@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -77,7 +54,7 @@ static ATOM_ENCODER_CAP_RECORD_V2 *get_encoder_cap_record(
 #define BIOS_IMAGE_SIZE_OFFSET 2
 #define BIOS_IMAGE_SIZE_UNIT 512
 
-/*****************************************************************************/
+ 
 static bool bios_parser_construct(
 	struct bios_parser *bp,
 	struct bp_init_data *init,
@@ -90,7 +67,7 @@ static enum bp_result bios_parser_get_embedded_panel_info(
 	struct dc_bios *dcb,
 	struct embedded_panel_info *info);
 
-/*****************************************************************************/
+ 
 
 struct dc_bios *bios_parser_create(
 	struct bp_init_data *init,
@@ -202,7 +179,7 @@ static enum bp_result bios_parser_get_src_obj(struct dc_bios *dcb,
 	object = get_bios_object(bp, object_id);
 
 	if (!object) {
-		BREAK_TO_DEBUGGER(); /* Invalid object id */
+		BREAK_TO_DEBUGGER();  
 		return BP_RESULT_BADINPUT;
 	}
 
@@ -249,7 +226,7 @@ static enum bp_result bios_parser_get_i2c_info(struct dc_bios *dcb,
 
 		if (ATOM_I2C_RECORD_TYPE == header->ucRecordType
 			&& sizeof(ATOM_I2C_RECORD) <= header->ucRecordSize) {
-			/* get the I2C info */
+			 
 			record = (ATOM_I2C_RECORD *) header;
 
 			if (get_gpio_i2c_info(bp, record, info) == BP_RESULT_OK)
@@ -340,11 +317,11 @@ static enum bp_result bios_parser_get_device_tag(
 	if (!info)
 		return BP_RESULT_BADINPUT;
 
-	/* getBiosObject will return MXM object */
+	 
 	object = get_bios_object(bp, connector_object_id);
 
 	if (!object) {
-		BREAK_TO_DEBUGGER(); /* Invalid object id */
+		BREAK_TO_DEBUGGER();  
 		return BP_RESULT_BADINPUT;
 	}
 
@@ -434,8 +411,7 @@ static enum bp_result get_firmware_info_v1_4(
 
 	memset(info, 0, sizeof(*info));
 
-	/* Pixel clock pll information. We need to convert from 10KHz units into
-	 * KHz units */
+	 
 	info->pll_info.crystal_frequency =
 		le16_to_cpu(firmware_info->usReferenceClock) * 10;
 	info->pll_info.min_input_pxl_clk_pll_frequency =
@@ -448,15 +424,13 @@ static enum bp_result get_firmware_info_v1_4(
 		le32_to_cpu(firmware_info->ulMaxPixelClockPLL_Output) * 10;
 
 	if (firmware_info->usFirmwareCapability.sbfAccess.MemoryClockSS_Support)
-		/* Since there is no information on the SS, report conservative
-		 * value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.memory_clk_ss_percentage = THREE_PERCENT_OF_10000;
 
 	if (firmware_info->usFirmwareCapability.sbfAccess.EngineClockSS_Support)
-		/* Since there is no information on the SS,report conservative
-		 * value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.engine_clk_ss_percentage = THREE_PERCENT_OF_10000;
 
 	return BP_RESULT_OK;
@@ -485,8 +459,7 @@ static enum bp_result get_firmware_info_v2_1(
 
 	memset(info, 0, sizeof(*info));
 
-	/* Pixel clock pll information. We need to convert from 10KHz units into
-	 * KHz units */
+	 
 	info->pll_info.crystal_frequency =
 		le16_to_cpu(firmwareInfo->usCoreReferenceClock) * 10;
 	info->pll_info.min_input_pxl_clk_pll_frequency =
@@ -503,13 +476,11 @@ static enum bp_result get_firmware_info_v2_1(
 		le16_to_cpu(firmwareInfo->usUniphyDPModeExtClkFreq) * 10;
 	info->min_allowed_bl_level = firmwareInfo->ucMinAllowedBL_Level;
 
-	/* There should be only one entry in the SS info table for Memory Clock
-	 */
+	 
 	index = 0;
 	if (firmwareInfo->usFirmwareCapability.sbfAccess.MemoryClockSS_Support)
-		/* Since there is no information for external SS, report
-		 *  conservative value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.memory_clk_ss_percentage = THREE_PERCENT_OF_10000;
 	else if (get_ss_info_v3_1(bp,
 		ASIC_INTERNAL_MEMORY_SS, index, &internalSS) == BP_RESULT_OK) {
@@ -517,22 +488,18 @@ static enum bp_result get_firmware_info_v2_1(
 			info->feature.memory_clk_ss_percentage =
 				internalSS.spread_spectrum_percentage;
 			if (internalSS.type.CENTER_MODE) {
-				/* if it is centermode, the exact SS Percentage
-				 * will be round up of half of the percentage
-				 * reported in the SS table */
+				 
 				++info->feature.memory_clk_ss_percentage;
 				info->feature.memory_clk_ss_percentage /= 2;
 			}
 		}
 	}
 
-	/* There should be only one entry in the SS info table for Engine Clock
-	 */
+	 
 	index = 1;
 	if (firmwareInfo->usFirmwareCapability.sbfAccess.EngineClockSS_Support)
-		/* Since there is no information for external SS, report
-		 * conservative value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.engine_clk_ss_percentage = THREE_PERCENT_OF_10000;
 	else if (get_ss_info_v3_1(bp,
 		ASIC_INTERNAL_ENGINE_SS, index, &internalSS) == BP_RESULT_OK) {
@@ -540,9 +507,7 @@ static enum bp_result get_firmware_info_v2_1(
 			info->feature.engine_clk_ss_percentage =
 				internalSS.spread_spectrum_percentage;
 			if (internalSS.type.CENTER_MODE) {
-				/* if it is centermode, the exact SS Percentage
-				 * will be round up of half of the percentage
-				 * reported in the SS table */
+				 
 				++info->feature.engine_clk_ss_percentage;
 				info->feature.engine_clk_ss_percentage /= 2;
 			}
@@ -571,8 +536,7 @@ static enum bp_result get_firmware_info_v2_2(
 
 	memset(info, 0, sizeof(*info));
 
-	/* Pixel clock pll information. We need to convert from 10KHz units into
-	 * KHz units */
+	 
 	info->pll_info.crystal_frequency =
 		le16_to_cpu(firmware_info->usCoreReferenceClock) * 10;
 	info->pll_info.min_input_pxl_clk_pll_frequency =
@@ -588,13 +552,11 @@ static enum bp_result get_firmware_info_v2_2(
 	info->external_clock_source_frequency_for_dp =
 		le16_to_cpu(firmware_info->usUniphyDPModeExtClkFreq) * 10;
 
-	/* There should be only one entry in the SS info table for Memory Clock
-	 */
+	 
 	index = 0;
 	if (firmware_info->usFirmwareCapability.sbfAccess.MemoryClockSS_Support)
-		/* Since there is no information for external SS, report
-		 *  conservative value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.memory_clk_ss_percentage = THREE_PERCENT_OF_10000;
 	else if (get_ss_info_v3_1(bp,
 			ASIC_INTERNAL_MEMORY_SS, index, &internal_ss) == BP_RESULT_OK) {
@@ -602,22 +564,18 @@ static enum bp_result get_firmware_info_v2_2(
 			info->feature.memory_clk_ss_percentage =
 					internal_ss.spread_spectrum_percentage;
 			if (internal_ss.type.CENTER_MODE) {
-				/* if it is centermode, the exact SS Percentage
-				 * will be round up of half of the percentage
-				 * reported in the SS table */
+				 
 				++info->feature.memory_clk_ss_percentage;
 				info->feature.memory_clk_ss_percentage /= 2;
 			}
 		}
 	}
 
-	/* There should be only one entry in the SS info table for Engine Clock
-	 */
+	 
 	index = 1;
 	if (firmware_info->usFirmwareCapability.sbfAccess.EngineClockSS_Support)
-		/* Since there is no information for external SS, report
-		 * conservative value 3% for bandwidth calculation */
-		/* unit of 0.01% */
+		 
+		 
 		info->feature.engine_clk_ss_percentage = THREE_PERCENT_OF_10000;
 	else if (get_ss_info_v3_1(bp,
 			ASIC_INTERNAL_ENGINE_SS, index, &internal_ss) == BP_RESULT_OK) {
@@ -625,21 +583,19 @@ static enum bp_result get_firmware_info_v2_2(
 			info->feature.engine_clk_ss_percentage =
 					internal_ss.spread_spectrum_percentage;
 			if (internal_ss.type.CENTER_MODE) {
-				/* if it is centermode, the exact SS Percentage
-				 * will be round up of half of the percentage
-				 * reported in the SS table */
+				 
 				++info->feature.engine_clk_ss_percentage;
 				info->feature.engine_clk_ss_percentage /= 2;
 			}
 		}
 	}
 
-	/* Remote Display */
+	 
 	info->remote_display_config = firmware_info->ucRemoteDisplayConfig;
 
-	/* Is allowed minimum BL level */
+	 
 	info->min_allowed_bl_level = firmware_info->ucMinAllowedBL_Level;
-	/* Used starting from CI */
+	 
 	info->smu_gpu_pll_output_freq =
 			(uint32_t) (le32_to_cpu(firmware_info->ulGPUPLL_OutputFreq) * 10);
 
@@ -685,17 +641,7 @@ static enum bp_result get_ss_info_v3_1(
 			table_index++;
 			continue;
 		}
-		/* VBIOS introduced new defines for Version 3, same values as
-		 *  before, so now use these new ones for Version 3.
-		 * Shouldn't affect field VBIOS's V3 as define values are still
-		 *  same.
-		 * #define SS_MODE_V3_CENTRE_SPREAD_MASK                0x01
-		 * #define SS_MODE_V3_EXTERNAL_SS_MASK                  0x02
-
-		 * Old VBIOS defines:
-		 * #define ATOM_SS_CENTRE_SPREAD_MODE_MASK        0x00000001
-		 * #define ATOM_EXTERNAL_SS_MASK                  0x00000002
-		 */
+		 
 
 		if (SS_MODE_V3_EXTERNAL_SS_MASK & tbl[i].ucSpreadSpectrumMode)
 			ss_info->type.EXTERNAL = true;
@@ -703,17 +649,16 @@ static enum bp_result get_ss_info_v3_1(
 		if (SS_MODE_V3_CENTRE_SPREAD_MASK & tbl[i].ucSpreadSpectrumMode)
 			ss_info->type.CENTER_MODE = true;
 
-		/* Older VBIOS (in field) always provides SS percentage in 0.01%
-		 * units set Divider to 100 */
+		 
 		ss_info->spread_percentage_divider = 100;
 
-		/* #define SS_MODE_V3_PERCENTAGE_DIV_BY_1000_MASK 0x10 */
+		 
 		if (SS_MODE_V3_PERCENTAGE_DIV_BY_1000_MASK
 				& tbl[i].ucSpreadSpectrumMode)
 			ss_info->spread_percentage_divider = 1000;
 
 		ss_info->type.STEP_AND_DELAY_INFO = false;
-		/* convert [10KHz] into [KHz] */
+		 
 		ss_info->target_clock_range =
 				le32_to_cpu(tbl[i].ulTargetClockRange) * 10;
 		ss_info->spread_spectrum_percentage =
@@ -872,7 +817,7 @@ static ATOM_HPD_INT_RECORD *get_hpd_record(struct bios_parser *bp,
 	uint32_t offset;
 
 	if (!object) {
-		BREAK_TO_DEBUGGER(); /* Invalid object */
+		BREAK_TO_DEBUGGER();  
 		return NULL;
 	}
 
@@ -907,19 +852,7 @@ static enum bp_result get_ss_info_from_tbl(
 	struct bios_parser *bp,
 	uint32_t id,
 	struct spread_spectrum_info *ss_info);
-/**
- * bios_parser_get_spread_spectrum_info
- * Get spread spectrum information from the ASIC_InternalSS_Info(ver 2.1 or
- * ver 3.1) or SS_Info table from the VBIOS. Currently ASIC_InternalSS_Info
- * ver 2.1 can co-exist with SS_Info table. Expect ASIC_InternalSS_Info ver 3.1,
- * there is only one entry for each signal /ss id.  However, there is
- * no planning of supporting multiple spread Sprectum entry for EverGreen
- * @dcb:     pointer to the DC BIOS
- * @signal:  ASSignalType to be converted to info index
- * @index:   number of entries that match the converted info index
- * @ss_info: sprectrum information structure,
- * return:   Bios parser result code
- */
+ 
 static enum bp_result bios_parser_get_spread_spectrum_info(
 	struct dc_bios *dcb,
 	enum as_signal_type signal,
@@ -932,9 +865,9 @@ static enum bp_result bios_parser_get_spread_spectrum_info(
 	ATOM_COMMON_TABLE_HEADER *header;
 	struct atom_data_revision tbl_revision;
 
-	if (!ss_info) /* check for bad input */
+	if (!ss_info)  
 		return BP_RESULT_BADINPUT;
-	/* signal translation */
+	 
 	clk_id_ss = signal_to_ss_id(signal);
 
 	if (!DATA_TABLES(ASIC_InternalSS_Info))
@@ -950,8 +883,7 @@ static enum bp_result bios_parser_get_spread_spectrum_info(
 	case 2:
 		switch (tbl_revision.minor) {
 		case 1:
-			/* there can not be more then one entry for Internal
-			 * SS Info table version 2.1 */
+			 
 			if (!index)
 				return get_ss_info_from_tbl(bp, clk_id_ss,
 						ss_info);
@@ -972,7 +904,7 @@ static enum bp_result bios_parser_get_spread_spectrum_info(
 	default:
 		break;
 	}
-	/* there can not be more then one entry for SS Info table */
+	 
 	return result;
 }
 
@@ -981,26 +913,15 @@ static enum bp_result get_ss_info_from_internal_ss_info_tbl_V2_1(
 	uint32_t id,
 	struct spread_spectrum_info *info);
 
-/**
- * get_ss_info_from_tbl
- * Get spread sprectrum information from the ASIC_InternalSS_Info Ver 2.1 or
- * SS_Info table from the VBIOS
- * There can not be more than 1 entry for  ASIC_InternalSS_Info Ver 2.1 or
- * SS_Info.
- *
- * @bp:      pointer to the BIOS parser
- * @id:      spread sprectrum info index
- * @ss_info: sprectrum information structure,
- * return:   BIOS parser result code
- */
+ 
 static enum bp_result get_ss_info_from_tbl(
 	struct bios_parser *bp,
 	uint32_t id,
 	struct spread_spectrum_info *ss_info)
 {
-	if (!ss_info) /* check for bad input, if ss_info is not NULL */
+	if (!ss_info)  
 		return BP_RESULT_BADINPUT;
-	/* for SS_Info table only support DP and LVDS */
+	 
 	if (id == ASIC_INTERNAL_SS_ON_DP || id == ASIC_INTERNAL_SS_ON_LVDS)
 		return get_ss_info_from_ss_info_table(bp, id, ss_info);
 	else
@@ -1008,17 +929,7 @@ static enum bp_result get_ss_info_from_tbl(
 			ss_info);
 }
 
-/**
- * get_ss_info_from_internal_ss_info_tbl_V2_1
- * Get spread sprectrum information from the ASIC_InternalSS_Info table Ver 2.1
- * from the VBIOS
- * There will not be multiple entry for Ver 2.1
- *
- * @bp:    pointer to the Bios parser
- * @id:    spread sprectrum info index
- * @info:  sprectrum information structure,
- * return: Bios parser result code
- */
+ 
 static enum bp_result get_ss_info_from_internal_ss_info_tbl_V2_1(
 	struct bios_parser *bp,
 	uint32_t id,
@@ -1060,7 +971,7 @@ static enum bp_result get_ss_info_from_internal_ss_info_tbl_V2_1(
 			info->type.CENTER_MODE = true;
 		}
 		info->type.STEP_AND_DELAY_INFO = false;
-		/* convert [10KHz] into [KHz] */
+		 
 		info->target_clock_range =
 			le32_to_cpu(tbl[i].ulTargetClockRange) * 10;
 		info->spread_spectrum_percentage =
@@ -1075,18 +986,7 @@ static enum bp_result get_ss_info_from_internal_ss_info_tbl_V2_1(
 
 }
 
-/**
- * get_ss_info_from_ss_info_table
- * Get spread sprectrum information from the SS_Info table from the VBIOS
- * if the pointer to info is NULL, indicate the caller what to know the number
- * of entries that matches the id
- * for, the SS_Info table, there should not be more than 1 entry match.
- *
- * @bp:      pointer to the Bios parser
- * @id:      spread sprectrum id
- * @ss_info: sprectrum information structure,
- * return:   Bios parser result code
- */
+ 
 static enum bp_result get_ss_info_from_ss_info_table(
 	struct bios_parser *bp,
 	uint32_t id,
@@ -1100,8 +1000,8 @@ static enum bp_result get_ss_info_from_ss_info_table(
 	uint32_t id_local = SS_ID_UNKNOWN;
 	struct atom_data_revision revision;
 
-	/* exist of the SS_Info table */
-	/* check for bad input, pSSinfo can not be NULL */
+	 
+	 
 	if (!DATA_TABLES(SS_Info) || !ss_info)
 		return result;
 
@@ -1113,7 +1013,7 @@ static enum bp_result get_ss_info_from_ss_info_table(
 	if (1 != revision.major || 2 > revision.minor)
 		return result;
 
-	/* have to convert from Internal_SS format to SS_Info format */
+	 
 	switch (id) {
 	case ASIC_INTERNAL_SS_ON_DP:
 		id_local = SS_ID_DP1;
@@ -1163,8 +1063,7 @@ static enum bp_result get_ss_info_from_ss_info_table(
 		ss_info->spread_spectrum_range =
 			(uint32_t)tbl->asSS_Info[i].ucSS_Range * 10000;
 
-		/* there will be only one entry for each display type in SS_info
-		 * table */
+		 
 		result = BP_RESULT_OK;
 		break;
 	}
@@ -1237,25 +1136,21 @@ static enum bp_result get_embedded_panel_info_v1_2(
 
 	memset(info, 0, sizeof(struct embedded_panel_info));
 
-	/* We need to convert from 10KHz units into KHz units*/
+	 
 	info->lcd_timing.pixel_clk =
 		le16_to_cpu(lvds->sLCDTiming.usPixClk) * 10;
-	/* usHActive does not include borders, according to VBIOS team*/
+	 
 	info->lcd_timing.horizontal_addressable =
 		le16_to_cpu(lvds->sLCDTiming.usHActive);
-	/* usHBlanking_Time includes borders, so we should really be subtracting
-	 * borders duing this translation, but LVDS generally*/
-	/* doesn't have borders, so we should be okay leaving this as is for
-	 * now.  May need to revisit if we ever have LVDS with borders*/
+	 
+	 
 	info->lcd_timing.horizontal_blanking_time =
 			le16_to_cpu(lvds->sLCDTiming.usHBlanking_Time);
-	/* usVActive does not include borders, according to VBIOS team*/
+	 
 	info->lcd_timing.vertical_addressable =
 			le16_to_cpu(lvds->sLCDTiming.usVActive);
-	/* usVBlanking_Time includes borders, so we should really be subtracting
-	 * borders duing this translation, but LVDS generally*/
-	/* doesn't have borders, so we should be okay leaving this as is for
-	 * now. May need to revisit if we ever have LVDS with borders*/
+	 
+	 
 	info->lcd_timing.vertical_blanking_time =
 		le16_to_cpu(lvds->sLCDTiming.usVBlanking_Time);
 	info->lcd_timing.horizontal_sync_offset =
@@ -1292,7 +1187,7 @@ static enum bp_result get_embedded_panel_info_v1_2(
 
 	{
 		uint8_t rr = le16_to_cpu(lvds->usSupportedRefreshRate);
-		/* Get minimum supported refresh rate*/
+		 
 		if (SUPPORTED_LCD_REFRESHRATE_30Hz & rr)
 			info->supported_rr.REFRESH_RATE_30HZ = 1;
 		else if (SUPPORTED_LCD_REFRESHRATE_40Hz & rr)
@@ -1305,7 +1200,7 @@ static enum bp_result get_embedded_panel_info_v1_2(
 			info->supported_rr.REFRESH_RATE_60HZ = 1;
 	}
 
-	/*Drr panel support can be reported by VBIOS*/
+	 
 	if (LCDPANEL_CAP_DRR_SUPPORTED
 			& lvds->ucLCDPanel_SpecialHandlingCap)
 		info->drr_enabled = 1;
@@ -1355,25 +1250,21 @@ static enum bp_result get_embedded_panel_info_v1_3(
 
 	memset(info, 0, sizeof(struct embedded_panel_info));
 
-	/* We need to convert from 10KHz units into KHz units */
+	 
 	info->lcd_timing.pixel_clk =
 			le16_to_cpu(lvds->sLCDTiming.usPixClk) * 10;
-	/* usHActive does not include borders, according to VBIOS team */
+	 
 	info->lcd_timing.horizontal_addressable =
 			le16_to_cpu(lvds->sLCDTiming.usHActive);
-	/* usHBlanking_Time includes borders, so we should really be subtracting
-	 * borders duing this translation, but LVDS generally*/
-	/* doesn't have borders, so we should be okay leaving this as is for
-	 * now.  May need to revisit if we ever have LVDS with borders*/
+	 
+	 
 	info->lcd_timing.horizontal_blanking_time =
 		le16_to_cpu(lvds->sLCDTiming.usHBlanking_Time);
-	/* usVActive does not include borders, according to VBIOS team*/
+	 
 	info->lcd_timing.vertical_addressable =
 		le16_to_cpu(lvds->sLCDTiming.usVActive);
-	/* usVBlanking_Time includes borders, so we should really be subtracting
-	 * borders duing this translation, but LVDS generally*/
-	/* doesn't have borders, so we should be okay leaving this as is for
-	 * now. May need to revisit if we ever have LVDS with borders*/
+	 
+	 
 	info->lcd_timing.vertical_blanking_time =
 		le16_to_cpu(lvds->sLCDTiming.usVBlanking_Time);
 	info->lcd_timing.horizontal_sync_offset =
@@ -1408,12 +1299,12 @@ static enum bp_result get_embedded_panel_info_v1_3(
 		lvds->sLCDTiming.susModeMiscInfo.sbfAccess.DoubleClock;
 	info->ss_id = lvds->ucSS_Id;
 
-	/* Drr panel support can be reported by VBIOS*/
+	 
 	if (LCDPANEL_CAP_V13_DRR_SUPPORTED
 			& lvds->ucLCDPanel_SpecialHandlingCap)
 		info->drr_enabled = 1;
 
-	/* Get supported refresh rate*/
+	 
 	if (info->drr_enabled == 1) {
 		uint8_t min_rr =
 				lvds->sRefreshRateSupport.ucMinRefreshRateForDRR;
@@ -1457,16 +1348,7 @@ static enum bp_result get_embedded_panel_info_v1_3(
 	return BP_RESULT_OK;
 }
 
-/**
- * bios_parser_get_encoder_cap_info - get encoder capability
- *                                    information of input object id
- *
- * @dcb:       pointer to the DC BIOS
- * @object_id: object id
- * @info:      encoder cap information structure
- *
- * return: Bios parser result code
- */
+ 
 static enum bp_result bios_parser_get_encoder_cap_info(
 	struct dc_bios *dcb,
 	struct graphics_object_id object_id,
@@ -1494,14 +1376,7 @@ static enum bp_result bios_parser_get_encoder_cap_info(
 	return BP_RESULT_OK;
 }
 
-/**
- * get_encoder_cap_record - Get encoder cap record for the object
- *
- * @bp:      pointer to the BIOS parser
- * @object:  ATOM object
- * return:   atom encoder cap record
- * note:     search all records to find the ATOM_ENCODER_CAP_RECORD_V2 record
- */
+ 
 static ATOM_ENCODER_CAP_RECORD_V2 *get_encoder_cap_record(
 	struct bios_parser *bp,
 	ATOM_OBJECT *object)
@@ -1510,7 +1385,7 @@ static ATOM_ENCODER_CAP_RECORD_V2 *get_encoder_cap_record(
 	uint32_t offset;
 
 	if (!object) {
-		BREAK_TO_DEBUGGER(); /* Invalid object */
+		BREAK_TO_DEBUGGER();  
 		return NULL;
 	}
 
@@ -1552,15 +1427,7 @@ static uint32_t get_ss_entry_number_from_ss_info_tbl(
 	struct bios_parser *bp,
 	uint32_t id);
 
-/**
- * bios_parser_get_ss_entry_number
- * Get Number of SpreadSpectrum Entry from the ASIC_InternalSS_Info table from
- * the VBIOS that match the SSid (to be converted from signal)
- *
- * @dcb:    pointer to the DC BIOS
- * @signal: ASSignalType to be converted to SSid
- * return: number of SS Entry that match the signal
- */
+ 
 static uint32_t bios_parser_get_ss_entry_number(
 	struct dc_bios *dcb,
 	enum as_signal_type signal)
@@ -1605,15 +1472,7 @@ static uint32_t bios_parser_get_ss_entry_number(
 	return 0;
 }
 
-/**
- * get_ss_entry_number_from_ss_info_tbl
- * Get Number of spread spectrum entry from the SS_Info table from the VBIOS.
- *
- * @bp:  pointer to the BIOS parser
- * @id:  spread spectrum id
- * return: number of SS Entry that match the id
- * note: There can only be one entry for each id for SS_Info Table
- */
+ 
 static uint32_t get_ss_entry_number_from_ss_info_tbl(
 	struct bios_parser *bp,
 	uint32_t id)
@@ -1626,7 +1485,7 @@ static uint32_t get_ss_entry_number_from_ss_info_tbl(
 	uint32_t id_local = SS_ID_UNKNOWN;
 	struct atom_data_revision revision;
 
-	/* SS_Info table exist */
+	 
 	if (!DATA_TABLES(SS_Info))
 		return number;
 
@@ -1640,7 +1499,7 @@ static uint32_t get_ss_entry_number_from_ss_info_tbl(
 	if (1 != revision.major || 2 > revision.minor)
 		return number;
 
-	/* have to convert from Internal_SS format to SS_Info format */
+	 
 	switch (id) {
 	case ASIC_INTERNAL_SS_ON_DP:
 		id_local = SS_ID_DP1;
@@ -1673,17 +1532,7 @@ static uint32_t get_ss_entry_number_from_ss_info_tbl(
 	return number;
 }
 
-/**
- * get_ss_entry_number
- * Get spread sprectrum information from the ASIC_InternalSS_Info Ver 2.1 or
- * SS_Info table from the VBIOS
- * There can not be more than 1 entry for  ASIC_InternalSS_Info Ver 2.1 or
- * SS_Info.
- *
- * @bp:    pointer to the BIOS parser
- * @id:    spread sprectrum info index
- * return: Bios parser result code
- */
+ 
 static uint32_t get_ss_entry_number(struct bios_parser *bp, uint32_t id)
 {
 	if (id == ASIC_INTERNAL_SS_ON_DP || id == ASIC_INTERNAL_SS_ON_LVDS)
@@ -1692,16 +1541,7 @@ static uint32_t get_ss_entry_number(struct bios_parser *bp, uint32_t id)
 	return get_ss_entry_number_from_internal_ss_info_tbl_v2_1(bp, id);
 }
 
-/**
- * get_ss_entry_number_from_internal_ss_info_tbl_v2_1
- * Get NUmber of spread sprectrum entry from the ASIC_InternalSS_Info table
- * Ver 2.1 from the VBIOS
- * There will not be multiple entry for Ver 2.1
- *
- * @bp:    pointer to the BIOS parser
- * @id:    spread sprectrum info index
- * return: number of SS Entry that match the id
- */
+ 
 static uint32_t get_ss_entry_number_from_internal_ss_info_tbl_v2_1(
 	struct bios_parser *bp,
 	uint32_t id)
@@ -1731,15 +1571,7 @@ static uint32_t get_ss_entry_number_from_internal_ss_info_tbl_v2_1(
 
 	return 0;
 }
-/**
- * get_ss_entry_number_from_internal_ss_info_tbl_V3_1
- * Get Number of SpreadSpectrum Entry from the ASIC_InternalSS_Info table of
- * the VBIOS that matches id
- *
- * @bp:    pointer to the BIOS parser
- * @id:    spread sprectrum id
- * return: number of SS Entry that match the id
- */
+ 
 static uint32_t get_ss_entry_number_from_internal_ss_info_tbl_V3_1(
 	struct bios_parser *bp,
 	uint32_t id)
@@ -1770,20 +1602,7 @@ static uint32_t get_ss_entry_number_from_internal_ss_info_tbl_V3_1(
 	return number;
 }
 
-/**
- * bios_parser_get_gpio_pin_info
- * Get GpioPin information of input gpio id
- *
- * @dcb:     pointer to the DC BIOS
- * @gpio_id: GPIO ID
- * @info:    GpioPin information structure
- * return:   Bios parser result code
- * note:
- *  to get the GPIO PIN INFO, we need:
- *  1. get the GPIO_ID from other object table, see GetHPDInfo()
- *  2. in DATA_TABLE.GPIO_Pin_LUT, search all records, to get the registerA
- *  offset/mask
- */
+ 
 static enum bp_result bios_parser_get_gpio_pin_info(
 	struct dc_bios *dcb,
 	uint32_t gpio_id,
@@ -1845,7 +1664,7 @@ static enum bp_result get_gpio_i2c_info(struct bios_parser *bp,
 	if (!info)
 		return BP_RESULT_BADINPUT;
 
-	/* get the GPIO_I2C info */
+	 
 	if (!DATA_TABLES(GPIO_I2C_Info))
 		return BP_RESULT_BADBIOSTABLE;
 
@@ -1860,14 +1679,14 @@ static enum bp_result get_gpio_i2c_info(struct bios_parser *bp,
 	if (1 != header->sHeader.ucTableContentRevision)
 		return BP_RESULT_UNSUPPORTED;
 
-	/* get data count */
+	 
 	count = (le16_to_cpu(header->sHeader.usStructureSize)
 			- sizeof(ATOM_COMMON_TABLE_HEADER))
 				/ sizeof(ATOM_GPIO_I2C_ASSIGMENT);
 	if (count < record->sucI2cId.bfI2C_LineMux)
 		return BP_RESULT_BADBIOSTABLE;
 
-	/* get the GPIO_I2C_INFO */
+	 
 	info->i2c_hw_assist = record->sucI2cId.bfHW_Capable;
 	info->i2c_line = record->sucI2cId.bfI2C_LineMux;
 	info->i2c_engine_id = record->sucI2cId.bfHW_EngineID;
@@ -1920,7 +1739,7 @@ static bool dal_graphics_object_id_is_valid(struct graphics_object_id id)
 		break;
 	case OBJECT_TYPE_GPU:
 	case OBJECT_TYPE_ENGINE:
-		/* do NOT check for id.id == 0 */
+		 
 		if (id.enum_id == ENUM_ID_UNKNOWN)
 			rc = false;
 		break;
@@ -2009,7 +1828,7 @@ static uint32_t get_src_obj_list(struct bios_parser *bp, ATOM_OBJECT *object,
 	uint8_t *number;
 
 	if (!object) {
-		BREAK_TO_DEBUGGER(); /* Invalid object id */
+		BREAK_TO_DEBUGGER();  
 		return 0;
 	}
 
@@ -2086,7 +1905,7 @@ static struct device_id device_type_from_device_id(uint16_t device_id)
 		break;
 
 	default:
-		BREAK_TO_DEBUGGER(); /* Invalid device Id */
+		BREAK_TO_DEBUGGER();  
 		result_device_id.device_type = DEVICE_TYPE_UNKNOWN;
 		result_device_id.enum_id = 0;
 	}
@@ -2100,7 +1919,7 @@ static void get_atom_data_table_revision(
 	if (!tbl_revision)
 		return;
 
-	/* initialize the revision to 0 which is invalid revision */
+	 
 	tbl_revision->major = 0;
 	tbl_revision->minor = 0;
 
@@ -2203,16 +2022,11 @@ static uint32_t get_support_mask_for_device_id(struct device_id device_id)
 		break;
 	}
 
-	/* Unidentified device ID, return empty support mask. */
+	 
 	return 0;
 }
 
-/**
- * bios_parser_set_scratch_critical_state - update critical state
- *                                          bit in VBIOS scratch register
- * @dcb:    pointer to the DC BIOS
- * @state:  set or reset state
- */
+ 
 static void bios_parser_set_scratch_critical_state(
 	struct dc_bios *dcb,
 	bool state)
@@ -2220,20 +2034,7 @@ static void bios_parser_set_scratch_critical_state(
 	bios_set_scratch_critical_state(dcb, state);
 }
 
-/*
- * get_integrated_info_v8
- *
- * @brief
- * Get V8 integrated BIOS information
- *
- * @param
- * bios_parser *bp - [in]BIOS parser handler to get master data table
- * integrated_info *info - [out] store and output integrated info
- *
- * return:
- * enum bp_result - BP_RESULT_OK if information is available,
- *                  BP_RESULT_BADBIOSTABLE otherwise.
- */
+ 
 static enum bp_result get_integrated_info_v8(
 	struct bios_parser *bp,
 	struct integrated_info *info)
@@ -2251,7 +2052,7 @@ static enum bp_result get_integrated_info_v8(
 	info->boot_up_uma_clock = le32_to_cpu(info_v8->ulBootUpUMAClock) * 10;
 
 	for (i = 0; i < NUMBER_OF_DISP_CLK_VOLTAGE; ++i) {
-		/* Convert [10KHz] into [KHz] */
+		 
 		info->disp_clk_voltage[i].max_supported_clk =
 			le32_to_cpu(info_v8->sDISPCLK_Voltage[i].
 				    ulMaximumSupportedCLK) * 10;
@@ -2264,14 +2065,7 @@ static enum bp_result get_integrated_info_v8(
 	info->gpu_cap_info =
 		le32_to_cpu(info_v8->ulGPUCapInfo);
 
-	/*
-	 * system_config: Bit[0] = 0 : PCIE power gating disabled
-	 *                       = 1 : PCIE power gating enabled
-	 *                Bit[1] = 0 : DDR-PLL shut down disabled
-	 *                       = 1 : DDR-PLL shut down enabled
-	 *                Bit[2] = 0 : DDR-PLL power down disabled
-	 *                       = 1 : DDR-PLL power down enabled
-	 */
+	 
 	info->system_config = le32_to_cpu(info_v8->ulSystemConfig);
 	info->cpu_cap_info = le32_to_cpu(info_v8->ulCPUCapInfo);
 	info->boot_up_nb_voltage =
@@ -2330,7 +2124,7 @@ static enum bp_result get_integrated_info_v8(
 		le32_to_cpu(info_v8->ulLCDBitDepthControlVal);
 
 	for (i = 0; i < NUMBER_OF_AVAILABLE_SCLK; ++i) {
-		/* Convert [10KHz] into [KHz] */
+		 
 		info->avail_s_clk[i].supported_s_clk =
 			le32_to_cpu(info_v8->sAvail_SCLK[i].ulSupportedSCLK) * 10;
 		info->avail_s_clk[i].voltage_index =
@@ -2370,20 +2164,7 @@ static enum bp_result get_integrated_info_v8(
 	return BP_RESULT_OK;
 }
 
-/*
- * get_integrated_info_v8
- *
- * @brief
- * Get V8 integrated BIOS information
- *
- * @param
- * bios_parser *bp - [in]BIOS parser handler to get master data table
- * integrated_info *info - [out] store and output integrated info
- *
- * return:
- * enum bp_result - BP_RESULT_OK if information is available,
- *                  BP_RESULT_BADBIOSTABLE otherwise.
- */
+ 
 static enum bp_result get_integrated_info_v9(
 	struct bios_parser *bp,
 	struct integrated_info *info)
@@ -2402,7 +2183,7 @@ static enum bp_result get_integrated_info_v9(
 	info->boot_up_uma_clock = le32_to_cpu(info_v9->ulBootUpUMAClock) * 10;
 
 	for (i = 0; i < NUMBER_OF_DISP_CLK_VOLTAGE; ++i) {
-		/* Convert [10KHz] into [KHz] */
+		 
 		info->disp_clk_voltage[i].max_supported_clk =
 			le32_to_cpu(info_v9->sDISPCLK_Voltage[i].ulMaximumSupportedCLK) * 10;
 		info->disp_clk_voltage[i].voltage_index =
@@ -2413,14 +2194,7 @@ static enum bp_result get_integrated_info_v9(
 		le32_to_cpu(info_v9->ulBootUpReqDisplayVector);
 	info->gpu_cap_info = le32_to_cpu(info_v9->ulGPUCapInfo);
 
-	/*
-	 * system_config: Bit[0] = 0 : PCIE power gating disabled
-	 *                       = 1 : PCIE power gating enabled
-	 *                Bit[1] = 0 : DDR-PLL shut down disabled
-	 *                       = 1 : DDR-PLL shut down enabled
-	 *                Bit[2] = 0 : DDR-PLL power down disabled
-	 *                       = 1 : DDR-PLL power down enabled
-	 */
+	 
 	info->system_config = le32_to_cpu(info_v9->ulSystemConfig);
 	info->cpu_cap_info = le32_to_cpu(info_v9->ulCPUCapInfo);
 	info->boot_up_nb_voltage = le16_to_cpu(info_v9->usBootUpNBVoltage);
@@ -2467,7 +2241,7 @@ static enum bp_result get_integrated_info_v9(
 		le32_to_cpu(info_v9->ulLCDBitDepthControlVal);
 
 	for (i = 0; i < NUMBER_OF_AVAILABLE_SCLK; ++i) {
-		/* Convert [10KHz] into [KHz] */
+		 
 		info->avail_s_clk[i].supported_s_clk =
 			le32_to_cpu(info_v9->sAvail_SCLK[i].ulSupportedSCLK) * 10;
 		info->avail_s_clk[i].voltage_index =
@@ -2507,20 +2281,7 @@ static enum bp_result get_integrated_info_v9(
 	return BP_RESULT_OK;
 }
 
-/*
- * construct_integrated_info
- *
- * @brief
- * Get integrated BIOS information based on table revision
- *
- * @param
- * bios_parser *bp - [in]BIOS parser handler to get master data table
- * integrated_info *info - [out] store and output integrated info
- *
- * return:
- * enum bp_result - BP_RESULT_OK if information is available,
- *                  BP_RESULT_BADBIOSTABLE otherwise.
- */
+ 
 static enum bp_result construct_integrated_info(
 	struct bios_parser *bp,
 	struct integrated_info *info)
@@ -2536,7 +2297,7 @@ static enum bp_result construct_integrated_info(
 
 		get_atom_data_table_revision(header, &revision);
 
-		/* Don't need to check major revision as they are all 1 */
+		 
 		switch (revision.minor) {
 		case 8:
 			result = get_integrated_info_v8(bp, info);
@@ -2550,7 +2311,7 @@ static enum bp_result construct_integrated_info(
 		}
 	}
 
-	/* Sort voltage table from low to high*/
+	 
 	if (result == BP_RESULT_OK) {
 		uint32_t i;
 		uint32_t j;
@@ -2560,7 +2321,7 @@ static enum bp_result construct_integrated_info(
 				if (
 						info->disp_clk_voltage[j].max_supported_clk <
 						info->disp_clk_voltage[j-1].max_supported_clk) {
-					/* swap j and j - 1*/
+					 
 					swap(info->disp_clk_voltage[j - 1],
 					     info->disp_clk_voltage[j]);
 				}
@@ -2616,7 +2377,7 @@ static enum bp_result update_slot_layout_info(struct dc_bios *dcb,
 			break;
 		}
 
-		/* the end of the list */
+		 
 		if (record_header->ucRecordType == 0xff ||
 			record_header->ucRecordSize == 0)	{
 			break;
@@ -2635,15 +2396,15 @@ static enum bp_result update_slot_layout_info(struct dc_bios *dcb,
 		record_offset += record_header->ucRecordSize;
 	}
 
-	/* return if the record not found */
+	 
 	if (result != BP_RESULT_OK)
 		return result;
 
-	/* get slot sizes */
+	 
 	slot_layout_info->length = record->ucLength;
 	slot_layout_info->width = record->ucWidth;
 
-	/* get info for each connector in the slot */
+	 
 	slot_layout_info->num_of_connectors = record->ucConnNum;
 	for (j = 0; j < slot_layout_info->num_of_connectors; ++j) {
 		slot_layout_info->connectors[j].connector_type =
@@ -2767,14 +2528,14 @@ static enum bp_result bios_get_board_layout_info(
 			&board_layout_info->slots[i]);
 
 		if (record_result == BP_RESULT_NORECORD && i > 0)
-			break; /* no more slots present in bios */
+			break;  
 		else if (record_result != BP_RESULT_OK)
-			return record_result;  /* fail */
+			return record_result;   
 
 		++board_layout_info->num_of_slots;
 	}
 
-	/* all data is valid */
+	 
 	board_layout_info->is_number_of_slots_valid = 1;
 	board_layout_info->is_slots_size_valid = 1;
 	board_layout_info->is_connector_offsets_valid = 1;
@@ -2783,7 +2544,7 @@ static enum bp_result bios_get_board_layout_info(
 	return BP_RESULT_OK;
 }
 
-/******************************************************************************/
+ 
 
 static const struct dc_vbios_funcs vbios_funcs = {
 	.get_connectors_number = bios_parser_get_connectors_number,
@@ -2808,14 +2569,14 @@ static const struct dc_vbios_funcs vbios_funcs = {
 
 	.get_encoder_cap_info = bios_parser_get_encoder_cap_info,
 
-	/* bios scratch register communication */
+	 
 	.is_accelerated_mode = bios_is_accelerated_mode,
 
 	.set_scratch_critical_state = bios_parser_set_scratch_critical_state,
 
 	.is_device_id_supported = bios_parser_is_device_id_supported,
 
-	/* COMMANDS */
+	 
 	.encoder_control = bios_parser_encoder_control,
 
 	.transmitter_control = bios_parser_transmitter_control,
@@ -2830,13 +2591,13 @@ static const struct dc_vbios_funcs vbios_funcs = {
 
 	.enable_spread_spectrum_on_ppll = bios_parser_enable_spread_spectrum_on_ppll,
 
-	.program_crtc_timing = bios_parser_program_crtc_timing, /* still use.  should probably retire and program directly */
+	.program_crtc_timing = bios_parser_program_crtc_timing,  
 
 	.program_display_engine_pll = bios_parser_program_display_engine_pll,
 
 	.enable_disp_power_gating = bios_parser_enable_disp_power_gating,
 
-	/* SW init and patch */
+	 
 
 	.bios_parser_destroy = bios_parser_destroy,
 
@@ -2929,4 +2690,4 @@ static bool bios_parser_construct(
 	return true;
 }
 
-/******************************************************************************/
+ 

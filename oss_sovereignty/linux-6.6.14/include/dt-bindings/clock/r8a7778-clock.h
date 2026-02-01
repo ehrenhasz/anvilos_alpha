@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2014 Ulrich Hecht
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_R8A7778_H__
 #define __DT_BINDINGS_CLOCK_R8A7778_H__
 
-/* CPG */
+ 
 #define R8A7778_CLK_PLLA	0
 #define R8A7778_CLK_PLLB	1
 #define R8A7778_CLK_B		2
@@ -15,7 +13,7 @@
 #define R8A7778_CLK_S		5
 #define R8A7778_CLK_S1		6
 
-/* MSTP0 */
+ 
 #define R8A7778_CLK_I2C0	30
 #define R8A7778_CLK_I2C1	29
 #define R8A7778_CLK_I2C2	28
@@ -38,13 +36,13 @@
 #define R8A7778_CLK_SRU		8
 #define R8A7778_CLK_HSPI	7
 
-/* MSTP1 */
+ 
 #define R8A7778_CLK_ETHER	14
 #define R8A7778_CLK_VIN0	10
 #define R8A7778_CLK_VIN1	9
 #define R8A7778_CLK_USB		0
 
-/* MSTP3 */
+ 
 #define R8A7778_CLK_MMC		31
 #define R8A7778_CLK_SDHI0	23
 #define R8A7778_CLK_SDHI1	22
@@ -55,7 +53,7 @@
 #define R8A7778_CLK_SSI7	8
 #define R8A7778_CLK_SSI8	7
 
-/* MSTP5 */
+ 
 #define R8A7778_CLK_SRU_SRC0	31
 #define R8A7778_CLK_SRU_SRC1	30
 #define R8A7778_CLK_SRU_SRC2	29
@@ -66,4 +64,4 @@
 #define R8A7778_CLK_SRU_SRC7	24
 #define R8A7778_CLK_SRU_SRC8	23
 
-#endif /* __DT_BINDINGS_CLOCK_R8A7778_H__ */
+#endif  

@@ -1,18 +1,4 @@
-/*
- *  Freescale i.MX Frame Buffer device driver
- *
- *  Copyright (C) 2004 Sascha Hauer, Pengutronix
- *   Based on acornfb.c Copyright (C) Russell King.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- *
- * Please direct your questions and comments on this driver to the following
- * email address:
- *
- *	linux-arm-kernel@lists.arm.linux.org.uk
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -55,9 +41,7 @@ struct imx_fb_videomode {
 	unsigned char	bpp;
 };
 
-/*
- * Complain if VAR is out of range.
- */
+ 
 #define DEBUG_VAR 1
 
 #define DRIVER_NAME "imx-fb"
@@ -103,13 +87,13 @@ struct imx_fb_videomode {
 #define POS_POS(x)	((x) & 1f)
 
 #define LCDC_LSCR1	0x28
-/* bit fields in imxfb.h */
+ 
 
 #define LCDC_PWMR	0x2C
-/* bit fields in imxfb.h */
+ 
 
 #define LCDC_DMACR	0x30
-/* bit fields in imxfb.h */
+ 
 
 #define LCDC_RMCR	0x34
 
@@ -132,13 +116,10 @@ struct imx_fb_videomode {
 #define LCDC_LAUSCR	0x80
 #define LAUSCR_AUS_MODE	(1<<31)
 
-/* Used fb-mode. Can be set on kernel command line, therefore file-static. */
+ 
 static const char *fb_mode;
 
-/*
- * These are the bitfields for each
- * display depth that we support.
- */
+ 
 struct imxfb_rgb {
 	struct fb_bitfield	red;
 	struct fb_bitfield	green;
@@ -167,10 +148,7 @@ struct imxfb_info {
 	enum imxfb_panel_type	panel_type;
 	bool			enabled;
 
-	/*
-	 * These are the addresses we mapped
-	 * the framebuffer memory region to.
-	 */
+	 
 	dma_addr_t		map_dma;
 	u_int			map_size;
 
@@ -202,7 +180,7 @@ static const struct platform_device_id imxfb_devtype[] = {
 		.name = "imx21-fb",
 		.driver_data = IMX21_FB,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, imxfb_devtype);
@@ -215,7 +193,7 @@ static const struct of_device_id imxfb_of_dev_id[] = {
 		.compatible = "fsl,imx21-fb",
 		.data = &imxfb_devtype[IMX21_FB],
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imxfb_of_dev_id);
@@ -227,16 +205,11 @@ static inline int is_imx1_fb(struct imxfb_info *fbi)
 
 #define IMX_NAME	"IMX"
 
-/*
- * Minimum X and Y resolutions
- */
+ 
 #define MIN_XRES	64
 #define MIN_YRES	64
 
-/* Actually this really is 18bit support, the lowest 2 bits of each colour
- * are unused in hardware. We claim to have 24bit support to make software
- * like X work, which does not support 18bit.
- */
+ 
 static struct imxfb_rgb def_rgb_18 = {
 	.red	= {.offset = 16, .length = 8,},
 	.green	= {.offset = 8, .length = 8,},
@@ -300,32 +273,21 @@ static int imxfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
 	unsigned int val;
 	int ret = 1;
 
-	/*
-	 * If inverse mode was selected, invert all the colours
-	 * rather than the register number.  The register number
-	 * is what you poke into the framebuffer to produce the
-	 * colour you requested.
-	 */
+	 
 	if (fbi->cmap_inverse) {
 		red   = 0xffff - red;
 		green = 0xffff - green;
 		blue  = 0xffff - blue;
 	}
 
-	/*
-	 * If greyscale is true, then we convert the RGB value
-	 * to greyscale no mater what visual we are using.
-	 */
+	 
 	if (info->var.grayscale)
 		red = green = blue = (19595 * red + 38470 * green +
 					7471 * blue) >> 16;
 
 	switch (info->fix.visual) {
 	case FB_VISUAL_TRUECOLOR:
-		/*
-		 * 12 or 16-bit True Colour.  We encode the RGB value
-		 * according to the RGB bitfield information.
-		 */
+		 
 		if (regno < 16) {
 			u32 *pal = info->pseudo_palette;
 
@@ -362,12 +324,7 @@ static const struct imx_fb_videomode *imxfb_find_mode(struct imxfb_info *fbi)
 	return NULL;
 }
 
-/*
- *  imxfb_check_var():
- *    Round up in the following order: bits_per_pixel, xres,
- *    yres, xres_virtual, yres_virtual, xoffset, yoffset, grayscale,
- *    bitfields, horizontal timing, vertical timing.
- */
+ 
 static int imxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	struct imxfb_info *fbi = info->par;
@@ -442,13 +399,11 @@ static int imxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		break;
 	}
 
-	/* add sync polarities */
+	 
 	pcr |= imxfb_mode->pcr & ~(0x3f | (7 << 25));
 
 	fbi->pcr = pcr;
-	/*
-	 * The LCDC AUS Mode Control Register does not exist on imx1.
-	 */
+	 
 	if (!is_imx1_fb(fbi) && imxfb_mode->aus_mode)
 		fbi->lauscr = LAUSCR_AUS_MODE;
 
@@ -459,10 +414,7 @@ static int imxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	else
 		fbi->panel_type = PANEL_TYPE_MONOCHROME;
 
-	/*
-	 * Copy the RGB parameters for this display
-	 * from the machine specific parameters.
-	 */
+	 
 	var->red    = rgb->red;
 	var->green  = rgb->green;
 	var->blue   = rgb->blue;
@@ -479,10 +431,7 @@ static int imxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	return 0;
 }
 
-/*
- * imxfb_set_par():
- *	Set the user defined part of the display for the specified console
- */
+ 
 static int imxfb_set_par(struct fb_info *info)
 {
 	struct imxfb_info *fbi = info->par;
@@ -493,11 +442,7 @@ static int imxfb_set_par(struct fb_info *info)
 	else if (!fbi->cmap_static)
 		info->fix.visual = FB_VISUAL_PSEUDOCOLOR;
 	else {
-		/*
-		 * Some people have weird ideas about wanting static
-		 * pseudocolor maps.  I suspect their user space
-		 * applications are broken.
-		 */
+		 
 		info->fix.visual = FB_VISUAL_STATIC_PSEUDOCOLOR;
 	}
 
@@ -520,17 +465,14 @@ static int imxfb_enable_controller(struct imxfb_info *fbi)
 
 	writel(fbi->map_dma, fbi->regs + LCDC_SSA);
 
-	/* panning offset 0 (0 pixel offset)        */
+	 
 	writel(0x00000000, fbi->regs + LCDC_POS);
 
-	/* disable hardware cursor */
+	 
 	writel(readl(fbi->regs + LCDC_CPOS) & ~(CPOS_CC0 | CPOS_CC1),
 		fbi->regs + LCDC_CPOS);
 
-	/*
-	 * RMCR_LCDC_EN_MX1 is present on i.MX1 only, but doesn't hurt
-	 * on other SoCs
-	 */
+	 
 	writel(RMCR_LCDC_EN_MX1, fbi->regs + LCDC_RMCR);
 
 	ret = clk_prepare_enable(fbi->clk_ipg);
@@ -602,11 +544,7 @@ static const struct fb_ops imxfb_ops = {
 	.fb_blank	= imxfb_blank,
 };
 
-/*
- * imxfb_activate_var():
- *	Configures LCD Controller based on entries in var parameter.  Settings are
- *	only written to the controller if changes were made.
- */
+ 
 static int imxfb_activate_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	struct imxfb_info *fbi = info->par;
@@ -654,7 +592,7 @@ static int imxfb_activate_var(struct fb_var_screeninfo *var, struct fb_info *inf
 			info->fix.id, var->lower_margin);
 #endif
 
-	/* physical screen start address	    */
+	 
 	writel(VPW_VPW(var->xres * var->bits_per_pixel / 8 / 4),
 		fbi->regs + LCDC_VPW);
 
@@ -676,7 +614,7 @@ static int imxfb_activate_var(struct fb_var_screeninfo *var, struct fb_info *inf
 		writel(fbi->pwmr, fbi->regs + LCDC_PWMR);
 	writel(fbi->lscr1, fbi->regs + LCDC_LSCR1);
 
-	/* dmacr = 0 is no valid value, as we need DMA control marks. */
+	 
 	if (fbi->dmacr)
 		writel(fbi->dmacr, fbi->regs + LCDC_DMACR);
 
@@ -773,9 +711,7 @@ static int imxfb_of_read_mode(struct device *dev, struct device_node *np,
 	imxfb_mode->bpp = bpp;
 	imxfb_mode->pcr = pcr;
 
-	/*
-	 * fsl,aus-mode is optional
-	 */
+	 
 	imxfb_mode->aus_mode = of_property_read_bool(np, "fsl,aus-mode");
 
 	return 0;
@@ -926,10 +862,7 @@ static int imxfb_probe(struct platform_device *pdev)
 		goto failed_init;
 	}
 
-	/*
-	 * imxfb does not support more modes, we choose only the native
-	 * mode.
-	 */
+	 
 	fbi->num_modes = 1;
 
 	fbi->mode = devm_kzalloc(&pdev->dev,
@@ -945,8 +878,7 @@ static int imxfb_probe(struct platform_device *pdev)
 	if (ret)
 		goto failed_init;
 
-	/* Calculate maximum bytes used per pixel. In most cases this should
-	 * be the same as m->bpp/8 */
+	 
 	m = &fbi->mode[0];
 	bytes_per_pixel = (m->bpp + 7) / 8;
 	for (i = 0; i < fbi->num_modes; i++, m++)
@@ -959,16 +891,7 @@ static int imxfb_probe(struct platform_device *pdev)
 		goto failed_init;
 	}
 
-	/*
-	 * The LCDC controller does not have an enable bit. The
-	 * controller starts directly when the clocks are enabled.
-	 * If the clocks are enabled when the controller is not yet
-	 * programmed with proper register values (enabled at the
-	 * bootloader, for example) then it just goes into some undefined
-	 * state.
-	 * To avoid this issue, let's enable and disable LCDC IPG clock
-	 * so that we force some kind of 'reset' to the LCDC block.
-	 */
+	 
 	ret = clk_prepare_enable(fbi->clk_ipg);
 	if (ret)
 		goto failed_init;
@@ -1007,16 +930,10 @@ static int imxfb_probe(struct platform_device *pdev)
 	for (i = 0; i < fbi->num_modes; i++)
 		fb_add_videomode(&fbi->mode[i].mode, &info->modelist);
 
-	/*
-	 * This makes sure that our colour bitfield
-	 * descriptors are correctly initialised.
-	 */
+	 
 	imxfb_check_var(&info->var, info);
 
-	/*
-	 * For modes > 8bpp, the color map is bypassed.
-	 * Therefore, 256 entries are enough.
-	 */
+	 
 	ret = fb_alloc_cmap(&info->cmap, 256, 0);
 	if (ret < 0)
 		goto failed_cmap;

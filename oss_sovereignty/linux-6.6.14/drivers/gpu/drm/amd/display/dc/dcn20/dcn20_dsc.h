@@ -1,26 +1,4 @@
-/* Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #ifndef __DCN20_DSC_H__
 #define __DCN20_DSC_H__
 
@@ -86,7 +64,7 @@
 #define DSC_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
-//Used in resolving the corner case with duplicate field name
+
 #define DSC2_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## _ ## field_name ## post_fix
 
@@ -100,7 +78,7 @@
 	DSC_SF(DSCC0_DSCC_CONFIG0, ALTERNATE_ICH_ENCODING_EN, mask_sh), \
 	DSC_SF(DSCC0_DSCC_CONFIG0, NUMBER_OF_SLICES_IN_VERTICAL_DIRECTION, mask_sh), \
 	DSC_SF(DSCC0_DSCC_CONFIG1, DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE, mask_sh), \
-	/*DSC_SF(DSCC0_DSCC_CONFIG1, DSCC_DISABLE_ICH, mask_sh),*/ \
+	  \
 	DSC_SF(DSCC0_DSCC_STATUS, DSCC_DOUBLE_BUFFER_REG_UPDATE_PENDING, mask_sh), \
 	DSC_SF(DSCC0_DSCC_INTERRUPT_CONTROL_STATUS, DSCC_RATE_BUFFER0_OVERFLOW_OCCURRED, mask_sh), \
 	DSC_SF(DSCC0_DSCC_INTERRUPT_CONTROL_STATUS, DSCC_RATE_BUFFER1_OVERFLOW_OCCURRED, mask_sh), \
@@ -271,7 +249,7 @@
 	type ALTERNATE_ICH_ENCODING_EN; \
 	type NUMBER_OF_SLICES_IN_VERTICAL_DIRECTION; \
 	type DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE; \
-	/*type DSCC_DISABLE_ICH;*/ \
+	  \
 	type DSCC_DOUBLE_BUFFER_REG_UPDATE_PENDING; \
 	type DSCC_RATE_BUFFER0_OVERFLOW_OCCURRED; \
 	type DSCC_RATE_BUFFER1_OVERFLOW_OCCURRED; \
@@ -506,7 +484,7 @@ struct dcn20_dsc_mask {
 	DSC_FIELD_LIST_DCN20(uint32_t);
 };
 
-/* DSCCIF_CONFIG.INPUT_PIXEL_FORMAT values */
+ 
 enum dsc_pixel_format {
 	DSC_PIXFMT_RGB,
 	DSC_PIXFMT_YCBCR444,
@@ -517,10 +495,10 @@ enum dsc_pixel_format {
 };
 
 struct dsc_reg_values {
-	/* PPS registers */
+	 
 	struct drm_dsc_config pps;
 
-	/* Additional registers */
+	 
 	uint32_t dsc_clock_enable;
 	uint32_t dsc_clock_gating_disable;
 	uint32_t underflow_recovery_en;

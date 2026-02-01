@@ -1,40 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * What:		/sys/kernel/debug/orangefs/debug-help
- * Date:		June 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			List of client and kernel debug keywords.
- *
- *
- * What:		/sys/kernel/debug/orangefs/client-debug
- * Date:		June 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Debug setting for "the client", the userspace
- * 			helper for the kernel module.
- *
- *
- * What:		/sys/kernel/debug/orangefs/kernel-debug
- * Date:		June 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Debug setting for the orangefs kernel module.
- *
- * 			Any of the keywords, or comma-separated lists
- * 			of keywords, from debug-help can be catted to
- * 			client-debug or kernel-debug.
- *
- * 			"none", "all" and "verbose" are special keywords
- * 			for client-debug. Setting client-debug to "all"
- * 			is kind of like trying to drink water from a
- * 			fire hose, "verbose" triggers most of the same
- * 			output except for the constant flow of output
- * 			from the main wait loop.
- *
- * 			"none" and "all" are similar settings for kernel-debug
- * 			no need for a "verbose".
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 
@@ -54,10 +19,7 @@
 #define ORANGEFS_VERBOSE "verbose"
 #define ORANGEFS_ALL "all"
 
-/*
- * An array of client_debug_mask will be built to hold debug keyword/mask
- * values fetched from userspace.
- */
+ 
 struct client_debug_mask {
 	char *keyword;
 	__u64 mask1;
@@ -137,40 +99,26 @@ static int cdm_element_count;
 
 static struct client_debug_mask client_debug_mask;
 
-/*
- * Used to protect data in ORANGEFS_KMOD_DEBUG_FILE and
- * ORANGEFS_KMOD_DEBUG_FILE.
- */
+ 
 static DEFINE_MUTEX(orangefs_debug_lock);
 
-/* Used to protect data in ORANGEFS_KMOD_DEBUG_HELP_FILE */
+ 
 static DEFINE_MUTEX(orangefs_help_file_lock);
 
-/*
- * initialize kmod debug operations, create orangefs debugfs dir and
- * ORANGEFS_KMOD_DEBUG_HELP_FILE.
- */
+ 
 void orangefs_debugfs_init(int debug_mask)
 {
-	/* convert input debug mask to a 64-bit unsigned integer */
+	 
         orangefs_gossip_debug_mask = (unsigned long long)debug_mask;
 
-	/*
-	 * set the kernel's gossip debug string; invalid mask values will
-	 * be ignored.
-	 */
+	 
 	debug_mask_to_string(&orangefs_gossip_debug_mask, 0);
 
-	/* remove any invalid values from the mask */
+	 
 	debug_string_to_mask(kernel_debug_string, &orangefs_gossip_debug_mask,
 	    0);
 
-	/*
-	 * if the mask has a non-zero value, then indicate that the mask
-	 * was set when the kernel module was loaded.  The orangefs dev ioctl
-	 * command will look at this boolean to determine if the kernel's
-	 * debug mask should be overwritten when the client-core is started.
-	 */
+	 
 	if (orangefs_gossip_debug_mask != 0)
 		kernel_mask_set_mod_init = true;
 
@@ -189,9 +137,7 @@ void orangefs_debugfs_init(int debug_mask)
 	orangefs_kernel_debug_init();
 }
 
-/*
- * initialize the kernel-debug file.
- */
+ 
 static void orangefs_kernel_debug_init(void)
 {
 	static char k_buffer[ORANGEFS_MAX_DEBUG_STRING_LEN] = { };
@@ -218,7 +164,7 @@ void orangefs_debugfs_cleanup(void)
 	debug_help_string = NULL;
 }
 
-/* open ORANGEFS_KMOD_DEBUG_HELP_FILE */
+ 
 static int orangefs_debug_help_open(struct inode *inode, struct file *file)
 {
 	int rc = -ENODEV;
@@ -245,12 +191,7 @@ out:
 	return rc;
 }
 
-/*
- * I think start always gets called again after stop. Start
- * needs to return NULL when it is done. The whole "payload"
- * in this case is a single (long) string, so by the second
- * time we get to start (pos = 1), we're done.
- */
+ 
 static void *help_start(struct seq_file *m, loff_t *pos)
 {
 	void *payload = NULL;
@@ -288,9 +229,7 @@ static int help_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * initialize the client-debug file.
- */
+ 
 static void orangefs_client_debug_init(void)
 {
 
@@ -313,7 +252,7 @@ static void orangefs_client_debug_init(void)
 						  &kernel_debug_fops);
 }
 
-/* open ORANGEFS_KMOD_DEBUG_FILE or ORANGEFS_CLIENT_DEBUG_FILE.*/
+ 
 static int orangefs_debug_open(struct inode *inode, struct file *file)
 {
 	int rc = -ENODEV;
@@ -389,10 +328,7 @@ static ssize_t orangefs_debug_write(struct file *file,
 	if (count == 0)
 		return 0;
 
-	/*
-	 * Thwart users who try to jamb a ridiculous number
-	 * of bytes into the debug file...
-	 */
+	 
 	if (count > ORANGEFS_MAX_DEBUG_STRING_LEN + 1) {
 		silly = count;
 		count = ORANGEFS_MAX_DEBUG_STRING_LEN + 1;
@@ -409,15 +345,7 @@ static ssize_t orangefs_debug_write(struct file *file,
 		goto out;
 	}
 
-	/*
-	 * Map the keyword string from userspace into a valid debug mask.
-	 * The mapping process involves mapping the human-inputted string
-	 * into a valid mask, and then rebuilding the string from the
-	 * verified valid mask.
-	 *
-	 * A service operation is required to set a new client-side
-	 * debug mask.
-	 */
+	 
 	if (!strcmp(file->f_path.dentry->d_name.name,
 		    ORANGEFS_KMOD_DEBUG_FILE)) {
 		debug_string_to_mask(buf, &orangefs_gossip_debug_mask, 0);
@@ -427,7 +355,7 @@ static ssize_t orangefs_debug_write(struct file *file,
 			     "New kernel debug string is %s\n",
 			     kernel_debug_string);
 	} else {
-		/* Can't reset client debug mask if client is not running. */
+		 
 		if (is_daemon_in_service()) {
 			pr_info("%s: Client not running :%d:\n",
 				__func__,
@@ -456,7 +384,7 @@ static ssize_t orangefs_debug_write(struct file *file,
 			c_mask.mask1,
 			c_mask.mask2);
 
-		/* service_operation returns 0 on success... */
+		 
 		rc = service_operation(new_op,
 				       "orangefs_param",
 					ORANGEFS_OP_INTERRUPTIBLE);
@@ -490,11 +418,7 @@ out:
 	return rc;
 }
 
-/*
- * After obtaining a string representation of the client's debug
- * keywords and their associated masks, this function is called to build an
- * array of these values.
- */
+ 
 static int orangefs_prepare_cdm_array(char *debug_array_string)
 {
 	int i;
@@ -505,9 +429,7 @@ static int orangefs_prepare_cdm_array(char *debug_array_string)
 
 	gossip_debug(GOSSIP_UTILS_DEBUG, "%s: start\n", __func__);
 
-	/*
-	 * figure out how many elements the cdm_array needs.
-	 */
+	 
 	for (i = 0; i < strlen(debug_array_string); i++)
 		if (debug_array_string[i] == '\n')
 			cdm_element_count++;
@@ -562,21 +484,7 @@ out:
 
 }
 
-/*
- * /sys/kernel/debug/orangefs/debug-help can be catted to
- * see all the available kernel and client debug keywords.
- *
- * When orangefs.ko initializes, we have no idea what keywords the
- * client supports, nor their associated masks.
- *
- * We pass through this function once at module-load and stamp a
- * boilerplate "we don't know" message for the client in the
- * debug-help file. We pass through here again when the client
- * starts and then we can fill out the debug-help file fully.
- *
- * The client might be restarted any number of times between
- * module reloads, we only build the debug-help file the first time.
- */
+ 
 int orangefs_prepare_debugfs_help_string(int at_boot)
 {
 	char *client_title = "Client Debug Keywords:\n";
@@ -592,31 +500,19 @@ int orangefs_prepare_debugfs_help_string(int at_boot)
 	if (at_boot)
 		client_title = HELP_STRING_UNINITIALIZED;
 
-	/* build a new debug_help_string. */
+	 
 	new = kzalloc(DEBUG_HELP_STRING_SIZE, GFP_KERNEL);
 	if (!new) {
 		rc = -ENOMEM;
 		goto out;
 	}
 
-	/*
-	 * strlcat(dst, src, size) will append at most
-	 * "size - strlen(dst) - 1" bytes of src onto dst,
-	 * null terminating the result, and return the total
-	 * length of the string it tried to create.
-	 *
-	 * We'll just plow through here building our new debug
-	 * help string and let strlcat take care of assuring that
-	 * dst doesn't overflow.
-	 */
+	 
 	strlcat(new, client_title, string_size);
 
 	if (!at_boot) {
 
-                /*
-		 * fill the client keyword/mask array and remember
-		 * how many elements there were.
-		 */
+                 
 		cdm_element_count =
 			orangefs_prepare_cdm_array(client_debug_array_string);
 		if (cdm_element_count <= 0) {
@@ -640,7 +536,7 @@ int orangefs_prepare_debugfs_help_string(int at_boot)
 		result_size = strlcat(new, "\n", string_size);
 	}
 
-	/* See if we tried to put too many bytes into "new"... */
+	 
 	if (result_size >= string_size) {
 		kfree(new);
 		goto out;
@@ -662,10 +558,7 @@ out:	return rc;
 
 }
 
-/*
- * kernel = type 0
- * client = type 1
- */
+ 
 static void debug_mask_to_string(void *mask, int type)
 {
 	int i;
@@ -685,16 +578,11 @@ static void debug_mask_to_string(void *mask, int type)
 
 	memset(debug_string, 0, ORANGEFS_MAX_DEBUG_STRING_LEN);
 
-	/*
-	 * Some keywords, like "all" or "verbose", are amalgams of
-	 * numerous other keywords. Make a special check for those
-	 * before grinding through the whole mask only to find out
-	 * later...
-	 */
+	 
 	if (check_amalgam_keyword(mask, type))
 		goto out;
 
-	/* Build the debug string. */
+	 
 	for (i = 0; i < element_count; i++)
 		if (type)
 			do_c_string(mask, i);
@@ -780,12 +668,7 @@ static int keyword_is_amalgam(char *keyword)
 	return rc;
 }
 
-/*
- * kernel = type 0
- * client = type 1
- *
- * return 1 if we found an amalgam.
- */
+ 
 static int check_amalgam_keyword(void *mask, int type)
 {
 	__u64 *k_mask;
@@ -825,10 +708,7 @@ out:
 	return rc;
 }
 
-/*
- * kernel = type 0
- * client = type 1
- */
+ 
 static void debug_string_to_mask(char *debug_string, void *mask, int type)
 {
 	char *unchecked_keyword;
@@ -923,16 +803,7 @@ int orangefs_debugfs_new_client_string(void __user *arg)
 		return -EFAULT;
 	}
 
-	/*
-	 * The real client-core makes an effort to ensure
-	 * that actual strings that aren't too long to fit in
-	 * this buffer is what we get here. We're going to use
-	 * string functions on the stuff we got, so we'll make
-	 * this extra effort to try and keep from
-	 * flowing out of this buffer when we use the string
-	 * functions, even if somehow the stuff we end up
-	 * with here is garbage.
-	 */
+	 
 	client_debug_array_string[ORANGEFS_MAX_DEBUG_STRING_LEN - 1] =
 		'\0';
 
@@ -941,7 +812,7 @@ int orangefs_debugfs_new_client_string(void __user *arg)
 
 	if (!help_string_initialized) {
 
-		/* Build a proper debug help string. */
+		 
 		ret = orangefs_prepare_debugfs_help_string(0);
 		if (ret) {
 			gossip_err("%s: no debug help string \n",
@@ -977,12 +848,7 @@ int orangefs_debugfs_new_debug(void __user *arg)
 	if (mask_info.mask_type == KERNEL_MASK) {
 		if ((mask_info.mask_value == 0)
 		    && (kernel_mask_set_mod_init)) {
-			/*
-			 * the kernel debug mask was set when the
-			 * kernel module was loaded; don't override
-			 * it if the client-core was started without
-			 * a value for ORANGEFS_KMODMASK.
-			 */
+			 
 			return 0;
 		}
 		debug_mask_to_string(&mask_info.mask_value,

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * This driver supports the analog controls for the internal codec
- * found in Allwinner's A64 SoC.
- *
- * Copyright (C) 2016 Chen-Yu Tsai <wens@csie.org>
- * Copyright (C) 2017 Marcus Cooper <codekipper@gmail.com>
- * Copyright (C) 2018 Vasily Khoruzhick <anarsoul@gmail.com>
- *
- * Based on sun8i-codec-analog.c
- *
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -25,7 +15,7 @@
 
 #include "sun8i-adda-pr-regmap.h"
 
-/* Codec analog control register offsets and bit fields */
+ 
 #define SUN50I_ADDA_HP_CTRL		0x00
 #define SUN50I_ADDA_HP_CTRL_PA_CLK_GATE		7
 #define SUN50I_ADDA_HP_CTRL_HPPA_EN		6
@@ -120,7 +110,7 @@
 #define SUN50I_ADDA_JACK_MIC_CTRL_INNERRESEN	6
 #define SUN50I_ADDA_JACK_MIC_CTRL_HMICBIASEN	5
 
-/* mixer controls */
+ 
 static const struct snd_kcontrol_new sun50i_a64_codec_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("Mic1 Playback Switch",
 			  SUN50I_ADDA_OL_MIX_CTRL,
@@ -144,7 +134,7 @@ static const struct snd_kcontrol_new sun50i_a64_codec_mixer_controls[] = {
 			  SUN50I_ADDA_OL_MIX_CTRL_DACR, 1, 0),
 };
 
-/* ADC mixer controls */
+ 
 static const struct snd_kcontrol_new sun50i_codec_adc_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("Mic1 Capture Switch",
 			  SUN50I_ADDA_L_ADCMIX_SRC,
@@ -187,39 +177,39 @@ static const DECLARE_TLV_DB_RANGE(sun50i_codec_earpiece_vol_scale,
 	2, 31, TLV_DB_SCALE_ITEM(-4350, 150, 0),
 );
 
-/* volume / mute controls */
+ 
 static const struct snd_kcontrol_new sun50i_a64_codec_controls[] = {
 	SOC_SINGLE_TLV("Headphone Playback Volume",
 		       SUN50I_ADDA_HP_CTRL,
 		       SUN50I_ADDA_HP_CTRL_HPVOL, 0x3f, 0,
 		       sun50i_codec_hp_vol_scale),
 
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Mic1 Playback Volume", SUN50I_ADDA_MIC1_CTRL,
 		       SUN50I_ADDA_MIC1_CTRL_MIC1G,
 		       0x7, 0, sun50i_codec_out_mixer_pregain_scale),
 
-	/* Microphone Amp boost gain */
+	 
 	SOC_SINGLE_TLV("Mic1 Boost Volume", SUN50I_ADDA_MIC1_CTRL,
 		       SUN50I_ADDA_MIC1_CTRL_MIC1BOOST, 0x7, 0,
 		       sun50i_codec_mic_gain_scale),
 
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Mic2 Playback Volume",
 		       SUN50I_ADDA_MIC2_CTRL, SUN50I_ADDA_MIC2_CTRL_MIC2G,
 		       0x7, 0, sun50i_codec_out_mixer_pregain_scale),
 
-	/* Microphone Amp boost gain */
+	 
 	SOC_SINGLE_TLV("Mic2 Boost Volume", SUN50I_ADDA_MIC2_CTRL,
 		       SUN50I_ADDA_MIC2_CTRL_MIC2BOOST, 0x7, 0,
 		       sun50i_codec_mic_gain_scale),
 
-	/* ADC */
+	 
 	SOC_SINGLE_TLV("ADC Gain Capture Volume", SUN50I_ADDA_ADC_CTRL,
 		       SUN50I_ADDA_ADC_CTRL_ADCG, 0x7, 0,
 		       sun50i_codec_out_mixer_pregain_scale),
 
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Line In Playback Volume", SUN50I_ADDA_LINEIN_CTRL,
 		       SUN50I_ADDA_LINEIN_CTRL_LINEING,
 		       0x7, 0, sun50i_codec_out_mixer_pregain_scale),
@@ -298,21 +288,17 @@ static const struct snd_kcontrol_new sun50i_codec_earpiece_switch[] = {
 };
 
 static const struct snd_soc_dapm_widget sun50i_a64_codec_widgets[] = {
-	/* DAC */
+	 
 	SND_SOC_DAPM_DAC("Left DAC", NULL, SUN50I_ADDA_MIX_DAC_CTRL,
 			 SUN50I_ADDA_MIX_DAC_CTRL_DACALEN, 0),
 	SND_SOC_DAPM_DAC("Right DAC", NULL, SUN50I_ADDA_MIX_DAC_CTRL,
 			 SUN50I_ADDA_MIX_DAC_CTRL_DACAREN, 0),
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC("Left ADC", NULL, SUN50I_ADDA_ADC_CTRL,
 			 SUN50I_ADDA_ADC_CTRL_ADCLEN, 0),
 	SND_SOC_DAPM_ADC("Right ADC", NULL, SUN50I_ADDA_ADC_CTRL,
 			 SUN50I_ADDA_ADC_CTRL_ADCREN, 0),
-	/*
-	 * Due to this component and the codec belonging to separate DAPM
-	 * contexts, we need to manually link the above widgets to their
-	 * stream widgets at the card level.
-	 */
+	 
 
 	SND_SOC_DAPM_REGULATOR_SUPPLY("cpvdd", 0, 0),
 	SND_SOC_DAPM_MUX("Left Headphone Source",
@@ -350,34 +336,34 @@ static const struct snd_soc_dapm_widget sun50i_a64_codec_widgets[] = {
 			     SUN50I_ADDA_EARPIECE_CTRL1_ESPPA_EN, 0, NULL, 0),
 	SND_SOC_DAPM_OUTPUT("EARPIECE"),
 
-	/* Microphone inputs */
+	 
 	SND_SOC_DAPM_INPUT("MIC1"),
 
-	/* Microphone Bias */
+	 
 	SND_SOC_DAPM_SUPPLY("MBIAS", SUN50I_ADDA_HS_MBIAS_CTRL,
 			    SUN50I_ADDA_HS_MBIAS_CTRL_MMICBIASEN,
 			    0, NULL, 0),
 
-	/* Mic input path */
+	 
 	SND_SOC_DAPM_PGA("Mic1 Amplifier", SUN50I_ADDA_MIC1_CTRL,
 			 SUN50I_ADDA_MIC1_CTRL_MIC1AMPEN, 0, NULL, 0),
 
-	/* Microphone input */
+	 
 	SND_SOC_DAPM_INPUT("MIC2"),
 
-	/* Microphone Bias */
+	 
 	SND_SOC_DAPM_SUPPLY("HBIAS", SUN50I_ADDA_JACK_MIC_CTRL,
 			    SUN50I_ADDA_JACK_MIC_CTRL_HMICBIASEN,
 			    0, NULL, 0),
 
-	/* Mic input path */
+	 
 	SND_SOC_DAPM_PGA("Mic2 Amplifier", SUN50I_ADDA_MIC2_CTRL,
 			 SUN50I_ADDA_MIC2_CTRL_MIC2AMPEN, 0, NULL, 0),
 
-	/* Line input */
+	 
 	SND_SOC_DAPM_INPUT("LINEIN"),
 
-	/* Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Left Mixer", SUN50I_ADDA_MIX_DAC_CTRL,
 			   SUN50I_ADDA_MIX_DAC_CTRL_LMIXEN, 0,
 			   sun50i_a64_codec_mixer_controls,
@@ -395,39 +381,39 @@ static const struct snd_soc_dapm_widget sun50i_a64_codec_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sun50i_a64_codec_routes[] = {
-	/* Left Mixer Routes */
+	 
 	{ "Left Mixer", "Mic1 Playback Switch", "Mic1 Amplifier" },
 	{ "Left Mixer", "Mic2 Playback Switch", "Mic2 Amplifier" },
 	{ "Left Mixer", "Line In Playback Switch", "LINEIN" },
 	{ "Left Mixer", "DAC Playback Switch", "Left DAC" },
 	{ "Left Mixer", "DAC Reversed Playback Switch", "Right DAC" },
 
-	/* Right Mixer Routes */
+	 
 	{ "Right Mixer", "Mic1 Playback Switch", "Mic1 Amplifier" },
 	{ "Right Mixer", "Mic2 Playback Switch", "Mic2 Amplifier" },
 	{ "Right Mixer", "Line In Playback Switch", "LINEIN" },
 	{ "Right Mixer", "DAC Playback Switch", "Right DAC" },
 	{ "Right Mixer", "DAC Reversed Playback Switch", "Left DAC" },
 
-	/* Left ADC Mixer Routes */
+	 
 	{ "Left ADC Mixer", "Mic1 Capture Switch", "Mic1 Amplifier" },
 	{ "Left ADC Mixer", "Mic2 Capture Switch", "Mic2 Amplifier" },
 	{ "Left ADC Mixer", "Line In Capture Switch", "LINEIN" },
 	{ "Left ADC Mixer", "Mixer Capture Switch", "Left Mixer" },
 	{ "Left ADC Mixer", "Mixer Reversed Capture Switch", "Right Mixer" },
 
-	/* Right ADC Mixer Routes */
+	 
 	{ "Right ADC Mixer", "Mic1 Capture Switch", "Mic1 Amplifier" },
 	{ "Right ADC Mixer", "Mic2 Capture Switch", "Mic2 Amplifier" },
 	{ "Right ADC Mixer", "Line In Capture Switch", "LINEIN" },
 	{ "Right ADC Mixer", "Mixer Capture Switch", "Right Mixer" },
 	{ "Right ADC Mixer", "Mixer Reversed Capture Switch", "Left Mixer" },
 
-	/* ADC Routes */
+	 
 	{ "Left ADC", NULL, "Left ADC Mixer" },
 	{ "Right ADC", NULL, "Right ADC Mixer" },
 
-	/* Headphone Routes */
+	 
 	{ "Left Headphone Source", "DAC", "Left DAC" },
 	{ "Left Headphone Source", "Mixer", "Left Mixer" },
 	{ "Left Headphone Switch", "Headphone Playback Switch", "Left Headphone Source" },
@@ -444,13 +430,13 @@ static const struct snd_soc_dapm_route sun50i_a64_codec_routes[] = {
 
 	{ "Headphone Amp", NULL, "cpvdd" },
 
-	/* Microphone Routes */
+	 
 	{ "Mic1 Amplifier", NULL, "MIC1"},
 
-	/* Microphone Routes */
+	 
 	{ "Mic2 Amplifier", NULL, "MIC2"},
 
-	/* Line-out Routes */
+	 
 	{ "Left Line Out Source", "Stereo", "Left Mixer" },
 	{ "Left Line Out Source", "Mono Differential", "Left Mixer" },
 	{ "Left Line Out Source", "Mono Differential", "Right Mixer" },
@@ -462,7 +448,7 @@ static const struct snd_soc_dapm_route sun50i_a64_codec_routes[] = {
 	{ "Right Line Out Source", "Mono Differential", "Left Line Out Switch" },
 	{ "LINEOUT", NULL, "Right Line Out Source" },
 
-	/* Earpiece Routes */
+	 
 	{ "Earpiece Source Playback Route", "DACL", "Left DAC" },
 	{ "Earpiece Source Playback Route", "DACR", "Right DAC" },
 	{ "Earpiece Source Playback Route", "Left Mixer", "Left Mixer" },

@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/***************************************************************************
- *            au88x0_cxtalk.h
- *
- *  Wed Nov 19 19:07:17 2003
- *  Copyright  2003  mjander
- *  mjander@users.sourceforge.org
- ****************************************************************************/
+ 
+ 
 
-/*
- */
+ 
 
-/* The crosstalk canceler supports 5 stereo input channels. The result is 
-   available at one single output route pair (stereo). */
+ 
 
 #ifndef _AU88X0_CXTALK_H
 #define _AU88X0_CXTALK_H
@@ -46,4 +38,4 @@ static void vortex_XtalkHw_Enable(vortex_t * vortex);
 static void vortex_XtalkHw_Disable(vortex_t * vortex);
 static void vortex_XtalkHw_init(vortex_t * vortex);
 
-#endif				/* _AU88X0_CXTALK_H */
+#endif				 

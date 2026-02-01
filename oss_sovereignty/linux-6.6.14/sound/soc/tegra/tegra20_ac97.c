@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra20_ac97.c - Tegra20 AC97 platform driver
- *
- * Copyright (c) 2012 Lucas Stach <dev@lynxeye.de>
- *
- * Partly based on code copyright/by:
- *
- * Copyright (c) 2011,2012 Toradex Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -39,7 +31,7 @@ static void tegra20_ac97_codec_reset(struct snd_ac97 *ac97)
 	u32 readback;
 	unsigned long timeout;
 
-	/* reset line is not driven by DAC pad group, have to toggle GPIO */
+	 
 	gpio_set_value(workdata->reset_gpio, 0);
 	udelay(2);
 
@@ -61,11 +53,7 @@ static void tegra20_ac97_codec_warm_reset(struct snd_ac97 *ac97)
 	u32 readback;
 	unsigned long timeout;
 
-	/*
-	 * although sync line is driven by the DAC pad group warm reset using
-	 * the controller cmd is not working, have to toggle sync line
-	 * manually.
-	 */
+	 
 	gpio_request(workdata->sync_gpio, "codec-sync");
 
 	gpio_direction_output(workdata->sync_gpio, 1);
@@ -413,7 +401,7 @@ static int tegra20_ac97_platform_probe(struct platform_device *pdev)
 		goto err_unregister_component;
 	}
 
-	/* XXX: crufty ASoC AC97 API - only one AC97 codec allowed */
+	 
 	workdata = ac97;
 
 	return 0;

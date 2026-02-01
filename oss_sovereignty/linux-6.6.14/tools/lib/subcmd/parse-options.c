@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <linux/string.h>
 #include <linux/types.h>
@@ -102,7 +102,7 @@ static int get_value(struct parse_opt_ctx_t *p,
 		case OPTION_CALLBACK:
 			if (!(opt->flags & PARSE_OPT_NOARG))
 				break;
-			/* FALLTHROUGH */
+			 
 		case OPTION_BOOLEAN:
 		case OPTION_INCR:
 		case OPTION_BIT:
@@ -220,14 +220,14 @@ static int get_value(struct parse_opt_ctx_t *p,
 		if (opt->set)
 			*(bool *)opt->set = true;
 
-		/* PARSE_OPT_NOEMPTY: Allow NULL but disallow empty string. */
+		 
 		if (opt->flags & PARSE_OPT_NOEMPTY) {
 			const char *val = *(const char **)opt->value;
 
 			if (!val)
 				return err;
 
-			/* Similar to unset if we are given an empty string. */
+			 
 			if (val[0] == '\0') {
 				*(const char **)opt->value = NULL;
 				return 0;
@@ -391,33 +391,23 @@ retry:
 		}
 		if (!rest) {
 			if (strstarts(options->long_name, "no-")) {
-				/*
-				 * The long name itself starts with "no-", so
-				 * accept the option without "no-" so that users
-				 * do not have to enter "no-no-" to get the
-				 * negation.
-				 */
+				 
 				rest = skip_prefix(arg, options->long_name + 3);
 				if (rest) {
 					flags |= OPT_UNSET;
 					goto match;
 				}
-				/* Abbreviated case */
+				 
 				if (strstarts(options->long_name + 3, arg)) {
 					flags |= OPT_UNSET;
 					goto is_abbreviated;
 				}
 			}
-			/* abbreviated? */
+			 
 			if (!strncmp(options->long_name, arg, arg_end - arg)) {
 is_abbreviated:
 				if (abbrev_option) {
-					/*
-					 * If this is abbreviated, it is
-					 * ambiguous. So when there is no
-					 * exact match later, we need to
-					 * error out.
-					 */
+					 
 					ambiguous_option = abbrev_option;
 					ambiguous_flags = abbrev_flags;
 				}
@@ -427,17 +417,17 @@ is_abbreviated:
 				abbrev_flags = flags;
 				continue;
 			}
-			/* negated and abbreviated very much? */
+			 
 			if (strstarts("no-", arg)) {
 				flags |= OPT_UNSET;
 				goto is_abbreviated;
 			}
-			/* negated? */
+			 
 			if (strncmp(arg, "no-", 3))
 				continue;
 			flags |= OPT_UNSET;
 			rest = skip_prefix(arg + 3, options->long_name);
-			/* abbreviated and negated? */
+			 
 			if (!rest && strstarts(options->long_name, arg + 3))
 				goto is_abbreviated;
 			if (!rest)
@@ -519,7 +509,7 @@ static int parse_options_step(struct parse_opt_ctx_t *ctx,
 	int excl_short_opt = 1;
 	const char *arg;
 
-	/* we must reset ->opt, unknown short option leave it dangling */
+	 
 	ctx->opt = NULL;
 
 	for (; ctx->argc; ctx->argc--, ctx->argv++) {
@@ -556,11 +546,7 @@ static int parse_options_step(struct parse_opt_ctx_t *ctx,
 				case -1:
 					return parse_options_usage(usagestr, options, arg, 1);
 				case -2:
-					/* fake a short option thing to hide the fact that we may have
-					 * started to parse aggregated stuff
-					 *
-					 * This is leaky, too bad.
-					 */
+					 
 					ctx->argv[0] = strdup(ctx->opt - 1);
 					*(char *)ctx->argv[0] = '-';
 					goto unknown;
@@ -573,7 +559,7 @@ static int parse_options_step(struct parse_opt_ctx_t *ctx,
 			continue;
 		}
 
-		if (!arg[2]) { /* "--" */
+		if (!arg[2]) {  
 			if (!(ctx->flags & PARSE_OPT_KEEP_DASHDASH)) {
 				ctx->argc--;
 				ctx->argv++;
@@ -634,7 +620,7 @@ int parse_options_subcommand(int argc, const char **argv, const struct option *o
 {
 	struct parse_opt_ctx_t ctx;
 
-	/* build usage string if it's not provided */
+	 
 	if (subcommands && !usagestr[0]) {
 		char *buf = NULL;
 
@@ -671,7 +657,7 @@ int parse_options_subcommand(int argc, const char **argv, const struct option *o
 		}
 		putchar('\n');
 		exit(130);
-	default: /* PARSE_OPT_UNKNOWN */
+	default:  
 		if (ctx.argv[0][1] == '-')
 			astrcatf(&error_buf, "unknown option `%s'",
 				 ctx.argv[0] + 2);
@@ -739,7 +725,7 @@ static void print_option_help(const struct option *opts, int full)
 	case OPTION_CALLBACK:
 		if (opts->flags & PARSE_OPT_NOARG)
 			break;
-		/* FALLTHROUGH */
+		 
 	case OPTION_STRING:
 		if (opts->argh) {
 			if (opts->flags & PARSE_OPT_OPTARG)
@@ -759,7 +745,7 @@ static void print_option_help(const struct option *opts, int full)
 				pos += fprintf(stderr, " ...");
 		}
 		break;
-	default: /* OPTION_{BIT,BOOLEAN,SET_UINT,SET_PTR} */
+	default:  
 	case OPTION_END:
 	case OPTION_GROUP:
 	case OPTION_BIT:
@@ -819,7 +805,7 @@ static struct option *options__order(const struct option *opts)
 		goto out;
 	memcpy(ordered, opts, len);
 
-	/* sort each option group individually */
+	 
 	for (opt = group = ordered; opt->type != OPTION_END; opt++) {
 		if (opt->type == OPTION_GROUP) {
 			qsort(group, nr_group, sizeof(*opt), option__cmp);
@@ -985,7 +971,7 @@ int parse_opt_verbosity_cb(const struct option *opt,
 	int *target = opt->value;
 
 	if (unset)
-		/* --no-quiet, --no-verbose */
+		 
 		*target = 0;
 	else if (opt->short_name == 'v') {
 		if (*target >= 0)

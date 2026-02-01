@@ -1,27 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/moduleparam.h>
@@ -34,14 +11,7 @@ module_param_named(virglhack, virtio_gpu_virglrenderer_workaround, int, 0400);
 int virtio_gpu_resource_id_get(struct virtio_gpu_device *vgdev, uint32_t *resid)
 {
 	if (virtio_gpu_virglrenderer_workaround) {
-		/*
-		 * Hack to avoid re-using resource IDs.
-		 *
-		 * virglrenderer versions up to (and including) 0.7.0
-		 * can't deal with that.  virglrenderer commit
-		 * "f91a9dd35715 Fix unlinking resources from hash
-		 * table." (Feb 2019) fixes the bug.
-		 */
+		 
 		static atomic_t seqno = ATOMIC_INIT(0);
 		int handle = atomic_inc_return(&seqno);
 		*resid = handle + 1;
@@ -91,7 +61,7 @@ static void virtio_gpu_free_object(struct drm_gem_object *obj)
 	if (bo->created) {
 		virtio_gpu_cmd_unref_resource(vgdev, bo);
 		virtio_gpu_notify(vgdev);
-		/* completion handler calls virtio_gpu_cleanup_object() */
+		 
 		return;
 	}
 	virtio_gpu_cleanup_object(bo);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2013-2019 NVIDIA Corporation
- * Copyright (C) 2015 Rob Clark
- */
+
+ 
 
 #include <drm/display/drm_dp_helper.h>
 #include <drm/drm_crtc.h>
@@ -56,21 +53,7 @@ static void drm_dp_link_reset(struct drm_dp_link *link)
 	link->num_rates = 0;
 }
 
-/**
- * drm_dp_link_add_rate() - add a rate to the list of supported rates
- * @link: the link to add the rate to
- * @rate: the rate to add
- *
- * Add a link rate to the list of supported link rates.
- *
- * Returns:
- * 0 on success or one of the following negative error codes on failure:
- * - ENOSPC if the maximum number of supported rates has been reached
- * - EEXISTS if the link already supports this rate
- *
- * See also:
- * drm_dp_link_remove_rate()
- */
+ 
 int drm_dp_link_add_rate(struct drm_dp_link *link, unsigned long rate)
 {
 	unsigned int i, pivot;
@@ -94,20 +77,7 @@ int drm_dp_link_add_rate(struct drm_dp_link *link, unsigned long rate)
 	return 0;
 }
 
-/**
- * drm_dp_link_remove_rate() - remove a rate from the list of supported rates
- * @link: the link from which to remove the rate
- * @rate: the rate to remove
- *
- * Removes a link rate from the list of supported link rates.
- *
- * Returns:
- * 0 on success or one of the following negative error codes on failure:
- * - EINVAL if the specified rate is not among the supported rates
- *
- * See also:
- * drm_dp_link_add_rate()
- */
+ 
 int drm_dp_link_remove_rate(struct drm_dp_link *link, unsigned long rate)
 {
 	unsigned int i;
@@ -129,18 +99,7 @@ int drm_dp_link_remove_rate(struct drm_dp_link *link, unsigned long rate)
 	return 0;
 }
 
-/**
- * drm_dp_link_update_rates() - normalize the supported link rates array
- * @link: the link for which to normalize the supported link rates
- *
- * Users should call this function after they've manually modified the array
- * of supported link rates. This function removes any stale entries, compacts
- * the array and updates the supported link rate count. Note that calling the
- * drm_dp_link_remove_rate() function already does this janitorial work.
- *
- * See also:
- * drm_dp_link_add_rate(), drm_dp_link_remove_rate()
- */
+ 
 void drm_dp_link_update_rates(struct drm_dp_link *link)
 {
 	unsigned int i, count = 0;
@@ -156,17 +115,7 @@ void drm_dp_link_update_rates(struct drm_dp_link *link)
 	link->num_rates = count;
 }
 
-/**
- * drm_dp_link_probe() - probe a DisplayPort link for capabilities
- * @aux: DisplayPort AUX channel
- * @link: pointer to structure in which to return link capabilities
- *
- * The structure filled in by this function can usually be passed directly
- * into drm_dp_link_power_up() and drm_dp_link_configure() to power up and
- * configure the link based on the link's capabilities.
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_probe(struct drm_dp_aux *aux, struct drm_dp_link *link)
 {
 	u8 dpcd[DP_RECEIVER_CAP_SIZE], value;
@@ -201,17 +150,7 @@ int drm_dp_link_probe(struct drm_dp_aux *aux, struct drm_dp_link *link)
 			link->edp = drm_dp_edp_revisions[value];
 	}
 
-	/*
-	 * The DPCD stores the AUX read interval in units of 4 ms. There are
-	 * two special cases:
-	 *
-	 *   1) if the TRAINING_AUX_RD_INTERVAL field is 0, the clock recovery
-	 *      and channel equalization should use 100 us or 400 us AUX read
-	 *      intervals, respectively
-	 *
-	 *   2) for DP v1.4 and above, clock recovery should always use 100 us
-	 *      AUX read intervals
-	 */
+	 
 	rd_interval = dpcd[DP_TRAINING_AUX_RD_INTERVAL] &
 			   DP_TRAINING_AUX_RD_MASK;
 
@@ -232,7 +171,7 @@ int drm_dp_link_probe(struct drm_dp_aux *aux, struct drm_dp_link *link)
 	link->rate = link->max_rate;
 	link->lanes = link->max_lanes;
 
-	/* Parse SUPPORTED_LINK_RATES from eDP 1.4 */
+	 
 	if (link->edp >= 0x14) {
 		u8 supported_rates[DP_MAX_SUPPORTED_RATES * 2];
 		unsigned int i;
@@ -255,19 +194,13 @@ int drm_dp_link_probe(struct drm_dp_aux *aux, struct drm_dp_link *link)
 	return 0;
 }
 
-/**
- * drm_dp_link_power_up() - power up a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_power_up(struct drm_dp_aux *aux, struct drm_dp_link *link)
 {
 	u8 value;
 	int err;
 
-	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
+	 
 	if (link->revision < 0x11)
 		return 0;
 
@@ -282,29 +215,19 @@ int drm_dp_link_power_up(struct drm_dp_aux *aux, struct drm_dp_link *link)
 	if (err < 0)
 		return err;
 
-	/*
-	 * According to the DP 1.1 specification, a "Sink Device must exit the
-	 * power saving state within 1 ms" (Section 2.5.3.1, Table 5-52, "Sink
-	 * Control Field" (register 0x600).
-	 */
+	 
 	usleep_range(1000, 2000);
 
 	return 0;
 }
 
-/**
- * drm_dp_link_power_down() - power down a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_power_down(struct drm_dp_aux *aux, struct drm_dp_link *link)
 {
 	u8 value;
 	int err;
 
-	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
+	 
 	if (link->revision < 0x11)
 		return 0;
 
@@ -322,13 +245,7 @@ int drm_dp_link_power_down(struct drm_dp_aux *aux, struct drm_dp_link *link)
 	return 0;
 }
 
-/**
- * drm_dp_link_configure() - configure a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_configure(struct drm_dp_aux *aux, struct drm_dp_link *link)
 {
 	u8 values[2], value;
@@ -371,44 +288,25 @@ int drm_dp_link_configure(struct drm_dp_aux *aux, struct drm_dp_link *link)
 	return 0;
 }
 
-/**
- * drm_dp_link_choose() - choose the lowest possible configuration for a mode
- * @link: DRM DP link object
- * @mode: DRM display mode
- * @info: DRM display information
- *
- * According to the eDP specification, a source should select a configuration
- * with the lowest number of lanes and the lowest possible link rate that can
- * match the bitrate requirements of a video mode. However it must ensure not
- * to exceed the capabilities of the sink.
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_choose(struct drm_dp_link *link,
 		       const struct drm_display_mode *mode,
 		       const struct drm_display_info *info)
 {
-	/* available link symbol clock rates */
+	 
 	static const unsigned int rates[3] = { 162000, 270000, 540000 };
-	/* available number of lanes */
+	 
 	static const unsigned int lanes[3] = { 1, 2, 4 };
 	unsigned long requirement, capacity;
 	unsigned int rate = link->max_rate;
 	unsigned int i, j;
 
-	/* bandwidth requirement */
+	 
 	requirement = mode->clock * info->bpc * 3;
 
 	for (i = 0; i < ARRAY_SIZE(lanes) && lanes[i] <= link->max_lanes; i++) {
 		for (j = 0; j < ARRAY_SIZE(rates) && rates[j] <= rate; j++) {
-			/*
-			 * Capacity for this combination of lanes and rate,
-			 * factoring in the ANSI 8B/10B encoding.
-			 *
-			 * Link rates in the DRM DP helpers are really link
-			 * symbol frequencies, so a tenth of the actual rate
-			 * of the link.
-			 */
+			 
 			capacity = lanes[i] * (rates[j] * 10) * 8 / 10;
 
 			if (capacity >= requirement) {
@@ -425,17 +323,9 @@ int drm_dp_link_choose(struct drm_dp_link *link,
 	return -ERANGE;
 }
 
-/**
- * DOC: Link training
- *
- * These functions contain common logic and helpers to implement DisplayPort
- * link training.
- */
+ 
 
-/**
- * drm_dp_link_train_init() - initialize DisplayPort link training state
- * @train: DisplayPort link training state
- */
+ 
 void drm_dp_link_train_init(struct drm_dp_link_train *train)
 {
 	struct drm_dp_link_train_set *request = &train->request;
@@ -481,7 +371,7 @@ static int drm_dp_link_apply_training(struct drm_dp_link *link)
 	pe = request->pre_emphasis;
 	pc = request->post_cursor;
 
-	/* write currently selected voltage-swing and pre-emphasis levels */
+	 
 	for (i = 0; i < lanes; i++)
 		values[i] = DP_TRAIN_VOLTAGE_SWING_LEVEL(vs[i]) |
 			    DP_TRAIN_PRE_EMPHASIS_LEVEL(pe[i]);
@@ -492,7 +382,7 @@ static int drm_dp_link_apply_training(struct drm_dp_link *link)
 		return err;
 	}
 
-	/* write currently selected post-cursor level (if supported) */
+	 
 	if (link->revision >= 0x12 && link->rate == 540000) {
 		values[0] = values[1] = 0;
 
@@ -507,7 +397,7 @@ static int drm_dp_link_apply_training(struct drm_dp_link *link)
 		}
 	}
 
-	/* write link pattern */
+	 
 	if (link->train.pattern != DP_TRAINING_PATTERN_DISABLE)
 		pattern |= DP_LINK_SCRAMBLING_DISABLE;
 
@@ -622,7 +512,7 @@ static int drm_dp_link_clock_recovery(struct drm_dp_link *link)
 	unsigned int repeat;
 	int err;
 
-	/* start clock recovery using training pattern 1 */
+	 
 	link->train.pattern = DP_TRAINING_PATTERN_1;
 
 	for (repeat = 1; repeat < 5; repeat++) {
@@ -678,7 +568,7 @@ static int drm_dp_link_channel_equalization(struct drm_dp_link *link)
 	unsigned int repeat;
 	int err;
 
-	/* start channel equalization using pattern 2 or 3 */
+	 
 	if (link->caps.tps3_supported)
 		link->train.pattern = DP_TRAINING_PATTERN_3;
 	else
@@ -800,7 +690,7 @@ static int drm_dp_link_train_fast(struct drm_dp_link *link)
 		return err;
 	}
 
-	/* transmit training pattern 1 for 500 microseconds */
+	 
 	link->train.pattern = DP_TRAINING_PATTERN_1;
 
 	err = drm_dp_link_apply_training(link);
@@ -809,7 +699,7 @@ static int drm_dp_link_train_fast(struct drm_dp_link *link)
 
 	usleep_range(500, 1000);
 
-	/* transmit training pattern 2 or 3 for 500 microseconds */
+	 
 	if (link->caps.tps3_supported)
 		link->train.pattern = DP_TRAINING_PATTERN_3;
 	else
@@ -842,20 +732,7 @@ out:
 	return err;
 }
 
-/**
- * drm_dp_link_train() - perform DisplayPort link training
- * @link: a DP link object
- *
- * Uses the context stored in the DP link object to perform link training. It
- * is expected that drivers will call drm_dp_link_probe() to obtain the link
- * capabilities before performing link training.
- *
- * If the sink supports fast link training (no AUX CH handshake) and valid
- * training settings are available, this function will try to perform fast
- * link training and fall back to full link training on failure.
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int drm_dp_link_train(struct drm_dp_link *link)
 {
 	int err;

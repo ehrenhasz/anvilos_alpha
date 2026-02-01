@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2015 Linaro Limited. All rights reserved.
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
- */
+
+ 
 
 #include <dirent.h>
 #include <stdbool.h>
@@ -23,7 +20,7 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
 {
 	struct perf_pmu **arm_spe_pmus = NULL;
 	int ret, i, nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
-	/* arm_spe_xxxxxxxxx\0 */
+	 
 	char arm_spe_pmu_name[sizeof(ARM_SPE_PMU_NAME) + 10];
 
 	arm_spe_pmus = zalloc(sizeof(struct perf_pmu *) * nr_cpus);
@@ -176,12 +173,7 @@ struct auxtrace_record
 		return hisi_ptt_recording_init(err, found_ptt);
 #endif
 
-	/*
-	 * Clear 'err' even if we haven't found an event - that way perf
-	 * record can still be used even if tracers aren't present.  The NULL
-	 * return value will take care of telling the infrastructure HW tracing
-	 * isn't available.
-	 */
+	 
 	*err = 0;
 	return NULL;
 }
@@ -205,7 +197,7 @@ int compat_auxtrace_mmap__write_tail(struct auxtrace_mmap *mm, u64 tail)
 {
 	struct perf_event_mmap_page *pc = mm->userpg;
 
-	/* Ensure all reads are done before we write the tail out */
+	 
 	smp_mb();
 
 	__asm__ __volatile__(

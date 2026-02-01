@@ -1,115 +1,8 @@
-/*
- * Equalizer Load-balancer for serial network interfaces.
- *
- * (c) Copyright 1995 Simon "Guru Aleph-Null" Janes
- * NCM: Network and Communications Management, Inc.
- *
- * (c) Copyright 2002 David S. Miller (davem@redhat.com)
- *
- *	This software may be used and distributed according to the terms
- *	of the GNU General Public License, incorporated herein by reference.
- *
- * The author may be reached as simon@ncm.com, or C/O
- *    NCM
- *    Attn: Simon Janes
- *    6803 Whittier Ave
- *    McLean VA 22101
- *    Phone: 1-703-847-0040 ext 103
- */
+ 
 
-/*
- * Sources:
- *   skeleton.c by Donald Becker.
- * Inspirations:
- *   The Harried and Overworked Alan Cox
- * Conspiracies:
- *   The Alan Cox and Mike McLagan plot to get someone else to do the code,
- *   which turned out to be me.
- */
+ 
 
-/*
- * $Log: eql.c,v $
- * Revision 1.2  1996/04/11 17:51:52  guru
- * Added one-line eql_remove_slave patch.
- *
- * Revision 1.1  1996/04/11 17:44:17  guru
- * Initial revision
- *
- * Revision 3.13  1996/01/21  15:17:18  alan
- * tx_queue_len changes.
- * reformatted.
- *
- * Revision 3.12  1995/03/22  21:07:51  anarchy
- * Added capable() checks on configuration.
- * Moved header file.
- *
- * Revision 3.11  1995/01/19  23:14:31  guru
- * 		      slave_load = (ULONG_MAX - (ULONG_MAX / 2)) -
- * 			(priority_Bps) + bytes_queued * 8;
- *
- * Revision 3.10  1995/01/19  23:07:53  guru
- * back to
- * 		      slave_load = (ULONG_MAX - (ULONG_MAX / 2)) -
- * 			(priority_Bps) + bytes_queued;
- *
- * Revision 3.9  1995/01/19  22:38:20  guru
- * 		      slave_load = (ULONG_MAX - (ULONG_MAX / 2)) -
- * 			(priority_Bps) + bytes_queued * 4;
- *
- * Revision 3.8  1995/01/19  22:30:55  guru
- *       slave_load = (ULONG_MAX - (ULONG_MAX / 2)) -
- * 			(priority_Bps) + bytes_queued * 2;
- *
- * Revision 3.7  1995/01/19  21:52:35  guru
- * printk's trimmed out.
- *
- * Revision 3.6  1995/01/19  21:49:56  guru
- * This is working pretty well. I gained 1 K/s in speed.. now it's just
- * robustness and printk's to be diked out.
- *
- * Revision 3.5  1995/01/18  22:29:59  guru
- * still crashes the kernel when the lock_wait thing is woken up.
- *
- * Revision 3.4  1995/01/18  21:59:47  guru
- * Broken set-bit locking snapshot
- *
- * Revision 3.3  1995/01/17  22:09:18  guru
- * infinite sleep in a lock somewhere..
- *
- * Revision 3.2  1995/01/15  16:46:06  guru
- * Log trimmed of non-pertinent 1.x branch messages
- *
- * Revision 3.1  1995/01/15  14:41:45  guru
- * New Scheduler and timer stuff...
- *
- * Revision 1.15  1995/01/15  14:29:02  guru
- * Will make 1.14 (now 1.15) the 3.0 branch, and the 1.12 the 2.0 branch, the one
- * with the dumber scheduler
- *
- * Revision 1.14  1995/01/15  02:37:08  guru
- * shock.. the kept-new-versions could have zonked working
- * stuff.. shudder
- *
- * Revision 1.13  1995/01/15  02:36:31  guru
- * big changes
- *
- * 	scheduler was torn out and replaced with something smarter
- *
- * 	global names not prefixed with eql_ were renamed to protect
- * 	against namespace collisions
- *
- * 	a few more abstract interfaces were added to facilitate any
- * 	potential change of datastructure.  the driver is still using
- * 	a linked list of slaves.  going to a heap would be a bit of
- * 	an overkill.
- *
- * 	this compiles fine with no warnings.
- *
- * 	the locking mechanism and timer stuff must be written however,
- * 	this version will not work otherwise
- *
- * Sorry, I had to rewrite most of this for 2.5.x -DaveM
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -189,16 +82,13 @@ static void __init eql_setup(struct net_device *dev)
 
 	dev->netdev_ops		= &eql_netdev_ops;
 
-	/*
-	 *	Now we undo some of the things that eth_setup does
-	 * 	that we don't like
-	 */
+	 
 
-	dev->mtu        	= EQL_DEFAULT_MTU;	/* set to 576 in if_eql.h */
+	dev->mtu        	= EQL_DEFAULT_MTU;	 
 	dev->flags      	= IFF_MASTER;
 
 	dev->type       	= ARPHRD_SLIP;
-	dev->tx_queue_len 	= 5;		/* Hands them off fast */
+	dev->tx_queue_len 	= 5;		 
 	netif_keep_dst(dev);
 }
 
@@ -206,14 +96,14 @@ static int eql_open(struct net_device *dev)
 {
 	equalizer_t *eql = netdev_priv(dev);
 
-	/* XXX We should force this off automatically for the user. */
+	 
 	netdev_info(dev,
 		    "remember to turn off Van-Jacobson compression on your slave devices\n");
 
 	BUG_ON(!list_empty(&eql->queue.all_slaves));
 
 	eql->min_slaves = 1;
-	eql->max_slaves = EQL_DEFAULT_MAX_SLAVES; /* 4 usually... */
+	eql->max_slaves = EQL_DEFAULT_MAX_SLAVES;  
 
 	add_timer(&eql->timer);
 
@@ -249,10 +139,7 @@ static int eql_close(struct net_device *dev)
 {
 	equalizer_t *eql = netdev_priv(dev);
 
-	/*
-	 *	The timer has to be stopped first before we start hacking away
-	 *	at the data structure it scans every so often...
-	 */
+	 
 
 	del_timer_sync(&eql->timer);
 
@@ -277,7 +164,7 @@ static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 	    !capable(CAP_NET_ADMIN))
 	  	return -EPERM;
 
-	if (in_compat_syscall()) /* to be implemented */
+	if (in_compat_syscall())  
 		return -EOPNOTSUPP;
 
 	switch (cmd) {
@@ -298,7 +185,7 @@ static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 	}
 }
 
-/* queue->lock must be held */
+ 
 static slave_t *__eql_schedule_slaves(slave_queue_t *queue)
 {
 	unsigned long best_load = ~0UL;
@@ -307,15 +194,13 @@ static slave_t *__eql_schedule_slaves(slave_queue_t *queue)
 
 	best_slave = NULL;
 
-	/* Make a pass to set the best slave. */
+	 
 	head = &queue->all_slaves;
 	list_for_each_safe(this, tmp, head) {
 		slave_t *slave = list_entry(this, slave_t, list);
 		unsigned long slave_load, bytes_queued, priority_Bps;
 
-		/* Go through the slave list once, updating best_slave
-		 * whenever a new best_load is found.
-		 */
+		 
 		bytes_queued = slave->bytes_queued;
 		priority_Bps = slave->priority_Bps;
 		if ((slave->dev->flags & IFF_UP) == IFF_UP) {
@@ -327,7 +212,7 @@ static slave_t *__eql_schedule_slaves(slave_queue_t *queue)
 				best_slave = slave;
 			}
 		} else {
-			/* We found a dead slave, kill it. */
+			 
 			eql_kill_one_slave(queue, slave);
 		}
 	}
@@ -360,11 +245,9 @@ static netdev_tx_t eql_slave_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-/*
- *	Private ioctl functions
- */
+ 
 
-/* queue->lock must be held */
+ 
 static slave_t *__eql_find_slave_dev(slave_queue_t *queue, struct net_device *dev)
 {
 	struct list_head *this, *head;
@@ -389,7 +272,7 @@ static inline int eql_is_full(slave_queue_t *queue)
 	return 0;
 }
 
-/* queue->lock must be held */
+ 
 static int __eql_insert_slave(slave_queue_t *queue, slave_t *slave)
 {
 	if (!eql_is_full(queue)) {
@@ -423,7 +306,7 @@ static int eql_enslave(struct net_device *master_dev, slaving_request_t __user *
 		return -ENODEV;
 
 	if ((master_dev->flags & IFF_UP) == IFF_UP) {
-		/* slave is not a master & not already a slave: */
+		 
 		if (!eql_is_master(slave_dev) && !eql_is_slave(slave_dev)) {
 			slave_t *s = kzalloc(sizeof(*s), GFP_KERNEL);
 			equalizer_t *eql = netdev_priv(master_dev);

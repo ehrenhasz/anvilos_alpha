@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Diolan DLN-2 USB-SPI adapter
- *
- * Copyright (c) 2014 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,7 +13,7 @@
 #define DLN2_SPI_MODULE_ID		0x02
 #define DLN2_SPI_CMD(cmd)		DLN2_CMD(cmd, DLN2_SPI_MODULE_ID)
 
-/* SPI commands */
+ 
 #define DLN2_SPI_GET_PORT_COUNT			DLN2_SPI_CMD(0x00)
 #define DLN2_SPI_ENABLE				DLN2_SPI_CMD(0x11)
 #define DLN2_SPI_DISABLE			DLN2_SPI_CMD(0x12)
@@ -82,11 +78,7 @@ struct dln2_spi {
 	struct spi_controller *host;
 	u8 port;
 
-	/*
-	 * This buffer will be used mainly for read/write operations. Since
-	 * they're quite large, we cannot use the stack. Protection is not
-	 * needed because all SPI communication is serialized by the SPI core.
-	 */
+	 
 	void *buf;
 
 	u8 bpw;
@@ -95,10 +87,7 @@ struct dln2_spi {
 	u8 cs;
 };
 
-/*
- * Enable/Disable SPI module. The disable command will wait for transfers to
- * complete first.
- */
+ 
 static int dln2_spi_enable(struct dln2_spi *dln2, bool enable)
 {
 	u16 cmd;
@@ -121,14 +110,7 @@ static int dln2_spi_enable(struct dln2_spi *dln2, bool enable)
 	return dln2_transfer_tx(dln2->pdev, cmd, &tx, len);
 }
 
-/*
- * Select/unselect multiple CS lines. The selected lines will be automatically
- * toggled LOW/HIGH by the board firmware during transfers, provided they're
- * enabled first.
- *
- * Ex: cs_mask = 0x03 -> CS0 & CS1 will be selected and the next WR/RD operation
- *                       will toggle the lines LOW/HIGH automatically.
- */
+ 
 static int dln2_spi_cs_set(struct dln2_spi *dln2, u8 cs_mask)
 {
 	struct {
@@ -138,27 +120,19 @@ static int dln2_spi_cs_set(struct dln2_spi *dln2, u8 cs_mask)
 
 	tx.port = dln2->port;
 
-	/*
-	 * According to Diolan docs, "a slave device can be selected by changing
-	 * the corresponding bit value to 0". The rest must be set to 1. Hence
-	 * the bitwise NOT in front.
-	 */
+	 
 	tx.cs = ~cs_mask;
 
 	return dln2_transfer_tx(dln2->pdev, DLN2_SPI_SET_SS, &tx, sizeof(tx));
 }
 
-/*
- * Select one CS line. The other lines will be un-selected.
- */
+ 
 static int dln2_spi_cs_set_one(struct dln2_spi *dln2, u8 cs)
 {
 	return dln2_spi_cs_set(dln2, BIT(cs));
 }
 
-/*
- * Enable/disable CS lines for usage. The module has to be disabled first.
- */
+ 
 static int dln2_spi_cs_enable(struct dln2_spi *dln2, u8 cs_mask, bool enable)
 {
 	struct {
@@ -231,9 +205,7 @@ static int dln2_spi_get_speed(struct dln2_spi *dln2, u16 cmd, u32 *freq)
 	return 0;
 }
 
-/*
- * Get bus min/max frequencies.
- */
+ 
 static int dln2_spi_get_speed_range(struct dln2_spi *dln2, u32 *fmin, u32 *fmax)
 {
 	int ret;
@@ -252,10 +224,7 @@ static int dln2_spi_get_speed_range(struct dln2_spi *dln2, u32 *fmin, u32 *fmax)
 	return 0;
 }
 
-/*
- * Set the bus speed. The module will automatically round down to the closest
- * available frequency and returns it. The module has to be disabled first.
- */
+ 
 static int dln2_spi_set_speed(struct dln2_spi *dln2, u32 speed)
 {
 	int ret;
@@ -281,9 +250,7 @@ static int dln2_spi_set_speed(struct dln2_spi *dln2, u32 speed)
 	return 0;
 }
 
-/*
- * Change CPOL & CPHA. The module has to be disabled first.
- */
+ 
 static int dln2_spi_set_mode(struct dln2_spi *dln2, u8 mode)
 {
 	struct {
@@ -297,9 +264,7 @@ static int dln2_spi_set_mode(struct dln2_spi *dln2, u8 mode)
 	return dln2_transfer_tx(dln2->pdev, DLN2_SPI_SET_MODE, &tx, sizeof(tx));
 }
 
-/*
- * Change frame size. The module has to be disabled first.
- */
+ 
 static int dln2_spi_set_bpw(struct dln2_spi *dln2, u8 bpw)
 {
 	struct {
@@ -348,11 +313,7 @@ static int dln2_spi_get_supported_frame_sizes(struct dln2_spi *dln2,
 	return 0;
 }
 
-/*
- * Copy the data to DLN2 buffer and change the byte order to LE, requested by
- * DLN2 module. SPI core makes sure that the data length is a multiple of word
- * size.
- */
+ 
 static int dln2_spi_copy_to_buf(u8 *dln2_buf, const u8 *src, u16 len, u8 bpw)
 {
 #ifdef __LITTLE_ENDIAN
@@ -380,12 +341,7 @@ static int dln2_spi_copy_to_buf(u8 *dln2_buf, const u8 *src, u16 len, u8 bpw)
 	return 0;
 }
 
-/*
- * Copy the data from DLN2 buffer and convert to CPU byte order since the DLN2
- * buffer is LE ordered. SPI core makes sure that the data length is a multiple
- * of word size. The RX dln2_buf is 2 byte aligned so, for BE, we have to make
- * sure we avoid unaligned accesses for 32 bit case.
- */
+ 
 static int dln2_spi_copy_from_buf(u8 *dest, const u8 *dln2_buf, u16 len, u8 bpw)
 {
 #ifdef __LITTLE_ENDIAN
@@ -413,9 +369,7 @@ static int dln2_spi_copy_from_buf(u8 *dest, const u8 *dln2_buf, u16 len, u8 bpw)
 	return 0;
 }
 
-/*
- * Perform one write operation.
- */
+ 
 static int dln2_spi_write_one(struct dln2_spi *dln2, const u8 *data,
 			      u16 data_len, u8 attr)
 {
@@ -442,9 +396,7 @@ static int dln2_spi_write_one(struct dln2_spi *dln2, const u8 *data,
 	return dln2_transfer_tx(dln2->pdev, DLN2_SPI_WRITE, tx, tx_len);
 }
 
-/*
- * Perform one read operation.
- */
+ 
 static int dln2_spi_read_one(struct dln2_spi *dln2, u8 *data,
 			     u16 data_len, u8 attr)
 {
@@ -483,9 +435,7 @@ static int dln2_spi_read_one(struct dln2_spi *dln2, u8 *data,
 	return 0;
 }
 
-/*
- * Perform one write & read operation.
- */
+ 
 static int dln2_spi_read_write_one(struct dln2_spi *dln2, const u8 *tx_data,
 				   u8 *rx_data, u16 data_len, u8 attr)
 {
@@ -508,11 +458,7 @@ static int dln2_spi_read_write_one(struct dln2_spi *dln2, const u8 *tx_data,
 	if (data_len > DLN2_SPI_MAX_XFER_SIZE)
 		return -EINVAL;
 
-	/*
-	 * Since this is a pseudo full-duplex communication, we're perfectly
-	 * safe to use the same buffer for both tx and rx. When DLN2 sends the
-	 * response back, with the rx data, we don't need the tx buffer anymore.
-	 */
+	 
 	tx = dln2->buf;
 	rx = dln2->buf;
 
@@ -539,10 +485,7 @@ static int dln2_spi_read_write_one(struct dln2_spi *dln2, const u8 *tx_data,
 	return 0;
 }
 
-/*
- * Read/Write wrapper. It will automatically split an operation into multiple
- * single ones due to device buffer constraints.
- */
+ 
 static int dln2_spi_rdwr(struct dln2_spi *dln2, const u8 *tx_data,
 			 u8 *rx_data, u16 data_len, u8 attr)
 {
@@ -704,11 +647,11 @@ static int dln2_spi_probe(struct platform_device *pdev)
 	dln2->host = host;
 	dln2->pdev = pdev;
 	dln2->port = pdata->port;
-	/* cs/mode can never be 0xff, so the first transfer will set them */
+	 
 	dln2->cs = 0xff;
 	dln2->mode = 0xff;
 
-	/* disable SPI module before continuing with the setup */
+	 
 	ret = dln2_spi_enable(dln2, false);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to disable SPI module\n");
@@ -748,7 +691,7 @@ static int dln2_spi_probe(struct platform_device *pdev)
 	host->transfer_one = dln2_spi_transfer_one;
 	host->auto_runtime_pm = true;
 
-	/* enable SPI module, we're good to go */
+	 
 	ret = dln2_spi_enable(dln2, true);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to enable SPI module\n");
@@ -809,10 +752,7 @@ static int dln2_spi_suspend(struct device *dev)
 			return ret;
 	}
 
-	/*
-	 * USB power may be cut off during sleep. Resetting the following
-	 * parameters will force the board to be set up before first transfer.
-	 */
+	 
 	dln2->cs = 0xff;
 	dln2->speed = 0;
 	dln2->bpw = 0;
@@ -839,7 +779,7 @@ static int dln2_spi_resume(struct device *dev)
 
 	return spi_controller_resume(host);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int dln2_spi_runtime_suspend(struct device *dev)
@@ -857,7 +797,7 @@ static int dln2_spi_runtime_resume(struct device *dev)
 
 	return  dln2_spi_enable(dln2, true);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops dln2_spi_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(dln2_spi_suspend, dln2_spi_resume)

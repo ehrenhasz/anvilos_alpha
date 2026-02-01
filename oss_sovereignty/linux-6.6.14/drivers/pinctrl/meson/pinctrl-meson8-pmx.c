@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * First generation of pinmux driver for Amlogic Meson SoCs
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- * Copyright (C) 2017 Jerome Brunet  <jbrunet@baylibre.com>
- */
 
-/* For this first generation of pinctrl driver every pinmux group can be
- * enabled by a specific bit in the first register range. When all groups for
- * a given pin are disabled the pin acts as a GPIO.
- */
+ 
+
+ 
 #include <linux/device.h>
 #include <linux/regmap.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -18,17 +10,7 @@
 #include "pinctrl-meson.h"
 #include "pinctrl-meson8-pmx.h"
 
-/**
- * meson8_pmx_disable_other_groups() - disable other groups using a given pin
- *
- * @pc:		meson pin controller device
- * @pin:	number of the pin
- * @sel_group:	index of the selected group, or -1 if none
- *
- * The function disables all pinmux groups using a pin except the
- * selected one. If @sel_group is -1 all groups are disabled, leaving
- * the pin in GPIO mode.
- */
+ 
 static void meson8_pmx_disable_other_groups(struct meson_pinctrl *pc,
 					    unsigned int pin, int sel_group)
 {
@@ -44,7 +26,7 @@ static void meson8_pmx_disable_other_groups(struct meson_pinctrl *pc,
 
 		for (j = 0; j < group->num_pins; j++) {
 			if (group->pins[j] == pin) {
-				/* We have found a group using the pin */
+				 
 				regmap_update_bits(pc->reg_mux,
 						   pmx_data->reg * 4,
 						   BIT(pmx_data->bit), 0);
@@ -66,14 +48,11 @@ static int meson8_pmx_set_mux(struct pinctrl_dev *pcdev, unsigned func_num,
 	dev_dbg(pc->dev, "enable function %s, group %s\n", func->name,
 		group->name);
 
-	/*
-	 * Disable groups using the same pin.
-	 * The selected group is not disabled to avoid glitches.
-	 */
+	 
 	for (i = 0; i < group->num_pins; i++)
 		meson8_pmx_disable_other_groups(pc, group->pins[i], group_num);
 
-	/* Function 0 (GPIO) doesn't need any additional setting */
+	 
 	if (func_num)
 		ret = regmap_update_bits(pc->reg_mux, pmx_data->reg * 4,
 					 BIT(pmx_data->bit),

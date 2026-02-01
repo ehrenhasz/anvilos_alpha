@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-2-Clause OR GPL-2.0-or-later
-/*
- * ENE KB3930 Embedded Controller Driver
- *
- * Copyright (C) 2020 Lubomir Rintel
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -13,14 +9,14 @@
 #include <linux/reboot.h>
 #include <linux/regmap.h>
 
-/* I2C registers that are multiplexing access to the EC RAM. */
+ 
 enum {
 	EC_DATA_IN	= 0x00,
 	EC_RAM_OUT	= 0x80,
 	EC_RAM_IN	= 0x81,
 };
 
-/* EC RAM registers. */
+ 
 enum {
 	EC_MODEL	= 0x30,
 	EC_VERSION_MAJ	= 0x31,
@@ -46,12 +42,7 @@ static void kb3930_off(struct kb3930 *ddata, int off_mode)
 	gpiod_direction_output(ddata->off_gpios->desc[EC_GPIO_OFF_MODE],
 			       off_mode);
 
-	/*
-	 * This creates a 10 Hz wave on EC_GPIO_WAVE that signals a
-	 * shutdown request to the EC. Once the EC detects it, it will
-	 * proceed to turn the power off or reset the board depending on
-	 * the value of EC_GPIO_OFF_MODE.
-	 */
+	 
 	while (1) {
 		mdelay(50);
 		gpiod_direction_output(ddata->off_gpios->desc[EC_GPIO_WAVE], 0);
@@ -144,7 +135,7 @@ static int kb3930_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Currently we only support the cells present on Dell Ariel model. */
+	 
 	if (model != 'J') {
 		dev_err(dev, "unknown board model: %02x\n", model);
 		return -ENODEV;

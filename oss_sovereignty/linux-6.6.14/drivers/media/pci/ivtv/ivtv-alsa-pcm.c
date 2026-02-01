@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ALSA PCM device for the
- *  ALSA interface to ivtv PCM capture streams
- *
- *  Copyright (C) 2009,2012  Andy Walls <awalls@md.metrocast.net>
- *  Copyright (C) 2009  Devin Heitmueller <dheitmueller@kernellabs.com>
- *
- *  Portions of this work were sponsored by ONELAN Limited for the cx18 driver
- */
+
+ 
 
 #include "ivtv-driver.h"
 #include "ivtv-queue.h"
@@ -44,11 +36,11 @@ static const struct snd_pcm_hardware snd_ivtv_hw_capture = {
 	.rate_max = 48000,
 	.channels_min = 2,
 	.channels_max = 2,
-	.buffer_bytes_max = 62720 * 8,	/* just about the value in usbaudio.c */
-	.period_bytes_min = 64,		/* 12544/2, */
+	.buffer_bytes_max = 62720 * 8,	 
+	.period_bytes_min = 64,		 
 	.period_bytes_max = 12544,
 	.periods_min = 2,
-	.periods_max = 98,		/* 12544, */
+	.periods_max = 98,		 
 };
 
 static void ivtv_alsa_announce_pcm_data(struct snd_ivtv_card *itvsc,
@@ -138,7 +130,7 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 	struct ivtv_open_id item;
 	int ret;
 
-	/* Instruct the CX2341[56] to start sending packets */
+	 
 	snd_ivtv_lock(itvsc);
 
 	if (ivtv_init_on_first_open(itv)) {
@@ -152,9 +144,9 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 	item.itv = itv;
 	item.type = s->type;
 
-	/* See if the stream is available */
+	 
 	if (ivtv_claim_stream(&item, item.type)) {
-		/* No, it's already in use */
+		 
 		v4l2_fh_exit(&item.fh);
 		snd_ivtv_unlock(itvsc);
 		return -EBUSY;
@@ -162,7 +154,7 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 
 	if (test_bit(IVTV_F_S_STREAMOFF, &s->s_flags) ||
 	    test_and_set_bit(IVTV_F_S_STREAMING, &s->s_flags)) {
-		/* We're already streaming.  No additional action required */
+		 
 		snd_ivtv_unlock(itvsc);
 		return 0;
 	}
@@ -175,7 +167,7 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 
 	itv->pcm_announce_callback = ivtv_alsa_announce_pcm_data;
 
-	/* Not currently streaming, so start it up */
+	 
 	set_bit(IVTV_F_S_STREAMING, &s->s_flags);
 	ret = ivtv_start_v4l2_encode_stream(s);
 	snd_ivtv_unlock(itvsc);
@@ -190,7 +182,7 @@ static int snd_ivtv_pcm_capture_close(struct snd_pcm_substream *substream)
 	struct ivtv *itv = to_ivtv(v4l2_dev);
 	struct ivtv_stream *s;
 
-	/* Instruct the ivtv to stop sending packets */
+	 
 	snd_ivtv_lock(itvsc);
 	s = &itv->streams[IVTV_ENC_STREAM_TYPE_PCM];
 	ivtv_stop_v4l2_encode_stream(s, 0);
@@ -250,9 +242,9 @@ int snd_ivtv_pcm_create(struct snd_ivtv_card *itvsc)
 	int ret;
 
 	ret = snd_pcm_new(sc, "CX2341[56] PCM",
-			  0, /* PCM device 0, the only one for this card */
-			  0, /* 0 playback substreams */
-			  1, /* 1 capture substream */
+			  0,  
+			  0,  
+			  1,  
 			  &sp);
 	if (ret) {
 		IVTV_ALSA_ERR("%s: snd_ivtv_pcm_create() failed with err %d\n",

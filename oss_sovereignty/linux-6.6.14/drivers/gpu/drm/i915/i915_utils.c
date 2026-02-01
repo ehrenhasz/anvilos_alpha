@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/device.h>
 
@@ -40,11 +38,7 @@ __i915_printk(struct drm_i915_private *dev_priv, const char *level,
 	va_end(args);
 
 	if (is_error && !shown_bug_once) {
-		/*
-		 * Ask the user to file a bug report for the error, except
-		 * if they may have caused the bug by fiddling with unsafe
-		 * module parameters.
-		 */
+		 
 		if (!test_taint(TAINT_USER))
 			dev_notice(kdev, "%s", FDO_BUG_MSG);
 		shown_bug_once = true;
@@ -56,7 +50,7 @@ void add_taint_for_CI(struct drm_i915_private *i915, unsigned int taint)
 	__i915_printk(i915, KERN_NOTICE, "CI tainted:%#x by %pS\n",
 		      taint, (void *)_RET_IP_);
 
-	/* Failures that occur during fault injection testing are expected */
+	 
 	if (!i915_error_injected())
 		__add_taint_for_CI(taint);
 }
@@ -105,15 +99,10 @@ void set_timer_ms(struct timer_list *t, unsigned long timeout)
 
 	timeout = msecs_to_jiffies(timeout);
 
-	/*
-	 * Paranoia to make sure the compiler computes the timeout before
-	 * loading 'jiffies' as jiffies is volatile and may be updated in
-	 * the background by a timer tick. All to reduce the complexity
-	 * of the addition and reduce the risk of losing a jiffie.
-	 */
+	 
 	barrier();
 
-	/* Keep t->expires = 0 reserved to indicate a canceled timer. */
+	 
 	mod_timer(t, jiffies + timeout ?: 1);
 }
 
@@ -122,6 +111,6 @@ bool i915_vtd_active(struct drm_i915_private *i915)
 	if (device_iommu_mapped(i915->drm.dev))
 		return true;
 
-	/* Running as a guest, we assume the host is enforcing VT'd */
+	 
 	return i915_run_as_guest();
 }

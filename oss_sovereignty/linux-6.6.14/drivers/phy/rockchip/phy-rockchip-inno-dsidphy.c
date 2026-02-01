@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Rockchip Electronics Co. Ltd.
- *
- * Author: Wyon Bi <bivvy.bi@rock-chips.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -25,19 +21,13 @@
 
 #define UPDATE(x, h, l)	(((x) << (l)) & GENMASK((h), (l)))
 
-/*
- * The offset address[7:0] is distributed two parts, one from the bit7 to bit5
- * is the first address, the other from the bit4 to bit0 is the second address.
- * when you configure the registers, you must set both of them. The Clock Lane
- * and Data Lane use the same registers with the same second address, but the
- * first address is different.
- */
+ 
 #define FIRST_ADDRESS(x)		(((x) & 0x7) << 5)
 #define SECOND_ADDRESS(x)		(((x) & 0x1f) << 0)
 #define PHY_REG(first, second)		(FIRST_ADDRESS(first) | \
 					 SECOND_ADDRESS(second))
 
-/* Analog Register Part: reg00 */
+ 
 #define BANDGAP_POWER_MASK			BIT(7)
 #define BANDGAP_POWER_DOWN			BIT(7)
 #define BANDGAP_POWER_ON			0
@@ -50,7 +40,7 @@
 #define POWER_WORK_MASK				GENMASK(1, 0)
 #define POWER_WORK_ENABLE			UPDATE(1, 1, 0)
 #define POWER_WORK_DISABLE			UPDATE(2, 1, 0)
-/* Analog Register Part: reg01 */
+ 
 #define REG_SYNCRST_MASK			BIT(2)
 #define REG_SYNCRST_RESET			BIT(2)
 #define REG_SYNCRST_NORMAL			0
@@ -60,30 +50,30 @@
 #define REG_PLLPD_MASK				BIT(0)
 #define REG_PLLPD_POWER_DOWN			BIT(0)
 #define REG_PLLPD_POWER_ON			0
-/* Analog Register Part: reg03 */
+ 
 #define REG_FBDIV_HI_MASK			BIT(5)
 #define REG_FBDIV_HI(x)				UPDATE((x >> 8), 5, 5)
 #define REG_PREDIV_MASK				GENMASK(4, 0)
 #define REG_PREDIV(x)				UPDATE(x, 4, 0)
-/* Analog Register Part: reg04 */
+ 
 #define REG_FBDIV_LO_MASK			GENMASK(7, 0)
 #define REG_FBDIV_LO(x)				UPDATE(x, 7, 0)
-/* Analog Register Part: reg05 */
+ 
 #define SAMPLE_CLOCK_PHASE_MASK			GENMASK(6, 4)
 #define SAMPLE_CLOCK_PHASE(x)			UPDATE(x, 6, 4)
 #define CLOCK_LANE_SKEW_PHASE_MASK		GENMASK(2, 0)
 #define CLOCK_LANE_SKEW_PHASE(x)		UPDATE(x, 2, 0)
-/* Analog Register Part: reg06 */
+ 
 #define DATA_LANE_3_SKEW_PHASE_MASK		GENMASK(6, 4)
 #define DATA_LANE_3_SKEW_PHASE(x)		UPDATE(x, 6, 4)
 #define DATA_LANE_2_SKEW_PHASE_MASK		GENMASK(2, 0)
 #define DATA_LANE_2_SKEW_PHASE(x)		UPDATE(x, 2, 0)
-/* Analog Register Part: reg07 */
+ 
 #define DATA_LANE_1_SKEW_PHASE_MASK		GENMASK(6, 4)
 #define DATA_LANE_1_SKEW_PHASE(x)		UPDATE(x, 6, 4)
 #define DATA_LANE_0_SKEW_PHASE_MASK		GENMASK(2, 0)
 #define DATA_LANE_0_SKEW_PHASE(x)		UPDATE(x, 2, 0)
-/* Analog Register Part: reg08 */
+ 
 #define PLL_POST_DIV_ENABLE_MASK		BIT(5)
 #define PLL_POST_DIV_ENABLE			BIT(5)
 #define SAMPLE_CLOCK_DIRECTION_MASK		BIT(4)
@@ -92,87 +82,87 @@
 #define LOWFRE_EN_MASK				BIT(5)
 #define PLL_OUTPUT_FREQUENCY_DIV_BY_1		0
 #define PLL_OUTPUT_FREQUENCY_DIV_BY_2		1
-/* Analog Register Part: reg0b */
+ 
 #define CLOCK_LANE_VOD_RANGE_SET_MASK		GENMASK(3, 0)
 #define CLOCK_LANE_VOD_RANGE_SET(x)		UPDATE(x, 3, 0)
 #define VOD_MIN_RANGE				0x1
 #define VOD_MID_RANGE				0x3
 #define VOD_BIG_RANGE				0x7
 #define VOD_MAX_RANGE				0xf
-/* Analog Register Part: reg1E */
+ 
 #define PLL_MODE_SEL_MASK			GENMASK(6, 5)
 #define PLL_MODE_SEL_LVDS_MODE			0
 #define PLL_MODE_SEL_MIPI_MODE			BIT(5)
-/* Digital Register Part: reg00 */
+ 
 #define REG_DIG_RSTN_MASK			BIT(0)
 #define REG_DIG_RSTN_NORMAL			BIT(0)
 #define REG_DIG_RSTN_RESET			0
-/* Digital Register Part: reg01 */
+ 
 #define INVERT_TXCLKESC_MASK			BIT(1)
 #define INVERT_TXCLKESC_ENABLE			BIT(1)
 #define INVERT_TXCLKESC_DISABLE			0
 #define INVERT_TXBYTECLKHS_MASK			BIT(0)
 #define INVERT_TXBYTECLKHS_ENABLE		BIT(0)
 #define INVERT_TXBYTECLKHS_DISABLE		0
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg05 */
+ 
 #define T_LPX_CNT_MASK				GENMASK(5, 0)
 #define T_LPX_CNT(x)				UPDATE(x, 5, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg06 */
+ 
 #define T_HS_ZERO_CNT_HI_MASK			BIT(7)
 #define T_HS_ZERO_CNT_HI(x)			UPDATE(x, 7, 7)
 #define T_HS_PREPARE_CNT_MASK			GENMASK(6, 0)
 #define T_HS_PREPARE_CNT(x)			UPDATE(x, 6, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg07 */
+ 
 #define T_HS_ZERO_CNT_LO_MASK			GENMASK(5, 0)
 #define T_HS_ZERO_CNT_LO(x)			UPDATE(x, 5, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg08 */
+ 
 #define T_HS_TRAIL_CNT_MASK			GENMASK(6, 0)
 #define T_HS_TRAIL_CNT(x)			UPDATE(x, 6, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg09 */
+ 
 #define T_HS_EXIT_CNT_LO_MASK			GENMASK(4, 0)
 #define T_HS_EXIT_CNT_LO(x)			UPDATE(x, 4, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg0a */
+ 
 #define T_CLK_POST_CNT_LO_MASK			GENMASK(3, 0)
 #define T_CLK_POST_CNT_LO(x)			UPDATE(x, 3, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg0c */
+ 
 #define LPDT_TX_PPI_SYNC_MASK			BIT(2)
 #define LPDT_TX_PPI_SYNC_ENABLE			BIT(2)
 #define LPDT_TX_PPI_SYNC_DISABLE		0
 #define T_WAKEUP_CNT_HI_MASK			GENMASK(1, 0)
 #define T_WAKEUP_CNT_HI(x)			UPDATE(x, 1, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg0d */
+ 
 #define T_WAKEUP_CNT_LO_MASK			GENMASK(7, 0)
 #define T_WAKEUP_CNT_LO(x)			UPDATE(x, 7, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg0e */
+ 
 #define T_CLK_PRE_CNT_MASK			GENMASK(3, 0)
 #define T_CLK_PRE_CNT(x)			UPDATE(x, 3, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg10 */
+ 
 #define T_CLK_POST_CNT_HI_MASK			GENMASK(7, 6)
 #define T_CLK_POST_CNT_HI(x)			UPDATE(x, 7, 6)
 #define T_TA_GO_CNT_MASK			GENMASK(5, 0)
 #define T_TA_GO_CNT(x)				UPDATE(x, 5, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg11 */
+ 
 #define T_HS_EXIT_CNT_HI_MASK			BIT(6)
 #define T_HS_EXIT_CNT_HI(x)			UPDATE(x, 6, 6)
 #define T_TA_SURE_CNT_MASK			GENMASK(5, 0)
 #define T_TA_SURE_CNT(x)			UPDATE(x, 5, 0)
-/* Clock/Data0/Data1/Data2/Data3 Lane Register Part: reg12 */
+ 
 #define T_TA_WAIT_CNT_MASK			GENMASK(5, 0)
 #define T_TA_WAIT_CNT(x)			UPDATE(x, 5, 0)
-/* LVDS Register Part: reg00 */
+ 
 #define LVDS_DIGITAL_INTERNAL_RESET_MASK	BIT(2)
 #define LVDS_DIGITAL_INTERNAL_RESET_DISABLE	BIT(2)
 #define LVDS_DIGITAL_INTERNAL_RESET_ENABLE	0
-/* LVDS Register Part: reg01 */
+ 
 #define LVDS_DIGITAL_INTERNAL_ENABLE_MASK	BIT(7)
 #define LVDS_DIGITAL_INTERNAL_ENABLE		BIT(7)
 #define LVDS_DIGITAL_INTERNAL_DISABLE		0
-/* LVDS Register Part: reg03 */
+ 
 #define MODE_ENABLE_MASK			GENMASK(2, 0)
 #define TTL_MODE_ENABLE				BIT(2)
 #define LVDS_MODE_ENABLE			BIT(1)
 #define MIPI_MODE_ENABLE			BIT(0)
-/* LVDS Register Part: reg0b */
+ 
 #define LVDS_LANE_EN_MASK			GENMASK(7, 3)
 #define LVDS_DATA_LANE0_EN			BIT(7)
 #define LVDS_DATA_LANE1_EN			BIT(6)
@@ -304,18 +294,14 @@ static unsigned long inno_dsidphy_pll_calc_rate(struct inno_dsidphy *inno,
 	u16 _fbdiv, best_fbdiv = 1;
 	u32 min_delta = UINT_MAX;
 
-	/*
-	 * The PLL output frequency can be calculated using a simple formula:
-	 * PLL_Output_Frequency = (FREF / PREDIV * FBDIV) / 2
-	 * PLL_Output_Frequency: it is equal to DDR-Clock-Frequency * 2
-	 */
+	 
 	fref = prate / 2;
 	if (rate > 1000000000UL)
 		fout = 1000000000UL;
 	else
 		fout = rate;
 
-	/* 5Mhz < Fref / prediv < 40MHz */
+	 
 	min_prediv = DIV_ROUND_UP(fref, 40000000);
 	max_prediv = fref / 5000000;
 
@@ -327,10 +313,7 @@ static unsigned long inno_dsidphy_pll_calc_rate(struct inno_dsidphy *inno,
 		do_div(tmp, fref);
 		_fbdiv = tmp;
 
-		/*
-		 * The possible settings of feedback divider are
-		 * 12, 13, 14, 16, ~ 511
-		 */
+		 
 		if (_fbdiv == 15)
 			continue;
 
@@ -377,10 +360,10 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
 
 	inno_dsidphy_pll_calc_rate(inno, cfg->hs_clk_rate);
 
-	/* Select MIPI mode */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x03,
 			MODE_ENABLE_MASK, MIPI_MODE_ENABLE);
-	/* Configure PLL */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x03,
 			REG_PREDIV_MASK, REG_PREDIV(inno->pll.prediv));
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x03,
@@ -394,17 +377,17 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
 				CLOCK_LANE_VOD_RANGE_SET_MASK,
 				CLOCK_LANE_VOD_RANGE_SET(VOD_MAX_RANGE));
 	}
-	/* Enable PLL and LDO */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x01,
 			REG_LDOPD_MASK | REG_PLLPD_MASK,
 			REG_LDOPD_POWER_ON | REG_PLLPD_POWER_ON);
-	/* Reset analog */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x01,
 			REG_SYNCRST_MASK, REG_SYNCRST_RESET);
 	udelay(1);
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x01,
 			REG_SYNCRST_MASK, REG_SYNCRST_NORMAL);
-	/* Reset digital */
+	 
 	phy_update_bits(inno, REGISTER_PART_DIGITAL, 0x00,
 			REG_DIG_RSTN_MASK, REG_DIG_RSTN_RESET);
 	udelay(1);
@@ -418,39 +401,18 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
 	txclkesc = txbyteclkhs / esc_clk_div;
 	t_txclkesc = div_u64(PSEC_PER_SEC, txclkesc);
 
-	/*
-	 * The value of counter for HS Ths-exit
-	 * Ths-exit = Tpin_txbyteclkhs * value
-	 */
+	 
 	hs_exit = DIV_ROUND_UP(cfg->hs_exit, t_txbyteclkhs);
-	/*
-	 * The value of counter for HS Tclk-post
-	 * Tclk-post = Tpin_txbyteclkhs * value
-	 */
+	 
 	clk_post = DIV_ROUND_UP(cfg->clk_post, t_txbyteclkhs);
-	/*
-	 * The value of counter for HS Tclk-pre
-	 * Tclk-pre = Tpin_txbyteclkhs * value
-	 */
+	 
 	clk_pre = DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE);
 
-	/*
-	 * The value of counter for HS Tta-go
-	 * Tta-go for turnaround
-	 * Tta-go = Ttxclkesc * value
-	 */
+	 
 	ta_go = DIV_ROUND_UP(cfg->ta_go, t_txclkesc);
-	/*
-	 * The value of counter for HS Tta-sure
-	 * Tta-sure for turnaround
-	 * Tta-sure = Ttxclkesc * value
-	 */
+	 
 	ta_sure = DIV_ROUND_UP(cfg->ta_sure, t_txclkesc);
-	/*
-	 * The value of counter for HS Tta-wait
-	 * Tta-wait for turnaround
-	 * Tta-wait = Ttxclkesc * value
-	 */
+	 
 	ta_wait = DIV_ROUND_UP(cfg->ta_get, t_txclkesc);
 
 	for (i = 0; i < inno->pdata->num_timings; i++)
@@ -460,10 +422,7 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
 	if (i == inno->pdata->num_timings)
 		--i;
 
-	/*
-	 * The value of counter for HS Tlpx Time
-	 * Tlpx = Tpin_txbyteclkhs * (2 + value)
-	 */
+	 
 	if (inno->pdata->max_rate == MAX_1GHZ) {
 		lpx = DIV_ROUND_UP(cfg->lpx, t_txbyteclkhs);
 		if (lpx >= 2)
@@ -518,7 +477,7 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
 				T_TA_WAIT_CNT(ta_wait));
 	}
 
-	/* Enable all lanes on analog part */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x00,
 			LANE_EN_MASK, LANE_EN_CK | LANE_EN_3 | LANE_EN_2 |
 			LANE_EN_1 | LANE_EN_0);
@@ -529,16 +488,16 @@ static void inno_dsidphy_lvds_mode_enable(struct inno_dsidphy *inno)
 	u8 prediv = 2;
 	u16 fbdiv = 28;
 
-	/* Sample clock reverse direction */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x08,
 			SAMPLE_CLOCK_DIRECTION_MASK | LOWFRE_EN_MASK,
 			SAMPLE_CLOCK_DIRECTION_REVERSE |
 			PLL_OUTPUT_FREQUENCY_DIV_BY_1);
 
-	/* Select LVDS mode */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x03,
 			MODE_ENABLE_MASK, LVDS_MODE_ENABLE);
-	/* Configure PLL */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x03,
 			REG_PREDIV_MASK, REG_PREDIV(prediv));
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x03,
@@ -546,18 +505,18 @@ static void inno_dsidphy_lvds_mode_enable(struct inno_dsidphy *inno)
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x04,
 			REG_FBDIV_LO_MASK, REG_FBDIV_LO(fbdiv));
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x08, 0xff, 0xfc);
-	/* Enable PLL and Bandgap */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x0b,
 			LVDS_PLL_POWER_MASK | LVDS_BANDGAP_POWER_MASK,
 			LVDS_PLL_POWER_ON | LVDS_BANDGAP_POWER_ON);
 
 	msleep(20);
 
-	/* Select PLL mode */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x1e,
 			PLL_MODE_SEL_MASK, PLL_MODE_SEL_LVDS_MODE);
 
-	/* Reset LVDS digital logic */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x00,
 			LVDS_DIGITAL_INTERNAL_RESET_MASK,
 			LVDS_DIGITAL_INTERNAL_RESET_ENABLE);
@@ -565,11 +524,11 @@ static void inno_dsidphy_lvds_mode_enable(struct inno_dsidphy *inno)
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x00,
 			LVDS_DIGITAL_INTERNAL_RESET_MASK,
 			LVDS_DIGITAL_INTERNAL_RESET_DISABLE);
-	/* Enable LVDS digital logic */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x01,
 			LVDS_DIGITAL_INTERNAL_ENABLE_MASK,
 			LVDS_DIGITAL_INTERNAL_ENABLE);
-	/* Enable LVDS analog driver */
+	 
 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x0b,
 			LVDS_LANE_EN_MASK, LVDS_CLK_LANE_EN |
 			LVDS_DATA_LANE0_EN | LVDS_DATA_LANE1_EN |
@@ -584,10 +543,10 @@ static int inno_dsidphy_power_on(struct phy *phy)
 	clk_prepare_enable(inno->ref_clk);
 	pm_runtime_get_sync(inno->dev);
 
-	/* Bandgap power on */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x00,
 			BANDGAP_POWER_MASK, BANDGAP_POWER_ON);
-	/* Enable power work */
+	 
 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x00,
 			POWER_WORK_MASK, POWER_WORK_ENABLE);
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl8712_cmd.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>.
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RTL8712_CMD_C_
 
@@ -52,23 +39,16 @@ static void check_hw_pbc(struct _adapter *padapter)
 	if (tmp1byte == 0xff)
 		return;
 	if (tmp1byte & HAL_8192S_HW_GPIO_WPS_BIT) {
-		/* Here we only set bPbcPressed to true
-		 * After trigger PBC, the variable will be set to false
-		 */
+		 
 		netdev_dbg(padapter->pnetdev, "CheckPbcGPIO - PBC is pressed !!!!\n");
-		/* 0 is the default value and it means the application monitors
-		 * the HW PBC doesn't provide its pid to driver.
-		 */
+		 
 		if (padapter->pid == 0)
 			return;
 		kill_pid(find_vpid(padapter->pid), SIGUSR1, 1);
 	}
 }
 
-/* query rx phy status from fw.
- * Adhoc mode: beacon.
- * Infrastructure mode: beacon , data.
- */
+ 
 static void query_fw_rx_phy_status(struct _adapter *padapter)
 {
 	u32 val32 = 0;
@@ -77,7 +57,7 @@ static void query_fw_rx_phy_status(struct _adapter *padapter)
 	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
 		r8712_write32(padapter, IOCMD_CTRL_REG, 0xf4000001);
 		msleep(100);
-		/* Wait FW complete IO Cmd */
+		 
 		while ((r8712_read32(padapter, IOCMD_CTRL_REG)) &&
 		       (pollingcnts > 0)) {
 			pollingcnts--;
@@ -85,7 +65,7 @@ static void query_fw_rx_phy_status(struct _adapter *padapter)
 		}
 		if (pollingcnts != 0)
 			val32 = r8712_read32(padapter, IOCMD_DATA_REG);
-		else /* time out */
+		else  
 			val32 = 0;
 		val32 >>= 4;
 		padapter->recvpriv.fw_rssi =
@@ -93,7 +73,7 @@ static void query_fw_rx_phy_status(struct _adapter *padapter)
 	}
 }
 
-/* check mlme, hw, phy, or dynamic algorithm status. */
+ 
 static void StatusWatchdogCallback(struct _adapter *padapter)
 {
 	check_hw_pbc(padapter);
@@ -202,11 +182,7 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 		break;
 	case GEN_CMD_CODE(_JoinBss):
 		r8712_joinbss_reset(padapter);
-		/* Before set JoinBss_CMD to FW, driver must ensure FW is in
-		 * PS_MODE_ACTIVE. Directly write rpwm to radio on and assign
-		 * new pwr_mode to Driver, instead of use workitem to change
-		 * state.
-		 */
+		 
 		if (padapter->pwrctrlpriv.pwr_mode > PS_MODE_ACTIVE) {
 			padapter->pwrctrlpriv.pwr_mode = PS_MODE_ACTIVE;
 			mutex_lock(&padapter->pwrctrlpriv.mutex_lock);
@@ -224,7 +200,7 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 		pcmd_r = pcmd;
 		break;
 	}
-	return pcmd_r; /* if returning pcmd_r == NULL, pcmd must be free. */
+	return pcmd_r;  
 }
 
 u8 r8712_fw_cmd(struct _adapter *pAdapter, u32 cmd)
@@ -245,9 +221,9 @@ u8 r8712_fw_cmd(struct _adapter *pAdapter, u32 cmd)
 
 void r8712_fw_cmd_data(struct _adapter *pAdapter, u32 *value, u8 flag)
 {
-	if (flag == 0)	/* set */
+	if (flag == 0)	 
 		r8712_write32(pAdapter, IOCMD_DATA_REG, *value);
-	else		/* query */
+	else		 
 		*value = r8712_read32(pAdapter, IOCMD_DATA_REG);
 }
 
@@ -282,7 +258,7 @@ _next:
 		pdesc = (struct tx_desc *)pcmdbuf;
 		memset(pdesc, 0, TXDESC_SIZE);
 		pcmd = cmd_hdl_filter(padapter, pcmd);
-		if (pcmd) { /* if pcmd != NULL, cmd will be handled by f/w */
+		if (pcmd) {  
 			struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
 			u8 blnPending = 0;
 			u16 cmdcode = pcmd->cmdcode;
@@ -299,7 +275,7 @@ _next:
 				if ((wr_sz % 64) == 0)
 					blnPending = 1;
 			}
-			if (blnPending) { /* 32 bytes for TX Desc - 8 offset */
+			if (blnPending) {  
 				pdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE +
 						OFFSET_SZ + 8) << OFFSET_SHT) &
 						0x00ff0000);
@@ -316,10 +292,10 @@ _next:
 			*pcmdbuf = cpu_to_le32((cmdsz & 0x0000ffff) |
 					       (pcmd->cmdcode << 16) |
 					       (pcmdpriv->cmd_seq << 24));
-			pcmdbuf += 2; /* 8 bytes alignment */
+			pcmdbuf += 2;  
 			memcpy((u8 *)pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
 			if (blnPending)
-				wr_sz += 8;   /* Append 8 bytes */
+				wr_sz += 8;    
 			r8712_write_mem(padapter, RTL8712_DMA_H2CCMD, wr_sz,
 					(u8 *)pdesc);
 			pcmdpriv->cmd_seq++;
@@ -349,7 +325,7 @@ _next:
 		}
 		flush_signals_thread();
 	}
-	/* free all cmd_obj resources */
+	 
 	do {
 		pcmd = r8712_dequeue_cmd(&pcmdpriv->cmd_queue);
 		if (!pcmd)
@@ -372,12 +348,12 @@ void r8712_event_handle(struct _adapter *padapter, __le32 *peventbuf)
 	evt_sz = (u16)(le32_to_cpu(*peventbuf) & 0xffff);
 	evt_seq = (u8)((le32_to_cpu(*peventbuf) >> 24) & 0x7f);
 	evt_code = (u8)((le32_to_cpu(*peventbuf) >> 16) & 0xff);
-	/* checking event sequence... */
+	 
 	if ((evt_seq & 0x7f) != pevt_priv->event_seq) {
 		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
 		goto _abort_event_;
 	}
-	/* checking if event code is valid */
+	 
 	if (evt_code >= MAX_C2HEVT) {
 		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
 		goto _abort_event_;
@@ -386,7 +362,7 @@ void r8712_event_handle(struct _adapter *padapter, __le32 *peventbuf)
 		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
 		goto _abort_event_;
 	}
-	/* checking if event size match the event parm size */
+	 
 	if ((wlanevents[evt_code].parmsize) &&
 	    (wlanevents[evt_code].parmsize != evt_sz)) {
 		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
@@ -395,10 +371,10 @@ void r8712_event_handle(struct _adapter *padapter, __le32 *peventbuf)
 		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
 		goto _abort_event_;
 	}
-	pevt_priv->event_seq++;	/* update evt_seq */
+	pevt_priv->event_seq++;	 
 	if (pevt_priv->event_seq > 127)
 		pevt_priv->event_seq = 0;
-	/* move to event content, 8 bytes alignment */
+	 
 	peventbuf = peventbuf + 2;
 	event_callback = wlanevents[evt_code].event_callback;
 	if (event_callback)

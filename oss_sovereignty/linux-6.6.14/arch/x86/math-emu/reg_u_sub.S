@@ -1,32 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 	.file	"reg_u_sub.S"
-/*---------------------------------------------------------------------------+
- |  reg_u_sub.S                                                              |
- |                                                                           |
- | Core floating point subtraction routine.                                  |
- |                                                                           |
- | Copyright (C) 1992,1993,1995,1997                                         |
- |                  W. Metzenthen, 22 Parker St, Ormond, Vic 3163, Australia |
- |                  E-mail   billm@suburbia.net                              |
- |                                                                           |
- | Call from C as:                                                           |
- |    int FPU_u_sub(FPU_REG *arg1, FPU_REG *arg2, FPU_REG *answ,             |
- |                                                int control_w)             |
- |    Return value is the tag of the answer, or-ed with FPU_Exception if     |
- |    one was raised, or -1 on internal error.                               |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+ 
 
-/*
- |    Kernel subtraction routine FPU_u_sub(reg *arg1, reg *arg2, reg *answ).
- |    Takes two valid reg f.p. numbers (TAG_Valid), which are
- |    treated as unsigned numbers,
- |    and returns their difference as a TAG_Valid or TAG_Zero f.p.
- |    number.
- |    The first number (arg1) must be the larger.
- |    The returned number is normalized.
- |    Basic checks are performed if PARANOID is defined.
- */
+ 
 
 #include "exception.h"
 #include "fpu_emu.h"
@@ -40,46 +16,39 @@ SYM_FUNC_START(FPU_u_sub)
 	pushl	%edi
 	pushl	%ebx
 
-	movl	PARAM1,%esi	/* source 1 */
-	movl	PARAM2,%edi	/* source 2 */
+	movl	PARAM1,%esi	 
+	movl	PARAM2,%edi	 
 	
 	movl	PARAM6,%ecx
-	subl	PARAM7,%ecx	/* exp1 - exp2 */
+	subl	PARAM7,%ecx	 
 
 #ifdef PARANOID
-	/* source 2 is always smaller than source 1 */
+	 
 	js	L_bugged_1
 
-	testl	$0x80000000,SIGH(%edi)	/* The args are assumed to be be normalized */
+	testl	$0x80000000,SIGH(%edi)	 
 	je	L_bugged_2
 
 	testl	$0x80000000,SIGH(%esi)
 	je	L_bugged_2
-#endif /* PARANOID */
+#endif  
 
-/*--------------------------------------+
- |	Form a register holding the     |
- |	smaller number                  |
- +--------------------------------------*/
-	movl	SIGH(%edi),%eax	/* register ms word */
-	movl	SIGL(%edi),%ebx	/* register ls word */
+ 
+	movl	SIGH(%edi),%eax	 
+	movl	SIGL(%edi),%ebx	 
 
-	movl	PARAM3,%edi	/* destination */
+	movl	PARAM3,%edi	 
 	movl	PARAM6,%edx
-	movw	%dx,EXP(%edi)	/* Copy exponent to destination */
+	movw	%dx,EXP(%edi)	 
 
-	xorl	%edx,%edx	/* register extension */
+	xorl	%edx,%edx	 
 
-/*--------------------------------------+
- |	Shift the temporary register	|
- |      right the required number of	|
- |	places.				|
- +--------------------------------------*/
+ 
 
-	cmpw	$32,%cx		/* shrd only works for 0..31 bits */
+	cmpw	$32,%cx		 
 	jnc	L_more_than_31
 
-/* less than 32 bits */
+ 
 	shrd	%cl,%ebx,%edx
 	shrd	%cl,%eax,%ebx
 	shr	%cl,%eax
@@ -95,9 +64,9 @@ L_more_than_31:
 	shrd	%cl,%eax,%edx
 	shr	%cl,%eax
 	orl	%ebx,%ebx
-	jz	L_more_31_no_low	/* none of the lowest bits is set */
+	jz	L_more_31_no_low	 
 
-	orl	$1,%edx			/* record the fact in the extension */
+	orl	$1,%edx			 
 
 L_more_31_no_low:
 	movl	%eax,%ebx
@@ -114,7 +83,7 @@ L_more_than_63:
 	cmpw	$65,%cx
 	jnc	L_more_than_64
 
-	/* Shift right by 64 bits */
+	 
 	movl	%eax,%edx
 	orl	%ebx,%ebx
 	jz	L_more_63_no_low
@@ -125,8 +94,8 @@ L_more_than_63:
 L_more_than_64:
 	jne	L_more_than_65
 
-	/* Shift right by 65 bits */
-	/* Carry is clear if we get here */
+	 
+	 
 	movl	%eax,%edx
 	rcrl	%edx
 	jnc	L_shift_65_nc
@@ -142,7 +111,7 @@ L_shift_65_nc:
 	jmp	L_more_63_no_low
 
 L_more_than_65:
-	movl	$1,%edx		/* The shifted nr always at least one '1' */
+	movl	$1,%edx		 
 
 L_more_63_no_low:
 	xorl	%ebx,%ebx
@@ -150,9 +119,7 @@ L_more_63_no_low:
 
 L_shift_done:
 L_subtr:
-/*------------------------------+
- |	Do the subtraction	|
- +------------------------------*/
+ 
 	xorl	%ecx,%ecx
 	subl	%edx,%ecx
 	movl	%ecx,%edx
@@ -164,34 +131,26 @@ L_subtr:
 	movl	%ecx,%eax
 
 #ifdef PARANOID
-	/* We can never get a borrow */
+	 
 	jc	L_bugged
-#endif /* PARANOID */
+#endif  
 
-/*--------------------------------------+
- |	Normalize the result		|
- +--------------------------------------*/
+ 
 	testl	$0x80000000,%eax
-	jnz	L_round		/* no shifting needed */
+	jnz	L_round		 
 
 	orl	%eax,%eax
-	jnz	L_shift_1	/* shift left 1 - 31 bits */
+	jnz	L_shift_1	 
 
 	orl	%ebx,%ebx
-	jnz	L_shift_32	/* shift left 32 - 63 bits */
+	jnz	L_shift_32	 
 
-/*
- *	 A rare case, the only one which is non-zero if we got here
- *         is:           1000000 .... 0000
- *                      -0111111 .... 1111 1
- *                       -------------------- 
- *                       0000000 .... 0000 1 
- */
+ 
 
 	cmpl	$0x80000000,%edx
 	jnz	L_must_be_zero
 
-	/* Shift left 64 bits */
+	 
 	subw	$64,EXP(%edi)
 	xchg	%edx,%eax
 	jmp	fpu_reg_round
@@ -200,10 +159,10 @@ L_must_be_zero:
 #ifdef PARANOID
 	orl	%edx,%edx
 	jnz	L_bugged_3
-#endif /* PARANOID */ 
+#endif   
 
-	/* The result is zero */
-	movw	$0,EXP(%edi)		/* exponent */
+	 
+	movw	$0,EXP(%edi)		 
 	movl	$0,SIGL(%edi)
 	movl	$0,SIGH(%edi)
 	movl	TAG_Zero,%eax
@@ -213,20 +172,20 @@ L_shift_32:
 	movl	%ebx,%eax
 	movl	%edx,%ebx
 	movl	$0,%edx
-	subw	$32,EXP(%edi)	/* Can get underflow here */
+	subw	$32,EXP(%edi)	 
 
-/* We need to shift left by 1 - 31 bits */
+ 
 L_shift_1:
-	bsrl	%eax,%ecx	/* get the required shift in %ecx */
+	bsrl	%eax,%ecx	 
 	subl	$31,%ecx
 	negl	%ecx
 	shld	%cl,%ebx,%eax
 	shld	%cl,%edx,%ebx
 	shl	%cl,%edx
-	subw	%cx,EXP(%edi)	/* Can get underflow here */
+	subw	%cx,EXP(%edi)	 
 
 L_round:
-	jmp	fpu_reg_round	/* Round the result */
+	jmp	fpu_reg_round	 
 
 
 #ifdef PARANOID
@@ -263,7 +222,7 @@ L_bugged:
 L_error_exit:
 	movl	$-1,%eax
 
-#endif /* PARANOID */
+#endif  
 
 L_exit:
 	popl	%ebx

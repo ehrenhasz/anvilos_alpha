@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 IBM Corporation
- *
- * Authors:
- *      Nayna Jain <nayna@linux.vnet.ibm.com>
- *
- * Access to TPM 2.0 event log as written by Firmware.
- * It assumes that writer of event log has followed TCG Specification
- * for Family "2.0" and written the event data in little endian.
- * With that, it doesn't need any endian conversion for structure
- * content.
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/fs.h>
@@ -22,17 +11,7 @@
 #include "../tpm.h"
 #include "common.h"
 
-/*
- * calc_tpm2_event_size() - calculate the event size, where event
- * is an entry in the TPM 2.0 event log. The event is of type Crypto
- * Agile Log Entry Format as defined in TCG EFI Protocol Specification
- * Family "2.0".
-
- * @event: event whose size is to be calculated.
- * @event_header: the first event in the event log.
- *
- * Returns size of the event. If it is an invalid event, returns 0.
- */
+ 
 static size_t calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
 				   struct tcg_pcr_event *event_header)
 {

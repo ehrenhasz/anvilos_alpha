@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_AUX_ENGINE_DCE110_H__
 #define __DAL_AUX_ENGINE_DCE110_H__
@@ -161,7 +138,7 @@ struct dce110_aux_registers {
 	AUX_SF(AUXP_IMPCAL, AUXP_IMPCAL_OVERRIDE_ENABLE, mask_sh),\
 	AUX_SF(AUXN_IMPCAL, AUXN_IMPCAL_OVERRIDE_ENABLE, mask_sh)
 
-/* DCN10 MASK */
+ 
 #define DCN10_AUX_MASK_SH_LIST(mask_sh)\
 	AUX_SF(DP_AUX0_AUX_CONTROL, AUX_EN, mask_sh),\
 	AUX_SF(DP_AUX0_AUX_CONTROL, AUX_RESET, mask_sh),\
@@ -187,7 +164,7 @@ struct dce110_aux_registers {
 	AUX_SF(AUXP_IMPCAL, AUXP_IMPCAL_OVERRIDE_ENABLE, mask_sh),\
 	AUX_SF(AUXN_IMPCAL, AUXN_IMPCAL_OVERRIDE_ENABLE, mask_sh)
 
-/* for all other DCN */
+ 
 #define DCN_AUX_MASK_SH_LIST(mask_sh)\
 	AUX_SF(DP_AUX0_AUX_CONTROL, AUX_EN, mask_sh),\
 	AUX_SF(DP_AUX0_AUX_CONTROL, AUX_RESET, mask_sh),\
@@ -212,29 +189,10 @@ struct dce110_aux_registers {
 #define AUX_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
-enum {	/* This is the timeout as defined in DP 1.2a,
-	 * 2.3.4 "Detailed uPacket TX AUX CH State Description".
-	 */
+enum {	 
 	AUX_TIMEOUT_PERIOD = 400,
 
-	/* Ideally, the SW timeout should be just above 550usec
-	 * which is programmed in HW.
-	 * But the SW timeout of 600usec is not reliable,
-	 * because on some systems, delay_in_microseconds()
-	 * returns faster than it should.
-	 * EPR #379763: by trial-and-error on different systems,
-	 * 700usec is the minimum reliable SW timeout for polling
-	 * the AUX_SW_STATUS.AUX_SW_DONE bit.
-	 * This timeout expires *only* when there is
-	 * AUX Error or AUX Timeout conditions - not during normal operation.
-	 * During normal operation, AUX_SW_STATUS.AUX_SW_DONE bit is set
-	 * at most within ~240usec. That means,
-	 * increasing this timeout will not affect normal operation,
-	 * and we'll timeout after
-	 * SW_AUX_TIMEOUT_PERIOD_MULTIPLIER * AUX_TIMEOUT_PERIOD = 2400usec.
-	 * This timeout is especially important for
-	 * converters, resume from S3, and CTS.
-	 */
+	 
 	SW_AUX_TIMEOUT_PERIOD_MULTIPLIER = 6
 };
 
@@ -242,7 +200,7 @@ struct dce_aux {
 	uint32_t inst;
 	struct ddc *ddc;
 	struct dc_context *ctx;
-	/* following values are expressed in milliseconds */
+	 
 	uint32_t delay;
 	uint32_t max_defer_write_retry;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (c) 1999-2002 Vojtech Pavlik
- */
+ 
+ 
 #ifndef _GAMEPORT_H
 #define _GAMEPORT_H
 
@@ -15,7 +13,7 @@
 
 struct gameport {
 
-	void *port_data;	/* Private pointer for gameport drivers */
+	void *port_data;	 
 	char name[32];
 	char phys[32];
 
@@ -31,7 +29,7 @@ struct gameport {
 	void (*close)(struct gameport *);
 
 	struct timer_list poll_timer;
-	unsigned int poll_interval;	/* in msecs */
+	unsigned int poll_interval;	 
 	spinlock_t timer_lock;
 	unsigned int poll_cnt;
 	void (*poll_handler)(struct gameport *);
@@ -39,7 +37,7 @@ struct gameport {
 	struct gameport *parent, *child;
 
 	struct gameport_driver *drv;
-	struct mutex drv_mutex;		/* protects serio->drv so attributes can pin driver */
+	struct mutex drv_mutex;		 
 
 	struct device dev;
 
@@ -66,7 +64,7 @@ void gameport_close(struct gameport *gameport);
 #if IS_REACHABLE(CONFIG_GAMEPORT)
 
 void __gameport_register_port(struct gameport *gameport, struct module *owner);
-/* use a define to avoid include chaining to get THIS_MODULE */
+ 
 #define gameport_register_port(gameport) \
 	__gameport_register_port(gameport, THIS_MODULE)
 
@@ -112,10 +110,7 @@ static inline void gameport_set_name(struct gameport *gameport, const char *name
 	strscpy(gameport->name, name, sizeof(gameport->name));
 }
 
-/*
- * Use the following functions to manipulate gameport's per-port
- * driver-specific data.
- */
+ 
 static inline void *gameport_get_drvdata(struct gameport *gameport)
 {
 	return dev_get_drvdata(&gameport->dev);
@@ -126,9 +121,7 @@ static inline void gameport_set_drvdata(struct gameport *gameport, void *data)
 	dev_set_drvdata(&gameport->dev, data);
 }
 
-/*
- * Use the following functions to pin gameport's driver in process context
- */
+ 
 static inline int gameport_pin_driver(struct gameport *gameport)
 {
 	return mutex_lock_interruptible(&gameport->drv_mutex);
@@ -142,21 +135,13 @@ static inline void gameport_unpin_driver(struct gameport *gameport)
 int __must_check __gameport_register_driver(struct gameport_driver *drv,
 				struct module *owner, const char *mod_name);
 
-/* use a define to avoid include chaining to get THIS_MODULE & friends */
+ 
 #define gameport_register_driver(drv) \
 	__gameport_register_driver(drv, THIS_MODULE, KBUILD_MODNAME)
 
 void gameport_unregister_driver(struct gameport_driver *drv);
 
-/**
- * module_gameport_driver() - Helper macro for registering a gameport driver
- * @__gameport_driver: gameport_driver struct
- *
- * Helper macro for gameport drivers which do not do anything special in
- * module init/exit. This eliminates a lot of boilerplate. Each module may
- * only use this macro once, and calling it replaces module_init() and
- * module_exit().
- */
+ 
 #define module_gameport_driver(__gameport_driver) \
 	module_driver(__gameport_driver, gameport_register_driver, \
 		       gameport_unregister_driver)

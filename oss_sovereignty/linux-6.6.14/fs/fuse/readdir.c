@@ -1,10 +1,4 @@
-/*
-  FUSE: Filesystem in Userspace
-  Copyright (C) 2001-2018  Miklos Szeredi <miklos@szeredi.hu>
-
-  This program can be distributed under the terms of the GNU GPL.
-  See the file COPYING.
-*/
+ 
 
 
 #include "fuse_i.h"
@@ -42,10 +36,7 @@ static void fuse_add_dirent_to_cache(struct file *file,
 	void *addr;
 
 	spin_lock(&fi->rdc.lock);
-	/*
-	 * Is cache already completed?  Or this entry does not go at the end of
-	 * cache?
-	 */
+	 
 	if (fi->rdc.cached || pos != fi->rdc.pos) {
 		spin_unlock(&fi->rdc.lock);
 		return;
@@ -54,7 +45,7 @@ static void fuse_add_dirent_to_cache(struct file *file,
 	size = fi->rdc.size;
 	offset = size & ~PAGE_MASK;
 	index = size >> PAGE_SHIFT;
-	/* Dirent doesn't fit in current page?  Jump to next page. */
+	 
 	if (offset + reclen > PAGE_SIZE) {
 		index++;
 		offset = 0;
@@ -71,7 +62,7 @@ static void fuse_add_dirent_to_cache(struct file *file,
 		return;
 
 	spin_lock(&fi->rdc.lock);
-	/* Raced with another readdir */
+	 
 	if (fi->rdc.version != version || fi->rdc.size != size ||
 	    WARN_ON(fi->rdc.pos != pos))
 		goto unlock;
@@ -97,7 +88,7 @@ static void fuse_readdir_cache_end(struct file *file, loff_t pos)
 	loff_t end;
 
 	spin_lock(&fi->rdc.lock);
-	/* does cache end position match current position? */
+	 
 	if (fi->rdc.pos != pos) {
 		spin_unlock(&fi->rdc.lock);
 		return;
@@ -107,7 +98,7 @@ static void fuse_readdir_cache_end(struct file *file, loff_t pos)
 	end = ALIGN(fi->rdc.size, PAGE_SIZE);
 	spin_unlock(&fi->rdc.lock);
 
-	/* truncate unused tail of cache */
+	 
 	truncate_inode_pages(file->f_mapping, end);
 }
 
@@ -163,21 +154,12 @@ static int fuse_direntplus_link(struct file *file,
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
 
 	if (!o->nodeid) {
-		/*
-		 * Unlike in the case of fuse_lookup, zero nodeid does not mean
-		 * ENOENT. Instead, it only means the userspace filesystem did
-		 * not want to return attributes/handle for this entry.
-		 *
-		 * So do nothing.
-		 */
+		 
 		return 0;
 	}
 
 	if (name.name[0] == '.') {
-		/*
-		 * We could potentially refresh the attributes of the directory
-		 * and its parent?
-		 */
+		 
 		if (name.len == 1)
 			return 0;
 		if (name.name[1] == '.' && name.len == 2)
@@ -226,10 +208,7 @@ retry:
 		fuse_change_attributes(inode, &o->attr, NULL,
 				       ATTR_TIMEOUT(o),
 				       attr_version);
-		/*
-		 * The other branch comes via fuse_iget()
-		 * which bumps nlookup inside
-		 */
+		 
 	} else {
 		inode = fuse_iget(dir->i_sb, o->nodeid, o->generation,
 				  &o->attr, ATTR_TIMEOUT(o),
@@ -280,7 +259,7 @@ static void fuse_force_forget(struct file *file, u64 nodeid)
 	args.noreply = true;
 
 	fuse_simple_request(fm, &args);
-	/* ignore errors */
+	 
 }
 
 static int parse_dirplusfile(char *buf, size_t nbytes, struct file *file,
@@ -305,12 +284,7 @@ static int parse_dirplusfile(char *buf, size_t nbytes, struct file *file,
 			return -EIO;
 
 		if (!over) {
-			/* We fill entries into dstbuf only as much as
-			   it can hold. But we still continue iterating
-			   over remaining entries to link them. If not,
-			   we need to send a FORGET for each of those
-			   which we did not link.
-			*/
+			 
 			over = !fuse_emit(file, ctx, dirent);
 			if (!over)
 				ctx->pos = dirent->off;
@@ -404,7 +378,7 @@ static enum fuse_parse_result fuse_parse_cache(struct fuse_file *ff,
 		if (nbytes < FUSE_NAME_OFFSET || !dirent->namelen)
 			break;
 
-		reclen = FUSE_DIRENT_SIZE(dirent); /* derefs ->namelen */
+		reclen = FUSE_DIRENT_SIZE(dirent);  
 
 		if (WARN_ON(dirent->namelen > FUSE_NAME_MAX))
 			return FOUND_ERR;
@@ -453,16 +427,13 @@ static int fuse_readdir_cached(struct file *file, struct dir_context *ctx)
 	struct page *page;
 	void *addr;
 
-	/* Seeked?  If so, reset the cache stream */
+	 
 	if (ff->readdir.pos != ctx->pos) {
 		ff->readdir.pos = 0;
 		ff->readdir.cache_off = 0;
 	}
 
-	/*
-	 * We're just about to start reading into the cache or reading the
-	 * cache; both cases require an up-to-date mtime value.
-	 */
+	 
 	if (!ctx->pos && fc->auto_inval_data) {
 		int err = fuse_update_attributes(inode, file, STATX_MTIME);
 
@@ -474,7 +445,7 @@ retry:
 	spin_lock(&fi->rdc.lock);
 retry_locked:
 	if (!fi->rdc.cached) {
-		/* Starting cache? Set cache mtime. */
+		 
 		if (!ctx->pos && !fi->rdc.size) {
 			fi->rdc.mtime = inode->i_mtime;
 			fi->rdc.iversion = inode_query_iversion(inode);
@@ -482,11 +453,7 @@ retry_locked:
 		spin_unlock(&fi->rdc.lock);
 		return UNCACHED;
 	}
-	/*
-	 * When at the beginning of the directory (i.e. just after opendir(3) or
-	 * rewinddir(3)), then need to check whether directory contents have
-	 * changed, and reset the cache if so.
-	 */
+	 
 	if (!ctx->pos) {
 		if (inode_peek_iversion(inode) != fi->rdc.iversion ||
 		    !timespec64_equal(&fi->rdc.mtime, &inode->i_mtime)) {
@@ -495,18 +462,12 @@ retry_locked:
 		}
 	}
 
-	/*
-	 * If cache version changed since the last getdents() call, then reset
-	 * the cache stream.
-	 */
+	 
 	if (ff->readdir.version != fi->rdc.version) {
 		ff->readdir.pos = 0;
 		ff->readdir.cache_off = 0;
 	}
-	/*
-	 * If at the beginning of the cache, than reset version to
-	 * current.
-	 */
+	 
 	if (ff->readdir.pos == 0)
 		ff->readdir.version = fi->rdc.version;
 
@@ -520,13 +481,13 @@ retry_locked:
 		size = PAGE_SIZE;
 	spin_unlock(&fi->rdc.lock);
 
-	/* EOF? */
+	 
 	if ((ff->readdir.cache_off & ~PAGE_MASK) == size)
 		return 0;
 
 	page = find_get_page_flags(file->f_mapping, index,
 				   FGP_ACCESSED | FGP_LOCK);
-	/* Page gone missing, then re-added to cache, but not initialized? */
+	 
 	if (page && !PageUptodate(page)) {
 		unlock_page(page);
 		put_page(page);
@@ -534,15 +495,13 @@ retry_locked:
 	}
 	spin_lock(&fi->rdc.lock);
 	if (!page) {
-		/*
-		 * Uh-oh: page gone missing, cache is useless
-		 */
+		 
 		if (fi->rdc.version == ff->readdir.version)
 			fuse_rdc_reset(inode);
 		goto retry_locked;
 	}
 
-	/* Make sure it's still the same version after getting the page. */
+	 
 	if (ff->readdir.version != fi->rdc.version) {
 		spin_unlock(&fi->rdc.lock);
 		unlock_page(page);
@@ -551,10 +510,7 @@ retry_locked:
 	}
 	spin_unlock(&fi->rdc.lock);
 
-	/*
-	 * Contents of the page are now protected against changing by holding
-	 * the page lock.
-	 */
+	 
 	addr = kmap_local_page(page);
 	res = fuse_parse_cache(ff, addr, size, ctx);
 	kunmap_local(addr);
@@ -568,16 +524,12 @@ retry_locked:
 		return 0;
 
 	if (size == PAGE_SIZE) {
-		/* We hit end of page: skip to next page. */
+		 
 		ff->readdir.cache_off = ALIGN(ff->readdir.cache_off, PAGE_SIZE);
 		goto retry;
 	}
 
-	/*
-	 * End of cache reached.  If found position, then we are done, otherwise
-	 * need to fall back to uncached, since the position we were looking for
-	 * wasn't in the cache.
-	 */
+	 
 	return res == FOUND_SOME ? 0 : UNCACHED;
 }
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Novatek NT36523 DriverIC panels driver
- *
- * Copyright (c) 2022, 2023 Jianhua Lu <lujianhua000@gmail.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -69,7 +65,7 @@ static int elish_boe_init_sequence(struct panel_info *pinfo)
 {
 	struct mipi_dsi_device *dsi0 = pinfo->dsi[0];
 	struct mipi_dsi_device *dsi1 = pinfo->dsi[1];
-	/* No datasheet, so write magic init sequence directly */
+	 
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xff, 0x10);
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xfb, 0x01);
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xb9, 0x05);
@@ -289,7 +285,7 @@ static int elish_csot_init_sequence(struct panel_info *pinfo)
 {
 	struct mipi_dsi_device *dsi0 = pinfo->dsi[0];
 	struct mipi_dsi_device *dsi1 = pinfo->dsi[1];
-	/* No datasheet, so write magic init sequence directly */
+	 
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xff, 0x10);
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xfb, 0x01);
 	mipi_dsi_dual_dcs_write_seq(dsi0, dsi1, 0xb9, 0x05);
@@ -935,7 +931,7 @@ static int j606f_boe_init_sequence(struct panel_info *pinfo)
 
 static const struct drm_display_mode elish_boe_modes[] = {
 	{
-		/* There is only one 120 Hz timing, but it doesn't work perfectly, 104 Hz preferred */
+		 
 		.clock = (1600 + 60 + 8 + 60) * (2560 + 26 + 4 + 168) * 104 / 1000,
 		.hdisplay = 1600,
 		.hsync_start = 1600 + 60,
@@ -950,7 +946,7 @@ static const struct drm_display_mode elish_boe_modes[] = {
 
 static const struct drm_display_mode elish_csot_modes[] = {
 	{
-		/* There is only one 120 Hz timing, but it doesn't work perfectly, 104 Hz preferred */
+		 
 		.clock = (1600 + 200 + 40 + 52) * (2560 + 26 + 4 + 168) * 104 / 1000,
 		.hdisplay = 1600,
 		.hsync_start = 1600 + 200,
@@ -1250,7 +1246,7 @@ static int nt36523_probe(struct mipi_dsi_device *dsi)
 	if (!pinfo->desc)
 		return -ENODEV;
 
-	/* If the panel is dual dsi, register DSI1 */
+	 
 	if (pinfo->desc->is_dual_dsi) {
 		info = &pinfo->desc->dsi_info;
 

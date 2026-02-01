@@ -1,21 +1,6 @@
-/*	$OpenBSD: md5.c,v 1.9 2014/01/08 06:14:57 tedu Exp $	*/
+ 
 
-/*
- * This code implements the MD5 message-digest algorithm.
- * The algorithm is due to Ron Rivest.	This code was
- * written by Colin Plumb in 1993, no copyright is claimed.
- * This code is in the public domain; do with it what you wish.
- *
- * Equivalent code is available from RSA Data Security, Inc.
- * This code has been tested against that, and is equivalent,
- * except that you don't need to include two pages of legalese
- * with every copy.
- *
- * To compute the message digest of a chunk of bytes, declare an
- * MD5Context structure, pass it to MD5Init, call MD5Update as
- * needed on buffers full of bytes, and then call MD5Final, which
- * will fill a supplied 16-byte array with the digest.
- */
+ 
 
 #include "includes.h"
 
@@ -47,10 +32,7 @@ static u_int8_t PADDING[MD5_BLOCK_LENGTH] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-/*
- * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
- * initialization constants.
- */
+ 
 void
 MD5Init(MD5_CTX *ctx)
 {
@@ -61,20 +43,17 @@ MD5Init(MD5_CTX *ctx)
 	ctx->state[3] = 0x10325476;
 }
 
-/*
- * Update context to reflect the concatenation of another buffer full
- * of bytes.
- */
+ 
 void
 MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
 {
 	size_t have, need;
 
-	/* Check how many bytes we already have and how many more we need. */
+	 
 	have = (size_t)((ctx->count >> 3) & (MD5_BLOCK_LENGTH - 1));
 	need = MD5_BLOCK_LENGTH - have;
 
-	/* Update bitcount */
+	 
 	ctx->count += (u_int64_t)len << 3;
 
 	if (len >= need) {
@@ -86,7 +65,7 @@ MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
 			have = 0;
 		}
 
-		/* Process data in MD5_BLOCK_LENGTH-byte chunks. */
+		 
 		while (len >= MD5_BLOCK_LENGTH) {
 			MD5Transform(ctx->state, input);
 			input += MD5_BLOCK_LENGTH;
@@ -94,36 +73,31 @@ MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
 		}
 	}
 
-	/* Handle any remaining bytes of data. */
+	 
 	if (len != 0)
 		memcpy(ctx->buffer + have, input, len);
 }
 
-/*
- * Pad pad to 64-byte boundary with the bit pattern
- * 1 0* (64-bit count of bits processed, MSB-first)
- */
+ 
 void
 MD5Pad(MD5_CTX *ctx)
 {
 	u_int8_t count[8];
 	size_t padlen;
 
-	/* Convert count to 8 bytes in little endian order. */
+	 
 	PUT_64BIT_LE(count, ctx->count);
 
-	/* Pad out to 56 mod 64. */
+	 
 	padlen = MD5_BLOCK_LENGTH -
 	    ((ctx->count >> 3) & (MD5_BLOCK_LENGTH - 1));
 	if (padlen < 1 + 8)
 		padlen += MD5_BLOCK_LENGTH;
-	MD5Update(ctx, PADDING, padlen - 8);		/* padlen - 8 <= 64 */
+	MD5Update(ctx, PADDING, padlen - 8);		 
 	MD5Update(ctx, count, 8);
 }
 
-/*
- * Final wrapup--call MD5Pad, fill in digest and zero out ctx.
- */
+ 
 void
 MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 {
@@ -136,23 +110,19 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 }
 
 
-/* The four core functions - F1 is optimized somewhat */
+ 
 
-/* #define F1(x, y, z) (x & y | ~x & z) */
+ 
 #define F1(x, y, z) (z ^ (x & (y ^ z)))
 #define F2(x, y, z) F1(z, x, y)
 #define F3(x, y, z) (x ^ y ^ z)
 #define F4(x, y, z) (y ^ (x | ~z))
 
-/* This is the central step in the MD5 algorithm. */
+ 
 #define MD5STEP(f, w, x, y, z, data, s) \
 	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 
-/*
- * The core of the MD5 algorithm, this alters an existing MD5 hash to
- * reflect the addition of 16 longwords of new data.  MD5Update blocks
- * the data and converts bytes into longwords for this routine.
- */
+ 
 void
 MD5Transform(u_int32_t state[4], const u_int8_t block[MD5_BLOCK_LENGTH])
 {
@@ -248,4 +218,4 @@ MD5Transform(u_int32_t state[4], const u_int8_t block[MD5_BLOCK_LENGTH])
 	state[2] += c;
 	state[3] += d;
 }
-#endif /* !WITH_OPENSSL */
+#endif  

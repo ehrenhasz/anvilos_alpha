@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* xfrm6_protocol.c - Generic xfrm protocol multiplexer for ipv6.
- *
- * Copyright (C) 2013 secunet Security Networks AG
- *
- * Author:
- * Steffen Klassert <steffen.klassert@secunet.com>
- *
- * Based on:
- * net/ipv4/xfrm4_protocol.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/mutex.h>

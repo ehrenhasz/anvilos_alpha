@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux Kernel Dump Test Module for testing kernel crashes conditions:
- * induces system failures at predefined crashpoints and under predefined
- * operational conditions in order to evaluate the reliability of kernel
- * sanity checking and crash dumps obtained using different dumping
- * solutions.
- *
- * Copyright (C) IBM Corporation, 2006
- *
- * Author: Ankita Garg <ankita@in.ibm.com>
- *
- * It is adapted from the Linux Kernel Dump Test Tool by
- * Fernando Luis Vazquez Cao <http://lkdtt.sourceforge.net>
- *
- * Debugfs support added by Simon Kagstrom <simon.kagstrom@netinsight.net>
- *
- * See Documentation/fault-injection/provoke-crashes.rst for instructions
- */
+
+ 
 #include "lkdtm.h"
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -53,7 +36,7 @@ static ssize_t lkdtm_debugfs_entry(struct file *f,
 # define CRASHPOINT_WRITE(_symbol)		direct_entry
 #endif
 
-/* Crash points */
+ 
 struct crashpoint {
 	const char *name;
 	const struct file_operations fops;
@@ -72,7 +55,7 @@ struct crashpoint {
 		CRASHPOINT_KPROBE(_symbol)			\
 	}
 
-/* Define the possible places where we can trigger a crash point. */
+ 
 static struct crashpoint crashpoints[] = {
 	CRASHPOINT("DIRECT",		 NULL),
 #ifdef CONFIG_KPROBES
@@ -86,7 +69,7 @@ static struct crashpoint crashpoints[] = {
 #endif
 };
 
-/* List of possible types for crashes that can be triggered. */
+ 
 static const struct crashtype_category *crashtype_categories[] = {
 	&bugs_crashtypes,
 	&heap_crashtypes,
@@ -101,12 +84,12 @@ static const struct crashtype_category *crashtype_categories[] = {
 #endif
 };
 
-/* Global kprobe entry and crashtype. */
+ 
 static struct kprobe *lkdtm_kprobe;
 static struct crashpoint *lkdtm_crashpoint;
 static const struct crashtype *lkdtm_crashtype;
 
-/* Module parameters */
+ 
 static int recur_count = -1;
 module_param(recur_count, int, 0644);
 MODULE_PARM_DESC(recur_count, " Recursion level for the stack overflow test");
@@ -125,14 +108,10 @@ module_param(cpoint_count, int, 0644);
 MODULE_PARM_DESC(cpoint_count, " Crash Point Count, number of times the "\
 				"crash point is to be hit to trigger action");
 
-/*
- * For test debug reporting when CI systems provide terse summaries.
- * TODO: Remove this once reasonable reporting exists in most CI systems:
- * https://lore.kernel.org/lkml/CAHk-=wiFvfkoFixTapvvyPMN9pq5G-+Dys2eSyBa1vzDGAO5+A@mail.gmail.com
- */
+ 
 char *lkdtm_kernel_info;
 
-/* Return the crashtype number or NULL if the name is invalid */
+ 
 static const struct crashtype *find_crashtype(const char *name)
 {
 	int cat, idx;
@@ -150,10 +129,7 @@ static const struct crashtype *find_crashtype(const char *name)
 	return NULL;
 }
 
-/*
- * This is forced noinline just so it distinctly shows up in the stackdump
- * which makes validation of expected lkdtm crashes easier.
- */
+ 
 static noinline void lkdtm_do_action(const struct crashtype *crashtype)
 {
 	if (WARN_ON(!crashtype || !crashtype->func))
@@ -166,7 +142,7 @@ static int lkdtm_register_cpoint(struct crashpoint *crashpoint,
 {
 	int ret;
 
-	/* If this doesn't have a symbol, just call immediately. */
+	 
 	if (!crashpoint->kprobe.symbol_name) {
 		lkdtm_do_action(crashtype);
 		return 0;
@@ -191,11 +167,11 @@ static int lkdtm_register_cpoint(struct crashpoint *crashpoint,
 }
 
 #ifdef CONFIG_KPROBES
-/* Global crash counter and spinlock. */
+ 
 static int crash_count = DEFAULT_COUNT;
 static DEFINE_SPINLOCK(crash_count_lock);
 
-/* Called by kprobe entry points. */
+ 
 static int lkdtm_kprobe_handler(struct kprobe *kp, struct pt_regs *regs)
 {
 	unsigned long flags;
@@ -240,7 +216,7 @@ static ssize_t lkdtm_debugfs_entry(struct file *f,
 		free_page((unsigned long) buf);
 		return -EFAULT;
 	}
-	/* NULL-terminate and remove enter */
+	 
 	buf[count] = '\0';
 	strim(buf);
 
@@ -260,7 +236,7 @@ static ssize_t lkdtm_debugfs_entry(struct file *f,
 }
 #endif
 
-/* Generic read callback that just prints out the available crash types */
+ 
 static ssize_t lkdtm_debugfs_read(struct file *f, char __user *user_buf,
 		size_t count, loff_t *off)
 {
@@ -297,7 +273,7 @@ static int lkdtm_debugfs_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/* Special entry to just crash directly. Available without KPROBEs */
+ 
 static ssize_t direct_entry(struct file *f, const char __user *user_buf,
 		size_t count, loff_t *off)
 {
@@ -316,7 +292,7 @@ static ssize_t direct_entry(struct file *f, const char __user *user_buf,
 		free_page((unsigned long) buf);
 		return -EFAULT;
 	}
-	/* NULL-terminate and remove enter */
+	 
 	buf[count] = '\0';
 	strim(buf);
 
@@ -333,10 +309,7 @@ static ssize_t direct_entry(struct file *f, const char __user *user_buf,
 }
 
 #ifndef MODULE
-/*
- * To avoid needing to export parse_args(), just don't use this code
- * when LKDTM is built as a module.
- */
+ 
 struct check_cmdline_args {
 	const char *param;
 	int value;
@@ -347,7 +320,7 @@ static int lkdtm_parse_one(char *param, char *val,
 {
 	struct check_cmdline_args *args = arg;
 
-	/* short circuit if we already found a value. */
+	 
 	if (args->value != -ESRCH)
 		return 0;
 	if (strncmp(param, args->param, strlen(args->param)) == 0) {
@@ -391,7 +364,7 @@ static int __init lkdtm_module_init(void)
 	int ret;
 	int i;
 
-	/* Neither or both of these need to be set */
+	 
 	if ((cpoint_type || cpoint_name) && !(cpoint_type && cpoint_name)) {
 		pr_err("Need both cpoint_type and cpoint_name or neither\n");
 		return -EINVAL;
@@ -411,7 +384,7 @@ static int __init lkdtm_module_init(void)
 				crashpoint = &crashpoints[i];
 		}
 
-		/* Refuse unknown crashpoints. */
+		 
 		if (!crashpoint) {
 			pr_err("Invalid crashpoint %s\n", cpoint_name);
 			return -EINVAL;
@@ -419,25 +392,25 @@ static int __init lkdtm_module_init(void)
 	}
 
 #ifdef CONFIG_KPROBES
-	/* Set crash count. */
+	 
 	crash_count = cpoint_count;
 #endif
 
-	/* Common initialization. */
+	 
 	lkdtm_kernel_info = kasprintf(GFP_KERNEL, "kernel (%s %s)",
 				      init_uts_ns.name.release,
 				      init_uts_ns.name.machine);
 
-	/* Handle test-specific initialization. */
+	 
 	lkdtm_bugs_init(&recur_count);
 	lkdtm_perms_init();
 	lkdtm_usercopy_init();
 	lkdtm_heap_init();
 
-	/* Register debugfs interface */
+	 
 	lkdtm_debugfs_root = debugfs_create_dir("provoke-crash", NULL);
 
-	/* Install debugfs trigger files. */
+	 
 	for (i = 0; i < ARRAY_SIZE(crashpoints); i++) {
 		struct crashpoint *cur = &crashpoints[i];
 
@@ -445,7 +418,7 @@ static int __init lkdtm_module_init(void)
 				    &cur->fops);
 	}
 
-	/* Install crashpoint if one was selected. */
+	 
 	if (crashpoint) {
 		ret = lkdtm_register_cpoint(crashpoint, crashtype);
 		if (ret < 0) {
@@ -469,7 +442,7 @@ static void __exit lkdtm_module_exit(void)
 {
 	debugfs_remove_recursive(lkdtm_debugfs_root);
 
-	/* Handle test-specific clean-up. */
+	 
 	lkdtm_heap_exit();
 	lkdtm_usercopy_exit();
 

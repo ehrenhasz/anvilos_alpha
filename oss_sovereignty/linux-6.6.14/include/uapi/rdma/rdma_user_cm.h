@@ -1,35 +1,5 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR Linux-OpenIB) */
-/*
- * Copyright (c) 2005-2006 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
+ 
 
 #ifndef RDMA_USER_CM_H
 #define RDMA_USER_CM_H
@@ -70,7 +40,7 @@ enum {
 	RDMA_USER_CM_CMD_JOIN_MCAST
 };
 
-/* See IBTA Annex A11, servies ID bytes 4 & 5 */
+ 
 enum rdma_ucm_port_space {
 	RDMA_PS_IPOIB = 0x0002,
 	RDMA_PS_IB    = 0x013F,
@@ -78,9 +48,7 @@ enum rdma_ucm_port_space {
 	RDMA_PS_UDP   = 0x0111,
 };
 
-/*
- * command ABI structures.
- */
+ 
 struct rdma_ucm_cmd_hdr {
 	__u32 cmd;
 	__u16 in;
@@ -90,7 +58,7 @@ struct rdma_ucm_cmd_hdr {
 struct rdma_ucm_create_id {
 	__aligned_u64 uid;
 	__aligned_u64 response;
-	__u16 ps;                  /* use enum rdma_ucm_port_space */
+	__u16 ps;                   
 	__u8  qp_type;
 	__u8  reserved[5];
 };
@@ -259,13 +227,13 @@ struct rdma_ucm_notify {
 };
 
 struct rdma_ucm_join_ip_mcast {
-	__aligned_u64 response;		/* rdma_ucm_create_id_resp */
+	__aligned_u64 response;		 
 	__aligned_u64 uid;
 	struct sockaddr_in6 addr;
 	__u32 id;
 };
 
-/* Multicast join flags */
+ 
 enum {
 	RDMA_MC_JOIN_FLAG_FULLMEMBER,
 	RDMA_MC_JOIN_FLAG_SENDONLY_FULLMEMBER,
@@ -273,7 +241,7 @@ enum {
 };
 
 struct rdma_ucm_join_mcast {
-	__aligned_u64 response;		/* rdma_ucma_create_id_resp */
+	__aligned_u64 response;		 
 	__aligned_u64 uid;
 	__u32 id;
 	__u16 addr_size;
@@ -290,10 +258,7 @@ struct rdma_ucm_event_resp {
 	__u32 id;
 	__u32 event;
 	__u32 status;
-	/*
-	 * NOTE: This union is not aligned to 8 bytes so none of the union
-	 * members may contain a u64 or anything with higher alignment than 4.
-	 */
+	 
 	union {
 		struct rdma_ucm_conn_param conn;
 		struct rdma_ucm_ud_param   ud;
@@ -302,13 +267,13 @@ struct rdma_ucm_event_resp {
 	struct rdma_ucm_ece ece;
 };
 
-/* Option levels */
+ 
 enum {
 	RDMA_OPTION_ID		= 0,
 	RDMA_OPTION_IB		= 1
 };
 
-/* Option details */
+ 
 enum {
 	RDMA_OPTION_ID_TOS	 = 0,
 	RDMA_OPTION_ID_REUSEADDR = 1,
@@ -338,4 +303,4 @@ struct rdma_ucm_migrate_resp {
 	__u32 events_reported;
 };
 
-#endif /* RDMA_USER_CM_H */
+#endif  

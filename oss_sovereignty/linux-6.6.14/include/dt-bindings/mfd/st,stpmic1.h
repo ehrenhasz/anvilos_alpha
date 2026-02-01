@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Philippe Peurichard <philippe.peurichard@st.com>,
- * Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_STPMIC1_H__
 #define __DT_BINDINGS_STPMIC1_H__
 
-/* IRQ definitions */
+ 
 #define IT_PONKEY_F	0
 #define IT_PONKEY_R	1
 #define IT_WAKEUP_F	2
@@ -43,8 +39,8 @@
 #define IT_SWIN_F	30
 #define IT_SWIN_R	31
 
-/* BUCK MODES definitions */
+ 
 #define STPMIC1_BUCK_MODE_NORMAL 0
 #define STPMIC1_BUCK_MODE_LP 2
 
-#endif /* __DT_BINDINGS_STPMIC1_H__ */
+#endif  

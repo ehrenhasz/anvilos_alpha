@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Montage Technology M88DS3103/M88RS6000 demodulator driver
- *
- * Copyright (C) 2013 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef M88DS3103_PRIV_H
 #define M88DS3103_PRIV_H
@@ -37,14 +33,14 @@ struct m88ds3103_dev {
 	struct dvb_frontend fe;
 	enum fe_delivery_system delivery_system;
 	enum fe_status fe_status;
-	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
-	bool warm; /* FW running */
+	u32 dvbv3_ber;  
+	bool warm;  
 	struct i2c_mux_core *muxc;
-	/* auto detect chip id to do different config */
+	 
 	u8 chip_id;
-	/* chip type to differentiate m88rs6000 from m88ds3103b */
+	 
 	u8 chiptype;
-	/* main mclk is calculated for M88RS6000 dynamically */
+	 
 	s32 mclk;
 	u64 post_bit_error;
 	u64 post_bit_count;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include "hdmi.h"
 
@@ -30,7 +27,7 @@ static void init_ddc(struct hdmi_i2c_adapter *hdmi_i2c)
 	hdmi_write(hdmi, REG_HDMI_DDC_SETUP,
 			HDMI_DDC_SETUP_TIMEOUT(0xff));
 
-	/* enable reference timer for 27us */
+	 
 	hdmi_write(hdmi, REG_HDMI_DDC_REF,
 			HDMI_DDC_REF_REFTIMER_ENABLE |
 			HDMI_DDC_REF_REFTIMER(27));
@@ -155,7 +152,7 @@ static int msm_hdmi_i2c_xfer(struct i2c_adapter *i2c,
 		hdmi_write(hdmi, REG_HDMI_I2C_TRANSACTION(i), i2c_trans);
 	}
 
-	/* trigger the transfer: */
+	 
 	hdmi_write(hdmi, REG_HDMI_DDC_CTRL,
 			HDMI_DDC_CTRL_TRANSACTION_CNT(num - 1) |
 			HDMI_DDC_CTRL_GO);
@@ -174,14 +171,14 @@ static int msm_hdmi_i2c_xfer(struct i2c_adapter *i2c,
 
 	ddc_status = hdmi_read(hdmi, REG_HDMI_DDC_SW_STATUS);
 
-	/* read back results of any read transactions: */
+	 
 	for (i = 0; i < num; i++) {
 		struct i2c_msg *p = &msgs[i];
 
 		if (!(p->flags & I2C_M_RD))
 			continue;
 
-		/* check for NACK: */
+		 
 		if (ddc_status & nack[i]) {
 			DBG("ddc_status=%08x", ddc_status);
 			break;
@@ -193,7 +190,7 @@ static int msm_hdmi_i2c_xfer(struct i2c_adapter *i2c,
 
 		hdmi_write(hdmi, REG_HDMI_DDC_DATA, ddc_data);
 
-		/* discard first byte: */
+		 
 		hdmi_read(hdmi, REG_HDMI_DDC_DATA);
 
 		for (j = 0; j < p->len; j++) {

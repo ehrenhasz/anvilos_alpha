@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * command structure borrowed from udev
- * (git://git.kernel.org/pub/scm/linux/hotplug/udev.git)
- *
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -164,8 +158,8 @@ int main(int argc, char *argv[])
 			break;
 		case '?':
 			printf("usbip: invalid option\n");
-			/* Terminate after printing error */
-			/* FALLTHRU */
+			 
+			 
 		default:
 			usbip_usage();
 			goto out;
@@ -184,7 +178,7 @@ int main(int argc, char *argv[])
 			}
 	}
 
-	/* invalid command */
+	 
 	usbip_help(0, NULL);
 out:
 	return (rc > -1 ? EXIT_SUCCESS : EXIT_FAILURE);

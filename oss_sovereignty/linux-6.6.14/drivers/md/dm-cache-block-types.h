@@ -1,22 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+ 
+ 
 
 #ifndef DM_CACHE_BLOCK_TYPES_H
 #define DM_CACHE_BLOCK_TYPES_H
 
 #include "persistent-data/dm-block-manager.h"
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * It's helpful to get sparse to differentiate between indexes into the
- * origin device, indexes into the cache device, and indexes into the
- * discard bitset.
- */
+ 
 
 typedef dm_block_t __bitwise dm_oblock_t;
 typedef uint32_t __bitwise dm_cblock_t;
@@ -52,4 +44,4 @@ static inline dm_block_t from_dblock(dm_dblock_t b)
 	return (__force dm_block_t) b;
 }
 
-#endif /* DM_CACHE_BLOCK_TYPES_H */
+#endif  

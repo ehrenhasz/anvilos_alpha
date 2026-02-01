@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/aead.h>
@@ -27,7 +27,7 @@
 #define SEC_DES3_2KEY_SIZE	(2 * DES_KEY_SIZE)
 #define SEC_DES3_3KEY_SIZE	(3 * DES_KEY_SIZE)
 
-/* SEC sqe(bd) bit operational relative MACRO */
+ 
 #define SEC_DE_OFFSET		1
 #define SEC_CIPHER_OFFSET	4
 #define SEC_SCENE_OFFSET	3
@@ -114,7 +114,7 @@ struct sec_aead {
 	struct aead_alg alg;
 };
 
-/* Get an en/de-cipher queue cyclically to balance load over queues of TFM */
+ 
 static inline int sec_alloc_queue_id(struct sec_ctx *ctx, struct sec_req *req)
 {
 	if (req->c_req.encrypt)
@@ -304,7 +304,7 @@ static int sec_bd_send(struct sec_ctx *ctx, struct sec_req *req)
 	return ret;
 }
 
-/* Get DMA memory resources */
+ 
 static int sec_alloc_civ_resource(struct device *dev, struct sec_alg_res *res)
 {
 	u16 q_depth = res->depth;
@@ -388,10 +388,7 @@ static void sec_free_pbuf_resource(struct device *dev, struct sec_alg_res *res)
 				  res->pbuf, res->pbuf_dma);
 }
 
-/*
- * To improve performance, pbuffer is used for
- * small packets (< 512Bytes) as IOMMU translation using.
- */
+ 
 static int sec_alloc_pbuf_resource(struct device *dev, struct sec_alg_res *res)
 {
 	u16 q_depth = res->depth;
@@ -404,14 +401,7 @@ static int sec_alloc_pbuf_resource(struct device *dev, struct sec_alg_res *res)
 	if (!res->pbuf)
 		return -ENOMEM;
 
-	/*
-	 * SEC_PBUF_PKG contains data pbuf, iv and
-	 * out_mac : <SEC_PBUF|SEC_IV|SEC_MAC>
-	 * Every PAGE contains six SEC_PBUF_PKG
-	 * The sec_qp_ctx contains QM_Q_DEPTH numbers of SEC_PBUF_PKG
-	 * So we need SEC_PBUF_PAGE_NUM numbers of PAGE
-	 * for the SEC_TOTAL_PBUF_SZ
-	 */
+	 
 	for (i = 0; i <= size; i++) {
 		pbuf_page_offset = PAGE_SIZE * i;
 		for (j = 0; j < SEC_PBUF_NUM; j++) {
@@ -601,7 +591,7 @@ static int sec_ctx_base_init(struct sec_ctx *ctx)
 
 	ctx->pbuf_supported = ctx->sec->iommu_used;
 
-	/* Half of queue depth is taken as fake requests limit in the queue. */
+	 
 	ctx->fake_req_limit = ctx->qps[0]->sq_depth >> 1;
 	ctx->qp_ctx = kcalloc(sec->ctx_q_num, sizeof(struct sec_qp_ctx),
 			      GFP_KERNEL);
@@ -688,7 +678,7 @@ static int sec_skcipher_fbtfm_init(struct crypto_skcipher *tfm)
 
 	c_ctx->fallback = false;
 
-	/* Currently, only XTS mode need fallback tfm when using 192bit key */
+	 
 	if (likely(strncmp(alg, "xts", SEC_XTS_NAME_SZ)))
 		return 0;
 
@@ -955,7 +945,7 @@ static int sec_aead_mac_init(struct sec_aead_req *req)
 	size_t copy_size;
 	off_t skip_size;
 
-	/* Copy input mac */
+	 
 	skip_size = aead_req->assoclen + aead_req->cryptlen - authsize;
 	copy_size = sg_pcopy_to_buffer(sgl, sg_nents(sgl), mac_out,
 				       authsize, skip_size);
@@ -1300,7 +1290,7 @@ static int sec_skcipher_bd_fill(struct sec_ctx *ctx, struct sec_req *req)
 		cipher = SEC_CIPHER_DEC << SEC_CIPHER_OFFSET;
 	sec_sqe->type_cipher_auth = bd_type | cipher;
 
-	/* Set destination and source address type */
+	 
 	if (req->use_pbuf) {
 		sa_type = SEC_PBUF << SEC_SRC_SGL_OFFSET;
 		da_type = SEC_PBUF << SEC_DST_SGL_OFFSET;
@@ -1348,7 +1338,7 @@ static int sec_skcipher_bd_fill_v3(struct sec_ctx *ctx, struct sec_req *req)
 		cipher = SEC_CIPHER_DEC;
 	sec_sqe3->c_icv_key |= cpu_to_le16(cipher);
 
-	/* Set the CTR counter mode is 128bit rollover */
+	 
 	sec_sqe3->auth_mac_key = cpu_to_le32((u32)SEC_CTR_CNT_ROLLOVER <<
 					SEC_CTR_CNT_OFFSET);
 
@@ -1373,7 +1363,7 @@ static int sec_skcipher_bd_fill_v3(struct sec_ctx *ctx, struct sec_req *req)
 	return 0;
 }
 
-/* increment counter (128-bit int) */
+ 
 static void ctr_iv_inc(__u8 *counter, __u8 bits, __u32 nums)
 {
 	do {
@@ -1448,7 +1438,7 @@ static void sec_skcipher_callback(struct sec_ctx *ctx, struct sec_req *req,
 
 	sec_free_req_id(req);
 
-	/* IV output at encrypto of CBC/CTR mode */
+	 
 	if (!err && (ctx->c_ctx.c_mode == SEC_CMODE_CBC ||
 	    ctx->c_ctx.c_mode == SEC_CMODE_CTR) && req->c_req.encrypt)
 		sec_update_iv(req, SEC_SKCIPHER);
@@ -1476,16 +1466,16 @@ static void set_aead_auth_iv(struct sec_ctx *ctx, struct sec_req *req)
 	u8 flage = 0;
 	u8 cm, cl;
 
-	/* the specification has been checked in aead_iv_demension_check() */
+	 
 	cl = c_req->c_ivin[0] + 1;
 	c_req->c_ivin[ctx->c_ctx.ivsize - cl] = 0x00;
 	memset(&c_req->c_ivin[ctx->c_ctx.ivsize - cl], 0, cl);
 	c_req->c_ivin[ctx->c_ctx.ivsize - IV_LAST_BYTE1] = IV_CTR_INIT;
 
-	/* the last 3bit is L' */
+	 
 	flage |= c_req->c_ivin[0] & IV_CL_MASK;
 
-	/* the M' is bit3~bit5, the Flags is bit6 */
+	 
 	cm = (authsize - IV_CM_CAL_NUM) / IV_CM_CAL_NUM;
 	flage |= cm << IV_CM_OFFSET;
 	if (aead_req->assoclen)
@@ -1494,11 +1484,7 @@ static void set_aead_auth_iv(struct sec_ctx *ctx, struct sec_req *req)
 	memcpy(a_req->a_ivin, c_req->c_ivin, ctx->c_ctx.ivsize);
 	a_req->a_ivin[0] = flage;
 
-	/*
-	 * the last 32bit is counter's initial number,
-	 * but the nonce uses the first 16bit
-	 * the tail 16bit fill with the cipher length
-	 */
+	 
 	if (!c_req->encrypt)
 		data_size = aead_req->cryptlen - authsize;
 
@@ -1520,16 +1506,13 @@ static void sec_aead_set_iv(struct sec_ctx *ctx, struct sec_req *req)
 	memcpy(c_req->c_ivin, aead_req->iv, ctx->c_ctx.ivsize);
 
 	if (ctx->c_ctx.c_mode == SEC_CMODE_CCM) {
-		/*
-		 * CCM 16Byte Cipher_IV: {1B_Flage,13B_IV,2B_counter},
-		 * the  counter must set to 0x01
-		 */
+		 
 		ctx->a_ctx.mac_len = authsize;
-		/* CCM 16Byte Auth_IV: {1B_AFlage,13B_IV,2B_Ptext_length} */
+		 
 		set_aead_auth_iv(ctx, req);
 	}
 
-	/* GCM 12Byte Cipher_IV == Auth_IV */
+	 
 	if (ctx->c_ctx.c_mode == SEC_CMODE_GCM) {
 		ctx->a_ctx.mac_len = authsize;
 		memcpy(a_req->a_ivin, c_req->c_ivin, SEC_AIV_SIZE);
@@ -1542,10 +1525,10 @@ static void sec_auth_bd_fill_xcm(struct sec_auth_ctx *ctx, int dir,
 	struct sec_aead_req *a_req = &req->aead_req;
 	struct aead_request *aq = a_req->aead_req;
 
-	/* C_ICV_Len is MAC size, 0x4 ~ 0x10 */
+	 
 	sec_sqe->type2.icvw_kmode |= cpu_to_le16((u16)ctx->mac_len);
 
-	/* mode set to CCM/GCM, don't set {A_Alg, AKey_Len, MAC_Len} */
+	 
 	sec_sqe->type2.a_key_addr = sec_sqe->type2.c_key_addr;
 	sec_sqe->type2.a_ivin_addr = cpu_to_le64(a_req->a_ivin_dma);
 	sec_sqe->type_cipher_auth |= SEC_NO_AUTH << SEC_AUTH_OFFSET;
@@ -1568,10 +1551,10 @@ static void sec_auth_bd_fill_xcm_v3(struct sec_auth_ctx *ctx, int dir,
 	struct sec_aead_req *a_req = &req->aead_req;
 	struct aead_request *aq = a_req->aead_req;
 
-	/* C_ICV_Len is MAC size, 0x4 ~ 0x10 */
+	 
 	sqe3->c_icv_key |= cpu_to_le16((u16)ctx->mac_len << SEC_MAC_OFFSET_V3);
 
-	/* mode set to CCM/GCM, don't set {A_Alg, AKey_Len, MAC_Len} */
+	 
 	sqe3->a_key_addr = sqe3->c_key_addr;
 	sqe3->auth_ivin.a_ivin_addr = cpu_to_le64(a_req->a_ivin_dma);
 	sqe3->auth_mac_key |= SEC_NO_AUTH;
@@ -1713,7 +1696,7 @@ static void sec_aead_callback(struct sec_ctx *c, struct sec_req *req, int err)
 	if (!err && c->c_ctx.c_mode == SEC_CMODE_CBC && c_req->encrypt)
 		sec_update_iv(req, SEC_AEAD);
 
-	/* Copy output mac */
+	 
 	if (!err && c_req->encrypt) {
 		struct scatterlist *sgl = a_req->dst;
 
@@ -1753,7 +1736,7 @@ static int sec_request_init(struct sec_ctx *ctx, struct sec_req *req)
 	struct sec_qp_ctx *qp_ctx;
 	int queue_id;
 
-	/* To load balance */
+	 
 	queue_id = sec_alloc_queue_id(ctx, req);
 	qp_ctx = &ctx->qp_ctx[queue_id];
 
@@ -1779,7 +1762,7 @@ static int sec_process(struct sec_ctx *ctx, struct sec_req *req)
 	if (unlikely(ret))
 		goto err_uninit_req;
 
-	/* Output IV as decrypto */
+	 
 	if (!req->c_req.encrypt && (ctx->c_ctx.c_mode == SEC_CMODE_CBC ||
 	    ctx->c_ctx.c_mode == SEC_CMODE_CTR))
 		sec_update_iv(req, ctx->alg_type);
@@ -1794,7 +1777,7 @@ static int sec_process(struct sec_ctx *ctx, struct sec_req *req)
 	return ret;
 
 err_send_req:
-	/* As failing, restore the IV from user */
+	 
 	if (ctx->c_ctx.c_mode == SEC_CMODE_CBC && !req->c_req.encrypt) {
 		if (ctx->alg_type == SEC_SKCIPHER)
 			memcpy(req->c_req.sk_req->iv, c_req->c_ivin,
@@ -2091,7 +2074,7 @@ static int sec_skcipher_soft_crypto(struct sec_ctx *ctx,
 
 	skcipher_request_set_sync_tfm(subreq, c_ctx->fbtfm);
 
-	/* software need sync mode to do crypto */
+	 
 	skcipher_request_set_callback(subreq, sreq->base.flags,
 				      NULL, NULL);
 	skcipher_request_set_crypt(subreq, sreq->src, sreq->dst,
@@ -2324,7 +2307,7 @@ static int sec_aead_param_check(struct sec_ctx *ctx, struct sec_req *sreq)
 		}
 	}
 
-	/* Support AES or SM4 */
+	 
 	if (unlikely(c_alg != SEC_CALG_AES && c_alg != SEC_CALG_SM4)) {
 		dev_err(dev, "aead crypto alg error!\n");
 		return -EINVAL;
@@ -2351,7 +2334,7 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
 	struct aead_request *subreq;
 	int ret;
 
-	/* Kunpeng920 aead mode not support input 0 size */
+	 
 	if (!a_ctx->fallback_aead_tfm) {
 		dev_err(dev, "aead fallback tfm is NULL!\n");
 		return -EINVAL;

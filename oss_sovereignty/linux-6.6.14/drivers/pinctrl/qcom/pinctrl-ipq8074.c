@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -16,7 +14,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -312,24 +310,24 @@ enum ipq8074_functions {
 };
 
 static const char * const qpic_groups[] = {
-	"gpio0",	/* LCD_TE */
-	"gpio1",	/* BUSY_N */
-	"gpio2",	/* LCD_RS_N */
-	"gpio3",	/* WE_N */
-	"gpio4",	/* OE_N */
-	"gpio5",	/* DATA[0] */
-	"gpio6",	/* DATA[1] */
-	"gpio7",	/* DATA[2] */
-	"gpio8",	/* DATA[3] */
-	"gpio9",	/* CS_CSR_LCD */
-	"gpio10",	/* CLE */
-	"gpio11",	/* NAND_CS_N */
-	"gpio12",	/* DATA[4] */
-	"gpio13",	/* DATA[5] */
-	"gpio14",	/* DATA[6] */
-	"gpio15",	/* DATA[7] */
-	"gpio16",	/* DATA[8] */
-	"gpio17",	/* ALE */
+	"gpio0",	 
+	"gpio1",	 
+	"gpio2",	 
+	"gpio3",	 
+	"gpio4",	 
+	"gpio5",	 
+	"gpio6",	 
+	"gpio7",	 
+	"gpio8",	 
+	"gpio9",	 
+	"gpio10",	 
+	"gpio11",	 
+	"gpio12",	 
+	"gpio13",	 
+	"gpio14",	 
+	"gpio15",	 
+	"gpio16",	 
+	"gpio17",	 
 };
 
 static const char * const blsp5_i2c_groups[] = {

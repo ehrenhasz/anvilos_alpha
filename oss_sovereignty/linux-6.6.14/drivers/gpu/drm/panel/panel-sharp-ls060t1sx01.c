@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021 Linaro Ltd.
- * Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
- *   Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -297,7 +294,7 @@ static void sharp_ls060_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id sharp_ls060t1sx01_of_match[] = {
 	{ .compatible = "sharp,ls060t1sx01" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sharp_ls060t1sx01_of_match);
 

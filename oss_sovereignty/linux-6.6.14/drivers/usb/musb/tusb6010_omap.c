@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TUSB6010 USB 2.0 OTG Dual Role controller OMAP DMA interface
- *
- * Copyright (C) 2006 Nokia Corporation
- * Tony Lindgren <tony@atomide.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -19,7 +14,7 @@
 
 #define to_chdat(c)		((struct tusb_omap_dma_ch *)(c)->private_data)
 
-#define MAX_DMAREQ		5	/* REVISIT: Really 6, but req5 not OK */
+#define MAX_DMAREQ		5	 
 
 struct tusb_dma_data {
 	s8			dmareq;
@@ -55,9 +50,7 @@ struct tusb_omap_dma {
 	unsigned			multichannel:1;
 };
 
-/*
- * Allocate dmareq0 to the current channel unless it's already taken
- */
+ 
 static inline int tusb_omap_use_shared_dmareq(struct tusb_omap_dma_ch *chdat)
 {
 	u32		reg = musb_readl(chdat->tbase, TUSB_DMA_EP_MAP);
@@ -90,10 +83,7 @@ static inline void tusb_omap_free_shared_dmareq(struct tusb_omap_dma_ch *chdat)
 	musb_writel(chdat->tbase, TUSB_DMA_EP_MAP, 0);
 }
 
-/*
- * See also musb_dma_completion in plat_uds.c and musb_g_[tx|rx]() in
- * musb_gadget.c.
- */
+ 
 static void tusb_omap_dma_cb(void *data)
 {
 	struct dma_channel	*channel = (struct dma_channel *)data;
@@ -118,7 +108,7 @@ static void tusb_omap_dma_cb(void *data)
 
 	remaining = TUSB_EP_CONFIG_XFR_SIZE(remaining);
 
-	/* HW issue #10: XFR_SIZE may get corrupt on DMA (both async & sync) */
+	 
 	if (unlikely(remaining > chdat->transfer_len)) {
 		dev_dbg(musb->controller, "Corrupt %s XFR_SIZE: 0x%08lx\n",
 			chdat->tx ? "tx" : "rx", remaining);
@@ -130,7 +120,7 @@ static void tusb_omap_dma_cb(void *data)
 
 	dev_dbg(musb->controller, "DMA remaining %lu/%u\n", remaining, chdat->transfer_len);
 
-	/* Transfer remaining 1 - 31 bytes */
+	 
 	if (pio > 0 && pio < 32) {
 		u8	*buf;
 
@@ -157,10 +147,7 @@ static void tusb_omap_dma_cb(void *data)
 
 	musb_dma_completion(musb, chdat->epnum, chdat->tx);
 
-	/* We must terminate short tx transfers manually by setting TXPKTRDY.
-	 * REVISIT: This same problem may occur with other MUSB dma as well.
-	 * Easy to test with g_ether by pinging the MUSB board with ping -s54.
-	 */
+	 
 	if ((chdat->transfer_len < chdat->packet_sz)
 			|| (chdat->transfer_len % chdat->packet_sz != 0)) {
 		u16	csr;
@@ -202,20 +189,11 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 	if (unlikely(dma_addr & 0x1) || (len < 32) || (len > packet_sz))
 		return false;
 
-	/*
-	 * HW issue #10: Async dma will eventually corrupt the XFR_SIZE
-	 * register which will cause missed DMA interrupt. We could try to
-	 * use a timer for the callback, but it is unsafe as the XFR_SIZE
-	 * register is corrupt, and we won't know if the DMA worked.
-	 */
+	 
 	if (dma_addr & 0x2)
 		return false;
 
-	/*
-	 * Because of HW issue #10, it seems like mixing sync DMA and async
-	 * PIO access can confuse the DMA. Make sure XFR_SIZE is reset before
-	 * using the channel for DMA.
-	 */
+	 
 	if (chdat->tx)
 		dma_remaining = musb_readl(ep_conf, TUSB_EP_TX_OFFSET);
 	else
@@ -242,9 +220,7 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 			return false;
 		}
 		if (dma_data->dmareq < 0) {
-			/* REVISIT: This should get blocked earlier, happens
-			 * with MSC ErrorRecoveryTest
-			 */
+			 
 			WARN_ON(1);
 			return false;
 		}
@@ -256,7 +232,7 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 	chdat->dma_addr = dma_addr;
 	channel->status = MUSB_DMA_STATUS_BUSY;
 
-	/* Since we're recycling dma areas, we need to clean or invalidate */
+	 
 	if (chdat->tx) {
 		dma_dir = DMA_MEM_TO_DEV;
 		dma_map_single(dev, phys_to_virt(dma_addr), len,
@@ -269,7 +245,7 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 
 	memset(&dma_cfg, 0, sizeof(dma_cfg));
 
-	/* Use 16-bit transfer if dma_addr is not 32-bit aligned */
+	 
 	if ((dma_addr & 0x3) == 0) {
 		dma_cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 		dma_cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
@@ -320,9 +296,7 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 		(dma_dir == DMA_MEM_TO_DEV) ? &dma_addr : &fifo_addr,
 		(dma_dir == DMA_MEM_TO_DEV) ? &fifo_addr : &dma_addr);
 
-	/*
-	 * Prepare MUSB for DMA transfer
-	 */
+	 
 	musb_ep_select(mbase, chdat->epnum);
 	if (chdat->tx) {
 		csr = musb_readw(hw_ep->regs, MUSB_TXCSR);
@@ -338,11 +312,11 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 			csr | MUSB_RXCSR_P_WZC_BITS);
 	}
 
-	/* Start DMA transfer */
+	 
 	dma_async_issue_pending(dma_data->chan);
 
 	if (chdat->tx) {
-		/* Send transfer_packet_sz packets at a time */
+		 
 		psize = musb_readl(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET);
 		psize &= ~0x7ff;
 		psize |= chdat->transfer_packet_sz;
@@ -351,7 +325,7 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 		musb_writel(ep_conf, TUSB_EP_TX_OFFSET,
 			TUSB_EP_CONFIG_XFR_SIZE(chdat->transfer_len));
 	} else {
-		/* Receive transfer_packet_sz packets at a time */
+		 
 		psize = musb_readl(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET);
 		psize &= ~(0x7ff << 16);
 		psize |= (chdat->transfer_packet_sz << 16);
@@ -433,7 +407,7 @@ tusb_omap_dma_allocate(struct dma_controller *c,
 	tusb_dma = container_of(c, struct tusb_omap_dma, controller);
 	musb = tusb_dma->controller.musb;
 
-	/* REVISIT: Why does dmareq5 not work? */
+	 
 	if (hw_ep->epnum == 0) {
 		dev_dbg(musb->controller, "Not allowing DMA for ep0 %s\n", tx ? "tx" : "rx");
 		return NULL;
@@ -524,7 +498,7 @@ void tusb_dma_controller_destroy(struct dma_controller *c)
 			kfree(ch);
 		}
 
-		/* Free up the DMA channels */
+		 
 		if (tusb_dma && tusb_dma->dma_pool[i].chan)
 			dma_release_channel(tusb_dma->dma_pool[i].chan);
 	}
@@ -542,11 +516,7 @@ static int tusb_omap_allocate_dma_pool(struct tusb_omap_dma *tusb_dma)
 	for (i = 0; i < MAX_DMAREQ; i++) {
 		struct tusb_dma_data *dma_data = &tusb_dma->dma_pool[i];
 
-		/*
-		 * Request DMA channels:
-		 * - one channel in case of non multichannel mode
-		 * - MAX_DMAREQ number of channels in multichannel mode
-		 */
+		 
 		if (i == 0 || tusb_dma->multichannel) {
 			char ch_name[8];
 
@@ -586,7 +556,7 @@ tusb_dma_controller_create(struct musb *musb, void __iomem *base)
 	struct tusb_omap_dma	*tusb_dma;
 	int			i;
 
-	/* REVISIT: Get dmareq lines used from board-*.c */
+	 
 
 	musb_writel(musb->ctrl_base, TUSB_DMA_INT_MASK, 0x7fffffff);
 	musb_writel(musb->ctrl_base, TUSB_DMA_EP_MAP, 0);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt6795-clk.h>
 #include <linux/module.h>
@@ -114,22 +111,22 @@ static void clk_mt6795_apmixed_setup_md1(void __iomem *base)
 {
 	void __iomem *reg = base + REG_AP_PLL_CON7;
 
-	/* Turn on MD1 internal clock */
+	 
 	writel(readl(reg) & ~MD1_CLK_OFF, reg);
 
-	/* Unlock MD1's MTCMOS power path */
+	 
 	writel(readl(reg) & ~MD1_MTCMOS_OFF, reg);
 
-	/* Turn on ISO */
+	 
 	writel(readl(reg) & ~MD1_ISO_OFF, reg);
 
-	/* Turn on memory */
+	 
 	writel(readl(reg) & ~MD1_MEM_OFF, reg);
 }
 
 static const struct of_device_id of_match_clk_mt6795_apmixed[] = {
 	{ .compatible = "mediatek,mt6795-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6795_apmixed);
 
@@ -171,7 +168,7 @@ static int clk_mt6795_apmixed_probe(struct platform_device *pdev)
 		goto unregister_ref2usb;
 	}
 
-	/* Setup MD1 to avoid random crashes */
+	 
 	dev_dbg(dev, "Performing initial setup for MD1\n");
 	clk_mt6795_apmixed_setup_md1(base);
 

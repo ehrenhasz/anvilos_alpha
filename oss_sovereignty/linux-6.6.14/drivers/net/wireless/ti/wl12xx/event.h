@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+ 
+ 
 
 #ifndef __WL12XX_EVENT_H__
 #define __WL12XX_EVENT_H__
@@ -54,29 +50,29 @@ struct wl12xx_event_mailbox {
 	u8 change_auto_mode_timeout;
 	u8 scheduled_scan_status;
 	u8 reserved4;
-	/* tuned channel (roc) */
+	 
 	u8 roc_channel;
 
 	__le16 hlid_removed_bitmap;
 
-	/* bitmap of aged stations (by HLID) */
+	 
 	__le16 sta_aging_status;
 
-	/* bitmap of stations (by HLID) which exceeded max tx retries */
+	 
 	__le16 sta_tx_retry_exceeded;
 
-	/* discovery completed results */
+	 
 	u8 discovery_tag;
 	u8 number_of_preq_results;
 	u8 number_of_prsp_results;
 	u8 reserved_5;
 
-	/* rx ba constraint */
-	u8 role_id; /* 0xFF means any role. */
+	 
+	u8 role_id;  
 	u8 rx_ba_allowed;
 	u8 reserved_6[2];
 
-	/* Channel switch results */
+	 
 
 	u8 channel_switch_role_id;
 	u8 channel_switch_status;

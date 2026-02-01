@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Calxeda, Inc.
- *
- * Based on arch/arm/plat-mxc/cpuidle.c: #v3.7
- * Copyright 2012 Freescale Semiconductor, Inc.
- * Copyright 2012 Linaro Ltd.
- *
- * Maintainer: Rob Herring <rob.herring@calxeda.com>
- */
+
+ 
 
 #include <linux/cpuidle.h>
 #include <linux/cpu_pm.h>

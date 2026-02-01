@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip machine ASoC driver for boards using a RT5645/RT5650 CODEC.
- *
- * Copyright (c) 2015, ROCKCHIP CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -41,13 +37,13 @@ static const struct snd_soc_dapm_widget rk_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route rk_audio_map[] = {
-	/* Input Lines */
+	 
 	{"DMIC L2", NULL, "Int Mic"},
 	{"DMIC R2", NULL, "Int Mic"},
 	{"RECMIXL", NULL, "Headset Mic"},
 	{"RECMIXR", NULL, "Headset Mic"},
 
-	/* Output Lines */
+	 
 	{"Headphones", NULL, "HPOR"},
 	{"Headphones", NULL, "HPOL"},
 	{"Speakers", NULL, "SPOL"},
@@ -112,7 +108,7 @@ static int rk_init(struct snd_soc_pcm_runtime *runtime)
 	struct snd_soc_card *card = runtime->card;
 	int ret;
 
-	/* Enable Headset and 4 Buttons Jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "Headset Jack",
 					 SND_JACK_HEADPHONE | SND_JACK_MICROPHONE |
 					 SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -145,7 +141,7 @@ static struct snd_soc_dai_link rk_dailink = {
 	.stream_name = "rt5645 PCM",
 	.init = rk_init,
 	.ops = &rk_aif1_ops,
-	/* set rt5645 as slave */
+	 
 	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 		SND_SOC_DAIFMT_CBS_CFS,
 	SND_SOC_DAILINK_REG(pcm),
@@ -170,7 +166,7 @@ static int snd_rk_mc_probe(struct platform_device *pdev)
 	struct snd_soc_card *card = &snd_soc_card_rk;
 	struct device_node *np = pdev->dev.of_node;
 
-	/* register the soc card */
+	 
 	card->dev = &pdev->dev;
 
 	rk_dailink.codecs->of_node = of_parse_phandle(np,

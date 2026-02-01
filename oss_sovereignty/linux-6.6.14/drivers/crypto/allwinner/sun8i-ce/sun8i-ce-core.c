@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ce-core.c - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6/R40 SoC
- *
- * Copyright (C) 2015-2019 Corentin Labbe <clabbe.montjoie@gmail.com>
- *
- * Core file which registers crypto algorithms supported by the CryptoEngine.
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/hash.h>
@@ -30,12 +21,7 @@
 
 #include "sun8i-ce.h"
 
-/*
- * mod clock is lower on H3 than other SoC due to some DMA timeout occurring
- * with high value.
- * If you want to tune mod clock, loading driver and passing selftest is
- * insufficient, you need to test with some LUKS test (mount and write to it)
- */
+ 
 static const struct ce_variant ce_h3_variant = {
 	.alg_cipher = { CE_ALG_AES, CE_ALG_DES, CE_ALG_3DES,
 	},
@@ -145,11 +131,7 @@ static const struct ce_variant ce_r40_variant = {
 	.trng = CE_ID_NOTSUPP,
 };
 
-/*
- * sun8i_ce_get_engine_number() get the next channel slot
- * This is a simple round-robin way of getting the next channel
- * The flow 3 is reserve for xRNG operations
- */
+ 
 int sun8i_ce_get_engine_number(struct sun8i_ce_dev *ce)
 {
 	return atomic_inc_return(&ce->flow) % (MAXFLOW - 1);
@@ -175,12 +157,10 @@ int sun8i_ce_run_task(struct sun8i_ce_dev *ce, int flow, const char *name)
 	writel(ce->chanlist[flow].t_phy, ce->base + CE_TDQ);
 
 	ce->chanlist[flow].status = 0;
-	/* Be sure all data is written before enabling the task */
+	 
 	wmb();
 
-	/* Only H6 needs to write a part of t_common_ctl along with "1", but since it is ignored
-	 * on older SoCs, we have no reason to complicate things.
-	 */
+	 
 	v = 1 | ((le32_to_cpu(ce->chanlist[flow].tl->t_common_ctl) & 0x7F) << 8);
 	writel(v, ce->base + CE_TLR);
 	mutex_unlock(&ce->mlock);
@@ -193,13 +173,11 @@ int sun8i_ce_run_task(struct sun8i_ce_dev *ce, int flow, const char *name)
 			ce->chanlist[flow].timeout, flow);
 		err = -EFAULT;
 	}
-	/* No need to lock for this read, the channel is locked so
-	 * nothing could modify the error value for this channel
-	 */
+	 
 	v = readl(ce->base + CE_ESR);
 	switch (ce->variant->esr) {
 	case ESR_H3:
-		/* Sadly, the error bit is not per flow */
+		 
 		if (v) {
 			dev_err(ce->dev, "CE ERROR: %x for flow %x\n", v, flow);
 			err = -EFAULT;
@@ -703,9 +681,7 @@ static void sun8i_ce_free_chanlist(struct sun8i_ce_dev *ce, int i)
 	}
 }
 
-/*
- * Allocate the channel list structure
- */
+ 
 static int sun8i_ce_allocate_chanlist(struct sun8i_ce_dev *ce)
 {
 	int i, err;
@@ -759,10 +735,7 @@ error_engine:
 	return err;
 }
 
-/*
- * Power management strategy: The device is suspended unless a TFM exists for
- * one of the algorithms proposed by this driver.
- */
+ 
 static int sun8i_ce_pm_suspend(struct device *dev)
 {
 	struct sun8i_ce_dev *ce = dev_get_drvdata(dev);
@@ -998,7 +971,7 @@ static int sun8i_ce_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Get Non Secure IRQ */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -1049,7 +1022,7 @@ static int sun8i_ce_probe(struct platform_device *pdev)
 		struct dentry *dbgfs_dir __maybe_unused;
 		struct dentry *dbgfs_stats __maybe_unused;
 
-		/* Ignore error of debugfs */
+		 
 		dbgfs_dir = debugfs_create_dir("sun8i-ce", NULL);
 		dbgfs_stats = debugfs_create_file("stats", 0444,
 						  dbgfs_dir, ce,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*x
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -3621,9 +3619,9 @@ static int mmcc_msm8996_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Disable the AHB DCD */
+	 
 	regmap_update_bits(regmap, 0x50d8, BIT(31), 0);
-	/* Disable the NoC FSM for mmss_mmagic_cfg_ahb_clk */
+	 
 	regmap_update_bits(regmap, 0x5054, BIT(15), 0);
 
 	return qcom_cc_really_probe(pdev, &mmcc_msm8996_desc, regmap);

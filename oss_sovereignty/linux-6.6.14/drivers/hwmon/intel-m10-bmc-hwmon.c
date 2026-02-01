@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel MAX 10 BMC HWMON Driver
- *
- * Copyright (C) 2018-2020 Intel Corporation. All rights reserved.
- *
- */
+
+ 
 #include <linux/device.h>
 #include <linux/hwmon.h>
 #include <linux/mfd/intel-m10-bmc.h>
@@ -596,13 +591,7 @@ static int do_sensor_read(struct m10bmc_hwmon *hw,
 	if (ret)
 		return ret;
 
-	/*
-	 * BMC Firmware will return 0xdeadbeef if the sensor value is invalid
-	 * at that time. This usually happens on sensor channels which connect
-	 * to external pluggable modules, e.g. QSFP temperature and voltage.
-	 * When the QSFP is unplugged from cage, driver will get 0xdeadbeef
-	 * from their registers.
-	 */
+	 
 	if (regval == 0xdeadbeef)
 		return -ENODATA;
 

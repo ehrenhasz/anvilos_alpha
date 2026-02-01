@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM snd_pcm
 #define TRACE_INCLUDE_FILE pcm_trace
@@ -141,9 +141,9 @@ TRACE_EVENT(applptr,
 	)
 );
 
-#endif /* _PCM_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2013 Johannes Berg <johannes@sipsolutions.net>
- *
- *  This file is free software: you may copy, redistribute and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation, either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  This file is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 #include <linux/etherdevice.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -66,7 +34,7 @@ static int alx_read_phy_core(struct alx_hw *hw, bool ext, u8 dev,
 
 	*phy_data = 0;
 
-	/* use slow clock when it's in hibernation status */
+	 
 	clk_sel = hw->link_speed != SPEED_UNKNOWN ?
 			ALX_MDIO_CLK_SEL_25MD4 :
 			ALX_MDIO_CLK_SEL_25MD128;
@@ -100,7 +68,7 @@ static int alx_write_phy_core(struct alx_hw *hw, bool ext, u8 dev,
 {
 	u32 val, clk_sel;
 
-	/* use slow clock when it's in hibernation status */
+	 
 	clk_sel = hw->link_speed != SPEED_UNKNOWN ?
 			ALX_MDIO_CLK_SEL_25MD4 :
 			ALX_MDIO_CLK_SEL_25MD128;
@@ -240,7 +208,7 @@ static u16 alx_get_phy_config(struct alx_hw *hw)
 	u16 phy_val;
 
 	val = alx_read_mem32(hw, ALX_PHY_CTRL);
-	/* phy in reset */
+	 
 	if ((val & ALX_PHY_CTRL_DSPRST_OUT) == 0)
 		return ALX_DRV_PHY_UNKNOWN;
 
@@ -281,7 +249,7 @@ static bool alx_read_macaddr(struct alx_hw *hw, u8 *addr)
 	mac0 = alx_read_mem32(hw, ALX_STAD0);
 	mac1 = alx_read_mem32(hw, ALX_STAD1);
 
-	/* addr should be big-endian */
+	 
 	put_unaligned(cpu_to_be32(mac0), (__be32 *)(addr + 2));
 	put_unaligned(cpu_to_be16(mac1), (__be16 *)addr);
 
@@ -292,11 +260,11 @@ int alx_get_perm_macaddr(struct alx_hw *hw, u8 *addr)
 {
 	u32 val;
 
-	/* try to get it from register first */
+	 
 	if (alx_read_macaddr(hw, addr))
 		return 0;
 
-	/* try to load from efuse */
+	 
 	if (!alx_wait_reg(hw, ALX_SLD, ALX_SLD_STAT | ALX_SLD_START, &val))
 		return -EIO;
 	alx_write_mem32(hw, ALX_SLD, val | ALX_SLD_START);
@@ -305,7 +273,7 @@ int alx_get_perm_macaddr(struct alx_hw *hw, u8 *addr)
 	if (alx_read_macaddr(hw, addr))
 		return 0;
 
-	/* try to load from flash/eeprom (if present) */
+	 
 	val = alx_read_mem32(hw, ALX_EFLD);
 	if (val & (ALX_EFLD_F_EXIST | ALX_EFLD_E_EXIST)) {
 		if (!alx_wait_reg(hw, ALX_EFLD,
@@ -325,7 +293,7 @@ void alx_set_macaddr(struct alx_hw *hw, const u8 *addr)
 {
 	u32 val;
 
-	/* for example: 00-0B-6A-F6-00-DC * STAD0=6AF600DC, STAD1=000B */
+	 
 	val = be32_to_cpu(get_unaligned((__be32 *)(addr + 2)));
 	alx_write_mem32(hw, ALX_STAD0, val);
 	val = be16_to_cpu(get_unaligned((__be16 *)addr));
@@ -336,33 +304,29 @@ static void alx_reset_osc(struct alx_hw *hw, u8 rev)
 {
 	u32 val, val2;
 
-	/* clear Internal OSC settings, switching OSC by hw itself */
+	 
 	val = alx_read_mem32(hw, ALX_MISC3);
 	alx_write_mem32(hw, ALX_MISC3,
 			(val & ~ALX_MISC3_25M_BY_SW) |
 			ALX_MISC3_25M_NOTO_INTNL);
 
-	/* 25M clk from chipset may be unstable 1s after de-assert of
-	 * PERST, driver need re-calibrate before enter Sleep for WoL
-	 */
+	 
 	val = alx_read_mem32(hw, ALX_MISC);
 	if (rev >= ALX_REV_B0) {
-		/* restore over current protection def-val,
-		 * this val could be reset by MAC-RST
-		 */
+		 
 		ALX_SET_FIELD(val, ALX_MISC_PSW_OCP, ALX_MISC_PSW_OCP_DEF);
-		/* a 0->1 change will update the internal val of osc */
+		 
 		val &= ~ALX_MISC_INTNLOSC_OPEN;
 		alx_write_mem32(hw, ALX_MISC, val);
 		alx_write_mem32(hw, ALX_MISC, val | ALX_MISC_INTNLOSC_OPEN);
-		/* hw will automatically dis OSC after cab. */
+		 
 		val2 = alx_read_mem32(hw, ALX_MSIC2);
 		val2 &= ~ALX_MSIC2_CALB_START;
 		alx_write_mem32(hw, ALX_MSIC2, val2);
 		alx_write_mem32(hw, ALX_MSIC2, val2 | ALX_MSIC2_CALB_START);
 	} else {
 		val &= ~ALX_MISC_INTNLOSC_OPEN;
-		/* disable isolate for rev A devices */
+		 
 		if (alx_is_rev_a(rev))
 			val &= ~ALX_MISC_ISO_EN;
 
@@ -409,7 +373,7 @@ int alx_reset_mac(struct alx_hw *hw)
 	rev = alx_hw_revision(hw);
 	a_cr = alx_is_rev_a(rev) && alx_hw_with_cr(hw);
 
-	/* disable all interrupts, RXQ/TXQ */
+	 
 	alx_write_mem32(hw, ALX_MSIX_MASK, 0xFFFFFFFF);
 	alx_write_mem32(hw, ALX_IMR, 0);
 	alx_write_mem32(hw, ALX_ISR, ALX_ISR_DIS);
@@ -418,10 +382,10 @@ int alx_reset_mac(struct alx_hw *hw)
 	if (ret)
 		return ret;
 
-	/* mac reset workaroud */
+	 
 	alx_write_mem32(hw, ALX_RFD_PIDX, 1);
 
-	/* dis l0s/l1 before mac reset */
+	 
 	if (a_cr) {
 		pmctrl = alx_read_mem32(hw, ALX_PMCTRL);
 		if (pmctrl & (ALX_PMCTRL_L1_EN | ALX_PMCTRL_L0S_EN))
@@ -430,12 +394,12 @@ int alx_reset_mac(struct alx_hw *hw)
 						   ALX_PMCTRL_L0S_EN));
 	}
 
-	/* reset whole mac safely */
+	 
 	val = alx_read_mem32(hw, ALX_MASTER);
 	alx_write_mem32(hw, ALX_MASTER,
 			val | ALX_MASTER_DMA_MAC_RST | ALX_MASTER_OOB_DIS);
 
-	/* make sure it's real idle */
+	 
 	udelay(10);
 	for (i = 0; i < ALX_DMA_MAC_RST_TO; i++) {
 		val = alx_read_mem32(hw, ALX_RFD_PIDX);
@@ -455,16 +419,14 @@ int alx_reset_mac(struct alx_hw *hw)
 
 	if (a_cr) {
 		alx_write_mem32(hw, ALX_MASTER, val | ALX_MASTER_PCLKSEL_SRDS);
-		/* restore l0s / l1 */
+		 
 		if (pmctrl & (ALX_PMCTRL_L1_EN | ALX_PMCTRL_L0S_EN))
 			alx_write_mem32(hw, ALX_PMCTRL, pmctrl);
 	}
 
 	alx_reset_osc(hw, rev);
 
-	/* clear Internal OSC settings, switching OSC by hw itself,
-	 * disable isolate for rev A devices
-	 */
+	 
 	val = alx_read_mem32(hw, ALX_MISC3);
 	alx_write_mem32(hw, ALX_MISC3,
 			(val & ~ALX_MISC3_25M_BY_SW) |
@@ -476,7 +438,7 @@ int alx_reset_mac(struct alx_hw *hw)
 	alx_write_mem32(hw, ALX_MISC, val);
 	udelay(20);
 
-	/* driver control speed/duplex, hash-alg */
+	 
 	alx_write_mem32(hw, ALX_MAC_CTRL, hw->rx_ctrl);
 
 	val = alx_read_mem32(hw, ALX_SERDES);
@@ -493,7 +455,7 @@ void alx_reset_phy(struct alx_hw *hw)
 	u32 val;
 	u16 phy_val;
 
-	/* (DSP)reset PHY core */
+	 
 	val = alx_read_mem32(hw, ALX_PHY_CTRL);
 	val &= ~(ALX_PHY_CTRL_DSPRST_OUT | ALX_PHY_CTRL_IDDQ |
 		 ALX_PHY_CTRL_GATE_25M | ALX_PHY_CTRL_POWER_DOWN |
@@ -508,19 +470,19 @@ void alx_reset_phy(struct alx_hw *hw)
 	for (i = 0; i < ALX_PHY_CTRL_DSPRST_TO; i++)
 		udelay(10);
 
-	/* phy power saving & hib */
+	 
 	alx_write_phy_dbg(hw, ALX_MIIDBG_LEGCYPS, ALX_LEGCYPS_DEF);
 	alx_write_phy_dbg(hw, ALX_MIIDBG_SYSMODCTRL,
 			  ALX_SYSMODCTRL_IECHOADJ_DEF);
 	alx_write_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_VDRVBIAS,
 			  ALX_VDRVBIAS_DEF);
 
-	/* EEE advertisement */
+	 
 	val = alx_read_mem32(hw, ALX_LPI_CTRL);
 	alx_write_mem32(hw, ALX_LPI_CTRL, val & ~ALX_LPI_CTRL_EN);
 	alx_write_phy_ext(hw, ALX_MIIEXT_ANEG, ALX_MIIEXT_LOCAL_EEEADV, 0);
 
-	/* phy power saving */
+	 
 	alx_write_phy_dbg(hw, ALX_MIIDBG_TST10BTCFG, ALX_TST10BTCFG_DEF);
 	alx_write_phy_dbg(hw, ALX_MIIDBG_SRDSYSMOD, ALX_SRDSYSMOD_DEF);
 	alx_write_phy_dbg(hw, ALX_MIIDBG_TST100BTCFG, ALX_TST100BTCFG_DEF);
@@ -528,30 +490,30 @@ void alx_reset_phy(struct alx_hw *hw)
 	alx_read_phy_dbg(hw, ALX_MIIDBG_GREENCFG2, &phy_val);
 	alx_write_phy_dbg(hw, ALX_MIIDBG_GREENCFG2,
 			  phy_val & ~ALX_GREENCFG2_GATE_DFSE_EN);
-	/* rtl8139c, 120m issue */
+	 
 	alx_write_phy_ext(hw, ALX_MIIEXT_ANEG, ALX_MIIEXT_NLP78,
 			  ALX_MIIEXT_NLP78_120M_DEF);
 	alx_write_phy_ext(hw, ALX_MIIEXT_ANEG, ALX_MIIEXT_S3DIG10,
 			  ALX_MIIEXT_S3DIG10_DEF);
 
 	if (hw->lnk_patch) {
-		/* Turn off half amplitude */
+		 
 		alx_read_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_CLDCTRL3,
 				 &phy_val);
 		alx_write_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_CLDCTRL3,
 				  phy_val | ALX_CLDCTRL3_BP_CABLE1TH_DET_GT);
-		/* Turn off Green feature */
+		 
 		alx_read_phy_dbg(hw, ALX_MIIDBG_GREENCFG2, &phy_val);
 		alx_write_phy_dbg(hw, ALX_MIIDBG_GREENCFG2,
 				  phy_val | ALX_GREENCFG2_BP_GREEN);
-		/* Turn off half Bias */
+		 
 		alx_read_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_CLDCTRL5,
 				 &phy_val);
 		alx_write_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_CLDCTRL5,
 				  phy_val | ALX_CLDCTRL5_BP_VD_HLFBIAS);
 	}
 
-	/* set phy interrupt mask */
+	 
 	alx_write_phy_reg(hw, ALX_MII_IER, ALX_IER_LINK_UP | ALX_IER_LINK_DOWN);
 }
 
@@ -563,26 +525,26 @@ void alx_reset_pcie(struct alx_hw *hw)
 	u32 val;
 	u16 val16;
 
-	/* Workaround for PCI problem when BIOS sets MMRBC incorrectly. */
+	 
 	pci_read_config_word(hw->pdev, PCI_COMMAND, &val16);
 	if (!(val16 & ALX_PCI_CMD) || (val16 & PCI_COMMAND_INTX_DISABLE)) {
 		val16 = (val16 | ALX_PCI_CMD) & ~PCI_COMMAND_INTX_DISABLE;
 		pci_write_config_word(hw->pdev, PCI_COMMAND, val16);
 	}
 
-	/* clear WoL setting/status */
+	 
 	val = alx_read_mem32(hw, ALX_WOL0);
 	alx_write_mem32(hw, ALX_WOL0, 0);
 
 	val = alx_read_mem32(hw, ALX_PDLL_TRNS1);
 	alx_write_mem32(hw, ALX_PDLL_TRNS1, val & ~ALX_PDLL_TRNS1_D3PLLOFF_EN);
 
-	/* mask some pcie error bits */
+	 
 	val = alx_read_mem32(hw, ALX_UE_SVRT);
 	val &= ~(ALX_UE_SVRT_DLPROTERR | ALX_UE_SVRT_FCPROTERR);
 	alx_write_mem32(hw, ALX_UE_SVRT, val);
 
-	/* wol 25M & pclk */
+	 
 	val = alx_read_mem32(hw, ALX_MASTER);
 	if (alx_is_rev_a(rev) && alx_hw_with_cr(hw)) {
 		if ((val & ALX_MASTER_WAKEN_25M) == 0 ||
@@ -598,7 +560,7 @@ void alx_reset_pcie(struct alx_hw *hw)
 					ALX_MASTER_WAKEN_25M);
 	}
 
-	/* ASPM setting */
+	 
 	alx_enable_aspm(hw, true, true);
 
 	udelay(10);
@@ -784,7 +746,7 @@ void alx_post_phy_link(struct alx_hw *hw)
 	if (revid != ALX_REV_B0 && !alx_is_rev_a(revid))
 		return;
 
-	/* 1000BT/AZ, wrong cable length */
+	 
 	if (hw->link_speed != SPEED_UNKNOWN) {
 		alx_read_phy_ext(hw, ALX_MIIEXT_PCS, ALX_MIIEXT_CLDCTRL6,
 				 &phy_val);
@@ -813,16 +775,13 @@ void alx_post_phy_link(struct alx_hw *hw)
 					  phy_val & ~ALX_AFE_10BT_100M_TH);
 		}
 
-		/* threshold adjust */
+		 
 		if (adj_th && hw->lnk_patch) {
 			if (hw->link_speed == SPEED_100) {
 				alx_write_phy_dbg(hw, ALX_MIIDBG_MSE16DB,
 						  ALX_MSE16DB_UP);
 			} else if (hw->link_speed == SPEED_1000) {
-				/*
-				 * Giga link threshold, raise the tolerance of
-				 * noise 50%
-				 */
+				 
 				alx_read_phy_dbg(hw, ALX_MIIDBG_MSE20DB,
 						 &phy_val);
 				ALX_SET_FIELD(phy_val, ALX_MSE20DB_TH,
@@ -882,7 +841,7 @@ int alx_read_phy_link(struct alx_hw *hw)
 		return 0;
 	}
 
-	/* speed/duplex result is saved in PHY Specific Status Register */
+	 
 	err = alx_read_phy_reg(hw, ALX_MII_GIGA_PSSR, &giga);
 	if (err)
 		return err;
@@ -916,7 +875,7 @@ int alx_clear_phy_intr(struct alx_hw *hw)
 {
 	u16 isr;
 
-	/* clear interrupt status by reading it */
+	 
 	return alx_read_phy_reg(hw, ALX_MII_ISR, &isr);
 }
 
@@ -938,7 +897,7 @@ void alx_configure_basic(struct alx_hw *hw)
 
 	alx_write_mem32(hw, ALX_CLK_GATE, ALX_CLK_GATE_ALL);
 
-	/* idle timeout to switch clk_125M */
+	 
 	if (chip_rev >= ALX_REV_B0)
 		alx_write_mem32(hw, ALX_IDLE_DECISN_TIMER,
 				ALX_IDLE_DECISN_TIMER_DEF);
@@ -952,9 +911,9 @@ void alx_configure_basic(struct alx_hw *hw)
 	alx_write_mem32(hw, ALX_MASTER, val);
 	alx_write_mem32(hw, ALX_IRQ_MODU_TIMER,
 			(hw->imt >> 1) << ALX_IRQ_MODU_TIMER1_SHIFT);
-	/* intr re-trig timeout */
+	 
 	alx_write_mem32(hw, ALX_INT_RETRIG, ALX_INT_RETRIG_TO);
-	/* tpd threshold to trig int */
+	 
 	alx_write_mem32(hw, ALX_TINT_TPD_THRSHLD, hw->ith_tpd);
 	alx_write_mem32(hw, ALX_TINT_TIMER, hw->imt);
 
@@ -970,10 +929,7 @@ void alx_configure_basic(struct alx_hw *hw)
 	alx_write_mem32(hw, ALX_TXQ1, val | ALX_TXQ1_ERRLGPKT_DROP_EN);
 
 	max_payload = pcie_get_readrq(hw->pdev) >> 8;
-	/*
-	 * if BIOS had changed the default dma read max length,
-	 * restore it to default value
-	 */
+	 
 	if (max_payload < ALX_DEV_CTRL_MAXRRS_MIN)
 		pcie_set_readrq(hw->pdev, 128 << ALX_DEV_CTRL_MAXRRS_MIN);
 
@@ -988,7 +944,7 @@ void alx_configure_basic(struct alx_hw *hw)
 	      ALX_HQTPD_BURST_EN;
 	alx_write_mem32(hw, ALX_HQTPD, val);
 
-	/* rxq, flow control */
+	 
 	val = alx_read_mem32(hw, ALX_SRAM5);
 	val = ALX_GET_FIELD(val, ALX_SRAM_RXF_LEN) << 3;
 	if (val > ALX_SRAM_RXF_LEN_8K) {
@@ -1022,7 +978,7 @@ void alx_configure_basic(struct alx_hw *hw)
 	      (hw->dma_chnl - 1) << ALX_DMA_RCHNL_SEL_SHIFT;
 	alx_write_mem32(hw, ALX_DMA, val);
 
-	/* default multi-tx-q weights */
+	 
 	val = ALX_WRR_PRI_RESTRICT_NONE << ALX_WRR_PRI_SHIFT |
 	      4 << ALX_WRR_PRI0_SHIFT |
 	      4 << ALX_WRR_PRI1_SHIFT |
@@ -1053,10 +1009,7 @@ bool alx_get_phy_info(struct alx_hw *hw)
 	    alx_read_phy_reg(hw, MII_PHYSID2, &hw->phy_id[1]))
 		return false;
 
-	/* since we haven't PMA/PMD status2 register, we can't
-	 * use mdio45_probe function for prtad and mmds.
-	 * use fixed MMD3 to get mmds.
-	 */
+	 
 	if (alx_read_phy_ext(hw, 3, MDIO_DEVS1, &devs1) ||
 	    alx_read_phy_ext(hw, 3, MDIO_DEVS2, &devs2))
 		return false;
@@ -1067,7 +1020,7 @@ bool alx_get_phy_info(struct alx_hw *hw)
 
 void alx_update_hw_stats(struct alx_hw *hw)
 {
-	/* RX stats */
+	 
 	hw->stats.rx_ok          += alx_read_mem32(hw, ALX_MIB_RX_OK);
 	hw->stats.rx_bcast       += alx_read_mem32(hw, ALX_MIB_RX_BCAST);
 	hw->stats.rx_mcast       += alx_read_mem32(hw, ALX_MIB_RX_MCAST);
@@ -1093,7 +1046,7 @@ void alx_update_hw_stats(struct alx_hw *hw)
 	hw->stats.rx_mc_byte_cnt += alx_read_mem32(hw, ALX_MIB_RX_MCCNT);
 	hw->stats.rx_err_addr    += alx_read_mem32(hw, ALX_MIB_RX_ERRADDR);
 
-	/* TX stats */
+	 
 	hw->stats.tx_ok          += alx_read_mem32(hw, ALX_MIB_TX_OK);
 	hw->stats.tx_bcast       += alx_read_mem32(hw, ALX_MIB_TX_BCAST);
 	hw->stats.tx_mcast       += alx_read_mem32(hw, ALX_MIB_TX_MCAST);

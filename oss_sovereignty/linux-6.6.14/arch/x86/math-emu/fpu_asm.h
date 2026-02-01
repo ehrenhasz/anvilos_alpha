@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*---------------------------------------------------------------------------+
- |  fpu_asm.h                                                                |
- |                                                                           |
- | Copyright (C) 1992,1995,1997                                              |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail billm@suburbia.net               |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+ 
+ 
 
 #ifndef _FPU_ASM_H_
 #define _FPU_ASM_H_
@@ -29,4 +22,4 @@
 #define	SIGL(x)	SIGL_OFFSET##(x)
 #define	SIGH(x)	4(x)
 
-#endif /* _FPU_ASM_H_ */
+#endif  

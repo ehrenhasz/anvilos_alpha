@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw_midi.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 
 #include "oxfw.h"
 
@@ -154,7 +150,7 @@ int snd_oxfw_create_midi(struct snd_oxfw *oxfw)
 	if (oxfw->midi_input_ports == 0 && oxfw->midi_output_ports == 0)
 		return 0;
 
-	/* create midi ports */
+	 
 	err = snd_rawmidi_new(oxfw->card, oxfw->card->driver, 0,
 			      oxfw->midi_output_ports, oxfw->midi_input_ports,
 			      &rmidi);

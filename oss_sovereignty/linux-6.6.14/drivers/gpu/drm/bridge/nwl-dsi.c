@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX8 NWL MIPI DSI host driver
- *
- * Copyright (C) 2017 NXP
- * Copyright (C) 2020 Purism SPC
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -35,8 +30,8 @@
 
 #define DRV_NAME "nwl-dsi"
 
-/* i.MX8 NWL quirks */
-/* i.MX8MQ errata E11418 */
+ 
+ 
 #define E11418_HS_MODE_QUIRK	BIT(0)
 
 #define NWL_DSI_MIPI_FIFO_TIMEOUT msecs_to_jiffies(500)
@@ -54,13 +49,13 @@ struct nwl_dsi_transfer {
 	struct mipi_dsi_packet packet;
 	struct completion completed;
 
-	int status; /* status of transmission */
+	int status;  
 	enum transfer_direction direction;
 	bool need_bta;
 	u8 cmd;
 	u16 rx_word_count;
-	size_t tx_len; /* in bytes */
-	size_t rx_len; /* in bytes */
+	size_t tx_len;  
+	size_t rx_len;  
 };
 
 struct nwl_dsi {
@@ -73,36 +68,22 @@ struct nwl_dsi {
 
 	struct regmap *regmap;
 	int irq;
-	/*
-	 * The DSI host controller needs this reset sequence according to NWL:
-	 * 1. Deassert pclk reset to get access to DSI regs
-	 * 2. Configure DSI Host and DPHY and enable DPHY
-	 * 3. Deassert ESC and BYTE resets to allow host TX operations)
-	 * 4. Send DSI cmds to configure peripheral (handled by panel drv)
-	 * 5. Deassert DPI reset so DPI receives pixels and starts sending
-	 *    DSI data
-	 *
-	 * TODO: Since panel_bridges do their DSI setup in enable we
-	 * currently have 4. and 5. swapped.
-	 */
+	 
 	struct reset_control *rst_byte;
 	struct reset_control *rst_esc;
 	struct reset_control *rst_dpi;
 	struct reset_control *rst_pclk;
 	struct mux_control *mux;
 
-	/* DSI clocks */
+	 
 	struct clk *phy_ref_clk;
 	struct clk *rx_esc_clk;
 	struct clk *tx_esc_clk;
 	struct clk *core_clk;
-	/*
-	 * hardware bug: the i.MX8MQ needs this clock on during reset
-	 * even when not using LCDIF.
-	 */
+	 
 	struct clk *lcdif_clk;
 
-	/* dsi lanes */
+	 
 	u32 lanes;
 	enum mipi_dsi_pixel_format format;
 	struct drm_display_mode mode;
@@ -182,9 +163,7 @@ static int nwl_dsi_get_dpi_pixel_format(enum mipi_dsi_pixel_format format)
 	}
 }
 
-/*
- * ps2bc - Picoseconds to byte clock cycles
- */
+ 
 static u32 ps2bc(struct nwl_dsi *dsi, unsigned long long ps)
 {
 	u32 bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
@@ -193,17 +172,13 @@ static u32 ps2bc(struct nwl_dsi *dsi, unsigned long long ps)
 				  dsi->lanes * 8ULL * NSEC_PER_SEC);
 }
 
-/*
- * ui2bc - UI time periods to byte clock cycles
- */
+ 
 static u32 ui2bc(unsigned int ui)
 {
 	return DIV_ROUND_UP(ui, BITS_PER_BYTE);
 }
 
-/*
- * us2bc - micro seconds to lp clock cycles
- */
+ 
 static u32 us2lp(u32 lp_clk_rate, unsigned long us)
 {
 	return DIV_ROUND_UP(us * lp_clk_rate, USEC_PER_SEC);
@@ -228,7 +203,7 @@ static int nwl_dsi_config_host(struct nwl_dsi *dsi)
 		nwl_dsi_write(dsi, NWL_DSI_CFG_AUTOINSERT_EOTP, 0x00);
 	}
 
-	/* values in byte clock cycles */
+	 
 	cycles = ui2bc(cfg->clk_pre);
 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_t_pre: 0x%x\n", cycles);
 	nwl_dsi_write(dsi, NWL_DSI_CFG_T_PRE, cycles);
@@ -245,7 +220,7 @@ static int nwl_dsi_config_host(struct nwl_dsi *dsi)
 	nwl_dsi_write(dsi, NWL_DSI_CFG_HTX_TO_COUNT, 0x00);
 	nwl_dsi_write(dsi, NWL_DSI_CFG_LRX_H_TO_COUNT, 0x00);
 	nwl_dsi_write(dsi, NWL_DSI_CFG_BTA_H_TO_COUNT, 0x00);
-	/* In LP clock cycles */
+	 
 	cycles = us2lp(cfg->lp_clk_rate, cfg->wakeup);
 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_twakeup: 0x%x\n", cycles);
 	nwl_dsi_write(dsi, NWL_DSI_CFG_TWAKEUP, cycles);
@@ -289,10 +264,7 @@ static int nwl_dsi_config_dpi(struct nwl_dsi *dsi)
 
 	nwl_dsi_write(dsi, NWL_DSI_INTERFACE_COLOR_CODING, NWL_DSI_DPI_24_BIT);
 	nwl_dsi_write(dsi, NWL_DSI_PIXEL_FORMAT, color_format);
-	/*
-	 * Adjusting input polarity based on the video mode results in
-	 * a black screen so always pick active low:
-	 */
+	 
 	nwl_dsi_write(dsi, NWL_DSI_VSYNC_POLARITY,
 		      NWL_DSI_VSYNC_POLARITY_ACTIVE_LOW);
 	nwl_dsi_write(dsi, NWL_DSI_HSYNC_POLARITY,
@@ -378,7 +350,7 @@ static bool nwl_dsi_read_packet(struct nwl_dsi *dsi, u32 status)
 	if (xfer->rx_word_count == 0) {
 		if (!(status & NWL_DSI_RX_PKT_HDR_RCVD))
 			return false;
-		/* Get the RX header and parse it */
+		 
 		val = nwl_dsi_read(dsi, NWL_DSI_RX_PKT_HEADER);
 		err = nwl_dsi_clear_error(dsi);
 		if (err)
@@ -399,7 +371,7 @@ static bool nwl_dsi_read_packet(struct nwl_dsi *dsi, u32 status)
 		case MIPI_DSI_RX_GENERIC_SHORT_READ_RESPONSE_2BYTE:
 		case MIPI_DSI_RX_DCS_SHORT_READ_RESPONSE_2BYTE:
 			if (xfer->msg->rx_len > 1) {
-				/* read second byte */
+				 
 				payload[1] = word_count >> 8;
 				++xfer->rx_len;
 			}
@@ -407,7 +379,7 @@ static bool nwl_dsi_read_packet(struct nwl_dsi *dsi, u32 status)
 		case MIPI_DSI_RX_GENERIC_SHORT_READ_RESPONSE_1BYTE:
 		case MIPI_DSI_RX_DCS_SHORT_READ_RESPONSE_1BYTE:
 			if (xfer->msg->rx_len > 0) {
-				/* read first byte */
+				 
 				payload[0] = word_count & 0xff;
 				++xfer->rx_len;
 			}
@@ -431,15 +403,15 @@ static bool nwl_dsi_read_packet(struct nwl_dsi *dsi, u32 status)
 
 		xfer->rx_word_count = word_count;
 	} else {
-		/* Set word_count from previous header read */
+		 
 		word_count = xfer->rx_word_count;
 	}
 
-	/* If RX payload is not yet received, wait for it */
+	 
 	if (!(status & NWL_DSI_RX_PKT_PAYLOAD_DATA_RCVD))
 		return false;
 
-	/* Read the RX payload */
+	 
 	while (word_count >= 4) {
 		val = nwl_dsi_read(dsi, NWL_DSI_RX_PAYLOAD);
 		payload[0] = (val >> 0) & 0xff;
@@ -510,7 +482,7 @@ static void nwl_dsi_begin_transmission(struct nwl_dsi *dsi)
 	u32 val;
 	u32 hs_workaround = 0;
 
-	/* Send the payload, if any */
+	 
 	length = pkt->payload_length;
 	payload = pkt->payload;
 
@@ -521,7 +493,7 @@ static void nwl_dsi_begin_transmission(struct nwl_dsi *dsi)
 		payload += 4;
 		length -= 4;
 	}
-	/* Send the rest of the payload */
+	 
 	val = 0;
 	switch (length) {
 	case 3:
@@ -538,12 +510,7 @@ static void nwl_dsi_begin_transmission(struct nwl_dsi *dsi)
 	}
 	xfer->tx_len = pkt->payload_length;
 
-	/*
-	 * Send the header
-	 * header[0] = Virtual Channel + Data Type
-	 * header[1] = Word Count LSB (LP) or first param (SP)
-	 * header[2] = Word Count MSB (LP) or second param (SP)
-	 */
+	 
 	word_count = pkt->header[1] | (pkt->header[2] << 8);
 	if (hs_workaround && (dsi->quirks & E11418_HS_MODE_QUIRK)) {
 		DRM_DEV_DEBUG_DRIVER(dsi->dev,
@@ -558,7 +525,7 @@ static void nwl_dsi_begin_transmission(struct nwl_dsi *dsi)
 	      NWL_DSI_BTA_TX(xfer->need_bta);
 	nwl_dsi_write(dsi, NWL_DSI_PKT_CONTROL, val);
 
-	/* Send packet command */
+	 
 	nwl_dsi_write(dsi, NWL_DSI_SEND_PACKET, 0x1);
 }
 
@@ -569,7 +536,7 @@ static ssize_t nwl_dsi_host_transfer(struct mipi_dsi_host *dsi_host,
 	struct nwl_dsi_transfer xfer;
 	ssize_t ret = 0;
 
-	/* Create packet to be sent */
+	 
 	dsi->xfer = &xfer;
 	ret = mipi_dsi_create_packet(&xfer.packet, msg);
 	if (ret < 0) {
@@ -606,7 +573,7 @@ static ssize_t nwl_dsi_host_transfer(struct mipi_dsi_host *dsi_host,
 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "Enabled rx_esc clk @%lu Hz\n",
 			     clk_get_rate(dsi->rx_esc_clk));
 
-	/* Initiate the DSI packet transmision */
+	 
 	nwl_dsi_begin_transmission(dsi);
 
 	if (!wait_for_completion_timeout(&xfer.completed,
@@ -730,7 +697,7 @@ static int nwl_dsi_disable(struct nwl_dsi *dsi)
 	phy_power_off(dsi->phy);
 	phy_exit(dsi->phy);
 
-	/* Disabling the clock before the phy breaks enabling dsi again */
+	 
 	clk_disable_unprepare(dsi->tx_esc_clk);
 
 	return 0;
@@ -782,10 +749,7 @@ static int nwl_dsi_get_dphy_params(struct nwl_dsi *dsi,
 	if (dsi->lanes < 1 || dsi->lanes > 4)
 		return -EINVAL;
 
-	/*
-	 * So far the DPHY spec minimal timings work for both mixel
-	 * dphy and nwl dsi host
-	 */
+	 
 	ret = phy_mipi_dphy_get_default_config(mode->clock * 1000,
 		mipi_dsi_pixel_format_to_bpp(dsi->format), dsi->lanes,
 		&phy_opts->mipi_dphy);
@@ -823,16 +787,11 @@ static int nwl_dsi_bridge_atomic_check(struct drm_bridge *bridge,
 {
 	struct drm_display_mode *adjusted_mode = &crtc_state->adjusted_mode;
 
-	/* At least LCDIF + NWL needs active high sync */
+	 
 	adjusted_mode->flags |= (DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC);
 	adjusted_mode->flags &= ~(DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC);
 
-	/*
-	 * Do a full modeset if crtc_state->active is changed to be true.
-	 * This ensures our ->mode_set() is called to get the DSI controller
-	 * and the PHY ready to send DCS commands, when only the connector's
-	 * DPMS is brought out of "Off" status.
-	 */
+	 
 	if (crtc_state->active_changed && crtc_state->active)
 		crtc_state->mode_changed = true;
 
@@ -856,7 +815,7 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
 
 	phy_ref_rate = clk_get_rate(dsi->phy_ref_clk);
 	DRM_DEV_DEBUG_DRIVER(dev, "PHY at ref rate: %lu\n", phy_ref_rate);
-	/* Save the new desired phy config */
+	 
 	memcpy(&dsi->phy_cfg, &new_cfg, sizeof(new_cfg));
 
 	drm_mode_copy(&dsi->mode, adjusted_mode);
@@ -870,17 +829,17 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
 	if (clk_prepare_enable(dsi->core_clk) < 0)
 		goto runtime_put;
 
-	/* Step 1 from DSI reset-out instructions */
+	 
 	ret = reset_control_deassert(dsi->rst_pclk);
 	if (ret < 0) {
 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
 		goto runtime_put;
 	}
 
-	/* Step 2 from DSI reset-out instructions */
+	 
 	nwl_dsi_mode_set(dsi);
 
-	/* Step 3 from DSI reset-out instructions */
+	 
 	ret = reset_control_deassert(dsi->rst_esc);
 	if (ret < 0) {
 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
@@ -905,7 +864,7 @@ nwl_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
 	struct nwl_dsi *dsi = bridge_to_dsi(bridge);
 	int ret;
 
-	/* Step 5 from DSI reset-out instructions */
+	 
 	ret = reset_control_deassert(dsi->rst_dpi);
 	if (ret < 0)
 		DRM_DEV_ERROR(dsi->dev, "Failed to deassert DPI: %d\n", ret);
@@ -936,7 +895,7 @@ static u32 *nwl_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	*num_input_fmts = 0;
 
 	switch (output_fmt) {
-	/* If MEDIA_BUS_FMT_FIXED is tested, return default bus format */
+	 
 	case MEDIA_BUS_FMT_FIXED:
 		input_fmt = MEDIA_BUS_FMT_RGB888_1X24;
 		break;
@@ -1133,14 +1092,14 @@ static const struct drm_bridge_timings nwl_dsi_timings = {
 
 static const struct of_device_id nwl_dsi_dt_ids[] = {
 	{ .compatible = "fsl,imx8mq-nwl-dsi", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nwl_dsi_dt_ids);
 
 static const struct soc_device_attribute nwl_dsi_quirks_match[] = {
 	{ .soc_id = "i.MX8MQ", .revision = "2.0",
 	  .data = (void *)E11418_HS_MODE_QUIRK },
-	{ /* sentinel. */ }
+	{   }
 };
 
 static int nwl_dsi_probe(struct platform_device *pdev)
@@ -1223,4 +1182,4 @@ module_platform_driver(nwl_dsi_driver);
 MODULE_AUTHOR("NXP Semiconductor");
 MODULE_AUTHOR("Purism SPC");
 MODULE_DESCRIPTION("Northwest Logic MIPI-DSI driver");
-MODULE_LICENSE("GPL"); /* GPLv2 or later */
+MODULE_LICENSE("GPL");  

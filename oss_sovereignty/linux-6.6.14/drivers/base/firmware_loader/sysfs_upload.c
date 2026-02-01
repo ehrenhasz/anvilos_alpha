@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -6,9 +6,7 @@
 
 #include "sysfs_upload.h"
 
-/*
- * Support for user-space to initiate a firmware upload to a device.
- */
+ 
 
 static const char * const fw_upload_prog_str[] = {
 	[FW_UPLOAD_PROG_IDLE]	      = "idle",
@@ -205,11 +203,7 @@ done:
 putdev_exit:
 	put_device(fw_dev->parent);
 
-	/*
-	 * Note: fwlp->remaining_size is left unmodified here to provide
-	 * additional information on errors. It will be reinitialized when
-	 * the next firmeware upload begins.
-	 */
+	 
 	mutex_lock(&fw_lock);
 	fw_free_paged_buf(fw_sysfs->fw_priv);
 	fw_state_init(fw_sysfs->fw_priv);
@@ -218,10 +212,7 @@ putdev_exit:
 	fw_upload_prog_complete(fwlp);
 }
 
-/*
- * Start a worker thread to upload data to the parent driver.
- * Must be called with fw_lock held.
- */
+ 
 int fw_upload_start(struct fw_sysfs *fw_sysfs)
 {
 	struct fw_priv *fw_priv = fw_sysfs->fw_priv;
@@ -240,13 +231,13 @@ int fw_upload_start(struct fw_sysfs *fw_sysfs)
 	fwlp = fw_sysfs->fw_upload_priv;
 	mutex_lock(&fwlp->lock);
 
-	/* Do not interfere with an on-going fw_upload */
+	 
 	if (fwlp->progress != FW_UPLOAD_PROG_IDLE) {
 		mutex_unlock(&fwlp->lock);
 		return -EBUSY;
 	}
 
-	get_device(fw_dev->parent); /* released in fw_upload_main */
+	get_device(fw_dev->parent);  
 
 	fwlp->progress = FW_UPLOAD_PROG_RECEIVING;
 	fwlp->err_code = 0;
@@ -273,20 +264,7 @@ void fw_upload_free(struct fw_sysfs *fw_sysfs)
 	kfree(fw_upload_priv);
 }
 
-/**
- * firmware_upload_register() - register for the firmware upload sysfs API
- * @module: kernel module of this device
- * @parent: parent device instantiating firmware upload
- * @name: firmware name to be associated with this device
- * @ops: pointer to structure of firmware upload ops
- * @dd_handle: pointer to parent driver private data
- *
- *	@name must be unique among all users of firmware upload. The firmware
- *	sysfs files for this device will be found at /sys/class/firmware/@name.
- *
- *	Return: struct fw_upload pointer or ERR_PTR()
- *
- **/
+ 
 struct fw_upload *
 firmware_upload_register(struct module *module, struct device *parent,
 			 const char *name, const struct fw_upload_ops *ops,
@@ -378,10 +356,7 @@ exit_module_put:
 }
 EXPORT_SYMBOL_GPL(firmware_upload_register);
 
-/**
- * firmware_upload_unregister() - Unregister firmware upload interface
- * @fw_upload: pointer to struct fw_upload
- **/
+ 
 void firmware_upload_unregister(struct fw_upload *fw_upload)
 {
 	struct fw_sysfs *fw_sysfs = fw_upload->priv;
@@ -397,7 +372,7 @@ void firmware_upload_unregister(struct fw_upload *fw_upload)
 	fw_upload_priv->ops->cancel(fw_upload);
 	mutex_unlock(&fw_upload_priv->lock);
 
-	/* Ensure lower-level device-driver is finished */
+	 
 	flush_work(&fw_upload_priv->work);
 
 unregister:

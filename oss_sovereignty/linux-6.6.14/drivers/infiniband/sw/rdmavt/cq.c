@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 - 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -11,17 +9,7 @@
 
 static struct workqueue_struct *comp_vector_wq;
 
-/**
- * rvt_cq_enter - add a new entry to the completion queue
- * @cq: completion queue
- * @entry: work completion entry to add
- * @solicited: true if @entry is solicited
- *
- * This may be called with qp->s_lock held.
- *
- * Return: return true on success, else return
- * false if cq is full.
- */
+ 
 bool rvt_cq_enter(struct rvt_cq *cq, struct ib_wc *entry, bool solicited)
 {
 	struct ib_uverbs_wc *uqueue = NULL;
@@ -47,10 +35,7 @@ bool rvt_cq_enter(struct rvt_cq *cq, struct ib_wc *entry, bool solicited)
 		tail = k_wc->tail;
 	}
 
-	/*
-	 * Note that the head pointer might be writable by
-	 * user processes.Take care to verify it is a sane value.
-	 */
+	 
 	if (head >= (unsigned)cq->ibcq.cqe) {
 		head = cq->ibcq.cqe;
 		next = 0;
@@ -91,7 +76,7 @@ bool rvt_cq_enter(struct rvt_cq *cq, struct ib_wc *entry, bool solicited)
 		uqueue[head].sl = entry->sl;
 		uqueue[head].dlid_path_bits = entry->dlid_path_bits;
 		uqueue[head].port_num = entry->port_num;
-		/* Make sure entry is written before the head index. */
+		 
 		RDMA_WRITE_UAPI_ATOMIC(u_wc->head, next);
 	} else {
 		kqueue[head] = *entry;
@@ -101,10 +86,7 @@ bool rvt_cq_enter(struct rvt_cq *cq, struct ib_wc *entry, bool solicited)
 	if (cq->notify == IB_CQ_NEXT_COMP ||
 	    (cq->notify == IB_CQ_SOLICITED &&
 	     (solicited || entry->status != IB_WC_SUCCESS))) {
-		/*
-		 * This will cause send_complete() to be called in
-		 * another thread.
-		 */
+		 
 		cq->notify = RVT_CQ_NONE;
 		cq->triggered++;
 		queue_work_on(cq->comp_vector_cpu, comp_vector_wq,
@@ -120,22 +102,11 @@ static void send_complete(struct work_struct *work)
 {
 	struct rvt_cq *cq = container_of(work, struct rvt_cq, comptask);
 
-	/*
-	 * The completion handler will most likely rearm the notification
-	 * and poll for all pending entries.  If a new completion entry
-	 * is added while we are in this routine, queue_work()
-	 * won't call us again until we return so we check triggered to
-	 * see if we need to call the handler again.
-	 */
+	 
 	for (;;) {
 		u8 triggered = cq->triggered;
 
-		/*
-		 * IPoIB connected mode assumes the callback is from a
-		 * soft IRQ. We simulate this by blocking "bottom halves".
-		 * See the implementation for ipoib_cm_handle_tx_wc(),
-		 * netif_tx_lock_bh() and netif_tx_lock().
-		 */
+		 
 		local_bh_disable();
 		cq->ibcq.comp_handler(&cq->ibcq, cq->ibcq.cq_context);
 		local_bh_enable();
@@ -145,16 +116,7 @@ static void send_complete(struct work_struct *work)
 	}
 }
 
-/**
- * rvt_create_cq - create a completion queue
- * @ibcq: Allocated CQ
- * @attr: creation attributes
- * @udata: user data for libibverbs.so
- *
- * Called by ib_create_cq() in the generic verbs code.
- *
- * Return: 0 on success
- */
+ 
 int rvt_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		  struct ib_udata *udata)
 {
@@ -179,13 +141,7 @@ int rvt_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 
 	comp_vector = comp_vector % rdi->ibdev.num_comp_vectors;
 
-	/*
-	 * Allocate the completion queue entries and head/tail pointers.
-	 * This is allocated separately so that it can be resized and
-	 * also mapped into user space.
-	 * We need to use vmalloc() in order to support mmap and large
-	 * numbers of entries.
-	 */
+	 
 	if (udata && udata->outlen >= sizeof(__u64)) {
 		sz = sizeof(struct ib_uverbs_wc) * (entries + 1);
 		sz += sizeof(*u_wc);
@@ -200,10 +156,7 @@ int rvt_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			return -ENOMEM;
 	}
 
-	/*
-	 * Return the address of the WC as the offset to mmap.
-	 * See rvt_mmap() for details.
-	 */
+	 
 	if (udata && udata->outlen >= sizeof(__u64)) {
 		cq->ip = rvt_create_mmap_info(rdi, sz, udata, u_wc);
 		if (IS_ERR(cq->ip)) {
@@ -233,11 +186,7 @@ int rvt_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		spin_unlock_irq(&rdi->pending_lock);
 	}
 
-	/*
-	 * ib_create_cq() will initialize cq->ibcq except for cq->ibcq.cqe.
-	 * The number of entries should be >= the number requested or return
-	 * an error.
-	 */
+	 
 	cq->rdi = rdi;
 	if (rdi->driver_f.comp_vect_cpu_lookup)
 		cq->comp_vector_cpu =
@@ -266,13 +215,7 @@ bail_wc:
 	return err;
 }
 
-/**
- * rvt_destroy_cq - destroy a completion queue
- * @ibcq: the completion queue to destroy.
- * @udata: user data or NULL for kernel object
- *
- * Called by ib_destroy_cq() in the generic verbs code.
- */
+ 
 int rvt_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 {
 	struct rvt_cq *cq = ibcq_to_rvtcq(ibcq);
@@ -289,16 +232,7 @@ int rvt_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 	return 0;
 }
 
-/**
- * rvt_req_notify_cq - change the notification type for a completion queue
- * @ibcq: the completion queue
- * @notify_flags: the type of notification to request
- *
- * This may be called from interrupt context.  Also called by
- * ib_req_notify_cq() in the generic verbs code.
- *
- * Return: 0 for success.
- */
+ 
 int rvt_req_notify_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags notify_flags)
 {
 	struct rvt_cq *cq = ibcq_to_rvtcq(ibcq);
@@ -306,10 +240,7 @@ int rvt_req_notify_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags notify_flags)
 	int ret = 0;
 
 	spin_lock_irqsave(&cq->lock, flags);
-	/*
-	 * Don't change IB_CQ_NEXT_COMP to IB_CQ_SOLICITED but allow
-	 * any other transitions (see C11-31 and C11-32 in ch. 11.4.2.2).
-	 */
+	 
 	if (cq->notify != IB_CQ_NEXT_COMP)
 		cq->notify = notify_flags & IB_CQ_SOLICITED_MASK;
 
@@ -329,12 +260,7 @@ int rvt_req_notify_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags notify_flags)
 	return ret;
 }
 
-/*
- * rvt_resize_cq - change the size of the CQ
- * @ibcq: the completion queue
- *
- * Return: 0 for success.
- */
+ 
 int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata)
 {
 	struct rvt_cq *cq = ibcq_to_rvtcq(ibcq);
@@ -350,9 +276,7 @@ int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata)
 	if (cqe < 1 || cqe > rdi->dparms.props.max_cqe)
 		return -EINVAL;
 
-	/*
-	 * Need to use vmalloc() if we want to support large #s of entries.
-	 */
+	 
 	if (udata && udata->outlen >= sizeof(__u64)) {
 		sz = sizeof(struct ib_uverbs_wc) * (cqe + 1);
 		sz += sizeof(*u_wc);
@@ -366,7 +290,7 @@ int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata)
 		if (!k_wc)
 			return -ENOMEM;
 	}
-	/* Check that we can write the offset to mmap. */
+	 
 	if (udata && udata->outlen >= sizeof(__u64)) {
 		__u64 offset = 0;
 
@@ -376,10 +300,7 @@ int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata)
 	}
 
 	spin_lock_irq(&cq->lock);
-	/*
-	 * Make sure head and tail are sane since they
-	 * might be user writable.
-	 */
+	 
 	if (u_wc) {
 		old_u_wc = cq->queue;
 		head = RDMA_READ_UAPI_ATOMIC(old_u_wc->head);
@@ -434,10 +355,7 @@ int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata)
 
 		rvt_update_mmap_info(rdi, ip, sz, u_wc);
 
-		/*
-		 * Return the offset to mmap.
-		 * See rvt_mmap() for details.
-		 */
+		 
 		if (udata && udata->outlen >= sizeof(__u64)) {
 			ret = ib_copy_to_udata(udata, &ip->offset,
 					       sizeof(ip->offset));
@@ -462,17 +380,7 @@ bail_free:
 	return ret;
 }
 
-/**
- * rvt_poll_cq - poll for work completion entries
- * @ibcq: the completion queue to poll
- * @num_entries: the maximum number of entries to return
- * @entry: pointer to array where work completions are placed
- *
- * This may be called from interrupt context.  Also called by ib_poll_cq()
- * in the generic verbs code.
- *
- * Return: the number of completion entries polled.
- */
+ 
 int rvt_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *entry)
 {
 	struct rvt_cq *cq = ibcq_to_rvtcq(ibcq);
@@ -481,7 +389,7 @@ int rvt_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *entry)
 	int npolled;
 	u32 tail;
 
-	/* The kernel can only poll a kernel completion queue */
+	 
 	if (cq->ip)
 		return -EINVAL;
 
@@ -494,7 +402,7 @@ int rvt_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *entry)
 	for (npolled = 0; npolled < num_entries; ++npolled, ++entry) {
 		if (tail == wc->head)
 			break;
-		/* The kernel doesn't need a RMB since it has the lock. */
+		 
 		trace_rvt_cq_poll(cq, &wc->kqueue[tail], npolled);
 		*entry = wc->kqueue[tail];
 		if (tail >= cq->ibcq.cqe)
@@ -509,11 +417,7 @@ int rvt_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *entry)
 	return npolled;
 }
 
-/**
- * rvt_driver_cq_init - Init cq resources on behalf of driver
- *
- * Return: 0 on success
- */
+ 
 int rvt_driver_cq_init(void)
 {
 	comp_vector_wq = alloc_workqueue("%s", WQ_HIGHPRI | WQ_CPU_INTENSIVE,
@@ -524,9 +428,7 @@ int rvt_driver_cq_init(void)
 	return 0;
 }
 
-/**
- * rvt_cq_exit - tear down cq reources
- */
+ 
 void rvt_cq_exit(void)
 {
 	destroy_workqueue(comp_vector_wq);

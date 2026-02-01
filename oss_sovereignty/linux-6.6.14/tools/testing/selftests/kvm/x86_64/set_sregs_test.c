@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KVM_SET_SREGS tests
- *
- * Copyright (C) 2018, Google LLC.
- *
- * This is a regression test for the bug fixed by the following commit:
- * d3802286fa0f ("kvm: x86: Disallow illegal IA32_APIC_BASE MSR values")
- *
- * That bug allowed a user-mode program that called the KVM_SET_SREGS
- * ioctl to put a VCPU's local APIC into an invalid state.
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +17,7 @@ do {										\
 	struct kvm_sregs new;							\
 	int rc;									\
 										\
-	/* Skip the sub-test, the feature/bit is supported. */			\
+	 			\
 	if (orig.cr & bit)							\
 		break;								\
 										\
@@ -37,7 +27,7 @@ do {										\
 	rc = _vcpu_sregs_set(vcpu, &new);					\
 	TEST_ASSERT(rc, "KVM allowed invalid " #cr " bit (0x%lx)", bit);	\
 										\
-	/* Sanity check that KVM didn't change anything. */			\
+	 			\
 	vcpu_sregs_get(vcpu, &new);						\
 	TEST_ASSERT(!memcmp(&new, &orig, sizeof(new)), "KVM modified sregs");	\
 } while (0)
@@ -81,11 +71,7 @@ int main(int argc, char *argv[])
 	uint64_t cr4;
 	int rc, i;
 
-	/*
-	 * Create a dummy VM, specifically to avoid doing KVM_SET_CPUID2, and
-	 * use it to verify all supported CR4 bits can be set prior to defining
-	 * the vCPU model, i.e. without doing KVM_SET_CPUID2.
-	 */
+	 
 	vm = vm_create_barebones();
 	vcpu = __vm_vcpu_add(vm, 0);
 
@@ -102,7 +88,7 @@ int main(int argc, char *argv[])
 	TEST_ASSERT(sregs.cr4 == cr4, "sregs.CR4 (0x%llx) != CR4 (0x%lx)",
 		    sregs.cr4, cr4);
 
-	/* Verify all unsupported features are rejected by KVM. */
+	 
 	TEST_INVALID_CR_BIT(vcpu, cr4, sregs, X86_CR4_UMIP);
 	TEST_INVALID_CR_BIT(vcpu, cr4, sregs, X86_CR4_LA57);
 	TEST_INVALID_CR_BIT(vcpu, cr4, sregs, X86_CR4_VMXE);
@@ -117,13 +103,13 @@ int main(int argc, char *argv[])
 	for (i = 32; i < 64; i++)
 		TEST_INVALID_CR_BIT(vcpu, cr0, sregs, BIT(i));
 
-	/* NW without CD is illegal, as is PG without PE. */
+	 
 	TEST_INVALID_CR_BIT(vcpu, cr0, sregs, X86_CR0_NW);
 	TEST_INVALID_CR_BIT(vcpu, cr0, sregs, X86_CR0_PG);
 
 	kvm_vm_free(vm);
 
-	/* Create a "real" VM and verify APIC_BASE can be set. */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, NULL);
 
 	vcpu_sregs_get(vcpu, &sregs);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 
@@ -32,10 +32,10 @@ struct {
 	__type(value, __u32);
 } hashmap3 SEC(".maps");
 
-/* will set before prog run */
+ 
 bool in_test_mode = 0;
 
-/* will collect results during prog run */
+ 
 __u32 key_sum_a = 0, key_sum_b = 0, key_sum_c = 0;
 __u64 val_sum = 0;
 
@@ -52,21 +52,11 @@ int dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)
 	int ret;
 
 	if (in_test_mode) {
-		/* test mode is used by selftests to
-		 * test functionality of bpf_hash_map iter.
-		 *
-		 * the above hashmap1 will have correct size
-		 * and will be accepted, hashmap2 and hashmap3
-		 * should be rejected due to smaller key/value
-		 * size.
-		 */
+		 
 		if (key == (void *)0 || val == (void *)0)
 			return 0;
 
-		/* update the value and then delete the <key, value> pair.
-		 * it should not impact the existing 'val' which is still
-		 * accessible under rcu.
-		 */
+		 
 		__builtin_memcpy(&tmp_key, key, sizeof(struct key_t));
 		ret = bpf_map_update_elem(&hashmap1, &tmp_key, &tmp_val, 0);
 		if (ret)
@@ -82,23 +72,7 @@ int dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)
 		return 0;
 	}
 
-	/* non-test mode, the map is prepared with the
-	 * below bpftool command sequence:
-	 *   bpftool map create /sys/fs/bpf/m1 type hash \
-	 *   	key 12 value 8 entries 3 name map1
-	 *   bpftool map update id 77 key 0 0 0 1 0 0 0 0 0 0 0 1 \
-	 *   	value 0 0 0 1 0 0 0 1
-	 *   bpftool map update id 77 key 0 0 0 1 0 0 0 0 0 0 0 2 \
-	 *   	value 0 0 0 1 0 0 0 2
-	 * The bpftool iter command line:
-	 *   bpftool iter pin ./bpf_iter_bpf_hash_map.o /sys/fs/bpf/p1 \
-	 *   	map id 77
-	 * The below output will be:
-	 *   map dump starts
-	 *   77: (1000000 0 2000000) (200000001000000)
-	 *   77: (1000000 0 1000000) (100000001000000)
-	 *   map dump ends
-	 */
+	 
 	if (seq_num == 0)
 		BPF_SEQ_PRINTF(seq, "map dump starts\n");
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LED Driver for SGI Octane machines
- */
+
+ 
 
 #include <asm/io.h>
 #include <linux/module.h>

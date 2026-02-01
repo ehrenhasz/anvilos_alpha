@@ -1,29 +1,4 @@
-/*
- * Copyright © 2013 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Brad Volkin <bradley.d.volkin@intel.com>
- *
- */
+ 
 
 #include <linux/highmem.h>
 
@@ -39,79 +14,11 @@
 #include "i915_memcpy.h"
 #include "i915_reg.h"
 
-/**
- * DOC: batch buffer command parser
- *
- * Motivation:
- * Certain OpenGL features (e.g. transform feedback, performance monitoring)
- * require userspace code to submit batches containing commands such as
- * MI_LOAD_REGISTER_IMM to access various registers. Unfortunately, some
- * generations of the hardware will noop these commands in "unsecure" batches
- * (which includes all userspace batches submitted via i915) even though the
- * commands may be safe and represent the intended programming model of the
- * device.
- *
- * The software command parser is similar in operation to the command parsing
- * done in hardware for unsecure batches. However, the software parser allows
- * some operations that would be noop'd by hardware, if the parser determines
- * the operation is safe, and submits the batch as "secure" to prevent hardware
- * parsing.
- *
- * Threats:
- * At a high level, the hardware (and software) checks attempt to prevent
- * granting userspace undue privileges. There are three categories of privilege.
- *
- * First, commands which are explicitly defined as privileged or which should
- * only be used by the kernel driver. The parser rejects such commands
- *
- * Second, commands which access registers. To support correct/enhanced
- * userspace functionality, particularly certain OpenGL extensions, the parser
- * provides a whitelist of registers which userspace may safely access
- *
- * Third, commands which access privileged memory (i.e. GGTT, HWS page, etc).
- * The parser always rejects such commands.
- *
- * The majority of the problematic commands fall in the MI_* range, with only a
- * few specific commands on each engine (e.g. PIPE_CONTROL and MI_FLUSH_DW).
- *
- * Implementation:
- * Each engine maintains tables of commands and registers which the parser
- * uses in scanning batch buffers submitted to that engine.
- *
- * Since the set of commands that the parser must check for is significantly
- * smaller than the number of commands supported, the parser tables contain only
- * those commands required by the parser. This generally works because command
- * opcode ranges have standard command length encodings. So for commands that
- * the parser does not need to check, it can easily skip them. This is
- * implemented via a per-engine length decoding vfunc.
- *
- * Unfortunately, there are a number of commands that do not follow the standard
- * length encoding for their opcode range, primarily amongst the MI_* commands.
- * To handle this, the parser provides a way to define explicit "skip" entries
- * in the per-engine command tables.
- *
- * Other command table entries map fairly directly to high level categories
- * mentioned above: rejected, register whitelist. The parser implements a number
- * of checks, including the privileged memory checks, via a general bitmasking
- * mechanism.
- */
+ 
 
-/*
- * A command that requires special handling by the command parser.
- */
+ 
 struct drm_i915_cmd_descriptor {
-	/*
-	 * Flags describing how the command parser processes the command.
-	 *
-	 * CMD_DESC_FIXED: The command has a fixed length if this is set,
-	 *                 a length mask if not set
-	 * CMD_DESC_SKIP: The command is allowed but does not follow the
-	 *                standard length encoding for the opcode range in
-	 *                which it falls
-	 * CMD_DESC_REJECT: The command is never allowed
-	 * CMD_DESC_REGISTER: The command should be checked against the
-	 *                    register whitelist for the appropriate ring
-	 */
+	 
 	u32 flags;
 #define CMD_DESC_FIXED    (1<<0)
 #define CMD_DESC_SKIP     (1<<1)
@@ -119,37 +26,19 @@ struct drm_i915_cmd_descriptor {
 #define CMD_DESC_REGISTER (1<<3)
 #define CMD_DESC_BITMASK  (1<<4)
 
-	/*
-	 * The command's unique identification bits and the bitmask to get them.
-	 * This isn't strictly the opcode field as defined in the spec and may
-	 * also include type, subtype, and/or subop fields.
-	 */
+	 
 	struct {
 		u32 value;
 		u32 mask;
 	} cmd;
 
-	/*
-	 * The command's length. The command is either fixed length (i.e. does
-	 * not include a length field) or has a length field mask. The flag
-	 * CMD_DESC_FIXED indicates a fixed length. Otherwise, the command has
-	 * a length mask. All command entries in a command table must include
-	 * length information.
-	 */
+	 
 	union {
 		u32 fixed;
 		u32 mask;
 	} length;
 
-	/*
-	 * Describes where to find a register address in the command to check
-	 * against the ring's register whitelist. Only valid if flags has the
-	 * CMD_DESC_REGISTER bit set.
-	 *
-	 * A non-zero step value implies that the command may access multiple
-	 * registers in sequence (e.g. LRI), in that case step gives the
-	 * distance in dwords between individual offset fields.
-	 */
+	 
 	struct {
 		u32 offset;
 		u32 mask;
@@ -157,17 +46,7 @@ struct drm_i915_cmd_descriptor {
 	} reg;
 
 #define MAX_CMD_DESC_BITMASKS 3
-	/*
-	 * Describes command checks where a particular dword is masked and
-	 * compared against an expected value. If the command does not match
-	 * the expected value, the parser rejects it. Only valid if flags has
-	 * the CMD_DESC_BITMASK bit set. Only entries where mask is non-zero
-	 * are valid.
-	 *
-	 * If the check specifies a non-zero condition_mask then the parser
-	 * only performs the check when the bits specified by condition_mask
-	 * are non-zero.
-	 */
+	 
 	struct {
 		u32 offset;
 		u32 mask;
@@ -177,13 +56,7 @@ struct drm_i915_cmd_descriptor {
 	} bits[MAX_CMD_DESC_BITMASKS];
 };
 
-/*
- * A table of commands requiring special handling by the command parser.
- *
- * Each engine has an array of tables. Each table consists of an array of
- * command descriptors, which must be sorted with command opcodes in
- * ascending order.
- */
+ 
 struct drm_i915_cmd_table {
 	const struct drm_i915_cmd_descriptor *table;
 	int count;
@@ -203,7 +76,7 @@ struct drm_i915_cmd_table {
 		__VA_ARGS__					\
 	}
 
-/* Convenience macros to compress the tables */
+ 
 #define SMI STD_MI_OPCODE_SHIFT
 #define S3D STD_3D_OPCODE_SHIFT
 #define S2D STD_2D_OPCODE_SHIFT
@@ -214,8 +87,7 @@ struct drm_i915_cmd_table {
 #define W CMD_DESC_REGISTER
 #define B CMD_DESC_BITMASK
 
-/*            Command                          Mask   Fixed Len   Action
-	      ---------------------------------------------------------- */
+ 
 static const struct drm_i915_cmd_descriptor gen7_common_cmds[] = {
 	CMD(  MI_NOOP,                          SMI,    F,  1,      S  ),
 	CMD(  MI_USER_INTERRUPT,                SMI,    F,  1,      R  ),
@@ -241,11 +113,7 @@ static const struct drm_i915_cmd_descriptor gen7_common_cmds[] = {
 			.mask = MI_GLOBAL_GTT,
 			.expected = 0,
 	      }},						       ),
-	/*
-	 * MI_BATCH_BUFFER_START requires some special handling. It's not
-	 * really a 'skip' action but it doesn't seem like it's worth adding
-	 * a new action. See intel_engine_cmd_parser().
-	 */
+	 
 	CMD(  MI_BATCH_BUFFER_START,            SMI,   !F,  0xFF,   S  ),
 };
 
@@ -369,11 +237,7 @@ static const struct drm_i915_cmd_descriptor gen7_video_cmds[] = {
 			.mask = MI_GLOBAL_GTT,
 			.expected = 0,
 	      }},						       ),
-	/*
-	 * MFX_WAIT doesn't fit the way we handle length for most commands.
-	 * It has a length field but it uses a non-standard length bias.
-	 * It is always 1 dword though, so just treat it as fixed length.
-	 */
+	 
 	CMD(  MFX_WAIT,                         SMFX,   F,  1,      S  ),
 };
 
@@ -453,23 +317,7 @@ static const struct drm_i915_cmd_descriptor hsw_blt_cmds[] = {
 	CMD(  MI_LOAD_SCAN_LINES_EXCL,          SMI,   !F,  0x3F,   R  ),
 };
 
-/*
- * For Gen9 we can still rely on the h/w to enforce cmd security, and only
- * need to re-enforce the register access checks. We therefore only need to
- * teach the cmdparser how to find the end of each command, and identify
- * register accesses. The table doesn't need to reject any commands, and so
- * the only commands listed here are:
- *   1) Those that touch registers
- *   2) Those that do not have the default 8-bit length
- *
- * Note that the default MI length mask chosen for this table is 0xFF, not
- * the 0x3F used on older devices. This is because the vast majority of MI
- * cmds on Gen9 use a standard 8-bit Length field.
- * All the Gen9 blitter instructions are standard 0xFF length mask, and
- * none allow access to non-general registers, so in fact no BLT cmds are
- * included in the table at all.
- *
- */
+ 
 static const struct drm_i915_cmd_descriptor gen9_blt_cmds[] = {
 	CMD(  MI_NOOP,                          SMI,    F,  1,      S  ),
 	CMD(  MI_USER_INTERRUPT,                SMI,    F,  1,      S  ),
@@ -493,10 +341,7 @@ static const struct drm_i915_cmd_descriptor gen9_blt_cmds[] = {
 	CMD(  MI_LOAD_REGISTER_REG,             SMI,    !F,  0xFF,  W,
 	      .reg = { .offset = 1, .mask = 0x007FFFFC, .step = 1 }    ),
 
-	/*
-	 * We allow BB_START but apply further checks. We just sanitize the
-	 * basic fields here.
-	 */
+	 
 #define MI_BB_START_OPERAND_MASK   GENMASK(SMI-1, 0)
 #define MI_BB_START_OPERAND_EXPECT (MI_BATCH_PPGTT_HSW | 1)
 	CMD(  MI_BATCH_BUFFER_START_GEN8,       SMI,    !F,  0xFF,  B,
@@ -558,39 +403,23 @@ static const struct drm_i915_cmd_table gen9_blt_cmd_table[] = {
 };
 
 
-/*
- * Register whitelists, sorted by increasing register offset.
- */
+ 
 
-/*
- * An individual whitelist entry granting access to register addr.  If
- * mask is non-zero the argument of immediate register writes will be
- * AND-ed with mask, and the command will be rejected if the result
- * doesn't match value.
- *
- * Registers with non-zero mask are only allowed to be written using
- * LRI.
- */
+ 
 struct drm_i915_reg_descriptor {
 	i915_reg_t addr;
 	u32 mask;
 	u32 value;
 };
 
-/* Convenience macro for adding 32-bit registers. */
+ 
 #define REG32(_reg, ...) \
 	{ .addr = (_reg), __VA_ARGS__ }
 
 #define REG32_IDX(_reg, idx) \
 	{ .addr = _reg(idx) }
 
-/*
- * Convenience macro for adding 64-bit registers.
- *
- * Some registers that userspace accesses are 64 bits. The register
- * access commands only allow 32-bit accesses. Hence, we have to include
- * entries for both halves of the 64-bit registers.
- */
+ 
 #define REG64(_reg) \
 	{ .addr = _reg }, \
 	{ .addr = _reg ## _UDW }
@@ -880,16 +709,7 @@ struct cmd_node {
 	struct hlist_node node;
 };
 
-/*
- * Different command ranges have different numbers of bits for the opcode. For
- * example, MI commands use bits 31:23 while 3D commands use bits 31:16. The
- * problem is that, for example, MI commands use bits 22:16 for other fields
- * such as GGTT vs PPGTT bits. If we include those bits in the mask then when
- * we mask a command from a batch it could hash to the wrong bucket due to
- * non-opcode bits being set. But if we don't include those bits, some 3D
- * commands may hash to the same bucket due to not including opcode bits that
- * make the command unique. For now, we will risk hashing to the same bucket.
- */
+ 
 static inline u32 cmd_header_key(u32 x)
 {
 	switch (x >> INSTR_CLIENT_SHIFT) {
@@ -944,14 +764,7 @@ static void fini_hash_table(struct intel_engine_cs *engine)
 	}
 }
 
-/**
- * intel_engine_init_cmd_parser() - set cmd parser related fields for an engine
- * @engine: the engine to initialize
- *
- * Optionally initializes fields related to batch buffer command parsing in the
- * struct intel_engine_cs based on whether the platform requires software
- * command parsing.
- */
+ 
 int intel_engine_init_cmd_parser(struct intel_engine_cs *engine)
 {
 	const struct drm_i915_cmd_table *cmd_tables;
@@ -995,7 +808,7 @@ int intel_engine_init_cmd_parser(struct intel_engine_cs *engine)
 			engine->get_cmd_length_mask =
 				gen9_blt_get_cmd_length_mask;
 
-			/* BCS Engine unsafe without parser */
+			 
 			engine->flags |= I915_ENGINE_REQUIRES_CMD_PARSER;
 		} else if (IS_HASWELL(engine->i915)) {
 			cmd_tables = hsw_blt_ring_cmd_table;
@@ -1020,7 +833,7 @@ int intel_engine_init_cmd_parser(struct intel_engine_cs *engine)
 	case VIDEO_ENHANCEMENT_CLASS:
 		cmd_tables = hsw_vebox_cmd_table;
 		cmd_table_count = ARRAY_SIZE(hsw_vebox_cmd_table);
-		/* VECS can use the same length_mask function as VCS */
+		 
 		engine->get_cmd_length_mask = gen7_bsd_get_cmd_length_mask;
 		break;
 	default:
@@ -1058,13 +871,7 @@ out:
 	return 0;
 }
 
-/**
- * intel_engine_cleanup_cmd_parser() - clean up cmd parser related fields
- * @engine: the engine to clean up
- *
- * Releases any resources related to command parsing that may have been
- * initialized for the specified engine.
- */
+ 
 void intel_engine_cleanup_cmd_parser(struct intel_engine_cs *engine)
 {
 	if (!intel_engine_using_cmd_parser(engine))
@@ -1089,14 +896,7 @@ find_cmd_in_table(struct intel_engine_cs *engine,
 	return NULL;
 }
 
-/*
- * Returns a pointer to a descriptor for the command specified by cmd_header.
- *
- * The caller must supply space for a default descriptor via the default_desc
- * parameter. If no descriptor for the specified command exists in the engine's
- * command parser tables, this function fills in default_desc based on the
- * engine's default length encoding and returns default_desc.
- */
+ 
 static const struct drm_i915_cmd_descriptor*
 find_cmd(struct intel_engine_cs *engine,
 	 u32 cmd_header,
@@ -1153,7 +953,7 @@ find_reg(const struct intel_engine_cs *engine, u32 addr)
 	return reg;
 }
 
-/* Returns a vmap'd pointer to dst_obj, which the caller must unmap */
+ 
 static u32 *copy_batch(struct drm_i915_gem_object *dst_obj,
 		       struct drm_i915_gem_object *src_obj,
 		       unsigned long offset, unsigned long length,
@@ -1193,14 +993,7 @@ static u32 *copy_batch(struct drm_i915_gem_object *dst_obj,
 		unsigned long x, n, remain;
 		void *ptr;
 
-		/*
-		 * We can avoid clflushing partial cachelines before the write
-		 * if we only every write full cache-lines. Since we know that
-		 * both the source and destination are in multiples of
-		 * PAGE_SIZE, we can simply round up to the next cacheline.
-		 * We don't care about copying too much here as we only
-		 * validate up to the end of the batch.
-		 */
+		 
 		remain = length;
 		if (dst_needs_clflush & CLFLUSH_BEFORE)
 			remain = round_up(remain,
@@ -1227,7 +1020,7 @@ static u32 *copy_batch(struct drm_i915_gem_object *dst_obj,
 
 	memset32(dst + length, 0, (dst_obj->base.size - length) / sizeof(u32));
 
-	/* dst_obj is returned with vmap pinned */
+	 
 	*needs_clflush_after = dst_needs_clflush & CLFLUSH_AFTER;
 
 	return dst;
@@ -1252,11 +1045,7 @@ static bool check_cmd(const struct intel_engine_cs *engine,
 	}
 
 	if (desc->flags & CMD_DESC_REGISTER) {
-		/*
-		 * Get the distance between individual register offset
-		 * fields if the command can perform more than one
-		 * access at a time.
-		 */
+		 
 		const u32 step = desc->reg.step ? desc->reg.step : length;
 		u32 offset;
 
@@ -1272,10 +1061,7 @@ static bool check_cmd(const struct intel_engine_cs *engine,
 				return false;
 			}
 
-			/*
-			 * Check the value written to the register against the
-			 * allowed mask/value pair given in the whitelist entry.
-			 */
+			 
 			if (reg->mask) {
 				if (cmd_desc_is(desc, MI_LOAD_REGISTER_MEM)) {
 					DRM_DEBUG("CMD: Rejected LRM to masked register 0x%08X\n",
@@ -1351,7 +1137,7 @@ static int check_bbstart(u32 *cmd, u32 offset, u32 length,
 	u64 jump_offset, jump_target;
 	u32 target_cmd_offset, target_cmd_index;
 
-	/* For igt compatibility on older platforms */
+	 
 	if (!jump_whitelist) {
 		DRM_DEBUG("CMD: Rejecting BB_START for ggtt based submission\n");
 		return -EACCES;
@@ -1366,20 +1152,14 @@ static int check_bbstart(u32 *cmd, u32 offset, u32 length,
 	jump_target = *(u64 *)(cmd + 1);
 	jump_offset = jump_target - batch_addr;
 
-	/*
-	 * Any underflow of jump_target is guaranteed to be outside the range
-	 * of a u32, so >= test catches both too large and too small
-	 */
+	 
 	if (jump_offset >= batch_length) {
 		DRM_DEBUG("CMD: BB_START to 0x%llx jumps out of BB\n",
 			  jump_target);
 		return -EINVAL;
 	}
 
-	/*
-	 * This cannot overflow a u32 because we already checked jump_offset
-	 * is within the BB, and the batch_length is a u32
-	 */
+	 
 	target_cmd_offset = lower_32_bits(jump_offset);
 	target_cmd_index = target_cmd_offset / sizeof(u32);
 
@@ -1404,13 +1184,9 @@ static unsigned long *alloc_whitelist(u32 batch_length)
 {
 	unsigned long *jmp;
 
-	/*
-	 * We expect batch_length to be less than 256KiB for known users,
-	 * i.e. we need at most an 8KiB bitmap allocation which should be
-	 * reasonably cheap due to kmalloc caches.
-	 */
+	 
 
-	/* Prefer to report transient allocation failure rather than hit oom */
+	 
 	jmp = bitmap_zalloc(DIV_ROUND_UP(batch_length, sizeof(u32)),
 			    GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
 	if (!jmp)
@@ -1421,21 +1197,7 @@ static unsigned long *alloc_whitelist(u32 batch_length)
 
 #define LENGTH_BIAS 2
 
-/**
- * intel_engine_cmd_parser() - parse a batch buffer for privilege violations
- * @engine: the engine on which the batch is to execute
- * @batch: the batch buffer in question
- * @batch_offset: byte offset in the batch at which execution starts
- * @batch_length: length of the commands in batch_obj
- * @shadow: validated copy of the batch buffer in question
- * @trampoline: true if we need to trampoline into privileged execution
- *
- * Parses the specified batch buffer looking for privilege violations as
- * described in the overview.
- *
- * Return: non-zero if the parser finds violations or otherwise fails; -EACCES
- * if the batch appears legal but should use hardware parsing
- */
+ 
 
 int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 			    struct i915_vma *batch,
@@ -1468,17 +1230,13 @@ int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 
 	jump_whitelist = NULL;
 	if (!trampoline)
-		/* Defer failure until attempted use */
+		 
 		jump_whitelist = alloc_whitelist(batch_length);
 
 	shadow_addr = gen8_canonical_addr(i915_vma_offset(shadow));
 	batch_addr = gen8_canonical_addr(i915_vma_offset(batch) + batch_offset);
 
-	/*
-	 * We use the batch length as size because the shadow object is as
-	 * large or larger and copy_batch() will write MI_NOPs to the extra
-	 * space. Parsing should be faster in some cases this way.
-	 */
+	 
 	batch_end = cmd + batch_length / sizeof(*batch_end);
 	do {
 		u32 length;
@@ -1532,26 +1290,15 @@ int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 	} while (1);
 
 	if (trampoline) {
-		/*
-		 * With the trampoline, the shadow is executed twice.
-		 *
-		 *   1 - starting at offset 0, in privileged mode
-		 *   2 - starting at offset batch_len, as non-privileged
-		 *
-		 * Only if the batch is valid and safe to execute, do we
-		 * allow the first privileged execution to proceed. If not,
-		 * we terminate the first batch and use the second batchbuffer
-		 * entry to chain to the original unsafe non-privileged batch,
-		 * leaving it to the HW to validate.
-		 */
+		 
 		*batch_end = MI_BATCH_BUFFER_END;
 
 		if (ret) {
-			/* Batch unsafe to execute with privileges, cancel! */
+			 
 			cmd = page_mask_bits(shadow->obj->mm.mapping);
 			*cmd = MI_BATCH_BUFFER_END;
 
-			/* If batch is unsafe but valid, jump to the original */
+			 
 			if (ret == -EACCES) {
 				unsigned int flags;
 
@@ -1564,7 +1311,7 @@ int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 						     batch_addr,
 						     flags);
 
-				ret = 0; /* allow execution */
+				ret = 0;  
 			}
 		}
 	}
@@ -1577,21 +1324,13 @@ int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 	return ret;
 }
 
-/**
- * i915_cmd_parser_get_version() - get the cmd parser version number
- * @dev_priv: i915 device private
- *
- * The cmd parser maintains a simple increasing integer version number suitable
- * for passing to userspace clients to determine what operations are permitted.
- *
- * Return: the current version number of the cmd parser
- */
+ 
 int i915_cmd_parser_get_version(struct drm_i915_private *dev_priv)
 {
 	struct intel_engine_cs *engine;
 	bool active = false;
 
-	/* If the command parser is not enabled, report 0 - unsupported */
+	 
 	for_each_uabi_engine(engine, dev_priv) {
 		if (intel_engine_using_cmd_parser(engine)) {
 			active = true;
@@ -1601,24 +1340,6 @@ int i915_cmd_parser_get_version(struct drm_i915_private *dev_priv)
 	if (!active)
 		return 0;
 
-	/*
-	 * Command parser version history
-	 *
-	 * 1. Initial version. Checks batches and reports violations, but leaves
-	 *    hardware parsing enabled (so does not allow new use cases).
-	 * 2. Allow access to the MI_PREDICATE_SRC0 and
-	 *    MI_PREDICATE_SRC1 registers.
-	 * 3. Allow access to the GPGPU_THREADS_DISPATCHED register.
-	 * 4. L3 atomic chicken bits of HSW_SCRATCH1 and HSW_ROW_CHICKEN3.
-	 * 5. GPGPU dispatch compute indirect registers.
-	 * 6. TIMESTAMP register and Haswell CS GPR registers
-	 * 7. Allow MI_LOAD_REGISTER_REG between whitelisted registers.
-	 * 8. Don't report cmd_check() failures as EINVAL errors to userspace;
-	 *    rely on the HW to NOOP disallowed commands as it would without
-	 *    the parser enabled.
-	 * 9. Don't whitelist or handle oacontrol specially, as ownership
-	 *    for oacontrol state is moving to i915-perf.
-	 * 10. Support for Gen9 BCS Parsing
-	 */
+	 
 	return 10;
 }

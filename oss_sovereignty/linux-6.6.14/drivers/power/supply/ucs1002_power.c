@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for UCS1002 Programmable USB Port Power Controller
- *
- * Copyright (C) 2019 Zodiac Inflight Innovations
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/freezer.h>
 #include <linux/gpio/consumer.h>
@@ -20,23 +16,18 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 
-/* UCS1002 Registers */
+ 
 #define UCS1002_REG_CURRENT_MEASUREMENT	0x00
 
-/*
- * The Total Accumulated Charge registers store the total accumulated
- * charge delivered from the VS source to a portable device. The total
- * value is calculated using four registers, from 01h to 04h. The bit
- * weighting of the registers is given in mA/hrs.
- */
+ 
 #define UCS1002_REG_TOTAL_ACC_CHARGE	0x01
 
-/* Other Status Register */
+ 
 #define UCS1002_REG_OTHER_STATUS	0x0f
 #  define F_ADET_PIN			BIT(4)
 #  define F_CHG_ACT			BIT(3)
 
-/* Interrupt Status */
+ 
 #define UCS1002_REG_INTERRUPT_STATUS	0x10
 #  define F_ERR				BIT(7)
 #  define F_DISCHARGE_ERR		BIT(6)
@@ -47,7 +38,7 @@
 #  define F_BACK_VOLT			BIT(1)
 #  define F_OVER_ILIM			BIT(0)
 
-/* Pin Status Register */
+ 
 #define UCS1002_REG_PIN_STATUS		0x14
 #  define UCS1002_PWR_STATE_MASK	0x03
 #  define F_PWR_EN_PIN			BIT(6)
@@ -62,14 +53,14 @@
 #  define F_ACTIVE_MODE_BC12_SDP	F_M1_PIN
 #  define F_ACTIVE_MODE_BC12_CDP	(F_M1_PIN | F_M2_PIN | F_EM_EN_PIN)
 
-/* General Configuration Register */
+ 
 #define UCS1002_REG_GENERAL_CFG		0x15
 #  define F_RATION_EN			BIT(3)
 
-/* Emulation Configuration Register */
+ 
 #define UCS1002_REG_EMU_CFG		0x16
 
-/* Switch Configuration Register */
+ 
 #define UCS1002_REG_SWITCH_CFG		0x17
 #  define F_PIN_IGNORE			BIT(7)
 #  define F_EM_EN_SET			BIT(5)
@@ -85,15 +76,15 @@
 #  define V_SET_ACTIVE_MODE_BC12_SDP	F_M1_SET
 #  define V_SET_ACTIVE_MODE_BC12_CDP	(F_M1_SET | F_M2_SET | F_EM_EN_SET)
 
-/* Current Limit Register */
+ 
 #define UCS1002_REG_ILIMIT		0x19
 #  define UCS1002_ILIM_SW_MASK		GENMASK(3, 0)
 
-/* Product ID */
+ 
 #define UCS1002_REG_PRODUCT_ID		0xfd
 #  define UCS1002_PRODUCT_ID		0x4e
 
-/* Manufacture name */
+ 
 #define UCS1002_MANUFACTURER		"SMSC"
 
 struct ucs1002_info {
@@ -114,7 +105,7 @@ static enum power_supply_property ucs1002_props[] = {
 	POWER_SUPPLY_PROP_CHARGE_NOW,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
 	POWER_SUPPLY_PROP_CURRENT_MAX,
-	POWER_SUPPLY_PROP_PRESENT, /* the presence of PED */
+	POWER_SUPPLY_PROP_PRESENT,  
 	POWER_SUPPLY_PROP_MANUFACTURER,
 	POWER_SUPPLY_PROP_USB_TYPE,
 	POWER_SUPPLY_PROP_HEALTH,
@@ -138,44 +129,15 @@ static int ucs1002_get_online(struct ucs1002_info *info,
 static int ucs1002_get_charge(struct ucs1002_info *info,
 			      union power_supply_propval *val)
 {
-	/*
-	 * To fit within 32 bits some values are rounded (uA/h)
-	 *
-	 * For Total Accumulated Charge Middle Low Byte register, addr
-	 * 03h, byte 2
-	 *
-	 *   B0: 0.01084 mA/h rounded to 11 uA/h
-	 *   B1: 0.02169 mA/h rounded to 22 uA/h
-	 *   B2: 0.04340 mA/h rounded to 43 uA/h
-	 *   B3: 0.08676 mA/h rounded to 87 uA/h
-	 *   B4: 0.17350 mA/h rounded to 173 uÁ/h
-	 *
-	 * For Total Accumulated Charge Low Byte register, addr 04h,
-	 * byte 3
-	 *
-	 *   B6: 0.00271 mA/h rounded to 3 uA/h
-	 *   B7: 0.005422 mA/h rounded to 5 uA/h
-	 */
+	 
 	static const int bit_weights_uAh[BITS_PER_TYPE(u32)] = {
-		/*
-		 * Bit corresponding to low byte (offset 0x04)
-		 * B0 B1 B2 B3 B4 B5 B6 B7
-		 */
+		 
 		0, 0, 0, 0, 0, 0, 3, 5,
-		/*
-		 * Bit corresponding to middle low byte (offset 0x03)
-		 * B0 B1 B2 B3 B4 B5 B6 B7
-		 */
+		 
 		11, 22, 43, 87, 173, 347, 694, 1388,
-		/*
-		 * Bit corresponding to middle high byte (offset 0x02)
-		 * B0 B1 B2 B3 B4 B5 B6 B7
-		 */
+		 
 		2776, 5552, 11105, 22210, 44420, 88840, 177700, 355400,
-		/*
-		 * Bit corresponding to high byte (offset 0x01)
-		 * B0 B1 B2 B3 B4 B5 B6 B7
-		 */
+		 
 		710700, 1421000, 2843000, 5685000, 11371000, 22742000,
 		45484000, 90968000,
 	};
@@ -188,7 +150,7 @@ static int ucs1002_get_charge(struct ucs1002_info *info,
 	if (ret)
 		return ret;
 
-	total_acc_charger = be32_to_cpu(reg); /* BE as per offsets above */
+	total_acc_charger = be32_to_cpu(reg);  
 	val->intval = 0;
 
 	for_each_set_bit(i, &total_acc_charger, ARRAY_SIZE(bit_weights_uAh))
@@ -200,11 +162,7 @@ static int ucs1002_get_charge(struct ucs1002_info *info,
 static int ucs1002_get_current(struct ucs1002_info *info,
 			       union power_supply_propval *val)
 {
-	/*
-	 * The Current Measurement register stores the measured
-	 * current value delivered to the portable device. The range
-	 * is from 9.76 mA to 2.5 A.
-	 */
+	 
 	static const int bit_weights_uA[BITS_PER_TYPE(u8)] = {
 		9760, 19500, 39000, 78100, 156200, 312300, 624600, 1249300,
 	};
@@ -225,10 +183,7 @@ static int ucs1002_get_current(struct ucs1002_info *info,
 	return 0;
 }
 
-/*
- * The Current Limit register stores the maximum current used by the
- * port switch. The range is from 500mA to 2.5 A.
- */
+ 
 static const u32 ucs1002_current_limit_uA[] = {
 	500000, 900000, 1000000, 1200000, 1500000, 1800000, 2000000, 2500000,
 };
@@ -275,11 +230,7 @@ static int ucs1002_set_max_current(struct ucs1002_info *info, u32 val)
 	ret = regmap_write(info->regmap, UCS1002_REG_ILIMIT, idx);
 	if (ret)
 		return ret;
-	/*
-	 * Any current limit setting exceeding the one set via ILIM
-	 * pin will be rejected, so we read out freshly changed limit
-	 * to make sure that it took effect.
-	 */
+	 
 	ret = regmap_read(info->regmap, UCS1002_REG_ILIMIT, &reg);
 	if (ret)
 		return ret;
@@ -448,7 +399,7 @@ static void ucs1002_health_poll(struct work_struct *work)
 	if (ret)
 		return;
 
-	/* bad health and no status change, just schedule us again in a while */
+	 
 	if ((reg & F_ERR) && info->health != POWER_SUPPLY_HEALTH_GOOD) {
 		schedule_delayed_work(&info->health_poll,
 				      msecs_to_jiffies(2000));
@@ -481,10 +432,10 @@ static irqreturn_t ucs1002_charger_irq(int irq, void *data)
 	if (ret)
 		return IRQ_HANDLED;
 
-	/* update attached status */
+	 
 	info->present = regval & F_ADET_PIN;
 
-	/* notify the change */
+	 
 	if (present != info->present)
 		power_supply_changed(info->charger);
 
@@ -504,11 +455,7 @@ static int ucs1002_regulator_enable(struct regulator_dev *rdev)
 {
 	struct ucs1002_info *info = rdev_get_drvdata(rdev);
 
-	/*
-	 * If the output is disabled due to 0 maximum current, just pretend the
-	 * enable did work. The regulator will be enabled as soon as we get a
-	 * a non-zero maximum current budget.
-	 */
+	 
 	if (info->output_disable)
 		return 0;
 
@@ -578,7 +525,7 @@ static int ucs1002_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* Enable charge rationing by default */
+	 
 	ret = regmap_update_bits(info->regmap, UCS1002_REG_GENERAL_CFG,
 				 F_RATION_EN, F_RATION_EN);
 	if (ret) {
@@ -586,10 +533,7 @@ static int ucs1002_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * Ignore the M1, M2, PWR_EN, and EM_EN pin states. Set active
-	 * mode selection to BC1.2 CDP.
-	 */
+	 
 	ret = regmap_update_bits(info->regmap, UCS1002_REG_SWITCH_CFG,
 				 V_SET_ACTIVE_MODE_MASK | F_PIN_IGNORE,
 				 V_SET_ACTIVE_MODE_BC12_CDP | F_PIN_IGNORE);
@@ -597,9 +541,7 @@ static int ucs1002_probe(struct i2c_client *client)
 		dev_err(dev, "Failed to configure default mode: %d\n", ret);
 		return ret;
 	}
-	/*
-	 * Be safe and set initial current limit to 500mA
-	 */
+	 
 	ret = ucs1002_set_max_current(info, 500000);
 	if (ret) {
 		dev_err(dev, "Failed to set max current default: %d\n", ret);
@@ -672,7 +614,7 @@ static int ucs1002_probe(struct i2c_client *client)
 
 static const struct of_device_id ucs1002_of_match[] = {
 	{ .compatible = "microchip,ucs1002", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ucs1002_of_match);
 

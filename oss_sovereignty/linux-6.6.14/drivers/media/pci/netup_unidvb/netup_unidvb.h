@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * netup_unidvb.h
- *
- * Data type definitions for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+ 
+ 
 
 #include <linux/pci.h>
 #include <linux/i2c.h>
@@ -22,12 +14,12 @@
 #define NETUP_VENDOR_ID		0x1b55
 #define NETUP_PCI_DEV_REVISION  0x2
 
-/* IRQ-related regisers */
+ 
 #define REG_ISR			0x4890
 #define REG_ISR_MASKED		0x4892
 #define REG_IMASK_SET		0x4894
 #define REG_IMASK_CLEAR		0x4896
-/* REG_ISR register bits */
+ 
 #define NETUP_UNIDVB_IRQ_SPI	(1 << 0)
 #define NETUP_UNIDVB_IRQ_I2C0	(1 << 1)
 #define NETUP_UNIDVB_IRQ_I2C1	(1 << 2)
@@ -41,10 +33,7 @@
 #define NETUP_UNIDVB_IRQ_CAM0	(1 << 11)
 #define NETUP_UNIDVB_IRQ_CAM1	(1 << 12)
 
-/* NetUP Universal DVB card hardware revisions and it's PCI device id's:
- * 1.3 - CXD2841ER demod, ASCOT2E and HORUS3A tuners
- * 1.4 - CXD2854ER demod, HELENE tuner
-*/
+ 
 enum netup_hw_rev {
 	NETUP_HW_REV_1_3 = 0x18F6,
 	NETUP_HW_REV_1_4 = 0x18F7

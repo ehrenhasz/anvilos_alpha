@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *
- * Siano Mobile Silicon, Inc.
- * MDTV receiver kernel modules.
- * Copyright (C) 2006-2009, Uri Shkolnik
- *
- * Copyright (c) 2010 - Mauro Carvalho Chehab
- *	- Ported the driver to use rc-core
- *	- IR raw event decoding is now done at rc-core
- *	- Code almost re-written
- */
+ 
+ 
 
 #ifndef __SMS_IR_H__
 #define __SMS_IR_H__
@@ -44,5 +34,5 @@ inline static void sms_ir_event(struct smscore_device_t *coredev,
 			const char *buf, int len) {};
 #endif
 
-#endif /* __SMS_IR_H__ */
+#endif  
 

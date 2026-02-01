@@ -1,38 +1,6 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file provides single entrance to link functionality declared in dc
- * public headers. The file is intended to be used as a thin translation layer
- * that directly calls link internal functions without adding new functional
- * behavior.
- *
- * When exporting a new link related dc function, add function declaration in
- * dc.h with detail interface documentation, then add function implementation
- * in this file which calls link functions.
- */
+ 
 #include "link.h"
 #include "dce/dce_i2c.h"
 struct dc_link *dc_get_link_at_index(struct dc *dc, uint32_t link_index)
@@ -48,7 +16,7 @@ void dc_get_edp_links(const struct dc *dc,
 
 	*edp_num = 0;
 	for (i = 0; i < dc->link_count; i++) {
-		// report any eDP links, even unconnected DDI's
+		
 		if (!dc->links[i])
 			continue;
 		if (dc->links[i]->connector_signal == SIGNAL_TYPE_EDP) {
@@ -94,7 +62,7 @@ const struct dc_link_status *dc_link_get_status(const struct dc_link *link)
 	return link->dc->link_srv->get_status(link);
 }
 
-/* return true if the connected receiver supports the hdcp version */
+ 
 bool dc_link_is_hdcp14(struct dc_link *link, enum signal_type signal)
 {
 	return link->dc->link_srv->is_hdcp1x_supported(link, signal);

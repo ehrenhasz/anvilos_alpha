@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for Samsung audio subsystem
- * clock controller.
- *
- * The constants defined in this header are being used in dts
- * and exynos audss driver.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_EXYNOS_AUDSS_H
 #define _DT_BINDINGS_CLK_EXYNOS_AUDSS_H

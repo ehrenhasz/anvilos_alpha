@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -32,28 +32,28 @@
 #define OV5675_MODE_STANDBY		0x00
 #define OV5675_MODE_STREAMING		0x01
 
-/* vertical-timings from sensor */
+ 
 #define OV5675_REG_VTS			0x380e
 #define OV5675_VTS_30FPS		0x07e4
 #define OV5675_VTS_30FPS_MIN		0x07e4
 #define OV5675_VTS_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define OV5675_REG_HTS			0x380c
 
-/* Exposure controls from sensor */
+ 
 #define OV5675_REG_EXPOSURE		0x3500
 #define	OV5675_EXPOSURE_MIN		4
 #define OV5675_EXPOSURE_MAX_MARGIN	4
 #define	OV5675_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV5675_REG_ANALOG_GAIN		0x3508
 #define	OV5675_ANAL_GAIN_MIN		128
 #define	OV5675_ANAL_GAIN_MAX		2047
 #define	OV5675_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OV5675_REG_DIGITAL_GAIN		0x350a
 #define OV5675_REG_MWB_R_GAIN		0x5019
 #define OV5675_REG_MWB_G_GAIN		0x501b
@@ -63,27 +63,27 @@
 #define OV5675_DGTL_GAIN_STEP		1
 #define OV5675_DGTL_GAIN_DEFAULT	1024
 
-/* Group Access */
+ 
 #define OV5675_REG_GROUP_ACCESS		0x3208
 #define OV5675_GROUP_HOLD_START		0x0
 #define OV5675_GROUP_HOLD_END		0x10
 #define OV5675_GROUP_HOLD_LAUNCH	0xa0
 
-/* Test Pattern Control */
+ 
 #define OV5675_REG_TEST_PATTERN		0x4503
 #define OV5675_TEST_PATTERN_ENABLE	BIT(7)
 #define OV5675_TEST_PATTERN_BAR_SHIFT	2
 
-/* Flip Mirror Controls from sensor */
+ 
 #define OV5675_REG_FORMAT1		0x3820
 #define OV5675_REG_FORMAT2		0x373d
 
 #define to_ov5675(_sd)			container_of(_sd, struct ov5675, sd)
 
 static const char * const ov5675_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital core power */
+	"avdd",		 
+	"dovdd",	 
+	"dvdd",		 
 };
 
 #define OV5675_NUM_SUPPLIES	ARRAY_SIZE(ov5675_supply_names)
@@ -107,25 +107,25 @@ struct ov5675_link_freq_config {
 };
 
 struct ov5675_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov5675_reg_list reg_list;
 };
 
@@ -500,23 +500,23 @@ struct ov5675 {
 	struct gpio_desc *reset_gpio;
 	struct regulator_bulk_data supplies[OV5675_NUM_SUPPLIES];
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov5675_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
@@ -652,10 +652,7 @@ static int ov5675_test_pattern(struct ov5675 *ov5675, u32 pattern)
 				OV5675_REG_VALUE_08BIT, pattern);
 }
 
-/*
- * OV5675 supports keeping the pixel order by mirror and flip function
- * The Bayer order isn't affected by the flip controls
- */
+ 
 static int ov5675_set_ctrl_hflip(struct ov5675 *ov5675, u32 ctrl_val)
 {
 	int ret;
@@ -707,9 +704,9 @@ static int ov5675_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = ov5675->cur_mode->height + ctrl->val -
 			OV5675_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov5675->exposure,
@@ -718,7 +715,7 @@ static int ov5675_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -733,13 +730,7 @@ static int ov5675_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part
-		 * val = val << 4
-		 * for ov5675, the unit of exposure is differnt from other
-		 * OmniVision sensors, its exposure value is twice of the
-		 * register value, the exposure should be divided by 2 before
-		 * set register, e.g. val << 3.
-		 */
+		 
 		ret = ov5675_write_reg(ov5675, OV5675_REG_EXPOSURE,
 				       OV5675_REG_VALUE_24BIT, ctrl->val << 3);
 		break;
@@ -979,7 +970,7 @@ static int ov5675_set_stream(struct v4l2_subdev *sd, int enable)
 
 static int ov5675_power_off(struct device *dev)
 {
-	/* 512 xvclk cycles after the last SCCB transation or MIPI frame end */
+	 
 	u32 delay_us = DIV_ROUND_UP(512, OV5675_XVCLK_19_2 / 1000 / 1000);
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
 	struct ov5675 *ov5675 = to_ov5675(sd);
@@ -1014,14 +1005,12 @@ static int ov5675_power_on(struct device *dev)
 		return ret;
 	}
 
-	/* Reset pulse should be at least 2ms and reset gpio released only once
-	 * regulators are stable.
-	 */
+	 
 	usleep_range(2000, 2200);
 
 	gpiod_set_value_cansleep(ov5675->reset_gpio, 0);
 
-	/* 8192 xvclk cycles prior to the first SCCB transation */
+	 
 	usleep_range(delay_us, delay_us * 2);
 
 	return 0;
@@ -1086,7 +1075,7 @@ static int ov5675_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(ov5675->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(ov5675->vblank,
 					 mode->vts_min - mode->height,
@@ -1388,7 +1377,7 @@ static int ov5675_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
@@ -1424,7 +1413,7 @@ MODULE_DEVICE_TABLE(acpi, ov5675_acpi_ids);
 
 static const struct of_device_id ov5675_of_match[] = {
 	{ .compatible = "ovti,ov5675", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov5675_of_match);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Parts came from builtin-{top,stat,record}.c, see those files for further
- * copyright notes.
- */
+
+ 
 
 #include <byteswap.h>
 #include <errno.h>
@@ -154,14 +149,7 @@ int __evsel__sample_size(u64 sample_type)
 	return size;
 }
 
-/**
- * __perf_evsel__calc_id_pos - calculate id_pos.
- * @sample_type: sample type
- *
- * This function returns the position of the event id (PERF_SAMPLE_ID or
- * PERF_SAMPLE_IDENTIFIER) in a sample event i.e. in the array of struct
- * perf_record_sample.
- */
+ 
 static int __perf_evsel__calc_id_pos(u64 sample_type)
 {
 	int idx = 0;
@@ -187,14 +175,7 @@ static int __perf_evsel__calc_id_pos(u64 sample_type)
 	return idx;
 }
 
-/**
- * __perf_evsel__calc_is_pos - calculate is_pos.
- * @sample_type: sample type
- *
- * This function returns the position (counting backwards) of the event id
- * (PERF_SAMPLE_ID or PERF_SAMPLE_IDENTIFIER) in a non-sample event i.e. if
- * sample_id_all is used there is an id sample appended to non-sample events.
- */
+ 
 static int __perf_evsel__calc_is_pos(u64 sample_type)
 {
 	int idx = 1;
@@ -252,14 +233,7 @@ void evsel__set_sample_id(struct evsel *evsel,
 	evsel->core.attr.read_format |= PERF_FORMAT_ID;
 }
 
-/**
- * evsel__is_function_event - Return whether given evsel is a function
- * trace event
- *
- * @evsel - evsel selector to be tested
- *
- * Return %true if event is function trace event
- */
+ 
 bool evsel__is_function_event(struct evsel *evsel)
 {
 #define FUNCTION_EVENT "ftrace:function"
@@ -346,13 +320,7 @@ static int evsel__copy_config_terms(struct evsel *dst, struct evsel *src)
 	return copy_config_terms(&dst->config_terms, &src->config_terms);
 }
 
-/**
- * evsel__clone - create a new evsel copied from @orig
- * @orig: original evsel
- *
- * The assumption is that @orig is not configured nor opened yet.
- * So we only care about the attributes that can be set while it's parsed.
- */
+ 
 struct evsel *evsel__clone(struct evsel *orig)
 {
 	struct evsel *evsel;
@@ -362,7 +330,7 @@ struct evsel *evsel__clone(struct evsel *orig)
 	BUG_ON(orig->priv);
 	BUG_ON(orig->per_pkg_mask);
 
-	/* cannot handle BPF objects for now */
+	 
 	if (orig->bpf_obj)
 		return NULL;
 
@@ -447,9 +415,7 @@ out_err:
 	return NULL;
 }
 
-/*
- * Returns pointer with encoded error via <linux/err.h> interface.
- */
+ 
 #ifdef HAVE_LIBTRACEEVENT
 struct evsel *evsel__newtp_idx(const char *sys, const char *name, int idx)
 {
@@ -517,7 +483,7 @@ bool evsel__match_bpf_counter_events(const char *name)
 	ptr = strstr(evsel__bpf_counter_events, name);
 	name_len = strlen(name);
 
-	/* check name matches a full token in evsel__bpf_counter_events */
+	 
 	match = (ptr != NULL) &&
 		((ptr == evsel__bpf_counter_events) || (*(ptr - 1) == ',')) &&
 		((*(ptr + name_len) == ',') || (*(ptr + name_len) == '\0'));
@@ -663,11 +629,7 @@ const char *const evsel__hw_cache_result[PERF_COUNT_HW_CACHE_RESULT_MAX][EVSEL__
 #define CACHE_PREFETCH	(1 << C(OP_PREFETCH))
 #define COP(x)		(1 << x)
 
-/*
- * cache operation stat
- * L1I : Read and prefetch only
- * ITLB and BPU : Read-only
- */
+ 
 static const unsigned long evsel__hw_cache_stat[C(MAX)] = {
  [C(L1D)]	= (CACHE_READ | CACHE_WRITE | CACHE_PREFETCH),
  [C(L1I)]	= (CACHE_READ | CACHE_PREFETCH),
@@ -681,9 +643,9 @@ static const unsigned long evsel__hw_cache_stat[C(MAX)] = {
 bool evsel__is_cache_op_valid(u8 type, u8 op)
 {
 	if (evsel__hw_cache_stat[type] & COP(op))
-		return true;	/* valid */
+		return true;	 
 	else
-		return false;	/* invalid */
+		return false;	 
 }
 
 int __evsel__hw_cache_type_op_res_name(u8 type, u8 op, u8 result, char *bf, size_t size)
@@ -810,16 +772,7 @@ const char *evsel__group_name(struct evsel *evsel)
 	return evsel->group_name ?: "anon group";
 }
 
-/*
- * Returns the group details for the specified leader,
- * with following rules.
- *
- *  For record -e '{cycles,instructions}'
- *    'anon group { cycles:u, instructions:u }'
- *
- *  For record -e 'cycles,instructions' and report --group
- *    'cycles:u, instructions:u'
- */
+ 
 int evsel__group_desc(struct evsel *evsel, char *buf, size_t size)
 {
 	int ret = 0;
@@ -931,7 +884,7 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 	struct evsel_config_term *term;
 	struct list_head *config_terms = &evsel->config_terms;
 	struct perf_event_attr *attr = &evsel->core.attr;
-	/* callgraph default */
+	 
 	struct callchain_param param = {
 		.record_mode = callchain_param.record_mode,
 	};
@@ -982,12 +935,7 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 			evsel->max_events = term->val.max_events;
 			break;
 		case EVSEL__CONFIG_TERM_INHERIT:
-			/*
-			 * attr->inherit should has already been set by
-			 * evsel__config. If user explicitly set
-			 * inherit using config terms, override global
-			 * opt->no_inherit setting.
-			 */
+			 
 			attr->inherit = term->val.inherit ? 1 : 0;
 			break;
 		case EVSEL__CONFIG_TERM_OVERWRITE:
@@ -1001,7 +949,7 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 			attr->aux_output = term->val.aux_output ? 1 : 0;
 			break;
 		case EVSEL__CONFIG_TERM_AUX_SAMPLE_SIZE:
-			/* Already applied by auxtrace */
+			 
 			break;
 		case EVSEL__CONFIG_TERM_CFG_CHG:
 			break;
@@ -1010,7 +958,7 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 		}
 	}
 
-	/* User explicitly set per-event callgraph, clear the old setting and reset. */
+	 
 	if ((callgraph_buf != NULL) || (dump_size > 0) || max_stack) {
 		bool sample_address = false;
 
@@ -1020,7 +968,7 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 				callgraph_buf = "fp";
 		}
 
-		/* parse callgraph parameters */
+		 
 		if (callgraph_buf != NULL) {
 			if (!strcmp(callgraph_buf, "no")) {
 				param.enabled = false;
@@ -1042,11 +990,11 @@ static void evsel__apply_config_terms(struct evsel *evsel,
 			param.dump_size = dump_size;
 		}
 
-		/* If global callgraph set, clear it */
+		 
 		if (callchain_param.enabled)
 			evsel__reset_callgraph(evsel, &callchain_param);
 
-		/* set perf-event callgraph */
+		 
 		if (param.enabled) {
 			if (sample_address) {
 				evsel__set_sample_bit(evsel, ADDR);
@@ -1096,34 +1044,7 @@ static bool evsel__is_offcpu_event(struct evsel *evsel)
 	return evsel__is_bpf_output(evsel) && evsel__name_is(evsel, OFFCPU_EVENT);
 }
 
-/*
- * The enable_on_exec/disabled value strategy:
- *
- *  1) For any type of traced program:
- *    - all independent events and group leaders are disabled
- *    - all group members are enabled
- *
- *     Group members are ruled by group leaders. They need to
- *     be enabled, because the group scheduling relies on that.
- *
- *  2) For traced programs executed by perf:
- *     - all independent events and group leaders have
- *       enable_on_exec set
- *     - we don't specifically enable or disable any event during
- *       the record command
- *
- *     Independent events and group leaders are initially disabled
- *     and get enabled by exec. Group members are ruled by group
- *     leaders as stated in 1).
- *
- *  3) For traced programs attached by perf (pid/tid):
- *     - we specifically enable or disable all events during
- *       the record command
- *
- *     When attaching events to already running traced we
- *     enable/disable events specifically, as there's no
- *     initial traced exec call.
- */
+ 
 void evsel__config(struct evsel *evsel, struct record_opts *opts,
 		   struct callchain_param *callchain)
 {
@@ -1143,36 +1064,24 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 	if (evsel->sample_read) {
 		evsel__set_sample_bit(evsel, READ);
 
-		/*
-		 * We need ID even in case of single event, because
-		 * PERF_SAMPLE_READ process ID specific data.
-		 */
+		 
 		evsel__set_sample_id(evsel, false);
 
-		/*
-		 * Apply group format only if we belong to group
-		 * with more than one members.
-		 */
+		 
 		if (leader->core.nr_members > 1) {
 			attr->read_format |= PERF_FORMAT_GROUP;
 			attr->inherit = 0;
 		}
 	}
 
-	/*
-	 * We default some events to have a default interval. But keep
-	 * it a weak assumption overridable by the user.
-	 */
+	 
 	if ((evsel->is_libpfm_event && !attr->sample_period) ||
 	    (!evsel->is_libpfm_event && (!attr->sample_period ||
 					 opts->user_freq != UINT_MAX ||
 					 opts->user_interval != ULLONG_MAX)))
 		evsel__set_default_freq_period(opts, attr);
 
-	/*
-	 * If attr->freq was set (here or earlier), ask for period
-	 * to be sampled.
-	 */
+	 
 	if (attr->freq)
 		evsel__set_sample_bit(evsel, PERIOD);
 
@@ -1192,11 +1101,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 		attr->mmap_data = track;
 	}
 
-	/*
-	 * We don't allow user space callchains for  function trace
-	 * event, due to issues with page faults while tracing page
-	 * fault handler and its overall trickiness nature.
-	 */
+	 
 	if (evsel__is_function_event(evsel))
 		evsel->core.attr.exclude_callchain_user = 1;
 
@@ -1218,9 +1123,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 	if (target__has_cpu(&opts->target) || opts->sample_cpu)
 		evsel__set_sample_bit(evsel, CPU);
 
-	/*
-	 * When the user explicitly disabled time don't force it here.
-	 */
+	 
 	if (opts->sample_time &&
 	    (!perf_missing_features.sample_id_all &&
 	    (!opts->no_inherit || target__has_cpu(&opts->target) || per_cpu ||
@@ -1257,10 +1160,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 	attr->comm     = track;
 	attr->build_id = track && opts->build_id;
 
-	/*
-	 * ksymbol is tracked separately with text poke because it needs to be
-	 * system wide and enabled immediately.
-	 */
+	 
 	if (!opts->text_poke)
 		attr->ksymbol = track && !perf_missing_features.ksymbol;
 	attr->bpf_event = track && !opts->no_bpf_event && !perf_missing_features.bpf;
@@ -1291,19 +1191,11 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 			PERF_FORMAT_TOTAL_TIME_RUNNING;
 	}
 
-	/*
-	 * XXX see the function comment above
-	 *
-	 * Disabling only independent events or group leaders,
-	 * keeping group members enabled.
-	 */
+	 
 	if (evsel__is_group_leader(evsel))
 		attr->disabled = 1;
 
-	/*
-	 * Setting enable_on_exec for independent events and
-	 * group leaders for traced executed by perf.
-	 */
+	 
 	if (target__none(&opts->target) && evsel__is_group_leader(evsel) &&
 	    !opts->target.initial_delay)
 		attr->enable_on_exec = 1;
@@ -1335,15 +1227,12 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 	if (evsel->core.own_cpus || evsel->unit)
 		evsel->core.attr.read_format |= PERF_FORMAT_ID;
 
-	/*
-	 * Apply event specific term settings,
-	 * it overloads any global configuration.
-	 */
+	 
 	evsel__apply_config_terms(evsel, opts, track);
 
 	evsel->ignore_missing_thread = opts->ignore_missing_thread;
 
-	/* The --period option takes the precedence. */
+	 
 	if (opts->period_set) {
 		if (opts->period)
 			evsel__set_sample_bit(evsel, PERIOD);
@@ -1351,14 +1240,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
 			evsel__reset_sample_bit(evsel, PERIOD);
 	}
 
-	/*
-	 * A dummy event never triggers any actual counter and therefore
-	 * cannot be used with branch_stack.
-	 *
-	 * For initial_delay, a dummy event is added implicitly.
-	 * The software event will trigger -EOPNOTSUPP error out,
-	 * if BRANCH_STACK bit is set.
-	 */
+	 
 	if (evsel__is_dummy_event(evsel))
 		evsel__reset_sample_bit(evsel, BRANCH_STACK);
 
@@ -1407,7 +1289,7 @@ int evsel__append_addr_filter(struct evsel *evsel, const char *filter)
 	return evsel__append_filter(evsel, "%s,%s", filter);
 }
 
-/* Caller has to clear disabled after going through all CPUs. */
+ 
 int evsel__enable_cpu(struct evsel *evsel, int cpu_map_idx)
 {
 	return perf_evsel__enable_cpu(&evsel->core, cpu_map_idx);
@@ -1422,7 +1304,7 @@ int evsel__enable(struct evsel *evsel)
 	return err;
 }
 
-/* Caller has to set disabled after going through all CPUs. */
+ 
 int evsel__disable_cpu(struct evsel *evsel, int cpu_map_idx)
 {
 	return perf_evsel__disable_cpu(&evsel->core, cpu_map_idx);
@@ -1431,12 +1313,7 @@ int evsel__disable_cpu(struct evsel *evsel, int cpu_map_idx)
 int evsel__disable(struct evsel *evsel)
 {
 	int err = perf_evsel__disable(&evsel->core);
-	/*
-	 * We mark it disabled here so that tools that disable a event can
-	 * ignore events after they disable it. I.e. the ring buffer may have
-	 * already a few more events queued up before the kernel got the stop
-	 * request.
-	 */
+	 
 	if (!err)
 		evsel->disabled = true;
 
@@ -1658,10 +1535,7 @@ static int get_group_fd(struct evsel *evsel, int cpu_map_idx, int thread)
 	if (evsel__is_group_leader(evsel))
 		return -1;
 
-	/*
-	 * Leader must be already processed/open,
-	 * if not it's a bug.
-	 */
+	 
 	BUG_ON(!leader->core.fd);
 
 	cpu_map_idx = evsel__hybrid_group_cpu_map_idx(evsel, cpu_map_idx);
@@ -1671,10 +1545,7 @@ static int get_group_fd(struct evsel *evsel, int cpu_map_idx, int thread)
 	fd = FD(leader, cpu_map_idx, thread);
 	BUG_ON(fd == -1 && !leader->skippable);
 
-	/*
-	 * When the leader has been skipped, return -2 to distinguish from no
-	 * group leader case.
-	 */
+	 
 	return fd == -1 ? -2 : fd;
 }
 
@@ -1699,10 +1570,7 @@ static int update_fds(struct evsel *evsel,
 
 		evsel__remove_fd(pos, nr_cpus, nr_threads, thread_idx);
 
-		/*
-		 * Since fds for next evsel has not been created,
-		 * there is no need to iterate whole event list.
-		 */
+		 
 		if (pos == evsel)
 			break;
 	}
@@ -1719,22 +1587,19 @@ static bool evsel__ignore_missing_thread(struct evsel *evsel,
 	if (!evsel->ignore_missing_thread)
 		return false;
 
-	/* The system wide setup does not work with threads. */
+	 
 	if (evsel->core.system_wide)
 		return false;
 
-	/* The -ESRCH is perf event syscall errno for pid's not found. */
+	 
 	if (err != -ESRCH)
 		return false;
 
-	/* If there's only one thread, let it fail. */
+	 
 	if (threads->nr == 1)
 		return false;
 
-	/*
-	 * We should remove fd for missing_thread first
-	 * because thread_map__remove() will decrease threads->nr.
-	 */
+	 
 	if (update_fds(evsel, nr_cpus, cpu_map_idx, threads->nr, thread))
 		return false;
 
@@ -1764,14 +1629,11 @@ static void display_attr(struct perf_event_attr *attr)
 
 bool evsel__precise_ip_fallback(struct evsel *evsel)
 {
-	/* Do not try less precise if not requested. */
+	 
 	if (!evsel->precise_max)
 		return false;
 
-	/*
-	 * We tried all the precise_ip values, and it's
-	 * still failing, so leave it to standard fallback.
-	 */
+	 
 	if (!evsel->core.attr.precise_ip) {
 		evsel->core.attr.precise_ip = evsel->precise_ip_original;
 		return false;
@@ -1838,7 +1700,7 @@ static void evsel__disable_missing_features(struct evsel *evsel)
 		evsel__reset_sample_bit(evsel, WEIGHT_STRUCT);
 	}
 	if (perf_missing_features.clockid_wrong)
-		evsel->core.attr.clockid = CLOCK_MONOTONIC; /* should always work */
+		evsel->core.attr.clockid = CLOCK_MONOTONIC;  
 	if (perf_missing_features.clockid) {
 		evsel->core.attr.use_clockid = 0;
 		evsel->core.attr.clockid = 0;
@@ -1880,10 +1742,7 @@ int evsel__prepare_open(struct evsel *evsel, struct perf_cpu_map *cpus,
 
 bool evsel__detect_missing_features(struct evsel *evsel)
 {
-	/*
-	 * Must probe features in the order they were added to the
-	 * perf_event_attr interface.
-	 */
+	 
 	if (!perf_missing_features.read_lost &&
 	    (evsel->core.attr.read_format & PERF_FORMAT_LOST)) {
 		perf_missing_features.read_lost = true;
@@ -1952,7 +1811,7 @@ bool evsel__detect_missing_features(struct evsel *evsel)
 		if (evsel->pmu)
 			evsel->pmu->missing_features.exclude_guest = true;
 		else {
-			/* we cannot find PMU, disable attrs now */
+			 
 			evsel->core.attr.exclude_host = false;
 			evsel->core.attr.exclude_guest = false;
 		}
@@ -2066,7 +1925,7 @@ retry_open:
 
 			test_attr__ready();
 
-			/* Debug message used by test scripts */
+			 
 			pr_debug2_peo("sys_perf_event_open: pid %d  cpu %d  group_fd %d  flags %#lx",
 				pid, perf_cpu_map__cpu(cpus, idx).cpu, group_fd, evsel->open_flags);
 
@@ -2092,7 +1951,7 @@ retry_open:
 						fd, group_fd, evsel->open_flags);
 			}
 
-			/* Debug message used by test scripts */
+			 
 			pr_debug2_peo(" = %d\n", fd);
 
 			if (evsel->bpf_fd >= 0) {
@@ -2112,10 +1971,7 @@ retry_open:
 
 			set_rlimit = NO_CHANGE;
 
-			/*
-			 * If we succeeded but had to kill clockid, fail and
-			 * have evsel__open_strerror() print us a nice error.
-			 */
+			 
 			if (perf_missing_features.clockid ||
 			    perf_missing_features.clockid_wrong) {
 				err = -EINVAL;
@@ -2132,17 +1988,14 @@ try_fallback:
 
 	if (evsel__ignore_missing_thread(evsel, perf_cpu_map__nr(cpus),
 					 idx, threads, thread, err)) {
-		/* We just removed 1 thread, so lower the upper nthreads limit. */
+		 
 		nthreads--;
 
-		/* ... and pretend like nothing have happened. */
+		 
 		err = 0;
 		goto retry_open;
 	}
-	/*
-	 * perf stat needs between 5 and 22 fds per CPU. When we run out
-	 * of them try to increase the limits.
-	 */
+	 
 	if (err == -EMFILE && evsel__increase_rlimit(&set_rlimit))
 		goto retry_open;
 
@@ -2213,7 +2066,7 @@ static int perf_evsel__parse_id_sample(const struct evsel *evsel,
 	if (type & PERF_SAMPLE_CPU) {
 		u.val64 = *array;
 		if (swapped) {
-			/* undo swap of u64, then swap on individual u32s */
+			 
 			u.val64 = bswap_64(u.val64);
 			u.val32[0] = bswap_32(u.val32[0]);
 		}
@@ -2240,7 +2093,7 @@ static int perf_evsel__parse_id_sample(const struct evsel *evsel,
 	if (type & PERF_SAMPLE_TID) {
 		u.val64 = *array;
 		if (swapped) {
-			/* undo swap of u64, then swap on individual u32s */
+			 
 			u.val64 = bswap_64(u.val64);
 			u.val32[0] = bswap_32(u.val32[0]);
 			u.val32[1] = bswap_32(u.val32[1]);
@@ -2272,11 +2125,7 @@ static inline bool overflow(const void *endp, u16 max_size, const void *offset,
 static int
 perf_event__check_size(union perf_event *event, unsigned int sample_size)
 {
-	/*
-	 * The evsel's sample_size is based on PERF_SAMPLE_MASK which includes
-	 * up to PERF_SAMPLE_PERIOD.  After that overflow() must be used to
-	 * check the format does not go past the end of the event.
-	 */
+	 
 	if (sample_size + sizeof(event->header) > event->header.size)
 		return -EFAULT;
 
@@ -2294,29 +2143,7 @@ u64 evsel__bitfield_swap_branch_flags(u64 value)
 {
 	u64 new_val = 0;
 
-	/*
-	 * branch_flags
-	 * union {
-	 * 	u64 values;
-	 * 	struct {
-	 * 		mispred:1	//target mispredicted
-	 * 		predicted:1	//target predicted
-	 * 		in_tx:1		//in transaction
-	 * 		abort:1		//transaction abort
-	 * 		cycles:16	//cycle count to last branch
-	 * 		type:4		//branch type
-	 * 		spec:2		//branch speculation info
-	 * 		new_type:4	//additional branch type
-	 * 		priv:3		//privilege level
-	 * 		reserved:31
-	 * 	}
-	 * }
-	 *
-	 * Avoid bswap64() the entire branch_flag.value,
-	 * as it has variable bit-field sizes. Instead the
-	 * macro takes the bit-field position/size,
-	 * swaps it based on the host endianness.
-	 */
+	 
 	if (host_is_bigendian()) {
 		new_val = bitfield_swap(value, 0, 1);
 		new_val |= bitfield_swap(value, 1, 1);
@@ -2354,10 +2181,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 	const void *endp = (void *)event + max_size;
 	u64 sz;
 
-	/*
-	 * used for cross-endian analysis. See git commit 65014ab3
-	 * for why this goofiness is needed.
-	 */
+	 
 	union u64_swap u;
 
 	memset(data, 0, sizeof(*data));
@@ -2394,7 +2218,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 	if (type & PERF_SAMPLE_TID) {
 		u.val64 = *array;
 		if (swapped) {
-			/* undo swap of u64, then swap on individual u32s */
+			 
 			u.val64 = bswap_64(u.val64);
 			u.val32[0] = bswap_32(u.val32[0]);
 			u.val32[1] = bswap_32(u.val32[1]);
@@ -2429,7 +2253,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 
 		u.val64 = *array;
 		if (swapped) {
-			/* undo swap of u64, then swap on individual u32s */
+			 
 			u.val64 = bswap_64(u.val64);
 			u.val32[0] = bswap_32(u.val32[0]);
 		}
@@ -2466,7 +2290,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 			array++;
 		}
 
-		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+		 
 		if (read_format & PERF_FORMAT_GROUP) {
 			const u64 max_group_nr = UINT64_MAX /
 					sizeof(struct sample_read_value);
@@ -2508,12 +2332,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 		OVERFLOW_CHECK_u64(array);
 		u.val64 = *array;
 
-		/*
-		 * Undo swap of u64, then swap on individual u32s,
-		 * get the size of the raw area and undo all of the
-		 * swap. The pevent interface handles endianness by
-		 * itself.
-		 */
+		 
 		if (swapped) {
 			u.val64 = bswap_64(u.val64);
 			u.val32[0] = bswap_32(u.val32[0]);
@@ -2521,10 +2340,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 		}
 		data->raw_size = u.val32[0];
 
-		/*
-		 * The raw data is aligned on 64bits including the
-		 * u32 size, so it's safe to use mem_bswap_64.
-		 */
+		 
 		if (swapped)
 			mem_bswap_64((void *) array, data->raw_size);
 
@@ -2553,24 +2369,12 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 			e = &data->branch_stack->entries[0];
 		} else {
 			data->no_hw_idx = true;
-			/*
-			 * if the PERF_SAMPLE_BRANCH_HW_INDEX is not applied,
-			 * only nr and entries[] will be output by kernel.
-			 */
+			 
 			e = (struct branch_entry *)&data->branch_stack->hw_idx;
 		}
 
 		if (swapped) {
-			/*
-			 * struct branch_flag does not have endian
-			 * specific bit field definition. And bswap
-			 * will not resolve the issue, since these
-			 * are bit fields.
-			 *
-			 * evsel__bitfield_swap_branch_flags() uses a
-			 * bitfield_swap macro to swap the bit position
-			 * based on the host endians.
-			 */
+			 
 			for (i = 0; i < data->branch_stack->nr; i++, e++)
 				e->flags.value = evsel__bitfield_swap_branch_flags(e->flags.value);
 		}
@@ -2680,7 +2484,7 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
 		sz = *array++;
 
 		OVERFLOW_CHECK(array, sz, max_size);
-		/* Undo swap of data */
+		 
 		if (swapped)
 			mem_bswap_64((char *)array, sz);
 		data->aux_sample.size = sz;
@@ -2840,14 +2644,7 @@ bool evsel__fallback(struct evsel *evsel, int err, char *msg, size_t msgsize)
 	if ((err == ENOENT || err == ENXIO || err == ENODEV) &&
 	    evsel->core.attr.type   == PERF_TYPE_HARDWARE &&
 	    evsel->core.attr.config == PERF_COUNT_HW_CPU_CYCLES) {
-		/*
-		 * If it's cycles then fall back to hrtimer based
-		 * cpu-clock-tick sw counter, which is always available even if
-		 * no PMU support.
-		 *
-		 * PPC returns ENXIO until 2.6.37 (behavior changed with commit
-		 * b0a873e).
-		 */
+		 
 		scnprintf(msg, msgsize, "%s",
 "The cycles event is not supported, trying to fall back to cpu-clock-ticks");
 
@@ -2862,11 +2659,11 @@ bool evsel__fallback(struct evsel *evsel, int err, char *msg, size_t msgsize)
 		char *new_name;
 		const char *sep = ":";
 
-		/* If event has exclude user then don't exclude kernel. */
+		 
 		if (evsel->core.attr.exclude_user)
 			return false;
 
-		/* Is there already the separator in the name. */
+		 
 		if (strchr(name, '/') ||
 		    (strchr(name, ':') && !evsel->is_libpfm_event))
 			sep = "";
@@ -2899,7 +2696,7 @@ static bool find_process(const char *name)
 	if (!dir)
 		return false;
 
-	/* Walk through the directory. */
+	 
 	while (ret && (d = readdir(dir)) != NULL) {
 		char path[PATH_MAX];
 		char *data;
@@ -3106,11 +2903,7 @@ void evsel__zero_per_pkg(struct evsel *evsel)
 	}
 }
 
-/**
- * evsel__is_hybrid - does the evsel have a known PMU that is hybrid. Note, this
- *                    will be false on hybrid systems for hardware and legacy
- *                    cache events.
- */
+ 
 bool evsel__is_hybrid(const struct evsel *evsel)
 {
 	if (perf_pmus__num_core_pmus() == 1)
@@ -3156,11 +2949,7 @@ bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel __maybe_unuse
 	return false;
 }
 
-/*
- * Remove an event from a given group (leader).
- * Some events, e.g., perf metrics Topdown events,
- * must always be grouped. Ignore the events.
- */
+ 
 void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader)
 {
 	if (!arch_evsel__must_be_in_group(evsel) && evsel != leader) {

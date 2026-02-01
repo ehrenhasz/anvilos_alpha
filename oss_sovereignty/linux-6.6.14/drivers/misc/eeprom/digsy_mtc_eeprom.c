@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EEPROMs access control driver for display configuration EEPROMs
- * on DigsyMTC board.
- *
- * (C) 2011 DENX Software Engineering, Anatolij Gustschin <agust@denx.de>
- *
- * FIXME: this driver is used on a device-tree probed platform: it
- * should be defined as a bit-banged SPI device and probed from the device
- * tree and not like this with static grabbing of a few numbered GPIO
- * lines at random.
- *
- * Add proper SPI and EEPROM in arch/powerpc/boot/dts/digsy_mtc.dts
- * and delete this driver.
- */
+
+ 
 
 #include <linux/gpio.h>
 #include <linux/gpio/machine.h>
@@ -31,13 +18,13 @@
 
 static void digsy_mtc_op_prepare(void *p)
 {
-	/* enable */
+	 
 	gpio_set_value(GPIO_EEPROM_OE, 0);
 }
 
 static void digsy_mtc_op_finish(void *p)
 {
-	/* disable */
+	 
 	gpio_set_value(GPIO_EEPROM_OE, 1);
 }
 

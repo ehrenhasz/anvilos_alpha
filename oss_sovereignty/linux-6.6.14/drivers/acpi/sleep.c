@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sleep.c - ACPI sleep support.
- *
- * Copyright (c) 2005 Alexey Starikovskiy <alexey.y.starikovskiy@intel.com>
- * Copyright (c) 2004 David Shaohua Li <shaohua.li@intel.com>
- * Copyright (c) 2000-2003 Patrick Mochel
- * Copyright (c) 2003 Open Source Development Lab
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: PM: " fmt
 
@@ -26,10 +19,7 @@
 #include "internal.h"
 #include "sleep.h"
 
-/*
- * Some HW-full platforms do not have _S5, so they may need
- * to leverage efi power off for a shutdown.
- */
+ 
 bool acpi_no_s5;
 static u8 sleep_states[ACPI_S_STATE_COUNT];
 
@@ -39,10 +29,7 @@ static void acpi_sleep_tts_switch(u32 acpi_state)
 
 	status = acpi_execute_simple_method(NULL, "\\_TTS", acpi_state);
 	if (ACPI_FAILURE(status) && status != AE_NOT_FOUND) {
-		/*
-		 * OS can't evaluate the _TTS object correctly. Some warning
-		 * message will be printed. But it won't break anything.
-		 */
+		 
 		pr_notice("Failure in evaluating _TTS object\n");
 	}
 }
@@ -69,7 +56,7 @@ static int acpi_sleep_prepare(u32 acpi_state)
 #ifdef CONFIG_ACPI_SLEEP
 	unsigned long acpi_wakeup_address;
 
-	/* do we have a wakeup address for S2 and S3? */
+	 
 	if (acpi_state == ACPI_STATE_S3 && !acpi_skip_set_wakeup_address()) {
 		acpi_wakeup_address = acpi_get_wakeup_address();
 		if (!acpi_wakeup_address)
@@ -106,13 +93,7 @@ EXPORT_SYMBOL_GPL(acpi_target_system_state);
 
 static bool pwr_btn_event_pending;
 
-/*
- * The ACPI specification wants us to save NVS memory regions during hibernation
- * and to restore them during the subsequent resume.  Windows does that also for
- * suspend to RAM.  However, it is known that this mechanism does not work on
- * all machines, so we allow the user to disable it with the help of the
- * 'acpi_sleep=nonvs' kernel command line option.
- */
+ 
 static bool nvs_nosave;
 
 void __init acpi_nvs_nosave(void)
@@ -120,14 +101,7 @@ void __init acpi_nvs_nosave(void)
 	nvs_nosave = true;
 }
 
-/*
- * The ACPI specification wants us to save NVS memory regions during hibernation
- * but says nothing about saving NVS during S3.  Not all versions of Windows
- * save NVS on S3 suspend either, and it is clear that not all systems need
- * NVS to be saved at S3 time.  To improve suspend/resume time, allow the
- * user to disable saving NVS on S3 if their system does not require it, but
- * continue to save/restore NVS for S4 as specified.
- */
+ 
 static bool nvs_nosave_s3;
 
 void __init acpi_nvs_nosave_s3(void)
@@ -141,11 +115,7 @@ static int __init init_nvs_save_s3(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * ACPI 1.0 wants us to execute _PTS before suspending devices, so we allow the
- * user to request that behavior by using the 'acpi_old_suspend_ordering'
- * kernel command line option that causes the following variable to be set.
- */
+ 
 static bool old_suspend_ordering;
 
 void __init acpi_old_suspend_ordering(void)
@@ -351,11 +321,7 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
 		DMI_MATCH(DMI_PRODUCT_NAME, "1025C"),
 		},
 	},
-	/*
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=189431
-	 * Lenovo G50-45 is a platform later than 2012, but needs nvs memory
-	 * saving during S3.
-	 */
+	 
 	{
 	.callback = init_nvs_save_s3,
 	.ident = "Lenovo G50-45",
@@ -372,11 +338,7 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
 		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
 		},
 	},
-	/*
-	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
-	 * the Low Power S0 Idle firmware interface (see
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=199057).
-	 */
+	 
 	{
 	.callback = init_default_s3,
 	.ident = "ThinkPad X1 Tablet(2016)",
@@ -385,10 +347,7 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
 		DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
 		},
 	},
-	/*
-	 * ASUS B1400CEAE hangs on resume from suspend (see
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
-	 */
+	 
 	{
 	.callback = init_default_s3,
 	.ident = "ASUS B1400CEAE",
@@ -418,9 +377,7 @@ static void __init acpi_sleep_dmi_check(void)
 	dmi_check_system(acpisleep_dmi_table);
 }
 
-/**
- * acpi_pm_freeze - Disable the GPEs and suspend EC transactions.
- */
+ 
 static int acpi_pm_freeze(void)
 {
 	acpi_disable_all_gpes();
@@ -429,21 +386,14 @@ static int acpi_pm_freeze(void)
 	return 0;
 }
 
-/**
- * acpi_pm_pre_suspend - Enable wakeup devices, "freeze" EC and save NVS.
- */
+ 
 static int acpi_pm_pre_suspend(void)
 {
 	acpi_pm_freeze();
 	return suspend_nvs_save();
 }
 
-/**
- *	__acpi_pm_prepare - Prepare the platform to enter the target state.
- *
- *	If necessary, set the firmware waking vector and do arch-specific
- *	nastiness to get the wakeup code to the waking vector.
- */
+ 
 static int __acpi_pm_prepare(void)
 {
 	int error = acpi_sleep_prepare(acpi_target_sleep_state);
@@ -453,10 +403,7 @@ static int __acpi_pm_prepare(void)
 	return error;
 }
 
-/**
- *	acpi_pm_prepare - Prepare the platform to enter the target sleep
- *		state and disable the GPEs.
- */
+ 
 static int acpi_pm_prepare(void)
 {
 	int error = __acpi_pm_prepare();
@@ -466,12 +413,7 @@ static int acpi_pm_prepare(void)
 	return error;
 }
 
-/**
- *	acpi_pm_finish - Instruct the platform to leave a sleep state.
- *
- *	This is called after we wake back up (or if entering the sleep state
- *	failed).
- */
+ 
 static void acpi_pm_finish(void)
 {
 	struct acpi_device *pwr_btn_adev;
@@ -487,19 +429,14 @@ static void acpi_pm_finish(void)
 	acpi_disable_wakeup_devices(acpi_state);
 	acpi_leave_sleep_state(acpi_state);
 
-	/* reset firmware waking vector */
+	 
 	acpi_set_waking_vector(0);
 
 	acpi_target_sleep_state = ACPI_STATE_S0;
 
 	acpi_resume_power_resources();
 
-	/* If we were woken with the fixed power button, provide a small
-	 * hint to userspace in the form of a wakeup event on the fixed power
-	 * button device (if it can be found).
-	 *
-	 * We delay the event generation til now, as the PM layer requires
-	 * timekeeping to be running before we generate events. */
+	 
 	if (!pwr_btn_event_pending)
 		return;
 
@@ -512,9 +449,7 @@ static void acpi_pm_finish(void)
 	}
 }
 
-/**
- * acpi_pm_start - Start system PM transition.
- */
+ 
 static void acpi_pm_start(u32 acpi_state)
 {
 	acpi_target_sleep_state = acpi_state;
@@ -522,26 +457,21 @@ static void acpi_pm_start(u32 acpi_state)
 	acpi_scan_lock_acquire();
 }
 
-/**
- * acpi_pm_end - Finish up system PM transition.
- */
+ 
 static void acpi_pm_end(void)
 {
 	acpi_turn_off_unused_power_resources();
 	acpi_scan_lock_release();
-	/*
-	 * This is necessary in case acpi_pm_finish() is not called during a
-	 * failing transition to a sleep state.
-	 */
+	 
 	acpi_target_sleep_state = ACPI_STATE_S0;
 	acpi_sleep_tts_switch(acpi_target_sleep_state);
 }
-#else /* !CONFIG_ACPI_SLEEP */
+#else  
 #define sleep_no_lps0	(1)
 #define acpi_target_sleep_state	ACPI_STATE_S0
 #define acpi_sleep_default_s3	(1)
 static inline void acpi_sleep_dmi_check(void) {}
-#endif /* CONFIG_ACPI_SLEEP */
+#endif  
 
 #ifdef CONFIG_SUSPEND
 static u32 acpi_suspend_states[] = {
@@ -551,10 +481,7 @@ static u32 acpi_suspend_states[] = {
 	[PM_SUSPEND_MAX] = ACPI_STATE_S5
 };
 
-/**
- *	acpi_suspend_begin - Set the target system sleep state to the state
- *		associated with given @pm_state, if supported.
- */
+ 
 static int acpi_suspend_begin(suspend_state_t pm_state)
 {
 	u32 acpi_state = acpi_suspend_states[pm_state];
@@ -575,14 +502,7 @@ static int acpi_suspend_begin(suspend_state_t pm_state)
 	return 0;
 }
 
-/**
- *	acpi_suspend_enter - Actually enter a sleep state.
- *	@pm_state: ignored
- *
- *	Flush caches and go to sleep. For STR we have to call arch-specific
- *	assembly, which in turn call acpi_enter_sleep_state().
- *	It's unfortunate, but it works. Please fix if you're feeling frisky.
- */
+ 
 static int acpi_suspend_enter(suspend_state_t pm_state)
 {
 	acpi_status status = AE_OK;
@@ -608,21 +528,13 @@ static int acpi_suspend_enter(suspend_state_t pm_state)
 	}
 	trace_suspend_resume(TPS("acpi_suspend"), acpi_state, false);
 
-	/* This violates the spec but is required for bug compatibility. */
+	 
 	acpi_write_bit_register(ACPI_BITREG_SCI_ENABLE, 1);
 
-	/* Reprogram control registers */
+	 
 	acpi_leave_sleep_state_prep(acpi_state);
 
-	/* ACPI 3.0 specs (P62) says that it's the responsibility
-	 * of the OSPM to clear the status bit [ implying that the
-	 * POWER_BUTTON event should not reach userspace ]
-	 *
-	 * However, we do generate a small hint for userspace in the form of
-	 * a wakeup event. We flag this condition for now and generate the
-	 * event later, as we're currently too early in resume to be able to
-	 * generate wakeup events.
-	 */
+	 
 	if (ACPI_SUCCESS(status) && (acpi_state == ACPI_STATE_S3)) {
 		acpi_event_status pwr_btn_status = ACPI_EVENT_FLAG_DISABLED;
 
@@ -630,26 +542,14 @@ static int acpi_suspend_enter(suspend_state_t pm_state)
 
 		if (pwr_btn_status & ACPI_EVENT_FLAG_STATUS_SET) {
 			acpi_clear_event(ACPI_EVENT_POWER_BUTTON);
-			/* Flag for later */
+			 
 			pwr_btn_event_pending = true;
 		}
 	}
 
-	/*
-	 * Disable all GPE and clear their status bits before interrupts are
-	 * enabled. Some GPEs (like wakeup GPEs) have no handlers and this can
-	 * prevent them from producing spurious interrups.
-	 *
-	 * acpi_leave_sleep_state() will reenable specific GPEs later.
-	 *
-	 * Because this code runs on one CPU with disabled interrupts (all of
-	 * the other CPUs are offline at this time), it need not acquire any
-	 * sleeping locks which may trigger an implicit preemption point even
-	 * if there is no contention, so avoid doing that by using a low-level
-	 * library routine here.
-	 */
+	 
 	acpi_hw_disable_all_gpes();
-	/* Allow EC transactions to happen. */
+	 
 	acpi_ec_unblock_transactions();
 
 	suspend_nvs_restore();
@@ -682,12 +582,7 @@ static const struct platform_suspend_ops acpi_suspend_ops = {
 	.end = acpi_pm_end,
 };
 
-/**
- *	acpi_suspend_begin_old - Set the target system sleep state to the
- *		state associated with given @pm_state, if supported, and
- *		execute the _PTS control method.  This function is used if the
- *		pre-ACPI 2.0 suspend ordering has been requested.
- */
+ 
 static int acpi_suspend_begin_old(suspend_state_t pm_state)
 {
 	int error = acpi_suspend_begin(pm_state);
@@ -697,10 +592,7 @@ static int acpi_suspend_begin_old(suspend_state_t pm_state)
 	return error;
 }
 
-/*
- * The following callbacks are used if the pre-ACPI 2.0 suspend ordering has
- * been requested.
- */
+ 
 static const struct platform_suspend_ops acpi_suspend_ops_old = {
 	.valid = acpi_suspend_state_valid,
 	.begin = acpi_suspend_begin_old,
@@ -734,7 +626,7 @@ int acpi_s2idle_prepare(void)
 
 	acpi_enable_wakeup_devices(ACPI_STATE_S0);
 
-	/* Change the configuration of GPEs to avoid spurious wakeup. */
+	 
 	acpi_enable_all_wakeup_gpes();
 	acpi_os_wait_events_complete();
 
@@ -748,36 +640,25 @@ bool acpi_s2idle_wake(void)
 		return pm_wakeup_pending();
 
 	while (pm_wakeup_pending()) {
-		/*
-		 * If IRQD_WAKEUP_ARMED is set for the SCI at this point, the
-		 * SCI has not triggered while suspended, so bail out (the
-		 * wakeup is pending anyway and the SCI is not the source of
-		 * it).
-		 */
+		 
 		if (irqd_is_wakeup_armed(irq_get_irq_data(acpi_sci_irq))) {
 			pm_pr_dbg("Wakeup unrelated to ACPI SCI\n");
 			return true;
 		}
 
-		/*
-		 * If the status bit of any enabled fixed event is set, the
-		 * wakeup is regarded as valid.
-		 */
+		 
 		if (acpi_any_fixed_event_status_set()) {
 			pm_pr_dbg("ACPI fixed event wakeup\n");
 			return true;
 		}
 
-		/* Check wakeups from drivers sharing the SCI. */
+		 
 		if (acpi_check_wakeup_handlers()) {
 			pm_pr_dbg("ACPI custom handler wakeup\n");
 			return true;
 		}
 
-		/*
-		 * Check non-EC GPE wakeups and if there are none, cancel the
-		 * SCI-related wakeup and dispatch the EC GPE.
-		 */
+		 
 		if (acpi_ec_dispatch_gpe()) {
 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
 			return true;
@@ -785,12 +666,7 @@ bool acpi_s2idle_wake(void)
 
 		acpi_os_wait_events_complete();
 
-		/*
-		 * The SCI is in the "suspended" state now and it cannot produce
-		 * new wakeup events till the rearming below, so if any of them
-		 * are pending here, they must be resulting from the processing
-		 * of EC events above or coming from somewhere else.
-		 */
+		 
 		if (pm_wakeup_pending()) {
 			pm_pr_dbg("Wakeup after ACPI Notify sync\n");
 			return true;
@@ -807,13 +683,10 @@ bool acpi_s2idle_wake(void)
 
 void acpi_s2idle_restore(void)
 {
-	/*
-	 * Drain pending events before restoring the working-state configuration
-	 * of GPEs.
-	 */
-	acpi_os_wait_events_complete(); /* synchronize GPE processing */
-	acpi_ec_flush_work(); /* flush the EC driver's workqueues */
-	acpi_os_wait_events_complete(); /* synchronize Notify handling */
+	 
+	acpi_os_wait_events_complete();  
+	acpi_ec_flush_work();  
+	acpi_os_wait_events_complete();  
 
 	s2idle_wakeup = false;
 
@@ -866,10 +739,10 @@ static void __init acpi_sleep_suspend_setup(void)
 	acpi_s2idle_setup();
 }
 
-#else /* !CONFIG_SUSPEND */
+#else  
 #define s2idle_wakeup		(false)
 static inline void acpi_sleep_suspend_setup(void) {}
-#endif /* !CONFIG_SUSPEND */
+#endif  
 
 bool acpi_s2idle_wakeup(void)
 {
@@ -907,12 +780,12 @@ static void acpi_sleep_syscore_init(void)
 }
 #else
 static inline void acpi_sleep_syscore_init(void) {}
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_HIBERNATION
 static unsigned long s4_hardware_signature;
 static struct acpi_table_facs *facs;
-int acpi_check_s4_hw_signature = -1; /* Default behaviour is just to warn */
+int acpi_check_s4_hw_signature = -1;  
 
 static int acpi_hibernation_begin(pm_message_t stage)
 {
@@ -933,9 +806,9 @@ static int acpi_hibernation_enter(void)
 {
 	acpi_status status = AE_OK;
 
-	/* This shouldn't return.  If it returns, we have a problem */
+	 
 	status = acpi_enter_sleep_state(ACPI_STATE_S4);
-	/* Reprogram control registers */
+	 
 	acpi_leave_sleep_state_prep(ACPI_STATE_S4);
 
 	return ACPI_SUCCESS(status) ? 0 : -EFAULT;
@@ -944,19 +817,16 @@ static int acpi_hibernation_enter(void)
 static void acpi_hibernation_leave(void)
 {
 	pm_set_resume_via_firmware();
-	/*
-	 * If ACPI is not enabled by the BIOS and the boot kernel, we need to
-	 * enable it here.
-	 */
+	 
 	acpi_enable();
-	/* Reprogram control registers */
+	 
 	acpi_leave_sleep_state_prep(ACPI_STATE_S4);
-	/* Check the hardware signature */
+	 
 	if (facs && s4_hardware_signature != facs->hardware_signature)
 		pr_crit("Hardware changed while hibernated, success doubtful!\n");
-	/* Restore the NVS memory area */
+	 
 	suspend_nvs_restore();
-	/* Allow EC transactions to happen. */
+	 
 	acpi_ec_unblock_transactions();
 }
 
@@ -978,20 +848,11 @@ static const struct platform_hibernation_ops acpi_hibernation_ops = {
 	.restore_cleanup = acpi_pm_thaw,
 };
 
-/**
- *	acpi_hibernation_begin_old - Set the target system sleep state to
- *		ACPI_STATE_S4 and execute the _PTS control method.  This
- *		function is used if the pre-ACPI 2.0 suspend ordering has been
- *		requested.
- */
+ 
 static int acpi_hibernation_begin_old(pm_message_t stage)
 {
 	int error;
-	/*
-	 * The _TTS object should always be evaluated before the _PTS object.
-	 * When the old_suspended_ordering is true, the _PTS object is
-	 * evaluated in the acpi_sleep_prepare.
-	 */
+	 
 	acpi_sleep_tts_switch(ACPI_STATE_S4);
 
 	error = acpi_sleep_prepare(ACPI_STATE_S4);
@@ -1012,10 +873,7 @@ static int acpi_hibernation_begin_old(pm_message_t stage)
 	return 0;
 }
 
-/*
- * The following callbacks are used if the pre-ACPI 2.0 suspend ordering has
- * been requested.
- */
+ 
 static const struct platform_hibernation_ops acpi_hibernation_ops_old = {
 	.begin = acpi_hibernation_begin_old,
 	.end = acpi_pm_end,
@@ -1042,31 +900,22 @@ static void acpi_sleep_hibernate_setup(void)
 
 	acpi_get_table(ACPI_SIG_FACS, 1, (struct acpi_table_header **)&facs);
 	if (facs) {
-		/*
-		 * s4_hardware_signature is the local variable which is just
-		 * used to warn about mismatch after we're attempting to
-		 * resume (in violation of the ACPI specification.)
-		 */
+		 
 		s4_hardware_signature = facs->hardware_signature;
 
 		if (acpi_check_s4_hw_signature > 0) {
-			/*
-			 * If we're actually obeying the ACPI specification
-			 * then the signature is written out as part of the
-			 * swsusp header, in order to allow the boot kernel
-			 * to gracefully decline to resume.
-			 */
+			 
 			swsusp_hardware_signature = facs->hardware_signature;
 		}
 	}
 }
-#else /* !CONFIG_HIBERNATION */
+#else  
 static inline void acpi_sleep_hibernate_setup(void) {}
-#endif /* !CONFIG_HIBERNATION */
+#endif  
 
 static int acpi_power_off_prepare(struct sys_off_data *data)
 {
-	/* Prepare to power off the system */
+	 
 	acpi_sleep_prepare(ACPI_STATE_S5);
 	acpi_disable_all_gpes();
 	acpi_os_wait_events_complete();
@@ -1075,7 +924,7 @@ static int acpi_power_off_prepare(struct sys_off_data *data)
 
 static int acpi_power_off(struct sys_off_data *data)
 {
-	/* acpi_sleep_prepare(ACPI_STATE_S5) should have already been called */
+	 
 	pr_debug("%s called\n", __func__);
 	local_irq_disable();
 	acpi_enter_sleep_state(ACPI_STATE_S5);
@@ -1107,10 +956,7 @@ int __init acpi_sleep_init(void)
 					 SYS_OFF_PRIO_FIRMWARE,
 					 acpi_power_off, NULL);
 
-		/*
-		 * Windows uses S5 for reboot, so some BIOSes depend on it to
-		 * perform proper reboot.
-		 */
+		 
 		register_sys_off_handler(SYS_OFF_MODE_RESTART_PREPARE,
 					 SYS_OFF_PRIO_FIRMWARE,
 					 acpi_power_off_prepare, NULL);
@@ -1125,10 +971,7 @@ int __init acpi_sleep_init(void)
 	}
 	pr_info("(supports%s)\n", supported);
 
-	/*
-	 * Register the tts_notifier to reboot notifier list so that the _TTS
-	 * object can also be evaluated when the system enters S5.
-	 */
+	 
 	register_reboot_notifier(&tts_notifier);
 	return 0;
 }

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Interrupt support for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -25,7 +20,7 @@
 		.mask = MADERA_ ## _irq ## _EINT1		\
 	}
 
-/* Mappings are the same for all Madera codecs */
+ 
 static const struct regmap_irq madera_irqs[MADERA_NUM_IRQ] = {
 	MADERA_IRQ(FLL1_LOCK,		MADERA_IRQ1_STATUS_2),
 	MADERA_IRQ(FLL2_LOCK,		MADERA_IRQ1_STATUS_2),
@@ -102,11 +97,7 @@ static int madera_suspend(struct device *dev)
 
 	dev_dbg(madera->irq_dev, "Suspend, disabling IRQ\n");
 
-	/*
-	 * A runtime resume would be needed to access the chip interrupt
-	 * controller but runtime pm doesn't function during suspend.
-	 * Temporarily disable interrupts until we reach suspend_noirq state.
-	 */
+	 
 	disable_irq(madera->irq);
 
 	return 0;
@@ -118,7 +109,7 @@ static int madera_suspend_noirq(struct device *dev)
 
 	dev_dbg(madera->irq_dev, "No IRQ suspend, reenabling IRQ\n");
 
-	/* Re-enable interrupts to service wakeup interrupts from the chip */
+	 
 	enable_irq(madera->irq);
 
 	return 0;
@@ -130,10 +121,7 @@ static int madera_resume_noirq(struct device *dev)
 
 	dev_dbg(madera->irq_dev, "No IRQ resume, disabling IRQ\n");
 
-	/*
-	 * We can't handle interrupts until runtime pm is available again.
-	 * Disable them temporarily.
-	 */
+	 
 	disable_irq(madera->irq);
 
 	return 0;
@@ -145,7 +133,7 @@ static int madera_resume(struct device *dev)
 
 	dev_dbg(madera->irq_dev, "Resume, reenabling IRQ\n");
 
-	/* Interrupts can now be handled */
+	 
 	enable_irq(madera->irq);
 
 	return 0;
@@ -167,10 +155,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "probe\n");
 
-	/*
-	 * Read the flags from the interrupt controller if not specified
-	 * by pdata
-	 */
+	 
 	irq_flags = madera->pdata.irq_flags;
 	if (!irq_flags) {
 		irq_data = irq_get_irq_data(madera->irq);
@@ -181,7 +166,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 
 		irq_flags = irqd_get_trigger_type(irq_data);
 
-		/* Codec defaults to trigger low, use this if no flags given */
+		 
 		if (irq_flags == IRQ_TYPE_NONE)
 			irq_flags = IRQF_TRIGGER_LOW;
 	}
@@ -191,10 +176,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * The silicon always starts at active-low, check if we need to
-	 * switch to active-high.
-	 */
+	 
 	if (irq_flags & IRQF_TRIGGER_HIGH) {
 		ret = regmap_update_bits(madera->regmap, MADERA_IRQ1_CTRL,
 					 MADERA_IRQ_POL_MASK, 0);
@@ -205,10 +187,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * NOTE: regmap registers this against the OF node of the parent of
-	 * the regmap - that is, against the mfd driver
-	 */
+	 
 	ret = regmap_add_irq_chip(madera->regmap, madera->irq, IRQF_ONESHOT, 0,
 				  &madera_irq_chip, &madera->irq_data);
 	if (ret) {
@@ -216,7 +195,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Save dev in parent MFD struct so it is accessible to siblings */
+	 
 	madera->irq_dev = &pdev->dev;
 
 	return 0;
@@ -226,10 +205,7 @@ static int madera_irq_remove(struct platform_device *pdev)
 {
 	struct madera *madera = dev_get_drvdata(pdev->dev.parent);
 
-	/*
-	 * The IRQ is disabled by the parent MFD driver before
-	 * it starts cleaning up all child drivers
-	 */
+	 
 	madera->irq_dev = NULL;
 	regmap_del_irq_chip(madera->irq, madera->irq_data);
 

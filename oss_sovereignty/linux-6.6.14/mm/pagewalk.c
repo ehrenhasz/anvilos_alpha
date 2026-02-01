@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/pagewalk.h>
 #include <linux/highmem.h>
 #include <linux/sched.h>
 #include <linux/hugetlb.h>
 
-/*
- * We want to know the real level where a entry is located ignoring any
- * folding of levels which may be happening. For example if p4d is folded then
- * a missing entry found at level 1 (p4d) is actually at level 0 (pgd).
- */
+ 
 static int real_depth(int depth)
 {
 	if (depth == 3 && PTRS_PER_PMD == 1)
@@ -46,12 +42,7 @@ static int walk_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
 	spinlock_t *ptl;
 
 	if (walk->no_vma) {
-		/*
-		 * pte_offset_map() might apply user-specific validation.
-		 * Indeed, on x86_64 the pmd entries set up by init_espfix_ap()
-		 * fit its pmd_bad() check (_PAGE_NX set and _PAGE_RW clear),
-		 * and CONFIG_EFI_PGT_DUMP efi_mm goes so far as to walk them.
-		 */
+		 
 		if (walk->mm == &init_mm || addr >= TASK_SIZE)
 			pte = pte_offset_kernel(pmd, addr);
 		else
@@ -135,10 +126,7 @@ again:
 
 		walk->action = ACTION_SUBTREE;
 
-		/*
-		 * This implies that each ->pmd_entry() handler
-		 * needs to know about pmd_trans_huge() pmds
-		 */
+		 
 		if (ops->pmd_entry)
 			err = ops->pmd_entry(pmd, addr, next, walk);
 		if (err)
@@ -147,10 +135,7 @@ again:
 		if (walk->action == ACTION_AGAIN)
 			goto again;
 
-		/*
-		 * Check this here so we only break down trans_huge
-		 * pages when we _need_ to
-		 */
+		 
 		if ((!walk->vma && (pmd_leaf(*pmd) || !pmd_present(*pmd))) ||
 		    walk->action == ACTION_CONTINUE ||
 		    !(ops->pte_entry))
@@ -334,21 +319,16 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
 	return err;
 }
 
-#else /* CONFIG_HUGETLB_PAGE */
+#else  
 static int walk_hugetlb_range(unsigned long addr, unsigned long end,
 			      struct mm_walk *walk)
 {
 	return 0;
 }
 
-#endif /* CONFIG_HUGETLB_PAGE */
+#endif  
 
-/*
- * Decide whether we really walk over the current vma on [@start, @end)
- * or skip it via the returned value. Return 0 if we do walk over the
- * current vma, and return 1 if we skip the vma. Negative values means
- * error, where we abort the current walk.
- */
+ 
 static int walk_page_test(unsigned long start, unsigned long end,
 			struct mm_walk *walk)
 {
@@ -358,14 +338,7 @@ static int walk_page_test(unsigned long start, unsigned long end,
 	if (ops->test_walk)
 		return ops->test_walk(start, end, walk);
 
-	/*
-	 * vma(VM_PFNMAP) doesn't have any valid struct pages behind VM_PFNMAP
-	 * range, so we don't walk over it as we do for normal vmas. However,
-	 * Some callers are interested in handling hole range and they don't
-	 * want to just ignore any single address range. Such users certainly
-	 * define their ->pte_hole() callbacks, so let's delegate them to handle
-	 * vma(VM_PFNMAP).
-	 */
+	 
 	if (vma->vm_flags & VM_PFNMAP) {
 		int err = 1;
 		if (ops->pte_hole)
@@ -421,52 +394,13 @@ static inline void process_vma_walk_lock(struct vm_area_struct *vma,
 		vma_assert_write_locked(vma);
 		break;
 	case PGWALK_RDLOCK:
-		/* PGWALK_RDLOCK is handled by process_mm_walk_lock */
+		 
 		break;
 	}
 #endif
 }
 
-/**
- * walk_page_range - walk page table with caller specific callbacks
- * @mm:		mm_struct representing the target process of page table walk
- * @start:	start address of the virtual address range
- * @end:	end address of the virtual address range
- * @ops:	operation to call during the walk
- * @private:	private data for callbacks' usage
- *
- * Recursively walk the page table tree of the process represented by @mm
- * within the virtual address range [@start, @end). During walking, we can do
- * some caller-specific works for each entry, by setting up pmd_entry(),
- * pte_entry(), and/or hugetlb_entry(). If you don't set up for some of these
- * callbacks, the associated entries/pages are just ignored.
- * The return values of these callbacks are commonly defined like below:
- *
- *  - 0  : succeeded to handle the current entry, and if you don't reach the
- *         end address yet, continue to walk.
- *  - >0 : succeeded to handle the current entry, and return to the caller
- *         with caller specific value.
- *  - <0 : failed to handle the current entry, and return to the caller
- *         with error code.
- *
- * Before starting to walk page table, some callers want to check whether
- * they really want to walk over the current vma, typically by checking
- * its vm_flags. walk_page_test() and @ops->test_walk() are used for this
- * purpose.
- *
- * If operations need to be staged before and committed after a vma is walked,
- * there are two callbacks, pre_vma() and post_vma(). Note that post_vma(),
- * since it is intended to handle commit-type operations, can't return any
- * errors.
- *
- * struct mm_walk keeps current values of some common data like vma and pmd,
- * which are useful for the access from callbacks. If you want to pass some
- * caller-specific data to callbacks, @private should be helpful.
- *
- * Locking:
- *   Callers of walk_page_range() and walk_page_vma() should hold @mm->mmap_lock,
- *   because these function traverse vma list and/or access to vma's data.
- */
+ 
 int walk_page_range(struct mm_struct *mm, unsigned long start,
 		unsigned long end, const struct mm_walk_ops *ops,
 		void *private)
@@ -490,17 +424,17 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
 
 	vma = find_vma(walk.mm, start);
 	do {
-		if (!vma) { /* after the last vma */
+		if (!vma) {  
 			walk.vma = NULL;
 			next = end;
 			if (ops->pte_hole)
 				err = ops->pte_hole(start, next, -1, &walk);
-		} else if (start < vma->vm_start) { /* outside vma */
+		} else if (start < vma->vm_start) {  
 			walk.vma = NULL;
 			next = min(end, vma->vm_start);
 			if (ops->pte_hole)
 				err = ops->pte_hole(start, next, -1, &walk);
-		} else { /* inside vma */
+		} else {  
 			process_vma_walk_lock(vma, ops->walk_lock);
 			walk.vma = vma;
 			next = min(end, vma->vm_end);
@@ -508,11 +442,7 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
 
 			err = walk_page_test(start, next, &walk);
 			if (err > 0) {
-				/*
-				 * positive return values are purely for
-				 * controlling the pagewalk, so should never
-				 * be passed to the callers.
-				 */
+				 
 				err = 0;
 				continue;
 			}
@@ -526,20 +456,7 @@ int walk_page_range(struct mm_struct *mm, unsigned long start,
 	return err;
 }
 
-/**
- * walk_page_range_novma - walk a range of pagetables not backed by a vma
- * @mm:		mm_struct representing the target process of page table walk
- * @start:	start address of the virtual address range
- * @end:	end address of the virtual address range
- * @ops:	operation to call during the walk
- * @pgd:	pgd to walk if different from mm->pgd
- * @private:	private data for callbacks' usage
- *
- * Similar to walk_page_range() but can walk any page tables even if they are
- * not backed by VMAs. Because 'unusual' entries may be walked this function
- * will also not lock the PTEs for the pte_entry() callback. This is useful for
- * walking the kernel pages tables or page tables for firmware.
- */
+ 
 int walk_page_range_novma(struct mm_struct *mm, unsigned long start,
 			  unsigned long end, const struct mm_walk_ops *ops,
 			  pgd_t *pgd,
@@ -600,36 +517,7 @@ int walk_page_vma(struct vm_area_struct *vma, const struct mm_walk_ops *ops,
 	return __walk_page_range(vma->vm_start, vma->vm_end, &walk);
 }
 
-/**
- * walk_page_mapping - walk all memory areas mapped into a struct address_space.
- * @mapping: Pointer to the struct address_space
- * @first_index: First page offset in the address_space
- * @nr: Number of incremental page offsets to cover
- * @ops:	operation to call during the walk
- * @private:	private data for callbacks' usage
- *
- * This function walks all memory areas mapped into a struct address_space.
- * The walk is limited to only the given page-size index range, but if
- * the index boundaries cross a huge page-table entry, that entry will be
- * included.
- *
- * Also see walk_page_range() for additional information.
- *
- * Locking:
- *   This function can't require that the struct mm_struct::mmap_lock is held,
- *   since @mapping may be mapped by multiple processes. Instead
- *   @mapping->i_mmap_rwsem must be held. This might have implications in the
- *   callbacks, and it's up tho the caller to ensure that the
- *   struct mm_struct::mmap_lock is not needed.
- *
- *   Also this means that a caller can't rely on the struct
- *   vm_area_struct::vm_flags to be constant across a call,
- *   except for immutable flags. Callers requiring this shouldn't use
- *   this function.
- *
- * Return: 0 on success, negative error code on failure, positive number on
- * caller defined premature termination.
- */
+ 
 int walk_page_mapping(struct address_space *mapping, pgoff_t first_index,
 		      pgoff_t nr, const struct mm_walk_ops *ops,
 		      void *private)
@@ -646,7 +534,7 @@ int walk_page_mapping(struct address_space *mapping, pgoff_t first_index,
 	lockdep_assert_held(&mapping->i_mmap_rwsem);
 	vma_interval_tree_foreach(vma, &mapping->i_mmap, first_index,
 				  first_index + nr - 1) {
-		/* Clip to the vma */
+		 
 		vba = vma->vm_pgoff;
 		vea = vba + vma_pages(vma);
 		cba = first_index;

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// STMicroelectronics STM32 SPI Controller driver
-//
-// Copyright (C) 2017, STMicroelectronics - All Rights Reserved
-// Author(s): Amelie Delaunay <amelie.delaunay@st.com> for STMicroelectronics.
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/debugfs.h>
@@ -21,14 +21,14 @@
 
 #define DRIVER_NAME "spi_stm32"
 
-/* STM32F4 SPI registers */
+ 
 #define STM32F4_SPI_CR1			0x00
 #define STM32F4_SPI_CR2			0x04
 #define STM32F4_SPI_SR			0x08
 #define STM32F4_SPI_DR			0x0C
 #define STM32F4_SPI_I2SCFGR		0x1C
 
-/* STM32F4_SPI_CR1 bit fields */
+ 
 #define STM32F4_SPI_CR1_CPHA		BIT(0)
 #define STM32F4_SPI_CR1_CPOL		BIT(1)
 #define STM32F4_SPI_CR1_MSTR		BIT(2)
@@ -47,7 +47,7 @@
 #define STM32F4_SPI_CR1_BR_MIN		0
 #define STM32F4_SPI_CR1_BR_MAX		(GENMASK(5, 3) >> 3)
 
-/* STM32F4_SPI_CR2 bit fields */
+ 
 #define STM32F4_SPI_CR2_RXDMAEN		BIT(0)
 #define STM32F4_SPI_CR2_TXDMAEN		BIT(1)
 #define STM32F4_SPI_CR2_SSOE		BIT(2)
@@ -56,7 +56,7 @@
 #define STM32F4_SPI_CR2_RXNEIE		BIT(6)
 #define STM32F4_SPI_CR2_TXEIE		BIT(7)
 
-/* STM32F4_SPI_SR bit fields */
+ 
 #define STM32F4_SPI_SR_RXNE		BIT(0)
 #define STM32F4_SPI_SR_TXE		BIT(1)
 #define STM32F4_SPI_SR_CHSIDE		BIT(2)
@@ -67,14 +67,14 @@
 #define STM32F4_SPI_SR_BSY		BIT(7)
 #define STM32F4_SPI_SR_FRE		BIT(8)
 
-/* STM32F4_SPI_I2SCFGR bit fields */
+ 
 #define STM32F4_SPI_I2SCFGR_I2SMOD	BIT(11)
 
-/* STM32F4 SPI Baud Rate min/max divisor */
+ 
 #define STM32F4_SPI_BR_DIV_MIN		(2 << STM32F4_SPI_CR1_BR_MIN)
 #define STM32F4_SPI_BR_DIV_MAX		(2 << STM32F4_SPI_CR1_BR_MAX)
 
-/* STM32H7 SPI registers */
+ 
 #define STM32H7_SPI_CR1			0x00
 #define STM32H7_SPI_CR2			0x04
 #define STM32H7_SPI_CFG1		0x08
@@ -86,7 +86,7 @@
 #define STM32H7_SPI_RXDR		0x30
 #define STM32H7_SPI_I2SCFGR		0x50
 
-/* STM32H7_SPI_CR1 bit fields */
+ 
 #define STM32H7_SPI_CR1_SPE		BIT(0)
 #define STM32H7_SPI_CR1_MASRX		BIT(8)
 #define STM32H7_SPI_CR1_CSTART		BIT(9)
@@ -94,11 +94,11 @@
 #define STM32H7_SPI_CR1_HDDIR		BIT(11)
 #define STM32H7_SPI_CR1_SSI		BIT(12)
 
-/* STM32H7_SPI_CR2 bit fields */
+ 
 #define STM32H7_SPI_CR2_TSIZE		GENMASK(15, 0)
 #define STM32H7_SPI_TSIZE_MAX		GENMASK(15, 0)
 
-/* STM32H7_SPI_CFG1 bit fields */
+ 
 #define STM32H7_SPI_CFG1_DSIZE		GENMASK(4, 0)
 #define STM32H7_SPI_CFG1_FTHLV		GENMASK(8, 5)
 #define STM32H7_SPI_CFG1_RXDMAEN	BIT(14)
@@ -108,7 +108,7 @@
 #define STM32H7_SPI_CFG1_MBR_MIN	0
 #define STM32H7_SPI_CFG1_MBR_MAX	(GENMASK(30, 28) >> 28)
 
-/* STM32H7_SPI_CFG2 bit fields */
+ 
 #define STM32H7_SPI_CFG2_MIDI		GENMASK(7, 4)
 #define STM32H7_SPI_CFG2_COMM		GENMASK(18, 17)
 #define STM32H7_SPI_CFG2_SP		GENMASK(21, 19)
@@ -120,7 +120,7 @@
 #define STM32H7_SPI_CFG2_SSIOP		BIT(28)
 #define STM32H7_SPI_CFG2_AFCNTR		BIT(31)
 
-/* STM32H7_SPI_IER bit fields */
+ 
 #define STM32H7_SPI_IER_RXPIE		BIT(0)
 #define STM32H7_SPI_IER_TXPIE		BIT(1)
 #define STM32H7_SPI_IER_DXPIE		BIT(2)
@@ -130,7 +130,7 @@
 #define STM32H7_SPI_IER_MODFIE		BIT(9)
 #define STM32H7_SPI_IER_ALL		GENMASK(10, 0)
 
-/* STM32H7_SPI_SR bit fields */
+ 
 #define STM32H7_SPI_SR_RXP		BIT(0)
 #define STM32H7_SPI_SR_TXP		BIT(1)
 #define STM32H7_SPI_SR_EOT		BIT(3)
@@ -140,66 +140,46 @@
 #define STM32H7_SPI_SR_RXPLVL		GENMASK(14, 13)
 #define STM32H7_SPI_SR_RXWNE		BIT(15)
 
-/* STM32H7_SPI_IFCR bit fields */
+ 
 #define STM32H7_SPI_IFCR_ALL		GENMASK(11, 3)
 
-/* STM32H7_SPI_I2SCFGR bit fields */
+ 
 #define STM32H7_SPI_I2SCFGR_I2SMOD	BIT(0)
 
-/* STM32H7 SPI Master Baud Rate min/max divisor */
+ 
 #define STM32H7_SPI_MBR_DIV_MIN		(2 << STM32H7_SPI_CFG1_MBR_MIN)
 #define STM32H7_SPI_MBR_DIV_MAX		(2 << STM32H7_SPI_CFG1_MBR_MAX)
 
-/* STM32H7 SPI Communication mode */
+ 
 #define STM32H7_SPI_FULL_DUPLEX		0
 #define STM32H7_SPI_SIMPLEX_TX		1
 #define STM32H7_SPI_SIMPLEX_RX		2
 #define STM32H7_SPI_HALF_DUPLEX		3
 
-/* SPI Communication type */
+ 
 #define SPI_FULL_DUPLEX		0
 #define SPI_SIMPLEX_TX		1
 #define SPI_SIMPLEX_RX		2
 #define SPI_3WIRE_TX		3
 #define SPI_3WIRE_RX		4
 
-#define STM32_SPI_AUTOSUSPEND_DELAY		1	/* 1 ms */
+#define STM32_SPI_AUTOSUSPEND_DELAY		1	 
 
-/*
- * use PIO for small transfers, avoiding DMA setup/teardown overhead for drivers
- * without fifo buffers.
- */
+ 
 #define SPI_DMA_MIN_BYTES	16
 
-/* STM32 SPI driver helpers */
+ 
 #define STM32_SPI_MASTER_MODE(stm32_spi) (!(stm32_spi)->device_mode)
 #define STM32_SPI_DEVICE_MODE(stm32_spi) ((stm32_spi)->device_mode)
 
-/**
- * struct stm32_spi_reg - stm32 SPI register & bitfield desc
- * @reg:		register offset
- * @mask:		bitfield mask
- * @shift:		left shift
- */
+ 
 struct stm32_spi_reg {
 	int reg;
 	int mask;
 	int shift;
 };
 
-/**
- * struct stm32_spi_regspec - stm32 registers definition, compatible dependent data
- * @en: enable register and SPI enable bit
- * @dma_rx_en: SPI DMA RX enable register end SPI DMA RX enable bit
- * @dma_tx_en: SPI DMA TX enable register end SPI DMA TX enable bit
- * @cpol: clock polarity register and polarity bit
- * @cpha: clock phase register and phase bit
- * @lsb_first: LSB transmitted first register and bit
- * @cs_high: chips select active value
- * @br: baud rate register and bitfields
- * @rx: SPI RX data register
- * @tx: SPI TX data register
- */
+ 
 struct stm32_spi_regspec {
 	const struct stm32_spi_reg en;
 	const struct stm32_spi_reg dma_rx_en;
@@ -215,32 +195,7 @@ struct stm32_spi_regspec {
 
 struct stm32_spi;
 
-/**
- * struct stm32_spi_cfg - stm32 compatible configuration data
- * @regs: registers descriptions
- * @get_fifo_size: routine to get fifo size
- * @get_bpw_mask: routine to get bits per word mask
- * @disable: routine to disable controller
- * @config: routine to configure controller as SPI Master
- * @set_bpw: routine to configure registers to for bits per word
- * @set_mode: routine to configure registers to desired mode
- * @set_data_idleness: optional routine to configure registers to desired idle
- * time between frames (if driver has this functionality)
- * @set_number_of_data: optional routine to configure registers to desired
- * number of data (if driver has this functionality)
- * @transfer_one_dma_start: routine to start transfer a single spi_transfer
- * using DMA
- * @dma_rx_cb: routine to call after DMA RX channel operation is complete
- * @dma_tx_cb: routine to call after DMA TX channel operation is complete
- * @transfer_one_irq: routine to configure interrupts for driver
- * @irq_handler_event: Interrupt handler for SPI controller events
- * @irq_handler_thread: thread of interrupt handler for SPI controller
- * @baud_rate_div_min: minimum baud rate divisor
- * @baud_rate_div_max: maximum baud rate divisor
- * @has_fifo: boolean to know if fifo is used for driver
- * @has_device_mode: is this compatible capable to switch on device mode
- * @flags: compatible specific SPI controller flags used at registration time
- */
+ 
 struct stm32_spi_cfg {
 	const struct stm32_spi_regspec *regs;
 	int (*get_fifo_size)(struct stm32_spi *spi);
@@ -264,34 +219,7 @@ struct stm32_spi_cfg {
 	u16 flags;
 };
 
-/**
- * struct stm32_spi - private data of the SPI controller
- * @dev: driver model representation of the controller
- * @ctrl: controller interface
- * @cfg: compatible configuration data
- * @base: virtual memory area
- * @clk: hw kernel clock feeding the SPI clock generator
- * @clk_rate: rate of the hw kernel clock feeding the SPI clock generator
- * @lock: prevent I/O concurrent access
- * @irq: SPI controller interrupt line
- * @fifo_size: size of the embedded fifo in bytes
- * @cur_midi: master inter-data idleness in ns
- * @cur_speed: speed configured in Hz
- * @cur_half_period: time of a half bit in us
- * @cur_bpw: number of bits in a single SPI data frame
- * @cur_fthlv: fifo threshold level (data frames in a single data packet)
- * @cur_comm: SPI communication mode
- * @cur_xferlen: current transfer length in bytes
- * @cur_usedma: boolean to know if dma is used in current transfer
- * @tx_buf: data to be written, or NULL
- * @rx_buf: data to be read, or NULL
- * @tx_len: number of data to be written in bytes
- * @rx_len: number of data to be read in bytes
- * @dma_tx: dma channel for TX transfer
- * @dma_rx: dma channel for RX transfer
- * @phys_addr: SPI registers physical base address
- * @device_mode: the controller is configured as SPI device
- */
+ 
 struct stm32_spi {
 	struct device *dev;
 	struct spi_controller *ctrl;
@@ -299,7 +227,7 @@ struct stm32_spi {
 	void __iomem *base;
 	struct clk *clk;
 	u32 clk_rate;
-	spinlock_t lock; /* prevent I/O concurrent access */
+	spinlock_t lock;  
 	int irq;
 	unsigned int fifo_size;
 
@@ -340,9 +268,7 @@ static const struct stm32_spi_regspec stm32f4_spi_regspec = {
 };
 
 static const struct stm32_spi_regspec stm32h7_spi_regspec = {
-	/* SPI data transfer is enabled but spi_ker_ck is idle.
-	 * CFG1 and CFG2 registers are write protected when SPE is enabled.
-	 */
+	 
 	.en = { STM32H7_SPI_CR1, STM32H7_SPI_CR1_SPE },
 
 	.dma_rx_en = { STM32H7_SPI_CFG1, STM32H7_SPI_CFG1_RXDMAEN },
@@ -373,10 +299,7 @@ static inline void stm32_spi_clr_bits(struct stm32_spi *spi,
 		       spi->base + offset);
 }
 
-/**
- * stm32h7_spi_get_fifo_size - Return fifo size
- * @spi: pointer to the spi controller data structure
- */
+ 
 static int stm32h7_spi_get_fifo_size(struct stm32_spi *spi)
 {
 	unsigned long flags;
@@ -398,20 +321,14 @@ static int stm32h7_spi_get_fifo_size(struct stm32_spi *spi)
 	return count;
 }
 
-/**
- * stm32f4_spi_get_bpw_mask - Return bits per word mask
- * @spi: pointer to the spi controller data structure
- */
+ 
 static int stm32f4_spi_get_bpw_mask(struct stm32_spi *spi)
 {
 	dev_dbg(spi->dev, "8-bit or 16-bit data frame supported\n");
 	return SPI_BPW_MASK(8) | SPI_BPW_MASK(16);
 }
 
-/**
- * stm32h7_spi_get_bpw_mask - Return bits per word mask
- * @spi: pointer to the spi controller data structure
- */
+ 
 static int stm32h7_spi_get_bpw_mask(struct stm32_spi *spi)
 {
 	unsigned long flags;
@@ -419,10 +336,7 @@ static int stm32h7_spi_get_bpw_mask(struct stm32_spi *spi)
 
 	spin_lock_irqsave(&spi->lock, flags);
 
-	/*
-	 * The most significant bit at DSIZE bit field is reserved when the
-	 * maximum data size of periperal instances is limited to 16-bit
-	 */
+	 
 	stm32_spi_set_bits(spi, STM32H7_SPI_CFG1, STM32H7_SPI_CFG1_DSIZE);
 
 	cfg1 = readl_relaxed(spi->base + STM32H7_SPI_CFG1);
@@ -435,34 +349,20 @@ static int stm32h7_spi_get_bpw_mask(struct stm32_spi *spi)
 	return SPI_BPW_RANGE_MASK(4, max_bpw);
 }
 
-/**
- * stm32_spi_prepare_mbr - Determine baud rate divisor value
- * @spi: pointer to the spi controller data structure
- * @speed_hz: requested speed
- * @min_div: minimum baud rate divisor
- * @max_div: maximum baud rate divisor
- *
- * Return baud rate divisor value in case of success or -EINVAL
- */
+ 
 static int stm32_spi_prepare_mbr(struct stm32_spi *spi, u32 speed_hz,
 				 u32 min_div, u32 max_div)
 {
 	u32 div, mbrdiv;
 
-	/* Ensure spi->clk_rate is even */
+	 
 	div = DIV_ROUND_CLOSEST(spi->clk_rate & ~0x1, speed_hz);
 
-	/*
-	 * SPI framework set xfer->speed_hz to ctrl->max_speed_hz if
-	 * xfer->speed_hz is greater than ctrl->max_speed_hz, and it returns
-	 * an error when xfer->speed_hz is lower than ctrl->min_speed_hz, so
-	 * no need to check it there.
-	 * However, we need to ensure the following calculations.
-	 */
+	 
 	if ((div < min_div) || (div > max_div))
 		return -EINVAL;
 
-	/* Determine the first power of 2 greater than or equal to div */
+	 
 	if (div & (div - 1))
 		mbrdiv = fls(div);
 	else
@@ -475,30 +375,20 @@ static int stm32_spi_prepare_mbr(struct stm32_spi *spi, u32 speed_hz,
 	return mbrdiv - 1;
 }
 
-/**
- * stm32h7_spi_prepare_fthlv - Determine FIFO threshold level
- * @spi: pointer to the spi controller data structure
- * @xfer_len: length of the message to be transferred
- */
+ 
 static u32 stm32h7_spi_prepare_fthlv(struct stm32_spi *spi, u32 xfer_len)
 {
 	u32 packet, bpw;
 
-	/* data packet should not exceed 1/2 of fifo space */
+	 
 	packet = clamp(xfer_len, 1U, spi->fifo_size / 2);
 
-	/* align packet size with data registers access */
+	 
 	bpw = DIV_ROUND_UP(spi->cur_bpw, 8);
 	return DIV_ROUND_UP(packet, bpw);
 }
 
-/**
- * stm32f4_spi_write_tx - Write bytes to Transmit Data Register
- * @spi: pointer to the spi controller data structure
- *
- * Read from tx_buf depends on remaining bytes to avoid to read beyond
- * tx_buf end.
- */
+ 
 static void stm32f4_spi_write_tx(struct stm32_spi *spi)
 {
 	if ((spi->tx_len > 0) && (readl_relaxed(spi->base + STM32F4_SPI_SR) &
@@ -521,13 +411,7 @@ static void stm32f4_spi_write_tx(struct stm32_spi *spi)
 	dev_dbg(spi->dev, "%s: %d bytes left\n", __func__, spi->tx_len);
 }
 
-/**
- * stm32h7_spi_write_txfifo - Write bytes in Transmit Data Register
- * @spi: pointer to the spi controller data structure
- *
- * Read from tx_buf depends on remaining bytes to avoid to read beyond
- * tx_buf end.
- */
+ 
 static void stm32h7_spi_write_txfifo(struct stm32_spi *spi)
 {
 	while ((spi->tx_len > 0) &&
@@ -556,13 +440,7 @@ static void stm32h7_spi_write_txfifo(struct stm32_spi *spi)
 	dev_dbg(spi->dev, "%s: %d bytes left\n", __func__, spi->tx_len);
 }
 
-/**
- * stm32f4_spi_read_rx - Read bytes from Receive Data Register
- * @spi: pointer to the spi controller data structure
- *
- * Write in rx_buf depends on remaining bytes to avoid to write beyond
- * rx_buf end.
- */
+ 
 static void stm32f4_spi_read_rx(struct stm32_spi *spi)
 {
 	if ((spi->rx_len > 0) && (readl_relaxed(spi->base + STM32F4_SPI_SR) &
@@ -585,13 +463,7 @@ static void stm32f4_spi_read_rx(struct stm32_spi *spi)
 	dev_dbg(spi->dev, "%s: %d bytes left\n", __func__, spi->rx_len);
 }
 
-/**
- * stm32h7_spi_read_rxfifo - Read bytes in Receive Data Register
- * @spi: pointer to the spi controller data structure
- *
- * Write in rx_buf depends on remaining bytes to avoid to write beyond
- * rx_buf end.
- */
+ 
 static void stm32h7_spi_read_rxfifo(struct stm32_spi *spi)
 {
 	u32 sr = readl_relaxed(spi->base + STM32H7_SPI_SR);
@@ -631,10 +503,7 @@ static void stm32h7_spi_read_rxfifo(struct stm32_spi *spi)
 		__func__, spi->rx_len, sr);
 }
 
-/**
- * stm32_spi_enable - Enable SPI controller
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32_spi_enable(struct stm32_spi *spi)
 {
 	dev_dbg(spi->dev, "enable controller\n");
@@ -643,10 +512,7 @@ static void stm32_spi_enable(struct stm32_spi *spi)
 			   spi->cfg->regs->en.mask);
 }
 
-/**
- * stm32f4_spi_disable - Disable SPI controller
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32f4_spi_disable(struct stm32_spi *spi)
 {
 	unsigned long flags;
@@ -662,12 +528,12 @@ static void stm32f4_spi_disable(struct stm32_spi *spi)
 		return;
 	}
 
-	/* Disable interrupts */
+	 
 	stm32_spi_clr_bits(spi, STM32F4_SPI_CR2, STM32F4_SPI_CR2_TXEIE |
 						 STM32F4_SPI_CR2_RXNEIE |
 						 STM32F4_SPI_CR2_ERRIE);
 
-	/* Wait until BSY = 0 */
+	 
 	if (readl_relaxed_poll_timeout_atomic(spi->base + STM32F4_SPI_SR,
 					      sr, !(sr & STM32F4_SPI_SR_BSY),
 					      10, 100000) < 0) {
@@ -684,19 +550,14 @@ static void stm32f4_spi_disable(struct stm32_spi *spi)
 	stm32_spi_clr_bits(spi, STM32F4_SPI_CR2, STM32F4_SPI_CR2_TXDMAEN |
 						 STM32F4_SPI_CR2_RXDMAEN);
 
-	/* Sequence to clear OVR flag */
+	 
 	readl_relaxed(spi->base + STM32F4_SPI_DR);
 	readl_relaxed(spi->base + STM32F4_SPI_SR);
 
 	spin_unlock_irqrestore(&spi->lock, flags);
 }
 
-/**
- * stm32h7_spi_disable - Disable SPI controller
- * @spi: pointer to the spi controller data structure
- *
- * RX-Fifo is flushed when SPI controller is disabled.
- */
+ 
 static void stm32h7_spi_disable(struct stm32_spi *spi)
 {
 	unsigned long flags;
@@ -713,7 +574,7 @@ static void stm32h7_spi_disable(struct stm32_spi *spi)
 		return;
 	}
 
-	/* Add a delay to make sure that transmission is ended. */
+	 
 	if (spi->cur_half_period)
 		udelay(spi->cur_half_period);
 
@@ -727,22 +588,14 @@ static void stm32h7_spi_disable(struct stm32_spi *spi)
 	stm32_spi_clr_bits(spi, STM32H7_SPI_CFG1, STM32H7_SPI_CFG1_TXDMAEN |
 						STM32H7_SPI_CFG1_RXDMAEN);
 
-	/* Disable interrupts and clear status flags */
+	 
 	writel_relaxed(0, spi->base + STM32H7_SPI_IER);
 	writel_relaxed(STM32H7_SPI_IFCR_ALL, spi->base + STM32H7_SPI_IFCR);
 
 	spin_unlock_irqrestore(&spi->lock, flags);
 }
 
-/**
- * stm32_spi_can_dma - Determine if the transfer is eligible for DMA use
- * @ctrl: controller interface
- * @spi_dev: pointer to the spi device
- * @transfer: pointer to spi transfer
- *
- * If driver has fifo and the current transfer size is greater than fifo size,
- * use DMA. Otherwise use DMA for transfer longer than defined DMA min bytes.
- */
+ 
 static bool stm32_spi_can_dma(struct spi_controller *ctrl,
 			      struct spi_device *spi_dev,
 			      struct spi_transfer *transfer)
@@ -761,11 +614,7 @@ static bool stm32_spi_can_dma(struct spi_controller *ctrl,
 	return (transfer->len > dma_size);
 }
 
-/**
- * stm32f4_spi_irq_event - Interrupt handler for SPI controller events
- * @irq: interrupt line
- * @dev_id: SPI controller ctrl interface
- */
+ 
 static irqreturn_t stm32f4_spi_irq_event(int irq, void *dev_id)
 {
 	struct spi_controller *ctrl = dev_id;
@@ -776,15 +625,12 @@ static irqreturn_t stm32f4_spi_irq_event(int irq, void *dev_id)
 	spin_lock(&spi->lock);
 
 	sr = readl_relaxed(spi->base + STM32F4_SPI_SR);
-	/*
-	 * BSY flag is not handled in interrupt but it is normal behavior when
-	 * this flag is set.
-	 */
+	 
 	sr &= ~STM32F4_SPI_SR_BSY;
 
 	if (!spi->cur_usedma && (spi->cur_comm == SPI_SIMPLEX_TX ||
 				 spi->cur_comm == SPI_3WIRE_TX)) {
-		/* OVR flag shouldn't be handled for TX only mode */
+		 
 		sr &= ~(STM32F4_SPI_SR_OVR | STM32F4_SPI_SR_RXNE);
 		mask |= STM32F4_SPI_SR_TXE;
 	}
@@ -792,7 +638,7 @@ static irqreturn_t stm32f4_spi_irq_event(int irq, void *dev_id)
 	if (!spi->cur_usedma && (spi->cur_comm == SPI_FULL_DUPLEX ||
 				spi->cur_comm == SPI_SIMPLEX_RX ||
 				spi->cur_comm == SPI_3WIRE_RX)) {
-		/* TXE flag is set and is handled when RXNE flag occurs */
+		 
 		sr &= ~STM32F4_SPI_SR_TXE;
 		mask |= STM32F4_SPI_SR_RXNE | STM32F4_SPI_SR_OVR;
 	}
@@ -806,15 +652,11 @@ static irqreturn_t stm32f4_spi_irq_event(int irq, void *dev_id)
 	if (sr & STM32F4_SPI_SR_OVR) {
 		dev_warn(spi->dev, "Overrun: received value discarded\n");
 
-		/* Sequence to clear OVR flag */
+		 
 		readl_relaxed(spi->base + STM32F4_SPI_DR);
 		readl_relaxed(spi->base + STM32F4_SPI_SR);
 
-		/*
-		 * If overrun is detected, it means that something went wrong,
-		 * so stop the current transfer. Transfer can wait for next
-		 * RXNE but DR is already read and end never happens.
-		 */
+		 
 		end = true;
 		goto end_irq;
 	}
@@ -830,13 +672,13 @@ static irqreturn_t stm32f4_spi_irq_event(int irq, void *dev_id)
 		stm32f4_spi_read_rx(spi);
 		if (spi->rx_len == 0)
 			end = true;
-		else if (spi->tx_buf)/* Load data for discontinuous mode */
+		else if (spi->tx_buf) 
 			stm32f4_spi_write_tx(spi);
 	}
 
 end_irq:
 	if (end) {
-		/* Immediately disable interrupts to do not generate new one */
+		 
 		stm32_spi_clr_bits(spi, STM32F4_SPI_CR2,
 					STM32F4_SPI_CR2_TXEIE |
 					STM32F4_SPI_CR2_RXNEIE |
@@ -849,11 +691,7 @@ end_irq:
 	return IRQ_HANDLED;
 }
 
-/**
- * stm32f4_spi_irq_thread - Thread of interrupt handler for SPI controller
- * @irq: interrupt line
- * @dev_id: SPI controller interface
- */
+ 
 static irqreturn_t stm32f4_spi_irq_thread(int irq, void *dev_id)
 {
 	struct spi_controller *ctrl = dev_id;
@@ -865,11 +703,7 @@ static irqreturn_t stm32f4_spi_irq_thread(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * stm32h7_spi_irq_thread - Thread of interrupt handler for SPI controller
- * @irq: interrupt line
- * @dev_id: SPI controller interface
- */
+ 
 static irqreturn_t stm32h7_spi_irq_thread(int irq, void *dev_id)
 {
 	struct spi_controller *ctrl = dev_id;
@@ -884,16 +718,10 @@ static irqreturn_t stm32h7_spi_irq_thread(int irq, void *dev_id)
 	ier = readl_relaxed(spi->base + STM32H7_SPI_IER);
 
 	mask = ier;
-	/*
-	 * EOTIE enables irq from EOT, SUSP and TXC events. We need to set
-	 * SUSP to acknowledge it later. TXC is automatically cleared
-	 */
+	 
 
 	mask |= STM32H7_SPI_SR_SUSP;
-	/*
-	 * DXPIE is set in Full-Duplex, one IT will be raised if TXP and RXP
-	 * are set. So in case of Full-Duplex, need to poll TXP and RXP event.
-	 */
+	 
 	if ((spi->cur_comm == SPI_FULL_DUPLEX) && !spi->cur_usedma)
 		mask |= STM32H7_SPI_SR_TXP | STM32H7_SPI_SR_RXP;
 
@@ -913,10 +741,7 @@ static irqreturn_t stm32h7_spi_irq_thread(int irq, void *dev_id)
 			dev_dbg_ratelimited(spi->dev, "Communication suspended\n");
 		if (!spi->cur_usedma && (spi->rx_buf && (spi->rx_len > 0)))
 			stm32h7_spi_read_rxfifo(spi);
-		/*
-		 * If communication is suspended while using DMA, it means
-		 * that something went wrong, so stop the current transfer
-		 */
+		 
 		if (spi->cur_usedma)
 			end = true;
 	}
@@ -959,11 +784,7 @@ static irqreturn_t stm32h7_spi_irq_thread(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * stm32_spi_prepare_msg - set up the controller to transfer a single message
- * @ctrl: controller interface
- * @msg: pointer to spi message
- */
+ 
 static int stm32_spi_prepare_msg(struct spi_controller *ctrl,
 				 struct spi_message *msg)
 {
@@ -973,7 +794,7 @@ static int stm32_spi_prepare_msg(struct spi_controller *ctrl,
 	unsigned long flags;
 	u32 clrb = 0, setb = 0;
 
-	/* SPI slave device may need time between data frames */
+	 
 	spi->cur_midi = 0;
 	if (np && !of_property_read_u32(np, "st,spi-midi-ns", &spi->cur_midi))
 		dev_dbg(spi->dev, "%dns inter-data idleness\n", spi->cur_midi);
@@ -1004,10 +825,7 @@ static int stm32_spi_prepare_msg(struct spi_controller *ctrl,
 		!!(spi_dev->mode & SPI_LSB_FIRST),
 		!!(spi_dev->mode & SPI_CS_HIGH));
 
-	/* On STM32H7, messages should not exceed a maximum size setted
-	 * afterward via the set_number_of_data function. In order to
-	 * ensure that, split large messages into several messages
-	 */
+	 
 	if (spi->cfg->set_number_of_data) {
 		int ret;
 
@@ -1020,7 +838,7 @@ static int stm32_spi_prepare_msg(struct spi_controller *ctrl,
 
 	spin_lock_irqsave(&spi->lock, flags);
 
-	/* CPOL, CPHA and LSB FIRST bits have common register */
+	 
 	if (clrb || setb)
 		writel_relaxed(
 			(readl_relaxed(spi->base + spi->cfg->regs->cpol.reg) &
@@ -1032,12 +850,7 @@ static int stm32_spi_prepare_msg(struct spi_controller *ctrl,
 	return 0;
 }
 
-/**
- * stm32f4_spi_dma_tx_cb - dma callback
- * @data: pointer to the spi controller data structure
- *
- * DMA callback is called when the transfer is complete for DMA TX channel.
- */
+ 
 static void stm32f4_spi_dma_tx_cb(void *data)
 {
 	struct stm32_spi *spi = data;
@@ -1048,12 +861,7 @@ static void stm32f4_spi_dma_tx_cb(void *data)
 	}
 }
 
-/**
- * stm32_spi_dma_rx_cb - dma callback
- * @data: pointer to the spi controller data structure
- *
- * DMA callback is called when the transfer is complete for DMA RX channel.
- */
+ 
 static void stm32_spi_dma_rx_cb(void *data)
 {
 	struct stm32_spi *spi = data;
@@ -1062,13 +870,7 @@ static void stm32_spi_dma_rx_cb(void *data)
 	spi->cfg->disable(spi);
 }
 
-/**
- * stm32_spi_dma_config - configure dma slave channel depending on current
- *			  transfer bits_per_word.
- * @spi: pointer to the spi controller data structure
- * @dma_conf: pointer to the dma_slave_config structure
- * @dir: direction of the dma transfer
- */
+ 
 static void stm32_spi_dma_config(struct stm32_spi *spi,
 				 struct dma_slave_config *dma_conf,
 				 enum dma_transfer_direction dir)
@@ -1084,7 +886,7 @@ static void stm32_spi_dma_config(struct stm32_spi *spi,
 		buswidth = DMA_SLAVE_BUSWIDTH_4_BYTES;
 
 	if (spi->cfg->has_fifo) {
-		/* Valid for DMA Half or Full Fifo threshold */
+		 
 		if (spi->cur_fthlv == 2)
 			maxburst = 1;
 		else
@@ -1095,14 +897,14 @@ static void stm32_spi_dma_config(struct stm32_spi *spi,
 
 	memset(dma_conf, 0, sizeof(struct dma_slave_config));
 	dma_conf->direction = dir;
-	if (dma_conf->direction == DMA_DEV_TO_MEM) { /* RX */
+	if (dma_conf->direction == DMA_DEV_TO_MEM) {  
 		dma_conf->src_addr = spi->phys_addr + spi->cfg->regs->rx.reg;
 		dma_conf->src_addr_width = buswidth;
 		dma_conf->src_maxburst = maxburst;
 
 		dev_dbg(spi->dev, "Rx DMA config buswidth=%d, maxburst=%d\n",
 			buswidth, maxburst);
-	} else if (dma_conf->direction == DMA_MEM_TO_DEV) { /* TX */
+	} else if (dma_conf->direction == DMA_MEM_TO_DEV) {  
 		dma_conf->dst_addr = spi->phys_addr + spi->cfg->regs->tx.reg;
 		dma_conf->dst_addr_width = buswidth;
 		dma_conf->dst_maxburst = maxburst;
@@ -1112,29 +914,19 @@ static void stm32_spi_dma_config(struct stm32_spi *spi,
 	}
 }
 
-/**
- * stm32f4_spi_transfer_one_irq - transfer a single spi_transfer using
- *				  interrupts
- * @spi: pointer to the spi controller data structure
- *
- * It must returns 0 if the transfer is finished or 1 if the transfer is still
- * in progress.
- */
+ 
 static int stm32f4_spi_transfer_one_irq(struct stm32_spi *spi)
 {
 	unsigned long flags;
 	u32 cr2 = 0;
 
-	/* Enable the interrupts relative to the current communication mode */
+	 
 	if (spi->cur_comm == SPI_SIMPLEX_TX || spi->cur_comm == SPI_3WIRE_TX) {
 		cr2 |= STM32F4_SPI_CR2_TXEIE;
 	} else if (spi->cur_comm == SPI_FULL_DUPLEX ||
 				spi->cur_comm == SPI_SIMPLEX_RX ||
 				spi->cur_comm == SPI_3WIRE_RX) {
-		/* In transmit-only mode, the OVR flag is set in the SR register
-		 * since the received data are never read. Therefore set OVR
-		 * interrupt only when rx buffer is available.
-		 */
+		 
 		cr2 |= STM32F4_SPI_CR2_RXNEIE | STM32F4_SPI_CR2_ERRIE;
 	} else {
 		return -EINVAL;
@@ -1146,7 +938,7 @@ static int stm32f4_spi_transfer_one_irq(struct stm32_spi *spi)
 
 	stm32_spi_enable(spi);
 
-	/* starting data transfer when buffer is loaded */
+	 
 	if (spi->tx_buf)
 		stm32f4_spi_write_tx(spi);
 
@@ -1155,28 +947,21 @@ static int stm32f4_spi_transfer_one_irq(struct stm32_spi *spi)
 	return 1;
 }
 
-/**
- * stm32h7_spi_transfer_one_irq - transfer a single spi_transfer using
- *				  interrupts
- * @spi: pointer to the spi controller data structure
- *
- * It must returns 0 if the transfer is finished or 1 if the transfer is still
- * in progress.
- */
+ 
 static int stm32h7_spi_transfer_one_irq(struct stm32_spi *spi)
 {
 	unsigned long flags;
 	u32 ier = 0;
 
-	/* Enable the interrupts relative to the current communication mode */
-	if (spi->tx_buf && spi->rx_buf)	/* Full Duplex */
+	 
+	if (spi->tx_buf && spi->rx_buf)	 
 		ier |= STM32H7_SPI_IER_DXPIE;
-	else if (spi->tx_buf)		/* Half-Duplex TX dir or Simplex TX */
+	else if (spi->tx_buf)		 
 		ier |= STM32H7_SPI_IER_TXPIE;
-	else if (spi->rx_buf)		/* Half-Duplex RX dir or Simplex RX */
+	else if (spi->rx_buf)		 
 		ier |= STM32H7_SPI_IER_RXPIE;
 
-	/* Enable the interrupts relative to the end of transfer */
+	 
 	ier |= STM32H7_SPI_IER_EOTIE | STM32H7_SPI_IER_TXTFIE |
 	       STM32H7_SPI_IER_OVRIE | STM32H7_SPI_IER_MODFIE;
 
@@ -1184,7 +969,7 @@ static int stm32h7_spi_transfer_one_irq(struct stm32_spi *spi)
 
 	stm32_spi_enable(spi);
 
-	/* Be sure to have data in fifo before starting data transfer */
+	 
 	if (spi->tx_buf)
 		stm32h7_spi_write_txfifo(spi);
 
@@ -1198,37 +983,25 @@ static int stm32h7_spi_transfer_one_irq(struct stm32_spi *spi)
 	return 1;
 }
 
-/**
- * stm32f4_spi_transfer_one_dma_start - Set SPI driver registers to start
- *					transfer using DMA
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32f4_spi_transfer_one_dma_start(struct stm32_spi *spi)
 {
-	/* In DMA mode end of transfer is handled by DMA TX or RX callback. */
+	 
 	if (spi->cur_comm == SPI_SIMPLEX_RX || spi->cur_comm == SPI_3WIRE_RX ||
 	    spi->cur_comm == SPI_FULL_DUPLEX) {
-		/*
-		 * In transmit-only mode, the OVR flag is set in the SR register
-		 * since the received data are never read. Therefore set OVR
-		 * interrupt only when rx buffer is available.
-		 */
+		 
 		stm32_spi_set_bits(spi, STM32F4_SPI_CR2, STM32F4_SPI_CR2_ERRIE);
 	}
 
 	stm32_spi_enable(spi);
 }
 
-/**
- * stm32h7_spi_transfer_one_dma_start - Set SPI driver registers to start
- *					transfer using DMA
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32h7_spi_transfer_one_dma_start(struct stm32_spi *spi)
 {
 	uint32_t ier = STM32H7_SPI_IER_OVRIE | STM32H7_SPI_IER_MODFIE;
 
-	/* Enable the interrupts */
+	 
 	if (spi->cur_comm == SPI_SIMPLEX_TX || spi->cur_comm == SPI_3WIRE_TX)
 		ier |= STM32H7_SPI_IER_EOTIE | STM32H7_SPI_IER_TXTFIE;
 
@@ -1240,14 +1013,7 @@ static void stm32h7_spi_transfer_one_dma_start(struct stm32_spi *spi)
 		stm32_spi_set_bits(spi, STM32H7_SPI_CR1, STM32H7_SPI_CR1_CSTART);
 }
 
-/**
- * stm32_spi_transfer_one_dma - transfer a single spi_transfer using DMA
- * @spi: pointer to the spi controller data structure
- * @xfer: pointer to the spi_transfer structure
- *
- * It must returns 0 if the transfer is finished or 1 if the transfer is still
- * in progress.
- */
+ 
 static int stm32_spi_transfer_one_dma(struct stm32_spi *spi,
 				      struct spi_transfer *xfer)
 {
@@ -1262,7 +1028,7 @@ static int stm32_spi_transfer_one_dma(struct stm32_spi *spi,
 		stm32_spi_dma_config(spi, &rx_dma_conf, DMA_DEV_TO_MEM);
 		dmaengine_slave_config(spi->dma_rx, &rx_dma_conf);
 
-		/* Enable Rx DMA request */
+		 
 		stm32_spi_set_bits(spi, spi->cfg->regs->dma_rx_en.reg,
 				   spi->cfg->regs->dma_rx_en.mask);
 
@@ -1300,7 +1066,7 @@ static int stm32_spi_transfer_one_dma(struct stm32_spi *spi,
 			dev_err(spi->dev, "Rx DMA submit failed\n");
 			goto dma_desc_error;
 		}
-		/* Enable Rx DMA channel */
+		 
 		dma_async_issue_pending(spi->dma_rx);
 	}
 
@@ -1315,10 +1081,10 @@ static int stm32_spi_transfer_one_dma(struct stm32_spi *spi,
 			dev_err(spi->dev, "Tx DMA submit failed\n");
 			goto dma_submit_error;
 		}
-		/* Enable Tx DMA channel */
+		 
 		dma_async_issue_pending(spi->dma_tx);
 
-		/* Enable Tx DMA request */
+		 
 		stm32_spi_set_bits(spi, spi->cfg->regs->dma_tx_en.reg,
 				   spi->cfg->regs->dma_tx_en.mask);
 	}
@@ -1345,10 +1111,7 @@ dma_desc_error:
 	return spi->cfg->transfer_one_irq(spi);
 }
 
-/**
- * stm32f4_spi_set_bpw - Configure bits per word
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32f4_spi_set_bpw(struct stm32_spi *spi)
 {
 	if (spi->cur_bpw == 16)
@@ -1357,10 +1120,7 @@ static void stm32f4_spi_set_bpw(struct stm32_spi *spi)
 		stm32_spi_clr_bits(spi, STM32F4_SPI_CR1, STM32F4_SPI_CR1_DFF);
 }
 
-/**
- * stm32h7_spi_set_bpw - configure bits per word
- * @spi: pointer to the spi controller data structure
- */
+ 
 static void stm32h7_spi_set_bpw(struct stm32_spi *spi)
 {
 	u32 bpw, fthlv;
@@ -1383,11 +1143,7 @@ static void stm32h7_spi_set_bpw(struct stm32_spi *spi)
 		spi->base + STM32H7_SPI_CFG1);
 }
 
-/**
- * stm32_spi_set_mbr - Configure baud rate divisor in master mode
- * @spi: pointer to the spi controller data structure
- * @mbrdiv: baud rate divisor value
- */
+ 
 static void stm32_spi_set_mbr(struct stm32_spi *spi, u32 mbrdiv)
 {
 	u32 clrb = 0, setb = 0;
@@ -1400,23 +1156,14 @@ static void stm32_spi_set_mbr(struct stm32_spi *spi, u32 mbrdiv)
 		       spi->base + spi->cfg->regs->br.reg);
 }
 
-/**
- * stm32_spi_communication_type - return transfer communication type
- * @spi_dev: pointer to the spi device
- * @transfer: pointer to spi transfer
- */
+ 
 static unsigned int stm32_spi_communication_type(struct spi_device *spi_dev,
 						 struct spi_transfer *transfer)
 {
 	unsigned int type = SPI_FULL_DUPLEX;
 
-	if (spi_dev->mode & SPI_3WIRE) { /* MISO/MOSI signals shared */
-		/*
-		 * SPI_3WIRE and xfer->tx_buf != NULL and xfer->rx_buf != NULL
-		 * is forbidden and unvalidated by SPI subsystem so depending
-		 * on the valid buffer, we can determine the direction of the
-		 * transfer.
-		 */
+	if (spi_dev->mode & SPI_3WIRE) {  
+		 
 		if (!transfer->tx_buf)
 			type = SPI_3WIRE_RX;
 		else
@@ -1431,11 +1178,7 @@ static unsigned int stm32_spi_communication_type(struct spi_device *spi_dev,
 	return type;
 }
 
-/**
- * stm32f4_spi_set_mode - configure communication mode
- * @spi: pointer to the spi controller data structure
- * @comm_type: type of communication to configure
- */
+ 
 static int stm32f4_spi_set_mode(struct stm32_spi *spi, unsigned int comm_type)
 {
 	if (comm_type == SPI_3WIRE_TX || comm_type == SPI_SIMPLEX_TX) {
@@ -1459,11 +1202,7 @@ static int stm32f4_spi_set_mode(struct stm32_spi *spi, unsigned int comm_type)
 	return 0;
 }
 
-/**
- * stm32h7_spi_set_mode - configure communication mode
- * @spi: pointer to the spi controller data structure
- * @comm_type: type of communication to configure
- */
+ 
 static int stm32h7_spi_set_mode(struct stm32_spi *spi, unsigned int comm_type)
 {
 	u32 mode;
@@ -1494,12 +1233,7 @@ static int stm32h7_spi_set_mode(struct stm32_spi *spi, unsigned int comm_type)
 	return 0;
 }
 
-/**
- * stm32h7_spi_data_idleness - configure minimum time delay inserted between two
- *			       consecutive data frames in master mode
- * @spi: pointer to the spi controller data structure
- * @len: transfer len
- */
+ 
 static void stm32h7_spi_data_idleness(struct stm32_spi *spi, u32 len)
 {
 	u32 cfg2_clrb = 0, cfg2_setb = 0;
@@ -1523,11 +1257,7 @@ static void stm32h7_spi_data_idleness(struct stm32_spi *spi, u32 len)
 		       spi->base + STM32H7_SPI_CFG2);
 }
 
-/**
- * stm32h7_spi_number_of_data - configure number of data at current transfer
- * @spi: pointer to the spi controller data structure
- * @nb_words: transfer length (in words)
- */
+ 
 static int stm32h7_spi_number_of_data(struct stm32_spi *spi, u32 nb_words)
 {
 	if (nb_words <= STM32H7_SPI_TSIZE_MAX) {
@@ -1540,14 +1270,7 @@ static int stm32h7_spi_number_of_data(struct stm32_spi *spi, u32 nb_words)
 	return 0;
 }
 
-/**
- * stm32_spi_transfer_one_setup - common setup to transfer a single
- *				  spi_transfer either using DMA or
- *				  interrupts.
- * @spi: pointer to the spi controller data structure
- * @spi_dev: pointer to the spi device
- * @transfer: pointer to spi transfer
- */
+ 
 static int stm32_spi_transfer_one_setup(struct stm32_spi *spi,
 					struct spi_device *spi_dev,
 					struct spi_transfer *transfer)
@@ -1564,7 +1287,7 @@ static int stm32_spi_transfer_one_setup(struct stm32_spi *spi,
 	spi->cur_bpw = transfer->bits_per_word;
 	spi->cfg->set_bpw(spi);
 
-	/* Update spi->cur_speed with real clock speed */
+	 
 	if (STM32_SPI_MASTER_MODE(spi)) {
 		mbr = stm32_spi_prepare_mbr(spi, transfer->speed_hz,
 					    spi->cfg->baud_rate_div_min,
@@ -1619,15 +1342,7 @@ out:
 	return ret;
 }
 
-/**
- * stm32_spi_transfer_one - transfer a single spi_transfer
- * @ctrl: controller interface
- * @spi_dev: pointer to the spi device
- * @transfer: pointer to spi transfer
- *
- * It must return 0 if the transfer is finished or 1 if the transfer is still
- * in progress.
- */
+ 
 static int stm32_spi_transfer_one(struct spi_controller *ctrl,
 				  struct spi_device *spi_dev,
 				  struct spi_transfer *transfer)
@@ -1655,11 +1370,7 @@ static int stm32_spi_transfer_one(struct spi_controller *ctrl,
 		return spi->cfg->transfer_one_irq(spi);
 }
 
-/**
- * stm32_spi_unprepare_msg - relax the hardware
- * @ctrl: controller interface
- * @msg: pointer to the spi message
- */
+ 
 static int stm32_spi_unprepare_msg(struct spi_controller *ctrl,
 				   struct spi_message *msg)
 {
@@ -1670,27 +1381,18 @@ static int stm32_spi_unprepare_msg(struct spi_controller *ctrl,
 	return 0;
 }
 
-/**
- * stm32f4_spi_config - Configure SPI controller as SPI master
- * @spi: pointer to the spi controller data structure
- */
+ 
 static int stm32f4_spi_config(struct stm32_spi *spi)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&spi->lock, flags);
 
-	/* Ensure I2SMOD bit is kept cleared */
+	 
 	stm32_spi_clr_bits(spi, STM32F4_SPI_I2SCFGR,
 			   STM32F4_SPI_I2SCFGR_I2SMOD);
 
-	/*
-	 * - SS input value high
-	 * - transmitter half duplex direction
-	 * - Set the master mode (default Motorola mode)
-	 * - Consider 1 master/n slaves configuration and
-	 *   SS input value is determined by the SSI bit
-	 */
+	 
 	stm32_spi_set_bits(spi, STM32F4_SPI_CR1, STM32F4_SPI_CR1_SSI |
 						 STM32F4_SPI_CR1_BIDIOE |
 						 STM32F4_SPI_CR1_MSTR |
@@ -1701,10 +1403,7 @@ static int stm32f4_spi_config(struct stm32_spi *spi)
 	return 0;
 }
 
-/**
- * stm32h7_spi_config - Configure SPI controller
- * @spi: pointer to the spi controller data structure
- */
+ 
 static int stm32h7_spi_config(struct stm32_spi *spi)
 {
 	unsigned long flags;
@@ -1712,27 +1411,18 @@ static int stm32h7_spi_config(struct stm32_spi *spi)
 
 	spin_lock_irqsave(&spi->lock, flags);
 
-	/* Ensure I2SMOD bit is kept cleared */
+	 
 	stm32_spi_clr_bits(spi, STM32H7_SPI_I2SCFGR,
 			   STM32H7_SPI_I2SCFGR_I2SMOD);
 
 	if (STM32_SPI_DEVICE_MODE(spi)) {
-		/* Use native device select */
+		 
 		cfg2 &= ~STM32H7_SPI_CFG2_SSM;
 	} else {
-		/*
-		 * - Transmitter half duplex direction
-		 * - Automatic communication suspend when RX-Fifo is full
-		 * - SS input value high
-		 */
+		 
 		cr1 |= STM32H7_SPI_CR1_HDDIR | STM32H7_SPI_CR1_MASRX | STM32H7_SPI_CR1_SSI;
 
-		/*
-		 * - Set the master mode (default Motorola mode)
-		 * - Consider 1 master/n devices configuration and
-		 *   SS input value is determined by the SSI bit
-		 * - keep control of all associated GPIOs
-		 */
+		 
 		cfg2 |= STM32H7_SPI_CFG2_MASTER | STM32H7_SPI_CFG2_SSM | STM32H7_SPI_CFG2_AFCNTR;
 	}
 
@@ -1776,10 +1466,7 @@ static const struct stm32_spi_cfg stm32h7_spi_cfg = {
 	.set_number_of_data = stm32h7_spi_number_of_data,
 	.transfer_one_dma_start = stm32h7_spi_transfer_one_dma_start,
 	.dma_rx_cb = stm32_spi_dma_rx_cb,
-	/*
-	 * dma_tx_cb is not necessary since in case of TX, dma is followed by
-	 * SPI access hence handling is performed within the SPI interrupt
-	 */
+	 
 	.transfer_one_irq = stm32h7_spi_transfer_one_irq,
 	.irq_handler_thread = stm32h7_spi_irq_thread,
 	.baud_rate_div_min = STM32H7_SPI_MBR_DIV_MIN,

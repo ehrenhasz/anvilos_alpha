@@ -1,25 +1,4 @@
-/* Test of file timestamp modification functions.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include "test-utimens-common.h"
-
-/* This file is designed to test both lutimens(a,b) and
-   utimensat(AT_FDCWD,a,b,AT_SYMLINK_NOFOLLOW).  FUNC is the function
-   to test.  Assumes that BASE and ASSERT are already defined.  If
-   PRINT, warn before skipping tests with status 77.  */
+ 
 static int
 test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
 {
@@ -29,7 +8,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
   struct stat st2;
   bool atime_supported = true;
 
-  /* Non-symlinks should be handled just like utimens.  */
+   
   errno = 0;
   ASSERT (func ("no_such", NULL) == -1);
   ASSERT (errno == ENOENT);
@@ -69,7 +48,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
   if (check_ctime)
     ASSERT (ctime_compare (&st1, &st2) < 0);
 
-  /* Play with symlink timestamps.  */
+   
   if (symlink (BASE "file", BASE "link"))
     {
       ASSERT (unlink (BASE "file") == 0);
@@ -81,7 +60,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
   errno = 0;
   result = func (BASE "link", NULL);
   saved_errno = errno;
-  /* Make sure we did not reference through link by accident.  */
+   
   ASSERT (stat (BASE "file", &st1) == 0);
   ASSERT (st1.st_atime == Y2K);
   ASSERT (st1.st_mtime == Y2K);
@@ -100,8 +79,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
     }
   ASSERT (!result);
   ASSERT (lstat (BASE "link", &st1) == 0);
-  /* On cygwin, lstat() changes atime of symlinks, so that lutimens
-     can only effectively modify mtime.  */
+   
   nap ();
   ASSERT (lstat (BASE "link", &st2) == 0);
   if (st1.st_atime != st2.st_atime
@@ -110,7 +88,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
   ASSERT (st1.st_ctime == st2.st_ctime);
   ASSERT (get_stat_ctime_ns (&st1) == get_stat_ctime_ns (&st2));
 
-  /* Invalid arguments.  */
+   
   {
     struct timespec ts[2];
     ts[0].tv_sec = Y2K;
@@ -139,7 +117,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
     }
   ASSERT (utimecmp (BASE "link", &st1, &st2, 0) == 0);
 
-  /* Set both times.  */
+   
   {
     struct timespec ts[2];
     ts[0].tv_sec = Y2K;
@@ -162,7 +140,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
       ASSERT (ctime_compare (&st1, &st2) < 0);
   }
 
-  /* Play with UTIME_OMIT, UTIME_NOW.  */
+   
   {
     struct stat st3;
     struct timespec ts[2];
@@ -198,7 +176,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
       ASSERT (ctime_compare (&st3, &st2) < 0);
   }
 
-  /* Symlink to directory.  */
+   
   ASSERT (unlink (BASE "link") == 0);
   ASSERT (symlink (BASE "dir", BASE "link") == 0);
   ASSERT (mkdir (BASE "dir", 0700) == 0);
@@ -209,8 +187,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
     ts[1] = ts[0];
     ASSERT (func (BASE "link/", ts) == 0);
   }
-  /* On cygwin 1.5, stat() changes atime of directories, so only check
-     mtime.  */
+   
   ASSERT (stat (BASE "dir", &st1) == 0);
   ASSERT (st1.st_mtime == Y2K);
   ASSERT (lstat (BASE "link", &st1) == 0);
@@ -223,7 +200,7 @@ test_lutimens (int (*func) (char const *, struct timespec const *), bool print)
   ASSERT (st1.st_atime != Y2K);
   ASSERT (st1.st_mtime != Y2K);
 
-  /* Cleanup.  */
+   
   ASSERT (rmdir (BASE "dir") == 0);
   ASSERT (unlink (BASE "link") == 0);
   return 0;

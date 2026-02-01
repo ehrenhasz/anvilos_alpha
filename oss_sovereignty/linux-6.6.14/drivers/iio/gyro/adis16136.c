@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADIS16133/ADIS16135/ADIS16136 gyroscope driver
- *
- * Copyright 2012 Analog Devices Inc.
- *   Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -235,14 +230,14 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
 				  adis16136_write_frequency);
 
 static const unsigned adis16136_3db_divisors[] = {
-	[0] = 2, /* Special case */
+	[0] = 2,  
 	[1] = 6,
 	[2] = 12,
 	[3] = 25,
 	[4] = 50,
 	[5] = 100,
 	[6] = 200,
-	[7] = 200, /* Not a valid setting */
+	[7] = 200,  
 };
 
 static int adis16136_set_filter(struct iio_dev *indio_dev, int val)
@@ -312,7 +307,7 @@ static int adis16136_read_raw(struct iio_dev *indio_dev,
 			return IIO_VAL_FRACTIONAL;
 		case IIO_TEMP:
 			*val = 10;
-			*val2 = 697000; /* 0.010697 degree Celsius */
+			*val2 = 697000;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		default:
 			return -EINVAL;

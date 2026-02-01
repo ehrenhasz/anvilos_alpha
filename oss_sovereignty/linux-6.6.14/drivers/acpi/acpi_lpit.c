@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * acpi_lpit.c - LPIT table processing functions
- *
- * Copyright (C) 2017 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/acpi.h>
@@ -18,7 +14,7 @@ struct lpit_residency_info {
 	void __iomem *iomem_addr;
 };
 
-/* Storage for an memory mapped and FFH based entries */
+ 
 static struct lpit_residency_info residency_info_mem;
 static struct lpit_residency_info residency_info_ffh;
 
@@ -100,7 +96,7 @@ static void lpit_update_residency(struct lpit_residency_info *info,
 {
 	struct device *dev_root = bus_get_dev_root(&cpu_subsys);
 
-	/* Silently fail, if cpuidle attribute group is not present */
+	 
 	if (!dev_root)
 		return;
 

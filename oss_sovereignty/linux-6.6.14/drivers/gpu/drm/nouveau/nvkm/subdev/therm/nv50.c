@@ -1,27 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- * 	    Martin Peres
- */
+ 
 #include "priv.h"
 
 static int
@@ -98,15 +75,14 @@ nv50_fan_pwm_clock(struct nvkm_therm *therm, int line)
 	struct nvkm_device *device = therm->subdev.device;
 	int pwm_clock;
 
-	/* determine the PWM source clock */
+	 
 	if (device->chipset > 0x50 && device->chipset < 0x94) {
 		u8 pwm_div = nvkm_rd32(device, 0x410c);
 		if (nvkm_rd32(device, 0xc040) & 0x800000) {
-			/* Use the HOST clock (100 MHz)
-			* Where does this constant(2.4) comes from? */
+			 
 			pwm_clock = (100000000 >> pwm_div) * 10 / 24;
 		} else {
-			/* Where does this constant(20) comes from? */
+			 
 			pwm_clock = (device->crystal * 1000) >> pwm_div;
 			pwm_clock /= 20;
 		}
@@ -122,7 +98,7 @@ nv50_sensor_setup(struct nvkm_therm *therm)
 {
 	struct nvkm_device *device = therm->subdev.device;
 	nvkm_mask(device, 0x20010, 0x40000000, 0x0);
-	mdelay(20); /* wait for the temperature to stabilize */
+	mdelay(20);  
 }
 
 static int
@@ -134,7 +110,7 @@ nv50_temp_get(struct nvkm_therm *therm)
 
 	core_temp = nvkm_rd32(device, 0x20014) & 0x3fff;
 
-	/* if the slope or the offset is unset, do no use the sensor */
+	 
 	if (!sensor->slope_div || !sensor->slope_mult ||
 	    !sensor->offset_num || !sensor->offset_den)
 	    return -ENODEV;
@@ -143,7 +119,7 @@ nv50_temp_get(struct nvkm_therm *therm)
 	core_temp = core_temp + sensor->offset_num / sensor->offset_den;
 	core_temp = core_temp + sensor->offset_constant - 8;
 
-	/* reserve negative temperatures for errors */
+	 
 	if (core_temp < 0)
 		core_temp = 0;
 

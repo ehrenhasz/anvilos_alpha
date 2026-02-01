@@ -1,32 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2018-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-// For DHCP specs see:
-//  https://www.ietf.org/rfc/rfc2131.txt
-//  https://tools.ietf.org/html/rfc2132 -- DHCP Options and BOOTP Vendor Extensions
+
+
+
 
 #include <stdio.h>
 #include <string.h>
@@ -66,42 +42,42 @@
 #define PORT_DHCP_CLIENT (68)
 
 #define DEFAULT_DNS MAKE_IP4(192, 168, 4, 1)
-#define DEFAULT_LEASE_TIME_S (24 * 60 * 60) // in seconds
+#define DEFAULT_LEASE_TIME_S (24 * 60 * 60) 
 
 #define MAC_LEN (6)
 #define MAKE_IP4(a, b, c, d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
 
 typedef struct {
-    uint8_t op; // message opcode
-    uint8_t htype; // hardware address type
-    uint8_t hlen; // hardware address length
+    uint8_t op; 
+    uint8_t htype; 
+    uint8_t hlen; 
     uint8_t hops;
-    uint32_t xid; // transaction id, chosen by client
-    uint16_t secs; // client seconds elapsed
+    uint32_t xid; 
+    uint16_t secs; 
     uint16_t flags;
-    uint8_t ciaddr[4]; // client IP address
-    uint8_t yiaddr[4]; // your IP address
-    uint8_t siaddr[4]; // next server IP address
-    uint8_t giaddr[4]; // relay agent IP address
-    uint8_t chaddr[16]; // client hardware address
-    uint8_t sname[64]; // server host name
-    uint8_t file[128]; // boot file name
-    uint8_t options[312]; // optional parameters, variable, starts with magic
+    uint8_t ciaddr[4]; 
+    uint8_t yiaddr[4]; 
+    uint8_t siaddr[4]; 
+    uint8_t giaddr[4]; 
+    uint8_t chaddr[16]; 
+    uint8_t sname[64]; 
+    uint8_t file[128]; 
+    uint8_t options[312]; 
 } dhcp_msg_t;
 
 static int dhcp_socket_new_dgram(struct udp_pcb **udp, void *cb_data, udp_recv_fn cb_udp_recv) {
-    // family is AF_INET
-    // type is SOCK_DGRAM
+    
+    
 
     *udp = udp_new();
     if (*udp == NULL) {
         return -MP_ENOMEM;
     }
 
-    // Register callback
+    
     udp_recv(*udp, cb_udp_recv, (void *)cb_data);
 
-    return 0; // success
+    return 0; 
 }
 
 static void dhcp_socket_free(struct udp_pcb **udp) {
@@ -114,7 +90,7 @@ static void dhcp_socket_free(struct udp_pcb **udp) {
 static int dhcp_socket_bind(struct udp_pcb **udp, uint32_t ip, uint16_t port) {
     ip_addr_t addr;
     IP_ADDR4(&addr, ip >> 24 & 0xff, ip >> 16 & 0xff, ip >> 8 & 0xff, ip & 0xff);
-    // TODO convert lwIP errors to errno
+    
     return udp_bind(*udp, &addr, port);
 }
 
@@ -191,7 +167,7 @@ static void dhcp_server_process(void *arg, struct udp_pcb *upcb, struct pbuf *p,
     (void)src_addr;
     (void)src_port;
 
-    // This is around 548 bytes
+    
     dhcp_msg_t dhcp_msg;
 
     #define DHCP_MIN_SIZE (240 + 3)
@@ -208,33 +184,33 @@ static void dhcp_server_process(void *arg, struct udp_pcb *upcb, struct pbuf *p,
     memcpy(&dhcp_msg.yiaddr, &ip_2_ip4(&d->ip)->addr, 4);
 
     uint8_t *opt = (uint8_t *)&dhcp_msg.options;
-    opt += 4; // assume magic cookie: 99, 130, 83, 99
+    opt += 4; 
 
     switch (opt[2]) {
         case DHCPDISCOVER: {
             int yi = DHCPS_MAX_IP;
             for (int i = 0; i < DHCPS_MAX_IP; ++i) {
                 if (memcmp(d->lease[i].mac, dhcp_msg.chaddr, MAC_LEN) == 0) {
-                    // MAC match, use this IP address
+                    
                     yi = i;
                     break;
                 }
                 if (yi == DHCPS_MAX_IP) {
-                    // Look for a free IP address
+                    
                     if (memcmp(d->lease[i].mac, "\x00\x00\x00\x00\x00\x00", MAC_LEN) == 0) {
-                        // IP available
+                        
                         yi = i;
                     }
                     uint32_t expiry = d->lease[i].expiry << 16 | 0xffff;
                     if ((int32_t)(expiry - mp_hal_ticks_ms()) < 0) {
-                        // IP expired, reuse it
+                        
                         memset(d->lease[i].mac, 0, MAC_LEN);
                         yi = i;
                     }
                 }
             }
             if (yi == DHCPS_MAX_IP) {
-                // No more IP addresses left
+                
                 goto ignore_request;
             }
             dhcp_msg.yiaddr[3] = DHCPS_BASE_IP + yi;
@@ -245,26 +221,26 @@ static void dhcp_server_process(void *arg, struct udp_pcb *upcb, struct pbuf *p,
         case DHCPREQUEST: {
             uint8_t *o = opt_find(opt, DHCP_OPT_REQUESTED_IP);
             if (o == NULL) {
-                // Should be NACK
+                
                 goto ignore_request;
             }
             if (memcmp(o + 2, &ip_2_ip4(&d->ip)->addr, 3) != 0) {
-                // Should be NACK
+                
                 goto ignore_request;
             }
             uint8_t yi = o[5] - DHCPS_BASE_IP;
             if (yi >= DHCPS_MAX_IP) {
-                // Should be NACK
+                
                 goto ignore_request;
             }
             if (memcmp(d->lease[yi].mac, dhcp_msg.chaddr, MAC_LEN) == 0) {
-                // MAC match, ok to use this IP address
+                
             } else if (memcmp(d->lease[yi].mac, "\x00\x00\x00\x00\x00\x00", MAC_LEN) == 0) {
-                // IP unused, ok to use this IP address
+                
                 memcpy(d->lease[yi].mac, dhcp_msg.chaddr, MAC_LEN);
             } else {
-                // IP already in use
-                // Should be NACK
+                
+                
                 goto ignore_request;
             }
             d->lease[yi].expiry = (mp_hal_ticks_ms() + DEFAULT_LEASE_TIME_S * 1000) >> 16;
@@ -282,8 +258,8 @@ static void dhcp_server_process(void *arg, struct udp_pcb *upcb, struct pbuf *p,
 
     opt_write_n(&opt, DHCP_OPT_SERVER_ID, 4, &ip_2_ip4(&d->ip)->addr);
     opt_write_n(&opt, DHCP_OPT_SUBNET_MASK, 4, &ip_2_ip4(&d->nm)->addr);
-    opt_write_n(&opt, DHCP_OPT_ROUTER, 4, &ip_2_ip4(&d->ip)->addr); // aka gateway; can have multiple addresses
-    opt_write_u32(&opt, DHCP_OPT_DNS, DEFAULT_DNS); // can have multiple addresses
+    opt_write_n(&opt, DHCP_OPT_ROUTER, 4, &ip_2_ip4(&d->ip)->addr); 
+    opt_write_u32(&opt, DHCP_OPT_DNS, DEFAULT_DNS); 
     opt_write_u32(&opt, DHCP_OPT_IP_LEASE_TIME, DEFAULT_LEASE_TIME_S);
     *opt++ = DHCP_OPT_END;
     struct netif *netif = ip_current_input_netif();
@@ -307,4 +283,4 @@ void dhcp_server_deinit(dhcp_server_t *d) {
     dhcp_socket_free(&d->udp);
 }
 
-#endif // MICROPY_PY_LWIP
+#endif 

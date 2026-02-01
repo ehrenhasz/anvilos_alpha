@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) STMicroelectronics 2017
- *
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -16,10 +12,10 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/pm_runtime.h>
 
-/* STM32 VREFBUF registers */
+ 
 #define STM32_VREFBUF_CSR		0x00
 
-/* STM32 VREFBUF CSR bitfields */
+ 
 #define STM32_VRS			GENMASK(6, 4)
 #define STM32_VRR			BIT(3)
 #define STM32_HIZ			BIT(1)
@@ -34,7 +30,7 @@ struct stm32_vrefbuf {
 };
 
 static const unsigned int stm32_vrefbuf_voltages[] = {
-	/* Matches resp. VRS = 000b, 001b, 010b, 011b */
+	 
 	2500000, 2048000, 1800000, 1500000,
 };
 
@@ -52,12 +48,7 @@ static int stm32_vrefbuf_enable(struct regulator_dev *rdev)
 	val = (val & ~STM32_HIZ) | STM32_ENVR;
 	writel_relaxed(val, priv->base + STM32_VREFBUF_CSR);
 
-	/*
-	 * Vrefbuf startup time depends on external capacitor: wait here for
-	 * VRR to be set. That means output has reached expected value.
-	 * ~650us sleep should be enough for caps up to 1.5uF. Use 10ms as
-	 * arbitrary timeout.
-	 */
+	 
 	ret = readl_poll_timeout(priv->base + STM32_VREFBUF_CSR, val,
 				 val & STM32_VRR, 650, 10000);
 	if (ret) {

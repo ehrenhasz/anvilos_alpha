@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Intel Corporation. */
+
+ 
 
 #include <linux/bpf_trace.h>
 #include <linux/stringify.h>
@@ -21,15 +21,7 @@ static struct xdp_buff **i40e_rx_bi(struct i40e_ring *rx_ring, u32 idx)
 	return &rx_ring->rx_bi_zc[idx];
 }
 
-/**
- * i40e_realloc_rx_xdp_bi - reallocate SW ring for either XSK or normal buffer
- * @rx_ring: Current rx ring
- * @pool_present: is pool for XSK present
- *
- * Try allocating memory and return ENOMEM, if failed to allocate.
- * If allocation was successful, substitute buffer with allocated one.
- * Returns 0 on success, negative on failure
- */
+ 
 static int i40e_realloc_rx_xdp_bi(struct i40e_ring *rx_ring, bool pool_present)
 {
 	size_t elem_size = pool_present ? sizeof(*rx_ring->rx_bi_zc) :
@@ -51,15 +43,7 @@ static int i40e_realloc_rx_xdp_bi(struct i40e_ring *rx_ring, bool pool_present)
 	return 0;
 }
 
-/**
- * i40e_realloc_rx_bi_zc - reallocate rx SW rings
- * @vsi: Current VSI
- * @zc: is zero copy set
- *
- * Reallocate buffer for rx_rings that might be used by XSK.
- * XDP requires more memory, than rx_buf provides.
- * Returns 0 on success, negative on failure
- */
+ 
 int i40e_realloc_rx_bi_zc(struct i40e_vsi *vsi, bool zc)
 {
 	struct i40e_ring *rx_ring;
@@ -73,15 +57,7 @@ int i40e_realloc_rx_bi_zc(struct i40e_vsi *vsi, bool zc)
 	return 0;
 }
 
-/**
- * i40e_xsk_pool_enable - Enable/associate an AF_XDP buffer pool to a
- * certain ring/qid
- * @vsi: Current VSI
- * @pool: buffer pool
- * @qid: Rx ring to associate buffer pool with
- *
- * Returns 0 on success, <0 on failure
- **/
+ 
 static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
 				struct xsk_buff_pool *pool,
 				u16 qid)
@@ -121,7 +97,7 @@ static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
 		if (err)
 			return err;
 
-		/* Kick start the NAPI context so that receiving will start */
+		 
 		err = i40e_xsk_wakeup(vsi->netdev, qid, XDP_WAKEUP_RX);
 		if (err)
 			return err;
@@ -130,14 +106,7 @@ static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
 	return 0;
 }
 
-/**
- * i40e_xsk_pool_disable - Disassociate an AF_XDP buffer pool from a
- * certain ring/qid
- * @vsi: Current VSI
- * @qid: Rx ring to associate buffer pool with
- *
- * Returns 0 on success, <0 on failure
- **/
+ 
 static int i40e_xsk_pool_disable(struct i40e_vsi *vsi, u16 qid)
 {
 	struct net_device *netdev = vsi->netdev;
@@ -172,17 +141,7 @@ static int i40e_xsk_pool_disable(struct i40e_vsi *vsi, u16 qid)
 	return 0;
 }
 
-/**
- * i40e_xsk_pool_setup - Enable/disassociate an AF_XDP buffer pool to/from
- * a ring/qid
- * @vsi: Current VSI
- * @pool: Buffer pool to enable/associate to a ring, or NULL to disable
- * @qid: Rx ring to (dis)associate buffer pool (from)to
- *
- * This function enables or disables a buffer pool to a certain ring.
- *
- * Returns 0 on success, <0 on failure
- **/
+ 
 int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
 			u16 qid)
 {
@@ -190,14 +149,7 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
 		i40e_xsk_pool_disable(vsi, qid);
 }
 
-/**
- * i40e_run_xdp_zc - Executes an XDP program on an xdp_buff
- * @rx_ring: Rx ring
- * @xdp: xdp_buff used as input to the XDP program
- * @xdp_prog: XDP program to run
- *
- * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR}
- **/
+ 
 static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp,
 			   struct bpf_prog *xdp_prog)
 {
@@ -273,22 +225,14 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
 		ntu = 0;
 	}
 
-	/* clear the status bits for the next_to_use descriptor */
+	 
 	rx_desc->wb.qword1.status_error_len = 0;
 	i40e_release_rx_desc(rx_ring, ntu);
 
 	return count == nb_buffs;
 }
 
-/**
- * i40e_construct_skb_zc - Create skbuff from zero-copy Rx buffer
- * @rx_ring: Rx ring
- * @xdp: xdp_buff
- *
- * This functions allocates a new skb from a zero-copy Rx buffer.
- *
- * Returns the skb, or NULL on failure.
- **/
+ 
 static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
 					     struct xdp_buff *xdp)
 {
@@ -304,7 +248,7 @@ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
 	}
 	net_prefetch(xdp->data_meta);
 
-	/* allocate a skb to store the frags */
+	 
 	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
 			       GFP_ATOMIC | __GFP_NOWARN);
 	if (unlikely(!skb))
@@ -371,11 +315,7 @@ static void i40e_handle_xdp_result_zc(struct i40e_ring *rx_ring,
 		return;
 	}
 	if (xdp_res == I40E_XDP_PASS) {
-		/* NB! We are not checking for errors using
-		 * i40e_test_staterr with
-		 * BIT(I40E_RXD_QW1_ERROR_SHIFT). This is due to that
-		 * SBP is *not* set in PRT_SBPVSI (default not set).
-		 */
+		 
 		skb = i40e_construct_skb_zc(rx_ring, xdp_buff);
 		if (!skb) {
 			rx_ring->rx_stats.alloc_buff_failed++;
@@ -395,8 +335,7 @@ static void i40e_handle_xdp_result_zc(struct i40e_ring *rx_ring,
 		return;
 	}
 
-	/* Should never get here, as all valid cases have been handled already.
-	 */
+	 
 	WARN_ON_ONCE(1);
 }
 
@@ -425,13 +364,7 @@ i40e_add_xsk_frag(struct i40e_ring *rx_ring, struct xdp_buff *first,
 	return 0;
 }
 
-/**
- * i40e_clean_rx_irq_zc - Consumes Rx packets from the hardware ring
- * @rx_ring: Rx ring
- * @budget: NAPI budget
- *
- * Returns amount of work completed
- **/
+ 
 int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
 {
 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
@@ -447,9 +380,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
 	if (next_to_process != next_to_clean)
 		first = *i40e_rx_bi(rx_ring, next_to_clean);
 
-	/* NB! xdp_prog will always be !NULL, due to the fact that
-	 * this path is enabled by setting an XDP program.
-	 */
+	 
 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
 
 	while (likely(total_rx_packets < (unsigned int)budget)) {
@@ -463,10 +394,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
 		rx_desc = I40E_RX_DESC(rx_ring, next_to_process);
 		qword = le64_to_cpu(rx_desc->wb.qword1.status_error_len);
 
-		/* This memory barrier is needed to keep us from reading
-		 * any other fields out of the rx_desc until we have
-		 * verified the descriptor has been written back.
-		 */
+		 
 		dma_rmb();
 
 		if (i40e_rx_is_programming_status(qword)) {
@@ -597,13 +525,7 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
 	tx_desc->cmd_type_offset_bsz |= cpu_to_le64(I40E_TX_DESC_CMD_RS << I40E_TXD_QW1_CMD_SHIFT);
 }
 
-/**
- * i40e_xmit_zc - Performs zero-copy Tx AF_XDP
- * @xdp_ring: XDP Tx ring
- * @budget: NAPI budget
- *
- * Returns true if the work is finished.
- **/
+ 
 static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
 {
 	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
@@ -623,7 +545,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
 	i40e_fill_tx_hw_ring(xdp_ring, &descs[nb_processed], nb_pkts - nb_processed,
 			     &total_bytes);
 
-	/* Request an interrupt for the last frame and bump tail ptr. */
+	 
 	i40e_set_rs_bit(xdp_ring);
 	i40e_xdp_ring_update_tail(xdp_ring);
 
@@ -632,11 +554,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
 	return nb_pkts < budget;
 }
 
-/**
- * i40e_clean_xdp_tx_buffer - Frees and unmaps an XDP Tx entry
- * @tx_ring: XDP Tx ring
- * @tx_bi: Tx buffer info to clean
- **/
+ 
 static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
 				     struct i40e_tx_buffer *tx_bi)
 {
@@ -648,13 +566,7 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
 	dma_unmap_len_set(tx_bi, len, 0);
 }
 
-/**
- * i40e_clean_xdp_tx_irq - Completes AF_XDP entries, and cleans XDP entries
- * @vsi: Current VSI
- * @tx_ring: XDP Tx ring
- *
- * Returns true if cleanup/transmission is done.
- **/
+ 
 bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
 {
 	struct xsk_buff_pool *bp = tx_ring->xsk_pool;
@@ -708,14 +620,7 @@ out_xmit:
 	return i40e_xmit_zc(tx_ring, I40E_DESC_UNUSED(tx_ring));
 }
 
-/**
- * i40e_xsk_wakeup - Implements the ndo_xsk_wakeup
- * @dev: the netdevice
- * @queue_id: queue id to wake up
- * @flags: ignored in our case since we have Rx and Tx in the same NAPI.
- *
- * Returns <0 for errors, 0 otherwise.
- **/
+ 
 int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
 {
 	struct i40e_netdev_priv *np = netdev_priv(dev);
@@ -740,12 +645,7 @@ int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
 
 	ring = vsi->xdp_rings[queue_id];
 
-	/* The idea here is that if NAPI is running, mark a miss, so
-	 * it will run again. If not, trigger an interrupt and
-	 * schedule the NAPI from interrupt context. If NAPI would be
-	 * scheduled here, the interrupt affinity would not be
-	 * honored.
-	 */
+	 
 	if (!napi_if_scheduled_mark_missed(&ring->q_vector->napi))
 		i40e_force_wb(vsi, ring->q_vector);
 
@@ -767,10 +667,7 @@ void i40e_xsk_clean_rx_ring(struct i40e_ring *rx_ring)
 	}
 }
 
-/**
- * i40e_xsk_clean_tx_ring - Clean the XDP Tx ring on shutdown
- * @tx_ring: XDP Tx ring
- **/
+ 
 void i40e_xsk_clean_tx_ring(struct i40e_ring *tx_ring)
 {
 	u16 ntc = tx_ring->next_to_clean, ntu = tx_ring->next_to_use;
@@ -797,13 +694,7 @@ void i40e_xsk_clean_tx_ring(struct i40e_ring *tx_ring)
 		xsk_tx_completed(bp, xsk_frames);
 }
 
-/**
- * i40e_xsk_any_rx_ring_enabled - Checks if Rx rings have an AF_XDP
- * buffer pool attached
- * @vsi: vsi
- *
- * Returns true if any of the Rx rings has an AF_XDP buffer pool attached
- **/
+ 
 bool i40e_xsk_any_rx_ring_enabled(struct i40e_vsi *vsi)
 {
 	struct net_device *netdev = vsi->netdev;

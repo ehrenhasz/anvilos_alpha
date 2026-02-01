@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/omapfb-sysfs.c
- *
- * Copyright (C) 2008 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #include <linux/fb.h>
 #include <linux/sysfs.h>
@@ -65,10 +57,7 @@ static ssize_t store_rotate_type(struct device *dev,
 
 	ofbi->rotation_type = rot_type;
 
-	/*
-	 * Since the VRAM for this FB is not allocated at the moment we don't
-	 * need to do any further parameter checking at this point.
-	 */
+	 
 put_region:
 	omapfb_put_mem_region(rg);
 out:
@@ -239,7 +228,7 @@ static ssize_t store_overlays(struct device *dev, struct device_attribute *attr,
 		}
 	}
 
-	/* detach unused overlays */
+	 
 	for (i = 0; i < ofbi->num_overlays; ++i) {
 		int t, found;
 
@@ -400,7 +389,7 @@ static ssize_t store_overlays_rotate(struct device *dev,
 		if (r)
 			goto out;
 
-		/* FIXME error handling? */
+		 
 	}
 
 	r = count;

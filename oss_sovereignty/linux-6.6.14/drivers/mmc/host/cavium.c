@@ -1,18 +1,4 @@
-/*
- * Shared part of driver for MMC/SDHC controller on Cavium OCTEON and
- * ThunderX SOCs.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012-2017 Cavium Inc.
- * Authors:
- *   David Daney <david.daney@cavium.com>
- *   Peter Swain <pswain@cavium.com>
- *   Steven J. Hill <steven.hill@cavium.com>
- *   Jan Glauber <jglauber@cavium.com>
- */
+ 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/dma-direction.h>
@@ -40,82 +26,72 @@ const char *cvm_mmc_irq_names[] = {
 	"MMC DMA int",
 };
 
-/*
- * The Cavium MMC host hardware assumes that all commands have fixed
- * command and response types.  These are correct if MMC devices are
- * being used.  However, non-MMC devices like SD use command and
- * response types that are unexpected by the host hardware.
- *
- * The command and response types can be overridden by supplying an
- * XOR value that is applied to the type.  We calculate the XOR value
- * from the values in this table and the flags passed from the MMC
- * core.
- */
+ 
 static struct cvm_mmc_cr_type cvm_mmc_cr_types[] = {
-	{0, 0},		/* CMD0 */
-	{0, 3},		/* CMD1 */
-	{0, 2},		/* CMD2 */
-	{0, 1},		/* CMD3 */
-	{0, 0},		/* CMD4 */
-	{0, 1},		/* CMD5 */
-	{0, 1},		/* CMD6 */
-	{0, 1},		/* CMD7 */
-	{1, 1},		/* CMD8 */
-	{0, 2},		/* CMD9 */
-	{0, 2},		/* CMD10 */
-	{1, 1},		/* CMD11 */
-	{0, 1},		/* CMD12 */
-	{0, 1},		/* CMD13 */
-	{1, 1},		/* CMD14 */
-	{0, 0},		/* CMD15 */
-	{0, 1},		/* CMD16 */
-	{1, 1},		/* CMD17 */
-	{1, 1},		/* CMD18 */
-	{3, 1},		/* CMD19 */
-	{2, 1},		/* CMD20 */
-	{0, 0},		/* CMD21 */
-	{0, 0},		/* CMD22 */
-	{0, 1},		/* CMD23 */
-	{2, 1},		/* CMD24 */
-	{2, 1},		/* CMD25 */
-	{2, 1},		/* CMD26 */
-	{2, 1},		/* CMD27 */
-	{0, 1},		/* CMD28 */
-	{0, 1},		/* CMD29 */
-	{1, 1},		/* CMD30 */
-	{1, 1},		/* CMD31 */
-	{0, 0},		/* CMD32 */
-	{0, 0},		/* CMD33 */
-	{0, 0},		/* CMD34 */
-	{0, 1},		/* CMD35 */
-	{0, 1},		/* CMD36 */
-	{0, 0},		/* CMD37 */
-	{0, 1},		/* CMD38 */
-	{0, 4},		/* CMD39 */
-	{0, 5},		/* CMD40 */
-	{0, 0},		/* CMD41 */
-	{2, 1},		/* CMD42 */
-	{0, 0},		/* CMD43 */
-	{0, 0},		/* CMD44 */
-	{0, 0},		/* CMD45 */
-	{0, 0},		/* CMD46 */
-	{0, 0},		/* CMD47 */
-	{0, 0},		/* CMD48 */
-	{0, 0},		/* CMD49 */
-	{0, 0},		/* CMD50 */
-	{0, 0},		/* CMD51 */
-	{0, 0},		/* CMD52 */
-	{0, 0},		/* CMD53 */
-	{0, 0},		/* CMD54 */
-	{0, 1},		/* CMD55 */
-	{0xff, 0xff},	/* CMD56 */
-	{0, 0},		/* CMD57 */
-	{0, 0},		/* CMD58 */
-	{0, 0},		/* CMD59 */
-	{0, 0},		/* CMD60 */
-	{0, 0},		/* CMD61 */
-	{0, 0},		/* CMD62 */
-	{0, 0}		/* CMD63 */
+	{0, 0},		 
+	{0, 3},		 
+	{0, 2},		 
+	{0, 1},		 
+	{0, 0},		 
+	{0, 1},		 
+	{0, 1},		 
+	{0, 1},		 
+	{1, 1},		 
+	{0, 2},		 
+	{0, 2},		 
+	{1, 1},		 
+	{0, 1},		 
+	{0, 1},		 
+	{1, 1},		 
+	{0, 0},		 
+	{0, 1},		 
+	{1, 1},		 
+	{1, 1},		 
+	{3, 1},		 
+	{2, 1},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 1},		 
+	{2, 1},		 
+	{2, 1},		 
+	{2, 1},		 
+	{2, 1},		 
+	{0, 1},		 
+	{0, 1},		 
+	{1, 1},		 
+	{1, 1},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 1},		 
+	{0, 1},		 
+	{0, 0},		 
+	{0, 1},		 
+	{0, 4},		 
+	{0, 5},		 
+	{0, 0},		 
+	{2, 1},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 1},		 
+	{0xff, 0xff},	 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0},		 
+	{0, 0}		 
 };
 
 static struct cvm_mmc_cr_mods cvm_mmc_get_cr_mods(struct mmc_command *cmd)
@@ -146,14 +122,14 @@ static struct cvm_mmc_cr_mods cvm_mmc_get_cr_mods(struct mmc_command *cmd)
 	case MMC_RSP_NONE:
 		desired_rtype = 0;
 		break;
-	case MMC_RSP_R1:/* MMC_RSP_R5, MMC_RSP_R6, MMC_RSP_R7 */
+	case MMC_RSP_R1: 
 	case MMC_RSP_R1B:
 		desired_rtype = 1;
 		break;
 	case MMC_RSP_R2:
 		desired_rtype = 2;
 		break;
-	case MMC_RSP_R3: /* MMC_RSP_R4 */
+	case MMC_RSP_R3:  
 		desired_rtype = 3;
 		break;
 	}
@@ -193,20 +169,14 @@ static int get_bus_id(u64 reg)
 	return FIELD_GET(GENMASK_ULL(61, 60), reg);
 }
 
-/*
- * We never set the switch_exe bit since that would interfere
- * with the commands send by the MMC core.
- */
+ 
 static void do_switch(struct cvm_mmc_host *host, u64 emm_switch)
 {
 	int retries = 100;
 	u64 rsp_sts;
 	int bus_id;
 
-	/*
-	 * Modes setting only taken from slot 0. Work around that hardware
-	 * issue by first switching to slot 0.
-	 */
+	 
 	bus_id = get_bus_id(emm_switch);
 	clear_bus_id(&emm_switch);
 	writeq(emm_switch, host->base + MIO_EMM_SWITCH(host));
@@ -214,7 +184,7 @@ static void do_switch(struct cvm_mmc_host *host, u64 emm_switch)
 	set_bus_id(&emm_switch, bus_id);
 	writeq(emm_switch, host->base + MIO_EMM_SWITCH(host));
 
-	/* wait for the switch to finish */
+	 
 	do {
 		rsp_sts = readq(host->base + MIO_EMM_RSP_STS(host));
 		if (!(rsp_sts & MIO_EMM_RSP_STS_SWITCH_VAL))
@@ -227,7 +197,7 @@ static void do_switch(struct cvm_mmc_host *host, u64 emm_switch)
 
 static bool switch_val_changed(struct cvm_mmc_slot *slot, u64 new_val)
 {
-	/* Match BUS_ID, HS_TIMING, BUS_WIDTH, POWER_CLASS, CLK_HI, CLK_LO */
+	 
 	u64 match = 0x3001070fffffffffull;
 
 	return (slot->cached_switch & match) != (new_val & match);
@@ -267,7 +237,7 @@ static void cvm_mmc_reset_bus(struct cvm_mmc_slot *slot)
 	writeq(wdog, slot->host->base + MIO_EMM_WDOG(host));
 }
 
-/* Switch to another slot if needed */
+ 
 static void cvm_mmc_switch_to(struct cvm_mmc_slot *slot)
 {
 	struct cvm_mmc_host *host = slot->host;
@@ -303,7 +273,7 @@ static void do_read(struct cvm_mmc_host *host, struct mmc_request *req,
 	int bytes_xfered, shift = -1;
 	u64 dat = 0;
 
-	/* Auto inc from offset zero */
+	 
 	writeq((0x10000 | (dbuf << 6)), host->base + MIO_EMM_BUF_IDX(host));
 
 	for (bytes_xfered = 0; bytes_xfered < data_len;) {
@@ -383,7 +353,7 @@ static int finish_dma_sg(struct cvm_mmc_host *host, struct mmc_data *data)
 	u64 fifo_cfg;
 	int count;
 
-	/* Check if there are any pending requests left */
+	 
 	fifo_cfg = readq(host->dma_base + MIO_EMM_DMA_FIFO_CFG(host));
 	count = FIELD_GET(MIO_EMM_DMA_FIFO_CFG_COUNT, fifo_cfg);
 	if (count)
@@ -392,7 +362,7 @@ static int finish_dma_sg(struct cvm_mmc_host *host, struct mmc_data *data)
 	data->bytes_xfered = data->blocks * data->blksz;
 	data->error = 0;
 
-	/* Clear and disable FIFO */
+	 
 	writeq(BIT_ULL(16), host->dma_base + MIO_EMM_DMA_FIFO_CFG(host));
 	dma_unmap_sg(host->dev, data->sg, data->sg_len, get_dma_dir(data));
 	return 1;
@@ -420,7 +390,7 @@ static int check_status(u64 rsp_sts)
 	return 0;
 }
 
-/* Try to clean up failed DMA. */
+ 
 static void cleanup_dma(struct cvm_mmc_host *host, u64 rsp_sts)
 {
 	u64 emm_dma;
@@ -444,7 +414,7 @@ irqreturn_t cvm_mmc_interrupt(int irq, void *dev_id)
 	else
 		__acquire(&host->irq_handler_lock);
 
-	/* Clear interrupt bits (write 1 clears ). */
+	 
 	emm_int = readq(host->base + MIO_EMM_INT(host));
 	writeq(emm_int, host->base + MIO_EMM_INT(host));
 
@@ -456,11 +426,7 @@ irqreturn_t cvm_mmc_interrupt(int irq, void *dev_id)
 		goto out;
 
 	rsp_sts = readq(host->base + MIO_EMM_RSP_STS(host));
-	/*
-	 * dma_val set means DMA is still in progress. Don't touch
-	 * the request and wait for the interrupt indicating that
-	 * the DMA is finished.
-	 */
+	 
 	if ((rsp_sts & MIO_EMM_RSP_STS_DMA_VAL) && host->dma_active)
 		goto out;
 
@@ -509,10 +475,7 @@ out:
 	return IRQ_RETVAL(emm_int != 0);
 }
 
-/*
- * Program DMA_CFG and if needed DMA_ADR.
- * Returns 0 on error, DMA address otherwise.
- */
+ 
 static u64 prepare_dma_single(struct cvm_mmc_host *host, struct mmc_data *data)
 {
 	u64 dma_cfg, addr;
@@ -545,10 +508,7 @@ static u64 prepare_dma_single(struct cvm_mmc_host *host, struct mmc_data *data)
 	return addr;
 }
 
-/*
- * Queue complete sg list into the FIFO.
- * Returns 0 on error, 1 otherwise.
- */
+ 
 static u64 prepare_dma_sg(struct cvm_mmc_host *host, struct mmc_data *data)
 {
 	struct scatterlist *sg;
@@ -562,25 +522,21 @@ static u64 prepare_dma_sg(struct cvm_mmc_host *host, struct mmc_data *data)
 	if (count > 16)
 		goto error;
 
-	/* Enable FIFO by removing CLR bit */
+	 
 	writeq(0, host->dma_base + MIO_EMM_DMA_FIFO_CFG(host));
 
 	for_each_sg(data->sg, sg, count, i) {
-		/* Program DMA address */
+		 
 		addr = sg_dma_address(sg);
 		if (addr & 7)
 			goto error;
 		writeq(addr, host->dma_base + MIO_EMM_DMA_FIFO_ADR(host));
 
-		/*
-		 * If we have scatter-gather support we also have an extra
-		 * register for the DMA addr, so no need to check
-		 * host->big_dma_addr here.
-		 */
+		 
 		rw = (data->flags & MMC_DATA_WRITE) ? 1 : 0;
 		fifo_cmd = FIELD_PREP(MIO_EMM_DMA_FIFO_CMD_RW, rw);
 
-		/* enable interrupts on the last element */
+		 
 		fifo_cmd |= FIELD_PREP(MIO_EMM_DMA_FIFO_CMD_INTDIS,
 				       (i + 1 == count) ? 0 : 1);
 
@@ -589,27 +545,19 @@ static u64 prepare_dma_sg(struct cvm_mmc_host *host, struct mmc_data *data)
 #endif
 		fifo_cmd |= FIELD_PREP(MIO_EMM_DMA_FIFO_CMD_SIZE,
 				       sg_dma_len(sg) / 8 - 1);
-		/*
-		 * The write copies the address and the command to the FIFO
-		 * and increments the FIFO's COUNT field.
-		 */
+		 
 		writeq(fifo_cmd, host->dma_base + MIO_EMM_DMA_FIFO_CMD(host));
 		pr_debug("[%s] sg_dma_len: %u  sg_elem: %d/%d\n",
 			 (rw) ? "W" : "R", sg_dma_len(sg), i, count);
 	}
 
-	/*
-	 * In difference to prepare_dma_single we don't return the
-	 * address here, as it would not make sense for scatter-gather.
-	 * The dma fixup is only required on models that don't support
-	 * scatter-gather, so that is not a problem.
-	 */
+	 
 	return 1;
 
 error:
 	WARN_ON_ONCE(1);
 	dma_unmap_sg(host->dev, data->sg, data->sg_len, get_dma_dir(data));
-	/* Disable FIFO */
+	 
 	writeq(BIT_ULL(16), host->dma_base + MIO_EMM_DMA_FIFO_CFG(host));
 	return 0;
 }
@@ -685,11 +633,7 @@ static void cvm_mmc_dma_request(struct mmc_host *mmc,
 	if (host->dmar_fixup)
 		host->dmar_fixup(host, mrq->cmd, data, addr);
 
-	/*
-	 * If we have a valid SD card in the slot, we set the response
-	 * bit mask to check for CRC errors and timeouts only.
-	 * Otherwise, use the default power reset value.
-	 */
+	 
 	if (mmc_card_sd(mmc->card))
 		writeq(0x00b00000ull, host->base + MIO_EMM_STS_MASK(host));
 	else
@@ -718,10 +662,10 @@ static void do_write_request(struct cvm_mmc_host *host, struct mmc_request *mrq)
 	int shift = 56;
 	u64 dat = 0;
 
-	/* Copy data to the xmit buffer before issuing the command. */
+	 
 	sg_miter_start(smi, mrq->data->sg, mrq->data->sg_len, SG_MITER_FROM_SG);
 
-	/* Auto inc from offset zero, dbuf zero */
+	 
 	writeq(0x10000ull, host->base + MIO_EMM_BUF_IDX(host));
 
 	for (bytes_xfered = 0; bytes_xfered < data_len;) {
@@ -756,15 +700,7 @@ static void cvm_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	u64 emm_cmd, rsp_sts;
 	int retries = 100;
 
-	/*
-	 * Note about locking:
-	 * All MMC devices share the same bus and controller. Allow only a
-	 * single user of the bootbus/MMC bus at a time. The lock is acquired
-	 * on all entry points from the MMC layer.
-	 *
-	 * For requests the lock is only released after the completion
-	 * interrupt!
-	 */
+	 
 	host->acquire_bus(host);
 
 	if (cmd->opcode == MMC_READ_MULTIPLE_BLOCK ||
@@ -829,7 +765,7 @@ static void cvm_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	host->acquire_bus(host);
 	cvm_mmc_switch_to(slot);
 
-	/* Set the power state */
+	 
 	switch (ios->power_mode) {
 	case MMC_POWER_ON:
 		break;
@@ -850,7 +786,7 @@ static void cvm_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		break;
 	}
 
-	/* Convert bus width to HW definition */
+	 
 	switch (ios->bus_width) {
 	case MMC_BUS_WIDTH_8:
 		bus_width = 2;
@@ -863,11 +799,11 @@ static void cvm_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		break;
 	}
 
-	/* DDR is available for 4/8 bit bus width */
+	 
 	if (ios->bus_width && ios->timing == MMC_TIMING_MMC_DDR52)
 		bus_width |= 4;
 
-	/* Change the clock frequency. */
+	 
 	clock = ios->clock;
 	if (clock > 52000000)
 		clock = 52000000;
@@ -915,12 +851,12 @@ static int cvm_mmc_init_lowlevel(struct cvm_mmc_slot *slot)
 	struct cvm_mmc_host *host = slot->host;
 	u64 emm_switch;
 
-	/* Enable this bus slot. */
+	 
 	host->emm_cfg |= (1ull << slot->bus_id);
 	writeq(host->emm_cfg, slot->host->base + MIO_EMM_CFG(host));
 	udelay(10);
 
-	/* Program initial clock speed and power. */
+	 
 	cvm_mmc_set_clock(slot, slot->mmc->f_min);
 	emm_switch = FIELD_PREP(MIO_EMM_SWITCH_POWER_CLASS, 10);
 	emm_switch |= FIELD_PREP(MIO_EMM_SWITCH_CLK_HI,
@@ -928,18 +864,13 @@ static int cvm_mmc_init_lowlevel(struct cvm_mmc_slot *slot)
 	emm_switch |= FIELD_PREP(MIO_EMM_SWITCH_CLK_LO,
 				 (host->sys_freq / slot->clock) / 2);
 
-	/* Make the changes take effect on this bus slot. */
+	 
 	set_bus_id(&emm_switch, slot->bus_id);
 	do_switch(host, emm_switch);
 
 	slot->cached_switch = emm_switch;
 
-	/*
-	 * Set watchdog timeout value and default reset value
-	 * for the mask register. Finally, set the CARD_RCA
-	 * bit so that we can get the card address relative
-	 * to the CMD register for CMD7 transactions.
-	 */
+	 
 	set_wdog(slot, 0);
 	writeq(0xe4390080ull, host->base + MIO_EMM_STS_MASK(host));
 	writeq(1, host->base + MIO_EMM_RCA(host));
@@ -968,19 +899,16 @@ static int cvm_mmc_of_parse(struct device *dev, struct cvm_mmc_slot *slot)
 	ret = mmc_regulator_get_supply(mmc);
 	if (ret)
 		return ret;
-	/*
-	 * Legacy Octeon firmware has no regulator entry, fall-back to
-	 * a hard-coded voltage to get a sane OCR.
-	 */
+	 
 	if (IS_ERR(mmc->supply.vmmc))
 		mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
-	/* Common MMC bindings */
+	 
 	ret = mmc_of_parse(mmc);
 	if (ret)
 		return ret;
 
-	/* Set bus width */
+	 
 	if (!(mmc->caps & (MMC_CAP_8_BIT_DATA | MMC_CAP_4_BIT_DATA))) {
 		of_property_read_u32(node, "cavium,bus-max-width", &bus_width);
 		if (bus_width == 8)
@@ -989,14 +917,14 @@ static int cvm_mmc_of_parse(struct device *dev, struct cvm_mmc_slot *slot)
 			mmc->caps |= MMC_CAP_4_BIT_DATA;
 	}
 
-	/* Set maximum and minimum frequency */
+	 
 	if (!mmc->f_max)
 		of_property_read_u32(node, "spi-max-frequency", &mmc->f_max);
 	if (!mmc->f_max || mmc->f_max > 52000000)
 		mmc->f_max = 52000000;
 	mmc->f_min = 400000;
 
-	/* Sampling register settings, period in picoseconds */
+	 
 	clock_period = 1000000000000ull / slot->host->sys_freq;
 	of_property_read_u32(node, "cavium,cmd-clk-skew", &cmd_skew);
 	of_property_read_u32(node, "cavium,dat-clk-skew", &dat_skew);
@@ -1025,16 +953,10 @@ int cvm_mmc_of_slot_probe(struct device *dev, struct cvm_mmc_host *host)
 		goto error;
 	id = ret;
 
-	/* Set up host parameters */
+	 
 	mmc->ops = &cvm_mmc_ops;
 
-	/*
-	 * We only have a 3.3v supply, we cannot support any
-	 * of the UHS modes. We do support the high speed DDR
-	 * modes up to 52MHz.
-	 *
-	 * Disable bounce buffers for max_segs = 1
-	 */
+	 
 	mmc->caps |= MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED |
 		     MMC_CAP_CMD23 | MMC_CAP_POWER_OFF_CARD | MMC_CAP_3_3V_DDR;
 
@@ -1043,13 +965,13 @@ int cvm_mmc_of_slot_probe(struct device *dev, struct cvm_mmc_host *host)
 	else
 		mmc->max_segs = 1;
 
-	/* DMA size field can address up to 8 MB */
+	 
 	mmc->max_seg_size = min_t(unsigned int, 8 * 1024 * 1024,
 				  dma_get_max_seg_size(host->dev));
 	mmc->max_req_size = mmc->max_seg_size;
-	/* External DMA is in 512 byte blocks */
+	 
 	mmc->max_blk_size = 512;
-	/* DMA block count field is 15 bits */
+	 
 	mmc->max_blk_count = 32767;
 
 	slot->clock = mmc->f_min;

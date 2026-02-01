@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/configfs.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -323,7 +323,7 @@ static ssize_t gadget_dev_desc_max_speed_store(struct config_item *item,
 
 	mutex_lock(&gi->lock);
 
-	/* Prevent changing of max_speed after the driver is binded */
+	 
 	if (gi->composite.gadget_driver.udc_name)
 		goto err;
 
@@ -434,11 +434,7 @@ static int config_usb_cfg_link(
 	int ret;
 
 	mutex_lock(&gi->lock);
-	/*
-	 * Make sure this function is from within our _this_ gadget and not
-	 * from another gadget or a random directory.
-	 * Also a function instance can only be linked once.
-	 */
+	 
 
 	if (gi->composite.gadget_driver.udc_name) {
 		ret = -EINVAL;
@@ -469,7 +465,7 @@ static int config_usb_cfg_link(
 		goto out;
 	}
 
-	/* stash the function until we bind it to the gadget */
+	 
 	list_add_tail(&f->list, &cfg->func_list);
 	ret = 0;
 out:
@@ -488,12 +484,7 @@ static void config_usb_cfg_unlink(
 			to_usb_function_instance(usb_func_ci);
 	struct usb_function *f;
 
-	/*
-	 * ideally I would like to forbid to unlink functions while a gadget is
-	 * bound to an UDC. Since this isn't possible at the moment, we simply
-	 * force an unbind, the function is available here and then we can
-	 * remove the function.
-	 */
+	 
 	mutex_lock(&gi->lock);
 	if (gi->composite.gadget_driver.udc_name)
 		unregister_gadget(gi);
@@ -886,7 +877,7 @@ static void gadget_language_string_drop(struct config_group *group,
 	list_del(&string->list);
 	language->nstrings--;
 
-	/* Reset the ids for the language's strings to guarantee a continuous set */
+	 
 	list_for_each_entry(string, &language->gadget_strings, list)
 		string->usb_string.id = i++;
 }
@@ -936,7 +927,7 @@ static struct config_group *gadget_language_make(struct config_group *group,
 	list_add_tail(&new->list, &gi->string_list);
 	INIT_LIST_HEAD(&new->gadget_strings);
 
-	/* We have the default manufacturer, product and serialnumber strings */
+	 
 	new->nstrings = 3;
 	return &new->group;
 err:
@@ -1065,7 +1056,7 @@ static ssize_t webusb_landingPage_store(struct config_item *item, const char *pa
 		return -EINVAL;
 	}
 
-	// validation
+	
 	if (strncasecmp(page, "https://",  8) == 0)
 		bytes_to_strip = 8;
 	else if (strncasecmp(page, "http://", 7) == 0)
@@ -1080,7 +1071,7 @@ static ssize_t webusb_landingPage_store(struct config_item *item, const char *pa
 	}
 
 	mutex_lock(&gi->lock);
-	// ensure 0 bytes are set, in case the new landing page is shorter then the old one.
+	
 	memcpy_and_pad(gi->landing_page, sizeof(gi->landing_page), page, l, 0);
 	mutex_unlock(&gi->lock);
 
@@ -1374,7 +1365,7 @@ static void usb_os_desc_ext_prop_release(struct config_item *item)
 {
 	struct usb_os_desc_ext_prop *ext_prop = to_usb_os_desc_ext_prop(item);
 
-	kfree(ext_prop); /* frees a whole chunk */
+	kfree(ext_prop);  
 }
 
 static struct configfs_item_operations ext_prop_ops = {
@@ -1611,11 +1602,11 @@ configfs_attach_gadget_strings(struct gadget_info *gi)
 	list_for_each(iter, &gi->string_list)
 		nlangs++;
 
-	/* Bail out early if no languages are configured */
+	 
 	if (!nlangs)
 		return NULL;
 
-	gadget_strings = kcalloc(nlangs + 1, /* including NULL terminator */
+	gadget_strings = kcalloc(nlangs + 1,  
 				 sizeof(struct usb_gadget_strings *), GFP_KERNEL);
 	if (!gadget_strings)
 		return ERR_PTR(-ENOMEM);
@@ -1681,14 +1672,14 @@ static int configfs_composite_bind(struct usb_gadget *gadget,
 	unsigned			i;
 	int				ret;
 
-	/* the gi->lock is hold by the caller */
+	 
 	gi->unbind = 0;
 	cdev->gadget = gadget;
 	set_gadget_data(gadget, cdev);
 	ret = composite_dev_prepare(composite, cdev);
 	if (ret)
 		return ret;
-	/* and now the gadget bind */
+	 
 	ret = -EINVAL;
 
 	if (list_empty(&gi->cdev.configs)) {
@@ -1710,7 +1701,7 @@ static int configfs_composite_bind(struct usb_gadget *gadget,
 		}
 	}
 
-	/* init all strings */
+	 
 	if (!list_empty(&gi->string_list)) {
 		s = configfs_attach_gadget_strings(gi);
 		if (IS_ERR(s)) {
@@ -1751,7 +1742,7 @@ static int configfs_composite_bind(struct usb_gadget *gadget,
 		otg_desc[1] = NULL;
 	}
 
-	/* Go through all configs, attach all functions */
+	 
 	list_for_each_entry(c, &gi->cdev.configs, list) {
 		struct config_usb_cfg *cfg;
 		struct usb_function *f;
@@ -1761,7 +1752,7 @@ static int configfs_composite_bind(struct usb_gadget *gadget,
 		if (gadget_is_otg(gadget))
 			c->descriptors = otg_desc;
 
-		/* Properly configure the bmAttributes wakeup bit */
+		 
 		check_remote_wakeup_config(gadget, c);
 
 		cfg = container_of(c, struct config_usb_cfg, c);
@@ -1818,7 +1809,7 @@ static void configfs_composite_unbind(struct usb_gadget *gadget)
 	struct gadget_info		*gi;
 	unsigned long flags;
 
-	/* the gi->lock is hold by the caller */
+	 
 
 	cdev = get_gadget_data(gadget);
 	gi = container_of(cdev, struct gadget_info, cdev);

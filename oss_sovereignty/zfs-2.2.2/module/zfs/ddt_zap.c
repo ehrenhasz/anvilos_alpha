@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2009, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -119,13 +97,7 @@ ddt_zap_walk(objset_t *os, uint64_t object, ddt_entry_t *dde, uint64_t *walk)
 	int error;
 
 	if (*walk == 0) {
-		/*
-		 * We don't want to prefetch the entire ZAP object, because
-		 * it can be enormous.  Also the primary use of DDT iteration
-		 * is for scrubbing, in which case we will be issuing many
-		 * scrub I/Os for each ZAP block that we read in, so
-		 * reading the ZAP is unlikely to be the bottleneck.
-		 */
+		 
 		zap_cursor_init_noprefetch(&zc, os, object);
 	} else {
 		zap_cursor_init_serialized(&zc, os, object, *walk);
@@ -167,9 +139,9 @@ const ddt_ops_t ddt_zap_ops = {
 	ddt_zap_count,
 };
 
-/* BEGIN CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs_dedup, , ddt_zap_default_bs, UINT, ZMOD_RW,
 	"DDT ZAP leaf blockshift");
 ZFS_MODULE_PARAM(zfs_dedup, , ddt_zap_default_ibs, UINT, ZMOD_RW,
 	"DDT ZAP indirect blockshift");
-/* END CSTYLED */
+ 

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc */
-/* Copyright (C) 2021 Corigine, Inc */
+
+ 
+ 
 
 #include <linux/dma-direction.h>
 #include <linux/dma-mapping.h>
@@ -70,10 +70,7 @@ void nfp_net_xsk_rx_ring_fill_freelist(struct nfp_net_rx_ring *rx_ring)
 
 		nfp_net_xsk_rx_bufs_stash(rx_ring, wr_idx, xdp);
 
-		/* DMA address is expanded to 48-bit width in freelist for NFP3800,
-		 * so the *_48b macro is used accordingly, it's also OK to fill
-		 * a 40-bit address since the top 8 bits are get set to 0.
-		 */
+		 
 		nfp_desc_set_dma_addr_48b(&rx_ring->rxds[wr_idx].fld,
 					  rx_ring->xsk_rxbufs[wr_idx].dma_addr);
 
@@ -81,7 +78,7 @@ void nfp_net_xsk_rx_ring_fill_freelist(struct nfp_net_rx_ring *rx_ring)
 		wr_ptr_add++;
 	}
 
-	/* Ensure all records are visible before incrementing write counter. */
+	 
 	wmb();
 	nfp_qcp_wr_ptr_add(rx_ring->qcp_fl, wr_ptr_add);
 }
@@ -116,24 +113,24 @@ int nfp_net_xsk_setup_pool(struct net_device *netdev,
 	struct nfp_net_dp *dp;
 	int err;
 
-	/* NFDK doesn't implement xsk yet. */
+	 
 	if (nn->dp.ops->version == NFP_NFD_VER_NFDK)
 		return -EOPNOTSUPP;
 
-	/* Reject on old FWs so we can drop some checks on datapath. */
+	 
 	if (nn->dp.rx_offset != NFP_NET_CFG_RX_OFFSET_DYNAMIC)
 		return -EOPNOTSUPP;
 	if (!nn->dp.chained_metadata_format)
 		return -EOPNOTSUPP;
 
-	/* Install */
+	 
 	if (pool) {
 		err = nfp_net_xsk_pool_map(nn->dp.dev, pool);
 		if (err)
 			return err;
 	}
 
-	/* Reconfig/swap */
+	 
 	dp = nfp_net_clone_dp(nn);
 	if (!dp) {
 		err = -ENOMEM;
@@ -147,7 +144,7 @@ int nfp_net_xsk_setup_pool(struct net_device *netdev,
 	if (err)
 		goto err_unmap;
 
-	/* Uninstall */
+	 
 	if (prev_pool)
 		nfp_net_xsk_pool_unmap(nn->dp.dev, prev_pool);
 
@@ -163,11 +160,7 @@ int nfp_net_xsk_wakeup(struct net_device *netdev, u32 queue_id, u32 flags)
 {
 	struct nfp_net *nn = netdev_priv(netdev);
 
-	/* queue_id comes from a zero-copy socket, installed with XDP_SETUP_XSK_POOL,
-	 * so it must be within our vector range.  Moreover, our napi structs
-	 * are statically allocated, so we can always kick them without worrying
-	 * if reconfig is in progress or interface down.
-	 */
+	 
 	napi_schedule(&nn->r_vecs[queue_id].napi);
 
 	return 0;

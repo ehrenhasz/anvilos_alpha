@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mlx90614.c - Support for Melexis MLX90614/MLX90615 contactless IR temperature sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- * Copyright (c) 2015 Essensium NV
- * Copyright (c) 2015 Melexis
- *
- * Driver for the Melexis MLX90614/MLX90615 I2C 16-bit IR thermopile sensor
- *
- * MLX90614 - 17-bit ADC + MLX90302 DSP
- * MLX90615 - 16-bit ADC + MLX90325 DSP
- *
- * (7-bit I2C slave address 0x5a, 100KHz bus speed only!)
- *
- * To wake up from sleep mode, the SDA line must be held low while SCL is high
- * for at least 33ms.  This is achieved with an extra GPIO that can be connected
- * directly to the SDA line.  In normal operation, the GPIO is set as input and
- * will not interfere in I2C communication.  While the GPIO is driven low, the
- * i2c adapter is locked since it cannot be used by other clients.  The SCL line
- * always has a pull-up so we do not need an extra GPIO to drive it high.  If
- * the "wakeup" GPIO is not given, power management will be disabled.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -42,50 +21,50 @@
 #define MLX90615_OP_RAM		0x20
 #define MLX90615_OP_SLEEP	0xc6
 
-/* Control bits in configuration register */
-#define MLX90614_CONFIG_IIR_SHIFT 0 /* IIR coefficient */
+ 
+#define MLX90614_CONFIG_IIR_SHIFT 0  
 #define MLX90614_CONFIG_IIR_MASK (0x7 << MLX90614_CONFIG_IIR_SHIFT)
-#define MLX90614_CONFIG_DUAL_SHIFT 6 /* single (0) or dual (1) IR sensor */
+#define MLX90614_CONFIG_DUAL_SHIFT 6  
 #define MLX90614_CONFIG_DUAL_MASK (1 << MLX90614_CONFIG_DUAL_SHIFT)
-#define MLX90614_CONFIG_FIR_SHIFT 8 /* FIR coefficient */
+#define MLX90614_CONFIG_FIR_SHIFT 8  
 #define MLX90614_CONFIG_FIR_MASK (0x7 << MLX90614_CONFIG_FIR_SHIFT)
 
-#define MLX90615_CONFIG_IIR_SHIFT 12 /* IIR coefficient */
+#define MLX90615_CONFIG_IIR_SHIFT 12  
 #define MLX90615_CONFIG_IIR_MASK (0x7 << MLX90615_CONFIG_IIR_SHIFT)
 
-/* Timings (in ms) */
-#define MLX90614_TIMING_EEPROM 20 /* time for EEPROM write/erase to complete */
-#define MLX90614_TIMING_WAKEUP 34 /* time to hold SDA low for wake-up */
-#define MLX90614_TIMING_STARTUP 250 /* time before first data after wake-up */
+ 
+#define MLX90614_TIMING_EEPROM 20  
+#define MLX90614_TIMING_WAKEUP 34  
+#define MLX90614_TIMING_STARTUP 250  
 
-#define MLX90615_TIMING_WAKEUP 22 /* time to hold SCL low for wake-up */
+#define MLX90615_TIMING_WAKEUP 22  
 
-#define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+#define MLX90614_AUTOSLEEP_DELAY 5000  
 
-/* Magic constants */
-#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the Kelvin offset */
-#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
-#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
-#define MLX90614_CONST_FIR 0x7 /* Fixed value for FIR part of low pass filter */
+ 
+#define MLX90614_CONST_OFFSET_DEC -13657  
+#define MLX90614_CONST_OFFSET_REM 500000  
+#define MLX90614_CONST_SCALE 20  
+#define MLX90614_CONST_FIR 0x7  
 
-/* Non-constant mask variant of FIELD_GET() and FIELD_PREP() */
+ 
 #define field_get(_mask, _reg)	(((_reg) & (_mask)) >> (ffs(_mask) - 1))
 #define field_prep(_mask, _val)	(((_val) << (ffs(_mask) - 1)) & (_mask))
 
 struct mlx_chip_info {
-	/* EEPROM offsets with 16-bit data, MSB first */
-	/* emissivity correction coefficient */
+	 
+	 
 	u8			op_eeprom_emissivity;
 	u8			op_eeprom_config1;
-	/* RAM offsets with 16-bit data, MSB first */
-	/* ambient temperature */
+	 
+	 
 	u8			op_ram_ta;
-	/* object 1 temperature */
+	 
 	u8			op_ram_tobj1;
-	/* object 2 temperature */
+	 
 	u8			op_ram_tobj2;
 	u8			op_sleep;
-	/* support for two input channels (MLX90614 only) */
+	 
 	u8			dual_channel;
 	u8			wakeup_delay_ms;
 	u16			emissivity_max;
@@ -98,30 +77,23 @@ struct mlx_chip_info {
 
 struct mlx90614_data {
 	struct i2c_client *client;
-	struct mutex lock; /* for EEPROM access only */
-	struct gpio_desc *wakeup_gpio; /* NULL to disable sleep/wake-up */
-	const struct mlx_chip_info *chip_info; /* Chip hardware details */
-	unsigned long ready_timestamp; /* in jiffies */
+	struct mutex lock;  
+	struct gpio_desc *wakeup_gpio;  
+	const struct mlx_chip_info *chip_info;  
+	unsigned long ready_timestamp;  
 };
 
-/*
- * Erase an address and write word.
- * The mutex must be locked before calling.
- */
+ 
 static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
 			       u16 value)
 {
-	/*
-	 * Note: The mlx90614 requires a PEC on writing but does not send us a
-	 * valid PEC on reading.  Hence, we cannot set I2C_CLIENT_PEC in
-	 * i2c_client.flags.  As a workaround, we use i2c_smbus_xfer here.
-	 */
+	 
 	union i2c_smbus_data data;
 	s32 ret;
 
 	dev_dbg(&client->dev, "Writing 0x%x to address 0x%x", value, command);
 
-	data.word = 0x0000; /* erase command */
+	data.word = 0x0000;  
 	ret = i2c_smbus_xfer(client->adapter, client->addr,
 			     client->flags | I2C_CLIENT_PEC,
 			     I2C_SMBUS_WRITE, command,
@@ -131,7 +103,7 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
 
 	msleep(MLX90614_TIMING_EEPROM);
 
-	data.word = value; /* actual write */
+	data.word = value;  
 	ret = i2c_smbus_xfer(client->adapter, client->addr,
 			     client->flags | I2C_CLIENT_PEC,
 			     I2C_SMBUS_WRITE, command,
@@ -142,10 +114,7 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
 	return ret;
 }
 
-/*
- * Find the IIR value inside iir_values array and return its position
- * which is equivalent to the bit value in sensor register
- */
+ 
 static inline s32 mlx90614_iir_search(const struct i2c_client *client,
 				      int value)
 {
@@ -165,16 +134,12 @@ static inline s32 mlx90614_iir_search(const struct i2c_client *client,
 	if (i == ARRAY_SIZE(chip_info->iir_values))
 		return -EINVAL;
 
-	/*
-	 * CONFIG register values must not be changed so
-	 * we must read them before we actually write
-	 * changes
-	 */
+	 
 	ret = i2c_smbus_read_word_data(client, chip_info->op_eeprom_config1);
 	if (ret < 0)
 		return ret;
 
-	/* Modify FIR on parts which have configurable FIR filter */
+	 
 	if (chip_info->fir_config_mask) {
 		ret &= ~chip_info->fir_config_mask;
 		ret |= field_prep(chip_info->fir_config_mask, MLX90614_CONST_FIR);
@@ -183,18 +148,13 @@ static inline s32 mlx90614_iir_search(const struct i2c_client *client,
 	ret &= ~chip_info->iir_config_mask;
 	ret |= field_prep(chip_info->iir_config_mask, i);
 
-	/* Write changed values */
+	 
 	ret = mlx90614_write_word(client, chip_info->op_eeprom_config1, ret);
 	return ret;
 }
 
 #ifdef CONFIG_PM
-/*
- * If @startup is true, make sure MLX90614_TIMING_STARTUP ms have elapsed since
- * the last wake-up.  This is normally only needed to get a valid temperature
- * reading.  EEPROM access does not need such delay.
- * Return 0 on success, <0 on error.
- */
+ 
 static int mlx90614_power_get(struct mlx90614_data *data, bool startup)
 {
 	unsigned long now;
@@ -249,7 +209,7 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
 	s32 ret;
 
 	switch (mask) {
-	case IIO_CHAN_INFO_RAW: /* 0.02K / LSB */
+	case IIO_CHAN_INFO_RAW:  
 		switch (channel->channel2) {
 		case IIO_MOD_TEMP_AMBIENT:
 			cmd = chip_info->op_ram_ta;
@@ -282,7 +242,7 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* MSB is an error flag */
+		 
 		if (ret & 0x8000)
 			return -EIO;
 
@@ -295,7 +255,7 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		*val = MLX90614_CONST_SCALE;
 		return IIO_VAL_INT;
-	case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/emissivity_max / LSB */
+	case IIO_CHAN_INFO_CALIBEMISSIVITY:  
 		ret = mlx90614_power_get(data, false);
 		if (ret < 0)
 			return ret;
@@ -317,7 +277,7 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
 			*val2 = ret * NSEC_PER_SEC / chip_info->emissivity_max;
 		}
 		return IIO_VAL_INT_PLUS_NANO;
-	/* IIR setting with FIR=1024 (MLX90614) or FIR=65536 (MLX90615) */
+	 
 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
 		ret = mlx90614_power_get(data, false);
 		if (ret < 0)
@@ -352,7 +312,7 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
 	s32 ret;
 
 	switch (mask) {
-	case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/emissivity_max / LSB */
+	case IIO_CHAN_INFO_CALIBEMISSIVITY:  
 		if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
 			return -EINVAL;
 		val = val * chip_info->emissivity_max +
@@ -369,7 +329,7 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
 		mlx90614_power_put(data);
 
 		return ret;
-	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter setting */
+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:  
 		if (val < 0 || val2 < 0)
 			return -EINVAL;
 
@@ -510,18 +470,13 @@ static int mlx90614_wakeup(struct mlx90614_data *data)
 	data->ready_timestamp = jiffies +
 			msecs_to_jiffies(MLX90614_TIMING_STARTUP);
 
-	/*
-	 * Quirk: the i2c controller may get confused right after the
-	 * wake-up signal has been sent.  As a workaround, do a dummy read.
-	 * If the read fails, the controller will probably be reset so that
-	 * further reads will work.
-	 */
+	 
 	i2c_smbus_read_word_data(data->client, chip_info->op_eeprom_config1);
 
 	return 0;
 }
 
-/* Return wake-up GPIO or NULL if sleep functionality should be disabled. */
+ 
 static struct gpio_desc *mlx90614_probe_wakeup(struct i2c_client *client)
 {
 	struct gpio_desc *gpio;
@@ -562,7 +517,7 @@ static inline struct gpio_desc *mlx90614_probe_wakeup(struct i2c_client *client)
 }
 #endif
 
-/* Return 0 for single sensor, 1 for dual sensor, <0 on error. */
+ 
 static int mlx90614_probe_num_ir_sensors(struct i2c_client *client)
 {
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
@@ -665,14 +620,14 @@ static const struct mlx_chip_info mlx90614_chip_info = {
 	.iir_valid_offset		= 0,
 	.iir_values			= { 77, 31, 20, 15, 723, 153, 110, 86 },
 	.iir_freqs			= {
-		{ 0, 150000 },	/* 13% ~= 0.15 Hz */
-		{ 0, 200000 },	/* 17% ~= 0.20 Hz */
-		{ 0, 310000 },	/* 25% ~= 0.31 Hz */
-		{ 0, 770000 },	/* 50% ~= 0.77 Hz */
-		{ 0, 860000 },	/* 57% ~= 0.86 Hz */
-		{ 1, 100000 },	/* 67% ~= 1.10 Hz */
-		{ 1, 530000 },	/* 80% ~= 1.53 Hz */
-		{ 7, 230000 }	/* 100% ~= 7.23 Hz */
+		{ 0, 150000 },	 
+		{ 0, 200000 },	 
+		{ 0, 310000 },	 
+		{ 0, 770000 },	 
+		{ 0, 860000 },	 
+		{ 1, 100000 },	 
+		{ 1, 530000 },	 
+		{ 7, 230000 }	 
 	},
 };
 
@@ -686,19 +641,19 @@ static const struct mlx_chip_info mlx90615_chip_info = {
 	.dual_channel			= false,
 	.wakeup_delay_ms		= MLX90615_TIMING_WAKEUP,
 	.emissivity_max			= 16383,
-	.fir_config_mask		= 0,	/* MLX90615 FIR is fixed */
+	.fir_config_mask		= 0,	 
 	.iir_config_mask		= MLX90615_CONFIG_IIR_MASK,
-	/* IIR value 0 is FORBIDDEN COMBINATION on MLX90615 */
+	 
 	.iir_valid_offset		= 1,
 	.iir_values			= { 500, 50, 30, 20, 15, 13, 10 },
 	.iir_freqs			= {
-		{ 0, 100000 },	/* 14% ~= 0.10 Hz */
-		{ 0, 130000 },	/* 17% ~= 0.13 Hz */
-		{ 0, 150000 },	/* 20% ~= 0.15 Hz */
-		{ 0, 200000 },	/* 25% ~= 0.20 Hz */
-		{ 0, 300000 },	/* 33% ~= 0.30 Hz */
-		{ 0, 500000 },	/* 50% ~= 0.50 Hz */
-		{ 5, 000000 },	/* 100% ~= 5.00 Hz */
+		{ 0, 100000 },	 
+		{ 0, 130000 },	 
+		{ 0, 150000 },	 
+		{ 0, 200000 },	 
+		{ 0, 300000 },	 
+		{ 0, 500000 },	 
+		{ 5, 000000 },	 
 	},
 };
 

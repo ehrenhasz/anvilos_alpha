@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * DRM driver for the HX8357D LCD controller
- *
- * Copyright 2018 Broadcom
- * Copyright 2018 David Lechner <david@lechnology.com>
- * Copyright 2016 Noralf Trønnes
- * Copyright (C) 2015 Adafruit Industries
- * Copyright (C) 2013 Christian Vogelgsang
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -64,46 +56,46 @@ static void yx240qv29_enable(struct drm_simple_display_pipe *pipe,
 	if (ret == 1)
 		goto out_enable;
 
-	/* setextc */
+	 
 	mipi_dbi_command(dbi, HX8357D_SETEXTC, 0xFF, 0x83, 0x57);
 	msleep(150);
 
-	/* setRGB which also enables SDO */
+	 
 	mipi_dbi_command(dbi, HX8357D_SETRGB, 0x00, 0x00, 0x06, 0x06);
 
-	/* -1.52V */
+	 
 	mipi_dbi_command(dbi, HX8357D_SETCOM, 0x25);
 
-	/* Normal mode 70Hz, Idle mode 55 Hz */
+	 
 	mipi_dbi_command(dbi, HX8357D_SETOSC, 0x68);
 
-	/* Set Panel - BGR, Gate direction swapped */
+	 
 	mipi_dbi_command(dbi, HX8357D_SETPANEL, 0x05);
 
 	mipi_dbi_command(dbi, HX8357D_SETPOWER,
-			 0x00,  /* Not deep standby */
-			 0x15,  /* BT */
-			 0x1C,  /* VSPR */
-			 0x1C,  /* VSNR */
-			 0x83,  /* AP */
-			 0xAA);  /* FS */
+			 0x00,   
+			 0x15,   
+			 0x1C,   
+			 0x1C,   
+			 0x83,   
+			 0xAA);   
 
 	mipi_dbi_command(dbi, HX8357D_SETSTBA,
-			 0x50,  /* OPON normal */
-			 0x50,  /* OPON idle */
-			 0x01,  /* STBA */
-			 0x3C,  /* STBA */
-			 0x1E,  /* STBA */
-			 0x08);  /* GEN */
+			 0x50,   
+			 0x50,   
+			 0x01,   
+			 0x3C,   
+			 0x1E,   
+			 0x08);   
 
 	mipi_dbi_command(dbi, HX8357D_SETCYC,
-			 0x02,  /* NW 0x02 */
-			 0x40,  /* RTN */
-			 0x00,  /* DIV */
-			 0x2A,  /* DUM */
-			 0x2A,  /* DUM */
-			 0x0D,  /* GDON */
-			 0x78);  /* GDOFF */
+			 0x02,   
+			 0x40,   
+			 0x00,   
+			 0x2A,   
+			 0x2A,   
+			 0x0D,   
+			 0x78);   
 
 	mipi_dbi_command(dbi, HX8357D_SETGAMMA,
 			 0x02,
@@ -141,21 +133,21 @@ static void yx240qv29_enable(struct drm_simple_display_pipe *pipe,
 			 0x00,
 			 0x01);
 
-	/* 16 bit */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_PIXEL_FORMAT,
 			 MIPI_DCS_PIXEL_FMT_16BIT);
 
-	/* TE off */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_TEAR_ON, 0x00);
 
-	/* tear line */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_TEAR_SCANLINE, 0x00, 0x02);
 
-	/* Exit Sleep */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(150);
 
-	/* display on */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_DISPLAY_ON);
 	usleep_range(5000, 7000);
 

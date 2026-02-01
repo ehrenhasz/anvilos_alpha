@@ -1,45 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
-**	lib_newwin.c
-**
-**	The routines newwin(), subwin() and their dependent
-**
-*/
+ 
 
 #include <curses.priv.h>
 #include <stddef.h>
@@ -94,7 +57,7 @@ _nc_freewin(WINDOW *win)
 {
     int result = ERR;
 #ifdef USE_SP_WINDOWLIST
-    SCREEN *sp = _nc_screen_of(win);	/* pretend this is parameter */
+    SCREEN *sp = _nc_screen_of(win);	 
 #endif
 
     T((T_CALLED("_nc_freewin(%p)"), (void *) win));
@@ -204,9 +167,7 @@ derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
     T((T_CALLED("derwin(%p,%d,%d,%d,%d)"), (void *) orig, num_lines, num_columns,
        begy, begx));
 
-    /*
-     * make sure window fits inside the original one
-     */
+     
     if (begy < 0 || begx < 0 || orig == 0 || num_lines < 0 || num_columns < 0)
 	returnWin(0);
     if (begy + num_lines > orig->_maxy + 1
@@ -335,25 +296,7 @@ NCURSES_SP_NAME(_nc_makenew) (NCURSES_SP_DCLx
     win->_pad._pad_right = -1;
 
     for (i = 0; i < num_lines; i++) {
-	/*
-	 * This used to do
-	 *
-	 * win->_line[i].firstchar = win->_line[i].lastchar = _NOCHANGE;
-	 *
-	 * which marks the whole window unchanged.  That's how
-	 * SVr1 curses did it, but SVr4 curses marks the whole new
-	 * window changed.
-	 *
-	 * With the old SVr1-like code, say you have stdscr full of
-	 * characters, then create a new window with newwin(),
-	 * then do a printw(win, "foo        ");, the trailing spaces are
-	 * completely ignored by the following refreshes.  So, you
-	 * get "foojunkjunk" on the screen instead of "foo        " as
-	 * you actually intended.
-	 *
-	 * SVr4 doesn't do this.  Instead the spaces are actually written.
-	 * So that's how we want ncurses to behave.
-	 */
+	 
 	win->_line[i].firstchar = 0;
 	win->_line[i].lastchar = (NCURSES_SIZE_T) (num_columns - 1);
 
@@ -380,11 +323,7 @@ NCURSES_SP_NAME(_nc_makenew) (NCURSES_SP_DCLx
     returnWin(win);
 }
 
-/*
- * wgetch() and other functions with a WINDOW* parameter may use a SCREEN*
- * internally, and it is useful to allow those to be invoked without switching
- * SCREEN's, e.g., for multi-threaded applications.
- */
+ 
 #if NCURSES_SP_FUNCS
 NCURSES_EXPORT(WINDOW *)
 _nc_curscr_of(SCREEN *sp)

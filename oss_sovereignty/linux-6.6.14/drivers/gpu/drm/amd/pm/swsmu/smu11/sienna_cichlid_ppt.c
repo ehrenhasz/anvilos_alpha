@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -50,11 +29,7 @@
 #include "amdgpu_ras.h"
 #include "smu_cmn.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -80,13 +55,10 @@
 		(*member) = (smu->smu_table.driver_pptable + offsetof(PPTable_t, field));\
 } while(0)
 
-/* STB FIFO depth is in 64bit units */
+ 
 #define SIENNA_CICHLID_STB_DEPTH_UNIT_BYTES 8
 
-/*
- * SMU support ECCTABLE since version 58.70.0,
- * use this to check whether ECCTABLE feature is supported.
- */
+ 
 #define SUPPORT_ECCTABLE_SMU_VERSION 0x003a4600
 
 static int get_table_size(struct smu_context *smu)
@@ -370,10 +342,7 @@ static void sienna_cichlid_check_bxco_support(struct smu_context *smu)
 			(val & RCC_BIF_STRAP0__STRAP_PX_CAPABLE_MASK) ? true :
 									false;
 
-		/*
-		 * Disable BACO entry/exit completely on below SKUs to
-		 * avoid hardware intermittent failures.
-		 */
+		 
 		if (((adev->pdev->device == 0x73A1) &&
 		    (adev->pdev->revision == 0x00)) ||
 		    ((adev->pdev->device == 0x73BF) &&
@@ -395,7 +364,7 @@ static void sienna_cichlid_check_fan_support(struct smu_context *smu)
 	PPTable_t *pptable = table_context->driver_pptable;
 	uint64_t features = *(uint64_t *) pptable->FeaturesToRun;
 
-	/* Fan control is not possible if PPTable has it disabled */
+	 
 	smu->adev->pm.no_fan =
 		!(features & (1ULL << FEATURE_FAN_CONTROL_BIT));
 	if (smu->adev->pm.no_fan)
@@ -418,10 +387,7 @@ static int sienna_cichlid_check_powerplay_table(struct smu_context *smu)
 	table_context->thermal_controller_type =
 		powerplay_table->thermal_controller_type;
 
-	/*
-	 * Instead of having its own buffer space and get overdrive_table copied,
-	 * smu->od_settings just points to the actual overdrive_table
-	 */
+	 
 	smu->od_settings = &powerplay_table->overdrive_table;
 
 	return 0;
@@ -478,7 +444,7 @@ static int sienna_cichlid_patch_pptable_quirk(struct smu_context *smu)
 	uint16_t *freq_table_gfx;
 	uint32_t i;
 
-	/* Fix some OEM SKU specific stability issues */
+	 
 	GET_PPTABLE_MEMBER(BoardReserved, &board_reserved);
 	if ((adev->pdev->device == 0x73DF) &&
 	    (adev->pdev->revision == 0XC3) &&
@@ -871,11 +837,11 @@ static int sienna_cichlid_get_smu_metrics_data(struct smu_context *smu,
 			use_metrics_v2 ? metrics_v2->CurrFanSpeed : metrics->CurrFanSpeed;
 		break;
 	case METRICS_UNIQUE_ID_UPPER32:
-		/* Only supported in 0x3A5300+, metrics_v3 requires 0x3A4900+ */
+		 
 		*value = use_metrics_v3 ? metrics_v3->PublicSerialNumUpper32 : 0;
 		break;
 	case METRICS_UNIQUE_ID_LOWER32:
-		/* Only supported in 0x3A5300+, metrics_v3 requires 0x3A4900+ */
+		 
 		*value = use_metrics_v3 ? metrics_v3->PublicSerialNumLower32 : 0;
 		break;
 	case METRICS_SS_APU_SHARE:
@@ -939,7 +905,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 	int i, ret = 0;
 	DpmDescriptor_t *table_member;
 
-	/* socclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.soc_table;
 	GET_PPTABLE_MEMBER(DpmDescriptor, &table_member);
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_SOCCLK_BIT)) {
@@ -958,7 +924,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -976,7 +942,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* uclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.uclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_UCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -994,7 +960,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* fclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.fclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_FCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -1012,7 +978,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* vclk0/1 dpm table setup */
+	 
 	for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
 		if (adev->vcn.harvest_config & (1 << i))
 			continue;
@@ -1035,7 +1001,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		}
 	}
 
-	/* dclk0/1 dpm table setup */
+	 
 	for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
 		if (adev->vcn.harvest_config & (1 << i))
 			continue;
@@ -1057,7 +1023,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		}
 	}
 
-	/* dcefclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.dcef_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCEFCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -1075,7 +1041,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* pixelclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.pixel_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCEFCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -1093,7 +1059,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* displayclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.display_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCEFCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -1111,7 +1077,7 @@ static int sienna_cichlid_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* phyclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.phy_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCEFCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -1140,7 +1106,7 @@ static int sienna_cichlid_dpm_set_vcn_enable(struct smu_context *smu, bool enabl
 	for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
 		if (adev->vcn.harvest_config & (1 << i))
 			continue;
-		/* vcn dpm on is a prerequisite for vcn power gate messages */
+		 
 		if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_MM_DPM_PG_BIT)) {
 			ret = smu_cmn_send_smc_msg_with_param(smu, enable ?
 							      SMU_MSG_PowerUpVcn : SMU_MSG_PowerDownVcn,
@@ -1237,7 +1203,7 @@ static bool sienna_cichlid_is_support_fine_grained_dpm(struct smu_context *smu, 
 						   clk_type);
 	dpm_desc = &table_member[clk_index];
 
-	/* 0 - Fine grained DPM, 1 - Discrete DPM */
+	 
 	return dpm_desc->SnapToDiscrete == 0;
 }
 
@@ -1380,10 +1346,7 @@ static int sienna_cichlid_print_clk_levels(struct smu_context *smu,
 		if (!smu->od_enabled || !od_table || !od_settings)
 			break;
 
-		/*
-		 * OD GFX Voltage Offset functionality is supported only by 58.41.0
-		 * and onwards SMU firmwares.
-		 */
+		 
 		smu_cmn_get_smc_version(smu, NULL, &smu_version);
 		if ((adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
 		     (smu_version < 0x003a2900))
@@ -1442,7 +1405,7 @@ static int sienna_cichlid_force_clk_levels(struct smu_context *smu,
 	case SMU_MCLK:
 	case SMU_UCLK:
 	case SMU_FCLK:
-		/* There is only 2 levels for fine grained DPM */
+		 
 		if (sienna_cichlid_is_support_fine_grained_dpm(smu, clk_type)) {
 			soft_max_level = (soft_max_level >= 1 ? 1 : 0);
 			soft_min_level = (soft_min_level >= 1 ? 1 : 0);
@@ -1523,7 +1486,7 @@ static int sienna_cichlid_pre_display_config_changed(struct smu_context *smu)
 	int ret = 0;
 	uint32_t max_freq = 0;
 
-	/* Sienna_Cichlid do not support to change display num currently */
+	 
 	return 0;
 #if 0
 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_NumOfDisplays, 0, NULL);
@@ -1580,11 +1543,7 @@ static int sienna_cichlid_get_fan_speed_rpm(struct smu_context *smu,
 	if (!speed)
 		return -EINVAL;
 
-	/*
-	 * For Sienna_Cichlid and later, the fan speed(rpm) reported
-	 * by pmfw is always trustable(even when the fan control feature
-	 * disabled or 0 RPM kicked in).
-	 */
+	 
 	return sienna_cichlid_get_smu_metrics_data(smu,
 						   METRICS_CURR_FANSPEED,
 						   speed);
@@ -1629,7 +1588,7 @@ static int sienna_cichlid_get_power_profile_mode(struct smu_context *smu, char *
 			title[6], title[7], title[8], title[9], title[10]);
 
 	for (i = 0; i <= PP_SMC_POWER_PROFILE_CUSTOM; i++) {
-		/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -1719,7 +1678,7 @@ static int sienna_cichlid_set_power_profile_mode(struct smu_context *smu, long *
 		}
 
 		switch (input[0]) {
-		case 0: /* Gfxclk */
+		case 0:  
 			activity_monitor->Gfx_FPS = input[1];
 			activity_monitor->Gfx_MinFreqStep = input[2];
 			activity_monitor->Gfx_MinActiveFreqType = input[3];
@@ -1730,7 +1689,7 @@ static int sienna_cichlid_set_power_profile_mode(struct smu_context *smu, long *
 			activity_monitor->Gfx_PD_Data_error_coeff = input[8];
 			activity_monitor->Gfx_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 1: /* Socclk */
+		case 1:  
 			activity_monitor->Fclk_FPS = input[1];
 			activity_monitor->Fclk_MinFreqStep = input[2];
 			activity_monitor->Fclk_MinActiveFreqType = input[3];
@@ -1741,7 +1700,7 @@ static int sienna_cichlid_set_power_profile_mode(struct smu_context *smu, long *
 			activity_monitor->Fclk_PD_Data_error_coeff = input[8];
 			activity_monitor->Fclk_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 2: /* Memlk */
+		case 2:  
 			activity_monitor->Mem_FPS = input[1];
 			activity_monitor->Mem_MinFreqStep = input[2];
 			activity_monitor->Mem_MinActiveFreqType = input[3];
@@ -1763,7 +1722,7 @@ static int sienna_cichlid_set_power_profile_mode(struct smu_context *smu, long *
 		}
 	}
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       smu->power_profile_mode);
@@ -1976,7 +1935,7 @@ static void sienna_cichlid_get_unique_id(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	uint32_t upper32 = 0, lower32 = 0;
 
-	/* Only supported as of version 0.58.83.0 and only on Sienna Cichlid */
+	 
 	if (smu->smc_fw_version < 0x3A5300 ||
 	    smu->adev->ip_versions[MP1_HWIP][0] != IP_VERSION(11, 0, 7))
 		return;
@@ -2015,7 +1974,7 @@ static int sienna_cichlid_get_uclk_dpm_states(struct smu_context *smu, uint32_t 
 
 	*num_states = num_discrete_levels;
 	for (i = 0; i < num_discrete_levels; i++) {
-		/* convert to khz */
+		 
 		*clocks_in_khz = (*dpm_levels) * 1000;
 		clocks_in_khz++;
 		dpm_levels++;
@@ -2180,10 +2139,7 @@ static int sienna_cichlid_set_default_od_settings(struct smu_context *smu)
 
 	memcpy(od_table, boot_od_table, sizeof(OverDriveTable_t));
 
-	/*
-	 * For S3/S4/Runpm resume, we need to setup those overdrive tables again,
-	 * but we have to preserve user defined values in "user_od_table".
-	 */
+	 
 	if (!smu->adev->in_suspend) {
 		memcpy(user_od_table, boot_od_table, sizeof(OverDriveTable_t));
 		smu->user_dpm_profile.user_od = false;
@@ -2381,10 +2337,7 @@ static int sienna_cichlid_od_edit_dpm_table(struct smu_context *smu,
 			return -EINVAL;
 		}
 
-		/*
-		 * OD GFX Voltage Offset functionality is supported only by 58.41.0
-		 * and onwards SMU firmwares.
-		 */
+		 
 		smu_cmn_get_smc_version(smu, NULL, &smu_version);
 		if ((adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
 		     (smu_version < 0x003a2900)) {
@@ -2445,7 +2398,7 @@ static int sienna_cichlid_baco_exit(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 
 	if (adev->in_runpm && smu_cmn_is_audio_func_enabled(adev)) {
-		/* Wait for PMFW handling for the Dstate change */
+		 
 		msleep(10);
 		return smu_v11_0_baco_set_armd3_sequence(smu, BACO_SEQ_ULPS);
 	} else {
@@ -2459,18 +2412,12 @@ static bool sienna_cichlid_is_mode1_reset_supported(struct smu_context *smu)
 	uint32_t val;
 	u32 smu_version;
 
-	/**
-	 * SRIOV env will not support SMU mode1 reset
-	 * PM FW support mode1 reset from 58.26
-	 */
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if (amdgpu_sriov_vf(adev) || (smu_version < 0x003a1a00))
 		return false;
 
-	/**
-	 * mode1 reset relies on PSP, so we should check if
-	 * PSP is alive.
-	 */
+	 
 	val = RREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_81);
 	return val != 0x0;
 }
@@ -3763,7 +3710,7 @@ static int sienna_cichlid_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	req->I2CcontrollerPort = smu_i2c->port;
 	req->I2CSpeed = I2C_SPEED_FAST_400K;
-	req->SlaveAddress = msg[0].addr << 1; /* wants an 8-bit address */
+	req->SlaveAddress = msg[0].addr << 1;  
 	dir = msg[0].flags & I2C_M_RD;
 
 	for (c = i = 0; i < num_msgs; i++) {
@@ -3771,25 +3718,20 @@ static int sienna_cichlid_i2c_xfer(struct i2c_adapter *i2c_adap,
 			SwI2cCmd_t *cmd = &req->SwI2cCmds[c];
 
 			if (!(msg[i].flags & I2C_M_RD)) {
-				/* write */
+				 
 				cmd->CmdConfig |= CMDCONFIG_READWRITE_MASK;
 				cmd->ReadWriteData = msg[i].buf[j];
 			}
 
 			if ((dir ^ msg[i].flags) & I2C_M_RD) {
-				/* The direction changes.
-				 */
+				 
 				dir = msg[i].flags & I2C_M_RD;
 				cmd->CmdConfig |= CMDCONFIG_RESTART_MASK;
 			}
 
 			req->NumCmds++;
 
-			/*
-			 * Insert STOP if we are at the last byte of either last
-			 * message for the transaction or the client explicitly
-			 * requires a STOP at this particular message.
-			 */
+			 
 			if ((j == msg[i].len - 1) &&
 			    ((i == num_msgs - 1) || (msg[i].flags & I2C_M_STOP))) {
 				cmd->CmdConfig &= ~CMDCONFIG_RESTART_MASK;
@@ -3865,8 +3807,8 @@ static int sienna_cichlid_i2c_control_init(struct smu_context *smu)
 			goto Out_err;
 		}
 	}
-	/* assign the buses used for the FRU EEPROM and RAS EEPROM */
-	/* XXX ideally this would be something in a vbios data table */
+	 
+	 
 	adev->pm.ras_eeprom_i2c_bus = &adev->pm.smu_i2c[1].adapter;
 	adev->pm.fru_eeprom_i2c_bus = &adev->pm.smu_i2c[0].adapter;
 
@@ -4110,10 +4052,7 @@ static int sienna_cichlid_enable_mgpu_fan_boost(struct smu_context *smu)
 	uint16_t *mgpu_fan_boost_limit_rpm;
 
 	GET_PPTABLE_MEMBER(MGpuFanBoostLimitRpm, &mgpu_fan_boost_limit_rpm);
-	/*
-	 * Skip the MGpuFanBoost setting for those ASICs
-	 * which do not support it
-	 */
+	 
 	if (*mgpu_fan_boost_limit_rpm == 0)
 		return 0;
 
@@ -4174,10 +4113,7 @@ static int sienna_cichlid_notify_2nd_usb20_port(struct smu_context *smu)
 	if (ret)
 		return ret;
 
-	/*
-	 * Message SMU_MSG_Enable2ndUSB20Port is supported by 58.45
-	 * onwards PMFWs.
-	 */
+	 
 	if (smu_version < 0x003A2D00)
 		return 0;
 
@@ -4212,7 +4148,7 @@ static int sienna_cichlid_set_mp1_state(struct smu_context *smu,
 		ret = smu_cmn_set_mp1_state(smu, mp1_state);
 		break;
 	default:
-		/* Ignore others */
+		 
 		ret = 0;
 	}
 
@@ -4227,13 +4163,13 @@ static void sienna_cichlid_stb_init(struct smu_context *smu)
 	reg = RREG32_PCIE(MP1_Public | smnMP1_PMI_3_START);
 	smu->stb_context.enabled = REG_GET_FIELD(reg, MP1_PMI_3_START, ENABLE);
 
-	/* STB is disabled */
+	 
 	if (!smu->stb_context.enabled)
 		return;
 
 	spin_lock_init(&smu->stb_context.lock);
 
-	/* STB buffer size in bytes as function of FIFO depth */
+	 
 	reg = RREG32_PCIE(MP1_Public | smnMP1_PMI_3_FIFO);
 	smu->stb_context.stb_buf_size = 1 << REG_GET_FIELD(reg, MP1_PMI_3_FIFO, DEPTH);
 	smu->stb_context.stb_buf_size *=  SIENNA_CICHLID_STB_DEPTH_UNIT_BYTES;
@@ -4302,13 +4238,10 @@ static int sienna_cichlid_stb_get_data_direct(struct smu_context *smu,
 	uint32_t *p = buf;
 	struct amdgpu_device *adev = smu->adev;
 
-	/* No need to disable interrupts for now as we don't lock it yet from ISR */
+	 
 	spin_lock(&smu->stb_context.lock);
 
-	/*
-	 * Read the STB FIFO in units of 32bit since this is the accessor window
-	 * (register width) we have.
-	 */
+	 
 	buf = ((char *) buf) + size;
 	while ((void *)p < buf)
 		*p++ = cpu_to_le32(RREG32_PCIE(MP1_Public | smnMP1_PMI_3));
@@ -4343,7 +4276,7 @@ static int sienna_cichlid_mode2_reset(struct smu_context *smu)
 	ret = smu_cmn_wait_for_response(smu);
 	while (ret != 0 && timeout) {
 		ret = smu_cmn_wait_for_response(smu);
-		/* Wait a bit more time for getting ACK */
+		 
 		if (ret != 0) {
 			--timeout;
 			usleep_range(500, 1000);
@@ -4361,7 +4294,7 @@ static int sienna_cichlid_mode2_reset(struct smu_context *smu)
 	}
 
 	dev_info(smu->adev->dev, "restore config space...\n");
-	/* Restore the config space saved during init */
+	 
 	amdgpu_device_load_pci_state(adev->pdev);
 out:
 	mutex_unlock(&smu->message_lock);

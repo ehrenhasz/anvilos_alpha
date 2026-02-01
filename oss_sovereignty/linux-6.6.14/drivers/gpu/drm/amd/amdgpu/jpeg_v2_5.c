@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_jpeg.h"
@@ -47,13 +26,7 @@ static int amdgpu_ih_clientid_jpeg[] = {
 	SOC15_IH_CLIENTID_VCN1
 };
 
-/**
- * jpeg_v2_5_early_init - set function pointers
- *
- * @handle: amdgpu_device pointer
- *
- * Set ring and irq function pointers
- */
+ 
 static int jpeg_v2_5_early_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -78,13 +51,7 @@ static int jpeg_v2_5_early_init(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_sw_init - sw init for JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- * Load firmware and sw initialization
- */
+ 
 static int jpeg_v2_5_sw_init(void *handle)
 {
 	struct amdgpu_ring *ring;
@@ -95,19 +62,19 @@ static int jpeg_v2_5_sw_init(void *handle)
 		if (adev->jpeg.harvest_config & (1 << i))
 			continue;
 
-		/* JPEG TRAP */
+		 
 		r = amdgpu_irq_add_id(adev, amdgpu_ih_clientid_jpeg[i],
 				VCN_2_0__SRCID__JPEG_DECODE, &adev->jpeg.inst[i].irq);
 		if (r)
 			return r;
 
-		/* JPEG DJPEG POISON EVENT */
+		 
 		r = amdgpu_irq_add_id(adev, amdgpu_ih_clientid_jpeg[i],
 			VCN_2_6__SRCID_DJPEG0_POISON, &adev->jpeg.inst[i].ras_poison_irq);
 		if (r)
 			return r;
 
-		/* JPEG EJPEG POISON EVENT */
+		 
 		r = amdgpu_irq_add_id(adev, amdgpu_ih_clientid_jpeg[i],
 			VCN_2_6__SRCID_EJPEG0_POISON, &adev->jpeg.inst[i].ras_poison_irq);
 		if (r)
@@ -150,13 +117,7 @@ static int jpeg_v2_5_sw_init(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_sw_fini - sw fini for JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- * JPEG suspend and free up sw allocation
- */
+ 
 static int jpeg_v2_5_sw_fini(void *handle)
 {
 	int r;
@@ -171,12 +132,7 @@ static int jpeg_v2_5_sw_fini(void *handle)
 	return r;
 }
 
-/**
- * jpeg_v2_5_hw_init - start and test JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- */
+ 
 static int jpeg_v2_5_hw_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -201,13 +157,7 @@ static int jpeg_v2_5_hw_init(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_hw_fini - stop the hardware block
- *
- * @handle: amdgpu_device pointer
- *
- * Stop the JPEG block, mark ring as not ready any more
- */
+ 
 static int jpeg_v2_5_hw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -230,13 +180,7 @@ static int jpeg_v2_5_hw_fini(void *handle)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_suspend - suspend JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- * HW fini and suspend JPEG block
- */
+ 
 static int jpeg_v2_5_suspend(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -251,13 +195,7 @@ static int jpeg_v2_5_suspend(void *handle)
 	return r;
 }
 
-/**
- * jpeg_v2_5_resume - resume JPEG block
- *
- * @handle: amdgpu_device pointer
- *
- * Resume firmware and hw init JPEG block
- */
+ 
 static int jpeg_v2_5_resume(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -314,13 +252,7 @@ static void jpeg_v2_5_enable_clock_gating(struct amdgpu_device *adev, int inst)
 	WREG32_SOC15(JPEG, inst, mmJPEG_CGC_GATE, data);
 }
 
-/**
- * jpeg_v2_5_start - start JPEG block
- *
- * @adev: amdgpu_device pointer
- *
- * Setup and start the JPEG block
- */
+ 
 static int jpeg_v2_5_start(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring;
@@ -331,24 +263,24 @@ static int jpeg_v2_5_start(struct amdgpu_device *adev)
 			continue;
 
 		ring = adev->jpeg.inst[i].ring_dec;
-		/* disable anti hang mechanism */
+		 
 		WREG32_P(SOC15_REG_OFFSET(JPEG, i, mmUVD_JPEG_POWER_STATUS), 0,
 			~UVD_JPEG_POWER_STATUS__JPEG_POWER_STATUS_MASK);
 
-		/* JPEG disable CGC */
+		 
 		jpeg_v2_5_disable_clock_gating(adev, i);
 
-		/* MJPEG global tiling registers */
+		 
 		WREG32_SOC15(JPEG, i, mmJPEG_DEC_GFX8_ADDR_CONFIG,
 			adev->gfx.config.gb_addr_config);
 		WREG32_SOC15(JPEG, i, mmJPEG_DEC_GFX10_ADDR_CONFIG,
 			adev->gfx.config.gb_addr_config);
 
-		/* enable JMI channel */
+		 
 		WREG32_P(SOC15_REG_OFFSET(JPEG, i, mmUVD_JMI_CNTL), 0,
 			~UVD_JMI_CNTL__SOFT_RESET_MASK);
 
-		/* enable System Interrupt for JRBC */
+		 
 		WREG32_P(SOC15_REG_OFFSET(JPEG, i, mmJPEG_SYS_INT_EN),
 			JPEG_SYS_INT_EN__DJRBC_MASK,
 			~JPEG_SYS_INT_EN__DJRBC_MASK);
@@ -369,13 +301,7 @@ static int jpeg_v2_5_start(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_stop - stop JPEG block
- *
- * @adev: amdgpu_device pointer
- *
- * stop the JPEG block
- */
+ 
 static int jpeg_v2_5_stop(struct amdgpu_device *adev)
 {
 	int i;
@@ -384,14 +310,14 @@ static int jpeg_v2_5_stop(struct amdgpu_device *adev)
 		if (adev->jpeg.harvest_config & (1 << i))
 			continue;
 
-		/* reset JMI */
+		 
 		WREG32_P(SOC15_REG_OFFSET(JPEG, i, mmUVD_JMI_CNTL),
 			UVD_JMI_CNTL__SOFT_RESET_MASK,
 			~UVD_JMI_CNTL__SOFT_RESET_MASK);
 
 		jpeg_v2_5_enable_clock_gating(adev, i);
 
-		/* enable anti hang mechanism */
+		 
 		WREG32_P(SOC15_REG_OFFSET(JPEG, i, mmUVD_JPEG_POWER_STATUS),
 			UVD_JPEG_POWER_STATUS__JPEG_POWER_STATUS_MASK,
 			~UVD_JPEG_POWER_STATUS__JPEG_POWER_STATUS_MASK);
@@ -400,13 +326,7 @@ static int jpeg_v2_5_stop(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * jpeg_v2_5_dec_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t jpeg_v2_5_dec_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -414,13 +334,7 @@ static uint64_t jpeg_v2_5_dec_ring_get_rptr(struct amdgpu_ring *ring)
 	return RREG32_SOC15(JPEG, ring->me, mmUVD_JRBC_RB_RPTR);
 }
 
-/**
- * jpeg_v2_5_dec_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t jpeg_v2_5_dec_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -431,13 +345,7 @@ static uint64_t jpeg_v2_5_dec_ring_get_wptr(struct amdgpu_ring *ring)
 		return RREG32_SOC15(JPEG, ring->me, mmUVD_JRBC_RB_WPTR);
 }
 
-/**
- * jpeg_v2_5_dec_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void jpeg_v2_5_dec_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -450,36 +358,24 @@ static void jpeg_v2_5_dec_ring_set_wptr(struct amdgpu_ring *ring)
 	}
 }
 
-/**
- * jpeg_v2_6_dec_ring_insert_start - insert a start command
- *
- * @ring: amdgpu_ring pointer
- *
- * Write a start command to the ring.
- */
+ 
 static void jpeg_v2_6_dec_ring_insert_start(struct amdgpu_ring *ring)
 {
 	amdgpu_ring_write(ring, PACKETJ(mmUVD_JRBC_EXTERNAL_REG_INTERNAL_OFFSET,
 		0, 0, PACKETJ_TYPE0));
-	amdgpu_ring_write(ring, 0x6aa04); /* PCTL0_MMHUB_DEEPSLEEP_IB */
+	amdgpu_ring_write(ring, 0x6aa04);  
 
 	amdgpu_ring_write(ring, PACKETJ(JRBC_DEC_EXTERNAL_REG_WRITE_ADDR,
 		0, 0, PACKETJ_TYPE0));
 	amdgpu_ring_write(ring, 0x80000000 | (1 << (ring->me * 2 + 14)));
 }
 
-/**
- * jpeg_v2_6_dec_ring_insert_end - insert a end command
- *
- * @ring: amdgpu_ring pointer
- *
- * Write a end command to the ring.
- */
+ 
 static void jpeg_v2_6_dec_ring_insert_end(struct amdgpu_ring *ring)
 {
 	amdgpu_ring_write(ring, PACKETJ(mmUVD_JRBC_EXTERNAL_REG_INTERNAL_OFFSET,
 		0, 0, PACKETJ_TYPE0));
-	amdgpu_ring_write(ring, 0x6aa04); /* PCTL0_MMHUB_DEEPSLEEP_IB */
+	amdgpu_ring_write(ring, 0x6aa04);  
 
 	amdgpu_ring_write(ring, PACKETJ(JRBC_DEC_EXTERNAL_REG_WRITE_ADDR,
 		0, 0, PACKETJ_TYPE0));
@@ -663,10 +559,10 @@ static const struct amdgpu_ring_funcs jpeg_v2_5_dec_ring_vm_funcs = {
 	.emit_frame_size =
 		SOC15_FLUSH_GPU_TLB_NUM_WREG * 6 +
 		SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 8 +
-		8 + /* jpeg_v2_5_dec_ring_emit_vm_flush */
-		18 + 18 + /* jpeg_v2_5_dec_ring_emit_fence x2 vm fence */
+		8 +  
+		18 + 18 +  
 		8 + 16,
-	.emit_ib_size = 22, /* jpeg_v2_5_dec_ring_emit_ib */
+	.emit_ib_size = 22,  
 	.emit_ib = jpeg_v2_0_dec_ring_emit_ib,
 	.emit_fence = jpeg_v2_0_dec_ring_emit_fence,
 	.emit_vm_flush = jpeg_v2_0_dec_ring_emit_vm_flush,
@@ -692,10 +588,10 @@ static const struct amdgpu_ring_funcs jpeg_v2_6_dec_ring_vm_funcs = {
 	.emit_frame_size =
 		SOC15_FLUSH_GPU_TLB_NUM_WREG * 6 +
 		SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 8 +
-		8 + /* jpeg_v2_5_dec_ring_emit_vm_flush */
-		18 + 18 + /* jpeg_v2_5_dec_ring_emit_fence x2 vm fence */
+		8 +  
+		18 + 18 +  
 		8 + 16,
-	.emit_ib_size = 22, /* jpeg_v2_5_dec_ring_emit_ib */
+	.emit_ib_size = 22,  
 	.emit_ib = jpeg_v2_0_dec_ring_emit_ib,
 	.emit_fence = jpeg_v2_0_dec_ring_emit_fence,
 	.emit_vm_flush = jpeg_v2_0_dec_ring_emit_vm_flush,
@@ -721,7 +617,7 @@ static void jpeg_v2_5_set_dec_ring_funcs(struct amdgpu_device *adev)
 			continue;
 		if (adev->asic_type == CHIP_ARCTURUS)
 			adev->jpeg.inst[i].ring_dec->funcs = &jpeg_v2_5_dec_ring_vm_funcs;
-		else  /* CHIP_ALDEBARAN */
+		else   
 			adev->jpeg.inst[i].ring_dec->funcs = &jpeg_v2_6_dec_ring_vm_funcs;
 		adev->jpeg.inst[i].ring_dec->me = i;
 		DRM_INFO("JPEG(%d) JPEG decode is enabled in VM mode\n", i);

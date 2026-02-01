@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -38,7 +38,7 @@ static int wol_prepare_data(const struct ethnl_req_info *req_base,
 		return ret;
 	dev->ethtool_ops->get_wol(dev, &data->wol);
 	ethnl_ops_complete(dev);
-	/* do not include password in notifications */
+	 
 	data->show_sopass = !genl_info_is_ntf(info) &&
 		(data->wol.supported & WAKE_MAGICSECURE);
 
@@ -83,7 +83,7 @@ static int wol_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* WOL_SET */
+ 
 
 const struct nla_policy ethnl_wol_set_policy[] = {
 	[ETHTOOL_A_WOL_HEADER]		=

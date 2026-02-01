@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <net/devlink.h>
 
 #include "prestera_devlink.h"
 #include "prestera_hw.h"
 
-/* All driver-specific traps must be documented in
- * Documentation/networking/devlink/prestera.rst
- */
+ 
 enum {
 	DEVLINK_PRESTERA_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
 	DEVLINK_PRESTERA_TRAP_ID_ARP_BC,
@@ -160,7 +158,7 @@ struct prestera_trap_data {
 			    PRESTERA_TRAP_METADATA)
 
 static const struct devlink_trap_group prestera_trap_groups_arr[] = {
-	/* No policer is associated with following groups (policerid == 0)*/
+	 
 	DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS, 0),
 	DEVLINK_TRAP_GROUP_GENERIC(L3_DROPS, 0),
 	DEVLINK_TRAP_GROUP_GENERIC(L3_EXCEPTIONS, 0),
@@ -179,7 +177,7 @@ static const struct devlink_trap_group prestera_trap_groups_arr[] = {
 	DEVLINK_TRAP_GROUP_GENERIC(BUFFER_DROPS, 0),
 };
 
-/* Initialize trap list, as well as associate CPU code with them. */
+ 
 static struct prestera_trap prestera_trap_items_arr[] = {
 	{
 		.trap = PRESTERA_TRAP_DRIVER_CONTROL(ARP_BC, NEIGH_DISCOVERY),
@@ -561,7 +559,7 @@ static int prestera_trap_action_set(struct devlink *devlink,
 				    enum devlink_trap_action action,
 				    struct netlink_ext_ack *extack)
 {
-	/* Currently, driver does not support trap action altering */
+	 
 	return -EOPNOTSUPP;
 }
 

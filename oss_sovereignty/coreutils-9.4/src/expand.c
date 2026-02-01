@@ -1,36 +1,4 @@
-/* expand - convert tabs to spaces
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* By default, convert all tabs to spaces.
-   Preserves backspace characters in the output; they decrement the
-   column count for tab calculations.
-   The default action is equivalent to -8.
-
-   Options:
-   --tabs=tab1[,tab2[,...]]
-   -t tab1[,tab2[,...]]
-   -tab1[,tab2[,...]]	If only one tab stop is given, set the tabs tab1
-                        columns apart instead of the default 8.  Otherwise,
-                        set the tabs at columns tab1, tab2, etc. (numbered from
-                        0); replace any tabs beyond the tab stops given with
-                        single spaces.
-   --initial
-   -i			Only convert initial tabs on each line to spaces.
-
-   David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 
@@ -40,7 +8,7 @@
 #include "system.h"
 #include "expand-common.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "expand"
 
 #define AUTHORS proper_name ("David MacKenzie")

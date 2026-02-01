@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/of_platform.h>
 #include <linux/module.h>
 #include <sound/soc.h>
 
-/*
- * The everest 7134 is a very simple DA converter with no register
- */
+ 
 
 struct es7134_clock_mode {
 	unsigned int rate_min;
@@ -57,7 +52,7 @@ static int es7134_check_mclk(struct snd_soc_dai *dai,
 		return -EINVAL;
 	}
 
-	/* should not happen */
+	 
 	dev_err(dai->dev, "unsupported rate: %u\n", rate);
 	return -EINVAL;
 }
@@ -68,7 +63,7 @@ static int es7134_hw_params(struct snd_pcm_substream *substream,
 {
 	struct es7134_data *priv = snd_soc_dai_get_drvdata(dai);
 
-	/* mclk has not been provided, assume it is OK */
+	 
 	if (!priv->mclk)
 		return 0;
 
@@ -158,19 +153,19 @@ static struct snd_soc_dai_driver es7134_dai = {
 
 static const struct es7134_clock_mode es7134_modes[] = {
 	{
-		/* Single speed mode */
+		 
 		.rate_min = 8000,
 		.rate_max = 50000,
 		.mclk_fs = (unsigned int[]) { 256, 384, 512, 768, 1024 },
 		.mclk_fs_num = 5,
 	}, {
-		/* Double speed mode */
+		 
 		.rate_min = 84000,
 		.rate_max = 100000,
 		.mclk_fs = (unsigned int[]) { 128, 192, 256, 384, 512 },
 		.mclk_fs_num = 5,
 	}, {
-		/* Quad speed mode */
+		 
 		.rate_min = 167000,
 		.rate_max = 192000,
 		.mclk_fs = (unsigned int[]) { 128, 192, 256 },
@@ -178,7 +173,7 @@ static const struct es7134_clock_mode es7134_modes[] = {
 	},
 };
 
-/* Digital I/O are also supplied by VDD on the es7134 */
+ 
 static const struct snd_soc_dapm_route es7134_extra_routes[] = {
 	{ "Playback", NULL, "VDD", }
 };
@@ -235,14 +230,14 @@ static struct snd_soc_dai_driver es7154_dai = {
 
 static const struct es7134_clock_mode es7154_modes[] = {
 	{
-		/* Single speed mode */
+		 
 		.rate_min = 8000,
 		.rate_max = 50000,
 		.mclk_fs = (unsigned int[]) { 32, 64, 128, 192, 256,
 					      384, 512, 768, 1024 },
 		.mclk_fs_num = 9,
 	}, {
-		/* Double speed mode */
+		 
 		.rate_min = 84000,
 		.rate_max = 100000,
 		.mclk_fs = (unsigned int[]) { 128, 192, 256, 384, 512,
@@ -251,7 +246,7 @@ static const struct es7134_clock_mode es7154_modes[] = {
 	}
 };
 
-/* Es7154 has a separate supply for digital I/O  */
+ 
 static const struct snd_soc_dapm_widget es7154_extra_widgets[] = {
 	SND_SOC_DAPM_REGULATOR_SUPPLY("PVDD", 0, 0),
 };

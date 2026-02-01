@@ -1,21 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 - Bootlin
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- *
- * Header containing internal definitions to be used only by core files.
- * NAND controller drivers should not include this file.
- */
+ 
+ 
 
 #ifndef __LINUX_RAWNAND_INTERNALS
 #define __LINUX_RAWNAND_INTERNALS
 
 #include <linux/mtd/rawnand.h>
 
-/*
- * NAND Flash Manufacturer ID Codes
- */
+ 
 #define NAND_MFR_AMD		0x01
 #define NAND_MFR_ATO		0x9b
 #define NAND_MFR_EON		0x92
@@ -30,20 +21,11 @@
 #define NAND_MFR_SAMSUNG	0xec
 #define NAND_MFR_SANDISK	0x45
 #define NAND_MFR_STMICRO	0x20
-/* Kioxia is new name of Toshiba memory. */
+ 
 #define NAND_MFR_TOSHIBA	0x98
 #define NAND_MFR_WINBOND	0xef
 
-/**
- * struct nand_manufacturer_ops - NAND Manufacturer operations
- * @detect: detect the NAND memory organization and capabilities
- * @init: initialize all vendor specific fields (like the ->read_retry()
- *	  implementation) if any.
- * @cleanup: the ->init() function may have allocated resources, ->cleanup()
- *	     is here to let vendor specific code release those resources.
- * @fixup_onfi_param_page: apply vendor specific fixups to the ONFI parameter
- *			   page. This is called after the checksum is verified.
- */
+ 
 struct nand_manufacturer_ops {
 	void (*detect)(struct nand_chip *chip);
 	int (*init)(struct nand_chip *chip);
@@ -52,12 +34,7 @@ struct nand_manufacturer_ops {
 				      struct nand_onfi_params *p);
 };
 
-/**
- * struct nand_manufacturer_desc - NAND Flash Manufacturer descriptor
- * @name: Manufacturer name
- * @id: manufacturer ID code of device.
- * @ops: manufacturer operations
- */
+ 
 struct nand_manufacturer_desc {
 	int id;
 	char *name;
@@ -76,10 +53,10 @@ extern const struct nand_manufacturer_ops samsung_nand_manuf_ops;
 extern const struct nand_manufacturer_ops sandisk_nand_manuf_ops;
 extern const struct nand_manufacturer_ops toshiba_nand_manuf_ops;
 
-/* MLC pairing schemes */
+ 
 extern const struct mtd_pairing_scheme dist3_pairing_scheme;
 
-/* Core functions */
+ 
 const struct nand_manufacturer_desc *nand_get_manufacturer_desc(u8 id);
 int nand_bbm_get_next_page(struct nand_chip *chip, int page);
 int nand_markbad_bbm(struct nand_chip *chip, loff_t ofs);
@@ -155,21 +132,21 @@ static inline bool nand_controller_can_setup_interface(struct nand_chip *chip)
 	return true;
 }
 
-/* BBT functions */
+ 
 int nand_markbad_bbt(struct nand_chip *chip, loff_t offs);
 int nand_isreserved_bbt(struct nand_chip *chip, loff_t offs);
 int nand_isbad_bbt(struct nand_chip *chip, loff_t offs, int allowbbt);
 
-/* Legacy */
+ 
 void nand_legacy_set_defaults(struct nand_chip *chip);
 void nand_legacy_adjust_cmdfunc(struct nand_chip *chip);
 int nand_legacy_check_hooks(struct nand_chip *chip);
 
-/* ONFI functions */
+ 
 u16 onfi_crc16(u16 crc, u8 const *p, size_t len);
 int nand_onfi_detect(struct nand_chip *chip);
 
-/* JEDEC functions */
+ 
 int nand_jedec_detect(struct nand_chip *chip);
 
-#endif /* __LINUX_RAWNAND_INTERNALS */
+#endif  

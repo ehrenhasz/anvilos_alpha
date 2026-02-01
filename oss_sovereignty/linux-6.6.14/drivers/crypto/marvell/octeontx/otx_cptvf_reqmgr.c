@@ -1,28 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include "otx_cptvf.h"
 #include "otx_cptvf_algs.h"
 
-/* Completion code size and initial value */
+ 
 #define COMPLETION_CODE_SIZE	8
 #define COMPLETION_CODE_INIT	0
 
-/* SG list header size in bytes */
+ 
 #define SG_LIST_HDR_SIZE	8
 
-/* Default timeout when waiting for free pending entry in us */
+ 
 #define CPT_PENTRY_TIMEOUT	1000
 #define CPT_PENTRY_STEP		50
 
-/* Default threshold for stopping and resuming sender requests */
+ 
 #define CPT_IQ_STOP_MARGIN	128
 #define CPT_IQ_RESUME_MARGIN	512
 
@@ -207,7 +200,7 @@ static inline int setup_sgio_list(struct pci_dev *pdev,
 	((u16 *)info->in_buffer)[2] = 0;
 	((u16 *)info->in_buffer)[3] = 0;
 
-	/* Setup gather (input) components */
+	 
 	if (setup_sgio_components(pdev, req->in, req->incnt,
 				  &info->in_buffer[8])) {
 		dev_err(&pdev->dev, "Failed to setup gather list\n");
@@ -227,14 +220,11 @@ static inline int setup_sgio_list(struct pci_dev *pdev,
 		dev_err(&pdev->dev, "DMA Mapping failed for cpt req\n");
 		return -EIO;
 	}
-	/*
-	 * Get buffer for union otx_cpt_res_s response
-	 * structure and its physical address
-	 */
+	 
 	info->completion_addr = (u64 *)(info->in_buffer + align_dlen);
 	info->comp_baddr = info->dptr_baddr + align_dlen;
 
-	/* Create and initialize RPTR */
+	 
 	info->out_buffer = (u8 *)info->completion_addr + rlen;
 	info->rptr_baddr = info->comp_baddr + rlen;
 
@@ -259,12 +249,7 @@ static void cpt_fill_inst(union otx_cpt_inst_s *inst,
 	inst->s.ei3 = cmd->cptr.u64;
 }
 
-/*
- * On OcteonTX platform the parameter db_count is used as a count for ringing
- * door bell. The valid values for db_count are:
- * 0 - 1 CPT instruction will be enqueued however CPT will not be informed
- * 1 - 1 CPT instruction will be enqueued and CPT will be informed
- */
+ 
 static void cpt_send_cmd(union otx_cpt_inst_s *cptinst, struct otx_cptvf *cptvf)
 {
 	struct otx_cpt_cmd_qinfo *qinfo = &cptvf->cqinfo;
@@ -273,10 +258,7 @@ static void cpt_send_cmd(union otx_cpt_inst_s *cptinst, struct otx_cptvf *cptvf)
 	u8 *ent;
 
 	queue = &qinfo->queue[0];
-	/*
-	 * cpt_send_cmd is currently called only from critical section
-	 * therefore no locking is required for accessing instruction queue
-	 */
+	 
 	ent = &queue->qhead->head[queue->idx * OTX_CPT_INST_SIZE];
 	memcpy(ent, (void *) cptinst, OTX_CPT_INST_SIZE);
 
@@ -289,7 +271,7 @@ static void cpt_send_cmd(union otx_cpt_inst_s *cptinst, struct otx_cptvf *cptvf)
 			queue->qhead = list_next_entry(queue->qhead, nextchunk);
 		queue->idx = 0;
 	}
-	/* make sure all memory stores are done before ringing doorbell */
+	 
 	smp_wmb();
 	otx_cptvf_write_vq_doorbell(cptvf, 1);
 }
@@ -337,11 +319,7 @@ static int process_request(struct pci_dev *pdev, struct otx_cpt_req_info *req,
 		goto request_cleanup;
 	}
 
-	/*
-	 * Check if we are close to filling in entire pending queue,
-	 * if so then tell the sender to stop/sleep by returning -EBUSY
-	 * We do it only for context which can sleep (GFP_KERNEL)
-	 */
+	 
 	if (gfp == GFP_KERNEL &&
 	    pqueue->pending_count > (pqueue->qlen - CPT_IQ_STOP_MARGIN)) {
 		pentry->resume_sender = true;
@@ -359,7 +337,7 @@ static int process_request(struct pci_dev *pdev, struct otx_cpt_req_info *req,
 	info->time_in = jiffies;
 	info->req = req;
 
-	/* Fill in the command */
+	 
 	iq_cmd.cmd.u64 = 0;
 	iq_cmd.cmd.s.opcode = cpu_to_be16(cpt_req->opcode.flags);
 	iq_cmd.cmd.s.param1 = cpu_to_be16(cpt_req->param1);
@@ -371,10 +349,10 @@ static int process_request(struct pci_dev *pdev, struct otx_cpt_req_info *req,
 	iq_cmd.cptr.u64 = 0;
 	iq_cmd.cptr.s.grp = ctrl->s.grp;
 
-	/* Fill in the CPT_INST_S type command for HW interpretation */
+	 
 	cpt_fill_inst(&cptinst, info, &iq_cmd);
 
-	/* Print debug info if enabled */
+	 
 	otx_cpt_dump_sg_list(pdev, req);
 	pr_debug("Cpt_inst_s hexdump (%d bytes)\n", OTX_CPT_INST_SIZE);
 	print_hex_dump_debug("", 0, 16, 1, &cptinst, OTX_CPT_INST_SIZE, false);
@@ -382,15 +360,10 @@ static int process_request(struct pci_dev *pdev, struct otx_cpt_req_info *req,
 	print_hex_dump_debug("", 0, 16, 1, info->in_buffer,
 			     cpt_req->dlen, false);
 
-	/* Send CPT command */
+	 
 	cpt_send_cmd(&cptinst, cptvf);
 
-	/*
-	 * We allocate and prepare pending queue entry in critical section
-	 * together with submitting CPT instruction to CPT instruction queue
-	 * to make sure that order of CPT requests is the same in both
-	 * pending and instruction queues
-	 */
+	 
 	spin_unlock_bh(&pqueue->lock);
 
 	ret = resume_sender ? -EBUSY : -EINPROGRESS;
@@ -455,7 +428,7 @@ static int cpt_process_ccode(struct pci_dev *pdev,
 		break;
 
 	case COMPLETION_CODE_INIT:
-		/* check for timeout */
+		 
 		if (time_after_eq(jiffies, cpt_info->time_in +
 				  OTX_CPT_COMMAND_TIMEOUT * HZ))
 			dev_warn(&pdev->dev, "Request timed out 0x%p\n", req);
@@ -466,16 +439,9 @@ static int cpt_process_ccode(struct pci_dev *pdev,
 		return 1;
 
 	case CPT_COMP_E_GOOD:
-		/* Check microcode completion code */
+		 
 		if (ecode.s.ccode) {
-			/*
-			 * If requested hmac is truncated and ucode returns
-			 * s/g write length error then we report success
-			 * because ucode writes as many bytes of calculated
-			 * hmac as available in gather buffer and reports
-			 * s/g write length error if number of bytes in gather
-			 * buffer is less than full hmac size.
-			 */
+			 
 			if (req->is_trunc_hmac &&
 			    ecode.s.ccode == ERR_SCATTER_GATHER_WRITE_LENGTH) {
 				*res_code = 0;
@@ -489,7 +455,7 @@ static int cpt_process_ccode(struct pci_dev *pdev,
 			break;
 		}
 
-		/* Request has been processed with success */
+		 
 		*res_code = 0;
 		break;
 
@@ -559,11 +525,7 @@ static inline void process_pending_queue(struct pci_dev *pdev,
 		cpt_info->pdev = pdev;
 
 process_pentry:
-		/*
-		 * Check if we should inform sending side to resume
-		 * We do it CPT_IQ_RESUME_MARGIN elements in advance before
-		 * pending queue becomes empty
-		 */
+		 
 		resume_index = modulo_inc(pqueue->front, pqueue->qlen,
 					  CPT_IQ_RESUME_MARGIN);
 		resume_pentry = &pqueue->head[resume_index];
@@ -576,10 +538,7 @@ process_pentry:
 			if (callback) {
 				spin_unlock_bh(&pqueue->lock);
 
-				/*
-				 * EINPROGRESS is an indication for sending
-				 * side that it can resume sending requests
-				 */
+				 
 				callback(-EINPROGRESS, areq, cpt_info);
 				spin_lock_bh(&pqueue->lock);
 			}
@@ -593,11 +552,7 @@ process_pentry:
 		pqueue->front = modulo_inc(pqueue->front, pqueue->qlen, 1);
 		spin_unlock_bh(&pqueue->lock);
 
-		/*
-		 * Call callback after current pending entry has been
-		 * processed, we don't do it if the callback pointer is
-		 * invalid.
-		 */
+		 
 		if (callback)
 			callback(res_code, areq, cpt_info);
 	}

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd. All rights reserved.
- */
+ 
+ 
 #ifndef __QCOM_PMIC_TYPEC_H__
 #define __QCOM_PMIC_TYPEC_H__
 
@@ -136,7 +133,7 @@
 #define TYPEC_PMI632_MICRO_USB_MODE_REG			0x73
 #define MICRO_USB_MODE_ONLY				BIT(0)
 
-/* Interrupt numbers */
+ 
 #define PMIC_TYPEC_OR_RID_IRQ				0x0
 #define PMIC_TYPEC_VPD_IRQ				0x1
 #define PMIC_TYPEC_CC_STATE_IRQ				0x2
@@ -146,7 +143,7 @@
 #define PMIC_TYPEC_LEGACY_CABLE_IRQ			0x6
 #define PMIC_TYPEC_TRY_SNK_SRC_IRQ			0x7
 
-/* Resources */
+ 
 #define PMIC_TYPEC_MAX_IRQS				0x08
 
 struct pmic_typec_port_irq_params {
@@ -159,7 +156,7 @@ struct pmic_typec_port_resources {
 	struct pmic_typec_port_irq_params	irq_params[PMIC_TYPEC_MAX_IRQS];
 };
 
-/* API */
+ 
 struct pmic_typec;
 
 struct pmic_typec_port *qcom_pmic_typec_port_alloc(struct device *dev);
@@ -192,4 +189,4 @@ int qcom_pmic_typec_port_start_toggling(struct pmic_typec_port *pmic_typec_port,
 
 int qcom_pmic_typec_port_set_vbus(struct pmic_typec_port *pmic_typec_port, bool on);
 
-#endif /* __QCOM_PMIC_TYPE_C_PORT_H__ */
+#endif  

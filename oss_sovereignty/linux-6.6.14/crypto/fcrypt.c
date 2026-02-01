@@ -1,46 +1,4 @@
-/* FCrypt encryption algorithm
- *
- * Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- * Based on code:
- *
- * Copyright (c) 1995 - 2000 Kungliga Tekniska Högskolan
- * (Royal Institute of Technology, Stockholm, Sweden).
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <asm/byteorder.h>
 #include <crypto/algapi.h>
@@ -54,7 +12,7 @@ struct fcrypt_ctx {
 	__be32 sched[ROUNDS];
 };
 
-/* Rotate right two 32 bit numbers as a 56 bit number */
+ 
 #define ror56(hi, lo, n)					\
 do {								\
 	u32 t = lo & ((1 << n) - 1);				\
@@ -62,13 +20,10 @@ do {								\
 	hi = (hi >> n) | (t << (24-n));				\
 } while (0)
 
-/* Rotate right one 64 bit number as a 56 bit number */
+ 
 #define ror56_64(k, n) (k = (k >> n) | ((k & ((1 << n) - 1)) << (56 - n)))
 
-/*
- * Sboxes for Feistel network derived from
- * /afs/transarc.com/public/afsps/afs.rel31b.export-src/rxkad/sboxes.h
- */
+ 
 #undef Z
 #define Z(x) cpu_to_be32(x << 3)
 static const __be32 sbox0[256] = {
@@ -217,9 +172,7 @@ static const __be32 sbox3[256] = {
 	Z(0xa1), Z(0xc2), Z(0xc5), Z(0xe3), Z(0xba), Z(0xfc), Z(0x0e), Z(0x25)
 };
 
-/*
- * This is a 16 round Feistel network with permutation F_ENCRYPT
- */
+ 
 #define F_ENCRYPT(R, L, sched)						\
 do {									\
 	union lc4 { __be32 l; u8 c[4]; } u;				\
@@ -227,9 +180,7 @@ do {									\
 	L ^= sbox0[u.c[0]] ^ sbox1[u.c[1]] ^ sbox2[u.c[2]] ^ sbox3[u.c[3]]; \
 } while (0)
 
-/*
- * encryptor
- */
+ 
 static void fcrypt_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 {
 	const struct fcrypt_ctx *ctx = crypto_tfm_ctx(tfm);
@@ -259,9 +210,7 @@ static void fcrypt_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 	memcpy(dst, &X, sizeof(X));
 }
 
-/*
- * decryptor
- */
+ 
 static void fcrypt_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 {
 	const struct fcrypt_ctx *ctx = crypto_tfm_ctx(tfm);
@@ -291,23 +240,16 @@ static void fcrypt_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 	memcpy(dst, &X, sizeof(X));
 }
 
-/*
- * Generate a key schedule from key, the least significant bit in each key byte
- * is parity and shall be ignored. This leaves 56 significant bits in the key
- * to scatter over the 16 key schedules. For each schedule extract the low
- * order 32 bits and use as schedule, then rotate right by 11 bits.
- */
+ 
 static int fcrypt_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen)
 {
 	struct fcrypt_ctx *ctx = crypto_tfm_ctx(tfm);
 
-#if BITS_PER_LONG == 64  /* the 64-bit version can also be used for 32-bit
-			  * kernels - it seems to be faster but the code is
-			  * larger */
+#if BITS_PER_LONG == 64   
 
-	u64 k;	/* k holds all 56 non-parity bits */
+	u64 k;	 
 
-	/* discard the parity bits */
+	 
 	k = (*key++) >> 1;
 	k <<= 7;
 	k |= (*key++) >> 1;
@@ -324,7 +266,7 @@ static int fcrypt_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int key
 	k <<= 7;
 	k |= (*key) >> 1;
 
-	/* Use lower 32 bits for schedule, rotate by 11 each round (16 times) */
+	 
 	ctx->sched[0x0] = cpu_to_be32(k); ror56_64(k, 11);
 	ctx->sched[0x1] = cpu_to_be32(k); ror56_64(k, 11);
 	ctx->sched[0x2] = cpu_to_be32(k); ror56_64(k, 11);
@@ -344,9 +286,9 @@ static int fcrypt_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int key
 
 	return 0;
 #else
-	u32 hi, lo;		/* hi is upper 24 bits and lo lower 32, total 56 */
+	u32 hi, lo;		 
 
-	/* discard the parity bits */
+	 
 	lo = (*key++) >> 1;
 	lo <<= 7;
 	lo |= (*key++) >> 1;
@@ -365,7 +307,7 @@ static int fcrypt_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int key
 	lo <<= 7;
 	lo |= (*key) >> 1;
 
-	/* Use lower 32 bits for schedule, rotate by 11 each round (16 times) */
+	 
 	ctx->sched[0x0] = cpu_to_be32(lo); ror56(hi, lo, 11);
 	ctx->sched[0x1] = cpu_to_be32(lo); ror56(hi, lo, 11);
 	ctx->sched[0x2] = cpu_to_be32(lo); ror56(hi, lo, 11);

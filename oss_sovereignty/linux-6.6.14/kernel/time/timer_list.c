@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * List pending timers
- *
- * Copyright(C) 2006, Red Hat, Inc., Ingo Molnar
- */
+
+ 
 
 #include <linux/proc_fs.h>
 #include <linux/module.h>
@@ -23,10 +19,7 @@ struct timer_list_iter {
 	u64 now;
 };
 
-/*
- * This allows printing both to /proc/timer_list and
- * to the console (on SysRq-Q):
- */
+ 
 __printf(2, 3)
 static void SEQ_printf(struct seq_file *m, const char *fmt, ...)
 {
@@ -73,10 +66,7 @@ next_one:
 	raw_spin_lock_irqsave(&base->cpu_base->lock, flags);
 
 	curr = timerqueue_getnext(&base->active);
-	/*
-	 * Crude but we have to do this O(N*N) thing, because
-	 * we have to unlock the base when printing:
-	 */
+	 
 	while (curr && i < next) {
 		curr = timerqueue_iterate_next(curr);
 		i++;

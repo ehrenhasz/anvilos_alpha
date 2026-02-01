@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Red Hat, Inc.
- * All Rights Reserved.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_shared.h"
@@ -76,7 +73,7 @@ const struct kobj_type xfs_mp_ktype = {
 };
 
 #ifdef DEBUG
-/* debug */
+ 
 
 STATIC ssize_t
 bug_on_assert_store(
@@ -194,11 +191,7 @@ always_cow_show(
 XFS_SYSFS_ATTR_RW(always_cow);
 
 #ifdef DEBUG
-/*
- * Override how many threads the parallel work queue is allowed to create.
- * This has to be a debug-only global (instead of an errortag) because one of
- * the main users of parallel workqueues is mount time quotacheck.
- */
+ 
 STATIC ssize_t
 pwork_threads_store(
 	struct kobject	*kobject,
@@ -251,7 +244,7 @@ larp_show(
 	return snprintf(buf, PAGE_SIZE, "%d\n", xfs_globals.larp);
 }
 XFS_SYSFS_ATTR_RW(larp);
-#endif /* DEBUG */
+#endif  
 
 static struct attribute *xfs_dbg_attrs[] = {
 	ATTR_LIST(bug_on_assert),
@@ -272,9 +265,9 @@ const struct kobj_type xfs_dbg_ktype = {
 	.default_groups = xfs_dbg_groups,
 };
 
-#endif /* DEBUG */
+#endif  
 
-/* stats */
+ 
 
 static inline struct xstats *
 to_xstats(struct kobject *kobject)
@@ -330,7 +323,7 @@ const struct kobj_type xfs_stats_ktype = {
 	.default_groups = xfs_stats_groups,
 };
 
-/* xlog */
+ 
 
 static inline struct xlog *
 to_xlog(struct kobject *kobject)
@@ -416,16 +409,7 @@ const struct kobj_type xfs_log_ktype = {
 	.default_groups = xfs_log_groups,
 };
 
-/*
- * Metadata IO error configuration
- *
- * The sysfs structure here is:
- *	...xfs/<dev>/error/<class>/<errno>/<error_attrs>
- *
- * where <class> allows us to discriminate between data IO and metadata IO,
- * and any other future type of IO (e.g. special inode or directory error
- * handling) we care to support.
- */
+ 
 static inline struct xfs_error_cfg *
 to_error_cfg(struct kobject *kobject)
 {
@@ -511,7 +495,7 @@ retry_timeout_seconds_store(
 	if (ret)
 		return ret;
 
-	/* 1 day timeout maximum, -1 means infinite */
+	 
 	if (val < -1 || val > 86400)
 		return -EINVAL;
 
@@ -575,16 +559,11 @@ static const struct kobj_type xfs_error_ktype = {
 	.sysfs_ops = &xfs_sysfs_ops,
 };
 
-/*
- * Error initialization tables. These need to be ordered in the same
- * order as the enums used to index the array. All class init tables need to
- * define a "default" behaviour as the first entry, all other entries can be
- * empty.
- */
+ 
 struct xfs_error_init {
 	char		*name;
 	int		max_retries;
-	int		retry_timeout;	/* in seconds */
+	int		retry_timeout;	 
 };
 
 static const struct xfs_error_init xfs_error_meta_init[XFS_ERR_ERRNO_MAX] = {
@@ -601,7 +580,7 @@ static const struct xfs_error_init xfs_error_meta_init[XFS_ERR_ERRNO_MAX] = {
 	  .retry_timeout = XFS_ERR_RETRY_FOREVER,
 	},
 	{ .name = "ENODEV",
-	  .max_retries = 0,	/* We can't recover from devices disappearing */
+	  .max_retries = 0,	 
 	  .retry_timeout = 0,
 	},
 };
@@ -642,7 +621,7 @@ xfs_error_sysfs_init_class(
 	return 0;
 
 out_error:
-	/* unwind the entries that succeeded */
+	 
 	for (i--; i >= 0; i--) {
 		cfg = &mp->m_error_cfg[class][i];
 		xfs_sysfs_del(&cfg->kobj);
@@ -657,7 +636,7 @@ xfs_error_sysfs_init(
 {
 	int			error;
 
-	/* .../xfs/<dev>/error/ */
+	 
 	error = xfs_sysfs_init(&mp->m_error_kobj, &xfs_error_ktype,
 				&mp->m_kobj, "error");
 	if (error)
@@ -669,7 +648,7 @@ xfs_error_sysfs_init(
 	if (error)
 		goto out_error;
 
-	/* .../xfs/<dev>/error/metadata/ */
+	 
 	error = xfs_error_sysfs_init_class(mp, XFS_ERR_METADATA,
 				"metadata", &mp->m_error_meta_kobj,
 				xfs_error_meta_init);

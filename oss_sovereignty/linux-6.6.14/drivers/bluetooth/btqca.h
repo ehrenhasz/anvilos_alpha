@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Bluetooth supports for Qualcomm Atheros ROME chips
- *
- *  Copyright (c) 2015 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #define EDL_PATCH_CMD_OPCODE		(0xFC00)
 #define EDL_NVM_ACCESS_OPCODE		(0xFC0B)
@@ -39,10 +35,7 @@
 
 #define QCA_WCN3991_SOC_ID		(0x40014320)
 
-/* QCA chipset version can be decided by patch and SoC
- * version, combination with upper 2 bytes from SoC
- * and lower 2 bytes from patch will be used.
- */
+ 
 #define get_soc_ver(soc_id, rom_ver)	\
 	((le32_to_cpu(soc_id) << 16) | (le16_to_cpu(rom_ver)))
 

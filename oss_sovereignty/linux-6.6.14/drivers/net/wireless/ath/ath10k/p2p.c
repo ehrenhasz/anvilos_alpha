@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2015 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include "core.h"
 #include "wmi.h"
@@ -20,7 +18,7 @@ static void ath10k_p2p_noa_ie_fill(u8 *data, size_t len,
 	u8 noa_descriptors = noa->num_descriptors;
 	int i;
 
-	/* P2P IE */
+	 
 	data[0] = WLAN_EID_VENDOR_SPECIFIC;
 	data[1] = len - 2;
 	data[2] = (WLAN_OUI_WFA >> 16) & 0xff;
@@ -28,9 +26,9 @@ static void ath10k_p2p_noa_ie_fill(u8 *data, size_t len,
 	data[4] = (WLAN_OUI_WFA >> 0) & 0xff;
 	data[5] = WLAN_OUI_TYPE_WFA_P2P;
 
-	/* NOA ATTR */
+	 
 	data[6] = IEEE80211_P2P_ATTR_ABSENCE_NOTICE;
-	noa_attr_len = (__le16 *)&data[7]; /* 2 bytes */
+	noa_attr_len = (__le16 *)&data[7];  
 	noa_attr = (struct ieee80211_p2p_noa_attr *)&data[9];
 
 	noa_attr->index = noa->index;
@@ -46,7 +44,7 @@ static void ath10k_p2p_noa_ie_fill(u8 *data, size_t len,
 		noa_attr->desc[i].start_time = noa->descriptors[i].start_time;
 	}
 
-	attr_len = 2; /* index + oppps_ctwindow */
+	attr_len = 2;  
 	attr_len += noa_descriptors * sizeof(struct ieee80211_p2p_noa_desc);
 	*noa_attr_len = __cpu_to_le16(attr_len);
 }
@@ -59,9 +57,9 @@ static size_t ath10k_p2p_noa_ie_len_compute(const struct wmi_p2p_noa_info *noa)
 	    !(noa->ctwindow_oppps & WMI_P2P_OPPPS_ENABLE_BIT))
 		return 0;
 
-	len += 1 + 1 + 4; /* EID + len + OUI */
-	len += 1 + 2; /* noa attr + attr len */
-	len += 1 + 1; /* index + oppps_ctwindow */
+	len += 1 + 1 + 4;  
+	len += 1 + 2;  
+	len += 1 + 1;  
 	len += noa->num_descriptors * sizeof(struct ieee80211_p2p_noa_desc);
 
 	return len;

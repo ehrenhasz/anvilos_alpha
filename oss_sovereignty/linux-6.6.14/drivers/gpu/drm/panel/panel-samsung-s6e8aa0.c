@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MIPI-DSI based s6e8aa0 AMOLED LCD 5.3 inch panel driver.
- *
- * Copyright (c) 2013 Samsung Electronics Co., Ltd
- *
- * Inki Dae, <inki.dae@samsung.com>
- * Donghwa Lee, <dh09.lee@samsung.com>
- * Joongmock Shin <jmock.shin@samsung.com>
- * Eunchul Kim <chulspro.kim@samsung.com>
- * Tomasz Figa <t.figa@samsung.com>
- * Andrzej Hajda <a.hajda@samsung.com>
-*/
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -111,12 +100,7 @@ struct s6e8aa0 {
 	const struct s6e8aa0_variant *variant;
 	int brightness;
 
-	/* This field is tested by functions directly accessing DSI bus before
-	 * transfer, transfer is skipped if it is set. In case of transfer
-	 * failure or unexpected response the field is set to error value.
-	 * Such construct allows to eliminate many checks in higher level
-	 * functions.
-	 */
+	 
 	int error;
 };
 
@@ -199,47 +183,47 @@ static void s6e8aa0_panel_cond_set_v142(struct s6e8aa0 *ctx)
 	u8 em_int_con = 0xc8;
 
 	if (ctx->flip_vertical) {
-		/* GTCON */
+		 
 		cfg &= ~(PANELCTL_GTCON_MASK);
 		cfg |= (PANELCTL_GTCON_110);
 	}
 
 	if (ctx->flip_horizontal) {
-		/* SS */
+		 
 		cfg &= ~(PANELCTL_SS_MASK);
 		cfg |= (PANELCTL_SS_1_800);
 	}
 
 	if (ctx->flip_horizontal || ctx->flip_vertical) {
-		/* CLK1,2_CON */
+		 
 		clk_con &= ~(PANELCTL_CLK1_CON_MASK |
 			PANELCTL_CLK2_CON_MASK);
 		clk_con |= (PANELCTL_CLK1_000 | PANELCTL_CLK2_001);
 
-		/* INT1,2_CON */
+		 
 		int_con &= ~(PANELCTL_INT1_CON_MASK |
 			PANELCTL_INT2_CON_MASK);
 		int_con |= (PANELCTL_INT1_000 | PANELCTL_INT2_001);
 
-		/* BICTL,B_CON */
+		 
 		bictl_con &= ~(PANELCTL_BICTL_CON_MASK |
 			PANELCTL_BICTLB_CON_MASK);
 		bictl_con |= (PANELCTL_BICTL_000 |
 			PANELCTL_BICTLB_001);
 
-		/* EM_CLK1,1B_CON */
+		 
 		em_clk1_con &= ~(PANELCTL_EM_CLK1_CON_MASK |
 			PANELCTL_EM_CLK1B_CON_MASK);
 		em_clk1_con |= (PANELCTL_EM_CLK1_110 |
 			PANELCTL_EM_CLK1B_110);
 
-		/* EM_CLK2,2B_CON */
+		 
 		em_clk2_con &= ~(PANELCTL_EM_CLK2_CON_MASK |
 			PANELCTL_EM_CLK2B_CON_MASK);
 		em_clk2_con |= (PANELCTL_EM_CLK2_110 |
 			PANELCTL_EM_CLK2B_110);
 
-		/* EM_INT1,2_CON */
+		 
 		em_int_con &= ~(PANELCTL_EM_INT1_CON_MASK |
 			PANELCTL_EM_INT2_CON_MASK);
 		em_int_con |= (PANELCTL_EM_INT1_000 |
@@ -323,17 +307,17 @@ static void s6e8aa0_elvss_nvm_set_v142(struct s6e8aa0 *ctx)
 	u8 br;
 
 	switch (ctx->brightness) {
-	case 0 ... 6: /* 30cd ~ 100cd */
+	case 0 ... 6:  
 		br = 0xdf;
 		break;
-	case 7 ... 11: /* 120cd ~ 150cd */
+	case 7 ... 11:  
 		br = 0xdd;
 		break;
-	case 12 ... 15: /* 180cd ~ 210cd */
+	case 12 ... 15:  
 	default:
 		br = 0xd9;
 		break;
-	case 16 ... 24: /* 240cd ~ 300cd */
+	case 16 ... 24:  
 		br = 0xd0;
 		break;
 	}
@@ -775,7 +759,7 @@ static void s6e8aa0_brightness_set(struct s6e8aa0 *ctx)
 
 	s6e8aa0_dcs_write(ctx, gamma, GAMMA_TABLE_LEN);
 
-	/* update gamma table. */
+	 
 	s6e8aa0_dcs_write_seq_static(ctx, 0xf7, 0x03);
 }
 

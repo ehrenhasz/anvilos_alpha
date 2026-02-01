@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -26,33 +26,33 @@ static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	write_reg(par, 0xae); /* Display Off */
+	write_reg(par, 0xae);  
 
-	/* Set Column Address Mapping, COM Scan Direction and Colour Depth */
+	 
 	if (par->info->var.rotate == 180)
 		write_reg(par, 0xa0, 0x60 | (par->bgr << 2));
 	else
 		write_reg(par, 0xa0, 0x72 | (par->bgr << 2));
 
-	write_reg(par, 0x72); /* RGB colour */
-	write_reg(par, 0xa1, 0x00); /* Set Display Start Line */
-	write_reg(par, 0xa2, 0x00); /* Set Display Offset */
-	write_reg(par, 0xa4); /* NORMALDISPLAY */
-	write_reg(par, 0xa8, 0x3f); /* Set multiplex */
-	write_reg(par, 0xad, 0x8e); /* Set master */
-	/* write_reg(par, 0xb0, 0x0b);  Set power mode */
-	write_reg(par, 0xb1, 0x31); /* Precharge */
-	write_reg(par, 0xb3, 0xf0); /* Clock div */
-	write_reg(par, 0x8a, 0x64); /* Precharge A */
-	write_reg(par, 0x8b, 0x78); /* Precharge B */
-	write_reg(par, 0x8c, 0x64); /* Precharge C */
-	write_reg(par, 0xbb, 0x3a); /* Precharge level */
-	write_reg(par, 0xbe, 0x3e); /* vcomh */
-	write_reg(par, 0x87, 0x06); /* Master current */
-	write_reg(par, 0x81, 0x91); /* Contrast A */
-	write_reg(par, 0x82, 0x50); /* Contrast B */
-	write_reg(par, 0x83, 0x7d); /* Contrast C */
-	write_reg(par, 0xaf); /* Set Sleep Mode Display On */
+	write_reg(par, 0x72);  
+	write_reg(par, 0xa1, 0x00);  
+	write_reg(par, 0xa2, 0x00);  
+	write_reg(par, 0xa4);  
+	write_reg(par, 0xa8, 0x3f);  
+	write_reg(par, 0xad, 0x8e);  
+	 
+	write_reg(par, 0xb1, 0x31);  
+	write_reg(par, 0xb3, 0xf0);  
+	write_reg(par, 0x8a, 0x64);  
+	write_reg(par, 0x8b, 0x78);  
+	write_reg(par, 0x8c, 0x64);  
+	write_reg(par, 0xbb, 0x3a);  
+	write_reg(par, 0xbe, 0x3e);  
+	write_reg(par, 0x87, 0x06);  
+	write_reg(par, 0x81, 0x91);  
+	write_reg(par, 0x82, 0x50);  
+	write_reg(par, 0x83, 0x7d);  
+	write_reg(par, 0xaf);  
 
 	return 0;
 }
@@ -107,27 +107,7 @@ static void write_reg8_bus8(struct fbtft_par *par, int len, ...)
 	va_end(args);
 }
 
-/*
- * Grayscale Lookup Table
- * GS1 - GS63
- * The driver Gamma curve contains the relative values between the entries
- * in the Lookup table.
- *
- * From datasheet:
- * 8.8 Gray Scale Decoder
- *
- * there are total 180 Gamma Settings (Setting 0 to Setting 180)
- * available for the Gray Scale table.
- *
- * The gray scale is defined in incremental way, with reference
- * to the length of previous table entry:
- * Setting of GS1 has to be >= 0
- * Setting of GS2 has to be > Setting of GS1 +1
- * Setting of GS3 has to be > Setting of GS2 +1
- * :
- * Setting of GS63 has to be > Setting of GS62 +1
- *
- */
+ 
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {
 	unsigned long tmp[GAMMA_NUM * GAMMA_LEN];

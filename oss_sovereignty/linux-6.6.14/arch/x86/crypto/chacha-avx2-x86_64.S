@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ChaCha 256-bit cipher algorithm, x64 AVX2 functions
- *
- * Copyright (C) 2015 Martin Willi
- */
+ 
+ 
 
 #include <linux/linkage.h>
 

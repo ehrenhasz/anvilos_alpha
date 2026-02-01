@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * test_ida.c: Test the IDA API
- * Copyright (c) 2016-2018 Microsoft Corporation
- * Copyright (c) 2018 Oracle Corporation
- * Author: Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/module.h>
@@ -25,9 +20,7 @@ void ida_dump(struct ida *ida) { }
 	}								\
 } while (0)
 
-/*
- * Straightforward checks that allocating and freeing IDs work.
- */
+ 
 static void ida_check_alloc(struct ida *ida)
 {
 	int i, id;
@@ -53,7 +46,7 @@ static void ida_check_alloc(struct ida *ida)
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
 }
 
-/* Destroy an IDA with a single entry at @base */
+ 
 static void ida_check_destroy_1(struct ida *ida, unsigned int base)
 {
 	IDA_BUG_ON(ida, ida_alloc_min(ida, base, GFP_KERNEL) != base);
@@ -62,10 +55,10 @@ static void ida_check_destroy_1(struct ida *ida, unsigned int base)
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
 }
 
-/* Check that ida_destroy and ida_is_empty work */
+ 
 static void ida_check_destroy(struct ida *ida)
 {
-	/* Destroy an already-empty IDA */
+	 
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
 	ida_destroy(ida);
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
@@ -77,10 +70,7 @@ static void ida_check_destroy(struct ida *ida)
 	ida_check_destroy_1(ida, 12345678);
 }
 
-/*
- * Check what happens when we fill a leaf and then delete it.  This may
- * discover mishandling of IDR_FREE.
- */
+ 
 static void ida_check_leaf(struct ida *ida, unsigned int base)
 {
 	unsigned long i;
@@ -99,11 +89,7 @@ static void ida_check_leaf(struct ida *ida, unsigned int base)
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
 }
 
-/*
- * Check allocations up to and slightly above the maximum allowed (2^31-1) ID.
- * Allocating up to 2^31-1 should succeed, and then allocating the next one
- * should fail.
- */
+ 
 static void ida_check_max(struct ida *ida)
 {
 	unsigned long i, j;
@@ -121,9 +107,7 @@ static void ida_check_max(struct ida *ida)
 	}
 }
 
-/*
- * Check handling of conversions between exceptional entries and full bitmaps.
- */
+ 
 static void ida_check_conv(struct ida *ida)
 {
 	unsigned long i;
@@ -150,32 +134,30 @@ static void ida_check_conv(struct ida *ida)
 	IDA_BUG_ON(ida, !ida_is_empty(ida));
 }
 
-/*
- * Check various situations where we attempt to free an ID we don't own.
- */
+ 
 static void ida_check_bad_free(struct ida *ida)
 {
 	unsigned long i;
 
 	printk("vvv Ignore \"not allocated\" warnings\n");
-	/* IDA is empty; all of these will fail */
+	 
 	ida_free(ida, 0);
 	for (i = 0; i < 31; i++)
 		ida_free(ida, 1 << i);
 
-	/* IDA contains a single value entry */
+	 
 	IDA_BUG_ON(ida, ida_alloc_min(ida, 3, GFP_KERNEL) != 3);
 	ida_free(ida, 0);
 	for (i = 0; i < 31; i++)
 		ida_free(ida, 1 << i);
 
-	/* IDA contains a single bitmap */
+	 
 	IDA_BUG_ON(ida, ida_alloc_min(ida, 1023, GFP_KERNEL) != 1023);
 	ida_free(ida, 0);
 	for (i = 0; i < 31; i++)
 		ida_free(ida, 1 << i);
 
-	/* IDA contains a tree */
+	 
 	IDA_BUG_ON(ida, ida_alloc_min(ida, (1 << 20) - 1, GFP_KERNEL) != (1 << 20) - 1);
 	ida_free(ida, 0);
 	for (i = 0; i < 31; i++)

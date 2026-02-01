@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2014-2016 Intel Corporation
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/shmem_fs.h>
@@ -28,18 +24,14 @@ static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
 	void *dst;
 	int i;
 
-	/* Contiguous chunk, with a single scatterlist element */
+	 
 	if (overflows_type(obj->base.size, sg->length))
 		return -E2BIG;
 
 	if (GEM_WARN_ON(i915_gem_object_needs_bit17_swizzle(obj)))
 		return -EINVAL;
 
-	/*
-	 * Always aligning to the object size, allows a single allocation
-	 * to handle all possible callers, and given typical object sizes,
-	 * the alignment of the buddy allocation will naturally match.
-	 */
+	 
 	vaddr = dma_alloc_coherent(obj->base.dev->dev,
 				   roundup_pow_of_two(obj->base.size),
 				   &dma, GFP_KERNEL);
@@ -81,7 +73,7 @@ static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
 
 	intel_gt_chipset_flush(to_gt(i915));
 
-	/* We're no longer struct page backed */
+	 
 	obj->mem_flags &= ~I915_BO_FLAG_STRUCT_PAGE;
 	__i915_gem_object_set_pages(obj, st);
 
@@ -156,10 +148,7 @@ int i915_gem_object_pwrite_phys(struct drm_i915_gem_object *obj,
 	if (err)
 		return err;
 
-	/*
-	 * We manually control the domain here and pretend that it
-	 * remains coherent i.e. in the GTT domain, like shmem_pwrite.
-	 */
+	 
 	i915_gem_object_invalidate_frontbuffer(obj, ORIGIN_CPU);
 
 	if (copy_from_user(vaddr, user_data, args->size))
@@ -203,7 +192,7 @@ static int i915_gem_object_shmem_to_phys(struct drm_i915_gem_object *obj)
 	if (err)
 		goto err_xfer;
 
-	/* Perma-pin (until release) the physical set of pages */
+	 
 	__i915_gem_object_pin_pages(obj);
 
 	if (!IS_ERR_OR_NULL(pages))

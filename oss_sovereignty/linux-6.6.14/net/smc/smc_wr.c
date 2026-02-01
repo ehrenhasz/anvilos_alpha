@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Work Requests exploiting Infiniband API
- *
- * Work requests (WR) of type ib_post_send or ib_post_recv respectively
- * are submitted to either RC SQ or RC RQ respectively
- * (reliably connected send/receive queue)
- * and become work queue entries (WQEs).
- * While an SQ WR/WQE is pending, we track it until transmission completion.
- * Through a send or receive completion queue (CQ) respectively,
- * we get completion queue entries (CQEs) [aka work completions (WCs)].
- * Since the CQ callback is called from IRQ context, we split work by using
- * bottom halves implemented by tasklets.
- *
- * SMC uses this to exchange LLC (link layer control)
- * and CDC (connection data control) messages.
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Steffen Maier <maier@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/hashtable.h>
@@ -31,33 +10,33 @@
 #include "smc.h"
 #include "smc_wr.h"
 
-#define SMC_WR_MAX_POLL_CQE 10	/* max. # of compl. queue elements in 1 poll */
+#define SMC_WR_MAX_POLL_CQE 10	 
 
 #define SMC_WR_RX_HASH_BITS 4
 static DEFINE_HASHTABLE(smc_wr_rx_hash, SMC_WR_RX_HASH_BITS);
 static DEFINE_SPINLOCK(smc_wr_rx_hash_lock);
 
-struct smc_wr_tx_pend {	/* control data for a pending send request */
-	u64			wr_id;		/* work request id sent */
+struct smc_wr_tx_pend {	 
+	u64			wr_id;		 
 	smc_wr_tx_handler	handler;
-	enum ib_wc_status	wc_status;	/* CQE status */
+	enum ib_wc_status	wc_status;	 
 	struct smc_link		*link;
 	u32			idx;
 	struct smc_wr_tx_pend_priv priv;
 	u8			compl_requested;
 };
 
-/******************************** send queue *********************************/
+ 
 
-/*------------------------------- completion --------------------------------*/
+ 
 
-/* returns true if at least one tx work request is pending on the given link */
+ 
 static inline bool smc_wr_is_tx_pend(struct smc_link *link)
 {
 	return !bitmap_empty(link->wr_tx_mask, link->wr_tx_cnt);
 }
 
-/* wait till all pending tx work requests on the given link are completed */
+ 
 void smc_wr_tx_wait_no_pending_sends(struct smc_link *link)
 {
 	wait_event(link->wr_tx_wait, !smc_wr_is_tx_pend(link));
@@ -98,7 +77,7 @@ static inline void smc_wr_tx_process_cqe(struct ib_wc *wc)
 			return;
 		link->wr_tx_v2_pend->wc_status = wc->status;
 		memcpy(&pnd_snd, link->wr_tx_v2_pend, sizeof(pnd_snd));
-		/* clear the full struct smc_wr_tx_pend including .priv */
+		 
 		memset(link->wr_tx_v2_pend, 0,
 		       sizeof(*link->wr_tx_v2_pend));
 		memset(link->lgr->wr_tx_buf_v2, 0,
@@ -109,7 +88,7 @@ static inline void smc_wr_tx_process_cqe(struct ib_wc *wc)
 			complete(&link->wr_tx_compl[pnd_snd_idx]);
 		memcpy(&pnd_snd, &link->wr_tx_pends[pnd_snd_idx],
 		       sizeof(pnd_snd));
-		/* clear the full struct smc_wr_tx_pend including .priv */
+		 
 		memset(&link->wr_tx_pends[pnd_snd_idx], 0,
 		       sizeof(link->wr_tx_pends[pnd_snd_idx]));
 		memset(&link->wr_tx_bufs[pnd_snd_idx], 0,
@@ -125,7 +104,7 @@ static inline void smc_wr_tx_process_cqe(struct ib_wc *wc)
 			memset(link->lgr->wr_tx_buf_v2, 0,
 			       sizeof(*link->lgr->wr_tx_buf_v2));
 		}
-		/* terminate link */
+		 
 		smcr_link_down_cond_sched(link);
 	}
 	if (pnd_snd.handler)
@@ -166,7 +145,7 @@ void smc_wr_tx_cq_handler(struct ib_cq *ib_cq, void *cq_context)
 	tasklet_schedule(&dev->send_tasklet);
 }
 
-/*---------------------------- request submission ---------------------------*/
+ 
 
 static inline int smc_wr_tx_get_free_slot_index(struct smc_link *link, u32 *idx)
 {
@@ -181,17 +160,7 @@ static inline int smc_wr_tx_get_free_slot_index(struct smc_link *link, u32 *idx)
 	return -EBUSY;
 }
 
-/**
- * smc_wr_tx_get_free_slot() - returns buffer for message assembly,
- *			and sets info for pending transmit tracking
- * @link:		Pointer to smc_link used to later send the message.
- * @handler:		Send completion handler function pointer.
- * @wr_buf:		Out value returns pointer to message buffer.
- * @wr_rdma_buf:	Out value returns pointer to rdma work request.
- * @wr_pend_priv:	Out value returns pointer serving as handler context.
- *
- * Return: 0 on success, or -errno on error.
- */
+ 
 int smc_wr_tx_get_free_slot(struct smc_link *link,
 			    smc_wr_tx_handler handler,
 			    struct smc_wr_buf **wr_buf,
@@ -219,7 +188,7 @@ int smc_wr_tx_get_free_slot(struct smc_link *link,
 			(smc_wr_tx_get_free_slot_index(link, &idx) != -EBUSY),
 			SMC_WR_TX_WAIT_FREE_SLOT_TIME);
 		if (!rc) {
-			/* timeout - terminate link */
+			 
 			smcr_link_down_cond_sched(link);
 			return -EPIPE;
 		}
@@ -277,7 +246,7 @@ int smc_wr_tx_put_slot(struct smc_link *link,
 	if (pend->idx < link->wr_tx_cnt) {
 		u32 idx = pend->idx;
 
-		/* clear the full struct smc_wr_tx_pend including .priv */
+		 
 		memset(&link->wr_tx_pends[idx], 0,
 		       sizeof(link->wr_tx_pends[idx]));
 		memset(&link->wr_tx_bufs[idx], 0,
@@ -287,7 +256,7 @@ int smc_wr_tx_put_slot(struct smc_link *link,
 		return 1;
 	} else if (link->lgr->smc_version == SMC_V2 &&
 		   pend->idx == link->wr_tx_cnt) {
-		/* Large v2 buffer */
+		 
 		memset(&link->wr_tx_v2_pend, 0,
 		       sizeof(link->wr_tx_v2_pend));
 		memset(&link->lgr->wr_tx_buf_v2, 0,
@@ -298,9 +267,7 @@ int smc_wr_tx_put_slot(struct smc_link *link,
 	return 0;
 }
 
-/* Send prepared WR slot via ib_post_send.
- * @priv: pointer to smc_wr_tx_pend_priv identifying prepared message buffer
- */
+ 
 int smc_wr_tx_send(struct smc_link *link, struct smc_wr_tx_pend_priv *priv)
 {
 	struct smc_wr_tx_pend *pend;
@@ -333,10 +300,7 @@ int smc_wr_tx_v2_send(struct smc_link *link, struct smc_wr_tx_pend_priv *priv,
 	return rc;
 }
 
-/* Send prepared WR slot via ib_post_send and wait for send completion
- * notification.
- * @priv: pointer to smc_wr_tx_pend_priv identifying prepared message buffer
- */
+ 
 int smc_wr_tx_send_wait(struct smc_link *link, struct smc_wr_tx_pend_priv *priv,
 			unsigned long timeout)
 {
@@ -352,7 +316,7 @@ int smc_wr_tx_send_wait(struct smc_link *link, struct smc_wr_tx_pend_priv *priv,
 	rc = smc_wr_tx_send(link, priv);
 	if (rc)
 		return rc;
-	/* wait for completion by smc_wr_tx_process_cqe() */
+	 
 	rc = wait_for_completion_interruptible_timeout(
 					&link->wr_tx_compl[pnd_idx], timeout);
 	if (rc <= 0)
@@ -362,7 +326,7 @@ int smc_wr_tx_send_wait(struct smc_link *link, struct smc_wr_tx_pend_priv *priv,
 	return rc;
 }
 
-/* Register a memory region and wait for result. */
+ 
 int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
 {
 	int rc;
@@ -383,7 +347,7 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
 					      SMC_WR_REG_MR_WAIT_TIME);
 	percpu_ref_put(&link->wr_reg_refs);
 	if (!rc) {
-		/* timeout - terminate link */
+		 
 		smcr_link_down_cond_sched(link);
 		return -EPIPE;
 	}
@@ -403,7 +367,7 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
 	return rc;
 }
 
-/****************************** receive queue ********************************/
+ 
 
 int smc_wr_rx_register_handler(struct smc_wr_rx_handler *handler)
 {
@@ -423,10 +387,7 @@ out_unlock:
 	return rc;
 }
 
-/* Demultiplex a received work request based on the message type to its handler.
- * Relies on smc_wr_rx_hash having been completely filled before any IB WRs,
- * and not being modified any more afterwards so we don't need to lock it.
- */
+ 
 static inline void smc_wr_rx_demultiplex(struct ib_wc *wc)
 {
 	struct smc_link *link = (struct smc_link *)wc->qp->qp_context;
@@ -436,7 +397,7 @@ static inline void smc_wr_rx_demultiplex(struct ib_wc *wc)
 	u32 index;
 
 	if (wc->byte_len < sizeof(*wr_rx))
-		return; /* short message */
+		return;  
 	temp_wr_id = wc->wr_id;
 	index = do_div(temp_wr_id, link->wr_rx_cnt);
 	wr_rx = (struct smc_wr_rx_hdr *)&link->wr_rx_bufs[index];
@@ -457,9 +418,9 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
 		if (wc[i].status == IB_WC_SUCCESS) {
 			link->wr_rx_tstamp = jiffies;
 			smc_wr_rx_demultiplex(&wc[i]);
-			smc_wr_rx_post(link); /* refill WR RX */
+			smc_wr_rx_post(link);  
 		} else {
-			/* handle status errors */
+			 
 			switch (wc[i].status) {
 			case IB_WC_RETRY_EXC_ERR:
 			case IB_WC_RNR_RETRY_EXC_ERR:
@@ -469,7 +430,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
 					wake_up(&link->wr_rx_empty_wait);
 				break;
 			default:
-				smc_wr_rx_post(link); /* refill WR RX */
+				smc_wr_rx_post(link);  
 				break;
 			}
 		}
@@ -518,7 +479,7 @@ int smc_wr_rx_post_init(struct smc_link *link)
 	return rc;
 }
 
-/***************************** init, exit, misc ******************************/
+ 
 
 void smc_wr_remember_qp_attr(struct smc_link *lnk)
 {
@@ -601,12 +562,7 @@ static void smc_wr_init_sge(struct smc_link *lnk)
 			IB_SEND_SIGNALED | IB_SEND_SOLICITED;
 	}
 
-	/* With SMC-Rv2 there can be messages larger than SMC_WR_TX_SIZE.
-	 * Each ib_recv_wr gets 2 sges, the second one is a spillover buffer
-	 * and the same buffer for all sges. When a larger message arrived then
-	 * the content of the first small sge is copied to the beginning of
-	 * the larger spillover buffer, allowing easy data mapping.
-	 */
+	 
 	for (i = 0; i < lnk->wr_rx_cnt; i++) {
 		int x = i * sges_per_buf;
 
@@ -740,7 +696,7 @@ int smc_wr_alloc_link_mem(struct smc_link *link)
 {
 	int sges_per_buf = link->lgr->smc_version == SMC_V2 ? 2 : 1;
 
-	/* allocate link related memory */
+	 
 	link->wr_tx_bufs = kcalloc(SMC_WR_BUF_CNT, SMC_WR_BUF_SIZE, GFP_KERNEL);
 	if (!link->wr_tx_bufs)
 		goto no_mem;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Facebook
- *
- * BPF program to automatically reflect TOS option from received syn packet
- *
- * Use "bpftool cgroup attach $cg sock_ops $prog" to load this BPF program.
- */
+
+ 
 
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/tcp.h>

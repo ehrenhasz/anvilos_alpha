@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * FSI core driver
- *
- * Copyright (C) IBM Corporation 2016
- *
- * TODO:
- *  - Rework topology
- *  - s/chip_id/chip_loc
- *  - s/cfam/chip (cfam_id -> chip_id etc...)
- */
+
+ 
 
 #include <linux/crc4.h>
 #include <linux/device.h>
@@ -47,37 +38,29 @@ static const int engine_page_size = 0x400;
 
 #define FSI_SLAVE_BASE			0x800
 
-/*
- * FSI slave engine control register offsets
- */
-#define FSI_SMODE		0x0	/* R/W: Mode register */
-#define FSI_SISC		0x8	/* R/W: Interrupt condition */
-#define FSI_SSTAT		0x14	/* R  : Slave status */
-#define FSI_SLBUS		0x30	/* W  : LBUS Ownership */
-#define FSI_LLMODE		0x100	/* R/W: Link layer mode register */
+ 
+#define FSI_SMODE		0x0	 
+#define FSI_SISC		0x8	 
+#define FSI_SSTAT		0x14	 
+#define FSI_SLBUS		0x30	 
+#define FSI_LLMODE		0x100	 
 
-/*
- * SMODE fields
- */
-#define FSI_SMODE_WSC		0x80000000	/* Warm start done */
-#define FSI_SMODE_ECRC		0x20000000	/* Hw CRC check */
-#define FSI_SMODE_SID_SHIFT	24		/* ID shift */
-#define FSI_SMODE_SID_MASK	3		/* ID Mask */
-#define FSI_SMODE_ED_SHIFT	20		/* Echo delay shift */
-#define FSI_SMODE_ED_MASK	0xf		/* Echo delay mask */
-#define FSI_SMODE_SD_SHIFT	16		/* Send delay shift */
-#define FSI_SMODE_SD_MASK	0xf		/* Send delay mask */
-#define FSI_SMODE_LBCRR_SHIFT	8		/* Clk ratio shift */
-#define FSI_SMODE_LBCRR_MASK	0xf		/* Clk ratio mask */
+ 
+#define FSI_SMODE_WSC		0x80000000	 
+#define FSI_SMODE_ECRC		0x20000000	 
+#define FSI_SMODE_SID_SHIFT	24		 
+#define FSI_SMODE_SID_MASK	3		 
+#define FSI_SMODE_ED_SHIFT	20		 
+#define FSI_SMODE_ED_MASK	0xf		 
+#define FSI_SMODE_SD_SHIFT	16		 
+#define FSI_SMODE_SD_MASK	0xf		 
+#define FSI_SMODE_LBCRR_SHIFT	8		 
+#define FSI_SMODE_LBCRR_MASK	0xf		 
 
-/*
- * SLBUS fields
- */
-#define FSI_SLBUS_FORCE		0x80000000	/* Force LBUS ownership */
+ 
+#define FSI_SLBUS_FORCE		0x80000000	 
 
-/*
- * LLMODE fields
- */
+ 
 #define FSI_LLMODE_ASYNC	0x1
 
 #define FSI_SLAVE_SIZE_23b		0x800000
@@ -91,7 +74,7 @@ static dev_t fsi_base_dev;
 static DEFINE_IDA(fsi_minor_ida);
 #define FSI_CHAR_MAX_DEVICES	0x1000
 
-/* Legacy /dev numbering: 4 devices per chip, 16 chips */
+ 
 #define FSI_CHAR_LEGACY_TOP	64
 
 static int fsi_master_read(struct fsi_master *master, int link,
@@ -100,23 +83,7 @@ static int fsi_master_write(struct fsi_master *master, int link,
 		uint8_t slave_id, uint32_t addr, const void *val, size_t size);
 static int fsi_master_break(struct fsi_master *master, int link);
 
-/*
- * fsi_device_read() / fsi_device_write() / fsi_device_peek()
- *
- * FSI endpoint-device support
- *
- * Read / write / peek accessors for a client
- *
- * Parameters:
- * dev:  Structure passed to FSI client device drivers on probe().
- * addr: FSI address of given device.  Client should pass in its base address
- *       plus desired offset to access its register space.
- * val:  For read/peek this is the value read at the specified address. For
- *       write this is value to write to the specified address.
- *       The data in val must be FSI bus endian (big endian).
- * size: Size in bytes of the operation.  Sizes supported are 1, 2 and 4 bytes.
- *       Addresses must be aligned on size boundaries or an error will result.
- */
+ 
 int fsi_device_read(struct fsi_device *dev, uint32_t addr, void *val,
 		size_t size)
 {
@@ -167,7 +134,7 @@ static struct fsi_device *fsi_create_device(struct fsi_slave *slave)
 	return dev;
 }
 
-/* FSI slave support */
+ 
 static int fsi_slave_calc_addr(struct fsi_slave *slave, uint32_t *addrp,
 		uint8_t *idp)
 {
@@ -177,9 +144,7 @@ static int fsi_slave_calc_addr(struct fsi_slave *slave, uint32_t *addrp,
 	if (addr > slave->size)
 		return -EINVAL;
 
-	/* For 23 bit addressing, we encode the extra two bits in the slave
-	 * id (and the slave's actual ID needs to be 0).
-	 */
+	 
 	if (addr > 0x1fffff) {
 		if (slave->id != 0)
 			return -EINVAL;
@@ -215,30 +180,30 @@ static int fsi_slave_report_and_clear_errors(struct fsi_slave *slave)
 	dev_dbg(&slave->dev, "status: 0x%08x, sisc: 0x%08x\n",
 			be32_to_cpu(stat), be32_to_cpu(irq));
 
-	/* clear interrupts */
+	 
 	return fsi_master_write(master, link, id, FSI_SLAVE_BASE + FSI_SISC,
 			&irq, sizeof(irq));
 }
 
-/* Encode slave local bus echo delay */
+ 
 static inline uint32_t fsi_smode_echodly(int x)
 {
 	return (x & FSI_SMODE_ED_MASK) << FSI_SMODE_ED_SHIFT;
 }
 
-/* Encode slave local bus send delay */
+ 
 static inline uint32_t fsi_smode_senddly(int x)
 {
 	return (x & FSI_SMODE_SD_MASK) << FSI_SMODE_SD_SHIFT;
 }
 
-/* Encode slave local bus clock rate ratio */
+ 
 static inline uint32_t fsi_smode_lbcrr(int x)
 {
 	return (x & FSI_SMODE_LBCRR_MASK) << FSI_SMODE_LBCRR_SHIFT;
 }
 
-/* Encode slave ID */
+ 
 static inline uint32_t fsi_smode_sid(int x)
 {
 	return (x & FSI_SMODE_SID_MASK) << FSI_SMODE_SID_SHIFT;
@@ -257,9 +222,7 @@ static int fsi_slave_set_smode(struct fsi_slave *slave)
 	uint32_t smode;
 	__be32 data;
 
-	/* set our smode register with the slave ID field to 0; this enables
-	 * extended slave addressing
-	 */
+	 
 	smode = fsi_slave_smode(slave->id, slave->t_send_delay, slave->t_echo_delay);
 	data = cpu_to_be32(smode);
 
@@ -285,14 +248,12 @@ static int fsi_slave_handle_error(struct fsi_slave *slave, bool write,
 	dev_dbg(&slave->dev, "handling error on %s to 0x%08x[%zd]",
 			write ? "write" : "read", addr, size);
 
-	/* try a simple clear of error conditions, which may fail if we've lost
-	 * communication with the slave
-	 */
+	 
 	rc = fsi_slave_report_and_clear_errors(slave);
 	if (!rc)
 		return 0;
 
-	/* send a TERM and retry */
+	 
 	if (master->term) {
 		rc = master->term(master, link, id);
 		if (!rc) {
@@ -308,7 +269,7 @@ static int fsi_slave_handle_error(struct fsi_slave *slave, bool write,
 	send_delay = slave->t_send_delay;
 	echo_delay = slave->t_echo_delay;
 
-	/* getting serious, reset the slave via BREAK */
+	 
 	rc = fsi_master_break(master, link);
 	if (rc)
 		return rc;
@@ -387,7 +348,7 @@ int fsi_slave_claim_range(struct fsi_slave *slave,
 	if (addr + size > slave->size)
 		return -EINVAL;
 
-	/* todo: check for overlapping claims */
+	 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(fsi_slave_claim_range);
@@ -418,10 +379,7 @@ static bool fsi_device_node_matches(struct device *dev, struct device_node *np,
 	return true;
 }
 
-/* Find a matching node for the slave engine at @address, using @size bytes
- * of space. Returns NULL if not found, or a matching node with refcount
- * already incremented.
- */
+ 
 static struct device_node *fsi_device_find_of_node(struct fsi_device *dev)
 {
 	struct device_node *parent, *np;
@@ -444,13 +402,7 @@ static int fsi_slave_scan(struct fsi_slave *slave)
 	uint32_t engine_addr;
 	int rc, i;
 
-	/*
-	 * scan engines
-	 *
-	 * We keep the peek mode and slave engines for the core; so start
-	 * at the third slot in the configuration table. We also need to
-	 * skip the chip ID entry at the start of the address space.
-	 */
+	 
 	engine_addr = engine_page_size * 3;
 	for (i = 2; i < engine_page_size / sizeof(uint32_t); i++) {
 		uint8_t slots, version, type, crc;
@@ -482,13 +434,10 @@ static int fsi_slave_scan(struct fsi_slave *slave)
 		type = (conf & FSI_SLAVE_CONF_TYPE_MASK)
 			>> FSI_SLAVE_CONF_TYPE_SHIFT;
 
-		/*
-		 * Unused address areas are marked by a zero type value; this
-		 * skips the defined address areas
-		 */
+		 
 		if (type != 0 && slots != 0) {
 
-			/* create device */
+			 
 			dev = fsi_create_device(slave);
 			if (!dev)
 				return -ENOMEM;
@@ -532,24 +481,15 @@ static unsigned long aligned_access_size(size_t offset, size_t count)
 {
 	unsigned long offset_unit, count_unit;
 
-	/* Criteria:
-	 *
-	 * 1. Access size must be less than or equal to the maximum access
-	 *    width or the highest power-of-two factor of offset
-	 * 2. Access size must be less than or equal to the amount specified by
-	 *    count
-	 *
-	 * The access width is optimal if we can calculate 1 to be strictly
-	 * equal while still satisfying 2.
-	 */
+	 
 
-	/* Find 1 by the bottom bit of offset (with a 4 byte access cap) */
+	 
 	offset_unit = BIT(__builtin_ctzl(offset | 4));
 
-	/* Find 2 by the top bit of count */
+	 
 	count_unit = BIT(8 * sizeof(unsigned long) - 1 - __builtin_clzl(count));
 
-	/* Constrain the maximum access width to the minimum of both criteria */
+	 
 	return BIT(__builtin_ctzl(offset_unit | count_unit));
 }
 
@@ -637,9 +577,7 @@ static bool fsi_slave_node_matches(struct device_node *np,
 	return addr == (((u64)link << 32) | id);
 }
 
-/* Find a matching node for the slave at (link, id). Returns NULL if none
- * found, or a matching node with refcount already incremented.
- */
+ 
 static struct device_node *fsi_slave_find_of_node(struct fsi_master *master,
 		int link, uint8_t id)
 {
@@ -804,7 +742,7 @@ static ssize_t slave_send_echo_store(struct device *dev,
 	if (!master->link_config)
 		return -ENXIO;
 
-	/* Current HW mandates that send and echo delay are identical */
+	 
 	slave->t_send_delay = val;
 	slave->t_echo_delay = val;
 
@@ -895,7 +833,7 @@ const struct device_type fsi_cdev_type = {
 };
 EXPORT_SYMBOL_GPL(fsi_cdev_type);
 
-/* Backward compatible /dev/ numbering in "old style" mode */
+ 
 static int fsi_adjust_index(int index)
 {
 #ifdef CONFIG_FSI_NEW_DEV_NODE
@@ -911,13 +849,9 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
 	int cid = slave->chip_id;
 	int id;
 
-	/* Check if we qualify for legacy numbering */
+	 
 	if (cid >= 0 && cid < 16 && type < 4) {
-		/*
-		 * Try reserving the legacy number, which has 0 - 0x3f reserved
-		 * in the ida range. cid goes up to 0xf and type contains two
-		 * bits, so construct the id with the below two bit shift.
-		 */
+		 
 		id = (cid << 2) | type;
 		id = ida_alloc_range(&fsi_minor_ida, id, id, GFP_KERNEL);
 		if (id >= 0) {
@@ -925,10 +859,10 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
 			*out_dev = fsi_base_dev + id;
 			return 0;
 		}
-		/* Other failure */
+		 
 		if (id != -ENOSPC)
 			return id;
-		/* Fallback to non-legacy allocation */
+		 
 	}
 	id = ida_alloc_range(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
 			     FSI_CHAR_MAX_DEVICES - 1, GFP_KERNEL);
@@ -953,7 +887,7 @@ int fsi_get_new_minor(struct fsi_device *fdev, enum fsi_dev_type type,
 		int aid = of_alias_get_id(fdev->dev.of_node, fsi_dev_type_names[type]);
 
 		if (aid >= 0) {
-			/* Use the same scheme as the legacy numbers. */
+			 
 			int id = (aid << 2) | type;
 
 			id = ida_alloc_range(&fsi_minor_ida, id, id, GFP_KERNEL);
@@ -986,9 +920,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 	__be32 data, llmode, slbus;
 	int rc;
 
-	/* Currently, we only support single slaves on a link, and use the
-	 * full 23-bit address range
-	 */
+	 
 	if (id != 0)
 		return -EINVAL;
 
@@ -1011,9 +943,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 	dev_dbg(&master->dev, "fsi: found chip %08x at %02x:%02x:%02x\n",
 			cfam_id, master->idx, link, id);
 
-	/* If we're behind a master that doesn't provide a self-running bus
-	 * clock, put the slave into async mode
-	 */
+	 
 	if (master->flags & FSI_MASTER_FLAG_SWCLOCK) {
 		llmode = cpu_to_be32(FSI_LLMODE_ASYNC);
 		rc = fsi_master_write(master, link, id,
@@ -1025,9 +955,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 				link, id, rc);
 	}
 
-	/* We can communicate with a slave; create the slave device and
-	 * register.
-	 */
+	 
 	slave = kzalloc(sizeof(*slave), GFP_KERNEL);
 	if (!slave)
 		return -ENOMEM;
@@ -1046,7 +974,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 	slave->t_send_delay = 16;
 	slave->t_echo_delay = 16;
 
-	/* Get chip ID if any */
+	 
 	slave->chip_id = -1;
 	if (slave->dev.of_node) {
 		uint32_t prop;
@@ -1071,7 +999,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 		goto err_free;
 	}
 
-	/* Allocate a minor in the FSI space */
+	 
 	rc = __fsi_get_new_minor(slave, fsi_dev_cfam, &slave->dev.devt,
 				 &slave->cdev_idx);
 	if (rc)
@@ -1079,7 +1007,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 
 	trace_fsi_slave_init(slave);
 
-	/* Create chardev for userspace access */
+	 
 	cdev_init(&slave->cdev, &cfam_fops);
 	rc = cdev_device_add(&slave->cdev, &slave->dev);
 	if (rc) {
@@ -1087,17 +1015,14 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
 		goto err_free_ida;
 	}
 
-	/* Now that we have the cdev registered with the core, any fatal
-	 * failures beyond this point will need to clean up through
-	 * cdev_device_del(). Fortunately though, nothing past here is fatal.
-	 */
+	 
 
 	if (master->link_config)
 		master->link_config(master, link,
 				    slave->t_send_delay,
 				    slave->t_echo_delay);
 
-	/* Legacy raw file -> to be removed */
+	 
 	rc = device_create_bin_file(&slave->dev, &fsi_slave_raw_attr);
 	if (rc)
 		dev_warn(&slave->dev, "failed to create raw attr: %d\n", rc);
@@ -1118,7 +1043,7 @@ err_free:
 	return rc;
 }
 
-/* FSI master support */
+ 
 static int fsi_check_access(uint32_t addr, size_t size)
 {
 	if (size == 4) {
@@ -1183,9 +1108,7 @@ static int fsi_master_link_enable(struct fsi_master *master, int link)
 	return 0;
 }
 
-/*
- * Issue a break command on this link
- */
+ 
 static int fsi_master_break(struct fsi_master *master, int link)
 {
 	int rc = 0;
@@ -1310,7 +1233,7 @@ int fsi_master_register(struct fsi_master *master)
 
 	mutex_init(&master->scan_lock);
 
-	/* Alloc the requested index if it's non-zero */
+	 
 	if (master->idx) {
 		master->idx = ida_alloc_range(&master_ida, master->idx,
 					      master->idx, GFP_KERNEL);
@@ -1359,7 +1282,7 @@ void fsi_master_unregister(struct fsi_master *master)
 }
 EXPORT_SYMBOL_GPL(fsi_master_unregister);
 
-/* FSI core & Linux bus type definitions */
+ 
 
 static int fsi_bus_match(struct device *dev, struct device_driver *drv)
 {

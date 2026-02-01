@@ -1,83 +1,17 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #include <aes/aes_impl.h>
 
-/*
- * This file is derived from the file  rijndael-alg-fst.c  taken from the
- * "optimized C code v3.0" on the "rijndael home page"
- * http://www.iaik.tu-graz.ac.at/research/krypto/AES/old/~rijmen/rijndael/
- * pointed by the NIST web-site http://csrc.nist.gov/archive/aes/
- *
- * The following note is from the original file:
- */
+ 
 
-/*
- * rijndael-alg-fst.c
- *
- * @version 3.0 (December 2000)
- *
- * Optimised ANSI C code for the Rijndael cipher (now AES)
- *
- * @author Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
- * @author Antoon Bosselaers <antoon.bosselaers@esat.kuleuven.ac.be>
- * @author Paulo Barreto <paulo.barreto@terra.com.br>
- *
- * This code is hereby placed in the public domain.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
-/*
- *  Constant tables
- */
+ 
 
-/*
- * Te0[x] = S [x].[02, 01, 01, 03];
- * Te1[x] = S [x].[03, 02, 01, 01];
- * Te2[x] = S [x].[01, 03, 02, 01];
- * Te3[x] = S [x].[01, 01, 03, 02];
- * Te4[x] = S [x].[01, 01, 01, 01];
- *
- * Td0[x] = Si[x].[0e, 09, 0d, 0b];
- * Td1[x] = Si[x].[0b, 0e, 09, 0d];
- * Td2[x] = Si[x].[0d, 0b, 0e, 09];
- * Td3[x] = Si[x].[09, 0d, 0b, 0e];
- * Td4[x] = Si[x].[01, 01, 01, 01];
- */
+ 
 
-/* Encrypt Sbox constants (for the substitute bytes operation) */
+ 
 
 static const uint32_t Te0[256] =
 {
@@ -422,7 +356,7 @@ static const uint32_t Te4[256] =
 	0xb0b0b0b0U, 0x54545454U, 0xbbbbbbbbU, 0x16161616U
 };
 
-/* Decrypt Sbox constants (for the substitute bytes operation) */
+ 
 
 static const uint32_t Td0[256] =
 {
@@ -764,28 +698,17 @@ static const uint32_t Td4[256] =
 	0x55555555U, 0x21212121U, 0x0c0c0c0cU, 0x7d7d7d7dU
 };
 
-/* Rcon is Round Constant; used for encryption key expansion */
+ 
 static const uint32_t rcon[RC_LENGTH] =
 {
-	/* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
+	 
 	0x01000000, 0x02000000, 0x04000000, 0x08000000,
 	0x10000000, 0x20000000, 0x40000000, 0x80000000,
 	0x1B000000, 0x36000000
 };
 
 
-/*
- * Expand the cipher key into the encryption key schedule.
- *
- * Return the number of rounds for the given cipher key size.
- * The size of the key schedule depends on the number of rounds
- * (which can be computed from the size of the key), i.e. 4*(Nr + 1).
- *
- * Parameters:
- * rk		AES key schedule 32-bit array to be initialized
- * cipherKey	User key
- * keyBits	AES key size (128, 192, or 256 bits)
- */
+ 
 static int
 rijndael_key_setup_enc(uint32_t rk[], const uint32_t cipherKey[],
     int keyBits)
@@ -880,27 +803,17 @@ rijndael_key_setup_enc(uint32_t rk[], const uint32_t cipherKey[],
 	return (0);
 }
 
-/*
- *  Expand the cipher key into the decryption key schedule.
- *  Return the number of rounds for the given cipher key size.
- *  The size of the key schedule depends on the number of rounds
- *  (which can be computed from the size of the key), i.e. 4*(Nr + 1).
- *
- * Parameters:
- * rk		AES key schedule 32-bit array to be initialized
- * cipherKey	User key
- * keyBits	AES key size (128, 192, or 256 bits)
- */
+ 
 static int
 rijndael_key_setup_dec(uint32_t rk[], const uint32_t cipherKey[], int keyBits)
 {
 	int	 Nr, i, j;
 	uint32_t temp;
 
-	/* expand the cipher key: */
+	 
 	Nr = rijndael_key_setup_enc(rk, cipherKey, keyBits);
 
-	/* invert the order of the round keys: */
+	 
 	for (i = 0, j = 4 * Nr; i < j; i += 4, j -= 4) {
 		temp = rk[i];
 		rk[i] = rk[j];
@@ -916,10 +829,7 @@ rijndael_key_setup_dec(uint32_t rk[], const uint32_t cipherKey[], int keyBits)
 		rk[j + 3] = temp;
 	}
 
-	/*
-	 * apply the inverse MixColumn transform to all
-	 * round keys but the first and the last:
-	 */
+	 
 	for (i = 1; i < Nr; i++) {
 		rk += 4;
 		rk[0] = Td0[Te4[rk[0] >> 24] & 0xff] ^
@@ -943,15 +853,7 @@ rijndael_key_setup_dec(uint32_t rk[], const uint32_t cipherKey[], int keyBits)
 	return (Nr);
 }
 
-/*
- * Expand the 32-bit AES cipher key array into the encryption and decryption
- * key schedules.
- *
- * Parameters:
- * key		AES key schedule to be initialized
- * keyarr32	User key
- * keyBits	AES key size (128, 192, or 256 bits)
- */
+ 
 static void
 aes_generic_generate(aes_key_t *key, const uint32_t *keyarr32, int keybits)
 {
@@ -961,20 +863,7 @@ aes_generic_generate(aes_key_t *key, const uint32_t *keyarr32, int keybits)
 	    keybits);
 }
 
-/*
- * Encrypt one block of data. The block is assumed to be an array
- * of four uint32_t values, so copy for alignment (and byte-order
- * reversal for little endian systems might be necessary on the
- * input and output byte streams.
- * The size of the key schedule depends on the number of rounds
- * (which can be computed from the size of the key), i.e. 4*(Nr + 1).
- *
- * Parameters:
- * rk	Key schedule, of aes_ks_t (60 32-bit integers)
- * Nr	Number of rounds
- * pt	Input block (plain text)
- * ct	Output block (crypto text).  Can overlap with pt
- */
+ 
 static void
 aes_generic_encrypt(const uint32_t rk[], int Nr, const uint32_t pt[4],
     uint32_t ct[4])
@@ -982,19 +871,14 @@ aes_generic_encrypt(const uint32_t rk[], int Nr, const uint32_t pt[4],
 	uint32_t	s0, s1, s2, s3, t0, t1, t2, t3;
 	int		r;
 
-	/*
-	 * map byte array block to cipher state
-	 * and add initial round key:
-	 */
+	 
 
 	s0 = pt[0] ^ rk[0];
 	s1 = pt[1] ^ rk[1];
 	s2 = pt[2] ^ rk[2];
 	s3 = pt[3] ^ rk[3];
 
-	/*
-	 * Nr - 1 full rounds:
-	 */
+	 
 
 	r = Nr >> 1;
 
@@ -1054,10 +938,7 @@ aes_generic_encrypt(const uint32_t rk[], int Nr, const uint32_t pt[4],
 		    rk[3];
 	}
 
-	/*
-	 * apply last round and
-	 * map cipher state to byte array block:
-	 */
+	 
 
 	s0 = (Te4[(t0 >> 24)] & 0xff000000) ^
 	    (Te4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
@@ -1089,20 +970,7 @@ aes_generic_encrypt(const uint32_t rk[], int Nr, const uint32_t pt[4],
 }
 
 
-/*
- * Decrypt one block of data. The block is assumed to be an array
- * of four uint32_t values, so copy for alignment (and byte-order
- * reversal for little endian systems might be necessary on the
- * input and output byte streams.
- * The size of the key schedule depends on the number of rounds
- * (which can be computed from the size of the key), i.e. 4*(Nr + 1).
- *
- * Parameters:
- * rk	Key schedule, of aes_ks_t (60 32-bit integers)
- * Nr	Number of rounds
- * ct	Input block (crypto text)
- * pt	Output block (plain text). Can overlap with pt
- */
+ 
 static void
 aes_generic_decrypt(const uint32_t rk[], int Nr, const uint32_t ct[4],
     uint32_t pt[4])
@@ -1110,18 +978,13 @@ aes_generic_decrypt(const uint32_t rk[], int Nr, const uint32_t ct[4],
 	uint32_t s0, s1, s2, s3, t0, t1, t2, t3;
 	int	 r;
 
-	/*
-	 * map byte array block to cipher state
-	 * and add initial round key:
-	 */
+	 
 	s0 = ct[0] ^ rk[0];
 	s1 = ct[1] ^ rk[1];
 	s2 = ct[2] ^ rk[2];
 	s3 = ct[3] ^ rk[3];
 
-	/*
-	 * Nr - 1 full rounds:
-	 */
+	 
 
 	r = Nr >> 1;
 
@@ -1181,10 +1044,7 @@ aes_generic_decrypt(const uint32_t rk[], int Nr, const uint32_t ct[4],
 		    rk[3];
 	}
 
-	/*
-	 * apply last round and
-	 * map cipher state to byte array block:
-	 */
+	 
 
 	s0 = (Td4[t0 >> 24] & 0xff000000) ^
 	    (Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
@@ -1221,13 +1081,7 @@ aes_generic_will_work(void)
 	return (B_TRUE);
 }
 
-/*
- * For _LITTLE_ENDIAN machines, reverse every 4 bytes in the key.
- * On _BIG_ENDIAN, copy the key without reversing bytes.
- *
- * SPARCv8/v9 uses a key schedule array with 64-bit elements.
- * X86/AMD64  uses a key schedule array with 32-bit elements.
- */
+ 
 const aes_impl_ops_t aes_generic_impl = {
 	.generate = &aes_generic_generate,
 	.encrypt = &aes_generic_encrypt,

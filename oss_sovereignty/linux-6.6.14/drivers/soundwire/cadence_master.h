@@ -1,32 +1,19 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/* Copyright(c) 2015-17 Intel Corporation. */
+ 
+ 
 #include <sound/soc.h>
 
 #ifndef __SDW_CADENCE_H
 #define __SDW_CADENCE_H
 
-#define SDW_CADENCE_GSYNC_KHZ		4 /* 4 kHz */
+#define SDW_CADENCE_GSYNC_KHZ		4  
 #define SDW_CADENCE_GSYNC_HZ		(SDW_CADENCE_GSYNC_KHZ * 1000)
 
-/*
- * The Cadence IP supports up to 32 entries in the FIFO, though implementations
- * can configure the IP to have a smaller FIFO.
- */
+ 
 #define CDNS_MCP_IP_MAX_CMD_LEN		32
 
 #define SDW_CADENCE_MCP_IP_OFFSET	0x4000
 
-/**
- * struct sdw_cdns_pdi: PDI (Physical Data Interface) instance
- *
- * @num: pdi number
- * @intel_alh_id: link identifier
- * @l_ch_num: low channel for PDI
- * @h_ch_num: high channel for PDI
- * @ch_count: total channel count for PDI
- * @dir: data direction
- * @type: stream type, (only PCM supported)
- */
+ 
 struct sdw_cdns_pdi {
 	int num;
 	int intel_alh_id;
@@ -37,20 +24,7 @@ struct sdw_cdns_pdi {
 	enum sdw_stream_type type;
 };
 
-/**
- * struct sdw_cdns_streams: Cadence stream data structure
- *
- * @num_bd: number of bidirectional streams
- * @num_in: number of input streams
- * @num_out: number of output streams
- * @num_ch_bd: number of bidirectional stream channels
- * @num_ch_bd: number of input stream channels
- * @num_ch_bd: number of output stream channels
- * @num_pdi: total number of PDIs
- * @bd: bidirectional streams
- * @in: input streams
- * @out: output streams
- */
+ 
 struct sdw_cdns_streams {
 	unsigned int num_bd;
 	unsigned int num_in;
@@ -64,32 +38,14 @@ struct sdw_cdns_streams {
 	struct sdw_cdns_pdi *out;
 };
 
-/**
- * struct sdw_cdns_stream_config: stream configuration
- *
- * @pcm_bd: number of bidirectional PCM streams supported
- * @pcm_in: number of input PCM streams supported
- * @pcm_out: number of output PCM streams supported
- */
+ 
 struct sdw_cdns_stream_config {
 	unsigned int pcm_bd;
 	unsigned int pcm_in;
 	unsigned int pcm_out;
 };
 
-/**
- * struct sdw_cdns_dai_runtime: Cadence DAI runtime data
- *
- * @name: SoundWire stream name
- * @stream: stream runtime
- * @pdi: PDI used for this dai
- * @bus: Bus handle
- * @stream_type: Stream type
- * @link_id: Master link id
- * @suspended: status set when suspended, to be used in .prepare
- * @paused: status set in .trigger, to be used in suspend
- * @direction: stream direction
- */
+ 
 struct sdw_cdns_dai_runtime {
 	char *name;
 	struct sdw_stream_runtime *stream;
@@ -102,22 +58,7 @@ struct sdw_cdns_dai_runtime {
 	int direction;
 };
 
-/**
- * struct sdw_cdns - Cadence driver context
- * @dev: Linux device
- * @bus: Bus handle
- * @instance: instance number
- * @ip_offset: version-dependent offset to access IP_MCP registers and fields
- * @response_buf: SoundWire response buffer
- * @tx_complete: Tx completion
- * @ports: Data ports
- * @num_ports: Total number of data ports
- * @pcm: PCM streams
- * @registers: Cadence registers
- * @link_up: Link status
- * @msg_count: Messages sent on bus
- * @dai_runtime_array: runtime context for each allocated DAI.
- */
+ 
 struct sdw_cdns {
 	struct device *dev;
 	struct sdw_bus bus;
@@ -125,10 +66,7 @@ struct sdw_cdns {
 
 	u32 ip_offset;
 
-	/*
-	 * The datasheet says the RX FIFO AVAIL can be 2 entries more
-	 * than the FIFO capacity, so allow for this.
-	 */
+	 
 	u32 response_buf[CDNS_MCP_IP_MAX_CMD_LEN + 2];
 
 	struct completion tx_complete;
@@ -156,7 +94,7 @@ struct sdw_cdns {
 
 #define bus_to_cdns(_bus) container_of(_bus, struct sdw_cdns, bus)
 
-/* Exported symbols */
+ 
 
 int sdw_cdns_probe(struct sdw_cdns *cdns);
 
@@ -202,4 +140,4 @@ void sdw_cdns_check_self_clearing_bits(struct sdw_cdns *cdns, const char *string
 void sdw_cdns_config_update(struct sdw_cdns *cdns);
 int sdw_cdns_config_update_set_wait(struct sdw_cdns *cdns);
 
-#endif /* __SDW_CADENCE_H */
+#endif  

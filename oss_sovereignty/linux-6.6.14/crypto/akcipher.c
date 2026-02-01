@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Public Key Encryption
- *
- * Copyright (c) 2015, Intel Corporation
- * Authors: Tadeusz Struk <tadeusz.struk@intel.com>
- */
+
+ 
 #include <crypto/internal/akcipher.h>
 #include <linux/cryptouser.h>
 #include <linux/errno.h>

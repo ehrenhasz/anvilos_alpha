@@ -1,34 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device Modules for Nintendo Wii / Wii U HID Driver
- * Copyright (c) 2011-2013 David Herrmann <dh.herrmann@gmail.com>
- */
 
-/*
- */
+ 
 
-/*
- * Wiimote Modules
- * Nintendo devices provide different peripherals and many new devices lack
- * initial features like the IR camera. Therefore, each peripheral device is
- * implemented as an independent module and we probe on each device only the
- * modules for the hardware that really is available.
- *
- * Module registration is sequential. Unregistration is done in reverse order.
- * After device detection, the needed modules are loaded. Users can trigger
- * re-detection which causes all modules to be unloaded and then reload the
- * modules for the new detected device.
- *
- * wdata->input is a shared input device. It is always initialized prior to
- * module registration. If at least one registered module is marked as
- * WIIMOD_FLAG_INPUT, then the input device will get registered after all
- * modules were registered.
- * Please note that it is unregistered _before_ the "remove" callbacks are
- * called. This guarantees that no input interaction is done, anymore. However,
- * the wiimote core keeps a reference to the input device so it is freed only
- * after all modules were removed. It is safe to send events to unregistered
- * input devices.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -36,27 +11,20 @@
 #include <linux/spinlock.h>
 #include "hid-wiimote.h"
 
-/*
- * Keys
- * The initial Wii Remote provided a bunch of buttons that are reported as
- * part of the core protocol. Many later devices dropped these and report
- * invalid data in the core button reports. Load this only on devices which
- * correctly send button reports.
- * It uses the shared input device.
- */
+ 
 
 static const __u16 wiimod_keys_map[] = {
-	KEY_LEFT,	/* WIIPROTO_KEY_LEFT */
-	KEY_RIGHT,	/* WIIPROTO_KEY_RIGHT */
-	KEY_UP,		/* WIIPROTO_KEY_UP */
-	KEY_DOWN,	/* WIIPROTO_KEY_DOWN */
-	KEY_NEXT,	/* WIIPROTO_KEY_PLUS */
-	KEY_PREVIOUS,	/* WIIPROTO_KEY_MINUS */
-	BTN_1,		/* WIIPROTO_KEY_ONE */
-	BTN_2,		/* WIIPROTO_KEY_TWO */
-	BTN_A,		/* WIIPROTO_KEY_A */
-	BTN_B,		/* WIIPROTO_KEY_B */
-	BTN_MODE,	/* WIIPROTO_KEY_HOME */
+	KEY_LEFT,	 
+	KEY_RIGHT,	 
+	KEY_UP,		 
+	KEY_DOWN,	 
+	KEY_NEXT,	 
+	KEY_PREVIOUS,	 
+	BTN_1,		 
+	BTN_2,		 
+	BTN_A,		 
+	BTN_B,		 
+	BTN_MODE,	 
 };
 
 static void wiimod_keys_in_keys(struct wiimote_data *wdata, const __u8 *keys)
@@ -106,17 +74,9 @@ static const struct wiimod_ops wiimod_keys = {
 	.in_keys = wiimod_keys_in_keys,
 };
 
-/*
- * Rumble
- * Nearly all devices provide a rumble feature. A small motor for
- * force-feedback effects. We provide an FF_RUMBLE memless ff device on the
- * shared input device if this module is loaded.
- * The rumble motor is controlled via a flag on almost every output report so
- * the wiimote core handles the rumble flag. But if a device doesn't provide
- * the rumble motor, this flag shouldn't be set.
- */
+ 
 
-/* used by wiimod_rumble and wiipro_rumble */
+ 
 static void wiimod_rumble_worker(struct work_struct *work)
 {
 	struct wiimote_data *wdata = container_of(work, struct wiimote_data,
@@ -133,19 +93,14 @@ static int wiimod_rumble_play(struct input_dev *dev, void *data,
 	struct wiimote_data *wdata = input_get_drvdata(dev);
 	__u8 value;
 
-	/*
-	 * The wiimote supports only a single rumble motor so if any magnitude
-	 * is set to non-zero then we start the rumble motor. If both are set to
-	 * zero, we stop the rumble motor.
-	 */
+	 
 
 	if (eff->u.rumble.strong_magnitude || eff->u.rumble.weak_magnitude)
 		value = 1;
 	else
 		value = 0;
 
-	/* Locking state.lock here might deadlock with input_event() calls.
-	 * schedule_work acts as barrier. Merging multiple changes is fine. */
+	 
 	wdata->state.cache_rumble = value;
 	schedule_work(&wdata->rumble_worker);
 
@@ -183,13 +138,7 @@ static const struct wiimod_ops wiimod_rumble = {
 	.remove = wiimod_rumble_remove,
 };
 
-/*
- * Battery
- * 1 byte of battery capacity information is sent along every protocol status
- * report. The wiimote core caches it but we try to update it on every
- * user-space request.
- * This is supported by nearly every device so it's almost always enabled.
- */
+ 
 
 static enum power_supply_property wiimod_battery_props[] = {
 	POWER_SUPPLY_PROP_CAPACITY,
@@ -283,13 +232,7 @@ static const struct wiimod_ops wiimod_battery = {
 	.remove = wiimod_battery_remove,
 };
 
-/*
- * LED
- * 0 to 4 player LEDs are supported by devices. The "arg" field of the
- * wiimod_ops structure specifies which LED this module controls. This allows
- * to register a limited number of LEDs.
- * State is managed by wiimote core.
- */
+ 
 
 static enum led_brightness wiimod_led_get(struct led_classdev *led_dev)
 {
@@ -362,7 +305,7 @@ static int wiimod_led_probe(const struct wiimod_ops *ops,
 	if (ret)
 		goto err_free;
 
-	/* enable LED1 to stop initial LED-blinking */
+	 
 	if (ops->arg == 0) {
 		spin_lock_irqsave(&wdata->state.lock, flags);
 		wiiproto_req_leds(wdata, WIIPROTO_FLAG_LED1);
@@ -415,12 +358,7 @@ static const struct wiimod_ops wiimod_leds[4] = {
 	},
 };
 
-/*
- * Accelerometer
- * 3 axis accelerometer data is part of nearly all DRMs. If not supported by a
- * device, it's mostly cleared to 0. This module parses this data and provides
- * it via a separate input device.
- */
+ 
 
 static void wiimod_accel_in_accel(struct wiimote_data *wdata,
 				  const __u8 *accel)
@@ -430,17 +368,7 @@ static void wiimod_accel_in_accel(struct wiimote_data *wdata,
 	if (!(wdata->state.flags & WIIPROTO_FLAG_ACCEL))
 		return;
 
-	/*
-	 * payload is: BB BB XX YY ZZ
-	 * Accelerometer data is encoded into 3 10bit values. XX, YY and ZZ
-	 * contain the upper 8 bits of each value. The lower 2 bits are
-	 * contained in the buttons data BB BB.
-	 * Bits 6 and 7 of the first buttons byte BB is the lower 2 bits of the
-	 * X accel value. Bit 5 of the second buttons byte is the 2nd bit of Y
-	 * accel value and bit 6 is the second bit of the Z value.
-	 * The first bit of Y and Z values is not available and always set to 0.
-	 * 0x200 is returned on no movement.
-	 */
+	 
 
 	x = accel[2] << 2;
 	y = accel[3] << 2;
@@ -537,15 +465,7 @@ static const struct wiimod_ops wiimod_accel = {
 	.in_accel = wiimod_accel_in_accel,
 };
 
-/*
- * IR Cam
- * Up to 4 IR sources can be tracked by a normal Wii Remote. The IR cam needs
- * to be initialized with a fairly complex procedure and consumes a lot of
- * power. Therefore, as long as no application uses the IR input device, it is
- * kept offline.
- * Nearly no other device than the normal Wii Remotes supports the IR cam so
- * you can disable this module for these devices.
- */
+ 
 
 static void wiimod_ir_in_ir(struct wiimote_data *wdata, const __u8 *ir,
 			    bool packed, unsigned int id)
@@ -579,15 +499,7 @@ static void wiimod_ir_in_ir(struct wiimote_data *wdata, const __u8 *ir,
 		return;
 	}
 
-	/*
-	 * Basic IR data is encoded into 3 bytes. The first two bytes are the
-	 * lower 8 bit of the X/Y data, the 3rd byte contains the upper 2 bits
-	 * of both.
-	 * If data is packed, then the 3rd byte is put first and slightly
-	 * reordered. This allows to interleave packed and non-packed data to
-	 * have two IR sets in 5 bytes instead of 6.
-	 * The resulting 10bit X/Y values are passed to the ABS_HAT? input dev.
-	 */
+	 
 
 	if (packed) {
 		x = ir[1] | ((ir[0] & 0x03) << 8);
@@ -637,7 +549,7 @@ static int wiimod_ir_change(struct wiimote_data *wdata, __u16 mode)
 	if (ret)
 		return ret;
 
-	/* send PIXEL CLOCK ENABLE cmd first */
+	 
 	spin_lock_irqsave(&wdata->state.lock, flags);
 	wiimote_cmd_set(wdata, WIIPROTO_REQ_IR1, 0);
 	wiiproto_req_ir1(wdata, 0x06);
@@ -651,7 +563,7 @@ static int wiimod_ir_change(struct wiimote_data *wdata, __u16 mode)
 		goto unlock;
 	}
 
-	/* enable IR LOGIC */
+	 
 	spin_lock_irqsave(&wdata->state.lock, flags);
 	wiimote_cmd_set(wdata, WIIPROTO_REQ_IR2, 0);
 	wiiproto_req_ir2(wdata, 0x06);
@@ -665,25 +577,25 @@ static int wiimod_ir_change(struct wiimote_data *wdata, __u16 mode)
 		goto unlock;
 	}
 
-	/* enable IR cam but do not make it send data, yet */
+	 
 	ret = wiimote_cmd_write(wdata, 0xb00030, data_enable,
 							sizeof(data_enable));
 	if (ret)
 		goto unlock;
 
-	/* write first sensitivity block */
+	 
 	ret = wiimote_cmd_write(wdata, 0xb00000, data_sens1,
 							sizeof(data_sens1));
 	if (ret)
 		goto unlock;
 
-	/* write second sensitivity block */
+	 
 	ret = wiimote_cmd_write(wdata, 0xb0001a, data_sens2,
 							sizeof(data_sens2));
 	if (ret)
 		goto unlock;
 
-	/* put IR cam into desired state */
+	 
 	switch (mode) {
 		case WIIPROTO_FLAG_IR_FULL:
 			format = 5;
@@ -699,12 +611,12 @@ static int wiimod_ir_change(struct wiimote_data *wdata, __u16 mode)
 	if (ret)
 		goto unlock;
 
-	/* make IR cam send data */
+	 
 	ret = wiimote_cmd_write(wdata, 0xb00030, data_fin, sizeof(data_fin));
 	if (ret)
 		goto unlock;
 
-	/* request new DRM mode compatible to IR mode */
+	 
 	spin_lock_irqsave(&wdata->state.lock, flags);
 	wdata->state.flags &= ~WIIPROTO_FLAGS_IR;
 	wdata->state.flags |= mode & WIIPROTO_FLAGS_IR;
@@ -799,12 +711,7 @@ static const struct wiimod_ops wiimod_ir = {
 	.in_ir = wiimod_ir_in_ir,
 };
 
-/*
- * Nunchuk Extension
- * The Nintendo Wii Nunchuk was the first official extension published by
- * Nintendo. It provides two additional keys and a separate accelerometer. It
- * can be hotplugged to standard Wii Remotes.
- */
+ 
 
 enum wiimod_nunchuk_keys {
 	WIIMOD_NUNCHUK_KEY_C,
@@ -813,43 +720,15 @@ enum wiimod_nunchuk_keys {
 };
 
 static const __u16 wiimod_nunchuk_map[] = {
-	BTN_C,		/* WIIMOD_NUNCHUK_KEY_C */
-	BTN_Z,		/* WIIMOD_NUNCHUK_KEY_Z */
+	BTN_C,		 
+	BTN_Z,		 
 };
 
 static void wiimod_nunchuk_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__s16 x, y, z, bx, by;
 
-	/*   Byte |   8    7 |  6    5 |  4    3 |  2 |  1  |
-	 *   -----+----------+---------+---------+----+-----+
-	 *    1   |              Button X <7:0>             |
-	 *    2   |              Button Y <7:0>             |
-	 *   -----+----------+---------+---------+----+-----+
-	 *    3   |               Speed X <9:2>             |
-	 *    4   |               Speed Y <9:2>             |
-	 *    5   |               Speed Z <9:2>             |
-	 *   -----+----------+---------+---------+----+-----+
-	 *    6   | Z <1:0>  | Y <1:0> | X <1:0> | BC | BZ  |
-	 *   -----+----------+---------+---------+----+-----+
-	 * Button X/Y is the analog stick. Speed X, Y and Z are the
-	 * accelerometer data in the same format as the wiimote's accelerometer.
-	 * The 6th byte contains the LSBs of the accelerometer data.
-	 * BC and BZ are the C and Z buttons: 0 means pressed
-	 *
-	 * If reported interleaved with motionp, then the layout changes. The
-	 * 5th and 6th byte changes to:
-	 *   -----+-----------------------------------+-----+
-	 *    5   |            Speed Z <9:3>          | EXT |
-	 *   -----+--------+-----+-----+----+----+----+-----+
-	 *    6   |Z <2:1> |Y <1>|X <1>| BC | BZ | 0  |  0  |
-	 *   -----+--------+-----+-----+----+----+----+-----+
-	 * All three accelerometer values lose their LSB. The other data is
-	 * still available but slightly moved.
-	 *
-	 * Center data for button values is 128. Center value for accelerometer
-	 * values it 512 / 0x200
-	 */
+	 
 
 	bx = ext[0];
 	by = ext[1];
@@ -996,13 +875,7 @@ static const struct wiimod_ops wiimod_nunchuk = {
 	.in_ext = wiimod_nunchuk_in_ext,
 };
 
-/*
- * Classic Controller
- * Another official extension from Nintendo. It provides a classic
- * gamecube-like controller that can be hotplugged on the Wii Remote.
- * It has several hardware buttons and switches that are all reported via
- * a normal extension device.
- */
+ 
 
 enum wiimod_classic_keys {
 	WIIMOD_CLASSIC_KEY_A,
@@ -1024,69 +897,28 @@ enum wiimod_classic_keys {
 };
 
 static const __u16 wiimod_classic_map[] = {
-	BTN_A,		/* WIIMOD_CLASSIC_KEY_A */
-	BTN_B,		/* WIIMOD_CLASSIC_KEY_B */
-	BTN_X,		/* WIIMOD_CLASSIC_KEY_X */
-	BTN_Y,		/* WIIMOD_CLASSIC_KEY_Y */
-	BTN_TL2,	/* WIIMOD_CLASSIC_KEY_ZL */
-	BTN_TR2,	/* WIIMOD_CLASSIC_KEY_ZR */
-	KEY_NEXT,	/* WIIMOD_CLASSIC_KEY_PLUS */
-	KEY_PREVIOUS,	/* WIIMOD_CLASSIC_KEY_MINUS */
-	BTN_MODE,	/* WIIMOD_CLASSIC_KEY_HOME */
-	KEY_LEFT,	/* WIIMOD_CLASSIC_KEY_LEFT */
-	KEY_RIGHT,	/* WIIMOD_CLASSIC_KEY_RIGHT */
-	KEY_UP,		/* WIIMOD_CLASSIC_KEY_UP */
-	KEY_DOWN,	/* WIIMOD_CLASSIC_KEY_DOWN */
-	BTN_TL,		/* WIIMOD_CLASSIC_KEY_LT */
-	BTN_TR,		/* WIIMOD_CLASSIC_KEY_RT */
+	BTN_A,		 
+	BTN_B,		 
+	BTN_X,		 
+	BTN_Y,		 
+	BTN_TL2,	 
+	BTN_TR2,	 
+	KEY_NEXT,	 
+	KEY_PREVIOUS,	 
+	BTN_MODE,	 
+	KEY_LEFT,	 
+	KEY_RIGHT,	 
+	KEY_UP,		 
+	KEY_DOWN,	 
+	BTN_TL,		 
+	BTN_TR,		 
 };
 
 static void wiimod_classic_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__s8 rx, ry, lx, ly, lt, rt;
 
-	/*   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   | RX <5:4>  |              LX <5:0>             |
-	 *    2   | RX <3:2>  |              LY <5:0>             |
-	 *   -----+-----+-----+-----+-----------------------------+
-	 *    3   |RX<1>| LT <5:4>  |         RY <5:1>            |
-	 *   -----+-----+-----------+-----------------------------+
-	 *    4   |     LT <3:1>    |         RT <5:1>            |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   | BDR | BDD | BLT | B-  | BH  | B+  | BRT |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   | BZL | BB  | BY  | BA  | BX  | BZR | BDL | BDU |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 * All buttons are 0 if pressed
-	 * RX and RY are right analog stick
-	 * LX and LY are left analog stick
-	 * LT is left trigger, RT is right trigger
-	 * BLT is 0 if left trigger is fully pressed
-	 * BRT is 0 if right trigger is fully pressed
-	 * BDR, BDD, BDL, BDU form the D-Pad with right, down, left, up buttons
-	 * BZL is left Z button and BZR is right Z button
-	 * B-, BH, B+ are +, HOME and - buttons
-	 * BB, BY, BA, BX are A, B, X, Y buttons
-	 * LSB of RX, RY, LT, and RT are not transmitted and always 0.
-	 *
-	 * With motionp enabled it changes slightly to this:
-	 *   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   | RX <5:4>  |          LX <5:1>           | BDU |
-	 *    2   | RX <3:2>  |          LY <5:1>           | BDL |
-	 *   -----+-----+-----+-----+-----------------------+-----+
-	 *    3   |RX<1>| LT <5:4>  |         RY <5:1>            |
-	 *   -----+-----+-----------+-----------------------------+
-	 *    4   |     LT <3:1>    |         RT <5:1>            |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   | BDR | BDD | BLT | B-  | BH  | B+  | BRT | EXT |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   | BZL | BB  | BY  | BA  | BX  | BZR |  0  |  0  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 * Only the LSBs of LX and LY are lost. BDU and BDL are moved, the rest
-	 * is the same as before.
-	 */
+	 
 
 	static const s8 digital_to_analog[3] = {0x20, 0, -0x20};
 
@@ -1293,18 +1125,7 @@ static const struct wiimod_ops wiimod_classic = {
 	.in_ext = wiimod_classic_in_ext,
 };
 
-/*
- * Balance Board Extension
- * The Nintendo Wii Balance Board provides four hardware weight sensor plus a
- * single push button. No other peripherals are available. However, the
- * balance-board data is sent via a standard Wii Remote extension. All other
- * data for non-present hardware is zeroed out.
- * Some 3rd party devices react allergic if we try to access normal Wii Remote
- * hardware, so this extension module should be the only module that is loaded
- * on balance boards.
- * The balance board needs 8 bytes extension data instead of basic 6 bytes so
- * it needs the WIIMOD_FLAG_EXT8 flag.
- */
+ 
 
 static void wiimod_bboard_in_keys(struct wiimote_data *wdata, const __u8 *keys)
 {
@@ -1320,29 +1141,7 @@ static void wiimod_bboard_in_ext(struct wiimote_data *wdata,
 	unsigned int i;
 	struct wiimote_state *s = &wdata->state;
 
-	/*
-	 * Balance board data layout:
-	 *
-	 *   Byte |  8  7  6  5  4  3  2  1  |
-	 *   -----+--------------------------+
-	 *    1   |    Top Right <15:8>      |
-	 *    2   |    Top Right  <7:0>      |
-	 *   -----+--------------------------+
-	 *    3   | Bottom Right <15:8>      |
-	 *    4   | Bottom Right  <7:0>      |
-	 *   -----+--------------------------+
-	 *    5   |     Top Left <15:8>      |
-	 *    6   |     Top Left  <7:0>      |
-	 *   -----+--------------------------+
-	 *    7   |  Bottom Left <15:8>      |
-	 *    8   |  Bottom Left  <7:0>      |
-	 *   -----+--------------------------+
-	 *
-	 * These values represent the weight-measurements of the Wii-balance
-	 * board with 16bit precision.
-	 *
-	 * The balance-board is never reported interleaved with motionp.
-	 */
+	 
 
 	val[0] = ext[0];
 	val[0] <<= 8;
@@ -1360,7 +1159,7 @@ static void wiimod_bboard_in_ext(struct wiimote_data *wdata,
 	val[3] <<= 8;
 	val[3] |= ext[7];
 
-	/* apply calibration data */
+	 
 	for (i = 0; i < 4; i++) {
 		if (val[i] <= s->calib_bboard[i][0]) {
 			tmp = 0;
@@ -1569,15 +1368,7 @@ static const struct wiimod_ops wiimod_bboard = {
 	.in_ext = wiimod_bboard_in_ext,
 };
 
-/*
- * Pro Controller
- * Released with the Wii U was the Nintendo Wii U Pro Controller. It does not
- * work together with the classic Wii, but only with the new Wii U. However, it
- * uses the same protocol and provides a builtin "classic controller pro"
- * extension, few standard buttons, a rumble motor, 4 LEDs and a battery.
- * We provide all these via a standard extension device as the device doesn't
- * feature an extension port.
- */
+ 
 
 enum wiimod_pro_keys {
 	WIIMOD_PRO_KEY_A,
@@ -1601,86 +1392,43 @@ enum wiimod_pro_keys {
 };
 
 static const __u16 wiimod_pro_map[] = {
-	BTN_EAST,	/* WIIMOD_PRO_KEY_A */
-	BTN_SOUTH,	/* WIIMOD_PRO_KEY_B */
-	BTN_NORTH,	/* WIIMOD_PRO_KEY_X */
-	BTN_WEST,	/* WIIMOD_PRO_KEY_Y */
-	BTN_START,	/* WIIMOD_PRO_KEY_PLUS */
-	BTN_SELECT,	/* WIIMOD_PRO_KEY_MINUS */
-	BTN_MODE,	/* WIIMOD_PRO_KEY_HOME */
-	BTN_DPAD_LEFT,	/* WIIMOD_PRO_KEY_LEFT */
-	BTN_DPAD_RIGHT,	/* WIIMOD_PRO_KEY_RIGHT */
-	BTN_DPAD_UP,	/* WIIMOD_PRO_KEY_UP */
-	BTN_DPAD_DOWN,	/* WIIMOD_PRO_KEY_DOWN */
-	BTN_TL,		/* WIIMOD_PRO_KEY_TL */
-	BTN_TR,		/* WIIMOD_PRO_KEY_TR */
-	BTN_TL2,	/* WIIMOD_PRO_KEY_ZL */
-	BTN_TR2,	/* WIIMOD_PRO_KEY_ZR */
-	BTN_THUMBL,	/* WIIMOD_PRO_KEY_THUMBL */
-	BTN_THUMBR,	/* WIIMOD_PRO_KEY_THUMBR */
+	BTN_EAST,	 
+	BTN_SOUTH,	 
+	BTN_NORTH,	 
+	BTN_WEST,	 
+	BTN_START,	 
+	BTN_SELECT,	 
+	BTN_MODE,	 
+	BTN_DPAD_LEFT,	 
+	BTN_DPAD_RIGHT,	 
+	BTN_DPAD_UP,	 
+	BTN_DPAD_DOWN,	 
+	BTN_TL,		 
+	BTN_TR,		 
+	BTN_TL2,	 
+	BTN_TR2,	 
+	BTN_THUMBL,	 
+	BTN_THUMBR,	 
 };
 
 static void wiimod_pro_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__s16 rx, ry, lx, ly;
 
-	/*   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   |                   LX <7:0>                    |
-	 *   -----+-----------------------+-----------------------+
-	 *    2   |  0     0     0     0  |       LX <11:8>       |
-	 *   -----+-----------------------+-----------------------+
-	 *    3   |                   RX <7:0>                    |
-	 *   -----+-----------------------+-----------------------+
-	 *    4   |  0     0     0     0  |       RX <11:8>       |
-	 *   -----+-----------------------+-----------------------+
-	 *    5   |                   LY <7:0>                    |
-	 *   -----+-----------------------+-----------------------+
-	 *    6   |  0     0     0     0  |       LY <11:8>       |
-	 *   -----+-----------------------+-----------------------+
-	 *    7   |                   RY <7:0>                    |
-	 *   -----+-----------------------+-----------------------+
-	 *    8   |  0     0     0     0  |       RY <11:8>       |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    9   | BDR | BDD | BLT | B-  | BH  | B+  | BRT |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *   10   | BZL | BB  | BY  | BA  | BX  | BZR | BDL | BDU |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *   11   |  1  |     BATTERY     | USB |CHARG|LTHUM|RTHUM|
-	 *   -----+-----+-----------------+-----------+-----+-----+
-	 * All buttons are low-active (0 if pressed)
-	 * RX and RY are right analog stick
-	 * LX and LY are left analog stick
-	 * BLT is left trigger, BRT is right trigger.
-	 * BDR, BDD, BDL, BDU form the D-Pad with right, down, left, up buttons
-	 * BZL is left Z button and BZR is right Z button
-	 * B-, BH, B+ are +, HOME and - buttons
-	 * BB, BY, BA, BX are A, B, X, Y buttons
-	 *
-	 * Bits marked as 0/1 are unknown and never changed during tests.
-	 *
-	 * Not entirely verified:
-	 *   CHARG: 1 if uncharging, 0 if charging
-	 *   USB: 1 if not connected, 0 if connected
-	 *   BATTERY: battery capacity from 000 (empty) to 100 (full)
-	 */
+	 
 
 	lx = (ext[0] & 0xff) | ((ext[1] & 0x0f) << 8);
 	rx = (ext[2] & 0xff) | ((ext[3] & 0x0f) << 8);
 	ly = (ext[4] & 0xff) | ((ext[5] & 0x0f) << 8);
 	ry = (ext[6] & 0xff) | ((ext[7] & 0x0f) << 8);
 
-	/* zero-point offsets */
+	 
 	lx -= 0x800;
 	ly = 0x800 - ly;
 	rx -= 0x800;
 	ry = 0x800 - ry;
 
-	/* Trivial automatic calibration. We don't know any calibration data
-	 * in the EEPROM so we must use the first report to calibrate the
-	 * null-position of the analog sticks. Users can retrigger calibration
-	 * via sysfs, or set it explicitly. If data is off more than abs(500),
-	 * we skip calibration as the sticks are likely to be moved already. */
+	 
 	if (!(wdata->state.flags & WIIPROTO_FLAG_PRO_CALIB_DONE)) {
 		wdata->state.flags |= WIIPROTO_FLAG_PRO_CALIB_DONE;
 		if (abs(lx) < 500)
@@ -1693,7 +1441,7 @@ static void wiimod_pro_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 			wdata->state.calib_pro_sticks[3] = -ry;
 	}
 
-	/* apply calibration data */
+	 
 	lx += wdata->state.calib_pro_sticks[0];
 	ly += wdata->state.calib_pro_sticks[1];
 	rx += wdata->state.calib_pro_sticks[2];
@@ -1791,19 +1539,14 @@ static int wiimod_pro_play(struct input_dev *dev, void *data,
 	struct wiimote_data *wdata = input_get_drvdata(dev);
 	__u8 value;
 
-	/*
-	 * The wiimote supports only a single rumble motor so if any magnitude
-	 * is set to non-zero then we start the rumble motor. If both are set to
-	 * zero, we stop the rumble motor.
-	 */
+	 
 
 	if (eff->u.rumble.strong_magnitude || eff->u.rumble.weak_magnitude)
 		value = 1;
 	else
 		value = 0;
 
-	/* Locking state.lock here might deadlock with input_event() calls.
-	 * schedule_work acts as barrier. Merging multiple changes is fine. */
+	 
 	wdata->state.cache_rumble = value;
 	schedule_work(&wdata->rumble_worker);
 
@@ -1965,14 +1708,7 @@ static const struct wiimod_ops wiimod_pro = {
 	.in_ext = wiimod_pro_in_ext,
 };
 
-/*
- * Drums
- * Guitar-Hero, Rock-Band and other games came bundled with drums which can
- * be plugged as extension to a Wiimote. Drum-reports are still not entirely
- * figured out, but the most important information is known.
- * We create a separate device for drums and report all information via this
- * input device.
- */
+ 
 
 static inline void wiimod_drums_report_pressure(struct wiimote_data *wdata,
 						__u8 none, __u8 which,
@@ -1996,36 +1732,7 @@ static void wiimod_drums_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 	__u8 pressure, which, none, hhp, sx, sy;
 	__u8 o, r, y, g, b, bass, bm, bp;
 
-	/*   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   |  0  |  0  |              SX <5:0>             |
-	 *    2   |  0  |  0  |              SY <5:0>             |
-	 *   -----+-----+-----+-----------------------------+-----+
-	 *    3   | HPP | NON |         WHICH <5:1>         |  ?  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    4   |   SOFT <7:5>    |  0  |  1  |  1  |  0  |  ?  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   |  ?  |  1  |  1  | B-  |  1  | B+  |  1  |  ?  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   |  O  |  R  |  Y  |  G  |  B  | BSS |  1  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 * All buttons are 0 if pressed
-	 *
-	 * With Motion+ enabled, the following bits will get invalid:
-	 *   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   |  0  |  0  |              SX <5:1>       |XXXXX|
-	 *    2   |  0  |  0  |              SY <5:1>       |XXXXX|
-	 *   -----+-----+-----+-----------------------------+-----+
-	 *    3   | HPP | NON |         WHICH <5:1>         |  ?  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    4   |   SOFT <7:5>    |  0  |  1  |  1  |  0  |  ?  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   |  ?  |  1  |  1  | B-  |  1  | B+  |  1  |XXXXX|
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   |  O  |  R  |  Y  |  G  |  B  | BSS |XXXXX|XXXXX|
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 */
+	 
 
 	pressure = 7 - (ext[3] >> 5);
 	which = (ext[2] >> 1) & 0x1f;
@@ -2063,11 +1770,11 @@ static void wiimod_drums_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 				     b, &wdata->state.pressure_drums[4],
 				     ABS_HAT0Y, 0x0f);
 
-	/* Bass shares pressure with hi-hat (set via hhp) */
+	 
 	wiimod_drums_report_pressure(wdata, none, hhp ? 0xff : which, pressure,
 				     bass, &wdata->state.pressure_drums[5],
 				     ABS_HAT3X, 0x1b);
-	/* Hi-hat has no on/off values, just pressure. Force to off/0. */
+	 
 	wiimod_drums_report_pressure(wdata, none, hhp ? which : 0xff, pressure,
 				     0, &wdata->state.pressure_drums[6],
 				     ABS_HAT3Y, 0x0e);
@@ -2187,13 +1894,7 @@ static const struct wiimod_ops wiimod_drums = {
 	.in_ext = wiimod_drums_in_ext,
 };
 
-/*
- * Guitar
- * Guitar-Hero, Rock-Band and other games came bundled with guitars which can
- * be plugged as extension to a Wiimote.
- * We create a separate device for guitars and report all information via this
- * input device.
- */
+ 
 
 enum wiimod_guitar_keys {
 	WIIMOD_GUITAR_KEY_G,
@@ -2209,51 +1910,22 @@ enum wiimod_guitar_keys {
 };
 
 static const __u16 wiimod_guitar_map[] = {
-	BTN_1,			/* WIIMOD_GUITAR_KEY_G */
-	BTN_2,			/* WIIMOD_GUITAR_KEY_R */
-	BTN_3,			/* WIIMOD_GUITAR_KEY_Y */
-	BTN_4,			/* WIIMOD_GUITAR_KEY_B */
-	BTN_5,			/* WIIMOD_GUITAR_KEY_O */
-	BTN_DPAD_UP,		/* WIIMOD_GUITAR_KEY_UP */
-	BTN_DPAD_DOWN,		/* WIIMOD_GUITAR_KEY_DOWN */
-	BTN_START,		/* WIIMOD_GUITAR_KEY_PLUS */
-	BTN_SELECT,		/* WIIMOD_GUITAR_KEY_MINUS */
+	BTN_1,			 
+	BTN_2,			 
+	BTN_3,			 
+	BTN_4,			 
+	BTN_5,			 
+	BTN_DPAD_UP,		 
+	BTN_DPAD_DOWN,		 
+	BTN_START,		 
+	BTN_SELECT,		 
 };
 
 static void wiimod_guitar_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__u8 sx, sy, tb, wb, bd, bm, bp, bo, br, bb, bg, by, bu;
 
-	/*   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   |  0  |  0  |              SX <5:0>             |
-	 *    2   |  0  |  0  |              SY <5:0>             |
-	 *   -----+-----+-----+-----+-----------------------------+
-	 *    3   |  0  |  0  |  0  |      TB <4:0>               |
-	 *   -----+-----+-----+-----+-----------------------------+
-	 *    4   |  0  |  0  |  0  |      WB <4:0>               |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   |  1  | BD  |  1  | B-  |  1  | B+  |  1  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   | BO  | BR  | BB  | BG  | BY  |  1  |  1  | BU  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 * All buttons are 0 if pressed
-	 *
-	 * With Motion+ enabled, it will look like this:
-	 *   Byte |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    1   |  0  |  0  |              SX <5:1>       | BU  |
-	 *    2   |  0  |  0  |              SY <5:1>       |  1  |
-	 *   -----+-----+-----+-----+-----------------------+-----+
-	 *    3   |  0  |  0  |  0  |      TB <4:0>               |
-	 *   -----+-----+-----+-----+-----------------------------+
-	 *    4   |  0  |  0  |  0  |      WB <4:0>               |
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    5   |  1  | BD  |  1  | B-  |  1  | B+  |  1  |XXXXX|
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 *    6   | BO  | BR  | BB  | BG  | BY  |  1  |XXXXX|XXXXX|
-	 *   -----+-----+-----+-----+-----+-----+-----+-----+-----+
-	 */
+	 
 
 	sx = ext[0] & 0x3f;
 	sy = ext[1] & 0x3f;
@@ -2403,13 +2075,7 @@ static const struct wiimod_ops wiimod_guitar = {
 	.in_ext = wiimod_guitar_in_ext,
 };
 
-/* 
- * Turntable
- * DJ Hero came with a Turntable Controller that was plugged in
- * as an extension.
- * We create a separate device for turntables and report all information via this
- * input device.
-*/
+ 
 
 enum wiimod_turntable_keys {
 	WIIMOD_TURNTABLE_KEY_G_RIGHT,
@@ -2425,51 +2091,21 @@ enum wiimod_turntable_keys {
 };
 
 static const __u16 wiimod_turntable_map[] = {
-	BTN_1,			/* WIIMOD_TURNTABLE_KEY_G_RIGHT */
-	BTN_2,			/* WIIMOD_TURNTABLE_KEY_R_RIGHT */
-	BTN_3,			/* WIIMOD_TURNTABLE_KEY_B_RIGHT */
-	BTN_4,			/* WIIMOD_TURNTABLE_KEY_G_LEFT */
-	BTN_5,			/* WIIMOD_TURNTABLE_KEY_R_LEFT */
-	BTN_6,			/* WIIMOD_TURNTABLE_KEY_B_LEFT */
-	BTN_7,			/* WIIMOD_TURNTABLE_KEY_EUPHORIA */
-	BTN_START,		/* WIIMOD_TURNTABLE_KEY_PLUS */
-	BTN_SELECT,		/* WIIMOD_TURNTABLE_KEY_MINUS */
+	BTN_1,			 
+	BTN_2,			 
+	BTN_3,			 
+	BTN_4,			 
+	BTN_5,			 
+	BTN_6,			 
+	BTN_7,			 
+	BTN_START,		 
+	BTN_SELECT,		 
 };
 
 static void wiimod_turntable_in_ext(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__u8 be, cs, sx, sy, ed, rtt, rbg, rbr, rbb, ltt, lbg, lbr, lbb, bp, bm;
-	/* 
-	 * Byte |  7   |  6  |  5  |  4  |  3  |  2   |  1   |  0     |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   0  | RTT<4:3>   | 		      	  SX <5:0> 			      |
-	 *   1  | RTT<2:1>   |				  SY <5:0>			      |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   2  |RTT<0>|  ED<4:3>  |          CS<3:0>        | RTT<5> |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   3  |     ED<2:0> 	   | 			 LTT<4:0>			  |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   4  |  0   |  0  | LBR |  B- |  0  |  B+  |  RBR | LTT<5> |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   5  | LBB  |  0  | RBG |  BE | LBG | RBB  | 0    | 0      |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 * All pressed buttons are 0
-	 *
-	 * With Motion+ enabled, it will look like this:
-	 * Byte |  8   |  7  |  6  |  5  |  4  |  3   |  2   |  1     |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   1  | RTT<4:3>   | 		      	  SX <5:1> 		 |	  0   |
-	 *   2  | RTT<2:1>   |				  SY <5:1>		 |	  0   |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   3  |RTT<0>|  ED<4:3>  |          CS<3:0>        | RTT<5> |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   4  |     ED<2:0> 	   | 			 LTT<4:0>			  |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   5  |  0   |  0  | LBR |  B- |  0  |  B+  | RBR  |  XXXX  |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 *   6  | LBB  |  0  | RBG |  BE | LBG | RBB  | XXXX |  XXXX  |
-	 *------+------+-----+-----+-----+-----+------+------+--------+
-	 */
+	 
 	
 	be = !(ext[5] & 0x10); 
 	cs = ((ext[2] & 0x1e));
@@ -2627,12 +2263,7 @@ static const struct wiimod_ops wiimod_turntable = {
 	.in_ext = wiimod_turntable_in_ext,
 };
 
-/*
- * Builtin Motion Plus
- * This module simply sets the WIIPROTO_FLAG_BUILTIN_MP protocol flag which
- * disables polling for Motion-Plus. This should be set only for devices which
- * don't allow MP hotplugging.
- */
+ 
 
 static int wiimod_builtin_mp_probe(const struct wiimod_ops *ops,
 				   struct wiimote_data *wdata)
@@ -2663,12 +2294,7 @@ static const struct wiimod_ops wiimod_builtin_mp = {
 	.remove = wiimod_builtin_mp_remove,
 };
 
-/*
- * No Motion Plus
- * This module simply sets the WIIPROTO_FLAG_NO_MP protocol flag which
- * disables motion-plus. This is needed for devices that advertise this but we
- * don't know how to use it (or whether it is actually present).
- */
+ 
 
 static int wiimod_no_mp_probe(const struct wiimod_ops *ops,
 			      struct wiimote_data *wdata)
@@ -2699,43 +2325,13 @@ static const struct wiimod_ops wiimod_no_mp = {
 	.remove = wiimod_no_mp_remove,
 };
 
-/*
- * Motion Plus
- * The Motion Plus extension provides rotation sensors (gyro) as a small
- * extension device for Wii Remotes. Many devices have them built-in so
- * you cannot see them from the outside.
- * Motion Plus extensions are special because they are on a separate extension
- * port and allow other extensions to be used simultaneously. This is all
- * handled by the Wiimote Core so we don't have to deal with it.
- */
+ 
 
 static void wiimod_mp_in_mp(struct wiimote_data *wdata, const __u8 *ext)
 {
 	__s32 x, y, z;
 
-	/*        |   8    7    6    5    4    3 |  2  |  1  |
-	 *   -----+------------------------------+-----+-----+
-	 *    1   |               Yaw Speed <7:0>            |
-	 *    2   |              Roll Speed <7:0>            |
-	 *    3   |             Pitch Speed <7:0>            |
-	 *   -----+------------------------------+-----+-----+
-	 *    4   |       Yaw Speed <13:8>       | Yaw |Pitch|
-	 *   -----+------------------------------+-----+-----+
-	 *    5   |      Roll Speed <13:8>       |Roll | Ext |
-	 *   -----+------------------------------+-----+-----+
-	 *    6   |     Pitch Speed <13:8>       |  1  |  0  |
-	 *   -----+------------------------------+-----+-----+
-	 * The single bits Yaw, Roll, Pitch in the lower right corner specify
-	 * whether the wiimote is rotating fast (0) or slow (1). Speed for slow
-	 * roation is 8192/440 units / deg/s and for fast rotation 8192/2000
-	 * units / deg/s. To get a linear scale for fast rotation we multiply
-	 * by 2000/440 = ~4.5454 and scale both fast and slow by 9 to match the
-	 * previous scale reported by this driver.
-	 * This leaves a linear scale with 8192*9/440 (~167.564) units / deg/s.
-	 * If the wiimote is not rotating the sensor reports 2^13 = 8192.
-	 * Ext specifies whether an extension is connected to the motionp.
-	 * which is parsed by wiimote-core.
-	 */
+	 
 
 	x = ext[0];
 	y = ext[1];
@@ -2854,7 +2450,7 @@ const struct wiimod_ops wiimod_mp = {
 	.in_mp = wiimod_mp_in_mp,
 };
 
-/* module table */
+ 
 
 static const struct wiimod_ops wiimod_dummy;
 

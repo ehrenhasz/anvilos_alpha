@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Synaptics AS370 SoC Hardware Monitoring Driver
- *
- * Copyright (C) 2018 Synaptics Incorporated
- * Author: Jisheng Zhang <jszhang@kernel.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/hwmon.h>

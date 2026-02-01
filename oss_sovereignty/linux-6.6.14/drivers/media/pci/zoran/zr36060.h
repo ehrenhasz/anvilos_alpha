@@ -1,24 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Zoran ZR36060 basic configuration functions - header file
- *
- * Copyright (C) 2002 Laurent Pinchart <laurent.pinchart@skynet.be>
- */
+ 
+ 
 
 #ifndef ZR36060_H
 #define ZR36060_H
 
 #include "videocodec.h"
 
-/* data stored for each zoran jpeg codec chip */
+ 
 struct zr36060 {
 	char name[32];
 	int num;
-	/* io datastructure */
+	 
 	struct videocodec *codec;
-	// last coder status
+	
 	__u8 status;
-	// actual coder setup
+	
 	int mode;
 
 	__u16 width;
@@ -35,12 +31,12 @@ struct zr36060 {
 	__u16 scalefact;
 	__u16 dri;
 
-	/* app/com marker data */
+	 
 	struct jpeg_app_marker app;
 	struct jpeg_com_marker com;
 };
 
-/* ZR36060 register addresses */
+ 
 #define ZR060_LOAD			0x000
 #define ZR060_CFSR			0x001
 #define ZR060_CIR			0x002
@@ -122,25 +118,25 @@ struct zr36060 {
 #define ZR060_APP_IDX			0x380
 #define ZR060_COM_IDX			0x3c0
 
-/* ZR36060 LOAD register bits */
+ 
 
 #define ZR060_LOAD_LOAD			BIT(7)
 #define ZR060_LOAD_SYNC_RST		BIT(0)
 
-/* ZR36060 Code FIFO Status register bits */
+ 
 
 #define ZR060_CFSR_BUSY			BIT(7)
 #define ZR060_CFSR_C_BUSY		BIT(2)
 #define ZR060_CFSR_CFIFO		(3 << 0)
 
-/* ZR36060 Code Interface register */
+ 
 
 #define ZR060_CIR_CODE16		BIT(7)
 #define ZR060_CIR_ENDIAN		BIT(6)
 #define ZR060_CIR_CFIS			BIT(2)
 #define ZR060_CIR_CODE_MSTR		BIT(0)
 
-/* ZR36060 Codec Mode register */
+ 
 
 #define ZR060_CMR_COMP			BIT(7)
 #define ZR060_CMR_ATP			BIT(6)
@@ -149,7 +145,7 @@ struct zr36060 {
 #define ZR060_CMR_BRB			BIT(2)
 #define ZR060_CMR_FSF			BIT(1)
 
-/* ZR36060 Markers Enable register */
+ 
 
 #define ZR060_MER_APP			BIT(7)
 #define ZR060_MER_COM			BIT(6)
@@ -157,14 +153,14 @@ struct zr36060 {
 #define ZR060_MER_DQT			BIT(4)
 #define ZR060_MER_DHT			BIT(3)
 
-/* ZR36060 Interrupt Mask register */
+ 
 
 #define ZR060_IMR_EOAV			BIT(3)
 #define ZR060_IMR_EOI			BIT(2)
 #define ZR060_IMR_END			BIT(1)
 #define ZR060_IMR_DATA_ERR		BIT(0)
 
-/* ZR36060 Interrupt Status register */
+ 
 
 #define ZR060_ISR_PRO_CNT		(3 << 6)
 #define ZR060_ISR_EOAV			BIT(3)
@@ -172,7 +168,7 @@ struct zr36060 {
 #define ZR060_ISR_END			BIT(1)
 #define ZR060_ISR_DATA_ERR		BIT(0)
 
-/* ZR36060 Video Control register */
+ 
 
 #define ZR060_VCR_VIDEO8		BIT(7)
 #define ZR060_VCR_RANGE			BIT(6)
@@ -181,7 +177,7 @@ struct zr36060 {
 #define ZR060_VCR_FI_EXT		BIT(1)
 #define ZR060_VCR_SYNC_MSTR		BIT(0)
 
-/* ZR36060 Video Polarity register */
+ 
 
 #define ZR060_VPR_VCLK_POL		BIT(7)
 #define ZR060_VPR_P_VAL_POL		BIT(6)
@@ -192,7 +188,7 @@ struct zr36060 {
 #define ZR060_VPR_HS_POL		BIT(1)
 #define ZR060_VPR_VS_POL		BIT(0)
 
-/* ZR36060 Scaling register */
+ 
 
 #define ZR060_SR_V_SCALE		BIT(2)
 #define ZR060_SR_H_SCALE2		BIT(0)
@@ -200,4 +196,4 @@ struct zr36060 {
 
 int zr36060_init_module(void);
 void zr36060_cleanup_module(void);
-#endif				/*fndef ZR36060_H */
+#endif				 

@@ -1,47 +1,31 @@
-/* input.h -- Structures and unions used for reading input. */
+ 
 
-/* Copyright (C) 1993-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if !defined (_INPUT_H_)
 #define _INPUT_H_
 
 #include "stdc.h"
 
-/* Function pointers can be declared as (Function *)foo. */
+ 
 #if !defined (_FUNCTION_DEF)
 #  define _FUNCTION_DEF
 typedef int Function ();
 typedef void VFunction ();
-typedef char *CPFunction ();		/* no longer used */
-typedef char **CPPFunction ();		/* no longer used */
-#endif /* _FUNCTION_DEF */
+typedef char *CPFunction ();		 
+typedef char **CPPFunction ();		 
+#endif  
 
-typedef int sh_cget_func_t PARAMS((void));		/* sh_ivoidfunc_t */
-typedef int sh_cunget_func_t PARAMS((int));	/* sh_intfunc_t */
+typedef int sh_cget_func_t PARAMS((void));		 
+typedef int sh_cunget_func_t PARAMS((int));	 
 
 enum stream_type {st_none, st_stdin, st_stream, st_string, st_bstream};
 
 #if defined (BUFFERED_INPUT)
 
-/* Possible values for b_flag. */
+ 
 #undef B_EOF
-#undef B_ERROR		/* There are some systems with this define */
+#undef B_ERROR		 
 #undef B_UNBUFF
 
 #define B_EOF		0x01
@@ -49,18 +33,17 @@ enum stream_type {st_none, st_stdin, st_stream, st_string, st_bstream};
 #define B_UNBUFF	0x04
 #define B_WASBASHINPUT	0x08
 #define B_TEXT		0x10
-#define B_SHAREDBUF	0x20	/* shared input buffer */
+#define B_SHAREDBUF	0x20	 
 
-/* A buffered stream.  Like a FILE *, but with our own buffering and
-   synchronization.  Look in input.c for the implementation. */
+ 
 typedef struct BSTREAM
 {
   int	 b_fd;
-  char	*b_buffer;		/* The buffer that holds characters read. */
-  size_t b_size;		/* How big the buffer is. */
-  size_t b_used;		/* How much of the buffer we're using, */
-  int	 b_flag;		/* Flag values. */
-  size_t b_inputp;		/* The input pointer, index into b_buffer. */
+  char	*b_buffer;		 
+  size_t b_size;		 
+  size_t b_used;		 
+  int	 b_flag;		 
+  size_t b_inputp;		 
 } BUFFERED_STREAM;
 
 #if 0
@@ -70,7 +53,7 @@ extern BUFFERED_STREAM **buffers;
 extern int default_buffered_input;
 extern int bash_input_fd_changed;
 
-#endif /* BUFFERED_INPUT */
+#endif  
 
 typedef union {
   FILE *file;
@@ -90,8 +73,7 @@ typedef struct {
 
 extern BASH_INPUT bash_input;
 
-/* Functions from parse.y whose use directly or indirectly depends on the
-   definitions in this file. */
+ 
 extern void initialize_bash_input PARAMS((void));
 extern void init_yy_io PARAMS((sh_cget_func_t *, sh_cunget_func_t *, enum stream_type, const char *, INPUT_STREAM));
 extern char *yy_input_name PARAMS((void));
@@ -109,12 +91,12 @@ extern void execute_variable_command PARAMS((char *, char *));
 extern int *save_token_state PARAMS((void));
 extern void restore_token_state PARAMS((int *));
 
-/* Functions from input.c */
+ 
 extern int getc_with_restart PARAMS((FILE *));
 extern int ungetc_with_restart PARAMS((int, FILE *));
 
 #if defined (BUFFERED_INPUT)
-/* Functions from input.c. */
+ 
 extern int fd_is_bash_input PARAMS((int));
 extern int set_bash_input_fd PARAMS((int));
 extern int save_bash_input PARAMS((int, int));
@@ -130,6 +112,6 @@ extern int sync_buffered_stream PARAMS((int));
 extern int buffered_getchar PARAMS((void));
 extern int buffered_ungetchar PARAMS((int));
 extern void with_input_from_buffered_stream PARAMS((int, char *));
-#endif /* BUFFERED_INPUT */
+#endif  
 
-#endif /* _INPUT_H_ */
+#endif  

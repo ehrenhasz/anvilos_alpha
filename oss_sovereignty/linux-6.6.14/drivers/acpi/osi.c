@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  osi.c - _OSI implementation
- *
- *  Copyright (C) 2016 Intel Corporation
- *    Author: Lv Zheng <lv.zheng@intel.com>
- */
 
-/* Uncomment next line to get verbose printout */
-/* #define DEBUG */
+ 
+
+ 
+ 
 #define pr_fmt(fmt) "ACPI: " fmt
 
 #include <linux/module.h>
@@ -84,7 +79,7 @@ void __init acpi_osi_setup(char *str)
 	if (*str == '!') {
 		str++;
 		if (*str == '\0') {
-			/* Do not override acpi_osi=!* */
+			 
 			if (!osi_config.default_disabling)
 				osi_config.default_disabling =
 					ACPI_DISABLE_ALL_VENDOR_STRINGS;
@@ -130,41 +125,13 @@ static void __init __acpi_osi_setup_darwin(bool enable)
 
 static void __init acpi_osi_setup_darwin(bool enable)
 {
-	/* Override acpi_osi_dmi_blacklisted() */
+	 
 	osi_config.darwin_dmi = 0;
 	osi_config.darwin_cmdline = 1;
 	__acpi_osi_setup_darwin(enable);
 }
 
-/*
- * The story of _OSI(Linux)
- *
- * From pre-history through Linux-2.6.22, Linux responded TRUE upon a BIOS
- * OSI(Linux) query.
- *
- * Unfortunately, reference BIOS writers got wind of this and put
- * OSI(Linux) in their example code, quickly exposing this string as
- * ill-conceived and opening the door to an un-bounded number of BIOS
- * incompatibilities.
- *
- * For example, OSI(Linux) was used on resume to re-POST a video card on
- * one system, because Linux at that time could not do a speedy restore in
- * its native driver. But then upon gaining quick native restore
- * capability, Linux has no way to tell the BIOS to skip the time-consuming
- * POST -- putting Linux at a permanent performance disadvantage. On
- * another system, the BIOS writer used OSI(Linux) to infer native OS
- * support for IPMI!  On other systems, OSI(Linux) simply got in the way of
- * Linux claiming to be compatible with other operating systems, exposing
- * BIOS issues such as skipped device initialization.
- *
- * So "Linux" turned out to be a really poor chose of OSI string, and from
- * Linux-2.6.23 onward we respond FALSE.
- *
- * BIOS writers should NOT query _OSI(Linux) on future systems. Linux will
- * complain on the console when it sees it, and return FALSE. To get Linux
- * to return TRUE for your system  will require a kernel source update to
- * add a DMI entry, or boot with "acpi_osi=Linux"
- */
+ 
 static void __init __acpi_osi_setup_linux(bool enable)
 {
 	osi_config.linux_enable = !!enable;
@@ -176,19 +143,13 @@ static void __init __acpi_osi_setup_linux(bool enable)
 
 static void __init acpi_osi_setup_linux(bool enable)
 {
-	/* Override acpi_osi_dmi_blacklisted() */
+	 
 	osi_config.linux_dmi = 0;
 	osi_config.linux_cmdline = 1;
 	__acpi_osi_setup_linux(enable);
 }
 
-/*
- * Modify the list of "OS Interfaces" reported to BIOS via _OSI
- *
- * empty string disables _OSI
- * string starting with '!' disables that string
- * otherwise string is added to list, augmenting built-in strings
- */
+ 
 static void __init acpi_osi_setup_late(void)
 {
 	struct acpi_osi_entry *osi;
@@ -293,12 +254,7 @@ static int __init dmi_disable_osi_win8(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * Linux default _OSI response behavior is determined by this DMI table.
- *
- * Note that _OSI("Linux")/_OSI("Darwin") determined here can be overridden
- * by acpi_osi=!Linux/acpi_osi=!Darwin command line options.
- */
+ 
 static const struct dmi_system_id acpi_osi_dmi_table[] __initconst = {
 	{
 	.callback = dmi_disable_osi_vista,
@@ -309,15 +265,7 @@ static const struct dmi_system_id acpi_osi_dmi_table[] __initconst = {
 		},
 	},
 	{
-	/*
-	 * There have a NVIF method in MSI GX723 DSDT need call by Nvidia
-	 * driver (e.g. nouveau) when user press brightness hotkey.
-	 * Currently, nouveau driver didn't do the job and it causes there
-	 * have a infinite while loop in DSDT when user press hotkey.
-	 * We add MSI GX723's dmi information to this table for workaround
-	 * this issue.
-	 * Will remove MSI GX723 from the table after nouveau grows support.
-	 */
+	 
 	.callback = dmi_disable_osi_vista,
 	.ident = "MSI GX723",
 	.matches = {
@@ -390,10 +338,7 @@ static const struct dmi_system_id acpi_osi_dmi_table[] __initconst = {
 		},
 	},
 
-	/*
-	 * The wireless hotkey does not work on those machines when
-	 * returning true for _OSI("Windows 2012")
-	 */
+	 
 	{
 	.callback = dmi_disable_osi_win8,
 	.ident = "Dell Inspiron 7737",
@@ -443,16 +388,9 @@ static const struct dmi_system_id acpi_osi_dmi_table[] __initconst = {
 		},
 	},
 
-	/*
-	 * BIOS invocation of _OSI(Linux) is almost always a BIOS bug.
-	 * Linux ignores it, except for the machines enumerated below.
-	 */
+	 
 
-	/*
-	 * Without this EEEpc exports a non working WMI interface, with
-	 * this it exports a working "good old" eeepc_laptop interface,
-	 * fixing both brightness control, and rfkill not working.
-	 */
+	 
 	{
 	.callback = dmi_enable_osi_linux,
 	.ident = "Asus EEE PC 1015PX",
@@ -468,7 +406,7 @@ static __init void acpi_osi_dmi_blacklisted(void)
 {
 	dmi_check_system(acpi_osi_dmi_table);
 
-	/* Enable _OSI("Darwin") for Apple platforms. */
+	 
 	if (x86_apple_machine)
 		acpi_osi_dmi_darwin();
 }

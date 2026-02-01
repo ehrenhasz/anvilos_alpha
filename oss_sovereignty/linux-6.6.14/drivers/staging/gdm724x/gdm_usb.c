@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,8 +38,8 @@
 	.bInterfaceProtocol = USB_PR_BULK
 
 static const struct usb_device_id id_table[] = {
-	{ USB_DEVICE_CDC_DATA(VID_GCT, PID_GDM7240) }, /* GCT GDM7240 */
-	{ USB_DEVICE_CDC_DATA(VID_GCT, PID_GDM7243) }, /* GCT GDM7243 */
+	{ USB_DEVICE_CDC_DATA(VID_GCT, PID_GDM7240) },  
+	{ USB_DEVICE_CDC_DATA(VID_GCT, PID_GDM7243) },  
 	{ }
 };
 
@@ -849,9 +849,7 @@ static int gdm_usb_probe(struct usb_interface *intf,
 	usb_enable_autosuspend(usbdev);
 	pm_runtime_set_autosuspend_delay(&usbdev->dev, AUTO_SUSPEND_TIMER);
 
-	/* List up hosts with big endians, otherwise,
-	 * defaults to little endian
-	 */
+	 
 	if (idProduct == PID_GDM7243)
 		udev->gdm_ed = ENDIANNESS_BIG;
 	else

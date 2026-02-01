@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -11,7 +11,7 @@
 #include "bus.h"
 #include "commands.h"
 
-/* Let device itself to select best values for current conditions */
+ 
 #define QTNF_SCAN_TIME_AUTO	0
 
 #define QTNF_SCAN_DWELL_ACTIVE_DEFAULT		90
@@ -120,7 +120,7 @@ static int qtnf_cmd_send_with_reply(struct qtnf_bus *bus,
 	if (ret)
 		goto out;
 
-	/* Return length of variable part of response */
+	 
 	if (response_skb && var_resp_size)
 		*var_resp_size = le16_to_cpu(resp->mhdr.len) - const_resp_size;
 
@@ -815,7 +815,7 @@ int qtnf_cmd_send_change_intf_type(struct qtnf_vif *vif,
 	ret = qtnf_cmd_send_add_change_intf(vif, iftype, use4addr, mac_addr,
 					    QLINK_CMD_CHANGE_INTF);
 
-	/* Regulatory settings may be different for different interface types */
+	 
 	if (ret == 0 && vif->wdev.iftype != iftype) {
 		enum nl80211_band band;
 		struct wiphy *wiphy = priv_to_wiphy(vif->mac);
@@ -1932,7 +1932,7 @@ int qtnf_cmd_send_del_sta(struct qtnf_vif *vif,
 	if (params->mac)
 		ether_addr_copy(cmd->sta_addr, params->mac);
 	else
-		eth_broadcast_addr(cmd->sta_addr);	/* flush all stations */
+		eth_broadcast_addr(cmd->sta_addr);	 
 
 	cmd->subtype = params->subtype;
 	cmd->reason_code = cpu_to_le16(params->reason_code);
@@ -2009,7 +2009,7 @@ int qtnf_cmd_send_scan(struct qtnf_wmac *mac)
 		dwell_passive = scan_req->duration;
 	} else if (wdev->iftype == NL80211_IFTYPE_STATION &&
 		   wdev->connected) {
-		/* let device select dwell based on traffic conditions */
+		 
 		dwell_active = QTNF_SCAN_TIME_AUTO;
 		dwell_passive = QTNF_SCAN_TIME_AUTO;
 	}
@@ -2106,7 +2106,7 @@ int qtnf_cmd_send_connect(struct qtnf_vif *vif,
 	    (sme->bg_scan_period <= SHRT_MAX))
 		cmd->bg_scan_period = cpu_to_le16(sme->bg_scan_period);
 	else
-		cmd->bg_scan_period = cpu_to_le16(-1); /* use default value */
+		cmd->bg_scan_period = cpu_to_le16(-1);  
 
 	if (sme->flags & ASSOC_REQ_DISABLE_HT)
 		connect_flags |= QLINK_STA_CONNECT_DISABLE_HT;

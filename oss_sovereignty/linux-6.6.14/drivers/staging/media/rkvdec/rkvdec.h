@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Rockchip Video Decoder driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on rkvdec driver by Google LLC. (Tomasz Figa <tfiga@chromium.org>)
- * Based on s5p-mfc driver by Samsung Electronics Co., Ltd.
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 #ifndef RKVDEC_H_
 #define RKVDEC_H_
 
@@ -41,14 +33,14 @@ struct rkvdec_run {
 };
 
 struct rkvdec_vp9_decoded_buffer_info {
-	/* Info needed when the decoded frame serves as a reference frame. */
+	 
 	unsigned short width;
 	unsigned short height;
 	unsigned int bit_depth : 4;
 };
 
 struct rkvdec_decoded_buffer {
-	/* Must be the first field in this struct. */
+	 
 	struct v4l2_m2m_buffer base;
 
 	union {
@@ -93,7 +85,7 @@ struct rkvdec_dev {
 	struct device *dev;
 	struct clk_bulk_data *clocks;
 	void __iomem *regs;
-	struct mutex vdev_lock; /* serializes ioctls */
+	struct mutex vdev_lock;  
 	struct delayed_work watchdog_work;
 };
 
@@ -124,4 +116,4 @@ void rkvdec_run_postamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
 extern const struct rkvdec_coded_fmt_ops rkvdec_h264_fmt_ops;
 extern const struct rkvdec_coded_fmt_ops rkvdec_vp9_fmt_ops;
 
-#endif /* RKVDEC_H_ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011-2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
@@ -46,7 +44,7 @@ struct tegra_smmu {
 
 	struct dentry *debugfs;
 
-	struct iommu_device iommu;	/* IOMMU Core code handle */
+	struct iommu_device iommu;	 
 };
 
 struct tegra_smmu_as {
@@ -117,12 +115,12 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
 #define SMMU_PTC_FLUSH_HI 0x9b8
 #define  SMMU_PTC_FLUSH_HI_MASK 0x3
 
-/* per-SWGROUP SMMU_*_ASID register */
+ 
 #define SMMU_ASID_ENABLE (1 << 31)
 #define SMMU_ASID_MASK 0x7f
 #define SMMU_ASID_VALUE(x) ((x) & SMMU_ASID_MASK)
 
-/* page table definitions */
+ 
 #define SMMU_NUM_PDE 1024
 #define SMMU_NUM_PTE 1024
 
@@ -308,7 +306,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
 
 	spin_lock_init(&as->lock);
 
-	/* setup aperture */
+	 
 	as->domain.geometry.aperture_start = 0;
 	as->domain.geometry.aperture_end = 0xffffffff;
 	as->domain.geometry.force_aperture = true;
@@ -320,7 +318,7 @@ static void tegra_smmu_domain_free(struct iommu_domain *domain)
 {
 	struct tegra_smmu_as *as = to_smmu_as(domain);
 
-	/* TODO: free page directory and page tables */
+	 
 
 	WARN_ON_ONCE(as->use_count);
 	kfree(as->count);
@@ -361,7 +359,7 @@ static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
 	} else {
 		pr_warn("%s group from swgroup %u not found\n", __func__,
 				swgroup);
-		/* No point moving ahead if group was not found */
+		 
 		return;
 	}
 
@@ -425,7 +423,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
 		goto unlock;
 	}
 
-	/* We can't handle 64-bit DMA addresses */
+	 
 	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
 		err = -ENOMEM;
 		goto err_unmap;
@@ -536,14 +534,14 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
 	u32 *pd = page_address(as->pd);
 	unsigned long offset = pd_index * sizeof(*pd);
 
-	/* Set the page directory entry first */
+	 
 	pd[pd_index] = value;
 
-	/* The flush the page directory entry from caches */
+	 
 	dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
 					 sizeof(*pd), DMA_TO_DEVICE);
 
-	/* And flush the iommu */
+	 
 	smmu_flush_ptc(smmu, as->pd_dma, offset);
 	smmu_flush_tlb_section(smmu, as->id, iova);
 	smmu_flush(smmu);
@@ -624,10 +622,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
 	unsigned int pde = iova_pd_index(iova);
 	struct page *page = as->pts[pde];
 
-	/*
-	 * When no entries in this page table are used anymore, return the
-	 * memory page to the system.
-	 */
+	 
 	if (--as->count[pde] == 0) {
 		struct tegra_smmu *smmu = as->smmu;
 		u32 *pd = page_address(as->pd);
@@ -663,15 +658,11 @@ static struct page *as_get_pde_page(struct tegra_smmu_as *as,
 	unsigned int pde = iova_pd_index(iova);
 	struct page *page = as->pts[pde];
 
-	/* at first check whether allocation needs to be done at all */
+	 
 	if (page)
 		return page;
 
-	/*
-	 * In order to prevent exhaustion of the atomic memory pool, we
-	 * allocate page in a sleeping context if GFP flags permit. Hence
-	 * spinlock needs to be unlocked and re-locked after allocation.
-	 */
+	 
 	if (gfpflags_allow_blocking(gfp))
 		spin_unlock_irqrestore(&as->lock, *flags);
 
@@ -680,11 +671,7 @@ static struct page *as_get_pde_page(struct tegra_smmu_as *as,
 	if (gfpflags_allow_blocking(gfp))
 		spin_lock_irqsave(&as->lock, *flags);
 
-	/*
-	 * In a case of blocking allocation, a concurrent mapping may win
-	 * the PDE allocation. In this case the allocated page isn't needed
-	 * if allocation succeeded and the allocation failure isn't fatal.
-	 */
+	 
 	if (as->pts[pde]) {
 		if (page)
 			__free_page(page);
@@ -714,7 +701,7 @@ __tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
 	if (!pte)
 		return -ENOMEM;
 
-	/* If we aren't overwriting a pre-existing entry, increment use */
+	 
 	if (*pte == 0)
 		tegra_smmu_pte_get_use(as, iova);
 
@@ -897,12 +884,12 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
 	struct tegra_smmu_group *group;
 	struct iommu_group *grp;
 
-	/* Find group_soc associating with swgroup */
+	 
 	soc = tegra_smmu_find_group(smmu, swgroup);
 
 	mutex_lock(&smmu->lock);
 
-	/* Find existing iommu_group associating with swgroup or group_soc */
+	 
 	list_for_each_entry(group, &smmu->groups, list)
 		if ((group->swgroup == swgroup) || (soc && group->soc == soc)) {
 			grp = iommu_group_ref_get(group->group);
@@ -948,13 +935,7 @@ static int tegra_smmu_of_xlate(struct device *dev,
 	struct tegra_mc *mc = platform_get_drvdata(iommu_pdev);
 	u32 id = args->args[0];
 
-	/*
-	 * Note: we are here releasing the reference of &iommu_pdev->dev, which
-	 * is mc->dev. Although some functions in tegra_smmu_ops may keep using
-	 * its private data beyond this point, it's still safe to do so because
-	 * the SMMU parent device is the same as the MC, so the reference count
-	 * isn't strictly necessary.
-	 */
+	 
 	put_device(&iommu_pdev->dev);
 
 	dev_iommu_priv_set(dev, mc->smmu);
@@ -1082,14 +1063,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
 	if (!smmu)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * This is a bit of a hack. Ideally we'd want to simply return this
-	 * value. However iommu_device_register() will attempt to add
-	 * all devices to the IOMMU before we get that far. In order
-	 * not to rely on global variables to track the IOMMU instance, we
-	 * set it here so that it can be looked up from the .probe_device()
-	 * callback via the IOMMU device's .drvdata field.
-	 */
+	 
 	mc->smmu = smmu;
 
 	smmu->asids = devm_bitmap_zalloc(dev, soc->num_asids, GFP_KERNEL);

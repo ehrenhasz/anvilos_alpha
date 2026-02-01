@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * max77976_charger.c - Driver for the Maxim MAX77976 battery charger
- *
- * Copyright (C) 2021 Luca Ceresoli
- * Author: Luca Ceresoli <luca.ceresoli@bootlin.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -17,9 +12,7 @@
 static const char *max77976_manufacturer	= "Maxim Integrated";
 static const char *max77976_model		= "MAX77976";
 
-/* --------------------------------------------------------------------------
- * Register map
- */
+ 
 
 #define MAX77976_REG_CHIP_ID		0x00
 #define MAX77976_REG_CHIP_REVISION	0x01
@@ -30,7 +23,7 @@ static const char *max77976_model		= "MAX77976";
 #define MAX77976_REG_CHG_CNFG_06	0x1c
 #define MAX77976_REG_CHG_CNFG_09	0x1f
 
-/* CHG_DETAILS_01.CHG_DTLS values */
+ 
 enum max77976_charging_state {
 	MAX77976_CHARGING_PREQUALIFICATION = 0x0,
 	MAX77976_CHARGING_FAST_CONST_CURRENT,
@@ -50,7 +43,7 @@ enum max77976_charging_state {
 	MAX77976_CHARGING_RESERVED_0F,
 };
 
-/* CHG_DETAILS_01.BAT_DTLS values */
+ 
 enum max77976_battery_state {
 	MAX77976_BATTERY_BATTERY_REMOVAL = 0x0,
 	MAX77976_BATTERY_PREQUALIFICATION,
@@ -59,33 +52,33 @@ enum max77976_battery_state {
 	MAX77976_BATTERY_LOW_VOLTAGE,
 	MAX77976_BATTERY_OVERVOLTAGE,
 	MAX77976_BATTERY_RESERVED,
-	MAX77976_BATTERY_BATTERY_ONLY, // No valid adapter is present
+	MAX77976_BATTERY_BATTERY_ONLY, 
 };
 
-/* CHG_CNFG_00.MODE values */
+ 
 enum max77976_mode {
 	MAX77976_MODE_CHARGER_BUCK		= 0x5,
 	MAX77976_MODE_BOOST			= 0x9,
 };
 
-/* CHG_CNFG_02.CHG_CC: charge current limit, 100..5500 mA, 50 mA steps */
+ 
 #define MAX77976_CHG_CC_STEP			  50000U
 #define MAX77976_CHG_CC_MIN			 100000U
 #define MAX77976_CHG_CC_MAX			5500000U
 
-/* CHG_CNFG_09.CHGIN_ILIM: input current limit, 100..3200 mA, 100 mA steps */
+ 
 #define MAX77976_CHGIN_ILIM_STEP		 100000U
 #define MAX77976_CHGIN_ILIM_MIN			 100000U
 #define MAX77976_CHGIN_ILIM_MAX			3200000U
 
 enum max77976_field_idx {
-	VERSION, REVISION,                      /* CHIP_REVISION */
-	CHGIN_OK,                               /* CHG_INT_OK */
-	BAT_DTLS, CHG_DTLS,                     /* CHG_DETAILS_01 */
-	MODE,                                   /* CHG_CNFG_00 */
-	CHG_CC,                                 /* CHG_CNFG_02 */
-	CHGPROT,                                /* CHG_CNFG_06 */
-	CHGIN_ILIM,                             /* CHG_CNFG_09 */
+	VERSION, REVISION,                       
+	CHGIN_OK,                                
+	BAT_DTLS, CHG_DTLS,                      
+	MODE,                                    
+	CHG_CC,                                  
+	CHGPROT,                                 
+	CHGIN_ILIM,                              
 	MAX77976_N_REGMAP_FIELDS
 };
 
@@ -107,9 +100,7 @@ static const struct regmap_config max77976_regmap_config = {
 	.max_register = 0x24,
 };
 
-/* --------------------------------------------------------------------------
- * Data structures
- */
+ 
 
 struct max77976 {
 	struct i2c_client	*client;
@@ -117,9 +108,7 @@ struct max77976 {
 	struct regmap_field	*rfield[MAX77976_N_REGMAP_FIELDS];
 };
 
-/* --------------------------------------------------------------------------
- * power_supply properties
- */
+ 
 
 static int max77976_get_status(struct max77976 *chg, int *val)
 {
@@ -385,9 +374,7 @@ static const struct power_supply_desc max77976_psy_desc = {
 	.property_is_writeable	= max77976_property_is_writeable,
 };
 
-/* --------------------------------------------------------------------------
- * Entry point
- */
+ 
 
 static int max77976_detect(struct max77976 *chg)
 {
@@ -418,15 +405,12 @@ static int max77976_configure(struct max77976 *chg)
 	struct device *dev = &chg->client->dev;
 	int err;
 
-	/* Magic value to unlock writing to some registers */
+	 
 	err = regmap_field_write(chg->rfield[CHGPROT], 0x3);
 	if (err)
 		goto err;
 
-	/*
-	 * Mode 5 = Charger ON, OTG OFF, buck ON, boost OFF.
-	 * Other modes are not implemented by this driver.
-	 */
+	 
 	err = regmap_field_write(chg->rfield[MODE], MAX77976_MODE_CHARGER_BUCK);
 	if (err)
 		goto err;

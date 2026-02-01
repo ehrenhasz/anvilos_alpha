@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  Xenbus code for blkif backend
-    Copyright (C) 2005 Rusty Russell <rusty@rustcorp.com.au>
-    Copyright (C) 2005 XenSource Ltd
 
-
-*/
+ 
 
 #define pr_fmt(fmt) "xen-blkback: " fmt
 
@@ -15,7 +10,7 @@
 #include <xen/grant_table.h>
 #include "common.h"
 
-/* On the XenBus the max length of 'ring-ref%u'. */
+ 
 #define RINGREF_NAME_LEN (20)
 
 struct backend_info {
@@ -40,10 +35,7 @@ struct xenbus_device *xen_blkbk_xenbus(struct backend_info *be)
 	return be->dev;
 }
 
-/*
- * The last request could free the device from softirq context and
- * xen_blkif_free() can sleep.
- */
+ 
 static void xen_blkif_deferred_free(struct work_struct *work)
 {
 	struct xen_blkif *blkif;
@@ -80,15 +72,15 @@ static void xen_update_blkif_status(struct xen_blkif *blkif)
 	struct xen_blkif_ring *ring;
 	int i;
 
-	/* Not ready to connect? */
+	 
 	if (!blkif->rings || !blkif->rings[0].irq || !blkif->vbd.bdev)
 		return;
 
-	/* Already connected? */
+	 
 	if (blkif->be->dev->state == XenbusStateConnected)
 		return;
 
-	/* Attempt to connect: exit if we fail to. */
+	 
 	connect(blkif->be);
 	if (blkif->be->dev->state != XenbusStateConnected)
 		return;
@@ -157,7 +149,7 @@ static int xen_blkif_alloc_rings(struct xen_blkif *blkif)
 	return 0;
 }
 
-/* Enable the persistent grants feature. */
+ 
 static bool feature_persistent = true;
 module_param(feature_persistent, bool, 0644);
 MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
@@ -176,13 +168,7 @@ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
 	atomic_set(&blkif->refcnt, 1);
 	init_completion(&blkif->drain_complete);
 
-	/*
-	 * Because freeing back to the cache may be deferred, it is not
-	 * safe to unload the module (and hence destroy the cache) until
-	 * this has completed. To prevent premature unloading, take an
-	 * extra module reference here and release only when the object
-	 * has been freed back to the cache.
-	 */
+	 
 	__module_get(THIS_MODULE);
 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
 
@@ -198,7 +184,7 @@ static int xen_blkif_map(struct xen_blkif_ring *ring, grant_ref_t *gref,
 	RING_IDX rsp_prod, req_prod;
 	unsigned int size;
 
-	/* Already connected through? */
+	 
 	if (ring->irq)
 		return 0;
 
@@ -283,10 +269,7 @@ static int xen_blkif_disconnect(struct xen_blkif *blkif)
 			wake_up(&ring->shutdown_wq);
 		}
 
-		/* The above kthread_stop() guarantees that at this point we
-		 * don't have any discard_io or other_io requests. So, checking
-		 * for inflight IO is enough.
-		 */
+		 
 		if (atomic_read(&ring->inflight) > 0) {
 			busy = true;
 			continue;
@@ -302,10 +285,10 @@ static int xen_blkif_disconnect(struct xen_blkif *blkif)
 			ring->blk_rings.common.sring = NULL;
 		}
 
-		/* Remove all persistent grants and the cache of ballooned pages. */
+		 
 		xen_blkbk_free_caches(ring);
 
-		/* Check that there is no request in use */
+		 
 		list_for_each_entry_safe(req, n, &ring->pending_free, free_list) {
 			list_del(&req->free_list);
 
@@ -331,10 +314,7 @@ static int xen_blkif_disconnect(struct xen_blkif *blkif)
 		return -EBUSY;
 
 	blkif->nr_ring_pages = 0;
-	/*
-	 * blkif->rings was allocated in connect_ring, so we should free it in
-	 * here.
-	 */
+	 
 	kfree(blkif->rings);
 	blkif->rings = NULL;
 	blkif->nr_rings = 0;
@@ -349,7 +329,7 @@ static void xen_blkif_free(struct xen_blkif *blkif)
 	kfree(blkif->be->mode);
 	kfree(blkif->be);
 
-	/* Make sure everything is drained before shutting down */
+	 
 	kmem_cache_free(xen_blkif_cachep, blkif);
 	module_put(THIS_MODULE);
 }
@@ -371,9 +351,7 @@ void xen_blkif_interface_fini(void)
 	xen_blkif_cachep = NULL;
 }
 
-/*
- *  sysfs interface for VBD I/O requests
- */
+ 
 
 #define VBD_SHOW_ALLRING(name, format)					\
 	static ssize_t show_##name(struct device *_dev,			\
@@ -544,7 +522,7 @@ static void xen_blkbk_remove(struct xenbus_device *dev)
 	if (be->blkif) {
 		xen_blkif_disconnect(be->blkif);
 
-		/* Put the reference we set in xen_blkif_alloc(). */
+		 
 		xen_blkif_put(be->blkif);
 	}
 }
@@ -590,7 +568,7 @@ static void xen_blkbk_discard(struct xenbus_transaction xbt, struct backend_info
 			return;
 		}
 		state = 1;
-		/* Optional. */
+		 
 		err = xenbus_printf(xbt, dev->nodename,
 				    "discard-secure", "%d",
 				    blkif->vbd.discard_secure);
@@ -619,11 +597,7 @@ int xen_blkbk_barrier(struct xenbus_transaction xbt,
 	return err;
 }
 
-/*
- * Entry point to this code when a new device is created.  Allocate the basic
- * structures, and watch the store waiting for the hotplug scripts to tell us
- * the device's physical major and minor numbers.  Switch to InitWait.
- */
+ 
 static int xen_blkbk_probe(struct xenbus_device *dev,
 			   const struct xenbus_device_id *id)
 {
@@ -631,7 +605,7 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 	struct backend_info *be = kzalloc(sizeof(struct backend_info),
 					  GFP_KERNEL);
 
-	/* match the pr_debug in xen_blkbk_remove */
+	 
 	pr_debug("%s %p %d\n", __func__, dev, dev->otherend_id);
 
 	if (!be) {
@@ -658,13 +632,13 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 			 "writing %s/feature-max-indirect-segments (%d)",
 			 dev->nodename, err);
 
-	/* Multi-queue: advertise how many queues are supported by us.*/
+	 
 	err = xenbus_printf(XBT_NIL, dev->nodename,
 			    "multi-queue-max-queues", "%u", xenblk_max_queues);
 	if (err)
 		pr_warn("Error writing multi-queue-max-queues\n");
 
-	/* setup back pointer */
+	 
 	be->blkif->be = be;
 
 	err = xenbus_watch_pathfmt(dev, &be->backend_watch, NULL,
@@ -690,11 +664,7 @@ fail:
 	return err;
 }
 
-/*
- * Callback received when the hotplug scripts have placed the physical-device
- * node.  Read it and the mode node, and create a vbd.  If the frontend is
- * ready, connect.
- */
+ 
 static void backend_changed(struct xenbus_watch *watch,
 			    const char *path, const char *token)
 {
@@ -713,11 +683,7 @@ static void backend_changed(struct xenbus_watch *watch,
 	err = xenbus_scanf(XBT_NIL, dev->nodename, "physical-device", "%x:%x",
 			   &major, &minor);
 	if (XENBUS_EXIST_ERR(err)) {
-		/*
-		 * Since this watch will fire once immediately after it is
-		 * registered, we expect this.  Ignore it, and wait for the
-		 * hotplug scripts.
-		 */
+		 
 		return;
 	}
 	if (err != 2) {
@@ -746,7 +712,7 @@ static void backend_changed(struct xenbus_watch *watch,
 		kfree(device_type);
 	}
 
-	/* Front end dir is a number, which is used as the handle. */
+	 
 	err = kstrtoul(strrchr(dev->otherend, '/') + 1, 0, &handle);
 	if (err) {
 		kfree(be->mode);
@@ -776,14 +742,12 @@ static void backend_changed(struct xenbus_watch *watch,
 		be->major = 0;
 		be->minor = 0;
 	} else {
-		/* We're potentially connected now */
+		 
 		xen_update_blkif_status(be->blkif);
 	}
 }
 
-/*
- * Callback received when the frontend's state changes.
- */
+ 
 static void frontend_changed(struct xenbus_device *dev,
 			     enum xenbus_state frontend_state)
 {
@@ -802,18 +766,11 @@ static void frontend_changed(struct xenbus_device *dev,
 
 	case XenbusStateInitialised:
 	case XenbusStateConnected:
-		/*
-		 * Ensure we connect even when two watches fire in
-		 * close succession and we miss the intermediate value
-		 * of frontend_state.
-		 */
+		 
 		if (dev->state == XenbusStateConnected)
 			break;
 
-		/*
-		 * Enforce precondition before potential leak point.
-		 * xen_blkif_disconnect() is idempotent.
-		 */
+		 
 		err = xen_blkif_disconnect(be->blkif);
 		if (err) {
 			xenbus_dev_fatal(dev, err, "pending I/O");
@@ -822,10 +779,7 @@ static void frontend_changed(struct xenbus_device *dev,
 
 		err = connect_ring(be);
 		if (err) {
-			/*
-			 * Clean up so that memory resources can be used by
-			 * other devices. connect_ring reported already error.
-			 */
+			 
 			xen_blkif_disconnect(be->blkif);
 			break;
 		}
@@ -842,9 +796,9 @@ static void frontend_changed(struct xenbus_device *dev,
 		if (xenbus_dev_is_online(dev))
 			break;
 		fallthrough;
-		/* if not online */
+		 
 	case XenbusStateUnknown:
-		/* implies xen_blkif_disconnect() via xen_blkbk_remove() */
+		 
 		device_unregister(&dev->dev);
 		break;
 
@@ -855,16 +809,14 @@ static void frontend_changed(struct xenbus_device *dev,
 	}
 }
 
-/* Once a memory pressure is detected, squeeze free page pools for a while. */
+ 
 static unsigned int buffer_squeeze_duration_ms = 10;
 module_param_named(buffer_squeeze_duration_ms,
 		buffer_squeeze_duration_ms, int, 0644);
 MODULE_PARM_DESC(buffer_squeeze_duration_ms,
 "Duration in ms to squeeze pages buffer when a memory pressure is detected");
 
-/*
- * Callback received when the memory pressure is detected.
- */
+ 
 static void reclaim_memory(struct xenbus_device *dev)
 {
 	struct backend_info *be = dev_get_drvdata(&dev->dev);
@@ -875,12 +827,9 @@ static void reclaim_memory(struct xenbus_device *dev)
 		msecs_to_jiffies(buffer_squeeze_duration_ms);
 }
 
-/* ** Connection ** */
+ 
 
-/*
- * Write the physical details regarding the block device to the store, and
- * switch to Connected state.
- */
+ 
 static void connect(struct backend_info *be)
 {
 	struct xenbus_transaction xbt;
@@ -889,7 +838,7 @@ static void connect(struct backend_info *be)
 
 	pr_debug("%s %s\n", __func__, dev->otherend);
 
-	/* Supply the information about the device the frontend needs */
+	 
 again:
 	err = xenbus_transaction_start(&xbt);
 	if (err) {
@@ -897,7 +846,7 @@ again:
 		return;
 	}
 
-	/* If we can't advertise it is OK. */
+	 
 	xen_blkbk_flush_diskcache(xbt, be, be->blkif->vbd.flush_support);
 
 	xen_blkbk_discard(xbt, be);
@@ -920,7 +869,7 @@ again:
 		goto abort;
 	}
 
-	/* FIXME: use a typename instead */
+	 
 	err = xenbus_printf(xbt, dev->nodename, "info", "%u",
 			    be->blkif->vbd.type |
 			    (be->blkif->vbd.readonly ? VDISK_READONLY : 0));
@@ -959,9 +908,7 @@ again:
 	xenbus_transaction_end(xbt, 1);
 }
 
-/*
- * Each ring may have multi pages, depends on "ring-page-order".
- */
+ 
 static int read_per_ring_refs(struct xen_blkif_ring *ring, const char *dir)
 {
 	unsigned int ring_ref[XENBUS_MAX_RING_GRANTS];
@@ -1026,7 +973,7 @@ static int read_per_ring_refs(struct xen_blkif_ring *ring, const char *dir)
 		}
 	}
 
-	/* Map the shared frame, irq etc. */
+	 
 	err = xen_blkif_map(ring, ring_ref, nr_grefs, evtchn);
 	if (err) {
 		xenbus_dev_fatal(dev, err, "mapping ring-ref port %u", evtchn);
@@ -1061,7 +1008,7 @@ static int connect_ring(struct backend_info *be)
 	int err, i;
 	char *xspath;
 	size_t xspathsize;
-	const size_t xenstore_path_ext_size = 11; /* sufficient for "/queue-NNN" */
+	const size_t xenstore_path_ext_size = 11;  
 	unsigned int requested_num_queues = 0;
 	unsigned int ring_page_order;
 
@@ -1090,15 +1037,13 @@ static int connect_ring(struct backend_info *be)
 
 	blkif->vbd.overflow_max_grants = 0;
 
-	/*
-	 * Read the number of hardware queues from frontend.
-	 */
+	 
 	requested_num_queues = xenbus_read_unsigned(dev->otherend,
 						    "multi-queue-num-queues",
 						    1);
 	if (requested_num_queues > xenblk_max_queues
 	    || requested_num_queues == 0) {
-		/* Buggy or malicious guest. */
+		 
 		xenbus_dev_fatal(dev, err,
 				"guest requested %u queues, exceeding the maximum of %u.",
 				requested_num_queues, xenblk_max_queues);

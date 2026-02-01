@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX77620 Regulator driver
- *
- * Copyright (c) 2016-2018, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Mallikarjun Kasoju <mkasoju@nvidia.com>
- *	Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/mfd/max77620.h>
@@ -20,13 +13,13 @@
 
 #define max77620_rails(_name)	"max77620-"#_name
 
-/* Power Mode */
+ 
 #define MAX77620_POWER_MODE_NORMAL		3
 #define MAX77620_POWER_MODE_LPM			2
 #define MAX77620_POWER_MODE_GLPM		1
 #define MAX77620_POWER_MODE_DISABLE		0
 
-/* SD Slew Rate */
+ 
 #define MAX77620_SD_SR_13_75			0
 #define MAX77620_SD_SR_27_5			1
 #define MAX77620_SD_SR_55			2
@@ -50,7 +43,7 @@ enum max77620_regulators {
 	MAX77620_NUM_REGS,
 };
 
-/* Regulator types */
+ 
 enum max77620_regulator_type {
 	MAX77620_REGULATOR_TYPE_SD,
 	MAX77620_REGULATOR_TYPE_LDO_N,
@@ -179,13 +172,13 @@ static int max77620_regulator_set_fps_slots(struct max77620_regulator *pmic,
 		pd = rpdata->suspend_fps_pd_slot;
 	}
 
-	/* FPS power up period setting */
+	 
 	if (pu >= 0) {
 		val |= (pu << MAX77620_FPS_PU_PERIOD_SHIFT);
 		mask |= MAX77620_FPS_PU_PERIOD_MASK;
 	}
 
-	/* FPS power down period setting */
+	 
 	if (pd >= 0) {
 		val |= (pd << MAX77620_FPS_PD_PERIOD_SHIFT);
 		mask |= MAX77620_FPS_PD_PERIOD_MASK;
@@ -390,7 +383,7 @@ static int max77620_init_pmic(struct max77620_regulator *pmic, int id)
 
 	max77620_config_power_ok(pmic, id);
 
-	/* Update power mode */
+	 
 	ret = max77620_regulator_get_power_mode(pmic, id);
 	if (ret < 0)
 		return ret;
@@ -405,7 +398,7 @@ static int max77620_init_pmic(struct max77620_regulator *pmic, int id)
 		rpdata->active_fps_src = ret;
 	}
 
-	 /* If rails are externally control of FPS then enable it always. */
+	  
 	if (rpdata->active_fps_src == MAX77620_FPS_SRC_NONE) {
 		ret = max77620_regulator_set_power_mode(pmic,
 					pmic->enable_power_mode[id], id);
@@ -589,10 +582,7 @@ static int max77620_regulator_set_ramp_delay(struct regulator_dev *rdev,
 	int id = rdev_get_id(rdev);
 	struct max77620_regulator_pdata *rpdata = &pmic->reg_pdata[id];
 
-	/* Device specific ramp rate setting tells that platform has
-	 * different ramp rate from advertised value. In this case,
-	 * do not configure anything and just return success.
-	 */
+	 
 	if (rpdata->ramp_rate_setting)
 		return 0;
 
@@ -814,11 +804,7 @@ static int max77620_regulator_probe(struct platform_device *pdev)
 	config.dev = dev;
 	config.driver_data = pmic;
 
-	/*
-	 * Set of_node_reuse flag to prevent driver core from attempting to
-	 * claim any pinmux resources already claimed by the parent device.
-	 * Otherwise PMIC driver will fail to re-probe.
-	 */
+	 
 	device_set_of_node_from_dev(&pdev->dev, pdev->dev.parent);
 
 	for (id = 0; id < MAX77620_NUM_REGS; id++) {

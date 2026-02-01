@@ -1,25 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-
-   Copyright (C) 2014 Intel Corporation
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #include <linux/debugfs.h>
 #include <linux/kstrtox.h>
@@ -179,10 +158,7 @@ static int uuids_show(struct seq_file *f, void *p)
 	list_for_each_entry(uuid, &hdev->uuids, list) {
 		u8 i, val[16];
 
-		/* The Bluetooth UUID values are stored in big endian,
-		 * but with reversed byte order. So convert them into
-		 * the right order for the %pUb modifier.
-		 */
+		 
 		for (i = 0; i < 16; i++)
 			val[i] = uuid->uuid[15 - i];
 
@@ -630,13 +606,7 @@ void hci_debugfs_create_bredr(struct hci_dev *hdev)
 	debugfs_create_file("voice_setting", 0444, hdev->debugfs, hdev,
 			    &voice_setting_fops);
 
-	/* If the controller does not support BR/EDR Secure Connections
-	 * feature, then the BR/EDR SMP channel shall not be present.
-	 *
-	 * To test this with Bluetooth 4.0 controllers, create a debugfs
-	 * switch that allows forcing BR/EDR SMP support and accepting
-	 * cross-transport pairing on non-AES encrypted connections.
-	 */
+	 
 	if (!lmp_sc_capable(hdev))
 		debugfs_create_file("force_bredr_smp", 0644, hdev->debugfs,
 				    hdev, &force_bredr_smp_fops);
@@ -684,9 +654,7 @@ static int rpa_timeout_set(void *data, u64 val)
 {
 	struct hci_dev *hdev = data;
 
-	/* Require the RPA timeout to be at least 30 seconds and at most
-	 * 24 hours.
-	 */
+	 
 	if (val < 30 || val > (60 * 60 * 24))
 		return -EINVAL;
 
@@ -1191,10 +1159,7 @@ void hci_debugfs_create_le(struct hci_dev *hdev)
 	debugfs_create_file("static_address", 0444, hdev->debugfs, hdev,
 			    &static_address_fops);
 
-	/* For controllers with a public address, provide a debug
-	 * option to force the usage of the configured static
-	 * address. By default the public address is used.
-	 */
+	 
 	if (bacmp(&hdev->bdaddr, BDADDR_ANY))
 		debugfs_create_file("force_static_address", 0644,
 				    hdev->debugfs, hdev,
@@ -1336,11 +1301,7 @@ static ssize_t vendor_diag_write(struct file *file, const char __user *user_buf,
 	if (err)
 		return err;
 
-	/* When the diagnostic flags are not persistent and the transport
-	 * is not active or in user channel operation, then there is no need
-	 * for the vendor callback. Instead just store the desired value and
-	 * the setting will be programmed when the controller gets powered on.
-	 */
+	 
 	if (test_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks) &&
 	    (!test_bit(HCI_RUNNING, &hdev->flags) ||
 	     hci_dev_test_flag(hdev, HCI_USER_CHANNEL)))

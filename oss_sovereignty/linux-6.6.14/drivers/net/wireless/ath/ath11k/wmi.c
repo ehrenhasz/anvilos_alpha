@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/skbuff.h>
 #include <linux/ctype.h>
 #include <net/mac80211.h>
@@ -166,7 +163,7 @@ static const int ath11k_hw_mode_pri_map[] = {
 	PRIMAP(WMI_HOST_HW_MODE_SBS),
 	PRIMAP(WMI_HOST_HW_MODE_DBS_SBS),
 	PRIMAP(WMI_HOST_HW_MODE_DBS_OR_SBS),
-	/* keep last */
+	 
 	PRIMAP(WMI_HOST_HW_MODE_MAX),
 };
 
@@ -339,7 +336,7 @@ static int ath11k_pull_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
 	if (!ev)
 		return -EINVAL;
 
-	/* Move this to host based bitmap */
+	 
 	param->default_conc_scan_config_bits = ev->default_conc_scan_config_bits;
 	param->default_fw_config_bits =	ev->default_fw_config_bits;
 	param->he_cap_info = ev->he_cap_info;
@@ -401,10 +398,7 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
 	    !(mac_phy_caps->supported_bands & WMI_HOST_WLAN_5G_CAP))
 		return -EINVAL;
 
-	/* Take non-zero tx/rx chainmask. If tx/rx chainmask differs from
-	 * band to band for a single radio, need to see how this should be
-	 * handled.
-	 */
+	 
 	if (mac_phy_caps->supported_bands & WMI_HOST_WLAN_2G_CAP) {
 		pdev_cap->tx_chain_mask = mac_phy_caps->tx_chain_mask_2g;
 		pdev_cap->rx_chain_mask = mac_phy_caps->rx_chain_mask_2g;
@@ -422,14 +416,7 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
 			WMI_NSS_RATIO_INFO_GET(mac_phy_caps->nss_ratio);
 	}
 
-	/* tx/rx chainmask reported from fw depends on the actual hw chains used,
-	 * For example, for 4x4 capable macphys, first 4 chains can be used for first
-	 * mac and the remaining 4 chains can be used for the second mac or vice-versa.
-	 * In this case, tx/rx chainmask 0xf will be advertised for first mac and 0xf0
-	 * will be advertised for second mac or vice-versa. Compute the shift value
-	 * for tx/rx chainmask which will be used to advertise supported ht/vht rates to
-	 * mac80211.
-	 */
+	 
 	pdev_cap->tx_chain_mask_shift =
 			find_first_bit((unsigned long *)&pdev_cap->tx_chain_mask, 32);
 	pdev_cap->rx_chain_mask_shift =
@@ -500,7 +487,7 @@ ath11k_pull_reg_cap_svc_rdy_ext(struct ath11k_pdev_wmi *wmi_handle,
 			      ext_reg_cap->eeprom_reg_domain_ext;
 	param->regcap1 = ext_reg_cap->regcap1;
 	param->regcap2 = ext_reg_cap->regcap2;
-	/* check if param->wireless_mode is needed */
+	 
 	param->low_2ghz_chan = ext_reg_cap->low_2ghz_chan;
 	param->high_2ghz_chan = ext_reg_cap->high_2ghz_chan;
 	param->low_5ghz_chan = ext_reg_cap->low_5ghz_chan;
@@ -542,10 +529,7 @@ static int ath11k_pull_service_ready_tlv(struct ath11k_base *ab,
 	return 0;
 }
 
-/* Save the wmi_service_bitmap into a linear bitmap. The wmi_services in
- * wmi_service ready event are advertised in b0-b3 (LSB 4-bits) of each
- * 4-byte word.
- */
+ 
 static void ath11k_wmi_service_bitmap_copy(struct ath11k_pdev_wmi *wmi,
 					   const u32 *wmi_svc_bm)
 {
@@ -708,10 +692,7 @@ int ath11k_wmi_vdev_create(struct ath11k *ar, u8 *macaddr,
 	int ret, len;
 	void *ptr;
 
-	/* It can be optimized my sending tx/rx chain configuration
-	 * only for supported bands instead of always sending it for
-	 * both the bands.
-	 */
+	 
 	len = sizeof(*cmd) + TLV_HDR_SIZE +
 		(WMI_NUM_SUPPORTED_BAND_MAX * sizeof(*txrx_streams));
 
@@ -980,9 +961,7 @@ int ath11k_wmi_vdev_start(struct ath11k *ar, struct wmi_vdev_start_req_arg *arg,
 	tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_STRUCT) |
 		      FIELD_PREP(WMI_TLV_LEN, 0);
 
-	/* Note: This is a nested TLV containing:
-	 * [wmi_tlv][wmi_p2p_noa_descriptor][wmi_tlv]..
-	 */
+	 
 
 	ptr += sizeof(*tlv);
 
@@ -1436,10 +1415,7 @@ int ath11k_wmi_pdev_resume(struct ath11k *ar, u32 pdev_id)
 	return ret;
 }
 
-/* TODO FW Support for the cmd is not available yet.
- * Can be tested once the command and corresponding
- * event is implemented in FW
- */
+ 
 int ath11k_wmi_pdev_bss_chan_info_request(struct ath11k *ar,
 					  enum wmi_bss_chan_info_req_type type)
 {
@@ -1848,15 +1824,11 @@ ath11k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 		if (param->bw_160)
 			cmd->peer_flags |= WMI_PEER_160MHZ;
 
-		/* Typically if STBC is enabled for VHT it should be enabled
-		 * for HT as well
-		 **/
+		 
 		if (param->stbc_flag)
 			cmd->peer_flags |= WMI_PEER_STBC;
 
-		/* Typically if LDPC is enabled for VHT it should be enabled
-		 * for HT as well
-		 **/
+		 
 		if (param->ldpc_flag)
 			cmd->peer_flags |= WMI_PEER_LDPC;
 
@@ -1876,10 +1848,7 @@ ath11k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 			cmd->peer_flags |= WMI_PEER_TWT_RESP;
 	}
 
-	/* Suppress authorization for all AUTH modes that need 4-way handshake
-	 * (during re-association).
-	 * Authorization will be done for these modes on key installation.
-	 */
+	 
 	if (param->auth_flag)
 		cmd->peer_flags |= WMI_PEER_AUTH;
 	if (param->need_ptk_4_way) {
@@ -1889,7 +1858,7 @@ ath11k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 	}
 	if (param->need_gtk_2_way)
 		cmd->peer_flags |= WMI_PEER_NEED_GTK_2_WAY;
-	/* safe mode bypass the 4-way handshake */
+	 
 	if (param->safe_mode_enabled)
 		cmd->peer_flags &= ~(WMI_PEER_NEED_PTK_4_WAY |
 				     WMI_PEER_NEED_GTK_2_WAY);
@@ -1897,16 +1866,10 @@ ath11k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 	if (param->is_pmf_enabled)
 		cmd->peer_flags |= WMI_PEER_PMF;
 
-	/* Disable AMSDU for station transmit, if user configures it */
-	/* Disable AMSDU for AP transmit to 11n Stations, if user configures
-	 * it
-	 * if (param->amsdu_disable) Add after FW support
-	 **/
+	 
+	 
 
-	/* Target asserts if node is marked HT and all MCS is set to 0.
-	 * Mark the node as non-HT if all the mcs rates are disabled through
-	 * iwpriv
-	 **/
+	 
 	if (param->peer_ht_rates.num_rates == 0)
 		cmd->peer_flags &= ~WMI_PEER_HT;
 }
@@ -1967,7 +1930,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 	cmd->peer_vht_caps = param->peer_vht_caps;
 	cmd->peer_phymode = param->peer_phymode;
 
-	/* Update 11ax capabilities */
+	 
 	cmd->peer_he_cap_info = param->peer_he_cap_macinfo[0];
 	cmd->peer_he_cap_info_ext = param->peer_he_cap_macinfo[1];
 	cmd->peer_he_cap_info_internal = param->peer_he_cap_macinfo_internal;
@@ -1978,7 +1941,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 	memcpy(&cmd->peer_ppet, &param->peer_ppet,
 	       sizeof(param->peer_ppet));
 
-	/* Update peer legacy rate information */
+	 
 	ptr += sizeof(*cmd);
 
 	tlv = ptr;
@@ -1991,7 +1954,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 	memcpy(ptr, param->peer_legacy_rates.rates,
 	       param->peer_legacy_rates.num_rates);
 
-	/* Update peer HT rate information */
+	 
 	ptr += peer_legacy_rates_align;
 
 	tlv = ptr;
@@ -2002,7 +1965,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 	memcpy(ptr, param->peer_ht_rates.rates,
 	       param->peer_ht_rates.num_rates);
 
-	/* VHT Rates */
+	 
 	ptr += peer_ht_rates_align;
 
 	mcs = ptr;
@@ -2012,7 +1975,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 
 	cmd->peer_nss = param->peer_nss;
 
-	/* Update bandwidth-NSS mapping */
+	 
 	cmd->peer_bw_rxnss_override = 0;
 	cmd->peer_bw_rxnss_override |= param->peer_bw_rxnss_override;
 
@@ -2023,7 +1986,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 		mcs->tx_mcs_set = param->tx_mcs_set;
 	}
 
-	/* HE Rates */
+	 
 	cmd->peer_he_mcs = param->peer_he_mcs_count;
 	cmd->min_data_rate = param->min_data_rate;
 
@@ -2036,7 +1999,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 		      FIELD_PREP(WMI_TLV_LEN, len);
 	ptr += TLV_HDR_SIZE;
 
-	/* Loop through the HE rate set */
+	 
 	for (i = 0; i < param->peer_he_mcs_count; i++) {
 		he_mcs = ptr;
 		he_mcs->tlv_header = FIELD_PREP(WMI_TLV_TAG,
@@ -2075,7 +2038,7 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
 void ath11k_wmi_start_scan_init(struct ath11k *ar,
 				struct scan_req_params *arg)
 {
-	/* setup commonly used values */
+	 
 	arg->scan_req_id = 1;
 	if (ar->state_11d == ATH11K_11D_PREPARING)
 		arg->scan_priority = WMI_SCAN_PRIORITY_MEDIUM;
@@ -2107,9 +2070,7 @@ void ath11k_wmi_start_scan_init(struct ath11k *ar,
 
 	arg->num_bssid = 1;
 
-	/* fill bssid_list[0] with 0xff, otherwise bssid and RA will be
-	 * ZEROs in probe request
-	 */
+	 
 	eth_broadcast_addr(arg->bssid_list[0].addr);
 }
 
@@ -2117,7 +2078,7 @@ static inline void
 ath11k_wmi_copy_scan_event_cntrl_flags(struct wmi_start_scan_cmd *cmd,
 				       struct scan_req_params *param)
 {
-	/* Scan events subscription */
+	 
 	if (param->scan_ev_started)
 		cmd->notify_scan_events |=  WMI_SCAN_EVENT_STARTED;
 	if (param->scan_ev_completed)
@@ -2141,7 +2102,7 @@ ath11k_wmi_copy_scan_event_cntrl_flags(struct wmi_start_scan_cmd *cmd,
 	if (param->scan_ev_resumed)
 		cmd->notify_scan_events |=  WMI_SCAN_EVENT_RESUMED;
 
-	/** Set scan control flags */
+	 
 	cmd->scan_ctrl_flags = 0;
 	if (param->scan_f_passive)
 		cmd->scan_ctrl_flags |=  WMI_SCAN_FLAG_PASSIVE;
@@ -2183,7 +2144,7 @@ ath11k_wmi_copy_scan_event_cntrl_flags(struct wmi_start_scan_cmd *cmd,
 		cmd->scan_ctrl_flags |=
 			 WMI_SCAN_ENABLE_IE_WHTELIST_IN_PROBE_REQ;
 
-	/* for adaptive scan mode using 3 bits (21 - 23 bits) */
+	 
 	WMI_SCAN_SET_DWELL_MODE(cmd->scan_ctrl_flags,
 				param->adaptive_dwell_time_mode);
 
@@ -2400,15 +2361,15 @@ int ath11k_wmi_send_scan_stop_cmd(struct ath11k *ar,
 	cmd->requestor = param->requester;
 	cmd->scan_id = param->scan_id;
 	cmd->pdev_id = param->pdev_id;
-	/* stop the scan with the corresponding scan_id */
+	 
 	if (param->req_type == WLAN_SCAN_CANCEL_PDEV_ALL) {
-		/* Cancelling all scans */
+		 
 		cmd->req_type =  WMI_SCAN_STOP_ALL;
 	} else if (param->req_type == WLAN_SCAN_CANCEL_VDEV_ALL) {
-		/* Cancelling VAP scans */
+		 
 		cmd->req_type =  WMI_SCN_STOP_VAP_ALL;
 	} else if (param->req_type == WLAN_SCAN_CANCEL_SINGLE) {
-		/* Cancelling specific scan */
+		 
 		cmd->req_type =  WMI_SCAN_STOP_ONE;
 	} else {
 		ath11k_warn(ar->ab, "invalid scan cancel param %d",
@@ -3161,7 +3122,7 @@ void ath11k_wmi_fill_default_twt_params(struct wmi_twt_enable_params *twt_params
 	twt_params->add_sta_slot_interval = ATH11K_TWT_DEF_ADD_STA_SLOT_INTERVAL;
 	twt_params->remove_sta_slot_interval =
 		ATH11K_TWT_DEF_REMOVE_STA_SLOT_INTERVAL;
-	/* TODO add MBSSID support */
+	 
 	twt_params->mbss_support = 0;
 }
 
@@ -4141,7 +4102,7 @@ static int ath11k_init_cmd_send(struct ath11k_pdev_wmi *wmi,
 	cmd->num_host_mem_chunks = param->num_mem_chunks;
 	len = sizeof(struct wlan_host_mem_chunk) * param->num_mem_chunks;
 
-	/* num_mem_chunks is zero */
+	 
 	tlv = ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_STRUCT) |
 		      FIELD_PREP(WMI_TLV_LEN, len);
@@ -4730,20 +4691,17 @@ static int ath11k_wmi_tlv_ext_soc_hal_reg_caps_parse(struct ath11k_base *soc,
 
 		soc->num_radios++;
 
-		/* For QCA6390, save mac_phy capability in the same pdev */
+		 
 		if (soc->hw_params.single_pdev_only)
 			pdev_index = 0;
 		else
 			pdev_index = soc->num_radios;
 
-		/* TODO: mac_phy_cap prints */
+		 
 		phy_id_map >>= 1;
 	}
 
-	/* For QCA6390, set num_radios to 1 because host manages
-	 * both 2G and 5G radio in one pdev.
-	 * Set pdev_id = 0 and 0 means soc level.
-	 */
+	 
 	if (soc->hw_params.single_pdev_only) {
 		soc->num_radios = 1;
 		soc->pdevs[0].pdev_id = 0;
@@ -5490,13 +5448,7 @@ static int ath11k_pull_reg_chan_list_ext_update_ev(struct ath11k_base *ab,
 
 	ext_wmi_reg_rule += num_2ghz_reg_rules;
 
-	/* Firmware might include 6 GHz reg rule in 5 GHz rule list
-	 * for few countries along with separate 6 GHz rule.
-	 * Having same 6 GHz reg rule in 5 GHz and 6 GHz rules list
-	 * causes intersect check to be true, and same rules will be
-	 * shown multiple times in iw cmd.
-	 * Hence, avoid parsing 6 GHz rule from 5 GHz reg rule list
-	 */
+	 
 	num_invalid_5ghz_ext_rules =
 		ath11k_invalid_5ghz_reg_ext_rules_from_wmi(num_5ghz_reg_rules,
 							   ext_wmi_reg_rule);
@@ -5527,11 +5479,7 @@ static int ath11k_pull_reg_chan_list_ext_update_ev(struct ath11k_base *ab,
 				      reg_info->reg_rules_5ghz_ptr);
 	}
 
-	/* We have adjusted the number of 5 GHz reg rules above. But still those
-	 * many rules needs to be adjusted in ext_wmi_reg_rule.
-	 *
-	 * NOTE: num_invalid_5ghz_ext_rules will be 0 for rest other cases.
-	 */
+	 
 	ext_wmi_reg_rule += (num_5ghz_reg_rules + num_invalid_5ghz_ext_rules);
 
 	for (i = 0; i < WMI_REG_CURRENT_MAX_AP_TYPE; i++) {
@@ -5805,7 +5753,7 @@ static int ath11k_pull_mgmt_rx_params_tlv(struct ath11k_base *ab,
 		return -EPROTO;
 	}
 
-	/* shift the sk_buff to point to `frame` */
+	 
 	skb_trim(skb, 0);
 	skb_put(skb, frame - skb->data);
 	skb_pull(skb, frame - skb->data);
@@ -5853,7 +5801,7 @@ static int wmi_process_mgmt_tx_comp(struct ath11k *ar,
 
 	num_mgmt = atomic_dec_if_positive(&ar->num_pending_mgmt_tx);
 
-	/* WARN when we received this event without doing any mgmt tx */
+	 
 	if (num_mgmt < 0)
 		WARN_ON_ONCE(1);
 
@@ -5945,14 +5893,7 @@ static void ath11k_wmi_event_scan_completed(struct ath11k *ar)
 	switch (ar->scan.state) {
 	case ATH11K_SCAN_IDLE:
 	case ATH11K_SCAN_STARTING:
-		/* One suspected reason scan can be completed while starting is
-		 * if firmware fails to deliver all scan events to the host,
-		 * e.g. when transport pipe is full. This has been observed
-		 * with spectral scan phyerr events starving wmi transport
-		 * pipe. In such case the "scan completed" event should be (and
-		 * is) ignored by the host as it may be just firmware's scan
-		 * state machine recovering.
-		 */
+		 
 		ath11k_warn(ar->ab, "received scan completed event in an invalid scan state: %s (%d)\n",
 			    ath11k_scan_state_str(ar->scan.state),
 			    ar->scan.state);
@@ -6825,9 +6766,7 @@ ath11k_wmi_fw_vdev_stats_fill(struct ath11k *ar,
 	u8 *vif_macaddr;
 	int i;
 
-	/* VDEV stats has all the active VDEVs of other PDEVs as well,
-	 * ignoring those not part of requested PDEV
-	 */
+	 
 	if (!arvif)
 		return;
 
@@ -6982,7 +6921,7 @@ unlock:
 
 static void ath11k_wmi_op_ep_tx_credits(struct ath11k_base *ab)
 {
-	/* try to send pending beacons first. they take priority */
+	 
 	wake_up(&ab->wmi_ab.tx_credits_wq);
 }
 
@@ -7099,19 +7038,14 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab,
 	ath11k_dbg(ab, ATH11K_DBG_WMI, "event reg chan list id %d", id);
 
 	if (reg_info->status_code != REG_SET_CC_STATUS_PASS) {
-		/* In case of failure to set the requested ctry,
-		 * fw retains the current regd. We print a failure info
-		 * and return from here.
-		 */
+		 
 		ath11k_warn(ab, "Failed to set the requested Country regulatory setting\n");
 		goto mem_free;
 	}
 
 	pdev_idx = reg_info->phy_id;
 
-	/* Avoid default reg rule updates sent during FW recovery if
-	 * it is already available
-	 */
+	 
 	spin_lock(&ab->base_lock);
 	if (test_bit(ATH11K_FLAG_RECOVERY, &ab->dev_flags) &&
 	    ab->default_regd[pdev_idx]) {
@@ -7121,10 +7055,7 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab,
 	spin_unlock(&ab->base_lock);
 
 	if (pdev_idx >= ab->num_radios) {
-		/* Process the event for phy0 only if single_pdev_only
-		 * is true. If pdev_idx is valid but not 0, discard the
-		 * event. Otherwise, it goes to fallback.
-		 */
+		 
 		if (ab->hw_params.single_pdev_only &&
 		    pdev_idx < ab->hw_params.num_rxmda_per_pdev)
 			goto mem_free;
@@ -7132,18 +7063,13 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab,
 			goto fallback;
 	}
 
-	/* Avoid multiple overwrites to default regd, during core
-	 * stop-start after mac registration.
-	 */
+	 
 	if (ab->default_regd[pdev_idx] && !ab->new_regd[pdev_idx] &&
 	    !memcmp((char *)ab->default_regd[pdev_idx]->alpha2,
 		    (char *)reg_info->alpha2, 2))
 		goto mem_free;
 
-	/* Intersect new rules with default regd if a new country setting was
-	 * requested, i.e a default regd was already set during initialization
-	 * and the regd coming from this event has a valid country info.
-	 */
+	 
 	if (ab->default_regd[pdev_idx] &&
 	    !ath11k_reg_is_world_alpha((char *)
 		ab->default_regd[pdev_idx]->alpha2) &&
@@ -7158,21 +7084,13 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab,
 
 	spin_lock(&ab->base_lock);
 	if (ab->default_regd[pdev_idx]) {
-		/* The initial rules from FW after WMI Init is to build
-		 * the default regd. From then on, any rules updated for
-		 * the pdev could be due to user reg changes.
-		 * Free previously built regd before assigning the newly
-		 * generated regd to ar. NULL pointer handling will be
-		 * taken care by kfree itself.
-		 */
+		 
 		ar = ab->pdevs[pdev_idx].ar;
 		kfree(ab->new_regd[pdev_idx]);
 		ab->new_regd[pdev_idx] = regd;
 		queue_work(ab->workqueue, &ar->regd_update_work);
 	} else {
-		/* This regd would be applied during mac registration and is
-		 * held constant throughout for regd intersection purpose
-		 */
+		 
 		ab->default_regd[pdev_idx] = regd;
 	}
 	ab->dfs_region = reg_info->dfs_region;
@@ -7181,14 +7099,8 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab,
 	goto mem_free;
 
 fallback:
-	/* Fallback to older reg (by sending previous country setting
-	 * again if fw has succeeded and we failed to process here.
-	 * The Regdomain should be uniform across driver and fw. Since the
-	 * FW has processed the command and sent a success status, we expect
-	 * this function to succeed as well. If it doesn't, CTRY needs to be
-	 * reverted at the fw and the old SCAN_CHAN_LIST cmd needs to be sent.
-	 */
-	/* TODO: This is rare, but still should also be handled */
+	 
+	 
 	WARN_ON(1);
 mem_free:
 	if (reg_info) {
@@ -7583,9 +7495,7 @@ static void ath11k_mgmt_rx_event(struct ath11k_base *ab, struct sk_buff *skb)
 	} else if (rx_ev.channel >= 36 && rx_ev.channel <= ATH11K_MAX_5G_CHAN) {
 		status->band = NL80211_BAND_5GHZ;
 	} else {
-		/* Shouldn't happen unless list of advertised channels to
-		 * mac80211 has been changed.
-		 */
+		 
 		WARN_ON_ONCE(1);
 		dev_kfree_skb(skb);
 		goto exit;
@@ -7608,16 +7518,10 @@ static void ath11k_mgmt_rx_event(struct ath11k_base *ab, struct sk_buff *skb)
 	hdr = (struct ieee80211_hdr *)skb->data;
 	fc = le16_to_cpu(hdr->frame_control);
 
-	/* Firmware is guaranteed to report all essential management frames via
-	 * WMI while it can deliver some extra via HTT. Since there can be
-	 * duplicates split the reporting wrt monitor/sniffing.
-	 */
+	 
 	status->flag |= RX_FLAG_SKIP_MONITOR;
 
-	/* In case of PMF, FW delivers decrypted frames with Protected Bit set.
-	 * Don't clear that. Also, FW delivers broadcast management frames
-	 * (ex: group privacy action frames in mesh) as encrypted payload.
-	 */
+	 
 	if (ieee80211_has_protected(hdr->frame_control) &&
 	    !is_multicast_ether_addr(ieee80211_get_DA(hdr))) {
 		status->flag |= RX_FLAG_DECRYPTED;
@@ -7715,12 +7619,7 @@ static void ath11k_scan_event(struct ath11k_base *ab, struct sk_buff *skb)
 
 	rcu_read_lock();
 
-	/* In case the scan was cancelled, ex. during interface teardown,
-	 * the interface will not be found in active interfaces.
-	 * Rather, in such scenarios, iterate over the active pdev's to
-	 * search 'ar' if the corresponding 'ar' scan is ABORTING and the
-	 * aborting scan's vdev id matches this event info.
-	 */
+	 
 	if (scan_ev.event_type == WMI_SCAN_EVENT_COMPLETED &&
 	    scan_ev.reason == WMI_SCAN_REASON_CANCELLED) {
 		ar = ath11k_get_ar_on_scan_state(ab, scan_ev.vdev_id,
@@ -7882,7 +7781,7 @@ static void ath11k_chan_info_event(struct ath11k_base *ab, struct sk_buff *skb)
 	struct ath11k *ar;
 	struct survey_info *survey;
 	int idx;
-	/* HW channel counters frequency value in hertz */
+	 
 	u32 cc_freq_hz = ab->cc_freq_hz;
 
 	if (ath11k_pull_chan_info_ev(ab, skb->data, skb->len, &ch_info_ev) != 0) {
@@ -7929,9 +7828,7 @@ static void ath11k_chan_info_event(struct ath11k_base *ab, struct sk_buff *skb)
 		goto exit;
 	}
 
-	/* If FW provides MAC clock frequency in Mhz, overriding the initialized
-	 * HW channel counters frequency value
-	 */
+	 
 	if (ch_info_ev.mac_clk_mhz)
 		cc_freq_hz = (ch_info_ev.mac_clk_mhz * 1000);
 
@@ -8178,19 +8075,14 @@ static void ath11k_update_stats_event(struct ath11k_base *ab, struct sk_buff *sk
 
 	spin_lock_bh(&ar->data_lock);
 
-	/* WMI_REQUEST_PDEV_STAT can be requested via .get_txpower mac ops or via
-	 * debugfs fw stats. Therefore, processing it separately.
-	 */
+	 
 	if (stats.stats_id == WMI_REQUEST_PDEV_STAT) {
 		list_splice_tail_init(&stats.pdevs, &ar->fw_stats.pdevs);
 		ar->fw_stats_done = true;
 		goto complete;
 	}
 
-	/* WMI_REQUEST_VDEV_STAT, WMI_REQUEST_BCN_STAT and WMI_REQUEST_RSSI_PER_CHAIN_STAT
-	 * are currently requested only via debugfs fw stats. Hence, processing these
-	 * in debugfs context
-	 */
+	 
 	ath11k_debugfs_fw_stats_process(ar, &stats);
 
 complete:
@@ -8198,18 +8090,14 @@ complete:
 	rcu_read_unlock();
 	spin_unlock_bh(&ar->data_lock);
 
-	/* Since the stats's pdev, vdev and beacon list are spliced and reinitialised
-	 * at this point, no need to free the individual list.
-	 */
+	 
 	return;
 
 free:
 	ath11k_fw_stats_free(&stats);
 }
 
-/* PDEV_CTL_FAILSAFE_CHECK_EVENT is received from FW when the frequency scanned
- * is not part of BDF CTL(Conformance test limits) table entries.
- */
+ 
 static void ath11k_pdev_ctl_failsafe_check_event(struct ath11k_base *ab,
 						 struct sk_buff *skb)
 {
@@ -8235,9 +8123,7 @@ static void ath11k_pdev_ctl_failsafe_check_event(struct ath11k_base *ab,
 		   "event pdev ctl failsafe check status %d\n",
 		   ev->ctl_failsafe_status);
 
-	/* If ctl_failsafe_status is set to 1 FW will max out the Transmit power
-	 * to 10 dBm else the CTL power entry in the BDF would be picked up.
-	 */
+	 
 	if (ev->ctl_failsafe_status != 0)
 		ath11k_warn(ab, "pdev ctl failsafe failure status %d",
 			    ev->ctl_failsafe_status);
@@ -8253,7 +8139,7 @@ ath11k_wmi_process_csa_switch_count_event(struct ath11k_base *ab,
 	int i;
 	struct ath11k_vif *arvif;
 
-	/* Finish CSA once the switch count becomes NULL */
+	 
 	if (ev->current_switch_count)
 		return;
 
@@ -8487,7 +8373,7 @@ static int ath11k_wmi_tlv_wow_wakeup_host_parse(struct ath11k_base *ab,
 	case WMI_TAG_ARRAY_BYTE:
 		if (ev && ev->wake_reason == WOW_REASON_PAGE_FAULT) {
 			wow_pg_fault = ptr;
-			/* the first 4 bytes are length */
+			 
 			wow_pg_len = *(int *)wow_pg_fault;
 			wow_pg_fault += sizeof(int);
 			ath11k_dbg(ab, ATH11K_DBG_WMI, "wow data_len = %d\n",
@@ -8637,7 +8523,7 @@ static void ath11k_wmi_gtk_offload_status_event(struct ath11k_base *ab,
 	replay_ctr = (replay_ctr << 32) | ev->replay_ctr.word0;
 	arvif->rekey_data.replay_ctr = replay_ctr;
 
-	/* supplicant expects big-endian replay counter */
+	 
 	replay_ctr_be = cpu_to_be64(replay_ctr);
 
 	ieee80211_gtk_rekey_notify(arvif->vif, arvif->bssid,
@@ -8662,7 +8548,7 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
 		goto out;
 
 	switch (id) {
-		/* Process all the WMI events here */
+		 
 	case WMI_SERVICE_READY_EVENTID:
 		ath11k_service_ready_event(ab, skb);
 		break;
@@ -8695,7 +8581,7 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
 		break;
 	case WMI_MGMT_RX_EVENTID:
 		ath11k_mgmt_rx_event(ab, skb);
-		/* mgmt_rx_event() owns the skb now! */
+		 
 		return;
 	case WMI_MGMT_TX_COMPLETION_EVENTID:
 		ath11k_mgmt_tx_compl_event(ab, skb);
@@ -8798,12 +8684,12 @@ static int ath11k_connect_pdev_htc_service(struct ath11k_base *ab,
 	memset(&conn_req, 0, sizeof(conn_req));
 	memset(&conn_resp, 0, sizeof(conn_resp));
 
-	/* these fields are the same for all service endpoints */
+	 
 	conn_req.ep_ops.ep_tx_complete = ath11k_wmi_htc_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath11k_wmi_tlv_op_rx;
 	conn_req.ep_ops.ep_tx_credits = ath11k_wmi_op_ep_tx_credits;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = svc_id[pdev_idx];
 
 	status = ath11k_htc_connect_service(&ab->htc, &conn_req, &conn_resp);
@@ -8899,10 +8785,7 @@ int ath11k_wmi_simulate_radar(struct ath11k *ar)
 
 	dfs_args[DFS_TEST_CMDID] = 0;
 	dfs_args[DFS_TEST_PDEV_ID] = ar->pdev->pdev_id;
-	/* Currently we could pass segment_id(b0 - b1), chirp(b2)
-	 * freq offset (b3 - b10) to unit test. For simulation
-	 * purpose this can be set to 0 which is valid.
-	 */
+	 
 	dfs_args[DFS_TEST_RADAR_PARAM] = 0;
 
 	wmi_ut.vdev_id = arvif->vdev_id;
@@ -8950,7 +8833,7 @@ int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, u32 *module_id_bitmap,
 		cmd->value = dbglog->value;
 		memcpy(tlv->value, module_id_bitmap,
 		       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
-		/* clear current config to be used for next user config */
+		 
 		memset(module_id_bitmap, 0,
 		       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
 		break;
@@ -8991,7 +8874,7 @@ static void ath11k_wmi_pdev_detach(struct ath11k_base *ab, u8 pdev_id)
 	if (WARN_ON(pdev_id >= MAX_RADIOS))
 		return;
 
-	/* TODO: Deinit any pdev specific wmi resource */
+	 
 }
 
 int ath11k_wmi_pdev_attach(struct ath11k_base *ab,
@@ -9007,7 +8890,7 @@ int ath11k_wmi_pdev_attach(struct ath11k_base *ab,
 	wmi_handle->wmi_ab = &ab->wmi_ab;
 
 	ab->wmi_ab.ab = ab;
-	/* TODO: Init remaining resource specific to pdev */
+	 
 
 	return 0;
 }
@@ -9023,11 +8906,11 @@ int ath11k_wmi_attach(struct ath11k_base *ab)
 	ab->wmi_ab.ab = ab;
 	ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_MAX;
 
-	/* It's overwritten when service_ext_ready is handled */
+	 
 	if (ab->hw_params.single_pdev_only && ab->hw_params.num_rxmda_per_pdev > 1)
 		ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_SINGLE;
 
-	/* TODO: Init remaining wmi soc resources required */
+	 
 	init_completion(&ab->wmi_ab.service_ready);
 	init_completion(&ab->wmi_ab.unified_ready);
 
@@ -9038,7 +8921,7 @@ void ath11k_wmi_detach(struct ath11k_base *ab)
 {
 	int i;
 
-	/* TODO: Deinit wmi resource specific to SOC as required */
+	 
 
 	for (i = 0; i < ab->htc.wmi_ep_count; i++)
 		ath11k_wmi_pdev_detach(ab, i);
@@ -9066,7 +8949,7 @@ int ath11k_wmi_hw_data_filter_cmd(struct ath11k *ar, u32 vdev_id,
 	cmd->vdev_id = vdev_id;
 	cmd->enable = enable;
 
-	/* Set all modes in case of disable */
+	 
 	if (cmd->enable)
 		cmd->hw_filter_bitmap = filter_bitmap;
 	else
@@ -9189,19 +9072,19 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 	size_t len;
 
 	len = sizeof(*cmd) +
-	      sizeof(*tlv) +			/* array struct */
-	      sizeof(*bitmap) +			/* bitmap */
-	      sizeof(*tlv) +			/* empty ipv4 sync */
-	      sizeof(*tlv) +			/* empty ipv6 sync */
-	      sizeof(*tlv) +			/* empty magic */
-	      sizeof(*tlv) +			/* empty info timeout */
-	      sizeof(*tlv) + sizeof(u32);	/* ratelimit interval */
+	      sizeof(*tlv) +			 
+	      sizeof(*bitmap) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) +			 
+	      sizeof(*tlv) + sizeof(u32);	 
 
 	skb = ath11k_wmi_alloc_skb(ar->wmi->wmi_ab, len);
 	if (!skb)
 		return -ENOMEM;
 
-	/* cmd */
+	 
 	ptr = (u8 *)skb->data;
 	cmd = (struct wmi_wow_add_pattern_cmd *)ptr;
 	cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG,
@@ -9214,7 +9097,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*cmd);
 
-	/* bitmap */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_STRUCT) |
@@ -9238,7 +9121,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*bitmap);
 
-	/* ipv4 sync */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_STRUCT) |
@@ -9246,7 +9129,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*tlv);
 
-	/* ipv6 sync */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_STRUCT) |
@@ -9254,7 +9137,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*tlv);
 
-	/* magic */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_STRUCT) |
@@ -9262,7 +9145,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*tlv);
 
-	/* pattern info timeout */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_UINT32) |
@@ -9270,7 +9153,7 @@ int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
 
 	ptr += sizeof(*tlv);
 
-	/* ratelimit interval */
+	 
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
 				 WMI_TAG_ARRAY_UINT32) |
@@ -9324,11 +9207,9 @@ ath11k_wmi_op_gen_config_pno_start(struct ath11k *ar,
 
 	len = sizeof(*cmd) +
 	      sizeof(*tlv) +
-	      /* TLV place holder for array of structures
-	       * nlo_configured_parameters(nlo_list)
-	       */
+	       
 	      sizeof(*tlv);
-	      /* TLV place holder for array of uint32 channel_list */
+	       
 
 	channel_list_len = sizeof(u32) * pno->a_networks[0].channel_count;
 	len += channel_list_len;
@@ -9348,7 +9229,7 @@ ath11k_wmi_op_gen_config_pno_start(struct ath11k *ar,
 	cmd->vdev_id = pno->vdev_id;
 	cmd->flags = WMI_NLO_CONFIG_START | WMI_NLO_CONFIG_SSID_HIDE_EN;
 
-	/* current FW does not support min-max range for dwell time */
+	 
 	cmd->active_dwell_time = pno->active_max_time;
 	cmd->passive_dwell_time = pno->passive_max_time;
 
@@ -9371,7 +9252,7 @@ ath11k_wmi_op_gen_config_pno_start(struct ath11k *ar,
 
 	ptr += sizeof(*cmd);
 
-	/* nlo_configured_parameters(nlo_list) */
+	 
 	cmd->no_of_ssids = pno->uc_networks_count;
 	tlv = (struct wmi_tlv *)ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG,
@@ -9539,7 +9420,7 @@ static void ath11k_wmi_fill_arp_offload(struct ath11k *ar,
 	u8 *buf_ptr = *ptr;
 	int i;
 
-	/* fill arp tuple */
+	 
 	tlv = (struct wmi_tlv *)buf_ptr;
 	tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_STRUCT) |
 		      FIELD_PREP(WMI_TLV_LEN, WMI_MAX_ARP_OFFLOADS * sizeof(*arp));
@@ -9551,7 +9432,7 @@ static void ath11k_wmi_fill_arp_offload(struct ath11k *ar,
 				  FIELD_PREP(WMI_TLV_LEN, sizeof(*arp) - TLV_HDR_SIZE);
 
 		if (enable && i < offload->ipv4_count) {
-			/* Copy the target ip addr and flags */
+			 
 			arp->flags = WMI_ARPOL_FLAGS_VALID;
 			memcpy(arp->target_ipaddr, offload->ipv4_addr[i], 4);
 			ath11k_ce_byte_swap(arp->target_ipaddr, 4);
@@ -9640,7 +9521,7 @@ int ath11k_wmi_gtk_rekey_offload(struct ath11k *ar,
 	if (enable) {
 		cmd->flags = GTK_OFFLOAD_ENABLE_OPCODE;
 
-		/* the length in rekey_data and cmd is equal */
+		 
 		memcpy(cmd->kck, rekey_data->kck, sizeof(cmd->kck));
 		ath11k_ce_byte_swap(cmd->kck, GTK_OFFLOAD_KEK_BYTES);
 		memcpy(cmd->kek, rekey_data->kek, sizeof(cmd->kek));

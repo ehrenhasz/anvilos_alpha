@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2021 Hisilicon Limited. */
+ 
+ 
 
 #ifndef __HNS3_DEBUGFS_H
 #define __HNS3_DEBUGFS_H
@@ -20,7 +20,7 @@
 
 struct hns3_dbg_item {
 	char name[HNS3_DBG_ITEM_NAME_LEN];
-	u16 interval; /* blank numbers after the item */
+	u16 interval;  
 };
 
 struct hns3_dbg_data {

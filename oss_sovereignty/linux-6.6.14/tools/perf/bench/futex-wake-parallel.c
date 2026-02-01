@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Davidlohr Bueso.
- *
- * Block a bunch of threads and let parallel waker threads wakeup an
- * equal amount of them. The program output reflects the avg latency
- * for each individual thread to service its share of work. Ultimately
- * it can be used to measure futex_wake() changes.
- */
+
+ 
 #include "bench.h"
 #include <linux/compiler.h>
 #include "../util/debug.h"
@@ -18,8 +11,8 @@ int bench_futex_wake_parallel(int argc __maybe_unused, const char **argv __maybe
 	pr_err("%s: pthread_barrier_t unavailable, disabling this test...\n", __func__);
 	return 0;
 }
-#else /* HAVE_PTHREAD_BARRIER */
-/* For the CLR_() macros */
+#else  
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -45,7 +38,7 @@ struct thread_data {
 
 static unsigned int nwakes = 1;
 
-/* all threads will block on the same futex -- hash bucket chaos ;) */
+ 
 static u_int32_t futex = 0;
 
 static pthread_t *blocked_worker;
@@ -105,13 +98,9 @@ static void wakeup_threads(struct thread_data *td)
 
 	pthread_barrier_init(&barrier, NULL, params.nwakes + 1);
 
-	/* create and block all threads */
+	 
 	for (i = 0; i < params.nwakes; i++) {
-		/*
-		 * Thread creation order will impact per-thread latency
-		 * as it will affect the order to acquire the hb spinlock.
-		 * For now let the scheduler decide.
-		 */
+		 
 		if (pthread_create(&td[i].worker, &thread_attr,
 				   waking_workerfn, (void *)&td[i]))
 			err(EXIT_FAILURE, "pthread_create");
@@ -136,7 +125,7 @@ static void *blocked_workerfn(void *arg __maybe_unused)
 	cond_wait(&thread_worker, &thread_lock);
 	mutex_unlock(&thread_lock);
 
-	while (1) { /* handle spurious wakeups */
+	while (1) {  
 		if (futex_wait(&futex, 0, NULL, futex_flag) != EINTR)
 			break;
 	}
@@ -158,7 +147,7 @@ static void block_threads(pthread_t *w, struct perf_cpu_map *cpu)
 	BUG_ON(!cpuset);
 	size = CPU_ALLOC_SIZE(nrcpus);
 
-	/* create and block all threads */
+	 
 	for (i = 0; i < params.nthreads; i++) {
 		pthread_attr_t thread_attr;
 
@@ -271,17 +260,14 @@ int bench_futex_wake_parallel(int argc, const char **argv)
 	if (!params.nthreads)
 		params.nthreads = perf_cpu_map__nr(cpu);
 
-	/* some sanity checks */
+	 
 	if (params.nwakes > params.nthreads ||
 	    !params.nwakes)
 		params.nwakes = params.nthreads;
 
 	if (params.nthreads % params.nwakes)
 		errx(EXIT_FAILURE, "Must be perfectly divisible");
-	/*
-	 * Each thread will wakeup nwakes tasks in
-	 * a single futex_wait call.
-	 */
+	 
 	nwakes = params.nthreads/params.nwakes;
 
 	blocked_worker = calloc(params.nthreads, sizeof(*blocked_worker));
@@ -308,10 +294,10 @@ int bench_futex_wake_parallel(int argc, const char **argv)
 		if (!waking_worker)
 			err(EXIT_FAILURE, "calloc");
 
-		/* create, launch & block all threads */
+		 
 		block_threads(blocked_worker, cpu);
 
-		/* make sure all threads are already blocked */
+		 
 		mutex_lock(&thread_lock);
 		while (threads_starting)
 			cond_wait(&thread_parent, &thread_lock);
@@ -320,7 +306,7 @@ int bench_futex_wake_parallel(int argc, const char **argv)
 
 		usleep(100000);
 
-		/* Ok, all threads are patiently blocked, start waking folks up */
+		 
 		wakeup_threads(waking_worker);
 
 		for (i = 0; i < params.nthreads; i++) {
@@ -336,7 +322,7 @@ int bench_futex_wake_parallel(int argc, const char **argv)
 		free(waking_worker);
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);
@@ -347,4 +333,4 @@ int bench_futex_wake_parallel(int argc, const char **argv)
 	perf_cpu_map__put(cpu);
 	return ret;
 }
-#endif /* HAVE_PTHREAD_BARRIER */
+#endif  

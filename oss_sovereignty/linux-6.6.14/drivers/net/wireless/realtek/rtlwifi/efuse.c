@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "wifi.h"
 #include "efuse.h"
@@ -217,7 +217,7 @@ void read_efuse(struct ieee80211_hw *hw, u16 _offset, u16 _size_byte, u8 *pbuf)
 		return;
 	}
 
-	/* allocate memory for efuse_tbl and efuse_word */
+	 
 	efuse_tbl = kzalloc(rtlpriv->cfg->maps[EFUSE_HWSET_MAX_SIZE],
 			    GFP_ATOMIC);
 	if (!efuse_tbl)
@@ -245,8 +245,8 @@ void read_efuse(struct ieee80211_hw *hw, u16 _offset, u16 _size_byte, u8 *pbuf)
 	}
 
 	while ((*rtemp8 != 0xFF) && (efuse_addr < efuse_len)) {
-		/*  Check PG header for section num.  */
-		if ((*rtemp8 & 0x1F) == 0x0F) {/* extended header */
+		 
+		if ((*rtemp8 & 0x1F) == 0x0F) { 
 			u1temp = ((*rtemp8 & 0xE0) >> 5);
 			read_efuse_byte(hw, efuse_addr, rtemp8);
 
@@ -1280,7 +1280,7 @@ int rtl_get_hwinfo(struct ieee80211_hw *hw, struct rtl_priv *rtlpriv,
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"EEPROM Customer ID: 0x%2x\n", rtlefuse->eeprom_oemid);
 
-	/* set channel plan to world wide 13 */
+	 
 	rtlefuse->channel_plan = params[9];
 
 	return 0;

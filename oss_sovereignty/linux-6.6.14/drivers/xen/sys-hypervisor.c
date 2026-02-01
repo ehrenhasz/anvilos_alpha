@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  copyright (c) 2006 IBM Corporation
- *  Authored by: Mike D. Day <ncmike@us.ibm.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -55,7 +52,7 @@ static ssize_t guest_type_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 	switch (xen_domain_type) {
 	case XEN_NATIVE:
-		/* ARM only. */
+		 
 		type = "Xen";
 		break;
 	case XEN_PV_DOMAIN:
@@ -78,7 +75,7 @@ static int __init xen_sysfs_guest_type_init(void)
 	return sysfs_create_file(hypervisor_kobj, &guest_type_attr.attr);
 }
 
-/* xen version attributes */
+ 
 static ssize_t major_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int version = HYPERVISOR_xen_version(XENVER_version, NULL);
@@ -134,7 +131,7 @@ static int __init xen_sysfs_version_init(void)
 	return sysfs_create_group(hypervisor_kobj, &version_group);
 }
 
-/* UUID */
+ 
 
 static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
 {
@@ -175,7 +172,7 @@ static int __init xen_sysfs_uuid_init(void)
 	return sysfs_create_file(hypervisor_kobj, &uuid_attr.attr);
 }
 
-/* xen compilation attributes */
+ 
 
 static ssize_t compiler_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
@@ -248,7 +245,7 @@ static int __init xen_sysfs_compilation_init(void)
 	return sysfs_create_group(hypervisor_kobj, &xen_compilation_group);
 }
 
-/* xen properties info */
+ 
 
 static ssize_t capabilities_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
@@ -425,12 +422,7 @@ static ssize_t flag_show(struct hyp_sysfs_attr *attr, char *buffer)
 		.hyp_attr_value = flag			\
 	}
 
-/*
- * Add new, known flags here.  No other changes are required, but
- * note that each known flag wastes one entry in flag_unames[].
- * The code/complexity machinations to avoid this isn't worth it
- * for a few entries, but keep it in mind.
- */
+ 
 static struct hyp_sysfs_attr flag_attrs[FLAG_COUNT] = {
 	FLAG_NODE(SIF_PRIVILEGED, privileged),
 	FLAG_NODE(SIF_INITDOMAIN, initdomain)

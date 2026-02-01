@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* arch/arm/plat-samsung/include/plat/usb-control.h
- *
- * Copyright (c) 2004 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- *
- * S3C - USB host port information
-*/
+ 
+ 
 
 #ifndef __ASM_ARCH_USBCONTROL_H
 #define __ASM_ARCH_USBCONTROL_H
@@ -37,4 +31,4 @@ static inline void s3c2410_usb_report_oc(struct s3c2410_hcd_info *info, int port
 
 extern void s3c_ohci_set_platdata(struct s3c2410_hcd_info *info);
 
-#endif /*__ASM_ARCH_USBCONTROL_H */
+#endif  

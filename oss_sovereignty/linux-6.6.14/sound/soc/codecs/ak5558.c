@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Audio driver for AK5558 ADC
-//
-// Copyright (C) 2015 Asahi Kasei Microdevices Corporation
-// Copyright 2018 NXP
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -35,25 +35,25 @@ static const char *ak5558_supply_names[AK5558_NUM_SUPPLIES] = {
 	"AVDD",
 };
 
-/* AK5558 Codec Private Data */
+ 
 struct ak5558_priv {
 	struct regulator_bulk_data supplies[AK5558_NUM_SUPPLIES];
 	struct snd_soc_component component;
 	struct regmap *regmap;
 	struct i2c_client *i2c;
-	struct gpio_desc *reset_gpiod; /* Reset & Power down GPIO */
+	struct gpio_desc *reset_gpiod;  
 	int slots;
 	int slot_width;
 };
 
-/* ak5558 register cache & default register settings */
+ 
 static const struct reg_default ak5558_reg[] = {
-	{ 0x0, 0xFF },	/*	0x00	AK5558_00_POWER_MANAGEMENT1	*/
-	{ 0x1, 0x01 },	/*	0x01	AK5558_01_POWER_MANAGEMENT2	*/
-	{ 0x2, 0x01 },	/*	0x02	AK5558_02_CONTROL1		*/
-	{ 0x3, 0x00 },	/*	0x03	AK5558_03_CONTROL2		*/
-	{ 0x4, 0x00 },	/*	0x04	AK5558_04_CONTROL3		*/
-	{ 0x5, 0x00 }	/*	0x05	AK5558_05_DSD			*/
+	{ 0x0, 0xFF },	 
+	{ 0x1, 0x01 },	 
+	{ 0x2, 0x01 },	 
+	{ 0x3, 0x00 },	 
+	{ 0x4, 0x00 },	 
+	{ 0x5, 0x00 }	 
 };
 
 static const char * const mono_texts[] = {
@@ -95,7 +95,7 @@ static const struct snd_kcontrol_new ak5552_snd_controls[] = {
 };
 
 static const struct snd_soc_dapm_widget ak5558_dapm_widgets[] = {
-	/* Analog Input */
+	 
 	SND_SOC_DAPM_INPUT("AIN1"),
 	SND_SOC_DAPM_INPUT("AIN2"),
 	SND_SOC_DAPM_INPUT("AIN3"),
@@ -118,7 +118,7 @@ static const struct snd_soc_dapm_widget ak5558_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_widget ak5552_dapm_widgets[] = {
-	/* Analog Input */
+	 
 	SND_SOC_DAPM_INPUT("AIN1"),
 	SND_SOC_DAPM_INPUT("AIN2"),
 
@@ -210,7 +210,7 @@ static int ak5558_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* set master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format = AK5558_DIF_I2S_MODE;

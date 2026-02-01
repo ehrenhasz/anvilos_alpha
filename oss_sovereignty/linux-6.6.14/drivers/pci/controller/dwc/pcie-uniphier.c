@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for UniPhier SoCs
- * Copyright 2018 Socionext Inc.
- * Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -89,18 +85,18 @@ static void uniphier_pcie_init_rc(struct uniphier_pcie *pcie)
 {
 	u32 val;
 
-	/* set RC MODE */
+	 
 	val = readl(pcie->base + PCL_MODE);
 	val |= PCL_MODE_REGEN;
 	val &= ~PCL_MODE_REGVAL;
 	writel(val, pcie->base + PCL_MODE);
 
-	/* use auxiliary power detection */
+	 
 	val = readl(pcie->base + PCL_APP_PM0);
 	val |= PCL_SYS_AUX_PWR_DET;
 	writel(val, pcie->base + PCL_APP_PM0);
 
-	/* assert PERST# */
+	 
 	val = readl(pcie->base + PCL_PINCTRL0);
 	val &= ~(PCL_PERST_NOE_REGVAL | PCL_PERST_OUT_REGVAL
 		 | PCL_PERST_PLDN_REGVAL);
@@ -112,7 +108,7 @@ static void uniphier_pcie_init_rc(struct uniphier_pcie *pcie)
 
 	usleep_range(100000, 200000);
 
-	/* deassert PERST# */
+	 
 	val = readl(pcie->base + PCL_PINCTRL0);
 	val |= PCL_PERST_OUT_REGVAL | PCL_PERST_OUT_REGEN;
 	writel(val, pcie->base + PCL_PINCTRL0);
@@ -123,7 +119,7 @@ static int uniphier_pcie_wait_rc(struct uniphier_pcie *pcie)
 	u32 status;
 	int ret;
 
-	/* wait PIPE clock */
+	 
 	ret = readl_poll_timeout(pcie->base + PCL_PIPEMON, status,
 				 status & PCL_PCLK_ALIVE, 100000, 1000000);
 	if (ret) {
@@ -232,7 +228,7 @@ static void uniphier_pcie_irq_handler(struct irq_desc *desc)
 	unsigned long reg;
 	u32 val, bit;
 
-	/* INT for debug */
+	 
 	val = readl(pcie->base + PCL_RCV_INT);
 
 	if (val & PCL_CFG_BW_MGT_STATUS)
@@ -246,7 +242,7 @@ static void uniphier_pcie_irq_handler(struct irq_desc *desc)
 
 	writel(val, pcie->base + PCL_RCV_INT);
 
-	/* INTx */
+	 
 	chained_irq_enter(chip, desc);
 
 	val = readl(pcie->base + PCL_RCV_INTX);
@@ -396,7 +392,7 @@ static int uniphier_pcie_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_pcie_match[] = {
 	{ .compatible = "socionext,uniphier-pcie", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver uniphier_pcie_driver = {

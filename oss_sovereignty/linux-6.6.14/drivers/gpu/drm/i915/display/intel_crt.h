@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_CRT_H__
 #define __INTEL_CRT_H__
@@ -17,4 +15,4 @@ bool intel_crt_port_enabled(struct drm_i915_private *dev_priv,
 void intel_crt_init(struct drm_i915_private *dev_priv);
 void intel_crt_reset(struct drm_encoder *encoder);
 
-#endif /* __INTEL_CRT_H__ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 		char *cargv[] = {"exec", now_str, NULL};
 		char *cenv[] = {NULL};
 
-		/* Check for proper vvar offsets after execve. */
+		 
 		snprintf(now_str, sizeof(now_str), "%ld", now.tv_sec + OFFSET);
 		execve("/proc/self/exe", cargv, cenv);
 		pr_perror("execve");
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	ksft_inc_pass_cnt();
 	ksft_test_result_pass("wait for child\n");
 
-	/* Check that we are still in the source timens. */
+	 
 	if (check("parent after vfork", &now))
 		return 1;
 

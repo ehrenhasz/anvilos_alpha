@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Memory Mapped IO Fixed clock driver
- *
- * Copyright (C) 2018 Cadence Design Systems, Inc.
- *
- * Authors:
- *	Jan Kotas <jank@cadence.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -55,9 +48,7 @@ static void __init of_fixed_mmio_clk_setup(struct device_node *node)
 }
 CLK_OF_DECLARE(fixed_mmio_clk, "fixed-mmio-clock", of_fixed_mmio_clk_setup);
 
-/*
- * This is not executed when of_fixed_mmio_clk_setup succeeded.
- */
+ 
 static int of_fixed_mmio_clk_probe(struct platform_device *pdev)
 {
 	struct clk_hw *clk;

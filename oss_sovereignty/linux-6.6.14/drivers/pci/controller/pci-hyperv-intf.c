@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) Microsoft Corporation.
- *
- * Author:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *
- * This small module is a helper driver allows other drivers to
- * have a common interface with the Hyper-V PCI frontend driver.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

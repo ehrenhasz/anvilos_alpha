@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <test_progs.h>
 #include "test_subskeleton.skel.h"
@@ -67,7 +67,7 @@ void test_subskeleton(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	result = subskeleton_lib_subresult(skel->obj) * 10;

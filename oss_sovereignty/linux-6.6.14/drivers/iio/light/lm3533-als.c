@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm3533-als.c -- LM3533 Ambient Light Sensor driver
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/fs.h>
@@ -117,10 +111,7 @@ static int lm3533_als_get_zone(struct iio_dev *indio_dev, u8 *zone)
 	return 0;
 }
 
-/*
- * channel	output channel 0..2
- * zone		zone 0..4
- */
+ 
 static inline u8 lm3533_als_get_target_reg(unsigned channel, unsigned zone)
 {
 	return LM3533_REG_ALS_TARGET_BASE + 5 * channel + zone;
@@ -251,7 +242,7 @@ static irqreturn_t lm3533_als_isr(int irq, void *dev_id)
 	u8 zone;
 	int ret;
 
-	/* Clear interrupt by reading the ALS zone register. */
+	 
 	ret = _lm3533_als_get_zone(indio_dev, &zone);
 	if (ret)
 		goto out;
@@ -353,11 +344,7 @@ static int lm3533_als_set_threshold(struct iio_dev *indio_dev, unsigned nr,
 		dev_err(&indio_dev->dev, "failed to get threshold\n");
 		goto out;
 	}
-	/*
-	 * This device does not allow negative hysteresis (in fact, it uses
-	 * whichever value is smaller as the lower bound) so we need to make
-	 * sure that thresh_falling <= thresh_raising.
-	 */
+	 
 	if ((raising && (val < val2)) || (!raising && (val > val2))) {
 		ret = -EINVAL;
 		goto out;
@@ -583,11 +570,7 @@ static ssize_t store_als_attr(struct device *dev,
 				S_IRUGO | S_IWUSR,			\
 				show_als_attr, store_als_attr,		\
 				LM3533_ATTR_TYPE_TARGET, _channel, _zone)
-/*
- * ALS output current values (ALS mapper targets)
- *
- * out_current[0-2]_current[0-4]_raw		0-255
- */
+ 
 static ALS_TARGET_ATTR_RW(0, 0);
 static ALS_TARGET_ATTR_RW(0, 1);
 static ALS_TARGET_ATTR_RW(0, 2);
@@ -617,12 +600,7 @@ static ALS_TARGET_ATTR_RW(2, 4);
 			S_IRUGO | S_IWUSR,				\
 			show_als_attr, store_als_attr,			\
 			LM3533_ATTR_TYPE_THRESH_RAISING, _nr, 0)
-/*
- * ALS Zone thresholds (boundaries)
- *
- * in_illuminance0_thresh[0-3]_falling_value	0-255
- * in_illuminance0_thresh[0-3]_raising_value	0-255
- */
+ 
 static ALS_THRESH_FALLING_ATTR_RW(0);
 static ALS_THRESH_FALLING_ATTR_RW(1);
 static ALS_THRESH_FALLING_ATTR_RW(2);
@@ -637,14 +615,7 @@ static ALS_THRESH_RAISING_ATTR_RW(3);
 	LM3533_ALS_ATTR(in_illuminance0_thresh##_nr##_hysteresis,	\
 			S_IRUGO, show_als_attr, NULL,			\
 			LM3533_ATTR_TYPE_HYSTERESIS, _nr, 0)
-/*
- * ALS Zone threshold hysteresis
- *
- * threshY_hysteresis = threshY_raising - threshY_falling
- *
- * in_illuminance0_thresh[0-3]_hysteresis	0-255
- * in_illuminance0_thresh[0-3]_hysteresis	0-255
- */
+ 
 static ALS_HYSTERESIS_ATTR_RO(0);
 static ALS_HYSTERESIS_ATTR_RO(1);
 static ALS_HYSTERESIS_ATTR_RO(2);
@@ -655,18 +626,10 @@ static ALS_HYSTERESIS_ATTR_RO(3);
 #define ILLUMINANCE_ATTR_RW(_name) \
 	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR, \
 						show_##_name, store_##_name)
-/*
- * ALS Zone threshold-event enable
- *
- * in_illuminance0_thresh_either_en		0,1
- */
+ 
 static ILLUMINANCE_ATTR_RW(thresh_either_en);
 
-/*
- * ALS Current Zone
- *
- * in_illuminance0_zone		0-4
- */
+ 
 static ILLUMINANCE_ATTR_RO(zone);
 
 static struct attribute *lm3533_als_event_attributes[] = {
@@ -721,9 +684,9 @@ static int lm3533_als_set_input_mode(struct lm3533_als *als, bool pwm_mode)
 	int ret;
 
 	if (pwm_mode)
-		val = mask;	/* pwm input */
+		val = mask;	 
 	else
-		val = 0;	/* analog input */
+		val = 0;	 
 
 	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, val, mask);
 	if (ret) {
@@ -762,7 +725,7 @@ static int lm3533_als_setup(struct lm3533_als *als,
 	if (ret)
 		return ret;
 
-	/* ALS input is always high impedance in PWM-mode. */
+	 
 	if (!pdata->pwm_mode) {
 		ret = lm3533_als_set_resistor(als, pdata->r_select);
 		if (ret)
@@ -777,7 +740,7 @@ static int lm3533_als_setup_irq(struct lm3533_als *als, void *dev)
 	u8 mask = LM3533_ALS_INT_ENABLE_MASK;
 	int ret;
 
-	/* Make sure interrupts are disabled. */
+	 
 	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_ZONE_INFO, 0, mask);
 	if (ret) {
 		dev_err(&als->pdev->dev, "failed to disable interrupts\n");

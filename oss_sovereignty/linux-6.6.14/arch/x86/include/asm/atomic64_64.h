@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_ATOMIC64_64_H
 #define _ASM_X86_ATOMIC64_64_H
 
@@ -6,7 +6,7 @@
 #include <asm/alternative.h>
 #include <asm/cmpxchg.h>
 
-/* The 64-bit atomic type */
+ 
 
 #define ATOMIC64_INIT(i)	{ (i) }
 
@@ -170,4 +170,4 @@ static __always_inline s64 arch_atomic64_fetch_xor(s64 i, atomic64_t *v)
 }
 #define arch_atomic64_fetch_xor arch_atomic64_fetch_xor
 
-#endif /* _ASM_X86_ATOMIC64_64_H */
+#endif  

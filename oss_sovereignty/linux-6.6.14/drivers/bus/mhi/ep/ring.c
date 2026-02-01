@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/mhi_ep.h>
 #include "internal.h"
@@ -34,11 +31,11 @@ static int __mhi_ep_cache_ring(struct mhi_ep_ring *ring, size_t end)
 	size_t start;
 	int ret;
 
-	/* Don't proceed in the case of event ring. This happens during mhi_ep_ring_start(). */
+	 
 	if (ring->type == RING_TYPE_ER)
 		return 0;
 
-	/* No need to cache the ring if write pointer is unmodified */
+	 
 	if (ring->wr_offset == end)
 		return 0;
 
@@ -83,7 +80,7 @@ static int mhi_ep_cache_ring(struct mhi_ep_ring *ring, u64 wr_ptr)
 
 	wr_offset = mhi_ep_ring_addr2offset(ring, wr_ptr);
 
-	/* Cache the host ring till write offset */
+	 
 	ret = __mhi_ep_cache_ring(ring, wr_offset);
 	if (ret)
 		return ret;
@@ -102,7 +99,7 @@ int mhi_ep_update_wr_offset(struct mhi_ep_ring *ring)
 	return mhi_ep_cache_ring(ring, wr_ptr);
 }
 
-/* TODO: Support for adding multiple ring elements to the ring */
+ 
 int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *el)
 {
 	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
@@ -124,7 +121,7 @@ int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *e
 	else
 		num_free_elem = ((ring->ring_size - ring->rd_offset) + ring->wr_offset) - 1;
 
-	/* Check if there is space in ring for adding at least an element */
+	 
 	if (!num_free_elem) {
 		dev_err(dev, "No space left in the ring\n");
 		return -ENOSPC;
@@ -135,7 +132,7 @@ int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *e
 
 	dev_dbg(dev, "Adding an element to ring at offset (%zu)\n", ring->rd_offset);
 
-	/* Update rp in ring context */
+	 
 	rp = cpu_to_le64(ring->rd_offset * sizeof(*el) + ring->rbase);
 	memcpy_toio((void __iomem *) &ring->ring_ctx->generic.rp, &rp, sizeof(u64));
 
@@ -181,12 +178,12 @@ int mhi_ep_ring_start(struct mhi_ep_cntrl *mhi_cntrl, struct mhi_ep_ring *ring,
 	if (ring->type == RING_TYPE_ER)
 		ring->irq_vector = le32_to_cpu(ring->ring_ctx->ev.msivec);
 
-	/* During ring init, both rp and wp are equal */
+	 
 	memcpy_fromio(&val, (void __iomem *) &ring->ring_ctx->generic.rp, sizeof(u64));
 	ring->rd_offset = mhi_ep_ring_addr2offset(ring, le64_to_cpu(val));
 	ring->wr_offset = mhi_ep_ring_addr2offset(ring, le64_to_cpu(val));
 
-	/* Allocate ring cache memory for holding the copy of host ring */
+	 
 	ring->ring_cache = kcalloc(ring->ring_size, sizeof(struct mhi_ring_element), GFP_KERNEL);
 	if (!ring->ring_cache)
 		return -ENOMEM;

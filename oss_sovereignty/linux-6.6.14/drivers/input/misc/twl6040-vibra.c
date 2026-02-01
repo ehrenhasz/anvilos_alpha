@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * twl6040-vibra.c - TWL6040 Vibrator driver
- *
- * Author:      Jorge Eduardo Candelaria <jorge.candelaria@ti.com>
- * Author:      Misael Lopez Cruz <misael.lopez@ti.com>
- *
- * Copyright:   (C) 2011 Texas Instruments, Inc.
- *
- * Based on twl4030-vibra.c by Henrik Saari <henrik.saari@nokia.com>
- *				Felipe Balbi <felipe.balbi@nokia.com>
- *				Jari Vanhala <ext-javi.vanhala@nokia.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -23,7 +12,7 @@
 
 #define EFFECT_DIR_180_DEG	0x8000
 
-/* Recommended modulation index 85% */
+ 
 #define TWL6040_VIBRA_MOD	85
 
 #define TWL6040_NUM_SUPPLIES 2
@@ -84,11 +73,7 @@ static void twl6040_vibra_enable(struct vibra_info *info)
 
 	twl6040_power(info->twl6040, 1);
 	if (twl6040_get_revid(twl6040) <= TWL6040_REV_ES1_1) {
-		/*
-		 * ERRATA: Disable overcurrent protection for at least
-		 * 3ms when enabling vibrator drivers to avoid false
-		 * overcurrent detection
-		 */
+		 
 		twl6040_reg_write(twl6040, TWL6040_REG_VIBCTLL,
 				  TWL6040_VIBENA | TWL6040_VIBCTRL);
 		twl6040_reg_write(twl6040, TWL6040_REG_VIBCTLR,
@@ -123,19 +108,19 @@ static u8 twl6040_vibra_code(int vddvib, int vibdrv_res, int motor_res,
 	int vpk, max_code;
 	u8 vibdat;
 
-	/* output swing */
+	 
 	vpk = (vddvib * motor_res * TWL6040_VIBRA_MOD) /
 		(100 * (vibdrv_res + motor_res));
 
-	/* 50mV per VIBDAT code step */
+	 
 	max_code = vpk / 50;
 	if (max_code > TWL6040_VIBDAT_MAX)
 		max_code = TWL6040_VIBDAT_MAX;
 
-	/* scale speed to max allowed code */
+	 
 	vibdat = (u8)((speed * max_code) / USHRT_MAX);
 
-	/* 2's complement for direction > 180 degrees */
+	 
 	vibdat *= direction;
 
 	return vibdat;
@@ -147,13 +132,13 @@ static void twl6040_vibra_set_effect(struct vibra_info *info)
 	u8 vibdatl, vibdatr;
 	int volt;
 
-	/* weak motor */
+	 
 	volt = regulator_get_voltage(info->supplies[0].consumer) / 1000;
 	vibdatl = twl6040_vibra_code(volt, info->vibldrv_res,
 				     info->viblmotor_res,
 				     info->weak_speed, info->direction);
 
-	/* strong motor */
+	 
 	volt = regulator_get_voltage(info->supplies[1].consumer) / 1000;
 	vibdatr = twl6040_vibra_code(volt, info->vibrdrv_res,
 				     info->vibrmotor_res,
@@ -169,7 +154,7 @@ static void vibra_play_work(struct work_struct *work)
 				struct vibra_info, play_work);
 	int ret;
 
-	/* Do not allow effect, while the routing is set to use audio */
+	 
 	ret = twl6040_get_vibralr_status(info->twl6040);
 	if (ret & TWL6040_VIBSEL) {
 		dev_info(info->dev, "Vibra is configured for audio\n");
@@ -287,10 +272,7 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 
 	info->supplies[0].supply = "vddvibl";
 	info->supplies[1].supply = "vddvibr";
-	/*
-	 * When booted with Device tree the regulators are attached to the
-	 * parent device (twl6040 MFD core)
-	 */
+	 
 	error = devm_regulator_bulk_get(twl6040_core_dev,
 					ARRAY_SIZE(info->supplies),
 					info->supplies);

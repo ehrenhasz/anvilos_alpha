@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Thermal device driver for DA9062 and DA9061
- * Copyright (C) 2017  Dialog Semiconductor
- */
 
-/* When over-temperature is reached, an interrupt from the device will be
- * triggered. Following this event the interrupt will be disabled and
- * periodic transmission of uevents (HOT trip point) should define the
- * first level of temperature supervision. It is expected that any final
- * implementation of the thermal driver will include a .notify() function
- * to implement these uevents to userspace.
- *
- * These uevents are intended to indicate non-invasive temperature control
- * of the system, where the necessary measures for cooling are the
- * responsibility of the host software. Once the temperature falls again,
- * the IRQ is re-enabled so the start of a new over-temperature event can
- * be detected without constant software monitoring.
- */
+ 
+
+ 
 
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -30,11 +15,7 @@
 #include <linux/mfd/da9062/core.h>
 #include <linux/mfd/da9062/registers.h>
 
-/* Minimum, maximum and default polling millisecond periods are provided
- * here as an example. It is expected that any final implementation to also
- * include a modification of these settings to match the required
- * application.
- */
+ 
 #define DA9062_DEFAULT_POLLING_MS_PERIOD	3000
 #define DA9062_MAX_POLLING_MS_PERIOD		10000
 #define DA9062_MIN_POLLING_MS_PERIOD		1000
@@ -51,7 +32,7 @@ struct da9062_thermal {
 	struct da9062 *hw;
 	struct delayed_work work;
 	struct thermal_zone_device *zone;
-	struct mutex lock; /* protection for da9062_thermal temperature */
+	struct mutex lock;  
 	int temperature;
 	int irq;
 	const struct da9062_thermal_config *config;
@@ -67,7 +48,7 @@ static void da9062_thermal_poll_on(struct work_struct *work)
 	unsigned int val;
 	int ret;
 
-	/* clear E_TEMP */
+	 
 	ret = regmap_write(thermal->hw->regmap,
 			   DA9062AA_EVENT_B,
 			   DA9062AA_E_TEMP_MASK);
@@ -77,10 +58,7 @@ static void da9062_thermal_poll_on(struct work_struct *work)
 		goto err_enable_irq;
 	}
 
-	/* Now read E_TEMP again: it is acting like a status bit.
-	 * If over-temperature, then this status will be true.
-	 * If not over-temperature, this status will be false.
-	 */
+	 
 	ret = regmap_read(thermal->hw->regmap,
 			  DA9062AA_EVENT_B,
 			  &val);
@@ -97,9 +75,7 @@ static void da9062_thermal_poll_on(struct work_struct *work)
 		thermal_zone_device_update(thermal->zone,
 					   THERMAL_EVENT_UNSPECIFIED);
 
-		/*
-		 * pp_tmp is between 1s and 10s, so we can round the jiffies
-		 */
+		 
 		delay = round_jiffies(msecs_to_jiffies(pp_tmp));
 		queue_delayed_work(system_freezable_wq, &thermal->work, delay);
 		return;

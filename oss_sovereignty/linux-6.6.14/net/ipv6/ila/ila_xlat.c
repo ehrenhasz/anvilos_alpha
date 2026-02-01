@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/jhash.h>
 #include <linux/netfilter.h>
 #include <linux/rcupdate.h>
@@ -85,7 +85,7 @@ static const struct rhashtable_params rht_params = {
 	.nelem_hint = 1024,
 	.head_offset = offsetof(struct ila_map, node),
 	.key_offset = offsetof(struct ila_map, xp.ip.locator_match),
-	.key_len = sizeof(u64), /* identifier */
+	.key_len = sizeof(u64),  
 	.max_size = 1048576,
 	.min_size = 256,
 	.automatic_shrinking = true,
@@ -122,7 +122,7 @@ static int parse_nl_config(struct genl_info *info,
 	return 0;
 }
 
-/* Must be called with rcu readlock */
+ 
 static inline struct ila_map *ila_lookup_wildcards(struct ila_addr *iaddr,
 						   int ifindex,
 						   struct ila_net *ilan)
@@ -140,7 +140,7 @@ static inline struct ila_map *ila_lookup_wildcards(struct ila_addr *iaddr,
 	return NULL;
 }
 
-/* Must be called with rcu readlock */
+ 
 static inline struct ila_map *ila_lookup_by_params(struct ila_xlat_params *xp,
 						   struct ila_net *ilan)
 {
@@ -167,7 +167,7 @@ static void ila_free_node(struct ila_map *ila)
 {
 	struct ila_map *next;
 
-	/* Assume rcu_readlock held */
+	 
 	while (ila) {
 		next = rcu_access_pointer(ila->next);
 		ila_release(ila);
@@ -208,9 +208,7 @@ static int ila_add_mapping(struct net *net, struct ila_xlat_params *xp)
 	int err = 0, order;
 
 	if (!ilan->xlat.hooks_registered) {
-		/* We defer registering net hooks in the namespace until the
-		 * first mapping is added.
-		 */
+		 
 		err = nf_register_net_hooks(net, ila_nf_hook_ops,
 					    ARRAY_SIZE(ila_nf_hook_ops));
 		if (err)
@@ -235,7 +233,7 @@ static int ila_add_mapping(struct net *net, struct ila_xlat_params *xp)
 				      &xp->ip.locator_match,
 				      rht_params);
 	if (!head) {
-		/* New entry for the rhash_table */
+		 
 		err = rhashtable_lookup_insert_fast(&ilan->xlat.rhash_table,
 						    &ila->node, rht_params);
 	} else {
@@ -256,11 +254,11 @@ static int ila_add_mapping(struct net *net, struct ila_xlat_params *xp)
 		} while (tila);
 
 		if (prev) {
-			/* Insert in sub list of head */
+			 
 			RCU_INIT_POINTER(ila->next, tila);
 			rcu_assign_pointer(prev->next, ila);
 		} else {
-			/* Make this ila new head */
+			 
 			RCU_INIT_POINTER(ila->next, head);
 			err = rhashtable_replace_fast(&ilan->xlat.rhash_table,
 						      &head->node,
@@ -305,25 +303,21 @@ static int ila_del_mapping(struct net *net, struct ila_xlat_params *xp)
 		err = 0;
 
 		if (prev) {
-			/* Not head, just delete from list */
+			 
 			rcu_assign_pointer(prev->next, ila->next);
 		} else {
-			/* It is the head. If there is something in the
-			 * sublist we need to make a new head.
-			 */
+			 
 			head = rcu_dereference_protected(ila->next,
 							 lockdep_is_held(lock));
 			if (head) {
-				/* Put first entry in the sublist into the
-				 * table
-				 */
+				 
 				err = rhashtable_replace_fast(
 					&ilan->xlat.rhash_table, &ila->node,
 					&head->node, rht_params);
 				if (err)
 					goto out;
 			} else {
-				/* Entry no longer used */
+				 
 				err = rhashtable_remove_fast(
 						&ilan->xlat.rhash_table,
 						&ila->node, rht_params);
@@ -541,16 +535,14 @@ int ila_xlat_nl_dump(struct sk_buff *skb, struct netlink_callback *cb)
 
 	rhashtable_walk_start(rhiter);
 
-	/* Get first entry */
+	 
 	ila = rhashtable_walk_peek(rhiter);
 
 	if (ila && !IS_ERR(ila) && skip) {
-		/* Skip over visited entries */
+		 
 
 		while (ila && skip) {
-			/* Skip over any ila entries in this list that we
-			 * have already dumped.
-			 */
+			 
 			ila = rcu_access_pointer(ila->next);
 			skip--;
 		}
@@ -562,11 +554,7 @@ int ila_xlat_nl_dump(struct sk_buff *skb, struct netlink_callback *cb)
 		if (IS_ERR(ila)) {
 			ret = PTR_ERR(ila);
 			if (ret == -EAGAIN) {
-				/* Table has changed and iter has reset. Return
-				 * -EAGAIN to the application even if we have
-				 * written data to the skb. The application
-				 * needs to deal with this.
-				 */
+				 
 
 				goto out_ret;
 			} else {
@@ -640,12 +628,9 @@ static int ila_xlat_addr(struct sk_buff *skb, bool sir2ila)
 	struct ila_net *ilan = net_generic(net, ila_net_id);
 	struct ila_addr *iaddr = ila_a2i(&ip6h->daddr);
 
-	/* Assumes skb contains a valid IPv6 header that is pulled */
+	 
 
-	/* No check here that ILA type in the mapping matches what is in the
-	 * address. We assume that whatever sender gaves us can be translated.
-	 * The checksum mode however is relevant.
-	 */
+	 
 
 	rcu_read_lock();
 

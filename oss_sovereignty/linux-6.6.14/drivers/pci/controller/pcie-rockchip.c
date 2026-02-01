@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Rockchip AXI PCIe host controller driver
- *
- * Copyright (c) 2016 Rockchip, Inc.
- *
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *         Wenrui Li <wenrui.li@rock-chips.com>
- *
- * Bits taken from Synopsys DesignWare Host controller driver and
- * ARM PCI Host generic driver.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -156,9 +146,9 @@ int rockchip_pcie_parse_dt(struct rockchip_pcie *rockchip)
 EXPORT_SYMBOL_GPL(rockchip_pcie_parse_dt);
 
 #define rockchip_pcie_read_addr(addr) rockchip_pcie_read(rockchip, addr)
-/* 100 ms max wait time for PHY PLLs to lock */
+ 
 #define RK_PHY_PLL_LOCK_TIMEOUT_US 100000
-/* Sleep should be less than 20ms */
+ 
 #define RK_PHY_PLL_LOCK_SLEEP_US 1000
 
 int rockchip_pcie_init_port(struct rockchip_pcie *rockchip)
@@ -272,10 +262,7 @@ int rockchip_pcie_init_port(struct rockchip_pcie *rockchip)
 		goto err_power_off_phy;
 	}
 
-	/*
-	 * Please don't reorder the deassert sequence of the following
-	 * four reset pins.
-	 */
+	 
 	err = reset_control_deassert(rockchip->mgmt_sticky_rst);
 	if (err) {
 		dev_err(dev, "deassert mgmt_sticky_rst err %d\n", err);
@@ -359,7 +346,7 @@ void rockchip_pcie_deinit_phys(struct rockchip_pcie *rockchip)
 	int i;
 
 	for (i = 0; i < MAX_LANE_NUM; i++) {
-		/* inactive lanes are already powered off */
+		 
 		if (rockchip->lanes_map & BIT(i))
 			phy_power_off(rockchip->phys[i]);
 		phy_exit(rockchip->phys[i]);
@@ -424,7 +411,7 @@ void rockchip_pcie_cfg_configuration_accesses(
 {
 	u32 ob_desc_0;
 
-	/* Configuration Accesses for region 0 */
+	 
 	rockchip_pcie_write(rockchip, 0x0, PCIE_RC_BAR_CONF);
 
 	rockchip_pcie_write(rockchip,

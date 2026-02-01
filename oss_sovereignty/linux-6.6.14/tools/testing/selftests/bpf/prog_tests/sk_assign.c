@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
-// Copyright (c) 2019 Cloudflare
-// Copyright (c) 2020 Isovalent, Inc.
-/*
- * Test that the socket assign program is able to redirect traffic towards a
- * socket, regardless of whether the port or address destination of the traffic
- * matches the port.
- */
+
+
+
+
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>
@@ -34,7 +30,7 @@ configure_stack(void)
 	char *prog;
 	FILE *tc;
 
-	/* Check whether tc is built with libbpf. */
+	 
 	tc = popen("tc -V", "r");
 	if (CHECK_FAIL(!tc))
 		return false;
@@ -47,11 +43,11 @@ configure_stack(void)
 	if (CHECK_FAIL(pclose(tc)))
 		return false;
 
-	/* Move to a new networking namespace */
+	 
 	if (CHECK_FAIL(unshare(CLONE_NEWNET)))
 		return false;
 
-	/* Configure necessary links, routes */
+	 
 	if (CHECK_FAIL(system("ip link set dev lo up")))
 		return false;
 	if (CHECK_FAIL(system("ip route add local default dev lo")))
@@ -59,7 +55,7 @@ configure_stack(void)
 	if (CHECK_FAIL(system("ip -6 route add local default dev lo")))
 		return false;
 
-	/* Load qdisc, BPF program */
+	 
 	if (CHECK_FAIL(system("tc qdisc add dev lo clsact")))
 		return false;
 	sprintf(tc_cmd, "%s %s %s %s %s", "tc filter add dev lo ingress bpf",
@@ -188,12 +184,7 @@ run_test(int server_fd, const struct sockaddr *addr, socklen_t len, int type)
 	port = get_port(srv_client);
 	if (CHECK_FAIL(!port))
 		goto out;
-	/* SOCK_STREAM is connected via accept(), so the server's local address
-	 * will be the CONNECT_PORT rather than the BIND port that corresponds
-	 * to the listen socket. SOCK_DGRAM on the other hand is connectionless
-	 * so we can't really do the same check there; the server doesn't ever
-	 * create a socket with CONNECT_PORT.
-	 */
+	 
 	if (type == SOCK_STREAM &&
 	    CHECK(port != htons(CONNECT_PORT), "Expected", "port %u but got %u",
 		  CONNECT_PORT, ntohs(port)))
@@ -320,7 +311,7 @@ void test_sk_assign(void)
 			goto close;
 		}
 
-		/* connect to unbound ports */
+		 
 		prepare_addr(test->addr, test->family, CONNECT_PORT,
 			     test->rewrite_addr);
 		if (run_test(server, addr, test->len, test->type))

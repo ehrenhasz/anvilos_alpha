@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ESSIV skcipher and aead template for block encryption
- *
- * This template encapsulates the ESSIV IV generation algorithm used by
- * dm-crypt and fscrypt, which converts the initial vector for the skcipher
- * used for block encryption, by encrypting it using the hash of the
- * skcipher key as encryption key. Usually, the input IV is a 64-bit sector
- * number in LE representation zero-padded to the size of the IV, but this
- * is not assumed by this driver.
- *
- * The typical use of this template is to instantiate the skcipher
- * 'essiv(cbc(aes),sha256)', which is the only instantiation used by
- * fscrypt, and the most relevant one for dm-crypt. However, dm-crypt
- * also permits ESSIV to be used in combination with the authenc template,
- * e.g., 'essiv(authenc(hmac(sha256),cbc(aes)),sha256)', in which case
- * we need to instantiate an aead that accepts the same special key format
- * as the authenc template, and deals with the way the encrypted IV is
- * embedded into the AAD area of the aead request. This means the AEAD
- * flavor produced by this template is tightly coupled to the way dm-crypt
- * happens to use it.
- *
- * Copyright (c) 2019 Linaro, Ltd. <ard.biesheuvel@linaro.org>
- *
- * Heavily based on:
- * adiantum length-preserving encryption mode
- *
- * Copyright 2018 Google LLC
- */
+
+ 
 
 #include <crypto/authenc.h>
 #include <crypto/internal/aead.h>
@@ -191,11 +164,7 @@ static int essiv_aead_crypt(struct aead_request *req, bool enc)
 
 	crypto_cipher_encrypt_one(tctx->essiv_cipher, req->iv, req->iv);
 
-	/*
-	 * dm-crypt embeds the sector number and the IV in the AAD region, so
-	 * we have to copy the converted IV into the right scatterlist before
-	 * we pass it on.
-	 */
+	 
 	rctx->assoc = NULL;
 	if (req->src == req->dst || !enc) {
 		scatterwalk_map_and_copy(req->iv, req->dst,
@@ -219,10 +188,7 @@ static int essiv_aead_crypt(struct aead_request *req, bool enc)
 		sg_init_table(rctx->sg, 4);
 
 		if (unlikely(nents > 1)) {
-			/*
-			 * This is a case that rarely occurs in practice, but
-			 * for correctness, we have to deal with it nonetheless.
-			 */
+			 
 			rctx->assoc = kmalloc(ssize, GFP_ATOMIC);
 			if (!rctx->assoc)
 				return -ENOMEM;
@@ -391,12 +357,12 @@ static bool parse_cipher_name(char *essiv_cipher_name, const char *cra_name)
 	const char *p, *q;
 	int len;
 
-	/* find the last opening parens */
+	 
 	p = strrchr(cra_name, '(');
 	if (!p++)
 		return false;
 
-	/* find the first closing parens in the tail of the string */
+	 
 	q = strchr(p, ')');
 	if (!q)
 		return false;
@@ -484,7 +450,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 		base = &skcipher_inst->alg.base;
 		ictx = crypto_instance_ctx(inst);
 
-		/* Symmetric cipher, e.g., "cbc(aes)" */
+		 
 		err = crypto_grab_skcipher(&ictx->u.skcipher_spawn, inst,
 					   inner_cipher_name, 0, mask);
 		if (err)
@@ -503,7 +469,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 		base = &aead_inst->alg.base;
 		ictx = crypto_instance_ctx(inst);
 
-		/* AEAD cipher, e.g., "authenc(hmac(sha256),cbc(aes))" */
+		 
 		err = crypto_grab_aead(&ictx->u.aead_spawn, inst,
 				       inner_cipher_name, 0, mask);
 		if (err)
@@ -528,7 +494,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto out_drop_skcipher;
 	}
 
-	/* Synchronous hash, e.g., "sha256" */
+	 
 	_hash_alg = crypto_alg_mod_lookup(shash_name,
 					  CRYPTO_ALG_TYPE_SHASH,
 					  CRYPTO_ALG_TYPE_MASK | mask);
@@ -538,7 +504,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 	}
 	hash_alg = __crypto_shash_alg(_hash_alg);
 
-	/* Check the set of algorithms */
+	 
 	if (!essiv_supported_algorithms(ictx->essiv_cipher_name, hash_alg,
 					ivsize)) {
 		pr_warn("Unsupported essiv instantiation: essiv(%s,%s)\n",
@@ -547,11 +513,11 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto out_free_hash;
 	}
 
-	/* record the driver name so we can instantiate this exact algo later */
+	 
 	strscpy(ictx->shash_driver_name, hash_alg->base.cra_driver_name,
 		CRYPTO_MAX_ALG_NAME);
 
-	/* Instance fields */
+	 
 
 	err = -ENAMETOOLONG;
 	if (snprintf(base->cra_name, CRYPTO_MAX_ALG_NAME,
@@ -563,10 +529,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
 		     hash_alg->base.cra_driver_name) >= CRYPTO_MAX_ALG_NAME)
 		goto out_free_hash;
 
-	/*
-	 * hash_alg wasn't gotten via crypto_grab*(), so we need to inherit its
-	 * flags manually.
-	 */
+	 
 	base->cra_flags        |= (hash_alg->base.cra_flags &
 				   CRYPTO_ALG_INHERITED_FLAGS);
 	base->cra_blocksize	= block_base->cra_blocksize;
@@ -626,7 +589,7 @@ out_free_inst:
 	return err;
 }
 
-/* essiv(cipher_name, shash_name) */
+ 
 static struct crypto_template essiv_tmpl = {
 	.name	= "essiv",
 	.create	= essiv_create,

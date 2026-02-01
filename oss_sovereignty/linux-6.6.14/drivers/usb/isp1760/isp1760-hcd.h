@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ISP1760_HCD_H_
 #define _ISP1760_HCD_H_
 
@@ -18,7 +18,7 @@ struct isp1760_slotinfo {
 	unsigned long timestamp;
 };
 
-/* chip memory management */
+ 
 #define ISP176x_BLOCK_MAX (32 + 20 + 4)
 #define ISP176x_BLOCK_NUM 3
 
@@ -63,7 +63,7 @@ struct isp1760_hcd {
 	struct isp1760_memory_chunk memory_pool[ISP176x_BLOCK_MAX];
 	struct list_head	qh_list[QH_END];
 
-	/* periodic schedule support */
+	 
 #define	DEFAULT_I_TDPS		1024
 	unsigned		periodic_size;
 	unsigned		i_thresh;
@@ -101,4 +101,4 @@ static inline void isp1760_deinit_kmem_cache(void)
 }
 #endif
 
-#endif /* _ISP1760_HCD_H_ */
+#endif  

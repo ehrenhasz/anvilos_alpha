@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW8723D_H__
 #define __RTW8723D_H__
@@ -34,7 +33,7 @@ enum rtw8723d_iqk_result {
 };
 
 struct rtw8723de_efuse {
-	u8 mac_addr[ETH_ALEN];		/* 0xd0 */
+	u8 mac_addr[ETH_ALEN];		 
 	u8 vender_id[2];
 	u8 device_id[2];
 	u8 sub_vender_id[2];
@@ -42,17 +41,17 @@ struct rtw8723de_efuse {
 };
 
 struct rtw8723du_efuse {
-	u8 res4[48];                    /* 0xd0 */
-	u8 vender_id[2];                /* 0x100 */
-	u8 product_id[2];               /* 0x102 */
-	u8 usb_option;                  /* 0x104 */
-	u8 res5[2];			/* 0x105 */
-	u8 mac_addr[ETH_ALEN];          /* 0x107 */
+	u8 res4[48];                     
+	u8 vender_id[2];                 
+	u8 product_id[2];                
+	u8 usb_option;                   
+	u8 res5[2];			 
+	u8 mac_addr[ETH_ALEN];           
 };
 
 struct rtw8723ds_efuse {
-	u8 res4[0x4a];			/* 0xd0 */
-	u8 mac_addr[ETH_ALEN];		/* 0x11a */
+	u8 res4[0x4a];			 
+	u8 mac_addr[ETH_ALEN];		 
 };
 
 struct rtw8723d_efuse {
@@ -61,15 +60,15 @@ struct rtw8723d_efuse {
 	u8 afe;
 	u8 rsvd1[11];
 
-	/* power index for four RF paths */
+	 
 	struct rtw_txpwr_idx txpwr_idx_table[4];
 
-	u8 channel_plan;		/* 0xb8 */
+	u8 channel_plan;		 
 	u8 xtal_k;
 	u8 thermal_meter;
 	u8 iqk_lck;
-	u8 pa_type;			/* 0xbc */
-	u8 lna_type_2g[2];		/* 0xbd */
+	u8 pa_type;			 
+	u8 lna_type_2g[2];		 
 	u8 lna_type_5g[2];
 	u8 rf_board_option;
 	u8 rf_feature_option;
@@ -79,7 +78,7 @@ struct rtw8723d_efuse {
 	u8 tx_bb_swing_setting_2g;
 	u8 res_c7;
 	u8 tx_pwr_calibrate_rate;
-	u8 rf_antenna_option;		/* 0xc9 */
+	u8 rf_antenna_option;		 
 	u8 rfe_option;
 	u8 country_code[2];
 	u8 res[3];
@@ -92,11 +91,11 @@ struct rtw8723d_efuse {
 
 extern const struct rtw_chip_info rtw8723d_hw_spec;
 
-/* phy status page0 */
+ 
 #define GET_PHY_STAT_P0_PWDB(phy_stat)                                         \
 	le32_get_bits(*((__le32 *)(phy_stat) + 0x00), GENMASK(15, 8))
 
-/* phy status page1 */
+ 
 #define GET_PHY_STAT_P1_PWDB_A(phy_stat)                                       \
 	le32_get_bits(*((__le32 *)(phy_stat) + 0x00), GENMASK(15, 8))
 #define GET_PHY_STAT_P1_PWDB_B(phy_stat)                                       \
@@ -116,20 +115,20 @@ extern const struct rtw_chip_info rtw8723d_hw_spec;
 
 static inline s32 iqkxy_to_s32(s32 val)
 {
-	/* val is Q10.8 */
+	 
 	return sign_extend32(val, 9);
 }
 
 static inline s32 iqk_mult(s32 x, s32 y, s32 *ext)
 {
-	/* x, y and return value are Q10.8 */
+	 
 	s32 t;
 
 	t = x * y;
 	if (ext)
-		*ext = (t >> 7) & 0x1;	/* Q.16 --> Q.9; get LSB of Q.9 */
+		*ext = (t >> 7) & 0x1;	 
 
-	return (t >> 8);	/* Q.16 --> Q.8 */
+	return (t >> 8);	 
 }
 
 #define OFDM_SWING_A(swing)		FIELD_GET(GENMASK(9, 0), swing)

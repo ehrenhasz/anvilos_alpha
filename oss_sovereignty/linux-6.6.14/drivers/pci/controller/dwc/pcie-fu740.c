@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FU740 DesignWare PCIe Controller integration
- * Copyright (C) 2019-2021 SiFive, Inc.
- * Paul Walmsley
- * Greentime Hu
- *
- * Based in part on the i.MX6 PCIe host controller shim which is:
- *
- * Copyright (C) 2013 Kosagi
- *		https://www.kosagi.com
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -79,28 +69,24 @@ struct fu740_pcie {
 
 static void fu740_pcie_assert_reset(struct fu740_pcie *afp)
 {
-	/* Assert PERST_N GPIO */
+	 
 	gpiod_set_value_cansleep(afp->reset, 0);
-	/* Assert controller PERST_N */
+	 
 	writel_relaxed(0x0, afp->mgmt_base + PCIEX8MGMT_PERST_N);
 }
 
 static void fu740_pcie_deassert_reset(struct fu740_pcie *afp)
 {
-	/* Deassert controller PERST_N */
+	 
 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_PERST_N);
-	/* Deassert PERST_N GPIO */
+	 
 	gpiod_set_value_cansleep(afp->reset, 1);
 }
 
 static void fu740_pcie_power_on(struct fu740_pcie *afp)
 {
 	gpiod_set_value_cansleep(afp->pwren, 1);
-	/*
-	 * Ensure that PERST has been asserted for at least 100 ms.
-	 * Section 2.2 of PCI Express Card Electromechanical Specification
-	 * Revision 3.0
-	 */
+	 
 	msleep(100);
 }
 
@@ -121,7 +107,7 @@ static void fu740_phyregwrite(const uint8_t phy, const uint16_t addr,
 	void __iomem *phy_cr_para_ack;
 	int ret, val;
 
-	/* Setup */
+	 
 	if (phy) {
 		phy_cr_para_addr = afp->mgmt_base + PCIEX8MGMT_PHY1_CR_PARA_ADDR;
 		phy_cr_para_wr_data = afp->mgmt_base + PCIEX8MGMT_PHY1_CR_PARA_WR_DATA;
@@ -138,15 +124,15 @@ static void fu740_phyregwrite(const uint8_t phy, const uint16_t addr,
 	writel_relaxed(wrdata, phy_cr_para_wr_data);
 	writel_relaxed(1, phy_cr_para_wr_en);
 
-	/* Wait for wait_idle */
+	 
 	ret = readl_poll_timeout(phy_cr_para_ack, val, val, 10, 5000);
 	if (ret)
 		dev_warn(dev, "Wait for wait_idle state failed!\n");
 
-	/* Clear */
+	 
 	writel_relaxed(0, phy_cr_para_wr_en);
 
-	/* Wait for ~wait_idle */
+	 
 	ret = readl_poll_timeout(phy_cr_para_ack, val, !val, 10, 5000);
 	if (ret)
 		dev_warn(dev, "Wait for !wait_idle state failed!\n");
@@ -154,17 +140,14 @@ static void fu740_phyregwrite(const uint8_t phy, const uint16_t addr,
 
 static void fu740_pcie_init_phy(struct fu740_pcie *afp)
 {
-	/* Enable phy cr_para_sel interfaces */
+	 
 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_PHY0_CR_PARA_SEL);
 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_PHY1_CR_PARA_SEL);
 
-	/*
-	 * Wait 10 cr_para cycles to guarantee that the registers are ready
-	 * to be edited.
-	 */
+	 
 	ndelay(10);
 
-	/* Set PHY AC termination mode */
+	 
 	fu740_phyregwrite(0, PCIEX8MGMT_PHY_LANE0_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
 	fu740_phyregwrite(0, PCIEX8MGMT_PHY_LANE1_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
 	fu740_phyregwrite(0, PCIEX8MGMT_PHY_LANE2_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
@@ -183,13 +166,7 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
 	int ret;
 	u32 orig, tmp;
 
-	/*
-	 * Force 2.5GT/s when starting the link, due to some devices not
-	 * probing at higher speeds. This happens with the PCIe switch
-	 * on the Unmatched board when U-Boot has not initialised the PCIe.
-	 * The fix in U-Boot is to force 2.5GT/s, which then gets cleared
-	 * by the soft reset done by this driver.
-	 */
+	 
 	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
 	dw_pcie_dbi_ro_wr_en(pci);
 
@@ -199,7 +176,7 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
 	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
 	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
 
-	/* Enable LTSSM */
+	 
 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
 
 	ret = dw_pcie_wait_for_link(pci);
@@ -229,7 +206,7 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
 
 	ret = 0;
 err:
-	WARN_ON(ret);	/* we assume that errors will be very rare */
+	WARN_ON(ret);	 
 	dw_pcie_dbi_ro_wr_dis(pci);
 	return ret;
 }
@@ -241,23 +218,20 @@ static int fu740_pcie_host_init(struct dw_pcie_rp *pp)
 	struct device *dev = pci->dev;
 	int ret;
 
-	/* Power on reset */
+	 
 	fu740_pcie_drive_reset(afp);
 
-	/* Enable pcieauxclk */
+	 
 	ret = clk_prepare_enable(afp->pcie_aux);
 	if (ret) {
 		dev_err(dev, "unable to enable pcie_aux clock\n");
 		return ret;
 	}
 
-	/*
-	 * Assert hold_phy_rst (hold the controller LTSSM in reset after
-	 * power_up_rst_n for register programming with cr_para)
-	 */
+	 
 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_HOLD_PHY_RST);
 
-	/* Deassert power_up_rst_n */
+	 
 	ret = reset_control_deassert(afp->rst);
 	if (ret) {
 		dev_err(dev, "unable to deassert pcie_power_up_rst_n\n");
@@ -266,13 +240,13 @@ static int fu740_pcie_host_init(struct dw_pcie_rp *pp)
 
 	fu740_pcie_init_phy(afp);
 
-	/* Disable pcieauxclk */
+	 
 	clk_disable_unprepare(afp->pcie_aux);
-	/* Clear hold_phy_rst */
+	 
 	writel_relaxed(0x0, afp->mgmt_base + PCIEX8MGMT_APP_HOLD_PHY_RST);
-	/* Enable pcieauxclk */
+	 
 	clk_prepare_enable(afp->pcie_aux);
-	/* Set RC mode */
+	 
 	writel_relaxed(0x4, afp->mgmt_base + PCIEX8MGMT_DEVICE_TYPE);
 
 	return 0;
@@ -301,12 +275,12 @@ static int fu740_pcie_probe(struct platform_device *pdev)
 	pci->pp.ops = &fu740_pcie_host_ops;
 	pci->pp.num_vectors = MAX_MSI_IRQS;
 
-	/* SiFive specific region: mgmt */
+	 
 	afp->mgmt_base = devm_platform_ioremap_resource_byname(pdev, "mgmt");
 	if (IS_ERR(afp->mgmt_base))
 		return PTR_ERR(afp->mgmt_base);
 
-	/* Fetch GPIOs */
+	 
 	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(afp->reset))
 		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
@@ -315,13 +289,13 @@ static int fu740_pcie_probe(struct platform_device *pdev)
 	if (IS_ERR(afp->pwren))
 		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
 
-	/* Fetch clocks */
+	 
 	afp->pcie_aux = devm_clk_get(dev, "pcie_aux");
 	if (IS_ERR(afp->pcie_aux))
 		return dev_err_probe(dev, PTR_ERR(afp->pcie_aux),
 					     "pcie_aux clock source missing or invalid\n");
 
-	/* Fetch reset */
+	 
 	afp->rst = devm_reset_control_get_exclusive(dev, NULL);
 	if (IS_ERR(afp->rst))
 		return dev_err_probe(dev, PTR_ERR(afp->rst), "unable to get reset\n");
@@ -335,7 +309,7 @@ static void fu740_pcie_shutdown(struct platform_device *pdev)
 {
 	struct fu740_pcie *afp = platform_get_drvdata(pdev);
 
-	/* Bring down link, so bootloader gets clean state in case of reboot */
+	 
 	fu740_pcie_assert_reset(afp);
 }
 

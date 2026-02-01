@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_CHIP_REG
 #define DEF_CHIP_REG
@@ -1292,4 +1290,4 @@
 #define SEND_DMA_DESC_FETCHED_CNT (TXE + 0x000000200058)
 #define CCE_MSIX_PBA_OFFSET 0X0110000
 
-#endif          /* DEF_CHIP_REG */
+#endif           

@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xtsonic.c
- *
- * (C) 2001 - 2007 Tensilica Inc.
- *	Kevin Chea <kchea@yahoo.com>
- *	Marc Gauthier <marc@linux-xtensa.org>
- *	Chris Zankel <chris@zankel.net>
- *
- * (C) 1996,1998 by Thomas Bogendoerfer (tsbogend@alpha.franken.de)
- *
- * This driver is based on work from Andreas Busse, but most of
- * the code is rewritten.
- *
- * (C) 1995 by Andreas Busse (andy@waldorf-gmbh.de)
- *
- * A driver for the onboard Sonic ethernet controller on the XT2000.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -47,41 +31,25 @@ extern void xtboard_get_ether_addr(unsigned char *buf);
 
 #include "sonic.h"
 
-/*
- * According to the documentation for the Sonic ethernet controller,
- * EOBC should be 760 words (1520 bytes) for 32-bit applications, and,
- * as such, 2 words less than the buffer size. The value for RBSIZE
- * defined in sonic.h, however is only 1520.
- *
- * (Note that in 16-bit configurations, EOBC is 759 words (1518 bytes) and
- * RBSIZE 1520 bytes)
- */
+ 
 #undef SONIC_RBSIZE
 #define SONIC_RBSIZE	1524
 
-/*
- * The chip provides 256 byte register space.
- */
+ 
 #define SONIC_MEM_SIZE	0x100
 
-/*
- * Macros to access SONIC registers
- */
+ 
 #define SONIC_READ(reg) \
 	(0xffff & *((volatile unsigned int *)dev->base_addr+reg))
 
 #define SONIC_WRITE(reg,val) \
 	*((volatile unsigned int *)dev->base_addr+reg) = val
 
-/*
- * We cannot use station (ethernet) address prefixes to detect the
- * sonic controller since these are board manufacturer depended.
- * So we check for known Silicon Revision IDs instead.
- */
+ 
 static unsigned short known_revisions[] =
 {
-	0x101,			/* SONIC 83934 */
-	0xffff			/* end of list */
+	0x101,			 
+	0xffff			 
 };
 
 static int xtsonic_open(struct net_device *dev)
@@ -132,11 +100,7 @@ static int sonic_probe1(struct net_device *dev)
 	if (!request_mem_region(base_addr, 0x100, xtsonic_string))
 		return -EBUSY;
 
-	/*
-	 * get the Silicon Revision ID. If this is one of the known
-	 * one assume that we found a SONIC ethernet controller at
-	 * the expected location.
-	 */
+	 
 	silicon_revision = SONIC_READ(SONIC_SR);
 	i = 0;
 	while ((known_revisions[i] != 0xffff) &&
@@ -149,10 +113,7 @@ static int sonic_probe1(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	/*
-	 * Put the sonic into software reset, then retrieve ethernet address.
-	 * Note: we are assuming that the boot-loader has initialized the cam.
-	 */
+	 
 	SONIC_WRITE(SONIC_CMD,SONIC_CR_RST);
 	SONIC_WRITE(SONIC_DCR,
 		    SONIC_DCR_WC0|SONIC_DCR_DW|SONIC_DCR_LBR|SONIC_DCR_SBUS);
@@ -178,9 +139,7 @@ static int sonic_probe1(struct net_device *dev)
 	dev->netdev_ops		= &xtsonic_netdev_ops;
 	dev->watchdog_timeo	= TX_TIMEOUT;
 
-	/*
-	 * clear tally counter
-	 */
+	 
 	SONIC_WRITE(SONIC_CRCT,0xffff);
 	SONIC_WRITE(SONIC_FAET,0xffff);
 	SONIC_WRITE(SONIC_MPT,0xffff);
@@ -192,10 +151,7 @@ out:
 }
 
 
-/*
- * Probe for a SONIC ethernet controller on an XT2000 board.
- * Actually probing is superfluous but we're paranoid.
- */
+ 
 
 int xtsonic_probe(struct platform_device *pdev)
 {

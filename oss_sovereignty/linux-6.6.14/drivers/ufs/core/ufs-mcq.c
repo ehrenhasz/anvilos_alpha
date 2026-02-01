@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Qualcomm Innovation Center. All rights reserved.
- *
- * Authors:
- *	Asutosh Das <quic_asutoshd@quicinc.com>
- *	Can Guo <quic_cang@quicinc.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/dma-mapping.h>
@@ -29,7 +23,7 @@
 #define MCQ_ENTRY_SIZE_IN_DWORD	8
 #define CQE_UCD_BA GENMASK_ULL(63, 7)
 
-/* Max mcq register polling time in microseconds */
+ 
 #define MCQ_POLL_US 500000
 
 static int rw_queue_count_set(const char *val, const struct kernel_param *kp)
@@ -80,14 +74,7 @@ module_param_cb(poll_queues, &poll_queue_count_ops, &poll_queues, 0644);
 MODULE_PARM_DESC(poll_queues,
 		 "Number of poll queues used for r/w. Default value is 1");
 
-/**
- * ufshcd_mcq_config_mac - Set the #Max Activ Cmds.
- * @hba: per adapter instance
- * @max_active_cmds: maximum # of active commands to the device at any time.
- *
- * The controller won't send more than the max_active_cmds to the device at
- * any time.
- */
+ 
 void ufshcd_mcq_config_mac(struct ufs_hba *hba, u32 max_active_cmds)
 {
 	u32 val;
@@ -99,15 +86,7 @@ void ufshcd_mcq_config_mac(struct ufs_hba *hba, u32 max_active_cmds)
 }
 EXPORT_SYMBOL_GPL(ufshcd_mcq_config_mac);
 
-/**
- * ufshcd_mcq_req_to_hwq - find the hardware queue on which the
- * request would be issued.
- * @hba: per adapter instance
- * @req: pointer to the request to be issued
- *
- * Return: the hardware queue instance on which the request would
- * be queued.
- */
+ 
 struct ufs_hw_queue *ufshcd_mcq_req_to_hwq(struct ufs_hba *hba,
 					 struct request *req)
 {
@@ -117,23 +96,12 @@ struct ufs_hw_queue *ufshcd_mcq_req_to_hwq(struct ufs_hba *hba,
 	return &hba->uhq[hwq];
 }
 
-/**
- * ufshcd_mcq_decide_queue_depth - decide the queue depth
- * @hba: per adapter instance
- *
- * Return: queue-depth on success, non-zero on error
- *
- * MAC - Max. Active Command of the Host Controller (HC)
- * HC wouldn't send more than this commands to the device.
- * It is mandatory to implement get_hba_mac() to enable MCQ mode.
- * Calculates and adjusts the queue depth based on the depth
- * supported by the HC and ufs device.
- */
+ 
 int ufshcd_mcq_decide_queue_depth(struct ufs_hba *hba)
 {
 	int mac;
 
-	/* Mandatory to implement get_hba_mac() */
+	 
 	mac = ufshcd_mcq_vops_get_hba_mac(hba);
 	if (mac < 0) {
 		dev_err(hba->dev, "Failed to get mac, err=%d\n", mac);
@@ -141,11 +109,7 @@ int ufshcd_mcq_decide_queue_depth(struct ufs_hba *hba)
 	}
 
 	WARN_ON_ONCE(!hba->dev_info.bqueuedepth);
-	/*
-	 * max. value of bqueuedepth = 256, mac is host dependent.
-	 * It is mandatory for UFS device to define bQueueDepth if
-	 * shared queuing architecture is enabled.
-	 */
+	 
 	return min_t(int, mac, hba->dev_info.bqueuedepth);
 }
 
@@ -155,7 +119,7 @@ static int ufshcd_mcq_config_nr_queues(struct ufs_hba *hba)
 	u32 hba_maxq, rem, tot_queues;
 	struct Scsi_Host *host = hba->host;
 
-	/* maxq is 0 based value */
+	 
 	hba_maxq = FIELD_GET(MAX_QUEUE_SUP, hba->mcq_capabilities) + 1;
 
 	tot_queues = read_queues + poll_queues + rw_queues;
@@ -229,7 +193,7 @@ int ufshcd_mcq_memory_alloc(struct ufs_hba *hba)
 }
 
 
-/* Operation and runtime registers configuration */
+ 
 #define MCQ_CFG_n(r, i)	((r) + MCQ_QCFG_SIZE * (i))
 #define MCQ_OPR_OFFSET_n(p, i) \
 	(hba->mcq_opr[(p)].offset + hba->mcq_opr[(p)].stride * (i))
@@ -254,20 +218,17 @@ void ufshcd_mcq_write_cqis(struct ufs_hba *hba, u32 val, int i)
 }
 EXPORT_SYMBOL_GPL(ufshcd_mcq_write_cqis);
 
-/*
- * Current MCQ specification doesn't provide a Task Tag or its equivalent in
- * the Completion Queue Entry. Find the Task Tag using an indirect method.
- */
+ 
 static int ufshcd_mcq_get_tag(struct ufs_hba *hba,
 				     struct ufs_hw_queue *hwq,
 				     struct cq_entry *cqe)
 {
 	u64 addr;
 
-	/* sizeof(struct utp_transfer_cmd_desc) must be a multiple of 128 */
+	 
 	BUILD_BUG_ON(sizeof(struct utp_transfer_cmd_desc) & GENMASK(6, 0));
 
-	/* Bits 63:7 UCD base address, 6:5 are reserved, 4:0 is SQ ID */
+	 
 	addr = (le64_to_cpu(cqe->command_desc_base_addr) & CQE_UCD_BA) -
 		hba->ucdl_dma_addr;
 
@@ -282,7 +243,7 @@ static void ufshcd_mcq_process_cqe(struct ufs_hba *hba,
 
 	if (cqe->command_desc_base_addr) {
 		ufshcd_compl_one_cqe(hba, tag, cqe);
-		/* After processed the cqe, mark it empty (invalid) entry */
+		 
 		cqe->command_desc_base_addr = 0;
 	}
 }
@@ -338,53 +299,50 @@ void ufshcd_mcq_make_queues_operational(struct ufs_hba *hba)
 		hwq->id = i;
 		qsize = hwq->max_entries * MCQ_ENTRY_SIZE_IN_DWORD - 1;
 
-		/* Submission Queue Lower Base Address */
+		 
 		ufsmcq_writelx(hba, lower_32_bits(hwq->sqe_dma_addr),
 			      MCQ_CFG_n(REG_SQLBA, i));
-		/* Submission Queue Upper Base Address */
+		 
 		ufsmcq_writelx(hba, upper_32_bits(hwq->sqe_dma_addr),
 			      MCQ_CFG_n(REG_SQUBA, i));
-		/* Submission Queue Doorbell Address Offset */
+		 
 		ufsmcq_writelx(hba, MCQ_OPR_OFFSET_n(OPR_SQD, i),
 			      MCQ_CFG_n(REG_SQDAO, i));
-		/* Submission Queue Interrupt Status Address Offset */
+		 
 		ufsmcq_writelx(hba, MCQ_OPR_OFFSET_n(OPR_SQIS, i),
 			      MCQ_CFG_n(REG_SQISAO, i));
 
-		/* Completion Queue Lower Base Address */
+		 
 		ufsmcq_writelx(hba, lower_32_bits(hwq->cqe_dma_addr),
 			      MCQ_CFG_n(REG_CQLBA, i));
-		/* Completion Queue Upper Base Address */
+		 
 		ufsmcq_writelx(hba, upper_32_bits(hwq->cqe_dma_addr),
 			      MCQ_CFG_n(REG_CQUBA, i));
-		/* Completion Queue Doorbell Address Offset */
+		 
 		ufsmcq_writelx(hba, MCQ_OPR_OFFSET_n(OPR_CQD, i),
 			      MCQ_CFG_n(REG_CQDAO, i));
-		/* Completion Queue Interrupt Status Address Offset */
+		 
 		ufsmcq_writelx(hba, MCQ_OPR_OFFSET_n(OPR_CQIS, i),
 			      MCQ_CFG_n(REG_CQISAO, i));
 
-		/* Save the base addresses for quicker access */
+		 
 		hwq->mcq_sq_head = mcq_opr_base(hba, OPR_SQD, i) + REG_SQHP;
 		hwq->mcq_sq_tail = mcq_opr_base(hba, OPR_SQD, i) + REG_SQTP;
 		hwq->mcq_cq_head = mcq_opr_base(hba, OPR_CQD, i) + REG_CQHP;
 		hwq->mcq_cq_tail = mcq_opr_base(hba, OPR_CQD, i) + REG_CQTP;
 
-		/* Reinitializing is needed upon HC reset */
+		 
 		hwq->sq_tail_slot = hwq->cq_tail_slot = hwq->cq_head_slot = 0;
 
-		/* Enable Tail Entry Push Status interrupt only for non-poll queues */
+		 
 		if (i < hba->nr_hw_queues - hba->nr_queues[HCTX_TYPE_POLL])
 			writel(1, mcq_opr_base(hba, OPR_CQIS, i) + REG_CQIE);
 
-		/* Completion Queue Enable|Size to Completion Queue Attribute */
+		 
 		ufsmcq_writel(hba, (1 << QUEUE_EN_OFFSET) | qsize,
 			      MCQ_CFG_n(REG_CQATTR, i));
 
-		/*
-		 * Submission Qeueue Enable|Size|Completion Queue ID to
-		 * Submission Queue Attribute
-		 */
+		 
 		ufsmcq_writel(hba, (1 << QUEUE_EN_OFFSET) | qsize |
 			      (i << QUEUE_ID_OFFSET),
 			      MCQ_CFG_n(REG_SQATTR, i));
@@ -442,7 +400,7 @@ int ufshcd_mcq_init(struct ufs_hba *hba)
 		mutex_init(&hwq->sq_mutex);
 	}
 
-	/* The very first HW queue serves device commands */
+	 
 	hba->dev_cmd_queue = &hba->uhq[0];
 
 	host->host_tagset = 1;
@@ -487,14 +445,7 @@ static int ufshcd_mcq_sq_start(struct ufs_hba *hba, struct ufs_hw_queue *hwq)
 	return err;
 }
 
-/**
- * ufshcd_mcq_sq_cleanup - Clean up submission queue resources
- * associated with the pending command.
- * @hba: per adapter instance.
- * @task_tag: The command's task tag.
- *
- * Return: 0 for success; error code otherwise.
- */
+ 
 int ufshcd_mcq_sq_cleanup(struct ufs_hba *hba, int task_tag)
 {
 	struct ufshcd_lrb *lrbp = &hba->lrb[task_tag];
@@ -519,20 +470,20 @@ int ufshcd_mcq_sq_cleanup(struct ufs_hba *hba, int task_tag)
 
 	mutex_lock(&hwq->sq_mutex);
 
-	/* stop the SQ fetching before working on it */
+	 
 	err = ufshcd_mcq_sq_stop(hba, hwq);
 	if (err)
 		goto unlock;
 
-	/* SQCTI = EXT_IID, IID, LUN, Task Tag */
+	 
 	nexus = lrbp->lun << 8 | task_tag;
 	opr_sqd_base = mcq_opr_base(hba, OPR_SQD, id);
 	writel(nexus, opr_sqd_base + REG_SQCTI);
 
-	/* SQRTCy.ICU = 1 */
+	 
 	writel(SQ_ICU, opr_sqd_base + REG_SQRTC);
 
-	/* Poll SQRTSy.CUS = 1. Return result from SQRTSy.RTC */
+	 
 	reg = opr_sqd_base + REG_SQRTS;
 	err = read_poll_timeout(readl, val, val & SQ_CUS, 20,
 				MCQ_POLL_US, false, reg);
@@ -549,30 +500,13 @@ unlock:
 	return err;
 }
 
-/**
- * ufshcd_mcq_nullify_sqe - Nullify the submission queue entry.
- * Write the sqe's Command Type to 0xF. The host controller will not
- * fetch any sqe with Command Type = 0xF.
- *
- * @utrd: UTP Transfer Request Descriptor to be nullified.
- */
+ 
 static void ufshcd_mcq_nullify_sqe(struct utp_transfer_req_desc *utrd)
 {
 	utrd->header.command_type = 0xf;
 }
 
-/**
- * ufshcd_mcq_sqe_search - Search for the command in the submission queue
- * If the command is in the submission queue and not issued to the device yet,
- * nullify the sqe so the host controller will skip fetching the sqe.
- *
- * @hba: per adapter instance.
- * @hwq: Hardware Queue to be searched.
- * @task_tag: The command's task tag.
- *
- * Return: true if the SQE containing the command is present in the SQ
- * (not fetched by the controller); returns false if the SQE is not in the SQ.
- */
+ 
 static bool ufshcd_mcq_sqe_search(struct ufs_hba *hba,
 				  struct ufs_hw_queue *hwq, int task_tag)
 {
@@ -617,12 +551,7 @@ out:
 	return ret;
 }
 
-/**
- * ufshcd_mcq_abort - Abort the command in MCQ.
- * @cmd: The command to be aborted.
- *
- * Return: SUCCESS or FAILED error codes
- */
+ 
 int ufshcd_mcq_abort(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *host = cmd->device->host;
@@ -640,7 +569,7 @@ int ufshcd_mcq_abort(struct scsi_cmnd *cmd)
 		goto out;
 	}
 
-	/* Skip task abort in case previous aborts failed and report failure */
+	 
 	if (lrbp->req_abort_skip) {
 		dev_err(hba->dev, "%s: skip abort. tag %d failed earlier\n",
 			__func__, tag);
@@ -650,20 +579,13 @@ int ufshcd_mcq_abort(struct scsi_cmnd *cmd)
 	hwq = ufshcd_mcq_req_to_hwq(hba, scsi_cmd_to_rq(cmd));
 
 	if (ufshcd_mcq_sqe_search(hba, hwq, tag)) {
-		/*
-		 * Failure. The command should not be "stuck" in SQ for
-		 * a long time which resulted in command being aborted.
-		 */
+		 
 		dev_err(hba->dev, "%s: cmd found in sq. hwq=%d, tag=%d\n",
 			__func__, hwq->id, tag);
 		goto out;
 	}
 
-	/*
-	 * The command is not in the submission queue, and it is not
-	 * in the completion queue either. Query the device to see if
-	 * the command is being processed in the device.
-	 */
+	 
 	if (ufshcd_try_to_abort_task(hba, tag)) {
 		dev_err(hba->dev, "%s: device abort failed %d\n", __func__, err);
 		lrbp->req_abort_skip = true;

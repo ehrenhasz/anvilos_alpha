@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fsl-mc object allocator driver
- *
- * Copyright (C) 2013-2016 Freescale Semiconductor, Inc.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/msi.h>
@@ -19,14 +14,7 @@ static bool __must_check fsl_mc_is_allocatable(struct fsl_mc_device *mc_dev)
 	       is_fsl_mc_bus_dpcon(mc_dev);
 }
 
-/**
- * fsl_mc_resource_pool_add_device - add allocatable object to a resource
- * pool of a given fsl-mc bus
- *
- * @mc_bus: pointer to the fsl-mc bus
- * @pool_type: pool type
- * @mc_dev: pointer to allocatable fsl-mc device
- */
+ 
 static int __must_check fsl_mc_resource_pool_add_device(struct fsl_mc_bus
 								*mc_bus,
 							enum fsl_mc_pool_type
@@ -85,15 +73,7 @@ out:
 	return error;
 }
 
-/**
- * fsl_mc_resource_pool_remove_device - remove an allocatable device from a
- * resource pool
- *
- * @mc_dev: pointer to allocatable fsl-mc device
- *
- * It permanently removes an allocatable fsl-mc device from the resource
- * pool. It's an error if the device is in use.
- */
+ 
 static int __must_check fsl_mc_resource_pool_remove_device(struct fsl_mc_device
 								   *mc_dev)
 {
@@ -130,10 +110,7 @@ static int __must_check fsl_mc_resource_pool_remove_device(struct fsl_mc_device
 		goto out_unlock;
 	}
 
-	/*
-	 * If the device is currently allocated, its resource is not
-	 * in the free list and thus, the device cannot be removed.
-	 */
+	 
 	if (list_empty(&resource->node)) {
 		error = -EBUSY;
 		dev_err(&mc_bus_dev->dev,
@@ -253,24 +230,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(fsl_mc_resource_free);
 
-/**
- * fsl_mc_object_allocate - Allocates an fsl-mc object of the given
- * pool type from a given fsl-mc bus instance
- *
- * @mc_dev: fsl-mc device which is used in conjunction with the
- * allocated object
- * @pool_type: pool type
- * @new_mc_adev: pointer to area where the pointer to the allocated device
- * is to be returned
- *
- * Allocatable objects are always used in conjunction with some functional
- * device.  This function allocates an object of the specified type from
- * the DPRC containing the functional device.
- *
- * NOTE: pool_type must be different from FSL_MC_POOL_MCP, since MC
- * portals are allocated using fsl_mc_portal_allocate(), instead of
- * this function.
- */
+ 
 int __must_check fsl_mc_object_allocate(struct fsl_mc_device *mc_dev,
 					enum fsl_mc_pool_type pool_type,
 					struct fsl_mc_device **new_mc_adev)
@@ -321,11 +281,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(fsl_mc_object_allocate);
 
-/**
- * fsl_mc_object_free - Returns an fsl-mc object to the resource
- * pool where it came from.
- * @mc_adev: Pointer to the fsl-mc device
- */
+ 
 void fsl_mc_object_free(struct fsl_mc_device *mc_adev)
 {
 	struct fsl_mc_resource *resource;
@@ -342,16 +298,9 @@ void fsl_mc_object_free(struct fsl_mc_device *mc_adev)
 }
 EXPORT_SYMBOL_GPL(fsl_mc_object_free);
 
-/*
- * A DPRC and the devices in the DPRC all share the same GIC-ITS device
- * ID.  A block of IRQs is pre-allocated and maintained in a pool
- * from which devices can allocate them when needed.
- */
+ 
 
-/*
- * Initialize the interrupt pool associated with an fsl-mc bus.
- * It allocates a block of IRQs from the GIC-ITS.
- */
+ 
 int fsl_mc_populate_irq_pool(struct fsl_mc_device *mc_bus_dev,
 			     unsigned int irq_count)
 {
@@ -363,7 +312,7 @@ int fsl_mc_populate_irq_pool(struct fsl_mc_device *mc_bus_dev,
 	struct fsl_mc_resource_pool *res_pool =
 			&mc_bus->resource_pools[FSL_MC_POOL_IRQ];
 
-	/* do nothing if the IRQ pool is already populated */
+	 
 	if (mc_bus->irq_resources)
 		return 0;
 
@@ -386,10 +335,7 @@ int fsl_mc_populate_irq_pool(struct fsl_mc_device *mc_bus_dev,
 	for (i = 0; i < irq_count; i++) {
 		mc_dev_irq = &irq_resources[i];
 
-		/*
-		 * NOTE: This mc_dev_irq's MSI addr/value pair will be set
-		 * by the fsl_mc_msi_write_msg() callback
-		 */
+		 
 		mc_dev_irq->resource.type = res_pool->type;
 		mc_dev_irq->resource.data = mc_dev_irq;
 		mc_dev_irq->resource.parent_pool = res_pool;
@@ -410,10 +356,7 @@ cleanup_msi_irqs:
 }
 EXPORT_SYMBOL_GPL(fsl_mc_populate_irq_pool);
 
-/*
- * Teardown the interrupt pool associated with an fsl-mc bus.
- * It frees the IRQs that were allocated to the pool, back to the GIC-ITS.
- */
+ 
 void fsl_mc_cleanup_irq_pool(struct fsl_mc_device *mc_bus_dev)
 {
 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_bus_dev);
@@ -437,9 +380,7 @@ void fsl_mc_cleanup_irq_pool(struct fsl_mc_device *mc_bus_dev)
 }
 EXPORT_SYMBOL_GPL(fsl_mc_cleanup_irq_pool);
 
-/*
- * Allocate the IRQs required by a given fsl-mc device.
- */
+ 
 int __must_check fsl_mc_allocate_irqs(struct fsl_mc_device *mc_dev)
 {
 	int i;
@@ -505,9 +446,7 @@ error_resource_alloc:
 }
 EXPORT_SYMBOL_GPL(fsl_mc_allocate_irqs);
 
-/*
- * Frees the IRQs that were allocated for an fsl-mc device.
- */
+ 
 void fsl_mc_free_irqs(struct fsl_mc_device *mc_dev)
 {
 	int i;
@@ -576,10 +515,7 @@ void fsl_mc_cleanup_all_resource_pools(struct fsl_mc_device *mc_bus_dev)
 		fsl_mc_cleanup_resource_pool(mc_bus_dev, pool_type);
 }
 
-/*
- * fsl_mc_allocator_probe - callback invoked when an allocatable device is
- * being added to the system
- */
+ 
 static int fsl_mc_allocator_probe(struct fsl_mc_device *mc_dev)
 {
 	enum fsl_mc_pool_type pool_type;
@@ -608,10 +544,7 @@ static int fsl_mc_allocator_probe(struct fsl_mc_device *mc_dev)
 	return 0;
 }
 
-/*
- * fsl_mc_allocator_remove - callback invoked when an allocatable device is
- * being removed from the system
- */
+ 
 static void fsl_mc_allocator_remove(struct fsl_mc_device *mc_dev)
 {
 	int error;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <subcmd/parse-options.h>
 #include "evsel.h"
 #include "cgroup.h"
@@ -20,7 +20,7 @@
 int nr_cgroups;
 bool cgrp_event_expanded;
 
-/* used to match cgroup name with patterns */
+ 
 struct cgroup_name {
 	struct list_head list;
 	bool used;
@@ -70,7 +70,7 @@ int read_cgroup_id(struct cgroup *cgrp)
 	cgrp->id = handle.cgroup_id;
 	return 0;
 }
-#endif  /* HAVE_FILE_HANDLE */
+#endif   
 
 #ifndef CGROUP2_SUPER_MAGIC
 #define CGROUP2_SUPER_MAGIC  0x63677270
@@ -93,9 +93,7 @@ int cgroup_is_v2(const char *subsys)
 static struct cgroup *evlist__find_cgroup(struct evlist *evlist, const char *str)
 {
 	struct evsel *counter;
-	/*
-	 * check if cgrp is already defined, if so we reuse it
-	 */
+	 
 	evlist__for_each_entry(evlist, counter) {
 		if (!counter->cgrp)
 			continue;
@@ -150,10 +148,7 @@ static int add_cgroup(struct evlist *evlist, const char *str)
 
 	if (!cgrp)
 		return -1;
-	/*
-	 * find corresponding event
-	 * if add cgroup N, then need to find event N
-	 */
+	 
 	n = 0;
 	evlist__for_each_entry(evlist, counter) {
 		if (n == nr_cgroups)
@@ -204,7 +199,7 @@ void evlist__set_default_cgroup(struct evlist *evlist, struct cgroup *cgroup)
 		evsel__set_default_cgroup(evsel, cgroup);
 }
 
-/* helper function for ftw() in match_cgroups and list_cgroups */
+ 
 static int add_cgroup_name(const char *fpath, const struct stat *sb __maybe_unused,
 			   int typeflag, struct FTW *ftwbuf __maybe_unused)
 {
@@ -233,7 +228,7 @@ static int check_and_add_cgroup_name(const char *fpath)
 			return 0;
 	}
 
-	/* pretend if it's added by ftw() */
+	 
 	return add_cgroup_name(fpath, NULL, FTW_D, NULL);
 }
 
@@ -248,14 +243,14 @@ static void release_cgroup_list(void)
 	}
 }
 
-/* collect given cgroups only */
+ 
 static int list_cgroups(const char *str)
 {
 	const char *p, *e, *eos = str + strlen(str);
 	struct cgroup_name *cn;
 	char *s;
 
-	/* use given name as is when no regex is given */
+	 
 	for (;;) {
 		p = strchr(str, ',');
 		e = p ? p : eos;
@@ -281,14 +276,14 @@ static int list_cgroups(const char *str)
 		str = p+1;
 	}
 
-	/* these groups will be used */
+	 
 	list_for_each_entry(cn, &cgroup_list, list)
 		cn->used = true;
 
 	return 0;
 }
 
-/* collect all cgroups first and then match with the pattern */
+ 
 static int match_cgroups(const char *str)
 {
 	char mnt[PATH_MAX];
@@ -301,10 +296,10 @@ static int match_cgroups(const char *str)
 	if (cgroupfs_find_mountpoint(mnt, sizeof(mnt), "perf_event"))
 		return -1;
 
-	/* cgroup_name will have a full path, skip the root directory */
+	 
 	prefix_len = strlen(mnt);
 
-	/* collect all cgroups in the cgroup_list */
+	 
 	if (nftw(mnt, add_cgroup_name, 20, 0) < 0)
 		return -1;
 
@@ -312,9 +307,9 @@ static int match_cgroups(const char *str)
 		p = strchr(str, ',');
 		e = p ? p : eos;
 
-		/* allow empty cgroups, i.e., skip */
+		 
 		if (e - str) {
-			/* termination added */
+			 
 			s = strndup(str, e - str);
 			if (!s)
 				return -1;
@@ -323,7 +318,7 @@ static int match_cgroups(const char *str)
 				return -1;
 			}
 
-			/* check cgroup name with the pattern */
+			 
 			list_for_each_entry(cn, &cgroup_list, list) {
 				char *name = cn->name + prefix_len;
 
@@ -335,7 +330,7 @@ static int match_cgroups(const char *str)
 			regfree(&reg);
 			free(s);
 		} else {
-			/* first entry to root cgroup */
+			 
 			cn = list_first_entry(&cgroup_list, struct cgroup_name,
 					      list);
 			cn->used = true;
@@ -367,9 +362,9 @@ int parse_cgroups(const struct option *opt, const char *str,
 		p = strchr(str, ',');
 		e = p ? p : eos;
 
-		/* allow empty cgroups, i.e., skip */
+		 
 		if (e - str) {
-			/* termination added */
+			 
 			s = strndup(str, e - str);
 			if (!s)
 				return -1;
@@ -378,13 +373,13 @@ int parse_cgroups(const struct option *opt, const char *str,
 			if (ret)
 				return -1;
 		}
-		/* nr_cgroups is increased een for empty cgroups */
+		 
 		nr_cgroups++;
 		if (!p)
 			break;
 		str = p+1;
 	}
-	/* for the case one cgroup combine to multiple events */
+	 
 	i = 0;
 	if (nr_cgroups == 1) {
 		evlist__for_each_entry(evlist, counter) {
@@ -428,7 +423,7 @@ int evlist__expand_cgroup(struct evlist *evlist, const char *str,
 		return -ENOMEM;
 	}
 
-	/* save original events and init evlist */
+	 
 	evlist__splice_list_tail(orig_list, &evlist->core.entries);
 	evlist->core.nr_entries = 0;
 
@@ -453,7 +448,7 @@ int evlist__expand_cgroup(struct evlist *evlist, const char *str,
 		if (!cn->used)
 			continue;
 
-		/* cgroup_name might have a full path, skip the prefix */
+		 
 		name = cn->name + prefix_len;
 		if (name[0] == '/' && name[1])
 			name++;
@@ -476,7 +471,7 @@ int evlist__expand_cgroup(struct evlist *evlist, const char *str,
 
 			evlist__add(tmp_list, evsel);
 		}
-		/* cgroup__new() has a refcount, release it here */
+		 
 		cgroup__put(cgrp);
 		nr_cgroups++;
 

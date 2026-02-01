@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* The industrial I/O core, trigger handling functions
- *
- * Copyright (c) 2008 Jonathan Cameron
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/idr.h>
@@ -19,33 +16,15 @@
 #include "iio_core_trigger.h"
 #include <linux/iio/trigger_consumer.h>
 
-/* RFC - Question of approach
- * Make the common case (single sensor single trigger)
- * simple by starting trigger capture from when first sensors
- * is added.
- *
- * Complex simultaneous start requires use of 'hold' functionality
- * of the trigger. (not implemented)
- *
- * Any other suggestions?
- */
+ 
 
 static DEFINE_IDA(iio_trigger_ida);
 
-/* Single list of all available triggers */
+ 
 static LIST_HEAD(iio_trigger_list);
 static DEFINE_MUTEX(iio_trigger_list_lock);
 
-/**
- * name_show() - retrieve useful identifying name
- * @dev:	device associated with the iio_trigger
- * @attr:	pointer to the device_attribute structure that is
- *		being processed
- * @buf:	buffer to print the name into
- *
- * Return: a negative number on failure or the number of written
- *	   characters on success.
- */
+ 
 static ssize_t name_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
@@ -72,14 +51,14 @@ int iio_trigger_register(struct iio_trigger *trig_info)
 	if (trig_info->id < 0)
 		return trig_info->id;
 
-	/* Set the name used for the sysfs directory etc */
+	 
 	dev_set_name(&trig_info->dev, "trigger%d", trig_info->id);
 
 	ret = device_add(&trig_info->dev);
 	if (ret)
 		goto error_unregister_id;
 
-	/* Add to list of available triggers held by the IIO core */
+	 
 	mutex_lock(&iio_trigger_list_lock);
 	if (__iio_trigger_find_by_name(trig_info->name)) {
 		pr_err("Duplicate trigger name '%s'\n", trig_info->name);
@@ -107,7 +86,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
 	mutex_unlock(&iio_trigger_list_lock);
 
 	ida_free(&iio_trigger_ida, trig_info->id);
-	/* Possible issue in here */
+	 
 	device_del(&trig_info->dev);
 }
 EXPORT_SYMBOL(iio_trigger_unregister);
@@ -131,7 +110,7 @@ int iio_trigger_set_immutable(struct iio_dev *indio_dev, struct iio_trigger *tri
 }
 EXPORT_SYMBOL(iio_trigger_set_immutable);
 
-/* Search for trigger by name, assuming iio_trigger_list_lock held */
+ 
 static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
 {
 	struct iio_trigger *iter;
@@ -164,27 +143,11 @@ static void iio_reenable_work_fn(struct work_struct *work)
 	struct iio_trigger *trig = container_of(work, struct iio_trigger,
 						reenable_work);
 
-	/*
-	 * This 'might' occur after the trigger state is set to disabled -
-	 * in that case the driver should skip reenabling.
-	 */
+	 
 	trig->ops->reenable(trig);
 }
 
-/*
- * In general, reenable callbacks may need to sleep and this path is
- * not performance sensitive, so just queue up a work item
- * to reneable the trigger for us.
- *
- * Races that can cause this.
- * 1) A handler occurs entirely in interrupt context so the counter
- *    the final decrement is still in this interrupt.
- * 2) The trigger has been removed, but one last interrupt gets through.
- *
- * For (1) we must call reenable, but not in atomic context.
- * For (2) it should be safe to call reenanble, if drivers never blindly
- * reenable after state is off.
- */
+ 
 static void iio_trigger_notify_done_atomic(struct iio_trigger *trig)
 {
 	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
@@ -192,12 +155,7 @@ static void iio_trigger_notify_done_atomic(struct iio_trigger *trig)
 		schedule_work(&trig->reenable_work);
 }
 
-/**
- * iio_trigger_poll() - Call the IRQ trigger handler of the consumers
- * @trig: trigger which occurred
- *
- * This function should only be called from a hard IRQ context.
- */
+ 
 void iio_trigger_poll(struct iio_trigger *trig)
 {
 	int i;
@@ -222,13 +180,7 @@ irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private)
 }
 EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
 
-/**
- * iio_trigger_poll_nested() - Call the threaded trigger handler of the
- * consumers
- * @trig: trigger which occurred
- *
- * This function should only be called from a kernel thread context.
- */
+ 
 void iio_trigger_poll_nested(struct iio_trigger *trig)
 {
 	int i;
@@ -254,7 +206,7 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
 }
 EXPORT_SYMBOL(iio_trigger_notify_done);
 
-/* Trigger Consumer related functions */
+ 
 static int iio_trigger_get_irq(struct iio_trigger *trig)
 {
 	int ret;
@@ -277,13 +229,8 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
 	mutex_unlock(&trig->pool_lock);
 }
 
-/* Complexity in here.  With certain triggers (datardy) an acknowledgement
- * may be needed if the pollfuncs do not include the data read for the
- * triggering device.
- * This is not currently handled.  Alternative of not enabling trigger unless
- * the relevant function is in there may be the best option.
- */
-/* Worth protecting against double additions? */
+ 
+ 
 int iio_trigger_attach_poll_func(struct iio_trigger *trig,
 				 struct iio_poll_func *pf)
 {
@@ -292,10 +239,10 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
 		bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
 	int ret = 0;
 
-	/* Prevent the module from being removed whilst attached to a trigger */
+	 
 	__module_get(iio_dev_opaque->driver_module);
 
-	/* Get irq number */
+	 
 	pf->irq = iio_trigger_get_irq(trig);
 	if (pf->irq < 0) {
 		pr_err("Could not find an available irq for trigger %s, CONFIG_IIO_CONSUMERS_PER_TRIGGER=%d limit might be exceeded\n",
@@ -303,25 +250,21 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
 		goto out_put_module;
 	}
 
-	/* Request irq */
+	 
 	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
 				   pf->type, pf->name,
 				   pf);
 	if (ret < 0)
 		goto out_put_irq;
 
-	/* Enable trigger in driver */
+	 
 	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
 		ret = trig->ops->set_trigger_state(trig, true);
 		if (ret)
 			goto out_free_irq;
 	}
 
-	/*
-	 * Check if we just registered to our own trigger: we determine that
-	 * this is the case if the IIO device and the trigger device share the
-	 * same parent device.
-	 */
+	 
 	if (iio_validate_own_trigger(pf->indio_dev, trig))
 		trig->attached_own_device = true;
 
@@ -404,19 +347,7 @@ void iio_dealloc_pollfunc(struct iio_poll_func *pf)
 }
 EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
 
-/**
- * current_trigger_show() - trigger consumer sysfs query current trigger
- * @dev:	device associated with an industrial I/O device
- * @attr:	pointer to the device_attribute structure that
- *		is being processed
- * @buf:	buffer where the current trigger name will be printed into
- *
- * For trigger consumers the current_trigger interface allows the trigger
- * used by the device to be queried.
- *
- * Return: a negative number on failure, the number of characters written
- *	   on success or 0 if no trigger is available
- */
+ 
 static ssize_t current_trigger_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -427,20 +358,7 @@ static ssize_t current_trigger_show(struct device *dev,
 	return 0;
 }
 
-/**
- * current_trigger_store() - trigger consumer sysfs set current trigger
- * @dev:	device associated with an industrial I/O device
- * @attr:	device attribute that is being processed
- * @buf:	string buffer that holds the name of the trigger
- * @len:	length of the trigger name held by buf
- *
- * For trigger consumers the current_trigger interface allows the trigger
- * used for this device to be specified at run time based on the trigger's
- * name.
- *
- * Return: negative error code on failure or length of the buffer
- *	   on success
- */
+ 
 static ssize_t current_trigger_store(struct device *dev,
 				     struct device_attribute *attr,
 				     const char *buf, size_t len)
@@ -611,17 +529,7 @@ free_trig:
 	return NULL;
 }
 
-/**
- * __iio_trigger_alloc - Allocate a trigger
- * @parent:		Device to allocate iio_trigger for
- * @this_mod:		module allocating the trigger
- * @fmt:		trigger name format. If it includes format
- *			specifiers, the additional arguments following
- *			format are formatted and inserted in the resulting
- *			string replacing their respective specifiers.
- * RETURNS:
- * Pointer to allocated iio_trigger on success, NULL on failure.
- */
+ 
 struct iio_trigger *__iio_trigger_alloc(struct device *parent,
 					struct module *this_mod,
 					const char *fmt, ...)
@@ -649,21 +557,7 @@ static void devm_iio_trigger_release(struct device *dev, void *res)
 	iio_trigger_free(*(struct iio_trigger **)res);
 }
 
-/**
- * __devm_iio_trigger_alloc - Resource-managed iio_trigger_alloc()
- * Managed iio_trigger_alloc.  iio_trigger allocated with this function is
- * automatically freed on driver detach.
- * @parent:		Device to allocate iio_trigger for
- * @this_mod:		module allocating the trigger
- * @fmt:		trigger name format. If it includes format
- *			specifiers, the additional arguments following
- *			format are formatted and inserted in the resulting
- *			string replacing their respective specifiers.
- *
- *
- * RETURNS:
- * Pointer to allocated iio_trigger on success, NULL on failure.
- */
+ 
 struct iio_trigger *__devm_iio_trigger_alloc(struct device *parent,
 					     struct module *this_mod,
 					     const char *fmt, ...)
@@ -676,7 +570,7 @@ struct iio_trigger *__devm_iio_trigger_alloc(struct device *parent,
 	if (!ptr)
 		return NULL;
 
-	/* use raw alloc_dr for kmalloc caller tracing */
+	 
 	va_start(vargs, fmt);
 	trig = viio_trigger_alloc(parent, this_mod, fmt, vargs);
 	va_end(vargs);
@@ -696,19 +590,7 @@ static void devm_iio_trigger_unreg(void *trigger_info)
 	iio_trigger_unregister(trigger_info);
 }
 
-/**
- * devm_iio_trigger_register - Resource-managed iio_trigger_register()
- * @dev:	device this trigger was allocated for
- * @trig_info:	trigger to register
- *
- * Managed iio_trigger_register().  The IIO trigger registered with this
- * function is automatically unregistered on driver detach. This function
- * calls iio_trigger_register() internally. Refer to that function for more
- * information.
- *
- * RETURNS:
- * 0 on success, negative error number on failure.
- */
+ 
 int devm_iio_trigger_register(struct device *dev,
 			      struct iio_trigger *trig_info)
 {
@@ -728,18 +610,7 @@ bool iio_trigger_using_own(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL(iio_trigger_using_own);
 
-/**
- * iio_validate_own_trigger - Check if a trigger and IIO device belong to
- *  the same device
- * @idev: the IIO device to check
- * @trig: the IIO trigger to check
- *
- * This function can be used as the validate_trigger callback for triggers that
- * can only be attached to their own device.
- *
- * Return: 0 if both the trigger and the IIO device belong to the same
- * device, -EINVAL otherwise.
- */
+ 
 int iio_validate_own_trigger(struct iio_dev *idev, struct iio_trigger *trig)
 {
 	if (idev->dev.parent != trig->dev.parent)
@@ -748,18 +619,7 @@ int iio_validate_own_trigger(struct iio_dev *idev, struct iio_trigger *trig)
 }
 EXPORT_SYMBOL_GPL(iio_validate_own_trigger);
 
-/**
- * iio_trigger_validate_own_device - Check if a trigger and IIO device belong to
- *  the same device
- * @trig: The IIO trigger to check
- * @indio_dev: the IIO device to check
- *
- * This function can be used as the validate_device callback for triggers that
- * can only be attached to their own device.
- *
- * Return: 0 if both the trigger and the IIO device belong to the same
- * device, -EINVAL otherwise.
- */
+ 
 int iio_trigger_validate_own_device(struct iio_trigger *trig,
 				    struct iio_dev *indio_dev)
 {
@@ -777,7 +637,7 @@ int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
 
 void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
 {
-	/* Clean up an associated but not attached trigger reference */
+	 
 	if (indio_dev->trig)
 		iio_trigger_put(indio_dev->trig);
 }

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Linaro Ltd. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -38,7 +36,7 @@ struct pmic_typec_port {
 	bool				debouncing_cc;
 	struct delayed_work		cc_debounce_dwork;
 
-	spinlock_t			lock;	/* Register atomicity */
+	spinlock_t			lock;	 
 };
 
 static const char * const typec_cc_status_name[] = {
@@ -168,7 +166,7 @@ int qcom_pmic_typec_port_set_vbus(struct pmic_typec_port *pmic_typec_port, bool 
 		val = TYPEC_SM_VBUS_VSAFE0V;
 	}
 
-	/* Poll waiting for transition to required vSafe5V or vSafe0V */
+	 
 	ret = regmap_read_poll_timeout(pmic_typec_port->regmap,
 				       pmic_typec_port->base + TYPEC_SM_STATUS_REG,
 				       sm_stat, sm_stat & val,
@@ -355,7 +353,7 @@ int qcom_pmic_typec_port_set_vconn(struct pmic_typec_port *pmic_typec_port, bool
 	if (ret)
 		goto done;
 
-	/* Set VCONN on the inversion of the active CC channel */
+	 
 	orientation = (misc & CC_ORIENTATION) ? 0 : VCONN_EN_ORIENTATION;
 	if (on) {
 		mask = VCONN_EN_ORIENTATION | VCONN_EN_VALUE;
@@ -411,7 +409,7 @@ int qcom_pmic_typec_port_start_toggling(struct pmic_typec_port *pmic_typec_port,
 
 	qcom_pmic_set_cc_debounce(pmic_typec_port);
 
-	/* force it to toggle at least once */
+	 
 	ret = regmap_write(pmic_typec_port->regmap,
 			   pmic_typec_port->base + TYPEC_MODE_CFG_REG,
 			   TYPEC_DISABLE_CMD);
@@ -448,7 +446,7 @@ int qcom_pmic_typec_port_start(struct pmic_typec_port *pmic_typec_port,
 	int mask;
 	int ret;
 
-	/* Configure interrupt sources */
+	 
 	ret = regmap_write(pmic_typec_port->regmap,
 			   pmic_typec_port->base + TYPEC_INTERRUPT_EN_CFG_1_REG,
 			   TYPEC_INTR_EN_CFG_1_MASK);
@@ -461,20 +459,20 @@ int qcom_pmic_typec_port_start(struct pmic_typec_port *pmic_typec_port,
 	if (ret)
 		goto done;
 
-	/* start in TRY_SNK mode */
+	 
 	ret = regmap_write(pmic_typec_port->regmap,
 			   pmic_typec_port->base + TYPEC_MODE_CFG_REG, EN_TRY_SNK);
 	if (ret)
 		goto done;
 
-	/* Configure VCONN for software control */
+	 
 	ret = regmap_update_bits(pmic_typec_port->regmap,
 				 pmic_typec_port->base + TYPEC_VCONN_CONTROL_REG,
 				 VCONN_EN_SRC | VCONN_EN_VALUE, VCONN_EN_SRC);
 	if (ret)
 		goto done;
 
-	/* Set CC threshold to 1.6 Volts | tPDdebounce = 10-20ms */
+	 
 	mask = SEL_SRC_UPPER_REF | USE_TPD_FOR_EXITING_ATTACHSRC;
 	ret = regmap_update_bits(pmic_typec_port->regmap,
 				 pmic_typec_port->base + TYPEC_EXIT_STATE_CFG_REG,

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include "main.h"
 
-/* LAG group config flags. */
+ 
 #define NFP_FL_LAG_LAST			BIT(1)
 #define NFP_FL_LAG_FIRST		BIT(2)
 #define NFP_FL_LAG_DATA			BIT(3)
@@ -12,7 +12,7 @@
 #define NFP_FL_LAG_SWITCH		BIT(6)
 #define NFP_FL_LAG_RESET		BIT(7)
 
-/* LAG port state flags. */
+ 
 #define NFP_PORT_LAG_LINK_UP		BIT(0)
 #define NFP_PORT_LAG_TX_ENABLED		BIT(1)
 #define NFP_PORT_LAG_CHANGED		BIT(2)
@@ -23,17 +23,7 @@ enum nfp_fl_lag_batch {
 	NFP_FL_LAG_BATCH_FINISHED
 };
 
-/**
- * struct nfp_flower_cmsg_lag_config - control message payload for LAG config
- * @ctrl_flags:	Configuration flags
- * @reserved:	Reserved for future use
- * @ttl:	Time to live of packet - host always sets to 0xff
- * @pkt_number:	Config message packet number - increment for each message
- * @batch_ver:	Batch version of messages - increment for each batch of messages
- * @group_id:	Group ID applicable
- * @group_inst:	Group instance number - increment when group is reused
- * @members:	Array of 32-bit words listing all active group members
- */
+ 
 struct nfp_flower_cmsg_lag_config {
 	u8 ctrl_flags;
 	u8 reserved[2];
@@ -45,18 +35,7 @@ struct nfp_flower_cmsg_lag_config {
 	__be32 members[];
 };
 
-/**
- * struct nfp_fl_lag_group - list entry for each LAG group
- * @group_id:		Assigned group ID for host/kernel sync
- * @group_inst:		Group instance in case of ID reuse
- * @list:		List entry
- * @master_ndev:	Group master Netdev
- * @dirty:		Marked if the group needs synced to HW
- * @offloaded:		Marked if the group is currently offloaded to NIC
- * @to_remove:		Marked if the group should be removed from NIC
- * @to_destroy:		Marked if the group should be removed from driver
- * @slave_cnt:		Number of slaves in group
- */
+ 
 struct nfp_fl_lag_group {
 	unsigned int group_id;
 	u8 group_inst;
@@ -73,15 +52,15 @@ struct nfp_fl_lag_group {
 #define NFP_FL_LAG_VERSION_MASK		GENMASK(22, 0)
 #define NFP_FL_LAG_HOST_TTL		0xff
 
-/* Use this ID with zero members to ack a batch config */
+ 
 #define NFP_FL_LAG_SYNC_ID		0
-#define NFP_FL_LAG_GROUP_MIN		1 /* ID 0 reserved */
-#define NFP_FL_LAG_GROUP_MAX		32 /* IDs 1 to 31 are valid */
+#define NFP_FL_LAG_GROUP_MIN		1  
+#define NFP_FL_LAG_GROUP_MAX		32  
 
-/* wait for more config */
+ 
 #define NFP_FL_LAG_DELAY		(msecs_to_jiffies(2))
 
-#define NFP_FL_LAG_RETRANS_LIMIT	100 /* max retrans cmsgs to store */
+#define NFP_FL_LAG_RETRANS_LIMIT	100  
 
 static unsigned int nfp_fl_get_next_pkt_number(struct nfp_fl_lag *lag)
 {
@@ -93,11 +72,11 @@ static unsigned int nfp_fl_get_next_pkt_number(struct nfp_fl_lag *lag)
 
 static void nfp_fl_increment_version(struct nfp_fl_lag *lag)
 {
-	/* LSB is not considered by firmware so add 2 for each increment. */
+	 
 	lag->batch_ver += 2;
 	lag->batch_ver &= NFP_FL_LAG_VERSION_MASK;
 
-	/* Zero is reserved by firmware. */
+	 
 	if (!lag->batch_ver)
 		lag->batch_ver += 2;
 }
@@ -250,22 +229,20 @@ nfp_fl_lag_config_group(struct nfp_fl_lag *lag, struct nfp_fl_lag_group *group,
 	cmsg_payload = nfp_flower_cmsg_get_data(skb);
 	flags = 0;
 
-	/* Increment batch version for each new batch of config messages. */
+	 
 	if (*batch == NFP_FL_LAG_BATCH_FIRST) {
 		flags |= NFP_FL_LAG_FIRST;
 		nfp_fl_increment_version(lag);
 		*batch = NFP_FL_LAG_BATCH_MEMBER;
 	}
 
-	/* If it is a reset msg then it is also the end of the batch. */
+	 
 	if (lag->rst_cfg) {
 		flags |= NFP_FL_LAG_RESET;
 		*batch = NFP_FL_LAG_BATCH_FINISHED;
 	}
 
-	/* To signal the end of a batch, both the switch and last flags are set
-	 * and the reserved SYNC group ID is used.
-	 */
+	 
 	if (*batch == NFP_FL_LAG_BATCH_FINISHED) {
 		flags |= NFP_FL_LAG_SWITCH | NFP_FL_LAG_LAST;
 		lag->rst_cfg = false;
@@ -313,7 +290,7 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
 		unsigned long *flags;
 
 		if (entry->to_remove) {
-			/* Active count of 0 deletes group on hw. */
+			 
 			err = nfp_fl_lag_config_group(lag, entry, NULL, 0,
 						      &batch);
 			if (!err) {
@@ -339,12 +316,7 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
 		acti_netdevs = kmalloc_array(entry->slave_cnt,
 					     sizeof(*acti_netdevs), GFP_KERNEL);
 
-		/* Include sanity check in the loop. It may be that a bond has
-		 * changed between processing the last notification and the
-		 * work queue triggering. If the number of slaves has changed
-		 * or it now contains netdevs that cannot be offloaded, ignore
-		 * the group until pending notifications are processed.
-		 */
+		 
 		rcu_read_lock();
 		for_each_netdev_in_bond_rcu(entry->master_ndev, iter_netdev) {
 			if (!nfp_netdev_is_nfp_repr(iter_netdev)) {
@@ -363,7 +335,7 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
 			if (slaves > entry->slave_cnt)
 				break;
 
-			/* Check the ports for state changes. */
+			 
 			repr_priv = repr->app_priv;
 			flags = &repr_priv->lag_port_flags;
 
@@ -397,7 +369,7 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
 		kfree(acti_netdevs);
 	}
 
-	/* End the config batch if at least one packet has been batched. */
+	 
 	if (batch == NFP_FL_LAG_BATCH_MEMBER) {
 		batch = NFP_FL_LAG_BATCH_FINISHED;
 		err = nfp_fl_lag_config_group(lag, NULL, NULL, 0, &batch);
@@ -418,10 +390,7 @@ nfp_fl_lag_put_unprocessed(struct nfp_fl_lag *lag, struct sk_buff *skb)
 	if (be32_to_cpu(cmsg_payload->group_id) >= NFP_FL_LAG_GROUP_MAX)
 		return -EINVAL;
 
-	/* Drop cmsg retrans if storage limit is exceeded to prevent
-	 * overloading. If the fw notices that expected messages have not been
-	 * received in a given time block, it will request a full resync.
-	 */
+	 
 	if (skb_queue_len(&lag->retrans_skbs) >= NFP_FL_LAG_RETRANS_LIMIT)
 		return -ENOSPC;
 
@@ -453,28 +422,20 @@ bool nfp_flower_lag_unprocessed_msg(struct nfp_app *app, struct sk_buff *skb)
 	cmsg_payload = nfp_flower_cmsg_get_data(skb);
 	flags = cmsg_payload->ctrl_flags;
 
-	/* Note the intentional fall through below. If DATA and XON are both
-	 * set, the message will stored and sent again with the rest of the
-	 * unprocessed messages list.
-	 */
+	 
 
-	/* Store */
+	 
 	if (flags & NFP_FL_LAG_DATA)
 		if (!nfp_fl_lag_put_unprocessed(&priv->nfp_lag, skb))
 			store_skb = true;
 
-	/* Send stored */
+	 
 	if (flags & NFP_FL_LAG_XON)
 		nfp_fl_send_unprocessed(&priv->nfp_lag);
 
-	/* Resend all */
+	 
 	if (flags & NFP_FL_LAG_SYNC) {
-		/* To resend all config:
-		 * 1) Clear all unprocessed messages
-		 * 2) Mark all groups dirty
-		 * 3) Reset NFP group config
-		 * 4) Schedule a LAG config update
-		 */
+		 
 
 		__skb_queue_purge(&priv->nfp_lag.retrans_skbs);
 
@@ -557,7 +518,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
 		}
 		repr = netdev_priv(iter_netdev);
 
-		/* Ensure all ports are created by the same app/on same card. */
+		 
 		if (repr->app != priv->app) {
 			can_offload = false;
 			break;
@@ -569,7 +530,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
 
 	lag_upper_info = info->upper_info;
 
-	/* Firmware supports active/backup and L3/L4 hash bonds. */
+	 
 	if (lag_upper_info &&
 	    lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_ACTIVEBACKUP &&
 	    (lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_HASH ||
@@ -587,7 +548,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
 	group = nfp_fl_lag_find_group_for_master_with_lag(lag, upper);
 
 	if (slave_count == 0 || !can_offload) {
-		/* Cannot offload the group - remove if previously offloaded. */
+		 
 		if (group && group->offloaded)
 			nfp_fl_lag_schedule_group_remove(lag, group);
 
@@ -606,7 +567,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
 	group->dirty = true;
 	group->slave_cnt = slave_count;
 
-	/* Group may have been on queue for removal but is now offloadable. */
+	 
 	group->to_remove = false;
 	mutex_unlock(&lag->lock);
 
@@ -634,7 +595,7 @@ nfp_fl_lag_changels_event(struct nfp_fl_lag *lag, struct net_device *netdev,
 	priv = container_of(lag, struct nfp_flower_priv, nfp_lag);
 	repr = netdev_priv(netdev);
 
-	/* Verify that the repr is associated with this app. */
+	 
 	if (repr->app != priv->app)
 		return;
 
@@ -699,7 +660,7 @@ void nfp_flower_lag_init(struct nfp_fl_lag *lag)
 
 	__skb_queue_head_init(&lag->retrans_skbs);
 
-	/* 0 is a reserved batch version so increment to first valid value. */
+	 
 	nfp_fl_increment_version(lag);
 }
 
@@ -711,7 +672,7 @@ void nfp_flower_lag_cleanup(struct nfp_fl_lag *lag)
 
 	__skb_queue_purge(&lag->retrans_skbs);
 
-	/* Remove all groups. */
+	 
 	mutex_lock(&lag->lock);
 	list_for_each_entry_safe(entry, storage, &lag->group_list, list) {
 		list_del(&entry->list);

@@ -1,31 +1,10 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _umc_6_7_0_SH_MASK_HEADER
 #define _umc_6_7_0_SH_MASK_HEADER
 
 
-// addressBlock: umc_w_phy_umc0_mca_ip_umc0_mca_map
-//MCA_UMC_UMC0_MCUMC_STATUST0
+
+
 #define MCA_UMC_UMC0_MCUMC_STATUST0__ErrorCode__SHIFT                                                         0x0
 #define MCA_UMC_UMC0_MCUMC_STATUST0__ErrorCodeExt__SHIFT                                                      0x10
 #define MCA_UMC_UMC0_MCUMC_STATUST0__RESERV22__SHIFT                                                          0x16
@@ -78,23 +57,23 @@
 #define MCA_UMC_UMC0_MCUMC_STATUST0__UC_MASK                                                                  0x2000000000000000L
 #define MCA_UMC_UMC0_MCUMC_STATUST0__Overflow_MASK                                                            0x4000000000000000L
 #define MCA_UMC_UMC0_MCUMC_STATUST0__Val_MASK                                                                 0x8000000000000000L
-//MCA_UMC_UMC0_MCUMC_ADDRT0
+
 #define MCA_UMC_UMC0_MCUMC_ADDRT0__ErrorAddr__SHIFT                                                           0x0
 #define MCA_UMC_UMC0_MCUMC_ADDRT0__Reserved__SHIFT                                                            0x38
 #define MCA_UMC_UMC0_MCUMC_ADDRT0__ErrorAddr_MASK                                                             0x00FFFFFFFFFFFFFFL
 #define MCA_UMC_UMC0_MCUMC_ADDRT0__Reserved_MASK                                                              0xFF00000000000000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch0_umcchdec
-//UMCCH0_0_BaseAddrCS0
+
+
 #define UMCCH0_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH0_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH0_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH0_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH0_0_AddrMaskCS01
+
 #define UMCCH0_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH0_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH0_0_AddrSelCS01
+
 #define UMCCH0_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH0_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH0_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -109,49 +88,49 @@
 #define UMCCH0_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH0_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH0_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH0_0_AddrHashBank0
+
 #define UMCCH0_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_AddrHashBank1
+
 #define UMCCH0_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_AddrHashBank2
+
 #define UMCCH0_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_AddrHashBank3
+
 #define UMCCH0_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_AddrHashBank4
+
 #define UMCCH0_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_AddrHashBank5
+
 #define UMCCH0_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_0_UMC_CONFIG
+
 #define UMCCH0_0_UMC_CONFIG__DDR_TYPE__SHIFT                                                                  0x0
 #define UMCCH0_0_UMC_CONFIG__BurstLength__SHIFT                                                               0x8
 #define UMCCH0_0_UMC_CONFIG__BurstCtrl__SHIFT                                                                 0xa
@@ -160,7 +139,7 @@
 #define UMCCH0_0_UMC_CONFIG__BurstLength_MASK                                                                 0x00000300L
 #define UMCCH0_0_UMC_CONFIG__BurstCtrl_MASK                                                                   0x00000C00L
 #define UMCCH0_0_UMC_CONFIG__DramReady_MASK                                                                   0x80000000L
-//UMCCH0_0_EccCtrl
+
 #define UMCCH0_0_EccCtrl__WrEccEn__SHIFT                                                                      0x0
 #define UMCCH0_0_EccCtrl__EccReplayEn__SHIFT                                                                  0x1
 #define UMCCH0_0_EccCtrl__UCFatalEn__SHIFT                                                                    0x8
@@ -173,24 +152,24 @@
 #define UMCCH0_0_EccCtrl__RdEccEn_MASK                                                                        0x00000400L
 #define UMCCH0_0_EccCtrl__PoisonFatalDis_MASK                                                                 0x00001000L
 #define UMCCH0_0_EccCtrl__PoisonInhibit_MASK                                                                  0x00002000L
-//UMCCH0_0_UmcLocalCap
+
 #define UMCCH0_0_UmcLocalCap__EccDis__SHIFT                                                                   0x0
 #define UMCCH0_0_UmcLocalCap__Spare__SHIFT                                                                    0x1
 #define UMCCH0_0_UmcLocalCap__WrDis__SHIFT                                                                    0x1f
 #define UMCCH0_0_UmcLocalCap__EccDis_MASK                                                                     0x00000001L
 #define UMCCH0_0_UmcLocalCap__Spare_MASK                                                                      0x0000003EL
 #define UMCCH0_0_UmcLocalCap__WrDis_MASK                                                                      0x80000000L
-//UMCCH0_0_EccErrCntSel
+
 #define UMCCH0_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH0_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH0_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH0_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH0_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH0_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH0_0_EccErrCnt
+
 #define UMCCH0_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH0_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH0_0_PerfMonCtlClk
+
 #define UMCCH0_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH0_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH0_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -203,15 +182,15 @@
 #define UMCCH0_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH0_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH0_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH0_0_PerfMonCtrClk_Lo
+
 #define UMCCH0_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH0_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtrClk_Hi
+
 #define UMCCH0_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH0_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH0_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH0_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH0_0_PerfMonCtl1
+
 #define UMCCH0_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -228,10 +207,10 @@
 #define UMCCH0_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr1_Lo
+
 #define UMCCH0_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr1_Hi
+
 #define UMCCH0_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -240,7 +219,7 @@
 #define UMCCH0_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl2
+
 #define UMCCH0_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -257,10 +236,10 @@
 #define UMCCH0_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr2_Lo
+
 #define UMCCH0_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr2_Hi
+
 #define UMCCH0_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -269,7 +248,7 @@
 #define UMCCH0_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl3
+
 #define UMCCH0_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -286,10 +265,10 @@
 #define UMCCH0_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr3_Lo
+
 #define UMCCH0_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr3_Hi
+
 #define UMCCH0_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -298,7 +277,7 @@
 #define UMCCH0_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl4
+
 #define UMCCH0_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -315,10 +294,10 @@
 #define UMCCH0_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr4_Lo
+
 #define UMCCH0_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr4_Hi
+
 #define UMCCH0_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -327,7 +306,7 @@
 #define UMCCH0_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl5
+
 #define UMCCH0_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -344,10 +323,10 @@
 #define UMCCH0_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr5_Lo
+
 #define UMCCH0_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr5_Hi
+
 #define UMCCH0_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -356,7 +335,7 @@
 #define UMCCH0_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl6
+
 #define UMCCH0_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -373,10 +352,10 @@
 #define UMCCH0_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr6_Lo
+
 #define UMCCH0_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr6_Hi
+
 #define UMCCH0_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -385,7 +364,7 @@
 #define UMCCH0_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl7
+
 #define UMCCH0_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -402,10 +381,10 @@
 #define UMCCH0_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr7_Lo
+
 #define UMCCH0_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr7_Hi
+
 #define UMCCH0_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -414,7 +393,7 @@
 #define UMCCH0_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_0_PerfMonCtl8
+
 #define UMCCH0_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -431,10 +410,10 @@
 #define UMCCH0_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH0_0_PerfMonCtr8_Lo
+
 #define UMCCH0_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_0_PerfMonCtr8_Hi
+
 #define UMCCH0_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -445,16 +424,16 @@
 #define UMCCH0_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch1_umcchdec
-//UMCCH1_0_BaseAddrCS0
+
+
 #define UMCCH1_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH1_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH1_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH1_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH1_0_AddrMaskCS01
+
 #define UMCCH1_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH1_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH1_0_AddrSelCS01
+
 #define UMCCH1_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH1_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH1_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -469,49 +448,49 @@
 #define UMCCH1_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH1_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH1_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH1_0_AddrHashBank0
+
 #define UMCCH1_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_AddrHashBank1
+
 #define UMCCH1_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_AddrHashBank2
+
 #define UMCCH1_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_AddrHashBank3
+
 #define UMCCH1_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_AddrHashBank4
+
 #define UMCCH1_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_AddrHashBank5
+
 #define UMCCH1_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_0_UMC_CONFIG
+
 #define UMCCH1_0_UMC_CONFIG__DDR_TYPE__SHIFT                                                                  0x0
 #define UMCCH1_0_UMC_CONFIG__BurstLength__SHIFT                                                               0x8
 #define UMCCH1_0_UMC_CONFIG__BurstCtrl__SHIFT                                                                 0xa
@@ -520,7 +499,7 @@
 #define UMCCH1_0_UMC_CONFIG__BurstLength_MASK                                                                 0x00000300L
 #define UMCCH1_0_UMC_CONFIG__BurstCtrl_MASK                                                                   0x00000C00L
 #define UMCCH1_0_UMC_CONFIG__DramReady_MASK                                                                   0x80000000L
-//UMCCH1_0_EccCtrl
+
 #define UMCCH1_0_EccCtrl__WrEccEn__SHIFT                                                                      0x0
 #define UMCCH1_0_EccCtrl__EccReplayEn__SHIFT                                                                  0x1
 #define UMCCH1_0_EccCtrl__UCFatalEn__SHIFT                                                                    0x8
@@ -533,24 +512,24 @@
 #define UMCCH1_0_EccCtrl__RdEccEn_MASK                                                                        0x00000400L
 #define UMCCH1_0_EccCtrl__PoisonFatalDis_MASK                                                                 0x00001000L
 #define UMCCH1_0_EccCtrl__PoisonInhibit_MASK                                                                  0x00002000L
-//UMCCH1_0_UmcLocalCap
+
 #define UMCCH1_0_UmcLocalCap__EccDis__SHIFT                                                                   0x0
 #define UMCCH1_0_UmcLocalCap__Spare__SHIFT                                                                    0x1
 #define UMCCH1_0_UmcLocalCap__WrDis__SHIFT                                                                    0x1f
 #define UMCCH1_0_UmcLocalCap__EccDis_MASK                                                                     0x00000001L
 #define UMCCH1_0_UmcLocalCap__Spare_MASK                                                                      0x0000003EL
 #define UMCCH1_0_UmcLocalCap__WrDis_MASK                                                                      0x80000000L
-//UMCCH1_0_EccErrCntSel
+
 #define UMCCH1_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH1_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH1_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH1_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH1_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH1_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH1_0_EccErrCnt
+
 #define UMCCH1_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH1_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH1_0_PerfMonCtlClk
+
 #define UMCCH1_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH1_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH1_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -563,15 +542,15 @@
 #define UMCCH1_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH1_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH1_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH1_0_PerfMonCtrClk_Lo
+
 #define UMCCH1_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH1_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtrClk_Hi
+
 #define UMCCH1_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH1_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH1_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH1_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH1_0_PerfMonCtl1
+
 #define UMCCH1_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -588,10 +567,10 @@
 #define UMCCH1_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr1_Lo
+
 #define UMCCH1_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr1_Hi
+
 #define UMCCH1_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -600,7 +579,7 @@
 #define UMCCH1_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl2
+
 #define UMCCH1_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -617,10 +596,10 @@
 #define UMCCH1_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr2_Lo
+
 #define UMCCH1_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr2_Hi
+
 #define UMCCH1_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -629,7 +608,7 @@
 #define UMCCH1_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl3
+
 #define UMCCH1_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -646,10 +625,10 @@
 #define UMCCH1_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr3_Lo
+
 #define UMCCH1_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr3_Hi
+
 #define UMCCH1_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -658,7 +637,7 @@
 #define UMCCH1_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl4
+
 #define UMCCH1_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -675,10 +654,10 @@
 #define UMCCH1_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr4_Lo
+
 #define UMCCH1_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr4_Hi
+
 #define UMCCH1_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -687,7 +666,7 @@
 #define UMCCH1_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl5
+
 #define UMCCH1_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -704,10 +683,10 @@
 #define UMCCH1_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr5_Lo
+
 #define UMCCH1_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr5_Hi
+
 #define UMCCH1_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -716,7 +695,7 @@
 #define UMCCH1_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl6
+
 #define UMCCH1_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -733,10 +712,10 @@
 #define UMCCH1_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr6_Lo
+
 #define UMCCH1_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr6_Hi
+
 #define UMCCH1_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -745,7 +724,7 @@
 #define UMCCH1_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl7
+
 #define UMCCH1_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -762,10 +741,10 @@
 #define UMCCH1_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr7_Lo
+
 #define UMCCH1_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr7_Hi
+
 #define UMCCH1_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -774,7 +753,7 @@
 #define UMCCH1_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_0_PerfMonCtl8
+
 #define UMCCH1_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -791,10 +770,10 @@
 #define UMCCH1_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH1_0_PerfMonCtr8_Lo
+
 #define UMCCH1_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_0_PerfMonCtr8_Hi
+
 #define UMCCH1_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -805,16 +784,16 @@
 #define UMCCH1_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch2_umcchdec
-//UMCCH2_0_BaseAddrCS0
+
+
 #define UMCCH2_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH2_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH2_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH2_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH2_0_AddrMaskCS01
+
 #define UMCCH2_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH2_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH2_0_AddrSelCS01
+
 #define UMCCH2_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH2_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH2_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -829,49 +808,49 @@
 #define UMCCH2_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH2_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH2_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH2_0_AddrHashBank0
+
 #define UMCCH2_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_AddrHashBank1
+
 #define UMCCH2_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_AddrHashBank2
+
 #define UMCCH2_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_AddrHashBank3
+
 #define UMCCH2_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_AddrHashBank4
+
 #define UMCCH2_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_AddrHashBank5
+
 #define UMCCH2_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_0_UMC_CONFIG
+
 #define UMCCH2_0_UMC_CONFIG__DDR_TYPE__SHIFT                                                                  0x0
 #define UMCCH2_0_UMC_CONFIG__BurstLength__SHIFT                                                               0x8
 #define UMCCH2_0_UMC_CONFIG__BurstCtrl__SHIFT                                                                 0xa
@@ -880,7 +859,7 @@
 #define UMCCH2_0_UMC_CONFIG__BurstLength_MASK                                                                 0x00000300L
 #define UMCCH2_0_UMC_CONFIG__BurstCtrl_MASK                                                                   0x00000C00L
 #define UMCCH2_0_UMC_CONFIG__DramReady_MASK                                                                   0x80000000L
-//UMCCH2_0_EccCtrl
+
 #define UMCCH2_0_EccCtrl__WrEccEn__SHIFT                                                                      0x0
 #define UMCCH2_0_EccCtrl__EccReplayEn__SHIFT                                                                  0x1
 #define UMCCH2_0_EccCtrl__UCFatalEn__SHIFT                                                                    0x8
@@ -893,24 +872,24 @@
 #define UMCCH2_0_EccCtrl__RdEccEn_MASK                                                                        0x00000400L
 #define UMCCH2_0_EccCtrl__PoisonFatalDis_MASK                                                                 0x00001000L
 #define UMCCH2_0_EccCtrl__PoisonInhibit_MASK                                                                  0x00002000L
-//UMCCH2_0_UmcLocalCap
+
 #define UMCCH2_0_UmcLocalCap__EccDis__SHIFT                                                                   0x0
 #define UMCCH2_0_UmcLocalCap__Spare__SHIFT                                                                    0x1
 #define UMCCH2_0_UmcLocalCap__WrDis__SHIFT                                                                    0x1f
 #define UMCCH2_0_UmcLocalCap__EccDis_MASK                                                                     0x00000001L
 #define UMCCH2_0_UmcLocalCap__Spare_MASK                                                                      0x0000003EL
 #define UMCCH2_0_UmcLocalCap__WrDis_MASK                                                                      0x80000000L
-//UMCCH2_0_EccErrCntSel
+
 #define UMCCH2_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH2_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH2_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH2_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH2_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH2_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH2_0_EccErrCnt
+
 #define UMCCH2_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH2_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH2_0_PerfMonCtlClk
+
 #define UMCCH2_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH2_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH2_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -923,15 +902,15 @@
 #define UMCCH2_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH2_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH2_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH2_0_PerfMonCtrClk_Lo
+
 #define UMCCH2_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH2_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtrClk_Hi
+
 #define UMCCH2_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH2_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH2_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH2_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH2_0_PerfMonCtl1
+
 #define UMCCH2_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -948,10 +927,10 @@
 #define UMCCH2_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr1_Lo
+
 #define UMCCH2_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr1_Hi
+
 #define UMCCH2_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -960,7 +939,7 @@
 #define UMCCH2_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl2
+
 #define UMCCH2_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -977,10 +956,10 @@
 #define UMCCH2_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr2_Lo
+
 #define UMCCH2_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr2_Hi
+
 #define UMCCH2_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -989,7 +968,7 @@
 #define UMCCH2_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl3
+
 #define UMCCH2_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -1006,10 +985,10 @@
 #define UMCCH2_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr3_Lo
+
 #define UMCCH2_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr3_Hi
+
 #define UMCCH2_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1018,7 +997,7 @@
 #define UMCCH2_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl4
+
 #define UMCCH2_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -1035,10 +1014,10 @@
 #define UMCCH2_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr4_Lo
+
 #define UMCCH2_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr4_Hi
+
 #define UMCCH2_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1047,7 +1026,7 @@
 #define UMCCH2_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl5
+
 #define UMCCH2_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -1064,10 +1043,10 @@
 #define UMCCH2_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr5_Lo
+
 #define UMCCH2_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr5_Hi
+
 #define UMCCH2_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1076,7 +1055,7 @@
 #define UMCCH2_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl6
+
 #define UMCCH2_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -1093,10 +1072,10 @@
 #define UMCCH2_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr6_Lo
+
 #define UMCCH2_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr6_Hi
+
 #define UMCCH2_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1105,7 +1084,7 @@
 #define UMCCH2_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl7
+
 #define UMCCH2_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -1122,10 +1101,10 @@
 #define UMCCH2_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr7_Lo
+
 #define UMCCH2_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr7_Hi
+
 #define UMCCH2_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1134,7 +1113,7 @@
 #define UMCCH2_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_0_PerfMonCtl8
+
 #define UMCCH2_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -1151,10 +1130,10 @@
 #define UMCCH2_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH2_0_PerfMonCtr8_Lo
+
 #define UMCCH2_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_0_PerfMonCtr8_Hi
+
 #define UMCCH2_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1165,16 +1144,16 @@
 #define UMCCH2_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch3_umcchdec
-//UMCCH3_0_BaseAddrCS0
+
+
 #define UMCCH3_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH3_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH3_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH3_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH3_0_AddrMaskCS01
+
 #define UMCCH3_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH3_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH3_0_AddrSelCS01
+
 #define UMCCH3_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH3_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH3_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -1189,49 +1168,49 @@
 #define UMCCH3_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH3_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH3_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH3_0_AddrHashBank0
+
 #define UMCCH3_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_AddrHashBank1
+
 #define UMCCH3_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_AddrHashBank2
+
 #define UMCCH3_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_AddrHashBank3
+
 #define UMCCH3_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_AddrHashBank4
+
 #define UMCCH3_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_AddrHashBank5
+
 #define UMCCH3_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_0_UMC_CONFIG
+
 #define UMCCH3_0_UMC_CONFIG__DDR_TYPE__SHIFT                                                                  0x0
 #define UMCCH3_0_UMC_CONFIG__BurstLength__SHIFT                                                               0x8
 #define UMCCH3_0_UMC_CONFIG__BurstCtrl__SHIFT                                                                 0xa
@@ -1240,7 +1219,7 @@
 #define UMCCH3_0_UMC_CONFIG__BurstLength_MASK                                                                 0x00000300L
 #define UMCCH3_0_UMC_CONFIG__BurstCtrl_MASK                                                                   0x00000C00L
 #define UMCCH3_0_UMC_CONFIG__DramReady_MASK                                                                   0x80000000L
-//UMCCH3_0_EccCtrl
+
 #define UMCCH3_0_EccCtrl__WrEccEn__SHIFT                                                                      0x0
 #define UMCCH3_0_EccCtrl__EccReplayEn__SHIFT                                                                  0x1
 #define UMCCH3_0_EccCtrl__UCFatalEn__SHIFT                                                                    0x8
@@ -1253,24 +1232,24 @@
 #define UMCCH3_0_EccCtrl__RdEccEn_MASK                                                                        0x00000400L
 #define UMCCH3_0_EccCtrl__PoisonFatalDis_MASK                                                                 0x00001000L
 #define UMCCH3_0_EccCtrl__PoisonInhibit_MASK                                                                  0x00002000L
-//UMCCH3_0_UmcLocalCap
+
 #define UMCCH3_0_UmcLocalCap__EccDis__SHIFT                                                                   0x0
 #define UMCCH3_0_UmcLocalCap__Spare__SHIFT                                                                    0x1
 #define UMCCH3_0_UmcLocalCap__WrDis__SHIFT                                                                    0x1f
 #define UMCCH3_0_UmcLocalCap__EccDis_MASK                                                                     0x00000001L
 #define UMCCH3_0_UmcLocalCap__Spare_MASK                                                                      0x0000003EL
 #define UMCCH3_0_UmcLocalCap__WrDis_MASK                                                                      0x80000000L
-//UMCCH3_0_EccErrCntSel
+
 #define UMCCH3_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH3_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH3_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH3_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH3_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH3_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH3_0_EccErrCnt
+
 #define UMCCH3_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH3_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH3_0_PerfMonCtlClk
+
 #define UMCCH3_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH3_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH3_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -1283,15 +1262,15 @@
 #define UMCCH3_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH3_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH3_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH3_0_PerfMonCtrClk_Lo
+
 #define UMCCH3_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH3_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtrClk_Hi
+
 #define UMCCH3_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH3_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH3_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH3_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH3_0_PerfMonCtl1
+
 #define UMCCH3_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -1308,10 +1287,10 @@
 #define UMCCH3_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr1_Lo
+
 #define UMCCH3_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr1_Hi
+
 #define UMCCH3_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1320,7 +1299,7 @@
 #define UMCCH3_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl2
+
 #define UMCCH3_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -1337,10 +1316,10 @@
 #define UMCCH3_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr2_Lo
+
 #define UMCCH3_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr2_Hi
+
 #define UMCCH3_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1349,7 +1328,7 @@
 #define UMCCH3_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl3
+
 #define UMCCH3_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -1366,10 +1345,10 @@
 #define UMCCH3_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr3_Lo
+
 #define UMCCH3_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr3_Hi
+
 #define UMCCH3_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1378,7 +1357,7 @@
 #define UMCCH3_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl4
+
 #define UMCCH3_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -1395,10 +1374,10 @@
 #define UMCCH3_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr4_Lo
+
 #define UMCCH3_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr4_Hi
+
 #define UMCCH3_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1407,7 +1386,7 @@
 #define UMCCH3_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl5
+
 #define UMCCH3_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -1424,10 +1403,10 @@
 #define UMCCH3_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr5_Lo
+
 #define UMCCH3_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr5_Hi
+
 #define UMCCH3_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1436,7 +1415,7 @@
 #define UMCCH3_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl6
+
 #define UMCCH3_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -1453,10 +1432,10 @@
 #define UMCCH3_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr6_Lo
+
 #define UMCCH3_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr6_Hi
+
 #define UMCCH3_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1465,7 +1444,7 @@
 #define UMCCH3_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl7
+
 #define UMCCH3_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -1482,10 +1461,10 @@
 #define UMCCH3_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr7_Lo
+
 #define UMCCH3_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr7_Hi
+
 #define UMCCH3_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1494,7 +1473,7 @@
 #define UMCCH3_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_0_PerfMonCtl8
+
 #define UMCCH3_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -1511,10 +1490,10 @@
 #define UMCCH3_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH3_0_PerfMonCtr8_Lo
+
 #define UMCCH3_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_0_PerfMonCtr8_Hi
+
 #define UMCCH3_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1525,16 +1504,16 @@
 #define UMCCH3_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch4_umcchdec
-//UMCCH4_0_BaseAddrCS0
+
+
 #define UMCCH4_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH4_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH4_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH4_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH4_0_AddrMaskCS01
+
 #define UMCCH4_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH4_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH4_0_AddrSelCS01
+
 #define UMCCH4_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH4_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH4_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -1549,59 +1528,59 @@
 #define UMCCH4_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH4_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH4_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH4_0_AddrHashBank0
+
 #define UMCCH4_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_AddrHashBank1
+
 #define UMCCH4_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_AddrHashBank2
+
 #define UMCCH4_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_AddrHashBank3
+
 #define UMCCH4_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_AddrHashBank4
+
 #define UMCCH4_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_AddrHashBank5
+
 #define UMCCH4_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_0_EccErrCntSel
+
 #define UMCCH4_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH4_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH4_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH4_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH4_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH4_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH4_0_EccErrCnt
+
 #define UMCCH4_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH4_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH4_0_PerfMonCtlClk
+
 #define UMCCH4_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH4_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH4_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -1614,15 +1593,15 @@
 #define UMCCH4_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH4_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH4_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH4_0_PerfMonCtrClk_Lo
+
 #define UMCCH4_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH4_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtrClk_Hi
+
 #define UMCCH4_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH4_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH4_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH4_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH4_0_PerfMonCtl1
+
 #define UMCCH4_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -1639,10 +1618,10 @@
 #define UMCCH4_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr1_Lo
+
 #define UMCCH4_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr1_Hi
+
 #define UMCCH4_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1651,7 +1630,7 @@
 #define UMCCH4_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl2
+
 #define UMCCH4_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -1668,10 +1647,10 @@
 #define UMCCH4_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr2_Lo
+
 #define UMCCH4_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr2_Hi
+
 #define UMCCH4_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1680,7 +1659,7 @@
 #define UMCCH4_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl3
+
 #define UMCCH4_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -1697,10 +1676,10 @@
 #define UMCCH4_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr3_Lo
+
 #define UMCCH4_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr3_Hi
+
 #define UMCCH4_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1709,7 +1688,7 @@
 #define UMCCH4_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl4
+
 #define UMCCH4_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -1726,10 +1705,10 @@
 #define UMCCH4_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr4_Lo
+
 #define UMCCH4_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr4_Hi
+
 #define UMCCH4_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1738,7 +1717,7 @@
 #define UMCCH4_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl5
+
 #define UMCCH4_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -1755,10 +1734,10 @@
 #define UMCCH4_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr5_Lo
+
 #define UMCCH4_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr5_Hi
+
 #define UMCCH4_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1767,7 +1746,7 @@
 #define UMCCH4_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl6
+
 #define UMCCH4_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -1784,10 +1763,10 @@
 #define UMCCH4_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr6_Lo
+
 #define UMCCH4_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr6_Hi
+
 #define UMCCH4_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1796,7 +1775,7 @@
 #define UMCCH4_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl7
+
 #define UMCCH4_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -1813,10 +1792,10 @@
 #define UMCCH4_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr7_Lo
+
 #define UMCCH4_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr7_Hi
+
 #define UMCCH4_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1825,7 +1804,7 @@
 #define UMCCH4_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_0_PerfMonCtl8
+
 #define UMCCH4_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -1842,10 +1821,10 @@
 #define UMCCH4_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH4_0_PerfMonCtr8_Lo
+
 #define UMCCH4_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_0_PerfMonCtr8_Hi
+
 #define UMCCH4_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1856,16 +1835,16 @@
 #define UMCCH4_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch5_umcchdec
-//UMCCH5_0_BaseAddrCS0
+
+
 #define UMCCH5_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH5_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH5_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH5_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH5_0_AddrMaskCS01
+
 #define UMCCH5_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH5_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH5_0_AddrSelCS01
+
 #define UMCCH5_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH5_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH5_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -1880,59 +1859,59 @@
 #define UMCCH5_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH5_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH5_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH5_0_AddrHashBank0
+
 #define UMCCH5_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_AddrHashBank1
+
 #define UMCCH5_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_AddrHashBank2
+
 #define UMCCH5_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_AddrHashBank3
+
 #define UMCCH5_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_AddrHashBank4
+
 #define UMCCH5_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_AddrHashBank5
+
 #define UMCCH5_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_0_EccErrCntSel
+
 #define UMCCH5_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH5_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH5_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH5_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH5_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH5_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH5_0_EccErrCnt
+
 #define UMCCH5_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH5_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH5_0_PerfMonCtlClk
+
 #define UMCCH5_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH5_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH5_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -1945,15 +1924,15 @@
 #define UMCCH5_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH5_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH5_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH5_0_PerfMonCtrClk_Lo
+
 #define UMCCH5_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH5_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtrClk_Hi
+
 #define UMCCH5_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH5_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH5_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH5_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH5_0_PerfMonCtl1
+
 #define UMCCH5_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -1970,10 +1949,10 @@
 #define UMCCH5_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr1_Lo
+
 #define UMCCH5_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr1_Hi
+
 #define UMCCH5_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -1982,7 +1961,7 @@
 #define UMCCH5_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl2
+
 #define UMCCH5_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -1999,10 +1978,10 @@
 #define UMCCH5_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr2_Lo
+
 #define UMCCH5_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr2_Hi
+
 #define UMCCH5_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2011,7 +1990,7 @@
 #define UMCCH5_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl3
+
 #define UMCCH5_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -2028,10 +2007,10 @@
 #define UMCCH5_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr3_Lo
+
 #define UMCCH5_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr3_Hi
+
 #define UMCCH5_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2040,7 +2019,7 @@
 #define UMCCH5_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl4
+
 #define UMCCH5_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -2057,10 +2036,10 @@
 #define UMCCH5_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr4_Lo
+
 #define UMCCH5_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr4_Hi
+
 #define UMCCH5_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2069,7 +2048,7 @@
 #define UMCCH5_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl5
+
 #define UMCCH5_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -2086,10 +2065,10 @@
 #define UMCCH5_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr5_Lo
+
 #define UMCCH5_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr5_Hi
+
 #define UMCCH5_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2098,7 +2077,7 @@
 #define UMCCH5_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl6
+
 #define UMCCH5_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -2115,10 +2094,10 @@
 #define UMCCH5_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr6_Lo
+
 #define UMCCH5_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr6_Hi
+
 #define UMCCH5_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2127,7 +2106,7 @@
 #define UMCCH5_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl7
+
 #define UMCCH5_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -2144,10 +2123,10 @@
 #define UMCCH5_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr7_Lo
+
 #define UMCCH5_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr7_Hi
+
 #define UMCCH5_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2156,7 +2135,7 @@
 #define UMCCH5_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_0_PerfMonCtl8
+
 #define UMCCH5_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -2173,10 +2152,10 @@
 #define UMCCH5_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH5_0_PerfMonCtr8_Lo
+
 #define UMCCH5_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_0_PerfMonCtr8_Hi
+
 #define UMCCH5_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2187,16 +2166,16 @@
 #define UMCCH5_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch6_umcchdec
-//UMCCH6_0_BaseAddrCS0
+
+
 #define UMCCH6_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH6_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH6_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH6_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH6_0_AddrMaskCS01
+
 #define UMCCH6_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH6_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH6_0_AddrSelCS01
+
 #define UMCCH6_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH6_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH6_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -2211,59 +2190,59 @@
 #define UMCCH6_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH6_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH6_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH6_0_AddrHashBank0
+
 #define UMCCH6_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_AddrHashBank1
+
 #define UMCCH6_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_AddrHashBank2
+
 #define UMCCH6_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_AddrHashBank3
+
 #define UMCCH6_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_AddrHashBank4
+
 #define UMCCH6_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_AddrHashBank5
+
 #define UMCCH6_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_0_EccErrCntSel
+
 #define UMCCH6_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH6_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH6_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH6_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH6_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH6_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH6_0_EccErrCnt
+
 #define UMCCH6_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH6_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH6_0_PerfMonCtlClk
+
 #define UMCCH6_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH6_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH6_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -2276,15 +2255,15 @@
 #define UMCCH6_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH6_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH6_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH6_0_PerfMonCtrClk_Lo
+
 #define UMCCH6_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH6_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtrClk_Hi
+
 #define UMCCH6_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH6_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH6_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH6_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH6_0_PerfMonCtl1
+
 #define UMCCH6_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -2301,10 +2280,10 @@
 #define UMCCH6_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr1_Lo
+
 #define UMCCH6_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr1_Hi
+
 #define UMCCH6_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2313,7 +2292,7 @@
 #define UMCCH6_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl2
+
 #define UMCCH6_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -2330,10 +2309,10 @@
 #define UMCCH6_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr2_Lo
+
 #define UMCCH6_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr2_Hi
+
 #define UMCCH6_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2342,7 +2321,7 @@
 #define UMCCH6_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl3
+
 #define UMCCH6_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -2359,10 +2338,10 @@
 #define UMCCH6_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr3_Lo
+
 #define UMCCH6_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr3_Hi
+
 #define UMCCH6_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2371,7 +2350,7 @@
 #define UMCCH6_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl4
+
 #define UMCCH6_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -2388,10 +2367,10 @@
 #define UMCCH6_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr4_Lo
+
 #define UMCCH6_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr4_Hi
+
 #define UMCCH6_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2400,7 +2379,7 @@
 #define UMCCH6_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl5
+
 #define UMCCH6_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -2417,10 +2396,10 @@
 #define UMCCH6_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr5_Lo
+
 #define UMCCH6_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr5_Hi
+
 #define UMCCH6_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2429,7 +2408,7 @@
 #define UMCCH6_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl6
+
 #define UMCCH6_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -2446,10 +2425,10 @@
 #define UMCCH6_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr6_Lo
+
 #define UMCCH6_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr6_Hi
+
 #define UMCCH6_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2458,7 +2437,7 @@
 #define UMCCH6_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl7
+
 #define UMCCH6_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -2475,10 +2454,10 @@
 #define UMCCH6_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr7_Lo
+
 #define UMCCH6_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr7_Hi
+
 #define UMCCH6_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2487,7 +2466,7 @@
 #define UMCCH6_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_0_PerfMonCtl8
+
 #define UMCCH6_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -2504,10 +2483,10 @@
 #define UMCCH6_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH6_0_PerfMonCtr8_Lo
+
 #define UMCCH6_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_0_PerfMonCtr8_Hi
+
 #define UMCCH6_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2518,16 +2497,16 @@
 #define UMCCH6_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc0_umcch7_umcchdec
-//UMCCH7_0_BaseAddrCS0
+
+
 #define UMCCH7_0_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH7_0_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH7_0_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH7_0_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH7_0_AddrMaskCS01
+
 #define UMCCH7_0_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH7_0_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH7_0_AddrSelCS01
+
 #define UMCCH7_0_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH7_0_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH7_0_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -2542,59 +2521,59 @@
 #define UMCCH7_0_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH7_0_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH7_0_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH7_0_AddrHashBank0
+
 #define UMCCH7_0_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_AddrHashBank1
+
 #define UMCCH7_0_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_AddrHashBank2
+
 #define UMCCH7_0_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_AddrHashBank3
+
 #define UMCCH7_0_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_AddrHashBank4
+
 #define UMCCH7_0_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_AddrHashBank5
+
 #define UMCCH7_0_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_0_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_0_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_0_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_0_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_0_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_0_EccErrCntSel
+
 #define UMCCH7_0_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH7_0_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH7_0_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH7_0_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH7_0_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH7_0_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH7_0_EccErrCnt
+
 #define UMCCH7_0_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH7_0_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH7_0_PerfMonCtlClk
+
 #define UMCCH7_0_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH7_0_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH7_0_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -2607,15 +2586,15 @@
 #define UMCCH7_0_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH7_0_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH7_0_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH7_0_PerfMonCtrClk_Lo
+
 #define UMCCH7_0_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH7_0_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtrClk_Hi
+
 #define UMCCH7_0_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH7_0_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH7_0_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH7_0_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH7_0_PerfMonCtl1
+
 #define UMCCH7_0_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -2632,10 +2611,10 @@
 #define UMCCH7_0_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr1_Lo
+
 #define UMCCH7_0_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr1_Hi
+
 #define UMCCH7_0_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2644,7 +2623,7 @@
 #define UMCCH7_0_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl2
+
 #define UMCCH7_0_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -2661,10 +2640,10 @@
 #define UMCCH7_0_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr2_Lo
+
 #define UMCCH7_0_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr2_Hi
+
 #define UMCCH7_0_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2673,7 +2652,7 @@
 #define UMCCH7_0_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl3
+
 #define UMCCH7_0_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -2690,10 +2669,10 @@
 #define UMCCH7_0_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr3_Lo
+
 #define UMCCH7_0_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr3_Hi
+
 #define UMCCH7_0_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2702,7 +2681,7 @@
 #define UMCCH7_0_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl4
+
 #define UMCCH7_0_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -2719,10 +2698,10 @@
 #define UMCCH7_0_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr4_Lo
+
 #define UMCCH7_0_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr4_Hi
+
 #define UMCCH7_0_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2731,7 +2710,7 @@
 #define UMCCH7_0_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl5
+
 #define UMCCH7_0_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -2748,10 +2727,10 @@
 #define UMCCH7_0_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr5_Lo
+
 #define UMCCH7_0_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr5_Hi
+
 #define UMCCH7_0_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2760,7 +2739,7 @@
 #define UMCCH7_0_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl6
+
 #define UMCCH7_0_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -2777,10 +2756,10 @@
 #define UMCCH7_0_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr6_Lo
+
 #define UMCCH7_0_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr6_Hi
+
 #define UMCCH7_0_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2789,7 +2768,7 @@
 #define UMCCH7_0_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl7
+
 #define UMCCH7_0_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -2806,10 +2785,10 @@
 #define UMCCH7_0_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr7_Lo
+
 #define UMCCH7_0_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr7_Hi
+
 #define UMCCH7_0_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2818,7 +2797,7 @@
 #define UMCCH7_0_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_0_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_0_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_0_PerfMonCtl8
+
 #define UMCCH7_0_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_0_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_0_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -2835,10 +2814,10 @@
 #define UMCCH7_0_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_0_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_0_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH7_0_PerfMonCtr8_Lo
+
 #define UMCCH7_0_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_0_PerfMonCtr8_Hi
+
 #define UMCCH7_0_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_0_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_0_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2849,16 +2828,16 @@
 #define UMCCH7_0_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch0_umcchdec
-//UMCCH0_1_BaseAddrCS0
+
+
 #define UMCCH0_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH0_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH0_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH0_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH0_1_AddrMaskCS01
+
 #define UMCCH0_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH0_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH0_1_AddrSelCS01
+
 #define UMCCH0_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH0_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH0_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -2873,59 +2852,59 @@
 #define UMCCH0_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH0_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH0_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH0_1_AddrHashBank0
+
 #define UMCCH0_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_AddrHashBank1
+
 #define UMCCH0_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_AddrHashBank2
+
 #define UMCCH0_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_AddrHashBank3
+
 #define UMCCH0_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_AddrHashBank4
+
 #define UMCCH0_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_AddrHashBank5
+
 #define UMCCH0_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_1_EccErrCntSel
+
 #define UMCCH0_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH0_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH0_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH0_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH0_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH0_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH0_1_EccErrCnt
+
 #define UMCCH0_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH0_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH0_1_PerfMonCtlClk
+
 #define UMCCH0_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH0_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH0_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -2938,15 +2917,15 @@
 #define UMCCH0_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH0_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH0_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH0_1_PerfMonCtrClk_Lo
+
 #define UMCCH0_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH0_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtrClk_Hi
+
 #define UMCCH0_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH0_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH0_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH0_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH0_1_PerfMonCtl1
+
 #define UMCCH0_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -2963,10 +2942,10 @@
 #define UMCCH0_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr1_Lo
+
 #define UMCCH0_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr1_Hi
+
 #define UMCCH0_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -2975,7 +2954,7 @@
 #define UMCCH0_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl2
+
 #define UMCCH0_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -2992,10 +2971,10 @@
 #define UMCCH0_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr2_Lo
+
 #define UMCCH0_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr2_Hi
+
 #define UMCCH0_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3004,7 +2983,7 @@
 #define UMCCH0_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl3
+
 #define UMCCH0_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -3021,10 +3000,10 @@
 #define UMCCH0_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr3_Lo
+
 #define UMCCH0_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr3_Hi
+
 #define UMCCH0_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3033,7 +3012,7 @@
 #define UMCCH0_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl4
+
 #define UMCCH0_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -3050,10 +3029,10 @@
 #define UMCCH0_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr4_Lo
+
 #define UMCCH0_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr4_Hi
+
 #define UMCCH0_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3062,7 +3041,7 @@
 #define UMCCH0_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl5
+
 #define UMCCH0_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -3079,10 +3058,10 @@
 #define UMCCH0_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr5_Lo
+
 #define UMCCH0_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr5_Hi
+
 #define UMCCH0_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3091,7 +3070,7 @@
 #define UMCCH0_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl6
+
 #define UMCCH0_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -3108,10 +3087,10 @@
 #define UMCCH0_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr6_Lo
+
 #define UMCCH0_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr6_Hi
+
 #define UMCCH0_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3120,7 +3099,7 @@
 #define UMCCH0_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl7
+
 #define UMCCH0_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -3137,10 +3116,10 @@
 #define UMCCH0_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr7_Lo
+
 #define UMCCH0_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr7_Hi
+
 #define UMCCH0_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3149,7 +3128,7 @@
 #define UMCCH0_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_1_PerfMonCtl8
+
 #define UMCCH0_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -3166,10 +3145,10 @@
 #define UMCCH0_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH0_1_PerfMonCtr8_Lo
+
 #define UMCCH0_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_1_PerfMonCtr8_Hi
+
 #define UMCCH0_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3180,16 +3159,16 @@
 #define UMCCH0_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch1_umcchdec
-//UMCCH1_1_BaseAddrCS0
+
+
 #define UMCCH1_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH1_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH1_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH1_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH1_1_AddrMaskCS01
+
 #define UMCCH1_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH1_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH1_1_AddrSelCS01
+
 #define UMCCH1_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH1_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH1_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -3204,59 +3183,59 @@
 #define UMCCH1_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH1_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH1_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH1_1_AddrHashBank0
+
 #define UMCCH1_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_AddrHashBank1
+
 #define UMCCH1_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_AddrHashBank2
+
 #define UMCCH1_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_AddrHashBank3
+
 #define UMCCH1_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_AddrHashBank4
+
 #define UMCCH1_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_AddrHashBank5
+
 #define UMCCH1_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_1_EccErrCntSel
+
 #define UMCCH1_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH1_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH1_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH1_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH1_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH1_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH1_1_EccErrCnt
+
 #define UMCCH1_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH1_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH1_1_PerfMonCtlClk
+
 #define UMCCH1_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH1_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH1_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -3269,15 +3248,15 @@
 #define UMCCH1_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH1_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH1_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH1_1_PerfMonCtrClk_Lo
+
 #define UMCCH1_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH1_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtrClk_Hi
+
 #define UMCCH1_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH1_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH1_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH1_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH1_1_PerfMonCtl1
+
 #define UMCCH1_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -3294,10 +3273,10 @@
 #define UMCCH1_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr1_Lo
+
 #define UMCCH1_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr1_Hi
+
 #define UMCCH1_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3306,7 +3285,7 @@
 #define UMCCH1_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl2
+
 #define UMCCH1_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -3323,10 +3302,10 @@
 #define UMCCH1_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr2_Lo
+
 #define UMCCH1_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr2_Hi
+
 #define UMCCH1_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3335,7 +3314,7 @@
 #define UMCCH1_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl3
+
 #define UMCCH1_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -3352,10 +3331,10 @@
 #define UMCCH1_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr3_Lo
+
 #define UMCCH1_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr3_Hi
+
 #define UMCCH1_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3364,7 +3343,7 @@
 #define UMCCH1_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl4
+
 #define UMCCH1_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -3381,10 +3360,10 @@
 #define UMCCH1_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr4_Lo
+
 #define UMCCH1_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr4_Hi
+
 #define UMCCH1_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3393,7 +3372,7 @@
 #define UMCCH1_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl5
+
 #define UMCCH1_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -3410,10 +3389,10 @@
 #define UMCCH1_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr5_Lo
+
 #define UMCCH1_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr5_Hi
+
 #define UMCCH1_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3422,7 +3401,7 @@
 #define UMCCH1_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl6
+
 #define UMCCH1_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -3439,10 +3418,10 @@
 #define UMCCH1_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr6_Lo
+
 #define UMCCH1_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr6_Hi
+
 #define UMCCH1_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3451,7 +3430,7 @@
 #define UMCCH1_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl7
+
 #define UMCCH1_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -3468,10 +3447,10 @@
 #define UMCCH1_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr7_Lo
+
 #define UMCCH1_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr7_Hi
+
 #define UMCCH1_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3480,7 +3459,7 @@
 #define UMCCH1_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_1_PerfMonCtl8
+
 #define UMCCH1_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -3497,10 +3476,10 @@
 #define UMCCH1_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH1_1_PerfMonCtr8_Lo
+
 #define UMCCH1_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_1_PerfMonCtr8_Hi
+
 #define UMCCH1_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3511,16 +3490,16 @@
 #define UMCCH1_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch2_umcchdec
-//UMCCH2_1_BaseAddrCS0
+
+
 #define UMCCH2_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH2_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH2_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH2_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH2_1_AddrMaskCS01
+
 #define UMCCH2_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH2_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH2_1_AddrSelCS01
+
 #define UMCCH2_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH2_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH2_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -3535,59 +3514,59 @@
 #define UMCCH2_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH2_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH2_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH2_1_AddrHashBank0
+
 #define UMCCH2_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_AddrHashBank1
+
 #define UMCCH2_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_AddrHashBank2
+
 #define UMCCH2_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_AddrHashBank3
+
 #define UMCCH2_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_AddrHashBank4
+
 #define UMCCH2_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_AddrHashBank5
+
 #define UMCCH2_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_1_EccErrCntSel
+
 #define UMCCH2_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH2_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH2_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH2_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH2_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH2_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH2_1_EccErrCnt
+
 #define UMCCH2_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH2_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH2_1_PerfMonCtlClk
+
 #define UMCCH2_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH2_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH2_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -3600,15 +3579,15 @@
 #define UMCCH2_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH2_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH2_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH2_1_PerfMonCtrClk_Lo
+
 #define UMCCH2_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH2_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtrClk_Hi
+
 #define UMCCH2_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH2_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH2_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH2_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH2_1_PerfMonCtl1
+
 #define UMCCH2_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -3625,10 +3604,10 @@
 #define UMCCH2_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr1_Lo
+
 #define UMCCH2_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr1_Hi
+
 #define UMCCH2_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3637,7 +3616,7 @@
 #define UMCCH2_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl2
+
 #define UMCCH2_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -3654,10 +3633,10 @@
 #define UMCCH2_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr2_Lo
+
 #define UMCCH2_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr2_Hi
+
 #define UMCCH2_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3666,7 +3645,7 @@
 #define UMCCH2_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl3
+
 #define UMCCH2_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -3683,10 +3662,10 @@
 #define UMCCH2_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr3_Lo
+
 #define UMCCH2_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr3_Hi
+
 #define UMCCH2_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3695,7 +3674,7 @@
 #define UMCCH2_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl4
+
 #define UMCCH2_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -3712,10 +3691,10 @@
 #define UMCCH2_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr4_Lo
+
 #define UMCCH2_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr4_Hi
+
 #define UMCCH2_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3724,7 +3703,7 @@
 #define UMCCH2_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl5
+
 #define UMCCH2_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -3741,10 +3720,10 @@
 #define UMCCH2_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr5_Lo
+
 #define UMCCH2_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr5_Hi
+
 #define UMCCH2_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3753,7 +3732,7 @@
 #define UMCCH2_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl6
+
 #define UMCCH2_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -3770,10 +3749,10 @@
 #define UMCCH2_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr6_Lo
+
 #define UMCCH2_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr6_Hi
+
 #define UMCCH2_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3782,7 +3761,7 @@
 #define UMCCH2_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl7
+
 #define UMCCH2_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -3799,10 +3778,10 @@
 #define UMCCH2_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr7_Lo
+
 #define UMCCH2_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr7_Hi
+
 #define UMCCH2_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3811,7 +3790,7 @@
 #define UMCCH2_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_1_PerfMonCtl8
+
 #define UMCCH2_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -3828,10 +3807,10 @@
 #define UMCCH2_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH2_1_PerfMonCtr8_Lo
+
 #define UMCCH2_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_1_PerfMonCtr8_Hi
+
 #define UMCCH2_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3842,16 +3821,16 @@
 #define UMCCH2_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch3_umcchdec
-//UMCCH3_1_BaseAddrCS0
+
+
 #define UMCCH3_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH3_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH3_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH3_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH3_1_AddrMaskCS01
+
 #define UMCCH3_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH3_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH3_1_AddrSelCS01
+
 #define UMCCH3_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH3_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH3_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -3866,59 +3845,59 @@
 #define UMCCH3_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH3_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH3_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH3_1_AddrHashBank0
+
 #define UMCCH3_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_AddrHashBank1
+
 #define UMCCH3_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_AddrHashBank2
+
 #define UMCCH3_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_AddrHashBank3
+
 #define UMCCH3_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_AddrHashBank4
+
 #define UMCCH3_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_AddrHashBank5
+
 #define UMCCH3_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_1_EccErrCntSel
+
 #define UMCCH3_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH3_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH3_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH3_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH3_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH3_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH3_1_EccErrCnt
+
 #define UMCCH3_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH3_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH3_1_PerfMonCtlClk
+
 #define UMCCH3_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH3_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH3_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -3931,15 +3910,15 @@
 #define UMCCH3_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH3_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH3_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH3_1_PerfMonCtrClk_Lo
+
 #define UMCCH3_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH3_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtrClk_Hi
+
 #define UMCCH3_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH3_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH3_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH3_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH3_1_PerfMonCtl1
+
 #define UMCCH3_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -3956,10 +3935,10 @@
 #define UMCCH3_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr1_Lo
+
 #define UMCCH3_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr1_Hi
+
 #define UMCCH3_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3968,7 +3947,7 @@
 #define UMCCH3_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl2
+
 #define UMCCH3_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -3985,10 +3964,10 @@
 #define UMCCH3_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr2_Lo
+
 #define UMCCH3_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr2_Hi
+
 #define UMCCH3_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -3997,7 +3976,7 @@
 #define UMCCH3_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl3
+
 #define UMCCH3_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -4014,10 +3993,10 @@
 #define UMCCH3_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr3_Lo
+
 #define UMCCH3_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr3_Hi
+
 #define UMCCH3_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4026,7 +4005,7 @@
 #define UMCCH3_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl4
+
 #define UMCCH3_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -4043,10 +4022,10 @@
 #define UMCCH3_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr4_Lo
+
 #define UMCCH3_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr4_Hi
+
 #define UMCCH3_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4055,7 +4034,7 @@
 #define UMCCH3_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl5
+
 #define UMCCH3_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -4072,10 +4051,10 @@
 #define UMCCH3_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr5_Lo
+
 #define UMCCH3_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr5_Hi
+
 #define UMCCH3_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4084,7 +4063,7 @@
 #define UMCCH3_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl6
+
 #define UMCCH3_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -4101,10 +4080,10 @@
 #define UMCCH3_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr6_Lo
+
 #define UMCCH3_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr6_Hi
+
 #define UMCCH3_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4113,7 +4092,7 @@
 #define UMCCH3_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl7
+
 #define UMCCH3_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -4130,10 +4109,10 @@
 #define UMCCH3_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr7_Lo
+
 #define UMCCH3_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr7_Hi
+
 #define UMCCH3_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4142,7 +4121,7 @@
 #define UMCCH3_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_1_PerfMonCtl8
+
 #define UMCCH3_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -4159,10 +4138,10 @@
 #define UMCCH3_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH3_1_PerfMonCtr8_Lo
+
 #define UMCCH3_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_1_PerfMonCtr8_Hi
+
 #define UMCCH3_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4173,16 +4152,16 @@
 #define UMCCH3_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch4_umcchdec
-//UMCCH4_1_BaseAddrCS0
+
+
 #define UMCCH4_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH4_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH4_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH4_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH4_1_AddrMaskCS01
+
 #define UMCCH4_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH4_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH4_1_AddrSelCS01
+
 #define UMCCH4_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH4_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH4_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -4197,59 +4176,59 @@
 #define UMCCH4_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH4_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH4_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH4_1_AddrHashBank0
+
 #define UMCCH4_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_AddrHashBank1
+
 #define UMCCH4_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_AddrHashBank2
+
 #define UMCCH4_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_AddrHashBank3
+
 #define UMCCH4_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_AddrHashBank4
+
 #define UMCCH4_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_AddrHashBank5
+
 #define UMCCH4_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_1_EccErrCntSel
+
 #define UMCCH4_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH4_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH4_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH4_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH4_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH4_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH4_1_EccErrCnt
+
 #define UMCCH4_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH4_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH4_1_PerfMonCtlClk
+
 #define UMCCH4_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH4_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH4_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -4262,15 +4241,15 @@
 #define UMCCH4_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH4_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH4_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH4_1_PerfMonCtrClk_Lo
+
 #define UMCCH4_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH4_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtrClk_Hi
+
 #define UMCCH4_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH4_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH4_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH4_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH4_1_PerfMonCtl1
+
 #define UMCCH4_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -4287,10 +4266,10 @@
 #define UMCCH4_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr1_Lo
+
 #define UMCCH4_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr1_Hi
+
 #define UMCCH4_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4299,7 +4278,7 @@
 #define UMCCH4_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl2
+
 #define UMCCH4_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -4316,10 +4295,10 @@
 #define UMCCH4_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr2_Lo
+
 #define UMCCH4_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr2_Hi
+
 #define UMCCH4_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4328,7 +4307,7 @@
 #define UMCCH4_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl3
+
 #define UMCCH4_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -4345,10 +4324,10 @@
 #define UMCCH4_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr3_Lo
+
 #define UMCCH4_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr3_Hi
+
 #define UMCCH4_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4357,7 +4336,7 @@
 #define UMCCH4_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl4
+
 #define UMCCH4_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -4374,10 +4353,10 @@
 #define UMCCH4_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr4_Lo
+
 #define UMCCH4_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr4_Hi
+
 #define UMCCH4_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4386,7 +4365,7 @@
 #define UMCCH4_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl5
+
 #define UMCCH4_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -4403,10 +4382,10 @@
 #define UMCCH4_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr5_Lo
+
 #define UMCCH4_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr5_Hi
+
 #define UMCCH4_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4415,7 +4394,7 @@
 #define UMCCH4_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl6
+
 #define UMCCH4_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -4432,10 +4411,10 @@
 #define UMCCH4_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr6_Lo
+
 #define UMCCH4_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr6_Hi
+
 #define UMCCH4_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4444,7 +4423,7 @@
 #define UMCCH4_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl7
+
 #define UMCCH4_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -4461,10 +4440,10 @@
 #define UMCCH4_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr7_Lo
+
 #define UMCCH4_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr7_Hi
+
 #define UMCCH4_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4473,7 +4452,7 @@
 #define UMCCH4_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_1_PerfMonCtl8
+
 #define UMCCH4_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -4490,10 +4469,10 @@
 #define UMCCH4_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH4_1_PerfMonCtr8_Lo
+
 #define UMCCH4_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_1_PerfMonCtr8_Hi
+
 #define UMCCH4_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4504,16 +4483,16 @@
 #define UMCCH4_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch5_umcchdec
-//UMCCH5_1_BaseAddrCS0
+
+
 #define UMCCH5_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH5_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH5_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH5_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH5_1_AddrMaskCS01
+
 #define UMCCH5_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH5_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH5_1_AddrSelCS01
+
 #define UMCCH5_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH5_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH5_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -4528,59 +4507,59 @@
 #define UMCCH5_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH5_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH5_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH5_1_AddrHashBank0
+
 #define UMCCH5_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_AddrHashBank1
+
 #define UMCCH5_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_AddrHashBank2
+
 #define UMCCH5_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_AddrHashBank3
+
 #define UMCCH5_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_AddrHashBank4
+
 #define UMCCH5_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_AddrHashBank5
+
 #define UMCCH5_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_1_EccErrCntSel
+
 #define UMCCH5_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH5_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH5_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH5_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH5_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH5_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH5_1_EccErrCnt
+
 #define UMCCH5_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH5_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH5_1_PerfMonCtlClk
+
 #define UMCCH5_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH5_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH5_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -4593,15 +4572,15 @@
 #define UMCCH5_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH5_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH5_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH5_1_PerfMonCtrClk_Lo
+
 #define UMCCH5_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH5_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtrClk_Hi
+
 #define UMCCH5_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH5_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH5_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH5_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH5_1_PerfMonCtl1
+
 #define UMCCH5_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -4618,10 +4597,10 @@
 #define UMCCH5_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr1_Lo
+
 #define UMCCH5_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr1_Hi
+
 #define UMCCH5_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4630,7 +4609,7 @@
 #define UMCCH5_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl2
+
 #define UMCCH5_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -4647,10 +4626,10 @@
 #define UMCCH5_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr2_Lo
+
 #define UMCCH5_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr2_Hi
+
 #define UMCCH5_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4659,7 +4638,7 @@
 #define UMCCH5_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl3
+
 #define UMCCH5_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -4676,10 +4655,10 @@
 #define UMCCH5_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr3_Lo
+
 #define UMCCH5_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr3_Hi
+
 #define UMCCH5_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4688,7 +4667,7 @@
 #define UMCCH5_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl4
+
 #define UMCCH5_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -4705,10 +4684,10 @@
 #define UMCCH5_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr4_Lo
+
 #define UMCCH5_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr4_Hi
+
 #define UMCCH5_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4717,7 +4696,7 @@
 #define UMCCH5_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl5
+
 #define UMCCH5_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -4734,10 +4713,10 @@
 #define UMCCH5_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr5_Lo
+
 #define UMCCH5_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr5_Hi
+
 #define UMCCH5_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4746,7 +4725,7 @@
 #define UMCCH5_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl6
+
 #define UMCCH5_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -4763,10 +4742,10 @@
 #define UMCCH5_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr6_Lo
+
 #define UMCCH5_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr6_Hi
+
 #define UMCCH5_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4775,7 +4754,7 @@
 #define UMCCH5_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl7
+
 #define UMCCH5_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -4792,10 +4771,10 @@
 #define UMCCH5_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr7_Lo
+
 #define UMCCH5_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr7_Hi
+
 #define UMCCH5_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4804,7 +4783,7 @@
 #define UMCCH5_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_1_PerfMonCtl8
+
 #define UMCCH5_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -4821,10 +4800,10 @@
 #define UMCCH5_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH5_1_PerfMonCtr8_Lo
+
 #define UMCCH5_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_1_PerfMonCtr8_Hi
+
 #define UMCCH5_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4835,16 +4814,16 @@
 #define UMCCH5_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch6_umcchdec
-//UMCCH6_1_BaseAddrCS0
+
+
 #define UMCCH6_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH6_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH6_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH6_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH6_1_AddrMaskCS01
+
 #define UMCCH6_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH6_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH6_1_AddrSelCS01
+
 #define UMCCH6_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH6_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH6_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -4859,59 +4838,59 @@
 #define UMCCH6_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH6_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH6_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH6_1_AddrHashBank0
+
 #define UMCCH6_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_AddrHashBank1
+
 #define UMCCH6_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_AddrHashBank2
+
 #define UMCCH6_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_AddrHashBank3
+
 #define UMCCH6_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_AddrHashBank4
+
 #define UMCCH6_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_AddrHashBank5
+
 #define UMCCH6_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_1_EccErrCntSel
+
 #define UMCCH6_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH6_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH6_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH6_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH6_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH6_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH6_1_EccErrCnt
+
 #define UMCCH6_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH6_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH6_1_PerfMonCtlClk
+
 #define UMCCH6_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH6_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH6_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -4924,15 +4903,15 @@
 #define UMCCH6_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH6_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH6_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH6_1_PerfMonCtrClk_Lo
+
 #define UMCCH6_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH6_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtrClk_Hi
+
 #define UMCCH6_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH6_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH6_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH6_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH6_1_PerfMonCtl1
+
 #define UMCCH6_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -4949,10 +4928,10 @@
 #define UMCCH6_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr1_Lo
+
 #define UMCCH6_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr1_Hi
+
 #define UMCCH6_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4961,7 +4940,7 @@
 #define UMCCH6_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl2
+
 #define UMCCH6_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -4978,10 +4957,10 @@
 #define UMCCH6_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr2_Lo
+
 #define UMCCH6_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr2_Hi
+
 #define UMCCH6_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -4990,7 +4969,7 @@
 #define UMCCH6_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl3
+
 #define UMCCH6_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -5007,10 +4986,10 @@
 #define UMCCH6_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr3_Lo
+
 #define UMCCH6_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr3_Hi
+
 #define UMCCH6_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5019,7 +4998,7 @@
 #define UMCCH6_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl4
+
 #define UMCCH6_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -5036,10 +5015,10 @@
 #define UMCCH6_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr4_Lo
+
 #define UMCCH6_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr4_Hi
+
 #define UMCCH6_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5048,7 +5027,7 @@
 #define UMCCH6_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl5
+
 #define UMCCH6_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -5065,10 +5044,10 @@
 #define UMCCH6_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr5_Lo
+
 #define UMCCH6_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr5_Hi
+
 #define UMCCH6_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5077,7 +5056,7 @@
 #define UMCCH6_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl6
+
 #define UMCCH6_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -5094,10 +5073,10 @@
 #define UMCCH6_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr6_Lo
+
 #define UMCCH6_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr6_Hi
+
 #define UMCCH6_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5106,7 +5085,7 @@
 #define UMCCH6_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl7
+
 #define UMCCH6_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -5123,10 +5102,10 @@
 #define UMCCH6_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr7_Lo
+
 #define UMCCH6_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr7_Hi
+
 #define UMCCH6_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5135,7 +5114,7 @@
 #define UMCCH6_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_1_PerfMonCtl8
+
 #define UMCCH6_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -5152,10 +5131,10 @@
 #define UMCCH6_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH6_1_PerfMonCtr8_Lo
+
 #define UMCCH6_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_1_PerfMonCtr8_Hi
+
 #define UMCCH6_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5166,16 +5145,16 @@
 #define UMCCH6_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc1_umcch7_umcchdec
-//UMCCH7_1_BaseAddrCS0
+
+
 #define UMCCH7_1_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH7_1_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH7_1_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH7_1_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH7_1_AddrMaskCS01
+
 #define UMCCH7_1_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH7_1_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH7_1_AddrSelCS01
+
 #define UMCCH7_1_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH7_1_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH7_1_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -5190,59 +5169,59 @@
 #define UMCCH7_1_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH7_1_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH7_1_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH7_1_AddrHashBank0
+
 #define UMCCH7_1_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_AddrHashBank1
+
 #define UMCCH7_1_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_AddrHashBank2
+
 #define UMCCH7_1_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_AddrHashBank3
+
 #define UMCCH7_1_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_AddrHashBank4
+
 #define UMCCH7_1_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_AddrHashBank5
+
 #define UMCCH7_1_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_1_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_1_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_1_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_1_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_1_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_1_EccErrCntSel
+
 #define UMCCH7_1_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH7_1_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH7_1_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH7_1_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH7_1_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH7_1_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH7_1_EccErrCnt
+
 #define UMCCH7_1_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH7_1_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH7_1_PerfMonCtlClk
+
 #define UMCCH7_1_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH7_1_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH7_1_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -5255,15 +5234,15 @@
 #define UMCCH7_1_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH7_1_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH7_1_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH7_1_PerfMonCtrClk_Lo
+
 #define UMCCH7_1_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH7_1_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtrClk_Hi
+
 #define UMCCH7_1_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH7_1_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH7_1_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH7_1_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH7_1_PerfMonCtl1
+
 #define UMCCH7_1_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -5280,10 +5259,10 @@
 #define UMCCH7_1_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr1_Lo
+
 #define UMCCH7_1_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr1_Hi
+
 #define UMCCH7_1_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5292,7 +5271,7 @@
 #define UMCCH7_1_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl2
+
 #define UMCCH7_1_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -5309,10 +5288,10 @@
 #define UMCCH7_1_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr2_Lo
+
 #define UMCCH7_1_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr2_Hi
+
 #define UMCCH7_1_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5321,7 +5300,7 @@
 #define UMCCH7_1_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl3
+
 #define UMCCH7_1_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -5338,10 +5317,10 @@
 #define UMCCH7_1_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr3_Lo
+
 #define UMCCH7_1_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr3_Hi
+
 #define UMCCH7_1_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5350,7 +5329,7 @@
 #define UMCCH7_1_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl4
+
 #define UMCCH7_1_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -5367,10 +5346,10 @@
 #define UMCCH7_1_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr4_Lo
+
 #define UMCCH7_1_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr4_Hi
+
 #define UMCCH7_1_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5379,7 +5358,7 @@
 #define UMCCH7_1_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl5
+
 #define UMCCH7_1_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -5396,10 +5375,10 @@
 #define UMCCH7_1_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr5_Lo
+
 #define UMCCH7_1_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr5_Hi
+
 #define UMCCH7_1_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5408,7 +5387,7 @@
 #define UMCCH7_1_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl6
+
 #define UMCCH7_1_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -5425,10 +5404,10 @@
 #define UMCCH7_1_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr6_Lo
+
 #define UMCCH7_1_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr6_Hi
+
 #define UMCCH7_1_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5437,7 +5416,7 @@
 #define UMCCH7_1_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl7
+
 #define UMCCH7_1_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -5454,10 +5433,10 @@
 #define UMCCH7_1_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr7_Lo
+
 #define UMCCH7_1_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr7_Hi
+
 #define UMCCH7_1_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5466,7 +5445,7 @@
 #define UMCCH7_1_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_1_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_1_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_1_PerfMonCtl8
+
 #define UMCCH7_1_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_1_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_1_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -5483,10 +5462,10 @@
 #define UMCCH7_1_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_1_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_1_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH7_1_PerfMonCtr8_Lo
+
 #define UMCCH7_1_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_1_PerfMonCtr8_Hi
+
 #define UMCCH7_1_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_1_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_1_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5497,16 +5476,16 @@
 #define UMCCH7_1_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch0_umcchdec
-//UMCCH0_2_BaseAddrCS0
+
+
 #define UMCCH0_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH0_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH0_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH0_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH0_2_AddrMaskCS01
+
 #define UMCCH0_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH0_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH0_2_AddrSelCS01
+
 #define UMCCH0_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH0_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH0_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -5521,59 +5500,59 @@
 #define UMCCH0_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH0_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH0_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH0_2_AddrHashBank0
+
 #define UMCCH0_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_AddrHashBank1
+
 #define UMCCH0_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_AddrHashBank2
+
 #define UMCCH0_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_AddrHashBank3
+
 #define UMCCH0_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_AddrHashBank4
+
 #define UMCCH0_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_AddrHashBank5
+
 #define UMCCH0_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_2_EccErrCntSel
+
 #define UMCCH0_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH0_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH0_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH0_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH0_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH0_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH0_2_EccErrCnt
+
 #define UMCCH0_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH0_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH0_2_PerfMonCtlClk
+
 #define UMCCH0_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH0_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH0_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -5586,15 +5565,15 @@
 #define UMCCH0_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH0_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH0_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH0_2_PerfMonCtrClk_Lo
+
 #define UMCCH0_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH0_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtrClk_Hi
+
 #define UMCCH0_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH0_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH0_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH0_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH0_2_PerfMonCtl1
+
 #define UMCCH0_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -5611,10 +5590,10 @@
 #define UMCCH0_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr1_Lo
+
 #define UMCCH0_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr1_Hi
+
 #define UMCCH0_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5623,7 +5602,7 @@
 #define UMCCH0_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl2
+
 #define UMCCH0_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -5640,10 +5619,10 @@
 #define UMCCH0_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr2_Lo
+
 #define UMCCH0_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr2_Hi
+
 #define UMCCH0_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5652,7 +5631,7 @@
 #define UMCCH0_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl3
+
 #define UMCCH0_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -5669,10 +5648,10 @@
 #define UMCCH0_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr3_Lo
+
 #define UMCCH0_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr3_Hi
+
 #define UMCCH0_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5681,7 +5660,7 @@
 #define UMCCH0_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl4
+
 #define UMCCH0_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -5698,10 +5677,10 @@
 #define UMCCH0_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr4_Lo
+
 #define UMCCH0_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr4_Hi
+
 #define UMCCH0_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5710,7 +5689,7 @@
 #define UMCCH0_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl5
+
 #define UMCCH0_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -5727,10 +5706,10 @@
 #define UMCCH0_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr5_Lo
+
 #define UMCCH0_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr5_Hi
+
 #define UMCCH0_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5739,7 +5718,7 @@
 #define UMCCH0_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl6
+
 #define UMCCH0_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -5756,10 +5735,10 @@
 #define UMCCH0_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr6_Lo
+
 #define UMCCH0_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr6_Hi
+
 #define UMCCH0_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5768,7 +5747,7 @@
 #define UMCCH0_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl7
+
 #define UMCCH0_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -5785,10 +5764,10 @@
 #define UMCCH0_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr7_Lo
+
 #define UMCCH0_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr7_Hi
+
 #define UMCCH0_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5797,7 +5776,7 @@
 #define UMCCH0_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_2_PerfMonCtl8
+
 #define UMCCH0_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -5814,10 +5793,10 @@
 #define UMCCH0_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH0_2_PerfMonCtr8_Lo
+
 #define UMCCH0_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_2_PerfMonCtr8_Hi
+
 #define UMCCH0_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5828,16 +5807,16 @@
 #define UMCCH0_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch1_umcchdec
-//UMCCH1_2_BaseAddrCS0
+
+
 #define UMCCH1_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH1_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH1_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH1_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH1_2_AddrMaskCS01
+
 #define UMCCH1_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH1_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH1_2_AddrSelCS01
+
 #define UMCCH1_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH1_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH1_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -5852,59 +5831,59 @@
 #define UMCCH1_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH1_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH1_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH1_2_AddrHashBank0
+
 #define UMCCH1_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_AddrHashBank1
+
 #define UMCCH1_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_AddrHashBank2
+
 #define UMCCH1_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_AddrHashBank3
+
 #define UMCCH1_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_AddrHashBank4
+
 #define UMCCH1_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_AddrHashBank5
+
 #define UMCCH1_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_2_EccErrCntSel
+
 #define UMCCH1_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH1_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH1_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH1_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH1_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH1_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH1_2_EccErrCnt
+
 #define UMCCH1_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH1_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH1_2_PerfMonCtlClk
+
 #define UMCCH1_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH1_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH1_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -5917,15 +5896,15 @@
 #define UMCCH1_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH1_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH1_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH1_2_PerfMonCtrClk_Lo
+
 #define UMCCH1_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH1_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtrClk_Hi
+
 #define UMCCH1_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH1_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH1_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH1_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH1_2_PerfMonCtl1
+
 #define UMCCH1_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -5942,10 +5921,10 @@
 #define UMCCH1_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr1_Lo
+
 #define UMCCH1_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr1_Hi
+
 #define UMCCH1_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5954,7 +5933,7 @@
 #define UMCCH1_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl2
+
 #define UMCCH1_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -5971,10 +5950,10 @@
 #define UMCCH1_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr2_Lo
+
 #define UMCCH1_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr2_Hi
+
 #define UMCCH1_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -5983,7 +5962,7 @@
 #define UMCCH1_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl3
+
 #define UMCCH1_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -6000,10 +5979,10 @@
 #define UMCCH1_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr3_Lo
+
 #define UMCCH1_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr3_Hi
+
 #define UMCCH1_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6012,7 +5991,7 @@
 #define UMCCH1_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl4
+
 #define UMCCH1_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -6029,10 +6008,10 @@
 #define UMCCH1_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr4_Lo
+
 #define UMCCH1_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr4_Hi
+
 #define UMCCH1_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6041,7 +6020,7 @@
 #define UMCCH1_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl5
+
 #define UMCCH1_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -6058,10 +6037,10 @@
 #define UMCCH1_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr5_Lo
+
 #define UMCCH1_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr5_Hi
+
 #define UMCCH1_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6070,7 +6049,7 @@
 #define UMCCH1_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl6
+
 #define UMCCH1_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -6087,10 +6066,10 @@
 #define UMCCH1_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr6_Lo
+
 #define UMCCH1_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr6_Hi
+
 #define UMCCH1_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6099,7 +6078,7 @@
 #define UMCCH1_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl7
+
 #define UMCCH1_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -6116,10 +6095,10 @@
 #define UMCCH1_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr7_Lo
+
 #define UMCCH1_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr7_Hi
+
 #define UMCCH1_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6128,7 +6107,7 @@
 #define UMCCH1_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_2_PerfMonCtl8
+
 #define UMCCH1_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -6145,10 +6124,10 @@
 #define UMCCH1_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH1_2_PerfMonCtr8_Lo
+
 #define UMCCH1_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_2_PerfMonCtr8_Hi
+
 #define UMCCH1_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6159,16 +6138,16 @@
 #define UMCCH1_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch2_umcchdec
-//UMCCH2_2_BaseAddrCS0
+
+
 #define UMCCH2_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH2_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH2_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH2_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH2_2_AddrMaskCS01
+
 #define UMCCH2_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH2_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH2_2_AddrSelCS01
+
 #define UMCCH2_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH2_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH2_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -6183,59 +6162,59 @@
 #define UMCCH2_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH2_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH2_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH2_2_AddrHashBank0
+
 #define UMCCH2_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_AddrHashBank1
+
 #define UMCCH2_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_AddrHashBank2
+
 #define UMCCH2_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_AddrHashBank3
+
 #define UMCCH2_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_AddrHashBank4
+
 #define UMCCH2_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_AddrHashBank5
+
 #define UMCCH2_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_2_EccErrCntSel
+
 #define UMCCH2_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH2_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH2_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH2_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH2_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH2_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH2_2_EccErrCnt
+
 #define UMCCH2_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH2_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH2_2_PerfMonCtlClk
+
 #define UMCCH2_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH2_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH2_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -6248,15 +6227,15 @@
 #define UMCCH2_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH2_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH2_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH2_2_PerfMonCtrClk_Lo
+
 #define UMCCH2_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH2_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtrClk_Hi
+
 #define UMCCH2_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH2_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH2_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH2_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH2_2_PerfMonCtl1
+
 #define UMCCH2_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -6273,10 +6252,10 @@
 #define UMCCH2_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr1_Lo
+
 #define UMCCH2_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr1_Hi
+
 #define UMCCH2_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6285,7 +6264,7 @@
 #define UMCCH2_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl2
+
 #define UMCCH2_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -6302,10 +6281,10 @@
 #define UMCCH2_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr2_Lo
+
 #define UMCCH2_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr2_Hi
+
 #define UMCCH2_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6314,7 +6293,7 @@
 #define UMCCH2_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl3
+
 #define UMCCH2_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -6331,10 +6310,10 @@
 #define UMCCH2_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr3_Lo
+
 #define UMCCH2_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr3_Hi
+
 #define UMCCH2_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6343,7 +6322,7 @@
 #define UMCCH2_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl4
+
 #define UMCCH2_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -6360,10 +6339,10 @@
 #define UMCCH2_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr4_Lo
+
 #define UMCCH2_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr4_Hi
+
 #define UMCCH2_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6372,7 +6351,7 @@
 #define UMCCH2_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl5
+
 #define UMCCH2_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -6389,10 +6368,10 @@
 #define UMCCH2_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr5_Lo
+
 #define UMCCH2_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr5_Hi
+
 #define UMCCH2_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6401,7 +6380,7 @@
 #define UMCCH2_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl6
+
 #define UMCCH2_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -6418,10 +6397,10 @@
 #define UMCCH2_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr6_Lo
+
 #define UMCCH2_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr6_Hi
+
 #define UMCCH2_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6430,7 +6409,7 @@
 #define UMCCH2_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl7
+
 #define UMCCH2_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -6447,10 +6426,10 @@
 #define UMCCH2_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr7_Lo
+
 #define UMCCH2_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr7_Hi
+
 #define UMCCH2_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6459,7 +6438,7 @@
 #define UMCCH2_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_2_PerfMonCtl8
+
 #define UMCCH2_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -6476,10 +6455,10 @@
 #define UMCCH2_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH2_2_PerfMonCtr8_Lo
+
 #define UMCCH2_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_2_PerfMonCtr8_Hi
+
 #define UMCCH2_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6490,16 +6469,16 @@
 #define UMCCH2_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch3_umcchdec
-//UMCCH3_2_BaseAddrCS0
+
+
 #define UMCCH3_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH3_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH3_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH3_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH3_2_AddrMaskCS01
+
 #define UMCCH3_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH3_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH3_2_AddrSelCS01
+
 #define UMCCH3_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH3_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH3_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -6514,59 +6493,59 @@
 #define UMCCH3_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH3_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH3_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH3_2_AddrHashBank0
+
 #define UMCCH3_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_AddrHashBank1
+
 #define UMCCH3_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_AddrHashBank2
+
 #define UMCCH3_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_AddrHashBank3
+
 #define UMCCH3_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_AddrHashBank4
+
 #define UMCCH3_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_AddrHashBank5
+
 #define UMCCH3_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_2_EccErrCntSel
+
 #define UMCCH3_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH3_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH3_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH3_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH3_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH3_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH3_2_EccErrCnt
+
 #define UMCCH3_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH3_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH3_2_PerfMonCtlClk
+
 #define UMCCH3_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH3_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH3_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -6579,15 +6558,15 @@
 #define UMCCH3_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH3_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH3_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH3_2_PerfMonCtrClk_Lo
+
 #define UMCCH3_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH3_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtrClk_Hi
+
 #define UMCCH3_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH3_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH3_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH3_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH3_2_PerfMonCtl1
+
 #define UMCCH3_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -6604,10 +6583,10 @@
 #define UMCCH3_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr1_Lo
+
 #define UMCCH3_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr1_Hi
+
 #define UMCCH3_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6616,7 +6595,7 @@
 #define UMCCH3_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl2
+
 #define UMCCH3_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -6633,10 +6612,10 @@
 #define UMCCH3_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr2_Lo
+
 #define UMCCH3_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr2_Hi
+
 #define UMCCH3_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6645,7 +6624,7 @@
 #define UMCCH3_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl3
+
 #define UMCCH3_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -6662,10 +6641,10 @@
 #define UMCCH3_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr3_Lo
+
 #define UMCCH3_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr3_Hi
+
 #define UMCCH3_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6674,7 +6653,7 @@
 #define UMCCH3_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl4
+
 #define UMCCH3_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -6691,10 +6670,10 @@
 #define UMCCH3_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr4_Lo
+
 #define UMCCH3_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr4_Hi
+
 #define UMCCH3_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6703,7 +6682,7 @@
 #define UMCCH3_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl5
+
 #define UMCCH3_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -6720,10 +6699,10 @@
 #define UMCCH3_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr5_Lo
+
 #define UMCCH3_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr5_Hi
+
 #define UMCCH3_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6732,7 +6711,7 @@
 #define UMCCH3_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl6
+
 #define UMCCH3_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -6749,10 +6728,10 @@
 #define UMCCH3_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr6_Lo
+
 #define UMCCH3_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr6_Hi
+
 #define UMCCH3_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6761,7 +6740,7 @@
 #define UMCCH3_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl7
+
 #define UMCCH3_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -6778,10 +6757,10 @@
 #define UMCCH3_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr7_Lo
+
 #define UMCCH3_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr7_Hi
+
 #define UMCCH3_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6790,7 +6769,7 @@
 #define UMCCH3_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_2_PerfMonCtl8
+
 #define UMCCH3_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -6807,10 +6786,10 @@
 #define UMCCH3_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH3_2_PerfMonCtr8_Lo
+
 #define UMCCH3_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_2_PerfMonCtr8_Hi
+
 #define UMCCH3_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6821,16 +6800,16 @@
 #define UMCCH3_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch4_umcchdec
-//UMCCH4_2_BaseAddrCS0
+
+
 #define UMCCH4_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH4_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH4_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH4_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH4_2_AddrMaskCS01
+
 #define UMCCH4_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH4_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH4_2_AddrSelCS01
+
 #define UMCCH4_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH4_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH4_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -6845,59 +6824,59 @@
 #define UMCCH4_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH4_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH4_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH4_2_AddrHashBank0
+
 #define UMCCH4_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_AddrHashBank1
+
 #define UMCCH4_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_AddrHashBank2
+
 #define UMCCH4_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_AddrHashBank3
+
 #define UMCCH4_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_AddrHashBank4
+
 #define UMCCH4_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_AddrHashBank5
+
 #define UMCCH4_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_2_EccErrCntSel
+
 #define UMCCH4_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH4_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH4_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH4_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH4_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH4_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH4_2_EccErrCnt
+
 #define UMCCH4_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH4_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH4_2_PerfMonCtlClk
+
 #define UMCCH4_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH4_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH4_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -6910,15 +6889,15 @@
 #define UMCCH4_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH4_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH4_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH4_2_PerfMonCtrClk_Lo
+
 #define UMCCH4_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH4_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtrClk_Hi
+
 #define UMCCH4_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH4_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH4_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH4_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH4_2_PerfMonCtl1
+
 #define UMCCH4_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -6935,10 +6914,10 @@
 #define UMCCH4_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr1_Lo
+
 #define UMCCH4_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr1_Hi
+
 #define UMCCH4_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6947,7 +6926,7 @@
 #define UMCCH4_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl2
+
 #define UMCCH4_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -6964,10 +6943,10 @@
 #define UMCCH4_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr2_Lo
+
 #define UMCCH4_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr2_Hi
+
 #define UMCCH4_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -6976,7 +6955,7 @@
 #define UMCCH4_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl3
+
 #define UMCCH4_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -6993,10 +6972,10 @@
 #define UMCCH4_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr3_Lo
+
 #define UMCCH4_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr3_Hi
+
 #define UMCCH4_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7005,7 +6984,7 @@
 #define UMCCH4_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl4
+
 #define UMCCH4_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -7022,10 +7001,10 @@
 #define UMCCH4_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr4_Lo
+
 #define UMCCH4_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr4_Hi
+
 #define UMCCH4_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7034,7 +7013,7 @@
 #define UMCCH4_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl5
+
 #define UMCCH4_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -7051,10 +7030,10 @@
 #define UMCCH4_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr5_Lo
+
 #define UMCCH4_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr5_Hi
+
 #define UMCCH4_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7063,7 +7042,7 @@
 #define UMCCH4_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl6
+
 #define UMCCH4_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -7080,10 +7059,10 @@
 #define UMCCH4_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr6_Lo
+
 #define UMCCH4_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr6_Hi
+
 #define UMCCH4_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7092,7 +7071,7 @@
 #define UMCCH4_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl7
+
 #define UMCCH4_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -7109,10 +7088,10 @@
 #define UMCCH4_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr7_Lo
+
 #define UMCCH4_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr7_Hi
+
 #define UMCCH4_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7121,7 +7100,7 @@
 #define UMCCH4_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_2_PerfMonCtl8
+
 #define UMCCH4_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -7138,10 +7117,10 @@
 #define UMCCH4_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH4_2_PerfMonCtr8_Lo
+
 #define UMCCH4_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_2_PerfMonCtr8_Hi
+
 #define UMCCH4_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7152,16 +7131,16 @@
 #define UMCCH4_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch5_umcchdec
-//UMCCH5_2_BaseAddrCS0
+
+
 #define UMCCH5_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH5_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH5_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH5_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH5_2_AddrMaskCS01
+
 #define UMCCH5_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH5_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH5_2_AddrSelCS01
+
 #define UMCCH5_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH5_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH5_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -7176,59 +7155,59 @@
 #define UMCCH5_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH5_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH5_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH5_2_AddrHashBank0
+
 #define UMCCH5_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_AddrHashBank1
+
 #define UMCCH5_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_AddrHashBank2
+
 #define UMCCH5_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_AddrHashBank3
+
 #define UMCCH5_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_AddrHashBank4
+
 #define UMCCH5_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_AddrHashBank5
+
 #define UMCCH5_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_2_EccErrCntSel
+
 #define UMCCH5_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH5_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH5_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH5_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH5_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH5_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH5_2_EccErrCnt
+
 #define UMCCH5_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH5_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH5_2_PerfMonCtlClk
+
 #define UMCCH5_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH5_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH5_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -7241,15 +7220,15 @@
 #define UMCCH5_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH5_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH5_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH5_2_PerfMonCtrClk_Lo
+
 #define UMCCH5_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH5_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtrClk_Hi
+
 #define UMCCH5_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH5_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH5_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH5_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH5_2_PerfMonCtl1
+
 #define UMCCH5_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -7266,10 +7245,10 @@
 #define UMCCH5_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr1_Lo
+
 #define UMCCH5_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr1_Hi
+
 #define UMCCH5_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7278,7 +7257,7 @@
 #define UMCCH5_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl2
+
 #define UMCCH5_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -7295,10 +7274,10 @@
 #define UMCCH5_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr2_Lo
+
 #define UMCCH5_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr2_Hi
+
 #define UMCCH5_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7307,7 +7286,7 @@
 #define UMCCH5_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl3
+
 #define UMCCH5_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -7324,10 +7303,10 @@
 #define UMCCH5_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr3_Lo
+
 #define UMCCH5_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr3_Hi
+
 #define UMCCH5_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7336,7 +7315,7 @@
 #define UMCCH5_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl4
+
 #define UMCCH5_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -7353,10 +7332,10 @@
 #define UMCCH5_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr4_Lo
+
 #define UMCCH5_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr4_Hi
+
 #define UMCCH5_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7365,7 +7344,7 @@
 #define UMCCH5_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl5
+
 #define UMCCH5_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -7382,10 +7361,10 @@
 #define UMCCH5_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr5_Lo
+
 #define UMCCH5_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr5_Hi
+
 #define UMCCH5_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7394,7 +7373,7 @@
 #define UMCCH5_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl6
+
 #define UMCCH5_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -7411,10 +7390,10 @@
 #define UMCCH5_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr6_Lo
+
 #define UMCCH5_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr6_Hi
+
 #define UMCCH5_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7423,7 +7402,7 @@
 #define UMCCH5_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl7
+
 #define UMCCH5_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -7440,10 +7419,10 @@
 #define UMCCH5_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr7_Lo
+
 #define UMCCH5_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr7_Hi
+
 #define UMCCH5_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7452,7 +7431,7 @@
 #define UMCCH5_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_2_PerfMonCtl8
+
 #define UMCCH5_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -7469,10 +7448,10 @@
 #define UMCCH5_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH5_2_PerfMonCtr8_Lo
+
 #define UMCCH5_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_2_PerfMonCtr8_Hi
+
 #define UMCCH5_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7483,16 +7462,16 @@
 #define UMCCH5_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch6_umcchdec
-//UMCCH6_2_BaseAddrCS0
+
+
 #define UMCCH6_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH6_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH6_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH6_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH6_2_AddrMaskCS01
+
 #define UMCCH6_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH6_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH6_2_AddrSelCS01
+
 #define UMCCH6_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH6_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH6_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -7507,59 +7486,59 @@
 #define UMCCH6_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH6_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH6_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH6_2_AddrHashBank0
+
 #define UMCCH6_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_AddrHashBank1
+
 #define UMCCH6_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_AddrHashBank2
+
 #define UMCCH6_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_AddrHashBank3
+
 #define UMCCH6_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_AddrHashBank4
+
 #define UMCCH6_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_AddrHashBank5
+
 #define UMCCH6_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_2_EccErrCntSel
+
 #define UMCCH6_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH6_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH6_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH6_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH6_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH6_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH6_2_EccErrCnt
+
 #define UMCCH6_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH6_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH6_2_PerfMonCtlClk
+
 #define UMCCH6_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH6_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH6_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -7572,15 +7551,15 @@
 #define UMCCH6_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH6_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH6_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH6_2_PerfMonCtrClk_Lo
+
 #define UMCCH6_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH6_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtrClk_Hi
+
 #define UMCCH6_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH6_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH6_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH6_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH6_2_PerfMonCtl1
+
 #define UMCCH6_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -7597,10 +7576,10 @@
 #define UMCCH6_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr1_Lo
+
 #define UMCCH6_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr1_Hi
+
 #define UMCCH6_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7609,7 +7588,7 @@
 #define UMCCH6_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl2
+
 #define UMCCH6_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -7626,10 +7605,10 @@
 #define UMCCH6_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr2_Lo
+
 #define UMCCH6_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr2_Hi
+
 #define UMCCH6_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7638,7 +7617,7 @@
 #define UMCCH6_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl3
+
 #define UMCCH6_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -7655,10 +7634,10 @@
 #define UMCCH6_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr3_Lo
+
 #define UMCCH6_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr3_Hi
+
 #define UMCCH6_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7667,7 +7646,7 @@
 #define UMCCH6_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl4
+
 #define UMCCH6_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -7684,10 +7663,10 @@
 #define UMCCH6_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr4_Lo
+
 #define UMCCH6_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr4_Hi
+
 #define UMCCH6_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7696,7 +7675,7 @@
 #define UMCCH6_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl5
+
 #define UMCCH6_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -7713,10 +7692,10 @@
 #define UMCCH6_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr5_Lo
+
 #define UMCCH6_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr5_Hi
+
 #define UMCCH6_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7725,7 +7704,7 @@
 #define UMCCH6_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl6
+
 #define UMCCH6_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -7742,10 +7721,10 @@
 #define UMCCH6_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr6_Lo
+
 #define UMCCH6_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr6_Hi
+
 #define UMCCH6_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7754,7 +7733,7 @@
 #define UMCCH6_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl7
+
 #define UMCCH6_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -7771,10 +7750,10 @@
 #define UMCCH6_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr7_Lo
+
 #define UMCCH6_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr7_Hi
+
 #define UMCCH6_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7783,7 +7762,7 @@
 #define UMCCH6_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_2_PerfMonCtl8
+
 #define UMCCH6_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -7800,10 +7779,10 @@
 #define UMCCH6_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH6_2_PerfMonCtr8_Lo
+
 #define UMCCH6_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_2_PerfMonCtr8_Hi
+
 #define UMCCH6_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7814,16 +7793,16 @@
 #define UMCCH6_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc2_umcch7_umcchdec
-//UMCCH7_2_BaseAddrCS0
+
+
 #define UMCCH7_2_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH7_2_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH7_2_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH7_2_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH7_2_AddrMaskCS01
+
 #define UMCCH7_2_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH7_2_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH7_2_AddrSelCS01
+
 #define UMCCH7_2_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH7_2_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH7_2_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -7838,59 +7817,59 @@
 #define UMCCH7_2_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH7_2_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH7_2_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH7_2_AddrHashBank0
+
 #define UMCCH7_2_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_AddrHashBank1
+
 #define UMCCH7_2_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_AddrHashBank2
+
 #define UMCCH7_2_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_AddrHashBank3
+
 #define UMCCH7_2_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_AddrHashBank4
+
 #define UMCCH7_2_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_AddrHashBank5
+
 #define UMCCH7_2_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_2_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_2_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_2_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_2_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_2_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_2_EccErrCntSel
+
 #define UMCCH7_2_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH7_2_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH7_2_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH7_2_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH7_2_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH7_2_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH7_2_EccErrCnt
+
 #define UMCCH7_2_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH7_2_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH7_2_PerfMonCtlClk
+
 #define UMCCH7_2_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH7_2_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH7_2_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -7903,15 +7882,15 @@
 #define UMCCH7_2_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH7_2_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH7_2_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH7_2_PerfMonCtrClk_Lo
+
 #define UMCCH7_2_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH7_2_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtrClk_Hi
+
 #define UMCCH7_2_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH7_2_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH7_2_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH7_2_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH7_2_PerfMonCtl1
+
 #define UMCCH7_2_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -7928,10 +7907,10 @@
 #define UMCCH7_2_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr1_Lo
+
 #define UMCCH7_2_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr1_Hi
+
 #define UMCCH7_2_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7940,7 +7919,7 @@
 #define UMCCH7_2_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl2
+
 #define UMCCH7_2_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -7957,10 +7936,10 @@
 #define UMCCH7_2_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr2_Lo
+
 #define UMCCH7_2_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr2_Hi
+
 #define UMCCH7_2_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7969,7 +7948,7 @@
 #define UMCCH7_2_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl3
+
 #define UMCCH7_2_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -7986,10 +7965,10 @@
 #define UMCCH7_2_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr3_Lo
+
 #define UMCCH7_2_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr3_Hi
+
 #define UMCCH7_2_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -7998,7 +7977,7 @@
 #define UMCCH7_2_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl4
+
 #define UMCCH7_2_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -8015,10 +7994,10 @@
 #define UMCCH7_2_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr4_Lo
+
 #define UMCCH7_2_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr4_Hi
+
 #define UMCCH7_2_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8027,7 +8006,7 @@
 #define UMCCH7_2_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl5
+
 #define UMCCH7_2_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -8044,10 +8023,10 @@
 #define UMCCH7_2_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr5_Lo
+
 #define UMCCH7_2_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr5_Hi
+
 #define UMCCH7_2_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8056,7 +8035,7 @@
 #define UMCCH7_2_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl6
+
 #define UMCCH7_2_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -8073,10 +8052,10 @@
 #define UMCCH7_2_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr6_Lo
+
 #define UMCCH7_2_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr6_Hi
+
 #define UMCCH7_2_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8085,7 +8064,7 @@
 #define UMCCH7_2_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl7
+
 #define UMCCH7_2_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -8102,10 +8081,10 @@
 #define UMCCH7_2_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr7_Lo
+
 #define UMCCH7_2_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr7_Hi
+
 #define UMCCH7_2_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8114,7 +8093,7 @@
 #define UMCCH7_2_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_2_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_2_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_2_PerfMonCtl8
+
 #define UMCCH7_2_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_2_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_2_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -8131,10 +8110,10 @@
 #define UMCCH7_2_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_2_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_2_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH7_2_PerfMonCtr8_Lo
+
 #define UMCCH7_2_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_2_PerfMonCtr8_Hi
+
 #define UMCCH7_2_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_2_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_2_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8145,16 +8124,16 @@
 #define UMCCH7_2_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch0_umcchdec
-//UMCCH0_3_BaseAddrCS0
+
+
 #define UMCCH0_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH0_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH0_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH0_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH0_3_AddrMaskCS01
+
 #define UMCCH0_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH0_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH0_3_AddrSelCS01
+
 #define UMCCH0_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH0_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH0_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -8169,59 +8148,59 @@
 #define UMCCH0_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH0_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH0_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH0_3_AddrHashBank0
+
 #define UMCCH0_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_AddrHashBank1
+
 #define UMCCH0_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_AddrHashBank2
+
 #define UMCCH0_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_AddrHashBank3
+
 #define UMCCH0_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_AddrHashBank4
+
 #define UMCCH0_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_AddrHashBank5
+
 #define UMCCH0_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH0_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH0_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH0_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH0_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH0_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH0_3_EccErrCntSel
+
 #define UMCCH0_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH0_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH0_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH0_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH0_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH0_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH0_3_EccErrCnt
+
 #define UMCCH0_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH0_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH0_3_PerfMonCtlClk
+
 #define UMCCH0_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH0_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH0_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -8234,15 +8213,15 @@
 #define UMCCH0_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH0_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH0_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH0_3_PerfMonCtrClk_Lo
+
 #define UMCCH0_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH0_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtrClk_Hi
+
 #define UMCCH0_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH0_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH0_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH0_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH0_3_PerfMonCtl1
+
 #define UMCCH0_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -8259,10 +8238,10 @@
 #define UMCCH0_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr1_Lo
+
 #define UMCCH0_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr1_Hi
+
 #define UMCCH0_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8271,7 +8250,7 @@
 #define UMCCH0_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl2
+
 #define UMCCH0_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -8288,10 +8267,10 @@
 #define UMCCH0_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr2_Lo
+
 #define UMCCH0_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr2_Hi
+
 #define UMCCH0_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8300,7 +8279,7 @@
 #define UMCCH0_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl3
+
 #define UMCCH0_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -8317,10 +8296,10 @@
 #define UMCCH0_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr3_Lo
+
 #define UMCCH0_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr3_Hi
+
 #define UMCCH0_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8329,7 +8308,7 @@
 #define UMCCH0_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl4
+
 #define UMCCH0_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -8346,10 +8325,10 @@
 #define UMCCH0_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr4_Lo
+
 #define UMCCH0_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr4_Hi
+
 #define UMCCH0_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8358,7 +8337,7 @@
 #define UMCCH0_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl5
+
 #define UMCCH0_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -8375,10 +8354,10 @@
 #define UMCCH0_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr5_Lo
+
 #define UMCCH0_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr5_Hi
+
 #define UMCCH0_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8387,7 +8366,7 @@
 #define UMCCH0_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl6
+
 #define UMCCH0_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -8404,10 +8383,10 @@
 #define UMCCH0_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr6_Lo
+
 #define UMCCH0_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr6_Hi
+
 #define UMCCH0_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8416,7 +8395,7 @@
 #define UMCCH0_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl7
+
 #define UMCCH0_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -8433,10 +8412,10 @@
 #define UMCCH0_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr7_Lo
+
 #define UMCCH0_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr7_Hi
+
 #define UMCCH0_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8445,7 +8424,7 @@
 #define UMCCH0_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH0_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH0_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH0_3_PerfMonCtl8
+
 #define UMCCH0_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH0_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH0_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -8462,10 +8441,10 @@
 #define UMCCH0_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH0_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH0_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH0_3_PerfMonCtr8_Lo
+
 #define UMCCH0_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH0_3_PerfMonCtr8_Hi
+
 #define UMCCH0_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH0_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH0_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8476,16 +8455,16 @@
 #define UMCCH0_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch1_umcchdec
-//UMCCH1_3_BaseAddrCS0
+
+
 #define UMCCH1_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH1_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH1_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH1_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH1_3_AddrMaskCS01
+
 #define UMCCH1_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH1_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH1_3_AddrSelCS01
+
 #define UMCCH1_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH1_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH1_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -8500,59 +8479,59 @@
 #define UMCCH1_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH1_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH1_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH1_3_AddrHashBank0
+
 #define UMCCH1_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_AddrHashBank1
+
 #define UMCCH1_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_AddrHashBank2
+
 #define UMCCH1_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_AddrHashBank3
+
 #define UMCCH1_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_AddrHashBank4
+
 #define UMCCH1_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_AddrHashBank5
+
 #define UMCCH1_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH1_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH1_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH1_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH1_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH1_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH1_3_EccErrCntSel
+
 #define UMCCH1_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH1_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH1_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH1_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH1_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH1_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH1_3_EccErrCnt
+
 #define UMCCH1_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH1_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH1_3_PerfMonCtlClk
+
 #define UMCCH1_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH1_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH1_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -8565,15 +8544,15 @@
 #define UMCCH1_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH1_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH1_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH1_3_PerfMonCtrClk_Lo
+
 #define UMCCH1_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH1_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtrClk_Hi
+
 #define UMCCH1_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH1_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH1_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH1_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH1_3_PerfMonCtl1
+
 #define UMCCH1_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -8590,10 +8569,10 @@
 #define UMCCH1_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr1_Lo
+
 #define UMCCH1_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr1_Hi
+
 #define UMCCH1_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8602,7 +8581,7 @@
 #define UMCCH1_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl2
+
 #define UMCCH1_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -8619,10 +8598,10 @@
 #define UMCCH1_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr2_Lo
+
 #define UMCCH1_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr2_Hi
+
 #define UMCCH1_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8631,7 +8610,7 @@
 #define UMCCH1_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl3
+
 #define UMCCH1_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -8648,10 +8627,10 @@
 #define UMCCH1_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr3_Lo
+
 #define UMCCH1_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr3_Hi
+
 #define UMCCH1_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8660,7 +8639,7 @@
 #define UMCCH1_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl4
+
 #define UMCCH1_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -8677,10 +8656,10 @@
 #define UMCCH1_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr4_Lo
+
 #define UMCCH1_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr4_Hi
+
 #define UMCCH1_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8689,7 +8668,7 @@
 #define UMCCH1_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl5
+
 #define UMCCH1_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -8706,10 +8685,10 @@
 #define UMCCH1_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr5_Lo
+
 #define UMCCH1_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr5_Hi
+
 #define UMCCH1_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8718,7 +8697,7 @@
 #define UMCCH1_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl6
+
 #define UMCCH1_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -8735,10 +8714,10 @@
 #define UMCCH1_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr6_Lo
+
 #define UMCCH1_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr6_Hi
+
 #define UMCCH1_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8747,7 +8726,7 @@
 #define UMCCH1_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl7
+
 #define UMCCH1_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -8764,10 +8743,10 @@
 #define UMCCH1_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr7_Lo
+
 #define UMCCH1_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr7_Hi
+
 #define UMCCH1_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8776,7 +8755,7 @@
 #define UMCCH1_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH1_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH1_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH1_3_PerfMonCtl8
+
 #define UMCCH1_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH1_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH1_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -8793,10 +8772,10 @@
 #define UMCCH1_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH1_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH1_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH1_3_PerfMonCtr8_Lo
+
 #define UMCCH1_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH1_3_PerfMonCtr8_Hi
+
 #define UMCCH1_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH1_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH1_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8807,16 +8786,16 @@
 #define UMCCH1_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch2_umcchdec
-//UMCCH2_3_BaseAddrCS0
+
+
 #define UMCCH2_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH2_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH2_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH2_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH2_3_AddrMaskCS01
+
 #define UMCCH2_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH2_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH2_3_AddrSelCS01
+
 #define UMCCH2_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH2_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH2_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -8831,59 +8810,59 @@
 #define UMCCH2_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH2_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH2_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH2_3_AddrHashBank0
+
 #define UMCCH2_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_AddrHashBank1
+
 #define UMCCH2_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_AddrHashBank2
+
 #define UMCCH2_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_AddrHashBank3
+
 #define UMCCH2_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_AddrHashBank4
+
 #define UMCCH2_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_AddrHashBank5
+
 #define UMCCH2_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH2_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH2_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH2_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH2_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH2_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH2_3_EccErrCntSel
+
 #define UMCCH2_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH2_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH2_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH2_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH2_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH2_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH2_3_EccErrCnt
+
 #define UMCCH2_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH2_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH2_3_PerfMonCtlClk
+
 #define UMCCH2_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH2_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH2_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -8896,15 +8875,15 @@
 #define UMCCH2_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH2_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH2_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH2_3_PerfMonCtrClk_Lo
+
 #define UMCCH2_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH2_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtrClk_Hi
+
 #define UMCCH2_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH2_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH2_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH2_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH2_3_PerfMonCtl1
+
 #define UMCCH2_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -8921,10 +8900,10 @@
 #define UMCCH2_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr1_Lo
+
 #define UMCCH2_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr1_Hi
+
 #define UMCCH2_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8933,7 +8912,7 @@
 #define UMCCH2_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl2
+
 #define UMCCH2_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -8950,10 +8929,10 @@
 #define UMCCH2_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr2_Lo
+
 #define UMCCH2_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr2_Hi
+
 #define UMCCH2_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8962,7 +8941,7 @@
 #define UMCCH2_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl3
+
 #define UMCCH2_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -8979,10 +8958,10 @@
 #define UMCCH2_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr3_Lo
+
 #define UMCCH2_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr3_Hi
+
 #define UMCCH2_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -8991,7 +8970,7 @@
 #define UMCCH2_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl4
+
 #define UMCCH2_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -9008,10 +8987,10 @@
 #define UMCCH2_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr4_Lo
+
 #define UMCCH2_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr4_Hi
+
 #define UMCCH2_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9020,7 +8999,7 @@
 #define UMCCH2_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl5
+
 #define UMCCH2_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -9037,10 +9016,10 @@
 #define UMCCH2_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr5_Lo
+
 #define UMCCH2_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr5_Hi
+
 #define UMCCH2_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9049,7 +9028,7 @@
 #define UMCCH2_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl6
+
 #define UMCCH2_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -9066,10 +9045,10 @@
 #define UMCCH2_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr6_Lo
+
 #define UMCCH2_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr6_Hi
+
 #define UMCCH2_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9078,7 +9057,7 @@
 #define UMCCH2_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl7
+
 #define UMCCH2_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -9095,10 +9074,10 @@
 #define UMCCH2_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr7_Lo
+
 #define UMCCH2_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr7_Hi
+
 #define UMCCH2_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9107,7 +9086,7 @@
 #define UMCCH2_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH2_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH2_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH2_3_PerfMonCtl8
+
 #define UMCCH2_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH2_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH2_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -9124,10 +9103,10 @@
 #define UMCCH2_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH2_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH2_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH2_3_PerfMonCtr8_Lo
+
 #define UMCCH2_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH2_3_PerfMonCtr8_Hi
+
 #define UMCCH2_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH2_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH2_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9138,16 +9117,16 @@
 #define UMCCH2_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch3_umcchdec
-//UMCCH3_3_BaseAddrCS0
+
+
 #define UMCCH3_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH3_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH3_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH3_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH3_3_AddrMaskCS01
+
 #define UMCCH3_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH3_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH3_3_AddrSelCS01
+
 #define UMCCH3_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH3_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH3_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -9162,59 +9141,59 @@
 #define UMCCH3_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH3_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH3_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH3_3_AddrHashBank0
+
 #define UMCCH3_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_AddrHashBank1
+
 #define UMCCH3_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_AddrHashBank2
+
 #define UMCCH3_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_AddrHashBank3
+
 #define UMCCH3_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_AddrHashBank4
+
 #define UMCCH3_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_AddrHashBank5
+
 #define UMCCH3_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH3_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH3_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH3_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH3_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH3_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH3_3_EccErrCntSel
+
 #define UMCCH3_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH3_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH3_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH3_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH3_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH3_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH3_3_EccErrCnt
+
 #define UMCCH3_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH3_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH3_3_PerfMonCtlClk
+
 #define UMCCH3_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH3_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH3_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -9227,15 +9206,15 @@
 #define UMCCH3_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH3_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH3_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH3_3_PerfMonCtrClk_Lo
+
 #define UMCCH3_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH3_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtrClk_Hi
+
 #define UMCCH3_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH3_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH3_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH3_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH3_3_PerfMonCtl1
+
 #define UMCCH3_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -9252,10 +9231,10 @@
 #define UMCCH3_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr1_Lo
+
 #define UMCCH3_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr1_Hi
+
 #define UMCCH3_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9264,7 +9243,7 @@
 #define UMCCH3_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl2
+
 #define UMCCH3_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -9281,10 +9260,10 @@
 #define UMCCH3_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr2_Lo
+
 #define UMCCH3_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr2_Hi
+
 #define UMCCH3_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9293,7 +9272,7 @@
 #define UMCCH3_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl3
+
 #define UMCCH3_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -9310,10 +9289,10 @@
 #define UMCCH3_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr3_Lo
+
 #define UMCCH3_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr3_Hi
+
 #define UMCCH3_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9322,7 +9301,7 @@
 #define UMCCH3_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl4
+
 #define UMCCH3_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -9339,10 +9318,10 @@
 #define UMCCH3_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr4_Lo
+
 #define UMCCH3_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr4_Hi
+
 #define UMCCH3_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9351,7 +9330,7 @@
 #define UMCCH3_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl5
+
 #define UMCCH3_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -9368,10 +9347,10 @@
 #define UMCCH3_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr5_Lo
+
 #define UMCCH3_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr5_Hi
+
 #define UMCCH3_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9380,7 +9359,7 @@
 #define UMCCH3_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl6
+
 #define UMCCH3_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -9397,10 +9376,10 @@
 #define UMCCH3_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr6_Lo
+
 #define UMCCH3_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr6_Hi
+
 #define UMCCH3_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9409,7 +9388,7 @@
 #define UMCCH3_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl7
+
 #define UMCCH3_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -9426,10 +9405,10 @@
 #define UMCCH3_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr7_Lo
+
 #define UMCCH3_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr7_Hi
+
 #define UMCCH3_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9438,7 +9417,7 @@
 #define UMCCH3_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH3_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH3_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH3_3_PerfMonCtl8
+
 #define UMCCH3_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH3_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH3_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -9455,10 +9434,10 @@
 #define UMCCH3_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH3_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH3_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH3_3_PerfMonCtr8_Lo
+
 #define UMCCH3_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH3_3_PerfMonCtr8_Hi
+
 #define UMCCH3_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH3_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH3_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9469,16 +9448,16 @@
 #define UMCCH3_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch4_umcchdec
-//UMCCH4_3_BaseAddrCS0
+
+
 #define UMCCH4_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH4_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH4_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH4_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH4_3_AddrMaskCS01
+
 #define UMCCH4_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH4_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH4_3_AddrSelCS01
+
 #define UMCCH4_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH4_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH4_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -9493,59 +9472,59 @@
 #define UMCCH4_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH4_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH4_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH4_3_AddrHashBank0
+
 #define UMCCH4_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_AddrHashBank1
+
 #define UMCCH4_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_AddrHashBank2
+
 #define UMCCH4_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_AddrHashBank3
+
 #define UMCCH4_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_AddrHashBank4
+
 #define UMCCH4_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_AddrHashBank5
+
 #define UMCCH4_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH4_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH4_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH4_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH4_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH4_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH4_3_EccErrCntSel
+
 #define UMCCH4_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH4_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH4_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH4_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH4_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH4_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH4_3_EccErrCnt
+
 #define UMCCH4_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH4_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH4_3_PerfMonCtlClk
+
 #define UMCCH4_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH4_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH4_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -9558,15 +9537,15 @@
 #define UMCCH4_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH4_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH4_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH4_3_PerfMonCtrClk_Lo
+
 #define UMCCH4_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH4_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtrClk_Hi
+
 #define UMCCH4_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH4_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH4_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH4_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH4_3_PerfMonCtl1
+
 #define UMCCH4_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -9583,10 +9562,10 @@
 #define UMCCH4_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr1_Lo
+
 #define UMCCH4_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr1_Hi
+
 #define UMCCH4_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9595,7 +9574,7 @@
 #define UMCCH4_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl2
+
 #define UMCCH4_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -9612,10 +9591,10 @@
 #define UMCCH4_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr2_Lo
+
 #define UMCCH4_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr2_Hi
+
 #define UMCCH4_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9624,7 +9603,7 @@
 #define UMCCH4_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl3
+
 #define UMCCH4_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -9641,10 +9620,10 @@
 #define UMCCH4_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr3_Lo
+
 #define UMCCH4_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr3_Hi
+
 #define UMCCH4_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9653,7 +9632,7 @@
 #define UMCCH4_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl4
+
 #define UMCCH4_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -9670,10 +9649,10 @@
 #define UMCCH4_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr4_Lo
+
 #define UMCCH4_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr4_Hi
+
 #define UMCCH4_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9682,7 +9661,7 @@
 #define UMCCH4_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl5
+
 #define UMCCH4_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -9699,10 +9678,10 @@
 #define UMCCH4_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr5_Lo
+
 #define UMCCH4_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr5_Hi
+
 #define UMCCH4_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9711,7 +9690,7 @@
 #define UMCCH4_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl6
+
 #define UMCCH4_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -9728,10 +9707,10 @@
 #define UMCCH4_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr6_Lo
+
 #define UMCCH4_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr6_Hi
+
 #define UMCCH4_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9740,7 +9719,7 @@
 #define UMCCH4_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl7
+
 #define UMCCH4_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -9757,10 +9736,10 @@
 #define UMCCH4_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr7_Lo
+
 #define UMCCH4_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr7_Hi
+
 #define UMCCH4_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9769,7 +9748,7 @@
 #define UMCCH4_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH4_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH4_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH4_3_PerfMonCtl8
+
 #define UMCCH4_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH4_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH4_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -9786,10 +9765,10 @@
 #define UMCCH4_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH4_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH4_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH4_3_PerfMonCtr8_Lo
+
 #define UMCCH4_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH4_3_PerfMonCtr8_Hi
+
 #define UMCCH4_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH4_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH4_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9800,16 +9779,16 @@
 #define UMCCH4_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch5_umcchdec
-//UMCCH5_3_BaseAddrCS0
+
+
 #define UMCCH5_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH5_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH5_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH5_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH5_3_AddrMaskCS01
+
 #define UMCCH5_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH5_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH5_3_AddrSelCS01
+
 #define UMCCH5_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH5_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH5_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -9824,59 +9803,59 @@
 #define UMCCH5_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH5_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH5_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH5_3_AddrHashBank0
+
 #define UMCCH5_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_AddrHashBank1
+
 #define UMCCH5_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_AddrHashBank2
+
 #define UMCCH5_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_AddrHashBank3
+
 #define UMCCH5_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_AddrHashBank4
+
 #define UMCCH5_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_AddrHashBank5
+
 #define UMCCH5_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH5_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH5_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH5_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH5_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH5_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH5_3_EccErrCntSel
+
 #define UMCCH5_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH5_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH5_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH5_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH5_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH5_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH5_3_EccErrCnt
+
 #define UMCCH5_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH5_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH5_3_PerfMonCtlClk
+
 #define UMCCH5_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH5_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH5_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -9889,15 +9868,15 @@
 #define UMCCH5_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH5_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH5_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH5_3_PerfMonCtrClk_Lo
+
 #define UMCCH5_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH5_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtrClk_Hi
+
 #define UMCCH5_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH5_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH5_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH5_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH5_3_PerfMonCtl1
+
 #define UMCCH5_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -9914,10 +9893,10 @@
 #define UMCCH5_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr1_Lo
+
 #define UMCCH5_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr1_Hi
+
 #define UMCCH5_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9926,7 +9905,7 @@
 #define UMCCH5_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl2
+
 #define UMCCH5_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -9943,10 +9922,10 @@
 #define UMCCH5_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr2_Lo
+
 #define UMCCH5_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr2_Hi
+
 #define UMCCH5_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9955,7 +9934,7 @@
 #define UMCCH5_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl3
+
 #define UMCCH5_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -9972,10 +9951,10 @@
 #define UMCCH5_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr3_Lo
+
 #define UMCCH5_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr3_Hi
+
 #define UMCCH5_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -9984,7 +9963,7 @@
 #define UMCCH5_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl4
+
 #define UMCCH5_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -10001,10 +9980,10 @@
 #define UMCCH5_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr4_Lo
+
 #define UMCCH5_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr4_Hi
+
 #define UMCCH5_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10013,7 +9992,7 @@
 #define UMCCH5_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl5
+
 #define UMCCH5_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -10030,10 +10009,10 @@
 #define UMCCH5_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr5_Lo
+
 #define UMCCH5_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr5_Hi
+
 #define UMCCH5_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10042,7 +10021,7 @@
 #define UMCCH5_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl6
+
 #define UMCCH5_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -10059,10 +10038,10 @@
 #define UMCCH5_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr6_Lo
+
 #define UMCCH5_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr6_Hi
+
 #define UMCCH5_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10071,7 +10050,7 @@
 #define UMCCH5_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl7
+
 #define UMCCH5_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -10088,10 +10067,10 @@
 #define UMCCH5_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr7_Lo
+
 #define UMCCH5_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr7_Hi
+
 #define UMCCH5_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10100,7 +10079,7 @@
 #define UMCCH5_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH5_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH5_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH5_3_PerfMonCtl8
+
 #define UMCCH5_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH5_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH5_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -10117,10 +10096,10 @@
 #define UMCCH5_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH5_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH5_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH5_3_PerfMonCtr8_Lo
+
 #define UMCCH5_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH5_3_PerfMonCtr8_Hi
+
 #define UMCCH5_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH5_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH5_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10131,16 +10110,16 @@
 #define UMCCH5_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch6_umcchdec
-//UMCCH6_3_BaseAddrCS0
+
+
 #define UMCCH6_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH6_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH6_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH6_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH6_3_AddrMaskCS01
+
 #define UMCCH6_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH6_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH6_3_AddrSelCS01
+
 #define UMCCH6_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH6_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH6_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -10155,59 +10134,59 @@
 #define UMCCH6_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH6_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH6_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH6_3_AddrHashBank0
+
 #define UMCCH6_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_AddrHashBank1
+
 #define UMCCH6_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_AddrHashBank2
+
 #define UMCCH6_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_AddrHashBank3
+
 #define UMCCH6_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_AddrHashBank4
+
 #define UMCCH6_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_AddrHashBank5
+
 #define UMCCH6_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH6_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH6_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH6_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH6_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH6_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH6_3_EccErrCntSel
+
 #define UMCCH6_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH6_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH6_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH6_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH6_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH6_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH6_3_EccErrCnt
+
 #define UMCCH6_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH6_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH6_3_PerfMonCtlClk
+
 #define UMCCH6_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH6_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH6_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -10220,15 +10199,15 @@
 #define UMCCH6_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH6_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH6_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH6_3_PerfMonCtrClk_Lo
+
 #define UMCCH6_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH6_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtrClk_Hi
+
 #define UMCCH6_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH6_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH6_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH6_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH6_3_PerfMonCtl1
+
 #define UMCCH6_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -10245,10 +10224,10 @@
 #define UMCCH6_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr1_Lo
+
 #define UMCCH6_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr1_Hi
+
 #define UMCCH6_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10257,7 +10236,7 @@
 #define UMCCH6_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl2
+
 #define UMCCH6_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -10274,10 +10253,10 @@
 #define UMCCH6_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr2_Lo
+
 #define UMCCH6_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr2_Hi
+
 #define UMCCH6_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10286,7 +10265,7 @@
 #define UMCCH6_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl3
+
 #define UMCCH6_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -10303,10 +10282,10 @@
 #define UMCCH6_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr3_Lo
+
 #define UMCCH6_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr3_Hi
+
 #define UMCCH6_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10315,7 +10294,7 @@
 #define UMCCH6_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl4
+
 #define UMCCH6_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -10332,10 +10311,10 @@
 #define UMCCH6_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr4_Lo
+
 #define UMCCH6_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr4_Hi
+
 #define UMCCH6_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10344,7 +10323,7 @@
 #define UMCCH6_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl5
+
 #define UMCCH6_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -10361,10 +10340,10 @@
 #define UMCCH6_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr5_Lo
+
 #define UMCCH6_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr5_Hi
+
 #define UMCCH6_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10373,7 +10352,7 @@
 #define UMCCH6_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl6
+
 #define UMCCH6_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -10390,10 +10369,10 @@
 #define UMCCH6_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr6_Lo
+
 #define UMCCH6_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr6_Hi
+
 #define UMCCH6_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10402,7 +10381,7 @@
 #define UMCCH6_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl7
+
 #define UMCCH6_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -10419,10 +10398,10 @@
 #define UMCCH6_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr7_Lo
+
 #define UMCCH6_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr7_Hi
+
 #define UMCCH6_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10431,7 +10410,7 @@
 #define UMCCH6_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH6_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH6_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH6_3_PerfMonCtl8
+
 #define UMCCH6_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH6_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH6_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -10448,10 +10427,10 @@
 #define UMCCH6_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH6_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH6_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH6_3_PerfMonCtr8_Lo
+
 #define UMCCH6_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH6_3_PerfMonCtr8_Hi
+
 #define UMCCH6_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH6_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH6_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10462,16 +10441,16 @@
 #define UMCCH6_3_PerfMonCtr8_Hi__ThreshCnt_MASK                                                               0xFFF00000L
 
 
-// addressBlock: umc_w_phy_umc3_umcch7_umcchdec
-//UMCCH7_3_BaseAddrCS0
+
+
 #define UMCCH7_3_BaseAddrCS0__CSEnable__SHIFT                                                                 0x0
 #define UMCCH7_3_BaseAddrCS0__BaseAddr__SHIFT                                                                 0x1
 #define UMCCH7_3_BaseAddrCS0__CSEnable_MASK                                                                   0x00000001L
 #define UMCCH7_3_BaseAddrCS0__BaseAddr_MASK                                                                   0xFFFFFFFEL
-//UMCCH7_3_AddrMaskCS01
+
 #define UMCCH7_3_AddrMaskCS01__AddrMask__SHIFT                                                                0x1
 #define UMCCH7_3_AddrMaskCS01__AddrMask_MASK                                                                  0xFFFFFFFEL
-//UMCCH7_3_AddrSelCS01
+
 #define UMCCH7_3_AddrSelCS01__BankBit0__SHIFT                                                                 0x0
 #define UMCCH7_3_AddrSelCS01__BankBit1__SHIFT                                                                 0x4
 #define UMCCH7_3_AddrSelCS01__BankBit2__SHIFT                                                                 0x8
@@ -10486,59 +10465,59 @@
 #define UMCCH7_3_AddrSelCS01__BankBit4_MASK                                                                   0x001F0000L
 #define UMCCH7_3_AddrSelCS01__RowLo_MASK                                                                      0x0F000000L
 #define UMCCH7_3_AddrSelCS01__RowHi_MASK                                                                      0xF0000000L
-//UMCCH7_3_AddrHashBank0
+
 #define UMCCH7_3_AddrHashBank0__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank0__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank0__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank0__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank0__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank0__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_AddrHashBank1
+
 #define UMCCH7_3_AddrHashBank1__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank1__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank1__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank1__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank1__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank1__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_AddrHashBank2
+
 #define UMCCH7_3_AddrHashBank2__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank2__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank2__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank2__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank2__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank2__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_AddrHashBank3
+
 #define UMCCH7_3_AddrHashBank3__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank3__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank3__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank3__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank3__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank3__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_AddrHashBank4
+
 #define UMCCH7_3_AddrHashBank4__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank4__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank4__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank4__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank4__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank4__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_AddrHashBank5
+
 #define UMCCH7_3_AddrHashBank5__XorEnable__SHIFT                                                              0x0
 #define UMCCH7_3_AddrHashBank5__ColXor__SHIFT                                                                 0x1
 #define UMCCH7_3_AddrHashBank5__RowXor__SHIFT                                                                 0xe
 #define UMCCH7_3_AddrHashBank5__XorEnable_MASK                                                                0x00000001L
 #define UMCCH7_3_AddrHashBank5__ColXor_MASK                                                                   0x00003FFEL
 #define UMCCH7_3_AddrHashBank5__RowXor_MASK                                                                   0xFFFFC000L
-//UMCCH7_3_EccErrCntSel
+
 #define UMCCH7_3_EccErrCntSel__EccErrCntCsSel__SHIFT                                                          0x0
 #define UMCCH7_3_EccErrCntSel__EccErrInt__SHIFT                                                               0xc
 #define UMCCH7_3_EccErrCntSel__EccErrCntEn__SHIFT                                                             0xf
 #define UMCCH7_3_EccErrCntSel__EccErrCntCsSel_MASK                                                            0x0000000FL
 #define UMCCH7_3_EccErrCntSel__EccErrInt_MASK                                                                 0x00003000L
 #define UMCCH7_3_EccErrCntSel__EccErrCntEn_MASK                                                               0x00008000L
-//UMCCH7_3_EccErrCnt
+
 #define UMCCH7_3_EccErrCnt__EccErrCnt__SHIFT                                                                  0x0
 #define UMCCH7_3_EccErrCnt__EccErrCnt_MASK                                                                    0x0000FFFFL
-//UMCCH7_3_PerfMonCtlClk
+
 #define UMCCH7_3_PerfMonCtlClk__GlblResetMsk__SHIFT                                                           0x0
 #define UMCCH7_3_PerfMonCtlClk__ClkGate__SHIFT                                                                0x16
 #define UMCCH7_3_PerfMonCtlClk__GlblReset__SHIFT                                                              0x18
@@ -10551,15 +10530,15 @@
 #define UMCCH7_3_PerfMonCtlClk__GlblMonEn_MASK                                                                0x02000000L
 #define UMCCH7_3_PerfMonCtlClk__NumCounters_MASK                                                              0x3C000000L
 #define UMCCH7_3_PerfMonCtlClk__CtrClkEn_MASK                                                                 0x80000000L
-//UMCCH7_3_PerfMonCtrClk_Lo
+
 #define UMCCH7_3_PerfMonCtrClk_Lo__Data__SHIFT                                                                0x0
 #define UMCCH7_3_PerfMonCtrClk_Lo__Data_MASK                                                                  0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtrClk_Hi
+
 #define UMCCH7_3_PerfMonCtrClk_Hi__Data__SHIFT                                                                0x0
 #define UMCCH7_3_PerfMonCtrClk_Hi__Overflow__SHIFT                                                            0x10
 #define UMCCH7_3_PerfMonCtrClk_Hi__Data_MASK                                                                  0x0000FFFFL
 #define UMCCH7_3_PerfMonCtrClk_Hi__Overflow_MASK                                                              0x00010000L
-//UMCCH7_3_PerfMonCtl1
+
 #define UMCCH7_3_PerfMonCtl1__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl1__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl1__PriorityMask__SHIFT                                                             0xa
@@ -10576,10 +10555,10 @@
 #define UMCCH7_3_PerfMonCtl1__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl1__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl1__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr1_Lo
+
 #define UMCCH7_3_PerfMonCtr1_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr1_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr1_Hi
+
 #define UMCCH7_3_PerfMonCtr1_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr1_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr1_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10588,7 +10567,7 @@
 #define UMCCH7_3_PerfMonCtr1_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr1_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr1_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl2
+
 #define UMCCH7_3_PerfMonCtl2__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl2__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl2__PriorityMask__SHIFT                                                             0xa
@@ -10605,10 +10584,10 @@
 #define UMCCH7_3_PerfMonCtl2__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl2__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl2__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr2_Lo
+
 #define UMCCH7_3_PerfMonCtr2_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr2_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr2_Hi
+
 #define UMCCH7_3_PerfMonCtr2_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr2_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr2_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10617,7 +10596,7 @@
 #define UMCCH7_3_PerfMonCtr2_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr2_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr2_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl3
+
 #define UMCCH7_3_PerfMonCtl3__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl3__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl3__PriorityMask__SHIFT                                                             0xa
@@ -10634,10 +10613,10 @@
 #define UMCCH7_3_PerfMonCtl3__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl3__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl3__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr3_Lo
+
 #define UMCCH7_3_PerfMonCtr3_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr3_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr3_Hi
+
 #define UMCCH7_3_PerfMonCtr3_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr3_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr3_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10646,7 +10625,7 @@
 #define UMCCH7_3_PerfMonCtr3_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr3_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr3_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl4
+
 #define UMCCH7_3_PerfMonCtl4__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl4__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl4__PriorityMask__SHIFT                                                             0xa
@@ -10663,10 +10642,10 @@
 #define UMCCH7_3_PerfMonCtl4__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl4__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl4__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr4_Lo
+
 #define UMCCH7_3_PerfMonCtr4_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr4_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr4_Hi
+
 #define UMCCH7_3_PerfMonCtr4_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr4_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr4_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10675,7 +10654,7 @@
 #define UMCCH7_3_PerfMonCtr4_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr4_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr4_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl5
+
 #define UMCCH7_3_PerfMonCtl5__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl5__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl5__PriorityMask__SHIFT                                                             0xa
@@ -10692,10 +10671,10 @@
 #define UMCCH7_3_PerfMonCtl5__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl5__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl5__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr5_Lo
+
 #define UMCCH7_3_PerfMonCtr5_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr5_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr5_Hi
+
 #define UMCCH7_3_PerfMonCtr5_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr5_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr5_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10704,7 +10683,7 @@
 #define UMCCH7_3_PerfMonCtr5_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr5_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr5_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl6
+
 #define UMCCH7_3_PerfMonCtl6__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl6__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl6__PriorityMask__SHIFT                                                             0xa
@@ -10721,10 +10700,10 @@
 #define UMCCH7_3_PerfMonCtl6__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl6__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl6__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr6_Lo
+
 #define UMCCH7_3_PerfMonCtr6_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr6_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr6_Hi
+
 #define UMCCH7_3_PerfMonCtr6_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr6_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr6_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10733,7 +10712,7 @@
 #define UMCCH7_3_PerfMonCtr6_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr6_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr6_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl7
+
 #define UMCCH7_3_PerfMonCtl7__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl7__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl7__PriorityMask__SHIFT                                                             0xa
@@ -10750,10 +10729,10 @@
 #define UMCCH7_3_PerfMonCtl7__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl7__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl7__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr7_Lo
+
 #define UMCCH7_3_PerfMonCtr7_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr7_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr7_Hi
+
 #define UMCCH7_3_PerfMonCtr7_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr7_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr7_Hi__ThreshCntEn__SHIFT                                                           0x12
@@ -10762,7 +10741,7 @@
 #define UMCCH7_3_PerfMonCtr7_Hi__Overflow_MASK                                                                0x00010000L
 #define UMCCH7_3_PerfMonCtr7_Hi__ThreshCntEn_MASK                                                             0x000C0000L
 #define UMCCH7_3_PerfMonCtr7_Hi__ThreshCnt_MASK                                                               0xFFF00000L
-//UMCCH7_3_PerfMonCtl8
+
 #define UMCCH7_3_PerfMonCtl8__EventSelect__SHIFT                                                              0x0
 #define UMCCH7_3_PerfMonCtl8__RdWrMask__SHIFT                                                                 0x8
 #define UMCCH7_3_PerfMonCtl8__PriorityMask__SHIFT                                                             0xa
@@ -10779,10 +10758,10 @@
 #define UMCCH7_3_PerfMonCtl8__VCSel_MASK                                                                      0x1F000000L
 #define UMCCH7_3_PerfMonCtl8__SubChanMask_MASK                                                                0x60000000L
 #define UMCCH7_3_PerfMonCtl8__Enable_MASK                                                                     0x80000000L
-//UMCCH7_3_PerfMonCtr8_Lo
+
 #define UMCCH7_3_PerfMonCtr8_Lo__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr8_Lo__Data_MASK                                                                    0xFFFFFFFFL
-//UMCCH7_3_PerfMonCtr8_Hi
+
 #define UMCCH7_3_PerfMonCtr8_Hi__Data__SHIFT                                                                  0x0
 #define UMCCH7_3_PerfMonCtr8_Hi__Overflow__SHIFT                                                              0x10
 #define UMCCH7_3_PerfMonCtr8_Hi__ThreshCntEn__SHIFT                                                           0x12

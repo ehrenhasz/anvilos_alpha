@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -75,7 +72,7 @@ static int fhctl_set_ssc_regs(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
 	writel((readl(regs->reg_cfg) & ~(data->fhctlx_en)), regs->reg_cfg);
 
 	if (rate > 0) {
-		/* Set the relative parameter registers (dt/df/upbnd/downbnd) */
+		 
 		r = readl(regs->reg_cfg);
 		r &= ~(data->msk_frddsx_dys);
 		r |= (data->df_val << (ffs(data->msk_frddsx_dys) - 1));
@@ -89,7 +86,7 @@ static int fhctl_set_ssc_regs(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
 		writel((readl(pll->pcw_addr) & data->dds_mask) | data->tgl_org,
 			regs->reg_dds);
 
-		/* Calculate UPDNLMT */
+		 
 		updnlmt_val = PERCENT_TO_DDSLMT((readl(regs->reg_dds) &
 						 data->dds_mask), rate) <<
 						 data->updnlmt_shft;
@@ -97,16 +94,16 @@ static int fhctl_set_ssc_regs(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
 		writel(updnlmt_val, regs->reg_updnlmt);
 		writel(readl(regs->reg_hp_en) | BIT(data->fh_id),
 		       regs->reg_hp_en);
-		/* Enable SSC */
+		 
 		writel(readl(regs->reg_cfg) | data->frddsx_en, regs->reg_cfg);
-		/* Enable Hopping control */
+		 
 		writel(readl(regs->reg_cfg) | data->fhctlx_en, regs->reg_cfg);
 
 	} else {
-		/* Switch to APMIXEDSYS control */
+		 
 		writel(readl(regs->reg_hp_en) & ~BIT(data->fh_id),
 		       regs->reg_hp_en);
-		/* Wait for DDS to be stable */
+		 
 		udelay(30);
 	}
 
@@ -136,7 +133,7 @@ static int hopping_hw_flow(struct mtk_clk_pll *pll, struct fh_pll_regs *regs,
 	writel(readl(regs->reg_hp_en) | BIT(data->fh_id), regs->reg_hp_en);
 	writel((new_dds) | (data->dvfs_tri), regs->reg_dvfs);
 
-	/* Wait 1000 us until DDS stable */
+	 
 	ret = readl_poll_timeout_atomic(regs->reg_mon, mon_dds,
 				       (mon_dds & dds_mask) == new_dds,
 					10, 1000);
@@ -245,7 +242,7 @@ void fhctl_hw_init(struct mtk_fh *fh)
 	struct fh_pll_regs regs = fh->regs;
 	u32 val;
 
-	/* initial hw register */
+	 
 	val = readl(regs.reg_clk_con) | BIT(data.fh_id);
 	writel(val, regs.reg_clk_con);
 
@@ -258,7 +255,7 @@ void fhctl_hw_init(struct mtk_fh *fh)
 	writel(0x0, regs.reg_updnlmt);
 	writel(0x0, regs.reg_dds);
 
-	/* enable ssc if needed */
+	 
 	if (state.ssc_rate)
 		fh->ops->ssc_enable(fh, state.ssc_rate);
 }

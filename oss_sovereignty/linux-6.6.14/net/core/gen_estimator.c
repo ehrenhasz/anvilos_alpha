@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/gen_estimator.c	Simple rate estimator.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *		Eric Dumazet <edumazet@google.com>
- *
- * Changes:
- *              Jamal Hadi Salim - moved it to net/core and reshulfed
- *              names to make it usable in general net subsystem.
- */
+
+ 
 
 #include <linux/uaccess.h>
 #include <linux/bitops.h>
@@ -32,12 +23,7 @@
 #include <net/sock.h>
 #include <net/gen_stats.h>
 
-/* This code is NOT intended to be used for statistics collection,
- * its purpose is to provide a base for statistical multiplexing
- * for controlled load service.
- * If you need only statistics, run a user level daemon which
- * periodically reads byte counters.
- */
+ 
 
 struct net_rate_estimator {
 	struct gnet_stats_basic_sync	*bstats;
@@ -45,7 +31,7 @@ struct net_rate_estimator {
 	bool			running;
 	struct gnet_stats_basic_sync __percpu *cpu_bstats;
 	u8			ewma_log;
-	u8			intvl_log; /* period : (250ms << intvl_log) */
+	u8			intvl_log;  
 
 	seqcount_t		seq;
 	u64			last_packets;
@@ -101,32 +87,13 @@ static void est_timer(struct timer_list *t)
 	est->next_jiffies += ((HZ/4) << est->intvl_log);
 
 	if (unlikely(time_after_eq(jiffies, est->next_jiffies))) {
-		/* Ouch... timer was delayed. */
+		 
 		est->next_jiffies = jiffies + 1;
 	}
 	mod_timer(&est->timer, est->next_jiffies);
 }
 
-/**
- * gen_new_estimator - create a new rate estimator
- * @bstats: basic statistics
- * @cpu_bstats: bstats per cpu
- * @rate_est: rate estimator statistics
- * @lock: lock for statistics and control path
- * @running: true if @bstats represents a running qdisc, thus @bstats'
- *           internal values might change during basic reads. Only used
- *           if @bstats_cpu is NULL
- * @opt: rate estimator configuration TLV
- *
- * Creates a new rate estimator with &bstats as source and &rate_est
- * as destination. A new timer with the interval specified in the
- * configuration TLV is created. Upon each interval, the latest statistics
- * will be read from &bstats and the estimated rate will be stored in
- * &rate_est with the statistics lock grabbed during this period.
- *
- * Returns 0 on success or a negative error code.
- *
- */
+ 
 int gen_new_estimator(struct gnet_stats_basic_sync *bstats,
 		      struct gnet_stats_basic_sync __percpu *cpu_bstats,
 		      struct net_rate_estimator __rcu **rate_est,
@@ -142,10 +109,7 @@ int gen_new_estimator(struct gnet_stats_basic_sync *bstats,
 	if (nla_len(opt) < sizeof(*parm))
 		return -EINVAL;
 
-	/* allowed timer periods are :
-	 * -2 : 250ms,   -1 : 500ms,    0 : 1 sec
-	 *  1 : 2 sec,    2 : 4 sec,    3 : 8 sec
-	 */
+	 
 	if (parm->interval < -2 || parm->interval > 3)
 		return -EINVAL;
 
@@ -195,13 +159,7 @@ int gen_new_estimator(struct gnet_stats_basic_sync *bstats,
 }
 EXPORT_SYMBOL(gen_new_estimator);
 
-/**
- * gen_kill_estimator - remove a rate estimator
- * @rate_est: rate estimator
- *
- * Removes the rate estimator.
- *
- */
+ 
 void gen_kill_estimator(struct net_rate_estimator __rcu **rate_est)
 {
 	struct net_rate_estimator *est;
@@ -214,22 +172,7 @@ void gen_kill_estimator(struct net_rate_estimator __rcu **rate_est)
 }
 EXPORT_SYMBOL(gen_kill_estimator);
 
-/**
- * gen_replace_estimator - replace rate estimator configuration
- * @bstats: basic statistics
- * @cpu_bstats: bstats per cpu
- * @rate_est: rate estimator statistics
- * @lock: lock for statistics and control path
- * @running: true if @bstats represents a running qdisc, thus @bstats'
- *           internal values might change during basic reads. Only used
- *           if @cpu_bstats is NULL
- * @opt: rate estimator configuration TLV
- *
- * Replaces the configuration of a rate estimator by calling
- * gen_kill_estimator() and gen_new_estimator().
- *
- * Returns 0 on success or a negative error code.
- */
+ 
 int gen_replace_estimator(struct gnet_stats_basic_sync *bstats,
 			  struct gnet_stats_basic_sync __percpu *cpu_bstats,
 			  struct net_rate_estimator __rcu **rate_est,
@@ -241,12 +184,7 @@ int gen_replace_estimator(struct gnet_stats_basic_sync *bstats,
 }
 EXPORT_SYMBOL(gen_replace_estimator);
 
-/**
- * gen_estimator_active - test if estimator is currently in use
- * @rate_est: rate estimator
- *
- * Returns true if estimator is active, and false if not.
- */
+ 
 bool gen_estimator_active(struct net_rate_estimator __rcu **rate_est)
 {
 	return !!rcu_access_pointer(*rate_est);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -110,7 +108,7 @@ void ath11k_debugfs_fw_stats_process(struct ath11k *ar, struct ath11k_fw_stats *
 	size_t total_vdevs_started = 0;
 	int i;
 
-	/* WMI_REQUEST_PDEV_STAT request has been already processed */
+	 
 
 	if (stats->stats_id == WMI_REQUEST_RSSI_PER_CHAIN_STAT) {
 		ar->fw_stats_done = true;
@@ -122,9 +120,7 @@ void ath11k_debugfs_fw_stats_process(struct ath11k *ar, struct ath11k_fw_stats *
 			ath11k_warn(ab, "empty vdev stats");
 			return;
 		}
-		/* FW sends all the active VDEV stats irrespective of PDEV,
-		 * hence limit until the count of all VDEVs started
-		 */
+		 
 		for (i = 0; i < ab->num_radios; i++) {
 			pdev = rcu_dereference(ab->pdevs_active[i]);
 			if (pdev && pdev->ar)
@@ -148,9 +144,7 @@ void ath11k_debugfs_fw_stats_process(struct ath11k *ar, struct ath11k_fw_stats *
 			ath11k_warn(ab, "empty bcn stats");
 			return;
 		}
-		/* Mark end until we reached the count of all started VDEVs
-		 * within the PDEV
-		 */
+		 
 		is_end = ((++num_bcn) == ar->num_started_vdevs);
 
 		list_splice_tail_init(&stats->bcn,
@@ -172,11 +166,7 @@ static int ath11k_debugfs_fw_stats_request(struct ath11k *ar,
 
 	lockdep_assert_held(&ar->conf_mutex);
 
-	/* FW stats can get split when exceeding the stats data buffer limit.
-	 * In that case, since there is no end marking for the back-to-back
-	 * received 'update stats' event, we keep a 3 seconds timeout in case,
-	 * fw_stats_done is not marked yet
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(3 * 1000);
 
 	ath11k_debugfs_fw_stats_reset(ar);
@@ -334,7 +324,7 @@ static int ath11k_open_vdev_stats(struct inode *inode, struct file *file)
 	}
 
 	req_param.pdev_id = ar->pdev->pdev_id;
-	/* VDEV stats is always sent for all active VDEVs from FW */
+	 
 	req_param.vdev_id = 0;
 	req_param.stats_id = WMI_REQUEST_VDEV_STAT;
 
@@ -408,7 +398,7 @@ static int ath11k_open_bcn_stats(struct inode *inode, struct file *file)
 	req_param.stats_id = WMI_REQUEST_BCN_STAT;
 	req_param.pdev_id = ar->pdev->pdev_id;
 
-	/* loop all active VDEVs for bcn stats */
+	 
 	list_for_each_entry(arvif, &ar->arvifs, list) {
 		if (!arvif->is_up)
 			continue;
@@ -423,9 +413,7 @@ static int ath11k_open_bcn_stats(struct inode *inode, struct file *file)
 
 	ath11k_wmi_fw_stats_fill(ar, &ar->fw_stats, req_param.stats_id, buf);
 
-	/* since beacon stats request is looped for all active VDEVs, saved fw
-	 * stats is not freed for each request until done for all active VDEVs
-	 */
+	 
 	spin_lock_bh(&ar->data_lock);
 	ath11k_fw_stats_bcn_free(&ar->fw_stats.bcn);
 	spin_unlock_bh(&ar->data_lock);
@@ -480,13 +468,7 @@ static ssize_t ath11k_read_simulate_fw_crash(struct file *file,
 	return simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
 }
 
-/* Simulate firmware crash:
- * 'soft': Call wmi command causing firmware hang. This firmware hang is
- * recoverable by warm firmware reset.
- * 'hard': Force firmware crash by setting any vdev parameter for not allowed
- * vdev id. This is hard firmware crash because it is recoverable only by cold
- * firmware reset.
- */
+ 
 static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
 					      const char __user *user_buf,
 					      size_t count, loff_t *ppos)
@@ -506,7 +488,7 @@ static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
 			break;
 		}
 	}
-	/* filter partial writes and invalid commands */
+	 
 	if (*ppos != 0 || count >= sizeof(buf) || count == 0)
 		return -EINVAL;
 
@@ -514,7 +496,7 @@ static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
 	if (rc < 0)
 		return rc;
 
-	/* drop the possible '\n' from the end */
+	 
 	if (buf[*ppos - 1] == '\n')
 		buf[*ppos - 1] = '\0';
 
@@ -1010,7 +992,7 @@ int ath11k_debugfs_soc_create(struct ath11k_base *ab)
 
 		dput_needed = false;
 	} else {
-		/* a dentry from lookup() needs dput() after we don't use it */
+		 
 		dput_needed = true;
 	}
 
@@ -1037,11 +1019,7 @@ void ath11k_debugfs_soc_destroy(struct ath11k_base *ab)
 	debugfs_remove_recursive(ab->debugfs_soc);
 	ab->debugfs_soc = NULL;
 
-	/* We are not removing ath11k directory on purpose, even if it
-	 * would be empty. This simplifies the directory handling and it's
-	 * a minor cosmetic issue to leave an empty ath11k directory to
-	 * debugfs.
-	 */
+	 
 }
 EXPORT_SYMBOL(ath11k_debugfs_soc_destroy);
 
@@ -1052,9 +1030,7 @@ void ath11k_debugfs_fw_stats_init(struct ath11k *ar)
 
 	ar->fw_stats.debugfs_fwstats = fwstats_dir;
 
-	/* all stats debugfs files created are under "fw_stats" directory
-	 * created per PDEV
-	 */
+	 
 	debugfs_create_file("pdev_stats", 0600, fwstats_dir, ar,
 			    &fops_pdev_stats);
 	debugfs_create_file("vdev_stats", 0600, fwstats_dir, ar,
@@ -1110,7 +1086,7 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
 		}
 	}
 
-	/* Clear rx filter set for monitor mode and rx status */
+	 
 	for (i = 0; i < ab->hw_params.num_rxmda_per_pdev; i++) {
 		ring_id = ar->dp.rx_mon_status_refill_ring[i].refill_buf_ring.ring_id;
 		ret = ath11k_dp_tx_htt_rx_filter_setup(ar->ab, ring_id, ar->dp.mac_id,
@@ -1600,7 +1576,7 @@ int ath11k_debugfs_register(struct ath11k *ar)
 	if (IS_ERR(ar->debug.debugfs_pdev))
 		return PTR_ERR(ar->debug.debugfs_pdev);
 
-	/* Create a symlink under ieee80211/phy* */
+	 
 	snprintf(buf, 100, "../../ath11k/%pd2", ar->debug.debugfs_pdev);
 	debugfs_create_symlink("ath11k", ar->hw->wiphy->debugfsdir, buf);
 
@@ -1712,13 +1688,7 @@ static ssize_t ath11k_write_twt_add_dialog(struct file *file,
 	if (ret != 16)
 		return -EINVAL;
 
-	/* In the case of station vif, TWT is entirely handled by
-	 * the firmware based on the input parameters in the TWT enable
-	 * WMI command that is sent to the target during assoc.
-	 * For manually testing the TWT feature, we need to first disable
-	 * TWT and send enable command again with TWT input parameter
-	 * sta_cong_timer_ms set to 0.
-	 */
+	 
 	if (arvif->vif->type == NL80211_IFTYPE_STATION) {
 		ath11k_wmi_send_twt_disable_cmd(ar, ar->pdev->pdev_id);
 

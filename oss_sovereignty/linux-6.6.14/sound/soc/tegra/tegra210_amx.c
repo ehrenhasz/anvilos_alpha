@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_amx.c - Tegra210 AMX driver
-//
-// Copyright (c) 2021-2023 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -21,16 +21,7 @@
 #include "tegra210_amx.h"
 #include "tegra_cif.h"
 
-/*
- * The counter is in terms of AHUB clock cycles. If a frame is not
- * received within these clock cycles, the AMX input channel gets
- * automatically disabled. For now the counter is calculated as a
- * function of sample rate (8 kHz) and AHUB clock (49.152 MHz).
- * If later an accurate number is needed, the counter needs to be
- * calculated at runtime.
- *
- *     count = ahub_clk / sample_rate
- */
+ 
 #define TEGRA194_MAX_FRAME_IDLE_COUNT	0x1800
 
 #define AMX_CH_REG(id, reg) ((reg) + ((id) * TEGRA210_AMX_AUDIOCIF_CH_STRIDE))
@@ -71,7 +62,7 @@ static int tegra210_amx_startup(struct snd_pcm_substream *substream,
 	unsigned int val;
 	int err;
 
-	/* Ensure if AMX is disabled */
+	 
 	err = regmap_read_poll_timeout(amx->regmap, TEGRA210_AMX_STATUS, val,
 				       !(val & 0x1), 10, 10000);
 	if (err < 0) {
@@ -79,12 +70,7 @@ static int tegra210_amx_startup(struct snd_pcm_substream *substream,
 		return err;
 	}
 
-	/*
-	 * Soft Reset: Below performs module soft reset which clears
-	 * all FSM logic, flushes flow control of FIFO and resets the
-	 * state register. It also brings module back to disabled
-	 * state (without flushing the data in the pipe).
-	 */
+	 
 	regmap_update_bits(amx->regmap, TEGRA210_AMX_SOFT_RESET,
 			   TEGRA210_AMX_SOFT_RESET_SOFT_RESET_MASK,
 			   TEGRA210_AMX_SOFT_RESET_SOFT_EN);
@@ -203,16 +189,7 @@ static int tegra210_amx_get_byte_map(struct snd_kcontrol *kcontrol,
 	else
 		enabled = amx->byte_mask[0] & (1 << reg);
 
-	/*
-	 * TODO: Simplify this logic to just return from bytes_map[]
-	 *
-	 * Presently below is required since bytes_map[] is
-	 * tightly packed and cannot store the control value of 256.
-	 * Byte mask state is used to know if 256 needs to be returned.
-	 * Note that for control value of 256, the put() call stores 0
-	 * in the bytes_map[] and disables the corresponding bit in
-	 * byte_mask[].
-	 */
+	 
 	if (enabled)
 		ucontrol->value.integer.value[0] = bytes_map[reg];
 	else
@@ -241,7 +218,7 @@ static int tegra210_amx_put_byte_map(struct snd_kcontrol *kcontrol,
 	if (mask_val == amx->byte_mask[reg / 32])
 		return 0;
 
-	/* Update byte map and slot */
+	 
 	bytes_map[reg] = value % 256;
 	amx->byte_mask[reg / 32] = mask_val;
 

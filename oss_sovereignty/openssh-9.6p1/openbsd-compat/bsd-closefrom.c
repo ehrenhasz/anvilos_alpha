@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2004-2005 Todd C. Miller <Todd.Miller@courtesan.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -54,34 +40,28 @@
 
 #if 0
 __unused static const char rcsid[] = "$Sudo: closefrom.c,v 1.11 2006/08/17 15:26:54 millert Exp $";
-#endif /* lint */
+#endif  
 
 #ifndef HAVE_FCNTL_CLOSEM
-/*
- * Close all file descriptors greater than or equal to lowfd.
- */
+ 
 static void
 closefrom_fallback(int lowfd)
 {
 	long fd, maxfd;
 
-	/*
-	 * Fall back on sysconf() or getdtablesize().  We avoid checking
-	 * resource limits since it is possible to open a file descriptor
-	 * and then drop the rlimit such that it is below the open fd.
-	 */
+	 
 #ifdef HAVE_SYSCONF
 	maxfd = sysconf(_SC_OPEN_MAX);
 #else
 	maxfd = getdtablesize();
-#endif /* HAVE_SYSCONF */
+#endif  
 	if (maxfd < 0)
 		maxfd = OPEN_MAX;
 
 	for (fd = lowfd; fd < maxfd; fd++)
 		(void) close((int) fd);
 }
-#endif /* HAVE_FCNTL_CLOSEM */
+#endif  
 
 #ifdef HAVE_FCNTL_CLOSEM
 void
@@ -99,7 +79,7 @@ closefrom(int lowfd)
 
 	sz = proc_pidinfo(pid, PROC_PIDLISTFDS, 0, NULL, 0);
 	if (sz == 0)
-		return; /* no fds, really? */
+		return;  
 	else if (sz == -1)
 		goto fallback;
 	if ((fdinfo_buf = malloc(sz)) == NULL)
@@ -133,7 +113,7 @@ closefrom(int lowfd)
 		return;
 #endif
 
-    /* Check for a /proc/$$/fd directory. */
+     
     len = snprintf(fdpath, sizeof(fdpath), "/proc/%ld/fd", (long)getpid());
     if (len > 0 && (size_t)len < sizeof(fdpath) && (dirp = opendir(fdpath))) {
 	while ((dent = readdir(dirp)) != NULL) {
@@ -145,7 +125,7 @@ closefrom(int lowfd)
 	(void) closedir(dirp);
 	return;
     }
-    /* /proc/$$/fd strategy failed, fall back to brute force closure */
+     
     closefrom_fallback(lowfd);
 }
 #else
@@ -154,5 +134,5 @@ closefrom(int lowfd)
 {
 	closefrom_fallback(lowfd);
 }
-#endif /* !HAVE_FCNTL_CLOSEM */
-#endif /* HAVE_CLOSEFROM */
+#endif  
+#endif  

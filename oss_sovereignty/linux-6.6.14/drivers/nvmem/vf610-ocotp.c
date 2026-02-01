@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Toradex AG.
- *
- * Author: Sanchayan Maity <sanchayan.maity@toradex.com>
- *
- * Based on the barebox ocotp driver,
- * Copyright (c) 2010 Baruch Siach <baruch@tkos.co.il>
- *	Orex Computed Radiography
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* OCOTP Register Offsets */
+ 
 #define OCOTP_CTRL_REG				0x00
 #define OCOTP_CTRL_SET				0x04
 #define OCOTP_CTRL_CLR				0x08
@@ -28,7 +20,7 @@
 #define OCOTP_READ_CTRL_REG			0x30
 #define OCOTP_READ_FUSE_DATA			0x40
 
-/* OCOTP Register bits and masks */
+ 
 #define OCOTP_CTRL_WR_UNLOCK			16
 #define OCOTP_CTRL_WR_UNLOCK_KEY		0x3E77
 #define OCOTP_CTRL_WR_UNLOCK_MASK		GENMASK(31, 16)
@@ -119,7 +111,7 @@ static int vf610_ocotp_calculate_timing(struct vf610_ocotp *ocotp_dev)
 
 	clk_rate = clk_get_rate(ocotp_dev->clk);
 
-	/* Refer section OTP read/write timing parameters in TRM */
+	 
 	relax = clk_rate / (1000000000 / DEF_RELAX) - 1;
 	strobe_prog = clk_rate / (1000000000 / 10000) + 2 * (DEF_RELAX + 1) - 1;
 	strobe_read = clk_rate / (1000000000 / 40) + 2 * (DEF_RELAX + 1) - 1;
@@ -178,11 +170,7 @@ static int vf610_ocotp_read(void *context, unsigned int offset,
 				writel(OCOTP_CTRL_ERR, base + OCOTP_CTRL_CLR);
 			}
 
-			/*
-			 * In case of error, we do not abort and expect to read
-			 * 0xBADABADA as mentioned by the TRM. We just read this
-			 * value and return.
-			 */
+			 
 			*buf = readl(base + OCOTP_READ_FUSE_DATA);
 		} else {
 			*buf = 0;
@@ -205,7 +193,7 @@ static struct nvmem_config ocotp_config = {
 
 static const struct of_device_id ocotp_of_match[] = {
 	{ .compatible = "fsl,vf610-ocotp", },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, ocotp_of_match);
 

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2010 Matt Turner.
- * Copyright 2012 Red Hat
- *
- * Authors: Matthew Garrett
- * 	    Matt Turner
- *	    Dave Airlie
- */
+ 
+ 
 #ifndef __MGAG200_DRV_H__
 #define __MGAG200_DRV_H__
 
@@ -124,32 +117,27 @@
 #define MGA_MISC_OUT 0x1fc2
 #define MGA_MISC_IN 0x1fcc
 
-/*
- * TODO: This is a pretty large set of default values for all kinds of
- *       settings. It should be split and set in the various DRM helpers,
- *       such as the CRTC reset or atomic_enable helpers. The PLL values
- *       probably belong to each model's PLL code.
- */
+ 
 #define MGAG200_DAC_DEFAULT(xvrefctrl, xpixclkctrl, xmiscctrl, xsyspllm, xsysplln, xsyspllp)	\
-	/* 0x00: */        0,    0,    0,    0,    0,    0, 0x00,    0,				\
-	/* 0x08: */        0,    0,    0,    0,    0,    0,    0,    0,				\
-	/* 0x10: */        0,    0,    0,    0,    0,    0,    0,    0,				\
-	/* 0x18: */     (xvrefctrl),								\
-	/* 0x19: */        0,									\
-	/* 0x1a: */     (xpixclkctrl),								\
-	/* 0x1b: */     0xff, 0xbf, 0x20,							\
-	/* 0x1e: */	(xmiscctrl),								\
-	/* 0x1f: */	0x20,									\
-	/* 0x20: */     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,				\
-	/* 0x28: */     0x00, 0x00, 0x00, 0x00,							\
-	/* 0x2c: */     (xsyspllm),								\
-	/* 0x2d: */     (xsysplln),								\
-	/* 0x2e: */     (xsyspllp),								\
-	/* 0x2f: */     0x40,									\
-	/* 0x30: */     0x00, 0xb0, 0x00, 0xc2, 0x34, 0x14, 0x02, 0x83,				\
-	/* 0x38: */     0x00, 0x93, 0x00, 0x77, 0x00, 0x00, 0x00, 0x3a,				\
-	/* 0x40: */        0,    0,    0,    0,    0,    0,    0,    0,				\
-	/* 0x48: */        0,    0,    0,    0,    0,    0,    0,    0				\
+	         0,    0,    0,    0,    0,    0, 0x00,    0,				\
+	         0,    0,    0,    0,    0,    0,    0,    0,				\
+	         0,    0,    0,    0,    0,    0,    0,    0,				\
+	      (xvrefctrl),								\
+	         0,									\
+	      (xpixclkctrl),								\
+	      0xff, 0xbf, 0x20,							\
+	 	(xmiscctrl),								\
+	 	0x20,									\
+	      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,				\
+	      0x00, 0x00, 0x00, 0x00,							\
+	      (xsyspllm),								\
+	      (xsysplln),								\
+	      (xsyspllp),								\
+	      0x40,									\
+	      0x00, 0xb0, 0x00, 0xc2, 0x34, 0x14, 0x02, 0x83,				\
+	      0x00, 0x93, 0x00, 0x77, 0x00, 0x00, 0x00, 0x3a,				\
+	         0,    0,    0,    0,    0,    0,    0,    0,				\
+	         0,    0,    0,    0,    0,    0,    0,    0				\
 
 #define MGAG200_LUT_SIZE 256
 
@@ -158,16 +146,7 @@
 
 struct mga_device;
 
-/*
- * Stores parameters for programming the PLLs
- *
- * Fref: reference frequency (A: 25.175 Mhz, B: 28.361, C: XX Mhz)
- * Fo: output frequency
- * Fvco = Fref * (N / M)
- * Fo = Fvco / P
- *
- * S = [0..3]
- */
+ 
 struct mgag200_pll_values {
 	unsigned int m;
 	unsigned int n;
@@ -178,7 +157,7 @@ struct mgag200_pll_values {
 struct mgag200_crtc_state {
 	struct drm_crtc_state base;
 
-	/* Primary-plane format; required for modesetting and color mgmt. */
+	 
 	const struct drm_format_info *format;
 
 	struct mgag200_pll_values pixpllc;
@@ -213,13 +192,10 @@ struct mgag200_device_info {
 	u16 max_hdisplay;
 	u16 max_vdisplay;
 
-	/*
-	 * Maximum memory bandwidth (MiB/sec). Setting this to zero disables
-	 * the rsp test during mode validation.
-	 */
+	 
 	unsigned long max_mem_bandwidth;
 
-	/* HW has external source (e.g., BMC) to synchronize with */
+	 
 	bool has_vidrst:1;
 
 	struct {
@@ -227,10 +203,7 @@ struct mgag200_device_info {
 		unsigned clock_bit:3;
 	} i2c;
 
-	/*
-	 * HW does not handle 'startadd' register correctly. Always set
-	 * it's value to 0.
-	 */
+	 
 	bool bug_no_startadd:1;
 };
 
@@ -250,30 +223,16 @@ struct mgag200_device_info {
 	}
 
 struct mgag200_device_funcs {
-	/*
-	 * Disables an external reset source (i.e., BMC) before programming
-	 * a new display mode.
-	 */
+	 
 	void (*disable_vidrst)(struct mga_device *mdev);
 
-	/*
-	 * Enables an external reset source (i.e., BMC) after programming
-	 * a new display mode.
-	 */
+	 
 	void (*enable_vidrst)(struct mga_device *mdev);
 
-	/*
-	 * Validate that the given state can be programmed into PIXPLLC. On
-	 * success, the calculated parameters should be stored in the CRTC's
-	 * state in struct @mgag200_crtc_state.pixpllc.
-	 */
+	 
 	int (*pixpllc_atomic_check)(struct drm_crtc *crtc, struct drm_atomic_state *new_state);
 
-	/*
-	 * Program PIXPLLC from the CRTC state. The parameters should have been
-	 * stored in struct @mgag200_crtc_state.pixpllc by the corresponding
-	 * implementation of @pixpllc_atomic_check.
-	 */
+	 
 	void (*pixpllc_atomic_update)(struct drm_crtc *crtc, struct drm_atomic_state *old_state);
 };
 
@@ -285,7 +244,7 @@ struct mga_device {
 
 	struct resource			*rmmio_res;
 	void __iomem			*rmmio;
-	struct mutex			rmmio_lock; /* Protects access to rmmio */
+	struct mutex			rmmio_lock;  
 
 	struct resource			*vram_res;
 	void __iomem			*vram;
@@ -306,7 +265,7 @@ static inline struct mga_device *to_mga_device(struct drm_device *dev)
 struct mgag200_g200_device {
 	struct mga_device base;
 
-	/* PLL constants */
+	 
 	long ref_clk;
 	long pclk_min;
 	long pclk_max;
@@ -320,7 +279,7 @@ static inline struct mgag200_g200_device *to_mgag200_g200_device(struct drm_devi
 struct mgag200_g200se_device {
 	struct mga_device base;
 
-	/* SE model number stored in reg 0x1e24 */
+	 
 	u32 unique_rev_id;
 };
 
@@ -329,7 +288,7 @@ static inline struct mgag200_g200se_device *to_mgag200_g200se_device(struct drm_
 	return container_of(to_mga_device(dev), struct mgag200_g200se_device, base);
 }
 
-				/* mgag200_drv.c */
+				 
 int mgag200_init_pci_options(struct pci_dev *pdev, u32 option, u32 option2);
 resource_size_t mgag200_probe_vram(void __iomem *mem, resource_size_t size);
 resource_size_t mgag200_device_probe_vram(struct mga_device *mdev);
@@ -338,7 +297,7 @@ int mgag200_device_init(struct mga_device *mdev,
 			const struct mgag200_device_info *info,
 			const struct mgag200_device_funcs *funcs);
 
-				/* mgag200_<device type>.c */
+				 
 struct mga_device *mgag200_g200_device_create(struct pci_dev *pdev, const struct drm_driver *drv);
 struct mga_device *mgag200_g200se_device_create(struct pci_dev *pdev, const struct drm_driver *drv,
 						enum mga_type type);
@@ -357,9 +316,7 @@ struct mga_device *mgag200_g200er_device_create(struct pci_dev *pdev,
 struct mga_device *mgag200_g200ew3_device_create(struct pci_dev *pdev,
 						 const struct drm_driver *drv);
 
-/*
- * mgag200_mode.c
- */
+ 
 
 struct drm_crtc;
 struct drm_crtc_state;
@@ -444,11 +401,11 @@ void mgag200_enable_display(struct mga_device *mdev);
 void mgag200_init_registers(struct mga_device *mdev);
 int mgag200_mode_config_init(struct mga_device *mdev, resource_size_t vram_available);
 
-				/* mgag200_bmc.c */
+				 
 void mgag200_bmc_disable_vidrst(struct mga_device *mdev);
 void mgag200_bmc_enable_vidrst(struct mga_device *mdev);
 
-				/* mgag200_i2c.c */
+				 
 int mgag200_i2c_init(struct mga_device *mdev, struct mga_i2c_chan *i2c);
 
-#endif				/* __MGAG200_DRV_H__ */
+#endif				 

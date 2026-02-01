@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/list.h>
@@ -20,22 +17,7 @@
 #include <linux/soc/qcom/smem_state.h>
 #include <linux/spinlock.h>
 
-/*
- * The Shared Memory Point to Point (SMP2P) protocol facilitates communication
- * of a single 32-bit value between two processors.  Each value has a single
- * writer (the local side) and a single reader (the remote side). Values are
- * uniquely identified in the system by the directed edge (local processor ID
- * to remote processor ID) and a string identifier.
- *
- * Each processor is responsible for creating the outgoing SMEM items and each
- * item is writable by the local processor and readable by the remote
- * processor.  By using two separate SMEM items that are single-reader and
- * single-writer, SMP2P does not require any remote locking mechanisms.
- *
- * The driver uses the Linux GPIO and interrupt framework to expose a virtual
- * GPIO for each outbound entry and a virtual interrupt controller for each
- * inbound entry.
- */
+ 
 
 #define SMP2P_MAX_ENTRY 16
 #define SMP2P_MAX_ENTRY_NAME 16
@@ -47,20 +29,7 @@
 #define SMP2P_MAGIC 0x504d5324
 #define SMP2P_ALL_FEATURES	SMP2P_FEATURE_SSR_ACK
 
-/**
- * struct smp2p_smem_item - in memory communication structure
- * @magic:		magic number
- * @version:		version - must be 1
- * @features:		features flag - currently unused
- * @local_pid:		processor id of sending end
- * @remote_pid:		processor id of receiving end
- * @total_entries:	number of entries - always SMP2P_MAX_ENTRY
- * @valid_entries:	number of allocated entries
- * @flags:
- * @entries:		individual communication entries
- *     @name:		name of the entry
- *     @value:		content of the entry
- */
+ 
 struct smp2p_smem_item {
 	u32 magic;
 	u8 version;
@@ -77,20 +46,7 @@ struct smp2p_smem_item {
 	} entries[SMP2P_MAX_ENTRY];
 } __packed;
 
-/**
- * struct smp2p_entry - driver context matching one entry
- * @node:	list entry to keep track of allocated entries
- * @smp2p:	reference to the device driver context
- * @name:	name of the entry, to match against smp2p_smem_item
- * @value:	pointer to smp2p_smem_item entry value
- * @last_value:	last handled value
- * @domain:	irq_domain for inbound entries
- * @irq_enabled:bitmap to track enabled irq bits
- * @irq_rising:	bitmap to mark irq bits for rising detection
- * @irq_falling:bitmap to mark irq bits for falling detection
- * @state:	smem state handle
- * @lock:	spinlock to protect read-modify-write of the value
- */
+ 
 struct smp2p_entry {
 	struct list_head node;
 	struct qcom_smp2p *smp2p;
@@ -112,26 +68,7 @@ struct smp2p_entry {
 #define SMP2P_INBOUND	0
 #define SMP2P_OUTBOUND	1
 
-/**
- * struct qcom_smp2p - device driver context
- * @dev:	device driver handle
- * @in:		pointer to the inbound smem item
- * @out:	pointer to the outbound smem item
- * @smem_items:	ids of the two smem items
- * @valid_entries: already scanned inbound entries
- * @ssr_ack_enabled: SMP2P_FEATURE_SSR_ACK feature is supported and was enabled
- * @ssr_ack: current cached state of the local ack bit
- * @negotiation_done: whether negotiating finished
- * @local_pid:	processor id of the inbound edge
- * @remote_pid:	processor id of the outbound edge
- * @ipc_regmap:	regmap for the outbound ipc
- * @ipc_offset:	offset within the regmap
- * @ipc_bit:	bit in regmap@offset to kick to signal remote processor
- * @mbox_client: mailbox client handle
- * @mbox_chan:	apcs ipc mailbox channel handle
- * @inbound:	list of inbound entries
- * @outbound:	list of outbound entries
- */
+ 
 struct qcom_smp2p {
 	struct device *dev;
 
@@ -162,7 +99,7 @@ struct qcom_smp2p {
 
 static void qcom_smp2p_kick(struct qcom_smp2p *smp2p)
 {
-	/* Make sure any updated data is written before the kick */
+	 
 	wmb();
 
 	if (smp2p->mbox_chan) {
@@ -228,7 +165,7 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
 
 	in = smp2p->in;
 
-	/* Match newly created entries */
+	 
 	for (i = smp2p->valid_entries; i < in->valid_entries; i++) {
 		list_for_each_entry(entry, &smp2p->inbound, node) {
 			memcpy(buf, in->entries[i].name, sizeof(buf));
@@ -240,9 +177,9 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
 	}
 	smp2p->valid_entries = i;
 
-	/* Fire interrupts based on any value changes */
+	 
 	list_for_each_entry(entry, &smp2p->inbound, node) {
-		/* Ignore entries not yet allocated by the remote side */
+		 
 		if (!entry->value)
 			continue;
 
@@ -251,7 +188,7 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
 		status = val ^ entry->last_value;
 		entry->last_value = val;
 
-		/* No changes of this entry? */
+		 
 		if (!status)
 			continue;
 
@@ -268,14 +205,7 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
 	}
 }
 
-/**
- * qcom_smp2p_intr() - interrupt handler for incoming notifications
- * @irq:	unused
- * @data:	smp2p driver context
- *
- * Handle notifications from the remote side to handle newly allocated entries
- * or any changes to the state bits of existing entries.
- */
+ 
 static irqreturn_t qcom_smp2p_intr(int irq, void *data)
 {
 	struct smp2p_smem_item *in;
@@ -287,7 +217,7 @@ static irqreturn_t qcom_smp2p_intr(int irq, void *data)
 
 	in = smp2p->in;
 
-	/* Acquire smem item, if not already found */
+	 
 	if (!in) {
 		in = qcom_smem_get(pid, smem_id, &size);
 		if (IS_ERR(in)) {
@@ -421,11 +351,11 @@ static int qcom_smp2p_outbound_entry(struct qcom_smp2p *smp2p,
 	struct smp2p_smem_item *out = smp2p->out;
 	char buf[SMP2P_MAX_ENTRY_NAME] = {};
 
-	/* Allocate an entry from the smem item */
+	 
 	strscpy(buf, entry->name, SMP2P_MAX_ENTRY_NAME);
 	memcpy(out->entries[out->valid_entries].name, buf, SMP2P_MAX_ENTRY_NAME);
 
-	/* Make the logical entry reference the physical value */
+	 
 	entry->value = &out->entries[out->valid_entries].value;
 
 	out->valid_entries++;
@@ -468,10 +398,7 @@ static int qcom_smp2p_alloc_outbound_item(struct qcom_smp2p *smp2p)
 	out->valid_entries = 0;
 	out->features = SMP2P_ALL_FEATURES;
 
-	/*
-	 * Make sure the rest of the header is written before we validate the
-	 * item by writing a valid version number.
-	 */
+	 
 	wmb();
 	out->version = 1;
 
@@ -609,7 +536,7 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Kick the outgoing edge after allocating entries */
+	 
 	qcom_smp2p_kick(smp2p);
 
 	ret = devm_request_threaded_irq(&pdev->dev, irq,
@@ -621,15 +548,7 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
 		goto unwind_interfaces;
 	}
 
-	/*
-	 * Treat smp2p interrupt as wakeup source, but keep it disabled
-	 * by default. User space can decide enabling it depending on its
-	 * use cases. For example if remoteproc crashes and device wants
-	 * to handle it immediatedly (e.g. to not miss phone calls) it can
-	 * enable wakeup source from user space, while other devices which
-	 * do not have proper autosleep feature may want to handle it with
-	 * other wakeup events (e.g. Power button) instead waking up immediately.
-	 */
+	 
 	device_set_wakeup_capable(&pdev->dev, true);
 
 	ret = dev_pm_set_wake_irq(&pdev->dev, irq);

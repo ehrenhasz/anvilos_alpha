@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010 Broadcom Corporation
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/types.h>
 #include <net/cfg80211.h>
@@ -28,30 +14,24 @@
 #include "mac80211_if.h"
 #include "debug.h"
 
-/* QDB() macro takes a dB value and converts to a quarter dB value */
+ 
 #define QDB(n) ((n) * BRCMS_TXPWR_DB_FACTOR)
 
 #define LOCALE_MIMO_IDX_bn		0
 #define LOCALE_MIMO_IDX_11n		0
 
-/* max of BAND_5G_PWR_LVLS and 14 for 2.4 GHz */
+ 
 #define BRCMS_MAXPWR_MIMO_TBL_SIZE	14
 
-/* maxpwr mapping to 5GHz band channels:
- * maxpwr[0] - channels [34-48]
- * maxpwr[1] - channels [52-60]
- * maxpwr[2] - channels [62-64]
- * maxpwr[3] - channels [100-140]
- * maxpwr[4] - channels [149-165]
- */
-#define BAND_5G_PWR_LVLS	5	/* 5 power levels for 5G */
+ 
+#define BAND_5G_PWR_LVLS	5	 
 
 #define LC(id)	LOCALE_MIMO_IDX_ ## id
 
 #define LOCALES(mimo2, mimo5) \
 		{LC(mimo2), LC(mimo5)}
 
-/* macro to get 5 GHz channel group index for tx power */
+ 
 #define CHANNEL_POWER_IDX_5G(c) (((c) < 52) ? 0 : \
 				 (((c) < 62) ? 1 : \
 				 (((c) < 100) ? 2 : \
@@ -85,21 +65,18 @@ static const struct ieee80211_regdomain brcms_regdom_x2 = {
 	}
 };
 
- /* locale per-channel tx power limits for MIMO frames
-  * maxpwr arrays are index by channel for 2.4 GHz limits, and
-  * by sub-band for 5 GHz limits using CHANNEL_POWER_IDX_5G(channel)
-  */
+  
 struct locale_mimo_info {
-	/* tx 20 MHz power limits, qdBm units */
+	 
 	s8 maxpwr20[BRCMS_MAXPWR_MIMO_TBL_SIZE];
-	/* tx 40 MHz power limits, qdBm units */
+	 
 	s8 maxpwr40[BRCMS_MAXPWR_MIMO_TBL_SIZE];
 };
 
-/* Country names and abbreviations with locale defined from ISO 3166 */
+ 
 struct country_info {
-	const u8 locale_mimo_2G;	/* 2.4G mimo info */
-	const u8 locale_mimo_5G;	/* 5G mimo info */
+	const u8 locale_mimo_2G;	 
+	const u8 locale_mimo_5G;	 
 };
 
 struct brcms_regd {
@@ -113,9 +90,7 @@ struct brcms_cm_info {
 	const struct brcms_regd *world_regd;
 };
 
-/*
- * MIMO Locale Definitions - 2.4 GHz
- */
+ 
 static const struct locale_mimo_info locale_bn = {
 	{QDB(13), QDB(13), QDB(13), QDB(13), QDB(13),
 	 QDB(13), QDB(13), QDB(13), QDB(13), QDB(13),
@@ -129,11 +104,9 @@ static const struct locale_mimo_info *g_mimo_2g_table[] = {
 	&locale_bn
 };
 
-/*
- * MIMO Locale Definitions - 5 GHz
- */
+ 
 static const struct locale_mimo_info locale_11n = {
-	{ /* 12.5 dBm */ 50, 50, 50, QDB(15), QDB(15)},
+	{   50, 50, 50, QDB(15), QDB(15)},
 	{QDB(14), QDB(15), QDB(15), QDB(15), QDB(15)},
 };
 
@@ -142,7 +115,7 @@ static const struct locale_mimo_info *g_mimo_5g_table[] = {
 };
 
 static const struct brcms_regd cntry_locales[] = {
-	/* Worldwide RoW 2, must always be at index 0 */
+	 
 	{
 		.country = LOCALES(bn, 11n),
 		.regdomain = &brcms_regdom_x2,
@@ -165,30 +138,19 @@ static const struct locale_mimo_info *brcms_c_get_mimo_5g(u8 locale_idx)
 	return g_mimo_5g_table[locale_idx];
 }
 
-/*
- * Indicates whether the country provided is valid to pass
- * to cfg80211 or not.
- *
- * returns true if valid; false if not.
- */
+ 
 static bool brcms_c_country_valid(const char *ccode)
 {
-	/*
-	 * only allow ascii alpha uppercase for the first 2
-	 * chars.
-	 */
+	 
 	if (!((ccode[0] & 0x80) == 0 && ccode[0] >= 0x41 && ccode[0] <= 0x5A &&
 	      (ccode[1] & 0x80) == 0 && ccode[1] >= 0x41 && ccode[1] <= 0x5A))
 		return false;
 
-	/*
-	 * do not match ISO 3166-1 user assigned country codes
-	 * that may be in the driver table
-	 */
-	if (!strcmp("AA", ccode) ||        /* AA */
-	    !strcmp("ZZ", ccode) ||        /* ZZ */
-	    ccode[0] == 'X' ||             /* XA - XZ */
-	    (ccode[0] == 'Q' &&            /* QM - QZ */
+	 
+	if (!strcmp("AA", ccode) ||         
+	    !strcmp("ZZ", ccode) ||         
+	    ccode[0] == 'X' ||              
+	    (ccode[0] == 'Q' &&             
 	     (ccode[1] >= 'M' && ccode[1] <= 'Z')))
 		return false;
 
@@ -218,7 +180,7 @@ static const struct brcms_regd *brcms_default_world_regd(void)
 	return &cntry_locales[0];
 }
 
-/* JP, J1 - J10 are Japan ccodes */
+ 
 static bool brcms_c_japan_ccode(const char *ccode)
 {
 	return (ccode[0] == 'J' &&
@@ -232,79 +194,75 @@ brcms_c_channel_min_txpower_limits_with_local_constraint(
 {
 	int j;
 
-	/* CCK Rates */
+	 
 	for (j = 0; j < WL_TX_POWER_CCK_NUM; j++)
 		txpwr->cck[j] = min(txpwr->cck[j], local_constraint_qdbm);
 
-	/* 20 MHz Legacy OFDM SISO */
+	 
 	for (j = 0; j < WL_TX_POWER_OFDM_NUM; j++)
 		txpwr->ofdm[j] = min(txpwr->ofdm[j], local_constraint_qdbm);
 
-	/* 20 MHz Legacy OFDM CDD */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_OFDM; j++)
 		txpwr->ofdm_cdd[j] =
 		    min(txpwr->ofdm_cdd[j], local_constraint_qdbm);
 
-	/* 40 MHz Legacy OFDM SISO */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_OFDM; j++)
 		txpwr->ofdm_40_siso[j] =
 		    min(txpwr->ofdm_40_siso[j], local_constraint_qdbm);
 
-	/* 40 MHz Legacy OFDM CDD */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_OFDM; j++)
 		txpwr->ofdm_40_cdd[j] =
 		    min(txpwr->ofdm_40_cdd[j], local_constraint_qdbm);
 
-	/* 20MHz MCS 0-7 SISO */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_20_siso[j] =
 		    min(txpwr->mcs_20_siso[j], local_constraint_qdbm);
 
-	/* 20MHz MCS 0-7 CDD */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_20_cdd[j] =
 		    min(txpwr->mcs_20_cdd[j], local_constraint_qdbm);
 
-	/* 20MHz MCS 0-7 STBC */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_20_stbc[j] =
 		    min(txpwr->mcs_20_stbc[j], local_constraint_qdbm);
 
-	/* 20MHz MCS 8-15 MIMO */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_2_STREAM; j++)
 		txpwr->mcs_20_mimo[j] =
 		    min(txpwr->mcs_20_mimo[j], local_constraint_qdbm);
 
-	/* 40MHz MCS 0-7 SISO */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_40_siso[j] =
 		    min(txpwr->mcs_40_siso[j], local_constraint_qdbm);
 
-	/* 40MHz MCS 0-7 CDD */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_40_cdd[j] =
 		    min(txpwr->mcs_40_cdd[j], local_constraint_qdbm);
 
-	/* 40MHz MCS 0-7 STBC */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_1_STREAM; j++)
 		txpwr->mcs_40_stbc[j] =
 		    min(txpwr->mcs_40_stbc[j], local_constraint_qdbm);
 
-	/* 40MHz MCS 8-15 MIMO */
+	 
 	for (j = 0; j < BRCMS_NUM_RATES_MCS_2_STREAM; j++)
 		txpwr->mcs_40_mimo[j] =
 		    min(txpwr->mcs_40_mimo[j], local_constraint_qdbm);
 
-	/* 40MHz MCS 32 */
+	 
 	txpwr->mcs32 = min(txpwr->mcs32, local_constraint_qdbm);
 
 }
 
-/*
- * set the driver's current country and regulatory information
- * using a country code as the source. Look up built in country
- * information found with the country code.
- */
+ 
 static void
 brcms_c_set_country(struct brcms_cm_info *wlc_cm,
 		    const struct brcms_regd *regd)
@@ -338,25 +296,22 @@ struct brcms_cm_info *brcms_c_channel_mgr_attach(struct brcms_c_info *wlc)
 	wlc_cm->wlc = wlc;
 	wlc->cmi = wlc_cm;
 
-	/* store the country code for passing up as a regulatory hint */
+	 
 	wlc_cm->world_regd = brcms_world_regd(ccode, ccode_len);
 	if (brcms_c_country_valid(ccode))
 		strncpy(wlc->pub->srom_ccode, ccode, ccode_len);
 
-	/*
-	 * If no custom world domain is found in the SROM, use the
-	 * default "X2" domain.
-	 */
+	 
 	if (!wlc_cm->world_regd) {
 		wlc_cm->world_regd = brcms_default_world_regd();
 		ccode = wlc_cm->world_regd->regdomain->alpha2;
 		ccode_len = BRCM_CNTRY_BUF_SZ - 1;
 	}
 
-	/* save default country for exiting 11d regulatory mode */
+	 
 	strncpy(wlc->country_default, ccode, ccode_len);
 
-	/* initialize autocountry_default to driver default */
+	 
 	strncpy(wlc->autocountry_default, ccode, ccode_len);
 
 	brcms_c_set_country(wlc_cm, wlc_cm->world_regd);
@@ -383,7 +338,7 @@ brcms_c_channel_set_chanspec(struct brcms_cm_info *wlc_cm, u16 chanspec,
 		wlc_cm, &txpwr, local_constraint_qdbm
 	);
 
-	/* set or restore gmode as required by regulatory */
+	 
 	if (ch->flags & IEEE80211_CHAN_NO_OFDM)
 		brcms_c_set_gmode(wlc, GMODE_LEGACY_B, false);
 	else
@@ -434,7 +389,7 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 	maxpwr = max(maxpwr, 0);
 	maxpwr = min(maxpwr, conducted_max);
 
-	/* CCK txpwr limits for 2.4G band */
+	 
 	if (band->bandtype == BRCM_BAND_2G) {
 		for (i = 0; i < BRCMS_NUM_RATES_CCK; i++)
 			txpwr->cck[i] = (u8) maxpwr;
@@ -443,13 +398,7 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 	for (i = 0; i < BRCMS_NUM_RATES_OFDM; i++) {
 		txpwr->ofdm[i] = (u8) maxpwr;
 
-		/*
-		 * OFDM 40 MHz SISO has the same power as the corresponding
-		 * MCS0-7 rate unless overriden by the locale specific code.
-		 * We set this value to 0 as a flag (presumably 0 dBm isn't
-		 * a possibility) and then copy the MCS0-7 value to the 40 MHz
-		 * value if it wasn't explicitly set.
-		 */
+		 
 		txpwr->ofdm_40_siso[i] = 0;
 
 		txpwr->ofdm_cdd[i] = (u8) maxpwr;
@@ -459,7 +408,7 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 
 	delta = 0;
 	if (band->antgain > QDB(6))
-		delta = band->antgain - QDB(6);	/* Excess over 6 dB */
+		delta = band->antgain - QDB(6);	 
 
 	if (band->bandtype == BRCM_BAND_2G)
 		maxpwr_idx = (chan - 1);
@@ -474,27 +423,21 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 	maxpwr40 = maxpwr40 - delta;
 	maxpwr40 = max(maxpwr40, 0);
 
-	/* Fill in the MCS 0-7 (SISO) rates */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_1_STREAM; i++) {
 
-		/*
-		 * 20 MHz has the same power as the corresponding OFDM rate
-		 * unless overriden by the locale specific code.
-		 */
+		 
 		txpwr->mcs_20_siso[i] = txpwr->ofdm[i];
 		txpwr->mcs_40_siso[i] = 0;
 	}
 
-	/* Fill in the MCS 0-7 CDD rates */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_1_STREAM; i++) {
 		txpwr->mcs_20_cdd[i] = (u8) maxpwr20;
 		txpwr->mcs_40_cdd[i] = (u8) maxpwr40;
 	}
 
-	/*
-	 * These locales have SISO expressed in the
-	 * table and override CDD later
-	 */
+	 
 	if (li_mimo == &locale_bn) {
 		maxpwr20 = QDB(16);
 		maxpwr40 = 0;
@@ -508,19 +451,19 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 		}
 	}
 
-	/* Fill in the MCS 0-7 STBC rates */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_1_STREAM; i++) {
 		txpwr->mcs_20_stbc[i] = 0;
 		txpwr->mcs_40_stbc[i] = 0;
 	}
 
-	/* Fill in the MCS 8-15 SDM rates */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_2_STREAM; i++) {
 		txpwr->mcs_20_mimo[i] = (u8) maxpwr20;
 		txpwr->mcs_40_mimo[i] = (u8) maxpwr40;
 	}
 
-	/* Fill in MCS32 */
+	 
 	txpwr->mcs32 = (u8) maxpwr40;
 
 	for (i = 0, j = 0; i < BRCMS_NUM_RATES_OFDM; i++, j++) {
@@ -533,10 +476,7 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 		}
 	}
 
-	/*
-	 * Copy the 40 MHZ MCS 0-7 CDD value to the 40 MHZ MCS 0-7 SISO
-	 * value if it wasn't provided explicitly.
-	 */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_1_STREAM; i++) {
 		if (txpwr->mcs_40_siso[i] == 0)
 			txpwr->mcs_40_siso[i] = txpwr->mcs_40_cdd[i];
@@ -552,10 +492,7 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 		}
 	}
 
-	/*
-	 * Copy the 20 and 40 MHz MCS0-7 CDD values to the corresponding
-	 * STBC values if they weren't provided explicitly.
-	 */
+	 
 	for (i = 0; i < BRCMS_NUM_RATES_MCS_1_STREAM; i++) {
 		if (txpwr->mcs_20_stbc[i] == 0)
 			txpwr->mcs_20_stbc[i] = txpwr->mcs_20_cdd[i];
@@ -567,22 +504,17 @@ brcms_c_channel_reg_limits(struct brcms_cm_info *wlc_cm, u16 chanspec,
 	return;
 }
 
-/*
- * Verify the chanspec is using a legal set of parameters, i.e. that the
- * chanspec specified a band, bw, ctl_sb and channel and that the
- * combination could be legal given any set of circumstances.
- * RETURNS: true is the chanspec is malformed, false if it looks good.
- */
+ 
 static bool brcms_c_chspec_malformed(u16 chanspec)
 {
-	/* must be 2G or 5G band */
+	 
 	if (!CHSPEC_IS5G(chanspec) && !CHSPEC_IS2G(chanspec))
 		return true;
-	/* must be 20 or 40 bandwidth */
+	 
 	if (!CHSPEC_IS40(chanspec) && !CHSPEC_IS20(chanspec))
 		return true;
 
-	/* 20MHZ b/w must have no ctl sb, 40 must have a ctl sb */
+	 
 	if (CHSPEC_IS20(chanspec)) {
 		if (!CHSPEC_SB_NONE(chanspec))
 			return true;
@@ -593,18 +525,14 @@ static bool brcms_c_chspec_malformed(u16 chanspec)
 	return false;
 }
 
-/*
- * Validate the chanspec for this locale, for 40MHZ we need to also
- * check that the sidebands are valid 20MZH channels in this locale
- * and they are also a legal HT combination
- */
+ 
 static bool
 brcms_c_valid_chanspec_ext(struct brcms_cm_info *wlc_cm, u16 chspec)
 {
 	struct brcms_c_info *wlc = wlc_cm->wlc;
 	u8 channel = CHSPEC_CHANNEL(chspec);
 
-	/* check the chanspec */
+	 
 	if (brcms_c_chspec_malformed(chspec)) {
 		brcms_err(wlc->hw->d11core, "wl%d: malformed chanspec 0x%x\n",
 			  wlc->pub->unit, chspec);
@@ -644,10 +572,7 @@ static void brcms_reg_apply_radar_flags(struct wiphy *wiphy)
 		if (!brcms_is_radar_freq(ch->center_freq))
 			continue;
 
-		/*
-		 * All channels in this range should be passive and have
-		 * DFS enabled.
-		 */
+		 
 		if (!(ch->flags & IEEE80211_CHAN_DISABLED))
 			ch->flags |= IEEE80211_CHAN_RADAR |
 				     IEEE80211_CHAN_NO_IR;
@@ -706,7 +631,7 @@ static void brcms_reg_notifier(struct wiphy *wiphy,
 	if (request->initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE)
 		brcms_reg_apply_beaconing_flags(wiphy, request->initiator);
 
-	/* Disable radio if all channels disallowed by regulatory */
+	 
 	for (band = 0; !ch_found && band < NUM_NL80211_BANDS; band++) {
 		sband = wiphy->bands[band];
 		if (!sband)
@@ -744,7 +669,7 @@ void brcms_c_regd_init(struct brcms_c_info *wlc)
 	struct brcms_band *band;
 	int band_idx, i;
 
-	/* Disable any channels not supported by the phy */
+	 
 	for (band_idx = 0; band_idx < wlc->pub->_nbands; band_idx++) {
 		band = wlc->bandstate[band_idx];
 

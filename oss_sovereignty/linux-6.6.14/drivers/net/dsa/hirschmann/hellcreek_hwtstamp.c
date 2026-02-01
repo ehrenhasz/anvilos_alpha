@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * DSA driver for:
- * Hirschmann Hellcreek TSN switch.
- *
- * Copyright (C) 2019,2020 Hochschule Offenburg
- * Copyright (C) 2019,2020 Linutronix GmbH
- * Authors: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
- *	    Kurt Kanzenbach <kurt@linutronix.de>
- */
+
+ 
 
 #include <linux/ptp_classify.h>
 
@@ -26,19 +18,16 @@ int hellcreek_get_ts_info(struct dsa_switch *ds, int port,
 		SOF_TIMESTAMPING_RX_HARDWARE |
 		SOF_TIMESTAMPING_RAW_HARDWARE;
 
-	/* enabled tx timestamping */
+	 
 	info->tx_types = BIT(HWTSTAMP_TX_ON);
 
-	/* L2 & L4 PTPv2 event rx messages are timestamped */
+	 
 	info->rx_filters = BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
 
 	return 0;
 }
 
-/* Enabling/disabling TX and RX HW timestamping for different PTP messages is
- * not available in the switch. Thus, this function only serves as a check if
- * the user requested what is actually available or not
- */
+ 
 static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 					 struct hwtstamp_config *config)
 {
@@ -47,9 +36,7 @@ static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 	bool tx_tstamp_enable = false;
 	bool rx_tstamp_enable = false;
 
-	/* Interaction with the timestamp hardware is prevented here.  It is
-	 * enabled when this config function ends successfully
-	 */
+	 
 	clear_bit_unlock(HELLCREEK_HWTSTAMP_ENABLED, &ps->state);
 
 	switch (config->tx_type) {
@@ -57,7 +44,7 @@ static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 		tx_tstamp_enable = true;
 		break;
 
-	/* TX HW timestamping can't be disabled on the switch */
+	 
 	case HWTSTAMP_TX_OFF:
 		config->tx_type = HWTSTAMP_TX_ON;
 		break;
@@ -67,7 +54,7 @@ static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 	}
 
 	switch (config->rx_filter) {
-	/* RX HW timestamping can't be disabled on the switch */
+	 
 	case HWTSTAMP_FILTER_NONE:
 		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
 		break;
@@ -85,7 +72,7 @@ static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 		rx_tstamp_enable = true;
 		break;
 
-	/* RX HW timestamping can't be enabled for all messages on the switch */
+	 
 	case HWTSTAMP_FILTER_ALL:
 		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
 		break;
@@ -100,10 +87,7 @@ static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
 	if (!rx_tstamp_enable)
 		return -ERANGE;
 
-	/* If this point is reached, then the requested hwtstamp config is
-	 * compatible with the hwtstamp offered by the switch.  Therefore,
-	 * enable the interaction with the HW timestamping
-	 */
+	 
 	set_bit(HELLCREEK_HWTSTAMP_ENABLED, &ps->state);
 
 	return 0;
@@ -126,7 +110,7 @@ int hellcreek_port_hwtstamp_set(struct dsa_switch *ds, int port,
 	if (err)
 		return err;
 
-	/* Save the chosen configuration to be returned later */
+	 
 	memcpy(&ps->tstamp_config, &config, sizeof(config));
 
 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
@@ -147,9 +131,7 @@ int hellcreek_port_hwtstamp_get(struct dsa_switch *ds, int port,
 		-EFAULT : 0;
 }
 
-/* Returns a pointer to the PTP header if the caller should time stamp, or NULL
- * if the caller should not.
- */
+ 
 static struct ptp_header *hellcreek_should_tstamp(struct hellcreek *hellcreek,
 						  int port, struct sk_buff *skb,
 						  unsigned int type)
@@ -189,13 +171,11 @@ static int hellcreek_ptp_hwtstamp_available(struct hellcreek *hellcreek,
 		dev_err(hellcreek->dev,
 			"Tx time stamp lost! This should never happen!\n");
 
-	/* If hwtstamp is not available, this means the previous hwtstamp was
-	 * successfully read, and the one we need is not yet available
-	 */
+	 
 	return (status & PR_TS_STATUS_TS_AVAIL) ? 1 : 0;
 }
 
-/* Get nanoseconds timestamp from timestamping unit */
+ 
 static u64 hellcreek_ptp_hwtstamp_read(struct hellcreek *hellcreek,
 				       unsigned int ts_reg)
 {
@@ -238,11 +218,9 @@ static int hellcreek_txtstamp_work(struct hellcreek *hellcreek,
 
 	ts_status = hellcreek_ptp_hwtstamp_available(hellcreek, status_reg);
 
-	/* Not available yet? */
+	 
 	if (ts_status == 0) {
-		/* Check whether the operation of reading the tx timestamp has
-		 * exceeded its allowed period
-		 */
+		 
 		if (time_is_before_jiffies(ps->tx_tstamp_start +
 					   TX_TSTAMP_TIMEOUT)) {
 			dev_err(hellcreek->dev,
@@ -250,9 +228,7 @@ static int hellcreek_txtstamp_work(struct hellcreek *hellcreek,
 			goto free_and_clear_skb;
 		}
 
-		/* The timestamp should be available quickly, while getting it
-		 * in high priority. Restart the work
-		 */
+		 
 		return 1;
 	}
 
@@ -261,22 +237,17 @@ static int hellcreek_txtstamp_work(struct hellcreek *hellcreek,
 	ns += hellcreek_ptp_gettime_seconds(hellcreek, ns);
 	mutex_unlock(&hellcreek->ptp_lock);
 
-	/* Now we have the timestamp in nanoseconds, store it in the correct
-	 * structure in order to send it to the user
-	 */
+	 
 	memset(&shhwtstamps, 0, sizeof(shhwtstamps));
 	shhwtstamps.hwtstamp = ns_to_ktime(ns);
 
 	tmp_skb = ps->tx_skb;
 	ps->tx_skb = NULL;
 
-	/* skb_complete_tx_timestamp() frees up the client to make another
-	 * timestampable transmit.  We have to be ready for it by clearing the
-	 * ps->tx_skb "flag" beforehand
-	 */
+	 
 	clear_bit_unlock(HELLCREEK_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
 
-	/* Deliver a clone of the original outgoing tx_skb with tx hwtstamp */
+	 
 	skb_complete_tx_timestamp(tmp_skb, &shhwtstamps);
 
 	return 0;
@@ -298,7 +269,7 @@ static void hellcreek_get_rxts(struct hellcreek *hellcreek,
 	struct sk_buff_head received;
 	unsigned long flags;
 
-	/* Construct Rx timestamps for all received PTP packets. */
+	 
 	__skb_queue_head_init(&received);
 	spin_lock_irqsave(&rxq->lock, flags);
 	skb_queue_splice_tail_init(rxq, &received);
@@ -309,18 +280,18 @@ static void hellcreek_get_rxts(struct hellcreek *hellcreek,
 		unsigned int type;
 		u64 ns;
 
-		/* Get nanoseconds from ptp packet */
+		 
 		type = SKB_PTP_TYPE(skb);
 		hdr  = ptp_parse_header(skb, type);
 		ns   = hellcreek_get_reserved_field(hdr);
 		hellcreek_clear_reserved_field(hdr);
 
-		/* Add seconds part */
+		 
 		mutex_lock(&hellcreek->ptp_lock);
 		ns += hellcreek_ptp_gettime_seconds(hellcreek, ns);
 		mutex_unlock(&hellcreek->ptp_lock);
 
-		/* Save time stamp */
+		 
 		shwt = skb_hwtstamps(skb);
 		memset(shwt, 0, sizeof(*shwt));
 		shwt->hwtstamp = ns_to_ktime(ns);
@@ -377,10 +348,7 @@ void hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
 	if (type == PTP_CLASS_NONE)
 		return;
 
-	/* Make sure the message is a PTP message that needs to be timestamped
-	 * and the interaction with the HW timestamping is enabled. If not, stop
-	 * here
-	 */
+	 
 	hdr = hellcreek_should_tstamp(hellcreek, port, skb, type);
 	if (!hdr)
 		return;
@@ -397,9 +365,7 @@ void hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
 
 	ps->tx_skb = clone;
 
-	/* store the number of ticks occurred since system start-up till this
-	 * moment
-	 */
+	 
 	ps->tx_tstamp_start = jiffies;
 
 	ptp_schedule_worker(hellcreek->ptp_clock, 0);
@@ -414,16 +380,11 @@ bool hellcreek_port_rxtstamp(struct dsa_switch *ds, int port,
 
 	ps = &hellcreek->ports[port].port_hwtstamp;
 
-	/* This check only fails if the user did not initialize hardware
-	 * timestamping beforehand.
-	 */
+	 
 	if (ps->tstamp_config.rx_filter != HWTSTAMP_FILTER_PTP_V2_EVENT)
 		return false;
 
-	/* Make sure the message is a PTP message that needs to be timestamped
-	 * and the interaction with the HW timestamping is enabled. If not, stop
-	 * here
-	 */
+	 
 	hdr = hellcreek_should_tstamp(hellcreek, port, skb, type);
 	if (!hdr)
 		return false;
@@ -450,7 +411,7 @@ int hellcreek_hwtstamp_setup(struct hellcreek *hellcreek)
 	struct dsa_switch *ds = hellcreek->ds;
 	int i;
 
-	/* Initialize timestamping ports. */
+	 
 	for (i = 0; i < ds->num_ports; ++i) {
 		if (!dsa_is_user_port(ds, i))
 			continue;
@@ -458,9 +419,7 @@ int hellcreek_hwtstamp_setup(struct hellcreek *hellcreek)
 		hellcreek_hwtstamp_port_setup(hellcreek, i);
 	}
 
-	/* Select the synchronized clock as the source timekeeper for the
-	 * timestamps and enable inline timestamping.
-	 */
+	 
 	hellcreek_ptp_write(hellcreek, PR_SETTINGS_C_TS_SRC_TK_MASK |
 			    PR_SETTINGS_C_RES3TS,
 			    PR_SETTINGS_C);
@@ -470,5 +429,5 @@ int hellcreek_hwtstamp_setup(struct hellcreek *hellcreek)
 
 void hellcreek_hwtstamp_free(struct hellcreek *hellcreek)
 {
-	/* Nothing todo */
+	 
 }

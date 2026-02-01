@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * NILFS B-tree node cache
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Seiji Kihara.
- * Revised by Ryusuke Konishi.
- */
+ 
+ 
 
 #ifndef _NILFS_BTNODE_H
 #define _NILFS_BTNODE_H
@@ -16,13 +9,7 @@
 #include <linux/fs.h>
 #include <linux/backing-dev.h>
 
-/**
- * struct nilfs_btnode_chkey_ctxt - change key context
- * @oldkey: old key of block's moving content
- * @newkey: new key for block's content
- * @bh: buffer head of old buffer
- * @newbh: buffer head of new buffer
- */
+ 
 struct nilfs_btnode_chkey_ctxt {
 	__u64 oldkey;
 	__u64 newkey;
@@ -44,4 +31,4 @@ void nilfs_btnode_commit_change_key(struct address_space *,
 void nilfs_btnode_abort_change_key(struct address_space *,
 				   struct nilfs_btnode_chkey_ctxt *);
 
-#endif	/* _NILFS_BTNODE_H */
+#endif	 

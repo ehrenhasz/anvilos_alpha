@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB framework compliant Linux driver for the
- *	DVBWorld DVB-S 2101, 2102, DVB-S2 2104, DVB-C 3101,
- *	TeVii S421, S480, S482, S600, S630, S632, S650, S660, S662,
- *	Prof 1100, 7500,
- *	Geniatech SU3000, T220,
- *	TechnoTrend S2-4600,
- *	Terratec Cinergy S2 cards
- * Copyright (C) 2008-2012 Igor M. Liplianin (liplianin@me.by)
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include <media/dvb-usb-ids.h>
 #include "dw2102.h"
 #include "si21xx.h"
@@ -33,7 +23,7 @@
 #include "cxd2820r.h"
 #include "m88ds3103.h"
 
-/* Max transfer size done by I2C transfer functions */
+ 
 #define MAX_XFER_SIZE  64
 
 
@@ -43,7 +33,7 @@
 #define REG_1F_SYMBOLRATE_BYTE0 0x1f
 #define REG_20_SYMBOLRATE_BYTE1 0x20
 #define REG_21_SYMBOLRATE_BYTE2 0x21
-/* on my own*/
+ 
 #define DW2102_VOLTAGE_CTRL (0x1800)
 #define SU3000_STREAM_CTRL (0x1900)
 #define DW2102_RC_QUERY (0x1a00)
@@ -67,19 +57,19 @@ struct dw2102_state {
 	struct i2c_client *i2c_client_demod;
 	struct i2c_client *i2c_client_tuner;
 
-	/* fe hook functions*/
+	 
 	int (*old_set_voltage)(struct dvb_frontend *f, enum fe_sec_voltage v);
 	int (*fe_read_status)(struct dvb_frontend *fe,
 			      enum fe_status *status);
 };
 
-/* debug */
+ 
 static int dvb_usb_dw2102_debug;
 module_param_named(debug, dvb_usb_dw2102_debug, int, 0644);
 MODULE_PARM_DESC(debug, "set debugging level (1=info 2=xfer 4=rc(or-able))."
 						DVB_USB_DEBUG_STATUS);
 
-/* demod probe */
+ 
 static int demod_probe = 1;
 module_param_named(demod, demod_probe, int, 0644);
 MODULE_PARM_DESC(demod, "demod to probe (1=cx24116 2=stv0903+stv6110 4=stv0903+stb6100(or-able)).");
@@ -112,7 +102,7 @@ static int dw210x_op_rw(struct usb_device *dev, u8 request, u16 value,
 	return ret;
 }
 
-/* I2C */
+ 
 static int dw2102_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		int num)
 {
@@ -132,8 +122,8 @@ static int dw2102_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			num = -EOPNOTSUPP;
 			break;
 		}
-		/* read stv0299 register */
-		value = msg[0].buf[0];/* register */
+		 
+		value = msg[0].buf[0]; 
 		for (i = 0; i < msg[1].len; i++) {
 			dw210x_op_rw(d->udev, 0xb5, value + i, 0,
 					buf6, 2, DW210X_READ_MSG);
@@ -147,7 +137,7 @@ static int dw2102_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 				num = -EOPNOTSUPP;
 				break;
 			}
-			/* write to stv0299 register */
+			 
 			buf6[0] = 0x2a;
 			buf6[1] = msg[0].buf[0];
 			buf6[2] = msg[0].buf[1];
@@ -160,7 +150,7 @@ static int dw2102_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					num = -EOPNOTSUPP;
 					break;
 				}
-			/* write to tuner pll */
+			 
 				buf6[0] = 0x2c;
 				buf6[1] = 5;
 				buf6[2] = 0xc0;
@@ -175,7 +165,7 @@ static int dw2102_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					num = -EOPNOTSUPP;
 					break;
 				}
-			/* read from tuner */
+			 
 				dw210x_op_rw(d->udev, 0xb5, 0, 0,
 						buf6, 1, DW210X_READ_MSG);
 				msg[0].buf[0] = buf6[0];
@@ -237,13 +227,13 @@ static int dw2102_serit_i2c_transfer(struct i2c_adapter *adap,
 			break;
 		}
 
-		/* read si2109 register by number */
+		 
 		buf6[0] = msg[0].addr << 1;
 		buf6[1] = msg[0].len;
 		buf6[2] = msg[0].buf[0];
 		dw210x_op_rw(d->udev, 0xc2, 0, 0,
 				buf6, msg[0].len + 2, DW210X_WRITE_MSG);
-		/* read si2109 register */
+		 
 		dw210x_op_rw(d->udev, 0xc3, 0xd0, 0,
 				buf6, msg[1].len + 2, DW210X_READ_MSG);
 		memcpy(msg[1].buf, buf6 + 2, msg[1].len);
@@ -259,7 +249,7 @@ static int dw2102_serit_i2c_transfer(struct i2c_adapter *adap,
 				break;
 			}
 
-			/* write to si2109 register */
+			 
 			buf6[0] = msg[0].addr << 1;
 			buf6[1] = msg[0].len;
 			memcpy(buf6 + 2, msg[0].buf, msg[0].len);
@@ -298,8 +288,8 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
 
 	switch (num) {
 	case 2: {
-		/* read */
-		/* first write first register number */
+		 
+		 
 		u8 ibuf[MAX_XFER_SIZE], obuf[3];
 
 		if (2 + msg[0].len != sizeof(obuf)) {
@@ -321,7 +311,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
 		obuf[2] = msg[0].buf[0];
 		dw210x_op_rw(d->udev, 0xc2, 0, 0,
 				obuf, msg[0].len + 2, DW210X_WRITE_MSG);
-		/* second read registers */
+		 
 		dw210x_op_rw(d->udev, 0xc3, 0xd1 , 0,
 				ibuf, msg[1].len + 2, DW210X_READ_MSG);
 		memcpy(msg[1].buf, ibuf + 2, msg[1].len);
@@ -331,7 +321,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
 	case 1:
 		switch (msg[0].addr) {
 		case 0x68: {
-			/* write to register */
+			 
 			u8 obuf[MAX_XFER_SIZE];
 
 			if (2 + msg[0].len > sizeof(obuf)) {
@@ -349,7 +339,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
 			break;
 		}
 		case 0x61: {
-			/* write to tuner */
+			 
 			u8 obuf[MAX_XFER_SIZE];
 
 			if (2 + msg[0].len > sizeof(obuf)) {
@@ -419,13 +409,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
 					obuf, 2, DW210X_WRITE_MSG);
 			break;
 		}
-		/*case 0x55: cx24116
-		case 0x6a: stv0903
-		case 0x68: ds3000, stv0903
-		case 0x60: ts2020, stv6110, stb6100 */
+		 
 		default: {
 			if (msg[j].flags == I2C_M_RD) {
-				/* read registers */
+				 
 				u8  ibuf[MAX_XFER_SIZE];
 
 				if (2 + msg[j].len > sizeof(ibuf)) {
@@ -445,7 +432,7 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
 						(msg[j].addr == 0x68)) ||
 						((msg[j].buf[0] == 0xf7) &&
 						(msg[j].addr == 0x55))) {
-				/* write firmware */
+				 
 				u8 obuf[19];
 				obuf[0] = msg[j].addr << 1;
 				obuf[1] = (msg[j].len > 15 ? 17 : msg[j].len);
@@ -462,7 +449,7 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
 					len -= 16;
 				} while (len > 0);
 			} else {
-				/* write registers */
+				 
 				u8 obuf[MAX_XFER_SIZE];
 
 				if (2 + msg[j].len > sizeof(obuf)) {
@@ -505,8 +492,8 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 
 	switch (num) {
 	case 2: {
-		/* read */
-		/* first write first register number */
+		 
+		 
 		u8 ibuf[MAX_XFER_SIZE], obuf[3];
 
 		if (2 + msg[0].len != sizeof(obuf)) {
@@ -526,7 +513,7 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		obuf[2] = msg[0].buf[0];
 		dw210x_op_rw(d->udev, 0xc2, 0, 0,
 				obuf, msg[0].len + 2, DW210X_WRITE_MSG);
-		/* second read registers */
+		 
 		dw210x_op_rw(d->udev, 0xc3, 0x19 , 0,
 				ibuf, msg[1].len + 2, DW210X_READ_MSG);
 		memcpy(msg[1].buf, ibuf + 2, msg[1].len);
@@ -537,7 +524,7 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		switch (msg[0].addr) {
 		case 0x60:
 		case 0x0c: {
-			/* write to register */
+			 
 			u8 obuf[MAX_XFER_SIZE];
 
 			if (2 + msg[0].len > sizeof(obuf)) {
@@ -603,11 +590,11 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			u8 obuf[2];
 
 			obuf[0] = 1;
-			obuf[1] = msg[j].buf[1];/* off-on */
+			obuf[1] = msg[j].buf[1]; 
 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
 					obuf, 2, DW210X_WRITE_MSG);
 			obuf[0] = 3;
-			obuf[1] = msg[j].buf[0];/* 13v-18v */
+			obuf[1] = msg[j].buf[0]; 
 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
 					obuf, 2, DW210X_WRITE_MSG);
 			break;
@@ -621,14 +608,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					obuf, 2, DW210X_WRITE_MSG);
 			break;
 		}
-		/*case 0x55: cx24116
-		case 0x6a: stv0903
-		case 0x68: ds3000, stv0903, rs2000
-		case 0x60: ts2020, stv6110, stb6100
-		case 0xa0: eeprom */
+		 
 		default: {
 			if (msg[j].flags == I2C_M_RD) {
-				/* read registers */
+				 
 				u8 ibuf[MAX_XFER_SIZE];
 
 				if (msg[j].len > sizeof(ibuf)) {
@@ -645,7 +628,7 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 				break;
 			} else if ((msg[j].buf[0] == 0xb0) &&
 						(msg[j].addr == 0x68)) {
-				/* write firmware */
+				 
 				u8 obuf[19];
 				obuf[0] = (msg[j].len > 16 ?
 						18 : msg[j].len + 1);
@@ -663,7 +646,7 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					len -= 16;
 				} while (len > 0);
 			} else if (j < (num - 1)) {
-				/* write register addr before read */
+				 
 				u8 obuf[MAX_XFER_SIZE];
 
 				if (2 + msg[j].len > sizeof(obuf)) {
@@ -683,7 +666,7 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 						DW210X_WRITE_MSG);
 				break;
 			} else {
-				/* write registers */
+				 
 				u8 obuf[MAX_XFER_SIZE];
 
 				if (2 + msg[j].len > sizeof(obuf)) {
@@ -756,7 +739,7 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 				break;
 			}
 
-			/* always i2c write*/
+			 
 			state->data[0] = 0x08;
 			state->data[1] = msg[0].addr;
 			state->data[2] = msg[0].len;
@@ -770,7 +753,7 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		}
 		break;
 	case 2:
-		/* always i2c read */
+		 
 		if (4 + msg[0].len > sizeof(state->data)) {
 			warn("i2c rd: len=%d is too big!\n",
 			     msg[0].len);
@@ -939,7 +922,7 @@ static int su3000_power_ctrl(struct dvb_usb_device *d, int i)
 		state->data[1] = 0;
 
 		state->initialized = 1;
-		/* reset board */
+		 
 		ret = dvb_usb_generic_rw(d, state->data, 2, NULL, 0, 0);
 		mutex_unlock(&d->data_mutex);
 	}
@@ -1052,7 +1035,7 @@ static int tt_s2_4600_read_status(struct dvb_frontend *fe,
 
 	ret = st->fe_read_status(fe, status);
 
-	/* resync slave fifo when signal change from unlock to lock */
+	 
 	if ((*status & FE_HAS_LOCK) && (!st->last_lock))
 		su3000_streaming_ctrl(d, 1);
 
@@ -1118,10 +1101,10 @@ static struct stv0900_config dw2104a_stv0900_config = {
 	.demod_address = 0x6a,
 	.demod_mode = 0,
 	.xtal = 27000000,
-	.clkmode = 3,/* 0-CLKI, 2-XTALI, else AUTO */
-	.diseqc_mode = 2,/* 2/3 PWM */
-	.tun1_maddress = 0,/* 0x60 */
-	.tun1_adc = 0,/* 2 Vpp */
+	.clkmode = 3, 
+	.diseqc_mode = 2, 
+	.tun1_maddress = 0, 
+	.tun1_adc = 0, 
 	.path1_mode = 3,
 };
 
@@ -1137,7 +1120,7 @@ static struct stv0900_config dw2104_stv0900_config = {
 	.clkmode = 3,
 	.diseqc_mode = 2,
 	.tun1_maddress = 0,
-	.tun1_adc = 1,/* 1 Vpp */
+	.tun1_adc = 1, 
 	.path1_mode = 3,
 };
 
@@ -1151,10 +1134,10 @@ static struct stv0900_config prof_7500_stv0900_config = {
 	.demod_address = 0x6a,
 	.demod_mode = 0,
 	.xtal = 27000000,
-	.clkmode = 3,/* 0-CLKI, 2-XTALI, else AUTO */
-	.diseqc_mode = 2,/* 2/3 PWM */
-	.tun1_maddress = 0,/* 0x60 */
-	.tun1_adc = 0,/* 2 Vpp */
+	.clkmode = 3, 
+	.diseqc_mode = 2, 
+	.tun1_maddress = 0, 
+	.tun1_adc = 0, 
 	.path1_mode = 3,
 	.tun1_type = 3,
 	.set_lock_led = dw210x_led_ctrl,
@@ -1167,7 +1150,7 @@ static struct ds3000_config su3000_ds3000_config = {
 };
 
 static struct cxd2820r_config cxd2820r_config = {
-	.i2c_address = 0x6c, /* (0xd8 >> 1) */
+	.i2c_address = 0x6c,  
 	.ts_mode = 0x38,
 	.ts_clock_inv = 1,
 };
@@ -1267,7 +1250,7 @@ static struct dvb_usb_device_properties s6x0_properties;
 static int dw2102_frontend_attach(struct dvb_usb_adapter *d)
 {
 	if (dw2102_properties.i2c_algo == &dw2102_serit_i2c_algo) {
-		/*dw2102_properties.adapter->tuner_attach = NULL;*/
+		 
 		d->fe_adap[0].fe = dvb_attach(si21xx_attach, &serit_sp1511lhb_config,
 					&d->dev->i2c_adap);
 		if (d->fe_adap[0].fe != NULL) {
@@ -1291,7 +1274,7 @@ static int dw2102_frontend_attach(struct dvb_usb_adapter *d)
 	}
 
 	if (dw2102_properties.i2c_algo == &dw2102_i2c_algo) {
-		/*dw2102_properties.adapter->tuner_attach = dw2102_tuner_attach;*/
+		 
 		d->fe_adap[0].fe = dvb_attach(stv0299_attach, &sharp_z0194a_config,
 					&d->dev->i2c_adap);
 		if (d->fe_adap[0].fe != NULL) {
@@ -1560,10 +1543,10 @@ static int tt_s2_4600_frontend_attach_probe_demod(struct dvb_usb_device *d,
 		return 0;
 	}
 
-	if (state->data[0] != 8) /* fail(7) or error, no device at address */
+	if (state->data[0] != 8)  
 		return 0;
 
-	/* probing successful */
+	 
 	return 1;
 }
 
@@ -1614,7 +1597,7 @@ static int tt_s2_4600_frontend_attach(struct dvb_usb_adapter *adap)
 	if (dvb_usb_generic_rw(d, state->data, 1, state->data, 1, 0) < 0)
 		err("command 0x51 transfer failed.");
 
-	/* probe for demodulator i2c address */
+	 
 	demod_addr = -1;
 	if (tt_s2_4600_frontend_attach_probe_demod(d, 0x68))
 		demod_addr = 0x68;
@@ -1630,7 +1613,7 @@ static int tt_s2_4600_frontend_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* attach demod */
+	 
 	m88ds3103_pdata.clk = 27000000;
 	m88ds3103_pdata.i2c_wr_max = 33;
 	m88ds3103_pdata.ts_mode = M88DS3103_TS_CI;
@@ -1663,7 +1646,7 @@ static int tt_s2_4600_frontend_attach(struct dvb_usb_adapter *adap)
 
 	state->i2c_client_demod = client;
 
-	/* attach tuner */
+	 
 	ts2020_config.fe = adap->fe_adap[0].fe;
 	memset(&board_info, 0, sizeof(board_info));
 	strscpy(board_info.type, "ts2022", I2C_NAME_SIZE);
@@ -1683,13 +1666,13 @@ static int tt_s2_4600_frontend_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* delegate signal strength measurement to tuner */
+	 
 	adap->fe_adap[0].fe->ops.read_signal_strength =
 			adap->fe_adap[0].fe->ops.tuner_ops.get_rf_strength;
 
 	state->i2c_client_tuner = client;
 
-	/* hook fe: need to resync the slave fifo when signal locks */
+	 
 	state->fe_read_status = adap->fe_adap[0].fe->ops.read_status;
 	adap->fe_adap[0].fe->ops.read_status = tt_s2_4600_read_status;
 
@@ -1871,7 +1854,7 @@ static int dw2102_load_firmware(struct usb_device *dev,
 	info("start downloading DW210X firmware");
 	p = kmalloc(fw->size, GFP_KERNEL);
 	reset = 1;
-	/*stop the CPU*/
+	 
 	dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1, DW210X_WRITE_MSG);
 	dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1, DW210X_WRITE_MSG);
 
@@ -1886,7 +1869,7 @@ static int dw2102_load_firmware(struct usb_device *dev,
 				break;
 			}
 		}
-		/* restart the CPU */
+		 
 		reset = 0;
 		if (ret || dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1,
 					DW210X_WRITE_MSG) != 1) {
@@ -1898,7 +1881,7 @@ static int dw2102_load_firmware(struct usb_device *dev,
 			err("could not restart the USB controller CPU.");
 			ret = -EINVAL;
 		}
-		/* init registers */
+		 
 		switch (le16_to_cpu(dev->descriptor.idProduct)) {
 		case USB_PID_TEVII_S650:
 			dw2104_properties.rc.core.rc_codes = RC_MAP_TEVII_NEC;
@@ -1919,7 +1902,7 @@ static int dw2102_load_firmware(struct usb_device *dev,
 					DW210X_WRITE_MSG);
 			dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
 					DW210X_READ_MSG);
-			/* check STV0299 frontend  */
+			 
 			dw210x_op_rw(dev, 0xb5, 0, 0, &reset16[0], 2,
 					DW210X_READ_MSG);
 			if ((reset16[0] == 0xa1) || (reset16[0] == 0x80)) {
@@ -1927,7 +1910,7 @@ static int dw2102_load_firmware(struct usb_device *dev,
 				dw2102_properties.adapter->fe[0].tuner_attach = &dw2102_tuner_attach;
 				break;
 			} else {
-				/* check STV0288 frontend  */
+				 
 				reset16[0] = 0xd0;
 				reset16[1] = 1;
 				reset16[2] = 0;
@@ -1979,7 +1962,7 @@ static struct dvb_usb_device_properties dw2102_properties = {
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x81,
-	/* parameter for the MPEG2-data transfer */
+	 
 	.num_adapters = 1,
 	.download_firmware = dw2102_load_firmware,
 	.read_mac_address = dw210x_read_mac_address,
@@ -2034,7 +2017,7 @@ static struct dvb_usb_device_properties dw2104_properties = {
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x81,
-	/* parameter for the MPEG2-data transfer */
+	 
 	.num_adapters = 1,
 	.download_firmware = dw2102_load_firmware,
 	.read_mac_address = dw210x_read_mac_address,
@@ -2085,7 +2068,7 @@ static struct dvb_usb_device_properties dw3101_properties = {
 	},
 
 	.generic_bulk_ctrl_endpoint = 0x81,
-	/* parameter for the MPEG2-data transfer */
+	 
 	.num_adapters = 1,
 	.download_firmware = dw2102_load_firmware,
 	.read_mac_address = dw210x_read_mac_address,
@@ -2599,14 +2582,14 @@ static void dw2102_disconnect(struct usb_interface *intf)
 	struct dw2102_state *st = d->priv;
 	struct i2c_client *client;
 
-	/* remove I2C client for tuner */
+	 
 	client = st->i2c_client_tuner;
 	if (client) {
 		module_put(client->dev.driver->owner);
 		i2c_unregister_device(client);
 	}
 
-	/* remove I2C client for demodulator */
+	 
 	client = st->i2c_client_demod;
 	if (client) {
 		module_put(client->dev.driver->owner);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/hdmi.h>
 
 #include "dce6_afmt.h"
@@ -161,16 +140,16 @@ void dce6_afmt_hdmi_write_speaker_allocation(struct drm_encoder *encoder,
 	if (!dig || !dig->afmt || !dig->pin)
 		return;
 
-	/* program the speaker allocation */
+	 
 	tmp = RREG32_ENDPOINT(dig->pin->offset,
 			      AZ_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER);
 	tmp &= ~(DP_CONNECTION | SPEAKER_ALLOCATION_MASK);
-	/* set HDMI mode */
+	 
 	tmp |= HDMI_CONNECTION;
 	if (sad_count)
 		tmp |= SPEAKER_ALLOCATION(sadb[0]);
 	else
-		tmp |= SPEAKER_ALLOCATION(5); /* stereo */
+		tmp |= SPEAKER_ALLOCATION(5);  
 	WREG32_ENDPOINT(dig->pin->offset,
 			AZ_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER, tmp);
 }
@@ -186,16 +165,16 @@ void dce6_afmt_dp_write_speaker_allocation(struct drm_encoder *encoder,
 	if (!dig || !dig->afmt || !dig->pin)
 		return;
 
-	/* program the speaker allocation */
+	 
 	tmp = RREG32_ENDPOINT(dig->pin->offset,
 			      AZ_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER);
 	tmp &= ~(HDMI_CONNECTION | SPEAKER_ALLOCATION_MASK);
-	/* set DP mode */
+	 
 	tmp |= DP_CONNECTION;
 	if (sad_count)
 		tmp |= SPEAKER_ALLOCATION(sadb[0]);
 	else
-		tmp |= SPEAKER_ALLOCATION(5); /* stereo */
+		tmp |= SPEAKER_ALLOCATION(5);  
 	WREG32_ENDPOINT(dig->pin->offset,
 			AZ_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER, tmp);
 }
@@ -269,7 +248,7 @@ void dce6_audio_enable(struct radeon_device *rdev,
 void dce6_hdmi_audio_set_dto(struct radeon_device *rdev,
 			     struct radeon_crtc *crtc, unsigned int clock)
 {
-	/* Two dtos; generally use dto0 for HDMI */
+	 
 	u32 value = 0;
 
 	if (crtc)
@@ -277,10 +256,7 @@ void dce6_hdmi_audio_set_dto(struct radeon_device *rdev,
 
 	WREG32(DCCG_AUDIO_DTO_SOURCE, value);
 
-	/* Express [24MHz / target pixel clock] as an exact rational
-	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
-	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
-	 */
+	 
 	WREG32(DCCG_AUDIO_DTO0_PHASE, 24000);
 	WREG32(DCCG_AUDIO_DTO0_MODULE, clock);
 }
@@ -288,7 +264,7 @@ void dce6_hdmi_audio_set_dto(struct radeon_device *rdev,
 void dce6_dp_audio_set_dto(struct radeon_device *rdev,
 			   struct radeon_crtc *crtc, unsigned int clock)
 {
-	/* Two dtos; generally use dto1 for DP */
+	 
 	u32 value = 0;
 	value |= DCCG_AUDIO_DTO_SEL;
 
@@ -297,10 +273,7 @@ void dce6_dp_audio_set_dto(struct radeon_device *rdev,
 
 	WREG32(DCCG_AUDIO_DTO_SOURCE, value);
 
-	/* Express [24MHz / target pixel clock] as an exact rational
-	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
-	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
-	 */
+	 
 	if (ASIC_IS_DCE8(rdev)) {
 		unsigned int div = (RREG32(DENTIST_DISPCLK_CNTL) &
 			DENTIST_DPREFCLK_WDIVIDER_MASK) >>

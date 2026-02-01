@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include "bpf_tracing_net.h"
@@ -54,33 +54,33 @@ static __always_inline int real_create(struct socket *sock, int family,
 	struct sock *sk;
 	int prio = 123;
 
-	/* Reject non-tx-only AF_PACKET. */
+	 
 	if (family == AF_PACKET && protocol != 0)
-		return 0; /* EPERM */
+		return 0;  
 
 	sk = sock->sk;
 	if (!sk)
 		return 1;
 
-	/* The rest of the sockets get default policy. */
+	 
 	if (bpf_setsockopt(sk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))
-		return 0; /* EPERM */
+		return 0;  
 
-	/* Make sure bpf_getsockopt is allowed and works. */
+	 
 	prio = 0;
 	if (bpf_getsockopt(sk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))
-		return 0; /* EPERM */
+		return 0;  
 	if (prio != 123)
-		return 0; /* EPERM */
+		return 0;  
 
-	/* Can access cgroup local storage. */
+	 
 	if (!test_local_storage())
-		return 0; /* EPERM */
+		return 0;  
 
 	return 1;
 }
 
-/* __cgroup_bpf_run_lsm_socket */
+ 
 SEC("lsm_cgroup/socket_post_create")
 int BPF_PROG(socket_post_create, struct socket *sock, int family,
 	     int type, int protocol, int kern)
@@ -89,7 +89,7 @@ int BPF_PROG(socket_post_create, struct socket *sock, int family,
 	return real_create(sock, family, protocol);
 }
 
-/* __cgroup_bpf_run_lsm_socket */
+ 
 SEC("lsm_cgroup/socket_post_create")
 int BPF_PROG(socket_post_create2, struct socket *sock, int family,
 	     int type, int protocol, int kern)
@@ -112,16 +112,16 @@ static __always_inline int real_bind(struct socket *sock,
 
 	bpf_probe_read_kernel(&sa, sizeof(sa), address);
 	if (sa.sll_protocol)
-		return 0; /* EPERM */
+		return 0;  
 
-	/* Can access cgroup local storage. */
+	 
 	if (!test_local_storage())
-		return 0; /* EPERM */
+		return 0;  
 
 	return 1;
 }
 
-/* __cgroup_bpf_run_lsm_socket */
+ 
 SEC("lsm_cgroup/socket_bind")
 int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
 	     int addrlen)
@@ -130,7 +130,7 @@ int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
 	return real_bind(sock, address, addrlen);
 }
 
-/* __cgroup_bpf_run_lsm_socket */
+ 
 SEC("lsm_cgroup/socket_bind")
 int BPF_PROG(socket_bind2, struct socket *sock, struct sockaddr *address,
 	     int addrlen)
@@ -139,26 +139,26 @@ int BPF_PROG(socket_bind2, struct socket *sock, struct sockaddr *address,
 	return real_bind(sock, address, addrlen);
 }
 
-/* __cgroup_bpf_run_lsm_current (via bpf_lsm_current_hooks) */
+ 
 SEC("lsm_cgroup/sk_alloc_security")
 int BPF_PROG(socket_alloc, struct sock *sk, int family, gfp_t priority)
 {
 	called_socket_alloc++;
-	/* if already have non-bpf lsms installed, EPERM will cause memory leak of non-bpf lsms */
+	 
 	if (CONFIG_SECURITY_SELINUX || CONFIG_SECURITY_SMACK || CONFIG_SECURITY_APPARMOR)
 		return 1;
 
 	if (family == AF_UNIX)
-		return 0; /* EPERM */
+		return 0;  
 
-	/* Can access cgroup local storage. */
+	 
 	if (!test_local_storage())
-		return 0; /* EPERM */
+		return 0;  
 
 	return 1;
 }
 
-/* __cgroup_bpf_run_lsm_sock */
+ 
 SEC("lsm_cgroup/inet_csk_clone")
 int BPF_PROG(socket_clone, struct sock *newsk, const struct request_sock *req)
 {
@@ -167,18 +167,18 @@ int BPF_PROG(socket_clone, struct sock *newsk, const struct request_sock *req)
 	if (!newsk)
 		return 1;
 
-	/* Accepted request sockets get a different priority. */
+	 
 	if (bpf_setsockopt(newsk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))
 		return 1;
 
-	/* Make sure bpf_getsockopt is allowed and works. */
+	 
 	prio = 0;
 	if (bpf_getsockopt(newsk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))
 		return 1;
 	if (prio != 234)
 		return 1;
 
-	/* Can access cgroup local storage. */
+	 
 	if (!test_local_storage())
 		return 1;
 

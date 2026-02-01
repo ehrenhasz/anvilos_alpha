@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon Hi6220 clock driver
- *
- * Copyright (c) 2015 Hisilicon Limited.
- *
- * Author: Bintian Wang <bintian.wang@huawei.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -18,7 +12,7 @@
 #include "clk.h"
 
 
-/* clocks in AO (always on) controller */
+ 
 static struct hisi_fixed_rate_clock hi6220_fixed_rate_clks[] __initdata = {
 	{ HI6220_REF32K,	"ref32k",	NULL, 0, 32764,     },
 	{ HI6220_CLK_TCXO,	"clk_tcxo",	NULL, 0, 19200000,  },
@@ -83,11 +77,11 @@ static void __init hi6220_clk_ao_init(struct device_node *np)
 	hisi_clk_register_gate_sep(hi6220_separated_gate_clks_ao,
 				ARRAY_SIZE(hi6220_separated_gate_clks_ao), clk_data_ao);
 }
-/* Allow reset driver to probe as well */
+ 
 CLK_OF_DECLARE_DRIVER(hi6220_clk_ao, "hisilicon,hi6220-aoctrl", hi6220_clk_ao_init);
 
 
-/* clocks in sysctrl */
+ 
 static const char *mmc0_mux0_p[] __initdata = { "pll_ddr_gate", "syspll", };
 static const char *mmc0_mux1_p[] __initdata = { "mmc0_mux0", "pll_media_gate", };
 static const char *mmc0_src_p[] __initdata = { "mmc0srcsel", "mmc0_div", };
@@ -194,7 +188,7 @@ static void __init hi6220_clk_sys_init(struct device_node *np)
 CLK_OF_DECLARE_DRIVER(hi6220_clk_sys, "hisilicon,hi6220-sysctrl", hi6220_clk_sys_init);
 
 
-/* clocks in media controller */
+ 
 static const char *clk_1000_1200_src[] __initdata = { "pll_gpu_gate", "media_syspll_src", };
 static const char *clk_1440_1200_src[] __initdata = { "media_syspll_src", "media_pll_src", };
 static const char *clk_1000_1440_src[] __initdata = { "pll_gpu_gate", "media_pll_src", };
@@ -251,7 +245,7 @@ static void __init hi6220_clk_media_init(struct device_node *np)
 CLK_OF_DECLARE_DRIVER(hi6220_clk_media, "hisilicon,hi6220-mediactrl", hi6220_clk_media_init);
 
 
-/* clocks in pmctrl */
+ 
 static struct hisi_gate_clock hi6220_gate_clks_power[] __initdata = {
 	{ HI6220_PLL_GPU_GATE,   "pll_gpu_gate",   "gpupll",    CLK_SET_RATE_PARENT|CLK_IGNORE_UNUSED, 0x8,  0,  0, },
 	{ HI6220_PLL1_DDR_GATE,  "pll1_ddr_gate",  "ddrpll1",   CLK_SET_RATE_PARENT|CLK_IGNORE_UNUSED, 0x10, 0,  0, },
@@ -281,7 +275,7 @@ static void __init hi6220_clk_power_init(struct device_node *np)
 }
 CLK_OF_DECLARE(hi6220_clk_power, "hisilicon,hi6220-pmctrl", hi6220_clk_power_init);
 
-/* clocks in acpu */
+ 
 static const struct hisi_gate_clock hi6220_acpu_sc_gate_sep_clks[] = {
 	{ HI6220_ACPU_SFT_AT_S, "sft_at_s", "cs_atb",
 	  CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED, 0xc, 11, 0, },

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra host1x Channel
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef __HOST1X_CHANNEL_H
 #define __HOST1X_CHANNEL_H
@@ -31,7 +27,7 @@ struct host1x_channel {
 	struct host1x_cdma cdma;
 };
 
-/* channel list operations */
+ 
 int host1x_channel_list_init(struct host1x_channel_list *chlist,
 			     unsigned int num_channels);
 void host1x_channel_list_free(struct host1x_channel_list *chlist);

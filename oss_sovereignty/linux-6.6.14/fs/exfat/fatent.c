@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <asm/unaligned.h>
@@ -51,7 +49,7 @@ static int __exfat_ent_get(struct super_block *sb, unsigned int loc,
 
 	*content = le32_to_cpu(*(__le32 *)(&bh->b_data[off]));
 
-	/* remap reserved clusters to simplify code */
+	 
 	if (*content > EXFAT_BAD_CLUSTER)
 		*content = EXFAT_EOF_CLUSTER;
 
@@ -144,7 +142,7 @@ int exfat_chain_cont_cluster(struct super_block *sb, unsigned int chain,
 	return 0;
 }
 
-/* This function must be called with bitmap_lock held */
+ 
 static int __exfat_free_cluster(struct inode *inode, struct exfat_chain *p_chain)
 {
 	struct super_block *sb = inode->i_sb;
@@ -153,17 +151,17 @@ static int __exfat_free_cluster(struct inode *inode, struct exfat_chain *p_chain
 	unsigned int num_clusters = 0;
 	unsigned int clu;
 
-	/* invalid cluster number */
+	 
 	if (p_chain->dir == EXFAT_FREE_CLUSTER ||
 	    p_chain->dir == EXFAT_EOF_CLUSTER ||
 	    p_chain->dir < EXFAT_FIRST_CLUSTER)
 		return 0;
 
-	/* no cluster to truncate */
+	 
 	if (p_chain->size == 0)
 		return 0;
 
-	/* check cluster validation */
+	 
 	if (!is_valid_cluster(sbi, p_chain->dir)) {
 		exfat_err(sb, "invalid start cluster (%u)", p_chain->dir);
 		return -EIO;
@@ -183,7 +181,7 @@ static int __exfat_free_cluster(struct inode *inode, struct exfat_chain *p_chain
 				next_cmap_i =
 				  BITMAP_OFFSET_SECTOR_INDEX(sb, CLUSTER_TO_BITMAP_ENT(clu+1));
 
-			/* flush bitmap only if index would be changed or for last cluster */
+			 
 			if (clu == last_cluster || cur_cmap_i != next_cmap_i) {
 				sync = true;
 				cur_cmap_i = next_cmap_i;
@@ -283,7 +281,7 @@ int exfat_zeroed_cluster(struct inode *dir, unsigned int clu)
 		return -EIO;
 	}
 
-	/* Zeroing the unused blocks on this cluster */
+	 
 	for (i = blknr; i < last_blknr; i++) {
 		bh = sb_getblk(sb, i);
 		if (!bh)
@@ -327,7 +325,7 @@ int exfat_alloc_cluster(struct inode *inode, unsigned int num_alloc,
 	mutex_lock(&sbi->bitmap_lock);
 
 	hint_clu = p_chain->dir;
-	/* find new cluster */
+	 
 	if (hint_clu == EXFAT_EOF_CLUSTER) {
 		if (sbi->clu_srch_ptr < EXFAT_FIRST_CLUSTER) {
 			exfat_err(sb, "sbi->clu_srch_ptr is invalid (%u)",
@@ -342,7 +340,7 @@ int exfat_alloc_cluster(struct inode *inode, unsigned int num_alloc,
 		}
 	}
 
-	/* check cluster validation */
+	 
 	if (!is_valid_cluster(sbi, hint_clu)) {
 		if (hint_clu != sbi->num_clusters)
 			exfat_err(sb, "hint_cluster is invalid (%u), rewind to the first cluster",
@@ -365,13 +363,13 @@ int exfat_alloc_cluster(struct inode *inode, unsigned int num_alloc,
 			p_chain->flags = ALLOC_FAT_CHAIN;
 		}
 
-		/* update allocation bitmap */
+		 
 		if (exfat_set_bitmap(inode, new_clu, sync_bmap)) {
 			ret = -EIO;
 			goto free_cluster;
 		}
 
-		/* update FAT table */
+		 
 		if (p_chain->flags == ALLOC_FAT_CHAIN) {
 			if (exfat_ent_set(sb, new_clu, EXFAT_EOF_CLUSTER)) {
 				ret = -EIO;

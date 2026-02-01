@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ISA bus.
- */
+ 
+ 
 
 #ifndef __LINUX_ISA_H
 #define __LINUX_ISA_H
@@ -64,42 +62,17 @@ static void __exit __isa_driver##_exit(void) \
 } \
 module_exit(__isa_driver##_exit)
 
-/**
- * module_isa_driver() - Helper macro for registering a ISA driver
- * @__isa_driver: isa_driver struct
- * @__num_isa_dev: number of devices to register
- *
- * Helper macro for ISA drivers which do not do anything special in module
- * init/exit. This eliminates a lot of boilerplate code. Each module may only
- * use this macro once, and calling it replaces module_init and module_exit.
- */
+ 
 #define module_isa_driver(__isa_driver, __num_isa_dev) \
 module_isa_driver_init(__isa_driver, __num_isa_dev); \
 module_isa_driver_exit(__isa_driver)
 
-/**
- * module_isa_driver_with_irq() - Helper macro for registering an ISA driver with irq
- * @__isa_driver: isa_driver struct
- * @__num_isa_dev: number of devices to register
- * @__num_irq: number of IRQ to register
- *
- * Helper macro for ISA drivers with irq that do not do anything special in
- * module init/exit. Each module may only use this macro once, and calling it
- * replaces module_init and module_exit.
- */
+ 
 #define module_isa_driver_with_irq(__isa_driver, __num_isa_dev, __num_irq) \
 module_isa_driver_with_irq_init(__isa_driver, __num_isa_dev, __num_irq); \
 module_isa_driver_exit(__isa_driver)
 
-/**
- * max_num_isa_dev() - Maximum possible number registered of an ISA device
- * @__ida_dev_ext: ISA device address extent
- *
- * The highest base address possible for an ISA device is 0x3FF; this results in
- * 1024 possible base addresses. Dividing the number of possible base addresses
- * by the address extent taken by each device results in the maximum number of
- * devices on a system.
- */
+ 
 #define max_num_isa_dev(__isa_dev_ext) (1024 / __isa_dev_ext)
 
-#endif /* __LINUX_ISA_H */
+#endif  

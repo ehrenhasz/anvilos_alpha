@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2015 Fujitsu Semiconductor Ltd.
- * Copyright (C) 2015 Linaro Ltd.
- * Based on ARM MHU driver by Jassi Brar <jaswinder.singh@linaro.org>
- * Copyright (C) 2020 ARM Ltd.
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/device.h>
@@ -25,8 +20,8 @@
 #define MHU_SEC_OFFSET	0x200
 #define TX_REG_OFFSET	0x100
 
-#define MHU_CHANS	3	/* Secure, Non-Secure High and Low Priority */
-#define MHU_CHAN_MAX	20	/* Max channels to save on unused RAM */
+#define MHU_CHANS	3	 
+#define MHU_CHAN_MAX	20	 
 #define MHU_NUM_DOORBELLS	32
 
 struct mhu_db_link {
@@ -42,13 +37,7 @@ struct arm_mhu {
 	struct device *dev;
 };
 
-/**
- * struct mhu_db_channel - ARM MHU Mailbox allocated channel information
- *
- * @mhu: Pointer to parent mailbox device
- * @pchan: Physical channel within which this doorbell resides in
- * @doorbell: doorbell number pertaining to this channel
- */
+ 
 struct mhu_db_channel {
 	struct arm_mhu *mhu;
 	unsigned int pchan;
@@ -101,10 +90,10 @@ mhu_db_mbox_irq_to_channel(struct arm_mhu *mhu, unsigned int pchan)
 
 	bits = readl_relaxed(base + INTR_STAT_OFS);
 	if (!bits)
-		/* No IRQs fired in specified physical channel */
+		 
 		return NULL;
 
-	/* An IRQ has fired, find the associated channel */
+	 
 	for (doorbell = 0; bits; doorbell++) {
 		if (!test_and_clear_bit(doorbell, &bits))
 			continue;
@@ -150,7 +139,7 @@ static int mhu_db_send_data(struct mbox_chan *chan, void *data)
 	struct mhu_db_channel *chan_info = chan->con_priv;
 	void __iomem *base = chan_info->mhu->mlink[chan_info->pchan].tx_reg;
 
-	/* Send event to co-processor */
+	 
 	writel_relaxed(BIT(chan_info->doorbell), base + INTR_SET_OFS);
 
 	return 0;
@@ -177,7 +166,7 @@ static void mhu_db_shutdown(struct mbox_chan *chan)
 		return;
 	}
 
-	/* Reset channel */
+	 
 	mhu_db_mbox_clear_irq(chan);
 	devm_kfree(mbox->dev, chan->con_priv);
 	chan->con_priv = NULL;
@@ -193,7 +182,7 @@ static struct mbox_chan *mhu_db_mbox_xlate(struct mbox_controller *mbox,
 	unsigned int doorbell = spec->args[1];
 	int i;
 
-	/* Bounds checking */
+	 
 	if (pchan >= MHU_CHANS || doorbell >= MHU_NUM_DOORBELLS) {
 		dev_err(mbox->dev,
 			"Invalid channel requested pchan: %d doorbell: %d\n",
@@ -201,7 +190,7 @@ static struct mbox_chan *mhu_db_mbox_xlate(struct mbox_controller *mbox,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Is requested channel free? */
+	 
 	chan = mhu_db_mbox_to_channel(mbox, pchan, doorbell);
 	if (chan) {
 		dev_err(mbox->dev, "Channel in use: pchan: %d doorbell: %d\n",
@@ -209,7 +198,7 @@ static struct mbox_chan *mhu_db_mbox_xlate(struct mbox_controller *mbox,
 		return ERR_PTR(-EBUSY);
 	}
 
-	/* Find the first free slot */
+	 
 	for (i = 0; i < mbox->num_chans; i++)
 		if (!mbox->chans[i].con_priv)
 			break;

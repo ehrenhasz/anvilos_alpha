@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MMIO register bitfield-controlled multiplexer driver
- *
- * Copyright (C) 2017 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -29,7 +25,7 @@ static const struct mux_control_ops mux_mmio_ops = {
 static const struct of_device_id mux_mmio_dt_ids[] = {
 	{ .compatible = "mmio-mux", },
 	{ .compatible = "reg-mux", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mux_mmio_dt_ids);
 

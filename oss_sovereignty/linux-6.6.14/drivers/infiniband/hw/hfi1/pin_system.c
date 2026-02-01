@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2023 - Cornelis Networks, Inc.
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -84,12 +82,7 @@ static void free_system_node(struct sdma_mmu_node *node)
 	kfree(node);
 }
 
-/*
- * kref_get()'s an additional kref on the returned rb_node to prevent rb_node
- * from being released until after rb_node is assigned to an SDMA descriptor
- * (struct sdma_desc) under add_system_iovec_to_sdma_packet(), even if the
- * virtual address range for rb_node is invalidated between now and then.
- */
+ 
 static struct sdma_mmu_node *find_system_node(struct mmu_rb_handler *handler,
 					      unsigned long start,
 					      unsigned long end)
@@ -104,7 +97,7 @@ static struct sdma_mmu_node *find_system_node(struct mmu_rb_handler *handler,
 		return NULL;
 	}
 
-	/* "safety" kref to prevent release before add_system_iovec_to_sdma_packet() */
+	 
 	kref_get(&rb_node->refcount);
 	spin_unlock_irqrestore(&handler->lock, flags);
 
@@ -157,13 +150,7 @@ retry:
 	return 0;
 }
 
-/*
- * kref refcount on *node_p will be 2 on successful addition: one kref from
- * kref_init() for mmu_rb_handler and one kref to prevent *node_p from being
- * released until after *node_p is assigned to an SDMA descriptor (struct
- * sdma_desc) under add_system_iovec_to_sdma_packet(), even if the virtual
- * address range for *node_p is invalidated between now and then.
- */
+ 
 static int add_system_pinning(struct user_sdma_request *req,
 			      struct sdma_mmu_node **node_p,
 			      unsigned long start, unsigned long len)
@@ -177,10 +164,10 @@ static int add_system_pinning(struct user_sdma_request *req,
 	if (!node)
 		return -ENOMEM;
 
-	/* First kref "moves" to mmu_rb_handler */
+	 
 	kref_init(&node->rb.refcount);
 
-	/* "safety" kref to prevent release before add_system_iovec_to_sdma_packet() */
+	 
 	kref_get(&node->rb.refcount);
 
 	node->pq = pq;
@@ -227,20 +214,14 @@ static int get_system_cache_entry(struct user_sdma_request *req,
 			ret = add_system_pinning(req, node_p, start,
 						 end - start);
 			if (ret == -EEXIST) {
-				/*
-				 * Another execution context has inserted a
-				 * conficting entry first.
-				 */
+				 
 				continue;
 			}
 			return ret;
 		}
 
 		if (node->rb.addr <= start) {
-			/*
-			 * This entry covers at least part of the region. If it doesn't extend
-			 * to the end, then this will be called again for the next segment.
-			 */
+			 
 			*node_p = node;
 			return 0;
 		}
@@ -249,16 +230,13 @@ static int get_system_cache_entry(struct user_sdma_request *req,
 			 node->rb.addr, kref_read(&node->rb.refcount));
 		prepend_len = node->rb.addr - start;
 
-		/*
-		 * This node will not be returned, instead a new node
-		 * will be. So release the reference.
-		 */
+		 
 		kref_put(&node->rb.refcount, hfi1_mmu_rb_release);
 
-		/* Prepend a node to cover the beginning of the allocation */
+		 
 		ret = add_system_pinning(req, node_p, start, prepend_len);
 		if (ret == -EEXIST) {
-			/* Another execution context has inserted a conficting entry first. */
+			 
 			continue;
 		}
 		return ret;
@@ -292,10 +270,7 @@ static int add_mapping_to_sdma_packet(struct user_sdma_request *req,
 	void *ctx;
 	int ret;
 
-	/*
-	 * Because the cache may be more fragmented than the memory that is being accessed,
-	 * it's not strictly necessary to have a descriptor per cache entry.
-	 */
+	 
 
 	while (from_this_cache_entry) {
 		page_index = PFN_DOWN(start - cache_entry->rb.addr);
@@ -313,11 +288,7 @@ static int add_mapping_to_sdma_packet(struct user_sdma_request *req,
 		if (from_this_page < from_this_cache_entry) {
 			ctx = NULL;
 		} else {
-			/*
-			 * In the case they are equal the next line has no practical effect,
-			 * but it's better to do a register to register copy than a conditional
-			 * branch.
-			 */
+			 
 			from_this_page = from_this_cache_entry;
 			ctx = cache_entry;
 		}
@@ -329,10 +300,7 @@ static int add_mapping_to_sdma_packet(struct user_sdma_request *req,
 				      sdma_mmu_rb_node_get,
 				      sdma_mmu_rb_node_put);
 		if (ret) {
-			/*
-			 * When there's a failure, the entire request is freed by
-			 * user_sdma_send_pkts().
-			 */
+			 
 			SDMA_DBG(req,
 				 "sdma_txadd_page failed %d page_index %lu page_offset %u from_this_page %u",
 				 ret, page_index, page_offset, from_this_page);
@@ -370,11 +338,7 @@ static int add_system_iovec_to_sdma_packet(struct user_sdma_request *req,
 		ret = add_mapping_to_sdma_packet(req, tx, cache_entry, start,
 						 from_this_cache_entry);
 
-		/*
-		 * Done adding cache_entry to zero or more sdma_desc. Can
-		 * kref_put() the "safety" kref taken under
-		 * get_system_cache_entry().
-		 */
+		 
 		kref_put(&cache_entry->rb.refcount, hfi1_mmu_rb_release);
 
 		if (ret) {
@@ -389,26 +353,14 @@ static int add_system_iovec_to_sdma_packet(struct user_sdma_request *req,
 	return 0;
 }
 
-/*
- * Add up to pkt_data_remaining bytes to the txreq, starting at the current
- * offset in the given iovec entry and continuing until all data has been added
- * to the iovec or the iovec entry type changes.
- *
- * On success, prior to returning, adjust pkt_data_remaining, req->iov_idx, and
- * the offset value in req->iov[req->iov_idx] to reflect the data that has been
- * consumed.
- */
+ 
 int hfi1_add_pages_to_sdma_packet(struct user_sdma_request *req,
 				  struct user_sdma_txreq *tx,
 				  struct user_sdma_iovec *iovec,
 				  u32 *pkt_data_remaining)
 {
 	size_t remaining_to_add = *pkt_data_remaining;
-	/*
-	 * Walk through iovec entries, ensure the associated pages
-	 * are pinned and mapped, add data to the packet until no more
-	 * data remains to be added or the iovec entry type changes.
-	 */
+	 
 	while (remaining_to_add > 0) {
 		struct user_sdma_iovec *cur_iovec;
 		size_t from_this_iovec;
@@ -420,7 +372,7 @@ int hfi1_add_pages_to_sdma_packet(struct user_sdma_request *req,
 		if (from_this_iovec > remaining_to_add) {
 			from_this_iovec = remaining_to_add;
 		} else {
-			/* The current iovec entry will be consumed by this pass. */
+			 
 			req->iov_idx++;
 			iovec++;
 		}
@@ -443,11 +395,7 @@ static bool sdma_rb_filter(struct mmu_rb_node *node, unsigned long addr,
 	return (bool)(node->addr == addr);
 }
 
-/*
- * Return 1 to remove the node from the rb tree and call the remove op.
- *
- * Called with the rb tree lock held.
- */
+ 
 static int sdma_rb_evict(void *arg, struct mmu_rb_node *mnode,
 			 void *evict_arg, bool *stop)
 {
@@ -455,14 +403,14 @@ static int sdma_rb_evict(void *arg, struct mmu_rb_node *mnode,
 		container_of(mnode, struct sdma_mmu_node, rb);
 	struct evict_data *evict_data = evict_arg;
 
-	/* this node will be evicted, add its pages to our count */
+	 
 	evict_data->cleared += node->npages;
 
-	/* have enough pages been cleared? */
+	 
 	if (evict_data->cleared >= evict_data->target)
 		*stop = true;
 
-	return 1; /* remove this node */
+	return 1;  
 }
 
 static void sdma_rb_remove(void *arg, struct mmu_rb_node *mnode)

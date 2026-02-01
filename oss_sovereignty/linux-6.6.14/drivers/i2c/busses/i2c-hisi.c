@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HiSilicon I2C Controller Driver for Kunpeng SoC
- *
- * Copyright (c) 2021 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -92,7 +88,7 @@ struct hisi_i2c_controller {
 	struct clk *clk;
 	int irq;
 
-	/* Intermediates for recording the transfer process */
+	 
 	struct completion *completion;
 	struct i2c_msg *msgs;
 	int msg_num;
@@ -103,7 +99,7 @@ struct hisi_i2c_controller {
 	u16 tar_addr;
 	u32 xfer_err;
 
-	/* I2C bus configuration */
+	 
 	struct i2c_timings t;
 	u32 clk_rate_khz;
 	u32 spk_len;
@@ -183,12 +179,7 @@ static void hisi_i2c_reset_xfer(struct hisi_i2c_controller *ctlr)
 	ctlr->buf_rx_idx = 0;
 }
 
-/*
- * Initialize the transfer information and start the I2C bus transfer.
- * We only configure the transfer and do some pre/post works here, and
- * wait for the transfer done. The major transfer process is performed
- * in the IRQ handler.
- */
+ 
 static int hisi_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 				int num)
 {
@@ -275,7 +266,7 @@ static void hisi_i2c_xfer_msg(struct hisi_i2c_controller *ctlr)
 		cur_msg = ctlr->msgs + ctlr->msg_tx_idx;
 		last_msg = (ctlr->msg_tx_idx == ctlr->msg_num - 1);
 
-		/* Signal the SR bit when we start transferring a new message */
+		 
 		if (ctlr->msg_tx_idx && !ctlr->buf_tx_idx)
 			need_restart = true;
 
@@ -289,7 +280,7 @@ static void hisi_i2c_xfer_msg(struct hisi_i2c_controller *ctlr)
 				need_restart = false;
 			}
 
-			/* Signal the STOP bit at the last frame of the last message */
+			 
 			if (ctlr->buf_tx_idx == cur_msg->len - 1 && last_msg)
 				cmd |= HISI_I2C_CMD_TXDATA_P_EN;
 
@@ -306,7 +297,7 @@ static void hisi_i2c_xfer_msg(struct hisi_i2c_controller *ctlr)
 			fifo_state = readl(ctlr->iobase + HISI_I2C_FIFO_STATE);
 		}
 
-		/* Update the transfer index after per message transfer is done. */
+		 
 		if (ctlr->buf_tx_idx == cur_msg->len) {
 			ctlr->buf_tx_idx = 0;
 			ctlr->msg_tx_idx++;
@@ -317,10 +308,7 @@ static void hisi_i2c_xfer_msg(struct hisi_i2c_controller *ctlr)
 			break;
 	}
 
-	/*
-	 * Disable the TX_EMPTY interrupt after finishing all the messages to
-	 * avoid overwhelming the CPU.
-	 */
+	 
 	if (ctlr->msg_tx_idx == ctlr->msg_num)
 		hisi_i2c_disable_int(ctlr, HISI_I2C_INT_TX_EMPTY);
 }
@@ -330,11 +318,7 @@ static irqreturn_t hisi_i2c_irq(int irq, void *context)
 	struct hisi_i2c_controller *ctlr = context;
 	u32 int_stat;
 
-	/*
-	 * Don't handle the interrupt if cltr->completion is NULL. We may
-	 * reach here because the interrupt is spurious or the transfer is
-	 * started by another port (e.g. firmware) rather than us.
-	 */
+	 
 	if (!ctlr->completion)
 		return IRQ_NONE;
 
@@ -351,15 +335,12 @@ static irqreturn_t hisi_i2c_irq(int irq, void *context)
 		goto out;
 	}
 
-	/* Drain the rx fifo before finish the transfer */
+	 
 	if (int_stat & (HISI_I2C_INT_TRANS_CPLT | HISI_I2C_INT_RX_FULL))
 		hisi_i2c_read_rx_fifo(ctlr);
 
 out:
-	/*
-	 * Only use TRANS_CPLT to indicate the completion. On error cases we'll
-	 * get two interrupts, INT_ERR first then TRANS_CPLT.
-	 */
+	 
 	if (int_stat & HISI_I2C_INT_TRANS_CPLT) {
 		hisi_i2c_disable_int(ctlr, HISI_I2C_INT_ALL);
 		hisi_i2c_clear_int(ctlr, HISI_I2C_INT_ALL);
@@ -369,12 +350,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * Helper function for calculating and configuring the HIGH and LOW
- * periods of SCL clock. The caller will pass the ratio of the
- * counts (divide / divisor) according to the target speed mode,
- * and the target registers.
- */
+ 
 static void hisi_i2c_set_scl(struct hisi_i2c_controller *ctlr,
 			     u32 divide, u32 divisor,
 			     u32 reg_hcnt, u32 reg_lcnt)
@@ -382,18 +358,18 @@ static void hisi_i2c_set_scl(struct hisi_i2c_controller *ctlr,
 	u32 total_cnt, t_scl_hcnt, t_scl_lcnt, scl_fall_cnt, scl_rise_cnt;
 	u32 scl_hcnt, scl_lcnt;
 
-	/* Total SCL clock cycles per speed period */
+	 
 	total_cnt = DIV_ROUND_UP_ULL(ctlr->clk_rate_khz * HZ_PER_KHZ, ctlr->t.bus_freq_hz);
-	/* Total HIGH level SCL clock cycles including edges */
+	 
 	t_scl_hcnt = DIV_ROUND_UP_ULL(total_cnt * divide, divisor);
-	/* Total LOW level SCL clock cycles including edges */
+	 
 	t_scl_lcnt = total_cnt - t_scl_hcnt;
-	/* Fall edge SCL clock cycles */
+	 
 	scl_fall_cnt = NSEC_TO_CYCLES(ctlr->t.scl_fall_ns, ctlr->clk_rate_khz);
-	/* Rise edge SCL clock cycles */
+	 
 	scl_rise_cnt = NSEC_TO_CYCLES(ctlr->t.scl_rise_ns, ctlr->clk_rate_khz);
 
-	/* Calculated HIGH and LOW periods of SCL clock */
+	 
 	scl_hcnt = t_scl_hcnt - ctlr->spk_len - 7 - scl_fall_cnt;
 	scl_lcnt = t_scl_lcnt - 1 - scl_rise_cnt;
 
@@ -421,7 +397,7 @@ static void hisi_i2c_configure_bus(struct hisi_i2c_controller *ctlr)
 	default:
 		speed_mode = HISI_I2C_STD_SPEED_MODE;
 
-		/* For default condition force the bus speed to standard mode. */
+		 
 		ctlr->t.bus_freq_hz = I2C_MAX_STANDARD_MODE_FREQ;
 		hisi_i2c_set_scl(ctlr, 40, 87, HISI_I2C_SS_SCL_HCNT, HISI_I2C_SS_SCL_LCNT);
 		break;

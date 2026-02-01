@@ -1,28 +1,4 @@
-/*
- * Copyright (c) 2006-2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -133,21 +109,14 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 	*vpp = NULL;
 	error = 0;
 
-	/*
-	 * Be ultra-paranoid about making sure the type and fspath
-	 * variables will fit in our mp buffers, including the
-	 * terminating NUL.
-	 */
+	 
 	if (strlen(fstype) >= MFSNAMELEN || strlen(fspath) >= MNAMELEN)
 		error = ENAMETOOLONG;
 	if (error == 0 && (vfsp = vfs_byname_kld(fstype, td, &error)) == NULL)
 		error = ENODEV;
 	if (error == 0 && vp->v_type != VDIR)
 		error = ENOTDIR;
-	/*
-	 * We need vnode lock to protect v_mountedhere and vnode interlock
-	 * to protect v_iflag.
-	 */
+	 
 	if (error == 0) {
 		VI_LOCK(vp);
 		if ((vp->v_iflag & VI_MOUNT) == 0 && vp->v_mountedhere == NULL)
@@ -163,11 +132,7 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 	vn_seqc_write_begin(vp);
 	VOP_UNLOCK1(vp);
 
-	/*
-	 * Allocate and initialize the filesystem.
-	 * We don't want regular user that triggered snapshot mount to be able
-	 * to unmount it, so pass credentials of the parent mount.
-	 */
+	 
 	mp = vfs_mount_alloc(vp, vfsp, fspath, vp->v_mount->mnt_cred);
 
 	mp->mnt_optnew = NULL;
@@ -175,33 +140,18 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 	mp->mnt_optnew = mp->mnt_opt;
 	mp->mnt_opt = NULL;
 
-	/*
-	 * Set the mount level flags.
-	 */
+	 
 	mp->mnt_flag = fsflags & MNT_UPDATEMASK;
-	/*
-	 * Snapshots are always read-only.
-	 */
+	 
 	mp->mnt_flag |= MNT_RDONLY;
-	/*
-	 * We don't want snapshots to allow access to vulnerable setuid
-	 * programs, so we turn off setuid when mounting snapshots.
-	 */
+	 
 	mp->mnt_flag |= MNT_NOSUID;
-	/*
-	 * We don't want snapshots to be visible in regular
-	 * mount(8) and df(1) output.
-	 */
+	 
 	mp->mnt_flag |= MNT_IGNORE;
 
 	error = VFS_MOUNT(mp);
 	if (error != 0) {
-		/*
-		 * Clear VI_MOUNT and decrement the use count "atomically",
-		 * under the vnode lock.  This is not strictly required,
-		 * but makes it easier to reason about the life-cycle and
-		 * ownership of the covered vnode.
-		 */
+		 
 		vn_lock(vp, LK_EXCLUSIVE | LK_RETRY);
 		VI_LOCK(vp);
 		vp->v_iflag &= ~VI_MOUNT;
@@ -221,16 +171,11 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 	(void) VFS_STATFS(mp, &mp->mnt_stat);
 
 #ifdef VFS_SUPPORTS_EXJAIL_CLONE
-	/*
-	 * Clone the mnt_exjail credentials of the parent, as required.
-	 */
+	 
 	vfs_exjail_clone(parent_vfsp, mp);
 #endif
 
-	/*
-	 * Prevent external consumers of mount options from reading
-	 * mnt_optnew.
-	 */
+	 
 	mp->mnt_optnew = NULL;
 
 	vn_lock(vp, LK_EXCLUSIVE | LK_RETRY);
@@ -244,7 +189,7 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 #endif
 	vp->v_mountedhere = mp;
 	VI_UNLOCK(vp);
-	/* Put the new filesystem on the mount list. */
+	 
 	mtx_lock(&mountlist_mtx);
 	TAILQ_INSERT_TAIL(&mountlist, mp, mnt_list);
 	mtx_unlock(&mountlist_mtx);
@@ -261,16 +206,7 @@ mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype, char *fspath,
 	return (0);
 }
 
-/*
- * Like vn_rele() except if we are going to call VOP_INACTIVE() then do it
- * asynchronously using a taskq. This can avoid deadlocks caused by re-entering
- * the file system as a result of releasing the vnode. Note, file systems
- * already have to handle the race where the vnode is incremented before the
- * inactive routine is called and does its locking.
- *
- * Warning: Excessive use of this routine can lead to performance problems.
- * This is because taskqs throttle back allocation if too many are created.
- */
+ 
 void
 vn_rele_async(vnode_t *vp, taskq_t *taskq)
 {

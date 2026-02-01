@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -11,42 +9,7 @@
 #include "intel_drrs.h"
 #include "intel_panel.h"
 
-/**
- * DOC: Display Refresh Rate Switching (DRRS)
- *
- * Display Refresh Rate Switching (DRRS) is a power conservation feature
- * which enables swtching between low and high refresh rates,
- * dynamically, based on the usage scenario. This feature is applicable
- * for internal panels.
- *
- * Indication that the panel supports DRRS is given by the panel EDID, which
- * would list multiple refresh rates for one resolution.
- *
- * DRRS is of 2 types - static and seamless.
- * Static DRRS involves changing refresh rate (RR) by doing a full modeset
- * (may appear as a blink on screen) and is used in dock-undock scenario.
- * Seamless DRRS involves changing RR without any visual effect to the user
- * and can be used during normal system usage. This is done by programming
- * certain registers.
- *
- * Support for static/seamless DRRS may be indicated in the VBT based on
- * inputs from the panel spec.
- *
- * DRRS saves power by switching to low RR based on usage scenarios.
- *
- * The implementation is based on frontbuffer tracking implementation.  When
- * there is a disturbance on the screen triggered by user activity or a periodic
- * system activity, DRRS is disabled (RR is changed to high RR).  When there is
- * no movement on screen, after a timeout of 1 second, a switch to low RR is
- * made.
- *
- * For integration with frontbuffer tracking code, intel_drrs_invalidate()
- * and intel_drrs_flush() are called.
- *
- * DRRS can be further extended to support other internal panels and also
- * the scenario of video playback wherein RR is set based on the rate
- * requested by userspace.
- */
+ 
 
 const char *intel_drrs_type_str(enum drrs_type drrs_type)
 {
@@ -131,12 +94,7 @@ static unsigned int intel_drrs_frontbuffer_bits(const struct intel_crtc_state *c
 	return frontbuffer_bits;
 }
 
-/**
- * intel_drrs_activate - activate DRRS
- * @crtc_state: the crtc state
- *
- * Activates DRRS on the crtc.
- */
+ 
 void intel_drrs_activate(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
@@ -163,12 +121,7 @@ void intel_drrs_activate(const struct intel_crtc_state *crtc_state)
 	mutex_unlock(&crtc->drrs.mutex);
 }
 
-/**
- * intel_drrs_deactivate - deactivate DRRS
- * @old_crtc_state: the old crtc state
- *
- * Deactivates DRRS on the crtc.
- */
+ 
 void intel_drrs_deactivate(const struct intel_crtc_state *old_crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(old_crtc_state->uapi.crtc);
@@ -230,13 +183,10 @@ static void intel_drrs_frontbuffer_update(struct drm_i915_private *dev_priv,
 		else
 			crtc->drrs.busy_frontbuffer_bits &= ~frontbuffer_bits;
 
-		/* flush/invalidate means busy screen hence upclock */
+		 
 		intel_drrs_set_state(crtc, DRRS_REFRESH_RATE_HIGH);
 
-		/*
-		 * flush also means no more activity hence schedule downclock, if all
-		 * other fbs are quiescent too
-		 */
+		 
 		if (!crtc->drrs.busy_frontbuffer_bits)
 			intel_drrs_schedule_work(crtc);
 		else
@@ -246,48 +196,21 @@ static void intel_drrs_frontbuffer_update(struct drm_i915_private *dev_priv,
 	}
 }
 
-/**
- * intel_drrs_invalidate - Disable Idleness DRRS
- * @dev_priv: i915 device
- * @frontbuffer_bits: frontbuffer plane tracking bits
- *
- * This function gets called everytime rendering on the given planes start.
- * Hence DRRS needs to be Upclocked, i.e. (LOW_RR -> HIGH_RR).
- *
- * Dirty frontbuffers relevant to DRRS are tracked in busy_frontbuffer_bits.
- */
+ 
 void intel_drrs_invalidate(struct drm_i915_private *dev_priv,
 			   unsigned int frontbuffer_bits)
 {
 	intel_drrs_frontbuffer_update(dev_priv, frontbuffer_bits, true);
 }
 
-/**
- * intel_drrs_flush - Restart Idleness DRRS
- * @dev_priv: i915 device
- * @frontbuffer_bits: frontbuffer plane tracking bits
- *
- * This function gets called every time rendering on the given planes has
- * completed or flip on a crtc is completed. So DRRS should be upclocked
- * (LOW_RR -> HIGH_RR). And also Idleness detection should be started again,
- * if no other planes are dirty.
- *
- * Dirty frontbuffers relevant to DRRS are tracked in busy_frontbuffer_bits.
- */
+ 
 void intel_drrs_flush(struct drm_i915_private *dev_priv,
 		      unsigned int frontbuffer_bits)
 {
 	intel_drrs_frontbuffer_update(dev_priv, frontbuffer_bits, false);
 }
 
-/**
- * intel_drrs_crtc_init - Init DRRS for CRTC
- * @crtc: crtc
- *
- * This function is called only once at driver load to initialize basic
- * DRRS stuff.
- *
- */
+ 
 void intel_drrs_crtc_init(struct intel_crtc *crtc)
 {
 	INIT_DELAYED_WORK(&crtc->drrs.work, intel_drrs_downclock_work);

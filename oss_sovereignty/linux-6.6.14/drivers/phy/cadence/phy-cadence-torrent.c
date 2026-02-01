@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cadence Torrent SD0801 PHY driver.
- *
- * Copyright 2018 Cadence Design Systems, Inc.
- *
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/phy/phy-cadence.h>
@@ -28,7 +23,7 @@
 #define REF_CLK_156_25MHZ	156250000
 
 #define MAX_NUM_LANES		4
-#define DEFAULT_MAX_BIT_RATE	8100 /* in Mbps */
+#define DEFAULT_MAX_BIT_RATE	8100  
 
 #define POLL_TIMEOUT_US		5000
 #define PLL_LOCK_TIMEOUT	100000
@@ -58,10 +53,7 @@
 
 #define TORRENT_DPTX_PHY_OFFSET		0x0
 
-/*
- * register offsets from DPTX PHY register block base (i.e MHDP
- * register base + 0x30a00)
- */
+ 
 #define PHY_AUX_CTRL			0x04
 #define PHY_RESET			0x20
 #define PMA_TX_ELEC_IDLE_SHIFT		4
@@ -73,10 +65,7 @@
 #define PHY_PMA_XCVR_POWER_STATE_ACK	0x30
 #define PHY_PMA_CMN_READY		0x34
 
-/*
- * register offsets from SD0801 PHY register block base (i.e MHDP
- * register base + 0x500000)
- */
+ 
 #define CMN_SSM_BANDGAP_TMR		0x0021U
 #define CMN_SSM_BIAS_TMR		0x0022U
 #define CMN_PLLSM0_PLLPRE_TMR		0x002AU
@@ -165,7 +154,7 @@
 #define CMN_PDIAG_PLL1_FILT_PADJ_M0	0x01C6U
 #define CMN_DIAG_BIAS_OVRD1		0x01E1U
 
-/* PMA TX Lane registers */
+ 
 #define TX_TXCC_CTRL			0x0040U
 #define TX_TXCC_CPOST_MULT_00		0x004CU
 #define TX_TXCC_CPOST_MULT_01		0x004DU
@@ -186,7 +175,7 @@
 #define TX_DIAG_ACYA			0x01E7U
 #define TX_DIAG_ACYA_HBDC_MASK		0x0001U
 
-/* PMA RX Lane registers */
+ 
 #define RX_PSC_A0			0x0000U
 #define RX_PSC_A1			0x0001U
 #define RX_PSC_A2			0x0002U
@@ -218,17 +207,17 @@
 #define RX_DIAG_PI_CAP			0x01F5U
 #define RX_DIAG_ACYA			0x01FFU
 
-/* PHY PCS common registers */
+ 
 #define PHY_PIPE_CMN_CTRL1		0x0000U
 #define PHY_PLL_CFG			0x000EU
 #define PHY_PIPE_USB3_GEN2_PRE_CFG0	0x0020U
 #define PHY_PIPE_USB3_GEN2_POST_CFG0	0x0022U
 #define PHY_PIPE_USB3_GEN2_POST_CFG1	0x0023U
 
-/* PHY PCS lane registers */
+ 
 #define PHY_PCS_ISO_LINK_CTRL		0x000BU
 
-/* PHY PMA common registers */
+ 
 #define PHY_PMA_CMN_CTRL1		0x0000U
 #define PHY_PMA_CMN_CTRL2		0x0001U
 #define PHY_PMA_PLL_RAW_CTRL		0x0003U
@@ -312,9 +301,7 @@ enum cdns_torrent_ssc_mode {
 	ANY_SSC,
 };
 
-/* Unique key id for vals table entry
- * REFCLK0_RATE | REFCLK1_RATE | LINK0_TYPE | LINK1_TYPE | SSC_TYPE
- */
+ 
 #define REFCLK0_SHIFT	12
 #define REFCLK0_MASK	GENMASK(14, 12)
 #define REFCLK1_SHIFT	9
@@ -347,9 +334,9 @@ struct cdns_torrent_inst {
 };
 
 struct cdns_torrent_phy {
-	void __iomem *base;	/* DPTX registers base */
-	void __iomem *sd_base; /* SD0801 registers base */
-	u32 max_bit_rate; /* Maximum link bit rate to use (in Mbps) */
+	void __iomem *base;	 
+	void __iomem *sd_base;  
+	u32 max_bit_rate;  
 	u32 dp_pll;
 	struct reset_control *phy_rst;
 	struct reset_control *apb_rst;
@@ -379,7 +366,7 @@ struct cdns_torrent_phy {
 
 enum phy_powerstate {
 	POWERSTATE_A0 = 0,
-	/* Powerstate A1 is unused */
+	 
 	POWERSTATE_A2 = 2,
 	POWERSTATE_A3 = 3,
 };
@@ -589,7 +576,7 @@ static const struct regmap_config cdns_torrent_dptx_phy_config = {
 	.reg_read = cdns_regmap_dptx_read,
 };
 
-/* PHY mmr access functions */
+ 
 
 static void cdns_torrent_phy_write(struct regmap *regmap, u32 offset, u32 val)
 {
@@ -604,7 +591,7 @@ static u32 cdns_torrent_phy_read(struct regmap *regmap, u32 offset)
 	return val;
 }
 
-/* DPTX mmr access functions */
+ 
 
 static void cdns_torrent_dp_write(struct regmap *regmap, u32 offset, u32 val)
 {
@@ -619,26 +606,19 @@ static u32 cdns_torrent_dp_read(struct regmap *regmap, u32 offset)
 	return val;
 }
 
-/*
- * Structure used to store values of PHY registers for voltage-related
- * coefficients, for particular voltage swing and pre-emphasis level. Values
- * are shared across all physical lanes.
- */
+ 
 struct coefficients {
-	/* Value of DRV_DIAG_TX_DRV register to use */
+	 
 	u16 diag_tx_drv;
-	/* Value of TX_TXCC_MGNFS_MULT_000 register to use */
+	 
 	u16 mgnfs_mult;
-	/* Value of TX_TXCC_CPOST_MULT_00 register to use */
+	 
 	u16 cpost_mult;
 };
 
-/*
- * Array consists of values of voltage-related registers for sd0801 PHY. A value
- * of 0xFFFF is a placeholder for invalid combination, and will never be used.
- */
+ 
 static const struct coefficients vltg_coeff[4][4] = {
-	/* voltage swing 0, pre-emphasis 0->3 */
+	 
 	{	{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x002A,
 		 .cpost_mult = 0x0000},
 		{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x001F,
@@ -649,7 +629,7 @@ static const struct coefficients vltg_coeff[4][4] = {
 		 .cpost_mult = 0x002A}
 	},
 
-	/* voltage swing 1, pre-emphasis 0->3 */
+	 
 	{	{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x001F,
 		 .cpost_mult = 0x0000},
 		{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x0013,
@@ -660,7 +640,7 @@ static const struct coefficients vltg_coeff[4][4] = {
 		 .cpost_mult = 0xFFFF}
 	},
 
-	/* voltage swing 2, pre-emphasis 0->3 */
+	 
 	{	{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x0013,
 		 .cpost_mult = 0x0000},
 		{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x0000,
@@ -671,7 +651,7 @@ static const struct coefficients vltg_coeff[4][4] = {
 		 .cpost_mult = 0xFFFF}
 	},
 
-	/* voltage swing 3, pre-emphasis 0->3 */
+	 
 	{	{.diag_tx_drv = 0x0003, .mgnfs_mult = 0x0000,
 		 .cpost_mult = 0x0000},
 		{.diag_tx_drv = 0xFFFF, .mgnfs_mult = 0xFFFF,
@@ -703,10 +683,7 @@ static const char *cdns_torrent_get_phy_type(enum cdns_torrent_phy_type phy_type
 	}
 }
 
-/*
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
+ 
 static
 void cdns_torrent_dp_enable_ssc_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 					u32 ctrl2_val, u32 ctrl3_val)
@@ -729,9 +706,9 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 {
 	struct regmap *regmap = cdns_phy->regmap_common_cdb;
 
-	/* Assumes 19.2 MHz refclock */
+	 
 	switch (rate) {
-	/* Setting VCO for 10.8GHz */
+	 
 	case 2700:
 	case 5400:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x0119);
@@ -747,7 +724,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_19_2mhz(cdns_phy, 0x033A, 0x006A);
 		break;
-	/* Setting VCO for 9.72GHz */
+	 
 	case 1620:
 	case 2430:
 	case 3240:
@@ -764,7 +741,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_19_2mhz(cdns_phy, 0x05DD, 0x0069);
 		break;
-	/* Setting VCO for 8.64GHz */
+	 
 	case 2160:
 	case 4320:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x01C2);
@@ -780,7 +757,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_19_2mhz(cdns_phy, 0x0536, 0x0069);
 		break;
-	/* Setting VCO for 8.1GHz */
+	 
 	case 8100:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x01A5);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_FRACDIVL_M0, 0xE000);
@@ -805,7 +782,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 	} else {
 		cdns_torrent_phy_write(regmap, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0260);
 		cdns_torrent_phy_write(regmap, CMN_PLL1_VCOCAL_PLLCNT_START, 0x0260);
-		/* Set reset register values to disable SSC */
+		 
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL1_M0, 0x0002);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL2_M0, 0x0000);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL3_M0, 0x0000);
@@ -824,10 +801,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(struct cdns_torrent_phy *cdns_phy,
 	cdns_torrent_phy_write(regmap, CMN_PLL1_LOCK_PLLCNT_START, 0x0099);
 }
 
-/*
- * Set registers responsible for enabling and configuring SSC, with second
- * register value provided by a parameter.
- */
+ 
 static void cdns_torrent_dp_enable_ssc_25mhz(struct cdns_torrent_phy *cdns_phy,
 					     u32 ctrl2_val)
 {
@@ -849,9 +823,9 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(struct cdns_torrent_phy *cdns_phy,
 {
 	struct regmap *regmap = cdns_phy->regmap_common_cdb;
 
-	/* Assumes 25 MHz refclock */
+	 
 	switch (rate) {
-	/* Setting VCO for 10.8GHz */
+	 
 	case 2700:
 	case 5400:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x01B0);
@@ -865,7 +839,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_25mhz(cdns_phy, 0x0423);
 		break;
-	/* Setting VCO for 9.72GHz */
+	 
 	case 1620:
 	case 2430:
 	case 3240:
@@ -880,7 +854,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_25mhz(cdns_phy, 0x03B9);
 		break;
-	/* Setting VCO for 8.64GHz */
+	 
 	case 2160:
 	case 4320:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x0159);
@@ -894,7 +868,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(struct cdns_torrent_phy *cdns_phy,
 		if (ssc)
 			cdns_torrent_dp_enable_ssc_25mhz(cdns_phy, 0x034F);
 		break;
-	/* Setting VCO for 8.1GHz */
+	 
 	case 8100:
 		cdns_torrent_phy_write(regmap, CMN_PLL0_INTDIV_M0, 0x0144);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_FRACDIVL_M0, 0x0000);
@@ -926,7 +900,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(struct cdns_torrent_phy *cdns_phy,
 				       CMN_PLL0_VCOCAL_PLLCNT_START, 0x0317);
 		cdns_torrent_phy_write(regmap,
 				       CMN_PLL1_VCOCAL_PLLCNT_START, 0x0317);
-		/* Set reset register values to disable SSC */
+		 
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL1_M0, 0x0002);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL2_M0, 0x0000);
 		cdns_torrent_phy_write(regmap, CMN_PLL0_SS_CTRL3_M0, 0x0000);
@@ -953,9 +927,9 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
 {
 	struct regmap *regmap = cdns_phy->regmap_common_cdb;
 
-	/* Assumes 100 MHz refclock */
+	 
 	switch (rate) {
-	/* Setting VCO for 10.8GHz */
+	 
 	case 2700:
 	case 5400:
 		if (cdns_phy->dp_pll & DP_PLL0)
@@ -967,7 +941,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
 			cdns_torrent_phy_write(regmap, CMN_PLL1_DSM_FBL_OVRD_M0, 0x000C);
 		}
 		break;
-	/* Setting VCO for 9.72GHz */
+	 
 	case 1620:
 	case 2430:
 	case 3240:
@@ -994,7 +968,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
 			cdns_torrent_phy_write(regmap, CMN_PDIAG_PLL1_CTRL_M0, 0x0002);
 		}
 		break;
-	/* Setting VCO for 8.64GHz */
+	 
 	case 2160:
 	case 4320:
 		if (cdns_phy->dp_pll & DP_PLL0) {
@@ -1020,7 +994,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
 			cdns_torrent_phy_write(regmap, CMN_PDIAG_PLL1_CTRL_M0, 0x0002);
 		}
 		break;
-	/* Setting VCO for 8.1GHz */
+	 
 	case 8100:
 		if (cdns_phy->dp_pll & DP_PLL0) {
 			cdns_torrent_phy_write(regmap, CMN_PLL0_DSM_DIAG_M0, 0x0004);
@@ -1046,7 +1020,7 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
 	}
 }
 
-/* Set PLL used for DP configuration */
+ 
 static int cdns_torrent_dp_get_pll(struct cdns_torrent_phy *cdns_phy,
 				   enum cdns_torrent_phy_type phy_t2)
 {
@@ -1070,9 +1044,7 @@ static int cdns_torrent_dp_get_pll(struct cdns_torrent_phy *cdns_phy,
 	return 0;
 }
 
-/*
- * Enable or disable PLL for selected lanes.
- */
+ 
 static int cdns_torrent_dp_set_pll_en(struct cdns_torrent_phy *cdns_phy,
 				      struct cdns_torrent_inst *inst,
 				      struct phy_configure_opts_dp *dp,
@@ -1082,15 +1054,12 @@ static int cdns_torrent_dp_set_pll_en(struct cdns_torrent_phy *cdns_phy,
 	u32 rd_val, pll_ack_val;
 	int ret;
 
-	/*
-	 * Used to determine, which bits to check for or enable in
-	 * PHY_PMA_XCVR_PLLCLK_EN register.
-	 */
+	 
 	u32 pll_bits;
-	/* Used to enable or disable lanes. */
+	 
 	u32 pll_val;
 
-	/* Select values of registers and mask, depending on enabled lane count. */
+	 
 	pll_val = cdns_torrent_dp_read(regmap, PHY_PMA_XCVR_PLLCLK_EN);
 
 	if (enable) {
@@ -1105,7 +1074,7 @@ static int cdns_torrent_dp_set_pll_en(struct cdns_torrent_phy *cdns_phy,
 
 	cdns_torrent_dp_write(regmap, PHY_PMA_XCVR_PLLCLK_EN, pll_val);
 
-	/* Wait for acknowledgment from PHY. */
+	 
 	ret = regmap_read_poll_timeout(regmap,
 				       PHY_PMA_XCVR_PLLCLK_EN_ACK,
 				       rd_val,
@@ -1120,7 +1089,7 @@ static int cdns_torrent_dp_set_power_state(struct cdns_torrent_phy *cdns_phy,
 					   u32 num_lanes,
 					   enum phy_powerstate powerstate)
 {
-	/* Register value for power state for a single byte. */
+	 
 	u32 value_part, i;
 	u32 value = 0;
 	u32 mask = 0;
@@ -1136,21 +1105,21 @@ static int cdns_torrent_dp_set_power_state(struct cdns_torrent_phy *cdns_phy,
 		value_part = 0x04U;
 		break;
 	default:
-		/* Powerstate A3 */
+		 
 		value_part = 0x08U;
 		break;
 	}
 
-	/* Select values of registers and mask, depending on enabled lane count. */
+	 
 
 	for (i = 0; i < num_lanes; i++) {
 		value |= (value_part << PHY_POWER_STATE_LN(i));
 		mask |= (PMA_XCVR_POWER_STATE_REQ_LN_MASK << PHY_POWER_STATE_LN(i));
 	}
 
-	/* Set power state A<n>. */
+	 
 	cdns_torrent_dp_write(regmap, PHY_PMA_XCVR_POWER_STATE_REQ, value);
-	/* Wait, until PHY acknowledges power state completion. */
+	 
 	ret = regmap_read_poll_timeout(regmap, PHY_PMA_XCVR_POWER_STATE_ACK,
 				       read_val, (read_val & mask) == value, 0,
 				       POLL_TIMEOUT_US);
@@ -1167,10 +1136,7 @@ static int cdns_torrent_dp_run(struct cdns_torrent_phy *cdns_phy,
 	int ret;
 	struct regmap *regmap = cdns_phy->regmap_dptx_phy_reg;
 
-	/*
-	 * waiting for ACK of pma_xcvr_pllclk_en_ln_*, only for the
-	 * master lane
-	 */
+	 
 	ret = regmap_read_poll_timeout(regmap, PHY_PMA_XCVR_PLLCLK_EN_ACK,
 				       read_val, read_val & 1,
 				       0, POLL_TIMEOUT_US);
@@ -1252,16 +1218,13 @@ static void cdns_torrent_dp_pma_cmn_rate(struct cdns_torrent_phy *cdns_phy,
 		cdns_torrent_phy_write(cdns_phy->regmap_common_cdb,
 				       CMN_PDIAG_PLL1_CLK_SEL_M0, clk_sel_val);
 
-	/* PMA lane configuration to deal with multi-link operation */
+	 
 	for (i = 0; i < num_lanes; i++)
 		cdns_torrent_phy_write(cdns_phy->regmap_tx_lane_cdb[inst->mlane + i],
 				       XCVR_DIAG_HSCLK_DIV, hsclk_div_val);
 }
 
-/*
- * Perform register operations related to setting link rate, once powerstate is
- * set and PLL disable request was processed.
- */
+ 
 static int cdns_torrent_dp_configure_rate(struct cdns_torrent_phy *cdns_phy,
 					  struct cdns_torrent_inst *inst,
 					  struct phy_configure_opts_dp *dp)
@@ -1269,21 +1232,14 @@ static int cdns_torrent_dp_configure_rate(struct cdns_torrent_phy *cdns_phy,
 	u32 read_val, field_val;
 	int ret;
 
-	/*
-	 * Disable the associated PLL (cmn_pll0_en or cmn_pll1_en) before
-	 * re-programming the new data rate.
-	 */
+	 
 	ret = regmap_field_read(cdns_phy->phy_pma_pll_raw_ctrl, &field_val);
 	if (ret)
 		return ret;
 	field_val &= ~(cdns_phy->dp_pll);
 	regmap_field_write(cdns_phy->phy_pma_pll_raw_ctrl, field_val);
 
-	/*
-	 * Wait for PLL ready de-assertion.
-	 * For PLL0 - PHY_PMA_CMN_CTRL2[2] == 1
-	 * For PLL1 - PHY_PMA_CMN_CTRL2[3] == 1
-	 */
+	 
 	if (cdns_phy->dp_pll & DP_PLL0) {
 		ret = regmap_field_read_poll_timeout(cdns_phy->phy_pma_cmn_ctrl_2,
 						     read_val,
@@ -1303,31 +1259,27 @@ static int cdns_torrent_dp_configure_rate(struct cdns_torrent_phy *cdns_phy,
 	}
 	ndelay(200);
 
-	/* DP Rate Change - VCO Output settings. */
+	 
 	if (cdns_phy->ref_clk_rate == CLK_19_2_MHZ)
-		/* PMA common configuration 19.2MHz */
+		 
 		cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(cdns_phy, dp->link_rate, dp->ssc);
 	else if (cdns_phy->ref_clk_rate == CLK_25_MHZ)
-		/* PMA common configuration 25MHz */
+		 
 		cdns_torrent_dp_pma_cmn_vco_cfg_25mhz(cdns_phy, dp->link_rate, dp->ssc);
 	else if (cdns_phy->ref_clk_rate == CLK_100_MHZ)
-		/* PMA common configuration 100MHz */
+		 
 		cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(cdns_phy, dp->link_rate, dp->ssc);
 
 	cdns_torrent_dp_pma_cmn_rate(cdns_phy, inst, dp->link_rate, dp->lanes);
 
-	/* Enable the associated PLL (cmn_pll0_en or cmn_pll1_en) */
+	 
 	ret = regmap_field_read(cdns_phy->phy_pma_pll_raw_ctrl, &field_val);
 	if (ret)
 		return ret;
 	field_val |= cdns_phy->dp_pll;
 	regmap_field_write(cdns_phy->phy_pma_pll_raw_ctrl, field_val);
 
-	/*
-	 * Wait for PLL ready assertion.
-	 * For PLL0 - PHY_PMA_CMN_CTRL2[0] == 1
-	 * For PLL1 - PHY_PMA_CMN_CTRL2[1] == 1
-	 */
+	 
 	if (cdns_phy->dp_pll & DP_PLL0) {
 		ret = regmap_field_read_poll_timeout(cdns_phy->phy_pma_cmn_ctrl_2,
 						     read_val,
@@ -1346,15 +1298,13 @@ static int cdns_torrent_dp_configure_rate(struct cdns_torrent_phy *cdns_phy,
 	return ret;
 }
 
-/*
- * Verify, that parameters to configure PHY with are correct.
- */
+ 
 static int cdns_torrent_dp_verify_config(struct cdns_torrent_inst *inst,
 					 struct phy_configure_opts_dp *dp)
 {
 	u8 i;
 
-	/* If changing link rate was required, verify it's supported. */
+	 
 	if (dp->set_rate) {
 		switch (dp->link_rate) {
 		case 1620:
@@ -1365,41 +1315,36 @@ static int cdns_torrent_dp_verify_config(struct cdns_torrent_inst *inst,
 		case 4320:
 		case 5400:
 		case 8100:
-			/* valid bit rate */
+			 
 			break;
 		default:
 			return -EINVAL;
 		}
 	}
 
-	/* Verify lane count. */
+	 
 	switch (dp->lanes) {
 	case 1:
 	case 2:
 	case 4:
-		/* valid lane count. */
+		 
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* Check against actual number of PHY's lanes. */
+	 
 	if (dp->lanes > inst->num_lanes)
 		return -EINVAL;
 
-	/*
-	 * If changing voltages is required, check swing and pre-emphasis
-	 * levels, per-lane.
-	 */
+	 
 	if (dp->set_voltages) {
-		/* Lane count verified previously. */
+		 
 		for (i = 0; i < dp->lanes; i++) {
 			if (dp->voltage[i] > 3 || dp->pre[i] > 3)
 				return -EINVAL;
 
-			/* Sum of voltage swing and pre-emphasis levels cannot
-			 * exceed 3.
-			 */
+			 
 			if (dp->voltage[i] + dp->pre[i] > 3)
 				return -EINVAL;
 		}
@@ -1408,7 +1353,7 @@ static int cdns_torrent_dp_verify_config(struct cdns_torrent_inst *inst,
 	return 0;
 }
 
-/* Set power state A0 and PLL clock enable to 0 on enabled lanes. */
+ 
 static void cdns_torrent_dp_set_a0_pll(struct cdns_torrent_phy *cdns_phy,
 				       struct cdns_torrent_inst *inst,
 				       u32 num_lanes)
@@ -1431,7 +1376,7 @@ static void cdns_torrent_dp_set_a0_pll(struct cdns_torrent_phy *cdns_phy,
 	cdns_torrent_dp_write(regmap, PHY_PMA_XCVR_PLLCLK_EN, pll_clk_en);
 }
 
-/* Configure lane count as required. */
+ 
 static int cdns_torrent_dp_set_lanes(struct cdns_torrent_phy *cdns_phy,
 				     struct cdns_torrent_inst *inst,
 				     struct phy_configure_opts_dp *dp)
@@ -1446,27 +1391,24 @@ static int cdns_torrent_dp_set_lanes(struct cdns_torrent_phy *cdns_phy,
 	lane_mask <<= clane;
 
 	value = cdns_torrent_dp_read(regmap, PHY_RESET);
-	/* clear pma_tx_elec_idle_ln_* bits. */
+	 
 	pma_tx_elec_idle_mask = ((1 << inst->num_lanes) - 1) << clane;
 
 	pma_tx_elec_idle_mask <<= PMA_TX_ELEC_IDLE_SHIFT;
 
 	value &= ~pma_tx_elec_idle_mask;
 
-	/* Assert pma_tx_elec_idle_ln_* for disabled lanes. */
+	 
 	value |= ((~lane_mask) << PMA_TX_ELEC_IDLE_SHIFT) &
 		 pma_tx_elec_idle_mask;
 
 	cdns_torrent_dp_write(regmap, PHY_RESET, value);
 
-	/* reset the link by asserting master lane phy_l0*_reset_n low */
+	 
 	cdns_torrent_dp_write(regmap, PHY_RESET,
 			      value & (~(1 << clane)));
 
-	/*
-	 * Assert lane reset on unused lanes and master lane so they remain in reset
-	 * and powered down when re-enabling the link
-	 */
+	 
 	for (i = 0; i < inst->num_lanes; i++)
 		value &= (~(1 << (clane + i)));
 
@@ -1477,7 +1419,7 @@ static int cdns_torrent_dp_set_lanes(struct cdns_torrent_phy *cdns_phy,
 
 	cdns_torrent_dp_set_a0_pll(cdns_phy, inst, dp->lanes);
 
-	/* release phy_l0*_reset_n based on used laneCount */
+	 
 	for (i = 0; i < inst->num_lanes; i++)
 		value &= (~(1 << (clane + i)));
 
@@ -1486,14 +1428,14 @@ static int cdns_torrent_dp_set_lanes(struct cdns_torrent_phy *cdns_phy,
 
 	cdns_torrent_dp_write(regmap, PHY_RESET, value);
 
-	/* Wait, until PHY gets ready after releasing PHY reset signal. */
+	 
 	ret = cdns_torrent_dp_wait_pma_cmn_ready(cdns_phy);
 	if (ret)
 		return ret;
 
 	ndelay(100);
 
-	/* release pma_xcvr_pllclk_en_ln_*, only for the master lane */
+	 
 	value = cdns_torrent_dp_read(regmap, PHY_PMA_XCVR_PLLCLK_EN);
 	value |= (1 << clane);
 	cdns_torrent_dp_write(regmap, PHY_PMA_XCVR_PLLCLK_EN, value);
@@ -1503,7 +1445,7 @@ static int cdns_torrent_dp_set_lanes(struct cdns_torrent_phy *cdns_phy,
 	return ret;
 }
 
-/* Configure link rate as required. */
+ 
 static int cdns_torrent_dp_set_rate(struct cdns_torrent_phy *cdns_phy,
 				    struct cdns_torrent_inst *inst,
 				    struct phy_configure_opts_dp *dp)
@@ -1540,7 +1482,7 @@ static int cdns_torrent_dp_set_rate(struct cdns_torrent_phy *cdns_phy,
 	return ret;
 }
 
-/* Configure voltage swing and pre-emphasis for all enabled lanes. */
+ 
 static void cdns_torrent_dp_set_voltages(struct cdns_torrent_phy *cdns_phy,
 					 struct cdns_torrent_inst *inst,
 					 struct phy_configure_opts_dp *dp)
@@ -1551,10 +1493,7 @@ static void cdns_torrent_dp_set_voltages(struct cdns_torrent_phy *cdns_phy,
 	for (lane = 0; lane < dp->lanes; lane++) {
 		val = cdns_torrent_phy_read(cdns_phy->regmap_tx_lane_cdb[inst->mlane + lane],
 					    TX_DIAG_ACYA);
-		/*
-		 * Write 1 to register bit TX_DIAG_ACYA[0] to freeze the
-		 * current state of the analog TX driver.
-		 */
+		 
 		val |= TX_DIAG_ACYA_HBDC_MASK;
 		cdns_torrent_phy_write(cdns_phy->regmap_tx_lane_cdb[inst->mlane + lane],
 				       TX_DIAG_ACYA, val);
@@ -1575,10 +1514,7 @@ static void cdns_torrent_dp_set_voltages(struct cdns_torrent_phy *cdns_phy,
 
 		val = cdns_torrent_phy_read(cdns_phy->regmap_tx_lane_cdb[inst->mlane + lane],
 					    TX_DIAG_ACYA);
-		/*
-		 * Write 0 to register bit TX_DIAG_ACYA[0] to allow the state of
-		 * analog TX driver to reflect the new programmed one.
-		 */
+		 
 		val &= ~TX_DIAG_ACYA_HBDC_MASK;
 		cdns_torrent_phy_write(cdns_phy->regmap_tx_lane_cdb[inst->mlane + lane],
 				       TX_DIAG_ACYA, val);
@@ -1628,19 +1564,16 @@ static int cdns_torrent_phy_on(struct phy *phy)
 	int ret;
 
 	if (cdns_phy->nsubnodes == 1) {
-		/* Take the PHY lane group out of reset */
+		 
 		reset_control_deassert(inst->lnk_rst);
 
-		/* Take the PHY out of reset */
+		 
 		ret = reset_control_deassert(cdns_phy->phy_rst);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * Wait for cmn_ready assertion
-	 * PHY_PMA_CMN_CTRL1[0] == 1
-	 */
+	 
 	ret = regmap_field_read_poll_timeout(cdns_phy->phy_pma_cmn_ctrl_1,
 					     read_val, read_val, 1000,
 					     PLL_LOCK_TIMEOUT);
@@ -1685,18 +1618,12 @@ static void cdns_torrent_dp_common_init(struct cdns_torrent_phy *cdns_phy,
 	unsigned char lane_bits;
 	u32 val;
 
-	cdns_torrent_dp_write(regmap, PHY_AUX_CTRL, 0x0003); /* enable AUX */
+	cdns_torrent_dp_write(regmap, PHY_AUX_CTRL, 0x0003);  
 
-	/*
-	 * Set lines power state to A0
-	 * Set lines pll clk enable to 0
-	 */
+	 
 	cdns_torrent_dp_set_a0_pll(cdns_phy, inst, inst->num_lanes);
 
-	/*
-	 * release phy_l0*_reset_n and pma_tx_elec_idle_ln_* based on
-	 * used lanes
-	 */
+	 
 	lane_bits = (1 << inst->num_lanes) - 1;
 
 	val = cdns_torrent_dp_read(regmap, PHY_RESET);
@@ -1704,15 +1631,12 @@ static void cdns_torrent_dp_common_init(struct cdns_torrent_phy *cdns_phy,
 	val &= ~(lane_bits << 4);
 	cdns_torrent_dp_write(regmap, PHY_RESET, val);
 
-	/* release pma_xcvr_pllclk_en_ln_*, only for the master lane */
+	 
 	val = cdns_torrent_dp_read(regmap, PHY_PMA_XCVR_PLLCLK_EN);
 	val |= 1;
 	cdns_torrent_dp_write(regmap, PHY_PMA_XCVR_PLLCLK_EN, val);
 
-	/*
-	 * PHY PMA registers configuration functions
-	 * Initialize PHY with max supported link rate, without SSC.
-	 */
+	 
 	if (cdns_phy->ref_clk_rate == CLK_19_2_MHZ)
 		cdns_torrent_dp_pma_cmn_vco_cfg_19_2mhz(cdns_phy,
 							cdns_phy->max_bit_rate,
@@ -1729,7 +1653,7 @@ static void cdns_torrent_dp_common_init(struct cdns_torrent_phy *cdns_phy,
 	cdns_torrent_dp_pma_cmn_rate(cdns_phy, inst, cdns_phy->max_bit_rate,
 				     inst->num_lanes);
 
-	/* take out of reset */
+	 
 	regmap_field_write(cdns_phy->phy_reset_ctrl, 0x1);
 }
 
@@ -1762,7 +1686,7 @@ static int cdns_torrent_dp_init(struct phy *phy)
 	case CLK_19_2_MHZ:
 	case CLK_25_MHZ:
 	case CLK_100_MHZ:
-		/* Valid Ref Clock Rate */
+		 
 		break;
 	default:
 		dev_err(cdns_phy->dev, "Unsupported Ref Clock Rate\n");
@@ -2067,7 +1991,7 @@ static int cdns_torrent_refclk_driver_register(struct cdns_torrent_phy *cdns_phy
 		refclk_driver->cmn_fields[i] = field;
 	}
 
-	/* Enable Derived reference clock as default */
+	 
 	regmap_field_write(refclk_driver->cmn_fields[CMN_CDIAG_REFCLK_DRV0_CTRL_4], 1);
 
 	refclk_driver->hw.init = init;
@@ -2311,14 +2235,11 @@ static int cdns_torrent_phy_init(struct phy *phy)
 		return 0;
 	}
 
-	/**
-	 * Spread spectrum generation is not required or supported
-	 * for SGMII/QSGMII/USXGMII
-	 */
+	 
 	if (phy_type == TYPE_SGMII || phy_type == TYPE_QSGMII || phy_type == TYPE_USXGMII)
 		ssc = NO_SSC;
 
-	/* PHY configuration specific registers for single link */
+	 
 	link_cmn_vals = cdns_torrent_get_tbl_vals(&init_data->link_cmn_vals_tbl,
 						  CLK_ANY, CLK_ANY,
 						  phy_type, TYPE_NONE,
@@ -2328,10 +2249,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 		num_regs = link_cmn_vals->num_regs;
 		regmap = cdns_phy->regmap_common_cdb;
 
-		/**
-		 * First array value in link_cmn_vals must be of
-		 * PHY_PLL_CFG register
-		 */
+		 
 		regmap_field_write(cdns_phy->phy_pll_cfg, reg_pairs[0].val);
 
 		for (i = 1; i < num_regs; i++)
@@ -2354,7 +2272,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 		}
 	}
 
-	/* PHY PCS common registers configurations */
+	 
 	pcs_cmn_vals = cdns_torrent_get_tbl_vals(&init_data->pcs_cmn_vals_tbl,
 						 CLK_ANY, CLK_ANY,
 						 phy_type, TYPE_NONE,
@@ -2368,7 +2286,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 				     reg_pairs[i].val);
 	}
 
-	/* PHY PMA common registers configurations */
+	 
 	phy_pma_cmn_vals = cdns_torrent_get_tbl_vals(&init_data->phy_pma_cmn_vals_tbl,
 						     CLK_ANY, CLK_ANY,
 						     phy_type, TYPE_NONE,
@@ -2382,7 +2300,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 				     reg_pairs[i].val);
 	}
 
-	/* PMA common registers configurations */
+	 
 	cmn_vals = cdns_torrent_get_tbl_vals(&init_data->cmn_vals_tbl,
 					     ref_clk, ref_clk,
 					     phy_type, TYPE_NONE,
@@ -2396,7 +2314,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 				     reg_pairs[i].val);
 	}
 
-	/* PMA TX lane registers configurations */
+	 
 	tx_ln_vals = cdns_torrent_get_tbl_vals(&init_data->tx_ln_vals_tbl,
 					       ref_clk, ref_clk,
 					       phy_type, TYPE_NONE,
@@ -2412,7 +2330,7 @@ static int cdns_torrent_phy_init(struct phy *phy)
 		}
 	}
 
-	/* PMA RX lane registers configurations */
+	 
 	rx_ln_vals = cdns_torrent_get_tbl_vals(&init_data->rx_ln_vals_tbl,
 					       ref_clk, ref_clk,
 					       phy_type, TYPE_NONE,
@@ -2444,7 +2362,7 @@ static const struct phy_ops cdns_torrent_phy_ops = {
 
 static int cdns_torrent_noop_phy_on(struct phy *phy)
 {
-	/* Give 5ms to 10ms delay for the PIPE clock to be stable */
+	 
 	usleep_range(5000, 10000);
 
 	return 0;
@@ -2470,24 +2388,17 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 	struct regmap *regmap;
 	u32 num_regs;
 
-	/* Maximum 2 links (subnodes) are supported */
+	 
 	if (cdns_phy->nsubnodes != 2)
 		return -EINVAL;
 
 	phy_t1 = cdns_phy->phys[0].phy_type;
 	phy_t2 = cdns_phy->phys[1].phy_type;
 
-	/**
-	 * First configure the PHY for first link with phy_t1. Get the array
-	 * values as [phy_t1][phy_t2][ssc].
-	 */
+	 
 	for (node = 0; node < cdns_phy->nsubnodes; node++) {
 		if (node == 1) {
-			/**
-			 * If first link with phy_t1 is configured, then
-			 * configure the PHY for second link with phy_t2.
-			 * Get the array values as [phy_t2][phy_t1][ssc].
-			 */
+			 
 			swap(phy_t1, phy_t2);
 		}
 
@@ -2495,16 +2406,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 		ssc = cdns_phy->phys[node].ssc_mode;
 		num_lanes = cdns_phy->phys[node].num_lanes;
 
-		/**
-		 * PHY configuration specific registers:
-		 * link_cmn_vals depend on combination of PHY types being
-		 * configured and are common for both PHY types, so array
-		 * values should be same for [phy_t1][phy_t2][ssc] and
-		 * [phy_t2][phy_t1][ssc].
-		 * xcvr_diag_vals also depend on combination of PHY types
-		 * being configured, but these can be different for particular
-		 * PHY type and are per lane.
-		 */
+		 
 		link_cmn_vals = cdns_torrent_get_tbl_vals(&init_data->link_cmn_vals_tbl,
 							  CLK_ANY, CLK_ANY,
 							  phy_t1, phy_t2, ANY_SSC);
@@ -2513,10 +2415,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 			num_regs = link_cmn_vals->num_regs;
 			regmap = cdns_phy->regmap_common_cdb;
 
-			/**
-			 * First array value in link_cmn_vals must be of
-			 * PHY_PLL_CFG register
-			 */
+			 
 			regmap_field_write(cdns_phy->phy_pll_cfg,
 					   reg_pairs[0].val);
 
@@ -2539,7 +2438,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 			}
 		}
 
-		/* PHY PCS common registers configurations */
+		 
 		pcs_cmn_vals = cdns_torrent_get_tbl_vals(&init_data->pcs_cmn_vals_tbl,
 							 CLK_ANY, CLK_ANY,
 							 phy_t1, phy_t2, ANY_SSC);
@@ -2552,7 +2451,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 					     reg_pairs[i].val);
 		}
 
-		/* PMA common registers configurations */
+		 
 		cmn_vals = cdns_torrent_get_tbl_vals(&init_data->cmn_vals_tbl,
 						     ref_clk, ref_clk,
 						     phy_t1, phy_t2, ssc);
@@ -2565,7 +2464,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 					     reg_pairs[i].val);
 		}
 
-		/* PMA TX lane registers configurations */
+		 
 		tx_ln_vals = cdns_torrent_get_tbl_vals(&init_data->tx_ln_vals_tbl,
 						       ref_clk, ref_clk,
 						       phy_t1, phy_t2, ssc);
@@ -2580,7 +2479,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 			}
 		}
 
-		/* PMA RX lane registers configurations */
+		 
 		rx_ln_vals = cdns_torrent_get_tbl_vals(&init_data->rx_ln_vals_tbl,
 						       ref_clk, ref_clk,
 						       phy_t1, phy_t2, ssc);
@@ -2604,7 +2503,7 @@ int cdns_torrent_phy_configure_multilink(struct cdns_torrent_phy *cdns_phy)
 		reset_control_deassert(cdns_phy->phys[node].lnk_rst);
 	}
 
-	/* Take the PHY out of reset */
+	 
 	ret = reset_control_deassert(cdns_phy->phy_rst);
 	if (ret)
 		return ret;
@@ -2741,7 +2640,7 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 	u8 init_dp_regmap = 0;
 	u32 phy_type;
 
-	/* Get init data for this PHY */
+	 
 	data = of_device_get_match_data(dev);
 	if (!data)
 		return -EINVAL;
@@ -2787,14 +2686,14 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 		if (ret)
 			goto clk_cleanup;
 
-		/* Enable APB */
+		 
 		reset_control_deassert(cdns_phy->apb_rst);
 	}
 
 	for_each_available_child_of_node(dev->of_node, child) {
 		struct phy *gphy;
 
-		/* PHY subnode name must be 'phy'. */
+		 
 		if (!(of_node_name_eq(child, "phy")))
 			continue;
 
@@ -2857,7 +2756,7 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 
 		total_num_lanes += cdns_phy->phys[node].num_lanes;
 
-		/* Get SSC mode */
+		 
 		cdns_phy->phys[node].ssc_mode = NO_SSC;
 		of_property_read_u32(child, "cdns,ssc-mode",
 				     &cdns_phy->phys[node].ssc_mode);
@@ -2876,7 +2775,7 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 			case 1:
 			case 2:
 			case 4:
-			/* valid number of lanes */
+			 
 				break;
 			default:
 				dev_err(dev, "unsupported number of lanes: %d\n",
@@ -2898,7 +2797,7 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 			case 4320:
 			case 5400:
 			case 8100:
-			/* valid bit rate */
+			 
 				break;
 			default:
 				dev_err(dev, "unsupported max bit rate: %dMbps\n",
@@ -2907,7 +2806,7 @@ static int cdns_torrent_phy_probe(struct platform_device *pdev)
 				goto put_child;
 			}
 
-			/* DPTX registers */
+			 
 			cdns_phy->base = devm_platform_ioremap_resource(pdev, 1);
 			if (IS_ERR(cdns_phy->base)) {
 				ret = PTR_ERR(cdns_phy->base);
@@ -3002,7 +2901,7 @@ static void cdns_torrent_phy_remove(struct platform_device *pdev)
 	cdns_torrent_clk_cleanup(cdns_phy);
 }
 
-/* USB and DP link configuration */
+ 
 static struct cdns_reg_pairs usb_dp_link_cmn_regs[] = {
 	{0x0002, PHY_PLL_CFG},
 	{0x8600, CMN_PDIAG_PLL0_CLK_SEL_M0}
@@ -3034,7 +2933,7 @@ static struct cdns_torrent_vals dp_usb_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(dp_usb_xcvr_diag_ln_regs),
 };
 
-/* TI USXGMII configuration: Enable cmn_refclk_rcv_out_en */
+ 
 static struct cdns_reg_pairs ti_usxgmii_phy_pma_cmn_regs[] = {
 	{0x0040, PHY_PMA_CMN_CTRL1},
 };
@@ -3044,7 +2943,7 @@ static struct cdns_torrent_vals ti_usxgmii_phy_pma_cmn_vals = {
 	.num_regs = ARRAY_SIZE(ti_usxgmii_phy_pma_cmn_regs),
 };
 
-/* Single USXGMII link configuration */
+ 
 static struct cdns_reg_pairs sl_usxgmii_link_cmn_regs[] = {
 	{0x0000, PHY_PLL_CFG},
 	{0x0400, CMN_PDIAG_PLL0_CLK_SEL_M0}
@@ -3066,7 +2965,7 @@ static struct cdns_torrent_vals sl_usxgmii_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_usxgmii_xcvr_diag_ln_regs),
 };
 
-/* Single link USXGMII, 156.25 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_usxgmii_156_25_no_ssc_cmn_regs[] = {
 	{0x0014, CMN_SSM_BIAS_TMR},
 	{0x0028, CMN_PLLSM0_PLLPRE_TMR},
@@ -3151,7 +3050,7 @@ static struct cdns_torrent_vals usxgmii_156_25_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(usxgmii_156_25_no_ssc_rx_ln_regs),
 };
 
-/* PCIe and DP link configuration */
+ 
 static struct cdns_reg_pairs pcie_dp_link_cmn_regs[] = {
 	{0x0003, PHY_PLL_CFG},
 	{0x0601, CMN_PDIAG_PLL0_CLK_SEL_M0},
@@ -3184,7 +3083,7 @@ static struct cdns_torrent_vals dp_pcie_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(dp_pcie_xcvr_diag_ln_regs),
 };
 
-/* DP Multilink, 100 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs dp_100_no_ssc_cmn_regs[] = {
 	{0x007F, CMN_TXPUCAL_TUNE},
 	{0x007F, CMN_TXPDCAL_TUNE}
@@ -3222,7 +3121,7 @@ static struct cdns_torrent_vals dp_100_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(dp_100_no_ssc_rx_ln_regs),
 };
 
-/* Single DisplayPort(DP) link configuration */
+ 
 static struct cdns_reg_pairs sl_dp_link_cmn_regs[] = {
 	{0x0000, PHY_PLL_CFG},
 };
@@ -3242,7 +3141,7 @@ static struct cdns_torrent_vals sl_dp_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_dp_xcvr_diag_ln_regs),
 };
 
-/* Single DP, 19.2 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_dp_19_2_no_ssc_cmn_regs[] = {
 	{0x0014, CMN_SSM_BIAS_TMR},
 	{0x0027, CMN_PLLSM0_PLLPRE_TMR},
@@ -3313,7 +3212,7 @@ static struct cdns_torrent_vals sl_dp_19_2_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_dp_19_2_no_ssc_rx_ln_regs),
 };
 
-/* Single DP, 25 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_dp_25_no_ssc_cmn_regs[] = {
 	{0x0019, CMN_SSM_BIAS_TMR},
 	{0x0032, CMN_PLLSM0_PLLPRE_TMR},
@@ -3384,7 +3283,7 @@ static struct cdns_torrent_vals sl_dp_25_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_dp_25_no_ssc_rx_ln_regs),
 };
 
-/* Single DP, 100 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_dp_100_no_ssc_cmn_regs[] = {
 	{0x0003, CMN_PLL0_VCOCAL_TCTRL},
 	{0x0003, CMN_PLL1_VCOCAL_TCTRL}
@@ -3422,7 +3321,7 @@ static struct cdns_torrent_vals sl_dp_100_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_dp_100_no_ssc_rx_ln_regs),
 };
 
-/* USB and SGMII/QSGMII link configuration */
+ 
 static struct cdns_reg_pairs usb_sgmii_link_cmn_regs[] = {
 	{0x0002, PHY_PLL_CFG},
 	{0x8600, CMN_PDIAG_PLL0_CLK_SEL_M0},
@@ -3456,7 +3355,7 @@ static struct cdns_torrent_vals sgmii_usb_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_usb_xcvr_diag_ln_regs),
 };
 
-/* PCIe and USB Unique SSC link configuration */
+ 
 static struct cdns_reg_pairs pcie_usb_link_cmn_regs[] = {
 	{0x0003, PHY_PLL_CFG},
 	{0x0601, CMN_PDIAG_PLL0_CLK_SEL_M0},
@@ -3491,7 +3390,7 @@ static struct cdns_torrent_vals usb_pcie_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(usb_pcie_xcvr_diag_ln_regs),
 };
 
-/* USB 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs usb_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL0_DSM_DIAG_M1},
@@ -3550,7 +3449,7 @@ static struct cdns_torrent_vals usb_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(usb_100_int_ssc_cmn_regs),
 };
 
-/* Single USB link configuration */
+ 
 static struct cdns_reg_pairs sl_usb_link_cmn_regs[] = {
 	{0x0000, PHY_PLL_CFG},
 	{0x8600, CMN_PDIAG_PLL0_CLK_SEL_M0}
@@ -3572,7 +3471,7 @@ static struct cdns_torrent_vals sl_usb_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_usb_xcvr_diag_ln_regs),
 };
 
-/* USB PHY PCS common configuration */
+ 
 static struct cdns_reg_pairs usb_phy_pcs_cmn_regs[] = {
 	{0x0A0A, PHY_PIPE_USB3_GEN2_PRE_CFG0},
 	{0x1000, PHY_PIPE_USB3_GEN2_POST_CFG0},
@@ -3584,7 +3483,7 @@ static struct cdns_torrent_vals usb_phy_pcs_cmn_vals = {
 	.num_regs = ARRAY_SIZE(usb_phy_pcs_cmn_regs),
 };
 
-/* USB 100 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_usb_100_no_ssc_cmn_regs[] = {
 	{0x0028, CMN_PDIAG_PLL1_CP_PADJ_M0},
 	{0x001E, CMN_PLL1_DSM_FBH_OVRD_M0},
@@ -3655,7 +3554,7 @@ static struct cdns_torrent_vals usb_100_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(usb_100_no_ssc_rx_ln_regs),
 };
 
-/* Single link USB, 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs sl_usb_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL1_DSM_DIAG_M0},
@@ -3702,7 +3601,7 @@ static struct cdns_torrent_vals sl_usb_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(sl_usb_100_int_ssc_cmn_regs),
 };
 
-/* PCIe and SGMII/QSGMII Unique SSC link configuration */
+ 
 static struct cdns_reg_pairs pcie_sgmii_link_cmn_regs[] = {
 	{0x0003, PHY_PLL_CFG},
 	{0x0601, CMN_PDIAG_PLL0_CLK_SEL_M0},
@@ -3737,7 +3636,7 @@ static struct cdns_torrent_vals sgmii_pcie_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_pcie_xcvr_diag_ln_regs),
 };
 
-/* SGMII 100 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_sgmii_100_no_ssc_cmn_regs[] = {
 	{0x0028, CMN_PDIAG_PLL1_CP_PADJ_M0},
 	{0x001E, CMN_PLL1_DSM_FBH_OVRD_M0},
@@ -3811,7 +3710,7 @@ static struct cdns_torrent_vals sgmii_100_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_100_no_ssc_rx_ln_regs),
 };
 
-/* SGMII 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs sgmii_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL0_DSM_DIAG_M1},
@@ -3868,7 +3767,7 @@ static struct cdns_torrent_vals sgmii_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_100_int_ssc_cmn_regs),
 };
 
-/* QSGMII 100 MHz Ref clk, no SSC */
+ 
 static struct cdns_reg_pairs sl_qsgmii_100_no_ssc_cmn_regs[] = {
 	{0x0028, CMN_PDIAG_PLL1_CP_PADJ_M0},
 	{0x001E, CMN_PLL1_DSM_FBH_OVRD_M0},
@@ -3944,7 +3843,7 @@ static struct cdns_torrent_vals qsgmii_100_no_ssc_rx_ln_vals = {
 	.num_regs = ARRAY_SIZE(qsgmii_100_no_ssc_rx_ln_regs),
 };
 
-/* QSGMII 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs qsgmii_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL0_DSM_DIAG_M1},
@@ -4001,7 +3900,7 @@ static struct cdns_torrent_vals qsgmii_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(qsgmii_100_int_ssc_cmn_regs),
 };
 
-/* Single SGMII/QSGMII link configuration */
+ 
 static struct cdns_reg_pairs sl_sgmii_link_cmn_regs[] = {
 	{0x0000, PHY_PLL_CFG},
 	{0x0601, CMN_PDIAG_PLL0_CLK_SEL_M0}
@@ -4023,7 +3922,7 @@ static struct cdns_torrent_vals sl_sgmii_xcvr_diag_ln_vals = {
 	.num_regs = ARRAY_SIZE(sl_sgmii_xcvr_diag_ln_regs),
 };
 
-/* Multi link PCIe, 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs pcie_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL0_DSM_DIAG_M1},
@@ -4078,7 +3977,7 @@ static struct cdns_torrent_vals pcie_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(pcie_100_int_ssc_cmn_regs),
 };
 
-/* Single link PCIe, 100 MHz Ref clk, internal SSC */
+ 
 static struct cdns_reg_pairs sl_pcie_100_int_ssc_cmn_regs[] = {
 	{0x0004, CMN_PLL0_DSM_DIAG_M0},
 	{0x0004, CMN_PLL0_DSM_DIAG_M1},
@@ -4133,7 +4032,7 @@ static struct cdns_torrent_vals sl_pcie_100_int_ssc_cmn_vals = {
 	.num_regs = ARRAY_SIZE(sl_pcie_100_int_ssc_cmn_regs),
 };
 
-/* PCIe, 100 MHz Ref clk, no SSC & external SSC */
+ 
 static struct cdns_reg_pairs pcie_100_ext_no_ssc_cmn_regs[] = {
 	{0x0028, CMN_PDIAG_PLL1_CP_PADJ_M0},
 	{0x001E, CMN_PLL1_DSM_FBH_OVRD_M0},

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -121,15 +121,7 @@ static int gxp_wdt_probe(struct platform_device *pdev)
 	if (!drvdata)
 		return -ENOMEM;
 
-	/*
-	 * The register area where the timer and watchdog reside is disarranged.
-	 * Hence mapping individual register blocks for the timer and watchdog
-	 * is not recommended as they would have access to each others
-	 * registers. Based on feedback the watchdog is no longer part of the
-	 * device tree file and the timer driver now creates the watchdog as a
-	 * child device. During the watchdogs creation, the timer driver passes
-	 * the base address to the watchdog over the private interface.
-	 */
+	 
 
 	drvdata->base = (void __iomem *)dev->platform_data;
 

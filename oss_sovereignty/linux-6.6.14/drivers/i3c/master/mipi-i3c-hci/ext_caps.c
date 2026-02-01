@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -17,7 +13,7 @@
 #include "xfer_mode_rate.h"
 
 
-/* Extended Capability Header */
+ 
 #define CAP_HEADER_LENGTH		GENMASK(23, 8)
 #define CAP_HEADER_ID			GENMASK(7, 0)
 
@@ -31,7 +27,7 @@ static int hci_extcap_hardware_id(struct i3c_hci *hci, void __iomem *base)
 	dev_info(&hci->master.dev, "vendor version ID: %#x\n", hci->vendor_version_id);
 	dev_info(&hci->master.dev, "vendor product ID: %#x\n", hci->vendor_product_id);
 
-	/* ought to go in a table if this grows too much */
+	 
 	switch (hci->vendor_mipi_id) {
 	case MIPI_VENDOR_NXP:
 		hci->quirks |= HCI_QUIRK_RAW_CCC;
@@ -73,12 +69,12 @@ static int hci_extcap_xfer_modes(struct i3c_hci *hci, void __iomem *base)
 
 	dev_info(&hci->master.dev, "transfer mode table has %d entries\n",
 		 entries);
-	base += 4;  /* skip header */
+	base += 4;   
 	for (index = 0; index < entries; index++) {
 		u32 mode_entry = readl(base);
 
 		DBG("mode %d: 0x%08x", index, mode_entry);
-		/* TODO: will be needed when I3C core does more than SDR */
+		 
 		base += 4;
 	}
 
@@ -92,7 +88,7 @@ static int hci_extcap_xfer_rates(struct i3c_hci *hci, void __iomem *base)
 	u32 rate_entry;
 	unsigned int index, rate, rate_id, mode_id;
 
-	base += 4;  /* skip header */
+	base += 4;   
 
 	dev_info(&hci->master.dev, "available data rates:\n");
 	for (index = 0; index < entries; index++) {
@@ -122,7 +118,7 @@ static int hci_extcap_auto_command(struct i3c_hci *hci, void __iomem *base)
 
 	dev_info(&hci->master.dev, "%d/%d active auto-command entries\n",
 		 count, max_count);
-	/* remember auto-command register location for later use */
+	 
 	hci->AUTOCMD_regs = base;
 	return 0;
 }
@@ -137,14 +133,14 @@ static int hci_extcap_debug(struct i3c_hci *hci, void __iomem *base)
 static int hci_extcap_scheduled_cmd(struct i3c_hci *hci, void __iomem *base)
 {
 	dev_info(&hci->master.dev, "scheduled commands available\n");
-	/* hci->schedcmd_regs = base; */
+	 
 	return 0;
 }
 
 static int hci_extcap_non_curr_master(struct i3c_hci *hci, void __iomem *base)
 {
 	dev_info(&hci->master.dev, "Non-Current Master support available\n");
-	/* hci->NCM_regs = base; */
+	 
 	return 0;
 }
 
@@ -191,7 +187,7 @@ static const struct hci_ext_caps ext_capabilities[] = {
 	EXT_CAP(0x08, 0x40, hci_extcap_xfer_rates),
 	EXT_CAP(0x0c, 0x10, hci_extcap_debug),
 	EXT_CAP(0x0d, 0x0c, hci_extcap_scheduled_cmd),
-	EXT_CAP(0x0e, 0x80, hci_extcap_non_curr_master), /* TODO confirm size */
+	EXT_CAP(0x0e, 0x80, hci_extcap_non_curr_master),  
 	EXT_CAP(0x0f, 0x04, hci_extcap_ccc_resp_conf),
 	EXT_CAP(0x10, 0x08, hci_extcap_global_DAT),
 	EXT_CAP(0x9d, 0x04,	hci_extcap_multilane),
@@ -202,7 +198,7 @@ static int hci_extcap_vendor_NXP(struct i3c_hci *hci, void __iomem *base)
 {
 	hci->vendor_data = (__force void *)base;
 	dev_info(&hci->master.dev, "Build Date Info = %#x\n", readl(base + 1*4));
-	/* reset the FPGA */
+	 
 	writel(0xdeadbeef, base + 1*4);
 	return 0;
 }
@@ -256,7 +252,7 @@ static int hci_extcap_vendor_specific(struct i3c_hci *hci, void __iomem *base,
 int i3c_hci_parse_ext_caps(struct i3c_hci *hci)
 {
 	void __iomem *curr_cap = hci->EXTCAPS_regs;
-	void __iomem *end = curr_cap + 0x1000; /* some arbitrary limit */
+	void __iomem *end = curr_cap + 0x1000;  
 	u32 cap_header, cap_id, cap_length;
 	const struct hci_ext_caps *cap_entry;
 	int i, err = 0;

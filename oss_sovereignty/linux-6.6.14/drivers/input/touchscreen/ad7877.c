@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2006-2008 Michael Hennerich, Analog Devices Inc.
- *
- * Description:	AD7877 based touchscreen, sensor (ADCs), DAC and GPIO driver
- * Based on:	ads7846.c
- *
- * Bugs:        Enter bugs at http://blackfin.uclinux.org/
- *
- * History:
- * Copyright (c) 2005 David Brownell
- * Copyright (c) 2006 Nokia Corporation
- * Various changes: Imre Deak <imre.deak@nokia.com>
- *
- * Using code from:
- *  - corgi_ts.c
- *	Copyright (C) 2004-2005 Richard Purdie
- *  - omap_ts.[hc], ads7846.h, ts_osk.c
- *	Copyright (C) 2002 MontaVista Software
- *	Copyright (C) 2004 Texas Instruments
- *	Copyright (C) 2005 Dirk Behme
- */
+
+ 
 
 
 #include <linux/device.h>
@@ -99,14 +79,14 @@ enum {
 	AD7877_NR_SENSE  = 11,
 };
 
-/* DAC Register Default RANGE 0 to Vcc, Volatge Mode, DAC On */
+ 
 #define AD7877_DAC_CONF			0x1
 
-/* If gpio3 is set AUX3/GPIO3 acts as GPIO Output */
+ 
 #define AD7877_EXTW_GPIO_3_CONF		0x1C4
 #define AD7877_EXTW_GPIO_DATA		0x200
 
-/* Control REG 2 */
+ 
 #define AD7877_TMR(x)			((x & 0x3) << 0)
 #define AD7877_REF(x)			((x & 0x1) << 2)
 #define AD7877_POL(x)			((x & 0x1) << 3)
@@ -115,14 +95,14 @@ enum {
 #define AD7877_ACQ(x)			((x & 0x3) << 8)
 #define AD7877_AVG(x)			((x & 0x3) << 10)
 
-/* Control REG 1 */
-#define	AD7877_SER			(1 << 11)	/* non-differential */
-#define	AD7877_DFR			(0 << 11)	/* differential */
+ 
+#define	AD7877_SER			(1 << 11)	 
+#define	AD7877_DFR			(0 << 11)	 
 
-#define AD7877_MODE_NOC  (0)	/* Do not convert */
-#define AD7877_MODE_SCC  (1)	/* Single channel conversion */
-#define AD7877_MODE_SEQ0 (2)	/* Sequence 0 in Slave Mode */
-#define AD7877_MODE_SEQ1 (3)	/* Sequence 1 in Master Mode */
+#define AD7877_MODE_NOC  (0)	 
+#define AD7877_MODE_SCC  (1)	 
+#define AD7877_MODE_SEQ0 (2)	 
+#define AD7877_MODE_SEQ1 (3)	 
 
 #define AD7877_CHANADD(x)		((x&0xF)<<7)
 #define AD7877_READADD(x)		((x)<<2)
@@ -135,9 +115,7 @@ enum {
 #define AD7877_MM_SEQUENCE (AD7877_SEQ_YPLUS_BIT | AD7877_SEQ_XPLUS_BIT | \
 		AD7877_SEQ_Z2_BIT | AD7877_SEQ_Z1_BIT)
 
-/*
- * Non-touchscreen sensors only use single-ended conversions.
- */
+ 
 
 struct ser_req {
 	u16			reset;
@@ -146,10 +124,7 @@ struct ser_req {
 	struct spi_message	msg;
 	struct spi_transfer	xfer[6];
 
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u16 sample ____cacheline_aligned;
 };
 
@@ -178,17 +153,14 @@ struct ad7877 {
 	struct spi_message	msg;
 
 	struct mutex		mutex;
-	bool			disabled;	/* P: mutex */
-	bool			gpio3;		/* P: mutex */
-	bool			gpio4;		/* P: mutex */
+	bool			disabled;	 
+	bool			gpio3;		 
+	bool			gpio4;		 
 
 	spinlock_t		lock;
-	struct timer_list	timer;		/* P: lock */
+	struct timer_list	timer;		 
 
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u16 conversion_data[AD7877_NR_SENSE] ____cacheline_aligned;
 };
 
@@ -265,7 +237,7 @@ static int ad7877_read_adc(struct spi_device *spi, unsigned command)
 
 	spi_message_init(&req->msg);
 
-	/* activate reference, so it has time to settle; */
+	 
 	req->ref_on = AD7877_WRITEADD(AD7877_REG_CTRL2) |
 			 AD7877_POL(ts->stopacq_polarity) |
 			 AD7877_AVG(0) | AD7877_PM(2) | AD7877_TMR(0) |
@@ -295,16 +267,14 @@ static int ad7877_read_adc(struct spi_device *spi, unsigned command)
 	req->xfer[3].len = 2;
 	req->xfer[3].cs_change = 1;
 
-	req->xfer[4].tx_buf = &ts->cmd_crtl2;	/*REF OFF*/
+	req->xfer[4].tx_buf = &ts->cmd_crtl2;	 
 	req->xfer[4].len = 2;
 	req->xfer[4].cs_change = 1;
 
-	req->xfer[5].tx_buf = &ts->cmd_crtl1;	/*DEFAULT*/
+	req->xfer[5].tx_buf = &ts->cmd_crtl1;	 
 	req->xfer[5].len = 2;
 
-	/* group all the transfers together, so we can't interfere with
-	 * reading touchscreen state; disable penirq while sampling
-	 */
+	 
 	for (i = 0; i < 6; i++)
 		spi_message_add_tail(&req->xfer[i], &req->msg);
 
@@ -327,26 +297,15 @@ static int ad7877_process_data(struct ad7877 *ts)
 	z1 = ts->conversion_data[AD7877_SEQ_Z1] & MAX_12BIT;
 	z2 = ts->conversion_data[AD7877_SEQ_Z2] & MAX_12BIT;
 
-	/*
-	 * The samples processed here are already preprocessed by the AD7877.
-	 * The preprocessing function consists of an averaging filter.
-	 * The combination of 'first conversion delay' and averaging provides a robust solution,
-	 * discarding the spurious noise in the signal and keeping only the data of interest.
-	 * The size of the averaging filter is programmable. (dev.platform_data, see linux/spi/ad7877.h)
-	 * Other user-programmable conversion controls include variable acquisition time,
-	 * and first conversion delay. Up to 16 averages can be taken per conversion.
-	 */
+	 
 
 	if (likely(x && z1)) {
-		/* compute touch pressure resistance using equation #1 */
+		 
 		Rt = (z2 - z1) * x * ts->x_plate_ohms;
 		Rt /= z1;
 		Rt = (Rt + 2047) >> 12;
 
-		/*
-		 * Sample found inconsistent, pressure is beyond
-		 * the maximum. Don't report it to user space.
-		 */
+		 
 		if (Rt > ts->pressure_max)
 			return -EINVAL;
 
@@ -419,10 +378,7 @@ static void ad7877_disable(void *data)
 			ad7877_ts_event_release(ts);
 	}
 
-	/*
-	 * We know the chip's in lowpower mode since we always
-	 * leave it that way after every request
-	 */
+	 
 
 	mutex_unlock(&ts->mutex);
 }
@@ -651,7 +607,7 @@ static void ad7877_setup_ts_def_msg(struct spi_device *spi, struct ad7877 *ts)
 
 	spi_message_add_tail(&ts->xfer[0], m);
 
-	ts->xfer[1].tx_buf = &ts->cmd_dummy; /* Send ZERO */
+	ts->xfer[1].tx_buf = &ts->cmd_dummy;  
 	ts->xfer[1].len = 2;
 	ts->xfer[1].cs_change = 1;
 
@@ -684,7 +640,7 @@ static int ad7877_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/* don't exceed max specified SPI CLK frequency */
+	 
 	if (spi->max_speed_hz > MAX_SPI_FREQ_HZ) {
 		dev_dbg(&spi->dev, "SPI CLK %d Hz?\n",spi->max_speed_hz);
 		return -EINVAL;
@@ -767,7 +723,7 @@ static int ad7877_probe(struct spi_device *spi)
 
 	ad7877_setup_ts_def_msg(spi, ts);
 
-	/* Request AD7877 /DAV GPIO interrupt */
+	 
 
 	err = devm_request_threaded_irq(&spi->dev, spi->irq, NULL, ad7877_irq,
 					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power-button driver for Basin Cove PMIC
- *
- * Copyright (c) 2019, Intel Corporation.
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/interrupt.h>
@@ -17,7 +12,7 @@
 #include <linux/slab.h>
 
 #define BCOVE_PBSTATUS		0x27
-#define BCOVE_PBSTATUS_PBLVL	BIT(4)	/* 1 - release, 0 - press */
+#define BCOVE_PBSTATUS_PBLVL	BIT(4)	 
 
 static irqreturn_t mrfld_pwrbtn_interrupt(int irq, void *dev_id)
 {

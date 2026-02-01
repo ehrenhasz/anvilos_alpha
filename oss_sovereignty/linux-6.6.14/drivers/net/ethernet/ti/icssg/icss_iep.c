@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Texas Instruments ICSSG Industrial Ethernet Peripheral (IEP) Driver
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -87,12 +83,7 @@ enum {
 	ICSS_IEP_MAX_REGS,
 };
 
-/**
- * struct icss_iep_plat_data - Plat data to handle SoC variants
- * @config: Regmap configuration data
- * @reg_offs: register offsets to capture offset differences across SoCs
- * @flags: Flags to represent IEP properties
- */
+ 
 struct icss_iep_plat_data {
 	struct regmap_config *config;
 	u32 reg_offs[ICSS_IEP_MAX_REGS];
@@ -106,11 +97,11 @@ struct icss_iep {
 	struct regmap *map;
 	struct device_node *client_np;
 	unsigned long refclk_freq;
-	int clk_tick_time;	/* one refclk tick time in ns */
+	int clk_tick_time;	 
 	struct ptp_clock_info ptp_info;
 	struct ptp_clock *ptp_clock;
-	struct mutex ptp_clk_mutex;	/* PHC access serializer */
-	spinlock_t irq_lock; /* CMP IRQ vs icss_iep_ptp_enable access */
+	struct mutex ptp_clk_mutex;	 
+	spinlock_t irq_lock;  
 	u32 def_inc;
 	s16 slow_cmp_inc;
 	u32 slow_cmp_count;
@@ -124,12 +115,7 @@ struct icss_iep {
 	u32 latch_enable;
 };
 
-/**
- * icss_iep_get_count_hi() - Get the upper 32 bit IEP counter
- * @iep: Pointer to structure representing IEP.
- *
- * Return: upper 32 bit IEP counter
- */
+ 
 int icss_iep_get_count_hi(struct icss_iep *iep)
 {
 	u32 val = 0;
@@ -141,12 +127,7 @@ int icss_iep_get_count_hi(struct icss_iep *iep)
 }
 EXPORT_SYMBOL_GPL(icss_iep_get_count_hi);
 
-/**
- * icss_iep_get_count_low() - Get the lower 32 bit IEP counter
- * @iep: Pointer to structure representing IEP.
- *
- * Return: lower 32 bit IEP counter
- */
+ 
 int icss_iep_get_count_low(struct icss_iep *iep)
 {
 	u32 val = 0;
@@ -158,12 +139,7 @@ int icss_iep_get_count_low(struct icss_iep *iep)
 }
 EXPORT_SYMBOL_GPL(icss_iep_get_count_low);
 
-/**
- * icss_iep_get_ptp_clock_idx() - Get PTP clock index using IEP driver
- * @iep: Pointer to structure representing IEP.
- *
- * Return: PTP clock index, -1 if not registered
- */
+ 
 int icss_iep_get_ptp_clock_idx(struct icss_iep *iep)
 {
 	if (!iep || !iep->ptp_clock)
@@ -182,14 +158,7 @@ static void icss_iep_set_counter(struct icss_iep *iep, u64 ns)
 
 static void icss_iep_update_to_next_boundary(struct icss_iep *iep, u64 start_ns);
 
-/**
- * icss_iep_settime() - Set time of the PTP clock using IEP driver
- * @iep: Pointer to structure representing IEP.
- * @ns: Time to be set in nanoseconds
- *
- * This API uses writel() instead of regmap_write() for write operations as
- * regmap_write() is too slow and this API is time sensitive.
- */
+ 
 static void icss_iep_settime(struct icss_iep *iep, u64 ns)
 {
 	unsigned long flags;
@@ -213,16 +182,7 @@ static void icss_iep_settime(struct icss_iep *iep, u64 ns)
 	spin_unlock_irqrestore(&iep->irq_lock, flags);
 }
 
-/**
- * icss_iep_gettime() - Get time of the PTP clock using IEP driver
- * @iep: Pointer to structure representing IEP.
- * @sts: Pointer to structure representing PTP system timestamp.
- *
- * This API uses readl() instead of regmap_read() for read operations as
- * regmap_read() is too slow and this API is time sensitive.
- *
- * Return: The current timestamp of the PTP clock using IEP driver
- */
+ 
 static u64 icss_iep_gettime(struct icss_iep *iep,
 			    struct ptp_system_timestamp *sts)
 {
@@ -232,10 +192,10 @@ static u64 icss_iep_gettime(struct icss_iep *iep,
 	if (iep->ops && iep->ops->gettime)
 		return iep->ops->gettime(iep->clockops_data, sts);
 
-	/* use local_irq_x() to make it work for both RT/non-RT */
+	 
 	local_irq_save(flags);
 
-	/* no need to play with hi-lo, hi is latched when lo is read */
+	 
 	ptp_read_system_prets(sts);
 	ts_lo = readl(iep->base + iep->plat_data->reg_offs[ICSS_IEP_COUNT_REG0]);
 	ptp_read_system_postts(sts);
@@ -270,38 +230,38 @@ static void icss_iep_enable_shadow_mode(struct icss_iep *iep)
 
 	icss_iep_disable(iep);
 
-	/* disable shadow mode */
+	 
 	regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 			   IEP_CMP_CFG_SHADOW_EN, 0);
 
-	/* enable shadow mode */
+	 
 	regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 			   IEP_CMP_CFG_SHADOW_EN, IEP_CMP_CFG_SHADOW_EN);
 
-	/* clear counters */
+	 
 	icss_iep_set_counter(iep, 0);
 
-	/* clear overflow status */
+	 
 	regmap_update_bits(iep->map, ICSS_IEP_GLOBAL_STATUS_REG,
 			   IEP_GLOBAL_STATUS_CNT_OVF,
 			   IEP_GLOBAL_STATUS_CNT_OVF);
 
-	/* clear compare status */
+	 
 	for (cmp = IEP_MIN_CMP; cmp < IEP_MAX_CMP; cmp++) {
 		regmap_update_bits(iep->map, ICSS_IEP_CMP_STAT_REG,
 				   IEP_CMP_STATUS(cmp), IEP_CMP_STATUS(cmp));
 	}
 
-	/* enable reset counter on CMP0 event */
+	 
 	regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 			   IEP_CMP_CFG_CMP0_RST_CNT_EN,
 			   IEP_CMP_CFG_CMP0_RST_CNT_EN);
-	/* enable compare */
+	 
 	regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 			   IEP_CMP_CFG_CMP_EN(0),
 			   IEP_CMP_CFG_CMP_EN(0));
 
-	/* set CMP0 value to cycle time */
+	 
 	regmap_write(iep->map, ICSS_IEP_CMP0_REG0, cycle_time);
 	if (iep->plat_data->flags & ICSS_IEP_64BIT_COUNTER_SUPPORT)
 		regmap_write(iep->map, ICSS_IEP_CMP0_REG1, cycle_time);
@@ -352,7 +312,7 @@ static void icss_iep_set_slow_compensation_count(struct icss_iep *iep,
 	regmap_write(iep->map, ICSS_IEP_SLOW_COMPEN_REG, compen_count);
 }
 
-/* PTP PHC operations */
+ 
 static int icss_iep_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct icss_iep *iep = container_of(ptp, struct icss_iep, ptp_info);
@@ -362,41 +322,27 @@ static int icss_iep_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	mutex_lock(&iep->ptp_clk_mutex);
 
-	/* ppb is amount of frequency we want to adjust in 1GHz (billion)
-	 * e.g. 100ppb means we need to speed up clock by 100Hz
-	 * i.e. at end of 1 second (1 billion ns) clock time, we should be
-	 * counting 100 more ns.
-	 * We use IEP slow compensation to achieve continuous freq. adjustment.
-	 * There are 2 parts. Cycle time and adjustment per cycle.
-	 * Simplest case would be 1 sec Cycle time. Then adjustment
-	 * pre cycle would be (def_inc + ppb) value.
-	 * Cycle time will have to be chosen based on how worse the ppb is.
-	 * e.g. smaller the ppb, cycle time has to be large.
-	 * The minimum adjustment we can do is +-1ns per cycle so let's
-	 * reduce the cycle time to get 1ns per cycle adjustment.
-	 *	1ppb = 1sec cycle time & 1ns adjust
-	 *	1000ppb = 1/1000 cycle time & 1ns adjust per cycle
-	 */
+	 
 
 	if (iep->cycle_time_ns)
-		iep->slow_cmp_inc = iep->clk_tick_time;	/* 4ns adj per cycle */
+		iep->slow_cmp_inc = iep->clk_tick_time;	 
 	else
-		iep->slow_cmp_inc = 1;	/* 1ns adjust per cycle */
+		iep->slow_cmp_inc = 1;	 
 
 	if (ppb < 0) {
 		iep->slow_cmp_inc = -iep->slow_cmp_inc;
 		ppb = -ppb;
 	}
 
-	cyc_count = NSEC_PER_SEC;		/* 1s cycle time @1GHz */
-	cyc_count /= ppb;		/* cycle time per ppb */
+	cyc_count = NSEC_PER_SEC;		 
+	cyc_count /= ppb;		 
 
-	/* slow_cmp_count is decremented every clock cycle, e.g. @250MHz */
+	 
 	if (!iep->cycle_time_ns)
 		cyc_count /= iep->clk_tick_time;
 	iep->slow_cmp_count = cyc_count;
 
-	/* iep->clk_tick_time is def_inc */
+	 
 	cmp_inc = iep->clk_tick_time + iep->slow_cmp_inc;
 	icss_iep_set_compensation_inc(iep, cmp_inc);
 	icss_iep_set_slow_compensation_count(iep, iep->slow_cmp_count);
@@ -462,11 +408,11 @@ static void icss_iep_update_to_next_boundary(struct icss_iep *iep, u64 start_ns)
 	if (start_ns < ns)
 		start_ns = ns;
 	p_ns = iep->period;
-	/* Round up to next period boundary */
+	 
 	start_ns += p_ns - 1;
 	offset = do_div(start_ns, p_ns);
 	start_ns = start_ns * p_ns;
-	/* If it is too close to update, shift to next boundary */
+	 
 	if (p_ns - offset < 10)
 		start_ns += p_ns;
 
@@ -487,24 +433,24 @@ static int icss_iep_perout_enable_hw(struct icss_iep *iep,
 			return ret;
 
 		if (on) {
-			/* Configure CMP */
+			 
 			regmap_write(iep->map, ICSS_IEP_CMP1_REG0, lower_32_bits(cmp));
 			if (iep->plat_data->flags & ICSS_IEP_64BIT_COUNTER_SUPPORT)
 				regmap_write(iep->map, ICSS_IEP_CMP1_REG1, upper_32_bits(cmp));
-			/* Configure SYNC, 1ms pulse width */
+			 
 			regmap_write(iep->map, ICSS_IEP_SYNC_PWIDTH_REG, 1000000);
 			regmap_write(iep->map, ICSS_IEP_SYNC0_PERIOD_REG, 0);
 			regmap_write(iep->map, ICSS_IEP_SYNC_START_REG, 0);
-			regmap_write(iep->map, ICSS_IEP_SYNC_CTRL_REG, 0); /* one-shot mode */
-			/* Enable CMP 1 */
+			regmap_write(iep->map, ICSS_IEP_SYNC_CTRL_REG, 0);  
+			 
 			regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 					   IEP_CMP_CFG_CMP_EN(1), IEP_CMP_CFG_CMP_EN(1));
 		} else {
-			/* Disable CMP 1 */
+			 
 			regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 					   IEP_CMP_CFG_CMP_EN(1), 0);
 
-			/* clear regs */
+			 
 			regmap_write(iep->map, ICSS_IEP_CMP1_REG0, 0);
 			if (iep->plat_data->flags & ICSS_IEP_64BIT_COUNTER_SUPPORT)
 				regmap_write(iep->map, ICSS_IEP_CMP1_REG1, 0);
@@ -519,23 +465,23 @@ static int icss_iep_perout_enable_hw(struct icss_iep *iep,
 				   + req->period.nsec;
 			icss_iep_update_to_next_boundary(iep, start_ns);
 
-			/* Enable Sync in single shot mode  */
+			 
 			regmap_write(iep->map, ICSS_IEP_SYNC_CTRL_REG,
 				     IEP_SYNC_CTRL_SYNC_N_EN(0) | IEP_SYNC_CTRL_SYNC_EN);
-			/* Enable CMP 1 */
+			 
 			regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 					   IEP_CMP_CFG_CMP_EN(1), IEP_CMP_CFG_CMP_EN(1));
 		} else {
-			/* Disable CMP 1 */
+			 
 			regmap_update_bits(iep->map, ICSS_IEP_CMP_CFG_REG,
 					   IEP_CMP_CFG_CMP_EN(1), 0);
 
-			/* clear CMP regs */
+			 
 			regmap_write(iep->map, ICSS_IEP_CMP1_REG0, 0);
 			if (iep->plat_data->flags & ICSS_IEP_64BIT_COUNTER_SUPPORT)
 				regmap_write(iep->map, ICSS_IEP_CMP1_REG1, 0);
 
-			/* Disable sync */
+			 
 			regmap_write(iep->map, ICSS_IEP_SYNC_CTRL_REG, 0);
 		}
 	}
@@ -690,7 +636,7 @@ struct icss_iep *icss_iep_get_idx(struct device_node *np, int idx)
 	of_node_put(iep_np);
 
 	if (!pdev)
-		/* probably IEP not yet probed */
+		 
 		return ERR_PTR(-EPROBE_DEFER);
 
 	iep = platform_get_drvdata(pdev);
@@ -729,7 +675,7 @@ EXPORT_SYMBOL_GPL(icss_iep_put);
 
 void icss_iep_init_fw(struct icss_iep *iep)
 {
-	/* start IEP for FW use in raw 64bit mode, no PTP support */
+	 
 	iep->clk_tick_time = iep->def_inc;
 	iep->cycle_time_ns = 0;
 	iep->ops = NULL;
@@ -737,7 +683,7 @@ void icss_iep_init_fw(struct icss_iep *iep)
 	icss_iep_set_default_inc(iep, iep->def_inc);
 	icss_iep_set_compensation_inc(iep, iep->def_inc);
 	icss_iep_set_compensation_count(iep, 0);
-	regmap_write(iep->map, ICSS_IEP_SYNC_PWIDTH_REG, iep->refclk_freq / 10); /* 100 ms pulse */
+	regmap_write(iep->map, ICSS_IEP_SYNC_PWIDTH_REG, iep->refclk_freq / 10);  
 	regmap_write(iep->map, ICSS_IEP_SYNC0_PERIOD_REG, 0);
 	if (iep->plat_data->flags & ICSS_IEP_SLOW_COMPEN_REG_SUPPORT)
 		icss_iep_set_slow_compensation_count(iep, 0);
@@ -765,7 +711,7 @@ int icss_iep_init(struct icss_iep *iep, const struct icss_iep_clockops *clkops,
 	icss_iep_set_default_inc(iep, iep->def_inc);
 	icss_iep_set_compensation_inc(iep, iep->def_inc);
 	icss_iep_set_compensation_count(iep, 0);
-	regmap_write(iep->map, ICSS_IEP_SYNC_PWIDTH_REG, iep->refclk_freq / 10); /* 100 ms pulse */
+	regmap_write(iep->map, ICSS_IEP_SYNC_PWIDTH_REG, iep->refclk_freq / 10);  
 	regmap_write(iep->map, ICSS_IEP_SYNC0_PERIOD_REG, 0);
 	if (iep->plat_data->flags & ICSS_IEP_SLOW_COMPEN_REG_SUPPORT)
 		icss_iep_set_slow_compensation_count(iep, 0);
@@ -833,7 +779,7 @@ static int icss_iep_probe(struct platform_device *pdev)
 
 	iep->refclk_freq = clk_get_rate(iep_clk);
 
-	iep->def_inc = NSEC_PER_SEC / iep->refclk_freq;	/* ns per clock tick */
+	iep->def_inc = NSEC_PER_SEC / iep->refclk_freq;	 
 	if (iep->def_inc > IEP_MAX_DEF_INC) {
 		dev_err(dev, "Failed to set def_inc %d.  IEP_clock is too slow to be supported\n",
 			iep->def_inc);

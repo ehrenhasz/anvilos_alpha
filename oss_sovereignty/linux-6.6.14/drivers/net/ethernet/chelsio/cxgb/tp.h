@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* $Date: 2005/03/07 23:59:05 $ $RCSfile: tp.h,v $ $Revision: 1.20 $ */
+ 
+ 
 #ifndef CHELSIO_TP_H
 #define CHELSIO_TP_H
 
@@ -9,7 +9,7 @@
 
 struct tp_mib_statistics {
 
-	/* IP */
+	 
 	u32 ipInReceive_hi;
 	u32 ipInReceive_lo;
 	u32 ipInHdrErrors_hi;
@@ -35,7 +35,7 @@ struct tp_mib_statistics {
 
 	u32 reserved[8];
 
-	/* TCP */
+	 
 	u32 tcpActiveOpens;
 	u32 tcpPassiveOpens;
 	u32 tcpAttemptFails;

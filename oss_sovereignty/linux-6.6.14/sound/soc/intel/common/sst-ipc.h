@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel SST generic IPC Support
- *
- * Copyright (C) 2015, Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __SST_GENERIC_IPC_H
 #define __SST_GENERIC_IPC_H
@@ -45,12 +41,12 @@ struct sst_plat_ipc_ops {
 	int (*check_dsp_lp_on)(struct sst_dsp *dsp, bool state);
 };
 
-/* SST generic IPC data */
+ 
 struct sst_generic_ipc {
 	struct device *dev;
 	struct sst_dsp *dsp;
 
-	/* IPC messaging */
+	 
 	struct list_head tx_list;
 	struct list_head rx_list;
 	struct list_head empty_list;

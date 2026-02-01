@@ -1,30 +1,9 @@
-/*
- * Copyright 2002, 2003 Andi Kleen, SuSE Labs.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details. No warranty for anything given at all.
- */
+ 
 #include <linux/linkage.h>
 #include <asm/errno.h>
 #include <asm/asm.h>
 
-/*
- * Checksum copy with exception handling.
- * On exceptions src_err_ptr or dst_err_ptr is set to -EFAULT and the
- * destination is zeroed.
- *
- * Input
- * rdi  source
- * rsi  destination
- * edx  len (32bit)
- *
- * Output
- * eax  64bit sum. undefined in case of exception.
- *
- * Wrappers need to take care of valid exception sum and zeroing.
- * They also should align source or destination to 8 bytes.
- */
+ 
 
 	.macro source
 10:
@@ -56,14 +35,14 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	movl  %ecx, %r12d
 
 	shrq  $6, %r12
-	jz	.Lhandle_tail       /* < 64 */
+	jz	.Lhandle_tail        
 
 	clc
 
-	/* main loop. clear in 64 byte blocks */
-	/* r9: zero, r8: temp2, rbx: temp1, rax: sum, rcx: saved length */
-	/* r11:	temp3, rdx: temp4, r12 loopcnt */
-	/* r10:	temp5, r15: temp6, r14 temp7, r13 temp8 */
+	 
+	 
+	 
+	 
 	.p2align 4
 .Lloop:
 	source
@@ -85,10 +64,7 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	movq  56(%rdi), %r13
 
 30:
-	/*
-	 * No _ASM_EXTABLE_UA; this is used for intentional prefetch on a
-	 * potentially unmapped kernel address.
-	 */
+	 
 	_ASM_EXTABLE(30b, 2f)
 	prefetcht0 5*64(%rdi)
 2:
@@ -128,9 +104,9 @@ SYM_FUNC_START(csum_partial_copy_generic)
 
 	adcq  %r9, %rax
 
-	/* do last up to 56 bytes */
+	 
 .Lhandle_tail:
-	/* ecx:	count, rcx.63: the end result needs to be rol8 */
+	 
 	movq %rcx, %r10
 	andl $63, %ecx
 	shrl $3, %ecx
@@ -144,23 +120,23 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	decl %ecx
 	dest
 	movq %rbx, (%rsi)
-	leaq 8(%rsi), %rsi /* preserve carry */
+	leaq 8(%rsi), %rsi  
 	leaq 8(%rdi), %rdi
 	jnz	.Lloop_8
-	adcq %r9, %rax	/* add in carry */
+	adcq %r9, %rax	 
 
 .Lfold:
-	/* reduce checksum to 32bits */
+	 
 	movl %eax, %ebx
 	shrq $32, %rax
 	addl %ebx, %eax
 	adcl %r9d, %eax
 
-	/* do last up to 6 bytes */
+	 
 .Lhandle_7:
 	movl %r10d, %ecx
 	andl $7, %ecx
-.L1:				/* .Lshort rejoins the common path here */
+.L1:				 
 	shrl $1, %ecx
 	jz   .Lhandle_1
 	movl $2, %edx
@@ -177,9 +153,9 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	leaq 2(%rdi), %rdi
 	leaq 2(%rsi), %rsi
 	jnz .Lloop_1
-	adcl %r9d, %eax	/* add in carry */
+	adcl %r9d, %eax	 
 
-	/* handle last odd byte */
+	 
 .Lhandle_1:
 	testb $1, %r10b
 	jz    .Lende
@@ -189,7 +165,7 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	dest
 	movb %bl, (%rsi)
 	addl %ebx, %eax
-	adcl %r9d, %eax		/* carry */
+	adcl %r9d, %eax		 
 
 .Lende:
 	testq %r10, %r10
@@ -238,7 +214,7 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	movb %bl, (%rsi)
 	leaq 1(%rdi), %rdi
 	leaq 1(%rsi), %rsi
-	/* decrement, set MSB */
+	 
 	leaq -1(%rcx, %rcx), %rcx
 	rorq $1, %rcx
 	shll $8, %ebx
@@ -249,7 +225,7 @@ SYM_FUNC_START(csum_partial_copy_generic)
 	roll $8, %eax
 	jmp .Lout
 
-	/* Exception: just return 0 */
+	 
 .Lfault:
 	xorl %eax, %eax
 	jmp  .Lout

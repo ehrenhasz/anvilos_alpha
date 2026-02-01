@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ialloc.c
- *
- * PURPOSE
- *	Inode allocation handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-2001 Ben Fennema
- *
- * HISTORY
- *
- *  02/24/99 blf  Created.
- *
- */
+
+ 
 
 #include "udfdecl.h"
 #include <linux/fs.h>

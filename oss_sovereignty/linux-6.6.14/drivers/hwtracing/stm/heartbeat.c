@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple heartbeat STM source driver
- * Copyright (c) 2016, Intel Corporation.
- *
- * Heartbeat STM source will send repetitive messages over STM devices to a
- * trace host.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

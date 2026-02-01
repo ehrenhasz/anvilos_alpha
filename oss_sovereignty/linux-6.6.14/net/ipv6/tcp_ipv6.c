@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	TCP over IPv6
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *
- *	Based on:
- *	linux/net/ipv4/tcp.c
- *	linux/net/ipv4/tcp_input.c
- *	linux/net/ipv4/tcp_output.c
- *
- *	Fixes:
- *	Hideaki YOSHIFUJI	:	sin6_scope_id support
- *	YOSHIFUJI Hideaki @USAGI and:	Support IPV6_V6ONLY socket option, which
- *	Alexey Kuznetsov		allow both IPv4 and IPv6 sockets to bind
- *					a single port at the same time.
- *	YOSHIFUJI Hideaki @USAGI:	convert /proc/net/tcp6 to seq_file.
- */
+
+ 
 
 #include <linux/bottom_half.h>
 #include <linux/module.h>
@@ -88,11 +70,7 @@ static struct tcp_md5sig_key *tcp_v6_md5_do_lookup(const struct sock *sk,
 }
 #endif
 
-/* Helper returning the inet6 address from a given tcp socket.
- * It can be used in TCP stack instead of inet6_sk(sk).
- * This avoids a dereference and allow compiler optimizations.
- * It is a specialized version of inet6_sk_generic().
- */
+ 
 #define tcp_inet6_sk(sk) (&container_of_const(tcp_sk(sk), \
 					      struct tcp6_sock, tcp)->inet6)
 
@@ -126,10 +104,7 @@ static u32 tcp_v6_init_ts_off(const struct net *net, const struct sk_buff *skb)
 static int tcp_v6_pre_connect(struct sock *sk, struct sockaddr *uaddr,
 			      int addr_len)
 {
-	/* This check is replicated from tcp_v6_connect() and intended to
-	 * prevent BPF program called below from accessing bytes that are out
-	 * of the bound specified by user in addr_len.
-	 */
+	 
 	if (addr_len < SIN6_LEN_RFC2133)
 		return -EINVAL;
 
@@ -175,9 +150,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 		}
 	}
 
-	/*
-	 *	connect() to INADDR_ANY means loopback (BSD'ism).
-	 */
+	 
 
 	if (ipv6_addr_any(&usin->sin6_addr)) {
 		if (ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
@@ -195,16 +168,14 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 	if (addr_type&IPV6_ADDR_LINKLOCAL) {
 		if (addr_len >= sizeof(struct sockaddr_in6) &&
 		    usin->sin6_scope_id) {
-			/* If interface is set while binding, indices
-			 * must coincide.
-			 */
+			 
 			if (!sk_dev_equal_l3scope(sk, usin->sin6_scope_id))
 				return -EINVAL;
 
 			sk->sk_bound_dev_if = usin->sin6_scope_id;
 		}
 
-		/* Connect to link-local address requires an interface */
+		 
 		if (!sk->sk_bound_dev_if)
 			return -EINVAL;
 	}
@@ -219,9 +190,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 	sk->sk_v6_daddr = usin->sin6_addr;
 	np->flow_label = fl6.flowlabel;
 
-	/*
-	 *	TCP over IPv4
-	 */
+	 
 
 	if (addr_type & IPV6_ADDR_MAPPED) {
 		u32 exthdrlen = icsk->icsk_ext_hdr_len;
@@ -234,7 +203,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 		sin.sin_port = usin->sin6_port;
 		sin.sin_addr.s_addr = usin->sin6_addr.s6_addr32[3];
 
-		/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
+		 
 		WRITE_ONCE(icsk->icsk_af_ops, &ipv6_mapped);
 		if (sk_is_mptcp(sk))
 			mptcpv6_handle_mapped(sk, true);
@@ -247,7 +216,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 
 		if (err) {
 			icsk->icsk_ext_hdr_len = exthdrlen;
-			/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
+			 
 			WRITE_ONCE(icsk->icsk_af_ops, &ipv6_specific);
 			if (sk_is_mptcp(sk))
 				mptcpv6_handle_mapped(sk, false);
@@ -296,7 +265,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 			goto failure;
 	}
 
-	/* set the source address */
+	 
 	np->saddr = *saddr;
 	inet->inet_rcv_saddr = LOOPBACK4_IPV6;
 
@@ -360,9 +329,7 @@ static void tcp_v6_mtu_reduced(struct sock *sk)
 
 	mtu = READ_ONCE(tcp_sk(sk)->mtu_info);
 
-	/* Drop requests trying to increase our current mss.
-	 * Check done in __ip6_rt_update_pmtu() is too late.
-	 */
+	 
 	if (tcp_mtu_to_mss(sk, mtu) >= tcp_sk(sk)->mss_cache)
 		return;
 
@@ -420,7 +387,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 		goto out;
 
 	if (static_branch_unlikely(&ip6_min_hopcount)) {
-		/* min_hopcount can be changed concurrently from do_ipv6_setsockopt() */
+		 
 		if (ipv6_hdr(skb)->hop_limit < READ_ONCE(tcp_inet6_sk(sk)->min_hopcount)) {
 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
 			goto out;
@@ -428,7 +395,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	}
 
 	tp = tcp_sk(sk);
-	/* XXX (TFO) - tp->snd_una should be ISN (tcp_create_openreq_child() */
+	 
 	fastopen = rcu_dereference(tp->fastopen_rsk);
 	snd_una = fastopen ? tcp_rsk(fastopen)->snt_isn : tp->snd_una;
 	if (sk->sk_state != TCP_LISTEN &&
@@ -452,10 +419,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	if (type == ICMPV6_PKT_TOOBIG) {
 		u32 mtu = ntohl(info);
 
-		/* We are not interested in TCP_LISTEN and open_requests
-		 * (SYN-ACKs send out by Linux are always <576bytes so
-		 * they should go through unfragmented).
-		 */
+		 
 		if (sk->sk_state == TCP_LISTEN)
 			goto out;
 
@@ -476,13 +440,11 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	}
 
 
-	/* Might be for an request_sock */
+	 
 	switch (sk->sk_state) {
 	case TCP_SYN_SENT:
 	case TCP_SYN_RECV:
-		/* Only in fast or simultaneous open. If a fast open socket is
-		 * already accepted it is treated as a connected one below.
-		 */
+		 
 		if (fastopen && !fastopen->sk)
 			break;
 
@@ -490,7 +452,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 
 		if (!sock_owned_by_user(sk)) {
 			WRITE_ONCE(sk->sk_err, err);
-			sk_error_report(sk);		/* Wake people up to see the error (see connect in sock.c) */
+			sk_error_report(sk);		 
 
 			tcp_done(sk);
 		} else {
@@ -500,9 +462,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	case TCP_LISTEN:
 		break;
 	default:
-		/* check if this ICMP message allows revert of backoff.
-		 * (see RFC 6069)
-		 */
+		 
 		if (!fastopen && type == ICMPV6_DEST_UNREACH &&
 		    code == ICMPV6_NOROUTE)
 			tcp_ld_RTO_revert(sk, seq);
@@ -536,7 +496,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
 	int err = -ENOMEM;
 	u8 tclass;
 
-	/* First, grab a route. */
+	 
 	if (!dst && (dst = inet6_csk_route_req(sk, fl6, req,
 					       IPPROTO_TCP)) == NULL)
 		goto done;
@@ -641,9 +601,7 @@ static int tcp_v6_parse_md5_keys(struct sock *sk, int optname,
 			l3index = dev->ifindex;
 		rcu_read_unlock();
 
-		/* ok to reference set/not set outside of rcu;
-		 * right now device MUST be an L3 master
-		 */
+		 
 		if (!dev || !l3index)
 			return -EINVAL;
 	}
@@ -680,7 +638,7 @@ static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
 	struct tcphdr *_th;
 
 	bp = hp->scratch;
-	/* 1. TCP pseudo-header (RFC2460) */
+	 
 	bp->saddr = *saddr;
 	bp->daddr = *daddr;
 	bp->protocol = cpu_to_be32(IPPROTO_TCP);
@@ -738,7 +696,7 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
 	struct ahash_request *req;
 	const struct tcphdr *th = tcp_hdr(skb);
 
-	if (sk) { /* valid for establish/request sockets */
+	if (sk) {  
 		saddr = &sk->sk_v6_rcv_saddr;
 		daddr = &sk->sk_v6_daddr;
 	} else {
@@ -788,7 +746,7 @@ static void tcp_v6_init_req(struct request_sock *req,
 	ireq->ir_v6_rmt_addr = ipv6_hdr(skb)->saddr;
 	ireq->ir_v6_loc_addr = ipv6_hdr(skb)->daddr;
 
-	/* So that link locals have meaning */
+	 
 	if ((!sk_listener->sk_bound_dev_if || l3_slave) &&
 	    ipv6_addr_type(&ireq->ir_v6_rmt_addr) & IPV6_ADDR_LINKLOCAL)
 		ireq->ir_iif = tcp_v6_iif(skb);
@@ -883,7 +841,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
 	t1 = skb_push(buff, tot_len);
 	skb_reset_transport_header(buff);
 
-	/* Swap the send and the receive. */
+	 
 	memset(t1, 0, sizeof(*t1));
 	t1->dest = th->source;
 	t1->source = th->dest;
@@ -943,7 +901,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
 		skb_set_delivery_time(buff, tcp_transmit_time(sk), true);
 	}
 	if (txhash) {
-		/* autoflowlabel/skb_get_hash_flowi6 rely on buff->hash */
+		 
 		skb_set_hash(buff, txhash, PKT_HASH_TYPE_L4);
 	}
 	fl6.flowi6_mark = IP6_REPLY_MARK(net, skb->mark) ?: mark;
@@ -952,12 +910,9 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
 	fl6.flowi6_uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
 	security_skb_classify_flow(skb, flowi6_to_flowi_common(&fl6));
 
-	/* Pass a socket to ip6_dst_lookup either it is for RST
-	 * Underlying function will use this to retrieve the network
-	 * namespace
-	 */
+	 
 	if (sk && sk->sk_state != TCP_TIME_WAIT)
-		dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL); /*sk's xfrm_policy can be referred*/
+		dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);  
 	else
 		dst = ip6_dst_lookup_flow(net, ctl_sk, &fl6, NULL);
 	if (!IS_ERR(dst)) {
@@ -994,9 +949,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
 	if (th->rst)
 		return;
 
-	/* If sk not NULL, it means we did a successful lookup and incoming
-	 * route had to be correct. prequeue might have dropped our dst.
-	 */
+	 
 	if (!sk && !ipv6_unicast_destination(skb))
 		return;
 
@@ -1007,9 +960,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
 	if (sk && sk_fullsock(sk)) {
 		int l3index;
 
-		/* sdif set, means packet ingressed via a device
-		 * in an L3 domain and inet_iif is set to it.
-		 */
+		 
 		l3index = tcp_v6_sdif(skb) ? tcp_v6_iif_l3_slave(skb) : 0;
 		key = tcp_v6_md5_do_lookup(sk, &ipv6h->saddr, l3index);
 	} else if (hash_location) {
@@ -1017,13 +968,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
 		int sdif = tcp_v6_sdif(skb);
 		int l3index;
 
-		/*
-		 * active side is lost. Try to find listening socket through
-		 * source port, and then find md5 key through listening socket.
-		 * we are not loose security here:
-		 * Incoming packet is checked with md5 hash with finding key,
-		 * no RST generated if md5 hash doesn't match.
-		 */
+		 
 		sk1 = inet6_lookup_listener(net, net->ipv4.tcp_death_row.hashinfo,
 					    NULL, 0, &ipv6h->saddr, th->source,
 					    &ipv6h->daddr, ntohs(th->source),
@@ -1031,9 +976,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
 		if (!sk1)
 			goto out;
 
-		/* sdif set, means packet ingressed via a device
-		 * in an L3 domain and dif is set to it.
-		 */
+		 
 		l3index = tcp_v6_sdif(skb) ? dif : 0;
 
 		key = tcp_v6_md5_do_lookup(sk1, &ipv6h->saddr, l3index);
@@ -1113,14 +1056,8 @@ static void tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
 
 	l3index = tcp_v6_sdif(skb) ? tcp_v6_iif_l3_slave(skb) : 0;
 
-	/* sk->sk_state == TCP_LISTEN -> for regular TCP_SYN_RECV
-	 * sk->sk_state == TCP_SYN_RECV -> for Fast Open.
-	 */
-	/* RFC 7323 2.3
-	 * The window field (SEG.WND) of every outgoing segment, with the
-	 * exception of <SYN> segments, MUST be right-shifted by
-	 * Rcv.Wind.Shift bits:
-	 */
+	 
+	 
 	tcp_v6_send_ack(sk, skb, (sk->sk_state == TCP_LISTEN) ?
 			tcp_rsk(req)->snt_isn + 1 : tcp_sk(sk)->snd_nxt,
 			tcp_rsk(req)->rcv_nxt,
@@ -1178,15 +1115,12 @@ static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
 
 drop:
 	tcp_listendrop(sk);
-	return 0; /* don't send reset */
+	return 0;  
 }
 
 static void tcp_v6_restore_cb(struct sk_buff *skb)
 {
-	/* We need to move header back to the beginning if xfrm6_policy_check()
-	 * and tcp_v6_fill_cb() are going to be called again.
-	 * ip6_datagram_recv_specific_ctl() also expects IP6CB to be there.
-	 */
+	 
 	memmove(IP6CB(skb), &TCP_SKB_CB(skb)->header.h6,
 		sizeof(struct inet6_skb_parm));
 }
@@ -1212,9 +1146,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 	struct flowi6 fl6;
 
 	if (skb->protocol == htons(ETH_P_IP)) {
-		/*
-		 *	v6 mapped
-		 */
+		 
 
 		newsk = tcp_v4_syn_recv_sock(sk, skb, req, dst,
 					     req_unhash, own_req);
@@ -1250,16 +1182,9 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 		if (np->repflow)
 			newnp->flow_label = 0;
 
-		/*
-		 * No need to charge this sock to the relevant IPv6 refcnt debug socks count
-		 * here, tcp_create_openreq_child now does this for us, see the comment in
-		 * that function for the gory details. -acme
-		 */
+		 
 
-		/* It is tricky place. Until this moment IPv4 tcp
-		   worked with IPv6 icsk.icsk_af_ops.
-		   Sync it now.
-		 */
+		 
 		tcp_sync_mss(newsk, inet_csk(newsk)->icsk_pmtu_cookie);
 
 		return newsk;
@@ -1280,11 +1205,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 	if (!newsk)
 		goto out_nonewsk;
 
-	/*
-	 * No need to charge this sock to the relevant IPv6 refcnt debug socks
-	 * count here, tcp_create_openreq_child now does this for us, see the
-	 * comment in that function for the gory details. -acme
-	 */
+	 
 
 	newsk->sk_gso_type = SKB_GSO_TCPV6;
 	ip6_dst_store(newsk, dst, NULL, NULL);
@@ -1303,16 +1224,13 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 	newsk->sk_v6_rcv_saddr = ireq->ir_v6_loc_addr;
 	newsk->sk_bound_dev_if = ireq->ir_iif;
 
-	/* Now IPv6 options...
-
-	   First: no IPv4 options.
-	 */
+	 
 	newinet->inet_opt = NULL;
 	newnp->ipv6_mc_list = NULL;
 	newnp->ipv6_ac_list = NULL;
 	newnp->ipv6_fl_list = NULL;
 
-	/* Clone RX bits */
+	 
 	newnp->rxopt.all = np->rxopt.all;
 
 	newnp->pktoptions = NULL;
@@ -1323,18 +1241,11 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 	if (np->repflow)
 		newnp->flow_label = ip6_flowlabel(ipv6_hdr(skb));
 
-	/* Set ToS of the new socket based upon the value of incoming SYN.
-	 * ECT bits are set later in tcp_init_transfer().
-	 */
+	 
 	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
 		newnp->tclass = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
 
-	/* Clone native IPv6 options from listening socket (if any)
-
-	   Yes, keeping reference count would be much more clever,
-	   but we make one more one thing there: reattach optmem
-	   to newsk.
-	 */
+	 
 	opt = ireq->ipv6_opt;
 	if (!opt)
 		opt = rcu_dereference(np->opt);
@@ -1360,7 +1271,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 #ifdef CONFIG_TCP_MD5SIG
 	l3index = l3mdev_master_ifindex_by_index(sock_net(sk), ireq->ir_iif);
 
-	/* Copy over the MD5 key from the original socket */
+	 
 	key = tcp_v6_md5_do_lookup(sk, &newsk->sk_v6_daddr, l3index);
 	if (key) {
 		const union tcp_md5_addr *addr;
@@ -1384,7 +1295,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 	if (*own_req) {
 		tcp_move_syn(newtp, req);
 
-		/* Clone pktoptions received with SYN, if we own the req */
+		 
 		if (ireq->pktopts) {
 			newnp->pktoptions = skb_clone_and_charge_r(ireq->pktopts, newsk);
 			consume_skb(ireq->pktopts);
@@ -1394,9 +1305,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
 		}
 	} else {
 		if (!req_unhash && found_dup_sk) {
-			/* This code path should only be executed in the
-			 * syncookie case only
-			 */
+			 
 			bh_unlock_sock(newsk);
 			sock_put(newsk);
 			newsk = NULL;
@@ -1416,14 +1325,7 @@ out:
 
 INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
 							   u32));
-/* The socket must have it's spinlock held when we get
- * here, unless it is a TCP_LISTEN socket.
- *
- * We have a potential double-lock case here, so even when
- * doing backlog processing we use the BH locking scheme.
- * This is because we cannot sleep with the original spinlock
- * held.
- */
+ 
 INDIRECT_CALLABLE_SCOPE
 int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 {
@@ -1432,40 +1334,19 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 	enum skb_drop_reason reason;
 	struct tcp_sock *tp;
 
-	/* Imagine: socket is IPv6. IPv4 packet arrives,
-	   goes to IPv4 receive handler and backlogged.
-	   From backlog it always goes here. Kerboom...
-	   Fortunately, tcp_rcv_established and rcv_established
-	   handle them correctly, but it is not case with
-	   tcp_v6_hnd_req and tcp_v6_send_reset().   --ANK
-	 */
+	 
 
 	if (skb->protocol == htons(ETH_P_IP))
 		return tcp_v4_do_rcv(sk, skb);
 
-	/*
-	 *	socket locking is here for SMP purposes as backlog rcv
-	 *	is currently called with bh processing disabled.
-	 */
+	 
 
-	/* Do Stevens' IPV6_PKTOPTIONS.
-
-	   Yes, guys, it is the only place in our code, where we
-	   may make it not affecting IPv4.
-	   The rest of code is protocol independent,
-	   and I do not like idea to uglify IPv4.
-
-	   Actually, all the idea behind IPV6_PKTOPTIONS
-	   looks not very well thought. For now we latch
-	   options, received in the last packet, enqueued
-	   by tcp. Feel free to propose better solution.
-					       --ANK (980728)
-	 */
+	 
 	if (np->rxopt.all)
 		opt_skb = skb_clone_and_charge_r(skb, sk);
 
 	reason = SKB_DROP_REASON_NOT_SPECIFIED;
-	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
+	if (sk->sk_state == TCP_ESTABLISHED) {  
 		struct dst_entry *dst;
 
 		dst = rcu_dereference_protected(sk->sk_rx_dst,
@@ -1529,13 +1410,7 @@ csum_err:
 
 
 ipv6_pktoptions:
-	/* Do you ask, what is it?
-
-	   1. skb was enqueued by tcp.
-	   2. skb is added to tail of read queue, rather than out of order.
-	   3. socket is not in passive state.
-	   4. Finally, it really contains options, which user wants to receive.
-	 */
+	 
 	tp = tcp_sk(sk);
 	if (TCP_SKB_CB(opt_skb)->end_seq == tp->rcv_nxt &&
 	    !((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))) {
@@ -1563,11 +1438,7 @@ ipv6_pktoptions:
 static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
 			   const struct tcphdr *th)
 {
-	/* This is tricky: we move IP6CB at its correct location into
-	 * TCP_SKB_CB(). It must be done after xfrm6_policy_check(), because
-	 * _decode_session6() uses IP6CB().
-	 * barrier() makes sure compiler won't play aliasing games.
-	 */
+	 
 	memmove(&TCP_SKB_CB(skb)->header.h6, IP6CB(skb),
 		sizeof(struct inet6_skb_parm));
 	barrier();
@@ -1600,9 +1471,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
 	if (skb->pkt_type != PACKET_HOST)
 		goto discard_it;
 
-	/*
-	 *	Count it even if it's bad.
-	 */
+	 
 	__TCP_INC_STATS(net, TCP_MIB_INSEGS);
 
 	if (!pskb_may_pull(skb, sizeof(struct tcphdr)))
@@ -1662,9 +1531,7 @@ process:
 				goto lookup;
 			}
 			sk = nsk;
-			/* reuseport_migrate_sock() has already held one sk_refcnt
-			 * before returning.
-			 */
+			 
 		} else {
 			sock_hold(sk);
 		}
@@ -1681,11 +1548,7 @@ process:
 		if (!nsk) {
 			reqsk_put(req);
 			if (req_stolen) {
-				/* Another cpu got exclusive access to req
-				 * and created a full blown socket.
-				 * Try to feed this packet to this socket
-				 * instead of discarding it.
-				 */
+				 
 				tcp_v6_restore_cb(skb);
 				sock_put(sk);
 				goto lookup;
@@ -1706,7 +1569,7 @@ process:
 	}
 
 	if (static_branch_unlikely(&ip6_min_hopcount)) {
-		/* min_hopcount can be changed concurrently from do_ipv6_setsockopt() */
+		 
 		if (unlikely(hdr->hop_limit < READ_ONCE(tcp_inet6_sk(sk)->min_hopcount))) {
 			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
 			drop_reason = SKB_DROP_REASON_TCP_MINTTL;
@@ -1822,7 +1685,7 @@ do_time_wait:
 			goto process;
 		}
 	}
-		/* to ACK */
+		 
 		fallthrough;
 	case TCP_TW_ACK:
 		tcp_v6_timewait_ack(sk, skb);
@@ -1856,7 +1719,7 @@ void tcp_v6_early_demux(struct sk_buff *skb)
 	if (th->doff < sizeof(struct tcphdr) / 4)
 		return;
 
-	/* Note : We use inet6_iif() here, not tcp_v6_iif() */
+	 
 	sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row.hashinfo,
 					&hdr->saddr, th->source,
 					&hdr->daddr, ntohs(th->dest),
@@ -1911,9 +1774,7 @@ static const struct tcp_sock_af_ops tcp_sock_ipv6_specific = {
 };
 #endif
 
-/*
- *	TCP over IPv4 via INET6 API
- */
+ 
 static const struct inet_connection_sock_af_ops ipv6_mapped = {
 	.queue_xmit	   = ip_queue_xmit,
 	.send_check	   = tcp_v4_send_check,
@@ -1937,9 +1798,7 @@ static const struct tcp_sock_af_ops tcp_sock_ipv6_mapped_specific = {
 };
 #endif
 
-/* NOTE: A lot of things set to zero explicitly by call to
- *       sk_alloc() so need not be done here.
- */
+ 
 static int tcp_v6_init_sock(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
@@ -1956,7 +1815,7 @@ static int tcp_v6_init_sock(struct sock *sk)
 }
 
 #ifdef CONFIG_PROC_FS
-/* Proc filesystem TCPv6 sock list dumping. */
+ 
 static void get_openreq6(struct seq_file *seq,
 			 const struct request_sock *req, int i)
 {
@@ -1978,14 +1837,14 @@ static void get_openreq6(struct seq_file *seq,
 		   dest->s6_addr32[2], dest->s6_addr32[3],
 		   ntohs(inet_rsk(req)->ir_rmt_port),
 		   TCP_SYN_RECV,
-		   0, 0, /* could print option size, but that is af dependent. */
-		   1,   /* timers active (only the expire timer) */
+		   0, 0,  
+		   1,    
 		   jiffies_to_clock_t(ttd),
 		   req->num_timeout,
 		   from_kuid_munged(seq_user_ns(seq),
 				    sock_i_uid(req->rsk_listener)),
-		   0,  /* non standard timer */
-		   0, /* open_requests have no inode */
+		   0,   
+		   0,  
 		   0, req);
 }
 
@@ -2027,9 +1886,7 @@ static void get_tcp6_sock(struct seq_file *seq, struct sock *sp, int i)
 	if (state == TCP_LISTEN)
 		rx_queue = READ_ONCE(sp->sk_ack_backlog);
 	else
-		/* Because we don't lock the socket,
-		 * we might find a transient negative value.
-		 */
+		 
 		rx_queue = max_t(int, READ_ONCE(tp->rcv_nxt) -
 				      READ_ONCE(tp->copied_seq), 0);
 
@@ -2235,7 +2092,7 @@ int __init tcpv6_init(void)
 	if (ret)
 		goto out;
 
-	/* register inet6 protocol */
+	 
 	ret = inet6_register_protosw(&tcpv6_protosw);
 	if (ret)
 		goto out_tcpv6_protocol;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -116,10 +116,7 @@ int __io_fixed_fd_install(struct io_ring_ctx *ctx, struct file *file,
 		ret = file_slot;
 	return ret;
 }
-/*
- * Note when io_fixed_fd_install() returns error value, it will ensure
- * fput() is called correspondingly.
- */
+ 
 int io_fixed_fd_install(struct io_kiocb *req, unsigned int issue_flags,
 			struct file *file, unsigned int file_slot)
 {

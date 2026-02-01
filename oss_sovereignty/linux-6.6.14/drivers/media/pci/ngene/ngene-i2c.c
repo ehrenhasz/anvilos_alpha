@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ngene-i2c.c: nGene PCIe bridge driver i2c functions
- *
- * Copyright (C) 2005-2007 Micronas
- *
- * Copyright (C) 2008-2009 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Modifications for new nGene firmware,
- *                         support for EEPROM-copying,
- *                         support for new dual DVB-S2 card prototype
- */
 
-/* FIXME - some of these can probably be removed */
+ 
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -27,7 +18,7 @@
 
 #include "ngene.h"
 
-/* Firmware command for i2c operations */
+ 
 static int ngene_command_i2c_read(struct ngene *dev, u8 adr,
 			   u8 *out, u8 outlen, u8 *in, u8 inlen, int flag)
 {

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  CPU frequency scaling for OMAP using OPP information
- *
- *  Copyright (C) 2005 Nokia Corporation
- *  Written by Tony Lindgren <tony@atomide.com>
- *
- *  Based on cpu-sa1110.c, Copyright (C) 2001 Russell King
- *
- * Copyright (C) 2007-2011 Texas Instruments, Inc.
- * - OMAP3/4 support by Rajendra Nayak, Santosh Shilimkar
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,7 +21,7 @@
 #include <asm/smp_plat.h>
 #include <asm/cpu.h>
 
-/* OPP tolerance in percentage */
+ 
 #define	OPP_TOLERANCE	4
 
 static struct cpufreq_frequency_table *freq_table;
@@ -76,7 +66,7 @@ static int omap_target(struct cpufreq_policy *policy, unsigned int index)
 		old_freq / 1000, volt_old ? volt_old / 1000 : -1,
 		new_freq / 1000, volt ? volt / 1000 : -1);
 
-	/* scaling up?  scale voltage before frequency */
+	 
 	if (mpu_reg && (new_freq > old_freq)) {
 		r = regulator_set_voltage(mpu_reg, volt - tol, volt + tol);
 		if (r < 0) {
@@ -88,7 +78,7 @@ static int omap_target(struct cpufreq_policy *policy, unsigned int index)
 
 	ret = clk_set_rate(policy->clk, new_freq * 1000);
 
-	/* scaling down?  scale voltage after frequency */
+	 
 	if (mpu_reg && (new_freq < old_freq)) {
 		r = regulator_set_voltage(mpu_reg, volt - tol, volt + tol);
 		if (r < 0) {
@@ -129,7 +119,7 @@ static int omap_cpu_init(struct cpufreq_policy *policy)
 
 	atomic_inc_return(&freq_table_users);
 
-	/* FIXME: what's the actual transition time? */
+	 
 	cpufreq_generic_init(policy, freq_table, 300 * 1000);
 
 	return 0;
@@ -167,10 +157,7 @@ static int omap_cpufreq_probe(struct platform_device *pdev)
 		pr_warn("%s: unable to get MPU regulator\n", __func__);
 		mpu_reg = NULL;
 	} else {
-		/* 
-		 * Ensure physical regulator is present.
-		 * (e.g. could be dummy regulator.)
-		 */
+		 
 		if (regulator_get_voltage(mpu_reg) < 0) {
 			pr_warn("%s: physical regulator not present for MPU\n",
 				__func__);

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2011 Broadcom Corporation.  All rights reserved. */
+ 
+ 
 
 #ifndef __SOUND_ARM_BCM2835_H
 #define __SOUND_ARM_BCM2835_H
@@ -20,17 +20,17 @@ enum {
 	CTRL_VOL_UNMUTE
 };
 
-/* macros for alsa2chip and chip2alsa, instead of functions */
+ 
 
-// convert alsa to chip volume (defined as macro rather than function call)
+
 #define alsa2chip(vol) ((uint)(-(((vol) << 8) / 100)))
 
-// convert chip to alsa volume
+
 #define chip2alsa(vol) -(((vol) * 100) >> 8)
 
-#define CHIP_MIN_VOLUME		26214 /* minimum level aka mute */
+#define CHIP_MIN_VOLUME		26214  
 
-/* Some constants for values .. */
+ 
 enum snd_bcm2835_route {
 	AUDIO_DEST_AUTO = 0,
 	AUDIO_DEST_HEADPHONES = 1,
@@ -48,7 +48,7 @@ struct bcm2835_vchi_ctx {
 	struct vchiq_instance *instance;
 };
 
-/* definition of the chip-specific record */
+ 
 struct bcm2835_chip {
 	struct snd_card *card;
 	struct snd_pcm *pcm;
@@ -62,7 +62,7 @@ struct bcm2835_chip {
 
 	unsigned int opened;
 	unsigned int spdif_status;
-	struct mutex audio_mutex; /* Serialize chip data access */
+	struct mutex audio_mutex;  
 
 	struct bcm2835_vchi_ctx *vchi_ctx;
 };
@@ -111,4 +111,4 @@ void bcm2835_playback_fifo(struct bcm2835_alsa_stream *alsa_stream,
 			   unsigned int size);
 unsigned int bcm2835_audio_retrieve_buffers(struct bcm2835_alsa_stream *alsa_stream);
 
-#endif /* __SOUND_ARM_BCM2835_H */
+#endif  

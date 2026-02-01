@@ -1,30 +1,4 @@
-/*
- * AGPGART driver frontend compatibility ioctls
- * Copyright (C) 2004 Silicon Graphics, Inc.
- * Copyright (C) 2002-2003 Dave Jones
- * Copyright (C) 1999 Jeff Hartmann
- * Copyright (C) 1999 Precision Insight, Inc.
- * Copyright (C) 1999 Xi Graphics, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * JEFF HARTMANN, OR ANY OTHER CONTRIBUTORS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -78,7 +52,7 @@ static int compat_agpioc_reserve_wrap(struct agp_file_private *priv, void __user
 	client = agp_find_client_by_pid(kreserve.pid);
 
 	if (kreserve.seg_count == 0) {
-		/* remove a client */
+		 
 		client_priv = agp_find_private(kreserve.pid);
 
 		if (client_priv != NULL) {
@@ -86,7 +60,7 @@ static int compat_agpioc_reserve_wrap(struct agp_file_private *priv, void __user
 			set_bit(AGP_FF_IS_VALID, &client_priv->access_flags);
 		}
 		if (client == NULL) {
-			/* client is already removed */
+			 
 			return 0;
 		}
 		return agp_remove_client(kreserve.pid);
@@ -129,7 +103,7 @@ static int compat_agpioc_reserve_wrap(struct agp_file_private *priv, void __user
 		kreserve.seg_list = ksegment;
 
 		if (client == NULL) {
-			/* Create the client and add the segment */
+			 
 			client = agp_create_client(kreserve.pid);
 
 			if (client == NULL) {
@@ -145,7 +119,7 @@ static int compat_agpioc_reserve_wrap(struct agp_file_private *priv, void __user
 		}
 		return agp_create_segment(client, &kreserve);
 	}
-	/* Will never really happen */
+	 
 	return -EINVAL;
 }
 
@@ -229,8 +203,7 @@ long compat_agp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret_val = -EPERM;
 			goto ioctl_out;
 		}
-		/* Use the original pid of the controller,
-		 * in case it's threaded */
+		 
 
 		if (agp_fe.current_controller->pid != curr_priv->my_pid) {
 			ret_val = -EBUSY;

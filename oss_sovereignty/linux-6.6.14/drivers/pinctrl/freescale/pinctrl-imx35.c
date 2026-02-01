@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// imx35 pinctrl driver.
-//
-// This driver was mostly copied from the imx51 pinctrl driver which has:
-//
-// Copyright (C) 2012 Freescale Semiconductor, Inc.
-// Copyright (C) 2012 Linaro, Inc.
-//
-// Author: Dong Aisheng <dong.aisheng@linaro.org>
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -506,7 +506,7 @@ enum imx35_pads {
 	MX35_PAD_TEST_MODE = 484,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx35_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX35_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX35_PAD_CAPTURE),
@@ -1002,7 +1002,7 @@ static const struct imx_pinctrl_soc_info imx35_pinctrl_info = {
 
 static const struct of_device_id imx35_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx35-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx35_pinctrl_probe(struct platform_device *pdev)

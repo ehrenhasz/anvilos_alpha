@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright (C) 2017 Google, Inc.
- *
- * Authors:
- * Sean Paul <seanpaul@chromium.org>
- */
+ 
+ 
 
 #ifndef _DRM_HDCP_HELPER_H_INCLUDED_
 #define _DRM_HDCP_HELPER_H_INCLUDED_

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * /proc/schedstat implementation
- */
+
+ 
 
 void __update_stats_wait_start(struct rq *rq, struct task_struct *p,
 			       struct sched_statistics *stats)
@@ -24,11 +22,7 @@ void __update_stats_wait_end(struct rq *rq, struct task_struct *p,
 
 	if (p) {
 		if (task_on_rq_migrating(p)) {
-			/*
-			 * Preserve migrating task's wait time so wait_start
-			 * time stamp can be adjusted to accumulate wait time
-			 * prior to migration.
-			 */
+			 
 			__schedstat_set(stats->wait_start, delta);
 
 			return;
@@ -92,11 +86,7 @@ void __update_stats_enqueue_sleeper(struct rq *rq, struct task_struct *p,
 
 			trace_sched_stat_blocked(p, delta);
 
-			/*
-			 * Blocking time is in units of nanosecs, so shift by
-			 * 20 to get a milliseconds-range estimation of the
-			 * amount of time that the task spent sleeping:
-			 */
+			 
 			if (unlikely(prof_on == SLEEP_PROFILING)) {
 				profile_hits(SLEEP_PROFILING,
 					     (void *)get_wchan(p),
@@ -107,12 +97,7 @@ void __update_stats_enqueue_sleeper(struct rq *rq, struct task_struct *p,
 	}
 }
 
-/*
- * Current schedstat API version.
- *
- * Bump this up when changing the output format or the meaning of an existing
- * format, so that tools can adapt (or abort)
- */
+ 
 #define SCHEDSTAT_VERSION 15
 
 static int show_schedstat(struct seq_file *seq, void *v)
@@ -131,7 +116,7 @@ static int show_schedstat(struct seq_file *seq, void *v)
 		cpu = (unsigned long)(v - 2);
 		rq = cpu_rq(cpu);
 
-		/* runqueue-specific stats */
+		 
 		seq_printf(seq,
 		    "cpu%d %u 0 %u %u %u %u %llu %llu %lu",
 		    cpu, rq->yld_count,
@@ -143,7 +128,7 @@ static int show_schedstat(struct seq_file *seq, void *v)
 		seq_printf(seq, "\n");
 
 #ifdef CONFIG_SMP
-		/* domain-specific stats */
+		 
 		rcu_read_lock();
 		for_each_domain(cpu, sd) {
 			enum cpu_idle_type itype;
@@ -176,13 +161,7 @@ static int show_schedstat(struct seq_file *seq, void *v)
 	return 0;
 }
 
-/*
- * This iterator needs some explanation.
- * It returns 1 for the header position.
- * This means 2 is cpu 0.
- * In a hotplugged system some CPUs, including cpu 0, may be missing so we have
- * to use cpumask_* to iterate over the CPUs.
- */
+ 
 static void *schedstat_start(struct seq_file *file, loff_t *offset)
 {
 	unsigned long n = *offset;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Secure Element driver for STMicroelectronics NFC NCI chip
- *
- * Copyright (C) 2014-2015 STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/nfc.h>
@@ -21,25 +17,25 @@ struct st_nci_pipe_info {
 	u8 dst_gate_id;
 } __packed;
 
-/* Hosts */
+ 
 #define ST_NCI_HOST_CONTROLLER_ID     0x00
 #define ST_NCI_TERMINAL_HOST_ID       0x01
 #define ST_NCI_UICC_HOST_ID           0x02
 #define ST_NCI_ESE_HOST_ID            0xc0
 
-/* Gates */
+ 
 #define ST_NCI_APDU_READER_GATE       0xf0
 #define ST_NCI_CONNECTIVITY_GATE      0x41
 
-/* Pipes */
+ 
 #define ST_NCI_DEVICE_MGNT_PIPE               0x02
 
-/* Connectivity pipe only */
+ 
 #define ST_NCI_SE_COUNT_PIPE_UICC             0x01
-/* Connectivity + APDU Reader pipe */
+ 
 #define ST_NCI_SE_COUNT_PIPE_EMBEDDED         0x02
 
-#define ST_NCI_SE_TO_HOT_PLUG			1000 /* msecs */
+#define ST_NCI_SE_TO_HOT_PLUG			1000  
 #define ST_NCI_SE_TO_PIPES			2000
 
 #define ST_NCI_EVT_HOT_PLUG_IS_INHIBITED(x)   (x->data[0] & 0x80)
@@ -75,23 +71,20 @@ struct st_nci_pipe_info {
 
 #define ST_NCI_ATR_DEFAULT_BWI        0x04
 
-/*
- * WT = 2^BWI/10[s], convert into msecs and add a secure
- * room by increasing by 2 this timeout
- */
+ 
 #define ST_NCI_BWI_TO_TIMEOUT(x)      ((1 << x) * 200)
 #define ST_NCI_ATR_GET_Y_FROM_TD(x)   (x >> 4)
 
-/* If TA is present bit 0 is set */
+ 
 #define ST_NCI_ATR_TA_PRESENT(x) (x & 0x01)
-/* If TB is present bit 1 is set */
+ 
 #define ST_NCI_ATR_TB_PRESENT(x) (x & 0x02)
 
 #define ST_NCI_NUM_DEVICES           256
 
 static DECLARE_BITMAP(dev_mask, ST_NCI_NUM_DEVICES);
 
-/* Here are the mandatory pipe for st_nci */
+ 
 static struct nci_hci_gate st_nci_gates[] = {
 	{NCI_HCI_ADMIN_GATE, NCI_HCI_ADMIN_PIPE,
 					ST_NCI_HOST_CONTROLLER_ID},
@@ -103,7 +96,7 @@ static struct nci_hci_gate st_nci_gates[] = {
 	{NCI_HCI_IDENTITY_MGMT_GATE, NCI_HCI_INVALID_PIPE,
 					ST_NCI_HOST_CONTROLLER_ID},
 
-	/* Secure element pipes are created by secure element host */
+	 
 	{ST_NCI_CONNECTIVITY_GATE, NCI_HCI_DO_NOT_OPEN_PIPE,
 					ST_NCI_HOST_CONTROLLER_ID},
 	{ST_NCI_APDU_READER_GATE, NCI_HCI_DO_NOT_OPEN_PIPE,
@@ -116,7 +109,7 @@ static u8 st_nci_se_get_bwi(struct nci_dev *ndev)
 	u8 td;
 	struct st_nci_info *info = nci_get_drvdata(ndev);
 
-	/* Bits 8 to 5 of the first TB for T=1 encode BWI from zero to nine */
+	 
 	for (i = 1; i < ST_NCI_ESE_MAX_LENGTH; i++) {
 		td = ST_NCI_ATR_GET_Y_FROM_TD(info->se_info.atr[i]);
 		if (ST_NCI_ATR_TA_PRESENT(td))
@@ -159,36 +152,21 @@ int st_nci_hci_load_session(struct nci_dev *ndev)
 	u8 pipe_info[] = { ST_NCI_DM_GETINFO_PIPE_INFO,
 			ST_NCI_TERMINAL_HOST_ID, 0};
 
-	/* On ST_NCI device pipes number are dynamics
-	 * If pipes are already created, hci_dev_up will fail.
-	 * Doing a clear all pipe is a bad idea because:
-	 * - It does useless EEPROM cycling
-	 * - It might cause issue for secure elements support
-	 * (such as removing connectivity or APDU reader pipe)
-	 * A better approach on ST_NCI is to:
-	 * - get a pipe list for each host.
-	 * (eg: ST_NCI_HOST_CONTROLLER_ID for now).
-	 * (TODO Later on UICC HOST and eSE HOST)
-	 * - get pipe information
-	 * - match retrieved pipe list in st_nci_gates
-	 * ST_NCI_DEVICE_MGNT_GATE is a proprietary gate
-	 * with ST_NCI_DEVICE_MGNT_PIPE.
-	 * Pipe can be closed and need to be open.
-	 */
+	 
 	r = nci_hci_connect_gate(ndev, ST_NCI_HOST_CONTROLLER_ID,
 				ST_NCI_DEVICE_MGNT_GATE,
 				ST_NCI_DEVICE_MGNT_PIPE);
 	if (r < 0)
 		return r;
 
-	/* Get pipe list */
+	 
 	r = nci_hci_send_cmd(ndev, ST_NCI_DEVICE_MGNT_GATE,
 			ST_NCI_DM_GETINFO, pipe_list, sizeof(pipe_list),
 			&skb_pipe_list);
 	if (r < 0)
 		return r;
 
-	/* Complete the existing gate_pipe table */
+	 
 	for (i = 0; i < skb_pipe_list->len; i++) {
 		pipe_info[2] = skb_pipe_list->data[i];
 		r = nci_hci_send_cmd(ndev, ST_NCI_DEVICE_MGNT_GATE,
@@ -198,15 +176,7 @@ int st_nci_hci_load_session(struct nci_dev *ndev)
 		if (r)
 			continue;
 
-		/*
-		 * Match pipe ID and gate ID
-		 * Output format from ST21NFC_DM_GETINFO is:
-		 * - pipe state (1byte)
-		 * - source hid (1byte)
-		 * - source gid (1byte)
-		 * - destination hid (1byte)
-		 * - destination gid (1byte)
-		 */
+		 
 		dm_pipe_info = (struct st_nci_pipe_info *)skb_pipe_info->data;
 		if (dm_pipe_info->dst_gate_id == ST_NCI_APDU_READER_GATE &&
 		    dm_pipe_info->src_host_id == ST_NCI_UICC_HOST_ID) {
@@ -235,10 +205,7 @@ int st_nci_hci_load_session(struct nci_dev *ndev)
 		kfree_skb(skb_pipe_info);
 	}
 
-	/*
-	 * 3 gates have a well known pipe ID. Only NCI_HCI_LINK_MGMT_GATE
-	 * is not yet open at this stage.
-	 */
+	 
 	r = nci_hci_connect_gate(ndev, ST_NCI_HOST_CONTROLLER_ID,
 				 NCI_HCI_LINK_MGMT_GATE,
 				 NCI_HCI_LINK_MGMT_PIPE);
@@ -300,11 +267,7 @@ static int st_nci_hci_apdu_reader_event_received(struct nci_dev *ndev,
 	return 0;
 }
 
-/*
- * Returns:
- * <= 0: driver handled the event, skb consumed
- *    1: driver does not handle the event, please do standard processing
- */
+ 
 static int st_nci_hci_connectivity_event_received(struct nci_dev *ndev,
 						u8 host, u8 event,
 						struct sk_buff *skb)
@@ -322,23 +285,7 @@ static int st_nci_hci_connectivity_event_received(struct nci_dev *ndev,
 		r = nfc_se_connectivity(ndev->nfc_dev, host);
 	break;
 	case ST_NCI_EVT_TRANSACTION:
-		/* According to specification etsi 102 622
-		 * 11.2.2.4 EVT_TRANSACTION Table 52
-		 * Description  Tag     Length
-		 * AID          81      5 to 16
-		 * PARAMETERS   82      0 to 255
-		 *
-		 * The key differences are aid storage length is variably sized
-		 * in the packet, but fixed in nfc_evt_transaction, and that
-		 * the aid_len is u8 in the packet, but u32 in the structure,
-		 * and the tags in the packet are not included in
-		 * nfc_evt_transaction.
-		 *
-		 * size(b):  1          1       5-16 1             1           0-255
-		 * offset:   0          1       2    aid_len + 2   aid_len + 3 aid_len + 4
-		 * mem name: aid_tag(M) aid_len aid  params_tag(M) params_len  params
-		 * example:  0x81       5-16    X    0x82          0-255       X
-		 */
+		 
 		if (skb->len < 2 || skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
 			return -EPROTO;
 
@@ -350,9 +297,7 @@ static int st_nci_hci_connectivity_event_received(struct nci_dev *ndev,
 
 		params_len = skb->data[aid_len + 3];
 
-		/* Verify PARAMETERS tag is (82), and final check that there is
-		 * enough space in the packet to read everything.
-		 */
+		 
 		if (skb->data[aid_len + 2] != NFC_EVT_TRANSACTION_PARAMS_TAG ||
 		    skb->len < aid_len + 4 + params_len)
 			return -EPROTO;
@@ -446,10 +391,7 @@ static int st_nci_control_se(struct nci_dev *ndev, u8 se_idx,
 		return -EINVAL;
 	}
 
-	/*
-	 * Wait for an EVT_HOT_PLUG in order to
-	 * retrieve a relevant host list.
-	 */
+	 
 	reinit_completion(&info->se_info.req_completion);
 	r = nci_nfcee_mode_set(ndev, se_idx, state);
 	if (r != NCI_STATUS_OK)
@@ -459,14 +401,10 @@ static int st_nci_control_se(struct nci_dev *ndev, u8 se_idx,
 		msecs_to_jiffies(ST_NCI_SE_TO_HOT_PLUG));
 	info->se_info.se_active = true;
 
-	/* Ignore return value and check in any case the host_list */
+	 
 	wait_for_completion_interruptible(&info->se_info.req_completion);
 
-	/* There might be some "collision" after receiving a HOT_PLUG event
-	 * This may cause the CLF to not answer to the next hci command.
-	 * There is no possible synchronization to prevent this.
-	 * Adding a small delay is the only way to solve the issue.
-	 */
+	 
 	if (info->se_info.se_status->is_ese_present &&
 	    info->se_info.se_status->is_uicc_present)
 		usleep_range(15000, 20000);
@@ -493,14 +431,10 @@ int st_nci_disable_se(struct nci_dev *ndev, u32 se_idx)
 {
 	int r;
 
-	/*
-	 * According to upper layer, se_idx == NFC_SE_UICC when
-	 * info->se_info.se_status->is_uicc_enable is true should never happen
-	 * Same for eSE.
-	 */
+	 
 	r = st_nci_control_se(ndev, se_idx, ST_NCI_SE_MODE_OFF);
 	if (r < 0) {
-		/* Do best effort to release SWP */
+		 
 		if (se_idx == NFC_SE_EMBEDDED) {
 			r = nci_hci_send_event(ndev, ST_NCI_APDU_READER_GATE,
 					ST_NCI_EVT_SE_END_OF_APDU_TRANSFER,
@@ -517,11 +451,7 @@ int st_nci_enable_se(struct nci_dev *ndev, u32 se_idx)
 {
 	int r;
 
-	/*
-	 * According to upper layer, se_idx == NFC_SE_UICC when
-	 * info->se_info.se_status->is_uicc_enable is true should never happen.
-	 * Same for eSE.
-	 */
+	 
 	r = st_nci_control_se(ndev, se_idx, ST_NCI_SE_MODE_ON);
 	if (r == ST_NCI_ESE_HOST_ID) {
 		st_nci_se_get_atr(ndev);
@@ -530,10 +460,7 @@ int st_nci_enable_se(struct nci_dev *ndev, u32 se_idx)
 	}
 
 	if (r < 0) {
-		/*
-		 * The activation procedure failed, the secure element
-		 * is not connected. Remove from the list.
-		 */
+		 
 		nfc_remove_se(ndev->nfc_dev, se_idx);
 		return r;
 	}
@@ -577,10 +504,7 @@ static int st_nci_hci_network_init(struct nci_dev *ndev)
 	memcpy(ndev->hci_dev->init_data.gates, st_nci_gates,
 	       sizeof(st_nci_gates));
 
-	/*
-	 * Session id must include the driver name + i2c bus addr
-	 * persistent info to discriminate 2 identical chips
-	 */
+	 
 	dev_num = find_first_zero_bit(dev_mask, ST_NCI_NUM_DEVICES);
 	if (dev_num >= ST_NCI_NUM_DEVICES) {
 		r = -ENODEV;
@@ -595,11 +519,7 @@ static int st_nci_hci_network_init(struct nci_dev *ndev)
 	if (r != NCI_HCI_ANY_OK)
 		goto free_dest_params;
 
-	/*
-	 * In factory mode, we prevent secure elements activation
-	 * by disabling nfcee on the current HCI connection id.
-	 * HCI will be used here only for proprietary commands.
-	 */
+	 
 	if (test_bit(ST_NCI_FACTORY_MODE, &info->flags))
 		r = nci_nfcee_mode_set(ndev,
 				       ndev->hci_dev->conn_info->dest_params->id,
@@ -672,11 +592,7 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
 					ST_NCI_EVT_TRANSMIT_DATA, apdu,
 					apdu_length);
 	default:
-		/* Need to free cb_context here as at the moment we can't
-		 * clearly indicate to the caller if the callback function
-		 * would be called (and free it) or not. In both cases a
-		 * negative value may be returned to the caller.
-		 */
+		 
 		kfree(cb_context);
 		return -ENODEV;
 	}
@@ -685,16 +601,8 @@ EXPORT_SYMBOL(st_nci_se_io);
 
 static void st_nci_se_wt_timeout(struct timer_list *t)
 {
-	/*
-	 * No answer from the secure element
-	 * within the defined timeout.
-	 * Let's send a reset request as recovery procedure.
-	 * According to the situation, we first try to send a software reset
-	 * to the secure element. If the next command is still not
-	 * answering in time, we send to the CLF a secure element hardware
-	 * reset request.
-	 */
-	/* hardware reset managed through VCC_UICC_OUT power supply */
+	 
+	 
 	u8 param = 0x01;
 	struct st_nci_info *info = from_timer(info, t, se_info.bwi_timer);
 
@@ -727,7 +635,7 @@ int st_nci_se_init(struct nci_dev *ndev, struct st_nci_se_status *se_status)
 	struct st_nci_info *info = nci_get_drvdata(ndev);
 
 	init_completion(&info->se_info.req_completion);
-	/* initialize timers */
+	 
 	timer_setup(&info->se_info.bwi_timer, st_nci_se_wt_timeout, 0);
 	info->se_info.bwi_active = false;
 

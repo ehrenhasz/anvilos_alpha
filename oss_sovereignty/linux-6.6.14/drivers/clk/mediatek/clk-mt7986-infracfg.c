@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- * Author: Wenzhen Yu <wenzhen.yu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -36,7 +32,7 @@ static const char *const infra_pcie_parents[] __initconst = {
 };
 
 static const struct mtk_mux infra_muxes[] = {
-	/* MODULE_CLK_SEL_0 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_INFRA_UART0_SEL, "infra_uart0_sel",
 			     infra_uart_parent, 0x0018, 0x0010, 0x0014, 0, 1,
 			     -1, -1, -1),
@@ -61,7 +57,7 @@ static const struct mtk_mux infra_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_INFRA_PWM_BSEL, "infra_pwm_bsel",
 			     infra_pwm_bsel_parents, 0x0018, 0x0010, 0x0014, 13,
 			     2, -1, -1, -1),
-	/* MODULE_CLK_SEL_1 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_INFRA_PCIE_SEL, "infra_pcie_sel",
 			     infra_pcie_parents, 0x0028, 0x0020, 0x0024, 0, 2,
 			     -1, -1, -1),
@@ -95,7 +91,7 @@ static const struct mtk_gate_regs infra2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &infra2_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate infra_clks[] = {
-	/* INFRA0 */
+	 
 	GATE_INFRA0(CLK_INFRA_GPT_STA, "infra_gpt_sta", "infra_sysaxi_d2", 0),
 	GATE_INFRA0(CLK_INFRA_PWM_HCK, "infra_pwm_hck", "infra_sysaxi_d2", 1),
 	GATE_INFRA0(CLK_INFRA_PWM_STA, "infra_pwm_sta", "infra_pwm_bsel", 2),
@@ -115,7 +111,7 @@ static const struct mtk_gate infra_clks[] = {
 	GATE_INFRA0(CLK_INFRA_SEJ_CK, "infra_sej", "infra_sysaxi_d2", 24),
 	GATE_INFRA0(CLK_INFRA_SEJ_13M_CK, "infra_sej_13m", "csw_f26m_sel", 25),
 	GATE_INFRA0(CLK_INFRA_TRNG_CK, "infra_trng", "sysaxi_sel", 26),
-	/* INFRA1 */
+	 
 	GATE_INFRA1(CLK_INFRA_THERM_CK, "infra_therm", "csw_f26m_sel", 0),
 	GATE_INFRA1(CLK_INFRA_I2C0_CK, "infra_i2c0", "i2c_sel", 1),
 	GATE_INFRA1(CLK_INFRA_UART0_CK, "infra_uart0", "infra_uart0_sel", 2),
@@ -142,7 +138,7 @@ static const struct mtk_gate infra_clks[] = {
 	GATE_INFRA1(CLK_INFRA_ADC_26M_CK, "infra_adc_26m", "infra_adc_frc", 20),
 	GATE_INFRA1(CLK_INFRA_ADC_FRC_CK, "infra_adc_frc", "csw_f26m_sel", 21),
 	GATE_INFRA1(CLK_INFRA_FBIST2FPC_CK, "infra_fbist2fpc", "nfi1x_sel", 23),
-	/* INFRA2 */
+	 
 	GATE_INFRA2(CLK_INFRA_IUSB_133_CK, "infra_iusb_133", "sysaxi_sel", 0),
 	GATE_INFRA2(CLK_INFRA_IUSB_66M_CK, "infra_iusb_66m", "infra_sysaxi_d2",
 		    1),
@@ -167,7 +163,7 @@ static const struct mtk_clk_desc infra_desc = {
 
 static const struct of_device_id of_match_clk_mt7986_infracfg[] = {
 	{ .compatible = "mediatek,mt7986-infracfg", .data = &infra_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7986_infracfg);
 

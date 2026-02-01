@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  drivers/irqchip/irq-crossbar.c
- *
- *  Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Sricharan R <r.sricharan@ti.com>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/irqchip.h>
@@ -18,17 +13,7 @@
 #define IRQ_SKIP	-3
 #define GIC_IRQ_START	32
 
-/**
- * struct crossbar_device - crossbar device description
- * @lock: spinlock serializing access to @irq_map
- * @int_max: maximum number of supported interrupts
- * @safe_map: safe default value to initialize the crossbar
- * @max_crossbar_sources: Maximum number of crossbar sources
- * @irq_map: array of interrupts to crossbar number mapping
- * @crossbar_base: crossbar base address
- * @register_offsets: offsets for each irq number
- * @write: register write function pointer
- */
+ 
 struct crossbar_device {
 	raw_spinlock_t lock;
 	uint int_max;
@@ -95,7 +80,7 @@ static int allocate_gic_irq(struct irq_domain *domain, unsigned virq,
 
 	fwspec.fwnode = domain->parent->fwnode;
 	fwspec.param_count = 3;
-	fwspec.param[0] = 0;	/* SPI */
+	fwspec.param[0] = 0;	 
 	fwspec.param[1] = i;
 	fwspec.param[2] = IRQ_TYPE_LEVEL_HIGH;
 
@@ -116,13 +101,13 @@ static int crossbar_domain_alloc(struct irq_domain *d, unsigned int virq,
 	int i;
 
 	if (fwspec->param_count != 3)
-		return -EINVAL;	/* Not GIC compliant */
+		return -EINVAL;	 
 	if (fwspec->param[0] != 0)
-		return -EINVAL;	/* No PPI should point to this domain */
+		return -EINVAL;	 
 
 	hwirq = fwspec->param[1];
 	if ((hwirq + nr_irqs) > cb->max_crossbar_sources)
-		return -EINVAL;	/* Can't deal with this */
+		return -EINVAL;	 
 
 	for (i = 0; i < nr_irqs; i++) {
 		int err = allocate_gic_irq(d, virq + i, hwirq + i);
@@ -137,18 +122,7 @@ static int crossbar_domain_alloc(struct irq_domain *d, unsigned int virq,
 	return 0;
 }
 
-/**
- * crossbar_domain_free - unmap/free a crossbar<->irq connection
- * @domain: domain of irq to unmap
- * @virq: virq number
- * @nr_irqs: number of irqs to free
- *
- * We do not maintain a use count of total number of map/unmap
- * calls for a particular irq to find out if a irq can be really
- * unmapped. This is because unmap is called during irq_dispose_mapping(irq),
- * after which irq is anyways unusable. So an explicit map has to be called
- * after that.
- */
+ 
 static void crossbar_domain_free(struct irq_domain *domain, unsigned int virq,
 				 unsigned int nr_irqs)
 {
@@ -174,7 +148,7 @@ static int crossbar_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
@@ -231,7 +205,7 @@ static int __init crossbar_of_init(struct device_node *node)
 	for (i = 0; i < max; i++)
 		cb->irq_map[i] = IRQ_FREE;
 
-	/* Get and mark reserved irqs */
+	 
 	irqsr = of_get_property(node, "ti,irqs-reserved", &size);
 	if (irqsr) {
 		size /= sizeof(__be32);
@@ -249,7 +223,7 @@ static int __init crossbar_of_init(struct device_node *node)
 		}
 	}
 
-	/* Skip irqs hardwired to bypass the crossbar */
+	 
 	irqsr = of_get_property(node, "ti,irqs-skip", &size);
 	if (irqsr) {
 		size /= sizeof(__be32);
@@ -291,10 +265,7 @@ static int __init crossbar_of_init(struct device_node *node)
 		break;
 	}
 
-	/*
-	 * Register offsets are not linear because of the
-	 * reserved irqs. so find and store the offsets once.
-	 */
+	 
 	for (i = 0; i < max; i++) {
 		if (cb->irq_map[i] == IRQ_RESERVED)
 			continue;
@@ -304,7 +275,7 @@ static int __init crossbar_of_init(struct device_node *node)
 	}
 
 	of_property_read_u32(node, "ti,irqs-safe-map", &cb->safe_map);
-	/* Initialize the crossbar with safe map to start with */
+	 
 	for (i = 0; i < max; i++) {
 		if (cb->irq_map[i] == IRQ_RESERVED ||
 		    cb->irq_map[i] == IRQ_SKIP)

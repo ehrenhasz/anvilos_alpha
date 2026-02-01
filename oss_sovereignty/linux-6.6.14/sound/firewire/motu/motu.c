@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "motu.h"
 
@@ -14,13 +10,13 @@ MODULE_AUTHOR("Takashi Sakamoto <o-takashi@sakamocchi.jp>");
 MODULE_LICENSE("GPL");
 
 const unsigned int snd_motu_clock_rates[SND_MOTU_CLOCK_RATE_COUNT] = {
-	/* mode 0 */
+	 
 	[0] =  44100,
 	[1] =  48000,
-	/* mode 1 */
+	 
 	[2] =  88200,
 	[3] =  96000,
-	/* mode 2 */
+	 
 	[4] = 176400,
 	[5] = 192000,
 };
@@ -136,7 +132,7 @@ static void motu_remove(struct fw_unit *unit)
 {
 	struct snd_motu *motu = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(motu->card);
 }
 
@@ -144,7 +140,7 @@ static void motu_bus_update(struct fw_unit *unit)
 {
 	struct snd_motu *motu = dev_get_drvdata(&unit->device);
 
-	/* The handler address register becomes initialized. */
+	 
 	snd_motu_transaction_reregister(motu);
 }
 
@@ -167,11 +163,11 @@ static const struct ieee1394_device_id motu_id_table[] = {
 	SND_MOTU_DEV_ENTRY(0x000009, &snd_motu_spec_traveler),
 	SND_MOTU_DEV_ENTRY(0x00000d, &snd_motu_spec_ultralite),
 	SND_MOTU_DEV_ENTRY(0x00000f, &snd_motu_spec_8pre),
-	SND_MOTU_DEV_ENTRY(0x000015, &snd_motu_spec_828mk3_fw), // FireWire only.
-	SND_MOTU_DEV_ENTRY(0x000019, &snd_motu_spec_ultralite_mk3), // FireWire only.
+	SND_MOTU_DEV_ENTRY(0x000015, &snd_motu_spec_828mk3_fw), 
+	SND_MOTU_DEV_ENTRY(0x000019, &snd_motu_spec_ultralite_mk3), 
 	SND_MOTU_DEV_ENTRY(0x00001b, &snd_motu_spec_traveler_mk3),
-	SND_MOTU_DEV_ENTRY(0x000030, &snd_motu_spec_ultralite_mk3), // Hybrid.
-	SND_MOTU_DEV_ENTRY(0x000035, &snd_motu_spec_828mk3_hybrid), // Hybrid.
+	SND_MOTU_DEV_ENTRY(0x000030, &snd_motu_spec_ultralite_mk3), 
+	SND_MOTU_DEV_ENTRY(0x000035, &snd_motu_spec_828mk3_hybrid), 
 	SND_MOTU_DEV_ENTRY(0x000033, &snd_motu_spec_audio_express),
 	SND_MOTU_DEV_ENTRY(0x000039, &snd_motu_spec_track16),
 	SND_MOTU_DEV_ENTRY(0x000045, &snd_motu_spec_4pre),

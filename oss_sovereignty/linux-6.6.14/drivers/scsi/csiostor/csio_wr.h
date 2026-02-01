@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __CSIO_WR_H__
 #define __CSIO_WR_H__
@@ -41,9 +9,7 @@
 #include "t4fw_api.h"
 #include "t4fw_api_stor.h"
 
-/*
- * SGE register field values.
- */
+ 
 #define X_INGPCIEBOUNDARY_32B		0
 #define X_INGPCIEBOUNDARY_64B		1
 #define X_INGPCIEBOUNDARY_128B		2
@@ -53,7 +19,7 @@
 #define X_INGPCIEBOUNDARY_2048B		6
 #define X_INGPCIEBOUNDARY_4096B		7
 
-/* GTS register */
+ 
 #define X_TIMERREG_COUNTER0		0
 #define X_TIMERREG_COUNTER1		1
 #define X_TIMERREG_COUNTER2		2
@@ -63,9 +29,7 @@
 #define X_TIMERREG_RESTART_COUNTER	6
 #define X_TIMERREG_UPDATE_CIDX		7
 
-/*
- * Egress Context field values
- */
+ 
 #define X_FETCHBURSTMIN_16B		0
 #define X_FETCHBURSTMIN_32B		1
 #define X_FETCHBURSTMIN_64B		2
@@ -81,9 +45,7 @@
 #define X_HOSTFCMODE_STATUS_PAGE	2
 #define X_HOSTFCMODE_BOTH		3
 
-/*
- * Ingress Context field values
- */
+ 
 #define X_UPDATESCHEDULING_TIMER	0
 #define X_UPDATESCHEDULING_COUNTER_OPTTIMER	1
 
@@ -99,7 +61,7 @@
 #define X_RSPD_TYPE_CPL			1
 #define X_RSPD_TYPE_INTR		2
 
-/* WR status is at the same position as retval in a CMD header */
+ 
 #define csio_wr_status(_wr)		\
 		(FW_CMD_RETVAL_G(ntohl(((struct fw_cmd_hdr *)(_wr))->lo)))
 
@@ -108,7 +70,7 @@ struct csio_hw;
 extern int csio_intr_coalesce_cnt;
 extern int csio_intr_coalesce_time;
 
-/* Ingress queue params */
+ 
 struct csio_iq_params {
 
 	uint8_t		iq_start:1;
@@ -196,7 +158,7 @@ struct csio_iq_params {
 	uint64_t	fl1addr;
 };
 
-/* Egress queue params */
+ 
 struct csio_eq_params {
 
 	uint8_t		pfn;
@@ -230,46 +192,37 @@ struct csio_eq_params {
 
 struct csio_dma_buf {
 	struct list_head	list;
-	void			*vaddr;		/* Virtual address */
-	dma_addr_t		paddr;		/* Physical address */
-	uint32_t		len;		/* Buffer size */
+	void			*vaddr;		 
+	dma_addr_t		paddr;		 
+	uint32_t		len;		 
 };
 
-/* Generic I/O request structure */
+ 
 struct csio_ioreq {
-	struct csio_sm		sm;		/* SM, List
-						 * should be the first member
-						 */
-	int			iq_idx;		/* Ingress queue index */
-	int			eq_idx;		/* Egress queue index */
-	uint32_t		nsge;		/* Number of SG elements */
-	uint32_t		tmo;		/* Driver timeout */
-	uint32_t		datadir;	/* Data direction */
-	struct csio_dma_buf	dma_buf;	/* Req/resp DMA buffers */
-	uint16_t		wr_status;	/* WR completion status */
-	int16_t			drv_status;	/* Driver internal status */
-	struct csio_lnode	*lnode;		/* Owner lnode */
-	struct csio_rnode	*rnode;		/* Src/destination rnode */
+	struct csio_sm		sm;		 
+	int			iq_idx;		 
+	int			eq_idx;		 
+	uint32_t		nsge;		 
+	uint32_t		tmo;		 
+	uint32_t		datadir;	 
+	struct csio_dma_buf	dma_buf;	 
+	uint16_t		wr_status;	 
+	int16_t			drv_status;	 
+	struct csio_lnode	*lnode;		 
+	struct csio_rnode	*rnode;		 
 	void (*io_cbfn) (struct csio_hw *, struct csio_ioreq *);
-						/* completion callback */
-	void			*scratch1;	/* Scratch area 1.
-						 */
-	void			*scratch2;	/* Scratch area 2. */
-	struct list_head	gen_list;	/* Any list associated with
-						 * this ioreq.
-						 */
-	uint64_t		fw_handle;	/* Unique handle passed
-						 * to FW
-						 */
-	uint8_t			dcopy;		/* Data copy required */
+						 
+	void			*scratch1;	 
+	void			*scratch2;	 
+	struct list_head	gen_list;	 
+	uint64_t		fw_handle;	 
+	uint8_t			dcopy;		 
 	uint8_t			reserved1;
 	uint16_t		reserved2;
-	struct completion	cmplobj;	/* ioreq completion object */
+	struct completion	cmplobj;	 
 } ____cacheline_aligned_in_smp;
 
-/*
- * Egress status page for egress cidx updates
- */
+ 
 struct csio_qstatus_page {
 	__be32 qid;
 	__be16 cidx;
@@ -279,9 +232,7 @@ struct csio_qstatus_page {
 
 enum {
 	CSIO_MAX_FLBUF_PER_IQWR = 4,
-	CSIO_QCREDIT_SZ  = 64,			/* pidx/cidx increments
-						 * in bytes
-						 */
+	CSIO_QCREDIT_SZ  = 64,			 
 	CSIO_MAX_QID = 0xFFFF,
 	CSIO_MAX_IQ = 128,
 
@@ -290,16 +241,14 @@ enum {
 	CSIO_SGE_FL_SIZE_REGS = 16,
 };
 
-/* Defines for type */
+ 
 enum {
 	CSIO_EGRESS	= 1,
 	CSIO_INGRESS	= 2,
 	CSIO_FREELIST	= 3,
 };
 
-/*
- * Structure for footer (last 2 flits) of Ingress Queue Entry.
- */
+ 
 struct csio_iqwr_footer {
 	__be32			hdrbuflen_pidx;
 	__be32			pldbuflen_qid;
@@ -315,14 +264,7 @@ struct csio_iqwr_footer {
 #define IQWRF_TYPE_GET(x)	(((x) >> 4) & 0x3U)
 
 
-/*
- * WR pair:
- * ========
- * A WR can start towards the end of a queue, and then continue at the
- * beginning, since the queue is considered to be circular. This will
- * require a pair of address/len to be passed back to the caller -
- * hence the Work request pair structure.
- */
+ 
 struct csio_wr_pair {
 	void			*addr1;
 	uint32_t		size1;
@@ -330,123 +272,97 @@ struct csio_wr_pair {
 	uint32_t		size2;
 };
 
-/*
- * The following structure is used by ingress processing to return the
- * free list buffers to consumers.
- */
+ 
 struct csio_fl_dma_buf {
 	struct csio_dma_buf	flbufs[CSIO_MAX_FLBUF_PER_IQWR];
-						/* Freelist DMA buffers */
-	int			offset;		/* Offset within the
-						 * first FL buf.
-						 */
-	uint32_t		totlen;		/* Total length */
-	uint8_t			defer_free;	/* Free of buffer can
-						 * deferred
-						 */
+						 
+	int			offset;		 
+	uint32_t		totlen;		 
+	uint8_t			defer_free;	 
 };
 
-/* Data-types */
+ 
 typedef void (*iq_handler_t)(struct csio_hw *, void *, uint32_t,
 			     struct csio_fl_dma_buf *, void *);
 
 struct csio_iq {
-	uint16_t		iqid;		/* Queue ID */
-	uint16_t		physiqid;	/* Physical Queue ID */
-	uint16_t		genbit;		/* Generation bit,
-						 * initially set to 1
-						 */
-	int			flq_idx;	/* Freelist queue index */
-	iq_handler_t		iq_intx_handler; /* IQ INTx handler routine */
+	uint16_t		iqid;		 
+	uint16_t		physiqid;	 
+	uint16_t		genbit;		 
+	int			flq_idx;	 
+	iq_handler_t		iq_intx_handler;  
 };
 
 struct csio_eq {
-	uint16_t		eqid;		/* Qid */
-	uint16_t		physeqid;	/* Physical Queue ID */
-	uint8_t			wrap[512];	/* Temp area for q-wrap around*/
+	uint16_t		eqid;		 
+	uint16_t		physeqid;	 
+	uint8_t			wrap[512];	 
 };
 
 struct csio_fl {
-	uint16_t		flid;		/* Qid */
-	uint16_t		packen;		/* Packing enabled? */
-	int			offset;		/* Offset within FL buf */
-	int			sreg;		/* Size register */
-	struct csio_dma_buf	*bufs;		/* Free list buffer ptr array
-						 * indexed using flq->cidx/pidx
-						 */
+	uint16_t		flid;		 
+	uint16_t		packen;		 
+	int			offset;		 
+	int			sreg;		 
+	struct csio_dma_buf	*bufs;		 
 };
 
 struct csio_qstats {
-	uint32_t	n_tot_reqs;		/* Total no. of Requests */
-	uint32_t	n_tot_rsps;		/* Total no. of responses */
-	uint32_t	n_qwrap;		/* Queue wraps */
-	uint32_t	n_eq_wr_split;		/* Number of split EQ WRs */
-	uint32_t	n_qentry;		/* Queue entry */
-	uint32_t	n_qempty;		/* Queue empty */
-	uint32_t	n_qfull;		/* Queue fulls */
-	uint32_t	n_rsp_unknown;		/* Unknown response type */
-	uint32_t	n_stray_comp;		/* Stray completion intr */
-	uint32_t	n_flq_refill;		/* Number of FL refills */
+	uint32_t	n_tot_reqs;		 
+	uint32_t	n_tot_rsps;		 
+	uint32_t	n_qwrap;		 
+	uint32_t	n_eq_wr_split;		 
+	uint32_t	n_qentry;		 
+	uint32_t	n_qempty;		 
+	uint32_t	n_qfull;		 
+	uint32_t	n_rsp_unknown;		 
+	uint32_t	n_stray_comp;		 
+	uint32_t	n_flq_refill;		 
 };
 
-/* Queue metadata */
+ 
 struct csio_q {
-	uint16_t		type;		/* Type: Ingress/Egress/FL */
-	uint16_t		pidx;		/* producer index */
-	uint16_t		cidx;		/* consumer index */
-	uint16_t		inc_idx;	/* Incremental index */
-	uint32_t		wr_sz;		/* Size of all WRs in this q
-						 * if fixed
-						 */
-	void			*vstart;	/* Base virtual address
-						 * of queue
-						 */
-	void			*vwrap;		/* Virtual end address to
-						 * wrap around at
-						 */
-	uint32_t		credits;	/* Size of queue in credits */
-	void			*owner;		/* Owner */
-	union {					/* Queue contexts */
+	uint16_t		type;		 
+	uint16_t		pidx;		 
+	uint16_t		cidx;		 
+	uint16_t		inc_idx;	 
+	uint32_t		wr_sz;		 
+	void			*vstart;	 
+	void			*vwrap;		 
+	uint32_t		credits;	 
+	void			*owner;		 
+	union {					 
 		struct csio_iq	iq;
 		struct csio_eq	eq;
 		struct csio_fl	fl;
 	} un;
 
-	dma_addr_t		pstart;		/* Base physical address of
-						 * queue
-						 */
-	uint32_t		portid;		/* PCIE Channel */
-	uint32_t		size;		/* Size of queue in bytes */
-	struct csio_qstats	stats;		/* Statistics */
+	dma_addr_t		pstart;		 
+	uint32_t		portid;		 
+	uint32_t		size;		 
+	struct csio_qstats	stats;		 
 } ____cacheline_aligned_in_smp;
 
 struct csio_sge {
-	uint32_t	csio_fl_align;		/* Calculated and cached
-						 * for fast path
-						 */
-	uint32_t	sge_control;		/* padding, boundaries,
-						 * lengths, etc.
-						 */
-	uint32_t	sge_host_page_size;	/* Host page size */
+	uint32_t	csio_fl_align;		 
+	uint32_t	sge_control;		 
+	uint32_t	sge_host_page_size;	 
 	uint32_t	sge_fl_buf_size[CSIO_SGE_FL_SIZE_REGS];
-						/* free list buffer sizes */
+						 
 	uint16_t	timer_val[CSIO_SGE_NTIMERS];
 	uint8_t		counter_val[CSIO_SGE_NCOUNTERS];
 };
 
-/* Work request module */
+ 
 struct csio_wrm {
-	int			num_q;		/* Number of queues */
-	struct csio_q		**q_arr;	/* Array of queue pointers
-						 * allocated dynamically
-						 * based on configured values
-						 */
-	uint32_t		fw_iq_start;	/* Start ID of IQ for this fn*/
-	uint32_t		fw_eq_start;	/* Start ID of EQ for this fn*/
+	int			num_q;		 
+	struct csio_q		**q_arr;	 
+	uint32_t		fw_iq_start;	 
+	uint32_t		fw_eq_start;	 
 	struct csio_q		*intr_map[CSIO_MAX_IQ];
-						/* IQ-id to IQ map table. */
-	int			free_qidx;	/* queue idx of free queue */
-	struct csio_sge		sge;		/* SGE params */
+						 
+	int			free_qidx;	 
+	struct csio_sge		sge;		 
 };
 
 #define csio_get_q(__hw, __idx)		((__hw)->wrm.q_arr[__idx])
@@ -509,4 +425,4 @@ void csio_wr_sge_init(struct csio_hw *);
 int csio_wrm_init(struct csio_wrm *, struct csio_hw *);
 void csio_wrm_exit(struct csio_wrm *, struct csio_hw *);
 
-#endif /* ifndef __CSIO_WR_H__ */
+#endif  

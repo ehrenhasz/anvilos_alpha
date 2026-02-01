@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ni_labpc ISA DMA support.
- */
+ 
+ 
 
 #ifndef _NI_LABPC_ISADMA_H
 #define _NI_LABPC_ISADMA_H
@@ -40,4 +38,4 @@ static inline void labpc_handle_dma_status(struct comedi_device *dev)
 
 #endif
 
-#endif /* _NI_LABPC_ISADMA_H */
+#endif  

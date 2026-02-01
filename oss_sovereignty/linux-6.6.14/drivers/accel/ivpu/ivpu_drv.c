@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -73,7 +71,7 @@ struct ivpu_file_priv *ivpu_file_priv_get_by_ctx_id(struct ivpu_device *vdev, un
 
 	xa_lock_irq(&vdev->context_xa);
 	file_priv = xa_load(&vdev->context_xa, id);
-	/* file_priv may still be in context_xa during file_priv_release() */
+	 
 	if (file_priv && !kref_get_unless_zero(&file_priv->ref))
 		file_priv = NULL;
 	xa_unlock_irq(&vdev->context_xa);
@@ -334,18 +332,12 @@ static int ivpu_wait_for_ready(struct ivpu_device *vdev)
 	return ret;
 }
 
-/**
- * ivpu_boot() - Start VPU firmware
- * @vdev: VPU device
- *
- * This function is paired with ivpu_shutdown() but it doesn't power up the
- * VPU because power up has to be called very early in ivpu_probe().
- */
+ 
 int ivpu_boot(struct ivpu_device *vdev)
 {
 	int ret;
 
-	/* Update boot params located at first 4KB of FW memory */
+	 
 	ivpu_fw_boot_params_setup(vdev, vdev->fw->mem->kvaddr);
 
 	ret = ivpu_hw_boot_fw(vdev);
@@ -464,10 +456,10 @@ static int ivpu_pci_init(struct ivpu_device *vdev)
 	}
 	dma_set_max_seg_size(vdev->drm.dev, UINT_MAX);
 
-	/* Clear any pending errors */
+	 
 	pcie_capability_clear_word(pdev, PCI_EXP_DEVSTA, 0x3f);
 
-	/* VPU 37XX does not require 10m D3hot delay */
+	 
 	if (ivpu_hw_gen(vdev) == IVPU_HW_37XX)
 		pdev->d3hot_delay = 0;
 
@@ -534,14 +526,14 @@ static int ivpu_dev_init(struct ivpu_device *vdev)
 		goto err_xa_destroy;
 	}
 
-	/* Init basic HW info based on buttress registers which are accessible before power up */
+	 
 	ret = ivpu_hw_info_init(vdev);
 	if (ret) {
 		ivpu_err(vdev, "Failed to initialize HW info: %d\n", ret);
 		goto err_xa_destroy;
 	}
 
-	/* Power up early so the rest of init code can access VPU registers */
+	 
 	ret = ivpu_hw_power_up(vdev);
 	if (ret) {
 		ivpu_err(vdev, "Failed to power up HW: %d\n", ret);

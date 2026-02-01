@@ -1,30 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 
- * User address space access functions.
- *
- * Copyright 1997 Andi Kleen <ak@muc.de>
- * Copyright 1997 Linus Torvalds
- * Copyright 2002 Andi Kleen <ak@suse.de>
- */
+
+ 
 #include <linux/export.h>
 #include <linux/uaccess.h>
 #include <linux/highmem.h>
 #include <linux/libnvdimm.h>
 
-/*
- * Zero Userspace
- */
+ 
 
 #ifdef CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE
-/**
- * clean_cache_range - write back a cache range with CLWB
- * @vaddr:	virtual start address
- * @size:	number of bytes to write back
- *
- * Write back a cache range using the CLWB (cache line write back)
- * instruction. Note that @size is internally rounded up to be cache
- * line size aligned.
- */
+ 
 static void clean_cache_range(void *addr, size_t size)
 {
 	u16 x86_clflush_size = boot_cpu_data.x86_clflush_size;
@@ -52,14 +36,7 @@ long __copy_user_flushcache(void *dst, const void __user *src, unsigned size)
 	rc = __copy_user_nocache(dst, src, size);
 	clac();
 
-	/*
-	 * __copy_user_nocache() uses non-temporal stores for the bulk
-	 * of the transfer, but we need to manually flush if the
-	 * transfer is unaligned. A cached memory copy is used when
-	 * destination or size is not naturally aligned. That is:
-	 *   - Require 8-byte alignment when size is 8 bytes or larger.
-	 *   - Require 4-byte alignment when size is 4 bytes.
-	 */
+	 
 	if (size < 8) {
 		if (!IS_ALIGNED(dest, 4) || size != 4)
 			clean_cache_range(dst, size);
@@ -82,7 +59,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
 	unsigned long dest = (unsigned long) _dst;
 	unsigned long source = (unsigned long) _src;
 
-	/* cache copy and flush to align dest */
+	 
 	if (!IS_ALIGNED(dest, 8)) {
 		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
 
@@ -95,7 +72,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
 			return;
 	}
 
-	/* 4x8 movnti loop */
+	 
 	while (size >= 32) {
 		asm("movq    (%0), %%r8\n"
 		    "movq   8(%0), %%r9\n"
@@ -112,7 +89,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
 		size -= 32;
 	}
 
-	/* 1x8 movnti loop */
+	 
 	while (size >= 8) {
 		asm("movq    (%0), %%r8\n"
 		    "movnti  %%r8,   (%1)\n"
@@ -123,7 +100,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
 		size -= 8;
 	}
 
-	/* 1x4 movnti loop */
+	 
 	while (size >= 4) {
 		asm("movl    (%0), %%r8d\n"
 		    "movnti  %%r8d,   (%1)\n"
@@ -134,7 +111,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
 		size -= 4;
 	}
 
-	/* cache copy for remaining bytes */
+	 
 	if (size) {
 		memcpy((void *) dest, (void *) source, size);
 		clean_cache_range((void *) dest, size);

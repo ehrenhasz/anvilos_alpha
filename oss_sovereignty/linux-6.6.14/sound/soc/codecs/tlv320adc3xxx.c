@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Based on sound/soc/codecs/tlv320aic3x.c by  Vladimir Barinov
-//
-// Copyright (C) 2010 Mistral Solutions Pvt Ltd.
-// Author: Shahina Shaik <shahina.s@mistralsolutions.com>
-//
-// Copyright (C) 2014-2018, Ambarella, Inc.
-// Author: Dongge wu <dgwu@ambarella.com>
-//
-// Copyright (C) 2021 Axis Communications AB
-// Author: Ricard Wanderlof <ricardw@axis.com>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <dt-bindings/sound/tlv320adc3xxx.h>
 #include <linux/clk.h>
@@ -35,13 +35,11 @@
 #include <sound/tlv.h>
 #include <sound/initval.h>
 
-/*
- * General definitions defining exported functionality.
- */
+ 
 
 #define ADC3XXX_MICBIAS_PINS		2
 
-/* Number of GPIO pins exposed via the gpiolib interface */
+ 
 #define ADC3XXX_GPIOS_MAX		2
 
 #define ADC3XXX_RATES		SNDRV_PCM_RATE_8000_96000
@@ -50,32 +48,22 @@
 				 SNDRV_PCM_FMTBIT_S24_3LE | \
 				 SNDRV_PCM_FMTBIT_S32_LE)
 
-/*
- * PLL modes, to be used for clk_id for set_sysclk callback.
- *
- * The default behavior (AUTO) is to take the first matching entry in the clock
- * table, which is intended to be the PLL based one if there is more than one.
- *
- * Setting the clock source using simple-card (clocks or
- * system-clock-frequency property) sets clk_id = 0 = ADC3XXX_PLL_AUTO.
- */
-#define ADC3XXX_PLL_AUTO	0 /* Use first available mode */
-#define ADC3XXX_PLL_ENABLE	1 /* Use PLL for clock generation */
-#define ADC3XXX_PLL_BYPASS	2 /* Don't use PLL for clock generation */
+ 
+#define ADC3XXX_PLL_AUTO	0  
+#define ADC3XXX_PLL_ENABLE	1  
+#define ADC3XXX_PLL_BYPASS	2  
 
-/* Register definitions. */
+ 
 
 #define ADC3XXX_PAGE_SIZE		128
 #define ADC3XXX_REG(page, reg)		((page * ADC3XXX_PAGE_SIZE) + reg)
 
-/*
- * Page 0 registers.
- */
+ 
 
 #define ADC3XXX_PAGE_SELECT			ADC3XXX_REG(0, 0)
 #define ADC3XXX_RESET				ADC3XXX_REG(0, 1)
 
-/* 2-3 Reserved */
+ 
 
 #define ADC3XXX_CLKGEN_MUX			ADC3XXX_REG(0, 4)
 #define ADC3XXX_PLL_PROG_PR			ADC3XXX_REG(0, 5)
@@ -83,14 +71,14 @@
 #define ADC3XXX_PLL_PROG_D_MSB			ADC3XXX_REG(0, 7)
 #define ADC3XXX_PLL_PROG_D_LSB			ADC3XXX_REG(0, 8)
 
-/* 9-17 Reserved */
+ 
 
 #define ADC3XXX_ADC_NADC			ADC3XXX_REG(0, 18)
 #define ADC3XXX_ADC_MADC			ADC3XXX_REG(0, 19)
 #define ADC3XXX_ADC_AOSR			ADC3XXX_REG(0, 20)
 #define ADC3XXX_ADC_IADC			ADC3XXX_REG(0, 21)
 
-/* 23-24 Reserved */
+ 
 
 #define ADC3XXX_CLKOUT_MUX			ADC3XXX_REG(0, 25)
 #define ADC3XXX_CLKOUT_M_DIV			ADC3XXX_REG(0, 26)
@@ -102,31 +90,31 @@
 #define ADC3XXX_INTERFACE_CTRL_4		ADC3XXX_REG(0, 32)
 #define ADC3XXX_INTERFACE_CTRL_5		ADC3XXX_REG(0, 33)
 #define ADC3XXX_I2S_SYNC			ADC3XXX_REG(0, 34)
-/* 35 Reserved */
+ 
 #define ADC3XXX_ADC_FLAG			ADC3XXX_REG(0, 36)
 #define ADC3XXX_CH_OFFSET_2			ADC3XXX_REG(0, 37)
 #define ADC3XXX_I2S_TDM_CTRL			ADC3XXX_REG(0, 38)
-/* 39-41 Reserved */
+ 
 #define ADC3XXX_INTR_FLAG_1			ADC3XXX_REG(0, 42)
 #define ADC3XXX_INTR_FLAG_2			ADC3XXX_REG(0, 43)
-/* 44 Reserved */
+ 
 #define ADC3XXX_INTR_FLAG_ADC1			ADC3XXX_REG(0, 45)
-/* 46 Reserved */
+ 
 #define ADC3XXX_INTR_FLAG_ADC2			ADC3XXX_REG(0, 47)
 #define ADC3XXX_INT1_CTRL			ADC3XXX_REG(0, 48)
 #define ADC3XXX_INT2_CTRL			ADC3XXX_REG(0, 49)
-/* 50 Reserved */
+ 
 #define ADC3XXX_GPIO2_CTRL			ADC3XXX_REG(0, 51)
 #define ADC3XXX_GPIO1_CTRL			ADC3XXX_REG(0, 52)
 #define ADC3XXX_DOUT_CTRL			ADC3XXX_REG(0, 53)
-/* 54-56 Reserved */
+ 
 #define ADC3XXX_SYNC_CTRL_1			ADC3XXX_REG(0, 57)
 #define ADC3XXX_SYNC_CTRL_2			ADC3XXX_REG(0, 58)
 #define ADC3XXX_CIC_GAIN_CTRL			ADC3XXX_REG(0, 59)
-/* 60 Reserved */
+ 
 #define ADC3XXX_PRB_SELECT			ADC3XXX_REG(0, 61)
 #define ADC3XXX_INST_MODE_CTRL			ADC3XXX_REG(0, 62)
-/* 63-79 Reserved */
+ 
 #define ADC3XXX_MIC_POLARITY_CTRL		ADC3XXX_REG(0, 80)
 #define ADC3XXX_ADC_DIGITAL			ADC3XXX_REG(0, 81)
 #define	ADC3XXX_ADC_FGA				ADC3XXX_REG(0, 82)
@@ -149,18 +137,16 @@
 #define ADC3XXX_RIGHT_CHN_AGC_6			ADC3XXX_REG(0, 99)
 #define ADC3XXX_RIGHT_CHN_AGC_7			ADC3XXX_REG(0, 100)
 #define ADC3XXX_RIGHT_AGC_GAIN			ADC3XXX_REG(0, 101)
-/* 102-127 Reserved */
+ 
 
-/*
- * Page 1 registers.
- */
+ 
 
-/* 1-25 Reserved */
+ 
 #define ADC3XXX_DITHER_CTRL			ADC3XXX_REG(1, 26)
-/* 27-50 Reserved */
+ 
 #define ADC3XXX_MICBIAS_CTRL			ADC3XXX_REG(1, 51)
 #define ADC3XXX_LEFT_PGA_SEL_1			ADC3XXX_REG(1, 52)
-/* 53 Reserved */
+ 
 #define ADC3XXX_LEFT_PGA_SEL_2			ADC3XXX_REG(1, 54)
 #define ADC3XXX_RIGHT_PGA_SEL_1			ADC3XXX_REG(1, 55)
 #define ADC3XXX_RIGHT_PGA_SEL_2			ADC3XXX_REG(1, 57)
@@ -168,11 +154,9 @@
 #define ADC3XXX_RIGHT_APGA_CTRL			ADC3XXX_REG(1, 60)
 #define ADC3XXX_LOW_CURRENT_MODES		ADC3XXX_REG(1, 61)
 #define ADC3XXX_ANALOG_PGA_FLAGS		ADC3XXX_REG(1, 62)
-/* 63-127 Reserved */
+ 
 
-/*
- * Page 4 registers. First page of coefficient memory for the miniDSP.
- */
+ 
 #define ADC3XXX_LEFT_ADC_IIR_COEFF_N0_MSB	ADC3XXX_REG(4, 8)
 #define ADC3XXX_LEFT_ADC_IIR_COEFF_N0_LSB	ADC3XXX_REG(4, 9)
 #define ADC3XXX_LEFT_ADC_IIR_COEFF_N1_MSB	ADC3XXX_REG(4, 10)
@@ -187,11 +171,9 @@
 #define ADC3XXX_RIGHT_ADC_IIR_COEFF_D1_MSB	ADC3XXX_REG(4, 76)
 #define ADC3XXX_RIGHT_ADC_IIR_COEFF_D1_LSB	ADC3XXX_REG(4, 77)
 
-/*
- * Register bits.
- */
+ 
 
-/* PLL Enable bits */
+ 
 #define ADC3XXX_ENABLE_PLL_SHIFT	7
 #define ADC3XXX_ENABLE_PLL		(1 << ADC3XXX_ENABLE_PLL_SHIFT)
 #define ADC3XXX_ENABLE_NADC_SHIFT	7
@@ -201,7 +183,7 @@
 #define ADC3XXX_ENABLE_BCLK_SHIFT	7
 #define ADC3XXX_ENABLE_BCLK		(1 << ADC3XXX_ENABLE_BCLK_SHIFT)
 
-/* Power bits */
+ 
 #define ADC3XXX_LADC_PWR_ON		0x80
 #define ADC3XXX_RADC_PWR_ON		0x40
 
@@ -209,7 +191,7 @@
 #define ADC3XXX_BCLK_MASTER		0x08
 #define ADC3XXX_WCLK_MASTER		0x04
 
-/* Interface register masks */
+ 
 #define ADC3XXX_FORMAT_MASK		0xc0
 #define ADC3XXX_FORMAT_SHIFT		6
 #define ADC3XXX_WLENGTH_MASK		0x30
@@ -217,7 +199,7 @@
 #define ADC3XXX_CLKDIR_MASK		0x0c
 #define ADC3XXX_CLKDIR_SHIFT		2
 
-/* Interface register bit patterns */
+ 
 #define ADC3XXX_FORMAT_I2S		(0 << ADC3XXX_FORMAT_SHIFT)
 #define ADC3XXX_FORMAT_DSP		(1 << ADC3XXX_FORMAT_SHIFT)
 #define ADC3XXX_FORMAT_RJF		(2 << ADC3XXX_FORMAT_SHIFT)
@@ -228,7 +210,7 @@
 #define ADC3XXX_IFACE_24BITS		(2 << ADC3XXX_WLENGTH_SHIFT)
 #define ADC3XXX_IFACE_32BITS		(3 << ADC3XXX_WLENGTH_SHIFT)
 
-/* PLL P/R bit offsets */
+ 
 #define ADC3XXX_PLLP_SHIFT		4
 #define ADC3XXX_PLLR_SHIFT		0
 #define ADC3XXX_PLL_PR_MASK		0x7f
@@ -241,13 +223,13 @@
 #define ADC3XXX_IADC_MASK		0xff
 #define ADC3XXX_BDIV_MASK		0x7f
 
-/* PLL_CLKIN bits */
+ 
 #define ADC3XXX_PLL_CLKIN_SHIFT		2
 #define ADC3XXX_PLL_CLKIN_MCLK		0x0
 #define ADC3XXX_PLL_CLKIN_BCLK		0x1
 #define ADC3XXX_PLL_CLKIN_ZERO		0x3
 
-/* CODEC_CLKIN bits */
+ 
 #define ADC3XXX_CODEC_CLKIN_SHIFT	0
 #define ADC3XXX_CODEC_CLKIN_MCLK	0x0
 #define ADC3XXX_CODEC_CLKIN_BCLK	0x1
@@ -258,17 +240,17 @@
 #define ADC3XXX_NO_PLL	((ADC3XXX_PLL_CLKIN_ZERO << ADC3XXX_PLL_CLKIN_SHIFT) | \
 			 (ADC3XXX_CODEC_CLKIN_MCLK << ADC3XXX_CODEC_CLKIN_SHIFT))
 
-/*  Analog PGA control bits */
+ 
 #define ADC3XXX_LPGA_MUTE		0x80
 #define ADC3XXX_RPGA_MUTE		0x80
 
 #define ADC3XXX_LPGA_GAIN_MASK		0x7f
 #define ADC3XXX_RPGA_GAIN_MASK		0x7f
 
-/* ADC current modes */
+ 
 #define ADC3XXX_ADC_LOW_CURR_MODE	0x01
 
-/* Left ADC Input selection bits */
+ 
 #define ADC3XXX_LCH_SEL1_SHIFT		0
 #define ADC3XXX_LCH_SEL2_SHIFT		2
 #define ADC3XXX_LCH_SEL3_SHIFT		4
@@ -280,7 +262,7 @@
 #define ADC3XXX_LCH_COMMON_MODE		0x40
 #define ADC3XXX_BYPASS_LPGA		0x80
 
-/* Right ADC Input selection bits */
+ 
 #define ADC3XXX_RCH_SEL1_SHIFT		0
 #define ADC3XXX_RCH_SEL2_SHIFT		2
 #define ADC3XXX_RCH_SEL3_SHIFT		4
@@ -292,7 +274,7 @@
 #define ADC3XXX_RCH_COMMON_MODE		0x40
 #define ADC3XXX_BYPASS_RPGA		0x80
 
-/* MICBIAS control bits */
+ 
 #define ADC3XXX_MICBIAS_MASK		0x3
 #define ADC3XXX_MICBIAS1_SHIFT		5
 #define ADC3XXX_MICBIAS2_SHIFT		3
@@ -300,7 +282,7 @@
 #define ADC3XXX_ADC_MAX_VOLUME		64
 #define ADC3XXX_ADC_POS_VOL		24
 
-/* GPIO control bits (GPIO1_CTRL and GPIO2_CTRL) */
+ 
 #define ADC3XXX_GPIO_CTRL_CFG_MASK		0x3c
 #define ADC3XXX_GPIO_CTRL_CFG_SHIFT		2
 #define ADC3XXX_GPIO_CTRL_OUTPUT_CTRL_MASK	0x01
@@ -321,7 +303,7 @@ struct adc3xxx {
 	struct gpio_desc *rst_pin;
 	unsigned int pll_mode;
 	unsigned int sysclk;
-	unsigned int gpio_cfg[ADC3XXX_GPIOS_MAX]; /* value+1 (0 => not set)  */
+	unsigned int gpio_cfg[ADC3XXX_GPIOS_MAX];  
 	unsigned int micbias_vg[ADC3XXX_MICBIAS_PINS];
 	int master;
 	u8 page_no;
@@ -340,7 +322,7 @@ static const unsigned int adc3xxx_micbias_shift[ADC3XXX_MICBIAS_PINS] = {
 };
 
 static const struct reg_default adc3xxx_defaults[] = {
-	/* Page 0 */
+	 
 	{ 0, 0x00 },    { 1, 0x00 },    { 2, 0x00 },    { 3, 0x00 },
 	{ 4, 0x00 },    { 5, 0x11 },    { 6, 0x04 },    { 7, 0x00 },
 	{ 8, 0x00 },    { 9, 0x00 },    { 10, 0x00 },   { 11, 0x00 },
@@ -374,7 +356,7 @@ static const struct reg_default adc3xxx_defaults[] = {
 	{ 120, 0x00 },  { 121, 0x00 },  { 122, 0x00 },  { 123, 0x00 },
 	{ 124, 0x00 },  { 125, 0x00 },  { 126, 0x00 },  { 127, 0x00 },
 
-	/* Page 1 */
+	 
 	{ 128, 0x00 },  { 129, 0x00 },  { 130, 0x00 },  { 131, 0x00 },
 	{ 132, 0x00 },  { 133, 0x00 },  { 134, 0x00 },  { 135, 0x00 },
 	{ 136, 0x00 },  { 137, 0x00 },  { 138, 0x00 },  { 139, 0x00 },
@@ -392,7 +374,7 @@ static const struct reg_default adc3xxx_defaults[] = {
 	{ 184, 0x00 },  { 185, 0x3f },  { 186, 0x00 },  { 187, 0x80 },
 	{ 188, 0x80 },  { 189, 0x00 },  { 190, 0x00 },  { 191, 0x00 },
 
-	/* Page 4 */
+	 
 	{ 1024, 0x00 },			{ 1026, 0x01 },	{ 1027, 0x17 },
 	{ 1028, 0x01 }, { 1029, 0x17 }, { 1030, 0x7d }, { 1031, 0xd3 },
 	{ 1032, 0x7f }, { 1033, 0xff }, { 1034, 0x00 }, { 1035, 0x00 },
@@ -477,38 +459,32 @@ struct adc3xxx_rate_divs {
 	u8 aosr;
 };
 
-/*
- * PLL and Clock settings.
- * If p member is 0, PLL is not used.
- * The order of the entries in this table have the PLL entries before
- * the non-PLL entries, so that the PLL modes are preferred unless
- * the PLL mode setting says otherwise.
- */
+ 
 static const struct adc3xxx_rate_divs adc3xxx_divs[] = {
-	/* mclk, rate, p, r, j, d, nadc, madc, aosr */
-	/* 8k rate */
+	 
+	 
 	{ 12000000, 8000, 1, 1, 7, 1680, 42, 2, 128 },
 	{ 12288000, 8000, 1, 1, 7, 0000, 42, 2, 128 },
-	/* 11.025k rate */
+	 
 	{ 12000000, 11025, 1, 1, 6, 8208, 29, 2, 128 },
-	/* 16k rate */
+	 
 	{ 12000000, 16000, 1, 1, 7, 1680, 21, 2, 128 },
 	{ 12288000, 16000, 1, 1, 7, 0000, 21, 2, 128 },
-	/* 22.05k rate */
+	 
 	{ 12000000, 22050, 1, 1, 7, 560, 15, 2, 128 },
-	/* 32k rate */
+	 
 	{ 12000000, 32000, 1, 1, 8, 1920, 12, 2, 128 },
 	{ 12288000, 32000, 1, 1, 8, 0000, 12, 2, 128 },
-	/* 44.1k rate */
+	 
 	{ 12000000, 44100, 1, 1, 7, 5264, 8, 2, 128 },
-	/* 48k rate */
+	 
 	{ 12000000, 48000, 1, 1, 7, 1680, 7, 2, 128 },
 	{ 12288000, 48000, 1, 1, 7, 0000, 7, 2, 128 },
-	{ 24576000, 48000, 1, 1, 3, 5000, 7, 2, 128 }, /* With PLL */
-	{ 24576000, 48000, 0, 0, 0, 0000, 2, 2, 128 }, /* Without PLL */
-	/* 88.2k rate */
+	{ 24576000, 48000, 1, 1, 3, 5000, 7, 2, 128 },  
+	{ 24576000, 48000, 0, 0, 0, 0000, 2, 2, 128 },  
+	 
 	{ 12000000, 88200, 1, 1, 7, 5264, 4, 4, 64 },
-	/* 96k rate */
+	 
 	{ 12000000, 96000, 1, 1, 8, 1920, 4, 4, 64 },
 };
 
@@ -521,10 +497,7 @@ static int adc3xxx_get_divs(struct device *dev, int mclk, int rate, int pll_mode
 	for (i = 0; i < ARRAY_SIZE(adc3xxx_divs); i++) {
 		const struct adc3xxx_rate_divs *mode = &adc3xxx_divs[i];
 
-		/* Skip this entry if it doesn't fulfill the intended clock
-		 * mode requirement. We consider anything besides the two
-		 * modes below to be the same as ADC3XXX_PLL_AUTO.
-		 */
+		 
 		if ((pll_mode == ADC3XXX_PLL_BYPASS && mode->pll_p) ||
 		    (pll_mode == ADC3XXX_PLL_ENABLE && !mode->pll_p))
 			continue;
@@ -541,9 +514,7 @@ static int adc3xxx_get_divs(struct device *dev, int mclk, int rate, int pll_mode
 static int adc3xxx_pll_delay(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
 {
-	/* 10msec delay needed after PLL power-up to allow
-	 * PLL and dividers to stabilize (datasheet p13).
-	 */
+	 
 	usleep_range(10000, 20000);
 
 	return 0;
@@ -557,7 +528,7 @@ static int adc3xxx_coefficient_info(struct snd_kcontrol *kcontrol,
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = numcoeff;
 	uinfo->value.integer.min = 0;
-	uinfo->value.integer.max = 0xffff; /* all coefficients are 16 bit */
+	uinfo->value.integer.max = 0xffff;  
 	return 0;
 }
 
@@ -613,9 +584,7 @@ static int adc3xxx_coefficient_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* All on-chip filters have coefficients which are expressed in terms of
- * 16 bit values, so represent them as strings of 16-bit integers.
- */
+ 
 #define TI_COEFFICIENTS(xname, reg, numcoeffs) { \
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
 	.name = xname, \
@@ -655,32 +624,24 @@ static SOC_VALUE_ENUM_DOUBLE_DECL(dither_dc_offset_enum,
 static const DECLARE_TLV_DB_SCALE(pga_tlv, 0, 50, 0);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -1200, 50, 0);
 static const DECLARE_TLV_DB_SCALE(adc_fine_tlv, -40, 10, 0);
-/* AGC target: 8 values: -5.5, -8, -10, -12, -14, -17, -20, -24 dB */
-/* It would be nice to declare these in the order above, but empirically
- * TLV_DB_SCALE_ITEM doesn't take lightly to the increment (second) parameter
- * being negative, despite there being examples to the contrary in other
- * drivers. So declare these in the order from lowest to highest, and
- * set the invert flag in the SOC_DOUBLE_R_TLV declaration instead.
- */
+ 
+ 
 static const DECLARE_TLV_DB_RANGE(agc_target_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(-2400, 0, 0),
 	1, 3, TLV_DB_SCALE_ITEM(-2000, 300, 0),
 	4, 6, TLV_DB_SCALE_ITEM(-1200, 200, 0),
 	7, 7, TLV_DB_SCALE_ITEM(-550, 0, 0));
-/* Since the 'disabled' value (mute) is at the highest value in the dB
- * range (i.e. just before -32 dB) rather than the lowest, we need to resort
- * to using a TLV_DB_RANGE in order to get the mute value in the right place.
- */
+ 
 static const DECLARE_TLV_DB_RANGE(agc_thresh_tlv,
 	0, 30, TLV_DB_SCALE_ITEM(-9000, 200, 0),
-	31, 31, TLV_DB_SCALE_ITEM(0, 0, 1)); /* disabled = mute */
-/* AGC hysteresis: 4 values: 1, 2, 4 dB, disabled (= mute) */
+	31, 31, TLV_DB_SCALE_ITEM(0, 0, 1));  
+ 
 static const DECLARE_TLV_DB_RANGE(agc_hysteresis_tlv,
 	0, 1, TLV_DB_SCALE_ITEM(100, 100, 0),
 	2, 2, TLV_DB_SCALE_ITEM(400, 0, 0),
-	3, 3, TLV_DB_SCALE_ITEM(0, 0, 1)); /* disabled = mute */
+	3, 3, TLV_DB_SCALE_ITEM(0, 0, 1));  
 static const DECLARE_TLV_DB_SCALE(agc_max_tlv, 0, 50, 0);
-/* Input attenuation: -6 dB or 0 dB */
+ 
 static const DECLARE_TLV_DB_SCALE(input_attenuation_tlv, -600, 600, 0);
 
 static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
@@ -697,21 +658,12 @@ static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
 		     ADC3XXX_RIGHT_CHN_AGC_2, 6, 3, 0, agc_hysteresis_tlv),
 	SOC_DOUBLE_R("AGC Clip Stepping Capture Switch", ADC3XXX_LEFT_CHN_AGC_2,
 		     ADC3XXX_RIGHT_CHN_AGC_2, 0, 1, 0),
-	/*
-	 * Oddly enough, the data sheet says the default value
-	 * for the left/right AGC maximum gain register field
-	 * (ADC3XXX_LEFT/RIGHT_CHN_AGC_3 bits 0..6) is 0x7f = 127
-	 * (verified empirically) even though this value (indeed, above
-	 * 0x50) is specified as 'Reserved. Do not use.' in the accompanying
-	 * table in the data sheet.
-	 */
+	 
 	SOC_DOUBLE_R_TLV("AGC Maximum Capture Volume", ADC3XXX_LEFT_CHN_AGC_3,
 		     ADC3XXX_RIGHT_CHN_AGC_3, 0, 0x50, 0, agc_max_tlv),
 	SOC_DOUBLE_R("AGC Attack Time", ADC3XXX_LEFT_CHN_AGC_4,
 		     ADC3XXX_RIGHT_CHN_AGC_4, 3, 0x1f, 0),
-	/* Would like to have the multipliers as LR pairs, but there is
-	 * no SOC_ENUM_foo which accepts two values in separate registers.
-	 */
+	 
 	SOC_ENUM("AGC Left Attack Time Multiplier", left_agc_attack_mult_enum),
 	SOC_ENUM("AGC Right Attack Time Multiplier", right_agc_attack_mult_enum),
 	SOC_DOUBLE_R("AGC Decay Time", ADC3XXX_LEFT_CHN_AGC_5,
@@ -722,12 +674,12 @@ static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
 		     ADC3XXX_RIGHT_CHN_AGC_6, 0, 0x1f, 0),
 	SOC_DOUBLE_R("AGC Signal Debounce", ADC3XXX_LEFT_CHN_AGC_7,
 		     ADC3XXX_RIGHT_CHN_AGC_7, 0, 0x0f, 0),
-	/* Read only register */
+	 
 	SOC_DOUBLE_R_S_TLV("AGC Applied Capture Volume", ADC3XXX_LEFT_AGC_GAIN,
 			   ADC3XXX_RIGHT_AGC_GAIN, 0, -24, 40, 6, 0, adc_tlv),
-	/* ADC soft stepping */
+	 
 	SOC_ENUM("ADC Soft Stepping", adc_softstepping_enum),
-	/* Left/Right Input attenuation */
+	 
 	SOC_SINGLE_TLV("Left Input IN_1L Capture Volume",
 		       ADC3XXX_LEFT_PGA_SEL_1, 0, 1, 1, input_attenuation_tlv),
 	SOC_SINGLE_TLV("Left Input IN_2L Capture Volume",
@@ -758,10 +710,7 @@ static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
 		       ADC3XXX_RIGHT_PGA_SEL_2, 2, 1, 1, input_attenuation_tlv),
 	SOC_DOUBLE_R_S_TLV("ADC Volume Control Capture Volume", ADC3XXX_LADC_VOL,
 			   ADC3XXX_RADC_VOL, 0, -24, 40, 6, 0, adc_tlv),
-	/* Empirically, the following doesn't work the way it's supposed
-	 * to. Values 0, -0.1, -0.2 and -0.3 dB result in the same level, and
-	 * -0.4 dB drops about 0.12 dB on a specific chip.
-	 */
+	 
 	SOC_DOUBLE_TLV("ADC Fine Volume Control Capture Volume", ADC3XXX_ADC_FGA,
 		       4, 0, 4, 1, adc_fine_tlv),
 	SOC_SINGLE("Left ADC Unselected CM Bias Capture Switch",
@@ -770,10 +719,8 @@ static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
 		   ADC3XXX_RIGHT_PGA_SEL_2, 6, 1, 0),
 	SOC_ENUM("Dither Control DC Offset", dither_dc_offset_enum),
 
-	/* Coefficient memory for miniDSP. */
-	/* For the default PRB_R1 processing block, the only available
-	 * filter is the first order IIR.
-	 */
+	 
+	 
 
 	TI_COEFFICIENTS("Left ADC IIR Coefficients N0 N1 D1",
 			ADC3XXX_LEFT_ADC_IIR_COEFF_N0_MSB, 3),
@@ -782,7 +729,7 @@ static const struct snd_kcontrol_new adc3xxx_snd_controls[] = {
 			ADC3XXX_RIGHT_ADC_IIR_COEFF_N0_MSB, 3),
 };
 
-/* Left input selection, Single Ended inputs and Differential inputs */
+ 
 static const struct snd_kcontrol_new left_input_mixer_controls[] = {
 	SOC_DAPM_SINGLE("IN_1L Capture Switch",
 			ADC3XXX_LEFT_PGA_SEL_1, 1, 0x1, 1),
@@ -800,7 +747,7 @@ static const struct snd_kcontrol_new left_input_mixer_controls[] = {
 			ADC3XXX_LEFT_PGA_SEL_2, 1, 0x1, 1),
 };
 
-/* Right input selection, Single Ended inputs and Differential inputs */
+ 
 static const struct snd_kcontrol_new right_input_mixer_controls[] = {
 	SOC_DAPM_SINGLE("IN_1R Capture Switch",
 			ADC3XXX_RIGHT_PGA_SEL_1, 1, 0x1, 1),
@@ -818,34 +765,34 @@ static const struct snd_kcontrol_new right_input_mixer_controls[] = {
 			 ADC3XXX_RIGHT_PGA_SEL_2, 1, 0x1, 1),
 };
 
-/* Left Digital Mic input for left ADC */
+ 
 static const struct snd_kcontrol_new left_input_dmic_controls[] = {
 	SOC_DAPM_SINGLE("Left ADC Capture Switch",
 			ADC3XXX_ADC_DIGITAL, 3, 0x1, 0),
 };
 
-/* Right Digital Mic input for Right ADC */
+ 
 static const struct snd_kcontrol_new right_input_dmic_controls[] = {
 	SOC_DAPM_SINGLE("Right ADC Capture Switch",
 			ADC3XXX_ADC_DIGITAL, 2, 0x1, 0),
 };
 
-/* DAPM widgets */
+ 
 static const struct snd_soc_dapm_widget adc3xxx_dapm_widgets[] = {
 
-	/* Left Input Selection */
+	 
 	SND_SOC_DAPM_MIXER("Left Input", SND_SOC_NOPM, 0, 0,
 			   &left_input_mixer_controls[0],
 			   ARRAY_SIZE(left_input_mixer_controls)),
-	/* Right Input Selection */
+	 
 	SND_SOC_DAPM_MIXER("Right Input", SND_SOC_NOPM, 0, 0,
 			   &right_input_mixer_controls[0],
 			   ARRAY_SIZE(right_input_mixer_controls)),
-	/* PGA selection */
+	 
 	SND_SOC_DAPM_PGA("Left PGA", ADC3XXX_LEFT_APGA_CTRL, 7, 1, NULL, 0),
 	SND_SOC_DAPM_PGA("Right PGA", ADC3XXX_RIGHT_APGA_CTRL, 7, 1, NULL, 0),
 
-	/* Digital Microphone Input Control for Left/Right ADC */
+	 
 	SND_SOC_DAPM_MIXER("Left DMic Input", SND_SOC_NOPM, 0, 0,
 			&left_input_dmic_controls[0],
 			ARRAY_SIZE(left_input_dmic_controls)),
@@ -853,11 +800,11 @@ static const struct snd_soc_dapm_widget adc3xxx_dapm_widgets[] = {
 			&right_input_dmic_controls[0],
 			ARRAY_SIZE(right_input_dmic_controls)),
 
-	/* Left/Right ADC */
+	 
 	SND_SOC_DAPM_ADC("Left ADC", "Left Capture", ADC3XXX_ADC_DIGITAL, 7, 0),
 	SND_SOC_DAPM_ADC("Right ADC", "Right Capture", ADC3XXX_ADC_DIGITAL, 6, 0),
 
-	/* Inputs */
+	 
 	SND_SOC_DAPM_INPUT("IN_1L"),
 	SND_SOC_DAPM_INPUT("IN_1R"),
 	SND_SOC_DAPM_INPUT("IN_2L"),
@@ -873,10 +820,10 @@ static const struct snd_soc_dapm_widget adc3xxx_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("DMic_L"),
 	SND_SOC_DAPM_INPUT("DMic_R"),
 
-	/* Digital audio interface output */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF_OUT", "Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Clocks */
+	 
 	SND_SOC_DAPM_SUPPLY("PLL_CLK", ADC3XXX_PLL_PROG_PR, ADC3XXX_ENABLE_PLL_SHIFT,
 			    0, adc3xxx_pll_delay, SND_SOC_DAPM_POST_PMU),
 
@@ -885,13 +832,13 @@ static const struct snd_soc_dapm_widget adc3xxx_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("ADC_MOD_CLK", ADC3XXX_ADC_MADC, ADC3XXX_ENABLE_MADC_SHIFT,
 			    0, NULL, 0),
 
-	/* This refers to the generated BCLK in master mode. */
+	 
 	SND_SOC_DAPM_SUPPLY("BCLK", ADC3XXX_BCLK_N_DIV, ADC3XXX_ENABLE_BCLK_SHIFT,
 			    0, NULL, 0),
 };
 
 static const struct snd_soc_dapm_route adc3xxx_intercon[] = {
-	/* Left input selection from switches */
+	 
 	{ "Left Input", "IN_1L Capture Switch", "IN_1L" },
 	{ "Left Input", "IN_2L Capture Switch", "IN_2L" },
 	{ "Left Input", "IN_3L Capture Switch", "IN_3L" },
@@ -900,13 +847,13 @@ static const struct snd_soc_dapm_route adc3xxx_intercon[] = {
 	{ "Left Input", "DIF_2R_3R Capture Switch", "DIFL_2R_3R" },
 	{ "Left Input", "IN_1R Capture Switch", "IN_1R" },
 
-	/* Left input selection to left PGA */
+	 
 	{ "Left PGA", NULL, "Left Input" },
 
-	/* Left PGA to left ADC */
+	 
 	{ "Left ADC", NULL, "Left PGA" },
 
-	/* Right input selection from switches */
+	 
 	{ "Right Input", "IN_1R Capture Switch", "IN_1R" },
 	{ "Right Input", "IN_2R Capture Switch", "IN_2R" },
 	{ "Right Input", "IN_3R Capture Switch", "IN_3R" },
@@ -915,29 +862,29 @@ static const struct snd_soc_dapm_route adc3xxx_intercon[] = {
 	{ "Right Input", "DIF_2L_3L Capture Switch", "DIFR_2L_3L" },
 	{ "Right Input", "IN_1L Capture Switch", "IN_1L" },
 
-	/* Right input selection to right PGA */
+	 
 	{ "Right PGA", NULL, "Right Input" },
 
-	/* Right PGA to right ADC */
+	 
 	{ "Right ADC", NULL, "Right PGA" },
 
-	/* Left DMic Input selection from switch */
+	 
 	{ "Left DMic Input", "Left ADC Capture Switch", "DMic_L" },
 
-	/* Left DMic to left ADC */
+	 
 	{ "Left ADC", NULL, "Left DMic Input" },
 
-	/* Right DMic Input selection from switch */
+	 
 	{ "Right DMic Input", "Right ADC Capture Switch", "DMic_R" },
 
-	/* Right DMic to right ADC */
+	 
 	{ "Right ADC", NULL, "Right DMic Input" },
 
-	/* ADC to AIF output */
+	 
 	{ "AIF_OUT", NULL, "Left ADC" },
 	{ "AIF_OUT", NULL, "Right ADC" },
 
-	/* Clocking */
+	 
 	{ "ADC_MOD_CLK", NULL, "ADC_CLK" },
 	{ "Left ADC", NULL, "ADC_MOD_CLK" },
 	{ "Right ADC", NULL, "ADC_MOD_CLK" },
@@ -960,11 +907,8 @@ static int adc3xxx_gpio_request(struct gpio_chip *chip, unsigned int offset)
 	if (offset >= ADC3XXX_GPIOS_MAX)
 		return -EINVAL;
 
-	/* GPIO1 is offset 0, GPIO2 is offset 1 */
-	/* We check here that the GPIO pins are either not configured in the
-	 * DT, or that they purposely are set as outputs.
-	 * (Input mode not yet implemented).
-	 */
+	 
+	 
 	if (adc3xxx->gpio_cfg[offset] != 0 &&
 	    adc3xxx->gpio_cfg[offset] != ADC3XXX_GPIO_GPO + 1)
 		return -EINVAL;
@@ -977,7 +921,7 @@ static int adc3xxx_gpio_direction_out(struct gpio_chip *chip,
 {
 	struct adc3xxx *adc3xxx = gpiochip_get_data(chip);
 
-	/* Set GPIO output function. */
+	 
 	return regmap_update_bits(adc3xxx->regmap,
 				  adc3xxx_gpio_ctrl_reg[offset],
 				  ADC3XXX_GPIO_CTRL_CFG_MASK |
@@ -986,28 +930,21 @@ static int adc3xxx_gpio_direction_out(struct gpio_chip *chip,
 				  !!value << ADC3XXX_GPIO_CTRL_OUTPUT_CTRL_SHIFT);
 }
 
-/* With only GPIO outputs configured, we never get the .direction_out call,
- * so we set the output mode and output value in the same call. Hence
- * .set in practice does the same thing as .direction_out .
- */
+ 
 static void adc3xxx_gpio_set(struct gpio_chip *chip, unsigned int offset,
 			     int value)
 {
 	(void) adc3xxx_gpio_direction_out(chip, offset, value);
 }
 
-/* Even though we only support GPIO output for now, some GPIO clients
- * want to read the current pin state using the .get callback.
- */
+ 
 static int adc3xxx_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
 	struct adc3xxx *adc3xxx = gpiochip_get_data(chip);
 	unsigned int regval;
 	int ret;
 
-	/* We only allow output pins, so just read the value set in the output
-	 * pin register field.
-	 */
+	 
 	ret = regmap_read(adc3xxx->regmap, adc3xxx_gpio_ctrl_reg[offset], &regval);
 	if (ret)
 		return ret;
@@ -1045,15 +982,12 @@ static void adc3xxx_init_gpio(struct adc3xxx *adc3xxx)
 	if (ret)
 		dev_err(adc3xxx->dev, "Failed to add gpios: %d\n", ret);
 
-	/* Set up potential GPIO configuration from the devicetree.
-	 * This allows us to set up things which are not software
-	 * controllable GPIOs, such as PDM microphone I/O,
-	 */
+	 
 	for (gpio = 0; gpio < ADC3XXX_GPIOS_MAX; gpio++) {
 		unsigned int cfg = adc3xxx->gpio_cfg[gpio];
 
 		if (cfg) {
-			cfg--; /* actual value to use is stored +1 */
+			cfg--;  
 			regmap_update_bits(adc3xxx->regmap,
 					   adc3xxx_gpio_ctrl_reg[gpio],
 					   ADC3XXX_GPIO_CTRL_CFG_MASK,
@@ -1061,7 +995,7 @@ static void adc3xxx_init_gpio(struct adc3xxx *adc3xxx)
 		}
 	}
 
-	/* Set up micbias voltage */
+	 
 	for (micbias = 0; micbias < ADC3XXX_MICBIAS_PINS; micbias++) {
 		unsigned int vg = adc3xxx->micbias_vg[micbias];
 
@@ -1086,7 +1020,7 @@ static int adc3xxx_parse_dt_gpio(struct adc3xxx *adc3xxx,
 		}
 		if (val == ADC3XXX_GPIO_GPI)
 			dev_warn(dev, "GPIO Input read not yet implemented\n");
-		*cfg = val + 1; /* 0 => not set up, all others shifted +1 */
+		*cfg = val + 1;  
 	}
 	return 0;
 }
@@ -1124,14 +1058,14 @@ static void adc3xxx_setup_pll(struct snd_soc_component *component,
 {
 	int i = div_entry;
 
-	/* P & R values */
+	 
 	snd_soc_component_write(component, ADC3XXX_PLL_PROG_PR,
 				(adc3xxx_divs[i].pll_p << ADC3XXX_PLLP_SHIFT) |
 				(adc3xxx_divs[i].pll_r << ADC3XXX_PLLR_SHIFT));
-	/* J value */
+	 
 	snd_soc_component_write(component, ADC3XXX_PLL_PROG_J,
 				adc3xxx_divs[i].pll_j & ADC3XXX_PLLJ_MASK);
-	/* D value */
+	 
 	snd_soc_component_write(component, ADC3XXX_PLL_PROG_D_LSB,
 				adc3xxx_divs[i].pll_d & ADC3XXX_PLLD_LSB_MASK);
 	snd_soc_component_write(component, ADC3XXX_PLL_PROG_D_MSB,
@@ -1154,7 +1088,7 @@ static int adc3xxx_hw_params(struct snd_pcm_substream *substream,
 	if (i < 0)
 		return i;
 
-	/* select data word length */
+	 
 	switch (params_width(params)) {
 	case 16:
 		iface_len = ADC3XXX_IFACE_16BITS;
@@ -1178,7 +1112,7 @@ static int adc3xxx_hw_params(struct snd_pcm_substream *substream,
 	}
 	snd_soc_component_update_bits(component, ADC3XXX_INTERFACE_CTRL_1,
 				      ADC3XXX_WLENGTH_MASK, iface_len);
-	if (adc3xxx_divs[i].pll_p) { /* If PLL used for this mode */
+	if (adc3xxx_divs[i].pll_p) {  
 		adc3xxx_setup_pll(component, i);
 		snd_soc_component_write(component, ADC3XXX_CLKGEN_MUX, ADC3XXX_USE_PLL);
 		if (!adc3xxx->use_pll) {
@@ -1195,17 +1129,17 @@ static int adc3xxx_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/* NADC */
+	 
 	snd_soc_component_update_bits(component, ADC3XXX_ADC_NADC,
 				      ADC3XXX_NADC_MASK, adc3xxx_divs[i].nadc);
-	/* MADC */
+	 
 	snd_soc_component_update_bits(component, ADC3XXX_ADC_MADC,
 				      ADC3XXX_MADC_MASK, adc3xxx_divs[i].madc);
-	/* AOSR */
+	 
 	snd_soc_component_update_bits(component, ADC3XXX_ADC_AOSR,
 				      ADC3XXX_AOSR_MASK, adc3xxx_divs[i].aosr);
-	/* BDIV N Value */
-	/* BCLK is (by default) set up to be derived from ADC_CLK */
+	 
+	 
 	bdiv = (adc3xxx_divs[i].aosr * adc3xxx_divs[i].madc) / (2 * width);
 	snd_soc_component_update_bits(component, ADC3XXX_BCLK_N_DIV,
 				      ADC3XXX_BDIV_MASK, bdiv);
@@ -1268,10 +1202,7 @@ static int adc3xxx_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/*
-	 * match both interface format and signal polarities since they
-	 * are fixed
-	 */
+	 
 	switch (fmt & (SND_SOC_DAIFMT_FORMAT_MASK | SND_SOC_DAIFMT_INV_MASK)) {
 	case SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF:
 		format = ADC3XXX_FORMAT_I2S;
@@ -1293,7 +1224,7 @@ static int adc3xxx_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* Add/del route enabling BCLK output as applicable */
+	 
 	if (master && !adc3xxx->master)
 		snd_soc_dapm_add_routes(dapm, adc3xxx_bclk_out_intercon,
 					ARRAY_SIZE(adc3xxx_bclk_out_intercon));
@@ -1302,7 +1233,7 @@ static int adc3xxx_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 					ARRAY_SIZE(adc3xxx_bclk_out_intercon));
 	adc3xxx->master = master;
 
-	/* set clock direction and format */
+	 
 	ret = snd_soc_component_update_bits(component,
 					    ADC3XXX_INTERFACE_CTRL_1,
 					    ADC3XXX_CLKDIR_MASK | ADC3XXX_FORMAT_MASK,
@@ -1367,13 +1298,7 @@ static int adc3xxx_i2c_probe(struct i2c_client *i2c)
 
 	adc3xxx->mclk = devm_clk_get(dev, NULL);
 	if (IS_ERR(adc3xxx->mclk)) {
-		/*
-		 * The chip itself supports running off the BCLK either
-		 * directly or via the PLL, but the driver does not (yet), so
-		 * having a specified mclk is required. Otherwise, we could
-		 * use the lack of a clocks property to indicate when BCLK is
-		 * intended as the clock source.
-		 */
+		 
 		return dev_err_probe(dev, PTR_ERR(adc3xxx->mclk),
 				     "Failed to acquire MCLK\n");
 	} else if (adc3xxx->mclk) {
@@ -1407,12 +1332,12 @@ static int adc3xxx_i2c_probe(struct i2c_client *i2c)
 	id = i2c_match_id(adc3xxx_i2c_id, i2c);
 	adc3xxx->type = id->driver_data;
 
-	/* Reset codec chip */
+	 
 	gpiod_set_value_cansleep(adc3xxx->rst_pin, 1);
-	usleep_range(2000, 100000); /* Requirement: > 10 ns (datasheet p13) */
+	usleep_range(2000, 100000);  
 	gpiod_set_value_cansleep(adc3xxx->rst_pin, 0);
 
-	/* Potentially set up pins used as GPIOs */
+	 
 	adc3xxx_init_gpio(adc3xxx);
 
 	ret = snd_soc_register_component(dev,

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hi6220 stub clock driver
- *
- * Copyright (c) 2015 Hisilicon Limited.
- * Copyright (c) 2015 Linaro Limited.
- *
- * Author: Leo Yan <leo.yan@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -17,20 +10,20 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* Stub clocks id */
+ 
 #define HI6220_STUB_ACPU0		0
 #define HI6220_STUB_ACPU1		1
 #define HI6220_STUB_GPU			2
 #define HI6220_STUB_DDR			5
 
-/* Mailbox message */
+ 
 #define HI6220_MBOX_MSG_LEN		8
 
 #define HI6220_MBOX_FREQ		0xA
 #define HI6220_MBOX_CMD_SET		0x3
 #define HI6220_MBOX_OBJ_AP		0x0
 
-/* CPU dynamic frequency scaling */
+ 
 #define ACPU_DFS_FREQ_MAX		0x1724
 #define ACPU_DFS_CUR_FREQ		0x17CC
 #define ACPU_DFS_FLAG			0x1B30
@@ -77,10 +70,10 @@ static int hi6220_acpu_set_freq(struct hi6220_stub_clk *stub_clk,
 {
 	union hi6220_mbox_data data;
 
-	/* set the frequency in sram */
+	 
 	regmap_write(stub_clk->dfs_map, ACPU_DFS_FREQ_REQ, freq);
 
-	/* compound mailbox message */
+	 
 	data.msg.type = HI6220_MBOX_FREQ;
 	data.msg.cmd  = HI6220_MBOX_CMD_SET;
 	data.msg.obj  = HI6220_MBOX_OBJ_AP;
@@ -96,15 +89,15 @@ static int hi6220_acpu_round_freq(struct hi6220_stub_clk *stub_clk,
 	unsigned int limit_flag, limit_freq = UINT_MAX;
 	unsigned int max_freq;
 
-	/* check the constrained frequency */
+	 
 	regmap_read(stub_clk->dfs_map, ACPU_DFS_FLAG, &limit_flag);
 	if (limit_flag == ACPU_DFS_LOCK_FLAG)
 		regmap_read(stub_clk->dfs_map, ACPU_DFS_FREQ_LMT, &limit_freq);
 
-	/* check the supported maximum frequency */
+	 
 	regmap_read(stub_clk->dfs_map, ACPU_DFS_FREQ_MAX, &max_freq);
 
-	/* calculate the real maximum frequency */
+	 
 	max_freq = min(max_freq, limit_freq);
 
 	if (WARN_ON(freq > max_freq))
@@ -123,7 +116,7 @@ static unsigned long hi6220_stub_clk_recalc_rate(struct clk_hw *hw,
 	case HI6220_STUB_ACPU0:
 		rate = hi6220_acpu_get_freq(stub_clk);
 
-		/* convert from kHz to Hz */
+		 
 		rate *= 1000;
 		break;
 
@@ -140,7 +133,7 @@ static int hi6220_stub_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 		unsigned long parent_rate)
 {
 	struct hi6220_stub_clk *stub_clk = to_stub_clk(hw);
-	unsigned long new_rate = rate / 1000;  /* kHz */
+	unsigned long new_rate = rate / 1000;   
 	int ret = 0;
 
 	switch (stub_clk->id) {
@@ -165,13 +158,13 @@ static long hi6220_stub_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 		unsigned long *parent_rate)
 {
 	struct hi6220_stub_clk *stub_clk = to_stub_clk(hw);
-	unsigned long new_rate = rate / 1000;  /* kHz */
+	unsigned long new_rate = rate / 1000;   
 
 	switch (stub_clk->id) {
 	case HI6220_STUB_ACPU0:
 		new_rate = hi6220_acpu_round_freq(stub_clk, new_rate);
 
-		/* convert from kHz to Hz */
+		 
 		new_rate *= 1000;
 		break;
 
@@ -214,14 +207,14 @@ static int hi6220_stub_clk_probe(struct platform_device *pdev)
 	stub_clk->dev = dev;
 	stub_clk->id = HI6220_STUB_ACPU0;
 
-	/* Use mailbox client with blocking mode */
+	 
 	stub_clk->cl.dev = dev;
 	stub_clk->cl.tx_done = NULL;
 	stub_clk->cl.tx_block = true;
 	stub_clk->cl.tx_tout = 500;
 	stub_clk->cl.knows_txdone = false;
 
-	/* Allocate mailbox channel */
+	 
 	stub_clk->mbox = mbox_request_channel(&stub_clk->cl, 0);
 	if (IS_ERR(stub_clk->mbox)) {
 		dev_err(dev, "failed get mailbox channel\n");
@@ -243,7 +236,7 @@ static int hi6220_stub_clk_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* initialize buffer to zero */
+	 
 	regmap_write(stub_clk->dfs_map, ACPU_DFS_FLAG, 0x0);
 	regmap_write(stub_clk->dfs_map, ACPU_DFS_FREQ_REQ, 0x0);
 	regmap_write(stub_clk->dfs_map, ACPU_DFS_FREQ_LMT, 0x0);

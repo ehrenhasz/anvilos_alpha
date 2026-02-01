@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2011-2014 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com/
-//
-// Exynos - CPU PMU(Power Management Unit) support
+
+
+
+
+
+
 
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -65,19 +65,14 @@ void exynos_sys_powerdown_conf(enum sys_powerdown mode)
 	}
 }
 
-/*
- * Split the data between ARM architectures because it is relatively big
- * and useless on other arch.
- */
+ 
 #ifdef CONFIG_EXYNOS_PMU_ARM_DRIVERS
 #define exynos_pmu_data_arm_ptr(data)	(&data)
 #else
 #define exynos_pmu_data_arm_ptr(data)	NULL
 #endif
 
-/*
- * PMU platform driver and devicetree bindings.
- */
+ 
 static const struct of_device_id exynos_pmu_of_device_ids[] = {
 	{
 		.compatible = "samsung,exynos3250-pmu",
@@ -106,7 +101,7 @@ static const struct of_device_id exynos_pmu_of_device_ids[] = {
 	}, {
 		.compatible = "samsung,exynos850-pmu",
 	},
-	{ /*sentinel*/ },
+	{   },
 };
 
 static const struct mfd_cell exynos_pmu_devs[] = {

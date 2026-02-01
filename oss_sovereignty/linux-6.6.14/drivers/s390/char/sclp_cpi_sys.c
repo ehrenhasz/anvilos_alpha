@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    SCLP control program identification sysfs interface
- *
- *    Copyright IBM Corp. 2001, 2007
- *    Author(s): Martin Peschke <mpeschke@de.ibm.com>
- *		 Michael Ernst <mernst@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "sclp_cpi"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -91,25 +85,25 @@ static struct sclp_req *cpi_prepare_req(void)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* setup SCCB for Control-Program Identification */
+	 
 	sccb->header.length = sizeof(struct cpi_sccb);
 	sccb->cpi_evbuf.header.length = sizeof(struct cpi_evbuf);
 	sccb->cpi_evbuf.header.type = EVTYP_CTLPROGIDENT;
 	evb = &sccb->cpi_evbuf;
 
-	/* set system type */
+	 
 	set_data(evb->system_type, system_type);
 
-	/* set system name */
+	 
 	set_data(evb->system_name, system_name);
 
-	/* set system level */
+	 
 	evb->system_level = system_level;
 
-	/* set sysplex name */
+	 
 	set_data(evb->sysplex_name, sysplex_name);
 
-	/* prepare request data structure presented to SCLP driver */
+	 
 	req->command = SCLP_CMDW_WRITE_EVENT_DATA;
 	req->sccb = sccb;
 	req->status = SCLP_REQ_FILLED;
@@ -147,7 +141,7 @@ static int cpi_req(void)
 	init_completion(&completion);
 	req->callback_data = &completion;
 
-	/* Add request to sclp queue */
+	 
 	rc = sclp_add_request(req);
 	if (rc)
 		goto out_free_req;

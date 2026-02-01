@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Freescale's 3-Axis Accelerometer MMA8450
- *
- *  Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,7 +15,7 @@
 #define POLL_INTERVAL		100
 #define POLL_INTERVAL_MAX	500
 
-/* register definitions */
+ 
 #define MMA8450_STATUS		0x00
 #define MMA8450_STATUS_ZXYDR	0x08
 
@@ -111,22 +107,18 @@ static void mma8450_poll(struct input_dev *input)
 	input_sync(input);
 }
 
-/* Initialize the MMA8450 chip */
+ 
 static int mma8450_open(struct input_dev *input)
 {
 	struct i2c_client *c = input_get_drvdata(input);
 	int err;
 
-	/* enable all events from X/Y/Z, no FIFO */
+	 
 	err = mma8450_write(c, MMA8450_XYZ_DATA_CFG, 0x07);
 	if (err)
 		return err;
 
-	/*
-	 * Sleep mode poll rate - 50Hz
-	 * System output data rate - 400Hz
-	 * Full scale selection - Active, +/- 2G
-	 */
+	 
 	err = mma8450_write(c, MMA8450_CTRL_REG1, 0x01);
 	if (err)
 		return err;
@@ -143,9 +135,7 @@ static void mma8450_close(struct input_dev *input)
 	mma8450_write(c, MMA8450_CTRL_REG2, 0x01);
 }
 
-/*
- * I2C init/probing/exit functions
- */
+ 
 static int mma8450_probe(struct i2c_client *c)
 {
 	struct input_dev *input;
@@ -193,7 +183,7 @@ MODULE_DEVICE_TABLE(i2c, mma8450_id);
 
 static const struct of_device_id mma8450_dt_ids[] = {
 	{ .compatible = "fsl,mma8450", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mma8450_dt_ids);
 

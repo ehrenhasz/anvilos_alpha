@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -16,7 +12,7 @@
 #include "driver.h"
 #include "playback.h"
 
-/* impulse response volume controls */
+ 
 static int snd_line6_impulse_volume_info(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_info *uinfo)
 {
@@ -59,7 +55,7 @@ static int snd_line6_impulse_volume_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/* impulse response period controls */
+ 
 static int snd_line6_impulse_period_info(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_info *uinfo)
 {
@@ -92,9 +88,7 @@ static int snd_line6_impulse_period_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/*
-	Unlink all currently active URBs.
-*/
+ 
 static void line6_unlink_audio_urbs(struct snd_line6_pcm *line6pcm,
 				    struct line6_pcm_stream *pcms)
 {
@@ -108,9 +102,7 @@ static void line6_unlink_audio_urbs(struct snd_line6_pcm *line6pcm,
 	}
 }
 
-/*
-	Wait until unlinking of all currently active URBs has been finished.
-*/
+ 
 static void line6_wait_clear_audio_urbs(struct snd_line6_pcm *line6pcm,
 					struct line6_pcm_stream *pcms)
 {
@@ -141,9 +133,7 @@ get_stream(struct snd_line6_pcm *line6pcm, int direction)
 		&line6pcm->out : &line6pcm->in;
 }
 
-/* allocate a buffer if not opened yet;
- * call this in line6pcm.state_mutex
- */
+ 
 static int line6_buffer_acquire(struct snd_line6_pcm *line6pcm,
 				struct line6_pcm_stream *pstr, int direction, int type)
 {
@@ -152,7 +142,7 @@ static int line6_buffer_acquire(struct snd_line6_pcm *line6pcm,
 			line6pcm->max_packet_size_out :
 			line6pcm->max_packet_size_in;
 
-	/* Invoked multiple times in a row so allocate once only */
+	 
 	if (!test_and_set_bit(type, &pstr->opened) && !pstr->buffer) {
 		pstr->buffer =
 			kmalloc(array3_size(line6pcm->line6->iso_buffers,
@@ -164,9 +154,7 @@ static int line6_buffer_acquire(struct snd_line6_pcm *line6pcm,
 	return 0;
 }
 
-/* free a buffer if all streams are closed;
- * call this in line6pcm.state_mutex
- */
+ 
 static void line6_buffer_release(struct snd_line6_pcm *line6pcm,
 				 struct line6_pcm_stream *pstr, int type)
 {
@@ -178,7 +166,7 @@ static void line6_buffer_release(struct snd_line6_pcm *line6pcm,
 	}
 }
 
-/* start a PCM stream */
+ 
 static int line6_stream_start(struct snd_line6_pcm *line6pcm, int direction,
 			      int type)
 {
@@ -190,7 +178,7 @@ static int line6_stream_start(struct snd_line6_pcm *line6pcm, int direction,
 	if (!test_and_set_bit(type, &pstr->running) &&
 	    !(pstr->active_urbs || pstr->unlink_urbs)) {
 		pstr->count = 0;
-		/* Submit all currently available URBs */
+		 
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK)
 			ret = line6_submit_audio_out_all_urbs(line6pcm);
 		else
@@ -203,7 +191,7 @@ static int line6_stream_start(struct snd_line6_pcm *line6pcm, int direction,
 	return ret;
 }
 
-/* stop a PCM stream; this doesn't sync with the unlinked URBs */
+ 
 static void line6_stream_stop(struct snd_line6_pcm *line6pcm, int direction,
 			  int type)
 {
@@ -224,7 +212,7 @@ static void line6_stream_stop(struct snd_line6_pcm *line6pcm, int direction,
 	spin_unlock_irqrestore(&pstr->lock, flags);
 }
 
-/* common PCM trigger callback */
+ 
 int snd_line6_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct snd_line6_pcm *line6pcm = snd_pcm_substream_chip(substream);
@@ -286,7 +274,7 @@ int snd_line6_trigger(struct snd_pcm_substream *substream, int cmd)
 	return 0;
 }
 
-/* common PCM pointer callback */
+ 
 snd_pcm_uframes_t snd_line6_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_line6_pcm *line6pcm = snd_pcm_substream_chip(substream);
@@ -295,15 +283,13 @@ snd_pcm_uframes_t snd_line6_pointer(struct snd_pcm_substream *substream)
 	return pstr->pos_done;
 }
 
-/* Acquire and optionally start duplex streams:
- * type is either LINE6_STREAM_IMPULSE or LINE6_STREAM_MONITOR
- */
+ 
 int line6_pcm_acquire(struct snd_line6_pcm *line6pcm, int type, bool start)
 {
 	struct line6_pcm_stream *pstr;
 	int ret = 0, dir;
 
-	/* TODO: We should assert SNDRV_PCM_STREAM_PLAYBACK/CAPTURE == 0/1 */
+	 
 	mutex_lock(&line6pcm->state_mutex);
 	for (dir = 0; dir < 2; dir++) {
 		pstr = get_stream(line6pcm, dir);
@@ -328,7 +314,7 @@ int line6_pcm_acquire(struct snd_line6_pcm *line6pcm, int type, bool start)
 }
 EXPORT_SYMBOL_GPL(line6_pcm_acquire);
 
-/* Stop and release duplex streams */
+ 
 void line6_pcm_release(struct snd_line6_pcm *line6pcm, int type)
 {
 	struct line6_pcm_stream *pstr;
@@ -345,7 +331,7 @@ void line6_pcm_release(struct snd_line6_pcm *line6pcm, int type)
 }
 EXPORT_SYMBOL_GPL(line6_pcm_release);
 
-/* common PCM hw_params callback */
+ 
 int snd_line6_hw_params(struct snd_pcm_substream *substream,
 			struct snd_pcm_hw_params *hw_params)
 {
@@ -365,7 +351,7 @@ int snd_line6_hw_params(struct snd_pcm_substream *substream,
 	return ret;
 }
 
-/* common PCM hw_free callback */
+ 
 int snd_line6_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_line6_pcm *line6pcm = snd_pcm_substream_chip(substream);
@@ -378,7 +364,7 @@ int snd_line6_hw_free(struct snd_pcm_substream *substream)
 }
 
 
-/* control info callback */
+ 
 static int snd_line6_control_playback_info(struct snd_kcontrol *kcontrol,
 					   struct snd_ctl_elem_info *uinfo)
 {
@@ -389,7 +375,7 @@ static int snd_line6_control_playback_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control get callback */
+ 
 static int snd_line6_control_playback_get(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
@@ -402,7 +388,7 @@ static int snd_line6_control_playback_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control put callback */
+ 
 static int snd_line6_control_playback_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
@@ -420,7 +406,7 @@ static int snd_line6_control_playback_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-/* control definition */
+ 
 static const struct snd_kcontrol_new line6_controls[] = {
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -445,14 +431,12 @@ static const struct snd_kcontrol_new line6_controls[] = {
 	},
 };
 
-/*
-	Cleanup the PCM device.
-*/
+ 
 static void cleanup_urbs(struct line6_pcm_stream *pcms, int iso_buffers)
 {
 	int i;
 
-	/* Most likely impossible in current code... */
+	 
 	if (pcms->urbs == NULL)
 		return;
 
@@ -475,7 +459,7 @@ static void line6_cleanup_pcm(struct snd_pcm *pcm)
 	kfree(line6pcm);
 }
 
-/* create a PCM device */
+ 
 static int snd_line6_new_pcm(struct usb_line6 *line6, struct snd_pcm **pcm_ret)
 {
 	struct snd_pcm *pcm;
@@ -488,20 +472,18 @@ static int snd_line6_new_pcm(struct usb_line6 *line6, struct snd_pcm **pcm_ret)
 	pcm = *pcm_ret;
 	strcpy(pcm->name, line6->properties->name);
 
-	/* set operators */
+	 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_line6_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_line6_capture_ops);
 
-	/* pre-allocation of buffers */
+	 
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
 				       NULL, 64 * 1024, 128 * 1024);
 	return 0;
 }
 
-/*
-	Sync with PCM stream stops.
-*/
+ 
 void line6_pcm_disconnect(struct snd_line6_pcm *line6pcm)
 {
 	line6_unlink_audio_urbs(line6pcm, &line6pcm->out);
@@ -510,10 +492,7 @@ void line6_pcm_disconnect(struct snd_line6_pcm *line6pcm)
 	line6_wait_clear_audio_urbs(line6pcm, &line6pcm->in);
 }
 
-/*
-	Create and register the PCM device and mixer entries.
-	Create URBs for playback and capture.
-*/
+ 
 int line6_init_pcm(struct usb_line6 *line6,
 		   struct line6_pcm_properties *properties)
 {
@@ -524,7 +503,7 @@ int line6_init_pcm(struct usb_line6 *line6,
 	struct snd_line6_pcm *line6pcm;
 
 	if (!(line6->properties->capabilities & LINE6_CAP_PCM))
-		return 0;	/* skip PCM initialization and report success */
+		return 0;	 
 
 	err = snd_line6_new_pcm(line6, &pcm);
 	if (err < 0)
@@ -570,7 +549,7 @@ int line6_init_pcm(struct usb_line6 *line6,
 	if (err < 0)
 		return err;
 
-	/* mixer: */
+	 
 	for (i = 0; i < ARRAY_SIZE(line6_controls); i++) {
 		err = snd_ctl_add(line6->card,
 				  snd_ctl_new1(&line6_controls[i], line6pcm));
@@ -582,7 +561,7 @@ int line6_init_pcm(struct usb_line6 *line6,
 }
 EXPORT_SYMBOL_GPL(line6_init_pcm);
 
-/* prepare pcm callback */
+ 
 int snd_line6_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_line6_pcm *line6pcm = snd_pcm_substream_chip(substream);

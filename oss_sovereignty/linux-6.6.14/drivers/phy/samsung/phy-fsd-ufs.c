@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UFS PHY driver data for FSD SoC
- *
- * Copyright (C) 2022 Samsung Electronics Co., Ltd.
- *
- */
+
+ 
 #include "phy-samsung-ufs.h"
 
 #define FSD_EMBEDDED_COMBO_PHY_CTRL	0x724
@@ -30,12 +25,12 @@ static const struct samsung_ufs_phy_cfg fsd_pre_init_cfg[] = {
 	END_UFS_PHY_CFG
 };
 
-/* Calibration for HS mode series A/B */
+ 
 static const struct samsung_ufs_phy_cfg fsd_pre_pwr_hs_cfg[] = {
 	END_UFS_PHY_CFG
 };
 
-/* Calibration for HS mode series A/B atfer PMC */
+ 
 static const struct samsung_ufs_phy_cfg fsd_post_pwr_hs_cfg[] = {
 	END_UFS_PHY_CFG
 };

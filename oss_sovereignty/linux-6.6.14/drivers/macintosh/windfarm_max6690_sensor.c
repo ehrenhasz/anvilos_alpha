@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control.  MAX6690 sensor.
- *
- * Copyright (C) 2005 Paul Mackerras, IBM Corp. <paulus@samba.org>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -17,10 +13,9 @@
 
 #define VERSION "1.0"
 
-/* This currently only exports the external temperature sensor,
-   since that's all the control loops need. */
+ 
 
-/* Some MAX6690 register numbers */
+ 
 #define MAX6690_INTERNAL_TEMP	0
 #define MAX6690_EXTERNAL_TEMP	1
 
@@ -39,7 +34,7 @@ static int wf_max6690_get(struct wf_sensor *sr, s32 *value)
 	if (max->i2c == NULL)
 		return -ENODEV;
 
-	/* chip gets initialized by firmware */
+	 
 	data = i2c_smbus_read_byte_data(max->i2c, MAX6690_EXTERNAL_TEMP);
 	if (data < 0)
 		return data;
@@ -72,10 +67,7 @@ static int wf_max6690_probe(struct i2c_client *client)
 		return -ENXIO;
 	}
 
-	/*
-	 * We only expose the external temperature register for
-	 * now as this is all we need for our control loops
-	 */
+	 
 	if (!strcmp(loc, "BACKSIDE") || !strcmp(loc, "SYS CTRLR AMBIENT"))
 		name = "backside-temp";
 	else if (!strcmp(loc, "NB Ambient"))

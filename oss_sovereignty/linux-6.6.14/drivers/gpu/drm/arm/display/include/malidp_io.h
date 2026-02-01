@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+ 
+ 
 #ifndef _MALIDP_IO_H_
 #define _MALIDP_IO_H_
 
@@ -46,4 +42,4 @@ malidp_write_group(u32 __iomem *base, u32 offset, int num, const u32 *values)
 		malidp_write32(base, offset + i * 4, values[i]);
 }
 
-#endif /*_MALIDP_IO_H_*/
+#endif  

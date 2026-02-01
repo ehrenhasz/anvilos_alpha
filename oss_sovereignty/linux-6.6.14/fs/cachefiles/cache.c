@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Manage high-level VFS aspects of a cache.
- *
- * Copyright (C) 2007, 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/statfs.h>
 #include <linux/namei.h>
 #include "internal.h"
 
-/*
- * Bring a cache online.
- */
+ 
 int cachefiles_add_cache(struct cachefiles_cache *cache)
 {
 	struct fscache_cache *cache_cookie;
@@ -28,14 +22,14 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 	if (IS_ERR(cache_cookie))
 		return PTR_ERR(cache_cookie);
 
-	/* we want to work under the module's security ID */
+	 
 	ret = cachefiles_get_security_ID(cache);
 	if (ret < 0)
 		goto error_getsec;
 
 	cachefiles_begin_secure(cache, &saved_cred);
 
-	/* look up the directory at the root of the cache */
+	 
 	ret = kern_path(cache->rootdirname, LOOKUP_DIRECTORY, &path);
 	if (ret < 0)
 		goto error_open_root;
@@ -49,14 +43,7 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 		goto error_unsupported;
 	}
 
-	/* Check features of the backing filesystem:
-	 * - Directories must support looking up and directory creation
-	 * - We create tmpfiles to handle invalidation
-	 * - We use xattrs to store metadata
-	 * - We need to be able to query the amount of space available
-	 * - We want to be able to sync the filesystem when stopping the cache
-	 * - We use DIO to/from pages, so the blocksize mustn't be too big.
-	 */
+	 
 	ret = -EOPNOTSUPP;
 	if (d_is_negative(root) ||
 	    !d_backing_inode(root)->i_op->lookup ||
@@ -72,13 +59,12 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 	if (sb_rdonly(root->d_sb))
 		goto error_unsupported;
 
-	/* determine the security of the on-disk cache as this governs
-	 * security ID of files we create */
+	 
 	ret = cachefiles_determine_cache_security(cache, root, &saved_cred);
 	if (ret < 0)
 		goto error_unsupported;
 
-	/* get the cache size and blocksize */
+	 
 	ret = vfs_statfs(&path, &stats);
 	if (ret < 0)
 		goto error_unsupported;
@@ -101,7 +87,7 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 	       (unsigned long long) stats.f_blocks,
 	       (unsigned long long) stats.f_bavail);
 
-	/* set up caching limits */
+	 
 	do_div(stats.f_files, 100);
 	cache->fstop = stats.f_files * cache->fstop_percent;
 	cache->fcull = stats.f_files * cache->fcull_percent;
@@ -122,7 +108,7 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 	       (unsigned long long) cache->bcull,
 	       (unsigned long long) cache->bstop);
 
-	/* get the cache directory and check its type */
+	 
 	cachedir = cachefiles_get_directory(cache, root, "cache", NULL);
 	if (IS_ERR(cachedir)) {
 		ret = PTR_ERR(cachedir);
@@ -131,7 +117,7 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 
 	cache->store = cachedir;
 
-	/* get the graveyard directory */
+	 
 	graveyard = cachefiles_get_directory(cache, root, "graveyard", NULL);
 	if (IS_ERR(graveyard)) {
 		ret = PTR_ERR(graveyard);
@@ -145,13 +131,13 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
 	if (ret < 0)
 		goto error_add_cache;
 
-	/* done */
+	 
 	set_bit(CACHEFILES_READY, &cache->flags);
 	dput(root);
 
 	pr_info("File cache on %s registered\n", cache_cookie->name);
 
-	/* check how much space the cache has */
+	 
 	cachefiles_has_space(cache, 0, 0, cachefiles_has_space_check);
 	cachefiles_end_secure(cache, saved_cred);
 	_leave(" = 0 [%px]", cache->cache);
@@ -175,10 +161,7 @@ error_getsec:
 	return ret;
 }
 
-/*
- * See if we have space for a number of pages and/or a number of files in the
- * cache
- */
+ 
 int cachefiles_has_space(struct cachefiles_cache *cache,
 			 unsigned fnr, unsigned bnr,
 			 enum cachefiles_has_space_for reason)
@@ -192,16 +175,16 @@ int cachefiles_has_space(struct cachefiles_cache *cache,
 		.dentry	= cache->mnt->mnt_root,
 	};
 
-	//_enter("{%llu,%llu,%llu,%llu,%llu,%llu},%u,%u",
-	//       (unsigned long long) cache->frun,
-	//       (unsigned long long) cache->fcull,
-	//       (unsigned long long) cache->fstop,
-	//       (unsigned long long) cache->brun,
-	//       (unsigned long long) cache->bcull,
-	//       (unsigned long long) cache->bstop,
-	//       fnr, bnr);
+	
+	
+	
+	
+	
+	
+	
+	
 
-	/* find out how many pages of blockdev are available */
+	 
 	memset(&stats, 0, sizeof(stats));
 
 	ret = vfs_statfs(&path, &stats);
@@ -221,11 +204,11 @@ int cachefiles_has_space(struct cachefiles_cache *cache,
 	else
 		b_avail = 0;
 
-	//_debug("avail %llu,%llu",
-	//       (unsigned long long)stats.f_ffree,
-	//       (unsigned long long)b_avail);
+	
+	
+	
 
-	/* see if there is sufficient space */
+	 
 	if (stats.f_ffree > fnr)
 		stats.f_ffree -= fnr;
 	else
@@ -255,7 +238,7 @@ int cachefiles_has_space(struct cachefiles_cache *cache,
 		cachefiles_state_changed(cache);
 	}
 
-	//_leave(" = 0");
+	
 	return 0;
 
 stop_and_begin_cull:
@@ -279,9 +262,7 @@ begin_cull:
 	return ret;
 }
 
-/*
- * Mark all the objects as being out of service and queue them all for cleanup.
- */
+ 
 static void cachefiles_withdraw_objects(struct cachefiles_cache *cache)
 {
 	struct cachefiles_object *object;
@@ -309,9 +290,7 @@ static void cachefiles_withdraw_objects(struct cachefiles_cache *cache)
 	_leave(" [%u objs]", count);
 }
 
-/*
- * Withdraw volumes.
- */
+ 
 static void cachefiles_withdraw_volumes(struct cachefiles_cache *cache)
 {
 	_enter("");
@@ -335,9 +314,7 @@ static void cachefiles_withdraw_volumes(struct cachefiles_cache *cache)
 	_leave("");
 }
 
-/*
- * Sync a cache to backing disk.
- */
+ 
 static void cachefiles_sync_cache(struct cachefiles_cache *cache)
 {
 	const struct cred *saved_cred;
@@ -345,8 +322,7 @@ static void cachefiles_sync_cache(struct cachefiles_cache *cache)
 
 	_enter("%s", cache->cache->name);
 
-	/* make sure all pages pinned by operations on behalf of the netfs are
-	 * written to disc */
+	 
 	cachefiles_begin_secure(cache, &saved_cred);
 	down_read(&cache->mnt->mnt_sb->s_umount);
 	ret = sync_filesystem(cache->mnt->mnt_sb);
@@ -359,9 +335,7 @@ static void cachefiles_sync_cache(struct cachefiles_cache *cache)
 				    ret);
 }
 
-/*
- * Withdraw cache objects.
- */
+ 
 void cachefiles_withdraw_cache(struct cachefiles_cache *cache)
 {
 	struct fscache_cache *fscache = cache->cache;
@@ -370,9 +344,7 @@ void cachefiles_withdraw_cache(struct cachefiles_cache *cache)
 
 	fscache_withdraw_cache(fscache);
 
-	/* we now have to destroy all the active objects pertaining to this
-	 * cache - which we do by passing them off to thread pool to be
-	 * disposed of */
+	 
 	cachefiles_withdraw_objects(cache);
 	fscache_wait_for_objects(fscache);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/A1 IRQC Driver
- *
- * Copyright (C) 2019 Glider bvba
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -20,22 +16,22 @@
 
 #define IRQC_NUM_IRQ		8
 
-#define ICR0			0	/* Interrupt Control Register 0 */
+#define ICR0			0	 
 
-#define ICR0_NMIL		BIT(15)	/* NMI Input Level (0=low, 1=high) */
-#define ICR0_NMIE		BIT(8)	/* Edge Select (0=falling, 1=rising) */
-#define ICR0_NMIF		BIT(1)	/* NMI Interrupt Request */
+#define ICR0_NMIL		BIT(15)	 
+#define ICR0_NMIE		BIT(8)	 
+#define ICR0_NMIF		BIT(1)	 
 
-#define ICR1			2	/* Interrupt Control Register 1 */
+#define ICR1			2	 
 
-#define ICR1_IRQS(n, sense)	((sense) << ((n) * 2))	/* IRQ Sense Select */
+#define ICR1_IRQS(n, sense)	((sense) << ((n) * 2))	 
 #define ICR1_IRQS_LEVEL_LOW	0
 #define ICR1_IRQS_EDGE_FALLING	1
 #define ICR1_IRQS_EDGE_RISING	2
 #define ICR1_IRQS_EDGE_BOTH	3
 #define ICR1_IRQS_MASK(n)	ICR1_IRQS((n), 3)
 
-#define IRQRR			4	/* IRQ Interrupt Request Register */
+#define IRQRR			4	 
 
 
 struct rza1_irqc_priv {
@@ -156,7 +152,7 @@ static int rza1_irqc_parse_map(struct rza1_irqc_priv *priv,
 		if (imaplen < 3)
 			return -EINVAL;
 
-		/* Check interrupt number, ignore sense */
+		 
 		if (be32_to_cpup(imap) != i)
 			return -EINVAL;
 

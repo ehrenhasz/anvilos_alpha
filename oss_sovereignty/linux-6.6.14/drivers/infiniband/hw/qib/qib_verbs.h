@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2012 - 2018 Intel Corporation.  All rights reserved.
- * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
- * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef QIB_VERBS_H
 #define QIB_VERBS_H
@@ -58,18 +26,15 @@ struct qib_verbs_txreq;
 #define QIB_GUIDS_PER_PORT	5
 #define QIB_PSN_SHIFT		8
 
-/*
- * Increment this value if any changes that break userspace ABI
- * compatibility are made.
- */
+ 
 #define QIB_UVERBS_ABI_VERSION       2
 
-/* IB Performance Manager status values */
+ 
 #define IB_PMA_SAMPLE_STATUS_DONE       0x00
 #define IB_PMA_SAMPLE_STATUS_STARTED    0x01
 #define IB_PMA_SAMPLE_STATUS_RUNNING    0x02
 
-/* Mandatory IB performance counter select values. */
+ 
 #define IB_PMA_PORT_XMIT_DATA   cpu_to_be16(0x0001)
 #define IB_PMA_PORT_RCV_DATA    cpu_to_be16(0x0002)
 #define IB_PMA_PORT_XMIT_PKTS   cpu_to_be16(0x0003)
@@ -80,7 +45,7 @@ struct qib_verbs_txreq;
 
 #define IB_DEFAULT_GID_PREFIX	cpu_to_be64(0xfe80000000000000ULL)
 
-/* Values for set/get portinfo VLCap OperationalVLs */
+ 
 #define IB_VL_VL0       1
 #define IB_VL_VL0_1     2
 #define IB_VL_VL0_3     3
@@ -109,13 +74,10 @@ struct qib_pio_header {
 	struct ib_header hdr;
 } __packed;
 
-/*
- * qib specific data structure that will be hidden from rvt after the queue pair
- * is made common.
- */
+ 
 struct qib_qp_priv {
-	struct ib_header *s_hdr;        /* next packet header to send */
-	struct list_head iowait;        /* link for wait PIO buf */
+	struct ib_header *s_hdr;         
+	struct list_head iowait;         
 	atomic_t s_dma_busy;
 	struct qib_verbs_txreq *s_tx;
 	struct work_struct s_work;
@@ -126,8 +88,8 @@ struct qib_qp_priv {
 #define QIB_PSN_CREDIT  16
 
 struct qib_opcode_stats {
-	u64 n_packets;          /* number of packets */
-	u64 n_bytes;            /* total number of bytes */
+	u64 n_packets;           
+	u64 n_bytes;             
 };
 
 struct qib_opcode_stats_perctx {
@@ -135,44 +97,44 @@ struct qib_opcode_stats_perctx {
 };
 
 struct qib_pma_counters {
-	u64 n_unicast_xmit;     /* total unicast packets sent */
-	u64 n_unicast_rcv;      /* total unicast packets received */
-	u64 n_multicast_xmit;   /* total multicast packets sent */
-	u64 n_multicast_rcv;    /* total multicast packets received */
+	u64 n_unicast_xmit;      
+	u64 n_unicast_rcv;       
+	u64 n_multicast_xmit;    
+	u64 n_multicast_rcv;     
 };
 
 struct qib_ibport {
 	struct rvt_ibport rvp;
 	struct rvt_ah *smi_ah;
-	__be64 guids[QIB_GUIDS_PER_PORT	- 1];	/* writable GUIDs */
+	__be64 guids[QIB_GUIDS_PER_PORT	- 1];	 
 	struct qib_pma_counters __percpu *pmastats;
-	u64 z_unicast_xmit;     /* starting count for PMA */
-	u64 z_unicast_rcv;      /* starting count for PMA */
-	u64 z_multicast_xmit;   /* starting count for PMA */
-	u64 z_multicast_rcv;    /* starting count for PMA */
-	u64 z_symbol_error_counter;             /* starting count for PMA */
-	u64 z_link_error_recovery_counter;      /* starting count for PMA */
-	u64 z_link_downed_counter;              /* starting count for PMA */
-	u64 z_port_rcv_errors;                  /* starting count for PMA */
-	u64 z_port_rcv_remphys_errors;          /* starting count for PMA */
-	u64 z_port_xmit_discards;               /* starting count for PMA */
-	u64 z_port_xmit_data;                   /* starting count for PMA */
-	u64 z_port_rcv_data;                    /* starting count for PMA */
-	u64 z_port_xmit_packets;                /* starting count for PMA */
-	u64 z_port_rcv_packets;                 /* starting count for PMA */
-	u32 z_local_link_integrity_errors;      /* starting count for PMA */
-	u32 z_excessive_buffer_overrun_errors;  /* starting count for PMA */
-	u32 z_vl15_dropped;                     /* starting count for PMA */
+	u64 z_unicast_xmit;      
+	u64 z_unicast_rcv;       
+	u64 z_multicast_xmit;    
+	u64 z_multicast_rcv;     
+	u64 z_symbol_error_counter;              
+	u64 z_link_error_recovery_counter;       
+	u64 z_link_downed_counter;               
+	u64 z_port_rcv_errors;                   
+	u64 z_port_rcv_remphys_errors;           
+	u64 z_port_xmit_discards;                
+	u64 z_port_xmit_data;                    
+	u64 z_port_rcv_data;                     
+	u64 z_port_xmit_packets;                 
+	u64 z_port_rcv_packets;                  
+	u32 z_local_link_integrity_errors;       
+	u32 z_excessive_buffer_overrun_errors;   
+	u32 z_vl15_dropped;                      
 	u8 sl_to_vl[16];
 };
 
 struct qib_ibdev {
 	struct rvt_dev_info rdi;
 
-	struct list_head piowait;       /* list for wait PIO buf */
-	struct list_head dmawait;	/* list for wait DMA */
-	struct list_head txwait;        /* list for wait qib_verbs_txreq */
-	struct list_head memwait;       /* list for wait kernel memory */
+	struct list_head piowait;        
+	struct list_head dmawait;	 
+	struct list_head txwait;         
+	struct list_head memwait;        
 	struct list_head txreq_free;
 	struct timer_list mem_timer;
 	struct qib_pio_header *pio_hdrs;
@@ -182,7 +144,7 @@ struct qib_ibdev {
 	u32 n_txwait;
 
 #ifdef CONFIG_DEBUG_FS
-	/* per HCA debugfs */
+	 
 	struct dentry *qib_ibdev_dbg;
 #endif
 };
@@ -211,10 +173,7 @@ static inline struct qib_ibdev *to_idev(struct ib_device *ibdev)
 	return container_of(rdi, struct qib_ibdev, rdi);
 }
 
-/*
- * Send if not busy or waiting for I/O and either
- * a RC response is pending or we can process send work requests.
- */
+ 
 static inline int qib_send_ok(struct rvt_qp *qp)
 {
 	return !(qp->s_flags & (RVT_S_BUSY | RVT_S_ANY_WAIT_IO)) &&
@@ -230,10 +189,7 @@ static inline int qib_pkey_ok(u16 pkey1, u16 pkey2)
 	u16 p1 = pkey1 & 0x7FFF;
 	u16 p2 = pkey2 & 0x7FFF;
 
-	/*
-	 * Low 15 bits must be non-zero and match, and
-	 * one of the two must be a full member.
-	 */
+	 
 	return p1 && p1 == p2 && ((__s16)pkey1 < 0 || (__s16)pkey2 < 0);
 }
 
@@ -249,10 +205,7 @@ int qib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 void qib_notify_create_mad_agent(struct rvt_dev_info *rdi, int port_idx);
 void qib_notify_free_mad_agent(struct rvt_dev_info *rdi, int port_idx);
 
-/*
- * Compare the lower 24 bits of the two values.
- * Returns an integer <, ==, or > than zero.
- */
+ 
 static inline int qib_cmp24(u32 a, u32 b)
 {
 	return (((int) a) - ((int) b)) << 8;
@@ -265,9 +218,7 @@ int qib_snapshot_counters(struct qib_pportdata *ppd, u64 *swords,
 int qib_get_counters(struct qib_pportdata *ppd,
 		     struct qib_verbs_counters *cntrs);
 
-/*
- * Functions provided by qib driver for rdmavt to use
- */
+ 
 unsigned qib_free_all_qps(struct rvt_dev_info *rdi);
 void *qib_qp_priv_alloc(struct rvt_dev_info *rdi, struct rvt_qp *qp);
 void qib_qp_priv_free(struct rvt_dev_info *rdi, struct rvt_qp *qp);
@@ -351,10 +302,7 @@ unsigned qib_get_pkey(struct qib_ibport *, unsigned);
 
 extern const enum ib_wc_opcode ib_qib_wc_opcode[];
 
-/*
- * Below  HCA-independent IB PhysPortState values, returned
- * by the f_ibphys_portstate() routine.
- */
+ 
 #define IB_PHYSPORTSTATE_SLEEP 1
 #define IB_PHYSPORTSTATE_POLL 2
 #define IB_PHYSPORTSTATE_DISABLED 3
@@ -371,7 +319,7 @@ extern const enum ib_wc_opcode ib_qib_wc_opcode[];
 
 extern const int ib_rvt_state_ops[];
 
-extern __be64 ib_qib_sys_image_guid;    /* in network order */
+extern __be64 ib_qib_sys_image_guid;     
 
 extern unsigned int ib_rvt_lkey_table_size;
 
@@ -399,4 +347,4 @@ extern const u32 ib_qib_rnr_table[];
 
 extern const struct rvt_operation_params qib_post_parms[];
 
-#endif                          /* QIB_VERBS_H */
+#endif                           

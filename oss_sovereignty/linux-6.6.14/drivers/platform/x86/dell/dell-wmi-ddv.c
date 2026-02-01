@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux driver for WMI sensor information on Dell notebooks.
- *
- * Copyright (C) 2022 Armin Wolf <W_Armin@gmx.de>
- */
+
+ 
 
 #define pr_format(fmt) KBUILD_MODNAME ": " fmt
 
@@ -63,7 +59,7 @@ enum dell_ddv_method {
 	DELL_DDV_BATTERY_RAW_ANALYTICS_START	= 0x0E,
 	DELL_DDV_BATTERY_RAW_ANALYTICS		= 0x0F,
 	DELL_DDV_BATTERY_DESIGN_VOLTAGE		= 0x10,
-	DELL_DDV_BATTERY_RAW_ANALYTICS_A_BLOCK	= 0x11, /* version 3 */
+	DELL_DDV_BATTERY_RAW_ANALYTICS_A_BLOCK	= 0x11,  
 
 	DELL_DDV_INTERFACE_VERSION		= 0x12,
 
@@ -96,7 +92,7 @@ struct combined_chip_info {
 
 struct dell_wmi_ddv_sensors {
 	bool active;
-	struct mutex lock;	/* protect caching */
+	struct mutex lock;	 
 	unsigned long timestamp;
 	union acpi_object *obj;
 	u64 entries;
@@ -230,9 +226,7 @@ static int dell_wmi_ddv_query_string(struct wmi_device *wdev, enum dell_ddv_meth
 	return dell_wmi_ddv_query_type(wdev, method, arg, result, ACPI_TYPE_STRING);
 }
 
-/*
- * Needs to be called with lock held, except during initialization.
- */
+ 
 static int dell_wmi_ddv_update_sensors(struct wmi_device *wdev, enum dell_ddv_method method,
 				       struct dell_wmi_ddv_sensors *sensors, size_t entry_size)
 {
@@ -253,7 +247,7 @@ static int dell_wmi_ddv_update_sensors(struct wmi_device *wdev, enum dell_ddv_me
 	if (ret < 0)
 		return ret;
 
-	/* buffer format sanity check */
+	 
 	buffer_size = obj->package.elements[0].integer.value;
 	buffer = obj->package.elements[1].buffer.pointer;
 	entries = div64_u64_rem(buffer_size, entry_size, &rem);
@@ -422,13 +416,13 @@ static int dell_wmi_ddv_temp_read_string(struct dell_wmi_ddv_data *data, int cha
 		*str = "Video";
 		break;
 	case 0x22:
-		*str = "Memory"; /* sometimes called DIMM */
+		*str = "Memory";  
 		break;
 	case 0x33:
 		*str = "Other";
 		break;
 	case 0x44:
-		*str = "Ambient"; /* sometimes called SKIN */
+		*str = "Ambient";  
 		break;
 	case 0x52:
 		*str = "SODIMM";
@@ -616,7 +610,7 @@ static int dell_wmi_ddv_hwmon_add(struct dell_wmi_ddv_data *data)
 	}
 
 	if (index < 2) {
-		/* Finding no available sensors is not an error */
+		 
 		ret = 0;
 
 		goto err_release;
@@ -665,7 +659,7 @@ static ssize_t temp_show(struct device *dev, struct device_attribute *attr, char
 	if (ret < 0)
 		return ret;
 
-	/* Use 2731 instead of 2731.5 to avoid unnecessary rounding */
+	 
 	return sysfs_emit(buf, "%d\n", value - 2731);
 }
 
@@ -701,7 +695,7 @@ static int dell_wmi_ddv_add_battery(struct power_supply *battery, struct acpi_ba
 	u32 index;
 	int ret;
 
-	/* Return 0 instead of error to avoid being unloaded */
+	 
 	ret = dell_wmi_ddv_battery_index(to_acpi_device(battery->dev.parent), &index);
 	if (ret < 0)
 		return 0;
@@ -859,7 +853,7 @@ static int dell_wmi_ddv_resume(struct device *dev)
 {
 	struct dell_wmi_ddv_data *data = dev_get_drvdata(dev);
 
-	/* Force re-reading of all active sensors */
+	 
 	dell_wmi_ddv_hwmon_cache_invalidate(&data->fans);
 	dell_wmi_ddv_hwmon_cache_invalidate(&data->temps);
 

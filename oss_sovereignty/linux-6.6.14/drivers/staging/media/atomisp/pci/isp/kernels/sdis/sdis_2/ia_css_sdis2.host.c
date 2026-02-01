@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -47,7 +35,7 @@ void ia_css_sdis2_horicoef_vmem_encode(
 				     sizeof(short);
 	short   *private       = (short *)to;
 
-	/* Copy the table, add padding */
+	 
 	assert(padding >= 0);
 	assert(total_bytes <= size);
 	assert(size % (IA_CSS_DVS2_NUM_COEF_TYPES * ISP_VEC_NELEMS * sizeof(
@@ -72,7 +60,7 @@ void ia_css_sdis2_vertcoef_vmem_encode(
 				      sizeof(short);
 	short   *private        = (short *)to;
 
-	/* Copy the table, add padding */
+	 
 	assert(padding >= 0);
 	assert(total_bytes <= size);
 	assert(size % (IA_CSS_DVS2_NUM_COEF_TYPES * ISP_VEC_NELEMS * sizeof(
@@ -132,7 +120,7 @@ void ia_css_get_isp_dvs2_coefficients(
 
 	params = stream->isp_params_configs;
 
-	/* Only video pipe supports DVS */
+	 
 	dvs_binary = ia_css_stream_get_dvs_binary(stream);
 	if (!dvs_binary)
 		return;
@@ -230,19 +218,19 @@ ia_css_translate_dvs2_statistics(
 		     host_stats->ver_prod.even_real, host_stats->ver_prod.even_imag,
 		     isp_stats->hor_proj, isp_stats->ver_proj);
 
-	/* Host side: reflecting the true width in bytes */
+	 
 	size_bytes = host_stats->grid.aligned_width * sizeof(*htemp_ptr);
 
-	/* DDR side: need to be aligned to the system bus width */
-	/* statistics table width in terms of 32-bit words*/
+	 
+	 
 	table_width = CEIL_MUL(size_bytes,
 			       HIVE_ISP_DDR_WORD_BYTES) / sizeof(*htemp_ptr);
 	table_size = table_width * host_stats->grid.aligned_height;
 
-	htemp_ptr = isp_stats->hor_proj; /* horizontal stats */
-	vtemp_ptr = isp_stats->ver_proj; /* vertical stats */
+	htemp_ptr = isp_stats->hor_proj;  
+	vtemp_ptr = isp_stats->ver_proj;  
 	for (height = 0; height < host_stats->grid.aligned_height; height++) {
-		/* hor stats */
+		 
 		memcpy(host_stats->hor_prod.odd_real + dst_offset,
 		       &htemp_ptr[0 * table_size + src_offset], size_bytes);
 		memcpy(host_stats->hor_prod.odd_imag + dst_offset,
@@ -252,7 +240,7 @@ ia_css_translate_dvs2_statistics(
 		memcpy(host_stats->hor_prod.even_imag + dst_offset,
 		       &htemp_ptr[3 * table_size + src_offset], size_bytes);
 
-		/* ver stats */
+		 
 		memcpy(host_stats->ver_prod.odd_real + dst_offset,
 		       &vtemp_ptr[0 * table_size + src_offset], size_bytes);
 		memcpy(host_stats->ver_prod.odd_imag + dst_offset,
@@ -262,7 +250,7 @@ ia_css_translate_dvs2_statistics(
 		memcpy(host_stats->ver_prod.even_imag + dst_offset,
 		       &vtemp_ptr[3 * table_size + src_offset], size_bytes);
 
-		src_offset += table_width; /* aligned table width */
+		src_offset += table_width;  
 		dst_offset += host_stats->grid.aligned_width;
 	}
 
@@ -287,9 +275,7 @@ ia_css_isp_dvs2_statistics_allocate(
 	if (!me)
 		goto err;
 
-	/* on ISP 2 SDIS DMA model, every row of projection table width must be
-	   aligned to HIVE_ISP_DDR_WORD_BYTES
-	*/
+	 
 	size = CEIL_MUL(sizeof(int) * grid->aligned_width, HIVE_ISP_DDR_WORD_BYTES)
 	       * grid->aligned_height * IA_CSS_DVS2_NUM_COEF_TYPES;
 

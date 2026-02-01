@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux driver model AC97 bus interface
- *
- * Author:	Nicolas Pitre
- * Created:	Jan 14, 2005
- * Copyright:	(C) MontaVista Software Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -13,16 +7,7 @@
 #include <linux/string.h>
 #include <sound/ac97_codec.h>
 
-/*
- * snd_ac97_check_id() - Reads and checks the vendor ID of the device
- * @ac97: The AC97 device to check
- * @id: The ID to compare to
- * @id_mask: Mask that is applied to the device ID before comparing to @id
- *
- * If @id is 0 this function returns true if the read device vendor ID is
- * a valid ID. If @id is non 0 this functions returns true if @id
- * matches the read vendor ID. Otherwise the function returns false.
- */
+ 
 static bool snd_ac97_check_id(struct snd_ac97 *ac97, unsigned int id,
 	unsigned int id_mask)
 {
@@ -38,20 +23,7 @@ static bool snd_ac97_check_id(struct snd_ac97 *ac97, unsigned int id,
 	return true;
 }
 
-/**
- * snd_ac97_reset() - Reset AC'97 device
- * @ac97: The AC'97 device to reset
- * @try_warm: Try a warm reset first
- * @id: Expected device vendor ID
- * @id_mask: Mask that is applied to the device ID before comparing to @id
- *
- * This function resets the AC'97 device. If @try_warm is true the function
- * first performs a warm reset. If the warm reset is successful the function
- * returns 1. Otherwise or if @try_warm is false the function issues cold reset
- * followed by a warm reset. If this is successful the function returns 0,
- * otherwise a negative error code. If @id is 0 any valid device ID will be
- * accepted, otherwise only the ID that matches @id and @id_mask is accepted.
- */
+ 
 int snd_ac97_reset(struct snd_ac97 *ac97, bool try_warm, unsigned int id,
 	unsigned int id_mask)
 {

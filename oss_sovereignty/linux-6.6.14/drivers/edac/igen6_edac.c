@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Intel client SoC with integrated memory controller using IBECC
- *
- * Copyright (C) 2020 Intel Corporation
- *
- * The In-Band ECC (IBECC) IP provides ECC protection to all or specific
- * regions of the physical memory space. It's used for memory controllers
- * that don't support the out-of-band ECC which often needs an additional
- * storage device to each channel for storing ECC data.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,7 +23,7 @@
 #define EDAC_MOD_STR	"igen6_edac"
 #define IGEN6_NMI_NAME	"igen6_ibecc"
 
-/* Debug macros */
+ 
 #define igen6_printk(level, fmt, arg...)		\
 	edac_printk(level, "igen6", fmt, ##arg)
 
@@ -41,40 +32,40 @@
 
 #define GET_BITFIELD(v, lo, hi) (((v) & GENMASK_ULL(hi, lo)) >> (lo))
 
-#define NUM_IMC				2 /* Max memory controllers */
-#define NUM_CHANNELS			2 /* Max channels */
-#define NUM_DIMMS			2 /* Max DIMMs per channel */
+#define NUM_IMC				2  
+#define NUM_CHANNELS			2  
+#define NUM_DIMMS			2  
 
 #define _4GB				BIT_ULL(32)
 
-/* Size of physical memory */
+ 
 #define TOM_OFFSET			0xa0
-/* Top of low usable DRAM */
+ 
 #define TOLUD_OFFSET			0xbc
-/* Capability register C */
+ 
 #define CAPID_C_OFFSET			0xec
 #define CAPID_C_IBECC			BIT(15)
 
-/* Capability register E */
+ 
 #define CAPID_E_OFFSET			0xf0
 #define CAPID_E_IBECC			BIT(12)
 
-/* Error Status */
+ 
 #define ERRSTS_OFFSET			0xc8
 #define ERRSTS_CE			BIT_ULL(6)
 #define ERRSTS_UE			BIT_ULL(7)
 
-/* Error Command */
+ 
 #define ERRCMD_OFFSET			0xca
 #define ERRCMD_CE			BIT_ULL(6)
 #define ERRCMD_UE			BIT_ULL(7)
 
-/* IBECC MMIO base address */
+ 
 #define IBECC_BASE			(res_cfg->ibecc_base)
 #define IBECC_ACTIVATE_OFFSET		IBECC_BASE
 #define IBECC_ACTIVATE_EN		BIT(0)
 
-/* IBECC error log */
+ 
 #define ECC_ERROR_LOG_OFFSET		(IBECC_BASE + res_cfg->ibecc_error_log_offset)
 #define ECC_ERROR_LOG_CE		BIT_ULL(62)
 #define ECC_ERROR_LOG_UE		BIT_ULL(63)
@@ -82,13 +73,13 @@
 #define ECC_ERROR_LOG_ADDR(v)		GET_BITFIELD(v, 5, 38)
 #define ECC_ERROR_LOG_SYND(v)		GET_BITFIELD(v, 46, 61)
 
-/* Host MMIO base address */
+ 
 #define MCHBAR_OFFSET			0x48
 #define MCHBAR_EN			BIT_ULL(0)
 #define MCHBAR_BASE(v)			(GET_BITFIELD(v, 16, 38) << 16)
 #define MCHBAR_SIZE			0x10000
 
-/* Parameters for the channel decode stage */
+ 
 #define IMC_BASE			(res_cfg->imc_base)
 #define MAD_INTER_CHANNEL_OFFSET	IMC_BASE
 #define MAD_INTER_CHANNEL_DDR_TYPE(v)	GET_BITFIELD(v, 0, 2)
@@ -96,30 +87,30 @@
 #define MAD_INTER_CHANNEL_CH_L_MAP(v)	GET_BITFIELD(v, 4, 4)
 #define MAD_INTER_CHANNEL_CH_S_SIZE(v)	((u64)GET_BITFIELD(v, 12, 19) << 29)
 
-/* Parameters for DRAM decode stage */
+ 
 #define MAD_INTRA_CH0_OFFSET		(IMC_BASE + 4)
 #define MAD_INTRA_CH_DIMM_L_MAP(v)	GET_BITFIELD(v, 0, 0)
 
-/* DIMM characteristics */
+ 
 #define MAD_DIMM_CH0_OFFSET		(IMC_BASE + 0xc)
 #define MAD_DIMM_CH_DIMM_L_SIZE(v)	((u64)GET_BITFIELD(v, 0, 6) << 29)
 #define MAD_DIMM_CH_DLW(v)		GET_BITFIELD(v, 7, 8)
 #define MAD_DIMM_CH_DIMM_S_SIZE(v)	((u64)GET_BITFIELD(v, 16, 22) << 29)
 #define MAD_DIMM_CH_DSW(v)		GET_BITFIELD(v, 24, 25)
 
-/* Hash for memory controller selection */
+ 
 #define MAD_MC_HASH_OFFSET		(IMC_BASE + 0x1b8)
 #define MAC_MC_HASH_LSB(v)		GET_BITFIELD(v, 1, 3)
 
-/* Hash for channel selection */
+ 
 #define CHANNEL_HASH_OFFSET		(IMC_BASE + 0x24)
-/* Hash for enhanced channel selection */
+ 
 #define CHANNEL_EHASH_OFFSET		(IMC_BASE + 0x28)
 #define CHANNEL_HASH_MASK(v)		(GET_BITFIELD(v, 6, 19) << 6)
 #define CHANNEL_HASH_LSB_MASK_BIT(v)	GET_BITFIELD(v, 24, 26)
 #define CHANNEL_HASH_MODE(v)		GET_BITFIELD(v, 28, 28)
 
-/* Parameters for memory slice decode stage */
+ 
 #define MEM_SLICE_HASH_MASK(v)		(GET_BITFIELD(v, 6, 19) << 6)
 #define MEM_SLICE_HASH_LSB_MASK_BIT(v)	GET_BITFIELD(v, 24, 26)
 
@@ -133,9 +124,9 @@ static struct res_config {
 	u32 ibecc_base;
 	u32 ibecc_error_log_offset;
 	bool (*ibecc_available)(struct pci_dev *pdev);
-	/* Convert error address logged in IBECC to system physical address */
+	 
 	u64 (*err_addr_to_sys_addr)(u64 eaddr, int mc);
-	/* Convert error address logged in IBECC to integrated memory controller address */
+	 
 	u64 (*err_addr_to_imc_addr)(u64 eaddr, int mc);
 } *res_cfg;
 
@@ -160,9 +151,9 @@ static struct igen6_pvt {
 	int ms_l_map;
 } *igen6_pvt;
 
-/* The top of low usable DRAM */
+ 
 static u32 igen6_tolud;
-/* The size of physical memory */
+ 
 static u64 igen6_tom;
 
 struct decoded_addr {
@@ -181,12 +172,7 @@ struct ecclog_node {
 	u64 ecclog;
 };
 
-/*
- * In the NMI handler, the driver uses the lock-less memory allocator
- * to allocate memory to store the IBECC error logs and links the logs
- * to the lock-less list. Delay printk() and the work of error reporting
- * to EDAC core in a worker.
- */
+ 
 #define ECCLOG_POOL_SIZE	PAGE_SIZE
 static LLIST_HEAD(ecclog_llist);
 static struct gen_pool *ecclog_pool;
@@ -194,7 +180,7 @@ static char ecclog_buf[ECCLOG_POOL_SIZE];
 static struct irq_work ecclog_irq_work;
 static struct work_struct ecclog_work;
 
-/* Compute die IDs for Elkhart Lake with IBECC */
+ 
 #define DID_EHL_SKU5	0x4514
 #define DID_EHL_SKU6	0x4528
 #define DID_EHL_SKU7	0x452a
@@ -207,16 +193,16 @@ static struct work_struct ecclog_work;
 #define DID_EHL_SKU14	0x4534
 #define DID_EHL_SKU15	0x4536
 
-/* Compute die IDs for ICL-NNPI with IBECC */
+ 
 #define DID_ICL_SKU8	0x4581
 #define DID_ICL_SKU10	0x4585
 #define DID_ICL_SKU11	0x4589
 #define DID_ICL_SKU12	0x458d
 
-/* Compute die IDs for Tiger Lake with IBECC */
+ 
 #define DID_TGL_SKU	0x9a14
 
-/* Compute die IDs for Alder Lake with IBECC */
+ 
 #define DID_ADL_SKU1	0x4601
 #define DID_ADL_SKU2	0x4602
 #define DID_ADL_SKU3	0x4621
@@ -481,7 +467,7 @@ static u64 decode_channel_addr(u64 addr, int intlv_bit)
 {
 	u64 channel_addr;
 
-	/* Remove the interleave bit and shift upper part down to fill gap */
+	 
 	channel_addr  = GET_BITFIELD(addr, intlv_bit + 1, 63) << intlv_bit;
 	channel_addr |= GET_BITFIELD(addr, 0, intlv_bit - 1);
 
@@ -520,7 +506,7 @@ static int igen6_decode(struct decoded_addr *res)
 		return -EINVAL;
 	}
 
-	/* Decode channel */
+	 
 	hash   = readl(imc->window + CHANNEL_HASH_OFFSET);
 	s_size = imc->ch_s_size;
 	l_map  = imc->ch_l_map;
@@ -528,7 +514,7 @@ static int igen6_decode(struct decoded_addr *res)
 	res->channel_idx  = idx;
 	res->channel_addr = sub_addr;
 
-	/* Decode sub-channel/DIMM */
+	 
 	hash   = readl(imc->window + CHANNEL_EHASH_OFFSET);
 	s_size = imc->dimm_s_size[idx];
 	l_map  = imc->dimm_l_map[idx];
@@ -585,19 +571,13 @@ static int ecclog_gen_pool_add(int mc, u64 ecclog)
 	return 0;
 }
 
-/*
- * Either the memory-mapped I/O status register ECC_ERROR_LOG or the PCI
- * configuration space status register ERRSTS can indicate whether a
- * correctable error or an uncorrectable error occurred. We only use the
- * ECC_ERROR_LOG register to check error type, but need to clear both
- * registers to enable future error events.
- */
+ 
 static u64 ecclog_read_and_clear(struct igen6_imc *imc)
 {
 	u64 ecclog = readq(imc->window + ECC_ERROR_LOG_OFFSET);
 
 	if (ecclog & (ECC_ERROR_LOG_CE | ECC_ERROR_LOG_UE)) {
-		/* Clear CE/UE bits by writing 1s */
+		 
 		writeq(ecclog, imc->window + ECC_ERROR_LOG_OFFSET);
 		return ecclog;
 	}
@@ -614,7 +594,7 @@ static void errsts_clear(struct igen6_imc *imc)
 		return;
 	}
 
-	/* Clear CE/UE bits by writing 1s */
+	 
 	if (errsts & (ERRSTS_CE | ERRSTS_UE))
 		pci_write_config_word(imc->pdev, ERRSTS_OFFSET, errsts);
 }
@@ -650,7 +630,7 @@ static int ecclog_handler(void)
 	for (i = 0; i < res_cfg->num_imc; i++) {
 		imc = &igen6_pvt->imc[i];
 
-		/* errsts_clear() isn't NMI-safe. Delay it in the IRQ context */
+		 
 
 		ecclog = ecclog_read_and_clear(imc);
 		if (!ecclog)
@@ -716,13 +696,7 @@ static int ecclog_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 	if (!ecclog_handler())
 		return NMI_DONE;
 
-	/*
-	 * Both In-Band ECC correctable error and uncorrectable error are
-	 * reported by SERR# NMI. The NMI generic code (see pci_serr_error())
-	 * doesn't clear the bit NMI_REASON_CLEAR_SERR (in port 0x61) to
-	 * re-enable the SERR# NMI after NMI handling. So clear this bit here
-	 * to re-enable SERR# NMI for receiving future In-Band ECC errors.
-	 */
+	 
 	reason  = x86_platform.get_nmi_reason() & NMI_REASON_CLEAR_MASK;
 	reason |= NMI_REASON_CLEAR_SERR;
 	outb(reason, NMI_REASON_PORT);
@@ -741,11 +715,7 @@ static int ecclog_mce_handler(struct notifier_block *nb, unsigned long val,
 	if (mce->kflags & MCE_HANDLED_CEC)
 		return NOTIFY_DONE;
 
-	/*
-	 * Ignore unless this is a memory related error.
-	 * We don't check the bit MCI_STATUS_ADDRV of MCi_STATUS here,
-	 * since this bit isn't set on some CPU (e.g., Tiger Lake UP3).
-	 */
+	 
 	if ((mce->status & 0xefff) >> 7 != 1)
 		return NOTIFY_DONE;
 
@@ -763,13 +733,7 @@ static int ecclog_mce_handler(struct notifier_block *nb, unsigned long val,
 	edac_dbg(0, "PROCESSOR %u:0x%x TIME %llu SOCKET %u APIC 0x%x\n",
 		 mce->cpuvendor, mce->cpuid, mce->time,
 		 mce->socketid, mce->apicid);
-	/*
-	 * We just use the Machine Check for the memory error notification.
-	 * Each memory controller is associated with an IBECC instance.
-	 * Directly read and clear the error information(error address and
-	 * error type) on all the IBECC instances so that we know on which
-	 * memory controller the memory error(s) occurred.
-	 */
+	 
 	if (!ecclog_handler())
 		return NOTIFY_DONE;
 
@@ -859,7 +823,7 @@ static int igen6_get_dimm_config(struct mem_ctl_info *mci)
 }
 
 #ifdef CONFIG_EDAC_DEBUG
-/* Top of upper usable DRAM */
+ 
 static u64 igen6_touud;
 #define TOUUD_OFFSET	0xa8
 
@@ -1045,16 +1009,7 @@ static int igen6_register_mci(int mc, u64 mchbar, struct pci_dev *pdev)
 
 	imc = mci->pvt_info;
 	device_initialize(&imc->dev);
-	/*
-	 * EDAC core uses mci->pdev(pointer of structure device) as
-	 * memory controller ID. The client SoCs attach one or more
-	 * memory controllers to single pci_dev (single pci_dev->dev
-	 * can be for multiple memory controllers).
-	 *
-	 * To make mci->pdev unique, assign pci_dev->dev to mci->pdev
-	 * for the first memory controller and assign a unique imc->dev
-	 * to mci->pdev for each non-first memory controller.
-	 */
+	 
 	mci->pdev = mc ? &imc->dev : &pdev->dev;
 	imc->mc	= mc;
 	imc->pdev = pdev;
@@ -1220,14 +1175,14 @@ static int igen6_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (rc)
 		goto fail3;
 
-	/* Enable error reporting */
+	 
 	rc = errcmd_enable_error_reporting(true);
 	if (rc) {
 		igen6_printk(KERN_ERR, "Failed to enable error reporting\n");
 		goto fail4;
 	}
 
-	/* Check if any pending errors before/during the registration of the error handler */
+	 
 	ecclog_handler();
 
 	igen6_debug_setup();

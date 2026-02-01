@@ -1,22 +1,6 @@
-/* table.c - bookkeeping functions for allocated memory */
+ 
 
-/* Copyright (C) 2001-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -39,8 +23,8 @@ extern int malloc_register;
 
 extern FILE *_imalloc_fopen PARAMS((char *, char *, char *, char *, size_t));
 
-#define FIND_ALLOC	0x01	/* find slot for new allocation */
-#define FIND_EXIST	0x02	/* find slot for existing entry for free() or search */
+#define FIND_ALLOC	0x01	 
+#define FIND_EXIST	0x02	 
 
 static int table_count = 0;
 static int table_allocated = 0;
@@ -56,9 +40,7 @@ static int location_table_index = 0;
 static int location_table_count = 0;
 static ma_table_t mlocation_table[REG_TABLE_SIZE];
 
-/*
- * NOTE: taken from dmalloc (http://dmalloc.com) and modified.
- */
+ 
 static unsigned int
 mt_hash (key)
      const PTR_T key;
@@ -66,11 +48,11 @@ mt_hash (key)
   unsigned int a, b, c;
   unsigned long x;
 
-  /* set up the internal state */
-  a = 0x9e3779b9;	/* the golden ratio; an arbitrary value */
-  x = (unsigned long)key;		/* truncation is OK */
+   
+  a = 0x9e3779b9;	 
+  x = (unsigned long)key;		 
   b = x >> 8;
-  c = x >> 3;				/* XXX - was >> 4 */
+  c = x >> 3;				 
 
   HASH_MIX(a, b, c);
   return c;
@@ -106,19 +88,19 @@ find_entry (mem, flags)
   if (mem_overflow.mem == mem)
     return (&mem_overflow);
 
-  /* If we want to insert an allocation entry just use the next slot */
+   
   if (flags & FIND_ALLOC)
     {
       table_bucket_index = next_bucket();
       table_count++;
       tp = mem_table + table_bucket_index;
-      memset(tp, 0, sizeof (mr_table_t));	/* overwrite next existing entry */
+      memset(tp, 0, sizeof (mr_table_t));	 
       return tp;
     }
     
   tp = endp = mem_table + table_bucket_index;
 
-  /* search for last allocation corresponding to MEM, return entry pointer */
+   
   while (1)
     {
       if (tp->mem == mem)
@@ -126,7 +108,7 @@ find_entry (mem, flags)
 
       tp = prev_entry (tp);
 
-      /* if we went all the way around and didn't find it, return NULL */
+       
       if (tp == endp)
         return ((mr_table_t *)NULL);
     }
@@ -171,7 +153,7 @@ mregister_alloc (tag, mem, size, file, line)
   sigset_t set, oset;
   int blocked_sigs;
 
-  /* Block all signals in case we are executed from a signal handler. */
+   
   blocked_sigs = 0;
 #ifdef SHELL
   if (running_trap || signal_is_trapped (SIGINT) || signal_is_trapped (SIGCHLD))
@@ -187,7 +169,7 @@ mregister_alloc (tag, mem, size, file, line)
 
   if (tentry == 0)
     {
-      /* oops.  table is full.  punt. */
+       
       fprintf (stderr, _("register_alloc: alloc table is full with FIND_ALLOC?\n"));
       if (blocked_sigs)
 	_malloc_unblock_signals (&set, &oset);
@@ -196,7 +178,7 @@ mregister_alloc (tag, mem, size, file, line)
   
   if (tentry->flags & MT_ALLOC)
     {
-      /* oops.  bad bookkeeping. ignore for now */
+       
       fprintf (stderr, _("register_alloc: %p already in table as allocated?\n"), mem);
     }
 
@@ -226,7 +208,7 @@ mregister_free (mem, size, file, line)
   sigset_t set, oset;
   int blocked_sigs;
 
-  /* Block all signals in case we are executed from a signal handler. */
+   
   blocked_sigs = 0;
 #ifdef SHELL
   if (running_trap || signal_is_trapped (SIGINT) || signal_is_trapped (SIGCHLD))
@@ -239,7 +221,7 @@ mregister_free (mem, size, file, line)
   tentry = find_entry (mem, FIND_EXIST);
   if (tentry == 0)
     {
-      /* oops.  not found. */
+       
 #if 0
       fprintf (stderr, "register_free: %p not in allocation table?\n", mem);
 #endif
@@ -249,7 +231,7 @@ mregister_free (mem, size, file, line)
     }
   if (tentry->flags & MT_FREE)
     {
-      /* oops.  bad bookkeeping. ignore for now */
+       
       fprintf (stderr, _("register_free: %p already in table as free?\n"), mem);
     }
     	
@@ -266,7 +248,7 @@ mregister_free (mem, size, file, line)
     _malloc_unblock_signals (&set, &oset);
 }
 
-/* If we ever add more flags, this will require changes. */
+ 
 static char *
 _entry_flags(x)
      int x;
@@ -316,7 +298,7 @@ mregister_table_init ()
   table_count = 0;
 }
 
-/* Simple for now */
+ 
 
 static ma_table_t *
 find_location_entry (file, line)
@@ -359,13 +341,13 @@ mlocation_register_alloc (file, line)
     {
       location_table_index++;
       if (location_table_index == REG_TABLE_SIZE)
-        location_table_index = 1;	/* slot 0 reserved */
+        location_table_index = 1;	 
       lentry = mlocation_table + location_table_index;
       lentry->file = nfile;
       lentry->line = line;
       lentry->nalloc = 1;
       if (location_table_count < REG_TABLE_SIZE)
-	location_table_count++;		/* clamp at REG_TABLE_SIZE for now */
+	location_table_count++;		 
     }
   else
     lentry->nalloc++;
@@ -400,7 +382,7 @@ mlocation_write_table ()
 
   fp = _imalloc_fopen ((char *)NULL, (char *)NULL, LOCROOT, defname, sizeof (defname));
   if (fp == 0)
-    return;		/* XXX - no error message yet */
+    return;		 
   _location_dump_table (fp);
   fclose (fp);
 }
@@ -409,13 +391,13 @@ void
 mlocation_table_init ()
 {
   memset (mlocation_table, 0, sizeof (ma_table_t) * REG_TABLE_SIZE);
-  mlocation_table[0].file = "";		/* reserve slot 0 for unknown locations */
+  mlocation_table[0].file = "";		 
   mlocation_table[0].line = 0;
   mlocation_table[0].nalloc = 0;
   location_table_count = 1;
 }
 
-#endif /* MALLOC_REGISTER */
+#endif  
 
 int
 malloc_set_register(n)

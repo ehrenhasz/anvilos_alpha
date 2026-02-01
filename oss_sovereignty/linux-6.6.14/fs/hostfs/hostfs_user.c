@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
+ 
 
 #include <stdio.h>
 #include <stddef.h>
@@ -231,11 +228,7 @@ int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 		}
 	}
 
-	/*
-	 * Update accessed and/or modified time, in two parts: first set
-	 * times according to the changes to perform, and then call futimes()
-	 * or utimes() to apply them.
-	 */
+	 
 	ma = (HOSTFS_ATTR_ATIME_SET | HOSTFS_ATTR_MTIME_SET);
 	if (attrs->ia_valid & ma) {
 		err = stat_file(file, &st, fd);
@@ -264,7 +257,7 @@ int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 		}
 	}
 
-	/* Note: ctime is not handled */
+	 
 	if (attrs->ia_valid & (HOSTFS_ATTR_ATIME | HOSTFS_ATTR_MTIME)) {
 		err = stat_file(file, &st, fd);
 		attrs->ia_atime = st.atime;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -640,23 +637,23 @@ static const char * const audull_vtx_parents[] = {
 };
 
 static struct mtk_composite top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE_FLAGS(CLK_TOP_AXI_SEL, "axi_sel", axi_parents, 0x040, 0, 3,
 		       7, CLK_IS_CRITICAL),
 	MUX_GATE_FLAGS(CLK_TOP_MEM_SEL, "mem_sel", mem_parents, 0x040, 8, 1,
 		       15, CLK_IS_CRITICAL),
 	MUX_GATE(CLK_TOP_MM_SEL, "mm_sel", mm_parents, 0x040, 24, 3, 31),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents, 0x050, 0, 2, 7),
 	MUX_GATE(CLK_TOP_VDEC_SEL, "vdec_sel", vdec_parents, 0x050, 8, 4, 15),
 	MUX_GATE(CLK_TOP_VENC_SEL, "venc_sel", venc_parents, 0x050, 16, 4, 23),
 	MUX_GATE(CLK_TOP_MFG_SEL, "mfg_sel", mfg_parents, 0x050, 24, 4, 31),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE(CLK_TOP_CAMTG_SEL, "camtg_sel", camtg_parents, 0x060, 0, 4, 7),
 	MUX_GATE(CLK_TOP_UART_SEL, "uart_sel", uart_parents, 0x060, 8, 1, 15),
 	MUX_GATE(CLK_TOP_SPI_SEL, "spi_sel", spi_parents, 0x060, 16, 3, 23),
 	MUX_GATE(CLK_TOP_USB20_SEL, "usb20_sel", usb20_parents, 0x060, 24, 2, 31),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE(CLK_TOP_USB30_SEL, "usb30_sel", usb30_parents, 0x070, 0, 2, 7),
 	MUX_GATE(CLK_TOP_MSDC50_0_HCLK_SEL, "msdc50_0_h_sel", msdc50_0_h_parents,
 		 0x070, 8, 3, 15),
@@ -664,7 +661,7 @@ static struct mtk_composite top_muxes[] = {
 		 0x070, 16, 4, 23),
 	MUX_GATE(CLK_TOP_MSDC30_1_SEL, "msdc30_1_sel", msdc30_1_parents,
 		 0x070, 24, 3, 31),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE(CLK_TOP_MSDC30_2_SEL, "msdc30_2_sel", msdc30_1_parents,
 		 0x080, 0, 3, 7),
 	MUX_GATE(CLK_TOP_MSDC30_3_SEL, "msdc30_3_sel", msdc30_3_parents,
@@ -673,32 +670,32 @@ static struct mtk_composite top_muxes[] = {
 		 0x080, 16, 2, 23),
 	MUX_GATE(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel", aud_intbus_parents,
 		 0x080, 24, 3, 31),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE(CLK_TOP_PMICSPI_SEL, "pmicspi_sel", pmicspi_parents, 0x090, 0, 3, 7),
 	MUX_GATE(CLK_TOP_DPILVDS1_SEL, "dpilvds1_sel", dpilvds1_parents,
 		 0x090, 8, 3, 15),
 	MUX_GATE(CLK_TOP_ATB_SEL, "atb_sel", atb_parents, 0x090, 16, 2, 23),
 	MUX_GATE(CLK_TOP_NR_SEL, "nr_sel", nr_parents, 0x090, 24, 3, 31),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE(CLK_TOP_NFI2X_SEL, "nfi2x_sel", nfi2x_parents, 0x0a0, 0, 4, 7),
 	MUX_GATE(CLK_TOP_IRDA_SEL, "irda_sel", irda_parents, 0x0a0, 8, 2, 15),
 	MUX_GATE(CLK_TOP_CCI400_SEL, "cci400_sel", cci400_parents, 0x0a0, 16, 3, 23),
 	MUX_GATE(CLK_TOP_AUD_1_SEL, "aud_1_sel", aud_1_parents, 0x0a0, 24, 2, 31),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE(CLK_TOP_AUD_2_SEL, "aud_2_sel", aud_2_parents, 0x0b0, 0, 2, 7),
 	MUX_GATE(CLK_TOP_MEM_MFG_IN_AS_SEL, "mem_mfg_sel", mem_mfg_parents,
 		 0x0b0, 8, 2, 15),
 	MUX_GATE(CLK_TOP_AXI_MFG_IN_AS_SEL, "axi_mfg_sel", axi_mfg_parents,
 		 0x0b0, 16, 2, 23),
 	MUX_GATE(CLK_TOP_SCAM_SEL, "scam_sel", scam_parents, 0x0b0, 24, 2, 31),
-	/* CLK_CFG_8 */
+	 
 	MUX_GATE(CLK_TOP_NFIECC_SEL, "nfiecc_sel", nfiecc_parents, 0x0c0, 0, 3, 7),
 	MUX_GATE(CLK_TOP_PE2_MAC_P0_SEL, "pe2_mac_p0_sel", pe2_mac_p0_parents,
 		 0x0c0, 8, 3, 15),
 	MUX_GATE(CLK_TOP_PE2_MAC_P1_SEL, "pe2_mac_p1_sel", pe2_mac_p0_parents,
 		 0x0c0, 16, 3, 23),
 	MUX_GATE(CLK_TOP_DPILVDS_SEL, "dpilvds_sel", dpilvds_parents, 0x0c0, 24, 3, 31),
-	/* CLK_CFG_9 */
+	 
 	MUX_GATE(CLK_TOP_MSDC50_3_HCLK_SEL, "msdc50_3_h_sel", msdc50_0_h_parents,
 		 0x0d0, 0, 3, 7),
 	MUX_GATE(CLK_TOP_HDCP_SEL, "hdcp_sel", hdcp_parents, 0x0d0, 8, 2, 15),
@@ -706,48 +703,48 @@ static struct mtk_composite top_muxes[] = {
 		 0x0d0, 16, 2, 23),
 	MUX_GATE_FLAGS(CLK_TOP_RTC_SEL, "rtc_sel", rtc_parents,
 		       0x0d0, 24, 2, 31, CLK_IS_CRITICAL),
-	/* CLK_CFG_10 */
+	 
 	MUX_GATE(CLK_TOP_SPINOR_SEL, "spinor_sel", spinor_parents, 0x500, 0, 4, 7),
 	MUX_GATE(CLK_TOP_APLL_SEL, "apll_sel", apll_parents, 0x500, 8, 4, 15),
 	MUX_GATE(CLK_TOP_APLL2_SEL, "apll2_sel", apll_parents, 0x500, 16, 4, 23),
 	MUX_GATE(CLK_TOP_A1SYS_HP_SEL, "a1sys_hp_sel", a1sys_hp_parents,
 		 0x500, 24, 3, 31),
-	/* CLK_CFG_11 */
+	 
 	MUX_GATE(CLK_TOP_A2SYS_HP_SEL, "a2sys_hp_sel", a2sys_hp_parents, 0x510, 0, 3, 7),
 	MUX_GATE(CLK_TOP_ASM_L_SEL, "asm_l_sel", asm_l_parents, 0x510, 8, 2, 15),
 	MUX_GATE(CLK_TOP_ASM_M_SEL, "asm_m_sel", asm_l_parents, 0x510, 16, 2, 23),
 	MUX_GATE(CLK_TOP_ASM_H_SEL, "asm_h_sel", asm_l_parents, 0x510, 24, 2, 31),
-	/* CLK_CFG_12 */
+	 
 	MUX_GATE(CLK_TOP_I2SO1_SEL, "i2so1_sel", i2so1_parents, 0x520, 0, 2, 7),
 	MUX_GATE(CLK_TOP_I2SO2_SEL, "i2so2_sel", i2so1_parents, 0x520, 8, 2, 15),
 	MUX_GATE(CLK_TOP_I2SO3_SEL, "i2so3_sel", i2so1_parents, 0x520, 16, 2, 23),
 	MUX_GATE(CLK_TOP_TDMO0_SEL, "tdmo0_sel", i2so1_parents, 0x520, 24, 2, 31),
-	/* CLK_CFG_13 */
+	 
 	MUX_GATE(CLK_TOP_TDMO1_SEL, "tdmo1_sel", i2so1_parents, 0x530, 0, 2, 7),
 	MUX_GATE(CLK_TOP_I2SI1_SEL, "i2si1_sel", i2so1_parents, 0x530, 8, 2, 15),
 	MUX_GATE(CLK_TOP_I2SI2_SEL, "i2si2_sel", i2so1_parents, 0x530, 16, 2, 23),
 	MUX_GATE(CLK_TOP_I2SI3_SEL, "i2si3_sel", i2so1_parents, 0x530, 24, 2, 31),
-	/* CLK_CFG_14 */
+	 
 	MUX_GATE(CLK_TOP_ETHER_125M_SEL, "ether_125m_sel", ether_125m_parents,
 		 0x540, 0, 2, 7),
 	MUX_GATE(CLK_TOP_ETHER_50M_SEL, "ether_50m_sel", ether_50m_parents,
 		 0x540, 8, 2, 15),
 	MUX_GATE(CLK_TOP_JPGDEC_SEL, "jpgdec_sel", jpgdec_parents, 0x540, 16, 4, 23),
 	MUX_GATE(CLK_TOP_SPISLV_SEL, "spislv_sel", spislv_parents, 0x540, 24, 3, 31),
-	/* CLK_CFG_15 */
+	 
 	MUX_GATE(CLK_TOP_ETHER_50M_RMII_SEL, "ether_sel", ether_parents, 0x550, 0, 2, 7),
 	MUX_GATE(CLK_TOP_CAM2TG_SEL, "cam2tg_sel", camtg_parents, 0x550, 8, 4, 15),
 	MUX_GATE(CLK_TOP_DI_SEL, "di_sel", di_parents, 0x550, 16, 3, 23),
 	MUX_GATE(CLK_TOP_TVD_SEL, "tvd_sel", tvd_parents, 0x550, 24, 2, 31),
-	/* CLK_CFG_16 */
+	 
 	MUX_GATE(CLK_TOP_I2C_SEL, "i2c_sel", i2c_parents, 0x560, 0, 3, 7),
 	MUX_GATE(CLK_TOP_PWM_INFRA_SEL, "pwm_infra_sel", pwm_parents, 0x560, 8, 2, 15),
 	MUX_GATE(CLK_TOP_MSDC0P_AES_SEL, "msdc0p_aes_sel", msdc0p_aes_parents,
 		 0x560, 16, 2, 23),
 	MUX_GATE(CLK_TOP_CMSYS_SEL, "cmsys_sel", cmsys_parents, 0x560, 24, 3, 31),
-	/* CLK_CFG_17 */
+	 
 	MUX_GATE(CLK_TOP_GCPU_SEL, "gcpu_sel", gcpu_parents, 0x570, 0, 3, 7),
-	/* CLK_AUDDIV_4 */
+	 
 	MUX(CLK_TOP_AUD_APLL1_SEL, "aud_apll1_sel", aud_apll1_parents, 0x134, 0, 1),
 	MUX(CLK_TOP_AUD_APLL2_SEL, "aud_apll2_sel", aud_apll2_parents, 0x134, 1, 1),
 	MUX(CLK_TOP_DA_AUDULL_VTX_6P5M_SEL, "audull_vtx_sel", audull_vtx_parents,
@@ -778,13 +775,13 @@ static const char * const mcu_bus_parents[] = {
 };
 
 static struct mtk_composite mcu_muxes[] = {
-	/* mp0_pll_divider_cfg */
+	 
 	MUX_GATE_FLAGS(CLK_MCU_MP0_SEL, "mcu_mp0_sel", mcu_mp0_parents, 0x7A0,
 		       9, 2, -1, CLK_IS_CRITICAL),
-	/* mp2_pll_divider_cfg */
+	 
 	MUX_GATE_FLAGS(CLK_MCU_MP2_SEL, "mcu_mp2_sel", mcu_mp2_parents, 0x7A8,
 		       9, 2, -1, CLK_IS_CRITICAL),
-	/* bus_pll_divider_cfg */
+	 
 	MUX_GATE_FLAGS(CLK_MCU_BUS_SEL, "mcu_bus_sel", mcu_bus_parents, 0x7C0,
 		       9, 2, -1, CLK_IS_CRITICAL),
 };
@@ -819,7 +816,7 @@ static const struct mtk_gate_regs top1_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &top1_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 static const struct mtk_gate top_clks[] = {
-	/* TOP0 */
+	 
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN0, "apll_div_pdn0", "i2so1_sel", 0),
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN1, "apll_div_pdn1", "i2so2_sel", 1),
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN2, "apll_div_pdn2", "i2so3_sel", 2),
@@ -828,7 +825,7 @@ static const struct mtk_gate top_clks[] = {
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN5, "apll_div_pdn5", "i2si1_sel", 5),
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN6, "apll_div_pdn6", "i2si2_sel", 6),
 	GATE_TOP0(CLK_TOP_APLL_DIV_PDN7, "apll_div_pdn7", "i2si3_sel", 7),
-	/* TOP1 */
+	 
 	GATE_TOP1(CLK_TOP_NFI2X_EN, "nfi2x_en", "nfi2x_sel", 0),
 	GATE_TOP1(CLK_TOP_NFIECC_EN, "nfiecc_en", "nfiecc_sel", 1),
 	GATE_TOP1(CLK_TOP_NFI1X_CK_EN, "nfi1x_ck_en", "nfi2x_sel", 2),
@@ -881,7 +878,7 @@ static const struct mtk_gate_regs peri2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &peri2_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 static const struct mtk_gate peri_clks[] = {
-	/* PERI0 */
+	 
 	GATE_PERI0(CLK_PERI_NFI, "per_nfi", "axi_sel", 0),
 	GATE_PERI0(CLK_PERI_THERM, "per_therm", "axi_sel", 1),
 	GATE_PERI0(CLK_PERI_PWM0, "per_pwm0", "pwm_sel", 2),
@@ -909,7 +906,7 @@ static const struct mtk_gate peri_clks[] = {
 	GATE_PERI0(CLK_PERI_I2C4, "per_i2c4", "axi_sel", 28),
 	GATE_PERI0(CLK_PERI_AUXADC, "per_auxadc", "ltepll_fs26m", 29),
 	GATE_PERI0(CLK_PERI_SPI0, "per_spi0", "spi_sel", 30),
-	/* PERI1 */
+	 
 	GATE_PERI1(CLK_PERI_SPI, "per_spi", "spinor_sel", 1),
 	GATE_PERI1(CLK_PERI_I2C5, "per_i2c5", "axi_sel", 3),
 	GATE_PERI1(CLK_PERI_SPI2, "per_spi2", "spi_sel", 5),
@@ -921,7 +918,7 @@ static const struct mtk_gate peri_clks[] = {
 	GATE_PERI1(CLK_PERI_PCIE0, "per_pcie0", "uart_sel", 14),
 	GATE_PERI1(CLK_PERI_PCIE1, "per_pcie1", "uart_sel", 15),
 	GATE_PERI1(CLK_PERI_GMAC_PCLK, "per_gmac_pclk", "uart_sel", 16),
-	/* PERI2 */
+	 
 	GATE_PERI2(CLK_PERI_MSDC50_0_EN, "per_msdc50_0_en", "msdc50_0_sel", 0),
 	GATE_PERI2(CLK_PERI_MSDC30_1_EN, "per_msdc30_1_en", "msdc30_1_sel", 1),
 	GATE_PERI2(CLK_PERI_MSDC30_2_EN, "per_msdc30_2_en", "msdc30_2_sel", 2),
@@ -936,13 +933,13 @@ static u16 infrasys_rst_ofs[] = { 0x30, 0x34, };
 static u16 pericfg_rst_ofs[] = { 0x0, 0x4, };
 
 static const struct mtk_clk_rst_desc clk_rst_desc[] = {
-	/* infra */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = infrasys_rst_ofs,
 		.rst_bank_nr = ARRAY_SIZE(infrasys_rst_ofs),
 	},
-	/* peri */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = pericfg_rst_ofs,
@@ -987,7 +984,7 @@ static const struct of_device_id of_match_clk_mt2712[] = {
 	{ .compatible = "mediatek,mt2712-mcucfg", .data = &mcu_desc },
 	{ .compatible = "mediatek,mt2712-pericfg", .data = &peri_desc, },
 	{ .compatible = "mediatek,mt2712-topckgen", .data = &topck_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt2712);
 

@@ -1,22 +1,20 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PCI_CONFIG_H__
 #define __INTEL_PCI_CONFIG_H__
 
-/* PCI BARs */
+ 
 #define GEN2_GMADR_BAR				0
-#define GEN2_MMADR_BAR				1 /* MMIO+GTT, despite the name */
-#define GEN2_IO_BAR				2 /* 85x/865 */
+#define GEN2_MMADR_BAR				1  
+#define GEN2_IO_BAR				2  
 
-#define GEN3_MMADR_BAR				0 /* MMIO only */
+#define GEN3_MMADR_BAR				0  
 #define GEN3_IO_BAR				1
 #define GEN3_GMADR_BAR				2
-#define GEN3_GTTADR_BAR				3 /* GTT only */
+#define GEN3_GTTADR_BAR				3  
 
-#define GEN4_GTTMMADR_BAR			0 /* MMIO+GTT */
+#define GEN4_GTTMMADR_BAR			0  
 #define GEN4_GMADR_BAR				2
 #define GEN4_IO_BAR				4
 
@@ -31,7 +29,7 @@ static inline int intel_mmio_bar(int graphics_ver)
 	}
 }
 
-/* BSM in include/drm/i915_drm.h */
+ 
 
 #define MCHBAR_I915				0x44
 #define MCHBAR_I965				0x48
@@ -40,7 +38,7 @@ static inline int intel_mmio_bar(int graphics_ver)
 #define DEVEN					0x54
 #define   DEVEN_MCHBAR_EN			(1 << 28)
 
-#define HPLLCC					0xc0 /* 85x only */
+#define HPLLCC					0xc0  
 #define   GC_CLOCK_CONTROL_MASK			(0x7 << 0)
 #define   GC_CLOCK_133_200			(0 << 0)
 #define   GC_CLOCK_100_200			(1 << 0)
@@ -59,14 +57,14 @@ static inline int intel_mmio_bar(int graphics_ver)
 #define   GRDOM_RESET_STATUS			(1 << 1)
 #define   GRDOM_RESET_ENABLE			(1 << 0)
 
-/* BSpec only has register offset, PCI device and bit found empirically */
-#define I830_CLOCK_GATE				0xc8 /* device 0 */
+ 
+#define I830_CLOCK_GATE				0xc8  
 #define   I830_L2_CACHE_CLOCK_GATE_DISABLE	(1 << 2)
 
 #define GCDGMBUS				0xcc
 
 #define GCFGC2					0xda
-#define GCFGC					0xf0 /* 915+ only */
+#define GCFGC					0xf0  
 #define   GC_LOW_FREQUENCY_ENABLE		(1 << 7)
 #define   GC_DISPLAY_CLOCK_190_200_MHZ		(0 << 4)
 #define   GC_DISPLAY_CLOCK_333_320_MHZ		(4 << 4)
@@ -104,7 +102,7 @@ static inline int intel_mmio_bar(int graphics_ver)
 #define   SWSCI_SCISEL				(1 << 15)
 #define   SWSCI_GSSCIE				(1 << 0)
 
-/* legacy/combination backlight modes, also called LBB */
+ 
 #define LBPC					0xf4
 
-#endif /* __INTEL_PCI_CONFIG_H__ */
+#endif  

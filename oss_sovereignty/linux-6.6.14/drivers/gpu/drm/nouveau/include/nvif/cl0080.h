@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_CL0080_H__
 #define __NVIF_CL0080_H__
 
@@ -6,7 +6,7 @@ struct nv_device_v0 {
 	__u8  version;
 	__u8  priv;
 	__u8  pad02[6];
-	__u64 device;	/* device identifier, ~0 for client default */
+	__u64 device;	 
 };
 
 #define NV_DEVICE_V0_INFO                                                  0x00
@@ -20,8 +20,8 @@ struct nv_device_info_v0 {
 #define NV_DEVICE_INFO_V0_PCIE                                             0x03
 #define NV_DEVICE_INFO_V0_SOC                                              0x04
 	__u8  platform;
-	__u16 chipset;	/* from NV_PMC_BOOT_0 */
-	__u8  revision;	/* from NV_PMC_BOOT_0 */
+	__u16 chipset;	 
+	__u8  revision;	 
 #define NV_DEVICE_INFO_V0_TNT                                              0x01
 #define NV_DEVICE_INFO_V0_CELSIUS                                          0x02
 #define NV_DEVICE_INFO_V0_KELVIN                                           0x03
@@ -48,7 +48,7 @@ struct nv_device_info_v1 {
 	__u8  count;
 	__u8  pad02[6];
 	struct nv_device_info_v1_data {
-		__u64 mthd; /* NV_DEVICE_INFO_* (see below). */
+		__u64 mthd;  
 		__u64 data;
 	} data[];
 };
@@ -63,15 +63,15 @@ struct nv_device_time_v0 {
 #define NV_DEVICE_INFO(n)                          ((n) | (0x00000000ULL << 32))
 #define NV_DEVICE_HOST(n)                          ((n) | (0x00000001ULL << 32))
 
-/* This will be returned in the mthd field for unsupported queries. */
+ 
 #define NV_DEVICE_INFO_INVALID                                           ~0ULL
 
-/* Returns the number of available runlists. */
+ 
 #define NV_DEVICE_HOST_RUNLISTS                       NV_DEVICE_HOST(0x00000000)
-/* Returns the number of available channels (0 if per-runlist). */
+ 
 #define NV_DEVICE_HOST_CHANNELS                       NV_DEVICE_HOST(0x00000001)
 
-/* Returns a mask of available engine types on runlist(data). */
+ 
 #define NV_DEVICE_HOST_RUNLIST_ENGINES                NV_DEVICE_HOST(0x00000100)
 #define NV_DEVICE_HOST_RUNLIST_ENGINES_SW                            0x00000001
 #define NV_DEVICE_HOST_RUNLIST_ENGINES_GR                            0x00000002
@@ -90,6 +90,6 @@ struct nv_device_time_v0 {
 #define NV_DEVICE_HOST_RUNLIST_ENGINES_SEC2                          0x00004000
 #define NV_DEVICE_HOST_RUNLIST_ENGINES_NVDEC                         0x00008000
 #define NV_DEVICE_HOST_RUNLIST_ENGINES_NVENC                         0x00010000
-/* Returns the number of available channels on runlist(data). */
+ 
 #define NV_DEVICE_HOST_RUNLIST_CHANNELS               NV_DEVICE_HOST(0x00000101)
 #endif

@@ -1,26 +1,8 @@
-/* bracecomp.c -- Complete a filename with the possible completions enclosed
-   in csh-style braces such that the list of completions is available to the
-   shell. */
+ 
 
-/* Original version by tromey@cns.caltech.edu,  Fri Feb  7 1992. */
+ 
 
-/* Copyright (C) 1993-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -43,7 +25,7 @@
 
 static int _strcompare PARAMS((char **, char **));
 
-/* Find greatest common prefix of two strings. */
+ 
 static int
 string_gcd (s1, s2)
      char *s1, *s2;
@@ -101,17 +83,14 @@ really_munge_braces (array, real_start, real_end, gcd_zero)
 
       if (gcd_zero == 0 && start == real_start && end != (real_end - 1))
 	{
-	  /* In this case, add in a leading '{', because we are at
-	     top level, and there isn't a consistent prefix. */
+	   
 	  result_size += 1;
 	  result = (char *)xrealloc (result, result_size);
 	  result[0] = '{'; result[1] = '\0';
 	  flag++;
 	}
 
-      /* Make sure we backslash quote every substring we insert into the
-	 resultant brace expression.  This is so the default filename
-	 quoting function won't inappropriately quote the braces. */
+       
       if (start == end)
 	{
 	  x = savestring (array[start] + gcd_zero);
@@ -120,8 +99,7 @@ really_munge_braces (array, real_start, real_end, gcd_zero)
 	}
       else
 	{
-	  /* If there is more than one element in the subarray,
-	     insert the (quoted) prefix and an opening brace. */
+	   
 	  tlen = gcd - gcd_zero;
 	  x = (char *)xmalloc (tlen + 1);
 	  strncpy (x, array[start] + gcd_zero, tlen);
@@ -184,8 +162,7 @@ hack_braces_completion (names)
   return 0;
 }
 
-/* We handle quoting ourselves within hack_braces_completion, so we turn off
-   rl_filename_quoting_desired and rl_filename_quoting_function. */
+ 
 int
 bash_brace_completion (count, ignore)
      int count, ignore;
@@ -218,4 +195,4 @@ bash_brace_completion (count, ignore)
 
   return r;
 }
-#endif /* BRACE_EXPANSION && READLINE */
+#endif  

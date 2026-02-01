@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Turris Mox Moxtet GPIO expander
- *
- *  Copyright (C) 2018 Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -76,7 +72,7 @@ static int moxtet_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 {
 	struct moxtet_gpio_chip *chip = gpiochip_get_data(gc);
 
-	/* All lines are hard wired to be either input or output, not both. */
+	 
 	if (chip->desc->in_mask & BIT(offset))
 		return GPIO_LINE_DIRECTION_IN;
 	else if (chip->desc->out_mask & BIT(offset))

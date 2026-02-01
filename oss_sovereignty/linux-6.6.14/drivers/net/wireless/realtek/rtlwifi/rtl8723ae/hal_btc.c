@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "hal_btc.h"
 #include "../pci.h"
@@ -54,7 +54,7 @@ void rtl_8723e_bt_wifi_media_status_notify(struct ieee80211_hw *hw,
 		return;
 
 	if (RT_MEDIA_CONNECT == mstatus)
-		h2c_parameter[0] = 0x1; /* 0: disconnected, 1:connected */
+		h2c_parameter[0] = 0x1;  
 	else
 		h2c_parameter[0] = 0x0;
 
@@ -166,7 +166,7 @@ static void rtl8723e_dm_bt_set_hw_pta_mode(struct ieee80211_hw *hw, bool b_mode)
 
 	if (BT_PTA_MODE_ON == b_mode) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE, "PTA mode on\n");
-		/*  Enable GPIO 0/1/2/3/8 pins for bt */
+		 
 		rtl_write_byte(rtlpriv, 0x40, 0x20);
 		rtlpriv->btcoexist.hw_coexist_all_off = false;
 	} else {
@@ -181,14 +181,14 @@ static void rtl8723e_dm_bt_set_sw_rf_rx_lpf_corner(struct ieee80211_hw *hw,
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
 	if (BT_RF_RX_LPF_CORNER_SHRINK == type) {
-		/* Shrink RF Rx LPF corner, 0x1e[7:4]=1111 ==> [11:4] */
+		 
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"Shrink RF Rx LPF corner!!\n");
 		rtl8723e_phy_set_rf_reg(hw, RF90_PATH_A, 0x1e,
 					0xfffff, 0xf0ff7);
 		rtlpriv->btcoexist.sw_coexist_all_off = false;
 	} else if (BT_RF_RX_LPF_CORNER_RESUME == type) {
-		/*Resume RF Rx LPF corner*/
+		 
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"Resume RF Rx LPF corner!!\n");
 		rtl8723e_phy_set_rf_reg(hw, RF90_PATH_A, 0x1e, 0xfffff,
@@ -292,7 +292,7 @@ static bool rtl8723e_dm_bt_is_2_ant_common_action(struct ieee80211_hw *hw)
 		btdm8723.rf_rx_lpf_shrink = false;
 		btdm8723.reject_aggre_pkt = false;
 
-		/* sw mechanism */
+		 
 		btdm8723.agc_table_en = false;
 		btdm8723.adc_back_off_on = false;
 		btdm8723.sw_dac_swing_on = false;
@@ -321,7 +321,7 @@ static bool rtl8723e_dm_bt_is_2_ant_common_action(struct ieee80211_hw *hw)
 			btdm8723.low_penalty_rate_adaptive = false;
 			btdm8723.reject_aggre_pkt = false;
 
-			/* sw mechanism */
+			 
 			btdm8723.agc_table_en = false;
 			btdm8723.adc_back_off_on = false;
 			btdm8723.sw_dac_swing_on = false;
@@ -403,7 +403,7 @@ static void rtl8723e_dm_bt_set_fw_2_ant_hid(struct ieee80211_hw *hw,
 		rtlpriv->btcoexist.fw_coexist_all_off = false;
 	}
 	if (b_dac_swing_on)
-		h2c_parameter[0] |= BIT(1); /* Dac Swing default enable */
+		h2c_parameter[0] |= BIT(1);  
 
 	rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 		"[BTCoex], turn 2-Ant+HID mode %s, DACSwing:%s, write 0x15=0x%x\n",
@@ -431,7 +431,7 @@ static void rtl8723e_dm_bt_set_fw_tdma_ctrl(struct ieee80211_hw *hw,
 
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"[BTCoex], turn TDMA mode ON!!\n");
-		h2c_parameter[0] |= BIT(0);		/* function enable */
+		h2c_parameter[0] |= BIT(0);		 
 		if (TDMA_1ANT == ant_num) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 				"[BTCoex], TDMA_1ANT\n");
@@ -489,7 +489,7 @@ static void rtl8723e_dm_bt_set_fw_ignore_wlan_act(struct ieee80211_hw *hw,
 	if (b_enable) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"[BTCoex], BT Ignore Wlan_Act !!\n");
-		h2c_parameter[0] |= BIT(0);		/* function enable */
+		h2c_parameter[0] |= BIT(0);		 
 		rtlpriv->btcoexist.fw_coexist_all_off = false;
 	} else {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
@@ -512,7 +512,7 @@ static void rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(struct ieee80211_hw *hw,
 
 	u8 h2c_parameter[2] = {0};
 
-	/* Only 8723 B cut should do this */
+	 
 	if (IS_VENDOR_8723_A_CUT(rtlhal->version)) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"[BTCoex], not 8723B cut, don't set Traditional TDMA!!\n");
@@ -522,7 +522,7 @@ static void rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(struct ieee80211_hw *hw,
 	if (b_enable) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 			"[BTCoex], turn TTDMA mode ON!!\n");
-		h2c_parameter[0] |= BIT(0);	/* function enable */
+		h2c_parameter[0] |= BIT(0);	 
 		if (TDMA_1ANT == ant_num) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 				"[BTCoex], TTDMA_1ANT\n");
@@ -623,9 +623,9 @@ static void rtl8723e_dm_bt_set_fw_wlan_act(struct ieee80211_hw *hw,
 	rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
 		"[BTCoex], write 0x11=0x%x\n", h2c_parameter_lo[0]);
 
-	/* WLAN_ACT = High duration, unit:ms */
+	 
 	rtl8723e_fill_h2c_cmd(hw, 0x22, 1, h2c_parameter_hi);
-	/*  WLAN_ACT = Low duration, unit:3*625us */
+	 
 	rtl8723e_fill_h2c_cmd(hw, 0x11, 1, h2c_parameter_lo);
 }
 
@@ -644,13 +644,13 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 	rtlpriv->cfg->ops->get_hw_reg(hw, HW_VAR_FWLPS_RF_ON,
 					      (u8 *)(&fw_ps_awake));
 
-	/* check new setting is different with the old one, */
-	/* if all the same, don't do the setting again. */
+	 
+	 
 	if (memcmp(btdm_8723, btdm, sizeof(struct btdm_8723)) == 0) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 			"[BTCoex], the same coexist setting, return!!\n");
 		return;
-	} else {	/* save the new coexist setting */
+	} else {	 
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 			"[BTCoex], UPDATE TO NEW COEX SETTING!!\n");
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -751,10 +751,7 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 
 		memcpy(btdm_8723, btdm, sizeof(struct btdm_8723));
 	}
-	/* Here we only consider when Bt Operation
-	 * inquiry/paging/pairing is ON
-	 * we only need to turn off TDMA
-	 */
+	 
 
 	if (rtlpriv->btcoexist.hold_for_bt_operation) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_TRACE,
@@ -805,13 +802,9 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 				      btdm->val_0x6c8, btdm->val_0x6cc);
 	rtl8723e_dm_bt_set_hw_pta_mode(hw, btdm->pta_on);
 
-	/* Note: There is a constraint between TDMA and 2AntHID
-	 * Only one of 2AntHid and tdma can be turn on
-	 * We should turn off those mechanisms should be turned off first
-	 * and then turn on those mechanisms should be turned on.
-	*/
+	 
 	if (btdm->b2_ant_hid_en) {
-		/* turn off tdma */
+		 
 		rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(hw, btdm->tra_tdma_on,
 						    btdm->tra_tdma_ant,
 						    btdm->tra_tdma_nav);
@@ -819,27 +812,27 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 						btdm->tdma_nav,
 						btdm->tdma_dac_swing);
 
-		/* turn off Pstdma */
+		 
 		rtl8723e_dm_bt_set_fw_ignore_wlan_act(hw,
 						      btdm->ignore_wlan_act);
-		/* Antenna control by PTA, 0x870 = 0x300. */
+		 
 		rtl8723e_dm_bt_set_fw_3a(hw, 0x0, 0x0, 0x0, 0x8, 0x0);
 
-		/* turn on 2AntHid */
+		 
 		rtl8723e_dm_bt_set_fw_bt_hid_info(hw, true);
 		rtl8723e_dm_bt_set_fw_2_ant_hid(hw, true, true);
 	} else if (btdm->tdma_on) {
-		/* turn off 2AntHid */
+		 
 		rtl8723e_dm_bt_set_fw_bt_hid_info(hw, false);
 		rtl8723e_dm_bt_set_fw_2_ant_hid(hw, false, false);
 
-		/* turn off pstdma */
+		 
 		rtl8723e_dm_bt_set_fw_ignore_wlan_act(hw,
 						      btdm->ignore_wlan_act);
-		/* Antenna control by PTA, 0x870 = 0x300. */
+		 
 		rtl8723e_dm_bt_set_fw_3a(hw, 0x0, 0x0, 0x0, 0x8, 0x0);
 
-		/* turn on tdma */
+		 
 		rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(hw, btdm->tra_tdma_on,
 						    btdm->tra_tdma_ant,
 						    btdm->tra_tdma_nav);
@@ -847,11 +840,11 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 						btdm->tdma_nav,
 						btdm->tdma_dac_swing);
 	} else if (btdm->ps_tdma_on) {
-		/* turn off 2AntHid */
+		 
 		rtl8723e_dm_bt_set_fw_bt_hid_info(hw, false);
 		rtl8723e_dm_bt_set_fw_2_ant_hid(hw, false, false);
 
-		/* turn off tdma */
+		 
 		rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(hw, btdm->tra_tdma_on,
 						    btdm->tra_tdma_ant,
 						    btdm->tra_tdma_nav);
@@ -859,7 +852,7 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 						btdm->tdma_nav,
 						btdm->tdma_dac_swing);
 
-		/* turn on pstdma */
+		 
 		rtl8723e_dm_bt_set_fw_ignore_wlan_act(hw,
 						      btdm->ignore_wlan_act);
 		rtl8723e_dm_bt_set_fw_3a(hw, btdm->ps_tdma_byte[0],
@@ -868,11 +861,11 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 					 btdm->ps_tdma_byte[3],
 					 btdm->ps_tdma_byte[4]);
 	} else {
-		/* turn off 2AntHid */
+		 
 		rtl8723e_dm_bt_set_fw_bt_hid_info(hw, false);
 		rtl8723e_dm_bt_set_fw_2_ant_hid(hw, false, false);
 
-		/* turn off tdma */
+		 
 		rtl8723e_dm_bt_set_fw_tra_tdma_ctrl(hw, btdm->tra_tdma_on,
 						    btdm->tra_tdma_ant,
 						    btdm->tra_tdma_nav);
@@ -880,30 +873,23 @@ void rtl8723e_dm_bt_set_bt_dm(struct ieee80211_hw *hw,
 						btdm->tdma_nav,
 						btdm->tdma_dac_swing);
 
-		/* turn off pstdma */
+		 
 		rtl8723e_dm_bt_set_fw_ignore_wlan_act(hw,
 						btdm->ignore_wlan_act);
-		/* Antenna control by PTA, 0x870 = 0x300. */
+		 
 		rtl8723e_dm_bt_set_fw_3a(hw, 0x0, 0x0, 0x0, 0x8, 0x0);
 	}
 
-	/* Note:
-	 * We should add delay for making sure
-	 *	sw DacSwing can be set sucessfully.
-	 * because of that rtl8723e_dm_bt_set_fw_2_ant_hid()
-	 *	and rtl8723e_dm_bt_set_fw_tdma_ctrl()
-	 * will overwrite the reg 0x880.
-	*/
+	 
 	mdelay(30);
 	rtl8723e_dm_bt_set_sw_full_time_dac_swing(hw, btdm->sw_dac_swing_on,
 						  btdm->sw_dac_swing_lvl);
 	rtl8723e_dm_bt_set_fw_dec_bt_pwr(hw, btdm->dec_bt_pwr);
 }
 
-/* ============================================================ */
-/* extern function start with BTDM_ */
-/* ============================================================i
- */
+ 
+ 
+ 
 static u32 rtl8723e_dm_bt_tx_rx_couter_h(struct ieee80211_hw *hw)
 {
 	u32	counters = 0;
@@ -985,17 +971,17 @@ static void rtl8723e_dm_bt_2_ant_hid_sco_esco(struct ieee80211_hw *hw)
 
 	if (rtlphy->current_chan_bw == HT_CHANNEL_WIDTH_20_40) {
 		rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG, "HT40\n");
-		/* coex table */
+		 
 		btdm8723.val_0x6c0 = 0x55555555;
 		btdm8723.val_0x6c8 = 0xffff;
 		btdm8723.val_0x6cc = 0x3;
 
-		/* sw mechanism */
+		 
 		btdm8723.agc_table_en = false;
 		btdm8723.adc_back_off_on = false;
 		btdm8723.sw_dac_swing_on = false;
 
-		/* fw mechanism */
+		 
 		btdm8723.ps_tdma_on = true;
 		if (bt_tx_rx_cnt_lvl == BT_TXRX_CNT_LEVEL_2) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -1030,12 +1016,12 @@ static void rtl8723e_dm_bt_2_ant_hid_sco_esco(struct ieee80211_hw *hw)
 		bt_rssi_state1 =
 		  rtl8723e_dm_bt_check_coex_rssi_state1(hw, 2, 27, 0);
 
-		/* coex table */
+		 
 		btdm8723.val_0x6c0 = 0x55555555;
 		btdm8723.val_0x6c8 = 0xffff;
 		btdm8723.val_0x6cc = 0x3;
 
-		/* sw mechanism */
+		 
 		if ((bt_rssi_state == BT_RSSI_STATE_HIGH) ||
 			(bt_rssi_state == BT_RSSI_STATE_STAY_HIGH)) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -1051,14 +1037,14 @@ static void rtl8723e_dm_bt_2_ant_hid_sco_esco(struct ieee80211_hw *hw)
 			btdm8723.sw_dac_swing_on = false;
 		}
 
-		/* fw mechanism */
+		 
 		btdm8723.ps_tdma_on = true;
 		if ((bt_rssi_state1 == BT_RSSI_STATE_HIGH) ||
 			(bt_rssi_state1 == BT_RSSI_STATE_STAY_HIGH)) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 				"Wifi rssi-1 high\n");
-			/* only rssi high we need to do this, */
-			/* when rssi low, the value will modified by fw */
+			 
+			 
 			rtl_write_byte(rtlpriv, 0x883, 0x40);
 			if (bt_tx_rx_cnt_lvl == BT_TXRX_CNT_LEVEL_2) {
 				rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -1119,7 +1105,7 @@ static void rtl8723e_dm_bt_2_ant_hid_sco_esco(struct ieee80211_hw *hw)
 	if (rtl8723e_dm_bt_need_to_dec_bt_pwr(hw))
 		btdm8723.dec_bt_pwr = true;
 
-	/* Always ignore WlanAct if bHid|bSCOBusy|bSCOeSCO */
+	 
 
 	rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 		"[BTCoex], BT btInqPageStartTime = 0x%x, btTxRxCntLvl = %d\n",
@@ -1166,17 +1152,17 @@ static void rtl8723e_dm_bt_2_ant_ftp_a2dp(struct ieee80211_hw *hw)
 		bt_rssi_state =
 		  rtl8723e_dm_bt_check_coex_rssi_state(hw, 2, 37, 0);
 
-		/* coex table */
+		 
 		btdm8723.val_0x6c0 = 0x55555555;
 		btdm8723.val_0x6c8 = 0xffff;
 		btdm8723.val_0x6cc = 0x3;
 
-		/* sw mechanism */
+		 
 		btdm8723.agc_table_en = false;
 		btdm8723.adc_back_off_on = true;
 		btdm8723.sw_dac_swing_on = false;
 
-		/* fw mechanism */
+		 
 		btdm8723.ps_tdma_on = true;
 		if ((bt_rssi_state == BT_RSSI_STATE_HIGH) ||
 			(bt_rssi_state == BT_RSSI_STATE_STAY_HIGH)) {
@@ -1245,12 +1231,12 @@ static void rtl8723e_dm_bt_2_ant_ftp_a2dp(struct ieee80211_hw *hw)
 		bt_rssi_state1 =
 		  rtl8723e_dm_bt_check_coex_rssi_state1(hw, 2, 27, 0);
 
-		/* coex table */
+		 
 		btdm8723.val_0x6c0 = 0x55555555;
 		btdm8723.val_0x6c8 = 0xffff;
 		btdm8723.val_0x6cc = 0x3;
 
-		/* sw mechanism */
+		 
 		if ((bt_rssi_state == BT_RSSI_STATE_HIGH) ||
 			(bt_rssi_state == BT_RSSI_STATE_STAY_HIGH)) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -1266,14 +1252,14 @@ static void rtl8723e_dm_bt_2_ant_ftp_a2dp(struct ieee80211_hw *hw)
 			btdm8723.sw_dac_swing_on = false;
 		}
 
-		/* fw mechanism */
+		 
 		btdm8723.ps_tdma_on = true;
 		if ((bt_rssi_state1 == BT_RSSI_STATE_HIGH) ||
 			(bt_rssi_state1 == BT_RSSI_STATE_STAY_HIGH)) {
 			rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
 				"Wifi rssi-1 high\n");
-			/* only rssi high we need to do this, */
-			/* when rssi low, the value will modified by fw */
+			 
+			 
 			rtl_write_byte(rtlpriv, 0x883, 0x40);
 			if (bt_tx_rx_cnt_lvl == BT_TXRX_CNT_LEVEL_2) {
 				rtl_dbg(rtlpriv, COMP_BT_COEXIST, DBG_DMESG,
@@ -1362,7 +1348,7 @@ static void rtl8723e_dm_bt_inq_page_monitor(struct ieee80211_hw *hw)
 
 	cur_time = jiffies;
 	if (hal_coex_8723.c2h_bt_inquiry_page) {
-		/* bt inquiry or page is started. */
+		 
 		if (hal_coex_8723.bt_inq_page_start_time == 0) {
 			rtlpriv->btcoexist.cstate  |=
 			BT_COEX_STATE_BT_INQ_PAGE;
@@ -1419,8 +1405,8 @@ static void _rtl8723e_dm_bt_coexist_2_ant(struct ieee80211_hw *hw)
 
 	bt_info_original = hal_coex_8723.c2h_bt_info_original;
 
-	/* when bt inquiry or page scan, we have to set h2c 0x25 */
-	/* ignore wlanact for continuous 4x2secs */
+	 
+	 
 	rtl8723e_dm_bt_inq_page_monitor(hw);
 	rtl8723e_dm_bt_reset_action_profile_state(hw);
 
@@ -1556,7 +1542,7 @@ static void rtl8723e_dm_bt_bt_hw_counters_monitor(struct ieee80211_hw *hw)
 		"Low Priority Tx/Rx (reg 0x%x)=%x(%d)/%x(%d)\n",
 		reg_lp_tx_rx, reg_lp_tx, reg_lp_tx, reg_lp_rx, reg_lp_rx);
 	rtlpriv->btcoexist.lps_counter = 0;
-	/* rtl_write_byte(rtlpriv, 0x76e, 0xc); */
+	 
 }
 
 static void rtl8723e_dm_bt_bt_enable_disable_check(struct ieee80211_hw *hw)
@@ -1720,7 +1706,7 @@ void rtl_8723e_c2h_command_handle(struct ieee80211_hw *hw)
 		return;
 	}
 
-	/* Read the content */
+	 
 	for (index = 0; index < c2h_event.cmd_len; index++)
 		ptmp_buf[index] = rtl_read_byte(rtlpriv,
 					REG_C2HEVT_MSG_NORMAL + 2 + index);

@@ -1,29 +1,6 @@
-/*
- * Copyright (c) 2006 Damien Bergamini <damien.bergamini@free.fr>
- * Copyright (c) 2006 Sam Leffler, Errno Consulting
- * Copyright (c) 2007 Christoph Hellwig <hch@lst.de>
- * Copyright (c) 2008-2009 Weongyo Jeong <weongyo@freebsd.org>
- * Copyright (c) 2012 Pontus Fuchs <pontus.fuchs@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*
- * This driver is based on the uath driver written by Damien Bergamini for
- * OpenBSD, who did black-box analysis of the Windows binary driver to find
- * out how the hardware works.  It contains a lot magic numbers because of
- * that and only has minimal functionality.
- */
+ 
 #include <linux/compiler.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,10 +14,7 @@
 #include "ar5523.h"
 #include "ar5523_hw.h"
 
-/*
- * Various supported device vendors/products.
- * UB51: AR5005UG 802.11b/g, UB52: AR5005UX 802.11a/b/g
- */
+ 
 
 static int ar5523_submit_rx_cmd(struct ar5523 *ar);
 static void ar5523_data_tx_pkt_put(struct ar5523 *ar);
@@ -66,7 +40,7 @@ static void ar5523_read_reply(struct ar5523 *ar, struct ar5523_cmd_hdr *hdr,
 		olen = be32_to_cpu(rp[0]);
 		dlen -= sizeof(u32);
 		if (olen == 0) {
-			/* convention is 0 =>'s one word */
+			 
 			olen = sizeof(u32);
 		}
 	} else
@@ -116,7 +90,7 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
 
 	switch (code & 0xff) {
 	default:
-		/* reply to a read command */
+		 
 		if (hdr->priv != AR5523_CMD_ID) {
 			ar5523_err(ar, "Unexpected command id: %02x\n",
 				   code & 0xff);
@@ -146,8 +120,7 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
 		break;
 
 	case WDCMSG_TARGET_START:
-		/* This command returns a bogus id so it needs special
-		   handling */
+		 
 		dlen = hdrlen - sizeof(*hdr);
 		if (dlen != (int)sizeof(u32)) {
 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
@@ -219,9 +192,7 @@ static int ar5523_submit_rx_cmd(struct ar5523 *ar)
 	return 0;
 }
 
-/*
- * Command submitted cb
- */
+ 
 static void ar5523_cmd_tx_cb(struct urb *urb)
 {
 	struct ar5523_tx_cmd *cmd = urb->context;
@@ -253,7 +224,7 @@ static int ar5523_cmd(struct ar5523 *ar, u32 code, const void *idata,
 	struct ar5523_tx_cmd *cmd = &ar->tx_cmd;
 	int xferlen, error;
 
-	/* always bulk-out a multiple of 4 bytes */
+	 
 	xferlen = (sizeof(struct ar5523_cmd_hdr) + ilen + 3) & ~3;
 
 	hdr = (struct ar5523_cmd_hdr *)cmd->buf_tx;
@@ -314,7 +285,7 @@ static int ar5523_config(struct ar5523 *ar, u32 reg, u32 val)
 	int error;
 
 	write.reg = cpu_to_be32(reg);
-	write.len = cpu_to_be32(0);	/* 0 = single write */
+	write.len = cpu_to_be32(0);	 
 	*(__be32 *)write.data = cpu_to_be32(val);
 
 	error = ar5523_cmd_write(ar, WDCMSG_TARGET_SET_CONFIG, &write,
@@ -334,7 +305,7 @@ static int ar5523_config_multi(struct ar5523 *ar, u32 reg, const void *data,
 	write.len = cpu_to_be32(len);
 	memcpy(write.data, data, len);
 
-	/* properly handle the case where len is zero (reset) */
+	 
 	error = ar5523_cmd_write(ar, WDCMSG_TARGET_SET_CONFIG, &write,
 	    (len == 0) ? sizeof(u32) : 2 * sizeof(u32) + len, 0);
 	if (error != 0)
@@ -386,7 +357,7 @@ static int ar5523_get_devcap(struct ar5523 *ar)
 	int error;
 	u32 cap;
 
-	/* collect device capabilities */
+	 
 	GETCAP(CAP_TARGET_VERSION);
 	GETCAP(CAP_TARGET_REVISION);
 	GETCAP(CAP_MAC_VERSION);
@@ -468,7 +439,7 @@ static int ar5523_set_chan(struct ar5523 *ar)
 	reset.flags |= cpu_to_be32(UATH_CHAN_2GHZ);
 	reset.flags |= cpu_to_be32(UATH_CHAN_OFDM);
 	reset.freq = cpu_to_be32(conf->chandef.chan->center_freq);
-	reset.maxrdpower = cpu_to_be32(50);	/* XXX */
+	reset.maxrdpower = cpu_to_be32(50);	 
 	reset.channelchange = cpu_to_be32(1);
 	reset.keeprccontent = cpu_to_be32(0);
 
@@ -485,13 +456,13 @@ static int ar5523_queue_init(struct ar5523 *ar)
 	ar5523_dbg(ar, "setting up Tx queue\n");
 	qinfo.qid	     = cpu_to_be32(0);
 	qinfo.len	     = cpu_to_be32(sizeof(qinfo.attr));
-	qinfo.attr.priority  = cpu_to_be32(0);	/* XXX */
+	qinfo.attr.priority  = cpu_to_be32(0);	 
 	qinfo.attr.aifs	     = cpu_to_be32(3);
 	qinfo.attr.logcwmin  = cpu_to_be32(4);
 	qinfo.attr.logcwmax  = cpu_to_be32(10);
 	qinfo.attr.bursttime = cpu_to_be32(0);
 	qinfo.attr.mode	     = cpu_to_be32(0);
-	qinfo.attr.qflags    = cpu_to_be32(1);	/* XXX? */
+	qinfo.attr.qflags    = cpu_to_be32(1);	 
 	return ar5523_cmd_write(ar, WDCMSG_SETUP_TX_QUEUE, &qinfo,
 				 sizeof(qinfo), 0);
 }
@@ -506,14 +477,14 @@ static int ar5523_switch_chan(struct ar5523 *ar)
 		goto out_err;
 	}
 
-	/* reset Tx rings */
+	 
 	error = ar5523_reset_tx_queues(ar);
 	if (error) {
 		ar5523_err(ar, "could not reset Tx queues, error %d\n",
 			   error);
 		goto out_err;
 	}
-	/* set Tx rings WME properties */
+	 
 	error = ar5523_queue_init(ar);
 	if (error)
 		ar5523_err(ar, "could not init wme, error %d\n", error);
@@ -544,7 +515,7 @@ static void ar5523_data_rx_cb(struct urb *urb)
 	int hdrlen, pad;
 
 	ar5523_dbg(ar, "%s\n", __func__);
-	/* sync/async unlink faults aren't errors */
+	 
 	if (urb->status) {
 		if (urb->status != -ESHUTDOWN)
 			ar5523_err(ar, "%s: USB err: %d\n", __func__,
@@ -567,7 +538,7 @@ static void ar5523_data_rx_cb(struct urb *urb)
 		goto skip;
 	}
 
-	/* Rx descriptor is located at the end, 32-bit aligned */
+	 
 	desc = (struct ar5523_rx_desc *)
 		(data->skb->data + usblen - sizeof(struct ar5523_rx_desc));
 
@@ -912,9 +883,7 @@ static void ar5523_tx_wd_work(struct work_struct *work)
 {
 	struct ar5523 *ar = container_of(work, struct ar5523, tx_wd_work);
 
-	/* Occasionally the TX queues stop responding. The only way to
-	 * recover seems to be to reset the dongle.
-	 */
+	 
 
 	mutex_lock(&ar->mutex);
 	ar5523_err(ar, "TX queue stuck (tot %d pend %d)\n",
@@ -930,7 +899,7 @@ static void ar5523_flush_tx(struct ar5523 *ar)
 {
 	ar5523_tx_work_locked(ar);
 
-	/* Don't waste time trying to flush if USB is disconnected */
+	 
 	if (test_bit(AR5523_USB_DISCONNECTED, &ar->flags))
 		return;
 	if (!wait_event_timeout(ar->tx_flush_waitq,
@@ -969,10 +938,7 @@ static int ar5523_alloc_tx_cmd(struct ar5523 *ar)
 	return 0;
 }
 
-/*
- * This function is called periodically (every second) when associated to
- * query device statistics.
- */
+ 
 static void ar5523_stat_work(struct work_struct *work)
 {
 	struct ar5523 *ar = container_of(work, struct ar5523, stat_work.work);
@@ -981,10 +947,7 @@ static void ar5523_stat_work(struct work_struct *work)
 	ar5523_dbg(ar, "%s\n", __func__);
 	mutex_lock(&ar->mutex);
 
-	/*
-	 * Send request for statistics asynchronously once a second. This
-	 * seems to be important. Throughput is a lot better if this is done.
-	 */
+	 
 	error = ar5523_cmd_write(ar, WDCMSG_TARGET_GET_STATS, NULL, 0, 0);
 	if (error)
 		ar5523_err(ar, "could not query stats, error %d\n", error);
@@ -992,9 +955,7 @@ static void ar5523_stat_work(struct work_struct *work)
 	ieee80211_queue_delayed_work(ar->hw, &ar->stat_work, HZ);
 }
 
-/*
- * Interface routines to the mac80211 stack.
- */
+ 
 static int ar5523_start(struct ieee80211_hw *hw)
 {
 	struct ar5523 *ar = hw->priv;
@@ -1007,11 +968,11 @@ static int ar5523_start(struct ieee80211_hw *hw)
 	val = cpu_to_be32(0);
 	ar5523_cmd_write(ar, WDCMSG_BIND, &val, sizeof(val), 0);
 
-	/* set MAC address */
+	 
 	ar5523_config_multi(ar, CFG_MAC_ADDR, &ar->hw->wiphy->perm_addr,
 			    ETH_ALEN);
 
-	/* XXX honor net80211 state */
+	 
 	ar5523_config(ar, CFG_RATE_CONTROL_ENABLE, 0x00000001);
 	ar5523_config(ar, CFG_DIVERSITY_CTL, 0x00000001);
 	ar5523_config(ar, CFG_ABOLT, 0x0000003f);
@@ -1040,13 +1001,13 @@ static int ar5523_start(struct ieee80211_hw *hw)
 
 	val = cpu_to_be32(TARGET_DEVICE_AWAKE);
 	ar5523_cmd_write(ar, WDCMSG_SET_PWR_MODE, &val, sizeof(val), 0);
-	/* XXX? check */
+	 
 	ar5523_cmd_write(ar, WDCMSG_RESET_KEY_CACHE, NULL, 0, 0);
 
 	set_bit(AR5523_HW_UP, &ar->flags);
 	queue_work(ar->wq, &ar->rx_refill_work);
 
-	/* enable Rx */
+	 
 	ar5523_set_rxfilter(ar, 0, UATH_FILTER_OP_INIT);
 	ar5523_set_rxfilter(ar,
 			    UATH_FILTER_RX_UCAST | UATH_FILTER_RX_MCAST |
@@ -1232,7 +1193,7 @@ static int ar5523_set_basic_rates(struct ar5523 *ar,
 	struct ar5523_cmd_rates rates;
 
 	memset(&rates, 0, sizeof(rates));
-	rates.connid = cpu_to_be32(2);		/* XXX */
+	rates.connid = cpu_to_be32(2);		 
 	rates.size   = cpu_to_be32(sizeof(struct ar5523_cmd_rateset));
 	ar5523_create_rateset(ar, bss, &rates.rateset, true);
 
@@ -1250,7 +1211,7 @@ static int ar5523_create_connection(struct ar5523 *ar,
 	memset(&create, 0, sizeof(create));
 	create.connid = cpu_to_be32(2);
 	create.bssid = cpu_to_be32(0);
-	/* XXX packed or not?  */
+	 
 	create.size = cpu_to_be32(sizeof(struct ar5523_cmd_rateset));
 
 	ar5523_create_rateset(ar, bss, &create.connattr.rateset, false);
@@ -1268,9 +1229,9 @@ static int ar5523_write_associd(struct ar5523 *ar, struct ieee80211_vif *vif)
 	struct ar5523_cmd_set_associd associd;
 
 	memset(&associd, 0, sizeof(associd));
-	associd.defaultrateix = cpu_to_be32(0);	/* XXX */
+	associd.defaultrateix = cpu_to_be32(0);	 
 	associd.associd = cpu_to_be32(vif->cfg.aid);
-	associd.timoffset = cpu_to_be32(0x3b);	/* XXX */
+	associd.timoffset = cpu_to_be32(0x3b);	 
 	memcpy(associd.bssid, bss->bssid, ETH_ALEN);
 	return ar5523_cmd_write(ar, WDCMSG_WRITE_ASSOCID, &associd,
 				sizeof(associd), 0);
@@ -1309,7 +1270,7 @@ static void ar5523_bss_info_changed(struct ieee80211_hw *hw,
 			goto out_unlock;
 		}
 
-		/* turn link LED on */
+		 
 		ar5523_set_ledsteady(ar, UATH_LED_LINK, UATH_LED_ON);
 		set_bit(AR5523_CONNECTED, &ar->flags);
 		ieee80211_queue_delayed_work(hw, &ar->stat_work, HZ);
@@ -1343,10 +1304,7 @@ static void ar5523_configure_filter(struct ieee80211_hw *hw,
 
 	*total_flags &= AR5523_SUPPORTED_FILTERS;
 
-	/* The filters seems strange. UATH_FILTER_RX_BCAST and
-	 * UATH_FILTER_RX_MCAST does not result in those frames being RXed.
-	 * The only way I have found to get [mb]cast frames seems to be
-	 * to set UATH_FILTER_RX_PROM. */
+	 
 	filter |= UATH_FILTER_RX_UCAST | UATH_FILTER_RX_MCAST |
 		  UATH_FILTER_RX_BCAST | UATH_FILTER_RX_BEACON |
 		  UATH_FILTER_RX_PROM;
@@ -1375,7 +1333,7 @@ static int ar5523_host_available(struct ar5523 *ar)
 {
 	struct ar5523_cmd_host_available setup;
 
-	/* inform target the host is available */
+	 
 	setup.sw_ver_major = cpu_to_be32(ATH_SW_VER_MAJOR);
 	setup.sw_ver_minor = cpu_to_be32(ATH_SW_VER_MINOR);
 	setup.sw_ver_patch = cpu_to_be32(ATH_SW_VER_PATCH);
@@ -1389,7 +1347,7 @@ static int ar5523_get_devstatus(struct ar5523 *ar)
 	u8 macaddr[ETH_ALEN];
 	int error;
 
-	/* retrieve MAC address */
+	 
 	error = ar5523_get_status(ar, ST_MAC_ADDR, macaddr, ETH_ALEN);
 	if (error) {
 		ar5523_err(ar, "could not read MAC address\n");
@@ -1414,7 +1372,7 @@ static int ar5523_get_max_rxsz(struct ar5523 *ar)
 	int error;
 	__be32 rxsize;
 
-	/* Get max rx size */
+	 
 	error = ar5523_get_status(ar, ST_WDC_TRANSPORT_CHUNK_SIZE, &rxsize,
 				  sizeof(rxsize));
 	if (error != 0) {
@@ -1434,10 +1392,7 @@ static int ar5523_get_max_rxsz(struct ar5523 *ar)
 	return 0;
 }
 
-/*
- * This is copied from rtl818x, but we should probably move this
- * to common code as in OpenBSD.
- */
+ 
 static const struct ieee80211_rate ar5523_rates[] = {
 	{ .bitrate = 10, .hw_value = 2, },
 	{ .bitrate = 20, .hw_value = 4 },
@@ -1487,18 +1442,14 @@ static int ar5523_init_modes(struct ar5523 *ar)
 	return 0;
 }
 
-/*
- * Load the MIPS R4000 microcode into the device.  Once the image is loaded,
- * the device will detach itself from the bus and reattach later with a new
- * product Id (a la ezusb).
- */
+ 
 static int ar5523_load_firmware(struct usb_device *dev)
 {
 	struct ar5523_fwblock *txblock, *rxblock;
 	const struct firmware *fw;
 	void *fwbuf;
 	int len, offset;
-	int foolen; /* XXX(hch): handle short transfers */
+	int foolen;  
 	int error = -ENXIO;
 
 	if (request_firmware(&fw, AR5523_FIRMWARE_FILE, &dev->dev)) {
@@ -1530,7 +1481,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
 		txblock->remain = cpu_to_be32(len - mlen);
 		txblock->len = cpu_to_be32(mlen);
 
-		/* send firmware block meta-data */
+		 
 		error = usb_bulk_msg(dev, ar5523_cmd_tx_pipe(dev),
 				     txblock, sizeof(*txblock), &foolen,
 				     AR5523_CMD_TIMEOUT);
@@ -1540,7 +1491,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
 			goto out_free_fwbuf;
 		}
 
-		/* send firmware block data */
+		 
 		memcpy(fwbuf, fw->data + offset, mlen);
 		error = usb_bulk_msg(dev, ar5523_data_tx_pipe(dev),
 				     fwbuf, mlen, &foolen,
@@ -1551,7 +1502,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
 			goto out_free_fwbuf;
 		}
 
-		/* wait for ack from firmware */
+		 
 		error = usb_bulk_msg(dev, ar5523_cmd_rx_pipe(dev),
 				     rxblock, sizeof(*rxblock), &foolen,
 				     AR5523_CMD_TIMEOUT);
@@ -1565,10 +1516,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
 		offset += mlen;
 	}
 
-	/*
-	 * Set the error to -ENXIO to make sure we continue probing for
-	 * a driver.
-	 */
+	 
 	error = -ENXIO;
 
  out_free_fwbuf:
@@ -1590,11 +1538,7 @@ static int ar5523_probe(struct usb_interface *intf,
 	struct ar5523 *ar;
 	int error = -ENOMEM;
 
-	/*
-	 * Load firmware if the device requires it.  This will return
-	 * -ENXIO on success and we'll get called back afer the usb
-	 * id changes to indicate that the firmware is present.
-	 */
+	 
 	if (id->driver_info & AR5523_FLAG_PRE_FIRMWARE)
 		return ar5523_load_firmware(dev);
 
@@ -1656,9 +1600,7 @@ static int ar5523_probe(struct usb_interface *intf,
 		goto out_free_tx_cmd;
 	}
 
-	/*
-	 * We're now ready to send/receive firmware commands.
-	 */
+	 
 	error = ar5523_host_available(ar);
 	if (error) {
 		ar5523_err(ar, "could not initialize adapter\n");
@@ -1760,36 +1702,34 @@ static void ar5523_disconnect(struct usb_interface *intf)
 		.driver_info = AR5523_FLAG_ABG|AR5523_FLAG_PRE_FIRMWARE }
 
 static const struct usb_device_id ar5523_id_table[] = {
-	AR5523_DEVICE_UG(0x168c, 0x0001),	/* Atheros / AR5523 */
-	AR5523_DEVICE_UG(0x0cf3, 0x0001),	/* Atheros2 / AR5523_1 */
-	AR5523_DEVICE_UG(0x0cf3, 0x0003),	/* Atheros2 / AR5523_2 */
-	AR5523_DEVICE_UX(0x0cf3, 0x0005),	/* Atheros2 / AR5523_3 */
-	AR5523_DEVICE_UG(0x0d8e, 0x7801),	/* Conceptronic / AR5523_1 */
-	AR5523_DEVICE_UX(0x0d8e, 0x7811),	/* Conceptronic / AR5523_2 */
-	AR5523_DEVICE_UX(0x2001, 0x3a00),	/* Dlink / DWLAG132 */
-	AR5523_DEVICE_UG(0x2001, 0x3a02),	/* Dlink / DWLG132 */
-	AR5523_DEVICE_UX(0x2001, 0x3a04),	/* Dlink / DWLAG122 */
-	AR5523_DEVICE_UG(0x07d1, 0x3a07),	/* D-Link / WUA-2340 rev A1 */
-	AR5523_DEVICE_UG(0x1690, 0x0712),	/* Gigaset / AR5523 */
-	AR5523_DEVICE_UG(0x1690, 0x0710),	/* Gigaset / SMCWUSBTG */
-	AR5523_DEVICE_UG(0x129b, 0x160b),	/* Gigaset / USB stick 108
-						   (CyberTAN Technology) */
-	AR5523_DEVICE_UG(0x16ab, 0x7801),	/* Globalsun / AR5523_1 */
-	AR5523_DEVICE_UX(0x16ab, 0x7811),	/* Globalsun / AR5523_2 */
-	AR5523_DEVICE_UG(0x0d8e, 0x7802),	/* Globalsun / AR5523_3 */
-	AR5523_DEVICE_UX(0x0846, 0x4300),	/* Netgear / WG111U */
-	AR5523_DEVICE_UG(0x0846, 0x4250),	/* Netgear / WG111T */
-	AR5523_DEVICE_UG(0x0846, 0x5f00),	/* Netgear / WPN111 */
-	AR5523_DEVICE_UG(0x083a, 0x4506),	/* SMC / EZ Connect
-						   SMCWUSBT-G2 */
-	AR5523_DEVICE_UG(0x157e, 0x3006),	/* Umedia / AR5523_1, TEW444UBEU*/
-	AR5523_DEVICE_UX(0x157e, 0x3205),	/* Umedia / AR5523_2 */
-	AR5523_DEVICE_UG(0x1435, 0x0826),	/* Wistronneweb / AR5523_1 */
-	AR5523_DEVICE_UX(0x1435, 0x0828),	/* Wistronneweb / AR5523_2 */
-	AR5523_DEVICE_UG(0x0cde, 0x0012),	/* Zcom / AR5523 */
-	AR5523_DEVICE_UG(0x1385, 0x4250),	/* Netgear3 / WG111T (2) */
-	AR5523_DEVICE_UG(0x1385, 0x5f00),	/* Netgear / WPN111 */
-	AR5523_DEVICE_UG(0x1385, 0x5f02),	/* Netgear / WPN111 */
+	AR5523_DEVICE_UG(0x168c, 0x0001),	 
+	AR5523_DEVICE_UG(0x0cf3, 0x0001),	 
+	AR5523_DEVICE_UG(0x0cf3, 0x0003),	 
+	AR5523_DEVICE_UX(0x0cf3, 0x0005),	 
+	AR5523_DEVICE_UG(0x0d8e, 0x7801),	 
+	AR5523_DEVICE_UX(0x0d8e, 0x7811),	 
+	AR5523_DEVICE_UX(0x2001, 0x3a00),	 
+	AR5523_DEVICE_UG(0x2001, 0x3a02),	 
+	AR5523_DEVICE_UX(0x2001, 0x3a04),	 
+	AR5523_DEVICE_UG(0x07d1, 0x3a07),	 
+	AR5523_DEVICE_UG(0x1690, 0x0712),	 
+	AR5523_DEVICE_UG(0x1690, 0x0710),	 
+	AR5523_DEVICE_UG(0x129b, 0x160b),	 
+	AR5523_DEVICE_UG(0x16ab, 0x7801),	 
+	AR5523_DEVICE_UX(0x16ab, 0x7811),	 
+	AR5523_DEVICE_UG(0x0d8e, 0x7802),	 
+	AR5523_DEVICE_UX(0x0846, 0x4300),	 
+	AR5523_DEVICE_UG(0x0846, 0x4250),	 
+	AR5523_DEVICE_UG(0x0846, 0x5f00),	 
+	AR5523_DEVICE_UG(0x083a, 0x4506),	 
+	AR5523_DEVICE_UG(0x157e, 0x3006),	 
+	AR5523_DEVICE_UX(0x157e, 0x3205),	 
+	AR5523_DEVICE_UG(0x1435, 0x0826),	 
+	AR5523_DEVICE_UX(0x1435, 0x0828),	 
+	AR5523_DEVICE_UG(0x0cde, 0x0012),	 
+	AR5523_DEVICE_UG(0x1385, 0x4250),	 
+	AR5523_DEVICE_UG(0x1385, 0x5f00),	 
+	AR5523_DEVICE_UG(0x1385, 0x5f02),	 
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, ar5523_id_table);

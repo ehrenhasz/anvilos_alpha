@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Header file for NI general purpose counter support code (ni_tio.c and
- * ni_tiocmd.c)
- *
- * COMEDI - Linux Control and Measurement Device Interface
- */
+ 
+ 
 
 #ifndef _COMEDI_NI_TIO_INTERNAL_H
 #define _COMEDI_NI_TIO_INTERNAL_H
@@ -158,7 +153,7 @@ unsigned int ni_tio_read(struct ni_gpct *counter, enum ni_gpct_register);
 static inline bool
 ni_tio_counting_mode_registers_present(const struct ni_gpct_device *counter_dev)
 {
-	/* m series and 660x variants have counting mode registers */
+	 
 	return counter_dev->variant != ni_gpct_variant_e_series;
 }
 
@@ -173,4 +168,4 @@ int ni_tio_set_gate_src(struct ni_gpct *counter, unsigned int gate,
 int ni_tio_set_gate_src_raw(struct ni_gpct *counter, unsigned int gate,
 			    unsigned int src);
 
-#endif /* _COMEDI_NI_TIO_INTERNAL_H */
+#endif  

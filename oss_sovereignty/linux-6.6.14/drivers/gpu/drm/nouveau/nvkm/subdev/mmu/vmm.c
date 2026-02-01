@@ -1,24 +1,4 @@
-/*
- * Copyright 2017 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #define NVKM_VMM_LEVELS_MAX 5
 #include "vmm.h"
 
@@ -145,15 +125,15 @@ nvkm_vmm_unref_pdes(struct nvkm_vmm_iter *it)
 	struct nvkm_vmm *vmm = it->vmm;
 	u32 pdei = it->pte[it->lvl + 1];
 
-	/* Recurse up the tree, unreferencing/destroying unneeded PDs. */
+	 
 	it->lvl++;
 	if (--pgd->refs[0]) {
 		const struct nvkm_vmm_desc_func *func = desc[it->lvl].func;
-		/* PD has other valid PDEs, so we need a proper update. */
+		 
 		TRA(it, "PDE unmap %s", nvkm_vmm_desc_type(&desc[it->lvl - 1]));
 		pgt->pt[type] = NULL;
 		if (!pgt->refs[!type]) {
-			/* PDE no longer required. */
+			 
 			if (pgd->pt[0]) {
 				if (pgt->sparse) {
 					func->sparse(vmm, pgd->pt[0], pdei, 1);
@@ -163,29 +143,24 @@ nvkm_vmm_unref_pdes(struct nvkm_vmm_iter *it)
 					pgd->pde[pdei] = NULL;
 				}
 			} else {
-				/* Special handling for Tesla-class GPUs,
-				 * where there's no central PD, but each
-				 * instance has its own embedded PD.
-				 */
+				 
 				func->pde(vmm, pgd, pdei);
 				pgd->pde[pdei] = NULL;
 			}
 		} else {
-			/* PDE was pointing at dual-PTs and we're removing
-			 * one of them, leaving the other in place.
-			 */
+			 
 			func->pde(vmm, pgd, pdei);
 		}
 
-		/* GPU may have cached the PTs, flush before freeing. */
+		 
 		nvkm_vmm_flush_mark(it);
 		nvkm_vmm_flush(it);
 	} else {
-		/* PD has no valid PDEs left, so we can just destroy it. */
+		 
 		nvkm_vmm_unref_pdes(it);
 	}
 
-	/* Destroy PD/PT. */
+	 
 	TRA(it, "PDE free %s", nvkm_vmm_desc_type(&desc[it->lvl - 1]));
 	nvkm_mmu_ptc_put(vmm->mmu, vmm->bootstrapped, &pt);
 	if (!pgt->refs[!type])
@@ -203,21 +178,19 @@ nvkm_vmm_unref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 	struct nvkm_vmm *vmm = it->vmm;
 	u32 spti = ptei & (sptn - 1), lpti, pteb;
 
-	/* Determine how many SPTEs are being touched under each LPTE,
-	 * and drop reference counts.
-	 */
+	 
 	for (lpti = ptei >> sptb; ptes; spti = 0, lpti++) {
 		const u32 pten = min(sptn - spti, ptes);
 		pgt->pte[lpti] -= pten;
 		ptes -= pten;
 	}
 
-	/* We're done here if there's no corresponding LPT. */
+	 
 	if (!pgt->refs[0])
 		return;
 
 	for (ptei = pteb = ptei >> sptb; ptei < lpti; pteb = ptei) {
-		/* Skip over any LPTEs that still have valid SPTEs. */
+		 
 		if (pgt->pte[pteb] & NVKM_VMM_PTE_SPTES) {
 			for (ptes = 1, ptei++; ptei < lpti; ptes++, ptei++) {
 				if (!(pgt->pte[ptei] & NVKM_VMM_PTE_SPTES))
@@ -226,12 +199,7 @@ nvkm_vmm_unref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 			continue;
 		}
 
-		/* As there's no more non-UNMAPPED SPTEs left in the range
-		 * covered by a number of LPTEs, the LPTEs once again take
-		 * control over their address range.
-		 *
-		 * Determine how many LPTEs need to transition state.
-		 */
+		 
 		pgt->pte[ptei] &= ~NVKM_VMM_PTE_VALID;
 		for (ptes = 1, ptei++; ptei < lpti; ptes++, ptei++) {
 			if (pgt->pte[ptei] & NVKM_VMM_PTE_SPTES)
@@ -244,10 +212,7 @@ nvkm_vmm_unref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 			pair->func->sparse(vmm, pgt->pt[0], pteb, ptes);
 		} else
 		if (pair->func->invalid) {
-			/* If the MMU supports it, restore the LPTE to the
-			 * INVALID state to tell the MMU there is no point
-			 * trying to fetch the corresponding SPTEs.
-			 */
+			 
 			TRA(it, "LPTE %05x: U -> I %d PTEs", pteb, ptes);
 			pair->func->invalid(vmm, pgt->pt[0], pteb, ptes);
 		}
@@ -263,30 +228,30 @@ nvkm_vmm_unref_ptes(struct nvkm_vmm_iter *it, bool pfn, u32 ptei, u32 ptes)
 	bool dma;
 
 	if (pfn) {
-		/* Need to clear PTE valid bits before we dma_unmap_page(). */
+		 
 		dma = desc->func->pfn_clear(it->vmm, pgt->pt[type], ptei, ptes);
 		if (dma) {
-			/* GPU may have cached the PT, flush before unmap. */
+			 
 			nvkm_vmm_flush_mark(it);
 			nvkm_vmm_flush(it);
 			desc->func->pfn_unmap(it->vmm, pgt->pt[type], ptei, ptes);
 		}
 	}
 
-	/* Drop PTE references. */
+	 
 	pgt->refs[type] -= ptes;
 
-	/* Dual-PTs need special handling, unless PDE becoming invalid. */
+	 
 	if (desc->type == SPT && (pgt->refs[0] || pgt->refs[1]))
 		nvkm_vmm_unref_sptes(it, pgt, desc, ptei, ptes);
 
-	/* PT no longer needed? Destroy it. */
+	 
 	if (!pgt->refs[type]) {
 		it->lvl++;
 		TRA(it, "%s empty", nvkm_vmm_desc_type(desc));
 		it->lvl--;
 		nvkm_vmm_unref_pdes(it);
-		return false; /* PTE writes for unmap() not necessary. */
+		return false;  
 	}
 
 	return true;
@@ -302,21 +267,19 @@ nvkm_vmm_ref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 	struct nvkm_vmm *vmm = it->vmm;
 	u32 spti = ptei & (sptn - 1), lpti, pteb;
 
-	/* Determine how many SPTEs are being touched under each LPTE,
-	 * and increase reference counts.
-	 */
+	 
 	for (lpti = ptei >> sptb; ptes; spti = 0, lpti++) {
 		const u32 pten = min(sptn - spti, ptes);
 		pgt->pte[lpti] += pten;
 		ptes -= pten;
 	}
 
-	/* We're done here if there's no corresponding LPT. */
+	 
 	if (!pgt->refs[0])
 		return;
 
 	for (ptei = pteb = ptei >> sptb; ptei < lpti; pteb = ptei) {
-		/* Skip over any LPTEs that already have valid SPTEs. */
+		 
 		if (pgt->pte[pteb] & NVKM_VMM_PTE_VALID) {
 			for (ptes = 1, ptei++; ptei < lpti; ptes++, ptei++) {
 				if (!(pgt->pte[ptei] & NVKM_VMM_PTE_VALID))
@@ -325,12 +288,7 @@ nvkm_vmm_ref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 			continue;
 		}
 
-		/* As there are now non-UNMAPPED SPTEs in the range covered
-		 * by a number of LPTEs, we need to transfer control of the
-		 * address range to the SPTEs.
-		 *
-		 * Determine how many LPTEs need to transition state.
-		 */
+		 
 		pgt->pte[ptei] |= NVKM_VMM_PTE_VALID;
 		for (ptes = 1, ptei++; ptei < lpti; ptes++, ptei++) {
 			if (pgt->pte[ptei] & NVKM_VMM_PTE_VALID)
@@ -341,19 +299,15 @@ nvkm_vmm_ref_sptes(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgt,
 		if (pgt->pte[pteb] & NVKM_VMM_PTE_SPARSE) {
 			const u32 spti = pteb * sptn;
 			const u32 sptc = ptes * sptn;
-			/* The entire LPTE is marked as sparse, we need
-			 * to make sure that the SPTEs are too.
-			 */
+			 
 			TRA(it, "SPTE %05x: U -> S %d PTEs", spti, sptc);
 			desc->func->sparse(vmm, pgt->pt[1], spti, sptc);
-			/* Sparse LPTEs prevent SPTEs from being accessed. */
+			 
 			TRA(it, "LPTE %05x: S -> U %d PTEs", pteb, ptes);
 			pair->func->unmap(vmm, pgt->pt[0], pteb, ptes);
 		} else
 		if (pair->func->invalid) {
-			/* MMU supports blocking SPTEs by marking an LPTE
-			 * as INVALID.  We need to reverse that here.
-			 */
+			 
 			TRA(it, "LPTE %05x: I -> U %d PTEs", pteb, ptes);
 			pair->func->unmap(vmm, pgt->pt[0], pteb, ptes);
 		}
@@ -367,10 +321,10 @@ nvkm_vmm_ref_ptes(struct nvkm_vmm_iter *it, bool pfn, u32 ptei, u32 ptes)
 	const int type = desc->type == SPT;
 	struct nvkm_vmm_pt *pgt = it->pt[0];
 
-	/* Take PTE references. */
+	 
 	pgt->refs[type] += ptes;
 
-	/* Dual-PTs need special handling. */
+	 
 	if (desc->type == SPT)
 		nvkm_vmm_ref_sptes(it, pgt, desc, ptei, ptes);
 
@@ -438,12 +392,7 @@ nvkm_vmm_ref_hwpt(struct nvkm_vmm_iter *it, struct nvkm_vmm_pt *pgd, u32 pdei)
 	pt = pgt->pt[type];
 
 	if (desc->type == LPT && pgt->refs[1]) {
-		/* SPT already exists covering the same range as this LPT,
-		 * which means we need to be careful that any LPTEs which
-		 * overlap valid SPTEs are unmapped as opposed to invalid
-		 * or sparse, which would prevent the MMU from looking at
-		 * the SPTEs on some GPUs.
-		 */
+		 
 		for (ptei = pteb = 0; ptei < pten; pteb = ptei) {
 			bool spte = pgt->pte[ptei] & NVKM_VMM_PTE_SPTES;
 			for (ptes = 1, ptei++; ptei < pten; ptes++, ptei++) {
@@ -514,7 +463,7 @@ nvkm_vmm_iter(struct nvkm_vmm *vmm, const struct nvkm_vmm_page *page,
 	it.cnt = size >> page->shift;
 	it.flush = NVKM_VMM_LEVELS_MAX;
 
-	/* Deconstruct address into PTE indices for each mapping level. */
+	 
 	for (it.lvl = 0; desc[it.lvl].bits; it.lvl++) {
 		it.pte[it.lvl] = bits & ((1 << desc[it.lvl].bits) - 1);
 		bits >>= desc[it.lvl].bits;
@@ -527,7 +476,7 @@ nvkm_vmm_iter(struct nvkm_vmm *vmm, const struct nvkm_vmm_page *page,
 	         addr, size, page->shift, it.cnt);
 	it.lvl = it.max;
 
-	/* Depth-first traversal of page tables. */
+	 
 	while (it.cnt) {
 		struct nvkm_vmm_pt *pgt = it.pt[it.lvl];
 		const int type = desc->type == SPT;
@@ -535,31 +484,26 @@ nvkm_vmm_iter(struct nvkm_vmm *vmm, const struct nvkm_vmm_page *page,
 		const u32 ptei = it.pte[0];
 		const u32 ptes = min_t(u64, it.cnt, pten - ptei);
 
-		/* Walk down the tree, finding page tables for each level. */
+		 
 		for (; it.lvl; it.lvl--) {
 			const u32 pdei = it.pte[it.lvl];
 			struct nvkm_vmm_pt *pgd = pgt;
 
-			/* Software PT. */
+			 
 			if (ref && NVKM_VMM_PDE_INVALID(pgd->pde[pdei])) {
 				if (!nvkm_vmm_ref_swpt(&it, pgd, pdei))
 					goto fail;
 			}
 			it.pt[it.lvl - 1] = pgt = pgd->pde[pdei];
 
-			/* Hardware PT.
-			 *
-			 * This is a separate step from above due to GF100 and
-			 * newer having dual page tables at some levels, which
-			 * are refcounted independently.
-			 */
+			 
 			if (ref && !pgt->refs[desc[it.lvl - 1].type == SPT]) {
 				if (!nvkm_vmm_ref_hwpt(&it, pgd, pdei))
 					goto fail;
 			}
 		}
 
-		/* Handle PTE updates. */
+		 
 		if (!REF_PTES || REF_PTES(&it, pfn, ptei, ptes)) {
 			struct nvkm_mmu_pt *pt = pgt->pt[type];
 			if (MAP_PTES || CLR_PTES) {
@@ -571,7 +515,7 @@ nvkm_vmm_iter(struct nvkm_vmm *vmm, const struct nvkm_vmm_page *page,
 			}
 		}
 
-		/* Walk back up the tree to the next position. */
+		 
 		it.pte[it.lvl] += ptes;
 		it.cnt -= ptes;
 		if (it.cnt) {
@@ -586,9 +530,7 @@ nvkm_vmm_iter(struct nvkm_vmm *vmm, const struct nvkm_vmm_page *page,
 	return ~0ULL;
 
 fail:
-	/* Reconstruct the failure address so the caller is able to
-	 * reverse any partially completed operations.
-	 */
+	 
 	addr = it.pte[it.max--];
 	do {
 		addr  = addr << desc[it.max].bits;
@@ -635,18 +577,18 @@ nvkm_vmm_ptes_sparse(struct nvkm_vmm *vmm, u64 addr, u64 size, bool ref)
 	u64 block;
 
 	while (size) {
-		/* Limit maximum page size based on remaining size. */
+		 
 		while (size < (1ULL << page[m].shift))
 			m++;
 		i = m;
 
-		/* Find largest page size suitable for alignment. */
+		 
 		while (!IS_ALIGNED(addr, 1ULL << page[i].shift))
 			i++;
 
-		/* Determine number of PTEs at this page size. */
+		 
 		if (i != m) {
-			/* Limited to alignment boundary of next page size. */
+			 
 			u64 next = 1ULL << page[i - 1].shift;
 			u64 part = ALIGN(addr, next) - addr;
 			if (size - part >= next)
@@ -657,7 +599,7 @@ nvkm_vmm_ptes_sparse(struct nvkm_vmm *vmm, u64 addr, u64 size, bool ref)
 			block = (size >> page[i].shift) << page[i].shift;
 		}
 
-		/* Perform operation. */
+		 
 		if (ref) {
 			int ret = nvkm_vmm_ptes_sparse_get(vmm, &page[i], addr, block);
 			if (ret) {
@@ -1101,16 +1043,11 @@ nvkm_vmm_ctor(const struct nvkm_vmm_func *func, struct nvkm_mmu *mmu,
 	mutex_init(&vmm->mutex.ref);
 	mutex_init(&vmm->mutex.map);
 
-	/* Locate the smallest page size supported by the backend, it will
-	 * have the deepest nesting of page tables.
-	 */
+	 
 	while (page[1].shift)
 		page++;
 
-	/* Locate the structure that describes the layout of the top-level
-	 * page table, and determine the number of valid bits in a virtual
-	 * address.
-	 */
+	 
 	for (levels = 0, desc = page->desc; desc->bits; desc++, levels++)
 		bits += desc->bits;
 	bits += page->shift;
@@ -1119,16 +1056,14 @@ nvkm_vmm_ctor(const struct nvkm_vmm_func *func, struct nvkm_mmu *mmu,
 	if (WARN_ON(levels > NVKM_VMM_LEVELS_MAX))
 		return -EINVAL;
 
-	/* Allocate top-level page table. */
+	 
 	vmm->pd = nvkm_vmm_pt_new(desc, false, NULL);
 	if (!vmm->pd)
 		return -ENOMEM;
 	vmm->pd->refs[0] = 1;
 	INIT_LIST_HEAD(&vmm->join);
 
-	/* ... and the GPU storage for it, except on Tesla-class GPUs that
-	 * have the PD embedded in the instance structure.
-	 */
+	 
 	if (desc->size) {
 		const u32 size = pd_header + desc->size * (1 << desc->bits);
 		vmm->pd->pt[0] = nvkm_mmu_ptc_get(mmu, size, desc->align, true);
@@ -1136,29 +1071,26 @@ nvkm_vmm_ctor(const struct nvkm_vmm_func *func, struct nvkm_mmu *mmu,
 			return -ENOMEM;
 	}
 
-	/* Initialise address-space MM. */
+	 
 	INIT_LIST_HEAD(&vmm->list);
 	vmm->free = RB_ROOT;
 	vmm->root = RB_ROOT;
 
 	if (managed) {
-		/* Address-space will be managed by the client for the most
-		 * part, except for a specified area where NVKM allocations
-		 * are allowed to be placed.
-		 */
+		 
 		vmm->start = 0;
 		vmm->limit = 1ULL << bits;
 		if (addr + size < addr || addr + size > vmm->limit)
 			return -EINVAL;
 
-		/* Client-managed area before the NVKM-managed area. */
+		 
 		if (addr && (ret = nvkm_vmm_ctor_managed(vmm, 0, addr)))
 			return ret;
 
 		vmm->managed.p.addr = 0;
 		vmm->managed.p.size = addr;
 
-		/* NVKM-managed area. */
+		 
 		if (size) {
 			if (!(vma = nvkm_vma_new(addr, size)))
 				return -ENOMEM;
@@ -1166,7 +1098,7 @@ nvkm_vmm_ctor(const struct nvkm_vmm_func *func, struct nvkm_mmu *mmu,
 			list_add_tail(&vma->head, &vmm->list);
 		}
 
-		/* Client-managed area after the NVKM-managed area. */
+		 
 		addr = addr + size;
 		size = vmm->limit - addr;
 		if (size && (ret = nvkm_vmm_ctor_managed(vmm, addr, size)))
@@ -1175,9 +1107,7 @@ nvkm_vmm_ctor(const struct nvkm_vmm_func *func, struct nvkm_mmu *mmu,
 		vmm->managed.n.addr = addr;
 		vmm->managed.n.size = size;
 	} else {
-		/* Address-space fully managed by NVKM, requiring calls to
-		 * nvkm_vmm_get()/nvkm_vmm_put() to allocate address-space.
-		 */
+		 
 		vmm->start = addr;
 		vmm->limit = size ? (addr + size) : (1ULL << bits);
 		if (vmm->start > vmm->limit || vmm->limit > (1ULL << bits))
@@ -1258,11 +1188,7 @@ nvkm_vmm_pfn_unmap(struct nvkm_vmm *vmm, u64 addr, u64 size)
 	return 0;
 }
 
-/*TODO:
- * - Avoid PT readback (for dma_unmap etc), this might end up being dealt
- *   with inside HMM, which would be a lot nicer for us to deal with.
- * - Support for systems without a 4KiB page size.
- */
+ 
 int
 nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 {
@@ -1273,9 +1199,7 @@ nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 	int pm = size >> shift;
 	int pi = 0;
 
-	/* Only support mapping where the page size of the incoming page
-	 * array matches a page size available for direct mapping.
-	 */
+	 
 	while (page->shift && (page->shift != shift ||
 	       page->desc->func->pfn == NULL))
 		page++;
@@ -1298,9 +1222,7 @@ nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 		u64 addr = start;
 		int pn, ret = 0;
 
-		/* Narrow the operation window to cover a single action (page
-		 * should be mapped or not) within a single VMA.
-		 */
+		 
 		for (pn = 0; pi + pn < pm; pn++) {
 			if (map != !!(pfn[pi + pn] & NVKM_VMM_PFN_V))
 				break;
@@ -1308,25 +1230,13 @@ nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 		size = min_t(u64, size, pn << page->shift);
 		size = min_t(u64, size, vma->size + vma->addr - addr);
 
-		/* Reject any operation to unmanaged regions, and areas that
-		 * have nvkm_memory objects mapped in them already.
-		 */
+		 
 		if (!vma->mapref || vma->memory) {
 			ret = -EINVAL;
 			goto next;
 		}
 
-		/* In order to both properly refcount GPU page tables, and
-		 * prevent "normal" mappings and these direct mappings from
-		 * interfering with each other, we need to track contiguous
-		 * ranges that have been mapped with this interface.
-		 *
-		 * Here we attempt to either split an existing VMA so we're
-		 * able to flag the region as either unmapped/mapped, or to
-		 * merge with adjacent VMAs that are already compatible.
-		 *
-		 * If the region is already compatible, nothing is required.
-		 */
+		 
 		if (map != mapped) {
 			tmp = nvkm_vmm_pfn_split_merge(vmm, vma, addr, size,
 						       page -
@@ -1343,7 +1253,7 @@ nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 			vma = tmp;
 		}
 
-		/* Update HW page tables. */
+		 
 		if (map) {
 			struct nvkm_vmm_map args;
 			args.page = page;
@@ -1365,15 +1275,13 @@ nvkm_vmm_pfn_map(struct nvkm_vmm *vmm, u8 shift, u64 addr, u64 size, u64 *pfn)
 		}
 
 next:
-		/* Iterate to next operation. */
+		 
 		if (vma->addr + vma->size == addr + size)
 			vma = node(vma, next);
 		start += size;
 
 		if (ret) {
-			/* Failure is signalled by clearing the valid bit on
-			 * any PFN that couldn't be modified as requested.
-			 */
+			 
 			while (size) {
 				pfn[pi++] = NVKM_VMM_PFN_NONE;
 				size -= 1 << page->shift;
@@ -1485,7 +1393,7 @@ nvkm_vmm_map_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma,
 
 	map->no_comp = vma->no_comp;
 
-	/* Make sure we won't overrun the end of the memory object. */
+	 
 	if (unlikely(nvkm_memory_size(map->memory) < map->offset + vma->size)) {
 		VMM_DEBUG(vmm, "overrun %016llx %016llx %016llx",
 			  nvkm_memory_size(map->memory),
@@ -1493,10 +1401,10 @@ nvkm_vmm_map_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma,
 		return -EINVAL;
 	}
 
-	/* Check remaining arguments for validity. */
+	 
 	if (vma->page == NVKM_VMA_PAGE_NONE &&
 	    vma->refd == NVKM_VMA_PAGE_NONE) {
-		/* Find the largest page size we can perform the mapping at. */
+		 
 		const u32 debug = vmm->debug;
 		vmm->debug = 0;
 		ret = nvkm_vmm_map_choose(vmm, vma, argv, argc, map);
@@ -1507,7 +1415,7 @@ nvkm_vmm_map_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma,
 			return -EINVAL;
 		}
 	} else {
-		/* Page size of the VMA is already pre-determined. */
+		 
 		if (vma->refd != NVKM_VMA_PAGE_NONE)
 			map->page = &vmm->func->page[vma->refd];
 		else
@@ -1520,7 +1428,7 @@ nvkm_vmm_map_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma,
 		}
 	}
 
-	/* Deal with the 'offset' argument, and fetch the backend function. */
+	 
 	map->off = map->offset;
 	if (map->mem) {
 		for (; map->off; map->mem = map->mem->next) {
@@ -1545,7 +1453,7 @@ nvkm_vmm_map_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma,
 		func = map->page->desc->func->dma;
 	}
 
-	/* Perform the map. */
+	 
 	if (vma->refd == NVKM_VMA_PAGE_NONE) {
 		ret = nvkm_vmm_ptes_get_map(vmm, map->page, vma->addr, vma->size, map, func);
 		if (ret)
@@ -1616,7 +1524,7 @@ nvkm_vmm_put_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma)
 			const u64 addr = next->addr;
 			u64 size = next->size;
 
-			/* Merge regions that are in the same state. */
+			 
 			while ((next = node(next, next)) && next->part &&
 			       (next->mapped == map) &&
 			       (next->memory != NULL) == mem &&
@@ -1624,25 +1532,19 @@ nvkm_vmm_put_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma)
 				size += next->size;
 
 			if (map) {
-				/* Region(s) are mapped, merge the unmap
-				 * and dereference into a single walk of
-				 * the page tree.
-				 */
+				 
 				nvkm_vmm_ptes_unmap_put(vmm, &page[refd], addr,
 							size, vma->sparse,
 							!mem);
 			} else
 			if (refd != NVKM_VMA_PAGE_NONE) {
-				/* Drop allocation-time PTE references. */
+				 
 				nvkm_vmm_ptes_put(vmm, &page[refd], addr, size);
 			}
 		} while (next && next->part);
 	}
 
-	/* Merge any mapped regions that were split from the initial
-	 * address-space allocation back into the allocated VMA, and
-	 * release memory/compression resources.
-	 */
+	 
 	next = vma;
 	do {
 		if (next->mapped)
@@ -1650,32 +1552,18 @@ nvkm_vmm_put_locked(struct nvkm_vmm *vmm, struct nvkm_vma *vma)
 	} while ((next = node(vma, next)) && next->part);
 
 	if (vma->sparse && !vma->mapref) {
-		/* Sparse region that was allocated with a fixed page size,
-		 * meaning all relevant PTEs were referenced once when the
-		 * region was allocated, and remained that way, regardless
-		 * of whether memory was mapped into it afterwards.
-		 *
-		 * The process of unmapping, unsparsing, and dereferencing
-		 * PTEs can be done in a single page tree walk.
-		 */
+		 
 		nvkm_vmm_ptes_sparse_put(vmm, &page[vma->refd], vma->addr, vma->size);
 	} else
 	if (vma->sparse) {
-		/* Sparse region that wasn't allocated with a fixed page size,
-		 * PTE references were taken both at allocation time (to make
-		 * the GPU see the region as sparse), and when mapping memory
-		 * into the region.
-		 *
-		 * The latter was handled above, and the remaining references
-		 * are dealt with here.
-		 */
+		 
 		nvkm_vmm_ptes_sparse(vmm, vma->addr, vma->size, false);
 	}
 
-	/* Remove VMA from the list of allocated nodes. */
+	 
 	nvkm_vmm_node_remove(vmm, vma);
 
-	/* Merge VMA back into the free list. */
+	 
 	vma->page = NVKM_VMA_PAGE_NONE;
 	vma->refd = NVKM_VMA_PAGE_NONE;
 	vma->used = false;
@@ -1708,28 +1596,21 @@ nvkm_vmm_get_locked(struct nvkm_vmm *vmm, bool getref, bool mapref, bool sparse,
 		       "shift: %d align: %d size: %016llx",
 		  getref, mapref, sparse, shift, align, size);
 
-	/* Zero-sized, or lazily-allocated sparse VMAs, make no sense. */
+	 
 	if (unlikely(!size || (!getref && !mapref && sparse))) {
 		VMM_DEBUG(vmm, "args %016llx %d %d %d",
 			  size, getref, mapref, sparse);
 		return -EINVAL;
 	}
 
-	/* Tesla-class GPUs can only select page size per-PDE, which means
-	 * we're required to know the mapping granularity up-front to find
-	 * a suitable region of address-space.
-	 *
-	 * The same goes if we're requesting up-front allocation of PTES.
-	 */
+	 
 	if (unlikely((getref || vmm->func->page_block) && !shift)) {
 		VMM_DEBUG(vmm, "page size required: %d %016llx",
 			  getref, vmm->func->page_block);
 		return -EINVAL;
 	}
 
-	/* If a specific page size was requested, determine its index and
-	 * make sure the requested size is a multiple of the page size.
-	 */
+	 
 	if (shift) {
 		for (page = vmm->func->page; page->shift; page++) {
 			if (shift == page->shift)
@@ -1745,7 +1626,7 @@ nvkm_vmm_get_locked(struct nvkm_vmm *vmm, bool getref, bool mapref, bool sparse,
 		align = max_t(u8, align, 12);
 	}
 
-	/* Locate smallest block that can possibly satisfy the allocation. */
+	 
 	temp = vmm->free.rb_node;
 	while (temp) {
 		struct nvkm_vma *this = rb_entry(temp, typeof(*this), tree);
@@ -1760,9 +1641,7 @@ nvkm_vmm_get_locked(struct nvkm_vmm *vmm, bool getref, bool mapref, bool sparse,
 	if (unlikely(!node))
 		return -ENOSPC;
 
-	/* Take into account alignment restrictions, trying larger blocks
-	 * in turn until we find a suitable free block.
-	 */
+	 
 	do {
 		struct nvkm_vma *this = rb_entry(node, typeof(*this), tree);
 		struct nvkm_vma *prev = node(this, prev);
@@ -1788,9 +1667,7 @@ nvkm_vmm_get_locked(struct nvkm_vmm *vmm, bool getref, bool mapref, bool sparse,
 	if (unlikely(!vma))
 		return -ENOSPC;
 
-	/* If the VMA we found isn't already exactly the requested size,
-	 * it needs to be split, and the remaining free blocks returned.
-	 */
+	 
 	if (addr != vma->addr) {
 		if (!(tmp = nvkm_vma_tail(vma, vma->size + vma->addr - addr))) {
 			nvkm_vmm_put_region(vmm, vma);
@@ -1808,7 +1685,7 @@ nvkm_vmm_get_locked(struct nvkm_vmm *vmm, bool getref, bool mapref, bool sparse,
 		nvkm_vmm_free_insert(vmm, tmp);
 	}
 
-	/* Pre-allocate page tables and/or setup sparse mappings. */
+	 
 	if (sparse && getref)
 		ret = nvkm_vmm_ptes_sparse_get(vmm, page, vma->addr, vma->size);
 	else if (sparse)

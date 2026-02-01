@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/firmware.h>
@@ -11,7 +11,7 @@
 #include "core.h"
 #include "registers.h"
 
-/* FW load (200ms) plus operational delays */
+ 
 #define FW_READY_TIMEOUT_MS	250
 
 #define FW_SIGNATURE		"$SST"
@@ -39,7 +39,7 @@ struct catpt_fw_mod_hdr {
 enum catpt_ram_type {
 	CATPT_RAM_TYPE_IRAM = 1,
 	CATPT_RAM_TYPE_DRAM = 2,
-	/* DRAM with module's initial state */
+	 
 	CATPT_RAM_TYPE_INSTANCE = 3,
 };
 
@@ -247,7 +247,7 @@ static int catpt_restore_fwimage(struct catpt_dev *cdev,
 
 	r1.start = cdev->dram.start + blk->ram_offset;
 	r1.end = r1.start + blk->size - 1;
-	/* advance to data area */
+	 
 	paddr += sizeof(*blk);
 
 	for (i = 0; i < cdev->dx_ctx.num_meminfo; i++) {
@@ -269,7 +269,7 @@ static int catpt_restore_fwimage(struct catpt_dev *cdev,
 
 		if (!resource_intersection(&r2, &r1, &common))
 			continue;
-		/* calculate start offset of common data area */
+		 
 		off = common.start - r1.start;
 
 		dev_dbg(cdev->dev, "restoring fwimage: %pr\n", &common);
@@ -313,7 +313,7 @@ static int catpt_load_block(struct catpt_dev *cdev,
 			return -EBUSY;
 	}
 
-	/* advance to data area */
+	 
 	paddr += sizeof(*blk);
 
 	ret = catpt_dma_memcpy_todsp(cdev, chan, dst_addr, paddr, blk->size);
@@ -335,7 +335,7 @@ static int catpt_restore_basefw(struct catpt_dev *cdev,
 	print_hex_dump_debug(__func__, DUMP_PREFIX_OFFSET, 8, 4,
 			     basefw, sizeof(*basefw), false);
 
-	/* restore basefw image */
+	 
 	for (i = 0; i < basefw->blocks; i++) {
 		struct catpt_fw_block_hdr *blk;
 
@@ -360,7 +360,7 @@ static int catpt_restore_basefw(struct catpt_dev *cdev,
 		offset += sizeof(*blk) + blk->size;
 	}
 
-	/* then proceed with memory dumps */
+	 
 	ret = catpt_restore_memdumps(cdev, chan);
 	if (ret)
 		dev_err(cdev->dev, "restore memdumps failed: %d\n", ret);
@@ -386,7 +386,7 @@ static int catpt_restore_module(struct catpt_dev *cdev,
 
 		switch (blk->ram_type) {
 		case CATPT_RAM_TYPE_INSTANCE:
-			/* restore module state */
+			 
 			ret = catpt_dma_memcpy_todsp(cdev, chan,
 					cdev->lpe_base + blk->ram_offset,
 					cdev->dxbuf_paddr + blk->ram_offset,
@@ -434,10 +434,7 @@ static int catpt_load_module(struct catpt_dev *cdev,
 			return ret;
 		}
 
-		/*
-		 * Save state window coordinates - these will be
-		 * used to capture module state on D0 exit.
-		 */
+		 
 		if (blk->ram_type == CATPT_RAM_TYPE_INSTANCE) {
 			type->state_offset = blk->ram_offset;
 			type->state_size = blk->size;
@@ -446,9 +443,9 @@ static int catpt_load_module(struct catpt_dev *cdev,
 		offset += sizeof(*blk) + blk->size;
 	}
 
-	/* init module type static info */
+	 
 	type->loaded = true;
-	/* DSP expects address from module header substracted by 4 */
+	 
 	type->entry_point = mod->entry_point - 4;
 	type->persistent_size = mod->persistent_size;
 	type->scratch_size = mod->scratch_size;
@@ -628,7 +625,7 @@ int catpt_boot_firmware(struct catpt_dev *cdev, bool restore)
 		return -ETIMEDOUT;
 	}
 
-	/* update sram pg & clock once done booting */
+	 
 	catpt_dsp_update_srampge(cdev, &cdev->dram, cdev->spec->dram_mask);
 	catpt_dsp_update_srampge(cdev, &cdev->iram, cdev->spec->iram_mask);
 
@@ -646,9 +643,9 @@ int catpt_first_boot_firmware(struct catpt_dev *cdev)
 		return ret;
 	}
 
-	/* restrict FW Core dump area */
+	 
 	__request_region(&cdev->dram, 0, 0x200, NULL, 0);
-	/* restrict entire area following BASE_FW - highest offset in DRAM */
+	 
 	for (res = cdev->dram.child; res->sibling; res = res->sibling)
 		;
 	__request_region(&cdev->dram, res->end + 1,
@@ -664,7 +661,7 @@ int catpt_first_boot_firmware(struct catpt_dev *cdev)
 		return ret;
 	}
 
-	/* update dram pg for scratch and restricted regions */
+	 
 	catpt_dsp_update_srampge(cdev, &cdev->dram, cdev->spec->dram_mask);
 
 	return 0;

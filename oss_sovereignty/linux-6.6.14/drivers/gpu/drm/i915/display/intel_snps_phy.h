@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_SNPS_PHY_H__
 #define __INTEL_SNPS_PHY_H__
@@ -35,4 +33,4 @@ void intel_snps_phy_set_signal_levels(struct intel_encoder *encoder,
 void intel_mpllb_state_verify(struct intel_atomic_state *state,
 			      struct intel_crtc_state *new_crtc_state);
 
-#endif /* __INTEL_SNPS_PHY_H__ */
+#endif  

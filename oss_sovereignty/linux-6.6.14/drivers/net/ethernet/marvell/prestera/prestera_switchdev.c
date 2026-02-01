@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <linux/if_vlan.h>
@@ -77,7 +77,7 @@ struct prestera_br_mdb_port {
 	struct list_head br_mdb_port_node;
 };
 
-/* Software representation of MDB table. */
+ 
 struct prestera_br_mdb_entry {
 	struct prestera_bridge *bridge;
 	struct prestera_mdb_entry *mdb;
@@ -907,11 +907,7 @@ static int prestera_br_mdb_mc_enable_sync(struct prestera_bridge *br_dev)
 	bool enabled;
 	int err;
 
-	/* if mrouter exists:
-	 *  - make sure every mrouter receives unreg mcast traffic;
-	 * if mrouter doesn't exists:
-	 *  - make sure every port receives unreg mcast traffic;
-	 */
+	 
 	list_for_each_entry(br_port, &br_dev->port_list, head) {
 		if (br_dev->multicast_enabled && br_dev->mrouter_exist)
 			enabled = br_port->mrouter;
@@ -971,7 +967,7 @@ prestera_mdb_port_add(struct prestera_mdb_entry *mdb,
 	return 0;
 }
 
-/* Sync bridge mdb (software table) with HW table (if MC is enabled). */
+ 
 static int prestera_br_mdb_sync(struct prestera_bridge *br_dev)
 {
 	struct prestera_br_mdb_port *br_mdb_port;
@@ -987,25 +983,19 @@ static int prestera_br_mdb_sync(struct prestera_bridge *br_dev)
 	list_for_each_entry(br_mdb, &br_dev->br_mdb_entry_list,
 			    br_mdb_entry_node) {
 		mdb = br_mdb->mdb;
-		/* Make sure every port that explicitly been added to the mdb
-		 * joins the specified group.
-		 */
+		 
 		list_for_each_entry(br_mdb_port, &br_mdb->br_mdb_port_list,
 				    br_mdb_port_node) {
 			br_port = br_mdb_port->br_port;
 			pr_port = prestera_port_dev_lower_find(br_port->dev);
 
-			/* Match only mdb and br_mdb ports that belong to the
-			 * same broadcast domain.
-			 */
+			 
 			if (br_dev->vlan_enabled &&
 			    !prestera_port_vlan_by_vid(pr_port,
 						       mdb->vid))
 				continue;
 
-			/* If port is not in MDB or there's no Mrouter
-			 * clear HW mdb.
-			 */
+			 
 			if (prestera_br_mdb_port_is_member(br_mdb,
 							   br_mdb_port->br_port->dev) &&
 							   br_dev->mrouter_exist)
@@ -1019,16 +1009,11 @@ static int prestera_br_mdb_sync(struct prestera_bridge *br_dev)
 				return err;
 		}
 
-		/* Make sure that every mrouter port joins every MC group int
-		 * broadcast domain. If it's not an mrouter - it should leave
-		 */
+		 
 		list_for_each_entry(br_port, &br_dev->port_list, head) {
 			pr_port = prestera_port_dev_lower_find(br_port->dev);
 
-			/* Make sure mrouter woudln't receive traffci from
-			 * another broadcast domain (e.g. from a vlan, which
-			 * mrouter port is not a member of).
-			 */
+			 
 			if (br_dev->vlan_enabled &&
 			    !prestera_port_vlan_by_vid(pr_port,
 						       mdb->vid))
@@ -1100,7 +1085,7 @@ static int prestera_port_attr_br_mc_disabled_set(struct prestera_port *port,
 
 	br_dev->multicast_enabled = !mc_disabled;
 
-	/* There's no point in enabling mdb back if router is missing. */
+	 
 	WARN_ON(prestera_br_mdb_enable_set(br_dev, br_dev->multicast_enabled &&
 					   br_dev->mrouter_exist));
 
@@ -1140,11 +1125,7 @@ prestera_port_attr_mrouter_set(struct prestera_port *port,
 
 	br_dev->mrouter_exist = prestera_bridge_mdb_mc_mrouter_exists(br_dev);
 
-	/* Enable MDB processing if both mrouter exists and mc is enabled.
-	 * In case if MC enabled, but there is no mrouter, device would flood
-	 * all multicast traffic (even if MDB table is not empty) with the use
-	 * of bridge's flood capabilities (without the use of flood_domain).
-	 */
+	 
 	WARN_ON(prestera_br_mdb_enable_set(br_dev, br_dev->multicast_enabled &&
 					   br_dev->mrouter_exist));
 
@@ -1602,9 +1583,7 @@ prestera_mdb_port_addr_obj_add(const struct switchdev_obj_port_mdb *mdb)
 	if (!br_mdb)
 		return -ENOMEM;
 
-	/* Make sure newly allocated MDB entry gets disabled if either MC is
-	 * disabled, or the mrouter does not exist.
-	 */
+	 
 	WARN_ON(prestera_mdb_enable_set(br_mdb, br_dev->multicast_enabled &&
 					br_dev->mrouter_exist));
 
@@ -1679,12 +1658,12 @@ prestera_mdb_port_addr_obj_del(struct prestera_port *port,
 	struct prestera_bridge *br_dev;
 	int err;
 
-	/* Bridge port no longer exists - and so does this MDB entry */
+	 
 	br_port = prestera_bridge_port_find(port->sw, mdb->obj.orig_dev);
 	if (!br_port)
 		return 0;
 
-	/* Removing MDB with non-existing VLAN - not supported; */
+	 
 	if (mdb->vid && !prestera_port_vlan_by_vid(port, mdb->vid))
 		return 0;
 
@@ -1700,10 +1679,7 @@ prestera_mdb_port_addr_obj_del(struct prestera_port *port,
 	if (!br_mdb)
 		return 0;
 
-	/* Since there might be a situation that this port was the last in the
-	 * MDB group, we have to both remove this port from software and HW MDB,
-	 * sync MDB table, and then destroy software MDB (if needed).
-	 */
+	 
 	prestera_br_mdb_port_del(br_mdb, br_port);
 
 	prestera_br_mdb_entry_put(br_mdb);

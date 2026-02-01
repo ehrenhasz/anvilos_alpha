@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
- * Author: Chao Xie <chao.xie@marvell.com>
- *	   Neil Zhang <zhangwm@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -139,12 +135,12 @@ static int mv_otg_reset(struct mv_otg *mvotg)
 	u32 tmp;
 	int ret;
 
-	/* Stop the controller */
+	 
 	tmp = readl(&mvotg->op_regs->usbcmd);
 	tmp &= ~USBCMD_RUN_STOP;
 	writel(tmp, &mvotg->op_regs->usbcmd);
 
-	/* Reset the controller to get default values */
+	 
 	writel(USBCMD_CTRL_RESET, &mvotg->op_regs->usbcmd);
 
 	ret = readl_poll_timeout_atomic(&mvotg->op_regs->usbcmd, tmp,
@@ -207,7 +203,7 @@ static void mv_otg_start_host(struct mv_otg *mvotg, int on)
 	} else {
 		usb_remove_hcd(hcd);
 	}
-#endif /* CONFIG_USB */
+#endif  
 }
 
 static void mv_otg_start_periphrals(struct mv_otg *mvotg, int on)
@@ -405,7 +401,7 @@ static void mv_otg_work(struct work_struct *work)
 	mvotg = container_of(to_delayed_work(work), struct mv_otg, work);
 
 run:
-	/* work queue is single thread, or we need spin_lock to protect */
+	 
 	otg = mvotg->phy.otg;
 	old_state = otg->state;
 
@@ -449,19 +445,13 @@ run:
 				mv_otg_start_host(mvotg, 1);
 			mv_otg_set_timer(mvotg, A_WAIT_BCON_TIMER,
 					 T_A_WAIT_BCON);
-			/*
-			 * Now, we directly enter A_HOST. So set b_conn = 1
-			 * here. In fact, it need host driver to notify us.
-			 */
+			 
 			mvotg->otg_ctrl.b_conn = 1;
 			break;
 		case OTG_STATE_A_HOST:
 			break;
 		case OTG_STATE_A_WAIT_VFALL:
-			/*
-			 * Now, we has exited A_HOST. So set b_conn = 0
-			 * here. In fact, it need host driver to notify us.
-			 */
+			 
 			mvotg->otg_ctrl.b_conn = 0;
 			mv_otg_set_vbus(otg, 0);
 			break;
@@ -482,10 +472,7 @@ static irqreturn_t mv_otg_irq(int irq, void *dev)
 	otgsc = readl(&mvotg->op_regs->otgsc);
 	writel(otgsc, &mvotg->op_regs->otgsc);
 
-	/*
-	 * if we have vbus, then the vbus detection for B-device
-	 * will be done by mv_otg_inputs_irq().
-	 */
+	 
 	if (mvotg->pdata->vbus)
 		if ((otgsc & OTGSC_STS_USB_ID) &&
 		    !(otgsc & OTGSC_INTSTS_USB_ID))
@@ -503,7 +490,7 @@ static irqreturn_t mv_otg_inputs_irq(int irq, void *dev)
 {
 	struct mv_otg *mvotg = dev;
 
-	/* The clock may disabled at this time */
+	 
 	if (!mvotg->active) {
 		mv_otg_enable(mvotg);
 		mv_otg_init_irq(mvotg);
@@ -531,12 +518,12 @@ a_bus_req_store(struct device *dev, struct device_attribute *attr,
 	if (count > 2)
 		return -1;
 
-	/* We will use this interface to change to A device */
+	 
 	if (mvotg->phy.otg->state != OTG_STATE_B_IDLE
 	    && mvotg->phy.otg->state != OTG_STATE_A_IDLE)
 		return -1;
 
-	/* The clock may disabled and we need to set irq for ID detected */
+	 
 	mv_otg_enable(mvotg);
 	mv_otg_init_irq(mvotg);
 
@@ -694,7 +681,7 @@ static int mv_otg_probe(struct platform_device *pdev)
 
 	INIT_DELAYED_WORK(&mvotg->work, mv_otg_work);
 
-	/* OTG common part */
+	 
 	mvotg->pdev = pdev;
 	mvotg->phy.dev = &pdev->dev;
 	mvotg->phy.otg = otg;
@@ -740,7 +727,7 @@ static int mv_otg_probe(struct platform_device *pdev)
 		goto err_destroy_workqueue;
 	}
 
-	/* we will acces controller register, so enable the udc controller */
+	 
 	retval = mv_otg_enable_internal(mvotg);
 	if (retval) {
 		dev_err(&pdev->dev, "mv otg enable error %d\n", retval);

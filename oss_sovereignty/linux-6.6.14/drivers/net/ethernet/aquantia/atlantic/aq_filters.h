@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2014-2017 aQuantia Corporation. */
+ 
+ 
 
-/* File aq_filters.h: RX filters related functions. */
+ 
 
 #ifndef AQ_FILTERS_H
 #define AQ_FILTERS_H
@@ -33,4 +33,4 @@ int aq_reapply_rxnfc_all_rules(struct aq_nic_s *aq_nic);
 int aq_filters_vlans_update(struct aq_nic_s *aq_nic);
 int aq_filters_vlan_offload_off(struct aq_nic_s *aq_nic);
 
-#endif /* AQ_FILTERS_H */
+#endif  

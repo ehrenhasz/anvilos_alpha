@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #ifndef USNIC_IB_QP_GRP_H_
 #define USNIC_IB_QP_GRP_H_
@@ -42,9 +11,7 @@
 #include "usnic_fwd.h"
 #include "usnic_vnic.h"
 
-/*
- * The qp group struct represents all the hw resources needed to present a ib_qp
- */
+ 
 struct usnic_ib_qp_grp {
 	struct ib_qp				ibqp;
 	enum ib_qp_state			state;
@@ -79,7 +46,7 @@ struct usnic_ib_qp_grp_flow {
 	struct usnic_ib_qp_grp		*qp_grp;
 	struct list_head		link;
 
-	/* Debug FS */
+	 
 	struct dentry			*dbgfs_dentry;
 	char				dentry_name[32];
 };
@@ -106,4 +73,4 @@ struct usnic_ib_qp_grp *to_uqp_grp(struct ib_qp *ibqp)
 {
 	return container_of(ibqp, struct usnic_ib_qp_grp, ibqp);
 }
-#endif /* USNIC_IB_QP_GRP_H_ */
+#endif  

@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * Common DAT related stuff
- */
+ 
+ 
 
 #ifndef DAT_H
 #define DAT_H
 
-/* Global DAT flags */
+ 
 #define DAT_0_I2C_DEVICE		W0_BIT_(31)
 #define DAT_0_SIR_REJECT		W0_BIT_(13)
 #define DAT_0_IBI_PAYLOAD		W0_BIT_(12)

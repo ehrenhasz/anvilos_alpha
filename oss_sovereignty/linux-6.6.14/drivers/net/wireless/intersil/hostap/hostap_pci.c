@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define PRISM2_PCI
 
-/* Host AP driver's support for Intersil Prism2.5 PCI cards is based on
- * driver patches from Reyk Floeter <reyk@vantronix.net> and
- * Andy Warner <andyw@pobox.com> */
+ 
 
 #include <linux/module.h>
 #include <linux/if.h>
@@ -30,21 +28,21 @@ MODULE_DESCRIPTION("Support for Intersil Prism2.5-based 802.11 wireless LAN "
 MODULE_LICENSE("GPL");
 
 
-/* struct local_info::hw_priv */
+ 
 struct hostap_pci_priv {
 	void __iomem *mem_start;
 };
 
 
-/* FIX: do we need mb/wmb/rmb with memory operations? */
+ 
 
 
 static const struct pci_device_id prism2_pci_id_table[] = {
-	/* Intersil Prism3 ISL3872 11Mb/s WLAN Controller */
+	 
 	{ 0x1260, 0x3872, PCI_ANY_ID, PCI_ANY_ID },
-	/* Intersil Prism2.5 ISL3874 11Mb/s WLAN Controller */
+	 
 	{ 0x1260, 0x3873, PCI_ANY_ID, PCI_ANY_ID },
-	/* Samsung MagicLAN SWL-2210P */
+	 
 	{ 0x167d, 0xa000, PCI_ANY_ID, PCI_ANY_ID },
 	{ 0 }
 };
@@ -131,7 +129,7 @@ static inline u16 hfa384x_inw_debug(struct net_device *dev, int a)
 #define HFA384X_OUTW_DATA(v,a) hfa384x_outw_debug(dev, (a), le16_to_cpu((v)))
 #define HFA384X_INW_DATA(a) cpu_to_le16(hfa384x_inw_debug(dev, (a)))
 
-#else /* PRISM2_IO_DEBUG */
+#else  
 
 static inline void hfa384x_outb(struct net_device *dev, int a, u8 v)
 {
@@ -176,7 +174,7 @@ static inline u16 hfa384x_inw(struct net_device *dev, int a)
 #define HFA384X_OUTW_DATA(v,a) hfa384x_outw(dev, (a), le16_to_cpu((v)))
 #define HFA384X_INW_DATA(a) cpu_to_le16(hfa384x_inw(dev, (a)))
 
-#endif /* PRISM2_IO_DEBUG */
+#endif  
 
 
 static int hfa384x_from_bap(struct net_device *dev, u16 bap, void *buf,
@@ -216,7 +214,7 @@ static int hfa384x_to_bap(struct net_device *dev, u16 bap, void *buf, int len)
 }
 
 
-/* FIX: This might change at some point.. */
+ 
 #include "hostap_hw.c"
 
 static void prism2_pci_cor_sreset(local_info_t *local)
@@ -227,13 +225,8 @@ static void prism2_pci_cor_sreset(local_info_t *local)
 	reg = HFA384X_INB(HFA384X_PCICOR_OFF);
 	printk(KERN_DEBUG "%s: Original COR value: 0x%0x\n", dev->name, reg);
 
-	/* linux-wlan-ng uses extremely long hold and settle times for
-	 * COR sreset. A comment in the driver code mentions that the long
-	 * delays appear to be necessary. However, at least IBM 22P6901 seems
-	 * to work fine with shorter delays.
-	 *
-	 * Longer delays can be configured by uncommenting following line: */
-/* #define PRISM2_PCI_USE_LONG_DELAYS */
+	 
+ 
 
 #ifdef PRISM2_PCI_USE_LONG_DELAYS
 	int i;
@@ -244,19 +237,19 @@ static void prism2_pci_cor_sreset(local_info_t *local)
 	HFA384X_OUTW(reg & ~0x0080, HFA384X_PCICOR_OFF);
 	mdelay(500);
 
-	/* Wait for f/w to complete initialization (CMD:BUSY == 0) */
+	 
 	i = 2000000 / 10;
 	while ((HFA384X_INW(HFA384X_CMD_OFF) & HFA384X_CMD_BUSY) && --i)
 		udelay(10);
 
-#else /* PRISM2_PCI_USE_LONG_DELAYS */
+#else  
 
 	HFA384X_OUTW(reg | 0x0080, HFA384X_PCICOR_OFF);
 	mdelay(2);
 	HFA384X_OUTW(reg & ~0x0080, HFA384X_PCICOR_OFF);
 	mdelay(2);
 
-#endif /* PRISM2_PCI_USE_LONG_DELAYS */
+#endif  
 
 	if (HFA384X_INW(HFA384X_CMD_OFF) & HFA384X_CMD_BUSY) {
 		printk(KERN_DEBUG "%s: COR sreset timeout\n", dev->name);
@@ -293,7 +286,7 @@ static int prism2_pci_probe(struct pci_dev *pdev,
 	void __iomem *mem = NULL;
 	local_info_t *local = NULL;
 	struct net_device *dev = NULL;
-	static int cards_found /* = 0 */;
+	static int cards_found  ;
 	int irq_registered = 0;
 	struct hostap_interface *iface;
 	struct hostap_pci_priv *hw_priv;
@@ -384,7 +377,7 @@ static void prism2_pci_remove(struct pci_dev *pdev)
 	iface = netdev_priv(dev);
 	hw_priv = iface->local->hw_priv;
 
-	/* Reset the hardware, and ensure interrupts are disabled. */
+	 
 	prism2_pci_cor_sreset(iface->local);
 	hfa384x_disable_interrupts(dev);
 

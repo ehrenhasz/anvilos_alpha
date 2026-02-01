@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014 Belkin Inc.
- * Copyright 2015 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -30,11 +27,11 @@
 #define TLC591XX_REG_GRPPWM	0x12
 #define TLC591XX_REG_GRPFREQ	0x13
 
-/* LED Driver Output State, determine the source that drives LED outputs */
-#define LEDOUT_OFF		0x0	/* Output LOW */
-#define LEDOUT_ON		0x1	/* Output HI-Z */
-#define LEDOUT_DIM		0x2	/* Dimming */
-#define LEDOUT_BLINK		0x3	/* Blinking */
+ 
+#define LEDOUT_OFF		0x0	 
+#define LEDOUT_ON		0x1	 
+#define LEDOUT_DIM		0x2	 
+#define LEDOUT_BLINK		0x3	 
 #define LEDOUT_MASK		0x3
 
 #define ldev_to_led(c)		container_of(c, struct tlc591xx_led, ldev)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2018 Facebook
+
+
 
 #include <stdlib.h>
 #include <string.h>

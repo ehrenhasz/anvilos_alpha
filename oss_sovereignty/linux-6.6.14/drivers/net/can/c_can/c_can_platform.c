@@ -1,23 +1,4 @@
-/*
- * Platform CAN bus driver for Bosch C_CAN controller
- *
- * Copyright (C) 2010 ST Microelectronics
- * Bhupesh Sharma <bhupesh.sharma@st.com>
- *
- * Borrowed heavily from the C_CAN driver originally written by:
- * Copyright (C) 2007
- * - Sascha Hauer, Marc Kleine-Budde, Pengutronix <s.hauer@pengutronix.de>
- * - Simon Kallweit, intefo AG <simon.kallweit@intefo.ch>
- *
- * Bosch C_CAN controller is compliant to CAN protocol version 2.0 part A and B.
- * Bosch C_CAN user manual can be obtained from:
- * http://www.semiconductors.bosch.de/media/en/pdf/ipmodules_1/c_can/
- * users_manual_c_can.pdf
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -44,11 +25,7 @@
 
 static DEFINE_SPINLOCK(raminit_lock);
 
-/* 16-bit c_can registers can be arranged differently in the memory
- * architecture of different implementations. For example: 16-bit
- * registers can be aligned to a 16-bit boundary or 32-bit boundary etc.
- * Handle the same by providing a common read/write interface.
- */
+ 
 static u16 c_can_plat_read_reg_aligned_to_16bit(const struct c_can_priv *priv,
 						enum reg index)
 {
@@ -80,7 +57,7 @@ static void c_can_hw_raminit_wait_syscon(const struct c_can_priv *priv,
 	int timeout = 0;
 	u32 ctrl = 0;
 
-	/* We look only at the bits of our instance. */
+	 
 	val &= mask;
 	do {
 		udelay(1);
@@ -105,30 +82,22 @@ static void c_can_hw_raminit_syscon(const struct c_can_priv *priv, bool enable)
 	mask = 1 << raminit->bits.start | 1 << raminit->bits.done;
 	regmap_read(raminit->syscon, raminit->reg, &ctrl);
 
-	/* We clear the start bit first. The start bit is
-	 * looking at the 0 -> transition, but is not self clearing;
-	 * NOTE: DONE must be written with 1 to clear it.
-	 * We can't clear the DONE bit here using regmap_update_bits()
-	 * as it will bypass the write if initial condition is START:0 DONE:1
-	 * e.g. on DRA7 which needs START pulse.
-	 */
-	ctrl &= ~mask;	/* START = 0, DONE = 0 */
+	 
+	ctrl &= ~mask;	 
 	regmap_update_bits(raminit->syscon, raminit->reg, mask, ctrl);
 
-	/* check if START bit is 0. Ignore DONE bit for now
-	 * as it can be either 0 or 1.
-	 */
+	 
 	c_can_hw_raminit_wait_syscon(priv, 1 << raminit->bits.start, ctrl);
 
 	if (enable) {
-		/* Clear DONE bit & set START bit. */
+		 
 		ctrl |= 1 << raminit->bits.start;
-		/* DONE must be written with 1 to clear it */
+		 
 		ctrl |= 1 << raminit->bits.done;
 		regmap_update_bits(raminit->syscon, raminit->reg, mask, ctrl);
-		/* prevent further clearing of DONE bit */
+		 
 		ctrl &= ~(1 << raminit->bits.done);
-		/* clear START bit if start pulse is needed */
+		 
 		if (raminit->needs_pulse) {
 			ctrl &= ~(1 << raminit->bits.start);
 			regmap_update_bits(raminit->syscon, raminit->reg,
@@ -239,7 +208,7 @@ static const struct platform_device_id c_can_id_table[] = {
 		.name = "d_can",
 		.driver_data = (kernel_ulong_t)&d_can_drvdata,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, c_can_id_table);
 
@@ -249,7 +218,7 @@ static const struct of_device_id c_can_of_table[] = {
 	{ .compatible = "ti,dra7-d_can", .data = &dra7_dcan_drvdata },
 	{ .compatible = "ti,am3352-d_can", .data = &am3352_dcan_drvdata },
 	{ .compatible = "ti,am4372-d_can", .data = &am3352_dcan_drvdata },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, c_can_of_table);
 
@@ -276,14 +245,14 @@ static int c_can_plat_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* get the appropriate clk */
+	 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk)) {
 		ret = PTR_ERR(clk);
 		goto exit;
 	}
 
-	/* get the platform data */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		ret = irq;
@@ -296,7 +265,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
 		goto exit;
 	}
 
-	/* allocate the c_can device */
+	 
 	dev = alloc_c_can_dev(drvdata->msg_obj_num);
 	if (!dev) {
 		ret = -ENOMEM;
@@ -330,9 +299,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
 		priv->read_reg32 = d_can_plat_read_reg32;
 		priv->write_reg32 = d_can_plat_write_reg32;
 
-		/* Check if we need custom RAMINIT via syscon. Mostly for TI
-		 * platforms. Only supported with DT boot.
-		 */
+		 
 		if (np && of_property_read_bool(np, "syscon-raminit")) {
 			u32 id;
 			struct c_can_raminit *raminit = &priv->raminit_sys;
@@ -341,7 +308,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
 			raminit->syscon = syscon_regmap_lookup_by_phandle(np,
 									  "syscon-raminit");
 			if (IS_ERR(raminit->syscon)) {
-				/* can fail with -EPROBE_DEFER */
+				 
 				ret = PTR_ERR(raminit->syscon);
 				free_c_can_dev(dev);
 				return ret;

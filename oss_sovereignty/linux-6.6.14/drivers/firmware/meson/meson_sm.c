@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic Secure Monitor driver
- *
- * Copyright (C) 2016 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "meson-sm: " fmt
 
@@ -46,7 +41,7 @@ static const struct meson_sm_chip gxbb_chip = {
 		CMD(SM_GET_CHIP_ID,	0x82000044),
 		CMD(SM_A1_PWRC_SET,	0x82000093),
 		CMD(SM_A1_PWRC_GET,	0x82000095),
-		{ /* sentinel */ },
+		{   },
 	},
 };
 
@@ -87,20 +82,7 @@ static void __iomem *meson_sm_map_shmem(u32 cmd_shmem, unsigned int size)
 	return ioremap_cache(sm_phy_base, size);
 }
 
-/**
- * meson_sm_call - generic SMC32 call to the secure-monitor
- *
- * @fw:		Pointer to secure-monitor firmware
- * @cmd_index:	Index of the SMC32 function ID
- * @ret:	Returned value
- * @arg0:	SMC32 Argument 0
- * @arg1:	SMC32 Argument 1
- * @arg2:	SMC32 Argument 2
- * @arg3:	SMC32 Argument 3
- * @arg4:	SMC32 Argument 4
- *
- * Return:	0 on success, a negative value on error
- */
+ 
 int meson_sm_call(struct meson_sm_firmware *fw, unsigned int cmd_index,
 		  u32 *ret, u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4)
 {
@@ -122,23 +104,7 @@ int meson_sm_call(struct meson_sm_firmware *fw, unsigned int cmd_index,
 }
 EXPORT_SYMBOL(meson_sm_call);
 
-/**
- * meson_sm_call_read - retrieve data from secure-monitor
- *
- * @fw:		Pointer to secure-monitor firmware
- * @buffer:	Buffer to store the retrieved data
- * @bsize:	Size of the buffer
- * @cmd_index:	Index of the SMC32 function ID
- * @arg0:	SMC32 Argument 0
- * @arg1:	SMC32 Argument 1
- * @arg2:	SMC32 Argument 2
- * @arg3:	SMC32 Argument 3
- * @arg4:	SMC32 Argument 4
- *
- * Return:	size of read data on success, a negative value on error
- *		When 0 is returned there is no guarantee about the amount of
- *		data read and bsize bytes are copied in buffer.
- */
+ 
 int meson_sm_call_read(struct meson_sm_firmware *fw, void *buffer,
 		       unsigned int bsize, unsigned int cmd_index, u32 arg0,
 		       u32 arg1, u32 arg2, u32 arg3, u32 arg4)
@@ -173,21 +139,7 @@ int meson_sm_call_read(struct meson_sm_firmware *fw, void *buffer,
 }
 EXPORT_SYMBOL(meson_sm_call_read);
 
-/**
- * meson_sm_call_write - send data to secure-monitor
- *
- * @fw:		Pointer to secure-monitor firmware
- * @buffer:	Buffer containing data to send
- * @size:	Size of the data to send
- * @cmd_index:	Index of the SMC32 function ID
- * @arg0:	SMC32 Argument 0
- * @arg1:	SMC32 Argument 1
- * @arg2:	SMC32 Argument 2
- * @arg3:	SMC32 Argument 3
- * @arg4:	SMC32 Argument 4
- *
- * Return:	size of sent data on success, a negative value on error
- */
+ 
 int meson_sm_call_write(struct meson_sm_firmware *fw, void *buffer,
 			unsigned int size, unsigned int cmd_index, u32 arg0,
 			u32 arg1, u32 arg2, u32 arg3, u32 arg4)
@@ -215,13 +167,7 @@ int meson_sm_call_write(struct meson_sm_firmware *fw, void *buffer,
 }
 EXPORT_SYMBOL(meson_sm_call_write);
 
-/**
- * meson_sm_get - get pointer to meson_sm_firmware structure.
- *
- * @sm_node:		Pointer to the secure-monitor Device Tree node.
- *
- * Return:		NULL is the secure-monitor device is not ready.
- */
+ 
 struct meson_sm_firmware *meson_sm_get(struct device_node *sm_node)
 {
 	struct platform_device *pdev = of_find_device_by_node(sm_node);
@@ -278,7 +224,7 @@ static const struct attribute_group meson_sm_sysfs_attr_group = {
 
 static const struct of_device_id meson_sm_ids[] = {
 	{ .compatible = "amlogic,meson-gxbb-sm", .data = &gxbb_chip },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int __init meson_sm_probe(struct platform_device *pdev)

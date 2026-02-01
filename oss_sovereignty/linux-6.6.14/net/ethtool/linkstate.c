@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -133,7 +133,7 @@ static int linkstate_reply_size(const struct ethnl_req_info *req_base,
 	struct linkstate_reply_data *data = LINKSTATE_REPDATA(reply_base);
 	int len;
 
-	len = nla_total_size(sizeof(u8)) /* LINKSTATE_LINK */
+	len = nla_total_size(sizeof(u8))  
 		+ 0;
 
 	if (data->sqi != -EOPNOTSUPP)
@@ -143,10 +143,10 @@ static int linkstate_reply_size(const struct ethnl_req_info *req_base,
 		len += nla_total_size(sizeof(u32));
 
 	if (data->link_ext_state_provided)
-		len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_STATE */
+		len += nla_total_size(sizeof(u8));  
 
 	if (data->ethtool_link_ext_state_info.__link_ext_substate)
-		len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_SUBSTATE */
+		len += nla_total_size(sizeof(u8));  
 
 	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
 		len += nla_total_size(sizeof(u32));

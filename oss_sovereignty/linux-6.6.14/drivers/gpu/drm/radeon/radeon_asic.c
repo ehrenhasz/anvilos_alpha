@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/console.h>
 #include <linux/pci.h>
@@ -37,19 +11,8 @@
 #include "radeon_asic.h"
 #include "radeon_reg.h"
 
-/*
- * Registers accessors functions.
- */
-/**
- * radeon_invalid_rreg - dummy reg read function
- *
- * @rdev: radeon device pointer
- * @reg: offset of register
- *
- * Dummy register read function.  Used for register blocks
- * that certain asics don't have (all asics).
- * Returns the value in the register.
- */
+ 
+ 
 static uint32_t radeon_invalid_rreg(struct radeon_device *rdev, uint32_t reg)
 {
 	DRM_ERROR("Invalid callback to read register 0x%04X\n", reg);
@@ -57,16 +20,7 @@ static uint32_t radeon_invalid_rreg(struct radeon_device *rdev, uint32_t reg)
 	return 0;
 }
 
-/**
- * radeon_invalid_wreg - dummy reg write function
- *
- * @rdev: radeon device pointer
- * @reg: offset of register
- * @v: value to write to the register
- *
- * Dummy register read function.  Used for register blocks
- * that certain asics don't have (all asics).
- */
+ 
 static void radeon_invalid_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
 {
 	DRM_ERROR("Invalid callback to write register 0x%04X with 0x%08X\n",
@@ -74,14 +28,7 @@ static void radeon_invalid_wreg(struct radeon_device *rdev, uint32_t reg, uint32
 	BUG_ON(1);
 }
 
-/**
- * radeon_register_accessor_init - sets up the register accessor callbacks
- *
- * @rdev: radeon device pointer
- *
- * Sets up the register accessor callbacks for various register
- * apertures.  Not all asics have all apertures (all asics).
- */
+ 
 static void radeon_register_accessor_init(struct radeon_device *rdev)
 {
 	rdev->mc_rreg = &radeon_invalid_rreg;
@@ -91,13 +38,13 @@ static void radeon_register_accessor_init(struct radeon_device *rdev)
 	rdev->pciep_rreg = &radeon_invalid_rreg;
 	rdev->pciep_wreg = &radeon_invalid_wreg;
 
-	/* Don't change order as we are overridding accessor. */
+	 
 	if (rdev->family < CHIP_RV515) {
 		rdev->pcie_reg_mask = 0xff;
 	} else {
 		rdev->pcie_reg_mask = 0x7ff;
 	}
-	/* FIXME: not sure here */
+	 
 	if (rdev->family <= CHIP_R580) {
 		rdev->pll_rreg = &r100_pll_rreg;
 		rdev->pll_wreg = &r100_pll_wreg;
@@ -142,15 +89,8 @@ static int radeon_invalid_get_allowed_info_register(struct radeon_device *rdev,
 	return -EINVAL;
 }
 
-/* helper to disable agp */
-/**
- * radeon_agp_disable - AGP disable helper function
- *
- * @rdev: radeon device pointer
- *
- * Removes AGP flags and changes the gart callbacks on AGP
- * cards when using the internal gart rather than AGP (all asics).
- */
+ 
+ 
 void radeon_agp_disable(struct radeon_device *rdev)
 {
 	rdev->flags &= ~RADEON_IS_AGP;
@@ -176,9 +116,7 @@ void radeon_agp_disable(struct radeon_device *rdev)
 	rdev->mc.gtt_size = radeon_gart_size * 1024 * 1024;
 }
 
-/*
- * ASIC
- */
+ 
 
 static const struct radeon_asic_ring r100_gfx_ring = {
 	.ib_execute = &r100_ring_ib_execute,
@@ -2305,21 +2243,12 @@ static struct radeon_asic kv_asic = {
 	},
 };
 
-/**
- * radeon_asic_init - register asic specific callbacks
- *
- * @rdev: radeon device pointer
- *
- * Registers the appropriate asic specific callbacks for each
- * chip family.  Also sets other asics specific info like the number
- * of crtcs and the register aperture accessors (all asics).
- * Returns 0 for success.
- */
+ 
 int radeon_asic_init(struct radeon_device *rdev)
 {
 	radeon_register_accessor_init(rdev);
 
-	/* set the number of crtcs */
+	 
 	if (rdev->flags & RADEON_SINGLE_CRTC)
 		rdev->num_crtc = 1;
 	else
@@ -2355,7 +2284,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_R423:
 	case CHIP_RV410:
 		rdev->asic = &r420_asic;
-		/* handle macs */
+		 
 		if (rdev->bios == NULL) {
 			rdev->asic->pm.get_engine_clock = &radeon_legacy_get_engine_clock;
 			rdev->asic->pm.set_engine_clock = &radeon_legacy_set_engine_clock;
@@ -2399,7 +2328,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_RS780:
 	case CHIP_RS880:
 		rdev->asic = &rs780_asic;
-		/* 760G/780V/880V don't have UVD */
+		 
 		if ((rdev->pdev->device == 0x9616)||
 		    (rdev->pdev->device == 0x9611)||
 		    (rdev->pdev->device == 0x9613)||
@@ -2421,7 +2350,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_JUNIPER:
 	case CHIP_CYPRESS:
 	case CHIP_HEMLOCK:
-		/* set num crtcs */
+		 
 		if (rdev->family == CHIP_CEDAR)
 			rdev->num_crtc = 4;
 		else
@@ -2438,7 +2367,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_BARTS:
 	case CHIP_TURKS:
 	case CHIP_CAICOS:
-		/* set num crtcs */
+		 
 		if (rdev->family == CHIP_CAICOS)
 			rdev->num_crtc = 4;
 		else
@@ -2448,13 +2377,13 @@ int radeon_asic_init(struct radeon_device *rdev)
 		break;
 	case CHIP_CAYMAN:
 		rdev->asic = &cayman_asic;
-		/* set num crtcs */
+		 
 		rdev->num_crtc = 6;
 		rdev->has_uvd = true;
 		break;
 	case CHIP_ARUBA:
 		rdev->asic = &trinity_asic;
-		/* set num crtcs */
+		 
 		rdev->num_crtc = 4;
 		rdev->has_uvd = true;
 		rdev->has_vce = true;
@@ -2467,7 +2396,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_OLAND:
 	case CHIP_HAINAN:
 		rdev->asic = &si_asic;
-		/* set num crtcs */
+		 
 		if (rdev->family == CHIP_HAINAN)
 			rdev->num_crtc = 0;
 		else if (rdev->family == CHIP_OLAND)
@@ -2489,7 +2418,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2506,7 +2435,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2525,7 +2454,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2539,14 +2468,14 @@ int radeon_asic_init(struct radeon_device *rdev)
 				RADEON_CG_SUPPORT_HDP_LS |
 				RADEON_CG_SUPPORT_HDP_MGCG;
 			rdev->pg_flags = 0 |
-				/*RADEON_PG_SUPPORT_GFX_PG | */
+				 
 				RADEON_PG_SUPPORT_SDMA;
 			break;
 		case CHIP_OLAND:
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2564,7 +2493,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2593,7 +2522,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CGTS_LS |
@@ -2612,7 +2541,7 @@ int radeon_asic_init(struct radeon_device *rdev)
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CP_LS |
@@ -2632,13 +2561,13 @@ int radeon_asic_init(struct radeon_device *rdev)
 	case CHIP_KABINI:
 	case CHIP_MULLINS:
 		rdev->asic = &kv_asic;
-		/* set num crtcs */
+		 
 		if (rdev->family == CHIP_KAVERI) {
 			rdev->num_crtc = 4;
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CGTS_LS |
@@ -2651,22 +2580,13 @@ int radeon_asic_init(struct radeon_device *rdev)
 				RADEON_CG_SUPPORT_HDP_LS |
 				RADEON_CG_SUPPORT_HDP_MGCG;
 			rdev->pg_flags = 0;
-				/*RADEON_PG_SUPPORT_GFX_PG |
-				RADEON_PG_SUPPORT_GFX_SMG |
-				RADEON_PG_SUPPORT_GFX_DMG |
-				RADEON_PG_SUPPORT_UVD |
-				RADEON_PG_SUPPORT_VCE |
-				RADEON_PG_SUPPORT_CP |
-				RADEON_PG_SUPPORT_GDS |
-				RADEON_PG_SUPPORT_RLC_SMU_HS |
-				RADEON_PG_SUPPORT_ACP |
-				RADEON_PG_SUPPORT_SAMU;*/
+				 
 		} else {
 			rdev->num_crtc = 2;
 			rdev->cg_flags =
 				RADEON_CG_SUPPORT_GFX_MGCG |
 				RADEON_CG_SUPPORT_GFX_MGLS |
-				/*RADEON_CG_SUPPORT_GFX_CGCG |*/
+				 
 				RADEON_CG_SUPPORT_GFX_CGLS |
 				RADEON_CG_SUPPORT_GFX_CGTS |
 				RADEON_CG_SUPPORT_GFX_CGTS_LS |
@@ -2679,20 +2599,13 @@ int radeon_asic_init(struct radeon_device *rdev)
 				RADEON_CG_SUPPORT_HDP_LS |
 				RADEON_CG_SUPPORT_HDP_MGCG;
 			rdev->pg_flags = 0;
-				/*RADEON_PG_SUPPORT_GFX_PG |
-				RADEON_PG_SUPPORT_GFX_SMG |
-				RADEON_PG_SUPPORT_UVD |
-				RADEON_PG_SUPPORT_VCE |
-				RADEON_PG_SUPPORT_CP |
-				RADEON_PG_SUPPORT_GDS |
-				RADEON_PG_SUPPORT_RLC_SMU_HS |
-				RADEON_PG_SUPPORT_SAMU;*/
+				 
 		}
 		rdev->has_uvd = true;
 		rdev->has_vce = true;
 		break;
 	default:
-		/* FIXME: not supported yet */
+		 
 		return -EINVAL;
 	}
 

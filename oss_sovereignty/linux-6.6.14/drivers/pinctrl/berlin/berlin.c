@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Berlin SoC pinctrl core driver
- *
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Ténart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
@@ -209,17 +203,17 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
 
 	for (i = 0; i < pctrl->desc->ngroups; i++) {
 		desc_group = pctrl->desc->groups + i;
-		/* compute the maximum number of functions a group can have */
+		 
 		max_functions += 1 << (desc_group->bit_width + 1);
 	}
 
-	/* we will reallocate later */
+	 
 	pctrl->functions = kcalloc(max_functions,
 				   sizeof(*pctrl->functions), GFP_KERNEL);
 	if (!pctrl->functions)
 		return -ENOMEM;
 
-	/* register all functions */
+	 
 	for (i = 0; i < pctrl->desc->ngroups; i++) {
 		desc_group = pctrl->desc->groups + i;
 		desc_function = desc_group->functions;
@@ -236,7 +230,7 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
 	if (!pctrl->functions)
 		return -ENOMEM;
 
-	/* map functions to theirs groups */
+	 
 	for (i = 0; i < pctrl->desc->ngroups; i++) {
 		desc_group = pctrl->desc->groups + i;
 		desc_function = desc_group->functions;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2023 Linaro Ltd
- */
+ 
+ 
 
 #include <linux/soc/qcom/smd-rpm.h>
 
@@ -61,7 +59,7 @@ const struct rpm_clk_resource qup_clk = {
 };
 EXPORT_SYMBOL_GPL(qup_clk);
 
-/* Branch clocks */
+ 
 const struct rpm_clk_resource aggre1_branch_clk = {
 	.resource_type = QCOM_SMD_RPM_AGGR_CLK,
 	.clock_id = 1,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2003-2022, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -36,14 +33,7 @@ static dev_t mei_devt;
 static DEFINE_MUTEX(mei_minor_lock);
 static DEFINE_IDR(mei_idr);
 
-/**
- * mei_open - the open function
- *
- * @inode: pointer to inode structure
- * @file: pointer to file structure
- *
- * Return: 0 on success, <0 on error
- */
+ 
 static int mei_open(struct inode *inode, struct file *file)
 {
 	struct mei_device *dev;
@@ -80,13 +70,7 @@ err_unlock:
 	return err;
 }
 
-/**
- * mei_cl_vtag_remove_by_fp - remove vtag that corresponds to fp from list
- *
- * @cl: host client
- * @fp: pointer to file structure
- *
- */
+ 
 static void mei_cl_vtag_remove_by_fp(const struct mei_cl *cl,
 				     const struct file *fp)
 {
@@ -101,14 +85,7 @@ static void mei_cl_vtag_remove_by_fp(const struct mei_cl *cl,
 	}
 }
 
-/**
- * mei_release - the release function
- *
- * @inode: pointer to inode structure
- * @file: pointer to file structure
- *
- * Return: 0 on success, <0 on error
- */
+ 
 static int mei_release(struct inode *inode, struct file *file)
 {
 	struct mei_cl *cl = file->private_data;
@@ -132,10 +109,7 @@ static int mei_release(struct inode *inode, struct file *file)
 	}
 
 	rets = mei_cl_disconnect(cl);
-	/*
-	 * Check again: This is necessary since disconnect releases the lock
-	 * and another client can connect in the meantime.
-	 */
+	 
 	if (!list_empty(&cl->vtag_map)) {
 		cl_dbg(dev, cl, "not the last vtag after disconnect\n");
 		mei_cl_flush_queues(cl, file);
@@ -156,16 +130,7 @@ out:
 }
 
 
-/**
- * mei_read - the read function.
- *
- * @file: pointer to file structure
- * @ubuf: pointer to user buffer
- * @length: buffer length
- * @offset: data offset in buffer
- *
- * Return: >=0 data length on success , <0 on error
- */
+ 
 static ssize_t mei_read(struct file *file, char __user *ubuf,
 			size_t length, loff_t *offset)
 {
@@ -237,7 +202,7 @@ static ssize_t mei_read(struct file *file, char __user *ubuf,
 	}
 
 copy_buffer:
-	/* now copy the data to user space */
+	 
 	if (cb->status) {
 		rets = cb->status;
 		cl_dbg(dev, cl, "read operation failed %zd\n", rets);
@@ -251,8 +216,7 @@ copy_buffer:
 		goto free;
 	}
 
-	/* length is being truncated to PAGE_SIZE,
-	 * however buf_idx may point beyond that */
+	 
 	length = min_t(size_t, length, cb->buf_idx - *offset);
 
 	if (copy_to_user(ubuf, cb->buf.data + *offset, length)) {
@@ -263,7 +227,7 @@ copy_buffer:
 
 	rets = length;
 	*offset += length;
-	/* not all data was read, keep the cb */
+	 
 	if (*offset < cb->buf_idx)
 		goto out;
 
@@ -277,14 +241,7 @@ out:
 	return rets;
 }
 
-/**
- * mei_cl_vtag_by_fp - obtain the vtag by file pointer
- *
- * @cl: host client
- * @fp: pointer to file structure
- *
- * Return: vtag value on success, otherwise 0
- */
+ 
 static u8 mei_cl_vtag_by_fp(const struct mei_cl *cl, const struct file *fp)
 {
 	struct mei_cl_vtag *cl_vtag;
@@ -298,16 +255,7 @@ static u8 mei_cl_vtag_by_fp(const struct mei_cl *cl, const struct file *fp)
 	return 0;
 }
 
-/**
- * mei_write - the write function.
- *
- * @file: pointer to file structure
- * @ubuf: pointer to user buffer
- * @length: buffer length
- * @offset: data offset in buffer
- *
- * Return: >=0 data length on success , <0 on error
- */
+ 
 static ssize_t mei_write(struct file *file, const char __user *ubuf,
 			 size_t length, loff_t *offset)
 {
@@ -391,17 +339,7 @@ out:
 	return rets;
 }
 
-/**
- * mei_ioctl_connect_client - the connect to fw client IOCTL function
- *
- * @file: private data of the file object
- * @in_client_uuid: requested UUID for connection
- * @client: IOCTL connect data, output parameters
- *
- * Locking: called under "dev->device_lock" lock
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 static int mei_ioctl_connect_client(struct file *file,
 				    const uuid_le *in_client_uuid,
 				    struct mei_client *client)
@@ -418,7 +356,7 @@ static int mei_ioctl_connect_client(struct file *file,
 	    cl->state != MEI_FILE_DISCONNECTED)
 		return  -EBUSY;
 
-	/* find ME client we're trying to connect to */
+	 
 	me_cl = mei_me_cl_by_uuid(dev, in_client_uuid);
 	if (!me_cl) {
 		dev_dbg(dev->dev, "Cannot connect to FW Client UUID = %pUl\n",
@@ -445,7 +383,7 @@ static int mei_ioctl_connect_client(struct file *file,
 	dev_dbg(dev->dev, "FW Client - Max Msg Len = %d\n",
 			me_cl->props.max_msg_length);
 
-	/* prepare the output buffer */
+	 
 	client->max_msg_length = me_cl->props.max_msg_length;
 	client->protocol_version = me_cl->props.protocol_version;
 	dev_dbg(dev->dev, "Can connect?\n");
@@ -457,19 +395,7 @@ end:
 	return rets;
 }
 
-/**
- * mei_vt_support_check - check if client support vtags
- *
- * Locking: called under "dev->device_lock" lock
- *
- * @dev: mei_device
- * @uuid: client UUID
- *
- * Return:
- *	0 - supported
- *	-ENOTTY - no such client
- *	-EOPNOTSUPP - vtags are not supported by client
- */
+ 
 static int mei_vt_support_check(struct mei_device *dev, const uuid_le *uuid)
 {
 	struct mei_me_client *me_cl;
@@ -490,18 +416,7 @@ static int mei_vt_support_check(struct mei_device *dev, const uuid_le *uuid)
 	return ret;
 }
 
-/**
- * mei_ioctl_connect_vtag - connect to fw client with vtag IOCTL function
- *
- * @file: private data of the file object
- * @in_client_uuid: requested UUID for connection
- * @client: IOCTL connect data, output parameters
- * @vtag: vm tag
- *
- * Locking: called under "dev->device_lock" lock
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 static int mei_ioctl_connect_vtag(struct file *file,
 				  const uuid_le *in_client_uuid,
 				  struct mei_client *client,
@@ -525,7 +440,7 @@ static int mei_ioctl_connect_vtag(struct file *file,
 		}
 		break;
 	case MEI_FILE_INITIALIZING:
-		/* malicious connect from another thread may push vtag */
+		 
 		if (!IS_ERR(mei_cl_fp_by_vtag(cl, vtag))) {
 			dev_err(dev->dev, "vtag already filled\n");
 			return -EINVAL;
@@ -537,15 +452,15 @@ static int mei_ioctl_connect_vtag(struct file *file,
 			if (!pos->me_cl)
 				continue;
 
-			/* only search for same UUID */
+			 
 			if (uuid_le_cmp(*mei_cl_uuid(pos), *in_client_uuid))
 				continue;
 
-			/* if tag already exist try another fp */
+			 
 			if (!IS_ERR(mei_cl_fp_by_vtag(pos, vtag)))
 				continue;
 
-			/* replace cl with acquired one */
+			 
 			dev_dbg(dev->dev, "replacing with existing cl\n");
 			mei_cl_unlink(cl);
 			kfree(cl);
@@ -586,15 +501,7 @@ static int mei_ioctl_connect_vtag(struct file *file,
 	return 0;
 }
 
-/**
- * mei_ioctl_client_notify_request -
- *     propagate event notification request to client
- *
- * @file: pointer to file structure
- * @request: 0 - disable, 1 - enable
- *
- * Return: 0 on success , <0 on error
- */
+ 
 static int mei_ioctl_client_notify_request(const struct file *file, u32 request)
 {
 	struct mei_cl *cl = file->private_data;
@@ -606,14 +513,7 @@ static int mei_ioctl_client_notify_request(const struct file *file, u32 request)
 	return mei_cl_notify_request(cl, file, (u8)request);
 }
 
-/**
- * mei_ioctl_client_notify_get -  wait for notification request
- *
- * @file: pointer to file structure
- * @notify_get: 0 - disable, 1 - enable
- *
- * Return: 0 on success , <0 on error
- */
+ 
 static int mei_ioctl_client_notify_get(const struct file *file, u32 *notify_get)
 {
 	struct mei_cl *cl = file->private_data;
@@ -629,15 +529,7 @@ static int mei_ioctl_client_notify_get(const struct file *file, u32 *notify_get)
 	return 0;
 }
 
-/**
- * mei_ioctl - the IOCTL function
- *
- * @file: pointer to file structure
- * @cmd: ioctl command
- * @data: pointer to mei message structure
- *
- * Return: 0 on success , <0 on error
- */
+ 
 static long mei_ioctl(struct file *file, unsigned int cmd, unsigned long data)
 {
 	struct mei_device *dev;
@@ -687,7 +579,7 @@ static long mei_ioctl(struct file *file, unsigned int cmd, unsigned long data)
 		if (rets)
 			goto out;
 
-		/* if all is ok, copying the data back to user. */
+		 
 		if (copy_to_user((char __user *)data, &conn, sizeof(conn))) {
 			dev_dbg(dev->dev, "failed to copy data to userland\n");
 			rets = -EFAULT;
@@ -726,7 +618,7 @@ static long mei_ioctl(struct file *file, unsigned int cmd, unsigned long data)
 		if (rets)
 			goto out;
 
-		/* if all is ok, copying the data back to user. */
+		 
 		if (copy_to_user((char __user *)data, &conn_vtag,
 				 sizeof(conn_vtag))) {
 			dev_dbg(dev->dev, "failed to copy data to userland\n");
@@ -772,14 +664,7 @@ out:
 	return rets;
 }
 
-/**
- * mei_poll - the poll function
- *
- * @file: pointer to file structure
- * @wait: pointer to poll_table structure
- *
- * Return: poll mask
- */
+ 
 static __poll_t mei_poll(struct file *file, poll_table *wait)
 {
 	__poll_t req_events = poll_requested_events(wait);
@@ -829,13 +714,7 @@ out:
 	return mask;
 }
 
-/**
- * mei_cl_is_write_queued - check if the client has pending writes.
- *
- * @cl: writing host client
- *
- * Return: true if client is writing, false otherwise.
- */
+ 
 static bool mei_cl_is_write_queued(struct mei_cl *cl)
 {
 	struct mei_device *dev = cl->dev;
@@ -850,16 +729,7 @@ static bool mei_cl_is_write_queued(struct mei_cl *cl)
 	return false;
 }
 
-/**
- * mei_fsync - the fsync handler
- *
- * @fp:       pointer to file structure
- * @start:    unused
- * @end:      unused
- * @datasync: unused
- *
- * Return: 0 on success, -ENODEV if client is not connected
- */
+ 
 static int mei_fsync(struct file *fp, loff_t start, loff_t end, int datasync)
 {
 	struct mei_cl *cl = fp->private_data;
@@ -900,17 +770,7 @@ out:
 	return rets;
 }
 
-/**
- * mei_fasync - asynchronous io support
- *
- * @fd: file descriptor
- * @file: pointer to file structure
- * @band: band bitmap
- *
- * Return: negative on error,
- *         0 if it did no changes,
- *         and positive a process was added or deleted
- */
+ 
 static int mei_fasync(int fd, struct file *file, int band)
 {
 
@@ -922,15 +782,7 @@ static int mei_fasync(int fd, struct file *file, int band)
 	return fasync_helper(fd, file, band, &cl->ev_async);
 }
 
-/**
- * trc_show - mei device trc attribute show method
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t trc_show(struct device *device,
 			struct device_attribute *attr, char *buf)
 {
@@ -945,15 +797,7 @@ static ssize_t trc_show(struct device *device,
 }
 static DEVICE_ATTR_RO(trc);
 
-/**
- * fw_status_show - mei device fw_status attribute show method
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t fw_status_show(struct device *device,
 		struct device_attribute *attr, char *buf)
 {
@@ -977,15 +821,7 @@ static ssize_t fw_status_show(struct device *device,
 }
 static DEVICE_ATTR_RO(fw_status);
 
-/**
- * hbm_ver_show - display HBM protocol version negotiated with FW
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t hbm_ver_show(struct device *device,
 			    struct device_attribute *attr, char *buf)
 {
@@ -1000,15 +836,7 @@ static ssize_t hbm_ver_show(struct device *device,
 }
 static DEVICE_ATTR_RO(hbm_ver);
 
-/**
- * hbm_ver_drv_show - display HBM protocol version advertised by driver
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t hbm_ver_drv_show(struct device *device,
 				struct device_attribute *attr, char *buf)
 {
@@ -1053,15 +881,7 @@ static ssize_t tx_queue_limit_store(struct device *device,
 }
 static DEVICE_ATTR_RW(tx_queue_limit);
 
-/**
- * fw_ver_show - display ME FW version
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t fw_ver_show(struct device *device,
 			   struct device_attribute *attr, char *buf)
 {
@@ -1080,15 +900,7 @@ static ssize_t fw_ver_show(struct device *device,
 }
 static DEVICE_ATTR_RO(fw_ver);
 
-/**
- * dev_state_show - display device state
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf:  char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t dev_state_show(struct device *device,
 			      struct device_attribute *attr, char *buf)
 {
@@ -1103,12 +915,7 @@ static ssize_t dev_state_show(struct device *device,
 }
 static DEVICE_ATTR_RO(dev_state);
 
-/**
- * mei_set_devstate: set to new device state and notify sysfs file.
- *
- * @dev: mei_device
- * @state: new device state
- */
+ 
 void mei_set_devstate(struct mei_device *dev, enum mei_dev_state state)
 {
 	struct device *clsdev;
@@ -1125,15 +932,7 @@ void mei_set_devstate(struct mei_device *dev, enum mei_dev_state state)
 	}
 }
 
-/**
- * kind_show - display device kind
- *
- * @device: device pointer
- * @attr: attribute pointer
- * @buf: char out buffer
- *
- * Return: number of the bytes printed into buf or error
- */
+ 
 static ssize_t kind_show(struct device *device,
 			 struct device_attribute *attr, char *buf)
 {
@@ -1162,9 +961,7 @@ static struct attribute *mei_attrs[] = {
 };
 ATTRIBUTE_GROUPS(mei);
 
-/*
- * file operations structure will be used for mei char device.
- */
+ 
 static const struct file_operations mei_fops = {
 	.owner = THIS_MODULE,
 	.read = mei_read,
@@ -1179,13 +976,7 @@ static const struct file_operations mei_fops = {
 	.llseek = no_llseek
 };
 
-/**
- * mei_minor_get - obtain next free device minor number
- *
- * @dev:  device pointer
- *
- * Return: allocated minor, or -ENOSPC if no free minor left
- */
+ 
 static int mei_minor_get(struct mei_device *dev)
 {
 	int ret;
@@ -1201,11 +992,7 @@ static int mei_minor_get(struct mei_device *dev)
 	return ret;
 }
 
-/**
- * mei_minor_free - mark device minor number as free
- *
- * @dev:  device pointer
- */
+ 
 static void mei_minor_free(struct mei_device *dev)
 {
 	mutex_lock(&mei_minor_lock);
@@ -1215,19 +1002,19 @@ static void mei_minor_free(struct mei_device *dev)
 
 int mei_register(struct mei_device *dev, struct device *parent)
 {
-	struct device *clsdev; /* class device */
+	struct device *clsdev;  
 	int ret, devno;
 
 	ret = mei_minor_get(dev);
 	if (ret < 0)
 		return ret;
 
-	/* Fill in the data structures */
+	 
 	devno = MKDEV(MAJOR(mei_devt), dev->minor);
 	cdev_init(&dev->cdev, &mei_fops);
 	dev->cdev.owner = parent->driver->owner;
 
-	/* Add the device */
+	 
 	ret = cdev_add(&dev->cdev, devno, 1);
 	if (ret) {
 		dev_err(parent, "unable to add device %d:%d\n",

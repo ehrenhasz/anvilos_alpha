@@ -1,15 +1,4 @@
-/*
- * Support of SDHCI platform devices for Microchip PIC32.
- *
- * Copyright (C) 2015 Microchip
- * Andrei Pistirica, Paul Thacker
- *
- * Inspired by sdhci-pltfm.c
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -73,7 +62,7 @@ static void pic32_sdhci_set_bus_width(struct sdhci_host *host, int width)
 			ctrl &= ~SDHCI_CTRL_4BITBUS;
 	}
 
-	/* CD select and test bits must be set for errata workaround. */
+	 
 	ctrl &= ~SDHCI_CTRL_CDTLVL;
 	ctrl |= SDHCI_CTRL_CDSSEL;
 	sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
@@ -81,10 +70,7 @@ static void pic32_sdhci_set_bus_width(struct sdhci_host *host, int width)
 
 static unsigned int pic32_sdhci_get_ro(struct sdhci_host *host)
 {
-	/*
-	 * The SDHCI_WRITE_PROTECT bit is unstable on current hardware so we
-	 * can't depend on its value in any way.
-	 */
+	 
 	return 0;
 }
 
@@ -110,11 +96,11 @@ static void pic32_sdhci_shared_bus(struct platform_device *pdev)
 	u32 clk_pins = (bus & SDH_SHARED_BUS_NR_CLK_PINS_MASK) >> 0;
 	u32 irq_pins = (bus & SDH_SHARED_BUS_NR_IRQ_PINS_MASK) >> 4;
 
-	/* select first clock */
+	 
 	if (clk_pins & 1)
 		bus |= (1 << SDH_SHARED_BUS_CLK_PINS);
 
-	/* select first interrupt */
+	 
 	if (irq_pins & 1)
 		bus |= (1 << SDH_SHARED_BUS_IRQ_PINS);
 
@@ -127,7 +113,7 @@ static void pic32_sdhci_probe_platform(struct platform_device *pdev,
 	u32 caps_slot_type;
 	struct sdhci_host *host = platform_get_drvdata(pdev);
 
-	/* Check card slot connected on shared bus. */
+	 
 	host->caps = readl(host->ioaddr + SDHCI_CAPABILITIES);
 	caps_slot_type = (host->caps & SDH_CAPS_SDH_SLOT_TYPE_MASK) >> 30;
 	if (caps_slot_type == SDH_SLOT_TYPE_SHARED_BUS)

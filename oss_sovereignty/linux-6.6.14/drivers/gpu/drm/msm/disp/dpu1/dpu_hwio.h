@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_HWIO_H
 #define _DPU_HWIO_H
 
 #include "dpu_hw_util.h"
 
-/**
- * MDP TOP block Register and bit fields and defines
- */
+ 
 #define DISP_INTF_SEL                   0x004
 #define INTR_EN                         0x010
 #define INTR_STATUS                     0x014
@@ -63,4 +60,4 @@
 #define MDP_PERIPH_TOP0			MDP_WD_TIMER_0_CTL
 #define MDP_PERIPH_TOP0_END		CLK_CTRL3
 
-#endif /*_DPU_HWIO_H */
+#endif  

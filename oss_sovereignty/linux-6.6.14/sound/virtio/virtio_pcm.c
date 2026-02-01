@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+
+ 
 #include <linux/moduleparam.h>
 #include <linux/virtio_config.h>
 
@@ -28,7 +25,7 @@ static u32 pcm_period_ms_max = 80;
 module_param(pcm_period_ms_max, uint, 0644);
 MODULE_PARM_DESC(pcm_period_ms_max, "Maximum PCM period time in milliseconds");
 
-/* Map for converting VirtIO format to ALSA format. */
+ 
 static const snd_pcm_format_t g_v2a_format_map[] = {
 	[VIRTIO_SND_PCM_FMT_IMA_ADPCM] = SNDRV_PCM_FORMAT_IMA_ADPCM,
 	[VIRTIO_SND_PCM_FMT_MU_LAW] = SNDRV_PCM_FORMAT_MU_LAW,
@@ -58,7 +55,7 @@ static const snd_pcm_format_t g_v2a_format_map[] = {
 		SNDRV_PCM_FORMAT_IEC958_SUBFRAME_LE
 };
 
-/* Map for converting VirtIO frame rate to ALSA frame rate. */
+ 
 struct virtsnd_v2a_rate {
 	unsigned int alsa_bit;
 	unsigned int rate;
@@ -80,14 +77,7 @@ static const struct virtsnd_v2a_rate g_v2a_rate_map[] = {
 	[VIRTIO_SND_PCM_RATE_192000] = { SNDRV_PCM_RATE_192000, 192000 }
 };
 
-/**
- * virtsnd_pcm_build_hw() - Parse substream config and build HW descriptor.
- * @vss: VirtIO substream.
- * @info: VirtIO substream information entry.
- *
- * Context: Any context.
- * Return: 0 on success, -EINVAL if configuration is invalid.
- */
+ 
 static int virtsnd_pcm_build_hw(struct virtio_pcm_substream *vss,
 				struct virtio_snd_pcm_info *info)
 {
@@ -99,10 +89,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_substream *vss,
 
 	vss->features = le32_to_cpu(info->features);
 
-	/*
-	 * TODO: set SNDRV_PCM_INFO_{BATCH,BLOCK_TRANSFER} if device supports
-	 * only message-based transport.
-	 */
+	 
 	vss->hw.info =
 		SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_MMAP_VALID |
@@ -172,32 +159,17 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_substream *vss,
 	vss->hw.periods_min = pcm_periods_min;
 	vss->hw.periods_max = pcm_periods_max;
 
-	/*
-	 * We must ensure that there is enough space in the buffer to store
-	 * pcm_buffer_ms ms for the combination (Cmax, Smax, Rmax), where:
-	 *   Cmax = maximum supported number of channels,
-	 *   Smax = maximum supported sample size in bytes,
-	 *   Rmax = maximum supported frame rate.
-	 */
+	 
 	vss->hw.buffer_bytes_max =
 		PAGE_ALIGN(sample_max * vss->hw.channels_max * pcm_buffer_ms *
 			   (vss->hw.rate_max / MSEC_PER_SEC));
 
-	/*
-	 * We must ensure that the minimum period size is enough to store
-	 * pcm_period_ms_min ms for the combination (Cmin, Smin, Rmin), where:
-	 *   Cmin = minimum supported number of channels,
-	 *   Smin = minimum supported sample size in bytes,
-	 *   Rmin = minimum supported frame rate.
-	 */
+	 
 	vss->hw.period_bytes_min =
 		sample_min * vss->hw.channels_min * pcm_period_ms_min *
 		(vss->hw.rate_min / MSEC_PER_SEC);
 
-	/*
-	 * We must ensure that the maximum period size is enough to store
-	 * pcm_period_ms_max ms for the combination (Cmax, Smax, Rmax).
-	 */
+	 
 	vss->hw.period_bytes_max =
 		sample_max * vss->hw.channels_max * pcm_period_ms_max *
 		(vss->hw.rate_max / MSEC_PER_SEC);
@@ -205,14 +177,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_substream *vss,
 	return 0;
 }
 
-/**
- * virtsnd_pcm_find() - Find the PCM device for the specified node ID.
- * @snd: VirtIO sound device.
- * @nid: Function node ID.
- *
- * Context: Any context.
- * Return: a pointer to the PCM device or ERR_PTR(-ENOENT).
- */
+ 
 struct virtio_pcm *virtsnd_pcm_find(struct virtio_snd *snd, u32 nid)
 {
 	struct virtio_pcm *vpcm;
@@ -224,15 +189,7 @@ struct virtio_pcm *virtsnd_pcm_find(struct virtio_snd *snd, u32 nid)
 	return ERR_PTR(-ENOENT);
 }
 
-/**
- * virtsnd_pcm_find_or_create() - Find or create the PCM device for the
- *                                specified node ID.
- * @snd: VirtIO sound device.
- * @nid: Function node ID.
- *
- * Context: Any context that permits to sleep.
- * Return: a pointer to the PCM device or ERR_PTR(-errno).
- */
+ 
 struct virtio_pcm *virtsnd_pcm_find_or_create(struct virtio_snd *snd, u32 nid)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -252,13 +209,7 @@ struct virtio_pcm *virtsnd_pcm_find_or_create(struct virtio_snd *snd, u32 nid)
 	return vpcm;
 }
 
-/**
- * virtsnd_pcm_validate() - Validate if the device can be started.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context.
- * Return: 0 on success, -EINVAL on failure.
- */
+ 
 int virtsnd_pcm_validate(struct virtio_device *vdev)
 {
 	if (pcm_periods_min < 2 || pcm_periods_min > pcm_periods_max) {
@@ -292,17 +243,7 @@ int virtsnd_pcm_validate(struct virtio_device *vdev)
 	return 0;
 }
 
-/**
- * virtsnd_pcm_period_elapsed() - Kernel work function to handle the elapsed
- *                                period state.
- * @work: Elapsed period work.
- *
- * The main purpose of this function is to call snd_pcm_period_elapsed() in
- * a process context, not in an interrupt context. This is necessary because PCM
- * devices operate in non-atomic mode.
- *
- * Context: Process context.
- */
+ 
 static void virtsnd_pcm_period_elapsed(struct work_struct *work)
 {
 	struct virtio_pcm_substream *vss =
@@ -311,15 +252,7 @@ static void virtsnd_pcm_period_elapsed(struct work_struct *work)
 	snd_pcm_period_elapsed(vss->substream);
 }
 
-/**
- * virtsnd_pcm_parse_cfg() - Parse the stream configuration.
- * @snd: VirtIO sound device.
- *
- * This function is called during initial device initialization.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_pcm_parse_cfg(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -391,13 +324,7 @@ on_exit:
 	return rc;
 }
 
-/**
- * virtsnd_pcm_build_devs() - Build ALSA PCM devices.
- * @snd: VirtIO sound device.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_pcm_build_devs(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -482,13 +409,7 @@ int virtsnd_pcm_build_devs(struct virtio_snd *snd)
 	return 0;
 }
 
-/**
- * virtsnd_pcm_event() - Handle the PCM device event notification.
- * @snd: VirtIO sound device.
- * @event: VirtIO sound event.
- *
- * Context: Interrupt context.
- */
+ 
 void virtsnd_pcm_event(struct virtio_snd *snd, struct virtio_snd_event *event)
 {
 	struct virtio_pcm_substream *vss;
@@ -501,7 +422,7 @@ void virtsnd_pcm_event(struct virtio_snd *snd, struct virtio_snd_event *event)
 
 	switch (le32_to_cpu(event->hdr.code)) {
 	case VIRTIO_SND_EVT_PCM_PERIOD_ELAPSED:
-		/* TODO: deal with shmem elapsed period */
+		 
 		break;
 	case VIRTIO_SND_EVT_PCM_XRUN:
 		spin_lock(&vss->lock);

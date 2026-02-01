@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -59,7 +56,7 @@ xfs_allocbt_alloc_block(
 	int			error;
 	xfs_agblock_t		bno;
 
-	/* Allocate the new block from the freelist. If we can't, give up.  */
+	 
 	error = xfs_alloc_get_freelist(cur->bc_ag.pag, cur->bc_tp,
 			cur->bc_ag.agbp, &bno, 1);
 	if (error)
@@ -100,9 +97,7 @@ xfs_allocbt_free_block(
 	return 0;
 }
 
-/*
- * Update the longest extent in the AGF
- */
+ 
 STATIC void
 xfs_allocbt_update_lastrec(
 	struct xfs_btree_cur		*cur,
@@ -120,10 +115,7 @@ xfs_allocbt_update_lastrec(
 
 	switch (reason) {
 	case LASTREC_UPDATE:
-		/*
-		 * If this is the last leaf block and it's the last record,
-		 * then update the size of the longest extent in the AG.
-		 */
+		 
 		if (ptr != xfs_btree_get_numrecs(block))
 			return;
 		len = rec->alloc.ar_blockcount;
@@ -310,15 +302,7 @@ xfs_allocbt_verify(
 			return fa;
 	}
 
-	/*
-	 * The perag may not be attached during grow operations or fully
-	 * initialized from the AGF during log recovery. Therefore we can only
-	 * check against maximum tree depth from those contexts.
-	 *
-	 * Otherwise check against the per-tree limit. Peek at one of the
-	 * verifier magic values to determine the type of tree we're verifying
-	 * against.
-	 */
+	 
 	level = be16_to_cpu(block->bb_level);
 	if (bp->b_ops->magic[0] == cpu_to_be32(XFS_ABTC_MAGIC))
 		btnum = XFS_BTNUM_CNTi;
@@ -486,10 +470,10 @@ static const struct xfs_btree_ops xfs_cntbt_ops = {
 	.diff_two_keys		= xfs_cntbt_diff_two_keys,
 	.keys_inorder		= xfs_cntbt_keys_inorder,
 	.recs_inorder		= xfs_cntbt_recs_inorder,
-	.keys_contiguous	= NULL, /* not needed right now */
+	.keys_contiguous	= NULL,  
 };
 
-/* Allocate most of a new allocation btree cursor. */
+ 
 STATIC struct xfs_btree_cur *
 xfs_allocbt_init_common(
 	struct xfs_mount	*mp,
@@ -522,16 +506,14 @@ xfs_allocbt_init_common(
 	return cur;
 }
 
-/*
- * Allocate a new allocation btree cursor.
- */
-struct xfs_btree_cur *			/* new alloc btree cursor */
+ 
+struct xfs_btree_cur *			 
 xfs_allocbt_init_cursor(
-	struct xfs_mount	*mp,		/* file system mount point */
-	struct xfs_trans	*tp,		/* transaction pointer */
-	struct xfs_buf		*agbp,		/* buffer for agf structure */
+	struct xfs_mount	*mp,		 
+	struct xfs_trans	*tp,		 
+	struct xfs_buf		*agbp,		 
 	struct xfs_perag	*pag,
-	xfs_btnum_t		btnum)		/* btree identifier */
+	xfs_btnum_t		btnum)		 
 {
 	struct xfs_agf		*agf = agbp->b_addr;
 	struct xfs_btree_cur	*cur;
@@ -547,7 +529,7 @@ xfs_allocbt_init_cursor(
 	return cur;
 }
 
-/* Create a free space btree cursor with a fake root for staging. */
+ 
 struct xfs_btree_cur *
 xfs_allocbt_stage_cursor(
 	struct xfs_mount	*mp,
@@ -562,10 +544,7 @@ xfs_allocbt_stage_cursor(
 	return cur;
 }
 
-/*
- * Install a new free space btree root.  Caller is responsible for invalidating
- * and freeing the old btree blocks.
- */
+ 
 void
 xfs_allocbt_commit_staged_btree(
 	struct xfs_btree_cur	*cur,
@@ -589,7 +568,7 @@ xfs_allocbt_commit_staged_btree(
 	}
 }
 
-/* Calculate number of records in an alloc btree block. */
+ 
 static inline unsigned int
 xfs_allocbt_block_maxrecs(
 	unsigned int		blocklen,
@@ -600,9 +579,7 @@ xfs_allocbt_block_maxrecs(
 	return blocklen / (sizeof(xfs_alloc_key_t) + sizeof(xfs_alloc_ptr_t));
 }
 
-/*
- * Calculate number of records in an alloc btree block.
- */
+ 
 int
 xfs_allocbt_maxrecs(
 	struct xfs_mount	*mp,
@@ -613,10 +590,10 @@ xfs_allocbt_maxrecs(
 	return xfs_allocbt_block_maxrecs(blocklen, leaf);
 }
 
-/* Free space btrees are at their largest when every other block is free. */
+ 
 #define XFS_MAX_FREESP_RECORDS	((XFS_MAX_AG_BLOCKS + 1) / 2)
 
-/* Compute the max possible height for free space btrees. */
+ 
 unsigned int
 xfs_allocbt_maxlevels_ondisk(void)
 {
@@ -632,7 +609,7 @@ xfs_allocbt_maxlevels_ondisk(void)
 	return xfs_btree_compute_maxlevels(minrecs, XFS_MAX_FREESP_RECORDS);
 }
 
-/* Calculate the freespace btree size for some records. */
+ 
 xfs_extlen_t
 xfs_allocbt_calc_size(
 	struct xfs_mount	*mp,

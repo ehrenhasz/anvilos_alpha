@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 TOSHIBA CORPORATION
- * Copyright (c) 2020 Toshiba Electronic Devices & Storage Corporation
- * Copyright (c) 2020 Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -20,7 +16,7 @@
 
 #define DSEL_MASK GENMASK(3, 0)
 
-/* private data */
+ 
 struct visconti_pinctrl {
 	void __iomem *base;
 	struct device *dev;
@@ -29,10 +25,10 @@ struct visconti_pinctrl {
 
 	const struct visconti_pinctrl_devdata  *devdata;
 
-	spinlock_t lock; /* protect pinctrl register */
+	spinlock_t lock;  
 };
 
-/* pinconf */
+ 
 static int visconti_pin_config_set(struct pinctrl_dev *pctldev,
 				  unsigned int _pin,
 				  unsigned long *configs,
@@ -60,7 +56,7 @@ static int visconti_pin_config_set(struct pinctrl_dev *pctldev,
 			set_val = 1;
 			fallthrough;
 		case PIN_CONFIG_BIAS_PULL_DOWN:
-			/* update pudsel setting */
+			 
 			val = readl(priv->base + pin->pudsel_offset);
 			val &= ~BIT(pin->pud_shift);
 			val |= set_val << pin->pud_shift;
@@ -68,7 +64,7 @@ static int visconti_pin_config_set(struct pinctrl_dev *pctldev,
 			pude_val = 1;
 			fallthrough;
 		case PIN_CONFIG_BIAS_DISABLE:
-			/* update pude setting */
+			 
 			val = readl(priv->base + pin->pude_offset);
 			val &= ~BIT(pin->pud_shift);
 			val |= pude_val << pin->pud_shift;
@@ -87,22 +83,14 @@ static int visconti_pin_config_set(struct pinctrl_dev *pctldev,
 			case 16:
 			case 24:
 			case 32:
-				/*
-				 * I/O drive capacity setting:
-				 * 2mA: 0
-				 * 4mA: 1
-				 * 8mA: 3
-				 * 16mA: 7
-				 * 24mA: 11
-				 * 32mA: 15
-				 */
+				 
 				set_val = DIV_ROUND_CLOSEST(arg, 2) - 1;
 				break;
 			default:
 				ret = -EINVAL;
 				goto err;
 			}
-			/* update drive setting */
+			 
 			val = readl(priv->base + pin->dsel_offset);
 			val &= ~(DSEL_MASK << pin->dsel_shift);
 			val |= set_val << pin->dsel_shift;
@@ -151,7 +139,7 @@ static const struct pinconf_ops visconti_pinconf_ops = {
 	.pin_config_config_dbg_show	= pinconf_generic_dump_config,
 };
 
-/* pinctrl */
+ 
 static int visconti_get_groups_count(struct pinctrl_dev *pctldev)
 {
 	struct visconti_pinctrl *priv = pinctrl_dev_get_drvdata(pctldev);
@@ -188,7 +176,7 @@ static const struct pinctrl_ops visconti_pinctrl_ops = {
 	.dt_free_map		= pinctrl_utils_free_map,
 };
 
-/* pinmux */
+ 
 static int visconti_get_functions_count(struct pinctrl_dev *pctldev)
 {
 	struct visconti_pinctrl *priv = pinctrl_dev_get_drvdata(pctldev);
@@ -232,7 +220,7 @@ static int visconti_set_mux(struct pinctrl_dev *pctldev,
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-	/* update mux */
+	 
 	val = readl(priv->base + mux->offset);
 	val &= ~mux->mask;
 	val |= mux->val;
@@ -256,7 +244,7 @@ static int visconti_gpio_request_enable(struct pinctrl_dev *pctldev,
 
 	dev_dbg(priv->dev, "%s: pin = %d\n", __func__, pin);
 
-	/* update mux */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	val = readl(priv->base + gpio_mux->offset);
 	val &= ~gpio_mux->mask;

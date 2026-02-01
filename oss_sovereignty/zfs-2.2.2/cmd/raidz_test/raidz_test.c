@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/time.h>
@@ -43,10 +22,7 @@ static void sig_handler(int signo)
 {
 	int old_errno = errno;
 	struct sigaction action;
-	/*
-	 * Restore default action and re-raise signal so SIGSEGV and
-	 * SIGABRT can trigger a core dump.
-	 */
+	 
 	action.sa_handler = SIG_DFL;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = 0;
@@ -93,14 +69,14 @@ static void print_opts(raidz_test_opts_t *opts, boolean_t force)
 		    "  (-s) size of DATA                 : 1 << %zu\n"
 		    "  (-S) sweep parameters             : %s \n"
 		    "  (-v) verbose                      : %s \n\n",
-		    opts->rto_ashift,				/* -a */
-		    ilog2(opts->rto_offset),			/* -o */
-		    opts->rto_expand ? "yes" : "no",		/* -e */
-		    (u_longlong_t)opts->rto_expand_offset,	/* -r */
-		    opts->rto_dcols,				/* -d */
-		    ilog2(opts->rto_dsize),			/* -s */
-		    opts->rto_sweep ? "yes" : "no",		/* -S */
-		    verbose);					/* -v */
+		    opts->rto_ashift,				 
+		    ilog2(opts->rto_offset),			 
+		    opts->rto_expand ? "yes" : "no",		 
+		    (u_longlong_t)opts->rto_expand_offset,	 
+		    opts->rto_dcols,				 
+		    ilog2(opts->rto_dsize),			 
+		    opts->rto_sweep ? "yes" : "no",		 
+		    verbose);					 
 	}
 }
 
@@ -125,14 +101,14 @@ static void usage(boolean_t requested)
 	    "\t[-T test the test, see if failure would be detected]\n"
 	    "\t[-D debug (attach gdb on SIGSEGV)]\n"
 	    "",
-	    o->rto_ashift,				/* -a */
-	    ilog2(o->rto_offset),			/* -o */
-	    o->rto_dcols,				/* -d */
-	    ilog2(o->rto_dsize),			/* -s */
-	    rto_opts.rto_sweep ? "yes" : "no",		/* -S */
-	    rto_opts.rto_expand ? "yes" : "no",		/* -e */
-	    (u_longlong_t)o->rto_expand_offset,		/* -r */
-	    o->rto_v);					/* -v */
+	    o->rto_ashift,				 
+	    ilog2(o->rto_offset),			 
+	    o->rto_dcols,				 
+	    ilog2(o->rto_dsize),			 
+	    rto_opts.rto_sweep ? "yes" : "no",		 
+	    rto_opts.rto_expand ? "yes" : "no",		 
+	    (u_longlong_t)o->rto_expand_offset,		 
+	    o->rto_v);					 
 
 	exit(requested ? 0 : 1);
 }
@@ -348,61 +324,42 @@ init_raidz_golden_map(raidz_test_opts_t *opts, const int parity)
 	vdev_raidz_generate_parity(opts->rm_golden);
 	vdev_raidz_generate_parity(rm_test);
 
-	/* sanity check */
+	 
 	err |= cmp_data(opts, rm_test);
 	err |= cmp_code(opts, rm_test, parity);
 
 	if (err)
 		ERR("initializing the golden copy ... [FAIL]!\n");
 
-	/* tear down raidz_map of test zio */
+	 
 	fini_raidz_map(&zio_test, &rm_test);
 
 	return (err);
 }
 
-/*
- * If reflow is not in progress, reflow_offset should be UINT64_MAX.
- * For each row, if the row is entirely before reflow_offset, it will
- * come from the new location.  Otherwise this row will come from the
- * old location.  Therefore, rows that straddle the reflow_offset will
- * come from the old location.
- *
- * NOTE: Until raidz expansion is implemented this function is only
- * needed by raidz_test.c to the multi-row raid_map_t functionality.
- */
+ 
 raidz_map_t *
 vdev_raidz_map_alloc_expanded(abd_t *abd, uint64_t size, uint64_t offset,
     uint64_t ashift, uint64_t physical_cols, uint64_t logical_cols,
     uint64_t nparity, uint64_t reflow_offset)
 {
-	/* The zio's size in units of the vdev's minimum sector size. */
+	 
 	uint64_t s = size >> ashift;
 	uint64_t q, r, bc, devidx, asize = 0, tot;
 
-	/*
-	 * "Quotient": The number of data sectors for this stripe on all but
-	 * the "big column" child vdevs that also contain "remainder" data.
-	 * AKA "full rows"
-	 */
+	 
 	q = s / (logical_cols - nparity);
 
-	/*
-	 * "Remainder": The number of partial stripe data sectors in this I/O.
-	 * This will add a sector to some, but not all, child vdevs.
-	 */
+	 
 	r = s - q * (logical_cols - nparity);
 
-	/* The number of "big columns" - those which contain remainder data. */
+	 
 	bc = (r == 0 ? 0 : r + nparity);
 
-	/*
-	 * The total number of data and parity sectors associated with
-	 * this I/O.
-	 */
+	 
 	tot = s + nparity * (q + (r == 0 ? 0 : 1));
 
-	/* How many rows contain data (not skip) */
+	 
 	uint64_t rows = howmany(tot, logical_cols);
 	int cols = MIN(tot, logical_cols);
 
@@ -415,37 +372,20 @@ vdev_raidz_map_alloc_expanded(abd_t *abd, uint64_t size, uint64_t offset,
 		    rr_col[cols]), KM_SLEEP);
 		rm->rm_row[row] = rr;
 
-		/* The starting RAIDZ (parent) vdev sector of the row. */
+		 
 		uint64_t b = (offset >> ashift) + row * logical_cols;
 
-		/*
-		 * If we are in the middle of a reflow, and any part of this
-		 * row has not been copied, then use the old location of
-		 * this row.
-		 */
+		 
 		int row_phys_cols = physical_cols;
 		if (b + (logical_cols - nparity) > reflow_offset >> ashift)
 			row_phys_cols--;
 
-		/* starting child of this row */
+		 
 		uint64_t child_id = b % row_phys_cols;
-		/* The starting byte offset on each child vdev. */
+		 
 		uint64_t child_offset = (b / row_phys_cols) << ashift;
 
-		/*
-		 * We set cols to the entire width of the block, even
-		 * if this row is shorter.  This is needed because parity
-		 * generation (for Q and R) needs to know the entire width,
-		 * because it treats the short row as though it was
-		 * full-width (and the "phantom" sectors were zero-filled).
-		 *
-		 * Another approach to this would be to set cols shorter
-		 * (to just the number of columns that we might do i/o to)
-		 * and have another mechanism to tell the parity generation
-		 * about the "entire width".  Reconstruction (at least
-		 * vdev_raidz_reconstruct_general()) would also need to
-		 * know about the "entire width".
-		 */
+		 
 		rr->rr_cols = cols;
 		rr->rr_bigcols = bc;
 		rr->rr_missingdata = 0;
@@ -474,16 +414,11 @@ vdev_raidz_map_alloc_expanded(abd_t *abd, uint64_t size, uint64_t offset,
 				    abd_alloc_linear(rr->rr_col[c].rc_size,
 				    B_TRUE);
 			} else if (row == rows - 1 && bc != 0 && c >= bc) {
-				/*
-				 * Past the end, this for parity generation.
-				 */
+				 
 				rr->rr_col[c].rc_size = 0;
 				rr->rr_col[c].rc_abd = NULL;
 			} else {
-				/*
-				 * "data column" (col excluding parity)
-				 * Add an ASCII art diagram here
-				 */
+				 
 				uint64_t off;
 
 				if (c < bc || r == 0) {
@@ -500,27 +435,7 @@ vdev_raidz_map_alloc_expanded(abd_t *abd, uint64_t size, uint64_t offset,
 
 			asize += rr->rr_col[c].rc_size;
 		}
-		/*
-		 * If all data stored spans all columns, there's a danger that
-		 * parity will always be on the same device and, since parity
-		 * isn't read during normal operation, that that device's I/O
-		 * bandwidth won't be used effectively. We therefore switch
-		 * the parity every 1MB.
-		 *
-		 * ...at least that was, ostensibly, the theory. As a practical
-		 * matter unless we juggle the parity between all devices
-		 * evenly, we won't see any benefit. Further, occasional writes
-		 * that aren't a multiple of the LCM of the number of children
-		 * and the minimum stripe width are sufficient to avoid pessimal
-		 * behavior. Unfortunately, this decision created an implicit
-		 * on-disk format requirement that we need to support for all
-		 * eternity, but only for single-parity RAID-Z.
-		 *
-		 * If we intend to skip a sector in the zeroth column for
-		 * padding we must make sure to note this swap. We will never
-		 * intend to skip the first column since at least one data and
-		 * one parity column must appear in each row.
-		 */
+		 
 		if (rr->rr_firstdatacol == 1 && rr->rr_cols > 1 &&
 		    (offset & (1ULL << 20))) {
 			ASSERT(rr->rr_cols >= 2);
@@ -536,7 +451,7 @@ vdev_raidz_map_alloc_expanded(abd_t *abd, uint64_t size, uint64_t offset,
 	}
 	ASSERT3U(asize, ==, tot << ashift);
 
-	/* init RAIDZ parity ops */
+	 
 	rm->rm_ops = vdev_raidz_math_get_ops();
 
 	return (rm);
@@ -571,7 +486,7 @@ init_raidz_map(raidz_test_opts_t *opts, zio_t **zio, const int parity)
 	}
 	VERIFY(rm);
 
-	/* Make sure code columns are destroyed */
+	 
 	corrupt_colums(rm, ccols, parity);
 
 	return (rm);
@@ -607,11 +522,11 @@ run_gen_check(raidz_test_opts_t *opts)
 
 		for (fn = 0; fn < RAIDZ_GEN_NUM; fn++) {
 
-			/* Check if should stop */
+			 
 			if (rto_opts.rto_should_stop)
 				return (err);
 
-			/* create suitable raidz_map */
+			 
 			rm_test = init_raidz_map(opts, &zio_test, fn+1);
 			VERIFY(rm_test);
 
@@ -643,24 +558,24 @@ run_rec_check_impl(raidz_test_opts_t *opts, raidz_map_t *rm, const int fn)
 	int tgtidx[3];
 	int err = 0;
 	static const int rec_tgts[7][3] = {
-		{1, 2, 3},	/* rec_p:   bad QR & D[0]	*/
-		{0, 2, 3},	/* rec_q:   bad PR & D[0]	*/
-		{0, 1, 3},	/* rec_r:   bad PQ & D[0]	*/
-		{2, 3, 4},	/* rec_pq:  bad R  & D[0][1]	*/
-		{1, 3, 4},	/* rec_pr:  bad Q  & D[0][1]	*/
-		{0, 3, 4},	/* rec_qr:  bad P  & D[0][1]	*/
-		{3, 4, 5}	/* rec_pqr: bad    & D[0][1][2] */
+		{1, 2, 3},	 
+		{0, 2, 3},	 
+		{0, 1, 3},	 
+		{2, 3, 4},	 
+		{1, 3, 4},	 
+		{0, 3, 4},	 
+		{3, 4, 5}	 
 	};
 
 	memcpy(tgtidx, rec_tgts[fn], sizeof (tgtidx));
 
 	if (fn < RAIDZ_REC_PQ) {
-		/* can reconstruct 1 failed data disk */
+		 
 		for (x0 = 0; x0 < opts->rto_dcols; x0++) {
 			if (x0 >= rm->rm_row[0]->rr_cols - raidz_parity(rm))
 				continue;
 
-			/* Check if should stop */
+			 
 			if (rto_opts.rto_should_stop)
 				return (err);
 
@@ -680,7 +595,7 @@ run_rec_check_impl(raidz_test_opts_t *opts, raidz_map_t *rm, const int fn)
 		}
 
 	} else if (fn < RAIDZ_REC_PQR) {
-		/* can reconstruct 2 failed data disk */
+		 
 		for (x0 = 0; x0 < opts->rto_dcols; x0++) {
 			if (x0 >= rm->rm_row[0]->rr_cols - raidz_parity(rm))
 				continue;
@@ -689,7 +604,7 @@ run_rec_check_impl(raidz_test_opts_t *opts, raidz_map_t *rm, const int fn)
 				    raidz_parity(rm))
 					continue;
 
-				/* Check if should stop */
+				 
 				if (rto_opts.rto_should_stop)
 					return (err);
 
@@ -711,7 +626,7 @@ run_rec_check_impl(raidz_test_opts_t *opts, raidz_map_t *rm, const int fn)
 			}
 		}
 	} else {
-		/* can reconstruct 3 failed data disk */
+		 
 		for (x0 = 0; x0 < opts->rto_dcols; x0++) {
 			if (x0 >= rm->rm_row[0]->rr_cols - raidz_parity(rm))
 				continue;
@@ -724,7 +639,7 @@ run_rec_check_impl(raidz_test_opts_t *opts, raidz_map_t *rm, const int fn)
 					    raidz_parity(rm))
 						continue;
 
-					/* Check if should stop */
+					 
 					if (rto_opts.rto_should_stop)
 						return (err);
 
@@ -781,9 +696,9 @@ run_rec_check(raidz_test_opts_t *opts)
 			LOG(D_INFO, "[SUPPORTED]\n");
 
 
-		/* create suitable raidz_map */
+		 
 		rm_test = init_raidz_map(opts, &zio_test, PARITY_PQR);
-		/* generate parity */
+		 
 		vdev_raidz_generate_parity(rm_test);
 
 		for (fn = 0; fn < RAIDZ_REC_NUM; fn++) {
@@ -799,7 +714,7 @@ run_rec_check(raidz_test_opts_t *opts)
 				LOG(D_INFO, "[PASS]\n");
 
 		}
-		/* tear down test raidz_map */
+		 
 		fini_raidz_map(&zio_test, &rm_test);
 	}
 
@@ -847,7 +762,7 @@ sweep_thread(void *arg)
 	err = run_test(opts);
 
 	if (rto_opts.rto_sanity) {
-		/* 25% chance that a sweep test fails */
+		 
 		if (rand() < (RAND_MAX/4))
 			err = 1;
 	}
@@ -861,7 +776,7 @@ sweep_thread(void *arg)
 
 	umem_free(opts, sizeof (raidz_test_opts_t));
 
-	/* signal the next thread */
+	 
 	mutex_enter(&sem_mtx);
 	free_slots++;
 	cv_signal(&sem_cv);
@@ -904,12 +819,12 @@ run_sweep(void)
 		if (++tried_comb % 20 == 0)
 			LOG(D_ALL, "%lu/%lu... ", tried_comb, total_comb);
 
-		/* wait for signal to start new thread */
+		 
 		mutex_enter(&sem_mtx);
 		while (cv_timedwait_sig(&sem_cv, &sem_mtx,
 		    ddi_get_lbolt() + hz)) {
 
-			/* check if should stop the test (timeout) */
+			 
 			time_diff = (gethrtime() - start_time) / NANOSEC;
 			if (rto_opts.rto_sweep_timeout > 0 &&
 			    time_diff >= rto_opts.rto_sweep_timeout) {
@@ -919,13 +834,13 @@ run_sweep(void)
 				goto exit;
 			}
 
-			/* check if should stop the test (error) */
+			 
 			if (sweep_state != SWEEP_RUNNING) {
 				mutex_exit(&sem_mtx);
 				goto exit;
 			}
 
-			/* exit loop if a slot is available */
+			 
 			if (free_slots > 0) {
 				break;
 			}
@@ -941,7 +856,7 @@ run_sweep(void)
 		opts->rto_dsize = size_v[s];
 		opts->rto_expand = rto_opts.rto_expand;
 		opts->rto_expand_offset = rto_opts.rto_expand_offset;
-		opts->rto_v = 0; /* be quiet */
+		opts->rto_v = 0;  
 
 		VERIFY3P(thread_create(NULL, 0, sweep_thread, (void *) opts,
 		    0, NULL, TS_RUN, defclsyspri), !=, NULL);
@@ -981,7 +896,7 @@ main(int argc, char **argv)
 	struct sigaction action;
 	int err = 0;
 
-	/* init gdb pid string early */
+	 
 	(void) sprintf(pid_s, "%d", getpid());
 
 	action.sa_handler = sig_handler;
@@ -1001,7 +916,7 @@ main(int argc, char **argv)
 
 	kernel_init(SPA_MODE_READ);
 
-	/* setup random data because rand() is not reentrant */
+	 
 	rand_data = (int *)umem_alloc(SPA_MAXBLOCKSIZE, UMEM_NOFAIL);
 	srand((unsigned)time(NULL) * getpid());
 	for (i = 0; i < SPA_MAXBLOCKSIZE / sizeof (int); i++)

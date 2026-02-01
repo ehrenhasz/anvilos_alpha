@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/bounds.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -120,15 +120,15 @@ __naked void based_on_zero_extended_mov(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r2 = 0x0000'0000'ffff'ffff */		\
+	 		\
 	w2 = 0xffffffff;				\
-	/* r2 = 0 */					\
+	 					\
 	r2 >>= 32;					\
-	/* no-op */					\
+	 					\
 	r0 += r2;					\
-	/* access at offset 0 */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -151,15 +151,15 @@ __naked void on_sign_extended_mov_test1(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r2 = 0xffff'ffff'ffff'ffff */		\
+	 		\
 	r2 = 0xffffffff;				\
-	/* r2 = 0xffff'ffff */				\
+	 				\
 	r2 >>= 32;					\
-	/* r0 = <oob pointer> */			\
+	 			\
 	r0 += r2;					\
-	/* access to OOB pointer */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -182,15 +182,15 @@ __naked void on_sign_extended_mov_test2(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r2 = 0xffff'ffff'ffff'ffff */		\
+	 		\
 	r2 = 0xffffffff;				\
-	/* r2 = 0xfff'ffff */				\
+	 				\
 	r2 >>= 36;					\
-	/* r0 = <oob pointer> */			\
+	 			\
 	r0 += r2;					\
-	/* access to OOB pointer */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -271,24 +271,24 @@ __naked void of_non_boundary_crossing_range(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r1 = [0x00, 0xff] */				\
+	 				\
 	r1 = *(u8*)(r0 + 0);				\
 	r2 = 1;						\
-	/* r2 = 0x10'0000'0000 */			\
+	 			\
 	r2 <<= 36;					\
-	/* r1 = [0x10'0000'0000, 0x10'0000'00ff] */	\
+	 	\
 	r1 += r2;					\
-	/* r1 = [0x10'7fff'ffff, 0x10'8000'00fe] */	\
+	 	\
 	r1 += 0x7fffffff;				\
-	/* r1 = [0x00, 0xff] */				\
+	 				\
 	w1 -= 0x7fffffff;				\
-	/* r1 = 0 */					\
+	 					\
 	r1 >>= 8;					\
-	/* no-op */					\
+	 					\
 	r0 += r1;					\
-	/* access at offset 0 */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -313,23 +313,19 @@ __naked void of_boundary_crossing_range_1(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r1 = [0x00, 0xff] */				\
+	 				\
 	r1 = *(u8*)(r0 + 0);				\
 	r1 += %[__imm_0];				\
-	/* r1 = [0xffff'ff80, 0x1'0000'007f] */		\
+	 		\
 	r1 += %[__imm_0];				\
-	/* r1 = [0xffff'ff80, 0xffff'ffff] or		\
-	 *      [0x0000'0000, 0x0000'007f]		\
-	 */						\
+	 						\
 	w1 += 0;					\
 	r1 -= %[__imm_0];				\
-	/* r1 = [0x00, 0xff] or				\
-	 *      [0xffff'ffff'0000'0080, 0xffff'ffff'ffff'ffff]\
-	 */						\
+	 						\
 	r1 -= %[__imm_0];				\
-	/* error on OOB pointer computation */		\
+	 		\
 	r0 += r1;					\
-	/* exit */					\
+	 					\
 	r0 = 0;						\
 l0_%=:	exit;						\
 "	:
@@ -353,25 +349,19 @@ __naked void of_boundary_crossing_range_2(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r1 = [0x00, 0xff] */				\
+	 				\
 	r1 = *(u8*)(r0 + 0);				\
 	r1 += %[__imm_0];				\
-	/* r1 = [0xffff'ff80, 0x1'0000'007f] */		\
+	 		\
 	r1 += %[__imm_0];				\
-	/* r1 = [0xffff'ff80, 0xffff'ffff] or		\
-	 *      [0x0000'0000, 0x0000'007f]		\
-	 * difference to previous test: truncation via MOV32\
-	 * instead of ALU32.				\
-	 */						\
+	 						\
 	w1 = w1;					\
 	r1 -= %[__imm_0];				\
-	/* r1 = [0x00, 0xff] or				\
-	 *      [0xffff'ffff'0000'0080, 0xffff'ffff'ffff'ffff]\
-	 */						\
+	 						\
 	r1 -= %[__imm_0];				\
-	/* error on OOB pointer computation */		\
+	 		\
 	r0 += r1;					\
-	/* exit */					\
+	 					\
 	r0 = 0;						\
 l0_%=:	exit;						\
 "	:
@@ -394,17 +384,17 @@ __naked void after_wrapping_32_bit_addition(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r1 = 0x7fff'ffff */				\
+	 				\
 	r1 = 0x7fffffff;				\
-	/* r1 = 0xffff'fffe */				\
+	 				\
 	r1 += 0x7fffffff;				\
-	/* r1 = 0 */					\
+	 					\
 	w1 += 2;					\
-	/* no-op */					\
+	 					\
 	r0 += r1;					\
-	/* access at offset 0 */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -429,15 +419,15 @@ __naked void shift_with_oversized_count_operand(void)
 	if r0 == 0 goto l0_%=;				\
 	r2 = 32;					\
 	r1 = 1;						\
-	/* r1 = (u32)1 << (u32)32 = ? */		\
+	 		\
 	w1 <<= w2;					\
-	/* r1 = [0x0000, 0xffff] */			\
+	 			\
 	r1 &= 0xffff;					\
-	/* computes unknown pointer, potentially OOB */	\
+	 	\
 	r0 += r1;					\
-	/* potentially OOB access */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -460,19 +450,19 @@ __naked void shift_of_maybe_negative_number(void)
 	r1 = %[map_hash_8b] ll;				\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
-	/* r1 = [0x00, 0xff] */				\
+	 				\
 	r1 = *(u8*)(r0 + 0);				\
-	/* r1 = [-0x01, 0xfe] */			\
+	 			\
 	r1 -= 1;					\
-	/* r1 = 0 or 0xff'ffff'ffff'ffff */		\
+	 		\
 	r1 >>= 8;					\
-	/* r1 = 0 or 0xffff'ffff'ffff */		\
+	 		\
 	r1 >>= 8;					\
-	/* computes unknown pointer, potentially OOB */	\
+	 	\
 	r0 += r1;					\
-	/* potentially OOB access */			\
+	 			\
 	r0 = *(u8*)(r0 + 0);				\
-l0_%=:	/* exit */					\
+l0_%=:	 					\
 	r0 = 0;						\
 	exit;						\
 "	:
@@ -496,15 +486,15 @@ __naked void shift_with_64_bit_input(void)
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
 	r1 = 2;						\
-	/* r1 = 1<<32 */				\
+	 				\
 	r1 <<= 31;					\
-	/* r1 = 0 (NOT 2!) */				\
+	 				\
 	w1 >>= 31;					\
-	/* r1 = 0xffff'fffe (NOT 0!) */			\
+	 			\
 	w1 -= 2;					\
-	/* error on computing OOB pointer */		\
+	 		\
 	r0 += r1;					\
-	/* exit */					\
+	 					\
 	r0 = 0;						\
 l0_%=:	exit;						\
 "	:
@@ -629,13 +619,13 @@ __naked void _32bit_and_64bit_arithmetic_test1(void)
 	r1 = -1;					\
 	r1 <<= 32;					\
 	r1 += 1;					\
-	/* r1 = 0xffffFFFF00000001 */			\
+	 			\
 	if w1 > 1 goto l0_%=;				\
-	/* check ALU64 op keeps 32bit bounds */		\
+	 		\
 	r1 += 1;					\
 	if w1 > 2 goto l0_%=;				\
 	goto l1_%=;					\
-l0_%=:	/* invalid ldx if bounds are lost above */	\
+l0_%=:	 	\
 	r0 = *(u64*)(r0 - 1);				\
 l1_%=:	exit;						\
 "	::: __clobber_all);
@@ -652,14 +642,14 @@ __naked void _32bit_and_64bit_arithmetic_test2(void)
 	r1 = -1;					\
 	r1 <<= 32;					\
 	r1 += 1;					\
-	/* r1 = 0xffffFFFF00000001 */			\
+	 			\
 	r2 = 3;						\
-	/* r1 = 0x2 */					\
+	 					\
 	w1 += 1;					\
-	/* check ALU32 op zero extends 64bit bounds */	\
+	 	\
 	if r1 > r2 goto l0_%=;				\
 	goto l1_%=;					\
-l0_%=:	/* invalid ldx if bounds are lost above */	\
+l0_%=:	 	\
 	r0 = *(u64*)(r0 - 1);				\
 l1_%=:	exit;						\
 "	::: __clobber_all);
@@ -900,7 +890,7 @@ __naked void _32_bit_truncation_test_1(void)
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
 	r1 = *(u32*)(r0 + 0);				\
-	/* This used to reduce the max bound to 0x7fffffff */\
+	 \
 	if r1 == 0 goto l1_%=;				\
 	if r1 > 0x7fffffff goto l0_%=;			\
 l1_%=:	r0 = 0;						\
@@ -952,7 +942,7 @@ __naked void crossing_64_bit_signed_boundary_1(void)
 	r1 += r0;					\
 	r0 = 0x8000000000000000 ll;			\
 l1_%=:	r0 += 1;					\
-	/* r1 unsigned range is [0x7fffffffffffff10, 0x800000000000000f] */\
+	 \
 	if r0 < r1 goto l1_%=;				\
 l0_%=:	r0 = 0;						\
 	exit;						\
@@ -980,7 +970,7 @@ __naked void crossing_64_bit_signed_boundary_2(void)
 	r0 = 0x8000000000000000 ll;			\
 l1_%=:	r0 += 1;					\
 	if r0 s> r2 goto l0_%=;				\
-	/* r1 signed range is [S64_MIN, S64_MAX] */	\
+	 	\
 	if r0 s< r1 goto l1_%=;				\
 	r0 = 1;						\
 	exit;						\
@@ -1033,7 +1023,7 @@ __naked void crossing_32_bit_signed_boundary_1(void)
 	w1 += w0;					\
 	w0 = 0x80000000;				\
 l1_%=:	w0 += 1;					\
-	/* r1 unsigned range is [0, 0x8000000f] */	\
+	 	\
 	if w0 < w1 goto l1_%=;				\
 l0_%=:	r0 = 0;						\
 	exit;						\
@@ -1061,7 +1051,7 @@ __naked void crossing_32_bit_signed_boundary_2(void)
 	w0 = 0x80000000;				\
 l1_%=:	w0 += 1;					\
 	if w0 s> w2 goto l0_%=;				\
-	/* r1 signed range is [S32_MIN, S32_MAX] */	\
+	 	\
 	if w0 s< w1 goto l1_%=;				\
 	r0 = 1;						\
 	exit;						\

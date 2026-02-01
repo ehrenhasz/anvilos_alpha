@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	6LoWPAN IPv6 Mobility Header compression according to RFC6282
- */
+
+ 
 
 #include "nhc.h"
 

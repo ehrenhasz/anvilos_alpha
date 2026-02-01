@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CrOS EC ANX7688 HDMI->DP bridge driver
- *
- * Copyright 2020 Google LLC
- */
+
+ 
 
 #include <drm/drm_bridge.h>
 #include <drm/drm_print.h>
@@ -12,7 +8,7 @@
 #include <linux/regmap.h>
 #include <linux/types.h>
 
-/* Register addresses */
+ 
 #define ANX7688_VENDOR_ID_REG		0x00
 #define ANX7688_DEVICE_ID_REG		0x02
 
@@ -24,7 +20,7 @@
 #define ANX7688_VENDOR_ID		0x1f29
 #define ANX7688_DEVICE_ID		0x7688
 
-/* First supported firmware version (0.85) */
+ 
 #define ANX7688_MINIMUM_FW_VERSION	0x0085
 
 static const struct regmap_config cros_ec_anx7688_regmap_config = {
@@ -58,7 +54,7 @@ static bool cros_ec_anx7688_bridge_mode_fixup(struct drm_bridge *bridge,
 	if (!anx->filter)
 		return true;
 
-	/* Read both regs 0x85 (bandwidth) and 0x86 (lane count). */
+	 
 	ret = regmap_bulk_read(anx->regmap, ANX7688_DP_BANDWIDTH_REG, regs, 2);
 	if (ret < 0) {
 		DRM_ERROR("Failed to read bandwidth/lane count\n");
@@ -67,17 +63,17 @@ static bool cros_ec_anx7688_bridge_mode_fixup(struct drm_bridge *bridge,
 	dpbw = regs[0];
 	lanecount = regs[1];
 
-	/* Maximum 0x19 bandwidth (6.75 Gbps Turbo mode), 2 lanes */
+	 
 	if (dpbw > 0x19 || lanecount > 2) {
 		DRM_ERROR("Invalid bandwidth/lane count (%02x/%d)\n", dpbw,
 			  lanecount);
 		return false;
 	}
 
-	/* Compute available bandwidth (kHz) */
+	 
 	totalbw = dpbw * lanecount * 270000 * 8 / 10;
 
-	/* Required bandwidth (8 bpc, kHz) */
+	 
 	requiredbw = mode->clock * 8 * 3;
 
 	DRM_DEBUG_KMS("DP bandwidth: %d kHz (%02x/%d); mode requires %d Khz\n",
@@ -117,7 +113,7 @@ static int cros_ec_anx7688_bridge_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Read both vendor and device id (4 bytes). */
+	 
 	ret = regmap_bulk_read(anx7688->regmap, ANX7688_VENDOR_ID_REG,
 			       buffer, 4);
 	if (ret) {
@@ -145,11 +141,11 @@ static int cros_ec_anx7688_bridge_probe(struct i2c_client *client)
 
 	anx7688->bridge.of_node = dev->of_node;
 
-	/* FW version >= 0.85 supports bandwidth/lane count registers */
+	 
 	if (fw_version >= ANX7688_MINIMUM_FW_VERSION)
 		anx7688->filter = true;
 	else
-		/* Warn, but not fail, for backwards compatibility */
+		 
 		DRM_WARN("Old ANX7688 FW version (0x%04x), not filtering\n",
 			 fw_version);
 

@@ -1,28 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * fs/inotify_user.c - inotify support for userspace
- *
- * Authors:
- *	John McCutchan	<ttb@tentacle.dhs.org>
- *	Robert Love	<rml@novell.com>
- *
- * Copyright (C) 2005 John McCutchan
- * Copyright 2006 Hewlett-Packard Development Company, L.P.
- *
- * Copyright (C) 2009 Eric Paris <Red Hat Inc>
- * inotify was largely rewriten to make use of the fsnotify infrastructure
- */
+
+ 
 
 #include <linux/file.h>
-#include <linux/fs.h> /* struct inode */
+#include <linux/fs.h>  
 #include <linux/fsnotify_backend.h>
 #include <linux/idr.h>
-#include <linux/init.h> /* fs_initcall */
+#include <linux/init.h>  
 #include <linux/inotify.h>
-#include <linux/kernel.h> /* roundup() */
-#include <linux/namei.h> /* LOOKUP_FOLLOW */
+#include <linux/kernel.h>  
+#include <linux/namei.h>  
 #include <linux/sched/signal.h>
-#include <linux/slab.h> /* struct kmem_cache */
+#include <linux/slab.h>  
 #include <linux/syscalls.h>
 #include <linux/types.h>
 #include <linux/anon_inodes.h>
@@ -37,16 +25,11 @@
 
 #include <asm/ioctls.h>
 
-/*
- * An inotify watch requires allocating an inotify_inode_mark structure as
- * well as pinning the watched inode. Doubling the size of a VFS inode
- * should be more than enough to cover the additional filesystem inode
- * size increase.
- */
+ 
 #define INOTIFY_WATCH_COST	(sizeof(struct inotify_inode_mark) + \
 				 2 * sizeof(struct inode))
 
-/* configurable via /proc/sys/fs/inotify/ */
+ 
 static int inotify_max_queued_events __read_mostly;
 
 struct kmem_cache *inotify_inode_mark_cachep __read_mostly;
@@ -95,21 +78,18 @@ static void __init inotify_sysctls_init(void)
 
 #else
 #define inotify_sysctls_init() do { } while (0)
-#endif /* CONFIG_SYSCTL */
+#endif  
 
 static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
 {
 	__u32 mask;
 
-	/*
-	 * Everything should receive events when the inode is unmounted.
-	 * All directories care about children.
-	 */
+	 
 	mask = (FS_UNMOUNT);
 	if (S_ISDIR(inode->i_mode))
 		mask |= FS_EVENT_ON_CHILD;
 
-	/* mask off the flags used to open the fd */
+	 
 	mask |= (arg & INOTIFY_USER_MASK);
 
 	return mask;
@@ -136,7 +116,7 @@ static inline u32 inotify_mask_to_arg(__u32 mask)
 		       IN_Q_OVERFLOW);
 }
 
-/* inotify userspace file descriptor functions */
+ 
 static __poll_t inotify_poll(struct file *file, poll_table *wait)
 {
 	struct fsnotify_group *group = file->private_data;
@@ -161,13 +141,7 @@ static int round_event_name_len(struct fsnotify_event *fsn_event)
 	return roundup(event->name_len + 1, sizeof(struct inotify_event));
 }
 
-/*
- * Get an inotify_kernel_event if one exists and is small
- * enough to fit in "count". Return an error pointer if
- * not large enough.
- *
- * Called with the group->notification_lock held.
- */
+ 
 static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 					    size_t count)
 {
@@ -184,19 +158,13 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	if (event_size > count)
 		return ERR_PTR(-EINVAL);
 
-	/* held the notification_lock the whole time, so this is the
-	 * same event we peeked above */
+	 
 	fsnotify_remove_first_event(group);
 
 	return event;
 }
 
-/*
- * Copy an event to user space, returning how much we copied.
- *
- * We already checked that the event size is smaller than the
- * buffer we had in "get_one_event()" above.
- */
+ 
 static ssize_t copy_event_to_user(struct fsnotify_group *group,
 				  struct fsnotify_event *fsn_event,
 				  char __user *buf)
@@ -211,34 +179,27 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 
 	event = INOTIFY_E(fsn_event);
 	name_len = event->name_len;
-	/*
-	 * round up name length so it is a multiple of event_size
-	 * plus an extra byte for the terminating '\0'.
-	 */
+	 
 	pad_name_len = round_event_name_len(fsn_event);
 	inotify_event.len = pad_name_len;
 	inotify_event.mask = inotify_mask_to_arg(event->mask);
 	inotify_event.wd = event->wd;
 	inotify_event.cookie = event->sync_cookie;
 
-	/* send the main event */
+	 
 	if (copy_to_user(buf, &inotify_event, event_size))
 		return -EFAULT;
 
 	buf += event_size;
 
-	/*
-	 * fsnotify only stores the pathname, so here we have to send the pathname
-	 * and then pad that pathname out to a multiple of sizeof(inotify_event)
-	 * with zeros.
-	 */
+	 
 	if (pad_name_len) {
-		/* copy the path name */
+		 
 		if (copy_to_user(buf, event->name, name_len))
 			return -EFAULT;
 		buf += name_len;
 
-		/* fill userspace with 0's */
+		 
 		if (clear_user(buf, pad_name_len - name_len))
 			return -EFAULT;
 		event_size += pad_name_len;
@@ -305,7 +266,7 @@ static int inotify_release(struct inode *ignored, struct file *file)
 
 	pr_debug("%s: group=%p\n", __func__, group);
 
-	/* free this group, matching get was inotify_init->fsnotify_obtain_group */
+	 
 	fsnotify_destroy_group(group);
 
 	return 0;
@@ -349,7 +310,7 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 			ret = 0;
 		}
 		break;
-#endif /* CONFIG_CHECKPOINT_RESTORE */
+#endif  
 	}
 
 	return ret;
@@ -367,9 +328,7 @@ static const struct file_operations inotify_fops = {
 };
 
 
-/*
- * find_inode - resolve a user-given path to a specific inode
- */
+ 
 static int inotify_find_inode(const char __user *dirname, struct path *path,
 						unsigned int flags, __u64 mask)
 {
@@ -378,7 +337,7 @@ static int inotify_find_inode(const char __user *dirname, struct path *path,
 	error = user_path_at(AT_FDCWD, dirname, flags, path);
 	if (error)
 		return error;
-	/* you can only watch an inode if you have read permissions on it */
+	 
 	error = path_permission(path, MAY_READ);
 	if (error) {
 		path_put(path);
@@ -402,7 +361,7 @@ static int inotify_add_to_idr(struct idr *idr, spinlock_t *idr_lock,
 
 	ret = idr_alloc_cyclic(idr, i_mark, 1, 0, GFP_NOWAIT);
 	if (ret >= 0) {
-		/* we added the mark to the idr, take a reference */
+		 
 		i_mark->wd = ret;
 		fsnotify_get_mark(&i_mark->fsn_mark);
 	}
@@ -426,7 +385,7 @@ static struct inotify_inode_mark *inotify_idr_find_locked(struct fsnotify_group 
 		struct fsnotify_mark *fsn_mark = &i_mark->fsn_mark;
 
 		fsnotify_get_mark(fsn_mark);
-		/* One ref for being in the idr, one ref we just took */
+		 
 		BUG_ON(refcount_read(&fsn_mark->refcnt) < 2);
 	}
 
@@ -446,10 +405,7 @@ static struct inotify_inode_mark *inotify_idr_find(struct fsnotify_group *group,
 	return i_mark;
 }
 
-/*
- * Remove the mark from the idr (if present) and drop the reference
- * on the mark because it was in the idr.
- */
+ 
 static void inotify_remove_from_idr(struct fsnotify_group *group,
 				    struct inotify_inode_mark *i_mark)
 {
@@ -461,17 +417,14 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	spin_lock(idr_lock);
 	wd = i_mark->wd;
 
-	/*
-	 * does this i_mark think it is in the idr?  we shouldn't get called
-	 * if it wasn't....
-	 */
+	 
 	if (wd == -1) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
 			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group);
 		goto out;
 	}
 
-	/* Lets look in the idr to see if we find it */
+	 
 	found_i_mark = inotify_idr_find_locked(group, wd);
 	if (unlikely(!found_i_mark)) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
@@ -479,11 +432,7 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 		goto out;
 	}
 
-	/*
-	 * We found an mark in the idr at the right wd, but it's
-	 * not the mark we were told to remove.  eparis seriously
-	 * fucked up somewhere.
-	 */
+	 
 	if (unlikely(found_i_mark != i_mark)) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p "
 			"found_i_mark=%p found_i_mark->wd=%d "
@@ -493,42 +442,37 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 		goto out;
 	}
 
-	/*
-	 * One ref for being in the idr
-	 * one ref grabbed by inotify_idr_find
-	 */
+	 
 	if (unlikely(refcount_read(&i_mark->fsn_mark.refcnt) < 2)) {
 		printk(KERN_ERR "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
 			 __func__, i_mark, i_mark->wd, i_mark->fsn_mark.group);
-		/* we can't really recover with bad ref cnting.. */
+		 
 		BUG();
 	}
 
 	idr_remove(idr, wd);
-	/* Removed from the idr, drop that ref. */
+	 
 	fsnotify_put_mark(&i_mark->fsn_mark);
 out:
 	i_mark->wd = -1;
 	spin_unlock(idr_lock);
-	/* match the ref taken by inotify_idr_find_locked() */
+	 
 	if (found_i_mark)
 		fsnotify_put_mark(&found_i_mark->fsn_mark);
 }
 
-/*
- * Send IN_IGNORED for this wd, remove this wd from the idr.
- */
+ 
 void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
 				    struct fsnotify_group *group)
 {
 	struct inotify_inode_mark *i_mark;
 
-	/* Queue ignore event for the watch */
+	 
 	inotify_handle_inode_event(fsn_mark, FS_IN_IGNORED, NULL, NULL, NULL,
 				   0);
 
 	i_mark = container_of(fsn_mark, struct inotify_inode_mark, fsn_mark);
-	/* remove this mark from the idr */
+	 
 	inotify_remove_from_idr(group, i_mark);
 
 	dec_inotify_watches(group->inotify_data.ucounts);
@@ -567,22 +511,22 @@ static int inotify_update_existing_watch(struct fsnotify_group *group,
 	spin_unlock(&fsn_mark->lock);
 
 	if (old_mask != new_mask) {
-		/* more bits in old than in new? */
+		 
 		int dropped = (old_mask & ~new_mask);
-		/* more bits in this fsn_mark than the inode's mask? */
+		 
 		int do_inode = (new_mask & ~inode->i_fsnotify_mask);
 
-		/* update the inode with this new fsn_mark */
+		 
 		if (dropped || do_inode)
 			fsnotify_recalc_mask(inode->i_fsnotify_marks);
 
 	}
 
-	/* return the wd */
+	 
 	ret = i_mark->wd;
 
 out:
-	/* match the get from fsnotify_find_mark() */
+	 
 	fsnotify_put_mark(fsn_mark);
 
 	return ret;
@@ -610,27 +554,27 @@ static int inotify_new_watch(struct fsnotify_group *group,
 	if (ret)
 		goto out_err;
 
-	/* increment the number of watches the user has */
+	 
 	if (!inc_inotify_watches(group->inotify_data.ucounts)) {
 		inotify_remove_from_idr(group, tmp_i_mark);
 		ret = -ENOSPC;
 		goto out_err;
 	}
 
-	/* we are on the idr, now get on the inode */
+	 
 	ret = fsnotify_add_inode_mark_locked(&tmp_i_mark->fsn_mark, inode, 0);
 	if (ret) {
-		/* we failed to get on the inode, get off the idr */
+		 
 		inotify_remove_from_idr(group, tmp_i_mark);
 		goto out_err;
 	}
 
 
-	/* return the watch descriptor for this new mark */
+	 
 	ret = tmp_i_mark->wd;
 
 out_err:
-	/* match the ref from fsnotify_init_mark() */
+	 
 	fsnotify_put_mark(&tmp_i_mark->fsn_mark);
 
 	return ret;
@@ -641,9 +585,9 @@ static int inotify_update_watch(struct fsnotify_group *group, struct inode *inod
 	int ret = 0;
 
 	fsnotify_group_lock(group);
-	/* try to update and existing watch with the new arg */
+	 
 	ret = inotify_update_existing_watch(group, inode, arg);
-	/* no mark present, try to add a new one */
+	 
 	if (ret == -ENOENT)
 		ret = inotify_new_watch(group, inode, arg);
 	fsnotify_group_unlock(group);
@@ -691,20 +635,20 @@ static struct fsnotify_group *inotify_new_group(unsigned int max_events)
 }
 
 
-/* inotify syscalls */
+ 
 static int do_inotify_init(int flags)
 {
 	struct fsnotify_group *group;
 	int ret;
 
-	/* Check the IN_* constants for consistency.  */
+	 
 	BUILD_BUG_ON(IN_CLOEXEC != O_CLOEXEC);
 	BUILD_BUG_ON(IN_NONBLOCK != O_NONBLOCK);
 
 	if (flags & ~(IN_CLOEXEC | IN_NONBLOCK))
 		return -EINVAL;
 
-	/* fsnotify_obtain_group took a reference to group, we put this when we kill the file in the end */
+	 
 	group = inotify_new_group(inotify_max_queued_events);
 	if (IS_ERR(group))
 		return PTR_ERR(group);
@@ -737,19 +681,10 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	int ret;
 	unsigned flags = 0;
 
-	/*
-	 * We share a lot of code with fs/dnotify.  We also share
-	 * the bit layout between inotify's IN_* and the fsnotify
-	 * FS_*.  This check ensures that only the inotify IN_*
-	 * bits get passed in and set in watches/events.
-	 */
+	 
 	if (unlikely(mask & ~ALL_INOTIFY_BITS))
 		return -EINVAL;
-	/*
-	 * Require at least one valid bit set in the mask.
-	 * Without _something_ set, we would have no events to
-	 * watch for.
-	 */
+	 
 	if (unlikely(!(mask & ALL_INOTIFY_BITS)))
 		return -EINVAL;
 
@@ -757,13 +692,13 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	if (unlikely(!f.file))
 		return -EBADF;
 
-	/* IN_MASK_ADD and IN_MASK_CREATE don't make sense together */
+	 
 	if (unlikely((mask & IN_MASK_ADD) && (mask & IN_MASK_CREATE))) {
 		ret = -EINVAL;
 		goto fput_and_out;
 	}
 
-	/* verify that this is indeed an inotify instance */
+	 
 	if (unlikely(f.file->f_op != &inotify_fops)) {
 		ret = -EINVAL;
 		goto fput_and_out;
@@ -779,11 +714,11 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	if (ret)
 		goto fput_and_out;
 
-	/* inode held in place by reference to path; group by fget on fd */
+	 
 	inode = path.dentry->d_inode;
 	group = f.file->private_data;
 
-	/* create/update an inode mark */
+	 
 	ret = inotify_update_watch(group, inode, mask);
 	path_put(&path);
 fput_and_out:
@@ -802,7 +737,7 @@ SYSCALL_DEFINE2(inotify_rm_watch, int, fd, __s32, wd)
 	if (unlikely(!f.file))
 		return -EBADF;
 
-	/* verify that this is indeed an inotify instance */
+	 
 	if (unlikely(f.file->f_op != &inotify_fops))
 		goto out;
 
@@ -816,7 +751,7 @@ SYSCALL_DEFINE2(inotify_rm_watch, int, fd, __s32, wd)
 
 	fsnotify_destroy_mark(&i_mark->fsn_mark, group);
 
-	/* match ref taken by inotify_idr_find */
+	 
 	fsnotify_put_mark(&i_mark->fsn_mark);
 
 out:
@@ -824,21 +759,14 @@ out:
 	return ret;
 }
 
-/*
- * inotify_user_setup - Our initialization function.  Note that we cannot return
- * error because we have compiled-in VFS hooks.  So an (unlikely) failure here
- * must result in panic().
- */
+ 
 static int __init inotify_user_setup(void)
 {
 	unsigned long watches_max;
 	struct sysinfo si;
 
 	si_meminfo(&si);
-	/*
-	 * Allow up to 1% of addressable memory to be allocated for inotify
-	 * watches (per user) limited to the range [8192, 1048576].
-	 */
+	 
 	watches_max = (((si.totalram - si.totalhigh) / 100) << PAGE_SHIFT) /
 			INOTIFY_WATCH_COST;
 	watches_max = clamp(watches_max, 8192UL, 1048576UL);

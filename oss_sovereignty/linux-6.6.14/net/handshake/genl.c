@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/handshake.yaml */
-/* YNL-GEN kernel source */
+
+ 
+ 
+ 
 
 #include <net/netlink.h>
 #include <net/genetlink.h>
@@ -10,19 +10,19 @@
 
 #include <uapi/linux/handshake.h>
 
-/* HANDSHAKE_CMD_ACCEPT - do */
+ 
 static const struct nla_policy handshake_accept_nl_policy[HANDSHAKE_A_ACCEPT_HANDLER_CLASS + 1] = {
 	[HANDSHAKE_A_ACCEPT_HANDLER_CLASS] = NLA_POLICY_MAX(NLA_U32, 2),
 };
 
-/* HANDSHAKE_CMD_DONE - do */
+ 
 static const struct nla_policy handshake_done_nl_policy[HANDSHAKE_A_DONE_REMOTE_AUTH + 1] = {
 	[HANDSHAKE_A_DONE_STATUS] = { .type = NLA_U32, },
 	[HANDSHAKE_A_DONE_SOCKFD] = { .type = NLA_U32, },
 	[HANDSHAKE_A_DONE_REMOTE_AUTH] = { .type = NLA_U32, },
 };
 
-/* Ops table for handshake */
+ 
 static const struct genl_split_ops handshake_nl_ops[] = {
 	{
 		.cmd		= HANDSHAKE_CMD_ACCEPT,

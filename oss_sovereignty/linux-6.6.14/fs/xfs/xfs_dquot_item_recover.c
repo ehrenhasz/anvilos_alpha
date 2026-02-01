@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -53,9 +50,7 @@ xlog_recover_dquot_ra_pass2(
 			&xfs_dquot_buf_ra_ops);
 }
 
-/*
- * Recover a dquot record
- */
+ 
 STATIC int
 xlog_recover_dquot_commit_pass2(
 	struct xlog			*log,
@@ -71,9 +66,7 @@ xlog_recover_dquot_commit_pass2(
 	int				error;
 	uint				type;
 
-	/*
-	 * Filesystems are required to send in quota flags at mount time.
-	 */
+	 
 	if (mp->m_qflags == 0)
 		return 0;
 
@@ -88,24 +81,13 @@ xlog_recover_dquot_commit_pass2(
 		return -EFSCORRUPTED;
 	}
 
-	/*
-	 * This type of quotas was turned off, so ignore this record.
-	 */
+	 
 	type = recddq->d_type & XFS_DQTYPE_REC_MASK;
 	ASSERT(type);
 	if (log->l_quotaoffs_flag & type)
 		return 0;
 
-	/*
-	 * At this point we know that quota was _not_ turned off.
-	 * Since the mount flags are not indicating to us otherwise, this
-	 * must mean that quota is on, and the dquot needs to be replayed.
-	 * Remember that we may not have fully recovered the superblock yet,
-	 * so we can't do the usual trick of looking at the SB quota bits.
-	 *
-	 * The other possibility, of course, is that the quota subsystem was
-	 * removed since the last mount - ENOSYS.
-	 */
+	 
 	dq_f = item->ri_buf[0].i_addr;
 	ASSERT(dq_f);
 	fa = xfs_dquot_verify(mp, recddq, dq_f->qlf_id);
@@ -116,13 +98,7 @@ xlog_recover_dquot_commit_pass2(
 	}
 	ASSERT(dq_f->qlf_len == 1);
 
-	/*
-	 * At this point we are assuming that the dquots have been allocated
-	 * and hence the buffer has valid dquots stamped in it. It should,
-	 * therefore, pass verifier validation. If the dquot is bad, then the
-	 * we'll return an error here, so we don't need to specifically check
-	 * the dquot in the buffer after the verifier has run.
-	 */
+	 
 	error = xfs_trans_read_buf(mp, NULL, mp->m_ddev_targp, dq_f->qlf_blkno,
 				   XFS_FSB_TO_BB(mp, dq_f->qlf_len), 0, &bp,
 				   &xfs_dquot_buf_ops);
@@ -132,10 +108,7 @@ xlog_recover_dquot_commit_pass2(
 	ASSERT(bp);
 	ddq = xfs_buf_offset(bp, dq_f->qlf_boffset);
 
-	/*
-	 * If the dquot has an LSN in it, recover the dquot only if it's less
-	 * than the lsn of the transaction we are replaying.
-	 */
+	 
 	if (xfs_has_crc(mp)) {
 		struct xfs_dqblk *dqb = (struct xfs_dqblk *)ddq;
 		xfs_lsn_t	lsn = be64_to_cpu(dqb->dd_lsn);
@@ -167,11 +140,7 @@ const struct xlog_recover_item_ops xlog_dquot_item_ops = {
 	.commit_pass2		= xlog_recover_dquot_commit_pass2,
 };
 
-/*
- * Recover QUOTAOFF records. We simply make a note of it in the xlog
- * structure, so that we know not to do any dquot item or dquot buffer recovery,
- * of that type.
- */
+ 
 STATIC int
 xlog_recover_quotaoff_commit_pass1(
 	struct xlog			*log,
@@ -180,10 +149,7 @@ xlog_recover_quotaoff_commit_pass1(
 	struct xfs_qoff_logformat	*qoff_f = item->ri_buf[0].i_addr;
 	ASSERT(qoff_f);
 
-	/*
-	 * The logitem format's flag tells us if this was user quotaoff,
-	 * group/project quotaoff or both.
-	 */
+	 
 	if (qoff_f->qf_flags & XFS_UQUOTA_ACCT)
 		log->l_quotaoffs_flag |= XFS_DQTYPE_USER;
 	if (qoff_f->qf_flags & XFS_PQUOTA_ACCT)
@@ -197,5 +163,5 @@ xlog_recover_quotaoff_commit_pass1(
 const struct xlog_recover_item_ops xlog_quotaoff_item_ops = {
 	.item_type		= XFS_LI_QUOTAOFF,
 	.commit_pass1		= xlog_recover_quotaoff_commit_pass1,
-	/* nothing to commit in pass2 */
+	 
 };

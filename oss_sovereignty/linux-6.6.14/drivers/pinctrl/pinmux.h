@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Internal interface between the core pin control system and the
- * pinmux portions
- *
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- * Based on bits of regulator core, gpio core and clk core
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+ 
+ 
 
 #include <linux/types.h>
 
@@ -131,13 +122,7 @@ static inline void pinmux_init_device_debugfs(struct dentry *devroot,
 
 #ifdef CONFIG_GENERIC_PINMUX_FUNCTIONS
 
-/**
- * struct function_desc - generic function descriptor
- * @name: name of the function
- * @group_names: array of pin group names
- * @num_group_names: number of pin group names
- * @data: pin controller driver specific data
- */
+ 
 struct function_desc {
 	const char *name;
 	const char * const *group_names;
@@ -176,4 +161,4 @@ static inline void pinmux_generic_free_functions(struct pinctrl_dev *pctldev)
 {
 }
 
-#endif /* CONFIG_GENERIC_PINMUX_FUNCTIONS */
+#endif  

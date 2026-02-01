@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <net/nfc/hci.h>
 
@@ -22,9 +20,9 @@
 #define ST21NFCA_EVT_TRANSACTION		0x12
 
 #define ST21NFCA_SE_TO_HOT_PLUG			1000
-/* Connectivity pipe only */
+ 
 #define ST21NFCA_SE_COUNT_PIPE_UICC		0x01
-/* Connectivity + APDU Reader pipe */
+ 
 #define ST21NFCA_SE_COUNT_PIPE_EMBEDDED	0x02
 
 #define ST21NFCA_SE_MODE_OFF			0x00
@@ -33,16 +31,13 @@
 #define ST21NFCA_PARAM_ATR				0x01
 #define ST21NFCA_ATR_DEFAULT_BWI		0x04
 
-/*
- * WT = 2^BWI/10[s], convert into msecs and add a secure
- * room by increasing by 2 this timeout
- */
+ 
 #define ST21NFCA_BWI_TO_TIMEOUT(x)		((1 << x) * 200)
 #define ST21NFCA_ATR_GET_Y_FROM_TD(x)	(x >> 4)
 
-/* If TA is present bit 0 is set */
+ 
 #define ST21NFCA_ATR_TA_PRESENT(x) (x & 0x01)
-/* If TB is present bit 1 is set */
+ 
 #define ST21NFCA_ATR_TB_PRESENT(x) (x & 0x02)
 
 static u8 st21nfca_se_get_bwi(struct nfc_hci_dev *hdev)
@@ -51,7 +46,7 @@ static u8 st21nfca_se_get_bwi(struct nfc_hci_dev *hdev)
 	u8 td;
 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
 
-	/* Bits 8 to 5 of the first TB for T=1 encode BWI from zero to nine */
+	 
 	for (i = 1; i < ST21NFCA_ESE_MAX_LENGTH; i++) {
 		td = ST21NFCA_ATR_GET_Y_FROM_TD(info->se_info.atr[i]);
 		if (ST21NFCA_ATR_TA_PRESENT(td))
@@ -112,10 +107,7 @@ static int st21nfca_hci_control_se(struct nfc_hci_dev *hdev, u32 se_idx,
 		return -EINVAL;
 	}
 
-	/*
-	 * Wait for an EVT_HOT_PLUG in order to
-	 * retrieve a relevant host list.
-	 */
+	 
 	reinit_completion(&info->se_info.req_completion);
 	r = nfc_hci_send_event(hdev, ST21NFCA_DEVICE_MGNT_GATE, se_event,
 			       NULL, 0);
@@ -126,7 +118,7 @@ static int st21nfca_hci_control_se(struct nfc_hci_dev *hdev, u32 se_idx,
 		msecs_to_jiffies(ST21NFCA_SE_TO_HOT_PLUG));
 	info->se_info.se_active = true;
 
-	/* Ignore return value and check in any case the host_list */
+	 
 	wait_for_completion_interruptible(&info->se_info.req_completion);
 
 	r = nfc_hci_get_param(hdev, NFC_HCI_ADMIN_GATE,
@@ -175,11 +167,7 @@ int st21nfca_hci_enable_se(struct nfc_hci_dev *hdev, u32 se_idx)
 {
 	int r;
 
-	/*
-	 * According to upper layer, se_idx == NFC_SE_UICC when
-	 * info->se_status->is_uicc_enable is true should never happen.
-	 * Same for eSE.
-	 */
+	 
 	r = st21nfca_hci_control_se(hdev, se_idx, ST21NFCA_SE_MODE_ON);
 	if (r == ST21NFCA_ESE_HOST_ID) {
 		st21nfca_se_get_atr(hdev);
@@ -188,10 +176,7 @@ int st21nfca_hci_enable_se(struct nfc_hci_dev *hdev, u32 se_idx)
 		if (r < 0)
 			return r;
 	} else if (r < 0) {
-		/*
-		 * The activation tentative failed, the secure element
-		 * is not connected. Remove from the list.
-		 */
+		 
 		nfc_remove_se(hdev->ndev, se_idx);
 		return r;
 	}
@@ -204,11 +189,7 @@ int st21nfca_hci_disable_se(struct nfc_hci_dev *hdev, u32 se_idx)
 {
 	int r;
 
-	/*
-	 * According to upper layer, se_idx == NFC_SE_UICC when
-	 * info->se_status->is_uicc_enable is true should never happen
-	 * Same for eSE.
-	 */
+	 
 	r = st21nfca_hci_control_se(hdev, se_idx, ST21NFCA_SE_MODE_OFF);
 	if (r < 0)
 		return r;
@@ -236,11 +217,7 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
 					ST21NFCA_EVT_TRANSMIT_DATA,
 					apdu, apdu_length);
 	default:
-		/* Need to free cb_context here as at the moment we can't
-		 * clearly indicate to the caller if the callback function
-		 * would be called (and free it) or not. In both cases a
-		 * negative value may be returned to the caller.
-		 */
+		 
 		kfree(cb_context);
 		return -ENODEV;
 	}
@@ -249,16 +226,8 @@ EXPORT_SYMBOL(st21nfca_hci_se_io);
 
 static void st21nfca_se_wt_work(struct work_struct *work)
 {
-	/*
-	 * No answer from the secure element
-	 * within the defined timeout.
-	 * Let's send a reset request as recovery procedure.
-	 * According to the situation, we first try to send a software reset
-	 * to the secure element. If the next command is still not
-	 * answering in time, we send to the CLF a secure element hardware
-	 * reset request.
-	 */
-	/* hardware reset managed through VCC_UICC_OUT power supply */
+	 
+	 
 	u8 param = 0x01;
 	struct st21nfca_hci_info *info = container_of(work,
 						struct st21nfca_hci_info,
@@ -295,11 +264,7 @@ static void st21nfca_se_activation_timeout(struct timer_list *t)
 	complete(&info->se_info.req_completion);
 }
 
-/*
- * Returns:
- * <= 0: driver handled the event, skb consumed
- *    1: driver does not handle the event, please do standard processing
- */
+ 
 int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
 				u8 event, struct sk_buff *skb)
 {
@@ -316,22 +281,7 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
 		r = nfc_se_connectivity(hdev->ndev, host);
 	break;
 	case ST21NFCA_EVT_TRANSACTION:
-		/* According to specification etsi 102 622
-		 * 11.2.2.4 EVT_TRANSACTION Table 52
-		 * Description	Tag	Length
-		 * AID		81	5 to 16
-		 * PARAMETERS	82	0 to 255
-		 *
-		 * The key differences are aid storage length is variably sized
-		 * in the packet, but fixed in nfc_evt_transaction, and that the aid_len
-		 * is u8 in the packet, but u32 in the structure, and the tags in
-		 * the packet are not included in nfc_evt_transaction.
-		 *
-		 * size in bytes: 1          1       5-16 1             1           0-255
-		 * offset:        0          1       2    aid_len + 2   aid_len + 3 aid_len + 4
-		 * member name:   aid_tag(M) aid_len aid  params_tag(M) params_len  params
-		 * example:       0x81       5-16    X    0x82 0-255    X
-		 */
+		 
 		if (skb->len < 2 || skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
 			return -EPROTO;
 
@@ -342,9 +292,7 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
 
 		params_len = skb->data[aid_len + 3];
 
-		/* Verify PARAMETERS tag is (82), and final check that there is enough
-		 * space in the packet to read everything.
-		 */
+		 
 		if ((skb->data[aid_len + 2] != NFC_EVT_TRANSACTION_PARAMS_TAG) ||
 		    (skb->len < aid_len + 4 + params_len))
 			return -EPROTO;
@@ -412,7 +360,7 @@ void st21nfca_se_init(struct nfc_hci_dev *hdev)
 
 	init_completion(&info->se_info.req_completion);
 	INIT_WORK(&info->se_info.timeout_work, st21nfca_se_wt_work);
-	/* initialize timers */
+	 
 	timer_setup(&info->se_info.bwi_timer, st21nfca_se_wt_timeout, 0);
 	info->se_info.bwi_active = false;
 

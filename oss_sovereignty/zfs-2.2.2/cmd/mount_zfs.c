@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011 Lawrence Livermore National Security, LLC.
- */
+ 
 
 #include <libintl.h>
 #include <unistd.h>
@@ -37,25 +15,16 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define	ZS_COMMENT	0x00000000	/* comment */
-#define	ZS_ZFSUTIL	0x00000001	/* caller is zfs(8) */
+#define	ZS_COMMENT	0x00000000	 
+#define	ZS_ZFSUTIL	0x00000001	 
 
 libzfs_handle_t *g_zfs;
 
-/*
- * Opportunistically convert a target string into a pool name. If the
- * string does not represent a block device with a valid zfs label
- * then it is passed through without modification.
- */
+ 
 static void
 parse_dataset(const char *target, char **dataset)
 {
-	/*
-	 * Prior to util-linux 2.36.2, if a file or directory in the
-	 * current working directory was named 'dataset' then mount(8)
-	 * would prepend the current working directory to the dataset.
-	 * Check for it and strip the prepended path when it is added.
-	 */
+	 
 	char cwd[PATH_MAX];
 	if (getcwd(cwd, PATH_MAX) == NULL) {
 		perror("getcwd");
@@ -65,7 +34,7 @@ parse_dataset(const char *target, char **dataset)
 	if (strncmp(cwd, target, len) == 0)
 		target += len;
 
-	/* Assume pool/dataset is more likely */
+	 
 	strlcpy(*dataset, target, PATH_MAX);
 
 	int fd = open(target, O_RDONLY | O_CLOEXEC);
@@ -84,11 +53,7 @@ parse_dataset(const char *target, char **dataset)
 		perror("close");
 }
 
-/*
- * Update the mtab_* code to use the libmount library when it is commonly
- * available otherwise fallback to legacy mode.  The mount(8) utility will
- * manage the lock file for us to prevent racing updates to /etc/mtab.
- */
+ 
 static int
 mtab_is_writeable(void)
 {
@@ -166,7 +131,7 @@ main(int argc, char **argv)
 
 	opterr = 0;
 
-	/* check options */
+	 
 	while ((c = getopt_long(argc, argv, "sfnvo:h?", 0, 0)) != -1) {
 		switch (c) {
 		case 's':
@@ -198,7 +163,7 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	/* check that we only have two arguments */
+	 
 	if (argc != 2) {
 		if (argc == 0)
 			(void) fprintf(stderr, gettext("missing dataset "
@@ -214,7 +179,7 @@ main(int argc, char **argv)
 
 	parse_dataset(argv[0], &pdataset);
 
-	/* canonicalize the mount point */
+	 
 	if (realpath(argv[1], mntpoint) == NULL) {
 		(void) fprintf(stderr, gettext("filesystem '%s' cannot be "
 		    "mounted at '%s' due to canonicalization error: %s\n"),
@@ -222,7 +187,7 @@ main(int argc, char **argv)
 		return (MOUNT_SYSERR);
 	}
 
-	/* validate mount options and set mntflags */
+	 
 	error = zfs_parse_mount_options(mntopts, &mntflags, &zfsflags, sloppy,
 	    badopt, mtabopt);
 	if (error) {
@@ -260,7 +225,7 @@ main(int argc, char **argv)
 		return (MOUNT_SYSERR);
 	}
 
-	/* try to open the dataset to access the mount point */
+	 
 	if ((zhp = zfs_open(g_zfs, dataset,
 	    ZFS_TYPE_FILESYSTEM | ZFS_TYPE_SNAPSHOT)) == NULL) {
 		(void) fprintf(stderr, gettext("filesystem '%s' cannot be "
@@ -274,18 +239,14 @@ main(int argc, char **argv)
 		zfs_adjust_mount_options(zhp, mntpoint, mntopts, mtabopt);
 	}
 
-	/* treat all snapshots as legacy mount points */
+	 
 	if (zfs_get_type(zhp) == ZFS_TYPE_SNAPSHOT)
 		(void) strlcpy(prop, ZFS_MOUNTPOINT_LEGACY, ZFS_MAXPROPLEN);
 	else
 		(void) zfs_prop_get(zhp, ZFS_PROP_MOUNTPOINT, prop,
 		    sizeof (prop), NULL, NULL, 0, B_FALSE);
 
-	/*
-	 * Fetch the max supported zfs version in case we get ENOTSUP
-	 * back from the mount command, since we need the zfs handle
-	 * to do so.
-	 */
+	 
 	zfs_version = zfs_prop_get_int(zhp, ZFS_PROP_VERSION);
 	if (zfs_version == 0) {
 		fprintf(stderr, gettext("unable to fetch "
@@ -295,17 +256,7 @@ main(int argc, char **argv)
 		return (MOUNT_SYSERR);
 	}
 
-	/*
-	 * Legacy mount points may only be mounted using 'mount', never using
-	 * 'zfs mount'.  However, since 'zfs mount' actually invokes 'mount'
-	 * we differentiate the two cases using the 'zfsutil' mount option.
-	 * This mount option should only be supplied by the 'zfs mount' util.
-	 *
-	 * The only exception to the above rule is '-o remount' which is
-	 * always allowed for non-legacy datasets.  This is done because when
-	 * using zfs as your root file system both rc.sysinit/umountroot and
-	 * systemd depend on 'mount -o remount <mountpoint>' to work.
-	 */
+	 
 	if (zfsutil && (strcmp(prop, ZFS_MOUNTPOINT_LEGACY) == 0)) {
 		(void) fprintf(stderr, gettext(
 		    "filesystem '%s' cannot be mounted using 'zfs mount'.\n"

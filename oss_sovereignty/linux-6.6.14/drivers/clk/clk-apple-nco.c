@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Driver for an SoC block (Numerically Controlled Oscillator)
- * found on t8103 (M1) and other Apple chips
- *
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -29,26 +24,7 @@
 #define REG_INC2	12
 #define REG_ACCINIT	16
 
-/*
- * Theory of operation (postulated)
- *
- * The REG_DIV register indirectly expresses a base integer divisor, roughly
- * corresponding to twice the desired ratio of input to output clock. This
- * base divisor is adjusted on a cycle-by-cycle basis based on the state of a
- * 32-bit phase accumulator to achieve a desired precise clock ratio over the
- * long term.
- *
- * Specifically an output clock cycle is produced after (REG_DIV divisor)/2
- * or (REG_DIV divisor + 1)/2 input cycles, the latter taking effect when top
- * bit of the 32-bit accumulator is set. The accumulator is incremented each
- * produced output cycle, by the value from either REG_INC1 or REG_INC2, which
- * of the two is selected depending again on the accumulator's current top bit.
- *
- * Because the NCO hardware implements counting of input clock cycles in part
- * in a Galois linear-feedback shift register, the higher bits of divisor
- * are programmed into REG_DIV by picking an appropriate LFSR state. See
- * applnco_compute_tables/applnco_div_translate for details on this.
- */
+ 
 
 #define LFSR_POLY	0xa01
 #define LFSR_INIT	0x7ff
@@ -56,7 +32,7 @@
 #define LFSR_PERIOD	((1 << LFSR_LEN) - 1)
 #define LFSR_TBLSIZE	(1 << LFSR_LEN)
 
-/* The minimal attainable coarse divisor (first value in table) */
+ 
 #define COARSE_DIV_OFFSET 2
 
 struct applnco_tables {
@@ -104,10 +80,7 @@ static void applnco_compute_tables(struct applnco_tables *tbl)
 	int i;
 	u32 state = LFSR_INIT;
 
-	/*
-	 * Go through the states of a Galois LFSR and build
-	 * a coarse divisor translation table.
-	 */
+	 
 	for (i = LFSR_PERIOD; i > 0; i--) {
 		if (state & 1)
 			state = (state >> 1) ^ (LFSR_POLY >> 1);
@@ -117,7 +90,7 @@ static void applnco_compute_tables(struct applnco_tables *tbl)
 		tbl->inv[state] = i;
 	}
 
-	/* Zero value is special-cased */
+	 
 	tbl->fwd[0] = 0;
 	tbl->inv[0] = 0;
 }
@@ -176,7 +149,7 @@ static int applnco_set_rate(struct clk_hw *hw, unsigned long rate,
 	writel_relaxed(inc1, chan->base + REG_INC1);
 	writel_relaxed(inc2, chan->base + REG_INC2);
 
-	/* Presumably a neutral initial value for accumulator */
+	 
 	writel_relaxed(1 << 31, chan->base + REG_ACCINIT);
 
 	if (was_enabled)
@@ -198,14 +171,11 @@ static unsigned long applnco_recalc_rate(struct clk_hw *hw,
 	inc1 = readl_relaxed(chan->base + REG_INC1);
 	inc2 = readl_relaxed(chan->base + REG_INC2);
 
-	/*
-	 * We don't support wraparound of accumulator
-	 * nor the edge case of both increments being zero
-	 */
+	 
 	if (inc1 >= (1 << 31) || inc2 < (1 << 31) || (inc1 == 0 && inc2 == 0))
 		return 0;
 
-	/* Scale both sides of division by incbase to maintain precision */
+	 
 	incbase = inc1 - inc2;
 
 	return div64_u64(((u64) parent_rate) * 2 * incbase,

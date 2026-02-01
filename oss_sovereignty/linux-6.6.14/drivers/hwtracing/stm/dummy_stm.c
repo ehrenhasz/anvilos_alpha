@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A dummy STM device for stm/stm_source class testing.
- * Copyright (c) 2014, Intel Corporation.
- *
- * STM class implements generic infrastructure for  System Trace Module devices
- * as defined in MIPI STPv2 specification.
- */
+
+ 
 
 #undef DEBUG
 #include <linux/kernel.h>

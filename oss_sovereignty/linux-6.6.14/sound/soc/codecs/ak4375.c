@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * Based on code by Hu Jin
- * Copyright (C) 2014 Asahi Kasei Microdevices Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -15,12 +12,12 @@
 #include <sound/soc.h>
 #include <sound/tlv.h>
 
-/* Registers and fields */
+ 
 #define AK4375_00_POWER_MANAGEMENT1		0x00
-#define PMPLL					BIT(0)	/* 0: PLL off, 1: PLL on */
+#define PMPLL					BIT(0)	 
 #define AK4375_01_POWER_MANAGEMENT2		0x01
-#define PMCP1					BIT(0)	/* Charge Pump 1: LDO1 and DAC */
-#define PMCP2					BIT(1)	/* Charge Pump 2: Class-G HP Amp */
+#define PMCP1					BIT(0)	 
+#define PMCP2					BIT(1)	 
 #define PMLDO1P					BIT(4)
 #define PMLDO1N					BIT(5)
 #define PMLDO					(PMLDO1P | PMLDO1N)
@@ -40,42 +37,42 @@
 #define FS_96KHZ				0x0e
 #define FS_176_4KHZ				0x11
 #define FS_192KHZ				0x12
-#define CM_MASK					GENMASK(6, 5)	/* For SRC Bypass mode */
+#define CM_MASK					GENMASK(6, 5)	 
 #define CM_0					(0x0 << 5)
 #define CM_1					(0x1 << 5)
 #define CM_2					(0x2 << 5)
 #define CM_3					(0x3 << 5)
 #define AK4375_06_DIGITAL_FILTER_SELECT		0x06
-#define DADFSEL					BIT(5)	/* 0: in SRC Bypass mode, 1: in SRC mode */
+#define DADFSEL					BIT(5)	 
 #define DASL					BIT(6)
 #define DASD					BIT(7)
 #define AK4375_07_DAC_MONO_MIXING		0x07
-#define DACMUTE_MASK				(GENMASK(5, 4) | GENMASK(1, 0)) /* Clear to mute */
+#define DACMUTE_MASK				(GENMASK(5, 4) | GENMASK(1, 0))  
 #define AK4375_08_JITTER_CLEANER_SETTING1	0x08
 #define AK4375_09_JITTER_CLEANER_SETTING2	0x09
 #define AK4375_0A_JITTER_CLEANER_SETTING3	0x0a
-#define SELDAIN					BIT(1)	/* 0: SRC Bypass mode, 1: SRC mode */
-#define XCKSEL					BIT(6)	/* 0: PLL0, 1: MCKI */
-#define XCKCPSEL				BIT(7)	/* Should be equal to SELDAIN and XCKSEL */
+#define SELDAIN					BIT(1)	 
+#define XCKSEL					BIT(6)	 
+#define XCKCPSEL				BIT(7)	 
 #define AK4375_0B_LCH_OUTPUT_VOLUME		0x0b
 #define AK4375_0C_RCH_OUTPUT_VOLUME		0x0c
 #define AK4375_0D_HP_VOLUME_CONTROL		0x0d
 #define AK4375_0E_PLL_CLK_SOURCE_SELECT		0x0e
-#define PLS					BIT(0)	/* 0: MCKI, 1: BCLK */
-#define AK4375_0F_PLL_REF_CLK_DIVIDER1		0x0f	/* Reference clock divider [15:8] bits */
-#define AK4375_10_PLL_REF_CLK_DIVIDER2		0x10	/* Reference clock divider [7:0] bis */
-#define AK4375_11_PLL_FB_CLK_DIVIDER1		0x11	/* Feedback clock divider [15:8] bits */
-#define AK4375_12_PLL_FB_CLK_DIVIDER2		0x12	/* Feedback clock divider [7:0] bits */
-#define AK4375_13_SRC_CLK_SOURCE		0x13	/* SRC Bypass: SRCCKS=XCKSEL=SELDAIN=0 */
-#define SRCCKS					BIT(0)	/* SRC Clock source 0: MCKI, 1: PLL0 */
+#define PLS					BIT(0)	 
+#define AK4375_0F_PLL_REF_CLK_DIVIDER1		0x0f	 
+#define AK4375_10_PLL_REF_CLK_DIVIDER2		0x10	 
+#define AK4375_11_PLL_FB_CLK_DIVIDER1		0x11	 
+#define AK4375_12_PLL_FB_CLK_DIVIDER2		0x12	 
+#define AK4375_13_SRC_CLK_SOURCE		0x13	 
+#define SRCCKS					BIT(0)	 
 #define DIV					BIT(4)
 #define AK4375_14_DAC_CLK_DIVIDER		0x14
 #define AK4375_15_AUDIO_IF_FORMAT		0x15
 #define DEVICEID_MASK				GENMASK(7, 5)
 #define AK4375_24_MODE_CONTROL			0x24
 
-#define AK4375_PLL_FREQ_OUT_112896000		112896000	/* 44.1 kHz base rate */
-#define AK4375_PLL_FREQ_OUT_122880000		122880000	/* 32 and 48 kHz base rates */
+#define AK4375_PLL_FREQ_OUT_112896000		112896000	 
+#define AK4375_PLL_FREQ_OUT_122880000		122880000	 
 
 #define DEVICEID_AK4375				0x00
 #define DEVICEID_AK4375A			0x01
@@ -113,16 +110,10 @@ static const struct reg_default ak4375_reg_defaults[] = {
 	{ 0x15, 0x00 }, { 0x24, 0x00 },
 };
 
-/*
- * Output Digital volume control:
- * from -12.5 to 3 dB in 0.5 dB steps (mute instead of -12.5 dB)
- */
+ 
 static DECLARE_TLV_DB_SCALE(dac_tlv, -1250, 50, 0);
 
-/*
- * HP-Amp Analog volume control:
- * from -4.2 to 6 dB in 2 dB steps (mute instead of -4.2 dB)
- */
+ 
 static DECLARE_TLV_DB_SCALE(hpg_tlv, -4200, 20, 0);
 
 static const char * const ak4375_ovolcn_select_texts[]	= { "Dependent", "Independent" };
@@ -133,13 +124,7 @@ static const char * const ak4375_cpmode_select_texts[]	= {
 	"+-1/2VDD Operation"
 };
 
-/*
- * DASD, DASL bits Digital Filter Setting
- * 0, 0 : Sharp Roll-Off Filter
- * 0, 1 : Slow Roll-Off Filter
- * 1, 0 : Short delay Sharp Roll-Off Filter
- * 1, 1 : Short delay Slow Roll-Off Filter
- */
+ 
 static const char * const ak4375_digfil_select_texts[] = {
 	"Sharp Roll-Off Filter",
 	"Slow Roll-Off Filter",
@@ -338,7 +323,7 @@ static int ak4375_dai_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
 		div = 1;
 	}
 
-	/* Writing both fields in one go seems to make playback choppy on start */
+	 
 	snd_soc_component_update_bits(component, AK4375_05_CLOCK_MODE_SELECT, FS_MASK, fs);
 	snd_soc_component_update_bits(component, AK4375_05_CLOCK_MODE_SELECT, CM_MASK, cm);
 
@@ -353,7 +338,7 @@ static int ak4375_dai_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
 
 	snd_soc_component_update_bits(component, AK4375_13_SRC_CLK_SOURCE, DIV, div);
 
-	/* SRCCKS bit: force to 1 for SRC PLL source clock */
+	 
 	snd_soc_component_update_bits(component, AK4375_13_SRC_CLK_SOURCE, SRCCKS, SRCCKS);
 
 	snd_soc_component_write(component, AK4375_14_DAC_CLK_DIVIDER, mdiv);
@@ -533,7 +518,7 @@ static int ak4375_i2c_probe(struct i2c_client *i2c)
 	if (ret < 0)
 		return ret;
 
-	/* Don't read deviceid from cache */
+	 
 	regcache_cache_bypass(ak4375->regmap, true);
 
 	ret = regmap_read(ak4375->regmap, AK4375_15_AUDIO_IF_FORMAT, &deviceid);

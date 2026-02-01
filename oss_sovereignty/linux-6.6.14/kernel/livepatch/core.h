@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LIVEPATCH_CORE_H
 #define _LIVEPATCH_CORE_H
 
@@ -56,4 +56,4 @@ static inline void klp_post_unpatch_callback(struct klp_object *obj)
 	obj->callbacks.post_unpatch_enabled = false;
 }
 
-#endif /* _LIVEPATCH_CORE_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
-/*
- * dvbdev.c
- *
- * Copyright (C) 2000 Ralph  Metzler <ralph@convergence.de>
- *                  & Marcus Metzler <marcus@convergence.de>
- *                    for convergence integrated media GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) "dvbdev: " fmt
 
@@ -23,7 +17,7 @@
 #include <linux/mutex.h>
 #include <media/dvbdev.h>
 
-/* Due to enum tuner_pad_index */
+ 
 #include <media/tuner.h>
 
 static DEFINE_MUTEX(dvbdev_mutex);
@@ -309,15 +303,7 @@ static int dvb_create_media_entity(struct dvb_device *dvbdev,
 		npads = 2;
 		break;
 	case DVB_DEVICE_NET:
-		/*
-		 * We should be creating entities for the MPE/ULE
-		 * decapsulation hardware (or software implementation).
-		 *
-		 * However, the number of for the MPE/ULE decaps may not be
-		 * fixed. As we don't have yet dynamic support for PADs at
-		 * the Media Controller, let's not create the decap
-		 * entities yet.
-		 */
+		 
 		return 0;
 	default:
 		return 0;
@@ -357,7 +343,7 @@ static int dvb_create_media_entity(struct dvb_device *dvbdev,
 		dvbdev->pads[1].flags = MEDIA_PAD_FL_SOURCE;
 		break;
 	default:
-		/* Should never happen, as the first switch prevents it */
+		 
 		kfree(dvbdev->entity);
 		kfree(dvbdev->pads);
 		dvbdev->entity = NULL;
@@ -425,13 +411,7 @@ static int dvb_register_media_device(struct dvb_device *dvbdev,
 	if (!dvbdev->intf_devnode)
 		return -ENOMEM;
 
-	/*
-	 * Create the "obvious" link, e. g. the ones that represent
-	 * a direct association between an interface and an entity.
-	 * Other links should be created elsewhere, like:
-	 *		DVB FE intf    -> tuner
-	 *		DVB demux intf -> dvr
-	 */
+	 
 
 	if (!dvbdev->entity)
 		return 0;
@@ -473,11 +453,7 @@ int dvb_register_device(struct dvb_adapter *adap, struct dvb_device **pdvbdev,
 		return -ENOMEM;
 	}
 
-	/*
-	 * When a device of the same type is probe()d more than once,
-	 * the first allocated fops are used. This prevents memory leaks
-	 * that can occur when the same device is probe()d repeatedly.
-	 */
+	 
 	list_for_each_entry(node, &dvbdevfops_list, list_head) {
 		if (node->fops->owner == adap->module &&
 		    node->type == type && node->template == template) {
@@ -688,13 +664,7 @@ int dvb_create_media_graph(struct dvb_adapter *adap,
 		}
 	}
 
-	/*
-	 * Prepare to signalize to media_create_pad_links() that multiple
-	 * entities of the same type exists and a 1:n or n:1 links need to be
-	 * created.
-	 * NOTE: if both tuner and demod have multiple instances, it is up
-	 * to the caller driver to create such links.
-	 */
+	 
 	if (ntuner > 1)
 		tuner = NULL;
 	if (ndemod > 1)
@@ -749,7 +719,7 @@ int dvb_create_media_graph(struct dvb_adapter *adap,
 	}
 
 	if (ntuner && ndemod) {
-		/* NOTE: first found tuner source pad presumed correct */
+		 
 		pad_source = media_get_pad_index(tuner, MEDIA_PAD_FL_SOURCE,
 						 PAD_SIGNAL_ANALOG);
 		if (pad_source < 0)
@@ -781,7 +751,7 @@ int dvb_create_media_graph(struct dvb_adapter *adap,
 			return ret;
 	}
 
-	/* Create demux links for each ringbuffer/pad */
+	 
 	if (demux) {
 		media_device_for_each_entity(entity, mdev) {
 			if (entity->function == MEDIA_ENT_F_IO_DTV) {
@@ -805,7 +775,7 @@ int dvb_create_media_graph(struct dvb_adapter *adap,
 		}
 	}
 
-	/* Create interface links for FE->tuner, DVR->demux and CA->ca */
+	 
 	media_device_for_each_intf(intf, mdev) {
 		if (intf->type == MEDIA_INTF_T_DVB_CA && ca) {
 			link = media_create_intf_link(ca, intf,
@@ -823,11 +793,7 @@ int dvb_create_media_graph(struct dvb_adapter *adap,
 				return -ENOMEM;
 		}
 #if 0
-		/*
-		 * Indirect link - let's not create yet, as we don't know how
-		 *		   to handle indirect links, nor if this will
-		 *		   actually be needed.
-		 */
+		 
 		if (intf->type == MEDIA_INTF_T_DVB_DVR && demux) {
 			link = media_create_intf_link(demux, intf,
 						      MEDIA_LNK_FL_ENABLED |
@@ -890,7 +856,7 @@ int dvb_register_adapter(struct dvb_adapter *adap, const char *name,
 	for (i = 0; i < DVB_MAX_ADAPTERS; ++i) {
 		num = adapter_nums[i];
 		if (num >= 0  &&  num < DVB_MAX_ADAPTERS) {
-		/* use the one the driver asked for */
+		 
 			if (dvbdev_check_free_adapter_num(num))
 				break;
 		} else {
@@ -939,13 +905,7 @@ int dvb_unregister_adapter(struct dvb_adapter *adap)
 }
 EXPORT_SYMBOL(dvb_unregister_adapter);
 
-/*
- * if the miracle happens and "generic_usercopy()" is included into
- * the kernel, then this can vanish. please don't make the mistake and
- * define this as video_usercopy(). this will introduce a dependency
- * to the v4l "videodev.o" module, which is unnecessary for some
- * cards (ie. the budget dvb-cards don't need the v4l module...)
- */
+ 
 int dvb_usercopy(struct file *file,
 		 unsigned int cmd, unsigned long arg,
 		 int (*func)(struct file *file,
@@ -956,22 +916,19 @@ int dvb_usercopy(struct file *file,
 	void    *parg = NULL;
 	int     err  = -EINVAL;
 
-	/*  Copy arguments into temp kernel buffer  */
+	 
 	switch (_IOC_DIR(cmd)) {
 	case _IOC_NONE:
-		/*
-		 * For this command, the pointer is actually an integer
-		 * argument.
-		 */
+		 
 		parg = (void *)arg;
 		break;
-	case _IOC_READ: /* some v4l ioctls are marked wrong ... */
+	case _IOC_READ:  
 	case _IOC_WRITE:
 	case (_IOC_WRITE | _IOC_READ):
 		if (_IOC_SIZE(cmd) <= sizeof(sbuf)) {
 			parg = sbuf;
 		} else {
-			/* too big to allocate from stack */
+			 
 			mbuf = kmalloc(_IOC_SIZE(cmd), GFP_KERNEL);
 			if (!mbuf)
 				return -ENOMEM;
@@ -984,7 +941,7 @@ int dvb_usercopy(struct file *file,
 		break;
 	}
 
-	/* call driver */
+	 
 	err = func(file, cmd, parg);
 	if (err == -ENOIOCTLCMD)
 		err = -ENOTTY;
@@ -992,7 +949,7 @@ int dvb_usercopy(struct file *file,
 	if (err < 0)
 		goto out;
 
-	/*  Copy results into user buffer  */
+	 
 	switch (_IOC_DIR(cmd)) {
 	case _IOC_READ:
 	case (_IOC_WRITE | _IOC_READ):

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Inject packets with all sorts of encapsulation into the kernel.
- *
- * IPv4/IPv6	outer layer 3
- * GRE/GUE/BARE outer layer 4, where bare is IPIP/SIT/IPv4-in-IPv6/..
- * IPv4/IPv6    inner layer 3
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -34,7 +28,7 @@
 
 #define CFG_PORT_INNER	8000
 
-/* Add some protocol definitions that do not exist in userspace */
+ 
 
 struct grehdr {
 	uint16_t unused;
@@ -66,7 +60,7 @@ static uint8_t	cfg_dsfield_inner;
 static uint8_t	cfg_dsfield_outer;
 static uint8_t	cfg_encap_proto;
 static bool	cfg_expect_failure = false;
-static int	cfg_l3_extra = AF_UNSPEC;	/* optional SIT prefix */
+static int	cfg_l3_extra = AF_UNSPEC;	 
 static int	cfg_l3_inner = AF_UNSPEC;
 static int	cfg_l3_outer = AF_UNSPEC;
 static int	cfg_num_pkt = 10;
@@ -212,7 +206,7 @@ static uint16_t build_udp_v4_csum(const struct iphdr *iph,
 				  int num_words)
 {
 	unsigned long pseudo_sum;
-	int num_u16 = sizeof(iph->saddr);	/* halfwords: twice byte len */
+	int num_u16 = sizeof(iph->saddr);	 
 
 	pseudo_sum = add_csum_hword((void *) &iph->saddr, num_u16);
 	pseudo_sum += htons(IPPROTO_UDP);
@@ -225,7 +219,7 @@ static uint16_t build_udp_v6_csum(const struct ipv6hdr *ip6h,
 				  int num_words)
 {
 	unsigned long pseudo_sum;
-	int num_u16 = sizeof(ip6h->saddr);	/* halfwords: twice byte len */
+	int num_u16 = sizeof(ip6h->saddr);	 
 
 	pseudo_sum = add_csum_hword((void *) &ip6h->saddr, num_u16);
 	pseudo_sum += htons(ip6h->nexthdr);
@@ -281,7 +275,7 @@ static int build_packet(void)
 	if (cfg_l3_extra)
 		el3_len = l3_length(cfg_l3_extra);
 
-	/* calculate header offsets */
+	 
 	if (cfg_encap_proto) {
 		ol3_len = l3_length(cfg_l3_outer);
 
@@ -298,14 +292,11 @@ static int build_packet(void)
 	    sizeof(buf))
 		error(1, 0, "packet too large\n");
 
-	/*
-	 * Fill packet from inside out, to calculate correct checksums.
-	 * But create ip before udp headers, as udp uses ip for pseudo-sum.
-	 */
+	 
 	memset(buf + el3_len + ol3_len + ol4_len + il3_len + il4_len,
 	       cfg_payload_char, cfg_payload_len);
 
-	/* add zero byte for udp csum padding */
+	 
 	buf[el3_len + ol3_len + ol4_len + il3_len + il4_len + cfg_payload_len] = 0;
 
 	switch (cfg_l3_inner) {
@@ -390,7 +381,7 @@ static int build_packet(void)
 	       cfg_payload_len;
 }
 
-/* sender transmits encapsulated over RAW or unencap'd over UDP */
+ 
 static int setup_tx(void)
 {
 	int family, fd, ret;
@@ -416,7 +407,7 @@ static int setup_tx(void)
 		if (ret)
 			error(1, errno, "connect tx");
 	} else if (cfg_l3_outer) {
-		/* connect to destination if not encapsulated */
+		 
 		if (cfg_l3_outer == PF_INET)
 			ret = connect(fd, (void *) &out_daddr4,
 				      sizeof(out_daddr4));
@@ -426,7 +417,7 @@ static int setup_tx(void)
 		if (ret)
 			error(1, errno, "connect tx");
 	} else {
-		/* otherwise using loopback */
+		 
 		if (cfg_l3_inner == PF_INET)
 			ret = connect(fd, (void *) &in_daddr4,
 				      sizeof(in_daddr4));
@@ -440,7 +431,7 @@ static int setup_tx(void)
 	return fd;
 }
 
-/* receiver reads unencapsulated UDP */
+ 
 static int setup_rx(void)
 {
 	int fd, ret;
@@ -547,7 +538,7 @@ static int do_main(void)
 		}
 	}
 
-	/* read straggler packets, if any */
+	 
 	if (rx < tx) {
 		tstop = util_gettime() + 100;
 		while (rx < tx) {
@@ -567,10 +558,7 @@ static int do_main(void)
 	if (fdt != -1 && close(fdt))
 		error(1, errno, "close tx");
 
-	/*
-	 * success (== 0) only if received all packets
-	 * unless failure is expected, in which case none must arrive.
-	 */
+	 
 	if (cfg_expect_failure)
 		return rx != 0;
 	else
@@ -649,7 +637,7 @@ static void parse_opts(int argc, char **argv)
 			else if (!strcmp(optarg, "bare"))
 				cfg_encap_proto = IPPROTO_IPIP;
 			else if (!strcmp(optarg, "none"))
-				cfg_encap_proto = IPPROTO_IP;	/* == 0 */
+				cfg_encap_proto = IPPROTO_IP;	 
 			else
 				usage(argv[0]);
 			break;
@@ -727,10 +715,7 @@ static void parse_opts(int argc, char **argv)
 	if (cfg_l3_inner == AF_INET6 && cfg_encap_proto == IPPROTO_IPIP)
 		cfg_encap_proto = IPPROTO_IPV6;
 
-	/* RFC 6040 4.2:
-	 *   on decap, if outer encountered congestion (CE == 0x3),
-	 *   but inner cannot encode ECN (NoECT == 0x0), then drop packet.
-	 */
+	 
 	if (((cfg_dsfield_outer & 0x3) == 0x3) &&
 	    ((cfg_dsfield_inner & 0x3) == 0x0))
 		cfg_expect_failure = true;

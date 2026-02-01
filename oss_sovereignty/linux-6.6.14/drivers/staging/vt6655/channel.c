@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- */
+
+ 
 
 #include "baseband.h"
 #include "channel.h"
@@ -69,15 +65,7 @@ void vnt_init_bands(struct vnt_private *priv)
 	vnt_init_band(priv, &vnt_supported_2ghz_band, NL80211_BAND_2GHZ);
 }
 
-/**
- * set_channel() - Set NIC media channel
- *
- * @priv: The adapter to be set
- * @ch: Channel to be set
- *
- * Return Value: true if succeeded; false if failed.
- *
- */
+ 
 bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch)
 {
 	bool ret = true;
@@ -85,7 +73,7 @@ bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch)
 	if (priv->byCurrentCh == ch->hw_value)
 		return ret;
 
-	/* Set VGA to max sensitivity */
+	 
 	if (priv->bUpdateBBVGA &&
 	    priv->byBBVGACurrent != priv->abyBBVGA[0]) {
 		priv->byBBVGACurrent = priv->abyBBVGA[0];
@@ -93,18 +81,16 @@ bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch)
 		bb_set_vga_gain_offset(priv, priv->byBBVGACurrent);
 	}
 
-	/* clear NAV */
+	 
 	vt6655_mac_reg_bits_on(priv->port_offset, MAC_REG_MACCR, MACCR_CLRNAV);
 
-	/* TX_PE will reserve 3 us for MAX2829 A mode only,
-	 * it is for better TX throughput
-	 */
+	 
 
 	priv->byCurrentCh = ch->hw_value;
 	ret &= RFbSelectChannel(priv, priv->byRFType,
 				ch->hw_value);
 
-	/* Init Synthesizer Table */
+	 
 	if (priv->bEnablePSMode)
 		rf_write_wake_prog_syn(priv, priv->byRFType, ch->hw_value);
 
@@ -115,7 +101,7 @@ bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch)
 
 		spin_lock_irqsave(&priv->lock, flags);
 
-		/* set HW default power register */
+		 
 		VT6655_MAC_SELECT_PAGE1(priv->port_offset);
 		RFbSetPower(priv, RATE_1M, priv->byCurrentCh);
 		iowrite8(priv->byCurPwr, priv->port_offset + MAC_REG_PWRCCK);

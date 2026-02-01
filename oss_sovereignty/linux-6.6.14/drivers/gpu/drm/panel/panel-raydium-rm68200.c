@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2017
- *
- * Authors: Philippe Cornu <philippe.cornu@st.com>
- *          Yannick Fertre <yannick.fertre@st.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -18,31 +13,31 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-/*** Manufacturer Command Set ***/
-#define MCS_CMD_MODE_SW		0xFE /* CMD Mode Switch */
-#define MCS_CMD1_UCS		0x00 /* User Command Set (UCS = CMD1) */
-#define MCS_CMD2_P0		0x01 /* Manufacture Command Set Page0 (CMD2 P0) */
-#define MCS_CMD2_P1		0x02 /* Manufacture Command Set Page1 (CMD2 P1) */
-#define MCS_CMD2_P2		0x03 /* Manufacture Command Set Page2 (CMD2 P2) */
-#define MCS_CMD2_P3		0x04 /* Manufacture Command Set Page3 (CMD2 P3) */
+ 
+#define MCS_CMD_MODE_SW		0xFE  
+#define MCS_CMD1_UCS		0x00  
+#define MCS_CMD2_P0		0x01  
+#define MCS_CMD2_P1		0x02  
+#define MCS_CMD2_P2		0x03  
+#define MCS_CMD2_P3		0x04  
 
-/* CMD2 P0 commands (Display Options and Power) */
-#define MCS_STBCTR		0x12 /* TE1 Output Setting Zig-Zag Connection */
-#define MCS_SGOPCTR		0x16 /* Source Bias Current */
-#define MCS_SDCTR		0x1A /* Source Output Delay Time */
-#define MCS_INVCTR		0x1B /* Inversion Type */
-#define MCS_EXT_PWR_IC		0x24 /* External PWR IC Control */
-#define MCS_SETAVDD		0x27 /* PFM Control for AVDD Output */
-#define MCS_SETAVEE		0x29 /* PFM Control for AVEE Output */
-#define MCS_BT2CTR		0x2B /* DDVDL Charge Pump Control */
-#define MCS_BT3CTR		0x2F /* VGH Charge Pump Control */
-#define MCS_BT4CTR		0x34 /* VGL Charge Pump Control */
-#define MCS_VCMCTR		0x46 /* VCOM Output Level Control */
-#define MCS_SETVGN		0x52 /* VG M/S N Control */
-#define MCS_SETVGP		0x54 /* VG M/S P Control */
-#define MCS_SW_CTRL		0x5F /* Interface Control for PFM and MIPI */
+ 
+#define MCS_STBCTR		0x12  
+#define MCS_SGOPCTR		0x16  
+#define MCS_SDCTR		0x1A  
+#define MCS_INVCTR		0x1B  
+#define MCS_EXT_PWR_IC		0x24  
+#define MCS_SETAVDD		0x27  
+#define MCS_SETAVEE		0x29  
+#define MCS_BT2CTR		0x2B  
+#define MCS_BT3CTR		0x2F  
+#define MCS_BT4CTR		0x34  
+#define MCS_VCMCTR		0x46  
+#define MCS_SETVGN		0x52  
+#define MCS_SETVGP		0x54  
+#define MCS_SW_CTRL		0x5F  
 
-/* CMD2 P2 commands (GOA Timing Control) - no description in datasheet */
+ 
 #define GOA_VSTV1		0x00
 #define GOA_VSTV2		0x07
 #define GOA_VCLK1		0x0E
@@ -68,9 +63,9 @@
 #define MCS_GOA_BS_SEL3		0xC9
 #define MCS_GOA_BS_SEL4		0xD3
 
-/* CMD2 P3 commands (Gamma) */
-#define MCS_GAMMA_VP		0x60 /* Gamma VP1~VP16 */
-#define MCS_GAMMA_VN		0x70 /* Gamma VN1~VN16 */
+ 
+#define MCS_GAMMA_VP		0x60  
+#define MCS_GAMMA_VN		0x70  
 
 struct rm68200 {
 	struct device *dev;
@@ -129,10 +124,7 @@ static void rm68200_dcs_write_cmd(struct rm68200 *ctx, u8 cmd, u8 value)
 	rm68200_dcs_write_buf(ctx, d, ARRAY_SIZE(d));		\
 })
 
-/*
- * This panel is not able to auto-increment all cmd addresses so for some of
- * them, we need to send them one by one...
- */
+ 
 #define dcs_write_cmd_seq(ctx, cmd, seq...)			\
 ({								\
 	static const u8 d[] = { seq };				\
@@ -144,7 +136,7 @@ static void rm68200_dcs_write_cmd(struct rm68200 *ctx, u8 cmd, u8 value)
 
 static void rm68200_init_sequence(struct rm68200 *ctx)
 {
-	/* Enter CMD2 with page 0 */
+	 
 	dcs_write_seq(ctx, MCS_CMD_MODE_SW, MCS_CMD2_P0);
 	dcs_write_cmd_seq(ctx, MCS_EXT_PWR_IC, 0xC0, 0x53, 0x00);
 	dcs_write_seq(ctx, MCS_BT2CTR, 0xE5);
@@ -159,7 +151,7 @@ static void rm68200_init_sequence(struct rm68200 *ctx)
 	dcs_write_seq(ctx, MCS_VCMCTR, 0x56);
 	dcs_write_seq(ctx, MCS_SETVGN, 0xA0, 0x00);
 	dcs_write_seq(ctx, MCS_SETVGP, 0xA0, 0x00);
-	dcs_write_seq(ctx, MCS_SW_CTRL, 0x11); /* 2 data lanes, see doc */
+	dcs_write_seq(ctx, MCS_SW_CTRL, 0x11);  
 
 	dcs_write_seq(ctx, MCS_CMD_MODE_SW, MCS_CMD2_P2);
 	dcs_write_seq(ctx, GOA_VSTV1, 0x05);
@@ -216,7 +208,7 @@ static void rm68200_init_sequence(struct rm68200 *ctx)
 	dcs_write_seq(ctx, 0xDC, 0x02);
 	dcs_write_seq(ctx, 0xDE, 0x12);
 
-	dcs_write_seq(ctx, MCS_CMD_MODE_SW, 0x0E); /* No documentation */
+	dcs_write_seq(ctx, MCS_CMD_MODE_SW, 0x0E);  
 	dcs_write_seq(ctx, 0x01, 0x75);
 
 	dcs_write_seq(ctx, MCS_CMD_MODE_SW, MCS_CMD2_P3);
@@ -227,7 +219,7 @@ static void rm68200_init_sequence(struct rm68200 *ctx)
 			  0x12, 0x0E, 0x0B, 0x15, 0x0B, 0x10, 0x07, 0x0F,
 			  0x12, 0x0C, 0x00);
 
-	/* Exit CMD2 */
+	 
 	dcs_write_seq(ctx, MCS_CMD_MODE_SW, MCS_CMD1_UCS);
 }
 

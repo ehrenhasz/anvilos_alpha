@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <linux/ptrace.h>
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/bpf_perf_event.h>
@@ -48,7 +43,7 @@ int bpf_prog1(struct bpf_perf_event_data *ctx)
 	int ret;
 
 	if (ctx->sample_period < 10000)
-		/* ignore warmup */
+		 
 		return 0;
 	bpf_get_current_comm(&key.comm, sizeof(key.comm));
 	key.kernstack = bpf_get_stackid(ctx, &stackmap, KERN_STACKID_FLAGS);

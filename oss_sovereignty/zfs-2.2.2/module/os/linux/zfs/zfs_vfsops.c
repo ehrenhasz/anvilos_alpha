@@ -1,29 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- */
+ 
+ 
 
-/* Portions Copyright 2010 Robert Milkowski */
+ 
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -207,9 +185,7 @@ zfsvfs_parse_option(char *option, int token, substring_t *args, vfs_t *vfsp)
 	return (0);
 }
 
-/*
- * Parse the raw mntopts and return a vfs_t describing the options.
- */
+ 
 static int
 zfsvfs_parse_options(char *mntopts, vfs_t **vfsp)
 {
@@ -261,17 +237,12 @@ zfs_sync(struct super_block *sb, int wait, cred_t *cr)
 	(void) cr;
 	zfsvfs_t *zfsvfs = sb->s_fs_info;
 
-	/*
-	 * Semantically, the only requirement is that the sync be initiated.
-	 * The DMU syncs out txgs frequently, so there's nothing to do.
-	 */
+	 
 	if (!wait)
 		return (0);
 
 	if (zfsvfs != NULL) {
-		/*
-		 * Sync a specific filesystem.
-		 */
+		 
 		dsl_pool_t *dp;
 		int error;
 
@@ -279,10 +250,7 @@ zfs_sync(struct super_block *sb, int wait, cred_t *cr)
 			return (error);
 		dp = dmu_objset_pool(zfsvfs->z_os);
 
-		/*
-		 * If the system is shutting down, then skip any
-		 * filesystems which may exist on a suspended pool.
-		 */
+		 
 		if (spa_suspended(dp->dp_spa)) {
 			zfs_exit(zfsvfs, FTAG);
 			return (0);
@@ -293,11 +261,7 @@ zfs_sync(struct super_block *sb, int wait, cred_t *cr)
 
 		zfs_exit(zfsvfs, FTAG);
 	} else {
-		/*
-		 * Sync all ZFS filesystems.  This is what happens when you
-		 * run sync(1).  Unlike other filesystems, ZFS honors the
-		 * request by waiting for all pools to commit all dirty data.
-		 */
+		 
 		spa_sync_allpools();
 	}
 
@@ -312,12 +276,7 @@ atime_changed_cb(void *arg, uint64_t newval)
 
 	if (sb == NULL)
 		return;
-	/*
-	 * Update SB_NOATIME bit in VFS super block.  Since atime update is
-	 * determined by atime_needs_update(), atime_needs_update() needs to
-	 * return false if atime is turned off, and not unconditionally return
-	 * false if atime is turned on.
-	 */
+	 
 	if (newval)
 		sb->s_flags &= ~SB_NOATIME;
 	else
@@ -365,7 +324,7 @@ acltype_changed_cb(void *arg, uint64_t newval)
 #else
 		zfsvfs->z_acl_type = ZFS_ACLTYPE_OFF;
 		zfsvfs->z_sb->s_flags &= ~SB_POSIXACL;
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 		break;
 	default:
 		break;
@@ -461,24 +420,13 @@ zfs_register_callbacks(vfs_t *vfsp)
 	ASSERT(zfsvfs);
 	os = zfsvfs->z_os;
 
-	/*
-	 * The act of registering our callbacks will destroy any mount
-	 * options we may have.  In order to enable temporary overrides
-	 * of mount options, we stash away the current values and
-	 * restore them after we register the callbacks.
-	 */
+	 
 	if (zfs_is_readonly(zfsvfs) || !spa_writeable(dmu_objset_spa(os))) {
 		vfsp->vfs_do_readonly = B_TRUE;
 		vfsp->vfs_readonly = B_TRUE;
 	}
 
-	/*
-	 * Register property callbacks.
-	 *
-	 * It would probably be fine to just check for i/o error from
-	 * the first prop_register(), but I guess I like to go
-	 * overboard...
-	 */
+	 
 	ds = dmu_objset_ds(os);
 	dsl_pool_config_enter(dmu_objset_pool(os), FTAG);
 	error = dsl_prop_register(ds,
@@ -512,9 +460,7 @@ zfs_register_callbacks(vfs_t *vfsp)
 	if (error)
 		goto unregister;
 
-	/*
-	 * Invoke our callbacks to restore temporary mount options.
-	 */
+	 
 	if (vfsp->vfs_do_readonly)
 		readonly_changed_cb(zfsvfs, vfsp->vfs_readonly);
 	if (vfsp->vfs_do_setuid)
@@ -539,12 +485,7 @@ unregister:
 	return (error);
 }
 
-/*
- * Takes a dataset, a property, a value and that value's setpoint as
- * found in the ZAP. Checks if the property has been changed in the vfs.
- * If so, val and setpoint will be overwritten with updated content.
- * Otherwise, they are left unchanged.
- */
+ 
 int
 zfs_get_temporary_prop(dsl_dataset_t *ds, zfs_prop_t zfs_prop, uint64_t *val,
     char *setpoint)
@@ -615,11 +556,7 @@ zfs_get_temporary_prop(dsl_dataset_t *ds, zfs_prop_t zfs_prop, uint64_t *val,
 	return (0);
 }
 
-/*
- * Associate this zfsvfs with the given objset, which must be owned.
- * This will cache a bunch of on-disk state from the objset in the
- * zfsvfs.
- */
+ 
 static int
 zfsvfs_init(zfsvfs_t *zfsvfs, objset_t *os)
 {
@@ -660,10 +597,7 @@ zfsvfs_init(zfsvfs_t *zfsvfs, objset_t *os)
 		return (error);
 	zfsvfs->z_acl_type = (uint_t)val;
 
-	/*
-	 * Fold case on file systems that are always or sometimes case
-	 * insensitive.
-	 */
+	 
 	if (zfsvfs->z_case == ZFS_CASE_INSENSITIVE ||
 	    zfsvfs->z_case == ZFS_CASE_MIXED)
 		zfsvfs->z_norm |= U8_TEXTPREP_TOUPPER;
@@ -673,7 +607,7 @@ zfsvfs_init(zfsvfs_t *zfsvfs, objset_t *os)
 
 	uint64_t sa_obj = 0;
 	if (zfsvfs->z_use_sa) {
-		/* should either have both of these objects or none */
+		 
 		error = zap_lookup(os, MASTER_NODE_OBJ, ZFS_SA_ATTRS, 8, 1,
 		    &sa_obj);
 		if (error != 0)
@@ -790,10 +724,7 @@ zfsvfs_create(const char *osname, boolean_t readonly, zfsvfs_t **zfvp)
 }
 
 
-/*
- * Note: zfsvfs is assumed to be malloc'd, and will be freed by this function
- * on a failure.  Do not pass in a statically allocated zfsvfs.
- */
+ 
 int
 zfsvfs_create_impl(zfsvfs_t **zfvp, zfsvfs_t *zfsvfs, objset_t *os)
 {
@@ -849,11 +780,7 @@ zfsvfs_setup(zfsvfs_t *zfsvfs, boolean_t mounting)
 	if (error)
 		return (error);
 
-	/*
-	 * If we are not mounting (ie: online recv), then we don't
-	 * have to worry about replaying the log as we blocked all
-	 * operations out since we closed the ZIL.
-	 */
+	 
 	if (mounting) {
 		ASSERT3P(zfsvfs->z_kstat.dk_kstats, ==, NULL);
 		error = dataset_kstats_create(&zfsvfs->z_kstat, zfsvfs->z_os);
@@ -862,10 +789,7 @@ zfsvfs_setup(zfsvfs_t *zfsvfs, boolean_t mounting)
 		zfsvfs->z_log = zil_open(zfsvfs->z_os, zfs_get_data,
 		    &zfsvfs->z_kstat.dk_zil_sums);
 
-		/*
-		 * During replay we remove the read only flag to
-		 * allow replays to succeed.
-		 */
+		 
 		if (readonly != 0) {
 			readonly_changed_cb(zfsvfs, B_FALSE);
 		} else {
@@ -883,33 +807,7 @@ zfsvfs_setup(zfsvfs_t *zfsvfs, boolean_t mounting)
 			dd->dd_activity_cancelled = B_FALSE;
 		}
 
-		/*
-		 * Parse and replay the intent log.
-		 *
-		 * Because of ziltest, this must be done after
-		 * zfs_unlinked_drain().  (Further note: ziltest
-		 * doesn't use readonly mounts, where
-		 * zfs_unlinked_drain() isn't called.)  This is because
-		 * ziltest causes spa_sync() to think it's committed,
-		 * but actually it is not, so the intent log contains
-		 * many txg's worth of changes.
-		 *
-		 * In particular, if object N is in the unlinked set in
-		 * the last txg to actually sync, then it could be
-		 * actually freed in a later txg and then reallocated
-		 * in a yet later txg.  This would write a "create
-		 * object N" record to the intent log.  Normally, this
-		 * would be fine because the spa_sync() would have
-		 * written out the fact that object N is free, before
-		 * we could write the "create object N" intent log
-		 * record.
-		 *
-		 * But when we are in ziltest mode, we advance the "open
-		 * txg" without actually spa_sync()-ing the changes to
-		 * disk.  So we would see that object N is still
-		 * allocated and in the unlinked set, and there is an
-		 * intent log record saying to allocate it.
-		 */
+		 
 		if (spa_writeable(dmu_objset_spa(zfsvfs->z_os))) {
 			if (zil_replay_disable) {
 				zil_destroy(zfsvfs->z_log, B_FALSE);
@@ -921,7 +819,7 @@ zfsvfs_setup(zfsvfs_t *zfsvfs, boolean_t mounting)
 			}
 		}
 
-		/* restore readonly bit */
+		 
 		if (readonly != 0)
 			readonly_changed_cb(zfsvfs, B_TRUE);
 	} else {
@@ -930,9 +828,7 @@ zfsvfs_setup(zfsvfs_t *zfsvfs, boolean_t mounting)
 		    &zfsvfs->z_kstat.dk_zil_sums);
 	}
 
-	/*
-	 * Set the objset user_ptr to track its zfsvfs.
-	 */
+	 
 	mutex_enter(&zfsvfs->z_os->os_user_ptr_lock);
 	dmu_objset_set_user(zfsvfs->z_os, zfsvfs);
 	mutex_exit(&zfsvfs->z_os->os_user_ptr_lock);
@@ -981,14 +877,7 @@ zfs_unregister_callbacks(zfsvfs_t *zfsvfs)
 }
 
 #ifdef HAVE_MLSLABEL
-/*
- * Check that the hex label string is appropriate for the dataset being
- * mounted into the global_zone proper.
- *
- * Return an error if the hex label string is not default or
- * admin_low/admin_high.  For admin_low labels, the corresponding
- * dataset must be readonly.
- */
+ 
 int
 zfs_check_global_label(const char *dsname, const char *hexsl)
 {
@@ -997,7 +886,7 @@ zfs_check_global_label(const char *dsname, const char *hexsl)
 	if (strcasecmp(hexsl, ADMIN_HIGH) == 0)
 		return (0);
 	if (strcasecmp(hexsl, ADMIN_LOW) == 0) {
-		/* must be readonly */
+		 
 		uint64_t rdonly;
 
 		if (dsl_prop_get_integer(dsname,
@@ -1007,7 +896,7 @@ zfs_check_global_label(const char *dsname, const char *hexsl)
 	}
 	return (SET_ERROR(EACCES));
 }
-#endif /* HAVE_MLSLABEL */
+#endif  
 
 static int
 zfs_statfs_project(zfsvfs_t *zfsvfs, znode_t *zp, struct kstatfs *statp,
@@ -1041,10 +930,7 @@ zfs_statfs_project(zfsvfs_t *zfsvfs, znode_t *zp, struct kstatfs *statp,
 		uint32_t blksize;
 		u_longlong_t nblocks;
 
-		/*
-		 * Quota accounting is async, so it is possible race case.
-		 * There is at least one object with the given project ID.
-		 */
+		 
 		sa_object_size(zp->z_sa_hdl, &blksize, &nblocks);
 		if (unlikely(zp->z_blksz == 0))
 			blksize = zfsvfs->z_max_blksz;
@@ -1072,10 +958,7 @@ objs:
 	err = zap_lookup(zfsvfs->z_os, DMU_PROJECTUSED_OBJECT,
 	    buf, 8, 1, &used);
 	if (unlikely(err == ENOENT)) {
-		/*
-		 * Quota accounting is async, so it is possible race case.
-		 * There is at least one object with the given project ID.
-		 */
+		 
 		used = 1;
 	} else if (err) {
 		return (err);
@@ -1101,39 +984,20 @@ zfs_statvfs(struct inode *ip, struct kstatfs *statp)
 	    &refdbytes, &availbytes, &usedobjs, &availobjs);
 
 	uint64_t fsid = dmu_objset_fsid_guid(zfsvfs->z_os);
-	/*
-	 * The underlying storage pool actually uses multiple block
-	 * size.  Under Solaris frsize (fragment size) is reported as
-	 * the smallest block size we support, and bsize (block size)
-	 * as the filesystem's maximum block size.  Unfortunately,
-	 * under Linux the fragment size and block size are often used
-	 * interchangeably.  Thus we are forced to report both of them
-	 * as the filesystem's maximum block size.
-	 */
+	 
 	statp->f_frsize = zfsvfs->z_max_blksz;
 	statp->f_bsize = zfsvfs->z_max_blksz;
 	uint32_t bshift = fls(statp->f_bsize) - 1;
 
-	/*
-	 * The following report "total" blocks of various kinds in
-	 * the file system, but reported in terms of f_bsize - the
-	 * "preferred" size.
-	 */
+	 
 
-	/* Round up so we never have a filesystem using 0 blocks. */
+	 
 	refdbytes = P2ROUNDUP(refdbytes, statp->f_bsize);
 	statp->f_blocks = (refdbytes + availbytes) >> bshift;
 	statp->f_bfree = availbytes >> bshift;
-	statp->f_bavail = statp->f_bfree; /* no root reservation */
+	statp->f_bavail = statp->f_bfree;  
 
-	/*
-	 * statvfs() should really be called statufs(), because it assumes
-	 * static metadata.  ZFS doesn't preallocate files, so the best
-	 * we can do is report the max that could possibly fit in f_files,
-	 * and that minus the number actually used in f_ffree.
-	 * For f_ffree, report the smaller of the number of objects available
-	 * and the number of blocks (each object will take at least a block).
-	 */
+	 
 	statp->f_ffree = MIN(availobjs, availbytes >> DNODE_SHIFT);
 	statp->f_files = statp->f_ffree + usedobjs;
 	statp->f_fsid.val[0] = (uint32_t)fsid;
@@ -1141,10 +1005,7 @@ zfs_statvfs(struct inode *ip, struct kstatfs *statp)
 	statp->f_type = ZFS_SUPER_MAGIC;
 	statp->f_namelen = MAXNAMELEN - 1;
 
-	/*
-	 * We have all of 40 characters to stuff a string here.
-	 * Is there anything useful we could/should provide?
-	 */
+	 
 	memset(statp->f_spare, 0, sizeof (statp->f_spare));
 
 	if (dmu_objset_projectquota_enabled(zfsvfs->z_os) &&
@@ -1177,15 +1038,7 @@ zfs_root(zfsvfs_t *zfsvfs, struct inode **ipp)
 	return (error);
 }
 
-/*
- * Linux kernels older than 3.1 do not support a per-filesystem shrinker.
- * To accommodate this we must improvise and manually walk the list of znodes
- * attempting to prune dentries in order to be able to drop the inodes.
- *
- * To avoid scanning the same znodes multiple times they are always rotated
- * to the end of the z_all_znodes list.  New znodes are inserted at the
- * end of the list so we're always scanning the oldest znodes first.
- */
+ 
 static int
 zfs_prune_aliases(zfsvfs_t *zfsvfs, unsigned long nr_to_scan)
 {
@@ -1206,7 +1059,7 @@ zfs_prune_aliases(zfsvfs_t *zfsvfs, unsigned long nr_to_scan)
 		list_remove(&zfsvfs->z_all_znodes, zp);
 		list_insert_tail(&zfsvfs->z_all_znodes, zp);
 
-		/* Skip active znodes and .zfs entries */
+		 
 		if (MUTEX_HELD(&zp->z_lock) || zp->z_is_ctldir)
 			continue;
 
@@ -1235,11 +1088,7 @@ zfs_prune_aliases(zfsvfs_t *zfsvfs, unsigned long nr_to_scan)
 	return (objects);
 }
 
-/*
- * The ARC has requested that the filesystem drop entries from the dentry
- * and inode caches.  This can occur when the ARC needs to free meta data
- * blocks but can't because they are all pinned by entries in these caches.
- */
+ 
 int
 zfs_prune(struct super_block *sb, unsigned long nr_to_scan, int *objects)
 {
@@ -1261,10 +1110,7 @@ zfs_prune(struct super_block *sb, unsigned long nr_to_scan, int *objects)
 		*objects = 0;
 		for_each_online_node(sc.nid) {
 			*objects += (*shrinker->scan_objects)(shrinker, &sc);
-			/*
-			 * reset sc.nr_to_scan, modified by
-			 * scan_objects == super_cache_scan
-			 */
+			 
 			sc.nr_to_scan = nr_to_scan;
 		}
 	} else {
@@ -1284,11 +1130,7 @@ zfs_prune(struct super_block *sb, unsigned long nr_to_scan, int *objects)
 
 #if defined(HAVE_D_PRUNE_ALIASES) && !defined(D_PRUNE_ALIASES_IS_DEFAULT)
 #undef	D_PRUNE_ALIASES_IS_DEFAULT
-	/*
-	 * Fall back to zfs_prune_aliases if the kernel's per-superblock
-	 * shrinker couldn't free anything, possibly due to the inodes being
-	 * allocated in a different memcg.
-	 */
+	 
 	if (*objects == 0)
 		*objects = zfs_prune_aliases(zfsvfs, nr_to_scan);
 #endif
@@ -1302,12 +1144,7 @@ zfs_prune(struct super_block *sb, unsigned long nr_to_scan, int *objects)
 	return (error);
 }
 
-/*
- * Teardown the zfsvfs_t.
- *
- * Note, if 'unmounting' is FALSE, we return with the 'z_teardown_lock'
- * and 'z_teardown_inactive_lock' held.
- */
+ 
 static int
 zfsvfs_teardown(zfsvfs_t *zfsvfs, boolean_t unmounting)
 {
@@ -1315,24 +1152,9 @@ zfsvfs_teardown(zfsvfs_t *zfsvfs, boolean_t unmounting)
 
 	zfs_unlinked_drain_stop_wait(zfsvfs);
 
-	/*
-	 * If someone has not already unmounted this file system,
-	 * drain the zrele_taskq to ensure all active references to the
-	 * zfsvfs_t have been handled only then can it be safely destroyed.
-	 */
+	 
 	if (zfsvfs->z_os) {
-		/*
-		 * If we're unmounting we have to wait for the list to
-		 * drain completely.
-		 *
-		 * If we're not unmounting there's no guarantee the list
-		 * will drain completely, but iputs run from the taskq
-		 * may add the parents of dir-based xattrs to the taskq
-		 * so we want to wait for these.
-		 *
-		 * We can safely check z_all_znodes for being empty because the
-		 * VFS has already blocked operations which add to it.
-		 */
+		 
 		int round = 0;
 		while (!list_is_empty(&zfsvfs->z_all_znodes)) {
 			taskq_wait_outstanding(dsl_pool_zrele_taskq(
@@ -1345,20 +1167,11 @@ zfsvfs_teardown(zfsvfs_t *zfsvfs, boolean_t unmounting)
 	ZFS_TEARDOWN_ENTER_WRITE(zfsvfs, FTAG);
 
 	if (!unmounting) {
-		/*
-		 * We purge the parent filesystem's super block as the
-		 * parent filesystem and all of its snapshots have their
-		 * inode's super block set to the parent's filesystem's
-		 * super block.  Note,  'z_parent' is self referential
-		 * for non-snapshots.
-		 */
+		 
 		shrink_dcache_sb(zfsvfs->z_parent->z_sb);
 	}
 
-	/*
-	 * Close the zil. NB: Can't close the zil while zfs_inactive
-	 * threads are blocked as zil_close can call zfs_inactive.
-	 */
+	 
 	if (zfsvfs->z_log) {
 		zil_close(zfsvfs->z_log);
 		zfsvfs->z_log = NULL;
@@ -1366,29 +1179,14 @@ zfsvfs_teardown(zfsvfs_t *zfsvfs, boolean_t unmounting)
 
 	rw_enter(&zfsvfs->z_teardown_inactive_lock, RW_WRITER);
 
-	/*
-	 * If we are not unmounting (ie: online recv) and someone already
-	 * unmounted this file system while we were doing the switcheroo,
-	 * or a reopen of z_os failed then just bail out now.
-	 */
+	 
 	if (!unmounting && (zfsvfs->z_unmounted || zfsvfs->z_os == NULL)) {
 		rw_exit(&zfsvfs->z_teardown_inactive_lock);
 		ZFS_TEARDOWN_EXIT(zfsvfs, FTAG);
 		return (SET_ERROR(EIO));
 	}
 
-	/*
-	 * At this point there are no VFS ops active, and any new VFS ops
-	 * will fail with EIO since we have z_teardown_lock for writer (only
-	 * relevant for forced unmount).
-	 *
-	 * Release all holds on dbufs. We also grab an extra reference to all
-	 * the remaining inodes so that the kernel does not attempt to free
-	 * any inodes of a suspended fs. This can cause deadlocks since the
-	 * zfs_resume_fs() process may involve starting threads, which might
-	 * attempt to free unreferenced inodes to free up memory for the new
-	 * thread.
-	 */
+	 
 	if (!unmounting) {
 		mutex_enter(&zfsvfs->z_znodes_lock);
 		for (zp = list_head(&zfsvfs->z_all_znodes); zp != NULL;
@@ -1402,35 +1200,21 @@ zfsvfs_teardown(zfsvfs_t *zfsvfs, boolean_t unmounting)
 		mutex_exit(&zfsvfs->z_znodes_lock);
 	}
 
-	/*
-	 * If we are unmounting, set the unmounted flag and let new VFS ops
-	 * unblock.  zfs_inactive will have the unmounted behavior, and all
-	 * other VFS ops will fail with EIO.
-	 */
+	 
 	if (unmounting) {
 		zfsvfs->z_unmounted = B_TRUE;
 		rw_exit(&zfsvfs->z_teardown_inactive_lock);
 		ZFS_TEARDOWN_EXIT(zfsvfs, FTAG);
 	}
 
-	/*
-	 * z_os will be NULL if there was an error in attempting to reopen
-	 * zfsvfs, so just return as the properties had already been
-	 *
-	 * unregistered and cached data had been evicted before.
-	 */
+	 
 	if (zfsvfs->z_os == NULL)
 		return (0);
 
-	/*
-	 * Unregister properties.
-	 */
+	 
 	zfs_unregister_callbacks(zfsvfs);
 
-	/*
-	 * Evict cached data. We must write out any dirty data before
-	 * disowning the dataset.
-	 */
+	 
 	objset_t *os = zfsvfs->z_os;
 	boolean_t os_dirty = B_FALSE;
 	for (int t = 0; t < TXG_SIZE; t++) {
@@ -1470,10 +1254,7 @@ zfs_domount(struct super_block *sb, zfs_mnt_t *zm, int silent)
 
 	dataset_visible_zone = zone_dataset_visible(osname, &canwrite);
 
-	/*
-	 * Refuse to mount a filesystem if we are in a namespace and the
-	 * dataset is not visible or writable in that namespace.
-	 */
+	 
 	if (!INGLOBALZONE(curproc) &&
 	    (!dataset_visible_zone || !canwrite)) {
 		return (SET_ERROR(EPERM));
@@ -1483,10 +1264,7 @@ zfs_domount(struct super_block *sb, zfs_mnt_t *zm, int silent)
 	if (error)
 		return (error);
 
-	/*
-	 * If a non-writable filesystem is being mounted without the
-	 * read-only flag, pretend it was set, as done for snapshots.
-	 */
+	 
 	if (!canwrite)
 		vfs->vfs_readonly = B_TRUE;
 
@@ -1518,12 +1296,12 @@ zfs_domount(struct super_block *sb, zfs_mnt_t *zm, int silent)
 
 	sb->s_bdi->ra_pages = 0;
 
-	/* Set callback operations for the file system. */
+	 
 	sb->s_op = &zpl_super_operations;
 	sb->s_xattr = zpl_xattr_handlers;
 	sb->s_export_op = &zpl_export_operations;
 
-	/* Set features for file system. */
+	 
 	zfs_set_fuid_feature(zfsvfs);
 
 	if (dmu_objset_is_snapshot(zfsvfs->z_os)) {
@@ -1551,19 +1329,19 @@ zfs_domount(struct super_block *sb, zfs_mnt_t *zm, int silent)
 			goto out;
 	}
 
-	/* Allocate a root inode for the filesystem. */
+	 
 	error = zfs_root(zfsvfs, &root_inode);
 	if (error) {
 		(void) zfs_umount(sb);
-		zfsvfs = NULL; /* avoid double-free; first in zfs_umount */
+		zfsvfs = NULL;  
 		goto out;
 	}
 
-	/* Allocate a root dentry for the filesystem */
+	 
 	sb->s_root = d_make_root(root_inode);
 	if (sb->s_root == NULL) {
 		(void) zfs_umount(sb);
-		zfsvfs = NULL; /* avoid double-free; first in zfs_umount */
+		zfsvfs = NULL;  
 		error = SET_ERROR(ENOMEM);
 		goto out;
 	}
@@ -1578,47 +1356,24 @@ out:
 			dmu_objset_disown(zfsvfs->z_os, B_TRUE, zfsvfs);
 			zfsvfs_free(zfsvfs);
 		}
-		/*
-		 * make sure we don't have dangling sb->s_fs_info which
-		 * zfs_preumount will use.
-		 */
+		 
 		sb->s_fs_info = NULL;
 	}
 
 	return (error);
 }
 
-/*
- * Called when an unmount is requested and certain sanity checks have
- * already passed.  At this point no dentries or inodes have been reclaimed
- * from their respective caches.  We drop the extra reference on the .zfs
- * control directory to allow everything to be reclaimed.  All snapshots
- * must already have been unmounted to reach this point.
- */
+ 
 void
 zfs_preumount(struct super_block *sb)
 {
 	zfsvfs_t *zfsvfs = sb->s_fs_info;
 
-	/* zfsvfs is NULL when zfs_domount fails during mount */
+	 
 	if (zfsvfs) {
 		zfs_unlinked_drain_stop_wait(zfsvfs);
 		zfsctl_destroy(sb->s_fs_info);
-		/*
-		 * Wait for zrele_async before entering evict_inodes in
-		 * generic_shutdown_super. The reason we must finish before
-		 * evict_inodes is when lazytime is on, or when zfs_purgedir
-		 * calls zfs_zget, zrele would bump i_count from 0 to 1. This
-		 * would race with the i_count check in evict_inodes. This means
-		 * it could destroy the inode while we are still using it.
-		 *
-		 * We wait for two passes. xattr directories in the first pass
-		 * may add xattr entries in zfs_purgedir, so in the second pass
-		 * we wait for them. We don't use taskq_wait here because it is
-		 * a pool wide taskq. Other mounted filesystems can constantly
-		 * do zrele_async and there's no guarantee when taskq will be
-		 * empty.
-		 */
+		 
 		taskq_wait_outstanding(dsl_pool_zrele_taskq(
 		    dmu_objset_pool(zfsvfs->z_os)), 0);
 		taskq_wait_outstanding(dsl_pool_zrele_taskq(
@@ -1626,10 +1381,7 @@ zfs_preumount(struct super_block *sb)
 	}
 }
 
-/*
- * Called once all other unmount released tear down has occurred.
- * It is our responsibility to release any remaining infrastructure.
- */
+ 
 int
 zfs_umount(struct super_block *sb)
 {
@@ -1642,21 +1394,14 @@ zfs_umount(struct super_block *sb)
 	os = zfsvfs->z_os;
 	zpl_bdi_destroy(sb);
 
-	/*
-	 * z_os will be NULL if there was an error in
-	 * attempting to reopen zfsvfs.
-	 */
+	 
 	if (os != NULL) {
-		/*
-		 * Unset the objset user_ptr.
-		 */
+		 
 		mutex_enter(&os->os_user_ptr_lock);
 		dmu_objset_set_user(os, NULL);
 		mutex_exit(&os->os_user_ptr_lock);
 
-		/*
-		 * Finally release the objset
-		 */
+		 
 		dmu_objset_disown(os, B_TRUE, zfsvfs);
 	}
 
@@ -1722,7 +1467,7 @@ zfs_vget(struct super_block *sb, struct inode **ipp, fid_t *fidp)
 		return (SET_ERROR(EINVAL));
 	}
 
-	/* LONG_FID_LEN means snapdirs */
+	 
 	if (fidp->fid_len == LONG_FID_LEN) {
 		zfid_long_t	*zlfid = (zfid_long_t *)fidp;
 		uint64_t	objsetid = 0;
@@ -1753,7 +1498,7 @@ zfs_vget(struct super_block *sb, struct inode **ipp, fid_t *fidp)
 
 	if ((err = zfs_enter(zfsvfs, FTAG)) != 0)
 		return (err);
-	/* A zero fid_gen means we are in the .zfs control directories */
+	 
 	if (fid_gen == 0 &&
 	    (object == ZFSCTL_INO_ROOT || object == ZFSCTL_INO_SNAPDIR)) {
 		*ipp = zfsvfs->z_ctldir;
@@ -1762,10 +1507,7 @@ zfs_vget(struct super_block *sb, struct inode **ipp, fid_t *fidp)
 			VERIFY(zfsctl_root_lookup(*ipp, "snapshot", ipp,
 			    0, kcred, NULL, NULL) == 0);
 		} else {
-			/*
-			 * Must have an existing ref, so igrab()
-			 * cannot return NULL
-			 */
+			 
 			VERIFY3P(igrab(*ipp), !=, NULL);
 		}
 		zfs_exit(zfsvfs, FTAG);
@@ -1780,7 +1522,7 @@ zfs_vget(struct super_block *sb, struct inode **ipp, fid_t *fidp)
 		return (err);
 	}
 
-	/* Don't export xattr stuff */
+	 
 	if (zp->z_pflags & ZFS_XATTR) {
 		zrele(zp);
 		zfs_exit(zfsvfs, FTAG);
@@ -1810,14 +1552,7 @@ zfs_vget(struct super_block *sb, struct inode **ipp, fid_t *fidp)
 	return (0);
 }
 
-/*
- * Block out VFS ops and close zfsvfs_t
- *
- * Note, if successful, then we return with the 'z_teardown_lock' and
- * 'z_teardown_inactive_lock' write held.  We leave ownership of the underlying
- * dataset and objset intact so that they can be atomically handed off during
- * a subsequent rollback or recv operation and the resume thereafter.
- */
+ 
 int
 zfs_suspend_fs(zfsvfs_t *zfsvfs)
 {
@@ -1829,13 +1564,7 @@ zfs_suspend_fs(zfsvfs_t *zfsvfs)
 	return (0);
 }
 
-/*
- * Rebuild SA and release VOPs.  Note that ownership of the underlying dataset
- * is an invariant across any of the operations that can be performed while the
- * filesystem was suspended.  Whether it succeeded or failed, the preconditions
- * are the same: the relevant objset and associated dataset are owned by
- * zfsvfs, held, and long held on entry.
- */
+ 
 int
 zfs_resume_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 {
@@ -1845,10 +1574,7 @@ zfs_resume_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 	ASSERT(ZFS_TEARDOWN_WRITE_HELD(zfsvfs));
 	ASSERT(RW_WRITE_HELD(&zfsvfs->z_teardown_inactive_lock));
 
-	/*
-	 * We already own this, so just update the objset_t, as the one we
-	 * had before may have been evicted.
-	 */
+	 
 	objset_t *os;
 	VERIFY3P(ds->ds_owner, ==, zfsvfs);
 	VERIFY(dsl_dataset_long_held(ds));
@@ -1867,15 +1593,7 @@ zfs_resume_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 	zfs_set_fuid_feature(zfsvfs);
 	zfsvfs->z_rollback_time = jiffies;
 
-	/*
-	 * Attempt to re-establish all the active inodes with their
-	 * dbufs.  If a zfs_rezget() fails, then we unhash the inode
-	 * and mark it stale.  This prevents a collision if a new
-	 * inode/object is created which must use the same inode
-	 * number.  The stale inode will be be released when the
-	 * VFS prunes the dentry holding the remaining references
-	 * on the stale inode.
-	 */
+	 
 	mutex_enter(&zfsvfs->z_znodes_lock);
 	for (zp = list_head(&zfsvfs->z_all_znodes); zp;
 	    zp = list_next(&zfsvfs->z_all_znodes, zp)) {
@@ -1885,7 +1603,7 @@ zfs_resume_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 			remove_inode_hash(ZTOI(zp));
 		}
 
-		/* see comment in zfs_suspend_fs() */
+		 
 		if (zp->z_suspended) {
 			zfs_zrele_async(zp);
 			zp->z_suspended = B_FALSE;
@@ -1894,56 +1612,37 @@ zfs_resume_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 	mutex_exit(&zfsvfs->z_znodes_lock);
 
 	if (!zfs_is_readonly(zfsvfs) && !zfsvfs->z_unmounted) {
-		/*
-		 * zfs_suspend_fs() could have interrupted freeing
-		 * of dnodes. We need to restart this freeing so
-		 * that we don't "leak" the space.
-		 */
+		 
 		zfs_unlinked_drain(zfsvfs);
 	}
 
-	/*
-	 * Most of the time zfs_suspend_fs is used for changing the contents
-	 * of the underlying dataset. ZFS rollback and receive operations
-	 * might create files for which negative dentries are present in
-	 * the cache. Since walking the dcache would require a lot of GPL-only
-	 * code duplication, it's much easier on these rather rare occasions
-	 * just to flush the whole dcache for the given dataset/filesystem.
-	 */
+	 
 	shrink_dcache_sb(zfsvfs->z_sb);
 
 bail:
 	if (err != 0)
 		zfsvfs->z_unmounted = B_TRUE;
 
-	/* release the VFS ops */
+	 
 	rw_exit(&zfsvfs->z_teardown_inactive_lock);
 	ZFS_TEARDOWN_EXIT(zfsvfs, FTAG);
 
 	if (err != 0) {
-		/*
-		 * Since we couldn't setup the sa framework, try to force
-		 * unmount this file system.
-		 */
+		 
 		if (zfsvfs->z_os)
 			(void) zfs_umount(zfsvfs->z_sb);
 	}
 	return (err);
 }
 
-/*
- * Release VOPs and unmount a suspended filesystem.
- */
+ 
 int
 zfs_end_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 {
 	ASSERT(ZFS_TEARDOWN_WRITE_HELD(zfsvfs));
 	ASSERT(RW_WRITE_HELD(&zfsvfs->z_teardown_inactive_lock));
 
-	/*
-	 * We already own this, so just hold and rele it to update the
-	 * objset_t, as the one we had before may have been evicted.
-	 */
+	 
 	objset_t *os;
 	VERIFY3P(ds->ds_owner, ==, zfsvfs);
 	VERIFY(dsl_dataset_long_held(ds));
@@ -1953,22 +1652,17 @@ zfs_end_fs(zfsvfs_t *zfsvfs, dsl_dataset_t *ds)
 	dsl_pool_config_exit(dp, FTAG);
 	zfsvfs->z_os = os;
 
-	/* release the VOPs */
+	 
 	rw_exit(&zfsvfs->z_teardown_inactive_lock);
 	ZFS_TEARDOWN_EXIT(zfsvfs, FTAG);
 
-	/*
-	 * Try to force unmount this file system.
-	 */
+	 
 	(void) zfs_umount(zfsvfs->z_sb);
 	zfsvfs->z_unmounted = B_TRUE;
 	return (0);
 }
 
-/*
- * Automounted snapshots rely on periodic revalidation
- * to defer snapshots from being automatically unmounted.
- */
+ 
 
 inline void
 zfs_exit_fs(zfsvfs_t *zfsvfs)
@@ -2052,11 +1746,7 @@ zfs_set_version(zfsvfs_t *zfsvfs, uint64_t newvers)
 	return (0);
 }
 
-/*
- * Return true if the corresponding vfs's unmounted flag is set.
- * Otherwise return false.
- * If this function returns true we know VFS unmount has been initiated.
- */
+ 
 boolean_t
 zfs_get_vfs_flag_unmounted(objset_t *os)
 {
@@ -2077,10 +1767,7 @@ zfs_get_vfs_flag_unmounted(objset_t *os)
 void
 zfsvfs_update_fromname(const char *oldname, const char *newname)
 {
-	/*
-	 * We don't need to do anything here, the devname is always current by
-	 * virtue of zfsvfs->z_sb->s_op->show_devname.
-	 */
+	 
 	(void) oldname, (void) newname;
 }
 
@@ -2099,9 +1786,7 @@ zfs_init(void)
 void
 zfs_fini(void)
 {
-	/*
-	 * we don't use outstanding because zpl_posix_acl_free might add more.
-	 */
+	 
 	taskq_wait(system_delay_taskq);
 	taskq_wait(system_taskq);
 #ifdef HAVE_VFS_FILE_OPERATIONS_EXTEND

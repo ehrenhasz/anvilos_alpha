@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_INTEL_PT_H
 #define _ASM_X86_INTEL_PT_H
 
 #define PT_CPUID_LEAVES		2
-#define PT_CPUID_REGS_NUM	4 /* number of registers (eax, ebx, ecx, edx) */
+#define PT_CPUID_REGS_NUM	4  
 
 enum pt_capabilities {
 	PT_CAP_max_subleaf = 0,
@@ -38,4 +38,4 @@ static inline u32 intel_pt_validate_cap(u32 *caps, enum pt_capabilities capabili
 static inline int is_intel_pt_event(struct perf_event *event) { return 0; }
 #endif
 
-#endif /* _ASM_X86_INTEL_PT_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  The driver for the EMU10K1 (SB Live!) based soundcards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   James Courtier-Dutton <James@superbug.co.uk>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -22,16 +18,16 @@ MODULE_LICENSE("GPL");
 #include <sound/emu10k1_synth.h>
 #endif
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	 
 static int extin[SNDRV_CARDS];
 static int extout[SNDRV_CARDS];
 static int seq_ports[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 4};
 static int max_synth_voices[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 64};
 static int max_buffer_size[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 128};
 static bool enable_ir[SNDRV_CARDS];
-static uint subsystem[SNDRV_CARDS]; /* Force card subsystem model */
+static uint subsystem[SNDRV_CARDS];  
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for the EMU10K1 soundcard.");
@@ -53,13 +49,11 @@ module_param_array(enable_ir, bool, NULL, 0444);
 MODULE_PARM_DESC(enable_ir, "Enable IR.");
 module_param_array(subsystem, uint, NULL, 0444);
 MODULE_PARM_DESC(subsystem, "Force card subsystem model.");
-/*
- * Class 0401: 1102:0008 (rev 00) Subsystem: 1102:1001 -> Audigy2 Value  Model:SB0400
- */
+ 
 static const struct pci_device_id snd_emu10k1_ids[] = {
-	{ PCI_VDEVICE(CREATIVE, 0x0002), 0 },	/* EMU10K1 */
-	{ PCI_VDEVICE(CREATIVE, 0x0004), 1 },	/* Audigy */
-	{ PCI_VDEVICE(CREATIVE, 0x0008), 1 },	/* Audigy 2 Value SB0400 */
+	{ PCI_VDEVICE(CREATIVE, 0x0002), 0 },	 
+	{ PCI_VDEVICE(CREATIVE, 0x0004), 1 },	 
+	{ PCI_VDEVICE(CREATIVE, 0x0008), 1 },	 
 	{ 0, }
 };
 
@@ -109,8 +103,8 @@ static int snd_card_emu10k1_probe(struct pci_dev *pci,
 	err = snd_emu10k1_pcm_efx(emu, 2);
 	if (err < 0)
 		return err;
-	/* This stores the periods table. */
-	if (emu->card_capabilities->ca0151_chip) { /* P16V */	
+	 
+	if (emu->card_capabilities->ca0151_chip) {  	
 		emu->p16v_buffer =
 			snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV, 1024);
 		if (!emu->p16v_buffer)
@@ -128,7 +122,7 @@ static int snd_card_emu10k1_probe(struct pci_dev *pci,
 	err = snd_emu10k1_pcm_multi(emu, 3);
 	if (err < 0)
 		return err;
-	if (emu->card_capabilities->ca0151_chip) { /* P16V */
+	if (emu->card_capabilities->ca0151_chip) {  
 		err = snd_p16v_pcm(emu, 4);
 		if (err < 0)
 			return err;
@@ -227,7 +221,7 @@ static SIMPLE_DEV_PM_OPS(snd_emu10k1_pm, snd_emu10k1_suspend, snd_emu10k1_resume
 #define SND_EMU10K1_PM_OPS	&snd_emu10k1_pm
 #else
 #define SND_EMU10K1_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct pci_driver emu10k1_driver = {
 	.name = KBUILD_MODNAME,

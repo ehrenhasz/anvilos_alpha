@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_ADAU7118_H
 #define _LINUX_ADAU7118_H
 
 struct regmap;
 struct device;
 
-/* register map */
+ 
 #define ADAU7118_REG_VENDOR_ID		0x00
 #define ADAU7118_REG_DEVICE_ID1		0x01
 #define ADAU7118_REG_DEVICE_ID2		0x02

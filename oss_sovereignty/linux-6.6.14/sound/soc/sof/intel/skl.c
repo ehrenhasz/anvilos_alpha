@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
-//
 
-/*
- * Hardware interface for audio DSP on Skylake and Kabylake.
- */
+
+
+
+
+
+
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -48,7 +46,7 @@ static int skl_dsp_ipc_get_mailbox_offset(struct snd_sof_dev *sdev)
 	return SRAM_MEMORY_WINDOW_BASE + 0x1000;
 }
 
-/* skylake ops */
+ 
 struct snd_sof_dsp_ops sof_skl_ops;
 EXPORT_SYMBOL_NS(sof_skl_ops, SND_SOC_SOF_INTEL_HDA_COMMON);
 
@@ -56,10 +54,10 @@ int sof_skl_ops_init(struct snd_sof_dev *sdev)
 {
 	struct sof_ipc4_fw_data *ipc4_data;
 
-	/* common defaults */
+	 
 	memcpy(&sof_skl_ops, &sof_hda_common_ops, sizeof(struct snd_sof_dsp_ops));
 
-	/* probe/remove/shutdown */
+	 
 	sof_skl_ops.shutdown	= hda_dsp_shutdown;
 
 	sdev->private = devm_kzalloc(sdev->dev, sizeof(*ipc4_data), GFP_KERNEL);
@@ -74,24 +72,24 @@ int sof_skl_ops_init(struct snd_sof_dev *sdev)
 	sof_skl_ops.get_window_offset = skl_dsp_ipc_get_window_offset;
 	sof_skl_ops.get_mailbox_offset = skl_dsp_ipc_get_mailbox_offset;
 
-	/* doorbell */
+	 
 	sof_skl_ops.irq_thread	= hda_dsp_ipc4_irq_thread;
 
-	/* ipc */
+	 
 	sof_skl_ops.send_msg	= hda_dsp_ipc4_send_msg;
 
-	/* set DAI driver ops */
+	 
 	hda_set_dai_drv_ops(sdev, &sof_skl_ops);
 
-	/* debug */
+	 
 	sof_skl_ops.debug_map	= skl_dsp_debugfs;
 	sof_skl_ops.debug_map_count	= ARRAY_SIZE(skl_dsp_debugfs);
 	sof_skl_ops.ipc_dump	= hda_ipc4_dump;
 
-	/* firmware run */
+	 
 	sof_skl_ops.run = hda_dsp_cl_boot_firmware_skl;
 
-	/* pre/post fw run */
+	 
 	sof_skl_ops.post_fw_run = hda_dsp_post_fw_run;
 
 	return 0;

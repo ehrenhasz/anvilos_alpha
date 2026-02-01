@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  thermal_hwmon.c - Generic Thermal Management hwmon support.
- *
- *  Code based on Intel thermal_core.c. Copyrights of the original code:
- *  Copyright (C) 2008 Intel Corp
- *  Copyright (C) 2008 Zhang Rui <rui.zhang@intel.com>
- *  Copyright (C) 2008 Sujith Thomas <sujith.thomas@intel.com>
- *
- *  Copyright (C) 2013 Texas Instruments
- *  Copyright (C) 2013 Eduardo Valentin <eduardo.valentin@ti.com>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/export.h>
 #include <linux/hwmon.h>
@@ -19,8 +9,8 @@
 #include "thermal_hwmon.h"
 #include "thermal_core.h"
 
-/* hwmon sys I/F */
-/* thermal zone devices with the same type share one hwmon device */
+ 
+ 
 struct thermal_hwmon_device {
 	char type[THERMAL_NAME_LENGTH];
 	struct device *device;
@@ -34,12 +24,12 @@ struct thermal_hwmon_attr {
 	char name[16];
 };
 
-/* one temperature input for each thermal zone */
+ 
 struct thermal_hwmon_temp {
 	struct list_head hwmon_node;
 	struct thermal_zone_device *tz;
-	struct thermal_hwmon_attr temp_input;	/* hwmon sys attr */
-	struct thermal_hwmon_attr temp_crit;	/* hwmon sys attr */
+	struct thermal_hwmon_attr temp_input;	 
+	struct thermal_hwmon_attr temp_crit;	 
 };
 
 static LIST_HEAD(thermal_hwmon_list);
@@ -114,7 +104,7 @@ thermal_hwmon_lookup_by_type(const struct thermal_zone_device *tz)
 	return NULL;
 }
 
-/* Find the temperature input matching a given thermal zone */
+ 
 static struct thermal_hwmon_temp *
 thermal_hwmon_lookup_temp(const struct thermal_hwmon_device *hwmon,
 			  const struct thermal_zone_device *tz)
@@ -228,14 +218,14 @@ void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
 
 	hwmon = thermal_hwmon_lookup_by_type(tz);
 	if (unlikely(!hwmon)) {
-		/* Should never happen... */
+		 
 		dev_dbg(&tz->device, "hwmon device lookup failed!\n");
 		return;
 	}
 
 	temp = thermal_hwmon_lookup_temp(hwmon, tz);
 	if (unlikely(!temp)) {
-		/* Should never happen... */
+		 
 		dev_dbg(&tz->device, "temperature input lookup failed!\n");
 		return;
 	}

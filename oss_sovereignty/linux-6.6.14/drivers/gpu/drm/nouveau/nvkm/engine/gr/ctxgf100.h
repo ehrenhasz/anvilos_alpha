@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_GRCTX_NVC0_H__
 #define __NVKM_GRCTX_NVC0_H__
 #include "gf100.h"
@@ -7,31 +7,31 @@ void gf100_grctx_patch_wr32(struct gf100_gr_chan *, u32 addr, u32 data);
 
 struct gf100_grctx_func {
 	void (*unkn88c)(struct gf100_gr *, bool on);
-	/* main context generation function */
+	 
 	void  (*main)(struct gf100_gr_chan *);
-	/* context-specific modify-on-first-load list generation function */
+	 
 	void  (*unkn)(struct gf100_gr *);
-	/* mmio context data */
+	 
 	const struct gf100_gr_pack *hub;
 	const struct gf100_gr_pack *gpc_0;
 	const struct gf100_gr_pack *gpc_1;
 	const struct gf100_gr_pack *zcull;
 	const struct gf100_gr_pack *tpc;
 	const struct gf100_gr_pack *ppc;
-	/* indirect context data, generated with icmds/mthds */
+	 
 	const struct gf100_gr_pack *icmd;
 	const struct gf100_gr_pack *mthd;
 	const struct gf100_gr_pack *sw_veid_bundle_init;
 	const struct gf100_gr_pack *sw_bundle64_init;
-	/* bundle circular buffer */
+	 
 	void (*bundle)(struct gf100_gr_chan *, u64 addr, u32 size);
 	u32 bundle_size;
 	u32 bundle_min_gpm_fifo_depth;
 	u32 bundle_token_limit;
-	/* pagepool */
+	 
 	void (*pagepool)(struct gf100_gr_chan *, u64 addr);
 	u32 pagepool_size;
-	/* attribute(/alpha) circular buffer */
+	 
 	u32 (*attrib_cb_size)(struct gf100_gr *);
 	void (*attrib_cb)(struct gf100_gr_chan *, u64 addr, u32 size);
 	void (*attrib)(struct gf100_gr_chan *);
@@ -40,12 +40,12 @@ struct gf100_grctx_func {
 	u32 alpha_nr_max;
 	u32 alpha_nr;
 	u32 gfxp_nr;
-	/* some other context buffer */
+	 
 	void (*unknown)(struct gf100_gr_chan *, u64 addr, u32 size);
 	u32 unknown_size;
-	/* other patch buffer stuff */
+	 
 	void (*patch_ltc)(struct gf100_gr_chan *);
-	/* floorsweeping */
+	 
 	void (*sm_id)(struct gf100_gr *, int gpc, int tpc, int sm);
 	void (*tpc_nr)(struct gf100_gr *, int gpc);
 	bool skip_pd_num_tpc_per_gpc;
@@ -59,7 +59,7 @@ struct gf100_grctx_func {
 	void (*r419f78)(struct gf100_gr *);
 	void (*tpc_mask)(struct gf100_gr *);
 	void (*smid_config)(struct gf100_gr *);
-	/* misc other things */
+	 
 	void (*r400088)(struct gf100_gr *, bool);
 	void (*r419cb8)(struct gf100_gr *);
 	void (*r418800)(struct gf100_gr *);
@@ -165,7 +165,7 @@ void tu102_grctx_generate_unknown(struct gf100_gr_chan *, u64, u32);
 
 extern const struct gf100_grctx_func ga102_grctx;
 
-/* context init value lists */
+ 
 
 extern const struct gf100_gr_pack gf100_grctx_pack_icmd[];
 

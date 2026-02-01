@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Linaro Ltd.
- *
- * Author: Stanimir Varbanov <stanimir.varbanov@linaro.org>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interconnect.h>
 #include <linux/iopoll.h>
@@ -224,12 +220,7 @@ static int load_scale_bw(struct venus_core *core)
 		total_peak += peak;
 	}
 
-	/*
-	 * keep minimum bandwidth vote for "video-mem" path,
-	 * so that clks can be disabled during vdec_session_release().
-	 * Actual bandwidth drop will be done during device supend
-	 * so that device can power down without any warnings.
-	 */
+	 
 
 	if (!total_avg && !total_peak)
 		total_avg = kbps_to_icc(1000);
@@ -642,11 +633,11 @@ static int decide_core(struct venus_inst *inst)
 
 	cur_inst_load = load_per_instance(inst);
 	cur_inst_load *= inst->clk_data.vpp_freq;
-	/*TODO : divide this inst->load by work_route */
+	 
 
 	cur_inst_lp_load = load_per_instance(inst);
 	cur_inst_lp_load *= inst->clk_data.low_power_freq;
-	/*TODO : divide this inst->load by work_route */
+	 
 
 	max_freq = core->res->freq_tbl[0].freq;
 
@@ -657,12 +648,12 @@ static int decide_core(struct venus_inst *inst)
 		inst->clk_data.core_id = min_coreid;
 		cu.video_core_enable_mask = min_coreid;
 	} else if (cur_inst_lp_load + min_load <= max_freq) {
-		/* Move current instance to LP and return */
+		 
 		inst->clk_data.core_id = min_coreid;
 		cu.video_core_enable_mask = min_coreid;
 		power_save_mode_enable(inst, true);
 	} else if (cur_inst_lp_load + min_lp_load <= max_freq) {
-		/* Move all instances to LP mode and return */
+		 
 		inst->clk_data.core_id = min_lp_coreid;
 		cu.video_core_enable_mask = min_lp_coreid;
 		move_core_to_power_save_mode(core, min_lp_coreid);
@@ -878,7 +869,7 @@ skip_pmdomains:
 	if (!core->res->opp_pmdomain)
 		return 0;
 
-	/* Attach the power domain for setting performance state */
+	 
 	ret = devm_pm_opp_attach_genpd(dev, res->opp_pmdomain, &opp_virt_dev);
 	if (ret)
 		goto opp_attach_err;
@@ -1057,7 +1048,7 @@ static int core_power_v4(struct venus_core *core, int on)
 		if (ret < 0 && pmctrl)
 			pm_runtime_put_sync(pmctrl);
 	} else {
-		/* Drop the performance state vote */
+		 
 		if (core->opp_pmdomain)
 			dev_pm_opp_set_rate(dev, 0);
 
@@ -1094,11 +1085,11 @@ static unsigned long calculate_inst_freq(struct venus_inst *inst,
 		vpp_freq = mbs_per_sec * inst->clk_data.vpp_freq;
 	}
 
-	/* 21 / 20 is overhead factor */
+	 
 	vpp_freq += vpp_freq / 20;
 	vsp_freq = mbs_per_sec * inst->clk_data.vsp_freq;
 
-	/* 10 / 7 is overhead factor */
+	 
 	if (inst->session_type == VIDC_SESSION_TYPE_ENC)
 		vsp_freq += (inst->controls.enc.bitrate * 10) / 7;
 	else

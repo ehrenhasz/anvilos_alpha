@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -63,7 +61,7 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
 	skb_dst_set(skb, &rt->dst);
 	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
 
-	/* Push down and install the IP header. */
+	 
 	skb_push(skb, sizeof(struct iphdr));
 	skb_reset_network_header(skb);
 
@@ -173,11 +171,7 @@ int iptunnel_handle_offloads(struct sk_buff *skb,
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
 		skb->ip_summed = CHECKSUM_NONE;
-		/* We clear encapsulation here to prevent badly-written
-		 * drivers potentially deciding to offload an inner checksum
-		 * if we set CHECKSUM_PARTIAL on the outer header.
-		 * This should go away when the drivers are all fixed.
-		 */
+		 
 		skb->encapsulation = 0;
 	}
 
@@ -185,13 +179,7 @@ int iptunnel_handle_offloads(struct sk_buff *skb,
 }
 EXPORT_SYMBOL_GPL(iptunnel_handle_offloads);
 
-/**
- * iptunnel_pmtud_build_icmp() - Build ICMP error message for PMTUD
- * @skb:	Original packet with L2 header
- * @mtu:	MTU value for ICMP error
- *
- * Return: length on success, negative error code if message couldn't be built.
- */
+ 
 static int iptunnel_pmtud_build_icmp(struct sk_buff *skb, int mtu)
 {
 	const struct iphdr *iph = ip_hdr(skb);
@@ -251,13 +239,7 @@ static int iptunnel_pmtud_build_icmp(struct sk_buff *skb, int mtu)
 	return skb->len;
 }
 
-/**
- * iptunnel_pmtud_check_icmp() - Trigger ICMP reply if needed and allowed
- * @skb:	Buffer being sent by encapsulation, L2 headers expected
- * @mtu:	Network MTU for path
- *
- * Return: 0 for no ICMP reply, length if built, negative value on error.
- */
+ 
 static int iptunnel_pmtud_check_icmp(struct sk_buff *skb, int mtu)
 {
 	const struct icmphdr *icmph = icmp_hdr(skb);
@@ -278,13 +260,7 @@ static int iptunnel_pmtud_check_icmp(struct sk_buff *skb, int mtu)
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * iptunnel_pmtud_build_icmpv6() - Build ICMPv6 error message for PMTUD
- * @skb:	Original packet with L2 header
- * @mtu:	MTU value for ICMPv6 error
- *
- * Return: length on success, negative error code if message couldn't be built.
- */
+ 
 static int iptunnel_pmtud_build_icmpv6(struct sk_buff *skb, int mtu)
 {
 	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
@@ -344,13 +320,7 @@ static int iptunnel_pmtud_build_icmpv6(struct sk_buff *skb, int mtu)
 	return skb->len;
 }
 
-/**
- * iptunnel_pmtud_check_icmpv6() - Trigger ICMPv6 reply if needed and allowed
- * @skb:	Buffer being sent by encapsulation, L2 headers expected
- * @mtu:	Network MTU for path
- *
- * Return: 0 for no ICMPv6 reply, length if built, negative value on error.
- */
+ 
 static int iptunnel_pmtud_check_icmpv6(struct sk_buff *skb, int mtu)
 {
 	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
@@ -386,24 +356,9 @@ static int iptunnel_pmtud_check_icmpv6(struct sk_buff *skb, int mtu)
 
 	return iptunnel_pmtud_build_icmpv6(skb, mtu);
 }
-#endif /* IS_ENABLED(CONFIG_IPV6) */
+#endif  
 
-/**
- * skb_tunnel_check_pmtu() - Check, update PMTU and trigger ICMP reply as needed
- * @skb:	Buffer being sent by encapsulation, L2 headers expected
- * @encap_dst:	Destination for tunnel encapsulation (outer IP)
- * @headroom:	Encapsulation header size, bytes
- * @reply:	Build matching ICMP or ICMPv6 message as a result
- *
- * L2 tunnel implementations that can carry IP and can be directly bridged
- * (currently UDP tunnels) can't always rely on IP forwarding paths to handle
- * PMTU discovery. In the bridged case, ICMP or ICMPv6 messages need to be built
- * based on payload and sent back by the encapsulation itself.
- *
- * For routable interfaces, we just need to update the PMTU for the destination.
- *
- * Return: 0 if ICMP error not needed, length if built, negative value on error
- */
+ 
 int skb_tunnel_check_pmtu(struct sk_buff *skb, struct dst_entry *encap_dst,
 			  int headroom, bool reply)
 {
@@ -860,33 +815,33 @@ static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
 	if (!(info->key.tun_flags & TUNNEL_OPTIONS_PRESENT))
 		return 0;
 
-	opt_len = nla_total_size(0);		/* LWTUNNEL_IP_OPTS */
+	opt_len = nla_total_size(0);		 
 	if (info->key.tun_flags & TUNNEL_GENEVE_OPT) {
 		struct geneve_opt *opt;
 		int offset = 0;
 
-		opt_len += nla_total_size(0);	/* LWTUNNEL_IP_OPTS_GENEVE */
+		opt_len += nla_total_size(0);	 
 		while (info->options_len > offset) {
 			opt = ip_tunnel_info_opts(info) + offset;
-			opt_len += nla_total_size(2)	/* OPT_GENEVE_CLASS */
-				   + nla_total_size(1)	/* OPT_GENEVE_TYPE */
+			opt_len += nla_total_size(2)	 
+				   + nla_total_size(1)	 
 				   + nla_total_size(opt->length * 4);
-							/* OPT_GENEVE_DATA */
+							 
 			offset += sizeof(*opt) + opt->length * 4;
 		}
 	} else if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
-		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_VXLAN */
-			   + nla_total_size(4);	/* OPT_VXLAN_GBP */
+		opt_len += nla_total_size(0)	 
+			   + nla_total_size(4);	 
 	} else if (info->key.tun_flags & TUNNEL_ERSPAN_OPT) {
 		struct erspan_metadata *md = ip_tunnel_info_opts(info);
 
-		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_ERSPAN */
-			   + nla_total_size(1)	/* OPT_ERSPAN_VER */
+		opt_len += nla_total_size(0)	 
+			   + nla_total_size(1)	 
 			   + (md->version == 1 ? nla_total_size(4)
-						/* OPT_ERSPAN_INDEX (v1) */
+						 
 					       : nla_total_size(1) +
 						 nla_total_size(1));
-						/* OPT_ERSPAN_DIR + HWID (v2) */
+						 
 	}
 
 	return opt_len;
@@ -894,14 +849,14 @@ static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
 
 static int ip_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
 {
-	return nla_total_size_64bit(8)	/* LWTUNNEL_IP_ID */
-		+ nla_total_size(4)	/* LWTUNNEL_IP_DST */
-		+ nla_total_size(4)	/* LWTUNNEL_IP_SRC */
-		+ nla_total_size(1)	/* LWTUNNEL_IP_TOS */
-		+ nla_total_size(1)	/* LWTUNNEL_IP_TTL */
-		+ nla_total_size(2)	/* LWTUNNEL_IP_FLAGS */
+	return nla_total_size_64bit(8)	 
+		+ nla_total_size(4)	 
+		+ nla_total_size(4)	 
+		+ nla_total_size(1)	 
+		+ nla_total_size(1)	 
+		+ nla_total_size(2)	 
 		+ ip_tun_opts_nlsize(lwt_tun_info(lwtstate));
-					/* LWTUNNEL_IP_OPTS */
+					 
 }
 
 static int ip_tun_cmp_encap(struct lwtunnel_state *a, struct lwtunnel_state *b)
@@ -1017,14 +972,14 @@ static int ip6_tun_fill_encap_info(struct sk_buff *skb,
 
 static int ip6_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
 {
-	return nla_total_size_64bit(8)	/* LWTUNNEL_IP6_ID */
-		+ nla_total_size(16)	/* LWTUNNEL_IP6_DST */
-		+ nla_total_size(16)	/* LWTUNNEL_IP6_SRC */
-		+ nla_total_size(1)	/* LWTUNNEL_IP6_HOPLIMIT */
-		+ nla_total_size(1)	/* LWTUNNEL_IP6_TC */
-		+ nla_total_size(2)	/* LWTUNNEL_IP6_FLAGS */
+	return nla_total_size_64bit(8)	 
+		+ nla_total_size(16)	 
+		+ nla_total_size(16)	 
+		+ nla_total_size(1)	 
+		+ nla_total_size(1)	 
+		+ nla_total_size(2)	 
 		+ ip_tun_opts_nlsize(lwt_tun_info(lwtstate));
-					/* LWTUNNEL_IP6_OPTS */
+					 
 }
 
 static const struct lwtunnel_encap_ops ip6_tun_lwt_ops = {
@@ -1037,10 +992,7 @@ static const struct lwtunnel_encap_ops ip6_tun_lwt_ops = {
 
 void __init ip_tunnel_core_init(void)
 {
-	/* If you land here, make sure whether increasing ip_tunnel_info's
-	 * options_len is a reasonable choice with its usage in front ends
-	 * (f.e., it's part of flow keys, etc).
-	 */
+	 
 	BUILD_BUG_ON(IP_TUNNEL_OPTS_MAX != 255);
 
 	lwtunnel_encap_add_ops(&ip_tun_lwt_ops, LWTUNNEL_ENCAP_IP);
@@ -1062,7 +1014,7 @@ void ip_tunnel_unneed_metadata(void)
 }
 EXPORT_SYMBOL_GPL(ip_tunnel_unneed_metadata);
 
-/* Returns either the correct skb->protocol value, or 0 if invalid. */
+ 
 __be16 ip_tunnel_parse_protocol(const struct sk_buff *skb)
 {
 	if (skb_network_header(skb) >= skb->head &&
@@ -1080,7 +1032,7 @@ EXPORT_SYMBOL(ip_tunnel_parse_protocol);
 const struct header_ops ip_tunnel_header_ops = { .parse_protocol = ip_tunnel_parse_protocol };
 EXPORT_SYMBOL(ip_tunnel_header_ops);
 
-/* This function returns true when ENCAP attributes are present in the nl msg */
+ 
 bool ip_tunnel_netlink_encap_parms(struct nlattr *data[],
 				   struct ip_tunnel_encap *encap)
 {

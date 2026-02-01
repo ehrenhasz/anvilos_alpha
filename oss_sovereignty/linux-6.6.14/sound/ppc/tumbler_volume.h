@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* volume tables, taken from TAS3001c data manual */
-/* volume gain values */
-/* 0 = -70 dB, 175 = 18.0 dB in 0.5 dB step */
+ 
+ 
+ 
+ 
 static const unsigned int master_volume_table[] = {
 	0x00000015, 0x00000016,	0x00000017,
 	0x00000019, 0x0000001a,	0x0000001c,
@@ -64,8 +64,8 @@ static const unsigned int master_volume_table[] = {
 	0x00071457, 0x00077fbb,	0x0007f17b,
 };
 
-/* treble table for TAS3001c */
-/* 0 = -18 dB, 72 = 18 dB in 0.5 dB step */
+ 
+ 
 static const unsigned int treble_volume_table[] = {
 	0x96, 0x95, 0x94,
 	0x93, 0x92, 0x91,
@@ -94,8 +94,8 @@ static const unsigned int treble_volume_table[] = {
 	0x01,
 };
 
-/* bass table for TAS3001c */
-/* 0 = -18 dB, 72 = 18 dB in 0.5 dB step */
+ 
+ 
 static const unsigned int bass_volume_table[] = {
 	0x86, 0x82, 0x7f,
 	0x7d, 0x7a, 0x78,
@@ -124,8 +124,8 @@ static const unsigned int bass_volume_table[] = {
 	0x01,
 };
 
-/* mixer (pcm) volume table */
-/* 0 = -70 dB, 175 = 18.0 dB in 0.5 dB step */
+ 
+ 
 static const unsigned int mixer_volume_table[] = {
 	0x00014b, 0x00015f, 0x000174,
 	0x00018a, 0x0001a1, 0x0001ba,
@@ -189,8 +189,8 @@ static const unsigned int mixer_volume_table[] = {
 };
 
 
-/* treble table for TAS3004 */
-/* 0 = -18 dB, 72 = 18 dB in 0.5 dB step */
+ 
+ 
 static const unsigned int snapper_treble_volume_table[] = {
 	0x96, 0x95, 0x94,
 	0x93, 0x92, 0x91,
@@ -219,8 +219,8 @@ static const unsigned int snapper_treble_volume_table[] = {
 	0x01,
 };
 
-/* bass table for TAS3004 */
-/* 0 = -18 dB, 72 = 18 dB in 0.5 dB step */
+ 
+ 
 static const unsigned int snapper_bass_volume_table[] = {
 	0x96, 0x95, 0x94,
 	0x93, 0x92, 0x91,

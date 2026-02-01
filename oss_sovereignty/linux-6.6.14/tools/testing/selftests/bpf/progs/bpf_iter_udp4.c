@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -42,7 +42,7 @@ int dump_udp4(struct bpf_iter__udp *ctx)
 			       "rx_queue tr tm->when retrnsmt   uid  timeout "
 			       "inode ref pointer drops\n");
 
-	/* filter out udp6 sockets */
+	 
 	inet = &udp_sk->inet;
 	if (inet->sk.sk_family == AF_INET6)
 		return 0;

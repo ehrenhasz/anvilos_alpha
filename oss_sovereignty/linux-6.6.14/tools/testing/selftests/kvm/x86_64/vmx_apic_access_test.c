@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vmx_apic_access_test
- *
- * Copyright (C) 2020, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * The first subtest simply checks to see that an L2 guest can be
- * launched with a valid APIC-access address that is backed by a
- * page of L1 physical memory.
- *
- * The second subtest sets the APIC-access address to a (valid) L1
- * physical address that is not backed by memory. KVM can't handle
- * this situation, so resuming L2 should result in a KVM exit for
- * internal error (emulation). This is not an architectural
- * requirement. It is just a shortcoming of KVM. The internal error
- * is unfortunate, but it's better than what used to happen!
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -30,7 +13,7 @@
 
 static void l2_guest_code(void)
 {
-	/* Exit to L1 */
+	 
 	__asm__ __volatile__("vmcall");
 }
 
@@ -43,7 +26,7 @@ static void l1_guest_code(struct vmx_pages *vmx_pages, unsigned long high_gpa)
 	GUEST_ASSERT(prepare_for_vmx_operation(vmx_pages));
 	GUEST_ASSERT(load_vmcs(vmx_pages));
 
-	/* Prepare the VMCS for L2 execution. */
+	 
 	prepare_vmcs(vmx_pages, l2_guest_code,
 		     &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 	control = vmreadz(CPU_BASED_VM_EXEC_CONTROL);
@@ -54,14 +37,14 @@ static void l1_guest_code(struct vmx_pages *vmx_pages, unsigned long high_gpa)
 	vmwrite(SECONDARY_VM_EXEC_CONTROL, control);
 	vmwrite(APIC_ACCESS_ADDR, vmx_pages->apic_access_gpa);
 
-	/* Try to launch L2 with the memory-backed APIC-access address. */
+	 
 	GUEST_SYNC(vmreadz(APIC_ACCESS_ADDR));
 	GUEST_ASSERT(!vmlaunch());
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
 
 	vmwrite(APIC_ACCESS_ADDR, high_gpa);
 
-	/* Try to resume L2 with the unbacked APIC-access address. */
+	 
 	GUEST_SYNC(vmreadz(APIC_ACCESS_ADDR));
 	GUEST_ASSERT(!vmresume());
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
@@ -108,7 +91,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			apic_access_addr = uc.args[1];
 			break;

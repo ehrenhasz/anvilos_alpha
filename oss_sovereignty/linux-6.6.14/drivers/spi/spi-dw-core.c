@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Designware SPI core controller driver (refer pxa2xx_spi.c)
- *
- * Copyright (c) 2009, Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/dma-mapping.h>
@@ -24,10 +20,10 @@
 #include <linux/debugfs.h>
 #endif
 
-/* Slave spi_device related */
+ 
 struct dw_spi_chip_data {
 	u32 cr0;
-	u32 rx_sample_dly;	/* RX sample delay */
+	u32 rx_sample_dly;	 
 };
 
 #ifdef CONFIG_DEBUG_FS
@@ -83,20 +79,14 @@ static inline void dw_spi_debugfs_init(struct dw_spi *dws)
 static inline void dw_spi_debugfs_remove(struct dw_spi *dws)
 {
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 void dw_spi_set_cs(struct spi_device *spi, bool enable)
 {
 	struct dw_spi *dws = spi_controller_get_devdata(spi->controller);
 	bool cs_high = !!(spi->mode & SPI_CS_HIGH);
 
-	/*
-	 * DW SPI controller demands any native CS being set in order to
-	 * proceed with data transfer. So in order to activate the SPI
-	 * communications we must set a corresponding bit in the Slave
-	 * Enable register no matter whether the SPI core is configured to
-	 * support active-high or active-low CS level.
-	 */
+	 
 	if (cs_high == enable)
 		dw_writel(dws, DW_SPI_SER, BIT(spi_get_chipselect(spi, 0)));
 	else
@@ -104,27 +94,20 @@ void dw_spi_set_cs(struct spi_device *spi, bool enable)
 }
 EXPORT_SYMBOL_NS_GPL(dw_spi_set_cs, SPI_DW_CORE);
 
-/* Return the max entries we can fill into tx fifo */
+ 
 static inline u32 dw_spi_tx_max(struct dw_spi *dws)
 {
 	u32 tx_room, rxtx_gap;
 
 	tx_room = dws->fifo_len - dw_readl(dws, DW_SPI_TXFLR);
 
-	/*
-	 * Another concern is about the tx/rx mismatch, we
-	 * though to use (dws->fifo_len - rxflr - txflr) as
-	 * one maximum value for tx, but it doesn't cover the
-	 * data which is out of tx/rx fifo and inside the
-	 * shift registers. So a control from sw point of
-	 * view is taken.
-	 */
+	 
 	rxtx_gap = dws->fifo_len - (dws->rx_len - dws->tx_len);
 
 	return min3((u32)dws->tx_len, tx_room, rxtx_gap);
 }
 
-/* Return the max entries we should read out of rx fifo */
+ 
 static inline u32 dw_spi_rx_max(struct dw_spi *dws)
 {
 	return min_t(u32, dws->rx_len, dw_readl(dws, DW_SPI_RXFLR));
@@ -197,7 +180,7 @@ int dw_spi_check_status(struct dw_spi *dws, bool raw)
 		ret = -EIO;
 	}
 
-	/* Generically handle the erroneous situation */
+	 
 	if (ret) {
 		dw_spi_reset_chip(dws);
 		if (dws->host->cur_msg)
@@ -217,13 +200,7 @@ static irqreturn_t dw_spi_transfer_handler(struct dw_spi *dws)
 		return IRQ_HANDLED;
 	}
 
-	/*
-	 * Read data from the Rx FIFO every time we've got a chance executing
-	 * this method. If there is nothing left to receive, terminate the
-	 * procedure. Otherwise adjust the Rx FIFO Threshold level if it's a
-	 * final stage of the transfer. By doing so we'll get the next IRQ
-	 * right when the leftover incoming data is received.
-	 */
+	 
 	dw_reader(dws);
 	if (!dws->rx_len) {
 		dw_spi_mask_intr(dws, 0xff);
@@ -232,11 +209,7 @@ static irqreturn_t dw_spi_transfer_handler(struct dw_spi *dws)
 		dw_writel(dws, DW_SPI_RXFTLR, dws->rx_len - 1);
 	}
 
-	/*
-	 * Send data out if Tx FIFO Empty IRQ is received. The IRQ will be
-	 * disabled after the data transmission is finished so not to
-	 * have the TXE IRQ flood at the final stage of the transfer.
-	 */
+	 
 	if (irq_status & DW_SPI_INT_TXEI) {
 		dw_writer(dws);
 		if (!dws->tx_len)
@@ -268,41 +241,33 @@ static u32 dw_spi_prepare_cr0(struct dw_spi *dws, struct spi_device *spi)
 	u32 cr0 = 0;
 
 	if (dw_spi_ip_is(dws, PSSI)) {
-		/* CTRLR0[ 5: 4] Frame Format */
+		 
 		cr0 |= FIELD_PREP(DW_PSSI_CTRLR0_FRF_MASK, DW_SPI_CTRLR0_FRF_MOTO_SPI);
 
-		/*
-		 * SPI mode (SCPOL|SCPH)
-		 * CTRLR0[ 6] Serial Clock Phase
-		 * CTRLR0[ 7] Serial Clock Polarity
-		 */
+		 
 		if (spi->mode & SPI_CPOL)
 			cr0 |= DW_PSSI_CTRLR0_SCPOL;
 		if (spi->mode & SPI_CPHA)
 			cr0 |= DW_PSSI_CTRLR0_SCPHA;
 
-		/* CTRLR0[11] Shift Register Loop */
+		 
 		if (spi->mode & SPI_LOOP)
 			cr0 |= DW_PSSI_CTRLR0_SRL;
 	} else {
-		/* CTRLR0[ 7: 6] Frame Format */
+		 
 		cr0 |= FIELD_PREP(DW_HSSI_CTRLR0_FRF_MASK, DW_SPI_CTRLR0_FRF_MOTO_SPI);
 
-		/*
-		 * SPI mode (SCPOL|SCPH)
-		 * CTRLR0[ 8] Serial Clock Phase
-		 * CTRLR0[ 9] Serial Clock Polarity
-		 */
+		 
 		if (spi->mode & SPI_CPOL)
 			cr0 |= DW_HSSI_CTRLR0_SCPOL;
 		if (spi->mode & SPI_CPHA)
 			cr0 |= DW_HSSI_CTRLR0_SCPHA;
 
-		/* CTRLR0[13] Shift Register Loop */
+		 
 		if (spi->mode & SPI_LOOP)
 			cr0 |= DW_HSSI_CTRLR0_SRL;
 
-		/* CTRLR0[31] MST */
+		 
 		if (dw_spi_ver_is_ge(dws, HSSI, 102A))
 			cr0 |= DW_HSSI_CTRLR0_MST;
 	}
@@ -318,14 +283,14 @@ void dw_spi_update_config(struct dw_spi *dws, struct spi_device *spi,
 	u32 speed_hz;
 	u16 clk_div;
 
-	/* CTRLR0[ 4/3: 0] or CTRLR0[ 20: 16] Data Frame Size */
+	 
 	cr0 |= (cfg->dfs - 1) << dws->dfs_offset;
 
 	if (dw_spi_ip_is(dws, PSSI))
-		/* CTRLR0[ 9:8] Transfer Mode */
+		 
 		cr0 |= FIELD_PREP(DW_PSSI_CTRLR0_TMOD_MASK, cfg->tmode);
 	else
-		/* CTRLR0[11:10] Transfer Mode */
+		 
 		cr0 |= FIELD_PREP(DW_HSSI_CTRLR0_TMOD_MASK, cfg->tmode);
 
 	dw_writel(dws, DW_SPI_CTRLR0, cr0);
@@ -334,7 +299,7 @@ void dw_spi_update_config(struct dw_spi *dws, struct spi_device *spi,
 	    cfg->tmode == DW_SPI_CTRLR0_TMOD_RO)
 		dw_writel(dws, DW_SPI_CTRLR1, cfg->ndf ? cfg->ndf - 1 : 0);
 
-	/* Note DW APB SSI clock divider doesn't support odd numbers */
+	 
 	clk_div = (DIV_ROUND_UP(dws->max_freq, cfg->freq) + 1) & 0xfffe;
 	speed_hz = dws->max_freq / clk_div;
 
@@ -343,7 +308,7 @@ void dw_spi_update_config(struct dw_spi *dws, struct spi_device *spi,
 		dws->current_freq = speed_hz;
 	}
 
-	/* Update RX sample delay if required */
+	 
 	if (dws->cur_rx_sample_dly != chip->rx_sample_dly) {
 		dw_writel(dws, DW_SPI_RX_SAMPLE_DLY, chip->rx_sample_dly);
 		dws->cur_rx_sample_dly = chip->rx_sample_dly;
@@ -356,11 +321,7 @@ static void dw_spi_irq_setup(struct dw_spi *dws)
 	u16 level;
 	u8 imask;
 
-	/*
-	 * Originally Tx and Rx data lengths match. Rx FIFO Threshold level
-	 * will be adjusted at the final stage of the IRQ-based SPI transfer
-	 * execution so not to lose the leftover of the incoming data.
-	 */
+	 
 	level = min_t(unsigned int, dws->fifo_len / 2, dws->tx_len);
 	dw_writel(dws, DW_SPI_TXFTLR, level);
 	dw_writel(dws, DW_SPI_RXFTLR, level - 1);
@@ -372,16 +333,7 @@ static void dw_spi_irq_setup(struct dw_spi *dws)
 	dw_spi_umask_intr(dws, imask);
 }
 
-/*
- * The iterative procedure of the poll-based transfer is simple: write as much
- * as possible to the Tx FIFO, wait until the pending to receive data is ready
- * to be read, read it from the Rx FIFO and check whether the performed
- * procedure has been successful.
- *
- * Note this method the same way as the IRQ-based transfer won't work well for
- * the SPI devices connected to the controller with native CS due to the
- * automatic CS assertion/de-assertion.
- */
+ 
 static int dw_spi_poll_transfer(struct dw_spi *dws,
 				struct spi_transfer *transfer)
 {
@@ -430,7 +382,7 @@ static int dw_spi_transfer_one(struct spi_controller *host,
 	dws->rx = transfer->rx_buf;
 	dws->rx_len = dws->tx_len;
 
-	/* Ensure the data above is visible for all CPUs */
+	 
 	smp_mb();
 
 	dw_spi_enable_chip(dws, 0);
@@ -439,11 +391,11 @@ static int dw_spi_transfer_one(struct spi_controller *host,
 
 	transfer->effective_speed_hz = dws->current_freq;
 
-	/* Check if current transfer is a DMA transaction */
+	 
 	if (host->can_dma && host->can_dma(host, spi, transfer))
 		dws->dma_mapped = host->cur_msg_mapped;
 
-	/* For poll mode just disable all interrupts */
+	 
 	dw_spi_mask_intr(dws, 0xff);
 
 	if (dws->dma_mapped) {
@@ -498,10 +450,7 @@ static int dw_spi_init_mem_buf(struct dw_spi *dws, const struct spi_mem_op *op)
 	unsigned int i, j, len;
 	u8 *out;
 
-	/*
-	 * Calculate the total length of the EEPROM command transfer and
-	 * either use the pre-allocated buffer or create a temporary one.
-	 */
+	 
 	len = op->cmd.nbytes + op->addr.nbytes + op->dummy.nbytes;
 	if (op->data.dir == SPI_MEM_DATA_OUT)
 		len += op->data.nbytes;
@@ -514,11 +463,7 @@ static int dw_spi_init_mem_buf(struct dw_spi *dws, const struct spi_mem_op *op)
 			return -ENOMEM;
 	}
 
-	/*
-	 * Collect the operation code, address and dummy bytes into the single
-	 * buffer. If it's a transfer with data to be sent, also copy it into the
-	 * single buffer in order to speed the data transmission up.
-	 */
+	 
 	for (i = 0; i < op->cmd.nbytes; ++i)
 		out[i] = DW_SPI_GET_BYTE(op->cmd.opcode, op->cmd.nbytes - i - 1);
 	for (j = 0; j < op->addr.nbytes; ++i, ++j)
@@ -555,22 +500,13 @@ static int dw_spi_write_then_read(struct dw_spi *dws, struct spi_device *spi)
 	unsigned int len;
 	u8 *buf;
 
-	/*
-	 * At initial stage we just pre-fill the Tx FIFO in with no rush,
-	 * since native CS hasn't been enabled yet and the automatic data
-	 * transmission won't start til we do that.
-	 */
+	 
 	len = min(dws->fifo_len, dws->tx_len);
 	buf = dws->tx;
 	while (len--)
 		dw_write_io_reg(dws, DW_SPI_DR, *buf++);
 
-	/*
-	 * After setting any bit in the SER register the transmission will
-	 * start automatically. We have to keep up with that procedure
-	 * otherwise the CS de-assertion will happen whereupon the memory
-	 * operation will be pre-terminated.
-	 */
+	 
 	len = dws->tx_len - ((void *)buf - dws->tx);
 	dw_spi_set_cs(spi, false);
 	while (len) {
@@ -584,11 +520,7 @@ static int dw_spi_write_then_read(struct dw_spi *dws, struct spi_device *spi)
 			dw_write_io_reg(dws, DW_SPI_DR, *buf++);
 	}
 
-	/*
-	 * Data fetching will start automatically if the EEPROM-read mode is
-	 * activated. We have to keep up with the incoming data pace to
-	 * prevent the Rx FIFO overflow causing the inbound data loss.
-	 */
+	 
 	len = dws->rx_len;
 	buf = dws->rx;
 	while (len) {
@@ -651,14 +583,7 @@ static void dw_spi_stop_mem_op(struct dw_spi *dws, struct spi_device *spi)
 	dw_spi_enable_chip(dws, 1);
 }
 
-/*
- * The SPI memory operation implementation below is the best choice for the
- * devices, which are selected by the native chip-select lane. It's
- * specifically developed to workaround the problem with automatic chip-select
- * lane toggle when there is no data in the Tx FIFO buffer. Luckily the current
- * SPI-mem core calls exec_op() callback only if the GPIO-based CS is
- * unavailable.
- */
+ 
 static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
 {
 	struct dw_spi *dws = spi_controller_get_devdata(mem->spi->controller);
@@ -666,18 +591,12 @@ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * Collect the outbound data into a single buffer to speed the
-	 * transmission up at least on the initial stage.
-	 */
+	 
 	ret = dw_spi_init_mem_buf(dws, op);
 	if (ret)
 		return ret;
 
-	/*
-	 * DW SPI EEPROM-read mode is required only for the SPI memory Data-IN
-	 * operation. Transmit-only mode is suitable for the rest of them.
-	 */
+	 
 	cfg.dfs = 8;
 	cfg.freq = clamp(mem->spi->max_speed_hz, 0U, dws->max_mem_freq);
 	if (op->data.dir == SPI_MEM_DATA_IN) {
@@ -695,34 +614,7 @@ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
 
 	dw_spi_enable_chip(dws, 1);
 
-	/*
-	 * DW APB SSI controller has very nasty peculiarities. First originally
-	 * (without any vendor-specific modifications) it doesn't provide a
-	 * direct way to set and clear the native chip-select signal. Instead
-	 * the controller asserts the CS lane if Tx FIFO isn't empty and a
-	 * transmission is going on, and automatically de-asserts it back to
-	 * the high level if the Tx FIFO doesn't have anything to be pushed
-	 * out. Due to that a multi-tasking or heavy IRQs activity might be
-	 * fatal, since the transfer procedure preemption may cause the Tx FIFO
-	 * getting empty and sudden CS de-assertion, which in the middle of the
-	 * transfer will most likely cause the data loss. Secondly the
-	 * EEPROM-read or Read-only DW SPI transfer modes imply the incoming
-	 * data being automatically pulled in into the Rx FIFO. So if the
-	 * driver software is late in fetching the data from the FIFO before
-	 * it's overflown, new incoming data will be lost. In order to make
-	 * sure the executed memory operations are CS-atomic and to prevent the
-	 * Rx FIFO overflow we have to disable the local interrupts so to block
-	 * any preemption during the subsequent IO operations.
-	 *
-	 * Note. At some circumstances disabling IRQs may not help to prevent
-	 * the problems described above. The CS de-assertion and Rx FIFO
-	 * overflow may still happen due to the relatively slow system bus or
-	 * CPU not working fast enough, so the write-then-read algo implemented
-	 * here just won't keep up with the SPI bus data transfer. Such
-	 * situation is highly platform specific and is supposed to be fixed by
-	 * manually restricting the SPI bus frequency using the
-	 * dws->max_mem_freq parameter.
-	 */
+	 
 	local_irq_save(flags);
 	preempt_disable();
 
@@ -731,13 +623,7 @@ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	local_irq_restore(flags);
 	preempt_enable();
 
-	/*
-	 * Wait for the operation being finished and check the controller
-	 * status only if there hasn't been any run-time error detected. In the
-	 * former case it's just pointless. In the later one to prevent an
-	 * additional error message printing since any hw error flag being set
-	 * would be due to an error detected on the data transfer.
-	 */
+	 
 	if (!ret) {
 		ret = dw_spi_wait_mem_op_done(dws);
 		if (!ret)
@@ -751,15 +637,7 @@ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	return ret;
 }
 
-/*
- * Initialize the default memory operations if a glue layer hasn't specified
- * custom ones. Direct mapping operations will be preserved anyway since DW SPI
- * controller doesn't have an embedded dirmap interface. Note the memory
- * operations implemented in this driver is the best choice only for the DW APB
- * SSI controller with standard native CS functionality. If a hardware vendor
- * has fixed the automatic CS assertion/de-assertion peculiarity, then it will
- * be safer to use the normal SPI-messages-based transfers implementation.
- */
+ 
 static void dw_spi_init_mem_ops(struct dw_spi *dws)
 {
 	if (!dws->mem_ops.exec_op && !(dws->caps & DW_SPI_CAP_CS_OVERRIDE) &&
@@ -772,13 +650,13 @@ static void dw_spi_init_mem_ops(struct dw_spi *dws)
 	}
 }
 
-/* This may be called twice for each spi dev */
+ 
 static int dw_spi_setup(struct spi_device *spi)
 {
 	struct dw_spi *dws = spi_controller_get_devdata(spi->controller);
 	struct dw_spi_chip_data *chip;
 
-	/* Only alloc on first setup */
+	 
 	chip = spi_get_ctldata(spi);
 	if (!chip) {
 		struct dw_spi *dws = spi_controller_get_devdata(spi->controller);
@@ -788,22 +666,18 @@ static int dw_spi_setup(struct spi_device *spi)
 		if (!chip)
 			return -ENOMEM;
 		spi_set_ctldata(spi, chip);
-		/* Get specific / default rx-sample-delay */
+		 
 		if (device_property_read_u32(&spi->dev,
 					     "rx-sample-delay-ns",
 					     &rx_sample_dly_ns) != 0)
-			/* Use default controller value */
+			 
 			rx_sample_dly_ns = dws->def_rx_sample_dly_ns;
 		chip->rx_sample_dly = DIV_ROUND_CLOSEST(rx_sample_dly_ns,
 							NSEC_PER_SEC /
 							dws->max_freq);
 	}
 
-	/*
-	 * Update CR0 data each time the setup callback is invoked since
-	 * the device parameters could have been changed, for instance, by
-	 * the MMC SPI driver or something else.
-	 */
+	 
 	chip->cr0 = dw_spi_prepare_cr0(dws, spi);
 
 	return 0;
@@ -817,16 +691,12 @@ static void dw_spi_cleanup(struct spi_device *spi)
 	spi_set_ctldata(spi, NULL);
 }
 
-/* Restart the controller, disable all interrupts, clean rx fifo */
+ 
 static void dw_spi_hw_init(struct device *dev, struct dw_spi *dws)
 {
 	dw_spi_reset_chip(dws);
 
-	/*
-	 * Retrieve the Synopsys component version if it hasn't been specified
-	 * by the platform. CoreKit version ID is encoded as a 3-chars ASCII
-	 * code enclosed with '*' (typical for the most of Synopsys IP-cores).
-	 */
+	 
 	if (!dws->ver) {
 		dws->ver = dw_readl(dws, DW_SPI_VERSION);
 
@@ -836,10 +706,7 @@ static void dw_spi_hw_init(struct device *dev, struct dw_spi *dws)
 			DW_SPI_GET_BYTE(dws->ver, 1));
 	}
 
-	/*
-	 * Try to detect the FIFO depth if not set by interface driver,
-	 * the depth could be from 2 to 256 from HW spec
-	 */
+	 
 	if (!dws->fifo_len) {
 		u32 fifo;
 
@@ -854,11 +721,7 @@ static void dw_spi_hw_init(struct device *dev, struct dw_spi *dws)
 		dev_dbg(dev, "Detected FIFO size: %u bytes\n", dws->fifo_len);
 	}
 
-	/*
-	 * Detect CTRLR0.DFS field size and offset by testing the lowest bits
-	 * writability. Note DWC SSI controller also has the extended DFS, but
-	 * with zero offset.
-	 */
+	 
 	if (dw_spi_ip_is(dws, PSSI)) {
 		u32 cr0, tmp = dw_readl(dws, DW_SPI_CTRLR0);
 
@@ -877,7 +740,7 @@ static void dw_spi_hw_init(struct device *dev, struct dw_spi *dws)
 		dws->caps |= DW_SPI_CAP_DFS32;
 	}
 
-	/* enable HW fixup for explicit CS deselect for Amazon's alpine chip */
+	 
 	if (dws->caps & DW_SPI_CAP_CS_OVERRIDE)
 		dw_writel(dws, DW_SPI_CS_OVERRIDE, 0xF);
 }
@@ -901,7 +764,7 @@ int dw_spi_add_host(struct device *dev, struct dw_spi *dws)
 
 	spi_controller_set_devdata(host, dws);
 
-	/* Basic HW init */
+	 
 	dw_spi_hw_init(dev, dws);
 
 	ret = request_irq(dws->irq, dw_spi_irq, IRQF_SHARED, dev_name(dev),
@@ -935,7 +798,7 @@ int dw_spi_add_host(struct device *dev, struct dw_spi *dws)
 	host->flags = SPI_CONTROLLER_GPIO_SS;
 	host->auto_runtime_pm = true;
 
-	/* Get default rx sample delay */
+	 
 	device_property_read_u32(dev, "rx-sample-delay-ns",
 				 &dws->def_rx_sample_dly_ns);
 

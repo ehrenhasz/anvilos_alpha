@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rsrc_mgr.c -- Resource management routines and/or wrappers
- *
- * The initial developer of the original code is David A. Hinds
- * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
- * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
- *
- * (C) 1999		David A. Hinds
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -19,8 +11,7 @@
 
 int static_init(struct pcmcia_socket *s)
 {
-	/* the good thing about SS_CAP_STATIC_MAP sockets is
-	 * that they don't need a resource database */
+	 
 
 	s->resource_setup_done = 1;
 

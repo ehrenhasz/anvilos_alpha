@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nvmem framework core.
- *
- * Copyright (C) 2015 Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
- * Copyright (C) 2013 Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -115,15 +110,12 @@ static int nvmem_access_with_keepouts(struct nvmem_device *nvmem,
 	const struct nvmem_keepout *keepoutend = keepout + nvmem->nkeepout;
 	int rc;
 
-	/*
-	 * Skip all keepouts before the range being accessed.
-	 * Keepouts are sorted.
-	 */
+	 
 	while ((keepout < keepoutend) && (keepout->end <= offset))
 		keepout++;
 
 	while ((offset < end) && (keepout < keepoutend)) {
-		/* Access the valid portion before the keepout. */
+		 
 		if (offset < keepout->start) {
 			kend = min(end, keepout->start);
 			ksize = kend - offset;
@@ -139,10 +131,7 @@ static int nvmem_access_with_keepouts(struct nvmem_device *nvmem,
 			val += ksize;
 		}
 
-		/*
-		 * Now we're aligned to the start of this keepout zone. Go
-		 * through it.
-		 */
+		 
 		kend = min(end, keepout->end);
 		ksize = kend - offset;
 		if (!write)
@@ -153,10 +142,7 @@ static int nvmem_access_with_keepouts(struct nvmem_device *nvmem,
 		keepout++;
 	}
 
-	/*
-	 * If we ran out of keepouts but there's still stuff to do, send it
-	 * down directly
-	 */
+	 
 	if (offset < end) {
 		ksize = end - offset;
 		if (write)
@@ -228,7 +214,7 @@ static ssize_t bin_attr_nvmem_read(struct file *filp, struct kobject *kobj,
 		dev = kobj_to_dev(kobj);
 	nvmem = to_nvmem_device(dev);
 
-	/* Stop the user from reading */
+	 
 	if (pos >= nvmem->size)
 		return 0;
 
@@ -268,7 +254,7 @@ static ssize_t bin_attr_nvmem_write(struct file *filp, struct kobject *kobj,
 		dev = kobj_to_dev(kobj);
 	nvmem = to_nvmem_device(dev);
 
-	/* Stop the user from writing */
+	 
 	if (pos >= nvmem->size)
 		return -EFBIG;
 
@@ -324,7 +310,7 @@ static umode_t nvmem_bin_attr_is_visible(struct kobject *kobj,
 	return nvmem_bin_attr_get_umode(nvmem);
 }
 
-/* default read/write permissions */
+ 
 static struct bin_attribute bin_attr_rw_nvmem = {
 	.attr	= {
 		.name	= "nvmem",
@@ -358,11 +344,7 @@ static struct bin_attribute bin_attr_nvmem_eeprom_compat = {
 	.write	= bin_attr_nvmem_write,
 };
 
-/*
- * nvmem_setup_compat() - Create an additional binary entry in
- * drivers sys directory, to be backwards compatible with the older
- * drivers/misc/eeprom drivers.
- */
+ 
 static int nvmem_sysfs_setup_compat(struct nvmem_device *nvmem,
 				    const struct nvmem_config *config)
 {
@@ -405,7 +387,7 @@ static void nvmem_sysfs_remove_compat(struct nvmem_device *nvmem,
 		device_remove_bin_file(nvmem->base_dev, &nvmem->eeprom);
 }
 
-#else /* CONFIG_NVMEM_SYSFS */
+#else  
 
 static int nvmem_sysfs_setup_compat(struct nvmem_device *nvmem,
 				    const struct nvmem_config *config)
@@ -417,7 +399,7 @@ static void nvmem_sysfs_remove_compat(struct nvmem_device *nvmem,
 {
 }
 
-#endif /* CONFIG_NVMEM_SYSFS */
+#endif  
 
 static void nvmem_release(struct device *dev)
 {
@@ -510,14 +492,7 @@ static int nvmem_cell_info_to_nvmem_cell_entry(struct nvmem_device *nvmem,
 	return 0;
 }
 
-/**
- * nvmem_add_one_cell() - Add one cell information to an nvmem device
- *
- * @nvmem: nvmem device to add cells to.
- * @info: nvmem cell info to add to the device
- *
- * Return: 0 or negative error code on failure.
- */
+ 
 int nvmem_add_one_cell(struct nvmem_device *nvmem,
 		       const struct nvmem_cell_info *info)
 {
@@ -540,15 +515,7 @@ int nvmem_add_one_cell(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_add_one_cell);
 
-/**
- * nvmem_add_cells() - Add cell information to an nvmem device
- *
- * @nvmem: nvmem device to add cells to.
- * @info: nvmem cell info to add to the device
- * @ncells: number of cells in info
- *
- * Return: 0 or negative error code on failure.
- */
+ 
 static int nvmem_add_cells(struct nvmem_device *nvmem,
 		    const struct nvmem_cell_info *info,
 		    int ncells)
@@ -564,26 +531,14 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
 	return 0;
 }
 
-/**
- * nvmem_register_notifier() - Register a notifier block for nvmem events.
- *
- * @nb: notifier block to be called on nvmem events.
- *
- * Return: 0 on success, negative error number on failure.
- */
+ 
 int nvmem_register_notifier(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_register(&nvmem_notifier, nb);
 }
 EXPORT_SYMBOL_GPL(nvmem_register_notifier);
 
-/**
- * nvmem_unregister_notifier() - Unregister a notifier block for nvmem events.
- *
- * @nb: notifier block to be unregistered.
- *
- * Return: 0 on success, negative error number on failure.
- */
+ 
 int nvmem_unregister_notifier(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_unregister(&nvmem_notifier, nb);
@@ -649,7 +604,7 @@ static int nvmem_validate_keepouts(struct nvmem_device *nvmem)
 	const struct nvmem_keepout *keepoutend = keepout + nvmem->nkeepout;
 
 	while (keepout < keepoutend) {
-		/* Ensure keepouts are sorted and don't overlap. */
+		 
 		if (keepout->start < cur) {
 			dev_err(&nvmem->dev,
 				"Keepout regions aren't sorted or overlap.\n");
@@ -664,10 +619,7 @@ static int nvmem_validate_keepouts(struct nvmem_device *nvmem)
 			return -EINVAL;
 		}
 
-		/*
-		 * Validate keepouts (and holes between) don't violate
-		 * word_size constraints.
-		 */
+		 
 		if ((keepout->end - keepout->start < nvmem->word_size) ||
 		    ((keepout->start != cur) &&
 		     (keepout->start - cur < nvmem->word_size))) {
@@ -678,7 +630,7 @@ static int nvmem_validate_keepouts(struct nvmem_device *nvmem)
 			return -ERANGE;
 		}
 
-		/* Validate keepouts don't violate stride (alignment). */
+		 
 		if (!IS_ALIGNED(keepout->start, nvmem->stride) ||
 		    !IS_ALIGNED(keepout->end, nvmem->stride)) {
 
@@ -796,17 +748,13 @@ static struct nvmem_layout *nvmem_layout_get(struct nvmem_device *nvmem)
 	if (!layout_np)
 		return NULL;
 
-	/* Fixed layouts don't have a matching driver */
+	 
 	if (of_device_is_compatible(layout_np, "fixed-layout")) {
 		of_node_put(layout_np);
 		return NULL;
 	}
 
-	/*
-	 * In case the nvmem device was built-in while the layout was built as a
-	 * module, we shall manually request the layout driver loading otherwise
-	 * we'll never have any match.
-	 */
+	 
 	of_request_module(layout_np);
 
 	spin_lock(&nvmem_layout_lock);
@@ -847,14 +795,7 @@ static int nvmem_add_cells_from_layout(struct nvmem_device *nvmem)
 }
 
 #if IS_ENABLED(CONFIG_OF)
-/**
- * of_nvmem_layout_get_container() - Get OF node to layout container.
- *
- * @nvmem: nvmem device.
- *
- * Return: a node pointer with refcount incremented or NULL if no
- * container exists. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_nvmem_layout_get_container(struct nvmem_device *nvmem)
 {
 	return of_get_child_by_name(nvmem->dev.of_node, "nvmem-layout");
@@ -875,15 +816,7 @@ const void *nvmem_layout_get_match_data(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_layout_get_match_data);
 
-/**
- * nvmem_register() - Register a nvmem device for given nvmem_config.
- * Also creates a binary entry in /sys/bus/nvmem/devices/dev-name/nvmem
- *
- * @config: nvmem device configuration with which nvmem device is created.
- *
- * Return: Will be an ERR_PTR() on error or a valid pointer to nvmem_device
- * on success.
- */
+ 
 
 struct nvmem_device *nvmem_register(const struct nvmem_config *config)
 {
@@ -980,10 +913,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
 			goto err_put_device;
 	}
 
-	/*
-	 * If the driver supplied a layout by config->layout, the module
-	 * pointer will be NULL and nvmem_layout_put() will be a noop.
-	 */
+	 
 	nvmem->layout = config->layout ?: nvmem_layout_get(nvmem);
 	if (IS_ERR(nvmem->layout)) {
 		rval = PTR_ERR(nvmem->layout);
@@ -1054,11 +984,7 @@ static void nvmem_device_release(struct kref *kref)
 	device_unregister(&nvmem->dev);
 }
 
-/**
- * nvmem_unregister() - Unregister previously registered nvmem device
- *
- * @nvmem: Pointer to previously registered nvmem device.
- */
+ 
 void nvmem_unregister(struct nvmem_device *nvmem)
 {
 	if (nvmem)
@@ -1071,17 +997,7 @@ static void devm_nvmem_unregister(void *nvmem)
 	nvmem_unregister(nvmem);
 }
 
-/**
- * devm_nvmem_register() - Register a managed nvmem device for given
- * nvmem_config.
- * Also creates a binary entry in /sys/bus/nvmem/devices/dev-name/nvmem
- *
- * @dev: Device that uses the nvmem device.
- * @config: nvmem device configuration with which nvmem device is created.
- *
- * Return: Will be an ERR_PTR() on error or a valid pointer to nvmem_device
- * on success.
- */
+ 
 struct nvmem_device *devm_nvmem_register(struct device *dev,
 					 const struct nvmem_config *config)
 {
@@ -1136,15 +1052,7 @@ static void __nvmem_device_put(struct nvmem_device *nvmem)
 }
 
 #if IS_ENABLED(CONFIG_OF)
-/**
- * of_nvmem_device_get() - Get nvmem device from a given id
- *
- * @np: Device tree node that uses the nvmem device.
- * @id: nvmem name from nvmem-names property.
- *
- * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
- * on success.
- */
+ 
 struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
 {
 
@@ -1166,18 +1074,10 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
 EXPORT_SYMBOL_GPL(of_nvmem_device_get);
 #endif
 
-/**
- * nvmem_device_get() - Get nvmem device from a given id
- *
- * @dev: Device that uses the nvmem device.
- * @dev_name: name of the requested nvmem device.
- *
- * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
- * on success.
- */
+ 
 struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
 {
-	if (dev->of_node) { /* try dt first */
+	if (dev->of_node) {  
 		struct nvmem_device *nvmem;
 
 		nvmem = of_nvmem_device_get(dev->of_node, dev_name);
@@ -1191,15 +1091,7 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
 }
 EXPORT_SYMBOL_GPL(nvmem_device_get);
 
-/**
- * nvmem_device_find() - Find nvmem device with matching function
- *
- * @data: Data to pass to match function
- * @match: Callback function to check device
- *
- * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
- * on success.
- */
+ 
 struct nvmem_device *nvmem_device_find(void *data,
 			int (*match)(struct device *dev, const void *data))
 {
@@ -1222,13 +1114,7 @@ static void devm_nvmem_device_release(struct device *dev, void *res)
 	nvmem_device_put(*(struct nvmem_device **)res);
 }
 
-/**
- * devm_nvmem_device_put() - put alredy got nvmem device
- *
- * @dev: Device that uses the nvmem device.
- * @nvmem: pointer to nvmem device allocated by devm_nvmem_cell_get(),
- * that needs to be released.
- */
+ 
 void devm_nvmem_device_put(struct device *dev, struct nvmem_device *nvmem)
 {
 	int ret;
@@ -1240,27 +1126,14 @@ void devm_nvmem_device_put(struct device *dev, struct nvmem_device *nvmem)
 }
 EXPORT_SYMBOL_GPL(devm_nvmem_device_put);
 
-/**
- * nvmem_device_put() - put alredy got nvmem device
- *
- * @nvmem: pointer to nvmem device that needs to be released.
- */
+ 
 void nvmem_device_put(struct nvmem_device *nvmem)
 {
 	__nvmem_device_put(nvmem);
 }
 EXPORT_SYMBOL_GPL(nvmem_device_put);
 
-/**
- * devm_nvmem_device_get() - Get nvmem cell of device form a given id
- *
- * @dev: Device that requests the nvmem device.
- * @id: name id for the requested nvmem device.
- *
- * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_cell
- * on success.  The nvmem_cell will be freed by the automatically once the
- * device is freed.
- */
+ 
 struct nvmem_device *devm_nvmem_device_get(struct device *dev, const char *id)
 {
 	struct nvmem_device **ptr, *nvmem;
@@ -1325,11 +1198,11 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
 	list_for_each_entry(lookup, &nvmem_lookup_list, node) {
 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
 		    (strcmp(lookup->con_id, con_id) == 0)) {
-			/* This is the right entry. */
+			 
 			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
 						   device_match_name);
 			if (IS_ERR(nvmem)) {
-				/* Provider may not be registered yet. */
+				 
 				cell = ERR_CAST(nvmem);
 				break;
 			}
@@ -1370,18 +1243,7 @@ nvmem_find_cell_entry_by_node(struct nvmem_device *nvmem, struct device_node *np
 	return cell;
 }
 
-/**
- * of_nvmem_cell_get() - Get a nvmem cell from given device node and cell id
- *
- * @np: Device tree node that uses the nvmem cell.
- * @id: nvmem cell name from nvmem-cell-names property, or NULL
- *      for the cell at index 0 (the lone cell with no accompanying
- *      nvmem-cell-names property).
- *
- * Return: Will be an ERR_PTR() on error or a valid pointer
- * to a struct nvmem_cell.  The nvmem_cell will be freed by the
- * nvmem_cell_put().
- */
+ 
 struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
 {
 	struct device_node *cell_np, *nvmem_np;
@@ -1393,7 +1255,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
 	int cell_index = 0;
 	int ret;
 
-	/* if cell name exists, find index to the name */
+	 
 	if (id)
 		index = of_property_match_string(np, "nvmem-cell-names", id);
 
@@ -1416,7 +1278,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* nvmem layouts produce cells within the nvmem-layout container */
+	 
 	if (of_node_name_eq(nvmem_np, "nvmem-layout")) {
 		nvmem_np = of_get_next_parent(nvmem_np);
 		if (!nvmem_np) {
@@ -1448,29 +1310,18 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
 EXPORT_SYMBOL_GPL(of_nvmem_cell_get);
 #endif
 
-/**
- * nvmem_cell_get() - Get nvmem cell of device form a given cell name
- *
- * @dev: Device that requests the nvmem cell.
- * @id: nvmem cell name to get (this corresponds with the name from the
- *      nvmem-cell-names property for DT systems and with the con_id from
- *      the lookup entry for non-DT systems).
- *
- * Return: Will be an ERR_PTR() on error or a valid pointer
- * to a struct nvmem_cell.  The nvmem_cell will be freed by the
- * nvmem_cell_put().
- */
+ 
 struct nvmem_cell *nvmem_cell_get(struct device *dev, const char *id)
 {
 	struct nvmem_cell *cell;
 
-	if (dev->of_node) { /* try dt first */
+	if (dev->of_node) {  
 		cell = of_nvmem_cell_get(dev->of_node, id);
 		if (!IS_ERR(cell) || PTR_ERR(cell) == -EPROBE_DEFER)
 			return cell;
 	}
 
-	/* NULL cell id only allowed for device tree; invalid otherwise */
+	 
 	if (!id)
 		return ERR_PTR(-EINVAL);
 
@@ -1483,16 +1334,7 @@ static void devm_nvmem_cell_release(struct device *dev, void *res)
 	nvmem_cell_put(*(struct nvmem_cell **)res);
 }
 
-/**
- * devm_nvmem_cell_get() - Get nvmem cell of device form a given id
- *
- * @dev: Device that requests the nvmem cell.
- * @id: nvmem cell name id to get.
- *
- * Return: Will be an ERR_PTR() on error or a valid pointer
- * to a struct nvmem_cell.  The nvmem_cell will be freed by the
- * automatically once the device is freed.
- */
+ 
 struct nvmem_cell *devm_nvmem_cell_get(struct device *dev, const char *id)
 {
 	struct nvmem_cell **ptr, *cell;
@@ -1523,13 +1365,7 @@ static int devm_nvmem_cell_match(struct device *dev, void *res, void *data)
 	return *c == data;
 }
 
-/**
- * devm_nvmem_cell_put() - Release previously allocated nvmem cell
- * from devm_nvmem_cell_get.
- *
- * @dev: Device that requests the nvmem cell.
- * @cell: Previously allocated nvmem cell by devm_nvmem_cell_get().
- */
+ 
 void devm_nvmem_cell_put(struct device *dev, struct nvmem_cell *cell)
 {
 	int ret;
@@ -1541,11 +1377,7 @@ void devm_nvmem_cell_put(struct device *dev, struct nvmem_cell *cell)
 }
 EXPORT_SYMBOL(devm_nvmem_cell_put);
 
-/**
- * nvmem_cell_put() - Release previously allocated nvmem cell.
- *
- * @cell: Previously allocated nvmem cell by nvmem_cell_get().
- */
+ 
 void nvmem_cell_put(struct nvmem_cell *cell)
 {
 	struct nvmem_device *nvmem = cell->entry->nvmem;
@@ -1565,28 +1397,28 @@ static void nvmem_shift_read_buffer_in_place(struct nvmem_cell_entry *cell, void
 
 	p = b = buf;
 	if (bit_offset) {
-		/* First shift */
+		 
 		*b++ >>= bit_offset;
 
-		/* setup rest of the bytes if any */
+		 
 		for (i = 1; i < cell->bytes; i++) {
-			/* Get bits from next byte and shift them towards msb */
+			 
 			*p |= *b << (BITS_PER_BYTE - bit_offset);
 
 			p = b;
 			*b++ >>= bit_offset;
 		}
 	} else {
-		/* point to the msb */
+		 
 		p += cell->bytes - 1;
 	}
 
-	/* result fits in less bytes */
+	 
 	extra = cell->bytes - DIV_ROUND_UP(cell->nbits, BITS_PER_BYTE);
 	while (--extra >= 0)
 		*p-- = 0;
 
-	/* clear msb bits if any leftover in the last byte */
+	 
 	if (cell->nbits % BITS_PER_BYTE)
 		*p &= GENMASK((cell->nbits % BITS_PER_BYTE) - 1, 0);
 }
@@ -1602,7 +1434,7 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
 	if (rc)
 		return rc;
 
-	/* shift bits in-place */
+	 
 	if (cell->bit_offset || cell->nbits)
 		nvmem_shift_read_buffer_in_place(cell, buf);
 
@@ -1619,16 +1451,7 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
 	return 0;
 }
 
-/**
- * nvmem_cell_read() - Read a given nvmem cell
- *
- * @cell: nvmem cell to be read.
- * @len: pointer to length of cell which will be populated on successful read;
- *	 can be NULL.
- *
- * Return: ERR_PTR() on error or a valid pointer to a buffer on success. The
- * buffer should be freed by the consumer with a kfree().
- */
+ 
 void *nvmem_cell_read(struct nvmem_cell *cell, size_t *len)
 {
 	struct nvmem_cell_entry *entry = cell->entry;
@@ -1672,15 +1495,15 @@ static void *nvmem_cell_prepare_write_buffer(struct nvmem_cell_entry *cell,
 		pbyte = *b;
 		*b <<= bit_offset;
 
-		/* setup the first byte with lsb bits from nvmem */
+		 
 		rc = nvmem_reg_read(nvmem, cell->offset, &v, 1);
 		if (rc)
 			goto err;
 		*b++ |= GENMASK(bit_offset - 1, 0) & v;
 
-		/* setup rest of the byte if any */
+		 
 		for (i = 1; i < cell->bytes; i++) {
-			/* Get last byte bits and shift them towards lsb */
+			 
 			pbits = pbyte >> (BITS_PER_BYTE - 1 - bit_offset);
 			pbyte = *b;
 			p = b;
@@ -1689,9 +1512,9 @@ static void *nvmem_cell_prepare_write_buffer(struct nvmem_cell_entry *cell,
 		}
 	}
 
-	/* if it's not end on byte boundary */
+	 
 	if ((nbits + bit_offset) % BITS_PER_BYTE) {
-		/* setup the last byte with msb bits from nvmem */
+		 
 		rc = nvmem_reg_read(nvmem,
 				    cell->offset + cell->bytes - 1, &v, 1);
 		if (rc)
@@ -1715,11 +1538,7 @@ static int __nvmem_cell_entry_write(struct nvmem_cell_entry *cell, void *buf, si
 	    (cell->bit_offset == 0 && len != cell->bytes))
 		return -EINVAL;
 
-	/*
-	 * Any cells which have a read_post_process hook are read-only because
-	 * we cannot reverse the operation and it might affect other cells,
-	 * too.
-	 */
+	 
 	if (cell->read_post_process)
 		return -EINVAL;
 
@@ -1731,7 +1550,7 @@ static int __nvmem_cell_entry_write(struct nvmem_cell_entry *cell, void *buf, si
 
 	rc = nvmem_reg_write(nvmem, cell->offset, buf, cell->bytes);
 
-	/* free the tmp buffer */
+	 
 	if (cell->bit_offset || cell->nbits)
 		kfree(buf);
 
@@ -1741,15 +1560,7 @@ static int __nvmem_cell_entry_write(struct nvmem_cell_entry *cell, void *buf, si
 	return len;
 }
 
-/**
- * nvmem_cell_write() - Write to a given nvmem cell
- *
- * @cell: nvmem cell to be written.
- * @buf: Buffer to be written.
- * @len: length of buffer to be written to nvmem cell.
- *
- * Return: length of bytes written or negative on failure.
- */
+ 
 int nvmem_cell_write(struct nvmem_cell *cell, void *buf, size_t len)
 {
 	return __nvmem_cell_entry_write(cell->entry, buf, len);
@@ -1785,60 +1596,28 @@ static int nvmem_cell_read_common(struct device *dev, const char *cell_id,
 	return 0;
 }
 
-/**
- * nvmem_cell_read_u8() - Read a cell value as a u8
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_u8(struct device *dev, const char *cell_id, u8 *val)
 {
 	return nvmem_cell_read_common(dev, cell_id, val, sizeof(*val));
 }
 EXPORT_SYMBOL_GPL(nvmem_cell_read_u8);
 
-/**
- * nvmem_cell_read_u16() - Read a cell value as a u16
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_u16(struct device *dev, const char *cell_id, u16 *val)
 {
 	return nvmem_cell_read_common(dev, cell_id, val, sizeof(*val));
 }
 EXPORT_SYMBOL_GPL(nvmem_cell_read_u16);
 
-/**
- * nvmem_cell_read_u32() - Read a cell value as a u32
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_u32(struct device *dev, const char *cell_id, u32 *val)
 {
 	return nvmem_cell_read_common(dev, cell_id, val, sizeof(*val));
 }
 EXPORT_SYMBOL_GPL(nvmem_cell_read_u32);
 
-/**
- * nvmem_cell_read_u64() - Read a cell value as a u64
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_u64(struct device *dev, const char *cell_id, u64 *val)
 {
 	return nvmem_cell_read_common(dev, cell_id, val, sizeof(*val));
@@ -1863,10 +1642,7 @@ static const void *nvmem_cell_read_variable_common(struct device *dev,
 	if (IS_ERR(buf))
 		return buf;
 
-	/*
-	 * If nbits is set then nvmem_cell_read() can significantly exaggerate
-	 * the length of the real data. Throw away the extra junk.
-	 */
+	 
 	if (nbits)
 		*len = DIV_ROUND_UP(nbits, 8);
 
@@ -1878,15 +1654,7 @@ static const void *nvmem_cell_read_variable_common(struct device *dev,
 	return buf;
 }
 
-/**
- * nvmem_cell_read_variable_le_u32() - Read up to 32-bits of data as a little endian number.
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_variable_le_u32(struct device *dev, const char *cell_id,
 				    u32 *val)
 {
@@ -1898,7 +1666,7 @@ int nvmem_cell_read_variable_le_u32(struct device *dev, const char *cell_id,
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* Copy w/ implicit endian conversion */
+	 
 	*val = 0;
 	for (i = 0; i < len; i++)
 		*val |= buf[i] << (8 * i);
@@ -1909,15 +1677,7 @@ int nvmem_cell_read_variable_le_u32(struct device *dev, const char *cell_id,
 }
 EXPORT_SYMBOL_GPL(nvmem_cell_read_variable_le_u32);
 
-/**
- * nvmem_cell_read_variable_le_u64() - Read up to 64-bits of data as a little endian number.
- *
- * @dev: Device that requests the nvmem cell.
- * @cell_id: Name of nvmem cell to read.
- * @val: pointer to output value.
- *
- * Return: 0 on success or negative errno.
- */
+ 
 int nvmem_cell_read_variable_le_u64(struct device *dev, const char *cell_id,
 				    u64 *val)
 {
@@ -1929,7 +1689,7 @@ int nvmem_cell_read_variable_le_u64(struct device *dev, const char *cell_id,
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* Copy w/ implicit endian conversion */
+	 
 	*val = 0;
 	for (i = 0; i < len; i++)
 		*val |= (uint64_t)buf[i] << (8 * i);
@@ -1940,16 +1700,7 @@ int nvmem_cell_read_variable_le_u64(struct device *dev, const char *cell_id,
 }
 EXPORT_SYMBOL_GPL(nvmem_cell_read_variable_le_u64);
 
-/**
- * nvmem_device_cell_read() - Read a given nvmem device and cell
- *
- * @nvmem: nvmem device to read from.
- * @info: nvmem cell info to be read.
- * @buf: buffer pointer which will be populated on successful read.
- *
- * Return: length of successful bytes read on success and negative
- * error code on error.
- */
+ 
 ssize_t nvmem_device_cell_read(struct nvmem_device *nvmem,
 			   struct nvmem_cell_info *info, void *buf)
 {
@@ -1972,15 +1723,7 @@ ssize_t nvmem_device_cell_read(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_device_cell_read);
 
-/**
- * nvmem_device_cell_write() - Write cell to a given nvmem device
- *
- * @nvmem: nvmem device to be written to.
- * @info: nvmem cell info to be written.
- * @buf: buffer to be written to cell.
- *
- * Return: length of bytes written or negative error code on failure.
- */
+ 
 int nvmem_device_cell_write(struct nvmem_device *nvmem,
 			    struct nvmem_cell_info *info, void *buf)
 {
@@ -1998,17 +1741,7 @@ int nvmem_device_cell_write(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_device_cell_write);
 
-/**
- * nvmem_device_read() - Read from a given nvmem device
- *
- * @nvmem: nvmem device to read from.
- * @offset: offset in nvmem device.
- * @bytes: number of bytes to read.
- * @buf: buffer pointer which will be populated on successful read.
- *
- * Return: length of successful bytes read on success and negative
- * error code on error.
- */
+ 
 int nvmem_device_read(struct nvmem_device *nvmem,
 		      unsigned int offset,
 		      size_t bytes, void *buf)
@@ -2027,16 +1760,7 @@ int nvmem_device_read(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_device_read);
 
-/**
- * nvmem_device_write() - Write cell to a given nvmem device
- *
- * @nvmem: nvmem device to be written to.
- * @offset: offset in nvmem device.
- * @bytes: number of bytes to write.
- * @buf: buffer to be written.
- *
- * Return: length of bytes written or negative error code on failure.
- */
+ 
 int nvmem_device_write(struct nvmem_device *nvmem,
 		       unsigned int offset,
 		       size_t bytes, void *buf)
@@ -2056,11 +1780,7 @@ int nvmem_device_write(struct nvmem_device *nvmem,
 }
 EXPORT_SYMBOL_GPL(nvmem_device_write);
 
-/**
- * nvmem_add_cell_table() - register a table of cell info entries
- *
- * @table: table of cell info entries
- */
+ 
 void nvmem_add_cell_table(struct nvmem_cell_table *table)
 {
 	mutex_lock(&nvmem_cell_mutex);
@@ -2069,11 +1789,7 @@ void nvmem_add_cell_table(struct nvmem_cell_table *table)
 }
 EXPORT_SYMBOL_GPL(nvmem_add_cell_table);
 
-/**
- * nvmem_del_cell_table() - remove a previously registered cell info table
- *
- * @table: table of cell info entries
- */
+ 
 void nvmem_del_cell_table(struct nvmem_cell_table *table)
 {
 	mutex_lock(&nvmem_cell_mutex);
@@ -2082,12 +1798,7 @@ void nvmem_del_cell_table(struct nvmem_cell_table *table)
 }
 EXPORT_SYMBOL_GPL(nvmem_del_cell_table);
 
-/**
- * nvmem_add_cell_lookups() - register a list of cell lookup entries
- *
- * @entries: array of cell lookup entries
- * @nentries: number of cell lookup entries in the array
- */
+ 
 void nvmem_add_cell_lookups(struct nvmem_cell_lookup *entries, size_t nentries)
 {
 	int i;
@@ -2099,13 +1810,7 @@ void nvmem_add_cell_lookups(struct nvmem_cell_lookup *entries, size_t nentries)
 }
 EXPORT_SYMBOL_GPL(nvmem_add_cell_lookups);
 
-/**
- * nvmem_del_cell_lookups() - remove a list of previously added cell lookup
- *                            entries
- *
- * @entries: array of cell lookup entries
- * @nentries: number of cell lookup entries in the array
- */
+ 
 void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries, size_t nentries)
 {
 	int i;
@@ -2117,13 +1822,7 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries, size_t nentries)
 }
 EXPORT_SYMBOL_GPL(nvmem_del_cell_lookups);
 
-/**
- * nvmem_dev_name() - Get the name of a given nvmem device.
- *
- * @nvmem: nvmem device.
- *
- * Return: name of the nvmem device.
- */
+ 
 const char *nvmem_dev_name(struct nvmem_device *nvmem)
 {
 	return dev_name(&nvmem->dev);

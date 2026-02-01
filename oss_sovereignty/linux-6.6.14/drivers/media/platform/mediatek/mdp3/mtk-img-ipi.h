@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Holmes Chiou <holmes.chiou@mediatek.com>
- *         Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_IMG_IPI_H__
 #define __MTK_IMG_IPI_H__
@@ -12,7 +8,7 @@
 #include "mdp_sm_mt8183.h"
 #include "mtk-mdp3-type.h"
 
-/* ISP-MDP generic input information */
+ 
 
 #define IMG_IPI_INIT    1
 #define IMG_IPI_DEINIT  2
@@ -25,20 +21,20 @@ struct img_timeval {
 } __packed;
 
 struct img_addr {
-	u64 va; /* Used for Linux OS access */
-	u32 pa; /* Used for CM4 access */
-	u32 iova; /* Used for IOMMU HW access */
+	u64 va;  
+	u32 pa;  
+	u32 iova;  
 } __packed;
 
 struct tuning_addr {
 	u64	present;
-	u32	pa;	/* Used for CM4 access */
-	u32	iova;	/* Used for IOMMU HW access */
+	u32	pa;	 
+	u32	iova;	 
 } __packed;
 
 struct img_sw_addr {
-	u64 va; /* Used for APMCU access */
-	u32 pa; /* Used for CM4 access */
+	u64 va;  
+	u32 pa;  
 } __packed;
 
 struct img_plane_format {
@@ -49,15 +45,15 @@ struct img_plane_format {
 struct img_pix_format {
 	u32 width;
 	u32 height;
-	u32 colorformat; /* enum mdp_color */
-	u32 ycbcr_prof; /* enum mdp_ycbcr_profile */
+	u32 colorformat;  
+	u32 ycbcr_prof;  
 	struct img_plane_format plane_fmt[IMG_MAX_PLANES];
 } __packed;
 
 struct img_image_buffer {
 	struct img_pix_format format;
 	u32 iova[IMG_MAX_PLANES];
-	/* enum mdp_buffer_usage, FD or advanced ISP usages */
+	 
 	u32 usage;
 } __packed;
 
@@ -71,21 +67,21 @@ struct img_image_buffer {
 
 struct img_input {
 	struct img_image_buffer buffer;
-	u32 flags; /* HDR, DRE, dither */
+	u32 flags;  
 } __packed;
 
 struct img_output {
 	struct img_image_buffer buffer;
 	struct img_crop crop;
 	s32 rotation;
-	u32 flags; /* H-flip, sharpness, dither */
+	u32 flags;  
 } __packed;
 
 struct img_ipi_frameparam {
 	u32 index;
 	u32 frame_no;
 	struct img_timeval timestamp;
-	u32 type; /* enum mdp_stream_type */
+	u32 type;  
 	u32 state;
 	u32 num_inputs;
 	u32 num_outputs;
@@ -99,8 +95,8 @@ struct img_ipi_frameparam {
 } __packed;
 
 struct img_sw_buffer {
-	u64	handle;		/* Used for APMCU access */
-	u32	scp_addr;	/* Used for CM4 access */
+	u64	handle;		 
+	u32	scp_addr;	 
 } __packed;
 
 struct img_ipi_param {
@@ -113,7 +109,7 @@ struct img_frameparam {
 	struct img_ipi_frameparam frameparam;
 } __packed;
 
-/* Platform config indicator */
+ 
 #define MT8183 8183
 
 #define CFG_CHECK(plat, p_id) ((plat) == (p_id))
@@ -146,4 +142,4 @@ struct img_compparam {
 	};
 } __packed;
 
-#endif  /* __MTK_IMG_IPI_H__ */
+#endif   

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* fakekey.c
- * Functions for simulating key presses.
- *
- * Copyright (C) 2010 the Speakup Team
- */
+
+ 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/preempt.h>
@@ -53,16 +49,14 @@ void speakup_remove_virtual_keyboard(void)
 	}
 }
 
-/*
- * Send a simulated down-arrow to the application.
- */
+ 
 void speakup_fake_down_arrow(void)
 {
 	unsigned long flags;
 
-	/* disable keyboard interrupts */
+	 
 	local_irq_save(flags);
-	/* don't change CPU */
+	 
 	preempt_disable();
 
 	__this_cpu_write(reporting_keystroke, true);
@@ -71,16 +65,13 @@ void speakup_fake_down_arrow(void)
 	input_sync(virt_keyboard);
 	__this_cpu_write(reporting_keystroke, false);
 
-	/* reenable preemption */
+	 
 	preempt_enable();
-	/* reenable keyboard interrupts */
+	 
 	local_irq_restore(flags);
 }
 
-/*
- * Are we handling a simulated key press on the current CPU?
- * Returns a boolean.
- */
+ 
 bool speakup_fake_key_pressed(void)
 {
 	return this_cpu_read(reporting_keystroke);

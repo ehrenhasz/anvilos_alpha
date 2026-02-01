@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2000-2001 Christoph Hellwig.
- * Copyright (c) 2016 Krzysztof Blaszkowski
- */
 
-/*
- * Veritas filesystem driver - lookup and other directory related code.
- */
+ 
+
+ 
 #include <linux/fs.h>
 #include <linux/time.h>
 #include <linux/mm.h>
@@ -19,9 +14,7 @@
 #include "vxfs_inode.h"
 #include "vxfs_extern.h"
 
-/*
- * Number of VxFS blocks per page.
- */
+ 
 #define VXFS_BLOCK_PER_PAGE(sbp)  ((PAGE_SIZE / (sbp)->s_blocksize))
 
 
@@ -39,20 +32,7 @@ const struct file_operations vxfs_dir_operations = {
 };
 
 
-/**
- * vxfs_find_entry - find a mathing directory entry for a dentry
- * @ip:		directory inode
- * @dp:		dentry for which we want to find a direct
- * @ppp:	gets filled with the page the return value sits in
- *
- * Description:
- *   vxfs_find_entry finds a &struct vxfs_direct for the VFS directory
- *   cache entry @dp.  @ppp will be filled with the page the return
- *   value resides in.
- *
- * Returns:
- *   The wanted direct on success, else a NULL pointer.
- */
+ 
 static struct vxfs_direct *
 vxfs_find_entry(struct inode *ip, struct dentry *dp, struct page **ppp)
 {
@@ -116,18 +96,7 @@ vxfs_find_entry(struct inode *ip, struct dentry *dp, struct page **ppp)
 	return de_exit;
 }
 
-/**
- * vxfs_inode_by_name - find inode number for dentry
- * @dip:	directory to search in
- * @dp:		dentry we search for
- *
- * Description:
- *   vxfs_inode_by_name finds out the inode number of
- *   the path component described by @dp in @dip.
- *
- * Returns:
- *   The wanted inode number on success, else Zero.
- */
+ 
 static ino_t
 vxfs_inode_by_name(struct inode *dip, struct dentry *dp)
 {
@@ -145,20 +114,7 @@ vxfs_inode_by_name(struct inode *dip, struct dentry *dp)
 	return (ino);
 }
 
-/**
- * vxfs_lookup - lookup pathname component
- * @dip:	dir in which we lookup
- * @dp:		dentry we lookup
- * @flags:	lookup flags
- *
- * Description:
- *   vxfs_lookup tries to lookup the pathname component described
- *   by @dp in @dip.
- *
- * Returns:
- *   A NULL-pointer on success, else a negative error code encoded
- *   in the return pointer.
- */
+ 
 static struct dentry *
 vxfs_lookup(struct inode *dip, struct dentry *dp, unsigned int flags)
 {
@@ -174,19 +130,7 @@ vxfs_lookup(struct inode *dip, struct dentry *dp, unsigned int flags)
 	return d_splice_alias(ip, dp);
 }
 
-/**
- * vxfs_readdir - read a directory
- * @fp:		the directory to read
- * @retp:	return buffer
- * @filler:	filldir callback
- *
- * Description:
- *   vxfs_readdir fills @retp with directory entries from @fp
- *   using the VFS supplied callback @filler.
- *
- * Returns:
- *   Zero.
- */
+ 
 static int
 vxfs_readdir(struct file *fp, struct dir_context *ctx)
 {
@@ -255,7 +199,7 @@ vxfs_readdir(struct file *fp, struct dir_context *ctx)
 					fs32_to_cpu(sbi, de->d_ino),
 					DT_UNKNOWN);
 			if (!rc) {
-				/* the dir entry was not read, fix pos. */
+				 
 				pos -= fs16_to_cpu(sbi, de->d_reclen);
 				break;
 			}

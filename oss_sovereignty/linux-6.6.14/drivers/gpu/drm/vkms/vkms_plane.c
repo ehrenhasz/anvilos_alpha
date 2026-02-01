@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/iosys-map.h>
 
@@ -51,9 +51,7 @@ static void vkms_plane_destroy_state(struct drm_plane *plane,
 	struct drm_crtc *crtc = vkms_state->base.base.crtc;
 
 	if (crtc && vkms_state->frame_info->fb) {
-		/* dropping the reference we acquired in
-		 * vkms_primary_plane_update()
-		 */
+		 
 		if (drm_framebuffer_read_refcount(vkms_state->frame_info->fb))
 			drm_framebuffer_put(vkms_state->frame_info->fb);
 	}
@@ -71,7 +69,7 @@ static void vkms_plane_reset(struct drm_plane *plane)
 
 	if (plane->state) {
 		vkms_plane_destroy_state(plane, plane->state);
-		plane->state = NULL; /* must be set to NULL here */
+		plane->state = NULL;  
 	}
 
 	vkms_state = kzalloc(sizeof(*vkms_state), GFP_KERNEL);

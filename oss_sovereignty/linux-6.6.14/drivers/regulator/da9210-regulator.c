@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// da9210-regulator.c - Regulator device driver for DA9210
-// Copyright (C) 2013  Dialog Semiconductor Ltd.
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -37,12 +37,12 @@ static const struct regulator_ops da9210_buck_ops = {
 	.get_current_limit = regulator_get_current_limit_regmap,
 };
 
-/* Default limits measured in millivolts and milliamps */
+ 
 #define DA9210_MIN_MV		300
 #define DA9210_MAX_MV		1570
 #define DA9210_STEP_MV		10
 
-/* Current limits for buck (uA) indices corresponds with register values */
+ 
 static const unsigned int da9210_buck_limits[] = {
 	1600000, 1800000, 2000000, 2200000, 2400000, 2600000, 2800000, 3000000,
 	3200000, 3400000, 3600000, 3800000, 4000000, 4200000, 4400000, 4600000
@@ -102,7 +102,7 @@ static irqreturn_t da9210_irq_handler(int irq, void *data)
 	}
 
 	if (handled) {
-		/* Clear handled events */
+		 
 		error = regmap_write(chip->regmap, DA9210_REG_EVENT_B, handled);
 		if (error < 0)
 			goto error_i2c;
@@ -117,9 +117,7 @@ error_i2c:
 	return ret;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 
 static const struct of_device_id __maybe_unused da9210_dt_ids[] = {
 	{ .compatible = "dlg,da9210", },
@@ -165,7 +163,7 @@ static int da9210_i2c_probe(struct i2c_client *i2c)
 	config.regmap = chip->regmap;
 	config.of_node = dev->of_node;
 
-	/* Mask all interrupt sources to deassert interrupt line */
+	 
 	error = regmap_write(chip->regmap, DA9210_REG_MASK_A, ~0);
 	if (!error)
 		error = regmap_write(chip->regmap, DA9210_REG_MASK_B, ~0);

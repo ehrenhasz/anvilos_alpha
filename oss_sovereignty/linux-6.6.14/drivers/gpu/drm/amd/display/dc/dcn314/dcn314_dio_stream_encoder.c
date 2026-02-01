@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 
 #include "dc_bios_types.h"
@@ -92,7 +69,7 @@ static void enc314_dp_set_odm_combine(
 	REG_UPDATE(DP_PIXEL_FORMAT, DP_PIXEL_PER_CYCLE_PROCESSING_MODE, odm_combine);
 }
 
-/* setup stream encoder in dvi mode */
+ 
 static void enc314_stream_encoder_dvi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
@@ -117,12 +94,12 @@ static void enc314_stream_encoder_dvi_set_stream_attribute(
 
 	} else {
 
-		//Set pattern for clock channel, default vlue 0x63 does not work
+		
 		REG_UPDATE(DIG_CLOCK_PATTERN, DIG_CLOCK_PATTERN, 0x1F);
 
-		//DIG_BE_TMDS_DVI_MODE : TMDS-DVI mode is already set in link_encoder_setup
+		
 
-		//DIG_SOURCE_SELECT is already set in dig_connect_to_otg
+		
 
 		enc314_enable_fifo(enc);
 	}
@@ -132,7 +109,7 @@ static void enc314_stream_encoder_dvi_set_stream_attribute(
 	enc1_stream_encoder_set_stream_attribute_helper(enc1, crtc_timing);
 }
 
-/* setup stream encoder in hdmi mode */
+ 
 static void enc314_stream_encoder_hdmi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
@@ -157,20 +134,20 @@ static void enc314_stream_encoder_hdmi_set_stream_attribute(
 
 	} else {
 
-		//Set pattern for clock channel, default vlue 0x63 does not work
+		
 		REG_UPDATE(DIG_CLOCK_PATTERN, DIG_CLOCK_PATTERN, 0x1F);
 
-		//DIG_BE_TMDS_HDMI_MODE : TMDS-HDMI mode is already set in link_encoder_setup
+		
 
-		//DIG_SOURCE_SELECT is already set in dig_connect_to_otg
+		
 
 		enc314_enable_fifo(enc);
 	}
 
-	/* Configure pixel encoding */
+	 
 	enc1_stream_encoder_set_stream_attribute_helper(enc1, crtc_timing);
 
-	/* setup HDMI engine */
+	 
 	REG_UPDATE_6(HDMI_CONTROL,
 		HDMI_PACKET_GEN_VERSION, 1,
 		HDMI_KEEPOUT_MODE, 1,
@@ -179,7 +156,7 @@ static void enc314_stream_encoder_hdmi_set_stream_attribute(
 		HDMI_NO_EXTRA_NULL_PACKET_FILLED, 1,
 		HDMI_CLOCK_CHANNEL_RATE, 0);
 
-	/* Configure color depth */
+	 
 	switch (crtc_timing->display_color_depth) {
 	case COLOR_DEPTH_888:
 		REG_UPDATE(HDMI_CONTROL, HDMI_DEEP_COLOR_DEPTH, 0);
@@ -216,50 +193,43 @@ static void enc314_stream_encoder_hdmi_set_stream_attribute(
 	}
 
 	if (actual_pix_clk_khz >= HDMI_CLOCK_CHANNEL_RATE_MORE_340M) {
-		/* enable HDMI data scrambler
-		 * HDMI_CLOCK_CHANNEL_RATE_MORE_340M
-		 * Clock channel frequency is 1/4 of character rate.
-		 */
+		 
 		REG_UPDATE_2(HDMI_CONTROL,
 			HDMI_DATA_SCRAMBLE_EN, 1,
 			HDMI_CLOCK_CHANNEL_RATE, 1);
 	} else if (crtc_timing->flags.LTE_340MCSC_SCRAMBLE) {
 
-		/* TODO: New feature for DCE11, still need to implement */
+		 
 
-		/* enable HDMI data scrambler
-		 * HDMI_CLOCK_CHANNEL_FREQ_EQUAL_TO_CHAR_RATE
-		 * Clock channel frequency is the same
-		 * as character rate
-		 */
+		 
 		REG_UPDATE_2(HDMI_CONTROL,
 			HDMI_DATA_SCRAMBLE_EN, 1,
 			HDMI_CLOCK_CHANNEL_RATE, 0);
 	}
 
 
-	/* Enable transmission of General Control packet on every frame */
+	 
 	REG_UPDATE_3(HDMI_VBI_PACKET_CONTROL,
 		HDMI_GC_CONT, 1,
 		HDMI_GC_SEND, 1,
 		HDMI_NULL_SEND, 1);
 
-	/* Disable Audio Content Protection packet transmission */
+	 
 	REG_UPDATE(HDMI_VBI_PACKET_CONTROL, HDMI_ACP_SEND, 0);
 
-	/* following belongs to audio */
-	/* Enable Audio InfoFrame packet transmission. */
+	 
+	 
 	REG_UPDATE(HDMI_INFOFRAME_CONTROL0, HDMI_AUDIO_INFO_SEND, 1);
 
-	/* update double-buffered AUDIO_INFO registers immediately */
+	 
 	ASSERT(enc->afmt);
 	enc->afmt->funcs->audio_info_immediate_update(enc->afmt);
 
-	/* Select line number on which to send Audio InfoFrame packets */
+	 
 	REG_UPDATE(HDMI_INFOFRAME_CONTROL1, HDMI_AUDIO_INFO_LINE,
 				VBI_LINE_0 + 2);
 
-	/* set HDMI GC AVMUTE */
+	 
 	REG_UPDATE(HDMI_GC, HDMI_GC_AVMUTE, 0);
 }
 
@@ -280,7 +250,7 @@ static void enc314_stream_encoder_dp_blank(
 {
 	enc1_stream_encoder_dp_blank(link, enc);
 
-	/* Disable FIFO after the DP vid stream is disabled to avoid corruption. */
+	 
 	if (enc->ctx->dc->debug.dig_fifo_off_in_blank)
 		enc314_disable_fifo(enc);
 }
@@ -299,15 +269,13 @@ static void enc314_stream_encoder_dp_unblank(
 		uint32_t pix_per_cycle = 0;
 		uint64_t m_vid_l = n_vid;
 
-		/* YCbCr 4:2:0 : Computed VID_M will be 2X the input rate */
+		 
 		if (is_two_pixels_per_containter(&param->timing) || param->opp_cnt > 1) {
-			/*this logic should be the same in get_pixel_clock_parameters() */
+			 
 			n_multiply = 1;
 			pix_per_cycle = 1;
 		}
-		/* M / N = Fstream / Flink
-		 * m_vid / n_vid = pixel rate / link rate
-		 */
+		 
 
 		m_vid_l *= param->timing.pix_clk_100hz / 10;
 		m_vid_l = div_u64(m_vid_l,
@@ -316,13 +284,11 @@ static void enc314_stream_encoder_dp_unblank(
 
 		m_vid = (uint32_t) m_vid_l;
 
-		/* enable auto measurement */
+		 
 
 		REG_UPDATE(DP_VID_TIMING, DP_VID_M_N_GEN_EN, 0);
 
-		/* auto measurement need 1 full 0x8000 symbol cycle to kick in,
-		 * therefore program initial value for Mvid and Nvid
-		 */
+		 
 
 		REG_UPDATE(DP_VID_N, DP_VID_N, n_vid);
 
@@ -337,49 +303,32 @@ static void enc314_stream_encoder_dp_unblank(
 				pix_per_cycle);
 	}
 
-	/* make sure stream is disabled before resetting steer fifo */
+	 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, false);
 	REG_WAIT(DP_VID_STREAM_CNTL, DP_VID_STREAM_STATUS, 0, 10, 5000);
 
-	/* DIG_START is removed from the register spec */
+	 
 
-	/* switch DP encoder to CRTC data, but reset it the fifo first. It may happen
-	 * that it overflows during mode transition, and sometimes doesn't recover.
-	 */
+	 
 	REG_UPDATE(DP_STEER_FIFO, DP_STEER_FIFO_RESET, 1);
 	udelay(10);
 
 	REG_UPDATE(DP_STEER_FIFO, DP_STEER_FIFO_RESET, 0);
 
-	/* wait 100us for DIG/DP logic to prime
-	 * (i.e. a few video lines)
-	 */
+	 
 	udelay(100);
 
-	/* the hardware would start sending video at the start of the next DP
-	 * frame (i.e. rising edge of the vblank).
-	 * NOTE: We used to program DP_VID_STREAM_DIS_DEFER = 2 here, but this
-	 * register has no effect on enable transition! HW always guarantees
-	 * VID_STREAM enable at start of next frame, and this is not
-	 * programmable
-	 */
+	 
 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, true);
 
-	/*
-	 * DIG Resync FIFO now needs to be explicitly enabled.
-	 * This should come after DP_VID_STREAM_ENABLE per HW docs.
-	 */
+	 
 	enc314_enable_fifo(enc);
 
 	link->dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_ENABLE_DP_VID_STREAM);
 }
 
-/* Set DSC-related configuration.
- *   dsc_mode: 0 disables DSC, other values enable DSC in specified format
- *   sc_bytes_per_pixel: DP_DSC_BYTES_PER_PIXEL removed in DCN32
- *   dsc_slice_width: DP_DSC_SLICE_WIDTH removed in DCN32
- */
+ 
 static void enc314_dp_set_dsc_config(struct stream_encoder *enc,
 					enum optc_dsc_mode dsc_mode,
 					uint32_t dsc_bytes_per_pixel,
@@ -390,14 +339,12 @@ static void enc314_dp_set_dsc_config(struct stream_encoder *enc,
 	REG_UPDATE(DP_DSC_CNTL,	DP_DSC_MODE, dsc_mode == OPTC_DSC_DISABLED ? 0 : 1);
 }
 
-/* this function read dsc related register fields to be logged later in dcn10_log_hw_state
- * into a dcn_dsc_state struct.
- */
+ 
 static void enc314_read_state(struct stream_encoder *enc, struct enc_state *s)
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	//if dsc is enabled, continue to read
+	
 	REG_GET(DP_DSC_CNTL, DP_DSC_MODE, &s->dsc_mode);
 	if (s->dsc_mode) {
 		REG_GET(DP_GSP11_CNTL, DP_SEC_GSP11_LINE_NUM, &s->sec_gsp_pps_line_num);
@@ -414,8 +361,8 @@ static void enc314_set_dig_input_mode(struct stream_encoder *enc, unsigned int p
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	// The naming of this field is confusing, what it means is the output mode of otg, which
-	// is the input mode of the dig
+	
+	
 	REG_UPDATE(DIG_FIFO_CTRL0, DIG_FIFO_OUTPUT_PIXEL_MODE, pix_per_container == 2 ? 0x1 : 0x0);
 }
 

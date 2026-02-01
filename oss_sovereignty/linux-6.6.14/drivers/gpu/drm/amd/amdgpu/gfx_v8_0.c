@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -82,17 +61,17 @@
 #define RLC_CGTT_MGCG_OVERRIDE__CGLS_MASK           0x00000010L
 #define RLC_CGTT_MGCG_OVERRIDE__GRBM_MASK           0x00000020L
 
-/* BPM SERDES CMD */
+ 
 #define SET_BPM_SERDES_CMD    1
 #define CLE_BPM_SERDES_CMD    0
 
-/* BPM Register Address*/
+ 
 enum {
-	BPM_REG_CGLS_EN = 0,        /* Enable/Disable CGLS */
-	BPM_REG_CGLS_ON,            /* ON/OFF CGLS: shall be controlled by RLC FW */
-	BPM_REG_CGCG_OVERRIDE,      /* Set/Clear CGCG Override */
-	BPM_REG_MGCG_OVERRIDE,      /* Set/Clear MGCG Override */
-	BPM_REG_FGCG_OVERRIDE,      /* Set/Clear FGCG Override */
+	BPM_REG_CGLS_EN = 0,         
+	BPM_REG_CGLS_ON,             
+	BPM_REG_CGCG_OVERRIDE,       
+	BPM_REG_MGCG_OVERRIDE,       
+	BPM_REG_FGCG_OVERRIDE,       
 	BPM_REG_FGCG_MAX
 };
 
@@ -1033,10 +1012,7 @@ static int gfx_v8_0_init_microcode(struct amdgpu_device *adev)
 	adev->gfx.ce_fw_version = le32_to_cpu(cp_hdr->header.ucode_version);
 	adev->gfx.ce_feature_version = le32_to_cpu(cp_hdr->ucode_feature_version);
 
-	/*
-	 * Support for MCBP/Virtualization in combination with chained IBs is
-	 * formal released on feature version #46
-	 */
+	 
 	if (adev->gfx.ce_feature_version >= 46 &&
 	    adev->gfx.pfp_feature_version >= 46) {
 		adev->virt.chained_ib_support = true;
@@ -1170,7 +1146,7 @@ static int gfx_v8_0_init_microcode(struct amdgpu_device *adev)
 	adev->firmware.fw_size +=
 		ALIGN(le32_to_cpu(header->ucode_size_bytes), PAGE_SIZE);
 
-	/* we need account JT in */
+	 
 	cp_hdr = (const struct gfx_firmware_header_v1_0 *)adev->gfx.mec_fw->data;
 	adev->firmware.fw_size +=
 		ALIGN(le32_to_cpu(cp_hdr->jt_size) << 2, PAGE_SIZE);
@@ -1272,7 +1248,7 @@ static int gfx_v8_0_rlc_init(struct amdgpu_device *adev)
 	cs_data = adev->gfx.rlc.cs_data;
 
 	if (cs_data) {
-		/* init clear state block */
+		 
 		r = amdgpu_gfx_rlc_init_csb(adev);
 		if (r)
 			return r;
@@ -1280,13 +1256,13 @@ static int gfx_v8_0_rlc_init(struct amdgpu_device *adev)
 
 	if ((adev->asic_type == CHIP_CARRIZO) ||
 	    (adev->asic_type == CHIP_STONEY)) {
-		adev->gfx.rlc.cp_table_size = ALIGN(96 * 5 * 4, 2048) + (64 * 1024); /* JT + GDS */
+		adev->gfx.rlc.cp_table_size = ALIGN(96 * 5 * 4, 2048) + (64 * 1024);  
 		r = amdgpu_gfx_rlc_init_cpt(adev);
 		if (r)
 			return r;
 	}
 
-	/* init spm vmid with 0xf */
+	 
 	if (adev->gfx.rlc.funcs->update_spm_vmid)
 		adev->gfx.rlc.funcs->update_spm_vmid(adev, 0xf);
 
@@ -1306,7 +1282,7 @@ static int gfx_v8_0_mec_init(struct amdgpu_device *adev)
 
 	bitmap_zero(adev->gfx.mec_bitmap[0].queue_bitmap, AMDGPU_MAX_COMPUTE_QUEUES);
 
-	/* take ownership of the relevant compute queues */
+	 
 	amdgpu_gfx_compute_queue_acquire(adev);
 
 	mec_hpd_size = adev->gfx.num_compute_rings * GFX8_MEC_HPD_SIZE;
@@ -1396,11 +1372,11 @@ static const u32 sgpr_init_compute_shader[] =
 static const u32 vgpr_init_regs[] =
 {
 	mmCOMPUTE_STATIC_THREAD_MGMT_SE0, 0xffffffff,
-	mmCOMPUTE_RESOURCE_LIMITS, 0x1000000, /* CU_GROUP_COUNT=1 */
+	mmCOMPUTE_RESOURCE_LIMITS, 0x1000000,  
 	mmCOMPUTE_NUM_THREAD_X, 256*4,
 	mmCOMPUTE_NUM_THREAD_Y, 1,
 	mmCOMPUTE_NUM_THREAD_Z, 1,
-	mmCOMPUTE_PGM_RSRC1, 0x100004f, /* VGPRS=15 (64 logical VGPRs), SGPRS=1 (16 SGPRs), BULKY=1 */
+	mmCOMPUTE_PGM_RSRC1, 0x100004f,  
 	mmCOMPUTE_PGM_RSRC2, 20,
 	mmCOMPUTE_USER_DATA_0, 0xedcedc00,
 	mmCOMPUTE_USER_DATA_1, 0xedcedc01,
@@ -1417,11 +1393,11 @@ static const u32 vgpr_init_regs[] =
 static const u32 sgpr1_init_regs[] =
 {
 	mmCOMPUTE_STATIC_THREAD_MGMT_SE0, 0x0f,
-	mmCOMPUTE_RESOURCE_LIMITS, 0x1000000, /* CU_GROUP_COUNT=1 */
+	mmCOMPUTE_RESOURCE_LIMITS, 0x1000000,  
 	mmCOMPUTE_NUM_THREAD_X, 256*5,
 	mmCOMPUTE_NUM_THREAD_Y, 1,
 	mmCOMPUTE_NUM_THREAD_Z, 1,
-	mmCOMPUTE_PGM_RSRC1, 0x240, /* SGPRS=9 (80 GPRS) */
+	mmCOMPUTE_PGM_RSRC1, 0x240,  
 	mmCOMPUTE_PGM_RSRC2, 20,
 	mmCOMPUTE_USER_DATA_0, 0xedcedc00,
 	mmCOMPUTE_USER_DATA_1, 0xedcedc01,
@@ -1442,7 +1418,7 @@ static const u32 sgpr2_init_regs[] =
 	mmCOMPUTE_NUM_THREAD_X, 256*5,
 	mmCOMPUTE_NUM_THREAD_Y, 1,
 	mmCOMPUTE_NUM_THREAD_Z, 1,
-	mmCOMPUTE_PGM_RSRC1, 0x240, /* SGPRS=9 (80 GPRS) */
+	mmCOMPUTE_PGM_RSRC1, 0x240,  
 	mmCOMPUTE_PGM_RSRC2, 20,
 	mmCOMPUTE_USER_DATA_0, 0xedcedc00,
 	mmCOMPUTE_USER_DATA_1, 0xedcedc01,
@@ -1495,11 +1471,11 @@ static int gfx_v8_0_do_edc_gpr_workarounds(struct amdgpu_device *adev)
 	unsigned total_size, vgpr_offset, sgpr_offset;
 	u64 gpu_addr;
 
-	/* only supported on CZ */
+	 
 	if (adev->asic_type != CHIP_CARRIZO)
 		return 0;
 
-	/* bail if the compute ring is not ready */
+	 
 	if (!ring->sched.ready)
 		return 0;
 
@@ -1518,7 +1494,7 @@ static int gfx_v8_0_do_edc_gpr_workarounds(struct amdgpu_device *adev)
 	sgpr_offset = total_size;
 	total_size += sizeof(sgpr_init_compute_shader);
 
-	/* allocate an indirect buffer to put the commands in */
+	 
 	memset(&ib, 0, sizeof(ib));
 	r = amdgpu_ib_get(adev, NULL, total_size,
 					AMDGPU_IB_POOL_DIRECT, &ib);
@@ -1527,102 +1503,102 @@ static int gfx_v8_0_do_edc_gpr_workarounds(struct amdgpu_device *adev)
 		return r;
 	}
 
-	/* load the compute shaders */
+	 
 	for (i = 0; i < ARRAY_SIZE(vgpr_init_compute_shader); i++)
 		ib.ptr[i + (vgpr_offset / 4)] = vgpr_init_compute_shader[i];
 
 	for (i = 0; i < ARRAY_SIZE(sgpr_init_compute_shader); i++)
 		ib.ptr[i + (sgpr_offset / 4)] = sgpr_init_compute_shader[i];
 
-	/* init the ib length to 0 */
+	 
 	ib.length_dw = 0;
 
-	/* VGPR */
-	/* write the register state for the compute dispatch */
+	 
+	 
 	for (i = 0; i < ARRAY_SIZE(vgpr_init_regs); i += 2) {
 		ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
 		ib.ptr[ib.length_dw++] = vgpr_init_regs[i] - PACKET3_SET_SH_REG_START;
 		ib.ptr[ib.length_dw++] = vgpr_init_regs[i + 1];
 	}
-	/* write the shader start address: mmCOMPUTE_PGM_LO, mmCOMPUTE_PGM_HI */
+	 
 	gpu_addr = (ib.gpu_addr + (u64)vgpr_offset) >> 8;
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
 	ib.ptr[ib.length_dw++] = mmCOMPUTE_PGM_LO - PACKET3_SET_SH_REG_START;
 	ib.ptr[ib.length_dw++] = lower_32_bits(gpu_addr);
 	ib.ptr[ib.length_dw++] = upper_32_bits(gpu_addr);
 
-	/* write dispatch packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
-	ib.ptr[ib.length_dw++] = 8; /* x */
-	ib.ptr[ib.length_dw++] = 1; /* y */
-	ib.ptr[ib.length_dw++] = 1; /* z */
+	ib.ptr[ib.length_dw++] = 8;  
+	ib.ptr[ib.length_dw++] = 1;  
+	ib.ptr[ib.length_dw++] = 1;  
 	ib.ptr[ib.length_dw++] =
 		REG_SET_FIELD(0, COMPUTE_DISPATCH_INITIATOR, COMPUTE_SHADER_EN, 1);
 
-	/* write CS partial flush packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_EVENT_WRITE, 0);
 	ib.ptr[ib.length_dw++] = EVENT_TYPE(7) | EVENT_INDEX(4);
 
-	/* SGPR1 */
-	/* write the register state for the compute dispatch */
+	 
+	 
 	for (i = 0; i < ARRAY_SIZE(sgpr1_init_regs); i += 2) {
 		ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
 		ib.ptr[ib.length_dw++] = sgpr1_init_regs[i] - PACKET3_SET_SH_REG_START;
 		ib.ptr[ib.length_dw++] = sgpr1_init_regs[i + 1];
 	}
-	/* write the shader start address: mmCOMPUTE_PGM_LO, mmCOMPUTE_PGM_HI */
+	 
 	gpu_addr = (ib.gpu_addr + (u64)sgpr_offset) >> 8;
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
 	ib.ptr[ib.length_dw++] = mmCOMPUTE_PGM_LO - PACKET3_SET_SH_REG_START;
 	ib.ptr[ib.length_dw++] = lower_32_bits(gpu_addr);
 	ib.ptr[ib.length_dw++] = upper_32_bits(gpu_addr);
 
-	/* write dispatch packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
-	ib.ptr[ib.length_dw++] = 8; /* x */
-	ib.ptr[ib.length_dw++] = 1; /* y */
-	ib.ptr[ib.length_dw++] = 1; /* z */
+	ib.ptr[ib.length_dw++] = 8;  
+	ib.ptr[ib.length_dw++] = 1;  
+	ib.ptr[ib.length_dw++] = 1;  
 	ib.ptr[ib.length_dw++] =
 		REG_SET_FIELD(0, COMPUTE_DISPATCH_INITIATOR, COMPUTE_SHADER_EN, 1);
 
-	/* write CS partial flush packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_EVENT_WRITE, 0);
 	ib.ptr[ib.length_dw++] = EVENT_TYPE(7) | EVENT_INDEX(4);
 
-	/* SGPR2 */
-	/* write the register state for the compute dispatch */
+	 
+	 
 	for (i = 0; i < ARRAY_SIZE(sgpr2_init_regs); i += 2) {
 		ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
 		ib.ptr[ib.length_dw++] = sgpr2_init_regs[i] - PACKET3_SET_SH_REG_START;
 		ib.ptr[ib.length_dw++] = sgpr2_init_regs[i + 1];
 	}
-	/* write the shader start address: mmCOMPUTE_PGM_LO, mmCOMPUTE_PGM_HI */
+	 
 	gpu_addr = (ib.gpu_addr + (u64)sgpr_offset) >> 8;
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
 	ib.ptr[ib.length_dw++] = mmCOMPUTE_PGM_LO - PACKET3_SET_SH_REG_START;
 	ib.ptr[ib.length_dw++] = lower_32_bits(gpu_addr);
 	ib.ptr[ib.length_dw++] = upper_32_bits(gpu_addr);
 
-	/* write dispatch packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
-	ib.ptr[ib.length_dw++] = 8; /* x */
-	ib.ptr[ib.length_dw++] = 1; /* y */
-	ib.ptr[ib.length_dw++] = 1; /* z */
+	ib.ptr[ib.length_dw++] = 8;  
+	ib.ptr[ib.length_dw++] = 1;  
+	ib.ptr[ib.length_dw++] = 1;  
 	ib.ptr[ib.length_dw++] =
 		REG_SET_FIELD(0, COMPUTE_DISPATCH_INITIATOR, COMPUTE_SHADER_EN, 1);
 
-	/* write CS partial flush packet */
+	 
 	ib.ptr[ib.length_dw++] = PACKET3(PACKET3_EVENT_WRITE, 0);
 	ib.ptr[ib.length_dw++] = EVENT_TYPE(7) | EVENT_INDEX(4);
 
-	/* shedule the ib on the ring */
+	 
 	r = amdgpu_ib_schedule(ring, 1, &ib, NULL, &f);
 	if (r) {
 		DRM_ERROR("amdgpu: ib submit failed (%d).\n", r);
 		goto fail;
 	}
 
-	/* wait for the GPU to finish processing the IB */
+	 
 	r = dma_fence_wait(f, false);
 	if (r) {
 		DRM_ERROR("amdgpu: fence wait failed (%d).\n", r);
@@ -1638,7 +1614,7 @@ static int gfx_v8_0_do_edc_gpr_workarounds(struct amdgpu_device *adev)
 	WREG32(mmCC_GC_EDC_CONFIG, tmp);
 
 
-	/* read back registers to clear the counters */
+	 
 	for (i = 0; i < ARRAY_SIZE(sec_ded_counter_registers); i++)
 		RREG32(sec_ded_counter_registers[i]);
 
@@ -1803,7 +1779,7 @@ static int gfx_v8_0_gpu_early_init(struct amdgpu_device *adev)
 	adev->gfx.config.num_tile_pipes = adev->gfx.config.max_tile_pipes;
 	adev->gfx.config.mem_max_burst_length_bytes = 256;
 	if (adev->flags & AMD_IS_APU) {
-		/* Get memory bank mapping mode. */
+		 
 		tmp = RREG32(mmMC_FUS_DRAM0_BANK_ADDR_MAPPING);
 		dimm00_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM0_BANK_ADDR_MAPPING, DIMM0ADDRMAP);
 		dimm01_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM0_BANK_ADDR_MAPPING, DIMM1ADDRMAP);
@@ -1812,7 +1788,7 @@ static int gfx_v8_0_gpu_early_init(struct amdgpu_device *adev)
 		dimm10_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM1_BANK_ADDR_MAPPING, DIMM0ADDRMAP);
 		dimm11_addr_map = REG_GET_FIELD(tmp, MC_FUS_DRAM1_BANK_ADDR_MAPPING, DIMM1ADDRMAP);
 
-		/* Validate settings in case only one DIMM installed. */
+		 
 		if ((dimm00_addr_map == 0) || (dimm00_addr_map == 3) || (dimm00_addr_map == 4) || (dimm00_addr_map > 12))
 			dimm00_addr_map = 0;
 		if ((dimm01_addr_map == 0) || (dimm01_addr_map == 3) || (dimm01_addr_map == 4) || (dimm01_addr_map > 12))
@@ -1822,8 +1798,8 @@ static int gfx_v8_0_gpu_early_init(struct amdgpu_device *adev)
 		if ((dimm11_addr_map == 0) || (dimm11_addr_map == 3) || (dimm11_addr_map == 4) || (dimm11_addr_map > 12))
 			dimm11_addr_map = 0;
 
-		/* If DIMM Addr map is 8GB, ROW size should be 2KB. Otherwise 1KB. */
-		/* If ROW size(DIMM1) != ROW size(DMIMM0), ROW size should be larger one. */
+		 
+		 
 		if ((dimm00_addr_map == 11) || (dimm01_addr_map == 11) || (dimm10_addr_map == 11) || (dimm11_addr_map == 11))
 			adev->gfx.config.mem_row_size_in_kb = 2;
 		else
@@ -1839,7 +1815,7 @@ static int gfx_v8_0_gpu_early_init(struct amdgpu_device *adev)
 	adev->gfx.config.num_gpus = 1;
 	adev->gfx.config.multi_gpu_tile_size = 64;
 
-	/* fix up row size */
+	 
 	switch (adev->gfx.config.mem_row_size_in_kb) {
 	case 1:
 	default:
@@ -1867,7 +1843,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
 
 	ring = &adev->gfx.compute_ring[ring_id];
 
-	/* mec0 is me1 */
+	 
 	ring->me = mec + 1;
 	ring->pipe = pipe;
 	ring->queue = queue;
@@ -1885,7 +1861,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
 
 	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
 			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
-	/* type-2 packets are deprecated on MEC, use type-3 instead */
+	 
 	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
 			     hw_prio, NULL);
 	if (r)
@@ -1924,30 +1900,30 @@ static int gfx_v8_0_sw_init(void *handle)
 	adev->gfx.mec.num_pipe_per_mec = 4;
 	adev->gfx.mec.num_queue_per_pipe = 8;
 
-	/* EOP Event */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_CP_END_OF_PIPE, &adev->gfx.eop_irq);
 	if (r)
 		return r;
 
-	/* Privileged reg */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_CP_PRIV_REG_FAULT,
 			      &adev->gfx.priv_reg_irq);
 	if (r)
 		return r;
 
-	/* Privileged inst */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_CP_PRIV_INSTR_FAULT,
 			      &adev->gfx.priv_inst_irq);
 	if (r)
 		return r;
 
-	/* Add CP EDC/ECC irq  */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_CP_ECC_ERROR,
 			      &adev->gfx.cp_ecc_error_irq);
 	if (r)
 		return r;
 
-	/* SQ interrupts. */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_SQ_INTERRUPT_MSG,
 			      &adev->gfx.sq_irq);
 	if (r) {
@@ -1977,12 +1953,12 @@ static int gfx_v8_0_sw_init(void *handle)
 		return r;
 	}
 
-	/* set up the gfx ring */
+	 
 	for (i = 0; i < adev->gfx.num_gfx_rings; i++) {
 		ring = &adev->gfx.gfx_ring[i];
 		ring->ring_obj = NULL;
 		sprintf(ring->name, "gfx");
-		/* no gfx doorbells on iceland */
+		 
 		if (adev->asic_type != CHIP_TOPAZ) {
 			ring->use_doorbell = true;
 			ring->doorbell_index = adev->doorbell_index.gfx_ring0;
@@ -1996,7 +1972,7 @@ static int gfx_v8_0_sw_init(void *handle)
 	}
 
 
-	/* set up the compute queues - allocate horizontally across pipes */
+	 
 	ring_id = 0;
 	for (i = 0; i < adev->gfx.mec.num_mec; ++i) {
 		for (j = 0; j < adev->gfx.mec.num_queue_per_pipe; j++) {
@@ -2027,7 +2003,7 @@ static int gfx_v8_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* create MQD for all compute queues as well as KIQ for SRIOV case */
+	 
 	r = amdgpu_gfx_mqd_sw_init(adev, sizeof(struct vi_mqd_allocation), 0);
 	if (r)
 		return r;
@@ -3579,13 +3555,13 @@ gfx_v8_0_write_harvested_raster_configs(struct amdgpu_device *adev,
 			}
 		}
 
-		/* GRBM_GFX_INDEX has a different offset on VI */
+		 
 		gfx_v8_0_select_se_sh(adev, se, 0xffffffff, 0xffffffff, 0);
 		WREG32(mmPA_SC_RASTER_CONFIG, raster_config_se);
 		WREG32(mmPA_SC_RASTER_CONFIG_1, raster_config_1);
 	}
 
-	/* GRBM_GFX_INDEX has a different offset on VI */
+	 
 	gfx_v8_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff, 0);
 }
 
@@ -3628,7 +3604,7 @@ static void gfx_v8_0_setup_rb(struct amdgpu_device *adev)
 							num_rb_pipes);
 	}
 
-	/* cache the values for userspace */
+	 
 	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
 		for (j = 0; j < adev->gfx.config.max_sh_per_se; j++) {
 			gfx_v8_0_select_se_sh(adev, i, j, 0xffffffff, 0);
@@ -3647,26 +3623,14 @@ static void gfx_v8_0_setup_rb(struct amdgpu_device *adev)
 }
 
 #define DEFAULT_SH_MEM_BASES	(0x6000)
-/**
- * gfx_v8_0_init_compute_vmid - gart enable
- *
- * @adev: amdgpu_device pointer
- *
- * Initialize compute vmid sh_mem registers
- *
- */
+ 
 static void gfx_v8_0_init_compute_vmid(struct amdgpu_device *adev)
 {
 	int i;
 	uint32_t sh_mem_config;
 	uint32_t sh_mem_bases;
 
-	/*
-	 * Configure apertures:
-	 * LDS:         0x60000000'00000000 - 0x60000001'00000000 (4GB)
-	 * Scratch:     0x60000001'00000000 - 0x60000002'00000000 (4GB)
-	 * GPUVM:       0x60010000'00000000 - 0x60020000'00000000 (1TB)
-	 */
+	 
 	sh_mem_bases = DEFAULT_SH_MEM_BASES | (DEFAULT_SH_MEM_BASES << 16);
 
 	sh_mem_config = SH_MEM_ADDRESS_MODE_HSA64 <<
@@ -3679,7 +3643,7 @@ static void gfx_v8_0_init_compute_vmid(struct amdgpu_device *adev)
 	mutex_lock(&adev->srbm_mutex);
 	for (i = adev->vm_manager.first_kfd_vmid; i < AMDGPU_NUM_VMID; i++) {
 		vi_srbm_select(adev, 0, 0, 0, i);
-		/* CP and shaders */
+		 
 		WREG32(mmSH_MEM_CONFIG, sh_mem_config);
 		WREG32(mmSH_MEM_APE1_BASE, 1);
 		WREG32(mmSH_MEM_APE1_LIMIT, 0);
@@ -3688,8 +3652,7 @@ static void gfx_v8_0_init_compute_vmid(struct amdgpu_device *adev)
 	vi_srbm_select(adev, 0, 0, 0, 0);
 	mutex_unlock(&adev->srbm_mutex);
 
-	/* Initialize all compute VMIDs to have no GDS, GWS, or OA
-	   access. These should be enabled by FW for target VMIDs. */
+	 
 	for (i = adev->vm_manager.first_kfd_vmid; i < AMDGPU_NUM_VMID; i++) {
 		WREG32(amdgpu_gds_reg_offset[i].mem_base, 0);
 		WREG32(amdgpu_gds_reg_offset[i].mem_size, 0);
@@ -3702,12 +3665,7 @@ static void gfx_v8_0_init_gds_vmid(struct amdgpu_device *adev)
 {
 	int vmid;
 
-	/*
-	 * Initialize all compute and user-gfx VMIDs to have no GDS, GWS, or OA
-	 * access. Compute VMIDs should be enabled by FW for target VMIDs,
-	 * the driver can enable them for graphics. VMID0 should maintain
-	 * access so that HWS firmware can save/restore entries.
-	 */
+	 
 	for (vmid = 1; vmid < AMDGPU_NUM_VMID; vmid++) {
 		WREG32(amdgpu_gds_reg_offset[vmid].mem_base, 0);
 		WREG32(amdgpu_gds_reg_offset[vmid].mem_size, 0);
@@ -3744,8 +3702,8 @@ static void gfx_v8_0_constants_init(struct amdgpu_device *adev)
 	gfx_v8_0_get_cu_info(adev);
 	gfx_v8_0_config_init(adev);
 
-	/* XXX SH_MEM regs */
-	/* where to put LDS, scratch, GPUVM in FSA64 space */
+	 
+	 
 	sh_static_mem_cfg = REG_SET_FIELD(0, SH_STATIC_MEM_CONFIG,
 				   SWIZZLE_ENABLE, 1);
 	sh_static_mem_cfg = REG_SET_FIELD(sh_static_mem_cfg, SH_STATIC_MEM_CONFIG,
@@ -3757,7 +3715,7 @@ static void gfx_v8_0_constants_init(struct amdgpu_device *adev)
 	mutex_lock(&adev->srbm_mutex);
 	for (i = 0; i < adev->vm_manager.id_mgr[0].num_ids; i++) {
 		vi_srbm_select(adev, 0, 0, 0, i);
-		/* CP and shaders */
+		 
 		if (i == 0) {
 			tmp = REG_SET_FIELD(0, SH_MEM_CONFIG, DEFAULT_MTYPE, MTYPE_UC);
 			tmp = REG_SET_FIELD(tmp, SH_MEM_CONFIG, APE1_MTYPE, MTYPE_UC);
@@ -3785,10 +3743,7 @@ static void gfx_v8_0_constants_init(struct amdgpu_device *adev)
 	gfx_v8_0_init_gds_vmid(adev);
 
 	mutex_lock(&adev->grbm_idx_mutex);
-	/*
-	 * making sure that the following register writes will be broadcasted
-	 * to all the shaders
-	 */
+	 
 	gfx_v8_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff, 0);
 
 	WREG32(mmPA_SC_FIFO_SIZE,
@@ -3866,7 +3821,7 @@ static void gfx_v8_0_enable_gui_idle_interrupt(struct amdgpu_device *adev,
 static void gfx_v8_0_init_csb(struct amdgpu_device *adev)
 {
 	adev->gfx.rlc.funcs->get_csb_buffer(adev, adev->gfx.rlc.cs_ptr);
-	/* csib */
+	 
 	WREG32(mmRLC_CSIB_ADDR_HI,
 			adev->gfx.rlc.clear_state_gpu_addr >> 32);
 	WREG32(mmRLC_CSIB_ADDR_LO,
@@ -3904,7 +3859,7 @@ static void gfx_v8_0_parse_ind_reg_list(int *register_list_format,
 
 		ind_offset += 2;
 
-		/* look for the matching indice */
+		 
 		for (indices = 0;
 			indices < *indices_count;
 			indices++) {
@@ -3950,14 +3905,14 @@ static int gfx_v8_0_init_save_restore_list(struct amdgpu_device *adev)
 				&offset_count,
 				ARRAY_SIZE(indirect_start_offsets));
 
-	/* save and restore list */
+	 
 	WREG32_FIELD(RLC_SRM_CNTL, AUTO_INCR_ADDR, 1);
 
 	WREG32(mmRLC_SRM_ARAM_ADDR, 0);
 	for (i = 0; i < adev->gfx.rlc.reg_list_size_bytes >> 2; i++)
 		WREG32(mmRLC_SRM_ARAM_DATA, adev->gfx.rlc.register_restore[i]);
 
-	/* indirect list */
+	 
 	WREG32(mmRLC_GPM_SCRATCH_ADDR, adev->gfx.rlc.reg_list_format_start);
 	for (i = 0; i < adev->gfx.rlc.reg_list_format_size_bytes >> 2; i++)
 		WREG32(mmRLC_GPM_SCRATCH_DATA, register_list_format[i]);
@@ -3967,14 +3922,14 @@ static int gfx_v8_0_init_save_restore_list(struct amdgpu_device *adev)
 	WREG32(mmRLC_GPM_SCRATCH_ADDR, adev->gfx.rlc.reg_restore_list_size);
 	WREG32(mmRLC_GPM_SCRATCH_DATA, list_size);
 
-	/* starting offsets starts */
+	 
 	WREG32(mmRLC_GPM_SCRATCH_ADDR,
 		adev->gfx.rlc.starting_offsets_start);
 	for (i = 0; i < ARRAY_SIZE(indirect_start_offsets); i++)
 		WREG32(mmRLC_GPM_SCRATCH_DATA,
 				indirect_start_offsets[i]);
 
-	/* unique indices */
+	 
 	temp = mmRLC_SRM_INDEX_CNTL_ADDR_0;
 	data = mmRLC_SRM_INDEX_CNTL_DATA_0;
 	for (i = 0; i < ARRAY_SIZE(unique_indices); i++) {
@@ -4069,7 +4024,7 @@ static void gfx_v8_0_rlc_start(struct amdgpu_device *adev)
 {
 	WREG32_FIELD(RLC_CNTL, RLC_ENABLE_F32, 1);
 
-	/* carrizo do enable cp interrupt after cp inited */
+	 
 	if (!(adev->flags & AMD_IS_APU))
 		gfx_v8_0_enable_gui_idle_interrupt(adev, true);
 
@@ -4114,9 +4069,9 @@ static u32 gfx_v8_0_get_csb_size(struct amdgpu_device *adev)
 	const struct cs_section_def *sect = NULL;
 	const struct cs_extent_def *ext = NULL;
 
-	/* begin clear state */
+	 
 	count += 2;
-	/* context control state */
+	 
 	count += 3;
 
 	for (sect = vi_cs_data; sect->section != NULL; ++sect) {
@@ -4127,11 +4082,11 @@ static u32 gfx_v8_0_get_csb_size(struct amdgpu_device *adev)
 				return 0;
 		}
 	}
-	/* pa_sc_raster_config/pa_sc_raster_config1 */
+	 
 	count += 4;
-	/* end clear state */
+	 
 	count += 2;
-	/* clear state */
+	 
 	count += 2;
 
 	return count;
@@ -4144,7 +4099,7 @@ static int gfx_v8_0_cp_gfx_start(struct amdgpu_device *adev)
 	const struct cs_extent_def *ext = NULL;
 	int r, i;
 
-	/* init the CP */
+	 
 	WREG32(mmCP_MAX_CONTEXT, adev->gfx.config.max_hw_contexts - 1);
 	WREG32(mmCP_ENDIAN_SWAP, 0);
 	WREG32(mmCP_DEVICE_ID, 1);
@@ -4157,7 +4112,7 @@ static int gfx_v8_0_cp_gfx_start(struct amdgpu_device *adev)
 		return r;
 	}
 
-	/* clear state buffer */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_PREAMBLE_CNTL, 0));
 	amdgpu_ring_write(ring, PACKET3_PREAMBLE_BEGIN_CLEAR_STATE);
 
@@ -4190,7 +4145,7 @@ static int gfx_v8_0_cp_gfx_start(struct amdgpu_device *adev)
 	amdgpu_ring_write(ring, PACKET3(PACKET3_CLEAR_STATE, 0));
 	amdgpu_ring_write(ring, 0);
 
-	/* init the CE partitions */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_SET_BASE, 2));
 	amdgpu_ring_write(ring, PACKET3_BASE_INDEX(CE_PARTITION_BASE));
 	amdgpu_ring_write(ring, 0x8000);
@@ -4203,7 +4158,7 @@ static int gfx_v8_0_cp_gfx_start(struct amdgpu_device *adev)
 static void gfx_v8_0_set_cpg_door_bell(struct amdgpu_device *adev, struct amdgpu_ring *ring)
 {
 	u32 tmp;
-	/* no gfx doorbells on iceland */
+	 
 	if (adev->asic_type == CHIP_TOPAZ)
 		return;
 
@@ -4241,13 +4196,13 @@ static int gfx_v8_0_cp_gfx_resume(struct amdgpu_device *adev)
 	u32 rb_bufsz;
 	u64 rb_addr, rptr_addr, wptr_gpu_addr;
 
-	/* Set the write pointer delay */
+	 
 	WREG32(mmCP_RB_WPTR_DELAY, 0);
 
-	/* set the RB to use vmid 0 */
+	 
 	WREG32(mmCP_RB_VMID, 0);
 
-	/* Set ring buffer size */
+	 
 	ring = &adev->gfx.gfx_ring[0];
 	rb_bufsz = order_base_2(ring->ring_size / 8);
 	tmp = REG_SET_FIELD(0, CP_RB0_CNTL, RB_BUFSZ, rb_bufsz);
@@ -4259,12 +4214,12 @@ static int gfx_v8_0_cp_gfx_resume(struct amdgpu_device *adev)
 #endif
 	WREG32(mmCP_RB0_CNTL, tmp);
 
-	/* Initialize the ring buffer's read and write pointers */
+	 
 	WREG32(mmCP_RB0_CNTL, tmp | CP_RB0_CNTL__RB_RPTR_WR_ENA_MASK);
 	ring->wptr = 0;
 	WREG32(mmCP_RB0_WPTR, lower_32_bits(ring->wptr));
 
-	/* set the wb address wether it's enabled or not */
+	 
 	rptr_addr = ring->rptr_gpu_addr;
 	WREG32(mmCP_RB0_RPTR_ADDR, lower_32_bits(rptr_addr));
 	WREG32(mmCP_RB0_RPTR_ADDR_HI, upper_32_bits(rptr_addr) & 0xFF);
@@ -4280,7 +4235,7 @@ static int gfx_v8_0_cp_gfx_resume(struct amdgpu_device *adev)
 	WREG32(mmCP_RB0_BASE_HI, upper_32_bits(rb_addr));
 
 	gfx_v8_0_set_cpg_door_bell(adev, ring);
-	/* start the ring */
+	 
 	amdgpu_ring_clear_ring(ring);
 	gfx_v8_0_cp_gfx_start(adev);
 
@@ -4298,13 +4253,13 @@ static void gfx_v8_0_cp_compute_enable(struct amdgpu_device *adev, bool enable)
 	udelay(50);
 }
 
-/* KIQ functions */
+ 
 static void gfx_v8_0_kiq_setting(struct amdgpu_ring *ring)
 {
 	uint32_t tmp;
 	struct amdgpu_device *adev = ring->adev;
 
-	/* tell RLC which is KIQ queue */
+	 
 	tmp = RREG32(mmRLC_CP_SCHEDULERS);
 	tmp &= 0xffffff00;
 	tmp |= (ring->me << 5) | (ring->pipe << 3) | (ring->queue);
@@ -4323,9 +4278,7 @@ static int gfx_v8_0_kiq_kcq_enable(struct amdgpu_device *adev)
 		if (!test_bit(i, adev->gfx.mec_bitmap[0].queue_bitmap))
 			continue;
 
-		/* This situation may be hit in the future if a new HW
-		 * generation exposes more than 64 queues. If so, the
-		 * definition of queue_mask needs updating */
+		 
 		if (WARN_ON(i >= (sizeof(queue_mask)*8))) {
 			DRM_ERROR("Invalid KCQ enabled: %d\n", i);
 			break;
@@ -4339,30 +4292,30 @@ static int gfx_v8_0_kiq_kcq_enable(struct amdgpu_device *adev)
 		DRM_ERROR("Failed to lock KIQ (%d).\n", r);
 		return r;
 	}
-	/* set resources */
+	 
 	amdgpu_ring_write(kiq_ring, PACKET3(PACKET3_SET_RESOURCES, 6));
-	amdgpu_ring_write(kiq_ring, 0);	/* vmid_mask:0 queue_type:0 (KIQ) */
-	amdgpu_ring_write(kiq_ring, lower_32_bits(queue_mask));	/* queue mask lo */
-	amdgpu_ring_write(kiq_ring, upper_32_bits(queue_mask));	/* queue mask hi */
-	amdgpu_ring_write(kiq_ring, 0);	/* gws mask lo */
-	amdgpu_ring_write(kiq_ring, 0);	/* gws mask hi */
-	amdgpu_ring_write(kiq_ring, 0);	/* oac mask */
-	amdgpu_ring_write(kiq_ring, 0);	/* gds heap base:0, gds heap size:0 */
+	amdgpu_ring_write(kiq_ring, 0);	 
+	amdgpu_ring_write(kiq_ring, lower_32_bits(queue_mask));	 
+	amdgpu_ring_write(kiq_ring, upper_32_bits(queue_mask));	 
+	amdgpu_ring_write(kiq_ring, 0);	 
+	amdgpu_ring_write(kiq_ring, 0);	 
+	amdgpu_ring_write(kiq_ring, 0);	 
+	amdgpu_ring_write(kiq_ring, 0);	 
 	for (i = 0; i < adev->gfx.num_compute_rings; i++) {
 		struct amdgpu_ring *ring = &adev->gfx.compute_ring[i];
 		uint64_t mqd_addr = amdgpu_bo_gpu_offset(ring->mqd_obj);
 		uint64_t wptr_addr = ring->wptr_gpu_addr;
 
-		/* map queues */
+		 
 		amdgpu_ring_write(kiq_ring, PACKET3(PACKET3_MAP_QUEUES, 5));
-		/* Q_sel:0, vmid:0, vidmem: 1, engine:0, num_Q:1*/
+		 
 		amdgpu_ring_write(kiq_ring,
 				  PACKET3_MAP_QUEUES_NUM_QUEUES(1));
 		amdgpu_ring_write(kiq_ring,
 				  PACKET3_MAP_QUEUES_DOORBELL_OFFSET(ring->doorbell_index) |
 				  PACKET3_MAP_QUEUES_QUEUE(ring->queue) |
 				  PACKET3_MAP_QUEUES_PIPE(ring->pipe) |
-				  PACKET3_MAP_QUEUES_ME(ring->me == 1 ? 0 : 1)); /* doorbell */
+				  PACKET3_MAP_QUEUES_ME(ring->me == 1 ? 0 : 1));  
 		amdgpu_ring_write(kiq_ring, lower_32_bits(mqd_addr));
 		amdgpu_ring_write(kiq_ring, upper_32_bits(mqd_addr));
 		amdgpu_ring_write(kiq_ring, lower_32_bits(wptr_addr));
@@ -4430,14 +4383,14 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 	mqd->cp_hqd_eop_base_addr_lo = eop_base_addr;
 	mqd->cp_hqd_eop_base_addr_hi = upper_32_bits(eop_base_addr);
 
-	/* set the EOP size, register value is 2^(EOP_SIZE+1) dwords */
+	 
 	tmp = RREG32(mmCP_HQD_EOP_CONTROL);
 	tmp = REG_SET_FIELD(tmp, CP_HQD_EOP_CONTROL, EOP_SIZE,
 			(order_base_2(GFX8_MEC_HPD_SIZE / 4) - 1));
 
 	mqd->cp_hqd_eop_control = tmp;
 
-	/* enable doorbell? */
+	 
 	tmp = REG_SET_FIELD(RREG32(mmCP_HQD_PQ_DOORBELL_CONTROL),
 			    CP_HQD_PQ_DOORBELL_CONTROL,
 			    DOORBELL_EN,
@@ -4445,21 +4398,21 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 
 	mqd->cp_hqd_pq_doorbell_control = tmp;
 
-	/* set the pointer to the MQD */
+	 
 	mqd->cp_mqd_base_addr_lo = ring->mqd_gpu_addr & 0xfffffffc;
 	mqd->cp_mqd_base_addr_hi = upper_32_bits(ring->mqd_gpu_addr);
 
-	/* set MQD vmid to 0 */
+	 
 	tmp = RREG32(mmCP_MQD_CONTROL);
 	tmp = REG_SET_FIELD(tmp, CP_MQD_CONTROL, VMID, 0);
 	mqd->cp_mqd_control = tmp;
 
-	/* set the pointer to the HQD, this is similar CP_RB0_BASE/_HI */
+	 
 	hqd_gpu_addr = ring->gpu_addr >> 8;
 	mqd->cp_hqd_pq_base_lo = hqd_gpu_addr;
 	mqd->cp_hqd_pq_base_hi = upper_32_bits(hqd_gpu_addr);
 
-	/* set up the HQD, this is similar to CP_RB0_CNTL */
+	 
 	tmp = RREG32(mmCP_HQD_PQ_CONTROL);
 	tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_CONTROL, QUEUE_SIZE,
 			    (order_base_2(ring->ring_size / 4) - 1));
@@ -4474,19 +4427,19 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 	tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_CONTROL, KMD_QUEUE, 1);
 	mqd->cp_hqd_pq_control = tmp;
 
-	/* set the wb address whether it's enabled or not */
+	 
 	wb_gpu_addr = ring->rptr_gpu_addr;
 	mqd->cp_hqd_pq_rptr_report_addr_lo = wb_gpu_addr & 0xfffffffc;
 	mqd->cp_hqd_pq_rptr_report_addr_hi =
 		upper_32_bits(wb_gpu_addr) & 0xffff;
 
-	/* only used if CP_PQ_WPTR_POLL_CNTL.CP_PQ_WPTR_POLL_CNTL__EN_MASK=1 */
+	 
 	wb_gpu_addr = ring->wptr_gpu_addr;
 	mqd->cp_hqd_pq_wptr_poll_addr_lo = wb_gpu_addr & 0xfffffffc;
 	mqd->cp_hqd_pq_wptr_poll_addr_hi = upper_32_bits(wb_gpu_addr) & 0xffff;
 
 	tmp = 0;
-	/* enable the doorbell if requested */
+	 
 	if (ring->use_doorbell) {
 		tmp = RREG32(mmCP_HQD_PQ_DOORBELL_CONTROL);
 		tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_DOORBELL_CONTROL,
@@ -4502,19 +4455,19 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 
 	mqd->cp_hqd_pq_doorbell_control = tmp;
 
-	/* reset read and write pointers, similar to CP_RB0_WPTR/_RPTR */
+	 
 	ring->wptr = 0;
 	mqd->cp_hqd_pq_wptr = ring->wptr;
 	mqd->cp_hqd_pq_rptr = RREG32(mmCP_HQD_PQ_RPTR);
 
-	/* set the vmid for the queue */
+	 
 	mqd->cp_hqd_vmid = 0;
 
 	tmp = RREG32(mmCP_HQD_PERSISTENT_STATE);
 	tmp = REG_SET_FIELD(tmp, CP_HQD_PERSISTENT_STATE, PRELOAD_SIZE, 0x53);
 	mqd->cp_hqd_persistent_state = tmp;
 
-	/* set MTYPE */
+	 
 	tmp = RREG32(mmCP_HQD_IB_CONTROL);
 	tmp = REG_SET_FIELD(tmp, CP_HQD_IB_CONTROL, MIN_IB_AVAIL_SIZE, 3);
 	tmp = REG_SET_FIELD(tmp, CP_HQD_IB_CONTROL, MTYPE, 3);
@@ -4528,7 +4481,7 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 	tmp = REG_SET_FIELD(tmp, CP_HQD_CTX_SAVE_CONTROL, MTYPE, 3);
 	mqd->cp_hqd_ctx_save_control = tmp;
 
-	/* defaults */
+	 
 	mqd->cp_hqd_eop_rptr = RREG32(mmCP_HQD_EOP_RPTR);
 	mqd->cp_hqd_eop_wptr = RREG32(mmCP_HQD_EOP_WPTR);
 	mqd->cp_hqd_ctx_save_base_addr_lo = RREG32(mmCP_HQD_CTX_SAVE_BASE_ADDR_LO);
@@ -4542,13 +4495,11 @@ static int gfx_v8_0_mqd_init(struct amdgpu_ring *ring)
 	mqd->cp_hqd_eop_wptr_mem = RREG32(mmCP_HQD_EOP_WPTR_MEM);
 	mqd->cp_hqd_eop_dones = RREG32(mmCP_HQD_EOP_DONES);
 
-	/* set static priority for a queue/ring */
+	 
 	gfx_v8_0_mqd_set_priority(ring, mqd);
 	mqd->cp_hqd_quantum = RREG32(mmCP_HQD_QUANTUM);
 
-	/* map_queues packet doesn't need activate the queue,
-	 * so only kiq need set this field.
-	 */
+	 
 	if (ring->funcs->type == AMDGPU_RING_TYPE_KIQ)
 		mqd->cp_hqd_active = 1;
 
@@ -4561,21 +4512,17 @@ static int gfx_v8_0_mqd_commit(struct amdgpu_device *adev,
 	uint32_t mqd_reg;
 	uint32_t *mqd_data;
 
-	/* HQD registers extend from mmCP_MQD_BASE_ADDR to mmCP_HQD_ERROR */
+	 
 	mqd_data = &mqd->cp_mqd_base_addr_lo;
 
-	/* disable wptr polling */
+	 
 	WREG32_FIELD(CP_PQ_WPTR_POLL_CNTL, EN, 0);
 
-	/* program all HQD registers */
+	 
 	for (mqd_reg = mmCP_HQD_VMID; mqd_reg <= mmCP_HQD_EOP_CONTROL; mqd_reg++)
 		WREG32(mqd_reg, mqd_data[mqd_reg - mmCP_MQD_BASE_ADDR]);
 
-	/* Tonga errata: EOP RPTR/WPTR should be left unmodified.
-	 * This is safe since EOP RPTR==WPTR for any inactive HQD
-	 * on ASICs that do not support context-save.
-	 * EOP writes/reads can start anywhere in the ring.
-	 */
+	 
 	if (adev->asic_type != CHIP_TONGA) {
 		WREG32(mmCP_HQD_EOP_RPTR, mqd->cp_hqd_eop_rptr);
 		WREG32(mmCP_HQD_EOP_WPTR, mqd->cp_hqd_eop_wptr);
@@ -4585,7 +4532,7 @@ static int gfx_v8_0_mqd_commit(struct amdgpu_device *adev,
 	for (mqd_reg = mmCP_HQD_EOP_EVENTS; mqd_reg <= mmCP_HQD_ERROR; mqd_reg++)
 		WREG32(mqd_reg, mqd_data[mqd_reg - mmCP_MQD_BASE_ADDR]);
 
-	/* activate the HQD */
+	 
 	for (mqd_reg = mmCP_MQD_BASE_ADDR; mqd_reg <= mmCP_HQD_ACTIVE; mqd_reg++)
 		WREG32(mqd_reg, mqd_data[mqd_reg - mmCP_MQD_BASE_ADDR]);
 
@@ -4599,12 +4546,12 @@ static int gfx_v8_0_kiq_init_queue(struct amdgpu_ring *ring)
 
 	gfx_v8_0_kiq_setting(ring);
 
-	if (amdgpu_in_reset(adev)) { /* for GPU_RESET case */
-		/* reset MQD to a clean status */
+	if (amdgpu_in_reset(adev)) {  
+		 
 		if (adev->gfx.kiq[0].mqd_backup)
 			memcpy(mqd, adev->gfx.kiq[0].mqd_backup, sizeof(struct vi_mqd_allocation));
 
-		/* reset ring buffer */
+		 
 		ring->wptr = 0;
 		amdgpu_ring_clear_ring(ring);
 		mutex_lock(&adev->srbm_mutex);
@@ -4651,10 +4598,10 @@ static int gfx_v8_0_kcq_init_queue(struct amdgpu_ring *ring)
 		if (adev->gfx.mec.mqd_backup[mqd_idx])
 			memcpy(adev->gfx.mec.mqd_backup[mqd_idx], mqd, sizeof(struct vi_mqd_allocation));
 	} else {
-		/* restore MQD to a clean status */
+		 
 		if (adev->gfx.mec.mqd_backup[mqd_idx])
 			memcpy(mqd, adev->gfx.mec.mqd_backup[mqd_idx], sizeof(struct vi_mqd_allocation));
-		/* reset ring buffer */
+		 
 		ring->wptr = 0;
 		amdgpu_ring_clear_ring(ring);
 	}
@@ -4667,7 +4614,7 @@ static void gfx_v8_0_set_mec_doorbell_range(struct amdgpu_device *adev)
 		WREG32(mmCP_MEC_DOORBELL_RANGE_LOWER, adev->doorbell_index.kiq << 2);
 		WREG32(mmCP_MEC_DOORBELL_RANGE_UPPER, adev->doorbell_index.mec_ring7 << 2);
 	}
-	/* enable doorbells */
+	 
 	WREG32_FIELD(CP_PQ_STATUS, DOORBELL_ENABLE, 1);
 }
 
@@ -4734,7 +4681,7 @@ static int gfx_v8_0_cp_test_all_rings(struct amdgpu_device *adev)
 	int r, i;
 	struct amdgpu_ring *ring;
 
-	/* collect all the ring_tests here, gfx, kiq, compute */
+	 
 	ring = &adev->gfx.gfx_ring[0];
 	r = amdgpu_ring_test_helper(ring);
 	if (r)
@@ -4817,8 +4764,8 @@ static int gfx_v8_0_kcq_disable(struct amdgpu_device *adev)
 		struct amdgpu_ring *ring = &adev->gfx.compute_ring[i];
 
 		amdgpu_ring_write(kiq_ring, PACKET3(PACKET3_UNMAP_QUEUES, 4));
-		amdgpu_ring_write(kiq_ring, /* Q_sel: 0, vmid: 0, engine: 0, num_Q: 1 */
-						PACKET3_UNMAP_QUEUES_ACTION(1) | /* RESET_QUEUES */
+		amdgpu_ring_write(kiq_ring,  
+						PACKET3_UNMAP_QUEUES_ACTION(1) |  
 						PACKET3_UNMAP_QUEUES_QUEUE_SEL(0) |
 						PACKET3_UNMAP_QUEUES_ENGINE_SEL(0) |
 						PACKET3_UNMAP_QUEUES_NUM_QUEUES(1));
@@ -4894,7 +4841,7 @@ static int gfx_v8_0_hw_fini(void *handle)
 
 	amdgpu_irq_put(adev, &adev->gfx.sq_irq, 0);
 
-	/* disable KCQ to avoid CPC touch memory not valid anymore */
+	 
 	gfx_v8_0_kcq_disable(adev);
 
 	if (amdgpu_sriov_vf(adev)) {
@@ -4931,7 +4878,7 @@ static bool gfx_v8_0_check_soft_reset(void *handle)
 	u32 grbm_soft_reset = 0, srbm_soft_reset = 0;
 	u32 tmp;
 
-	/* GRBM_STATUS */
+	 
 	tmp = RREG32(mmGRBM_STATUS);
 	if (tmp & (GRBM_STATUS__PA_BUSY_MASK | GRBM_STATUS__SC_BUSY_MASK |
 		   GRBM_STATUS__BCI_BUSY_MASK | GRBM_STATUS__SX_BUSY_MASK |
@@ -4948,7 +4895,7 @@ static bool gfx_v8_0_check_soft_reset(void *handle)
 						SRBM_SOFT_RESET, SOFT_RESET_GRBM, 1);
 	}
 
-	/* GRBM_STATUS2 */
+	 
 	tmp = RREG32(mmGRBM_STATUS2);
 	if (REG_GET_FIELD(tmp, GRBM_STATUS2, RLC_BUSY))
 		grbm_soft_reset = REG_SET_FIELD(grbm_soft_reset,
@@ -4967,7 +4914,7 @@ static bool gfx_v8_0_check_soft_reset(void *handle)
 						SOFT_RESET_GRBM, 1);
 	}
 
-	/* SRBM_STATUS */
+	 
 	tmp = RREG32(mmSRBM_STATUS);
 	if (REG_GET_FIELD(tmp, SRBM_STATUS, GRBM_RQ_PENDING))
 		srbm_soft_reset = REG_SET_FIELD(srbm_soft_reset,
@@ -4998,12 +4945,12 @@ static int gfx_v8_0_pre_soft_reset(void *handle)
 
 	grbm_soft_reset = adev->gfx.grbm_soft_reset;
 
-	/* stop the rlc */
+	 
 	adev->gfx.rlc.funcs->stop(adev);
 
 	if (REG_GET_FIELD(grbm_soft_reset, GRBM_SOFT_RESET, SOFT_RESET_CP) ||
 	    REG_GET_FIELD(grbm_soft_reset, GRBM_SOFT_RESET, SOFT_RESET_GFX))
-		/* Disable GFX parsing/prefetching */
+		 
 		gfx_v8_0_cp_gfx_enable(adev, false);
 
 	if (REG_GET_FIELD(grbm_soft_reset, GRBM_SOFT_RESET, SOFT_RESET_CP) ||
@@ -5021,7 +4968,7 @@ static int gfx_v8_0_pre_soft_reset(void *handle)
 			vi_srbm_select(adev, 0, 0, 0, 0);
 			mutex_unlock(&adev->srbm_mutex);
 		}
-		/* Disable MEC parsing/prefetching */
+		 
 		gfx_v8_0_cp_compute_enable(adev, false);
 	}
 
@@ -5084,7 +5031,7 @@ static int gfx_v8_0_soft_reset(void *handle)
 		WREG32(mmGMCON_DEBUG, tmp);
 	}
 
-	/* Wait a little for things to settle down */
+	 
 	udelay(50);
 
 	return 0;
@@ -5131,14 +5078,7 @@ static int gfx_v8_0_post_soft_reset(void *handle)
 	return 0;
 }
 
-/**
- * gfx_v8_0_get_gpu_clock_counter - return GPU clock counter snapshot
- *
- * @adev: amdgpu_device pointer
- *
- * Fetches a GPU clock counter snapshot.
- * Returns the 64 bit clock counter snapshot.
- */
+ 
 static uint64_t gfx_v8_0_get_gpu_clock_counter(struct amdgpu_device *adev)
 {
 	uint64_t clock;
@@ -5157,7 +5097,7 @@ static void gfx_v8_0_ring_emit_gds_switch(struct amdgpu_ring *ring,
 					  uint32_t gws_base, uint32_t gws_size,
 					  uint32_t oa_base, uint32_t oa_size)
 {
-	/* GDS Base */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 				WRITE_DATA_DST_SEL(0)));
@@ -5165,7 +5105,7 @@ static void gfx_v8_0_ring_emit_gds_switch(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, 0);
 	amdgpu_ring_write(ring, gds_base);
 
-	/* GDS Size */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 				WRITE_DATA_DST_SEL(0)));
@@ -5173,7 +5113,7 @@ static void gfx_v8_0_ring_emit_gds_switch(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, 0);
 	amdgpu_ring_write(ring, gds_size);
 
-	/* GWS */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 				WRITE_DATA_DST_SEL(0)));
@@ -5181,7 +5121,7 @@ static void gfx_v8_0_ring_emit_gds_switch(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, 0);
 	amdgpu_ring_write(ring, gws_size << GDS_GWS_VMID0__SIZE__SHIFT | gws_base);
 
-	/* OA */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 				WRITE_DATA_DST_SEL(0)));
@@ -5217,7 +5157,7 @@ static void wave_read_regs(struct amdgpu_device *adev, uint32_t simd,
 
 static void gfx_v8_0_read_wave_data(struct amdgpu_device *adev, uint32_t xcc_id, uint32_t simd, uint32_t wave, uint32_t *dst, int *no_fields)
 {
-	/* type 0 wave data */
+	 
 	dst[(*no_fields)++] = 0;
 	dst[(*no_fields)++] = wave_read_ind(adev, simd, wave, ixSQ_WAVE_STATUS);
 	dst[(*no_fields)++] = wave_read_ind(adev, simd, wave, ixSQ_WAVE_PC_LO);
@@ -5288,7 +5228,7 @@ static int gfx_v8_0_late_init(void *handle)
 	if (r)
 		return r;
 
-	/* requires IBs so do in late init after IB pool is initialized */
+	 
 	r = gfx_v8_0_do_edc_gpr_workarounds(adev);
 	if (r)
 		return r;
@@ -5316,7 +5256,7 @@ static void gfx_v8_0_enable_gfx_static_mg_power_gating(struct amdgpu_device *ade
 	if ((adev->asic_type == CHIP_POLARIS11) ||
 	    (adev->asic_type == CHIP_POLARIS12) ||
 	    (adev->asic_type == CHIP_VEGAM))
-		/* Send msg to SMU via Powerplay */
+		 
 		amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_GFX, enable);
 
 	WREG32_FIELD(RLC_PG_CNTL, STATIC_PER_CU_PG_ENABLE, enable ? 1 : 0);
@@ -5345,7 +5285,7 @@ static void cz_enable_gfx_pipeline_power_gating(struct amdgpu_device *adev,
 {
 	WREG32_FIELD(RLC_PG_CNTL, GFX_PIPELINE_PG_ENABLE, enable ? 1 : 0);
 
-	/* Read any GFX register to wake up GFX. */
+	 
 	if (!enable)
 		RREG32(mmDB_RENDER_CONTROL);
 }
@@ -5442,35 +5382,35 @@ static void gfx_v8_0_get_clockgating_state(void *handle, u64 *flags)
 	if (amdgpu_sriov_vf(adev))
 		*flags = 0;
 
-	/* AMD_CG_SUPPORT_GFX_MGCG */
+	 
 	data = RREG32(mmRLC_CGTT_MGCG_OVERRIDE);
 	if (!(data & RLC_CGTT_MGCG_OVERRIDE__CPF_MASK))
 		*flags |= AMD_CG_SUPPORT_GFX_MGCG;
 
-	/* AMD_CG_SUPPORT_GFX_CGLG */
+	 
 	data = RREG32(mmRLC_CGCG_CGLS_CTRL);
 	if (data & RLC_CGCG_CGLS_CTRL__CGCG_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_GFX_CGCG;
 
-	/* AMD_CG_SUPPORT_GFX_CGLS */
+	 
 	if (data & RLC_CGCG_CGLS_CTRL__CGLS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_GFX_CGLS;
 
-	/* AMD_CG_SUPPORT_GFX_CGTS */
+	 
 	data = RREG32(mmCGTS_SM_CTRL_REG);
 	if (!(data & CGTS_SM_CTRL_REG__OVERRIDE_MASK))
 		*flags |= AMD_CG_SUPPORT_GFX_CGTS;
 
-	/* AMD_CG_SUPPORT_GFX_CGTS_LS */
+	 
 	if (!(data & CGTS_SM_CTRL_REG__LS_OVERRIDE_MASK))
 		*flags |= AMD_CG_SUPPORT_GFX_CGTS_LS;
 
-	/* AMD_CG_SUPPORT_GFX_RLC_LS */
+	 
 	data = RREG32(mmRLC_MEM_SLP_CNTL);
 	if (data & RLC_MEM_SLP_CNTL__RLC_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_GFX_RLC_LS | AMD_CG_SUPPORT_GFX_MGLS;
 
-	/* AMD_CG_SUPPORT_GFX_CP_LS */
+	 
 	data = RREG32(mmCP_MEM_SLP_CNTL);
 	if (data & CP_MEM_SLP_CNTL__CP_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_GFX_CP_LS | AMD_CG_SUPPORT_GFX_MGLS;
@@ -5545,7 +5485,7 @@ static void gfx_v8_0_set_safe_mode(struct amdgpu_device *adev, int xcc_id)
 	data |= (1 << RLC_SAFE_MODE__MESSAGE__SHIFT);
 	WREG32(mmRLC_SAFE_MODE, data);
 
-	/* wait for RLC_SAFE_MODE */
+	 
 	for (i = 0; i < adev->usec_timeout; i++) {
 		if ((RREG32(mmRLC_GPM_STAT) &
 		     (RLC_GPM_STAT__GFX_CLOCK_STATUS_MASK |
@@ -5623,18 +5563,18 @@ static void gfx_v8_0_update_medium_grain_clock_gating(struct amdgpu_device *adev
 
 	amdgpu_gfx_rlc_enter_safe_mode(adev, 0);
 
-	/* It is disabled by HW by default */
+	 
 	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_GFX_MGCG)) {
 		if (adev->cg_flags & AMD_CG_SUPPORT_GFX_MGLS) {
 			if (adev->cg_flags & AMD_CG_SUPPORT_GFX_RLC_LS)
-				/* 1 - RLC memory Light sleep */
+				 
 				WREG32_FIELD(RLC_MEM_SLP_CNTL, RLC_MEM_LS_EN, 1);
 
 			if (adev->cg_flags & AMD_CG_SUPPORT_GFX_CP_LS)
 				WREG32_FIELD(CP_MEM_SLP_CNTL, CP_MEM_LS_EN, 1);
 		}
 
-		/* 3 - RLC_CGTT_MGCG_OVERRIDE */
+		 
 		temp = data = RREG32(mmRLC_CGTT_MGCG_OVERRIDE);
 		if (adev->flags & AMD_IS_APU)
 			data &= ~(RLC_CGTT_MGCG_OVERRIDE__CPF_MASK |
@@ -5649,14 +5589,14 @@ static void gfx_v8_0_update_medium_grain_clock_gating(struct amdgpu_device *adev
 		if (temp != data)
 			WREG32(mmRLC_CGTT_MGCG_OVERRIDE, data);
 
-		/* 4 - wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* 5 - clear mgcg override */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_MGCG_OVERRIDE, CLE_BPM_SERDES_CMD);
 
 		if (adev->cg_flags & AMD_CG_SUPPORT_GFX_CGTS) {
-			/* 6 - Enable CGTS(Tree Shade) MGCG /MGLS */
+			 
 			temp = data = RREG32(mmCGTS_SM_CTRL_REG);
 			data &= ~(CGTS_SM_CTRL_REG__SM_MODE_MASK);
 			data |= (0x2 << CGTS_SM_CTRL_REG__SM_MODE__SHIFT);
@@ -5672,10 +5612,10 @@ static void gfx_v8_0_update_medium_grain_clock_gating(struct amdgpu_device *adev
 		}
 		udelay(50);
 
-		/* 7 - wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 	} else {
-		/* 1 - MGCG_OVERRIDE[0] for CP and MGCG_OVERRIDE[1] for RLC */
+		 
 		temp = data = RREG32(mmRLC_CGTT_MGCG_OVERRIDE);
 		data |= (RLC_CGTT_MGCG_OVERRIDE__CPF_MASK |
 				RLC_CGTT_MGCG_OVERRIDE__RLC_MASK |
@@ -5684,36 +5624,36 @@ static void gfx_v8_0_update_medium_grain_clock_gating(struct amdgpu_device *adev
 		if (temp != data)
 			WREG32(mmRLC_CGTT_MGCG_OVERRIDE, data);
 
-		/* 2 - disable MGLS in RLC */
+		 
 		data = RREG32(mmRLC_MEM_SLP_CNTL);
 		if (data & RLC_MEM_SLP_CNTL__RLC_MEM_LS_EN_MASK) {
 			data &= ~RLC_MEM_SLP_CNTL__RLC_MEM_LS_EN_MASK;
 			WREG32(mmRLC_MEM_SLP_CNTL, data);
 		}
 
-		/* 3 - disable MGLS in CP */
+		 
 		data = RREG32(mmCP_MEM_SLP_CNTL);
 		if (data & CP_MEM_SLP_CNTL__CP_MEM_LS_EN_MASK) {
 			data &= ~CP_MEM_SLP_CNTL__CP_MEM_LS_EN_MASK;
 			WREG32(mmCP_MEM_SLP_CNTL, data);
 		}
 
-		/* 4 - Disable CGTS(Tree Shade) MGCG and MGLS */
+		 
 		temp = data = RREG32(mmCGTS_SM_CTRL_REG);
 		data |= (CGTS_SM_CTRL_REG__OVERRIDE_MASK |
 				CGTS_SM_CTRL_REG__LS_OVERRIDE_MASK);
 		if (temp != data)
 			WREG32(mmCGTS_SM_CTRL_REG, data);
 
-		/* 5 - wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* 6 - set mgcg override */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_MGCG_OVERRIDE, SET_BPM_SERDES_CMD);
 
 		udelay(50);
 
-		/* 7- wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 	}
 
@@ -5735,23 +5675,23 @@ static void gfx_v8_0_update_coarse_grain_clock_gating(struct amdgpu_device *adev
 		if (temp1 != data1)
 			WREG32(mmRLC_CGTT_MGCG_OVERRIDE, data1);
 
-		/* : wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* 2 - clear cgcg override */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_CGCG_OVERRIDE, CLE_BPM_SERDES_CMD);
 
-		/* wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* 3 - write cmd to set CGLS */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_CGLS_EN, SET_BPM_SERDES_CMD);
 
-		/* 4 - enable cgcg */
+		 
 		data |= RLC_CGCG_CGLS_CTRL__CGCG_EN_MASK;
 
 		if (adev->cg_flags & AMD_CG_SUPPORT_GFX_CGLS) {
-			/* enable cgls*/
+			 
 			data |= RLC_CGCG_CGLS_CTRL__CGLS_EN_MASK;
 
 			temp1 = data1 =	RREG32(mmRLC_CGTT_MGCG_OVERRIDE);
@@ -5766,45 +5706,43 @@ static void gfx_v8_0_update_coarse_grain_clock_gating(struct amdgpu_device *adev
 		if (temp != data)
 			WREG32(mmRLC_CGCG_CGLS_CTRL, data);
 
-		/* 5 enable cntx_empty_int_enable/cntx_busy_int_enable/
-		 * Cmp_busy/GFX_Idle interrupts
-		 */
+		 
 		gfx_v8_0_enable_gui_idle_interrupt(adev, true);
 	} else {
-		/* disable cntx_empty_int_enable & GFX Idle interrupt */
+		 
 		gfx_v8_0_enable_gui_idle_interrupt(adev, false);
 
-		/* TEST CGCG */
+		 
 		temp1 = data1 =	RREG32(mmRLC_CGTT_MGCG_OVERRIDE);
 		data1 |= (RLC_CGTT_MGCG_OVERRIDE__CGCG_MASK |
 				RLC_CGTT_MGCG_OVERRIDE__CGLS_MASK);
 		if (temp1 != data1)
 			WREG32(mmRLC_CGTT_MGCG_OVERRIDE, data1);
 
-		/* read gfx register to wake up cgcg */
+		 
 		RREG32(mmCB_CGTT_SCLK_CTRL);
 		RREG32(mmCB_CGTT_SCLK_CTRL);
 		RREG32(mmCB_CGTT_SCLK_CTRL);
 		RREG32(mmCB_CGTT_SCLK_CTRL);
 
-		/* wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* write cmd to Set CGCG Override */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_CGCG_OVERRIDE, SET_BPM_SERDES_CMD);
 
-		/* wait for RLC_SERDES_CU_MASTER & RLC_SERDES_NONCU_MASTER idle */
+		 
 		gfx_v8_0_wait_for_rlc_serdes(adev);
 
-		/* write cmd to Clear CGLS */
+		 
 		gfx_v8_0_send_serdes_cmd(adev, BPM_REG_CGLS_EN, CLE_BPM_SERDES_CMD);
 
-		/* disable cgcg, cgls should be disabled too. */
+		 
 		data &= ~(RLC_CGCG_CGLS_CTRL__CGCG_EN_MASK |
 			  RLC_CGCG_CGLS_CTRL__CGLS_EN_MASK);
 		if (temp != data)
 			WREG32(mmRLC_CGCG_CGLS_CTRL, data);
-		/* enable interrupts again for PG */
+		 
 		gfx_v8_0_enable_gui_idle_interrupt(adev, true);
 	}
 
@@ -5816,15 +5754,11 @@ static int gfx_v8_0_update_gfx_clock_gating(struct amdgpu_device *adev,
 					    bool enable)
 {
 	if (enable) {
-		/* CGCG/CGLS should be enabled after MGCG/MGLS/TS(CG/LS)
-		 * ===  MGCG + MGLS + TS(CG/LS) ===
-		 */
+		 
 		gfx_v8_0_update_medium_grain_clock_gating(adev, enable);
 		gfx_v8_0_update_coarse_grain_clock_gating(adev, enable);
 	} else {
-		/* CGCG/CGLS should be disabled before MGCG/MGLS/TS(CG/LS)
-		 * ===  CGCG + CGLS ===
-		 */
+		 
 		gfx_v8_0_update_coarse_grain_clock_gating(adev, enable);
 		gfx_v8_0_update_medium_grain_clock_gating(adev, enable);
 	}
@@ -6018,7 +5952,7 @@ static u64 gfx_v8_0_ring_get_wptr_gfx(struct amdgpu_ring *ring)
 	struct amdgpu_device *adev = ring->adev;
 
 	if (ring->use_doorbell)
-		/* XXX check if swapping is necessary on BE */
+		 
 		return *ring->wptr_cpu_addr;
 	else
 		return RREG32(mmCP_RB0_WPTR);
@@ -6029,7 +5963,7 @@ static void gfx_v8_0_ring_set_wptr_gfx(struct amdgpu_ring *ring)
 	struct amdgpu_device *adev = ring->adev;
 
 	if (ring->use_doorbell) {
-		/* XXX check if swapping is necessary on BE */
+		 
 		*ring->wptr_cpu_addr = lower_32_bits(ring->wptr);
 		WDOORBELL32(ring->doorbell_index, lower_32_bits(ring->wptr));
 	} else {
@@ -6057,18 +5991,18 @@ static void gfx_v8_0_ring_emit_hdp_flush(struct amdgpu_ring *ring)
 		reg_mem_engine = 0;
 	} else {
 		ref_and_mask = GPU_HDP_FLUSH_DONE__CP0_MASK;
-		reg_mem_engine = WAIT_REG_MEM_ENGINE(1); /* pfp */
+		reg_mem_engine = WAIT_REG_MEM_ENGINE(1);  
 	}
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
-	amdgpu_ring_write(ring, (WAIT_REG_MEM_OPERATION(1) | /* write, wait, write */
-				 WAIT_REG_MEM_FUNCTION(3) |  /* == */
+	amdgpu_ring_write(ring, (WAIT_REG_MEM_OPERATION(1) |  
+				 WAIT_REG_MEM_FUNCTION(3) |   
 				 reg_mem_engine));
 	amdgpu_ring_write(ring, mmGPU_HDP_FLUSH_REQ);
 	amdgpu_ring_write(ring, mmGPU_HDP_FLUSH_DONE);
 	amdgpu_ring_write(ring, ref_and_mask);
 	amdgpu_ring_write(ring, ref_and_mask);
-	amdgpu_ring_write(ring, 0x20); /* poll interval */
+	amdgpu_ring_write(ring, 0x20);  
 }
 
 static void gfx_v8_0_ring_emit_vgt_flush(struct amdgpu_ring *ring)
@@ -6122,16 +6056,7 @@ static void gfx_v8_0_ring_emit_ib_compute(struct amdgpu_ring *ring,
 	unsigned vmid = AMDGPU_JOB_GET_VMID(job);
 	u32 control = INDIRECT_BUFFER_VALID | ib->length_dw | (vmid << 24);
 
-	/* Currently, there is a high possibility to get wave ID mismatch
-	 * between ME and GDS, leading to a hw deadlock, because ME generates
-	 * different wave IDs than the GDS expects. This situation happens
-	 * randomly when at least 5 compute pipes use GDS ordered append.
-	 * The wave IDs generated by ME are also wrong after suspend/resume.
-	 * Those are probably bugs somewhere else in the kernel driver.
-	 *
-	 * Writing GDS_COMPUTE_MAX_WAVE_ID resets wave ID counters in ME and
-	 * GDS to 0 for this ring (me/pipe).
-	 */
+	 
 	if (ib->flags & AMDGPU_IB_FLAG_RESET_GDS_MAX_WAVE_ID) {
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SET_CONFIG_REG, 1));
 		amdgpu_ring_write(ring, mmGDS_COMPUTE_MAX_WAVE_ID - PACKET3_SET_CONFIG_REG_START);
@@ -6154,9 +6079,7 @@ static void gfx_v8_0_ring_emit_fence_gfx(struct amdgpu_ring *ring, u64 addr,
 	bool write64bit = flags & AMDGPU_FENCE_FLAG_64BIT;
 	bool int_sel = flags & AMDGPU_FENCE_FLAG_INT;
 
-	/* Workaround for cache flush problems. First send a dummy EOP
-	 * event down the pipe with seq one below.
-	 */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_EVENT_WRITE_EOP, 4));
 	amdgpu_ring_write(ring, (EOP_TCL1_ACTION_EN |
 				 EOP_TC_ACTION_EN |
@@ -6169,8 +6092,7 @@ static void gfx_v8_0_ring_emit_fence_gfx(struct amdgpu_ring *ring, u64 addr,
 	amdgpu_ring_write(ring, lower_32_bits(seq - 1));
 	amdgpu_ring_write(ring, upper_32_bits(seq - 1));
 
-	/* Then send the real EOP event down the pipe:
-	 * EVENT_WRITE_EOP - flush caches, send int */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_EVENT_WRITE_EOP, 4));
 	amdgpu_ring_write(ring, (EOP_TCL1_ACTION_EN |
 				 EOP_TC_ACTION_EN |
@@ -6192,14 +6114,14 @@ static void gfx_v8_0_ring_emit_pipeline_sync(struct amdgpu_ring *ring)
 	uint64_t addr = ring->fence_drv.gpu_addr;
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
-	amdgpu_ring_write(ring, (WAIT_REG_MEM_MEM_SPACE(1) | /* memory */
-				 WAIT_REG_MEM_FUNCTION(3) | /* equal */
-				 WAIT_REG_MEM_ENGINE(usepfp))); /* pfp or me */
+	amdgpu_ring_write(ring, (WAIT_REG_MEM_MEM_SPACE(1) |  
+				 WAIT_REG_MEM_FUNCTION(3) |  
+				 WAIT_REG_MEM_ENGINE(usepfp)));  
 	amdgpu_ring_write(ring, addr & 0xfffffffc);
 	amdgpu_ring_write(ring, upper_32_bits(addr) & 0xffffffff);
 	amdgpu_ring_write(ring, seq);
 	amdgpu_ring_write(ring, 0xffffffff);
-	amdgpu_ring_write(ring, 4); /* poll interval */
+	amdgpu_ring_write(ring, 4);  
 }
 
 static void gfx_v8_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
@@ -6209,20 +6131,20 @@ static void gfx_v8_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
 
 	amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 
-	/* wait for the invalidate to complete */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
-	amdgpu_ring_write(ring, (WAIT_REG_MEM_OPERATION(0) | /* wait */
-				 WAIT_REG_MEM_FUNCTION(0) |  /* always */
-				 WAIT_REG_MEM_ENGINE(0))); /* me */
+	amdgpu_ring_write(ring, (WAIT_REG_MEM_OPERATION(0) |  
+				 WAIT_REG_MEM_FUNCTION(0) |   
+				 WAIT_REG_MEM_ENGINE(0)));  
 	amdgpu_ring_write(ring, mmVM_INVALIDATE_REQUEST);
 	amdgpu_ring_write(ring, 0);
-	amdgpu_ring_write(ring, 0); /* ref */
-	amdgpu_ring_write(ring, 0); /* mask */
-	amdgpu_ring_write(ring, 0x20); /* poll interval */
+	amdgpu_ring_write(ring, 0);  
+	amdgpu_ring_write(ring, 0);  
+	amdgpu_ring_write(ring, 0x20);  
 
-	/* compute doesn't have PFP */
+	 
 	if (usepfp) {
-		/* sync PFP to ME, otherwise we might get invalid PFP reads */
+		 
 		amdgpu_ring_write(ring, PACKET3(PACKET3_PFP_SYNC_ME, 0));
 		amdgpu_ring_write(ring, 0x0);
 	}
@@ -6237,7 +6159,7 @@ static void gfx_v8_0_ring_set_wptr_compute(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
 
-	/* XXX check if swapping is necessary on BE */
+	 
 	*ring->wptr_cpu_addr = lower_32_bits(ring->wptr);
 	WDOORBELL32(ring->doorbell_index, lower_32_bits(ring->wptr));
 }
@@ -6249,7 +6171,7 @@ static void gfx_v8_0_ring_emit_fence_compute(struct amdgpu_ring *ring,
 	bool write64bit = flags & AMDGPU_FENCE_FLAG_64BIT;
 	bool int_sel = flags & AMDGPU_FENCE_FLAG_INT;
 
-	/* RELEASE_MEM - flush caches, send int */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_RELEASE_MEM, 5));
 	amdgpu_ring_write(ring, (EOP_TCL1_ACTION_EN |
 				 EOP_TC_ACTION_EN |
@@ -6266,10 +6188,10 @@ static void gfx_v8_0_ring_emit_fence_compute(struct amdgpu_ring *ring,
 static void gfx_v8_0_ring_emit_fence_kiq(struct amdgpu_ring *ring, u64 addr,
 					 u64 seq, unsigned int flags)
 {
-	/* we only allocate 32bit for each seq wb address */
+	 
 	BUG_ON(flags & AMDGPU_FENCE_FLAG_64BIT);
 
-	/* write fence seq to the "addr" */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 	amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 				 WRITE_DATA_DST_SEL(5) | WR_CONFIRM));
@@ -6278,13 +6200,13 @@ static void gfx_v8_0_ring_emit_fence_kiq(struct amdgpu_ring *ring, u64 addr,
 	amdgpu_ring_write(ring, lower_32_bits(seq));
 
 	if (flags & AMDGPU_FENCE_FLAG_INT) {
-		/* set register to trigger INT */
+		 
 		amdgpu_ring_write(ring, PACKET3(PACKET3_WRITE_DATA, 3));
 		amdgpu_ring_write(ring, (WRITE_DATA_ENGINE_SEL(0) |
 					 WRITE_DATA_DST_SEL(0) | WR_CONFIRM));
 		amdgpu_ring_write(ring, mmCPC_INT_STATUS);
 		amdgpu_ring_write(ring, 0);
-		amdgpu_ring_write(ring, 0x20000000); /* src_id is 178 */
+		amdgpu_ring_write(ring, 0x20000000);  
 	}
 }
 
@@ -6301,23 +6223,21 @@ static void gfx_v8_ring_emit_cntxcntl(struct amdgpu_ring *ring, uint32_t flags)
 	if (amdgpu_sriov_vf(ring->adev))
 		gfx_v8_0_ring_emit_ce_meta(ring);
 
-	dw2 |= 0x80000000; /* set load_enable otherwise this package is just NOPs */
+	dw2 |= 0x80000000;  
 	if (flags & AMDGPU_HAVE_CTX_SWITCH) {
 		gfx_v8_0_ring_emit_vgt_flush(ring);
-		/* set load_global_config & load_global_uconfig */
+		 
 		dw2 |= 0x8001;
-		/* set load_cs_sh_regs */
+		 
 		dw2 |= 0x01000000;
-		/* set load_per_context_state & load_gfx_sh_regs for GFX */
+		 
 		dw2 |= 0x10002;
 
-		/* set load_ce_ram if preamble presented */
+		 
 		if (AMDGPU_PREAMBLE_IB_PRESENT & flags)
 			dw2 |= 0x10000000;
 	} else {
-		/* still load_ce_ram if this is the first time preamble presented
-		 * although there is no context switch happens.
-		 */
+		 
 		if (AMDGPU_PREAMBLE_IB_PRESENT_FIRST & flags)
 			dw2 |= 0x10000000;
 	}
@@ -6334,9 +6254,9 @@ static unsigned gfx_v8_0_ring_emit_init_cond_exec(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, PACKET3(PACKET3_COND_EXEC, 3));
 	amdgpu_ring_write(ring, lower_32_bits(ring->cond_exe_gpu_addr));
 	amdgpu_ring_write(ring, upper_32_bits(ring->cond_exe_gpu_addr));
-	amdgpu_ring_write(ring, 0); /* discard following DWs if *cond_exec_gpu_addr==0 */
+	amdgpu_ring_write(ring, 0);  
 	ret = ring->wptr & ring->buf_mask;
-	amdgpu_ring_write(ring, 0x55aa55aa); /* patch dummy value later */
+	amdgpu_ring_write(ring, 0x55aa55aa);  
 	return ret;
 }
 
@@ -6360,9 +6280,9 @@ static void gfx_v8_0_ring_emit_rreg(struct amdgpu_ring *ring, uint32_t reg,
 	struct amdgpu_device *adev = ring->adev;
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_COPY_DATA, 4));
-	amdgpu_ring_write(ring, 0 |	/* src: register*/
-				(5 << 8) |	/* dst: memory */
-				(1 << 20));	/* write confirm */
+	amdgpu_ring_write(ring, 0 |	 
+				(5 << 8) |	 
+				(1 << 20));	 
 	amdgpu_ring_write(ring, reg);
 	amdgpu_ring_write(ring, 0);
 	amdgpu_ring_write(ring, lower_32_bits(adev->wb.gpu_addr +
@@ -6381,7 +6301,7 @@ static void gfx_v8_0_ring_emit_wreg(struct amdgpu_ring *ring, uint32_t reg,
 		cmd = WRITE_DATA_ENGINE_SEL(1) | WR_CONFIRM;
 		break;
 	case AMDGPU_RING_TYPE_KIQ:
-		cmd = 1 << 16; /* no inc addr */
+		cmd = 1 << 16;  
 		break;
 	default:
 		cmd = WR_CONFIRM;
@@ -6420,11 +6340,7 @@ static void gfx_v8_0_set_compute_eop_interrupt_state(struct amdgpu_device *adev,
 {
 	u32 mec_int_cntl, mec_int_cntl_reg;
 
-	/*
-	 * amdgpu controls only the first MEC. That's why this function only
-	 * handles the setting of interrupts for this specific MEC. All other
-	 * pipes' interrupts are set by amdkfd.
-	 */
+	 
 
 	if (me == 1) {
 		switch (pipe) {
@@ -6618,9 +6534,7 @@ static int gfx_v8_0_eop_irq(struct amdgpu_device *adev,
 	case 2:
 		for (i = 0; i < adev->gfx.num_compute_rings; i++) {
 			ring = &adev->gfx.compute_ring[i];
-			/* Per-queue interrupt is supported for MEC starting from VI.
-			  * The interrupt can only be enabled/disabled per pipe instead of per queue.
-			  */
+			 
 			if ((ring->me == me_id) && (ring->pipe == pipe_id) && (ring->queue == queue_id))
 				amdgpu_fence_process(ring);
 		}
@@ -6716,11 +6630,7 @@ static void gfx_v8_0_parse_sq_irq(struct amdgpu_device *adev, unsigned ih_data,
 			cu_id = REG_GET_FIELD(ih_data, SQ_INTERRUPT_WORD_WAVE, CU_ID);
 			sh_id = REG_GET_FIELD(ih_data, SQ_INTERRUPT_WORD_WAVE, SH_ID);
 
-			/*
-			 * This function can be called either directly from ISR
-			 * or from BH in which case we can access SQ_EDC_INFO
-			 * instance
-			 */
+			 
 			if (from_wq) {
 				mutex_lock(&adev->grbm_idx_mutex);
 				gfx_v8_0_select_se_sh(adev, se_id, sh_id, cu_id, 0);
@@ -6768,11 +6678,7 @@ static int gfx_v8_0_sq_irq(struct amdgpu_device *adev,
 {
 	unsigned ih_data = entry->src_data[0];
 
-	/*
-	 * Try to submit work so SQ_EDC_INFO can be accessed from
-	 * BH. If previous work submission hasn't finished yet
-	 * just print whatever info is possible directly from the ISR.
-	 */
+	 
 	if (work_pending(&adev->gfx.sq_work.work)) {
 		gfx_v8_0_parse_sq_irq(adev, ih_data, false);
 	} else {
@@ -6790,10 +6696,10 @@ static void gfx_v8_0_emit_mem_sync(struct amdgpu_ring *ring)
 			  PACKET3_TC_ACTION_ENA |
 			  PACKET3_SH_KCACHE_ACTION_ENA |
 			  PACKET3_SH_ICACHE_ACTION_ENA |
-			  PACKET3_TC_WB_ACTION_ENA);  /* CP_COHER_CNTL */
-	amdgpu_ring_write(ring, 0xffffffff);  /* CP_COHER_SIZE */
-	amdgpu_ring_write(ring, 0);  /* CP_COHER_BASE */
-	amdgpu_ring_write(ring, 0x0000000A); /* poll interval */
+			  PACKET3_TC_WB_ACTION_ENA);   
+	amdgpu_ring_write(ring, 0xffffffff);   
+	amdgpu_ring_write(ring, 0);   
+	amdgpu_ring_write(ring, 0x0000000A);  
 }
 
 static void gfx_v8_0_emit_mem_sync_compute(struct amdgpu_ring *ring)
@@ -6803,16 +6709,16 @@ static void gfx_v8_0_emit_mem_sync_compute(struct amdgpu_ring *ring)
 			  PACKET3_TC_ACTION_ENA |
 			  PACKET3_SH_KCACHE_ACTION_ENA |
 			  PACKET3_SH_ICACHE_ACTION_ENA |
-			  PACKET3_TC_WB_ACTION_ENA);  /* CP_COHER_CNTL */
-	amdgpu_ring_write(ring, 0xffffffff);	/* CP_COHER_SIZE */
-	amdgpu_ring_write(ring, 0xff);		/* CP_COHER_SIZE_HI */
-	amdgpu_ring_write(ring, 0);		/* CP_COHER_BASE */
-	amdgpu_ring_write(ring, 0);		/* CP_COHER_BASE_HI */
-	amdgpu_ring_write(ring, 0x0000000A);	/* poll interval */
+			  PACKET3_TC_WB_ACTION_ENA);   
+	amdgpu_ring_write(ring, 0xffffffff);	 
+	amdgpu_ring_write(ring, 0xff);		 
+	amdgpu_ring_write(ring, 0);		 
+	amdgpu_ring_write(ring, 0);		 
+	amdgpu_ring_write(ring, 0x0000000A);	 
 }
 
 
-/* mmSPI_WCL_PIPE_PERCENT_CS[0-7]_DEFAULT values are same */
+ 
 #define mmSPI_WCL_PIPE_PERCENT_CS_DEFAULT	0x0000007f
 static void gfx_v8_0_emit_wave_limit_cs(struct amdgpu_ring *ring,
 					uint32_t pipe, bool enable)
@@ -6851,18 +6757,11 @@ static void gfx_v8_0_emit_wave_limit(struct amdgpu_ring *ring, bool enable)
 	uint32_t val;
 	int i;
 
-	/* mmSPI_WCL_PIPE_PERCENT_GFX is 7 bit multiplier register to limit
-	 * number of gfx waves. Setting 5 bit will make sure gfx only gets
-	 * around 25% of gpu resources.
-	 */
+	 
 	val = enable ? 0x1f : mmSPI_WCL_PIPE_PERCENT_GFX_DEFAULT;
 	amdgpu_ring_emit_wreg(ring, mmSPI_WCL_PIPE_PERCENT_GFX, val);
 
-	/* Restrict waves for normal/low priority compute queues as well
-	 * to get best QoS for high priority compute jobs.
-	 *
-	 * amdgpu controls only 1st ME(0-3 CS pipes).
-	 */
+	 
 	for (i = 0; i < adev->gfx.mec.num_pipe_per_mec; i++) {
 		if (i != ring->pipe)
 			gfx_v8_0_emit_wave_limit_cs(ring, i, enable);
@@ -6900,26 +6799,24 @@ static const struct amdgpu_ring_funcs gfx_v8_0_ring_funcs_gfx = {
 	.get_rptr = gfx_v8_0_ring_get_rptr,
 	.get_wptr = gfx_v8_0_ring_get_wptr_gfx,
 	.set_wptr = gfx_v8_0_ring_set_wptr_gfx,
-	.emit_frame_size = /* maximum 215dw if count 16 IBs in */
-		5 +  /* COND_EXEC */
-		7 +  /* PIPELINE_SYNC */
-		VI_FLUSH_GPU_TLB_NUM_WREG * 5 + 9 + /* VM_FLUSH */
-		12 +  /* FENCE for VM_FLUSH */
-		20 + /* GDS switch */
-		4 + /* double SWITCH_BUFFER,
-		       the first COND_EXEC jump to the place just
-			   prior to this double SWITCH_BUFFER  */
-		5 + /* COND_EXEC */
-		7 +	 /*	HDP_flush */
-		4 +	 /*	VGT_flush */
-		14 + /*	CE_META */
-		31 + /*	DE_META */
-		3 + /* CNTX_CTRL */
-		5 + /* HDP_INVL */
-		12 + 12 + /* FENCE x2 */
-		2 + /* SWITCH_BUFFER */
-		5, /* SURFACE_SYNC */
-	.emit_ib_size =	4, /* gfx_v8_0_ring_emit_ib_gfx */
+	.emit_frame_size =  
+		5 +   
+		7 +   
+		VI_FLUSH_GPU_TLB_NUM_WREG * 5 + 9 +  
+		12 +   
+		20 +  
+		4 +  
+		5 +  
+		7 +	  
+		4 +	  
+		14 +  
+		31 +  
+		3 +  
+		5 +  
+		12 + 12 +  
+		2 +  
+		5,  
+	.emit_ib_size =	4,  
 	.emit_ib = gfx_v8_0_ring_emit_ib_gfx,
 	.emit_fence = gfx_v8_0_ring_emit_fence_gfx,
 	.emit_pipeline_sync = gfx_v8_0_ring_emit_pipeline_sync,
@@ -6948,16 +6845,16 @@ static const struct amdgpu_ring_funcs gfx_v8_0_ring_funcs_compute = {
 	.get_wptr = gfx_v8_0_ring_get_wptr_compute,
 	.set_wptr = gfx_v8_0_ring_set_wptr_compute,
 	.emit_frame_size =
-		20 + /* gfx_v8_0_ring_emit_gds_switch */
-		7 + /* gfx_v8_0_ring_emit_hdp_flush */
-		5 + /* hdp_invalidate */
-		7 + /* gfx_v8_0_ring_emit_pipeline_sync */
-		VI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 + /* gfx_v8_0_ring_emit_vm_flush */
-		7 + 7 + 7 + /* gfx_v8_0_ring_emit_fence_compute x3 for user fence, vm fence */
-		7 + /* gfx_v8_0_emit_mem_sync_compute */
-		5 + /* gfx_v8_0_emit_wave_limit for updating mmSPI_WCL_PIPE_PERCENT_GFX register */
-		15, /* for updating 3 mmSPI_WCL_PIPE_PERCENT_CS registers */
-	.emit_ib_size =	7, /* gfx_v8_0_ring_emit_ib_compute */
+		20 +  
+		7 +  
+		5 +  
+		7 +  
+		VI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 +  
+		7 + 7 + 7 +  
+		7 +  
+		5 +  
+		15,  
+	.emit_ib_size =	7,  
 	.emit_ib = gfx_v8_0_ring_emit_ib_compute,
 	.emit_fence = gfx_v8_0_ring_emit_fence_compute,
 	.emit_pipeline_sync = gfx_v8_0_ring_emit_pipeline_sync,
@@ -6982,13 +6879,13 @@ static const struct amdgpu_ring_funcs gfx_v8_0_ring_funcs_kiq = {
 	.get_wptr = gfx_v8_0_ring_get_wptr_compute,
 	.set_wptr = gfx_v8_0_ring_set_wptr_compute,
 	.emit_frame_size =
-		20 + /* gfx_v8_0_ring_emit_gds_switch */
-		7 + /* gfx_v8_0_ring_emit_hdp_flush */
-		5 + /* hdp_invalidate */
-		7 + /* gfx_v8_0_ring_emit_pipeline_sync */
-		17 + /* gfx_v8_0_ring_emit_vm_flush */
-		7 + 7 + 7, /* gfx_v8_0_ring_emit_fence_kiq x3 for user fence, vm fence */
-	.emit_ib_size =	7, /* gfx_v8_0_ring_emit_ib_compute */
+		20 +  
+		7 +  
+		5 +  
+		7 +  
+		17 +  
+		7 + 7 + 7,  
+	.emit_ib_size =	7,  
 	.emit_fence = gfx_v8_0_ring_emit_fence_kiq,
 	.test_ring = gfx_v8_0_ring_test_ring,
 	.insert_nop = amdgpu_ring_insert_nop,
@@ -7060,7 +6957,7 @@ static void gfx_v8_0_set_rlc_funcs(struct amdgpu_device *adev)
 
 static void gfx_v8_0_set_gds_init(struct amdgpu_device *adev)
 {
-	/* init asci gds info */
+	 
 	adev->gds.gds_size = RREG32(mmGDS_VMID0_SIZE);
 	adev->gds.gws_size = 64;
 	adev->gds.oa_size = 16;

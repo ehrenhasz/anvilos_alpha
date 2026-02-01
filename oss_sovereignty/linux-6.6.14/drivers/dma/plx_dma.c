@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microsemi Switchtec(tm) PCIe Management Driver
- * Copyright (c) 2019, Logan Gunthorpe <logang@deltatee.com>
- * Copyright (c) 2019, GigaIO Networks, Inc
- */
+
+ 
 
 #include "dmaengine.h"
 
@@ -282,15 +278,12 @@ static struct dma_async_tx_descriptor *plx_dma_prep_memcpy(struct dma_chan *c,
 	plxdesc->hw->flags_and_size = cpu_to_le32(len);
 	plxdesc->txd.flags = flags;
 
-	/* return with the lock held, it will be released in tx_submit */
+	 
 
 	return &plxdesc->txd;
 
 err_unlock:
-	/*
-	 * Keep sparse happy by restoring an even lock count on
-	 * this lock.
-	 */
+	 
 	__acquire(plxdev->ring_lock);
 
 	spin_unlock_bh(&plxdev->ring_lock);
@@ -306,10 +299,7 @@ static dma_cookie_t plx_dma_tx_submit(struct dma_async_tx_descriptor *desc)
 
 	cookie = dma_cookie_assign(desc);
 
-	/*
-	 * Ensure the descriptor updates are visible to the dma device
-	 * before setting the valid bit.
-	 */
+	 
 	wmb();
 
 	plxdesc->hw->flags_and_size |= cpu_to_le32(PLX_DESC_FLAG_VALID);
@@ -344,10 +334,7 @@ static void plx_dma_issue_pending(struct dma_chan *chan)
 		return;
 	}
 
-	/*
-	 * Ensure the valid bits are visible before starting the
-	 * DMA engine.
-	 */
+	 
 	wmb();
 
 	writew(PLX_REG_CTRL_START_VAL, plxdev->bar + PLX_REG_CTRL);

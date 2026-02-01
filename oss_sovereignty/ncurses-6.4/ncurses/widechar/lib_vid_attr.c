@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2018-2019,2020 Thomas E. Dickey                                *
- * Copyright 2002-2014,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -56,7 +27,7 @@ MODULE_ID("$Id: lib_vid_attr.c,v 1.30 2020/05/27 23:54:31 tom Exp $")
 	    turn_off &= ~mask; \
 	}
 
-	/* if there is no current screen, assume we *can* do color */
+	 
 #define SetColorsIf(why, old_attr, old_pair) \
 	if (can_color && (why)) { \
 		TR(TRACE_ATTRS, ("old pair = %d -- new pair = %d", old_pair, color_pair)); \
@@ -101,7 +72,7 @@ NCURSES_SP_NAME(vid_puts) (NCURSES_SP_DCLx
     set_extended_pair(opts, color_pair);
     T((T_CALLED("vid_puts(%s,%d)"), _traceattr(newmode), color_pair));
 
-    /* this allows us to go on whether or not newterm() has been called */
+     
     if (SP_PARM) {
 	previous_attr = AttrOf(SCREEN_ATTRS(SP_PARM));
 	previous_pair = GetPair(SCREEN_ATTRS(SP_PARM));
@@ -116,25 +87,11 @@ NCURSES_SP_NAME(vid_puts) (NCURSES_SP_DCLx
 	newmode &= ~(SP_PARM->_xmc_suppress);
 #endif
 
-    /*
-     * If we have a terminal that cannot combine color with video
-     * attributes, use the colors in preference.
-     */
+     
     if ((color_pair != 0
 	 || fix_pair0)
 	&& (no_color_video > 0)) {
-	/*
-	 * If we had chosen the A_xxx definitions to correspond to the
-	 * no_color_video mask, we could simply shift it up and mask off the
-	 * attributes.  But we did not (actually copied Solaris' definitions).
-	 * However, this is still simpler/faster than a lookup table.
-	 *
-	 * The 63 corresponds to A_STANDOUT, A_UNDERLINE, A_REVERSE, A_BLINK,
-	 * A_DIM, A_BOLD which are 1:1 with no_color_video.  The bits that
-	 * correspond to A_INVIS, A_PROTECT (192) must be shifted up 1 and
-	 * A_ALTCHARSET (256) down 2 to line up.  We use the NCURSES_BITS
-	 * macro so this will work properly for the wide-character layout.
-	 */
+	 
 	unsigned value = (unsigned) no_color_video;
 	attr_t mask = NCURSES_BITS((value & 63)
 				   | ((value & 192) << 1)
@@ -242,7 +199,7 @@ NCURSES_SP_NAME(vid_puts) (NCURSES_SP_DCLx
 	SetColorsIf((color_pair != 0) || fix_pair0, previous_attr, previous_pair);
 
 	TR(TRACE_ATTRS, ("turning %s on", _traceattr(turn_on)));
-	/* *INDENT-OFF* */
+	 
 	TurnOn(A_ALTCHARSET,	enter_alt_charset_mode);
 	TurnOn(A_BLINK,		enter_blink_mode);
 	TurnOn(A_BOLD,		enter_bold_mode);
@@ -263,7 +220,7 @@ NCURSES_SP_NAME(vid_puts) (NCURSES_SP_DCLx
 	TurnOn(A_TOP,		enter_top_hl_mode);
 	TurnOn(A_VERTICAL,	enter_vertical_hl_mode);
 #endif
-	/* *INDENT-ON* */
+	 
     }
 
     if (reverse)
@@ -325,10 +282,7 @@ vid_attr(attr_t newmode, NCURSES_PAIRS_T pair_arg, void *opts)
 }
 #endif
 
-/*
- * This implementation uses the same mask values for A_xxx and WA_xxx, so
- * we can use termattrs() for part of the logic.
- */
+ 
 NCURSES_EXPORT(attr_t)
 NCURSES_SP_NAME(term_attrs) (NCURSES_SP_DCL0)
 {
@@ -339,7 +293,7 @@ NCURSES_SP_NAME(term_attrs) (NCURSES_SP_DCL0)
 	attrs = NCURSES_SP_NAME(termattrs) (NCURSES_SP_ARG);
 
 #if USE_WIDEC_SUPPORT && defined(enter_horizontal_hl_mode)
-	/* these are only supported for wide-character mode */
+	 
 	if (enter_horizontal_hl_mode)
 	    attrs |= WA_HORIZONTAL;
 	if (enter_left_hl_mode)

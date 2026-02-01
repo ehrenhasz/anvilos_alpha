@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * move_extents.c
- *
- * Copyright (C) 2011 Oracle.  All rights reserved.
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/types.h>
 #include <linux/mount.h>
@@ -99,10 +95,7 @@ static int __ocfs2_move_extent(handle_t *handle,
 	rec = &el->l_recs[index];
 
 	BUG_ON(ext_flags != rec->e_flags);
-	/*
-	 * after moving/defraging to new location, the extent is not going
-	 * to be refcounted anymore.
-	 */
+	 
 	replace_rec.e_flags = ext_flags & ~OCFS2_EXT_REFCOUNTED;
 
 	ret = ocfs2_split_extent(handle, &context->et, path, index,
@@ -115,9 +108,7 @@ static int __ocfs2_move_extent(handle_t *handle,
 
 	context->new_phys_cpos = new_p_cpos;
 
-	/*
-	 * need I to append truncate log for old clusters?
-	 */
+	 
 	if (old_blkno) {
 		if (ext_flags & OCFS2_EXT_REFCOUNTED)
 			ret = ocfs2_decrease_refcount(inode, handle,
@@ -136,10 +127,7 @@ out:
 	return ret;
 }
 
-/*
- * lock allocator, and reserve appropriate number of bits for
- * meta blocks.
- */
+ 
 static int ocfs2_lock_meta_allocator_move_extents(struct inode *inode,
 					struct ocfs2_extent_tree *et,
 					u32 clusters_to_move,
@@ -185,13 +173,7 @@ out:
 	return ret;
 }
 
-/*
- * Using one journal handle to guarantee the data consistency in case
- * crash happens anywhere.
- *
- *  XXX: defrag can end up with finishing partial extent as requested,
- * due to not enough contiguous clusters can be found in allocator.
- */
+ 
 static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 			       u32 cpos, u32 phys_cpos, u32 *len, int ext_flags)
 {
@@ -237,12 +219,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		goto out;
 	}
 
-	/*
-	 * should be using allocation reservation strategy there?
-	 *
-	 * if (context->data_ac)
-	 *	context->data_ac->ac_resv = &OCFS2_I(inode)->ip_la_data_resv;
-	 */
+	 
 
 	inode_lock(tl_inode);
 
@@ -254,15 +231,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
-	/*
-	 * Make sure ocfs2_reserve_cluster is called after
-	 * __ocfs2_flush_truncate_log, otherwise, dead lock may happen.
-	 *
-	 * If ocfs2_reserve_cluster is called
-	 * before __ocfs2_flush_truncate_log, dead lock on global bitmap
-	 * may happen.
-	 *
-	 */
+	 
 	ret = ocfs2_reserve_clusters(osb, *len, &context->data_ac);
 	if (ret) {
 		mlog_errno(ret);
@@ -283,12 +252,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		goto out_commit;
 	}
 
-	/*
-	 * allowing partial extent moving is kind of 'pros and cons', it makes
-	 * whole defragmentation less likely to fail, on the contrary, the bad
-	 * thing is it may make the fs even more fragmented after moving, let
-	 * userspace make a good decision here.
-	 */
+	 
 	if (new_len != *len) {
 		mlog(0, "len_claimed: %u, len: %u\n", new_len, *len);
 		if (!partial) {
@@ -310,10 +274,7 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 	if (partial && (new_len != *len))
 		*len = new_len;
 
-	/*
-	 * Here we should write the new page out first if we are
-	 * in write-back mode.
-	 */
+	 
 	ret = ocfs2_cow_sync_writeback(inode->i_sb, context->inode, cpos, *len);
 	if (ret)
 		mlog_errno(ret);
@@ -355,9 +316,7 @@ out:
 	return ret;
 }
 
-/*
- * find the victim alloc group, where #blkno fits.
- */
+ 
 static int ocfs2_find_victim_alloc_group(struct inode *inode,
 					 u64 vict_blkno,
 					 int type, int slot,
@@ -396,9 +355,7 @@ static int ocfs2_find_victim_alloc_group(struct inode *inode,
 	if (type == GLOBAL_BITMAP_SYSTEM_INODE)
 		bits_per_unit = osb->s_clustersize_bits -
 					inode->i_sb->s_blocksize_bits;
-	/*
-	 * 'vict_blkno' was out of the valid range.
-	 */
+	 
 	if ((vict_blkno < le64_to_cpu(rec->c_blkno)) ||
 	    (vict_blkno >= ((u64)le32_to_cpu(ac_dinode->id1.bitmap1.i_total) <<
 				bits_per_unit))) {
@@ -453,15 +410,11 @@ static int ocfs2_find_victim_alloc_group(struct inode *inode,
 out:
 	brelse(ac_bh);
 
-	/*
-	 * caller has to release the gd_bh properly.
-	 */
+	 
 	return ret;
 }
 
-/*
- * XXX: helper to validate and adjust moving goal.
- */
+ 
 static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 					       struct ocfs2_move_extents *range)
 {
@@ -473,15 +426,10 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 	int c_to_b = 1 << (osb->s_clustersize_bits -
 					inode->i_sb->s_blocksize_bits);
 
-	/*
-	 * make goal become cluster aligned.
-	 */
+	 
 	range->me_goal = ocfs2_block_to_cluster_start(inode->i_sb,
 						      range->me_goal);
-	/*
-	 * validate goal sits within global_bitmap, and return the victim
-	 * group desc
-	 */
+	 
 	ret = ocfs2_find_victim_alloc_group(inode, range->me_goal,
 					    GLOBAL_BITMAP_SYSTEM_INODE,
 					    OCFS2_INVALID_SLOT,
@@ -491,25 +439,17 @@ static int ocfs2_validate_and_adjust_move_goal(struct inode *inode,
 
 	bg = (struct ocfs2_group_desc *)gd_bh->b_data;
 
-	/*
-	 * moving goal is not allowd to start with a group desc blok(#0 blk)
-	 * let's compromise to the latter cluster.
-	 */
+	 
 	if (range->me_goal == le64_to_cpu(bg->bg_blkno))
 		range->me_goal += c_to_b;
 
-	/*
-	 * movement is not gonna cross two groups.
-	 */
+	 
 	if ((le16_to_cpu(bg->bg_bits) - goal_bit) * osb->s_clustersize <
 								range->me_len) {
 		ret = -EINVAL;
 		goto out;
 	}
-	/*
-	 * more exact validations/adjustments will be performed later during
-	 * moving operation for each extent range.
-	 */
+	 
 	mlog(0, "extents get ready to be moved to #%llu block\n",
 	     range->me_goal);
 
@@ -532,10 +472,7 @@ static void ocfs2_probe_alloc_group(struct inode *inode, struct buffer_head *bh,
 
 		used = ocfs2_test_bit(i, (unsigned long *)gd->bg_bitmap);
 		if (used) {
-			/*
-			 * we even tried searching the free chunk by jumping
-			 * a 'max_hop' distance, but still failed.
-			 */
+			 
 			if ((i - base_bit) > max_hop) {
 				*phys_cpos = 0;
 				break;
@@ -611,16 +548,10 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		goto out;
 	}
 
-	/*
-	 * need to count 2 extra credits for global_bitmap inode and
-	 * group descriptor.
-	 */
+	 
 	credits += OCFS2_INODE_UPDATE_CREDITS + 1;
 
-	/*
-	 * ocfs2_move_extent() didn't reserve any clusters in lock_allocators()
-	 * logic, while we still need to lock the global_bitmap.
-	 */
+	 
 	gb_inode = ocfs2_get_system_file_inode(osb, GLOBAL_BITMAP_SYSTEM_INODE,
 					       OCFS2_INVALID_SLOT);
 	if (!gb_inode) {
@@ -656,12 +587,7 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		goto out_commit;
 	}
 
-	/*
-	 * probe the victim cluster group to find a proper
-	 * region to fit wanted movement, it even will perfrom
-	 * a best-effort attempt by compromising to a threshold
-	 * around the goal.
-	 */
+	 
 	ocfs2_probe_alloc_group(inode, gd_bh, &goal_bit, len, move_max_hop,
 				new_phys_cpos);
 	if (!*new_phys_cpos) {
@@ -692,10 +618,7 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		mlog_errno(ret);
 	}
 
-	/*
-	 * Here we should write the new page out first if we are
-	 * in write-back mode.
-	 */
+	 
 	ret = ocfs2_cow_sync_writeback(inode->i_sb, context->inode, cpos, len);
 	if (ret)
 		mlog_errno(ret);
@@ -725,31 +648,18 @@ out:
 	return ret;
 }
 
-/*
- * Helper to calculate the defraging length in one run according to threshold.
- */
+ 
 static void ocfs2_calc_extent_defrag_len(u32 *alloc_size, u32 *len_defraged,
 					 u32 threshold, int *skip)
 {
 	if ((*alloc_size + *len_defraged) < threshold) {
-		/*
-		 * proceed defragmentation until we meet the thresh
-		 */
+		 
 		*len_defraged += *alloc_size;
 	} else if (*len_defraged == 0) {
-		/*
-		 * XXX: skip a large extent.
-		 */
+		 
 		*skip = 1;
 	} else {
-		/*
-		 * split this extent to coalesce with former pieces as
-		 * to reach the threshold.
-		 *
-		 * we're done here with one cycle of defragmentation
-		 * in a size of 'thresh', resetting 'len_defraged'
-		 * forces a new defragmentation.
-		 */
+		 
 		*alloc_size = threshold - *len_defraged;
 		*len_defraged = 0;
 	}
@@ -778,19 +688,11 @@ static int __ocfs2_move_extents_range(struct buffer_head *di_bh,
 	ocfs2_init_dinode_extent_tree(&context->et, INODE_CACHE(inode), di_bh);
 	ocfs2_init_dealloc_ctxt(&context->dealloc);
 
-	/*
-	 * TO-DO XXX:
-	 *
-	 * - xattr extents.
-	 */
+	 
 
 	do_defrag = context->auto_defrag;
 
-	/*
-	 * extents moving happens in unit of clusters, for the sake
-	 * of simplicity, we may ignore two clusters where 'byte_start'
-	 * and 'byte_start + len' were within.
-	 */
+	 
 	move_start = ocfs2_clusters_for_bytes(osb->sb, range->me_start);
 	len_to_move = (range->me_start + range->me_len) >>
 						osb->s_clustersize_bits;
@@ -826,12 +728,7 @@ static int __ocfs2_move_extents_range(struct buffer_head *di_bh,
 		if (alloc_size > len_to_move)
 			alloc_size = len_to_move;
 
-		/*
-		 * XXX: how to deal with a hole:
-		 *
-		 * - skip the hole of course
-		 * - force a new defragmentation
-		 */
+		 
 		if (!phys_cpos) {
 			if (do_defrag)
 				len_defraged = 0;
@@ -842,9 +739,7 @@ static int __ocfs2_move_extents_range(struct buffer_head *di_bh,
 		if (do_defrag) {
 			ocfs2_calc_extent_defrag_len(&alloc_size, &len_defraged,
 						     defrag_thresh, &skip);
-			/*
-			 * skip large extents
-			 */
+			 
 			if (skip) {
 				skip = 0;
 				goto next;
@@ -904,9 +799,7 @@ static int ocfs2_move_extents(struct ocfs2_move_extents_context *context)
 
 	inode_lock(inode);
 
-	/*
-	 * This prevents concurrent writes from other nodes
-	 */
+	 
 	status = ocfs2_rw_lock(inode, 1);
 	if (status) {
 		mlog_errno(status);
@@ -919,9 +812,7 @@ static int ocfs2_move_extents(struct ocfs2_move_extents_context *context)
 		goto out_rw_unlock;
 	}
 
-	/*
-	 * rememer ip_xattr_sem also needs to be held if necessary
-	 */
+	 
 	down_write(&OCFS2_I(inode)->ip_alloc_sem);
 
 	status = __ocfs2_move_extents_range(di_bh, context);
@@ -932,9 +823,7 @@ static int ocfs2_move_extents(struct ocfs2_move_extents_context *context)
 		goto out_inode_unlock;
 	}
 
-	/*
-	 * We update ctime for these changes
-	 */
+	 
 	handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS);
 	if (IS_ERR(handle)) {
 		status = PTR_ERR(handle);
@@ -1021,11 +910,7 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 
 	context->range = &range;
 
-	/*
-	 * ok, the default theshold for the defragmentation
-	 * is 1M, since our maximum clustersize was 1M also.
-	 * any thought?
-	 */
+	 
 	if (!range.me_threshold)
 		range.me_threshold = 1024 * 1024;
 
@@ -1038,12 +923,7 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 		if (range.me_flags & OCFS2_MOVE_EXT_FL_PART_DEFRAG)
 			context->partial = 1;
 	} else {
-		/*
-		 * first best-effort attempt to validate and adjust the goal
-		 * (physical address in block), while it can't guarantee later
-		 * operation can succeed all the time since global_bitmap may
-		 * change a bit over time.
-		 */
+		 
 
 		status = ocfs2_validate_and_adjust_move_goal(inode, &range);
 		if (status)
@@ -1054,11 +934,7 @@ int ocfs2_ioctl_move_extents(struct file *filp, void __user *argp)
 	if (status)
 		mlog_errno(status);
 out_copy:
-	/*
-	 * movement/defragmentation may end up being partially completed,
-	 * that's the reason why we need to return userspace the finished
-	 * length and new_offset even if failure happens somewhere.
-	 */
+	 
 	if (copy_to_user(argp, &range, sizeof(range)))
 		status = -EFAULT;
 

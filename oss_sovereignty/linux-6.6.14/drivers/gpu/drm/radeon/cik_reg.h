@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 #ifndef __CIK_REG_H__
 #define __CIK_REG_H__
 
@@ -49,16 +27,16 @@
 #       define CIK_ADDR_SURF_BANK_WIDTH_4         2
 #       define CIK_ADDR_SURF_BANK_WIDTH_8         3
 #       define CIK_GRPH_FORMAT(x)                 (((x) & 0x7) << 8)
-/* 8 BPP */
+ 
 #       define CIK_GRPH_FORMAT_INDEXED            0
-/* 16 BPP */
+ 
 #       define CIK_GRPH_FORMAT_ARGB1555           0
 #       define CIK_GRPH_FORMAT_ARGB565            1
 #       define CIK_GRPH_FORMAT_ARGB4444           2
 #       define CIK_GRPH_FORMAT_AI88               3
 #       define CIK_GRPH_FORMAT_MONO16             4
 #       define CIK_GRPH_FORMAT_BGRA5551           5
-/* 32 BPP */
+ 
 #       define CIK_GRPH_FORMAT_ARGB8888           0
 #       define CIK_GRPH_FORMAT_ARGB2101010        1
 #       define CIK_GRPH_FORMAT_32BPP_DIG          2
@@ -109,7 +87,7 @@
 #       define CIK_DEPTH_MICRO_TILING            2
 #       define CIK_ROTATED_MICRO_TILING          4
 
-/* CUR blocks at 0x6998, 0x7598, 0x10198, 0x10d98, 0x11998, 0x12598 */
+ 
 #define CIK_CUR_CONTROL                           0x6998
 #       define CIK_CURSOR_EN                      (1 << 0)
 #       define CIK_CURSOR_MODE(x)                 (((x) & 0x3) << 8)
@@ -151,10 +129,7 @@
 #define SQ_CMD						0x8DEC
 #define SQ_IND_DATA					0x8DE4
 
-/*
- * The TCP_WATCHx_xxxx addresses that are shown here are in dwords,
- * and that's why they are multiplied by 4
- */
+ 
 #define TCP_WATCH0_ADDR_H				(0x32A0*4)
 #define TCP_WATCH1_ADDR_H				(0x32A3*4)
 #define TCP_WATCH2_ADDR_H				(0x32A6*4)
@@ -205,7 +180,7 @@
 #define	SDMA1_CNTL					0xD810
 
 enum {
-	MAX_TRAPID = 8,		/* 3 bits in the bitfield.  */
+	MAX_TRAPID = 8,		 
 	MAX_WATCH_ADDRESSES = 4
 };
 
@@ -216,11 +191,11 @@ enum {
 	ADDRESS_WATCH_REG_MAX
 };
 
-enum {				/*  not defined in the CI/KV reg file  */
+enum {				 
 	ADDRESS_WATCH_REG_CNTL_ATC_BIT = 0x10000000UL,
 	ADDRESS_WATCH_REG_CNTL_DEFAULT_MASK = 0x00FFFFFF,
 	ADDRESS_WATCH_REG_ADDLOW_MASK_EXTENSION = 0x03000000,
-	/* extend the mask to 26 bits in order to match the low address field */
+	 
 	ADDRESS_WATCH_REG_ADDLOW_SHIFT = 6,
 	ADDRESS_WATCH_REG_ADDHIGH_MASK = 0xFFFF
 };

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *  Copyright (C) 2014 Marvell International Ltd.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -22,7 +14,7 @@
 #include <net/nfc/nci_core.h>
 #include <linux/nfc.h>
 
-/* Complete data exchange transaction and forward skb to nfc core */
+ 
 void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
 				__u8 conn_id, int err)
 {
@@ -41,17 +33,17 @@ void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
 
 	pr_debug("len %d, err %d\n", skb ? skb->len : 0, err);
 
-	/* data exchange is complete, stop the data timer */
+	 
 	del_timer_sync(&ndev->data_timer);
 	clear_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags);
 
 	if (cb) {
-		/* forward skb to nfc core */
+		 
 		cb(cb_context, skb, err);
 	} else if (skb) {
 		pr_err("no rx callback, dropping rx data...\n");
 
-		/* no waiting callback, free skb */
+		 
 		kfree_skb(skb);
 	}
 
@@ -59,7 +51,7 @@ exit:
 	clear_bit(NCI_DATA_EXCHANGE, &ndev->flags);
 }
 
-/* ----------------- NCI TX Data ----------------- */
+ 
 
 static inline void nci_push_data_hdr(struct nci_dev *ndev,
 				     __u8 conn_id,
@@ -125,10 +117,10 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 		}
 		skb_reserve(skb_frag, NCI_DATA_HDR_SIZE);
 
-		/* first, copy the data */
+		 
 		skb_put_data(skb_frag, data, frag_len);
 
-		/* second, set the header */
+		 
 		nci_push_data_hdr(ndev, conn_id, skb_frag,
 				  ((total_len == frag_len) ?
 				   (NCI_PBF_LAST) : (NCI_PBF_CONT)));
@@ -142,7 +134,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 			 frag_len, total_len);
 	}
 
-	/* queue all fragments atomically */
+	 
 	spin_lock_irqsave(&ndev->tx_q.lock, flags);
 
 	while ((skb_frag = __skb_dequeue(&frags_q)) != NULL)
@@ -150,7 +142,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 
 	spin_unlock_irqrestore(&ndev->tx_q.lock, flags);
 
-	/* free the original skb */
+	 
 	kfree_skb(skb);
 
 	goto exit;
@@ -163,7 +155,7 @@ exit:
 	return rc;
 }
 
-/* Send NCI data */
+ 
 int nci_send_data(struct nci_dev *ndev, __u8 conn_id, struct sk_buff *skb)
 {
 	const struct nci_conn_info *conn_info;
@@ -177,14 +169,14 @@ int nci_send_data(struct nci_dev *ndev, __u8 conn_id, struct sk_buff *skb)
 		goto free_exit;
 	}
 
-	/* check if the packet need to be fragmented */
+	 
 	if (skb->len <= conn_info->max_pkt_payload_len) {
-		/* no need to fragment packet */
+		 
 		nci_push_data_hdr(ndev, conn_id, skb, NCI_PBF_LAST);
 
 		skb_queue_tail(&ndev->tx_q, skb);
 	} else {
-		/* fragment packet and queue the fragments */
+		 
 		rc = nci_queue_tx_data_frags(ndev, conn_id, skb);
 		if (rc) {
 			pr_err("failed to fragment tx data packet\n");
@@ -205,7 +197,7 @@ exit:
 }
 EXPORT_SYMBOL(nci_send_data);
 
-/* ----------------- NCI RX Data ----------------- */
+ 
 
 static void nci_add_rx_data_frag(struct nci_dev *ndev,
 				 struct sk_buff *skb,
@@ -222,7 +214,7 @@ static void nci_add_rx_data_frag(struct nci_dev *ndev,
 	if (ndev->rx_data_reassembly) {
 		reassembly_len = ndev->rx_data_reassembly->len;
 
-		/* first, make enough room for the already accumulated data */
+		 
 		if (skb_cow_head(skb, reassembly_len)) {
 			pr_err("error adding room for accumulated rx data\n");
 
@@ -236,25 +228,25 @@ static void nci_add_rx_data_frag(struct nci_dev *ndev,
 			goto exit;
 		}
 
-		/* second, combine the two fragments */
+		 
 		memcpy(skb_push(skb, reassembly_len),
 		       ndev->rx_data_reassembly->data,
 		       reassembly_len);
 
-		/* third, free old reassembly */
+		 
 		kfree_skb(ndev->rx_data_reassembly);
 		ndev->rx_data_reassembly = NULL;
 	}
 
 	if (pbf == NCI_PBF_CONT) {
-		/* need to wait for next fragment, store skb and exit */
+		 
 		ndev->rx_data_reassembly = skb;
 		return;
 	}
 
 exit:
 	if (ndev->nfc_dev->rf_mode == NFC_RF_TARGET) {
-		/* Data received in Target mode, forward to nfc core */
+		 
 		err = nfc_tm_data_received(ndev->nfc_dev, skb);
 		if (err)
 			pr_err("unable to handle received data\n");
@@ -263,7 +255,7 @@ exit:
 	}
 }
 
-/* Rx Data packet */
+ 
 void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	__u8 pbf = nci_pbf(skb->data);
@@ -284,14 +276,14 @@ void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		return;
 	}
 
-	/* strip the nci data header */
+	 
 	skb_pull(skb, NCI_DATA_HDR_SIZE);
 
 	if (ndev->target_active_prot == NFC_PROTO_MIFARE ||
 	    ndev->target_active_prot == NFC_PROTO_JEWEL ||
 	    ndev->target_active_prot == NFC_PROTO_FELICA ||
 	    ndev->target_active_prot == NFC_PROTO_ISO15693) {
-		/* frame I/F => remove the status byte */
+		 
 		pr_debug("frame I/F => remove the status byte\n");
 		status = skb->data[skb->len - 1];
 		skb_trim(skb, (skb->len - 1));

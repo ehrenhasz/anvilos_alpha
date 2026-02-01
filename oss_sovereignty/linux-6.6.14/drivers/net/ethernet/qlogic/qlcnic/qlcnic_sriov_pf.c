@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -355,7 +352,7 @@ static int qlcnic_sriov_pf_cfg_vlan_filtering(struct qlcnic_adapter *adapter,
 	return err;
 }
 
-/* On configuring VF flood bit, PFD will receive traffic from all VFs */
+ 
 static int qlcnic_sriov_pf_cfg_flood(struct qlcnic_adapter *adapter)
 {
 	struct qlcnic_cmd_args cmd;
@@ -485,9 +482,7 @@ static int qlcnic_pci_sriov_disable(struct qlcnic_adapter *adapter)
 
 	qlcnic_sriov_pf_cleanup(adapter);
 
-	/* After disabling SRIOV re-init the driver in default mode
-	   configure opmode based on op_mode of function
-	 */
+	 
 	if (qlcnic_83xx_configure_opmode(adapter)) {
 		rtnl_unlock();
 		return -EIO;
@@ -643,7 +638,7 @@ static int qlcnic_pci_sriov_enable(struct qlcnic_adapter *adapter, int num_vfs)
 		netdev_info(netdev,
 			    "SR-IOV is enabled successfully on port %d\n",
 			    adapter->portnum);
-		/* Return number of vfs enabled */
+		 
 		return num_vfs;
 	}
 
@@ -1346,9 +1341,7 @@ static int qlcnic_sriov_pf_get_acl_cmd(struct qlcnic_bc_trans *trans,
 
 	cmd->rsp.arg[0] |= 1 << 25;
 
-	/* For 84xx adapter in case of PVID , PFD should send vlan mode as
-	 * QLC_NO_VLAN_MODE to VFD which is zero in mailbox response
-	 */
+	 
 	if (qlcnic_84xx_check(adapter) && mode == QLC_PVID_MODE)
 		return 0;
 

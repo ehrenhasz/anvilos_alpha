@@ -1,20 +1,14 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Module Name: acapps - common include for ACPI applications/tools
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef _ACAPPS
 #define _ACAPPS
 
 #ifdef ACPI_USE_STANDARD_HEADERS
 #include <sys/stat.h>
-#endif				/* ACPI_USE_STANDARD_HEADERS */
+#endif				 
 
-/* Common info for tool signons */
+ 
 
 #define ACPICA_NAME                 "Intel ACPI Component Architecture"
 #define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2022 Intel Corporation"
@@ -31,7 +25,7 @@
 
 #endif
 
-/* Macros for signons and file headers */
+ 
 
 #define ACPI_COMMON_SIGNON(utility_name) \
 	"\n%s\n%s version %8.8X\n%s\n\n", \
@@ -49,7 +43,7 @@
 #define ACPI_COMMON_BUILD_TIME \
 	"Build date/time: %s %s\n", __DATE__, __TIME__
 
-/* Macros for usage messages */
+ 
 
 #define ACPI_USAGE_HEADER(usage) \
 	printf ("Usage: %s\nOptions:\n", usage);
@@ -60,7 +54,7 @@
 #define ACPI_OPTION(name, description) \
 	printf ("  %-20s%s\n", name, description);
 
-/* Check for unexpected exceptions */
+ 
 
 #define ACPI_CHECK_STATUS(name, status, expected) \
 	if (status != expected) \
@@ -69,14 +63,14 @@
 			acpi_format_exception (status), #name, _acpi_module_name, __LINE__); \
 	}
 
-/* Check for unexpected non-AE_OK errors */
+ 
 
 #define ACPI_CHECK_OK(name, status)   ACPI_CHECK_STATUS (name, status, AE_OK);
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define FILE_SUFFIX_BINARY_TABLE    ".dat"	/* Needs the dot */
+#define FILE_SUFFIX_BINARY_TABLE    ".dat"	 
 
-/* acfileio */
+ 
 
 acpi_status
 ac_get_all_tables_from_file(char *filename,
@@ -89,14 +83,12 @@ u8 ac_is_file_binary(FILE * file);
 
 acpi_status ac_validate_table_header(FILE * file, long table_offset);
 
-/* Values for get_only_aml_tables */
+ 
 
 #define ACPI_GET_ONLY_AML_TABLES    TRUE
 #define ACPI_GET_ALL_TABLES         FALSE
 
-/*
- * getopt
- */
+ 
 int acpi_getopt(int argc, char **argv, char *opts);
 
 int acpi_getopt_argument(int argc, char **argv);
@@ -106,14 +98,10 @@ extern int acpi_gbl_opterr;
 extern int acpi_gbl_sub_opt_char;
 extern char *acpi_gbl_optarg;
 
-/*
- * cmfsize - Common get file size function
- */
+ 
 u32 cm_get_file_size(ACPI_FILE file);
 
-/*
- * adwalk
- */
+ 
 void
 acpi_dm_cross_reference_namespace(union acpi_parse_object *parse_tree_root,
 				  struct acpi_namespace_node *namespace_root,
@@ -132,9 +120,7 @@ void
 acpi_dm_convert_parse_objects(union acpi_parse_object *parse_tree_root,
 			      struct acpi_namespace_node *namespace_root);
 
-/*
- * adfile
- */
+ 
 acpi_status ad_initialize(void);
 
 char *fl_generate_filename(char *input_filename, char *suffix);
@@ -151,4 +137,4 @@ void
 ad_write_table(struct acpi_table_header *table,
 	       u32 length, char *table_name, char *oem_table_id);
 
-#endif				/* _ACAPPS */
+#endif				 

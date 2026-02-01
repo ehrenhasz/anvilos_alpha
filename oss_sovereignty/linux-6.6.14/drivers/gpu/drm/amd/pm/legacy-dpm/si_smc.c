@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -61,7 +39,7 @@ int amdgpu_si_copy_bytes_to_smc(struct amdgpu_device *adev,
 
 	spin_lock_irqsave(&adev->smc_idx_lock, flags);
 	while (byte_count >= 4) {
-		/* SMC address space is BE */
+		 
 		data = (src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3];
 
 		ret = si_set_smc_sram_address(adev, addr, limit);
@@ -75,7 +53,7 @@ int amdgpu_si_copy_bytes_to_smc(struct amdgpu_device *adev,
 		addr += 4;
 	}
 
-	/* RMW for the final bytes */
+	 
 	if (byte_count > 0) {
 		data = 0;
 
@@ -87,7 +65,7 @@ int amdgpu_si_copy_bytes_to_smc(struct amdgpu_device *adev,
 		extra_shift = 8 * (4 - byte_count);
 
 		while (byte_count > 0) {
-			/* SMC address space is BE */
+			 
 			data = (data << 8) + *src++;
 			byte_count--;
 		}
@@ -228,7 +206,7 @@ int amdgpu_si_load_smc_ucode(struct amdgpu_device *adev, u32 limit)
 	WREG32(SMC_IND_INDEX_0, ucode_start_address);
 	WREG32_P(SMC_IND_ACCESS_CNTL, AUTO_INCREMENT_IND_0, ~AUTO_INCREMENT_IND_0);
 	while (ucode_size >= 4) {
-		/* SMC address space is BE */
+		 
 		data = (src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3];
 
 		WREG32(SMC_IND_DATA_0, data);

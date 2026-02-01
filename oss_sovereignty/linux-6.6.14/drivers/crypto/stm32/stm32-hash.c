@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of STM32 Crypto driver for Linux.
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author(s): Lionel DEBIEVE <lionel.debieve@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/hash.h>
@@ -39,7 +34,7 @@
 #define HASH_VER			0x3F4
 #define HASH_ID				0x3F8
 
-/* Control Register */
+ 
 #define HASH_CR_INIT			BIT(2)
 #define HASH_CR_DMAE			BIT(3)
 #define HASH_CR_DATATYPE_POS		4
@@ -49,28 +44,28 @@
 #define HASH_CR_DMAA			BIT(14)
 #define HASH_CR_LKEY			BIT(16)
 
-/* Interrupt */
+ 
 #define HASH_DINIE			BIT(0)
 #define HASH_DCIE			BIT(1)
 
-/* Interrupt Mask */
+ 
 #define HASH_MASK_CALC_COMPLETION	BIT(0)
 #define HASH_MASK_DATA_INPUT		BIT(1)
 
-/* Status Flags */
+ 
 #define HASH_SR_DATA_INPUT_READY	BIT(0)
 #define HASH_SR_OUTPUT_READY		BIT(1)
 #define HASH_SR_DMA_ACTIVE		BIT(2)
 #define HASH_SR_BUSY			BIT(3)
 
-/* STR Register */
+ 
 #define HASH_STR_NBLW_MASK		GENMASK(4, 0)
 #define HASH_STR_DCAL			BIT(8)
 
-/* HWCFGR Register */
+ 
 #define HASH_HWCFG_DMA_MASK		GENMASK(3, 0)
 
-/* Context swap register */
+ 
 #define HASH_CSR_NB_SHA256_HMAC		54
 #define HASH_CSR_NB_SHA256		38
 #define HASH_CSR_NB_SHA512_HMAC		103
@@ -147,7 +142,7 @@ struct stm32_hash_state {
 
 	u8 buffer[HASH_BUFLEN] __aligned(4);
 
-	/* hash state */
+	 
 	u32			hw_context[3 + HASH_CSR_NB_MAX];
 };
 
@@ -158,7 +153,7 @@ struct stm32_hash_request_ctx {
 	u8 digest[SHA512_DIGEST_SIZE] __aligned(sizeof(u32));
 	size_t			digcnt;
 
-	/* DMA */
+	 
 	struct scatterlist	*sg;
 	unsigned int		offset;
 	unsigned int		total;
@@ -211,7 +206,7 @@ struct stm32_hash_dev {
 
 struct stm32_hash_drv {
 	struct list_head	dev_list;
-	spinlock_t		lock; /* List protection access */
+	spinlock_t		lock;  
 };
 
 static struct stm32_hash_drv stm32_hash = {
@@ -236,7 +231,7 @@ static inline int stm32_hash_wait_busy(struct stm32_hash_dev *hdev)
 {
 	u32 status;
 
-	/* The Ux500 lacks the special status register, we poll the DCAL bit instead */
+	 
 	if (!hdev->pdata->has_sr)
 		return readl_relaxed_poll_timeout(hdev->io_base + HASH_STR, status,
 						  !(status & HASH_STR_DCAL), 10, 10000);
@@ -319,10 +314,7 @@ static void stm32_hash_write_ctrl(struct stm32_hash_dev *hdev)
 
 		hdev->flags |= HASH_FLAGS_INIT;
 
-		/*
-		 * After first block + 1 words are fill up,
-		 * we only need to fill 1 block to start partial computation
-		 */
+		 
 		rctx->state.blocklen -= sizeof(u32);
 
 		dev_dbg(hdev->dev, "Write Control %x\n", reg);
@@ -376,7 +368,7 @@ static int stm32_hash_xmit_cpu(struct stm32_hash_dev *hdev,
 	if (final) {
 		hdev->flags |= HASH_FLAGS_FINAL;
 
-		/* Do not process empty messages if hw is buggy. */
+		 
 		if (!(hdev->flags & HASH_FLAGS_INIT) && !length &&
 		    hdev->pdata->broken_emptymsg) {
 			state->flags |= HASH_FLAGS_EMPTY;
@@ -1037,7 +1029,7 @@ static int stm32_hash_one_request(struct crypto_engine *engine, void *areq)
 	else if (rctx->op == HASH_OP_FINAL)
 		err = stm32_hash_final_req(hdev);
 
-	/* If we have an IRQ, wait for that, else poll for completion */
+	 
 	if (err == -EINPROGRESS && hdev->polled) {
 		if (stm32_hash_wait_busy(hdev))
 			err = -ETIMEDOUT;
@@ -1048,7 +1040,7 @@ static int stm32_hash_one_request(struct crypto_engine *engine, void *areq)
 	}
 
 	if (err != -EINPROGRESS)
-	/* done task will not finish it, so do it here */
+	 
 		stm32_hash_finish_req(req, err);
 
 	return 0;
@@ -1163,7 +1155,7 @@ static int stm32_hash_init_fallback(struct crypto_tfm *tfm)
 	const char *name = crypto_tfm_alg_name(tfm);
 	struct crypto_shash *xtfm;
 
-	/* The fallback is only needed on Ux500 */
+	 
 	if (!hdev->pdata->ux500)
 		return 0;
 
@@ -1241,7 +1233,7 @@ static irqreturn_t stm32_hash_irq_thread(int irq, void *dev_id)
 	return IRQ_HANDLED;
 
 finish:
-	/* Finish current request */
+	 
 	stm32_hash_finish_req(hdev->req, 0);
 
 	return IRQ_HANDLED;
@@ -1255,7 +1247,7 @@ static irqreturn_t stm32_hash_irq_handler(int irq, void *dev_id)
 	reg = stm32_hash_read(hdev, HASH_SR);
 	if (reg & HASH_SR_OUTPUT_READY) {
 		hdev->flags |= HASH_FLAGS_OUTPUT_READY;
-		/* Disable IT*/
+		 
 		stm32_hash_write(hdev, HASH_IMR, 0);
 		return IRQ_WAKE_THREAD;
 	}
@@ -2119,7 +2111,7 @@ static int stm32_hash_probe(struct platform_device *pdev)
 	list_add_tail(&hdev->list, &stm32_hash.dev_list);
 	spin_unlock(&stm32_hash.lock);
 
-	/* Initialize crypto engine */
+	 
 	hdev->engine = crypto_engine_alloc_init(dev, 1);
 	if (!hdev->engine) {
 		ret = -ENOMEM;
@@ -2131,12 +2123,12 @@ static int stm32_hash_probe(struct platform_device *pdev)
 		goto err_engine_start;
 
 	if (hdev->pdata->ux500)
-		/* FIXME: implement DMA mode for Ux500 */
+		 
 		hdev->dma_mode = 0;
 	else
 		hdev->dma_mode = stm32_hash_read(hdev, HASH_HWCFGR) & HASH_HWCFG_DMA_MASK;
 
-	/* Register algos */
+	 
 	ret = stm32_hash_register_algs(hdev);
 	if (ret)
 		goto err_algs;

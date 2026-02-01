@@ -1,64 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * resolve_btfids scans ELF object for .BTF_ids section and resolves
- * its symbols with BTF ID values.
- *
- * Each symbol points to 4 bytes data and is expected to have
- * following name syntax:
- *
- * __BTF_ID__<type>__<symbol>[__<id>]
- *
- * type is:
- *
- *   func    - lookup BTF_KIND_FUNC symbol with <symbol> name
- *             and store its ID into the data:
- *
- *             __BTF_ID__func__vfs_close__1:
- *             .zero 4
- *
- *   struct  - lookup BTF_KIND_STRUCT symbol with <symbol> name
- *             and store its ID into the data:
- *
- *             __BTF_ID__struct__sk_buff__1:
- *             .zero 4
- *
- *   union   - lookup BTF_KIND_UNION symbol with <symbol> name
- *             and store its ID into the data:
- *
- *             __BTF_ID__union__thread_union__1:
- *             .zero 4
- *
- *   typedef - lookup BTF_KIND_TYPEDEF symbol with <symbol> name
- *             and store its ID into the data:
- *
- *             __BTF_ID__typedef__pid_t__1:
- *             .zero 4
- *
- *   set     - store symbol size into first 4 bytes and sort following
- *             ID list
- *
- *             __BTF_ID__set__list:
- *             .zero 4
- *             list:
- *             __BTF_ID__func__vfs_getattr__3:
- *             .zero 4
- *             __BTF_ID__func__vfs_fallocate__4:
- *             .zero 4
- *
- *   set8    - store symbol size into first 4 bytes and sort following
- *             ID list
- *
- *             __BTF_ID__set8__list:
- *             .zero 8
- *             list:
- *             __BTF_ID__func__vfs_getattr__3:
- *             .zero 4
- *	       .word (1 << 0) | (1 << 2)
- *             __BTF_ID__func__vfs_fallocate__5:
- *             .zero 4
- *	       .word (1 << 3) | (1 << 1) | (1 << 2)
- */
+
+ 
 
 #define  _GNU_SOURCE
 #include <stdio.h>
@@ -215,11 +157,7 @@ btf_id__add(struct rb_root *root, char *name, bool unique)
 
 static char *get_id(const char *prefix_end)
 {
-	/*
-	 * __BTF_ID__func__vfs_truncate__0
-	 * prefix_end =  ^
-	 * pos        =    ^
-	 */
+	 
 	int len = strlen(prefix_end);
 	int pos = sizeof("__") - 1;
 	char *p, *id;
@@ -229,12 +167,7 @@ static char *get_id(const char *prefix_end)
 
 	id = strdup(prefix_end + pos);
 	if (id) {
-		/*
-		 * __BTF_ID__func__vfs_truncate__0
-		 * id =            ^
-		 *
-		 * cut the unique id part
-		 */
+		 
 		p = strrchr(id, '_');
 		p--;
 		if (*p != '_') {
@@ -248,11 +181,7 @@ static char *get_id(const char *prefix_end)
 
 static struct btf_id *add_set(struct object *obj, char *name, bool is_set8)
 {
-	/*
-	 * __BTF_ID__set__name
-	 * name =    ^
-	 * id   =         ^
-	 */
+	 
 	char *id = name + (is_set8 ? sizeof(BTF_SET8 "__") : sizeof(BTF_SET "__")) - 1;
 	int len = strlen(name);
 
@@ -277,21 +206,12 @@ static struct btf_id *add_symbol(struct rb_root *root, char *name, size_t size)
 	return btf_id__add(root, id, false);
 }
 
-/* Older libelf.h and glibc elf.h might not yet define the ELF compression types. */
+ 
 #ifndef SHF_COMPRESSED
-#define SHF_COMPRESSED (1 << 11) /* Section with compressed data. */
+#define SHF_COMPRESSED (1 << 11)  
 #endif
 
-/*
- * The data of compressed section should be aligned to 4
- * (for 32bit) or 8 (for 64 bit) bytes. The binutils ld
- * sets sh_addralign to 1, which makes libelf fail with
- * misaligned section error during the update:
- *    FAILED elf_update(WRITE): invalid section alignment
- *
- * While waiting for ld fix, we fix the compressed sections
- * sh_addralign value manualy.
- */
+ 
 static int compressed_section_fix(Elf *elf, Elf_Scn *scn, GElf_Shdr *sh)
 {
 	int expected = gelf_getclass(elf) == ELFCLASS32 ? 4 : 8;
@@ -350,10 +270,7 @@ static int elf_collect(struct object *obj)
 		return -1;
 	}
 
-	/*
-	 * Scan all the elf sections and look for save data
-	 * from .BTF_ids section and symbols.
-	 */
+	 
 	while ((scn = elf_nextscn(elf, scn)) != NULL) {
 		Elf_Data *data;
 		GElf_Shdr sh;
@@ -416,10 +333,7 @@ static int symbols_collect(struct object *obj)
 
 	n = sh.sh_size / sh.sh_entsize;
 
-	/*
-	 * Scan symbols and look for the ones starting with
-	 * __BTF_ID__* over .BTF_ids section.
-	 */
+	 
 	for (i = 0; i < n; i++) {
 		char *prefix;
 		struct btf_id *id;
@@ -437,48 +351,37 @@ static int symbols_collect(struct object *obj)
 		if (!is_btf_id(name))
 			continue;
 
-		/*
-		 * __BTF_ID__TYPE__vfs_truncate__0
-		 * prefix =  ^
-		 */
+		 
 		prefix = name + sizeof(BTF_ID) - 1;
 
-		/* struct */
+		 
 		if (!strncmp(prefix, BTF_STRUCT, sizeof(BTF_STRUCT) - 1)) {
 			obj->nr_structs++;
 			id = add_symbol(&obj->structs, prefix, sizeof(BTF_STRUCT) - 1);
-		/* union  */
+		 
 		} else if (!strncmp(prefix, BTF_UNION, sizeof(BTF_UNION) - 1)) {
 			obj->nr_unions++;
 			id = add_symbol(&obj->unions, prefix, sizeof(BTF_UNION) - 1);
-		/* typedef */
+		 
 		} else if (!strncmp(prefix, BTF_TYPEDEF, sizeof(BTF_TYPEDEF) - 1)) {
 			obj->nr_typedefs++;
 			id = add_symbol(&obj->typedefs, prefix, sizeof(BTF_TYPEDEF) - 1);
-		/* func */
+		 
 		} else if (!strncmp(prefix, BTF_FUNC, sizeof(BTF_FUNC) - 1)) {
 			obj->nr_funcs++;
 			id = add_symbol(&obj->funcs, prefix, sizeof(BTF_FUNC) - 1);
-		/* set8 */
+		 
 		} else if (!strncmp(prefix, BTF_SET8, sizeof(BTF_SET8) - 1)) {
 			id = add_set(obj, prefix, true);
-			/*
-			 * SET8 objects store list's count, which is encoded
-			 * in symbol's size, together with 'cnt' field hence
-			 * that - 1.
-			 */
+			 
 			if (id) {
 				id->cnt = sym.st_size / sizeof(uint64_t) - 1;
 				id->is_set8 = true;
 			}
-		/* set */
+		 
 		} else if (!strncmp(prefix, BTF_SET, sizeof(BTF_SET) - 1)) {
 			id = add_set(obj, prefix, false);
-			/*
-			 * SET objects store list's count, which is encoded
-			 * in symbol's size, together with 'cnt' field hence
-			 * that - 1.
-			 */
+			 
 			if (id) {
 				id->cnt = sym.st_size / sizeof(int) - 1;
 				id->is_set = true;
@@ -534,9 +437,7 @@ static int symbols_resolve(struct object *obj)
 	err = -1;
 	nr_types = btf__type_cnt(btf);
 
-	/*
-	 * Iterate all the BTF types and search for collected symbol IDs.
-	 */
+	 
 	for (type_id = 1; type_id < nr_types; type_id++) {
 		const struct btf_type *type;
 		struct rb_root *root;
@@ -598,7 +499,7 @@ static int id_patch(struct object *obj, struct btf_id *id)
 	int *ptr = data->d_buf;
 	int i;
 
-	/* For set, set8, id->id may be 0 */
+	 
 	if (!id->id && !id->is_set && !id->is_set8)
 		pr_err("WARN: resolve_btfids: unresolved symbol %s\n", id->name);
 
@@ -663,7 +564,7 @@ static int sets_patch(struct object *obj)
 		addr = id->addr[0];
 		idx  = addr - obj->efile.idlist_addr;
 
-		/* sets are unique */
+		 
 		if (id->addr_cnt != 1) {
 			pr_err("FAILED malformed data for set '%s'\n",
 				id->name);
@@ -698,7 +599,7 @@ static int symbols_patch(struct object *obj)
 	if (sets_patch(obj))
 		return -1;
 
-	/* Set type to ensure endian translation occurs. */
+	 
 	obj->efile.idlist->d_type = ELF_T_WORD;
 
 	elf_flagdata(obj->efile.idlist, ELF_C_SET, ELF_F_DIRTY);
@@ -753,10 +654,7 @@ int main(int argc, const char **argv)
 	if (elf_collect(&obj))
 		goto out;
 
-	/*
-	 * We did not find .BTF_ids section or symbols section,
-	 * nothing to do..
-	 */
+	 
 	if (obj.efile.idlist_shndx == -1 ||
 	    obj.efile.symbols_shndx == -1) {
 		pr_debug("Cannot find .BTF_ids or symbols sections, nothing to do\n");

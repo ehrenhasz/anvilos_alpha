@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -16,7 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* NANDc reg offsets */
+ 
 #define	NAND_FLASH_CMD			0x00
 #define	NAND_ADDR0			0x04
 #define	NAND_ADDR1			0x08
@@ -53,30 +51,30 @@
 #define	NAND_READ_LOCATION_LAST_CW_2	0xf48
 #define	NAND_READ_LOCATION_LAST_CW_3	0xf4c
 
-/* dummy register offsets, used by write_reg_dma */
+ 
 #define	NAND_DEV_CMD1_RESTORE		0xdead
 #define	NAND_DEV_CMD_VLD_RESTORE	0xbeef
 
-/* NAND_FLASH_CMD bits */
+ 
 #define	PAGE_ACC			BIT(4)
 #define	LAST_PAGE			BIT(5)
 
-/* NAND_FLASH_CHIP_SELECT bits */
+ 
 #define	NAND_DEV_SEL			0
 #define	DM_EN				BIT(2)
 
-/* NAND_FLASH_STATUS bits */
+ 
 #define	FS_OP_ERR			BIT(4)
 #define	FS_READY_BSY_N			BIT(5)
 #define	FS_MPU_ERR			BIT(8)
 #define	FS_DEVICE_STS_ERR		BIT(16)
 #define	FS_DEVICE_WP			BIT(23)
 
-/* NAND_BUFFER_STATUS bits */
+ 
 #define	BS_UNCORRECTABLE_BIT		BIT(8)
 #define	BS_CORRECTABLE_ERR_MSK		0x1f
 
-/* NAND_DEVn_CFG0 bits */
+ 
 #define	DISABLE_STATUS_AFTER_WRITE	4
 #define	CW_PER_PAGE			6
 #define	UD_SIZE_BYTES			9
@@ -88,7 +86,7 @@
 #define	STATUS_BFR_READ			30
 #define	SET_RD_MODE_AFTER_STATUS	31
 
-/* NAND_DEVn_CFG0 bits */
+ 
 #define	DEV0_CFG1_ECC_DISABLE		0
 #define	WIDE_FLASH			1
 #define	NAND_RECOVERY_CYCLES		2
@@ -98,7 +96,7 @@
 #define	WR_RD_BSY_GAP			17
 #define	ENABLE_BCH_ECC			27
 
-/* NAND_DEV0_ECC_CFG bits */
+ 
 #define	ECC_CFG_ECC_DISABLE		0
 #define	ECC_SW_RESET			1
 #define	ECC_MODE			4
@@ -107,20 +105,20 @@
 #define	ECC_NUM_DATA_BYTES_MASK		GENMASK(25, 16)
 #define	ECC_FORCE_CLK_OPEN		30
 
-/* NAND_DEV_CMD1 bits */
+ 
 #define	READ_ADDR			0
 
-/* NAND_DEV_CMD_VLD bits */
+ 
 #define	READ_START_VLD			BIT(0)
 #define	READ_STOP_VLD			BIT(1)
 #define	WRITE_START_VLD			BIT(2)
 #define	ERASE_START_VLD			BIT(3)
 #define	SEQ_READ_START_VLD		BIT(4)
 
-/* NAND_EBI2_ECC_BUF_CFG bits */
+ 
 #define	NUM_STEPS			0
 
-/* NAND_ERASED_CW_DETECT_CFG bits */
+ 
 #define	ERASED_CW_ECC_MASK		1
 #define	AUTO_DETECT_RES			0
 #define	MASK_ECC			BIT(ERASED_CW_ECC_MASK)
@@ -129,7 +127,7 @@
 #define	CLR_ERASED_PAGE_DET		(RESET_ERASED_DET | MASK_ECC)
 #define	SET_ERASED_PAGE_DET		(ACTIVE_ERASED_DET | MASK_ECC)
 
-/* NAND_ERASED_CW_DETECT_STATUS bits */
+ 
 #define	PAGE_ALL_ERASED			BIT(7)
 #define	CODEWORD_ALL_ERASED		BIT(6)
 #define	PAGE_ERASED			BIT(5)
@@ -137,18 +135,18 @@
 #define	ERASED_PAGE			(PAGE_ALL_ERASED | PAGE_ERASED)
 #define	ERASED_CW			(CODEWORD_ALL_ERASED | CODEWORD_ERASED)
 
-/* NAND_READ_LOCATION_n bits */
+ 
 #define READ_LOCATION_OFFSET		0
 #define READ_LOCATION_SIZE		16
 #define READ_LOCATION_LAST		31
 
-/* Version Mask */
+ 
 #define	NAND_VERSION_MAJOR_MASK		0xf0000000
 #define	NAND_VERSION_MAJOR_SHIFT	28
 #define	NAND_VERSION_MINOR_MASK		0x0fff0000
 #define	NAND_VERSION_MINOR_SHIFT	16
 
-/* NAND OP_CMDs */
+ 
 #define	OP_PAGE_READ			0x2
 #define	OP_PAGE_READ_WITH_ECC		0x3
 #define	OP_PAGE_READ_WITH_ECC_SPARE	0x4
@@ -161,29 +159,23 @@
 #define	OP_FETCH_ID			0xb
 #define	OP_RESET_DEVICE			0xd
 
-/* Default Value for NAND_DEV_CMD_VLD */
+ 
 #define NAND_DEV_CMD_VLD_VAL		(READ_START_VLD | WRITE_START_VLD | \
 					 ERASE_START_VLD | SEQ_READ_START_VLD)
 
-/* NAND_CTRL bits */
+ 
 #define	BAM_MODE_EN			BIT(0)
 
-/*
- * the NAND controller performs reads/writes with ECC in 516 byte chunks.
- * the driver calls the chunks 'step' or 'codeword' interchangeably
- */
+ 
 #define	NANDC_STEP_SIZE			512
 
-/*
- * the largest page size we support is 8K, this will have 16 steps/codewords
- * of 512 bytes each
- */
+ 
 #define	MAX_NUM_STEPS			(SZ_8K / NANDC_STEP_SIZE)
 
-/* we read at most 3 registers per codeword scan */
+ 
 #define	MAX_REG_RD			(3 * MAX_NUM_STEPS)
 
-/* ECC modes supported by the controller */
+ 
 #define	ECC_NONE	BIT(0)
 #define	ECC_RS_4BIT	BIT(1)
 #define	ECC_BCH_4BIT	BIT(2)
@@ -200,16 +192,13 @@ nandc_set_reg(chip, reg,			\
 	      ((cw_offset) << READ_LOCATION_OFFSET) |		\
 	      ((read_size) << READ_LOCATION_SIZE) |			\
 	      ((is_last_read_loc) << READ_LOCATION_LAST))
-/*
- * Returns the actual register address for all NAND_DEV_ registers
- * (i.e. NAND_DEV_CMD0, NAND_DEV_CMD1, NAND_DEV_CMD2 and NAND_DEV_CMD_VLD)
- */
+ 
 #define dev_cmd_reg_addr(nandc, reg) ((nandc)->props->dev_cmd_reg_start + (reg))
 
-/* Returns the NAND register physical address */
+ 
 #define nandc_reg_phys(chip, offset) ((chip)->base_phys + (offset))
 
-/* Returns the dma address for reg read buffer */
+ 
 #define reg_buf_dma_addr(chip, vaddr) \
 	((chip)->reg_read_dma + \
 	((u8 *)(vaddr) - (u8 *)(chip)->reg_read_buf))
@@ -220,46 +209,19 @@ nandc_set_reg(chip, reg,			\
 
 #define QPIC_NAND_COMPLETION_TIMEOUT	msecs_to_jiffies(2000)
 
-/*
- * Flags used in DMA descriptor preparation helper functions
- * (i.e. read_reg_dma/write_reg_dma/read_data_dma/write_data_dma)
- */
-/* Don't set the EOT in current tx BAM sgl */
+ 
+ 
 #define NAND_BAM_NO_EOT			BIT(0)
-/* Set the NWD flag in current BAM sgl */
+ 
 #define NAND_BAM_NWD			BIT(1)
-/* Finish writing in the current BAM sgl and start writing in another BAM sgl */
+ 
 #define NAND_BAM_NEXT_SGL		BIT(2)
-/*
- * Erased codeword status is being used two times in single transfer so this
- * flag will determine the current value of erased codeword status register
- */
+ 
 #define NAND_ERASED_CW_SET		BIT(4)
 
 #define MAX_ADDRESS_CYCLE		5
 
-/*
- * This data type corresponds to the BAM transaction which will be used for all
- * NAND transfers.
- * @bam_ce - the array of BAM command elements
- * @cmd_sgl - sgl for NAND BAM command pipe
- * @data_sgl - sgl for NAND BAM consumer/producer pipe
- * @last_data_desc - last DMA desc in data channel (tx/rx).
- * @last_cmd_desc - last DMA desc in command channel.
- * @txn_done - completion for NAND transfer.
- * @bam_ce_pos - the index in bam_ce which is available for next sgl
- * @bam_ce_start - the index in bam_ce which marks the start position ce
- *		   for current sgl. It will be used for size calculation
- *		   for current sgl
- * @cmd_sgl_pos - current index in command sgl.
- * @cmd_sgl_start - start index in command sgl.
- * @tx_sgl_pos - current index in data sgl for tx.
- * @tx_sgl_start - start index in data sgl for tx.
- * @rx_sgl_pos - current index in data sgl for rx.
- * @rx_sgl_start - start index in data sgl for rx.
- * @wait_second_completion - wait for second DMA desc completion before making
- *			     the NAND transfer completion.
- */
+ 
 struct bam_transaction {
 	struct bam_cmd_element *bam_ce;
 	struct scatterlist *cmd_sgl;
@@ -278,17 +240,7 @@ struct bam_transaction {
 	bool wait_second_completion;
 };
 
-/*
- * This data type corresponds to the nand dma descriptor
- * @dma_desc - low level DMA engine descriptor
- * @list - list for desc_info
- *
- * @adm_sgl - sgl which will be used for single sgl dma descriptor. Only used by
- *	      ADM
- * @bam_sgl - sgl which will be used for dma descriptor. Only used by BAM
- * @sgl_cnt - number of SGL in bam_sgl. Only used by BAM
- * @dir - DMA transfer direction
- */
+ 
 struct desc_info {
 	struct dma_async_tx_descriptor *dma_desc;
 	struct list_head node;
@@ -303,10 +255,7 @@ struct desc_info {
 	enum dma_data_direction dir;
 };
 
-/*
- * holds the current register values that we want to write. acts as a contiguous
- * chunk of memory which we use to write the controller registers through DMA.
- */
+ 
 struct nandc_regs {
 	__le32 cmd;
 	__le32 addr0;
@@ -341,54 +290,7 @@ struct nandc_regs {
 	__le32 erased_cw_detect_cfg_set;
 };
 
-/*
- * NAND controller data struct
- *
- * @dev:			parent device
- *
- * @base:			MMIO base
- *
- * @core_clk:			controller clock
- * @aon_clk:			another controller clock
- *
- * @regs:			a contiguous chunk of memory for DMA register
- *				writes. contains the register values to be
- *				written to controller
- *
- * @props:			properties of current NAND controller,
- *				initialized via DT match data
- *
- * @controller:			base controller structure
- * @host_list:			list containing all the chips attached to the
- *				controller
- *
- * @chan:			dma channel
- * @cmd_crci:			ADM DMA CRCI for command flow control
- * @data_crci:			ADM DMA CRCI for data flow control
- *
- * @desc_list:			DMA descriptor list (list of desc_infos)
- *
- * @data_buffer:		our local DMA buffer for page read/writes,
- *				used when we can't use the buffer provided
- *				by upper layers directly
- * @reg_read_buf:		local buffer for reading back registers via DMA
- *
- * @base_phys:			physical base address of controller registers
- * @base_dma:			dma base address of controller registers
- * @reg_read_dma:		contains dma address for register read buffer
- *
- * @buf_size/count/start:	markers for chip->legacy.read_buf/write_buf
- *				functions
- * @max_cwperpage:		maximum QPIC codewords required. calculated
- *				from all connected NAND devices pagesize
- *
- * @reg_read_pos:		marker for data read in reg_read_buf
- *
- * @cmd1/vld:			some fixed controller register values
- *
- * @exec_opwrite:		flag to select correct number of code word
- *				while reading status
- */
+ 
 struct qcom_nand_controller {
 	struct device *dev;
 
@@ -406,14 +308,14 @@ struct qcom_nand_controller {
 	struct list_head host_list;
 
 	union {
-		/* will be used only by QPIC for BAM DMA */
+		 
 		struct {
 			struct dma_chan *tx_chan;
 			struct dma_chan *rx_chan;
 			struct dma_chan *cmd_chan;
 		};
 
-		/* will be used only by EBI2 for ADM DMA */
+		 
 		struct {
 			struct dma_chan *chan;
 			unsigned int cmd_crci;
@@ -441,31 +343,13 @@ struct qcom_nand_controller {
 	bool exec_opwrite;
 };
 
-/*
- * NAND special boot partitions
- *
- * @page_offset:		offset of the partition where spare data is not protected
- *				by ECC (value in pages)
- * @page_offset:		size of the partition where spare data is not protected
- *				by ECC (value in pages)
- */
+ 
 struct qcom_nand_boot_partition {
 	u32 page_offset;
 	u32 page_size;
 };
 
-/*
- * Qcom op for each exec_op transfer
- *
- * @data_instr:			data instruction pointer
- * @data_instr_idx:		data instruction index
- * @rdy_timeout_ms:		wait ready timeout in ms
- * @rdy_delay_ns:		Additional delay in ns
- * @addr1_reg:			Address1 register value
- * @addr2_reg:			Address2 register value
- * @cmd_reg:			CMD register value
- * @flag:			flag for misc instruction
- */
+ 
 struct qcom_op {
 	const struct nand_op_instr *data_instr;
 	unsigned int data_instr_idx;
@@ -477,43 +361,7 @@ struct qcom_op {
 	u8 flag;
 };
 
-/*
- * NAND chip structure
- *
- * @boot_partitions:		array of boot partitions where offset and size of the
- *				boot partitions are stored
- *
- * @chip:			base NAND chip structure
- * @node:			list node to add itself to host_list in
- *				qcom_nand_controller
- *
- * @nr_boot_partitions:		count of the boot partitions where spare data is not
- *				protected by ECC
- *
- * @cs:				chip select value for this chip
- * @cw_size:			the number of bytes in a single step/codeword
- *				of a page, consisting of all data, ecc, spare
- *				and reserved bytes
- * @cw_data:			the number of bytes within a codeword protected
- *				by ECC
- * @ecc_bytes_hw:		ECC bytes used by controller hardware for this
- *				chip
- *
- * @last_command:		keeps track of last command on this chip. used
- *				for reading correct status
- *
- * @cfg0, cfg1, cfg0_raw..:	NANDc register configurations needed for
- *				ecc/non-ecc mode for the current nand flash
- *				device
- *
- * @status:			value to be returned if NAND_CMD_STATUS command
- *				is executed
- * @codeword_fixup:		keep track of the current layout used by
- *				the driver for read/write operation.
- * @use_ecc:			request the controller to use ECC for the
- *				upcoming read/write
- * @bch_enabled:		flag to tell whether BCH ECC mode is used
- */
+ 
 struct qcom_nand_host {
 	struct qcom_nand_boot_partition *boot_partitions;
 
@@ -544,16 +392,7 @@ struct qcom_nand_host {
 	bool bch_enabled;
 };
 
-/*
- * This data type corresponds to the NAND controller properties which varies
- * among different NAND controllers.
- * @ecc_modes - ecc mode for NAND
- * @dev_cmd_reg_start - NAND_DEV_CMD_* registers starting offset
- * @is_bam - whether NAND controller is using BAM
- * @is_qpic - whether NAND CTRL is part of qpic IP
- * @qpic_v2 - flag to indicate QPIC IP version 2
- * @use_codeword_fixup - whether NAND has different layout for boot partitions
- */
+ 
 struct qcom_nandc_props {
 	u32 ecc_modes;
 	u32 dev_cmd_reg_start;
@@ -563,7 +402,7 @@ struct qcom_nandc_props {
 	bool use_codeword_fixup;
 };
 
-/* Frees the BAM transaction memory */
+ 
 static void free_bam_transaction(struct qcom_nand_controller *nandc)
 {
 	struct bam_transaction *bam_txn = nandc->bam_txn;
@@ -571,7 +410,7 @@ static void free_bam_transaction(struct qcom_nand_controller *nandc)
 	devm_kfree(nandc->dev, bam_txn);
 }
 
-/* Allocates and Initializes the BAM transaction */
+ 
 static struct bam_transaction *
 alloc_bam_transaction(struct qcom_nand_controller *nandc)
 {
@@ -608,7 +447,7 @@ alloc_bam_transaction(struct qcom_nand_controller *nandc)
 	return bam_txn;
 }
 
-/* Clears the BAM transaction indexes */
+ 
 static void clear_bam_transaction(struct qcom_nand_controller *nandc)
 {
 	struct bam_transaction *bam_txn = nandc->bam_txn;
@@ -635,18 +474,12 @@ static void clear_bam_transaction(struct qcom_nand_controller *nandc)
 	reinit_completion(&bam_txn->txn_done);
 }
 
-/* Callback for DMA descriptor completion */
+ 
 static void qpic_bam_dma_done(void *data)
 {
 	struct bam_transaction *bam_txn = data;
 
-	/*
-	 * In case of data transfer with NAND, 2 callbacks will be generated.
-	 * One for command channel and another one for data channel.
-	 * If current transaction has data descriptors
-	 * (i.e. wait_second_completion is true), then set this to false
-	 * and wait for second DMA descriptor completion.
-	 */
+	 
 	if (bam_txn->wait_second_completion)
 		bam_txn->wait_second_completion = false;
 	else
@@ -761,13 +594,13 @@ static void nandc_set_reg(struct nand_chip *chip, int offset,
 		*reg = cpu_to_le32(val);
 }
 
-/* Helper to check the code word, whether it is last cw or not */
+ 
 static bool qcom_nandc_is_last_cw(struct nand_ecc_ctrl *ecc, int cw)
 {
 	return cw == (ecc->steps - 1);
 }
 
-/* helper to configure location register values */
+ 
 static void nandc_set_read_loc(struct nand_chip *chip, int cw, int reg,
 			       int cw_offset, int read_size, int is_last_read_loc)
 {
@@ -788,7 +621,7 @@ static void nandc_set_read_loc(struct nand_chip *chip, int cw, int reg,
 				read_size, is_last_read_loc);
 }
 
-/* helper to configure address register values */
+ 
 static void set_address(struct qcom_nand_host *host, u16 column, int page)
 {
 	struct nand_chip *chip = &host->chip;
@@ -800,14 +633,7 @@ static void set_address(struct qcom_nand_host *host, u16 column, int page)
 	nandc_set_reg(chip, NAND_ADDR1, page >> 16 & 0xff);
 }
 
-/*
- * update_rw_regs:	set up read/write register values, these will be
- *			written to the NAND controller registers via DMA
- *
- * @num_cw:		number of steps for the read/write operation
- * @read:		read or write operation
- * @cw	:		which code word
- */
+ 
 static void update_rw_regs(struct qcom_nand_host *host, int num_cw, bool read, int cw)
 {
 	struct nand_chip *chip = &host->chip;
@@ -852,11 +678,7 @@ static void update_rw_regs(struct qcom_nand_host *host, int num_cw, bool read, i
 				   host->cw_data : host->cw_size, 1);
 }
 
-/*
- * Maps the scatter gather list for DMA transfer and forms the DMA descriptor
- * for BAM. This descriptor will be added in the NAND DMA descriptor queue
- * which will be submitted to DMA engine.
- */
+ 
 static int prepare_bam_async_desc(struct qcom_nand_controller *nandc,
 				  struct dma_chan *chan,
 				  unsigned long flags)
@@ -916,7 +738,7 @@ static int prepare_bam_async_desc(struct qcom_nand_controller *nandc,
 
 	desc->dma_desc = dma_desc;
 
-	/* update last data/command descriptor */
+	 
 	if (chan == nandc->cmd_chan)
 		bam_txn->last_cmd_desc = dma_desc;
 	else
@@ -927,15 +749,7 @@ static int prepare_bam_async_desc(struct qcom_nand_controller *nandc,
 	return 0;
 }
 
-/*
- * Prepares the command descriptor for BAM DMA which will be used for NAND
- * register reads and writes. The command descriptor requires the command
- * to be formed in command element type so this function uses the command
- * element from bam transaction ce array and fills the same with required
- * data. A single SGL can contain multiple command elements so
- * NAND_BAM_NEXT_SGL will be used for starting the separate SGL
- * after the current command element.
- */
+ 
 static int prep_bam_dma_desc_cmd(struct qcom_nand_controller *nandc, bool read,
 				 int reg_off, const void *vaddr,
 				 int size, unsigned int flags)
@@ -947,7 +761,7 @@ static int prep_bam_dma_desc_cmd(struct qcom_nand_controller *nandc, bool read,
 
 	bam_ce_buffer = &bam_txn->bam_ce[bam_txn->bam_ce_pos];
 
-	/* fill the command desc */
+	 
 	for (i = 0; i < size; i++) {
 		if (read)
 			bam_prep_ce(&bam_ce_buffer[i],
@@ -964,7 +778,7 @@ static int prep_bam_dma_desc_cmd(struct qcom_nand_controller *nandc, bool read,
 
 	bam_txn->bam_ce_pos += size;
 
-	/* use the separate sgl after this command */
+	 
 	if (flags & NAND_BAM_NEXT_SGL) {
 		bam_ce_buffer = &bam_txn->bam_ce[bam_txn->bam_ce_start];
 		bam_ce_size = (bam_txn->bam_ce_pos -
@@ -987,10 +801,7 @@ static int prep_bam_dma_desc_cmd(struct qcom_nand_controller *nandc, bool read,
 	return 0;
 }
 
-/*
- * Prepares the data descriptor for BAM DMA which will be used for NAND
- * data reads and writes.
- */
+ 
 static int prep_bam_dma_desc_data(struct qcom_nand_controller *nandc, bool read,
 				  const void *vaddr,
 				  int size, unsigned int flags)
@@ -1007,10 +818,7 @@ static int prep_bam_dma_desc_data(struct qcom_nand_controller *nandc, bool read,
 			   vaddr, size);
 		bam_txn->tx_sgl_pos++;
 
-		/*
-		 * BAM will only set EOT for DMA_PREP_INTERRUPT so if this flag
-		 * is not set, form the DMA descriptor
-		 */
+		 
 		if (!(flags & NAND_BAM_NO_EOT)) {
 			ret = prepare_bam_async_desc(nandc, nandc->tx_chan,
 						     DMA_PREP_INTERRUPT);
@@ -1101,14 +909,7 @@ err:
 	return ret;
 }
 
-/*
- * read_reg_dma:	prepares a descriptor to read a given number of
- *			contiguous registers to the reg_read_buf pointer
- *
- * @first:		offset of the first register in the contiguous block
- * @num_regs:		number of registers to read
- * @flags:		flags to control DMA descriptor preparation
- */
+ 
 static int read_reg_dma(struct qcom_nand_controller *nandc, int first,
 			int num_regs, unsigned int flags)
 {
@@ -1132,14 +933,7 @@ static int read_reg_dma(struct qcom_nand_controller *nandc, int first,
 				 num_regs * sizeof(u32), flow_control);
 }
 
-/*
- * write_reg_dma:	prepares a descriptor to write a given number of
- *			contiguous registers
- *
- * @first:		offset of the first register in the contiguous block
- * @num_regs:		number of registers to write
- * @flags:		flags to control DMA descriptor preparation
- */
+ 
 static int write_reg_dma(struct qcom_nand_controller *nandc, int first,
 			 int num_regs, unsigned int flags)
 {
@@ -1176,15 +970,7 @@ static int write_reg_dma(struct qcom_nand_controller *nandc, int first,
 				 num_regs * sizeof(u32), flow_control);
 }
 
-/*
- * read_data_dma:	prepares a DMA descriptor to transfer data from the
- *			controller's internal buffer to the buffer 'vaddr'
- *
- * @reg_off:		offset within the controller's data buffer
- * @vaddr:		virtual address of the buffer we want to write to
- * @size:		DMA transaction size in bytes
- * @flags:		flags to control DMA descriptor preparation
- */
+ 
 static int read_data_dma(struct qcom_nand_controller *nandc, int reg_off,
 			 const u8 *vaddr, int size, unsigned int flags)
 {
@@ -1194,15 +980,7 @@ static int read_data_dma(struct qcom_nand_controller *nandc, int reg_off,
 	return prep_adm_dma_desc(nandc, true, reg_off, vaddr, size, false);
 }
 
-/*
- * write_data_dma:	prepares a DMA descriptor to transfer data from
- *			'vaddr' to the controller's internal buffer
- *
- * @reg_off:		offset within the controller's data buffer
- * @vaddr:		virtual address of the buffer we want to read from
- * @size:		DMA transaction size in bytes
- * @flags:		flags to control DMA descriptor preparation
- */
+ 
 static int write_data_dma(struct qcom_nand_controller *nandc, int reg_off,
 			  const u8 *vaddr, int size, unsigned int flags)
 {
@@ -1212,10 +990,7 @@ static int write_data_dma(struct qcom_nand_controller *nandc, int reg_off,
 	return prep_adm_dma_desc(nandc, false, reg_off, vaddr, size, false);
 }
 
-/*
- * Helper to prepare DMA descriptors for configuring registers
- * before reading a NAND page.
- */
+ 
 static void config_nand_page_read(struct nand_chip *chip)
 {
 	struct qcom_nand_controller *nandc = get_qcom_nand_controller(chip);
@@ -1229,10 +1004,7 @@ static void config_nand_page_read(struct nand_chip *chip)
 		      NAND_ERASED_CW_SET | NAND_BAM_NEXT_SGL);
 }
 
-/*
- * Helper to prepare DMA descriptors for configuring registers
- * before reading each codeword in NAND page.
- */
+ 
 static void
 config_nand_cw_read(struct nand_chip *chip, bool use_ecc, int cw)
 {
@@ -1259,10 +1031,7 @@ config_nand_cw_read(struct nand_chip *chip, bool use_ecc, int cw)
 	}
 }
 
-/*
- * Helper to prepare dma descriptors to configure registers needed for reading a
- * single codeword in page
- */
+ 
 static void
 config_nand_single_cw_page_read(struct nand_chip *chip,
 				bool use_ecc, int cw)
@@ -1271,10 +1040,7 @@ config_nand_single_cw_page_read(struct nand_chip *chip,
 	config_nand_cw_read(chip, use_ecc, cw);
 }
 
-/*
- * Helper to prepare DMA descriptors used to configure registers needed for
- * before writing a NAND page.
- */
+ 
 static void config_nand_page_write(struct nand_chip *chip)
 {
 	struct qcom_nand_controller *nandc = get_qcom_nand_controller(chip);
@@ -1286,10 +1052,7 @@ static void config_nand_page_write(struct nand_chip *chip)
 			      NAND_BAM_NEXT_SGL);
 }
 
-/*
- * Helper to prepare DMA descriptors for configuring registers
- * before writing each codeword in NAND page.
- */
+ 
 static void config_nand_cw_write(struct nand_chip *chip)
 {
 	struct qcom_nand_controller *nandc = get_qcom_nand_controller(chip);
@@ -1303,7 +1066,7 @@ static void config_nand_cw_write(struct nand_chip *chip)
 	write_reg_dma(nandc, NAND_READ_STATUS, 1, NAND_BAM_NEXT_SGL);
 }
 
-/* helpers to submit/free our list of dma descriptors */
+ 
 static int submit_descs(struct qcom_nand_controller *nandc)
 {
 	struct desc_info *desc, *n;
@@ -1358,10 +1121,7 @@ static int submit_descs(struct qcom_nand_controller *nandc)
 	}
 
 err_unmap_free_desc:
-	/*
-	 * Unmap the dma sg_list and free the desc allocated by both
-	 * prepare_bam_async_desc() and prep_adm_dma_desc() functions.
-	 */
+	 
 	list_for_each_entry_safe(desc, n, &nandc->desc_list, node) {
 		list_del(&desc->node);
 
@@ -1378,51 +1138,31 @@ err_unmap_free_desc:
 	return ret;
 }
 
-/* reset the register read buffer for next NAND operation */
+ 
 static void clear_read_regs(struct qcom_nand_controller *nandc)
 {
 	nandc->reg_read_pos = 0;
 	nandc_read_buffer_sync(nandc, false);
 }
 
-/*
- * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
- * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
- *
- * when using RS ECC, the HW reports the same erros when reading an erased CW,
- * but it notifies that it is an erased CW by placing special characters at
- * certain offsets in the buffer.
- *
- * verify if the page is erased or not, and fix up the page for RS ECC by
- * replacing the special characters with 0xff.
- */
+ 
 static bool erased_chunk_check_and_fixup(u8 *data_buf, int data_len)
 {
 	u8 empty1, empty2;
 
-	/*
-	 * an erased page flags an error in NAND_FLASH_STATUS, check if the page
-	 * is erased by looking for 0x54s at offsets 3 and 175 from the
-	 * beginning of each codeword
-	 */
+	 
 
 	empty1 = data_buf[3];
 	empty2 = data_buf[175];
 
-	/*
-	 * if the erased codework markers, if they exist override them with
-	 * 0xffs
-	 */
+	 
 	if ((empty1 == 0x54 && empty2 == 0xff) ||
 	    (empty1 == 0xff && empty2 == 0x54)) {
 		data_buf[3] = 0xff;
 		data_buf[175] = 0xff;
 	}
 
-	/*
-	 * check if the entire chunk contains 0xffs or not. if it doesn't, then
-	 * restore the original values at the special offsets
-	 */
+	 
 	if (memchr_inv(data_buf, 0xff, data_len)) {
 		data_buf[3] = empty1;
 		data_buf[175] = empty2;
@@ -1439,7 +1179,7 @@ struct read_stats {
 	__le32 erased_cw;
 };
 
-/* reads back FLASH_STATUS register set by the controller */
+ 
 static int check_flash_errors(struct qcom_nand_host *host, int cw_cnt)
 {
 	struct nand_chip *chip = &host->chip;
@@ -1458,7 +1198,7 @@ static int check_flash_errors(struct qcom_nand_host *host, int cw_cnt)
 	return 0;
 }
 
-/* performs raw read for one codeword */
+ 
 static int
 qcom_nandc_read_cw_raw(struct mtd_info *mtd, struct nand_chip *chip,
 		       u8 *data_buf, u8 *oob_buf, int page, int cw)
@@ -1532,21 +1272,7 @@ qcom_nandc_read_cw_raw(struct mtd_info *mtd, struct nand_chip *chip,
 	return check_flash_errors(host, 1);
 }
 
-/*
- * Bitflips can happen in erased codewords also so this function counts the
- * number of 0 in each CW for which ECC engine returns the uncorrectable
- * error. The page will be assumed as erased if this count is less than or
- * equal to the ecc->strength for each CW.
- *
- * 1. Both DATA and OOB need to be checked for number of 0. The
- *    top-level API can be called with only data buf or OOB buf so use
- *    chip->data_buf if data buf is null and chip->oob_poi if oob buf
- *    is null for copying the raw bytes.
- * 2. Perform raw read for all the CW which has uncorrectable errors.
- * 3. For each CW, check the number of 0 in cw_data and usable OOB bytes.
- *    The BBM and spare bytes bit flip won’t affect the ECC so don’t check
- *    the number of bitflips in this area.
- */
+ 
 static int
 check_for_erased_page(struct qcom_nand_host *host, u8 *data_buf,
 		      u8 *oob_buf, unsigned long uncorrectable_cws,
@@ -1575,7 +1301,7 @@ check_for_erased_page(struct qcom_nand_host *host, u8 *data_buf,
 			oob_size = host->ecc_bytes_hw;
 		}
 
-		/* determine starting buffer address for current CW */
+		 
 		cw_data_buf = data_buf + (cw * host->cw_data);
 		cw_oob_buf = oob_buf + (cw * ecc->bytes);
 
@@ -1584,10 +1310,7 @@ check_for_erased_page(struct qcom_nand_host *host, u8 *data_buf,
 		if (ret)
 			return ret;
 
-		/*
-		 * make sure it isn't an erased page reported
-		 * as not-erased by HW because of a few bitflips
-		 */
+		 
 		ret = nand_check_erased_ecc_chunk(cw_data_buf, data_size,
 						  cw_oob_buf + host->bbm_size,
 						  oob_size, NULL,
@@ -1603,10 +1326,7 @@ check_for_erased_page(struct qcom_nand_host *host, u8 *data_buf,
 	return max_bitflips;
 }
 
-/*
- * reads back status registers set by the controller to notify page read
- * errors. this is equivalent to what 'ecc->correct()' would do.
- */
+ 
 static int parse_read_errors(struct qcom_nand_host *host, u8 *data_buf,
 			     u8 *oob_buf, int page)
 {
@@ -1639,27 +1359,12 @@ static int parse_read_errors(struct qcom_nand_host *host, u8 *data_buf,
 		buffer = le32_to_cpu(buf->buffer);
 		erased_cw = le32_to_cpu(buf->erased_cw);
 
-		/*
-		 * Check ECC failure for each codeword. ECC failure can
-		 * happen in either of the following conditions
-		 * 1. If number of bitflips are greater than ECC engine
-		 *    capability.
-		 * 2. If this codeword contains all 0xff for which erased
-		 *    codeword detection check will be done.
-		 */
+		 
 		if ((flash & FS_OP_ERR) && (buffer & BS_UNCORRECTABLE_BIT)) {
-			/*
-			 * For BCH ECC, ignore erased codeword errors, if
-			 * ERASED_CW bits are set.
-			 */
+			 
 			if (host->bch_enabled) {
 				erased = (erased_cw & ERASED_CW) == ERASED_CW;
-			/*
-			 * For RS ECC, HW reports the erased CW by placing
-			 * special characters at certain offsets in the buffer.
-			 * These special characters will be valid only if
-			 * complete page is read i.e. data_buf is not NULL.
-			 */
+			 
 			} else if (data_buf) {
 				erased = erased_chunk_check_and_fixup(data_buf,
 								      data_len);
@@ -1669,18 +1374,10 @@ static int parse_read_errors(struct qcom_nand_host *host, u8 *data_buf,
 
 			if (!erased)
 				uncorrectable_cws |= BIT(i);
-		/*
-		 * Check if MPU or any other operational error (timeout,
-		 * device failure, etc.) happened for this codeword and
-		 * make flash_op_err true. If flash_op_err is set, then
-		 * EIO will be returned for page read.
-		 */
+		 
 		} else if (flash & (FS_OP_ERR | FS_MPU_ERR)) {
 			flash_op_err = true;
-		/*
-		 * No ECC or operational errors happened. Check the number of
-		 * bits corrected and update the ecc_stats.corrected.
-		 */
+		 
 		} else {
 			unsigned int stat;
 
@@ -1706,10 +1403,7 @@ static int parse_read_errors(struct qcom_nand_host *host, u8 *data_buf,
 				     max_bitflips);
 }
 
-/*
- * helper to perform the actual page read operation, used by ecc->read_page(),
- * ecc->read_oob()
- */
+ 
 static int read_page_ecc(struct qcom_nand_host *host, u8 *data_buf,
 			 u8 *oob_buf, int page)
 {
@@ -1721,7 +1415,7 @@ static int read_page_ecc(struct qcom_nand_host *host, u8 *data_buf,
 
 	config_nand_page_read(chip);
 
-	/* queue cmd descs for each codeword */
+	 
 	for (i = 0; i < ecc->steps; i++) {
 		int data_size, oob_size;
 
@@ -1753,13 +1447,7 @@ static int read_page_ecc(struct qcom_nand_host *host, u8 *data_buf,
 			read_data_dma(nandc, FLASH_BUF_ACC, data_buf,
 				      data_size, 0);
 
-		/*
-		 * when ecc is enabled, the controller doesn't read the real
-		 * or dummy bad block markers in each chunk. To maintain a
-		 * consistent layout across RAW and ECC reads, we just
-		 * leave the real/dummy BBM offsets empty (i.e, filled with
-		 * 0xffs)
-		 */
+		 
 		if (oob_buf) {
 			int j;
 
@@ -1785,10 +1473,7 @@ static int read_page_ecc(struct qcom_nand_host *host, u8 *data_buf,
 	return parse_read_errors(host, data_buf_start, oob_buf_start, page);
 }
 
-/*
- * a helper that copies the last step/codeword of a page (containing free oob)
- * into our local buffer
- */
+ 
 static int copy_last_cw(struct qcom_nand_host *host, int page)
 {
 	struct nand_chip *chip = &host->chip;
@@ -1801,7 +1486,7 @@ static int copy_last_cw(struct qcom_nand_host *host, int page)
 
 	size = host->use_ecc ? host->cw_data : host->cw_size;
 
-	/* prepare a clean read buffer */
+	 
 	memset(nandc->data_buffer, 0xff, size);
 
 	set_address(host, host->cw_size * (ecc->steps - 1), page);
@@ -1824,28 +1509,22 @@ static bool qcom_nandc_is_boot_partition(struct qcom_nand_host *host, int page)
 	u32 start, end;
 	int i;
 
-	/*
-	 * Since the frequent access will be to the non-boot partitions like rootfs,
-	 * optimize the page check by:
-	 *
-	 * 1. Checking if the page lies after the last boot partition.
-	 * 2. Checking from the boot partition end.
-	 */
+	 
 
-	/* First check the last boot partition */
+	 
 	boot_partition = &host->boot_partitions[host->nr_boot_partitions - 1];
 	start = boot_partition->page_offset;
 	end = start + boot_partition->page_size;
 
-	/* Page is after the last boot partition end. This is NOT a boot partition */
+	 
 	if (page > end)
 		return false;
 
-	/* Actually check if it's a boot partition */
+	 
 	if (page < end && page >= start)
 		return true;
 
-	/* Check the other boot partitions starting from the second-last partition */
+	 
 	for (i = host->nr_boot_partitions - 2; i >= 0; i--) {
 		boot_partition = &host->boot_partitions[i];
 		start = boot_partition->page_offset;
@@ -1862,7 +1541,7 @@ static void qcom_nandc_codeword_fixup(struct qcom_nand_host *host, int page)
 {
 	bool codeword_fixup = qcom_nandc_is_boot_partition(host, page);
 
-	/* Skip conf write if we are already in the correct mode */
+	 
 	if (codeword_fixup == host->codeword_fixup)
 		return;
 
@@ -1881,7 +1560,7 @@ static void qcom_nandc_codeword_fixup(struct qcom_nand_host *host, int page)
 	host->ecc_buf_cfg = (host->cw_data - 1) << NUM_STEPS;
 }
 
-/* implements ecc->read_page() */
+ 
 static int qcom_nandc_read_page(struct nand_chip *chip, u8 *buf,
 				int oob_required, int page)
 {
@@ -1909,7 +1588,7 @@ static int qcom_nandc_read_page(struct nand_chip *chip, u8 *buf,
 	return read_page_ecc(host, data_buf, oob_buf, page);
 }
 
-/* implements ecc->read_page_raw() */
+ 
 static int qcom_nandc_read_page_raw(struct nand_chip *chip, u8 *buf,
 				    int oob_required, int page)
 {
@@ -1935,7 +1614,7 @@ static int qcom_nandc_read_page_raw(struct nand_chip *chip, u8 *buf,
 	return 0;
 }
 
-/* implements ecc->read_oob() */
+ 
 static int qcom_nandc_read_oob(struct nand_chip *chip, int page)
 {
 	struct qcom_nand_host *host = to_qcom_nand_host(chip);
@@ -1955,7 +1634,7 @@ static int qcom_nandc_read_oob(struct nand_chip *chip, int page)
 	return read_page_ecc(host, NULL, chip->oob_poi, page);
 }
 
-/* implements ecc->write_page() */
+ 
 static int qcom_nandc_write_page(struct nand_chip *chip, const u8 *buf,
 				 int oob_required, int page)
 {
@@ -1998,13 +1677,7 @@ static int qcom_nandc_write_page(struct nand_chip *chip, const u8 *buf,
 		write_data_dma(nandc, FLASH_BUF_ACC, data_buf, data_size,
 			       i == (ecc->steps - 1) ? NAND_BAM_NO_EOT : 0);
 
-		/*
-		 * when ECC is enabled, we don't really need to write anything
-		 * to oob for the first n - 1 codewords since these oob regions
-		 * just contain ECC bytes that's written by the controller
-		 * itself. For the last codeword, we skip the bbm positions and
-		 * write to the free oob area.
-		 */
+		 
 		if (qcom_nandc_is_last_cw(ecc, i)) {
 			oob_buf += host->bbm_size;
 
@@ -2027,7 +1700,7 @@ static int qcom_nandc_write_page(struct nand_chip *chip, const u8 *buf,
 	return nand_prog_page_end_op(chip);
 }
 
-/* implements ecc->write_page_raw() */
+ 
 static int qcom_nandc_write_page_raw(struct nand_chip *chip,
 				     const u8 *buf, int oob_required,
 				     int page)
@@ -2100,13 +1773,7 @@ static int qcom_nandc_write_page_raw(struct nand_chip *chip,
 	return nand_prog_page_end_op(chip);
 }
 
-/*
- * implements ecc->write_oob()
- *
- * the NAND controller cannot write only data or only OOB within a codeword
- * since ECC is calculated for the combined codeword. So update the OOB from
- * chip->oob_poi, and pad the data area with OxFF before writing.
- */
+ 
 static int qcom_nandc_write_oob(struct nand_chip *chip, int page)
 {
 	struct mtd_info *mtd = nand_to_mtd(chip);
@@ -2123,12 +1790,12 @@ static int qcom_nandc_write_oob(struct nand_chip *chip, int page)
 	host->use_ecc = true;
 	clear_bam_transaction(nandc);
 
-	/* calculate the data and oob size for the last codeword/step */
+	 
 	data_size = ecc->size - ((ecc->steps - 1) << 2);
 	oob_size = mtd->oobavail;
 
 	memset(nandc->data_buffer, 0xff, host->cw_data);
-	/* override new oob content to last codeword */
+	 
 	mtd_ooblayout_get_databytes(mtd, nandc->data_buffer + data_size, oob,
 				    0, mtd->oobavail);
 
@@ -2159,12 +1826,7 @@ static int qcom_nandc_block_bad(struct nand_chip *chip, loff_t ofs)
 
 	page = (int)(ofs >> chip->page_shift) & chip->pagemask;
 
-	/*
-	 * configure registers for a raw sub page read, the address is set to
-	 * the beginning of the last codeword, we don't care about reading ecc
-	 * portion of oob. we just want the first few bytes from this codeword
-	 * that contains the BBM
-	 */
+	 
 	host->use_ecc = false;
 
 	clear_bam_transaction(nandc);
@@ -2197,16 +1859,12 @@ static int qcom_nandc_block_markbad(struct nand_chip *chip, loff_t ofs)
 	clear_read_regs(nandc);
 	clear_bam_transaction(nandc);
 
-	/*
-	 * to mark the BBM as bad, we flash the entire last codeword with 0s.
-	 * we don't care about the rest of the content in the codeword since
-	 * we aren't going to use this block again
-	 */
+	 
 	memset(nandc->data_buffer, 0x00, host->cw_size);
 
 	page = (int)(ofs >> chip->page_shift) & chip->pagemask;
 
-	/* prepare write */
+	 
 	host->use_ecc = false;
 	set_address(host, host->cw_size * (ecc->steps - 1), page);
 	update_rw_regs(host, 1, false, ecc->steps - 1);
@@ -2225,91 +1883,7 @@ static int qcom_nandc_block_markbad(struct nand_chip *chip, loff_t ofs)
 	return nand_prog_page_end_op(chip);
 }
 
-/*
- * NAND controller page layout info
- *
- * Layout with ECC enabled:
- *
- * |----------------------|  |---------------------------------|
- * |           xx.......yy|  |             *********xx.......yy|
- * |    DATA   xx..ECC..yy|  |    DATA     **SPARE**xx..ECC..yy|
- * |   (516)   xx.......yy|  |  (516-n*4)  **(n*4)**xx.......yy|
- * |           xx.......yy|  |             *********xx.......yy|
- * |----------------------|  |---------------------------------|
- *     codeword 1,2..n-1                  codeword n
- *  <---(528/532 Bytes)-->    <-------(528/532 Bytes)--------->
- *
- * n = Number of codewords in the page
- * . = ECC bytes
- * * = Spare/free bytes
- * x = Unused byte(s)
- * y = Reserved byte(s)
- *
- * 2K page: n = 4, spare = 16 bytes
- * 4K page: n = 8, spare = 32 bytes
- * 8K page: n = 16, spare = 64 bytes
- *
- * the qcom nand controller operates at a sub page/codeword level. each
- * codeword is 528 and 532 bytes for 4 bit and 8 bit ECC modes respectively.
- * the number of ECC bytes vary based on the ECC strength and the bus width.
- *
- * the first n - 1 codewords contains 516 bytes of user data, the remaining
- * 12/16 bytes consist of ECC and reserved data. The nth codeword contains
- * both user data and spare(oobavail) bytes that sum up to 516 bytes.
- *
- * When we access a page with ECC enabled, the reserved bytes(s) are not
- * accessible at all. When reading, we fill up these unreadable positions
- * with 0xffs. When writing, the controller skips writing the inaccessible
- * bytes.
- *
- * Layout with ECC disabled:
- *
- * |------------------------------|  |---------------------------------------|
- * |         yy          xx.......|  |         bb          *********xx.......|
- * |  DATA1  yy  DATA2   xx..ECC..|  |  DATA1  bb  DATA2   **SPARE**xx..ECC..|
- * | (size1) yy (size2)  xx.......|  | (size1) bb (size2)  **(n*4)**xx.......|
- * |         yy          xx.......|  |         bb          *********xx.......|
- * |------------------------------|  |---------------------------------------|
- *         codeword 1,2..n-1                        codeword n
- *  <-------(528/532 Bytes)------>    <-----------(528/532 Bytes)----------->
- *
- * n = Number of codewords in the page
- * . = ECC bytes
- * * = Spare/free bytes
- * x = Unused byte(s)
- * y = Dummy Bad Bock byte(s)
- * b = Real Bad Block byte(s)
- * size1/size2 = function of codeword size and 'n'
- *
- * when the ECC block is disabled, one reserved byte (or two for 16 bit bus
- * width) is now accessible. For the first n - 1 codewords, these are dummy Bad
- * Block Markers. In the last codeword, this position contains the real BBM
- *
- * In order to have a consistent layout between RAW and ECC modes, we assume
- * the following OOB layout arrangement:
- *
- * |-----------|  |--------------------|
- * |yyxx.......|  |bb*********xx.......|
- * |yyxx..ECC..|  |bb*FREEOOB*xx..ECC..|
- * |yyxx.......|  |bb*********xx.......|
- * |yyxx.......|  |bb*********xx.......|
- * |-----------|  |--------------------|
- *  first n - 1       nth OOB region
- *  OOB regions
- *
- * n = Number of codewords in the page
- * . = ECC bytes
- * * = FREE OOB bytes
- * y = Dummy bad block byte(s) (inaccessible when ECC enabled)
- * x = Unused byte(s)
- * b = Real bad block byte(s) (inaccessible when ECC enabled)
- *
- * This layout is read as is when ECC is disabled. When ECC is enabled, the
- * inaccessible Bad Block byte(s) are ignored when we write to a page/oob,
- * and assumed as 0xffs when we read a page/oob. The ECC, unused and
- * dummy/real bad block bytes are grouped as ecc bytes (i.e, ecc->bytes is
- * the sum of the three).
- */
+ 
 static int qcom_nand_ooblayout_ecc(struct mtd_info *mtd, int section,
 				   struct mtd_oob_region *oobregion)
 {
@@ -2372,15 +1946,12 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 	bool wide_bus;
 	int ecc_mode = 1;
 
-	/* controller only supports 512 bytes data steps */
+	 
 	ecc->size = NANDC_STEP_SIZE;
 	wide_bus = chip->options & NAND_BUSWIDTH_16 ? true : false;
 	cwperpage = mtd->writesize / NANDC_STEP_SIZE;
 
-	/*
-	 * Each CW has 4 available OOB bytes which will be protected with ECC
-	 * so remaining bytes can be used for ECC.
-	 */
+	 
 	ret = nand_ecc_choose_conf(chip, &qcom_nandc_ecc_caps,
 				   mtd->oobsize - (cwperpage * 4));
 	if (ret) {
@@ -2389,7 +1960,7 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 	}
 
 	if (ecc->strength >= 8) {
-		/* 8 bit ECC defaults to BCH ECC on all platforms */
+		 
 		host->bch_enabled = true;
 		ecc_mode = 1;
 
@@ -2403,13 +1974,9 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 			host->bbm_size = 1;
 		}
 	} else {
-		/*
-		 * if the controller supports BCH for 4 bit ECC, the controller
-		 * uses lesser bytes for ECC. If RS is used, the ECC bytes is
-		 * always 10 bytes
-		 */
+		 
 		if (nandc->props->ecc_modes & ECC_BCH_4BIT) {
-			/* BCH */
+			 
 			host->bch_enabled = true;
 			ecc_mode = 0;
 
@@ -2423,7 +1990,7 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 				host->bbm_size = 1;
 			}
 		} else {
-			/* RS */
+			 
 			host->ecc_bytes_hw = 10;
 
 			if (wide_bus) {
@@ -2436,12 +2003,7 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 		}
 	}
 
-	/*
-	 * we consider ecc->bytes as the sum of all the non-data content in a
-	 * step. It gives us a clean representation of the oob area (even if
-	 * all the bytes aren't used for ECC).It is always 16 bytes for 8 bit
-	 * ECC and 12 bytes for 4 bit ECC
-	 */
+	 
 	ecc->bytes = host->ecc_bytes_hw + host->spare_bytes + host->bbm_size;
 
 	ecc->read_page		= qcom_nandc_read_page;
@@ -2454,14 +2016,14 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 	ecc->engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 
 	mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
-	/* Free the initially allocated BAM transaction for reading the ONFI params */
+	 
 	if (nandc->props->is_bam)
 		free_bam_transaction(nandc);
 
 	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
 				     cwperpage);
 
-	/* Now allocate the BAM transaction based on updated max_cwperpage */
+	 
 	if (nandc->props->is_bam) {
 		nandc->bam_txn = alloc_bam_transaction(nandc);
 		if (!nandc->bam_txn) {
@@ -2471,17 +2033,10 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
 		}
 	}
 
-	/*
-	 * DATA_UD_BYTES varies based on whether the read/write command protects
-	 * spare data with ECC too. We protect spare data by default, so we set
-	 * it to main + spare data, which are 512 and 4 bytes respectively.
-	 */
+	 
 	host->cw_data = 516;
 
-	/*
-	 * total bytes in a step, either 528 bytes for 4 bit ECC, or 532 bytes
-	 * for 8 bit ECC
-	 */
+	 
 	host->cw_size = host->cw_data + ecc->bytes;
 	bad_block_byte = mtd->writesize - host->cw_size * (cwperpage - 1) + 1;
 
@@ -2588,7 +2143,7 @@ static int qcom_op_cmd_mapping(struct nand_chip *chip, u8 opcode,
 	return cmd;
 }
 
-/* NAND framework ->exec_op() hooks and related helpers */
+ 
 static int qcom_parse_instructions(struct nand_chip *chip,
 				    const struct nand_subop *subop,
 				    struct qcom_op *q_op)
@@ -2891,7 +2446,7 @@ static int qcom_param_page_type_exec(struct nand_chip *chip,  const struct nand_
 	if (!nandc->props->qpic_v2)
 		nandc_set_reg(chip, NAND_EBI2_ECC_BUF_CFG, 1 << ECC_CFG_ECC_DISABLE);
 
-	/* configure CMD1 and VLD for ONFI param probing in QPIC v1 */
+	 
 	if (!nandc->props->qpic_v2) {
 		nandc_set_reg(chip, NAND_DEV_CMD_VLD,
 			      (nandc->vld & ~READ_START_VLD));
@@ -2926,7 +2481,7 @@ static int qcom_param_page_type_exec(struct nand_chip *chip,  const struct nand_
 	read_data_dma(nandc, FLASH_BUF_ACC, nandc->data_buffer,
 		      nandc->buf_count, 0);
 
-	/* restore CMD1 and VLD regs */
+	 
 	if (!nandc->props->qpic_v2) {
 		write_reg_dma(nandc, NAND_DEV_CMD1_RESTORE, 1, 0);
 		write_reg_dma(nandc, NAND_DEV_CMD_VLD_RESTORE, 1, NAND_BAM_NEXT_SGL);
@@ -3049,12 +2604,7 @@ static int qcom_nandc_alloc(struct qcom_nand_controller *nandc)
 		return ret;
 	}
 
-	/*
-	 * we use the internal buffer for reading ONFI params, reading small
-	 * data like ID and status, and preforming read-copy-write operations
-	 * when writing to a codeword partially. 532 is the maximum possible
-	 * size of a codeword for our nand controller
-	 */
+	 
 	nandc->buf_size = 532;
 
 	nandc->data_buffer = devm_kzalloc(nandc->dev, nandc->buf_size, GFP_KERNEL);
@@ -3109,12 +2659,7 @@ static int qcom_nandc_alloc(struct qcom_nand_controller *nandc)
 			goto unalloc;
 		}
 
-		/*
-		 * Initially allocate BAM transaction to read ONFI param page.
-		 * After detecting all the devices, this BAM transaction will
-		 * be freed and the next BAM transaction will be allocated with
-		 * maximum codeword size
-		 */
+		 
 		nandc->max_cwperpage = 1;
 		nandc->bam_txn = alloc_bam_transaction(nandc);
 		if (!nandc->bam_txn) {
@@ -3146,12 +2691,12 @@ unalloc:
 	return ret;
 }
 
-/* one time setup of a few nand controller registers */
+ 
 static int qcom_nandc_setup(struct qcom_nand_controller *nandc)
 {
 	u32 nand_ctrl;
 
-	/* kill onenand */
+	 
 	if (!nandc->props->is_qpic)
 		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
 
@@ -3159,24 +2704,18 @@ static int qcom_nandc_setup(struct qcom_nand_controller *nandc)
 		nandc_write(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD_VLD),
 			    NAND_DEV_CMD_VLD_VAL);
 
-	/* enable ADM or BAM DMA */
+	 
 	if (nandc->props->is_bam) {
 		nand_ctrl = nandc_read(nandc, NAND_CTRL);
 
-		/*
-		 *NAND_CTRL is an operational registers, and CPU
-		 * access to operational registers are read only
-		 * in BAM mode. So update the NAND_CTRL register
-		 * only if it is not in BAM mode. In most cases BAM
-		 * mode will be enabled in bootloader
-		 */
+		 
 		if (!(nand_ctrl & BAM_MODE_EN))
 			nandc_write(nandc, NAND_CTRL, nand_ctrl | BAM_MODE_EN);
 	} else {
 		nandc_write(nandc, NAND_FLASH_CHIP_SELECT, DM_EN);
 	}
 
-	/* save the original values of these registers */
+	 
 	if (!nandc->props->qpic_v2) {
 		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
 		nandc->vld = NAND_DEV_CMD_VLD_VAL;
@@ -3231,7 +2770,7 @@ static int qcom_nand_host_parse_boot_partitions(struct qcom_nand_controller *nan
 			host->nr_boot_partitions = 0;
 			return -EINVAL;
 		}
-		/* Convert offset to nand pages */
+		 
 		boot_partition->page_offset /= mtd->writesize;
 
 		ret = of_property_read_u32_index(dn, "qcom,boot-partitions", j + 1,
@@ -3248,7 +2787,7 @@ static int qcom_nand_host_parse_boot_partitions(struct qcom_nand_controller *nan
 			host->nr_boot_partitions = 0;
 			return -EINVAL;
 		}
-		/* Convert size to nand pages */
+		 
 		boot_partition->page_size /= mtd->writesize;
 	}
 
@@ -3278,14 +2817,7 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
 	mtd->owner = THIS_MODULE;
 	mtd->dev.parent = dev;
 
-	/*
-	 * the bad block marker is readable only when we read the last codeword
-	 * of a page with ECC disabled. currently, the nand_base and nand_bbt
-	 * helpers don't allow us to read BB from a nand chip with ECC
-	 * disabled (MTD_OPS_PLACE_OOB is set by default). use the block_bad
-	 * and block_markbad helpers until we permanently switch to using
-	 * MTD_OPS_RAW for all drivers (with the help of badblockbits)
-	 */
+	 
 	chip->legacy.block_bad		= qcom_nandc_block_bad;
 	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
 
@@ -3293,7 +2825,7 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
 	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
 			 NAND_SKIP_BBTSCAN;
 
-	/* set up initial status value */
+	 
 	host->status = NAND_STATUS_READY | NAND_STATUS_WP;
 
 	ret = nand_scan(chip, 1);
@@ -3343,7 +2875,7 @@ static int qcom_probe_nand_devices(struct qcom_nand_controller *nandc)
 	return ret;
 }
 
-/* parse custom DT properties here */
+ 
 static int qcom_nandc_parse_dt(struct platform_device *pdev)
 {
 	struct qcom_nand_controller *nandc = platform_get_drvdata(pdev);
@@ -3502,10 +3034,7 @@ static const struct qcom_nandc_props sdx55_nandc_props = {
 	.dev_cmd_reg_start = 0x7000,
 };
 
-/*
- * data will hold a struct pointer containing more differences once we support
- * more controller variants
- */
+ 
 static const struct of_device_id qcom_nandc_of_match[] = {
 	{
 		.compatible = "qcom,ipq806x-nand",

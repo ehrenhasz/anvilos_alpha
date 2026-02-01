@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include <linux/pm_runtime.h>
@@ -42,10 +36,7 @@ void wl1271_scan_complete_work(struct work_struct *work)
 
 	wlvif = wl->scan_wlvif;
 
-	/*
-	 * Rearm the tx watchdog just before idling scan. This
-	 * prevents just-finished scans from triggering the watchdog
-	 */
+	 
 	wl12xx_rearm_tx_watchdog_locked(wl);
 
 	wl->scan.state = WL1271_SCAN_STATE_IDLE;
@@ -58,7 +49,7 @@ void wl1271_scan_complete_work(struct work_struct *work)
 		goto out;
 
 	if (test_bit(WLVIF_FLAG_STA_ASSOCIATED, &wlvif->flags)) {
-		/* restore hardware connection monitoring template */
+		 
 		wl1271_cmd_build_ap_probe_req(wl, wlvif, wlvif->probereq);
 	}
 
@@ -86,11 +77,7 @@ static void wlcore_started_vifs_iter(void *data, u8 *mac,
 	bool active = false;
 	int *count = (int *)data;
 
-	/*
-	 * count active interfaces according to interface type.
-	 * checking only bss_conf.idle is bad for some cases, e.g.
-	 * we don't want to count sta in p2p_find as active interface.
-	 */
+	 
 	switch (wlvif->bss_type) {
 	case BSS_TYPE_STA_BSS:
 		if (test_bit(WLVIF_FLAG_STA_ASSOCIATED, &wlvif->flags))
@@ -137,7 +124,7 @@ wlcore_scan_get_channels(struct wl1271 *wl,
 	u32 min_dwell_time_active, max_dwell_time_active;
 	u32 dwell_time_passive, dwell_time_dfs;
 
-	/* configure dwell times according to scan type */
+	 
 	if (scan_type == SCAN_TYPE_SEARCH) {
 		struct conf_scan_settings *c = &wl->conf.scan;
 		bool active_vif_exists = !!wlcore_count_started_vifs(wl);
@@ -183,7 +170,7 @@ wlcore_scan_get_channels(struct wl1271 *wl,
 		if ((req_channels[i]->band == band) &&
 		    !(flags & IEEE80211_CHAN_DISABLED) &&
 		    (!!(flags & IEEE80211_CHAN_RADAR) == radar) &&
-		    /* if radar is set, we ignore the passive flag */
+		     
 		    (radar ||
 		     !!(flags & IEEE80211_CHAN_NO_IR) == passive)) {
 			if (flags & IEEE80211_CHAN_RADAR) {
@@ -210,13 +197,10 @@ wlcore_scan_get_channels(struct wl1271 *wl,
 			    (channels[j].channel <= 14) &&
 			    (flags & IEEE80211_CHAN_NO_IR) &&
 			    !force_passive) {
-				/* pactive channels treated as DFS */
+				 
 				channels[j].flags = SCAN_CHANNEL_FLAGS_DFS;
 
-				/*
-				 * n_pactive_ch is counted down from the end of
-				 * the passive channel list
-				 */
+				 
 				(*n_pactive_ch)++;
 				wl1271_debug(DEBUG_SCAN, "n_pactive_ch = %d",
 					     *n_pactive_ch);
@@ -309,7 +293,7 @@ wlcore_set_scan_chan_params(struct wl1271 *wl,
 					 &n_pactive_ch,
 					 scan_type);
 
-	/* 802.11j channels are not supported yet */
+	 
 	cfg->passive[2] = 0;
 	cfg->active[2] = 0;
 
@@ -333,10 +317,7 @@ int wlcore_scan(struct wl1271 *wl, struct ieee80211_vif *vif,
 {
 	struct wl12xx_vif *wlvif = wl12xx_vif_to_data(vif);
 
-	/*
-	 * cfg80211 should guarantee that we don't get more channels
-	 * than what we have registered.
-	 */
+	 
 	BUG_ON(req->n_channels > WL1271_MAX_CHANNELS);
 
 	if (wl->scan.state != WL1271_SCAN_STATE_IDLE)
@@ -355,7 +336,7 @@ int wlcore_scan(struct wl1271 *wl, struct ieee80211_vif *vif,
 	wl->scan.req = req;
 	memset(wl->scan.scanned_ch, 0, sizeof(wl->scan.scanned_ch));
 
-	/* we assume failure so that timeout scenarios are handled correctly */
+	 
 	wl->scan.failed = true;
 	ieee80211_queue_delayed_work(wl->hw, &wl->scan_complete_work,
 				     msecs_to_jiffies(WL1271_SCAN_TIMEOUT));
@@ -364,7 +345,7 @@ int wlcore_scan(struct wl1271 *wl, struct ieee80211_vif *vif,
 
 	return 0;
 }
-/* Returns the scan type to be used or a negative value on error */
+ 
 int
 wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 				 struct wl12xx_vif *wlvif,
@@ -377,12 +358,12 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 
 	wl1271_debug((DEBUG_CMD | DEBUG_SCAN), "cmd sched scan ssid list");
 
-	/* count the match sets that contain SSIDs */
+	 
 	for (i = 0; i < req->n_match_sets; i++)
 		if (sets[i].ssid.ssid_len > 0)
 			n_match_ssids++;
 
-	/* No filter, no ssids or only bcast ssid */
+	 
 	if (!n_match_ssids &&
 	    (!req->n_ssids ||
 	     (req->n_ssids == 1 && req->ssids[0].ssid_len == 0))) {
@@ -398,7 +379,7 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 
 	cmd->role_id = wlvif->role_id;
 	if (!n_match_ssids) {
-		/* No filter, with ssids */
+		 
 		type = SCAN_SSID_FILTER_DISABLED;
 
 		for (i = 0; i < req->n_ssids; i++) {
@@ -412,9 +393,9 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 	} else {
 		type = SCAN_SSID_FILTER_LIST;
 
-		/* Add all SSIDs from the filters */
+		 
 		for (i = 0; i < req->n_match_sets; i++) {
-			/* ignore sets without SSIDs */
+			 
 			if (!sets[i].ssid.ssid_len)
 				continue;
 
@@ -426,10 +407,7 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 		}
 		if ((req->n_ssids > 1) ||
 		    (req->n_ssids == 1 && req->ssids[0].ssid_len > 0)) {
-			/*
-			 * Mark all the SSIDs passed in the SSID list as HIDDEN,
-			 * so they're used in probe requests.
-			 */
+			 
 			for (i = 0; i < req->n_ssids; i++) {
 				if (!req->ssids[i].ssid_len)
 					continue;
@@ -444,7 +422,7 @@ wlcore_scan_sched_scan_ssid_list(struct wl1271 *wl,
 							SCAN_SSID_TYPE_HIDDEN;
 						break;
 					}
-				/* Fail if SSID isn't present in the filters */
+				 
 				if (j == cmd->n_ssids) {
 					ret = -EINVAL;
 					goto out_free;

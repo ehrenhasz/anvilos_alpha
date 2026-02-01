@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  dell-smo8800.c - Dell Latitude ACPI SMO88XX freefall sensor driver
- *
- *  Copyright (C) 2012 Sonal Santan <sonal.santan@gmail.com>
- *  Copyright (C) 2014 Pali Rohár <pali@kernel.org>
- *
- *  This is loosely based on lis3lv02d driver.
- */
+
+ 
 
 #define DRIVER_NAME "smo8800"
 
@@ -20,12 +13,12 @@
 #include <linux/uaccess.h>
 
 struct smo8800_device {
-	u32 irq;                     /* acpi device irq */
-	atomic_t counter;            /* count after last read */
-	struct miscdevice miscdev;   /* for /dev/freefall */
-	unsigned long misc_opened;   /* whether the device is open */
-	wait_queue_head_t misc_wait; /* Wait queue for the misc dev */
-	struct device *dev;          /* acpi device */
+	u32 irq;                      
+	atomic_t counter;             
+	struct miscdevice miscdev;    
+	unsigned long misc_opened;    
+	wait_queue_head_t misc_wait;  
+	struct device *dev;           
 };
 
 static irqreturn_t smo8800_interrupt_quick(int irq, void *data)
@@ -81,7 +74,7 @@ static int smo8800_misc_open(struct inode *inode, struct file *file)
 					 struct smo8800_device, miscdev);
 
 	if (test_and_set_bit(0, &smo8800->misc_opened))
-		return -EBUSY; /* already open */
+		return -EBUSY;  
 
 	atomic_set(&smo8800->counter, 0);
 	return 0;
@@ -92,7 +85,7 @@ static int smo8800_misc_release(struct inode *inode, struct file *file)
 	struct smo8800_device *smo8800 = container_of(file->private_data,
 					 struct smo8800_device, miscdev);
 
-	clear_bit(0, &smo8800->misc_opened); /* release the device */
+	clear_bit(0, &smo8800->misc_opened);  
 	return 0;
 }
 
@@ -163,7 +156,7 @@ static void smo8800_remove(struct platform_device *device)
 	dev_dbg(&device->dev, "device /dev/freefall unregistered\n");
 }
 
-/* NOTE: Keep this list in sync with drivers/i2c/busses/i2c-i801.c */
+ 
 static const struct acpi_device_id smo8800_ids[] = {
 	{ "SMO8800", 0 },
 	{ "SMO8801", 0 },

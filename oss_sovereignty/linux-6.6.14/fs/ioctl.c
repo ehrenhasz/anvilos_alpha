@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ioctl.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/syscalls.h>
 #include <linux/mm.h>
@@ -27,20 +23,10 @@
 
 #include <asm/ioctls.h>
 
-/* So that the fiemap access checks can't overflow on 32 bit machines. */
+ 
 #define FIEMAP_MAX_EXTENTS	(UINT_MAX / sizeof(struct fiemap_extent))
 
-/**
- * vfs_ioctl - call filesystem specific ioctl methods
- * @filp:	open file to invoke ioctl method on
- * @cmd:	ioctl command to execute
- * @arg:	command-specific argument for ioctl
- *
- * Invokes filesystem specific ->unlocked_ioctl, if one exists; otherwise
- * returns -ENOTTY.
- *
- * Returns 0 on success, -errno on error.
- */
+ 
 long vfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	int error = -ENOTTY;
@@ -94,28 +80,14 @@ static int ioctl_fibmap(struct file *filp, int __user *p)
 	return error;
 }
 
-/**
- * fiemap_fill_next_extent - Fiemap helper function
- * @fieinfo:	Fiemap context passed into ->fiemap
- * @logical:	Extent logical start offset, in bytes
- * @phys:	Extent physical start offset, in bytes
- * @len:	Extent length, in bytes
- * @flags:	FIEMAP_EXTENT flags that describe this extent
- *
- * Called from file system ->fiemap callback. Will populate extent
- * info as passed in via arguments and copy to user memory. On
- * success, extent count on fieinfo is incremented.
- *
- * Returns 0 on success, -errno on error, 1 if this was the last
- * extent that will fit in user array.
- */
+ 
 int fiemap_fill_next_extent(struct fiemap_extent_info *fieinfo, u64 logical,
 			    u64 phys, u64 len, u32 flags)
 {
 	struct fiemap_extent extent;
 	struct fiemap_extent __user *dest = fieinfo->fi_extents_start;
 
-	/* only count the extents */
+	 
 	if (fieinfo->fi_extents_max == 0) {
 		fieinfo->fi_extents_mapped++;
 		return (flags & FIEMAP_EXTENT_LAST) ? 1 : 0;
@@ -152,19 +124,7 @@ int fiemap_fill_next_extent(struct fiemap_extent_info *fieinfo, u64 logical,
 }
 EXPORT_SYMBOL(fiemap_fill_next_extent);
 
-/**
- * fiemap_prep - check validity of requested flags for fiemap
- * @inode:	Inode to operate on
- * @fieinfo:	Fiemap context passed into ->fiemap
- * @start:	Start of the mapped range
- * @len:	Length of the mapped range, can be truncated by this function.
- * @supported_flags:	Set of fiemap flags that the file system understands
- *
- * This function must be called from each ->fiemap instance to validate the
- * fiemap request against the file system parameters.
- *
- * Returns 0 on success, or a negative error on failure.
- */
+ 
 int fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,
 		u64 start, u64 *len, u32 supported_flags)
 {
@@ -177,9 +137,7 @@ int fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,
 	if (start >= maxbytes)
 		return -EFBIG;
 
-	/*
-	 * Shrink request scope to what the fs can actually handle.
-	 */
+	 
 	if (*len > maxbytes || (maxbytes - *len) < start)
 		*len = maxbytes - start;
 
@@ -260,13 +218,7 @@ static long ioctl_file_clone_range(struct file *file,
 				args.src_length, args.dest_offset);
 }
 
-/*
- * This provides compatibility with legacy XFS pre-allocation ioctls
- * which predate the fallocate syscall.
- *
- * Only the l_start, l_len and l_whence fields of the 'struct space_resv'
- * are used here, rest are ignored.
- */
+ 
 static int ioctl_preallocate(struct file *filp, int mode, void __user *argp)
 {
 	struct inode *inode = file_inode(filp);
@@ -292,9 +244,9 @@ static int ioctl_preallocate(struct file *filp, int mode, void __user *argp)
 			sr.l_len);
 }
 
-/* on ia32 l_start is on a 32-bit boundary */
+ 
 #if defined CONFIG_COMPAT && defined(CONFIG_X86_64)
-/* just account for different alignment */
+ 
 static int compat_ioctl_preallocate(struct file *file, int mode,
 				    struct space_resv_32 __user *argp)
 {
@@ -349,7 +301,7 @@ static int ioctl_fionbio(struct file *filp, int __user *argp)
 		return error;
 	flag = O_NONBLOCK;
 #ifdef __sparc__
-	/* SunOS compatibility item. */
+	 
 	if (O_NONBLOCK != O_NDELAY)
 		flag |= O_NDELAY;
 #endif
@@ -373,10 +325,10 @@ static int ioctl_fioasync(unsigned int fd, struct file *filp,
 		return error;
 	flag = on ? FASYNC : 0;
 
-	/* Did FASYNC state change ? */
+	 
 	if ((flag ^ filp->f_flags) & FASYNC) {
 		if (filp->f_op->fasync)
-			/* fasync() adjusts filp->f_flags */
+			 
 			error = filp->f_op->fasync(fd, filp, on);
 		else
 			error = -ENOTTY;
@@ -391,11 +343,11 @@ static int ioctl_fsfreeze(struct file *filp)
 	if (!ns_capable(sb->s_user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/* If filesystem doesn't support freeze feature, return. */
+	 
 	if (sb->s_op->freeze_fs == NULL && sb->s_op->freeze_super == NULL)
 		return -EOPNOTSUPP;
 
-	/* Freeze */
+	 
 	if (sb->s_op->freeze_super)
 		return sb->s_op->freeze_super(sb, FREEZE_HOLDER_USERSPACE);
 	return freeze_super(sb, FREEZE_HOLDER_USERSPACE);
@@ -408,7 +360,7 @@ static int ioctl_fsthaw(struct file *filp)
 	if (!ns_capable(sb->s_user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/* Thaw */
+	 
 	if (sb->s_op->thaw_super)
 		return sb->s_op->thaw_super(sb, FREEZE_HOLDER_USERSPACE);
 	return thaw_super(sb, FREEZE_HOLDER_USERSPACE);
@@ -454,14 +406,7 @@ out:
 	return ret;
 }
 
-/**
- * fileattr_fill_xflags - initialize fileattr with xflags
- * @fa:		fileattr pointer
- * @xflags:	FS_XFLAG_* flags
- *
- * Set ->fsx_xflags, ->fsx_valid and ->flags (translated xflags).  All
- * other fields are zeroed.
- */
+ 
 void fileattr_fill_xflags(struct fileattr *fa, u32 xflags)
 {
 	memset(fa, 0, sizeof(*fa));
@@ -484,14 +429,7 @@ void fileattr_fill_xflags(struct fileattr *fa, u32 xflags)
 }
 EXPORT_SYMBOL(fileattr_fill_xflags);
 
-/**
- * fileattr_fill_flags - initialize fileattr with flags
- * @fa:		fileattr pointer
- * @flags:	FS_*_FL flags
- *
- * Set ->flags, ->flags_valid and ->fsx_xflags (translated flags).
- * All other fields are zeroed.
- */
+ 
 void fileattr_fill_flags(struct fileattr *fa, u32 flags)
 {
 	memset(fa, 0, sizeof(*fa));
@@ -514,15 +452,7 @@ void fileattr_fill_flags(struct fileattr *fa, u32 flags)
 }
 EXPORT_SYMBOL(fileattr_fill_flags);
 
-/**
- * vfs_fileattr_get - retrieve miscellaneous file attributes
- * @dentry:	the object to retrieve from
- * @fa:		fileattr pointer
- *
- * Call i_op->fileattr_get() callback, if exists.
- *
- * Return: 0 on success, or a negative error on failure.
- */
+ 
 int vfs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 {
 	struct inode *inode = d_inode(dentry);
@@ -534,13 +464,7 @@ int vfs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 }
 EXPORT_SYMBOL(vfs_fileattr_get);
 
-/**
- * copy_fsxattr_to_user - copy fsxattr to userspace.
- * @fa:		fileattr pointer
- * @ufa:	fsxattr user pointer
- *
- * Return: 0 on success, or -EFAULT on failure.
- */
+ 
 int copy_fsxattr_to_user(const struct fileattr *fa, struct fsxattr __user *ufa)
 {
 	struct fsxattr xfa;
@@ -576,22 +500,14 @@ static int copy_fsxattr_from_user(struct fileattr *fa,
 	return 0;
 }
 
-/*
- * Generic function to check FS_IOC_FSSETXATTR/FS_IOC_SETFLAGS values and reject
- * any invalid configurations.
- *
- * Note: must be called with inode lock held.
- */
+ 
 static int fileattr_set_prepare(struct inode *inode,
 			      const struct fileattr *old_ma,
 			      struct fileattr *fa)
 {
 	int err;
 
-	/*
-	 * The IMMUTABLE and APPEND_ONLY flags can only be changed by
-	 * the relevant capability.
-	 */
+	 
 	if ((fa->flags ^ old_ma->flags) & (FS_APPEND_FL | FS_IMMUTABLE_FL) &&
 	    !capable(CAP_LINUX_IMMUTABLE))
 		return -EPERM;
@@ -600,11 +516,7 @@ static int fileattr_set_prepare(struct inode *inode,
 	if (err)
 		return err;
 
-	/*
-	 * Project Quota ID state is only allowed to change from within the init
-	 * namespace. Enforce that restriction only if we are trying to change
-	 * the quota ID state. Everything else is allowed in user namespaces.
-	 */
+	 
 	if (current_user_ns() != &init_user_ns) {
 		if (old_ma->fsx_projid != fa->fsx_projid)
 			return -EINVAL;
@@ -612,16 +524,13 @@ static int fileattr_set_prepare(struct inode *inode,
 				FS_XFLAG_PROJINHERIT)
 			return -EINVAL;
 	} else {
-		/*
-		 * Caller is allowed to change the project ID. If it is being
-		 * changed, make sure that the new value is valid.
-		 */
+		 
 		if (old_ma->fsx_projid != fa->fsx_projid &&
 		    !projid_valid(make_kprojid(&init_user_ns, fa->fsx_projid)))
 			return -EINVAL;
 	}
 
-	/* Check extent size hints. */
+	 
 	if ((fa->fsx_xflags & FS_XFLAG_EXTSIZE) && !S_ISREG(inode->i_mode))
 		return -EINVAL;
 
@@ -633,15 +542,12 @@ static int fileattr_set_prepare(struct inode *inode,
 	    !S_ISREG(inode->i_mode) && !S_ISDIR(inode->i_mode))
 		return -EINVAL;
 
-	/*
-	 * It is only valid to set the DAX flag on regular files and
-	 * directories on filesystems.
-	 */
+	 
 	if ((fa->fsx_xflags & FS_XFLAG_DAX) &&
 	    !(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode)))
 		return -EINVAL;
 
-	/* Extent size hints of zero turn off the flags. */
+	 
 	if (fa->fsx_extsize == 0)
 		fa->fsx_xflags &= ~(FS_XFLAG_EXTSIZE | FS_XFLAG_EXTSZINHERIT);
 	if (fa->fsx_cowextsize == 0)
@@ -650,22 +556,7 @@ static int fileattr_set_prepare(struct inode *inode,
 	return 0;
 }
 
-/**
- * vfs_fileattr_set - change miscellaneous file attributes
- * @idmap:	idmap of the mount
- * @dentry:	the object to change
- * @fa:		fileattr pointer
- *
- * After verifying permissions, call i_op->fileattr_set() callback, if
- * exists.
- *
- * Verifying attributes involves retrieving current attributes with
- * i_op->fileattr_get(), this also allows initializing attributes that have
- * not been set by the caller to current values.  Inode lock is held
- * thoughout to prevent racing with another instance.
- *
- * Return: 0 on success, or a negative error on failure.
- */
+ 
 int vfs_fileattr_set(struct mnt_idmap *idmap, struct dentry *dentry,
 		     struct fileattr *fa)
 {
@@ -682,7 +573,7 @@ int vfs_fileattr_set(struct mnt_idmap *idmap, struct dentry *dentry,
 	inode_lock(inode);
 	err = vfs_fileattr_get(dentry, &old_ma);
 	if (!err) {
-		/* initialize missing bits from old_ma */
+		 
 		if (fa->flags_valid) {
 			fa->fsx_xflags |= old_ma.fsx_xflags & ~FS_XFLAG_COMMON;
 			fa->fsx_extsize = old_ma.fsx_extsize;
@@ -704,7 +595,7 @@ EXPORT_SYMBOL(vfs_fileattr_set);
 
 static int ioctl_getflags(struct file *file, unsigned int __user *argp)
 {
-	struct fileattr fa = { .flags_valid = true }; /* hint only */
+	struct fileattr fa = { .flags_valid = true };  
 	int err;
 
 	err = vfs_fileattr_get(file->f_path.dentry, &fa);
@@ -735,7 +626,7 @@ static int ioctl_setflags(struct file *file, unsigned int __user *argp)
 
 static int ioctl_fsgetxattr(struct file *file, void __user *argp)
 {
-	struct fileattr fa = { .fsx_valid = true }; /* hint only */
+	struct fileattr fa = { .fsx_valid = true };  
 	int err;
 
 	err = vfs_fileattr_get(file->f_path.dentry, &fa);
@@ -763,13 +654,7 @@ static int ioctl_fssetxattr(struct file *file, void __user *argp)
 	return err;
 }
 
-/*
- * do_vfs_ioctl() is not for drivers and not intended to be EXPORT_SYMBOL()'d.
- * It's just a simple helper for sys_ioctl and compat_sys_ioctl.
- *
- * When you add any new common ioctls to the switches above and below,
- * please ensure they have compatible arguments in compat mode.
- */
+ 
 static int do_vfs_ioctl(struct file *filp, unsigned int fd,
 			unsigned int cmd, unsigned long arg)
 {
@@ -811,7 +696,7 @@ static int do_vfs_ioctl(struct file *filp, unsigned int fd,
 		return ioctl_fiemap(filp, argp);
 
 	case FIGETBSZ:
-		/* anon_bdev filesystems may not have a block size */
+		 
 		if (!inode->i_sb->s_blocksize)
 			return -EINVAL;
 
@@ -876,32 +761,7 @@ out:
 }
 
 #ifdef CONFIG_COMPAT
-/**
- * compat_ptr_ioctl - generic implementation of .compat_ioctl file operation
- * @file: The file to operate on.
- * @cmd: The ioctl command number.
- * @arg: The argument to the ioctl.
- *
- * This is not normally called as a function, but instead set in struct
- * file_operations as
- *
- *     .compat_ioctl = compat_ptr_ioctl,
- *
- * On most architectures, the compat_ptr_ioctl() just passes all arguments
- * to the corresponding ->ioctl handler. The exception is arch/s390, where
- * compat_ptr() clears the top bit of a 32-bit pointer value, so user space
- * pointers to the second 2GB alias the first 2GB, as is the case for
- * native 32-bit s390 user space.
- *
- * The compat_ptr_ioctl() function must therefore be used only with ioctl
- * functions that either ignore the argument or pass a pointer to a
- * compatible data type.
- *
- * If any ioctl command handled by fops->unlocked_ioctl passes a plain
- * integer instead of a pointer, or any of the passed data types
- * is incompatible between 32-bit and 64-bit architectures, a proper
- * handler is required instead of compat_ptr_ioctl.
- */
+ 
 long compat_ptr_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	if (!file->f_op->unlocked_ioctl)
@@ -920,19 +780,19 @@ COMPAT_SYSCALL_DEFINE3(ioctl, unsigned int, fd, unsigned int, cmd,
 	if (!f.file)
 		return -EBADF;
 
-	/* RED-PEN how should LSM module know it's handling 32bit? */
+	 
 	error = security_file_ioctl(f.file, cmd, arg);
 	if (error)
 		goto out;
 
 	switch (cmd) {
-	/* FICLONE takes an int argument, so don't use compat_ptr() */
+	 
 	case FICLONE:
 		error = ioctl_file_clone(f.file, arg, 0, 0, 0);
 		break;
 
 #if defined(CONFIG_X86_64)
-	/* these get messy on amd64 due to alignment differences */
+	 
 	case FS_IOC_RESVSP_32:
 	case FS_IOC_RESVSP64_32:
 		error = compat_ioctl_preallocate(f.file, 0, compat_ptr(arg));
@@ -948,20 +808,13 @@ COMPAT_SYSCALL_DEFINE3(ioctl, unsigned int, fd, unsigned int, cmd,
 		break;
 #endif
 
-	/*
-	 * These access 32-bit values anyway so no further handling is
-	 * necessary.
-	 */
+	 
 	case FS_IOC32_GETFLAGS:
 	case FS_IOC32_SETFLAGS:
 		cmd = (cmd == FS_IOC32_GETFLAGS) ?
 			FS_IOC_GETFLAGS : FS_IOC_SETFLAGS;
 		fallthrough;
-	/*
-	 * everything else in do_vfs_ioctl() takes either a compatible
-	 * pointer argument or no argument -- call it with a modified
-	 * argument.
-	 */
+	 
 	default:
 		error = do_vfs_ioctl(f.file, fd, cmd,
 				     (unsigned long)compat_ptr(arg));

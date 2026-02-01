@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015 QLogic Corporation
- * Copyright (c) 2019-2021 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QED_DEBUG_H
 #define _QED_DEBUG_H
@@ -19,7 +16,7 @@ enum qed_dbg_features {
 	DBG_FEATURE_NUM
 };
 
-/* Forward Declaration */
+ 
 struct qed_dev;
 struct qed_hwfn;
 

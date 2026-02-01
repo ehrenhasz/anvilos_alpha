@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Sunrisepoint PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2015, Intel Corporation
- * Authors: Mathias Nyman <mathias.nyman@linux.intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -41,9 +35,9 @@
 #define SPT_LP_COMMUNITY(b, s, e)			\
 	INTEL_COMMUNITY_SIZE(b, s, e, 24, 4, SPT_LP)
 
-/* Sunrisepoint-LP */
+ 
 static const struct pinctrl_pin_desc sptlp_pins[] = {
-	/* GPP_A */
+	 
 	PINCTRL_PIN(0, "RCINB"),
 	PINCTRL_PIN(1, "LAD_0"),
 	PINCTRL_PIN(2, "LAD_1"),
@@ -68,7 +62,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(21, "ISH_GP_3"),
 	PINCTRL_PIN(22, "ISH_GP_4"),
 	PINCTRL_PIN(23, "ISH_GP_5"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(24, "CORE_VID_0"),
 	PINCTRL_PIN(25, "CORE_VID_1"),
 	PINCTRL_PIN(26, "VRALERTB"),
@@ -93,7 +87,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(45, "GSPI1_MISO"),
 	PINCTRL_PIN(46, "GSPI1_MOSI"),
 	PINCTRL_PIN(47, "SML1ALERTB"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(48, "SMBCLK"),
 	PINCTRL_PIN(49, "SMBDATA"),
 	PINCTRL_PIN(50, "SMBALERTB"),
@@ -118,7 +112,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(69, "UART2_TXD"),
 	PINCTRL_PIN(70, "UART2_RTSB"),
 	PINCTRL_PIN(71, "UART2_CTSB"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(72, "SPI1_CSB"),
 	PINCTRL_PIN(73, "SPI1_CLK"),
 	PINCTRL_PIN(74, "SPI1_MISO_IO_1"),
@@ -143,7 +137,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(93, "SPI1_IO_2"),
 	PINCTRL_PIN(94, "SPI1_IO_3"),
 	PINCTRL_PIN(95, "SSP_MCLK"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(96, "SATAXPCIE_0"),
 	PINCTRL_PIN(97, "SATAXPCIE_1"),
 	PINCTRL_PIN(98, "SATAXPCIE_2"),
@@ -168,7 +162,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(117, "DDPC_CTRLDATA"),
 	PINCTRL_PIN(118, "DDPD_CTRLCLK"),
 	PINCTRL_PIN(119, "DDPD_CTRLDATA"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(120, "SSP2_SCLK"),
 	PINCTRL_PIN(121, "SSP2_SFRM"),
 	PINCTRL_PIN(122, "SSP2_TXD"),
@@ -193,7 +187,7 @@ static const struct pinctrl_pin_desc sptlp_pins[] = {
 	PINCTRL_PIN(141, "EMMC_RCLK"),
 	PINCTRL_PIN(142, "EMMC_CLK"),
 	PINCTRL_PIN(143, "GPP_F_23"),
-	/* GPP_G */
+	 
 	PINCTRL_PIN(144, "SD_CMD"),
 	PINCTRL_PIN(145, "SD_DATA_0"),
 	PINCTRL_PIN(146, "SD_DATA_1"),
@@ -291,9 +285,9 @@ static const struct intel_pinctrl_soc_data sptlp_soc_data = {
 	.ncommunities = ARRAY_SIZE(sptlp_communities),
 };
 
-/* Sunrisepoint-H */
+ 
 static const struct pinctrl_pin_desc spth_pins[] = {
-	/* GPP_A */
+	 
 	PINCTRL_PIN(0, "RCINB"),
 	PINCTRL_PIN(1, "LAD_0"),
 	PINCTRL_PIN(2, "LAD_1"),
@@ -318,7 +312,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(21, "ISH_GP_3"),
 	PINCTRL_PIN(22, "ISH_GP_4"),
 	PINCTRL_PIN(23, "ISH_GP_5"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(24, "CORE_VID_0"),
 	PINCTRL_PIN(25, "CORE_VID_1"),
 	PINCTRL_PIN(26, "VRALERTB"),
@@ -343,7 +337,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(45, "GSPI1_MISO"),
 	PINCTRL_PIN(46, "GSPI1_MOSI"),
 	PINCTRL_PIN(47, "SML1ALERTB"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(48, "SMBCLK"),
 	PINCTRL_PIN(49, "SMBDATA"),
 	PINCTRL_PIN(50, "SMBALERTB"),
@@ -368,7 +362,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(69, "UART2_TXD"),
 	PINCTRL_PIN(70, "UART2_RTSB"),
 	PINCTRL_PIN(71, "UART2_CTSB"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(72, "SPI1_CSB"),
 	PINCTRL_PIN(73, "SPI1_CLK"),
 	PINCTRL_PIN(74, "SPI1_MISO_IO_1"),
@@ -393,7 +387,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(93, "SPI1_IO_2"),
 	PINCTRL_PIN(94, "SPI1_IO_3"),
 	PINCTRL_PIN(95, "ISH_I2C2_SCL"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(96, "SATAXPCIE_0"),
 	PINCTRL_PIN(97, "SATAXPCIE_1"),
 	PINCTRL_PIN(98, "SATAXPCIE_2"),
@@ -407,7 +401,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(106, "USB2_OCB_1"),
 	PINCTRL_PIN(107, "USB2_OCB_2"),
 	PINCTRL_PIN(108, "USB2_OCB_3"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(109, "SATAXPCIE_3"),
 	PINCTRL_PIN(110, "SATAXPCIE_4"),
 	PINCTRL_PIN(111, "SATAXPCIE_5"),
@@ -432,7 +426,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(130, "L_BKLTCTL"),
 	PINCTRL_PIN(131, "GPP_F_22"),
 	PINCTRL_PIN(132, "GPP_F_23"),
-	/* GPP_G */
+	 
 	PINCTRL_PIN(133, "FAN_TACH_0"),
 	PINCTRL_PIN(134, "FAN_TACH_1"),
 	PINCTRL_PIN(135, "FAN_TACH_2"),
@@ -457,7 +451,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(154, "GPP_G_21"),
 	PINCTRL_PIN(155, "GPP_G_22"),
 	PINCTRL_PIN(156, "GPP_G_23"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(157, "SRCCLKREQB_6"),
 	PINCTRL_PIN(158, "SRCCLKREQB_7"),
 	PINCTRL_PIN(159, "SRCCLKREQB_8"),
@@ -482,7 +476,7 @@ static const struct pinctrl_pin_desc spth_pins[] = {
 	PINCTRL_PIN(178, "ISH_I2C1_SDA"),
 	PINCTRL_PIN(179, "ISH_I2C1_SCL"),
 	PINCTRL_PIN(180, "GPP_H_23"),
-	/* GPP_I */
+	 
 	PINCTRL_PIN(181, "DDSP_HDP_0"),
 	PINCTRL_PIN(182, "DDSP_HDP_1"),
 	PINCTRL_PIN(183, "DDSP_HDP_2"),
@@ -537,21 +531,21 @@ static const struct intel_function spth_functions[] = {
 };
 
 static const struct intel_padgroup spth_community0_gpps[] = {
-	SPT_H_GPP(0, 0, 23, 0),		/* GPP_A */
-	SPT_H_GPP(1, 24, 47, 24),	/* GPP_B */
+	SPT_H_GPP(0, 0, 23, 0),		 
+	SPT_H_GPP(1, 24, 47, 24),	 
 };
 
 static const struct intel_padgroup spth_community1_gpps[] = {
-	SPT_H_GPP(0, 48, 71, 48),	/* GPP_C */
-	SPT_H_GPP(1, 72, 95, 72),	/* GPP_D */
-	SPT_H_GPP(2, 96, 108, 96),	/* GPP_E */
-	SPT_H_GPP(3, 109, 132, 120),	/* GPP_F */
-	SPT_H_GPP(4, 133, 156, 144),	/* GPP_G */
-	SPT_H_GPP(5, 157, 180, 168),	/* GPP_H */
+	SPT_H_GPP(0, 48, 71, 48),	 
+	SPT_H_GPP(1, 72, 95, 72),	 
+	SPT_H_GPP(2, 96, 108, 96),	 
+	SPT_H_GPP(3, 109, 132, 120),	 
+	SPT_H_GPP(4, 133, 156, 144),	 
+	SPT_H_GPP(5, 157, 180, 168),	 
 };
 
 static const struct intel_padgroup spth_community3_gpps[] = {
-	SPT_H_GPP(0, 181, 191, 192),	/* GPP_I */
+	SPT_H_GPP(0, 181, 191, 192),	 
 };
 
 static const struct intel_community spth_communities[] = {

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD7879/AD7889 touchscreen (SPI bus)
- *
- * Copyright (C) 2008-2010 Michael Hennerich, Analog Devices Inc.
- */
 
-#include <linux/input.h>	/* BUS_SPI */
+ 
+
+#include <linux/input.h>	 
 #include <linux/pm.h>
 #include <linux/spi/spi.h>
 #include <linux/module.h>
@@ -14,7 +10,7 @@
 
 #include "ad7879.h"
 
-#define AD7879_DEVID		0x7A	/* AD7879/AD7889 */
+#define AD7879_DEVID		0x7A	 
 
 #define MAX_SPI_FREQ_HZ      5000000
 
@@ -33,7 +29,7 @@ static int ad7879_spi_probe(struct spi_device *spi)
 {
 	struct regmap *regmap;
 
-	/* don't exceed max specified SPI CLK frequency */
+	 
 	if (spi->max_speed_hz > MAX_SPI_FREQ_HZ) {
 		dev_err(&spi->dev, "SPI CLK %d Hz?\n", spi->max_speed_hz);
 		return -EINVAL;

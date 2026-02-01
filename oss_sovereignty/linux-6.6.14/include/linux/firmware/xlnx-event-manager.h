@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _FIRMWARE_XLNX_EVENT_MANAGER_H_
 #define _FIRMWARE_XLNX_EVENT_MANAGER_H_
 
 #include <linux/firmware/xlnx-zynqmp.h>
 
-#define CB_MAX_PAYLOAD_SIZE	(4U) /*In payload maximum 32bytes */
+#define CB_MAX_PAYLOAD_SIZE	(4U)  
 
-/************************** Exported Function *****************************/
+ 
 
 typedef void (*event_cb_func_t)(const u32 *payload, void *data);
 
@@ -33,4 +33,4 @@ static inline int xlnx_unregister_event(const enum pm_api_cb_id cb_type, const u
 }
 #endif
 
-#endif /* _FIRMWARE_XLNX_EVENT_MANAGER_H_ */
+#endif  

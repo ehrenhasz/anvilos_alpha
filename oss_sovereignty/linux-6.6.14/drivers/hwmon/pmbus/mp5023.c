@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for MPS MP5023 Hot-Swap Controller
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

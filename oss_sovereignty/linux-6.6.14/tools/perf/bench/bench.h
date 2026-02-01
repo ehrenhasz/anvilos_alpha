@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef BENCH_H
 #define BENCH_H
 
@@ -6,11 +6,7 @@
 
 extern struct timeval bench__start, bench__end, bench__runtime;
 
-/*
- * The madvise transparent hugepage constants were added in glibc
- * 2.13. For compatibility with older versions of glibc, define these
- * tokens if they are not already defined.
- */
+ 
 # ifndef MADV_HUGEPAGE
 #  define MADV_HUGEPAGE		14
 # endif
@@ -33,7 +29,7 @@ int bench_futex_hash(int argc, const char **argv);
 int bench_futex_wake(int argc, const char **argv);
 int bench_futex_wake_parallel(int argc, const char **argv);
 int bench_futex_requeue(int argc, const char **argv);
-/* pi futexes */
+ 
 int bench_futex_lock_pi(int argc, const char **argv);
 int bench_epoll_wait(int argc, const char **argv);
 int bench_epoll_ctl(int argc, const char **argv);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * It tests the mlock/mlock2() when they are invoked
- * on randomly memory region.
- */
+
+ 
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/capability.h>
@@ -35,7 +32,7 @@ int set_cap_limits(rlim_t max)
 		return -1;
 	}
 
-	/* drop capabilities including CAP_IPC_LOCK */
+	 
 	if (cap_set_proc(cap)) {
 		perror("cap_set_proc() returns error\n");
 		return -2;
@@ -76,13 +73,7 @@ int get_proc_locked_vm_size(void)
 	return -1;
 }
 
-/*
- * Get the MMUPageSize of the memory region including input
- * address from proc file.
- *
- * return value: on error case, 0 will be returned.
- * Otherwise the page size(in bytes) is returned.
- */
+ 
 int get_proc_page_size(unsigned long addr)
 {
 	FILE *smaps;
@@ -104,7 +95,7 @@ int get_proc_page_size(unsigned long addr)
 			continue;
 		}
 
-		/* found the MMUPageSize of this section */
+		 
 		if (sscanf(line, "MMUPageSize:    %8lu kB",
 					&mmupage_size) < 1) {
 			printf("Unable to parse smaps entry for Size:%s\n",
@@ -119,23 +110,7 @@ int get_proc_page_size(unsigned long addr)
 	return mmupage_size << 10;
 }
 
-/*
- * Test mlock/mlock2() on provided memory chunk.
- * It expects the mlock/mlock2() to be successful (within rlimit)
- *
- * With allocated memory chunk [p, p + alloc_size), this
- * test will choose start/len randomly to perform mlock/mlock2
- * [start, start +  len] memory range. The range is within range
- * of the allocated chunk.
- *
- * The memory region size alloc_size is within the rlimit.
- * So we always expect a success of mlock/mlock2.
- *
- * VmLck is assumed to be 0 before this test.
- *
- *    return value: 0 - success
- *    else: failure
- */
+ 
 int test_mlock_within_limit(char *p, int alloc_size)
 {
 	int i;
@@ -153,12 +128,7 @@ int test_mlock_within_limit(char *p, int alloc_size)
 
 	srand(time(NULL));
 	for (i = 0; i < TEST_LOOP; i++) {
-		/*
-		 * - choose mlock/mlock2 randomly
-		 * - choose lock_size randomly but lock_size < alloc_size
-		 * - choose start_offset randomly but p+start_offset+lock_size
-		 *   < p+alloc_size
-		 */
+		 
 		int is_mlock = !!(rand() % 2);
 		int lock_size = rand() % alloc_size;
 		int start_offset = rand() % (alloc_size - lock_size);
@@ -178,9 +148,7 @@ int test_mlock_within_limit(char *p, int alloc_size)
 		}
 	}
 
-	/*
-	 * Check VmLck left by the tests.
-	 */
+	 
 	locked_vm_size = get_proc_locked_vm_size();
 	page_size = get_proc_page_size((unsigned long)p);
 	if (page_size == 0) {
@@ -198,21 +166,7 @@ int test_mlock_within_limit(char *p, int alloc_size)
 }
 
 
-/*
- * We expect the mlock/mlock2() to be fail (outof limitation)
- *
- * With allocated memory chunk [p, p + alloc_size), this
- * test will randomly choose start/len and perform mlock/mlock2
- * on [start, start+len] range.
- *
- * The memory region size alloc_size is above the rlimit.
- * And the len to be locked is higher than rlimit.
- * So we always expect a failure of mlock/mlock2.
- * No locked page number should be increased as a side effect.
- *
- *    return value: 0 - success
- *    else: failure
- */
+ 
 int test_mlock_outof_limit(char *p, int alloc_size)
 {
 	int i;

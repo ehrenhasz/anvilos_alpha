@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015 Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8916_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8916_H
@@ -168,7 +166,7 @@
 #define GCC_CODEC_DIGCODEC_CLK			159
 #define GCC_MSS_Q6_BIMC_AXI_CLK			160
 
-/* Indexes for GDSCs */
+ 
 #define BIMC_GDSC				0
 #define VENUS_GDSC				1
 #define MDSS_GDSC				2

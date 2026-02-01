@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (c) 2018 Facebook */
+
+ 
 
 #include <ctype.h>
-#include <stdio.h> /* for (FILE *) used by json_writer */
+#include <stdio.h>  
 #include <string.h>
 #include <unistd.h>
 #include <asm/byteorder.h>
@@ -43,7 +43,7 @@ static int dump_prog_id_as_func_ptr(const struct btf_dumper *d,
 	char prog_str[1024];
 	int err;
 
-	/* Get the ptr's func_proto */
+	 
 	func_sig_len = btf_dump_func(d->btf, prog_str, func_proto, NULL, 0,
 				     sizeof(prog_str));
 	if (func_sig_len == -1)
@@ -52,7 +52,7 @@ static int dump_prog_id_as_func_ptr(const struct btf_dumper *d,
 	if (!prog_id)
 		goto print;
 
-	/* Get the bpf_prog's name.  Obtain from func_info. */
+	 
 	prog_fd = bpf_prog_get_fd_by_id(prog_id);
 	if (prog_fd < 0)
 		goto print;
@@ -218,9 +218,7 @@ static bool is_str_array(const struct btf *btf, const struct btf_array *arr,
 		return false;
 
 	elem_type = btf__type_by_id(btf, arr->type);
-	/* Not skipping typedef.  typedef to char does not count as
-	 * a string now.
-	 */
+	 
 	while (elem_type && btf_is_mod(elem_type))
 		elem_type = btf__type_by_id(btf, elem_type->type);
 
@@ -240,7 +238,7 @@ static bool is_str_array(const struct btf *btf, const struct btf_array *arr,
 		s++;
 	}
 
-	/* '\0' is not found */
+	 
 	return false;
 }
 
@@ -277,13 +275,7 @@ static int btf_dumper_array(const struct btf_dumper *d, __u32 type_id,
 static void btf_int128_print(json_writer_t *jw, const void *data,
 			     bool is_plain_text)
 {
-	/* data points to a __int128 number.
-	 * Suppose
-	 *     int128_num = *(__int128 *)data;
-	 * The below formulas shows what upper_num and lower_num represents:
-	 *     upper_num = int128_num >> 64;
-	 *     lower_num = int128_num & 0xffffffffFFFFFFFFULL;
-	 */
+	 
 	__u64 upper_num, lower_num;
 
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -320,7 +312,7 @@ static void btf_int128_shift(__u64 *print_num, __u16 left_shift_bits,
 	lower_num = print_num[0];
 #endif
 
-	/* shake out un-needed bits by shift/or operations */
+	 
 	if (left_shift_bits >= 64) {
 		upper_num = lower_num << (left_shift_bits - 64);
 		lower_num = 0;
@@ -382,9 +374,7 @@ static void btf_dumper_int_bits(__u32 int_type, __u8 bit_offset,
 	int nr_bits = BTF_INT_BITS(int_type);
 	int total_bits_offset;
 
-	/* bits_offset is at most 7.
-	 * BTF_INT_OFFSET() cannot exceed 128 bits.
-	 */
+	 
 	total_bits_offset = bit_offset + BTF_INT_OFFSET(int_type);
 	data += BITS_ROUNDDOWN_BYTES(total_bits_offset);
 	bit_offset = BITS_PER_BYTE_MASKED(total_bits_offset);
@@ -401,7 +391,7 @@ static int btf_dumper_int(const struct btf_type *t, __u8 bit_offset,
 
 	int_type = (__u32 *)(t + 1);
 	nr_bits = BTF_INT_BITS(*int_type);
-	/* if this is bit field */
+	 
 	if (bit_offset || BTF_INT_OFFSET(*int_type) ||
 	    BITS_PER_BYTE_MASKED(nr_bits)) {
 		btf_dumper_int_bits(*int_type, bit_offset, data, jw,
@@ -455,7 +445,7 @@ static int btf_dumper_int(const struct btf_type *t, __u8 bit_offset,
 		jsonw_bool(jw, *(bool *)data);
 		break;
 	default:
-		/* shouldn't happen */
+		 
 		return -EINVAL;
 	}
 
@@ -577,7 +567,7 @@ static int btf_dumper_do_type(const struct btf_dumper *d, __u32 type_id,
 		jsonw_printf(d->jw, "(unknown)");
 		return 0;
 	case BTF_KIND_FWD:
-		/* map key or value can't be forward */
+		 
 		jsonw_printf(d->jw, "(fwd-kind-invalid)");
 		return -EINVAL;
 	case BTF_KIND_TYPEDEF:
@@ -730,10 +720,7 @@ static int btf_dump_func(const struct btf *btf, char *func_sig,
 				BTF_PRINT_ARG("%s",
 					      btf__name_by_offset(btf, arg->name_off));
 			else if (pos && func_sig[pos - 1] == ' ')
-				/* Remove unnecessary space for
-				 * FUNC_PROTO that does not have
-				 * arg->name_off
-				 */
+				 
 				func_sig[--pos] = '\0';
 		} else {
 			BTF_PRINT_ARG("...");
@@ -782,10 +769,7 @@ void btf_dump_linfo_plain(const struct btf *btf,
 	if (linum) {
 		const char *file = btf__name_by_offset(btf, linfo->file_name_off);
 
-		/* More forgiving on file because linum option is
-		 * expected to provide more info than the already
-		 * available src line.
-		 */
+		 
 		if (!file)
 			file = "";
 
@@ -851,19 +835,16 @@ static const char *shorten_path(const char *path)
 	if (len <= MAX_PATH_LEN)
 		return path;
 
-	/* Search for last '/' under the MAX_PATH_LEN limit */
+	 
 	shortpath = strchr(path + len - MAX_PATH_LEN, '/');
 	if (shortpath) {
 		if (shortpath < path + strlen("..."))
-			/* We removed a very short prefix, e.g. "/w", and we'll
-			 * make the path longer by prefixing with the ellipsis.
-			 * Not worth it, keep initial path.
-			 */
+			 
 			return path;
 		return shortpath;
 	}
 
-	/* File base name length is > MAX_PATH_LEN, search for last '/' */
+	 
 			shortpath = strrchr(path, '/');
 	if (shortpath)
 		return shortpath;
@@ -884,10 +865,7 @@ void btf_dump_linfo_dotlabel(const struct btf *btf,
 		const char *file = btf__name_by_offset(btf, linfo->file_name_off);
 		const char *shortfile;
 
-		/* More forgiving on file because linum option is
-		 * expected to provide more info than the already
-		 * available src line.
-		 */
+		 
 		if (!file)
 			shortfile = "";
 		else

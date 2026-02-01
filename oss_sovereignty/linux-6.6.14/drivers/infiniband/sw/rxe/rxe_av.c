@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include "rxe.h"
 #include "rxe_loc.h"
@@ -120,7 +117,7 @@ void rxe_av_fill_ip_info(struct rxe_av *av, struct rdma_ah_attr *attr)
 		type = RXE_NETWORK_TYPE_IPV6;
 		break;
 	default:
-		/* not reached - checked in rxe_av_chk_attr */
+		 
 		type = 0;
 		break;
 	}
@@ -147,7 +144,7 @@ struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt, struct rxe_ah **ahp)
 
 	ah_num = pkt->wqe->wr.wr.ud.ah_num;
 	if (ah_num) {
-		/* only new user provider or kernel client */
+		 
 		ah = rxe_pool_get_index(&pkt->rxe->ah_pool, ah_num);
 		if (!ah) {
 			rxe_dbg_qp(pkt->qp, "Unable to find AH matching ah_num\n");
@@ -168,6 +165,6 @@ struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt, struct rxe_ah **ahp)
 		return &ah->av;
 	}
 
-	/* only old user provider for UD sends*/
+	 
 	return &pkt->wqe->wr.wr.ud.av;
 }

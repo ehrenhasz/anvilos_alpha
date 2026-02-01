@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Cadence Design Systems Inc.
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -751,10 +747,7 @@ static int cdns_i3c_master_priv_xfers(struct i3c_dev_desc *dev,
 	    nxfers > master->caps.cmdrfifodepth)
 		return -ENOTSUPP;
 
-	/*
-	 * First make sure that all transactions (block of transfers separated
-	 * by a STOP marker) fit in the FIFOs.
-	 */
+	 
 	for (i = 0; i < nxfers; i++) {
 		if (xfers[i].rnw)
 			rxslots += DIV_ROUND_UP(xfers[i].len, 4);
@@ -881,13 +874,13 @@ static u32 prepare_rr0_dev_address(u32 addr)
 {
 	u32 ret = (addr << 1) & 0xff;
 
-	/* RR0[7:1] = addr[6:0] */
+	 
 	ret |= (addr & GENMASK(6, 0)) << 1;
 
-	/* RR0[15:13] = addr[9:7] */
+	 
 	ret |= (addr & GENMASK(9, 7)) << 6;
 
-	/* RR0[0] = ~XOR(addr[6:0]) */
+	 
 	if (!(hweight8(addr & 0x7f) & 1))
 		ret |= 1;
 
@@ -1096,7 +1089,7 @@ static void cdns_i3c_master_upd_i3c_scl_lim(struct cdns_i3c_master *master)
 			new_i3c_scl_lim = max_fscl;
 	}
 
-	/* Only update PRESCL_CTRL1 if the I3C SCL limitation has changed. */
+	 
 	if (new_i3c_scl_lim == master->i3c_scl_lim)
 		return;
 	master->i3c_scl_lim = new_i3c_scl_lim;
@@ -1104,7 +1097,7 @@ static void cdns_i3c_master_upd_i3c_scl_lim(struct cdns_i3c_master *master)
 		return;
 	pres_step = 1000000000UL / (bus->scl_rate.i3c * 4);
 
-	/* Configure PP_LOW to meet I3C slave limitations. */
+	 
 	prescl1 = readl(master->regs + PRESCL_CTRL1) &
 		  ~PRESCL_CTRL1_PP_LOW_MASK;
 	ctrl = readl(master->regs + CTRL);
@@ -1118,7 +1111,7 @@ static void cdns_i3c_master_upd_i3c_scl_lim(struct cdns_i3c_master *master)
 
 	prescl1 |= PRESCL_CTRL1_PP_LOW(ncycles);
 
-	/* Disable I3C master before updating PRESCL_CTRL1. */
+	 
 	if (ctrl & CTRL_DEV_EN)
 		cdns_i3c_master_disable(master);
 
@@ -1139,7 +1132,7 @@ static int cdns_i3c_master_do_daa(struct i3c_master_controller *m)
 	olddevs = readl(master->regs + DEVS_CTRL) & DEVS_CTRL_DEVS_ACTIVE_MASK;
 	olddevs |= BIT(0);
 
-	/* Prepare RR slots before launching DAA. */
+	 
 	for_each_clear_bit(slot, &olddevs, master->maxdevs + 1) {
 		ret = i3c_master_get_free_addr(m, last_addr + 1);
 		if (ret < 0)
@@ -1160,19 +1153,11 @@ static int cdns_i3c_master_do_daa(struct i3c_master_controller *m)
 	newdevs = readl(master->regs + DEVS_CTRL) & DEVS_CTRL_DEVS_ACTIVE_MASK;
 	newdevs &= ~olddevs;
 
-	/*
-	 * Clear all retaining registers filled during DAA. We already
-	 * have the addressed assigned to them in the addrs array.
-	 */
+	 
 	for_each_set_bit(slot, &newdevs, master->maxdevs + 1)
 		i3c_master_add_i3c_dev_locked(m, addrs[slot]);
 
-	/*
-	 * Clear slots that ended up not being used. Can be caused by I3C
-	 * device creation failure or when the I3C device was already known
-	 * by the system but with a different address (in this case the device
-	 * already has a slot and does not need a new one).
-	 */
+	 
 	writel(readl(master->regs + DEVS_CTRL) |
 	       master->free_rr_slots << DEVS_CTRL_DEV_CLR_SHIFT,
 	       master->regs + DEVS_CTRL);
@@ -1181,7 +1166,7 @@ static int cdns_i3c_master_do_daa(struct i3c_master_controller *m)
 
 	cdns_i3c_master_upd_i3c_scl_lim(master);
 
-	/* Unmask Hot-Join and Mastership request interrupts. */
+	 
 	i3c_master_enec_locked(m, I3C_BROADCAST_ADDR,
 			       I3C_CCC_EVENT_HJ | I3C_CCC_EVENT_MR);
 
@@ -1194,11 +1179,11 @@ static u8 cdns_i3c_master_calculate_thd_delay(struct cdns_i3c_master *master)
 	u8 thd_delay = DIV_ROUND_UP(master->devdata->thd_delay_ns,
 				    (NSEC_PER_SEC / sysclk_rate));
 
-	/* Every value greater than 3 is not valid. */
+	 
 	if (thd_delay > THD_DELAY_MAX)
 		thd_delay = THD_DELAY_MAX;
 
-	/* CTLR_THD_DEL value is encoded. */
+	 
 	return (THD_DELAY_MAX - thd_delay);
 }
 
@@ -1254,7 +1239,7 @@ static int cdns_i3c_master_bus_init(struct i3c_master_controller *m)
 	prescl0 |= PRESCL_CTRL0_I2C(pres);
 	writel(prescl0, master->regs + PRESCL_CTRL0);
 
-	/* Calculate OD and PP low. */
+	 
 	pres_step = 1000000000 / (bus->scl_rate.i3c * 4);
 	ncycles = DIV_ROUND_UP(I3C_BUS_TLOW_OD_MIN_NS, pres_step) - 2;
 	if (ncycles < 0)
@@ -1262,7 +1247,7 @@ static int cdns_i3c_master_bus_init(struct i3c_master_controller *m)
 	prescl1 = PRESCL_CTRL1_OD_LOW(ncycles);
 	writel(prescl1, master->regs + PRESCL_CTRL1);
 
-	/* Get an address for the master. */
+	 
 	ret = i3c_master_get_free_addr(m, 0);
 	if (ret < 0)
 		return ret;
@@ -1278,21 +1263,10 @@ static int cdns_i3c_master_bus_init(struct i3c_master_controller *m)
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable Hot-Join, and, when a Hot-Join request happens, disable all
-	 * events coming from this device.
-	 *
-	 * We will issue ENTDAA afterwards from the threaded IRQ handler.
-	 */
+	 
 	ctrl |= CTRL_HJ_ACK | CTRL_HJ_DISEC | CTRL_HALT_EN | CTRL_MCS_EN;
 
-	/*
-	 * Configure data hold delay based on device-specific data.
-	 *
-	 * MIPI I3C Specification 1.0 defines non-zero minimal tHD_PP timing on
-	 * master output. This setting allows to meet this timing on master's
-	 * SoC outputs, regardless of PCB balancing.
-	 */
+	 
 	ctrl |= CTRL_THD_DELAY(cdns_i3c_master_calculate_thd_delay(master));
 	writel(ctrl, master->regs + CTRL);
 
@@ -1312,10 +1286,7 @@ static void cdns_i3c_master_handle_ibi(struct cdns_i3c_master *master,
 	size_t nbytes;
 	u8 *buf;
 
-	/*
-	 * FIXME: maybe we should report the FIFO OVF errors to the upper
-	 * layer.
-	 */
+	 
 	if (id >= master->ibi.num_slots || (ibir & IBIR_ERROR))
 		goto out;
 
@@ -1346,7 +1317,7 @@ out_unlock:
 	spin_unlock(&master->ibi.lock);
 
 out:
-	/* Consume data from the FIFO if it's not been done already. */
+	 
 	if (!data_consumed) {
 		int i;
 
@@ -1559,7 +1530,7 @@ static struct cdns_i3c_data cdns_i3c_devdata = {
 
 static const struct of_device_id cdns_i3c_master_of_ids[] = {
 	{ .compatible = "cdns,i3c-master", .data = &cdns_i3c_devdata },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int cdns_i3c_master_probe(struct platform_device *pdev)
@@ -1620,7 +1591,7 @@ static int cdns_i3c_master_probe(struct platform_device *pdev)
 
 	val = readl(master->regs + CONF_STATUS0);
 
-	/* Device ID0 is reserved to describe this master. */
+	 
 	master->maxdevs = CONF_STATUS0_DEVS_NUM(val);
 	master->free_rr_slots = GENMASK(master->maxdevs, 1);
 	master->caps.ibirfifodepth = CONF_STATUS0_IBIR_DEPTH(val);

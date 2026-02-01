@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, NVIDIA CORPORATION.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -113,10 +111,7 @@ static int tegra210_bpmp_ring_doorbell(struct tegra_bpmp *bpmp)
 	struct tegra210_bpmp *priv = bpmp->priv;
 	struct irq_data *irq_data = priv->tx_irq_data;
 
-	/*
-	 * Tegra Legacy Interrupt Controller (LIC) is used to notify BPMP of
-	 * available messages
-	 */
+	 
 	if (irq_data->chip->irq_retrigger)
 		return irq_data->chip->irq_retrigger(irq_data);
 
@@ -140,7 +135,7 @@ static int tegra210_bpmp_channel_init(struct tegra_bpmp_channel *channel,
 	void __iomem *p;
 	u32 address;
 
-	/* Retrieve channel base address from BPMP */
+	 
 	writel(index << TRIGGER_ID_SHIFT | TRIGGER_CMD_GET,
 	       priv->atomics + TRIGGER_OFFSET);
 	address = readl(priv->atomics + RESULT_OFFSET(index));

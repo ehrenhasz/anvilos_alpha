@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Real Time Clock Driver Test
- *	by: Benjamin Gaignard (benjamin.gaignard@linaro.org)
- *
- * To build
- *	gcc rtctest_setdate.c -o rtctest_setdate
- */
+
+ 
 
 #include <stdio.h>
 #include <linux/rtc.h>
@@ -28,7 +23,7 @@ int main(int argc, char **argv)
 	switch (argc) {
 	case 4:
 		time = argv[3];
-		/* FALLTHROUGH */
+		 
 	case 3:
 		date = argv[2];
 		rtc = argv[1];
@@ -53,7 +48,7 @@ int main(int argc, char **argv)
 		new.tm_mday, new.tm_mon + 1, new.tm_year + 1900,
 		new.tm_hour, new.tm_min, new.tm_sec);
 
-	/* Write the new date in RTC */
+	 
 	retval = ioctl(fd, RTC_SET_TIME, &new);
 	if (retval == -1) {
 		perror("RTC_SET_TIME ioctl");
@@ -61,7 +56,7 @@ int main(int argc, char **argv)
 		exit(errno);
 	}
 
-	/* Read back */
+	 
 	retval = ioctl(fd, RTC_RD_TIME, &current);
 	if (retval == -1) {
 		perror("RTC_RD_TIME ioctl");

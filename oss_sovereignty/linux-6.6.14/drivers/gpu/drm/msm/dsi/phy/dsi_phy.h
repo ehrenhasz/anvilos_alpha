@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DSI_PHY_H__
 #define __DSI_PHY_H__
@@ -78,7 +76,7 @@ struct msm_dsi_dphy_timing {
 
 	struct msm_dsi_phy_shared_timings shared_timings;
 
-	/* For PHY v2 only */
+	 
 	u32 hs_rqst_ckln;
 	u32 hs_prep_dly;
 	u32 hs_prep_dly_ckln;
@@ -123,9 +121,7 @@ struct msm_dsi_phy {
 	bool state_saved;
 };
 
-/*
- * PHY internal functions
- */
+ 
 int msm_dsi_dphy_timing_calc(struct msm_dsi_dphy_timing *timing,
 			     struct msm_dsi_phy_clk_request *clk_req);
 int msm_dsi_dphy_timing_calc_v2(struct msm_dsi_dphy_timing *timing,
@@ -137,4 +133,4 @@ int msm_dsi_dphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 int msm_dsi_cphy_timing_calc_v4(struct msm_dsi_dphy_timing *timing,
 				struct msm_dsi_phy_clk_request *clk_req);
 
-#endif /* __DSI_PHY_H__ */
+#endif  

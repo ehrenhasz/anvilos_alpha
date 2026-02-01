@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO based MDIO bitbang driver.
- * Supports OpenFirmware.
- *
- * Copyright (c) 2008 CSE Semaphore Belgium.
- *  by Laurent Pinchart <laurentp@cse-semaphore.com>
- *
- * Copyright (C) 2008, Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
- *
- * Based on earlier work by
- *
- * Copyright (c) 2003 Intracom S.A.
- *  by Pantelis Antoniou <panto@intracom.gr>
- *
- * 2005 (c) MontaVista Software, Inc.
- * Vitaly Bordug <vbordug@ru.mvista.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -56,11 +40,7 @@ static void mdio_dir(struct mdiobb_ctrl *ctrl, int dir)
 		container_of(ctrl, struct mdio_gpio_info, ctrl);
 
 	if (bitbang->mdo) {
-		/* Separate output pin. Always set its value to high
-		 * when changing direction. If direction is input,
-		 * assume the pin serves as pull-up. If direction is
-		 * output, the default value is high.
-		 */
+		 
 		gpiod_set_value_cansleep(bitbang->mdo, 1);
 		return;
 	}
@@ -204,7 +184,7 @@ static int mdio_gpio_remove(struct platform_device *pdev)
 static const struct of_device_id mdio_gpio_of_match[] = {
 	{ .compatible = "virtual,mdio-gpio", },
 	{ .compatible = "microchip,mdio-smi0" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mdio_gpio_of_match);
 

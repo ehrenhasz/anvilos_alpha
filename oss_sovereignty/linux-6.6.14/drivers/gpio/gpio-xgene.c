@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppliedMicro X-Gene SoC GPIO Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Feng Kan <fkan@apm.com>.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>

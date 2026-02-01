@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018-2020, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_ARFS_H_
 #define _ICE_ARFS_H_
@@ -15,16 +15,9 @@ enum ice_arfs_fltr_state {
 struct ice_arfs_entry {
 	struct ice_fdir_fltr fltr_info;
 	struct hlist_node list_entry;
-	u64 time_activated;	/* only valid for UDP flows */
+	u64 time_activated;	 
 	u32 flow_id;
-	/* fltr_state = 0 - ICE_ARFS_INACTIVE:
-	 *	filter needs to be updated or programmed in HW.
-	 * fltr_state = 1 - ICE_ARFS_ACTIVE:
-	 *	filter is active and programmed in HW.
-	 * fltr_state = 2 - ICE_ARFS_TODEL:
-	 *	filter has been deleted from HW and needs to be removed from
-	 *	the aRFS hash table.
-	 */
+	 
 	u8 fltr_state;
 };
 
@@ -81,5 +74,5 @@ ice_is_arfs_using_perfect_flow(struct ice_hw __always_unused *hw,
 {
 	return false;
 }
-#endif /* CONFIG_RFS_ACCEL */
-#endif /* _ICE_ARFS_H_ */
+#endif  
+#endif  

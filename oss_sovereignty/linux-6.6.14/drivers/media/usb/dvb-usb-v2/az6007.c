@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for AzureWave 6007 DVB-C/T USB2.0 and clones
- *
- * Copyright (c) Henry Wang <Henry.wang@AzureWave.com>
- *
- * This driver was made publicly available by Terratec, at:
- *	http://linux.terratec.de/files/TERRATEC_H7/20110323_TERRATEC_H7_Linux.tar.gz
- * The original driver's license is GPL, as declared with MODULE_LICENSE()
- *
- * Copyright (c) 2010-2012 Mauro Carvalho Chehab
- *	Driver modified by in order to work with upstream drxk driver, and
- *	tons of bugs got fixed, and converted to use dvb-usb-v2.
- */
+
+ 
 
 #include "drxk.h"
 #include "mt2063.h"
@@ -27,7 +15,7 @@ MODULE_PARM_DESC(xfer_debug, "Enable xfer debug");
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
-/* Known requests (Cypress FX2 firmware + az6007 "private" ones*/
+ 
 
 #define FX2_OED			0xb5
 #define AZ6007_READ_DATA	0xb7
@@ -195,7 +183,7 @@ static int az6007_streaming_ctrl(struct dvb_frontend *fe, int onoff)
 }
 
 #if IS_ENABLED(CONFIG_RC_CORE)
-/* remote control stuff (does not work with my box) */
+ 
 static int az6007_rc_query(struct dvb_usb_device *d)
 {
 	struct az6007_device_state *st = d_to_priv(d);
@@ -596,8 +584,8 @@ static int az6007_ci_init(struct dvb_usb_adapter *adap)
 
 	ret = dvb_ca_en50221_init(&adap->dvb_adap,
 				  &state->ca,
-				  0, /* flags */
-				  1);/* n_slots */
+				  0,  
+				  1); 
 	if (ret != 0) {
 		pr_err("Cannot initialize CI: Error %d.\n", ret);
 		memset(&state->ca, 0, sizeof(state->ca));
@@ -672,7 +660,7 @@ static int az6007_tuner_attach(struct dvb_usb_adapter *adap)
 
 	pr_debug("attaching tuner mt2063\n");
 
-	/* Attach mt2063 to DVB-C frontend */
+	 
 	if (adap->fe[0]->ops.i2c_gate_ctrl)
 		adap->fe[0]->ops.i2c_gate_ctrl(adap->fe[0], 1);
 	if (!dvb_attach(mt2063_attach, adap->fe[0],
@@ -739,7 +727,7 @@ static int az6007_power_ctrl(struct dvb_usb_device *d, int onoff)
 	return 0;
 }
 
-/* I2C */
+ 
 static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 			   int num)
 {
@@ -762,11 +750,7 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 		    && ((msgs[i].flags & I2C_M_RD) != I2C_M_RD)
 		    && (msgs[i + 1].flags & I2C_M_RD)
 		    && (msgs[i].addr == msgs[i + 1].addr)) {
-			/*
-			 * A write + read xfer for the same address, where
-			 * the first xfer has just 1 byte length.
-			 * Need to join both into one operation
-			 */
+			 
 			if (az6007_xfer_debug)
 				printk(KERN_DEBUG "az6007: I2C W/R addr=0x%x len=%d/%d\n",
 				       addr, msgs[i].len, msgs[i + 1].len);
@@ -784,7 +768,7 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 				ret = -EIO;
 			i++;
 		} else if (!(msgs[i].flags & I2C_M_RD)) {
-			/* write bytes */
+			 
 			if (az6007_xfer_debug)
 				printk(KERN_DEBUG "az6007: I2C W addr=0x%x len=%d\n",
 				       addr, msgs[i].len);
@@ -802,7 +786,7 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 			ret =  __az6007_write(d->udev, req, value, index,
 					      st->data, length);
 		} else {
-			/* read bytes */
+			 
 			if (az6007_xfer_debug)
 				printk(KERN_DEBUG "az6007: I2C R addr=0x%x len=%d\n",
 				       addr, msgs[i].len);
@@ -854,7 +838,7 @@ static int az6007_identify_state(struct dvb_usb_device *d, const char **name)
 	if (!mac)
 		return -ENOMEM;
 
-	/* Try to read the mac address */
+	 
 	ret = __az6007_read(d->udev, AZ6007_READ_DATA, 6, 0, mac, 6);
 	if (ret == 6)
 		ret = WARM;
@@ -889,7 +873,7 @@ static int az6007_download_firmware(struct dvb_usb_device *d,
 	return cypress_load_firmware(d->udev, fw, CYPRESS_FX2);
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties az6007_props = {
 	.driver_name         = KBUILD_MODNAME,
 	.owner               = THIS_MODULE,
@@ -923,7 +907,7 @@ static struct dvb_usb_device_properties az6007_cablestar_hdci_props = {
 	.tuner_attach        = az6007_tuner_attach,
 	.frontend_attach     = az6007_cablestar_hdci_frontend_attach,
 	.streaming_ctrl      = az6007_streaming_ctrl,
-/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
+ 
 	.get_rc_config       = NULL,
 	.read_mac_address    = az6007_read_mac_addr,
 	.download_firmware   = az6007_download_firmware,
@@ -966,7 +950,7 @@ static int az6007_resume(struct usb_interface *intf)
 	return dvb_usbv2_resume(intf);
 }
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver az6007_usb_driver = {
 	.name		= KBUILD_MODNAME,
 	.id_table	= az6007_usb_table,
@@ -974,10 +958,7 @@ static struct usb_driver az6007_usb_driver = {
 	.disconnect	= az6007_usb_disconnect,
 	.no_dynamic_id	= 1,
 	.soft_unbind	= 1,
-	/*
-	 * FIXME: need to implement reset_resume, likely with
-	 * dvb-usb-v2 core support
-	 */
+	 
 	.suspend	= az6007_suspend,
 	.resume		= az6007_resume,
 };

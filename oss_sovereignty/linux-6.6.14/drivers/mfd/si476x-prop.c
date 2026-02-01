@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/mfd/si476x-prop.c -- Subroutines to access
- * properties of si476x chips
- *
- * Copyright (C) 2012 Innovative Converged Devices(ICD)
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+ 
 #include <linux/module.h>
 
 #include <linux/mfd/si476x-core.h>

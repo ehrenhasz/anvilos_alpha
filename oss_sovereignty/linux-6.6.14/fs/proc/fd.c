@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/sched/signal.h>
 #include <linux/errno.h>
 #include <linux/dcache.h>
@@ -61,7 +61,7 @@ static int seq_show(struct seq_file *m, void *v)
 		   real_mount(file->f_path.mnt)->mnt_id,
 		   file_inode(file)->i_ino);
 
-	/* show_fd_locks() never deferences files so a stale value is safe */
+	 
 	show_fd_locks(m, file, files);
 	if (seq_has_overflowed(m))
 		goto out;
@@ -322,10 +322,7 @@ static struct dentry *proc_lookupfd(struct inode *dir, struct dentry *dentry,
 	return proc_lookupfd_common(dir, dentry, proc_fd_instantiate);
 }
 
-/*
- * /proc/pid/fd needs a special permission handler so that a process can still
- * access /proc/self/fd after it has executed a setuid().
- */
+ 
 int proc_fd_permission(struct mnt_idmap *idmap,
 		       struct inode *inode, int mask)
 {
@@ -354,7 +351,7 @@ static int proc_fd_getattr(struct mnt_idmap *idmap,
 
 	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 
-	/* If it's a directory, put the number of open fds there */
+	 
 	if (S_ISDIR(inode->i_mode)) {
 		rv = proc_readfd_count(inode, &stat->size);
 		if (rv < 0)

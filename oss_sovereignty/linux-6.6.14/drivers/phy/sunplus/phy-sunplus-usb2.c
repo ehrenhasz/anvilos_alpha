@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Sunplus SP7021 USB 2.0 phy driver
- *
- * Copyright (C) 2022 Sunplus Technology Inc., All rights reserved.
- *
- * Note 1 : non-posted write command for the registers accesses of
- * Sunplus SP7021.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -25,7 +17,7 @@
 #define LOW_MASK_BITS				GENMASK(15, 0)
 #define OTP_DISC_LEVEL_DEFAULT			0xd
 
-/* GROUP UPHY */
+ 
 #define CONFIG1					0x4
 #define J_HS_TX_PWRSAV				BIT(5)
 #define CONFIG3					0xc
@@ -52,7 +44,7 @@
 #define PROB_MASK				GENMASK(5, 3)
 #define PROB					FIELD_PREP(PROB_MASK, 7)
 
-/* GROUP MOON4 */
+ 
 #define UPHY_CONTROL0				0x0
 #define UPHY_CONTROL1				0x4
 #define UPHY_CONTROL2				0x8
@@ -122,16 +114,16 @@ static int sp_uphy_init(struct phy *phy)
 	if (ret)
 		goto err_reset;
 
-	/* Default value modification */
+	 
 	writel(HIGH_MASK_BITS | 0x4002, usbphy->moon4_regs + UPHY_CONTROL0);
 	writel(HIGH_MASK_BITS | 0x8747, usbphy->moon4_regs + UPHY_CONTROL1);
 
-	/* disconnect voltage */
+	 
 	ret = update_disc_vol(usbphy);
 	if (ret < 0)
 		return ret;
 
-	/* board uphy 0 internal register modification for tid certification */
+	 
 	val = readl(usbphy->phy_regs + CONFIG9);
 	val &= ~(J_ECO_PATH);
 	writel(val, usbphy->phy_regs + CONFIG9);
@@ -144,16 +136,16 @@ static int sp_uphy_init(struct phy *phy)
 	val = (val & ~PROB) | PROB;
 	writel(val, usbphy->phy_regs + CONFIG23);
 
-	/* port 0 uphy clk fix */
+	 
 	writel(MASK_MO1_UPHY_RX_CLK_SEL | MO1_UPHY_RX_CLK_SEL,
 	       usbphy->moon4_regs + UPHY_CONTROL2);
 
-	/* battery charger */
+	 
 	writel(J_TBCWAIT_1P1_MS | J_TVDM_SRC_DIS_8P2_MS | J_TVDM_SRC_EN_1P6_MS | J_BC_EN,
 	       usbphy->phy_regs + CONFIG16);
 	writel(IBG_TRIM0_SSLVHT | J_VDATREE_TRIM_DEFAULT, usbphy->phy_regs + CONFIG17);
 
-	/* chirp mode */
+	 
 	writel(J_FORCE_DISC_ON | J_DEBUG_CTRL_ADDR_MACRO, usbphy->phy_regs + CONFIG3);
 
 	return 0;
@@ -171,7 +163,7 @@ static int sp_uphy_power_on(struct phy *phy)
 	struct sp_usbphy *usbphy = phy_get_drvdata(phy);
 	u32 pll_pwr_on, pll_pwr_off;
 
-	/* PLL power off/on twice */
+	 
 	pll_pwr_off = (readl(usbphy->moon4_regs + UPHY_CONTROL3) & ~LOW_MASK_BITS)
 			| MO1_UPHY_PLL_POWER_OFF_SEL | MO1_UPHY_PLL_POWER_OFF;
 	pll_pwr_on = (readl(usbphy->moon4_regs + UPHY_CONTROL3) & ~LOW_MASK_BITS)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/types.h>
@@ -20,9 +18,9 @@
 #define HINIC_MBOX_INT_DST_AEQN_SHIFT				10
 #define HINIC_MBOX_INT_SRC_RESP_AEQN_SHIFT			12
 #define HINIC_MBOX_INT_STAT_DMA_SHIFT				14
-/* The size of data to be sended (unit of 4 bytes) */
+ 
 #define HINIC_MBOX_INT_TX_SIZE_SHIFT				20
-/* SO_RO(strong order, relax order) */
+ 
 #define HINIC_MBOX_INT_STAT_DMA_SO_RO_SHIFT			25
 #define HINIC_MBOX_INT_WB_EN_SHIFT				28
 
@@ -44,10 +42,7 @@ enum hinic_mbox_tx_status {
 
 #define HINIC_MBOX_CTRL_TRIGGER_AEQE_SHIFT			0
 
-/* specifies the issue request for the message data.
- * 0 - Tx request is done;
- * 1 - Tx request is in process.
- */
+ 
 #define HINIC_MBOX_CTRL_TX_STATUS_SHIFT				1
 
 #define HINIC_MBOX_CTRL_TRIGGER_AEQE_MASK			0x1
@@ -64,10 +59,7 @@ enum hinic_mbox_tx_status {
 #define HINIC_MBOX_HEADER_SEQID_SHIFT				24
 #define HINIC_MBOX_HEADER_LAST_SHIFT				30
 
-/* specifies the mailbox message direction
- * 0 - send
- * 1 - receive
- */
+ 
 #define HINIC_MBOX_HEADER_DIRECTION_SHIFT			31
 #define HINIC_MBOX_HEADER_CMD_SHIFT				32
 #define HINIC_MBOX_HEADER_MSG_ID_SHIFT				40
@@ -107,12 +99,12 @@ enum hinic_mbox_tx_status {
 
 #define MBOX_INFO_SZ				4
 
-/* MBOX size is 64B, 8B for mbox_header, 4B reserved */
+ 
 #define MBOX_SEG_LEN				48
 #define MBOX_SEG_LEN_ALIGN			4
 #define MBOX_WB_STATUS_LEN			16UL
 
-/* mbox write back status is 16B, only first 4B is used */
+ 
 #define MBOX_WB_STATUS_ERRCODE_MASK		0xFFFF
 #define MBOX_WB_STATUS_MASK			0xFF
 #define MBOX_WB_ERROR_CODE_MASK			0xFF00
@@ -149,7 +141,7 @@ enum hinic_mbox_tx_status {
 
 #define FUNC_ID_OFF_SET_8B		8
 
-/* max message counter wait to process for one function */
+ 
 #define HINIC_MAX_MSG_CNT_TO_PROCESS	10
 
 #define HINIC_QUEUE_MIN_DEPTH		6
@@ -214,13 +206,7 @@ bool hinic_mbox_check_func_id_8B(struct hinic_hwdev *hwdev, u16 func_idx,
 			     FUNC_ID_OFF_SET_8B);
 }
 
-/**
- * hinic_register_pf_mbox_cb - register mbox callback for pf
- * @hwdev: the pointer to hw device
- * @mod:	specific mod that the callback will handle
- * @callback:	callback function
- * Return: 0 - success, negative - failure
- */
+ 
 int hinic_register_pf_mbox_cb(struct hinic_hwdev *hwdev,
 			      enum hinic_mod_type mod,
 			      hinic_pf_mbox_cb callback)
@@ -237,13 +223,7 @@ int hinic_register_pf_mbox_cb(struct hinic_hwdev *hwdev,
 	return 0;
 }
 
-/**
- * hinic_register_vf_mbox_cb - register mbox callback for vf
- * @hwdev: the pointer to hw device
- * @mod:	specific mod that the callback will handle
- * @callback:	callback function
- * Return: 0 - success, negative - failure
- */
+ 
 int hinic_register_vf_mbox_cb(struct hinic_hwdev *hwdev,
 			      enum hinic_mod_type mod,
 			      hinic_vf_mbox_cb callback)
@@ -260,11 +240,7 @@ int hinic_register_vf_mbox_cb(struct hinic_hwdev *hwdev,
 	return 0;
 }
 
-/**
- * hinic_unregister_pf_mbox_cb - unregister the mbox callback for pf
- * @hwdev:	the pointer to hw device
- * @mod:	specific mod that the callback will handle
- */
+ 
 void hinic_unregister_pf_mbox_cb(struct hinic_hwdev *hwdev,
 				 enum hinic_mod_type mod)
 {
@@ -279,11 +255,7 @@ void hinic_unregister_pf_mbox_cb(struct hinic_hwdev *hwdev,
 	func_to_func->pf_mbox_cb[mod] = NULL;
 }
 
-/**
- * hinic_unregister_vf_mbox_cb - unregister the mbox callback for vf
- * @hwdev:	the pointer to hw device
- * @mod:	specific mod that the callback will handle
- */
+ 
 void hinic_unregister_vf_mbox_cb(struct hinic_hwdev *hwdev,
 				 enum hinic_mod_type mod)
 {
@@ -659,7 +631,7 @@ static void clear_mbox_status(struct hinic_send_mbox *mbox)
 {
 	*mbox->wb_status = 0;
 
-	/* clear mailbox write back status */
+	 
 	wmb();
 }
 
@@ -682,7 +654,7 @@ static void mbox_copy_send_data(struct hinic_hwdev *hwdev,
 	u32 *data = seg;
 	u32 i, idx_max;
 
-	/* The mbox message should be aligned in 4 bytes. */
+	 
 	if (seg_len % chk_sz) {
 		memcpy(mbox_max_buf, seg, seg_len);
 		data = (u32 *)mbox_max_buf;
@@ -716,7 +688,7 @@ static void write_mbox_msg_attr(struct hinic_mbox_func_to_func *func_to_func,
 	hinic_hwif_write_reg(func_to_func->hwif,
 			     HINIC_FUNC_CSR_MAILBOX_INT_OFFSET_OFF, mbox_int);
 
-	wmb(); /* writing the mbox int attributes */
+	wmb();  
 	mbox_ctrl = HINIC_MBOX_CTRL_SET(TX_NOT_DONE, TX_STATUS);
 
 	if (poll)
@@ -744,10 +716,10 @@ static void dump_mox_reg(struct hinic_hwdev *hwdev)
 
 static u16 get_mbox_status(struct hinic_send_mbox *mbox)
 {
-	/* write back is 16B, but only use first 4B */
+	 
 	u64 wb_val = be64_to_cpu(*mbox->wb_status);
 
-	rmb(); /* verify reading before check */
+	rmb();  
 
 	return (u16)(wb_val & MBOX_WB_STATUS_ERRCODE_MASK);
 }
@@ -821,7 +793,7 @@ static int send_mbox_seg(struct hinic_mbox_func_to_func *func_to_func,
 
 	write_mbox_msg_attr(func_to_func, dst_func, dst_aeqn, seg_len, poll);
 
-	wmb(); /* writing the mbox msg attributes */
+	wmb();  
 
 	if (wait_for_mbox_seg_completion(func_to_func, poll, &wb_status))
 		return -ETIMEDOUT;
@@ -861,7 +833,7 @@ static int send_mbox_to_func(struct hinic_mbox_func_to_func *func_to_func,
 		 HINIC_MBOX_HEADER_SET(NOT_LAST_SEG, LAST) |
 		 HINIC_MBOX_HEADER_SET(direction, DIRECTION) |
 		 HINIC_MBOX_HEADER_SET(cmd, CMD) |
-		 /* The vf's offset to it's associated pf */
+		  
 		 HINIC_MBOX_HEADER_SET(msg_info->msg_id, MSG_ID) |
 		 HINIC_MBOX_HEADER_SET(msg_info->status, STATUS) |
 		 HINIC_MBOX_HEADER_SET(hinic_global_func_id_hw(hwdev->hwif),
@@ -915,7 +887,7 @@ response_for_recv_func_mbox(struct hinic_mbox_func_to_func *func_to_func,
 		else if (err)
 			msg_info.status = HINIC_MBOX_PF_SEND_ERR;
 
-		/* if no data needs to response, set out_size to 1 */
+		 
 		if (!out_size || err)
 			out_size = MBOX_MSG_NO_DATA_LEN;
 
@@ -1109,9 +1081,7 @@ int hinic_mbox_to_vf(struct hinic_hwdev *hwdev,
 		return -EINVAL;
 	}
 
-	/* vf_offset_to_pf + vf_id is the vf's global function id of vf in
-	 * this pf
-	 */
+	 
 	dst_func_idx = hinic_glb_pf_vf_offset(hwdev->hwif) + vf_id;
 
 	return hinic_mbox_to_func(func_to_func, mod, cmd, dst_func_idx, buf_in,
@@ -1269,7 +1239,7 @@ static bool hinic_cmdq_check_vf_ctxt(struct hinic_hwdev *hwdev,
 		(ctxt_info->curr_wqe_page_pfn, CURR_WQE_PAGE_PFN);
 	wq_block_pfn = HINIC_CMDQ_CTXT_BLOCK_INFO_GET
 		(ctxt_info->wq_block_pfn, WQ_BLOCK_PFN);
-	/* VF must use 0-level CLA */
+	 
 	if (curr_pg_pfn != wq_block_pfn)
 		return false;
 
@@ -1473,9 +1443,7 @@ void hinic_func_to_func_free(struct hinic_hwdev *hwdev)
 	hinic_aeq_unregister_hw_cb(&hwdev->aeqs, HINIC_MBX_SEND_RSLT);
 
 	hinic_unregister_pf_mbox_cb(hwdev, HINIC_MOD_COMM);
-	/* destroy workqueue before free related mbox resources in case of
-	 * illegal resource access
-	 */
+	 
 	destroy_workqueue(func_to_func->workq);
 
 	free_mbox_wb_status(func_to_func);

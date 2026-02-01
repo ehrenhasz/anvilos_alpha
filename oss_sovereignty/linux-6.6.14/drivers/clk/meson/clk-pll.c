@@ -1,30 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- *
- * Copyright (c) 2018 Baylibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
 
-/*
- * In the most basic form, a Meson PLL is composed as follows:
- *
- *                     PLL
- *        +--------------------------------+
- *        |                                |
- *        |             +--+               |
- *  in >>-----[ /N ]--->|  |      +-----+  |
- *        |             |  |------| DCO |---->> out
- *        |  +--------->|  |      +--v--+  |
- *        |  |          +--+         |     |
- *        |  |                       |     |
- *        |  +--[ *(M + (F/Fmax) ]<--+     |
- *        |                                |
- *        +--------------------------------+
- *
- * out = in * (m + frac / frac_max) / n
- */
+ 
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -77,11 +54,7 @@ static unsigned long meson_clk_pll_recalc_rate(struct clk_hw *hw,
 
 	n = meson_parm_read(clk->map, &pll->n);
 
-	/*
-	 * On some HW, N is set to zero on init. This value is invalid as
-	 * it would result in a division by zero. The rate can't be
-	 * calculated in this case
-	 */
+	 
 	if (n == 0)
 		return 0;
 
@@ -103,7 +76,7 @@ static unsigned int __pll_params_with_frac(unsigned long rate,
 	unsigned int frac_max = (1 << pll->frac.width);
 	u64 val = (u64)rate * n;
 
-	/* Bail out if we are already over the requested rate */
+	 
 	if (rate < parent_rate * m / n)
 		return 0;
 
@@ -123,11 +96,11 @@ static bool meson_clk_pll_is_better(unsigned long rate,
 				    struct meson_clk_pll_data *pll)
 {
 	if (__pll_round_closest_mult(pll)) {
-		/* Round Closest */
+		 
 		if (abs(now - rate) < abs(best - rate))
 			return true;
 	} else {
-		/* Round down */
+		 
 		if (now <= rate && best < now)
 			return true;
 	}
@@ -171,12 +144,12 @@ static int meson_clk_get_pll_range_index(unsigned long rate,
 {
 	*n = index + 1;
 
-	/* Check the predivider range */
+	 
 	if (*n >= (1 << pll->n.width))
 		return -EINVAL;
 
 	if (*n == 1) {
-		/* Get the boundaries out the way */
+		 
 		if (rate <= pll->range->min * parent_rate) {
 			*m = pll->range->min;
 			return -ENODATA;
@@ -188,7 +161,7 @@ static int meson_clk_get_pll_range_index(unsigned long rate,
 
 	*m = meson_clk_get_pll_range_m(rate, parent_rate, *n, pll);
 
-	/* the pre-divider gives a multiplier too big - stop */
+	 
 	if (*m >= (1 << pll->m.width))
 		return -EINVAL;
 
@@ -262,10 +235,7 @@ static int meson_clk_pll_determine_rate(struct clk_hw *hw,
 		return 0;
 	}
 
-	/*
-	 * The rate provided by the setting is not an exact match, let's
-	 * try to improve the result using the fractional parameter
-	 */
+	 
 	frac = __pll_params_with_frac(req->rate, req->best_parent_rate, m, n, pll);
 	req->rate = __pll_params_to_rate(req->best_parent_rate, m, n, frac, pll);
 
@@ -279,7 +249,7 @@ static int meson_clk_pll_wait_lock(struct clk_hw *hw)
 	int delay = 5000;
 
 	do {
-		/* Is the clock locked now ? Time out after 100ms. */
+		 
 		if (meson_parm_read(clk->map, &pll->l))
 			return 0;
 
@@ -343,29 +313,22 @@ static int meson_clk_pll_enable(struct clk_hw *hw)
 	struct clk_regmap *clk = to_clk_regmap(hw);
 	struct meson_clk_pll_data *pll = meson_clk_pll_data(clk);
 
-	/* do nothing if the PLL is already enabled */
+	 
 	if (clk_hw_is_enabled(hw))
 		return 0;
 
-	/* Make sure the pll is in reset */
+	 
 	if (MESON_PARM_APPLICABLE(&pll->rst))
 		meson_parm_write(clk->map, &pll->rst, 1);
 
-	/* Enable the pll */
+	 
 	meson_parm_write(clk->map, &pll->en, 1);
 
-	/* Take the pll out reset */
+	 
 	if (MESON_PARM_APPLICABLE(&pll->rst))
 		meson_parm_write(clk->map, &pll->rst, 0);
 
-	/*
-	 * Compared with the previous SoCs, self-adaption current module
-	 * is newly added for A1, keep the new power-on sequence to enable the
-	 * PLL. The sequence is:
-	 * 1. enable the pll, delay for 10us
-	 * 2. enable the pll self-adaption current module, delay for 40us
-	 * 3. enable the lock detect module
-	 */
+	 
 	if (MESON_PARM_APPLICABLE(&pll->current_en)) {
 		udelay(10);
 		meson_parm_write(clk->map, &pll->current_en, 1);
@@ -388,14 +351,14 @@ static void meson_clk_pll_disable(struct clk_hw *hw)
 	struct clk_regmap *clk = to_clk_regmap(hw);
 	struct meson_clk_pll_data *pll = meson_clk_pll_data(clk);
 
-	/* Put the pll is in reset */
+	 
 	if (MESON_PARM_APPLICABLE(&pll->rst))
 		meson_parm_write(clk->map, &pll->rst, 1);
 
-	/* Disable the pll */
+	 
 	meson_parm_write(clk->map, &pll->en, 0);
 
-	/* Disable PLL internal self-adaption current module */
+	 
 	if (MESON_PARM_APPLICABLE(&pll->current_en))
 		meson_parm_write(clk->map, &pll->current_en, 0);
 }
@@ -430,7 +393,7 @@ static int meson_clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 		meson_parm_write(clk->map, &pll->frac, frac);
 	}
 
-	/* If the pll is stopped, bail out now */
+	 
 	if (!enabled)
 		return 0;
 
@@ -438,25 +401,14 @@ static int meson_clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ret) {
 		pr_warn("%s: pll did not lock, trying to restore old rate %lu\n",
 			__func__, old_rate);
-		/*
-		 * FIXME: Do we really need/want this HACK ?
-		 * It looks unsafe. what happens if the clock gets into a
-		 * broken state and we can't lock back on the old_rate ? Looks
-		 * like an infinite recursion is possible
-		 */
+		 
 		meson_clk_pll_set_rate(hw, old_rate, parent_rate);
 	}
 
 	return ret;
 }
 
-/*
- * The Meson G12A PCIE PLL is fined tuned to deliver a very precise
- * 100MHz reference clock for the PCIe Analog PHY, and thus requires
- * a strict register sequence to enable the PLL.
- * To simplify, re-use the _init() op to enable the PLL and keep
- * the other ops except set_rate since the rate is fixed.
- */
+ 
 const struct clk_ops meson_clk_pcie_pll_ops = {
 	.recalc_rate	= meson_clk_pll_recalc_rate,
 	.determine_rate	= meson_clk_pll_determine_rate,

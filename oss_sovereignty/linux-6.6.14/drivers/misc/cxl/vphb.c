@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <misc/cxl.h>
@@ -19,10 +17,7 @@ static int cxl_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 
 static void cxl_teardown_msi_irqs(struct pci_dev *pdev)
 {
-	/*
-	 * MSI should never be set but need still need to provide this call
-	 * back.
-	 */
+	 
 }
 
 static bool cxl_pci_enable_device_hook(struct pci_dev *dev)
@@ -41,10 +36,7 @@ static bool cxl_pci_enable_device_hook(struct pci_dev *dev)
 
 	dev->dev.archdata.dma_offset = PAGE_OFFSET;
 
-	/*
-	 * Allocate a context to do cxl things too.  If we eventually do real
-	 * DMA ops, we'll need a default context to attach them to
-	 */
+	 
 	ctx = cxl_dev_context_init(dev);
 	if (IS_ERR(ctx))
 		return false;
@@ -69,7 +61,7 @@ static void cxl_pci_disable_device(struct pci_dev *dev)
 
 static void cxl_pci_reset_secondary_bus(struct pci_dev *dev)
 {
-	/* Should we do an AFU reset here ? */
+	 
 }
 
 static int cxl_pcie_cfg_record(u8 bus, u8 devfn)
@@ -117,7 +109,7 @@ static int cxl_pcie_read_config(struct pci_bus *bus, unsigned int devfn,
 	u32 val32;
 
 	afu = pci_bus_to_afu(bus);
-	/* Grab a reader lock on afu. */
+	 
 	if (afu == NULL || !cxl_afu_configured_get(afu))
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
@@ -154,7 +146,7 @@ static int cxl_pcie_write_config(struct pci_bus *bus, unsigned int devfn,
 	struct cxl_afu *afu;
 
 	afu = pci_bus_to_afu(bus);
-	/* Grab a reader lock on afu. */
+	 
 	if (afu == NULL || !cxl_afu_configured_get(afu))
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
@@ -205,59 +197,43 @@ int cxl_pci_vphb_add(struct cxl_afu *afu)
 	struct device_node *vphb_dn;
 	struct device *parent;
 
-	/*
-	 * If there are no AFU configuration records we won't have anything to
-	 * expose under the vPHB, so skip creating one, returning success since
-	 * this is still a valid case. This will also opt us out of EEH
-	 * handling since we won't have anything special to do if there are no
-	 * kernel drivers attached to the vPHB, and EEH handling is not yet
-	 * supported in the peer model.
-	 */
+	 
 	if (!afu->crs_num)
 		return 0;
 
-	/* The parent device is the adapter. Reuse the device node of
-	 * the adapter.
-	 * We don't seem to care what device node is used for the vPHB,
-	 * but tools such as lsvpd walk up the device parents looking
-	 * for a valid location code, so we might as well show devices
-	 * attached to the adapter as being located on that adapter.
-	 */
+	 
 	parent = afu->adapter->dev.parent;
 	vphb_dn = parent->of_node;
 
-	/* Alloc and setup PHB data structure */
+	 
 	phb = pcibios_alloc_controller(vphb_dn);
 	if (!phb)
 		return -ENODEV;
 
-	/* Setup parent in sysfs */
+	 
 	phb->parent = parent;
 
-	/* Setup the PHB using arch provided callback */
+	 
 	phb->ops = &cxl_pcie_pci_ops;
 	phb->cfg_addr = NULL;
 	phb->cfg_data = NULL;
 	phb->private_data = afu;
 	phb->controller_ops = cxl_pci_controller_ops;
 
-	/* Scan the bus */
+	 
 	pcibios_scan_phb(phb);
 	if (phb->bus == NULL)
 		return -ENXIO;
 
-	/* Set release hook on root bus */
+	 
 	pci_set_host_bridge_release(to_pci_host_bridge(phb->bus->bridge),
 				    pcibios_free_controller_deferred,
 				    (void *) phb);
 
-	/* Claim resources. This might need some rework as well depending
-	 * whether we are doing probe-only or not, like assigning unassigned
-	 * resources etc...
-	 */
+	 
 	pcibios_claim_one_bus(phb->bus);
 
-	/* Add probed PCI devices to the device model */
+	 
 	pci_bus_add_devices(phb->bus);
 
 	afu->phb = phb;
@@ -269,7 +245,7 @@ void cxl_pci_vphb_remove(struct cxl_afu *afu)
 {
 	struct pci_controller *phb;
 
-	/* If there is no configuration record we won't have one of these */
+	 
 	if (!afu || !afu->phb)
 		return;
 
@@ -277,10 +253,7 @@ void cxl_pci_vphb_remove(struct cxl_afu *afu)
 	afu->phb = NULL;
 
 	pci_remove_root_bus(phb->bus);
-	/*
-	 * We don't free phb here - that's handled by
-	 * pcibios_free_controller_deferred()
-	 */
+	 
 }
 
 bool cxl_pci_is_vphb_device(struct pci_dev *dev)

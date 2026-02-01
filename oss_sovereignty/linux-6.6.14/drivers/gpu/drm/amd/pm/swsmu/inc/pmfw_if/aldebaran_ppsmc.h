@@ -1,39 +1,18 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef ALDEBARAN_PP_SMC_H
 #define ALDEBARAN_PP_SMC_H
 
 #pragma pack(push, 1)
 
-// SMU Response Codes:
+
 #define PPSMC_Result_OK                    0x1
 #define PPSMC_Result_Failed                0xFF
 #define PPSMC_Result_UnknownCmd            0xFE
 #define PPSMC_Result_CmdRejectedPrereq     0xFD
 #define PPSMC_Result_CmdRejectedBusy       0xFC
 
-// Message Definitions:
+
 #define PPSMC_MSG_TestMessage                    0x1
 #define PPSMC_MSG_GetSmuVersion                  0x2
 #define PPSMC_MSG_GfxDriverReset                 0x3
@@ -70,8 +49,8 @@
 #define PPSMC_MSG_SetPptLimit                    0x22
 #define PPSMC_MSG_GetPptLimit                    0x23
 #define PPSMC_MSG_PrepareMp1ForUnload            0x24
-#define PPSMC_MSG_PrepareMp1ForReset             0x25 //retired in 68.07
-#define PPSMC_MSG_SoftReset                      0x26 //retired in 68.07
+#define PPSMC_MSG_PrepareMp1ForReset             0x25 
+#define PPSMC_MSG_SoftReset                      0x26 
 #define PPSMC_MSG_RunDcBtc                       0x27
 #define PPSMC_MSG_DramLogSetDramAddrHigh         0x28
 #define PPSMC_MSG_DramLogSetDramAddrLow          0x29
@@ -92,7 +71,7 @@
 #define PPSMC_MSG_DisableDeterminism             0x3A
 #define PPSMC_MSG_SetUclkDpmMode                 0x3B
 
-//STB to dram log
+
 #define PPSMC_MSG_DumpSTBtoDram                     0x3C
 #define PPSMC_MSG_STBtoDramLogSetDramAddrHigh       0x3D
 #define PPSMC_MSG_STBtoDramLogSetDramAddrLow        0x3E
@@ -107,10 +86,10 @@
 #define PPSMC_Message_Count			0x47
 
 
-//PPSMC Reset Types
+
 #define PPSMC_RESET_TYPE_WARM_RESET              0x00
-#define PPSMC_RESET_TYPE_DRIVER_MODE_1_RESET     0x01 //driver msg argument should be 1 for mode-1
-#define PPSMC_RESET_TYPE_DRIVER_MODE_2_RESET     0x02 //and 2 for mode-2
+#define PPSMC_RESET_TYPE_DRIVER_MODE_1_RESET     0x01 
+#define PPSMC_RESET_TYPE_DRIVER_MODE_2_RESET     0x02 
 #define PPSMC_RESET_TYPE_PCIE_LINK_RESET         0x03
 #define PPSMC_RESET_TYPE_BIF_LINK_RESET          0x04
 #define PPSMC_RESET_TYPE_PF0_FLR_RESET           0x05

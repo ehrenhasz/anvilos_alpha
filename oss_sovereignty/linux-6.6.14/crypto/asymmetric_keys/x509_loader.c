@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/kernel.h>
 #include <linux/key.h>
@@ -15,9 +15,7 @@ int x509_load_certificate_list(const u8 cert_list[],
 	p = cert_list;
 	end = p + list_size;
 	while (p < end) {
-		/* Each cert begins with an ASN.1 SEQUENCE tag and must be more
-		 * than 256 bytes in size.
-		 */
+		 
 		if (end - p < 4)
 			goto dodgy_cert;
 		if (p[0] != 0x30 &&

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_print.h>
 
@@ -90,7 +88,7 @@ static int guc_sched_disable_delay_ms_set(void *data, u64 val)
 	if (!intel_guc_submission_is_used(guc))
 		return -ENODEV;
 
-	/* clamp to a practical limit, 1 minute is reasonable for a longest delay */
+	 
 	guc->submission_state.sched_disable_delay_ms = min_t(u64, val, 60000);
 
 	return 0;

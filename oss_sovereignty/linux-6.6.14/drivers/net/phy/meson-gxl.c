@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson GXL Internal PHY Driver
- *
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2016 BayLibre, SAS. All rights reserved.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mii.h>
@@ -29,11 +23,11 @@
 #define BANK_WOL		1
 #define BANK_BIST		3
 
-/* WOL Registers */
+ 
 #define LPI_STATUS	0xc
 #define  LPI_STATUS_RSV12	BIT(12)
 
-/* BIST Registers */
+ 
 #define FR_PLL_CONTROL	0x1b
 #define FR_PLL_DIV0	0x1c
 #define FR_PLL_DIV1	0x1d
@@ -42,9 +36,7 @@ static int meson_gxl_open_banks(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable Analog and DSP register Bank access by
-	 * toggling TSTCNTL_TEST_MODE bit in the TSTCNTL register
-	 */
+	 
 	ret = phy_write(phydev, TSTCNTL, 0);
 	if (ret)
 		return ret;
@@ -80,7 +72,7 @@ static int meson_gxl_read_reg(struct phy_device *phydev,
 
 	ret = phy_read(phydev, TSTREAD1);
 out:
-	/* Close the bank access on our way out */
+	 
 	meson_gxl_close_banks(phydev);
 	return ret;
 }
@@ -105,7 +97,7 @@ static int meson_gxl_write_reg(struct phy_device *phydev,
 			FIELD_PREP(TSTCNTL_WRITE_ADDRESS, reg));
 
 out:
-	/* Close the bank access on our way out */
+	 
 	meson_gxl_close_banks(phydev);
 	return ret;
 }
@@ -114,17 +106,17 @@ static int meson_gxl_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable fractional PLL */
+	 
 	ret = meson_gxl_write_reg(phydev, BANK_BIST, FR_PLL_CONTROL, 0x5);
 	if (ret)
 		return ret;
 
-	/* Program fraction FR_PLL_DIV1 */
+	 
 	ret = meson_gxl_write_reg(phydev, BANK_BIST, FR_PLL_DIV1, 0x029a);
 	if (ret)
 		return ret;
 
-	/* Program fraction FR_PLL_DIV1 */
+	 
 	ret = meson_gxl_write_reg(phydev, BANK_BIST, FR_PLL_DIV0, 0xaaaa);
 	if (ret)
 		return ret;
@@ -132,22 +124,7 @@ static int meson_gxl_config_init(struct phy_device *phydev)
 	return 0;
 }
 
-/* This function is provided to cope with the possible failures of this phy
- * during aneg process. When aneg fails, the PHY reports that aneg is done
- * but the value found in MII_LPA is wrong:
- *  - Early failures: MII_LPA is just 0x0001. if MII_EXPANSION reports that
- *    the link partner (LP) supports aneg but the LP never acked our base
- *    code word, it is likely that we never sent it to begin with.
- *  - Late failures: MII_LPA is filled with a value which seems to make sense
- *    but it actually is not what the LP is advertising. It seems that we
- *    can detect this using a magic bit in the WOL bank (reg 12 - bit 12).
- *    If this particular bit is not set when aneg is reported being done,
- *    it means MII_LPA is likely to be wrong.
- *
- * In both case, forcing a restart of the aneg process solve the problem.
- * When this failure happens, the first retry is usually successful but,
- * in some cases, it may take up to 6 retries to get a decent result
- */
+ 
 static int meson_gxl_read_status(struct phy_device *phydev)
 {
 	int ret, wol, lpa, exp;
@@ -159,7 +136,7 @@ static int meson_gxl_read_status(struct phy_device *phydev)
 		else if (!ret)
 			goto read_status_continue;
 
-		/* Aneg is done, let's check everything is fine */
+		 
 		wol = meson_gxl_read_reg(phydev, BANK_WOL, LPI_STATUS);
 		if (wol < 0)
 			return wol;
@@ -174,7 +151,7 @@ static int meson_gxl_read_status(struct phy_device *phydev)
 
 		if (!(wol & LPI_STATUS_RSV12) ||
 		    ((exp & EXPANSION_NWAY) && !(lpa & LPA_LPACK))) {
-			/* Looks like aneg failed after all */
+			 
 			phydev_dbg(phydev, "LPA corruption - aneg restart\n");
 			return genphy_restart_aneg(phydev);
 		}
@@ -188,7 +165,7 @@ static struct phy_driver meson_gxl_phy[] = {
 	{
 		PHY_ID_MATCH_EXACT(0x01814400),
 		.name		= "Meson GXL Internal PHY",
-		/* PHY_BASIC_FEATURES */
+		 
 		.flags		= PHY_IS_INTERNAL,
 		.soft_reset     = genphy_soft_reset,
 		.config_init	= meson_gxl_config_init,
@@ -202,7 +179,7 @@ static struct phy_driver meson_gxl_phy[] = {
 	}, {
 		PHY_ID_MATCH_EXACT(0x01803301),
 		.name		= "Meson G12A Internal PHY",
-		/* PHY_BASIC_FEATURES */
+		 
 		.flags		= PHY_IS_INTERNAL,
 		.probe		= smsc_phy_probe,
 		.config_init	= smsc_phy_config_init,

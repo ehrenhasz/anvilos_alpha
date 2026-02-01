@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: Weiyi Lu <weiyi.lu@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -32,9 +32,9 @@ static const struct mtk_gate_regs vdec1_cg_regs = {
 		&mtk_clk_gate_ops_setclr_inv)
 
 static const struct mtk_gate vdec_clks[] = {
-	/* VDEC0 */
+	 
 	GATE_VDEC0_I(CLK_VDEC_VDEC, "vdec_vdec", "mm_sel", 0),
-	/* VDEC1 */
+	 
 	GATE_VDEC1_I(CLK_VDEC_LARB1, "vdec_larb1", "mm_sel", 0),
 };
 
@@ -48,7 +48,7 @@ static const struct of_device_id of_match_clk_mt8183_vdec[] = {
 		.compatible = "mediatek,mt8183-vdecsys",
 		.data = &vdec_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8183_vdec);

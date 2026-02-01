@@ -1,32 +1,6 @@
-/*
- * Copyright 2015-2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/**
- * Bandwidth and Watermark calculations interface.
- * (Refer to "DCEx_mode_support.xlsm" from Perforce.)
- */
+ 
 #ifndef __DCE_CALCS_H__
 #define __DCE_CALCS_H__
 
@@ -48,15 +22,10 @@ enum bw_calcs_version {
 	BW_CALCS_VERSION_VEGA10
 };
 
-/*******************************************************************************
- * There are three types of input into Calculations:
- * 1. per-DCE static values - these are "hardcoded" properties of the DCEIP
- * 2. board-level values - these are generally coming from VBIOS parser
- * 3. mode/configuration values - depending Mode, Scaling number of Displays etc.
- ******************************************************************************/
+ 
 
 enum bw_defines {
-	//Common
+	
 	bw_def_no = 0,
 	bw_def_none = 0,
 	bw_def_yes = 1,
@@ -65,7 +34,7 @@ enum bw_defines {
 	bw_def_mid = 1,
 	bw_def_low = 0,
 
-	//Internal
+	
 	bw_defs_start = 255,
 	bw_def_underlay422,
 	bw_def_underlay420_luma,
@@ -90,25 +59,25 @@ enum bw_defines {
 	bw_def_exceeded_allowed_maximum_bw,
 	bw_def_landscape,
 
-	//Panning and bezel
+	
 	bw_def_any_lines,
 
-	//Underlay mode
+	
 	bw_def_underlay_only,
 	bw_def_blended,
 	bw_def_blend,
 
-	//Stereo mode
+	
 	bw_def_mono,
 	bw_def_side_by_side,
 	bw_def_top_bottom,
 
-	//Underlay surface type
+	
 	bw_def_420,
 	bw_def_422,
 	bw_def_444,
 
-	//Tiling mode
+	
 	bw_def_linear,
 	bw_def_tiled,
 	bw_def_array_linear_general,
@@ -116,11 +85,11 @@ enum bw_defines {
 	bw_def_rotated_micro_tiling,
 	bw_def_display_micro_tiling,
 
-	//Memory type
+	
 	bw_def_gddr5,
 	bw_def_hbm,
 
-	//Voltage
+	
 	bw_def_high_no_nbp_state_change,
 	bw_def_0_72,
 	bw_def_0_8,
@@ -194,20 +163,20 @@ struct bw_calcs_vbios {
 	uint32_t dram_channel_width_in_bits;
 	uint32_t number_of_dram_channels;
 	uint32_t number_of_dram_banks;
-	struct bw_fixed low_yclk; /*m_hz*/
-	struct bw_fixed mid_yclk; /*m_hz*/
-	struct bw_fixed high_yclk; /*m_hz*/
-	struct bw_fixed low_sclk; /*m_hz*/
-	struct bw_fixed mid1_sclk; /*m_hz*/
-	struct bw_fixed mid2_sclk; /*m_hz*/
-	struct bw_fixed mid3_sclk; /*m_hz*/
-	struct bw_fixed mid4_sclk; /*m_hz*/
-	struct bw_fixed mid5_sclk; /*m_hz*/
-	struct bw_fixed mid6_sclk; /*m_hz*/
-	struct bw_fixed high_sclk; /*m_hz*/
-	struct bw_fixed low_voltage_max_dispclk; /*m_hz*/
-	struct bw_fixed mid_voltage_max_dispclk; /*m_hz*/
-	struct bw_fixed high_voltage_max_dispclk; /*m_hz*/
+	struct bw_fixed low_yclk;  
+	struct bw_fixed mid_yclk;  
+	struct bw_fixed high_yclk;  
+	struct bw_fixed low_sclk;  
+	struct bw_fixed mid1_sclk;  
+	struct bw_fixed mid2_sclk;  
+	struct bw_fixed mid3_sclk;  
+	struct bw_fixed mid4_sclk;  
+	struct bw_fixed mid5_sclk;  
+	struct bw_fixed mid6_sclk;  
+	struct bw_fixed high_sclk;  
+	struct bw_fixed low_voltage_max_dispclk;  
+	struct bw_fixed mid_voltage_max_dispclk;  
+	struct bw_fixed high_voltage_max_dispclk;  
 	struct bw_fixed low_voltage_max_phyclk;
 	struct bw_fixed mid_voltage_max_phyclk;
 	struct bw_fixed high_voltage_max_phyclk;
@@ -227,14 +196,12 @@ struct bw_calcs_vbios {
 	struct bw_fixed maximum_blackout_recovery_time;
 };
 
-/*******************************************************************************
- * Temporary data structure(s).
- ******************************************************************************/
+ 
 #define maximum_number_of_surfaces 12
-/*Units : MHz, us */
+ 
 
 struct bw_calcs_data {
-	/* data for all displays */
+	 
 	bool display_synchronization_enabled;
 	uint32_t number_of_displays;
 	enum bw_defines underlay_surface_type;
@@ -463,20 +430,13 @@ struct bw_calcs_data {
 	struct bw_fixed dmif_required_sclk_for_urgent_latency[6];
 };
 
-/**
- * Initialize structures with data which will NOT change at runtime.
- */
+ 
 void bw_calcs_init(
 	struct bw_calcs_dceip *bw_dceip,
 	struct bw_calcs_vbios *bw_vbios,
 	struct hw_asic_id asic_id);
 
-/**
- * Return:
- *	true -	Display(s) configuration supported.
- *		In this case 'calcs_output' contains data for HW programming
- *	false - Display(s) configuration not supported (not enough bandwidth).
- */
+ 
 bool bw_calcs(
 	struct dc_context *ctx,
 	const struct bw_calcs_dceip *dceip,
@@ -485,5 +445,5 @@ bool bw_calcs(
 	int pipe_count,
 	struct dce_bw_output *calcs_output);
 
-#endif /* __BANDWIDTH_CALCS_H__ */
+#endif  
 

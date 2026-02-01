@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MARVELL_CESA_H__
 #define __MARVELL_CESA_H__
 
@@ -65,12 +65,7 @@
 #define CESA_SA_ST_ACT_0			BIT(0)
 #define CESA_SA_ST_ACT_1			BIT(1)
 
-/*
- * CESA_SA_FPGA_INT_STATUS looks like an FPGA leftover and is documented only
- * in Errata 4.12. It looks like that it was part of an IRQ-controller in FPGA
- * and someone forgot to remove  it while switching to the core and moving to
- * CESA_SA_INT_STATUS.
- */
+ 
 #define CESA_SA_FPGA_INT_STATUS			0xdd68
 #define CESA_SA_INT_STATUS			0xde20
 #define CESA_SA_INT_AUTH_DONE			BIT(0)
@@ -120,36 +115,9 @@
 #define CESA_SA_DESC_CFG_MID_FRAG		(3 << 30)
 #define CESA_SA_DESC_CFG_FRAG_MSK		GENMASK(31, 30)
 
-/*
- * /-----------\ 0
- * | ACCEL CFG |	4 * 8
- * |-----------| 0x20
- * | CRYPT KEY |	8 * 4
- * |-----------| 0x40
- * |  IV   IN  |	4 * 4
- * |-----------| 0x40 (inplace)
- * |  IV BUF   |	4 * 4
- * |-----------| 0x80
- * |  DATA IN  |	16 * x (max ->max_req_size)
- * |-----------| 0x80 (inplace operation)
- * |  DATA OUT |	16 * x (max ->max_req_size)
- * \-----------/ SRAM size
- */
+ 
 
-/*
- * Hashing memory map:
- * /-----------\ 0
- * | ACCEL CFG |        4 * 8
- * |-----------| 0x20
- * | Inner IV  |        8 * 4
- * |-----------| 0x40
- * | Outer IV  |        8 * 4
- * |-----------| 0x60
- * | Output BUF|        8 * 4
- * |-----------| 0x80
- * |  DATA IN  |        64 * x (max ->max_req_size)
- * \-----------/ SRAM size
- */
+ 
 
 #define CESA_SA_CFG_SRAM_OFFSET			0x00
 #define CESA_SA_DATA_SRAM_OFFSET		0x80
@@ -204,20 +172,7 @@
 #define CESA_MAX_HASH_BLOCK_SIZE		64
 #define CESA_HASH_BLOCK_SIZE_MSK		(CESA_MAX_HASH_BLOCK_SIZE - 1)
 
-/**
- * struct mv_cesa_sec_accel_desc - security accelerator descriptor
- * @config:	engine config
- * @enc_p:	input and output data pointers for a cipher operation
- * @enc_len:	cipher operation length
- * @enc_key_p:	cipher key pointer
- * @enc_iv:	cipher IV pointers
- * @mac_src_p:	input pointer and total hash length
- * @mac_digest:	digest pointer and hash operation length
- * @mac_iv:	hmac IV pointers
- *
- * Structure passed to the CESA engine to describe the crypto operation
- * to be executed.
- */
+ 
 struct mv_cesa_sec_accel_desc {
 	__le32 config;
 	__le32 enc_p;
@@ -229,37 +184,19 @@ struct mv_cesa_sec_accel_desc {
 	__le32 mac_iv;
 };
 
-/**
- * struct mv_cesa_skcipher_op_ctx - cipher operation context
- * @key:	cipher key
- * @iv:		cipher IV
- *
- * Context associated to a cipher operation.
- */
+ 
 struct mv_cesa_skcipher_op_ctx {
 	__le32 key[8];
 	u32 iv[4];
 };
 
-/**
- * struct mv_cesa_hash_op_ctx - hash or hmac operation context
- * @key:	cipher key
- * @iv:		cipher IV
- *
- * Context associated to an hash or hmac operation.
- */
+ 
 struct mv_cesa_hash_op_ctx {
 	u32 iv[16];
 	__le32 hash[8];
 };
 
-/**
- * struct mv_cesa_op_ctx - crypto operation context
- * @desc:	CESA descriptor
- * @ctx:	context associated to the crypto operation
- *
- * Context associated to a crypto operation.
- */
+ 
 struct mv_cesa_op_ctx {
 	struct mv_cesa_sec_accel_desc desc;
 	union {
@@ -268,7 +205,7 @@ struct mv_cesa_op_ctx {
 	} ctx;
 };
 
-/* TDMA descriptor flags */
+ 
 #define CESA_TDMA_DST_IN_SRAM			BIT(31)
 #define CESA_TDMA_SRC_IN_SRAM			BIT(30)
 #define CESA_TDMA_END_OF_REQ			BIT(29)
@@ -280,22 +217,7 @@ struct mv_cesa_op_ctx {
 #define CESA_TDMA_OP				2
 #define CESA_TDMA_RESULT			3
 
-/**
- * struct mv_cesa_tdma_desc - TDMA descriptor
- * @byte_cnt:	number of bytes to transfer
- * @src:	DMA address of the source
- * @dst:	DMA address of the destination
- * @next_dma:	DMA address of the next TDMA descriptor
- * @cur_dma:	DMA address of this TDMA descriptor
- * @next:	pointer to the next TDMA descriptor
- * @op:		CESA operation attached to this TDMA descriptor
- * @data:	raw data attached to this TDMA descriptor
- * @flags:	flags describing the TDMA transfer. See the
- *		"TDMA descriptor flags" section above
- *
- * TDMA descriptor used to create a transfer chain describing a crypto
- * operation.
- */
+ 
 struct mv_cesa_tdma_desc {
 	__le32 byte_cnt;
 	union {
@@ -308,7 +230,7 @@ struct mv_cesa_tdma_desc {
 	};
 	__le32 next_dma;
 
-	/* Software state */
+	 
 	dma_addr_t cur_dma;
 	struct mv_cesa_tdma_desc *next;
 	union {
@@ -318,16 +240,7 @@ struct mv_cesa_tdma_desc {
 	u32 flags;
 };
 
-/**
- * struct mv_cesa_sg_dma_iter - scatter-gather iterator
- * @dir:	transfer direction
- * @sg:		scatter list
- * @offset:	current position in the scatter list
- * @op_offset:	current position in the crypto operation
- *
- * Iterator used to iterate over a scatterlist while creating a TDMA chain for
- * a crypto operation.
- */
+ 
 struct mv_cesa_sg_dma_iter {
 	enum dma_data_direction dir;
 	struct scatterlist *sg;
@@ -335,28 +248,14 @@ struct mv_cesa_sg_dma_iter {
 	unsigned int op_offset;
 };
 
-/**
- * struct mv_cesa_dma_iter - crypto operation iterator
- * @len:	the crypto operation length
- * @offset:	current position in the crypto operation
- * @op_len:	sub-operation length (the crypto engine can only act on 2kb
- *		chunks)
- *
- * Iterator used to create a TDMA chain for a given crypto operation.
- */
+ 
 struct mv_cesa_dma_iter {
 	unsigned int len;
 	unsigned int offset;
 	unsigned int op_len;
 };
 
-/**
- * struct mv_cesa_tdma_chain - TDMA chain
- * @first:	first entry in the TDMA chain
- * @last:	last entry in the TDMA chain
- *
- * Stores a TDMA chain for a specific crypto operation.
- */
+ 
 struct mv_cesa_tdma_chain {
 	struct mv_cesa_tdma_desc *first;
 	struct mv_cesa_tdma_desc *last;
@@ -364,17 +263,7 @@ struct mv_cesa_tdma_chain {
 
 struct mv_cesa_engine;
 
-/**
- * struct mv_cesa_caps - CESA device capabilities
- * @engines:		number of engines
- * @has_tdma:		whether this device has a TDMA block
- * @cipher_algs:	supported cipher algorithms
- * @ncipher_algs:	number of supported cipher algorithms
- * @ahash_algs:		supported hash algorithms
- * @nahash_algs:	number of supported hash algorithms
- *
- * Structure used to describe CESA device capabilities.
- */
+ 
 struct mv_cesa_caps {
 	int nengines;
 	bool has_tdma;
@@ -384,17 +273,7 @@ struct mv_cesa_caps {
 	int nahash_algs;
 };
 
-/**
- * struct mv_cesa_dev_dma - DMA pools
- * @tdma_desc_pool:	TDMA desc pool
- * @op_pool:		crypto operation pool
- * @cache_pool:		data cache pool (used by hash implementation when the
- *			hash request is smaller than the hash block size)
- * @padding_pool:	padding pool (used by hash implementation when hardware
- *			padding cannot be used)
- *
- * Structure containing the different DMA pools used by this driver.
- */
+ 
 struct mv_cesa_dev_dma {
 	struct dma_pool *tdma_desc_pool;
 	struct dma_pool *op_pool;
@@ -402,17 +281,7 @@ struct mv_cesa_dev_dma {
 	struct dma_pool *padding_pool;
 };
 
-/**
- * struct mv_cesa_dev - CESA device
- * @caps:	device capabilities
- * @regs:	device registers
- * @sram_size:	usable SRAM size
- * @lock:	device lock
- * @engines:	array of engines
- * @dma:	dma pools
- *
- * Structure storing CESA device information.
- */
+ 
 struct mv_cesa_dev {
 	const struct mv_cesa_caps *caps;
 	void __iomem *regs;
@@ -423,29 +292,7 @@ struct mv_cesa_dev {
 	struct mv_cesa_dev_dma *dma;
 };
 
-/**
- * struct mv_cesa_engine - CESA engine
- * @id:			engine id
- * @regs:		engine registers
- * @sram:		SRAM memory region
- * @sram_pool:		SRAM memory region from pool
- * @sram_dma:		DMA address of the SRAM memory region
- * @lock:		engine lock
- * @req:		current crypto request
- * @clk:		engine clk
- * @zclk:		engine zclk
- * @max_req_len:	maximum chunk length (useful to create the TDMA chain)
- * @int_mask:		interrupt mask cache
- * @pool:		memory pool pointing to the memory region reserved in
- *			SRAM
- * @queue:		fifo of the pending crypto requests
- * @load:		engine load counter, useful for load balancing
- * @chain:		list of the current tdma descriptors being processed
- *			by this engine.
- * @complete_queue:	fifo of the processed requests by the engine
- *
- * Structure storing CESA engine information.
- */
+ 
 struct mv_cesa_engine {
 	int id;
 	void __iomem *regs;
@@ -468,16 +315,7 @@ struct mv_cesa_engine {
 	int irq;
 };
 
-/**
- * struct mv_cesa_req_ops - CESA request operations
- * @process:	process a request chunk result (should return 0 if the
- *		operation, -EINPROGRESS if it needs more steps or an error
- *		code)
- * @step:	launch the crypto operation on the next chunk
- * @cleanup:	cleanup the crypto request (release associated data)
- * @complete:	complete the request, i.e copy result or context from sram when
- *		needed.
- */
+ 
 struct mv_cesa_req_ops {
 	int (*process)(struct crypto_async_request *req, u32 status);
 	void (*step)(struct crypto_async_request *req);
@@ -485,75 +323,41 @@ struct mv_cesa_req_ops {
 	void (*complete)(struct crypto_async_request *req);
 };
 
-/**
- * struct mv_cesa_ctx - CESA operation context
- * @ops:	crypto operations
- *
- * Base context structure inherited by operation specific ones.
- */
+ 
 struct mv_cesa_ctx {
 	const struct mv_cesa_req_ops *ops;
 };
 
-/**
- * struct mv_cesa_hash_ctx - CESA hash operation context
- * @base:	base context structure
- *
- * Hash context structure.
- */
+ 
 struct mv_cesa_hash_ctx {
 	struct mv_cesa_ctx base;
 };
 
-/**
- * struct mv_cesa_hash_ctx - CESA hmac operation context
- * @base:	base context structure
- * @iv:		initialization vectors
- *
- * HMAC context structure.
- */
+ 
 struct mv_cesa_hmac_ctx {
 	struct mv_cesa_ctx base;
 	__be32 iv[16];
 };
 
-/**
- * enum mv_cesa_req_type - request type definitions
- * @CESA_STD_REQ:	standard request
- * @CESA_DMA_REQ:	DMA request
- */
+ 
 enum mv_cesa_req_type {
 	CESA_STD_REQ,
 	CESA_DMA_REQ,
 };
 
-/**
- * struct mv_cesa_req - CESA request
- * @engine:	engine associated with this request
- * @chain:	list of tdma descriptors associated  with this request
- */
+ 
 struct mv_cesa_req {
 	struct mv_cesa_engine *engine;
 	struct mv_cesa_tdma_chain chain;
 };
 
-/**
- * struct mv_cesa_sg_std_iter - CESA scatter-gather iterator for standard
- *				requests
- * @iter:	sg mapping iterator
- * @offset:	current offset in the SG entry mapped in memory
- */
+ 
 struct mv_cesa_sg_std_iter {
 	struct sg_mapping_iter iter;
 	unsigned int offset;
 };
 
-/**
- * struct mv_cesa_skcipher_std_req - cipher standard request
- * @op:		operation context
- * @offset:	current operation offset
- * @size:	size of the crypto operation
- */
+ 
 struct mv_cesa_skcipher_std_req {
 	struct mv_cesa_op_ctx op;
 	unsigned int offset;
@@ -561,12 +365,7 @@ struct mv_cesa_skcipher_std_req {
 	bool skip_ctx;
 };
 
-/**
- * struct mv_cesa_skcipher_req - cipher request
- * @req:	type specific request information
- * @src_nents:	number of entries in the src sg list
- * @dst_nents:	number of entries in the dest sg list
- */
+ 
 struct mv_cesa_skcipher_req {
 	struct mv_cesa_req base;
 	struct mv_cesa_skcipher_std_req std;
@@ -574,20 +373,12 @@ struct mv_cesa_skcipher_req {
 	int dst_nents;
 };
 
-/**
- * struct mv_cesa_ahash_std_req - standard hash request
- * @offset:	current operation offset
- */
+ 
 struct mv_cesa_ahash_std_req {
 	unsigned int offset;
 };
 
-/**
- * struct mv_cesa_ahash_dma_req - DMA hash request
- * @padding:		padding buffer
- * @padding_dma:	DMA address of the padding buffer
- * @cache_dma:		DMA address of the cache buffer
- */
+ 
 struct mv_cesa_ahash_dma_req {
 	u8 *padding;
 	dma_addr_t padding_dma;
@@ -595,17 +386,7 @@ struct mv_cesa_ahash_dma_req {
 	dma_addr_t cache_dma;
 };
 
-/**
- * struct mv_cesa_ahash_req - hash request
- * @req:		type specific request information
- * @cache:		cache buffer
- * @cache_ptr:		write pointer in the cache buffer
- * @len:		hash total length
- * @src_nents:		number of entries in the scatterlist
- * @last_req:		define whether the current operation is the last one
- *			or not
- * @state:		hash state
- */
+ 
 struct mv_cesa_ahash_req {
 	struct mv_cesa_req base;
 	union {
@@ -622,7 +403,7 @@ struct mv_cesa_ahash_req {
 	u32 state[8];
 };
 
-/* CESA functions */
+ 
 
 extern struct mv_cesa_dev *cesa_dev;
 
@@ -755,34 +536,23 @@ static inline struct mv_cesa_engine *mv_cesa_select_engine(int weight)
 	return selected;
 }
 
-/*
- * Helper function that indicates whether a crypto request needs to be
- * cleaned up or not after being enqueued using mv_cesa_queue_req().
- */
+ 
 static inline int mv_cesa_req_needs_cleanup(struct crypto_async_request *req,
 					    int ret)
 {
-	/*
-	 * The queue still had some space, the request was queued
-	 * normally, so there's no need to clean it up.
-	 */
+	 
 	if (ret == -EINPROGRESS)
 		return false;
 
-	/*
-	 * The queue had not space left, but since the request is
-	 * flagged with CRYPTO_TFM_REQ_MAY_BACKLOG, it was added to
-	 * the backlog and will be processed later. There's no need to
-	 * clean it up.
-	 */
+	 
 	if (ret == -EBUSY)
 		return false;
 
-	/* Request wasn't queued, we need to clean it up */
+	 
 	return true;
 }
 
-/* TDMA functions */
+ 
 
 static inline void mv_cesa_req_dma_iter_init(struct mv_cesa_dma_iter *iter,
 					     unsigned int len)
@@ -896,7 +666,7 @@ static inline size_t mv_cesa_sg_copy_from_sram(struct mv_cesa_engine *engine,
 			       false);
 }
 
-/* Algorithm definitions */
+ 
 
 extern struct ahash_alg mv_md5_alg;
 extern struct ahash_alg mv_sha1_alg;
@@ -912,4 +682,4 @@ extern struct skcipher_alg mv_cesa_cbc_des3_ede_alg;
 extern struct skcipher_alg mv_cesa_ecb_aes_alg;
 extern struct skcipher_alg mv_cesa_cbc_aes_alg;
 
-#endif /* __MARVELL_CESA_H__ */
+#endif  

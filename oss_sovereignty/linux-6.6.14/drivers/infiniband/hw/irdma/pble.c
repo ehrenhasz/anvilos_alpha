@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "hmc.h"
 #include "defs.h"
@@ -9,10 +9,7 @@
 
 static int add_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc);
 
-/**
- * irdma_destroy_pble_prm - destroy prm during module unload
- * @pble_rsrc: pble resources
- */
+ 
 void irdma_destroy_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc)
 {
 	struct irdma_chunk *chunk;
@@ -28,11 +25,7 @@ void irdma_destroy_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc)
 	}
 }
 
-/**
- * irdma_hmc_init_pble - Initialize pble resources during module load
- * @dev: irdma_sc_dev struct
- * @pble_rsrc: pble resources
- */
+ 
 int irdma_hmc_init_pble(struct irdma_sc_dev *dev,
 			struct irdma_hmc_pble_rsrc *pble_rsrc)
 {
@@ -43,7 +36,7 @@ int irdma_hmc_init_pble(struct irdma_sc_dev *dev,
 	hmc_info = dev->hmc_info;
 	pble_rsrc->dev = dev;
 	pble_rsrc->fpm_base_addr = hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].base;
-	/* Start pble' on 4k boundary */
+	 
 	if (pble_rsrc->fpm_base_addr & 0xfff)
 		fpm_idx = (4096 - (pble_rsrc->fpm_base_addr & 0xfff)) >> 3;
 	pble_rsrc->unallocated_pble =
@@ -63,11 +56,7 @@ int irdma_hmc_init_pble(struct irdma_sc_dev *dev,
 	return status;
 }
 
-/**
- * get_sd_pd_idx -  Returns sd index, pd index and rel_pd_idx from fpm address
- * @pble_rsrc: structure containing fpm address
- * @idx: where to return indexes
- */
+ 
 static void get_sd_pd_idx(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			  struct sd_pd_idx *idx)
 {
@@ -76,11 +65,7 @@ static void get_sd_pd_idx(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	idx->rel_pd_idx = (idx->pd_idx % IRDMA_HMC_PD_CNT_IN_SD);
 }
 
-/**
- * add_sd_direct - add sd direct for pble
- * @pble_rsrc: pble resource ptr
- * @info: page info for sd
- */
+ 
 static int add_sd_direct(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			 struct irdma_add_page_info *info)
 {
@@ -114,11 +99,7 @@ static int add_sd_direct(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	return 0;
 }
 
-/**
- * fpm_to_idx - given fpm address, get pble index
- * @pble_rsrc: pble resource management
- * @addr: fpm address for index
- */
+ 
 static u32 fpm_to_idx(struct irdma_hmc_pble_rsrc *pble_rsrc, u64 addr)
 {
 	u64 idx;
@@ -128,11 +109,7 @@ static u32 fpm_to_idx(struct irdma_hmc_pble_rsrc *pble_rsrc, u64 addr)
 	return (u32)idx;
 }
 
-/**
- * add_bp_pages - add backing pages for sd
- * @pble_rsrc: pble resource management
- * @info: page info for sd
- */
+ 
 static int add_bp_pages(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			struct irdma_add_page_info *info)
 {
@@ -182,12 +159,7 @@ error:
 	return status;
 }
 
-/**
- * irdma_get_type - add a sd entry type for sd
- * @dev: irdma_sc_dev struct
- * @idx: index of sd
- * @pages: pages in the sd
- */
+ 
 static enum irdma_sd_entry_type irdma_get_type(struct irdma_sc_dev *dev,
 					       struct sd_pd_idx *idx, u32 pages)
 {
@@ -198,10 +170,7 @@ static enum irdma_sd_entry_type irdma_get_type(struct irdma_sc_dev *dev,
 	return sd_entry_type;
 }
 
-/**
- * add_pble_prm - add a sd entry for pble resoure
- * @pble_rsrc: pble resource management
- */
+ 
 static int add_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc)
 {
 	struct irdma_sc_dev *dev = pble_rsrc->dev;
@@ -298,11 +267,7 @@ error:
 	return ret_code;
 }
 
-/**
- * free_lvl2 - fee level 2 pble
- * @pble_rsrc: pble resource management
- * @palloc: level 2 pble allocation
- */
+ 
 static void free_lvl2(struct irdma_hmc_pble_rsrc *pble_rsrc,
 		      struct irdma_pble_alloc *palloc)
 {
@@ -326,11 +291,7 @@ static void free_lvl2(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	lvl2->leaf = NULL;
 }
 
-/**
- * get_lvl2_pble - get level 2 pble resource
- * @pble_rsrc: pble resource management
- * @palloc: level 2 pble allocation
- */
+ 
 static int get_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			 struct irdma_pble_alloc *palloc)
 {
@@ -343,7 +304,7 @@ static int get_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	int ret_code;
 	u64 fpm_addr;
 
-	/* number of full 512 (4K) leafs) */
+	 
 	lf4k = palloc->total_cnt >> 9;
 	lflast = palloc->total_cnt % PBLE_PER_PAGE;
 	total = (lflast == 0) ? lf4k : lf4k + 1;
@@ -393,11 +354,7 @@ error:
 	return -ENOMEM;
 }
 
-/**
- * get_lvl1_pble - get level 1 pble resource
- * @pble_rsrc: pble resource management
- * @palloc: level 1 pble allocation
- */
+ 
 static int get_lvl1_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			 struct irdma_pble_alloc *palloc)
 {
@@ -419,12 +376,7 @@ static int get_lvl1_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	return 0;
 }
 
-/**
- * get_lvl1_lvl2_pble - calls get_lvl1 and get_lvl2 pble routine
- * @pble_rsrc: pble resources
- * @palloc: contains all inforamtion regarding pble (idx + pble addr)
- * @lvl: Bitmask for requested pble level
- */
+ 
 static int get_lvl1_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			      struct irdma_pble_alloc *palloc, u8 lvl)
 {
@@ -439,13 +391,7 @@ static int get_lvl1_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 	return status;
 }
 
-/**
- * irdma_get_pble - allocate pbles from the prm
- * @pble_rsrc: pble resources
- * @palloc: contains all inforamtion regarding pble (idx + pble addr)
- * @pble_cnt: #of pbles requested
- * @lvl: requested pble level mask
- */
+ 
 int irdma_get_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 		   struct irdma_pble_alloc *palloc, u32 pble_cnt,
 		   u8 lvl)
@@ -459,9 +405,7 @@ int irdma_get_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 
 	mutex_lock(&pble_rsrc->pble_mutex_lock);
 
-	/*check first to see if we can get pble's without acquiring
-	 * additional sd's
-	 */
+	 
 	status = get_lvl1_lvl2_pble(pble_rsrc, palloc, lvl);
 	if (!status)
 		goto exit;
@@ -473,7 +417,7 @@ int irdma_get_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 			break;
 
 		status = get_lvl1_lvl2_pble(pble_rsrc, palloc, lvl);
-		/* if level1_only, only go through it once */
+		 
 		if (!status || lvl)
 			break;
 	}
@@ -490,11 +434,7 @@ exit:
 	return status;
 }
 
-/**
- * irdma_free_pble - put pbles back into prm
- * @pble_rsrc: pble resources
- * @palloc: contains all information regarding pble resource being freed
- */
+ 
 void irdma_free_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
 		     struct irdma_pble_alloc *palloc)
 {

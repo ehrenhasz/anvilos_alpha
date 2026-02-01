@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for BCM6358 memory-mapped LEDs, based on leds-syscon.c
- *
- * Copyright 2015 Álvaro Fernández Rojas <noltari@gmail.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/leds.h>
@@ -27,14 +23,7 @@
 #define BCM6358_SLED_MAX_COUNT		32
 #define BCM6358_SLED_WAIT		100
 
-/**
- * struct bcm6358_led - state container for bcm6358 based LEDs
- * @cdev: LED class device for this LED
- * @mem: memory resource
- * @lock: memory lock
- * @pin: LED pin number
- * @active_low: LED is active low
- */
+ 
 struct bcm6358_led {
 	struct led_classdev cdev;
 	void __iomem *mem;
@@ -149,7 +138,7 @@ static int bcm6358_leds_probe(struct platform_device *pdev)
 	struct device_node *np = dev_of_node(&pdev->dev);
 	struct device_node *child;
 	void __iomem *mem;
-	spinlock_t *lock; /* memory lock */
+	spinlock_t *lock;  
 	unsigned long val;
 	u32 clk_div;
 

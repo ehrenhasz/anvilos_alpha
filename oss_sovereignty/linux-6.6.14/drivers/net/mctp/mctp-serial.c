@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Management Component Transport Protocol (MCTP) - serial transport
- * binding. This driver is an implementation of the DMTF specificiation
- * "DSP0253 - Management Component Transport Protocol (MCTP) Serial Transport
- * Binding", available at:
- *
- *  https://www.dmtf.org/sites/default/files/standards/documents/DSP0253_1.0.0.pdf
- *
- * This driver provides DSP0253-type MCTP-over-serial transport using a Linux
- * tty device, by setting the N_MCTP line discipline on the tty.
- *
- * Copyright (c) 2021 Code Construct
- */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/if_arp.h>
@@ -25,10 +13,10 @@
 #include <net/mctp.h>
 #include <net/pkt_sched.h>
 
-#define MCTP_SERIAL_MTU		68 /* base mtu (64) + mctp header */
-#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6) /* + serial framing */
+#define MCTP_SERIAL_MTU		68  
+#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6)  
 
-#define MCTP_SERIAL_VERSION	0x1 /* DSP0253 defines a single version: 1 */
+#define MCTP_SERIAL_VERSION	0x1  
 
 #define BUFSIZE			MCTP_SERIAL_FRAME_MTU
 
@@ -56,7 +44,7 @@ struct mctp_serial {
 
 	int			idx;
 
-	/* protects our rx & tx state machines; held during both paths */
+	 
 	spinlock_t		lock;
 
 	struct work_struct	tx_work;
@@ -77,20 +65,15 @@ static int next_chunk_len(struct mctp_serial *dev)
 {
 	int i;
 
-	/* either we have no bytes to send ... */
+	 
 	if (dev->txpos == dev->txlen)
 		return 0;
 
-	/* ... or the next byte to send is an escaped byte; requiring a
-	 * single-byte chunk...
-	 */
+	 
 	if (needs_escape(dev->txbuf[dev->txpos]))
 		return 1;
 
-	/* ... or we have one or more bytes up to the next escape - this chunk
-	 * will be those non-escaped bytes, and does not include the escaped
-	 * byte.
-	 */
+	 
 	for (i = 1; i + dev->txpos + 1 < dev->txlen; i++) {
 		if (needs_escape(dev->txbuf[dev->txpos + i + 1]))
 			break;
@@ -114,7 +97,7 @@ static void mctp_serial_tx_work(struct work_struct *work)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
-	/* txstate represents the next thing to send */
+	 
 	switch (dev->txstate) {
 	case STATE_START:
 		dev->txpos = 0;
@@ -399,7 +382,7 @@ static void mctp_serial_tty_receive_buf(struct tty_struct *tty, const u8 *c,
 	if (!netif_running(dev->netdev))
 		return;
 
-	/* we don't (currently) use the flag bytes, just data. */
+	 
 	for (i = 0; i < len; i++)
 		mctp_serial_push(dev, c[i]);
 }
@@ -420,9 +403,7 @@ static void mctp_serial_setup(struct net_device *ndev)
 {
 	ndev->type = ARPHRD_MCTP;
 
-	/* we limit at the fixed MTU, which is also the MCTP-standard
-	 * baseline MTU, so is also our minimum
-	 */
+	 
 	ndev->mtu = MCTP_SERIAL_MTU;
 	ndev->max_mtu = MCTP_SERIAL_MTU;
 	ndev->min_mtu = MCTP_SERIAL_MTU;

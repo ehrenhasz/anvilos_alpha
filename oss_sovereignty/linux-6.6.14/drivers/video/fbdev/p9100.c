@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* p9100.c: P9100 frame buffer driver
- *
- * Copyright (C) 2003, 2006 David S. Miller (davem@davemloft.net)
- * Copyright 1999 Derrick J Brashear (shadow@dementia.org)
- *
- * Driver layout based loosely on tgafb.c, see that file for credits.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -23,9 +17,7 @@
 
 #include "sbuslib.h"
 
-/*
- * Local functions.
- */
+ 
 
 static int p9100_setcolreg(unsigned, unsigned, unsigned, unsigned,
 			   unsigned, struct fb_info *);
@@ -34,9 +26,7 @@ static int p9100_blank(int, struct fb_info *);
 static int p9100_mmap(struct fb_info *, struct vm_area_struct *);
 static int p9100_ioctl(struct fb_info *, unsigned int, unsigned long);
 
-/*
- *  Frame buffer operations
- */
+ 
 
 static const struct fb_ops p9100_ops = {
 	.owner			= THIS_MODULE,
@@ -52,26 +42,26 @@ static const struct fb_ops p9100_ops = {
 #endif
 };
 
-/* P9100 control registers */
+ 
 #define P9100_SYSCTL_OFF	0x0UL
 #define P9100_VIDEOCTL_OFF	0x100UL
 #define P9100_VRAMCTL_OFF 	0x180UL
 #define P9100_RAMDAC_OFF 	0x200UL
 #define P9100_VIDEOCOPROC_OFF 	0x400UL
 
-/* P9100 command registers */
+ 
 #define P9100_CMD_OFF 0x0UL
 
-/* P9100 framebuffer memory */
+ 
 #define P9100_FB_OFF 0x0UL
 
-/* 3 bits: 2=8bpp 3=16bpp 5=32bpp 7=24bpp */
+ 
 #define SYS_CONFIG_PIXELSIZE_SHIFT 26
 
-#define SCREENPAINT_TIMECTL1_ENABLE_VIDEO 0x20 /* 0 = off, 1 = on */
+#define SCREENPAINT_TIMECTL1_ENABLE_VIDEO 0x20  
 
 struct p9100_regs {
-	/* Registers for the system control */
+	 
 	u32 sys_base;
 	u32 sys_config;
 	u32 sys_intr;
@@ -80,7 +70,7 @@ struct p9100_regs {
 	u32 sys_alt_wr;
 	u32 sys_xxx[58];
 
-	/* Registers for the video control */
+	 
 	u32 vid_base;
 	u32 vid_hcnt;
 	u32 vid_htotal;
@@ -100,7 +90,7 @@ struct p9100_regs {
 	u32 vid_screenpaint_timectl2;
 	u32 vid_xxx[15];
 
-	/* Registers for the video control */
+	 
 	u32 vram_base;
 	u32 vram_memcfg;
 	u32 vram_refresh_pd;
@@ -110,7 +100,7 @@ struct p9100_regs {
 	u32 pwrup_cfg;
 	u32 vram_xxx[25];
 
-	/* Registers for IBM RGB528 Palette */
+	 
 	u32 ramdac_cmap_wridx;
 	u32 ramdac_palette_data;
 	u32 ramdac_pixel_mask;
@@ -138,15 +128,7 @@ struct p9100_par {
 	unsigned long		which_io;
 };
 
-/**
- *      p9100_setcolreg - Optional function. Sets a color register.
- *      @regno: boolean, 0 copy local, 1 get_user() function
- *      @red: frame buffer colormap structure
- *      @green: The green value which can be up to 16 bits wide
- *      @blue:  The blue value which can be up to 16 bits wide.
- *      @transp: If supported the alpha value which can be up to 16 bits wide.
- *      @info: frame buffer info structure
- */
+ 
 static int p9100_setcolreg(unsigned regno,
 			   unsigned red, unsigned green, unsigned blue,
 			   unsigned transp, struct fb_info *info)
@@ -174,11 +156,7 @@ static int p9100_setcolreg(unsigned regno,
 	return 0;
 }
 
-/**
- *      p9100_blank - Optional function.  Blanks the display.
- *      @blank: the blank mode we want.
- *      @info: frame buffer structure that represents a single frame buffer
- */
+ 
 static int
 p9100_blank(int blank, struct fb_info *info)
 {
@@ -190,17 +168,17 @@ p9100_blank(int blank, struct fb_info *info)
 	spin_lock_irqsave(&par->lock, flags);
 
 	switch (blank) {
-	case FB_BLANK_UNBLANK: /* Unblanking */
+	case FB_BLANK_UNBLANK:  
 		val = sbus_readl(&regs->vid_screenpaint_timectl1);
 		val |= SCREENPAINT_TIMECTL1_ENABLE_VIDEO;
 		sbus_writel(val, &regs->vid_screenpaint_timectl1);
 		par->flags &= ~P9100_FLAG_BLANKED;
 		break;
 
-	case FB_BLANK_NORMAL: /* Normal blanking */
-	case FB_BLANK_VSYNC_SUSPEND: /* VESA blank (vsync off) */
-	case FB_BLANK_HSYNC_SUSPEND: /* VESA blank (hsync off) */
-	case FB_BLANK_POWERDOWN: /* Poweroff */
+	case FB_BLANK_NORMAL:  
+	case FB_BLANK_VSYNC_SUSPEND:  
+	case FB_BLANK_HSYNC_SUSPEND:  
+	case FB_BLANK_POWERDOWN:  
 		val = sbus_readl(&regs->vid_screenpaint_timectl1);
 		val &= ~SCREENPAINT_TIMECTL1_ENABLE_VIDEO;
 		sbus_writel(val, &regs->vid_screenpaint_timectl1);
@@ -230,14 +208,12 @@ static int p9100_mmap(struct fb_info *info, struct vm_area_struct *vma)
 static int p9100_ioctl(struct fb_info *info, unsigned int cmd,
 		       unsigned long arg)
 {
-	/* Make it look like a cg3. */
+	 
 	return sbusfb_ioctl_helper(cmd, arg, info,
 				   FBTYPE_SUN3COLOR, 8, info->fix.smem_len);
 }
 
-/*
- *  Initialisation
- */
+ 
 
 static void p9100_init_fix(struct fb_info *info, int linebytes, struct device_node *dp)
 {
@@ -267,7 +243,7 @@ static int p9100_probe(struct platform_device *op)
 
 	spin_lock_init(&par->lock);
 
-	/* This is the framebuffer and the only resource apps can mmap.  */
+	 
 	info->fix.smem_start = op->resource[2].start;
 	par->which_io = op->resource[2].flags & IORESOURCE_BITS;
 

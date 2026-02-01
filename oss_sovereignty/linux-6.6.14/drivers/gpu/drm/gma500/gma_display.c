@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2006-2011 Intel Corporation
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/highmem.h>
@@ -24,9 +18,7 @@
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
 
-/*
- * Returns whether any output on the specified pipe is of the specified type
- */
+ 
 bool gma_pipe_has_type(struct drm_crtc *crtc, int type)
 {
 	struct drm_device *dev = crtc->dev;
@@ -51,7 +43,7 @@ bool gma_pipe_has_type(struct drm_crtc *crtc, int type)
 
 void gma_wait_for_vblank(struct drm_device *dev)
 {
-	/* Wait for 20ms, i.e. one cycle at 50hz. */
+	 
 	mdelay(20);
 }
 
@@ -72,7 +64,7 @@ int gma_pipe_set_base(struct drm_crtc *crtc, int x, int y,
 	if (!gma_power_begin(dev, true))
 		return 0;
 
-	/* no fb bound */
+	 
 	if (!fb) {
 		dev_err(dev->dev, "No FB bound\n");
 		goto gma_pipe_cleaner;
@@ -80,8 +72,7 @@ int gma_pipe_set_base(struct drm_crtc *crtc, int x, int y,
 
 	pobj = to_psb_gem_object(fb->obj[0]);
 
-	/* We are displaying this buffer, make sure it is actually loaded
-	   into the GTT */
+	 
 	ret = psb_gem_pin(pobj);
 	if (ret < 0)
 		goto gma_pipe_set_base_exit;
@@ -117,9 +108,7 @@ int gma_pipe_set_base(struct drm_crtc *crtc, int x, int y,
 	dev_dbg(dev->dev,
 		"Writing base %08lX %08lX %d %d\n", start, offset, x, y);
 
-	/* FIXME: Investigate whether this really is the base for psb and why
-		  the linear offset is named base for the other chips. map->surf
-		  should be the base and map->linoff the offset for all chips */
+	 
 	if (IS_PSB(dev)) {
 		REG_WRITE(map->base, offset + start);
 		REG_READ(map->base);
@@ -131,7 +120,7 @@ int gma_pipe_set_base(struct drm_crtc *crtc, int x, int y,
 	}
 
 gma_pipe_cleaner:
-	/* If there was a previous display we can now unpin it */
+	 
 	if (old_fb)
 		psb_gem_unpin(to_psb_gem_object(old_fb->obj[0]));
 
@@ -140,7 +129,7 @@ gma_pipe_set_base_exit:
 	return ret;
 }
 
-/* Loads the palette/gamma unit for the CRTC with the prepared values */
+ 
 void gma_crtc_load_lut(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -151,7 +140,7 @@ void gma_crtc_load_lut(struct drm_crtc *crtc)
 	u16 *r, *g, *b;
 	int i;
 
-	/* The clocks have to be on to load the palette. */
+	 
 	if (!crtc->enabled)
 		return;
 
@@ -169,7 +158,7 @@ void gma_crtc_load_lut(struct drm_crtc *crtc)
 		gma_power_end(dev);
 	} else {
 		for (i = 0; i < 256; i++) {
-			/* FIXME: Why pipe[0] and not pipe[..._crtc->pipe]? */
+			 
 			dev_priv->regs.pipe[0].palette[i] =
 				(((*r++ >> 8) + gma_crtc->lut_adj[i]) << 16) |
 				(((*g++ >> 8) + gma_crtc->lut_adj[i]) << 8) |
@@ -188,12 +177,7 @@ static int gma_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
 	return 0;
 }
 
-/*
- * Sets the power management mode of the pipe and plane.
- *
- * This code should probably grow support for turning the cursor off and back
- * on appropriately at the same time as we're turning the pipe off/on.
- */
+ 
 void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 {
 	struct drm_device *dev = crtc->dev;
@@ -203,9 +187,7 @@ void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 	const struct psb_offset *map = &dev_priv->regmap[pipe];
 	u32 temp;
 
-	/* XXX: When our outputs are all unaware of DPMS modes other than off
-	 * and on, we should map those modes to DRM_MODE_DPMS_OFF in the CRTC.
-	 */
+	 
 
 	if (IS_CDV(dev))
 		dev_priv->ops->disable_sr(dev);
@@ -219,35 +201,35 @@ void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 
 		gma_crtc->active = true;
 
-		/* Enable the DPLL */
+		 
 		temp = REG_READ(map->dpll);
 		if ((temp & DPLL_VCO_ENABLE) == 0) {
 			REG_WRITE(map->dpll, temp);
 			REG_READ(map->dpll);
-			/* Wait for the clocks to stabilize. */
+			 
 			udelay(150);
 			REG_WRITE(map->dpll, temp | DPLL_VCO_ENABLE);
 			REG_READ(map->dpll);
-			/* Wait for the clocks to stabilize. */
+			 
 			udelay(150);
 			REG_WRITE(map->dpll, temp | DPLL_VCO_ENABLE);
 			REG_READ(map->dpll);
-			/* Wait for the clocks to stabilize. */
+			 
 			udelay(150);
 		}
 
-		/* Enable the plane */
+		 
 		temp = REG_READ(map->cntr);
 		if ((temp & DISPLAY_PLANE_ENABLE) == 0) {
 			REG_WRITE(map->cntr,
 				  temp | DISPLAY_PLANE_ENABLE);
-			/* Flush the plane changes */
+			 
 			REG_WRITE(map->base, REG_READ(map->base));
 		}
 
 		udelay(150);
 
-		/* Enable the pipe */
+		 
 		temp = REG_READ(map->conf);
 		if ((temp & PIPEACONF_ENABLE) == 0)
 			REG_WRITE(map->conf, temp | PIPEACONF_ENABLE);
@@ -260,9 +242,8 @@ void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 
 		gma_crtc_load_lut(crtc);
 
-		/* Give the overlay scaler a chance to enable
-		 * if it's on this pipe */
-		/* psb_intel_crtc_dpms_video(crtc, true); TODO */
+		 
+		 
 
 		drm_crtc_vblank_on(crtc);
 		break;
@@ -272,49 +253,48 @@ void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 
 		gma_crtc->active = false;
 
-		/* Give the overlay scaler a chance to disable
-		 * if it's on this pipe */
-		/* psb_intel_crtc_dpms_video(crtc, FALSE); TODO */
+		 
+		 
 
-		/* Disable the VGA plane that we never use */
+		 
 		REG_WRITE(VGACNTRL, VGA_DISP_DISABLE);
 
-		/* Turn off vblank interrupts */
+		 
 		drm_crtc_vblank_off(crtc);
 
-		/* Wait for vblank for the disable to take effect */
+		 
 		gma_wait_for_vblank(dev);
 
-		/* Disable plane */
+		 
 		temp = REG_READ(map->cntr);
 		if ((temp & DISPLAY_PLANE_ENABLE) != 0) {
 			REG_WRITE(map->cntr,
 				  temp & ~DISPLAY_PLANE_ENABLE);
-			/* Flush the plane changes */
+			 
 			REG_WRITE(map->base, REG_READ(map->base));
 			REG_READ(map->base);
 		}
 
-		/* Disable pipe */
+		 
 		temp = REG_READ(map->conf);
 		if ((temp & PIPEACONF_ENABLE) != 0) {
 			REG_WRITE(map->conf, temp & ~PIPEACONF_ENABLE);
 			REG_READ(map->conf);
 		}
 
-		/* Wait for vblank for the disable to take effect. */
+		 
 		gma_wait_for_vblank(dev);
 
 		udelay(150);
 
-		/* Disable DPLL */
+		 
 		temp = REG_READ(map->dpll);
 		if ((temp & DPLL_VCO_ENABLE) != 0) {
 			REG_WRITE(map->dpll, temp & ~DPLL_VCO_ENABLE);
 			REG_READ(map->dpll);
 		}
 
-		/* Wait for the clocks to turn off. */
+		 
 		udelay(150);
 		break;
 	}
@@ -322,7 +302,7 @@ void gma_crtc_dpms(struct drm_crtc *crtc, int mode)
 	if (IS_CDV(dev))
 		dev_priv->ops->update_wm(dev, crtc);
 
-	/* Set FIFO watermarks */
+	 
 	REG_WRITE(DSPARB, 0x3F3E);
 }
 
@@ -344,7 +324,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 	void *tmp_dst;
 	int ret = 0, i, cursor_pages;
 
-	/* If we didn't get a handle then turn the cursor off */
+	 
 	if (!handle) {
 		temp = CURSOR_MODE_DISABLE;
 		if (gma_power_begin(dev, false)) {
@@ -353,7 +333,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 			gma_power_end(dev);
 		}
 
-		/* Unpin the old GEM object */
+		 
 		if (gma_crtc->cursor_obj) {
 			pobj = to_psb_gem_object(gma_crtc->cursor_obj);
 			psb_gem_unpin(pobj);
@@ -363,7 +343,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 		return 0;
 	}
 
-	/* Currently we only support 64x64 cursors */
+	 
 	if (width != 64 || height != 64) {
 		dev_dbg(dev->dev, "We currently only support 64x64 cursors\n");
 		return -EINVAL;
@@ -383,7 +363,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 
 	pobj = to_psb_gem_object(obj);
 
-	/* Pin the memory into the GTT */
+	 
 	ret = psb_gem_pin(pobj);
 	if (ret) {
 		dev_err(dev->dev, "Can not pin down handle 0x%x\n", handle);
@@ -399,9 +379,9 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 
 		cursor_pages = obj->size / PAGE_SIZE;
 		if (cursor_pages > 4)
-			cursor_pages = 4; /* Prevent overflow */
+			cursor_pages = 4;  
 
-		/* Copy the cursor to cursor mem */
+		 
 		tmp_dst = dev_priv->vram_addr + cursor_pobj->offset;
 		for (i = 0; i < cursor_pages; i++) {
 			memcpy_from_page(tmp_dst, pobj->pages[i], 0, PAGE_SIZE);
@@ -415,7 +395,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 	}
 
 	temp = 0;
-	/* set the pipe for the cursor */
+	 
 	temp |= (pipe << 28);
 	temp |= CURSOR_MODE_64_ARGB_AX | MCURSOR_GAMMA_ENABLE;
 
@@ -425,7 +405,7 @@ static int gma_crtc_cursor_set(struct drm_crtc *crtc,
 		gma_power_end(dev);
 	}
 
-	/* unpin the old bo */
+	 
 	if (gma_crtc->cursor_obj) {
 		pobj = to_psb_gem_object(gma_crtc->cursor_obj);
 		psb_gem_unpin(pobj);
@@ -525,7 +505,7 @@ int gma_crtc_page_flip(struct drm_crtc *crtc,
 	if (!crtc_funcs->mode_set_base)
 		return -EINVAL;
 
-	/* Using mode_set_base requires the new fb to be set already. */
+	 
 	crtc->primary->fb = fb;
 
 	if (event) {
@@ -536,7 +516,7 @@ int gma_crtc_page_flip(struct drm_crtc *crtc,
 		gma_crtc->page_flip_event = event;
 		spin_unlock_irqrestore(&dev->event_lock, flags);
 
-		/* Call this locked if we want an event at vblank interrupt. */
+		 
 		ret = crtc_funcs->mode_set_base(crtc, crtc->x, crtc->y, old_fb);
 		if (ret) {
 			spin_lock_irqsave(&dev->event_lock, flags);
@@ -550,7 +530,7 @@ int gma_crtc_page_flip(struct drm_crtc *crtc,
 		ret = crtc_funcs->mode_set_base(crtc, crtc->x, crtc->y, old_fb);
 	}
 
-	/* Restore previous fb in case of failure. */
+	 
 	if (ret)
 		crtc->primary->fb = current_fb;
 
@@ -569,9 +549,7 @@ const struct drm_crtc_funcs gma_crtc_funcs = {
 	.get_vblank_counter = gma_crtc_get_vblank_counter,
 };
 
-/*
- * Save HW states of given crtc
- */
+ 
 void gma_crtc_save(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -601,7 +579,7 @@ void gma_crtc_save(struct drm_crtc *crtc)
 	crtc_state->saveVSYNC = REG_READ(map->vsync);
 	crtc_state->saveDSPSTRIDE = REG_READ(map->stride);
 
-	/* NOTE: DSPSIZE DSPPOS only for psb */
+	 
 	crtc_state->saveDSPSIZE = REG_READ(map->size);
 	crtc_state->saveDSPPOS = REG_READ(map->pos);
 
@@ -612,9 +590,7 @@ void gma_crtc_save(struct drm_crtc *crtc)
 		crtc_state->savePalette[i] = REG_READ(palette_reg + (i << 2));
 }
 
-/*
- * Restore HW states of given crtc
- */
+ 
 void gma_crtc_restore(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -678,7 +654,7 @@ void gma_encoder_prepare(struct drm_encoder *encoder)
 {
 	const struct drm_encoder_helper_funcs *encoder_funcs =
 	    encoder->helper_private;
-	/* lvds has its own version of prepare see psb_intel_lvds_prepare */
+	 
 	encoder_funcs->dpms(encoder, DRM_MODE_DPMS_OFF);
 }
 
@@ -686,7 +662,7 @@ void gma_encoder_commit(struct drm_encoder *encoder)
 {
 	const struct drm_encoder_helper_funcs *encoder_funcs =
 	    encoder->helper_private;
-	/* lvds has its own version of commit see psb_intel_lvds_commit */
+	 
 	encoder_funcs->dpms(encoder, DRM_MODE_DPMS_ON);
 }
 
@@ -698,7 +674,7 @@ void gma_encoder_destroy(struct drm_encoder *encoder)
 	kfree(intel_encoder);
 }
 
-/* Currently there is only a 1:1 mapping of encoders and connectors */
+ 
 struct drm_encoder *gma_best_encoder(struct drm_connector *connector)
 {
 	struct gma_encoder *gma_encoder = gma_attached_encoder(connector);
@@ -714,7 +690,7 @@ void gma_connector_attach_encoder(struct gma_connector *connector,
 					  &encoder->base);
 }
 
-#define GMA_PLL_INVALID(s) { /* DRM_ERROR(s); */ return false; }
+#define GMA_PLL_INVALID(s) {   return false; }
 
 bool gma_pll_is_valid(struct drm_crtc *crtc,
 		      const struct gma_limit_t *limit,
@@ -728,7 +704,7 @@ bool gma_pll_is_valid(struct drm_crtc *crtc,
 		GMA_PLL_INVALID("m2 out of range");
 	if (clock->m1 < limit->m1.min || limit->m1.max < clock->m1)
 		GMA_PLL_INVALID("m1 out of range");
-	/* On CDV m1 is always 0 */
+	 
 	if (clock->m1 <= clock->m2 && clock->m1 != 0)
 		GMA_PLL_INVALID("m1 <= m2 && m1 != 0");
 	if (clock->m < limit->m.min || limit->m.max < clock->m)
@@ -737,10 +713,7 @@ bool gma_pll_is_valid(struct drm_crtc *crtc,
 		GMA_PLL_INVALID("n out of range");
 	if (clock->vco < limit->vco.min || limit->vco.max < clock->vco)
 		GMA_PLL_INVALID("vco out of range");
-	/* XXX: We may need to be checking "Dot clock"
-	 * depending on the multiplier, connector, etc.,
-	 * rather than just a single range.
-	 */
+	 
 	if (clock->dot < limit->dot.min || limit->dot.max < clock->dot)
 		GMA_PLL_INVALID("dot out of range");
 
@@ -759,12 +732,7 @@ bool gma_find_best_pll(const struct gma_limit_t *limit,
 
 	if (gma_pipe_has_type(crtc, INTEL_OUTPUT_LVDS) &&
 	    (REG_READ(LVDS) & LVDS_PORT_EN) != 0) {
-		/*
-		 * For LVDS, if the panel is on, just rely on its current
-		 * settings for dual-channel.  We haven't figured out how to
-		 * reliably set up different single/dual channel state, if we
-		 * even can.
-		 */
+		 
 		if ((REG_READ(LVDS) & LVDS_CLKB_POWER_MASK) ==
 		    LVDS_CLKB_POWER_UP)
 			clock.p2 = limit->p2.p2_fast;
@@ -779,7 +747,7 @@ bool gma_find_best_pll(const struct gma_limit_t *limit,
 
 	memset(best_clock, 0, sizeof(*best_clock));
 
-	/* m1 is always 0 on CDV so the outmost loop will run just once */
+	 
 	for (clock.m1 = limit->m1.min; clock.m1 <= limit->m1.max; clock.m1++) {
 		for (clock.m2 = limit->m2.min;
 		     (clock.m2 < clock.m1 || clock.m1 == 0) &&

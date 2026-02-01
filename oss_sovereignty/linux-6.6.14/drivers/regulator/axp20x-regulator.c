@@ -1,17 +1,4 @@
-/*
- * AXP20x regulators driver.
- *
- * Copyright (C) 2013 Carlo Caione <carlo@caione.org>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -474,7 +461,7 @@ static int axp20x_set_ramp_delay(struct regulator_dev *rdev, int ramp)
 
 		fallthrough;
 	default:
-		/* Not supported for this regulator */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -516,13 +503,7 @@ static int axp20x_regulator_enable_regmap(struct regulator_dev *rdev)
 			int v_out;
 			int ret;
 
-			/*
-			 * On some boards, the LDO3 can be overloaded when
-			 * turning on, causing the entire PMIC to shutdown
-			 * without warning. Turning it on at the minimal voltage
-			 * and then setting the voltage to the requested value
-			 * works reliably.
-			 */
+			 
 			if (regulator_is_enabled_regmap(rdev))
 				break;
 
@@ -534,11 +515,7 @@ static int axp20x_regulator_enable_regmap(struct regulator_dev *rdev)
 				break;
 
 			ret = regulator_set_voltage_sel_regmap(rdev, 0x00);
-			/*
-			 * A small pause is needed between
-			 * setting the voltage and enabling the LDO to give the
-			 * internal state machine time to process the request.
-			 */
+			 
 			usleep_range(1000, 5000);
 			ret |= regulator_enable_regmap(rdev);
 			ret |= regulator_set_voltage_sel_regmap(rdev, v_out);
@@ -547,7 +524,7 @@ static int axp20x_regulator_enable_regmap(struct regulator_dev *rdev)
 		}
 		break;
 	default:
-		/* No quirks */
+		 
 		break;
 	}
 
@@ -646,10 +623,10 @@ static const struct regulator_desc axp22x_regulators[] = {
 	AXP_DESC(AXP22X, DCDC5, "dcdc5", "vin5", 1000, 2550, 50,
 		 AXP22X_DCDC5_V_OUT, AXP22X_DCDC5_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL1, AXP22X_PWR_OUT_DCDC5_MASK),
-	/* secondary switchable output of DCDC1 */
+	 
 	AXP_DESC_SW(AXP22X, DC1SW, "dc1sw", NULL,
 		    AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_DC1SW_MASK),
-	/* LDO regulator internally chained to DCDC5 */
+	 
 	AXP_DESC(AXP22X, DC5LDO, "dc5ldo", NULL, 700, 1400, 100,
 		 AXP22X_DC5LDO_V_OUT, AXP22X_DC5LDO_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL1, AXP22X_PWR_OUT_DC5LDO_MASK),
@@ -683,14 +660,12 @@ static const struct regulator_desc axp22x_regulators[] = {
 	AXP_DESC(AXP22X, ELDO3, "eldo3", "eldoin", 700, 3300, 100,
 		 AXP22X_ELDO3_V_OUT, AXP22X_ELDO3_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_ELDO3_MASK),
-	/* Note the datasheet only guarantees reliable operation up to
-	 * 3.3V, this needs to be enforced via dts provided constraints */
+	 
 	AXP_DESC_IO(AXP22X, LDO_IO0, "ldo_io0", "ips", 700, 3800, 100,
 		    AXP22X_LDO_IO0_V_OUT, AXP22X_LDO_IO0_V_OUT_MASK,
 		    AXP20X_GPIO0_CTRL, AXP20X_GPIO0_FUNC_MASK,
 		    AXP22X_IO_ENABLED, AXP22X_IO_DISABLED),
-	/* Note the datasheet only guarantees reliable operation up to
-	 * 3.3V, this needs to be enforced via dts provided constraints */
+	 
 	AXP_DESC_IO(AXP22X, LDO_IO1, "ldo_io1", "ips", 700, 3800, 100,
 		    AXP22X_LDO_IO1_V_OUT, AXP22X_LDO_IO1_V_OUT_MASK,
 		    AXP20X_GPIO1_CTRL, AXP20X_GPIO1_FUNC_MASK,
@@ -721,10 +696,7 @@ static const struct linear_range axp313a_dcdc2_ranges[] = {
 	REGULATOR_LINEAR_RANGE(1220000, 71, 87, 20000),
 };
 
-/*
- * This is deviating from the datasheet. The values here are taken from the
- * BSP driver and have been confirmed by measurements.
- */
+ 
 static const struct linear_range axp313a_dcdc3_ranges[] = {
 	REGULATOR_LINEAR_RANGE(500000,   0,  70, 10000),
 	REGULATOR_LINEAR_RANGE(1220000, 71, 102, 20000),
@@ -752,7 +724,7 @@ static const struct regulator_desc axp313a_regulators[] = {
 	AXP_DESC_FIXED(AXP313A, RTC_LDO, "rtc-ldo", "vin1", 1800),
 };
 
-/* DCDC ranges shared with AXP813 */
+ 
 static const struct linear_range axp803_dcdc234_ranges[] = {
 	REGULATOR_LINEAR_RANGE(500000,
 			       AXP803_DCDC234_500mV_START,
@@ -786,7 +758,7 @@ static const struct linear_range axp803_dcdc6_ranges[] = {
 			       20000),
 };
 
-/* AXP806's CLDO2 and AXP809's DLDO1 share the same range */
+ 
 static const struct linear_range axp803_dldo2_ranges[] = {
 	REGULATOR_LINEAR_RANGE(700000,
 			       AXP803_DLDO2_700mV_START,
@@ -822,7 +794,7 @@ static const struct regulator_desc axp803_regulators[] = {
 			axp803_dcdc6_ranges, AXP803_DCDC6_NUM_VOLTAGES,
 			AXP803_DCDC6_V_OUT, AXP803_DCDC6_V_OUT_MASK,
 			AXP22X_PWR_OUT_CTRL1, AXP803_PWR_OUT_DCDC6_MASK),
-	/* secondary switchable output of DCDC1 */
+	 
 	AXP_DESC_SW(AXP803, DC1SW, "dc1sw", NULL,
 		    AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_DC1SW_MASK),
 	AXP_DESC(AXP803, ALDO1, "aldo1", "aldoin", 700, 3300, 100,
@@ -977,10 +949,10 @@ static const struct regulator_desc axp809_regulators[] = {
 	AXP_DESC(AXP809, DCDC5, "dcdc5", "vin5", 1000, 2550, 50,
 		 AXP22X_DCDC5_V_OUT, AXP22X_DCDC5_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL1, AXP22X_PWR_OUT_DCDC5_MASK),
-	/* secondary switchable output of DCDC1 */
+	 
 	AXP_DESC_SW(AXP809, DC1SW, "dc1sw", NULL,
 		    AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_DC1SW_MASK),
-	/* LDO regulator internally chained to DCDC5 */
+	 
 	AXP_DESC(AXP809, DC5LDO, "dc5ldo", NULL, 700, 1400, 100,
 		 AXP22X_DC5LDO_V_OUT, AXP22X_DC5LDO_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL1, AXP22X_PWR_OUT_DC5LDO_MASK),
@@ -1009,18 +981,12 @@ static const struct regulator_desc axp809_regulators[] = {
 	AXP_DESC(AXP809, ELDO3, "eldo3", "eldoin", 700, 3300, 100,
 		 AXP22X_ELDO3_V_OUT, AXP22X_ELDO3_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_ELDO3_MASK),
-	/*
-	 * Note the datasheet only guarantees reliable operation up to
-	 * 3.3V, this needs to be enforced via dts provided constraints
-	 */
+	 
 	AXP_DESC_IO(AXP809, LDO_IO0, "ldo_io0", "ips", 700, 3800, 100,
 		    AXP22X_LDO_IO0_V_OUT, AXP22X_LDO_IO0_V_OUT_MASK,
 		    AXP20X_GPIO0_CTRL, AXP20X_GPIO0_FUNC_MASK,
 		    AXP22X_IO_ENABLED, AXP22X_IO_DISABLED),
-	/*
-	 * Note the datasheet only guarantees reliable operation up to
-	 * 3.3V, this needs to be enforced via dts provided constraints
-	 */
+	 
 	AXP_DESC_IO(AXP809, LDO_IO1, "ldo_io1", "ips", 700, 3800, 100,
 		    AXP22X_LDO_IO1_V_OUT, AXP22X_LDO_IO1_V_OUT_MASK,
 		    AXP20X_GPIO1_CTRL, AXP20X_GPIO1_FUNC_MASK,
@@ -1089,19 +1055,14 @@ static const struct regulator_desc axp813_regulators[] = {
 	AXP_DESC(AXP813, ELDO3, "eldo3", "eldoin", 700, 1900, 50,
 		 AXP22X_ELDO3_V_OUT, AXP22X_ELDO3_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL2, AXP22X_PWR_OUT_ELDO3_MASK),
-	/* to do / check ... */
+	 
 	AXP_DESC(AXP813, FLDO1, "fldo1", "fldoin", 700, 1450, 50,
 		 AXP803_FLDO1_V_OUT, AXP803_FLDO1_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL3, AXP803_PWR_OUT_FLDO1_MASK),
 	AXP_DESC(AXP813, FLDO2, "fldo2", "fldoin", 700, 1450, 50,
 		 AXP803_FLDO2_V_OUT, AXP803_FLDO2_V_OUT_MASK,
 		 AXP22X_PWR_OUT_CTRL3, AXP803_PWR_OUT_FLDO2_MASK),
-	/*
-	 * TODO: FLDO3 = {DCDC5, FLDOIN} / 2
-	 *
-	 * This means FLDO3 effectively switches supplies at runtime,
-	 * something the regulator subsystem does not support.
-	 */
+	 
 	AXP_DESC_FIXED(AXP813, RTC_LDO, "rtc-ldo", "ips", 1800),
 	AXP_DESC_IO(AXP813, LDO_IO0, "ldo-io0", "ips", 700, 3300, 100,
 		    AXP22X_LDO_IO0_V_OUT, AXP22X_LDO_IO0_V_OUT_MASK,
@@ -1202,14 +1163,14 @@ static const struct regulator_desc axp15060_regulators[] = {
 	AXP_DESC(AXP15060, CLDO4, "cldo4", "cldoin", 700, 4200, 100,
 		 AXP15060_CLDO4_V_CTRL, AXP15060_CLDO4_V_CTRL_MASK,
 		 AXP15060_PWR_OUT_CTRL3, AXP15060_PWR_OUT_CLDO4_MASK),
-	/* Supply comes from DCDC5 */
+	 
 	AXP_DESC(AXP15060, CPUSLDO, "cpusldo", NULL, 700, 1400, 50,
 		 AXP15060_CPUSLDO_V_CTRL, AXP15060_CPUSLDO_V_CTRL_MASK,
 		 AXP15060_PWR_OUT_CTRL3, AXP15060_PWR_OUT_CPUSLDO_MASK),
-	/* Supply comes from DCDC1 */
+	 
 	AXP_DESC_SW(AXP15060, SW, "sw", NULL,
 		    AXP15060_PWR_OUT_CTRL3, AXP15060_PWR_OUT_SW_MASK),
-	/* Supply comes from ALDO1 */
+	 
 	AXP_DESC_FIXED(AXP15060, RTC_LDO, "rtc-ldo", NULL, 1800),
 };
 
@@ -1229,18 +1190,11 @@ static int axp20x_set_dcdc_freq(struct platform_device *pdev, u32 dcdcfreq)
 		break;
 	case AXP803_ID:
 	case AXP813_ID:
-		/*
-		 * AXP803/AXP813 DCDC work frequency setting has the same
-		 * range and step as AXP22X, but at a different register.
-		 * (See include/linux/mfd/axp20x.h)
-		 */
+		 
 		reg = AXP803_DCDC_FREQ_CTRL;
-		fallthrough;	/* to the check below */
+		fallthrough;	 
 	case AXP806_ID:
-		/*
-		 * AXP806 also have DCDC work frequency setting register at a
-		 * different position.
-		 */
+		 
 		if (axp20x->variant == AXP806_ID)
 			reg = AXP806_DCDC_FREQ_CTRL;
 		fallthrough;
@@ -1254,7 +1208,7 @@ static int axp20x_set_dcdc_freq(struct platform_device *pdev, u32 dcdcfreq)
 		break;
 	case AXP313A_ID:
 	case AXP15060_ID:
-		/* The DCDC PWM frequency seems to be fixed to 3 MHz. */
+		 
 		if (dcdcfreq != 0) {
 			dev_err(&pdev->dev,
 				"DCDC frequency on this PMIC is fixed to 3 MHz.\n");
@@ -1335,12 +1289,9 @@ static int axp20x_set_dcdc_workmode(struct regulator_dev *rdev, int id, u32 work
 		break;
 
 	case AXP806_ID:
-		/*
-		 * AXP806 DCDC regulator IDs have the same range as AXP22X.
-		 * (See include/linux/mfd/axp20x.h)
-		 */
+		 
 		reg = AXP806_DCDC_MODE_CTRL2;
-		fallthrough;	/* to the check below */
+		fallthrough;	 
 	case AXP221_ID:
 	case AXP223_ID:
 	case AXP809_ID:
@@ -1377,7 +1328,7 @@ static int axp20x_set_dcdc_workmode(struct regulator_dev *rdev, int id, u32 work
 		break;
 
 	default:
-		/* should not happen */
+		 
 		WARN_ON(1);
 		return -EINVAL;
 	}
@@ -1385,18 +1336,12 @@ static int axp20x_set_dcdc_workmode(struct regulator_dev *rdev, int id, u32 work
 	return regmap_update_bits(rdev->regmap, reg, mask, workmode);
 }
 
-/*
- * This function checks whether a regulator is part of a poly-phase
- * output setup based on the registers settings. Returns true if it is.
- */
+ 
 static bool axp20x_is_polyphase_slave(struct axp20x_dev *axp20x, int id)
 {
 	u32 reg = 0;
 
-	/*
-	 * Currently in our supported AXP variants, only AXP803, AXP806,
-	 * AXP813 and AXP15060 have polyphase regulators.
-	 */
+	 
 	switch (axp20x->variant) {
 	case AXP803_ID:
 	case AXP813_ID:
@@ -1509,35 +1454,22 @@ static int axp20x_regulator_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* This only sets the dcdc freq. Ignore any errors */
+	 
 	axp20x_regulator_parse_dt(pdev);
 
 	for (i = 0; i < nregulators; i++) {
 		const struct regulator_desc *desc = &regulators[i];
 		struct regulator_desc *new_desc;
 
-		/*
-		 * If this regulator is a slave in a poly-phase setup,
-		 * skip it, as its controls are bound to the master
-		 * regulator and won't work.
-		 */
+		 
 		if (axp20x_is_polyphase_slave(axp20x, i))
 			continue;
 
-		/* Support for AXP813's FLDO3 is not implemented */
+		 
 		if (axp20x->variant == AXP813_ID && i == AXP813_FLDO3)
 			continue;
 
-		/*
-		 * Regulators DC1SW, DC5LDO and RTCLDO on AXP15060 are
-		 * connected internally, so we have to handle their supply
-		 * names separately.
-		 *
-		 * We always register the regulators in proper sequence,
-		 * so the supply names are correctly read. See the last
-		 * part of this loop to see where we save the DT defined
-		 * name.
-		 */
+		 
 		if ((regulators == axp22x_regulators && i == AXP22X_DC1SW) ||
 		    (regulators == axp803_regulators && i == AXP803_DC1SW) ||
 		    (regulators == axp809_regulators && i == AXP809_DC1SW) ||
@@ -1594,9 +1526,7 @@ static int axp20x_regulator_probe(struct platform_device *pdev)
 					rdev->desc->name);
 		}
 
-		/*
-		 * Save AXP22X DCDC1 / DCDC5 / AXP15060 ALDO1 regulator names for later.
-		 */
+		 
 		if ((regulators == axp22x_regulators && i == AXP22X_DCDC1) ||
 		    (regulators == axp809_regulators && i == AXP809_DCDC1) ||
 		    (regulators == axp15060_regulators && i == AXP15060_DCDC1))
@@ -1618,7 +1548,7 @@ static int axp20x_regulator_probe(struct platform_device *pdev)
 	}
 
 	if (drivevbus) {
-		/* Change N_VBUSEN sense pin to DRIVEVBUS output pin */
+		 
 		regmap_update_bits(axp20x->regmap, AXP20X_OVER_TMP,
 				   AXP22X_MISC_N_VBUSEN_FUNC, 0);
 		rdev = devm_regulator_register(&pdev->dev,

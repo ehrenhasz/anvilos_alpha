@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Multipath support for RPC
- *
- * Copyright (c) 2015, 2016, Primary Data, Inc. All rights reserved.
- *
- * Trond Myklebust <trond.myklebust@primarydata.com>
- *
- */
+
+ 
 #include <linux/atomic.h>
 #include <linux/types.h>
 #include <linux/kref.h>
@@ -42,13 +35,7 @@ static void xprt_switch_add_xprt_locked(struct rpc_xprt_switch *xps,
 	xps->xps_nactive++;
 }
 
-/**
- * rpc_xprt_switch_add_xprt - Add a new rpc_xprt to an rpc_xprt_switch
- * @xps: pointer to struct rpc_xprt_switch
- * @xprt: pointer to struct rpc_xprt
- *
- * Adds xprt to the end of the list of struct rpc_xprt in xps.
- */
+ 
 void rpc_xprt_switch_add_xprt(struct rpc_xprt_switch *xps,
 		struct rpc_xprt *xprt)
 {
@@ -75,14 +62,7 @@ static void xprt_switch_remove_xprt_locked(struct rpc_xprt_switch *xps,
 	list_del_rcu(&xprt->xprt_switch);
 }
 
-/**
- * rpc_xprt_switch_remove_xprt - Removes an rpc_xprt from a rpc_xprt_switch
- * @xps: pointer to struct rpc_xprt_switch
- * @xprt: pointer to struct rpc_xprt
- * @offline: indicates if the xprt that's being removed is in an offline state
- *
- * Removes xprt from the list of struct rpc_xprt in xps.
- */
+ 
 void rpc_xprt_switch_remove_xprt(struct rpc_xprt_switch *xps,
 		struct rpc_xprt *xprt, bool offline)
 {
@@ -116,14 +96,7 @@ static void xprt_switch_free_id(struct rpc_xprt_switch *xps)
 	ida_free(&rpc_xprtswitch_ids, xps->xps_id);
 }
 
-/**
- * xprt_switch_alloc - Allocate a new struct rpc_xprt_switch
- * @xprt: pointer to struct rpc_xprt
- * @gfp_flags: allocation flags
- *
- * On success, returns an initialised struct rpc_xprt_switch, containing
- * the entry xprt. Returns NULL on failure.
- */
+ 
 struct rpc_xprt_switch *xprt_switch_alloc(struct rpc_xprt *xprt,
 		gfp_t gfp_flags)
 {
@@ -175,12 +148,7 @@ static void xprt_switch_free(struct kref *kref)
 	kfree_rcu(xps, xps_rcu);
 }
 
-/**
- * xprt_switch_get - Return a reference to a rpc_xprt_switch
- * @xps: pointer to struct rpc_xprt_switch
- *
- * Returns a reference to xps unless the refcount is already zero.
- */
+ 
 struct rpc_xprt_switch *xprt_switch_get(struct rpc_xprt_switch *xps)
 {
 	if (xps != NULL && kref_get_unless_zero(&xps->xps_kref))
@@ -188,24 +156,14 @@ struct rpc_xprt_switch *xprt_switch_get(struct rpc_xprt_switch *xps)
 	return NULL;
 }
 
-/**
- * xprt_switch_put - Release a reference to a rpc_xprt_switch
- * @xps: pointer to struct rpc_xprt_switch
- *
- * Release the reference to xps, and free it once the refcount is zero.
- */
+ 
 void xprt_switch_put(struct rpc_xprt_switch *xps)
 {
 	if (xps != NULL)
 		kref_put(&xps->xps_kref, xprt_switch_free);
 }
 
-/**
- * rpc_xprt_switch_set_roundrobin - Set a round-robin policy on rpc_xprt_switch
- * @xps: pointer to struct rpc_xprt_switch
- *
- * Sets a round-robin default policy for iterators acting on xps.
- */
+ 
 void rpc_xprt_switch_set_roundrobin(struct rpc_xprt_switch *xps)
 {
 	if (READ_ONCE(xps->xps_iter_ops) != &rpc_xprt_iter_roundrobin)
@@ -366,10 +324,7 @@ struct rpc_xprt *xprt_switch_find_next_entry(struct list_head *head,
 	list_for_each_entry_rcu(pos, head, xprt_switch) {
 		if (cur == prev)
 			found = true;
-		/* for request to return active transports return only
-		 * active, for request to return offline transports
-		 * return only offline
-		 */
+		 
 		if (found && ((check_active && xprt_is_active(pos)) ||
 			      (!check_active && !xprt_is_active(pos))))
 			return pos;
@@ -431,7 +386,7 @@ struct rpc_xprt *xprt_switch_find_next_entry_roundrobin(struct rpc_xprt_switch *
 		xprt_queuelen = atomic_long_read(&xprt->queuelen);
 		xps_queuelen = atomic_long_read(&xps->xps_queuelen);
 		nactive = READ_ONCE(xps->xps_nactive);
-		/* Exit loop if xprt_queuelen <= average queue length */
+		 
 		if (xprt_queuelen * nactive <= xps_queuelen)
 			break;
 		cur = xprt;
@@ -474,13 +429,7 @@ struct rpc_xprt *xprt_iter_next_entry_offline(struct rpc_xprt_iter *xpi)
 			xprt_switch_find_next_entry_offline);
 }
 
-/*
- * xprt_iter_rewind - Resets the xprt iterator
- * @xpi: pointer to rpc_xprt_iter
- *
- * Resets xpi to ensure that it points to the first entry in the list
- * of transports.
- */
+ 
 void xprt_iter_rewind(struct rpc_xprt_iter *xpi)
 {
 	rcu_read_lock();
@@ -497,29 +446,14 @@ static void __xprt_iter_init(struct rpc_xprt_iter *xpi,
 	xpi->xpi_ops = ops;
 }
 
-/**
- * xprt_iter_init - Initialise an xprt iterator
- * @xpi: pointer to rpc_xprt_iter
- * @xps: pointer to rpc_xprt_switch
- *
- * Initialises the iterator to use the default iterator ops
- * as set in xps. This function is mainly intended for internal
- * use in the rpc_client.
- */
+ 
 void xprt_iter_init(struct rpc_xprt_iter *xpi,
 		struct rpc_xprt_switch *xps)
 {
 	__xprt_iter_init(xpi, xps, NULL);
 }
 
-/**
- * xprt_iter_init_listall - Initialise an xprt iterator
- * @xpi: pointer to rpc_xprt_iter
- * @xps: pointer to rpc_xprt_switch
- *
- * Initialises the iterator to iterate once through the entire list
- * of entries in xps.
- */
+ 
 void xprt_iter_init_listall(struct rpc_xprt_iter *xpi,
 		struct rpc_xprt_switch *xps)
 {
@@ -532,42 +466,26 @@ void xprt_iter_init_listoffline(struct rpc_xprt_iter *xpi,
 	__xprt_iter_init(xpi, xps, &rpc_xprt_iter_listoffline);
 }
 
-/**
- * xprt_iter_xchg_switch - Atomically swap out the rpc_xprt_switch
- * @xpi: pointer to rpc_xprt_iter
- * @newswitch: pointer to a new rpc_xprt_switch or NULL
- *
- * Swaps out the existing xpi->xpi_xpswitch with a new value.
- */
+ 
 struct rpc_xprt_switch *xprt_iter_xchg_switch(struct rpc_xprt_iter *xpi,
 		struct rpc_xprt_switch *newswitch)
 {
 	struct rpc_xprt_switch __rcu *oldswitch;
 
-	/* Atomically swap out the old xpswitch */
+	 
 	oldswitch = xchg(&xpi->xpi_xpswitch, RCU_INITIALIZER(newswitch));
 	if (newswitch != NULL)
 		xprt_iter_rewind(xpi);
 	return rcu_dereference_protected(oldswitch, true);
 }
 
-/**
- * xprt_iter_destroy - Destroys the xprt iterator
- * @xpi: pointer to rpc_xprt_iter
- */
+ 
 void xprt_iter_destroy(struct rpc_xprt_iter *xpi)
 {
 	xprt_switch_put(xprt_iter_xchg_switch(xpi, NULL));
 }
 
-/**
- * xprt_iter_xprt - Returns the rpc_xprt pointed to by the cursor
- * @xpi: pointer to rpc_xprt_iter
- *
- * Returns a pointer to the struct rpc_xprt that is currently
- * pointed to by the cursor.
- * Caller must be holding rcu_read_lock().
- */
+ 
 struct rpc_xprt *xprt_iter_xprt(struct rpc_xprt_iter *xpi)
 {
 	WARN_ON_ONCE(!rcu_read_lock_held());
@@ -589,13 +507,7 @@ struct rpc_xprt *xprt_iter_get_helper(struct rpc_xprt_iter *xpi,
 	return ret;
 }
 
-/**
- * xprt_iter_get_xprt - Returns the rpc_xprt pointed to by the cursor
- * @xpi: pointer to rpc_xprt_iter
- *
- * Returns a reference to the struct rpc_xprt that is currently
- * pointed to by the cursor.
- */
+ 
 struct rpc_xprt *xprt_iter_get_xprt(struct rpc_xprt_iter *xpi)
 {
 	struct rpc_xprt *xprt;
@@ -606,13 +518,7 @@ struct rpc_xprt *xprt_iter_get_xprt(struct rpc_xprt_iter *xpi)
 	return xprt;
 }
 
-/**
- * xprt_iter_get_next - Returns the next rpc_xprt following the cursor
- * @xpi: pointer to rpc_xprt_iter
- *
- * Returns a reference to the struct rpc_xprt that immediately follows the
- * entry pointed to by the cursor.
- */
+ 
 struct rpc_xprt *xprt_iter_get_next(struct rpc_xprt_iter *xpi)
 {
 	struct rpc_xprt *xprt;
@@ -623,7 +529,7 @@ struct rpc_xprt *xprt_iter_get_next(struct rpc_xprt_iter *xpi)
 	return xprt;
 }
 
-/* Policy for always returning the first entry in the rpc_xprt_switch */
+ 
 static
 const struct rpc_xprt_iter_ops rpc_xprt_iter_singular = {
 	.xpi_rewind = xprt_iter_no_rewind,
@@ -631,7 +537,7 @@ const struct rpc_xprt_iter_ops rpc_xprt_iter_singular = {
 	.xpi_next = xprt_iter_first_entry,
 };
 
-/* Policy for round-robin iteration of entries in the rpc_xprt_switch */
+ 
 static
 const struct rpc_xprt_iter_ops rpc_xprt_iter_roundrobin = {
 	.xpi_rewind = xprt_iter_default_rewind,
@@ -639,7 +545,7 @@ const struct rpc_xprt_iter_ops rpc_xprt_iter_roundrobin = {
 	.xpi_next = xprt_iter_next_entry_roundrobin,
 };
 
-/* Policy for once-through iteration of entries in the rpc_xprt_switch */
+ 
 static
 const struct rpc_xprt_iter_ops rpc_xprt_iter_listall = {
 	.xpi_rewind = xprt_iter_default_rewind,

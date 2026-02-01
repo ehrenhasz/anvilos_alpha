@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ethernet driver for the WIZnet W5100 chip.
- *
- * Copyright (C) 2006-2008 WIZnet Co.,Ltd.
- * Copyright (C) 2012 Mike Sinkovsky <msink@permonline.ru>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -35,45 +30,43 @@ MODULE_AUTHOR("Mike Sinkovsky <msink@permonline.ru>");
 MODULE_ALIAS("platform:"DRV_NAME);
 MODULE_LICENSE("GPL");
 
-/*
- * W5100/W5200/W5500 common registers
- */
+ 
 #define W5100_COMMON_REGS	0x0000
-#define W5100_MR		0x0000 /* Mode Register */
-#define   MR_RST		  0x80 /* S/W reset */
-#define   MR_PB			  0x10 /* Ping block */
-#define   MR_AI			  0x02 /* Address Auto-Increment */
-#define   MR_IND		  0x01 /* Indirect mode */
-#define W5100_SHAR		0x0009 /* Source MAC address */
-#define W5100_IR		0x0015 /* Interrupt Register */
+#define W5100_MR		0x0000  
+#define   MR_RST		  0x80  
+#define   MR_PB			  0x10  
+#define   MR_AI			  0x02  
+#define   MR_IND		  0x01  
+#define W5100_SHAR		0x0009  
+#define W5100_IR		0x0015  
 #define W5100_COMMON_REGS_LEN	0x0040
 
-#define W5100_Sn_MR		0x0000 /* Sn Mode Register */
-#define W5100_Sn_CR		0x0001 /* Sn Command Register */
-#define W5100_Sn_IR		0x0002 /* Sn Interrupt Register */
-#define W5100_Sn_SR		0x0003 /* Sn Status Register */
-#define W5100_Sn_TX_FSR		0x0020 /* Sn Transmit free memory size */
-#define W5100_Sn_TX_RD		0x0022 /* Sn Transmit memory read pointer */
-#define W5100_Sn_TX_WR		0x0024 /* Sn Transmit memory write pointer */
-#define W5100_Sn_RX_RSR		0x0026 /* Sn Receive free memory size */
-#define W5100_Sn_RX_RD		0x0028 /* Sn Receive memory read pointer */
+#define W5100_Sn_MR		0x0000  
+#define W5100_Sn_CR		0x0001  
+#define W5100_Sn_IR		0x0002  
+#define W5100_Sn_SR		0x0003  
+#define W5100_Sn_TX_FSR		0x0020  
+#define W5100_Sn_TX_RD		0x0022  
+#define W5100_Sn_TX_WR		0x0024  
+#define W5100_Sn_RX_RSR		0x0026  
+#define W5100_Sn_RX_RD		0x0028  
 
 #define S0_REGS(priv)		((priv)->s0_regs)
 
 #define W5100_S0_MR(priv)	(S0_REGS(priv) + W5100_Sn_MR)
-#define   S0_MR_MACRAW		  0x04 /* MAC RAW mode */
-#define   S0_MR_MF		  0x40 /* MAC Filter for W5100 and W5200 */
-#define   W5500_S0_MR_MF	  0x80 /* MAC Filter for W5500 */
+#define   S0_MR_MACRAW		  0x04  
+#define   S0_MR_MF		  0x40  
+#define   W5500_S0_MR_MF	  0x80  
 #define W5100_S0_CR(priv)	(S0_REGS(priv) + W5100_Sn_CR)
-#define   S0_CR_OPEN		  0x01 /* OPEN command */
-#define   S0_CR_CLOSE		  0x10 /* CLOSE command */
-#define   S0_CR_SEND		  0x20 /* SEND command */
-#define   S0_CR_RECV		  0x40 /* RECV command */
+#define   S0_CR_OPEN		  0x01  
+#define   S0_CR_CLOSE		  0x10  
+#define   S0_CR_SEND		  0x20  
+#define   S0_CR_RECV		  0x40  
 #define W5100_S0_IR(priv)	(S0_REGS(priv) + W5100_Sn_IR)
-#define   S0_IR_SENDOK		  0x10 /* complete sending */
-#define   S0_IR_RECV		  0x04 /* receiving data */
+#define   S0_IR_SENDOK		  0x10  
+#define   S0_IR_RECV		  0x04  
 #define W5100_S0_SR(priv)	(S0_REGS(priv) + W5100_Sn_SR)
-#define   S0_SR_MACRAW		  0x42 /* mac raw mode */
+#define   S0_SR_MACRAW		  0x42  
 #define W5100_S0_TX_FSR(priv)	(S0_REGS(priv) + W5100_Sn_TX_FSR)
 #define W5100_S0_TX_RD(priv)	(S0_REGS(priv) + W5100_Sn_TX_RD)
 #define W5100_S0_TX_WR(priv)	(S0_REGS(priv) + W5100_Sn_TX_WR)
@@ -82,19 +75,15 @@ MODULE_LICENSE("GPL");
 
 #define W5100_S0_REGS_LEN	0x0040
 
-/*
- * W5100 and W5200 common registers
- */
-#define W5100_IMR		0x0016 /* Interrupt Mask Register */
-#define   IR_S0			  0x01 /* S0 interrupt */
-#define W5100_RTR		0x0017 /* Retry Time-value Register */
-#define   RTR_DEFAULT		  2000 /* =0x07d0 (2000) */
+ 
+#define W5100_IMR		0x0016  
+#define   IR_S0			  0x01  
+#define W5100_RTR		0x0017  
+#define   RTR_DEFAULT		  2000  
 
-/*
- * W5100 specific register and memory
- */
-#define W5100_RMSR		0x001a /* Receive Memory Size */
-#define W5100_TMSR		0x001b /* Transmit Memory Size */
+ 
+#define W5100_RMSR		0x001a  
+#define W5100_TMSR		0x001b  
 
 #define W5100_S0_REGS		0x0400
 
@@ -103,55 +92,44 @@ MODULE_LICENSE("GPL");
 #define W5100_RX_MEM_START	0x6000
 #define W5100_RX_MEM_SIZE	0x2000
 
-/*
- * W5200 specific register and memory
- */
+ 
 #define W5200_S0_REGS		0x4000
 
-#define W5200_Sn_RXMEM_SIZE(n)	(0x401e + (n) * 0x0100) /* Sn RX Memory Size */
-#define W5200_Sn_TXMEM_SIZE(n)	(0x401f + (n) * 0x0100) /* Sn TX Memory Size */
+#define W5200_Sn_RXMEM_SIZE(n)	(0x401e + (n) * 0x0100)  
+#define W5200_Sn_TXMEM_SIZE(n)	(0x401f + (n) * 0x0100)  
 
 #define W5200_TX_MEM_START	0x8000
 #define W5200_TX_MEM_SIZE	0x4000
 #define W5200_RX_MEM_START	0xc000
 #define W5200_RX_MEM_SIZE	0x4000
 
-/*
- * W5500 specific register and memory
- *
- * W5500 register and memory are organized by multiple blocks.  Each one is
- * selected by 16bits offset address and 5bits block select bits.  So we
- * encode it into 32bits address. (lower 16bits is offset address and
- * upper 16bits is block select bits)
- */
-#define W5500_SIMR		0x0018 /* Socket Interrupt Mask Register */
-#define W5500_RTR		0x0019 /* Retry Time-value Register */
+ 
+#define W5500_SIMR		0x0018  
+#define W5500_RTR		0x0019  
 
 #define W5500_S0_REGS		0x10000
 
 #define W5500_Sn_RXMEM_SIZE(n)	\
-		(0x1001e + (n) * 0x40000) /* Sn RX Memory Size */
+		(0x1001e + (n) * 0x40000)  
 #define W5500_Sn_TXMEM_SIZE(n)	\
-		(0x1001f + (n) * 0x40000) /* Sn TX Memory Size */
+		(0x1001f + (n) * 0x40000)  
 
 #define W5500_TX_MEM_START	0x20000
 #define W5500_TX_MEM_SIZE	0x04000
 #define W5500_RX_MEM_START	0x30000
 #define W5500_RX_MEM_SIZE	0x04000
 
-/*
- * Device driver private data structure
- */
+ 
 
 struct w5100_priv {
 	const struct w5100_ops *ops;
 
-	/* Socket 0 register offset address */
+	 
 	u32 s0_regs;
-	/* Socket 0 TX buffer offset address and size */
+	 
 	u32 s0_tx_buf;
 	u16 s0_tx_buf_size;
-	/* Socket 0 RX buffer offset address and size */
+	 
 	u32 s0_rx_buf;
 	u16 s0_rx_buf_size;
 
@@ -172,15 +150,11 @@ struct w5100_priv {
 	struct work_struct restart_work;
 };
 
-/************************************************************************
- *
- *  Lowlevel I/O functions
- *
- ***********************************************************************/
+ 
 
 struct w5100_mmio_priv {
 	void __iomem *base;
-	/* Serialize access in indirect address mode */
+	 
 	spinlock_t reg_lock;
 };
 
@@ -196,12 +170,7 @@ static inline void __iomem *w5100_mmio(struct net_device *ndev)
 	return mmio_priv->base;
 }
 
-/*
- * In direct address mode host system can directly access W5100 registers
- * after mapping to Memory-Mapped I/O space.
- *
- * 0x8000 bytes are required for memory space.
- */
+ 
 static inline int w5100_read_direct(struct net_device *ndev, u32 addr)
 {
 	return ioread8(w5100_mmio(ndev) + (addr << CONFIG_WIZNET_BUS_SHIFT));
@@ -285,16 +254,9 @@ static const struct w5100_ops w5100_mmio_direct_ops = {
 	.init = w5100_mmio_init,
 };
 
-/*
- * In indirect address mode host system indirectly accesses registers by
- * using Indirect Mode Address Register (IDM_AR) and Indirect Mode Data
- * Register (IDM_DR), which are directly mapped to Memory-Mapped I/O space.
- * Mode Register (MR) is directly accessible.
- *
- * Only 0x04 bytes are required for memory space.
- */
-#define W5100_IDM_AR		0x01   /* Indirect Mode Address Register */
-#define W5100_IDM_DR		0x03   /* Indirect Mode Data Register */
+ 
+#define W5100_IDM_AR		0x01    
+#define W5100_IDM_DR		0x03    
 
 static int w5100_read_indirect(struct net_device *ndev, u32 addr)
 {
@@ -475,7 +437,7 @@ static int w5100_writebulk(struct w5100_priv *priv, u32 addr, const u8 *buf,
 	return w5100_writebulk_indirect(priv->ndev, addr, buf, len);
 }
 
-#else /* CONFIG_WIZNET_BUS_ANY */
+#else  
 
 static int w5100_read(struct w5100_priv *priv, u32 addr)
 {
@@ -617,9 +579,7 @@ static void w5100_disable_intr(struct w5100_priv *priv)
 
 static void w5100_memory_configure(struct w5100_priv *priv)
 {
-	/* Configure 16K of internal memory
-	 * as 8K RX buffer and 8K TX buffer
-	 */
+	 
 	w5100_write(priv, W5100_RMSR, 0x03);
 	w5100_write(priv, W5100_TMSR, 0x03);
 }
@@ -628,9 +588,7 @@ static void w5200_memory_configure(struct w5100_priv *priv)
 {
 	int i;
 
-	/* Configure internal RX memory as 16K RX buffer and
-	 * internal TX memory as 16K TX buffer
-	 */
+	 
 	w5100_write(priv, W5200_Sn_RXMEM_SIZE(0), 0x10);
 	w5100_write(priv, W5200_Sn_TXMEM_SIZE(0), 0x10);
 
@@ -644,9 +602,7 @@ static void w5500_memory_configure(struct w5100_priv *priv)
 {
 	int i;
 
-	/* Configure internal RX memory as 16K RX buffer and
-	 * internal TX memory as 16K TX buffer
-	 */
+	 
 	w5100_write(priv, W5500_Sn_RXMEM_SIZE(0), 0x10);
 	w5100_write(priv, W5500_Sn_TXMEM_SIZE(0), 0x10);
 
@@ -710,11 +666,7 @@ static void w5100_hw_close(struct w5100_priv *priv)
 	w5100_command(priv, S0_CR_CLOSE);
 }
 
-/***********************************************************************
- *
- *   Device driver functions / callbacks
- *
- ***********************************************************************/
+ 
 
 static void w5100_get_drvinfo(struct net_device *ndev,
 			      struct ethtool_drvinfo *info)
@@ -1135,9 +1087,7 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
 	ndev->ethtool_ops = &w5100_ethtool_ops;
 	netif_napi_add_weight(ndev, &priv->napi, w5100_napi_poll, 16);
 
-	/* This chip doesn't support VLAN packets with normal MTU,
-	 * so disable VLAN for this device.
-	 */
+	 
 	ndev->features |= NETIF_F_VLAN_CHALLENGED;
 
 	err = register_netdev(ndev);
@@ -1262,7 +1212,7 @@ static int w5100_resume(struct device *dev)
 	}
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 SIMPLE_DEV_PM_OPS(w5100_pm_ops, w5100_suspend, w5100_resume);
 EXPORT_SYMBOL_GPL(w5100_pm_ops);

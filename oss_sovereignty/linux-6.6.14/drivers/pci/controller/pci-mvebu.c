@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe driver for Marvell Armada 370 and Armada XP SoCs
- *
- * Author: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,9 +22,7 @@
 #include "../pci.h"
 #include "../pci-bridge-emul.h"
 
-/*
- * PCIe unit register offsets.
- */
+ 
 #define PCIE_DEV_ID_OFF		0x0000
 #define PCIE_CMD_OFF		0x0004
 #define PCIE_DEV_REV_OFF	0x0008
@@ -80,7 +74,7 @@
 
 struct mvebu_pcie_port;
 
-/* Structure representing all PCIe interfaces */
+ 
 struct mvebu_pcie {
 	struct platform_device *pdev;
 	struct mvebu_pcie_port *ports;
@@ -96,7 +90,7 @@ struct mvebu_pcie_window {
 	size_t size;
 };
 
-/* Structure representing one PCIe interface */
+ 
 struct mvebu_pcie_port {
 	char *name;
 	void __iomem *base;
@@ -194,13 +188,7 @@ static void mvebu_pcie_disable_wins(struct mvebu_pcie_port *port)
 	mvebu_writel(port, 0, PCIE_WIN5_REMAP_OFF);
 }
 
-/*
- * Setup PCIE BARs and Address Decode Wins:
- * BAR[0] -> internal registers (needed for MSI)
- * BAR[1] -> covers all DRAM banks
- * BAR[2] -> Disabled
- * WIN[0-3] -> DRAM bank[0-3]
- */
+ 
 static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
 {
 	const struct mbus_dram_target_info *dram;
@@ -209,10 +197,10 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
 
 	dram = mv_mbus_dram_info();
 
-	/* First, disable and clear BARs and windows. */
+	 
 	mvebu_pcie_disable_wins(port);
 
-	/* Setup windows for DDR banks.  Count total DDR size on the fly. */
+	 
 	size = 0;
 	for (i = 0; i < dram->num_cs; i++) {
 		const struct mbus_dram_window *cs = dram->cs + i;
@@ -229,19 +217,17 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
 		size += cs->size;
 	}
 
-	/* Round up 'size' to the nearest power of two. */
+	 
 	if ((size & (size - 1)) != 0)
 		size = 1 << fls(size);
 
-	/* Setup BAR[1] to all DRAM banks. */
+	 
 	mvebu_writel(port, dram->cs[0].base, PCIE_BAR_LO_OFF(1));
 	mvebu_writel(port, 0, PCIE_BAR_HI_OFF(1));
 	mvebu_writel(port, ((size - 1) & 0xffff0000) | 1,
 		     PCIE_BAR_CTRL_OFF(1));
 
-	/*
-	 * Point BAR[0] to the device's internal registers.
-	 */
+	 
 	mvebu_writel(port, round_down(port->regs.start, SZ_1M), PCIE_BAR_LO_OFF(0));
 	mvebu_writel(port, 0, PCIE_BAR_HI_OFF(0));
 }
@@ -250,62 +236,32 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
 {
 	u32 ctrl, lnkcap, cmd, dev_rev, unmask, sspl;
 
-	/* Setup PCIe controller to Root Complex mode. */
+	 
 	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
 	ctrl |= PCIE_CTRL_RC_MODE;
 	mvebu_writel(port, ctrl, PCIE_CTRL_OFF);
 
-	/*
-	 * Set Maximum Link Width to X1 or X4 in Root Port's PCIe Link
-	 * Capability register. This register is defined by PCIe specification
-	 * as read-only but this mvebu controller has it as read-write and must
-	 * be set to number of SerDes PCIe lanes (1 or 4). If this register is
-	 * not set correctly then link with endpoint card is not established.
-	 */
+	 
 	lnkcap = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
 	lnkcap &= ~PCI_EXP_LNKCAP_MLW;
 	lnkcap |= FIELD_PREP(PCI_EXP_LNKCAP_MLW, port->is_x4 ? 4 : 1);
 	mvebu_writel(port, lnkcap, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
 
-	/* Disable Root Bridge I/O space, memory space and bus mastering. */
+	 
 	cmd = mvebu_readl(port, PCIE_CMD_OFF);
 	cmd &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	mvebu_writel(port, cmd, PCIE_CMD_OFF);
 
-	/*
-	 * Change Class Code of PCI Bridge device to PCI Bridge (0x6004)
-	 * because default value is Memory controller (0x5080).
-	 *
-	 * Note that this mvebu PCI Bridge does not have compliant Type 1
-	 * Configuration Space. Header Type is reported as Type 0 and it
-	 * has format of Type 0 config space.
-	 *
-	 * Moreover Type 0 BAR registers (ranges 0x10 - 0x28 and 0x30 - 0x34)
-	 * have the same format in Marvell's specification as in PCIe
-	 * specification, but their meaning is totally different and they do
-	 * different things: they are aliased into internal mvebu registers
-	 * (e.g. PCIE_BAR_LO_OFF) and these should not be changed or
-	 * reconfigured by pci device drivers.
-	 *
-	 * Therefore driver uses emulation of PCI Bridge which emulates
-	 * access to configuration space via internal mvebu registers or
-	 * emulated configuration buffer. Driver access these PCI Bridge
-	 * directly for simplification, but these registers can be accessed
-	 * also via standard mvebu way for accessing PCI config space.
-	 */
+	 
 	dev_rev = mvebu_readl(port, PCIE_DEV_REV_OFF);
 	dev_rev &= ~0xffffff00;
 	dev_rev |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
 	mvebu_writel(port, dev_rev, PCIE_DEV_REV_OFF);
 
-	/* Point PCIe unit MBUS decode windows to DRAM space. */
+	 
 	mvebu_pcie_setup_wins(port);
 
-	/*
-	 * Program Root Port to automatically send Set_Slot_Power_Limit
-	 * PCIe Message when changing status from Dl_Down to Dl_Up and valid
-	 * slot power limit was specified.
-	 */
+	 
 	sspl = mvebu_readl(port, PCIE_SSPL_OFF);
 	sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
 	if (port->slot_power_limit_value) {
@@ -315,26 +271,17 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
 	}
 	mvebu_writel(port, sspl, PCIE_SSPL_OFF);
 
-	/* Mask all interrupt sources. */
+	 
 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
 
-	/* Clear all interrupt causes. */
+	 
 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
 
-	/* Check if "intx" interrupt was specified in DT. */
+	 
 	if (port->intx_irq > 0)
 		return;
 
-	/*
-	 * Fallback code when "intx" interrupt was not specified in DT:
-	 * Unmask all legacy INTx interrupts as driver does not provide a way
-	 * for masking and unmasking of individual legacy INTx interrupts.
-	 * Legacy INTx are reported via one shared GIC source and therefore
-	 * kernel cannot distinguish which individual legacy INTx was triggered.
-	 * These interrupts are shared, so it should not cause any issue. Just
-	 * performance penalty as every PCIe interrupt handler needs to be
-	 * called when some interrupt is triggered.
-	 */
+	 
 	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
 	unmask |= PCIE_INT_INTX(0) | PCIE_INT_INTX(1) |
 		  PCIE_INT_INTX(2) | PCIE_INT_INTX(3);
@@ -422,10 +369,7 @@ static struct pci_ops mvebu_pcie_child_ops = {
 	.write = mvebu_pcie_child_wr_conf,
 };
 
-/*
- * Remove windows, starting from the largest ones to the smallest
- * ones.
- */
+ 
 static void mvebu_pcie_del_windows(struct mvebu_pcie_port *port,
 				   phys_addr_t base, size_t size)
 {
@@ -438,12 +382,7 @@ static void mvebu_pcie_del_windows(struct mvebu_pcie_port *port,
 	}
 }
 
-/*
- * MBus windows can only have a power of two size, but PCI BARs do not
- * have this constraint. Therefore, we have to split the PCI BAR into
- * areas each having a power of two size. We start from the largest
- * one (i.e highest order bit set in the size).
- */
+ 
 static int mvebu_pcie_add_windows(struct mvebu_pcie_port *port,
 				   unsigned int target, unsigned int attribute,
 				   phys_addr_t base, size_t size,
@@ -494,11 +433,7 @@ static int mvebu_pcie_set_window(struct mvebu_pcie_port *port,
 		cur->size = 0;
 		cur->base = 0;
 
-		/*
-		 * If something tries to change the window while it is enabled
-		 * the change will not be done atomically. That would be
-		 * difficult to do in the general case.
-		 */
+		 
 	}
 
 	if (desired->size == 0)
@@ -521,19 +456,13 @@ static int mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
 	struct mvebu_pcie_window desired = {};
 	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
 
-	/* Are the new iobase/iolimit values invalid? */
+	 
 	if (conf->iolimit < conf->iobase ||
 	    le16_to_cpu(conf->iolimitupper) < le16_to_cpu(conf->iobaseupper))
 		return mvebu_pcie_set_window(port, port->io_target, port->io_attr,
 					     &desired, &port->iowin);
 
-	/*
-	 * We read the PCI-to-PCI bridge emulated registers, and
-	 * calculate the base address and size of the address decoding
-	 * window to setup, according to the PCI-to-PCI bridge
-	 * specifications. iobase is the bus address, port->iowin_base
-	 * is the CPU address.
-	 */
+	 
 	desired.remap = ((conf->iobase & 0xF0) << 8) |
 			(le16_to_cpu(conf->iobaseupper) << 16);
 	desired.base = port->pcie->io.start + desired.remap;
@@ -551,17 +480,12 @@ static int mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
 	struct mvebu_pcie_window desired = {.remap = MVEBU_MBUS_NO_REMAP};
 	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
 
-	/* Are the new membase/memlimit values invalid? */
+	 
 	if (le16_to_cpu(conf->memlimit) < le16_to_cpu(conf->membase))
 		return mvebu_pcie_set_window(port, port->mem_target, port->mem_attr,
 					     &desired, &port->memwin);
 
-	/*
-	 * We read the PCI-to-PCI bridge emulated registers, and
-	 * calculate the base address and size of the address decoding
-	 * window to setup, according to the PCI-to-PCI bridge
-	 * specifications.
-	 */
+	 
 	desired.base = ((le16_to_cpu(conf->membase) & 0xFFF0) << 16);
 	desired.size = (((le16_to_cpu(conf->memlimit) & 0xFFF0) << 16) | 0xFFFFF) -
 		       desired.base + 1;
@@ -582,11 +506,7 @@ mvebu_pci_bridge_emul_base_conf_read(struct pci_bridge_emul *bridge,
 		break;
 
 	case PCI_PRIMARY_BUS: {
-		/*
-		 * From the whole 32bit register we support reading from HW only
-		 * secondary bus number which is mvebu local bus number.
-		 * Other bits are retrieved only from emulated config buffer.
-		 */
+		 
 		__le32 *cfgspace = (__le32 *)&bridge->conf;
 		u32 val = le32_to_cpu(cfgspace[PCI_PRIMARY_BUS / 4]);
 		val &= ~0xff00;
@@ -596,11 +516,7 @@ mvebu_pci_bridge_emul_base_conf_read(struct pci_bridge_emul *bridge,
 	}
 
 	case PCI_INTERRUPT_LINE: {
-		/*
-		 * From the whole 32bit register we support reading from HW only
-		 * one bit: PCI_BRIDGE_CTL_BUS_RESET.
-		 * Other bits are retrieved only from emulated config buffer.
-		 */
+		 
 		__le32 *cfgspace = (__le32 *)&bridge->conf;
 		u32 val = le32_to_cpu(cfgspace[PCI_INTERRUPT_LINE / 4]);
 		if (mvebu_readl(port, PCIE_CTRL_OFF) & PCIE_CTRL_MASTER_HOT_RESET)
@@ -634,18 +550,13 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
 		break;
 
 	case PCI_EXP_LNKCAP:
-		/*
-		 * PCIe requires that the Clock Power Management capability bit
-		 * is hard-wired to zero for downstream ports but HW returns 1.
-		 * Additionally enable Data Link Layer Link Active Reporting
-		 * Capable bit as DL_Active indication is provided too.
-		 */
+		 
 		*value = (mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP) &
 			  ~PCI_EXP_LNKCAP_CLKPM) | PCI_EXP_LNKCAP_DLLLARC;
 		break;
 
 	case PCI_EXP_LNKCTL:
-		/* DL_Active indication is provided via PCIE_STAT_OFF */
+		 
 		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL) |
 			 (mvebu_pcie_link_up(port) ?
 			  (PCI_EXP_LNKSTA_DLLLA << 16) : 0);
@@ -655,16 +566,12 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
 		u16 slotctl = le16_to_cpu(bridge->pcie_conf.slotctl);
 		u16 slotsta = le16_to_cpu(bridge->pcie_conf.slotsta);
 		u32 val = 0;
-		/*
-		 * When slot power limit was not specified in DT then
-		 * ASPL_DISABLE bit is stored only in emulated config space.
-		 * Otherwise reflect status of PCIE_SSPL_ENABLE bit in HW.
-		 */
+		 
 		if (!port->slot_power_limit_value)
 			val |= slotctl & PCI_EXP_SLTCTL_ASPL_DISABLE;
 		else if (!(mvebu_readl(port, PCIE_SSPL_OFF) & PCIE_SSPL_ENABLE))
 			val |= PCI_EXP_SLTCTL_ASPL_DISABLE;
-		/* This callback is 32-bit and in high bits is slot status. */
+		 
 		val |= slotsta << 16;
 		*value = val;
 		break;
@@ -739,7 +646,7 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
 	case PCI_IO_BASE:
 		if ((mask & 0xffff) && mvebu_has_ioport(port) &&
 		    mvebu_pcie_handle_iobase_change(port)) {
-			/* On error disable IO range */
+			 
 			conf->iobase &= ~0xf0;
 			conf->iolimit &= ~0xf0;
 			conf->iobase |= 0xf0;
@@ -750,7 +657,7 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
 
 	case PCI_MEMORY_BASE:
 		if (mvebu_pcie_handle_membase_change(port)) {
-			/* On error disable mem range */
+			 
 			conf->membase = cpu_to_le16(le16_to_cpu(conf->membase) & ~0xfff0);
 			conf->memlimit = cpu_to_le16(le16_to_cpu(conf->memlimit) & ~0xfff0);
 			conf->membase = cpu_to_le16(le16_to_cpu(conf->membase) | 0xfff0);
@@ -760,7 +667,7 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
 	case PCI_IO_BASE_UPPER16:
 		if (mvebu_has_ioport(port) &&
 		    mvebu_pcie_handle_iobase_change(port)) {
-			/* On error disable IO range */
+			 
 			conf->iobase &= ~0xf0;
 			conf->iolimit &= ~0xf0;
 			conf->iobase |= 0xf0;
@@ -802,21 +709,14 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
 		break;
 
 	case PCI_EXP_LNKCTL:
-		/*
-		 * PCIe requires that the Enable Clock Power Management bit
-		 * is hard-wired to zero for downstream ports but HW allows
-		 * to change it.
-		 */
+		 
 		new &= ~PCI_EXP_LNKCTL_CLKREQ_EN;
 
 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL);
 		break;
 
 	case PCI_EXP_SLTCTL:
-		/*
-		 * Allow to change PCIE_SSPL_ENABLE bit only when slot power
-		 * limit was specified in DT and configured into HW.
-		 */
+		 
 		if ((mask & PCI_EXP_SLTCTL_ASPL_DISABLE) &&
 		    port->slot_power_limit_value) {
 			u32 sspl = mvebu_readl(port, PCIE_SSPL_OFF);
@@ -829,12 +729,7 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
 		break;
 
 	case PCI_EXP_RTSTA:
-		/*
-		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
-		 * is read-only and can be cleared only by writing 0b to the
-		 * Interrupt Cause RW0C register (PCIE_INT_CAUSE_OFF). So
-		 * clear PME via Interrupt Cause.
-		 */
+		 
 		if (new & PCI_EXP_RTSTA_PME)
 			mvebu_writel(port, ~PCIE_INT_PM_PME, PCIE_INT_CAUSE_OFF);
 		break;
@@ -859,7 +754,7 @@ mvebu_pci_bridge_emul_ext_conf_write(struct pci_bridge_emul *bridge,
 	struct mvebu_pcie_port *port = bridge->data;
 
 	switch (reg) {
-	/* These are W1C registers, so clear other bits */
+	 
 	case PCI_ERR_UNCOR_STATUS:
 	case PCI_ERR_COR_STATUS:
 	case PCI_ERR_ROOT_STATUS:
@@ -893,10 +788,7 @@ static const struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
 	.write_ext = mvebu_pci_bridge_emul_ext_conf_write,
 };
 
-/*
- * Initialize the configuration space of the PCI-to-PCI bridge
- * associated with the given PCIe interface.
- */
+ 
 static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
 {
 	unsigned int bridge_flags = PCI_BRIDGE_EMUL_NO_PREFMEM_FORWARD;
@@ -912,31 +804,17 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
 	bridge->conf.class_revision = cpu_to_le32(dev_rev & 0xff);
 
 	if (mvebu_has_ioport(port)) {
-		/* We support 32 bits I/O addressing */
+		 
 		bridge->conf.iobase = PCI_IO_RANGE_TYPE_32;
 		bridge->conf.iolimit = PCI_IO_RANGE_TYPE_32;
 	} else {
 		bridge_flags |= PCI_BRIDGE_EMUL_NO_IO_FORWARD;
 	}
 
-	/*
-	 * Older mvebu hardware provides PCIe Capability structure only in
-	 * version 1. New hardware provides it in version 2.
-	 * Enable slot support which is emulated.
-	 */
+	 
 	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver | PCI_EXP_FLAGS_SLOT);
 
-	/*
-	 * Set Presence Detect State bit permanently as there is no support for
-	 * unplugging PCIe card from the slot. Assume that PCIe card is always
-	 * connected in slot.
-	 *
-	 * Set physical slot number to port+1 as mvebu ports are indexed from
-	 * zero and zero value is reserved for ports within the same silicon
-	 * as Root Port which is not mvebu case.
-	 *
-	 * Also set correct slot power limit.
-	 */
+	 
 	bridge->pcie_conf.slotcap = cpu_to_le32(
 		FIELD_PREP(PCI_EXP_SLTCAP_SPLV, port->slot_power_limit_value) |
 		FIELD_PREP(PCI_EXP_SLTCAP_SPLS, port->slot_power_limit_scale) |
@@ -981,7 +859,7 @@ static struct mvebu_pcie_port *mvebu_pcie_find_port(struct mvebu_pcie *pcie,
 	return NULL;
 }
 
-/* PCI configuration space write function */
+ 
 static int mvebu_pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 			      int where, int size, u32 val)
 {
@@ -995,7 +873,7 @@ static int mvebu_pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 	return pci_bridge_emul_conf_write(&port->bridge, where, size, val);
 }
 
-/* PCI configuration space read function */
+ 
 static int mvebu_pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 			      int size, u32 *val)
 {
@@ -1104,7 +982,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
 	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
 	status = cause & unmask;
 
-	/* Process legacy INTx interrupts */
+	 
 	for (i = 0; i < PCI_NUM_INTX; i++) {
 		if (!(status & PCIE_INT_INTX(i)))
 			continue;
@@ -1118,9 +996,9 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
 
 static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	/* Interrupt support on mvebu emulated bridges is not implemented yet */
+	 
 	if (dev->bus->number == 0)
-		return 0; /* Proper return code 0 == NO_IRQ */
+		return 0;  
 
 	return of_irq_parse_and_map_pci(dev, slot, pin);
 }
@@ -1134,17 +1012,7 @@ static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
 	if (dev->bus->number != 0)
 		return start;
 
-	/*
-	 * On the PCI-to-PCI bridge side, the I/O windows must have at
-	 * least a 64 KB size and the memory windows must have at
-	 * least a 1 MB size. Moreover, MBus windows need to have a
-	 * base address aligned on their size, and their size must be
-	 * a power of two. This means that if the BAR doesn't have a
-	 * power of two size, several MBus windows will actually be
-	 * created. We need to ensure that the biggest MBus window
-	 * (which will be the first one) is aligned on its size, which
-	 * explains the rounddown_pow_of_two() being done here.
-	 */
+	 
 	if (res->flags & IORESOURCE_IO)
 		return round_up(start, max_t(resource_size_t, SZ_64K,
 					     rounddown_pow_of_two(size)));
@@ -1311,10 +1179,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 		port->io_attr = -1;
 	}
 
-	/*
-	 * Old DT bindings do not contain "intx" interrupt
-	 * so do not fail probing driver when interrupt does not exist.
-	 */
+	 
 	port->intx_irq = of_irq_get_byname(child, "intx");
 	if (port->intx_irq == -EPROBE_DEFER) {
 		ret = port->intx_irq;
@@ -1340,7 +1205,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 	if (ret) {
 		if (ret != -ENOENT)
 			goto err;
-		/* reset gpio is optional */
+		 
 		port->reset_gpio = NULL;
 		devm_kfree(dev, port->reset_name);
 		port->reset_name = NULL;
@@ -1372,7 +1237,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 skip:
 	ret = 0;
 
-	/* In the case of skipping, we need to free these */
+	 
 	devm_kfree(dev, port->reset_name);
 	port->reset_name = NULL;
 	devm_kfree(dev, port->name);
@@ -1382,11 +1247,7 @@ err:
 	return ret;
 }
 
-/*
- * Power up a PCIe port.  PCIe requires the refclk to be stable for 100µs
- * prior to releasing PERST.  See table 2-4 in section 2.6.2 AC Specifications
- * of the PCI Express Card Electromechanical Specification, 1.1.
- */
+ 
 static int mvebu_pcie_powerup(struct mvebu_pcie_port *port)
 {
 	int ret;
@@ -1410,10 +1271,7 @@ static int mvebu_pcie_powerup(struct mvebu_pcie_port *port)
 	return 0;
 }
 
-/*
- * Power down a PCIe port.  Strictly, PCIe requires us to place the card
- * in D3hot state before asserting PERST#.
- */
+ 
 static void mvebu_pcie_powerdown(struct mvebu_pcie_port *port)
 {
 	gpiod_set_value_cansleep(port->reset_gpio, 1);
@@ -1421,18 +1279,14 @@ static void mvebu_pcie_powerdown(struct mvebu_pcie_port *port)
 	clk_disable_unprepare(port->clk);
 }
 
-/*
- * devm_of_pci_get_host_bridge_resources() only sets up translateable resources,
- * so we need extra resource setup parsing our special DT properties encoding
- * the MEM and IO apertures.
- */
+ 
 static int mvebu_pcie_parse_request_resources(struct mvebu_pcie *pcie)
 {
 	struct device *dev = &pcie->pdev->dev;
 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
 	int ret;
 
-	/* Get the PCIe memory aperture */
+	 
 	mvebu_mbus_get_pcie_mem_aperture(&pcie->mem);
 	if (resource_size(&pcie->mem) == 0) {
 		dev_err(dev, "invalid memory aperture size\n");
@@ -1445,7 +1299,7 @@ static int mvebu_pcie_parse_request_resources(struct mvebu_pcie *pcie)
 	if (ret)
 		return ret;
 
-	/* Get the PCIe IO aperture */
+	 
 	mvebu_mbus_get_pcie_io_aperture(&pcie->io);
 
 	if (resource_size(&pcie->io) != 0) {
@@ -1559,81 +1413,7 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
 							 port);
 		}
 
-		/*
-		 * PCIe topology exported by mvebu hw is quite complicated. In
-		 * reality has something like N fully independent host bridges
-		 * where each host bridge has one PCIe Root Port (which acts as
-		 * PCI Bridge device). Each host bridge has its own independent
-		 * internal registers, independent access to PCI config space,
-		 * independent interrupt lines, independent window and memory
-		 * access configuration. But additionally there is some kind of
-		 * peer-to-peer support between PCIe devices behind different
-		 * host bridges limited just to forwarding of memory and I/O
-		 * transactions (forwarding of error messages and config cycles
-		 * is not supported). So we could say there are N independent
-		 * PCIe Root Complexes.
-		 *
-		 * For this kind of setup DT should have been structured into
-		 * N independent PCIe controllers / host bridges. But instead
-		 * structure in past was defined to put PCIe Root Ports of all
-		 * host bridges into one bus zero, like in classic multi-port
-		 * Root Complex setup with just one host bridge.
-		 *
-		 * This means that pci-mvebu.c driver provides "virtual" bus 0
-		 * on which registers all PCIe Root Ports (PCI Bridge devices)
-		 * specified in DT by their BDF addresses and virtually routes
-		 * PCI config access of each PCI bridge device to specific PCIe
-		 * host bridge.
-		 *
-		 * Normally PCI Bridge should choose between Type 0 and Type 1
-		 * config requests based on primary and secondary bus numbers
-		 * configured on the bridge itself. But because mvebu PCI Bridge
-		 * does not have registers for primary and secondary bus numbers
-		 * in its config space, it determinates type of config requests
-		 * via its own custom way.
-		 *
-		 * There are two options how mvebu determinate type of config
-		 * request.
-		 *
-		 * 1. If Secondary Bus Number Enable bit is not set or is not
-		 * available (applies for pre-XP PCIe controllers) then Type 0
-		 * is used if target bus number equals Local Bus Number (bits
-		 * [15:8] in register 0x1a04) and target device number differs
-		 * from Local Device Number (bits [20:16] in register 0x1a04).
-		 * Type 1 is used if target bus number differs from Local Bus
-		 * Number. And when target bus number equals Local Bus Number
-		 * and target device equals Local Device Number then request is
-		 * routed to Local PCI Bridge (PCIe Root Port).
-		 *
-		 * 2. If Secondary Bus Number Enable bit is set (bit 7 in
-		 * register 0x1a2c) then mvebu hw determinate type of config
-		 * request like compliant PCI Bridge based on primary bus number
-		 * which is configured via Local Bus Number (bits [15:8] in
-		 * register 0x1a04) and secondary bus number which is configured
-		 * via Secondary Bus Number (bits [7:0] in register 0x1a2c).
-		 * Local PCI Bridge (PCIe Root Port) is available on primary bus
-		 * as device with Local Device Number (bits [20:16] in register
-		 * 0x1a04).
-		 *
-		 * Secondary Bus Number Enable bit is disabled by default and
-		 * option 2. is not available on pre-XP PCIe controllers. Hence
-		 * this driver always use option 1.
-		 *
-		 * Basically it means that primary and secondary buses shares
-		 * one virtual number configured via Local Bus Number bits and
-		 * Local Device Number bits determinates if accessing primary
-		 * or secondary bus. Set Local Device Number to 1 and redirect
-		 * all writes of PCI Bridge Secondary Bus Number register to
-		 * Local Bus Number (bits [15:8] in register 0x1a04).
-		 *
-		 * So when accessing devices on buses behind secondary bus
-		 * number it would work correctly. And also when accessing
-		 * device 0 at secondary bus number via config space would be
-		 * correctly routed to secondary bus. Due to issues described
-		 * in mvebu_pcie_setup_hw(), PCI Bridges at primary bus (zero)
-		 * are not accessed directly via PCI config space but rarher
-		 * indirectly via kernel emulated PCI bridge driver.
-		 */
+		 
 		mvebu_pcie_setup_hw(port);
 		mvebu_pcie_set_local_dev_nr(port, 1);
 		mvebu_pcie_set_local_bus_nr(port, 0);
@@ -1655,7 +1435,7 @@ static void mvebu_pcie_remove(struct platform_device *pdev)
 	u32 cmd, sspl;
 	int i;
 
-	/* Remove PCI bus with all devices. */
+	 
 	pci_lock_rescan_remove();
 	pci_stop_root_bus(bridge->bus);
 	pci_remove_root_bus(bridge->bus);
@@ -1668,42 +1448,42 @@ static void mvebu_pcie_remove(struct platform_device *pdev)
 		if (!port->base)
 			continue;
 
-		/* Disable Root Bridge I/O space, memory space and bus mastering. */
+		 
 		cmd = mvebu_readl(port, PCIE_CMD_OFF);
 		cmd &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 		mvebu_writel(port, cmd, PCIE_CMD_OFF);
 
-		/* Mask all interrupt sources. */
+		 
 		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
 
-		/* Clear all interrupt causes. */
+		 
 		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
 
 		if (irq > 0)
 			irq_set_chained_handler_and_data(irq, NULL, NULL);
 
-		/* Remove IRQ domains. */
+		 
 		if (port->intx_irq_domain)
 			irq_domain_remove(port->intx_irq_domain);
 
-		/* Free config space for emulated root bridge. */
+		 
 		pci_bridge_emul_cleanup(&port->bridge);
 
-		/* Disable sending Set_Slot_Power_Limit PCIe Message. */
+		 
 		sspl = mvebu_readl(port, PCIE_SSPL_OFF);
 		sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
 		mvebu_writel(port, sspl, PCIE_SSPL_OFF);
 
-		/* Disable and clear BARs and windows. */
+		 
 		mvebu_pcie_disable_wins(port);
 
-		/* Delete PCIe IO and MEM windows. */
+		 
 		if (port->iowin.size)
 			mvebu_pcie_del_windows(port, port->iowin.base, port->iowin.size);
 		if (port->memwin.size)
 			mvebu_pcie_del_windows(port, port->memwin.base, port->memwin.size);
 
-		/* Power down card and disable clocks. Must be the last step. */
+		 
 		mvebu_pcie_powerdown(port);
 	}
 }

@@ -1,19 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/export.h>
 #include <linux/power_supply.h>
 #include <linux/of.h>
 
 #include "ab8500-bm.h"
 
-/* Default: under this temperature, charging is stopped */
+ 
 #define AB8500_TEMP_UNDER	3
-/* Default: between this temp and AB8500_TEMP_UNDER charging is reduced */
+ 
 #define AB8500_TEMP_LOW		8
-/* Default: between this temp and AB8500_TEMP_OVER charging is reduced */
+ 
 #define AB8500_TEMP_HIGH	43
-/* Default: over this temp, charging is stopped */
+ 
 #define AB8500_TEMP_OVER	48
-/* Default: temperature hysteresis */
+ 
 #define AB8500_TEMP_HYSTERESIS	3
 
 static struct power_supply_battery_ocv_table ocv_cap_tbl[] = {
@@ -43,30 +43,26 @@ static struct power_supply_battery_ocv_table ocv_cap_tbl[] = {
 	{ .ocv = 3094000, .capacity = 0},
 };
 
-/*
- * Note that the batres_vs_temp table must be strictly sorted by falling
- * temperature values to work. Factory resistance is 300 mOhm and the
- * resistance values to the right are percentages of 300 mOhm.
- */
+ 
 static struct power_supply_resistance_temp_table temp_to_batres_tbl_thermistor[] = {
-	{ .temp = 40, .resistance = 40 /* 120 mOhm */ },
-	{ .temp = 30, .resistance = 45 /* 135 mOhm */ },
-	{ .temp = 20, .resistance = 55 /* 165 mOhm */ },
-	{ .temp = 10, .resistance = 77 /* 230 mOhm */ },
-	{ .temp = 00, .resistance = 108 /* 325 mOhm */ },
-	{ .temp = -10, .resistance = 158 /* 445 mOhm */ },
-	{ .temp = -20, .resistance = 198 /* 595 mOhm */ },
+	{ .temp = 40, .resistance = 40   },
+	{ .temp = 30, .resistance = 45   },
+	{ .temp = 20, .resistance = 55   },
+	{ .temp = 10, .resistance = 77   },
+	{ .temp = 00, .resistance = 108   },
+	{ .temp = -10, .resistance = 158   },
+	{ .temp = -20, .resistance = 198   },
 };
 
 static struct power_supply_maintenance_charge_table ab8500_maint_charg_table[] = {
 	{
-		/* Maintenance charging phase A, 60 hours */
+		 
 		.charge_current_max_ua = 400000,
 		.charge_voltage_max_uv = 4050000,
 		.charge_safety_timer_minutes = 60*60,
 	},
 	{
-		/* Maintenance charging phase B, 200 hours */
+		 
 		.charge_current_max_ua = 400000,
 		.charge_voltage_max_uv = 4000000,
 		.charge_safety_timer_minutes = 200*60,
@@ -117,7 +113,7 @@ static const struct ab8500_bm_charger_parameters chg = {
 	.ac_curr_max_ua		= 1500000,
 };
 
-/* This is referenced directly in the charger code */
+ 
 struct ab8500_bm_data ab8500_bm_data = {
 	.main_safety_tmr_h      = 4,
 	.temp_interval_chg      = 20,
@@ -151,20 +147,17 @@ int ab8500_bm_of_probe(struct power_supply *psy,
 	}
 	bi = bm->bi;
 
-	/* Fill in defaults for any data missing from the device tree */
+	 
 	if (bi->charge_full_design_uah < 0)
-		/* The default capacity is 612 mAh for unknown batteries */
+		 
 		bi->charge_full_design_uah = 612000;
 
-	/*
-	 * All of these voltages need to be specified or we will simply
-	 * fall back to safe defaults.
-	 */
+	 
 	if ((bi->voltage_min_design_uv < 0) ||
 	    (bi->voltage_max_design_uv < 0)) {
-		/* Nominal voltage is 3.7V for unknown batteries */
+		 
 		bi->voltage_min_design_uv = 3700000;
-		/* Termination voltage 4.05V */
+		 
 		bi->voltage_max_design_uv = 4050000;
 	}
 
@@ -175,7 +168,7 @@ int ab8500_bm_of_probe(struct power_supply *psy,
 		bi->constant_charge_voltage_max_uv = 4100000;
 
 	if (bi->charge_term_current_ua)
-		/* Charging stops when we drop below this current */
+		 
 		bi->charge_term_current_ua = 200000;
 
 	if (!bi->maintenance_charge || !bi->maintenance_charge_size) {
@@ -196,10 +189,7 @@ int ab8500_bm_of_probe(struct power_supply *psy,
 		bi->alert_high_temp_charge_voltage_uv = 4000000;
 	}
 
-	/*
-	 * Internal resistance and factory resistance are tightly coupled
-	 * so both MUST be defined or we fall back to defaults.
-	 */
+	 
 	if ((bi->factory_internal_resistance_uohm < 0) ||
 	    !bi->resist_table) {
 		bi->factory_internal_resistance_uohm = 300000;
@@ -207,7 +197,7 @@ int ab8500_bm_of_probe(struct power_supply *psy,
 		bi->resist_table_size = ARRAY_SIZE(temp_to_batres_tbl_thermistor);
 	}
 
-	/* The default battery is emulated by a resistor at 7K */
+	 
 	if (bi->bti_resistance_ohm < 0 ||
 	    bi->bti_resistance_tolerance < 0) {
 		bi->bti_resistance_ohm = 7000;
@@ -215,7 +205,7 @@ int ab8500_bm_of_probe(struct power_supply *psy,
 	}
 
 	if (!bi->ocv_table[0]) {
-		/* Default capacity table at say 25 degrees Celsius */
+		 
 		bi->ocv_temp[0] = 25;
 		bi->ocv_table[0] = ocv_cap_tbl;
 		bi->ocv_table_size[0] = ARRAY_SIZE(ocv_cap_tbl);

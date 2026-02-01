@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- *
- * Copyright (C) 2018 Icenowy Zheng <icenowy@aosc.xyz>
- *
- */
+ 
 
 #ifndef _DT_BINDINGS_RST_SUNIV_F1C100S_H_
 #define _DT_BINDINGS_RST_SUNIV_F1C100S_H_
@@ -35,4 +31,4 @@
 #define RST_BUS_UART1		25
 #define RST_BUS_UART2		26
 
-#endif /* _DT_BINDINGS_RST_SUNIV_F1C100S_H_ */
+#endif  

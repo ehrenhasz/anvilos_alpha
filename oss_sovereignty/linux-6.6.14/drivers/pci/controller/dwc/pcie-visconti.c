@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DWC PCIe RC driver for Toshiba Visconti ARM SoC
- *
- * Copyright (C) 2021 Toshiba Electronic Device & Storage Corporation
- * Copyright (C) 2021 TOSHIBA CORPORATION
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -93,7 +86,7 @@ struct visconti_pcie {
 #define PCIE_MPU_REG_MP_EN		0x0
 #define  MPU_MP_EN_DISABLE		BIT(0)
 
-/* Access registers in PCIe ulreg */
+ 
 static void visconti_ulreg_writel(struct visconti_pcie *pcie, u32 val, u32 reg)
 {
 	writel_relaxed(val, pcie->ulreg_base + reg);
@@ -104,13 +97,13 @@ static u32 visconti_ulreg_readl(struct visconti_pcie *pcie, u32 reg)
 	return readl_relaxed(pcie->ulreg_base + reg);
 }
 
-/* Access registers in PCIe smu */
+ 
 static void visconti_smu_writel(struct visconti_pcie *pcie, u32 val, u32 reg)
 {
 	writel_relaxed(val, pcie->smu_base + reg);
 }
 
-/* Access registers in PCIe mpu */
+ 
 static void visconti_mpu_writel(struct visconti_pcie *pcie, u32 val, u32 reg)
 {
 	writel_relaxed(val, pcie->mpu_base + reg);
@@ -171,11 +164,7 @@ static void visconti_pcie_stop_link(struct dw_pcie *pci)
 	visconti_mpu_writel(pcie, val | MPU_MP_EN_DISABLE, PCIE_MPU_REG_MP_EN);
 }
 
-/*
- * In this SoC specification, the CPU bus outputs the offset value from
- * 0x40000000 to the PCIe bus, so 0x40000000 is subtracted from the CPU
- * bus address. This 0x40000000 is also based on io_base from DT.
- */
+ 
 static u64 visconti_pcie_cpu_addr_fixup(struct dw_pcie *pci, u64 cpu_addr)
 {
 	struct dw_pcie_rp *pp = &pci->pp;

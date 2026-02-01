@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2014 Marvell International Ltd.
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- *
- *  Acknowledgements:
- *  This file is based on hci_event.c, which was written
- *  by Maxim Krasnyansky.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -25,12 +13,12 @@
 #include <net/nfc/nci_core.h>
 #include <linux/nfc.h>
 
-/* Handle NCI Notification packets */
+ 
 
 static void nci_core_reset_ntf_packet(struct nci_dev *ndev,
 				      const struct sk_buff *skb)
 {
-	/* Handle NCI 2.x core reset notification */
+	 
 	const struct nci_core_reset_ntf *ntf = (void *)skb->data;
 
 	ndev->nci_ver = ntf->nci_ver;
@@ -56,7 +44,7 @@ static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 	if (ntf->num_entries > NCI_MAX_NUM_CONN)
 		ntf->num_entries = NCI_MAX_NUM_CONN;
 
-	/* update the credits */
+	 
 	for (i = 0; i < ntf->num_entries; i++) {
 		ntf->conn_entries[i].conn_id =
 			nci_conn_id(&ntf->conn_entries[i].conn_id);
@@ -74,7 +62,7 @@ static void nci_core_conn_credits_ntf_packet(struct nci_dev *ndev,
 			   &conn_info->credits_cnt);
 	}
 
-	/* trigger the next tx */
+	 
 	if (!skb_queue_empty(&ndev->tx_q))
 		queue_work(ndev->tx_wq, &ndev->tx_work);
 }
@@ -87,8 +75,7 @@ static void nci_core_generic_error_ntf_packet(struct nci_dev *ndev,
 	pr_debug("status 0x%x\n", status);
 
 	if (atomic_read(&ndev->state) == NCI_W4_HOST_SELECT) {
-		/* Activation failed, so complete the request
-		   (the state remains the same) */
+		 
 		nci_req_complete(ndev, status);
 	}
 }
@@ -102,7 +89,7 @@ static void nci_core_conn_intf_error_ntf_packet(struct nci_dev *ndev,
 
 	pr_debug("status 0x%x, conn_id %d\n", ntf->status, ntf->conn_id);
 
-	/* complete the data exchange transaction, if exists */
+	 
 	if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
 		nci_data_exchange_complete(ndev, NULL, ntf->conn_id, -EIO);
 }
@@ -293,7 +280,7 @@ static void nci_add_new_target(struct nci_dev *ndev,
 	for (i = 0; i < ndev->n_targets; i++) {
 		target = &ndev->targets[i];
 		if (target->logical_idx == ntf->rf_discovery_id) {
-			/* This target already exists, add the new protocol */
+			 
 			nci_add_new_protocol(ndev, target, ntf->rf_protocol,
 					     ntf->rf_tech_and_mode,
 					     &ntf->rf_tech_specific_params);
@@ -301,7 +288,7 @@ static void nci_add_new_target(struct nci_dev *ndev,
 		}
 	}
 
-	/* This is a new target, check if we've enough room */
+	 
 	if (ndev->n_targets == NCI_MAX_DISCOVERED_TARGETS) {
 		pr_debug("not enough room, ignoring new target...\n");
 		return;
@@ -559,10 +546,7 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 	pr_debug("rf_tech_specific_params_len %d\n",
 		 ntf.rf_tech_specific_params_len);
 
-	/* If this contains a value of 0x00 (NFCEE Direct RF
-	 * Interface) then all following parameters SHALL contain a
-	 * value of 0 and SHALL be ignored.
-	 */
+	 
 	if (ntf.rf_interface == NCI_RF_INTERFACE_NFCEE_DIRECT)
 		goto listen;
 
@@ -589,7 +573,7 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 			break;
 
 		case NCI_NFC_A_PASSIVE_LISTEN_MODE:
-			/* no RF technology specific parameters */
+			 
 			break;
 
 		case NCI_NFC_F_PASSIVE_LISTEN_MODE:
@@ -630,7 +614,7 @@ static void nci_rf_intf_activated_ntf_packet(struct nci_dev *ndev,
 			break;
 
 		case NCI_RF_INTERFACE_FRAME:
-			/* no activation params */
+			 
 			break;
 
 		default:
@@ -650,11 +634,11 @@ exit:
 		conn_info->max_pkt_payload_len = ntf.max_data_pkt_payload_size;
 		conn_info->initial_num_credits = ntf.initial_num_credits;
 
-		/* set the available credits to initial value */
+		 
 		atomic_set(&conn_info->credits_cnt,
 			   conn_info->initial_num_credits);
 
-		/* store general bytes to be reported later in dep_link_up */
+		 
 		if (ntf.rf_interface == NCI_RF_INTERFACE_NFC_DEP) {
 			err = nci_store_general_bytes_nfc_dep(ndev, &ntf);
 			if (err != NCI_STATUS_OK)
@@ -663,22 +647,20 @@ exit:
 	}
 
 	if (!(ntf.activation_rf_tech_and_mode & NCI_RF_TECH_MODE_LISTEN_MASK)) {
-		/* Poll mode */
+		 
 		if (atomic_read(&ndev->state) == NCI_DISCOVERY) {
-			/* A single target was found and activated
-			 * automatically */
+			 
 			atomic_set(&ndev->state, NCI_POLL_ACTIVE);
 			if (err == NCI_STATUS_OK)
 				nci_target_auto_activated(ndev, &ntf);
-		} else {	/* ndev->state == NCI_W4_HOST_SELECT */
-			/* A selected target was activated, so complete the
-			 * request */
+		} else {	 
+			 
 			atomic_set(&ndev->state, NCI_POLL_ACTIVE);
 			nci_req_complete(ndev, err);
 		}
 	} else {
 listen:
-		/* Listen mode */
+		 
 		atomic_set(&ndev->state, NCI_LISTEN_ACTIVE);
 		if (err == NCI_STATUS_OK &&
 		    ntf.rf_protocol == NCI_RF_PROTOCOL_NFC_DEP) {
@@ -705,16 +687,16 @@ static void nci_rf_deactivate_ntf_packet(struct nci_dev *ndev,
 	if (!conn_info)
 		return;
 
-	/* drop tx data queue */
+	 
 	skb_queue_purge(&ndev->tx_q);
 
-	/* drop partial rx data packet */
+	 
 	if (ndev->rx_data_reassembly) {
 		kfree_skb(ndev->rx_data_reassembly);
 		ndev->rx_data_reassembly = NULL;
 	}
 
-	/* complete the data exchange transaction, if exists */
+	 
 	if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
 		nci_data_exchange_complete(ndev, NULL, NCI_STATIC_RF_CONN_ID,
 					   -EIO);
@@ -744,11 +726,7 @@ static void nci_nfcee_discover_ntf_packet(struct nci_dev *ndev,
 	const struct nci_nfcee_discover_ntf *nfcee_ntf =
 				(struct nci_nfcee_discover_ntf *)skb->data;
 
-	/* NFCForum NCI 9.2.1 HCI Network Specific Handling
-	 * If the NFCC supports the HCI Network, it SHALL return one,
-	 * and only one, NFCEE_DISCOVER_NTF with a Protocol type of
-	 * “HCI Access”, even if the HCI Network contains multiple NFCEEs.
-	 */
+	 
 	ndev->hci_dev->nfcee_id = nfcee_ntf->nfcee_id;
 	ndev->cur_params.id = nfcee_ntf->nfcee_id;
 
@@ -765,7 +743,7 @@ void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		 nci_opcode_oid(ntf_opcode),
 		 nci_plen(skb->data));
 
-	/* strip the nci control header */
+	 
 	skb_pull(skb, NCI_CTRL_HDR_SIZE);
 
 	if (nci_opcode_gid(ntf_opcode) == NCI_GID_PROPRIETARY) {

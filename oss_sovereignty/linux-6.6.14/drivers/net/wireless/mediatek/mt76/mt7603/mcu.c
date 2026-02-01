@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include <linux/firmware.h>
 #include "mt7603.h"
@@ -155,7 +155,7 @@ static int mt7603_load_firmware(struct mt7603_dev *dev)
 	mt76_wr(dev, addr, 0x5);
 	udelay(1);
 
-	/* switch to bypass mode */
+	 
 	mt76_rmw(dev, MT_SCH_4, MT_SCH_4_FORCE_QID,
 		 MT_SCH_4_BYPASS | FIELD_PREP(MT_SCH_4_FORCE_QID, 5));
 
@@ -280,7 +280,7 @@ int mt7603_mcu_set_eeprom(struct mt7603_dev *dev)
 		MT_EE_XTAL_TRIM_3_COMP,
 		MT_EE_XTAL_WF_RFCAL,
 
-		/* unknown fields below */
+		 
 		WORD(0x24),
 		0x34,
 		0x39,

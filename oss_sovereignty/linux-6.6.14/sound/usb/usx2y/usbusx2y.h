@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef USBUSX2Y_H
 #define USBUSX2Y_H
 #include "../usbaudio.h"
@@ -55,7 +55,7 @@ struct snd_usx2y_substream {
 	struct snd_pcm_substream *pcm_substream;
 
 	int			endpoint;
-	unsigned int		maxpacksize;		/* max packet size in bytes */
+	unsigned int		maxpacksize;		 
 
 	atomic_t		state;
 #define STATE_STOPPED	0
@@ -66,13 +66,13 @@ struct snd_usx2y_substream {
 #define STATE_PRERUNNING  6
 #define STATE_RUNNING	8
 
-	int			hwptr;			/* free frame position in the buffer (only for playback) */
-	int			hwptr_done;		/* processed frame position in the buffer */
-	int			transfer_done;		/* processed frames since last period update */
+	int			hwptr;			 
+	int			hwptr_done;		 
+	int			transfer_done;		 
 
-	struct urb		*urb[NRURBS];	/* data urb table */
+	struct urb		*urb[NRURBS];	 
 	struct urb		*completed_urb;
-	char			*tmpbuf;			/* temporary buffer for playback */
+	char			*tmpbuf;			 
 };
 
 

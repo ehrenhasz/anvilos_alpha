@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * vboxguest linux pci driver, char-dev and input-device code,
- *
- * Copyright (C) 2006-2016 Oracle Corporation
- */
+ 
+ 
 
 #include <linux/cred.h>
 #include <linux/input.h>
@@ -15,18 +11,18 @@
 #include <linux/vbox_utils.h>
 #include "vboxguest_core.h"
 
-/** The device name. */
+ 
 #define DEVICE_NAME		"vboxguest"
-/** The device name for the device node open to everyone. */
+ 
 #define DEVICE_NAME_USER	"vboxuser"
-/** VirtualBox PCI vendor ID. */
+ 
 #define VBOX_VENDORID		0x80ee
-/** VMMDev PCI card product ID. */
+ 
 #define VMMDEV_DEVICEID		0xcafe
 
-/** Mutex protecting the global vbg_gdev pointer used by vbg_get/put_gdev. */
+ 
 static DEFINE_MUTEX(vbg_gdev_mutex);
-/** Global vbg_gdev pointer used by vbg_get/put_gdev. */
+ 
 static struct vbg_dev *vbg_gdev;
 
 static u32 vbg_misc_device_requestor(struct inode *inode)
@@ -51,7 +47,7 @@ static int vbg_misc_device_open(struct inode *inode, struct file *filp)
 	struct vbg_session *session;
 	struct vbg_dev *gdev;
 
-	/* misc_open sets filp->private_data to our misc device */
+	 
 	gdev = container_of(filp->private_data, struct vbg_dev, misc_device);
 
 	session = vbg_core_open_session(gdev, vbg_misc_device_requestor(inode));
@@ -67,7 +63,7 @@ static int vbg_misc_device_user_open(struct inode *inode, struct file *filp)
 	struct vbg_session *session;
 	struct vbg_dev *gdev;
 
-	/* misc_open sets filp->private_data to our misc device */
+	 
 	gdev = container_of(filp->private_data, struct vbg_dev,
 			    misc_device_user);
 
@@ -80,12 +76,7 @@ static int vbg_misc_device_user_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * Close device.
- * Return: 0 on success, negated errno on failure.
- * @inode:		Pointer to inode info structure.
- * @filp:		Associated file pointer.
- */
+ 
 static int vbg_misc_device_close(struct inode *inode, struct file *filp)
 {
 	vbg_core_close_session(filp->private_data);
@@ -93,13 +84,7 @@ static int vbg_misc_device_close(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * Device I/O Control entry point.
- * Return: 0 on success, negated errno on failure.
- * @filp:		Associated file pointer.
- * @req:		The request specified to ioctl().
- * @arg:		The argument specified to ioctl().
- */
+ 
 static long vbg_misc_device_ioctl(struct file *filp, unsigned int req,
 				  unsigned long arg)
 {
@@ -126,10 +111,7 @@ static long vbg_misc_device_ioctl(struct file *filp, unsigned int req,
 	if (size > SZ_16M)
 		return -E2BIG;
 
-	/*
-	 * IOCTL_VMMDEV_REQUEST needs the buffer to be below 4G to avoid
-	 * the need for a bounce-buffer and another copy later on.
-	 */
+	 
 	is_vmmdev_req = (req & ~IOCSIZE_MASK) == VBG_IOCTL_VMMDEV_REQUEST(0) ||
 			 req == VBG_IOCTL_VMMDEV_REQUEST_BIG ||
 			 req == VBG_IOCTL_VMMDEV_REQUEST_BIG_ALT;
@@ -173,7 +155,7 @@ out:
 	return ret;
 }
 
-/** The file_operations structures. */
+ 
 static const struct file_operations vbg_misc_device_fops = {
 	.owner			= THIS_MODULE,
 	.open			= vbg_misc_device_open,
@@ -193,11 +175,7 @@ static const struct file_operations vbg_misc_device_user_fops = {
 #endif
 };
 
-/**
- * Called when the input device is first opened.
- *
- * Sets up absolute mouse reporting.
- */
+ 
 static int vbg_input_open(struct input_dev *input)
 {
 	struct vbg_dev *gdev = input_get_drvdata(input);
@@ -206,11 +184,7 @@ static int vbg_input_open(struct input_dev *input)
 	return vbg_core_set_mouse_status(gdev, feat);
 }
 
-/**
- * Called if all open handles to the input device are closed.
- *
- * Disables absolute reporting.
- */
+ 
 static void vbg_input_close(struct input_dev *input)
 {
 	struct vbg_dev *gdev = input_get_drvdata(input);
@@ -218,11 +192,7 @@ static void vbg_input_close(struct input_dev *input)
 	vbg_core_set_mouse_status(gdev, 0);
 }
 
-/**
- * Creates the kernel input device.
- *
- * Return: 0 on success, negated errno on failure.
- */
+ 
 static int vbg_create_input_device(struct vbg_dev *gdev)
 {
 	struct input_dev *input;
@@ -277,11 +247,7 @@ static struct attribute *vbg_pci_attrs[] = {
 };
 ATTRIBUTE_GROUPS(vbg_pci);
 
-/**
- * Does the PCI detection and init of the device.
- *
- * Return: 0 on success, negated errno on failure.
- */
+ 
 static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
 {
 	struct device *dev = &pci->dev;
@@ -334,7 +300,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
 		goto err_disable_pcidev;
 	}
 
-	/* Validate MMIO region version and size. */
+	 
 	if (vmmdev->version != VMMDEV_MEMORY_VERSION ||
 	    vmmdev->size < 32 || vmmdev->size > mmio_len) {
 		vbg_err("vboxguest: Bogus VMMDev memory; version=%08x (expected %08x) size=%d (expected <= %d)\n",
@@ -433,11 +399,7 @@ struct vbg_dev *vbg_get_gdev(void)
 {
 	mutex_lock(&vbg_gdev_mutex);
 
-	/*
-	 * Note on success we keep the mutex locked until vbg_put_gdev(),
-	 * this stops vbg_pci_remove from removing the device from underneath
-	 * vboxsf. vboxsf will only hold a reference for a short while.
-	 */
+	 
 	if (vbg_gdev)
 		return vbg_gdev;
 
@@ -453,19 +415,12 @@ void vbg_put_gdev(struct vbg_dev *gdev)
 }
 EXPORT_SYMBOL(vbg_put_gdev);
 
-/**
- * Callback for mouse events.
- *
- * This is called at the end of the ISR, after leaving the event spinlock, if
- * VMMDEV_EVENT_MOUSE_POSITION_CHANGED was raised by the host.
- *
- * @gdev:		The device extension.
- */
+ 
 void vbg_linux_mouse_event(struct vbg_dev *gdev)
 {
 	int rc;
 
-	/* Report events to the kernel input device */
+	 
 	gdev->mouse_status_req->mouse_features = 0;
 	gdev->mouse_status_req->pointer_pos_x = 0;
 	gdev->mouse_status_req->pointer_pos_y = 0;

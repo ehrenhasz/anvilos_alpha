@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * algif_aead: User-space interface for AEAD algorithms
- *
- * Copyright (C) 2014, Stephan Mueller <smueller@chronox.de>
- *
- * This file provides the user-space API for AEAD ciphers.
- *
- * The following concept of the memory management is used:
- *
- * The kernel maintains two SGLs, the TX SGL and the RX SGL. The TX SGL is
- * filled by user space with the data submitted via sendmsg (maybe with
- * MSG_SPLICE_PAGES).  Filling up the TX SGL does not cause a crypto operation
- * -- the data will only be tracked by the kernel. Upon receipt of one recvmsg
- * call, the caller must provide a buffer which is tracked with the RX SGL.
- *
- * During the processing of the recvmsg operation, the cipher request is
- * allocated and prepared. As part of the recvmsg operation, the processed
- * TX buffers are extracted from the TX SGL into a separate SGL.
- *
- * After the completion of the crypto operation, the RX SGL and the cipher
- * request is released. The extracted TX SGL parts are released together with
- * the RX SGL release.
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/scatterwalk.h>
@@ -51,10 +29,7 @@ static inline bool aead_sufficient_data(struct sock *sk)
 	struct crypto_aead *tfm = aeadc->aead;
 	unsigned int as = crypto_aead_authsize(tfm);
 
-	/*
-	 * The minimum amount of memory needed for an AEAD cipher is
-	 * the AAD and in case of decryption the tag.
-	 */
+	 
 	return ctx->used >= ctx->aead_assoclen + (ctx->enc ? 0 : as);
 }
 
@@ -101,10 +76,10 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 	struct af_alg_tsgl *tsgl, *tmp;
 	struct scatterlist *rsgl_src, *tsgl_src = NULL;
 	int err = 0;
-	size_t used = 0;		/* [in]  TX bufs to be en/decrypted */
-	size_t outlen = 0;		/* [out] RX bufs produced by kernel */
-	size_t usedpages = 0;		/* [in]  RX bufs to be used from user */
-	size_t processed = 0;		/* [in]  TX bufs to be consumed */
+	size_t used = 0;		 
+	size_t outlen = 0;		 
+	size_t usedpages = 0;		 
+	size_t processed = 0;		 
 
 	if (!ctx->init || ctx->more) {
 		err = af_alg_wait_for_data(sk, flags, 0);
@@ -112,61 +87,34 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 			return err;
 	}
 
-	/*
-	 * Data length provided by caller via sendmsg that has not yet been
-	 * processed.
-	 */
+	 
 	used = ctx->used;
 
-	/*
-	 * Make sure sufficient data is present -- note, the same check is also
-	 * present in sendmsg. The checks in sendmsg shall provide an
-	 * information to the data sender that something is wrong, but they are
-	 * irrelevant to maintain the kernel integrity.  We need this check
-	 * here too in case user space decides to not honor the error message
-	 * in sendmsg and still call recvmsg. This check here protects the
-	 * kernel integrity.
-	 */
+	 
 	if (!aead_sufficient_data(sk))
 		return -EINVAL;
 
-	/*
-	 * Calculate the minimum output buffer size holding the result of the
-	 * cipher operation. When encrypting data, the receiving buffer is
-	 * larger by the tag length compared to the input buffer as the
-	 * encryption operation generates the tag. For decryption, the input
-	 * buffer provides the tag which is consumed resulting in only the
-	 * plaintext without a buffer for the tag returned to the caller.
-	 */
+	 
 	if (ctx->enc)
 		outlen = used + as;
 	else
 		outlen = used - as;
 
-	/*
-	 * The cipher operation input data is reduced by the associated data
-	 * length as this data is processed separately later on.
-	 */
+	 
 	used -= ctx->aead_assoclen;
 
-	/* Allocate cipher request for current operation. */
+	 
 	areq = af_alg_alloc_areq(sk, sizeof(struct af_alg_async_req) +
 				     crypto_aead_reqsize(tfm));
 	if (IS_ERR(areq))
 		return PTR_ERR(areq);
 
-	/* convert iovecs of output buffers into RX SGL */
+	 
 	err = af_alg_get_rsgl(sk, msg, flags, areq, outlen, &usedpages);
 	if (err)
 		goto free;
 
-	/*
-	 * Ensure output buffer is sufficiently large. If the caller provides
-	 * less buffer space, only use the relative required input size. This
-	 * allows AIO operation where the caller sent all data to be processed
-	 * and the AIO operation performs the operation on the different chunks
-	 * of the input data.
-	 */
+	 
 	if (usedpages < outlen) {
 		size_t less = outlen - usedpages;
 
@@ -196,33 +144,13 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 		goto free;
 	}
 
-	/*
-	 * Copy of AAD from source to destination
-	 *
-	 * The AAD is copied to the destination buffer without change. Even
-	 * when user space uses an in-place cipher operation, the kernel
-	 * will copy the data as it does not see whether such in-place operation
-	 * is initiated.
-	 *
-	 * To ensure efficiency, the following implementation ensure that the
-	 * ciphers are invoked to perform a crypto operation in-place. This
-	 * is achieved by memory management specified as follows.
-	 */
+	 
 
-	/* Use the RX SGL as source (and destination) for crypto op. */
+	 
 	rsgl_src = areq->first_rsgl.sgl.sgt.sgl;
 
 	if (ctx->enc) {
-		/*
-		 * Encryption operation - The in-place cipher operation is
-		 * achieved by the following operation:
-		 *
-		 * TX SGL: AAD || PT
-		 *	    |	   |
-		 *	    | copy |
-		 *	    v	   v
-		 * RX SGL: AAD || PT || Tag
-		 */
+		 
 		err = crypto_aead_copy_sgl(null_tfm, tsgl_src,
 					   areq->first_rsgl.sgl.sgt.sgl,
 					   processed);
@@ -230,25 +158,16 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 			goto free;
 		af_alg_pull_tsgl(sk, processed, NULL, 0);
 	} else {
-		/*
-		 * Decryption operation - To achieve an in-place cipher
-		 * operation, the following  SGL structure is used:
-		 *
-		 * TX SGL: AAD || CT || Tag
-		 *	    |	   |	 ^
-		 *	    | copy |	 | Create SGL link.
-		 *	    v	   v	 |
-		 * RX SGL: AAD || CT ----+
-		 */
+		 
 
-		 /* Copy AAD || CT to RX SGL buffer for in-place operation. */
+		  
 		err = crypto_aead_copy_sgl(null_tfm, tsgl_src,
 					   areq->first_rsgl.sgl.sgt.sgl,
 					   outlen);
 		if (err)
 			goto free;
 
-		/* Create TX SGL for tag and chain it to RX SGL. */
+		 
 		areq->tsgl_entries = af_alg_count_tsgl(sk, processed,
 						       processed - as);
 		if (!areq->tsgl_entries)
@@ -262,34 +181,34 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 		}
 		sg_init_table(areq->tsgl, areq->tsgl_entries);
 
-		/* Release TX SGL, except for tag data and reassign tag data. */
+		 
 		af_alg_pull_tsgl(sk, processed, areq->tsgl, processed - as);
 
-		/* chain the areq TX SGL holding the tag with RX SGL */
+		 
 		if (usedpages) {
-			/* RX SGL present */
+			 
 			struct af_alg_sgl *sgl_prev = &areq->last_rsgl->sgl;
 			struct scatterlist *sg = sgl_prev->sgt.sgl;
 
 			sg_unmark_end(sg + sgl_prev->sgt.nents - 1);
 			sg_chain(sg, sgl_prev->sgt.nents + 1, areq->tsgl);
 		} else
-			/* no RX SGL present (e.g. authentication only) */
+			 
 			rsgl_src = areq->tsgl;
 	}
 
-	/* Initialize the crypto operation */
+	 
 	aead_request_set_crypt(&areq->cra_u.aead_req, rsgl_src,
 			       areq->first_rsgl.sgl.sgt.sgl, used, ctx->iv);
 	aead_request_set_ad(&areq->cra_u.aead_req, ctx->aead_assoclen);
 	aead_request_set_tfm(&areq->cra_u.aead_req, tfm);
 
 	if (msg->msg_iocb && !is_sync_kiocb(msg->msg_iocb)) {
-		/* AIO operation */
+		 
 		sock_hold(sk);
 		areq->iocb = msg->msg_iocb;
 
-		/* Remember output size that will be generated. */
+		 
 		areq->outlen = outlen;
 
 		aead_request_set_callback(&areq->cra_u.aead_req,
@@ -298,13 +217,13 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
 		err = ctx->enc ? crypto_aead_encrypt(&areq->cra_u.aead_req) :
 				 crypto_aead_decrypt(&areq->cra_u.aead_req);
 
-		/* AIO operation in progress */
+		 
 		if (err == -EINPROGRESS)
 			return -EIOCBQUEUED;
 
 		sock_put(sk);
 	} else {
-		/* Synchronous operation */
+		 
 		aead_request_set_callback(&areq->cra_u.aead_req,
 					  CRYPTO_TFM_REQ_MAY_SLEEP |
 					  CRYPTO_TFM_REQ_MAY_BACKLOG,
@@ -332,14 +251,7 @@ static int aead_recvmsg(struct socket *sock, struct msghdr *msg,
 	while (msg_data_left(msg)) {
 		int err = _aead_recvmsg(sock, msg, ignored, flags);
 
-		/*
-		 * This error covers -EIOCBQUEUED which implies that we can
-		 * only handle one AIO request. If the caller wants to have
-		 * multiple AIO requests in parallel, he must make multiple
-		 * separate AIO calls.
-		 *
-		 * Also return the error if no data has been processed so far.
-		 */
+		 
 		if (err <= 0) {
 			if (err == -EIOCBQUEUED || err == -EBADMSG || !ret)
 				ret = err;

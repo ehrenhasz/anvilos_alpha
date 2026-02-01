@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -24,21 +22,17 @@
 
 #define PMIC_MPP_ADDRESS_RANGE			0x100
 
-/*
- * Pull Up Values - it indicates whether a pull-up should be
- * applied for bidirectional mode only. The hardware ignores the
- * configuration when operating in other modes.
- */
+ 
 #define PMIC_MPP_PULL_UP_0P6KOHM		0
 #define PMIC_MPP_PULL_UP_10KOHM			1
 #define PMIC_MPP_PULL_UP_30KOHM			2
 #define PMIC_MPP_PULL_UP_OPEN			3
 
-/* type registers base address bases */
+ 
 #define PMIC_MPP_REG_TYPE			0x4
 #define PMIC_MPP_REG_SUBTYPE			0x5
 
-/* mpp peripheral type and subtype values */
+ 
 #define PMIC_MPP_TYPE				0x11
 #define PMIC_MPP_SUBTYPE_4CH_NO_ANA_OUT		0x3
 #define PMIC_MPP_SUBTYPE_ULT_4CH_NO_ANA_OUT	0x4
@@ -50,7 +44,7 @@
 #define PMIC_MPP_REG_RT_STS			0x10
 #define PMIC_MPP_REG_RT_STS_VAL_MASK		0x1
 
-/* control register base address bases */
+ 
 #define PMIC_MPP_REG_MODE_CTL			0x40
 #define PMIC_MPP_REG_DIG_VIN_CTL		0x41
 #define PMIC_MPP_REG_DIG_PULL_CTL		0x42
@@ -60,25 +54,25 @@
 #define PMIC_MPP_REG_AIN_CTL			0x4a
 #define PMIC_MPP_REG_SINK_CTL			0x4c
 
-/* PMIC_MPP_REG_MODE_CTL */
+ 
 #define PMIC_MPP_REG_MODE_VALUE_MASK		0x1
 #define PMIC_MPP_REG_MODE_FUNCTION_SHIFT	1
 #define PMIC_MPP_REG_MODE_FUNCTION_MASK		0x7
 #define PMIC_MPP_REG_MODE_DIR_SHIFT		4
 #define PMIC_MPP_REG_MODE_DIR_MASK		0x7
 
-/* PMIC_MPP_REG_DIG_VIN_CTL */
+ 
 #define PMIC_MPP_REG_VIN_SHIFT			0
 #define PMIC_MPP_REG_VIN_MASK			0x7
 
-/* PMIC_MPP_REG_DIG_PULL_CTL */
+ 
 #define PMIC_MPP_REG_PULL_SHIFT			0
 #define PMIC_MPP_REG_PULL_MASK			0x7
 
-/* PMIC_MPP_REG_EN_CTL */
+ 
 #define PMIC_MPP_REG_MASTER_EN_SHIFT		7
 
-/* PMIC_MPP_REG_AIN_CTL */
+ 
 #define PMIC_MPP_REG_AIN_ROUTE_SHIFT		0
 #define PMIC_MPP_REG_AIN_ROUTE_MASK		0x7
 
@@ -96,30 +90,13 @@
 
 #define PMIC_MPP_PHYSICAL_OFFSET		1
 
-/* Qualcomm specific pin configurations */
+ 
 #define PMIC_MPP_CONF_AMUX_ROUTE		(PIN_CONFIG_END + 1)
 #define PMIC_MPP_CONF_ANALOG_LEVEL		(PIN_CONFIG_END + 2)
 #define PMIC_MPP_CONF_DTEST_SELECTOR		(PIN_CONFIG_END + 3)
 #define PMIC_MPP_CONF_PAIRED			(PIN_CONFIG_END + 4)
 
-/**
- * struct pmic_mpp_pad - keep current MPP settings
- * @base: Address base in SPMI device.
- * @is_enabled: Set to false when MPP should be put in high Z state.
- * @out_value: Cached pin output value.
- * @output_enabled: Set to true if MPP output logic is enabled.
- * @input_enabled: Set to true if MPP input buffer logic is enabled.
- * @paired: Pin operates in paired mode
- * @has_pullup: Pin has support to configure pullup
- * @num_sources: Number of power-sources supported by this MPP.
- * @power_source: Current power-source used.
- * @amux_input: Set the source for analog input.
- * @aout_level: Analog output level
- * @pullup: Pullup resistor value. Valid in Bidirectional mode only.
- * @function: See pmic_mpp_functions[].
- * @drive_strength: Amount of current in sink mode
- * @dtest: DTEST route selector
- */
+ 
 struct pmic_mpp_pad {
 	u16		base;
 	bool		is_enabled;
@@ -203,7 +180,7 @@ static int pmic_mpp_write(struct pmic_mpp_state *state,
 
 static int pmic_mpp_get_groups_count(struct pinctrl_dev *pctldev)
 {
-	/* Every PIN is a group */
+	 
 	return pctldev->desc->npins;
 }
 
@@ -393,7 +370,7 @@ static int pmic_mpp_config_get(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 	}
 
-	/* Convert register value to pinconf value */
+	 
 	*config = pinconf_to_config_packed(param, arg);
 	return 0;
 }
@@ -409,7 +386,7 @@ static int pmic_mpp_config_set(struct pinctrl_dev *pctldev, unsigned int pin,
 
 	pad = pctldev->desc->pins[pin].drv_data;
 
-	/* Make it possible to enable the pin, by not setting high impedance */
+	 
 	pad->is_enabled = true;
 
 	for (i = 0; i < nconfs; i++) {

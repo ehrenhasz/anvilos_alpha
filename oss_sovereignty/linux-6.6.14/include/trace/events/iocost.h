@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iocost
 
@@ -219,7 +219,7 @@ TRACE_EVENT(iocost_iocg_forgive_debt,
 	)
 );
 
-#endif /* _TRACE_BLK_IOCOST_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

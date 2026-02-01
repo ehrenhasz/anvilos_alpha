@@ -1,26 +1,4 @@
-/*
- * Copyright © 2006-2019 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _INTEL_DISPLAY_H_
 #define _INTEL_DISPLAY_H_
@@ -94,10 +72,7 @@ static inline bool transcoder_is_dsi(enum transcoder transcoder)
 	return transcoder == TRANSCODER_DSI_A || transcoder == TRANSCODER_DSI_C;
 }
 
-/*
- * Global legacy plane identifier. Valid only for primary/sprite
- * planes on pre-g4x, and only for primary planes on g4x-bdw.
- */
+ 
 enum i9xx_plane_id {
 	PLANE_A,
 	PLANE_B,
@@ -121,10 +96,7 @@ enum i9xx_plane_id {
 
 #define port_name(p) ((p) + 'A')
 
-/*
- * Ports identifier referenced from other drivers.
- * Expected to remain stable over time
- */
+ 
 static inline const char *port_identifier(enum port port)
 {
 	switch (port) {
@@ -171,13 +143,13 @@ enum aux_ch {
 	AUX_CH_B,
 	AUX_CH_C,
 	AUX_CH_D,
-	AUX_CH_E, /* ICL+ */
+	AUX_CH_E,  
 	AUX_CH_F,
 	AUX_CH_G,
 	AUX_CH_H,
 	AUX_CH_I,
 
-	/* tgl+ */
+	 
 	AUX_CH_USBC1 = AUX_CH_D,
 	AUX_CH_USBC2,
 	AUX_CH_USBC3,
@@ -185,7 +157,7 @@ enum aux_ch {
 	AUX_CH_USBC5,
 	AUX_CH_USBC6,
 
-	/* XE_LPD repositions D/E offsets and bitfields */
+	 
 	AUX_CH_D_XELPD = AUX_CH_USBC5,
 	AUX_CH_E_XELPD,
 };
@@ -515,7 +487,7 @@ void intel_plane_fixup_bitmasks(struct intel_crtc_state *crtc_state);
 
 void intel_update_watermarks(struct drm_i915_private *i915);
 
-/* modesetting */
+ 
 int intel_modeset_all_pipes(struct intel_atomic_state *state,
 			    const char *reason);
 void intel_modeset_get_crtc_power_domains(struct intel_crtc_state *crtc_state,
@@ -523,7 +495,7 @@ void intel_modeset_get_crtc_power_domains(struct intel_crtc_state *crtc_state,
 void intel_modeset_put_crtc_power_domains(struct intel_crtc *crtc,
 					  struct intel_power_domain_mask *domains);
 
-/* interface for intel_display_driver.c */
+ 
 void intel_setup_outputs(struct drm_i915_private *i915);
 int intel_initial_commit(struct drm_device *dev);
 void intel_panel_sanitize_ssc(struct drm_i915_private *i915);
@@ -536,7 +508,7 @@ int intel_atomic_commit(struct drm_device *dev, struct drm_atomic_state *_state,
 
 void intel_hpd_poll_fini(struct drm_i915_private *i915);
 
-/* modesetting asserts */
+ 
 void assert_transcoder(struct drm_i915_private *dev_priv,
 		       enum transcoder cpu_transcoder, bool state);
 #define assert_transcoder_enabled(d, t) assert_transcoder(d, t, true)
@@ -544,13 +516,7 @@ void assert_transcoder(struct drm_i915_private *dev_priv,
 
 bool assert_port_valid(struct drm_i915_private *i915, enum port port);
 
-/*
- * Use I915_STATE_WARN(x) (rather than WARN() and WARN_ON()) for hw state sanity
- * checks to check for unexpected conditions which may not necessarily be a user
- * visible problem. This will either WARN() or DRM_ERROR() depending on the
- * verbose_state_checks module param, to enable distros and users to tailor
- * their preferred amount of i915 abrt spam.
- */
+ 
 #define I915_STATE_WARN(__i915, condition, format...) ({		\
 	struct drm_device *drm = &(__i915)->drm;			\
 	int __ret_warn_on = !!(condition);				\

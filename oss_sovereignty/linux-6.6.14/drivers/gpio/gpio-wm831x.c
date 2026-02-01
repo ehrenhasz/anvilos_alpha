@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * gpiolib support for Wolfson WM831x PMICs
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -82,7 +75,7 @@ static int wm831x_gpio_direction_out(struct gpio_chip *chip,
 	if (ret < 0)
 		return ret;
 
-	/* Can only set GPIO state once it's in output mode */
+	 
 	wm831x_gpio_set(chip, offset, value);
 
 	return 0;
@@ -112,7 +105,7 @@ static int wm831x_gpio_set_debounce(struct wm831x *wm831x, unsigned offset,
 	case 1:
 		break;
 	default:
-		/* Not in GPIO mode */
+		 
 		return -EBUSY;
 	}
 
@@ -162,11 +155,7 @@ static void wm831x_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 		int reg;
 		const char *label, *pull, *powerdomain;
 
-		/* We report the GPIO even if it's not requested since
-		 * we're also reporting things like alternate
-		 * functions which apply even when the GPIO is not in
-		 * use as a GPIO.
-		 */
+		 
 		label = gpiochip_is_requested(chip, i);
 		if (!label)
 			label = "Unrequested";

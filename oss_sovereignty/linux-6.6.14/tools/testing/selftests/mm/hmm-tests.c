@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HMM stands for Heterogeneous Memory Management, it is a helper layer inside
- * the linux kernel to help device drivers mirror a process address space in
- * the device. This allows the device to use the same address space which
- * makes communication and data exchange a lot easier.
- *
- * This framework's sole purpose is to exercise various code paths inside
- * the kernel to make sure that HMM performs as expected and to flush out any
- * bugs.
- */
+
+ 
 
 #include "../kselftest_harness.h"
 
@@ -27,10 +18,7 @@
 #include <sys/ioctl.h>
 
 
-/*
- * This is a private UAPI to the kernel test module so it isn't exported
- * in the usual include/uapi/... directory.
- */
+ 
 #include <lib/test_hmm_uapi.h>
 #include <mm/gup_test.h>
 
@@ -56,14 +44,14 @@ enum {
 #define NTIMES		10
 
 #define ALIGN(x, a) (((x) + (a - 1)) & (~((a) - 1)))
-/* Just the flags we need, copied from mm.h: */
+ 
 
 #ifndef FOLL_WRITE
-#define FOLL_WRITE	0x01	/* check pte is writable */
+#define FOLL_WRITE	0x01	 
 #endif
 
 #ifndef FOLL_LONGTERM
-#define FOLL_LONGTERM   0x100 /* mapping lifetime is indefinite */
+#define FOLL_LONGTERM   0x100  
 #endif
 FIXTURE(hmm)
 {
@@ -183,7 +171,7 @@ static int hmm_dmirror_cmd(int fd,
 	struct hmm_dmirror_cmd cmd;
 	int ret;
 
-	/* Simulate a device reading system memory. */
+	 
 	cmd.addr = (__u64)buffer->ptr;
 	cmd.ptr = (__u64)buffer->mirror;
 	cmd.npages = npages;
@@ -213,9 +201,7 @@ static void hmm_buffer_free(struct hmm_buffer *buffer)
 	free(buffer);
 }
 
-/*
- * Create a temporary file that will be deleted on close.
- */
+ 
 static int hmm_create_file(unsigned long size)
 {
 	char path[HMM_PATH_MAX];
@@ -236,9 +222,7 @@ static int hmm_create_file(unsigned long size)
 	return -1;
 }
 
-/*
- * Return a random unsigned number.
- */
+ 
 static unsigned int hmm_random(void)
 {
 	static int fd = -1;
@@ -279,16 +263,12 @@ static int hmm_migrate_dev_to_sys(int fd,
 	return hmm_dmirror_cmd(fd, HMM_DMIRROR_MIGRATE_TO_SYS, buffer, npages);
 }
 
-/*
- * Simple NULL test of device open/close.
- */
+ 
 TEST_F(hmm, open_close)
 {
 }
 
-/*
- * Read private anonymous memory.
- */
+ 
 TEST_F(hmm, anon_read)
 {
 	struct hmm_buffer *buffer;
@@ -317,29 +297,26 @@ TEST_F(hmm, anon_read)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/*
-	 * Initialize buffer in system memory but leave the first two pages
-	 * zero (pte_none and pfn_zero).
-	 */
+	 
 	i = 2 * self->page_size / sizeof(*ptr);
 	for (ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Set buffer permission to read-only. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Populate the CPU page table with a special zero page. */
+	 
 	val = *(int *)(buffer->ptr + self->page_size);
 	ASSERT_EQ(val, 0);
 
-	/* Simulate a device reading system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device read. */
+	 
 	ptr = buffer->mirror;
 	for (i = 0; i < 2 * self->page_size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], 0);
@@ -349,10 +326,7 @@ TEST_F(hmm, anon_read)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Read private anonymous memory which has been protected with
- * mprotect() PROT_NONE.
- */
+ 
 TEST_F(hmm, anon_read_prot)
 {
 	struct hmm_buffer *buffer;
@@ -380,38 +354,36 @@ TEST_F(hmm, anon_read_prot)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Initialize mirror buffer so we can verify it isn't written. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = -i;
 
-	/* Protect buffer from reading. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_NONE);
 	ASSERT_EQ(ret, 0);
 
-	/* Simulate a device reading system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer, npages);
 	ASSERT_EQ(ret, -EFAULT);
 
-	/* Allow CPU to read the buffer so we can check it. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_READ);
 	ASSERT_EQ(ret, 0);
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], -i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Write private anonymous memory.
- */
+ 
 TEST_F(hmm, anon_write)
 {
 	struct hmm_buffer *buffer;
@@ -439,27 +411,24 @@ TEST_F(hmm, anon_write)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Write private anonymous memory which has been protected with
- * mprotect() PROT_READ.
- */
+ 
 TEST_F(hmm, anon_write_prot)
 {
 	struct hmm_buffer *buffer;
@@ -487,45 +456,42 @@ TEST_F(hmm, anon_write_prot)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Simulate a device reading a zero page of memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer, 1);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, 1);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, -EPERM);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], 0);
 
-	/* Now allow writing and see that the zero page is replaced. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_WRITE | PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Check that a device writing an anonymous private mapping
- * will copy-on-write if a child process inherits the mapping.
- */
+ 
 TEST_F(hmm, anon_write_child)
 {
 	struct hmm_buffer *buffer;
@@ -555,11 +521,11 @@ TEST_F(hmm, anon_write_child)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer->ptr so we can tell if it is written. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = -i;
 
@@ -570,29 +536,29 @@ TEST_F(hmm, anon_write_child)
 		waitpid(pid, &ret, 0);
 		ASSERT_EQ(WIFEXITED(ret), 1);
 
-		/* Check that the parent's buffer did not change. */
+		 
 		for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 			ASSERT_EQ(ptr[i], i);
 		return;
 	}
 
-	/* Check that we see the parent's values. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], -i);
 
-	/* The child process needs its own mirror to its own mm. */
+	 
 	child_fd = hmm_open(0);
 	ASSERT_GE(child_fd, 0);
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(child_fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], -i);
 
@@ -600,10 +566,7 @@ TEST_F(hmm, anon_write_child)
 	exit(0);
 }
 
-/*
- * Check that a device writing an anonymous shared mapping
- * will not copy-on-write if a child process inherits the mapping.
- */
+ 
 TEST_F(hmm, anon_write_child_shared)
 {
 	struct hmm_buffer *buffer;
@@ -633,11 +596,11 @@ TEST_F(hmm, anon_write_child_shared)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer->ptr so we can tell if it is written. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = -i;
 
@@ -648,29 +611,29 @@ TEST_F(hmm, anon_write_child_shared)
 		waitpid(pid, &ret, 0);
 		ASSERT_EQ(WIFEXITED(ret), 1);
 
-		/* Check that the parent's buffer did change. */
+		 
 		for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 			ASSERT_EQ(ptr[i], -i);
 		return;
 	}
 
-	/* Check that we see the parent's values. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], -i);
 
-	/* The child process needs its own mirror to its own mm. */
+	 
 	child_fd = hmm_open(0);
 	ASSERT_GE(child_fd, 0);
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(child_fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], -i);
 
@@ -678,9 +641,7 @@ TEST_F(hmm, anon_write_child_shared)
 	exit(0);
 }
 
-/*
- * Write private anonymous huge page.
- */
+ 
 TEST_F(hmm, anon_write_huge)
 {
 	struct hmm_buffer *buffer;
@@ -716,17 +677,17 @@ TEST_F(hmm, anon_write_huge)
 	old_ptr = buffer->ptr;
 	buffer->ptr = map;
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
@@ -734,10 +695,7 @@ TEST_F(hmm, anon_write_huge)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Read numeric data from raw and tagged kernel status files.  Used to read
- * /proc and /sys data (without a tag) and from /proc/meminfo (with a tag).
- */
+ 
 static long file_read_ulong(char *file, const char *tag)
 {
 	int fd;
@@ -748,43 +706,41 @@ static long file_read_ulong(char *file, const char *tag)
 
 	fd = open(file, O_RDONLY);
 	if (fd < 0) {
-		/* Error opening the file */
+		 
 		return -1;
 	}
 
 	len = read(fd, buf, sizeof(buf));
 	close(fd);
 	if (len < 0) {
-		/* Error in reading the file */
+		 
 		return -1;
 	}
 	if (len == sizeof(buf)) {
-		/* Error file is too large */
+		 
 		return -1;
 	}
 	buf[len] = '\0';
 
-	/* Search for a tag if provided */
+	 
 	if (tag) {
 		p = strstr(buf, tag);
 		if (!p)
-			return -1; /* looks like the line we want isn't there */
+			return -1;  
 		p += strlen(tag);
 	} else
 		p = buf;
 
 	val = strtol(p, &q, 0);
 	if (*q != ' ') {
-		/* Error parsing the file */
+		 
 		return -1;
 	}
 
 	return val;
 }
 
-/*
- * Write huge TLBFS page.
- */
+ 
 TEST_F(hmm, anon_write_hugetlbfs)
 {
 	struct hmm_buffer *buffer;
@@ -798,7 +754,7 @@ TEST_F(hmm, anon_write_hugetlbfs)
 	default_hsize = file_read_ulong("/proc/meminfo", "Hugepagesize:");
 	if (default_hsize < 0 || default_hsize*1024 < default_hsize)
 		SKIP(return, "Huge page size could not be determined");
-	default_hsize = default_hsize*1024; /* KB to B */
+	default_hsize = default_hsize*1024;  
 
 	size = ALIGN(TWOMEG, default_hsize);
 	npages = size >> self->page_shift;
@@ -820,17 +776,17 @@ TEST_F(hmm, anon_write_hugetlbfs)
 	buffer->mirror = malloc(size);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
@@ -839,9 +795,7 @@ TEST_F(hmm, anon_write_hugetlbfs)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Read mmap'ed file memory.
- */
+ 
 TEST_F(hmm, file_read)
 {
 	struct hmm_buffer *buffer;
@@ -868,7 +822,7 @@ TEST_F(hmm, file_read)
 	buffer->mirror = malloc(size);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Write initial contents of the file. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 	len = pwrite(fd, buffer->mirror, size, 0);
@@ -881,22 +835,20 @@ TEST_F(hmm, file_read)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Simulate a device reading system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Write mmap'ed file memory.
- */
+ 
 TEST_F(hmm, file_write)
 {
 	struct hmm_buffer *buffer;
@@ -929,21 +881,21 @@ TEST_F(hmm, file_write)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize data that the device will write to buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device wrote. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Check that the device also wrote the file. */
+	 
 	len = pread(fd, buffer->mirror, size, 0);
 	ASSERT_EQ(len, size);
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
@@ -952,9 +904,7 @@ TEST_F(hmm, file_write)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Migrate anonymous memory to device private memory.
- */
+ 
 TEST_F(hmm, migrate)
 {
 	struct hmm_buffer *buffer;
@@ -982,27 +932,23 @@ TEST_F(hmm, migrate)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Migrate memory to device. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Migrate anonymous memory to device private memory and fault some of it back
- * to system memory, then try migrating the resulting mix of system and device
- * private memory to the device.
- */
+ 
 TEST_F(hmm, migrate_fault)
 {
 	struct hmm_buffer *buffer;
@@ -1030,29 +976,29 @@ TEST_F(hmm, migrate_fault)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Migrate memory to device. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Fault half the pages back to system memory and check them. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / (2 * sizeof(*ptr)); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Migrate memory to the device again. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
@@ -1084,33 +1030,31 @@ TEST_F(hmm, migrate_release)
 			   MAP_PRIVATE | MAP_ANONYMOUS, buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Migrate memory to device. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Release device memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_RELEASE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 
-	/* Fault pages back to system memory and check them. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / (2 * sizeof(*ptr)); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Migrate anonymous shared memory to device private memory.
- */
+ 
 TEST_F(hmm, migrate_shared)
 {
 	struct hmm_buffer *buffer;
@@ -1136,16 +1080,14 @@ TEST_F(hmm, migrate_shared)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Migrate memory to device. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, -ENOENT);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Try to migrate various memory types to device private memory.
- */
+ 
 TEST_F(hmm2, migrate_mixed)
 {
 	struct hmm_buffer *buffer;
@@ -1167,7 +1109,7 @@ TEST_F(hmm2, migrate_mixed)
 	buffer->mirror = malloc(size);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Reserve a range of addresses. */
+	 
 	buffer->ptr = mmap(NULL, size,
 			   PROT_NONE,
 			   MAP_PRIVATE | MAP_ANONYMOUS,
@@ -1175,19 +1117,19 @@ TEST_F(hmm2, migrate_mixed)
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 	p = buffer->ptr;
 
-	/* Migrating a protected area should be an error. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd1, buffer, npages);
 	ASSERT_EQ(ret, -EINVAL);
 
-	/* Punch a hole after the first page address. */
+	 
 	ret = munmap(buffer->ptr + self->page_size, self->page_size);
 	ASSERT_EQ(ret, 0);
 
-	/* We expect an error if the vma doesn't cover the range. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd1, buffer, 3);
 	ASSERT_EQ(ret, -EINVAL);
 
-	/* Page 2 will be a read-only zero page. */
+	 
 	ret = mprotect(buffer->ptr + 2 * self->page_size, self->page_size,
 				PROT_READ);
 	ASSERT_EQ(ret, 0);
@@ -1195,7 +1137,7 @@ TEST_F(hmm2, migrate_mixed)
 	val = *ptr + 3;
 	ASSERT_EQ(val, 3);
 
-	/* Page 3 will be read-only. */
+	 
 	ret = mprotect(buffer->ptr + 3 * self->page_size, self->page_size,
 				PROT_READ | PROT_WRITE);
 	ASSERT_EQ(ret, 0);
@@ -1205,7 +1147,7 @@ TEST_F(hmm2, migrate_mixed)
 				PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Page 4-5 will be read-write. */
+	 
 	ret = mprotect(buffer->ptr + 4 * self->page_size, 2 * self->page_size,
 				PROT_READ | PROT_WRITE);
 	ASSERT_EQ(ret, 0);
@@ -1214,13 +1156,13 @@ TEST_F(hmm2, migrate_mixed)
 	ptr = (int *)(buffer->ptr + 5 * self->page_size);
 	*ptr = val;
 
-	/* Now try to migrate pages 2-5 to device 1. */
+	 
 	buffer->ptr = p + 2 * self->page_size;
 	ret = hmm_migrate_sys_to_dev(self->fd1, buffer, 4);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, 4);
 
-	/* Page 5 won't be migrated to device 0 because it's on device 1. */
+	 
 	buffer->ptr = p + 5 * self->page_size;
 	ret = hmm_migrate_sys_to_dev(self->fd0, buffer, 1);
 	ASSERT_EQ(ret, -ENOENT);
@@ -1230,14 +1172,7 @@ TEST_F(hmm2, migrate_mixed)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Migrate anonymous memory to device memory and back to system memory
- * multiple times. In case of private zone configuration, this is done
- * through fault pages accessed by CPU. In case of coherent zone configuration,
- * the pages from the device should be explicitly migrated back to system memory.
- * The reason is Coherent device zone has coherent access by CPU, therefore
- * it will not generate any page fault.
- */
+ 
 TEST_F(hmm, migrate_multiple)
 {
 	struct hmm_buffer *buffer;
@@ -1267,20 +1202,20 @@ TEST_F(hmm, migrate_multiple)
 				   buffer->fd, 0);
 		ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-		/* Initialize buffer in system memory. */
+		 
 		for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 			ptr[i] = i;
 
-		/* Migrate memory to device. */
+		 
 		ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 		ASSERT_EQ(ret, 0);
 		ASSERT_EQ(buffer->cpages, npages);
 
-		/* Check what the device read. */
+		 
 		for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 			ASSERT_EQ(ptr[i], i);
 
-		/* Migrate back to system memory and check them. */
+		 
 		if (hmm_is_coherent_type(variant->device_number)) {
 			ret = hmm_migrate_dev_to_sys(self->fd, buffer, npages);
 			ASSERT_EQ(ret, 0);
@@ -1294,9 +1229,7 @@ TEST_F(hmm, migrate_multiple)
 	}
 }
 
-/*
- * Read anonymous memory multiple times.
- */
+ 
 TEST_F(hmm, anon_read_multiple)
 {
 	struct hmm_buffer *buffer;
@@ -1326,18 +1259,18 @@ TEST_F(hmm, anon_read_multiple)
 				   buffer->fd, 0);
 		ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-		/* Initialize buffer in system memory. */
+		 
 		for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 			ptr[i] = i + c;
 
-		/* Simulate a device reading system memory. */
+		 
 		ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer,
 				      npages);
 		ASSERT_EQ(ret, 0);
 		ASSERT_EQ(buffer->cpages, npages);
 		ASSERT_EQ(buffer->faults, 1);
 
-		/* Check what the device read. */
+		 
 		for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 			ASSERT_EQ(ptr[i], i + c);
 
@@ -1349,7 +1282,7 @@ void *unmap_buffer(void *p)
 {
 	struct hmm_buffer *buffer = p;
 
-	/* Delay for a bit and then unmap buffer while it is being read. */
+	 
 	hmm_nanosleep(hmm_random() % 32000);
 	munmap(buffer->ptr + buffer->size / 2, buffer->size / 2);
 	buffer->ptr = NULL;
@@ -1357,9 +1290,7 @@ void *unmap_buffer(void *p)
 	return NULL;
 }
 
-/*
- * Try reading anonymous memory while it is being unmapped.
- */
+ 
 TEST_F(hmm, anon_teardown)
 {
 	unsigned long npages;
@@ -1392,21 +1323,21 @@ TEST_F(hmm, anon_teardown)
 				   buffer->fd, 0);
 		ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-		/* Initialize buffer in system memory. */
+		 
 		for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 			ptr[i] = i + c;
 
 		rc = pthread_create(&thread, NULL, unmap_buffer, buffer);
 		ASSERT_EQ(rc, 0);
 
-		/* Simulate a device reading system memory. */
+		 
 		rc = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_READ, buffer,
 				     npages);
 		if (rc == 0) {
 			ASSERT_EQ(buffer->cpages, npages);
 			ASSERT_EQ(buffer->faults, 1);
 
-			/* Check what the device read. */
+			 
 			for (i = 0, ptr = buffer->mirror;
 			     i < size / sizeof(*ptr);
 			     ++i)
@@ -1418,9 +1349,7 @@ TEST_F(hmm, anon_teardown)
 	}
 }
 
-/*
- * Test memory snapshot without faulting in pages accessed by the device.
- */
+ 
 TEST_F(hmm, mixedmap)
 {
 	struct hmm_buffer *buffer;
@@ -1441,28 +1370,26 @@ TEST_F(hmm, mixedmap)
 	ASSERT_NE(buffer->mirror, NULL);
 
 
-	/* Reserve a range of addresses. */
+	 
 	buffer->ptr = mmap(NULL, size,
 			   PROT_READ | PROT_WRITE,
 			   MAP_PRIVATE,
 			   self->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Simulate a device snapshotting CPU pagetables. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device saw. */
+	 
 	m = buffer->mirror;
 	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_READ);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Test memory snapshot without faulting in pages accessed by the device.
- */
+ 
 TEST_F(hmm2, snapshot)
 {
 	struct hmm_buffer *buffer;
@@ -1485,7 +1412,7 @@ TEST_F(hmm2, snapshot)
 	buffer->mirror = malloc(npages);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Reserve a range of addresses. */
+	 
 	buffer->ptr = mmap(NULL, size,
 			   PROT_NONE,
 			   MAP_PRIVATE | MAP_ANONYMOUS,
@@ -1493,11 +1420,11 @@ TEST_F(hmm2, snapshot)
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 	p = buffer->ptr;
 
-	/* Punch a hole after the first page address. */
+	 
 	ret = munmap(buffer->ptr + self->page_size, self->page_size);
 	ASSERT_EQ(ret, 0);
 
-	/* Page 2 will be read-only zero page. */
+	 
 	ret = mprotect(buffer->ptr + 2 * self->page_size, self->page_size,
 				PROT_READ);
 	ASSERT_EQ(ret, 0);
@@ -1505,7 +1432,7 @@ TEST_F(hmm2, snapshot)
 	val = *ptr + 3;
 	ASSERT_EQ(val, 3);
 
-	/* Page 3 will be read-only. */
+	 
 	ret = mprotect(buffer->ptr + 3 * self->page_size, self->page_size,
 				PROT_READ | PROT_WRITE);
 	ASSERT_EQ(ret, 0);
@@ -1515,32 +1442,32 @@ TEST_F(hmm2, snapshot)
 				PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Page 4-6 will be read-write. */
+	 
 	ret = mprotect(buffer->ptr + 4 * self->page_size, 3 * self->page_size,
 				PROT_READ | PROT_WRITE);
 	ASSERT_EQ(ret, 0);
 	ptr = (int *)(buffer->ptr + 4 * self->page_size);
 	*ptr = val;
 
-	/* Page 5 will be migrated to device 0. */
+	 
 	buffer->ptr = p + 5 * self->page_size;
 	ret = hmm_migrate_sys_to_dev(self->fd0, buffer, 1);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, 1);
 
-	/* Page 6 will be migrated to device 1. */
+	 
 	buffer->ptr = p + 6 * self->page_size;
 	ret = hmm_migrate_sys_to_dev(self->fd1, buffer, 1);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, 1);
 
-	/* Simulate a device snapshotting CPU pagetables. */
+	 
 	buffer->ptr = p;
 	ret = hmm_dmirror_cmd(self->fd0, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device saw. */
+	 
 	m = buffer->mirror;
 	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_ERROR);
 	ASSERT_EQ(m[1], HMM_DMIRROR_PROT_ERROR);
@@ -1561,10 +1488,7 @@ TEST_F(hmm2, snapshot)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Test the hmm_range_fault() HMM_PFN_PMD flag for large pages that
- * should be mapped by a large page table entry.
- */
+ 
 TEST_F(hmm, compound)
 {
 	struct hmm_buffer *buffer;
@@ -1576,12 +1500,12 @@ TEST_F(hmm, compound)
 	int ret;
 	unsigned long i;
 
-	/* Skip test if we can't allocate a hugetlbfs page. */
+	 
 
 	default_hsize = file_read_ulong("/proc/meminfo", "Hugepagesize:");
 	if (default_hsize < 0 || default_hsize*1024 < default_hsize)
 		SKIP(return, "Huge page size could not be determined");
-	default_hsize = default_hsize*1024; /* KB to B */
+	default_hsize = default_hsize*1024;  
 
 	size = ALIGN(TWOMEG, default_hsize);
 	npages = size >> self->page_shift;
@@ -1602,31 +1526,31 @@ TEST_F(hmm, compound)
 	buffer->mirror = malloc(npages);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Initialize the pages the device will snapshot in buffer->ptr. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Simulate a device snapshotting CPU pagetables. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device saw. */
+	 
 	m = buffer->mirror;
 	for (i = 0; i < npages; ++i)
 		ASSERT_EQ(m[i], HMM_DMIRROR_PROT_WRITE |
 				HMM_DMIRROR_PROT_PMD);
 
-	/* Make the region read-only. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Simulate a device snapshotting CPU pagetables. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device saw. */
+	 
 	m = buffer->mirror;
 	for (i = 0; i < npages; ++i)
 		ASSERT_EQ(m[i], HMM_DMIRROR_PROT_READ |
@@ -1637,9 +1561,7 @@ TEST_F(hmm, compound)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Test two devices reading the same memory (double mapped).
- */
+ 
 TEST_F(hmm2, double_map)
 {
 	struct hmm_buffer *buffer;
@@ -1660,42 +1582,42 @@ TEST_F(hmm2, double_map)
 	buffer->mirror = malloc(npages);
 	ASSERT_NE(buffer->mirror, NULL);
 
-	/* Reserve a range of addresses. */
+	 
 	buffer->ptr = mmap(NULL, size,
 			   PROT_READ | PROT_WRITE,
 			   MAP_PRIVATE | MAP_ANONYMOUS,
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Make region read-only. */
+	 
 	ret = mprotect(buffer->ptr, size, PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Simulate device 0 reading system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd0, HMM_DMIRROR_READ, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Simulate device 1 reading system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd1, HMM_DMIRROR_READ, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Migrate pages to device 1 and try to read from device 0. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd1, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
@@ -1705,16 +1627,14 @@ TEST_F(hmm2, double_map)
 	ASSERT_EQ(buffer->cpages, npages);
 	ASSERT_EQ(buffer->faults, 1);
 
-	/* Check what device 0 read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Basic check of exclusive faulting.
- */
+ 
 TEST_F(hmm, exclusive)
 {
 	struct hmm_buffer *buffer;
@@ -1742,27 +1662,27 @@ TEST_F(hmm, exclusive)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Map memory exclusively for device access. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_EXCLUSIVE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
-	/* Fault pages back to system memory and check them. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i]++, i);
 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i+1);
 
-	/* Check atomic access revoked */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_CHECK_EXCLUSIVE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 
@@ -1796,32 +1716,30 @@ TEST_F(hmm, exclusive_mprotect)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Map memory exclusively for device access. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_EXCLUSIVE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
 	ret = mprotect(buffer->ptr, size, PROT_READ);
 	ASSERT_EQ(ret, 0);
 
-	/* Simulate a device writing system memory. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_WRITE, buffer, npages);
 	ASSERT_EQ(ret, -EPERM);
 
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Check copy-on-write works.
- */
+ 
 TEST_F(hmm, exclusive_cow)
 {
 	struct hmm_buffer *buffer;
@@ -1849,18 +1767,18 @@ TEST_F(hmm, exclusive_cow)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Map memory exclusively for device access. */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_EXCLUSIVE, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
 
 	fork();
 
-	/* Fault pages back to system memory and check them. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i]++, i);
 
@@ -1888,13 +1806,7 @@ static int gup_test_exec(int gup_fd, unsigned long addr, int cmd,
 	return 0;
 }
 
-/*
- * Test get user device pages through gup_test. Setting PIN_LONGTERM flag.
- * This should trigger a migration back to system memory for both, private
- * and coherent type pages.
- * This test makes use of gup_test module. Make sure GUP_TEST_CONFIG is added
- * to your configuration before you run it.
- */
+ 
 TEST_F(hmm, hmm_gup_test)
 {
 	struct hmm_buffer *buffer;
@@ -1927,15 +1839,15 @@ TEST_F(hmm, hmm_gup_test)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Migrate memory to device. */
+	 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
-	/* Check what the device read. */
+	 
 	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
@@ -1952,7 +1864,7 @@ TEST_F(hmm, hmm_gup_test)
 				(unsigned long)buffer->ptr + 3 * self->page_size,
 				PIN_LONGTERM_BENCHMARK, 1, self->page_size, 0), 0);
 
-	/* Take snapshot to CPU pagetables */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);
@@ -1966,10 +1878,7 @@ TEST_F(hmm, hmm_gup_test)
 	}
 	ASSERT_EQ(HMM_DMIRROR_PROT_WRITE, m[2]);
 	ASSERT_EQ(HMM_DMIRROR_PROT_WRITE, m[3]);
-	/*
-	 * Check again the content on the pages. Make sure there's no
-	 * corrupted data.
-	 */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ASSERT_EQ(ptr[i], i);
 
@@ -1977,13 +1886,7 @@ TEST_F(hmm, hmm_gup_test)
 	hmm_buffer_free(buffer);
 }
 
-/*
- * Test copy-on-write in device pages.
- * In case of writing to COW private page(s), a page fault will migrate pages
- * back to system memory first. Then, these pages will be duplicated. In case
- * of COW device coherent type, pages are duplicated directly from device
- * memory.
- */
+ 
 TEST_F(hmm, hmm_cow_in_device)
 {
 	struct hmm_buffer *buffer;
@@ -2013,11 +1916,11 @@ TEST_F(hmm, hmm_cow_in_device)
 			   buffer->fd, 0);
 	ASSERT_NE(buffer->ptr, MAP_FAILED);
 
-	/* Initialize buffer in system memory. */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Migrate memory to device. */
+	 
 
 	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
 	ASSERT_EQ(ret, 0);
@@ -2027,26 +1930,23 @@ TEST_F(hmm, hmm_cow_in_device)
 	if (pid == -1)
 		ASSERT_EQ(pid, 0);
 	if (!pid) {
-		/* Child process waitd for SIGTERM from the parent. */
+		 
 		while (1) {
 		}
 		perror("Should not reach this\n");
 		exit(0);
 	}
-	/* Parent process writes to COW pages(s) and gets a
-	 * new copy in system. In case of device private pages,
-	 * this write causes a migration to system mem first.
-	 */
+	 
 	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
 		ptr[i] = i;
 
-	/* Terminate child and wait */
+	 
 	EXPECT_EQ(0, kill(pid, SIGTERM));
 	EXPECT_EQ(pid, waitpid(pid, &status, 0));
 	EXPECT_NE(0, WIFSIGNALED(status));
 	EXPECT_EQ(SIGTERM, WTERMSIG(status));
 
-	/* Take snapshot to CPU pagetables */
+	 
 	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
 	ASSERT_EQ(ret, 0);
 	ASSERT_EQ(buffer->cpages, npages);

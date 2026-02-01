@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory controller driver for ARM PrimeCell PL172
- * PrimeCell MultiPort Memory Controller (PL172)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * Based on:
- * TI AEMIF driver, Copyright (C) 2010 - 2013 Texas Instruments Inc.
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/clk.h>
@@ -44,7 +36,7 @@
 #define MPMC_STATIC_WAIT_TURN(n)	(0x218 + 0x20 * (n))
 #define  MPMC_STATIC_WAIT_TURN_MAX	0x0f
 
-/* Maximum number of static chip selects */
+ 
 #define PL172_MAX_CS		4
 
 struct pl172_data {
@@ -86,7 +78,7 @@ static int pl172_setup_static(struct amba_device *adev,
 	u32 cfg;
 	int ret;
 
-	/* MPMC static memory configuration */
+	 
 	if (!of_property_read_u32(np, "mpmc,memory-width", &cfg)) {
 		if (cfg == 8) {
 			cfg = MPMC_STATIC_CFG_MW_8BIT;
@@ -125,7 +117,7 @@ static int pl172_setup_static(struct amba_device *adev,
 	writel(cfg, pl172->base + MPMC_STATIC_CFG(cs));
 	dev_dbg(&adev->dev, "mpmc static config cs%u: 0x%08x\n", cs, cfg);
 
-	/* MPMC static memory timing */
+	 
 	ret = pl172_timing_prop(adev, np, "mpmc,write-enable-delay",
 				MPMC_STATIC_WAIT_WEN(cs),
 				MPMC_STATIC_WAIT_WEN_MAX, 1);
@@ -251,11 +243,7 @@ static int pl172_probe(struct amba_device *adev, const struct amba_id *id)
 
 	amba_set_drvdata(adev, pl172);
 
-	/*
-	 * Loop through each child node, which represent a chip select, and
-	 * configure parameters and timing. If successful; populate devices
-	 * under that node.
-	 */
+	 
 	for_each_available_child_of_node(np, child_np) {
 		ret = pl172_parse_cs_config(adev, child_np);
 		if (ret)
@@ -282,17 +270,17 @@ static void pl172_remove(struct amba_device *adev)
 }
 
 static const struct amba_id pl172_ids[] = {
-	/*  PrimeCell MPMC PL172, EMC found on NXP LPC18xx and LPC43xx */
+	 
 	{
 		.id	= 0x07041172,
 		.mask	= 0x3f0fffff,
 	},
-	/* PrimeCell MPMC PL175, EMC found on NXP LPC32xx */
+	 
 	{
 		.id	= 0x07041175,
 		.mask	= 0x3f0fffff,
 	},
-	/* PrimeCell MPMC PL176 */
+	 
 	{
 		.id	= 0x89041176,
 		.mask	= 0xff0fffff,

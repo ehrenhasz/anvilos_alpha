@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 struct bss {
@@ -61,7 +61,7 @@ void test_rdonly_maps(void)
 		if (!ASSERT_OK_PTR(link, "attach_prog"))
 			goto cleanup;
 
-		/* trigger probe */
+		 
 		usleep(1);
 
 		bpf_link__destroy(link);

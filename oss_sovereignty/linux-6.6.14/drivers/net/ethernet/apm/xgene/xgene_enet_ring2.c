@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2015, Applied Micro Circuits Corporation
- * Author: Iyappan Subramanian <isubramanian@apm.com>
- */
+
+ 
 
 #include "xgene_enet_main.h"
 #include "xgene_enet_hw.h"

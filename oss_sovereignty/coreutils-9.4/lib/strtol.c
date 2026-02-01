@@ -1,47 +1,4 @@
-/* Convert string representation of a number into an integer value.
-
-   Copyright (C) 1991-1992, 1994-1999, 2003, 2005-2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   NOTE: The canonical source of this file is maintained with the GNU C
-   Library.  Bugs can be reported to bug-glibc@gnu.org.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifdef _LIBC
-# define USE_NUMBER_GROUPING
-#else
-# include <config.h>
-#endif
-
-#include <ctype.h>
-#include <errno.h>
-#ifndef __set_errno
-# define __set_errno(Val) errno = (Val)
-#endif
-
-#include <limits.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-
-#ifdef USE_NUMBER_GROUPING
-# include "../locale/localeinfo.h"
-#endif
-
-/* Nonzero if we are defining 'strtoul' or 'strtoull', operating on
-   unsigned integers.  */
+ 
 #ifndef UNSIGNED
 # define UNSIGNED 0
 # define INT LONG int
@@ -49,7 +6,7 @@
 # define INT unsigned LONG int
 #endif
 
-/* Determine the name.  */
+ 
 #ifdef USE_IN_EXTENDED_LOCALE_MODEL
 # undef strtol
 # if UNSIGNED
@@ -114,15 +71,14 @@
 # endif
 #endif
 
-/* If QUAD is defined, we are defining 'strtoll' or 'strtoull',
-   operating on 'long long int's.  */
+ 
 #ifdef QUAD
 # define LONG long long
 # define STRTOL_LONG_MIN LLONG_MIN
 # define STRTOL_LONG_MAX LLONG_MAX
 # define STRTOL_ULONG_MAX ULLONG_MAX
 # if __GNUC__ == 2 && __GNUC_MINOR__ < 7
-   /* Work around gcc bug with using this constant.  */
+    
    static const unsigned long long int maxquad = ULLONG_MAX;
 #  undef STRTOL_ULONG_MAX
 #  define STRTOL_ULONG_MAX maxquad
@@ -141,10 +97,7 @@
 # define GROUP_PARAM_PROTO
 #endif
 
-/* We use this code also for the extended locale handling where the
-   function gets as an additional argument the locale which has to be
-   used.  To access the values we have to redefine the _NL_CURRENT
-   macro.  */
+ 
 #ifdef USE_IN_EXTENDED_LOCALE_MODEL
 # undef _NL_CURRENT
 # define _NL_CURRENT(category, item) \
@@ -195,18 +148,13 @@
 #endif
 
 #ifdef USE_NUMBER_GROUPING
-/* This file defines a function to check for correct grouping.  */
+ 
 # include "grouping.h"
 #endif
 
 
 
-/* Convert NPTR to an 'unsigned long int' or 'long int' in base BASE.
-   If BASE is 0 the base is determined by the presence of a leading
-   zero, indicating octal or a leading "0x" or "0X", indicating hexadecimal.
-   If BASE is < 2 or > 36, it is reset to 10.
-   If ENDPTR is not NULL, a pointer to the character after the last
-   one converted is stored in *ENDPTR.  */
+ 
 
 INT
 INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
@@ -225,10 +173,9 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
 # ifdef USE_IN_EXTENDED_LOCALE_MODEL
   struct locale_data *current = loc->__locales[LC_NUMERIC];
 # endif
-  /* The thousands character of the current locale.  */
+   
   wchar_t thousands = L'\0';
-  /* The numeric grouping specification of the current locale,
-     in the format described in <locale.h>.  */
+   
   const char *grouping;
 
   if (group)
@@ -238,7 +185,7 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
         grouping = NULL;
       else
         {
-          /* Figure out the thousands separator character.  */
+           
 # if defined _LIBC || defined _HAVE_BTOWC
           thousands = __btowc (*_NL_CURRENT (LC_NUMERIC, THOUSANDS_SEP));
           if (thousands == WEOF)
@@ -260,13 +207,13 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
 
   save = s = nptr;
 
-  /* Skip white space.  */
+   
   while (ISSPACE (*s))
     ++s;
   if (*s == L_('\0'))
     goto noconv;
 
-  /* Check for a sign.  */
+   
   if (*s == L_('-'))
     {
       negative = 1;
@@ -280,7 +227,7 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
   else
     negative = 0;
 
-  /* Recognize number prefix and if BASE is zero, figure it out ourselves.  */
+   
   if (*s == L_('0'))
     {
       if ((base == 0 || base == 16) && TOUPPER (s[1]) == L_('X'))
@@ -299,13 +246,13 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
   else if (base == 0)
     base = 10;
 
-  /* Save the pointer so we can check later if anything happened.  */
+   
   save = s;
 
 #ifdef USE_NUMBER_GROUPING
   if (group)
     {
-      /* Find the end of the digit string and check its grouping.  */
+       
       end = s;
       for (c = *end; c != L_('\0'); c = *++end)
         if ((wchar_t) c != thousands
@@ -338,7 +285,7 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
         break;
       if ((int) c >= base)
         break;
-      /* Check for overflow.  */
+       
       if (i > cutoff || (i == cutoff && c > cutlim))
         overflow = 1;
       else
@@ -348,18 +295,16 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
         }
     }
 
-  /* Check if anything actually happened.  */
+   
   if (s == save)
     goto noconv;
 
-  /* Store in ENDPTR the address of one character
-     past the last character we converted.  */
+   
   if (endptr != NULL)
     *endptr = (STRING_TYPE *) s;
 
 #if !UNSIGNED
-  /* Check for a value that is within the range of
-     'unsigned LONG int', but outside the range of 'LONG int'.  */
+   
   if (overflow == 0
       && i > (negative
               ? -((unsigned LONG int) (STRTOL_LONG_MIN + 1)) + 1
@@ -377,16 +322,11 @@ INTERNAL (strtol) (const STRING_TYPE *nptr, STRING_TYPE **endptr,
 #endif
     }
 
-  /* Return the result of the appropriate sign.  */
+   
   return negative ? -i : i;
 
 noconv:
-  /* We must handle a special case here: the base is 0 or 16 and the
-     first two characters are '0' and 'x', but the rest are no
-     hexadecimal digits.  Likewise when the base is 0 or 2 and the
-     first two characters are '0' and 'b', but the rest are no binary
-     digits.  This is no error case.  We return 0 and ENDPTR points to
-     the 'x' or 'b'.  */
+   
   if (endptr != NULL)
     {
       if (save - nptr >= 2
@@ -394,7 +334,7 @@ noconv:
           && save[-2] == L_('0'))
         *endptr = (STRING_TYPE *) &save[-1];
       else
-        /*  There was no number to convert.  */
+         
         *endptr = (STRING_TYPE *) nptr;
     }
 
@@ -402,7 +342,7 @@ noconv:
 }
 
 #ifdef USE_NUMBER_GROUPING
-/* External user entry point.  */
+ 
 
 INT
 # ifdef weak_function

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 
 #include <linux/if_vlan.h>
@@ -87,8 +56,7 @@ int mlx4_en_QUERY_PORT(struct mlx4_en_dev *mdev, u8 port)
 		goto out;
 	qport_context = mailbox->buf;
 
-	/* This command is always accessed from Ethtool context
-	 * already synchronized, no need in locking */
+	 
 	state->link_state = !!(qport_context->link_up & MLX4_EN_LINK_UP_MASK);
 	switch (qport_context->link_speed & MLX4_EN_SPEED_MASK) {
 	case MLX4_EN_100M_SPEED:
@@ -117,7 +85,7 @@ int mlx4_en_QUERY_PORT(struct mlx4_en_dev *mdev, u8 port)
 
 	state->transceiver = qport_context->transceiver;
 
-	state->flags = 0; /* Reset and recalculate the port flags */
+	state->flags = 0;  
 	state->flags |= (qport_context->link_up & MLX4_EN_ANC_MASK) ?
 		MLX4_EN_PORT_ANC : 0;
 	state->flags |= (qport_context->autoneg & MLX4_EN_AUTONEG_MASK) ?
@@ -128,10 +96,7 @@ out:
 	return err;
 }
 
-/* Each counter set is located in struct mlx4_en_stat_out_mbox
- * with a const offset between its prio components.
- * This function runs over a counter set and sum all of it's prio components.
- */
+ 
 static unsigned long en_stats_adder(__be64 *start, __be64 *next, int num)
 {
 	__be64 *curr = start;
@@ -218,7 +183,7 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
 	err = mlx4_get_counter_stats(mdev->dev, counter_index,
 				     &tmp_counter_stats, reset);
 
-	/* 0xffs indicates invalid value */
+	 
 	memset(mailbox_priority->buf, 0xff,
 	       sizeof(*flowstats) * MLX4_NUM_PRIORITIES);
 
@@ -306,7 +271,7 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
 		}
 	}
 
-	/* net device stats */
+	 
 	stats->rx_errors = be64_to_cpu(mlx4_en_stats->PCS) +
 			   be32_to_cpu(mlx4_en_stats->RJBBR) +
 			   be32_to_cpu(mlx4_en_stats->RCRC) +
@@ -331,7 +296,7 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
 	stats->tx_dropped = be32_to_cpu(mlx4_en_stats->TDROP) +
 			    sw_tx_dropped;
 
-	/* RX stats */
+	 
 	priv->pkstats.rx_multicast_packets = stats->multicast;
 	priv->pkstats.rx_broadcast_packets =
 			en_stats_adder(&mlx4_en_stats->RBCAST_prio_0,
@@ -343,7 +308,7 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
 	priv->pkstats.rx_out_range_length_error =
 		be64_to_cpu(mlx4_en_stats->ROutRangeLengthErr);
 
-	/* Tx stats */
+	 
 	priv->pkstats.tx_multicast_packets =
 		en_stats_adder(&mlx4_en_stats->TMCAST_prio_0,
 			       &mlx4_en_stats->TMCAST_prio_1,
@@ -412,7 +377,7 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
 			be64_to_cpu(flowstats[i].tx_pause_transition);
 	}
 
-	/* if pfc is not in use, all priorities counters have the same value */
+	 
 	priv->rx_flowstats.rx_pause =
 		be64_to_cpu(flowstats[0].rx_pause);
 	priv->rx_flowstats.rx_pause_duration =

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rotary_encoder.c
- *
- * (c) 2009 Daniel Mack <daniel@caiaq.de>
- * Copyright (C) 2011 Johan Hovold <jhovold@gmail.com>
- *
- * state machine code inspired by code from Tim Ruetz
- *
- * A generic driver for rotary encoders connected to GPIO lines.
- * See file:Documentation/input/devices/rotary-encoder.rst for more information
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -48,7 +38,7 @@ struct rotary_encoder {
 	unsigned int *irq;
 
 	bool armed;
-	signed char dir;	/* 1 - clockwise, -1 - CCW */
+	signed char dir;	 
 
 	unsigned int last_stable;
 };
@@ -61,7 +51,7 @@ static unsigned int rotary_encoder_get_state(struct rotary_encoder *encoder)
 	for (i = 0; i < encoder->gpios->ndescs; ++i) {
 		int val = gpiod_get_value_cansleep(encoder->gpios->desc[i]);
 
-		/* convert from gray encoding to normal */
+		 
 		if (encoder->encoding == ROTENC_GRAY && ret & 1)
 			val = !val;
 
@@ -80,13 +70,13 @@ static void rotary_encoder_report_event(struct rotary_encoder *encoder)
 		unsigned int pos = encoder->pos;
 
 		if (encoder->dir < 0) {
-			/* turning counter-clockwise */
+			 
 			if (encoder->rollover)
 				pos += encoder->steps;
 			if (pos)
 				pos--;
 		} else {
-			/* turning clockwise */
+			 
 			if (encoder->rollover || pos < encoder->steps)
 				pos++;
 		}
@@ -203,13 +193,7 @@ static int rotary_encoder_probe(struct platform_device *pdev)
 	err = device_property_read_u32(dev, "rotary-encoder,steps-per-period",
 				       &steps_per_period);
 	if (err) {
-		/*
-		 * The 'half-period' property has been deprecated, you must
-		 * use 'steps-per-period' and set an appropriate value, but
-		 * we still need to parse it to maintain compatibility. If
-		 * neither property is present we fall back to the one step
-		 * per period behavior.
-		 */
+		 
 		steps_per_period = device_property_read_bool(dev,
 					"rotary-encoder,half-period") ? 2 : 1;
 	}

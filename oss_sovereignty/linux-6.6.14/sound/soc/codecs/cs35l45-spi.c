@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l45-spi.c -- CS35L45 SPI driver
-//
-// Copyright 2019-2022 Cirrus Logic, Inc.
-//
-// Author: James Schulman <james.schulman@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/module.h>

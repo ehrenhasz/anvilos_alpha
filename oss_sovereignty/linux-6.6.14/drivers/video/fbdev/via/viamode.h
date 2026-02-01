@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
-
- */
+ 
+ 
 
 #ifndef __VIAMODE_H__
 #define __VIAMODE_H__
@@ -46,4 +42,4 @@ const struct fb_videomode *viafb_get_best_mode(int hres, int vres,
 const struct fb_videomode *viafb_get_best_rb_mode(int hres, int vres,
 	int refresh);
 
-#endif /* __VIAMODE_H__ */
+#endif  

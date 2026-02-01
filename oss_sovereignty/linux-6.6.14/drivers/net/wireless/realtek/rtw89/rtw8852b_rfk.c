@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2022  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "debug.h"
@@ -348,7 +347,7 @@ static void _rck(struct rtw89_dev *rtwdev, enum rtw89_rf_path path)
 	rtw89_debug(rtwdev, RTW89_DBG_RFK, "[RCK] RF0x00 = 0x%05x\n",
 		    rtw89_read_rf(rtwdev, path, RR_MOD, RFREG_MASK));
 
-	/* RCK trigger */
+	 
 	rtw89_write_rf(rtwdev, path, RR_RCKC, RFREG_MASK, 0x00240);
 
 	ret = read_poll_timeout_atomic(rtw89_read_rf, val, val, 2, 30,
@@ -416,13 +415,13 @@ static void _addck_reload(struct rtw89_dev *rtwdev)
 {
 	struct rtw89_dack_info *dack = &rtwdev->dack;
 
-	/* S0 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0D, B_ADDCK0D_VAL, dack->addck_d[0][0]);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_VAL, dack->addck_d[0][1] >> 6);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0D, B_ADDCK0D_VAL2, dack->addck_d[0][1] & 0x3f);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_MAN, 0x3);
 
-	/* S1 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1D, B_ADDCK1D_VAL, dack->addck_d[1][0]);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1, B_ADDCK0_VAL, dack->addck_d[1][1] >> 6);
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK1D, B_ADDCK1D_VAL2, dack->addck_d[1][1] & 0x3f);
@@ -512,7 +511,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 	u32 val;
 	int ret;
 
-	/* S0 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_ADDCK0, B_ADDCK0_MAN, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_PATH1_SAMPL_DLY_T_V1, 0x30, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_P0_NRBW, B_P0_NRBW_DBG, 0x1);
@@ -548,7 +547,7 @@ static void _addck(struct rtw89_dev *rtwdev)
 	rtw89_phy_write32_mask(rtwdev, R_ANAPAR, B_ANAPAR_ADCCLK, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_P0_NRBW, B_P0_NRBW_DBG, 0x0);
 
-	/* S1 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_P1_DBGMOD, B_P1_DBGMOD_ON, 0x1);
 	rtw89_phy_write32_mask(rtwdev, R_ANAPAR, B_ANAPAR_ADCCLK, 0x0);
 	rtw89_phy_write32_mask(rtwdev, R_ANAPAR, B_ANAPAR_FLTRST, 0x0);
@@ -1352,7 +1351,7 @@ static void _iqk_by_path(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy_idx, u
 
 	_iqk_txclk_setting(rtwdev, path);
 
-	/* LOK */
+	 
 	for (i = 0; i < try; i++) {
 		_lok_res_table(rtwdev, path, ibias++);
 		_iqk_txk_setting(rtwdev, path);
@@ -1364,13 +1363,13 @@ static void _iqk_by_path(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy_idx, u
 	if (lok_is_fail)
 		rtw89_debug(rtwdev, RTW89_DBG_RFK, "[IQK] LOK (%d) fail\n", path);
 
-	/* TXK */
+	 
 	if (iqk_info->is_nbiqk)
 		iqk_info->iqk_tx_fail[0][path] = _iqk_nbtxk(rtwdev, phy_idx, path);
 	else
 		iqk_info->iqk_tx_fail[0][path] = _txk_group_sel(rtwdev, phy_idx, path);
 
-	/* RX */
+	 
 	_iqk_rxclk_setting(rtwdev, path);
 	_iqk_rxk_setting(rtwdev, path);
 	if (iqk_info->is_nbiqk)
@@ -1433,10 +1432,10 @@ static void _iqk_get_ch_info(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy, u
 		    iqk_info->syn1to2);
 
 	rtw89_phy_write32_mask(rtwdev, R_IQKINF, B_IQKINF_VER, RTW8852B_IQK_VER);
-	/* 2GHz/5GHz/6GHz = 0/1/2 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_IQKCH, B_IQKCH_BAND << (path * 16),
 			       iqk_info->iqk_band[path]);
-	/* 20/40/80 = 0/1/2 */
+	 
 	rtw89_phy_write32_mask(rtwdev, R_IQKCH, B_IQKCH_BW << (path * 16),
 			       iqk_info->iqk_bw[path]);
 	rtw89_phy_write32_mask(rtwdev, R_IQKCH, B_IQKCH_CH << (path * 16),
@@ -2704,7 +2703,7 @@ static void _set_dpd_backoff(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy)
 	tx_scale = rtw89_phy_read32_mask(rtwdev, R_DPD_BF + (phy << 13), B_DPD_BF_SCA);
 
 	if (ofdm_bkof + tx_scale >= 44) {
-		/* move dpd backoff to bb, and set dpd backoff to 0 */
+		 
 		dpk->dpk_gs[phy] = 0x7f;
 		for (path = 0; path < RF_PATH_NUM_8852B; path++) {
 			if (!(kpath & BIT(path)))
@@ -3430,7 +3429,7 @@ static void _tssi_hw_tx(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
 	else if (path == RF_PATH_AB)
 		rx_path = RF_AB;
 	else
-		rx_path = RF_ABCD; /* don't change path, but still set others */
+		rx_path = RF_ABCD;  
 
 	if (enable) {
 		rtw8852b_bb_set_plcp_tx(rtwdev);

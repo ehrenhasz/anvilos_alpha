@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Faraday Technolog FTGPIO010 gpiochip and interrupt routines
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on arch/arm/mach-gemini/gpio.c:
- * Copyright (C) 2008-2009 Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
- *
- * Based on plat-mxc/gpio.c:
- * MXC GPIO support. (c) 2008 Daniel Mack <daniel@caiaq.de>
- * Copyright 2008 Juergen Beisert, kernel@pengutronix.de
- */
+
+ 
 #include <linux/gpio/driver.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
@@ -17,7 +7,7 @@
 #include <linux/bitops.h>
 #include <linux/clk.h>
 
-/* GPIO registers definition */
+ 
 #define GPIO_DATA_OUT		0x00
 #define GPIO_DATA_IN		0x04
 #define GPIO_DIR		0x08
@@ -37,13 +27,7 @@
 #define GPIO_DEBOUNCE_EN	0x40
 #define GPIO_DEBOUNCE_PRESCALE	0x44
 
-/**
- * struct ftgpio_gpio - Gemini GPIO state container
- * @dev: containing device for this instance
- * @gc: gpiochip for this instance
- * @base: remapped I/O-memory base
- * @clk: silicon clock
- */
+ 
 struct ftgpio_gpio {
 	struct device *dev;
 	struct gpio_chip gc;
@@ -167,21 +151,11 @@ static int ftgpio_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 	if (param != PIN_CONFIG_INPUT_DEBOUNCE)
 		return -ENOTSUPP;
 
-	/*
-	 * Debounce only works if interrupts are enabled. The manual
-	 * states that if PCLK is 66 MHz, and this is set to 0x7D0, then
-	 * PCLK is divided down to 33 kHz for the debounce timer. 0x7D0 is
-	 * 2000 decimal, so what they mean is simply that the PCLK is
-	 * divided by this value.
-	 *
-	 * As we get a debounce setting in microseconds, we calculate the
-	 * desired period time and see if we can get a suitable debounce
-	 * time.
-	 */
+	 
 	pclk_freq = clk_get_rate(g->clk);
 	deb_div = DIV_ROUND_CLOSEST(pclk_freq, arg);
 
-	/* This register is only 24 bits wide */
+	 
 	if (deb_div > (1 << 24))
 		return -ENOTSUPP;
 
@@ -190,13 +164,7 @@ static int ftgpio_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 
 	val = readl(g->base + GPIO_DEBOUNCE_PRESCALE);
 	if (val == deb_div) {
-		/*
-		 * The debounce timer happens to already be set to the
-		 * desirable value, what a coincidence! We can just enable
-		 * debounce on this GPIO line and return. This happens more
-		 * often than you think, for example when all GPIO keys
-		 * on a system are requesting the same debounce interval.
-		 */
+		 
 		val = readl(g->base + GPIO_DEBOUNCE_EN);
 		val |= BIT(offset);
 		writel(val, g->base + GPIO_DEBOUNCE_EN);
@@ -205,16 +173,13 @@ static int ftgpio_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 
 	val = readl(g->base + GPIO_DEBOUNCE_EN);
 	if (val) {
-		/*
-		 * Oh no! Someone is already using the debounce with
-		 * another setting than what we need. Bummer.
-		 */
+		 
 		return -ENOTSUPP;
 	}
 
-	/* First come, first serve */
+	 
 	writel(deb_div, g->base + GPIO_DEBOUNCE_PRESCALE);
-	/* Enable debounce */
+	 
 	val |= BIT(offset);
 	writel(val, g->base + GPIO_DEBOUNCE_EN);
 
@@ -259,10 +224,7 @@ static int ftgpio_gpio_probe(struct platform_device *pdev)
 		if (ret)
 			return ret;
 	} else if (PTR_ERR(g->clk) == -EPROBE_DEFER) {
-		/*
-		 * Percolate deferrals, for anything else,
-		 * just live without the clocking.
-		 */
+		 
 		return PTR_ERR(g->clk);
 	}
 
@@ -281,9 +243,9 @@ static int ftgpio_gpio_probe(struct platform_device *pdev)
 	g->gc.base = -1;
 	g->gc.parent = dev;
 	g->gc.owner = THIS_MODULE;
-	/* ngpio is set by bgpio_init() */
+	 
 
-	/* We need a silicon clock to do debounce */
+	 
 	if (!IS_ERR(g->clk))
 		g->gc.set_config = ftgpio_gpio_set_config;
 
@@ -301,12 +263,12 @@ static int ftgpio_gpio_probe(struct platform_device *pdev)
 	girq->handler = handle_bad_irq;
 	girq->parents[0] = irq;
 
-	/* Disable, unmask and clear all interrupts */
+	 
 	writel(0x0, g->base + GPIO_INT_EN);
 	writel(0x0, g->base + GPIO_INT_MASK);
 	writel(~0x0, g->base + GPIO_INT_CLR);
 
-	/* Clear any use of debounce */
+	 
 	writel(0x0, g->base + GPIO_DEBOUNCE_EN);
 
 	ret = devm_gpiochip_add_data(dev, &g->gc, g);

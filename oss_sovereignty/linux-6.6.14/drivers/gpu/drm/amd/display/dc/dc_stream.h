@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-14 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef DC_STREAM_H_
 #define DC_STREAM_H_
@@ -29,9 +6,7 @@
 #include "dc_types.h"
 #include "grph_object_defs.h"
 
-/*******************************************************************************
- * Stream Interfaces
- ******************************************************************************/
+ 
 struct timing_sync_info {
 	int group_id;
 	int group_size;
@@ -42,9 +17,7 @@ struct dc_stream_status {
 	int primary_otg_inst;
 	int stream_enc_inst;
 
-	/**
-	 * @plane_count: Total of planes attached to a single stream
-	 */
+	 
 	int plane_count;
 	int audio_inst;
 	struct timing_sync_info timing_sync_info;
@@ -58,27 +31,23 @@ enum hubp_dmdata_mode {
 };
 
 struct dc_dmdata_attributes {
-	/* Specifies whether dynamic meta data will be updated by software
-	 * or has to be fetched by hardware (DMA mode)
-	 */
+	 
 	enum hubp_dmdata_mode dmdata_mode;
-	/* Specifies if current dynamic meta data is to be used only for the current frame */
+	 
 	bool dmdata_repeat;
-	/* Specifies the size of Dynamic Metadata surface in byte.  Size of 0 means no Dynamic metadata is fetched */
+	 
 	uint32_t dmdata_size;
-	/* Specifies if a new dynamic meta data should be fetched for an upcoming frame */
+	 
 	bool dmdata_updated;
-	/* If hardware mode is used, the base address where DMDATA surface is located */
+	 
 	PHYSICAL_ADDRESS_LOC address;
-	/* Specifies whether QOS level will be provided by TTU or it will come from DMDATA_QOS_LEVEL */
+	 
 	bool dmdata_qos_mode;
-	/* If qos_mode = 1, this is the QOS value to be used: */
+	 
 	uint32_t dmdata_qos_level;
-	/* Specifies the value in unit of REFCLK cycles to be added to the
-	 * current time to produce the Amortized deadline for Dynamic Metadata chunk request
-	 */
+	 
 	uint32_t dmdata_dl_delta;
-	/* An unbounded array of uint32s, represents software dmdata to be loaded */
+	 
 	uint32_t *dmdata_sw_data;
 };
 
@@ -88,9 +57,9 @@ struct dc_writeback_info {
 	struct dc_dwb_params dwb_params;
 	struct mcif_buf_params mcif_buf_params;
 	struct mcif_warmup_params mcif_warmup_params;
-	/* the plane that is the input to TOP_MUX for MPCC that is the DWB source */
+	 
 	struct dc_plane_state *writeback_source_plane;
-	/* source MPCC instance.  for use by internally by dc */
+	 
 	int mpcc_inst;
 };
 
@@ -104,9 +73,9 @@ enum vertical_interrupt_ref_point {
 	START_V_SYNC,
 	INVALID_POINT
 
-	//For now, only v_update interrupt is used.
-	//START_V_BLANK,
-	//START_V_ACTIVE
+	
+	
+	
 };
 
 struct periodic_interrupt_config {
@@ -115,8 +84,8 @@ struct periodic_interrupt_config {
 };
 
 struct dc_mst_stream_bw_update {
-	bool is_increase; // is bandwidth reduced or increased
-	uint32_t mst_stream_bw; // new mst bandwidth in kbps
+	bool is_increase; 
+	uint32_t mst_stream_bw; 
 };
 
 union stream_update_flags {
@@ -145,28 +114,21 @@ struct test_pattern {
 	unsigned int cust_pattern_size;
 };
 
-#define SUBVP_DRR_MARGIN_US 100 // 100us for DRR margin (SubVP + DRR)
+#define SUBVP_DRR_MARGIN_US 100 
 
 enum mall_stream_type {
-	SUBVP_NONE, // subvp not in use
-	SUBVP_MAIN, // subvp in use, this stream is main stream
-	SUBVP_PHANTOM, // subvp in use, this stream is a phantom stream
+	SUBVP_NONE, 
+	SUBVP_MAIN, 
+	SUBVP_PHANTOM, 
 };
 
 struct mall_stream_config {
-	/* MALL stream config to indicate if the stream is phantom or not.
-	 * We will use a phantom stream to indicate that the pipe is phantom.
-	 */
+	 
 	enum mall_stream_type type;
-	struct dc_stream_state *paired_stream;	// master / slave stream
+	struct dc_stream_state *paired_stream;	
 };
 
-/* Temp struct used to save and restore MALL config
- * during validation.
- *
- * TODO: Move MALL config into dc_state instead of stream struct
- * to avoid needing to save/restore.
- */
+ 
 struct mall_temp_config {
 	struct mall_stream_config mall_stream_config[MAX_PIPES];
 	bool is_phantom_plane[MAX_PIPES];
@@ -177,14 +139,12 @@ struct dc_stream_debug_options {
 };
 
 struct dc_stream_state {
-	// sink is deprecated, new code should not reference
-	// this pointer
+	
+	
 	struct dc_sink *sink;
 
 	struct dc_link *link;
-	/* For dynamic link encoder assignment, update the link encoder assigned to
-	 * a stream via the volatile dc_state rather than the static dc_link.
-	 */
+	 
 	struct link_encoder *link_enc;
 	struct dc_stream_debug_options debug;
 	struct dc_panel_patch sink_patches;
@@ -198,8 +158,8 @@ struct dc_stream_state {
 	struct dc_info_packet vtem_infopacket;
 	struct dc_info_packet adaptive_sync_infopacket;
 	uint8_t dsc_packed_pps[128];
-	struct rect src; /* composition area */
-	struct rect dst; /* stream addressable area */
+	struct rect src;  
+	struct rect dst;  
 
 	struct audio_info audio_info;
 
@@ -219,18 +179,10 @@ struct dc_stream_state {
 	bool use_vsc_sdp_for_colorimetry;
 	bool ignore_msa_timing_param;
 
-	/**
-	 * @allow_freesync:
-	 *
-	 * It say if Freesync is enabled or not.
-	 */
+	 
 	bool allow_freesync;
 
-	/**
-	 * @vrr_active_variable:
-	 *
-	 * It describes if VRR is in use.
-	 */
+	 
 	bool vrr_active_variable;
 	bool freesync_on_desktop;
 	bool vrr_active_fixed;
@@ -239,19 +191,19 @@ struct dc_stream_state {
 	uint8_t qs_bit;
 	uint8_t qy_bit;
 
-	/* TODO: custom INFO packets */
-	/* TODO: ABM info (DMCU) */
-	/* TODO: CEA VIC */
+	 
+	 
+	 
 
-	/* DMCU info */
+	 
 	unsigned int abm_level;
 
 	struct periodic_interrupt_config periodic_interrupt;
 
-	/* from core_stream struct */
+	 
 	struct dc_context *ctx;
 
-	/* used by DCP and FMT */
+	 
 	struct bit_depth_reduction_params bit_depth_params;
 	struct clamping_and_pixel_encoding_params clamping;
 
@@ -263,29 +215,25 @@ struct dc_stream_state {
 
 	struct dc_cursor_attributes cursor_attributes;
 	struct dc_cursor_position cursor_position;
-	uint32_t sdr_white_level; // for boosting (SDR) cursor in HDR mode
+	uint32_t sdr_white_level; 
 
-	/* from stream struct */
+	 
 	struct kref refcount;
 
 	struct crtc_trigger_info triggered_crtc_reset;
 
-	/* writeback */
+	 
 	unsigned int num_wb_info;
 	struct dc_writeback_info writeback_info[MAX_DWB_PIPES];
 	const struct dc_transfer_func *func_shaper;
 	const struct dc_3dlut *lut3d_func;
-	/* Computed state bits */
+	 
 	bool mode_changed : 1;
 
-	/* Output from DC when stream state is committed or altered
-	 * DC may only access these values during:
-	 * dc_commit_state, dc_commit_state_no_check, dc_commit_streams
-	 * values may not change outside of those calls
-	 */
+	 
 	struct {
-		// For interrupt management, some hardware instance
-		// offsets need to be exposed to DM
+		
+		
 		uint8_t otg_offset;
 	} out;
 
@@ -350,65 +298,34 @@ bool dc_is_stream_unchanged(
 bool dc_is_stream_scaling_unchanged(
 	struct dc_stream_state *old_stream, struct dc_stream_state *stream);
 
-/*
- * Setup stream attributes if no stream updates are provided
- * there will be no impact on the stream parameters
- *
- * Set up surface attributes and associate to a stream
- * The surfaces parameter is an absolute set of all surface active for the stream.
- * If no surfaces are provided, the stream will be blanked; no memory read.
- * Any flip related attribute changes must be done through this interface.
- *
- * After this call:
- *   Surfaces attributes are programmed and configured to be composed into stream.
- *   This does not trigger a flip.  No surface address is programmed.
- *
- */
+ 
 bool dc_update_planes_and_stream(struct dc *dc,
 		struct dc_surface_update *surface_updates, int surface_count,
 		struct dc_stream_state *dc_stream,
 		struct dc_stream_update *stream_update);
 
-/*
- * Set up surface attributes and associate to a stream
- * The surfaces parameter is an absolute set of all surface active for the stream.
- * If no surfaces are provided, the stream will be blanked; no memory read.
- * Any flip related attribute changes must be done through this interface.
- *
- * After this call:
- *   Surfaces attributes are programmed and configured to be composed into stream.
- *   This does not trigger a flip.  No surface address is programmed.
- */
+ 
 void dc_commit_updates_for_stream(struct dc *dc,
 		struct dc_surface_update *srf_updates,
 		int surface_count,
 		struct dc_stream_state *stream,
 		struct dc_stream_update *stream_update,
 		struct dc_state *state);
-/*
- * Log the current stream state.
- */
+ 
 void dc_stream_log(const struct dc *dc, const struct dc_stream_state *stream);
 
 uint8_t dc_get_current_stream_count(struct dc *dc);
 struct dc_stream_state *dc_get_stream_at_index(struct dc *dc, uint8_t i);
 
-/*
- * Return the current frame counter.
- */
+ 
 uint32_t dc_stream_get_vblank_counter(const struct dc_stream_state *stream);
 
-/*
- * Send dp sdp message.
- */
+ 
 bool dc_stream_send_dp_sdp(const struct dc_stream_state *stream,
 		const uint8_t *custom_sdp_message,
 		unsigned int sdp_message_size);
 
-/* TODO: Return parsed values rather than direct register read
- * This has a dependency on the caller (amdgpu_display_get_crtc_scanoutpos)
- * being refactored properly to be dce-specific
- */
+ 
 bool dc_stream_get_scanoutpos(const struct dc_stream_state *stream,
 				  uint32_t *v_blank_start,
 				  uint32_t *v_blank_end,
@@ -474,25 +391,15 @@ bool dc_stream_set_dynamic_metadata(struct dc *dc,
 
 enum dc_status dc_validate_stream(struct dc *dc, struct dc_stream_state *stream);
 
-/*
- * Set up streams and links associated to drive sinks
- * The streams parameter is an absolute set of all active streams.
- *
- * After this call:
- *   Phy, Encoder, Timing Generator are programmed and enabled.
- *   New streams are enabled with blank stream; no memory read.
- */
-/*
- * Enable stereo when commit_streams is not required,
- * for example, frame alternate.
- */
+ 
+ 
 void dc_enable_stereo(
 	struct dc *dc,
 	struct dc_state *context,
 	struct dc_stream_state *streams[],
 	uint8_t stream_count);
 
-/* Triggers multi-stream synchronization. */
+ 
 void dc_trigger_sync(struct dc *dc, struct dc_state *context);
 
 enum surface_update_type dc_check_update_surfaces_for_stream(
@@ -502,9 +409,7 @@ enum surface_update_type dc_check_update_surfaces_for_stream(
 		struct dc_stream_update *stream_update,
 		const struct dc_stream_status *stream_status);
 
-/**
- * Create a new default stream for the requested sink
- */
+ 
 struct dc_stream_state *dc_create_stream_for_sink(struct dc_sink *dc_sink);
 
 struct dc_stream_state *dc_copy_stream(const struct dc_stream_state *stream);
@@ -526,10 +431,8 @@ bool dc_optimize_timing_for_fsft(
 	unsigned int max_input_rate_in_khz);
 #endif
 
-/*******************************************************************************
- * Cursor interfaces - To manages the cursor within a stream
- ******************************************************************************/
-/* TODO: Deprecated once we switch to dc_set_cursor_position */
+ 
+ 
 bool dc_stream_set_cursor_attributes(
 	struct dc_stream_state *stream,
 	const struct dc_cursor_attributes *attributes);
@@ -601,4 +504,4 @@ void dc_dmub_update_dirty_rect(struct dc *dc,
 			       struct dc_stream_state *stream,
 			       struct dc_surface_update *srf_updates,
 			       struct dc_state *context);
-#endif /* DC_STREAM_H_ */
+#endif  

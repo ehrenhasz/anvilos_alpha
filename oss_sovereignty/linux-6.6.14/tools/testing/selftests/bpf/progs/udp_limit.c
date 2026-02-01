@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <sys/socket.h>
 #include <linux/bpf.h>
@@ -30,10 +30,7 @@ int sock(struct bpf_sock *ctx)
 	__sync_fetch_and_add(&invocations, 1);
 
 	if (in_use > 0) {
-		/* BPF_CGROUP_INET_SOCK_RELEASE is _not_ called
-		 * when we return an error from the BPF
-		 * program!
-		 */
+		 
 		return 0;
 	}
 

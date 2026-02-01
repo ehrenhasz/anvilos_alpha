@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <error.h>
 #include <errno.h>
 #include <getopt.h>
@@ -24,7 +24,7 @@ static void load_and_attach_program(void)
 	int prog_fd, ret;
 	struct bpf_object *obj;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	ret = bpf_flow_load(&obj, cfg_path_name, cfg_prog_name,
@@ -32,7 +32,7 @@ static void load_and_attach_program(void)
 	if (ret)
 		error(1, 0, "bpf_flow_load %s", cfg_path_name);
 
-	ret = bpf_prog_attach(prog_fd, 0 /* Ignore */, BPF_FLOW_DISSECTOR, 0);
+	ret = bpf_prog_attach(prog_fd, 0  , BPF_FLOW_DISSECTOR, 0);
 	if (ret)
 		error(1, 0, "bpf_prog_attach %s", cfg_path_name);
 
@@ -50,7 +50,7 @@ static void detach_program(void)
 	if (ret)
 		error(1, 0, "bpf_prog_detach");
 
-	/* To unpin, it is necessary and sufficient to just remove this dir */
+	 
 	sprintf(command, "rm -r %s", cfg_pin_path);
 	ret = system(command);
 	if (ret)

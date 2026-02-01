@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1251
- *
- * Copyright (c) 1998-2007 Texas Instruments Incorporated
- * Copyright (C) 2008 Nokia Corporation
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/gfp.h>
@@ -42,14 +37,7 @@ static void wl1251_rx_status(struct wl1251 *wl,
 	status->band = NL80211_BAND_2GHZ;
 	status->mactime = desc->timestamp;
 
-	/*
-	 * The rx status timestamp is a 32 bits value while the TSF is a
-	 * 64 bits one.
-	 * For IBSS merging, TSF is mandatory, so we have to get it
-	 * somehow, so we ask for ACX_TSF_INFO.
-	 * That could be moved to the get_tsf() hook, but unfortunately,
-	 * this one must be atomic, while our SPI routines can sleep.
-	 */
+	 
 	if ((wl->bss_type == BSS_TYPE_IBSS) && beacon) {
 		ret = wl1251_acx_tsf_info(wl, &mactime);
 		if (ret == 0)
@@ -58,10 +46,7 @@ static void wl1251_rx_status(struct wl1251 *wl,
 
 	status->signal = desc->rssi;
 
-	/*
-	 * FIXME: guessing that snr needs to be divided by two, otherwise
-	 * the values don't make any sense
-	 */
+	 
 	wl->noise = desc->rssi - desc->snr / 2;
 
 	status->freq = ieee80211_channel_to_frequency(desc->channel,
@@ -83,7 +68,7 @@ static void wl1251_rx_status(struct wl1251 *wl,
 		status->flag |= RX_FLAG_FAILED_FCS_CRC;
 
 	switch (desc->rate) {
-		/* skip 1 and 12 Mbps because they have same value 0x0a */
+		 
 	case RATE_2MBPS:
 		status->rate_idx = 1;
 		break;
@@ -116,13 +101,13 @@ static void wl1251_rx_status(struct wl1251 *wl,
 		break;
 	}
 
-	/* for 1 and 12 Mbps we have to check the modulation */
+	 
 	if (desc->rate == RATE_1MBPS) {
 		if (!(desc->mod_pre & OFDM_RATE_BIT))
-			/* CCK -> RATE_1MBPS */
+			 
 			status->rate_idx = 0;
 		else
-			/* OFDM -> RATE_12MBPS */
+			 
 			status->rate_idx = 6;
 	}
 
@@ -165,7 +150,7 @@ static void wl1251_rx_body(struct wl1251 *wl,
 	rx_buffer = skb_put(skb, length);
 	wl1251_mem_read(wl, rx_packet_ring_addr, rx_buffer, length);
 
-	/* The actual length doesn't include the target's alignment */
+	 
 	skb_trim(skb, desc->length - PLCP_HEADER_LENGTH);
 
 	fc = (u16 *)skb->data;
@@ -196,7 +181,7 @@ static void wl1251_rx_ack(struct wl1251 *wl)
 
 	wl1251_reg_write32(wl, addr, data);
 
-	/* Toggle buffer ring */
+	 
 	wl->rx_current_buffer = !wl->rx_current_buffer;
 }
 
@@ -210,12 +195,12 @@ void wl1251_rx(struct wl1251 *wl)
 
 	rx_desc = wl->rx_descriptor;
 
-	/* We first read the frame's header */
+	 
 	wl1251_rx_header(wl, rx_desc);
 
-	/* Now we can read the body */
+	 
 	wl1251_rx_body(wl, rx_desc);
 
-	/* Finally, we need to ACK the RX */
+	 
 	wl1251_rx_ack(wl);
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple iSight audio driver
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <asm/byteorder.h>
 #include <linux/delay.h>
@@ -90,7 +86,7 @@ static void isight_update_pointers(struct isight *isight, unsigned int count)
 	struct snd_pcm_runtime *runtime = isight->pcm->runtime;
 	unsigned int ptr;
 
-	smp_wmb(); /* update buffer data before buffer pointer */
+	smp_wmb();  
 
 	ptr = isight->buffer_pointer;
 	ptr += count;
@@ -177,7 +173,7 @@ static void isight_packet(struct fw_iso_context *context, u32 cycle,
 	length = be32_to_cpup(header) >> 16;
 
 	if (likely(length >= 16 &&
-		   payload->signature == cpu_to_be32(0x73676874/*"sght"*/))) {
+		   payload->signature == cpu_to_be32(0x73676874 ))) {
 		count = be32_to_cpu(payload->sample_count);
 		if (likely(count <= (length - 16) / 4)) {
 			total = be32_to_cpu(payload->sample_total);
@@ -381,7 +377,7 @@ static int isight_start_streaming(struct isight *isight)
 	isight->packet_index = 0;
 
 	err = fw_iso_context_start(isight->context, -1, 0,
-				   FW_ISO_CONTEXT_MATCH_ALL_TAGS/*?*/);
+				   FW_ISO_CONTEXT_MATCH_ALL_TAGS );
 	if (err < 0)
 		goto err_context;
 
@@ -694,7 +690,7 @@ static void isight_remove(struct fw_unit *unit)
 	isight_stop_streaming(isight);
 	mutex_unlock(&isight->mutex);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(isight->card);
 
 	mutex_destroy(&isight->mutex);

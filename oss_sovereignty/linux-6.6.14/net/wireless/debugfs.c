@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cfg80211 debugfs
- *
- * Copyright 2009	Luis R. Rodriguez <lrodriguez@atheros.com>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #include <linux/slab.h>
 #include "core.h"

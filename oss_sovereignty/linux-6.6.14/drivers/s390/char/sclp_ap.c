@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * s390 crypto adapter related sclp functions.
- *
- * Copyright IBM Corp. 2020
- */
+
+ 
 #define KMSG_COMPONENT "sclp_cmd"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 

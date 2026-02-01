@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss.h
- *
- * Qualcomm MSM Camera Subsystem - Core
- *
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_H
 #define QC_MSM_CAMSS_H
 
@@ -69,7 +62,7 @@ struct resources_icc {
 enum pm_domain {
 	PM_DOMAIN_VFE0 = 0,
 	PM_DOMAIN_VFE1 = 1,
-	PM_DOMAIN_VFELITE = 2,		/* VFELITE / TOP GDSC */
+	PM_DOMAIN_VFELITE = 2,		 
 };
 
 enum camss_version {
@@ -113,7 +106,7 @@ struct camss_camera_interface {
 };
 
 struct camss_async_subdev {
-	struct v4l2_async_connection asd; /* must be first */
+	struct v4l2_async_connection asd;  
 	struct camss_camera_interface interface;
 };
 
@@ -136,4 +129,4 @@ int camss_pm_domain_on(struct camss *camss, int id);
 void camss_pm_domain_off(struct camss *camss, int id);
 void camss_delete(struct camss *camss);
 
-#endif /* QC_MSM_CAMSS_H */
+#endif  

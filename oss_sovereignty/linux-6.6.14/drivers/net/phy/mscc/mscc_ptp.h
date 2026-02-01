@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Copyright (c) 2020 Microsemi Corporation
- */
+ 
+ 
 
 #ifndef _MSCC_PHY_PTP_H_
 #define _MSCC_PHY_PTP_H_
 
-/* 1588 page Registers */
+ 
 #define MSCC_PHY_TS_BIU_ADDR_CNTL	  16
 #define BIU_ADDR_EXE			  0x8000
 #define BIU_ADDR_READ			  0x4000
@@ -30,7 +26,7 @@
 #define VSC85XX_1588_INT_MASK_MASK	  (VSC85XX_1588_INT_FIFO_ADD | \
 					   VSC85XX_1588_INT_FIFO_OVERFLOW)
 
-/* TS CSR addresses */
+ 
 #define MSCC_PHY_ANA_ETH1_NTX_PROT	  0x0000
 #define ANA_ETH1_NTX_PROT_SIG_OFF_MASK	  GENMASK(20, 16)
 #define ANA_ETH1_NTX_PROT_SIG_OFF(x)	  (((x) << 16) & ANA_ETH1_NTX_PROT_SIG_OFF_MASK)
@@ -420,7 +416,7 @@
 #define PPS_WIDTH_ADJ			  0x1dcd6500
 #define STALL_EGR_LATENCY(x)		  (1536000 / (x))
 
-/* PHC clock available frequencies. */
+ 
 enum {
 	PHC_CLK_125MHZ,
 	PHC_CLK_156_25MHZ,
@@ -433,12 +429,12 @@ enum ptp_cmd {
 	PTP_NOP = 0,
 	PTP_WRITE_1588 = 5,
 	PTP_WRITE_NS = 7,
-	PTP_SAVE_IN_TS_FIFO = 11, /* invalid when writing in reg */
+	PTP_SAVE_IN_TS_FIFO = 11,  
 };
 
 struct vsc85xx_ptphdr {
-	u8 tsmt; /* transportSpecific | messageType */
-	u8 ver;  /* reserved0 | versionPTP */
+	u8 tsmt;  
+	u8 ver;   
 	__be16 msglen;
 	u8 domain;
 	u8 rsrvd1;
@@ -452,7 +448,7 @@ struct vsc85xx_ptphdr {
 	u8 log_interval;
 } __attribute__((__packed__));
 
-/* Represents an entry in the timestamping FIFO */
+ 
 struct vsc85xx_ts_fifo {
 	u32 ns;
 	u64 secs:48;
@@ -469,4 +465,4 @@ struct vsc85xx_ptp {
 	u8 configured:1;
 };
 
-#endif /* _MSCC_PHY_PTP_H_ */
+#endif  

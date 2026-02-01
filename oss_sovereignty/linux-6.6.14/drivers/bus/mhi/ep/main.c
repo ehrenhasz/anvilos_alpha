@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MHI Endpoint bus stack
- *
- * Copyright (C) 2022 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -44,7 +39,7 @@ static int mhi_ep_send_event(struct mhi_ep_cntrl *mhi_cntrl, u32 ring_idx,
 		}
 	}
 
-	/* Add element to the event ring */
+	 
 	ret = mhi_ep_ring_add_element(ring, el);
 	if (ret) {
 		dev_err(dev, "Error adding element to event ring (%u)\n", ring_idx);
@@ -53,10 +48,7 @@ static int mhi_ep_send_event(struct mhi_ep_cntrl *mhi_cntrl, u32 ring_idx,
 
 	mutex_unlock(&mhi_cntrl->event_lock);
 
-	/*
-	 * Raise IRQ to host only if the BEI flag is not set in TRE. Host might
-	 * set this flag for interrupt moderation as per MHI protocol.
-	 */
+	 
 	if (!bei)
 		mhi_cntrl->raise_irq(mhi_cntrl, ring->irq_vector);
 
@@ -156,7 +148,7 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 
 	ch_id = MHI_TRE_GET_CMD_CHID(el);
 
-	/* Check if the channel is supported by the controller */
+	 
 	if ((ch_id >= mhi_cntrl->max_chan) || !mhi_cntrl->mhi_chan[ch_id].name) {
 		dev_dbg(dev, "Channel (%u) not supported!\n", ch_id);
 		return -ENODEV;
@@ -170,7 +162,7 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 		dev_dbg(dev, "Received START command for channel (%u)\n", ch_id);
 
 		mutex_lock(&mhi_chan->lock);
-		/* Initialize and configure the corresponding channel ring */
+		 
 		if (!ch_ring->started) {
 			ret = mhi_ep_ring_start(mhi_cntrl, ch_ring,
 				(union mhi_ep_ring_ctx *)&mhi_cntrl->ch_ctx_cache[ch_id]);
@@ -185,7 +177,7 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 			}
 		}
 
-		/* Set channel state to RUNNING */
+		 
 		mhi_chan->state = MHI_CH_STATE_RUNNING;
 		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
 		tmp &= ~CHAN_CTX_CHSTATE_MASK;
@@ -201,15 +193,7 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 
 		mutex_unlock(&mhi_chan->lock);
 
-		/*
-		 * Create MHI device only during UL channel start. Since the MHI
-		 * channels operate in a pair, we'll associate both UL and DL
-		 * channels to the same device.
-		 *
-		 * We also need to check for mhi_dev != NULL because, the host
-		 * will issue START_CHAN command during resume and we don't
-		 * destroy the device during suspend.
-		 */
+		 
 		if (!(ch_id % 2) && !mhi_chan->mhi_dev) {
 			ret = mhi_ep_create_device(mhi_cntrl, ch_id);
 			if (ret) {
@@ -219,7 +203,7 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 			}
 		}
 
-		/* Finally, enable DB for the channel */
+		 
 		mhi_ep_mmio_enable_chdb(mhi_cntrl, ch_id);
 
 		break;
@@ -231,17 +215,17 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 		}
 
 		mutex_lock(&mhi_chan->lock);
-		/* Disable DB for the channel */
+		 
 		mhi_ep_mmio_disable_chdb(mhi_cntrl, ch_id);
 
-		/* Send channel disconnect status to client drivers */
+		 
 		if (mhi_chan->xfer_cb) {
 			result.transaction_status = -ENOTCONN;
 			result.bytes_xferd = 0;
 			mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
 		}
 
-		/* Set channel state to STOP */
+		 
 		mhi_chan->state = MHI_CH_STATE_STOP;
 		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
 		tmp &= ~CHAN_CTX_CHSTATE_MASK;
@@ -265,17 +249,17 @@ static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_ele
 		}
 
 		mutex_lock(&mhi_chan->lock);
-		/* Stop and reset the transfer ring */
+		 
 		mhi_ep_ring_reset(mhi_cntrl, ch_ring);
 
-		/* Send channel disconnect status to client driver */
+		 
 		if (mhi_chan->xfer_cb) {
 			result.transaction_status = -ENOTCONN;
 			result.bytes_xferd = 0;
 			mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
 		}
 
-		/* Set channel state to DISABLED */
+		 
 		mhi_chan->state = MHI_CH_STATE_DISABLED;
 		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
 		tmp &= ~CHAN_CTX_CHSTATE_MASK;
@@ -333,7 +317,7 @@ static int mhi_ep_read_channel(struct mhi_ep_cntrl *mhi_cntrl,
 	buf_left = len;
 
 	do {
-		/* Don't process the transfer ring if the channel is not in RUNNING state */
+		 
 		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
 			dev_err(dev, "Channel not available\n");
 			return -ENODEV;
@@ -341,7 +325,7 @@ static int mhi_ep_read_channel(struct mhi_ep_cntrl *mhi_cntrl,
 
 		el = &ring->ring_cache[ring->rd_offset];
 
-		/* Check if there is data pending to be read from previous read operation */
+		 
 		if (mhi_chan->tre_bytes_left) {
 			dev_dbg(dev, "TRE bytes remaining: %u\n", mhi_chan->tre_bytes_left);
 			tr_len = min(buf_left, mhi_chan->tre_bytes_left);
@@ -370,24 +354,11 @@ static int mhi_ep_read_channel(struct mhi_ep_cntrl *mhi_cntrl,
 		buf_left -= tr_len;
 		mhi_chan->tre_bytes_left -= tr_len;
 
-		/*
-		 * Once the TRE (Transfer Ring Element) of a TD (Transfer Descriptor) has been
-		 * read completely:
-		 *
-		 * 1. Send completion event to the host based on the flags set in TRE.
-		 * 2. Increment the local read offset of the transfer ring.
-		 */
+		 
 		if (!mhi_chan->tre_bytes_left) {
-			/*
-			 * The host will split the data packet into multiple TREs if it can't fit
-			 * the packet in a single TRE. In that case, CHAIN flag will be set by the
-			 * host for all TREs except the last one.
-			 */
+			 
 			if (MHI_TRE_DATA_GET_CHAIN(el)) {
-				/*
-				 * IEOB (Interrupt on End of Block) flag will be set by the host if
-				 * it expects the completion event for all TREs of a TD.
-				 */
+				 
 				if (MHI_TRE_DATA_GET_IEOB(el)) {
 					ret = mhi_ep_send_completion_event(mhi_cntrl, ring, el,
 								     MHI_TRE_DATA_GET_LEN(el),
@@ -399,11 +370,7 @@ static int mhi_ep_read_channel(struct mhi_ep_cntrl *mhi_cntrl,
 					}
 				}
 			} else {
-				/*
-				 * IEOT (Interrupt on End of Transfer) flag will be set by the host
-				 * for the last TRE of the TD and expects the completion event for
-				 * the same.
-				 */
+				 
 				if (MHI_TRE_DATA_GET_IEOT(el)) {
 					ret = mhi_ep_send_completion_event(mhi_cntrl, ring, el,
 								     MHI_TRE_DATA_GET_LEN(el),
@@ -437,21 +404,18 @@ static int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_elem
 
 	mhi_chan = &mhi_cntrl->mhi_chan[ring->ch_id];
 
-	/*
-	 * Bail out if transfer callback is not registered for the channel.
-	 * This is most likely due to the client driver not loaded at this point.
-	 */
+	 
 	if (!mhi_chan->xfer_cb) {
 		dev_err(&mhi_chan->mhi_dev->dev, "Client driver not available\n");
 		return -ENODEV;
 	}
 
 	if (ring->ch_id % 2) {
-		/* DL channel */
+		 
 		result.dir = mhi_chan->dir;
 		mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
 	} else {
-		/* UL channel */
+		 
 		result.buf_addr = kmem_cache_zalloc(mhi_cntrl->tre_buf_cache, GFP_KERNEL | GFP_DMA);
 		if (!result.buf_addr)
 			return -ENOMEM;
@@ -469,7 +433,7 @@ static int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_elem
 			result.bytes_xferd = 0;
 			memset(result.buf_addr, 0, len);
 
-			/* Read until the ring becomes empty */
+			 
 		} while (!mhi_ep_queue_is_empty(mhi_chan->mhi_dev, DMA_TO_DEVICE));
 
 		kmem_cache_free(mhi_cntrl->tre_buf_cache, result.buf_addr);
@@ -478,7 +442,7 @@ static int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_elem
 	return 0;
 }
 
-/* TODO: Handle partially formed TDs */
+ 
 int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
 {
 	struct mhi_ep_cntrl *mhi_cntrl = mhi_dev->mhi_cntrl;
@@ -499,7 +463,7 @@ int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
 	mutex_lock(&mhi_chan->lock);
 
 	do {
-		/* Don't process the transfer ring if the channel is not in RUNNING state */
+		 
 		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
 			dev_err(dev, "Channel not available\n");
 			ret = -ENODEV;
@@ -530,12 +494,7 @@ int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
 		}
 
 		buf_left -= tr_len;
-		/*
-		 * For all TREs queued by the host for DL channel, only the EOT flag will be set.
-		 * If the packet doesn't fit into a single TRE, send the OVERFLOW event to
-		 * the host so that the host can adjust the packet boundary to next TREs. Else send
-		 * the EOT event to the host indicating the packet boundary.
-		 */
+		 
 		if (buf_left)
 			code = MHI_EV_CC_OVERFLOW;
 		else
@@ -567,7 +526,7 @@ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
 	int ret;
 
-	/* Update the number of event rings (NER) programmed by the host */
+	 
 	mhi_ep_mmio_update_ner(mhi_cntrl);
 
 	dev_dbg(dev, "Number of Event rings: %u, HW Event rings: %u\n",
@@ -577,10 +536,10 @@ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 	ev_ctx_host_size = sizeof(struct mhi_event_ctxt) * mhi_cntrl->event_rings;
 	cmd_ctx_host_size = sizeof(struct mhi_cmd_ctxt) * NR_OF_CMD_RINGS;
 
-	/* Get the channel context base pointer from host */
+	 
 	mhi_ep_mmio_get_chc_base(mhi_cntrl);
 
-	/* Allocate and map memory for caching host channel context */
+	 
 	ret = mhi_cntrl->alloc_map(mhi_cntrl, mhi_cntrl->ch_ctx_host_pa,
 				   &mhi_cntrl->ch_ctx_cache_phys,
 				   (void __iomem **) &mhi_cntrl->ch_ctx_cache,
@@ -590,10 +549,10 @@ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 		return ret;
 	}
 
-	/* Get the event context base pointer from host */
+	 
 	mhi_ep_mmio_get_erc_base(mhi_cntrl);
 
-	/* Allocate and map memory for caching host event context */
+	 
 	ret = mhi_cntrl->alloc_map(mhi_cntrl, mhi_cntrl->ev_ctx_host_pa,
 				   &mhi_cntrl->ev_ctx_cache_phys,
 				   (void __iomem **) &mhi_cntrl->ev_ctx_cache,
@@ -603,10 +562,10 @@ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 		goto err_ch_ctx;
 	}
 
-	/* Get the command context base pointer from host */
+	 
 	mhi_ep_mmio_get_crc_base(mhi_cntrl);
 
-	/* Allocate and map memory for caching host command context */
+	 
 	ret = mhi_cntrl->alloc_map(mhi_cntrl, mhi_cntrl->cmd_ctx_host_pa,
 				   &mhi_cntrl->cmd_ctx_cache_phys,
 				   (void __iomem **) &mhi_cntrl->cmd_ctx_cache,
@@ -616,7 +575,7 @@ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 		goto err_ev_ctx;
 	}
 
-	/* Initialize command ring */
+	 
 	ret = mhi_ep_ring_start(mhi_cntrl, &mhi_cntrl->mhi_cmd->ring,
 				(union mhi_ep_ring_ctx *)mhi_cntrl->cmd_ctx_cache);
 	if (ret) {
@@ -661,11 +620,7 @@ static void mhi_ep_free_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
 
 static void mhi_ep_enable_int(struct mhi_ep_cntrl *mhi_cntrl)
 {
-	/*
-	 * Doorbell interrupts are enabled when the corresponding channel gets started.
-	 * Enabling all interrupts here triggers spurious irqs as some of the interrupts
-	 * associated with hw channels always get triggered.
-	 */
+	 
 	mhi_ep_mmio_enable_ctrl_interrupt(mhi_cntrl);
 	mhi_ep_mmio_enable_cmdb_interrupt(mhi_cntrl);
 }
@@ -678,12 +633,12 @@ static int mhi_ep_enable(struct mhi_ep_cntrl *mhi_cntrl)
 	u32 count = 0;
 	int ret;
 
-	/* Wait for Host to set the M0 state */
+	 
 	do {
 		msleep(M0_WAIT_DELAY_MS);
 		mhi_ep_mmio_get_mhi_state(mhi_cntrl, &state, &mhi_reset);
 		if (mhi_reset) {
-			/* Clear the MHI reset if host is in reset state */
+			 
 			mhi_ep_mmio_clear_reset(mhi_cntrl);
 			dev_info(dev, "Detected Host reset while waiting for M0\n");
 		}
@@ -703,7 +658,7 @@ static int mhi_ep_enable(struct mhi_ep_cntrl *mhi_cntrl)
 
 	mhi_ep_mmio_set_env(mhi_cntrl, MHI_EE_AMSS);
 
-	/* Enable all interrupts now */
+	 
 	mhi_ep_enable_int(mhi_cntrl);
 
 	return 0;
@@ -717,21 +672,18 @@ static void mhi_ep_cmd_ring_worker(struct work_struct *work)
 	struct mhi_ring_element *el;
 	int ret;
 
-	/* Update the write offset for the ring */
+	 
 	ret = mhi_ep_update_wr_offset(ring);
 	if (ret) {
 		dev_err(dev, "Error updating write offset for ring\n");
 		return;
 	}
 
-	/* Sanity check to make sure there are elements in the ring */
+	 
 	if (ring->rd_offset == ring->wr_offset)
 		return;
 
-	/*
-	 * Process command ring element till write offset. In case of an error, just try to
-	 * process next element.
-	 */
+	 
 	while (ring->rd_offset != ring->wr_offset) {
 		el = &ring->ring_cache[ring->rd_offset];
 
@@ -759,7 +711,7 @@ static void mhi_ep_ch_ring_worker(struct work_struct *work)
 	list_splice_tail_init(&mhi_cntrl->ch_db_list, &head);
 	spin_unlock_irqrestore(&mhi_cntrl->list_lock, flags);
 
-	/* Process each queued channel ring. In case of an error, just process next element. */
+	 
 	list_for_each_entry_safe(itr, tmp, &head, node) {
 		list_del(&itr->node);
 		ring = itr->ring;
@@ -767,17 +719,14 @@ static void mhi_ep_ch_ring_worker(struct work_struct *work)
 		chan = &mhi_cntrl->mhi_chan[ring->ch_id];
 		mutex_lock(&chan->lock);
 
-		/*
-		 * The ring could've stopped while we waited to grab the (chan->lock), so do
-		 * a sanity check before going further.
-		 */
+		 
 		if (!ring->started) {
 			mutex_unlock(&chan->lock);
 			kfree(itr);
 			continue;
 		}
 
-		/* Update the write offset for the ring */
+		 
 		ret = mhi_ep_update_wr_offset(ring);
 		if (ret) {
 			dev_err(dev, "Error updating write offset for ring\n");
@@ -786,7 +735,7 @@ static void mhi_ep_ch_ring_worker(struct work_struct *work)
 			continue;
 		}
 
-		/* Sanity check to make sure there are elements in the ring */
+		 
 		if (ring->rd_offset == ring->wr_offset) {
 			mutex_unlock(&chan->lock);
 			kmem_cache_free(mhi_cntrl->ring_item_cache, itr);
@@ -856,9 +805,9 @@ static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl, unsigned lon
 	LIST_HEAD(head);
 	u32 i;
 
-	/* First add the ring items to a local list */
+	 
 	for_each_set_bit(i, &ch_int, 32) {
-		/* Channel index varies for each register: 0, 32, 64, 96 */
+		 
 		u32 ch_id = ch_idx + i;
 
 		ring = &mhi_cntrl->mhi_chan[ch_id].ring;
@@ -870,7 +819,7 @@ static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl, unsigned lon
 		list_add_tail(&item->node, &head);
 	}
 
-	/* Now, splice the local list into ch_db_list and queue the work item */
+	 
 	if (work) {
 		spin_lock(&mhi_cntrl->list_lock);
 		list_splice_tail_init(&head, &mhi_cntrl->ch_db_list);
@@ -880,23 +829,19 @@ static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl, unsigned lon
 	}
 }
 
-/*
- * Channel interrupt statuses are contained in 4 registers each of 32bit length.
- * For checking all interrupts, we need to loop through each registers and then
- * check for bits set.
- */
+ 
 static void mhi_ep_check_channel_interrupt(struct mhi_ep_cntrl *mhi_cntrl)
 {
 	u32 ch_int, ch_idx, i;
 
-	/* Bail out if there is no channel doorbell interrupt */
+	 
 	if (!mhi_ep_mmio_read_chdb_status_interrupts(mhi_cntrl))
 		return;
 
 	for (i = 0; i < MHI_MASK_ROWS_CH_DB; i++) {
 		ch_idx = i * MHI_MASK_CH_LEN;
 
-		/* Only process channel interrupt if the mask is enabled */
+		 
 		ch_int = mhi_cntrl->chdb[i].status & mhi_cntrl->chdb[i].mask;
 		if (ch_int) {
 			mhi_ep_queue_channel_db(mhi_cntrl, ch_int, ch_idx);
@@ -923,11 +868,7 @@ static void mhi_ep_process_ctrl_interrupt(struct mhi_ep_cntrl *mhi_cntrl,
 	queue_work(mhi_cntrl->wq, &mhi_cntrl->state_work);
 }
 
-/*
- * Interrupt handler that services interrupts raised by the host writing to
- * MHICTRL and Command ring doorbell (CRDB) registers for state change and
- * channel interrupts.
- */
+ 
 static irqreturn_t mhi_ep_irq(int irq, void *data)
 {
 	struct mhi_ep_cntrl *mhi_cntrl = data;
@@ -936,11 +877,11 @@ static irqreturn_t mhi_ep_irq(int irq, void *data)
 	u32 int_value;
 	bool mhi_reset;
 
-	/* Acknowledge the ctrl interrupt */
+	 
 	int_value = mhi_ep_mmio_read(mhi_cntrl, MHI_CTRL_INT_STATUS);
 	mhi_ep_mmio_write(mhi_cntrl, MHI_CTRL_INT_CLEAR, int_value);
 
-	/* Check for ctrl interrupt */
+	 
 	if (FIELD_GET(MHI_CTRL_INT_STATUS_MSK, int_value)) {
 		dev_dbg(dev, "Processing ctrl interrupt\n");
 		mhi_ep_mmio_get_mhi_state(mhi_cntrl, &state, &mhi_reset);
@@ -954,13 +895,13 @@ static irqreturn_t mhi_ep_irq(int irq, void *data)
 		mhi_ep_process_ctrl_interrupt(mhi_cntrl, state);
 	}
 
-	/* Check for command doorbell interrupt */
+	 
 	if (FIELD_GET(MHI_CTRL_INT_STATUS_CRDB_MSK, int_value)) {
 		dev_dbg(dev, "Processing command doorbell interrupt\n");
 		queue_work(mhi_cntrl->wq, &mhi_cntrl->cmd_ring_work);
 	}
 
-	/* Check for channel interrupts */
+	 
 	mhi_ep_check_channel_interrupt(mhi_cntrl);
 
 	return IRQ_HANDLED;
@@ -973,14 +914,14 @@ static void mhi_ep_abort_transfer(struct mhi_ep_cntrl *mhi_cntrl)
 	struct mhi_ep_chan *mhi_chan;
 	int i;
 
-	/* Stop all the channels */
+	 
 	for (i = 0; i < mhi_cntrl->max_chan; i++) {
 		mhi_chan = &mhi_cntrl->mhi_chan[i];
 		if (!mhi_chan->ring.started)
 			continue;
 
 		mutex_lock(&mhi_chan->lock);
-		/* Send channel disconnect status to client drivers */
+		 
 		if (mhi_chan->xfer_cb) {
 			result.transaction_status = -ENOTCONN;
 			result.bytes_xferd = 0;
@@ -993,10 +934,10 @@ static void mhi_ep_abort_transfer(struct mhi_ep_cntrl *mhi_cntrl)
 
 	flush_workqueue(mhi_cntrl->wq);
 
-	/* Destroy devices associated with all channels */
+	 
 	device_for_each_child(&mhi_cntrl->mhi_dev->dev, NULL, mhi_ep_destroy_device);
 
-	/* Stop and reset the transfer rings */
+	 
 	for (i = 0; i < mhi_cntrl->max_chan; i++) {
 		mhi_chan = &mhi_cntrl->mhi_chan[i];
 		if (!mhi_chan->ring.started)
@@ -1008,7 +949,7 @@ static void mhi_ep_abort_transfer(struct mhi_ep_cntrl *mhi_cntrl)
 		mutex_unlock(&mhi_chan->lock);
 	}
 
-	/* Stop and reset the event rings */
+	 
 	for (i = 0; i < mhi_cntrl->event_rings; i++) {
 		ev_ring = &mhi_cntrl->mhi_event[i].ring;
 		if (!ev_ring->started)
@@ -1019,7 +960,7 @@ static void mhi_ep_abort_transfer(struct mhi_ep_cntrl *mhi_cntrl)
 		mutex_unlock(&mhi_cntrl->event_lock);
 	}
 
-	/* Stop and reset the command ring */
+	 
 	mhi_ep_ring_reset(mhi_cntrl, &mhi_cntrl->mhi_cmd->ring);
 
 	mhi_ep_free_host_cfg(mhi_cntrl);
@@ -1037,26 +978,18 @@ static void mhi_ep_reset_worker(struct work_struct *work)
 
 	mutex_lock(&mhi_cntrl->state_lock);
 
-	/* Reset MMIO to signal host that the MHI_RESET is completed in endpoint */
+	 
 	mhi_ep_mmio_reset(mhi_cntrl);
 	cur_state = mhi_cntrl->mhi_state;
 
-	/*
-	 * Only proceed further if the reset is due to SYS_ERR. The host will
-	 * issue reset during shutdown also and we don't need to do re-init in
-	 * that case.
-	 */
+	 
 	if (cur_state == MHI_STATE_SYS_ERR)
 		mhi_ep_power_up(mhi_cntrl);
 
 	mutex_unlock(&mhi_cntrl->state_lock);
 }
 
-/*
- * We don't need to do anything special other than setting the MHI SYS_ERR
- * state. The host will reset all contexts and issue MHI RESET so that we
- * could also recover from error state.
- */
+ 
 void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl)
 {
 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
@@ -1066,7 +999,7 @@ void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl)
 	if (ret)
 		return;
 
-	/* Signal host that the device went to SYS_ERR state */
+	 
 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_SYS_ERR);
 	if (ret)
 		dev_err(dev, "Failed sending SYS_ERR state change event: %d\n", ret);
@@ -1077,10 +1010,7 @@ int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
 	int ret, i;
 
-	/*
-	 * Mask all interrupts until the state machine is ready. Interrupts will
-	 * be enabled later with mhi_ep_enable().
-	 */
+	 
 	mhi_ep_mmio_mask_interrupts(mhi_cntrl);
 	mhi_ep_mmio_init(mhi_cntrl);
 
@@ -1089,7 +1019,7 @@ int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
 	if (!mhi_cntrl->mhi_event)
 		return -ENOMEM;
 
-	/* Initialize command, channel and event rings */
+	 
 	mhi_ep_ring_init(&mhi_cntrl->mhi_cmd->ring, RING_TYPE_CMD, 0);
 	for (i = 0; i < mhi_cntrl->max_chan; i++)
 		mhi_ep_ring_init(&mhi_cntrl->mhi_chan[i].ring, RING_TYPE_CH, i);
@@ -1098,10 +1028,10 @@ int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
 
 	mhi_cntrl->mhi_state = MHI_STATE_RESET;
 
-	/* Set AMSS EE before signaling ready state */
+	 
 	mhi_ep_mmio_set_env(mhi_cntrl, MHI_EE_AMSS);
 
-	/* All set, notify the host that we are ready */
+	 
 	ret = mhi_ep_set_ready_state(mhi_cntrl);
 	if (ret)
 		goto err_free_event;
@@ -1149,7 +1079,7 @@ void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl)
 			continue;
 
 		mutex_lock(&mhi_chan->lock);
-		/* Skip if the channel is not currently running */
+		 
 		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
 		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_RUNNING) {
 			mutex_unlock(&mhi_chan->lock);
@@ -1157,7 +1087,7 @@ void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl)
 		}
 
 		dev_dbg(&mhi_chan->mhi_dev->dev, "Suspending channel\n");
-		/* Set channel state to SUSPENDED */
+		 
 		mhi_chan->state = MHI_CH_STATE_SUSPENDED;
 		tmp &= ~CHAN_CTX_CHSTATE_MASK;
 		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_SUSPENDED);
@@ -1179,7 +1109,7 @@ void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl)
 			continue;
 
 		mutex_lock(&mhi_chan->lock);
-		/* Skip if the channel is not currently suspended */
+		 
 		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
 		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_SUSPENDED) {
 			mutex_unlock(&mhi_chan->lock);
@@ -1187,7 +1117,7 @@ void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl)
 		}
 
 		dev_dbg(&mhi_chan->mhi_dev->dev, "Resuming channel\n");
-		/* Set channel state to RUNNING */
+		 
 		mhi_chan->state = MHI_CH_STATE_RUNNING;
 		tmp &= ~CHAN_CTX_CHSTATE_MASK;
 		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
@@ -1203,11 +1133,7 @@ static void mhi_ep_release_device(struct device *dev)
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		mhi_dev->mhi_cntrl->mhi_dev = NULL;
 
-	/*
-	 * We need to set the mhi_chan->mhi_dev to NULL here since the MHI
-	 * devices for the channels will only get created in mhi_ep_create_device()
-	 * if the mhi_dev associated with it is NULL.
-	 */
+	 
 	if (mhi_dev->ul_chan)
 		mhi_dev->ul_chan->mhi_dev = NULL;
 
@@ -1232,12 +1158,12 @@ static struct mhi_ep_device *mhi_ep_alloc_device(struct mhi_ep_cntrl *mhi_cntrl,
 	dev->bus = &mhi_ep_bus_type;
 	dev->release = mhi_ep_release_device;
 
-	/* Controller device is always allocated first */
+	 
 	if (dev_type == MHI_DEVICE_CONTROLLER)
-		/* for MHI controller device, parent is the bus device (e.g. PCI EPF) */
+		 
 		dev->parent = mhi_cntrl->cntrl_dev;
 	else
-		/* for MHI client devices, parent is the MHI controller device */
+		 
 		dev->parent = &mhi_cntrl->mhi_dev->dev;
 
 	mhi_dev->mhi_cntrl = mhi_cntrl;
@@ -1246,12 +1172,7 @@ static struct mhi_ep_device *mhi_ep_alloc_device(struct mhi_ep_cntrl *mhi_cntrl,
 	return mhi_dev;
 }
 
-/*
- * MHI channels are always defined in pairs with UL as the even numbered
- * channel and DL as odd numbered one. This function gets UL channel (primary)
- * as the ch_id and always looks after the next entry in channel list for
- * the corresponding DL channel (secondary).
- */
+ 
 static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id)
 {
 	struct mhi_ep_chan *mhi_chan = &mhi_cntrl->mhi_chan[ch_id];
@@ -1259,7 +1180,7 @@ static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id)
 	struct mhi_ep_device *mhi_dev;
 	int ret;
 
-	/* Check if the channel name is same for both UL and DL */
+	 
 	if (strcmp(mhi_chan->name, mhi_chan[1].name)) {
 		dev_err(dev, "UL and DL channel names are not same: (%s) != (%s)\n",
 			mhi_chan->name, mhi_chan[1].name);
@@ -1270,18 +1191,18 @@ static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id)
 	if (IS_ERR(mhi_dev))
 		return PTR_ERR(mhi_dev);
 
-	/* Configure primary channel */
+	 
 	mhi_dev->ul_chan = mhi_chan;
 	get_device(&mhi_dev->dev);
 	mhi_chan->mhi_dev = mhi_dev;
 
-	/* Configure secondary channel as well */
+	 
 	mhi_chan++;
 	mhi_dev->dl_chan = mhi_chan;
 	get_device(&mhi_dev->dev);
 	mhi_chan->mhi_dev = mhi_dev;
 
-	/* Channel name is same for both UL and DL */
+	 
 	mhi_dev->name = mhi_chan->name;
 	ret = dev_set_name(&mhi_dev->dev, "%s_%s",
 		     dev_name(&mhi_cntrl->mhi_dev->dev),
@@ -1310,7 +1231,7 @@ static int mhi_ep_destroy_device(struct device *dev, void *data)
 	mhi_dev = to_mhi_ep_device(dev);
 	mhi_cntrl = mhi_dev->mhi_cntrl;
 
-	/* Only destroy devices created for channels */
+	 
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		return 0;
 
@@ -1326,7 +1247,7 @@ static int mhi_ep_destroy_device(struct device *dev, void *data)
 	dev_dbg(&mhi_cntrl->mhi_dev->dev, "Destroying device for chan:%s\n",
 		 mhi_dev->name);
 
-	/* Notify the client and remove the device from MHI bus */
+	 
 	device_del(dev);
 	put_device(dev);
 
@@ -1343,10 +1264,7 @@ static int mhi_ep_chan_init(struct mhi_ep_cntrl *mhi_cntrl,
 
 	mhi_cntrl->max_chan = config->max_channels;
 
-	/*
-	 * Allocate max_channels supported by the MHI endpoint and populate
-	 * only the defined channels
-	 */
+	 
 	mhi_cntrl->mhi_chan = kcalloc(mhi_cntrl->max_chan, sizeof(*mhi_cntrl->mhi_chan),
 				      GFP_KERNEL);
 	if (!mhi_cntrl->mhi_chan)
@@ -1364,7 +1282,7 @@ static int mhi_ep_chan_init(struct mhi_ep_cntrl *mhi_cntrl,
 			goto error_chan_cfg;
 		}
 
-		/* Bi-directional and direction less channels are not supported */
+		 
 		if (ch_cfg->dir == DMA_BIDIRECTIONAL || ch_cfg->dir == DMA_NONE) {
 			dev_err(dev, "Invalid direction (%u) for channel (%u)\n",
 				ch_cfg->dir, chan);
@@ -1386,10 +1304,7 @@ error_chan_cfg:
 	return ret;
 }
 
-/*
- * Allocate channel and command rings here. Event rings will be allocated
- * in mhi_ep_power_up() as the config comes from the host.
- */
+ 
 int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
 				const struct mhi_ep_cntrl_config *config)
 {
@@ -1448,11 +1363,11 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
 	mutex_init(&mhi_cntrl->state_lock);
 	mutex_init(&mhi_cntrl->event_lock);
 
-	/* Set MHI version and AMSS EE before enumeration */
+	 
 	mhi_ep_mmio_write(mhi_cntrl, EP_MHIVER, config->mhi_version);
 	mhi_ep_mmio_set_env(mhi_cntrl, MHI_EE_AMSS);
 
-	/* Set controller index */
+	 
 	ret = ida_alloc(&mhi_ep_cntrl_ida, GFP_KERNEL);
 	if (ret < 0)
 		goto err_destroy_wq;
@@ -1467,7 +1382,7 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
 		goto err_ida_free;
 	}
 
-	/* Allocate the controller device */
+	 
 	mhi_dev = mhi_ep_alloc_device(mhi_cntrl, MHI_DEVICE_CONTROLLER);
 	if (IS_ERR(mhi_dev)) {
 		dev_err(mhi_cntrl->cntrl_dev, "Failed to allocate controller device\n");
@@ -1513,10 +1428,7 @@ err_free_ch:
 }
 EXPORT_SYMBOL_GPL(mhi_ep_register_controller);
 
-/*
- * It is expected that the controller drivers will power down the MHI EP stack
- * using "mhi_ep_power_down()" before calling this function to unregister themselves.
- */
+ 
 void mhi_ep_unregister_controller(struct mhi_ep_cntrl *mhi_cntrl)
 {
 	struct mhi_ep_device *mhi_dev = mhi_cntrl->mhi_dev;
@@ -1559,11 +1471,11 @@ static int mhi_ep_driver_remove(struct device *dev)
 	struct mhi_ep_chan *mhi_chan;
 	int dir;
 
-	/* Skip if it is a controller device */
+	 
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		return 0;
 
-	/* Disconnect the channels associated with the driver */
+	 
 	for (dir = 0; dir < 2; dir++) {
 		mhi_chan = dir ? mhi_dev->ul_chan : mhi_dev->dl_chan;
 
@@ -1571,7 +1483,7 @@ static int mhi_ep_driver_remove(struct device *dev)
 			continue;
 
 		mutex_lock(&mhi_chan->lock);
-		/* Send channel disconnect status to the client driver */
+		 
 		if (mhi_chan->xfer_cb) {
 			result.transaction_status = -ENOTCONN;
 			result.bytes_xferd = 0;
@@ -1583,7 +1495,7 @@ static int mhi_ep_driver_remove(struct device *dev)
 		mutex_unlock(&mhi_chan->lock);
 	}
 
-	/* Remove the client driver now */
+	 
 	mhi_drv->remove(mhi_dev);
 
 	return 0;
@@ -1596,7 +1508,7 @@ int __mhi_ep_driver_register(struct mhi_ep_driver *mhi_drv, struct module *owner
 	if (!mhi_drv->probe || !mhi_drv->remove)
 		return -EINVAL;
 
-	/* Client drivers should have callbacks defined for both channels */
+	 
 	if (!mhi_drv->ul_xfer_cb || !mhi_drv->dl_xfer_cb)
 		return -EINVAL;
 
@@ -1629,10 +1541,7 @@ static int mhi_ep_match(struct device *dev, struct device_driver *drv)
 	struct mhi_ep_driver *mhi_drv = to_mhi_ep_driver(drv);
 	const struct mhi_device_id *id;
 
-	/*
-	 * If the device is a controller type then there is no client driver
-	 * associated with it
-	 */
+	 
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		return 0;
 

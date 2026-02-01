@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include "htt.h"
@@ -652,9 +649,7 @@ int ath10k_htt_h2t_stats_req(struct ath10k_htt *htt, u32 mask, u32 reset_mask,
 
 	memset(req, 0, sizeof(*req));
 
-	/* currently we support only max 24 bit masks so no need to worry
-	 * about endian support
-	 */
+	 
 	memcpy(req->upload_types, &mask, 3);
 	memcpy(req->reset_types, &reset_mask, 3);
 	req->stat_type = HTT_STATS_REQ_CFG_STAT_TYPE_INVALID;
@@ -825,10 +820,7 @@ static int ath10k_htt_send_rx_ring_cfg_32(struct ath10k_htt *htt)
 	int len;
 	int ret;
 
-	/*
-	 * the HW expects the buffer to be an integral number of 4-byte
-	 * "words"
-	 */
+	 
 	BUILD_BUG_ON(!IS_ALIGNED(HTT_RX_BUF_SIZE, 4));
 	BUILD_BUG_ON((HTT_RX_BUF_SIZE & HTT_MAX_CACHE_LINE_SIZE_MASK) != 0);
 
@@ -846,7 +838,7 @@ static int ath10k_htt_send_rx_ring_cfg_32(struct ath10k_htt *htt)
 	cmd->hdr.msg_type = HTT_H2T_MSG_TYPE_RX_RING_CFG;
 	cmd->rx_setup_32.hdr.num_rings = 1;
 
-	/* FIXME: do we need all of this? */
+	 
 	flags = 0;
 	flags |= HTT_RX_RING_FLAGS_MAC80211_HDR;
 	flags |= HTT_RX_RING_FLAGS_MSDU_PAYLOAD;
@@ -898,9 +890,7 @@ static int ath10k_htt_send_rx_ring_cfg_64(struct ath10k_htt *htt)
 	int len;
 	int ret;
 
-	/* HW expects the buffer to be an integral number of 4-byte
-	 * "words"
-	 */
+	 
 	BUILD_BUG_ON(!IS_ALIGNED(HTT_RX_BUF_SIZE, 4));
 	BUILD_BUG_ON((HTT_RX_BUF_SIZE & HTT_MAX_CACHE_LINE_SIZE_MASK) != 0);
 
@@ -966,10 +956,7 @@ static int ath10k_htt_send_rx_ring_cfg_hl(struct ath10k_htt *htt)
 	int len;
 	int ret;
 
-	/*
-	 * the HW expects the buffer to be an integral number of 4-byte
-	 * "words"
-	 */
+	 
 	BUILD_BUG_ON(!IS_ALIGNED(HTT_RX_BUF_SIZE, 4));
 	BUILD_BUG_ON((HTT_RX_BUF_SIZE & HTT_MAX_CACHE_LINE_SIZE_MASK) != 0);
 
@@ -1017,7 +1004,7 @@ static int ath10k_htt_h2t_aggr_cfg_msg_32(struct ath10k_htt *htt,
 	int len;
 	int ret;
 
-	/* Firmware defaults are: amsdu = 3 and ampdu = 64 */
+	 
 
 	if (max_subfrms_ampdu == 0 || max_subfrms_ampdu > 64)
 		return -EINVAL;
@@ -1064,7 +1051,7 @@ static int ath10k_htt_h2t_aggr_cfg_msg_v2(struct ath10k_htt *htt,
 	int len;
 	int ret;
 
-	/* Firmware defaults are: amsdu = 3 and ampdu = 64 */
+	 
 
 	if (max_subfrms_ampdu == 0 || max_subfrms_ampdu > 64)
 		return -EINVAL;
@@ -1112,9 +1099,7 @@ int ath10k_htt_tx_fetch_resp(struct ath10k *ar,
 	int len = 0;
 	int ret;
 
-	/* Response IDs are echo-ed back only for host driver convenience
-	 * purposes. They aren't used for anything in the driver yet so use 0.
-	 */
+	 
 
 	len += sizeof(cmd->hdr);
 	len += sizeof(cmd->tx_fetch_resp);
@@ -1327,9 +1312,7 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
 		flags1 |= HTT_DATA_TX_DESC_FLAGS1_CKSUM_L4_OFFLOAD;
 	}
 
-	/* Prepend the HTT header and TX desc struct to the data message
-	 * and realloc the skb if it does not have enough headroom.
-	 */
+	 
 	if (skb_headroom(msdu) < HTT_TX_HL_NEEDED_HEADROOM) {
 		tmp_skb = msdu;
 
@@ -1355,11 +1338,7 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
 		msdu_id = res;
 	}
 
-	/* As msdu is freed by mac80211 (in ieee80211_tx_status()) and by
-	 * ath10k (in ath10k_htt_htc_tx_complete()) we have to increase
-	 * reference by one to avoid a use-after-free case and a double
-	 * free.
-	 */
+	 
 	skb_get(msdu);
 
 	skb_push(msdu, sizeof(*cmd_hdr));
@@ -1372,10 +1351,8 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
 	tx_desc->flags1 = __cpu_to_le16(flags1);
 	tx_desc->len = __cpu_to_le16(data_len);
 	tx_desc->id = __cpu_to_le16(msdu_id);
-	tx_desc->frags_paddr = 0; /* always zero */
-	/* Initialize peer_id to INVALID_PEER because this is NOT
-	 * Reinjection path
-	 */
+	tx_desc->frags_paddr = 0;  
+	 
 	tx_desc->peerid = __cpu_to_le32(HTT_INVALID_PEERID);
 
 	res = ath10k_htc_send_hl(&htt->ar->htc, htt->eid, msdu);
@@ -1488,22 +1465,7 @@ static int ath10k_htt_tx_32(struct ath10k_htt *htt,
 		break;
 	}
 
-	/* Normally all commands go through HTC which manages tx credits for
-	 * each endpoint and notifies when tx is completed.
-	 *
-	 * HTT endpoint is creditless so there's no need to care about HTC
-	 * flags. In that case it is trivial to fill the HTC header here.
-	 *
-	 * MSDU transmission is considered completed upon HTT event. This
-	 * implies no relevant resources can be freed until after the event is
-	 * received. That's why HTC tx completion handler itself is ignored by
-	 * setting NULL to transfer_context for all sg items.
-	 *
-	 * There is simply no point in pushing HTT TX_FRM through HTC tx path
-	 * as it's a waste of resources. By bypassing HTC it is possible to
-	 * avoid extra memory allocations, compress data structures and thus
-	 * improve performance.
-	 */
+	 
 
 	txbuf->htc_hdr.eid = htt->eid;
 	txbuf->htc_hdr.len = __cpu_to_le16(sizeof(txbuf->cmd_hdr) +
@@ -1524,10 +1486,7 @@ static int ath10k_htt_tx_32(struct ath10k_htt *htt,
 			ext_desc->flags |= HTT_MSDU_CHECKSUM_ENABLE;
 	}
 
-	/* Prevent firmware from sending up tx inspection requests. There's
-	 * nothing ath10k can do with frames requested for inspection so force
-	 * it to simply rely a regular tx completion with discard status.
-	 */
+	 
 	flags1 |= HTT_DATA_TX_DESC_FLAGS1_POSTPONED;
 
 	txbuf->cmd_hdr.msg_type = HTT_H2T_MSG_TYPE_TX_FRM;
@@ -1695,22 +1654,7 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
 		break;
 	}
 
-	/* Normally all commands go through HTC which manages tx credits for
-	 * each endpoint and notifies when tx is completed.
-	 *
-	 * HTT endpoint is creditless so there's no need to care about HTC
-	 * flags. In that case it is trivial to fill the HTC header here.
-	 *
-	 * MSDU transmission is considered completed upon HTT event. This
-	 * implies no relevant resources can be freed until after the event is
-	 * received. That's why HTC tx completion handler itself is ignored by
-	 * setting NULL to transfer_context for all sg items.
-	 *
-	 * There is simply no point in pushing HTT TX_FRM through HTC tx path
-	 * as it's a waste of resources. By bypassing HTC it is possible to
-	 * avoid extra memory allocations, compress data structures and thus
-	 * improve performance.
-	 */
+	 
 
 	txbuf->htc_hdr.eid = htt->eid;
 	txbuf->htc_hdr.len = __cpu_to_le16(sizeof(txbuf->cmd_hdr) +
@@ -1734,10 +1678,7 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
 		}
 	}
 
-	/* Prevent firmware from sending up tx inspection requests. There's
-	 * nothing ath10k can do with frames requested for inspection so force
-	 * it to simply rely a regular tx completion with discard status.
-	 */
+	 
 	flags1 |= HTT_DATA_TX_DESC_FLAGS1_POSTPONED;
 
 	txbuf->cmd_hdr.msg_type = HTT_H2T_MSG_TYPE_TX_FRM;
@@ -1746,7 +1687,7 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
 	txbuf->cmd_tx.len = __cpu_to_le16(msdu->len);
 	txbuf->cmd_tx.id = __cpu_to_le16(msdu_id);
 
-	/* fill fragment descriptor */
+	 
 	txbuf->cmd_tx.frags_paddr = __cpu_to_le64(frags_paddr);
 	if (ath10k_mac_tx_frm_has_freq(ar)) {
 		txbuf->cmd_tx.offchan_tx.peerid =

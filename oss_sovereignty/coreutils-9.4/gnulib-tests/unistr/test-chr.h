@@ -1,20 +1,4 @@
-/* Test of uN_chr() functions.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake and Bruno Haible <bruno@clisp.org>, 2010.  */
+ 
 
 int
 main (void)
@@ -44,7 +28,7 @@ main (void)
   input = U32_TO_U (input32, size, NULL, &length);
   ASSERT (input);
 
-  /* Basic behavior tests.  */
+   
   ASSERT (U_CHR (input, length, 'a') == input);
 
   ASSERT (U_CHR (input, 0, 'a') == NULL);
@@ -81,8 +65,7 @@ main (void)
   ASSERT (U_CHR (input, length, 'f') == NULL);
   ASSERT (U_CHR (input, length, '\0') == NULL);
 
-  /* Check that a very long haystack is handled quickly if the byte is
-     found near the beginning.  */
+   
   {
     size_t repeat = 10000;
     for (; repeat > 0; repeat--)
@@ -91,7 +74,7 @@ main (void)
       }
   }
 
-  /* Alignment tests.  */
+   
   {
     int i, j;
     for (i = 0; i < 32; i++)
@@ -105,8 +88,7 @@ main (void)
       }
   }
 
-  /* Check that uN_chr() does not read past the first occurrence of the
-     byte being searched.  */
+   
   {
     char *page_boundary = (char *) zerosize_ptr ();
     size_t n;

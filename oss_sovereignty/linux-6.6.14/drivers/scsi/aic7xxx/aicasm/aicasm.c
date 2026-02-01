@@ -1,46 +1,4 @@
-/*
- * Aic7xxx SCSI host adapter firmware assembler
- *
- * Copyright (c) 1997, 1998, 2000, 2001 Justin T. Gibbs.
- * Copyright (c) 2001, 2002 Adaptec Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- * $Id: //depot/aic7xxx/aic7xxx/aicasm/aicasm.c#23 $
- *
- * $FreeBSD$
- */
+ 
 #include <sys/types.h>
 #include <sys/mman.h>
 
@@ -129,7 +87,7 @@ main(int argc, char *argv[])
 	TAILQ_INIT(&cs_tailq);
 	SLIST_INIT(&scope_stack);
 
-	/* Set Sentinal scope node */
+	 
 	sentinal = scope_alloc();
 	sentinal->type = SCOPE_ROOT;
 	
@@ -167,7 +125,7 @@ main(int argc, char *argv[])
 			stock_include_file = optarg;
 			break;
 		case 'l':
-			/* Create a program listing */
+			 
 			if ((listfile = fopen(optarg, "w")) == NULL) {
 				perror(optarg);
 				stop(NULL, EX_CANTCREAT);
@@ -175,12 +133,12 @@ main(int argc, char *argv[])
 			listfilename = optarg;
 			break;
 		case 'n':
-			/* Don't complain about the -nostdinc directrive */
+			 
 			if (strcmp(optarg, "ostdinc")) {
 				fprintf(stderr, "%s: Unknown option -%c%s\n",
 					appname, ch, optarg);
 				usage();
-				/* NOTREACHED */
+				 
 			}
 			break;
 		case 'o':
@@ -191,7 +149,7 @@ main(int argc, char *argv[])
 			ofilename = optarg;
 			break;
 		case 'p':
-			/* Create Register Diagnostic "printing" Functions */
+			 
 			if ((regdiagfile = fopen(optarg, "w")) == NULL) {
 				perror(optarg);
 				stop(NULL, EX_CANTCREAT);
@@ -220,11 +178,7 @@ main(int argc, char *argv[])
 				     include_dir != NULL;
 				     include_dir = SLIST_NEXT(include_dir,
 							      links))
-					/*
-					 * All entries before a '-I-' only
-					 * apply to includes specified with
-					 * quotes instead of "<>".
-					 */
+					 
 					include_dir->quoted_includes_only = 1;
 			} else {
 				include_dir =
@@ -247,7 +201,7 @@ main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-			/* NOTREACHED */
+			 
 		}
 	}
 	argc -= optind;
@@ -256,7 +210,7 @@ main(int argc, char *argv[])
 	if (argc != 1) {
 		fprintf(stderr, "%s: No input file specified\n", appname);
 		usage();
-		/* NOTREACHED */
+		 
 	}
 
 	if (regdiagfile != NULL
@@ -265,7 +219,7 @@ main(int argc, char *argv[])
 			"%s: The -p option requires the -r and -i options.\n",
 			appname);
 		usage();
-		/* NOTREACHED */
+		 
 	}
 	symtable_open();
 	inputfilename = *argv;
@@ -275,20 +229,16 @@ main(int argc, char *argv[])
 		if (SLIST_FIRST(&scope_stack) == NULL
 		 || SLIST_FIRST(&scope_stack)->type != SCOPE_ROOT) {
 			stop("Unterminated conditional expression", EX_DATAERR);
-			/* NOTREACHED */
+			 
 		}
 
-		/* Process outmost scope */
+		 
 		process_scope(SLIST_FIRST(&scope_stack));
-		/*
-		 * Decend the tree of scopes and insert/emit
-		 * patches as appropriate.  We perform a depth first
-		 * traversal, recursively handling each scope.
-		 */
-		/* start at the root scope */
+		 
+		 
 		dump_scope(SLIST_FIRST(&scope_stack));
 
-		/* Patch up forward jump addresses */
+		 
 		back_patch();
 
 		if (ofile != NULL)
@@ -300,7 +250,7 @@ main(int argc, char *argv[])
 	}
 
 	stop(NULL, 0);
-	/* NOTREACHED */
+	 
 	return (0);
 }
 
@@ -335,7 +285,7 @@ back_patch()
 					 "Undefined label %s",
 					 cur_instr->patch_label->name);
 				stop(buf, EX_DATAERR);
-				/* NOTREACHED */
+				 
 			}
 			f3_instr = &cur_instr->format.format3;
 			address = f3_instr->address;
@@ -388,9 +338,7 @@ output_code()
 		stop("Patch argument list not defined",
 		     EX_DATAERR);
 
-	/*
-	 *  Output patch information.  Patch functions first.
-	 */
+	 
 	fprintf(ofile,
 "typedef int %spatch_func_t (%s);\n", prefix, patch_arg_list);
 
@@ -461,14 +409,10 @@ dump_scope(scope_t *scope)
 {
 	scope_t *cur_scope;
 
-	/*
-	 * Emit the first patch for this scope
-	 */
+	 
 	emit_patch(scope, 0);
 
-	/*
-	 * Dump each scope within this one.
-	 */
+	 
 	cur_scope = TAILQ_FIRST(&scope->inner_scope);
 
 	while (cur_scope != NULL) {
@@ -478,9 +422,7 @@ dump_scope(scope_t *scope)
 		cur_scope = TAILQ_NEXT(cur_scope, scope_links);
 	}
 
-	/*
-	 * Emit the second, closing, patch for this scope
-	 */
+	 
 	emit_patch(scope, 1);
 }
 
@@ -493,7 +435,7 @@ emit_patch(scope_t *scope, int patch)
 	pinfo = &scope->patches[patch];
 
 	if (pinfo->skip_instr == 0)
-		/* No-Op patch */
+		 
 		return;
 
 	new_patch = (patch_t *)malloc(sizeof(*new_patch));
@@ -539,9 +481,7 @@ output_listing(char *ifilename)
 		stop(NULL, EX_DATAERR);
 	}
 
-	/*
-	 * Determine which options to apply to this listing.
-	 */
+	 
 	for (func_count = 0, cur_func = SLIST_FIRST(&patch_functions);
 	    cur_func != NULL;
 	    cur_func = SLIST_NEXT(cur_func, links))
@@ -554,13 +494,10 @@ output_listing(char *ifilename)
 		if (func_values == NULL)
 			stop("Could not malloc", EX_OSERR);
 		
-		func_values[0] = 0; /* FALSE func */
+		func_values[0] = 0;  
 		func_count--;
 
-		/*
-		 * Ask the user to fill in the return values for
-		 * the rest of the functions.
-		 */
+		 
 		
 		
 		for (cur_func = SLIST_FIRST(&patch_functions);
@@ -592,7 +529,7 @@ output_listing(char *ifilename)
 		fprintf(stdout, "\nThanks!\n");
 	}
 
-	/* Now output the listing */
+	 
 	cur_patch = STAILQ_FIRST(&patches);
 	for (cur_instr = STAILQ_FIRST(&seq_program);
 	     cur_instr != NULL;
@@ -600,9 +537,7 @@ output_listing(char *ifilename)
 
 		if (check_patch(&cur_patch, instrcount,
 				&skip_addr, func_values) == 0) {
-			/* Don't count this instruction as it is in a patch
-			 * that was removed.
-			 */
+			 
                         continue;
 		}
 
@@ -623,11 +558,7 @@ output_listing(char *ifilename)
 			cur_instr->format.bytes[1],
 			cur_instr->format.bytes[0]);
 #endif
-		/*
-		 * Macro expansions can cause several instructions
-		 * to be output for a single source line.  Only
-		 * advance the line once in these cases.
-		 */
+		 
 		if (line == cur_instr->srcline) {
 			fgets(buf, sizeof(buf), ifile);
 			fprintf(listfile, "\t%s", buf);
@@ -637,7 +568,7 @@ output_listing(char *ifilename)
 		}
 		instrptr++;
 	}
-	/* Dump the remainder of the file */
+	 
 	while(fgets(buf, sizeof(buf), ifile) != NULL)
 		fprintf(listfile, "             %s", buf);
 
@@ -656,33 +587,27 @@ check_patch(patch_t **start_patch, int start_instr,
 		if (func_vals[cur_patch->patch_func] == 0) {
 			int skip;
 
-			/* Start rejecting code */
+			 
 			*skip_addr = start_instr + cur_patch->skip_instr;
 			for (skip = cur_patch->skip_patch;
 			     skip > 0 && cur_patch != NULL;
 			     skip--)
 				cur_patch = STAILQ_NEXT(cur_patch, links);
 		} else {
-			/* Accepted this patch.  Advance to the next
-			 * one and wait for our intruction pointer to
-			 * hit this point.
-			 */
+			 
 			cur_patch = STAILQ_NEXT(cur_patch, links);
 		}
 	}
 
 	*start_patch = cur_patch;
 	if (start_instr < *skip_addr)
-		/* Still skipping */
+		 
 		return (0);
 
 	return (1);
 }
 
-/*
- * Print out error information if appropriate, and clean up before
- * terminating the program.
- */
+ 
 void
 stop(const char *string, int err_code)
 {
@@ -771,7 +696,7 @@ scope_alloc()
 		TAILQ_INSERT_TAIL(&SLIST_FIRST(&scope_stack)->inner_scope,
 				  new_scope, scope_links);
 	}
-	/* This patch is now the current scope */
+	 
 	SLIST_INSERT_HEAD(&scope_stack, new_scope, scope_stack_links);
 	return new_scope;
 }
@@ -779,11 +704,7 @@ scope_alloc()
 void
 process_scope(scope_t *scope)
 {
-	/*
-	 * We are "leaving" this scope.  We should now have
-	 * enough information to process the lists of scopes
-	 * we encapsulate.
-	 */
+	 
 	scope_t *cur_scope;
 	u_int skip_patch_count;
 	u_int skip_instr_count;
@@ -799,7 +720,7 @@ process_scope(scope_t *scope)
 		case SCOPE_IF:
 		case SCOPE_ELSE_IF:
 			if (skip_instr_count != 0) {
-				/* Create a tail patch */
+				 
 				patch0_patch_skip++;
 				cur_scope->patches[1].skip_patch =
 				    skip_patch_count + 1;
@@ -807,10 +728,10 @@ process_scope(scope_t *scope)
 				    skip_instr_count;
 			}
 
-			/* Count Head patch */
+			 
 			patch0_patch_skip++;
 
-			/* Count any patches contained in our inner scope */
+			 
 			patch0_patch_skip += cur_scope->inner_scope_patches;
 
 			cur_scope->patches[0].skip_patch = patch0_patch_skip;
@@ -827,7 +748,7 @@ process_scope(scope_t *scope)
 			}
 			break;
 		case SCOPE_ELSE:
-			/* Count any patches contained in our innter scope */
+			 
 			skip_patch_count += cur_scope->inner_scope_patches;
 
 			skip_instr_count += cur_scope->end_addr
@@ -835,7 +756,7 @@ process_scope(scope_t *scope)
 			break;
 		case SCOPE_ROOT:
 			stop("Unexpected scope type encountered", EX_SOFTWARE);
-			/* NOTREACHED */
+			 
 		}
 
 		cur_scope = TAILQ_PREV(cur_scope, scope_tailq, scope_links);

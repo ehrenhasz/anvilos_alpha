@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- * Based on sound/soc/imx/imx-pcm-dma-mx2.c
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>

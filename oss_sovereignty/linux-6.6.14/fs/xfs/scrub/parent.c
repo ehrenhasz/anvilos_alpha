@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -18,7 +15,7 @@
 #include "scrub/common.h"
 #include "scrub/readdir.h"
 
-/* Set us up to scrub parents. */
+ 
 int
 xchk_setup_parent(
 	struct xfs_scrub	*sc)
@@ -26,16 +23,16 @@ xchk_setup_parent(
 	return xchk_setup_inode_contents(sc, 0);
 }
 
-/* Parent pointers */
+ 
 
-/* Look for an entry in a parent pointing to this inode. */
+ 
 
 struct xchk_parent_ctx {
 	struct xfs_scrub	*sc;
 	xfs_nlink_t		nlink;
 };
 
-/* Look for a single entry in a directory pointing to an inode. */
+ 
 STATIC int
 xchk_parent_actor(
 	struct xfs_scrub	*sc,
@@ -48,7 +45,7 @@ xchk_parent_actor(
 	struct xchk_parent_ctx	*spc = priv;
 	int			error = 0;
 
-	/* Does this name make sense? */
+	 
 	if (!xfs_dir2_namecheck(name->name, name->len))
 		error = -EFSCORRUPTED;
 	if (!xchk_fblock_xref_process_error(sc, XFS_DATA_FORK, 0, &error))
@@ -63,10 +60,7 @@ xchk_parent_actor(
 	return 0;
 }
 
-/*
- * Try to lock a parent directory for checking dirents.  Returns the inode
- * flags for the locks we now hold, or zero if we failed.
- */
+ 
 STATIC unsigned int
 xchk_parent_ilock_dir(
 	struct xfs_inode	*dp)
@@ -85,12 +79,7 @@ xchk_parent_ilock_dir(
 	return XFS_ILOCK_EXCL;
 }
 
-/*
- * Given the inode number of the alleged parent of the inode being scrubbed,
- * try to validate that the parent has exactly one directory entry pointing
- * back to the inode being scrubbed.  Returns -EAGAIN if we need to revalidate
- * the dotdot entry.
- */
+ 
 STATIC int
 xchk_parent_validate(
 	struct xfs_scrub	*sc,
@@ -106,7 +95,7 @@ xchk_parent_validate(
 	unsigned int		lock_mode;
 	int			error = 0;
 
-	/* Is this the root dir?  Then '..' must point to itself. */
+	 
 	if (sc->ip == mp->m_rootip) {
 		if (sc->ip->i_ino != mp->m_sb.sb_rootino ||
 		    sc->ip->i_ino != parent_ino)
@@ -114,27 +103,16 @@ xchk_parent_validate(
 		return 0;
 	}
 
-	/* '..' must not point to ourselves. */
+	 
 	if (sc->ip->i_ino == parent_ino) {
 		xchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);
 		return 0;
 	}
 
-	/*
-	 * If we're an unlinked directory, the parent /won't/ have a link
-	 * to us.  Otherwise, it should have one link.
-	 */
+	 
 	expected_nlink = VFS_I(sc->ip)->i_nlink == 0 ? 0 : 1;
 
-	/*
-	 * Grab the parent directory inode.  This must be released before we
-	 * cancel the scrub transaction.
-	 *
-	 * If _iget returns -EINVAL or -ENOENT then the parent inode number is
-	 * garbage and the directory is corrupt.  If the _iget returns
-	 * -EFSCORRUPTED or -EFSBADCRC then the parent is corrupt which is a
-	 *  cross referencing error.  Any other error is an operational error.
-	 */
+	 
 	error = xchk_iget(sc, parent_ino, &dp);
 	if (error == -EINVAL || error == -ENOENT) {
 		error = -EFSCORRUPTED;
@@ -156,15 +134,12 @@ xchk_parent_validate(
 		goto out_rele;
 	}
 
-	/* Look for a directory entry in the parent pointing to the child. */
+	 
 	error = xchk_dir_walk(sc, dp, xchk_parent_actor, &spc);
 	if (!xchk_fblock_xref_process_error(sc, XFS_DATA_FORK, 0, &error))
 		goto out_unlock;
 
-	/*
-	 * Ensure that the parent has as many links to the child as the child
-	 * thinks it has to the parent.
-	 */
+	 
 	if (spc.nlink != expected_nlink)
 		xchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);
 
@@ -175,7 +150,7 @@ out_rele:
 	return error;
 }
 
-/* Scrub a parent pointer. */
+ 
 int
 xchk_parent(
 	struct xfs_scrub	*sc)
@@ -184,14 +159,11 @@ xchk_parent(
 	xfs_ino_t		parent_ino;
 	int			error = 0;
 
-	/*
-	 * If we're a directory, check that the '..' link points up to
-	 * a directory that has one entry pointing to us.
-	 */
+	 
 	if (!S_ISDIR(VFS_I(sc->ip)->i_mode))
 		return -ENOENT;
 
-	/* We're not a special inode, are we? */
+	 
 	if (!xfs_verify_dir_ino(mp, sc->ip->i_ino)) {
 		xchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);
 		return 0;
@@ -201,7 +173,7 @@ xchk_parent(
 		if (xchk_should_terminate(sc, &error))
 			break;
 
-		/* Look up '..' */
+		 
 		error = xchk_dir_lookup(sc, sc->ip, &xfs_name_dotdot,
 				&parent_ino);
 		if (!xchk_fblock_process_error(sc, XFS_DATA_FORK, 0, &error))
@@ -211,10 +183,7 @@ xchk_parent(
 			return 0;
 		}
 
-		/*
-		 * Check that the dotdot entry points to a parent directory
-		 * containing a dirent pointing to this subdirectory.
-		 */
+		 
 		error = xchk_parent_validate(sc, parent_ino);
 	} while (error == -EAGAIN);
 

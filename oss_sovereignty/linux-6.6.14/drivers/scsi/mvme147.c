@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/blkdev.h>
@@ -27,7 +27,7 @@ static irqreturn_t mvme147_intr(int irq, void *data)
 	if (irq == MVME147_IRQ_SCSI_PORT)
 		wd33c93_intr(instance);
 	else
-		m147_pcc->dma_intr = 0x89;	/* Ack and enable ints */
+		m147_pcc->dma_intr = 0x89;	 
 	return IRQ_HANDLED;
 }
 
@@ -39,27 +39,27 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	unsigned char flags = 0x01;
 	unsigned long addr = virt_to_bus(scsi_pointer->ptr);
 
-	/* setup dma direction */
+	 
 	if (!dir_in)
 		flags |= 0x04;
 
-	/* remember direction */
+	 
 	hdata->dma_dir = dir_in;
 
 	if (dir_in) {
-		/* invalidate any cache */
+		 
 		cache_clear(addr, scsi_pointer->this_residual);
 	} else {
-		/* push any dirty cache */
+		 
 		cache_push(addr, scsi_pointer->this_residual);
 	}
 
-	/* start DMA */
+	 
 	m147_pcc->dma_bcr = scsi_pointer->this_residual | (1 << 24);
 	m147_pcc->dma_dadr = addr;
 	m147_pcc->dma_cntrl = flags;
 
-	/* return success */
+	 
 	return 0;
 }
 
@@ -121,17 +121,17 @@ static int __init mvme147_init(void)
 			"MVME147 SCSI DMA", mvme147_shost);
 	if (error)
 		goto err_free_irq;
-#if 0	/* Disabled; causes problems booting */
-	m147_pcc->scsi_interrupt = 0x10;	/* Assert SCSI bus reset */
+#if 0	 
+	m147_pcc->scsi_interrupt = 0x10;	 
 	udelay(100);
-	m147_pcc->scsi_interrupt = 0x00;	/* Negate SCSI bus reset */
+	m147_pcc->scsi_interrupt = 0x00;	 
 	udelay(2000);
-	m147_pcc->scsi_interrupt = 0x40;	/* Clear bus reset interrupt */
+	m147_pcc->scsi_interrupt = 0x40;	 
 #endif
-	m147_pcc->scsi_interrupt = 0x09;	/* Enable interrupt */
+	m147_pcc->scsi_interrupt = 0x09;	 
 
-	m147_pcc->dma_cntrl = 0x00;	/* ensure DMA is stopped */
-	m147_pcc->dma_intr = 0x89;	/* Ack and enable ints */
+	m147_pcc->dma_cntrl = 0x00;	 
+	m147_pcc->dma_intr = 0x89;	 
 
 	error = scsi_add_host(mvme147_shost, NULL);
 	if (error)
@@ -151,7 +151,7 @@ static void __exit mvme147_exit(void)
 {
 	scsi_remove_host(mvme147_shost);
 
-	/* XXX Make sure DMA is stopped! */
+	 
 	free_irq(MVME147_IRQ_SCSI_PORT, mvme147_shost);
 	free_irq(MVME147_IRQ_SCSI_DMA, mvme147_shost);
 

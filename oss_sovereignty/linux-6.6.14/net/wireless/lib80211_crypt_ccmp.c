@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lib80211 crypt: host-based CCMP encryption implementation for lib80211
- *
- * Copyright (c) 2003-2004, Jouni Malinen <j@w1.fi>
- * Copyright (c) 2008, John W. Linville <linville@tuxdriver.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -51,7 +46,7 @@ struct lib80211_ccmp_data {
 
 	struct crypto_aead *tfm;
 
-	/* scratch buffers for virt_to_page() (crypto API) */
+	 
 	u8 tx_aad[2 * AES_BLOCK_LEN];
 	u8 rx_aad[2 * AES_BLOCK_LEN];
 };
@@ -112,40 +107,28 @@ static int ccmp_init_iv_and_aad(const struct ieee80211_hdr *hdr,
 		aad_len += 2;
 	}
 
-	/* In CCM, the initial vectors (IV) used for CTR mode encryption and CBC
-	 * mode authentication are not allowed to collide, yet both are derived
-	 * from the same vector. We only set L := 1 here to indicate that the
-	 * data size can be represented in (L+1) bytes. The CCM layer will take
-	 * care of storing the data length in the top (L+1) bytes and setting
-	 * and clearing the other bits as is required to derive the two IVs.
-	 */
+	 
 	iv[0] = 0x1;
 
-	/* Nonce: QC | A2 | PN */
+	 
 	iv[1] = qc;
 	memcpy(iv + 2, hdr->addr2, ETH_ALEN);
 	memcpy(iv + 8, pn, CCMP_PN_LEN);
 
-	/* AAD:
-	 * FC with bits 4..6 and 11..13 masked to zero; 14 is always one
-	 * A1 | A2 | A3
-	 * SC with bits 4..15 (seq#) masked to zero
-	 * A4 (if present)
-	 * QC (if present)
-	 */
+	 
 	pos = (u8 *) hdr;
 	aad[0] = pos[0] & 0x8f;
 	aad[1] = pos[1] & 0xc7;
 	memcpy(aad + 2, &hdr->addrs, 3 * ETH_ALEN);
 	pos = (u8 *) & hdr->seq_ctrl;
 	aad[20] = pos[0] & 0x0f;
-	aad[21] = 0;		/* all bits masked */
+	aad[21] = 0;		 
 	memset(aad + 22, 0, 8);
 	if (a4_included)
 		memcpy(aad + 22, hdr->addr4, ETH_ALEN);
 	if (qc_included) {
 		aad[a4_included ? 28 : 22] = qc;
-		/* rest of QC masked */
+		 
 	}
 	return aad_len;
 }
@@ -178,7 +161,7 @@ static int lib80211_ccmp_hdr(struct sk_buff *skb, int hdr_len,
 	*pos++ = key->tx_pn[5];
 	*pos++ = key->tx_pn[4];
 	*pos++ = 0;
-	*pos++ = (key->key_idx << 6) | (1 << 5) /* Ext IV included */ ;
+	*pos++ = (key->key_idx << 6) | (1 << 5)   ;
 	*pos++ = key->tx_pn[3];
 	*pos++ = key->tx_pn[2];
 	*pos++ = key->tx_pn[1];
@@ -230,10 +213,7 @@ static int lib80211_ccmp_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	return ret;
 }
 
-/*
- * deal with seq counter wrapping correctly.
- * refer to timer_after() for jiffies wrapping handling
- */
+ 
 static inline int ccmp_replay_check(u8 *pn_n, u8 *pn_o)
 {
 	u32 iv32_n, iv16_n;
@@ -336,7 +316,7 @@ static int lib80211_ccmp_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 
 	memcpy(key->rx_pn, pn, CCMP_PN_LEN);
 
-	/* Remove hdr and MIC */
+	 
 	memmove(skb->data + CCMP_HDR_LEN, skb->data, hdr_len);
 	skb_pull(skb, CCMP_HDR_LEN);
 	skb_trim(skb, skb->len - CCMP_MIC_LEN);

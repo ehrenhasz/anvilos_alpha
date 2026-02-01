@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/rtnetlink.h>
@@ -54,10 +54,7 @@ static void __vlan_delete_pvid(struct net_bridge_vlan_group *vg, u16 vid)
 	vg->pvid = 0;
 }
 
-/* Update the BRIDGE_VLAN_INFO_PVID and BRIDGE_VLAN_INFO_UNTAGGED flags of @v.
- * If @commit is false, return just whether the BRIDGE_VLAN_INFO_PVID and
- * BRIDGE_VLAN_INFO_UNTAGGED bits of @flags would produce any change onto @v.
- */
+ 
 static bool __vlan_flags_update(struct net_bridge_vlan *v, u16 flags,
 				bool commit)
 {
@@ -69,7 +66,7 @@ static bool __vlan_flags_update(struct net_bridge_vlan *v, u16 flags,
 	else
 		vg = nbp_vlan_group(v->port);
 
-	/* check if anything would be changed on commit */
+	 
 	change = !!(flags & BRIDGE_VLAN_INFO_PVID) == !!(vg->pvid != v->vid) ||
 		 ((flags ^ v->flags) & BRIDGE_VLAN_INFO_UNTAGGED);
 
@@ -106,9 +103,7 @@ static int __vlan_vid_add(struct net_device *dev, struct net_bridge *br,
 {
 	int err;
 
-	/* Try switchdev op first. In case it is not supported, fallback to
-	 * 8021q add.
-	 */
+	 
 	err = br_switchdev_port_vlan_add(dev, v->vid, flags, false, extack);
 	if (err == -EOPNOTSUPP)
 		return vlan_vid_add(dev, br->vlan_proto, v->vid);
@@ -146,18 +141,14 @@ static int __vlan_vid_del(struct net_device *dev, struct net_bridge *br,
 {
 	int err;
 
-	/* Try switchdev op first. In case it is not supported, fallback to
-	 * 8021q del.
-	 */
+	 
 	err = br_switchdev_port_vlan_del(dev, v->vid);
 	if (!(v->priv_flags & BR_VLFLAG_ADDED_BY_SWITCHDEV))
 		vlan_vid_del(dev, br->vlan_proto, v->vid);
 	return err == -EOPNOTSUPP ? 0 : err;
 }
 
-/* Returns a master vlan, if it didn't exist it gets created. In all cases
- * a reference is taken to the master vlan before returning.
- */
+ 
 static struct net_bridge_vlan *
 br_vlan_get_master(struct net_bridge *br, u16 vid,
 		   struct netlink_ext_ack *extack)
@@ -170,7 +161,7 @@ br_vlan_get_master(struct net_bridge *br, u16 vid,
 	if (!masterv) {
 		bool changed;
 
-		/* missing global ctx, create it now */
+		 
 		if (br_vlan_add(br, vid, 0, &changed, extack))
 			return NULL;
 		masterv = br_vlan_find(vg, vid);
@@ -219,7 +210,7 @@ static void nbp_vlan_rcu_free(struct rcu_head *rcu)
 
 	v = container_of(rcu, struct net_bridge_vlan, rcu);
 	WARN_ON(br_vlan_is_master(v));
-	/* if we had per-port stats configured then free them here */
+	 
 	if (v->priv_flags & BR_VLFLAG_PER_PORT_STATS)
 		free_percpu(v->stats);
 	v->stats = NULL;
@@ -244,17 +235,7 @@ static void br_vlan_init_state(struct net_bridge_vlan *v)
 	v->msti = 0;
 }
 
-/* This is the shared VLAN add function which works for both ports and bridge
- * devices. There are four possible calls to this function in terms of the
- * vlan entry type:
- * 1. vlan is being added on a port (no master flags, global entry exists)
- * 2. vlan is being added on a bridge (both master and brentry flags)
- * 3. vlan is being added on a port, but a global entry didn't exist which
- *    is being created right now (master flag set, brentry flag unset), the
- *    global entry is used for global per-vlan features, but not for filtering
- * 4. same as 3 but with both master and brentry flags set so the entry
- *    will be used for filtering in both the port and the bridge
- */
+ 
 static int __vlan_add(struct net_bridge_vlan *v, u16 flags,
 		      struct netlink_ext_ack *extack)
 {
@@ -277,15 +258,12 @@ static int __vlan_add(struct net_bridge_vlan *v, u16 flags,
 	}
 
 	if (p) {
-		/* Add VLAN to the device filter if it is supported.
-		 * This ensures tagged traffic enters the bridge when
-		 * promiscuous mode is disabled by br_manage_promisc().
-		 */
+		 
 		err = __vlan_vid_add(dev, br, v, flags, extack);
 		if (err)
 			goto out;
 
-		/* need to work on the master vlan too */
+		 
 		if (flags & BRIDGE_VLAN_INFO_MASTER) {
 			bool changed;
 
@@ -329,7 +307,7 @@ static int __vlan_add(struct net_bridge_vlan *v, u16 flags,
 		v->priv_flags |= BR_VLFLAG_GLOBAL_MCAST_ENABLED;
 	}
 
-	/* Add the dev mac and count the vlan only if it's usable */
+	 
 	if (br_vlan_should_use(v)) {
 		err = br_fdb_add_local(br, p, dev->dev_addr, v->vid);
 		if (err) {
@@ -339,7 +317,7 @@ static int __vlan_add(struct net_bridge_vlan *v, u16 flags,
 		vg->num_vlans++;
 	}
 
-	/* set the state before publishing */
+	 
 	br_vlan_init_state(v);
 
 	err = rhashtable_lookup_insert_fast(&vg->vlan_hash, &v->vnode,
@@ -446,11 +424,11 @@ static void __vlan_flush(const struct net_bridge *br,
 
 	__vlan_delete_pvid(vg, vg->pvid);
 	list_for_each_entry_safe(vlan, tmp, &vg->vlan_list, vlist) {
-		/* take care of disjoint ranges */
+		 
 		if (!v_start) {
 			v_start = vlan->vid;
 		} else if (vlan->vid - v_end != 1) {
-			/* found range end, notify and start next one */
+			 
 			br_vlan_notify(br, p, v_start, v_end, RTM_DELVLAN);
 			v_start = vlan->vid;
 		}
@@ -465,7 +443,7 @@ static void __vlan_flush(const struct net_bridge *br,
 		}
 	}
 
-	/* notify about the last/whole vlan range */
+	 
 	if (v_start)
 		br_vlan_notify(br, p, v_start, v_end, RTM_DELVLAN);
 }
@@ -479,21 +457,14 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
 	struct net_bridge_vlan *v;
 	u16 vid;
 
-	/* If this packet was not filtered at input, let it pass */
+	 
 	if (!BR_INPUT_SKB_CB(skb)->vlan_filtered)
 		goto out;
 
-	/* At this point, we know that the frame was filtered and contains
-	 * a valid vlan id.  If the vlan id has untagged flag set,
-	 * send untagged; otherwise, send tagged.
-	 */
+	 
 	br_vlan_get_tag(skb, &vid);
 	v = br_vlan_find(vg, vid);
-	/* Vlan entry must be configured at this point.  The
-	 * only exception is the bridge is set in promisc mode and the
-	 * packet is destined for the bridge device.  In this case
-	 * pass the packet as is.
-	 */
+	 
 	if (!v || !br_vlan_should_use(v)) {
 		if ((br->dev->flags & IFF_PROMISC) && skb->dev == br->dev) {
 			goto out;
@@ -510,13 +481,7 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
 		u64_stats_update_end(&stats->syncp);
 	}
 
-	/* If the skb will be sent using forwarding offload, the assumption is
-	 * that the switchdev will inject the packet into hardware together
-	 * with the bridge VLAN, so that it can be forwarded according to that
-	 * VLAN. The switchdev should deal with popping the VLAN header in
-	 * hardware on each egress port as appropriate. So only strip the VLAN
-	 * header if forwarding offload is not being used.
-	 */
+	 
 	if (v->flags & BRIDGE_VLAN_INFO_UNTAGGED &&
 	    !br_switchdev_frame_uses_tx_fwd_offload(skb))
 		__vlan_hwaccel_clear_tag(skb);
@@ -530,7 +495,7 @@ out:
 	return skb;
 }
 
-/* Called under RCU */
+ 
 static bool __allowed_ingress(const struct net_bridge *br,
 			      struct net_bridge_vlan_group *vg,
 			      struct sk_buff *skb, u16 *vid,
@@ -542,10 +507,7 @@ static bool __allowed_ingress(const struct net_bridge *br,
 	bool tagged;
 
 	BR_INPUT_SKB_CB(skb)->vlan_filtered = true;
-	/* If vlan tx offload is disabled on bridge device and frame was
-	 * sent from vlan device on the bridge device, it does not have
-	 * HW accelerated vlan tag.
-	 */
+	 
 	if (unlikely(!skb_vlan_tag_present(skb) &&
 		     skb->protocol == br->vlan_proto)) {
 		skb = skb_vlan_untag(skb);
@@ -554,9 +516,9 @@ static bool __allowed_ingress(const struct net_bridge *br,
 	}
 
 	if (!br_vlan_get_tag(skb, vid)) {
-		/* Tagged frame */
+		 
 		if (skb->vlan_proto != br->vlan_proto) {
-			/* Protocol-mismatch, empty out vlan_tci for new tag */
+			 
 			skb_push(skb, ETH_HLEN);
 			skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
 							skb_vlan_tag_get(skb));
@@ -571,36 +533,27 @@ static bool __allowed_ingress(const struct net_bridge *br,
 			tagged = true;
 		}
 	} else {
-		/* Untagged frame */
+		 
 		tagged = false;
 	}
 
 	if (!*vid) {
 		u16 pvid = br_get_pvid(vg);
 
-		/* Frame had a tag with VID 0 or did not have a tag.
-		 * See if pvid is set on this port.  That tells us which
-		 * vlan untagged or priority-tagged traffic belongs to.
-		 */
+		 
 		if (!pvid)
 			goto drop;
 
-		/* PVID is set on this port.  Any untagged or priority-tagged
-		 * ingress frame is considered to belong to this vlan.
-		 */
+		 
 		*vid = pvid;
 		if (likely(!tagged))
-			/* Untagged Frame. */
+			 
 			__vlan_hwaccel_put_tag(skb, br->vlan_proto, pvid);
 		else
-			/* Priority-tagged Frame.
-			 * At this point, we know that skb->vlan_tci VID
-			 * field was 0.
-			 * We update only VID field and preserve PCP field.
-			 */
+			 
 			skb->vlan_tci |= pvid;
 
-		/* if snooping and stats are disabled we can avoid the lookup */
+		 
 		if (!br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED) &&
 		    !br_opt_get(br, BROPT_VLAN_STATS_ENABLED)) {
 			if (*state == BR_STATE_FORWARDING) {
@@ -643,9 +596,7 @@ bool br_allowed_ingress(const struct net_bridge *br,
 			u16 *vid, u8 *state,
 			struct net_bridge_vlan **vlan)
 {
-	/* If VLAN filtering is disabled on the bridge, all packets are
-	 * permitted.
-	 */
+	 
 	*vlan = NULL;
 	if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
 		BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
@@ -655,14 +606,14 @@ bool br_allowed_ingress(const struct net_bridge *br,
 	return __allowed_ingress(br, vg, skb, vid, state, vlan);
 }
 
-/* Called under RCU. */
+ 
 bool br_allowed_egress(struct net_bridge_vlan_group *vg,
 		       const struct sk_buff *skb)
 {
 	const struct net_bridge_vlan *v;
 	u16 vid;
 
-	/* If this packet was not filtered at input, let it pass */
+	 
 	if (!BR_INPUT_SKB_CB(skb)->vlan_filtered)
 		return true;
 
@@ -675,14 +626,14 @@ bool br_allowed_egress(struct net_bridge_vlan_group *vg,
 	return false;
 }
 
-/* Called under RCU */
+ 
 bool br_should_learn(struct net_bridge_port *p, struct sk_buff *skb, u16 *vid)
 {
 	struct net_bridge_vlan_group *vg;
 	struct net_bridge *br = p->br;
 	struct net_bridge_vlan *v;
 
-	/* If filtering was disabled at input, let it pass. */
+	 
 	if (!br_opt_get(br, BROPT_VLAN_ENABLED))
 		return true;
 
@@ -720,16 +671,14 @@ static int br_vlan_add_existing(struct net_bridge *br,
 	int err;
 
 	if (!br_vlan_is_brentry(vlan)) {
-		/* Trying to change flags of non-existent bridge vlan */
+		 
 		if (!(flags & BRIDGE_VLAN_INFO_BRENTRY))
 			return -EINVAL;
 
 		becomes_brentry = true;
 	}
 
-	/* Master VLANs that aren't brentries weren't notified before,
-	 * time to notify them now.
-	 */
+	 
 	if (becomes_brentry || would_change) {
 		err = br_switchdev_port_vlan_add(br->dev, vlan->vid, flags,
 						 would_change, extack);
@@ -738,7 +687,7 @@ static int br_vlan_add_existing(struct net_bridge *br,
 	}
 
 	if (becomes_brentry) {
-		/* It was only kept for port vlans, now make it real */
+		 
 		err = br_fdb_add_local(br, NULL, br->dev->dev_addr, vlan->vid);
 		if (err) {
 			br_err(br, "failed to insert local address into bridge forwarding table\n");
@@ -763,10 +712,7 @@ err_fdb_insert:
 	return err;
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- * changed must be true only if the vlan was created or updated
- */
+ 
 int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags, bool *changed,
 		struct netlink_ext_ack *extack)
 {
@@ -809,9 +755,7 @@ int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags, bool *changed,
 	return ret;
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- */
+ 
 int br_vlan_delete(struct net_bridge *br, u16 vid)
 {
 	struct net_bridge_vlan_group *vg;
@@ -853,7 +797,7 @@ struct net_bridge_vlan *br_vlan_find(struct net_bridge_vlan_group *vg, u16 vid)
 	return br_vlan_lookup(&vg->vlan_hash, vid);
 }
 
-/* Must be protected by RTNL. */
+ 
 static void recalculate_group_addr(struct net_bridge *br)
 {
 	if (br_opt_get(br, BROPT_GROUP_ADDR_SET))
@@ -862,22 +806,22 @@ static void recalculate_group_addr(struct net_bridge *br)
 	spin_lock_bh(&br->lock);
 	if (!br_opt_get(br, BROPT_VLAN_ENABLED) ||
 	    br->vlan_proto == htons(ETH_P_8021Q)) {
-		/* Bridge Group Address */
+		 
 		br->group_addr[5] = 0x00;
-	} else { /* vlan_enabled && ETH_P_8021AD */
-		/* Provider Bridge Group Address */
+	} else {  
+		 
 		br->group_addr[5] = 0x08;
 	}
 	spin_unlock_bh(&br->lock);
 }
 
-/* Must be protected by RTNL. */
+ 
 void br_recalculate_fwd_mask(struct net_bridge *br)
 {
 	if (!br_opt_get(br, BROPT_VLAN_ENABLED) ||
 	    br->vlan_proto == htons(ETH_P_8021Q))
 		br->group_fwd_mask_required = BR_GROUPFWD_DEFAULT;
-	else /* vlan_enabled && ETH_P_8021AD */
+	else  
 		br->group_fwd_mask_required = BR_GROUPFWD_8021AD &
 					      ~(1u << br->group_addr[5]);
 }
@@ -955,7 +899,7 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto,
 	if (err && err != -EOPNOTSUPP)
 		return err;
 
-	/* Add VLANs for the new proto to the device filter. */
+	 
 	list_for_each_entry(p, &br->port_list, list) {
 		vg = nbp_vlan_group(p);
 		list_for_each_entry(vlan, &vg->vlan_list, vlist) {
@@ -972,7 +916,7 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto,
 	recalculate_group_addr(br);
 	br_recalculate_fwd_mask(br);
 
-	/* Delete VLANs for the old proto from the device filter. */
+	 
 	list_for_each_entry(p, &br->port_list, list) {
 		vg = nbp_vlan_group(p);
 		list_for_each_entry(vlan, &vg->vlan_list, vlist) {
@@ -1033,7 +977,7 @@ int br_vlan_set_stats_per_port(struct net_bridge *br, unsigned long val)
 {
 	struct net_bridge_port *p;
 
-	/* allow to change the option if there are no port vlans configured */
+	 
 	list_for_each_entry(p, &br->port_list, list) {
 		struct net_bridge_vlan_group *vg = nbp_vlan_group(p);
 
@@ -1073,9 +1017,7 @@ static void br_vlan_disable_default_pvid(struct net_bridge *br)
 	struct net_bridge_port *p;
 	u16 pvid = br->default_pvid;
 
-	/* Disable default_pvid on all ports where it is still
-	 * configured.
-	 */
+	 
 	if (vlan_default_pvid(br_vlan_group(br), pvid)) {
 		if (!br_vlan_delete(br, pvid))
 			br_vlan_notify(br, NULL, pvid, 0, RTM_DELVLAN);
@@ -1112,9 +1054,7 @@ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
 
 	old_pvid = br->default_pvid;
 
-	/* Update default_pvid config only if we do not conflict with
-	 * user configuration.
-	 */
+	 
 	vg = br_vlan_group(br);
 	pvent = br_vlan_find(vg, pvid);
 	if ((!old_pvid || vlan_default_pvid(vg, old_pvid)) &&
@@ -1134,9 +1074,7 @@ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
 	}
 
 	list_for_each_entry(p, &br->port_list, list) {
-		/* Update default_pvid config only if we do not conflict with
-		 * user configuration.
-		 */
+		 
 		vg = nbp_vlan_group(p);
 		if ((old_pvid &&
 		     !vlan_default_pvid(vg, old_pvid)) ||
@@ -1204,7 +1142,7 @@ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val,
 	if (pvid == br->default_pvid)
 		goto out;
 
-	/* Only allow default pvid change when filtering is disabled */
+	 
 	if (br_opt_get(br, BROPT_VLAN_ENABLED)) {
 		pr_info_once("Please disable vlan filtering to change default_pvid\n");
 		err = -EPERM;
@@ -1299,10 +1237,7 @@ err_vlan_enabled:
 	goto out;
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- * changed must be true only if the vlan was created or updated
- */
+ 
 int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
 		 bool *changed, struct netlink_ext_ack *extack)
 {
@@ -1317,7 +1252,7 @@ int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
 		bool would_change = __vlan_flags_would_change(vlan, flags);
 
 		if (would_change) {
-			/* Pass the flags to the hardware bridge */
+			 
 			ret = br_switchdev_port_vlan_add(port->dev, vid, flags,
 							 true, extack);
 			if (ret && ret != -EOPNOTSUPP)
@@ -1345,9 +1280,7 @@ int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
 	return ret;
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- */
+ 
 int nbp_vlan_delete(struct net_bridge_port *port, u16 vid)
 {
 	struct net_bridge_vlan *v;
@@ -1713,7 +1646,7 @@ static void br_vlan_link_state_change(struct net_device *dev,
 	rcu_read_unlock();
 }
 
-/* Must be protected by RTNL. */
+ 
 static void nbp_vlan_set_vlan_dev_state(struct net_bridge_port *p, u16 vid)
 {
 	struct net_device *vlan_dev;
@@ -1726,7 +1659,7 @@ static void nbp_vlan_set_vlan_dev_state(struct net_bridge_port *p, u16 vid)
 		br_vlan_set_vlan_dev_state(p->br, vlan_dev);
 }
 
-/* Must be protected by RTNL. */
+ 
 int br_vlan_bridge_event(struct net_device *dev, unsigned long event, void *ptr)
 {
 	struct netdev_notifier_changeupper_info *info;
@@ -1764,7 +1697,7 @@ int br_vlan_bridge_event(struct net_device *dev, unsigned long event, void *ptr)
 	return ret;
 }
 
-/* Must be protected by RTNL. */
+ 
 void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
 {
 	if (!br_opt_get(p->br, BROPT_VLAN_BRIDGE_BINDING))
@@ -1813,7 +1746,7 @@ out_err:
 	return false;
 }
 
-/* v_opts is used to dump the options which must be equal in the whole range */
+ 
 static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
 			      const struct net_bridge_vlan *v_opts,
 			      const struct net_bridge_port *p,
@@ -1862,10 +1795,10 @@ out_err:
 static size_t rtnl_vlan_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct br_vlan_msg))
-		+ nla_total_size(0) /* BRIDGE_VLANDB_ENTRY */
-		+ nla_total_size(sizeof(u16)) /* BRIDGE_VLANDB_ENTRY_RANGE */
-		+ nla_total_size(sizeof(struct bridge_vlan_info)) /* BRIDGE_VLANDB_ENTRY_INFO */
-		+ br_vlan_opts_nl_size(); /* bridge vlan options */
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(struct bridge_vlan_info))  
+		+ br_vlan_opts_nl_size();  
 }
 
 void br_vlan_notify(const struct net_bridge *br,
@@ -1883,7 +1816,7 @@ void br_vlan_notify(const struct net_bridge *br,
 	u16 flags = 0;
 	int ifindex;
 
-	/* right now notifications are done only with rtnl held */
+	 
 	ASSERT_RTNL();
 
 	if (p) {
@@ -1911,7 +1844,7 @@ void br_vlan_notify(const struct net_bridge *br,
 
 	switch (cmd) {
 	case RTM_NEWVLAN:
-		/* need to find the vlan due to flags/options */
+		 
 		v = br_vlan_find(vg, vid);
 		if (!v || !br_vlan_should_use(v))
 			goto out_kfree;
@@ -1939,7 +1872,7 @@ out_kfree:
 	kfree_skb(skb);
 }
 
-/* check if v_curr can enter a range ending in range_end */
+ 
 bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
 			     const struct net_bridge_vlan *range_end)
 {
@@ -1973,7 +1906,7 @@ static int br_vlan_dump_dev(const struct net_device *dev,
 		vg = br_vlan_group_rcu(br);
 		p = NULL;
 	} else {
-		/* global options are dumped only for bridge devices */
+		 
 		if (dump_global)
 			return 0;
 
@@ -1997,7 +1930,7 @@ static int br_vlan_dump_dev(const struct net_device *dev,
 	bvm->ifindex = dev->ifindex;
 	pvid = br_get_pvid(vg);
 
-	/* idx must stay at range's beginning until it is filled in */
+	 
 	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
 		if (!dump_global && !br_vlan_should_use(v))
 			continue;
@@ -2021,7 +1954,7 @@ static int br_vlan_dump_dev(const struct net_device *dev,
 				err = -EMSGSIZE;
 				break;
 			}
-			/* advance number of filled vlans */
+			 
 			idx += range_end->vid - range_start->vid + 1;
 
 			range_start = v;
@@ -2035,7 +1968,7 @@ static int br_vlan_dump_dev(const struct net_device *dev,
 				err = -EMSGSIZE;
 				break;
 			}
-			/* advance number of filled vlans */
+			 
 			idx += range_end->vid - range_start->vid + 1;
 
 			range_start = v;
@@ -2044,11 +1977,7 @@ update_end:
 		range_end = v;
 	}
 
-	/* err will be 0 and range_start will be set in 3 cases here:
-	 * - first vlan (range_start == range_end)
-	 * - last vlan (range_start == range_end, not in range)
-	 * - last vlan range (range_start != range_end, in range)
-	 */
+	 
 	if (!err && range_start) {
 		if (dump_global &&
 		    !br_vlan_global_opts_fill(skb, range_start->vid,
@@ -2099,7 +2028,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
 			goto out_err;
 		}
 		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
-		/* if the dump completed without an error we return 0 here */
+		 
 		if (err != -EMSGSIZE)
 			goto out_err;
 	} else {
@@ -2185,11 +2114,11 @@ static int br_vlan_rtm_process_one(struct net_device *dev,
 
 	if (tb[BRIDGE_VLANDB_ENTRY_RANGE]) {
 		vrange_end.vid = nla_get_u16(tb[BRIDGE_VLANDB_ENTRY_RANGE]);
-		/* validate user-provided flags without RANGE_BEGIN */
+		 
 		vrange_end.flags = BRIDGE_VLAN_INFO_RANGE_END | vinfo->flags;
 		vinfo->flags |= BRIDGE_VLAN_INFO_RANGE_BEGIN;
 
-		/* vinfo_last is the range start, vinfo the range end */
+		 
 		vinfo_last = vinfo;
 		vinfo = &vrange_end;
 
@@ -2211,11 +2140,11 @@ static int br_vlan_rtm_process_one(struct net_device *dev,
 	if (!skip_processing) {
 		struct bridge_vlan_info *tmp_last = vinfo_last;
 
-		/* br_process_vlan_info may overwrite vinfo_last */
+		 
 		err = br_process_vlan_info(br, p, cmdmap, vinfo, &tmp_last,
 					   &changed, extack);
 
-		/* notify first if anything changed */
+		 
 		if (changed)
 			br_ifinfo_notify(cmdmap, br, p);
 
@@ -2223,7 +2152,7 @@ static int br_vlan_rtm_process_one(struct net_device *dev,
 			return err;
 	}
 
-	/* deal with options */
+	 
 	if (cmd == RTM_NEWVLAN) {
 		struct net_bridge_vlan *range_start, *range_end;
 
@@ -2252,7 +2181,7 @@ static int br_vlan_rtm_process(struct sk_buff *skb, struct nlmsghdr *nlh,
 	int err, vlans = 0;
 	int rem;
 
-	/* this should validate the header and check for remaining bytes */
+	 
 	err = nlmsg_parse(nlh, sizeof(*bvm), NULL, BRIDGE_VLANDB_MAX, NULL,
 			  extack);
 	if (err < 0)

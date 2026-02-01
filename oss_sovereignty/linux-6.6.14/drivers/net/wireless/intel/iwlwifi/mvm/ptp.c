@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2021 - 2023 Intel Corporation
- */
+
+ 
 
 #include "mvm.h"
 #include "iwl-debug.h"
@@ -11,10 +9,7 @@
 #define IWL_PTP_GP2_WRAP	0x100000000ULL
 #define IWL_PTP_WRAP_TIME	(3600 * HZ)
 
-/* The scaled_ppm parameter is ppm (parts per million) with a 16-bit fractional
- * part, which means that a value of 1 in one of those fields actually means
- * 2^-16 ppm, and 2^16=65536 is 1 ppm.
- */
+ 
 #define SCALE_FACTOR	65536000000ULL
 #define IWL_PTP_WRAP_THRESHOLD_USEC	(5000)
 
@@ -22,9 +17,7 @@
 
 static void iwl_mvm_ptp_update_new_read(struct iwl_mvm *mvm, u32 gp2)
 {
-	/* If the difference is above the threshold, assume it's a wraparound.
-	 * Otherwise assume it's an old read and ignore it.
-	 */
+	 
 	if (gp2 < mvm->ptp_data.last_gp2 &&
 	    mvm->ptp_data.last_gp2 - gp2 < IWL_PTP_WRAP_THRESHOLD_USEC) {
 		IWL_DEBUG_INFO(mvm,
@@ -60,9 +53,7 @@ u64 iwl_mvm_ptp_get_adj_time(struct iwl_mvm *mvm, u64 base_time_ns)
 	base_time_ns = base_time_ns +
 		(data->wrap_counter * IWL_PTP_GP2_WRAP * NSEC_PER_USEC);
 
-	/* It is possible that a GP2 timestamp was received from fw before the
-	 * last scale update. Since we don't know how to scale - ignore it.
-	 */
+	 
 	if (base_time_ns < last_gp2_ns) {
 		IWL_DEBUG_INFO(mvm, "Time before scale update - ignore\n");
 		return 0;
@@ -153,11 +144,11 @@ iwl_mvm_phc_get_crosstimestamp(struct ptp_clock_info *ptp,
 	struct iwl_mvm *mvm = container_of(ptp, struct iwl_mvm,
 					   ptp_data.ptp_clock_info);
 	int ret = 0;
-	/* Raw value read from GP2 register in usec */
+	 
 	u32 gp2;
-	/* GP2 value in ns*/
+	 
 	s64 gp2_ns;
-	/* System (wall) time */
+	 
 	ktime_t sys_time;
 
 	memset(xtstamp, 0, sizeof(struct system_device_crosststamp));
@@ -182,7 +173,7 @@ iwl_mvm_phc_get_crosstimestamp(struct ptp_clock_info *ptp,
 	IWL_INFO(mvm, "Got Sync Time: GP2:%u, last_GP2: %u, GP2_ns: %lld, sys_time: %lld\n",
 		 gp2, mvm->ptp_data.last_gp2, gp2_ns, (s64)sys_time);
 
-	/* System monotonic raw time is not used */
+	 
 	xtstamp->device = (ktime_t)gp2_ns;
 	xtstamp->sys_realtime = sys_time;
 
@@ -244,10 +235,7 @@ static int iwl_mvm_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	mutex_lock(&mvm->mutex);
 
-	/* Must call _iwl_mvm_ptp_get_adj_time() before updating
-	 * data->scale_update_gp2 or data->scaled_freq since
-	 * scale_update_adj_time_ns should reflect the previous scaled_freq.
-	 */
+	 
 	gp2 = iwl_mvm_get_systime(mvm);
 	data->scale_update_adj_time_ns =
 		iwl_mvm_ptp_get_adj_time(mvm, gp2 * NSEC_PER_USEC);
@@ -263,14 +251,10 @@ static int iwl_mvm_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	return 0;
 }
 
-/* iwl_mvm_ptp_init - initialize PTP for devices which support it.
- * @mvm: internal mvm structure, see &struct iwl_mvm.
- *
- * Performs the required steps for enabling PTP support.
- */
+ 
 void iwl_mvm_ptp_init(struct iwl_mvm *mvm)
 {
-	/* Warn if the interface already has a ptp_clock defined */
+	 
 	if (WARN_ON(mvm->ptp_data.ptp_clock))
 		return;
 
@@ -283,7 +267,7 @@ void iwl_mvm_ptp_init(struct iwl_mvm *mvm)
 	mvm->ptp_data.ptp_clock_info.gettime64 = iwl_mvm_ptp_gettime;
 	mvm->ptp_data.scaled_freq = SCALE_FACTOR;
 
-	/* Give a short 'friendly name' to identify the PHC clock */
+	 
 	snprintf(mvm->ptp_data.ptp_clock_info.name,
 		 sizeof(mvm->ptp_data.ptp_clock_info.name),
 		 "%s", "iwlwifi-PTP");
@@ -304,11 +288,7 @@ void iwl_mvm_ptp_init(struct iwl_mvm *mvm)
 	}
 }
 
-/* iwl_mvm_ptp_remove - disable PTP device.
- * @mvm: internal mvm structure, see &struct iwl_mvm.
- *
- * Disable PTP support.
- */
+ 
 void iwl_mvm_ptp_remove(struct iwl_mvm *mvm)
 {
 	if (mvm->ptp_data.ptp_clock) {

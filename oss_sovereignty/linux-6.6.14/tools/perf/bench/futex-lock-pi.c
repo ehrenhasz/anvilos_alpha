@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Davidlohr Bueso.
- */
 
-/* For the CLR_() macros */
+ 
+
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -73,7 +71,7 @@ static void toggle_done(int sig __maybe_unused,
 			siginfo_t *info __maybe_unused,
 			void *uc __maybe_unused)
 {
-	/* inform all threads that we're done for the day */
+	 
 	done = true;
 	gettimeofday(&bench__end, NULL);
 	timersub(&bench__end, &bench__start, &bench__runtime);
@@ -96,7 +94,7 @@ static void *workerfn(void *arg)
 	again:
 		ret = futex_lock_pi(w->futex, NULL, futex_flag);
 
-		if (ret) { /* handle lock acquisition */
+		if (ret) {  
 			if (!params.silent)
 				warn("thread %d: Could not lock pi-lock for %p (%d)",
 				     w->tid, w->futex, ret);
@@ -111,7 +109,7 @@ static void *workerfn(void *arg)
 		if (ret && !params.silent)
 			warn("thread %d: Could not unlock pi-lock for %p (%d)",
 			     w->tid, w->futex, ret);
-		ops++; /* account for thread's share of work */
+		ops++;  
 	}  while (!done);
 
 	w->ops = ops;
@@ -224,7 +222,7 @@ int bench_futex_lock_pi(int argc, const char **argv)
 			err(EXIT_FAILURE, "pthread_join");
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);

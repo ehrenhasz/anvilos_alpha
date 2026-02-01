@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Xilinx, Inc.
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/of.h>
@@ -126,7 +123,7 @@ static const struct of_device_id zynqmp_reset_dt_ids[] = {
 	{ .compatible = "xlnx,zynqmp-reset", .data = &zynqmp_reset_data, },
 	{ .compatible = "xlnx,versal-reset", .data = &versal_reset_data, },
 	{ .compatible = "xlnx,versal-net-reset", .data = &versal_net_reset_data, },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver zynqmp_reset_driver = {

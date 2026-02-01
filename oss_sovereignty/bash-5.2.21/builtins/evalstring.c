@@ -1,22 +1,6 @@
-/* evalstring.c - evaluate a string as one or more shell commands. */
+ 
 
-/* Copyright (C) 1996-2022 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -99,16 +83,14 @@ should_optimize_fork (command, subshell)
       ((command->flags & CMD_INVERT_RETURN) == 0));
 }
 
-/* This has extra tests to account for STARTUP_STATE == 2, which is for
-   -c command but has been extended to command and process substitution
-   (basically any time you call parse_and_execute in a subshell). */
+ 
 int
 should_suppress_fork (command)
      COMMAND *command;
 {
   int subshell;
 
-  subshell = subshell_environment & SUBSHELL_PROCSUB;	/* salt to taste */
+  subshell = subshell_environment & SUBSHELL_PROCSUB;	 
   return (startup_state == 2 && parse_and_execute_level == 1 &&
 	  *bash_input.location.string == '\0' &&
 	  parser_expanding_alias () == 0 &&
@@ -192,17 +174,14 @@ can_optimize_cat_file (command)
 	    command->value.Simple->redirects->redirector.dest == 0);
 }
 
-/* How to force parse_and_execute () to clean up after itself. */
+ 
 void
 parse_and_execute_cleanup (old_running_trap)
      int old_running_trap;
 {
   if (running_trap > 0)
     {
-      /* We assume if we have a different value for running_trap than when
-	 we started (the only caller that cares is evalstring()), the
-	 original caller will perform the cleanup, and we should not step
-	 on them. */
+       
       if (running_trap != old_running_trap)
 	run_trap_cleanup (running_trap - 1);
       unfreeze_jobs_list ();
@@ -211,7 +190,7 @@ parse_and_execute_cleanup (old_running_trap)
   if (have_unwind_protects ())
      run_unwind_frame (PE_TAG);
   else
-    parse_and_execute_level = 0;			/* XXX */
+    parse_and_execute_level = 0;			 
 }
 
 static void
@@ -224,7 +203,7 @@ parse_prologue (string, flags, tag)
   int x;
 
   orig_string = string;
-  /* Unwind protect this invocation of parse_and_execute (). */
+   
   begin_unwind_frame (tag);
   unwind_protect_int (parse_and_execute_level);
   unwind_protect_jmp_buf (top_level);
@@ -241,11 +220,11 @@ parse_prologue (string, flags, tag)
   if (parse_and_execute_level == 0)
     add_unwind_protect (set_history_remembering, (char *)NULL);
   else
-    unwind_protect_int (remember_on_history);	/* can be used in scripts */
+    unwind_protect_int (remember_on_history);	 
 #  if defined (BANG_HISTORY)
   unwind_protect_int (history_expansion_inhibited);
-#  endif /* BANG_HISTORY */
-#endif /* HISTORY */
+#  endif  
+#endif  
 
   if (interactive_shell)
     {
@@ -276,22 +255,11 @@ parse_prologue (string, flags, tag)
 #  if defined (BANG_HISTORY)
   if (flags & SEVAL_NOHISTEXP)
     history_expansion_inhibited = 1;
-#  endif /* BANG_HISTORY */
-#endif /* HISTORY */
+#  endif  
+#endif  
 }
 
-/* Parse and execute the commands in STRING.  Returns whatever
-   execute_command () returns.  This frees STRING.  FLAGS is a
-   flags word; look in common.h for the possible values.  Actions
-   are:
-   	(flags & SEVAL_NONINT) -> interactive = 0;
-   	(flags & SEVAL_INTERACT) -> interactive = 1;
-   	(flags & SEVAL_NOHIST) -> call bash_history_disable ()
-   	(flags & SEVAL_NOFREE) -> don't free STRING when finished
-   	(flags & SEVAL_RESETLINE) -> reset line_number to 1
-   	(flags & SEVAL_NOHISTEXP) -> history_expansion_inhibited -> 1
-   	(flags & SEVAL_NOOPTIMIZE) -> don't try to turn on optimizing flags
-*/
+ 
 
 int
 parse_and_execute (string, from_file, flags)
@@ -311,18 +279,15 @@ parse_and_execute (string, from_file, flags)
   lreset = flags & SEVAL_RESETLINE;
 
 #if defined (HAVE_POSIX_SIGNALS)
-  /* If we longjmp and are going to go on, use this to restore signal mask */
+   
   sigemptyset ((sigset_t *)&pe_sigmask);
   sigprocmask (SIG_BLOCK, (sigset_t *)NULL, (sigset_t *)&pe_sigmask);
 #endif
 
-  /* Reset the line number if the caller wants us to.  If we don't reset the
-     line number, we have to subtract one, because we will add one just
-     before executing the next command (resetting the line number sets it to
-     0; the first line number is 1). */
+   
   push_stream (lreset);
   if (parser_expanding_alias ())
-    /* push current shell_input_line */
+     
     parser_save_alias ();
   
   if (lreset == 0)
@@ -333,9 +298,9 @@ parse_and_execute (string, from_file, flags)
   code = should_jump_to_top_level = 0;
   last_result = EXECUTION_SUCCESS;
 
-  /* We need to reset enough of the token state so we can start fresh. */
+   
   if (current_token == yacc_EOF)
-    current_token = '\n';		/* reset_parser() ? */
+    current_token = '\n';		 
 
   with_input_from_string (string, from_file);
   clear_shell_input_line ();
@@ -349,9 +314,7 @@ parse_and_execute (string, from_file, flags)
 	  break;
 	}
 
-      /* Provide a location for functions which `longjmp (top_level)' to
-	 jump to.  This prevents errors in substitution from restarting
-	 the reader loop directly, for example. */
+       
       code = setjmp_nosigs (top_level);
 
       if (code)
@@ -360,18 +323,11 @@ parse_and_execute (string, from_file, flags)
 	  switch (code)
 	    {
 	    case ERREXIT:
-	      /* variable_context -> 0 is what eval.c:reader_loop() does in
-		 these circumstances.  Don't bother with cleanup here because
-		 we don't want to run the function execution cleanup stuff
-		 that will cause pop_context and other functions to run.
-		 We call reset_local_contexts() instead, which just frees
-		 context memory.
-		 XXX - change that if we want the function context to be
-		 unwound. */
+	       
 	      if (exit_immediately_on_error && variable_context)
 	        {
 	          discard_unwind_frame ("pe_dispose");
-	          reset_local_contexts (); /* not in a function */
+	          reset_local_contexts ();  
 	        }
 	      should_jump_to_top_level = 1;
 	      goto out;
@@ -379,8 +335,7 @@ parse_and_execute (string, from_file, flags)
 	    case EXITPROG:
 	      if (command)
 		run_unwind_frame ("pe_dispose");
-	      /* Remember to call longjmp (top_level) after the old
-		 value for it is restored. */
+	       
 	      should_jump_to_top_level = 1;
 	      goto out;
 
@@ -389,11 +344,7 @@ parse_and_execute (string, from_file, flags)
 		{
 		  if (variable_context && signal_is_trapped (0))
 		    {
-		      /* Let's make sure we run the exit trap in the function
-			 context, as we do when not running parse_and_execute.
-			 The pe_dispose unwind frame comes before any unwind-
-			 protects installed by the string we're evaluating, so
-			 it will undo the current function scope. */
+		       
 		      dispose_command (command);
 		      discard_unwind_frame ("pe_dispose");
 		    }
@@ -406,7 +357,7 @@ parse_and_execute (string, from_file, flags)
 	    case DISCARD:
 	      if (command)
 		run_unwind_frame ("pe_dispose");
-	      last_result = last_command_exit_value = EXECUTION_FAILURE; /* XXX */
+	      last_result = last_command_exit_value = EXECUTION_FAILURE;  
 	      set_pipestatus_from_exit (last_command_exit_value);
 	      if (subshell_environment)
 		{
@@ -416,7 +367,7 @@ parse_and_execute (string, from_file, flags)
 	      else
 		{
 #if 0
-		  dispose_command (command);	/* pe_dispose does this */
+		  dispose_command (command);	 
 #endif
 #if defined (HAVE_POSIX_SIGNALS)
 		  sigprocmask (SIG_SETMASK, (sigset_t *)&pe_sigmask, (sigset_t *)NULL);
@@ -448,11 +399,7 @@ parse_and_execute (string, from_file, flags)
 		{
 		  char *x;
 
-		  /* If the command parses to something other than a straight
-		     function definition, or if we have not consumed the entire
-		     string, or if the parser has transformed the function
-		     name (as parsing will if it begins or ends with shell
-		     whitespace, for example), reject the attempt */
+		   
 		  if (command->type != cm_function_def ||
 		      ((x = parser_remaining_input ()) && *x) ||
 		      (STREQ (from_file, command->value.Function_def->name->word) == 0))
@@ -469,7 +416,7 @@ parse_and_execute (string, from_file, flags)
 	      bitmap = new_fd_bitmap (FD_BITMAP_SIZE);
 	      begin_unwind_frame ("pe_dispose");
 	      add_unwind_protect (dispose_fd_bitmap, bitmap);
-	      add_unwind_protect (dispose_command, command);	/* XXX */
+	      add_unwind_protect (dispose_command, command);	 
 
 	      global_command = (COMMAND *)NULL;
 
@@ -477,32 +424,14 @@ parse_and_execute (string, from_file, flags)
 		command->flags |= CMD_IGNORE_RETURN;
 
 #if defined (ONESHOT)
-	      /*
-	       * IF
-	       *   we were invoked as `bash -c' (startup_state == 2) AND
-	       *   parse_and_execute has not been called recursively AND
-	       *   we're not running a trap AND
-	       *   we have parsed the full command (string == '\0') AND
-	       *   we're not going to run the exit trap AND
-	       *   we have a simple command without redirections AND
-	       *   the command is not being timed AND
-	       *   the command's return status is not being inverted AND
-	       *   there aren't any traps in effect
-	       * THEN
-	       *   tell the execution code that we don't need to fork
-	       */
+	       
 	      if (should_suppress_fork (command))
 		{
 		  command->flags |= CMD_NO_FORK;
 		  command->value.Simple->flags |= CMD_NO_FORK;
 		}
 
-	      /* Can't optimize forks out here execept for simple commands.
-		 This knows that the parser sets up commands as left-side heavy
-		 (&& and || are left-associative) and after the single parse,
-		 if we are at the end of the command string, the last in a
-		 series of connection commands is
-		 command->value.Connection->second. */
+	       
 	      else if (command->type == cm_connection &&
 		       (flags & SEVAL_NOOPTIMIZE) == 0 &&
 		       can_optimize_connection (command))
@@ -510,22 +439,15 @@ parse_and_execute (string, from_file, flags)
 		  command->value.Connection->second->flags |= CMD_TRY_OPTIMIZING;
 		  command->value.Connection->second->value.Simple->flags |= CMD_TRY_OPTIMIZING;
 		}
-#endif /* ONESHOT */
+#endif  
 
-	      /* We play tricks in the parser and command_substitute() turning
-		 expand_aliases on and off depending on which parsing pass and
-		 whether or not we're in posix mode. This only matters for
-		 parsing, and we let the higher layers deal with that. We just
-		 want to ensure that expand_aliases is set to the appropriate
-		 global value when we go to execute this command, so we save
-		 and restore it around the execution (we don't restore it if
-		 the global value of the flag (expaliases_flag) changes). */
+	       
 	      local_expalias = expand_aliases;
 	      local_alflag = expaliases_flag;
 	      if (subshell_environment & SUBSHELL_COMSUB)
 		expand_aliases = expaliases_flag;
 
-	      /* See if this is a candidate for $( <file ). */
+	       
 	      if (startup_state == 2 &&
 		  (subshell_environment & SUBSHELL_COMSUB) &&
 		  *bash_input.location.string == '\0' &&
@@ -542,7 +464,7 @@ parse_and_execute (string, from_file, flags)
 	      dispose_fd_bitmap (bitmap);
 	      discard_unwind_frame ("pe_dispose");
 
-	      /* If the global value didn't change, we restore what we had. */
+	       
 	      if ((subshell_environment & SUBSHELL_COMSUB) && local_alflag == expaliases_flag)
 		expand_aliases = local_expalias;
 
@@ -555,7 +477,7 @@ parse_and_execute (string, from_file, flags)
 	}
       else
 	{
-	  last_result = EX_BADUSAGE;	/* was EXECUTION_FAILURE */
+	  last_result = EX_BADUSAGE;	 
 
 	  if (interactive_shell == 0 && this_shell_builtin &&
 	      (this_shell_builtin == source_builtin || this_shell_builtin == eval_builtin) &&
@@ -566,8 +488,7 @@ parse_and_execute (string, from_file, flags)
 	      last_command_exit_value = EX_BADUSAGE;
 	    }
 
-	  /* Since we are shell compatible, syntax errors in a script
-	     abort the execution of the script.  Right? */
+	   
 	  break;
 	}
     }
@@ -578,9 +499,7 @@ parse_and_execute (string, from_file, flags)
 
   if (interrupt_state && parse_and_execute_level == 0)
     {
-      /* An interrupt during non-interactive execution in an
-	 interactive shell (e.g. via $PROMPT_COMMAND) should
-	 not cause the shell to exit. */
+       
       interactive = interactive_shell;
       throw_to_top_level ();
     }
@@ -593,11 +512,7 @@ parse_and_execute (string, from_file, flags)
   return (last_result);
 }
 
-/* Parse a command contained in STRING according to FLAGS and return the
-   number of characters consumed from the string.  If non-NULL, set *ENDP
-   to the position in the string where the parse ended.  Used to validate
-   command substitutions during parsing to obey Posix rules about finding
-   the end of the command and balancing parens. */
+ 
 int
 parse_string (string, from_file, flags, cmdp, endp)
      char *string;
@@ -615,18 +530,15 @@ parse_string (string, from_file, flags, cmdp, endp)
   parse_prologue (string, flags, PS_TAG);
 
 #if defined (HAVE_POSIX_SIGNALS)
-  /* If we longjmp and are going to go on, use this to restore signal mask */
+   
   sigemptyset ((sigset_t *)&ps_sigmask);
   sigprocmask (SIG_BLOCK, (sigset_t *)NULL, (sigset_t *)&ps_sigmask);
 #endif
 
-  /* Reset the line number if the caller wants us to.  If we don't reset the
-     line number, we have to subtract one, because we will add one just
-     before executing the next command (resetting the line number sets it to
-     0; the first line number is 1). */
+   
   push_stream (0);
   if (parser_expanding_alias ())
-    /* push current shell_input_line */
+     
     parser_save_alias ();
 
   code = should_jump_to_top_level = 0;
@@ -634,7 +546,7 @@ parse_string (string, from_file, flags, cmdp, endp)
 
   with_input_from_string (string, from_file);
   ostring = bash_input.location.string;
-  while (*(bash_input.location.string))		/* XXX - parser_expanding_alias () ? */
+  while (*(bash_input.location.string))		 
     {
       command = (COMMAND *)NULL;
 
@@ -643,8 +555,7 @@ parse_string (string, from_file, flags, cmdp, endp)
 	break;
 #endif
 
-      /* Provide a location for functions which `longjmp (top_level)' to
-	 jump to. */
+       
       code = setjmp_nosigs (top_level);
 
       if (code)
@@ -658,11 +569,10 @@ parse_string (string, from_file, flags, cmdp, endp)
 	    case ERREXIT:
 	    case EXITPROG:
 	    case EXITBLTIN:
-	    case DISCARD:		/* XXX */
+	    case DISCARD:		 
 	      if (command)
 		dispose_command (command);
-	      /* Remember to call longjmp (top_level) after the old
-		 value for it is restored. */
+	       
 	      should_jump_to_top_level = 1;
 	      goto out;
 
@@ -691,7 +601,7 @@ parse_string (string, from_file, flags, cmdp, endp)
 	      code = DISCARD;
 	    }
 	  else
-	    reset_parser ();	/* XXX - sets token_to_read */
+	    reset_parser ();	 
 	  break;
 	}
 
@@ -712,8 +622,7 @@ out:
 
   run_unwind_frame (PS_TAG);
 
-  /* If we return < 0, the caller (xparse_dolparen) will jump_to_top_level for
-     us, after doing cleanup */
+   
   if (should_jump_to_top_level)
     {
       if (parse_and_execute_level == 0)
@@ -737,7 +646,7 @@ open_redir_file (r, fnp)
   if (r->instruction != r_input_direction)
     return -1;
 
-  /* Get the filename. */
+   
   if (posixly_correct && !interactive_shell)
     disallow_filename_globbing++;
   fn = redirection_expand (r->redirectee.filename);
@@ -765,9 +674,7 @@ open_redir_file (r, fnp)
   return fd;
 }
 
-/* Handle a $( < file ) command substitution.  This expands the filename,
-   returning errors as appropriate, then just cats the file to the standard
-   output. */
+ 
 static int
 cat_file (r)
      REDIRECT *r;
@@ -796,14 +703,12 @@ evalstring (string, from_file, flags)
   volatile int r, rflag, rcatch;
   volatile int was_trap;
 
-  /* Are we running a trap when we execute this function? */
+   
   was_trap = running_trap;
 
   rcatch = 0;
   rflag = return_catch_flag;
-  /* If we are in a place where `return' is valid, we have to catch
-     `eval "... return"' and make sure parse_and_execute cleans up. Then
-     we can trampoline to the previous saved return_catch location. */
+   
   if (rflag)
     {
       begin_unwind_frame ("evalstring");
@@ -811,19 +716,18 @@ evalstring (string, from_file, flags)
       unwind_protect_int (return_catch_flag);
       unwind_protect_jmp_buf (return_catch);
 
-      return_catch_flag++;	/* increment so we have a counter */
+      return_catch_flag++;	 
       rcatch = setjmp_nosigs (return_catch);
     }
 
   if (rcatch)
     {
-      /* We care about whether or not we are running the same trap we were
-	 when we entered this function. */
+       
       parse_and_execute_cleanup (was_trap);
       r = return_catch_value;
     }
   else
-    /* Note that parse_and_execute () frees the string it is passed. */
+     
     r = parse_and_execute (string, from_file, flags);
 
   if (rflag)

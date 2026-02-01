@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/* lib_color.c
- *
- * Handles color emulation of SYS V curses
- */
+ 
 
 #define NEW_PAIR_INTERNAL 1
 
@@ -70,11 +35,7 @@ MODULE_ID("$Id: lib_color.c,v 1.149 2022/04/30 18:36:54 tom Exp $")
 #endif
 
 #ifndef USE_TERM_DRIVER
-/*
- * These should be screen structure members.  They need to be globals for
- * historical reasons.  So we assign them in start_color() and also in
- * set_term()'s screen-switching logic.
- */
+ 
 #if USE_REENTRANT
 NCURSES_EXPORT(int)
 NCURSES_PUBLIC_VAR(COLOR_PAIRS) (void)
@@ -90,7 +51,7 @@ NCURSES_PUBLIC_VAR(COLORS) (void)
 NCURSES_EXPORT_VAR(int) COLOR_PAIRS = 0;
 NCURSES_EXPORT_VAR(int) COLORS = 0;
 #endif
-#endif /* !USE_TERM_DRIVER */
+#endif  
 
 #define DATA(r,g,b) {r,g,b, 0,0,0, 0}
 
@@ -99,37 +60,34 @@ NCURSES_EXPORT_VAR(int) COLORS = 0;
 #define OkColorHi(n)	(((n) < COLORS) && ((n) < maxcolors))
 #define InPalette(n)	((n) >= 0 && (n) < MAX_PALETTE)
 
-/*
- * Given a RGB range of 0..1000, we'll normally set the individual values
- * to about 2/3 of the maximum, leaving full-range for bold/bright colors.
- */
+ 
 #define RGB_ON  680
 #define RGB_OFF 0
-/* *INDENT-OFF* */
+ 
 static const color_t cga_palette[] =
 {
-    /*  R               G               B */
-    DATA(RGB_OFF,	RGB_OFF,	RGB_OFF),	/* COLOR_BLACK */
-    DATA(RGB_ON,	RGB_OFF,	RGB_OFF),	/* COLOR_RED */
-    DATA(RGB_OFF,	RGB_ON,		RGB_OFF),	/* COLOR_GREEN */
-    DATA(RGB_ON,	RGB_ON,		RGB_OFF),	/* COLOR_YELLOW */
-    DATA(RGB_OFF,	RGB_OFF,	RGB_ON),	/* COLOR_BLUE */
-    DATA(RGB_ON,	RGB_OFF,	RGB_ON),	/* COLOR_MAGENTA */
-    DATA(RGB_OFF,	RGB_ON,		RGB_ON),	/* COLOR_CYAN */
-    DATA(RGB_ON,	RGB_ON,		RGB_ON),	/* COLOR_WHITE */
+     
+    DATA(RGB_OFF,	RGB_OFF,	RGB_OFF),	 
+    DATA(RGB_ON,	RGB_OFF,	RGB_OFF),	 
+    DATA(RGB_OFF,	RGB_ON,		RGB_OFF),	 
+    DATA(RGB_ON,	RGB_ON,		RGB_OFF),	 
+    DATA(RGB_OFF,	RGB_OFF,	RGB_ON),	 
+    DATA(RGB_ON,	RGB_OFF,	RGB_ON),	 
+    DATA(RGB_OFF,	RGB_ON,		RGB_ON),	 
+    DATA(RGB_ON,	RGB_ON,		RGB_ON),	 
 };
 
 static const color_t hls_palette[] =
 {
-    /*  	H       L       S */
-    DATA(	0,	0,	0),		/* COLOR_BLACK */
-    DATA(	120,	50,	100),		/* COLOR_RED */
-    DATA(	240,	50,	100),		/* COLOR_GREEN */
-    DATA(	180,	50,	100),		/* COLOR_YELLOW */
-    DATA(	330,	50,	100),		/* COLOR_BLUE */
-    DATA(	60,	50,	100),		/* COLOR_MAGENTA */
-    DATA(	300,	50,	100),		/* COLOR_CYAN */
-    DATA(	0,	50,	100),		/* COLOR_WHITE */
+     
+    DATA(	0,	0,	0),		 
+    DATA(	120,	50,	100),		 
+    DATA(	240,	50,	100),		 
+    DATA(	180,	50,	100),		 
+    DATA(	330,	50,	100),		 
+    DATA(	60,	50,	100),		 
+    DATA(	300,	50,	100),		 
+    DATA(	0,	50,	100),		 
 };
 
 #ifdef USE_TERM_DRIVER
@@ -137,12 +95,9 @@ NCURSES_EXPORT_VAR(const color_t*) _nc_cga_palette = cga_palette;
 NCURSES_EXPORT_VAR(const color_t*) _nc_hls_palette = hls_palette;
 #endif
 
-/* *INDENT-ON* */
+ 
 #if NCURSES_EXT_FUNCS
-/*
- * These are called from _nc_do_color(), which in turn is called from
- * vidattr - so we have to assume that sp may be null.
- */
+ 
 static int
 default_fg(NCURSES_SP_DCL0)
 {
@@ -160,11 +115,7 @@ default_bg(NCURSES_SP_DCL0)
 #endif
 
 #ifndef USE_TERM_DRIVER
-/*
- * SVr4 curses is known to interchange color codes (1,4) and (3,6), possibly
- * to maintain compatibility with a pre-ANSI scheme.  The same scheme is
- * also used in the FreeBSD syscons.
- */
+ 
 static int
 toggled_colors(int c)
 {
@@ -259,7 +210,7 @@ init_direct_colors(NCURSES_SP_DCL0)
 	const char *s;
 	int width;
 
-	/* find the number of bits needed for the maximum color value */
+	 
 	for (width = 0; (1 << width) - 1 < (COLORS - 1); ++width) {
 	    ;
 	}
@@ -281,15 +232,15 @@ init_direct_colors(NCURSES_SP_DCL0)
 	    switch (sscanf(s, "%d/%d/%d", &red, &green, &blue)) {
 	    default:
 		blue = width - (2 * n);
-		/* FALLTHRU */
+		 
 	    case 1:
 		green = n;
-		/* FALLTHRU */
+		 
 	    case 2:
 		red = n;
-		/* FALLTHRU */
+		 
 	    case 3:
-		/* okay */
+		 
 		break;
 	    }
 	    result->bits.red = UChar(red);
@@ -300,9 +251,7 @@ init_direct_colors(NCURSES_SP_DCL0)
     return (result->value != 0);
 }
 
-/*
- * Reset the color pair, e.g., to whatever color pair 0 is.
- */
+ 
 static bool
 reset_color_pair(NCURSES_SP_DCL0)
 {
@@ -320,11 +269,7 @@ reset_color_pair(NCURSES_SP_DCL0)
 #endif
 }
 
-/*
- * Reset color pairs and definitions.  Actually we do both more to accommodate
- * badly-written terminal descriptions than for the relatively rare case where
- * someone has changed the color definitions.
- */
+ 
 NCURSES_EXPORT(bool)
 NCURSES_SP_NAME(_nc_reset_colors) (NCURSES_SP_DCL0)
 {
@@ -378,9 +323,7 @@ NCURSES_SP_NAME(start_color) (NCURSES_SP_DCL0)
 				 NCURSES_SP_NAME(_nc_outch));
 	}
 #if !NCURSES_EXT_COLORS
-	/*
-	 * Without ext-colors, we cannot represent more than 256 color pairs.
-	 */
+	 
 	if (maxpairs > 256)
 	    maxpairs = 256;
 #endif
@@ -389,15 +332,12 @@ NCURSES_SP_NAME(start_color) (NCURSES_SP_DCL0)
 	    SP_PARM->_pair_limit = maxpairs;
 
 #if NCURSES_EXT_FUNCS
-	    /*
-	     * If using default colors, allocate extra space in table to
-	     * allow for default-color as a component of a color-pair.
-	     */
+	     
 	    SP_PARM->_pair_limit += (1 + (2 * maxcolors));
 #if !NCURSES_EXT_COLORS
 	    SP_PARM->_pair_limit = limit_PAIRS(SP_PARM->_pair_limit);
 #endif
-#endif /* NCURSES_EXT_FUNCS */
+#endif  
 	    SP_PARM->_pair_count = maxpairs;
 	    SP_PARM->_color_count = maxcolors;
 #if !USE_REENTRANT
@@ -444,10 +384,10 @@ start_color(void)
 }
 #endif
 
-/* This function was originally written by Daniel Weaver <danw@znyx.com> */
+ 
 static void
 rgb2hls(int r, int g, int b, int *h, int *l, int *s)
-/* convert RGB to HLS system */
+ 
 {
     int min, max, t;
 
@@ -456,22 +396,22 @@ rgb2hls(int r, int g, int b, int *h, int *l, int *s)
     if ((max = g > r ? g : r) < b)
 	max = b;
 
-    /* calculate lightness */
+     
     *l = ((min + max) / 20);
 
-    if (min == max) {		/* black, white and all shades of gray */
+    if (min == max) {		 
 	*h = 0;
 	*s = 0;
 	return;
     }
 
-    /* calculate saturation */
+     
     if (*l < 50)
 	*s = (((max - min) * 100) / (max + min));
     else
 	*s = (((max - min) * 100) / (2000 - max - min));
 
-    /* calculate hue */
+     
     if (r == max)
 	t = (120 + ((g - b) * 60) / (max - min));
     else if (g == max)
@@ -482,9 +422,7 @@ rgb2hls(int r, int g, int b, int *h, int *l, int *s)
     *h = (t % 360);
 }
 
-/*
- * Change all cells which use(d) a given color pair to force a repaint.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_change_pair(SCREEN *sp, int pair)
 {
@@ -502,8 +440,7 @@ _nc_change_pair(SCREEN *sp, int pair)
 	bool changed = FALSE;
 	for (x = 0; x <= CurScreen(sp)->_maxx; x++) {
 	    if (GetPair(ptr->text[x]) == pair) {
-		/* Set the old cell to zero to ensure it will be
-		   updated on the next doupdate() */
+		 
 		SetChar(ptr->text[x], 0, 0);
 		CHANGED_CELL(ptr, x);
 		changed = TRUE;
@@ -551,10 +488,7 @@ _nc_reserve_pairs(SCREEN *sp, int want)
     }
 }
 
-/*
- * Extension (1997/1/18) - Allow negative f/b values to set default color
- * values.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_init_pair(SCREEN *sp, int pair, int f, int b)
 {
@@ -578,11 +512,7 @@ _nc_init_pair(SCREEN *sp, int pair, int f, int b)
 	bool wasDefault = FALSE;
 	int default_pairs = sp->_default_pairs;
 
-	/*
-	 * Map caller's color number, e.g., -1, 0, 1, .., 7, etc., into
-	 * internal unsigned values which we will store in the _color_pairs[]
-	 * table.
-	 */
+	 
 	if (isDefaultColor(f)) {
 	    f = COLOR_DEFAULT;
 	    isDefault = TRUE;
@@ -597,32 +527,19 @@ _nc_init_pair(SCREEN *sp, int pair, int f, int b)
 	    returnCode(ERR);
 	}
 
-	/*
-	 * Check if the table entry that we are going to init/update used
-	 * default colors.
-	 */
+	 
 	if (isDefaultColor(FORE_OF(previous))
 	    || isDefaultColor(BACK_OF(previous)))
 	    wasDefault = TRUE;
 
-	/*
-	 * Keep track of the number of entries in the color pair table which
-	 * used a default color.
-	 */
+	 
 	if (isDefault && !wasDefault) {
 	    ++default_pairs;
 	} else if (wasDefault && !isDefault) {
 	    --default_pairs;
 	}
 
-	/*
-	 * As an extension, ncurses allows the pair number to exceed the
-	 * terminal's color_pairs value for pairs using a default color.
-	 *
-	 * Note that updating a pair which used a default color with one
-	 * that does not will decrement the count - and possibly interfere
-	 * with sequentially adding new pairs.
-	 */
+	 
 	if (pair > (sp->_pair_count + default_pairs)) {
 	    returnCode(ERR);
 	}
@@ -637,11 +554,7 @@ _nc_init_pair(SCREEN *sp, int pair, int f, int b)
 	}
     }
 
-    /*
-     * When a pair's content is changed, replace its colors (if pair was
-     * initialized before a screen update is performed replacing original
-     * pair colors with the new ones).
-     */
+     
     MakeColorPair(result, f, b);
     if ((FORE_OF(previous) != 0
 	 || BACK_OF(previous) != 0)
@@ -654,7 +567,7 @@ _nc_init_pair(SCREEN *sp, int pair, int f, int b)
     _nc_set_color_pair(sp, pair, cpINIT);
 
     if (GET_SCREEN_PAIR(sp) == pair)
-	SET_SCREEN_PAIR(sp, (int) (~0));	/* force attribute update */
+	SET_SCREEN_PAIR(sp, (int) (~0));	 
 
 #ifdef USE_TERM_DRIVER
     CallDriver_3(sp, td_initpair, pair, f, b);
@@ -1020,11 +933,7 @@ NCURSES_SP_NAME(_nc_do_color) (NCURSES_SP_DCLx
 	if ((isDefaultColor(fg) && !isDefaultColor(old_fg))
 	    || (isDefaultColor(bg) && !isDefaultColor(old_bg))) {
 #if NCURSES_EXT_FUNCS
-	    /*
-	     * A minor optimization - but extension.  If "AX" is specified in
-	     * the terminal description, treat it as screen's indicator of ECMA
-	     * SGR 39 and SGR 49, and assume the two sequences are independent.
-	     */
+	     
 	    if (SP_PARM->_has_sgr_39_49
 		&& isDefaultColor(old_bg)
 		&& !isDefaultColor(old_fg)) {
@@ -1162,5 +1071,5 @@ reset_color_pairs(void)
 {
     NCURSES_SP_NAME(reset_color_pairs) (CURRENT_SCREEN);
 }
-#endif /* NCURSES_SP_FUNCS */
-#endif /* NCURSES_EXT_COLORS */
+#endif  
+#endif  

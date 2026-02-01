@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt_pkt_decoder.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+ 
+ 
 
 #ifndef INCLUDE__INTEL_PT_PKT_DECODER_H__
 #define INCLUDE__INTEL_PT_PKT_DECODER_H__
@@ -67,15 +64,11 @@ struct intel_pt_pkt {
 	uint64_t		payload;
 };
 
-/*
- * Decoding of BIP packets conflicts with single-byte TNT packets. Since BIP
- * packets only occur in the context of a block (i.e. between BBP and BEP), that
- * context must be recorded and passed to the packet decoder.
- */
+ 
 enum intel_pt_pkt_ctx {
-	INTEL_PT_NO_CTX,	/* BIP packets are invalid */
-	INTEL_PT_BLK_4_CTX,	/* 4-byte BIP packets */
-	INTEL_PT_BLK_8_CTX,	/* 8-byte BIP packets */
+	INTEL_PT_NO_CTX,	 
+	INTEL_PT_BLK_4_CTX,	 
+	INTEL_PT_BLK_8_CTX,	 
 };
 
 const char *intel_pt_pkt_name(enum intel_pt_pkt_type);

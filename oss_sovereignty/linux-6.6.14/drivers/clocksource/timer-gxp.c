@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -16,8 +16,8 @@
 #define GXP_TIMESTAMP_OFS 0x08
 #define GXP_TIMER_CTRL_OFS 0x14
 
-/* TCS Stands for Timer Control/Status: these are masks to be used in */
-/* the Timer Count Registers */
+ 
+ 
 #define MASK_TCS_ENABLE	0x01
 #define MASK_TCS_PERIOD	0x02
 #define MASK_TCS_RELOAD	0x04
@@ -47,7 +47,7 @@ static int gxp_time_set_next_event(unsigned long event, struct clock_event_devic
 {
 	struct gxp_timer *timer = to_gxp_timer(evt_dev);
 
-	/* Stop counting and disable interrupt before updating */
+	 
 	writeb_relaxed(MASK_TCS_TC, timer->control);
 	writel_relaxed(event, timer->counter);
 	writeb_relaxed(MASK_TCS_TC | MASK_TCS_ENABLE, timer->control);
@@ -103,7 +103,7 @@ static int __init gxp_timer_init(struct device_node *node)
 		goto err_iomap;
 	}
 
-	/* Set the offsets to the clock register and timer registers */
+	 
 	gxp_timer->counter = base + GXP_TIMER_CNT_OFS;
 	gxp_timer->control = base + GXP_TIMER_CTRL_OFS;
 	system_clock = base + GXP_TIMESTAMP_OFS;
@@ -163,10 +163,7 @@ err_free:
 	return ret;
 }
 
-/*
- * This probe gets called after the timer is already up and running. This will create
- * the watchdog device as a child since the registers are shared.
- */
+ 
 
 static int gxp_timer_probe(struct platform_device *pdev)
 {
@@ -185,7 +182,7 @@ static int gxp_timer_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* Pass the base address (counter) as platform data and nothing else */
+	 
 	gxp_watchdog_device->dev.platform_data = gxp_timer->counter;
 	gxp_watchdog_device->dev.parent = dev;
 

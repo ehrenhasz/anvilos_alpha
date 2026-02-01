@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Sieć Badawcza Łukasiewicz
- * - Przemysłowy Instytut Automatyki i Pomiarów PIAP
- * Written by Krzysztof Hałasa
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -13,15 +9,15 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-subdev.h>
 
-/* External clock (extclk) frequencies */
+ 
 #define AR0521_EXTCLK_MIN		(10 * 1000 * 1000)
 #define AR0521_EXTCLK_MAX		(48 * 1000 * 1000)
 
-/* PLL and PLL2 */
+ 
 #define AR0521_PLL_MIN			(320 * 1000 * 1000)
 #define AR0521_PLL_MAX			(1280 * 1000 * 1000)
 
-/* Effective pixel sample rate on the pixel array. */
+ 
 #define AR0521_PIXEL_CLOCK_RATE		(184 * 1000 * 1000)
 #define AR0521_PIXEL_CLOCK_MIN		(168 * 1000 * 1000)
 #define AR0521_PIXEL_CLOCK_MAX		(414 * 1000 * 1000)
@@ -39,16 +35,16 @@
 #define AR0521_HEIGHT_MAX		1944u
 
 #define AR0521_WIDTH_BLANKING_MIN	572u
-#define AR0521_HEIGHT_BLANKING_MIN	38u /* must be even */
-#define AR0521_TOTAL_HEIGHT_MAX		65535u /* max_frame_length_lines */
-#define AR0521_TOTAL_WIDTH_MAX		65532u /* max_line_length_pck */
+#define AR0521_HEIGHT_BLANKING_MIN	38u  
+#define AR0521_TOTAL_HEIGHT_MAX		65535u  
+#define AR0521_TOTAL_WIDTH_MAX		65532u  
 
 #define AR0521_ANA_GAIN_MIN		0x00
 #define AR0521_ANA_GAIN_MAX		0x3f
 #define AR0521_ANA_GAIN_STEP		0x01
 #define AR0521_ANA_GAIN_DEFAULT		0x00
 
-/* AR0521 registers */
+ 
 #define AR0521_REG_VT_PIX_CLK_DIV		0x0300
 #define AR0521_REG_FRAME_LENGTH_LINES		0x0340
 
@@ -85,9 +81,9 @@
 #define be		cpu_to_be16
 
 static const char * const ar0521_supply_names[] = {
-	"vdd_io",	/* I/O (1.8V) supply */
-	"vdd",		/* Core, PLL and MIPI (1.2V) supply */
-	"vaa",		/* Analog (2.7V) supply */
+	"vdd_io",	 
+	"vdd",		 
+	"vaa",		 
 };
 
 static const s64 ar0521_link_frequencies[] = {
@@ -120,7 +116,7 @@ struct ar0521_dev {
 	struct regulator *supplies[ARRAY_SIZE(ar0521_supply_names)];
 	struct gpio_desc *reset_gpio;
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
 	struct v4l2_mbus_framefmt fmt;
@@ -168,7 +164,7 @@ static int ar0521_code_to_bpp(struct ar0521_dev *sensor)
 	return -EINVAL;
 }
 
-/* Data must be BE16, the first value is the register address */
+ 
 static int ar0521_write_regs(struct ar0521_dev *sensor, const __be16 *data,
 			     unsigned int count)
 {
@@ -200,13 +196,13 @@ static int ar0521_write_reg(struct ar0521_dev *sensor, u16 reg, u16 val)
 
 static int ar0521_set_geometry(struct ar0521_dev *sensor)
 {
-	/* Center the image in the visible output window. */
+	 
 	u16 x = clamp((AR0521_WIDTH_MAX - sensor->fmt.width) / 2,
 		       AR0521_MIN_X_ADDR_START, AR0521_MAX_X_ADDR_END);
 	u16 y = clamp(((AR0521_HEIGHT_MAX - sensor->fmt.height) / 2) & ~1,
 		       AR0521_MIN_Y_ADDR_START, AR0521_MAX_Y_ADDR_END);
 
-	/* All dimensions are unsigned 12-bit integers */
+	 
 	__be16 regs[] = {
 		be(AR0521_REG_FRAME_LENGTH_LINES),
 		be(sensor->fmt.height + sensor->ctrls.vblank->val),
@@ -228,7 +224,7 @@ static int ar0521_set_gains(struct ar0521_dev *sensor)
 	int red = max(green + sensor->ctrls.red_balance->val, 0);
 	int blue = max(green + sensor->ctrls.blue_balance->val, 0);
 	unsigned int gain = min(red, min(green, blue));
-	unsigned int analog = min(gain, 64u); /* range is 0 - 127 */
+	unsigned int analog = min(gain, 64u);  
 	__be16 regs[5];
 
 	red   = min(red   - analog + 64, 511u);
@@ -254,15 +250,15 @@ static u32 calc_pll(struct ar0521_dev *sensor, u32 freq, u16 *pre_ptr, u16 *mult
 					      sensor->extclk_freq);
 
 		if (new_mult < 32)
-			continue; /* Minimum value */
+			continue;  
 		if (new_mult > 254)
-			break; /* Maximum, larger pre won't work either */
+			break;  
 		if (sensor->extclk_freq * (u64)new_mult < AR0521_PLL_MIN *
 		    new_pre)
 			continue;
 		if (sensor->extclk_freq * (u64)new_mult > AR0521_PLL_MAX *
 		    new_pre)
-			break; /* Larger pre won't work either */
+			break;  
 		new_pll = div64_round_up(sensor->extclk_freq * (u64)new_mult,
 					 new_pre);
 		if (new_pll < pll) {
@@ -285,52 +281,7 @@ static void ar0521_calc_pll(struct ar0521_dev *sensor)
 	u32 vco;
 	int bpp;
 
-	/*
-	 * PLL1 and PLL2 are computed equally even if the application note
-	 * suggests a slower PLL1 clock. Maintain pll1 and pll2 divider and
-	 * multiplier separated to later specialize the calculation procedure.
-	 *
-	 * PLL1:
-	 * - mclk -> / pre_div1 * pre_mul1 = VCO1 = COUNTER_CLOCK
-	 *
-	 * PLL2:
-	 * - mclk -> / pre_div * pre_mul = VCO
-	 *
-	 *   VCO -> / vt_pix = PIXEL_CLOCK
-	 *   VCO -> / vt_pix / 2 = WORD_CLOCK
-	 *   VCO -> / op_sys = SERIAL_CLOCK
-	 *
-	 * With:
-	 * - vt_pix = bpp / 2
-	 * - WORD_CLOCK = PIXEL_CLOCK / 2
-	 * - SERIAL_CLOCK = MIPI data rate (Mbps / lane) = WORD_CLOCK * bpp
-	 *   NOTE: this implies the MIPI clock is divided internally by 2
-	 *         to account for DDR.
-	 *
-	 * As op_sys_div is fixed to 1:
-	 *
-	 * SERIAL_CLOCK = VCO
-	 * VCO = 2 * MIPI_CLK
-	 * VCO = PIXEL_CLOCK * bpp / 2
-	 *
-	 * In the clock tree:
-	 * MIPI_CLK = PIXEL_CLOCK * bpp / 2 / 2
-	 *
-	 * Generic pixel_rate to bus clock frequencey equation:
-	 * MIPI_CLK = V4L2_CID_PIXEL_RATE * bpp / lanes / 2
-	 *
-	 * From which we derive the PIXEL_CLOCK to use in the clock tree:
-	 * PIXEL_CLOCK = V4L2_CID_PIXEL_RATE * 2 / lanes
-	 *
-	 * Documented clock ranges:
-	 *   WORD_CLOCK = (35MHz - 120 MHz)
-	 *   PIXEL_CLOCK = (84MHz - 207MHz)
-	 *   VCO = (320MHz - 1280MHz)
-	 *
-	 * TODO: in case we have less data lanes we have to reduce the desired
-	 * VCO not to exceed the limits specified by the datasheet and
-	 * consequentially reduce the obtained pixel clock.
-	 */
+	 
 	pixel_clock = AR0521_PIXEL_CLOCK_RATE * 2 / sensor->lane_count;
 	bpp = ar0521_code_to_bpp(sensor);
 	sensor->pll.vt_pix = bpp / 2;
@@ -346,12 +297,12 @@ static int ar0521_pll_config(struct ar0521_dev *sensor)
 {
 	__be16 pll_regs[] = {
 		be(AR0521_REG_VT_PIX_CLK_DIV),
-		/* 0x300 */ be(sensor->pll.vt_pix), /* vt_pix_clk_div = bpp / 2 */
-		/* 0x302 */ be(1), /* vt_sys_clk_div */
-		/* 0x304 */ be((sensor->pll.pre2 << 8) | sensor->pll.pre),
-		/* 0x306 */ be((sensor->pll.mult2 << 8) | sensor->pll.mult),
-		/* 0x308 */ be(sensor->pll.vt_pix * 2), /* op_pix_clk_div = 2 * vt_pix_clk_div */
-		/* 0x30A */ be(1)  /* op_sys_clk_div */
+		  be(sensor->pll.vt_pix),  
+		  be(1),  
+		  be((sensor->pll.pre2 << 8) | sensor->pll.pre),
+		  be((sensor->pll.mult2 << 8) | sensor->pll.mult),
+		  be(sensor->pll.vt_pix * 2),  
+		  be(1)   
 	};
 
 	ar0521_calc_pll(sensor);
@@ -367,7 +318,7 @@ static int ar0521_set_stream(struct ar0521_dev *sensor, bool on)
 		if (ret < 0)
 			return ret;
 
-		/* Stop streaming for just a moment */
+		 
 		ret = ar0521_write_reg(sensor, AR0521_REG_RESET,
 				       AR0521_REG_RESET_DEFAULTS);
 		if (ret)
@@ -385,13 +336,13 @@ static int ar0521_set_stream(struct ar0521_dev *sensor, bool on)
 		if (ret)
 			goto err;
 
-		/* Exit LP-11 mode on clock and data lanes */
+		 
 		ret = ar0521_write_reg(sensor, AR0521_REG_HISPI_CONTROL_STATUS,
 				       0);
 		if (ret)
 			goto err;
 
-		/* Start streaming */
+		 
 		ret = ar0521_write_reg(sensor, AR0521_REG_RESET,
 				       AR0521_REG_RESET_DEFAULTS |
 				       AR0521_REG_RESET_STREAM);
@@ -405,15 +356,12 @@ err:
 		return ret;
 
 	} else {
-		/*
-		 * Reset gain, the sensor may produce all white pixels without
-		 * this
-		 */
+		 
 		ret = ar0521_write_reg(sensor, AR0521_REG_GLOBAL_GAIN, 0x2000);
 		if (ret)
 			return ret;
 
-		/* Stop streaming */
+		 
 		ret = ar0521_write_reg(sensor, AR0521_REG_RESET,
 				       AR0521_REG_RESET_DEFAULTS);
 		if (ret)
@@ -449,7 +397,7 @@ static int ar0521_get_fmt(struct v4l2_subdev *sd,
 
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
 		fmt = v4l2_subdev_get_try_format(&sensor->sd, sd_state, 0
-						 /* pad */);
+						  );
 	else
 		fmt = &sensor->fmt;
 
@@ -474,7 +422,7 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
 		struct v4l2_mbus_framefmt *fmt;
 
-		fmt = v4l2_subdev_get_try_format(sd, sd_state, 0 /* pad */);
+		fmt = v4l2_subdev_get_try_format(sd, sd_state, 0  );
 		*fmt = format->format;
 
 		mutex_unlock(&sensor->lock);
@@ -485,10 +433,7 @@ static int ar0521_set_fmt(struct v4l2_subdev *sd,
 	sensor->fmt = format->format;
 	ar0521_calc_pll(sensor);
 
-	/*
-	 * Update the exposure and blankings limits. Blankings are also reset
-	 * to the minimum.
-	 */
+	 
 	max_hblank = AR0521_TOTAL_WIDTH_MAX - sensor->fmt.width;
 	ret = __v4l2_ctrl_modify_range(sensor->ctrls.hblank,
 				       sensor->ctrls.hblank->minimum,
@@ -534,7 +479,7 @@ static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
 	int exp_max;
 	int ret;
 
-	/* v4l2_ctrl_lock() locks our own mutex */
+	 
 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
@@ -546,7 +491,7 @@ static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/* access the sensor only if it's powered up */
+	 
 	if (!pm_runtime_get_if_in_use(&sensor->i2c_client->dev))
 		return 0;
 
@@ -606,15 +551,15 @@ static int ar0521_init_controls(struct ar0521_dev *sensor)
 
 	v4l2_ctrl_handler_init(hdl, 32);
 
-	/* We can use our own mutex for the ctrl lock */
+	 
 	hdl->lock = &sensor->lock;
 
-	/* Analog gain */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_ANALOGUE_GAIN,
 			  AR0521_ANA_GAIN_MIN, AR0521_ANA_GAIN_MAX,
 			  AR0521_ANA_GAIN_STEP, AR0521_ANA_GAIN_DEFAULT);
 
-	/* Manual gain */
+	 
 	ctrls->gain = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_GAIN, 0, 511, 1, 0);
 	ctrls->red_balance = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_RED_BALANCE,
 					       -512, 511, 1, 0);
@@ -622,7 +567,7 @@ static int ar0521_init_controls(struct ar0521_dev *sensor)
 						-512, 511, 1, 0);
 	v4l2_ctrl_cluster(3, &ctrls->gain);
 
-	/* Initialize blanking limits using the default 2592x1944 format. */
+	 
 	max_hblank = AR0521_TOTAL_WIDTH_MAX - AR0521_WIDTH_MAX;
 	ctrls->hblank = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_HBLANK,
 					  AR0521_WIDTH_BLANKING_MIN,
@@ -636,13 +581,13 @@ static int ar0521_init_controls(struct ar0521_dev *sensor)
 					  AR0521_HEIGHT_BLANKING_MIN);
 	v4l2_ctrl_cluster(2, &ctrls->hblank);
 
-	/* Read-only */
+	 
 	ctrls->pixrate = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_PIXEL_RATE,
 					   AR0521_PIXEL_CLOCK_MIN,
 					   AR0521_PIXEL_CLOCK_MAX, 1,
 					   AR0521_PIXEL_CLOCK_RATE);
 
-	/* Manual exposure time: max exposure time = visible + blank - 4 */
+	 
 	exposure_max = AR0521_HEIGHT_MAX + AR0521_HEIGHT_BLANKING_MIN - 4;
 	ctrls->exposure = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_EXPOSURE, 0,
 					    exposure_max, 1, 0x70);
@@ -675,167 +620,167 @@ free_ctrls:
 #define REGS(...)	REGS_ENTRY(((const __be16[]){__VA_ARGS__}))
 
 static const struct initial_reg {
-	const __be16 *data; /* data[0] is register address */
+	const __be16 *data;  
 	unsigned int count;
 } initial_regs[] = {
-	REGS(be(0x0112), be(0x0808)), /* 8-bit/8-bit mode */
+	REGS(be(0x0112), be(0x0808)),  
 
-	/* PEDESTAL+2 :+2 is a workaround for 10bit mode +0.5 rounding */
+	 
 	REGS(be(0x301E), be(0x00AA)),
 
-	/* corrections_recommended_bayer */
+	 
 	REGS(be(0x3042),
-	     be(0x0004),  /* 3042: RNC: enable b/w rnc mode */
-	     be(0x4580)), /* 3044: RNC: enable row noise correction */
+	     be(0x0004),   
+	     be(0x4580)),  
 
 	REGS(be(0x30D2),
-	     be(0x0000),  /* 30D2: CRM/CC: enable crm on Visible and CC rows */
-	     be(0x0000),  /* 30D4: CC: CC enabled with 16 samples per column */
-	     /* 30D6: CC: bw mode enabled/12 bit data resolution/bw mode */
+	     be(0x0000),   
+	     be(0x0000),   
+	      
 	     be(0x2FFF)),
 
 	REGS(be(0x30DA),
-	     be(0x0FFF),  /* 30DA: CC: column correction clip level 2 is 0 */
-	     be(0x0FFF),  /* 30DC: CC: column correction clip level 3 is 0 */
-	     be(0x0000)), /* 30DE: CC: Group FPN correction */
+	     be(0x0FFF),   
+	     be(0x0FFF),   
+	     be(0x0000)),  
 
-	/* RNC: rnc scaling factor = * 54 / 64 (32 / 38 * 64 = 53.9) */
+	 
 	REGS(be(0x30EE), be(0x1136)),
-	REGS(be(0x30FA), be(0xFD00)), /* GPIO0 = flash, GPIO1 = shutter */
-	REGS(be(0x3120), be(0x0005)), /* p1 dither enabled for 10bit mode */
-	REGS(be(0x3172), be(0x0206)), /* txlo clk divider options */
-	/* FDOC:fdoc settings with fdoc every frame turned of */
+	REGS(be(0x30FA), be(0xFD00)),  
+	REGS(be(0x3120), be(0x0005)),  
+	REGS(be(0x3172), be(0x0206)),  
+	 
 	REGS(be(0x3180), be(0x9434)),
 
 	REGS(be(0x31B0),
-	     be(0x008B),  /* 31B0: frame_preamble - FIXME check WRT lanes# */
-	     be(0x0050)), /* 31B2: line_preamble - FIXME check WRT lanes# */
+	     be(0x008B),   
+	     be(0x0050)),  
 
-	/* don't use continuous clock mode while shut down */
+	 
 	REGS(be(0x31BC), be(0x068C)),
-	REGS(be(0x31E0), be(0x0781)), /* Fuse/2DDC: enable 2ddc */
+	REGS(be(0x31E0), be(0x0781)),  
 
-	/* analog_setup_recommended_10bit */
-	REGS(be(0x341A), be(0x4735)), /* Samp&Hold pulse in ADC */
-	REGS(be(0x3420), be(0x4735)), /* Samp&Hold pulse in ADC */
-	REGS(be(0x3426), be(0x8A1A)), /* ADC offset distribution pulse */
-	REGS(be(0x342A), be(0x0018)), /* pulse_config */
+	 
+	REGS(be(0x341A), be(0x4735)),  
+	REGS(be(0x3420), be(0x4735)),  
+	REGS(be(0x3426), be(0x8A1A)),  
+	REGS(be(0x342A), be(0x0018)),  
 
-	/* pixel_timing_recommended */
+	 
 	REGS(be(0x3D00),
-	     /* 3D00 */ be(0x043E), be(0x4760), be(0xFFFF), be(0xFFFF),
-	     /* 3D08 */ be(0x8000), be(0x0510), be(0xAF08), be(0x0252),
-	     /* 3D10 */ be(0x486F), be(0x5D5D), be(0x8056), be(0x8313),
-	     /* 3D18 */ be(0x0087), be(0x6A48), be(0x6982), be(0x0280),
-	     /* 3D20 */ be(0x8359), be(0x8D02), be(0x8020), be(0x4882),
-	     /* 3D28 */ be(0x4269), be(0x6A95), be(0x5988), be(0x5A83),
-	     /* 3D30 */ be(0x5885), be(0x6280), be(0x6289), be(0x6097),
-	     /* 3D38 */ be(0x5782), be(0x605C), be(0xBF18), be(0x0961),
-	     /* 3D40 */ be(0x5080), be(0x2090), be(0x4390), be(0x4382),
-	     /* 3D48 */ be(0x5F8A), be(0x5D5D), be(0x9C63), be(0x8063),
-	     /* 3D50 */ be(0xA960), be(0x9757), be(0x8260), be(0x5CFF),
-	     /* 3D58 */ be(0xBF10), be(0x1681), be(0x0802), be(0x8000),
-	     /* 3D60 */ be(0x141C), be(0x6000), be(0x6022), be(0x4D80),
-	     /* 3D68 */ be(0x5C97), be(0x6A69), be(0xAC6F), be(0x4645),
-	     /* 3D70 */ be(0x4400), be(0x0513), be(0x8069), be(0x6AC6),
-	     /* 3D78 */ be(0x5F95), be(0x5F70), be(0x8040), be(0x4A81),
-	     /* 3D80 */ be(0x0300), be(0xE703), be(0x0088), be(0x4A83),
-	     /* 3D88 */ be(0x40FF), be(0xFFFF), be(0xFD70), be(0x8040),
-	     /* 3D90 */ be(0x4A85), be(0x4FA8), be(0x4F8C), be(0x0070),
-	     /* 3D98 */ be(0xBE47), be(0x8847), be(0xBC78), be(0x6B89),
-	     /* 3DA0 */ be(0x6A80), be(0x6986), be(0x6B8E), be(0x6B80),
-	     /* 3DA8 */ be(0x6980), be(0x6A88), be(0x7C9F), be(0x866B),
-	     /* 3DB0 */ be(0x8765), be(0x46FF), be(0xE365), be(0xA679),
-	     /* 3DB8 */ be(0x4A40), be(0x4580), be(0x44BC), be(0x7000),
-	     /* 3DC0 */ be(0x8040), be(0x0802), be(0x10EF), be(0x0104),
-	     /* 3DC8 */ be(0x3860), be(0x5D5D), be(0x5682), be(0x1300),
-	     /* 3DD0 */ be(0x8648), be(0x8202), be(0x8082), be(0x598A),
-	     /* 3DD8 */ be(0x0280), be(0x2048), be(0x3060), be(0x8042),
-	     /* 3DE0 */ be(0x9259), be(0x865A), be(0x8258), be(0x8562),
-	     /* 3DE8 */ be(0x8062), be(0x8560), be(0x9257), be(0x8221),
-	     /* 3DF0 */ be(0x10FF), be(0xB757), be(0x9361), be(0x1019),
-	     /* 3DF8 */ be(0x8020), be(0x9043), be(0x8E43), be(0x845F),
-	     /* 3E00 */ be(0x835D), be(0x805D), be(0x8163), be(0x8063),
-	     /* 3E08 */ be(0xA060), be(0x9157), be(0x8260), be(0x5CFF),
-	     /* 3E10 */ be(0xFFFF), be(0xFFE5), be(0x1016), be(0x2048),
-	     /* 3E18 */ be(0x0802), be(0x1C60), be(0x0014), be(0x0060),
-	     /* 3E20 */ be(0x2205), be(0x8120), be(0x908F), be(0x6A80),
-	     /* 3E28 */ be(0x6982), be(0x5F9F), be(0x6F46), be(0x4544),
-	     /* 3E30 */ be(0x0005), be(0x8013), be(0x8069), be(0x6A80),
-	     /* 3E38 */ be(0x7000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E40 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E48 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E50 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E58 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E60 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E68 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E70 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E78 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E80 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E88 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E90 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3E98 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3EA0 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3EA8 */ be(0x0000), be(0x0000), be(0x0000), be(0x0000),
-	     /* 3EB0 */ be(0x0000), be(0x0000), be(0x0000)),
+	       be(0x043E), be(0x4760), be(0xFFFF), be(0xFFFF),
+	       be(0x8000), be(0x0510), be(0xAF08), be(0x0252),
+	       be(0x486F), be(0x5D5D), be(0x8056), be(0x8313),
+	       be(0x0087), be(0x6A48), be(0x6982), be(0x0280),
+	       be(0x8359), be(0x8D02), be(0x8020), be(0x4882),
+	       be(0x4269), be(0x6A95), be(0x5988), be(0x5A83),
+	       be(0x5885), be(0x6280), be(0x6289), be(0x6097),
+	       be(0x5782), be(0x605C), be(0xBF18), be(0x0961),
+	       be(0x5080), be(0x2090), be(0x4390), be(0x4382),
+	       be(0x5F8A), be(0x5D5D), be(0x9C63), be(0x8063),
+	       be(0xA960), be(0x9757), be(0x8260), be(0x5CFF),
+	       be(0xBF10), be(0x1681), be(0x0802), be(0x8000),
+	       be(0x141C), be(0x6000), be(0x6022), be(0x4D80),
+	       be(0x5C97), be(0x6A69), be(0xAC6F), be(0x4645),
+	       be(0x4400), be(0x0513), be(0x8069), be(0x6AC6),
+	       be(0x5F95), be(0x5F70), be(0x8040), be(0x4A81),
+	       be(0x0300), be(0xE703), be(0x0088), be(0x4A83),
+	       be(0x40FF), be(0xFFFF), be(0xFD70), be(0x8040),
+	       be(0x4A85), be(0x4FA8), be(0x4F8C), be(0x0070),
+	       be(0xBE47), be(0x8847), be(0xBC78), be(0x6B89),
+	       be(0x6A80), be(0x6986), be(0x6B8E), be(0x6B80),
+	       be(0x6980), be(0x6A88), be(0x7C9F), be(0x866B),
+	       be(0x8765), be(0x46FF), be(0xE365), be(0xA679),
+	       be(0x4A40), be(0x4580), be(0x44BC), be(0x7000),
+	       be(0x8040), be(0x0802), be(0x10EF), be(0x0104),
+	       be(0x3860), be(0x5D5D), be(0x5682), be(0x1300),
+	       be(0x8648), be(0x8202), be(0x8082), be(0x598A),
+	       be(0x0280), be(0x2048), be(0x3060), be(0x8042),
+	       be(0x9259), be(0x865A), be(0x8258), be(0x8562),
+	       be(0x8062), be(0x8560), be(0x9257), be(0x8221),
+	       be(0x10FF), be(0xB757), be(0x9361), be(0x1019),
+	       be(0x8020), be(0x9043), be(0x8E43), be(0x845F),
+	       be(0x835D), be(0x805D), be(0x8163), be(0x8063),
+	       be(0xA060), be(0x9157), be(0x8260), be(0x5CFF),
+	       be(0xFFFF), be(0xFFE5), be(0x1016), be(0x2048),
+	       be(0x0802), be(0x1C60), be(0x0014), be(0x0060),
+	       be(0x2205), be(0x8120), be(0x908F), be(0x6A80),
+	       be(0x6982), be(0x5F9F), be(0x6F46), be(0x4544),
+	       be(0x0005), be(0x8013), be(0x8069), be(0x6A80),
+	       be(0x7000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000), be(0x0000),
+	       be(0x0000), be(0x0000), be(0x0000)),
 
-	REGS(be(0x3EB6), be(0x004C)), /* ECL */
+	REGS(be(0x3EB6), be(0x004C)),  
 
 	REGS(be(0x3EBA),
-	     be(0xAAAD),  /* 3EBA */
-	     be(0x0086)), /* 3EBC: Bias currents for FSC/ECL */
+	     be(0xAAAD),   
+	     be(0x0086)),  
 
 	REGS(be(0x3EC0),
-	     be(0x1E00),  /* 3EC0: SFbin/SH mode settings */
-	     be(0x100A),  /* 3EC2: CLK divider for ramp for 10 bit 400MH */
-	     /* 3EC4: FSC clamps for HDR mode and adc comp power down co */
+	     be(0x1E00),   
+	     be(0x100A),   
+	      
 	     be(0x3300),
-	     be(0xEA44),  /* 3EC6: VLN and clk gating controls */
-	     be(0x6F6F),  /* 3EC8: Txl0 and Txlo1 settings for normal mode */
-	     be(0x2F4A),  /* 3ECA: CDAC/Txlo2/RSTGHI/RSTGLO settings */
-	     be(0x0506),  /* 3ECC: RSTDHI/RSTDLO/CDAC/TXHI settings */
-	     /* 3ECE: Ramp buffer settings and Booster enable (bits 0-5) */
+	     be(0xEA44),   
+	     be(0x6F6F),   
+	     be(0x2F4A),   
+	     be(0x0506),   
+	      
 	     be(0x203B),
-	     be(0x13F0),  /* 3ED0: TXLO from atest/sf bin settings */
-	     be(0xA53D),  /* 3ED2: Ramp offset */
-	     be(0x862F),  /* 3ED4: TXLO open loop/row driver settings */
-	     be(0x4081),  /* 3ED6: Txlatch fr cfpn rows/vln bias */
-	     be(0x8003),  /* 3ED8: Ramp step setting for 10 bit 400 Mhz */
-	     be(0xA580),  /* 3EDA: Ramp Offset */
-	     be(0xC000),  /* 3EDC: over range for rst and under range for sig */
-	     be(0xC103)), /* 3EDE: over range for sig and col dec clk settings */
+	     be(0x13F0),   
+	     be(0xA53D),   
+	     be(0x862F),   
+	     be(0x4081),   
+	     be(0x8003),   
+	     be(0xA580),   
+	     be(0xC000),   
+	     be(0xC103)),  
 
-	/* corrections_recommended_bayer */
+	 
 	REGS(be(0x3F00),
-	     be(0x0017),  /* 3F00: BM_T0 */
-	     be(0x02DD),  /* 3F02: BM_T1 */
-	     /* 3F04: if Ana_gain less than 2, use noise_floor0, multipl */
+	     be(0x0017),   
+	     be(0x02DD),   
+	      
 	     be(0x0020),
-	     /* 3F06: if Ana_gain between 4 and 7, use noise_floor2 and */
+	      
 	     be(0x0040),
-	     /* 3F08: if Ana_gain between 4 and 7, use noise_floor2 and */
+	      
 	     be(0x0070),
-	     /* 3F0A: Define noise_floor0(low address) and noise_floor1 */
+	      
 	     be(0x0101),
-	     be(0x0302)), /* 3F0C: Define noise_floor2 and noise_floor3 */
+	     be(0x0302)),  
 
 	REGS(be(0x3F10),
-	     be(0x0505),  /* 3F10: single k factor 0 */
-	     be(0x0505),  /* 3F12: single k factor 1 */
-	     be(0x0505),  /* 3F14: single k factor 2 */
-	     be(0x01FF),  /* 3F16: cross factor 0 */
-	     be(0x01FF),  /* 3F18: cross factor 1 */
-	     be(0x01FF),  /* 3F1A: cross factor 2 */
-	     be(0x0022)), /* 3F1E */
+	     be(0x0505),   
+	     be(0x0505),   
+	     be(0x0505),   
+	     be(0x01FF),   
+	     be(0x01FF),   
+	     be(0x01FF),   
+	     be(0x0022)),  
 
-	/* GTH_THRES_RTN: 4max,4min filtered out of every 46 samples and */
+	 
 	REGS(be(0x3F2C), be(0x442E)),
 
 	REGS(be(0x3F3E),
-	     be(0x0000),  /* 3F3E: Switch ADC from 12 bit to 10 bit mode */
-	     be(0x1511),  /* 3F40: couple k factor 0 */
-	     be(0x1511),  /* 3F42: couple k factor 1 */
-	     be(0x0707)), /* 3F44: couple k factor 2 */
+	     be(0x0000),   
+	     be(0x1511),   
+	     be(0x1511),   
+	     be(0x0707)),  
 };
 
 static int ar0521_power_off(struct device *dev)
@@ -847,7 +792,7 @@ static int ar0521_power_off(struct device *dev)
 	clk_disable_unprepare(sensor->extclk);
 
 	if (sensor->reset_gpio)
-		gpiod_set_value(sensor->reset_gpio, 1); /* assert RESET signal */
+		gpiod_set_value(sensor->reset_gpio, 1);  
 
 	for (i = ARRAY_SIZE(ar0521_supply_names) - 1; i >= 0; i--) {
 		if (sensor->supplies[i])
@@ -869,7 +814,7 @@ static int ar0521_power_on(struct device *dev)
 			if (ret < 0)
 				goto off;
 
-			usleep_range(1000, 1500); /* min 1 ms */
+			usleep_range(1000, 1500);  
 		}
 
 	ret = clk_prepare_enable(sensor->extclk);
@@ -877,12 +822,12 @@ static int ar0521_power_on(struct device *dev)
 		v4l2_err(&sensor->sd, "error enabling sensor clock\n");
 		goto off;
 	}
-	usleep_range(1000, 1500); /* min 1 ms */
+	usleep_range(1000, 1500);  
 
 	if (sensor->reset_gpio)
-		/* deassert RESET signal */
+		 
 		gpiod_set_value(sensor->reset_gpio, 0);
-	usleep_range(4500, 5000); /* min 45000 clocks */
+	usleep_range(4500, 5000);  
 
 	for (cnt = 0; cnt < ARRAY_SIZE(initial_regs); cnt++) {
 		ret = ar0521_write_regs(sensor, initial_regs[cnt].data,
@@ -897,7 +842,7 @@ static int ar0521_power_on(struct device *dev)
 	if (ret)
 		goto off;
 
-	/* set MIPI test mode - disabled for now */
+	 
 	ret = ar0521_write_reg(sensor, AR0521_REG_HISPI_TEST_MODE,
 			       ((0x40 << sensor->lane_count) - 0x40) |
 			       AR0521_REG_HISPI_TEST_MODE_LP11);
@@ -958,13 +903,13 @@ static int ar0521_pre_streamon(struct v4l2_subdev *sd, u32 flags)
 	if (ret < 0)
 		return ret;
 
-	/* Set LP-11 on clock and data lanes */
+	 
 	ret = ar0521_write_reg(sensor, AR0521_REG_HISPI_CONTROL_STATUS,
 			AR0521_REG_HISPI_CONTROL_STATUS_FRAMER_TEST_MODE_ENABLE);
 	if (ret)
 		goto err;
 
-	/* Start streaming LP-11 */
+	 
 	ret = ar0521_write_reg(sensor, AR0521_REG_RESET,
 			       AR0521_REG_RESET_DEFAULTS |
 			       AR0521_REG_RESET_STREAM);
@@ -1094,7 +1039,7 @@ static int ar0521_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Get master clock (extclk) */
+	 
 	sensor->extclk = devm_clk_get(dev, "extclk");
 	if (IS_ERR(sensor->extclk)) {
 		dev_err(dev, "failed to get extclk\n");
@@ -1110,7 +1055,7 @@ static int ar0521_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Request optional reset pin (usually active low) and assert it */
+	 
 	sensor->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						     GPIOD_OUT_HIGH);
 
@@ -1147,7 +1092,7 @@ static int ar0521_probe(struct i2c_client *client)
 	if (ret)
 		goto free_ctrls;
 
-	/* Turn on the device and enable runtime PM */
+	 
 	ret = ar0521_power_on(&client->dev);
 	if (ret)
 		goto disable;

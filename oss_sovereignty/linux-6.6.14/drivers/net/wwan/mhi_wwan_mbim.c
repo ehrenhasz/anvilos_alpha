@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* MHI MBIM Network driver - Network/MBIM over MHI bus
- *
- * Copyright (C) 2021 Linaro Ltd <loic.poulain@linaro.org>
- *
- * This driver copy some code from cdc_ncm, which is:
- * Copyright (C) ST-Ericsson 2010-2012
- * and cdc_mbim, which is:
- * Copyright (c) 2012  Smith Micro Software, Inc.
- * Copyright (c) 2012  Bjørn Mork <bjorn@mork.no>
- *
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/if_arp.h>
@@ -28,10 +18,7 @@
 #include <linux/usb/cdc_ncm.h>
 #include <linux/wwan.h>
 
-/* 3500 allows to optimize skb allocation, the skbs will basically fit in
- * one 4K page. Large MBIM packets will simply be split over several MHI
- * transfers and chained by the MHI net layer (zerocopy).
- */
+ 
 #define MHI_DEFAULT_MRU 3500
 
 #define MHI_MBIM_DEFAULT_MTU 1500
@@ -47,7 +34,7 @@ struct mhi_mbim_link {
 	struct net_device *ndev;
 	unsigned int session;
 
-	/* stats */
+	 
 	u64_stats_t rx_packets;
 	u64_stats_t rx_bytes;
 	u64_stats_t rx_errors;
@@ -101,9 +88,9 @@ static struct sk_buff *mbim_tx_fixup(struct sk_buff *skb, unsigned int session,
 	struct usb_cdc_ncm_ndp16 *ndp16;
 	struct mbim_tx_hdr *mbim_hdr;
 
-	/* Only one NDP is sent, containing the IP packet (no aggregation) */
+	 
 
-	/* Ensure we have enough headroom for crafting MBIM header */
+	 
 	if (skb_cow_head(skb, sizeof(struct mbim_tx_hdr))) {
 		dev_kfree_skb_any(skb);
 		return NULL;
@@ -111,7 +98,7 @@ static struct sk_buff *mbim_tx_fixup(struct sk_buff *skb, unsigned int session,
 
 	mbim_hdr = skb_push(skb, sizeof(struct mbim_tx_hdr));
 
-	/* Fill NTB header */
+	 
 	nth16 = &mbim_hdr->nth16;
 	nth16->dwSignature = cpu_to_le32(USB_CDC_NCM_NTH16_SIGN);
 	nth16->wHeaderLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
@@ -119,18 +106,18 @@ static struct sk_buff *mbim_tx_fixup(struct sk_buff *skb, unsigned int session,
 	nth16->wBlockLength = cpu_to_le16(skb->len);
 	nth16->wNdpIndex = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
 
-	/* Fill the unique NDP */
+	 
 	ndp16 = &mbim_hdr->ndp16;
 	ndp16->dwSignature = cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN | (session << 24));
 	ndp16->wLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_ndp16)
 					+ sizeof(struct usb_cdc_ncm_dpe16) * 2);
 	ndp16->wNextNdpIndex = 0;
 
-	/* Datagram follows the mbim header */
+	 
 	ndp16->dpe16[0].wDatagramIndex = cpu_to_le16(sizeof(struct mbim_tx_hdr));
 	ndp16->dpe16[0].wDatagramLength = cpu_to_le16(dgram_size);
 
-	/* null termination */
+	 
 	ndp16->dpe16[1].wDatagramIndex = 0;
 	ndp16->dpe16[1].wDatagramLength = 0;
 
@@ -144,7 +131,7 @@ static netdev_tx_t mhi_mbim_ndo_xmit(struct sk_buff *skb, struct net_device *nde
 	unsigned long flags;
 	int err = -ENOMEM;
 
-	/* Serialize MHI channel queuing and MBIM seq */
+	 
 	spin_lock_irqsave(&mbim->tx_lock, flags);
 
 	skb = mbim_tx_fixup(skb, link->session, mbim->tx_seq);
@@ -198,7 +185,7 @@ static int mbim_rx_verify_nth16(struct mhi_mbim_context *mbim, struct sk_buff *s
 		return -EINVAL;
 	}
 
-	/* No limit on the block length, except the size of the data pkt */
+	 
 	len = le16_to_cpu(nth16->wBlockLength);
 	if (len > skb->len) {
 		net_err_ratelimited("NTB does not fit into the skb %u/%u\n",
@@ -229,7 +216,7 @@ static int mbim_rx_verify_ndp16(struct sk_buff *skb, struct usb_cdc_ncm_ndp16 *n
 
 	ret = ((le16_to_cpu(ndp16->wLength) - sizeof(struct usb_cdc_ncm_ndp16))
 			/ sizeof(struct usb_cdc_ncm_dpe16));
-	ret--; /* Last entry is always a NULL terminator */
+	ret--;  
 
 	if (sizeof(struct usb_cdc_ncm_ndp16) +
 	     ret * sizeof(struct usb_cdc_ncm_dpe16) > skb->len) {
@@ -244,14 +231,14 @@ static void mhi_mbim_rx(struct mhi_mbim_context *mbim, struct sk_buff *skb)
 {
 	int ndpoffset;
 
-	/* Check NTB header and retrieve first NDP offset */
+	 
 	ndpoffset = mbim_rx_verify_nth16(mbim, skb);
 	if (ndpoffset < 0) {
 		net_err_ratelimited("mbim: Incorrect NTB header\n");
 		goto error;
 	}
 
-	/* Process each NDP */
+	 
 	while (1) {
 		struct usb_cdc_ncm_ndp16 ndp16;
 		struct usb_cdc_ncm_dpe16 dpe16;
@@ -265,14 +252,14 @@ static void mhi_mbim_rx(struct mhi_mbim_context *mbim, struct sk_buff *skb)
 			goto error;
 		}
 
-		/* Check NDP header and retrieve number of datagrams */
+		 
 		nframes = mbim_rx_verify_ndp16(skb, &ndp16);
 		if (nframes < 0) {
 			net_err_ratelimited("mbim: Incorrect NDP16\n");
 			goto error;
 		}
 
-		 /* Only IP data type supported, no DSS in MHI context */
+		  
 		if ((ndp16.dwSignature & cpu_to_le32(MBIM_NDP16_SIGN_MASK))
 				!= cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN)) {
 			net_err_ratelimited("mbim: Unsupported NDP type\n");
@@ -289,7 +276,7 @@ static void mhi_mbim_rx(struct mhi_mbim_context *mbim, struct sk_buff *skb)
 			goto unlock;
 		}
 
-		/* de-aggregate and deliver IP packets */
+		 
 		dpeoffset = ndpoffset + sizeof(struct usb_cdc_ncm_ndp16);
 		for (n = 0; n < nframes; n++, dpeoffset += sizeof(dpe16)) {
 			u16 dgram_offset, dgram_len;
@@ -302,7 +289,7 @@ static void mhi_mbim_rx(struct mhi_mbim_context *mbim, struct sk_buff *skb)
 			dgram_len = le16_to_cpu(dpe16.wDatagramLength);
 
 			if (!dgram_offset || !dgram_len)
-				break; /* null terminator */
+				break;  
 
 			skbn = netdev_alloc_skb(link->ndev, dgram_len);
 			if (!skbn)
@@ -338,13 +325,13 @@ static void mhi_mbim_rx(struct mhi_mbim_context *mbim, struct sk_buff *skb)
 unlock:
 		rcu_read_unlock();
 next_ndp:
-		/* Other NDP to process? */
+		 
 		ndpoffset = (int)le16_to_cpu(ndp16.wNextNdpIndex);
 		if (!ndpoffset)
 			break;
 	}
 
-	/* free skb */
+	 
 	dev_consume_skb_any(skb);
 	return;
 error:
@@ -357,7 +344,7 @@ static struct sk_buff *mhi_net_skb_agg(struct mhi_mbim_context *mbim,
 	struct sk_buff *head = mbim->skbagg_head;
 	struct sk_buff *tail = mbim->skbagg_tail;
 
-	/* This is non-paged skb chaining using frag_list */
+	 
 	if (!head) {
 		mbim->skbagg_head = skb;
 		return skb;
@@ -397,13 +384,11 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
 			break;
 		}
 
-		/* Do not hog the CPU if rx buffers are consumed faster than
-		 * queued (unlikely).
-		 */
+		 
 		cond_resched();
 	}
 
-	/* If we're still starved of rx buffers, reschedule later */
+	 
 	if (mhi_get_free_desc_count(mdev, DMA_FROM_DEVICE) == mbim->rx_queue_sz)
 		schedule_delayed_work(&mbim->rx_refill, HZ / 2);
 }
@@ -420,23 +405,23 @@ static void mhi_mbim_dl_callback(struct mhi_device *mhi_dev,
 	if (unlikely(mhi_res->transaction_status)) {
 		switch (mhi_res->transaction_status) {
 		case -EOVERFLOW:
-			/* Packet has been split over multiple transfers */
+			 
 			skb_put(skb, mhi_res->bytes_xferd);
 			mhi_net_skb_agg(mbim, skb);
 			break;
 		case -ENOTCONN:
-			/* MHI layer stopping/resetting the DL channel */
+			 
 			dev_kfree_skb_any(skb);
 			return;
 		default:
-			/* Unknown error, simply drop */
+			 
 			dev_kfree_skb_any(skb);
 		}
 	} else {
 		skb_put(skb, mhi_res->bytes_xferd);
 
 		if (mbim->skbagg_head) {
-			/* Aggregate the final fragment */
+			 
 			skb = mhi_net_skb_agg(mbim, skb);
 			mbim->skbagg_head = NULL;
 		}
@@ -444,7 +429,7 @@ static void mhi_mbim_dl_callback(struct mhi_device *mhi_dev,
 		mhi_mbim_rx(mbim, skb);
 	}
 
-	/* Refill if RX buffers queue becomes low */
+	 
 	if (free_desc_count >= mbim->rx_queue_sz / 2)
 		schedule_delayed_work(&mbim->rx_refill, 0);
 }
@@ -479,14 +464,12 @@ static void mhi_mbim_ul_callback(struct mhi_device *mhi_dev,
 	struct net_device *ndev = skb->dev;
 	struct mhi_mbim_link *link = wwan_netdev_drvpriv(ndev);
 
-	/* Hardware has consumed the buffer, so free the skb (which is not
-	 * freed by the MHI stack) and perform accounting.
-	 */
+	 
 	dev_consume_skb_any(skb);
 
 	u64_stats_update_begin(&link->tx_syncp);
 	if (unlikely(mhi_res->transaction_status)) {
-		/* MHI layer stopping/resetting the UL channel */
+		 
 		if (mhi_res->transaction_status == -ENOTCONN) {
 			u64_stats_update_end(&link->tx_syncp);
 			return;
@@ -507,10 +490,10 @@ static int mhi_mbim_ndo_open(struct net_device *ndev)
 {
 	struct mhi_mbim_link *link = wwan_netdev_drvpriv(ndev);
 
-	/* Feed the MHI rx buffer pool */
+	 
 	schedule_delayed_work(&link->mbim->rx_refill, 0);
 
-	/* Carrier is established via out-of-band channel (e.g. qmi) */
+	 
 	netif_carrier_on(ndev);
 
 	netif_start_queue(ndev);
@@ -552,7 +535,7 @@ static int mhi_mbim_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
 	}
 	rcu_read_unlock();
 
-	/* Already protected by RTNL lock */
+	 
 	hlist_add_head_rcu(&link->hlnode, &mbim->link_list[LINK_HASH(if_id)]);
 
 	return register_netdevice(ndev);
@@ -571,7 +554,7 @@ static void mhi_mbim_dellink(void *ctxt, struct net_device *ndev,
 
 static void mhi_mbim_setup(struct net_device *ndev)
 {
-	ndev->header_ops = NULL;  /* No header */
+	ndev->header_ops = NULL;   
 	ndev->type = ARPHRD_RAWIP;
 	ndev->needed_headroom = sizeof(struct mbim_tx_hdr);
 	ndev->hard_header_len = 0;
@@ -609,15 +592,15 @@ static int mhi_mbim_probe(struct mhi_device *mhi_dev, const struct mhi_device_id
 
 	INIT_DELAYED_WORK(&mbim->rx_refill, mhi_net_rx_refill_work);
 
-	/* Start MHI channels */
+	 
 	err = mhi_prepare_for_transfer(mhi_dev);
 	if (err)
 		return err;
 
-	/* Number of transfer descriptors determines size of the queue */
+	 
 	mbim->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
 
-	/* Register wwan link ops with MHI controller representing WWAN instance */
+	 
 	return wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_mbim_wwan_ops, mbim, 0);
 }
 
@@ -634,7 +617,7 @@ static void mhi_mbim_remove(struct mhi_device *mhi_dev)
 }
 
 static const struct mhi_device_id mhi_mbim_id_table[] = {
-	/* Hardware accelerated data PATH (to modem IPA), MBIM protocol */
+	 
 	{ .chan = "IP_HW0_MBIM", .driver_data = 0 },
 	{}
 };

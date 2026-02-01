@@ -1,35 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * I2O user space accessible structures/APIs
- *
- * (c) Copyright 1999, 2000 Red Hat Software
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- *************************************************************************
- *
- * This header file defines the I2O APIs that are available to both
- * the kernel and user level applications.  Kernel specific structures
- * are defined in i2o_osm. OSMs should include _only_ i2o_osm.h which
- * automatically includes this file.
- *
- */
+ 
+ 
 
 #ifndef _I2O_DEV_H
 #define _I2O_DEV_H
 
-/* How many controllers are we allowing */
+ 
 #define MAX_I2O_CONTROLLERS	32
 
 #include <linux/ioctl.h>
 #include <linux/types.h>
 
-/*
- * I2O Control IOCTLs and structures
- */
+ 
 #define I2O_MAGIC_NUMBER	'i'
 #define I2OGETIOPS		_IOR(I2O_MAGIC_NUMBER,0,__u8[MAX_I2O_CONTROLLERS])
 #define I2OHRTGET		_IOWR(I2O_MAGIC_NUMBER,1,struct i2o_cmd_hrtlct)
@@ -47,49 +28,49 @@
 #define I2OPASSTHRU32		_IOR(I2O_MAGIC_NUMBER,12,struct i2o_cmd_passthru32)
 
 struct i2o_cmd_passthru32 {
-	unsigned int iop;	/* IOP unit number */
-	__u32 msg;		/* message */
+	unsigned int iop;	 
+	__u32 msg;		 
 };
 
 struct i2o_cmd_passthru {
-	unsigned int iop;	/* IOP unit number */
-	void __user *msg;	/* message */
+	unsigned int iop;	 
+	void __user *msg;	 
 };
 
 struct i2o_cmd_hrtlct {
-	unsigned int iop;	/* IOP unit number */
-	void __user *resbuf;	/* Buffer for result */
-	unsigned int __user *reslen;	/* Buffer length in bytes */
+	unsigned int iop;	 
+	void __user *resbuf;	 
+	unsigned int __user *reslen;	 
 };
 
 struct i2o_cmd_psetget {
-	unsigned int iop;	/* IOP unit number */
-	unsigned int tid;	/* Target device TID */
-	void __user *opbuf;	/* Operation List buffer */
-	unsigned int oplen;	/* Operation List buffer length in bytes */
-	void __user *resbuf;	/* Result List buffer */
-	unsigned int __user *reslen;	/* Result List buffer length in bytes */
+	unsigned int iop;	 
+	unsigned int tid;	 
+	void __user *opbuf;	 
+	unsigned int oplen;	 
+	void __user *resbuf;	 
+	unsigned int __user *reslen;	 
 };
 
 struct i2o_sw_xfer {
-	unsigned int iop;	/* IOP unit number */
-	unsigned char flags;	/* Flags field */
-	unsigned char sw_type;	/* Software type */
-	unsigned int sw_id;	/* Software ID */
-	void __user *buf;	/* Pointer to software buffer */
-	unsigned int __user *swlen;	/* Length of software data */
-	unsigned int __user *maxfrag;	/* Maximum fragment count */
-	unsigned int __user *curfrag;	/* Current fragment count */
+	unsigned int iop;	 
+	unsigned char flags;	 
+	unsigned char sw_type;	 
+	unsigned int sw_id;	 
+	void __user *buf;	 
+	unsigned int __user *swlen;	 
+	unsigned int __user *maxfrag;	 
+	unsigned int __user *curfrag;	 
 };
 
 struct i2o_html {
-	unsigned int iop;	/* IOP unit number */
-	unsigned int tid;	/* Target device ID */
-	unsigned int page;	/* HTML page */
-	void __user *resbuf;	/* Buffer for reply HTML page */
-	unsigned int __user *reslen;	/* Length in bytes of reply buffer */
-	void __user *qbuf;	/* Pointer to HTTP query string */
-	unsigned int qlen;	/* Length in bytes of query string buffer */
+	unsigned int iop;	 
+	unsigned int tid;	 
+	unsigned int page;	 
+	void __user *resbuf;	 
+	unsigned int __user *reslen;	 
+	void __user *qbuf;	 
+	unsigned int qlen;	 
 };
 
 #define I2O_EVT_Q_LEN 32
@@ -100,7 +81,7 @@ struct i2o_evt_id {
 	unsigned int evt_mask;
 };
 
-/* Event data size = frame size - message header + evt indicator */
+ 
 #define I2O_EVT_DATA_SIZE 88
 
 struct i2o_evt_info {
@@ -116,16 +97,14 @@ struct i2o_evt_get {
 };
 
 typedef struct i2o_sg_io_hdr {
-	unsigned int flags;	/* see I2O_DPT_SG_IO_FLAGS */
+	unsigned int flags;	 
 } i2o_sg_io_hdr_t;
 
-/**************************************************************************
- * HRT related constants and structures
- **************************************************************************/
+ 
 #define I2O_BUS_LOCAL	0
 #define I2O_BUS_ISA	1
 #define I2O_BUS_EISA	2
-/* was  I2O_BUS_MCA	3 */
+ 
 #define I2O_BUS_PCI	4
 #define I2O_BUS_PCMCIA	5
 #define I2O_BUS_NUBUS	6
@@ -253,7 +232,7 @@ typedef struct _i2o_status_block {
 	__u32 cmd_status:8;
 } i2o_status_block;
 
-/* Event indicator mask flags */
+ 
 #define I2O_EVT_IND_STATE_CHANGE		0x80000000
 #define I2O_EVT_IND_GENERAL_WARNING		0x40000000
 #define I2O_EVT_IND_CONFIGURATION_FLAG		0x20000000
@@ -265,7 +244,7 @@ typedef struct _i2o_status_block {
 #define I2O_EVT_IND_VENDOR_EVT			0x00800000
 #define I2O_EVT_IND_DEVICE_STATE		0x00400000
 
-/* Executive event indicitors */
+ 
 #define I2O_EVT_IND_EXEC_RESOURCE_LIMITS	0x00000001
 #define I2O_EVT_IND_EXEC_CONNECTION_FAIL	0x00000002
 #define I2O_EVT_IND_EXEC_ADAPTER_FAULT		0x00000004
@@ -278,14 +257,14 @@ typedef struct _i2o_status_block {
 #define I2O_EVT_IND_EXEC_MODIFIED_LCT		0x00000200
 #define I2O_EVT_IND_EXEC_DDM_AVAILABILITY	0x00000400
 
-/* Random Block Storage Event Indicators */
+ 
 #define I2O_EVT_IND_BSA_VOLUME_LOAD		0x00000001
 #define I2O_EVT_IND_BSA_VOLUME_UNLOAD		0x00000002
 #define I2O_EVT_IND_BSA_VOLUME_UNLOAD_REQ	0x00000004
 #define I2O_EVT_IND_BSA_CAPACITY_CHANGE 	0x00000008
 #define I2O_EVT_IND_BSA_SCSI_SMART		0x00000010
 
-/* Event data for generic events */
+ 
 #define I2O_EVT_STATE_CHANGE_NORMAL		0x00
 #define I2O_EVT_STATE_CHANGE_SUSPENDED		0x01
 #define I2O_EVT_STATE_CHANGE_RESTART		0x02
@@ -304,19 +283,13 @@ typedef struct _i2o_status_block {
 
 #define I2O_EVT_SENSOR_STATE_CHANGED		0x01
 
-/*
- *	I2O classes / subclasses
- */
+ 
 
-/*  Class ID and Code Assignments
- *  (LCT.ClassID.Version field)
- */
+ 
 #define I2O_CLASS_VERSION_10			0x00
 #define I2O_CLASS_VERSION_11			0x01
 
-/*  Class code names
- *  (from v1.5 Table 6-1 Class Code Assignments.)
- */
+ 
 
 #define I2O_CLASS_EXECUTIVE			0x000
 #define I2O_CLASS_DDM				0x001
@@ -336,21 +309,17 @@ typedef struct _i2o_status_block {
 #define I2O_CLASS_PEER_TRANSPORT		0x091
 #define	I2O_CLASS_END				0xfff
 
-/*
- *  Rest of 0x092 - 0x09f reserved for peer-to-peer classes
- */
+ 
 
 #define I2O_CLASS_MATCH_ANYCLASS		0xffffffff
 
-/*
- *  Subclasses
- */
+ 
 
 #define I2O_SUBCLASS_i960			0x001
 #define I2O_SUBCLASS_HDM			0x020
 #define I2O_SUBCLASS_ISM			0x021
 
-/* Operation functions */
+ 
 
 #define I2O_PARAMS_FIELD_GET			0x0001
 #define I2O_PARAMS_LIST_GET			0x0002
@@ -363,10 +332,7 @@ typedef struct _i2o_status_block {
 #define I2O_PARAMS_ROW_DELETE			0x0009
 #define I2O_PARAMS_TABLE_CLEAR			0x000A
 
-/*
- * I2O serial number conventions / formats
- * (circa v1.5)
- */
+ 
 
 #define I2O_SNFORMAT_UNKNOWN			0
 #define I2O_SNFORMAT_BINARY			1
@@ -375,9 +341,7 @@ typedef struct _i2o_status_block {
 #define I2O_SNFORMAT_LAN48_MAC			4
 #define I2O_SNFORMAT_WAN			5
 
-/*
- * Plus new in v2.0 (Yellowstone pdf doc)
- */
+ 
 
 #define I2O_SNFORMAT_LAN64_MAC			6
 #define I2O_SNFORMAT_DDM			7
@@ -385,9 +349,7 @@ typedef struct _i2o_status_block {
 #define I2O_SNFORMAT_IEEE_REG128		9
 #define I2O_SNFORMAT_UNKNOWN2			0xff
 
-/*
- *	I2O Get Status State values
- */
+ 
 
 #define ADAPTER_STATE_INITIALIZING		0x01
 #define ADAPTER_STATE_RESET			0x02
@@ -397,21 +359,15 @@ typedef struct _i2o_status_block {
 #define ADAPTER_STATE_FAILED			0x10
 #define ADAPTER_STATE_FAULTED			0x11
 
-/*
- *	Software module types
- */
+ 
 #define I2O_SOFTWARE_MODULE_IRTOS		0x11
 #define I2O_SOFTWARE_MODULE_IOP_PRIVATE		0x22
 #define I2O_SOFTWARE_MODULE_IOP_CONFIG		0x23
 
-/*
- *	Vendors
- */
+ 
 #define I2O_VENDOR_DPT				0x001b
 
-/*
- * DPT / Adaptec specific values for i2o_sg_io_hdr flags.
- */
+ 
 #define I2O_DPT_SG_FLAG_INTERPRET		0x00010000
 #define I2O_DPT_SG_FLAG_PHYSICAL		0x00020000
 
@@ -419,4 +375,4 @@ typedef struct _i2o_status_block {
 #define I2O_DPT_FLASH_READ			0x0101
 #define I2O_DPT_FLASH_WRITE			0x0102
 
-#endif				/* _I2O_DEV_H */
+#endif				 

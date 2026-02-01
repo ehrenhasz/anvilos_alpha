@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// bpf-lirc.c - handles bpf
-//
-// Copyright (C) 2018 Sean Young <sean@mess.org>
+
+
+
+
 
 #include <linux/bpf.h>
 #include <linux/filter.h>
@@ -11,9 +11,7 @@
 #define lirc_rcu_dereference(p)						\
 	rcu_dereference_protected(p, lockdep_is_held(&ir_raw_handler_lock))
 
-/*
- * BPF interface for raw IR
- */
+ 
 const struct bpf_prog_ops lirc_mode2_prog_ops = {
 };
 
@@ -30,7 +28,7 @@ BPF_CALL_1(bpf_rc_repeat, u32*, sample)
 
 static const struct bpf_func_proto rc_repeat_proto = {
 	.func	   = bpf_rc_repeat,
-	.gpl_only  = true, /* rc_repeat is EXPORT_SYMBOL_GPL */
+	.gpl_only  = true,  
 	.ret_type  = RET_INTEGER,
 	.arg1_type = ARG_PTR_TO_CTX,
 };
@@ -49,7 +47,7 @@ BPF_CALL_4(bpf_rc_keydown, u32*, sample, u32, protocol, u64, scancode,
 
 static const struct bpf_func_proto rc_keydown_proto = {
 	.func	   = bpf_rc_keydown,
-	.gpl_only  = true, /* rc_keydown is EXPORT_SYMBOL_GPL */
+	.gpl_only  = true,  
 	.ret_type  = RET_INTEGER,
 	.arg1_type = ARG_PTR_TO_CTX,
 	.arg2_type = ARG_ANYTHING,
@@ -123,7 +121,7 @@ static bool lirc_mode2_is_valid_access(int off, int size,
 				       const struct bpf_prog *prog,
 				       struct bpf_insn_access_aux *info)
 {
-	/* We have one field of u32 */
+	 
 	return type == BPF_READ && off == 0 && size == sizeof(u32);
 }
 
@@ -194,11 +192,7 @@ static int lirc_bpf_detach(struct rc_dev *rcdev, struct bpf_prog *prog)
 
 	old_array = lirc_rcu_dereference(raw->progs);
 	ret = bpf_prog_array_copy(old_array, prog, NULL, 0, &new_array);
-	/*
-	 * Do not use bpf_prog_array_delete_safe() as we would end up
-	 * with a dummy entry in the array, and the we would free the
-	 * dummy in lirc_bpf_free()
-	 */
+	 
 	if (ret)
 		goto unlock;
 
@@ -224,12 +218,7 @@ void lirc_bpf_run(struct rc_dev *rcdev, u32 sample)
 	}
 }
 
-/*
- * This should be called once the rc thread has been stopped, so there can be
- * no concurrent bpf execution.
- *
- * Should be called with the ir_raw_handler_lock held.
- */
+ 
 void lirc_bpf_free(struct rc_dev *rcdev)
 {
 	struct bpf_prog_array_item *item;

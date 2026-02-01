@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * core.c - Implementation of core module of MOST Linux driver stack
- *
- * Copyright (C) 2013-2020 Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -43,15 +39,15 @@ struct most_channel {
 	u16 channel_id;
 	char name[STRING_SIZE];
 	bool is_poisoned;
-	struct mutex start_mutex; /* channel activation synchronization */
-	struct mutex nq_mutex; /* nq thread synchronization */
+	struct mutex start_mutex;  
+	struct mutex nq_mutex;  
 	int is_starving;
 	struct most_interface *iface;
 	struct most_channel_config cfg;
 	bool keep_mbo;
 	bool enqueue_halt;
 	struct list_head fifo;
-	spinlock_t fifo_lock; /* fifo access synchronization */
+	spinlock_t fifo_lock;  
 	struct list_head halt_fifo;
 	struct list_head list;
 	struct pipe pipe0;
@@ -82,10 +78,7 @@ static const struct {
 	{ MOST_CH_ISOC, "isoc_avp"},
 };
 
-/**
- * list_pop_mbo - retrieves the first MBO of the list and removes it
- * @ptr: the list head to grab the MBO from.
- */
+ 
 #define list_pop_mbo(ptr)						\
 ({									\
 	struct mbo *_mbo = list_first_entry(ptr, struct mbo, list);	\
@@ -93,10 +86,7 @@ static const struct {
 	_mbo;								\
 })
 
-/**
- * most_free_mbo_coherent - free an MBO and its coherent buffer
- * @mbo: most buffer
- */
+ 
 static void most_free_mbo_coherent(struct mbo *mbo)
 {
 	struct most_channel *c = mbo->context;
@@ -111,10 +101,7 @@ static void most_free_mbo_coherent(struct mbo *mbo)
 		complete(&c->cleanup);
 }
 
-/**
- * flush_channel_fifos - clear the channel fifos
- * @c: pointer to channel object
- */
+ 
 static void flush_channel_fifos(struct most_channel *c)
 {
 	unsigned long flags, hf_flags;
@@ -145,10 +132,7 @@ static void flush_channel_fifos(struct most_channel *c)
 		dev_warn(&c->dev, "Channel or trash fifo not empty\n");
 }
 
-/**
- * flush_trash_fifo - clear the trash fifo
- * @c: pointer to channel object
- */
+ 
 static int flush_trash_fifo(struct most_channel *c)
 {
 	struct mbo *mbo, *tmp;
@@ -524,11 +508,7 @@ static ssize_t components_show(struct device_driver *drv, char *buf)
 	return offs;
 }
 
-/**
- * get_channel - get pointer to channel
- * @mdev: name of the device interface
- * @mdev_ch: name of channel
- */
+ 
 static struct most_channel *get_channel(char *mdev, char *mdev_ch)
 {
 	struct device *dev = NULL;
@@ -821,17 +801,7 @@ static int run_enqueue_thread(struct most_channel *c, int channel_id)
 	return 0;
 }
 
-/**
- * arm_mbo - recycle MBO for further usage
- * @mbo: most buffer
- *
- * This puts an MBO back to the list to have it ready for up coming
- * tx transactions.
- *
- * In case the MBO belongs to a channel that recently has been
- * poisoned, the MBO is scheduled to be trashed.
- * Calls the completion handler of an attached component.
- */
+ 
 static void arm_mbo(struct mbo *mbo)
 {
 	unsigned long flags;
@@ -856,19 +826,7 @@ static void arm_mbo(struct mbo *mbo)
 		c->pipe1.comp->tx_completion(c->iface, c->channel_id);
 }
 
-/**
- * arm_mbo_chain - helper function that arms an MBO chain for the HDM
- * @c: pointer to interface channel
- * @dir: direction of the channel
- * @compl: pointer to completion function
- *
- * This allocates buffer objects including the containing DMA coherent
- * buffer and puts them in the fifo.
- * Buffers of Rx channels are put in the kthread fifo, hence immediately
- * submitted to the HDM.
- *
- * Returns the number of allocated and enqueued MBOs.
- */
+ 
 static int arm_mbo_chain(struct most_channel *c, int dir,
 			 void (*compl)(struct mbo *))
 {
@@ -918,10 +876,7 @@ flush_fifos:
 	return 0;
 }
 
-/**
- * most_submit_mbo - submits an MBO to fifo
- * @mbo: most buffer
- */
+ 
 void most_submit_mbo(struct mbo *mbo)
 {
 	if (WARN_ONCE(!mbo || !mbo->context,
@@ -932,13 +887,7 @@ void most_submit_mbo(struct mbo *mbo)
 }
 EXPORT_SYMBOL_GPL(most_submit_mbo);
 
-/**
- * most_write_completion - write completion handler
- * @mbo: most buffer
- *
- * This recycles the MBO for further usage. In case the channel has been
- * poisoned, the MBO is scheduled to be trashed.
- */
+ 
 static void most_write_completion(struct mbo *mbo)
 {
 	struct most_channel *c;
@@ -972,15 +921,7 @@ int channel_has_mbo(struct most_interface *iface, int id,
 }
 EXPORT_SYMBOL_GPL(channel_has_mbo);
 
-/**
- * most_get_mbo - get pointer to an MBO of pool
- * @iface: pointer to interface instance
- * @id: channel ID
- * @comp: driver component
- *
- * This attempts to get a free buffer out of the channel fifo.
- * Returns a pointer to MBO on success or NULL otherwise.
- */
+ 
 struct mbo *most_get_mbo(struct most_interface *iface, int id,
 			 struct most_component *comp)
 {
@@ -1020,10 +961,7 @@ struct mbo *most_get_mbo(struct most_interface *iface, int id,
 }
 EXPORT_SYMBOL_GPL(most_get_mbo);
 
-/**
- * most_put_mbo - return buffer to pool
- * @mbo: most buffer
- */
+ 
 void most_put_mbo(struct mbo *mbo)
 {
 	struct most_channel *c = mbo->context;
@@ -1037,16 +975,7 @@ void most_put_mbo(struct mbo *mbo)
 }
 EXPORT_SYMBOL_GPL(most_put_mbo);
 
-/**
- * most_read_completion - read completion handler
- * @mbo: most buffer
- *
- * This function is called by the HDM when data has been received from the
- * hardware and copied to the buffer of the MBO.
- *
- * In case the channel has been poisoned it puts the buffer in the trash queue.
- * Otherwise, it passes the buffer to an component for further processing.
- */
+ 
 static void most_read_completion(struct mbo *mbo)
 {
 	struct most_channel *c = mbo->context;
@@ -1076,17 +1005,7 @@ static void most_read_completion(struct mbo *mbo)
 	most_put_mbo(mbo);
 }
 
-/**
- * most_start_channel - prepares a channel for communication
- * @iface: pointer to interface instance
- * @id: channel ID
- * @comp: driver component
- *
- * This prepares the channel for usage. Cross-checks whether the
- * channel's been properly configured.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 int most_start_channel(struct most_interface *iface, int id,
 		       struct most_component *comp)
 {
@@ -1099,7 +1018,7 @@ int most_start_channel(struct most_interface *iface, int id,
 
 	mutex_lock(&c->start_mutex);
 	if (c->pipe0.refs + c->pipe1.refs > 0)
-		goto out; /* already started by another component */
+		goto out;  
 
 	if (!try_module_get(iface->mod)) {
 		dev_err(&c->dev, "Failed to acquire HDM lock\n");
@@ -1151,12 +1070,7 @@ err_put_module:
 }
 EXPORT_SYMBOL_GPL(most_start_channel);
 
-/**
- * most_stop_channel - stops a running channel
- * @iface: pointer to interface instance
- * @id: channel ID
- * @comp: driver component
- */
+ 
 int most_stop_channel(struct most_interface *iface, int id,
 		      struct most_component *comp)
 {
@@ -1212,10 +1126,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(most_stop_channel);
 
-/**
- * most_register_component - registers a driver component with the core
- * @comp: driver component
- */
+ 
 int most_register_component(struct most_component *comp)
 {
 	if (!comp) {
@@ -1245,10 +1156,7 @@ static int disconnect_channels(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * most_deregister_component - deregisters a driver component with the core
- * @comp: driver component
- */
+ 
 int most_deregister_component(struct most_component *comp)
 {
 	if (!comp) {
@@ -1269,13 +1177,7 @@ static void release_channel(struct device *dev)
 	kfree(c);
 }
 
-/**
- * most_register_interface - registers an interface with core
- * @iface: device interface
- *
- * Allocates and initializes a new interface instance and all of its channels.
- * Returns a pointer to kobject or an error pointer.
- */
+ 
 int most_register_interface(struct most_interface *iface)
 {
 	unsigned int i;
@@ -1371,13 +1273,7 @@ err_free_resources:
 }
 EXPORT_SYMBOL_GPL(most_register_interface);
 
-/**
- * most_deregister_interface - deregisters an interface with core
- * @iface: device interface
- *
- * Before removing an interface instance from the list, all running
- * channels are stopped and poisoned.
- */
+ 
 void most_deregister_interface(struct most_interface *iface)
 {
 	int i;
@@ -1403,16 +1299,7 @@ void most_deregister_interface(struct most_interface *iface)
 }
 EXPORT_SYMBOL_GPL(most_deregister_interface);
 
-/**
- * most_stop_enqueue - prevents core from enqueueing MBOs
- * @iface: pointer to interface
- * @id: channel id
- *
- * This is called by an HDM that _cannot_ attend to its duties and
- * is imminent to get run over by the core. The core is not going to
- * enqueue any further packets unless the flagging HDM calls
- * most_resume enqueue().
- */
+ 
 void most_stop_enqueue(struct most_interface *iface, int id)
 {
 	struct most_channel *c = iface->p->channel[id];
@@ -1426,14 +1313,7 @@ void most_stop_enqueue(struct most_interface *iface, int id)
 }
 EXPORT_SYMBOL_GPL(most_stop_enqueue);
 
-/**
- * most_resume_enqueue - allow core to enqueue MBOs again
- * @iface: pointer to interface
- * @id: channel id
- *
- * This clears the enqueue halt flag and enqueues all MBOs currently
- * sitting in the wait fifo.
- */
+ 
 void most_resume_enqueue(struct most_interface *iface, int id)
 {
 	struct most_channel *c = iface->p->channel[id];

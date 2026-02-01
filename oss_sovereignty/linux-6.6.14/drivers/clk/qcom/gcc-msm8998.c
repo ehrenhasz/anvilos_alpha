@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -2157,11 +2155,7 @@ static struct clk_branch gcc_gpu_cfg_ahb_clk = {
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_gpu_cfg_ahb_clk",
 			.ops = &clk_branch2_ops,
-			/*
-			 * The GPU IOMMU depends on this clock and hypervisor
-			 * will crash the SoC if this clock goes down, due to
-			 * secure contexts protection.
-			 */
+			 
 			.flags = CLK_IS_CRITICAL,
 		},
 	},
@@ -2270,11 +2264,7 @@ static struct clk_branch gcc_mmss_noc_cfg_ahb_clk = {
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_mmss_noc_cfg_ahb_clk",
 			.ops = &clk_branch2_ops,
-			/*
-			 * Any access to mmss depends on this clock.
-			 * Gating this clock has been shown to crash the system
-			 * when mmssnoc_axi_rpm_clk is inited in rpmcc.
-			 */
+			 
 			.flags = CLK_IS_CRITICAL,
 		},
 	},
@@ -2948,7 +2938,7 @@ static struct gdsc usb_30_gdsc = {
 	.pd = {
 		.name = "usb_30_gdsc",
 	},
-	/* TODO: Change to OFF_ON when USB drivers get proper suspend support */
+	 
 	.pwrsts = PWRSTS_RET_ON,
 	.flags = VOTABLE,
 };
@@ -3280,15 +3270,12 @@ static int gcc_msm8998_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/*
-	 * Set the HMSS_AHB_CLK_SLEEP_ENA bit to allow the hmss_ahb_clk to be
-	 * turned off by hardware during certain apps low power modes.
-	 */
+	 
 	ret = regmap_update_bits(regmap, 0x52008, BIT(21), BIT(21));
 	if (ret)
 		return ret;
 
-	/* Disable the GPLL0 active input to MMSS and GPU via MISC registers */
+	 
 	regmap_write(regmap, GCC_MMSS_MISC, 0x10003);
 	regmap_write(regmap, GCC_GPU_MISC, 0x10003);
 

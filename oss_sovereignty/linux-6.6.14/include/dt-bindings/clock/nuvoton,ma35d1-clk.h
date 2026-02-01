@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Copyright (C) 2023 Nuvoton Technologies.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_NUVOTON_MA35D1_CLK_H
 #define __DT_BINDINGS_CLOCK_NUVOTON_MA35D1_CLK_H
 
-/* external and internal oscillator clocks */
+ 
 #define HXT		0
 #define HXT_GATE	1
 #define LXT		2
@@ -15,18 +13,18 @@
 #define HIRC_GATE	5
 #define LIRC		6
 #define LIRC_GATE	7
-/* PLLs */
+ 
 #define CAPLL		8
 #define SYSPLL		9
 #define DDRPLL		10
 #define APLL		11
 #define EPLL		12
 #define VPLL		13
-/* EPLL divider */
+ 
 #define EPLL_DIV2	14
 #define EPLL_DIV4	15
 #define EPLL_DIV8	16
-/* CPU clock, system clock, AXI, HCLK and PCLK */
+ 
 #define CA35CLK_MUX	17
 #define AXICLK_DIV2	18
 #define AXICLK_DIV4	19
@@ -43,7 +41,7 @@
 #define HCLK3		30
 #define PCLK3		31
 #define PCLK4		32
-/* AXI and AHB peripheral clocks */
+ 
 #define USBPHY0		33
 #define USBPHY1		34
 #define DDR0_GATE	35
@@ -115,7 +113,7 @@
 #define GPL_GATE	101
 #define GPM_GATE	102
 #define GPN_GATE	103
-/* APB peripheral clocks */
+ 
 #define TMR0_MUX	104
 #define TMR0_GATE	105
 #define TMR1_MUX	106
@@ -250,4 +248,4 @@
 #define EADC_GATE	235
 #define	CLK_MAX_IDX	236
 
-#endif /* __DT_BINDINGS_CLOCK_NUVOTON_MA35D1_CLK_H */
+#endif  

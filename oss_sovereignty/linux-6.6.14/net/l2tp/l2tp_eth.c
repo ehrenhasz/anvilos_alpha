@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* L2TPv3 ethernet pseudowire driver
- *
- * Copyright (c) 2008,2009,2010 Katalix Systems Ltd
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,10 +28,10 @@
 
 #include "l2tp_core.h"
 
-/* Default device name. May be overridden by name specified by user */
+ 
 #define L2TP_ETH_DEV_NAME	"l2tpeth%d"
 
-/* via netdev_priv() */
+ 
 struct l2tp_eth {
 	struct l2tp_session	*session;
 	atomic_long_t		tx_bytes;
@@ -45,7 +42,7 @@ struct l2tp_eth {
 	atomic_long_t		rx_errors;
 };
 
-/* via l2tp_session_priv() */
+ 
 struct l2tp_eth_sess {
 	struct net_device __rcu *dev;
 };
@@ -66,9 +63,7 @@ static void l2tp_eth_dev_uninit(struct net_device *dev)
 
 	spriv = l2tp_session_priv(priv->session);
 	RCU_INIT_POINTER(spriv->dev, NULL);
-	/* No need for synchronize_net() here. We're called by
-	 * unregister_netdev*(), which does the synchronisation for us.
-	 */
+	 
 }
 
 static netdev_tx_t l2tp_eth_dev_xmit(struct sk_buff *skb, struct net_device *dev)
@@ -133,7 +128,7 @@ static void l2tp_eth_dev_recv(struct l2tp_session *session, struct sk_buff *skb,
 
 	secpath_reset(skb);
 
-	/* checksums verified by L2TP */
+	 
 	skb->ip_summed = CHECKSUM_NONE;
 
 	skb_dst_drop(skb);
@@ -209,7 +204,7 @@ static void l2tp_eth_adjust_mtu(struct l2tp_tunnel *tunnel,
 	u32 l3_overhead = 0;
 	u32 mtu;
 
-	/* if the encap is UDP, account for UDP header size */
+	 
 	if (tunnel->encap == L2TP_ENCAPTYPE_UDP) {
 		overhead += sizeof(struct udphdr);
 		dev->needed_headroom += sizeof(struct udphdr);
@@ -220,16 +215,10 @@ static void l2tp_eth_adjust_mtu(struct l2tp_tunnel *tunnel,
 	release_sock(tunnel->sock);
 
 	if (l3_overhead == 0) {
-		/* L3 Overhead couldn't be identified, this could be
-		 * because tunnel->sock was NULL or the socket's
-		 * address family was not IPv4 or IPv6,
-		 * dev mtu stays at 1500.
-		 */
+		 
 		return;
 	}
-	/* Adjust MTU, factor overhead - underlay L3, overlay L2 hdr
-	 * UDP overhead, if any, was already factored in above.
-	 */
+	 
 	overhead += session->hdr_len + ETH_HLEN + l3_overhead;
 
 	mtu = l2tp_tunnel_dst_mtu(tunnel) - overhead;
@@ -294,10 +283,7 @@ static int l2tp_eth_create(struct net *net, struct l2tp_tunnel *tunnel,
 
 	rtnl_lock();
 
-	/* Register both device and session while holding the rtnl lock. This
-	 * ensures that l2tp_eth_delete() will see that there's a device to
-	 * unregister, even if it happened to run before we assign spriv->dev.
-	 */
+	 
 	rc = l2tp_session_register(session, tunnel);
 	if (rc < 0) {
 		rtnl_unlock();

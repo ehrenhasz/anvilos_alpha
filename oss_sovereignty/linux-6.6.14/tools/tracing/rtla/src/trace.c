@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sys/sendfile.h>
 #include <tracefs.h>
@@ -10,9 +10,7 @@
 #include "trace.h"
 #include "utils.h"
 
-/*
- * enable_tracer_by_name - enable a tracer on the given instance
- */
+ 
 int enable_tracer_by_name(struct tracefs_instance *inst, const char *tracer_name)
 {
 	enum tracefs_tracers tracer;
@@ -34,9 +32,7 @@ int enable_tracer_by_name(struct tracefs_instance *inst, const char *tracer_name
 	return 0;
 }
 
-/*
- * disable_tracer - set nop tracer to the insta
- */
+ 
 void disable_tracer(struct tracefs_instance *inst)
 {
 	enum tracefs_tracers t = TRACEFS_TRACER_NOP;
@@ -47,26 +43,20 @@ void disable_tracer(struct tracefs_instance *inst)
 		err_msg("Oops, error disabling tracer\n");
 }
 
-/*
- * create_instance - create a trace instance with *instance_name
- */
+ 
 struct tracefs_instance *create_instance(char *instance_name)
 {
 	return tracefs_instance_create(instance_name);
 }
 
-/*
- * destroy_instance - remove a trace instance and free the data
- */
+ 
 void destroy_instance(struct tracefs_instance *inst)
 {
 	tracefs_instance_destroy(inst);
 	tracefs_instance_free(inst);
 }
 
-/*
- * save_trace_to_file - save the trace output of the instance to the file
- */
+ 
 int save_trace_to_file(struct tracefs_instance *inst, const char *filename)
 {
 	const char *file = "trace";
@@ -105,12 +95,7 @@ out_close_in:
 	return retval;
 }
 
-/*
- * collect_registered_events - call the existing callback function for the event
- *
- * If an event has a registered callback function, call it.
- * Otherwise, ignore the event.
- */
+ 
 int
 collect_registered_events(struct tep_event *event, struct tep_record *record,
 			  int cpu, void *context)
@@ -126,9 +111,7 @@ collect_registered_events(struct tep_event *event, struct tep_record *record,
 	return 0;
 }
 
-/*
- * trace_instance_destroy - destroy and free a rtla trace instance
- */
+ 
 void trace_instance_destroy(struct trace_instance *trace)
 {
 	if (trace->inst) {
@@ -148,17 +131,7 @@ void trace_instance_destroy(struct trace_instance *trace)
 	}
 }
 
-/*
- * trace_instance_init - create an rtla trace instance
- *
- * It is more than the tracefs instance, as it contains other
- * things required for the tracing, such as the local events and
- * a seq file.
- *
- * Note that the trace instance is returned disabled. This allows
- * the tool to apply some other configs, like setting priority
- * to the kernel threads, before starting generating trace entries.
- */
+ 
 int trace_instance_init(struct trace_instance *trace, char *tool_name)
 {
 	trace->seq = calloc(1, sizeof(*trace->seq));
@@ -175,10 +148,7 @@ int trace_instance_init(struct trace_instance *trace, char *tool_name)
 	if (!trace->tep)
 		goto out_err;
 
-	/*
-	 * Let the main enable the record after setting some other
-	 * things such as the priority of the tracer's threads.
-	 */
+	 
 	tracefs_trace_off(trace->inst);
 
 	return 0;
@@ -188,17 +158,13 @@ out_err:
 	return 1;
 }
 
-/*
- * trace_instance_start - start tracing a given rtla instance
- */
+ 
 int trace_instance_start(struct trace_instance *trace)
 {
 	return tracefs_trace_on(trace->inst);
 }
 
-/*
- * trace_events_free - free a list of trace events
- */
+ 
 static void trace_events_free(struct trace_events *events)
 {
 	struct trace_events *tevent = events;
@@ -218,9 +184,7 @@ static void trace_events_free(struct trace_events *events)
 	}
 }
 
-/*
- * trace_event_alloc - alloc and parse a single trace event
- */
+ 
 struct trace_events *trace_event_alloc(const char *event_string)
 {
 	struct trace_events *tevent;
@@ -244,9 +208,7 @@ struct trace_events *trace_event_alloc(const char *event_string)
 	return tevent;
 }
 
-/*
- * trace_event_add_filter - record an event filter
- */
+ 
 int trace_event_add_filter(struct trace_events *event, char *filter)
 {
 	if (event->filter)
@@ -259,9 +221,7 @@ int trace_event_add_filter(struct trace_events *event, char *filter)
 	return 0;
 }
 
-/*
- * trace_event_add_trigger - record an event trigger action
- */
+ 
 int trace_event_add_trigger(struct trace_events *event, char *trigger)
 {
 	if (event->trigger)
@@ -274,9 +234,7 @@ int trace_event_add_trigger(struct trace_events *event, char *trigger)
 	return 0;
 }
 
-/*
- * trace_event_disable_filter - disable an event filter
- */
+ 
 static void trace_event_disable_filter(struct trace_instance *instance,
 				       struct trace_events *tevent)
 {
@@ -301,11 +259,7 @@ static void trace_event_disable_filter(struct trace_instance *instance,
 			tevent->event ? : "*", tevent->filter);
 }
 
-/*
- * trace_event_save_hist - save the content of an event hist
- *
- * If the trigger is a hist: one, save the content of the hist file.
- */
+ 
 static void trace_event_save_hist(struct trace_instance *instance,
 				  struct trace_events *tevent)
 {
@@ -317,11 +271,11 @@ static void trace_event_save_hist(struct trace_instance *instance,
 	if (!tevent)
 		return;
 
-	/* trigger enables hist */
+	 
 	if (!tevent->trigger)
 		return;
 
-	/* is this a hist: trigger? */
+	 
 	retval = strncmp(tevent->trigger, "hist:", strlen("hist:"));
 	if (retval)
 		return;
@@ -352,9 +306,7 @@ out_close:
 	close(out_fd);
 }
 
-/*
- * trace_event_disable_trigger - disable an event trigger
- */
+ 
 static void trace_event_disable_trigger(struct trace_instance *instance,
 					struct trace_events *tevent)
 {
@@ -381,9 +333,7 @@ static void trace_event_disable_trigger(struct trace_instance *instance,
 			tevent->event ? : "*", tevent->trigger);
 }
 
-/*
- * trace_events_disable - disable all trace events
- */
+ 
 void trace_events_disable(struct trace_instance *instance,
 			  struct trace_events *events)
 {
@@ -405,9 +355,7 @@ void trace_events_disable(struct trace_instance *instance,
 	}
 }
 
-/*
- * trace_event_enable_filter - enable an event filter associated with an event
- */
+ 
 static int trace_event_enable_filter(struct trace_instance *instance,
 				     struct trace_events *tevent)
 {
@@ -440,9 +388,7 @@ static int trace_event_enable_filter(struct trace_instance *instance,
 	return 0;
 }
 
-/*
- * trace_event_enable_trigger - enable an event trigger associated with an event
- */
+ 
 static int trace_event_enable_trigger(struct trace_instance *instance,
 				      struct trace_events *tevent)
 {
@@ -476,9 +422,7 @@ static int trace_event_enable_trigger(struct trace_instance *instance,
 	return 0;
 }
 
-/*
- * trace_events_enable - enable all events
- */
+ 
 int trace_events_enable(struct trace_instance *instance,
 			struct trace_events *events)
 {
@@ -509,9 +453,7 @@ int trace_events_enable(struct trace_instance *instance,
 	return 0;
 }
 
-/*
- * trace_events_destroy - disable and free all trace events
- */
+ 
 void trace_events_destroy(struct trace_instance *instance,
 			  struct trace_events *events)
 {
@@ -524,17 +466,11 @@ void trace_events_destroy(struct trace_instance *instance,
 
 int trace_is_off(struct trace_instance *tool, struct trace_instance *trace)
 {
-	/*
-	 * The tool instance is always present, it is the one used to collect
-	 * data.
-	 */
+	 
 	if (!tracefs_trace_is_on(tool->inst))
 		return 1;
 
-	/*
-	 * The trace instance is only enabled when -t is set. IOW, when the system
-	 * is tracing.
-	 */
+	 
 	if (trace && !tracefs_trace_is_on(trace->inst))
 		return 1;
 

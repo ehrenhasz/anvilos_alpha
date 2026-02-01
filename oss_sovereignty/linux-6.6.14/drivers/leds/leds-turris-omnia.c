@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CZ.NIC's Turris Omnia LEDs driver
- *
- * 2020, 2023 by Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/led-class-multicolor.h>
@@ -144,7 +140,7 @@ static int omnia_led_register(struct i2c_client *client, struct omnia_led *led,
 	cdev->max_brightness = 255;
 	cdev->brightness_set_blocking = omnia_led_brightness_set_blocking;
 
-	/* put the LED into software mode */
+	 
 	ret = omnia_cmd_write_u8(client, CMD_LED_MODE,
 				 CMD_LED_MODE_LED(led->reg) |
 				 CMD_LED_MODE_USER);
@@ -154,7 +150,7 @@ static int omnia_led_register(struct i2c_client *client, struct omnia_led *led,
 		return ret;
 	}
 
-	/* disable the LED */
+	 
 	ret = omnia_cmd_write_u8(client, CMD_LED_STATE,
 				 CMD_LED_STATE_LED(led->reg));
 	if (ret < 0) {
@@ -172,17 +168,7 @@ static int omnia_led_register(struct i2c_client *client, struct omnia_led *led,
 	return 1;
 }
 
-/*
- * On the front panel of the Turris Omnia router there is also a button which
- * can be used to control the intensity of all the LEDs at once, so that if they
- * are too bright, user can dim them.
- * The microcontroller cycles between 8 levels of this global brightness (from
- * 100% to 0%), but this setting can have any integer value between 0 and 100.
- * It is therefore convenient to be able to change this setting from software.
- * We expose this setting via a sysfs attribute file called "brightness". This
- * file lives in the device directory of the LED controller, not an individual
- * LED, so it should not confuse users.
- */
+ 
 static ssize_t brightness_show(struct device *dev, struct device_attribute *a,
 			       char *buf)
 {
@@ -266,11 +252,11 @@ static void omnia_leds_remove(struct i2c_client *client)
 {
 	u8 buf[5];
 
-	/* put all LEDs into default (HW triggered) mode */
+	 
 	omnia_cmd_write_u8(client, CMD_LED_MODE,
 			   CMD_LED_MODE_LED(OMNIA_BOARD_LEDS));
 
-	/* set all LEDs color to [255, 255, 255] */
+	 
 	buf[0] = CMD_LED_COLOR;
 	buf[1] = OMNIA_BOARD_LEDS;
 	buf[2] = 255;

@@ -1,66 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2016, 2017 Intel Corporation.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>.
- */
+ 
 
-/*
- * Functions to convert between a list of vdevs and an nvlist representing the
- * configuration.  Each entry in the list can be one of:
- *
- * 	Device vdevs
- * 		disk=(path=..., devid=...)
- * 		file=(path=...)
- *
- * 	Group vdevs
- * 		raidz[1|2]=(...)
- * 		mirror=(...)
- *
- * 	Hot spares
- *
- * While the underlying implementation supports it, group vdevs cannot contain
- * other group vdevs.  All userland verification of devices is contained within
- * this file.  If successful, the nvlist returned can be passed directly to the
- * kernel; we've done as much verification as possible in userland.
- *
- * Hot spares are a special case, and passed down as an array of disk vdevs, at
- * the same level as the root of the vdev tree.
- *
- * The only function exported by this file is 'make_root_vdev'.  The
- * function performs several passes:
- *
- * 	1. Construct the vdev specification.  Performs syntax validation and
- *         makes sure each device is valid.
- * 	2. Check for devices in use.  Using libblkid to make sure that no
- *         devices are also in use.  Some can be overridden using the 'force'
- *         flag, others cannot.
- * 	3. Check for replication errors if the 'force' flag is not specified.
- *         validates that the replication level is consistent across the
- *         entire pool.
- * 	4. Call libzfs to label any whole disks with an EFI label.
- */
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -91,11 +33,7 @@ typedef struct vdev_disk_db_entry
 	int sector_size;
 } vdev_disk_db_entry_t;
 
-/*
- * Database of block devices that lie about physical sector sizes.  The
- * identification string must be precisely 24 characters to avoid false
- * negatives
- */
+ 
 static vdev_disk_db_entry_t vdev_disk_database[] = {
 	{"ATA     ADATA SSD S396 3", 8192},
 	{"ATA     APPLE SSD SM128E", 8192},
@@ -165,7 +103,7 @@ static vdev_disk_db_entry_t vdev_disk_database[] = {
 	{"ATA     SAMSUNG MCCOE32G", 4096},
 	{"ATA     SAMSUNG MCCOE64G", 4096},
 	{"ATA     SAMSUNG SSD PM80", 4096},
-	/* Flash drives optimized for 4KB IOs on larger pages */
+	 
 	{"ATA     INTEL SSDSC2BA10", 4096},
 	{"ATA     INTEL SSDSC2BA20", 4096},
 	{"ATA     INTEL SSDSC2BA40", 4096},
@@ -185,9 +123,9 @@ static vdev_disk_db_entry_t vdev_disk_database[] = {
 	{"ATA     INTEL SSDSC2BP48", 4096},
 	{"NA      SmrtStorSDLKAE9W", 4096},
 	{"NVMe    Amazon EC2 NVMe ", 4096},
-	/* Imported from Open Solaris */
+	 
 	{"ATA     MARVELL SD88SA02", 4096},
-	/* Advanced format Hard drives */
+	 
 	{"ATA     Hitachi HDS5C303", 4096},
 	{"ATA     SAMSUNG HD204UI ", 4096},
 	{"ATA     ST2000DL004 HD20", 4096},
@@ -225,7 +163,7 @@ check_sector_size_database(char *path, int *sector_size)
 	int fd;
 	int i;
 
-	/* Prepare INQUIRY command */
+	 
 	memset(&io_hdr, 0, sizeof (sg_io_hdr_t));
 	io_hdr.interface_id = 'S';
 	io_hdr.cmd_len = sizeof (inq_cmd_blk);
@@ -235,7 +173,7 @@ check_sector_size_database(char *path, int *sector_size)
 	io_hdr.dxferp = inq_buff;
 	io_hdr.cmdp = inq_cmd_blk;
 	io_hdr.sbp = sense_buffer;
-	io_hdr.timeout = 10;		/* 10 milliseconds is ample time */
+	io_hdr.timeout = 10;		 
 
 	if ((fd = open(path, O_RDONLY|O_DIRECT)) < 0)
 		return (B_FALSE);
@@ -267,16 +205,12 @@ check_slice(const char *path, blkid_cache cache, int force, boolean_t isspare)
 	int err;
 	char *value;
 
-	/* No valid type detected device is safe to use */
+	 
 	value = blkid_get_tag_value(cache, "TYPE", path);
 	if (value == NULL)
 		return (0);
 
-	/*
-	 * If libblkid detects a ZFS device, we check the device
-	 * using check_file() to see if it's safe.  The one safe
-	 * case is a spare device shared between multiple pools.
-	 */
+	 
 	if (strcmp(value, "zfs_member") == 0) {
 		err = check_file(path, force, isspare);
 	} else {
@@ -294,18 +228,7 @@ check_slice(const char *path, blkid_cache cache, int force, boolean_t isspare)
 	return (err);
 }
 
-/*
- * Validate that a disk including all partitions are safe to use.
- *
- * For EFI labeled disks this can done relatively easily with the libefi
- * library.  The partition numbers are extracted from the label and used
- * to generate the expected /dev/ paths.  Each partition can then be
- * checked for conflicts.
- *
- * For non-EFI labeled disks (MBR/EBR/etc) the same process is possible
- * but due to the lack of a readily available libraries this scanning is
- * not implemented.  Instead only the device path as given is checked.
- */
+ 
 static int
 check_disk(const char *path, blkid_cache cache, int force,
     boolean_t isspare, boolean_t iswholedisk)
@@ -319,7 +242,7 @@ check_disk(const char *path, blkid_cache cache, int force,
 	if (!iswholedisk)
 		return (check_slice(path, cache, force, isspare));
 
-	/* only spares can be shared, other devices require exclusive access */
+	 
 	if (!isspare)
 		flags |= O_EXCL;
 
@@ -331,27 +254,20 @@ check_disk(const char *path, blkid_cache cache, int force,
 		return (-1);
 	}
 
-	/*
-	 * Expected to fail for non-EFI labeled disks.  Just check the device
-	 * as given and do not attempt to detect and scan partitions.
-	 */
+	 
 	err = efi_alloc_and_read(fd, &vtoc);
 	if (err) {
 		(void) close(fd);
 		return (check_slice(path, cache, force, isspare));
 	}
 
-	/*
-	 * The primary efi partition label is damaged however the secondary
-	 * label at the end of the device is intact.  Rather than use this
-	 * label we should play it safe and treat this as a non efi device.
-	 */
+	 
 	if (vtoc->efi_flags & EFI_GPT_PRIMARY_CORRUPT) {
 		efi_free(vtoc);
 		(void) close(fd);
 
 		if (force) {
-			/* Partitions will now be created using the backup */
+			 
 			return (0);
 		} else {
 			vdev_error(gettext("%s contains a corrupt primary "

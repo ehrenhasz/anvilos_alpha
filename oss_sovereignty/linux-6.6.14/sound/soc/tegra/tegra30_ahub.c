@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra30_ahub.c - Tegra30 AHUB driver
- *
- * Copyright (c) 2011,2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -50,17 +46,7 @@ static __maybe_unused int tegra30_ahub_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * clk_apbif isn't required for an I2S<->I2S configuration where no PCM data
- * is read from or sent to memory. However, that's not something the rest of
- * the driver supports right now, so we'll just treat the two clocks as one
- * for now.
- *
- * These functions should not be a plain ref-count. Instead, each active stream
- * contributes some requirement to the minimum clock rate, so starting or
- * stopping streams should dynamically adjust the clock as required.  However,
- * this is not yet implemented.
- */
+ 
 static __maybe_unused int tegra30_ahub_runtime_resume(struct device *dev)
 {
 	int ret;
@@ -351,16 +337,16 @@ static const struct reset_control_bulk_data tegra30_ahub_resets_data[] = {
 	{ "dam1" },
 	{ "dam2" },
 	{ "spdif" },
-	{ "amx" }, /* Tegra114+ */
-	{ "adx" }, /* Tegra114+ */
-	{ "amx1" }, /* Tegra124 */
-	{ "adx1" }, /* Tegra124 */
-	{ "afc0" }, /* Tegra124 */
-	{ "afc1" }, /* Tegra124 */
-	{ "afc2" }, /* Tegra124 */
-	{ "afc3" }, /* Tegra124 */
-	{ "afc4" }, /* Tegra124 */
-	{ "afc5" }, /* Tegra124 */
+	{ "amx" },  
+	{ "adx" },  
+	{ "amx1" },  
+	{ "adx1" },  
+	{ "afc0" },  
+	{ "afc1" },  
+	{ "afc2" },  
+	{ "afc3" },  
+	{ "afc4" },  
+	{ "afc5" },  
 };
 
 #define LAST_REG(name) \

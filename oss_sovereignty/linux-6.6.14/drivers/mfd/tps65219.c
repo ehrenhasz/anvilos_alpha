@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for TPS65219 Integrated Power Management Integrated Chips (PMIC)
-//
-// Copyright (C) 2022 BayLibre Incorporated - https://www.baylibre.com/
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/reboot.h>
@@ -130,20 +130,16 @@ static const struct regmap_config tps65219_regmap_config = {
 	.max_register = TPS65219_REG_FACTORY_CONFIG_2,
 };
 
-/*
- * Mapping of main IRQ register bits to sub-IRQ register offsets so that we can
- * access corect sub-IRQ registers based on bits that are set in main IRQ
- * register.
- */
-/* Timeout Residual Voltage Shutdown */
+ 
+ 
 static unsigned int bit0_offsets[] = { TPS65219_REG_INT_TO_RV_POS };
-static unsigned int bit1_offsets[] = { TPS65219_REG_INT_RV_POS };	/* Residual Voltage */
-static unsigned int bit2_offsets[] = { TPS65219_REG_INT_SYS_POS };	/* System */
-static unsigned int bit3_offsets[] = { TPS65219_REG_INT_BUCK_1_2_POS };	/* Buck 1-2 */
-static unsigned int bit4_offsets[] = { TPS65219_REG_INT_BUCK_3_POS };	/* Buck 3 */
-static unsigned int bit5_offsets[] = { TPS65219_REG_INT_LDO_1_2_POS };	/* LDO 1-2 */
-static unsigned int bit6_offsets[] = { TPS65219_REG_INT_LDO_3_4_POS };	/* LDO 3-4 */
-static unsigned int bit7_offsets[] = { TPS65219_REG_INT_PB_POS };	/* Power Button */
+static unsigned int bit1_offsets[] = { TPS65219_REG_INT_RV_POS };	 
+static unsigned int bit2_offsets[] = { TPS65219_REG_INT_SYS_POS };	 
+static unsigned int bit3_offsets[] = { TPS65219_REG_INT_BUCK_1_2_POS };	 
+static unsigned int bit4_offsets[] = { TPS65219_REG_INT_BUCK_3_POS };	 
+static unsigned int bit5_offsets[] = { TPS65219_REG_INT_LDO_1_2_POS };	 
+static unsigned int bit6_offsets[] = { TPS65219_REG_INT_LDO_3_4_POS };	 
+static unsigned int bit7_offsets[] = { TPS65219_REG_INT_PB_POS };	 
 
 static struct regmap_irq_sub_irq_map tps65219_sub_irq_offsets[] = {
 	REGMAP_IRQ_MAIN_REG_OFFSET(bit0_offsets),

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gfs2
 
@@ -76,17 +76,9 @@ static inline u8 glock_trace_state(unsigned int state)
 }
 #endif
 
-/* Section 1 - Locking
- *
- * Objectives:
- * Latency: Remote demote request to state change
- * Latency: Local lock request to state change
- * Latency: State change to lock grant
- * Correctness: Ordering of local lock state vs. I/O requests
- * Correctness: Responses to remote demote requests
- */
+ 
 
-/* General glock state change (DLM lock request completes) */
+ 
 TRACE_EVENT(gfs2_glock_state_change,
 
 	TP_PROTO(const struct gfs2_glock *gl, unsigned int new_state),
@@ -125,7 +117,7 @@ TRACE_EVENT(gfs2_glock_state_change,
 		  show_glock_flags(__entry->flags))
 );
 
-/* State change -> unlocked, glock is being deallocated */
+ 
 TRACE_EVENT(gfs2_glock_put,
 
 	TP_PROTO(const struct gfs2_glock *gl),
@@ -157,7 +149,7 @@ TRACE_EVENT(gfs2_glock_put,
 
 );
 
-/* Callback (local or remote) requesting lock demotion */
+ 
 TRACE_EVENT(gfs2_demote_rq,
 
 	TP_PROTO(const struct gfs2_glock *gl, bool remote),
@@ -194,7 +186,7 @@ TRACE_EVENT(gfs2_demote_rq,
 
 );
 
-/* Promotion/grant of a glock */
+ 
 TRACE_EVENT(gfs2_promote,
 
 	TP_PROTO(const struct gfs2_holder *gh),
@@ -221,7 +213,7 @@ TRACE_EVENT(gfs2_promote,
 		  glock_trace_name(__entry->state))
 );
 
-/* Queue/dequeue a lock request */
+ 
 TRACE_EVENT(gfs2_glock_queue,
 
 	TP_PROTO(const struct gfs2_holder *gh, int queue),
@@ -251,7 +243,7 @@ TRACE_EVENT(gfs2_glock_queue,
 		  glock_trace_name(__entry->state))
 );
 
-/* DLM sends a reply to GFS2 */
+ 
 TRACE_EVENT(gfs2_glock_lock_time,
 
 	TP_PROTO(const struct gfs2_glock *gl, s64 tdiff),
@@ -307,15 +299,9 @@ TRACE_EVENT(gfs2_glock_lock_time,
 		  (long long)__entry->qcount)
 );
 
-/* Section 2 - Log/journal
- *
- * Objectives:
- * Latency: Log flush time
- * Correctness: pin/unpin vs. disk I/O ordering
- * Performance: Log usage stats
- */
+ 
 
-/* Pin/unpin a block in the log */
+ 
 TRACE_EVENT(gfs2_pin,
 
 	TP_PROTO(const struct gfs2_bufdata *bd, int pin),
@@ -346,7 +332,7 @@ TRACE_EVENT(gfs2_pin,
 		  (unsigned long long)__entry->ino)
 );
 
-/* Flushing the log */
+ 
 TRACE_EVENT(gfs2_log_flush,
 
 	TP_PROTO(const struct gfs2_sbd *sdp, int start, u32 flags),
@@ -374,7 +360,7 @@ TRACE_EVENT(gfs2_log_flush,
 		  (unsigned long long)__entry->flags)
 );
 
-/* Reserving/releasing blocks in the log */
+ 
 TRACE_EVENT(gfs2_log_blocks,
 
 	TP_PROTO(const struct gfs2_sbd *sdp, int blocks),
@@ -397,7 +383,7 @@ TRACE_EVENT(gfs2_log_blocks,
 		  MINOR(__entry->dev), __entry->blocks, __entry->blks_free)
 );
 
-/* Writing back the AIL */
+ 
 TRACE_EVENT(gfs2_ail_flush,
 
 	TP_PROTO(const struct gfs2_sbd *sdp, const struct writeback_control *wbc, int start),
@@ -424,15 +410,9 @@ TRACE_EVENT(gfs2_ail_flush,
 		  __entry->nr_to_write)
 );
 
-/* Section 3 - bmap
- *
- * Objectives:
- * Latency: Bmap request time
- * Performance: Block allocator tracing
- * Correctness: Test of disard generation vs. blocks allocated
- */
+ 
 
-/* Map an extent of blocks, possibly a new allocation */
+ 
 TRACE_EVENT(gfs2_bmap,
 
 	TP_PROTO(const struct gfs2_inode *ip, const struct buffer_head *bh,
@@ -541,7 +521,7 @@ TRACE_EVENT(gfs2_iomap_end,
 		  (u16)__entry->flags, __entry->ret)
 );
 
-/* Keep track of blocks as they are allocated/freed */
+ 
 TRACE_EVENT(gfs2_block_alloc,
 
 	TP_PROTO(const struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
@@ -585,7 +565,7 @@ TRACE_EVENT(gfs2_block_alloc,
 		  __entry->rd_reserved)
 );
 
-/* Keep track of multi-block reservations as they are allocated/freed */
+ 
 TRACE_EVENT(gfs2_rs,
 
 	TP_PROTO(const struct gfs2_blkreserv *rs, u8 func),
@@ -632,9 +612,9 @@ TRACE_EVENT(gfs2_rs,
 		  __entry->reserved)
 );
 
-#endif /* _TRACE_GFS2_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace_gfs2

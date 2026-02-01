@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for LEDs connected to the Intel Cherry Trail Whiskey Cove PMIC
- *
- * Copyright 2019 Yauhen Kharuzhy <jekhor@gmail.com>
- * Copyright 2023 Hans de Goede <hansg@kernel.org>
- *
- * Register info comes from the Lenovo Yoga Book Android opensource code
- * available from Lenovo. File lenovo_yb1_x90f_l_osc_201803.7z path in the 7z:
- * YB1_source_code/kernel/cht/drivers/misc/charger_gp_led.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
@@ -27,12 +18,12 @@
 #define CHT_WC_LED2_FSM			0x4fe0
 #define CHT_WC_LED2_PWM			0x4fe1
 
-#define CHT_WC_LED1_SWCTL		BIT(0)		/* HW or SW control of charging led */
+#define CHT_WC_LED1_SWCTL		BIT(0)		 
 #define CHT_WC_LED1_ON			BIT(1)
 
 #define CHT_WC_LED2_ON			BIT(0)
-#define CHT_WC_LED_I_MA2_5		(2 << 2)	/* LED current limit */
-#define CHT_WC_LED_I_MASK		GENMASK(3, 2)	/* LED current limit mask */
+#define CHT_WC_LED_I_MA2_5		(2 << 2)	 
+#define CHT_WC_LED_I_MASK		GENMASK(3, 2)	 
 
 #define CHT_WC_LED_F_1_4_HZ		(0 << 4)
 #define CHT_WC_LED_F_1_2_HZ		(1 << 4)
@@ -49,11 +40,11 @@
 #define CHT_WC_LED_COUNT		2
 
 struct cht_wc_led_regs {
-	/* Register addresses */
+	 
 	u16 ctrl;
 	u16 fsm;
 	u16 pwm;
-	/* Mask + values for turning the LED on/off */
+	 
 	u8 on_off_mask;
 	u8 on_val;
 	u8 off_val;
@@ -75,7 +66,7 @@ struct cht_wc_led {
 
 struct cht_wc_leds {
 	struct cht_wc_led leds[CHT_WC_LED_COUNT];
-	/* Saved LED1 initial register values */
+	 
 	struct cht_wc_led_saved_regs led1_initial_regs;
 };
 
@@ -119,7 +110,7 @@ static int cht_wc_leds_brightness_set(struct led_classdev *cdev,
 			goto out;
 		}
 
-		/* Disable HW blinking */
+		 
 		ret = regmap_update_bits(led->regmap, led->regs->fsm,
 					 CHT_WC_LED_EFF_MASK, CHT_WC_LED_EFF_ON);
 		if (ret < 0)
@@ -176,7 +167,7 @@ done:
 	return ret;
 }
 
-/* Return blinking period for given CTRL reg value */
+ 
 static unsigned long cht_wc_leds_get_period(int ctrl)
 {
 	ctrl &= CHT_WC_LED_F_MASK;
@@ -195,14 +186,7 @@ static unsigned long cht_wc_leds_get_period(int ctrl)
 	return 0;
 }
 
-/*
- * Find suitable hardware blink mode for given period.
- * period < 750 ms - select 2 HZ
- * 750 ms <= period < 1500 ms - select 1 HZ
- * 1500 ms <= period < 3000 ms - select 1/2 HZ
- * 3000 ms <= period < 5000 ms - select 1/4 HZ
- * 5000 ms <= period - return -1
- */
+ 
 static int cht_wc_leds_find_freq(unsigned long period)
 {
 	if (period < 750)
@@ -227,19 +211,19 @@ static int cht_wc_leds_set_effect(struct led_classdev *cdev,
 
 	mutex_lock(&led->mutex);
 
-	/* Blink with 1 Hz as default if nothing specified */
+	 
 	if (!*delay_on && !*delay_off)
 		*delay_on = *delay_off = 500;
 
 	ctrl = cht_wc_leds_find_freq(*delay_on + *delay_off);
 	if (ctrl < 0) {
-		/* Disable HW blinking */
+		 
 		ret = regmap_update_bits(led->regmap, led->regs->fsm,
 					 CHT_WC_LED_EFF_MASK, CHT_WC_LED_EFF_ON);
 		if (ret < 0)
 			dev_err(cdev->dev, "Failed to update LED FSM reg: %d\n", ret);
 
-		/* Fallback to software timer */
+		 
 		*delay_on = *delay_off = 0;
 		ret = -EINVAL;
 		goto done;
@@ -250,7 +234,7 @@ static int cht_wc_leds_set_effect(struct led_classdev *cdev,
 	if (ret < 0)
 		dev_err(cdev->dev, "Failed to update LED FSM reg: %d\n", ret);
 
-	/* Set the frequency and make sure the LED is on */
+	 
 	ret = regmap_update_bits(led->regmap, led->regs->ctrl,
 				 CHT_WC_LED_F_MASK | led->regs->on_off_mask,
 				 ctrl | led->regs->on_val);
@@ -271,13 +255,7 @@ static int cht_wc_leds_blink_set(struct led_classdev *cdev,
 {
 	u8 effect = CHT_WC_LED_EFF_BLINKING;
 
-	/*
-	 * The desired default behavior of LED1 / the charge LED is breathing
-	 * while charging and on/solid when full. Since triggers cannot select
-	 * breathing, blink_set() gets called when charging. Use slow breathing
-	 * when the default "charging-blink-full-solid" trigger is used to
-	 * achieve the desired default behavior.
-	 */
+	 
 	if (cdev->flags & LED_INIT_DEFAULT_TRIGGER) {
 		*delay_on = *delay_off = 1000;
 		effect = CHT_WC_LED_EFF_BREATHING;
@@ -341,11 +319,7 @@ static int cht_wc_leds_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
-	/*
-	 * On the Lenovo Yoga Tab 3 the LED1 driver output is actually
-	 * connected to a haptic feedback motor rather then a LED.
-	 * So do not register a LED classdev there (LED2 is unused).
-	 */
+	 
 	if (pmic->cht_wc_model == INTEL_CHT_WC_LENOVO_YT3_X90)
 		return -ENODEV;
 
@@ -353,18 +327,14 @@ static int cht_wc_leds_probe(struct platform_device *pdev)
 	if (!leds)
 		return -ENOMEM;
 
-	/*
-	 * LED1 might be in hw-controlled mode when this driver gets loaded; and
-	 * since the PMIC is always powered by the battery any changes made are
-	 * permanent. Save LED1 regs to restore them on remove() or shutdown().
-	 */
+	 
 	leds->leds[0].regs = &cht_wc_led_regs[0];
 	leds->leds[0].regmap = pmic->regmap;
 	ret = cht_wc_led_save_regs(&leds->leds[0], &leds->led1_initial_regs);
 	if (ret < 0)
 		return ret;
 
-	/* Set LED1 default trigger based on machine model */
+	 
 	switch (pmic->cht_wc_model) {
 	case INTEL_CHT_WC_GPD_WIN_POCKET:
 		leds->leds[0].cdev.default_trigger = "max170xx_battery-charging-blink-full-solid";
@@ -411,7 +381,7 @@ static void cht_wc_leds_remove(struct platform_device *pdev)
 	for (i = 0; i < CHT_WC_LED_COUNT; i++)
 		led_classdev_unregister(&leds->leds[i].cdev);
 
-	/* Restore LED1 regs if hw-control was active else leave LED1 off */
+	 
 	if (!(leds->led1_initial_regs.ctrl & CHT_WC_LED1_SWCTL))
 		cht_wc_led_restore_regs(&leds->leds[0], &leds->led1_initial_regs);
 }
@@ -424,12 +394,12 @@ static void cht_wc_leds_disable(struct platform_device *pdev)
 	for (i = 0; i < CHT_WC_LED_COUNT; i++)
 		cht_wc_leds_brightness_set(&leds->leds[i].cdev, 0);
 
-	/* Restore LED1 regs if hw-control was active else leave LED1 off */
+	 
 	if (!(leds->led1_initial_regs.ctrl & CHT_WC_LED1_SWCTL))
 		cht_wc_led_restore_regs(&leds->leds[0], &leds->led1_initial_regs);
 }
 
-/* On suspend save current settings and turn LEDs off */
+ 
 static int cht_wc_leds_suspend(struct device *dev)
 {
 	struct cht_wc_leds *leds = dev_get_drvdata(dev);
@@ -445,7 +415,7 @@ static int cht_wc_leds_suspend(struct device *dev)
 	return 0;
 }
 
-/* On resume restore the saved settings */
+ 
 static int cht_wc_leds_resume(struct device *dev)
 {
 	struct cht_wc_leds *leds = dev_get_drvdata(dev);

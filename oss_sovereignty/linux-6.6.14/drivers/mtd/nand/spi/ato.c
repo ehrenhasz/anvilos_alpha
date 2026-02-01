@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Aidan MacDonald
- *
- * Author: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -48,7 +44,7 @@ static int ato25d1ga_ooblayout_free(struct mtd_info *mtd, int section,
 		region->offset = (16 * section);
 		region->length = 8;
 	} else {
-		/* first byte of section 0 is reserved for the BBM */
+		 
 		region->offset = 1;
 		region->length = 7;
 	}

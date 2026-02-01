@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
 
-/* Test listening on the same port 443 with multiple VIPS.
- * Each VIP:443 will have multiple sk listening on by using
- * SO_REUSEPORT.
- */
+ 
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>

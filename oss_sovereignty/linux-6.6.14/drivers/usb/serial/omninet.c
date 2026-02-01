@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB ZyXEL omni.net driver
- *
- * Copyright (C) 2013,2017 Johan Hovold <johan@kernel.org>
- *
- * See Documentation/usb/usb-serial.rst for more information on using this
- * driver
- *
- * Please report both successes and troubles to the author at omninet@kroah.com
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -27,10 +18,10 @@
 #define ZYXEL_VENDOR_ID		0x0586
 #define ZYXEL_OMNINET_ID	0x1000
 #define ZYXEL_OMNI_56K_PLUS_ID	0x1500
-/* This one seems to be a re-branded ZyXEL device */
+ 
 #define BT_IGNITIONPRO_ID	0x2000
 
-/* function prototypes */
+ 
 static void omninet_process_read_urb(struct urb *urb);
 static int omninet_prepare_write_buffer(struct usb_serial_port *port,
 				void *buf, size_t count);
@@ -43,7 +34,7 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(ZYXEL_VENDOR_ID, ZYXEL_OMNINET_ID) },
 	{ USB_DEVICE(ZYXEL_VENDOR_ID, ZYXEL_OMNI_56K_PLUS_ID) },
 	{ USB_DEVICE(ZYXEL_VENDOR_ID, BT_IGNITIONPRO_ID) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
@@ -67,28 +58,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
 };
 
 
-/*
- * The protocol.
- *
- * The omni.net always exchange 64 bytes of data with the host. The first
- * four bytes are the control header.
- *
- * oh_seq is a sequence number. Don't know if/how it's used.
- * oh_len is the length of the data bytes in the packet.
- * oh_xxx Bit-mapped, related to handshaking and status info.
- *	I normally set it to 0x03 in transmitted frames.
- *	7: Active when the TA is in a CONNECTed state.
- *	6: unknown
- *	5: handshaking, unknown
- *	4: handshaking, unknown
- *	3: unknown, usually 0
- *	2: unknown, usually 0
- *	1: handshaking, unknown, usually set to 1 in transmitted frames
- *	0: handshaking, unknown, usually set to 1 in transmitted frames
- * oh_pad Probably a pad byte.
- *
- * After the header you will find data bytes if oh_len was greater than zero.
- */
+ 
 struct omninet_header {
 	__u8	oh_seq;
 	__u8	oh_len;
@@ -97,13 +67,13 @@ struct omninet_header {
 };
 
 struct omninet_data {
-	__u8	od_outseq;	/* Sequence number for bulk_out URBs */
+	__u8	od_outseq;	 
 };
 
 static int omninet_calc_num_ports(struct usb_serial *serial,
 					struct usb_serial_endpoints *epds)
 {
-	/* We need only the second bulk-out for our single-port device. */
+	 
 	epds->bulk_out[0] = epds->bulk_out[1];
 	epds->num_bulk_out = 1;
 
@@ -168,7 +138,7 @@ static int omninet_prepare_write_buffer(struct usb_serial_port *port,
 	header->oh_xxx = 0x03;
 	header->oh_pad = 0x00;
 
-	/* always 64 bytes */
+	 
 	return OMNINET_BULKOUTSIZE;
 }
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <errno.h>
 #include <sys/syscall.h>
@@ -138,7 +138,7 @@ static void map_ops_for_each_subtest(void)
 		goto teardown;
 
 	map_for_each_pass();
-	/* expect to iterate over 1 element */
+	 
 	ASSERT_EQ(skel->bss->err, 1, "map_for_each_no_flags");
 
 	map_for_each_fail();

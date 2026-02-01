@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rk3328 ALSA SoC Audio driver
-//
-// Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -17,13 +17,7 @@
 #include <sound/pcm_params.h>
 #include "rk3328_codec.h"
 
-/*
- * volume setting
- * 0: -39dB
- * 26: 0dB
- * 31: 6dB
- * Step: 1.5dB
- */
+ 
 #define OUT_VOLUME	(0x18)
 #define RK3328_GRF_SOC_CON2	(0x0408)
 #define RK3328_GRF_SOC_CON10	(0x0428)
@@ -35,7 +29,7 @@ struct rk3328_codec_priv {
 	struct clk *mclk;
 	struct clk *pclk;
 	unsigned int sclk;
-	int spk_depop_time; /* msec */
+	int spk_depop_time;  
 };
 
 static const struct reg_default rk3328_codec_reg_defaults[] = {
@@ -251,7 +245,7 @@ static int rk3328_codec_close_playback(struct rk3328_codec_priv *rk3328)
 		mdelay(1);
 	}
 
-	/* Workaround for silence when changed Fs 48 -> 44.1kHz */
+	 
 	rk3328_codec_reset(rk3328);
 
 	regmap_update_bits(rk3328->regmap, DAC_PRECHARGE_CTRL,
@@ -437,7 +431,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "missing 'rockchip,grf'\n");
 		return PTR_ERR(grf);
 	}
-	/* enable i2s_acodec_en */
+	 
 	regmap_write(grf, RK3328_GRF_SOC_CON2,
 		     (BIT(14) << 16 | BIT(14)));
 
@@ -451,11 +445,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
 	rk3328->mute = gpiod_get_optional(&pdev->dev, "mute", GPIOD_OUT_HIGH);
 	if (IS_ERR(rk3328->mute))
 		return PTR_ERR(rk3328->mute);
-	/*
-	 * Rock64 is the only supported platform to have widely relied on
-	 * this; if we do happen to come across an old DTB, just leave the
-	 * external mute forced off.
-	 */
+	 
 	if (!rk3328->mute && of_machine_is_compatible("pine64,rock64")) {
 		dev_warn(&pdev->dev, "assuming implicit control of GPIO_MUTE; update devicetree if possible\n");
 		regmap_write(grf, RK3328_GRF_SOC_CON10, BIT(17) | BIT(1));

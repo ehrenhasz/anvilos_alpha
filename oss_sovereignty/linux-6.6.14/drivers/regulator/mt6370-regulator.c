@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bits.h>
 #include <linux/gpio/consumer.h>
@@ -163,10 +163,7 @@ static int mt6370_of_parse_cb(struct device_node *np,
 		return 0;
 	}
 
-	/*
-	 * RG control by default
-	 * Only if all are using external pin, change all by external control
-	 */
+	 
 	if (priv->use_external_ctrl) {
 		ret = regmap_update_bits(priv->regmap, MT6370_REG_DB_CTRL1,
 					 MT6370_DBEXTEN_MASK,

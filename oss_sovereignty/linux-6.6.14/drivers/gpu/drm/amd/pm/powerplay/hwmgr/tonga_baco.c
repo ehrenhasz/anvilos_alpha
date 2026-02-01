@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "tonga_baco.h"
 
@@ -179,7 +158,7 @@ int tonga_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state)
 	smu7_baco_get_state(hwmgr, &cur_state);
 
 	if (cur_state == state)
-		/* aisc already in the target state */
+		 
 		return 0;
 
 	if (state == BACO_STATE_IN) {
@@ -197,9 +176,9 @@ int tonga_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state)
 			return 0;
 
 	} else if (state == BACO_STATE_OUT) {
-		/* HW requires at least 20ms between regulator off and on */
+		 
 		msleep(20);
-		/* Execute Hardware BACO exit sequence */
+		 
 		if (hwmgr->chip_id == CHIP_TOPAZ) {
 			if (baco_program_registers(hwmgr, exit_baco_tbl_iceland,
 						   ARRAY_SIZE(exit_baco_tbl_iceland))) {

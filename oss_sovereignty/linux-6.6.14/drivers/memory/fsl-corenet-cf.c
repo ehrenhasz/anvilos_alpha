@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CoreNet Coherency Fabric error reporting
- *
- * Copyright 2014 Freescale Semiconductor Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -38,10 +34,7 @@ static const struct ccf_info ccf2_info = {
 	.has_brr = true,
 };
 
-/*
- * This register is present but not documented, with different values for
- * IP_ID, on other chips with fsl,corenet2-cf such as t4240 and b4860.
- */
+ 
 #define CCF_BRR			0xbf8
 #define CCF_BRR_IPID		0xffff0000
 #define CCF_BRR_IPID_T1040	0x09310000
@@ -60,28 +53,28 @@ static const struct of_device_id ccf_matches[] = {
 MODULE_DEVICE_TABLE(of, ccf_matches);
 
 struct ccf_err_regs {
-	u32 errdet;		/* 0x00 Error Detect Register */
-	/* 0x04 Error Enable (ccf1)/Disable (ccf2) Register */
+	u32 errdet;		 
+	 
 	u32 errdis;
-	/* 0x08 Error Interrupt Enable Register (ccf2 only) */
+	 
 	u32 errinten;
-	u32 cecar;		/* 0x0c Error Capture Attribute Register */
-	u32 cecaddrh;		/* 0x10 Error Capture Address High */
-	u32 cecaddrl;		/* 0x14 Error Capture Address Low */
-	u32 cecar2;		/* 0x18 Error Capture Attribute Register 2 */
+	u32 cecar;		 
+	u32 cecaddrh;		 
+	u32 cecaddrl;		 
+	u32 cecar2;		 
 };
 
-/* LAE/CV also valid for errdis and errinten */
-#define ERRDET_LAE		(1 << 0)  /* Local Access Error */
-#define ERRDET_CV		(1 << 1)  /* Coherency Violation */
-#define ERRDET_UTID		(1 << 2)  /* Unavailable Target ID (t1040) */
-#define ERRDET_MCST		(1 << 3)  /* Multicast Stash (t1040) */
-#define ERRDET_CTYPE_SHIFT	26	  /* Capture Type (ccf2 only) */
+ 
+#define ERRDET_LAE		(1 << 0)   
+#define ERRDET_CV		(1 << 1)   
+#define ERRDET_UTID		(1 << 2)   
+#define ERRDET_MCST		(1 << 3)   
+#define ERRDET_CTYPE_SHIFT	26	   
 #define ERRDET_CTYPE_MASK	(0x1f << ERRDET_CTYPE_SHIFT)
-#define ERRDET_CAP		(1 << 31) /* Capture Valid (ccf2 only) */
+#define ERRDET_CAP		(1 << 31)  
 
-#define CECAR_VAL		(1 << 0)  /* Valid (ccf1 only) */
-#define CECAR_UVT		(1 << 15) /* Unavailable target ID (ccf1) */
+#define CECAR_VAL		(1 << 0)   
+#define CECAR_UVT		(1 << 15)  
 #define CECAR_SRCID_SHIFT_CCF1	24
 #define CECAR_SRCID_MASK_CCF1	(0xff << CECAR_SRCID_SHIFT_CCF1)
 #define CECAR_SRCID_SHIFT_CCF2	18
@@ -217,7 +210,7 @@ static int ccf_probe(struct platform_device *pdev)
 
 	switch (ccf->info->version) {
 	case CCF1:
-		/* On CCF1 this register enables rather than disables. */
+		 
 		iowrite32be(errinten, &ccf->err_regs->errdis);
 		break;
 
@@ -240,11 +233,7 @@ static int ccf_remove(struct platform_device *pdev)
 		break;
 
 	case CCF2:
-		/*
-		 * We clear errdis on ccf1 because that's the only way to
-		 * disable interrupts, but on ccf2 there's no need to disable
-		 * detection.
-		 */
+		 
 		iowrite32be(0, &ccf->err_regs->errinten);
 		break;
 	}

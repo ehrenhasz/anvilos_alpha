@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author:
- *	Chuanhong Guo <gch981213@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -85,7 +82,7 @@ static int gd5fxgq4xa_ooblayout_free(struct mtd_info *mtd, int section,
 		region->offset = 16 * section;
 		region->length = 8;
 	} else {
-		/* section 0 has one byte reserved for bad block mark */
+		 
 		region->offset = 1;
 		region->length = 7;
 	}
@@ -105,7 +102,7 @@ static int gd5fxgq4xa_ecc_get_status(struct spinand_device *spinand,
 		return 0;
 
 	case GD5FXGQ4XA_STATUS_ECC_1_7_BITFLIPS:
-		/* 1-7 bits are flipped. return the maximum. */
+		 
 		return 7;
 
 	case GD5FXGQ4XA_STATUS_ECC_8_BITFLIPS:
@@ -139,14 +136,14 @@ static int gd5fxgqx_variant2_ooblayout_free(struct mtd_info *mtd, int section,
 	if (section)
 		return -ERANGE;
 
-	/* Reserve 1 bytes for the BBM. */
+	 
 	region->offset = 1;
 	region->length = 63;
 
 	return 0;
 }
 
-/* Valid for Q4/Q5 and Q6 (untested) devices */
+ 
 static const struct mtd_ooblayout_ops gd5fxgqx_variant2_ooblayout = {
 	.ecc = gd5fxgqx_variant2_ooblayout_ecc,
 	.free = gd5fxgqx_variant2_ooblayout_free,
@@ -194,19 +191,13 @@ static int gd5fxgq4uexxg_ecc_get_status(struct spinand_device *spinand,
 		return 0;
 
 	case GD5FXGQ4XA_STATUS_ECC_1_7_BITFLIPS:
-		/*
-		 * Read status2 register to determine a more fine grained
-		 * bit error status
-		 */
+		 
 		ret = spi_mem_exec_op(spinand->spimem, &op);
 		if (ret)
 			return ret;
 
-		/*
-		 * 4 ... 7 bits are flipped (1..4 can't be detected, so
-		 * report the maximum of 4 in this case
-		 */
-		/* bits sorted this way (3...0): ECCS1,ECCS0,ECCSE1,ECCSE0 */
+		 
+		 
 		return ((status & STATUS_ECC_MASK) >> 2) |
 			((status2 & STATUS_ECC_MASK) >> 4);
 
@@ -236,18 +227,13 @@ static int gd5fxgq5xexxg_ecc_get_status(struct spinand_device *spinand,
 		return 0;
 
 	case GD5FXGQ5XE_STATUS_ECC_1_4_BITFLIPS:
-		/*
-		 * Read status2 register to determine a more fine grained
-		 * bit error status
-		 */
+		 
 		ret = spi_mem_exec_op(spinand->spimem, &op);
 		if (ret)
 			return ret;
 
-		/*
-		 * 1 ... 4 bits are flipped (and corrected)
-		 */
-		/* bits sorted this way (1...0): ECCSE1, ECCSE0 */
+		 
+		 
 		return ((status2 & STATUS_ECC_MASK) >> 4) + 1;
 
 	case STATUS_ECC_UNCOR_ERROR:
@@ -273,7 +259,7 @@ static int gd5fxgq4ufxxg_ecc_get_status(struct spinand_device *spinand,
 	case GD5FXGQ4UXFXXG_STATUS_ECC_UNCOR_ERROR:
 		return -EBADMSG;
 
-	default: /* (2 << 4) through (6 << 4) are 4-8 corrected errors */
+	default:  
 		return ((status & GD5FXGQ4UXFXXG_STATUS_ECC_MASK) >> 4) + 2;
 	}
 

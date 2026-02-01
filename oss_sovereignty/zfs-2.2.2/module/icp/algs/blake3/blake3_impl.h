@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Based on BLAKE3 v1.3.1, https://github.com/BLAKE3-team/BLAKE3
- * Copyright (c) 2019-2020 Samuel Neves and Jack O'Connor
- * Copyright (c) 2021-2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #ifndef	BLAKE3_IMPL_H
 #define	BLAKE3_IMPL_H
@@ -36,9 +13,7 @@ extern "C" {
 #include <sys/simd.h>
 #include <sys/asm_linkage.h>
 
-/*
- * Methods used to define BLAKE3 assembler implementations
- */
+ 
 typedef void (*blake3_compress_in_place_f)(uint32_t cv[8],
     const uint8_t block[BLAKE3_BLOCK_LEN],
     uint8_t block_len, uint64_t counter,
@@ -64,7 +39,7 @@ typedef struct {
 	const char *name;
 } blake3_ops_t;
 
-/* return selected BLAKE3 implementation ops */
+ 
 extern const blake3_ops_t *blake3_get_ops(void);
 
 #if defined(__x86_64)
@@ -89,7 +64,7 @@ static const uint8_t BLAKE3_MSG_SCHEDULE[7][16] = {
 	{11, 15, 5, 0, 1, 9, 8, 6, 14, 10, 2, 12, 3, 4, 7, 13},
 };
 
-/* Find index of the highest set bit */
+ 
 static inline unsigned int highest_one(uint64_t x) {
 #if defined(__GNUC__) || defined(__clang__)
 	return (63 ^ __builtin_clzll(x));
@@ -119,7 +94,7 @@ static inline unsigned int highest_one(uint64_t x) {
 #endif
 }
 
-/* Count the number of 1 bits. */
+ 
 static inline unsigned int popcnt(uint64_t x) {
 	unsigned int count = 0;
 
@@ -131,10 +106,7 @@ static inline unsigned int popcnt(uint64_t x) {
 	return (count);
 }
 
-/*
- * Largest power of two less than or equal to x.
- * As a special case, returns 1 when x is 0.
- */
+ 
 static inline uint64_t round_down_to_power_of_2(uint64_t x) {
 	return (1ULL << highest_one(x | 1));
 }
@@ -188,4 +160,4 @@ static inline void store_cv_words(uint8_t bytes_out[32], uint32_t cv_words[8]) {
 }
 #endif
 
-#endif				/* BLAKE3_IMPL_H */
+#endif				 

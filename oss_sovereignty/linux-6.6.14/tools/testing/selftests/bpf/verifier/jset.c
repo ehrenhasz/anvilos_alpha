@@ -4,26 +4,26 @@
 	BPF_DIRECT_PKT_R2,
 	BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_2, 0),
 
-	/* reg, bit 63 or bit 0 set, taken */
+	 
 	BPF_LD_IMM64(BPF_REG_8, 0x8000000000000001),
 	BPF_JMP_REG(BPF_JSET, BPF_REG_7, BPF_REG_8, 1),
 	BPF_EXIT_INSN(),
 
-	/* reg, bit 62, not taken */
+	 
 	BPF_LD_IMM64(BPF_REG_8, 0x4000000000000000),
 	BPF_JMP_REG(BPF_JSET, BPF_REG_7, BPF_REG_8, 1),
 	BPF_JMP_IMM(BPF_JA, 0, 0, 1),
 	BPF_EXIT_INSN(),
 
-	/* imm, any bit set, taken */
+	 
 	BPF_JMP_IMM(BPF_JSET, BPF_REG_7, -1, 1),
 	BPF_EXIT_INSN(),
 
-	/* imm, bit 31 set, taken */
+	 
 	BPF_JMP_IMM(BPF_JSET, BPF_REG_7, 0x80000000, 1),
 	BPF_EXIT_INSN(),
 
-	/* all good - return r0 == 2 */
+	 
 	BPF_MOV64_IMM(BPF_REG_0, 2),
 	BPF_EXIT_INSN(),
 	},

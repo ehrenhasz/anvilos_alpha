@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_REG_H_
 #define _INTEL_GUC_REG_H_
@@ -11,7 +9,7 @@
 
 #include "i915_reg_defs.h"
 
-/* Definitions of GuC H/W registers, bits, etc */
+ 
 
 #define GUC_STATUS			_MMIO(0xc000)
 #define   GS_RESET_SHIFT		0
@@ -110,7 +108,7 @@
 
 #define GUC_NUM_DOORBELLS		256
 
-/* format of the HW-monitored doorbell cacheline */
+ 
 struct guc_doorbell_info {
 	u32 db_status;
 #define GUC_DOORBELL_DISABLED		0
@@ -136,7 +134,7 @@ struct guc_doorbell_info {
 #define GUC_WD_VECS_IER			_MMIO(0xC558)
 #define GUC_PM_P24C_IER			_MMIO(0xC55C)
 
-/* GuC Interrupt Vector */
+ 
 #define GUC_INTR_GUC2HOST		BIT(15)
 #define GUC_INTR_EXEC_ERROR		BIT(14)
 #define GUC_INTR_DISPLAY_EVENT		BIT(13)

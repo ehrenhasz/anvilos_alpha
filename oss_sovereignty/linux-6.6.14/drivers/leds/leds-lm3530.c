@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 ST-Ericsson SA.
- * Copyright (C) 2009 Motorola, Inc.
- *
- * Simple driver for National Semiconductor LM3530 Backlight driver chip
- *
- * Author: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
- * based on leds-lm3530.c by Dan Murphy <D.Murphy@motorola.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -38,7 +30,7 @@
 #define LM3530_ALS_Z4T_REG		0x74
 #define LM3530_REG_MAX			14
 
-/* General Control Register */
+ 
 #define LM3530_EN_I2C_SHIFT		(0)
 #define LM3530_RAMP_LAW_SHIFT		(1)
 #define LM3530_MAX_CURR_SHIFT		(2)
@@ -51,34 +43,34 @@
 #define LM3530_POL_LOW			(1 << LM3530_PWM_POL_SHIFT)
 #define LM3530_ENABLE_PWM_SIMPLE	(1 << LM3530_EN_PWM_SIMPLE_SHIFT)
 
-/* ALS Config Register Options */
+ 
 #define LM3530_ALS_AVG_TIME_SHIFT	(0)
 #define LM3530_EN_ALS_SHIFT		(3)
 #define LM3530_ALS_SEL_SHIFT		(5)
 
 #define LM3530_ENABLE_ALS		(3 << LM3530_EN_ALS_SHIFT)
 
-/* Brightness Ramp Rate Register */
+ 
 #define LM3530_BRT_RAMP_FALL_SHIFT	(0)
 #define LM3530_BRT_RAMP_RISE_SHIFT	(3)
 
-/* ALS Resistor Select */
+ 
 #define LM3530_ALS1_IMP_SHIFT		(0)
 #define LM3530_ALS2_IMP_SHIFT		(4)
 
-/* Zone Boundary Register defaults */
+ 
 #define LM3530_ALS_ZB_MAX		(4)
 #define LM3530_ALS_WINDOW_mV		(1000)
 #define LM3530_ALS_OFFSET_mV		(4)
 
-/* Zone Target Register defaults */
+ 
 #define LM3530_DEF_ZT_0			(0x7F)
 #define LM3530_DEF_ZT_1			(0x66)
 #define LM3530_DEF_ZT_2			(0x4C)
 #define LM3530_DEF_ZT_3			(0x33)
 #define LM3530_DEF_ZT_4			(0x19)
 
-/* 7 bits are used for the brightness : LM3530_BRT_CTRL_REG */
+ 
 #define MAX_BRIGHTNESS			(127)
 
 struct lm3530_mode_map {
@@ -92,16 +84,7 @@ static struct lm3530_mode_map mode_map[] = {
 	{ "pwm", LM3530_BL_MODE_PWM },
 };
 
-/**
- * struct lm3530_data
- * @led_dev: led class device
- * @client: i2c client
- * @pdata: LM3530 platform data
- * @mode: mode of operation - manual, ALS, PWM
- * @regulator: regulator
- * @brightness: previous brightness value
- * @enable: regulator is enabled
- */
+ 
 struct lm3530_data {
 	struct led_classdev led_dev;
 	struct i2c_client *client;
@@ -112,12 +95,7 @@ struct lm3530_data {
 	bool enable;
 };
 
-/*
- * struct lm3530_als_data
- * @config  : value of ALS configuration register
- * @imp_sel : value of ALS resistor select register
- * @zone    : values of ALS ZB(Zone Boundary) registers
- */
+ 
 struct lm3530_als_data {
 	u8 config;
 	u8 imp_sel;
@@ -169,7 +147,7 @@ static void lm3530_als_configure(struct lm3530_platform_data *pdata,
 	if ((als_vmax - als_vmin) > LM3530_ALS_WINDOW_mV)
 		pdata->als_vmax = als_vmax = als_vmin + LM3530_ALS_WINDOW_mV;
 
-	/* n zone boundary makes n+1 zones */
+	 
 	als_vstep = (als_vmax - als_vmin) / (LM3530_ALS_ZB_MAX + 1);
 
 	for (i = 0; i < LM3530_ALS_ZB_MAX; i++)
@@ -263,27 +241,27 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 	if (brightness > drvdata->led_dev.max_brightness)
 		brightness = drvdata->led_dev.max_brightness;
 
-	reg_val[0] = gen_config;	/* LM3530_GEN_CONFIG */
-	reg_val[1] = als.config;	/* LM3530_ALS_CONFIG */
-	reg_val[2] = brt_ramp;		/* LM3530_BRT_RAMP_RATE */
-	reg_val[3] = als.imp_sel;	/* LM3530_ALS_IMP_SELECT */
-	reg_val[4] = brightness;	/* LM3530_BRT_CTRL_REG */
-	reg_val[5] = als.zones[0];	/* LM3530_ALS_ZB0_REG */
-	reg_val[6] = als.zones[1];	/* LM3530_ALS_ZB1_REG */
-	reg_val[7] = als.zones[2];	/* LM3530_ALS_ZB2_REG */
-	reg_val[8] = als.zones[3];	/* LM3530_ALS_ZB3_REG */
-	reg_val[9] = LM3530_DEF_ZT_0;	/* LM3530_ALS_Z0T_REG */
-	reg_val[10] = LM3530_DEF_ZT_1;	/* LM3530_ALS_Z1T_REG */
-	reg_val[11] = LM3530_DEF_ZT_2;	/* LM3530_ALS_Z2T_REG */
-	reg_val[12] = LM3530_DEF_ZT_3;	/* LM3530_ALS_Z3T_REG */
-	reg_val[13] = LM3530_DEF_ZT_4;	/* LM3530_ALS_Z4T_REG */
+	reg_val[0] = gen_config;	 
+	reg_val[1] = als.config;	 
+	reg_val[2] = brt_ramp;		 
+	reg_val[3] = als.imp_sel;	 
+	reg_val[4] = brightness;	 
+	reg_val[5] = als.zones[0];	 
+	reg_val[6] = als.zones[1];	 
+	reg_val[7] = als.zones[2];	 
+	reg_val[8] = als.zones[3];	 
+	reg_val[9] = LM3530_DEF_ZT_0;	 
+	reg_val[10] = LM3530_DEF_ZT_1;	 
+	reg_val[11] = LM3530_DEF_ZT_2;	 
+	reg_val[12] = LM3530_DEF_ZT_3;	 
+	reg_val[13] = LM3530_DEF_ZT_4;	 
 
 	ret = lm3530_led_enable(drvdata);
 	if (ret)
 		return ret;
 
 	for (i = 0; i < LM3530_REG_MAX; i++) {
-		/* do not update brightness register when pwm mode */
+		 
 		if (lm3530_reg[i] == LM3530_BRT_CTRL_REG &&
 		    drvdata->mode == LM3530_BL_MODE_PWM) {
 			if (pwm->pwm_set_intensity)
@@ -323,7 +301,7 @@ static void lm3530_brightness_set(struct led_classdev *led_cdev,
 			}
 		}
 
-		/* set the brightness in brightness control register*/
+		 
 		err = i2c_smbus_write_byte_data(drvdata->client,
 				LM3530_BRT_CTRL_REG, brt_val);
 		if (err)
@@ -385,7 +363,7 @@ static ssize_t mode_store(struct device *dev, struct device_attribute
 
 	drvdata->mode = mode;
 
-	/* set pwm to low if unnecessary */
+	 
 	if (mode != LM3530_BL_MODE_PWM && pwm->pwm_set_intensity)
 		pwm->pwm_set_intensity(0, max_brightness);
 
@@ -416,7 +394,7 @@ static int lm3530_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* BL mode */
+	 
 	if (pdata->mode > LM3530_BL_MODE_PWM) {
 		dev_err(&client->dev, "Illegal Mode request\n");
 		return -EINVAL;

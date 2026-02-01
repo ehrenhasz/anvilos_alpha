@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -59,16 +57,7 @@ TC_INDIRECT_SCOPE int tcf_bpf_act(struct sk_buff *skb,
 	if (skb_sk_is_prefetched(skb) && filter_res != TC_ACT_OK)
 		skb_orphan(skb);
 
-	/* A BPF program may overwrite the default action opcode.
-	 * Similarly as in cls_bpf, if filter_res == -1 we use the
-	 * default action specified from tc.
-	 *
-	 * In case a different well-known TC_ACT opcode has been
-	 * returned, it will overwrite the default one.
-	 *
-	 * For everything else that is unknown, TC_ACT_UNSPEC is
-	 * returned.
-	 */
+	 
 	switch (filter_res) {
 	case TC_ACT_PIPE:
 	case TC_ACT_RECLASSIFY:
@@ -267,9 +256,7 @@ static void tcf_bpf_prog_fill_cfg(const struct tcf_bpf *prog,
 				  struct tcf_bpf_cfg *cfg)
 {
 	cfg->is_ebpf = tcf_bpf_is_ebpf(prog);
-	/* updates to prog->filter are prevented, since it's called either
-	 * with tcf lock or during final cleanup in rcu callback
-	 */
+	 
 	cfg->filter = rcu_dereference_protected(prog->filter, 1);
 
 	cfg->bpf_ops = prog->bpf_ops;
@@ -316,7 +303,7 @@ static int tcf_bpf_init(struct net *net, struct nlattr *nla,
 
 		res = ACT_P_CREATED;
 	} else if (ret > 0) {
-		/* Don't override defaults. */
+		 
 		if (bind)
 			return 0;
 
@@ -367,7 +354,7 @@ static int tcf_bpf_init(struct net *net, struct nlattr *nla,
 		tcf_chain_put_by_act(goto_ch);
 
 	if (res != ACT_P_CREATED) {
-		/* make sure the program being replaced is no longer executing */
+		 
 		synchronize_rcu();
 		tcf_bpf_cfg_cleanup(&old);
 	}

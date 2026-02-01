@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn30_mpc.h"
@@ -101,9 +78,7 @@ void mpc3_set_out_rate_control(
 
 enum dc_lut_mode mpc3_get_ogam_current(struct mpc *mpc, int mpcc_id)
 {
-	/*Contrary to DCN2 and DCN1 wherein a single status register field holds this info;
-	 *in DCN3/3AG, we need to read two separate fields to retrieve the same info
-	 */
+	 
 	enum dc_lut_mode mode;
 	uint32_t state_mode;
 	uint32_t state_ram_lut_in_use;
@@ -143,16 +118,11 @@ void mpc3_power_on_ogam_lut(
 {
 	struct dcn30_mpc *mpc30 = TO_DCN30_MPC(mpc);
 
-	/*
-	 * Powering on: force memory active so the LUT can be updated.
-	 * Powering off: allow entering memory low power mode
-	 *
-	 * Memory low power mode is controlled during MPC OGAM LUT init.
-	 */
+	 
 	REG_UPDATE(MPCC_MEM_PWR_CTRL[mpcc_id],
 		   MPCC_OGAM_MEM_PWR_DIS, power_on != 0);
 
-	/* Wait for memory to be powered on - we won't be able to write to it otherwise. */
+	 
 	if (power_on)
 		REG_WAIT(MPCC_MEM_PWR_CTRL[mpcc_id], MPCC_OGAM_MEM_PWR_STATE, 0, 10, 10);
 }
@@ -226,7 +196,7 @@ static void mpc3_program_luta(struct mpc *mpc, int mpcc_id,
 	gam_regs.start_end_cntl2_r = REG(MPCC_OGAM_RAMA_END_CNTL2_R[mpcc_id]);
 	gam_regs.region_start = REG(MPCC_OGAM_RAMA_REGION_0_1[mpcc_id]);
 	gam_regs.region_end = REG(MPCC_OGAM_RAMA_REGION_32_33[mpcc_id]);
-	//New registers in DCN3AG/DCN OGAM block
+	 
 	gam_regs.offset_b =  REG(MPCC_OGAM_RAMA_OFFSET_B[mpcc_id]);
 	gam_regs.offset_g =  REG(MPCC_OGAM_RAMA_OFFSET_G[mpcc_id]);
 	gam_regs.offset_r =  REG(MPCC_OGAM_RAMA_OFFSET_R[mpcc_id]);
@@ -259,7 +229,7 @@ static void mpc3_program_lutb(struct mpc *mpc, int mpcc_id,
 	gam_regs.start_end_cntl2_r = REG(MPCC_OGAM_RAMB_END_CNTL2_R[mpcc_id]);
 	gam_regs.region_start = REG(MPCC_OGAM_RAMB_REGION_0_1[mpcc_id]);
 	gam_regs.region_end = REG(MPCC_OGAM_RAMB_REGION_32_33[mpcc_id]);
-	//New registers in DCN3AG/DCN OGAM block
+	 
 	gam_regs.offset_b =  REG(MPCC_OGAM_RAMB_OFFSET_B[mpcc_id]);
 	gam_regs.offset_g =  REG(MPCC_OGAM_RAMB_OFFSET_G[mpcc_id]);
 	gam_regs.offset_r =  REG(MPCC_OGAM_RAMB_OFFSET_R[mpcc_id]);
@@ -282,11 +252,7 @@ static void mpc3_program_ogam_pwl(
 	uint32_t last_base_value_green = rgb[num-1].green_reg + rgb[num-1].delta_green_reg;
 	uint32_t last_base_value_blue = rgb[num-1].blue_reg + rgb[num-1].delta_blue_reg;
 
-	/*the entries of DCN3AG gamma LUTs take 18bit base values as opposed to
-	 *38 base+delta values per entry in earlier DCN architectures
-	 *last base value for our lut is compute by adding the last base value
-	 *in our data + last delta
-	 */
+	 
 
 	if (is_rgb_equal(rgb,  num)) {
 		for (i = 0 ; i < num; i++)
@@ -341,11 +307,11 @@ void mpc3_set_output_gamma(
 		return;
 	}
 
-	if (params == NULL) { //disable OGAM
+	if (params == NULL) {  
 		REG_SET(MPCC_OGAM_CONTROL[mpcc_id], 0, MPCC_OGAM_MODE, 0);
 		return;
 	}
-	//enable OGAM
+	 
 	REG_SET(MPCC_OGAM_CONTROL[mpcc_id], 0, MPCC_OGAM_MODE, 2);
 
 	current_mode = mpc3_get_ogam_current(mpc, mpcc_id);
@@ -367,7 +333,7 @@ void mpc3_set_output_gamma(
 	mpc3_program_ogam_pwl(
 			mpc, mpcc_id, params->rgb_resulted, params->hw_points_num);
 
-	/*we need to program 2 fields here as apposed to 1*/
+	 
 	REG_UPDATE(MPCC_OGAM_CONTROL[mpcc_id],
 			MPCC_OGAM_SELECT, next_mode == LUT_RAM_A ? 0:1);
 
@@ -381,7 +347,7 @@ void mpc3_set_denorm(
 		enum dc_color_depth output_depth)
 {
 	struct dcn30_mpc *mpc30 = TO_DCN30_MPC(mpc);
-	/* De-normalize Fixed U1.13 color data to different target bit depths. 0 is bypass*/
+	 
 	int denorm_mode = 0;
 
 	switch (output_depth) {
@@ -406,7 +372,7 @@ void mpc3_set_denorm(
 	case COLOR_DEPTH_141414:
 	case COLOR_DEPTH_161616:
 	default:
-		/* not valid used case! */
+		 
 		break;
 	}
 
@@ -421,7 +387,7 @@ void mpc3_set_denorm_clamp(
 {
 	struct dcn30_mpc *mpc30 = TO_DCN30_MPC(mpc);
 
-	/*program min and max clamp values for the pixel components*/
+	 
 	REG_UPDATE_2(DENORM_CONTROL[opp_id],
 			MPC_OUT_DENORM_CLAMP_MAX_R_CR, denorm_clamp.clamp_max_r_cr,
 			MPC_OUT_DENORM_CLAMP_MIN_R_CR, denorm_clamp.clamp_min_r_cr);
@@ -819,13 +785,13 @@ static void mpc3_power_on_shaper_3dlut(
 	if (rmu_idx == 0) {
 		REG_SET(MPC_RMU_MEM_PWR_CTRL, 0,
 			MPC_RMU0_MEM_PWR_DIS, power_on == true ? 1:0);
-		/* wait for memory to fully power up */
+		 
 		if (power_on && mpc->ctx->dc->debug.enable_mem_low_power.bits.mpc) {
 			REG_WAIT(MPC_RMU_MEM_PWR_CTRL, MPC_RMU0_SHAPER_MEM_PWR_STATE, 0, 1, max_retries);
 			REG_WAIT(MPC_RMU_MEM_PWR_CTRL, MPC_RMU0_3DLUT_MEM_PWR_STATE, 0, 1, max_retries);
 		}
 
-		/*read status is not mandatory, it is just for debugging*/
+		 
 		REG_GET(MPC_RMU_MEM_PWR_CTRL, MPC_RMU0_SHAPER_MEM_PWR_STATE, &power_status_shaper);
 		REG_GET(MPC_RMU_MEM_PWR_CTRL, MPC_RMU0_3DLUT_MEM_PWR_STATE, &power_status_3dlut);
 	} else if (rmu_idx == 1) {
@@ -839,7 +805,7 @@ static void mpc3_power_on_shaper_3dlut(
 		REG_GET(MPC_RMU_MEM_PWR_CTRL, MPC_RMU1_SHAPER_MEM_PWR_STATE, &power_status_shaper);
 		REG_GET(MPC_RMU_MEM_PWR_CTRL, MPC_RMU1_3DLUT_MEM_PWR_STATE, &power_status_3dlut);
 	}
-	/*TODO Add rmu_idx == 2 for SIENNA_CICHLID */
+	 
 	if (power_status_shaper != 0 && power_on == true)
 		BREAK_TO_DEBUGGER();
 
@@ -1026,7 +992,7 @@ static void mpc3_set3dlut_ram10(
 		red   = lut[i].red;
 		green = lut[i].green;
 		blue  = lut[i].blue;
-		//should we shift red 22bit and green 12? ask Nvenko
+		 
 		value = (red<<20) | (green<<10) | blue;
 
 		REG_SET(RMU_3DLUT_DATA_30BIT[rmu_idx], 0, MPC_RMU_3DLUT_DATA_30BIT, value);
@@ -1070,9 +1036,7 @@ static void program_gamut_remap(
 	case GAMUT_REMAP_COEFF:
 		selection = 1;
 		break;
-		/*this corresponds to GAMUT_REMAP coefficients set B
-		 * we don't have common coefficient sets in dcn3ag/dcn3
-		 */
+		 
 	case GAMUT_REMAP_COMA_COEFF:
 		selection = 2;
 		break;
@@ -1106,7 +1070,7 @@ static void program_gamut_remap(
 				&gam_regs);
 
 	}
-	//select coefficient set to use
+	
 	REG_SET(MPCC_GAMUT_REMAP_MODE[mpcc_id], 0,
 					MPCC_GAMUT_REMAP_MODE, selection);
 }
@@ -1132,11 +1096,11 @@ void mpc3_set_gamut_remap(
 		convert_float_matrix(
 			arr_reg_val, arr_matrix, 12);
 
-		//current coefficient set in use
+		
 		REG_GET(MPCC_GAMUT_REMAP_MODE[mpcc_id], MPCC_GAMUT_REMAP_MODE_CURRENT, &gamut_mode);
 
 		if (gamut_mode == 0)
-			gamut_mode = 1; //use coefficient set A
+			gamut_mode = 1; 
 		else if (gamut_mode == 1)
 			gamut_mode = 2;
 		else
@@ -1347,18 +1311,18 @@ uint32_t mpcc3_acquire_rmu(struct mpc *mpc, int mpcc_id, int rmu_idx)
 {
 	uint32_t rmu_status;
 
-	//determine if this mpcc is already multiplexed to an RMU unit
+	
 	rmu_status = mpc3_get_rmu_mux_status(mpc, rmu_idx);
 	if (rmu_status == mpcc_id)
-		//return rmu_idx of pre_acquired rmu unit
+		
 		return rmu_idx;
 
-	if (rmu_status == 0xf) {//rmu unit is disabled
+	if (rmu_status == 0xf) {
 		mpc3_set_rmu_mux(mpc, rmu_idx, mpcc_id);
 		return rmu_idx;
 	}
 
-	//no vacant RMU units or invalid parameters acquire_post_bldn_3dlut
+	
 	return -1;
 }
 

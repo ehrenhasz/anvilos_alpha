@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * StarFive JH71XX PMU (Power Management Unit) Controller Driver
- *
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -15,7 +11,7 @@
 #include <linux/pm_domain.h>
 #include <dt-bindings/power/starfive,jh7110-pmu.h>
 
-/* register offset */
+ 
 #define JH71XX_PMU_SW_TURN_ON_POWER	0x0C
 #define JH71XX_PMU_SW_TURN_OFF_POWER	0x10
 #define JH71XX_PMU_SW_ENCOURAGE		0x44
@@ -24,14 +20,14 @@
 #define JH71XX_PMU_EVENT_STATUS		0x88
 #define JH71XX_PMU_INT_STATUS		0x8C
 
-/* sw encourage cfg */
+ 
 #define JH71XX_PMU_SW_ENCOURAGE_EN_LO	0x05
 #define JH71XX_PMU_SW_ENCOURAGE_EN_HI	0x50
 #define JH71XX_PMU_SW_ENCOURAGE_DIS_LO	0x0A
 #define JH71XX_PMU_SW_ENCOURAGE_DIS_HI	0xA0
 #define JH71XX_PMU_SW_ENCOURAGE_ON	0xFF
 
-/* pmu int status */
+ 
 #define JH71XX_PMU_INT_SEQ_DONE		BIT(0)
 #define JH71XX_PMU_INT_HW_REQ		BIT(1)
 #define JH71XX_PMU_INT_SW_FAIL		GENMASK(3, 2)
@@ -39,10 +35,7 @@
 #define JH71XX_PMU_INT_PCH_FAIL		GENMASK(8, 6)
 #define JH71XX_PMU_INT_ALL_MASK		GENMASK(8, 0)
 
-/*
- * The time required for switching power status is based on the time
- * to turn on the largest domain's power, which is at microsecond level
- */
+ 
 #define JH71XX_PMU_TIMEOUT_US		100
 
 struct jh71xx_domain_info {
@@ -63,7 +56,7 @@ struct jh71xx_pmu {
 	struct generic_pm_domain **genpd;
 	struct genpd_onecell_data genpd_data;
 	int irq;
-	spinlock_t lock;	/* protects pmu reg */
+	spinlock_t lock;	 
 };
 
 struct jh71xx_pmu_dev {
@@ -110,16 +103,7 @@ static int jh71xx_pmu_set_state(struct jh71xx_pmu_dev *pmd, u32 mask, bool on)
 
 	spin_lock_irqsave(&pmu->lock, flags);
 
-	/*
-	 * The PMU accepts software encourage to switch power mode in the following 2 steps:
-	 *
-	 * 1.Configure the register SW_TURN_ON_POWER (offset 0x0c) by writing 1 to
-	 *   the bit corresponding to the power domain that will be turned on
-	 *   and writing 0 to the others.
-	 *   Likewise, configure the register SW_TURN_OFF_POWER (offset 0x10) by
-	 *   writing 1 to the bit corresponding to the power domain that will be
-	 *   turned off and writing 0 to the others.
-	 */
+	 
 	if (on) {
 		mode = JH71XX_PMU_SW_TURN_ON_POWER;
 		encourage_lo = JH71XX_PMU_SW_ENCOURAGE_EN_LO;
@@ -132,21 +116,14 @@ static int jh71xx_pmu_set_state(struct jh71xx_pmu_dev *pmd, u32 mask, bool on)
 
 	writel(mask, pmu->base + mode);
 
-	/*
-	 * 2.Write SW encourage command sequence to the Software Encourage Reg (offset 0x44)
-	 *   First write SW_MODE_ENCOURAGE_ON to JH71XX_PMU_SW_ENCOURAGE. This will reset
-	 *   the state machine which parses the command sequence. This register must be
-	 *   written every time software wants to power on/off a domain.
-	 *   Then write the lower bits of the command sequence, followed by the upper
-	 *   bits. The sequence differs between powering on & off a domain.
-	 */
+	 
 	writel(JH71XX_PMU_SW_ENCOURAGE_ON, pmu->base + JH71XX_PMU_SW_ENCOURAGE);
 	writel(encourage_lo, pmu->base + JH71XX_PMU_SW_ENCOURAGE);
 	writel(encourage_hi, pmu->base + JH71XX_PMU_SW_ENCOURAGE);
 
 	spin_unlock_irqrestore(&pmu->lock, flags);
 
-	/* Wait for the power domain bit to be enabled / disabled */
+	 
 	if (on) {
 		ret = readl_poll_timeout_atomic(pmu->base + JH71XX_PMU_CURR_POWER_MODE,
 						val, val & mask,
@@ -219,7 +196,7 @@ static irqreturn_t jh71xx_pmu_interrupt(int irq, void *data)
 	if (val & JH71XX_PMU_INT_PCH_FAIL)
 		dev_err(pmu->dev, "p-channel fail event.\n");
 
-	/* clear interrupts */
+	 
 	writel(val, pmu->base + JH71XX_PMU_INT_STATUS);
 	writel(val, pmu->base + JH71XX_PMU_EVENT_STATUS);
 
@@ -364,7 +341,7 @@ static const struct of_device_id jh71xx_pmu_of_match[] = {
 		.compatible = "starfive,jh7110-pmu",
 		.data = (void *)&jh7110_pmu,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/regulator/consumer.h>
@@ -6,7 +6,7 @@
 #include "mcde_drm.h"
 #include "mcde_display_regs.h"
 
-/* The MCDE internal clock dividers for FIFO A and B */
+ 
 struct mcde_clk_div {
 	struct clk_hw hw;
 	struct mcde *mcde;
@@ -22,16 +22,13 @@ static int mcde_clk_div_enable(struct clk_hw *hw)
 
 	spin_lock(&mcde->fifo_crx1_lock);
 	val = readl(mcde->regs + cdiv->cr);
-	/*
-	 * Select the PLL72 (LCD) clock as parent
-	 * FIXME: implement other parents.
-	 */
+	 
 	val &= ~MCDE_CRX1_CLKSEL_MASK;
 	val |= MCDE_CRX1_CLKSEL_CLKPLL72 << MCDE_CRX1_CLKSEL_SHIFT;
-	/* Internal clock */
+	 
 	val |= MCDE_CRA1_CLKTYPE_TVXCLKSEL1;
 
-	/* Clear then set the divider */
+	 
 	val &= ~(MCDE_CRX1_BCD | MCDE_CRX1_PCD_MASK);
 	val |= cdiv->cr_div;
 
@@ -87,11 +84,7 @@ static unsigned long mcde_clk_div_recalc_rate(struct clk_hw *hw,
 	u32 cr;
 	int div;
 
-	/*
-	 * If the MCDE is not powered we can't access registers.
-	 * It will come up with 0 in the divider register bits, which
-	 * means "divide by 2".
-	 */
+	 
 	if (!regulator_is_enabled(mcde->epod))
 		return DIV_ROUND_UP_ULL(prate, 2);
 
@@ -99,7 +92,7 @@ static unsigned long mcde_clk_div_recalc_rate(struct clk_hw *hw,
 	if (cr & MCDE_CRX1_BCD)
 		return prate;
 
-	/* 0 in the PCD means "divide by 2", 1 means "divide by 3" etc */
+	 
 	div = cr & MCDE_CRX1_PCD_MASK;
 	div += 2;
 
@@ -113,12 +106,9 @@ static int mcde_clk_div_set_rate(struct clk_hw *hw, unsigned long rate,
 	int div = mcde_clk_div_choose_div(hw, rate, &prate, false);
 	u32 cr = 0;
 
-	/*
-	 * We cache the CR bits to set the divide in the state so that
-	 * we can call this before we can even write to the hardware.
-	 */
+	 
 	if (div == 1) {
-		/* Bypass clock divider */
+		 
 		cr |= MCDE_CRX1_BCD;
 	} else {
 		div -= 2;
@@ -161,7 +151,7 @@ int mcde_init_clock_divider(struct mcde *mcde)
 	spin_lock_init(&mcde->fifo_crx1_lock);
 	parent_name = __clk_get_name(mcde->lcd_clk);
 
-	/* Allocate 2 clocks */
+	 
 	fifoa = devm_kzalloc(dev, sizeof(*fifoa), GFP_KERNEL);
 	if (!fifoa)
 		return -ENOMEM;

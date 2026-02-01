@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- * This file contains device methods for creating, using and destroying
- * virtual HSR or PRP devices.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
@@ -79,14 +73,14 @@ static void hsr_check_announce(struct net_device *hsr_dev,
 	hsr = netdev_priv(hsr_dev);
 
 	if (hsr_dev->operstate == IF_OPER_UP && old_operstate != IF_OPER_UP) {
-		/* Went up */
+		 
 		hsr->announce_count = 0;
 		mod_timer(&hsr->announce_timer,
 			  jiffies + msecs_to_jiffies(HSR_ANNOUNCE_INTERVAL));
 	}
 
 	if (hsr_dev->operstate != IF_OPER_UP && old_operstate == IF_OPER_UP)
-		/* Went down */
+		 
 		del_timer(&hsr->announce_timer);
 }
 
@@ -97,9 +91,7 @@ void hsr_check_carrier_and_operstate(struct hsr_priv *hsr)
 	bool has_carrier;
 
 	master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
-	/* netif_stacked_transfer_operstate() cannot be used here since
-	 * it doesn't set IF_OPER_LOWERLAYERDOWN (?)
-	 */
+	 
 	old_operstate = master->dev->operstate;
 	has_carrier = hsr_check_carrier(master);
 	hsr_set_operstate(master, has_carrier);
@@ -173,7 +165,7 @@ static int hsr_dev_open(struct net_device *dev)
 
 static int hsr_dev_close(struct net_device *dev)
 {
-	/* Nothing to do here. */
+	 
 	return 0;
 }
 
@@ -185,13 +177,7 @@ static netdev_features_t hsr_features_recompute(struct hsr_priv *hsr,
 
 	mask = features;
 
-	/* Mask out all features that, if supported by one device, should be
-	 * enabled for all devices (see NETIF_F_ONE_FOR_ALL).
-	 *
-	 * Anything that's off in mask will not be enabled - so only things
-	 * that were in features originally, and also is in NETIF_F_ONE_FOR_ALL,
-	 * may become enabled.
-	 */
+	 
 	features &= ~NETIF_F_ONE_FOR_ALL;
 	hsr_for_each_port(hsr, port)
 		features = netdev_increment_features(features,
@@ -242,10 +228,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master)
 
 	hlen = LL_RESERVED_SPACE(master->dev);
 	tlen = master->dev->needed_tailroom;
-	/* skb size is same for PRP/HSR frames, only difference
-	 * being, for PRP it is a trailer and for HSR it is a
-	 * header
-	 */
+	 
 	skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
 			    sizeof(struct hsr_sup_payload) + hlen + tlen);
 
@@ -299,7 +282,7 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
 	set_hsr_stag_path(hsr_stag, (hsr->prot_version ? 0x0 : 0xf));
 	set_hsr_stag_HSR_ver(hsr_stag, hsr->prot_version);
 
-	/* From HSRv1 on we have separate supervision sequence numbers. */
+	 
 	spin_lock_bh(&hsr->seqnr_lock);
 	if (hsr->prot_version > 0) {
 		hsr_stag->sequence_nr = htons(hsr->sup_sequence_nr);
@@ -310,11 +293,11 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
 	}
 
 	hsr_stag->tlv.HSR_TLV_type = type;
-	/* TODO: Why 12 in HSRv0? */
+	 
 	hsr_stag->tlv.HSR_TLV_length = hsr->prot_version ?
 				sizeof(struct hsr_sup_payload) : 12;
 
-	/* Payload: MacAddressA */
+	 
 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
 
@@ -347,14 +330,14 @@ static void send_prp_supervision_frame(struct hsr_port *master,
 	set_hsr_stag_path(hsr_stag, (hsr->prot_version ? 0x0 : 0xf));
 	set_hsr_stag_HSR_ver(hsr_stag, (hsr->prot_version ? 1 : 0));
 
-	/* From HSRv1 on we have separate supervision sequence numbers. */
+	 
 	spin_lock_bh(&hsr->seqnr_lock);
 	hsr_stag->sequence_nr = htons(hsr->sup_sequence_nr);
 	hsr->sup_sequence_nr++;
 	hsr_stag->tlv.HSR_TLV_type = PRP_TLV_LIFE_CHECK_DD;
 	hsr_stag->tlv.HSR_TLV_length = sizeof(struct hsr_sup_payload);
 
-	/* Payload: MacAddressA */
+	 
 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
 
@@ -367,8 +350,7 @@ static void send_prp_supervision_frame(struct hsr_port *master,
 	spin_unlock_bh(&hsr->seqnr_lock);
 }
 
-/* Announce (supervision frame) timer function
- */
+ 
 static void hsr_announce(struct timer_list *t)
 {
 	struct hsr_priv *hsr;
@@ -454,27 +436,22 @@ void hsr_dev_setup(struct net_device *dev)
 
 	dev->features = dev->hw_features;
 
-	/* Prevent recursive tx locking */
+	 
 	dev->features |= NETIF_F_LLTX;
-	/* VLAN on top of HSR needs testing and probably some work on
-	 * hsr_header_create() etc.
-	 */
+	 
 	dev->features |= NETIF_F_VLAN_CHALLENGED;
-	/* Not sure about this. Taken from bridge code. netdev_features.h says
-	 * it means "Does not change network namespaces".
-	 */
+	 
 	dev->features |= NETIF_F_NETNS_LOCAL;
 }
 
-/* Return true if dev is a HSR master; return false otherwise.
- */
+ 
 bool is_hsr_master(struct net_device *dev)
 {
 	return (dev->netdev_ops->ndo_start_xmit == hsr_dev_xmit);
 }
 EXPORT_SYMBOL(is_hsr_master);
 
-/* Default multicast address for HSR Supervision frames */
+ 
 static const unsigned char def_multicast_addr[ETH_ALEN] __aligned(2) = {
 	0x01, 0x15, 0x4e, 0x00, 0x01, 0x00
 };
@@ -494,25 +471,23 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
 
 	eth_hw_addr_set(hsr_dev, slave[0]->dev_addr);
 
-	/* initialize protocol specific functions */
+	 
 	if (protocol_version == PRP_V1) {
-		/* For PRP, lan_id has most significant 3 bits holding
-		 * the net_id of PRP_LAN_ID
-		 */
+		 
 		hsr->net_id = PRP_LAN_ID << 1;
 		hsr->proto_ops = &prp_ops;
 	} else {
 		hsr->proto_ops = &hsr_ops;
 	}
 
-	/* Make sure we recognize frames from ourselves in hsr_rcv() */
+	 
 	res = hsr_create_self_node(hsr, hsr_dev->dev_addr,
 				   slave[1]->dev_addr);
 	if (res < 0)
 		return res;
 
 	spin_lock_init(&hsr->seqnr_lock);
-	/* Overflow soon to find bugs easier: */
+	 
 	hsr->sequence_nr = HSR_SEQNR_START;
 	hsr->sup_sequence_nr = HSR_SUP_SEQNR_START;
 
@@ -524,14 +499,14 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
 
 	hsr->prot_version = protocol_version;
 
-	/* Make sure the 1st call to netif_carrier_on() gets through */
+	 
 	netif_carrier_off(hsr_dev);
 
 	res = hsr_add_port(hsr, hsr_dev, HSR_PT_MASTER, extack);
 	if (res)
 		goto err_add_master;
 
-	/* HSR forwarding offload supported in lower device? */
+	 
 	if ((slave[0]->features & NETIF_F_HW_HSR_FWD) &&
 	    (slave[1]->features & NETIF_F_HW_HSR_FWD))
 		hsr->fwd_offloaded = true;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Oleksij Rempel <linux@rempel-privat.de>.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -92,8 +90,7 @@ static const struct asm9260_div_clk asm9260_div_clks[] __initconst = {
 	{ CLKID_SYS_CPU,	"cpu_div", "main_gate", HW_CPUCLKDIV },
 	{ CLKID_SYS_AHB,	"ahb_div", "cpu_div", HW_SYSAHBCLKDIV },
 
-	/* i2s has two deviders: one for only external mclk and internal
-	 * devider for all clks. */
+	 
 	{ CLKID_SYS_I2S0M,	"i2s0m_div", "i2s0_mclk",  HW_I2S0MCLKDIV },
 	{ CLKID_SYS_I2S1M,	"i2s1m_div", "i2s1_mclk",  HW_I2S1MCLKDIV },
 	{ CLKID_SYS_I2S0S,	"i2s0s_div", "i2s0_gate",  HW_I2S0SCLKDIV },
@@ -134,7 +131,7 @@ static const struct asm9260_gate_data asm9260_mux_gates[] __initconst = {
 	{ 0, "clkout_gate",	"clkout_mux",	HW_CLKOUTCLKUEN, 0 },
 };
 static const struct asm9260_gate_data asm9260_ahb_gates[] __initconst = {
-	/* ahb gates */
+	 
 	{ CLKID_AHB_ROM,	"rom",		"ahb_div",
 		HW_AHBCLKCTRL0,	1, CLK_IGNORE_UNUSED},
 	{ CLKID_AHB_RAM,	"ram",		"ahb_div",
@@ -272,7 +269,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 	if (IS_ERR(base))
 		panic("%pOFn: unable to map resource", np);
 
-	/* register pll */
+	 
 	rate = (ioread32(base + HW_SYSPLLCTRL) & 0xffff) * 1000000;
 
 	pll_hw = clk_hw_register_fixed_rate_parent_accuracy(NULL, pll_clk, &pll_parent_data,
@@ -288,7 +285,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 				0, mc->mask, 0, mc->table, &asm9260_clk_lock);
 	}
 
-	/* clock mux gate cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(asm9260_mux_gates); n++) {
 		const struct asm9260_gate_data *gd = &asm9260_mux_gates[n];
 
@@ -297,7 +294,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 			base + gd->reg, gd->bit_idx, 0, &asm9260_clk_lock);
 	}
 
-	/* clock div cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(asm9260_div_clks); n++) {
 		const struct asm9260_div_clk *dc = &asm9260_div_clks[n];
 
@@ -307,7 +304,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 				&asm9260_clk_lock);
 	}
 
-	/* clock ahb gate cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(asm9260_ahb_gates); n++) {
 		const struct asm9260_gate_data *gd = &asm9260_ahb_gates[n];
 
@@ -316,7 +313,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 				gd->bit_idx, 0, &asm9260_clk_lock);
 	}
 
-	/* check for errors on leaf clocks */
+	 
 	for (n = 0; n < MAX_CLKS; n++) {
 		if (!IS_ERR(hws[n]))
 			continue;
@@ -326,7 +323,7 @@ static void __init asm9260_acc_init(struct device_node *np)
 		goto fail;
 	}
 
-	/* register clk-provider */
+	 
 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_data);
 	return;
 fail:

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth HCI UART driver
- *
- *  Copyright (C) 2000-2001  Qualcomm Incorporated
- *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -37,7 +30,7 @@ struct h4_struct {
 	struct sk_buff_head txq;
 };
 
-/* Initialize protocol */
+ 
 static int h4_open(struct hci_uart *hu)
 {
 	struct h4_struct *h4;
@@ -54,7 +47,7 @@ static int h4_open(struct hci_uart *hu)
 	return 0;
 }
 
-/* Flush protocol data */
+ 
 static int h4_flush(struct hci_uart *hu)
 {
 	struct h4_struct *h4 = hu->priv;
@@ -66,7 +59,7 @@ static int h4_flush(struct hci_uart *hu)
 	return 0;
 }
 
-/* Close protocol */
+ 
 static int h4_close(struct hci_uart *hu)
 {
 	struct h4_struct *h4 = hu->priv;
@@ -83,14 +76,14 @@ static int h4_close(struct hci_uart *hu)
 	return 0;
 }
 
-/* Enqueue frame for transmission (padding, crc, etc) */
+ 
 static int h4_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	struct h4_struct *h4 = hu->priv;
 
 	BT_DBG("hu %p skb %p", hu, skb);
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 	skb_queue_tail(&h4->txq, skb);
 
@@ -104,7 +97,7 @@ static const struct h4_recv_pkt h4_recv_pkts[] = {
 	{ H4_RECV_ISO,   .recv = hci_recv_frame },
 };
 
-/* Recv data */
+ 
 static int h4_recv(struct hci_uart *hu, const void *data, int count)
 {
 	struct h4_struct *h4 = hu->priv;
@@ -158,14 +151,14 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 	struct hci_uart *hu = hci_get_drvdata(hdev);
 	u8 alignment = hu->alignment ? hu->alignment : 1;
 
-	/* Check for error from previous call */
+	 
 	if (IS_ERR(skb))
 		skb = NULL;
 
 	while (count) {
 		int i, len;
 
-		/* remove padding bytes from buffer */
+		 
 		for (; hu->padding && count > 0; hu->padding--) {
 			count--;
 			buffer++;
@@ -188,7 +181,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 				break;
 			}
 
-			/* Check for invalid packet type */
+			 
 			if (!skb)
 				return ERR_PTR(-EILSEQ);
 
@@ -202,7 +195,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 		count -= len;
 		buffer += len;
 
-		/* Check for partial packet */
+		 
 		if (skb->len < hci_skb_expect(skb))
 			continue;
 
@@ -221,11 +214,11 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 
 			switch ((&pkts[i])->lsize) {
 			case 0:
-				/* No variable data length */
+				 
 				dlen = 0;
 				break;
 			case 1:
-				/* Single octet variable length */
+				 
 				dlen = skb->data[(&pkts[i])->loff];
 				hci_skb_expect(skb) += dlen;
 
@@ -235,7 +228,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 				}
 				break;
 			case 2:
-				/* Double octet variable length */
+				 
 				dlen = get_unaligned_le16(skb->data +
 							  (&pkts[i])->loff);
 				hci_skb_expect(skb) += dlen;
@@ -246,7 +239,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 				}
 				break;
 			default:
-				/* Unsupported variable length */
+				 
 				kfree_skb(skb);
 				return ERR_PTR(-EILSEQ);
 			}
@@ -255,7 +248,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 				hu->padding = (skb->len + 1) % alignment;
 				hu->padding = (alignment - hu->padding) % alignment;
 
-				/* No more data, complete frame */
+				 
 				(&pkts[i])->recv(hdev, skb);
 				skb = NULL;
 			}
@@ -263,7 +256,7 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
 			hu->padding = (skb->len + 1) % alignment;
 			hu->padding = (alignment - hu->padding) % alignment;
 
-			/* Complete frame */
+			 
 			(&pkts[i])->recv(hdev, skb);
 			skb = NULL;
 		}

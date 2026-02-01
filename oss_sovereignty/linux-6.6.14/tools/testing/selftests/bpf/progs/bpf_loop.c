@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -18,16 +18,14 @@ struct {
 	__type(value, int);
 } map1 SEC(".maps");
 
-/* These should be set by the user program */
+ 
 u32 nested_callback_nr_loops;
 u32 stop_index = -1;
 u32 nr_loops;
 int pid;
 int callback_selector;
 
-/* Making these global variables so that the userspace program
- * can verify the output through the skeleton
- */
+ 
 int nr_loops_returned;
 int g_output;
 int err;
@@ -132,9 +130,7 @@ static int callback_set_0f(int i, void *ctx)
 	return 0;
 }
 
-/*
- * non-constant callback is a corner case for bpf_loop inline logic
- */
+ 
 SEC("fentry/" SYS_PREFIX "sys_nanosleep")
 int prog_non_constant_callback(void *ctx)
 {
@@ -193,12 +189,7 @@ static int stack_check_outer_callback(void *ctx)
 	return 0;
 }
 
-/* Some of the local variables in stack_check and
- * stack_check_outer_callback would be allocated on stack by
- * compiler. This test should verify that stack content for these
- * variables is preserved between calls to bpf_loop (might be an issue
- * if loop inlining allocates stack slots incorrectly).
- */
+ 
 SEC("fentry/" SYS_PREFIX "sys_nanosleep")
 int stack_check(void *ctx)
 {

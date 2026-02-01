@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <stdint.h>
 #include <string.h>
@@ -9,10 +9,10 @@
 
 #include <bpf/bpf_helpers.h>
 
-/* Max supported length of a string with unsigned long in base 10 (pow2 - 1). */
+ 
 #define MAX_ULONG_STR_LEN 0xF
 
-/* Max supported length of sysctl value string (pow2). */
+ 
 #define MAX_VALUE_STR_LEN 0x40
 
 #ifndef ARRAY_SIZE

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -81,7 +79,7 @@ static int imx8_pcie_phy_power_on(struct phy *phy)
 	case IMX8MM:
 		reset_control_assert(imx8_phy->reset);
 
-		/* Tune PHY de-emphasis setting to pass PCIe compliance. */
+		 
 		if (imx8_phy->tx_deemph_gen1)
 			writel(imx8_phy->tx_deemph_gen1,
 			       imx8_phy->base + PCIE_PHY_TRSV_REG5);
@@ -89,25 +87,25 @@ static int imx8_pcie_phy_power_on(struct phy *phy)
 			writel(imx8_phy->tx_deemph_gen2,
 			       imx8_phy->base + PCIE_PHY_TRSV_REG6);
 		break;
-	case IMX8MP: /* Do nothing. */
+	case IMX8MP:  
 		break;
 	}
 
 	if (pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT ||
 	    pad_mode == IMX8_PCIE_REFCLK_PAD_UNUSED) {
-		/* Configure the pad as input */
+		 
 		val = readl(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
 		writel(val & ~ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
 		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
 	} else {
-		/* Configure the PHY to output the refclock via pad */
+		 
 		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
 		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
 	}
 
 	if (pad_mode == IMX8_PCIE_REFCLK_PAD_OUTPUT ||
 	    pad_mode == IMX8_PCIE_REFCLK_PAD_UNUSED) {
-		/* Source clock from SoC internal PLL */
+		 
 		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_SEL,
 		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG062);
 		writel(AUX_PLL_REFCLK_SEL_SYS_PLL,
@@ -119,7 +117,7 @@ static int imx8_pcie_phy_power_on(struct phy *phy)
 		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG065);
 	}
 
-	/* Set AUX_EN_OVERRIDE 1'b0, when the CLKREQ# isn't hooked */
+	 
 	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
 			   IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE,
 			   imx8_phy->clkreq_unused ?
@@ -139,7 +137,7 @@ static int imx8_pcie_phy_power_on(struct phy *phy)
 			   IMX8MM_GPR_PCIE_REF_CLK_PLL);
 	usleep_range(100, 200);
 
-	/* Do the PHY common block reset */
+	 
 	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
 			   IMX8MM_GPR_PCIE_CMN_RST,
 			   IMX8MM_GPR_PCIE_CMN_RST);
@@ -154,7 +152,7 @@ static int imx8_pcie_phy_power_on(struct phy *phy)
 		break;
 	}
 
-	/* Polling to check the phy is ready or not. */
+	 
 	ret = readl_poll_timeout(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG075,
 				 val, val == ANA_PLL_DONE, 10, 20000);
 	return ret;
@@ -213,7 +211,7 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
 
 	imx8_phy->drvdata = of_device_get_match_data(dev);
 
-	/* get PHY refclk pad mode */
+	 
 	of_property_read_u32(np, "fsl,refclk-pad-mode",
 			     &imx8_phy->refclk_pad_mode);
 
@@ -236,7 +234,7 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(imx8_phy->clk);
 	}
 
-	/* Grab GPR config register range */
+	 
 	imx8_phy->iomuxc_gpr =
 		 syscon_regmap_lookup_by_compatible(imx8_phy->drvdata->gpr);
 	if (IS_ERR(imx8_phy->iomuxc_gpr)) {

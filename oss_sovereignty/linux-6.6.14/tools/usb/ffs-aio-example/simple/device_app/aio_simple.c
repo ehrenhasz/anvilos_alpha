@@ -1,33 +1,8 @@
-/*
- * This is free and unencumbered software released into the public domain.
- *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <http://unlicense.org/>
- */
+ 
 
-/* $(CROSS_COMPILE)cc -g -o aio_simple aio_simple.c -laio */
+ 
 
-#define _DEFAULT_SOURCE /* for endian.h */
+#define _DEFAULT_SOURCE  
 
 #include <endian.h>
 #include <errno.h>
@@ -51,11 +26,7 @@
 
 #define BUF_LEN		8192
 
-/*
- * cpu_to_le16/32 are used when initializing structures, a context where a
- * function call is not allowed. To solve this, we code cpu_to_le16/32 in a way
- * that allows them to be used when initializing structures.
- */
+ 
 
 #if BYTE_ORDER == __LITTLE_ENDIAN
 #define cpu_to_le16(x)  (x)
@@ -67,7 +38,7 @@
 	(((x) & 0x0000ff00u) <<  8) | (((x) & 0x000000ffu) << 24))
 #endif
 
-/******************** Descriptors and Strings *******************************/
+ 
 
 static const struct {
 	struct usb_functionfs_descs_head_v2 header;
@@ -149,12 +120,12 @@ static const struct {
 		.lang_count = cpu_to_le32(1),
 	},
 	.lang0 = {
-		cpu_to_le16(0x0409), /* en-us */
+		cpu_to_le16(0x0409),  
 		STR_INTERFACE,
 	},
 };
 
-/******************** Endpoints handling *******************************/
+ 
 
 static void display_event(struct usb_functionfs_event *event)
 {
@@ -242,13 +213,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	ep_path = malloc(strlen(argv[1]) + 4 /* "/ep#" */ + 1 /* '\0' */);
+	ep_path = malloc(strlen(argv[1]) + 4   + 1  );
 	if (!ep_path) {
 		perror("malloc");
 		return 1;
 	}
 
-	/* open endpoint files */
+	 
 	sprintf(ep_path, "%s/ep0", argv[1]);
 	ep0 = open(ep_path, O_RDWR);
 	if (ep0 < 0) {
@@ -276,7 +247,7 @@ int main(int argc, char *argv[])
 	free(ep_path);
 
 	memset(&ctx, 0, sizeof(ctx));
-	/* setup aio context to handle up to 2 requests */
+	 
 	if (io_setup(2, &ctx) < 0) {
 		perror("unable to setup aio");
 		return 1;
@@ -288,7 +259,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	/* alloc buffers and requests */
+	 
 	buf_in = malloc(BUF_LEN);
 	buf_out = malloc(BUF_LEN);
 	iocb_in = malloc(sizeof(*iocb_in));
@@ -311,11 +282,11 @@ int main(int argc, char *argv[])
 		if (FD_ISSET(ep0, &rfds))
 			handle_ep0(ep0, &ready);
 
-		/* we are waiting for function ENABLE */
+		 
 		if (!ready)
 			continue;
 
-		/* if something was submitted we wait for event */
+		 
 		if (FD_ISSET(evfd, &rfds)) {
 			uint64_t ev_cnt;
 			ret = read(evfd, &ev_cnt, sizeof(ev_cnt));
@@ -325,9 +296,9 @@ int main(int argc, char *argv[])
 			}
 
 			struct io_event e[2];
-			/* we wait for one event */
+			 
 			ret = io_getevents(ctx, 1, 2, e, NULL);
-			/* if we got event */
+			 
 			for (i = 0; i < ret; ++i) {
 				if (e[i].obj->aio_fildes == ep[0]) {
 					printf("ev=in; ret=%lu\n", e[i].res);
@@ -339,29 +310,29 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		if (!req_in) { /* if IN transfer not requested*/
-			/* prepare write request */
+		if (!req_in) {  
+			 
 			io_prep_pwrite(iocb_in, ep[0], buf_in, BUF_LEN, 0);
-			/* enable eventfd notification */
+			 
 			iocb_in->u.c.flags |= IOCB_FLAG_RESFD;
 			iocb_in->u.c.resfd = evfd;
-			/* submit table of requests */
+			 
 			ret = io_submit(ctx, 1, &iocb_in);
-			if (ret >= 0) { /* if ret > 0 request is queued */
+			if (ret >= 0) {  
 				req_in = 1;
 				printf("submit: in\n");
 			} else
 				perror("unable to submit request");
 		}
-		if (!req_out) { /* if OUT transfer not requested */
-			/* prepare read request */
+		if (!req_out) {  
+			 
 			io_prep_pread(iocb_out, ep[1], buf_out, BUF_LEN, 0);
-			/* enable eventfs notification */
+			 
 			iocb_out->u.c.flags |= IOCB_FLAG_RESFD;
 			iocb_out->u.c.resfd = evfd;
-			/* submit table of requests */
+			 
 			ret = io_submit(ctx, 1, &iocb_out);
-			if (ret >= 0) { /* if ret > 0 request is queued */
+			if (ret >= 0) {  
 				req_out = 1;
 				printf("submit: out\n");
 			} else
@@ -369,7 +340,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/* free resources */
+	 
 
 	io_destroy(ctx);
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
@@ -13,12 +13,7 @@
 
 static int csr_temp_enable;
 
-/*
- * Loongson-3 series cpu has two sensors inside,
- * each of them from 0 to 255,
- * if more than 127, that is dangerous.
- * here only provide sensor1 data, because it always hot than sensor0
- */
+ 
 int loongson3_cpu_temp(int cpu)
 {
 	u32 reg, prid_rev;

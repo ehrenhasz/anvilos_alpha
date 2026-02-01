@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+ 
 
 #include "ice_vsi_vlan_lib.h"
 #include "ice_lib.h"
@@ -12,15 +12,7 @@ static void print_invalid_tpid(struct ice_vsi *vsi, u16 tpid)
 		ice_vsi_type_str(vsi->type), vsi->idx, tpid);
 }
 
-/**
- * validate_vlan - check if the ice_vlan passed in is valid
- * @vsi: VSI used for printing error message
- * @vlan: ice_vlan structure to validate
- *
- * Return true if the VLAN TPID is valid or if the VLAN TPID is 0 and the VLAN
- * VID is 0, which allows for non-zero VLAN filters with the specified VLAN TPID
- * and untagged VLAN 0 filters to be added to the prune list respectively.
- */
+ 
 static bool validate_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	if (vlan->tpid != ETH_P_8021Q && vlan->tpid != ETH_P_8021AD &&
@@ -32,11 +24,7 @@ static bool validate_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return true;
 }
 
-/**
- * ice_vsi_add_vlan - default add VLAN implementation for all VSI types
- * @vsi: VSI being configured
- * @vlan: VLAN filter to add
- */
+ 
 int ice_vsi_add_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	int err;
@@ -55,11 +43,7 @@ int ice_vsi_add_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return 0;
 }
 
-/**
- * ice_vsi_del_vlan - default del VLAN implementation for all VSI types
- * @vsi: VSI being configured
- * @vlan: VLAN filter to delete
- */
+ 
 int ice_vsi_del_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	struct ice_pf *pf = vsi->back;
@@ -83,10 +67,7 @@ int ice_vsi_del_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return err;
 }
 
-/**
- * ice_vsi_manage_vlan_insertion - Manage VLAN insertion for the VSI for Tx
- * @vsi: the VSI being changed
- */
+ 
 static int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -97,13 +78,10 @@ static int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
 	if (!ctxt)
 		return -ENOMEM;
 
-	/* Here we are configuring the VSI to let the driver add VLAN tags by
-	 * setting inner_vlan_flags to ICE_AQ_VSI_INNER_VLAN_TX_MODE_ALL. The actual VLAN tag
-	 * insertion happens in the Tx hot path, in ice_tx_map.
-	 */
+	 
 	ctxt->info.inner_vlan_flags = ICE_AQ_VSI_INNER_VLAN_TX_MODE_ALL;
 
-	/* Preserve existing VLAN strip setting */
+	 
 	ctxt->info.inner_vlan_flags |= (vsi->info.inner_vlan_flags &
 					ICE_AQ_VSI_INNER_VLAN_EMODE_M);
 
@@ -122,20 +100,14 @@ out:
 	return err;
 }
 
-/**
- * ice_vsi_manage_vlan_stripping - Manage VLAN stripping for the VSI for Rx
- * @vsi: the VSI being changed
- * @ena: boolean value indicating if this is a enable or disable request
- */
+ 
 static int ice_vsi_manage_vlan_stripping(struct ice_vsi *vsi, bool ena)
 {
 	struct ice_hw *hw = &vsi->back->hw;
 	struct ice_vsi_ctx *ctxt;
 	int err;
 
-	/* do not allow modifying VLAN stripping when a port VLAN is configured
-	 * on this VSI
-	 */
+	 
 	if (vsi->info.port_based_inner_vlan)
 		return 0;
 
@@ -143,18 +115,15 @@ static int ice_vsi_manage_vlan_stripping(struct ice_vsi *vsi, bool ena)
 	if (!ctxt)
 		return -ENOMEM;
 
-	/* Here we are configuring what the VSI should do with the VLAN tag in
-	 * the Rx packet. We can either leave the tag in the packet or put it in
-	 * the Rx descriptor.
-	 */
+	 
 	if (ena)
-		/* Strip VLAN tag from Rx packet and put it in the desc */
+		 
 		ctxt->info.inner_vlan_flags = ICE_AQ_VSI_INNER_VLAN_EMODE_STR_BOTH;
 	else
-		/* Disable stripping. Leave tag in packet */
+		 
 		ctxt->info.inner_vlan_flags = ICE_AQ_VSI_INNER_VLAN_EMODE_NOTHING;
 
-	/* Allow all packets untagged/tagged */
+	 
 	ctxt->info.inner_vlan_flags |= ICE_AQ_VSI_INNER_VLAN_TX_MODE_ALL;
 
 	ctxt->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_VLAN_VALID);
@@ -220,11 +189,7 @@ ice_restore_vlan_info(struct ice_aqc_vsi_props *info,
 	info->outer_vlan_flags = vlan->outer_vlan_flags;
 }
 
-/**
- * __ice_vsi_set_inner_port_vlan - set port VLAN VSI context settings to enable a port VLAN
- * @vsi: the VSI to update
- * @pvid_info: VLAN ID and QoS used to set the PVID VSI context field
- */
+ 
 static int __ice_vsi_set_inner_port_vlan(struct ice_vsi *vsi, u16 pvid_info)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -305,13 +270,7 @@ int ice_vsi_clear_inner_port_vlan(struct ice_vsi *vsi)
 	return ret;
 }
 
-/**
- * ice_cfg_vlan_pruning - enable or disable VLAN pruning on the VSI
- * @vsi: VSI to enable or disable VLAN pruning on
- * @ena: set to true to enable VLAN pruning and false to disable it
- *
- * returns 0 if VSI is updated, negative otherwise
- */
+ 
 static int ice_cfg_vlan_pruning(struct ice_vsi *vsi, bool ena)
 {
 	struct ice_vsi_ctx *ctxt;
@@ -321,10 +280,7 @@ static int ice_cfg_vlan_pruning(struct ice_vsi *vsi, bool ena)
 	if (!vsi)
 		return -EINVAL;
 
-	/* Don't enable VLAN pruning if the netdev is currently in promiscuous
-	 * mode. VLAN pruning will be enabled when the interface exits
-	 * promiscuous mode if any VLAN filters are active.
-	 */
+	 
 	if (vsi->netdev && vsi->netdev->flags & IFF_PROMISC && ena)
 		return 0;
 
@@ -411,11 +367,7 @@ int ice_vsi_dis_tx_vlan_filtering(struct ice_vsi *vsi)
 	return ice_cfg_vlan_antispoof(vsi, false);
 }
 
-/**
- * tpid_to_vsi_outer_vlan_type - convert from TPID to VSI context based tag_type
- * @tpid: tpid used to translate into VSI context based tag_type
- * @tag_type: output variable to hold the VSI context based tag type
- */
+ 
 static int tpid_to_vsi_outer_vlan_type(u16 tpid, u8 *tag_type)
 {
 	switch (tpid) {
@@ -436,25 +388,7 @@ static int tpid_to_vsi_outer_vlan_type(u16 tpid, u8 *tag_type)
 	return 0;
 }
 
-/**
- * ice_vsi_ena_outer_stripping - enable outer VLAN stripping
- * @vsi: VSI to configure
- * @tpid: TPID to enable outer VLAN stripping for
- *
- * Enable outer VLAN stripping via VSI context. This function should only be
- * used if DVM is supported. Also, this function should never be called directly
- * as it should be part of ice_vsi_vlan_ops if it's needed.
- *
- * Since the VSI context only supports a single TPID for insertion and
- * stripping, setting the TPID for stripping will affect the TPID for insertion.
- * Callers need to be aware of this limitation.
- *
- * Only modify outer VLAN stripping settings and the VLAN TPID. Outer VLAN
- * insertion settings are unmodified.
- *
- * This enables hardware to strip a VLAN tag with the specified TPID to be
- * stripped from the packet and placed in the receive descriptor.
- */
+ 
 int ice_vsi_ena_outer_stripping(struct ice_vsi *vsi, u16 tpid)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -462,9 +396,7 @@ int ice_vsi_ena_outer_stripping(struct ice_vsi *vsi, u16 tpid)
 	u8 tag_type;
 	int err;
 
-	/* do not allow modifying VLAN stripping when a port VLAN is configured
-	 * on this VSI
-	 */
+	 
 	if (vsi->info.port_based_outer_vlan)
 		return 0;
 
@@ -477,7 +409,7 @@ int ice_vsi_ena_outer_stripping(struct ice_vsi *vsi, u16 tpid)
 
 	ctxt->info.valid_sections =
 		cpu_to_le16(ICE_AQ_VSI_PROP_OUTER_TAG_VALID);
-	/* clear current outer VLAN strip settings */
+	 
 	ctxt->info.outer_vlan_flags = vsi->info.outer_vlan_flags &
 		~(ICE_AQ_VSI_OUTER_VLAN_EMODE_M | ICE_AQ_VSI_OUTER_TAG_TYPE_M);
 	ctxt->info.outer_vlan_flags |=
@@ -497,21 +429,7 @@ int ice_vsi_ena_outer_stripping(struct ice_vsi *vsi, u16 tpid)
 	return err;
 }
 
-/**
- * ice_vsi_dis_outer_stripping - disable outer VLAN stripping
- * @vsi: VSI to configure
- *
- * Disable outer VLAN stripping via VSI context. This function should only be
- * used if DVM is supported. Also, this function should never be called directly
- * as it should be part of ice_vsi_vlan_ops if it's needed.
- *
- * Only modify the outer VLAN stripping settings. The VLAN TPID and outer VLAN
- * insertion settings are unmodified.
- *
- * This tells the hardware to not strip any VLAN tagged packets, thus leaving
- * them in the packet. This enables software offloaded VLAN stripping and
- * disables hardware offloaded VLAN stripping.
- */
+ 
 int ice_vsi_dis_outer_stripping(struct ice_vsi *vsi)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -527,7 +445,7 @@ int ice_vsi_dis_outer_stripping(struct ice_vsi *vsi)
 
 	ctxt->info.valid_sections =
 		cpu_to_le16(ICE_AQ_VSI_PROP_OUTER_TAG_VALID);
-	/* clear current outer VLAN strip settings */
+	 
 	ctxt->info.outer_vlan_flags = vsi->info.outer_vlan_flags &
 		~ICE_AQ_VSI_OUTER_VLAN_EMODE_M;
 	ctxt->info.outer_vlan_flags |= ICE_AQ_VSI_OUTER_VLAN_EMODE_NOTHING <<
@@ -544,25 +462,7 @@ int ice_vsi_dis_outer_stripping(struct ice_vsi *vsi)
 	return err;
 }
 
-/**
- * ice_vsi_ena_outer_insertion - enable outer VLAN insertion
- * @vsi: VSI to configure
- * @tpid: TPID to enable outer VLAN insertion for
- *
- * Enable outer VLAN insertion via VSI context. This function should only be
- * used if DVM is supported. Also, this function should never be called directly
- * as it should be part of ice_vsi_vlan_ops if it's needed.
- *
- * Since the VSI context only supports a single TPID for insertion and
- * stripping, setting the TPID for insertion will affect the TPID for stripping.
- * Callers need to be aware of this limitation.
- *
- * Only modify outer VLAN insertion settings and the VLAN TPID. Outer VLAN
- * stripping settings are unmodified.
- *
- * This allows a VLAN tag with the specified TPID to be inserted in the transmit
- * descriptor.
- */
+ 
 int ice_vsi_ena_outer_insertion(struct ice_vsi *vsi, u16 tpid)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -582,7 +482,7 @@ int ice_vsi_ena_outer_insertion(struct ice_vsi *vsi, u16 tpid)
 
 	ctxt->info.valid_sections =
 		cpu_to_le16(ICE_AQ_VSI_PROP_OUTER_TAG_VALID);
-	/* clear current outer VLAN insertion settings */
+	 
 	ctxt->info.outer_vlan_flags = vsi->info.outer_vlan_flags &
 		~(ICE_AQ_VSI_OUTER_VLAN_PORT_BASED_INSERT |
 		  ICE_AQ_VSI_OUTER_VLAN_BLOCK_TX_DESC |
@@ -606,21 +506,7 @@ int ice_vsi_ena_outer_insertion(struct ice_vsi *vsi, u16 tpid)
 	return err;
 }
 
-/**
- * ice_vsi_dis_outer_insertion - disable outer VLAN insertion
- * @vsi: VSI to configure
- *
- * Disable outer VLAN insertion via VSI context. This function should only be
- * used if DVM is supported. Also, this function should never be called directly
- * as it should be part of ice_vsi_vlan_ops if it's needed.
- *
- * Only modify the outer VLAN insertion settings. The VLAN TPID and outer VLAN
- * settings are unmodified.
- *
- * This tells the hardware to not allow any VLAN tagged packets in the transmit
- * descriptor. This enables software offloaded VLAN insertion and disables
- * hardware offloaded VLAN insertion.
- */
+ 
 int ice_vsi_dis_outer_insertion(struct ice_vsi *vsi)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -636,7 +522,7 @@ int ice_vsi_dis_outer_insertion(struct ice_vsi *vsi)
 
 	ctxt->info.valid_sections =
 		cpu_to_le16(ICE_AQ_VSI_PROP_OUTER_TAG_VALID);
-	/* clear current outer VLAN insertion settings */
+	 
 	ctxt->info.outer_vlan_flags = vsi->info.outer_vlan_flags &
 		~(ICE_AQ_VSI_OUTER_VLAN_PORT_BASED_INSERT |
 		  ICE_AQ_VSI_OUTER_VLAN_TX_MODE_M);
@@ -657,27 +543,7 @@ int ice_vsi_dis_outer_insertion(struct ice_vsi *vsi)
 	return err;
 }
 
-/**
- * __ice_vsi_set_outer_port_vlan - set the outer port VLAN and related settings
- * @vsi: VSI to configure
- * @vlan_info: packed u16 that contains the VLAN prio and ID
- * @tpid: TPID of the port VLAN
- *
- * Set the port VLAN prio, ID, and TPID.
- *
- * Enable VLAN pruning so the VSI doesn't receive any traffic that doesn't match
- * a VLAN prune rule. The caller should take care to add a VLAN prune rule that
- * matches the port VLAN ID and TPID.
- *
- * Tell hardware to strip outer VLAN tagged packets on receive and don't put
- * them in the receive descriptor. VSI(s) in port VLANs should not be aware of
- * the port VLAN ID or TPID they are assigned to.
- *
- * Tell hardware to prevent outer VLAN tag insertion on transmit and only allow
- * untagged outer packets from the transmit descriptor.
- *
- * Also, tell the hardware to insert the port VLAN on transmit.
- */
+ 
 static int
 __ice_vsi_set_outer_port_vlan(struct ice_vsi *vsi, u16 vlan_info, u16 tpid)
 {
@@ -727,17 +593,7 @@ __ice_vsi_set_outer_port_vlan(struct ice_vsi *vsi, u16 vlan_info, u16 tpid)
 	return err;
 }
 
-/**
- * ice_vsi_set_outer_port_vlan - public version of __ice_vsi_set_outer_port_vlan
- * @vsi: VSI to configure
- * @vlan: ice_vlan structure used to set the port VLAN
- *
- * Set the outer port VLAN via VSI context. This function should only be
- * used if DVM is supported. Also, this function should never be called directly
- * as it should be part of ice_vsi_vlan_ops if it's needed.
- *
- * Use the ice_vlan structure passed in to set this VSI in a port VLAN.
- */
+ 
 int ice_vsi_set_outer_port_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	u16 port_vlan_info;
@@ -750,13 +606,7 @@ int ice_vsi_set_outer_port_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return __ice_vsi_set_outer_port_vlan(vsi, port_vlan_info, vlan->tpid);
 }
 
-/**
- * ice_vsi_clear_outer_port_vlan - clear outer port vlan
- * @vsi: VSI to configure
- *
- * The function is restoring previously set vlan config (saved in
- * vsi->vlan_info). Setting happens in port vlan configuration.
- */
+ 
 int ice_vsi_clear_outer_port_vlan(struct ice_vsi *vsi)
 {
 	struct ice_hw *hw = &vsi->back->hw;

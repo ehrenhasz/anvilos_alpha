@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef RXE_VERBS_H
 #define RXE_VERBS_H
@@ -20,10 +17,7 @@ static inline int pkey_match(u16 key1, u16 key2)
 		((key1 & 0x8000) || (key2 & 0x8000))) ? 1 : 0;
 }
 
-/* Return >0 if psn_a > psn_b
- *	   0 if psn_a == psn_b
- *	  <0 if psn_a < psn_b
- */
+ 
 static inline int psn_compare(u32 psn_a, u32 psn_b)
 {
 	s32 diff;
@@ -79,15 +73,15 @@ struct rxe_sq {
 	int			max_wr;
 	int			max_sge;
 	int			max_inline;
-	spinlock_t		sq_lock; /* guard queue */
+	spinlock_t		sq_lock;  
 	struct rxe_queue	*queue;
 };
 
 struct rxe_rq {
 	int			max_wr;
 	int			max_sge;
-	spinlock_t		producer_lock; /* guard queue producer */
-	spinlock_t		consumer_lock; /* guard queue consumer */
+	spinlock_t		producer_lock;  
+	spinlock_t		consumer_lock;  
 	struct rxe_queue	*queue;
 };
 
@@ -172,10 +166,10 @@ struct rxe_resp_info {
 	enum ib_wc_status	status;
 	u8			aeth_syndrome;
 
-	/* Receive only */
+	 
 	struct rxe_recv_wqe	*wqe;
 
-	/* RDMA read / atomic only */
+	 
 	u64			va;
 	u64			offset;
 	struct rxe_mr		*mr;
@@ -183,15 +177,13 @@ struct rxe_resp_info {
 	u32			rkey;
 	u32			length;
 
-	/* SRQ only */
+	 
 	struct {
 		struct rxe_recv_wqe	wqe;
 		struct ib_sge		sge[RXE_MAX_SGE];
 	} srq_wqe;
 
-	/* Responder resources. It's a circular list where the oldest
-	 * resource is dropped first.
-	 */
+	 
 	struct resp_res		*resources;
 	unsigned int		res_head;
 	unsigned int		res_tail;
@@ -237,18 +229,14 @@ struct rxe_qp {
 	atomic_t		skb_out;
 	int			need_req_skb;
 
-	/* Timer for retranmitting packet when ACKs have been lost. RC
-	 * only. The requester sets it when it is not already
-	 * started. The responder resets it whenever an ack is
-	 * received.
-	 */
+	 
 	struct timer_list retrans_timer;
 	u64 qp_timeout_jiffies;
 
-	/* Timer for handling RNR NAKS. */
+	 
 	struct timer_list rnr_nak_timer;
 
-	spinlock_t		state_lock; /* guard requester and completer */
+	spinlock_t		state_lock;  
 
 	struct execute_work	cleanup_work;
 };
@@ -335,7 +323,7 @@ struct rxe_mw {
 	struct rxe_pool_elem	elem;
 	spinlock_t		lock;
 	enum rxe_mw_state	state;
-	struct rxe_qp		*qp; /* Type 2 only */
+	struct rxe_qp		*qp;  
 	struct rxe_mr		*mr;
 	u32			rkey;
 	int			access;
@@ -363,9 +351,9 @@ struct rxe_port {
 	struct ib_port_attr	attr;
 	__be64			port_guid;
 	__be64			subnet_prefix;
-	spinlock_t		port_lock; /* guard port */
+	spinlock_t		port_lock;  
 	unsigned int		mtu_cap;
-	/* special QPs */
+	 
 	u32			qp_gsi_index;
 };
 
@@ -387,16 +375,16 @@ struct rxe_dev {
 	struct rxe_pool		mr_pool;
 	struct rxe_pool		mw_pool;
 
-	/* multicast support */
+	 
 	spinlock_t		mcg_lock;
 	struct rb_root		mcg_tree;
 	atomic_t		mcg_num;
 	atomic_t		mcg_attach;
 
-	spinlock_t		pending_lock; /* guard pending_mmaps */
+	spinlock_t		pending_lock;  
 	struct list_head	pending_mmaps;
 
-	spinlock_t		mmap_offset_lock; /* guard mmap_offset */
+	spinlock_t		mmap_offset_lock;  
 	u64			mmap_offset;
 
 	atomic64_t		stats_counters[RXE_NUM_OF_COUNTERS];
@@ -472,4 +460,4 @@ static inline struct rxe_pd *rxe_mw_pd(struct rxe_mw *mw)
 
 int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name);
 
-#endif /* RXE_VERBS_H */
+#endif  

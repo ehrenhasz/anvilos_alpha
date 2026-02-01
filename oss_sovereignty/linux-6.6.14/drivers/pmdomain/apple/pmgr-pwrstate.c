@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple SoC PMGR device power state driver
- *
- * Copyright The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -59,7 +55,7 @@ static int apple_pmgr_ps_set(struct generic_pm_domain *genpd, u32 pstate, bool a
 	if (ret < 0)
 		return ret;
 
-	/* Resets are synchronous, and only work if the device is powered and clocked. */
+	 
 	if (reg & APPLE_PMGR_RESET && pstate != APPLE_PMGR_PS_ACTIVE)
 		dev_err(ps->dev, "PS %s: powering off with RESET active\n",
 			genpd->name);
@@ -80,7 +76,7 @@ static int apple_pmgr_ps_set(struct generic_pm_domain *genpd, u32 pstate, bool a
 			genpd->name, pstate, reg);
 
 	if (auto_enable) {
-		/* Not all devices implement this; this is a no-op where not implemented. */
+		 
 		reg &= ~APPLE_PMGR_FLAGS;
 		reg |= APPLE_PMGR_AUTO_ENABLE;
 		regmap_write(ps->regmap, ps->offset, reg);
@@ -94,10 +90,7 @@ static bool apple_pmgr_ps_is_active(struct apple_pmgr_ps *ps)
 	u32 reg = 0;
 
 	regmap_read(ps->regmap, ps->offset, &reg);
-	/*
-	 * We consider domains as active if they are actually on, or if they have auto-PM
-	 * enabled and the intended target is on.
-	 */
+	 
 	return (FIELD_GET(APPLE_PMGR_PS_ACTUAL, reg) == APPLE_PMGR_PS_ACTIVE ||
 		(FIELD_GET(APPLE_PMGR_PS_TARGET, reg) == APPLE_PMGR_PS_ACTIVE &&
 		 reg & APPLE_PMGR_AUTO_ENABLE));
@@ -124,7 +117,7 @@ static int apple_pmgr_reset_assert(struct reset_controller_dev *rcdev, unsigned 
 		dev_err(ps->dev, "PS 0x%x: asserting RESET while powered down\n", ps->offset);
 
 	dev_dbg(ps->dev, "PS 0x%x: assert reset\n", ps->offset);
-	/* Quiesce device before asserting reset */
+	 
 	regmap_update_bits(ps->regmap, ps->offset, APPLE_PMGR_FLAGS | APPLE_PMGR_DEV_DISABLE,
 			   APPLE_PMGR_DEV_DISABLE);
 	regmap_update_bits(ps->regmap, ps->offset, APPLE_PMGR_FLAGS | APPLE_PMGR_RESET,
@@ -239,12 +232,12 @@ static int apple_pmgr_ps_probe(struct platform_device *pdev)
 		ps->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
 		if (!active) {
 			dev_warn(dev, "always-on domain %s is not on at boot\n", name);
-			/* Turn it on so pm_genpd_init does not fail */
+			 
 			active = apple_pmgr_ps_power_on(&ps->genpd) == 0;
 		}
 	}
 
-	/* Turn on auto-PM if the domain is already on */
+	 
 	if (active)
 		regmap_update_bits(regmap, ps->offset, APPLE_PMGR_FLAGS | APPLE_PMGR_AUTO_ENABLE,
 				   APPLE_PMGR_AUTO_ENABLE);
@@ -281,10 +274,7 @@ static int apple_pmgr_ps_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Do not participate in regular PM; parent power domains are handled via the
-	 * genpd hierarchy.
-	 */
+	 
 	pm_genpd_remove_device(dev);
 
 	ps->rcdev.owner = THIS_MODULE;

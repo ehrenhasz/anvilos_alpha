@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments Ltd
- * Author: Archit Taneja <archit@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

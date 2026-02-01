@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_PARAMETERS_H
 #define ISCSI_PARAMETERS_H
 
@@ -62,9 +62,7 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define NOTUNDERSTOOD			"NotUnderstood"
 #define REJECT				"Reject"
 
-/*
- * The Parameter Names.
- */
+ 
 #define AUTHMETHOD			"AuthMethod"
 #define HEADERDIGEST			"HeaderDigest"
 #define DATADIGEST			"DataDigest"
@@ -94,25 +92,19 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define IFMARKINT			"IFMarkInt"
 #define OFMARKINT			"OFMarkInt"
 
-/*
- * Parameter names of iSCSI Extentions for RDMA (iSER).  See RFC-5046
- */
+ 
 #define RDMAEXTENSIONS			"RDMAExtensions"
 #define INITIATORRECVDATASEGMENTLENGTH	"InitiatorRecvDataSegmentLength"
 #define TARGETRECVDATASEGMENTLENGTH	"TargetRecvDataSegmentLength"
 
-/*
- * For AuthMethod.
- */
+ 
 #define KRB5				"KRB5"
 #define SPKM1				"SPKM1"
 #define SPKM2				"SPKM2"
 #define SRP				"SRP"
 #define CHAP				"CHAP"
 
-/*
- * Initial values for Parameter Negotiation.
- */
+ 
 #define INITIAL_AUTHMETHOD			CHAP
 #define INITIAL_HEADERDIGEST			"CRC32C,None"
 #define INITIAL_DATADIGEST			"CRC32C,None"
@@ -127,9 +119,7 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define INITIAL_INITIALR2T			YES
 #define INITIAL_IMMEDIATEDATA			YES
 #define INITIAL_MAXRECVDATASEGMENTLENGTH	"8192"
-/*
- * Match outgoing MXDSL default to incoming Open-iSCSI default
- */
+ 
 #define INITIAL_MAXXMITDATASEGMENTLENGTH	"262144"
 #define INITIAL_MAXBURSTLENGTH			"262144"
 #define INITIAL_FIRSTBURSTLENGTH		"65536"
@@ -145,27 +135,19 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define INITIAL_IFMARKINT			REJECT
 #define INITIAL_OFMARKINT			REJECT
 
-/*
- * Initial values for iSER parameters following RFC-5046 Section 6
- */
+ 
 #define INITIAL_RDMAEXTENSIONS			NO
 #define INITIAL_INITIATORRECVDATASEGMENTLENGTH	"262144"
 #define INITIAL_TARGETRECVDATASEGMENTLENGTH	"8192"
 
-/*
- * For [Header,Data]Digests.
- */
+ 
 #define CRC32C				"CRC32C"
 
-/*
- * For SessionType.
- */
+ 
 #define DISCOVERY			"Discovery"
 #define NORMAL				"Normal"
 
-/*
- * struct iscsi_param->use
- */
+ 
 #define USE_LEADING_ONLY		0x01
 #define USE_INITIAL_ONLY		0x02
 #define USE_ALL				0x04
@@ -176,31 +158,25 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 
 #define SET_USE_INITIAL_ONLY(p)		((p)->use |= USE_INITIAL_ONLY)
 
-/*
- * struct iscsi_param->sender
- */
+ 
 #define	SENDER_INITIATOR		0x01
 #define SENDER_TARGET			0x02
 #define SENDER_BOTH			0x03
-/* Used in iscsi_check_key() */
+ 
 #define SENDER_RECEIVER			0x04
 
 #define IS_SENDER_INITIATOR(p)		((p)->sender & SENDER_INITIATOR)
 #define IS_SENDER_TARGET(p)		((p)->sender & SENDER_TARGET)
 #define IS_SENDER_BOTH(p)		((p)->sender & SENDER_BOTH)
 
-/*
- * struct iscsi_param->scope
- */
+ 
 #define SCOPE_CONNECTION_ONLY		0x01
 #define SCOPE_SESSION_WIDE		0x02
 
 #define IS_SCOPE_CONNECTION_ONLY(p)	((p)->scope & SCOPE_CONNECTION_ONLY)
 #define IS_SCOPE_SESSION_WIDE(p)	((p)->scope & SCOPE_SESSION_WIDE)
 
-/*
- * struct iscsi_param->phase
- */
+ 
 #define PHASE_SECURITY			0x01
 #define PHASE_OPERATIONAL		0x02
 #define PHASE_DECLARATIVE		0x04
@@ -211,9 +187,7 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define IS_PHASE_DECLARATIVE(p)		((p)->phase & PHASE_DECLARATIVE)
 #define IS_PHASE_FFP0(p)		((p)->phase & PHASE_FFP0)
 
-/*
- * struct iscsi_param->type
- */
+ 
 #define TYPE_BOOL_AND			0x01
 #define TYPE_BOOL_OR			0x02
 #define TYPE_NUMBER			0x04
@@ -228,9 +202,7 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define IS_TYPE_STRING(p)		((p)->type & TYPE_STRING)
 #define IS_TYPE_VALUE_LIST(p)		((p)->type & TYPE_VALUE_LIST)
 
-/*
- * struct iscsi_param->type_range
- */
+ 
 #define TYPERANGE_BOOL_AND		0x0001
 #define TYPERANGE_BOOL_OR		0x0002
 #define TYPERANGE_0_TO_2		0x0004
@@ -260,9 +232,7 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define IS_TYPERANGE_SESSIONTYPE(p)	((p)->type_range & \
 						TYPERANGE_SESSIONTYPE)
 
-/*
- * struct iscsi_param->state
- */
+ 
 #define PSTATE_ACCEPTOR			0x01
 #define PSTATE_NEGOTIATE		0x02
 #define PSTATE_PROPOSER			0x04
@@ -290,4 +260,4 @@ extern void iscsi_set_session_parameters(struct iscsi_sess_ops *,
 #define SET_PSTATE_RESPONSE_GOT(p)	((p)->state |= PSTATE_RESPONSE_GOT)
 #define SET_PSTATE_RESPONSE_SENT(p)	((p)->state |= PSTATE_RESPONSE_SENT)
 
-#endif /* ISCSI_PARAMETERS_H */
+#endif  

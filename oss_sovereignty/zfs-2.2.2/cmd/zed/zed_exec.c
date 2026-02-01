@@ -1,16 +1,4 @@
-/*
- * This file is part of the ZFS Event Daemon (ZED).
- *
- * Developed at Lawrence Livermore National Laboratory (LLNL-CODE-403049).
- * Copyright (C) 2013-2014 Lawrence Livermore National Security, LLC.
- * Refer to the OpenZFS git commit log for authoritative copyright attribution.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- */
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -67,11 +55,7 @@ static avl_tree_t _launched_processes;
 static pthread_mutex_t _launched_processes_lock = PTHREAD_MUTEX_INITIALIZER;
 static int16_t _launched_processes_limit;
 
-/*
- * Create an environment string array for passing to execve() using the
- * NAME=VALUE strings in container [zsp].
- * Return a newly-allocated environment, or NULL on error.
- */
+ 
 static char **
 _zed_exec_create_env(zed_strings_t *zsp)
 {
@@ -108,13 +92,7 @@ _zed_exec_create_env(zed_strings_t *zsp)
 	return ((char **)buf);
 }
 
-/*
- * Fork a child process to handle event [eid].  The program [prog]
- * in directory [dir] is executed with the environment [env].
- *
- * The file descriptor [zfd] is the zevent_fd used to track the
- * current cursor location within the zevent nvlist.
- */
+ 
 static void
 _zed_exec_fork_child(uint64_t eid, const char *dir, const char *prog,
     char *env[], int zfd, boolean_t in_foreground)
@@ -157,7 +135,7 @@ _zed_exec_fork_child(uint64_t eid, const char *dir, const char *prog,
 		(void) sigprocmask(SIG_SETMASK, &mask, NULL);
 
 		(void) umask(022);
-		if (in_foreground && /* we're already devnulled if daemonised */
+		if (in_foreground &&  
 		    (fd = open("/dev/null", O_RDWR | O_CLOEXEC)) != -1) {
 			(void) dup2(fd, STDIN_FILENO);
 			(void) dup2(fd, STDOUT_FILENO);
@@ -168,7 +146,7 @@ _zed_exec_fork_child(uint64_t eid, const char *dir, const char *prog,
 		_exit(127);
 	}
 
-	/* parent process */
+	 
 
 	node = calloc(1, sizeof (*node));
 	if (node) {
@@ -305,22 +283,7 @@ zed_exec_fini(void)
 	_reap_children_tid = (pthread_t)-1;
 }
 
-/*
- * Process the event [eid] by synchronously invoking all zedlets with a
- * matching class prefix.
- *
- * Each executable in [zcp->zedlets] from the directory [zcp->zedlet_dir]
- * is matched against the event's [class], [subclass], and the "all" class
- * (which matches all events).
- * Every zedlet with a matching class prefix is invoked.
- * The NAME=VALUE strings in [envs] will be passed to the zedlet as
- * environment variables.
- *
- * The file descriptor [zcp->zevent_fd] is the zevent_fd used to track the
- * current cursor location within the zevent nvlist.
- *
- * Return 0 on success, -1 on error.
- */
+ 
 int
 zed_exec_process(uint64_t eid, const char *class, const char *subclass,
     struct zed_conf *zcp, zed_strings_t *envs)

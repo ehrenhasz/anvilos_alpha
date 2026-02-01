@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/of.h>
@@ -23,10 +20,7 @@ int tegra_output_connector_get_modes(struct drm_connector *connector)
 	struct edid *edid = NULL;
 	int err = 0;
 
-	/*
-	 * If the panel provides one or more modes, use them exclusively and
-	 * ignore any other means of obtaining a mode.
-	 */
+	 
 	if (output->panel) {
 		err = drm_panel_get_modes(output->panel, connector);
 		if (err > 0)
@@ -110,10 +104,7 @@ int tegra_output_probe(struct tegra_output *output)
 
 	panel = of_parse_phandle(output->of_node, "nvidia,panel", 0);
 	if (panel) {
-		/*
-		 * Don't mix nvidia,panel phandle with the graph in a
-		 * device-tree.
-		 */
+		 
 		WARN_ON(output->panel || output->bridge);
 
 		output->panel = of_drm_find_panel(panel);
@@ -170,11 +161,7 @@ int tegra_output_probe(struct tegra_output *output)
 
 		output->connector.polled = DRM_CONNECTOR_POLL_HPD;
 
-		/*
-		 * Disable the interrupt until the connector has been
-		 * initialized to avoid a race in the hotplug interrupt
-		 * handler.
-		 */
+		 
 		disable_irq(output->hpd_irq);
 	}
 
@@ -194,17 +181,12 @@ int tegra_output_init(struct drm_device *drm, struct tegra_output *output)
 {
 	int connector_type;
 
-	/*
-	 * The connector is now registered and ready to receive hotplug events
-	 * so the hotplug interrupt can be enabled.
-	 */
+	 
 	if (output->hpd_gpio)
 		enable_irq(output->hpd_irq);
 
 	connector_type = output->connector.connector_type;
-	/*
-	 * Create a CEC notifier for HDMI connector.
-	 */
+	 
 	if (connector_type == DRM_MODE_CONNECTOR_HDMIA ||
 	    connector_type == DRM_MODE_CONNECTOR_HDMIB) {
 		struct cec_connector_info conn_info;
@@ -221,10 +203,7 @@ int tegra_output_init(struct drm_device *drm, struct tegra_output *output)
 
 void tegra_output_exit(struct tegra_output *output)
 {
-	/*
-	 * The connector is going away, so the interrupt must be disabled to
-	 * prevent the hotplug interrupt handler from potentially crashing.
-	 */
+	 
 	if (output->hpd_gpio)
 		disable_irq(output->hpd_irq);
 }

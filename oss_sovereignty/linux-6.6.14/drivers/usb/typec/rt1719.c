@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bitfield.h>
 #include <linux/completion.h>
@@ -240,7 +240,7 @@ static void rt1719_register_partner(struct rt1719_data *data)
 		}
 	}
 
-	/* Just to prevent multiple times attach */
+	 
 	if (data->partner)
 		typec_unregister_partner(data->partner);
 
@@ -354,7 +354,7 @@ static void rt1719_update_operating_status(struct rt1719_data *data)
 
 	op_current = min(max_current, pdo_max_current(data->snkcaps[snk_sel]));
 
-	/* covert mV/mA to uV/uA */
+	 
 	data->voltage = voltage * 1000;
 	data->max_current = max_current * 1000;
 	data->op_current = op_current * 1000;
@@ -625,7 +625,7 @@ static irqreturn_t rt1719_irq_handler(int irq, void *priv)
 		rt1719_update_pwr_opmode(data);
 	}
 
-	/* Write 1 to clear already handled events */
+	 
 	rt1719_write32(data, RT1719_REG_EVENTS, events);
 
 	return IRQ_HANDLED;
@@ -887,7 +887,7 @@ static int rt1719_probe(struct i2c_client *i2c)
 	}
 
 	typec_cap.revision = USB_TYPEC_REV_1_2;
-	typec_cap.pd_revision = 0x300;	/* USB-PD spec release 3.0 */
+	typec_cap.pd_revision = 0x300;	 
 	typec_cap.type = TYPEC_PORT_SNK;
 	typec_cap.data = TYPEC_PORT_DRD;
 	typec_cap.ops = &rt1719_port_ops;

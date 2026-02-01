@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Fitipower FC0013 tuner driver
- *
- * Copyright (C) 2012 Hans-Frieder Vogt <hfvogt@gmx.net>
- */
+ 
+ 
 
 #ifndef _FC0013_PRIV_H_
 #define _FC0013_PRIV_H_

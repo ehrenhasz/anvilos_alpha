@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2021 Linaro Ltd.
- *
- * Author:
- * Sumit Garg <sumit.garg@linaro.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/key-type.h>
@@ -18,36 +13,16 @@
 
 #define DRIVER_NAME "trusted-key-tee"
 
-/*
- * Get random data for symmetric key
- *
- * [out]     memref[0]        Random data
- */
+ 
 #define TA_CMD_GET_RANDOM	0x0
 
-/*
- * Seal trusted key using hardware unique key
- *
- * [in]      memref[0]        Plain key
- * [out]     memref[1]        Sealed key datablob
- */
+ 
 #define TA_CMD_SEAL		0x1
 
-/*
- * Unseal trusted key using hardware unique key
- *
- * [in]      memref[0]        Sealed key datablob
- * [out]     memref[1]        Plain key
- */
+ 
 #define TA_CMD_UNSEAL		0x2
 
-/**
- * struct trusted_key_tee_private - TEE Trusted key private data
- * @dev:		TEE based Trusted key device.
- * @ctx:		TEE context handler.
- * @session_id:		Trusted key TA session identifier.
- * @shm_pool:		Memory pool shared with TEE device.
- */
+ 
 struct trusted_key_tee_private {
 	struct device *dev;
 	struct tee_context *ctx;
@@ -57,9 +32,7 @@ struct trusted_key_tee_private {
 
 static struct trusted_key_tee_private pvt_data;
 
-/*
- * Have the TEE seal(encrypt) the symmetric key
- */
+ 
 static int trusted_tee_seal(struct trusted_key_payload *p, char *datablob)
 {
 	int ret;
@@ -104,9 +77,7 @@ static int trusted_tee_seal(struct trusted_key_payload *p, char *datablob)
 	return ret;
 }
 
-/*
- * Have the TEE unseal(decrypt) the symmetric key
- */
+ 
 static int trusted_tee_unseal(struct trusted_key_payload *p, char *datablob)
 {
 	int ret;
@@ -151,9 +122,7 @@ static int trusted_tee_unseal(struct trusted_key_payload *p, char *datablob)
 	return ret;
 }
 
-/*
- * Have the TEE generate random symmetric key
- */
+ 
 static int trusted_tee_get_random(unsigned char *key, size_t key_len)
 {
 	int ret;
@@ -281,7 +250,7 @@ static void trusted_tee_exit(void)
 }
 
 struct trusted_key_ops trusted_key_tee_ops = {
-	.migratable = 0, /* non-migratable */
+	.migratable = 0,  
 	.init = trusted_tee_init,
 	.seal = trusted_tee_seal,
 	.unseal = trusted_tee_unseal,

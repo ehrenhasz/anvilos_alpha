@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Rahul Sharma <rahul.sharma@samsung.com>
- *
- * Common Clock Framework support for Exynos5260 SoC.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -15,7 +10,7 @@
 
 #include <dt-bindings/clock/exynos5260-clk.h>
 
-/* NOTE: Must be equal to the last clock ID increased by one */
+ 
 #define CLKS_NR_TOP			(PHYCLK_USBDRD30_UDRD30_PHYCLOCK + 1)
 #define CLKS_NR_EGL			(EGL_DOUT_EGL1 + 1)
 #define CLKS_NR_KFC			(KFC_DOUT_KFC1 + 1)
@@ -30,10 +25,7 @@
 #define CLKS_NR_G2D			(G2D_CLK_SMMU3_G2D + 1)
 #define CLKS_NR_ISP			(ISP_SCLK_UART_EXT + 1)
 
-/*
- * Applicable for all 2550 Type PLLS for Exynos5260, listed below
- * DISP_PLL, EGL_PLL, KFC_PLL, MEM_PLL, BUS_PLL, MEDIA_PLL, G3D_PLL.
- */
+ 
 static const struct samsung_pll_rate_table pll2550_24mhz_tbl[] __initconst = {
 	PLL_35XX_RATE(24 * MHZ, 1700000000, 425, 6, 0),
 	PLL_35XX_RATE(24 * MHZ, 1600000000, 200, 3, 0),
@@ -64,9 +56,7 @@ static const struct samsung_pll_rate_table pll2550_24mhz_tbl[] __initconst = {
 	PLL_35XX_RATE(24 * MHZ, 160000000, 160, 3, 3),
 };
 
-/*
- * Applicable for 2650 Type PLL for AUD_PLL.
- */
+ 
 static const struct samsung_pll_rate_table pll2650_24mhz_tbl[] __initconst = {
 	PLL_36XX_RATE(24 * MHZ, 1600000000, 200, 3, 0, 0),
 	PLL_36XX_RATE(24 * MHZ, 1200000000, 100, 2, 0, 0),
@@ -88,7 +78,7 @@ static const struct samsung_pll_rate_table pll2650_24mhz_tbl[] __initconst = {
 	PLL_36XX_RATE(24 * MHZ, 66000000, 176, 2, 5, 0),
 };
 
-/* CMU_AUD */
+ 
 
 static const unsigned long aud_clk_regs[] __initconst = {
 	MUX_SEL_AUD,
@@ -164,7 +154,7 @@ CLK_OF_DECLARE(exynos5260_clk_aud, "samsung,exynos5260-clock-aud",
 		exynos5260_clk_aud_init);
 
 
-/* CMU_DISP */
+ 
 
 static const unsigned long disp_clk_regs[] __initconst = {
 	MUX_SEL_DISP0,
@@ -354,7 +344,7 @@ CLK_OF_DECLARE(exynos5260_clk_disp, "samsung,exynos5260-clock-disp",
 		exynos5260_clk_disp_init);
 
 
-/* CMU_EGL */
+ 
 
 static const unsigned long egl_clk_regs[] __initconst = {
 	EGL_PLL_LOCK,
@@ -418,7 +408,7 @@ CLK_OF_DECLARE(exynos5260_clk_egl, "samsung,exynos5260-clock-egl",
 		exynos5260_clk_egl_init);
 
 
-/* CMU_FSYS */
+ 
 
 static const unsigned long fsys_clk_regs[] __initconst = {
 	MUX_SEL_FSYS0,
@@ -518,7 +508,7 @@ CLK_OF_DECLARE(exynos5260_clk_fsys, "samsung,exynos5260-clock-fsys",
 		exynos5260_clk_fsys_init);
 
 
-/* CMU_G2D */
+ 
 
 static const unsigned long g2d_clk_regs[] __initconst = {
 	MUX_SEL_G2D,
@@ -609,7 +599,7 @@ CLK_OF_DECLARE(exynos5260_clk_g2d, "samsung,exynos5260-clock-g2d",
 		exynos5260_clk_g2d_init);
 
 
-/* CMU_G3D */
+ 
 
 static const unsigned long g3d_clk_regs[] __initconst = {
 	G3D_PLL_LOCK,
@@ -672,7 +662,7 @@ CLK_OF_DECLARE(exynos5260_clk_g3d, "samsung,exynos5260-clock-g3d",
 		exynos5260_clk_g3d_init);
 
 
-/* CMU_GSCL */
+ 
 
 static const unsigned long gscl_clk_regs[] __initconst = {
 	MUX_SEL_GSCL,
@@ -805,7 +795,7 @@ CLK_OF_DECLARE(exynos5260_clk_gscl, "samsung,exynos5260-clock-gscl",
 		exynos5260_clk_gscl_init);
 
 
-/* CMU_ISP */
+ 
 
 static const unsigned long isp_clk_regs[] __initconst = {
 	MUX_SEL_ISP0,
@@ -924,7 +914,7 @@ CLK_OF_DECLARE(exynos5260_clk_isp, "samsung,exynos5260-clock-isp",
 		exynos5260_clk_isp_init);
 
 
-/* CMU_KFC */
+ 
 
 static const unsigned long kfc_clk_regs[] __initconst = {
 	KFC_PLL_LOCK,
@@ -988,7 +978,7 @@ CLK_OF_DECLARE(exynos5260_clk_kfc, "samsung,exynos5260-clock-kfc",
 		exynos5260_clk_kfc_init);
 
 
-/* CMU_MFC */
+ 
 
 static const unsigned long mfc_clk_regs[] __initconst = {
 	MUX_SEL_MFC,
@@ -1044,7 +1034,7 @@ CLK_OF_DECLARE(exynos5260_clk_mfc, "samsung,exynos5260-clock-mfc",
 		exynos5260_clk_mfc_init);
 
 
-/* CMU_MIF */
+ 
 
 static const unsigned long mif_clk_regs[] __initconst = {
 	MEM_PLL_LOCK,
@@ -1193,7 +1183,7 @@ CLK_OF_DECLARE(exynos5260_clk_mif, "samsung,exynos5260-clock-mif",
 		exynos5260_clk_mif_init);
 
 
-/* CMU_PERI */
+ 
 
 static const unsigned long peri_clk_regs[] __initconst = {
 	MUX_SEL_PERI,
@@ -1399,7 +1389,7 @@ CLK_OF_DECLARE(exynos5260_clk_peri, "samsung,exynos5260-clock-peri",
 		exynos5260_clk_peri_init);
 
 
-/* CMU_TOP */
+ 
 
 static const unsigned long top_clk_regs[] __initconst = {
 	DISP_PLL_LOCK,
@@ -1441,7 +1431,7 @@ static const unsigned long top_clk_regs[] __initconst = {
 	EN_IP_TOP,
 };
 
-/* fixed rate clocks generated inside the soc */
+ 
 static const struct samsung_fixed_rate_clock fixed_rate_clks[] __initconst = {
 	FRATE(PHYCLK_DPTX_PHY_CH3_TXD_CLK, "phyclk_dptx_phy_ch3_txd_clk", NULL,
 			0, 270000000),

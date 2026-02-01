@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * adjd_s311.c - Support for ADJD-S311-CR999 digital color sensor
- *
- * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * driver for ADJD-S311-CR999 digital color sensor (10-bit channels for
- * red, green, blue, clear); 7-bit I2C slave address 0x74
- *
- * limitations: no calibration, no offset mode, no sleep mode
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -195,10 +186,7 @@ static int adjd_s311_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 		*val = 0;
-		/*
-		 * not documented, based on measurement:
-		 * 4095 LSBs correspond to roughly 4 ms
-		 */
+		 
 		*val2 = ret & ADJD_S311_INT_MASK;
 		return IIO_VAL_INT_PLUS_MICRO;
 	}

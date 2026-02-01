@@ -1,30 +1,4 @@
-/*
- * Copyright (C) 2014 Red Hat
- * Copyright (C) 2014 Intel Corp.
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- * Rob Clark <robdclark@gmail.com>
- * Daniel Vetter <daniel.vetter@ffwll.ch>
- */
+ 
 
 
 #include <linux/sync_file.h>
@@ -55,17 +29,7 @@ void __drm_crtc_commit_free(struct kref *kref)
 }
 EXPORT_SYMBOL(__drm_crtc_commit_free);
 
-/**
- * drm_crtc_commit_wait - Waits for a commit to complete
- * @commit: &drm_crtc_commit to wait for
- *
- * Waits for a given &drm_crtc_commit to be programmed into the
- * hardware and flipped to.
- *
- * Returns:
- *
- * 0 on success, a negative error code otherwise.
- */
+ 
 int drm_crtc_commit_wait(struct drm_crtc_commit *commit)
 {
 	unsigned long timeout = 10 * HZ;
@@ -80,10 +44,7 @@ int drm_crtc_commit_wait(struct drm_crtc_commit *commit)
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * Currently no support for overwriting flips, hence
-	 * stall for previous one to execute completely.
-	 */
+	 
 	ret = wait_for_completion_timeout(&commit->flip_done, timeout);
 	if (!ret) {
 		drm_err(commit->crtc->dev, "flip_done timed out\n");
@@ -94,15 +55,7 @@ int drm_crtc_commit_wait(struct drm_crtc_commit *commit)
 }
 EXPORT_SYMBOL(drm_crtc_commit_wait);
 
-/**
- * drm_atomic_state_default_release -
- * release memory initialized by drm_atomic_state_init
- * @state: atomic state
- *
- * Free all the memory allocated by drm_atomic_state_init.
- * This should only be used by drivers which are still subclassing
- * &drm_atomic_state and haven't switched to &drm_private_state yet.
- */
+ 
 void drm_atomic_state_default_release(struct drm_atomic_state *state)
 {
 	kfree(state->connectors);
@@ -112,23 +65,13 @@ void drm_atomic_state_default_release(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_state_default_release);
 
-/**
- * drm_atomic_state_init - init new atomic state
- * @dev: DRM device
- * @state: atomic state
- *
- * Default implementation for filling in a new atomic state.
- * This should only be used by drivers which are still subclassing
- * &drm_atomic_state and haven't switched to &drm_private_state yet.
- */
+ 
 int
 drm_atomic_state_init(struct drm_device *dev, struct drm_atomic_state *state)
 {
 	kref_init(&state->ref);
 
-	/* TODO legacy paths should maybe do a better job about
-	 * setting this appropriately?
-	 */
+	 
 	state->allow_modeset = true;
 
 	state->crtcs = kcalloc(dev->mode_config.num_crtc,
@@ -140,11 +83,7 @@ drm_atomic_state_init(struct drm_device *dev, struct drm_atomic_state *state)
 	if (!state->planes)
 		goto fail;
 
-	/*
-	 * Because drm_atomic_state can be committed asynchronously we need our
-	 * own reference and cannot rely on the on implied by drm_file in the
-	 * ioctl call.
-	 */
+	 
 	drm_dev_get(dev);
 	state->dev = dev;
 
@@ -157,12 +96,7 @@ fail:
 }
 EXPORT_SYMBOL(drm_atomic_state_init);
 
-/**
- * drm_atomic_state_alloc - allocate atomic state
- * @dev: DRM device
- *
- * This allocates an empty atomic state to track updates.
- */
+ 
 struct drm_atomic_state *
 drm_atomic_state_alloc(struct drm_device *dev)
 {
@@ -185,14 +119,7 @@ drm_atomic_state_alloc(struct drm_device *dev)
 }
 EXPORT_SYMBOL(drm_atomic_state_alloc);
 
-/**
- * drm_atomic_state_default_clear - clear base atomic state
- * @state: atomic state
- *
- * Default implementation for clearing atomic state.
- * This should only be used by drivers which are still subclassing
- * &drm_atomic_state and haven't switched to &drm_private_state yet.
- */
+ 
 void drm_atomic_state_default_clear(struct drm_atomic_state *state)
 {
 	struct drm_device *dev = state->dev;
@@ -269,20 +196,7 @@ void drm_atomic_state_default_clear(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_state_default_clear);
 
-/**
- * drm_atomic_state_clear - clear state object
- * @state: atomic state
- *
- * When the w/w mutex algorithm detects a deadlock we need to back off and drop
- * all locks. So someone else could sneak in and change the current modeset
- * configuration. Which means that all the state assembled in @state is no
- * longer an atomic update to the current state, but to some arbitrary earlier
- * state. Which could break assumptions the driver's
- * &drm_mode_config_funcs.atomic_check likely relies on.
- *
- * Hence we must clear all cached state and completely start over, using this
- * function.
- */
+ 
 void drm_atomic_state_clear(struct drm_atomic_state *state)
 {
 	struct drm_device *dev = state->dev;
@@ -295,13 +209,7 @@ void drm_atomic_state_clear(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_state_clear);
 
-/**
- * __drm_atomic_state_free - free all memory for an atomic state
- * @ref: This atomic state to deallocate
- *
- * This frees all memory associated with an atomic state, including all the
- * per-object state for planes, CRTCs and connectors.
- */
+ 
 void __drm_atomic_state_free(struct kref *ref)
 {
 	struct drm_atomic_state *state = container_of(ref, typeof(*state), ref);
@@ -323,25 +231,7 @@ void __drm_atomic_state_free(struct kref *ref)
 }
 EXPORT_SYMBOL(__drm_atomic_state_free);
 
-/**
- * drm_atomic_get_crtc_state - get CRTC state
- * @state: global atomic state object
- * @crtc: CRTC to get state object for
- *
- * This function returns the CRTC state for the given CRTC, allocating it if
- * needed. It will also grab the relevant CRTC lock to make sure that the state
- * is consistent.
- *
- * WARNING: Drivers may only add new CRTC states to a @state if
- * drm_atomic_state.allow_modeset is set, or if it's a driver-internal commit
- * not created by userspace through an IOCTL call.
- *
- * Returns:
- *
- * Either the allocated state or the error code encoded into the pointer. When
- * the error is EDEADLK then the w/w mutex code has detected a deadlock and the
- * entire atomic sequence must be restarted. All other errors are fatal.
- */
+ 
 struct drm_crtc_state *
 drm_atomic_get_crtc_state(struct drm_atomic_state *state,
 			  struct drm_crtc *crtc)
@@ -381,13 +271,7 @@ static int drm_atomic_crtc_check(const struct drm_crtc_state *old_crtc_state,
 {
 	struct drm_crtc *crtc = new_crtc_state->crtc;
 
-	/* NOTE: we explicitly don't enforce constraints such as primary
-	 * layer covering entire screen, since that is something we want
-	 * to allow (on hw that supports it).  For hw that does not, it
-	 * should be checked in driver's crtc->atomic_check() vfunc.
-	 *
-	 * TODO: Add generic modeset state checks once we support those.
-	 */
+	 
 
 	if (new_crtc_state->active && !new_crtc_state->enable) {
 		drm_dbg_atomic(crtc->dev,
@@ -396,10 +280,7 @@ static int drm_atomic_crtc_check(const struct drm_crtc_state *old_crtc_state,
 		return -EINVAL;
 	}
 
-	/* The state->enable vs. state->mode_blob checks can be WARN_ON,
-	 * as this is a kernel-internal detail that userspace should never
-	 * be able to trigger.
-	 */
+	 
 	if (drm_core_check_feature(crtc->dev, DRIVER_ATOMIC) &&
 	    WARN_ON(new_crtc_state->enable && !new_crtc_state->mode_blob)) {
 		drm_dbg_atomic(crtc->dev,
@@ -416,16 +297,7 @@ static int drm_atomic_crtc_check(const struct drm_crtc_state *old_crtc_state,
 		return -EINVAL;
 	}
 
-	/*
-	 * Reject event generation for when a CRTC is off and stays off.
-	 * It wouldn't be hard to implement this, but userspace has a track
-	 * record of happily burning through 100% cpu (or worse, crash) when the
-	 * display pipe is suspended. To avoid all that fun just reject updates
-	 * that ask for events since likely that indicates a bug in the
-	 * compositor's drawing loop. This is consistent with the vblank IOCTL
-	 * and legacy page_flip IOCTL which also reject service on a disabled
-	 * pipe.
-	 */
+	 
 	if (new_crtc_state->event &&
 	    !new_crtc_state->active && !old_crtc_state->active) {
 		drm_dbg_atomic(crtc->dev,
@@ -508,21 +380,7 @@ static int drm_atomic_connector_check(struct drm_connector *connector,
 	return 0;
 }
 
-/**
- * drm_atomic_get_plane_state - get plane state
- * @state: global atomic state object
- * @plane: plane to get state object for
- *
- * This function returns the plane state for the given plane, allocating it if
- * needed. It will also grab the relevant plane lock to make sure that the state
- * is consistent.
- *
- * Returns:
- *
- * Either the allocated state or the error code encoded into the pointer. When
- * the error is EDEADLK then the w/w mutex code has detected a deadlock and the
- * entire atomic sequence must be restarted. All other errors are fatal.
- */
+ 
 struct drm_plane_state *
 drm_atomic_get_plane_state(struct drm_atomic_state *state,
 			  struct drm_plane *plane)
@@ -532,7 +390,7 @@ drm_atomic_get_plane_state(struct drm_atomic_state *state,
 
 	WARN_ON(!state->acquire_ctx);
 
-	/* the legacy pointers should never be set */
+	 
 	WARN_ON(plane->fb);
 	WARN_ON(plane->old_fb);
 	WARN_ON(plane->crtc);
@@ -581,24 +439,11 @@ plane_switching_crtc(const struct drm_plane_state *old_plane_state,
 	if (old_plane_state->crtc == new_plane_state->crtc)
 		return false;
 
-	/* This could be refined, but currently there's no helper or driver code
-	 * to implement direct switching of active planes nor userspace to take
-	 * advantage of more direct plane switching without the intermediate
-	 * full OFF state.
-	 */
+	 
 	return true;
 }
 
-/**
- * drm_atomic_plane_check - check plane state
- * @old_plane_state: old plane state to check
- * @new_plane_state: new plane state to check
- *
- * Provides core sanity checks for plane state.
- *
- * RETURNS:
- * Zero on success, error code on failure
- */
+ 
 static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 				  const struct drm_plane_state *new_plane_state)
 {
@@ -610,7 +455,7 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 	uint32_t num_clips;
 	int ret;
 
-	/* either *both* CRTC and FB must be set, or neither */
+	 
 	if (crtc && !fb) {
 		drm_dbg_atomic(plane->dev, "[PLANE:%d:%s] CRTC set but no FB\n",
 			       plane->base.id, plane->name);
@@ -621,11 +466,11 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 		return -EINVAL;
 	}
 
-	/* if disabled, we don't care about the rest of the state: */
+	 
 	if (!crtc)
 		return 0;
 
-	/* Check whether this plane is usable on this CRTC */
+	 
 	if (!(plane->possible_crtcs & drm_crtc_mask(crtc))) {
 		drm_dbg_atomic(plane->dev,
 			       "Invalid [CRTC:%d:%s] for [PLANE:%d:%s]\n",
@@ -634,7 +479,7 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 		return -EINVAL;
 	}
 
-	/* Check whether this plane supports the fb pixel format. */
+	 
 	ret = drm_plane_check_pixel_format(plane, fb->format->format,
 					   fb->modifier);
 	if (ret) {
@@ -645,7 +490,7 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 		return ret;
 	}
 
-	/* Give drivers some help against integer overflows */
+	 
 	if (new_plane_state->crtc_w > INT_MAX ||
 	    new_plane_state->crtc_x > INT_MAX - (int32_t) new_plane_state->crtc_w ||
 	    new_plane_state->crtc_h > INT_MAX ||
@@ -661,7 +506,7 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 	fb_width = fb->width << 16;
 	fb_height = fb->height << 16;
 
-	/* Make sure source coordinates are inside the fb. */
+	 
 	if (new_plane_state->src_w > fb_width ||
 	    new_plane_state->src_x > fb_width - new_plane_state->src_w ||
 	    new_plane_state->src_h > fb_height ||
@@ -685,7 +530,7 @@ static int drm_atomic_plane_check(const struct drm_plane_state *old_plane_state,
 	clips = __drm_plane_get_damage_clips(new_plane_state);
 	num_clips = drm_plane_get_damage_clips_count(new_plane_state);
 
-	/* Make sure damage clips are valid and inside the fb. */
+	 
 	while (num_clips > 0) {
 		if (clips->x1 >= clips->x2 ||
 		    clips->y1 >= clips->y2 ||
@@ -738,55 +583,9 @@ static void drm_atomic_plane_print_state(struct drm_printer *p,
 		plane->funcs->atomic_print_state(p, state);
 }
 
-/**
- * DOC: handling driver private state
- *
- * Very often the DRM objects exposed to userspace in the atomic modeset api
- * (&drm_connector, &drm_crtc and &drm_plane) do not map neatly to the
- * underlying hardware. Especially for any kind of shared resources (e.g. shared
- * clocks, scaler units, bandwidth and fifo limits shared among a group of
- * planes or CRTCs, and so on) it makes sense to model these as independent
- * objects. Drivers then need to do similar state tracking and commit ordering for
- * such private (since not exposed to userspace) objects as the atomic core and
- * helpers already provide for connectors, planes and CRTCs.
- *
- * To make this easier on drivers the atomic core provides some support to track
- * driver private state objects using struct &drm_private_obj, with the
- * associated state struct &drm_private_state.
- *
- * Similar to userspace-exposed objects, private state structures can be
- * acquired by calling drm_atomic_get_private_obj_state(). This also takes care
- * of locking, hence drivers should not have a need to call drm_modeset_lock()
- * directly. Sequence of the actual hardware state commit is not handled,
- * drivers might need to keep track of struct drm_crtc_commit within subclassed
- * structure of &drm_private_state as necessary, e.g. similar to
- * &drm_plane_state.commit. See also &drm_atomic_state.fake_commit.
- *
- * All private state structures contained in a &drm_atomic_state update can be
- * iterated using for_each_oldnew_private_obj_in_state(),
- * for_each_new_private_obj_in_state() and for_each_old_private_obj_in_state().
- * Drivers are recommended to wrap these for each type of driver private state
- * object they have, filtering on &drm_private_obj.funcs using for_each_if(), at
- * least if they want to iterate over all objects of a given type.
- *
- * An earlier way to handle driver private state was by subclassing struct
- * &drm_atomic_state. But since that encourages non-standard ways to implement
- * the check/commit split atomic requires (by using e.g. "check and rollback or
- * commit instead" of "duplicate state, check, then either commit or release
- * duplicated state) it is deprecated in favour of using &drm_private_state.
- */
+ 
 
-/**
- * drm_atomic_private_obj_init - initialize private object
- * @dev: DRM device this object will be attached to
- * @obj: private object
- * @state: initial private object state
- * @funcs: pointer to the struct of function pointers that identify the object
- * type
- *
- * Initialize the private object, which can be embedded into any
- * driver private object that needs its own atomic state.
- */
+ 
 void
 drm_atomic_private_obj_init(struct drm_device *dev,
 			    struct drm_private_obj *obj,
@@ -805,12 +604,7 @@ drm_atomic_private_obj_init(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_atomic_private_obj_init);
 
-/**
- * drm_atomic_private_obj_fini - finalize private object
- * @obj: private object
- *
- * Finalize the private object.
- */
+ 
 void
 drm_atomic_private_obj_fini(struct drm_private_obj *obj)
 {
@@ -820,19 +614,7 @@ drm_atomic_private_obj_fini(struct drm_private_obj *obj)
 }
 EXPORT_SYMBOL(drm_atomic_private_obj_fini);
 
-/**
- * drm_atomic_get_private_obj_state - get private object state
- * @state: global atomic state
- * @obj: private object to get the state for
- *
- * This function returns the private object state for the given private object,
- * allocating the state if needed. It will also grab the relevant private
- * object lock to make sure that the state is consistent.
- *
- * RETURNS:
- *
- * Either the allocated state or the error code encoded into a pointer.
- */
+ 
 struct drm_private_state *
 drm_atomic_get_private_obj_state(struct drm_atomic_state *state,
 				 struct drm_private_obj *obj)
@@ -880,14 +662,7 @@ drm_atomic_get_private_obj_state(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_private_obj_state);
 
-/**
- * drm_atomic_get_old_private_obj_state
- * @state: global atomic state object
- * @obj: private_obj to grab
- *
- * This function returns the old private object state for the given private_obj,
- * or NULL if the private_obj is not part of the global atomic state.
- */
+ 
 struct drm_private_state *
 drm_atomic_get_old_private_obj_state(const struct drm_atomic_state *state,
 				     struct drm_private_obj *obj)
@@ -902,14 +677,7 @@ drm_atomic_get_old_private_obj_state(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_old_private_obj_state);
 
-/**
- * drm_atomic_get_new_private_obj_state
- * @state: global atomic state object
- * @obj: private_obj to grab
- *
- * This function returns the new private object state for the given private_obj,
- * or NULL if the private_obj is not part of the global atomic state.
- */
+ 
 struct drm_private_state *
 drm_atomic_get_new_private_obj_state(const struct drm_atomic_state *state,
 				     struct drm_private_obj *obj)
@@ -924,24 +692,7 @@ drm_atomic_get_new_private_obj_state(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_new_private_obj_state);
 
-/**
- * drm_atomic_get_old_connector_for_encoder - Get old connector for an encoder
- * @state: Atomic state
- * @encoder: The encoder to fetch the connector state for
- *
- * This function finds and returns the connector that was connected to @encoder
- * as specified by the @state.
- *
- * If there is no connector in @state which previously had @encoder connected to
- * it, this function will return NULL. While this may seem like an invalid use
- * case, it is sometimes useful to differentiate commits which had no prior
- * connectors attached to @encoder vs ones that did (and to inspect their
- * state). This is especially true in enable hooks because the pipeline has
- * changed.
- *
- * Returns: The old connector connected to @encoder, or NULL if the encoder is
- * not connected.
- */
+ 
 struct drm_connector *
 drm_atomic_get_old_connector_for_encoder(const struct drm_atomic_state *state,
 					 struct drm_encoder *encoder)
@@ -959,23 +710,7 @@ drm_atomic_get_old_connector_for_encoder(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_old_connector_for_encoder);
 
-/**
- * drm_atomic_get_new_connector_for_encoder - Get new connector for an encoder
- * @state: Atomic state
- * @encoder: The encoder to fetch the connector state for
- *
- * This function finds and returns the connector that will be connected to
- * @encoder as specified by the @state.
- *
- * If there is no connector in @state which will have @encoder connected to it,
- * this function will return NULL. While this may seem like an invalid use case,
- * it is sometimes useful to differentiate commits which have no connectors
- * attached to @encoder vs ones that do (and to inspect their state). This is
- * especially true in disable hooks because the pipeline will change.
- *
- * Returns: The new connector connected to @encoder, or NULL if the encoder is
- * not connected.
- */
+ 
 struct drm_connector *
 drm_atomic_get_new_connector_for_encoder(const struct drm_atomic_state *state,
 					 struct drm_encoder *encoder)
@@ -993,17 +728,7 @@ drm_atomic_get_new_connector_for_encoder(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_new_connector_for_encoder);
 
-/**
- * drm_atomic_get_old_crtc_for_encoder - Get old crtc for an encoder
- * @state: Atomic state
- * @encoder: The encoder to fetch the crtc state for
- *
- * This function finds and returns the crtc that was connected to @encoder
- * as specified by the @state.
- *
- * Returns: The old crtc connected to @encoder, or NULL if the encoder is
- * not connected.
- */
+ 
 struct drm_crtc *
 drm_atomic_get_old_crtc_for_encoder(struct drm_atomic_state *state,
 				    struct drm_encoder *encoder)
@@ -1023,17 +748,7 @@ drm_atomic_get_old_crtc_for_encoder(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_old_crtc_for_encoder);
 
-/**
- * drm_atomic_get_new_crtc_for_encoder - Get new crtc for an encoder
- * @state: Atomic state
- * @encoder: The encoder to fetch the crtc state for
- *
- * This function finds and returns the crtc that will be connected to @encoder
- * as specified by the @state.
- *
- * Returns: The new crtc connected to @encoder, or NULL if the encoder is
- * not connected.
- */
+ 
 struct drm_crtc *
 drm_atomic_get_new_crtc_for_encoder(struct drm_atomic_state *state,
 				    struct drm_encoder *encoder)
@@ -1053,21 +768,7 @@ drm_atomic_get_new_crtc_for_encoder(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_new_crtc_for_encoder);
 
-/**
- * drm_atomic_get_connector_state - get connector state
- * @state: global atomic state object
- * @connector: connector to get state object for
- *
- * This function returns the connector state for the given connector,
- * allocating it if needed. It will also grab the relevant connector lock to
- * make sure that the state is consistent.
- *
- * Returns:
- *
- * Either the allocated state or the error code encoded into the pointer. When
- * the error is EDEADLK then the w/w mutex code has detected a deadlock and the
- * entire atomic sequence must be restarted. All other errors are fatal.
- */
+ 
 struct drm_connector_state *
 drm_atomic_get_connector_state(struct drm_atomic_state *state,
 			  struct drm_connector *connector)
@@ -1150,21 +851,7 @@ static void drm_atomic_connector_print_state(struct drm_printer *p,
 		connector->funcs->atomic_print_state(p, state);
 }
 
-/**
- * drm_atomic_get_bridge_state - get bridge state
- * @state: global atomic state object
- * @bridge: bridge to get state object for
- *
- * This function returns the bridge state for the given bridge, allocating it
- * if needed. It will also grab the relevant bridge lock to make sure that the
- * state is consistent.
- *
- * Returns:
- *
- * Either the allocated state or the error code encoded into the pointer. When
- * the error is EDEADLK then the w/w mutex code has detected a deadlock and the
- * entire atomic sequence must be restarted.
- */
+ 
 struct drm_bridge_state *
 drm_atomic_get_bridge_state(struct drm_atomic_state *state,
 			    struct drm_bridge *bridge)
@@ -1179,14 +866,7 @@ drm_atomic_get_bridge_state(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_bridge_state);
 
-/**
- * drm_atomic_get_old_bridge_state - get old bridge state, if it exists
- * @state: global atomic state object
- * @bridge: bridge to grab
- *
- * This function returns the old bridge state for the given bridge, or NULL if
- * the bridge is not part of the global atomic state.
- */
+ 
 struct drm_bridge_state *
 drm_atomic_get_old_bridge_state(const struct drm_atomic_state *state,
 				struct drm_bridge *bridge)
@@ -1201,14 +881,7 @@ drm_atomic_get_old_bridge_state(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_old_bridge_state);
 
-/**
- * drm_atomic_get_new_bridge_state - get new bridge state, if it exists
- * @state: global atomic state object
- * @bridge: bridge to grab
- *
- * This function returns the new bridge state for the given bridge, or NULL if
- * the bridge is not part of the global atomic state.
- */
+ 
 struct drm_bridge_state *
 drm_atomic_get_new_bridge_state(const struct drm_atomic_state *state,
 				struct drm_bridge *bridge)
@@ -1223,22 +896,7 @@ drm_atomic_get_new_bridge_state(const struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_get_new_bridge_state);
 
-/**
- * drm_atomic_add_encoder_bridges - add bridges attached to an encoder
- * @state: atomic state
- * @encoder: DRM encoder
- *
- * This function adds all bridges attached to @encoder. This is needed to add
- * bridge states to @state and make them available when
- * &drm_bridge_funcs.atomic_check(), &drm_bridge_funcs.atomic_pre_enable(),
- * &drm_bridge_funcs.atomic_enable(),
- * &drm_bridge_funcs.atomic_disable_post_disable() are called.
- *
- * Returns:
- * 0 on success or can fail with -EDEADLK or -ENOMEM. When the error is EDEADLK
- * then the w/w mutex code has detected a deadlock and the entire atomic
- * sequence must be restarted. All other errors are fatal.
- */
+ 
 int
 drm_atomic_add_encoder_bridges(struct drm_atomic_state *state,
 			       struct drm_encoder *encoder)
@@ -1254,7 +912,7 @@ drm_atomic_add_encoder_bridges(struct drm_atomic_state *state,
 		       encoder->base.id, encoder->name, state);
 
 	drm_for_each_bridge_in_chain(encoder, bridge) {
-		/* Skip bridges that don't implement the atomic state hooks. */
+		 
 		if (!bridge->funcs->atomic_duplicate_state)
 			continue;
 
@@ -1267,23 +925,7 @@ drm_atomic_add_encoder_bridges(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_add_encoder_bridges);
 
-/**
- * drm_atomic_add_affected_connectors - add connectors for CRTC
- * @state: atomic state
- * @crtc: DRM CRTC
- *
- * This function walks the current configuration and adds all connectors
- * currently using @crtc to the atomic configuration @state. Note that this
- * function must acquire the connection mutex. This can potentially cause
- * unneeded serialization if the update is just for the planes on one CRTC. Hence
- * drivers and helpers should only call this when really needed (e.g. when a
- * full modeset needs to happen due to some change).
- *
- * Returns:
- * 0 on success or can fail with -EDEADLK or -ENOMEM. When the error is EDEADLK
- * then the w/w mutex code has detected a deadlock and the entire atomic
- * sequence must be restarted. All other errors are fatal.
- */
+ 
 int
 drm_atomic_add_affected_connectors(struct drm_atomic_state *state,
 				   struct drm_crtc *crtc)
@@ -1307,10 +949,7 @@ drm_atomic_add_affected_connectors(struct drm_atomic_state *state,
 		       "Adding all current connectors for [CRTC:%d:%s] to %p\n",
 		       crtc->base.id, crtc->name, state);
 
-	/*
-	 * Changed connectors are already in @state, so only need to look
-	 * at the connector_mask in crtc_state.
-	 */
+	 
 	drm_connector_list_iter_begin(state->dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
 		if (!(crtc_state->connector_mask & drm_connector_mask(connector)))
@@ -1328,26 +967,7 @@ drm_atomic_add_affected_connectors(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_add_affected_connectors);
 
-/**
- * drm_atomic_add_affected_planes - add planes for CRTC
- * @state: atomic state
- * @crtc: DRM CRTC
- *
- * This function walks the current configuration and adds all planes
- * currently used by @crtc to the atomic configuration @state. This is useful
- * when an atomic commit also needs to check all currently enabled plane on
- * @crtc, e.g. when changing the mode. It's also useful when re-enabling a CRTC
- * to avoid special code to force-enable all planes.
- *
- * Since acquiring a plane state will always also acquire the w/w mutex of the
- * current CRTC for that plane (if there is any) adding all the plane states for
- * a CRTC will not reduce parallelism of atomic updates.
- *
- * Returns:
- * 0 on success or can fail with -EDEADLK or -ENOMEM. When the error is EDEADLK
- * then the w/w mutex code has detected a deadlock and the entire atomic
- * sequence must be restarted. All other errors are fatal.
- */
+ 
 int
 drm_atomic_add_affected_planes(struct drm_atomic_state *state,
 			       struct drm_crtc *crtc)
@@ -1373,17 +993,7 @@ drm_atomic_add_affected_planes(struct drm_atomic_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_add_affected_planes);
 
-/**
- * drm_atomic_check_only - check whether a given config would work
- * @state: atomic configuration to check
- *
- * Note that this function can return -EDEADLK if the driver needed to acquire
- * more locks but encountered a deadlock. The caller must then do the usual w/w
- * backoff dance and restart. All other errors are fatal.
- *
- * Returns:
- * 0 on success, negative error code on failure.
- */
+ 
 int drm_atomic_check_only(struct drm_atomic_state *state)
 {
 	struct drm_device *dev = state->dev;
@@ -1459,16 +1069,7 @@ int drm_atomic_check_only(struct drm_atomic_state *state)
 			affected_crtc |= drm_crtc_mask(crtc);
 	}
 
-	/*
-	 * For commits that allow modesets drivers can add other CRTCs to the
-	 * atomic commit, e.g. when they need to reallocate global resources.
-	 * This can cause spurious EBUSY, which robs compositors of a very
-	 * effective sanity check for their drawing loop. Therefor only allow
-	 * drivers to add unrelated CRTC states for modeset commits.
-	 *
-	 * FIXME: Should add affected_crtc mask to the ATOMIC IOCTL as an output
-	 * so compositors know what's going on.
-	 */
+	 
 	if (affected_crtc != requested_crtc) {
 		drm_dbg_atomic(dev,
 			       "driver added CRTC to commit: requested 0x%x, affected 0x%0x\n",
@@ -1481,20 +1082,7 @@ int drm_atomic_check_only(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_check_only);
 
-/**
- * drm_atomic_commit - commit configuration atomically
- * @state: atomic configuration to check
- *
- * Note that this function can return -EDEADLK if the driver needed to acquire
- * more locks but encountered a deadlock. The caller must then do the usual w/w
- * backoff dance and restart. All other errors are fatal.
- *
- * This function will take its own reference on @state.
- * Callers should always release their reference with drm_atomic_state_put().
- *
- * Returns:
- * 0 on success, negative error code on failure.
- */
+ 
 int drm_atomic_commit(struct drm_atomic_state *state)
 {
 	struct drm_mode_config *config = &state->dev->mode_config;
@@ -1514,20 +1102,7 @@ int drm_atomic_commit(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_commit);
 
-/**
- * drm_atomic_nonblocking_commit - atomic nonblocking commit
- * @state: atomic configuration to check
- *
- * Note that this function can return -EDEADLK if the driver needed to acquire
- * more locks but encountered a deadlock. The caller must then do the usual w/w
- * backoff dance and restart. All other errors are fatal.
- *
- * This function will take its own reference on @state.
- * Callers should always release their reference with drm_atomic_state_put().
- *
- * Returns:
- * 0 on success, negative error code on failure.
- */
+ 
 int drm_atomic_nonblocking_commit(struct drm_atomic_state *state)
 {
 	struct drm_mode_config *config = &state->dev->mode_config;
@@ -1543,7 +1118,7 @@ int drm_atomic_nonblocking_commit(struct drm_atomic_state *state)
 }
 EXPORT_SYMBOL(drm_atomic_nonblocking_commit);
 
-/* just used from drm-client and atomic-helper: */
+ 
 int __drm_atomic_helper_disable_plane(struct drm_plane *plane,
 				      struct drm_plane_state *plane_state)
 {
@@ -1582,7 +1157,7 @@ static int update_output_state(struct drm_atomic_state *state,
 	if (ret)
 		return ret;
 
-	/* First disable all connectors on the target crtc. */
+	 
 	ret = drm_atomic_add_affected_connectors(state, set->crtc);
 	if (ret)
 		return ret;
@@ -1594,12 +1169,12 @@ static int update_output_state(struct drm_atomic_state *state,
 			if (ret)
 				return ret;
 
-			/* Make sure legacy setCrtc always re-trains */
+			 
 			new_conn_state->link_status = DRM_LINK_STATUS_GOOD;
 		}
 	}
 
-	/* Then set all connectors from set->connectors on the target crtc */
+	 
 	for (i = 0; i < set->num_connectors; i++) {
 		new_conn_state = drm_atomic_get_connector_state(state,
 								set->connectors[i]);
@@ -1613,12 +1188,7 @@ static int update_output_state(struct drm_atomic_state *state,
 	}
 
 	for_each_new_crtc_in_state(state, crtc, new_crtc_state, i) {
-		/*
-		 * Don't update ->enable for the CRTC in the set_config request,
-		 * since a mismatch would indicate a bug in the upper layers.
-		 * The actual modeset code later on will catch any
-		 * inconsistencies here.
-		 */
+		 
 		if (crtc == set->crtc)
 			continue;
 
@@ -1635,7 +1205,7 @@ static int update_output_state(struct drm_atomic_state *state,
 	return 0;
 }
 
-/* just used from drm-client and atomic-helper: */
+ 
 int __drm_atomic_helper_set_config(struct drm_mode_set *set,
 				   struct drm_atomic_state *state)
 {
@@ -1720,17 +1290,7 @@ static void drm_atomic_private_obj_print_state(struct drm_printer *p,
 		obj->funcs->atomic_print_state(p, state);
 }
 
-/**
- * drm_atomic_print_new_state - prints drm atomic state
- * @state: atomic configuration to check
- * @p: drm printer
- *
- * This functions prints the drm atomic state snapshot using the drm printer
- * which is passed to it. This snapshot can be used for debugging purposes.
- *
- * Note that this function looks into the new state objects and hence its not
- * safe to be used after the call to drm_atomic_helper_commit_hw_done().
- */
+ 
 void drm_atomic_print_new_state(const struct drm_atomic_state *state,
 		struct drm_printer *p)
 {
@@ -1803,21 +1363,7 @@ static void __drm_state_dump(struct drm_device *dev, struct drm_printer *p,
 	drm_connector_list_iter_end(&conn_iter);
 }
 
-/**
- * drm_state_dump - dump entire device atomic state
- * @dev: the drm device
- * @p: where to print the state to
- *
- * Just for debugging.  Drivers might want an option to dump state
- * to dmesg in case of error irq's.  (Hint, you probably want to
- * ratelimit this!)
- *
- * The caller must wrap this drm_modeset_lock_all_ctx() and
- * drm_modeset_drop_locks(). If this is called from error irq handler, it should
- * not be enabled by default - if you are debugging errors you might
- * not care that this is racey, but calling this without all modeset locks held
- * is inherently unsafe.
- */
+ 
 void drm_state_dump(struct drm_device *dev, struct drm_printer *p)
 {
 	__drm_state_dump(dev, p, false);
@@ -1836,7 +1382,7 @@ static int drm_state_info(struct seq_file *m, void *data)
 	return 0;
 }
 
-/* any use in debugfs files to dump individual planes/crtc/etc? */
+ 
 static const struct drm_debugfs_info drm_atomic_debugfs_list[] = {
 	{"state", drm_state_info, 0},
 };

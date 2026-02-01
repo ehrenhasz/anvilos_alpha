@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Broadcom STB ASP 2.0 Driver
- *
- * Copyright (c) 2023 Broadcom
- */
+
+ 
 #include <linux/etherdevice.h>
 #include <linux/if_vlan.h>
 #include <linux/init.h>
@@ -97,7 +93,7 @@ static irqreturn_t bcmasp_isr(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Handle intferfaces */
+	 
 	list_for_each_entry(intf, &priv->intfs, list)
 		bcmasp_intr2_handling(intf, status);
 
@@ -120,7 +116,7 @@ void bcmasp_flush_rx_port(struct bcmasp_intf *intf)
 		mask = ASP_CTRL_SPB_FLUSH_MASK;
 		break;
 	default:
-		/* Not valid port */
+		 
 		return;
 	}
 
@@ -221,7 +217,7 @@ static void bcmasp_netfilt_wr(struct bcmasp_priv *priv,
 {
 	int reg_offset;
 
-	/* HW only accepts 4 byte aligned writes */
+	 
 	if (!IS_ALIGNED(offset, 4) || offset > MAX_WAKE_FILTER_SIZE)
 		return;
 
@@ -238,7 +234,7 @@ static u32 bcmasp_netfilt_rd(struct bcmasp_priv *priv,
 {
 	int reg_offset;
 
-	/* HW only accepts 4 byte aligned writes */
+	 
 	if (!IS_ALIGNED(offset, 4) || offset > MAX_WAKE_FILTER_SIZE)
 		return 0;
 
@@ -260,11 +256,7 @@ static int bcmasp_netfilt_wr_m_wake(struct bcmasp_priv *priv,
 		return -EINVAL;
 
 	while (size--) {
-		/* The HW only accepts 4 byte aligned writes, so if we
-		 * begin unaligned or if remaining bytes less than 4,
-		 * we need to read then write to avoid losing current
-		 * register state
-		 */
+		 
 		if (first_byte && (!IS_ALIGNED(offset, 4) || size < 3)) {
 			match_val = bcmasp_netfilt_rd(priv, nfilt,
 						      ASP_NETFILT_MATCH,
@@ -280,7 +272,7 @@ static int bcmasp_netfilt_wr_m_wake(struct bcmasp_priv *priv,
 		match_val |= (u32)(*((u8 *)match) << shift);
 		mask_val |= (u32)(*((u8 *)mask) << shift);
 
-		/* If last byte or last byte of word, write to reg */
+		 
 		if (!size || ((offset % 4) == 3)) {
 			bcmasp_netfilt_wr(priv, nfilt, ASP_NETFILT_MATCH,
 					  match_val, ALIGN_DOWN(offset, 4));
@@ -377,7 +369,7 @@ static int bcmasp_netfilt_wr_to_hw(struct bcmasp_priv *priv,
 	__be16 val_16, mask_16;
 	u8 val_8, mask_8;
 
-	/* Currently only supports wake filters */
+	 
 	if (!nfilt->wake_filter)
 		return -EINVAL;
 
@@ -442,7 +434,7 @@ static int bcmasp_netfilt_wr_to_hw(struct bcmasp_priv *priv,
 		if (!fs->m_u.usr_ip4_spec.l4_4_bytes)
 			break;
 
-		/* Only supports 20 byte IPv4 header */
+		 
 		val_8 = 0x45;
 		mask_8 = 0xFF;
 		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset,
@@ -500,9 +492,9 @@ void bcmasp_netfilt_suspend(struct bcmasp_intf *intf)
 	bool write = false;
 	int ret, i;
 
-	/* Write all filters to HW */
+	 
 	for (i = 0; i < NUM_NET_FILTERS; i++) {
-		/* If the filter does not match the port, skip programming. */
+		 
 		if (!priv->net_filters[i].claimed ||
 		    priv->net_filters[i].port != intf->port)
 			continue;
@@ -517,9 +509,7 @@ void bcmasp_netfilt_suspend(struct bcmasp_intf *intf)
 			write = true;
 	}
 
-	/* Successfully programmed at least one wake filter
-	 * so enable top level wake config
-	 */
+	 
 	if (write)
 		rx_filter_core_wl(priv, (ASP_RX_FILTER_OPUT_EN |
 				  ASP_RX_FILTER_LNR_MD |
@@ -565,7 +555,7 @@ int bcmasp_netfilt_get_active(struct bcmasp_intf *intf)
 		    priv->net_filters[i].port != intf->port)
 			continue;
 
-		/* Skip over a wake filter pair */
+		 
 		if (i > 0 && (i % 2) &&
 		    priv->net_filters[i].wake_filter &&
 		    priv->net_filters[i - 1].wake_filter)
@@ -641,9 +631,7 @@ bool bcmasp_netfilt_check_dup(struct bcmasp_intf *intf,
 	return false;
 }
 
-/* If no network filter found, return open filter.
- * If no more open filters return NULL
- */
+ 
 struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
 						  u32 loc, bool wake_filter,
 						  bool init)
@@ -652,40 +640,34 @@ struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
 	struct bcmasp_priv *priv = intf->parent;
 	int i, open_index = -1;
 
-	/* Check whether we exceed the filter table capacity */
+	 
 	if (loc != RX_CLS_LOC_ANY && loc >= NUM_NET_FILTERS)
 		return ERR_PTR(-EINVAL);
 
-	/* If the filter location is busy (already claimed) and we are initializing
-	 * the filter (insertion), return a busy error code.
-	 */
+	 
 	if (loc != RX_CLS_LOC_ANY && init && priv->net_filters[loc].claimed)
 		return ERR_PTR(-EBUSY);
 
-	/* We need two filters for wake-up, so we cannot use an odd filter */
+	 
 	if (wake_filter && loc != RX_CLS_LOC_ANY && (loc % 2))
 		return ERR_PTR(-EINVAL);
 
-	/* Initialize the loop index based on the desired location or from 0 */
+	 
 	i = loc == RX_CLS_LOC_ANY ? 0 : loc;
 
 	for ( ; i < NUM_NET_FILTERS; i++) {
-		/* Found matching network filter */
+		 
 		if (!init &&
 		    priv->net_filters[i].claimed &&
 		    priv->net_filters[i].hw_index == i &&
 		    priv->net_filters[i].port == intf->port)
 			return &priv->net_filters[i];
 
-		/* If we don't need a new filter or new filter already found */
+		 
 		if (!init || open_index >= 0)
 			continue;
 
-		/* Wake filter conslidates two filters to cover more bytes
-		 * Wake filter is open if...
-		 * 1. It is an even filter
-		 * 2. The current and next filter is not claimed
-		 */
+		 
 		if (wake_filter && !(i % 2) && !priv->net_filters[i].claimed &&
 		    !priv->net_filters[i + 1].claimed)
 			open_index = i;
@@ -701,7 +683,7 @@ struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
 	}
 
 	if (wake_filter && open_index >= 0) {
-		/* Claim next filter */
+		 
 		priv->net_filters[open_index + 1].claimed = true;
 		priv->net_filters[open_index + 1].wake_filter = true;
 		nfilter->wake_filter = true;
@@ -738,11 +720,11 @@ static void bcmasp_set_mda_filter(struct bcmasp_intf *intf,
 	struct bcmasp_priv *priv = intf->parent;
 	u32 addr_h, addr_l, mask_h, mask_l;
 
-	/* Set local copy */
+	 
 	ether_addr_copy(priv->mda_filters[i].mask, mask);
 	ether_addr_copy(priv->mda_filters[i].addr, addr);
 
-	/* Write to HW */
+	 
 	bcmasp_addr_to_uint(priv->mda_filters[i].mask, &mask_h, &mask_l);
 	bcmasp_addr_to_uint(priv->mda_filters[i].addr, &addr_h, &addr_l);
 	rx_filter_core_wl(priv, addr_h, ASP_RX_FILTER_MDA_PAT_H(i));
@@ -768,19 +750,7 @@ static void bcmasp_en_mda_filter(struct bcmasp_intf *intf, bool en,
 			  ASP_RX_FILTER_MDA_CFG(i));
 }
 
-/* There are 32 MDA filters shared between all ports, we reserve 4 filters per
- * port for the following.
- * - Promisc: Filter to allow all packets when promisc is enabled
- * - All Multicast
- * - Broadcast
- * - Own address
- *
- * The reserved filters are identified as so.
- * - Promisc: (index * 4) + 0
- * - All Multicast: (index * 4) + 1
- * - Broadcast: (index * 4) + 2
- * - Own address: (index * 4) + 3
- */
+ 
 enum asp_rx_filter_id {
 	ASP_RX_FILTER_MDA_PROMISC = 0,
 	ASP_RX_FILTER_MDA_ALLMULTI,
@@ -804,7 +774,7 @@ void bcmasp_set_promisc(struct bcmasp_intf *intf, bool en)
 	unsigned char promisc[ETH_ALEN];
 
 	eth_zero_addr(promisc);
-	/* Set mask to 00:00:00:00:00:00 to match all packets */
+	 
 	bcmasp_set_mda_filter(intf, promisc, promisc, i);
 	bcmasp_en_mda_filter(intf, en, i);
 }
@@ -814,7 +784,7 @@ void bcmasp_set_allmulti(struct bcmasp_intf *intf, bool en)
 	unsigned char allmulti[] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
 	unsigned int i = ASP_RX_FILT_MDA(intf, ALLMULTI);
 
-	/* Set mask to 01:00:00:00:00:00 to match all multicast */
+	 
 	bcmasp_set_mda_filter(intf, allmulti, allmulti, i);
 	bcmasp_en_mda_filter(intf, en, i);
 }
@@ -847,7 +817,7 @@ void bcmasp_disable_all_filters(struct bcmasp_intf *intf)
 
 	res_count = bcmasp_total_res_mda_cnt(intf->parent);
 
-	/* Disable all filters held by this port */
+	 
 	for (i = res_count; i < NUM_MDA_FILTERS; i++) {
 		if (priv->mda_filters[i].en &&
 		    priv->mda_filters[i].port == intf->port)
@@ -862,24 +832,24 @@ static int bcmasp_combine_set_filter(struct bcmasp_intf *intf,
 	struct bcmasp_priv *priv = intf->parent;
 	u64 addr1, addr2, mask1, mask2, mask3;
 
-	/* Switch to u64 to help with the calculations */
+	 
 	addr1 = ether_addr_to_u64(priv->mda_filters[i].addr);
 	mask1 = ether_addr_to_u64(priv->mda_filters[i].mask);
 	addr2 = ether_addr_to_u64(addr);
 	mask2 = ether_addr_to_u64(mask);
 
-	/* Check if one filter resides within the other */
+	 
 	mask3 = mask1 & mask2;
 	if (mask3 == mask1 && ((addr1 & mask1) == (addr2 & mask1))) {
-		/* Filter 2 resides within filter 1, so everything is good */
+		 
 		return 0;
 	} else if (mask3 == mask2 && ((addr1 & mask2) == (addr2 & mask2))) {
-		/* Filter 1 resides within filter 2, so swap filters */
+		 
 		bcmasp_set_mda_filter(intf, addr, mask, i);
 		return 0;
 	}
 
-	/* Unable to combine */
+	 
 	return -EINVAL;
 }
 
@@ -893,12 +863,12 @@ int bcmasp_set_en_mda_filter(struct bcmasp_intf *intf, unsigned char *addr,
 	res_count = bcmasp_total_res_mda_cnt(intf->parent);
 
 	for (i = res_count; i < NUM_MDA_FILTERS; i++) {
-		/* If filter not enabled or belongs to another port skip */
+		 
 		if (!priv->mda_filters[i].en ||
 		    priv->mda_filters[i].port != intf->port)
 			continue;
 
-		/* Attempt to combine filters */
+		 
 		ret = bcmasp_combine_set_filter(intf, addr, mask, i);
 		if (!ret) {
 			intf->mib.filters_combine_cnt++;
@@ -906,7 +876,7 @@ int bcmasp_set_en_mda_filter(struct bcmasp_intf *intf, unsigned char *addr,
 		}
 	}
 
-	/* Create new filter if possible */
+	 
 	for (i = res_count; i < NUM_MDA_FILTERS; i++) {
 		if (priv->mda_filters[i].en)
 			continue;
@@ -916,7 +886,7 @@ int bcmasp_set_en_mda_filter(struct bcmasp_intf *intf, unsigned char *addr,
 		return 0;
 	}
 
-	/* No room for new filter */
+	 
 	return -EINVAL;
 }
 
@@ -924,9 +894,7 @@ static void bcmasp_core_init_filters(struct bcmasp_priv *priv)
 {
 	unsigned int i;
 
-	/* Disable all filters and reset software view since the HW
-	 * can lose context while in deep sleep suspend states
-	 */
+	 
 	for (i = 0; i < NUM_MDA_FILTERS; i++) {
 		rx_filter_core_wl(priv, 0x0, ASP_RX_FILTER_MDA_CFG(i));
 		priv->mda_filters[i].en = 0;
@@ -935,10 +903,7 @@ static void bcmasp_core_init_filters(struct bcmasp_priv *priv)
 	for (i = 0; i < NUM_NET_FILTERS; i++)
 		rx_filter_core_wl(priv, 0x0, ASP_RX_FILTER_NET_CFG(i));
 
-	/* Top level filter enable bit should be enabled at all times, set
-	 * GEN_WAKE_CLEAR to clear the network filter wake-up which would
-	 * otherwise be sticky
-	 */
+	 
 	rx_filter_core_wl(priv, (ASP_RX_FILTER_OPUT_EN |
 			  ASP_RX_FILTER_MDA_EN |
 			  ASP_RX_FILTER_GEN_WK_CLR |
@@ -946,7 +911,7 @@ static void bcmasp_core_init_filters(struct bcmasp_priv *priv)
 			  ASP_RX_FILTER_BLK_CTRL);
 }
 
-/* ASP core initialization */
+ 
 static void bcmasp_core_init(struct bcmasp_priv *priv)
 {
 	tx_analytics_core_wl(priv, 0x0, ASP_TX_ANALYTICS_CTRL);
@@ -964,9 +929,7 @@ static void bcmasp_core_init(struct bcmasp_priv *priv)
 
 	rx_edpkt_core_wl(priv, ASP_EDPKT_ENABLE_EN, ASP_EDPKT_ENABLE);
 
-	/* Disable and clear both UniMAC's wake-up interrupts to avoid
-	 * sticky interrupts.
-	 */
+	 
 	_intr2_mask_set(priv, ASP_INTR2_UMC0_WAKE | ASP_INTR2_UMC1_WAKE);
 	intr2_core_wl(priv, ASP_INTR2_UMC0_WAKE | ASP_INTR2_UMC1_WAKE,
 		      ASP_INTR2_CLEAR);
@@ -1015,12 +978,7 @@ void bcmasp_core_clock_set_intf(struct bcmasp_intf *intf, bool en)
 	unsigned long flags;
 	u32 reg;
 
-	/* When enabling an interface, if the RX or TX clocks were not enabled,
-	 * enable them. Conversely, while disabling an interface, if this is
-	 * the last one enabled, we can turn off the shared RX and TX clocks as
-	 * well. We control enable bits which is why we test for equality on
-	 * the RGMII clock bit mask.
-	 */
+	 
 	spin_lock_irqsave(&priv->clk_lock, flags);
 	if (en) {
 		intf_mask |= ASP_CTRL_CLOCK_CTRL_ASP_TX_DISABLE |
@@ -1042,7 +1000,7 @@ static irqreturn_t bcmasp_isr_wol(int irq, void *data)
 	struct bcmasp_priv *priv = data;
 	u32 status;
 
-	/* No L3 IRQ, so we good */
+	 
 	if (priv->wol_irq <= 0)
 		goto irq_handled;
 
@@ -1100,7 +1058,7 @@ static void bcmasp_enable_wol_shared(struct bcmasp_intf *intf, bool en)
 			return;
 		}
 
-		/* First enable */
+		 
 		set_bit(intf->port, &priv->wol_irq_enabled_mask);
 		enable_irq_wake(priv->wol_irq);
 		device_set_wakeup_enable(dev, 1);
@@ -1112,7 +1070,7 @@ static void bcmasp_enable_wol_shared(struct bcmasp_intf *intf, bool en)
 		if (priv->wol_irq_enabled_mask)
 			return;
 
-		/* Last disable */
+		 
 		disable_irq_wake(priv->wol_irq);
 		device_set_wakeup_enable(dev, 0);
 	}
@@ -1200,14 +1158,14 @@ static const struct bcmasp_plat_data v21_plat_data = {
 static const struct of_device_id bcmasp_of_match[] = {
 	{ .compatible = "brcm,asp-v2.0", .data = &v20_plat_data },
 	{ .compatible = "brcm,asp-v2.1", .data = &v21_plat_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, bcmasp_of_match);
 
 static const struct of_device_id bcmasp_mdio_of_match[] = {
 	{ .compatible = "brcm,asp-v2.1-mdio", },
 	{ .compatible = "brcm,asp-v2.0-mdio", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, bcmasp_mdio_of_match);
 
@@ -1244,7 +1202,7 @@ static int bcmasp_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(priv->clk),
 				     "failed to request clock\n");
 
-	/* Base from parent node */
+	 
 	priv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->base))
 		return dev_err_probe(dev, PTR_ERR(priv->base), "failed to iomap\n");
@@ -1270,10 +1228,10 @@ static int bcmasp_probe(struct platform_device *pdev)
 	priv->destroy_wol = pdata->destroy_wol;
 	priv->hw_info = pdata->hw_info;
 
-	/* Enable all clocks to ensure successful probing */
+	 
 	bcmasp_core_clock_set(priv, ASP_CTRL_CLOCK_CTRL_ASP_ALL_DISABLE, 0);
 
-	/* Switch to the main clock */
+	 
 	bcmasp_core_clock_select(priv, false);
 
 	bcmasp_intr2_mask_set_all(priv);
@@ -1284,12 +1242,10 @@ static int bcmasp_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to request ASP interrupt: %d", ret);
 
-	/* Register mdio child nodes */
+	 
 	of_platform_populate(dev->of_node, bcmasp_mdio_of_match, NULL, dev);
 
-	/* ASP specific initialization, Needs to be done regardless of
-	 * how many interfaces come up.
-	 */
+	 
 	bcmasp_core_init(priv);
 	bcmasp_core_init_filters(priv);
 
@@ -1312,19 +1268,15 @@ static int bcmasp_probe(struct platform_device *pdev)
 		i++;
 	}
 
-	/* Check and enable WoL */
+	 
 	priv->init_wol(priv);
 
-	/* Drop the clock reference count now and let ndo_open()/ndo_close()
-	 * manage it for us from now on.
-	 */
+	 
 	bcmasp_core_clock_set(priv, 0, ASP_CTRL_CLOCK_CTRL_ASP_ALL_DISABLE);
 
 	clk_disable_unprepare(priv->clk);
 
-	/* Now do the registration of the network ports which will take care
-	 * of managing the clock properly.
-	 */
+	 
 	list_for_each_entry(intf, &priv->intfs, list) {
 		ret = register_netdev(intf->ndev);
 		if (ret) {
@@ -1378,9 +1330,7 @@ static int __maybe_unused bcmasp_suspend(struct device *d)
 	if (ret)
 		return ret;
 
-	/* Whether Wake-on-LAN is enabled or not, we can always disable
-	 * the shared TX clock
-	 */
+	 
 	bcmasp_core_clock_set(priv, 0, ASP_CTRL_CLOCK_CTRL_ASP_TX_DISABLE);
 
 	bcmasp_core_clock_select(priv, true);
@@ -1400,16 +1350,16 @@ static int __maybe_unused bcmasp_resume(struct device *d)
 	if (ret)
 		return ret;
 
-	/* Switch to the main clock domain */
+	 
 	bcmasp_core_clock_select(priv, false);
 
-	/* Re-enable all clocks for re-initialization */
+	 
 	bcmasp_core_clock_set(priv, ASP_CTRL_CLOCK_CTRL_ASP_ALL_DISABLE, 0);
 
 	bcmasp_core_init(priv);
 	bcmasp_core_init_filters(priv);
 
-	/* And disable them to let the network devices take care of them */
+	 
 	bcmasp_core_clock_set(priv, 0, ASP_CTRL_CLOCK_CTRL_ASP_ALL_DISABLE);
 
 	clk_disable_unprepare(priv->clk);

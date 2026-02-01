@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -746,12 +744,7 @@ static void venc_input_done(struct vpu_inst *inst)
 	vpu_inst_unlock(inst);
 }
 
-/*
- * It's hardware limitation, that there may be several bytes
- * redundant data at the beginning of frame.
- * For android platform, the redundant data may cause cts test fail
- * So driver will strip them
- */
+ 
 static int venc_precheck_encoded_frame(struct vpu_inst *inst, struct venc_frame_t *frame)
 {
 	struct venc_t *venc;
@@ -946,9 +939,9 @@ static int venc_start_session(struct vpu_inst *inst, u32 type)
 		goto error;
 
 	inst->state = VPU_CODEC_STATE_CONFIGURED;
-	/*vpu_iface_config_memory_resource*/
+	 
 
-	/*config enc expert mode parameter*/
+	 
 	ret = vpu_iface_set_encode_params(inst, &venc->params, 1);
 	if (ret)
 		goto error;

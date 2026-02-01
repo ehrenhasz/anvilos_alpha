@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Laura Garcia <nevola@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

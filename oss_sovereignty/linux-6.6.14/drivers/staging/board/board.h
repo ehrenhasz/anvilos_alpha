@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
@@ -12,12 +12,12 @@ struct board_staging_clk {
 };
 
 struct board_staging_dev {
-	/* Platform Device */
+	 
 	struct platform_device *pdev;
-	/* Clocks (optional) */
+	 
 	const struct board_staging_clk *clocks;
 	unsigned int nclocks;
-	/* Generic PM Domain (optional) */
+	 
 	const char *domain;
 };
 
@@ -43,4 +43,4 @@ static int __init runtime_board_check(void)	\
 						\
 device_initcall(runtime_board_check)
 
-#endif /* __BOARD_H__ */
+#endif  

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the s5k83a sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -74,12 +63,9 @@ static const unsigned char preinit_s5k83a[][4] = {
 	{BRIDGE, M5602_XB_I2C_CLK_DIV, 0x20, 0x00},
 };
 
-/* This could probably be considerably shortened.
-   I don't have the hardware to experiment with it, patches welcome
-*/
+ 
 static const unsigned char init_s5k83a[][4] = {
-	/* The following sequence is useless after a clean boot
-	   but is necessary after resume from suspend */
+	 
 	{BRIDGE, M5602_XB_GPIO_DIR, 0x1d, 0x00},
 	{BRIDGE, M5602_XB_GPIO_DAT, 0x08, 0x00},
 	{BRIDGE, M5602_XB_GPIO_EN_H, 0x3f, 0x00},
@@ -120,17 +106,16 @@ static const unsigned char init_s5k83a[][4] = {
 	{SENSOR, 0x04, 0xf0, 0x00},
 	{SENSOR, 0x05, 0x0b, 0x00},
 	{SENSOR, 0x06, 0x71, 0x00},
-	{SENSOR, 0x07, 0xe8, 0x00}, /* 488 */
+	{SENSOR, 0x07, 0xe8, 0x00},  
 	{SENSOR, 0x08, 0x02, 0x00},
-	{SENSOR, 0x09, 0x88, 0x00}, /* 648 */
+	{SENSOR, 0x09, 0x88, 0x00},  
 	{SENSOR, 0x14, 0x00, 0x00},
-	{SENSOR, 0x15, 0x20, 0x00}, /* 32 */
+	{SENSOR, 0x15, 0x20, 0x00},  
 	{SENSOR, 0x19, 0x00, 0x00},
-	{SENSOR, 0x1a, 0x98, 0x00}, /* 152 */
+	{SENSOR, 0x1a, 0x98, 0x00},  
 	{SENSOR, 0x0f, 0x02, 0x00},
-	{SENSOR, 0x10, 0xe5, 0x00}, /* 741 */
-	/* normal colors
-	(this is value after boot, but after tries can be different) */
+	{SENSOR, 0x10, 0xe5, 0x00},  
+	 
 	{SENSOR, 0x00, 0x06, 0x00},
 };
 
@@ -147,7 +132,7 @@ static const unsigned char start_s5k83a[][4] = {
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x01, 0x00},
-	{BRIDGE, M5602_XB_VSYNC_PARA, 0xe4, 0x00}, /* 484 */
+	{BRIDGE, M5602_XB_VSYNC_PARA, 0xe4, 0x00},  
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_VSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_SIG_INI, 0x00, 0x00},
@@ -155,7 +140,7 @@ static const unsigned char start_s5k83a[][4] = {
 	{BRIDGE, M5602_XB_HSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_HSYNC_PARA, 0x00, 0x00},
 	{BRIDGE, M5602_XB_HSYNC_PARA, 0x02, 0x00},
-	{BRIDGE, M5602_XB_HSYNC_PARA, 0x7f, 0x00}, /* 639 */
+	{BRIDGE, M5602_XB_HSYNC_PARA, 0x7f, 0x00},  
 	{BRIDGE, M5602_XB_SIG_INI, 0x00, 0x00},
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00, 0x00},
 	{BRIDGE, M5602_XB_SEN_CLK_CTRL, 0xb0, 0x00},
@@ -178,14 +163,13 @@ int s5k83a_probe(struct sd *sd)
 			pr_info("Forcing a %s sensor\n", s5k83a.name);
 			goto sensor_found;
 		}
-		/* If we want to force another sensor, don't try to probe this
-		 * one */
+		 
 		return -ENODEV;
 	}
 
 	gspca_dbg(gspca_dev, D_PROBE, "Probing for a s5k83a sensor\n");
 
-	/* Preinit the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(preinit_s5k83a) && !err; i++) {
 		u8 data[2] = {preinit_s5k83a[i][2], preinit_s5k83a[i][3]};
 		if (preinit_s5k83a[i][0] == SENSOR)
@@ -196,9 +180,7 @@ int s5k83a_probe(struct sd *sd)
 				data[0]);
 	}
 
-	/* We don't know what register (if any) that contain the product id
-	 * Just pick the first addresses that seem to produce the same results
-	 * on multiple machines */
+	 
 	if (m5602_read_sensor(sd, 0x00, &prod_id, 1))
 		return -ENODEV;
 
@@ -214,7 +196,7 @@ sensor_found:
 	sd->gspca_dev.cam.cam_mode = s5k83a_modes;
 	sd->gspca_dev.cam.nmodes = ARRAY_SIZE(s5k83a_modes);
 
-	/* null the pointer! thread is't running now */
+	 
 	sd->rotation_thread = NULL;
 
 	return 0;
@@ -321,7 +303,7 @@ static int rotation_thread_function(void *data)
 		set_current_state(TASK_INTERRUPTIBLE);
 	}
 
-	/* return to "front" flip */
+	 
 	if (previous_rotation) {
 		hflip = sd->hflip->val;
 		vflip = sd->vflip->val;
@@ -336,9 +318,7 @@ int s5k83a_start(struct sd *sd)
 {
 	int i, err = 0;
 
-	/* Create another thread, polling the GPIO ports of the camera to check
-	   if it got rotated. This is how the windows driver does it so we have
-	   to assume that there is no better way of accomplishing this */
+	 
 	sd->rotation_thread = kthread_run(rotation_thread_function,
 					  sd, "rotation thread");
 	if (IS_ERR(sd->rotation_thread)) {
@@ -347,7 +327,7 @@ int s5k83a_start(struct sd *sd)
 		return err;
 	}
 
-	/* Preinit the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(start_s5k83a) && !err; i++) {
 		u8 data[2] = {start_s5k83a[i][2], start_s5k83a[i][3]};
 		if (start_s5k83a[i][0] == SENSOR)
@@ -396,10 +376,9 @@ static int s5k83a_set_gain(struct gspca_dev *gspca_dev, __s32 val)
 	if (err < 0)
 		return err;
 
-	/* FIXME: This is not sane, we need to figure out the composition
-		  of these registers */
-	data[0] = val >> 3; /* gain, high 5 bits */
-	data[1] = val >> 1; /* gain, high 7 bits */
+	 
+	data[0] = val >> 3;  
+	data[1] = val >> 1;  
 	err = m5602_write_sensor(sd, S5K83A_GAIN, data, 2);
 
 	return err;
@@ -436,7 +415,7 @@ static int s5k83a_set_flip_real(struct gspca_dev *gspca_dev,
 	if (err < 0)
 		return err;
 
-	/* six bit is vflip, seven is hflip */
+	 
 	data[0] = S5K83A_FLIP_MASK;
 	data[0] = (vflip) ? data[0] | 0x40 : data[0];
 	data[0] = (hflip) ? data[0] | 0x80 : data[0];
@@ -523,7 +502,7 @@ static int s5k83a_set_led_indication(struct sd *sd, u8 val)
 	return err;
 }
 
-/* Get camera rotation on Acer notebooks */
+ 
 static int s5k83a_get_rotation(struct sd *sd, u8 *reg_data)
 {
 	int err = m5602_read_bridge(sd, M5602_XB_GPIO_DAT, reg_data);
@@ -567,7 +546,7 @@ static void s5k83a_dump_registers(struct sd *sd)
 				pr_info("register 0x%x is read only\n",
 					address);
 
-			/* Restore original val */
+			 
 			m5602_write_sensor(sd, address, &old_val, 1);
 		}
 	}

@@ -1,34 +1,6 @@
-/*
- * Copyright 2011 Red Hat, Inc.
- * Copyright © 2014 The Chromium OS Authors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software")
- * to deal in the software without restriction, including without limitation
- * on the rights to use, copy, modify, merge, publish, distribute, sub
- * license, and/or sell copies of the Software, and to permit persons to whom
- * them Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTIBILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Adam Jackson <ajax@redhat.com>
- *	Ben Widawsky <ben@bwidawsk.net>
- */
+ 
 
-/*
- * This is vgem, a (non-hardware-backed) GEM service.  This is used by Mesa's
- * software renderer and the X server for efficient buffer sharing.
- */
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/module.h>
@@ -99,10 +71,7 @@ static struct drm_gem_object *vgem_gem_create_object(struct drm_device *dev, siz
 	if (!obj)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * vgem doesn't have any begin/end cpu access ioctls, therefore must use
-	 * coherent memory or dma-buf sharing just wont work.
-	 */
+	 
 	obj->map_wc = true;
 
 	return &obj->base;
@@ -151,7 +120,7 @@ static int __init vgem_init(void)
 	}
 	vgem_device->platform = pdev;
 
-	/* Final step: expose the device/driver to userspace */
+	 
 	ret = drm_dev_register(&vgem_device->drm, 0);
 	if (ret)
 		goto out_devres;

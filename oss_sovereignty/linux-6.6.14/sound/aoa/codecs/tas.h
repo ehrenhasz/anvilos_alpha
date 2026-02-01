@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Apple Onboard Audio driver for tas codec (header)
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- */
+ 
+ 
 #ifndef __SND_AOA_CODECTASH
 #define __SND_AOA_CODECTASH
 
-#define TAS_REG_MCS	0x01	/* main control */
+#define TAS_REG_MCS	0x01	 
 #	define TAS_MCS_FASTLOAD		(1<<7)
 #	define TAS_MCS_SCLK64		(1<<6)
 #	define TAS_MCS_SPORT_MODE_MASK	(3<<4)
@@ -27,7 +23,7 @@
 #define TAS_REG_LMIX	0x07
 #define TAS_REG_RMIX	0x08
 
-#define TAS_REG_ACR	0x40	/* analog control */
+#define TAS_REG_ACR	0x40	 
 #	define TAS_ACR_B_MONAUREAL	(1<<7)
 #	define TAS_ACR_B_MON_SEL_RIGHT	(1<<6)
 #	define TAS_ACR_DEEMPH_MASK	(3<<2)
@@ -37,7 +33,7 @@
 #	define TAS_ACR_INPUT_B		(1<<1)
 #	define TAS_ACR_ANALOG_PDOWN	(1<<0)
 
-#define TAS_REG_MCS2	0x43	/* main control 2 */
+#define TAS_REG_MCS2	0x43	 
 #	define TAS_MCS2_ALLPASS		(1<<1)
 
 #define TAS_REG_LEFT_BIQUAD6	0x10
@@ -51,4 +47,4 @@
 #define TAS3001_DRC_MAX		0x5f
 #define TAS3004_DRC_MAX		0xef
 
-#endif /* __SND_AOA_CODECTASH */
+#endif  

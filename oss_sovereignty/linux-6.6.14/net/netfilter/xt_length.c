@@ -1,7 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Kernel module to match packet length. */
-/* (C) 1999-2001 James Morris <jmorros@intercode.com.au>
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

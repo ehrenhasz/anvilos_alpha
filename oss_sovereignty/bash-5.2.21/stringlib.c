@@ -1,22 +1,6 @@
-/* stringlib.c - Miscellaneous string functions. */
+ 
 
-/* Copyright (C) 1996-2009 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -39,14 +23,13 @@
 #  include <glob/strmatch.h>
 #endif
 
-/* **************************************************************** */
-/*								    */
-/*		Functions to manage arrays of strings		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Find STRING in ALIST, a list of string key/int value pairs.  If FLAGS
-   is 1, STRING is treated as a pattern and matched using strmatch. */
+ 
 int
 find_string_in_alist (string, alist, flags)
      char *string;
@@ -71,9 +54,7 @@ find_string_in_alist (string, alist, flags)
   return -1;
 }
 
-/* Find TOKEN in ALIST, a list of string/int value pairs.  Return the
-   corresponding string.  Allocates memory for the returned
-   string.  FLAGS is currently ignored, but reserved. */
+ 
 char *
 find_token_in_alist (token, alist, flags)
      int token;
@@ -115,14 +96,13 @@ find_index_in_alist (string, alist, flags)
   return -1;
 }
 
-/* **************************************************************** */
-/*								    */
-/*		    String Management Functions			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Cons a new string from STRING starting at START and ending at END,
-   not including END. */
+ 
 char *
 substring (string, start, end)
      const char *string;
@@ -138,9 +118,7 @@ substring (string, start, end)
   return (result);
 }
 
-/* Replace occurrences of PAT with REP in STRING.  If GLOBAL is non-zero,
-   replace all occurrences, otherwise replace only the first.
-   This returns a new string; the caller should free it. */
+ 
 char *
 strsub (string, pat, rep, global)
      char *string, *pat, *rep;
@@ -159,10 +137,10 @@ strsub (string, pat, rep, global)
 	  if (replen)
 	    RESIZE_MALLOCED_BUFFER (temp, templen, replen, tempsize, (replen * 2));
 
-	  for (r = rep; *r; )	/* can rep == "" */
+	  for (r = rep; *r; )	 
 	    temp[templen++] = *r++;
 
-	  i += patlen ? patlen : 1;	/* avoid infinite recursion */
+	  i += patlen ? patlen : 1;	 
 	  repl = global != 0;
 	}
       else
@@ -178,10 +156,7 @@ strsub (string, pat, rep, global)
   return (temp);
 }
 
-/* Replace all instances of C in STRING with TEXT.  TEXT may be empty or
-   NULL.  If (FLAGS & 1) is non-zero, we quote the replacement text for
-   globbing.  Backslash may be used to quote C. If (FLAGS & 2) we allow
-   backslash to escape backslash as well. */
+ 
 char *
 strcreplace (string, c, text, flags)
      char *string;
@@ -212,7 +187,7 @@ strcreplace (string, c, text, flags)
 		  t = quote_globbing_chars (text);
 		  tlen = strlen (t);
 		  RESIZE_MALLOCED_BUFFER (ret, ind, tlen, rlen, rlen);
-		  r = ret + ind;	/* in case reallocated */
+		  r = ret + ind;	 
 		  strcpy (r, t);
 		  r += tlen;
 		  free (t);
@@ -220,7 +195,7 @@ strcreplace (string, c, text, flags)
 	      else
 		{
 		  RESIZE_MALLOCED_BUFFER (ret, ind, len, rlen, rlen);
-		  r = ret + ind;	/* in case reallocated */
+		  r = ret + ind;	 
 		  strcpy (r, text);
 		  r += len;
 		}
@@ -236,7 +211,7 @@ strcreplace (string, c, text, flags)
 
       ind = r - ret;
       RESIZE_MALLOCED_BUFFER (ret, ind, 2, rlen, rlen);
-      r = ret + ind;			/* in case reallocated */
+      r = ret + ind;			 
       *r++ = *p++;
     }
   *r = '\0';
@@ -245,8 +220,7 @@ strcreplace (string, c, text, flags)
 }
 
 #ifdef INCLUDE_UNUSED
-/* Remove all leading whitespace from STRING.  This includes
-   newlines.  STRING should be terminated with a zero. */
+ 
 void
 strip_leading (string)
      char *string;
@@ -265,9 +239,7 @@ strip_leading (string)
 }
 #endif
 
-/* Remove all trailing whitespace from STRING.  This includes
-   newlines.  If NEWLINES_ONLY is non-zero, only trailing newlines
-   are removed.  STRING should be terminated with a zero. */
+ 
 void
 strip_trailing (string, len, newlines_only)
      char *string;
@@ -285,7 +257,7 @@ strip_trailing (string, len, newlines_only)
   string[len + 1] = '\0';
 }
 
-/* A wrapper for bcopy that can be prototyped in general.h */
+ 
 void
 xbcopy (s, d, n)
      char *s, *d;

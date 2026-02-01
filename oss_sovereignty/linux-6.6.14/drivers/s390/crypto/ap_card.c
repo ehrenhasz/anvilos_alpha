@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2016
- * Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
- *
- * Adjunct processor bus, card related code.
- */
+
+ 
 
 #define KMSG_COMPONENT "ap"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -16,9 +11,7 @@
 
 #include "ap_bus.h"
 
-/*
- * AP card related attributes.
- */
+ 
 static ssize_t hwtype_show(struct device *dev,
 			   struct device_attribute *attr, char *buf)
 {

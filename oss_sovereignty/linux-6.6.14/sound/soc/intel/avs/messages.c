@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/slab.h>
 #include "avs.h"
@@ -159,24 +159,7 @@ int avs_ipc_get_pipeline_state(struct avs_dev *adev, u8 instance_id,
 	return ret;
 }
 
-/*
- * avs_ipc_init_instance - Initialize module instance
- *
- * @adev: Driver context
- * @module_id: Module-type id
- * @instance_id: Unique module instance id
- * @ppl_id: Parent pipeline id
- * @core_id: DSP core to allocate module on
- * @domain: Processing domain (low latency or data processing)
- * @param: Module-type specific configuration
- * @param_size: Size of @param in bytes
- *
- * Argument verification, as well as pipeline state checks are done by the
- * firmware.
- *
- * Note: @ppl_id and @core_id are independent of each other as single pipeline
- * can be composed of module instances located on different DSP cores.
- */
+ 
 int avs_ipc_init_instance(struct avs_dev *adev, u16 module_id, u8 instance_id,
 			  u8 ppl_id, u8 core_id, u8 domain,
 			  void *param, u32 param_size)
@@ -187,7 +170,7 @@ int avs_ipc_init_instance(struct avs_dev *adev, u16 module_id, u8 instance_id,
 
 	msg.module_id = module_id;
 	msg.instance_id = instance_id;
-	/* firmware expects size provided in dwords */
+	 
 	msg.ext.init_instance.param_block_size = DIV_ROUND_UP(param_size, sizeof(u32));
 	msg.ext.init_instance.ppl_instance_id = ppl_id;
 	msg.ext.init_instance.core_id = core_id;
@@ -204,20 +187,7 @@ int avs_ipc_init_instance(struct avs_dev *adev, u16 module_id, u8 instance_id,
 	return ret;
 }
 
-/*
- * avs_ipc_delete_instance - Delete module instance
- *
- * @adev: Driver context
- * @module_id: Module-type id
- * @instance_id: Unique module instance id
- *
- * Argument verification, as well as pipeline state checks are done by the
- * firmware.
- *
- * Note: only standalone modules i.e. without a parent pipeline shall be
- * deleted using this IPC message. In all other cases, pipeline owning the
- * modules performs cleanup automatically when it is deleted.
- */
+ 
 int avs_ipc_delete_instance(struct avs_dev *adev, u16 module_id, u8 instance_id)
 {
 	union avs_module_msg msg = AVS_MODULE_REQUEST(DELETE_INSTANCE);
@@ -235,17 +205,7 @@ int avs_ipc_delete_instance(struct avs_dev *adev, u16 module_id, u8 instance_id)
 	return ret;
 }
 
-/*
- * avs_ipc_bind - Bind two module instances
- *
- * @adev: Driver context
- * @module_id: Source module-type id
- * @instance_id: Source module instance id
- * @dst_module_id: Sink module-type id
- * @dst_instance_id: Sink module instance id
- * @dst_queue: Sink module pin to bind @src_queue with
- * @src_queue: Source module pin to bind @dst_queue with
- */
+ 
 int avs_ipc_bind(struct avs_dev *adev, u16 module_id, u8 instance_id,
 		 u16 dst_module_id, u8 dst_instance_id,
 		 u8 dst_queue, u8 src_queue)
@@ -269,17 +229,7 @@ int avs_ipc_bind(struct avs_dev *adev, u16 module_id, u8 instance_id,
 	return ret;
 }
 
-/*
- * avs_ipc_unbind - Unbind two module instances
- *
- * @adev: Driver context
- * @module_id: Source module-type id
- * @instance_id: Source module instance id
- * @dst_module_id: Sink module-type id
- * @dst_instance_id: Sink module instance id
- * @dst_queue: Sink module pin to unbind @src_queue from
- * @src_queue: Source module pin to unbind @dst_queue from
- */
+ 
 int avs_ipc_unbind(struct avs_dev *adev, u16 module_id, u8 instance_id,
 		   u16 dst_module_id, u8 dst_instance_id,
 		   u8 dst_queue, u8 src_queue)
@@ -341,7 +291,7 @@ int avs_ipc_set_large_config(struct avs_dev *adev, u16 module_id,
 	tx_size = min_t(size_t, AVS_MAILBOX_SIZE, remaining);
 	final = (tx_size == remaining);
 
-	/* Initial request states total payload size. */
+	 
 	ret = __avs_ipc_set_large_config(adev, module_id, instance_id,
 					 param_id, 1, final, request, tx_size,
 					 request_size);
@@ -350,7 +300,7 @@ int avs_ipc_set_large_config(struct avs_dev *adev, u16 module_id,
 
 	remaining -= tx_size;
 
-	/* Loop the rest only when payload exceeds mailbox's size. */
+	 
 	while (remaining) {
 		size_t offset;
 
@@ -389,7 +339,7 @@ int avs_ipc_get_large_config(struct avs_dev *adev, u16 module_id, u8 instance_id
 	msg.instance_id = instance_id;
 	msg.ext.large_config.data_off_size = request_size;
 	msg.ext.large_config.large_param_id = param_id;
-	/* final_block is always 0 on request. Updated by fw on reply. */
+	 
 	msg.ext.large_config.final_block = 0;
 	msg.ext.large_config.init_block = 1;
 
@@ -437,12 +387,7 @@ int avs_ipc_set_dx(struct avs_dev *adev, u32 core_mask, bool powerup)
 	return ret;
 }
 
-/*
- * avs_ipc_set_d0ix - Set power gating policy (entering D0IX substates)
- *
- * @enable_pg: Whether to enable or disable power gating
- * @streaming: Whether a stream is running when transitioning
- */
+ 
 int avs_ipc_set_d0ix(struct avs_dev *adev, bool enable_pg, bool streaming)
 {
 	union avs_module_msg msg = AVS_MODULE_REQUEST(SET_D0IX);
@@ -474,7 +419,7 @@ int avs_ipc_get_fw_config(struct avs_dev *adev, struct avs_fw_cfg *cfg)
 				       &payload, &payload_size);
 	if (ret)
 		return ret;
-	/* Non-zero payload expected for FIRMWARE_CONFIG. */
+	 
 	if (!payload_size)
 		return -EREMOTEIO;
 
@@ -558,7 +503,7 @@ int avs_ipc_get_fw_config(struct avs_dev *adev, struct avs_fw_cfg *cfg)
 			cfg->power_gating_policy = *tlv->value;
 			break;
 
-		/* Known but not useful to us. */
+		 
 		case AVS_FW_CFG_DMA_BUFFER_CONFIG:
 		case AVS_FW_CFG_SCHEDULER_CONFIG:
 		case AVS_FW_CFG_CLOCKS_CONFIG:
@@ -573,7 +518,7 @@ int avs_ipc_get_fw_config(struct avs_dev *adev, struct avs_fw_cfg *cfg)
 		offset += sizeof(*tlv) + tlv->length;
 	}
 
-	/* No longer needed, free it as it's owned by the get_large_config() caller. */
+	 
 	kfree(payload);
 	return ret;
 }
@@ -591,7 +536,7 @@ int avs_ipc_get_hw_config(struct avs_dev *adev, struct avs_hw_cfg *cfg)
 				       &payload, &payload_size);
 	if (ret)
 		return ret;
-	/* Non-zero payload expected for HARDWARE_CONFIG. */
+	 
 	if (!payload_size)
 		return -EREMOTEIO;
 
@@ -622,7 +567,7 @@ int avs_ipc_get_hw_config(struct avs_dev *adev, struct avs_hw_cfg *cfg)
 			if (!size)
 				break;
 
-			/* Multiply to get entire array size. */
+			 
 			size *= sizeof(*cfg->i2s_caps.ctrl_base_addr);
 			cfg->i2s_caps.ctrl_base_addr = devm_kmemdup(adev->dev,
 								    &tlv->value[2],
@@ -661,7 +606,7 @@ int avs_ipc_get_hw_config(struct avs_dev *adev, struct avs_hw_cfg *cfg)
 	}
 
 exit:
-	/* No longer needed, free it as it's owned by the get_large_config() caller. */
+	 
 	kfree(payload);
 	return ret;
 }
@@ -677,7 +622,7 @@ int avs_ipc_get_modules_info(struct avs_dev *adev, struct avs_mods_info **info)
 				       &payload, &payload_size);
 	if (ret)
 		return ret;
-	/* Non-zero payload expected for MODULES_INFO. */
+	 
 	if (!payload_size)
 		return -EREMOTEIO;
 
@@ -693,7 +638,7 @@ int avs_ipc_copier_set_sink_format(struct avs_dev *adev, u16 module_id,
 	struct avs_copier_sink_format cpr_fmt;
 
 	cpr_fmt.sink_id = sink_id;
-	/* Firmware expects driver to resend copier's input format. */
+	 
 	cpr_fmt.src_fmt = *src_fmt;
 	cpr_fmt.sink_fmt = *sink_fmt;
 
@@ -721,7 +666,7 @@ int avs_ipc_peakvol_get_volume(struct avs_dev *adev, u16 module_id, u8 instance_
 	if (ret)
 		return ret;
 
-	/* Non-zero payload expected for PEAKVOL_VOLUME. */
+	 
 	if (!payload_size)
 		return -EREMOTEIO;
 
@@ -743,7 +688,7 @@ int avs_ipc_set_system_time(struct avs_dev *adev)
 	struct avs_sys_time sys_time;
 	u64 us;
 
-	/* firmware expects UTC time in micro seconds */
+	 
 	us = ktime_to_us(ktime_get());
 	sys_time.val_l = us & UINT_MAX;
 	sys_time.val_u = us >> 32;

@@ -1,26 +1,4 @@
-/*
- * Copyright 2003 José Fonseca.
- * Copyright 2003 Leif Delgass.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
- * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/export.h>
@@ -37,7 +15,7 @@
 #include "drm_legacy.h"
 
 #ifdef CONFIG_DRM_LEGACY
-/* List of devices hanging off drivers with stealth attach. */
+ 
 static LIST_HEAD(legacy_dev_list);
 static DEFINE_MUTEX(legacy_dev_list_lock);
 #endif
@@ -45,13 +23,10 @@ static DEFINE_MUTEX(legacy_dev_list_lock);
 static int drm_get_pci_domain(struct drm_device *dev)
 {
 #ifndef __alpha__
-	/* For historical reasons, drm_get_pci_domain() is busticated
-	 * on most archs and has to remain so for userspace interface
-	 * < 1.4, except on alpha which was right from the beginning
-	 */
+	 
 	if (dev->if_version < 0x10004)
 		return 0;
-#endif /* __alpha__ */
+#endif  
 
 	return pci_domain_nr(to_pci_dev(dev->dev)->bus);
 }
@@ -90,18 +65,7 @@ static int drm_legacy_pci_irq_by_busid(struct drm_device *dev, struct drm_irq_bu
 	return 0;
 }
 
-/**
- * drm_legacy_irq_by_busid - Get interrupt from bus ID
- * @dev: DRM device
- * @data: IOCTL parameter pointing to a drm_irq_busid structure
- * @file_priv: DRM file private.
- *
- * Finds the PCI device with the specified bus id and gets its IRQ number.
- * This IOCTL is deprecated, and will now return EINVAL for any busid not equal
- * to that of the device that this DRM instance attached to.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int drm_legacy_irq_by_busid(struct drm_device *dev, void *data,
 			    struct drm_file *file_priv)
 {
@@ -110,7 +74,7 @@ int drm_legacy_irq_by_busid(struct drm_device *dev, void *data,
 	if (!drm_core_check_feature(dev, DRIVER_LEGACY))
 		return -EOPNOTSUPP;
 
-	/* UMS was only ever support on PCI devices. */
+	 
 	if (WARN_ON(!dev_is_pci(dev->dev)))
 		return -EINVAL;
 
@@ -187,15 +151,7 @@ err_free:
 	return ret;
 }
 
-/**
- * drm_legacy_pci_init - shadow-attach a legacy DRM PCI driver
- * @driver: DRM device driver
- * @pdriver: PCI device driver
- *
- * This is only used by legacy dri1 drivers and deprecated.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int drm_legacy_pci_init(const struct drm_driver *driver,
 			struct pci_driver *pdriver)
 {
@@ -208,16 +164,11 @@ int drm_legacy_pci_init(const struct drm_driver *driver,
 	if (WARN_ON(!(driver->driver_features & DRIVER_LEGACY)))
 		return -EINVAL;
 
-	/* If not using KMS, fall back to stealth mode manual scanning. */
+	 
 	for (i = 0; pdriver->id_table[i].vendor != 0; i++) {
 		pid = &pdriver->id_table[i];
 
-		/* Loop around setting up a DRM device for each PCI device
-		 * matching our ID and device class.  If we had the internal
-		 * function that pci_get_subsys and pci_get_class used, we'd
-		 * be able to just pass pid in instead of doing a two-stage
-		 * thing.
-		 */
+		 
 		pdev = NULL;
 		while ((pdev =
 			pci_get_subsys(pid->vendor, pid->device, pid->subvendor,
@@ -225,7 +176,7 @@ int drm_legacy_pci_init(const struct drm_driver *driver,
 			if ((pdev->class & pid->class_mask) != pid->class)
 				continue;
 
-			/* stealth mode requires a manual probe */
+			 
 			pci_dev_get(pdev);
 			drm_legacy_get_pci_dev(pdev, pid, driver);
 		}
@@ -234,14 +185,7 @@ int drm_legacy_pci_init(const struct drm_driver *driver,
 }
 EXPORT_SYMBOL(drm_legacy_pci_init);
 
-/**
- * drm_legacy_pci_exit - unregister shadow-attach legacy DRM driver
- * @driver: DRM device driver
- * @pdriver: PCI device driver
- *
- * Unregister a DRM driver shadow-attached through drm_legacy_pci_init(). This
- * is deprecated and only used by dri1 drivers.
- */
+ 
 void drm_legacy_pci_exit(const struct drm_driver *driver,
 			 struct pci_driver *pdriver)
 {

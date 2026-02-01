@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -71,17 +71,17 @@ struct mlxsw_core {
 	struct list_head rx_listener_list;
 	struct list_head event_listener_list;
 	struct list_head irq_event_handler_list;
-	struct mutex irq_event_handler_lock; /* Locks access to handlers list */
+	struct mutex irq_event_handler_lock;  
 	struct {
 		atomic64_t tid;
 		struct list_head trans_list;
-		spinlock_t trans_list_lock; /* protects trans_list writes */
+		spinlock_t trans_list_lock;  
 		bool use_emad;
 		bool enable_string_tlv;
 		bool enable_latency_tlv;
 	} emad;
 	struct {
-		u16 *mapping; /* lag_id+port_index to local_port mapping */
+		u16 *mapping;  
 	} lag;
 	struct mlxsw_res res;
 	struct mlxsw_hwmon *hwmon;
@@ -96,7 +96,7 @@ struct mlxsw_core {
 	} health;
 	struct mlxsw_env *env;
 	unsigned long driver_priv[];
-	/* driver_priv has to be always the last item */
+	 
 };
 
 struct mlxsw_linecards *mlxsw_core_linecards(struct mlxsw_core *mlxsw_core)
@@ -142,7 +142,7 @@ static int mlxsw_ports_init(struct mlxsw_core *mlxsw_core, bool reload)
 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
 	int err;
 
-	/* Switch ports are numbered from 1 to queried value */
+	 
 	if (MLXSW_CORE_RES_VALID(mlxsw_core, MAX_SYSTEM_PORT))
 		mlxsw_core->max_ports = MLXSW_CORE_RES_GET(mlxsw_core,
 							   MAX_SYSTEM_PORT) + 1;
@@ -260,162 +260,81 @@ static int mlxsw_core_trap_groups_set(struct mlxsw_core *mlxsw_core)
 	return 0;
 }
 
-/******************
- * EMAD processing
- ******************/
+ 
 
-/* emad_eth_hdr_dmac
- * Destination MAC in EMAD's Ethernet header.
- * Must be set to 01:02:c9:00:00:01
- */
+ 
 MLXSW_ITEM_BUF(emad, eth_hdr, dmac, 0x00, 6);
 
-/* emad_eth_hdr_smac
- * Source MAC in EMAD's Ethernet header.
- * Must be set to 00:02:c9:01:02:03
- */
+ 
 MLXSW_ITEM_BUF(emad, eth_hdr, smac, 0x06, 6);
 
-/* emad_eth_hdr_ethertype
- * Ethertype in EMAD's Ethernet header.
- * Must be set to 0x8932
- */
+ 
 MLXSW_ITEM32(emad, eth_hdr, ethertype, 0x0C, 16, 16);
 
-/* emad_eth_hdr_mlx_proto
- * Mellanox protocol.
- * Must be set to 0x0.
- */
+ 
 MLXSW_ITEM32(emad, eth_hdr, mlx_proto, 0x0C, 8, 8);
 
-/* emad_eth_hdr_ver
- * Mellanox protocol version.
- * Must be set to 0x0.
- */
+ 
 MLXSW_ITEM32(emad, eth_hdr, ver, 0x0C, 4, 4);
 
-/* emad_op_tlv_type
- * Type of the TLV.
- * Must be set to 0x1 (operation TLV).
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, type, 0x00, 27, 5);
 
-/* emad_op_tlv_len
- * Length of the operation TLV in u32.
- * Must be set to 0x4.
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, len, 0x00, 16, 11);
 
-/* emad_op_tlv_dr
- * Direct route bit. Setting to 1 indicates the EMAD is a direct route
- * EMAD. DR TLV must follow.
- *
- * Note: Currently not supported and must not be set.
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, dr, 0x00, 15, 1);
 
-/* emad_op_tlv_status
- * Returned status in case of EMAD response. Must be set to 0 in case
- * of EMAD request.
- * 0x0 - success
- * 0x1 - device is busy. Requester should retry
- * 0x2 - Mellanox protocol version not supported
- * 0x3 - unknown TLV
- * 0x4 - register not supported
- * 0x5 - operation class not supported
- * 0x6 - EMAD method not supported
- * 0x7 - bad parameter (e.g. port out of range)
- * 0x8 - resource not available
- * 0x9 - message receipt acknowledgment. Requester should retry
- * 0x70 - internal error
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, status, 0x00, 8, 7);
 
-/* emad_op_tlv_register_id
- * Register ID of register within register TLV.
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, register_id, 0x04, 16, 16);
 
-/* emad_op_tlv_r
- * Response bit. Setting to 1 indicates Response, otherwise request.
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, r, 0x04, 15, 1);
 
-/* emad_op_tlv_method
- * EMAD method type.
- * 0x1 - query
- * 0x2 - write
- * 0x3 - send (currently not supported)
- * 0x4 - event
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, method, 0x04, 8, 7);
 
-/* emad_op_tlv_class
- * EMAD operation class. Must be set to 0x1 (REG_ACCESS).
- */
+ 
 MLXSW_ITEM32(emad, op_tlv, class, 0x04, 0, 8);
 
-/* emad_op_tlv_tid
- * EMAD transaction ID. Used for pairing request and response EMADs.
- */
+ 
 MLXSW_ITEM64(emad, op_tlv, tid, 0x08, 0, 64);
 
-/* emad_string_tlv_type
- * Type of the TLV.
- * Must be set to 0x2 (string TLV).
- */
+ 
 MLXSW_ITEM32(emad, string_tlv, type, 0x00, 27, 5);
 
-/* emad_string_tlv_len
- * Length of the string TLV in u32.
- */
+ 
 MLXSW_ITEM32(emad, string_tlv, len, 0x00, 16, 11);
 
 #define MLXSW_EMAD_STRING_TLV_STRING_LEN 128
 
-/* emad_string_tlv_string
- * String provided by the device's firmware in case of erroneous register access
- */
+ 
 MLXSW_ITEM_BUF(emad, string_tlv, string, 0x04,
 	       MLXSW_EMAD_STRING_TLV_STRING_LEN);
 
-/* emad_latency_tlv_type
- * Type of the TLV.
- * Must be set to 0x4 (latency TLV).
- */
+ 
 MLXSW_ITEM32(emad, latency_tlv, type, 0x00, 27, 5);
 
-/* emad_latency_tlv_len
- * Length of the latency TLV in u32.
- */
+ 
 MLXSW_ITEM32(emad, latency_tlv, len, 0x00, 16, 11);
 
-/* emad_latency_tlv_latency_time
- * EMAD latency time in units of uSec.
- */
+ 
 MLXSW_ITEM32(emad, latency_tlv, latency_time, 0x04, 0, 32);
 
-/* emad_reg_tlv_type
- * Type of the TLV.
- * Must be set to 0x3 (register TLV).
- */
+ 
 MLXSW_ITEM32(emad, reg_tlv, type, 0x00, 27, 5);
 
-/* emad_reg_tlv_len
- * Length of the operation TLV in u32.
- */
+ 
 MLXSW_ITEM32(emad, reg_tlv, len, 0x00, 16, 11);
 
-/* emad_end_tlv_type
- * Type of the TLV.
- * Must be set to 0x0 (end TLV).
- */
+ 
 MLXSW_ITEM32(emad, end_tlv, type, 0x00, 27, 5);
 
-/* emad_end_tlv_len
- * Length of the end TLV in u32.
- * Must be set to 1.
- */
+ 
 MLXSW_ITEM32(emad, end_tlv, len, 0x00, 16, 11);
 
 enum mlxsw_core_reg_access_type {
@@ -562,7 +481,7 @@ static void mlxsw_emad_tlv_parse(struct sk_buff *skb)
 	offsets->reg_tlv = MLXSW_EMAD_ETH_HDR_LEN +
 			   MLXSW_EMAD_OP_TLV_LEN * sizeof(u32);
 
-	/* If string TLV is present, it must come after the operation TLV. */
+	 
 	if (mlxsw_emad_tlv_is_string_tlv(skb->data + offsets->reg_tlv)) {
 		offsets->string_tlv = offsets->reg_tlv;
 		offsets->reg_tlv += MLXSW_EMAD_STRING_TLV_LEN * sizeof(u32);
@@ -807,7 +726,7 @@ static void mlxsw_emad_process_response(struct mlxsw_core *mlxsw_core,
 	}
 }
 
-/* called with rcu read lock held */
+ 
 static void mlxsw_emad_rx_listener_func(struct sk_buff *skb, u16 local_port,
 					void *priv)
 {
@@ -877,10 +796,7 @@ static int mlxsw_emad_init(struct mlxsw_core *mlxsw_core)
 		return -ENOMEM;
 	mlxsw_core->emad_wq = emad_wq;
 
-	/* Set the upper 32 bits of the transaction ID field to a random
-	 * number. This allows us to discard EMADs addressed to other
-	 * devices.
-	 */
+	 
 	get_random_bytes(&tid, 4);
 	tid <<= 32;
 	atomic64_set(&mlxsw_core->emad.tid, tid);
@@ -1000,9 +916,7 @@ err_out:
 	return err;
 }
 
-/*****************
- * Core functions
- *****************/
+ 
 
 int mlxsw_core_driver_register(struct mlxsw_driver *mlxsw_driver)
 {
@@ -1238,11 +1152,11 @@ static int mlxsw_core_fw_rev_validate(struct mlxsw_core *mlxsw_core,
 	const struct firmware *firmware;
 	int err;
 
-	/* Don't check if driver does not require it */
+	 
 	if (!req_rev || !filename)
 		return 0;
 
-	/* Don't check if devlink 'fw_load_policy' param is 'flash' */
+	 
 	err = devl_param_driverinit_value_get(priv_to_devlink(mlxsw_core),
 					      DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
 					      &value);
@@ -1251,7 +1165,7 @@ static int mlxsw_core_fw_rev_validate(struct mlxsw_core *mlxsw_core,
 	if (value.vu8 == DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_FLASH)
 		return 0;
 
-	/* Validate driver & FW are compatible */
+	 
 	if (rev->major != req_rev->major) {
 		WARN(1, "Mismatch in major FW version [%d:%d] is never expected; Please contact support\n",
 		     rev->major, req_rev->major);
@@ -1276,9 +1190,7 @@ static int mlxsw_core_fw_rev_validate(struct mlxsw_core *mlxsw_core,
 	if (err)
 		dev_err(mlxsw_bus_info->dev, "Could not upgrade firmware\n");
 
-	/* On FW flash success, tell the caller FW reset is needed
-	 * if current FW supports it.
-	 */
+	 
 	if (rev->minor >= req_rev->can_reset_minor)
 		return err ? err : -EAGAIN;
 	else
@@ -1921,7 +1833,7 @@ static int mlxsw_core_health_fw_fatal_dump(struct devlink_health_reporter *repor
 	int err;
 
 	if (!priv_ctx)
-		/* User-triggered dumps are not possible */
+		 
 		return -EOPNOTSUPP;
 
 	val = mlxsw_reg_mfde_irisc_id_get(mfde_pl);
@@ -2068,7 +1980,7 @@ mlxsw_core_health_fw_fatal_test(struct devlink_health_reporter *reporter,
 	char mfgd_pl[MLXSW_REG_MFGD_LEN];
 	int err;
 
-	/* Read the register first to make sure no other bits are changed. */
+	 
 	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mfgd), mfgd_pl);
 	if (err)
 		return err;
@@ -2089,7 +2001,7 @@ static int mlxsw_core_health_fw_fatal_config(struct mlxsw_core *mlxsw_core,
 	char mfgd_pl[MLXSW_REG_MFGD_LEN];
 	int err;
 
-	/* Read the register first to make sure no other bits are changed. */
+	 
 	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mfgd), mfgd_pl);
 	if (err)
 		return err;
@@ -2138,7 +2050,7 @@ static void mlxsw_core_health_fini(struct mlxsw_core *mlxsw_core)
 
 	mlxsw_core_health_fw_fatal_config(mlxsw_core, false);
 	mlxsw_core_trap_unregister(mlxsw_core, &mlxsw_core_health_listener, mlxsw_core);
-	/* Make sure there is no more event work scheduled */
+	 
 	mlxsw_core_flush_owq();
 	devl_health_reporter_destroy(mlxsw_core->health.fw_fatal);
 }
@@ -2320,10 +2232,7 @@ again:
 	err = __mlxsw_core_bus_device_register(mlxsw_bus_info, mlxsw_bus,
 					       bus_priv, reload,
 					       devlink, extack);
-	/* -EAGAIN is returned in case the FW was updated. FW needs
-	 * a reset, so lets try to call __mlxsw_core_bus_device_register()
-	 * again.
-	 */
+	 
 	if (err == -EAGAIN && !called_again) {
 		called_again = true;
 		goto again;
@@ -2343,9 +2252,7 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
 
 	if (devlink_is_reload_failed(devlink)) {
 		if (!reload)
-			/* Only the parts that were not de-initialized in the
-			 * failed reload attempt need to be de-initialized.
-			 */
+			 
 			goto reload_fail_deinit;
 		else
 			return;
@@ -2550,9 +2457,7 @@ int mlxsw_core_event_listener_register(struct mlxsw_core *mlxsw_core,
 	if (err)
 		goto err_rx_listener_register;
 
-	/* No reason to save item if we did not manage to register an RX
-	 * listener for it.
-	 */
+	 
 	list_add_rcu(&el_item->list, &mlxsw_core->event_listener_list);
 
 	return 0;
@@ -2712,7 +2617,7 @@ int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
 	char hpkt_pl[MLXSW_REG_HPKT_LEN];
 	int err;
 
-	/* Not supported for event listener */
+	 
 	if (WARN_ON(listener->is_event))
 		return -EINVAL;
 
@@ -2833,7 +2738,7 @@ int mlxsw_reg_trans_bulk_wait(struct list_head *bulk_list)
 	list_for_each_entry_safe(trans, tmp, bulk_list, bulk_list) {
 		err = mlxsw_reg_trans_wait(trans);
 		if (err && sum_err == 0)
-			sum_err = err; /* first error to be returned */
+			sum_err = err;  
 	}
 	return sum_err;
 }
@@ -2919,11 +2824,7 @@ static int mlxsw_core_reg_access_cmd(struct mlxsw_core *mlxsw_core,
 	tmp = in_mbox + MLXSW_EMAD_OP_TLV_LEN * sizeof(u32);
 	mlxsw_emad_pack_reg_tlv(tmp, reg, payload);
 
-	/* There is a special treatment needed for MRSR (reset) register.
-	 * The command interface will return error after the command
-	 * is executed, so tell the lower layer to expect it
-	 * and cope accordingly.
-	 */
+	 
 	reset_ok = reg->id == MLXSW_REG_MRSR_ID;
 
 	n_retry = 0;
@@ -2970,10 +2871,7 @@ static int mlxsw_core_reg_access(struct mlxsw_core *mlxsw_core,
 	LIST_HEAD(bulk_list);
 	int err;
 
-	/* During initialization EMAD interface is not available to us,
-	 * so we default to command interface. We switch to EMAD interface
-	 * after setting the appropriate traps.
-	 */
+	 
 	if (!mlxsw_core->emad.use_emad)
 		return mlxsw_core_reg_access_cmd(mlxsw_core, reg,
 						 payload, type);
@@ -3015,9 +2913,7 @@ void mlxsw_core_skb_receive(struct mlxsw_core *mlxsw_core, struct sk_buff *skb,
 		dev_dbg_ratelimited(mlxsw_core->bus_info->dev, "%s: lag_id = %d, lag_port_index = 0x%x\n",
 				    __func__, rx_info->u.lag_id,
 				    rx_info->trap_id);
-		/* Upper layer does not care if the skb came from LAG or not,
-		 * so just get the local_port for the lag port and push it up.
-		 */
+		 
 		local_port = mlxsw_core_lag_mapping_get(mlxsw_core,
 							rx_info->u.lag_id,
 							rx_info->lag_port_index);
@@ -3400,9 +3296,7 @@ int mlxsw_core_resources_query(struct mlxsw_core *mlxsw_core, char *mbox,
 		}
 	}
 
-	/* If after MLXSW_RESOURCES_QUERY_MAX_QUERIES we still didn't get
-	 * MLXSW_RESOURCES_TABLE_END_ID, something went bad in the FW.
-	 */
+	 
 	return -EIO;
 }
 EXPORT_SYMBOL(mlxsw_core_resources_query);

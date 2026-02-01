@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery charger driver for RT5033
- *
- * Copyright (C) 2014 Samsung Electronics, Co., Ltd.
- * Author: Beomho Seo <beomho.seo@samsung.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -120,7 +115,7 @@ static inline int rt5033_init_const_charge(struct rt5033_charger *charger)
 	unsigned int val;
 	u8 reg_data;
 
-	/* Set constant voltage mode */
+	 
 	if (chg->const_uvolt < RT5033_CHARGER_CONST_VOLTAGE_LIMIT_MIN ||
 	    chg->const_uvolt > RT5033_CHARGER_CONST_VOLTAGE_LIMIT_MAX) {
 		dev_err(charger->dev,
@@ -147,7 +142,7 @@ static inline int rt5033_init_const_charge(struct rt5033_charger *charger)
 		return -EINVAL;
 	}
 
-	/* Set end of charge current */
+	 
 	if (chg->eoc_uamp < RT5033_CHARGER_EOC_MIN ||
 	    chg->eoc_uamp > RT5033_CHARGER_EOC_MAX) {
 		dev_err(charger->dev,
@@ -191,7 +186,7 @@ static inline int rt5033_init_fast_charge(struct rt5033_charger *charger)
 	unsigned int val;
 	u8 reg_data;
 
-	/* Set limit input current */
+	 
 	ret = regmap_update_bits(charger->regmap, RT5033_REG_CHG_CTRL1,
 			RT5033_CHGCTRL1_IAICR_MASK, RT5033_AICR_2000_MODE);
 	if (ret) {
@@ -199,7 +194,7 @@ static inline int rt5033_init_fast_charge(struct rt5033_charger *charger)
 		return -EINVAL;
 	}
 
-	/* Set fast-charge mode charging current */
+	 
 	if (chg->fast_uamp < RT5033_CHARGER_FAST_CURRENT_MIN ||
 	    chg->fast_uamp > RT5033_CHARGER_FAST_CURRENT_MAX) {
 		dev_err(charger->dev,
@@ -236,7 +231,7 @@ static inline int rt5033_init_pre_charge(struct rt5033_charger *charger)
 	unsigned int val;
 	u8 reg_data;
 
-	/* Set pre-charge threshold voltage */
+	 
 	if (chg->pre_uvolt < RT5033_CHARGER_PRE_THRESHOLD_LIMIT_MIN ||
 	    chg->pre_uvolt > RT5033_CHARGER_PRE_THRESHOLD_LIMIT_MAX) {
 		dev_err(charger->dev,
@@ -262,7 +257,7 @@ static inline int rt5033_init_pre_charge(struct rt5033_charger *charger)
 		return -EINVAL;
 	}
 
-	/* Set pre-charge mode charging current */
+	 
 	if (chg->pre_uamp < RT5033_CHARGER_PRE_CURRENT_LIMIT_MIN ||
 	    chg->pre_uamp > RT5033_CHARGER_PRE_CURRENT_LIMIT_MAX) {
 		dev_err(charger->dev,
@@ -296,7 +291,7 @@ static int rt5033_charger_reg_init(struct rt5033_charger *charger)
 {
 	int ret = 0;
 
-	/* Enable charging termination */
+	 
 	ret = regmap_update_bits(charger->regmap, RT5033_REG_CHG_CTRL1,
 			RT5033_CHGCTRL1_TE_EN_MASK, RT5033_TE_ENABLE);
 	if (ret) {
@@ -304,10 +299,7 @@ static int rt5033_charger_reg_init(struct rt5033_charger *charger)
 		return -EINVAL;
 	}
 
-	/*
-	 * Disable minimum input voltage regulation (MIVR), this improves
-	 * the charging performance.
-	 */
+	 
 	ret = regmap_update_bits(charger->regmap, RT5033_REG_CHG_CTRL4,
 			RT5033_CHGCTRL4_MIVR_MASK, RT5033_CHARGER_MIVR_DISABLE);
 	if (ret) {
@@ -392,7 +384,7 @@ static struct rt5033_charger_data *rt5033_charger_dt_init(
 		return ERR_PTR(dev_err_probe(charger->dev, -EINVAL,
 			       "missing battery info\n"));
 
-	/* Assign data. Validity will be checked in the init functions. */
+	 
 	chg->pre_uamp = info->precharge_current_ua;
 	chg->fast_uamp = info->constant_charge_current_max_ua;
 	chg->eoc_uamp = info->charge_term_current_ua;

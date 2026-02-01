@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_CLUSTER_MATCH_H
 #define _XT_CLUSTER_MATCH_H
 
@@ -17,4 +17,4 @@ struct xt_cluster_match_info {
 
 #define XT_CLUSTER_NODES_MAX	32
 
-#endif /* _XT_CLUSTER_MATCH_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 The Chromium Authors, All Rights Reserved.
- * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
- *
- * util_is_printable_string contributed by
- *	Pantelis Antoniou <pantelis.antoniou AT gmail.com>
- */
+
+ 
 
 #include <ctype.h>
 #include <stdio.h>
@@ -46,7 +40,7 @@ char *xstrndup(const char *s, size_t n)
 
 int xavsprintf_append(char **strp, const char *fmt, va_list ap)
 {
-	int n, size = 0;	/* start with 128 bytes */
+	int n, size = 0;	 
 	char *p;
 	va_list ap_copy;
 
@@ -121,11 +115,11 @@ bool util_is_printable_string(const void *data, int len)
 	const char *s = data;
 	const char *ss, *se;
 
-	/* zero length is not */
+	 
 	if (len == 0)
 		return 0;
 
-	/* must terminate with zero */
+	 
 	if (s[len - 1] != '\0')
 		return 0;
 
@@ -136,7 +130,7 @@ bool util_is_printable_string(const void *data, int len)
 		while (s < se && *s && isprint((unsigned char)*s))
 			s++;
 
-		/* not zero, or not done yet */
+		 
 		if (*s != '\0' || s == ss)
 			return 0;
 
@@ -146,12 +140,7 @@ bool util_is_printable_string(const void *data, int len)
 	return 1;
 }
 
-/*
- * Parse a octal encoded character starting at index i in string s.  The
- * resulting character will be returned and the index i will be updated to
- * point at the character directly after the end of the encoding, this may be
- * the '\0' terminator of the string.
- */
+ 
 static char get_oct_char(const char *s, int *i)
 {
 	char x[4];
@@ -169,12 +158,7 @@ static char get_oct_char(const char *s, int *i)
 	return val;
 }
 
-/*
- * Parse a hexadecimal encoded character starting at index i in string s.  The
- * resulting character will be returned and the index i will be updated to
- * point at the character directly after the end of the encoding, this may be
- * the '\0' terminator of the string.
- */
+ 
 static char get_hex_char(const char *s, int *i)
 {
 	char x[3];
@@ -228,8 +212,7 @@ char get_escape_char(const char *s, int *i)
 	case '5':
 	case '6':
 	case '7':
-		j--; /* need to re-read the first digit as
-		      * part of the octal value */
+		j--;  
 		val = get_oct_char(s, &j);
 		break;
 	case 'x':
@@ -245,7 +228,7 @@ char get_escape_char(const char *s, int *i)
 
 int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 {
-	int fd = 0;	/* assume stdin */
+	int fd = 0;	 
 	char *buf = NULL;
 	size_t bufsize = 1024, offset = 0;
 	int ret = 0;
@@ -257,10 +240,10 @@ int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 			return errno;
 	}
 
-	/* Loop until we have read everything */
+	 
 	buf = xmalloc(bufsize);
 	do {
-		/* Expand the buffer to hold the next chunk */
+		 
 		if (offset == bufsize) {
 			bufsize *= 2;
 			buf = xrealloc(buf, bufsize);
@@ -274,7 +257,7 @@ int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 		offset += ret;
 	} while (ret != 0);
 
-	/* Clean up, including closing stdin; return errno on error */
+	 
 	close(fd);
 	if (ret)
 		free(buf);
@@ -295,13 +278,13 @@ char *utilfdt_read(const char *filename, size_t *len)
 			strerror(ret));
 		return NULL;
 	}
-	/* Successful read */
+	 
 	return buff;
 }
 
 int utilfdt_write_err(const char *filename, const void *blob)
 {
-	int fd = 1;	/* assume stdout */
+	int fd = 1;	 
 	int totalsize;
 	int offset;
 	int ret = 0;
@@ -324,7 +307,7 @@ int utilfdt_write_err(const char *filename, const void *blob)
 		}
 		offset += ret;
 	}
-	/* Close the file/stdin; return errno on error */
+	 
 	if (fd != 1)
 		close(fd);
 	return ret < 0 ? -ret : 0;
@@ -349,13 +332,13 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 	if (!*fmt)
 		return -1;
 
-	/* get the conversion qualifier */
+	 
 	*size = -1;
 	if (strchr("hlLb", *fmt)) {
 		qualifier = *fmt++;
 		if (qualifier == *fmt) {
 			switch (*fmt++) {
-/* TODO:		case 'l': qualifier = 'L'; break;*/
+ 
 			case 'h':
 				qualifier = 'b';
 				break;
@@ -363,18 +346,18 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 		}
 	}
 
-	/* we should now have a type */
+	 
 	if ((*fmt == '\0') || !strchr("iuxsr", *fmt))
 		return -1;
 
-	/* convert qualifier (bhL) to byte size */
+	 
 	if (*fmt != 's' && *fmt != 'r')
 		*size = qualifier == 'b' ? 1 :
 				qualifier == 'h' ? 2 :
 				qualifier == 'l' ? 4 : -1;
 	*type = *fmt++;
 
-	/* that should be it! */
+	 
 	if (*fmt)
 		return -1;
 	return 0;
@@ -385,7 +368,7 @@ void utilfdt_print_data(const char *data, int len)
 	int i;
 	const char *s;
 
-	/* no data, don't print */
+	 
 	if (len == 0)
 		return;
 
@@ -439,10 +422,10 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
 		"\n"
 		"Options: -[%s]\n", synopsis, short_opts);
 
-	/* prescan the --long opt length to auto-align */
+	 
 	optlen = 0;
 	for (i = 0; long_opts[i].name; ++i) {
-		/* +1 is for space between --opt and help text */
+		 
 		int l = strlen(long_opts[i].name) + 1;
 		if (long_opts[i].has_arg == a_argument)
 			l += a_arg_len;
@@ -451,23 +434,23 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
 	}
 
 	for (i = 0; long_opts[i].name; ++i) {
-		/* helps when adding new applets or options */
+		 
 		assert(opts_help[i] != NULL);
 
-		/* first output the short flag if it has one */
+		 
 		if (long_opts[i].val > '~')
 			fprintf(fp, "      ");
 		else
 			fprintf(fp, "  -%c, ", long_opts[i].val);
 
-		/* then the long flag */
+		 
 		if (long_opts[i].has_arg == no_argument)
 			fprintf(fp, "--%-*s", optlen, long_opts[i].name);
 		else
 			fprintf(fp, "--%s %s%*s", long_opts[i].name, a_arg,
 				(int)(optlen - strlen(long_opts[i].name) - a_arg_len), "");
 
-		/* finally the help text */
+		 
 		fprintf(fp, "%s\n", opts_help[i]);
 	}
 

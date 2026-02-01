@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CMAC: Cipher Block Mode for Authentication
- *
- * Copyright © 2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- *
- * Based on work by:
- *  Copyright © 2013 Tom St Denis <tstdenis@elliptictech.com>
- * Based on crypto/xcbc.c:
- *  Copyright © 2006 USAGI/WIDE Project,
- *   Author: Kazunori Miyazawa <miyazawa@linux-ipv6.org>
- */
+
+ 
 
 #include <crypto/internal/cipher.h>
 #include <crypto/internal/hash.h>
@@ -17,31 +7,13 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-/*
- * +------------------------
- * | <parent tfm>
- * +------------------------
- * | cmac_tfm_ctx
- * +------------------------
- * | consts (block size * 2)
- * +------------------------
- */
+ 
 struct cmac_tfm_ctx {
 	struct crypto_cipher *child;
 	u8 ctx[];
 };
 
-/*
- * +------------------------
- * | <shash desc>
- * +------------------------
- * | cmac_desc_ctx
- * +------------------------
- * | odds (block size)
- * +------------------------
- * | prev (block size)
- * +------------------------
- */
+ 
 struct cmac_desc_ctx {
 	unsigned int len;
 	u8 ctx[];
@@ -63,7 +35,7 @@ static int crypto_cmac_digest_setkey(struct crypto_shash *parent,
 	if (err)
 		return err;
 
-	/* encrypt the zero block */
+	 
 	memset(consts, 0, bs);
 	crypto_cipher_encrypt_one(ctx->child, (u8 *)consts, (u8 *)consts);
 
@@ -73,7 +45,7 @@ static int crypto_cmac_digest_setkey(struct crypto_shash *parent,
 		_const[0] = be64_to_cpu(consts[1]);
 		_const[1] = be64_to_cpu(consts[0]);
 
-		/* gf(2^128) multiply zero-ciphertext with u and u^2 */
+		 
 		for (i = 0; i < 4; i += 2) {
 			msb_mask = ((s64)_const[1] >> 63) & gfmask;
 			_const[1] = (_const[1] << 1) | (_const[0] >> 63);
@@ -88,7 +60,7 @@ static int crypto_cmac_digest_setkey(struct crypto_shash *parent,
 		gfmask = 0x1B;
 		_const[0] = be64_to_cpu(consts[0]);
 
-		/* gf(2^64) multiply zero-ciphertext with u and u^2 */
+		 
 		for (i = 0; i < 2; i++) {
 			msb_mask = ((s64)_const[0] >> 63) & gfmask;
 			_const[0] = (_const[0] << 1) ^ msb_mask;
@@ -127,14 +99,14 @@ static int crypto_cmac_digest_update(struct shash_desc *pdesc, const u8 *p,
 	u8 *odds = PTR_ALIGN((void *)ctx->ctx, alignmask + 1);
 	u8 *prev = odds + bs;
 
-	/* checking the data can fill the block */
+	 
 	if ((ctx->len + len) <= bs) {
 		memcpy(odds + ctx->len, p, len);
 		ctx->len += len;
 		return 0;
 	}
 
-	/* filling odds with new data and encrypting it */
+	 
 	memcpy(odds + ctx->len, p, bs - ctx->len);
 	len -= bs - ctx->len;
 	p += bs - ctx->len;
@@ -142,10 +114,10 @@ static int crypto_cmac_digest_update(struct shash_desc *pdesc, const u8 *p,
 	crypto_xor(prev, odds, bs);
 	crypto_cipher_encrypt_one(tfm, prev, prev);
 
-	/* clearing the length */
+	 
 	ctx->len = 0;
 
-	/* encrypting the rest of data */
+	 
 	while (len > bs) {
 		crypto_xor(prev, p, bs);
 		crypto_cipher_encrypt_one(tfm, prev, prev);
@@ -153,7 +125,7 @@ static int crypto_cmac_digest_update(struct shash_desc *pdesc, const u8 *p,
 		len -= bs;
 	}
 
-	/* keeping the surplus of blocksize */
+	 
 	if (len) {
 		memcpy(odds, p, len);
 		ctx->len = len;

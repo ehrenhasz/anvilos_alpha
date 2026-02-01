@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xhci-dbc.c - xHCI debug capability early driver
- *
- * Copyright (C) 2016 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ":%s: " fmt, __func__
 
@@ -33,7 +27,7 @@ static bool early_console_keep;
 #define	xdbc_trace	trace_printk
 #else
 static inline void xdbc_trace(const char *fmt, ...) { }
-#endif /* XDBC_TRACE */
+#endif  
 
 static void __iomem * __init xdbc_map_pci_mmio(u32 bus, u32 dev, u32 func)
 {
@@ -76,7 +70,7 @@ static void __iomem * __init xdbc_map_pci_mmio(u32 bus, u32 dev, u32 func)
 
 	sz64 = 1ULL << __ffs64(sz64);
 
-	/* Check if the mem space is enabled: */
+	 
 	byte = read_pci_config_byte(bus, dev, func, PCI_COMMAND);
 	if (!(byte & PCI_COMMAND_MEMORY)) {
 		byte |= PCI_COMMAND_MEMORY;
@@ -135,7 +129,7 @@ static int handshake(void __iomem *ptr, u32 mask, u32 done, int wait, int delay)
 {
 	u32 result;
 
-	/* Can not use readl_poll_timeout_atomic() for early boot things */
+	 
 	do {
 		result = readl(ptr);
 		result &= mask;
@@ -166,7 +160,7 @@ static void __init xdbc_bios_handoff(void)
 		}
 	}
 
-	/* Disable BIOS SMIs and clear all SMI events: */
+	 
 	val = readl(xdbc.xhci_base + offset + XHCI_LEGACY_CONTROL_OFFSET);
 	val &= XHCI_LEGACY_DISABLE_SMI;
 	val |= XHCI_LEGACY_SMI_EVENTS;
@@ -241,7 +235,7 @@ static void xdbc_mem_init(void)
 	memset(xdbc.table_base, 0, PAGE_SIZE);
 	memset(xdbc.out_buf, 0, PAGE_SIZE);
 
-	/* Initialize event ring segment table: */
+	 
 	xdbc.erst_size	= 16;
 	xdbc.erst_base	= xdbc.table_base + index * XDBC_TABLE_ENTRY_SIZE;
 	xdbc.erst_dma	= xdbc.table_dma + index * XDBC_TABLE_ENTRY_SIZE;
@@ -253,19 +247,19 @@ static void xdbc_mem_init(void)
 	entry->seg_size		= cpu_to_le32(XDBC_TRBS_PER_SEGMENT);
 	entry->__reserved_0	= 0;
 
-	/* Initialize ERST registers: */
+	 
 	writel(1, &xdbc.xdbc_reg->ersts);
 	xdbc_write64(xdbc.erst_dma, &xdbc.xdbc_reg->erstba);
 	xdbc_write64(xdbc.evt_seg.dma, &xdbc.xdbc_reg->erdp);
 
-	/* Debug capability contexts: */
+	 
 	xdbc.dbcc_size	= 64 * 3;
 	xdbc.dbcc_base	= xdbc.table_base + index * XDBC_TABLE_ENTRY_SIZE;
 	xdbc.dbcc_dma	= xdbc.table_dma + index * XDBC_TABLE_ENTRY_SIZE;
 
 	index += XDBC_DBCC_ENTRY_NUM;
 
-	/* Popluate the strings: */
+	 
 	xdbc.string_size = sizeof(struct xdbc_strings);
 	xdbc.string_base = xdbc.table_base + index * XDBC_TABLE_ENTRY_SIZE;
 	xdbc.string_dma	 = xdbc.table_dma + index * XDBC_TABLE_ENTRY_SIZE;
@@ -273,7 +267,7 @@ static void xdbc_mem_init(void)
 
 	index += XDBC_STRING_ENTRY_NUM;
 
-	/* Serial string: */
+	 
 	s_desc			= (struct usb_string_descriptor *)strings->serial;
 	s_desc->bLength		= (strlen(XDBC_STRING_SERIAL) + 1) * 2;
 	s_desc->bDescriptorType	= USB_DT_STRING;
@@ -282,7 +276,7 @@ static void xdbc_mem_init(void)
 	string_length = s_desc->bLength;
 	string_length <<= 8;
 
-	/* Product string: */
+	 
 	s_desc			= (struct usb_string_descriptor *)strings->product;
 	s_desc->bLength		= (strlen(XDBC_STRING_PRODUCT) + 1) * 2;
 	s_desc->bDescriptorType	= USB_DT_STRING;
@@ -291,7 +285,7 @@ static void xdbc_mem_init(void)
 	string_length += s_desc->bLength;
 	string_length <<= 8;
 
-	/* Manufacture string: */
+	 
 	s_desc			= (struct usb_string_descriptor *)strings->manufacturer;
 	s_desc->bLength		= (strlen(XDBC_STRING_MANUFACTURER) + 1) * 2;
 	s_desc->bDescriptorType	= USB_DT_STRING;
@@ -300,7 +294,7 @@ static void xdbc_mem_init(void)
 	string_length += s_desc->bLength;
 	string_length <<= 8;
 
-	/* String0: */
+	 
 	strings->string0[0]	= 4;
 	strings->string0[1]	= USB_DT_STRING;
 	strings->string0[2]	= 0x09;
@@ -308,7 +302,7 @@ static void xdbc_mem_init(void)
 
 	string_length += 4;
 
-	/* Populate info Context: */
+	 
 	ctx = (struct xdbc_context *)xdbc.dbcc_base;
 
 	ctx->info.string0	= cpu_to_le64(xdbc.string_dma);
@@ -317,7 +311,7 @@ static void xdbc_mem_init(void)
 	ctx->info.serial	= cpu_to_le64(xdbc.string_dma + XDBC_MAX_STRING_LENGTH * 3);
 	ctx->info.length	= cpu_to_le32(string_length);
 
-	/* Populate bulk out endpoint context: */
+	 
 	max_burst = DEBUG_MAX_BURST(readl(&xdbc.xdbc_reg->control));
 	ep_out = (struct xdbc_ep_context *)&ctx->out;
 
@@ -325,14 +319,14 @@ static void xdbc_mem_init(void)
 	ep_out->ep_info2	= cpu_to_le32(EP_TYPE(BULK_OUT_EP) | MAX_PACKET(1024) | MAX_BURST(max_burst));
 	ep_out->deq		= cpu_to_le64(xdbc.out_seg.dma | xdbc.out_ring.cycle_state);
 
-	/* Populate bulk in endpoint context: */
+	 
 	ep_in = (struct xdbc_ep_context *)&ctx->in;
 
 	ep_in->ep_info1		= 0;
 	ep_in->ep_info2		= cpu_to_le32(EP_TYPE(BULK_IN_EP) | MAX_PACKET(1024) | MAX_BURST(max_burst));
 	ep_in->deq		= cpu_to_le64(xdbc.in_seg.dma | xdbc.in_ring.cycle_state);
 
-	/* Set DbC context and info registers: */
+	 
 	xdbc_write64(xdbc.dbcc_dma, &xdbc.xdbc_reg->dccp);
 
 	dev_info = cpu_to_le32((XDBC_VENDOR_ID << 16) | XDBC_PROTOCOL);
@@ -428,25 +422,25 @@ static int xdbc_start(void)
 		return ret;
 	}
 
-	/* Reset port to avoid bus hang: */
+	 
 	if (xdbc.vendor == PCI_VENDOR_ID_INTEL)
 		xdbc_reset_debug_port();
 
-	/* Wait for port connection: */
+	 
 	ret = handshake(&xdbc.xdbc_reg->portsc, PORTSC_CONN_STATUS, PORTSC_CONN_STATUS, 5000000, 100);
 	if (ret) {
 		xdbc_trace("waiting for connection timed out\n");
 		return ret;
 	}
 
-	/* Wait for debug device to be configured: */
+	 
 	ret = handshake(&xdbc.xdbc_reg->control, CTRL_DBC_RUN, CTRL_DBC_RUN, 5000000, 100);
 	if (ret) {
 		xdbc_trace("waiting for device configuration timed out\n");
 		return ret;
 	}
 
-	/* Check port number: */
+	 
 	status = readl(&xdbc.xdbc_reg->status);
 	if (!DCST_DEBUG_PORT(status)) {
 		xdbc_trace("invalid root hub port number\n");
@@ -506,10 +500,7 @@ static int xdbc_bulk_transfer(void *data, int size, bool read)
 
 	xdbc_queue_trb(ring, lower_32_bits(addr), upper_32_bits(addr), length, control);
 
-	/*
-	 * Add a barrier between writes of trb fields and flipping
-	 * the cycle bit:
-	 */
+	 
 	wmb();
 	if (cycle)
 		trb->field[3] |= cpu_to_le32(cycle);
@@ -559,22 +550,22 @@ static int __init xdbc_early_setup(void)
 	if (ret)
 		return ret;
 
-	/* Allocate the table page: */
+	 
 	xdbc.table_base = xdbc_get_page(&xdbc.table_dma);
 	if (!xdbc.table_base)
 		return -ENOMEM;
 
-	/* Get and store the transfer buffer: */
+	 
 	xdbc.out_buf = xdbc_get_page(&xdbc.out_dma);
 	if (!xdbc.out_buf)
 		return -ENOMEM;
 
-	/* Allocate the event ring: */
+	 
 	ret = xdbc_alloc_ring(&xdbc.evt_seg, &xdbc.evt_ring);
 	if (ret < 0)
 		return ret;
 
-	/* Allocate IN/OUT endpoint transfer rings: */
+	 
 	ret = xdbc_alloc_ring(&xdbc.in_seg, &xdbc.in_ring);
 	if (ret < 0)
 		return ret;
@@ -621,7 +612,7 @@ int __init early_xdbc_parse_parameter(char *s, int keep_early)
 
 	pr_notice("dbgp_num: %lu\n", dbgp_num);
 
-	/* Locate the host controller: */
+	 
 	ret = xdbc_find_dbgp(dbgp_num, &bus, &dev, &func);
 	if (ret) {
 		pr_notice("failed to locate xhci host\n");
@@ -634,12 +625,12 @@ int __init early_xdbc_parse_parameter(char *s, int keep_early)
 	xdbc.dev	= dev;
 	xdbc.func	= func;
 
-	/* Map the IO memory: */
+	 
 	xdbc.xhci_base = xdbc_map_pci_mmio(bus, dev, func);
 	if (!xdbc.xhci_base)
 		return -EINVAL;
 
-	/* Locate DbC registers: */
+	 
 	offset = xhci_find_next_ext_cap(xdbc.xhci_base, 0, XHCI_EXT_CAPS_DEBUG);
 	if (!offset) {
 		pr_notice("xhci host doesn't support debug capability\n");
@@ -694,7 +685,7 @@ static void xdbc_handle_port_status(struct xdbc_trb *evt_trb)
 	if (port_reg & PORTSC_CONN_CHANGE) {
 		xdbc_trace("connect status change event\n");
 
-		/* Check whether cable unplugged: */
+		 
 		if (!(port_reg & PORTSC_CONN_STATUS)) {
 			xdbc.flags = 0;
 			xdbc_trace("cable unplugged\n");
@@ -710,7 +701,7 @@ static void xdbc_handle_port_status(struct xdbc_trb *evt_trb)
 	if (port_reg & PORTSC_CONFIG_CHANGE)
 		xdbc_trace("config error change\n");
 
-	/* Write back the value to clear RW1C bits: */
+	 
 	writel(port_reg, &xdbc.xdbc_reg->portsc);
 }
 
@@ -766,7 +757,7 @@ static void xdbc_handle_events(void)
 	if (!(xdbc.flags & XDBC_FLAGS_INITIALIZED))
 		return;
 
-	/* Handle external reset events: */
+	 
 	reg = readl(&xdbc.xdbc_reg->control);
 	if (!(reg & CTRL_DBC_ENABLE)) {
 		if (xdbc_handle_external_reset()) {
@@ -775,7 +766,7 @@ static void xdbc_handle_events(void)
 		}
 	}
 
-	/* Handle configure-exit event: */
+	 
 	reg = readl(&xdbc.xdbc_reg->control);
 	if (reg & CTRL_DBC_RUN_CHANGE) {
 		writel(reg, &xdbc.xdbc_reg->control);
@@ -785,7 +776,7 @@ static void xdbc_handle_events(void)
 			xdbc.flags &= ~XDBC_FLAGS_CONFIGURED;
 	}
 
-	/* Handle endpoint stall event: */
+	 
 	reg = readl(&xdbc.xdbc_reg->control);
 	if (reg & CTRL_HALT_IN_TR) {
 		xdbc.flags |= XDBC_FLAGS_IN_STALL;
@@ -800,13 +791,10 @@ static void xdbc_handle_events(void)
 	else
 		xdbc.flags &= ~XDBC_FLAGS_OUT_STALL;
 
-	/* Handle the events in the event ring: */
+	 
 	evt_trb = xdbc.evt_ring.dequeue;
 	while ((le32_to_cpu(evt_trb->field[3]) & TRB_CYCLE) == xdbc.evt_ring.cycle_state) {
-		/*
-		 * Add a barrier between reading the cycle flag and any
-		 * reads of the event's flags/data below:
-		 */
+		 
 		rmb();
 
 		switch ((le32_to_cpu(evt_trb->field[3]) & TRB_TYPE_BITMASK)) {
@@ -830,7 +818,7 @@ static void xdbc_handle_events(void)
 		update_erdp = true;
 	}
 
-	/* Update event ring dequeue pointer: */
+	 
 	if (update_erdp)
 		xdbc_write64(__pa(xdbc.evt_ring.dequeue), &xdbc.xdbc_reg->erdp);
 }
@@ -850,7 +838,7 @@ retry:
 
 	xdbc_handle_events();
 
-	/* Check completion of the previous request: */
+	 
 	if ((xdbc.flags & XDBC_FLAGS_OUT_PROCESS) && (timeout < 2000000)) {
 		raw_spin_unlock_irqrestore(&xdbc.lock, flags);
 		udelay(100);
@@ -873,7 +861,7 @@ retry:
 
 static void early_xdbc_write(struct console *con, const char *str, u32 n)
 {
-	/* static variables are zeroed, so buf is always NULL terminated */
+	 
 	static char buf[XDBC_MAX_PACKET + 1];
 	int chunk, ret;
 	int use_cr = 0;
@@ -965,10 +953,7 @@ static int __init xdbc_init(void)
 	if (!(xdbc.flags & XDBC_FLAGS_INITIALIZED))
 		return 0;
 
-	/*
-	 * It's time to shut down the DbC, so that the debug
-	 * port can be reused by the host controller:
-	 */
+	 
 	if (early_xdbc_console.index == -1 ||
 	    (early_xdbc_console.flags & CON_BOOT)) {
 		xdbc_trace("hardware not used anymore\n");

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright (C) 2017     Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+
+ 
 
 #include <net/mac80211.h>
 #include <linux/module.h>
@@ -74,7 +67,7 @@ void ieee80211_configure_filter(struct ieee80211_local *local)
 	mc = drv_prepare_multicast(local, &local->mc_list);
 	spin_unlock_bh(&local->filter_lock);
 
-	/* be a bit nasty */
+	 
 	new_flags |= (1<<31);
 
 	drv_configure_filter(local, changed_flags, &new_flags, mc);
@@ -133,11 +126,7 @@ static u32 ieee80211_hw_conf_chan(struct ieee80211_local *local)
 	}
 
 	if (!conf_is_ht(&local->hw.conf)) {
-		/*
-		 * mac80211.h documents that this is only valid
-		 * when the channel is set to an HT type, and
-		 * that otherwise STATIC is used.
-		 */
+		 
 		local->hw.conf.smps_mode = IEEE80211_SMPS_STATIC;
 	} else if (local->hw.conf.smps_mode != local->smps_mode) {
 		local->hw.conf.smps_mode = local->smps_mode;
@@ -181,21 +170,8 @@ int ieee80211_hw_config(struct ieee80211_local *local, u32 changed)
 
 	if (changed && local->open_count) {
 		ret = drv_config(local, changed);
-		/*
-		 * Goal:
-		 * HW reconfiguration should never fail, the driver has told
-		 * us what it can support so it should live up to that promise.
-		 *
-		 * Current status:
-		 * rfkill is not integrated with mac80211 and a
-		 * configuration command can thus fail if hardware rfkill
-		 * is enabled
-		 *
-		 * FIXME: integrate rfkill with mac80211 and then add this
-		 * WARN_ON() back
-		 *
-		 */
-		/* WARN_ON(ret); */
+		 
+		 
 	}
 
 	return ret;
@@ -247,7 +223,7 @@ void ieee80211_bss_info_change_notify(struct ieee80211_sub_if_data *sdata,
 	if (changed & ~BSS_CHANGED_VIF_CFG_FLAGS) {
 		u64 ch = changed & ~BSS_CHANGED_VIF_CFG_FLAGS;
 
-		/* FIXME: should be for each link */
+		 
 		trace_drv_link_info_changed(local, sdata, &sdata->vif.bss_conf,
 					    changed);
 		if (local->ops->link_info_changed)
@@ -310,8 +286,7 @@ static void ieee80211_tasklet_handler(struct tasklet_struct *t)
 	       (skb = skb_dequeue(&local->skb_queue_unreliable))) {
 		switch (skb->pkt_type) {
 		case IEEE80211_RX_MSG:
-			/* Clear skb->pkt_type in order to not confuse kernel
-			 * netstack. */
+			 
 			skb->pkt_type = 0;
 			ieee80211_rx(&local->hw, skb);
 			break;
@@ -338,29 +313,16 @@ static void ieee80211_restart_work(struct work_struct *work)
 	flush_workqueue(local->workqueue);
 
 	rtnl_lock();
-	/* we might do interface manipulations, so need both */
+	 
 	wiphy_lock(local->hw.wiphy);
 
 	WARN(test_bit(SCAN_HW_SCANNING, &local->scanning),
 	     "%s called with hardware scan in progress\n", __func__);
 
 	list_for_each_entry(sdata, &local->interfaces, list) {
-		/*
-		 * XXX: there may be more work for other vif types and even
-		 * for station mode: a good thing would be to run most of
-		 * the iface type's dependent _stop (ieee80211_mg_stop,
-		 * ieee80211_ibss_stop) etc...
-		 * For now, fix only the specific bug that was seen: race
-		 * between csa_connection_drop_work and us.
-		 */
+		 
 		if (sdata->vif.type == NL80211_IFTYPE_STATION) {
-			/*
-			 * This worker is scheduled from the iface worker that
-			 * runs on mac80211's workqueue, so we can't be
-			 * scheduling this worker after the cancel right here.
-			 * The exception is ieee80211_chswitch_done.
-			 * Then we can have a race...
-			 */
+			 
 			wiphy_work_cancel(local->hw.wiphy,
 					  &sdata->u.mgd.csa_connection_drop_work);
 			if (sdata->vif.bss_conf.csa_active) {
@@ -375,11 +337,11 @@ static void ieee80211_restart_work(struct work_struct *work)
 	}
 	ieee80211_scan_cancel(local);
 
-	/* make sure any new ROC will consider local->in_reconfig */
+	 
 	wiphy_delayed_work_flush(local->hw.wiphy, &local->roc_work);
 	wiphy_work_flush(local->hw.wiphy, &local->hw_roc_done);
 
-	/* wait for all packet processing to be done */
+	 
 	synchronize_net();
 
 	ret = ieee80211_reconfig(local);
@@ -400,15 +362,12 @@ void ieee80211_restart_hw(struct ieee80211_hw *hw)
 	wiphy_info(hw->wiphy,
 		   "Hardware restart was requested\n");
 
-	/* use this reason, ieee80211_reconfig will unblock it */
+	 
 	ieee80211_stop_queues_by_reason(hw, IEEE80211_MAX_QUEUE_MAP,
 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
 					false);
 
-	/*
-	 * Stop all Rx during the reconfig. We don't want state changes
-	 * or driver callbacks while this is in progress.
-	 */
+	 
 	local->in_reconfig = true;
 	barrier();
 
@@ -432,7 +391,7 @@ static int ieee80211_ifa_changed(struct notifier_block *nb,
 	struct ieee80211_if_managed *ifmgd;
 	int c = 0;
 
-	/* Make sure it's our interface that got changed */
+	 
 	if (!wdev)
 		return NOTIFY_DONE;
 
@@ -442,7 +401,7 @@ static int ieee80211_ifa_changed(struct notifier_block *nb,
 	sdata = IEEE80211_DEV_TO_SUB_IF(ndev);
 	vif_cfg = &sdata->vif.cfg;
 
-	/* ARP filtering is only supported in managed mode */
+	 
 	if (sdata->vif.type != NL80211_IFTYPE_STATION)
 		return NOTIFY_DONE;
 
@@ -453,7 +412,7 @@ static int ieee80211_ifa_changed(struct notifier_block *nb,
 	ifmgd = &sdata->u.mgd;
 	sdata_lock(sdata);
 
-	/* Copy the addresses to the vif config list */
+	 
 	ifa = rtnl_dereference(idev->ifa_list);
 	while (ifa) {
 		if (c < IEEE80211_BSS_ARP_ADDR_LIST_LEN)
@@ -464,7 +423,7 @@ static int ieee80211_ifa_changed(struct notifier_block *nb,
 
 	vif_cfg->arp_addr_cnt = c;
 
-	/* Configure driver only if associated (which also implies it is up) */
+	 
 	if (ifmgd->associated)
 		ieee80211_vif_cfg_change_notify(sdata, BSS_CHANGED_ARP_FILTER);
 
@@ -486,16 +445,13 @@ static int ieee80211_ifa6_changed(struct notifier_block *nb,
 	struct wireless_dev *wdev = ndev->ieee80211_ptr;
 	struct ieee80211_sub_if_data *sdata;
 
-	/* Make sure it's our interface that got changed */
+	 
 	if (!wdev || wdev->wiphy != local->hw.wiphy)
 		return NOTIFY_DONE;
 
 	sdata = IEEE80211_DEV_TO_SUB_IF(ndev);
 
-	/*
-	 * For now only support station mode. This is mostly because
-	 * doing AP would have to handle AP_VLAN in some way ...
-	 */
+	 
 	if (sdata->vif.type != NL80211_IFTYPE_STATION)
 		return NOTIFY_DONE;
 
@@ -505,7 +461,7 @@ static int ieee80211_ifa6_changed(struct notifier_block *nb,
 }
 #endif
 
-/* There isn't a lot of sense in it, but you can transmit anything you like */
+ 
 static const struct ieee80211_txrx_stypes
 ieee80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	[NL80211_IFTYPE_ADHOC] = {
@@ -517,18 +473,7 @@ ieee80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	},
 	[NL80211_IFTYPE_STATION] = {
 		.tx = 0xffff,
-		/*
-		 * To support Pre Association Security Negotiation (PASN) while
-		 * already associated to one AP, allow user space to register to
-		 * Rx authentication frames, so that the user space logic would
-		 * be able to receive/handle authentication frames from a
-		 * different AP as part of PASN.
-		 * It is expected that user space would intelligently register
-		 * for Rx authentication frames, i.e., only when PASN is used
-		 * and configure a match filter only for PASN authentication
-		 * algorithm, as otherwise the MLME functionality of mac80211
-		 * would be broken.
-		 */
+		 
 		.rx = BIT(IEEE80211_STYPE_ACTION >> 4) |
 			BIT(IEEE80211_STYPE_AUTH >> 4) |
 			BIT(IEEE80211_STYPE_PROBE_REQ >> 4),
@@ -544,7 +489,7 @@ ieee80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 			BIT(IEEE80211_STYPE_ACTION >> 4),
 	},
 	[NL80211_IFTYPE_AP_VLAN] = {
-		/* copy AP */
+		 
 		.tx = 0xffff,
 		.rx = BIT(IEEE80211_STYPE_ASSOC_REQ >> 4) |
 			BIT(IEEE80211_STYPE_REASSOC_REQ >> 4) |
@@ -639,7 +584,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
 		    (ops->link_info_changed && ops->bss_info_changed)))
 		return NULL;
 
-	/* check all or no channel context operations exist */
+	 
 	i = !!ops->add_chanctx + !!ops->remove_chanctx +
 	    !!ops->change_chanctx + !!ops->assign_vif_chanctx +
 	    !!ops->unassign_vif_chanctx;
@@ -647,21 +592,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
 		return NULL;
 	use_chanctx = i == 5;
 
-	/* Ensure 32-byte alignment of our private data and hw private data.
-	 * We use the wiphy priv data for both our ieee80211_local and for
-	 * the driver's private data
-	 *
-	 * In memory it'll be like this:
-	 *
-	 * +-------------------------+
-	 * | struct wiphy	    |
-	 * +-------------------------+
-	 * | struct ieee80211_local  |
-	 * +-------------------------+
-	 * | driver's private data   |
-	 * +-------------------------+
-	 *
-	 */
+	 
 	priv_size = ALIGN(sizeof(*local), NETDEV_ALIGN) + priv_data_len;
 
 	wiphy = wiphy_new_nm(&mac80211_config_ops, priv_size, requested_name);
@@ -704,11 +635,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
 	if (!ops->hw_scan) {
 		wiphy->features |= NL80211_FEATURE_LOW_PRIORITY_SCAN |
 				   NL80211_FEATURE_AP_SCAN;
-		/*
-		 * if the driver behaves correctly using the probe request
-		 * (template) from mac80211, then both of these should be
-		 * supported even with hw scan - but let drivers opt in.
-		 */
+		 
 		wiphy_ext_feature_set(wiphy,
 				      NL80211_EXT_FEATURE_SCAN_RANDOM_SN);
 		wiphy_ext_feature_set(wiphy,
@@ -735,19 +662,10 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
 	local->ops = ops;
 	local->use_chanctx = use_chanctx;
 
-	/*
-	 * We need a bit of data queued to build aggregates properly, so
-	 * instruct the TCP stack to allow more than a single ms of data
-	 * to be queued in the stack. The value is a bit-shift of 1
-	 * second, so 7 is ~8ms of queued data. Only affects local TCP
-	 * sockets.
-	 * This is the default, anyhow - drivers may need to override it
-	 * for local reasons (longer buffers, longer completion time, or
-	 * similar).
-	 */
+	 
 	local->hw.tx_sk_pacing_shift = 7;
 
-	/* set up some defaults */
+	 
 	local->hw.queues = 1;
 	local->hw.max_rates = 1;
 	local->hw.max_report_rates = 0;
@@ -855,12 +773,12 @@ EXPORT_SYMBOL(ieee80211_alloc_hw_nm);
 
 static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
 {
-	bool have_wep = !fips_enabled; /* FIPS does not permit the use of RC4 */
+	bool have_wep = !fips_enabled;  
 	bool have_mfp = ieee80211_hw_check(&local->hw, MFP_CAPABLE);
 	int r = 0, w = 0;
 	u32 *suites;
 	static const u32 cipher_suites[] = {
-		/* keep WEP first, it may be removed below */
+		 
 		WLAN_CIPHER_SUITE_WEP40,
 		WLAN_CIPHER_SUITE_WEP104,
 		WLAN_CIPHER_SUITE_TKIP,
@@ -869,7 +787,7 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
 		WLAN_CIPHER_SUITE_GCMP,
 		WLAN_CIPHER_SUITE_GCMP_256,
 
-		/* keep last -- depends on hw flags! */
+		 
 		WLAN_CIPHER_SUITE_AES_CMAC,
 		WLAN_CIPHER_SUITE_BIP_CMAC_256,
 		WLAN_CIPHER_SUITE_BIP_GMAC_128,
@@ -878,17 +796,15 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
 
 	if (ieee80211_hw_check(&local->hw, SW_CRYPTO_CONTROL) ||
 	    local->hw.wiphy->cipher_suites) {
-		/* If the driver advertises, or doesn't support SW crypto,
-		 * we only need to remove WEP if necessary.
-		 */
+		 
 		if (have_wep)
 			return 0;
 
-		/* well if it has _no_ ciphers ... fine */
+		 
 		if (!local->hw.wiphy->n_cipher_suites)
 			return 0;
 
-		/* Driver provides cipher suites, but we need to exclude WEP */
+		 
 		suites = kmemdup(local->hw.wiphy->cipher_suites,
 				 sizeof(u32) * local->hw.wiphy->n_cipher_suites,
 				 GFP_KERNEL);
@@ -904,9 +820,7 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
 			suites[w++] = suite;
 		}
 	} else {
-		/* assign the (software supported and perhaps offloaded)
-		 * cipher suites
-		 */
+		 
 		local->hw.wiphy->cipher_suites = cipher_suites;
 		local->hw.wiphy->n_cipher_suites = ARRAY_SIZE(cipher_suites);
 
@@ -918,7 +832,7 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
 			local->hw.wiphy->n_cipher_suites -= 2;
 		}
 
-		/* not dynamically allocated, so just return */
+		 
 		return 0;
 	}
 
@@ -959,12 +873,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		return -EINVAL;
 
 	if (hw->wiphy->flags & WIPHY_FLAG_SUPPORTS_MLO) {
-		/*
-		 * For drivers capable of doing MLO, assume modern driver
-		 * or firmware facilities, so software doesn't have to do
-		 * as much, e.g. monitoring beacons would be hard if we
-		 * might not even know which link is active at which time.
-		 */
+		 
 		if (WARN_ON(!local->use_chanctx))
 			return -EINVAL;
 
@@ -1019,7 +928,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 				return -EINVAL;
 		}
 	} else {
-		/* DFS is not supported with multi-channel combinations yet */
+		 
 		for (i = 0; i < local->hw.wiphy->n_iface_combinations; i++) {
 			const struct ieee80211_iface_combination *comb;
 
@@ -1031,7 +940,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		}
 	}
 
-	/* Only HW csum features are currently compatible with mac80211 */
+	 
 	if (WARN_ON(hw->netdev_features & ~MAC80211_SUPPORTED_FEATURES))
 		return -EINVAL;
 
@@ -1040,11 +949,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 
 	local->rx_chains = 1;
 
-	/*
-	 * generic code guarantees at least one band,
-	 * set this very early because much code assumes
-	 * that hw.conf.channel is assigned
-	 */
+	 
 	channels = 0;
 	max_bitrates = 0;
 	supp_ht = false;
@@ -1059,21 +964,18 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 			continue;
 
 		if (!dflt_chandef.chan) {
-			/*
-			 * Assign the first enabled channel to dflt_chandef
-			 * from the list of channels
-			 */
+			 
 			for (i = 0; i < sband->n_channels; i++)
 				if (!(sband->channels[i].flags &
 						IEEE80211_CHAN_DISABLED))
 					break;
-			/* if none found then use the first anyway */
+			 
 			if (i == sband->n_channels)
 				i = 0;
 			cfg80211_chandef_create(&dflt_chandef,
 						&sband->channels[i],
 						NL80211_CHAN_NO_HT);
-			/* init channel we're on */
+			 
 			if (!local->use_chanctx && !local->_oper_chandef.chan) {
 				local->hw.conf.chandef = dflt_chandef;
 				local->_oper_chandef = dflt_chandef;
@@ -1083,11 +985,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 
 		channels += sband->n_channels;
 
-		/*
-		 * Due to the way the aggregation code handles this and it
-		 * being an HT capability, we can't really support delayed
-		 * BA in MLO (yet).
-		 */
+		 
 		if (WARN_ON(sband->ht_cap.ht_supported &&
 			    (sband->ht_cap.cap & IEEE80211_HT_CAP_DELAY_BA) &&
 			    hw->wiphy->flags & WIPHY_FLAG_SUPPORTS_MLO))
@@ -1107,43 +1005,40 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 			supp_eht = supp_eht || iftd->eht_cap.has_eht;
 		}
 
-		/* HT, VHT, HE require QoS, thus >= 4 queues */
+		 
 		if (WARN_ON(local->hw.queues < IEEE80211_NUM_ACS &&
 			    (supp_ht || supp_vht || supp_he)))
 			return -EINVAL;
 
-		/* EHT requires HE support */
+		 
 		if (WARN_ON(supp_eht && !supp_he))
 			return -EINVAL;
 
 		if (!sband->ht_cap.ht_supported)
 			continue;
 
-		/* TODO: consider VHT for RX chains, hopefully it's the same */
+		 
 		local->rx_chains =
 			max(ieee80211_mcs_to_chains(&sband->ht_cap.mcs),
 			    local->rx_chains);
 
-		/* no need to mask, SM_PS_DISABLED has all bits set */
+		 
 		sband->ht_cap.cap |= WLAN_HT_CAP_SM_PS_DISABLED <<
 			             IEEE80211_HT_CAP_SM_PS_SHIFT;
 	}
 
-	/* if low-level driver supports AP, we also support VLAN.
-	 * drivers advertising SW_CRYPTO_CONTROL should enable AP_VLAN
-	 * based on their support to transmit SW encrypted packets.
-	 */
+	 
 	if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_AP) &&
 	    !ieee80211_hw_check(&local->hw, SW_CRYPTO_CONTROL)) {
 		hw->wiphy->interface_modes |= BIT(NL80211_IFTYPE_AP_VLAN);
 		hw->wiphy->software_iftypes |= BIT(NL80211_IFTYPE_AP_VLAN);
 	}
 
-	/* mac80211 always supports monitor */
+	 
 	hw->wiphy->interface_modes |= BIT(NL80211_IFTYPE_MONITOR);
 	hw->wiphy->software_iftypes |= BIT(NL80211_IFTYPE_MONITOR);
 
-	/* mac80211 doesn't support more than one IBSS interface right now */
+	 
 	for (i = 0; i < hw->wiphy->n_iface_combinations; i++) {
 		const struct ieee80211_iface_combination *c;
 		int j;
@@ -1170,16 +1065,15 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 	}
 
 #ifndef CONFIG_MAC80211_MESH
-	/* mesh depends on Kconfig, but drivers should set it if they want */
+	 
 	local->hw.wiphy->interface_modes &= ~BIT(NL80211_IFTYPE_MESH_POINT);
 #endif
 
-	/* if the underlying driver supports mesh, mac80211 will (at least)
-	 * provide routing of mesh authentication frames to userspace */
+	 
 	if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_MESH_POINT))
 		local->hw.wiphy->flags |= WIPHY_FLAG_MESH_AUTH;
 
-	/* mac80211 supports control port protocol changing */
+	 
 	local->hw.wiphy->flags |= WIPHY_FLAG_CONTROL_PORT_PROTOCOL;
 
 	if (ieee80211_hw_check(&local->hw, SIGNAL_DBM)) {
@@ -1192,9 +1086,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		}
 	}
 
-	/* Mac80211 and therefore all drivers using SW crypto only
-	 * are able to handle PTK rekeys and Extended Key ID.
-	 */
+	 
 	if (!local->ops->set_key) {
 		wiphy_ext_feature_set(local->hw.wiphy,
 				      NL80211_EXT_FEATURE_CAN_REPLACE_PTK0);
@@ -1206,14 +1098,9 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		wiphy_ext_feature_set(local->hw.wiphy,
 				      NL80211_EXT_FEATURE_DEL_IBSS_STA);
 
-	/*
-	 * Calculate scan IE length -- we need this to alloc
-	 * memory and to subtract from the driver limit. It
-	 * includes the DS Params, (extended) supported rates, and HT
-	 * information -- SSID is the driver's responsibility.
-	 */
-	local->scan_ies_len = 4 + max_bitrates /* (ext) supp rates */ +
-		3 /* DS Params */;
+	 
+	local->scan_ies_len = 4 + max_bitrates   +
+		3  ;
 	if (supp_ht)
 		local->scan_ies_len += 2 + sizeof(struct ieee80211_ht_cap);
 
@@ -1221,8 +1108,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		local->scan_ies_len +=
 			2 + sizeof(struct ieee80211_vht_cap);
 
-	/*
-	 * HE cap element is variable in size - set len to allow max size */
+	 
 	if (supp_he) {
 		local->scan_ies_len +=
 			3 + sizeof(struct ieee80211_he_cap_elem) +
@@ -1237,18 +1123,12 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 	}
 
 	if (!local->ops->hw_scan) {
-		/* For hw_scan, driver needs to set these up. */
+		 
 		local->hw.wiphy->max_scan_ssids = 4;
 		local->hw.wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
 	}
 
-	/*
-	 * If the driver supports any scan IEs, then assume the
-	 * limit includes the IEs mac80211 will add, otherwise
-	 * leave it at zero and let the driver sort it out; we
-	 * still pass our IEs to the driver but userspace will
-	 * not be allowed to in that case.
-	 */
+	 
 	if (local->hw.wiphy->max_scan_ie_len)
 		local->hw.wiphy->max_scan_ie_len -= local->scan_ies_len;
 
@@ -1259,15 +1139,15 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 	if (!local->ops->remain_on_channel)
 		local->hw.wiphy->max_remain_on_channel_duration = 5000;
 
-	/* mac80211 based drivers don't support internal TDLS setup */
+	 
 	if (local->hw.wiphy->flags & WIPHY_FLAG_SUPPORTS_TDLS)
 		local->hw.wiphy->flags |= WIPHY_FLAG_TDLS_EXTERNAL_SETUP;
 
-	/* mac80211 supports eCSA, if the driver supports STA CSA at all */
+	 
 	if (ieee80211_hw_check(&local->hw, CHANCTX_STA_CSA))
 		local->ext_capa[0] |= WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING;
 
-	/* mac80211 supports multi BSSID, if the driver supports it */
+	 
 	if (ieee80211_hw_check(&local->hw, SUPPORTS_MULTI_BSSID)) {
 		local->hw.wiphy->support_mbssid = true;
 		if (ieee80211_hw_check(&local->hw,
@@ -1280,10 +1160,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 
 	local->hw.wiphy->max_num_csa_counters = IEEE80211_MAX_CNTDWN_COUNTERS_NUM;
 
-	/*
-	 * We use the number of queues for feature tests (QoS, HT) internally
-	 * so restrict them appropriately.
-	 */
+	 
 	if (hw->queues > IEEE80211_MAX_QUEUES)
 		hw->queues = IEEE80211_MAX_QUEUES;
 
@@ -1294,18 +1171,11 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 		goto fail_workqueue;
 	}
 
-	/*
-	 * The hardware needs headroom for sending the frame,
-	 * and we need some headroom for passing the frame to monitor
-	 * interfaces, but never both at the same time.
-	 */
+	 
 	local->tx_headroom = max_t(unsigned int , local->hw.extra_tx_headroom,
 				   IEEE80211_TX_STATUS_HEADROOM);
 
-	/*
-	 * if the driver doesn't specify a max listen interval we
-	 * use 5 which should be a safe default
-	 */
+	 
 	if (local->hw.max_listen_interval == 0)
 		local->hw.max_listen_interval = 5;
 
@@ -1345,14 +1215,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 			ieee80211_hw_set(hw, SUPPORTS_VHT_EXT_NSS_BW);
 	}
 
-	/*
-	 * If the VHT capabilities don't have IEEE80211_VHT_EXT_NSS_BW_CAPABLE,
-	 * or have it when we don't, copy the sband structure and set/clear it.
-	 * This is necessary because rate scaling algorithms could be switched
-	 * and have different support values.
-	 * Print a message so that in the common case the reallocation can be
-	 * avoided.
-	 */
+	 
 	BUILD_BUG_ON(NUM_NL80211_BANDS > 8 * sizeof(local->sband_allocated));
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
 		struct ieee80211_supported_band *sband;
@@ -1396,7 +1259,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 	rtnl_lock();
 	wiphy_lock(hw->wiphy);
 
-	/* add one default STA interface if supported */
+	 
 	if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_STATION) &&
 	    !ieee80211_hw_check(hw, NO_AUTO_VIF)) {
 		struct vif_params params = {0};
@@ -1472,11 +1335,7 @@ void ieee80211_unregister_hw(struct ieee80211_hw *hw)
 
 	rtnl_lock();
 
-	/*
-	 * At this point, interface list manipulations are fine
-	 * because the driver cannot be handing us frames any
-	 * more and the tasklet is killed.
-	 */
+	 
 	ieee80211_remove_interfaces(local);
 
 	wiphy_lock(local->hw.wiphy);

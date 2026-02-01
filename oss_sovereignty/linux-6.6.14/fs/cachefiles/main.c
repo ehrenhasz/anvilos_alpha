@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Network filesystem caching backend to use cache files on a premounted
- * filesystem
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -39,9 +34,7 @@ static struct miscdevice cachefiles_dev = {
 	.fops	= &cachefiles_daemon_fops,
 };
 
-/*
- * initialise the fs caching module
- */
+ 
 static int __init cachefiles_init(void)
 {
 	int ret;
@@ -53,7 +46,7 @@ static int __init cachefiles_init(void)
 	if (ret < 0)
 		goto error_dev;
 
-	/* create an object jar */
+	 
 	ret = -ENOMEM;
 	cachefiles_object_jar =
 		kmem_cache_create("cachefiles_object_jar",
@@ -78,9 +71,7 @@ error_einj:
 
 fs_initcall(cachefiles_init);
 
-/*
- * clean up on module removal
- */
+ 
 static void __exit cachefiles_exit(void)
 {
 	pr_info("Unloading\n");

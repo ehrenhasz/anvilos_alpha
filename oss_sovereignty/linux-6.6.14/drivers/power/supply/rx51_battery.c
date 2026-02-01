@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Nokia RX-51 battery driver
- *
- * Copyright (C) 2012  Pali Rohár <pali@kernel.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/param.h>
@@ -22,9 +18,7 @@ struct rx51_device_info {
 	struct iio_channel *channel_vbat;
 };
 
-/*
- * Read ADCIN channel value, code copied from maemo kernel
- */
+ 
 static int rx51_battery_read_adc(struct iio_channel *channel)
 {
 	int val, err;
@@ -34,10 +28,7 @@ static int rx51_battery_read_adc(struct iio_channel *channel)
 	return val;
 }
 
-/*
- * Read ADCIN channel 12 (voltage) and convert RAW value to micro voltage
- * This conversion formula was extracted from maemo program bsi-read
- */
+ 
 static int rx51_battery_read_voltage(struct rx51_device_info *di)
 {
 	int voltage = rx51_battery_read_adc(di->channel_vbat);
@@ -50,31 +41,15 @@ static int rx51_battery_read_voltage(struct rx51_device_info *di)
 	return 1000 * (10000 * voltage / 1705);
 }
 
-/*
- * Temperature look-up tables
- * TEMP = (1/(t1 + 1/298) - 273.15)
- * Where t1 = (1/B) * ln((RAW_ADC_U * 2.5)/(R * I * 255))
- * Formula is based on experimental data, RX-51 CAL data, maemo program bme
- * and formula from da9052 driver with values R = 100, B = 3380, I = 0.00671
- */
+ 
 
-/*
- * Table1 (temperature for first 25 RAW values)
- * Usage: TEMP = rx51_temp_table1[RAW]
- *   RAW is between 1 and 24
- *   TEMP is between 201 C and 55 C
- */
+ 
 static u8 rx51_temp_table1[] = {
 	255, 201, 159, 138, 124, 114, 106,  99,  94,  89,  85,  82,  78,  75,
 	 73,  70,  68,  66,  64,  62,  61,  59,  57,  56,  55
 };
 
-/*
- * Table2 (lowest RAW value for temperature)
- * Usage: RAW = rx51_temp_table2[TEMP-rx51_temp_table2_first]
- *   TEMP is between 53 C and -32 C
- *   RAW is between 25 and 993
- */
+ 
 #define rx51_temp_table2_first 53
 static u16 rx51_temp_table2[] = {
 	 25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  39,
@@ -86,10 +61,7 @@ static u16 rx51_temp_table2[] = {
 	937, 993, 1024
 };
 
-/*
- * Read ADCIN channel 0 (battery temp) and convert value to tenths of Celsius
- * Use Temperature look-up tables for conversation
- */
+ 
 static int rx51_battery_read_temperature(struct rx51_device_info *di)
 {
 	int min = 0;
@@ -99,19 +71,19 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
 	if (raw < 0)
 		dev_err(di->dev, "Could not read ADC: %d\n", raw);
 
-	/* Zero and negative values are undefined */
+	 
 	if (raw <= 0)
 		return INT_MAX;
 
-	/* ADC channels are 10 bit, higher value are undefined */
+	 
 	if (raw >= (1 << 10))
 		return INT_MIN;
 
-	/* First check for temperature in first direct table */
+	 
 	if (raw < ARRAY_SIZE(rx51_temp_table1))
 		return rx51_temp_table1[raw] * 10;
 
-	/* Binary search RAW value in second inverse table */
+	 
 	while (max - min > 1) {
 		int mid = (max + min) / 2;
 		if (rx51_temp_table2[mid] <= raw)
@@ -125,10 +97,7 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
 	return (rx51_temp_table2_first - min) * 10;
 }
 
-/*
- * Read ADCIN channel 4 (BSI) and convert RAW value to micro Ah
- * This conversion formula was extracted from maemo program bsi-read
- */
+ 
 static int rx51_battery_read_capacity(struct rx51_device_info *di)
 {
 	int capacity = rx51_battery_read_adc(di->channel_bsi);
@@ -141,9 +110,7 @@ static int rx51_battery_read_capacity(struct rx51_device_info *di)
 	return 1280 * (1200 * capacity)/(1024 - capacity);
 }
 
-/*
- * Return power_supply property
- */
+ 
 static int rx51_battery_get_property(struct power_supply *psy,
 					enum power_supply_property psp,
 					union power_supply_propval *val)

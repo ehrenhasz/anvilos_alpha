@@ -1,40 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) COPYRIGHT 2012-2013 ARM Limited. All rights reserved.
- *
- * Parts of this file were based on sources as follows:
- *
- * Copyright (c) 2006-2008 Intel Corporation
- * Copyright (c) 2007 Dave Airlie <airlied@linux.ie>
- * Copyright (C) 2011 Texas Instruments
- */
 
-/**
- * DOC: ARM PrimeCell PL110 and PL111 CLCD Driver
- *
- * The PL110/PL111 is a simple LCD controller that can support TFT
- * and STN displays. This driver exposes a standard KMS interface
- * for them.
- *
- * The driver currently doesn't expose the cursor.  The DRM API for
- * cursors requires support for 64x64 ARGB8888 cursor images, while
- * the hardware can only support 64x64 monochrome with masking
- * cursors.  While one could imagine trying to hack something together
- * to look at the ARGB8888 and program reasonable in monochrome, we
- * just don't expose the cursor at all instead, and leave cursor
- * support to the application software cursor layer.
- *
- * TODO:
- *
- * - Fix race between setting plane base address and getting IRQ for
- *   vsync firing the pageflip completion.
- *
- * - Read back hardware state at boot to skip reprogramming the
- *   hardware when doing a no-op modeset.
- *
- * - Use the CLKSEL bit to support switching between the two external
- *   clock parents.
- */
+ 
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/dma-buf.h>
@@ -105,14 +72,10 @@ static int pl111_modeset_init(struct drm_device *dev)
 						  &tmp_bridge);
 		if (ret) {
 			if (ret == -EPROBE_DEFER) {
-				/*
-				 * Something deferred, but that is often just
-				 * another way of saying -ENODEV, but let's
-				 * cast a vote for later deferral.
-				 */
+				 
 				defer = true;
 			} else if (ret != -ENODEV) {
-				/* Continue, maybe something else is working */
+				 
 				dev_err(dev->dev,
 					"endpoint %d returns %d\n", i, ret);
 			}
@@ -132,11 +95,7 @@ static int pl111_modeset_init(struct drm_device *dev)
 		i++;
 	}
 
-	/*
-	 * If we can't find neither panel nor bridge on any of the
-	 * endpoints, and any of them retured -EPROBE_DEFER, then
-	 * let's defer this driver too.
-	 */
+	 
 	if ((!panel && !bridge) && defer)
 		return -EPROBE_DEFER;
 
@@ -199,11 +158,7 @@ pl111_gem_import_sg_table(struct drm_device *dev,
 {
 	struct pl111_drm_dev_private *priv = dev->dev_private;
 
-	/*
-	 * When using device-specific reserved memory we can't import
-	 * DMA buffers: those are passed by reference in any global
-	 * memory and we can only handle a specific range of memory.
-	 */
+	 
 	if (priv->use_device_memory)
 		return ERR_PTR(-EINVAL);
 
@@ -264,7 +219,7 @@ static int pl111_amba_probe(struct amba_device *amba_dev,
 		priv->memory_bw = 0;
 	}
 
-	/* The two main variants swap this register */
+	 
 	if (variant->is_pl110 || variant->is_lcdc) {
 		priv->ienb = CLCD_PL110_IENB;
 		priv->ctrl = CLCD_PL110_CNTL;
@@ -280,14 +235,14 @@ static int pl111_amba_probe(struct amba_device *amba_dev,
 		goto dev_put;
 	}
 
-	/* This may override some variant settings */
+	 
 	ret = pl111_versatile_init(dev, priv);
 	if (ret)
 		goto dev_put;
 
 	pl111_nomadik_init(dev);
 
-	/* turn off interrupts before requesting the irq */
+	 
 	writel(0, priv->regs + priv->ienb);
 
 	ret = devm_request_irq(dev, amba_dev->irq[0], pl111_irq, 0,
@@ -335,9 +290,7 @@ static void pl111_amba_shutdown(struct amba_device *amba_dev)
 	drm_atomic_helper_shutdown(amba_get_drvdata(amba_dev));
 }
 
-/*
- * This early variant lacks the 565 and 444 pixel formats.
- */
+ 
 static const u32 pl110_pixel_formats[] = {
 	DRM_FORMAT_ABGR8888,
 	DRM_FORMAT_XBGR8888,
@@ -357,7 +310,7 @@ static const struct pl111_variant_data pl110_variant = {
 	.fb_depth = 16,
 };
 
-/* RealView, Versatile Express etc use this modern variant */
+ 
 static const u32 pl111_pixel_formats[] = {
 	DRM_FORMAT_ABGR8888,
 	DRM_FORMAT_XBGR8888,

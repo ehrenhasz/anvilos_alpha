@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom Northstar USB 3.0 PHY Driver
- *
- * Copyright (C) 2016 Rafał Miłecki <rafal@milecki.pl>
- * Copyright (C) 2016 Broadcom
- *
- * All magic values used for initialization (and related comments) were obtained
- * from Broadcom's SDK:
- * Copyright (c) Broadcom Corp, 2012
- */
+
+ 
 
 #include <linux/bcma/bcma.h>
 #include <linux/delay.h>
@@ -27,15 +18,15 @@
 #define BCM_NS_USB3_PHY_TX_PMD_BLOCK	0x8040
 #define BCM_NS_USB3_PHY_PIPE_BLOCK	0x8060
 
-/* Registers of PLL30 block */
+ 
 #define BCM_NS_USB3_PLL_CONTROL		0x01
 #define BCM_NS_USB3_PLLA_CONTROL0	0x0a
 #define BCM_NS_USB3_PLLA_CONTROL1	0x0b
 
-/* Registers of TX PMD block */
+ 
 #define BCM_NS_USB3_TX_PMD_CONTROL1	0x01
 
-/* Registers of PIPE block */
+ 
 #define BCM_NS_USB3_LFPS_CMP		0x02
 #define BCM_NS_USB3_LFPS_DEGLITCH	0x03
 
@@ -72,45 +63,45 @@ static int bcm_ns_usb3_phy_init_ns_bx(struct bcm_ns_usb3 *usb3)
 {
 	int err;
 
-	/* USB3 PLL Block */
+	 
 	err = bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PHY_BASE_ADDR_REG,
 					 BCM_NS_USB3_PHY_PLL30_BLOCK);
 	if (err < 0)
 		return err;
 
-	/* Assert Ana_Pllseq start */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PLL_CONTROL, 0x1000);
 
-	/* Assert CML Divider ratio to 26 */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PLLA_CONTROL0, 0x6400);
 
-	/* Asserting PLL Reset */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PLLA_CONTROL1, 0xc000);
 
-	/* Deaaserting PLL Reset */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PLLA_CONTROL1, 0x8000);
 
-	/* Deasserting USB3 system reset */
+	 
 	writel(0, usb3->dmp + BCMA_RESET_CTL);
 
-	/* PLL frequency monitor enable */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PLL_CONTROL, 0x9000);
 
-	/* PIPE Block */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PHY_BASE_ADDR_REG,
 				   BCM_NS_USB3_PHY_PIPE_BLOCK);
 
-	/* CMPMAX & CMPMINTH setting */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_LFPS_CMP, 0xf30d);
 
-	/* DEGLITCH MIN & MAX setting */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_LFPS_DEGLITCH, 0x6302);
 
-	/* TXPMD block */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PHY_BASE_ADDR_REG,
 				   BCM_NS_USB3_PHY_TX_PMD_BLOCK);
 
-	/* Enabling SSC */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_TX_PMD_CONTROL1, 0x1003);
 
 	return 0;
@@ -120,7 +111,7 @@ static int bcm_ns_usb3_phy_init_ns_ax(struct bcm_ns_usb3 *usb3)
 {
 	int err;
 
-	/* PLL30 block */
+	 
 	err = bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PHY_BASE_ADDR_REG,
 					 BCM_NS_USB3_PHY_PLL30_BLOCK);
 	if (err < 0)
@@ -132,7 +123,7 @@ static int bcm_ns_usb3_phy_init_ns_ax(struct bcm_ns_usb3 *usb3)
 
 	bcm_ns_usb3_mdio_phy_write(usb3, 0x02, 0x009c);
 
-	/* Enable SSC */
+	 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_PHY_BASE_ADDR_REG,
 				   BCM_NS_USB3_PHY_TX_PMD_BLOCK);
 
@@ -140,7 +131,7 @@ static int bcm_ns_usb3_phy_init_ns_ax(struct bcm_ns_usb3 *usb3)
 
 	bcm_ns_usb3_mdio_phy_write(usb3, BCM_NS_USB3_TX_PMD_CONTROL1, 0x1003);
 
-	/* Deasserting USB3 system reset */
+	 
 	writel(0, usb3->dmp + BCMA_RESET_CTL);
 
 	return 0;
@@ -151,7 +142,7 @@ static int bcm_ns_usb3_phy_init(struct phy *phy)
 	struct bcm_ns_usb3 *usb3 = phy_get_drvdata(phy);
 	int err;
 
-	/* Perform USB3 system soft reset */
+	 
 	writel(BCMA_RESET_CTL_RESET, usb3->dmp + BCMA_RESET_CTL);
 
 	switch (usb3->family) {
@@ -174,9 +165,7 @@ static const struct phy_ops ops = {
 	.owner		= THIS_MODULE,
 };
 
-/**************************************************
- * MDIO driver code
- **************************************************/
+ 
 
 static int bcm_ns_usb3_mdio_phy_write(struct bcm_ns_usb3 *usb3, u16 reg,
 				      u16 value)

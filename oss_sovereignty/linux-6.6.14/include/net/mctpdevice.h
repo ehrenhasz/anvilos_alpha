@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Management Component Transport Protocol (MCTP) - device
- * definitions.
- *
- * Copyright (c) 2021 Code Construct
- * Copyright (c) 2021 Google
- */
+ 
+ 
 
 #ifndef __NET_MCTPDEVICE_H
 #define __NET_MCTPDEVICE_H
@@ -25,7 +19,7 @@ struct mctp_dev {
 
 	const struct mctp_netdev_ops *ops;
 
-	/* Only modified under RTNL. Reads have addrs_lock held */
+	 
 	u8			*addrs;
 	size_t			num_addrs;
 	spinlock_t		addrs_lock;
@@ -53,4 +47,4 @@ void mctp_dev_put(struct mctp_dev *mdev);
 void mctp_dev_set_key(struct mctp_dev *dev, struct mctp_sk_key *key);
 void mctp_dev_release_key(struct mctp_dev *dev, struct mctp_sk_key *key);
 
-#endif /* __NET_MCTPDEVICE_H */
+#endif  

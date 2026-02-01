@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -76,7 +76,7 @@ __naked void mov32sx_s8_range(void)
 	asm volatile ("					\
 	call %[bpf_get_prandom_u32];			\
 	w1 = (s8)w0;					\
-	/* w1 with s8 range */				\
+	 				\
 	if w1 s> 0x7f goto l0_%=;			\
 	if w1 s< -0x80 goto l0_%=;			\
 	r0 = 1;						\
@@ -98,7 +98,7 @@ __naked void mov32sx_s16_range(void)
 	asm volatile ("					\
 	call %[bpf_get_prandom_u32];			\
 	w1 = (s16)w0;					\
-	/* w1 with s16 range */				\
+	 				\
 	if w1 s> 0x7fff goto l0_%=;			\
 	if w1 s< -0x80ff goto l0_%=;			\
 	r0 = 1;						\
@@ -141,7 +141,7 @@ __naked void mov64sx_s8_range(void)
 	asm volatile ("					\
 	call %[bpf_get_prandom_u32];			\
 	r1 = (s8)r0;					\
-	/* r1 with s8 range */				\
+	 				\
 	if r1 s> 0x7f goto l0_%=;			\
 	if r1 s< -0x80 goto l0_%=;			\
 	r0 = 1;						\
@@ -163,7 +163,7 @@ __naked void mov64sx_s16_range(void)
 	asm volatile ("					\
 	call %[bpf_get_prandom_u32];			\
 	r1 = (s16)r0;					\
-	/* r1 with s16 range */				\
+	 				\
 	if r1 s> 0x7fff goto l0_%=;			\
 	if r1 s< -0x8000 goto l0_%=;			\
 	r0 = 1;						\
@@ -185,7 +185,7 @@ __naked void mov64sx_s32_range(void)
 	asm volatile ("					\
 	call %[bpf_get_prandom_u32];			\
 	r1 = (s32)r0;					\
-	/* r1 with s32 range */				\
+	 				\
 	if r1 s> 0x7fffffff goto l0_%=;			\
 	if r1 s< -0x80000000 goto l0_%=;		\
 	r0 = 1;						\

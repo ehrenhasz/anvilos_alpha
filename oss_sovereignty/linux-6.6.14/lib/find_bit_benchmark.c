@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test for find_*_bit functions.
- *
- * Copyright (c) 2017 Cavium.
- */
 
-/*
- * find_bit functions are widely used in kernel, so the successful boot
- * is good enough test for correctness.
- *
- * This test is focused on performance of traversing bitmaps. Two typical
- * scenarios are reproduced:
- * - randomly filled bitmap with approximately equal number of set and
- *   cleared bits;
- * - sparse bitmap with few set bits at random positions.
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -29,10 +16,7 @@
 static DECLARE_BITMAP(bitmap, BITMAP_LEN) __initdata;
 static DECLARE_BITMAP(bitmap2, BITMAP_LEN) __initdata;
 
-/*
- * This is Schlemiel the Painter's algorithm. It should be called after
- * all other tests for the same bitmap because it sets all bits of bitmap to 1.
- */
+ 
 static int __init test_find_first_bit(void *bitmap, unsigned long len)
 {
 	unsigned long i, cnt;
@@ -160,10 +144,7 @@ static int __init find_bit_test(void)
 	test_find_last_bit(bitmap, BITMAP_LEN);
 	test_find_nth_bit(bitmap, BITMAP_LEN / 10);
 
-	/*
-	 * test_find_first_bit() may take some time, so
-	 * traverse only part of bitmap to avoid soft lockup.
-	 */
+	 
 	test_find_first_bit(bitmap, BITMAP_LEN / 10);
 	test_find_first_and_bit(bitmap, bitmap2, BITMAP_LEN / 2);
 	test_find_next_and_bit(bitmap, bitmap2, BITMAP_LEN);
@@ -186,10 +167,7 @@ static int __init find_bit_test(void)
 	test_find_first_and_bit(bitmap, bitmap2, BITMAP_LEN);
 	test_find_next_and_bit(bitmap, bitmap2, BITMAP_LEN);
 
-	/*
-	 * Everything is OK. Return error just to let user run benchmark
-	 * again without annoying rmmod.
-	 */
+	 
 	return -EINVAL;
 }
 module_init(find_bit_test);

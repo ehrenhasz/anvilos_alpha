@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: 802.11ac
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -11,34 +7,30 @@
 #include "main.h"
 #include "11ac.h"
 
-/* Tables of the MCS map to the highest data rate (in Mbps) supported
- * for long GI.
- */
+ 
 static const u16 max_rate_lgi_80MHZ[8][3] = {
-	{0x124, 0x15F, 0x186},	/* NSS = 1 */
-	{0x249, 0x2BE, 0x30C},  /* NSS = 2 */
-	{0x36D, 0x41D, 0x492},  /* NSS = 3 */
-	{0x492, 0x57C, 0x618},  /* NSS = 4 */
-	{0x5B6, 0x6DB, 0x79E},  /* NSS = 5 */
-	{0x6DB, 0x83A, 0x0},    /* NSS = 6 */
-	{0x7FF, 0x999, 0xAAA},  /* NSS = 7 */
-	{0x924, 0xAF8, 0xC30}   /* NSS = 8 */
+	{0x124, 0x15F, 0x186},	 
+	{0x249, 0x2BE, 0x30C},   
+	{0x36D, 0x41D, 0x492},   
+	{0x492, 0x57C, 0x618},   
+	{0x5B6, 0x6DB, 0x79E},   
+	{0x6DB, 0x83A, 0x0},     
+	{0x7FF, 0x999, 0xAAA},   
+	{0x924, 0xAF8, 0xC30}    
 };
 
 static const u16 max_rate_lgi_160MHZ[8][3] = {
-	{0x249, 0x2BE, 0x30C},   /* NSS = 1 */
-	{0x492, 0x57C, 0x618},   /* NSS = 2 */
-	{0x6DB, 0x83A, 0x0},     /* NSS = 3 */
-	{0x924, 0xAF8, 0xC30},   /* NSS = 4 */
-	{0xB6D, 0xDB6, 0xF3C},   /* NSS = 5 */
-	{0xDB6, 0x1074, 0x1248}, /* NSS = 6 */
-	{0xFFF, 0x1332, 0x1554}, /* NSS = 7 */
-	{0x1248, 0x15F0, 0x1860} /* NSS = 8 */
+	{0x249, 0x2BE, 0x30C},    
+	{0x492, 0x57C, 0x618},    
+	{0x6DB, 0x83A, 0x0},      
+	{0x924, 0xAF8, 0xC30},    
+	{0xB6D, 0xDB6, 0xF3C},    
+	{0xDB6, 0x1074, 0x1248},  
+	{0xFFF, 0x1332, 0x1554},  
+	{0x1248, 0x15F0, 0x1860}  
 };
 
-/* This function converts the 2-bit MCS map to the highest long GI
- * VHT data rate.
- */
+ 
 static u16
 mwifiex_convert_mcsmap_to_maxrate(struct mwifiex_private *priv,
 				  u8 bands, u16 mcs_map)
@@ -53,7 +45,7 @@ mwifiex_convert_mcsmap_to_maxrate(struct mwifiex_private *priv,
 	else
 		usr_vht_cap_info = adapter->usr_dot_11ac_dev_cap_bg;
 
-	/* find the max NSS supported */
+	 
 	nss = 1;
 	for (i = 1; i <= 8; i++) {
 		mcs = GET_VHTNSSMCS(mcs_map, i);
@@ -62,20 +54,20 @@ mwifiex_convert_mcsmap_to_maxrate(struct mwifiex_private *priv,
 	}
 	mcs = GET_VHTNSSMCS(mcs_map, nss);
 
-	/* if mcs is 3, nss must be 1 (NSS = 1). Default mcs to MCS 0~9 */
+	 
 	if (mcs == IEEE80211_VHT_MCS_NOT_SUPPORTED)
 		mcs = IEEE80211_VHT_MCS_SUPPORT_0_9;
 
 	if (GET_VHTCAP_CHWDSET(usr_vht_cap_info)) {
-		/* support 160 MHz */
+		 
 		max_rate = max_rate_lgi_160MHZ[nss - 1][mcs];
 		if (!max_rate)
-			/* MCS9 is not supported in NSS6 */
+			 
 			max_rate = max_rate_lgi_160MHZ[nss - 1][mcs - 1];
 	} else {
 		max_rate = max_rate_lgi_80MHZ[nss - 1][mcs];
 		if (!max_rate)
-			/* MCS9 is not supported in NSS3 */
+			 
 			max_rate = max_rate_lgi_80MHZ[nss - 1][mcs - 1];
 	}
 
@@ -103,10 +95,10 @@ void mwifiex_fill_vht_cap_tlv(struct mwifiex_private *priv,
 	u16 mcs_map_user, mcs_map_resp, mcs_map_result;
 	u16 mcs_user, mcs_resp, nss, tmp;
 
-	/* Fill VHT cap info */
+	 
 	mwifiex_fill_vht_cap_info(priv, vht_cap, bands);
 
-	/* rx MCS Set: find the minimum of the user rx mcs and ap rx mcs */
+	 
 	mcs_map_user = GET_DEVRXMCSMAP(adapter->usr_dot_11ac_mcs_support);
 	mcs_map_resp = le16_to_cpu(vht_cap->supp_mcs.rx_mcs_map);
 	mcs_map_result = 0;
@@ -129,7 +121,7 @@ void mwifiex_fill_vht_cap_tlv(struct mwifiex_private *priv,
 	tmp = mwifiex_convert_mcsmap_to_maxrate(priv, bands, mcs_map_result);
 	vht_cap->supp_mcs.rx_highest = cpu_to_le16(tmp);
 
-	/* tx MCS Set: find the minimum of the user tx mcs and ap tx mcs */
+	 
 	mcs_map_user = GET_DEVTXMCSMAP(adapter->usr_dot_11ac_mcs_support);
 	mcs_map_resp = le16_to_cpu(vht_cap->supp_mcs.tx_mcs_map);
 	mcs_map_result = 0;
@@ -172,7 +164,7 @@ int mwifiex_cmd_append_11ac_tlv(struct mwifiex_private *priv,
 	else
 		usr_vht_cap_info = adapter->usr_dot_11ac_dev_cap_bg;
 
-	/* VHT Capabilities IE */
+	 
 	if (bss_desc->bcn_vht_cap) {
 		vht_cap = (struct mwifiex_ie_types_vhtcap *)*buffer;
 		memset(vht_cap, 0, sizeof(*vht_cap));
@@ -189,7 +181,7 @@ int mwifiex_cmd_append_11ac_tlv(struct mwifiex_private *priv,
 		ret_len += sizeof(*vht_cap);
 	}
 
-	/* VHT Operation IE */
+	 
 	if (bss_desc->bcn_vht_oper) {
 		if (priv->bss_mode == NL80211_IFTYPE_STATION) {
 			vht_op = (struct mwifiex_ie_types_vht_oper *)*buffer;
@@ -203,9 +195,7 @@ int mwifiex_cmd_append_11ac_tlv(struct mwifiex_private *priv,
 			       (u8 *)bss_desc->bcn_vht_oper,
 			       le16_to_cpu(vht_op->header.len));
 
-			/* negotiate the channel width and central freq
-			 * and keep the central freq as the peer suggests
-			 */
+			 
 			supp_chwd_set = GET_VHTCAP_CHWDSET(usr_vht_cap_info);
 
 			switch (supp_chwd_set) {
@@ -235,7 +225,7 @@ int mwifiex_cmd_append_11ac_tlv(struct mwifiex_private *priv,
 		}
 	}
 
-	/* Operating Mode Notification IE */
+	 
 	if (bss_desc->oper_mode) {
 		ieee_oper_ntf = bss_desc->oper_mode;
 		oper_ntf = (void *)*buffer;
@@ -269,9 +259,7 @@ int mwifiex_cmd_11ac_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function initializes the BlockACK setup information for given
- * mwifiex_private structure for 11ac enabled networks.
- */
+ 
 void mwifiex_set_11ac_ba_params(struct mwifiex_private *priv)
 {
 	priv->add_ba_param.timeout = MWIFIEX_DEFAULT_BLOCK_ACK_TIMEOUT;

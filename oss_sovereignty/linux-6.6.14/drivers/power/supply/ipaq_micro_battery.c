@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * h3xxx atmel micro companion support, battery subdevice
- * based on previous kernel 2.4 version
- * Author : Alessandro Gardich <gremlin@gremlin.it>
- * Author : Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -14,7 +8,7 @@
 #include <linux/power_supply.h>
 #include <linux/workqueue.h>
 
-#define BATT_PERIOD 100000 /* 100 seconds in milliseconds */
+#define BATT_PERIOD 100000  
 
 #define MICRO_BATT_CHEM_ALKALINE	0x01
 #define MICRO_BATT_CHEM_NICD		0x02
@@ -29,9 +23,9 @@
 #define MICRO_BATT_STATUS_CRITICAL	0x04
 #define MICRO_BATT_STATUS_CHARGING	0x08
 #define MICRO_BATT_STATUS_CHARGEMAIN	0x10
-#define MICRO_BATT_STATUS_DEAD		0x20 /* Battery will not charge */
-#define MICRO_BATT_STATUS_NOTINSTALLED	0x20 /* For expansion pack batteries */
-#define MICRO_BATT_STATUS_FULL		0x40 /* Battery fully charged */
+#define MICRO_BATT_STATUS_DEAD		0x20  
+#define MICRO_BATT_STATUS_NOTINSTALLED	0x20  
+#define MICRO_BATT_STATUS_FULL		0x40  
 #define MICRO_BATT_STATUS_NOBATTERY	0x80
 #define MICRO_BATT_STATUS_UNKNOWN	0xff
 
@@ -57,21 +51,12 @@ static void micro_battery_work(struct work_struct *work)
 		.id = MSG_THERMAL_SENSOR,
 	};
 
-	/* First send battery message */
+	 
 	ipaq_micro_tx_msg_sync(mb->micro, &msg_battery);
 	if (msg_battery.rx_len < 4)
 		pr_info("ERROR");
 
-	/*
-	 * Returned message format:
-	 * byte 0:   0x00 = Not plugged in
-	 *           0x01 = AC adapter plugged in
-	 * byte 1:   chemistry
-	 * byte 2:   voltage LSB
-	 * byte 3:   voltage MSB
-	 * byte 4:   flags
-	 * byte 5-9: same for battery 2
-	 */
+	 
 	mb->ac = msg_battery.rx_data[0];
 	mb->chemistry = msg_battery.rx_data[1];
 	mb->voltage = ((((unsigned short)msg_battery.rx_data[3] << 8) +
@@ -81,7 +66,7 @@ static void micro_battery_work(struct work_struct *work)
 	if (msg_battery.rx_len == 9)
 		pr_debug("second battery ignored\n");
 
-	/* Then read the sensor */
+	 
 	ipaq_micro_tx_msg_sync(mb->micro, &msg_sensor);
 	mb->temperature = msg_sensor.rx_data[1] << 8 | msg_sensor.rx_data[0];
 

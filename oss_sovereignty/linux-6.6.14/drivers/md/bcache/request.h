@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BCACHE_REQUEST_H_
 #define _BCACHE_REQUEST_H_
 
@@ -44,4 +44,4 @@ void flash_dev_submit_bio(struct bio *bio);
 
 extern struct kmem_cache *bch_search_cache;
 
-#endif /* _BCACHE_REQUEST_H_ */
+#endif  

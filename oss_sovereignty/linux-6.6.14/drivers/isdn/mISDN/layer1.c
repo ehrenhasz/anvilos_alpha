@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Author	Karsten Keil <kkeil@novell.com>
- *
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 
 #include <linux/slab.h>
@@ -194,7 +189,7 @@ l1_timer3(struct FsmInst *fi, int event, void *arg)
 	}
 	if (l1->l1m.state != ST_L1_F6) {
 		mISDN_FsmChangeState(fi, ST_L1_F3);
-		/* do not force anything here, we need send INFO 0 */
+		 
 	}
 }
 
@@ -228,7 +223,7 @@ l1_activate_s(struct FsmInst *fi, int event, void *arg)
 
 	mISDN_FsmRestartTimer(&l1->timer3, l1->t3_value, EV_TIMER3, NULL, 2);
 	test_and_set_bit(FLG_L1_T3RUN, &l1->Flags);
-	/* Tell HW to send INFO 1 */
+	 
 	l1->dcb(l1->dch, HW_RESET_REQ);
 }
 

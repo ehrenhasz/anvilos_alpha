@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN6I_ISP_H_
 #define _SUN6I_ISP_H_
@@ -62,7 +59,7 @@ struct sun6i_isp_device {
 	struct clk			*clock_ram;
 	struct reset_control		*reset;
 
-	spinlock_t			state_lock; /* State helpers lock. */
+	spinlock_t			state_lock;  
 };
 
 struct sun6i_isp_variant {
@@ -72,18 +69,18 @@ struct sun6i_isp_variant {
 	unsigned int	table_stats_size;
 };
 
-/* Helpers */
+ 
 
 u32 sun6i_isp_load_read(struct sun6i_isp_device *isp_dev, u32 offset);
 void sun6i_isp_load_write(struct sun6i_isp_device *isp_dev, u32 offset,
 			  u32 value);
 u32 sun6i_isp_address_value(dma_addr_t address);
 
-/* State */
+ 
 
 void sun6i_isp_state_update(struct sun6i_isp_device *isp_dev, bool ready_hold);
 
-/* Tables */
+ 
 
 void sun6i_isp_tables_configure(struct sun6i_isp_device *isp_dev);
 

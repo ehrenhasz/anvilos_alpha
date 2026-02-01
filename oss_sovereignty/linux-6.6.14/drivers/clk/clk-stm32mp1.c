@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Olivier Bideau <olivier.bideau@st.com> for STMicroelectronics.
- * Author: Gabriel Fernandez <gabriel.fernandez@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -377,7 +373,7 @@ struct stm32_mux_cfg {
 	const struct clk_ops	*ops;
 };
 
-/* STM32 Composite clock */
+ 
 struct stm32_composite_cfg {
 	const struct stm32_gate_cfg	*gate;
 	const struct stm32_div_cfg	*div;
@@ -449,7 +445,7 @@ _clk_hw_register_mux(struct device *dev,
 				   mux_cfg->width, mux_cfg->mux_flags, lock);
 }
 
-/* MP1 Gate clock with set & clear registers */
+ 
 
 static int mp1_gate_clk_enable(struct clk_hw *hw)
 {
@@ -738,9 +734,9 @@ static const struct clk_ops clk_mmux_ops = {
 	.determine_rate	= __clk_mux_determine_rate,
 };
 
-/* STM32 PLL */
+ 
 struct stm32_pll_obj {
-	/* lock pll enable/disable registers */
+	 
 	spinlock_t *lock;
 	void __iomem *reg;
 	struct clk_hw hw;
@@ -788,11 +784,7 @@ static int pll_enable(struct clk_hw *hw)
 	reg |= PLL_ON;
 	writel_relaxed(reg, clk_elem->reg);
 
-	/* We can't use readl_poll_timeout() because we can be blocked if
-	 * someone enables this clock before clocksource changes.
-	 * Only jiffies counter is available. Jiffies are incremented by
-	 * interruptions and enable op does not allow to be interrupted.
-	 */
+	 
 	do {
 		bit_status = !(readl_relaxed(clk_elem->reg) & PLL_RDY);
 
@@ -933,9 +925,9 @@ static struct clk_hw *clk_register_pll(struct device *dev, const char *name,
 	return hw;
 }
 
-/* Kernel Timer */
+ 
 struct timer_cker {
-	/* lock the kernel output divider register */
+	 
 	spinlock_t *lock;
 	void __iomem *apbdiv;
 	void __iomem *timpre;
@@ -1063,7 +1055,7 @@ static struct clk_hw *clk_register_cktim(struct device *dev, const char *name,
 	return hw;
 }
 
-/* The divider of RTC clock concerns only ck_hse clock */
+ 
 #define HSE_RTC 3
 
 static unsigned long clk_divider_rtc_recalc_rate(struct clk_hw *hw,
@@ -1258,7 +1250,7 @@ _clk_stm32_register_composite(struct device *dev,
 		  GATE_MP1(_id, _name, _parent, CLK_SET_RATE_PARENT,\
 			   _offset_set, _bit_idx, 0)
 
-/* STM32 GATE */
+ 
 #define STM32_GATE(_id, _name, _parent, _flags, _gate)\
 {\
 	.id		= _id,\
@@ -1526,9 +1518,9 @@ static struct stm32_mgate mp1_mgate[G_LAST];
 	_K_GATE(_id, _gate_offset, _gate_bit_idx, _gate_flags,\
 	       &mp1_mgate[_id], &mp1_mgate_clk_ops)
 
-/* Peripheral gates */
+ 
 static struct stm32_gate_cfg per_gate_cfg[G_LAST] = {
-	/* Multi gates */
+	 
 	K_GATE(G_MDIO,		RCC_APB1ENSETR, 31, 0),
 	K_MGATE(G_DAC12,	RCC_APB1ENSETR, 29, 0),
 	K_MGATE(G_CEC,		RCC_APB1ENSETR, 27, 0),
@@ -1713,7 +1705,7 @@ static struct stm32_mmux ker_mux[M_LAST];
 			&ker_mux[_id], &clk_mmux_ops)
 
 static const struct stm32_mux_cfg ker_mux_cfg[M_LAST] = {
-	/* Kernel multi mux */
+	 
 	K_MMUX(M_SDMMC12, RCC_SDMMC12CKSELR, 0, 3, 0),
 	K_MMUX(M_SPI23, RCC_SPI2S23CKSELR, 0, 3, 0),
 	K_MMUX(M_SPI45, RCC_SPI2S45CKSELR, 0, 3, 0),
@@ -1728,7 +1720,7 @@ static const struct stm32_mux_cfg ker_mux_cfg[M_LAST] = {
 	K_MMUX(M_ETHCK, RCC_ETHCKSELR, 0, 2, 0),
 	K_MMUX(M_I2C46, RCC_I2C46CKSELR, 0, 3, 0),
 
-	/*  Kernel simple mux */
+	 
 	K_MUX(M_RNG2, RCC_RNG2CKSELR, 0, 2, 0),
 	K_MUX(M_SDMMC3, RCC_SDMMC3CKSELR, 0, 3, 0),
 	K_MUX(M_FMC, RCC_FMCCKSELR, 0, 2, 0),
@@ -1754,9 +1746,9 @@ static const struct stm32_mux_cfg ker_mux_cfg[M_LAST] = {
 };
 
 static const struct clock_config stm32mp1_clock_cfg[] = {
-	/*  External / Internal Oscillators */
+	 
 	GATE_MP1(CK_HSE, "ck_hse", "clk-hse", 0, RCC_OCENSETR, 8, 0),
-	/* ck_csi is used by IO compensation and should be critical */
+	 
 	GATE_MP1(CK_CSI, "ck_csi", "clk-csi", CLK_IS_CRITICAL,
 		 RCC_OCENSETR, 4, 0),
 	COMPOSITE(CK_HSI, "ck_hsi", PARENT("clk-hsi"), 0,
@@ -1769,13 +1761,13 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 
 	FIXED_FACTOR(CK_HSE_DIV2, "clk-hse-div2", "ck_hse", 0, 1, 2),
 
-	/* PLLs */
+	 
 	PLL(PLL1, "pll1", ref12_parents, 0, RCC_PLL1CR, RCC_RCK12SELR),
 	PLL(PLL2, "pll2", ref12_parents, 0, RCC_PLL2CR, RCC_RCK12SELR),
 	PLL(PLL3, "pll3", ref3_parents, 0, RCC_PLL3CR, RCC_RCK3SELR),
 	PLL(PLL4, "pll4", ref4_parents, 0, RCC_PLL4CR, RCC_RCK4SELR),
 
-	/* ODF */
+	 
 	COMPOSITE(PLL1_P, "pll1_p", PARENT("pll1"), 0,
 		  _GATE(RCC_PLL1CR, 4, 0),
 		  _NO_MUX,
@@ -1826,7 +1818,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 		  _NO_MUX,
 		  _DIV(RCC_PLL4CFGR2, 16, 7, 0, NULL)),
 
-	/* MUX system clocks */
+	 
 	MUX(CK_PER, "ck_per", per_src, CLK_OPS_PARENT_ENABLE,
 	    RCC_CPERCKSELR, 0, 2, 0),
 
@@ -1860,7 +1852,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 	DIV_TABLE(NO_ID, "pclk5", "ck_axi", CLK_IGNORE_UNUSED, RCC_APB5DIVR, 0,
 		  3, CLK_DIVIDER_READ_ONLY, apb_div_table),
 
-	/* Kernel Timers */
+	 
 	STM32_CKTIM("ck1_tim", "pclk1", 0, RCC_APB1DIVR, RCC_TIMG1PRER),
 	STM32_CKTIM("ck2_tim", "pclk2", 0, RCC_APB2DIVR, RCC_TIMG2PRER),
 
@@ -1879,7 +1871,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 	STM32_TIM(TIM16_K, "tim16_k", "ck2_tim", RCC_APB2ENSETR, 3),
 	STM32_TIM(TIM17_K, "tim17_k", "ck2_tim", RCC_APB2ENSETR, 4),
 
-	/* Peripheral clocks */
+	 
 	PCLK(TIM2, "tim2", "pclk1", CLK_IGNORE_UNUSED, G_TIM2),
 	PCLK(TIM3, "tim3", "pclk1", CLK_IGNORE_UNUSED, G_TIM3),
 	PCLK(TIM4, "tim4", "pclk1", CLK_IGNORE_UNUSED, G_TIM4),
@@ -1990,7 +1982,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 	PCLK(ETHSTP, "ethstp", "ck_axi", 0, G_ETHSTP),
 	PCLK(DDRPERFM, "ddrperfm", "pclk4", 0, G_DDRPERFM),
 
-	/* Kernel clocks */
+	 
 	KCLK(SDMMC1_K, "sdmmc1_k", sdmmc12_src, 0, G_SDMMC1, M_SDMMC12),
 	KCLK(SDMMC2_K, "sdmmc2_k", sdmmc12_src, 0, G_SDMMC2, M_SDMMC12),
 	KCLK(SDMMC3_K, "sdmmc3_k", sdmmc3_src, 0, G_SDMMC3, M_SDMMC3),
@@ -2037,7 +2029,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 	KCLK(ADFSDM_K, "adfsdm_k", sai_src, 0, G_ADFSDM, M_SAI1),
 	KCLK(USBO_K, "usbo_k", usbo_src, 0, G_USBO, M_USBO),
 
-	/* Particulary Kernel Clocks (no mux or no gate) */
+	 
 	MGATE_MP1(DFSDM_K, "dfsdm_k", "ck_mcu", 0, G_DFSDM),
 	MGATE_MP1(DSI_PX, "dsi_px", "pll4_q", CLK_SET_RATE_PARENT, G_DSI),
 	MGATE_MP1(LTDC_PX, "ltdc_px", "pll4_q", CLK_SET_RATE_PARENT, G_LTDC),
@@ -2055,13 +2047,13 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 	DIV(ETHPTP_K, "ethptp_k", "ck_ker_eth", CLK_OPS_PARENT_ENABLE |
 	    CLK_SET_RATE_NO_REPARENT, RCC_ETHCKSELR, 4, 4, 0),
 
-	/* RTC clock */
+	 
 	COMPOSITE(RTC, "ck_rtc", rtc_src, CLK_OPS_PARENT_ENABLE,
 		  _GATE(RCC_BDCR, 20, 0),
 		  _MUX(RCC_BDCR, 16, 2, 0),
 		  _DIV_RTC(RCC_RTCDIVR, 0, 6, 0, NULL)),
 
-	/* MCO clocks */
+	 
 	COMPOSITE(CK_MCO1, "ck_mco1", mco1_src, CLK_OPS_PARENT_ENABLE |
 		  CLK_SET_RATE_NO_REPARENT,
 		  _GATE(RCC_MCO1CFGR, 12, 0),
@@ -2074,7 +2066,7 @@ static const struct clock_config stm32mp1_clock_cfg[] = {
 		  _MUX(RCC_MCO2CFGR, 0, 3, 0),
 		  _DIV(RCC_MCO2CFGR, 4, 4, 0, NULL)),
 
-	/* Debug clocks */
+	 
 	GATE(CK_DBG, "ck_sys_dbg", "ck_axi", CLK_IGNORE_UNUSED,
 	     RCC_DBGCFGR, 8, 0),
 
@@ -2196,7 +2188,7 @@ static int stm32_register_hw_clk(struct device *dev,
 #define STM32_RESET_ID_MASK GENMASK(15, 0)
 
 struct stm32_reset_data {
-	/* reset lock */
+	 
 	spinlock_t			lock;
 	struct reset_controller_dev	rcdev;
 	void __iomem			*membase;
@@ -2351,14 +2343,14 @@ static int stm32_rcc_init(struct device *dev, void __iomem *base,
 		return -ENODEV;
 	}
 
-	/* RCC Reset Configuration */
+	 
 	err = stm32_rcc_reset_init(dev, base, match);
 	if (err) {
 		pr_err("stm32mp1 reset failed to initialize\n");
 		return err;
 	}
 
-	/* RCC Clock Configuration */
+	 
 	err = stm32_rcc_clock_init(dev, base, match);
 	if (err) {
 		pr_err("stm32mp1 clock failed to initialize\n");
@@ -2414,7 +2406,7 @@ static int get_clock_deps(struct device *dev)
 			if (PTR_ERR(clk) != -EINVAL && PTR_ERR(clk) != -ENOENT)
 				return PTR_ERR(clk);
 		} else {
-			/* Device gets a reference count on the clock */
+			 
 			clk_deps[i] = devm_clk_get(dev, __clk_get_name(clk));
 			clk_put(clk);
 		}

@@ -1,38 +1,4 @@
-/*======================================================================
-
-    A driver for PCMCIA parallel port adapters
-
-    (specifically, for the Quatech SPP-100 EPP card: other cards will
-    probably require driver tweaks)
-    
-    parport_cs.c 1.29 2002/10/11 06:57:41
-
-    The contents of this file are subject to the Mozilla Public
-    License Version 1.1 (the "License"); you may not use this file
-    except in compliance with the License. You may obtain a copy of
-    the License at http://www.mozilla.org/MPL/
-
-    Software distributed under the License is distributed on an "AS
-    IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-    implied. See the License for the specific language governing
-    rights and limitations under the License.
-
-    The initial developer of the original code is David A. Hinds
-    <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
-    are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
-
-    Alternatively, the contents of this file may be used under the
-    terms of the GNU General Public License version 2 (the "GPL"), in
-    which case the provisions of the GPL are applicable instead of the
-    above.  If you wish to allow the use of your version of this file
-    only under the terms of the GPL and not to allow others to use
-    your version of this file under the MPL, indicate your decision
-    by deleting the provisions above and replace them with the notice
-    and other provisions required by the GPL.  If you do not delete
-    the provisions above, a recipient may use your version of this
-    file under either the MPL or the GPL.
-    
-======================================================================*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -53,9 +19,9 @@
 #include <pcmcia/cisreg.h>
 #include <pcmcia/ciscode.h>
 
-/*====================================================================*/
+ 
 
-/* Module parameters */
+ 
 
 MODULE_AUTHOR("David Hinds <dahinds@users.sourceforge.net>");
 MODULE_DESCRIPTION("PCMCIA parallel port card driver");
@@ -66,7 +32,7 @@ MODULE_LICENSE("Dual MPL/GPL");
 INT_MODULE_PARM(epp_mode, 1);
 
 
-/*====================================================================*/
+ 
 
 #define FORCE_EPP_MODE	0x08
 
@@ -86,7 +52,7 @@ static int parport_probe(struct pcmcia_device *link)
 
     dev_dbg(&link->dev, "parport_attach()\n");
 
-    /* Create new parport device */
+     
     info = kzalloc(sizeof(*info), GFP_KERNEL);
     if (!info) return -ENOMEM;
     link->priv = info;
@@ -95,7 +61,7 @@ static int parport_probe(struct pcmcia_device *link)
     link->config_flags |= CONF_ENABLE_IRQ | CONF_AUTO_SET_IO;
 
     return parport_config(link);
-} /* parport_attach */
+}  
 
 static void parport_detach(struct pcmcia_device *link)
 {
@@ -104,7 +70,7 @@ static void parport_detach(struct pcmcia_device *link)
     parport_cs_release(link);
 
     kfree(link->priv);
-} /* parport_detach */
+}  
 
 static int parport_config_check(struct pcmcia_device *p_dev, void *priv_data)
 {
@@ -159,7 +125,7 @@ failed:
 	parport_cs_release(link);
 	kfree(link->priv);
 	return -ENODEV;
-} /* parport_config */
+}  
 
 static void parport_cs_release(struct pcmcia_device *link)
 {
@@ -174,7 +140,7 @@ static void parport_cs_release(struct pcmcia_device *link)
 	info->ndev = 0;
 
 	pcmcia_disable_device(link);
-} /* parport_cs_release */
+}  
 
 
 static const struct pcmcia_device_id parport_ids[] = {

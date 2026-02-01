@@ -1,24 +1,4 @@
-/*
- * Linux Security plug
- *
- * Copyright (C) 2001 WireX Communications, Inc <chris@wirex.com>
- * Copyright (C) 2001 Greg Kroah-Hartman <greg@kroah.com>
- * Copyright (C) 2001 Networks Associates Technology, Inc <ssmalley@nai.com>
- * Copyright (C) 2001 James Morris <jmorris@intercode.com.au>
- * Copyright (C) 2001 Silicon Graphics, Inc. (Trust Technology Group)
- * Copyright (C) 2016 Mellanox Techonologies
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Due to this file being licensed under the GPL there is controversy over
- *	whether this permits you to write a module that #includes this file
- *	without placing your module under the GPL.  Please consult a lawyer for
- *	advice before doing this.
- *
- */
+ 
 
 #ifndef __LINUX_SECURITY_H
 #define __LINUX_SECURITY_H
@@ -61,14 +41,14 @@ enum fs_value_type;
 struct watch;
 struct watch_notification;
 
-/* Default (no) options for the capable function */
+ 
 #define CAP_OPT_NONE 0x0
-/* If capable should audit the security request */
+ 
 #define CAP_OPT_NOAUDIT BIT(1)
-/* If capable is being called by a setid function */
+ 
 #define CAP_OPT_INSETID BIT(2)
 
-/* LSM Agnostic defines for security_sb_set_mnt_opts() flags */
+ 
 #define SECURITY_LSM_NATIVE_LABELS	1
 
 struct ctl_table;
@@ -80,30 +60,7 @@ enum lsm_event {
 	LSM_POLICY_CHANGE,
 };
 
-/*
- * These are reasons that can be passed to the security_locked_down()
- * LSM hook. Lockdown reasons that protect kernel integrity (ie, the
- * ability for userland to modify kernel code) are placed before
- * LOCKDOWN_INTEGRITY_MAX.  Lockdown reasons that protect kernel
- * confidentiality (ie, the ability for userland to extract
- * information from the running kernel that would otherwise be
- * restricted) are placed before LOCKDOWN_CONFIDENTIALITY_MAX.
- *
- * LSM authors should note that the semantics of any given lockdown
- * reason are not guaranteed to be stable - the same reason may block
- * one set of features in one kernel release, and a slightly different
- * set of features in a later kernel release. LSMs that seek to expose
- * lockdown policy at any level of granularity other than "none",
- * "integrity" or "confidentiality" are responsible for either
- * ensuring that they expose a consistent level of functionality to
- * userland, or ensuring that userland is aware that this is
- * potentially a moving target. It is easy to misuse this information
- * in a way that could break userspace. Please be careful not to do
- * so.
- *
- * If you add to this, remember to extend lockdown_reasons in
- * security/lockdown/lockdown.c.
- */
+ 
 enum lockdown_reason {
 	LOCKDOWN_NONE,
 	LOCKDOWN_MODULE_SIGNATURE,
@@ -139,7 +96,7 @@ enum lockdown_reason {
 
 extern const char *const lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1];
 
-/* These functions are in security/commoncap.c */
+ 
 extern int cap_capable(const struct cred *cred, struct user_namespace *ns,
 		       int cap, unsigned int opts);
 extern int cap_settime(const struct timespec64 *ts, const struct timezone *tz);
@@ -194,30 +151,28 @@ extern unsigned long dac_mmap_min_addr;
 #define dac_mmap_min_addr	0UL
 #endif
 
-/*
- * Values used in the task_security_ops calls
- */
-/* setuid or setgid, id0 == uid or gid */
+ 
+ 
 #define LSM_SETID_ID	1
 
-/* setreuid or setregid, id0 == real, id1 == eff */
+ 
 #define LSM_SETID_RE	2
 
-/* setresuid or setresgid, id0 == real, id1 == eff, uid2 == saved */
+ 
 #define LSM_SETID_RES	4
 
-/* setfsuid or setfsgid, id0 == fsuid or fsgid */
+ 
 #define LSM_SETID_FS	8
 
-/* Flags for security_task_prlimit(). */
+ 
 #define LSM_PRLIMIT_READ  1
 #define LSM_PRLIMIT_WRITE 2
 
-/* forward declares to avoid warnings */
+ 
 struct sched_param;
 struct request_sock;
 
-/* bprm->unsafe reasons */
+ 
 #define LSM_UNSAFE_SHARE	1
 #define LSM_UNSAFE_PTRACE	2
 #define LSM_UNSAFE_NO_NEW_PRIVS	4
@@ -227,12 +182,12 @@ extern int mmap_min_addr_handler(struct ctl_table *table, int write,
 				 void *buffer, size_t *lenp, loff_t *ppos);
 #endif
 
-/* security_inode_init_security callback function to write xattrs */
+ 
 typedef int (*initxattrs) (struct inode *inode,
 			   const struct xattr *xattr_array, void *fs_data);
 
 
-/* Keep the kernel_load_data_id enum in sync with kernel_read_file_id */
+ 
 #define __data_id_enumify(ENUM, dummy) LOADING_ ## ENUM,
 #define __data_id_stringify(dummy, str) #str,
 
@@ -258,11 +213,11 @@ int call_blocking_lsm_notifier(enum lsm_event event, void *data);
 int register_blocking_lsm_notifier(struct notifier_block *nb);
 int unregister_blocking_lsm_notifier(struct notifier_block *nb);
 
-/* prototypes */
+ 
 extern int security_init(void);
 extern int early_security_init(void);
 
-/* Security operations */
+ 
 int security_binder_set_context_mgr(const struct cred *mgr);
 int security_binder_transaction(const struct cred *from,
 				const struct cred *to);
@@ -484,7 +439,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
 int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
 int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
 int security_locked_down(enum lockdown_reason what);
-#else /* CONFIG_SECURITY */
+#else  
 
 static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
 {
@@ -505,10 +460,7 @@ static inline void security_free_mnt_opts(void **mnt_opts)
 {
 }
 
-/*
- * This is the default capabilities functionality.  Most of these functions
- * are just stubbed out, but a few must call the proper capable code.
- */
+ 
 
 static inline int security_init(void)
 {
@@ -1395,7 +1347,7 @@ static inline int security_locked_down(enum lockdown_reason what)
 {
 	return 0;
 }
-#endif	/* CONFIG_SECURITY */
+#endif	 
 
 #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 int security_post_notification(const struct cred *w_cred,
@@ -1475,7 +1427,7 @@ int security_sctp_assoc_established(struct sctp_association *asoc,
 				    struct sk_buff *skb);
 int security_mptcp_add_subflow(struct sock *sk, struct sock *ssk);
 
-#else	/* CONFIG_SECURITY_NETWORK */
+#else	 
 static inline int security_unix_stream_connect(struct sock *sock,
 					       struct sock *other,
 					       struct sock *newsk)
@@ -1706,14 +1658,14 @@ static inline int security_mptcp_add_subflow(struct sock *sk, struct sock *ssk)
 {
 	return 0;
 }
-#endif	/* CONFIG_SECURITY_NETWORK */
+#endif	 
 
 #ifdef CONFIG_SECURITY_INFINIBAND
 int security_ib_pkey_access(void *sec, u64 subnet_prefix, u16 pkey);
 int security_ib_endport_manage_subnet(void *sec, const char *name, u8 port_num);
 int security_ib_alloc_security(void **sec);
 void security_ib_free_security(void *sec);
-#else	/* CONFIG_SECURITY_INFINIBAND */
+#else	 
 static inline int security_ib_pkey_access(void *sec, u64 subnet_prefix, u16 pkey)
 {
 	return 0;
@@ -1732,7 +1684,7 @@ static inline int security_ib_alloc_security(void **sec)
 static inline void security_ib_free_security(void *sec)
 {
 }
-#endif	/* CONFIG_SECURITY_INFINIBAND */
+#endif	 
 
 #ifdef CONFIG_SECURITY_NETWORK_XFRM
 
@@ -1753,7 +1705,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
 int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
 void security_skb_classify_flow(struct sk_buff *skb, struct flowi_common *flic);
 
-#else	/* CONFIG_SECURITY_NETWORK_XFRM */
+#else	 
 
 static inline int security_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
 					     struct xfrm_user_sec_ctx *sec_ctx,
@@ -1819,7 +1771,7 @@ static inline void security_skb_classify_flow(struct sk_buff *skb,
 {
 }
 
-#endif	/* CONFIG_SECURITY_NETWORK_XFRM */
+#endif	 
 
 #ifdef CONFIG_SECURITY_PATH
 int security_path_unlink(const struct path *dir, struct dentry *dentry);
@@ -1838,7 +1790,7 @@ int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
 int security_path_chmod(const struct path *path, umode_t mode);
 int security_path_chown(const struct path *path, kuid_t uid, kgid_t gid);
 int security_path_chroot(const struct path *path);
-#else	/* CONFIG_SECURITY_PATH */
+#else	 
 static inline int security_path_unlink(const struct path *dir, struct dentry *dentry)
 {
 	return 0;
@@ -1902,7 +1854,7 @@ static inline int security_path_chroot(const struct path *path)
 {
 	return 0;
 }
-#endif	/* CONFIG_SECURITY_PATH */
+#endif	 
 
 #ifdef CONFIG_KEYS
 #ifdef CONFIG_SECURITY
@@ -1940,7 +1892,7 @@ static inline int security_key_getsecurity(struct key *key, char **_buffer)
 }
 
 #endif
-#endif /* CONFIG_KEYS */
+#endif  
 
 #ifdef CONFIG_AUDIT
 #ifdef CONFIG_SECURITY
@@ -1971,8 +1923,8 @@ static inline int security_audit_rule_match(u32 secid, u32 field, u32 op,
 static inline void security_audit_rule_free(void *lsmrule)
 { }
 
-#endif /* CONFIG_SECURITY */
-#endif /* CONFIG_AUDIT */
+#endif  
+#endif  
 
 #ifdef CONFIG_SECURITYFS
 
@@ -1986,7 +1938,7 @@ struct dentry *securityfs_create_symlink(const char *name,
 					 const struct inode_operations *iops);
 extern void securityfs_remove(struct dentry *dentry);
 
-#else /* CONFIG_SECURITYFS */
+#else  
 
 static inline struct dentry *securityfs_create_dir(const char *name,
 						   struct dentry *parent)
@@ -2061,8 +2013,8 @@ static inline int security_bpf_prog_alloc(struct bpf_prog_aux *aux)
 
 static inline void security_bpf_prog_free(struct bpf_prog_aux *aux)
 { }
-#endif /* CONFIG_SECURITY */
-#endif /* CONFIG_BPF_SYSCALL */
+#endif  
+#endif  
 
 #ifdef CONFIG_PERF_EVENTS
 struct perf_event_attr;
@@ -2099,8 +2051,8 @@ static inline int security_perf_event_write(struct perf_event *event)
 {
 	return 0;
 }
-#endif /* CONFIG_SECURITY */
-#endif /* CONFIG_PERF_EVENTS */
+#endif  
+#endif  
 
 #ifdef CONFIG_IO_URING
 #ifdef CONFIG_SECURITY
@@ -2120,7 +2072,7 @@ static inline int security_uring_cmd(struct io_uring_cmd *ioucmd)
 {
 	return 0;
 }
-#endif /* CONFIG_SECURITY */
-#endif /* CONFIG_IO_URING */
+#endif  
+#endif  
 
-#endif /* ! __LINUX_SECURITY_H */
+#endif  

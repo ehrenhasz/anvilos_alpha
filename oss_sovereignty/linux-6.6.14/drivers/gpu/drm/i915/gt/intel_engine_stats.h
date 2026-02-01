@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_ENGINE_STATS_H__
 #define __INTEL_ENGINE_STATS_H__
@@ -10,7 +8,7 @@
 #include <linux/ktime.h>
 #include <linux/seqlock.h>
 
-#include "i915_gem.h" /* GEM_BUG_ON */
+#include "i915_gem.h"  
 #include "intel_engine.h"
 
 static inline void intel_engine_context_in(struct intel_engine_cs *engine)
@@ -23,7 +21,7 @@ static inline void intel_engine_context_in(struct intel_engine_cs *engine)
 		return;
 	}
 
-	/* The writer is serialised; but the pmu reader may be from hardirq */
+	 
 	local_irq_save(flags);
 	write_seqcount_begin(&stats->lock);
 
@@ -58,4 +56,4 @@ static inline void intel_engine_context_out(struct intel_engine_cs *engine)
 	local_irq_restore(flags);
 }
 
-#endif /* __INTEL_ENGINE_STATS_H__ */
+#endif  

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Vincent Abriou <vincent.abriou@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_AWG_UTILS_H_
 #define _STI_AWG_UTILS_H_

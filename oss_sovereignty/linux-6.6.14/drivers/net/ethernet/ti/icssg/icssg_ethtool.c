@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments ICSSG Ethernet driver
- *
- * Copyright (C) 2018-2022 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+ 
 
 #include "icssg_prueth.h"
 #include "icssg_stats.h"
@@ -134,9 +130,7 @@ static int emac_set_channels(struct net_device *ndev,
 {
 	struct prueth_emac *emac = netdev_priv(ndev);
 
-	/* Check if interface is up. Can change the num queues when
-	 * the interface is down.
-	 */
+	 
 	if (netif_running(emac->ndev))
 		return -EBUSY;
 

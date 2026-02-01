@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for Exar XR17V35X chip
- *
- * Copyright (C) 2015 Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -21,10 +17,7 @@
 #define EXAR_OFFSET_MPIOLVL_HI 0x96
 #define EXAR_OFFSET_MPIOSEL_HI 0x99
 
-/*
- * The Device Configuration and UART Configuration Registers
- * for each UART channel take 1KB of memory address space.
- */
+ 
 #define EXAR_UART_CHANNEL_SIZE 0x400
 
 #define DRIVER_NAME "gpio_exar"
@@ -37,10 +30,7 @@ struct exar_gpio_chip {
 	int index;
 	char name[20];
 	unsigned int first_pin;
-	/*
-	 * The offset to the cascaded device's (if existing)
-	 * Device Configuration Registers.
-	 */
+	 
 	unsigned int cascaded_offset;
 };
 
@@ -153,10 +143,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
 	void __iomem *p;
 	int index, ret;
 
-	/*
-	 * The UART driver must have mapped region 0 prior to registering this
-	 * device - use it.
-	 */
+	 
 	p = pcim_iomap_table(pcidev)[0];
 	if (!p)
 		return -ENOMEM;
@@ -173,21 +160,14 @@ static int gpio_exar_probe(struct platform_device *pdev)
 	if (!exar_gpio)
 		return -ENOMEM;
 
-	/*
-	 * If cascaded, secondary xr17v354 or xr17v358 have the same amount
-	 * of MPIOs as their primaries and the last 4 bits of the primary's
-	 * PCI Device ID is the number of its UART channels.
-	 */
+	 
 	if (pcidev->device & GENMASK(15, 12)) {
 		ngpios += ngpios;
 		exar_gpio->cascaded_offset = (pcidev->device & GENMASK(3, 0)) *
 				EXAR_UART_CHANNEL_SIZE;
 	}
 
-	/*
-	 * We don't need to check the return values of mmio regmap operations (unless
-	 * the regmap has a clock attached which is not the case here).
-	 */
+	 
 	exar_gpio->regmap = devm_regmap_init_mmio(dev, p, &exar_regmap_config);
 	if (IS_ERR(exar_gpio->regmap))
 		return PTR_ERR(exar_gpio->regmap);

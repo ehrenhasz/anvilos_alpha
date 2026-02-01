@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  exynos_adc.c - Support for ADC in EXYNOS SoCs
- *
- *  8 ~ 10 channel, 10/12-bit ADC
- *
- *  Copyright (C) 2013 Naveen Krishna Chatradhi <ch.naveen@samsung.com>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/module.h>
@@ -33,7 +27,7 @@
 
 #include <linux/platform_data/touchscreen-s3c2410.h>
 
-/* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
+ 
 #define ADC_V1_CON(x)		((x) + 0x00)
 #define ADC_V1_TSC(x)		((x) + 0x04)
 #define ADC_V1_DLY(x)		((x) + 0x08)
@@ -44,10 +38,10 @@
 #define ADC_V1_MUX(x)		((x) + 0x1c)
 #define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
 
-/* S3C2410 ADC registers definitions */
+ 
 #define ADC_S3C2410_MUX(x)	((x) + 0x18)
 
-/* Future ADC_V2 registers definitions */
+ 
 #define ADC_V2_CON1(x)		((x) + 0x00)
 #define ADC_V2_CON2(x)		((x) + 0x04)
 #define ADC_V2_STAT(x)		((x) + 0x08)
@@ -55,21 +49,21 @@
 #define ADC_V2_INT_ST(x)	((x) + 0x14)
 #define ADC_V2_VER(x)		((x) + 0x20)
 
-/* Bit definitions for ADC_V1 */
+ 
 #define ADC_V1_CON_RES		(1u << 16)
 #define ADC_V1_CON_PRSCEN	(1u << 14)
 #define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
 #define ADC_V1_CON_STANDBY	(1u << 2)
 
-/* Bit definitions for S3C2410 ADC */
+ 
 #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) << 3)
 #define ADC_S3C2410_DATX_MASK	0x3FF
 #define ADC_S3C2416_CON_RES_SEL	(1u << 3)
 
-/* touch screen always uses channel 0 */
+ 
 #define ADC_S3C2410_MUX_TS	0
 
-/* ADCTSC Register Bits */
+ 
 #define ADC_S3C2443_TSC_UD_SEN		(1u << 8)
 #define ADC_S3C2410_TSC_YM_SEN		(1u << 7)
 #define ADC_S3C2410_TSC_YP_SEN		(1u << 6)
@@ -90,7 +84,7 @@
 			 ADC_S3C2410_TSC_AUTO_PST | \
 			 ADC_S3C2410_TSC_XY_PST(0))
 
-/* Bit definitions for ADC_V2 */
+ 
 #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
 
 #define ADC_V2_CON2_OSEL	(1u << 10)
@@ -106,7 +100,7 @@
 #define MAX_EXYNOS4212_ADC_CHANNELS	4
 #define MAX_S5PV210_ADC_CHANNELS	10
 
-/* Bit definitions common for ADC_V1 and ADC_V2 */
+ 
 #define ADC_CON_EN_START	(1u << 0)
 #define ADC_CON_EN_START_MASK	(0x3 << 0)
 #define ADC_DATX_PRESSED	(1u << 15)
@@ -142,14 +136,7 @@ struct exynos_adc {
 	u32			ts_x;
 	u32			ts_y;
 
-	/*
-	 * Lock to protect from potential concurrent access to the
-	 * completion callback during a manual conversion. For this driver
-	 * a wait-callback is used to wait for the conversion result,
-	 * so in the meantime no other read request (or conversion start)
-	 * must be performed, otherwise it would interfere with the
-	 * current conversion result.
-	 */
+	 
 	struct mutex		lock;
 };
 
@@ -233,14 +220,14 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
 	if (info->data->needs_adc_phy)
 		regmap_write(info->pmu_map, info->data->phy_offset, 1);
 
-	/* set default prescaler values and Enable prescaler */
+	 
 	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
 
-	/* Enable 12-bit ADC resolution */
+	 
 	con1 |= ADC_V1_CON_RES;
 	writel(con1, ADC_V1_CON(info->regs));
 
-	/* set touchscreen delay */
+	 
 	writel(info->delay, ADC_V1_DLY(info->regs));
 }
 
@@ -272,10 +259,10 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
 	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
 }
 
-/* Exynos4212 and 4412 is like ADCv1 but with four channels only */
+ 
 static const struct exynos_adc_data exynos4212_adc_data = {
 	.num_channels	= MAX_EXYNOS4212_ADC_CHANNELS,
-	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,	 
 	.needs_adc_phy	= true,
 	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
 
@@ -287,7 +274,7 @@ static const struct exynos_adc_data exynos4212_adc_data = {
 
 static const struct exynos_adc_data exynos_adc_v1_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,	 
 	.needs_adc_phy	= true,
 	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
 
@@ -299,7 +286,7 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
 
 static const struct exynos_adc_data exynos_adc_s5pv210_data = {
 	.num_channels	= MAX_S5PV210_ADC_CHANNELS,
-	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,	 
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
@@ -312,12 +299,12 @@ static void exynos_adc_s3c2416_start_conv(struct exynos_adc *info,
 {
 	u32 con1;
 
-	/* Enable 12 bit ADC resolution */
+	 
 	con1 = readl(ADC_V1_CON(info->regs));
 	con1 |= ADC_S3C2416_CON_RES_SEL;
 	writel(con1, ADC_V1_CON(info->regs));
 
-	/* Select channel for S3C2416 */
+	 
 	writel(addr, ADC_S3C2410_MUX(info->regs));
 
 	con1 = readl(ADC_V1_CON(info->regs));
@@ -326,7 +313,7 @@ static void exynos_adc_s3c2416_start_conv(struct exynos_adc *info,
 
 static struct exynos_adc_data const exynos_adc_s3c2416_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,	 
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
@@ -338,7 +325,7 @@ static void exynos_adc_s3c2443_start_conv(struct exynos_adc *info,
 {
 	u32 con1;
 
-	/* Select channel for S3C2433 */
+	 
 	writel(addr, ADC_S3C2410_MUX(info->regs));
 
 	con1 = readl(ADC_V1_CON(info->regs));
@@ -347,7 +334,7 @@ static void exynos_adc_s3c2443_start_conv(struct exynos_adc *info,
 
 static struct exynos_adc_data const exynos_adc_s3c2443_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_S3C2410_DATX_MASK, /* 10 bit ADC resolution */
+	.mask		= ADC_S3C2410_DATX_MASK,  
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
@@ -367,7 +354,7 @@ static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
 
 static struct exynos_adc_data const exynos_adc_s3c24xx_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_S3C2410_DATX_MASK, /* 10 bit ADC resolution */
+	.mask		= ADC_S3C2410_DATX_MASK,  
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
@@ -376,7 +363,7 @@ static struct exynos_adc_data const exynos_adc_s3c24xx_data = {
 
 static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,	 
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
@@ -398,7 +385,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
 		ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
 	writel(con2, ADC_V2_CON2(info->regs));
 
-	/* Enable interrupts */
+	 
 	writel(1, ADC_V2_INT_EN(info->regs));
 }
 
@@ -435,7 +422,7 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
 
 static const struct exynos_adc_data exynos_adc_v2_data = {
 	.num_channels	= MAX_ADC_V2_CHANNELS,
-	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,  
 	.needs_adc_phy	= true,
 	.phy_offset	= EXYNOS_ADCV2_PHY_OFFSET,
 
@@ -447,7 +434,7 @@ static const struct exynos_adc_data exynos_adc_v2_data = {
 
 static const struct exynos_adc_data exynos3250_adc_data = {
 	.num_channels	= MAX_EXYNOS3250_ADC_CHANNELS,
-	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,  
 	.needs_sclk	= true,
 	.needs_adc_phy	= true,
 	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
@@ -470,13 +457,13 @@ static void exynos_adc_exynos7_init_hw(struct exynos_adc *info)
 	con2 |= ADC_V2_CON2_C_TIME(0);
 	writel(con2, ADC_V2_CON2(info->regs));
 
-	/* Enable interrupts */
+	 
 	writel(1, ADC_V2_INT_EN(info->regs));
 }
 
 static const struct exynos_adc_data exynos7_adc_data = {
 	.num_channels	= MAX_ADC_V1_CHANNELS,
-	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+	.mask		= ADC_DATX_MASK,  
 
 	.init_hw	= exynos_adc_exynos7_init_hw,
 	.exit_hw	= exynos_adc_v2_exit_hw,
@@ -546,7 +533,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* Regulator voltage is in uV, but need mV */
+		 
 		*val = ret / 1000;
 		*val2 = info->data->mask;
 
@@ -558,7 +545,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
 	mutex_lock(&info->lock);
 	reinit_completion(&info->completion);
 
-	/* Select the channel to be used and Trigger conversion */
+	 
 	if (info->data->start_conv)
 		info->data->start_conv(info, chan->address);
 
@@ -594,7 +581,7 @@ static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
 	writel(ADC_S3C2410_TSC_PULL_UP_DISABLE | ADC_TSC_AUTOPST,
 	       ADC_V1_TSC(info->regs));
 
-	/* Select the ts channel to be used and Trigger conversion */
+	 
 	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
 
 	timeout = wait_for_completion_timeout(&info->completion,
@@ -621,7 +608,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
 	struct exynos_adc *info = dev_id;
 	u32 mask = info->data->mask;
 
-	/* Read value */
+	 
 	if (info->read_ts) {
 		info->ts_x = readl(ADC_V1_DATX(info->regs));
 		info->ts_y = readl(ADC_V1_DATY(info->regs));
@@ -630,7 +617,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
 		info->value = readl(ADC_V1_DATX(info->regs)) & mask;
 	}
 
-	/* clear irq */
+	 
 	if (info->data->clear_irq)
 		info->data->clear_irq(info);
 
@@ -639,13 +626,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Here we (ab)use a threaded interrupt handler to stay running
- * for as long as the touchscreen remains pressed, we report
- * a new event with the latest data and then sleep until the
- * next timer tick. This mirrors the behavior of the old
- * driver, with much less code.
- */
+ 
 static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
 {
 	struct exynos_adc *info = dev_id;
@@ -826,7 +807,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* leave out any TS related code if unreachable */
+	 
 	if (IS_REACHABLE(CONFIG_INPUT)) {
 		has_ts = of_property_read_bool(pdev->dev.of_node,
 					       "has-touchscreen") || pdata;

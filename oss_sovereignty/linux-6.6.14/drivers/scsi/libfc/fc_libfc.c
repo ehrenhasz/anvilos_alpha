@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2009 Intel Corporation. All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -30,24 +26,18 @@ struct blocking_notifier_head fc_lport_notifier_head =
 		BLOCKING_NOTIFIER_INIT(fc_lport_notifier_head);
 EXPORT_SYMBOL(fc_lport_notifier_head);
 
-/*
- * Providers which primarily send requests and PRLIs.
- */
+ 
 struct fc4_prov *fc_active_prov[FC_FC4_PROV_SIZE] = {
 	[0] = &fc_rport_t0_prov,
 	[FC_TYPE_FCP] = &fc_rport_fcp_init,
 };
 
-/*
- * Providers which receive requests.
- */
+ 
 struct fc4_prov *fc_passive_prov[FC_FC4_PROV_SIZE] = {
 	[FC_TYPE_ELS] = &fc_lport_els_prov,
 };
 
-/**
- * libfc_init() - Initialize libfc.ko
- */
+ 
 static int __init libfc_init(void)
 {
 	int rc = 0;
@@ -73,9 +63,7 @@ destroy_pkt_cache:
 }
 module_init(libfc_init);
 
-/**
- * libfc_exit() - Tear down libfc.ko
- */
+ 
 static void __exit libfc_exit(void)
 {
 	fc_destroy_fcp();
@@ -84,18 +72,7 @@ static void __exit libfc_exit(void)
 }
 module_exit(libfc_exit);
 
-/**
- * fc_copy_buffer_to_sglist() - This routine copies the data of a buffer
- *				into a scatter-gather list (SG list).
- *
- * @buf: pointer to the data buffer.
- * @len: the byte-length of the data buffer.
- * @sg: pointer to the pointer of the SG list.
- * @nents: pointer to the remaining number of entries in the SG list.
- * @offset: pointer to the current offset in the SG list.
- * @crc: pointer to the 32-bit crc value.
- *	 If crc is NULL, CRC is not calculated.
- */
+ 
 u32 fc_copy_buffer_to_sglist(void *buf, size_t len,
 			     struct scatterlist *sg,
 			     u32 *nents, size_t *offset,
@@ -109,10 +86,7 @@ u32 fc_copy_buffer_to_sglist(void *buf, size_t len,
 		void *page_addr;
 
 		if (*offset >= sg->length) {
-			/*
-			 * Check for end and drop resources
-			 * from the last iteration.
-			 */
+			 
 			if (!(*nents))
 				break;
 			--(*nents);
@@ -122,10 +96,7 @@ u32 fc_copy_buffer_to_sglist(void *buf, size_t len,
 		}
 		sg_bytes = min(remaining, sg->length - *offset);
 
-		/*
-		 * The scatterlist item may be bigger than PAGE_SIZE,
-		 * but we are limited to mapping PAGE_SIZE at a time.
-		 */
+		 
 		off = *offset + sg->offset;
 		sg_bytes = min(sg_bytes,
 			       (size_t)(PAGE_SIZE - (off & ~PAGE_MASK)));
@@ -142,15 +113,7 @@ u32 fc_copy_buffer_to_sglist(void *buf, size_t len,
 	return copy_len;
 }
 
-/**
- * fc_fill_hdr() -  fill FC header fields based on request
- * @fp: reply frame containing header to be filled in
- * @in_fp: request frame containing header to use in filling in reply
- * @r_ctl: R_CTL value for header
- * @f_ctl: F_CTL value for header, with 0 pad
- * @seq_cnt: sequence count for the header, ignored if frame has a sequence
- * @parm_offset: parameter / offset value
- */
+ 
 void fc_fill_hdr(struct fc_frame *fp, const struct fc_frame *in_fp,
 		 enum fc_rctl r_ctl, u32 f_ctl, u16 seq_cnt, u32 parm_offset)
 {
@@ -165,13 +128,13 @@ void fc_fill_hdr(struct fc_frame *fp, const struct fc_frame *in_fp,
 	if (f_ctl & FC_FC_END_SEQ) {
 		fill = -fr_len(fp) & 3;
 		if (fill) {
-			/* TODO, this may be a problem with fragmented skb */
+			 
 			skb_put_zero(fp_skb(fp), fill);
 			f_ctl |= fill;
 		}
 		fr_eof(fp) = FC_EOF_T;
 	} else {
-		WARN_ON(fr_len(fp) % 4 != 0);	/* no pad to non last frame */
+		WARN_ON(fr_len(fp) % 4 != 0);	 
 		fr_eof(fp) = FC_EOF_N;
 	}
 
@@ -200,13 +163,7 @@ void fc_fill_hdr(struct fc_frame *fp, const struct fc_frame *in_fp,
 }
 EXPORT_SYMBOL(fc_fill_hdr);
 
-/**
- * fc_fill_reply_hdr() -  fill FC reply header fields based on request
- * @fp: reply frame containing header to be filled in
- * @in_fp: request frame containing header to use in filling in reply
- * @r_ctl: R_CTL value for reply
- * @parm_offset: parameter / offset value
- */
+ 
 void fc_fill_reply_hdr(struct fc_frame *fp, const struct fc_frame *in_fp,
 		       enum fc_rctl r_ctl, u32 parm_offset)
 {
@@ -219,13 +176,7 @@ void fc_fill_reply_hdr(struct fc_frame *fp, const struct fc_frame *in_fp,
 }
 EXPORT_SYMBOL(fc_fill_reply_hdr);
 
-/**
- * fc_fc4_conf_lport_params() - Modify "service_params" of specified lport
- * if there is service provider (target provider) registered with libfc
- * for specified "fc_ft_type"
- * @lport: Local port which service_params needs to be modified
- * @type: FC-4 type, such as FC_TYPE_FCP
- */
+ 
 void fc_fc4_conf_lport_params(struct fc_lport *lport, enum fc_fh_type type)
 {
 	struct fc4_prov *prov_entry;
@@ -249,13 +200,7 @@ void fc_lport_iterate(void (*notify)(struct fc_lport *, void *), void *arg)
 }
 EXPORT_SYMBOL(fc_lport_iterate);
 
-/**
- * fc_fc4_register_provider() - register FC-4 upper-level provider.
- * @type: FC-4 type, such as FC_TYPE_FCP
- * @prov: structure describing provider including ops vector.
- *
- * Returns 0 on success, negative error otherwise.
- */
+ 
 int fc_fc4_register_provider(enum fc_fh_type type, struct fc4_prov *prov)
 {
 	struct fc4_prov **prov_entry;
@@ -274,11 +219,7 @@ int fc_fc4_register_provider(enum fc_fh_type type, struct fc4_prov *prov)
 }
 EXPORT_SYMBOL(fc_fc4_register_provider);
 
-/**
- * fc_fc4_deregister_provider() - deregister FC-4 upper-level provider.
- * @type: FC-4 type, such as FC_TYPE_FCP
- * @prov: structure describing provider including ops vector.
- */
+ 
 void fc_fc4_deregister_provider(enum fc_fh_type type, struct fc4_prov *prov)
 {
 	BUG_ON(type >= FC_FC4_PROV_SIZE);
@@ -292,10 +233,7 @@ void fc_fc4_deregister_provider(enum fc_fh_type type, struct fc4_prov *prov)
 }
 EXPORT_SYMBOL(fc_fc4_deregister_provider);
 
-/**
- * fc_fc4_add_lport() - add new local port to list and run notifiers.
- * @lport:  The new local port.
- */
+ 
 void fc_fc4_add_lport(struct fc_lport *lport)
 {
 	mutex_lock(&fc_prov_mutex);
@@ -305,10 +243,7 @@ void fc_fc4_add_lport(struct fc_lport *lport)
 	mutex_unlock(&fc_prov_mutex);
 }
 
-/**
- * fc_fc4_del_lport() - remove local port from list and run notifiers.
- * @lport:  The new local port.
- */
+ 
 void fc_fc4_del_lport(struct fc_lport *lport)
 {
 	mutex_lock(&fc_prov_mutex);

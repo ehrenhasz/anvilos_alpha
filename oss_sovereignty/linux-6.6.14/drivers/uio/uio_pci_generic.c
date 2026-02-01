@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* uio_pci_generic - generic UIO driver for PCI 2.3 devices
- *
- * Copyright (C) 2009 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Since the driver does not declare any device ids, you must allocate
- * id and bind the device to the driver yourself.  For example:
- *
- * # echo "8086 10f5" > /sys/bus/pci/drivers/uio_pci_generic/new_id
- * # echo -n 0000:00:19.0 > /sys/bus/pci/drivers/e1000e/unbind
- * # echo -n 0000:00:19.0 > /sys/bus/pci/drivers/uio_pci_generic/bind
- * # ls -l /sys/bus/pci/devices/0000:00:19.0/driver
- * .../0000:00:19.0/driver -> ../../../bus/pci/drivers/uio_pci_generic
- *
- * Driver won't bind to devices which do not support the Interrupt Disable Bit
- * in the command register. All devices compliant to PCI 2.3 (circa 2002) and
- * all compliant PCI Express devices should support this bit.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -43,20 +26,12 @@ static int release(struct uio_info *info, struct inode *inode)
 {
 	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
 
-	/*
-	 * This driver is insecure when used with devices doing DMA, but some
-	 * people (mis)use it with such devices.
-	 * Let's at least make sure DMA isn't left enabled after the userspace
-	 * driver closes the fd.
-	 * Note that there's a non-zero chance doing this will wedge the device
-	 * at least until reset.
-	 */
+	 
 	pci_clear_master(gdev->pdev);
 	return 0;
 }
 
-/* Interrupt handler. Read/modify/write the command register to disable
- * the interrupt. */
+ 
 static irqreturn_t irqhandler(int irq, struct uio_info *info)
 {
 	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
@@ -64,7 +39,7 @@ static irqreturn_t irqhandler(int irq, struct uio_info *info)
 	if (!pci_check_and_mask_intx(gdev->pdev))
 		return IRQ_NONE;
 
-	/* UIO core will signal the user process. */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -138,7 +113,7 @@ static int probe(struct pci_dev *pdev,
 
 static struct pci_driver uio_pci_driver = {
 	.name = "uio_pci_generic",
-	.id_table = NULL, /* only dynamic id's */
+	.id_table = NULL,  
 	.probe = probe,
 };
 

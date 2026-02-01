@@ -1,54 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* lanai.c -- Copyright 1999-2003 by Mitchell Blank Jr <mitch@sfgoth.com>
- *
- * This driver supports ATM cards based on the Efficient "Lanai"
- * chipset such as the Speedstream 3010 and the ENI-25p.  The
- * Speedstream 3060 is currently not supported since we don't
- * have the code to drive the on-board Alcatel DSL chipset (yet).
- *
- * Thanks to Efficient for supporting this project with hardware,
- * documentation, and by answering my questions.
- *
- * Things not working yet:
- *
- * o  We don't support the Speedstream 3060 yet - this card has
- *    an on-board DSL modem chip by Alcatel and the driver will
- *    need some extra code added to handle it
- *
- * o  Note that due to limitations of the Lanai only one VCC can be
- *    in CBR at once
- *
- * o We don't currently parse the EEPROM at all.  The code is all
- *   there as per the spec, but it doesn't actually work.  I think
- *   there may be some issues with the docs.  Anyway, do NOT
- *   enable it yet - bugs in that code may actually damage your
- *   hardware!  Because of this you should hardware an ESI before
- *   trying to use this in a LANE or MPOA environment.
- *
- * o  AAL0 is stubbed in but the actual rx/tx path isn't written yet:
- *	vcc_tx_aal0() needs to send or queue a SKB
- *	vcc_tx_unqueue_aal0() needs to attempt to send queued SKBs
- *	vcc_rx_aal0() needs to handle AAL0 interrupts
- *    This isn't too much work - I just wanted to get other things
- *    done first.
- *
- * o  lanai_change_qos() isn't written yet
- *
- * o  There aren't any ioctl's yet -- I'd like to eventually support
- *    setting loopback and LED modes that way.
- *
- * o  If the segmentation engine or DMA gets shut down we should restart
- *    card as per section 17.0i.  (see lanai_reset)
- *
- * o setsockopt(SO_CIRANGE) isn't done (although despite what the
- *   API says it isn't exactly commonly implemented)
- */
 
-/* Version history:
- *   v.1.00 -- 26-JUL-2003 -- PCI/DMA updates
- *   v.0.02 -- 11-JAN-2000 -- Endian fixes
- *   v.0.01 -- 30-NOV-1999 -- Initial release
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -63,99 +16,56 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 
-/* -------------------- TUNABLE PARAMATERS: */
+ 
 
-/*
- * Maximum number of VCIs per card.  Setting it lower could theoretically
- * save some memory, but since we allocate our vcc list with get_free_pages,
- * it's not really likely for most architectures
- */
+ 
 #define NUM_VCI			(1024)
 
-/*
- * Enable extra debugging
- */
+ 
 #define DEBUG
-/*
- * Debug _all_ register operations with card, except the memory test.
- * Also disables the timed poll to prevent extra chattiness.  This
- * isn't for normal use
- */
+ 
 #undef DEBUG_RW
 
-/*
- * The programming guide specifies a full test of the on-board SRAM
- * at initialization time.  Undefine to remove this
- */
+ 
 #define FULL_MEMORY_TEST
 
-/*
- * This is the number of (4 byte) service entries that we will
- * try to allocate at startup.  Note that we will end up with
- * one PAGE_SIZE's worth regardless of what this is set to
- */
+ 
 #define SERVICE_ENTRIES		(1024)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * We normally read the onboard EEPROM in order to discover our MAC
- * address.  Undefine to _not_ do this
- */
-/* #define READ_EEPROM */ /* ***DONT ENABLE YET*** */
-/* TODO: make above a module load-time option (also) */
+ 
+   
+ 
 
-/*
- * Depth of TX fifo (in 128 byte units; range 2-31)
- * Smaller numbers are better for network latency
- * Larger numbers are better for PCI latency
- * I'm really sure where the best tradeoff is, but the BSD driver uses
- * 7 and it seems to work ok.
- */
+ 
 #define TX_FIFO_DEPTH		(7)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * How often (in jiffies) we will try to unstick stuck connections -
- * shouldn't need to happen much
- */
+ 
 #define LANAI_POLL_PERIOD	(10*HZ)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * When allocating an AAL5 receiving buffer, try to make it at least
- * large enough to hold this many max_sdu sized PDUs
- */
+ 
 #define AAL5_RX_MULTIPLIER	(3)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * Same for transmitting buffer
- */
+ 
 #define AAL5_TX_MULTIPLIER	(3)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * When allocating an AAL0 transmiting buffer, how many cells should fit.
- * Remember we'll end up with a PAGE_SIZE of them anyway, so this isn't
- * really critical
- */
+ 
 #define AAL0_TX_MULTIPLIER	(40)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * How large should we make the AAL0 receiving buffer.  Remember that this
- * is shared between all AAL0 VC's
- */
+ 
 #define AAL0_RX_BUFFER_SIZE	(PAGE_SIZE)
-/* TODO: make above a module load-time option */
+ 
 
-/*
- * Should we use Lanai's "powerdown" feature when no vcc's are bound?
- */
-/* #define USE_POWERDOWN */
-/* TODO: make above a module load-time option (also) */
+ 
+ 
+ 
 
-/* -------------------- DEBUGGING AIDS: */
+ 
 
 #define DEV_LABEL "lanai"
 
@@ -169,21 +79,21 @@
 			printk(KERN_ERR DEV_LABEL ": " format, ##args); \
 	} while (0)
 
-#else /* !DEBUG */
+#else  
 
 #define DPRINTK(format, args...)
 #define APRINTK(truth, format, args...)
 
-#endif /* DEBUG */
+#endif  
 
 #ifdef DEBUG_RW
 #define RWDEBUG(format, args...) \
 	printk(KERN_DEBUG DEV_LABEL ": " format, ##args)
-#else /* !DEBUG_RW */
+#else  
 #define RWDEBUG(format, args...)
 #endif
 
-/* -------------------- DATA DEFINITIONS: */
+ 
 
 #define LANAI_MAPPING_SIZE	(0x40000)
 #define LANAI_EEPROM_SIZE	(128)
@@ -191,11 +101,11 @@
 typedef int vci_t;
 typedef void __iomem *bus_addr_t;
 
-/* DMA buffer in host memory for TX, RX, or service list. */
+ 
 struct lanai_buffer {
-	u32 *start;	/* From get_free_pages */
-	u32 *end;	/* One past last byte */
-	u32 *ptr;	/* Pointer to current host location */
+	u32 *start;	 
+	u32 *end;	 
+	u32 *ptr;	 
 	dma_addr_t dmaaddr;
 };
 
@@ -213,29 +123,22 @@ struct lanai_vcc_stats {
 	} x;
 };
 
-struct lanai_dev;			/* Forward declaration */
+struct lanai_dev;			 
 
-/*
- * This is the card-specific per-vcc data.  Note that unlike some other
- * drivers there is NOT a 1-to-1 correspondance between these and
- * atm_vcc's - each one of these represents an actual 2-way vcc, but
- * an atm_vcc can be 1-way and share with a 1-way vcc in the other
- * direction.  To make it weirder, there can even be 0-way vccs
- * bound to us, waiting to do a change_qos
- */
+ 
 struct lanai_vcc {
-	bus_addr_t vbase;		/* Base of VCC's registers */
+	bus_addr_t vbase;		 
 	struct lanai_vcc_stats stats;
-	int nref;			/* # of atm_vcc's who reference us */
+	int nref;			 
 	vci_t vci;
 	struct {
 		struct lanai_buffer buf;
-		struct atm_vcc *atmvcc;	/* atm_vcc who is receiver */
+		struct atm_vcc *atmvcc;	 
 	} rx;
 	struct {
 		struct lanai_buffer buf;
-		struct atm_vcc *atmvcc;	/* atm_vcc who is transmitter */
-		int endptr;		/* last endptr from service entry */
+		struct atm_vcc *atmvcc;	 
+		int endptr;		 
 		struct sk_buff_head backlog;
 		void (*unqueue)(struct lanai_dev *, struct lanai_vcc *, int);
 	} tx;
@@ -247,10 +150,10 @@ enum lanai_type {
 };
 
 struct lanai_dev_stats {
-	unsigned ovfl_trash;	/* # of cells dropped - buffer overflow */
-	unsigned vci_trash;	/* # of cells dropped - closed vci */
-	unsigned hec_err;	/* # of cells dropped - bad HEC */
-	unsigned atm_ovfl;	/* # of cells dropped - rx fifo overflow */
+	unsigned ovfl_trash;	 
+	unsigned vci_trash;	 
+	unsigned hec_err;	 
+	unsigned atm_ovfl;	 
 	unsigned pcierr_parity_detect;
 	unsigned pcierr_serr_set;
 	unsigned pcierr_master_abort;
@@ -270,35 +173,31 @@ struct lanai_dev {
 	struct lanai_buffer service;
 	struct lanai_vcc **vccs;
 #ifdef USE_POWERDOWN
-	int nbound;			/* number of bound vccs */
+	int nbound;			 
 #endif
 	enum lanai_type type;
-	vci_t num_vci;			/* Currently just NUM_VCI */
+	vci_t num_vci;			 
 	u8 eeprom[LANAI_EEPROM_SIZE];
 	u32 serialno, magicno;
 	struct pci_dev *pci;
-	DECLARE_BITMAP(backlog_vccs, NUM_VCI);   /* VCCs with tx backlog */
-	DECLARE_BITMAP(transmit_ready, NUM_VCI); /* VCCs with transmit space */
+	DECLARE_BITMAP(backlog_vccs, NUM_VCI);    
+	DECLARE_BITMAP(transmit_ready, NUM_VCI);  
 	struct timer_list timer;
 	int naal0;
-	struct lanai_buffer aal0buf;	/* AAL0 RX buffers */
-	u32 conf1, conf2;		/* CONFIG[12] registers */
-	u32 status;			/* STATUS register */
+	struct lanai_buffer aal0buf;	 
+	u32 conf1, conf2;		 
+	u32 status;			 
 	spinlock_t endtxlock;
 	spinlock_t servicelock;
 	struct atm_vcc *cbrvcc;
 	int number;
 	int board_rev;
-/* TODO - look at race conditions with maintence of conf1/conf2 */
-/* TODO - transmit locking: should we use _irq not _irqsave? */
-/* TODO - organize above in some rational fashion (see <asm/cache.h>) */
+ 
+ 
+ 
 };
 
-/*
- * Each device has two bitmaps for each VCC (baclog_vccs and transmit_ready)
- * This function iterates one of these, calling a given function for each
- * vci with their bit set
- */
+ 
 static void vci_bitfield_iterate(struct lanai_dev *lanai,
 	const unsigned long *lp,
 	void (*func)(struct lanai_dev *,vci_t vci))
@@ -309,43 +208,29 @@ static void vci_bitfield_iterate(struct lanai_dev *lanai,
 		func(lanai, vci);
 }
 
-/* -------------------- BUFFER  UTILITIES: */
+ 
 
-/*
- * Lanai needs DMA buffers aligned to 256 bytes of at least 1024 bytes -
- * usually any page allocation will do.  Just to be safe in case
- * PAGE_SIZE is insanely tiny, though...
- */
+ 
 #define LANAI_PAGE_SIZE   ((PAGE_SIZE >= 1024) ? PAGE_SIZE : 1024)
 
-/*
- * Allocate a buffer in host RAM for service list, RX, or TX
- * Returns buf->start==NULL if no memory
- * Note that the size will be rounded up 2^n bytes, and
- * if we can't allocate that we'll settle for something smaller
- * until minbytes
- */
+ 
 static void lanai_buf_allocate(struct lanai_buffer *buf,
 	size_t bytes, size_t minbytes, struct pci_dev *pci)
 {
 	int size;
 
-	if (bytes > (128 * 1024))	/* max lanai buffer size */
+	if (bytes > (128 * 1024))	 
 		bytes = 128 * 1024;
 	for (size = LANAI_PAGE_SIZE; size < bytes; size *= 2)
 		;
 	if (minbytes < LANAI_PAGE_SIZE)
 		minbytes = LANAI_PAGE_SIZE;
 	do {
-		/*
-		 * Technically we could use non-consistent mappings for
-		 * everything, but the way the lanai uses DMA memory would
-		 * make that a terrific pain.  This is much simpler.
-		 */
+		 
 		buf->start = dma_alloc_coherent(&pci->dev,
 						size, &buf->dmaaddr, GFP_KERNEL);
-		if (buf->start != NULL) {	/* Success */
-			/* Lanai requires 256-byte alignment of DMA bufs */
+		if (buf->start != NULL) {	 
+			 
 			APRINTK((buf->dmaaddr & ~0xFFFFFF00) == 0,
 			    "bad dmaaddr: 0x%lx\n",
 			    (unsigned long) buf->dmaaddr);
@@ -359,7 +244,7 @@ static void lanai_buf_allocate(struct lanai_buffer *buf,
 	} while (size >= minbytes);
 }
 
-/* size of buffer in bytes */
+ 
 static inline size_t lanai_buf_size(const struct lanai_buffer *buf)
 {
 	return ((unsigned long) buf->end) - ((unsigned long) buf->start);
@@ -375,94 +260,94 @@ static void lanai_buf_deallocate(struct lanai_buffer *buf,
 	}
 }
 
-/* size of buffer as "card order" (0=1k .. 7=128k) */
+ 
 static int lanai_buf_size_cardorder(const struct lanai_buffer *buf)
 {
 	int order = get_order(lanai_buf_size(buf)) + (PAGE_SHIFT - 10);
 
-	/* This can only happen if PAGE_SIZE is gigantic, but just in case */
+	 
 	if (order > 7)
 		order = 7;
 	return order;
 }
 
-/* -------------------- PORT I/O UTILITIES: */
+ 
 
-/* Registers (and their bit-fields) */
+ 
 enum lanai_register {
-	Reset_Reg		= 0x00,	/* Reset; read for chip type; bits: */
-#define   RESET_GET_BOARD_REV(x)    (((x)>> 0)&0x03)	/* Board revision */
-#define   RESET_GET_BOARD_ID(x)	    (((x)>> 2)&0x03)	/* Board ID */
-#define     BOARD_ID_LANAI256		(0)	/* 25.6M adapter card */
-	Endian_Reg		= 0x04,	/* Endian setting */
-	IntStatus_Reg		= 0x08,	/* Interrupt status */
-	IntStatusMasked_Reg	= 0x0C,	/* Interrupt status (masked) */
-	IntAck_Reg		= 0x10,	/* Interrupt acknowledge */
-	IntAckMasked_Reg	= 0x14,	/* Interrupt acknowledge (masked) */
-	IntStatusSet_Reg	= 0x18,	/* Get status + enable/disable */
-	IntStatusSetMasked_Reg	= 0x1C,	/* Get status + en/di (masked) */
-	IntControlEna_Reg	= 0x20,	/* Interrupt control enable */
-	IntControlDis_Reg	= 0x24,	/* Interrupt control disable */
-	Status_Reg		= 0x28,	/* Status */
-#define   STATUS_PROMDATA	 (0x00000001)	/* PROM_DATA pin */
-#define   STATUS_WAITING	 (0x00000002)	/* Interrupt being delayed */
-#define	  STATUS_SOOL		 (0x00000004)	/* SOOL alarm */
-#define   STATUS_LOCD		 (0x00000008)	/* LOCD alarm */
-#define	  STATUS_LED		 (0x00000010)	/* LED (HAPPI) output */
-#define   STATUS_GPIN		 (0x00000020)	/* GPIN pin */
-#define   STATUS_BUTTBUSY	 (0x00000040)	/* Butt register is pending */
-	Config1_Reg		= 0x2C,	/* Config word 1; bits: */
-#define   CONFIG1_PROMDATA	 (0x00000001)	/* PROM_DATA pin */
-#define   CONFIG1_PROMCLK	 (0x00000002)	/* PROM_CLK pin */
-#define   CONFIG1_SET_READMODE(x) ((x)*0x004)	/* PCI BM reads; values: */
-#define     READMODE_PLAIN	    (0)		/*   Plain memory read */
-#define     READMODE_LINE	    (2)		/*   Memory read line */
-#define     READMODE_MULTIPLE	    (3)		/*   Memory read multiple */
-#define   CONFIG1_DMA_ENABLE	 (0x00000010)	/* Turn on DMA */
-#define   CONFIG1_POWERDOWN	 (0x00000020)	/* Turn off clocks */
-#define   CONFIG1_SET_LOOPMODE(x) ((x)*0x080)	/* Clock&loop mode; values: */
-#define     LOOPMODE_NORMAL	    (0)		/*   Normal - no loop */
+	Reset_Reg		= 0x00,	 
+#define   RESET_GET_BOARD_REV(x)    (((x)>> 0)&0x03)	 
+#define   RESET_GET_BOARD_ID(x)	    (((x)>> 2)&0x03)	 
+#define     BOARD_ID_LANAI256		(0)	 
+	Endian_Reg		= 0x04,	 
+	IntStatus_Reg		= 0x08,	 
+	IntStatusMasked_Reg	= 0x0C,	 
+	IntAck_Reg		= 0x10,	 
+	IntAckMasked_Reg	= 0x14,	 
+	IntStatusSet_Reg	= 0x18,	 
+	IntStatusSetMasked_Reg	= 0x1C,	 
+	IntControlEna_Reg	= 0x20,	 
+	IntControlDis_Reg	= 0x24,	 
+	Status_Reg		= 0x28,	 
+#define   STATUS_PROMDATA	 (0x00000001)	 
+#define   STATUS_WAITING	 (0x00000002)	 
+#define	  STATUS_SOOL		 (0x00000004)	 
+#define   STATUS_LOCD		 (0x00000008)	 
+#define	  STATUS_LED		 (0x00000010)	 
+#define   STATUS_GPIN		 (0x00000020)	 
+#define   STATUS_BUTTBUSY	 (0x00000040)	 
+	Config1_Reg		= 0x2C,	 
+#define   CONFIG1_PROMDATA	 (0x00000001)	 
+#define   CONFIG1_PROMCLK	 (0x00000002)	 
+#define   CONFIG1_SET_READMODE(x) ((x)*0x004)	 
+#define     READMODE_PLAIN	    (0)		 
+#define     READMODE_LINE	    (2)		 
+#define     READMODE_MULTIPLE	    (3)		 
+#define   CONFIG1_DMA_ENABLE	 (0x00000010)	 
+#define   CONFIG1_POWERDOWN	 (0x00000020)	 
+#define   CONFIG1_SET_LOOPMODE(x) ((x)*0x080)	 
+#define     LOOPMODE_NORMAL	    (0)		 
 #define     LOOPMODE_TIME	    (1)
 #define     LOOPMODE_DIAG	    (2)
 #define     LOOPMODE_LINE	    (3)
 #define   CONFIG1_MASK_LOOPMODE  (0x00000180)
-#define   CONFIG1_SET_LEDMODE(x) ((x)*0x0200)	/* Mode of LED; values: */
-#define     LEDMODE_NOT_SOOL	    (0)		/*   !SOOL */
-#define	    LEDMODE_OFF		    (1)		/*   0     */
-#define	    LEDMODE_ON		    (2)		/*   1     */
-#define	    LEDMODE_NOT_LOCD	    (3)		/*   !LOCD */
-#define	    LEDMORE_GPIN	    (4)		/*   GPIN  */
-#define     LEDMODE_NOT_GPIN	    (7)		/*   !GPIN */
+#define   CONFIG1_SET_LEDMODE(x) ((x)*0x0200)	 
+#define     LEDMODE_NOT_SOOL	    (0)		 
+#define	    LEDMODE_OFF		    (1)		 
+#define	    LEDMODE_ON		    (2)		 
+#define	    LEDMODE_NOT_LOCD	    (3)		 
+#define	    LEDMORE_GPIN	    (4)		 
+#define     LEDMODE_NOT_GPIN	    (7)		 
 #define   CONFIG1_MASK_LEDMODE	 (0x00000E00)
-#define   CONFIG1_GPOUT1	 (0x00001000)	/* Toggle for reset */
-#define   CONFIG1_GPOUT2	 (0x00002000)	/* Loopback PHY */
-#define   CONFIG1_GPOUT3	 (0x00004000)	/* Loopback lanai */
-	Config2_Reg		= 0x30,	/* Config word 2; bits: */
-#define   CONFIG2_HOWMANY	 (0x00000001)	/* >512 VCIs? */
-#define   CONFIG2_PTI7_MODE	 (0x00000002)	/* Make PTI=7 RM, not OAM */
-#define   CONFIG2_VPI_CHK_DIS	 (0x00000004)	/* Ignore RX VPI value */
-#define   CONFIG2_HEC_DROP	 (0x00000008)	/* Drop cells w/ HEC errors */
-#define   CONFIG2_VCI0_NORMAL	 (0x00000010)	/* Treat VCI=0 normally */
-#define   CONFIG2_CBR_ENABLE	 (0x00000020)	/* Deal with CBR traffic */
-#define   CONFIG2_TRASH_ALL	 (0x00000040)	/* Trashing incoming cells */
-#define   CONFIG2_TX_DISABLE	 (0x00000080)	/* Trashing outgoing cells */
-#define   CONFIG2_SET_TRASH	 (0x00000100)	/* Turn trashing on */
-	Statistics_Reg		= 0x34,	/* Statistics; bits: */
-#define   STATS_GET_FIFO_OVFL(x)    (((x)>> 0)&0xFF)	/* FIFO overflowed */
-#define   STATS_GET_HEC_ERR(x)      (((x)>> 8)&0xFF)	/* HEC was bad */
-#define   STATS_GET_BAD_VCI(x)      (((x)>>16)&0xFF)	/* VCI not open */
-#define   STATS_GET_BUF_OVFL(x)     (((x)>>24)&0xFF)	/* VCC buffer full */
-	ServiceStuff_Reg	= 0x38,	/* Service stuff; bits: */
-#define   SSTUFF_SET_SIZE(x) ((x)*0x20000000)	/* size of service buffer */
-#define   SSTUFF_SET_ADDR(x)	    ((x)>>8)	/* set address of buffer */
-	ServWrite_Reg		= 0x3C,	/* ServWrite Pointer */
-	ServRead_Reg		= 0x40,	/* ServRead Pointer */
-	TxDepth_Reg		= 0x44,	/* FIFO Transmit Depth */
-	Butt_Reg		= 0x48,	/* Butt register */
+#define   CONFIG1_GPOUT1	 (0x00001000)	 
+#define   CONFIG1_GPOUT2	 (0x00002000)	 
+#define   CONFIG1_GPOUT3	 (0x00004000)	 
+	Config2_Reg		= 0x30,	 
+#define   CONFIG2_HOWMANY	 (0x00000001)	 
+#define   CONFIG2_PTI7_MODE	 (0x00000002)	 
+#define   CONFIG2_VPI_CHK_DIS	 (0x00000004)	 
+#define   CONFIG2_HEC_DROP	 (0x00000008)	 
+#define   CONFIG2_VCI0_NORMAL	 (0x00000010)	 
+#define   CONFIG2_CBR_ENABLE	 (0x00000020)	 
+#define   CONFIG2_TRASH_ALL	 (0x00000040)	 
+#define   CONFIG2_TX_DISABLE	 (0x00000080)	 
+#define   CONFIG2_SET_TRASH	 (0x00000100)	 
+	Statistics_Reg		= 0x34,	 
+#define   STATS_GET_FIFO_OVFL(x)    (((x)>> 0)&0xFF)	 
+#define   STATS_GET_HEC_ERR(x)      (((x)>> 8)&0xFF)	 
+#define   STATS_GET_BAD_VCI(x)      (((x)>>16)&0xFF)	 
+#define   STATS_GET_BUF_OVFL(x)     (((x)>>24)&0xFF)	 
+	ServiceStuff_Reg	= 0x38,	 
+#define   SSTUFF_SET_SIZE(x) ((x)*0x20000000)	 
+#define   SSTUFF_SET_ADDR(x)	    ((x)>>8)	 
+	ServWrite_Reg		= 0x3C,	 
+	ServRead_Reg		= 0x40,	 
+	TxDepth_Reg		= 0x44,	 
+	Butt_Reg		= 0x48,	 
 	CBR_ICG_Reg		= 0x50,
 	CBR_PTR_Reg		= 0x54,
-	PingCount_Reg		= 0x58,	/* Ping count */
-	DMA_Addr_Reg		= 0x5C	/* DMA address */
+	PingCount_Reg		= 0x58,	 
+	DMA_Addr_Reg		= 0x5C	 
 };
 
 static inline bus_addr_t reg_addr(const struct lanai_dev *lanai,
@@ -499,13 +384,13 @@ static inline void conf2_write(const struct lanai_dev *lanai)
 	reg_write(lanai, lanai->conf2, Config2_Reg);
 }
 
-/* Same as conf2_write(), but defers I/O if we're powered down */
+ 
 static inline void conf2_write_if_powerup(const struct lanai_dev *lanai)
 {
 #ifdef USE_POWERDOWN
 	if (unlikely((lanai->conf1 & CONFIG1_POWERDOWN) != 0))
 		return;
-#endif /* USE_POWERDOWN */
+#endif  
 	conf2_write(lanai);
 }
 
@@ -513,24 +398,15 @@ static inline void reset_board(const struct lanai_dev *lanai)
 {
 	DPRINTK("about to reset board\n");
 	reg_write(lanai, 0, Reset_Reg);
-	/*
-	 * If we don't delay a little while here then we can end up
-	 * leaving the card in a VERY weird state and lock up the
-	 * PCI bus.  This isn't documented anywhere but I've convinced
-	 * myself after a lot of painful experimentation
-	 */
+	 
 	udelay(5);
 }
 
-/* -------------------- CARD SRAM UTILITIES: */
+ 
 
-/* The SRAM is mapped into normal PCI memory space - the only catch is
- * that it is only 16-bits wide but must be accessed as 32-bit.  The
- * 16 high bits will be zero.  We don't hide this, since they get
- * programmed mostly like discrete registers anyway
- */
+ 
 #define SRAM_START (0x20000)
-#define SRAM_BYTES (0x20000)	/* Again, half don't really exist */
+#define SRAM_BYTES (0x20000)	 
 
 static inline bus_addr_t sram_addr(const struct lanai_dev *lanai, int offset)
 {
@@ -585,54 +461,54 @@ static int sram_test_and_clear(const struct lanai_dev *lanai)
 	return sram_test_pass(lanai, 0x0000);
 }
 
-/* -------------------- CARD-BASED VCC TABLE UTILITIES: */
+ 
 
-/* vcc table */
+ 
 enum lanai_vcc_offset {
-	vcc_rxaddr1		= 0x00,	/* Location1, plus bits: */
-#define   RXADDR1_SET_SIZE(x) ((x)*0x0000100)	/* size of RX buffer */
-#define   RXADDR1_SET_RMMODE(x) ((x)*0x00800)	/* RM cell action; values: */
-#define     RMMODE_TRASH	  (0)		/*   discard */
-#define     RMMODE_PRESERVE	  (1)		/*   input as AAL0 */
-#define     RMMODE_PIPE		  (2)		/*   pipe to coscheduler */
-#define     RMMODE_PIPEALL	  (3)		/*   pipe non-RM too */
-#define   RXADDR1_OAM_PRESERVE	 (0x00002000)	/* Input OAM cells as AAL0 */
-#define   RXADDR1_SET_MODE(x) ((x)*0x0004000)	/* Reassembly mode */
-#define     RXMODE_TRASH	  (0)		/*   discard */
-#define     RXMODE_AAL0		  (1)		/*   non-AAL5 mode */
-#define     RXMODE_AAL5		  (2)		/*   AAL5, intr. each PDU */
-#define     RXMODE_AAL5_STREAM	  (3)		/*   AAL5 w/o per-PDU intr */
-	vcc_rxaddr2		= 0x04,	/* Location2 */
-	vcc_rxcrc1		= 0x08,	/* RX CRC claculation space */
+	vcc_rxaddr1		= 0x00,	 
+#define   RXADDR1_SET_SIZE(x) ((x)*0x0000100)	 
+#define   RXADDR1_SET_RMMODE(x) ((x)*0x00800)	 
+#define     RMMODE_TRASH	  (0)		 
+#define     RMMODE_PRESERVE	  (1)		 
+#define     RMMODE_PIPE		  (2)		 
+#define     RMMODE_PIPEALL	  (3)		 
+#define   RXADDR1_OAM_PRESERVE	 (0x00002000)	 
+#define   RXADDR1_SET_MODE(x) ((x)*0x0004000)	 
+#define     RXMODE_TRASH	  (0)		 
+#define     RXMODE_AAL0		  (1)		 
+#define     RXMODE_AAL5		  (2)		 
+#define     RXMODE_AAL5_STREAM	  (3)		 
+	vcc_rxaddr2		= 0x04,	 
+	vcc_rxcrc1		= 0x08,	 
 	vcc_rxcrc2		= 0x0C,
-	vcc_rxwriteptr		= 0x10, /* RX writeptr, plus bits: */
-#define   RXWRITEPTR_LASTEFCI	 (0x00002000)	/* Last PDU had EFCI bit */
-#define   RXWRITEPTR_DROPPING	 (0x00004000)	/* Had error, dropping */
-#define   RXWRITEPTR_TRASHING	 (0x00008000)	/* Trashing */
-	vcc_rxbufstart		= 0x14,	/* RX bufstart, plus bits: */
+	vcc_rxwriteptr		= 0x10,  
+#define   RXWRITEPTR_LASTEFCI	 (0x00002000)	 
+#define   RXWRITEPTR_DROPPING	 (0x00004000)	 
+#define   RXWRITEPTR_TRASHING	 (0x00008000)	 
+	vcc_rxbufstart		= 0x14,	 
 #define   RXBUFSTART_CLP	 (0x00004000)
 #define   RXBUFSTART_CI		 (0x00008000)
-	vcc_rxreadptr		= 0x18,	/* RX readptr */
-	vcc_txicg		= 0x1C, /* TX ICG */
-	vcc_txaddr1		= 0x20,	/* Location1, plus bits: */
-#define   TXADDR1_SET_SIZE(x) ((x)*0x0000100)	/* size of TX buffer */
-#define   TXADDR1_ABR		 (0x00008000)	/* use ABR (doesn't work) */
-	vcc_txaddr2		= 0x24,	/* Location2 */
-	vcc_txcrc1		= 0x28,	/* TX CRC claculation space */
+	vcc_rxreadptr		= 0x18,	 
+	vcc_txicg		= 0x1C,  
+	vcc_txaddr1		= 0x20,	 
+#define   TXADDR1_SET_SIZE(x) ((x)*0x0000100)	 
+#define   TXADDR1_ABR		 (0x00008000)	 
+	vcc_txaddr2		= 0x24,	 
+	vcc_txcrc1		= 0x28,	 
 	vcc_txcrc2		= 0x2C,
-	vcc_txreadptr		= 0x30, /* TX Readptr, plus bits: */
+	vcc_txreadptr		= 0x30,  
 #define   TXREADPTR_GET_PTR(x) ((x)&0x01FFF)
-#define   TXREADPTR_MASK_DELTA	(0x0000E000)	/* ? */
-	vcc_txendptr		= 0x34, /* TX Endptr, plus bits: */
+#define   TXREADPTR_MASK_DELTA	(0x0000E000)	 
+	vcc_txendptr		= 0x34,  
 #define   TXENDPTR_CLP		(0x00002000)
-#define   TXENDPTR_MASK_PDUMODE	(0x0000C000)	/* PDU mode; values: */
+#define   TXENDPTR_MASK_PDUMODE	(0x0000C000)	 
 #define     PDUMODE_AAL0	 (0*0x04000)
 #define     PDUMODE_AAL5	 (2*0x04000)
 #define     PDUMODE_AAL5STREAM	 (3*0x04000)
-	vcc_txwriteptr		= 0x38,	/* TX Writeptr */
+	vcc_txwriteptr		= 0x38,	 
 #define   TXWRITEPTR_GET_PTR(x) ((x)&0x1FFF)
-	vcc_txcbr_next		= 0x3C	/* # of next CBR VCI in ring */
-#define   TXCBR_NEXT_BOZO	(0x00008000)	/* "bozo bit" */
+	vcc_txcbr_next		= 0x3C	 
+#define   TXCBR_NEXT_BOZO	(0x00008000)	 
 };
 
 #define CARDVCC_SIZE	(0x40)
@@ -666,19 +542,16 @@ static inline void cardvcc_write(const struct lanai_vcc *lvcc,
 	writel(val, lvcc->vbase + offset);
 }
 
-/* -------------------- COMPUTE SIZE OF AN AAL5 PDU: */
+ 
 
-/* How many bytes will an AAL5 PDU take to transmit - remember that:
- *   o  we need to add 8 bytes for length, CPI, UU, and CRC
- *   o  we need to round up to 48 bytes for cells
- */
+ 
 static inline int aal5_size(int size)
 {
 	int cells = (size + 8 + 47) / 48;
 	return cells * 48;
 }
 
-/* -------------------- FREE AN ATM SKB: */
+ 
 
 static inline void lanai_free_skb(struct atm_vcc *atmvcc, struct sk_buff *skb)
 {
@@ -688,7 +561,7 @@ static inline void lanai_free_skb(struct atm_vcc *atmvcc, struct sk_buff *skb)
 		dev_kfree_skb_any(skb);
 }
 
-/* -------------------- TURN VCCS ON AND OFF: */
+ 
 
 static void host_vcc_start_rx(const struct lanai_vcc *lvcc)
 {
@@ -703,14 +576,14 @@ static void host_vcc_start_rx(const struct lanai_vcc *lvcc)
 		cardvcc_write(lvcc, (dmaaddr >> 16) & 0xFFFF, vcc_rxaddr2);
 		addr1 = ((dmaaddr >> 8) & 0xFF) |
 		    RXADDR1_SET_SIZE(lanai_buf_size_cardorder(&lvcc->rx.buf))|
-		    RXADDR1_SET_RMMODE(RMMODE_TRASH) |	/* ??? */
-		 /* RXADDR1_OAM_PRESERVE |	--- no OAM support yet */
+		    RXADDR1_SET_RMMODE(RMMODE_TRASH) |	 
+		  
 		    RXADDR1_SET_MODE(RXMODE_AAL5);
 	} else
-		addr1 = RXADDR1_SET_RMMODE(RMMODE_PRESERVE) | /* ??? */
-		    RXADDR1_OAM_PRESERVE |		      /* ??? */
+		addr1 = RXADDR1_SET_RMMODE(RMMODE_PRESERVE) |  
+		    RXADDR1_OAM_PRESERVE |		       
 		    RXADDR1_SET_MODE(RXMODE_AAL0);
-	/* This one must be last! */
+	 
 	cardvcc_write(lvcc, addr1, vcc_rxaddr1);
 }
 
@@ -733,17 +606,17 @@ static void host_vcc_start_tx(const struct lanai_vcc *lvcc)
 	    vcc_txaddr1);
 }
 
-/* Shutdown receiving on card */
+ 
 static void lanai_shutdown_rx_vci(const struct lanai_vcc *lvcc)
 {
-	if (lvcc->vbase == NULL)	/* We were never bound to a VCI */
+	if (lvcc->vbase == NULL)	 
 		return;
-	/* 15.1.1 - set to trashing, wait one cell time (15us) */
+	 
 	cardvcc_write(lvcc,
 	    RXADDR1_SET_RMMODE(RMMODE_TRASH) |
 	    RXADDR1_SET_MODE(RXMODE_TRASH), vcc_rxaddr1);
 	udelay(15);
-	/* 15.1.2 - clear rest of entries */
+	 
 	cardvcc_write(lvcc, 0, vcc_rxaddr2);
 	cardvcc_write(lvcc, 0, vcc_rxcrc1);
 	cardvcc_write(lvcc, 0, vcc_rxcrc2);
@@ -752,13 +625,7 @@ static void lanai_shutdown_rx_vci(const struct lanai_vcc *lvcc)
 	cardvcc_write(lvcc, 0, vcc_rxreadptr);
 }
 
-/* Shutdown transmitting on card.
- * Unfortunately the lanai needs us to wait until all the data
- * drains out of the buffer before we can dealloc it, so this
- * can take awhile -- up to 370ms for a full 128KB buffer
- * assuming everone else is quiet.  In theory the time is
- * boundless if there's a CBR VCC holding things up.
- */
+ 
 static void lanai_shutdown_tx_vci(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc)
 {
@@ -766,30 +633,26 @@ static void lanai_shutdown_tx_vci(struct lanai_dev *lanai,
 	unsigned long flags, timeout;
 	int read, write, lastread = -1;
 
-	if (lvcc->vbase == NULL)	/* We were never bound to a VCI */
+	if (lvcc->vbase == NULL)	 
 		return;
-	/* 15.2.1 - wait for queue to drain */
+	 
 	while ((skb = skb_dequeue(&lvcc->tx.backlog)) != NULL)
 		lanai_free_skb(lvcc->tx.atmvcc, skb);
 	read_lock_irqsave(&vcc_sklist_lock, flags);
 	__clear_bit(lvcc->vci, lanai->backlog_vccs);
 	read_unlock_irqrestore(&vcc_sklist_lock, flags);
-	/*
-	 * We need to wait for the VCC to drain but don't wait forever.  We
-	 * give each 1K of buffer size 1/128th of a second to clear out.
-	 * TODO: maybe disable CBR if we're about to timeout?
-	 */
+	 
 	timeout = jiffies +
 	    (((lanai_buf_size(&lvcc->tx.buf) / 1024) * HZ) >> 7);
 	write = TXWRITEPTR_GET_PTR(cardvcc_read(lvcc, vcc_txwriteptr));
 	for (;;) {
 		read = TXREADPTR_GET_PTR(cardvcc_read(lvcc, vcc_txreadptr));
-		if (read == write &&	   /* Is TX buffer empty? */
+		if (read == write &&	    
 		    (lvcc->tx.atmvcc->qos.txtp.traffic_class != ATM_CBR ||
 		    (cardvcc_read(lvcc, vcc_txcbr_next) &
 		    TXCBR_NEXT_BOZO) == 0))
 			break;
-		if (read != lastread) {	   /* Has there been any progress? */
+		if (read != lastread) {	    
 			lastread = read;
 			timeout += HZ / 10;
 		}
@@ -802,7 +665,7 @@ static void lanai_shutdown_tx_vci(struct lanai_dev *lanai,
 		}
 		msleep(40);
 	}
-	/* 15.2.2 - clear out all tx registers */
+	 
 	cardvcc_write(lvcc, 0, vcc_txreadptr);
 	cardvcc_write(lvcc, 0, vcc_txwriteptr);
 	cardvcc_write(lvcc, 0, vcc_txendptr);
@@ -812,7 +675,7 @@ static void lanai_shutdown_tx_vci(struct lanai_dev *lanai,
 	cardvcc_write(lvcc, 0, vcc_txaddr1);
 }
 
-/* -------------------- MANAGING AAL0 RX BUFFER: */
+ 
 
 static inline int aal0_buffer_allocate(struct lanai_dev *lanai)
 {
@@ -828,9 +691,9 @@ static inline void aal0_buffer_free(struct lanai_dev *lanai)
 	lanai_buf_deallocate(&lanai->aal0buf, lanai->pci);
 }
 
-/* -------------------- EEPROM UTILITIES: */
+ 
 
-/* Offsets of data in the EEPROM */
+ 
 #define EEPROM_COPYRIGHT	(0)
 #define EEPROM_COPYRIGHT_LEN	(44)
 #define EEPROM_CHECKSUM		(62)
@@ -846,7 +709,7 @@ static inline void aal0_buffer_free(struct lanai_dev *lanai)
 
 #ifndef READ_EEPROM
 
-/* Stub functions to use if EEPROM reading is disabled */
+ 
 static int eeprom_read(struct lanai_dev *lanai)
 {
 	printk(KERN_INFO DEV_LABEL "(itf %d): *NOT* reading EEPROM\n",
@@ -862,7 +725,7 @@ static int eeprom_validate(struct lanai_dev *lanai)
 	return 0;
 }
 
-#else /* READ_EEPROM */
+#else  
 
 static int eeprom_read(struct lanai_dev *lanai)
 {
@@ -879,37 +742,37 @@ static int eeprom_read(struct lanai_dev *lanai)
 #define read_pin()	 (reg_read(lanai, Status_Reg) & STATUS_PROMDATA)
 #define send_stop()	 do { data_l(); udelay(5); clock_h(); udelay(5); \
 			      data_h(); udelay(5); } while (0)
-	/* start with both clock and data high */
+	 
 	data_h(); clock_h(); udelay(5);
 	for (address = 0; address < LANAI_EEPROM_SIZE; address++) {
-		data = (address << 1) | 1;	/* Command=read + address */
-		/* send start bit */
+		data = (address << 1) | 1;	 
+		 
 		data_l(); udelay(5);
 		clock_l(); udelay(5);
-		for (i = 128; i != 0; i >>= 1) {   /* write command out */
+		for (i = 128; i != 0; i >>= 1) {    
 			tmp = (lanai->conf1 & ~CONFIG1_PROMDATA) |
 			    ((data & i) ? CONFIG1_PROMDATA : 0);
 			if (lanai->conf1 != tmp) {
 				set_config1(tmp);
-				udelay(5);	/* Let new data settle */
+				udelay(5);	 
 			}
 			clock_h(); udelay(5); clock_l(); udelay(5);
 		}
-		/* look for ack */
+		 
 		data_h(); clock_h(); udelay(5);
 		if (read_pin() != 0)
-			goto error;	/* No ack seen */
+			goto error;	 
 		clock_l(); udelay(5);
-		/* read back result */
+		 
 		for (data = 0, i = 7; i >= 0; i--) {
 			data_h(); clock_h(); udelay(5);
 			data = (data << 1) | !!read_pin();
 			clock_l(); udelay(5);
 		}
-		/* look again for ack */
+		 
 		data_h(); clock_h(); udelay(5);
 		if (read_pin() == 0)
-			goto error;	/* Spurious ack */
+			goto error;	 
 		clock_l(); udelay(5);
 		send_stop();
 		lanai->eeprom[address] = data;
@@ -918,7 +781,7 @@ static int eeprom_read(struct lanai_dev *lanai)
 	}
 	return 0;
     error:
-	clock_l(); udelay(5);		/* finish read */
+	clock_l(); udelay(5);		 
 	send_stop();
 	printk(KERN_ERR DEV_LABEL "(itf %d): error reading EEPROM byte %d\n",
 	    lanai->number, address);
@@ -933,20 +796,20 @@ static int eeprom_read(struct lanai_dev *lanai)
 #undef send_stop
 }
 
-/* read a big-endian 4-byte value out of eeprom */
+ 
 static inline u32 eeprom_be4(const struct lanai_dev *lanai, int address)
 {
 	return be32_to_cpup((const u32 *) &lanai->eeprom[address]);
 }
 
-/* Checksum/validate EEPROM contents */
+ 
 static int eeprom_validate(struct lanai_dev *lanai)
 {
 	int i, s;
 	u32 v;
 	const u8 *e = lanai->eeprom;
 #ifdef DEBUG
-	/* First, see if we can get an ASCIIZ string out of the copyright */
+	 
 	for (i = EEPROM_COPYRIGHT;
 	    i < (EEPROM_COPYRIGHT + EEPROM_COPYRIGHT_LEN); i++)
 		if (e[i] < 0x20 || e[i] > 0x7E)
@@ -958,7 +821,7 @@ static int eeprom_validate(struct lanai_dev *lanai)
 	else
 		DPRINTK("eeprom: copyright not found\n");
 #endif
-	/* Validate checksum */
+	 
 	for (i = s = 0; i < EEPROM_CHECKSUM; i++)
 		s += e[i];
 	s &= 0xFF;
@@ -975,7 +838,7 @@ static int eeprom_validate(struct lanai_dev *lanai)
 		    (unsigned int) s, (unsigned int) e[EEPROM_CHECKSUM_REV]);
 		return -EIO;
 	}
-	/* Verify MAC address */
+	 
 	for (i = 0; i < 6; i++)
 		if ((e[EEPROM_MAC + i] ^ e[EEPROM_MAC_REV + i]) != 0xFF) {
 			printk(KERN_ERR DEV_LABEL
@@ -986,7 +849,7 @@ static int eeprom_validate(struct lanai_dev *lanai)
 			return -EIO;
 		}
 	DPRINTK("eeprom: MAC address = %pM\n", &e[EEPROM_MAC]);
-	/* Verify serial number */
+	 
 	lanai->serialno = eeprom_be4(lanai, EEPROM_SERIAL);
 	v = eeprom_be4(lanai, EEPROM_SERIAL_REV);
 	if ((lanai->serialno ^ v) != 0xFFFFFFFF) {
@@ -996,7 +859,7 @@ static int eeprom_validate(struct lanai_dev *lanai)
 		return -EIO;
 	}
 	DPRINTK("eeprom: Serial number = %d\n", (unsigned int) lanai->serialno);
-	/* Verify magic number */
+	 
 	lanai->magicno = eeprom_be4(lanai, EEPROM_MAGIC);
 	v = eeprom_be4(lanai, EEPROM_MAGIC_REV);
 	if ((lanai->magicno ^ v) != 0xFFFFFFFF) {
@@ -1014,39 +877,39 @@ static int eeprom_validate(struct lanai_dev *lanai)
 	return 0;
 }
 
-#endif /* READ_EEPROM */
+#endif  
 
 static inline const u8 *eeprom_mac(const struct lanai_dev *lanai)
 {
 	return &lanai->eeprom[EEPROM_MAC];
 }
 
-/* -------------------- INTERRUPT HANDLING UTILITIES: */
+ 
 
-/* Interrupt types */
-#define INT_STATS	(0x00000002)	/* Statistics counter overflow */
-#define INT_SOOL	(0x00000004)	/* SOOL changed state */
-#define INT_LOCD	(0x00000008)	/* LOCD changed state */
-#define INT_LED		(0x00000010)	/* LED (HAPPI) changed state */
-#define INT_GPIN	(0x00000020)	/* GPIN changed state */
-#define INT_PING	(0x00000040)	/* PING_COUNT fulfilled */
-#define INT_WAKE	(0x00000080)	/* Lanai wants bus */
-#define INT_CBR0	(0x00000100)	/* CBR sched hit VCI 0 */
-#define INT_LOCK	(0x00000200)	/* Service list overflow */
-#define INT_MISMATCH	(0x00000400)	/* TX magic list mismatch */
-#define INT_AAL0_STR	(0x00000800)	/* Non-AAL5 buffer half filled */
-#define INT_AAL0	(0x00001000)	/* Non-AAL5 data available */
-#define INT_SERVICE	(0x00002000)	/* Service list entries available */
-#define INT_TABORTSENT	(0x00004000)	/* Target abort sent by lanai */
-#define INT_TABORTBM	(0x00008000)	/* Abort rcv'd as bus master */
-#define INT_TIMEOUTBM	(0x00010000)	/* No response to bus master */
-#define INT_PCIPARITY	(0x00020000)	/* Parity error on PCI */
+ 
+#define INT_STATS	(0x00000002)	 
+#define INT_SOOL	(0x00000004)	 
+#define INT_LOCD	(0x00000008)	 
+#define INT_LED		(0x00000010)	 
+#define INT_GPIN	(0x00000020)	 
+#define INT_PING	(0x00000040)	 
+#define INT_WAKE	(0x00000080)	 
+#define INT_CBR0	(0x00000100)	 
+#define INT_LOCK	(0x00000200)	 
+#define INT_MISMATCH	(0x00000400)	 
+#define INT_AAL0_STR	(0x00000800)	 
+#define INT_AAL0	(0x00001000)	 
+#define INT_SERVICE	(0x00002000)	 
+#define INT_TABORTSENT	(0x00004000)	 
+#define INT_TABORTBM	(0x00008000)	 
+#define INT_TIMEOUTBM	(0x00010000)	 
+#define INT_PCIPARITY	(0x00020000)	 
 
-/* Sets of the above */
-#define INT_ALL		(0x0003FFFE)	/* All interrupts */
-#define INT_STATUS	(0x0000003C)	/* Some status pin changed */
-#define INT_DMASHUT	(0x00038000)	/* DMA engine got shut down */
-#define INT_SEGSHUT	(0x00000700)	/* Segmentation got shut down */
+ 
+#define INT_ALL		(0x0003FFFE)	 
+#define INT_STATUS	(0x0000003C)	 
+#define INT_DMASHUT	(0x00038000)	 
+#define INT_SEGSHUT	(0x00000700)	 
 
 static inline u32 intr_pending(const struct lanai_dev *lanai)
 {
@@ -1063,7 +926,7 @@ static inline void intr_disable(const struct lanai_dev *lanai, u32 i)
 	reg_write(lanai, i, IntControlDis_Reg);
 }
 
-/* -------------------- CARD/PCI STATUS: */
+ 
 
 static void status_message(int itf, const char *name, int status)
 {
@@ -1127,41 +990,41 @@ static void pcistatus_check(struct lanai_dev *lanai, int clearonly)
 #undef e
 }
 
-/* -------------------- VCC TX BUFFER UTILITIES: */
+ 
 
-/* space left in tx buffer in bytes */
+ 
 static inline int vcc_tx_space(const struct lanai_vcc *lvcc, int endptr)
 {
 	int r;
 	r = endptr * 16;
 	r -= ((unsigned long) lvcc->tx.buf.ptr) -
 	    ((unsigned long) lvcc->tx.buf.start);
-	r -= 16;	/* Leave "bubble" - if start==end it looks empty */
+	r -= 16;	 
 	if (r < 0)
 		r += lanai_buf_size(&lvcc->tx.buf);
 	return r;
 }
 
-/* test if VCC is currently backlogged */
+ 
 static inline int vcc_is_backlogged(const struct lanai_vcc *lvcc)
 {
 	return !skb_queue_empty(&lvcc->tx.backlog);
 }
 
-/* Bit fields in the segmentation buffer descriptor */
+ 
 #define DESCRIPTOR_MAGIC	(0xD0000000)
 #define DESCRIPTOR_AAL5		(0x00008000)
 #define DESCRIPTOR_AAL5_STREAM	(0x00004000)
 #define DESCRIPTOR_CLP		(0x00002000)
 
-/* Add 32-bit descriptor with its padding */
+ 
 static inline void vcc_tx_add_aal5_descriptor(struct lanai_vcc *lvcc,
 	u32 flags, int len)
 {
 	int pos;
 	APRINTK((((unsigned long) lvcc->tx.buf.ptr) & 15) == 0,
 	    "vcc_tx_add_aal5_descriptor: bad ptr=%p\n", lvcc->tx.buf.ptr);
-	lvcc->tx.buf.ptr += 4;	/* Hope the values REALLY don't matter */
+	lvcc->tx.buf.ptr += 4;	 
 	pos = ((unsigned char *) lvcc->tx.buf.ptr) -
 	    (unsigned char *) lvcc->tx.buf.start;
 	APRINTK((pos & ~0x0001FFF0) == 0,
@@ -1181,7 +1044,7 @@ static inline void vcc_tx_add_aal5_descriptor(struct lanai_vcc *lvcc,
 		lvcc->tx.buf.ptr = lvcc->tx.buf.start;
 }
 
-/* Add 32-bit AAL5 trailer and leave room for its CRC */
+ 
 static inline void vcc_tx_add_aal5_trailer(struct lanai_vcc *lvcc,
 	int len, int cpi, int uu)
 {
@@ -1228,7 +1091,7 @@ static inline void vcc_tx_memzero(struct lanai_vcc *lvcc, int n)
 	lvcc->tx.buf.ptr = (u32 *) e;
 }
 
-/* Update "butt" register to specify new WritePtr */
+ 
 static inline void lanai_endtx(struct lanai_dev *lanai,
 	const struct lanai_vcc *lvcc)
 {
@@ -1239,19 +1102,9 @@ static inline void lanai_endtx(struct lanai_dev *lanai,
 	    ptr, lvcc->vci, lvcc->tx.buf.start, lvcc->tx.buf.ptr,
 	    lvcc->tx.buf.end);
 
-	/*
-	 * Since the "butt register" is a shared resounce on the card we
-	 * serialize all accesses to it through this spinlock.  This is
-	 * mostly just paranoia since the register is rarely "busy" anyway
-	 * but is needed for correctness.
-	 */
+	 
 	spin_lock(&lanai->endtxlock);
-	/*
-	 * We need to check if the "butt busy" bit is set before
-	 * updating the butt register.  In theory this should
-	 * never happen because the ATM card is plenty fast at
-	 * updating the register.  Still, we should make sure
-	 */
+	 
 	for (i = 0; reg_read(lanai, Status_Reg) & STATUS_BUTTBUSY; i++) {
 		if (unlikely(i > 50)) {
 			printk(KERN_ERR DEV_LABEL "(itf %d): butt register "
@@ -1260,20 +1113,13 @@ static inline void lanai_endtx(struct lanai_dev *lanai,
 		}
 		udelay(5);
 	}
-	/*
-	 * Before we tall the card to start work we need to be sure 100% of
-	 * the info in the service buffer has been written before we tell
-	 * the card about it
-	 */
+	 
 	wmb();
 	reg_write(lanai, (ptr << 12) | lvcc->vci, Butt_Reg);
 	spin_unlock(&lanai->endtxlock);
 }
 
-/*
- * Add one AAL5 PDU to lvcc's transmit buffer.  Caller garauntees there's
- * space available.  "pdusize" is the number of bytes the PDU will take
- */
+ 
 static void lanai_send_one_aal5(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc, struct sk_buff *skb, int pdusize)
 {
@@ -1293,7 +1139,7 @@ static void lanai_send_one_aal5(struct lanai_dev *lanai,
 	atomic_inc(&lvcc->tx.atmvcc->stats->tx);
 }
 
-/* Try to fill the buffer - don't call unless there is backlog */
+ 
 static void vcc_tx_unqueue_aal5(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc, int endptr)
 {
@@ -1309,7 +1155,7 @@ static void vcc_tx_unqueue_aal5(struct lanai_dev *lanai,
 			goto no_backlog;
 		n = aal5_size(skb->len);
 		if (n + 16 > space) {
-			/* No room for this packet - put it back on queue */
+			 
 			skb_queue_head(&lvcc->tx.backlog, skb);
 			return;
 		}
@@ -1322,18 +1168,18 @@ static void vcc_tx_unqueue_aal5(struct lanai_dev *lanai,
 	}
 }
 
-/* Given an skb that we want to transmit either send it now or queue */
+ 
 static void vcc_tx_aal5(struct lanai_dev *lanai, struct lanai_vcc *lvcc,
 	struct sk_buff *skb)
 {
 	int space, n;
-	if (vcc_is_backlogged(lvcc))		/* Already backlogged */
+	if (vcc_is_backlogged(lvcc))		 
 		goto queue_it;
 	space = vcc_tx_space(lvcc,
 		    TXREADPTR_GET_PTR(cardvcc_read(lvcc, vcc_txreadptr)));
 	n = aal5_size(skb->len);
 	APRINTK(n + 16 >= 64, "vcc_tx_aal5: n too small (%d)\n", n);
-	if (space < n + 16) {			/* No space for this PDU */
+	if (space < n + 16) {			 
 		__set_bit(lvcc->vci, lanai->backlog_vccs);
 	    queue_it:
 		skb_queue_tail(&lvcc->tx.backlog, skb);
@@ -1353,13 +1199,13 @@ static void vcc_tx_aal0(struct lanai_dev *lanai, struct lanai_vcc *lvcc,
 	struct sk_buff *skb)
 {
 	printk(KERN_INFO DEV_LABEL ": vcc_tx_aal0: not implemented\n");
-	/* Remember to increment lvcc->tx.atmvcc->stats->tx */
+	 
 	lanai_free_skb(lvcc->tx.atmvcc, skb);
 }
 
-/* -------------------- VCC RX BUFFER UTILITIES: */
+ 
 
-/* unlike the _tx_ cousins, this doesn't update ptr */
+ 
 static inline void vcc_rx_memcpy(unsigned char *dest,
 	const struct lanai_vcc *lvcc, int n)
 {
@@ -1369,11 +1215,11 @@ static inline void vcc_rx_memcpy(unsigned char *dest,
 		m = 0;
 	memcpy(dest, lvcc->rx.buf.ptr, n - m);
 	memcpy(dest + n - m, lvcc->rx.buf.start, m);
-	/* Make sure that these copies don't get reordered */
+	 
 	barrier();
 }
 
-/* Receive AAL5 data on a VCC with a particular endptr */
+ 
 static void vcc_rx_aal5(struct lanai_vcc *lvcc, int endptr)
 {
 	int size;
@@ -1386,17 +1232,14 @@ static void vcc_rx_aal5(struct lanai_vcc *lvcc, int endptr)
 	APRINTK(n >= 0 && n < lanai_buf_size(&lvcc->rx.buf) && !(n & 15),
 	    "vcc_rx_aal5: n out of range (%d/%zu)\n",
 	    n, lanai_buf_size(&lvcc->rx.buf));
-	/* Recover the second-to-last word to get true pdu length */
+	 
 	if ((x = &end[-2]) < lvcc->rx.buf.start)
 		x = &lvcc->rx.buf.end[-2];
-	/*
-	 * Before we actually read from the buffer, make sure the memory
-	 * changes have arrived
-	 */
+	 
 	rmb();
 	size = be32_to_cpup(x) & 0xffff;
 	if (unlikely(n != aal5_size(size))) {
-		/* Make sure size matches padding */
+		 
 		printk(KERN_INFO DEV_LABEL "(itf %d): Got bad AAL5 length "
 		    "on vci=%d - size=%d n=%d\n",
 		    lvcc->rx.atmvcc->dev->number, lvcc->vci, size, n);
@@ -1422,13 +1265,13 @@ static void vcc_rx_aal5(struct lanai_vcc *lvcc, int endptr)
 static void vcc_rx_aal0(struct lanai_dev *lanai)
 {
 	printk(KERN_INFO DEV_LABEL ": vcc_rx_aal0: not implemented\n");
-	/* Remember to get read_lock(&vcc_sklist_lock) while looking up VC */
-	/* Remember to increment lvcc->rx.atmvcc->stats->rx */
+	 
+	 
 }
 
-/* -------------------- MANAGING HOST-BASED VCC TABLE: */
+ 
 
-/* Decide whether to use vmalloc or get_zeroed_page for VCC table */
+ 
 #if (NUM_VCI * BITS_PER_LONG) <= PAGE_SIZE
 #define VCCTABLE_GETFREEPAGE
 #else
@@ -1460,7 +1303,7 @@ static inline void vcc_table_deallocate(const struct lanai_dev *lanai)
 #endif
 }
 
-/* Allocate a fresh lanai_vcc, with the appropriate things cleared */
+ 
 static inline struct lanai_vcc *new_lanai_vcc(void)
 {
 	struct lanai_vcc *lvcc;
@@ -1494,7 +1337,7 @@ static int lanai_get_sized_buffer(struct lanai_dev *lanai,
 	return 0;
 }
 
-/* Setup a RX buffer for a currently unbound AAL5 vci */
+ 
 static inline int lanai_setup_rx_vci_aal5(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc, const struct atm_qos *qos)
 {
@@ -1502,7 +1345,7 @@ static inline int lanai_setup_rx_vci_aal5(struct lanai_dev *lanai,
 	    qos->rxtp.max_sdu, AAL5_RX_MULTIPLIER, "RX");
 }
 
-/* Setup a TX buffer for a currently unbound AAL5 vci */
+ 
 static int lanai_setup_tx_vci(struct lanai_dev *lanai, struct lanai_vcc *lvcc,
 	const struct atm_qos *qos)
 {
@@ -1524,7 +1367,7 @@ static inline void host_vcc_bind(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc, vci_t vci)
 {
 	if (lvcc->vbase != NULL)
-		return;    /* We already were bound in the other direction */
+		return;     
 	DPRINTK("Binding vci %d\n", vci);
 #ifdef USE_POWERDOWN
 	if (lanai->nbound++ == 0) {
@@ -1542,7 +1385,7 @@ static inline void host_vcc_unbind(struct lanai_dev *lanai,
 	struct lanai_vcc *lvcc)
 {
 	if (lvcc->vbase == NULL)
-		return;	/* This vcc was never bound */
+		return;	 
 	DPRINTK("Unbinding vci %d\n", lvcc->vci);
 	lvcc->vbase = NULL;
 	lanai->vccs[lvcc->vci] = NULL;
@@ -1555,26 +1398,21 @@ static inline void host_vcc_unbind(struct lanai_dev *lanai,
 #endif
 }
 
-/* -------------------- RESET CARD: */
+ 
 
 static void lanai_reset(struct lanai_dev *lanai)
 {
 	printk(KERN_CRIT DEV_LABEL "(itf %d): *NOT* resetting - not "
 	    "implemented\n", lanai->number);
-	/* TODO */
-	/* The following is just a hack until we write the real
-	 * resetter - at least ack whatever interrupt sent us
-	 * here
-	 */
+	 
+	 
 	reg_write(lanai, INT_ALL, IntAck_Reg);
 	lanai->stats.card_reset++;
 }
 
-/* -------------------- SERVICE LIST UTILITIES: */
+ 
 
-/*
- * Allocate service buffer and tell card about it
- */
+ 
 static int service_buffer_allocate(struct lanai_dev *lanai)
 {
 	lanai_buf_allocate(&lanai->service, SERVICE_ENTRIES * 4, 8,
@@ -1585,9 +1423,9 @@ static int service_buffer_allocate(struct lanai_dev *lanai)
 	    lanai->service.start,
 	    lanai_buf_size(&lanai->service),
 	    lanai_buf_size_cardorder(&lanai->service));
-	/* Clear ServWrite register to be safe */
+	 
 	reg_write(lanai, 0, ServWrite_Reg);
-	/* ServiceStuff register contains size and address of buffer */
+	 
 	reg_write(lanai,
 	    SSTUFF_SET_SIZE(lanai_buf_size_cardorder(&lanai->service)) |
 	    SSTUFF_SET_ADDR(lanai->service.dmaaddr),
@@ -1600,19 +1438,17 @@ static inline void service_buffer_deallocate(struct lanai_dev *lanai)
 	lanai_buf_deallocate(&lanai->service, lanai->pci);
 }
 
-/* Bitfields in service list */
-#define SERVICE_TX	(0x80000000)	/* Was from transmission */
-#define SERVICE_TRASH	(0x40000000)	/* RXed PDU was trashed */
-#define SERVICE_CRCERR	(0x20000000)	/* RXed PDU had CRC error */
-#define SERVICE_CI	(0x10000000)	/* RXed PDU had CI set */
-#define SERVICE_CLP	(0x08000000)	/* RXed PDU had CLP set */
-#define SERVICE_STREAM	(0x04000000)	/* RX Stream mode */
+ 
+#define SERVICE_TX	(0x80000000)	 
+#define SERVICE_TRASH	(0x40000000)	 
+#define SERVICE_CRCERR	(0x20000000)	 
+#define SERVICE_CI	(0x10000000)	 
+#define SERVICE_CLP	(0x08000000)	 
+#define SERVICE_STREAM	(0x04000000)	 
 #define SERVICE_GET_VCI(x) (((x)>>16)&0x3FF)
 #define SERVICE_GET_END(x) ((x)&0x1FFF)
 
-/* Handle one thing from the service list - returns true if it marked a
- * VCC ready for xmit
- */
+ 
 static int handle_service(struct lanai_dev *lanai, u32 s)
 {
 	vci_t vci = SERVICE_GET_VCI(s);
@@ -1629,7 +1465,7 @@ static int handle_service(struct lanai_dev *lanai, u32 s)
 			lanai->stats.service_norx++;
 		return 0;
 	}
-	if (s & SERVICE_TX) {			/* segmentation interrupt */
+	if (s & SERVICE_TX) {			 
 		if (unlikely(lvcc->tx.atmvcc == NULL)) {
 			read_unlock(&vcc_sklist_lock);
 			DPRINTK("(itf %d) got service entry 0x%X for non-TX "
@@ -1694,7 +1530,7 @@ static int handle_service(struct lanai_dev *lanai, u32 s)
 	return 0;
 }
 
-/* Try transmitting on all VCIs that we marked ready to serve */
+ 
 static void iter_transmit(struct lanai_dev *lanai, vci_t vci)
 {
 	struct lanai_vcc *lvcc = lanai->vccs[vci];
@@ -1702,10 +1538,7 @@ static void iter_transmit(struct lanai_dev *lanai, vci_t vci)
 		lvcc->tx.unqueue(lanai, lvcc, lvcc->tx.endptr);
 }
 
-/* Run service queue -- called from interrupt context or with
- * interrupts otherwise disabled and with the lanai->servicelock
- * lock held
- */
+ 
 static void run_service(struct lanai_dev *lanai)
 {
 	int ntx = 0;
@@ -1727,7 +1560,7 @@ static void run_service(struct lanai_dev *lanai)
 	}
 }
 
-/* -------------------- GATHER STATISTICS: */
+ 
 
 static void get_statistics(struct lanai_dev *lanai)
 {
@@ -1738,10 +1571,10 @@ static void get_statistics(struct lanai_dev *lanai)
 	lanai->stats.ovfl_trash += STATS_GET_BUF_OVFL(statreg);
 }
 
-/* -------------------- POLLING TIMER: */
+ 
 
 #ifndef DEBUG_RW
-/* Try to undequeue 1 backlogged vcc */
+ 
 static void iter_dequeue(struct lanai_dev *lanai, vci_t vci)
 {
 	struct lanai_vcc *lvcc = lanai->vccs[vci];
@@ -1754,7 +1587,7 @@ static void iter_dequeue(struct lanai_dev *lanai, vci_t vci)
 	endptr = TXREADPTR_GET_PTR(cardvcc_read(lvcc, vcc_txreadptr));
 	lvcc->tx.unqueue(lanai, lvcc, endptr);
 }
-#endif /* !DEBUG_RW */
+#endif  
 
 static void lanai_timed_poll(struct timer_list *t)
 {
@@ -1764,22 +1597,22 @@ static void lanai_timed_poll(struct timer_list *t)
 #ifdef USE_POWERDOWN
 	if (lanai->conf1 & CONFIG1_POWERDOWN)
 		return;
-#endif /* USE_POWERDOWN */
+#endif  
 	local_irq_save(flags);
-	/* If we can grab the spinlock, check if any services need to be run */
+	 
 	if (spin_trylock(&lanai->servicelock)) {
 		run_service(lanai);
 		spin_unlock(&lanai->servicelock);
 	}
-	/* ...and see if any backlogged VCs can make progress */
-	/* unfortunately linux has no read_trylock() currently */
+	 
+	 
 	read_lock(&vcc_sklist_lock);
 	vci_bitfield_iterate(lanai, lanai->backlog_vccs, iter_dequeue);
 	read_unlock(&vcc_sklist_lock);
 	local_irq_restore(flags);
 
 	get_statistics(lanai);
-#endif /* !DEBUG_RW */
+#endif  
 	mod_timer(&lanai->timer, jiffies + LANAI_POLL_PERIOD);
 }
 
@@ -1795,7 +1628,7 @@ static inline void lanai_timed_poll_stop(struct lanai_dev *lanai)
 	del_timer_sync(&lanai->timer);
 }
 
-/* -------------------- INTERRUPT SERVICE: */
+ 
 
 static inline void lanai_int_1(struct lanai_dev *lanai, u32 reason)
 {
@@ -1810,11 +1643,11 @@ static inline void lanai_int_1(struct lanai_dev *lanai, u32 reason)
 		ack |= reason & (INT_AAL0_STR | INT_AAL0);
 		vcc_rx_aal0(lanai);
 	}
-	/* The rest of the interrupts are pretty rare */
+	 
 	if (ack == reason)
 		goto done;
 	if (reason & INT_STATS) {
-		reason &= ~INT_STATS;	/* No need to ack */
+		reason &= ~INT_STATS;	 
 		get_statistics(lanai);
 	}
 	if (reason & INT_STATUS) {
@@ -1876,22 +1709,18 @@ static irqreturn_t lanai_int(int irq, void *devid)
 	u32 reason;
 
 #ifdef USE_POWERDOWN
-	/*
-	 * If we're powered down we shouldn't be generating any interrupts -
-	 * so assume that this is a shared interrupt line and it's for someone
-	 * else
-	 */
+	 
 	if (unlikely(lanai->conf1 & CONFIG1_POWERDOWN))
 		return IRQ_NONE;
 #endif
 
 	reason = intr_pending(lanai);
 	if (reason == 0)
-		return IRQ_NONE;	/* Must be for someone else */
+		return IRQ_NONE;	 
 
 	do {
 		if (unlikely(reason == 0xFFFFFFFF))
-			break;		/* Maybe we've been unplugged? */
+			break;		 
 		lanai_int_1(lanai, reason);
 		reason = intr_pending(lanai);
 	} while (reason != 0);
@@ -1899,17 +1728,11 @@ static irqreturn_t lanai_int(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-/* TODO - it would be nice if we could use the "delayed interrupt" system
- *   to some advantage
- */
+ 
 
-/* -------------------- CHECK BOARD ID/REV: */
+ 
 
-/*
- * The board id and revision are stored both in the reset register and
- * in the PCI configuration space - the documentation says to check
- * each of them.  If revp!=NULL we store the revision there
- */
+ 
 static int check_board_id_and_rev(const char *name, u32 val, int *revp)
 {
 	DPRINTK("%s says board_id=%d, board_rev=%d\n", name,
@@ -1925,7 +1748,7 @@ static int check_board_id_and_rev(const char *name, u32 val, int *revp)
 	return 0;
 }
 
-/* -------------------- PCI INITIALIZATION/SHUTDOWN: */
+ 
 
 static int lanai_pci_start(struct lanai_dev *lanai)
 {
@@ -1946,7 +1769,7 @@ static int lanai_pci_start(struct lanai_dev *lanai)
 	result = check_board_id_and_rev("PCI", pci->subsystem_device, NULL);
 	if (result != 0)
 		return result;
-	/* Set latency timer to zero as per lanai docs */
+	 
 	result = pci_write_config_byte(pci, PCI_LATENCY_TIMER, 0);
 	if (result != PCIBIOS_SUCCESSFUL) {
 		printk(KERN_ERR DEV_LABEL "(itf %d): can't write "
@@ -1958,14 +1781,9 @@ static int lanai_pci_start(struct lanai_dev *lanai)
 	return 0;
 }
 
-/* -------------------- VPI/VCI ALLOCATION: */
+ 
 
-/*
- * We _can_ use VCI==0 for normal traffic, but only for UBR (or we'll
- * get a CBRZERO interrupt), and we can use it only if no one is receiving
- * AAL0 traffic (since they will use the same queue) - according to the
- * docs we shouldn't even use it for AAL0 traffic
- */
+ 
 static inline int vci0_is_ok(struct lanai_dev *lanai,
 	const struct atm_qos *qos)
 {
@@ -1980,9 +1798,7 @@ static inline int vci0_is_ok(struct lanai_dev *lanai,
 	return 1;
 }
 
-/* return true if vci is currently unused, or if requested qos is
- * compatible
- */
+ 
 static int vci_is_ok(struct lanai_dev *lanai, vci_t vci,
 	const struct atm_vcc *atmvcc)
 {
@@ -2039,36 +1855,18 @@ static int lanai_normalize_ci(struct lanai_dev *lanai,
 	return 0;
 }
 
-/* -------------------- MANAGE CBR: */
+ 
 
-/*
- * CBR ICG is stored as a fixed-point number with 4 fractional bits.
- * Note that storing a number greater than 2046.0 will result in
- * incorrect shaping
- */
+ 
 #define CBRICG_FRAC_BITS	(4)
 #define CBRICG_MAX		(2046 << CBRICG_FRAC_BITS)
 
-/*
- * ICG is related to PCR with the formula PCR = MAXPCR / (ICG + 1)
- * where MAXPCR is (according to the docs) 25600000/(54*8),
- * which is equal to (3125<<9)/27.
- *
- * Solving for ICG, we get:
- *    ICG = MAXPCR/PCR - 1
- *    ICG = (3125<<9)/(27*PCR) - 1
- *    ICG = ((3125<<9) - (27*PCR)) / (27*PCR)
- *
- * The end result is supposed to be a fixed-point number with FRAC_BITS
- * bits of a fractional part, so we keep everything in the numerator
- * shifted by that much as we compute
- *
- */
+ 
 static int pcr_to_cbricg(const struct atm_qos *qos)
 {
-	int rounddown = 0;	/* 1 = Round PCR down, i.e. round ICG _up_ */
+	int rounddown = 0;	 
 	int x, icg, pcr = atm_pcr_goal(&qos->txtp);
-	if (pcr == 0)		/* Use maximum bandwidth */
+	if (pcr == 0)		 
 		return 0;
 	if (pcr < 0) {
 		rounddown = 1;
@@ -2100,9 +1898,9 @@ static inline void lanai_cbr_shutdown(struct lanai_dev *lanai)
 	conf2_write(lanai);
 }
 
-/* -------------------- OPERATIONS: */
+ 
 
-/* setup a newly detected device */
+ 
 static int lanai_dev_open(struct atm_dev *atmdev)
 {
 	struct lanai_dev *lanai = (struct lanai_dev *) atmdev->dev_data;
@@ -2110,7 +1908,7 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 	int result;
 
 	DPRINTK("In lanai_dev_open()\n");
-	/* Basic device fields */
+	 
 	lanai->number = atmdev->number;
 	lanai->num_vci = NUM_VCI;
 	bitmap_zero(lanai->backlog_vccs, NUM_VCI);
@@ -2129,7 +1927,7 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 		atmdev->ci_range.vci_bits++;
 	atmdev->link_rate = ATM_25_PCR;
 
-	/* 3.2: PCI initialization */
+	 
 	if ((result = lanai_pci_start(lanai)) != 0)
 		goto error;
 	raw_base = lanai->pci->resource[0].start;
@@ -2139,7 +1937,7 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 		result = -ENOMEM;
 		goto error_pci;
 	}
-	/* 3.3: Reset lanai and PHY */
+	 
 	reset_board(lanai);
 	lanai->conf1 = reg_read(lanai, Config1_Reg);
 	lanai->conf1 &= ~(CONFIG1_GPOUT1 | CONFIG1_POWERDOWN |
@@ -2149,39 +1947,31 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 	udelay(1000);
 	conf1_write(lanai);
 
-	/*
-	 * 3.4: Turn on endian mode for big-endian hardware
-	 *   We don't actually want to do this - the actual bit fields
-	 *   in the endian register are not documented anywhere.
-	 *   Instead we do the bit-flipping ourselves on big-endian
-	 *   hardware.
-	 *
-	 * 3.5: get the board ID/rev by reading the reset register
-	 */
+	 
 	result = check_board_id_and_rev("register",
 	    reg_read(lanai, Reset_Reg), &lanai->board_rev);
 	if (result != 0)
 		goto error_unmap;
 
-	/* 3.6: read EEPROM */
+	 
 	if ((result = eeprom_read(lanai)) != 0)
 		goto error_unmap;
 	if ((result = eeprom_validate(lanai)) != 0)
 		goto error_unmap;
 
-	/* 3.7: re-reset PHY, do loopback tests, setup PHY */
+	 
 	reg_write(lanai, lanai->conf1 | CONFIG1_GPOUT1, Config1_Reg);
 	udelay(1000);
 	conf1_write(lanai);
-	/* TODO - loopback tests */
+	 
 	lanai->conf1 |= (CONFIG1_GPOUT2 | CONFIG1_GPOUT3 | CONFIG1_DMA_ENABLE);
 	conf1_write(lanai);
 
-	/* 3.8/3.9: test and initialize card SRAM */
+	 
 	if ((result = sram_test_and_clear(lanai)) != 0)
 		goto error_unmap;
 
-	/* 3.10: initialize lanai registers */
+	 
 	lanai->conf1 |= CONFIG1_DMA_ENABLE;
 	conf1_write(lanai);
 	if ((result = service_buffer_allocate(lanai)) != 0)
@@ -2189,24 +1979,24 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 	if ((result = vcc_table_allocate(lanai)) != 0)
 		goto error_service;
 	lanai->conf2 = (lanai->num_vci >= 512 ? CONFIG2_HOWMANY : 0) |
-	    CONFIG2_HEC_DROP |	/* ??? */ CONFIG2_PTI7_MODE;
+	    CONFIG2_HEC_DROP |	  CONFIG2_PTI7_MODE;
 	conf2_write(lanai);
 	reg_write(lanai, TX_FIFO_DEPTH, TxDepth_Reg);
-	reg_write(lanai, 0, CBR_ICG_Reg);	/* CBR defaults to no limit */
+	reg_write(lanai, 0, CBR_ICG_Reg);	 
 	if ((result = request_irq(lanai->pci->irq, lanai_int, IRQF_SHARED,
 	    DEV_LABEL, lanai)) != 0) {
 		printk(KERN_ERR DEV_LABEL ": can't allocate interrupt\n");
 		goto error_vcctable;
 	}
-	mb();				/* Make sure that all that made it */
+	mb();				 
 	intr_enable(lanai, INT_ALL & ~(INT_PING | INT_WAKE));
-	/* 3.11: initialize loop mode (i.e. turn looping off) */
+	 
 	lanai->conf1 = (lanai->conf1 & ~CONFIG1_MASK_LOOPMODE) |
 	    CONFIG1_SET_LOOPMODE(LOOPMODE_NORMAL) |
 	    CONFIG1_GPOUT2 | CONFIG1_GPOUT3;
 	conf1_write(lanai);
 	lanai->status = reg_read(lanai, Status_Reg);
-	/* We're now done initializing this card */
+	 
 #ifdef USE_POWERDOWN
 	lanai->conf1 |= CONFIG1_POWERDOWN;
 	conf1_write(lanai);
@@ -2240,9 +2030,7 @@ static int lanai_dev_open(struct atm_dev *atmdev)
 	return result;
 }
 
-/* called when device is being shutdown, and all vcc's are gone - higher
- * levels will deallocate the atm device for us
- */
+ 
 static void lanai_dev_close(struct atm_dev *atmdev)
 {
 	struct lanai_dev *lanai = (struct lanai_dev *) atmdev->dev_data;
@@ -2269,7 +2057,7 @@ static void lanai_dev_close(struct atm_dev *atmdev)
 	kfree(lanai);
 }
 
-/* close a vcc */
+ 
 static void lanai_close(struct atm_vcc *atmvcc)
 {
 	struct lanai_vcc *lvcc = (struct lanai_vcc *) atmvcc->dev_data;
@@ -2305,7 +2093,7 @@ static void lanai_close(struct atm_vcc *atmvcc)
 	clear_bit(ATM_VF_ADDR, &atmvcc->flags);
 }
 
-/* open a vcc on the card to vpi/vci */
+ 
 static int lanai_open(struct atm_vcc *atmvcc)
 {
 	struct lanai_dev *lanai;
@@ -2313,7 +2101,7 @@ static int lanai_open(struct atm_vcc *atmvcc)
 	int result = 0;
 	int vci = atmvcc->vci;
 	short vpi = atmvcc->vpi;
-	/* we don't support partial open - it's not really useful anyway */
+	 
 	if ((test_bit(ATM_VF_PARTIAL, &atmvcc->flags)) ||
 	    (vpi == ATM_VPI_UNSPEC) || (vci == ATM_VCI_UNSPEC))
 		return -EINVAL;
@@ -2368,10 +2156,7 @@ static int lanai_open(struct atm_vcc *atmvcc)
 		}
 	}
 	host_vcc_bind(lanai, lvcc, vci);
-	/*
-	 * Make sure everything made it to RAM before we tell the card about
-	 * the VCC
-	 */
+	 
 	wmb();
 	if (atmvcc == lvcc->rx.atmvcc)
 		host_vcc_start_rx(lvcc);
@@ -2416,7 +2201,7 @@ static int lanai_send(struct atm_vcc *atmvcc, struct sk_buff *skb)
 		case ATM_AAL0:
 			if (unlikely(skb->len != ATM_CELL_SIZE-1))
 				goto einval;
-  /* NOTE - this next line is technically invalid - we haven't unshared skb */
+   
 			cpu_to_be32s((u32 *) skb->data);
 			read_lock_irqsave(&vcc_sklist_lock, flags);
 			vcc_tx_aal0(lanai, lvcc, skb);
@@ -2431,9 +2216,9 @@ static int lanai_send(struct atm_vcc *atmvcc, struct sk_buff *skb)
 }
 
 static int lanai_change_qos(struct atm_vcc *atmvcc,
-	/*const*/ struct atm_qos *qos, int flags)
+	  struct atm_qos *qos, int flags)
 {
-	return -EBUSY;		/* TODO: need to write this */
+	return -EBUSY;		 
 }
 
 #ifndef CONFIG_PROC_FS
@@ -2491,7 +2276,7 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 	if (left-- == 0)
 		return sprintf(page, "resets: dma=%u, card=%u\n",
 		    lanai->stats.dma_reenable, lanai->stats.card_reset);
-	/* At this point, "left" should be the VCI we're looking for */
+	 
 	read_lock(&vcc_sklist_lock);
 	for (; ; left++) {
 		if (left >= NUM_VCI) {
@@ -2502,7 +2287,7 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 			break;
 		(*pos)++;
 	}
-	/* Note that we re-use "left" here since we're done with it */
+	 
 	left = sprintf(page, "VCI %4d: nref=%d, rx_nomem=%u",  (vci_t) left,
 	    lvcc->nref, lvcc->stats.rx_nomem);
 	if (lvcc->rx.atmvcc != NULL) {
@@ -2531,9 +2316,9 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 	read_unlock(&vcc_sklist_lock);
 	return left;
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-/* -------------------- HOOKS: */
+ 
 
 static const struct atmdev_ops ops = {
 	.dev_close	= lanai_dev_close,
@@ -2547,7 +2332,7 @@ static const struct atmdev_ops ops = {
 	.owner		= THIS_MODULE
 };
 
-/* initialize one probed card */
+ 
 static int lanai_init_one(struct pci_dev *pci,
 			  const struct pci_device_id *ident)
 {
@@ -2586,7 +2371,7 @@ static int lanai_init_one(struct pci_dev *pci,
 static const struct pci_device_id lanai_pci_tbl[] = {
 	{ PCI_VDEVICE(EF, PCI_DEVICE_ID_EF_ATM_LANAI2) },
 	{ PCI_VDEVICE(EF, PCI_DEVICE_ID_EF_ATM_LANAIHB) },
-	{ 0, }	/* terminal entry */
+	{ 0, }	 
 };
 MODULE_DEVICE_TABLE(pci, lanai_pci_tbl);
 

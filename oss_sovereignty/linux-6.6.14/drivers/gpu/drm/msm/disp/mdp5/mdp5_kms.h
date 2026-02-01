@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __MDP5_KMS_H__
 #define __MDP5_KMS_H__
@@ -10,7 +7,7 @@
 #include "msm_drv.h"
 #include "msm_kms.h"
 #include "disp/mdp_kms.h"
-#include "mdp5_cfg.h"	/* must be included before mdp5.xml.h */
+#include "mdp5_cfg.h"	 
 #include "mdp5.xml.h"
 #include "mdp5_pipe.h"
 #include "mdp5_mixer.h"
@@ -34,19 +31,16 @@ struct mdp5_kms {
 	struct mdp5_interface *intfs[5];
 
 	struct mdp5_cfg_handler *cfg;
-	uint32_t caps;	/* MDP capabilities (MDP_CAP_XXX bits) */
+	uint32_t caps;	 
 
-	/*
-	 * Global private object state, Do not access directly, use
-	 * mdp5_global_get_state()
-	 */
+	 
 	struct drm_modeset_lock glob_state_lock;
 	struct drm_private_obj glob_state;
 
 	struct mdp5_smp *smp;
 	struct mdp5_ctl_manager *ctlm;
 
-	/* io/register spaces: */
+	 
 	void __iomem *mmio;
 
 	struct clk *axi_clk;
@@ -57,10 +51,7 @@ struct mdp5_kms {
 	struct clk *tbu_rt_clk;
 	struct clk *vsync_clk;
 
-	/*
-	 * lock to protect access to global resources: ie., following register:
-	 *	- REG_MDP5_DISP_INTF_SEL
-	 */
+	 
 	spinlock_t resource_lock;
 
 	bool rpm_enabled;
@@ -71,9 +62,7 @@ struct mdp5_kms {
 };
 #define to_mdp5_kms(x) container_of(x, struct mdp5_kms, base)
 
-/* Global private object state for tracking resources that are shared across
- * multiple kms objects (planes/crtcs/etc).
- */
+ 
 #define to_mdp5_global_state(x) container_of(x, struct mdp5_global_state, base)
 struct mdp5_global_state {
 	struct drm_private_state base;
@@ -89,21 +78,17 @@ struct mdp5_global_state {
 struct mdp5_global_state * mdp5_get_existing_global_state(struct mdp5_kms *mdp5_kms);
 struct mdp5_global_state *__must_check mdp5_get_global_state(struct drm_atomic_state *s);
 
-/* Atomic plane state.  Subclasses the base drm_plane_state in order to
- * track assigned hwpipe and hw specific state.
- */
+ 
 struct mdp5_plane_state {
 	struct drm_plane_state base;
 
 	struct mdp5_hw_pipe *hwpipe;
-	struct mdp5_hw_pipe *r_hwpipe;	/* right hwpipe */
+	struct mdp5_hw_pipe *r_hwpipe;	 
 
-	/* assigned by crtc blender */
+	 
 	enum mdp_mixer_stage_id stage;
 
-	/* whether attached CRTC needs pixel data explicitly flushed to
-	 * display (ex. DSI command mode display)
-	 */
+	 
 	bool needs_dirtyfb;
 };
 #define to_mdp5_plane_state(x) \
@@ -112,7 +97,7 @@ struct mdp5_plane_state {
 struct mdp5_pipeline {
 	struct mdp5_interface *intf;
 	struct mdp5_hw_mixer *mixer;
-	struct mdp5_hw_mixer *r_mixer;	/* right mixer */
+	struct mdp5_hw_mixer *r_mixer;	 
 };
 
 struct mdp5_crtc_state {
@@ -121,19 +106,14 @@ struct mdp5_crtc_state {
 	struct mdp5_ctl *ctl;
 	struct mdp5_pipeline pipeline;
 
-	/* these are derivatives of intf/mixer state in mdp5_pipeline */
+	 
 	u32 vblank_irqmask;
 	u32 err_irqmask;
 	u32 pp_done_irqmask;
 
 	bool cmd_mode;
 
-	/* should we not write CTL[n].START register on flush?  If the
-	 * encoder has changed this is set to true, since encoder->enable()
-	 * is called after crtc state is committed, but we only want to
-	 * write the CTL[n].START register once.  This lets us defer
-	 * writing CTL[n].START until encoder->enable()
-	 */
+	 
 	bool defer_start;
 };
 #define to_mdp5_crtc_state(x) \
@@ -142,25 +122,25 @@ struct mdp5_crtc_state {
 enum mdp5_intf_mode {
 	MDP5_INTF_MODE_NONE = 0,
 
-	/* Modes used for DSI interface (INTF_DSI type): */
+	 
 	MDP5_INTF_DSI_MODE_VIDEO,
 	MDP5_INTF_DSI_MODE_COMMAND,
 
-	/* Modes used for WB interface (INTF_WB type):  */
+	 
 	MDP5_INTF_WB_MODE_BLOCK,
 	MDP5_INTF_WB_MODE_LINE,
 };
 
 struct mdp5_interface {
 	int idx;
-	int num; /* display interface number */
+	int num;  
 	enum mdp5_intf_type type;
 	enum mdp5_intf_mode mode;
 };
 
 struct mdp5_encoder {
 	struct drm_encoder base;
-	spinlock_t intf_lock;	/* protect REG_MDP5_INTF_* registers */
+	spinlock_t intf_lock;	 
 	bool enabled;
 	uint32_t bsc;
 
@@ -234,11 +214,7 @@ static inline uint32_t intf2err(int intf_num)
 static inline uint32_t intf2vblank(struct mdp5_hw_mixer *mixer,
 				   struct mdp5_interface *intf)
 {
-	/*
-	 * In case of DSI Command Mode, the Ping Pong's read pointer IRQ
-	 * acts as a Vblank signal. The Ping Pong buffer used is bound to
-	 * layer mixer.
-	 */
+	 
 
 	if ((intf->type == INTF_DSI) &&
 			(intf->mode == MDP5_INTF_DSI_MODE_COMMAND))
@@ -324,4 +300,4 @@ static inline int mdp5_cmd_encoder_set_split_display(
 }
 #endif
 
-#endif /* __MDP5_KMS_H__ */
+#endif  

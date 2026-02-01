@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "ieee80211.h"
 #include <linux/etherdevice.h>
 #include <linux/slab.h>
@@ -6,23 +6,18 @@
 
 static void TsSetupTimeOut(struct timer_list *unused)
 {
-	// Not implement yet
-	// This is used for WMMSA and ACM , that would send ADDTSReq frame.
+	
+	
 }
 
 static void TsInactTimeout(struct timer_list *unused)
 {
-	// Not implement yet
-	// This is used for WMMSA and ACM.
-	// This function would be call when TS is no Tx/Rx for some period of time.
+	
+	
+	
 }
 
-/********************************************************************************************************************
- *function:  I still not understand this function, so wait for further implementation
- *   input:  unsigned long	 data		//acturally we send struct tx_ts_record or struct rx_ts_record to these timer
- *  return:  NULL
- *  notice:
- ********************************************************************************************************************/
+ 
 static void RxPktPendingTimeout(struct timer_list *t)
 {
 	struct rx_ts_record     *pRxTs = from_timer(pRxTs, t, rx_pkt_pending_timer);
@@ -30,7 +25,7 @@ static void RxPktPendingTimeout(struct timer_list *t)
 
 	struct rx_reorder_entry	*pReorderEntry = NULL;
 
-	//u32 flags = 0;
+	
 	unsigned long flags = 0;
 	u8 index = 0;
 	bool bPktInBuf = false;
@@ -38,7 +33,7 @@ static void RxPktPendingTimeout(struct timer_list *t)
 	spin_lock_irqsave(&(ieee->reorder_spinlock), flags);
 	IEEE80211_DEBUG(IEEE80211_DL_REORDER, "==================>%s()\n", __func__);
 	if (pRxTs->rx_timeout_indicate_seq != 0xffff) {
-		// Indicate the pending packets sequentially according to SeqNum until meet the gap.
+		
 		while (!list_empty(&pRxTs->rx_pending_pkt_list)) {
 			pReorderEntry = list_entry(pRxTs->rx_pending_pkt_list.prev, struct rx_reorder_entry, List);
 			if (index == 0)
@@ -64,10 +59,10 @@ static void RxPktPendingTimeout(struct timer_list *t)
 	}
 
 	if (index > 0) {
-		// Set rx_timeout_indicate_seq to 0xffff to indicate no pending packets in buffer now.
+		
 		pRxTs->rx_timeout_indicate_seq = 0xffff;
 
-		// Indicate packets
+		
 		if (index > REORDER_WIN_SIZE) {
 			IEEE80211_DEBUG(IEEE80211_DL_ERR, "RxReorderIndicatePacket(): Rx Reorder buffer full!! \n");
 			spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
@@ -84,12 +79,7 @@ static void RxPktPendingTimeout(struct timer_list *t)
 	spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
 }
 
-/********************************************************************************************************************
- *function:  Add BA timer function
- *   input:  unsigned long	 data		//acturally we send struct tx_ts_record or struct rx_ts_record to these timer
- *  return:  NULL
- *  notice:
- ********************************************************************************************************************/
+ 
 static void TsAddBaProcess(struct timer_list *t)
 {
 	struct tx_ts_record *pTxTs = from_timer(pTxTs, t, ts_add_ba_timer);
@@ -117,16 +107,16 @@ static void ResetTxTsEntry(struct tx_ts_record *pTS)
 	pTS->add_ba_req_in_progress = false;
 	pTS->add_ba_req_delayed = false;
 	pTS->using_ba = false;
-	ResetBaEntry(&pTS->tx_admitted_ba_record); //For BA Originator
+	ResetBaEntry(&pTS->tx_admitted_ba_record); 
 	ResetBaEntry(&pTS->tx_pending_ba_record);
 }
 
 static void ResetRxTsEntry(struct rx_ts_record *pTS)
 {
 	ResetTsCommonInfo(&pTS->ts_common_info);
-	pTS->rx_indicate_seq = 0xffff; // This indicate the rx_indicate_seq is not used now!!
-	pTS->rx_timeout_indicate_seq = 0xffff; // This indicate the rx_timeout_indicate_seq is not used now!!
-	ResetBaEntry(&pTS->rx_admitted_ba_record);	  // For BA Recipient
+	pTS->rx_indicate_seq = 0xffff; 
+	pTS->rx_timeout_indicate_seq = 0xffff; 
+	ResetBaEntry(&pTS->rx_admitted_ba_record);	  
 }
 
 void TSInitialize(struct ieee80211_device *ieee)
@@ -136,16 +126,16 @@ void TSInitialize(struct ieee80211_device *ieee)
 	struct rx_reorder_entry	*pRxReorderEntry = ieee->RxReorderEntry;
 	u8				count = 0;
 	IEEE80211_DEBUG(IEEE80211_DL_TS, "==========>%s()\n", __func__);
-	// Initialize Tx TS related info.
+	
 	INIT_LIST_HEAD(&ieee->Tx_TS_Admit_List);
 	INIT_LIST_HEAD(&ieee->Tx_TS_Pending_List);
 	INIT_LIST_HEAD(&ieee->Tx_TS_Unused_List);
 
 	for (count = 0; count < TOTAL_TS_NUM; count++) {
-		//
+		
 		pTxTS->num = count;
-		// The timers for the operation of Traffic Stream and Block Ack.
-		// DLS related timer will be add here in the future!!
+		
+		
 		timer_setup(&pTxTS->ts_common_info.setup_timer, TsSetupTimeOut,
 			    0);
 		timer_setup(&pTxTS->ts_common_info.inact_timer, TsInactTimeout,
@@ -160,7 +150,7 @@ void TSInitialize(struct ieee80211_device *ieee)
 		pTxTS++;
 	}
 
-	// Initialize Rx TS related info.
+	
 	INIT_LIST_HEAD(&ieee->Rx_TS_Admit_List);
 	INIT_LIST_HEAD(&ieee->Rx_TS_Pending_List);
 	INIT_LIST_HEAD(&ieee->Rx_TS_Unused_List);
@@ -178,7 +168,7 @@ void TSInitialize(struct ieee80211_device *ieee)
 		list_add_tail(&pRxTS->ts_common_info.list, &ieee->Rx_TS_Unused_List);
 		pRxTS++;
 	}
-	// Initialize unused Rx Reorder List.
+	
 	INIT_LIST_HEAD(&ieee->RxReorder_Unused_List);
 	for (count = 0; count < REORDER_ENTRY_NUM; count++) {
 		list_add_tail(&pRxReorderEntry->List, &ieee->RxReorder_Unused_List);
@@ -204,12 +194,12 @@ static struct ts_common_info *SearchAdmitTRStream(struct ieee80211_device *ieee,
 						  u8 *Addr, u8 TID,
 						  enum tr_select TxRxSelect)
 {
-	//DIRECTION_VALUE	dir;
+	
 	u8	dir;
 	bool				search_dir[4] = {0};
-	struct list_head		*psearch_list; //FIXME
+	struct list_head		*psearch_list; 
 	struct ts_common_info	*pRet = NULL;
-	if (ieee->iw_mode == IW_MODE_MASTER) { //ap mode
+	if (ieee->iw_mode == IW_MODE_MASTER) { 
 		if (TxRxSelect == TX_DIR) {
 			search_dir[DIR_DOWN] = true;
 			search_dir[DIR_BI_DIR] = true;
@@ -239,16 +229,16 @@ static struct ts_common_info *SearchAdmitTRStream(struct ieee80211_device *ieee,
 	else
 		psearch_list = &ieee->Rx_TS_Admit_List;
 
-	//for(dir = DIR_UP; dir <= DIR_BI_DIR; dir++)
+	
 	for (dir = 0; dir <= DIR_BI_DIR; dir++) {
 		if (!search_dir[dir])
 			continue;
 		list_for_each_entry(pRet, psearch_list, list) {
-	//		IEEE80211_DEBUG(IEEE80211_DL_TS, "ADD:%pM, TID:%d, dir:%d\n", pRet->Addr, pRet->TSpec.ts_info.ucTSID, pRet->TSpec.ts_info.ucDirection);
+	
 			if (memcmp(pRet->addr, Addr, 6) == 0)
 				if (pRet->t_spec.ts_info.uc_tsid == TID)
 					if (pRet->t_spec.ts_info.uc_direction == dir) {
-	//					printk("Bingo! got it\n");
+	
 						break;
 					}
 		}
@@ -289,15 +279,15 @@ bool GetTs(
 	struct ts_common_info		**ppTS,
 	u8				*Addr,
 	u8				TID,
-	enum tr_select			TxRxSelect,  //Rx:1, Tx:0
+	enum tr_select			TxRxSelect,  
 	bool				bAddNewTs
 	)
 {
 	u8	UP = 0;
-	//
-	// We do not build any TS for Broadcast or Multicast stream.
-	// So reject these kinds of search here.
-	//
+	
+	
+	
+	
 	if (is_multicast_ether_addr(Addr)) {
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "get TS for Broadcast or Multicast\n");
 		return false;
@@ -306,7 +296,7 @@ bool GetTs(
 	if (ieee->current_network.qos_data.supported == 0) {
 		UP = 0;
 	} else {
-		// In WMM case: we use 4 TID only
+		
 		if (!is_ac_valid(TID)) {
 			IEEE80211_DEBUG(IEEE80211_DL_ERR, " in %s(), TID(%d) is not valid\n", __func__, TID);
 			return false;
@@ -347,11 +337,11 @@ bool GetTs(
 			IEEE80211_DEBUG(IEEE80211_DL_TS, "add new TS failed(tid:%d)\n", UP);
 			return false;
 		} else {
-			//
-			// Create a new Traffic stream for current Tx/Rx
-			// This is for EDCA and WMM to add a new TS.
-			// For HCCA or WMMSA, TS cannot be addmit without negotiation.
-			//
+			
+			
+			
+			
+			
 			struct tspec_body	TSpec;
 			struct qos_tsinfo	*pTSInfo = &TSpec.ts_info;
 			struct list_head	*pUnusedList =
@@ -380,21 +370,21 @@ bool GetTs(
 				}
 
 				IEEE80211_DEBUG(IEEE80211_DL_TS, "to init current TS, UP:%d, Dir:%d, addr:%pM\n", UP, Dir, Addr);
-				// Prepare TS Info related field
-				pTSInfo->uc_traffic_type = 0;		// Traffic type: WMM is reserved in this field
-				pTSInfo->uc_tsid = UP;			// TSID
-				pTSInfo->uc_direction = Dir;		// Direction: if there is DirectLink, this need additional consideration.
-				pTSInfo->uc_access_policy = 1;		// Access policy
-				pTSInfo->uc_aggregation = 0;		// Aggregation
-				pTSInfo->uc_psb = 0;			// Aggregation
-				pTSInfo->uc_up = UP;			// User priority
-				pTSInfo->uc_ts_info_ack_policy = 0;	// Ack policy
-				pTSInfo->uc_schedule = 0;		// Schedule
+				
+				pTSInfo->uc_traffic_type = 0;		
+				pTSInfo->uc_tsid = UP;			
+				pTSInfo->uc_direction = Dir;		
+				pTSInfo->uc_access_policy = 1;		
+				pTSInfo->uc_aggregation = 0;		
+				pTSInfo->uc_psb = 0;			
+				pTSInfo->uc_up = UP;			
+				pTSInfo->uc_ts_info_ack_policy = 0;	
+				pTSInfo->uc_schedule = 0;		
 
 				MakeTSEntry(*ppTS, Addr, &TSpec, NULL, 0, 0);
 				AdmitTS(ieee, *ppTS, 0);
 				list_add_tail(&((*ppTS)->list), pAddmitList);
-				// if there is DirectLink, we need to do additional operation here!!
+				
 
 				return true;
 			} else {
@@ -408,7 +398,7 @@ bool GetTs(
 static void RemoveTsEntry(struct ieee80211_device *ieee, struct ts_common_info *pTs,
 			  enum tr_select TxRxSelect)
 {
-	//u32 flags = 0;
+	
 	unsigned long flags = 0;
 	del_timer_sync(&pTs->setup_timer);
 	del_timer_sync(&pTs->inact_timer);
@@ -422,7 +412,7 @@ static void RemoveTsEntry(struct ieee80211_device *ieee, struct ts_common_info *
 
 		while (!list_empty(&pRxTS->rx_pending_pkt_list)) {
 			spin_lock_irqsave(&(ieee->reorder_spinlock), flags);
-			//pRxReorderEntry = list_entry(&pRxTS->rx_pending_pkt_list.prev,RX_REORDER_ENTRY,List);
+			
 			pRxReorderEntry = list_entry(pRxTS->rx_pending_pkt_list.prev, struct rx_reorder_entry, List);
 			list_del_init(&pRxReorderEntry->List);
 			{
@@ -526,7 +516,7 @@ void TsStartAddBaProcess(struct ieee80211_device *ieee, struct tx_ts_record *pTx
 				  jiffies + msecs_to_jiffies(TS_ADDBA_DELAY));
 		} else {
 			IEEE80211_DEBUG(IEEE80211_DL_BA, "%s: Immediately Start ADDBA now!!\n", __func__);
-			mod_timer(&pTxTS->ts_add_ba_timer, jiffies + 10); //set 10 ticks
+			mod_timer(&pTxTS->ts_add_ba_timer, jiffies + 10); 
 		}
 	} else {
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "%s()==>BA timer is already added\n", __func__);

@@ -1,140 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Documentation/ABI/stable/sysfs-fs-orangefs:
- *
- * What:		/sys/fs/orangefs/perf_counter_reset
- * Date:		June 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			echo a 0 or a 1 into perf_counter_reset to
- * 			reset all the counters in
- * 			/sys/fs/orangefs/perf_counters
- * 			except ones with PINT_PERF_PRESERVE set.
- *
- *
- * What:		/sys/fs/orangefs/perf_counters/...
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Counters and settings for various caches.
- * 			Read only.
- *
- *
- * What:		/sys/fs/orangefs/perf_time_interval_secs
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- *			Length of perf counter intervals in
- *			seconds.
- *
- *
- * What:		/sys/fs/orangefs/perf_history_size
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			The perf_counters cache statistics have N, or
- * 			perf_history_size, samples. The default is
- * 			one.
- *
- *			Every perf_time_interval_secs the (first)
- *			samples are reset.
- *
- *			If N is greater than one, the "current" set
- *			of samples is reset, and the samples from the
- *			other N-1 intervals remain available.
- *
- *
- * What:		/sys/fs/orangefs/op_timeout_secs
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- *			Service operation timeout in seconds.
- *
- *
- * What:		/sys/fs/orangefs/slot_timeout_secs
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- *			"Slot" timeout in seconds. A "slot"
- *			is an indexed buffer in the shared
- *			memory segment used for communication
- *			between the kernel module and userspace.
- *			Slots are requested and waited for,
- *			the wait times out after slot_timeout_secs.
- *
- * What:		/sys/fs/orangefs/cache_timeout_msecs
- * Date:		Mar 2018
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Time in milliseconds between which
- *			orangefs_revalidate_mapping will invalidate the page
- *			cache.
- *
- * What:		/sys/fs/orangefs/dcache_timeout_msecs
- * Date:		Jul 2016
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Time lookup is valid in milliseconds.
- *
- * What:		/sys/fs/orangefs/getattr_timeout_msecs
- * Date:		Jul 2016
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Time getattr is valid in milliseconds.
- *
- * What:		/sys/fs/orangefs/readahead_count
- * Date:		Aug 2016
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Readahead cache buffer count.
- *
- * What:		/sys/fs/orangefs/readahead_size
- * Date:		Aug 2016
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Readahead cache buffer size.
- *
- * What:		/sys/fs/orangefs/readahead_count_size
- * Date:		Aug 2016
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Readahead cache buffer count and size.
- *
- * What:		/sys/fs/orangefs/readahead_readcnt
- * Date:		Jan 2017
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- *			Number of buffers (in multiples of readahead_size)
- *			which can be read ahead for a single file at once.
- *
- * What:		/sys/fs/orangefs/acache/...
- * Date:		Jun 2015
- * Contact:		Martin Brandenburg <martin@omnibond.com>
- * Description:
- * 			Attribute cache configurable settings.
- *
- *
- * What:		/sys/fs/orangefs/ncache/...
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Name cache configurable settings.
- *
- *
- * What:		/sys/fs/orangefs/capcache/...
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Capability cache configurable settings.
- *
- *
- * What:		/sys/fs/orangefs/ccache/...
- * Date:		Jun 2015
- * Contact:		Mike Marshall <hubcap@omnibond.com>
- * Description:
- * 			Credential cache configurable settings.
- *
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/kobject.h>
@@ -155,12 +20,7 @@
 #define PC_KOBJ_ID "pc"
 #define STATS_KOBJ_ID "stats"
 
-/*
- * Every item calls orangefs_attr_show and orangefs_attr_store through
- * orangefs_sysfs_ops. They look at the orangefs_attributes further below to
- * call one of sysfs_int_show, sysfs_int_store, sysfs_service_op_show, or
- * sysfs_service_op_store.
- */
+ 
 
 struct orangefs_attribute {
 	struct attribute attr;
@@ -314,9 +174,7 @@ out:
 	return rc;
 }
 
-/*
- * obtain attribute values from userspace with a service operation.
- */
+ 
 static ssize_t sysfs_service_op_show(struct kobject *kobj,
     struct orangefs_attribute *attr, char *buf)
 {
@@ -338,7 +196,7 @@ static ssize_t sysfs_service_op_show(struct kobject *kobj,
 	if (!new_op)
 		return -ENOMEM;
 
-	/* Can't do a service_operation if the client is not running... */
+	 
 	rc = is_daemon_in_service();
 	if (rc) {
 		pr_info_ratelimited("%s: Client not running :%d:\n",
@@ -351,7 +209,7 @@ static ssize_t sysfs_service_op_show(struct kobject *kobj,
 		new_op->upcall.req.param.type = ORANGEFS_PARAM_REQUEST_GET;
 
 	if (!strcmp(kobj->name, ORANGEFS_KOBJ_ID)) {
-		/* Drop unsupported requests first. */
+		 
 		if (!(orangefs_features & ORANGEFS_FEATURE_READAHEAD) &&
 		    (!strcmp(attr->attr.name, "readahead_count") ||
 		    !strcmp(attr->attr.name, "readahead_size") ||
@@ -486,10 +344,7 @@ static ssize_t sysfs_service_op_show(struct kobject *kobj,
 	else
 		ser_op_type = "orangefs_perf_count";
 
-	/*
-	 * The service_operation will return an errno return code on
-	 * error, and zero on success.
-	 */
+	 
 	rc = service_operation(new_op, ser_op_type, ORANGEFS_OP_INTERRUPTIBLE);
 
 out:
@@ -521,17 +376,7 @@ out:
 
 }
 
-/*
- * pass attribute values back to userspace with a service operation.
- *
- * We have to do a memory allocation, an sscanf and a service operation.
- * And we have to evaluate what the user entered, to make sure the
- * value is within the range supported by the attribute. So, there's
- * a lot of return code checking and mapping going on here.
- *
- * We want to return 1 if we think everything went OK, and
- * EINVAL if not.
- */
+ 
 static ssize_t sysfs_service_op_store(struct kobject *kobj,
     struct orangefs_attribute *attr, const char *buf, size_t count)
 {
@@ -545,9 +390,9 @@ static ssize_t sysfs_service_op_store(struct kobject *kobj,
 
 	new_op = op_alloc(ORANGEFS_VFS_OP_PARAM);
 	if (!new_op)
-		return -EINVAL; /* sic */
+		return -EINVAL;  
 
-	/* Can't do a service_operation if the client is not running... */
+	 
 	rc = is_daemon_in_service();
 	if (rc) {
 		pr_info("%s: Client not running :%d:\n",
@@ -556,10 +401,7 @@ static ssize_t sysfs_service_op_store(struct kobject *kobj,
 		goto out;
 	}
 
-	/*
-	 * The value we want to send back to userspace is in buf, unless this
-	 * there are two parameters, which is specially handled below.
-	 */
+	 
 	if (strcmp(kobj->name, ORANGEFS_KOBJ_ID) ||
 	    strcmp(attr->attr.name, "readahead_count_size")) {
 		rc = kstrtoint(buf, 0, &val);
@@ -570,7 +412,7 @@ static ssize_t sysfs_service_op_store(struct kobject *kobj,
 	new_op->upcall.req.param.type = ORANGEFS_PARAM_REQUEST_SET;
 
 	if (!strcmp(kobj->name, ORANGEFS_KOBJ_ID)) {
-		/* Drop unsupported requests first. */
+		 
 		if (!(orangefs_features & ORANGEFS_FEATURE_READAHEAD) &&
 		    (!strcmp(attr->attr.name, "readahead_count") ||
 		    !strcmp(attr->attr.name, "readahead_size") ||
@@ -807,10 +649,7 @@ static ssize_t sysfs_service_op_store(struct kobject *kobj,
 	new_op->upcall.req.param.u.value64 = val;
 value_set:
 
-	/*
-	 * The service_operation will return a errno return code on
-	 * error, and zero on success.
-	 */
+	 
 	rc = service_operation(new_op, "orangefs_param", ORANGEFS_OP_INTERRUPTIBLE);
 
 	if (rc < 0) {
@@ -1177,7 +1016,7 @@ int orangefs_sysfs_init(void)
 
 	gossip_debug(GOSSIP_SYSFS_DEBUG, "orangefs_sysfs_init: start\n");
 
-	/* create /sys/fs/orangefs. */
+	 
 	orangefs_obj = kzalloc(sizeof(*orangefs_obj), GFP_KERNEL);
 	if (!orangefs_obj)
 		goto out;
@@ -1192,7 +1031,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/acache. */
+	 
 	acache_orangefs_obj = kzalloc(sizeof(*acache_orangefs_obj), GFP_KERNEL);
 	if (!acache_orangefs_obj) {
 		rc = -EINVAL;
@@ -1209,7 +1048,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(acache_orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/capcache. */
+	 
 	capcache_orangefs_obj =
 		kzalloc(sizeof(*capcache_orangefs_obj), GFP_KERNEL);
 	if (!capcache_orangefs_obj) {
@@ -1226,7 +1065,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(capcache_orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/ccache. */
+	 
 	ccache_orangefs_obj =
 		kzalloc(sizeof(*ccache_orangefs_obj), GFP_KERNEL);
 	if (!ccache_orangefs_obj) {
@@ -1243,7 +1082,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(ccache_orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/ncache. */
+	 
 	ncache_orangefs_obj = kzalloc(sizeof(*ncache_orangefs_obj), GFP_KERNEL);
 	if (!ncache_orangefs_obj) {
 		rc = -EINVAL;
@@ -1260,7 +1099,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(ncache_orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/perf_counters. */
+	 
 	pc_orangefs_obj = kzalloc(sizeof(*pc_orangefs_obj), GFP_KERNEL);
 	if (!pc_orangefs_obj) {
 		rc = -EINVAL;
@@ -1277,7 +1116,7 @@ int orangefs_sysfs_init(void)
 
 	kobject_uevent(pc_orangefs_obj, KOBJ_ADD);
 
-	/* create /sys/fs/orangefs/stats. */
+	 
 	stats_orangefs_obj = kzalloc(sizeof(*stats_orangefs_obj), GFP_KERNEL);
 	if (!stats_orangefs_obj) {
 		rc = -EINVAL;

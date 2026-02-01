@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO ALSA driver for PXs2.
-//
-// Copyright (c) 2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/module.h>
 
 #include "aio.h"
 
 static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
-	/* for Line PCM In, Pin:AI1Dx */
+	 
 	{
 		.name = AUD_NAME_PCMIN1,
 		.gname = AUD_GNAME_LINE,
@@ -23,7 +23,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for Speaker/Headphone/Mic PCM In, Pin:AI2Dx */
+	 
 	{
 		.name = AUD_NAME_PCMIN2,
 		.gname = AUD_GNAME_AUX,
@@ -37,7 +37,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for HDMI PCM Out, Pin:AO1Dx (inner) */
+	 
 	{
 		.name = AUD_NAME_HPCMOUT1,
 		.gname = AUD_GNAME_HDMI,
@@ -51,7 +51,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for Line PCM Out, Pin:AO2Dx */
+	 
 	{
 		.name = AUD_NAME_PCMOUT1,
 		.gname = AUD_GNAME_LINE,
@@ -65,7 +65,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for Speaker/Headphone/Mic PCM Out, Pin:AO3Dx */
+	 
 	{
 		.name = AUD_NAME_PCMOUT2,
 		.gname = AUD_GNAME_AUX,
@@ -79,7 +79,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for HDMI Out, Pin:AO1IEC */
+	 
 	{
 		.name = AUD_NAME_HIECOUT1,
 		.swm = {
@@ -92,7 +92,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for HDMI Out, Pin:AO1IEC, Compress */
+	 
 	{
 		.name = AUD_NAME_HIECCOMPOUT1,
 		.swm = {
@@ -105,7 +105,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for S/PDIF Out, Pin:AO2IEC */
+	 
 	{
 		.name = AUD_NAME_IECOUT1,
 		.swm = {
@@ -118,7 +118,7 @@ static const struct uniphier_aio_spec uniphier_aio_pxs2[] = {
 		},
 	},
 
-	/* for S/PDIF Out, Pin:AO2IEC */
+	 
 	{
 		.name = AUD_NAME_IECCOMPOUT1,
 		.swm = {

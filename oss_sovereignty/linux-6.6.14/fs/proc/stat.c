@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/cpumask.h>
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -30,7 +30,7 @@ u64 get_idle_time(struct kernel_cpustat *kcs, int cpu)
 		idle_usecs = get_cpu_idle_time_us(cpu, NULL);
 
 	if (idle_usecs == -1ULL)
-		/* !NO_HZ or cpu offline so we can rely on cpustat.idle */
+		 
 		idle = kcs->cpustat[CPUTIME_IDLE];
 	else
 		idle = idle_usecs * NSEC_PER_USEC;
@@ -46,7 +46,7 @@ static u64 get_iowait_time(struct kernel_cpustat *kcs, int cpu)
 		iowait_usecs = get_cpu_iowait_time_us(cpu, NULL);
 
 	if (iowait_usecs == -1ULL)
-		/* !NO_HZ or cpu offline so we can rely on cpustat.iowait */
+		 
 		iowait = kcs->cpustat[CPUTIME_IOWAIT];
 	else
 		iowait = iowait_usecs * NSEC_PER_USEC;
@@ -93,7 +93,7 @@ static int show_stat(struct seq_file *p, void *v)
 		irq = softirq = steal = 0;
 	guest = guest_nice = 0;
 	getboottime64(&boottime);
-	/* shift boot timestamp according to the timens offset */
+	 
 	timens_sub_boottime(&boottime);
 
 	for_each_possible_cpu(i) {
@@ -142,7 +142,7 @@ static int show_stat(struct seq_file *p, void *v)
 
 		kcpustat_cpu_fetch(&kcpustat, i);
 
-		/* Copy values here to work around gcc-2.95.3, gcc-2.96 */
+		 
 		user		= cpustat[CPUTIME_USER];
 		nice		= cpustat[CPUTIME_NICE];
 		system		= cpustat[CPUTIME_SYSTEM];
@@ -195,7 +195,7 @@ static int stat_open(struct inode *inode, struct file *file)
 {
 	unsigned int size = 1024 + 128 * num_online_cpus();
 
-	/* minimum size to display an interrupt count : 2 bytes */
+	 
 	size += 2 * nr_irqs;
 	return single_open_size(file, show_stat, NULL, size);
 }

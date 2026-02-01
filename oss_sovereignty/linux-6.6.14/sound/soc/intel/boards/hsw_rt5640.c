@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sound card driver for Intel Haswell Lynx Point with Realtek 5640
- *
- * Copyright (C) 2013, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,7 +20,7 @@ static const struct snd_soc_dapm_route card_routes[] = {
 	{"Headphones", NULL, "HPOL"},
 	{"IN2P", NULL, "Mic"},
 
-	/* CODEC BE connections */
+	 
 	{"SSP0 CODEC IN", NULL, "AIF1 Capture"},
 	{"AIF1 Playback", NULL, "SSP0 CODEC OUT"},
 };
@@ -35,10 +31,10 @@ static int codec_link_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_interval *rate = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
 
-	/* The ADSP will convert the FE rate to 48k, stereo. */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
-	/* Set SSP0 to 16 bit. */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 
 	return 0;
@@ -57,7 +53,7 @@ static int codec_link_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set correct codec filter for DAI format and clock config. */
+	 
 	snd_soc_component_update_bits(codec_dai->component, 0x83, 0xffff, 0x8000);
 
 	return ret;
@@ -78,7 +74,7 @@ SND_SOC_DAILINK_DEF(platform, DAILINK_COMP_ARRAY(COMP_PLATFORM("haswell-pcm-audi
 SND_SOC_DAILINK_DEF(ssp0_port, DAILINK_COMP_ARRAY(COMP_CPU("ssp0-port")));
 
 static struct snd_soc_dai_link card_dai_links[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "System",
 		.stream_name = "System Playback/Capture",
@@ -116,9 +112,9 @@ static struct snd_soc_dai_link card_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(loopback, dummy, platform),
 	},
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "Codec",
 		.id = 0,
 		.nonatomic = 1,

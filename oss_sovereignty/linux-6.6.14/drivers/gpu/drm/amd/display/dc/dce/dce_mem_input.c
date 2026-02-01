@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dce_mem_input.h"
 #include "reg_helper.h"
@@ -68,19 +45,19 @@ static const struct pte_setting pte_settings[mi_tiling_count][mi_bpp_count] = {
 		{  8, 4096, 1, 8, 0, 1, 0, 0, 0},
 		{ 16, 2048, 1, 8, 0, 1, 0, 0, 0},
 		{ 32, 1024, 1, 8, 0, 1, 0, 0, 0},
-		{ 64,  512, 1, 8, 0, 1, 0, 0, 0}, /* new for 64bpp from HW */
+		{ 64,  512, 1, 8, 0, 1, 0, 0, 0},  
 	},
 	[mi_tiling_1D] = {
-		{  8, 512, 8, 1, 0, 1, 0, 0, 0},  /* 0 for invalid */
+		{  8, 512, 8, 1, 0, 1, 0, 0, 0},   
 		{ 16, 256, 8, 2, 0, 1, 0, 0, 0},
 		{ 32, 128, 8, 4, 0, 1, 0, 0, 0},
-		{ 64,  64, 8, 4, 0, 1, 0, 0, 0}, /* fake */
+		{ 64,  64, 8, 4, 0, 1, 0, 0, 0},  
 	},
 	[mi_tiling_2D] = {
 		{  8, 64, 64,  8,  8, 1, 4, 0, 0},
 		{ 16, 64, 32,  8, 16, 1, 8, 0, 0},
 		{ 32, 32, 32, 16, 16, 1, 8, 0, 0},
-		{ 64,  8, 32, 16, 16, 1, 8, 0, 0}, /* fake */
+		{ 64,  8, 32, 16, 16, 1, 8, 0, 0},  
 	},
 };
 
@@ -320,19 +297,19 @@ static void dce_mi_program_display_marks(
 	struct dce_mem_input *dce_mi = TO_DCE_MEM_INPUT(mi);
 	uint32_t stutter_en = mi->ctx->dc->debug.disable_stutter ? 0 : 1;
 
-	program_urgency_watermark(dce_mi, 2, /* set a */
+	program_urgency_watermark(dce_mi, 2,  
 			urgent.a_mark, total_dest_line_time_ns);
-	program_urgency_watermark(dce_mi, 1, /* set d */
+	program_urgency_watermark(dce_mi, 1,  
 			urgent.d_mark, total_dest_line_time_ns);
 
 	REG_UPDATE_2(DPG_PIPE_STUTTER_CONTROL,
 		STUTTER_ENABLE, stutter_en,
 		STUTTER_IGNORE_FBC, 1);
-	program_nbp_watermark(dce_mi, 2, nbp.a_mark); /* set a */
-	program_nbp_watermark(dce_mi, 1, nbp.d_mark); /* set d */
+	program_nbp_watermark(dce_mi, 2, nbp.a_mark);  
+	program_nbp_watermark(dce_mi, 1, nbp.d_mark);  
 
-	program_stutter_watermark(dce_mi, 2, stutter_exit.a_mark); /* set a */
-	program_stutter_watermark(dce_mi, 1, stutter_exit.d_mark); /* set d */
+	program_stutter_watermark(dce_mi, 2, stutter_exit.a_mark);  
+	program_stutter_watermark(dce_mi, 1, stutter_exit.d_mark);  
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
@@ -347,19 +324,19 @@ static void dce60_mi_program_display_marks(
 	struct dce_mem_input *dce_mi = TO_DCE_MEM_INPUT(mi);
 	uint32_t stutter_en = mi->ctx->dc->debug.disable_stutter ? 0 : 1;
 
-	dce60_program_urgency_watermark(dce_mi, 2, /* set a */
+	dce60_program_urgency_watermark(dce_mi, 2,  
 			urgent.a_mark, total_dest_line_time_ns);
-	dce60_program_urgency_watermark(dce_mi, 1, /* set d */
+	dce60_program_urgency_watermark(dce_mi, 1,  
 			urgent.d_mark, total_dest_line_time_ns);
 
 	REG_UPDATE_2(DPG_PIPE_STUTTER_CONTROL,
 		STUTTER_ENABLE, stutter_en,
 		STUTTER_IGNORE_FBC, 1);
-	dce60_program_nbp_watermark(dce_mi, 2, nbp.a_mark); /* set a */
-	dce60_program_nbp_watermark(dce_mi, 1, nbp.d_mark); /* set d */
+	dce60_program_nbp_watermark(dce_mi, 2, nbp.a_mark);  
+	dce60_program_nbp_watermark(dce_mi, 1, nbp.d_mark);  
 
-	dce60_program_stutter_watermark(dce_mi, 2, stutter_exit.a_mark); /* set a */
-	dce60_program_stutter_watermark(dce_mi, 1, stutter_exit.d_mark); /* set d */
+	dce60_program_stutter_watermark(dce_mi, 2, stutter_exit.a_mark);  
+	dce60_program_stutter_watermark(dce_mi, 1, stutter_exit.d_mark);  
 }
 #endif
 
@@ -373,27 +350,27 @@ static void dce112_mi_program_display_marks(struct mem_input *mi,
 	struct dce_mem_input *dce_mi = TO_DCE_MEM_INPUT(mi);
 	uint32_t stutter_en = mi->ctx->dc->debug.disable_stutter ? 0 : 1;
 
-	program_urgency_watermark(dce_mi, 0, /* set a */
+	program_urgency_watermark(dce_mi, 0,  
 			urgent.a_mark, total_dest_line_time_ns);
-	program_urgency_watermark(dce_mi, 1, /* set b */
+	program_urgency_watermark(dce_mi, 1,  
 			urgent.b_mark, total_dest_line_time_ns);
-	program_urgency_watermark(dce_mi, 2, /* set c */
+	program_urgency_watermark(dce_mi, 2,  
 			urgent.c_mark, total_dest_line_time_ns);
-	program_urgency_watermark(dce_mi, 3, /* set d */
+	program_urgency_watermark(dce_mi, 3,  
 			urgent.d_mark, total_dest_line_time_ns);
 
 	REG_UPDATE_2(DPG_PIPE_STUTTER_CONTROL,
 		STUTTER_ENABLE, stutter_en,
 		STUTTER_IGNORE_FBC, 1);
-	program_nbp_watermark(dce_mi, 0, nbp.a_mark); /* set a */
-	program_nbp_watermark(dce_mi, 1, nbp.b_mark); /* set b */
-	program_nbp_watermark(dce_mi, 2, nbp.c_mark); /* set c */
-	program_nbp_watermark(dce_mi, 3, nbp.d_mark); /* set d */
+	program_nbp_watermark(dce_mi, 0, nbp.a_mark);  
+	program_nbp_watermark(dce_mi, 1, nbp.b_mark);  
+	program_nbp_watermark(dce_mi, 2, nbp.c_mark);  
+	program_nbp_watermark(dce_mi, 3, nbp.d_mark);  
 
-	program_stutter_watermark(dce_mi, 0, stutter_exit.a_mark); /* set a */
-	program_stutter_watermark(dce_mi, 1, stutter_exit.b_mark); /* set b */
-	program_stutter_watermark(dce_mi, 2, stutter_exit.c_mark); /* set c */
-	program_stutter_watermark(dce_mi, 3, stutter_exit.d_mark); /* set d */
+	program_stutter_watermark(dce_mi, 0, stutter_exit.a_mark);  
+	program_stutter_watermark(dce_mi, 1, stutter_exit.b_mark);  
+	program_stutter_watermark(dce_mi, 2, stutter_exit.c_mark);  
+	program_stutter_watermark(dce_mi, 3, stutter_exit.d_mark);  
 }
 
 static void dce120_mi_program_display_marks(struct mem_input *mi,
@@ -406,33 +383,33 @@ static void dce120_mi_program_display_marks(struct mem_input *mi,
 	struct dce_mem_input *dce_mi = TO_DCE_MEM_INPUT(mi);
 	uint32_t stutter_en = mi->ctx->dc->debug.disable_stutter ? 0 : 1;
 
-	dce120_program_urgency_watermark(dce_mi, 0, /* set a */
+	dce120_program_urgency_watermark(dce_mi, 0,  
 			urgent.a_mark, total_dest_line_time_ns);
-	dce120_program_urgency_watermark(dce_mi, 1, /* set b */
+	dce120_program_urgency_watermark(dce_mi, 1,  
 			urgent.b_mark, total_dest_line_time_ns);
-	dce120_program_urgency_watermark(dce_mi, 2, /* set c */
+	dce120_program_urgency_watermark(dce_mi, 2,  
 			urgent.c_mark, total_dest_line_time_ns);
-	dce120_program_urgency_watermark(dce_mi, 3, /* set d */
+	dce120_program_urgency_watermark(dce_mi, 3,  
 			urgent.d_mark, total_dest_line_time_ns);
 
 	REG_UPDATE_2(DPG_PIPE_STUTTER_CONTROL,
 		STUTTER_ENABLE, stutter_en,
 		STUTTER_IGNORE_FBC, 1);
-	program_nbp_watermark(dce_mi, 0, nbp.a_mark); /* set a */
-	program_nbp_watermark(dce_mi, 1, nbp.b_mark); /* set b */
-	program_nbp_watermark(dce_mi, 2, nbp.c_mark); /* set c */
-	program_nbp_watermark(dce_mi, 3, nbp.d_mark); /* set d */
+	program_nbp_watermark(dce_mi, 0, nbp.a_mark);  
+	program_nbp_watermark(dce_mi, 1, nbp.b_mark);  
+	program_nbp_watermark(dce_mi, 2, nbp.c_mark);  
+	program_nbp_watermark(dce_mi, 3, nbp.d_mark);  
 
-	dce120_program_stutter_watermark(dce_mi, 0, stutter_exit.a_mark, stutter_entry.a_mark); /* set a */
-	dce120_program_stutter_watermark(dce_mi, 1, stutter_exit.b_mark, stutter_entry.b_mark); /* set b */
-	dce120_program_stutter_watermark(dce_mi, 2, stutter_exit.c_mark, stutter_entry.c_mark); /* set c */
-	dce120_program_stutter_watermark(dce_mi, 3, stutter_exit.d_mark, stutter_entry.d_mark); /* set d */
+	dce120_program_stutter_watermark(dce_mi, 0, stutter_exit.a_mark, stutter_entry.a_mark);  
+	dce120_program_stutter_watermark(dce_mi, 1, stutter_exit.b_mark, stutter_entry.b_mark);  
+	dce120_program_stutter_watermark(dce_mi, 2, stutter_exit.c_mark, stutter_entry.c_mark);  
+	dce120_program_stutter_watermark(dce_mi, 3, stutter_exit.d_mark, stutter_entry.d_mark);  
 }
 
 static void program_tiling(
 	struct dce_mem_input *dce_mi, const union dc_tiling_info *info)
 {
-	if (dce_mi->masks->GRPH_SW_MODE) { /* GFX9 */
+	if (dce_mi->masks->GRPH_SW_MODE) {  
 		REG_UPDATE_6(GRPH_CONTROL,
 				GRPH_SW_MODE, info->gfx9.swizzle,
 				GRPH_NUM_BANKS, log_2(info->gfx9.num_banks),
@@ -440,13 +417,10 @@ static void program_tiling(
 				GRPH_NUM_PIPES, log_2(info->gfx9.num_pipes),
 				GRPH_COLOR_EXPANSION_MODE, 1,
 				GRPH_SE_ENABLE, info->gfx9.shaderEnable);
-		/* TODO: DCP0_GRPH_CONTROL__GRPH_SE_ENABLE where to get info
-		GRPH_SE_ENABLE, 1,
-		GRPH_Z, 0);
-		 */
+		 
 	}
 
-	if (dce_mi->masks->GRPH_MICRO_TILE_MODE) { /* GFX8 */
+	if (dce_mi->masks->GRPH_MICRO_TILE_MODE) {  
 		REG_UPDATE_9(GRPH_CONTROL,
 				GRPH_NUM_BANKS, info->gfx8.num_banks,
 				GRPH_BANK_WIDTH, info->gfx8.bank_width,
@@ -457,27 +431,23 @@ static void program_tiling(
 				GRPH_PIPE_CONFIG, info->gfx8.pipe_config,
 				GRPH_ARRAY_MODE, info->gfx8.array_mode,
 				GRPH_COLOR_EXPANSION_MODE, 1);
-		/* 01 - DCP_GRPH_COLOR_EXPANSION_MODE_ZEXP: zero expansion for YCbCr */
-		/*
-				GRPH_Z, 0);
-				*/
+		 
+		 
 	}
 
-	if (dce_mi->masks->GRPH_ARRAY_MODE) { /* GFX6 but reuses gfx8 struct */
+	if (dce_mi->masks->GRPH_ARRAY_MODE) {  
 		REG_UPDATE_8(GRPH_CONTROL,
 				GRPH_NUM_BANKS, info->gfx8.num_banks,
 				GRPH_BANK_WIDTH, info->gfx8.bank_width,
 				GRPH_BANK_HEIGHT, info->gfx8.bank_height,
 				GRPH_MACRO_TILE_ASPECT, info->gfx8.tile_aspect,
 				GRPH_TILE_SPLIT, info->gfx8.tile_split,
-				/* DCE6 has no GRPH_MICRO_TILE_MODE mask */
+				 
 				GRPH_PIPE_CONFIG, info->gfx8.pipe_config,
 				GRPH_ARRAY_MODE, info->gfx8.array_mode,
 				GRPH_COLOR_EXPANSION_MODE, 1);
-		/* 01 - DCP_GRPH_COLOR_EXPANSION_MODE_ZEXP: zero expansion for YCbCr */
-		/*
-				GRPH_Z, 0);
-				*/
+		 
+		 
 	}
 }
 
@@ -526,13 +496,13 @@ static void program_size_and_rotation(
 #if defined(CONFIG_DRM_AMD_DC_SI)
 static void dce60_program_size(
 	struct dce_mem_input *dce_mi,
-	enum dc_rotation_angle rotation, /* not used in DCE6 */
+	enum dc_rotation_angle rotation,  
 	const struct plane_size *plane_size)
 {
 	struct rect hw_rect = plane_size->surface_size;
-	/* DCE6 has no HW rotation, skip rotation_angles declaration */
+	 
 
-	/* DCE6 has no HW rotation, skip ROTATION_ANGLE_* processing */
+	 
 
 	REG_SET(GRPH_X_START, 0,
 			GRPH_X_START, hw_rect.x);
@@ -549,7 +519,7 @@ static void dce60_program_size(
 	REG_SET(GRPH_PITCH, 0,
 			GRPH_PITCH, plane_size->surface_pitch);
 
-	/* DCE6 has no HW_ROTATION register, skip setting rotation_angles */
+	 
 }
 #endif
 
@@ -557,18 +527,17 @@ static void program_grph_pixel_format(
 	struct dce_mem_input *dce_mi,
 	enum surface_pixel_format format)
 {
-	uint32_t red_xbar = 0, blue_xbar = 0; /* no swap */
+	uint32_t red_xbar = 0, blue_xbar = 0;  
 	uint32_t grph_depth = 0, grph_format = 0;
 	uint32_t sign = 0, floating = 0;
 
 	if (format == SURFACE_PIXEL_FORMAT_GRPH_ABGR8888 ||
-			/*todo: doesn't look like we handle BGRA here,
-			 *  should problem swap endian*/
+			 
 		format == SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010 ||
 		format == SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010_XR_BIAS ||
 		format == SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616 ||
 		format == SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616F) {
-		/* ABGR formats */
+		 
 		red_xbar = 2;
 		blue_xbar = 2;
 	}
@@ -605,7 +574,7 @@ static void program_grph_pixel_format(
 		sign = 1;
 		floating = 1;
 		fallthrough;
-	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F: /* shouldn't this get float too? */
+	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F:  
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:
 		grph_depth = 3;
@@ -653,7 +622,7 @@ static void dce60_mi_program_surface_config(
 	enum surface_pixel_format format,
 	union dc_tiling_info *tiling_info,
 	struct plane_size *plane_size,
-	enum dc_rotation_angle rotation, /* not used in DCE6 */
+	enum dc_rotation_angle rotation,  
 	struct dc_plane_dcc_param *dcc,
 	bool horizontal_mirror)
 {
@@ -680,18 +649,18 @@ static uint32_t get_dmif_switch_time_us(
 	uint32_t refresh_rate;
 	const uint32_t us_in_sec = 1000000;
 	const uint32_t min_single_frame_time_us = 30000;
-	/*return double of frame time*/
+	 
 	const uint32_t single_frame_time_multiplier = 2;
 
 	if (!h_total || v_total || !pix_clk_khz)
 		return single_frame_time_multiplier * min_single_frame_time_us;
 
-	/*TODO: should we use pixel format normalized pixel clock here?*/
+	 
 	pixels_per_second = pix_clk_khz * 1000;
 	pixels_per_frame = h_total * v_total;
 
 	if (!pixels_per_second || !pixels_per_frame) {
-		/* avoid division by zero */
+		 
 		ASSERT(pixels_per_frame);
 		ASSERT(pixels_per_second);
 		return single_frame_time_multiplier * min_single_frame_time_us;
@@ -700,7 +669,7 @@ static uint32_t get_dmif_switch_time_us(
 	refresh_rate = pixels_per_second / pixels_per_frame;
 
 	if (!refresh_rate) {
-		/* avoid division by zero*/
+		 
 		ASSERT(refresh_rate);
 		return single_frame_time_multiplier * min_single_frame_time_us;
 	}
@@ -797,7 +766,7 @@ static void program_sec_addr(
 	struct dce_mem_input *dce_mi,
 	PHYSICAL_ADDRESS_LOC address)
 {
-	/*high register MUST be programmed first*/
+	 
 	REG_SET(GRPH_SECONDARY_SURFACE_ADDRESS_HIGH, 0,
 		GRPH_SECONDARY_SURFACE_ADDRESS_HIGH,
 		address.high_part);
@@ -811,7 +780,7 @@ static void program_pri_addr(
 	struct dce_mem_input *dce_mi,
 	PHYSICAL_ADDRESS_LOC address)
 {
-	/*high register MUST be programmed first*/
+	 
 	REG_SET(GRPH_PRIMARY_SURFACE_ADDRESS_HIGH, 0,
 		GRPH_PRIMARY_SURFACE_ADDRESS_HIGH,
 		address.high_part);
@@ -862,7 +831,7 @@ static bool dce_mi_program_surface_flip_and_addr(
 		program_sec_addr(dce_mi, address->grph_stereo.right_addr);
 		break;
 	default:
-		/* not supported */
+		 
 		BREAK_TO_DEBUGGER();
 		break;
 	}

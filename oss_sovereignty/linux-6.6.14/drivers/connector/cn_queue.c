@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	cn_queue.c
- *
- * 2004+ Copyright (c) Evgeniy Polyakov <zbr@ioremap.net>
- * All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

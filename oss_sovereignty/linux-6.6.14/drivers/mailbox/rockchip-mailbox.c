@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -43,7 +41,7 @@ struct rockchip_mbox {
 	struct clk *pclk;
 	void __iomem *mbox_base;
 
-	/* The maximum size of buf for each channel */
+	 
 	u32 buf_size;
 
 	struct rockchip_mbox_chan *chans;
@@ -80,7 +78,7 @@ static int rockchip_mbox_startup(struct mbox_chan *chan)
 {
 	struct rockchip_mbox *mb = dev_get_drvdata(chan->mbox->dev);
 
-	/* Enable all B2A interrupts */
+	 
 	writel_relaxed((1 << mb->mbox.num_chans) - 1,
 		       mb->mbox_base + MAILBOX_B2A_INTEN);
 
@@ -92,7 +90,7 @@ static void rockchip_mbox_shutdown(struct mbox_chan *chan)
 	struct rockchip_mbox *mb = dev_get_drvdata(chan->mbox->dev);
 	struct rockchip_mbox_chan *chans = mb->chans;
 
-	/* Disable all B2A interrupts */
+	 
 	writel_relaxed(0, mb->mbox_base + MAILBOX_B2A_INTEN);
 
 	mb->chans[chans->idx].msg = NULL;
@@ -112,7 +110,7 @@ static irqreturn_t rockchip_mbox_irq(int irq, void *dev_id)
 
 	for (idx = 0; idx < mb->mbox.num_chans; idx++) {
 		if ((status & (1 << idx)) && (irq == mb->chans[idx].irq)) {
-			/* Clear mbox interrupt */
+			 
 			writel_relaxed(1 << idx,
 				       mb->mbox_base + MAILBOX_B2A_STATUS);
 			return IRQ_WAKE_THREAD;
@@ -136,7 +134,7 @@ static irqreturn_t rockchip_mbox_isr(int irq, void *dev_id)
 		if (!msg) {
 			dev_err(mb->mbox.dev,
 				"Chan[%d]: B2A message is NULL\n", idx);
-			break; /* spurious */
+			break;  
 		}
 
 		mbox_chan_received_data(&mb->mbox.chans[idx], msg);
@@ -198,7 +196,7 @@ static int rockchip_mbox_probe(struct platform_device *pdev)
 	if (IS_ERR(mb->mbox_base))
 		return PTR_ERR(mb->mbox_base);
 
-	/* Each channel has two buffers for A2B and B2A */
+	 
 	mb->buf_size = (size_t)resource_size(res) / (drv_data->num_chans * 2);
 
 	mb->pclk = devm_clk_get(&pdev->dev, "pclk_mailbox");

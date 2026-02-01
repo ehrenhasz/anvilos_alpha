@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017-2020 Jacopo Mondi
- * Copyright (C) 2017-2020 Kieran Bingham
- * Copyright (C) 2017-2020 Laurent Pinchart
- * Copyright (C) 2017-2020 Niklas Söderlund
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2015 Cogent Embedded, Inc.
- *
- * This file exports functions to control the Maxim MAX9271 GMSL serializer
- * chip. This is not a self-contained driver, as MAX9271 is usually embedded in
- * camera modules with at least one image sensor and optional additional
- * components, such as uController units or ISPs/DSPs.
- *
- * Drivers for the camera modules (i.e. rdacm20/21) are expected to use
- * functions exported from this library driver to maximize code re-use.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -52,13 +37,7 @@ static int max9271_write(struct max9271_device *dev, u8 reg, u8 val)
 	return ret;
 }
 
-/*
- * max9271_pclk_detect() - Detect valid pixel clock from image sensor
- *
- * Wait up to 10ms for a valid pixel clock.
- *
- * Returns 0 for success, < 0 for pixel clock not properly detected
- */
+ 
 static int max9271_pclk_detect(struct max9271_device *dev)
 {
 	unsigned int i;
@@ -82,10 +61,7 @@ static int max9271_pclk_detect(struct max9271_device *dev)
 
 void max9271_wake_up(struct max9271_device *dev)
 {
-	/*
-	 * Use the chip default address as this function has to be called
-	 * before any other one.
-	 */
+	 
 	dev->client->addr = MAX9271_DEFAULT_ADDR;
 	i2c_smbus_read_byte(dev->client);
 	usleep_range(5000, 8000);
@@ -107,17 +83,7 @@ int max9271_set_serial_link(struct max9271_device *dev, bool enable)
 		val |= MAX9271_CLINKEN;
 	}
 
-	/*
-	 * The serializer temporarily disables the reverse control channel for
-	 * 350µs after starting/stopping the forward serial link, but the
-	 * deserializer synchronization time isn't clearly documented.
-	 *
-	 * According to the serializer datasheet we should wait 3ms, while
-	 * according to the deserializer datasheet we should wait 5ms.
-	 *
-	 * Short delays here appear to show bit-errors in the writes following.
-	 * Therefore a conservative delay seems best here.
-	 */
+	 
 	ret = max9271_write(dev, 0x04, val);
 	if (ret < 0)
 		return ret;
@@ -136,10 +102,7 @@ int max9271_configure_i2c(struct max9271_device *dev, u8 i2c_config)
 	if (ret < 0)
 		return ret;
 
-	/* The delay required after an I2C bus configuration change is not
-	 * characterized in the serializer manual. Sleep up to 5msec to
-	 * stay safe.
-	 */
+	 
 	usleep_range(3500, 5000);
 
 	return 0;
@@ -154,10 +117,7 @@ int max9271_set_high_threshold(struct max9271_device *dev, bool enable)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Enable or disable reverse channel high threshold to increase
-	 * immunity to power supply noise.
-	 */
+	 
 	ret = max9271_write(dev, 0x08, enable ? ret | BIT(0) : ret & ~BIT(0));
 	if (ret < 0)
 		return ret;
@@ -172,16 +132,7 @@ int max9271_configure_gmsl_link(struct max9271_device *dev)
 {
 	int ret;
 
-	/*
-	 * Configure the GMSL link:
-	 *
-	 * - Double input mode, high data rate, 24-bit mode
-	 * - Latch input data on PCLKIN rising edge
-	 * - Enable HS/VS encoding
-	 * - 1-bit parity error detection
-	 *
-	 * TODO: Make the GMSL link configuration parametric.
-	 */
+	 
 	ret = max9271_write(dev, 0x07, MAX9271_DBL | MAX9271_HVEN |
 			    MAX9271_EDC_1BIT_PARITY);
 	if (ret < 0)
@@ -189,10 +140,7 @@ int max9271_configure_gmsl_link(struct max9271_device *dev)
 
 	usleep_range(5000, 8000);
 
-	/*
-	 * Adjust spread spectrum to +4% and auto-detect pixel clock
-	 * and serial link rate.
-	 */
+	 
 	ret = max9271_write(dev, 0x02,
 			    MAX9271_SPREAD_SPECT_4 | MAX9271_R02_RES |
 			    MAX9271_PCLK_AUTODETECT |
@@ -256,7 +204,7 @@ int max9271_enable_gpios(struct max9271_device *dev, u8 gpio_mask)
 	if (ret < 0)
 		return 0;
 
-	/* BIT(0) reserved: GPO is always enabled. */
+	 
 	ret |= (gpio_mask & ~BIT(0));
 	ret = max9271_write(dev, 0x0e, ret);
 	if (ret < 0) {
@@ -278,7 +226,7 @@ int max9271_disable_gpios(struct max9271_device *dev, u8 gpio_mask)
 	if (ret < 0)
 		return 0;
 
-	/* BIT(0) reserved: GPO cannot be disabled */
+	 
 	ret &= ~(gpio_mask | BIT(0));
 	ret = max9271_write(dev, 0x0e, ret);
 	if (ret < 0) {

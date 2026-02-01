@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/hfsplus/xattr_trusted.c
- *
- * Vyacheslav Dubeyko <slava@dubeyko.com>
- *
- * Handler for trusted extended attributes.
- */
+
+ 
 
 #include <linux/nls.h>
 

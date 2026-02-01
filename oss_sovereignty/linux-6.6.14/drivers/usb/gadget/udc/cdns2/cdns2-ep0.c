@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBHS-DEV driver.
- *
- * Copyright (C) 2023 Cadence Design Systems.
- *
- * Authors: Pawel Laszczak <pawell@cadence.com>
- */
+
+ 
 
 #include <linux/usb/composite.h>
 #include <asm/unaligned.h>
@@ -240,14 +234,7 @@ static int cdns2_ep0_handle_feature_device(struct cdns2_device *pdev,
 		case USB_TEST_K:
 		case USB_TEST_SE0_NAK:
 		case USB_TEST_PACKET:
-			/*
-			 * The USBHS controller automatically handles the
-			 * Set_Feature(testmode) request. Standard test modes
-			 * that use values of test mode selector from
-			 * 01h to 04h (Test_J, Test_K, Test_SE0_NAK,
-			 * Test_Packet) are supported by the
-			 * controller(HS - ack, FS - stall).
-			 */
+			 
 			break;
 		default:
 			ret = -EINVAL;
@@ -390,10 +377,7 @@ void cdns2_handle_setup_packet(struct cdns2_device *pdev)
 	for (i = 0; i < 8; i++)
 		((u8 *)&pdev->setup)[i] = readb(&pdev->ep0_regs->setupdat[i]);
 
-	/*
-	 * If SETUP packet was modified while reading just simple ignore it.
-	 * The new one will be handled latter.
-	 */
+	 
 	if (cdns2_check_new_setup(pdev)) {
 		trace_cdns2_ep0_setup("overridden");
 		return;
@@ -412,7 +396,7 @@ void cdns2_handle_setup_packet(struct cdns2_device *pdev)
 
 	pep = &pdev->eps[0];
 
-	/* Halt for Ep0 is cleared automatically when SETUP packet arrives. */
+	 
 	pep->ep_state &= ~EP_STALLED;
 
 	if (!list_empty(&pep->pending_list)) {
@@ -428,12 +412,7 @@ void cdns2_handle_setup_packet(struct cdns2_device *pdev)
 
 	pep->dir = ctrl->bRequestType & USB_DIR_IN;
 
-	/*
-	 * SET_ADDRESS request is acknowledged automatically by controller and
-	 * in the worse case driver may not notice this request. To check
-	 * whether this request has been processed driver can use
-	 * fnaddr register.
-	 */
+	 
 	reg = readb(&pdev->usb_regs->fnaddr);
 	if (pdev->setup.bRequest != USB_REQ_SET_ADDRESS &&
 	    pdev->dev_address != reg)
@@ -493,20 +472,14 @@ void cdns2_handle_ep0_interrupt(struct cdns2_device *pdev, int dir)
 	}
 }
 
-/*
- * Function shouldn't be called by gadget driver,
- * endpoint 0 is allways active.
- */
+ 
 static int cdns2_gadget_ep0_enable(struct usb_ep *ep,
 				   const struct usb_endpoint_descriptor *desc)
 {
 	return -EINVAL;
 }
 
-/*
- * Function shouldn't be called by gadget driver,
- * endpoint 0 is allways active.
- */
+ 
 static int cdns2_gadget_ep0_disable(struct usb_ep *ep)
 {
 	return -EINVAL;
@@ -550,14 +523,14 @@ static int cdns2_gadget_ep0_queue(struct usb_ep *ep,
 
 	trace_cdns2_request_enqueue(preq);
 
-	/* Cancel the request if controller receive new SETUP packet. */
+	 
 	if (cdns2_check_new_setup(pdev)) {
 		trace_cdns2_ep0_setup("overridden");
 		spin_unlock_irqrestore(&pdev->lock, flags);
 		return -ECONNRESET;
 	}
 
-	/* Send STATUS stage. Should be called only for SET_CONFIGURATION. */
+	 
 	if (pdev->ep0_stage == CDNS2_STATUS_STAGE) {
 		cdns2_status_stage(pdev);
 
@@ -567,11 +540,7 @@ static int cdns2_gadget_ep0_queue(struct usb_ep *ep,
 		usb_gadget_set_state(&pdev->gadget, USB_STATE_CONFIGURED);
 		spin_unlock_irqrestore(&pdev->lock, flags);
 
-		/*
-		 * Since there is no completion interrupt for status stage,
-		 * it needs to call ->completion in software after
-		 * cdns2_gadget_ep0_queue is back.
-		 */
+		 
 		queue_work(system_freezable_wq, &pdev->pending_status_wq);
 		return 0;
 	}

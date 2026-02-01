@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2018-2021 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_io_h__
 #define __iwl_io_h__
 
@@ -54,14 +52,10 @@ void iwl_force_nmi(struct iwl_trans *trans);
 
 int iwl_finish_nic_init(struct iwl_trans *trans);
 
-/* Error handling */
+ 
 int iwl_dump_fh(struct iwl_trans *trans, char **buf);
 
-/*
- * UMAC periphery address space changed from 0xA00000 to 0xD00000 starting from
- * device family AX200. So peripheries used in families above and below AX200
- * should go through iwl_..._umac_..._prph.
- */
+ 
 static inline u32 iwl_umac_prph(struct iwl_trans *trans, u32 ofs)
 {
 	return ofs + trans->trans_cfg->umac_prph_offset;

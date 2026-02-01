@@ -1,61 +1,8 @@
-/*
- *  linux/net/sunrpc/gss_krb5_unseal.c
- *
- *  Adapted from MIT Kerberos 5-1.2.1 lib/gssapi/krb5/k5unseal.c
- *
- *  Copyright (c) 2000-2008 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Andy Adamson   <andros@umich.edu>
- */
+ 
 
-/*
- * Copyright 1993 by OpenVision Technologies, Inc.
- *
- * Permission to use, copy, modify, distribute, and sell this software
- * and its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appears in all copies and
- * that both that copyright notice and this permission notice appear in
- * supporting documentation, and that the name of OpenVision not be used
- * in advertising or publicity pertaining to distribution of the software
- * without specific, written prior permission. OpenVision makes no
- * representations about the suitability of this software for any
- * purpose.  It is provided "as is" without express or implied warranty.
- *
- * OPENVISION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL OPENVISION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*
- * Copyright (C) 1998 by the FundsXpress, INC.
- *
- * All rights reserved.
- *
- * Export of this software from the United States of America may require
- * a specific license from the United States Government.  It is the
- * responsibility of any person or organization contemplating export to
- * obtain such a license before exporting.
- *
- * WITHIN THAT CONSTRAINT, permission to use, copy, modify, and
- * distribute this software and its documentation for any purpose and
- * without fee is hereby granted, provided that the above copyright
- * notice appear in all copies and that both that copyright notice and
- * this permission notice appear in supporting documentation, and that
- * the name of FundsXpress. not be used in advertising or publicity pertaining
- * to distribution of the software without specific, written prior
- * permission.  FundsXpress makes no representations about the suitability of
- * this software for any purpose.  It is provided "as is" without express
- * or implied warranty.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
- */
+ 
 
 #include <crypto/algapi.h>
 #include <linux/types.h>
@@ -114,15 +61,12 @@ gss_krb5_verify_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *message_buffer,
 				ctx->gk5e->cksumlength))
 		return GSS_S_BAD_SIG;
 
-	/* it got through unscathed.  Make sure the context is unexpired */
+	 
 	now = ktime_get_real_seconds();
 	if (now > ctx->endtime)
 		return GSS_S_CONTEXT_EXPIRED;
 
-	/*
-	 * NOTE: the sequence number at ptr + 8 is skipped, rpcsec_gss
-	 * doesn't want it checked; see page 6 of rfc 2203.
-	 */
+	 
 
 	return GSS_S_COMPLETE;
 }

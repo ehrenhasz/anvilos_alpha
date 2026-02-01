@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
- *
- * RMNET configuration engine
- */
+
+ 
 
 #include <net/sock.h>
 #include <linux/module.h>
@@ -14,7 +11,7 @@
 #include "rmnet_private.h"
 #include "rmnet_map.h"
 
-/* Local Definitions and Declarations */
+ 
 
 static const struct nla_policy rmnet_policy[IFLA_RMNET_MAX + 1] = {
 	[IFLA_RMNET_MUX_ID]	= { .type = NLA_U16 },
@@ -26,7 +23,7 @@ static int rmnet_is_real_dev_registered(const struct net_device *real_dev)
 	return rcu_access_pointer(real_dev->rx_handler) == rmnet_rx_handler;
 }
 
-/* Needs rtnl lock */
+ 
 struct rmnet_port*
 rmnet_get_port_rtnl(const struct net_device *real_dev)
 {
@@ -98,7 +95,7 @@ static void rmnet_unregister_bridge(struct rmnet_port *port)
 
 	rmnet_dev = port->rmnet_dev;
 	if (!port->nr_rmnet_devs) {
-		/* bridge device */
+		 
 		real_dev = port->bridge_ep;
 		bridge_dev = port->dev;
 
@@ -106,7 +103,7 @@ static void rmnet_unregister_bridge(struct rmnet_port *port)
 		real_port->bridge_ep = NULL;
 		real_port->rmnet_mode = RMNET_EPMODE_VND;
 	} else {
-		/* real device */
+		 
 		bridge_dev = port->bridge_ep;
 
 		port->bridge_ep = NULL;
@@ -230,7 +227,7 @@ static void rmnet_force_unassociate_device(struct net_device *real_dev)
 	port = rmnet_get_port_rtnl(real_dev);
 
 	if (port->nr_rmnet_devs) {
-		/* real device */
+		 
 		rmnet_unregister_bridge(port);
 		hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
 			unregister_netdevice_queue(ep->egress_dev, &list);
@@ -358,9 +355,9 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t rmnet_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_RMNET_MUX_ID */
+		 
 		nla_total_size(2) +
-		/* IFLA_RMNET_FLAGS */
+		 
 		nla_total_size(sizeof(struct ifla_rmnet_flags));
 }
 
@@ -439,9 +436,7 @@ int rmnet_add_bridge(struct net_device *rmnet_dev,
 
 	port = rmnet_get_port_rtnl(real_dev);
 
-	/* If there is more than one rmnet dev attached, its probably being
-	 * used for muxing. Skip the briding in that case
-	 */
+	 
 	if (port->nr_rmnet_devs > 1) {
 		NL_SET_ERR_MSG_MOD(extack, "more than one rmnet dev attached");
 		return -EINVAL;
@@ -493,7 +488,7 @@ int rmnet_del_bridge(struct net_device *rmnet_dev,
 	return 0;
 }
 
-/* Startup/Shutdown */
+ 
 
 static int __init rmnet_init(void)
 {

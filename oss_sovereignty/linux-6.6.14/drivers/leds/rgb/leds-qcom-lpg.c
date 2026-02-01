@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017-2022 Linaro Ltd
- * Copyright (c) 2010-2012, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
 #include <linux/led-class-multicolor.h>
@@ -54,23 +50,7 @@
 struct lpg_channel;
 struct lpg_data;
 
-/**
- * struct lpg - LPG device context
- * @dev:	pointer to LPG device
- * @map:	regmap for register access
- * @lock:	used to synchronize LED and pwm callback requests
- * @pwm:	PWM-chip object, if operating in PWM mode
- * @data:	reference to version specific data
- * @lut_base:	base address of the LUT block (optional)
- * @lut_size:	number of entries in the LUT block
- * @lut_bitmap:	allocation bitmap for LUT entries
- * @triled_base: base address of the TRILED block (optional)
- * @triled_src:	power-source for the TRILED
- * @triled_has_atc_ctl:	true if there is TRI_LED_ATC_CTL register
- * @triled_has_src_sel:	true if there is TRI_LED_SRC_SEL register
- * @channels:	list of PWM channels
- * @num_channels: number of @channels
- */
+ 
 struct lpg {
 	struct device *dev;
 	struct regmap *map;
@@ -94,34 +74,7 @@ struct lpg {
 	unsigned int num_channels;
 };
 
-/**
- * struct lpg_channel - per channel data
- * @lpg:	reference to parent lpg
- * @base:	base address of the PWM channel
- * @triled_mask: mask in TRILED to enable this channel
- * @lut_mask:	mask in LUT to start pattern generator for this channel
- * @subtype:	PMIC hardware block subtype
- * @in_use:	channel is exposed to LED framework
- * @color:	color of the LED attached to this channel
- * @dtest_line:	DTEST line for output, or 0 if disabled
- * @dtest_value: DTEST line configuration
- * @pwm_value:	duty (in microseconds) of the generated pulses, overridden by LUT
- * @enabled:	output enabled?
- * @period:	period (in nanoseconds) of the generated pulses
- * @clk_sel:	reference clock frequency selector
- * @pre_div_sel: divider selector of the reference clock
- * @pre_div_exp: exponential divider of the reference clock
- * @pwm_resolution_sel:	pwm resolution selector
- * @ramp_enabled: duty cycle is driven by iterating over lookup table
- * @ramp_ping_pong: reverse through pattern, rather than wrapping to start
- * @ramp_oneshot: perform only a single pass over the pattern
- * @ramp_reverse: iterate over pattern backwards
- * @ramp_tick_ms: length (in milliseconds) of one step in the pattern
- * @ramp_lo_pause_ms: pause (in milliseconds) before iterating over pattern
- * @ramp_hi_pause_ms: pause (in milliseconds) after iterating over pattern
- * @pattern_lo_idx: start index of associated pattern
- * @pattern_hi_idx: last index of associated pattern
- */
+ 
 struct lpg_channel {
 	struct lpg *lpg;
 
@@ -158,14 +111,7 @@ struct lpg_channel {
 	unsigned int pattern_hi_idx;
 };
 
-/**
- * struct lpg_led - logical LED object
- * @lpg:		lpg context reference
- * @cdev:		LED class device
- * @mcdev:		Multicolor LED class device
- * @num_channels:	number of @channels
- * @channels:		list of channels associated with the LED
- */
+ 
 struct lpg_led {
 	struct lpg *lpg;
 
@@ -176,26 +122,13 @@ struct lpg_led {
 	struct lpg_channel *channels[];
 };
 
-/**
- * struct lpg_channel_data - per channel initialization data
- * @base:		base address for PWM channel registers
- * @triled_mask:	bitmask for controlling this channel in TRILED
- */
+ 
 struct lpg_channel_data {
 	unsigned int base;
 	u8 triled_mask;
 };
 
-/**
- * struct lpg_data - initialization data
- * @lut_base:		base address of LUT block
- * @lut_size:		number of entries in LUT
- * @triled_base:	base address of TRILED
- * @triled_has_atc_ctl:	true if there is TRI_LED_ATC_CTL register
- * @triled_has_src_sel:	true if there is TRI_LED_SRC_SEL register
- * @num_channels:	number of channels in LPG
- * @channels:		list of channel initialization data
- */
+ 
 struct lpg_data {
 	unsigned int lut_base;
 	unsigned int lut_size;
@@ -208,7 +141,7 @@ struct lpg_data {
 
 static int triled_set(struct lpg *lpg, unsigned int mask, unsigned int enable)
 {
-	/* Skip if we don't have a triled block */
+	 
 	if (!lpg->triled_base)
 		return 0;
 
@@ -279,23 +212,7 @@ static int lpg_calc_freq(struct lpg_channel *chan, uint64_t period)
 	u64 best_period = 0;
 	u64 max_res;
 
-	/*
-	 * The PWM period is determined by:
-	 *
-	 *          resolution * pre_div * 2^M
-	 * period = --------------------------
-	 *                   refclk
-	 *
-	 * Resolution = 2^9 bits for PWM or
-	 *              2^{8, 9, 10, 11, 12, 13, 14, 15} bits for high resolution PWM
-	 * pre_div = {1, 3, 5, 6} and
-	 * M = [0..7].
-	 *
-	 * This allows for periods between 27uS and 384s for PWM channels and periods between
-	 * 3uS and 24576s for high resolution PWMs.
-	 * The PWM framework wants a period of equal or lower length than requested,
-	 * reject anything below minimum period.
-	 */
+	 
 
 	if (chan->subtype == LPG_SUBTYPE_HI_RES_PWM) {
 		clk_rate_arr = lpg_clk_rates_hi_res;
@@ -316,20 +233,13 @@ static int lpg_calc_freq(struct lpg_channel *chan, uint64_t period)
 	if (period <= min_period)
 		return -EINVAL;
 
-	/* Limit period to largest possible value, to avoid overflows */
+	 
 	max_period = div64_u64((u64)NSEC_PER_SEC * max_res * LPG_MAX_PREDIV * (1 << LPG_MAX_M),
 			       1024);
 	if (period > max_period)
 		period = max_period;
 
-	/*
-	 * Search for the pre_div, refclk, resolution and M by solving the rewritten formula
-	 * for each refclk, resolution and pre_div value:
-	 *
-	 *                     period * refclk
-	 * M = log2 -------------------------------------
-	 *           NSEC_PER_SEC * pre_div * resolution
-	 */
+	 
 
 	for (i = 0; i < pwm_resolution_count; i++) {
 		resolution = 1 << pwm_resolution_arr[i];
@@ -402,7 +312,7 @@ static void lpg_apply_freq(struct lpg_channel *chan)
 
 	val = chan->clk_sel;
 
-	/* Specify resolution, based on the subtype of the channel */
+	 
 	switch (chan->subtype) {
 	case LPG_SUBTYPE_LPG:
 		val |= GENMASK(5, 4);
@@ -520,10 +430,7 @@ static void lpg_apply_control(struct lpg_channel *chan)
 
 	regmap_write(lpg->map, chan->base + PWM_ENABLE_CONTROL_REG, ctrl);
 
-	/*
-	 * Due to LPG hardware bug, in the PWM mode, having enabled PWM,
-	 * We have to write PWM values one more time.
-	 */
+	 
 	if (chan->enabled)
 		lpg_apply_pwm_value(chan);
 }
@@ -644,11 +551,11 @@ static void lpg_brightness_set(struct lpg_led *led, struct led_classdev *cdev,
 		lpg_apply(chan);
 	}
 
-	/* Toggle triled lines */
+	 
 	if (triled_mask)
 		triled_set(lpg, triled_mask, triled_enabled);
 
-	/* Trigger start of ramp generator(s) */
+	 
 	if (lut_mask)
 		lpg_lut_sync(lpg, lut_mask);
 }
@@ -717,7 +624,7 @@ static int lpg_blink_set(struct lpg_led *led,
 		lpg_apply(chan);
 	}
 
-	/* Enable triled lines */
+	 
 	triled_set(lpg, triled_mask, triled_mask);
 
 	chan = led->channels[0];
@@ -777,21 +684,11 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
 	bool ping_pong = true;
 	int ret = -EINVAL;
 
-	/* Hardware only support oneshot or indefinite loops */
+	 
 	if (repeat != -1 && repeat != 1)
 		return -EINVAL;
 
-	/*
-	 * The standardized leds-trigger-pattern format defines that the
-	 * brightness of the LED follows a linear transition from one entry
-	 * in the pattern to the next, over the given delta_t time. It
-	 * describes that the way to perform instant transitions a zero-length
-	 * entry should be added following a pattern entry.
-	 *
-	 * The LPG hardware is only able to perform the latter (no linear
-	 * transitions), so require each entry in the pattern to be followed by
-	 * a zero-length transition.
-	 */
+	 
 	if (len % 2)
 		return -EINVAL;
 
@@ -811,34 +708,13 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
 
 	len /= 2;
 
-	/*
-	 * Specifying a pattern of length 1 causes the hardware to iterate
-	 * through the entire LUT, so prohibit this.
-	 */
+	 
 	if (len < 2)
 		goto out_free_pattern;
 
-	/*
-	 * The LPG plays patterns with at a fixed pace, a "low pause" can be
-	 * used to stretch the first delay of the pattern and a "high pause"
-	 * the last one.
-	 *
-	 * In order to save space the pattern can be played in "ping pong"
-	 * mode, in which the pattern is first played forward, then "high
-	 * pause" is applied, then the pattern is played backwards and finally
-	 * the "low pause" is applied.
-	 *
-	 * The middle elements of the pattern are used to determine delta_t and
-	 * the "low pause" and "high pause" multipliers are derrived from this.
-	 *
-	 * The first element in the pattern is used to determine "low pause".
-	 *
-	 * If the specified pattern is a palindrome the ping pong mode is
-	 * enabled. In this scenario the delta_t of the middle entry (i.e. the
-	 * last in the programmed pattern) determines the "high pause".
-	 */
+	 
 
-	/* Detect palindromes and use "ping pong" to reduce LUT usage */
+	 
 	for (i = 0; i < len / 2; i++) {
 		brightness_a = pattern[i].brightness;
 		brightness_b = pattern[len - i - 1].brightness;
@@ -849,33 +725,27 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
 		}
 	}
 
-	/* The pattern length to be written to the LUT */
+	 
 	if (ping_pong)
 		actual_len = (len + 1) / 2;
 	else
 		actual_len = len;
 
-	/*
-	 * Validate that all delta_t in the pattern are the same, with the
-	 * exception of the middle element in case of ping_pong.
-	 */
+	 
 	delta_t = pattern[1].delta_t;
 	for (i = 2; i < len; i++) {
 		if (pattern[i].delta_t != delta_t) {
-			/*
-			 * Allow last entry in the full or shortened pattern to
-			 * specify hi pause. Reject other variations.
-			 */
+			 
 			if (i != actual_len - 1)
 				goto out_free_pattern;
 		}
 	}
 
-	/* LPG_RAMP_DURATION_REG is a 9bit */
+	 
 	if (delta_t >= BIT(9))
 		goto out_free_pattern;
 
-	/* Find "low pause" and "high pause" in the pattern */
+	 
 	lo_pause = pattern[0].delta_t;
 	hi_pause = pattern[actual_len - 1].delta_t;
 
@@ -985,13 +855,7 @@ static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 	return chan->in_use ? -EBUSY : 0;
 }
 
-/*
- * Limitations:
- * - Updating both duty and period is not done atomically, so the output signal
- *   will momentarily be a mix of the settings.
- * - Changed parameters takes effect immediately.
- * - A disabled channel outputs a logical 0.
- */
+ 
 static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			 const struct pwm_state *state)
 {
@@ -1188,7 +1052,7 @@ static int lpg_add_led(struct lpg *lpg, struct device_node *np)
 		cdev->brightness_set_blocking = lpg_brightness_mc_set;
 		cdev->blink_set = lpg_blink_mc_set;
 
-		/* Register pattern accessors only if we have a LUT block */
+		 
 		if (lpg->lut_base) {
 			cdev->pattern_set = lpg_pattern_mc_set;
 			cdev->pattern_clear = lpg_pattern_mc_clear;
@@ -1202,7 +1066,7 @@ static int lpg_add_led(struct lpg *lpg, struct device_node *np)
 		cdev->brightness_set_blocking = lpg_brightness_single_set;
 		cdev->blink_set = lpg_blink_single_set;
 
-		/* Register pattern accessors only if we have a LUT block */
+		 
 		if (lpg->lut_base) {
 			cdev->pattern_set = lpg_pattern_single_set;
 			cdev->pattern_clear = lpg_pattern_single_clear;
@@ -1263,7 +1127,7 @@ static int lpg_init_triled(struct lpg *lpg)
 	struct device_node *np = lpg->dev->of_node;
 	int ret;
 
-	/* Skip initialization if we don't have a triled block */
+	 
 	if (!lpg->data->triled_base)
 		return 0;
 
@@ -1279,15 +1143,15 @@ static int lpg_init_triled(struct lpg *lpg)
 		}
 	}
 
-	/* Disable automatic trickle charge LED */
+	 
 	if (lpg->triled_has_atc_ctl)
 		regmap_write(lpg->map, lpg->triled_base + TRI_LED_ATC_CTL, 0);
 
-	/* Configure power source */
+	 
 	if (lpg->triled_has_src_sel)
 		regmap_write(lpg->map, lpg->triled_base + TRI_LED_SRC_SEL, lpg->triled_src);
 
-	/* Default all outputs to off */
+	 
 	regmap_write(lpg->map, lpg->triled_base + TRI_LED_EN_CTL, 0);
 
 	return 0;
@@ -1416,7 +1280,7 @@ static const struct lpg_data pm8994_lpg_data = {
 	},
 };
 
-/* PMI632 uses SDAM instead of LUT for pattern */
+ 
 static const struct lpg_data pmi632_lpg_data = {
 	.triled_base = 0xd000,
 

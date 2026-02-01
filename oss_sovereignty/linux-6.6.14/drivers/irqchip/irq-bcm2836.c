@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Root interrupt controller for the BCM2836 (Raspberry Pi 2).
- *
- * Copyright 2015 Broadcom
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/of_address.h>
@@ -181,10 +177,7 @@ static void bcm2836_arm_irqchip_ipi_send_mask(struct irq_data *d,
 	int cpu;
 	void __iomem *mailbox0_base = intc.base + LOCAL_MAILBOX0_SET0;
 
-	/*
-	 * Ensure that stores to normal memory are visible to the
-	 * other CPUs before issuing the IPI.
-	 */
+	 
 	smp_wmb();
 
 	for_each_cpu(cpu, mask)
@@ -220,7 +213,7 @@ static void bcm2836_arm_irqchip_ipi_free(struct irq_domain *d,
 					 unsigned int virq,
 					 unsigned int nr_irqs)
 {
-	/* Not freeing IPIs */
+	 
 }
 
 static const struct irq_domain_ops ipi_domain_ops = {
@@ -277,7 +270,7 @@ static void __init bcm2836_arm_irqchip_smp_init(void)
 	irq_set_chained_handler_and_data(mux_irq,
 					 bcm2836_arm_irqchip_handle_ipi, NULL);
 
-	/* Unmask IPIs to the boot CPU. */
+	 
 	cpuhp_setup_state(CPUHP_AP_IRQ_BCM2836_STARTING,
 			  "irqchip/bcm2836:starting", bcm2836_cpu_starting,
 			  bcm2836_cpu_dying);
@@ -291,24 +284,13 @@ static const struct irq_domain_ops bcm2836_arm_irqchip_intc_ops = {
 	.map = bcm2836_map,
 };
 
-/*
- * The LOCAL_IRQ_CNT* timer firings are based off of the external
- * oscillator with some scaling.  The firmware sets up CNTFRQ to
- * report 19.2Mhz, but doesn't set up the scaling registers.
- */
+ 
 static void bcm2835_init_local_timer_frequency(void)
 {
-	/*
-	 * Set the timer to source from the 19.2Mhz crystal clock (bit
-	 * 8 unset), and only increment by 1 instead of 2 (bit 9
-	 * unset).
-	 */
+	 
 	writel(0, intc.base + LOCAL_CONTROL);
 
-	/*
-	 * Set the timer prescaler to 1:1 (timer freq = input freq *
-	 * 2**31 / prescaler)
-	 */
+	 
 	writel(0x80000000, intc.base + LOCAL_PRESCALER);
 }
 

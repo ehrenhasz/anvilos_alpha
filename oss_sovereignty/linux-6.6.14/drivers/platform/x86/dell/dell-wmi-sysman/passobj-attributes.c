@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to password object type attributes under BIOS Password Object GUID for
- * use with dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include "dell-wmi-sysman.h"
 
@@ -22,7 +17,7 @@ static ssize_t is_enabled_show(struct kobject *kobj, struct kobj_attribute *attr
 	if (instance_id < 0)
 		return instance_id;
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = get_wmiobj_pointer(instance_id, DELL_WMI_BIOS_PASSOBJ_ATTRIBUTE_GUID);
 	if (!obj)
 		return -EIO;
@@ -48,9 +43,7 @@ static ssize_t current_password_store(struct kobject *kobj,
 	if (buf[length-1] == '\n')
 		length--;
 
-	/* firmware does verifiation of min/max password length,
-	 * hence only check for not exceeding MAX_BUFF here.
-	 */
+	 
 	if (length >= MAX_BUFF)
 		return -EINVAL;
 
@@ -150,12 +143,7 @@ int alloc_po_data(void)
 	return ret;
 }
 
-/**
- * populate_po_data() - Populate all properties of an instance under password object attribute
- * @po_obj: ACPI object with password object data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int populate_po_data(union acpi_object *po_obj, int instance_id, struct kobject *attr_name_kobj)
 {
 	wmi_priv.po_data[instance_id].attr_name_kobj = attr_name_kobj;
@@ -175,11 +163,7 @@ int populate_po_data(union acpi_object *po_obj, int instance_id, struct kobject 
 	return sysfs_create_group(attr_name_kobj, &po_attr_group);
 }
 
-/**
- * exit_po_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void exit_po_attributes(void)
 {
 	int instance_id;

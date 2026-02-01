@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (C) 2015 Intel Corporation Inc.
-*/
+
+ 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/property.h>
@@ -61,10 +59,7 @@ static int inv_mpu_probe(struct spi_device *spi)
 				  inv_mpu_i2c_disable, chip_type);
 }
 
-/*
- * device id table is used to identify what device can be
- * supported by this driver
- */
+ 
 static const struct spi_device_id inv_mpu_id[] = {
 	{"mpu6000", INV_MPU6000},
 	{"mpu6500", INV_MPU6500},

@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtk-dsp-sof-common.c  --  MediaTek dsp sof common ctrl
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chunxu Li <chunxu.li@mediatek.com>
- */
+
+ 
 
 #include "mtk-dsp-sof-common.h"
 #include "mtk-soc-card.h"
 
-/* fixup the BE DAI link to match any values from topology */
+ 
 int mtk_sof_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 			   struct snd_pcm_hw_params *params)
 {
@@ -55,7 +50,7 @@ int mtk_sof_card_probe(struct snd_soc_card *card)
 	int i;
 	struct snd_soc_dai_link *dai_link;
 
-	/* Set stream_name to help sof bind widgets */
+	 
 	for_each_card_prelinks(card, i, dai_link) {
 		if (dai_link->no_pcm && !dai_link->stream_name && dai_link->name)
 			dai_link->stream_name = dai_link->name;
@@ -74,7 +69,7 @@ int mtk_sof_card_late_probe(struct snd_soc_card *card)
 	struct mtk_sof_priv *sof_priv = soc_card_data->sof_priv;
 	int i;
 
-	/* 1. find sof component */
+	 
 	for_each_card_rtds(card, rtd) {
 		sof_comp = snd_soc_rtdcom_lookup(rtd, "sof-audio-component");
 		if (sof_comp)
@@ -86,7 +81,7 @@ int mtk_sof_card_late_probe(struct snd_soc_card *card)
 		return 0;
 	}
 
-	/* 2. add route path and fixup callback */
+	 
 	for (i = 0; i < sof_priv->num_streams; i++) {
 		const struct sof_conn_stream *conn = &sof_priv->conn_streams[i];
 		struct snd_soc_pcm_runtime *sof_rtd = NULL;

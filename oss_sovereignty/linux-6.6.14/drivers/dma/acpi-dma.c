@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI helpers for DMA request / controller
- *
- * Based on of-dma.c
- *
- * Copyright (C) 2013, Intel Corporation
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -25,19 +17,7 @@
 static LIST_HEAD(acpi_dma_list);
 static DEFINE_MUTEX(acpi_dma_lock);
 
-/**
- * acpi_dma_parse_resource_group - match device and parse resource group
- * @grp:	CSRT resource group
- * @adev:	ACPI device to match with
- * @adma:	struct acpi_dma of the given DMA controller
- *
- * In order to match a device from DSDT table to the corresponding CSRT device
- * we use MMIO address and IRQ.
- *
- * Return:
- * 1 on success, 0 when no information is available, or appropriate errno value
- * on error.
- */
+ 
 static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 		struct acpi_device *adev, struct acpi_dma *adma)
 {
@@ -64,38 +44,34 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 
 	acpi_dev_free_resource_list(&resource_list);
 
-	/* Consider initial zero values as resource not found */
+	 
 	if (mem == 0 && irq == 0)
 		return 0;
 
 	si = (const struct acpi_csrt_shared_info *)&grp[1];
 
-	/* Match device by MMIO */
+	 
 	if (si->mmio_base_low != lower_32_bits(mem) ||
 	    si->mmio_base_high != upper_32_bits(mem))
 		return 0;
 
-	/*
-	 * acpi_gsi_to_irq() can't be used because some platforms do not save
-	 * registered IRQs in the MP table. Instead we just try to register
-	 * the GSI, which is the core part of the above mentioned function.
-	 */
+	 
 	ret = acpi_register_gsi(NULL, si->gsi_interrupt, si->interrupt_mode, si->interrupt_polarity);
 	if (ret < 0)
 		return 0;
 
-	/* Match device by Linux vIRQ */
+	 
 	if (ret != irq)
 		return 0;
 
 	dev_dbg(&adev->dev, "matches with %.4s%04X (rev %u)\n",
 		(char *)&grp->vendor_id, grp->device_id, grp->revision);
 
-	/* Check if the request line range is available */
+	 
 	if (si->base_request_line == 0 && si->num_handshake_signals == 0)
 		return 0;
 
-	/* Set up DMA mask based on value from CSRT */
+	 
 	ret = dma_coerce_mask_and_coherent(&adev->dev,
 					   DMA_BIT_MASK(si->dma_address_width));
 	if (ret)
@@ -111,19 +87,7 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
 	return 1;
 }
 
-/**
- * acpi_dma_parse_csrt - parse CSRT to exctract additional DMA resources
- * @adev:	ACPI device to match with
- * @adma:	struct acpi_dma of the given DMA controller
- *
- * CSRT or Core System Resources Table is a proprietary ACPI table
- * introduced by Microsoft. This table can contain devices that are not in
- * the system DSDT table. In particular DMA controllers might be described
- * here.
- *
- * We are using this table to get the request line range of the specific DMA
- * controller to be used later.
- */
+ 
 static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
 {
 	struct acpi_csrt_group *grp, *end;
@@ -156,20 +120,7 @@ static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
 	acpi_put_table((struct acpi_table_header *)csrt);
 }
 
-/**
- * acpi_dma_controller_register - Register a DMA controller to ACPI DMA helpers
- * @dev:		struct device of DMA controller
- * @acpi_dma_xlate:	translation function which converts a dma specifier
- *			into a dma_chan structure
- * @data:		pointer to controller specific data to be used by
- *			translation function
- *
- * Allocated memory should be freed with appropriate acpi_dma_controller_free()
- * call.
- *
- * Return:
- * 0 on success or appropriate errno value on error.
- */
+ 
 int acpi_dma_controller_register(struct device *dev,
 		struct dma_chan *(*acpi_dma_xlate)
 		(struct acpi_dma_spec *, struct acpi_dma *),
@@ -181,7 +132,7 @@ int acpi_dma_controller_register(struct device *dev,
 	if (!dev || !acpi_dma_xlate)
 		return -EINVAL;
 
-	/* Check if the device was enumerated by ACPI */
+	 
 	adev = ACPI_COMPANION(dev);
 	if (!adev)
 		return -EINVAL;
@@ -196,7 +147,7 @@ int acpi_dma_controller_register(struct device *dev,
 
 	acpi_dma_parse_csrt(adev, adma);
 
-	/* Now queue acpi_dma controller structure in list */
+	 
 	mutex_lock(&acpi_dma_lock);
 	list_add_tail(&adma->dma_controllers, &acpi_dma_list);
 	mutex_unlock(&acpi_dma_lock);
@@ -205,15 +156,7 @@ int acpi_dma_controller_register(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(acpi_dma_controller_register);
 
-/**
- * acpi_dma_controller_free - Remove a DMA controller from ACPI DMA helpers list
- * @dev:	struct device of DMA controller
- *
- * Memory allocated by acpi_dma_controller_register() is freed here.
- *
- * Return:
- * 0 on success or appropriate errno value on error.
- */
+ 
 int acpi_dma_controller_free(struct device *dev)
 {
 	struct acpi_dma *adma;
@@ -241,19 +184,7 @@ static void devm_acpi_dma_release(struct device *dev, void *res)
 	acpi_dma_controller_free(dev);
 }
 
-/**
- * devm_acpi_dma_controller_register - resource managed acpi_dma_controller_register()
- * @dev:		device that is registering this DMA controller
- * @acpi_dma_xlate:	translation function
- * @data:		pointer to controller specific data
- *
- * Managed acpi_dma_controller_register(). DMA controller registered by this
- * function are automatically freed on driver detach. See
- * acpi_dma_controller_register() for more information.
- *
- * Return:
- * 0 on success or appropriate errno value on error.
- */
+ 
 int devm_acpi_dma_controller_register(struct device *dev,
 		struct dma_chan *(*acpi_dma_xlate)
 		(struct acpi_dma_spec *, struct acpi_dma *),
@@ -276,56 +207,30 @@ int devm_acpi_dma_controller_register(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_acpi_dma_controller_register);
 
-/**
- * devm_acpi_dma_controller_free - resource managed acpi_dma_controller_free()
- * @dev:	device that is unregistering as DMA controller
- *
- * Unregister a DMA controller registered with
- * devm_acpi_dma_controller_register(). Normally this function will not need to
- * be called and the resource management code will ensure that the resource is
- * freed.
- */
+ 
 void devm_acpi_dma_controller_free(struct device *dev)
 {
 	WARN_ON(devres_release(dev, devm_acpi_dma_release, NULL, NULL));
 }
 EXPORT_SYMBOL_GPL(devm_acpi_dma_controller_free);
 
-/**
- * acpi_dma_update_dma_spec - prepare dma specifier to pass to translation function
- * @adma:	struct acpi_dma of DMA controller
- * @dma_spec:	dma specifier to update
- *
- * Accordingly to ACPI 5.0 Specification Table 6-170 "Fixed DMA Resource
- * Descriptor":
- *	DMA Request Line bits is a platform-relative number uniquely
- *	identifying the request line assigned. Request line-to-Controller
- *	mapping is done in a controller-specific OS driver.
- * That's why we can safely adjust slave_id when the appropriate controller is
- * found.
- *
- * Return:
- * 0, if no information is avaiable, -1 on mismatch, and 1 otherwise.
- */
+ 
 static int acpi_dma_update_dma_spec(struct acpi_dma *adma,
 		struct acpi_dma_spec *dma_spec)
 {
-	/* Set link to the DMA controller device */
+	 
 	dma_spec->dev = adma->dev;
 
-	/* Check if the request line range is available */
+	 
 	if (adma->base_request_line == 0 && adma->end_request_line == 0)
 		return 0;
 
-	/* Check if slave_id falls to the range */
+	 
 	if (dma_spec->slave_id < adma->base_request_line ||
 	    dma_spec->slave_id > adma->end_request_line)
 		return -1;
 
-	/*
-	 * Here we adjust slave_id. It should be a relative number to the base
-	 * request line.
-	 */
+	 
 	dma_spec->slave_id -= adma->base_request_line;
 
 	return 1;
@@ -337,11 +242,7 @@ struct acpi_dma_parser_data {
 	size_t n;
 };
 
-/**
- * acpi_dma_parse_fixed_dma - Parse FixedDMA ACPI resources to a DMA specifier
- * @res:	struct acpi_resource to get FixedDMA resources from
- * @data:	pointer to a helper struct acpi_dma_parser_data
- */
+ 
 static int acpi_dma_parse_fixed_dma(struct acpi_resource *res, void *data)
 {
 	struct acpi_dma_parser_data *pdata = data;
@@ -355,18 +256,11 @@ static int acpi_dma_parse_fixed_dma(struct acpi_resource *res, void *data)
 		}
 	}
 
-	/* Tell the ACPI core to skip this resource */
+	 
 	return 1;
 }
 
-/**
- * acpi_dma_request_slave_chan_by_index - Get the DMA slave channel
- * @dev:	struct device to get DMA request from
- * @index:	index of FixedDMA descriptor for @dev
- *
- * Return:
- * Pointer to appropriate dma channel on success or an error pointer.
- */
+ 
 struct dma_chan *acpi_dma_request_slave_chan_by_index(struct device *dev,
 		size_t index)
 {
@@ -382,7 +276,7 @@ struct dma_chan *acpi_dma_request_slave_chan_by_index(struct device *dev,
 	memset(&pdata, 0, sizeof(pdata));
 	pdata.index = index;
 
-	/* Initial values for the request line and channel */
+	 
 	dma_spec->chan_id = -1;
 	dma_spec->slave_id = -1;
 
@@ -399,19 +293,12 @@ struct dma_chan *acpi_dma_request_slave_chan_by_index(struct device *dev,
 	mutex_lock(&acpi_dma_lock);
 
 	list_for_each_entry(adma, &acpi_dma_list, dma_controllers) {
-		/*
-		 * We are not going to call translation function if slave_id
-		 * doesn't fall to the request range.
-		 */
+		 
 		found = acpi_dma_update_dma_spec(adma, dma_spec);
 		if (found < 0)
 			continue;
 		chan = adma->acpi_dma_xlate(dma_spec, adma);
-		/*
-		 * Try to get a channel only from the DMA controller that
-		 * matches the slave_id. See acpi_dma_update_dma_spec()
-		 * description for the details.
-		 */
+		 
 		if (found > 0 || chan)
 			break;
 	}
@@ -421,22 +308,7 @@ struct dma_chan *acpi_dma_request_slave_chan_by_index(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(acpi_dma_request_slave_chan_by_index);
 
-/**
- * acpi_dma_request_slave_chan_by_name - Get the DMA slave channel
- * @dev:	struct device to get DMA request from
- * @name:	represents corresponding FixedDMA descriptor for @dev
- *
- * In order to support both Device Tree and ACPI in a single driver we
- * translate the names "tx" and "rx" here based on the most common case where
- * the first FixedDMA descriptor is TX and second is RX.
- *
- * If the device has "dma-names" property the FixedDMA descriptor indices
- * are retrieved based on those. Otherwise the function falls back using
- * hardcoded indices.
- *
- * Return:
- * Pointer to appropriate dma channel on success or an error pointer.
- */
+ 
 struct dma_chan *acpi_dma_request_slave_chan_by_name(struct device *dev,
 		const char *name)
 {
@@ -457,17 +329,7 @@ struct dma_chan *acpi_dma_request_slave_chan_by_name(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(acpi_dma_request_slave_chan_by_name);
 
-/**
- * acpi_dma_simple_xlate - Simple ACPI DMA engine translation helper
- * @dma_spec: pointer to ACPI DMA specifier
- * @adma: pointer to ACPI DMA controller data
- *
- * A simple translation function for ACPI based devices. Passes &struct
- * dma_spec to the DMA controller driver provided filter function.
- *
- * Return:
- * Pointer to the channel if found or %NULL otherwise.
- */
+ 
 struct dma_chan *acpi_dma_simple_xlate(struct acpi_dma_spec *dma_spec,
 		struct acpi_dma *adma)
 {

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright (C) 2020 Google, Inc.
- *
- * Authors:
- * Sean Paul <seanpaul@chromium.org>
- */
+ 
+ 
 
 #include <drm/display/drm_dp_helper.h>
 #include <drm/display/drm_dp_mst_helper.h>
@@ -56,7 +51,7 @@ int intel_dp_hdcp_write_an_aksv(struct intel_digital_port *dig_port,
 	u8 aksv[DRM_HDCP_KSV_LEN] = {};
 	ssize_t dpcd_ret;
 
-	/* Output An first, that's easy */
+	 
 	dpcd_ret = drm_dp_dpcd_write(&dig_port->dp.aux, DP_AUX_HDCP_AN,
 				     an, DRM_HDCP_AN_LEN);
 	if (dpcd_ret != DRM_HDCP_AN_LEN) {
@@ -66,13 +61,7 @@ int intel_dp_hdcp_write_an_aksv(struct intel_digital_port *dig_port,
 		return dpcd_ret >= 0 ? -EIO : dpcd_ret;
 	}
 
-	/*
-	 * Since Aksv is Oh-So-Secret, we can't access it in software. So we
-	 * send an empty buffer of the correct length through the DP helpers. On
-	 * the other side, in the transfer hook, we'll generate a flag based on
-	 * the destination address which will tickle the hardware to output the
-	 * Aksv on our behalf after the header is sent.
-	 */
+	 
 	dpcd_ret = drm_dp_dpcd_write(&dig_port->dp.aux, DP_AUX_HDCP_AKSV,
 				     aksv, DRM_HDCP_KSV_LEN);
 	if (dpcd_ret != DRM_HDCP_KSV_LEN) {
@@ -106,11 +95,7 @@ static int intel_dp_hdcp_read_bstatus(struct intel_digital_port *dig_port,
 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
 	ssize_t ret;
 
-	/*
-	 * For some reason the HDMI and DP HDCP specs call this register
-	 * definition by different names. In the HDMI spec, it's called BSTATUS,
-	 * but in DP it's called BINFO.
-	 */
+	 
 	ret = drm_dp_dpcd_read(&dig_port->dp.aux, DP_AUX_HDCP_BINFO,
 			       bstatus, DRM_HDCP_BSTATUS_LEN);
 	if (ret != DRM_HDCP_BSTATUS_LEN) {
@@ -198,7 +183,7 @@ int intel_dp_hdcp_read_ksv_fifo(struct intel_digital_port *dig_port,
 	ssize_t ret;
 	int i;
 
-	/* KSV list is read via 15 byte window (3 entries @ 5 bytes each) */
+	 
 	for (i = 0; i < num_downstream; i += 3) {
 		size_t len = min(num_downstream - i, 3) * DRM_HDCP_KSV_LEN;
 		ret = drm_dp_dpcd_read(&dig_port->dp.aux,
@@ -241,7 +226,7 @@ int intel_dp_hdcp_toggle_signalling(struct intel_digital_port *dig_port,
 				    enum transcoder cpu_transcoder,
 				    bool enable)
 {
-	/* Not used for single stream DisplayPort setups */
+	 
 	return 0;
 }
 
@@ -289,8 +274,8 @@ struct hdcp2_dp_msg_data {
 	u32 offset;
 	bool msg_detectable;
 	u32 timeout;
-	u32 timeout2; /* Added for non_paired situation */
-	/* Timeout to read entire msg */
+	u32 timeout2;  
+	 
 	u32 msg_read_timeout;
 };
 
@@ -323,7 +308,7 @@ static const struct hdcp2_dp_msg_data hdcp2_dp_msg_data[] = {
 	  0, 0, 0},
 	{ HDCP_2_2_REP_STREAM_READY, DP_HDCP_2_2_REP_STREAM_READY_OFFSET,
 	  false, HDCP_2_2_STREAM_READY_TIMEOUT_MS, 0, 0 },
-/* local define to shovel this through the write_2_2 interface */
+ 
 #define HDCP_2_2_ERRATA_DP_STREAM_TYPE	50
 	{ HDCP_2_2_ERRATA_DP_STREAM_TYPE,
 	  DP_HDCP_2_2_REG_STREAM_TYPE_OFFSET, false,
@@ -398,18 +383,12 @@ intel_dp_hdcp2_wait_for_msg(struct intel_digital_port *dig_port,
 	else
 		timeout = hdcp2_msg_data->timeout;
 
-	/*
-	 * There is no way to detect the CERT, LPRIME and STREAM_READY
-	 * availability. So Wait for timeout and read the msg.
-	 */
+	 
 	if (!hdcp2_msg_data->msg_detectable) {
 		mdelay(timeout);
 		ret = 0;
 	} else {
-		/*
-		 * As we want to check the msg availability at timeout, Ignoring
-		 * the timeout at wait for CP_IRQ.
-		 */
+		 
 		intel_dp_hdcp_wait_for_cp_irq(hdcp, timeout);
 		ret = hdcp2_detect_msg_availability(dig_port,
 						    msg_id, &msg_ready);
@@ -451,7 +430,7 @@ int intel_dp_hdcp2_write_msg(struct intel_digital_port *dig_port,
 
 	offset = hdcp2_msg_data->offset;
 
-	/* No msg_id in DP HDCP2.2 msgs */
+	 
 	bytes_to_write = size - 1;
 	byte++;
 
@@ -519,7 +498,7 @@ int intel_dp_hdcp2_read_msg(struct intel_digital_port *dig_port,
 
 	hdcp->cp_irq_count_cached = atomic_read(&hdcp->cp_irq_count);
 
-	/* DP adaptation msgs has no msg_id */
+	 
 	byte++;
 
 	if (msg_id == HDCP_2_2_REP_SEND_RECVID_LIST) {
@@ -540,7 +519,7 @@ int intel_dp_hdcp2_read_msg(struct intel_digital_port *dig_port,
 		len = bytes_to_recv > DP_AUX_MAX_PAYLOAD_BYTES ?
 		      DP_AUX_MAX_PAYLOAD_BYTES : bytes_to_recv;
 
-		/* Entire msg read timeout since initiate of msg read */
+		 
 		if (bytes_to_recv == size - 1 && hdcp2_msg_data->msg_read_timeout > 0)
 			msg_end = ktime_add_ms(ktime_get_raw(),
 					       hdcp2_msg_data->msg_read_timeout);
@@ -583,13 +562,7 @@ int intel_dp_hdcp2_config_stream_type(struct intel_digital_port *dig_port,
 	if (is_repeater)
 		return 0;
 
-	/*
-	 * Errata for DP: As Stream type is used for encryption, Receiver
-	 * should be communicated with stream type for the decryption of the
-	 * content.
-	 * Repeater will be communicated with stream type as a part of it's
-	 * auth later in time.
-	 */
+	 
 	stream_type_msg.msg_id = HDCP_2_2_ERRATA_DP_STREAM_TYPE;
 	stream_type_msg.stream_type = content_type;
 
@@ -700,7 +673,7 @@ intel_dp_mst_hdcp_stream_encryption(struct intel_connector *connector,
 	if (!stream_enc_status)
 		return -EINVAL;
 
-	/* Wait for encryption confirmation */
+	 
 	if (intel_de_wait_for_register(i915,
 				       HDCP_STATUS(i915, cpu_transcoder, port),
 				       stream_enc_status,
@@ -735,7 +708,7 @@ intel_dp_mst_hdcp2_stream_encryption(struct intel_connector *connector,
 	if (ret)
 		return ret;
 
-	/* Wait for encryption confirmation */
+	 
 	if (intel_de_wait_for_register(i915,
 				       HDCP2_STREAM_STATUS(i915, cpu_transcoder, pipe),
 				       STREAM_ENCRYPTION_STATUS,
@@ -756,12 +729,7 @@ int intel_dp_mst_hdcp2_check_link(struct intel_digital_port *dig_port,
 	struct intel_hdcp *hdcp = &connector->hdcp;
 	int ret;
 
-	/*
-	 * We do need to do the Link Check only for the connector involved with
-	 * HDCP port authentication and encryption.
-	 * We can re-use the hdcp->is_repeater flag to know that the connector
-	 * involved with HDCP port authentication and encryption.
-	 */
+	 
 	if (hdcp->is_repeater) {
 		ret = intel_dp_hdcp2_check_link(dig_port, connector);
 		if (ret)

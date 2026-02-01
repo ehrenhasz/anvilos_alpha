@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2018 Sean Young <sean@mess.org>
+
+
+
 
 #include <linux/module.h>
 #include <linux/usb.h>
 #include <linux/usb/input.h>
 #include <media/rc-core.h>
 
-/* Each bit is 250us */
+ 
 #define BIT_DURATION 250
 
 struct imon {
@@ -18,14 +18,7 @@ struct imon {
 	char phys[64];
 };
 
-/*
- * The first 5 bytes of data represent IR pulse or space. Each bit, starting
- * from highest bit in the first byte, represents 250µs of data. It is 1
- * for space and 0 for pulse.
- *
- * The station sends 10 packets, and the 7th byte will be number 1 to 10, so
- * when we receive 10 we assume all the data has arrived.
- */
+ 
 static void imon_ir_data(struct imon *imon)
 {
 	struct ir_raw_event rawir = {};
@@ -39,24 +32,11 @@ static void imon_ir_data(struct imon *imon)
 
 	dev_dbg(imon->dev, "data: %*ph", 8, imon->ir_buf);
 
-	/*
-	 * Only the first 5 bytes contain IR data. Right shift so we move
-	 * the IR bits to the lower 40 bits.
-	 */
+	 
 	data >>= 24;
 
 	do {
-		/*
-		 * Find highest set bit which is less or equal to offset
-		 *
-		 * offset is the bit above (base 0) where we start looking.
-		 *
-		 * data & (BIT_ULL(offset) - 1) masks off any unwanted bits,
-		 * so we have just bits less than offset.
-		 *
-		 * fls will tell us the highest bit set plus 1 (or 0 if no
-		 * bits are set).
-		 */
+		 
 		rawir.pulse = !rawir.pulse;
 		bit = fls64(data & (BIT_ULL(offset) - 1));
 		if (bit < offset) {
@@ -197,7 +177,7 @@ static void imon_disconnect(struct usb_interface *intf)
 }
 
 static const struct usb_device_id imon_table[] = {
-	/* SoundGraph iMON (IR only) -- sg_imon.inf */
+	 
 	{ USB_DEVICE(0x04e8, 0xff30) },
 	{}
 };

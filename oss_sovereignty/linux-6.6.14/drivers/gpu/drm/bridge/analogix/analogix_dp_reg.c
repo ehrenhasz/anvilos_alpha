@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Analogix DP (Display port) core register interface driver.
- *
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -97,17 +92,17 @@ void analogix_dp_init_analog_param(struct analogix_dp_device *dp)
 
 void analogix_dp_init_interrupt(struct analogix_dp_device *dp)
 {
-	/* Set interrupt pin assertion polarity as high */
+	 
 	writel(INT_POL1 | INT_POL0, dp->reg_base + ANALOGIX_DP_INT_CTL);
 
-	/* Clear pending regisers */
+	 
 	writel(0xff, dp->reg_base + ANALOGIX_DP_COMMON_INT_STA_1);
 	writel(0x4f, dp->reg_base + ANALOGIX_DP_COMMON_INT_STA_2);
 	writel(0xe0, dp->reg_base + ANALOGIX_DP_COMMON_INT_STA_3);
 	writel(0xe7, dp->reg_base + ANALOGIX_DP_COMMON_INT_STA_4);
 	writel(0x63, dp->reg_base + ANALOGIX_DP_INT_STA);
 
-	/* 0:mask,1: unmask */
+	 
 	writel(0x00, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_1);
 	writel(0x00, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_2);
 	writel(0x00, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_3);
@@ -174,7 +169,7 @@ void analogix_dp_config_interrupt(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* 0: mask, 1: unmask */
+	 
 	reg = COMMON_INT_MASK_1;
 	writel(reg, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_1);
 
@@ -195,7 +190,7 @@ void analogix_dp_mute_hpd_interrupt(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* 0: mask, 1: unmask */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_4);
 	reg &= ~COMMON_INT_MASK_4;
 	writel(reg, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_4);
@@ -209,7 +204,7 @@ void analogix_dp_unmute_hpd_interrupt(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* 0: mask, 1: unmask */
+	 
 	reg = COMMON_INT_MASK_4;
 	writel(reg, dp->reg_base + ANALOGIX_DP_COMMON_INT_MASK_4);
 
@@ -313,11 +308,7 @@ void analogix_dp_set_analog_power_down(struct analogix_dp_device *dp,
 		writel(reg, dp->reg_base + phy_pd_addr);
 		break;
 	case ANALOG_TOTAL:
-		/*
-		 * There is no bit named DP_PHY_PD, so We used DP_INC_BG
-		 * to power off everything instead of DP_PHY_PD in
-		 * Rockchip
-		 */
+		 
 		if (dp->plat_data && is_rockchip(dp->plat_data->dev_type))
 			mask = DP_INC_BG;
 		else
@@ -367,7 +358,7 @@ int analogix_dp_init_analog_func(struct analogix_dp_device *dp)
 	reg &= ~(F_PLL_LOCK | PLL_LOCK_CTRL);
 	writel(reg, dp->reg_base + ANALOGIX_DP_DEBUG_CTL);
 
-	/* Power up PLL */
+	 
 	if (analogix_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 		analogix_dp_set_pll_power_down(dp, 0);
 
@@ -381,7 +372,7 @@ int analogix_dp_init_analog_func(struct analogix_dp_device *dp)
 		}
 	}
 
-	/* Enable Serdes FIFO function and Link symbol clock domain module */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_FUNC_EN_2);
 	reg &= ~(SERDES_FIFO_FUNC_EN_N | LS_CLK_DOMAIN_FUNC_EN_N
 		| AUX_FUNC_EN_N);
@@ -437,7 +428,7 @@ enum dp_irq_type analogix_dp_get_irq_type(struct analogix_dp_device *dp)
 		else
 			return DP_IRQ_TYPE_HP_CABLE_OUT;
 	} else {
-		/* Parse hotplug interrupt status register */
+		 
 		reg = readl(dp->reg_base + ANALOGIX_DP_COMMON_INT_STA_4);
 
 		if (reg & PLUG)
@@ -457,7 +448,7 @@ void analogix_dp_reset_aux(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* Disable AUX channel module */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_FUNC_EN_2);
 	reg |= AUX_FUNC_EN_N;
 	writel(reg, dp->reg_base + ANALOGIX_DP_FUNC_EN_2);
@@ -467,7 +458,7 @@ void analogix_dp_init_aux(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* Clear inerrupts related to AUX channel */
+	 
 	reg = RPLY_RECEIV | AUX_ERR;
 	writel(reg, dp->reg_base + ANALOGIX_DP_INT_STA);
 
@@ -477,23 +468,23 @@ void analogix_dp_init_aux(struct analogix_dp_device *dp)
 
 	analogix_dp_reset_aux(dp);
 
-	/* AUX_BIT_PERIOD_EXPECTED_DELAY doesn't apply to Rockchip IP */
+	 
 	if (dp->plat_data && is_rockchip(dp->plat_data->dev_type))
 		reg = 0;
 	else
 		reg = AUX_BIT_PERIOD_EXPECTED_DELAY(3);
 
-	/* Disable AUX transaction H/W retry */
+	 
 	reg |= AUX_HW_RETRY_COUNT_SEL(0) |
 	       AUX_HW_RETRY_INTERVAL_600_MICROSECONDS;
 
 	writel(reg, dp->reg_base + ANALOGIX_DP_AUX_HW_RETRY_CTL);
 
-	/* Receive AUX Channel DEFER commands equal to DEFFER_COUNT*64 */
+	 
 	reg = DEFER_CTRL_EN | DEFER_COUNT(1);
 	writel(reg, dp->reg_base + ANALOGIX_DP_AUX_CH_DEFER_CTL);
 
-	/* Enable AUX channel module */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_FUNC_EN_2);
 	reg &= ~AUX_FUNC_EN_N;
 	writel(reg, dp->reg_base + ANALOGIX_DP_FUNC_EN_2);
@@ -714,7 +705,7 @@ void analogix_dp_reset_macro(struct analogix_dp_device *dp)
 	reg |= MACRO_RST;
 	writel(reg, dp->reg_base + ANALOGIX_DP_PHY_TEST);
 
-	/* 10 us is the minimum reset time. */
+	 
 	usleep_range(10, 20);
 
 	reg &= ~MACRO_RST;
@@ -745,13 +736,13 @@ void analogix_dp_set_video_color_format(struct analogix_dp_device *dp)
 {
 	u32 reg;
 
-	/* Configure the input color depth, color space, dynamic range */
+	 
 	reg = (dp->video_info.dynamic_range << IN_D_RANGE_SHIFT) |
 		(dp->video_info.color_depth << IN_BPC_SHIFT) |
 		(dp->video_info.color_space << IN_COLOR_F_SHIFT);
 	writel(reg, dp->reg_base + ANALOGIX_DP_VIDEO_CTL_2);
 
-	/* Set Input Color YCbCr Coefficients to ITU601 or ITU709 */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_VIDEO_CTL_3);
 	reg &= ~IN_YC_COEFFI_MASK;
 	if (dp->video_info.ycbcr_coeff)
@@ -955,42 +946,42 @@ int analogix_dp_send_psr_spd(struct analogix_dp_device *dp,
 	int ret;
 	ssize_t psr_status;
 
-	/* don't send info frame */
+	 
 	val = readl(dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
 	val &= ~IF_EN;
 	writel(val, dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
 
-	/* configure single frame update mode */
+	 
 	writel(PSR_FRAME_UP_TYPE_BURST | PSR_CRC_SEL_HARDWARE,
 	       dp->reg_base + ANALOGIX_DP_PSR_FRAME_UPDATE_CTRL);
 
-	/* configure VSC HB0~HB3 */
+	 
 	writel(vsc->sdp_header.HB0, dp->reg_base + ANALOGIX_DP_SPD_HB0);
 	writel(vsc->sdp_header.HB1, dp->reg_base + ANALOGIX_DP_SPD_HB1);
 	writel(vsc->sdp_header.HB2, dp->reg_base + ANALOGIX_DP_SPD_HB2);
 	writel(vsc->sdp_header.HB3, dp->reg_base + ANALOGIX_DP_SPD_HB3);
 
-	/* configure reused VSC PB0~PB3, magic number from vendor */
+	 
 	writel(0x00, dp->reg_base + ANALOGIX_DP_SPD_PB0);
 	writel(0x16, dp->reg_base + ANALOGIX_DP_SPD_PB1);
 	writel(0xCE, dp->reg_base + ANALOGIX_DP_SPD_PB2);
 	writel(0x5D, dp->reg_base + ANALOGIX_DP_SPD_PB3);
 
-	/* configure DB0 / DB1 values */
+	 
 	writel(vsc->db[0], dp->reg_base + ANALOGIX_DP_VSC_SHADOW_DB0);
 	writel(vsc->db[1], dp->reg_base + ANALOGIX_DP_VSC_SHADOW_DB1);
 
-	/* set reuse spd inforframe */
+	 
 	val = readl(dp->reg_base + ANALOGIX_DP_VIDEO_CTL_3);
 	val |= REUSE_SPD_EN;
 	writel(val, dp->reg_base + ANALOGIX_DP_VIDEO_CTL_3);
 
-	/* mark info frame update */
+	 
 	val = readl(dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
 	val = (val | IF_UP) & ~IF_EN;
 	writel(val, dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
 
-	/* send info frame */
+	 
 	val = readl(dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
 	val |= IF_EN;
 	writel(val, dp->reg_base + ANALOGIX_DP_PKT_SEND_CTL);
@@ -998,15 +989,7 @@ int analogix_dp_send_psr_spd(struct analogix_dp_device *dp,
 	if (!blocking)
 		return 0;
 
-	/*
-	 * db[1]!=0: entering PSR, wait for fully active remote frame buffer.
-	 * db[1]==0: exiting PSR, wait for either
-	 *  (a) ACTIVE_RESYNC - the sink "must display the
-	 *      incoming active frames from the Source device with no visible
-	 *      glitches and/or artifacts", even though timings may still be
-	 *      re-synchronizing; or
-	 *  (b) INACTIVE - the transition is fully complete.
-	 */
+	 
 	ret = readx_poll_timeout(analogix_dp_get_psr_status, dp, psr_status,
 		psr_status >= 0 &&
 		((vsc->db[1] && psr_status == DP_PSR_SINK_ACTIVE_RFB) ||
@@ -1030,11 +1013,11 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 	int num_transferred = 0;
 	int ret;
 
-	/* Buffer size of AUX CH is 16 bytes */
+	 
 	if (WARN_ON(msg->size > 16))
 		return -E2BIG;
 
-	/* Clear AUX CH data buffer */
+	 
 	reg = BUF_CLR;
 	writel(reg, dp->reg_base + ANALOGIX_DP_BUFFER_DATA_CTL);
 
@@ -1066,7 +1049,7 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 	reg |= AUX_LENGTH(msg->size);
 	writel(reg, dp->reg_base + ANALOGIX_DP_AUX_CH_CTL_1);
 
-	/* Select DPCD device address */
+	 
 	reg = AUX_ADDR_7_0(msg->address);
 	writel(reg, dp->reg_base + ANALOGIX_DP_AUX_ADDR_7_0);
 	reg = AUX_ADDR_15_8(msg->address);
@@ -1083,10 +1066,10 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 		}
 	}
 
-	/* Enable AUX CH operation */
+	 
 	reg = AUX_EN;
 
-	/* Zero-sized messages specify address-only transactions. */
+	 
 	if (msg->size < 1)
 		reg |= ADDR_ONLY;
 
@@ -1099,8 +1082,8 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 		goto aux_error;
 	}
 
-	/* TODO: Wait for an interrupt instead of looping? */
-	/* Is AUX CH command reply received? */
+	 
+	 
 	ret = readx_poll_timeout(readl, dp->reg_base + ANALOGIX_DP_INT_STA,
 				 reg, reg & RPLY_RECEIV, 10, 20 * 1000);
 	if (ret) {
@@ -1108,10 +1091,10 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 		goto aux_error;
 	}
 
-	/* Clear interrupt source for AUX CH command reply */
+	 
 	writel(RPLY_RECEIV, dp->reg_base + ANALOGIX_DP_INT_STA);
 
-	/* Clear interrupt source for AUX CH access error */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_INT_STA);
 	status_reg = readl(dp->reg_base + ANALOGIX_DP_AUX_CH_STA);
 	if ((reg & AUX_ERR) || (status_reg & AUX_STATUS_MASK)) {
@@ -1131,7 +1114,7 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 		}
 	}
 
-	/* Check if Rx sends defer */
+	 
 	reg = readl(dp->reg_base + ANALOGIX_DP_AUX_RX_COMM);
 	if (reg == AUX_RX_COMM_AUX_DEFER)
 		msg->reply = DP_AUX_NATIVE_REPLY_DEFER;
@@ -1147,7 +1130,7 @@ ssize_t analogix_dp_transfer(struct analogix_dp_device *dp,
 	return num_transferred > 0 ? num_transferred : -EBUSY;
 
 aux_error:
-	/* if aux err happen, reset aux */
+	 
 	analogix_dp_init_aux(dp);
 
 	return -EREMOTEIO;

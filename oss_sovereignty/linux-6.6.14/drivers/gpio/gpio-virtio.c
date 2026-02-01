@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * GPIO driver for virtio-based virtual GPIO controllers
- *
- * Copyright (C) 2021 metux IT consult
- * Enrico Weigelt, metux IT consult <info@metux.net>
- *
- * Copyright (C) 2021 Linaro.
- * Viresh Kumar <viresh.kumar@linaro.org>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/err.h>
@@ -22,7 +14,7 @@
 #include <uapi/linux/virtio_ids.h>
 
 struct virtio_gpio_line {
-	struct mutex lock; /* Protects line operation */
+	struct mutex lock;  
 	struct completion completion;
 	struct virtio_gpio_request req ____cacheline_aligned;
 	struct virtio_gpio_response res ____cacheline_aligned;
@@ -43,15 +35,15 @@ struct vgpio_irq_line {
 
 struct virtio_gpio {
 	struct virtio_device *vdev;
-	struct mutex lock; /* Protects virtqueue operation */
+	struct mutex lock;  
 	struct gpio_chip gc;
 	struct virtio_gpio_line *lines;
 	struct virtqueue *request_vq;
 
-	/* irq support */
+	 
 	struct virtqueue *event_vq;
-	struct mutex irq_lock; /* Protects irq operation */
-	raw_spinlock_t eventq_lock; /* Protects queuing of the buffer */
+	struct mutex irq_lock;  
+	raw_spinlock_t eventq_lock;  
 	struct vgpio_irq_line *irq_lines;
 };
 
@@ -65,12 +57,7 @@ static int _virtio_gpio_req(struct virtio_gpio *vgpio, u16 type, u16 gpio,
 	struct device *dev = &vgpio->vdev->dev;
 	int ret;
 
-	/*
-	 * Prevent concurrent requests for the same line since we have
-	 * pre-allocated request/response buffers for each GPIO line. Moreover
-	 * Linux always accesses a GPIO line sequentially, so this locking shall
-	 * always go through without any delays.
-	 */
+	 
 	mutex_lock(&line->lock);
 
 	req->type = cpu_to_le16(type);
@@ -85,10 +72,7 @@ static int _virtio_gpio_req(struct virtio_gpio *vgpio, u16 type, u16 gpio,
 	line->rxlen = 0;
 	reinit_completion(&line->completion);
 
-	/*
-	 * Virtqueue callers need to ensure they don't call its APIs with other
-	 * virtqueue operations at the same time.
-	 */
+	 
 	mutex_lock(&vgpio->lock);
 	ret = virtqueue_add_sgs(vgpio->request_vq, sgs, 1, 1, line, GFP_KERNEL);
 	if (ret) {
@@ -201,7 +185,7 @@ static void virtio_gpio_set(struct gpio_chip *gc, unsigned int gpio, int value)
 	virtio_gpio_req(vgpio, VIRTIO_GPIO_MSG_SET_VALUE, gpio, value, NULL);
 }
 
-/* Interrupt handling */
+ 
 static void virtio_gpio_irq_prepare(struct virtio_gpio *vgpio, u16 gpio)
 {
 	struct vgpio_irq_line *irq_line = &vgpio->irq_lines[gpio];
@@ -279,7 +263,7 @@ static void virtio_gpio_irq_unmask(struct irq_data *d)
 	raw_spin_lock(&vgpio->eventq_lock);
 	irq_line->masked = false;
 
-	/* Queue the buffer unconditionally on unmask */
+	 
 	virtio_gpio_irq_prepare(vgpio, d->hwirq);
 	raw_spin_unlock(&vgpio->eventq_lock);
 }
@@ -338,7 +322,7 @@ static void virtio_gpio_irq_bus_sync_unlock(struct irq_data *d)
 		virtio_gpio_req(vgpio, VIRTIO_GPIO_MSG_IRQ_TYPE, d->hwirq, type,
 				NULL);
 
-		/* Queue the buffer only after interrupt is enabled */
+		 
 		raw_spin_lock_irqsave(&vgpio->eventq_lock, flags);
 		if (irq_line->queue_pending) {
 			irq_line->queue_pending = false;
@@ -358,7 +342,7 @@ static struct irq_chip vgpio_irq_chip = {
 	.irq_unmask		= virtio_gpio_irq_unmask,
 	.irq_set_type		= virtio_gpio_irq_set_type,
 
-	/* These are required to implement irqchip for slow busses */
+	 
 	.irq_bus_lock		= virtio_gpio_irq_bus_lock,
 	.irq_bus_sync_unlock	= virtio_gpio_irq_bus_sync_unlock,
 };
@@ -371,16 +355,13 @@ static bool ignore_irq(struct virtio_gpio *vgpio, int gpio,
 	raw_spin_lock(&vgpio->eventq_lock);
 	irq_line->queued = false;
 
-	/* Interrupt is disabled currently */
+	 
 	if (irq_line->masked || irq_line->disabled) {
 		ignore = true;
 		goto unlock;
 	}
 
-	/*
-	 * Buffer is returned as the interrupt was disabled earlier, but is
-	 * enabled again now. Requeue the buffers.
-	 */
+	 
 	if (irq_line->ires.status == VIRTIO_GPIO_IRQ_STATUS_INVALID) {
 		virtio_gpio_irq_prepare(vgpio, gpio);
 		ignore = true;
@@ -415,12 +396,7 @@ static void virtio_gpio_event_vq(struct virtqueue *vq)
 			continue;
 		}
 
-		/*
-		 * Find GPIO line number from the offset of irq_line within the
-		 * irq_lines block. We can also get GPIO number from
-		 * irq-request, but better not to rely on a buffer returned by
-		 * remote.
-		 */
+		 
 		gpio = irq_line - vgpio->irq_lines;
 		WARN_ON(gpio >= vgpio->gc.ngpio);
 
@@ -521,12 +497,12 @@ static const char **virtio_gpio_get_names(struct virtio_gpio *vgpio,
 	if (!names)
 		return NULL;
 
-	/* NULL terminate the string instead of checking it */
+	 
 	gpio_names[gpio_names_size - 1] = '\0';
 
 	for (i = 0, str = gpio_names; i < ngpio; i++) {
 		names[i] = str;
-		str += strlen(str) + 1; /* zero-length strings are allowed */
+		str += strlen(str) + 1;  
 
 		if (str > gpio_names + gpio_names_size) {
 			dev_err(dev, "gpio_names block is too short (%d)\n", i);
@@ -550,7 +526,7 @@ static int virtio_gpio_probe(struct virtio_device *vdev)
 	if (!vgpio)
 		return -ENOMEM;
 
-	/* Read configuration */
+	 
 	virtio_cread_bytes(vdev, 0, &config, sizeof(config));
 	gpio_names_size = le32_to_cpu(config.gpio_names_size);
 	ngpio = le16_to_cpu(config.ngpio);
@@ -579,19 +555,19 @@ static int virtio_gpio_probe(struct virtio_device *vdev)
 	vgpio->gc.get			= virtio_gpio_get;
 	vgpio->gc.set			= virtio_gpio_set;
 	vgpio->gc.ngpio			= ngpio;
-	vgpio->gc.base			= -1; /* Allocate base dynamically */
+	vgpio->gc.base			= -1;  
 	vgpio->gc.label			= dev_name(dev);
 	vgpio->gc.parent		= dev;
 	vgpio->gc.owner			= THIS_MODULE;
 	vgpio->gc.can_sleep		= true;
 
-	/* Interrupt support */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_GPIO_F_IRQ)) {
 		vgpio->irq_lines = devm_kcalloc(dev, ngpio, sizeof(*vgpio->irq_lines), GFP_KERNEL);
 		if (!vgpio->irq_lines)
 			return -ENOMEM;
 
-		/* The event comes from the outside so no parent handler */
+		 
 		vgpio->gc.irq.parent_handler	= NULL;
 		vgpio->gc.irq.num_parents	= 0;
 		vgpio->gc.irq.parents		= NULL;
@@ -613,7 +589,7 @@ static int virtio_gpio_probe(struct virtio_device *vdev)
 	if (ret)
 		return ret;
 
-	/* Mark the device ready to perform operations from within probe() */
+	 
 	virtio_device_ready(vdev);
 
 	vgpio->gc.names = virtio_gpio_get_names(vgpio, gpio_names_size, ngpio);

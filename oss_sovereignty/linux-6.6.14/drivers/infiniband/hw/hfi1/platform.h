@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef __PLATFORM_H
 #define __PLATFORM_H
@@ -11,7 +9,7 @@
 #define METADATA_TABLE_FIELD_LEN_SHIFT			16
 #define METADATA_TABLE_FIELD_LEN_LEN_BITS		16
 
-/* Header structure */
+ 
 #define PLATFORM_CONFIG_HEADER_RECORD_IDX_SHIFT			0
 #define PLATFORM_CONFIG_HEADER_RECORD_IDX_LEN_BITS		6
 #define PLATFORM_CONFIG_HEADER_TABLE_LENGTH_SHIFT		16
@@ -117,32 +115,19 @@ struct platform_config_data {
 	u32 num_table;
 };
 
-/*
- * This struct acts as a quick reference into the platform_data binary image
- * and is populated by parse_platform_config(...) depending on the specific
- * META_VERSION
- */
+ 
 struct platform_config_cache {
 	u8  cache_valid;
 	struct platform_config_data config_tables[PLATFORM_CONFIG_TABLE_MAX];
 };
 
-/* This section defines default values and encodings for the
- * fields defined for each table above
- */
+ 
 
-/*
- * =====================================================
- *  System table encodings
- * =====================================================
- */
+ 
 #define PLATFORM_CONFIG_MAGIC_NUM		0x3d4f5041
 #define PLATFORM_CONFIG_MAGIC_NUMBER_LEN	4
 
-/*
- * These power classes are the same as defined in SFF 8636 spec rev 2.4
- * describing byte 129 in table 6-16, except enumerated in a different order
- */
+ 
 enum platform_config_qsfp_power_class_encoding {
 	QSFP_POWER_CLASS_1 = 1,
 	QSFP_POWER_CLASS_2,
@@ -153,11 +138,7 @@ enum platform_config_qsfp_power_class_encoding {
 	QSFP_POWER_CLASS_7
 };
 
-/*
- * ====================================================
- *  Port table encodings
- * ====================================================
- */
+ 
 enum platform_config_port_type_encoding {
 	PORT_TYPE_UNKNOWN,
 	PORT_TYPE_DISCONNECTED,
@@ -174,12 +155,7 @@ enum platform_config_link_speed_supported_encoding {
 	LINK_SPEED_SUPP_MAX
 };
 
-/*
- * This is a subset (not strict) of the link downgrades
- * supported. The link downgrades supported are expected
- * to be supplied to the driver by another entity such as
- * the fabric manager
- */
+ 
 enum platform_config_link_width_supported_encoding {
 	LINK_WIDTH_SUPP_1X = 1,
 	LINK_WIDTH_SUPP_2X,
@@ -218,7 +194,7 @@ enum platform_config_virtual_lane_capability_encoding {
 	VL_CAP_MAX
 };
 
-/* Max MTU */
+ 
 enum platform_config_mtu_capability_encoding {
 	MTU_CAP_256   = 1,
 	MTU_CAP_512   = 2,
@@ -244,10 +220,7 @@ enum link_tuning_encoding {
 	OPA_UNKNOWN_TUNING
 };
 
-/*
- * Shifts and masks for the link SI tuning values stuffed into the ASIC scratch
- * registers for integrated platforms
- */
+ 
 #define PORT0_PORT_TYPE_SHIFT		0
 #define PORT0_LOCAL_ATTEN_SHIFT		4
 #define PORT0_REMOTE_ATTEN_SHIFT	10
@@ -361,11 +334,11 @@ enum link_tuning_encoding {
 #define CHECKSUM_MASK			0xFFFFUL
 #define CHECKSUM_SMASK			(CHECKSUM_MASK << CHECKSUM_SHIFT)
 
-/* platform.c */
+ 
 void get_platform_config(struct hfi1_devdata *dd);
 void free_platform_config(struct hfi1_devdata *dd);
 void get_port_type(struct hfi1_pportdata *ppd);
 int set_qsfp_tx(struct hfi1_pportdata *ppd, int on);
 void tune_serdes(struct hfi1_pportdata *ppd);
 
-#endif			/*__PLATFORM_H*/
+#endif			 

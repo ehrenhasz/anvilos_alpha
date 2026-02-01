@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include "g4x_dp.h"
 #include "i915_reg.h"
@@ -91,7 +89,7 @@ static void assert_pch_ports_disabled(struct drm_i915_private *dev_priv,
 			"PCH LVDS enabled on transcoder %c, should be disabled\n",
 			pipe_name(pipe));
 
-	/* PCH SDVOB multiplex with HDMIB */
+	 
 	assert_pch_hdmi_disabled(dev_priv, pipe, PORT_B, PCH_HDMIB);
 	assert_pch_hdmi_disabled(dev_priv, pipe, PORT_C, PCH_HDMIC);
 	assert_pch_hdmi_disabled(dev_priv, pipe, PORT_D, PCH_HDMID);
@@ -150,22 +148,12 @@ static void ibx_sanitize_pch_dp_port(struct drm_i915_private *dev_priv,
 
 static void ibx_sanitize_pch_ports(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * The BIOS may select transcoder B on some of the PCH
-	 * ports even it doesn't enable the port. This would trip
-	 * assert_pch_dp_disabled() and assert_pch_hdmi_disabled().
-	 * Sanitize the transcoder select bits to prevent that. We
-	 * assume that the BIOS never actually enabled the port,
-	 * because if it did we'd actually have to toggle the port
-	 * on and back off to make the transcoder A select stick
-	 * (see. intel_dp_link_down(), intel_disable_hdmi(),
-	 * intel_disable_sdvo()).
-	 */
+	 
 	ibx_sanitize_pch_dp_port(dev_priv, PORT_B, PCH_DP_B);
 	ibx_sanitize_pch_dp_port(dev_priv, PORT_C, PCH_DP_C);
 	ibx_sanitize_pch_dp_port(dev_priv, PORT_D, PCH_DP_D);
 
-	/* PCH SDVOB multiplex with HDMIB */
+	 
 	ibx_sanitize_pch_hdmi_port(dev_priv, PORT_B, PCH_HDMIB);
 	ibx_sanitize_pch_hdmi_port(dev_priv, PORT_C, PCH_HDMIC);
 	ibx_sanitize_pch_hdmi_port(dev_priv, PORT_D, PCH_HDMID);
@@ -247,22 +235,19 @@ static void ilk_enable_pch_transcoder(const struct intel_crtc_state *crtc_state)
 	i915_reg_t reg;
 	u32 val, pipeconf_val;
 
-	/* Make sure PCH DPLL is enabled */
+	 
 	assert_shared_dpll_enabled(dev_priv, crtc_state->shared_dpll);
 
-	/* FDI must be feeding us bits for PCH ports */
+	 
 	assert_fdi_tx_enabled(dev_priv, pipe);
 	assert_fdi_rx_enabled(dev_priv, pipe);
 
 	if (HAS_PCH_CPT(dev_priv)) {
 		reg = TRANS_CHICKEN2(pipe);
 		val = intel_de_read(dev_priv, reg);
-		/*
-		 * Workaround: Set the timing override bit
-		 * before enabling the pch transcoder.
-		 */
+		 
 		val |= TRANS_CHICKEN2_TIMING_OVERRIDE;
-		/* Configure frame start delay to match the CPU */
+		 
 		val &= ~TRANS_CHICKEN2_FRAME_START_DELAY_MASK;
 		val |= TRANS_CHICKEN2_FRAME_START_DELAY(crtc_state->framestart_delay - 1);
 		intel_de_write(dev_priv, reg, val);
@@ -273,15 +258,11 @@ static void ilk_enable_pch_transcoder(const struct intel_crtc_state *crtc_state)
 	pipeconf_val = intel_de_read(dev_priv, TRANSCONF(pipe));
 
 	if (HAS_PCH_IBX(dev_priv)) {
-		/* Configure frame start delay to match the CPU */
+		 
 		val &= ~TRANS_FRAME_START_DELAY_MASK;
 		val |= TRANS_FRAME_START_DELAY(crtc_state->framestart_delay - 1);
 
-		/*
-		 * Make the BPC in transcoder be consistent with
-		 * that in pipeconf reg. For HDMI we must use 8bpc
-		 * here for both 8bpc and 12bpc.
-		 */
+		 
 		val &= ~TRANSCONF_BPC_MASK;
 		if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI))
 			val |= TRANSCONF_BPC_8;
@@ -312,22 +293,22 @@ static void ilk_disable_pch_transcoder(struct intel_crtc *crtc)
 	enum pipe pipe = crtc->pipe;
 	i915_reg_t reg;
 
-	/* FDI relies on the transcoder */
+	 
 	assert_fdi_tx_disabled(dev_priv, pipe);
 	assert_fdi_rx_disabled(dev_priv, pipe);
 
-	/* Ports must be off as well */
+	 
 	assert_pch_ports_disabled(dev_priv, pipe);
 
 	reg = PCH_TRANSCONF(pipe);
 	intel_de_rmw(dev_priv, reg, TRANS_ENABLE, 0);
-	/* wait for PCH transcoder off, transcoder state */
+	 
 	if (intel_de_wait_for_clear(dev_priv, reg, TRANS_STATE_ENABLE, 50))
 		drm_err(&dev_priv->drm, "failed to disable transcoder %c\n",
 			pipe_name(pipe));
 
 	if (HAS_PCH_CPT(dev_priv))
-		/* Workaround: Clear the timing override chicken bit again. */
+		 
 		intel_de_rmw(dev_priv, TRANS_CHICKEN2(pipe),
 			     TRANS_CHICKEN2_TIMING_OVERRIDE, 0);
 }
@@ -338,22 +319,11 @@ void ilk_pch_pre_enable(struct intel_atomic_state *state,
 	const struct intel_crtc_state *crtc_state =
 		intel_atomic_get_new_crtc_state(state, crtc);
 
-	/*
-	 * Note: FDI PLL enabling _must_ be done before we enable the
-	 * cpu pipes, hence this is separate from all the other fdi/pch
-	 * enabling.
-	 */
+	 
 	ilk_fdi_pll_enable(crtc_state);
 }
 
-/*
- * Enable PCH resources required for PCH ports:
- *   - PCH PLLs
- *   - FDI training & RX/TX
- *   - update transcoder timings
- *   - DP transcoding bits
- *   - transcoder
- */
+ 
 void ilk_pch_enable(struct intel_atomic_state *state,
 		    struct intel_crtc *crtc)
 {
@@ -365,13 +335,10 @@ void ilk_pch_enable(struct intel_atomic_state *state,
 
 	assert_pch_transcoder_disabled(dev_priv, pipe);
 
-	/* For PCH output, training FDI link */
+	 
 	intel_fdi_link_train(crtc, crtc_state);
 
-	/*
-	 * We need to program the right clock selection
-	 * before writing the pixel multiplier into the DPLL.
-	 */
+	 
 	if (HAS_PCH_CPT(dev_priv)) {
 		u32 sel;
 
@@ -386,18 +353,10 @@ void ilk_pch_enable(struct intel_atomic_state *state,
 		intel_de_write(dev_priv, PCH_DPLL_SEL, temp);
 	}
 
-	/*
-	 * XXX: pch pll's can be enabled any time before we enable the PCH
-	 * transcoder, and we actually should do this to not upset any PCH
-	 * transcoder that already use the clock when we share it.
-	 *
-	 * Note that enable_shared_dpll tries to do the right thing, but
-	 * get_shared_dpll unconditionally resets the pll - we need that
-	 * to have the right LVDS enable sequence.
-	 */
+	 
 	intel_enable_shared_dpll(crtc_state);
 
-	/* set transcoder timing, panel must allow it */
+	 
 	assert_pps_unlocked(dev_priv, pipe);
 	if (intel_crtc_has_dp_encoder(crtc_state)) {
 		intel_pch_transcoder_set_m1_n1(crtc, &crtc_state->dp_m_n);
@@ -407,7 +366,7 @@ void ilk_pch_enable(struct intel_atomic_state *state,
 
 	intel_fdi_normal_train(crtc);
 
-	/* For PCH DP, enable TRANS_DP_CTL */
+	 
 	if (HAS_PCH_CPT(dev_priv) &&
 	    intel_crtc_has_dp_encoder(crtc_state)) {
 		const struct drm_display_mode *adjusted_mode =
@@ -422,7 +381,7 @@ void ilk_pch_enable(struct intel_atomic_state *state,
 			  TRANS_DP_HSYNC_ACTIVE_HIGH |
 			  TRANS_DP_BPC_MASK);
 		temp |= TRANS_DP_OUTPUT_ENABLE;
-		temp |= bpc << 9; /* same format but at 11:9 */
+		temp |= bpc << 9;  
 
 		if (adjusted_mode->flags & DRM_MODE_FLAG_PHSYNC)
 			temp |= TRANS_DP_HSYNC_ACTIVE_HIGH;
@@ -454,12 +413,12 @@ void ilk_pch_post_disable(struct intel_atomic_state *state,
 	ilk_disable_pch_transcoder(crtc);
 
 	if (HAS_PCH_CPT(dev_priv)) {
-		/* disable TRANS_DP_CTL */
+		 
 		intel_de_rmw(dev_priv, TRANS_DP_CTL(pipe),
 			     TRANS_DP_OUTPUT_ENABLE | TRANS_DP_PORT_SEL_MASK,
 			     TRANS_DP_PORT_SEL_NONE);
 
-		/* disable DPLL_SEL */
+		 
 		intel_de_rmw(dev_priv, PCH_DPLL_SEL,
 			     TRANS_DPLL_ENABLE(pipe) | TRANS_DPLLB_SEL(pipe), 0);
 	}
@@ -472,14 +431,10 @@ static void ilk_pch_clock_get(struct intel_crtc_state *crtc_state)
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
 
-	/* read out port_clock from the DPLL */
+	 
 	i9xx_crtc_clock_get(crtc, crtc_state);
 
-	/*
-	 * In case there is an active pipe without active ports,
-	 * we may need some idea for the dotclock anyway.
-	 * Calculate one based on the FDI configuration.
-	 */
+	 
 	crtc_state->hw.adjusted_mode.crtc_clock =
 		intel_dotclock_calculate(intel_fdi_link_freq(dev_priv, crtc_state),
 					 &crtc_state->fdi_m_n);
@@ -508,10 +463,7 @@ void ilk_pch_get_config(struct intel_crtc_state *crtc_state)
 				       &crtc_state->fdi_m_n);
 
 	if (HAS_PCH_IBX(dev_priv)) {
-		/*
-		 * The pipe->pch transcoder and pch transcoder->pll
-		 * mapping is fixed.
-		 */
+		 
 		pll_id = (enum intel_dpll_id) pipe;
 	} else {
 		tmp = intel_de_read(dev_priv, PCH_DPLL_SEL);
@@ -543,14 +495,14 @@ static void lpt_enable_pch_transcoder(const struct intel_crtc_state *crtc_state)
 	enum transcoder cpu_transcoder = crtc_state->cpu_transcoder;
 	u32 val, pipeconf_val;
 
-	/* FDI must be feeding us bits for PCH ports */
+	 
 	assert_fdi_tx_enabled(dev_priv, (enum pipe) cpu_transcoder);
 	assert_fdi_rx_enabled(dev_priv, PIPE_A);
 
 	val = intel_de_read(dev_priv, TRANS_CHICKEN2(PIPE_A));
-	/* Workaround: set timing override bit. */
+	 
 	val |= TRANS_CHICKEN2_TIMING_OVERRIDE;
-	/* Configure frame start delay to match the CPU */
+	 
 	val &= ~TRANS_CHICKEN2_FRAME_START_DELAY_MASK;
 	val |= TRANS_CHICKEN2_FRAME_START_DELAY(crtc_state->framestart_delay - 1);
 	intel_de_write(dev_priv, TRANS_CHICKEN2(PIPE_A), val);
@@ -572,12 +524,12 @@ static void lpt_enable_pch_transcoder(const struct intel_crtc_state *crtc_state)
 static void lpt_disable_pch_transcoder(struct drm_i915_private *dev_priv)
 {
 	intel_de_rmw(dev_priv, LPT_TRANSCONF, TRANS_ENABLE, 0);
-	/* wait for PCH transcoder off, transcoder state */
+	 
 	if (intel_de_wait_for_clear(dev_priv, LPT_TRANSCONF,
 				    TRANS_STATE_ENABLE, 50))
 		drm_err(&dev_priv->drm, "Failed to disable PCH transcoder\n");
 
-	/* Workaround: clear timing override bit. */
+	 
 	intel_de_rmw(dev_priv, TRANS_CHICKEN2(PIPE_A), TRANS_CHICKEN2_TIMING_OVERRIDE, 0);
 }
 
@@ -592,7 +544,7 @@ void lpt_pch_enable(struct intel_atomic_state *state,
 
 	lpt_program_iclkip(crtc_state);
 
-	/* Set transcoder timing. */
+	 
 	ilk_pch_transcoder_set_timings(crtc_state, PIPE_A);
 
 	lpt_enable_pch_transcoder(crtc_state);

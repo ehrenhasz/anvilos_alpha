@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Firmware loading.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -14,11 +9,11 @@
 #include "wfx.h"
 #include "hwio.h"
 
-/* Addresses below are in SRAM area */
+ 
 #define WFX_DNLD_FIFO             0x09004000
 #define     DNLD_BLOCK_SIZE           0x0400
-#define     DNLD_FIFO_SIZE            0x8000 /* (32 * DNLD_BLOCK_SIZE) */
-/* Download Control Area (DCA) */
+#define     DNLD_FIFO_SIZE            0x8000  
+ 
 #define WFX_DCA_IMAGE_SIZE        0x0900C000
 #define WFX_DCA_PUT               0x0900C004
 #define WFX_DCA_GET               0x0900C008
@@ -58,8 +53,8 @@
 #define     ERR_ECC_PUB_KEY           0x11
 #define     ERR_MAC_KEY               0x18
 
-#define DCA_TIMEOUT  50 /* milliseconds */
-#define WAKEUP_TIMEOUT 200 /* milliseconds */
+#define DCA_TIMEOUT  50  
+#define WAKEUP_TIMEOUT 200  
 
 static const char * const fwio_errors[] = {
 	[ERR_INVALID_SEC_TYPE] = "Invalid section type or wrong encryption",
@@ -69,14 +64,7 @@ static const char * const fwio_errors[] = {
 	[ERR_MAC_KEY]          = "MAC key not initialized",
 };
 
-/* request_firmware() allocate data using vmalloc(). It is not compatible with underlying hardware
- * that use DMA. Function below detect this case and allocate a bounce buffer if necessary.
- *
- * Notice that, in doubt, you can enable CONFIG_DEBUG_SG to ask kernel to detect this problem at
- * runtime  (else, kernel silently fail).
- *
- * NOTE: it may also be possible to use 'pages' from struct firmware and avoid bounce buffer
- */
+ 
 static int wfx_sram_write_dma_safe(struct wfx_dev *wdev, u32 addr, const u8 *buf, size_t len)
 {
 	int ret;
@@ -120,7 +108,7 @@ static int get_firmware(struct wfx_dev *wdev, u32 keyset_chip,
 
 	data = (*fw)->data;
 	if (memcmp(data, "KEYSET", 6) != 0) {
-		/* Legacy firmware format */
+		 
 		*file_offset = 0;
 		keyset_file = 0x90;
 	} else {
@@ -199,7 +187,7 @@ static int upload_firmware(struct wfx_dev *wdev, const u8 *data, size_t len)
 		if (ret < 0)
 			return ret;
 
-		/* The device seems to not support writing 0 in this register during first loop */
+		 
 		offs += DNLD_BLOCK_SIZE;
 		ret = wfx_sram_reg_write(wdev, WFX_DCA_PUT, offs);
 		if (ret < 0)
@@ -256,7 +244,7 @@ static int load_firmware_secure(struct wfx_dev *wdev)
 	if (ret)
 		goto error;
 
-	wfx_sram_reg_write(wdev, WFX_DNLD_FIFO, 0xFFFFFFFF); /* Fifo init */
+	wfx_sram_reg_write(wdev, WFX_DNLD_FIFO, 0xFFFFFFFF);  
 	wfx_sram_write_dma_safe(wdev, WFX_DCA_FW_VERSION, "\x01\x00\x00\x00", FW_VERSION_SIZE);
 	wfx_sram_write_dma_safe(wdev, WFX_DCA_FW_SIGNATURE, fw->data + fw_offset,
 				FW_SIGNATURE_SIZE);
@@ -277,7 +265,7 @@ static int load_firmware_secure(struct wfx_dev *wdev)
 
 	wfx_sram_reg_write(wdev, WFX_DCA_HOST_STATUS, HOST_UPLOAD_COMPLETE);
 	ret = wait_ncp_status(wdev, NCP_AUTH_OK);
-	/* Legacy ROM support */
+	 
 	if (ret < 0)
 		ret = wait_ncp_status(wdev, NCP_PUB_KEY_RDY);
 	if (ret < 0)
@@ -319,7 +307,7 @@ int wfx_init_device(struct wfx_dev *wdev)
 {
 	int ret;
 	int hw_revision, hw_type;
-	int wakeup_timeout = 50; /* ms */
+	int wakeup_timeout = 50;  
 	ktime_t now, start;
 	u32 reg;
 

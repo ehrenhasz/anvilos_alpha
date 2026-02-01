@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ALSA driver for Echoaudio soundcards.
- *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
- *  Copyright (C) 2020 Mark Hills <mark@xwax.org>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -88,9 +84,7 @@ static void free_firmware_cache(struct echoaudio *chip)
 
 
 
-/******************************************************************************
-	PCM interface
-******************************************************************************/
+ 
 
 static void audiopipe_free(struct snd_pcm_runtime *runtime)
 {
@@ -114,18 +108,18 @@ static int hw_rule_capture_format_by_channels(struct snd_pcm_hw_params *params,
 	snd_mask_any(&fmt);
 
 #ifndef ECHOCARD_HAS_STEREO_BIG_ENDIAN32
-	/* >=2 channels cannot be S32_BE */
+	 
 	if (c->min == 2) {
 		fmt.bits[0] &= ~SNDRV_PCM_FMTBIT_S32_BE;
 		return snd_mask_refine(f, &fmt);
 	}
 #endif
-	/* > 2 channels cannot be U8 and S32_BE */
+	 
 	if (c->min > 2) {
 		fmt.bits[0] &= ~(SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S32_BE);
 		return snd_mask_refine(f, &fmt);
 	}
-	/* Mono is ok with any format */
+	 
 	return 0;
 }
 
@@ -141,7 +135,7 @@ static int hw_rule_capture_channels_by_format(struct snd_pcm_hw_params *params,
 
 	snd_interval_any(&ch);
 
-	/* S32_BE is mono (and stereo) only */
+	 
 	if (f->bits[0] == SNDRV_PCM_FMTBIT_S32_BE) {
 		ch.min = 1;
 #ifdef ECHOCARD_HAS_STEREO_BIG_ENDIAN32
@@ -152,14 +146,14 @@ static int hw_rule_capture_channels_by_format(struct snd_pcm_hw_params *params,
 		ch.integer = 1;
 		return snd_interval_refine(c, &ch);
 	}
-	/* U8 can be only mono or stereo */
+	 
 	if (f->bits[0] == SNDRV_PCM_FMTBIT_U8) {
 		ch.min = 1;
 		ch.max = 2;
 		ch.integer = 1;
 		return snd_interval_refine(c, &ch);
 	}
-	/* S16_LE, S24_3LE and S32_LE support any number of channels. */
+	 
 	return 0;
 }
 
@@ -177,16 +171,16 @@ static int hw_rule_playback_format_by_channels(struct snd_pcm_hw_params *params,
 
 	fmask = fmt.bits[0] + ((u64)fmt.bits[1] << 32);
 
-	/* >2 channels must be S16_LE, S24_3LE or S32_LE */
+	 
 	if (c->min > 2) {
 		fmask &= SNDRV_PCM_FMTBIT_S16_LE |
 			 SNDRV_PCM_FMTBIT_S24_3LE |
 			 SNDRV_PCM_FMTBIT_S32_LE;
-	/* 1 channel must be S32_BE or S32_LE */
+	 
 	} else if (c->max == 1)
 		fmask &= SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_S32_BE;
 #ifndef ECHOCARD_HAS_STEREO_BIG_ENDIAN32
-	/* 2 channels cannot be S32_BE */
+	 
 	else if (c->min == 2 && c->max == 2)
 		fmask &= ~SNDRV_PCM_FMTBIT_S32_BE;
 #endif
@@ -213,7 +207,7 @@ static int hw_rule_playback_channels_by_format(struct snd_pcm_hw_params *params,
 	ch.integer = 1;
 	fmask = f->bits[0] + ((u64)f->bits[1] << 32);
 
-	/* S32_BE is mono (and stereo) only */
+	 
 	if (fmask == SNDRV_PCM_FMTBIT_S32_BE) {
 		ch.min = 1;
 #ifdef ECHOCARD_HAS_STEREO_BIG_ENDIAN32
@@ -221,10 +215,10 @@ static int hw_rule_playback_channels_by_format(struct snd_pcm_hw_params *params,
 #else
 		ch.max = 1;
 #endif
-	/* U8 is stereo only */
+	 
 	} else if (fmask == SNDRV_PCM_FMTBIT_U8)
 		ch.min = ch.max = 2;
-	/* S16_LE and S24_3LE must be at least stereo */
+	 
 	else if (!(fmask & ~(SNDRV_PCM_FMTBIT_S16_LE |
 			       SNDRV_PCM_FMTBIT_S24_3LE)))
 		ch.min = 2;
@@ -236,8 +230,7 @@ static int hw_rule_playback_channels_by_format(struct snd_pcm_hw_params *params,
 
 
 
-/* Since the sample rate is a global setting, do allow the user to change the
-sample rate only if there is only one pcm device open. */
+ 
 static int hw_rule_sample_rate(struct snd_pcm_hw_params *params,
 			       struct snd_pcm_hw_rule *rule)
 {
@@ -279,9 +272,9 @@ static int pcm_open(struct snd_pcm_substream *substream,
 	pipe = kzalloc(sizeof(struct audiopipe), GFP_KERNEL);
 	if (!pipe)
 		return -ENOMEM;
-	pipe->index = -1;		/* Not configured yet */
+	pipe->index = -1;		 
 
-	/* Set up hw capabilities and contraints */
+	 
 	memcpy(&pipe->hw, &pcm_hardware_skel, sizeof(struct snd_pcm_hardware));
 	dev_dbg(chip->card->dev, "max_channels=%d\n", max_channels);
 	pipe->constr.list = channels_list;
@@ -300,22 +293,20 @@ static int pcm_open(struct snd_pcm_substream *substream,
 	runtime->private_free = audiopipe_free;
 	snd_pcm_set_sync(substream);
 
-	/* Only mono and any even number of channels are allowed */
+	 
 	err = snd_pcm_hw_constraint_list(runtime, 0,
 					 SNDRV_PCM_HW_PARAM_CHANNELS,
 					 &pipe->constr);
 	if (err < 0)
 		return err;
 
-	/* All periods should have the same size */
+	 
 	err = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (err < 0)
 		return err;
 
-	/* The hw accesses memory in chunks 32 frames long and they should be
-	32-bytes-aligned. It's not a requirement, but it seems that IRQs are
-	generated with a resolution of 32 frames. Thus we need the following */
+	 
 	err = snd_pcm_hw_constraint_step(runtime, 0,
 					 SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 32);
 	if (err < 0)
@@ -332,7 +323,7 @@ static int pcm_open(struct snd_pcm_substream *substream,
 	if (err < 0)
 		return err;
 
-	/* Allocate a page for the scatter-gather list */
+	 
 	err = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV,
 				  &chip->pci->dev,
 				  PAGE_SIZE, &pipe->sgpage);
@@ -341,9 +332,7 @@ static int pcm_open(struct snd_pcm_substream *substream,
 		return err;
 	}
 
-	/*
-	 * Sole ownership required to set the rate
-	 */
+	 
 
 	dev_dbg(chip->card->dev, "pcm_open opencount=%d can_set_rate=%d, rate_set=%d",
 		chip->opencount, chip->can_set_rate, chip->rate_set);
@@ -428,9 +417,7 @@ static int pcm_digital_in_open(struct snd_pcm_substream *substream)
 	mutex_lock(&chip->mode_mutex);
 	if (chip->digital_mode == DIGITAL_MODE_ADAT)
 		err = pcm_open(substream, max_channels);
-	else	/* If the card has ADAT, subtract the 6 channels
-		 * that S/PDIF doesn't have
-		 */
+	else	 
 		err = pcm_open(substream, max_channels - ECHOCARD_HAS_ADAT);
 
 	if (err < 0)
@@ -456,7 +443,7 @@ din_exit:
 
 
 
-#ifndef ECHOCARD_HAS_VMIXER	/* See the note in snd_echo_new_pcm() */
+#ifndef ECHOCARD_HAS_VMIXER	 
 
 static int pcm_digital_out_open(struct snd_pcm_substream *substream)
 {
@@ -467,9 +454,7 @@ static int pcm_digital_out_open(struct snd_pcm_substream *substream)
 	mutex_lock(&chip->mode_mutex);
 	if (chip->digital_mode == DIGITAL_MODE_ADAT)
 		err = pcm_open(substream, max_channels);
-	else	/* If the card has ADAT, subtract the 6 channels
-		 * that S/PDIF doesn't have
-		 */
+	else	 
 		err = pcm_open(substream, max_channels - ECHOCARD_HAS_ADAT);
 
 	if (err < 0)
@@ -495,9 +480,9 @@ dout_exit:
 	return err;
 }
 
-#endif /* !ECHOCARD_HAS_VMIXER */
+#endif  
 
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
 
 
@@ -505,9 +490,7 @@ static int pcm_close(struct snd_pcm_substream *substream)
 {
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
 
-	/* Nothing to do here. Audio is already off and pipe will be
-	 * freed by its callback
-	 */
+	 
 
 	mutex_lock(&chip->mode_mutex);
 
@@ -532,7 +515,7 @@ static int pcm_close(struct snd_pcm_substream *substream)
 
 
 
-/* Channel allocation and scatter-gather list setup */
+ 
 static int init_engine(struct snd_pcm_substream *substream,
 		       struct snd_pcm_hw_params *hw_params,
 		       int pipe_index, int interleave)
@@ -544,9 +527,7 @@ static int init_engine(struct snd_pcm_substream *substream,
 	chip = snd_pcm_substream_chip(substream);
 	pipe = (struct audiopipe *) substream->runtime->private_data;
 
-	/* Sets up che hardware. If it's already initialized, reset and
-	 * redo with the new parameters
-	 */
+	 
 	spin_lock_irq(&chip->lock);
 	if (pipe->index >= 0) {
 		dev_dbg(chip->card->dev, "hwp_ie free(%d)\n", pipe->index);
@@ -598,12 +579,10 @@ static int init_engine(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/* Close the ring buffer */
+	 
 	sglist_wrap(chip, pipe);
 
-	/* This stuff is used by the irq handler, so it must be
-	 * initialized before chip->substream
-	 */
+	 
 	pipe->last_period = 0;
 	pipe->last_counter = 0;
 	pipe->position = 0;
@@ -651,7 +630,7 @@ static int pcm_digital_in_hw_params(struct snd_pcm_substream *substream,
 
 
 
-#ifndef ECHOCARD_HAS_VMIXER	/* See the note in snd_echo_new_pcm() */
+#ifndef ECHOCARD_HAS_VMIXER	 
 static int pcm_digital_out_hw_params(struct snd_pcm_substream *substream,
 				     struct snd_pcm_hw_params *hw_params)
 {
@@ -660,9 +639,9 @@ static int pcm_digital_out_hw_params(struct snd_pcm_substream *substream,
 	return init_engine(substream, hw_params, px_digital_out(chip) +
 			substream->number, params_channels(hw_params));
 }
-#endif /* !ECHOCARD_HAS_VMIXER */
+#endif  
 
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
 
 
@@ -726,10 +705,7 @@ static int pcm_prepare(struct snd_pcm_substream *substream)
 	if (snd_BUG_ON(pipe_index >= px_num(chip)))
 		return -EINVAL;
 
-	/*
-	 * We passed checks we can do independently; now take
-	 * exclusive control
-	 */
+	 
 
 	spin_lock_irq(&chip->lock);
 
@@ -823,29 +799,24 @@ static snd_pcm_uframes_t pcm_pointer(struct snd_pcm_substream *substream)
 	struct audiopipe *pipe = runtime->private_data;
 	u32 counter, step;
 
-	/*
-	 * IRQ handling runs concurrently. Do not share tracking of
-	 * counter with it, which would race or require locking
-	 */
+	 
 
-	counter = le32_to_cpu(*pipe->dma_counter);  /* presumed atomic */
+	counter = le32_to_cpu(*pipe->dma_counter);   
 
-	step = counter - pipe->last_counter;  /* handles wrapping */
+	step = counter - pipe->last_counter;   
 	pipe->last_counter = counter;
 
-	/* counter doesn't neccessarily wrap on a multiple of
-	 * buffer_size, so can't derive the position; must
-	 * accumulate */
+	 
 
 	pipe->position += step;
-	pipe->position %= frames_to_bytes(runtime, runtime->buffer_size); /* wrap */
+	pipe->position %= frames_to_bytes(runtime, runtime->buffer_size);  
 
 	return bytes_to_frames(runtime, pipe->position);
 }
 
 
 
-/* pcm *_ops structures */
+ 
 static const struct snd_pcm_ops analog_playback_ops = {
 	.open = pcm_analog_out_open,
 	.close = pcm_close,
@@ -875,7 +846,7 @@ static const struct snd_pcm_ops digital_playback_ops = {
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
 };
-#endif /* !ECHOCARD_HAS_VMIXER */
+#endif  
 static const struct snd_pcm_ops digital_capture_ops = {
 	.open = pcm_digital_in_open,
 	.close = pcm_close,
@@ -885,13 +856,11 @@ static const struct snd_pcm_ops digital_capture_ops = {
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
 };
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
 
 
-/* Preallocate memory only for the first substream because it's the most
- * used one
- */
+ 
 static void snd_echo_preallocate_pages(struct snd_pcm *pcm, struct device *dev)
 {
 	struct snd_pcm_substream *ss;
@@ -907,20 +876,16 @@ static void snd_echo_preallocate_pages(struct snd_pcm *pcm, struct device *dev)
 
 
 
-/*<--snd_echo_probe() */
+ 
 static int snd_echo_new_pcm(struct echoaudio *chip)
 {
 	struct snd_pcm *pcm;
 	int err;
 
 #ifdef ECHOCARD_HAS_VMIXER
-	/* This card has a Vmixer, that is there is no direct mapping from PCM
-	streams to physical outputs. The user can mix the streams as he wishes
-	via control interface and it's possible to send any stream to any
-	output, thus it makes no sense to keep analog and digital outputs
-	separated */
+	 
 
-	/* PCM#0 Virtual outputs and analog inputs */
+	 
 	err = snd_pcm_new(chip->card, "PCM", 0, num_pipes_out(chip),
 			  num_analog_busses_in(chip), &pcm);
 	if (err < 0)
@@ -933,7 +898,7 @@ static int snd_echo_new_pcm(struct echoaudio *chip)
 	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
 
 #ifdef ECHOCARD_HAS_DIGITAL_IO
-	/* PCM#1 Digital inputs, no outputs */
+	 
 	err = snd_pcm_new(chip->card, "Digital PCM", 1, 0,
 			  num_digital_busses_in(chip), &pcm);
 	if (err < 0)
@@ -943,16 +908,13 @@ static int snd_echo_new_pcm(struct echoaudio *chip)
 	strcpy(pcm->name, chip->card->shortname);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &digital_capture_ops);
 	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
-#else /* ECHOCARD_HAS_VMIXER */
+#else  
 
-	/* The card can manage substreams formed by analog and digital channels
-	at the same time, but I prefer to keep analog and digital channels
-	separated, because that mixed thing is confusing and useless. So we
-	register two PCM devices: */
+	 
 
-	/* PCM#0 Analog i/o */
+	 
 	err = snd_pcm_new(chip->card, "Analog PCM", 0,
 			  num_analog_busses_out(chip),
 			  num_analog_busses_in(chip), &pcm);
@@ -966,7 +928,7 @@ static int snd_echo_new_pcm(struct echoaudio *chip)
 	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
 
 #ifdef ECHOCARD_HAS_DIGITAL_IO
-	/* PCM#1 Digital i/o */
+	 
 	err = snd_pcm_new(chip->card, "Digital PCM", 1,
 			  num_digital_busses_out(chip),
 			  num_digital_busses_in(chip), &pcm);
@@ -978,9 +940,9 @@ static int snd_echo_new_pcm(struct echoaudio *chip)
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &digital_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &digital_capture_ops);
 	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
-#endif /* ECHOCARD_HAS_VMIXER */
+#endif  
 
 	return 0;
 }
@@ -988,13 +950,11 @@ static int snd_echo_new_pcm(struct echoaudio *chip)
 
 
 
-/******************************************************************************
-	Control interface
-******************************************************************************/
+ 
 
 #if !defined(ECHOCARD_HAS_VMIXER) || defined(ECHOCARD_HAS_LINE_OUT_GAIN)
 
-/******************* PCM output volume *******************/
+ 
 static int snd_echo_output_gain_info(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_info *uinfo)
 {
@@ -1031,7 +991,7 @@ static int snd_echo_output_gain_put(struct snd_kcontrol *kcontrol,
 	spin_lock_irq(&chip->lock);
 	for (c = 0; c < num_busses_out(chip); c++) {
 		gain = ucontrol->value.integer.value[c];
-		/* Ignore out of range values */
+		 
 		if (gain < ECHOGAIN_MINOUT || gain > ECHOGAIN_MAXOUT)
 			continue;
 		if (chip->output_gain[c] != gain) {
@@ -1046,7 +1006,7 @@ static int snd_echo_output_gain_put(struct snd_kcontrol *kcontrol,
 }
 
 #ifdef ECHOCARD_HAS_LINE_OUT_GAIN
-/* On the Mia this one controls the line-out volume */
+ 
 static const struct snd_kcontrol_new snd_echo_line_output_gain = {
 	.name = "Line Playback Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -1069,13 +1029,13 @@ static const struct snd_kcontrol_new snd_echo_pcm_output_gain = {
 };
 #endif
 
-#endif /* !ECHOCARD_HAS_VMIXER || ECHOCARD_HAS_LINE_OUT_GAIN */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_INPUT_GAIN
 
-/******************* Analog input volume *******************/
+ 
 static int snd_echo_input_gain_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
@@ -1112,7 +1072,7 @@ static int snd_echo_input_gain_put(struct snd_kcontrol *kcontrol,
 	spin_lock_irq(&chip->lock);
 	for (c = 0; c < num_analog_busses_in(chip); c++) {
 		gain = ucontrol->value.integer.value[c];
-		/* Ignore out of range values */
+		 
 		if (gain < ECHOGAIN_MININP || gain > ECHOGAIN_MAXINP)
 			continue;
 		if (chip->input_gain[c] != gain) {
@@ -1138,13 +1098,13 @@ static const struct snd_kcontrol_new snd_echo_line_input_gain = {
 	.tlv = {.p = db_scale_input_gain},
 };
 
-#endif /* ECHOCARD_HAS_INPUT_GAIN */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_OUTPUT_NOMINAL_LEVEL
 
-/************ Analog output nominal level (+4dBu / -10dBV) ***************/
+ 
 static int snd_echo_output_nominal_info (struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_info *uinfo)
 {
@@ -1200,13 +1160,13 @@ static const struct snd_kcontrol_new snd_echo_output_nominal_level = {
 	.put = snd_echo_output_nominal_put,
 };
 
-#endif /* ECHOCARD_HAS_OUTPUT_NOMINAL_LEVEL */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_INPUT_NOMINAL_LEVEL
 
-/*************** Analog input nominal level (+4dBu / -10dBV) ***************/
+ 
 static int snd_echo_input_nominal_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
@@ -1251,9 +1211,7 @@ static int snd_echo_input_nominal_put(struct snd_kcontrol *kcontrol,
 		}
 	}
 	if (changed)
-		update_output_line_level(chip);	/* "Output" is not a mistake
-						 * here.
-						 */
+		update_output_line_level(chip);	 
 	spin_unlock_irq(&chip->lock);
 	return changed;
 }
@@ -1266,13 +1224,13 @@ static const struct snd_kcontrol_new snd_echo_intput_nominal_level = {
 	.put = snd_echo_input_nominal_put,
 };
 
-#endif /* ECHOCARD_HAS_INPUT_NOMINAL_LEVEL */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_MONITOR
 
-/******************* Monitor mixer *******************/
+ 
 static int snd_echo_mixer_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
@@ -1333,13 +1291,13 @@ static struct snd_kcontrol_new snd_echo_monitor_mixer = {
 	.tlv = {.p = db_scale_output_gain},
 };
 
-#endif /* ECHOCARD_HAS_MONITOR */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_VMIXER
 
-/******************* Vmixer *******************/
+ 
 static int snd_echo_vmixer_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
@@ -1396,13 +1354,13 @@ static struct snd_kcontrol_new snd_echo_vmixer = {
 	.tlv = {.p = db_scale_output_gain},
 };
 
-#endif /* ECHOCARD_HAS_VMIXER */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_DIGITAL_MODE_SWITCH
 
-/******************* Digital mode switch *******************/
+ 
 static int snd_echo_digital_mode_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
@@ -1448,18 +1406,15 @@ static int snd_echo_digital_mode_put(struct snd_kcontrol *kcontrol,
 	dmode = chip->digital_mode_list[emode];
 
 	if (dmode != chip->digital_mode) {
-		/* mode_mutex is required to make this operation atomic wrt
-		pcm_digital_*_open() and set_input_clock() functions. */
+		 
 		mutex_lock(&chip->mode_mutex);
 
-		/* Do not allow the user to change the digital mode when a pcm
-		device is open because it also changes the number of channels
-		and the allowed sample rates */
+		 
 		if (chip->opencount) {
 			changed = -EAGAIN;
 		} else {
 			changed = set_digital_mode(chip, dmode);
-			/* If we had to change the clock source, report it */
+			 
 			if (changed > 0 && chip->clock_src_ctl) {
 				snd_ctl_notify(chip->card,
 					       SNDRV_CTL_EVENT_MASK_VALUE,
@@ -1468,7 +1423,7 @@ static int snd_echo_digital_mode_put(struct snd_kcontrol *kcontrol,
 					"SDM() =%d\n", changed);
 			}
 			if (changed >= 0)
-				changed = 1;	/* No errors */
+				changed = 1;	 
 		}
 		mutex_unlock(&chip->mode_mutex);
 	}
@@ -1483,13 +1438,13 @@ static const struct snd_kcontrol_new snd_echo_digital_mode_switch = {
 	.put = snd_echo_digital_mode_put,
 };
 
-#endif /* ECHOCARD_HAS_DIGITAL_MODE_SWITCH */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_DIGITAL_IO
 
-/******************* S/PDIF mode switch *******************/
+ 
 static int snd_echo_spdif_mode_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
@@ -1533,13 +1488,13 @@ static const struct snd_kcontrol_new snd_echo_spdif_mode_switch = {
 	.put = snd_echo_spdif_mode_put,
 };
 
-#endif /* ECHOCARD_HAS_DIGITAL_IO */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_EXTERNAL_CLOCK
 
-/******************* Select input clock source *******************/
+ 
 static int snd_echo_clock_source_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
@@ -1587,7 +1542,7 @@ static int snd_echo_clock_source_put(struct snd_kcontrol *kcontrol,
 		spin_lock_irq(&chip->lock);
 		changed = set_input_clock(chip, dclock);
 		if (!changed)
-			changed = 1;	/* no errors */
+			changed = 1;	 
 		spin_unlock_irq(&chip->lock);
 		mutex_unlock(&chip->mode_mutex);
 	}
@@ -1607,13 +1562,13 @@ static const struct snd_kcontrol_new snd_echo_clock_source_switch = {
 	.put = snd_echo_clock_source_put,
 };
 
-#endif /* ECHOCARD_HAS_EXTERNAL_CLOCK */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_PHANTOM_POWER
 
-/******************* Phantom power switch *******************/
+ 
 #define snd_echo_phantom_power_info	snd_ctl_boolean_mono_info
 
 static int snd_echo_phantom_power_get(struct snd_kcontrol *kcontrol,
@@ -1637,7 +1592,7 @@ static int snd_echo_phantom_power_put(struct snd_kcontrol *kcontrol,
 		changed = set_phantom_power(chip, power);
 		spin_unlock_irq(&chip->lock);
 		if (changed == 0)
-			changed = 1;	/* no errors */
+			changed = 1;	 
 	}
 	return changed;
 }
@@ -1650,13 +1605,13 @@ static const struct snd_kcontrol_new snd_echo_phantom_power_switch = {
 	.put = snd_echo_phantom_power_put,
 };
 
-#endif /* ECHOCARD_HAS_PHANTOM_POWER */
+#endif  
 
 
 
 #ifdef ECHOCARD_HAS_DIGITAL_IN_AUTOMUTE
 
-/******************* Digital input automute switch *******************/
+ 
 #define snd_echo_automute_info		snd_ctl_boolean_mono_info
 
 static int snd_echo_automute_get(struct snd_kcontrol *kcontrol,
@@ -1680,7 +1635,7 @@ static int snd_echo_automute_put(struct snd_kcontrol *kcontrol,
 		changed = set_input_auto_mute(chip, automute);
 		spin_unlock_irq(&chip->lock);
 		if (changed == 0)
-			changed = 1;	/* no errors */
+			changed = 1;	 
 	}
 	return changed;
 }
@@ -1693,11 +1648,11 @@ static const struct snd_kcontrol_new snd_echo_automute_switch = {
 	.put = snd_echo_automute_put,
 };
 
-#endif /* ECHOCARD_HAS_DIGITAL_IN_AUTOMUTE */
+#endif  
 
 
 
-/******************* VU-meters switch *******************/
+ 
 #define snd_echo_vumeters_switch_info		snd_ctl_boolean_mono_info
 
 static int snd_echo_vumeters_switch_put(struct snd_kcontrol *kcontrol,
@@ -1722,7 +1677,7 @@ static const struct snd_kcontrol_new snd_echo_vumeters_switch = {
 
 
 
-/***** Read VU-meters (input, output, analog and digital together) *****/
+ 
 static int snd_echo_vumeters_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
@@ -1756,7 +1711,7 @@ static const struct snd_kcontrol_new snd_echo_vumeters = {
 
 
 
-/*** Channels info - it exports informations about the number of channels ***/
+ 
 static int snd_echo_channels_info_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
@@ -1780,7 +1735,7 @@ static int snd_echo_channels_info_get(struct snd_kcontrol *kcontrol,
 	ucontrol->value.integer.value[3] = num_analog_busses_out(chip);
 	ucontrol->value.integer.value[4] = num_pipes_out(chip);
 
-	/* Compute the bitmask of the currently valid input clocks */
+	 
 	detected = detect_input_clocks(chip);
 	clocks = 0;
 	src = chip->num_clock_sources - 1;
@@ -1807,16 +1762,8 @@ static const struct snd_kcontrol_new snd_echo_channels_info = {
 
 
 
-/******************************************************************************
-	IRQ Handling
-******************************************************************************/
-/* Check if a period has elapsed since last interrupt
- *
- * Don't make any updates to state; PCM core handles this with the
- * correct locks.
- *
- * \return true if a period has elapsed, otherwise false
- */
+ 
+ 
 static bool period_has_elapsed(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -1829,15 +1776,15 @@ static bool period_has_elapsed(struct snd_pcm_substream *substream)
 
 	period_bytes = frames_to_bytes(runtime, runtime->period_size);
 
-	counter = le32_to_cpu(*pipe->dma_counter);  /* presumed atomic */
+	counter = le32_to_cpu(*pipe->dma_counter);   
 
-	step = counter - pipe->last_period;  /* handles wrapping */
-	step -= step % period_bytes;  /* acknowledge whole periods only */
+	step = counter - pipe->last_period;   
+	step -= step % period_bytes;   
 
 	if (step == 0)
-		return false;  /* haven't advanced a whole period yet */
+		return false;   
 
-	pipe->last_period += step;  /* used exclusively by us */
+	pipe->last_period += step;   
 	return true;
 }
 
@@ -1852,8 +1799,7 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 		spin_unlock(&chip->lock);
 		return IRQ_NONE;
 	}
-	/* The hardware doesn't tell us which substream caused the irq,
-	thus we have to check all running substreams. */
+	 
 	for (ss = 0; ss < DSP_MAXPIPES; ss++) {
 		struct snd_pcm_substream *substream;
 
@@ -1878,9 +1824,7 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 
 
 
-/******************************************************************************
-	Module construction / destruction
-******************************************************************************/
+ 
 
 static void snd_echo_free(struct snd_card *card)
 {
@@ -1892,11 +1836,11 @@ static void snd_echo_free(struct snd_card *card)
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 
-	/* release chip data */
+	 
 	free_firmware_cache(chip);
 }
 
-/* <--snd_echo_probe() */
+ 
 static int snd_echo_create(struct snd_card *card,
 			   struct pci_dev *pci)
 {
@@ -1911,7 +1855,7 @@ static int snd_echo_create(struct snd_card *card,
 		return err;
 	pci_set_master(pci);
 
-	/* Allocate chip if needed */
+	 
 	spin_lock_init(&chip->lock);
 	chip->card = card;
 	chip->pci = pci;
@@ -1920,7 +1864,7 @@ static int snd_echo_create(struct snd_card *card,
 	mutex_init(&chip->mode_mutex);
 	chip->can_set_rate = 1;
 
-	/* PCI resource allocation */
+	 
 	err = pci_request_regions(pci, ECHOCARD_NAME);
 	if (err < 0)
 		return err;
@@ -1928,7 +1872,7 @@ static int snd_echo_create(struct snd_card *card,
 	chip->dsp_registers_phys = pci_resource_start(pci, 0);
 	sz = pci_resource_len(pci, 0);
 	if (sz > PAGE_SIZE)
-		sz = PAGE_SIZE;		/* We map only the required part */
+		sz = PAGE_SIZE;		 
 
 	chip->dsp_registers = devm_ioremap(&pci->dev, chip->dsp_registers_phys, sz);
 	if (!chip->dsp_registers) {
@@ -1948,8 +1892,7 @@ static int snd_echo_create(struct snd_card *card,
 
 	card->private_free = snd_echo_free;
 
-	/* Create the DSP comm page - this is the area of memory used for most
-	of the communication with the DSP, which accesses it via bus mastering */
+	 
 	chip->commpage_dma_buf =
 		snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV,
 				     sizeof(struct comm_page));
@@ -1969,7 +1912,7 @@ static int snd_echo_create(struct snd_card *card,
 	return 0;
 }
 
-/* constructor */
+ 
 static int __snd_echo_probe(struct pci_dev *pci,
 			    const struct pci_device_id *pci_id)
 {
@@ -2016,7 +1959,7 @@ static int __snd_echo_probe(struct pci_dev *pci,
 	}
 
 #ifdef ECHOCARD_HAS_MIDI
-	if (chip->has_midi) {	/* Some Mia's do not have midi */
+	if (chip->has_midi) {	 
 		err = snd_echo_midi_create(card, chip);
 		if (err < 0) {
 			dev_err(chip->card->dev, "new midi error %d\n", err);
@@ -2036,12 +1979,12 @@ static int __snd_echo_probe(struct pci_dev *pci,
 	if (err < 0)
 		return err;
 #endif
-#else /* ECHOCARD_HAS_VMIXER */
+#else  
 	err = snd_ctl_add(chip->card,
 			  snd_ctl_new1(&snd_echo_pcm_output_gain, chip));
 	if (err < 0)
 		return err;
-#endif /* ECHOCARD_HAS_VMIXER */
+#endif  
 
 #ifdef ECHOCARD_HAS_INPUT_GAIN
 	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_line_input_gain, chip));
@@ -2089,7 +2032,7 @@ static int __snd_echo_probe(struct pci_dev *pci,
 		return err;
 
 #ifdef ECHOCARD_HAS_DIGITAL_MODE_SWITCH
-	/* Creates a list of available digital modes */
+	 
 	chip->num_digital_modes = 0;
 	for (i = 0; i < 6; i++)
 		if (chip->digital_modes & (1 << i))
@@ -2098,10 +2041,10 @@ static int __snd_echo_probe(struct pci_dev *pci,
 	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_digital_mode_switch, chip));
 	if (err < 0)
 		return err;
-#endif /* ECHOCARD_HAS_DIGITAL_MODE_SWITCH */
+#endif  
 
 #ifdef ECHOCARD_HAS_EXTERNAL_CLOCK
-	/* Creates a list of available clock sources */
+	 
 	chip->num_clock_sources = 0;
 	for (i = 0; i < 10; i++)
 		if (chip->input_clock_types & (1 << i))
@@ -2113,7 +2056,7 @@ static int __snd_echo_probe(struct pci_dev *pci,
 		if (err < 0)
 			return err;
 	}
-#endif /* ECHOCARD_HAS_EXTERNAL_CLOCK */
+#endif  
 
 #ifdef ECHOCARD_HAS_DIGITAL_IO
 	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_spdif_mode_switch, chip));
@@ -2153,7 +2096,7 @@ static int snd_echo_suspend(struct device *dev)
 	struct echoaudio *chip = dev_get_drvdata(dev);
 
 #ifdef ECHOCARD_HAS_MIDI
-	/* This call can sleep */
+	 
 	if (chip->midi_out)
 		snd_echo_midi_output_trigger(chip->midi_out, 0);
 #endif
@@ -2198,9 +2141,7 @@ static int snd_echo_resume(struct device *dev)
 		return err;
 	}
 
-	/* Temporarily set chip->pipe_alloc_mask=0 otherwise
-	 * restore_dsp_settings() fails.
-	 */
+	 
 	pipe_alloc_mask = chip->pipe_alloc_mask;
 	chip->pipe_alloc_mask = 0;
 	err = restore_dsp_rettings(chip);
@@ -2241,13 +2182,11 @@ static SIMPLE_DEV_PM_OPS(snd_echo_pm, snd_echo_suspend, snd_echo_resume);
 #define SND_ECHO_PM_OPS	&snd_echo_pm
 #else
 #define SND_ECHO_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/******************************************************************************
-	Everything starts and ends here
-******************************************************************************/
+ 
 
-/* pci_driver definition */
+ 
 static struct pci_driver echo_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_echo_ids,

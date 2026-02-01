@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIOs on MPC512x/8349/8572/8610/QorIQ and compatible
- *
- * Copyright (C) 2008 Peter Korsgaard <jacmet@sunsite.dk>
- * Copyright (C) 2016 Freescale Semiconductor Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -44,21 +39,13 @@ struct mpc8xxx_gpio_chip {
 	int irqn;
 };
 
-/*
- * This hardware has a big endian bit assignment such that GPIO line 0 is
- * connected to bit 31, line 1 to bit 30 ... line 31 to bit 0.
- * This inline helper give the right bitmask for a certain line.
- */
+ 
 static inline u32 mpc_pin2mask(unsigned int offset)
 {
 	return BIT(31 - offset);
 }
 
-/* Workaround GPIO 1 errata on MPC8572/MPC8536. The status of GPIOs
- * defined as output cannot be determined by reading GPDAT register,
- * so we use shadow data register instead. The status of input pins
- * is determined by reading GPDAT register.
- */
+ 
 static int mpc8572_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	u32 val;
@@ -76,7 +63,7 @@ static int mpc5121_gpio_dir_out(struct gpio_chip *gc,
 				unsigned int gpio, int val)
 {
 	struct mpc8xxx_gpio_chip *mpc8xxx_gc = gpiochip_get_data(gc);
-	/* GPIO 28..31 are input only on MPC5121 */
+	 
 	if (gpio >= 28)
 		return -EINVAL;
 
@@ -87,7 +74,7 @@ static int mpc5125_gpio_dir_out(struct gpio_chip *gc,
 				unsigned int gpio, int val)
 {
 	struct mpc8xxx_gpio_chip *mpc8xxx_gc = gpiochip_get_data(gc);
-	/* GPIO 0..3 are input only on MPC5125 */
+	 
 	if (gpio <= 3)
 		return -EINVAL;
 
@@ -241,7 +228,7 @@ static struct irq_chip mpc8xxx_irq_chip = {
 	.irq_unmask	= mpc8xxx_irq_unmask,
 	.irq_mask	= mpc8xxx_irq_mask,
 	.irq_ack	= mpc8xxx_irq_ack,
-	/* this might get overwritten in mpc8xxx_probe() */
+	 
 	.irq_set_type	= mpc8xxx_irq_set_type,
 };
 
@@ -347,10 +334,7 @@ static int mpc8xxx_probe(struct platform_device *pdev)
 	if (!devtype)
 		devtype = &mpc8xxx_gpio_devtype_default;
 
-	/*
-	 * It's assumed that only a single type of gpio controller is available
-	 * on the current machine, so overwriting global data is fine.
-	 */
+	 
 	if (devtype->irq_set_type)
 		mpc8xxx_irq_chip.irq_set_type = devtype->irq_set_type;
 
@@ -361,20 +345,14 @@ static int mpc8xxx_probe(struct platform_device *pdev)
 
 	gc->to_irq = mpc8xxx_gpio_to_irq;
 
-	/*
-	 * The GPIO Input Buffer Enable register(GPIO_IBE) is used to control
-	 * the input enable of each individual GPIO port.  When an individual
-	 * GPIO port’s direction is set to input (GPIO_GPDIR[DRn=0]), the
-	 * associated input enable must be set (GPIOxGPIE[IEn]=1) to propagate
-	 * the port value to the GPIO Data Register.
-	 */
+	 
 	fwnode = dev_fwnode(&pdev->dev);
 	if (of_device_is_compatible(np, "fsl,qoriq-gpio") ||
 	    of_device_is_compatible(np, "fsl,ls1028a-gpio") ||
 	    of_device_is_compatible(np, "fsl,ls1088a-gpio") ||
 	    is_acpi_node(fwnode)) {
 		gc->write_reg(mpc8xxx_gc->regs + GPIO_IBE, 0xffffffff);
-		/* Also, latch state of GPIOs configured as output by bootloader. */
+		 
 		gc->bgpio_data = gc->read_reg(mpc8xxx_gc->regs + GPIO_DAT) &
 			gc->read_reg(mpc8xxx_gc->regs + GPIO_DIR);
 	}
@@ -398,7 +376,7 @@ static int mpc8xxx_probe(struct platform_device *pdev)
 	if (!mpc8xxx_gc->irq)
 		return 0;
 
-	/* ack and mask all irqs */
+	 
 	gc->write_reg(mpc8xxx_gc->regs + GPIO_IER, 0xffffffff);
 	gc->write_reg(mpc8xxx_gc->regs + GPIO_IMR, 0);
 

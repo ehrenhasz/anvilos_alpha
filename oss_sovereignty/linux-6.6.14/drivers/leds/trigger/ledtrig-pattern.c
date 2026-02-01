@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * LED pattern trigger
- *
- * Idea discussed with Pavel Machek. Raphael Teysseyre implemented
- * the first version, Baolin Wang simplified and improved the approach.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
@@ -15,10 +10,7 @@
 #include <linux/timer.h>
 
 #define MAX_PATTERNS		1024
-/*
- * When doing gradual dimming, the led brightness will be updated
- * every 50 milliseconds.
- */
+ 
 #define UPDATE_INTERVAL		50
 
 struct pattern_trig_data {
@@ -54,11 +46,7 @@ static int pattern_trig_compute_brightness(struct pattern_trig_data *data)
 {
 	int step_brightness;
 
-	/*
-	 * If current tuple's duration is less than the dimming interval,
-	 * we should treat it as a step change of brightness instead of
-	 * doing gradual dimming.
-	 */
+	 
 	if (data->delta_t == 0 || data->curr->delta_t < UPDATE_INTERVAL)
 		return data->curr->brightness;
 
@@ -80,25 +68,21 @@ static void pattern_trig_timer_function(struct timer_list *t)
 			break;
 
 		if (data->curr->brightness == data->next->brightness) {
-			/* Step change of brightness */
+			 
 			led_set_brightness(data->led_cdev,
 					   data->curr->brightness);
 			mod_timer(&data->timer,
 				  jiffies + msecs_to_jiffies(data->curr->delta_t));
 			if (!data->next->delta_t) {
-				/* Skip the tuple with zero duration */
+				 
 				pattern_trig_update_patterns(data);
 			}
-			/* Select next tuple */
+			 
 			pattern_trig_update_patterns(data);
 		} else {
-			/* Gradual dimming */
+			 
 
-			/*
-			 * If the accumulation time is larger than current
-			 * tuple's duration, we should go next one and re-check
-			 * if we repeated done.
-			 */
+			 
 			if (data->delta_t > data->curr->delta_t) {
 				pattern_trig_update_patterns(data);
 				continue;
@@ -109,7 +93,7 @@ static void pattern_trig_timer_function(struct timer_list *t)
 			mod_timer(&data->timer,
 				  jiffies + msecs_to_jiffies(UPDATE_INTERVAL));
 
-			/* Accumulate the gradual dimming time */
+			 
 			data->delta_t += UPDATE_INTERVAL;
 		}
 
@@ -129,7 +113,7 @@ static int pattern_trig_start_pattern(struct led_classdev *led_cdev)
 					     data->npatterns, data->repeat);
 	}
 
-	/* At least 2 tuples for software pattern. */
+	 
 	if (data->npatterns < 2)
 		return -EINVAL;
 
@@ -169,7 +153,7 @@ static ssize_t repeat_store(struct device *dev, struct device_attribute *attr,
 	if (err)
 		return err;
 
-	/* Number 0 and negative numbers except -1 are invalid. */
+	 
 	if (res < -1 || res == 0)
 		return -EINVAL;
 
@@ -181,7 +165,7 @@ static ssize_t repeat_store(struct device *dev, struct device_attribute *attr,
 		led_cdev->pattern_clear(led_cdev);
 
 	data->last_repeat = data->repeat = res;
-	/* -1 means repeat indefinitely */
+	 
 	if (data->repeat == -1)
 		data->is_indefinite = true;
 	else
@@ -410,10 +394,7 @@ static int pattern_trig_activate(struct led_classdev *led_cdev)
 
 	if (led_cdev->flags & LED_INIT_DEFAULT_TRIGGER) {
 		pattern_init(led_cdev);
-		/*
-		 * Mark as initialized even on pattern_init() error because
-		 * any consecutive call to it would produce the same error.
-		 */
+		 
 		led_cdev->flags &= ~LED_INIT_DEFAULT_TRIGGER;
 	}
 

@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * media-dev-allocator.c - Media Controller Device Allocator API
- *
- * Copyright (c) 2019 Shuah Khan <shuah@kernel.org>
- *
- * Credits: Suggested by Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
 
-/*
- * This file adds a global refcounted Media Controller Device Instance API.
- * A system wide global media device list is managed and each media device
- * includes a kref count. The last put on the media device releases the media
- * device instance.
- *
- */
+ 
+
+ 
 
 #include <linux/kref.h>
 #include <linux/module.h>
@@ -57,7 +45,7 @@ static void media_device_instance_release(struct kref *kref)
 	kfree(mdi);
 }
 
-/* Callers should hold media_device_lock when calling this function */
+ 
 static struct media_device *__media_device_get(struct device *dev,
 						const char *module_name,
 						struct module *owner)
@@ -70,7 +58,7 @@ static struct media_device *__media_device_get(struct device *dev,
 
 		kref_get(&mdi->refcount);
 
-		/* get module reference for the media_device owner */
+		 
 		if (owner != mdi->owner && !try_module_get(mdi->owner))
 			dev_err(dev,
 				"%s: module %s get owner reference error\n",
@@ -107,7 +95,7 @@ struct media_device *media_device_usb_allocate(struct usb_device *udev,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* check if media device is already initialized */
+	 
 	if (!mdev->dev)
 		__media_device_usb_init(mdev, udev, udev->product,
 					module_name);
@@ -122,7 +110,7 @@ void media_device_delete(struct media_device *mdev, const char *module_name,
 	struct media_device_instance *mdi = to_media_device_instance(mdev);
 
 	mutex_lock(&media_device_lock);
-	/* put module reference for the media_device owner */
+	 
 	if (mdi->owner != owner) {
 		module_put(mdi->owner);
 		dev_dbg(mdi->mdev.dev,

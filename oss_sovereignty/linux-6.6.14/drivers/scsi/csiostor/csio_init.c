@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -56,9 +24,7 @@ static struct dentry *csio_debugfs_root;
 static struct scsi_transport_template *csio_fcoe_transport;
 static struct scsi_transport_template *csio_fcoe_transport_vport;
 
-/*
- * debugfs support
- */
+ 
 static ssize_t
 csio_mem_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
@@ -134,10 +100,7 @@ static int csio_setup_debugfs(struct csio_hw *hw)
 	return 0;
 }
 
-/*
- * csio_dfs_create - Creates and sets up per-hw debugfs.
- *
- */
+ 
 static int
 csio_dfs_create(struct csio_hw *hw)
 {
@@ -150,42 +113,28 @@ csio_dfs_create(struct csio_hw *hw)
 	return 0;
 }
 
-/*
- * csio_dfs_destroy - Destroys per-hw debugfs.
- */
+ 
 static void
 csio_dfs_destroy(struct csio_hw *hw)
 {
 	debugfs_remove_recursive(hw->debugfs_root);
 }
 
-/*
- * csio_dfs_init - Debug filesystem initialization for the module.
- *
- */
+ 
 static void
 csio_dfs_init(void)
 {
 	csio_debugfs_root = debugfs_create_dir(KBUILD_MODNAME, NULL);
 }
 
-/*
- * csio_dfs_exit - debugfs cleanup for the module.
- */
+ 
 static void
 csio_dfs_exit(void)
 {
 	debugfs_remove(csio_debugfs_root);
 }
 
-/*
- * csio_pci_init - PCI initialization.
- * @pdev: PCI device.
- * @bars: Bitmask of bars to be requested.
- *
- * Initializes the PCI function by enabling MMIO, setting bus
- * mastership and setting DMA mask.
- */
+ 
 static int
 csio_pci_init(struct pci_dev *pdev, int *bars)
 {
@@ -222,12 +171,7 @@ err:
 
 }
 
-/*
- * csio_pci_exit - PCI unitialization.
- * @pdev: PCI device.
- * @bars: Bars to be released.
- *
- */
+ 
 static void
 csio_pci_exit(struct pci_dev *pdev, int *bars)
 {
@@ -235,11 +179,7 @@ csio_pci_exit(struct pci_dev *pdev, int *bars)
 	pci_disable_device(pdev);
 }
 
-/*
- * csio_hw_init_workers - Initialize the HW module's worker threads.
- * @hw: HW module.
- *
- */
+ 
 static void
 csio_hw_init_workers(struct csio_hw *hw)
 {
@@ -272,7 +212,7 @@ csio_create_queues(struct csio_hw *hw)
 		}
 	}
 
-	/* FW event queue */
+	 
 	rv = csio_wr_iq_create(hw, NULL, hw->fwevt_iq_idx,
 			       csio_get_fwevt_intr_idx(hw),
 			       hw->pport[0].portid, true, NULL);
@@ -281,7 +221,7 @@ csio_create_queues(struct csio_hw *hw)
 		return rv;
 	}
 
-	/* Create mgmt queue */
+	 
 	rv = csio_wr_eq_create(hw, NULL, mgmtm->eq_idx,
 			mgmtm->iq_idx, hw->pport[0].portid, NULL);
 
@@ -290,7 +230,7 @@ csio_create_queues(struct csio_hw *hw)
 		goto err;
 	}
 
-	/* Create SCSI queues */
+	 
 	for (i = 0; i < hw->num_pports; i++) {
 		info = &hw->scsi_cpu_info[i];
 
@@ -313,8 +253,8 @@ csio_create_queues(struct csio_hw *hw)
 				   i, j, rv);
 				goto err;
 			}
-		} /* for all CPUs */
-	} /* For all ports */
+		}  
+	}  
 
 	hw->flags |= CSIO_HWF_Q_FW_ALLOCED;
 	return 0;
@@ -323,12 +263,7 @@ err:
 	return -EINVAL;
 }
 
-/*
- * csio_config_queues - Configure the DMA queues.
- * @hw: HW module.
- *
- * Allocates memory for queues are registers them with FW.
- */
+ 
 int
 csio_config_queues(struct csio_hw *hw)
 {
@@ -342,7 +277,7 @@ csio_config_queues(struct csio_hw *hw)
 	if (hw->flags & CSIO_HWF_Q_MEM_ALLOCED)
 		return csio_create_queues(hw);
 
-	/* Calculate number of SCSI queues for MSIX we would like */
+	 
 	hw->num_scsi_msix_cpus = num_online_cpus();
 	hw->num_sqsets = num_online_cpus() * hw->num_pports;
 
@@ -351,7 +286,7 @@ csio_config_queues(struct csio_hw *hw)
 		hw->num_scsi_msix_cpus = CSIO_MAX_SCSI_CPU;
 	}
 
-	/* Initialize max_cpus, may get reduced during msix allocations */
+	 
 	for (i = 0; i < hw->num_pports; i++)
 		hw->scsi_cpu_info[i].max_cpus = hw->num_scsi_msix_cpus;
 
@@ -362,7 +297,7 @@ csio_config_queues(struct csio_hw *hw)
 
 	if (hw->intr_mode != CSIO_IM_MSIX) {
 
-		/* Allocate Forward interrupt iq. */
+		 
 		hw->intr_iq_idx = csio_wr_alloc_q(hw, CSIO_INTR_IQSIZE,
 						CSIO_INTR_WRSIZE, CSIO_INGRESS,
 						(void *)hw, 0, 0, NULL);
@@ -373,7 +308,7 @@ csio_config_queues(struct csio_hw *hw)
 		}
 	}
 
-	/* Allocate the FW evt queue */
+	 
 	hw->fwevt_iq_idx = csio_wr_alloc_q(hw, CSIO_FWEVT_IQSIZE,
 					   CSIO_FWEVT_WRSIZE,
 					   CSIO_INGRESS, (void *)hw,
@@ -384,7 +319,7 @@ csio_config_queues(struct csio_hw *hw)
 		goto intr_disable;
 	}
 
-	/* Allocate the mgmt queue */
+	 
 	mgmtm->eq_idx = csio_wr_alloc_q(hw, CSIO_MGMT_EQSIZE,
 				      CSIO_MGMT_EQ_WRSIZE,
 				      CSIO_EGRESS, (void *)hw, 0, 0, NULL);
@@ -393,10 +328,10 @@ csio_config_queues(struct csio_hw *hw)
 		goto intr_disable;
 	}
 
-	/* Use FW IQ for MGMT req completion */
+	 
 	mgmtm->iq_idx = hw->fwevt_iq_idx;
 
-	/* Allocate SCSI queues */
+	 
 	for (i = 0; i < hw->num_pports; i++) {
 		info = &hw->scsi_cpu_info[i];
 
@@ -432,8 +367,8 @@ csio_config_queues(struct csio_hw *hw)
 				goto intr_disable;
 			}
 			sqset->iq_idx = idx;
-		} /* for all CPUs */
-	} /* For all ports */
+		}  
+	}  
 
 	hw->flags |= CSIO_HWF_Q_MEM_ALLOCED;
 
@@ -441,10 +376,7 @@ csio_config_queues(struct csio_hw *hw)
 	if (rv != 0)
 		goto intr_disable;
 
-	/*
-	 * Now request IRQs for the vectors. In the event of a failure,
-	 * cleanup is handled internally by this function.
-	 */
+	 
 	rv = csio_request_irqs(hw);
 	if (rv != 0)
 		return -EINVAL;
@@ -505,13 +437,7 @@ csio_resource_free(struct csio_hw *hw)
 	hw->mb_mempool = NULL;
 }
 
-/*
- * csio_hw_alloc - Allocate and initialize the HW module.
- * @pdev: PCI device.
- *
- * Allocates HW structure, DMA, memory resources, maps BARS to
- * host memory and initializes HW module.
- */
+ 
 static struct csio_hw *csio_hw_alloc(struct pci_dev *pdev)
 {
 	struct csio_hw *hw;
@@ -523,11 +449,11 @@ static struct csio_hw *csio_hw_alloc(struct pci_dev *pdev)
 	hw->pdev = pdev;
 	strncpy(hw->drv_version, CSIO_DRV_VERSION, 32);
 
-	/* memory pool/DMA pool allocation */
+	 
 	if (csio_resource_alloc(hw))
 		goto err_free_hw;
 
-	/* Get the start address of registers from BAR 0 */
+	 
 	hw->regstart = ioremap(pci_resource_start(pdev, 0),
 				       pci_resource_len(pdev, 0));
 	if (!hw->regstart) {
@@ -558,12 +484,7 @@ err:
 	return NULL;
 }
 
-/*
- * csio_hw_free - Uninitialize and free the HW module.
- * @hw: The HW module
- *
- * Disable interrupts, uninit the HW module, free resources, free hw.
- */
+ 
 static void
 csio_hw_free(struct csio_hw *hw)
 {
@@ -576,18 +497,7 @@ csio_hw_free(struct csio_hw *hw)
 	kfree(hw);
 }
 
-/**
- * csio_shost_init - Create and initialize the lnode module.
- * @hw:		The HW module.
- * @dev:	The device associated with this invocation.
- * @probe:	Called from probe context or not?
- * @pln:	Parent lnode if any.
- *
- * Allocates lnode structure via scsi_host_alloc, initializes
- * shost, initializes lnode module and registers with SCSI ML
- * via scsi_host_add. This function is shared between physical and
- * virtual node ports.
- */
+ 
 struct csio_lnode *
 csio_shost_init(struct csio_hw *hw, struct device *dev,
 		  bool probe, struct csio_lnode *pln)
@@ -598,10 +508,7 @@ csio_shost_init(struct csio_hw *hw, struct device *dev,
 	csio_fcoe_shost_template.cmd_per_lun = csio_lun_qdepth;
 	csio_fcoe_shost_vport_template.cmd_per_lun = csio_lun_qdepth;
 
-	/*
-	 * hw->pdev is the physical port's PCI dev structure,
-	 * which will be different from the NPIV dev structure.
-	 */
+	 
 	if (dev == &hw->pdev->dev)
 		shost = scsi_host_alloc(
 				&csio_fcoe_shost_template,
@@ -617,13 +524,13 @@ csio_shost_init(struct csio_hw *hw, struct device *dev,
 	ln = shost_priv(shost);
 	memset(ln, 0, sizeof(struct csio_lnode));
 
-	/* Link common lnode to this lnode */
+	 
 	ln->dev_num = (shost->host_no << 16);
 
 	shost->can_queue = CSIO_MAX_QUEUE;
 	shost->this_id = -1;
 	shost->unique_id = shost->host_no;
-	shost->max_cmd_len = 16; /* Max CDB length supported */
+	shost->max_cmd_len = 16;  
 	shost->max_id = min_t(uint32_t, csio_fcoe_rnodes,
 			      hw->fres_info.max_ssns);
 	shost->max_lun = CSIO_MAX_LUN;
@@ -632,11 +539,11 @@ csio_shost_init(struct csio_hw *hw, struct device *dev,
 	else
 		shost->transportt = csio_fcoe_transport_vport;
 
-	/* root lnode */
+	 
 	if (!hw->rln)
 		hw->rln = ln;
 
-	/* Other initialization here: Common, Transport specific */
+	 
 	if (csio_lnode_init(ln, hw, pln))
 		goto err_shost_put;
 
@@ -653,26 +560,20 @@ err:
 	return NULL;
 }
 
-/**
- * csio_shost_exit - De-instantiate the shost.
- * @ln:		The lnode module corresponding to the shost.
- *
- */
+ 
 void
 csio_shost_exit(struct csio_lnode *ln)
 {
 	struct Scsi_Host *shost = csio_ln_to_shost(ln);
 	struct csio_hw *hw = csio_lnode_to_hw(ln);
 
-	/* Inform transport */
+	 
 	fc_remove_host(shost);
 
-	/* Inform SCSI ML */
+	 
 	scsi_remove_host(shost);
 
-	/* Flush all the events, so that any rnode removal events
-	 * already queued are all handled, before we remove the lnode.
-	 */
+	 
 	spin_lock_irq(&hw->lock);
 	csio_evtq_flush(hw);
 	spin_unlock_irq(&hw->lock);
@@ -705,12 +606,12 @@ csio_lnodes_block_request(struct csio_hw *hw)
 	}
 
 	spin_lock_irq(&hw->lock);
-	/* Traverse sibling lnodes */
+	 
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 		lnode_list[cur_cnt++] = sln;
 
-		/* Traverse children lnodes */
+		 
 		list_for_each(cur_cln, &sln->cln_head)
 			lnode_list[cur_cnt++] = (struct csio_lnode *) cur_cln;
 	}
@@ -744,12 +645,12 @@ csio_lnodes_unblock_request(struct csio_hw *hw)
 	}
 
 	spin_lock_irq(&hw->lock);
-	/* Traverse sibling lnodes */
+	 
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 		lnode_list[cur_cnt++] = sln;
 
-		/* Traverse children lnodes */
+		 
 		list_for_each(cur_cln, &sln->cln_head)
 			lnode_list[cur_cnt++] = (struct csio_lnode *) cur_cln;
 	}
@@ -782,7 +683,7 @@ csio_lnodes_block_by_port(struct csio_hw *hw, uint8_t portid)
 	}
 
 	spin_lock_irq(&hw->lock);
-	/* Traverse sibling lnodes */
+	 
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 		if (sln->portid != portid)
@@ -790,7 +691,7 @@ csio_lnodes_block_by_port(struct csio_hw *hw, uint8_t portid)
 
 		lnode_list[cur_cnt++] = sln;
 
-		/* Traverse children lnodes */
+		 
 		list_for_each(cur_cln, &sln->cln_head)
 			lnode_list[cur_cnt++] = (struct csio_lnode *) cur_cln;
 	}
@@ -823,14 +724,14 @@ csio_lnodes_unblock_by_port(struct csio_hw *hw, uint8_t portid)
 	}
 
 	spin_lock_irq(&hw->lock);
-	/* Traverse sibling lnodes */
+	 
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 		if (sln->portid != portid)
 			continue;
 		lnode_list[cur_cnt++] = sln;
 
-		/* Traverse children lnodes */
+		 
 		list_for_each(cur_cln, &sln->cln_head)
 			lnode_list[cur_cnt++] = (struct csio_lnode *) cur_cln;
 	}
@@ -861,39 +762,39 @@ csio_lnodes_exit(struct csio_hw *hw, bool npiv)
 		return;
 	}
 
-	/* Get all child lnodes(NPIV ports) */
+	 
 	spin_lock_irq(&hw->lock);
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 
-		/* Traverse children lnodes */
+		 
 		list_for_each(cur_cln, &sln->cln_head)
 			lnode_list[cur_cnt++] = (struct csio_lnode *) cur_cln;
 	}
 	spin_unlock_irq(&hw->lock);
 
-	/* Delete NPIV lnodes */
+	 
 	for (ii = 0; ii < cur_cnt; ii++) {
 		csio_dbg(hw, "Deleting child lnode: %p\n", lnode_list[ii]);
 		ln = lnode_list[ii];
 		fc_vport_terminate(ln->fc_vport);
 	}
 
-	/* Delete only npiv lnodes */
+	 
 	if (npiv)
 		goto free_lnodes;
 
 	cur_cnt = 0;
-	/* Get all physical lnodes */
+	 
 	spin_lock_irq(&hw->lock);
-	/* Traverse sibling lnodes */
+	 
 	list_for_each(cur_ln, &hw->sln_head) {
 		sln = (struct csio_lnode *) cur_ln;
 		lnode_list[cur_cnt++] = sln;
 	}
 	spin_unlock_irq(&hw->lock);
 
-	/* Delete physical lnodes */
+	 
 	for (ii = 0; ii < cur_cnt; ii++) {
 		csio_dbg(hw, "Deleting parent lnode: %p\n", lnode_list[ii]);
 		csio_shost_exit(lnode_list[ii]);
@@ -903,11 +804,7 @@ free_lnodes:
 	kfree(lnode_list);
 }
 
-/*
- * csio_lnode_init_post: Set lnode attributes after starting HW.
- * @ln: lnode.
- *
- */
+ 
 static void
 csio_lnode_init_post(struct csio_lnode *ln)
 {
@@ -918,24 +815,7 @@ csio_lnode_init_post(struct csio_lnode *ln)
 	scsi_scan_host(shost);
 }
 
-/*
- * csio_probe_one - Instantiate this function.
- * @pdev: PCI device
- * @id: Device ID
- *
- * This is the .probe() callback of the driver. This function:
- * - Initializes the PCI function by enabling MMIO, setting bus
- *   mastership and setting DMA mask.
- * - Allocates HW structure, DMA, memory resources, maps BARS to
- *   host memory and initializes HW module.
- * - Allocates lnode structure via scsi_host_alloc, initializes
- *   shost, initialized lnode module and registers with SCSI ML
- *   via scsi_host_add.
- * - Enables interrupts, and starts the chip by kicking off the
- *   HW state machine.
- * - Once hardware is ready, initiated scan of the host via
- *   scsi_scan_host.
- */
+ 
 static int csio_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	int rv;
@@ -944,7 +824,7 @@ static int csio_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	struct csio_hw *hw;
 	struct csio_lnode *ln;
 
-	/* probe only T5 and T6 cards */
+	 
 	if (!csio_is_t5((pdev->device & CSIO_HW_CHIP_MASK)) &&
 	    !csio_is_t6((pdev->device & CSIO_HW_CHIP_MASK)))
 		return -ENODEV;
@@ -986,7 +866,7 @@ static int csio_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 			rv = -ENODEV;
 			break;
 		}
-		/* Initialize portid */
+		 
 		ln->portid = hw->pport[i].portid;
 
 		spin_lock_irq(&hw->lock);
@@ -1020,12 +900,7 @@ err:
 	return rv;
 }
 
-/*
- * csio_remove_one - Remove one instance of the driver at this PCI function.
- * @pdev: PCI device
- *
- * Used during hotplug operation.
- */
+ 
 static void csio_remove_one(struct pci_dev *pdev)
 {
 	struct csio_hw *hw = pci_get_drvdata(pdev);
@@ -1034,10 +909,7 @@ static void csio_remove_one(struct pci_dev *pdev)
 	csio_lnodes_block_request(hw);
 	spin_lock_irq(&hw->lock);
 
-	/* Stops lnode, Rnode s/m
-	 * Quiesce IOs.
-	 * All sessions with remote ports are unregistered.
-	 */
+	 
 	csio_hw_stop(hw);
 	spin_unlock_irq(&hw->lock);
 	csio_lnodes_unblock_request(hw);
@@ -1047,11 +919,7 @@ static void csio_remove_one(struct pci_dev *pdev)
 	csio_pci_exit(pdev, &bars);
 }
 
-/*
- * csio_pci_error_detected - PCI error was detected
- * @pdev: PCI device
- *
- */
+ 
 static pci_ers_result_t
 csio_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
 {
@@ -1060,10 +928,7 @@ csio_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
 	csio_lnodes_block_request(hw);
 	spin_lock_irq(&hw->lock);
 
-	/* Post PCI error detected evt to HW s/m
-	 * HW s/m handles this evt by quiescing IOs, unregisters rports
-	 * and finally takes the device to offline.
-	 */
+	 
 	csio_post_event(&hw->sm, CSIO_HWE_PCIERR_DETECTED);
 	spin_unlock_irq(&hw->lock);
 	csio_lnodes_unblock_request(hw);
@@ -1074,11 +939,7 @@ csio_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
 		PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_NEED_RESET;
 }
 
-/*
- * csio_pci_slot_reset - PCI slot has been reset.
- * @pdev: PCI device
- *
- */
+ 
 static pci_ers_result_t
 csio_pci_slot_reset(struct pci_dev *pdev)
 {
@@ -1094,9 +955,7 @@ csio_pci_slot_reset(struct pci_dev *pdev)
 	pci_restore_state(pdev);
 	pci_save_state(pdev);
 
-	/* Bring HW s/m to ready state.
-	 * but don't resume IOs.
-	 */
+	 
 	spin_lock_irq(&hw->lock);
 	csio_post_event(&hw->sm, CSIO_HWE_PCIERR_SLOT_RESET);
 	ready = csio_is_hw_ready(hw);
@@ -1110,11 +969,7 @@ csio_pci_slot_reset(struct pci_dev *pdev)
 	}
 }
 
-/*
- * csio_pci_resume - Resume normal operations
- * @pdev: PCI device
- *
- */
+ 
 static void
 csio_pci_resume(struct pci_dev *pdev)
 {
@@ -1123,7 +978,7 @@ csio_pci_resume(struct pci_dev *pdev)
 	int rv = 0;
 	int i;
 
-	/* Bring the LINK UP and Resume IO */
+	 
 
 	for (i = 0; i < hw->num_pports; i++) {
 		ln = csio_shost_init(hw, &pdev->dev, true, NULL);
@@ -1131,7 +986,7 @@ csio_pci_resume(struct pci_dev *pdev)
 			rv = -ENODEV;
 			break;
 		}
-		/* Initialize portid */
+		 
 		ln->portid = hw->pport[i].portid;
 
 		spin_lock_irq(&hw->lock);
@@ -1167,12 +1022,10 @@ static struct pci_error_handlers csio_err_handler = {
 	.resume		= csio_pci_resume,
 };
 
-/*
- *  Macros needed to support the PCI Device ID Table ...
- */
+ 
 #define CH_PCI_DEVICE_ID_TABLE_DEFINE_BEGIN \
 	static const struct pci_device_id csio_pci_tbl[] = {
-/* Define for FCoE uses PF6 */
+ 
 #define CH_PCI_DEVICE_ID_FUNCTION	0x6
 
 #define CH_PCI_ID_TABLE_ENTRY(devid) \
@@ -1193,10 +1046,7 @@ static struct pci_driver csio_pci_driver = {
 	.err_handler	= &csio_err_handler,
 };
 
-/*
- * csio_init - Chelsio storage driver initialization function.
- *
- */
+ 
 static int __init
 csio_init(void)
 {
@@ -1230,11 +1080,7 @@ err:
 	return rv;
 }
 
-/*
- * csio_exit - Chelsio storage driver uninitialization .
- *
- * Function that gets called in the unload path.
- */
+ 
 static void __exit
 csio_exit(void)
 {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_SYNPROXY_H
 #define _XT_SYNPROXY_H
 
@@ -12,4 +12,4 @@
 
 #define xt_synproxy_info		nf_synproxy_info
 
-#endif /* _XT_SYNPROXY_H */
+#endif  

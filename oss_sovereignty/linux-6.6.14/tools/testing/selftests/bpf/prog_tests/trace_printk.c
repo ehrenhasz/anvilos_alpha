@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Oracle and/or its affiliates. */
+
+ 
 
 #include <test_progs.h>
 
@@ -42,10 +42,10 @@ void serial_test_trace_printk(void)
 	if (!ASSERT_OK_PTR(fp, "fopen(TRACE_PIPE)"))
 		goto cleanup;
 
-	/* We do not want to wait forever if this test fails... */
+	 
 	fcntl(fileno(fp), F_SETFL, O_NONBLOCK);
 
-	/* wait for tracepoint to trigger */
+	 
 	usleep(1);
 	trace_printk_lskel__detach(skel);
 
@@ -55,7 +55,7 @@ void serial_test_trace_printk(void)
 	if (!ASSERT_GT(bss->trace_printk_ret, 0, "bss->trace_printk_ret"))
 		goto cleanup;
 
-	/* verify our search string is in the trace buffer */
+	 
 	while (getline(&buf, &buflen, fp) >= 0 || errno == EAGAIN) {
 		if (strstr(buf, SEARCHMSG) != NULL)
 			found++;

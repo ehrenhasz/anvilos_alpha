@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-vfe-gen1.c
- *
- * Qualcomm MSM Camera Subsystem - VFE Common functionality for Gen 1 versions of hw (4.1, 4.7..)
- *
- * Copyright (C) 2020 Linaro Ltd.
- */
+
+ 
 
 #include "camss.h"
 #include "camss-vfe.h"
 #include "camss-vfe-gen1.h"
 
-/* Max number of frame drop updates per frame */
+ 
 #define VFE_FRAME_DROP_UPDATES 2
 #define VFE_NEXT_SOF_MS 500
 
@@ -91,12 +85,7 @@ static int vfe_disable_output(struct vfe_line *line)
 	return 0;
 }
 
-/*
- * vfe_gen1_disable - Disable streaming on VFE line
- * @line: VFE line
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int vfe_gen1_disable(struct vfe_line *line)
 {
 	struct vfe_device *vfe = to_vfe(line);
@@ -152,7 +141,7 @@ static void vfe_output_frame_drop(struct vfe_device *vfe,
 	u8 drop_period;
 	unsigned int i;
 
-	/* We need to toggle update period to be valid on next frame */
+	 
 	output->drop_update_idx++;
 	output->drop_update_idx %= VFE_FRAME_DROP_UPDATES;
 	drop_period = VFE_FRAME_DROP_VAL + output->drop_update_idx;
@@ -185,7 +174,7 @@ static int vfe_enable_output(struct vfe_line *line)
 		struct v4l2_subdev *subdev = media_entity_to_v4l2_subdev(sensor);
 
 		v4l2_subdev_call(subdev, sensor, g_skip_frames, &frame_skip);
-		/* Max frame skip is 29 frames */
+		 
 		if (frame_skip > VFE_FRAME_DROP_VAL - 1)
 			frame_skip = VFE_FRAME_DROP_VAL - 1;
 	}
@@ -504,21 +493,14 @@ static void vfe_buf_update_wm_on_new(struct vfe_device *vfe,
 	}
 }
 
-/*
- * vfe_isr_halt_ack - Process halt ack
- * @vfe: VFE Device
- */
+ 
 static void vfe_isr_halt_ack(struct vfe_device *vfe)
 {
 	complete(&vfe->halt_complete);
 	vfe->ops_gen1->halt_clear(vfe);
 }
 
-/*
- * vfe_isr_sof - Process start of frame interrupt
- * @vfe: VFE Device
- * @line_id: VFE line
- */
+ 
 static void vfe_isr_sof(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
 	struct vfe_output *output;
@@ -533,11 +515,7 @@ static void vfe_isr_sof(struct vfe_device *vfe, enum vfe_line_id line_id)
 	spin_unlock_irqrestore(&vfe->output_lock, flags);
 }
 
-/*
- * vfe_isr_reg_update - Process reg update interrupt
- * @vfe: VFE Device
- * @line_id: VFE line
- */
+ 
 static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
 	struct vfe_output *output;
@@ -557,7 +535,7 @@ static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 	}
 
 	if (output->state == VFE_OUTPUT_STOPPING) {
-		/* Release last buffer when hw is idle */
+		 
 		if (output->last_buffer) {
 			vb2_buffer_done(&output->last_buffer->vb.vb2_buf,
 					VB2_BUF_STATE_DONE);
@@ -565,8 +543,8 @@ static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 		}
 		output->state = VFE_OUTPUT_IDLE;
 
-		/* Buffers received in stopping state are queued in */
-		/* dma pending queue, start next capture here */
+		 
+		 
 
 		output->buf[0] = vfe_buf_get_pending(output);
 		output->buf[1] = vfe_buf_get_pending(output);
@@ -600,11 +578,7 @@ static void vfe_isr_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 	spin_unlock_irqrestore(&vfe->output_lock, flags);
 }
 
-/*
- * vfe_isr_wm_done - Process write master done interrupt
- * @vfe: VFE Device
- * @wm: Write master id
- */
+ 
 static void vfe_isr_wm_done(struct vfe_device *vfe, u8 wm)
 {
 	struct camss_buffer *ready_buf;
@@ -644,10 +618,10 @@ static void vfe_isr_wm_done(struct vfe_device *vfe, u8 wm)
 	ready_buf->vb.vb2_buf.timestamp = ts;
 	ready_buf->vb.sequence = output->sequence++;
 
-	/* Get next buffer */
+	 
 	output->buf[!active_index] = vfe_buf_get_pending(output);
 	if (!output->buf[!active_index]) {
-		/* No next buffer - set same address */
+		 
 		new_addr = ready_buf->addr;
 		vfe_buf_update_wm_on_last(vfe, output);
 	} else {
@@ -675,16 +649,7 @@ out_unlock:
 	spin_unlock_irqrestore(&vfe->output_lock, flags);
 }
 
-/*
- * vfe_queue_buffer - Add empty buffer
- * @vid: Video device structure
- * @buf: Buffer to be enqueued
- *
- * Add an empty buffer - depending on the current number of buffers it will be
- * put in pending buffer queue or directly given to the hardware to be filled.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int vfe_queue_buffer(struct camss_video *vid, struct camss_buffer *buf)
 {
 	struct vfe_line *line = container_of(vid, struct vfe_line, video_out);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * skl-sst-dsp.c - SKL SST library generic function
- *
- * Copyright (C) 2014-15, Intel Corporation.
- * Author:Rafal Redzimski <rafal.f.redzimski@intel.com>
- *	Jeeja KP <jeeja.kp@intel.com>
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <sound/pcm.h>
 
 #include "../common/sst-dsp.h"
@@ -14,7 +7,7 @@
 #include "../common/sst-dsp-priv.h"
 #include "skl.h"
 
-/* various timeout values */
+ 
 #define SKL_DSP_PU_TO		50
 #define SKL_DSP_PD_TO		50
 #define SKL_DSP_RESET_TO	50
@@ -26,11 +19,7 @@ void skl_dsp_set_state_locked(struct sst_dsp *ctx, int state)
 	mutex_unlock(&ctx->mutex);
 }
 
-/*
- * Initialize core power state and usage count. To be called after
- * successful first boot. Hence core 0 will be running and other cores
- * will be reset
- */
+ 
 void skl_dsp_init_core_state(struct sst_dsp *ctx)
 {
 	struct skl_dev *skl = ctx->thread_context;
@@ -45,7 +34,7 @@ void skl_dsp_init_core_state(struct sst_dsp *ctx)
 	}
 }
 
-/* Get the mask for all enabled cores */
+ 
 unsigned int skl_dsp_get_enabled_cores(struct sst_dsp *ctx)
 {
 	struct skl_dev *skl = ctx->thread_context;
@@ -56,15 +45,15 @@ unsigned int skl_dsp_get_enabled_cores(struct sst_dsp *ctx)
 
 	val = sst_dsp_shim_read_unlocked(ctx, SKL_ADSP_REG_ADSPCS);
 
-	/* Cores having CPA bit set */
+	 
 	en_cores_mask = (val & SKL_ADSPCS_CPA_MASK(core_mask)) >>
 			SKL_ADSPCS_CPA_SHIFT;
 
-	/* And cores having CRST bit cleared */
+	 
 	en_cores_mask &= (~val & SKL_ADSPCS_CRST_MASK(core_mask)) >>
 			SKL_ADSPCS_CRST_SHIFT;
 
-	/* And cores having CSTALL bit cleared */
+	 
 	en_cores_mask &= (~val & SKL_ADSPCS_CSTALL_MASK(core_mask)) >>
 			SKL_ADSPCS_CSTALL_SHIFT;
 	en_cores_mask &= core_mask;
@@ -79,12 +68,12 @@ skl_dsp_core_set_reset_state(struct sst_dsp *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx,
 			SKL_ADSP_REG_ADSPCS, SKL_ADSPCS_CRST_MASK(core_mask),
 			SKL_ADSPCS_CRST_MASK(core_mask));
 
-	/* poll with timeout to check if operation successful */
+	 
 	ret = sst_dsp_register_poll(ctx,
 			SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CRST_MASK(core_mask),
@@ -109,11 +98,11 @@ int skl_dsp_core_unset_reset_state(
 
 	dev_dbg(ctx->dev, "In %s\n", __func__);
 
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_ADSPCS,
 				SKL_ADSPCS_CRST_MASK(core_mask), 0);
 
-	/* poll with timeout to check if operation successful */
+	 
 	ret = sst_dsp_register_poll(ctx,
 			SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CRST_MASK(core_mask),
@@ -152,12 +141,12 @@ is_skl_dsp_core_enable(struct sst_dsp *ctx, unsigned int core_mask)
 
 static int skl_dsp_reset_core(struct sst_dsp *ctx, unsigned int core_mask)
 {
-	/* stall core */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CSTALL_MASK(core_mask),
 			SKL_ADSPCS_CSTALL_MASK(core_mask));
 
-	/* set reset state */
+	 
 	return skl_dsp_core_set_reset_state(ctx, core_mask);
 }
 
@@ -165,12 +154,12 @@ int skl_dsp_start_core(struct sst_dsp *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* unset reset state */
+	 
 	ret = skl_dsp_core_unset_reset_state(ctx, core_mask);
 	if (ret < 0)
 		return ret;
 
-	/* run core */
+	 
 	dev_dbg(ctx->dev, "unstall/run core: core_mask = %x\n", core_mask);
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CSTALL_MASK(core_mask), 0);
@@ -189,12 +178,12 @@ int skl_dsp_core_power_up(struct sst_dsp *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_SPA_MASK(core_mask),
 			SKL_ADSPCS_SPA_MASK(core_mask));
 
-	/* poll with timeout to check if operation successful */
+	 
 	ret = sst_dsp_register_poll(ctx,
 			SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CPA_MASK(core_mask),
@@ -215,11 +204,11 @@ int skl_dsp_core_power_up(struct sst_dsp *ctx, unsigned int core_mask)
 
 int skl_dsp_core_power_down(struct sst_dsp  *ctx, unsigned int core_mask)
 {
-	/* update bits */
+	 
 	sst_dsp_shim_update_bits_unlocked(ctx, SKL_ADSP_REG_ADSPCS,
 				SKL_ADSPCS_SPA_MASK(core_mask), 0);
 
-	/* poll with timeout to check if operation successful */
+	 
 	return sst_dsp_register_poll(ctx,
 			SKL_ADSP_REG_ADSPCS,
 			SKL_ADSPCS_CPA_MASK(core_mask),
@@ -232,7 +221,7 @@ int skl_dsp_enable_core(struct sst_dsp  *ctx, unsigned int core_mask)
 {
 	int ret;
 
-	/* power up */
+	 
 	ret = skl_dsp_core_power_up(ctx, core_mask);
 	if (ret < 0) {
 		dev_err(ctx->dev, "dsp core power up failed: core_mask %x\n",
@@ -254,7 +243,7 @@ int skl_dsp_disable_core(struct sst_dsp *ctx, unsigned int core_mask)
 		return ret;
 	}
 
-	/* power down core*/
+	 
 	ret = skl_dsp_core_power_down(ctx, core_mask);
 	if (ret < 0) {
 		dev_err(ctx->dev, "dsp core power down fail mask %x: %d\n",
@@ -329,10 +318,7 @@ irqreturn_t skl_dsp_sst_interrupt(int irq, void *dev_id)
 
 	return result;
 }
-/*
- * skl_dsp_get_core/skl_dsp_put_core will be called inside DAPM context
- * within the dapm mutex. Hence no separate lock is used.
- */
+ 
 int skl_dsp_get_core(struct sst_dsp *ctx, unsigned int core_id)
 {
 	struct skl_dev *skl = ctx->thread_context;
@@ -420,7 +406,7 @@ struct sst_dsp *skl_dsp_ctx_init(struct device *dev,
 	sst->ops = sst_dev->ops;
 	sst->thread_context = sst_dev->thread_context;
 
-	/* Initialise SST Audio DSP */
+	 
 	if (sst->ops->init) {
 		ret = sst->ops->init(sst);
 		if (ret < 0)
@@ -435,7 +421,7 @@ int skl_dsp_acquire_irq(struct sst_dsp *sst)
 	struct sst_dsp_device *sst_dev = sst->sst_dev;
 	int ret;
 
-	/* Register the ISR */
+	 
 	ret = request_threaded_irq(sst->irq, sst->ops->irq_handler,
 		sst_dev->thread, IRQF_SHARED, "AudioDSP", sst);
 	if (ret)

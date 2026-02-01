@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interconnect.h>
@@ -27,29 +23,7 @@ static int mdp5_hw_init(struct msm_kms *kms)
 
 	pm_runtime_get_sync(dev);
 
-	/* Magic unknown register writes:
-	 *
-	 *    W VBIF:0x004 00000001      (mdss_mdp.c:839)
-	 *    W MDP5:0x2e0 0xe9          (mdss_mdp.c:839)
-	 *    W MDP5:0x2e4 0x55          (mdss_mdp.c:839)
-	 *    W MDP5:0x3ac 0xc0000ccc    (mdss_mdp.c:839)
-	 *    W MDP5:0x3b4 0xc0000ccc    (mdss_mdp.c:839)
-	 *    W MDP5:0x3bc 0xcccccc      (mdss_mdp.c:839)
-	 *    W MDP5:0x4a8 0xcccc0c0     (mdss_mdp.c:839)
-	 *    W MDP5:0x4b0 0xccccc0c0    (mdss_mdp.c:839)
-	 *    W MDP5:0x4b8 0xccccc000    (mdss_mdp.c:839)
-	 *
-	 * Downstream fbdev driver gets these register offsets/values
-	 * from DT.. not really sure what these registers are or if
-	 * different values for different boards/SoC's, etc.  I guess
-	 * they are the golden registers.
-	 *
-	 * Not setting these does not seem to cause any problem.  But
-	 * we may be getting lucky with the bootloader initializing
-	 * them for us.  OTOH, if we can always count on the bootloader
-	 * setting the golden registers, then perhaps we don't need to
-	 * care.
-	 */
+	 
 
 	spin_lock_irqsave(&mdp5_kms->resource_lock, flags);
 	mdp5_write(mdp5_kms, REG_MDP5_DISP_INTF_SEL, 0);
@@ -62,23 +36,16 @@ static int mdp5_hw_init(struct msm_kms *kms)
 	return 0;
 }
 
-/* Global/shared object state funcs */
+ 
 
-/*
- * This is a helper that returns the private state currently in operation.
- * Note that this would return the "old_state" if called in the atomic check
- * path, and the "new_state" after the atomic swap has been done.
- */
+ 
 struct mdp5_global_state *
 mdp5_get_existing_global_state(struct mdp5_kms *mdp5_kms)
 {
 	return to_mdp5_global_state(mdp5_kms->glob_state.state);
 }
 
-/*
- * This acquires the modeset lock set aside for global state, creates
- * a new duplicated private object state.
- */
+ 
 struct mdp5_global_state *mdp5_get_global_state(struct drm_atomic_state *s)
 {
 	struct msm_drm_private *priv = s->dev->dev_private;
@@ -167,7 +134,7 @@ static void mdp5_prepare_commit(struct msm_kms *kms, struct drm_atomic_state *st
 
 static void mdp5_flush_commit(struct msm_kms *kms, unsigned crtc_mask)
 {
-	/* TODO */
+	 
 }
 
 static void mdp5_wait_flush(struct msm_kms *kms, unsigned crtc_mask)
@@ -437,10 +404,7 @@ static int modeset_init(struct mdp5_kms *mdp5_kms)
 	struct drm_encoder *encoder;
 	unsigned int num_encoders;
 
-	/*
-	 * Construct encoders and modeset initialize connector devices
-	 * for each external display interface.
-	 */
+	 
 	for (i = 0; i < mdp5_kms->num_intfs; i++) {
 		ret = modeset_init_intf(mdp5_kms, mdp5_kms->intfs[i]);
 		if (ret)
@@ -451,18 +415,10 @@ static int modeset_init(struct mdp5_kms *mdp5_kms)
 	drm_for_each_encoder(encoder, dev)
 		num_encoders++;
 
-	/*
-	 * We should ideally have less number of encoders (set up by parsing
-	 * the MDP5 interfaces) than the number of layer mixers present in HW,
-	 * but let's be safe here anyway
-	 */
+	 
 	num_crtcs = min(num_encoders, mdp5_kms->num_hwmixers);
 
-	/*
-	 * Construct planes equaling the number of hw pipes, and CRTCs for the
-	 * N encoders set up by the driver. The first N planes become primary
-	 * planes for the CRTCs, with the remainder as overlay planes:
-	 */
+	 
 	for (i = 0; i < mdp5_kms->num_hwpipes; i++) {
 		struct mdp5_hw_pipe *hwpipe = mdp5_kms->hwpipes[i];
 		struct drm_plane *plane;
@@ -500,10 +456,7 @@ static int modeset_init(struct mdp5_kms *mdp5_kms)
 		priv->num_crtcs++;
 	}
 
-	/*
-	 * Now that we know the number of crtcs we've created, set the possible
-	 * crtcs for the encoders
-	 */
+	 
 	drm_for_each_encoder(encoder, dev)
 		encoder->possible_crtcs = (1 << priv->num_crtcs) - 1;
 
@@ -562,7 +515,7 @@ static int mdp5_kms_init(struct drm_device *dev)
 	if (ret)
 		return ret;
 
-	/* priv->kms would have been populated by the MDP5 driver */
+	 
 	kms = priv->kms;
 	if (!kms)
 		return -ENOMEM;
@@ -587,10 +540,7 @@ static int mdp5_kms_init(struct drm_device *dev)
 
 	config = mdp5_cfg_get_config(mdp5_kms->cfg);
 
-	/* make sure things are off before attaching iommu (bootloader could
-	 * have left things on, in which case we'll start getting faults if
-	 * we don't disable):
-	 */
+	 
 	pm_runtime_get_sync(&pdev->dev);
 	for (i = 0; i < MDP5_INTF_NUM_MAX; i++) {
 		if (mdp5_cfg_intf_is_virtual(config->hw->intf.connect[i]) ||
@@ -623,7 +573,7 @@ static int mdp5_kms_init(struct drm_device *dev)
 	dev->mode_config.max_width = 0xffff;
 	dev->mode_config.max_height = 0xffff;
 
-	dev->max_vblank_count = 0; /* max_vblank_count is set on each CRTC */
+	dev->max_vblank_count = 0;  
 	dev->vblank_disable_immediate = true;
 
 	return 0;
@@ -698,25 +648,25 @@ static int hwpipe_init(struct mdp5_kms *mdp5_kms)
 
 	hw_cfg = mdp5_cfg_get_hw_config(mdp5_kms->cfg);
 
-	/* Construct RGB pipes: */
+	 
 	ret = construct_pipes(mdp5_kms, hw_cfg->pipe_rgb.count, rgb_planes,
 			hw_cfg->pipe_rgb.base, hw_cfg->pipe_rgb.caps);
 	if (ret)
 		return ret;
 
-	/* Construct video (VIG) pipes: */
+	 
 	ret = construct_pipes(mdp5_kms, hw_cfg->pipe_vig.count, vig_planes,
 			hw_cfg->pipe_vig.base, hw_cfg->pipe_vig.caps);
 	if (ret)
 		return ret;
 
-	/* Construct DMA pipes: */
+	 
 	ret = construct_pipes(mdp5_kms, hw_cfg->pipe_dma.count, dma_planes,
 			hw_cfg->pipe_dma.base, hw_cfg->pipe_dma.caps);
 	if (ret)
 		return ret;
 
-	/* Construct cursor pipes: */
+	 
 	ret = construct_pipes(mdp5_kms, hw_cfg->pipe_cursor.count,
 			cursor_planes, hw_cfg->pipe_cursor.base,
 			hw_cfg->pipe_cursor.caps);
@@ -813,7 +763,7 @@ static int mdp5_init(struct platform_device *pdev, struct drm_device *dev)
 		goto fail;
 	}
 
-	/* mandatory clocks: */
+	 
 	ret = get_clk(pdev, &mdp5_kms->axi_clk, "bus", true);
 	if (ret)
 		goto fail;
@@ -827,18 +777,15 @@ static int mdp5_init(struct platform_device *pdev, struct drm_device *dev)
 	if (ret)
 		goto fail;
 
-	/* optional clocks: */
+	 
 	get_clk(pdev, &mdp5_kms->lut_clk, "lut", false);
 	get_clk(pdev, &mdp5_kms->tbu_clk, "tbu", false);
 	get_clk(pdev, &mdp5_kms->tbu_rt_clk, "tbu_rt", false);
 
-	/* we need to set a default rate before enabling.  Set a safe
-	 * rate first, then figure out hw revision, and then set a
-	 * more optimal rate:
-	 */
+	 
 	clk_set_rate(mdp5_kms->core_clk, 200000000);
 
-	/* set uninit-ed kms */
+	 
 	priv->kms = &mdp5_kms->base.base;
 
 	pm_runtime_enable(&pdev->dev);
@@ -856,14 +803,10 @@ static int mdp5_init(struct platform_device *pdev, struct drm_device *dev)
 	config = mdp5_cfg_get_config(mdp5_kms->cfg);
 	mdp5_kms->caps = config->hw->mdp.caps;
 
-	/* TODO: compute core clock rate at runtime */
+	 
 	clk_set_rate(mdp5_kms->core_clk, config->hw->max_clk);
 
-	/*
-	 * Some chipsets have a Shared Memory Pool (SMP), while others
-	 * have dedicated latency buffering per source pipe instead;
-	 * this section initializes the SMP:
-	 */
+	 
 	if (mdp5_kms->caps & MDP_CAP_SMP) {
 		mdp5_kms->smp = mdp5_smp_init(mdp5_kms, &config->hw->smp);
 		if (IS_ERR(mdp5_kms->smp)) {
@@ -909,12 +852,7 @@ static int mdp5_setup_interconnect(struct platform_device *pdev)
 		return PTR_ERR(path0);
 
 	if (!path0) {
-		/* no interconnect support is not necessarily a fatal
-		 * condition, the platform may simply not have an
-		 * interconnect driver yet.  But warn about it in case
-		 * bootloader didn't setup bus clocks high enough for
-		 * scanout.
-		 */
+		 
 		dev_warn(&pdev->dev, "No interconnect support may cause display underflows!\n");
 		return 0;
 	}
@@ -979,7 +917,7 @@ static const struct dev_pm_ops mdp5_pm_ops = {
 
 static const struct of_device_id mdp5_dt_match[] = {
 	{ .compatible = "qcom,mdp5", },
-	/* to support downstream DT files */
+	 
 	{ .compatible = "qcom,mdss_mdp", },
 	{}
 };

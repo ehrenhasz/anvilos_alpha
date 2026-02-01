@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "disp.h"
 #include "atom.h"
 #include "core.h"
@@ -68,9 +46,7 @@
 
 #include <subdev/bios/dp.h>
 
-/******************************************************************************
- * EVO channel
- *****************************************************************************/
+ 
 
 static int
 nv50_chan_create(struct nvif_device *device, struct nvif_object *disp,
@@ -111,9 +87,7 @@ nv50_chan_destroy(struct nv50_chan *chan)
 	nvif_object_dtor(&chan->user);
 }
 
-/******************************************************************************
- * DMA EVO channel
- *****************************************************************************/
+ 
 
 void
 nv50_dmac_destroy(struct nv50_dmac *dmac)
@@ -133,9 +107,7 @@ nv50_dmac_kick(struct nvif_push *push)
 
 	dmac->cur = push->cur - (u32 __iomem *)dmac->_push.mem.object.map.ptr;
 	if (dmac->put != dmac->cur) {
-		/* Push buffer fetches are not coherent with BAR1, we need to ensure
-		 * writes have been flushed right through to VRAM before writing PUT.
-		 */
+		 
 		if (dmac->push->mem.type & NVIF_MEM_VRAM) {
 			struct nvif_device *device = dmac->base.device;
 			nvif_wr32(&device->object, 0x070000, 0x00000001);
@@ -156,7 +128,7 @@ static int
 nv50_dmac_free(struct nv50_dmac *dmac)
 {
 	u32 get = NVIF_RV32(&dmac->base.user, NV507C, GET, PTR);
-	if (get > dmac->cur) /* NVIDIA stay 5 away from GET, do the same. */
+	if (get > dmac->cur)  
 		return get - dmac->cur - 5;
 	return dmac->max - dmac->cur;
 }
@@ -164,12 +136,10 @@ nv50_dmac_free(struct nv50_dmac *dmac)
 static int
 nv50_dmac_wind(struct nv50_dmac *dmac)
 {
-	/* Wait for GET to depart from the beginning of the push buffer to
-	 * prevent writing PUT == GET, which would be ignored by HW.
-	 */
+	 
 	u32 get = NVIF_RV32(&dmac->base.user, NV507C, GET, PTR);
 	if (get == 0) {
-		/* Corner-case, HW idle, but non-committed work pending. */
+		 
 		if (dmac->put == 0)
 			nv50_dmac_kick(dmac->push);
 
@@ -236,15 +206,7 @@ nv50_dmac_create(struct nvif_device *device, struct nvif_object *disp,
 
 	mutex_init(&dmac->lock);
 
-	/* Pascal added support for 47-bit physical addresses, but some
-	 * parts of EVO still only accept 40-bit PAs.
-	 *
-	 * To avoid issues on systems with large amounts of RAM, and on
-	 * systems where an IOMMU maps pages at a high address, we need
-	 * to allocate push buffers in VRAM instead.
-	 *
-	 * This appears to match NVIDIA's behaviour on Pascal.
-	 */
+	 
 	if ((nv50_dmac_vram_pushbuf > 0) ||
 	    (nv50_dmac_vram_pushbuf < 0 && device->info.family == NV_DEVICE_INFO_V0_PASCAL))
 		type |= NVIF_MEM_VRAM;
@@ -263,9 +225,7 @@ nv50_dmac_create(struct nvif_device *device, struct nvif_object *disp,
 	dmac->push->end = dmac->push->bgn;
 	dmac->max = 0x1000/4 - 1;
 
-	/* EVO channels are affected by a HW bug where the last 12 DWORDs
-	 * of the push buffer aren't able to be used safely.
-	 */
+	 
 	if (disp->oclass < GV100_DISP)
 		dmac->max -= 12;
 
@@ -306,9 +266,7 @@ nv50_dmac_create(struct nvif_device *device, struct nvif_object *disp,
 	return ret;
 }
 
-/******************************************************************************
- * Output path helpers
- *****************************************************************************/
+ 
 static void
 nv50_outp_dump_caps(struct nouveau_drm *drm,
 		    struct nouveau_encoder *outp)
@@ -338,10 +296,7 @@ nv50_outp_atomic_check_view(struct drm_encoder *encoder,
 		switch (connector->connector_type) {
 		case DRM_MODE_CONNECTOR_LVDS:
 		case DRM_MODE_CONNECTOR_eDP:
-			/* Don't force scaler for EDID modes with
-			 * same size as the native one (e.g. different
-			 * refresh rate)
-			 */
+			 
 			if (mode->hdisplay == native_mode->hdisplay &&
 			    mode->vdisplay == native_mode->vdisplay &&
 			    mode->type & DRM_MODE_TYPE_DRIVER)
@@ -376,10 +331,10 @@ nv50_outp_atomic_fix_depth(struct drm_encoder *encoder, struct drm_crtc_state *c
 	case DCB_OUTPUT_DP:
 		max_rate = nv_encoder->dp.link_nr * nv_encoder->dp.link_bw;
 
-		/* we don't support more than 10 anyway */
+		 
 		asyh->or.bpc = min_t(u8, asyh->or.bpc, 10);
 
-		/* reduce the bpc until it works out */
+		 
 		while (asyh->or.bpc > 6) {
 			mode_rate = DIV_ROUND_UP(mode->clock * asyh->or.bpc * 3, 8);
 			if (mode_rate <= max_rate)
@@ -411,7 +366,7 @@ nv50_outp_atomic_check(struct drm_encoder *encoder,
 	if (crtc_state->mode_changed || crtc_state->connectors_changed)
 		asyh->or.bpc = connector->display_info.bpc;
 
-	/* We might have to reduce the bpc */
+	 
 	nv50_outp_atomic_fix_depth(encoder, crtc_state);
 
 	return 0;
@@ -465,9 +420,7 @@ nv50_outp_get_new_crtc(const struct drm_atomic_state *state, const struct nouvea
 	return NULL;
 }
 
-/******************************************************************************
- * DAC
- *****************************************************************************/
+ 
 static void
 nv50_dac_atomic_disable(struct drm_encoder *encoder, struct drm_atomic_state *state)
 {
@@ -583,9 +536,7 @@ nv50_dac_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	return nvif_outp_ctor(disp->disp, nv_encoder->base.base.name, dcbe->id, &nv_encoder->outp);
 }
 
-/*
- * audio component binding for ELD notification
- */
+ 
 static void
 nv50_audio_component_eld_notify(struct drm_audio_component *acomp, int port,
 				int dev_id)
@@ -614,7 +565,7 @@ nv50_audio_component_get_eld(struct device *kdev, int port, int dev_id,
 		struct nouveau_connector *nv_connector = NULL;
 
 		if (encoder->encoder_type == DRM_MODE_ENCODER_DPMST)
-			continue; /* TODO */
+			continue;  
 
 		nv_encoder = nouveau_encoder(encoder);
 		nv_connector = nouveau_connector(nv_encoder->audio.connector);
@@ -701,9 +652,7 @@ nv50_audio_component_fini(struct nouveau_drm *drm)
 	mutex_destroy(&drm->audio.lock);
 }
 
-/******************************************************************************
- * Audio
- *****************************************************************************/
+ 
 static bool
 nv50_audio_supported(struct drm_encoder *encoder)
 {
@@ -761,9 +710,7 @@ nv50_audio_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 	nv50_audio_component_eld_notify(drm->audio.component, outp->or.id, nv_crtc->index);
 }
 
-/******************************************************************************
- * HDMI
- *****************************************************************************/
+ 
 static void
 nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 		 struct nouveau_connector *nv_connector, struct drm_atomic_state *state,
@@ -773,7 +720,7 @@ nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 	struct nouveau_encoder *nv_encoder = nouveau_encoder(encoder);
 	struct drm_hdmi_info *hdmi = &nv_connector->base.display_info.hdmi;
 	union hdmi_infoframe infoframe = { 0 };
-	const u8 rekey = 56; /* binary driver, and tegra, constant */
+	const u8 rekey = 56;  
 	u8 scdc = 0;
 	u32 max_ac_packet;
 	struct {
@@ -784,7 +731,7 @@ nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 
 	max_ac_packet  = mode->htotal - mode->hdisplay;
 	max_ac_packet -= rekey;
-	max_ac_packet -= 18; /* constant from tegra */
+	max_ac_packet -= 18;  
 	max_ac_packet /= 32;
 
 	if (hdmi->scdc.scrambling.supported) {
@@ -813,7 +760,7 @@ nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 	if (ret)
 		return;
 
-	/* AVI InfoFrame. */
+	 
 	args.infoframe.version = 0;
 	args.infoframe.head = nv_crtc->index;
 
@@ -828,7 +775,7 @@ nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 
 	nvif_outp_infoframe(&nv_encoder->outp, NVIF_OUTP_INFOFRAME_V0_AVI, &args.infoframe, size);
 
-	/* Vendor InfoFrame. */
+	 
 	memset(&args.data, 0, sizeof(args.data));
 	if (!drm_hdmi_vendor_infoframe_from_display_mode(&infoframe.vendor.hdmi,
 							 &nv_connector->base, mode))
@@ -841,9 +788,7 @@ nv50_hdmi_enable(struct drm_encoder *encoder, struct nouveau_crtc *nv_crtc,
 	nv50_audio_enable(encoder, nv_crtc, nv_connector, state, mode);
 }
 
-/******************************************************************************
- * MST
- *****************************************************************************/
+ 
 #define nv50_mstm(p) container_of((p), struct nv50_mstm, mgr)
 #define nv50_mstc(p) container_of((p), struct nv50_mstc, connector)
 #define nv50_msto(p) container_of((p), struct nv50_msto, encoder)
@@ -860,7 +805,7 @@ struct nv50_mstc {
 struct nv50_msto {
 	struct drm_encoder encoder;
 
-	/* head is statically assigned on msto creation */
+	 
 	struct nv50_head *head;
 	struct nv50_mstc *mstc;
 	bool disabled;
@@ -920,7 +865,7 @@ nv50_msto_prepare(struct drm_atomic_state *state,
 	payload = drm_atomic_get_mst_payload_state(mst_state, mstc->port);
 	old_payload = drm_atomic_get_mst_payload_state(old_mst_state, mstc->port);
 
-	// TODO: Figure out if we want to do a better job of handling VCPI allocation failures here?
+	
 	if (msto->disabled) {
 		drm_dp_remove_payload(mgr, mst_state, old_payload, payload);
 
@@ -957,11 +902,7 @@ nv50_msto_atomic_check(struct drm_encoder *encoder,
 	if (!drm_atomic_crtc_needs_modeset(crtc_state))
 		return 0;
 
-	/*
-	 * When restoring duplicated states, we need to make sure that the bw
-	 * remains the same and avoid recalculating it, as the connector's bpc
-	 * may have changed after the state was duplicated
-	 */
+	 
 	if (!state->duplicated) {
 		const int clock = crtc_state->adjusted_mode.clock;
 
@@ -1027,7 +968,7 @@ nv50_msto_atomic_enable(struct drm_encoder *encoder, struct drm_atomic_state *st
 		return;
 
 	if (!mstm->links++) {
-		/*XXX: MST audio. */
+		 
 		nvif_outp_acquire_dp(&mstm->outp->outp, mstm->outp->dp.dpcd, 0, 0, false, true);
 	}
 
@@ -1123,9 +1064,7 @@ nv50_mstc_mode_valid(struct drm_connector *connector,
 	struct nv50_mstc *mstc = nv50_mstc(connector);
 	struct nouveau_encoder *outp = mstc->mstm->outp;
 
-	/* TODO: calculate the PBN from the dotclock and validate against the
-	 * MSTB's max possible PBN
-	 */
+	 
 
 	return nv50_dp_mode_valid(outp, mode, NULL);
 }
@@ -1141,12 +1080,7 @@ nv50_mstc_get_modes(struct drm_connector *connector)
 	if (mstc->edid)
 		ret = drm_add_edid_modes(&mstc->connector, mstc->edid);
 
-	/*
-	 * XXX: Since we don't use HDR in userspace quite yet, limit the bpc
-	 * to 8 to save bandwidth on the topology. In the future, we'll want
-	 * to properly fix this by dynamically selecting the highest possible
-	 * bpc that would fit in the topology
-	 */
+	 
 	if (connector->display_info.bpc)
 		connector->display_info.bpc =
 			clamp(connector->display_info.bpc, 6U, 8U);
@@ -1302,7 +1236,7 @@ nv50_mstm_prepare(struct drm_atomic_state *state,
 
 	NV_ATOMIC(drm, "%s: mstm prepare\n", mstm->outp->base.base.name);
 
-	/* Disable payloads first */
+	 
 	drm_for_each_encoder(encoder, mstm->outp->base.base.dev) {
 		if (encoder->encoder_type == DRM_MODE_ENCODER_DPMST) {
 			struct nv50_msto *msto = nv50_msto(encoder);
@@ -1312,9 +1246,7 @@ nv50_mstm_prepare(struct drm_atomic_state *state,
 		}
 	}
 
-	/* Add payloads for new heads, while also updating the start slots of any unmodified (but
-	 * active) heads that may have had their VC slots shifted left after the previous step
-	 */
+	 
 	drm_for_each_encoder(encoder, mstm->outp->base.base.dev) {
 		if (encoder->encoder_type == DRM_MODE_ENCODER_DPMST) {
 			struct nv50_msto *msto = nv50_msto(encoder);
@@ -1410,14 +1342,12 @@ nv50_mstm_detect(struct nouveau_encoder *outp)
 
 	aux = mstm->mgr.aux;
 
-	/* Clear any leftover MST state we didn't set ourselves by first
-	 * disabling MST if it was already enabled
-	 */
+	 
 	ret = drm_dp_dpcd_writeb(aux, DP_MSTM_CTRL, 0);
 	if (ret < 0)
 		return ret;
 
-	/* And start enabling */
+	 
 	ret = drm_dp_mst_topology_mgr_set_mst(&mstm->mgr, true);
 	if (ret)
 		return ret;
@@ -1434,10 +1364,7 @@ nv50_mstm_fini(struct nouveau_encoder *outp)
 	if (!mstm)
 		return;
 
-	/* Don't change the MST state of this connector until we've finished
-	 * resuming, since we can't safely grab hpd_irq_lock in our resume
-	 * path to protect mstm->is_mst without potentially deadlocking
-	 */
+	 
 	mutex_lock(&outp->dp.hpd_irq_lock);
 	mstm->suspended = true;
 	mutex_unlock(&outp->dp.hpd_irq_lock);
@@ -1502,9 +1429,7 @@ nv50_mstm_new(struct nouveau_encoder *outp, struct drm_dp_aux *aux, int aux_max,
 	return 0;
 }
 
-/******************************************************************************
- * SOR
- *****************************************************************************/
+ 
 static void
 nv50_sor_update(struct nouveau_encoder *nv_encoder, u8 head,
 		struct nv50_head_atom *asyh, u8 proto, u8 depth)
@@ -1525,11 +1450,7 @@ nv50_sor_update(struct nouveau_encoder *nv_encoder, u8 head,
 	core->func->sor->ctrl(core, nv_encoder->outp.or.id, nv_encoder->ctrl, asyh);
 }
 
-/* TODO: Should we extend this to PWM-only backlights?
- * As well, should we add a DRM helper for waiting for the backlight to acknowledge
- * the panel backlight has been shut off? Intel doesn't seem to do this, and uses a
- * fixed time delay from the vbios…
- */
+ 
 static void
 nv50_sor_atomic_disable(struct drm_encoder *encoder, struct drm_atomic_state *state)
 {
@@ -1608,12 +1529,7 @@ nv50_sor_atomic_enable(struct drm_encoder *encoder, struct drm_atomic_state *sta
 
 		if (nv_encoder->outp.or.link & 1) {
 			proto = NV507D_SOR_SET_CONTROL_PROTOCOL_SINGLE_TMDS_A;
-			/* Only enable dual-link if:
-			 *  - Need to (i.e. rate > 165MHz)
-			 *  - DCB says we can
-			 *  - Not an HDMI monitor, since there's no dual-link
-			 *    on HDMI.
-			 */
+			 
 			if (mode->clock >= 165000 &&
 			    nv_encoder->dcb->duallink_possible &&
 			    !drm_detect_hdmi_monitor(nv_connector->edid))
@@ -1762,10 +1678,7 @@ nv50_sor_create(struct drm_connector *connector, struct dcb_output *dcbe)
 
 		if (aux) {
 			if (disp->disp->object.oclass < GF110_DISP) {
-				/* HW has no support for address-only
-				 * transactions, so we're required to
-				 * use custom I2C-over-AUX code.
-				 */
+				 
 				nv_encoder->i2c = &aux->i2c;
 			} else {
 				nv_encoder->i2c = &nv_connector->aux.ddc;
@@ -1791,9 +1704,7 @@ nv50_sor_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	return nvif_outp_ctor(disp->disp, nv_encoder->base.base.name, dcbe->id, &nv_encoder->outp);
 }
 
-/******************************************************************************
- * PIOR
- *****************************************************************************/
+ 
 static int
 nv50_pior_atomic_check(struct drm_encoder *encoder,
 		       struct drm_crtc_state *crtc_state,
@@ -1939,9 +1850,7 @@ nv50_pior_create(struct drm_connector *connector, struct dcb_output *dcbe)
 	return nvif_outp_ctor(disp->disp, nv_encoder->base.base.name, dcbe->id, &nv_encoder->outp);
 }
 
-/******************************************************************************
- * Atomic
- *****************************************************************************/
+ 
 
 static void
 nv50_disp_atomic_commit_core(struct drm_atomic_state *state, u32 *interlock)
@@ -2019,7 +1928,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 	if (atom->lock_core)
 		mutex_lock(&disp->mutex);
 
-	/* Disable head(s). */
+	 
 	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_state, new_crtc_state, i) {
 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
 		struct nv50_head *head = nv50_head(crtc);
@@ -2038,7 +1947,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		}
 	}
 
-	/* Disable plane(s). */
+	 
 	for_each_new_plane_in_state(state, plane, new_plane_state, i) {
 		struct nv50_wndw_atom *asyw = nv50_wndw_atom(new_plane_state);
 		struct nv50_wndw *wndw = nv50_wndw(plane);
@@ -2051,7 +1960,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		nv50_wndw_flush_clr(wndw, interlock, atom->flush_disable, asyw);
 	}
 
-	/* Disable output path(s). */
+	 
 	list_for_each_entry(outp, &atom->outp, head) {
 		const struct drm_encoder_helper_funcs *help;
 		struct drm_encoder *encoder;
@@ -2075,7 +1984,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		}
 	}
 
-	/* Flush disable. */
+	 
 	if (interlock[NV50_DISP_INTERLOCK_CORE]) {
 		if (atom->flush_disable) {
 			nv50_disp_atomic_commit_wndw(state, interlock);
@@ -2090,7 +1999,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		nv50_crc_atomic_release_notifier_contexts(state);
 	nv50_crc_atomic_init_notifier_contexts(state);
 
-	/* Update output path(s). */
+	 
 	list_for_each_entry_safe(outp, outt, &atom->outp, head) {
 		const struct drm_encoder_helper_funcs *help;
 		struct drm_encoder *encoder;
@@ -2110,7 +2019,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		kfree(outp);
 	}
 
-	/* Update head(s). */
+	 
 	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_state, new_crtc_state, i) {
 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
 		struct nv50_head *head = nv50_head(crtc);
@@ -2133,14 +2042,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		}
 	}
 
-	/* Update window->head assignment.
-	 *
-	 * This has to happen in an update that's not interlocked with
-	 * any window channels to avoid hitting HW error checks.
-	 *
-	 *TODO: Proper handling of window ownership (Turing apparently
-	 *      supports non-fixed mappings).
-	 */
+	 
 	if (core->assign_windows) {
 		core->func->wndw.owner(core);
 		nv50_disp_atomic_commit_core(state, interlock);
@@ -2148,20 +2050,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		interlock[NV50_DISP_INTERLOCK_CORE] = 0;
 	}
 
-	/* Finish updating head(s)...
-	 *
-	 * NVD is rather picky about both where window assignments can change,
-	 * *and* about certain core and window channel states matching.
-	 *
-	 * The EFI GOP driver on newer GPUs configures window channels with a
-	 * different output format to what we do, and the core channel update
-	 * in the assign_windows case above would result in a state mismatch.
-	 *
-	 * Delay some of the head update until after that point to workaround
-	 * the issue.  This only affects the initial modeset.
-	 *
-	 * TODO: handle this better when adding flexible window mapping
-	 */
+	 
 	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_state, new_crtc_state, i) {
 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
 		struct nv50_head *head = nv50_head(crtc);
@@ -2175,7 +2064,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		}
 	}
 
-	/* Update plane(s). */
+	 
 	for_each_new_plane_in_state(state, plane, new_plane_state, i) {
 		struct nv50_wndw_atom *asyw = nv50_wndw_atom(new_plane_state);
 		struct nv50_wndw *wndw = nv50_wndw(plane);
@@ -2189,7 +2078,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 		nv50_wndw_flush_set(wndw, interlock, asyw);
 	}
 
-	/* Flush update. */
+	 
 	nv50_disp_atomic_commit_wndw(state, interlock);
 
 	if (interlock[NV50_DISP_INTERLOCK_CORE]) {
@@ -2205,7 +2094,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 	if (atom->lock_core)
 		mutex_unlock(&disp->mutex);
 
-	/* Wait for HW to signal completion. */
+	 
 	for_each_new_plane_in_state(state, plane, new_plane_state, i) {
 		struct nv50_wndw_atom *asyw = nv50_wndw_atom(new_plane_state);
 		struct nv50_wndw *wndw = nv50_wndw(plane);
@@ -2217,7 +2106,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 	for_each_new_crtc_in_state(state, crtc, new_crtc_state, i) {
 		if (new_crtc_state->event) {
 			unsigned long flags;
-			/* Get correct count/ts if racing with vblank irq */
+			 
 			if (new_crtc_state->active)
 				drm_crtc_accurate_vblank_count(crtc);
 			spin_lock_irqsave(&crtc->dev->event_lock, flags);
@@ -2239,7 +2128,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
 	drm_atomic_helper_commit_cleanup_done(state);
 	drm_atomic_state_put(state);
 
-	/* Drop the RPM ref we got from nv50_disp_atomic_commit() */
+	 
 	pm_runtime_mark_last_busy(dev->dev);
 	pm_runtime_put_autosuspend(dev->dev);
 }
@@ -2296,10 +2185,7 @@ nv50_disp_atomic_commit(struct drm_device *dev,
 
 	drm_atomic_state_get(state);
 
-	/*
-	 * Grab another RPM ref for the commit tail, which will release the
-	 * ref when it's finished
-	 */
+	 
 	pm_runtime_get_noresume(dev->dev);
 
 	if (nonblock)
@@ -2415,7 +2301,7 @@ nv50_disp_atomic_check(struct drm_device *dev, struct drm_atomic_state *state)
 		}
 	}
 
-	/* We need to handle colour management on a per-plane basis. */
+	 
 	for_each_new_crtc_in_state(state, crtc, new_crtc_state, i) {
 		if (new_crtc_state->color_mgmt_changed) {
 			ret = drm_atomic_add_affected_planes(state, crtc);
@@ -2498,9 +2384,7 @@ nv50_disp_helper_func = {
 	.atomic_commit_setup = drm_dp_mst_atomic_setup_commit,
 };
 
-/******************************************************************************
- * Init
- *****************************************************************************/
+ 
 
 static void
 nv50_display_fini(struct drm_device *dev, bool runtime, bool suspend)
@@ -2585,7 +2469,7 @@ nv50_display_create(struct drm_device *dev)
 	dev->mode_config.quirk_addfb_prefer_xbgr_30bpp = true;
 	dev->mode_config.normalize_zpos = true;
 
-	/* small shared memory area we use for notifiers and semaphores */
+	 
 	ret = nouveau_bo_new(&drm->client, 4096, 0x1000,
 			     NOUVEAU_GEM_DOMAIN_VRAM,
 			     0, 0x0000, NULL, NULL, &disp->sync);
@@ -2603,7 +2487,7 @@ nv50_display_create(struct drm_device *dev)
 	if (ret)
 		goto out;
 
-	/* allocate master evo channel */
+	 
 	ret = nv50_core_new(drm, &disp->core);
 	if (ret)
 		goto out;
@@ -2615,7 +2499,7 @@ nv50_display_create(struct drm_device *dev)
 			goto out;
 	}
 
-	/* Assign the correct format modifiers */
+	 
 	if (disp->disp->object.oclass >= TU102_DISP)
 		nouveau_display(dev)->format_modifiers = wndwc57e_modifiers;
 	else
@@ -2624,14 +2508,7 @@ nv50_display_create(struct drm_device *dev)
 	else
 		nouveau_display(dev)->format_modifiers = disp50xx_modifiers;
 
-	/* FIXME: 256x256 cursors are supported on Kepler, however unlike Maxwell and later
-	 * generations Kepler requires that we use small pages (4K) for cursor scanout surfaces. The
-	 * proper fix for this is to teach nouveau to migrate fbs being used for the cursor plane to
-	 * small page allocations in prepare_fb(). When this is implemented, we should also force
-	 * large pages (128K) for ovly fbs in order to fix Kepler ovlys.
-	 * But until then, just limit cursors to 128x128 - which is small enough to avoid ever using
-	 * large pages.
-	 */
+	 
 	if (disp->disp->object.oclass >= GM107_DISP) {
 		dev->mode_config.cursor_width = 256;
 		dev->mode_config.cursor_height = 256;
@@ -2643,7 +2520,7 @@ nv50_display_create(struct drm_device *dev)
 		dev->mode_config.cursor_height = 64;
 	}
 
-	/* create crtc objects to represent the hw heads */
+	 
 	if (disp->disp->object.oclass >= GV100_DISP)
 		crtcs = nvif_rd32(&device->object, 0x610060) & 0xff;
 	else
@@ -2672,21 +2549,12 @@ nv50_display_create(struct drm_device *dev)
 				goto out;
 			}
 
-			/*
-			 * FIXME: This is a hack to workaround the following
-			 * issues:
-			 *
-			 * https://gitlab.gnome.org/GNOME/mutter/issues/759
-			 * https://gitlab.freedesktop.org/xorg/xserver/merge_requests/277
-			 *
-			 * Once these issues are closed, this should be
-			 * removed
-			 */
+			 
 			head->msto->encoder.possible_crtcs = crtcs;
 		}
 	}
 
-	/* create encoder/connector objects based on VBIOS DCB table */
+	 
 	for (i = 0, dcbe = &dcb->entry[0]; i < dcb->entries; i++, dcbe++) {
 		connector = nouveau_connector_create(dev, dcbe);
 		if (IS_ERR(connector))
@@ -2718,7 +2586,7 @@ nv50_display_create(struct drm_device *dev)
 		}
 	}
 
-	/* cull any connectors we created that don't have an encoder */
+	 
 	list_for_each_entry_safe(connector, tmp, &dev->mode_config.connector_list, head) {
 		if (connector->possible_encoders)
 			continue;
@@ -2728,7 +2596,7 @@ nv50_display_create(struct drm_device *dev)
 		connector->funcs->destroy(connector);
 	}
 
-	/* Disable vblank irqs aggressively for power-saving, safe on nv50+ */
+	 
 	dev->vblank_disable_immediate = true;
 
 	nv50_audio_component_init(drm);
@@ -2739,17 +2607,10 @@ out:
 	return ret;
 }
 
-/******************************************************************************
- * Format modifiers
- *****************************************************************************/
+ 
 
-/****************************************************************
- *            Log2(block height) ----------------------------+  *
- *            Page Kind ----------------------------------+  |  *
- *            Gob Height/Page Kind Generation ------+     |  |  *
- *                          Sector layout -------+  |     |  |  *
- *                          Compression ------+  |  |     |  |  */
-const u64 disp50xx_modifiers[] = { /*         |  |  |     |  |  */
+ 
+const u64 disp50xx_modifiers[] = {  
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 1, 0x7a, 0),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 1, 0x7a, 1),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 1, 0x7a, 2),
@@ -2772,13 +2633,8 @@ const u64 disp50xx_modifiers[] = { /*         |  |  |     |  |  */
 	DRM_FORMAT_MOD_INVALID
 };
 
-/****************************************************************
- *            Log2(block height) ----------------------------+  *
- *            Page Kind ----------------------------------+  |  *
- *            Gob Height/Page Kind Generation ------+     |  |  *
- *                          Sector layout -------+  |     |  |  *
- *                          Compression ------+  |  |     |  |  */
-const u64 disp90xx_modifiers[] = { /*         |  |  |     |  |  */
+ 
+const u64 disp90xx_modifiers[] = {  
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 0, 0xfe, 0),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 0, 0xfe, 1),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 0, 0xfe, 2),

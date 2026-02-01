@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022 NVIDIA Corporation
- *
- * Author: Dipen Patel <dipenp@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -15,38 +11,7 @@
 #include <linux/timer.h>
 #include <linux/workqueue.h>
 
-/*
- * This sample HTE test driver demonstrates HTE API usage by enabling
- * hardware timestamp on gpio_in and specified LIC IRQ lines.
- *
- * Note: gpio_out and gpio_in need to be shorted externally in order for this
- * test driver to work for the GPIO monitoring. The test driver has been
- * tested on Jetson AGX Xavier platform by shorting pin 32 and 16 on 40 pin
- * header.
- *
- * Device tree snippet to activate this driver:
- *	tegra_hte_test {
- *		compatible = "nvidia,tegra194-hte-test";
- *		in-gpio = <&gpio_aon TEGRA194_AON_GPIO(BB, 1)>;
- *		out-gpio = <&gpio_aon TEGRA194_AON_GPIO(BB, 0)>;
- *		timestamps = <&tegra_hte_aon TEGRA194_AON_GPIO(BB, 1)>,
- *			     <&tegra_hte_lic 0x19>;
- *		timestamp-names = "hte-gpio", "hte-i2c-irq";
- *		status = "okay";
- *	};
- *
- * How to run test driver:
- * - Load test driver.
- * - For the GPIO, at regular interval gpio_out pin toggles triggering
- *   HTE for rising edge on gpio_in pin.
- *
- * - For the LIC IRQ line, it uses 0x19 interrupt which is i2c controller 1.
- * - Run i2cdetect -y 1 1>/dev/null, this command will generate i2c bus
- *   transactions which creates timestamp data.
- * - It prints below message for both the lines.
- *   HW timestamp(<line id>:<ts seq number>): <timestamp>, edge: <edge>.
- * - Unloading the driver disables and deallocate the HTE.
- */
+ 
 
 static struct tegra_hte_test {
 	int gpio_in_irq;
@@ -168,19 +133,11 @@ static int tegra_hte_test_probe(struct platform_device *pdev)
 
 	for (i = 0; i < cnt; i++) {
 		if (i == 0)
-			/*
-			 * GPIO hte init, line_id and name will be parsed from
-			 * the device tree node. The edge_flag is implicitly
-			 * set by request_irq call. Only line_data is needed to be
-			 * set.
-			 */
+			 
 			hte_init_line_attr(&hte.desc[i], 0, 0, NULL,
 					   hte.gpio_in);
 		else
-			/*
-			 * same comment as above except that IRQ does not need
-			 * line data.
-			 */
+			 
 			hte_init_line_attr(&hte.desc[i], 0, 0, NULL, NULL);
 
 		ret = hte_ts_get(hte.pdev, &hte.desc[i], i);
@@ -190,7 +147,7 @@ static int tegra_hte_test_probe(struct platform_device *pdev)
 		ret = devm_hte_request_ts_ns(hte.pdev, &hte.desc[i],
 					     process_hw_ts, NULL,
 					     &hte.desc[i]);
-		if (ret) /* no need to ts_put, request API takes care */
+		if (ret)  
 			goto free_irq;
 	}
 

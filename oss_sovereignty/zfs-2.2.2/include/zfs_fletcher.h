@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright 2013 Saso Kiselkov. All rights reserved.
- */
+ 
+ 
+ 
 
 #ifndef	_ZFS_FLETCHER_H
 #define	_ZFS_FLETCHER_H extern __attribute__((visibility("default")))
@@ -36,18 +12,7 @@
 extern "C" {
 #endif
 
-/*
- * fletcher checksum functions
- *
- * Note: Fletcher checksum methods expect buffer size to be 4B aligned. This
- * limitation stems from the algorithm design. Performing incremental checksum
- * without said alignment would yield different results. Therefore, the code
- * includes assertions for the size alignment.
- * For compatibility, it is required that some code paths calculate checksum of
- * non-aligned buffer sizes. For this purpose, `fletcher_4_native_varsize()`
- * checksum method is added. This method will ignore last (size % 4) bytes of
- * the data buffer.
- */
+ 
 _ZFS_FLETCHER_H void fletcher_init(zio_cksum_t *);
 _ZFS_FLETCHER_H void fletcher_2_native(const void *, uint64_t, const void *,
     zio_cksum_t *);
@@ -69,7 +34,7 @@ _ZFS_FLETCHER_H void fletcher_4_fini(void);
 
 
 
-/* Internal fletcher ctx */
+ 
 
 typedef struct zfs_fletcher_superscalar {
 	uint64_t v[4];
@@ -110,9 +75,7 @@ typedef union fletcher_4_ctx {
 #endif
 } fletcher_4_ctx_t;
 
-/*
- * fletcher checksum struct
- */
+ 
 typedef void (*fletcher_4_init_f)(fletcher_4_ctx_t *);
 typedef void (*fletcher_4_fini_f)(fletcher_4_ctx_t *, zio_cksum_t *);
 typedef void (*fletcher_4_compute_f)(fletcher_4_ctx_t *,
@@ -161,4 +124,4 @@ _ZFS_FLETCHER_H const fletcher_4_ops_t fletcher_4_aarch64_neon_ops;
 }
 #endif
 
-#endif	/* _ZFS_FLETCHER_H */
+#endif	 

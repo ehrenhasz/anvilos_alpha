@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Serial Attached SCSI (SAS) class internal header file
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- */
+ 
+ 
 
 #ifndef _SAS_INTERNAL_H_
 #define _SAS_INTERNAL_H_
@@ -28,7 +23,7 @@
 #define ASSIGN_SAS_TASK(_sc, _t) do { (_sc)->host_scribble = (void *) _t; } while (0)
 
 struct sas_phy_data {
-	/* let reset be performed in sas_queue_work() context */
+	 
 	struct sas_phy *phy;
 	struct mutex event_lock;
 	int hard_reset;
@@ -144,7 +139,7 @@ static inline void sas_fill_in_rphy(struct domain_device *dev,
 	rphy->identify.target_port_protocols = dev->tproto;
 	switch (dev->dev_type) {
 	case SAS_SATA_DEV:
-		/* FIXME: need sata device type */
+		 
 	case SAS_END_DEVICE:
 	case SAS_SATA_PENDING:
 		rphy->identify.device_type = SAS_END_DEVICE;
@@ -184,7 +179,7 @@ static inline void sas_add_parent_port(struct domain_device *dev, int phy_id)
 
 	if (!ex->parent_port) {
 		ex->parent_port = sas_port_alloc(&dev->rphy->dev, phy_id);
-		/* FIXME: error handling */
+		 
 		BUG_ON(!ex->parent_port);
 		BUG_ON(sas_port_add(ex->parent_port));
 		sas_port_mark_backlink(ex->parent_port);
@@ -211,4 +206,4 @@ static inline void sas_put_device(struct domain_device *dev)
 	kref_put(&dev->kref, sas_free_device);
 }
 
-#endif /* _SAS_INTERNAL_H_ */
+#endif  

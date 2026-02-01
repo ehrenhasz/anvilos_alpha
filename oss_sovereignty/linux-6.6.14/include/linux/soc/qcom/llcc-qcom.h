@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
- *
- */
+ 
+ 
 
 #include <linux/platform_device.h>
 #ifndef __LLCC_QCOM__
@@ -56,25 +53,13 @@
 #define LLCC_DISP_1	 54
 #define LLCC_VIDVSP	 64
 
-/**
- * struct llcc_slice_desc - Cache slice descriptor
- * @slice_id: llcc slice id
- * @slice_size: Size allocated for the llcc slice
- */
+ 
 struct llcc_slice_desc {
 	u32 slice_id;
 	size_t slice_size;
 };
 
-/**
- * struct llcc_edac_reg_data - llcc edac registers data for each error type
- * @name: Name of the error
- * @reg_cnt: Number of registers
- * @count_mask: Mask value to get the error count
- * @ways_mask: Mask value to get the error ways
- * @count_shift: Shift value to get the error count
- * @ways_shift: Shift value to get the error ways
- */
+ 
 struct llcc_edac_reg_data {
 	char *name;
 	u32 reg_cnt;
@@ -85,7 +70,7 @@ struct llcc_edac_reg_data {
 };
 
 struct llcc_edac_reg_offset {
-	/* LLCC TRP registers */
+	 
 	u32 trp_ecc_error_status0;
 	u32 trp_ecc_error_status1;
 	u32 trp_ecc_sb_err_syn0;
@@ -95,12 +80,12 @@ struct llcc_edac_reg_offset {
 	u32 trp_interrupt_0_clear;
 	u32 trp_interrupt_0_enable;
 
-	/* LLCC Common registers */
+	 
 	u32 cmn_status0;
 	u32 cmn_interrupt_0_enable;
 	u32 cmn_interrupt_2_enable;
 
-	/* LLCC DRP registers */
+	 
 	u32 drp_ecc_error_cfg;
 	u32 drp_ecc_error_cntr_clear;
 	u32 drp_interrupt_status;
@@ -112,20 +97,7 @@ struct llcc_edac_reg_offset {
 	u32 drp_ecc_db_err_syn0;
 };
 
-/**
- * struct llcc_drv_data - Data associated with the llcc driver
- * @regmaps: regmaps associated with the llcc device
- * @bcast_regmap: regmap associated with llcc broadcast offset
- * @cfg: pointer to the data structure for slice configuration
- * @edac_reg_offset: Offset of the LLCC EDAC registers
- * @lock: mutex associated with each slice
- * @cfg_size: size of the config data table
- * @max_slices: max slices as read from device tree
- * @num_banks: Number of llcc banks
- * @bitmap: Bit map to track the active slice ids
- * @ecc_irq: interrupt for llcc cache error detection and reporting
- * @version: Indicates the LLCC version
- */
+ 
 struct llcc_drv_data {
 	struct regmap **regmaps;
 	struct regmap *bcast_regmap;
@@ -141,40 +113,22 @@ struct llcc_drv_data {
 };
 
 #if IS_ENABLED(CONFIG_QCOM_LLCC)
-/**
- * llcc_slice_getd - get llcc slice descriptor
- * @uid: usecase_id of the client
- */
+ 
 struct llcc_slice_desc *llcc_slice_getd(u32 uid);
 
-/**
- * llcc_slice_putd - llcc slice descritpor
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 void llcc_slice_putd(struct llcc_slice_desc *desc);
 
-/**
- * llcc_get_slice_id - get slice id
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 int llcc_get_slice_id(struct llcc_slice_desc *desc);
 
-/**
- * llcc_get_slice_size - llcc slice size
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 size_t llcc_get_slice_size(struct llcc_slice_desc *desc);
 
-/**
- * llcc_slice_activate - Activate the llcc slice
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 int llcc_slice_activate(struct llcc_slice_desc *desc);
 
-/**
- * llcc_slice_deactivate - Deactivate the llcc slice
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 int llcc_slice_deactivate(struct llcc_slice_desc *desc);
 
 #else

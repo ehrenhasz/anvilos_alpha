@@ -1,24 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2018 - 2020, 2023 Intel Corporation
- *****************************************************************************/
+
+ 
 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "iwl-agn-hw.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL5000_UCODE_API_MAX 5
 #define IWL5150_UCODE_API_MAX 2
 
-/* Lowest firmware API version supported */
+ 
 #define IWL5000_UCODE_API_MIN 1
 #define IWL5150_UCODE_API_MIN 1
 
-/* EEPROM versions */
+ 
 #define EEPROM_5000_TX_POWER_VERSION	(4)
 #define EEPROM_5000_EEPROM_VERSION	(0x11A)
 #define EEPROM_5050_TX_POWER_VERSION	(4)
@@ -74,32 +70,32 @@ static const struct iwl_eeprom_params iwl5000_eeprom_params = {
 const struct iwl_cfg iwl5300_agn_cfg = {
 	.name = "Intel(R) Ultimate N WiFi Link 5300 AGN",
 	IWL_DEVICE_5000,
-	/* at least EEPROM 0x11A has wrong info */
-	.valid_tx_ant = ANT_ABC,	/* .cfg overwrite */
-	.valid_rx_ant = ANT_ABC,	/* .cfg overwrite */
+	 
+	.valid_tx_ant = ANT_ABC,	 
+	.valid_rx_ant = ANT_ABC,	 
 	.ht_params = &iwl5000_ht_params,
 };
 
 const struct iwl_cfg iwl5100_bgn_cfg = {
 	.name = "Intel(R) WiFi Link 5100 BGN",
 	IWL_DEVICE_5000,
-	.valid_tx_ant = ANT_B,		/* .cfg overwrite */
-	.valid_rx_ant = ANT_AB,		/* .cfg overwrite */
+	.valid_tx_ant = ANT_B,		 
+	.valid_rx_ant = ANT_AB,		 
 	.ht_params = &iwl5000_ht_params,
 };
 
 const struct iwl_cfg iwl5100_abg_cfg = {
 	.name = "Intel(R) WiFi Link 5100 ABG",
 	IWL_DEVICE_5000,
-	.valid_tx_ant = ANT_B,		/* .cfg overwrite */
-	.valid_rx_ant = ANT_AB,		/* .cfg overwrite */
+	.valid_tx_ant = ANT_B,		 
+	.valid_rx_ant = ANT_AB,		 
 };
 
 const struct iwl_cfg iwl5100_agn_cfg = {
 	.name = "Intel(R) WiFi Link 5100 AGN",
 	IWL_DEVICE_5000,
-	.valid_tx_ant = ANT_B,		/* .cfg overwrite */
-	.valid_rx_ant = ANT_AB,		/* .cfg overwrite */
+	.valid_tx_ant = ANT_B,		 
+	.valid_rx_ant = ANT_AB,		 
 	.ht_params = &iwl5000_ht_params,
 };
 

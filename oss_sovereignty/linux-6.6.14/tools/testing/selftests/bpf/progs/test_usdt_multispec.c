@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/usdt.bpf.h>
 
-/* this file is linked together with test_usdt.c to validate that usdt.bpf.h
- * can be included in multiple .bpf.c files forming single final BPF object
- * file
- */
+ 
 
 extern int my_pid;
 

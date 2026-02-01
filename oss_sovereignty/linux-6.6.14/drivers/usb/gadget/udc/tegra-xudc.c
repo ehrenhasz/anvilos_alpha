@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra XUSB device mode controller
- *
- * Copyright (c) 2013-2022, NVIDIA CORPORATION.  All rights reserved.
- * Copyright (c) 2015, Google Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -30,7 +25,7 @@
 #include <linux/usb/phy.h>
 #include <linux/workqueue.h>
 
-/* XUSB_DEV registers */
+ 
 #define DB 0x004
 #define  DB_TARGET_MASK GENMASK(15, 8)
 #define  DB_TARGET(x) (((x) << 8) & DB_TARGET_MASK)
@@ -201,7 +196,7 @@
 #define  CFG_DEV_FE_PORTREGSEL(x) ((x) & CFG_DEV_FE_PORTREGSEL_MASK)
 #define  CFG_DEV_FE_INFINITE_SS_RETRY BIT(29)
 
-/* FPCI registers */
+ 
 #define XUSB_DEV_CFG_1 0x004
 #define  XUSB_DEV_CFG_1_IO_SPACE_EN BIT(0)
 #define  XUSB_DEV_CFG_1_MEMORY_SPACE_EN BIT(1)
@@ -210,7 +205,7 @@
 #define  XUSB_DEV_CFG_4_BASE_ADDR_MASK GENMASK(31, 15)
 #define XUSB_DEV_CFG_5 0x014
 
-/* IPFS registers */
+ 
 #define XUSB_DEV_CONFIGURATION_0 0x180
 #define  XUSB_DEV_CONFIGURATION_0_EN_FPCI BIT(0)
 #define XUSB_DEV_INTR_MASK_0 0x188
@@ -627,7 +622,7 @@ static void tegra_xudc_limit_port_speed(struct tegra_xudc *xudc)
 {
 	u32 val;
 
-	/* limit port speed to gen 1 */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_CNT56);
 	val &= ~(SSPX_CORE_CNT56_SCD_BIT0_TRPT_MAX_MASK);
 	val |= SSPX_CORE_CNT56_SCD_BIT0_TRPT_MAX(0x260);
@@ -663,7 +658,7 @@ static void tegra_xudc_restore_port_speed(struct tegra_xudc *xudc)
 {
 	u32 val;
 
-	/* restore port speed to gen2 */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_CNT56);
 	val &= ~(SSPX_CORE_CNT56_SCD_BIT0_TRPT_MAX_MASK);
 	val |= SSPX_CORE_CNT56_SCD_BIT0_TRPT_MAX(0x438);
@@ -737,7 +732,7 @@ static void tegra_xudc_device_mode_off(struct tegra_xudc *xudc)
 	pls = (xudc_readl(xudc, PORTSC) & PORTSC_PLS_MASK) >>
 		PORTSC_PLS_SHIFT;
 
-	/* Direct link to U0 if disconnected in RESUME or U2. */
+	 
 	if (xudc->soc->pls_quirk && xudc->gadget.speed == USB_SPEED_SUPER &&
 	    (pls == PORTSC_PLS_RESUME || pls == PORTSC_PLS_U2)) {
 		val = xudc_readl(xudc, PORTPM);
@@ -750,11 +745,11 @@ static void tegra_xudc_device_mode_off(struct tegra_xudc *xudc)
 		xudc_writel(xudc, val, PORTSC);
 	}
 
-	/* Wait for disconnect event. */
+	 
 	if (connected)
 		wait_for_completion(&xudc->disconnect_complete);
 
-	/* Make sure interrupt handler has completed before powergating. */
+	 
 	synchronize_irq(xudc->irq);
 
 	tegra_phy_xusb_utmi_pad_power_down(xudc->curr_utmi_phy);
@@ -881,7 +876,7 @@ static void tegra_xudc_port_reset_war_work(struct work_struct *work)
 
 		if (pls == PORTSC_PLS_DISABLED) {
 			dev_dbg(xudc->dev, "toggle vbus\n");
-			/* PRC doesn't complete in 100ms, toggle the vbus */
+			 
 			ret = tegra_phy_xusb_utmi_port_reset(
 				xudc->curr_utmi_phy);
 			if (ret == 1)
@@ -1158,22 +1153,7 @@ static unsigned int tegra_xudc_queue_trbs(struct tegra_xudc_ep *ep,
 		ep->ring_full = true;
 	}
 
-	/*
-	 * To generate zero-length packet on USB bus, SW needs schedule a
-	 * standalone zero-length TD. According to HW's behavior, SW needs
-	 * to schedule TDs in different ways for different endpoint types.
-	 *
-	 * For control endpoint:
-	 * - Data stage TD (IOC = 1, CH = 0)
-	 * - Ring doorbell and wait transfer event
-	 * - Data stage TD for ZLP (IOC = 1, CH = 0)
-	 * - Ring doorbell
-	 *
-	 * For bulk and interrupt endpoints:
-	 * - Normal transfer TD (IOC = 0, CH = 0)
-	 * - Normal transfer TD for ZLP (IOC = 1, CH = 0)
-	 * - Ring doorbell
-	 */
+	 
 
 	if (req->need_zlp && usb_endpoint_xfer_control(ep->desc) && count > 1)
 		wait_td = true;
@@ -1220,7 +1200,7 @@ static void tegra_xudc_ep_ring_doorbell(struct tegra_xudc_ep *ep)
 	} else if (usb_ss_max_streams(ep->comp_desc) > 0) {
 		struct tegra_xudc_request *req;
 
-		/* Don't ring doorbell if the stream has been rejected. */
+		 
 		if (ep->stream_rejected)
 			return;
 
@@ -1339,10 +1319,7 @@ static void squeeze_transfer_ring(struct tegra_xudc_ep *ep,
 	bool pcs_enq = trb_read_cycle(trb);
 	bool pcs;
 
-	/*
-	 * Clear out all the TRBs part of or after the cancelled request,
-	 * and must correct trb cycle bit to the last un-enqueued state.
-	 */
+	 
 	while (trb != &ep->transfer_ring[ep->enq_ptr]) {
 		pcs = trb_read_cycle(trb);
 		memset(trb, 0, sizeof(*trb));
@@ -1353,12 +1330,9 @@ static void squeeze_transfer_ring(struct tegra_xudc_ep *ep,
 			trb = ep->transfer_ring;
 	}
 
-	/* Requests will be re-queued at the start of the cancelled request. */
+	 
 	ep->enq_ptr = req->first_trb - ep->transfer_ring;
-	/*
-	 * Retrieve the correct cycle bit state from the first trb of
-	 * the cancelled request.
-	 */
+	 
 	ep->pcs = pcs_enq;
 	ep->ring_full = false;
 	list_for_each_entry_continue(req, &ep->queue, list) {
@@ -1372,10 +1346,7 @@ static void squeeze_transfer_ring(struct tegra_xudc_ep *ep,
 	}
 }
 
-/*
- * Determine if the given TRB is in the range [first trb, last trb] for the
- * given request.
- */
+ 
 static bool trb_in_request(struct tegra_xudc_ep *ep,
 			   struct tegra_xudc_request *req,
 			   struct tegra_xudc_trb *trb)
@@ -1394,10 +1365,7 @@ static bool trb_in_request(struct tegra_xudc_ep *ep,
 	return false;
 }
 
-/*
- * Determine if the given TRB is in the range [EP enqueue pointer, first TRB)
- * for the given endpoint and request.
- */
+ 
 static bool trb_before_request(struct tegra_xudc_ep *ep,
 			       struct tegra_xudc_request *req,
 			       struct tegra_xudc_trb *trb)
@@ -1427,7 +1395,7 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
 	bool busy, kick_queue = false;
 	int ret = 0;
 
-	/* Make sure the request is actually queued to this endpoint. */
+	 
 	list_for_each_entry(iter, &ep->queue, list) {
 		if (iter != req)
 			continue;
@@ -1438,27 +1406,24 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
 	if (!r)
 		return -EINVAL;
 
-	/* Request hasn't been queued in the transfer ring yet. */
+	 
 	if (!req->trbs_queued) {
 		tegra_xudc_req_done(ep, req, -ECONNRESET);
 		return 0;
 	}
 
-	/* Halt DMA for this endpoint. */
+	 
 	if (ep_ctx_read_state(ep->context) == EP_STATE_RUNNING) {
 		ep_pause(xudc, ep->index);
 		ep_wait_for_inactive(xudc, ep->index);
 	}
 
 	deq_trb = trb_phys_to_virt(ep, ep_ctx_read_deq_ptr(ep->context));
-	/* Is the hardware processing the TRB at the dequeue pointer? */
+	 
 	busy = (trb_read_cycle(deq_trb) == ep_ctx_read_dcs(ep->context));
 
 	if (trb_in_request(ep, req, deq_trb) && busy) {
-		/*
-		 * Request has been partially completed or it hasn't
-		 * started processing yet.
-		 */
+		 
 		dma_addr_t deq_ptr;
 
 		squeeze_transfer_ring(ep, req);
@@ -1467,12 +1432,9 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
 		tegra_xudc_req_done(ep, req, -ECONNRESET);
 		kick_queue = true;
 
-		/* EDTLA is > 0: request has been partially completed */
+		 
 		if (req->usb_req.actual > 0) {
-			/*
-			 * Abort the pending transfer and update the dequeue
-			 * pointer
-			 */
+			 
 			ep_ctx_write_edtla(ep->context, 0);
 			ep_ctx_write_partial_td(ep->context, 0);
 			ep_ctx_write_data_offset(ep->context, 0);
@@ -1489,21 +1451,18 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
 			}
 		}
 	} else if (trb_before_request(ep, req, deq_trb) && busy) {
-		/* Request hasn't started processing yet. */
+		 
 		squeeze_transfer_ring(ep, req);
 
 		tegra_xudc_req_done(ep, req, -ECONNRESET);
 		kick_queue = true;
 	} else {
-		/*
-		 * Request has completed, but we haven't processed the
-		 * completion event yet.
-		 */
+		 
 		tegra_xudc_req_done(ep, req, -ECONNRESET);
 		ret = -EINVAL;
 	}
 
-	/* Resume the endpoint. */
+	 
 	ep_unpause(xudc, ep->index);
 
 	if (kick_queue)
@@ -1676,7 +1635,7 @@ static void tegra_xudc_ep_context_setup(struct tegra_xudc_ep *ep)
 	ep_ctx_write_deq_ptr(ep->context, ep->transfer_ring_phys);
 	ep_ctx_write_dcs(ep->context, ep->pcs);
 
-	/* Select a reasonable average TRB length based on endpoint type. */
+	 
 	switch (usb_endpoint_type(desc)) {
 	case USB_ENDPOINT_XFER_CONTROL:
 		val = 8;
@@ -1735,10 +1694,7 @@ static int __tegra_xudc_ep_disable(struct tegra_xudc_ep *ep)
 	if (xudc_readl(xudc, EP_STOPPED) & BIT(ep->index))
 		xudc_writel(xudc, BIT(ep->index), EP_STOPPED);
 
-	/*
-	 * If this is the last endpoint disabled in a de-configure request,
-	 * switch back to address state.
-	 */
+	 
 	if ((xudc->device_state == USB_STATE_CONFIGURED) &&
 	    (xudc->nr_enabled_eps == 1)) {
 		u32 val;
@@ -1793,7 +1749,7 @@ static int __tegra_xudc_ep_enable(struct tegra_xudc_ep *ep,
 		!usb_endpoint_xfer_control(desc) && !ep->usb_ep.comp_desc)
 		return -EINVAL;
 
-	/* Disable the EP if it is not disabled */
+	 
 	if (ep_ctx_read_state(ep->context) != EP_STATE_DISABLED)
 		__tegra_xudc_ep_disable(ep);
 
@@ -1820,17 +1776,11 @@ static int __tegra_xudc_ep_enable(struct tegra_xudc_ep *ep,
 
 	tegra_xudc_ep_context_setup(ep);
 
-	/*
-	 * No need to reload and un-halt EP0.  This will be done automatically
-	 * once a valid SETUP packet is received.
-	 */
+	 
 	if (usb_endpoint_xfer_control(desc))
 		goto out;
 
-	/*
-	 * Transition to configured state once the first non-control
-	 * endpoint is enabled.
-	 */
+	 
 	if (xudc->device_state == USB_STATE_ADDRESS) {
 		val = xudc_readl(xudc, CTRL);
 		val |= CTRL_RUN;
@@ -1841,10 +1791,7 @@ static int __tegra_xudc_ep_enable(struct tegra_xudc_ep *ep,
 	}
 
 	if (usb_endpoint_xfer_isoc(desc)) {
-		/*
-		 * Pause all bulk endpoints when enabling an isoch endpoint
-		 * to ensure the isoch endpoint is allocated enough bandwidth.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(xudc->ep); i++) {
 			if (xudc->ep[i].desc &&
 			    usb_endpoint_xfer_bulk(xudc->ep[i].desc))
@@ -1979,7 +1926,7 @@ static void tegra_xudc_resume_device_state(struct tegra_xudc *xudc)
 
 	ep_unpause_all(xudc);
 
-	/* Direct link to U0. */
+	 
 	val = xudc_readl(xudc, PORTSC);
 	if (((val & PORTSC_PLS_MASK) >> PORTSC_PLS_SHIFT) != PORTSC_PLS_U0) {
 		val &= ~(PORTSC_CHANGE_MASK | PORTSC_PLS_MASK);
@@ -1993,10 +1940,7 @@ static void tegra_xudc_resume_device_state(struct tegra_xudc *xudc)
 		xudc->resume_state = 0;
 	}
 
-	/*
-	 * Doorbells may be dropped if they are sent too soon (< ~200ns)
-	 * after unpausing the endpoint.  Wait for 500ns just to be safe.
-	 */
+	 
 	ndelay(500);
 	for (i = 0; i < ARRAY_SIZE(xudc->ep); i++)
 		tegra_xudc_ep_ring_doorbell(&xudc->ep[i]);
@@ -2025,7 +1969,7 @@ static int tegra_xudc_gadget_wakeup(struct usb_gadget *gadget)
 	     (val & PORTPM_FRWE))) {
 		tegra_xudc_resume_device_state(xudc);
 
-		/* Send Device Notification packet. */
+		 
 		if (xudc->gadget.speed == USB_SPEED_SUPER) {
 			val = DEVNOTIF_LO_TYPE(DEVNOTIF_LO_TYPE_FUNCTION_WAKE)
 					     | DEVNOTIF_LO_TRIG;
@@ -2436,7 +2380,7 @@ static int tegra_xudc_ep0_get_status(struct tegra_xudc *xudc,
 
 static void set_sel_complete(struct usb_ep *ep, struct usb_request *req)
 {
-	/* Nothing to do with SEL values */
+	 
 }
 
 static int tegra_xudc_ep0_set_sel(struct tegra_xudc *xudc,
@@ -2461,7 +2405,7 @@ static int tegra_xudc_ep0_set_sel(struct tegra_xudc *xudc,
 
 static void set_isoch_delay_complete(struct usb_ep *ep, struct usb_request *req)
 {
-	/* Nothing to do with isoch delay */
+	 
 }
 
 static int tegra_xudc_ep0_set_isoch_delay(struct tegra_xudc *xudc,
@@ -2556,11 +2500,7 @@ static int tegra_xudc_ep0_standard_req(struct tegra_xudc *xudc,
 		break;
 	case USB_REQ_SET_CONFIGURATION:
 		dev_dbg(xudc->dev, "USB_REQ_SET_CONFIGURATION\n");
-		/*
-		 * In theory we need to clear RUN bit before status stage of
-		 * deconfig request sent, but this seems to be causing problems.
-		 * Clear RUN once all endpoints are disabled instead.
-		 */
+		 
 		fallthrough;
 	default:
 		ret = tegra_xudc_ep0_delegate_req(xudc, ctrl);
@@ -2578,13 +2518,10 @@ static void tegra_xudc_handle_ep0_setup_packet(struct tegra_xudc *xudc,
 
 	xudc->setup_seq_num = seq_num;
 
-	/* Ensure EP0 is unhalted. */
+	 
 	ep_unhalt(xudc, 0);
 
-	/*
-	 * On Tegra210, setup packets with sequence numbers 0xfffe or 0xffff
-	 * are invalid.  Halt EP0 until we get a valid packet.
-	 */
+	 
 	if (xudc->soc->invalid_seq_num &&
 	    (seq_num == 0xfffe || seq_num == 0xffff)) {
 		dev_warn(xudc->dev, "invalid sequence number detected\n");
@@ -2617,12 +2554,7 @@ static void tegra_xudc_handle_ep0_event(struct tegra_xudc *xudc,
 	u16 seq_num = trb_read_seq_num(event);
 
 	if (xudc->setup_state != WAIT_FOR_SETUP) {
-		/*
-		 * The controller is in the process of handling another
-		 * setup request.  Queue subsequent requests and handle
-		 * the last one once the controller reports a sequence
-		 * number error.
-		 */
+		 
 		memcpy(&xudc->setup_packet.ctrl_req, ctrl, sizeof(*ctrl));
 		xudc->setup_packet.seq_num = seq_num;
 		xudc->queued_setup_packet = true;
@@ -2661,10 +2593,7 @@ static void tegra_xudc_handle_transfer_completion(struct tegra_xudc *xudc,
 	trb = trb_phys_to_virt(ep, trb_read_data_ptr(event));
 	req = trb_to_request(ep, trb);
 
-	/*
-	 * TDs are complete on short packet or when the completed TRB is the
-	 * last TRB in the TD (the CHAIN bit is unset).
-	 */
+	 
 	if (req && (short_packet || (!trb_read_chain(trb) &&
 		(req->trbs_needed == req->trbs_queued)))) {
 		struct tegra_xudc_trb *last = req->last_trb;
@@ -2681,10 +2610,7 @@ static void tegra_xudc_handle_transfer_completion(struct tegra_xudc *xudc,
 		if (ep->desc && usb_endpoint_xfer_control(ep->desc))
 			tegra_xudc_ep0_req_done(xudc);
 
-		/*
-		 * Advance the dequeue pointer past the end of the current TD
-		 * on short packet completion.
-		 */
+		 
 		if (short_packet) {
 			ep->deq_ptr = (last - ep->transfer_ring) + 1;
 			if (ep->deq_ptr == XUDC_TRANSFER_RING_SIZE - 1)
@@ -2712,7 +2638,7 @@ static void tegra_xudc_handle_transfer_event(struct tegra_xudc *xudc,
 		return;
 	}
 
-	/* Update transfer ring dequeue pointer. */
+	 
 	trb = trb_phys_to_virt(ep, trb_read_data_ptr(event));
 	comp_code = trb_read_cmpl_code(event);
 	if (comp_code != TRB_CMPL_CODE_BABBLE_DETECTED_ERR) {
@@ -2738,20 +2664,13 @@ static void tegra_xudc_handle_transfer_event(struct tegra_xudc *xudc,
 
 		if (ep->stream_rejected) {
 			ep->stream_rejected = false;
-			/*
-			 * An EP is stopped when a stream is rejected.  Wait
-			 * for the EP to report that it is stopped and then
-			 * un-stop it.
-			 */
+			 
 			ep_wait_for_stopped(xudc, ep_index);
 		}
 		tegra_xudc_ep_ring_doorbell(ep);
 		break;
 	case TRB_CMPL_CODE_BABBLE_DETECTED_ERR:
-		/*
-		 * Wait for the EP to be stopped so the controller stops
-		 * processing doorbells.
-		 */
+		 
 		ep_wait_for_stopped(xudc, ep_index);
 		ep->enq_ptr = ep->deq_ptr;
 		tegra_xudc_ep_nuke(ep, -EIO);
@@ -2772,10 +2691,7 @@ static void tegra_xudc_handle_transfer_event(struct tegra_xudc *xudc,
 	case TRB_CMPL_CODE_CTRL_SEQNUM_ERR:
 		dev_info(xudc->dev, "sequence number error\n");
 
-		/*
-		 * Kill any queued control request and skip to the last
-		 * setup packet we received.
-		 */
+		 
 		tegra_xudc_ep_nuke(ep, -EINVAL);
 		xudc->setup_state = WAIT_FOR_SETUP;
 		if (!xudc->queued_setup_packet)
@@ -2790,7 +2706,7 @@ static void tegra_xudc_handle_transfer_event(struct tegra_xudc *xudc,
 		dev_dbg(xudc->dev, "stop completion code on EP %u\n",
 			ep_index);
 
-		/* Disconnected. */
+		 
 		tegra_xudc_ep_nuke(ep, -ECONNREFUSED);
 		break;
 	default:
@@ -2815,10 +2731,7 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
 	for (i = 0; i < ARRAY_SIZE(xudc->ep); i++)
 		tegra_xudc_ep_nuke(&xudc->ep[i], -ESHUTDOWN);
 
-	/*
-	 * Reset sequence number and dequeue pointer to flush the transfer
-	 * ring.
-	 */
+	 
 	ep0->deq_ptr = ep0->enq_ptr;
 	ep0->ring_full = false;
 
@@ -3157,10 +3070,7 @@ static int tegra_xudc_alloc_ep(struct tegra_xudc *xudc, unsigned int index)
 	ep->context = &xudc->ep_context[index];
 	INIT_LIST_HEAD(&ep->queue);
 
-	/*
-	 * EP1 would be the input endpoint corresponding to EP0, but since
-	 * EP0 is bi-directional, EP1 is unused.
-	 */
+	 
 	if (index == 1)
 		return 0;
 
@@ -3201,10 +3111,7 @@ static void tegra_xudc_free_ep(struct tegra_xudc *xudc, unsigned int index)
 {
 	struct tegra_xudc_ep *ep = &xudc->ep[index];
 
-	/*
-	 * EP1 would be the input endpoint corresponding to EP0, but since
-	 * EP0 is bi-directional, EP1 is unused.
-	 */
+	 
 	if (index == 1)
 		return;
 
@@ -3363,12 +3270,12 @@ static void tegra_xudc_fpci_ipfs_init(struct tegra_xudc *xudc)
 		usleep_range(10, 15);
 	}
 
-	/* Enable bus master */
+	 
 	val = XUSB_DEV_CFG_1_IO_SPACE_EN | XUSB_DEV_CFG_1_MEMORY_SPACE_EN |
 		XUSB_DEV_CFG_1_BUS_MASTER_EN;
 	fpci_writel(xudc, val, XUSB_DEV_CFG_1);
 
-	/* Program BAR0 space */
+	 
 	val = fpci_readl(xudc, XUSB_DEV_CFG_4);
 	val &= ~(XUSB_DEV_CFG_4_BASE_ADDR_MASK);
 	val |= xudc->phys_base & (XUSB_DEV_CFG_4_BASE_ADDR_MASK);
@@ -3379,7 +3286,7 @@ static void tegra_xudc_fpci_ipfs_init(struct tegra_xudc *xudc)
 	usleep_range(100, 200);
 
 	if (xudc->soc->has_ipfs) {
-		/* Enable interrupt assertion */
+		 
 		val = ipfs_readl(xudc, XUSB_DEV_INTR_MASK_0);
 		val |= XUSB_DEV_INTR_MASK_0_IP_INT_MASK;
 		ipfs_writel(xudc, val, XUSB_DEV_INTR_MASK_0);
@@ -3405,42 +3312,39 @@ static void tegra_xudc_device_params_init(struct tegra_xudc *xudc)
 	if (xudc->soc->port_speed_quirk)
 		tegra_xudc_limit_port_speed(xudc);
 
-	/* Set a reasonable U3 exit timer value. */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_PADCTL4);
 	val &= ~(SSPX_CORE_PADCTL4_RXDAT_VLD_TIMEOUT_U3_MASK);
 	val |= SSPX_CORE_PADCTL4_RXDAT_VLD_TIMEOUT_U3(0x5dc0);
 	xudc_writel(xudc, val, SSPX_CORE_PADCTL4);
 
-	/* Default ping LFPS tBurst is too large. */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_CNT0);
 	val &= ~(SSPX_CORE_CNT0_PING_TBURST_MASK);
 	val |= SSPX_CORE_CNT0_PING_TBURST(0xa);
 	xudc_writel(xudc, val, SSPX_CORE_CNT0);
 
-	/* Default tPortConfiguration timeout is too small. */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_CNT30);
 	val &= ~(SSPX_CORE_CNT30_LMPITP_TIMER_MASK);
 	val |= SSPX_CORE_CNT30_LMPITP_TIMER(0x978);
 	xudc_writel(xudc, val, SSPX_CORE_CNT30);
 
 	if (xudc->soc->lpm_enable) {
-		/* Set L1 resume duration to 95 us. */
+		 
 		val = xudc_readl(xudc, HSFSPI_COUNT13);
 		val &= ~(HSFSPI_COUNT13_U2_RESUME_K_DURATION_MASK);
 		val |= HSFSPI_COUNT13_U2_RESUME_K_DURATION(0x2c88);
 		xudc_writel(xudc, val, HSFSPI_COUNT13);
 	}
 
-	/*
-	 * Compliance suite appears to be violating polling LFPS tBurst max
-	 * of 1.4us.  Send 1.45us instead.
-	 */
+	 
 	val = xudc_readl(xudc, SSPX_CORE_CNT32);
 	val &= ~(SSPX_CORE_CNT32_POLL_TBURST_MAX_MASK);
 	val |= SSPX_CORE_CNT32_POLL_TBURST_MAX(0xb0);
 	xudc_writel(xudc, val, SSPX_CORE_CNT32);
 
-	/* Direct HS/FS port instance to RxDetect. */
+	 
 	val = xudc_readl(xudc, CFG_DEV_FE);
 	val &= ~(CFG_DEV_FE_PORTREGSEL_MASK);
 	val |= CFG_DEV_FE_PORTREGSEL(CFG_DEV_FE_PORTREGSEL_HSFS_PI);
@@ -3451,7 +3355,7 @@ static void tegra_xudc_device_params_init(struct tegra_xudc *xudc)
 	val |= PORTSC_LWS | PORTSC_PLS(PORTSC_PLS_RXDETECT);
 	xudc_writel(xudc, val, PORTSC);
 
-	/* Direct SS port instance to RxDetect. */
+	 
 	val = xudc_readl(xudc, CFG_DEV_FE);
 	val &= ~(CFG_DEV_FE_PORTREGSEL_MASK);
 	val |= CFG_DEV_FE_PORTREGSEL_SS_PI & CFG_DEV_FE_PORTREGSEL_MASK;
@@ -3462,27 +3366,24 @@ static void tegra_xudc_device_params_init(struct tegra_xudc *xudc)
 	val |= PORTSC_LWS | PORTSC_PLS(PORTSC_PLS_RXDETECT);
 	xudc_writel(xudc, val, PORTSC);
 
-	/* Restore port instance. */
+	 
 	val = xudc_readl(xudc, CFG_DEV_FE);
 	val &= ~(CFG_DEV_FE_PORTREGSEL_MASK);
 	xudc_writel(xudc, val, CFG_DEV_FE);
 
-	/*
-	 * Enable INFINITE_SS_RETRY to prevent device from entering
-	 * Disabled.Error when attached to buggy SuperSpeed hubs.
-	 */
+	 
 	val = xudc_readl(xudc, CFG_DEV_FE);
 	val |= CFG_DEV_FE_INFINITE_SS_RETRY;
 	xudc_writel(xudc, val, CFG_DEV_FE);
 
-	/* Set interrupt moderation. */
+	 
 	imod = XUDC_INTERRUPT_MODERATION_US * 4;
 	val = xudc_readl(xudc, RT_IMOD);
 	val &= ~((RT_IMOD_IMODI_MASK) | (RT_IMOD_IMODC_MASK));
 	val |= (RT_IMOD_IMODI(imod) | RT_IMOD_IMODC(imod));
 	xudc_writel(xudc, val, RT_IMOD);
 
-	/* increase SSPI transaction timeout from 32us to 512us */
+	 
 	val = xudc_readl(xudc, CFG_DEV_SSPI_XFER);
 	val &= ~(CFG_DEV_SSPI_XFER_ACKTIMEOUT_MASK);
 	val |= CFG_DEV_SSPI_XFER_ACKTIMEOUT(0xf000);
@@ -3514,7 +3415,7 @@ static int tegra_xudc_phy_get(struct tegra_xudc *xudc)
 	for (i = 0; i < xudc->soc->num_phys; i++) {
 		char phy_name[] = "usb.-.";
 
-		/* Get USB2 phy */
+		 
 		snprintf(phy_name, sizeof(phy_name), "usb2-%d", i);
 		xudc->utmi_phy[i] = devm_phy_optional_get(xudc->dev, phy_name);
 		if (IS_ERR(xudc->utmi_phy[i])) {
@@ -3523,7 +3424,7 @@ static int tegra_xudc_phy_get(struct tegra_xudc *xudc)
 				      "failed to get usb2-%d PHY\n", i);
 			goto clean_up;
 		} else if (xudc->utmi_phy[i]) {
-			/* Get usb-phy, if utmi phy is available */
+			 
 			xudc->usbphy[i] = devm_usb_get_phy_by_node(xudc->dev,
 						xudc->utmi_phy[i]->dev.of_node,
 						NULL);
@@ -3534,11 +3435,11 @@ static int tegra_xudc_phy_get(struct tegra_xudc *xudc)
 				goto clean_up;
 			}
 		} else if (!xudc->utmi_phy[i]) {
-			/* if utmi phy is not available, ignore USB3 phy get */
+			 
 			continue;
 		}
 
-		/* Get USB3 phy */
+		 
 		usb3 = tegra_xusb_padctl_get_usb3_companion(xudc->padctl, i);
 		if (usb3 < 0)
 			continue;
@@ -4007,7 +3908,7 @@ static int __maybe_unused tegra_xudc_suspend(struct device *dev)
 	flush_work(&xudc->usb_role_sw_work);
 
 	if (!pm_runtime_status_suspended(dev)) {
-		/* Forcibly disconnect before powergating. */
+		 
 		tegra_xudc_device_mode_off(xudc);
 		tegra_xudc_powergate(xudc);
 	}

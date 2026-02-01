@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2014-2018 MediaTek Inc.
 
-/*
- * Library for MediaTek External Interrupt Support
- *
- * Author: Maoguang Meng <maoguang.meng@mediatek.com>
- *	   Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -352,12 +346,7 @@ static void mtk_eint_irq_handler(struct irq_desc *desc)
 			index = eint_num + offset;
 			status &= ~BIT(offset);
 
-			/*
-			 * If we get an interrupt on pin that was only required
-			 * for wake (but no real interrupt requested), mask the
-			 * interrupt (as would mtk_eint_resume do anyway later
-			 * in the resume sequence).
-			 */
+			 
 			if (eint->wake_mask[mask_offset] & BIT(offset) &&
 			    !(eint->cur_mask[mask_offset] & BIT(offset))) {
 				writel_relaxed(BIT(offset), reg -
@@ -367,10 +356,7 @@ static void mtk_eint_irq_handler(struct irq_desc *desc)
 
 			dual_edge = eint->dual_edge[index];
 			if (dual_edge) {
-				/*
-				 * Clear soft-irq in case we raised it last
-				 * time.
-				 */
+				 
 				writel(BIT(offset), reg - eint->regs->stat +
 				       eint->regs->soft_clr);
 
@@ -384,10 +370,7 @@ static void mtk_eint_irq_handler(struct irq_desc *desc)
 			if (dual_edge) {
 				curr_level = mtk_eint_flip_edge(eint, index);
 
-				/*
-				 * If level changed, we might lost one edge
-				 * interrupt, raised it through soft-irq.
-				 */
+				 
 				if (start_level != curr_level)
 					writel(BIT(offset), reg -
 					       eint->regs->stat +
@@ -461,10 +444,7 @@ int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_num,
 	rst = MTK_EINT_DBNC_RST_BIT << eint_offset;
 	writel(rst | bit, eint->base + set_offset);
 
-	/*
-	 * Delay a while (more than 2T) to wait for hw debounce counter reset
-	 * work correctly.
-	 */
+	 
 	udelay(1);
 	if (unmask == 1)
 		mtk_eint_unmask(d);
@@ -489,7 +469,7 @@ int mtk_eint_do_init(struct mtk_eint *eint)
 {
 	int i;
 
-	/* If clients don't assign a specific regs, let's use generic one */
+	 
 	if (!eint->regs)
 		eint->regs = &mtk_generic_eint_regs;
 

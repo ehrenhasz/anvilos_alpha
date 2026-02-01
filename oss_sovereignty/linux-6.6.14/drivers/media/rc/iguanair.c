@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IguanaWorks USB IR Transceiver support
- *
- * Copyright (C) 2012 Sean Young <sean@mess.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -26,14 +22,14 @@ struct iguanair {
 	uint8_t bufsize;
 	uint8_t cycle_overhead;
 
-	/* receiver support */
+	 
 	bool receiver_on;
 	dma_addr_t dma_in, dma_out;
 	uint8_t *buf_in;
 	struct urb *urb_in, *urb_out;
 	struct completion completion;
 
-	/* transmit support */
+	 
 	bool tx_overflow;
 	uint32_t carrier;
 	struct send_packet *packet;
@@ -178,7 +174,7 @@ static void iguanair_irq_out(struct urb *urb)
 	if (urb->status)
 		dev_dbg(ir->dev, "Error: out urb status = %d\n", urb->status);
 
-	/* if we sent an nop packet, do not expect a response */
+	 
 	if (urb->status == 0 && ir->packet->header.cmd == CMD_NOP)
 		complete(&ir->completion);
 }
@@ -204,11 +200,7 @@ static int iguanair_get_features(struct iguanair *ir)
 {
 	int rc;
 
-	/*
-	 * On cold boot, the iguanair initializes on the first packet
-	 * received but does not process that packet. Send an empty
-	 * packet.
-	 */
+	 
 	ir->packet->header.start = 0;
 	ir->packet->header.direction = DIR_OUT;
 	ir->packet->header.cmd = CMD_NOP;
@@ -262,12 +254,7 @@ static int iguanair_receiver(struct iguanair *ir, bool enable)
 	return iguanair_send(ir, sizeof(ir->packet->header));
 }
 
-/*
- * The iguanair creates the carrier by busy spinning after each half period.
- * This is counted in CPU cycles, with the CPU running at 24MHz. It is
- * broken down into 7-cycles and 4-cyles delays, with a preference for
- * 4-cycle delays, minus the overhead of the loop itself (cycle_overhead).
- */
+ 
 static int iguanair_set_tx_carrier(struct rc_dev *dev, uint32_t carrier)
 {
 	struct iguanair *ir = dev->priv;
@@ -283,22 +270,11 @@ static int iguanair_set_tx_carrier(struct rc_dev *dev, uint32_t carrier)
 		cycles = DIV_ROUND_CLOSEST(24000000, carrier * 2) -
 							ir->cycle_overhead;
 
-		/*
-		 * Calculate minimum number of 7 cycles needed so
-		 * we are left with a multiple of 4; so we want to have
-		 * (sevens * 7) & 3 == cycles & 3
-		 */
+		 
 		sevens = (4 - cycles) & 3;
 		fours = (cycles - sevens * 7) / 4;
 
-		/*
-		 * The firmware interprets these values as a relative offset
-		 * for a branch. Immediately following the branches, there
-		 * 4 instructions of 7 cycles (2 bytes each) and 110
-		 * instructions of 4 cycles (1 byte each). A relative branch
-		 * of 0 will execute all of them, branch further for less
-		 * cycle burning.
-		 */
+		 
 		ir->packet->busy7 = (4 - sevens) * 2;
 		ir->packet->busy4 = 110 - fours;
 	}
@@ -324,7 +300,7 @@ static int iguanair_tx(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 	unsigned int i, size, p, periods;
 	int rc;
 
-	/* convert from us to carrier periods */
+	 
 	for (i = size = 0; i < count; i++) {
 		periods = DIV_ROUND_CLOSEST(txbuf[i] * ir->carrier, 1000000);
 		while (periods) {
@@ -553,7 +529,7 @@ static struct usb_driver iguanair_driver = {
 	.resume = iguanair_resume,
 	.reset_resume = iguanair_resume,
 	.id_table = iguanair_table,
-	.soft_unbind = 1	/* we want to disable receiver on unbind */
+	.soft_unbind = 1	 
 };
 
 module_usb_driver(iguanair_driver);

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Renesas RZ/G2L CRU
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- *
- * Based on Renesas R-Car VIN
- * Copyright (C) 2011-2013 Renesas Solutions Corp.
- * Copyright (C) 2013 Cogent Embedded, Inc., <source@cogentembedded.com>
- * Copyright (C) 2008 Magnus Damm
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -32,9 +23,7 @@ static const struct media_device_ops rzg2l_cru_media_ops = {
 	.link_notify = v4l2_pipeline_link_notify,
 };
 
-/* -----------------------------------------------------------------------------
- * Group async notifier
- */
+ 
 
 static int rzg2l_cru_group_notify_complete(struct v4l2_async_notifier *notifier)
 {
@@ -56,12 +45,7 @@ static int rzg2l_cru_group_notify_complete(struct v4l2_async_notifier *notifier)
 	if (ret)
 		return ret;
 
-	/*
-	 * CRU can be connected either to CSI2 or PARALLEL device
-	 * For now we are only supporting CSI2
-	 *
-	 * Create media device link between CSI-2 <-> CRU IP
-	 */
+	 
 	source = &cru->csi.subdev->entity;
 	sink = &cru->ip.subdev.entity;
 	ret = media_create_pad_link(source, 1, sink, 0,
@@ -75,7 +59,7 @@ static int rzg2l_cru_group_notify_complete(struct v4l2_async_notifier *notifier)
 	cru->csi.channel = 0;
 	cru->ip.remote = cru->csi.subdev;
 
-	/* Create media device link between CRU IP <-> CRU OUTPUT */
+	 
 	source = &cru->ip.subdev.entity;
 	sink = &cru->vdev.entity;
 	ret = media_create_pad_link(source, 1, sink, 0,
@@ -315,7 +299,7 @@ static void rzg2l_cru_remove(struct platform_device *pdev)
 
 static const struct of_device_id rzg2l_cru_of_id_table[] = {
 	{ .compatible = "renesas,rzg2l-cru", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzg2l_cru_of_id_table);
 

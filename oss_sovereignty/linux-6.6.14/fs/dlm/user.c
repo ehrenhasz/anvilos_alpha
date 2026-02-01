@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2010 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/miscdevice.h>
 #include <linux/init.h>
@@ -81,7 +79,7 @@ struct dlm_lock_result32 {
 	struct dlm_lksb32 lksb;
 	__u8 bast_mode;
 	__u8 unused[3];
-	/* Offsets may be zero if no data is present */
+	 
 	__u32 lvb_offset;
 };
 
@@ -145,7 +143,7 @@ static void compat_output(struct dlm_lock_result *res,
 }
 #endif
 
-/* should held proc->asts_spin lock */
+ 
 void dlm_purge_lkb_callbacks(struct dlm_lkb *lkb)
 {
 	struct dlm_callback *cb, *safe;
@@ -157,22 +155,13 @@ void dlm_purge_lkb_callbacks(struct dlm_lkb *lkb)
 
 	clear_bit(DLM_IFL_CB_PENDING_BIT, &lkb->lkb_iflags);
 
-	/* invalidate */
+	 
 	dlm_callback_set_last_ptr(&lkb->lkb_last_cast, NULL);
 	dlm_callback_set_last_ptr(&lkb->lkb_last_cb, NULL);
 	lkb->lkb_last_bast_mode = -1;
 }
 
-/* Figure out if this lock is at the end of its life and no longer
-   available for the application to use.  The lkb still exists until
-   the final ast is read.  A lock becomes EOL in three situations:
-     1. a noqueue request fails with EAGAIN
-     2. an unlock completes with EUNLOCK
-     3. a cancel of a waiting request completes with ECANCEL/EDEADLK
-   An EOL lock needs to be removed from the process's list of locks.
-   And we can't allow any new operation on an EOL lock.  This is
-   not related to the lifetime of the lkb struct which is managed
-   entirely by refcount. */
+ 
 
 static int lkb_is_endoflife(int mode, int status)
 {
@@ -190,8 +179,7 @@ static int lkb_is_endoflife(int mode, int status)
 	return 0;
 }
 
-/* we could possibly check if the cancel of an orphan has resulted in the lkb
-   being removed and then remove that lkb from the orphans list and free it */
+ 
 
 void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 		      int status, uint32_t sbflags)
@@ -208,11 +196,7 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 	ls = lkb->lkb_resource->res_ls;
 	spin_lock(&ls->ls_clear_proc_locks);
 
-	/* If ORPHAN/DEAD flag is set, it means the process is dead so an ast
-	   can't be delivered.  For ORPHAN's, dlm_clear_proc_locks() freed
-	   lkb->ua so we can't try to use it.  This second check is necessary
-	   for cases where a completion ast is received for an operation that
-	   began before clear_proc_locks did its cancel/unlock. */
+	 
 
 	if (test_bit(DLM_DFL_ORPHAN_BIT, &lkb->lkb_dflags) ||
 	    test_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags))
@@ -250,7 +234,7 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 	spin_unlock(&proc->asts_spin);
 
 	if (test_bit(DLM_IFL_ENDOFLIFE_BIT, &lkb->lkb_iflags)) {
-		/* N.B. spin_lock locks_spin, not asts_spin */
+		 
 		spin_lock(&proc->locks_spin);
 		if (!list_empty(&lkb->lkb_ownqueue)) {
 			list_del_init(&lkb->lkb_ownqueue);
@@ -362,8 +346,7 @@ static int dlm_device_register(struct dlm_ls *ls, char *name)
 {
 	int error, len;
 
-	/* The device is already registered.  This happens when the
-	   lockspace is created multiple times from userspace. */
+	 
 	if (ls->ls_device.name)
 		return 0;
 
@@ -381,9 +364,7 @@ static int dlm_device_register(struct dlm_ls *ls, char *name)
 	error = misc_register(&ls->ls_device);
 	if (error) {
 		kfree(ls->ls_device.name);
-		/* this has to be set to NULL
-		 * to avoid a double-free in dlm_device_deregister
-		 */
+		 
 		ls->ls_device.name = NULL;
 	}
 fail:
@@ -392,9 +373,7 @@ fail:
 
 int dlm_device_deregister(struct dlm_ls *ls)
 {
-	/* The device is not registered.  This happens when the lockspace
-	   was never used from userspace, or when device_create_lockspace()
-	   calls dlm_release_lockspace() after the register fails. */
+	 
 	if (!ls->ls_device.name)
 		return 0;
 
@@ -468,12 +447,7 @@ static int device_remove_lockspace(struct dlm_lspace_params *params)
 	lockspace = ls->ls_local_handle;
 	dlm_put_lockspace(ls);
 
-	/* The final dlm_release_lockspace waits for references to go to
-	   zero, so all processes will need to close their device for the
-	   ls before the release will proceed.  release also calls the
-	   device_deregister above.  Converting a positive return value
-	   from release to zero means that userspace won't know when its
-	   release was the final one, but it shouldn't need to know. */
+	 
 
 	error = dlm_release_lockspace(lockspace, force);
 	if (error > 0)
@@ -481,7 +455,7 @@ static int device_remove_lockspace(struct dlm_lspace_params *params)
 	return error;
 }
 
-/* Check the user's version matches ours */
+ 
 static int check_version(struct dlm_write_request *req)
 {
 	if (req->version[0] != DLM_DEVICE_VERSION_MAJOR ||
@@ -503,26 +477,9 @@ static int check_version(struct dlm_write_request *req)
 	return 0;
 }
 
-/*
- * device_write
- *
- *   device_user_lock
- *     dlm_user_request -> request_lock
- *     dlm_user_convert -> convert_lock
- *
- *   device_user_unlock
- *     dlm_user_unlock -> unlock_lock
- *     dlm_user_cancel -> cancel_lock
- *
- *   device_create_lockspace
- *     dlm_new_lockspace
- *
- *   device_remove_lockspace
- *     dlm_release_lockspace
- */
+ 
 
-/* a write to a lockspace device is a lock or unlock request, a write
-   to the control device is to create/remove a lockspace */
+ 
 
 static ssize_t device_write(struct file *file, const char __user *buf,
 			    size_t count, loff_t *ppos)
@@ -538,10 +495,7 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 #endif
 		return -EINVAL;
 
-	/*
-	 * can't compare against COMPAT/dlm_write_request32 because
-	 * we don't yet know if is64bit is zero
-	 */
+	 
 	if (count > sizeof(struct dlm_write_request) + DLM_RESNAME_MAXLEN)
 		return -EINVAL;
 
@@ -564,7 +518,7 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 
 		k32buf = (struct dlm_write_request32 *)kbuf;
 
-		/* add 1 after namelen so that the name string is terminated */
+		 
 		kbuf = kzalloc(sizeof(struct dlm_write_request) + namelen + 1,
 			       GFP_NOFS);
 		if (!kbuf) {
@@ -580,7 +534,7 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	}
 #endif
 
-	/* do we really need this? can a write happen after a close? */
+	 
 	if ((kbuf->cmd == DLM_USER_LOCK || kbuf->cmd == DLM_USER_UNLOCK) &&
 	    (proc && test_bit(DLM_PROC_FLAGS_CLOSING, &proc->flags))) {
 		error = -EINVAL;
@@ -649,9 +603,7 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	return error;
 }
 
-/* Every process that opens the lockspace device has its own "proc" structure
-   hanging off the open file that's used to keep track of locks owned by the
-   process and asts that need to be delivered to the process. */
+ 
 
 static int device_open(struct inode *inode, struct file *file)
 {
@@ -693,18 +645,15 @@ static int device_close(struct inode *inode, struct file *file)
 
 	dlm_clear_proc_locks(ls, proc);
 
-	/* at this point no more lkb's should exist for this lockspace,
-	   so there's no chance of dlm_user_add_ast() being called and
-	   looking for lkb->ua->proc */
+	 
 
 	kfree(proc);
 	file->private_data = NULL;
 
 	dlm_put_lockspace(ls);
-	dlm_put_lockspace(ls);  /* for the find in device_open() */
+	dlm_put_lockspace(ls);   
 
-	/* FIXME: AUTOFREE: if this ls is no longer used do
-	   device_remove_lockspace() */
+	 
 
 	return 0;
 }
@@ -729,11 +678,7 @@ static int copy_result_to_user(struct dlm_user_args *ua, int compat,
 	memcpy(&result.lksb, &ua->lksb, offsetof(struct dlm_lksb, sb_lvbptr));
 	result.user_lksb = ua->user_lksb;
 
-	/* FIXME: dlm1 provides for the user's bastparam/addr to not be updated
-	   in a conversion unless the conversion is successful.  See code
-	   in dlm_user_convert() for updating ua from ua_tmp.  OpenVMS, though,
-	   notes that a new blocking AST address and parameter are set even if
-	   the conversion fails, so maybe we should just do that. */
+	 
 
 	if (flags & DLM_CB_BAST) {
 		result.user_astaddr = ua->bastaddr;
@@ -752,8 +697,7 @@ static int copy_result_to_user(struct dlm_user_args *ua, int compat,
 		len = sizeof(struct dlm_lock_result);
 	struct_len = len;
 
-	/* copy lvb to userspace if there is one, it's been updated, and
-	   the user buffer has space for it */
+	 
 
 	if (copy_lvb && ua->lksb.sb_lvbptr && count >= len + DLM_USER_LVB_LEN) {
 		if (copy_to_user(buf+len, ua->lksb.sb_lvbptr,
@@ -797,7 +741,7 @@ static int copy_version_to_user(char __user *buf, size_t count)
 	return sizeof(struct dlm_device_version);
 }
 
-/* a read returns a single ast described in a struct dlm_lock_result */
+ 
 
 static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 			   loff_t *ppos)
@@ -828,7 +772,7 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 
  try_another:
 
-	/* do we really need this? can a read happen after a close? */
+	 
 	if (test_bit(DLM_PROC_FLAGS_CLOSING, &proc->flags))
 		return -EINVAL;
 
@@ -858,25 +802,21 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 		}
 	}
 
-	/* if we empty lkb_callbacks, we don't want to unlock the spinlock
-	   without removing lkb_cb_list; so empty lkb_cb_list is always
-	   consistent with empty lkb_callbacks */
+	 
 
 	lkb = list_first_entry(&proc->asts, struct dlm_lkb, lkb_cb_list);
 
-	/* rem_lkb_callback sets a new lkb_last_cast */
+	 
 	old_mode = lkb->lkb_last_cast->mode;
 
 	rv = dlm_dequeue_lkb_callback(lkb, &cb);
 	switch (rv) {
 	case DLM_DEQUEUE_CALLBACK_EMPTY:
-		/* this shouldn't happen; lkb should have been removed from
-		 * list when last item was dequeued
-		 */
+		 
 		log_print("dlm_rem_lkb_callback empty %x", lkb->lkb_id);
 		list_del_init(&lkb->lkb_cb_list);
 		spin_unlock(&proc->asts_spin);
-		/* removes ref for proc->asts, may cause lkb to be freed */
+		 
 		dlm_put_lkb(lkb);
 		WARN_ON_ONCE(1);
 		goto try_another;
@@ -912,7 +852,7 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 
 	kref_put(&cb->ref, dlm_release_callback);
 
-	/* removes ref for proc->asts, may cause lkb to be freed */
+	 
 	if (rv == DLM_DEQUEUE_CALLBACK_LAST)
 		dlm_put_lkb(lkb);
 
@@ -936,17 +876,12 @@ static __poll_t device_poll(struct file *file, poll_table *wait)
 
 int dlm_user_daemon_available(void)
 {
-	/* dlm_controld hasn't started (or, has started, but not
-	   properly populated configfs) */
+	 
 
 	if (!dlm_our_nodeid())
 		return 0;
 
-	/* This is to deal with versions of dlm_controld that don't
-	   know about the monitor device.  We assume that if the
-	   dlm_controld was started (above), but the monitor device
-	   was never opened, that it's an old version.  dlm_controld
-	   should open the monitor device before populating configfs. */
+	 
 
 	if (dlm_monitor_unused)
 		return 1;

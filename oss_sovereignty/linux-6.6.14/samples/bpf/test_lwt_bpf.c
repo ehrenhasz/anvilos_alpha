@@ -1,14 +1,4 @@
-/* Copyright (c) 2016 Thomas Graf <tgraf@tgraf.ch>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- */
+ 
 
 #include "vmlinux.h"
 #include "net_shared.h"
@@ -24,14 +14,14 @@
 
 #define CB_MAGIC 1234
 
-/* Test: Pass all packets through */
+ 
 SEC("nop")
 int do_nop(struct __sk_buff *skb)
 {
 	return BPF_OK;
 }
 
-/* Test: Verify context information can be accessed */
+ 
 SEC("test_ctx")
 int do_test_ctx(struct __sk_buff *skb)
 {
@@ -44,7 +34,7 @@ int do_test_ctx(struct __sk_buff *skb)
 	return BPF_OK;
 }
 
-/* Test: Ensure skb->cb[] buffer is cleared */
+ 
 SEC("test_cb")
 int do_test_cb(struct __sk_buff *skb)
 {
@@ -55,7 +45,7 @@ int do_test_cb(struct __sk_buff *skb)
 	return BPF_OK;
 }
 
-/* Test: Verify skb data can be read */
+ 
 SEC("test_data")
 int do_test_data(struct __sk_buff *skb)
 {
@@ -136,7 +126,7 @@ static inline int rewrite(struct __sk_buff *skb, uint32_t old_ip,
 	return BPF_OK;
 }
 
-/* Test: Verify skb data can be modified */
+ 
 SEC("test_rewrite")
 int do_test_rewrite(struct __sk_buff *skb)
 {
@@ -234,7 +224,7 @@ int do_fill_garbage_and_redirect(struct __sk_buff *skb)
 	return bpf_redirect(ifindex, 0);
 }
 
-/* Drop all packets */
+ 
 SEC("drop_all")
 int do_drop_all(struct __sk_buff *skb)
 {

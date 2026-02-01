@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// tfa9879.c  --  driver for NXP Semiconductors TFA9879
-//
-// Copyright (C) 2014 Axentia Technologies AB
-// Author: Peter Rosin <peda@axentia.se>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -156,27 +156,27 @@ static int tfa9879_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 }
 
 static const struct reg_default tfa9879_regs[] = {
-	{ TFA9879_DEVICE_CONTROL,	0x0000 }, /* 0x00 */
-	{ TFA9879_SERIAL_INTERFACE_1,	0x0a18 }, /* 0x01 */
-	{ TFA9879_PCM_IOM2_FORMAT_1,	0x0007 }, /* 0x02 */
-	{ TFA9879_SERIAL_INTERFACE_2,	0x0a18 }, /* 0x03 */
-	{ TFA9879_PCM_IOM2_FORMAT_2,	0x0007 }, /* 0x04 */
-	{ TFA9879_EQUALIZER_A1,		0x59dd }, /* 0x05 */
-	{ TFA9879_EQUALIZER_A2,		0xc63e }, /* 0x06 */
-	{ TFA9879_EQUALIZER_B1,		0x651a }, /* 0x07 */
-	{ TFA9879_EQUALIZER_B2,		0xe53e }, /* 0x08 */
-	{ TFA9879_EQUALIZER_C1,		0x4616 }, /* 0x09 */
-	{ TFA9879_EQUALIZER_C2,		0xd33e }, /* 0x0a */
-	{ TFA9879_EQUALIZER_D1,		0x4df3 }, /* 0x0b */
-	{ TFA9879_EQUALIZER_D2,		0xea3e }, /* 0x0c */
-	{ TFA9879_EQUALIZER_E1,		0x5ee0 }, /* 0x0d */
-	{ TFA9879_EQUALIZER_E2,		0xf93e }, /* 0x0e */
-	{ TFA9879_BYPASS_CONTROL,	0x0093 }, /* 0x0f */
-	{ TFA9879_DYNAMIC_RANGE_COMPR,	0x92ba }, /* 0x10 */
-	{ TFA9879_BASS_TREBLE,		0x12a5 }, /* 0x11 */
-	{ TFA9879_HIGH_PASS_FILTER,	0x0004 }, /* 0x12 */
-	{ TFA9879_VOLUME_CONTROL,	0x10bd }, /* 0x13 */
-	{ TFA9879_MISC_CONTROL,		0x0000 }, /* 0x14 */
+	{ TFA9879_DEVICE_CONTROL,	0x0000 },  
+	{ TFA9879_SERIAL_INTERFACE_1,	0x0a18 },  
+	{ TFA9879_PCM_IOM2_FORMAT_1,	0x0007 },  
+	{ TFA9879_SERIAL_INTERFACE_2,	0x0a18 },  
+	{ TFA9879_PCM_IOM2_FORMAT_2,	0x0007 },  
+	{ TFA9879_EQUALIZER_A1,		0x59dd },  
+	{ TFA9879_EQUALIZER_A2,		0xc63e },  
+	{ TFA9879_EQUALIZER_B1,		0x651a },  
+	{ TFA9879_EQUALIZER_B2,		0xe53e },  
+	{ TFA9879_EQUALIZER_C1,		0x4616 },  
+	{ TFA9879_EQUALIZER_C2,		0xd33e },  
+	{ TFA9879_EQUALIZER_D1,		0x4df3 },  
+	{ TFA9879_EQUALIZER_D2,		0xea3e },  
+	{ TFA9879_EQUALIZER_E1,		0x5ee0 },  
+	{ TFA9879_EQUALIZER_E2,		0xf93e },  
+	{ TFA9879_BYPASS_CONTROL,	0x0093 },  
+	{ TFA9879_DYNAMIC_RANGE_COMPR,	0x92ba },  
+	{ TFA9879_BASS_TREBLE,		0x12a5 },  
+	{ TFA9879_HIGH_PASS_FILTER,	0x0004 },  
+	{ TFA9879_VOLUME_CONTROL,	0x10bd },  
+	{ TFA9879_MISC_CONTROL,		0x0000 },  
 };
 
 static bool tfa9879_volatile_reg(struct device *dev, unsigned int reg)
@@ -286,7 +286,7 @@ static int tfa9879_i2c_probe(struct i2c_client *i2c)
 	if (IS_ERR(tfa9879->regmap))
 		return PTR_ERR(tfa9879->regmap);
 
-	/* Ensure the device is in reset state */
+	 
 	for (i = 0; i < ARRAY_SIZE(tfa9879_regs); i++)
 		regmap_write(tfa9879->regmap,
 			     tfa9879_regs[i].reg, tfa9879_regs[i].def);

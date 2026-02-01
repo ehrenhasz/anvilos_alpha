@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implementation of the symbol table type.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SN Platform GRU Driver
- *
- *              PROC INTERFACES
- *
- * This file supports the /proc interfaces for the GRU driver
- *
- *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
- */
+
+ 
 
 #include <linux/proc_fs.h>
 #include <linux/device.h>
@@ -254,7 +246,7 @@ static int options_open(struct inode *inode, struct file *file)
 	return single_open(file, options_show, NULL);
 }
 
-/* *INDENT-OFF* */
+ 
 static const struct proc_ops statistics_proc_ops = {
 	.proc_open	= statistics_open,
 	.proc_read	= seq_read,

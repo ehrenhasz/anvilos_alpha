@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -62,7 +60,7 @@
 #define MIN_OUTPUT_FRAC			12000000UL
 #define MAX_OUTPUT_FRAC			1600000000UL
 
-/* Fractional PLL operating modes */
+ 
 enum pll_mode {
 	PLL_MODE_FRAC,
 	PLL_MODE_INT,
@@ -206,7 +204,7 @@ static int pll_gf40lp_frac_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!params || !params->refdiv)
 		return -EINVAL;
 
-	/* calculate vco */
+	 
 	vco = params->fref;
 	vco *= (params->fbdiv << 24) + params->frac;
 	vco = div64_u64(vco, params->refdiv << 24);
@@ -254,7 +252,7 @@ static int pll_gf40lp_frac_set_rate(struct clk_hw *hw, unsigned long rate,
 		(params->postdiv2 << PLL_FRAC_CTRL2_POSTDIV2_SHIFT);
 	pll_writel(pll, val, PLL_CTRL2);
 
-	/* set operating mode */
+	 
 	if (params->frac)
 		pll_frac_set_mode(hw, PLL_MODE_FRAC);
 	else
@@ -283,7 +281,7 @@ static unsigned long pll_gf40lp_frac_recalc_rate(struct clk_hw *hw,
 		PLL_FRAC_CTRL2_POSTDIV2_MASK;
 	frac = (val >> PLL_FRAC_CTRL2_FRAC_SHIFT) & PLL_FRAC_CTRL2_FRAC_MASK;
 
-	/* get operating mode (int/frac) and calculate rate accordingly */
+	 
 	rate = parent_rate;
 	if (pll_frac_get_mode(hw) == PLL_MODE_FRAC)
 		rate *= (fbdiv << 24) + frac;

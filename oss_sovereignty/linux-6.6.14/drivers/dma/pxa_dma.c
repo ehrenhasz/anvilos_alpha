@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015 Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -32,66 +30,66 @@
 #define DTADR(n)	(0x0208 + ((n) << 4))
 #define DCMD(n)		(0x020c + ((n) << 4))
 
-#define PXA_DCSR_RUN		BIT(31)	/* Run Bit (read / write) */
-#define PXA_DCSR_NODESC		BIT(30)	/* No-Descriptor Fetch (read / write) */
-#define PXA_DCSR_STOPIRQEN	BIT(29)	/* Stop Interrupt Enable (R/W) */
-#define PXA_DCSR_REQPEND	BIT(8)	/* Request Pending (read-only) */
-#define PXA_DCSR_STOPSTATE	BIT(3)	/* Stop State (read-only) */
-#define PXA_DCSR_ENDINTR	BIT(2)	/* End Interrupt (read / write) */
-#define PXA_DCSR_STARTINTR	BIT(1)	/* Start Interrupt (read / write) */
-#define PXA_DCSR_BUSERR		BIT(0)	/* Bus Error Interrupt (read / write) */
+#define PXA_DCSR_RUN		BIT(31)	 
+#define PXA_DCSR_NODESC		BIT(30)	 
+#define PXA_DCSR_STOPIRQEN	BIT(29)	 
+#define PXA_DCSR_REQPEND	BIT(8)	 
+#define PXA_DCSR_STOPSTATE	BIT(3)	 
+#define PXA_DCSR_ENDINTR	BIT(2)	 
+#define PXA_DCSR_STARTINTR	BIT(1)	 
+#define PXA_DCSR_BUSERR		BIT(0)	 
 
-#define PXA_DCSR_EORIRQEN	BIT(28)	/* End of Receive IRQ Enable (R/W) */
-#define PXA_DCSR_EORJMPEN	BIT(27)	/* Jump to next descriptor on EOR */
-#define PXA_DCSR_EORSTOPEN	BIT(26)	/* STOP on an EOR */
-#define PXA_DCSR_SETCMPST	BIT(25)	/* Set Descriptor Compare Status */
-#define PXA_DCSR_CLRCMPST	BIT(24)	/* Clear Descriptor Compare Status */
-#define PXA_DCSR_CMPST		BIT(10)	/* The Descriptor Compare Status */
-#define PXA_DCSR_EORINTR	BIT(9)	/* The end of Receive */
+#define PXA_DCSR_EORIRQEN	BIT(28)	 
+#define PXA_DCSR_EORJMPEN	BIT(27)	 
+#define PXA_DCSR_EORSTOPEN	BIT(26)	 
+#define PXA_DCSR_SETCMPST	BIT(25)	 
+#define PXA_DCSR_CLRCMPST	BIT(24)	 
+#define PXA_DCSR_CMPST		BIT(10)	 
+#define PXA_DCSR_EORINTR	BIT(9)	 
 
-#define DRCMR_MAPVLD	BIT(7)	/* Map Valid (read / write) */
-#define DRCMR_CHLNUM	0x1f	/* mask for Channel Number (read / write) */
+#define DRCMR_MAPVLD	BIT(7)	 
+#define DRCMR_CHLNUM	0x1f	 
 
-#define DDADR_DESCADDR	0xfffffff0	/* Address of next descriptor (mask) */
-#define DDADR_STOP	BIT(0)	/* Stop (read / write) */
+#define DDADR_DESCADDR	0xfffffff0	 
+#define DDADR_STOP	BIT(0)	 
 
-#define PXA_DCMD_INCSRCADDR	BIT(31)	/* Source Address Increment Setting. */
-#define PXA_DCMD_INCTRGADDR	BIT(30)	/* Target Address Increment Setting. */
-#define PXA_DCMD_FLOWSRC	BIT(29)	/* Flow Control by the source. */
-#define PXA_DCMD_FLOWTRG	BIT(28)	/* Flow Control by the target. */
-#define PXA_DCMD_STARTIRQEN	BIT(22)	/* Start Interrupt Enable */
-#define PXA_DCMD_ENDIRQEN	BIT(21)	/* End Interrupt Enable */
-#define PXA_DCMD_ENDIAN		BIT(18)	/* Device Endian-ness. */
-#define PXA_DCMD_BURST8		(1 << 16)	/* 8 byte burst */
-#define PXA_DCMD_BURST16	(2 << 16)	/* 16 byte burst */
-#define PXA_DCMD_BURST32	(3 << 16)	/* 32 byte burst */
-#define PXA_DCMD_WIDTH1		(1 << 14)	/* 1 byte width */
-#define PXA_DCMD_WIDTH2		(2 << 14)	/* 2 byte width (HalfWord) */
-#define PXA_DCMD_WIDTH4		(3 << 14)	/* 4 byte width (Word) */
-#define PXA_DCMD_LENGTH		0x01fff		/* length mask (max = 8K - 1) */
+#define PXA_DCMD_INCSRCADDR	BIT(31)	 
+#define PXA_DCMD_INCTRGADDR	BIT(30)	 
+#define PXA_DCMD_FLOWSRC	BIT(29)	 
+#define PXA_DCMD_FLOWTRG	BIT(28)	 
+#define PXA_DCMD_STARTIRQEN	BIT(22)	 
+#define PXA_DCMD_ENDIRQEN	BIT(21)	 
+#define PXA_DCMD_ENDIAN		BIT(18)	 
+#define PXA_DCMD_BURST8		(1 << 16)	 
+#define PXA_DCMD_BURST16	(2 << 16)	 
+#define PXA_DCMD_BURST32	(3 << 16)	 
+#define PXA_DCMD_WIDTH1		(1 << 14)	 
+#define PXA_DCMD_WIDTH2		(2 << 14)	 
+#define PXA_DCMD_WIDTH4		(3 << 14)	 
+#define PXA_DCMD_LENGTH		0x01fff		 
 
 #define PDMA_ALIGNMENT		3
 #define PDMA_MAX_DESC_BYTES	(PXA_DCMD_LENGTH & ~((1 << PDMA_ALIGNMENT) - 1))
 
 struct pxad_desc_hw {
-	u32 ddadr;	/* Points to the next descriptor + flags */
-	u32 dsadr;	/* DSADR value for the current transfer */
-	u32 dtadr;	/* DTADR value for the current transfer */
-	u32 dcmd;	/* DCMD value for the current transfer */
+	u32 ddadr;	 
+	u32 dsadr;	 
+	u32 dtadr;	 
+	u32 dcmd;	 
 } __aligned(16);
 
 struct pxad_desc_sw {
-	struct virt_dma_desc	vd;		/* Virtual descriptor */
-	int			nb_desc;	/* Number of hw. descriptors */
-	size_t			len;		/* Number of bytes xfered */
-	dma_addr_t		first;		/* First descriptor's addr */
+	struct virt_dma_desc	vd;		 
+	int			nb_desc;	 
+	size_t			len;		 
+	dma_addr_t		first;		 
 
-	/* At least one descriptor has an src/dst address not multiple of 8 */
+	 
 	bool			misaligned;
 	bool			cyclic;
-	struct dma_pool		*desc_pool;	/* Channel's used allocator */
+	struct dma_pool		*desc_pool;	 
 
-	struct pxad_desc_hw	*hw_desc[];	/* DMA coherent descriptors */
+	struct pxad_desc_hw	*hw_desc[];	 
 };
 
 struct pxad_phy {
@@ -101,20 +99,16 @@ struct pxad_phy {
 };
 
 struct pxad_chan {
-	struct virt_dma_chan	vc;		/* Virtual channel */
-	u32			drcmr;		/* Requestor of the channel */
-	enum pxad_chan_prio	prio;		/* Required priority of phy */
-	/*
-	 * At least one desc_sw in submitted or issued transfers on this channel
-	 * has one address such as: addr % 8 != 0. This implies the DALGN
-	 * setting on the phy.
-	 */
+	struct virt_dma_chan	vc;		 
+	u32			drcmr;		 
+	enum pxad_chan_prio	prio;		 
+	 
 	bool			misaligned;
-	struct dma_slave_config	cfg;		/* Runtime config */
+	struct dma_slave_config	cfg;		 
 
-	/* protected by vc->lock */
+	 
 	struct pxad_phy		*phy;
-	struct dma_pool		*desc_pool;	/* Descriptors pool */
+	struct dma_pool		*desc_pool;	 
 	dma_cookie_t		bus_error;
 
 	wait_queue_head_t	wq_state;
@@ -126,7 +120,7 @@ struct pxad_device {
 	int				nr_requestors;
 	void __iomem			*base;
 	struct pxad_phy			*phys;
-	spinlock_t			phy_lock;	/* Phy association */
+	spinlock_t			phy_lock;	 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry			*dbgfs_root;
 	struct dentry			**dbgfs_chan;
@@ -177,9 +171,7 @@ static unsigned int pxad_drcmr(unsigned int line)
 
 static bool pxad_filter_fn(struct dma_chan *chan, void *param);
 
-/*
- * Debug fs
- */
+ 
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
@@ -306,7 +298,7 @@ static int state_show(struct seq_file *s, void *p)
 {
 	struct pxad_device *pdev = s->private;
 
-	/* basic device status */
+	 
 	seq_puts(s, "DMA engine status\n");
 	seq_printf(s, "\tChannel number: %d\n", pdev->nr_chans);
 
@@ -373,13 +365,7 @@ static struct pxad_phy *lookup_phy(struct pxad_chan *pchan)
 	struct pxad_phy *phy, *found = NULL;
 	unsigned long flags;
 
-	/*
-	 * dma channel priorities
-	 * ch 0 - 3,  16 - 19  <--> (0)
-	 * ch 4 - 7,  20 - 23  <--> (1)
-	 * ch 8 - 11, 24 - 27  <--> (2)
-	 * ch 12 - 15, 28 - 31  <--> (3)
-	 */
+	 
 
 	spin_lock_irqsave(&pdev->phy_lock, flags);
 	for (prio = pchan->prio; prio >= PXAD_PRIO_HIGHEST; prio--) {
@@ -415,7 +401,7 @@ static void pxad_free_phy(struct pxad_chan *chan)
 	if (!chan->phy)
 		return;
 
-	/* clear the channel mapping in DRCMR */
+	 
 	if (chan->drcmr <= pdev->nr_requestors) {
 		reg = pxad_drcmr(chan->drcmr);
 		writel_relaxed(0, chan->phy->base + reg);
@@ -504,10 +490,7 @@ static void pxad_launch_chan(struct pxad_chan *chan,
 	}
 	chan->bus_error = 0;
 
-	/*
-	 * Program the descriptor's address into the DMA controller,
-	 * then start the DMA transaction
-	 */
+	 
 	phy_writel(chan->phy, desc->first, DDADR);
 	phy_enable(chan->phy, chan->misaligned);
 	wake_up(&chan->wq_state);
@@ -557,13 +540,7 @@ static bool pxad_try_hotchain(struct virt_dma_chan *vc,
 	struct virt_dma_desc *vd_last_issued = NULL;
 	struct pxad_chan *chan = to_pxad_chan(&vc->chan);
 
-	/*
-	 * Attempt to hot chain the tx if the phy is still running. This is
-	 * considered successful only if either the channel is still running
-	 * after the chaining, or if the chained transfer is completed after
-	 * having been hot chained.
-	 * A change of alignment is not allowed, and forbids hotchaining.
-	 */
+	 
 	if (is_chan_running(chan)) {
 		BUG_ON(list_empty(&vc->desc_issued));
 
@@ -589,7 +566,7 @@ static unsigned int clear_chan_irq(struct pxad_phy *phy)
 	if (!(dint & BIT(phy->idx)))
 		return PXA_DCSR_RUN;
 
-	/* clear irq */
+	 
 	dcsr = phy_readl_relaxed(phy, DCSR);
 	phy_writel(phy, dcsr, DCSR);
 	if ((dcsr & PXA_DCSR_BUSERR) && (phy->vchan))
@@ -792,18 +769,11 @@ static dma_cookie_t pxad_tx_submit(struct dma_async_tx_descriptor *tx)
 		goto out;
 	}
 
-	/*
-	 * Fallback to placing the tx in the submitted queue
-	 */
+	 
 	if (!list_empty(&vc->desc_submitted)) {
 		vd_chained = list_entry(vc->desc_submitted.prev,
 					struct virt_dma_desc, node);
-		/*
-		 * Only chain the descriptors if no new misalignment is
-		 * introduced. If a new misalignment is chained, let the channel
-		 * stop, and be relaunched in misalign mode from the irq
-		 * handler.
-		 */
+		 
 		if (chan->misaligned || !to_pxad_sw_desc(vd)->misaligned)
 			pxad_desc_chain(vd_chained, vd);
 		else
@@ -1026,7 +996,7 @@ pxad_prep_dma_cyclic(struct dma_chan *dchan,
 			"Unsupported direction for cyclic DMA\n");
 		return NULL;
 	}
-	/* the buffer length must be a multiple of period_len */
+	 
 	if (len % period_len != 0 || period_len > PDMA_MAX_DESC_BYTES ||
 	    !IS_ALIGNED(period_len, 1 << PDMA_ALIGNMENT))
 		return NULL;
@@ -1119,10 +1089,7 @@ static unsigned int pxad_residue(struct pxad_chan *chan,
 	bool passed = false;
 	int i;
 
-	/*
-	 * If the channel does not have a phy pointer anymore, it has already
-	 * been completed. Therefore, its residue is 0.
-	 */
+	 
 	if (!chan->phy)
 		return 0;
 
@@ -1138,12 +1105,7 @@ static unsigned int pxad_residue(struct pxad_chan *chan,
 	else
 		curr = phy_readl_relaxed(chan->phy, DTADR);
 
-	/*
-	 * curr has to be actually read before checking descriptor
-	 * completion, so that a curr inside a status updater
-	 * descriptor implies the following test returns true, and
-	 * preventing reordering of curr load and the test.
-	 */
+	 
 	rmb();
 	if (is_desc_completed(vd))
 		goto out;
@@ -1157,14 +1119,7 @@ static unsigned int pxad_residue(struct pxad_chan *chan,
 		len = hw_desc->dcmd & PXA_DCMD_LENGTH;
 		end = start + len;
 
-		/*
-		 * 'passed' will be latched once we found the descriptor
-		 * which lies inside the boundaries of the curr
-		 * pointer. All descriptors that occur in the list
-		 * _after_ we found that partially handled descriptor
-		 * are still to be processed and are hence added to the
-		 * residual bytes counter.
-		 */
+		 
 
 		if (passed) {
 			residue += len;
@@ -1362,12 +1317,12 @@ static int pxad_probe(struct platform_device *op)
 
 	of_id = of_match_device(pxad_dt_ids, &op->dev);
 	if (of_id) {
-		/* Parse new and deprecated dma-channels properties */
+		 
 		if (of_property_read_u32(op->dev.of_node, "dma-channels",
 					 &dma_channels))
 			of_property_read_u32(op->dev.of_node, "#dma-channels",
 					     &dma_channels);
-		/* Parse new and deprecated dma-requests properties */
+		 
 		ret = of_property_read_u32(op->dev.of_node, "dma-requests",
 					   &nb_requestors);
 		if (ret)
@@ -1385,7 +1340,7 @@ static int pxad_probe(struct platform_device *op)
 		slave_map = pdata->slave_map;
 		slave_map_cnt = pdata->slave_map_cnt;
 	} else {
-		dma_channels = 32;	/* default 32 channel */
+		dma_channels = 32;	 
 	}
 
 	dma_cap_set(DMA_SLAVE, pdev->slave.cap_mask);
@@ -1414,7 +1369,7 @@ static int pxad_probe(struct platform_device *op)
 	}
 
 	if (op->dev.of_node) {
-		/* Device-tree DMA controller registration */
+		 
 		ret = of_dma_controller_register(op->dev.of_node,
 						 pxad_dma_xlate, pdev);
 		if (ret < 0) {

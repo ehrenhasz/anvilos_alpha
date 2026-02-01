@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
- *
- * Copyright (c) 2016, AngeloGioacchino Del Regno <kholk11@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -19,7 +15,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\

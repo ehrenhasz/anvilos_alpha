@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/sort.h>
@@ -39,7 +37,7 @@ static void close_objects(struct intel_memory_region *mem,
 		i915_gem_object_lock(obj, NULL);
 		if (i915_gem_object_has_pinned_pages(obj))
 			i915_gem_object_unpin_pages(obj);
-		/* No polluting the memory region between tests */
+		 
 		__i915_gem_object_put_pages(obj);
 		i915_gem_object_unlock(obj);
 		list_del(&obj->st_link);
@@ -178,12 +176,12 @@ static int igt_mock_reserve(void *arg)
 		goto out_free_order;
 	}
 
-	/* Reserve a bunch of ranges within the region */
+	 
 	for (i = 0; i < count; ++i) {
 		u64 start = order[i] * chunk_size;
 		u64 size = i915_prandom_u32_max_state(chunk_size, &prng);
 
-		/* Allow for some really big holes */
+		 
 		if (!size)
 			continue;
 
@@ -197,11 +195,11 @@ static int igt_mock_reserve(void *arg)
 			goto out_close;
 		}
 
-		/* XXX: maybe sanity check the block range here? */
+		 
 		avail -= size;
 	}
 
-	/* Try to see if we can allocate from the remaining space */
+	 
 	allocated = 0;
 	cur_avail = avail;
 	do {
@@ -248,7 +246,7 @@ static int igt_mock_contiguous(void *arg)
 
 	total = resource_size(&mem->region);
 
-	/* Min size */
+	 
 	obj = igt_object_create(mem, &objects, PAGE_SIZE,
 				I915_BO_ALLOC_CONTIGUOUS);
 	if (IS_ERR(obj))
@@ -262,7 +260,7 @@ static int igt_mock_contiguous(void *arg)
 
 	igt_object_release(obj);
 
-	/* Max size */
+	 
 	obj = igt_object_create(mem, &objects, total, I915_BO_ALLOC_CONTIGUOUS);
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
@@ -275,7 +273,7 @@ static int igt_mock_contiguous(void *arg)
 
 	igt_object_release(obj);
 
-	/* Internal fragmentation should not bleed into the object size */
+	 
 	target = i915_prandom_u64_state(&prng);
 	div64_u64_rem(target, total, &target);
 	target = round_up(target, PAGE_SIZE);
@@ -301,10 +299,7 @@ static int igt_mock_contiguous(void *arg)
 
 	igt_object_release(obj);
 
-	/*
-	 * Try to fragment the address space, such that half of it is free, but
-	 * the max contiguous block size is SZ_64K.
-	 */
+	 
 
 	target = SZ_64K;
 	n_objects = div64_u64(total, target);
@@ -330,7 +325,7 @@ static int igt_mock_contiguous(void *arg)
 	min = target;
 	target = total >> 1;
 
-	/* Make sure we can still allocate all the fragmented space */
+	 
 	obj = igt_object_create(mem, &objects, target, 0);
 	if (IS_ERR(obj)) {
 		err = PTR_ERR(obj);
@@ -339,10 +334,7 @@ static int igt_mock_contiguous(void *arg)
 
 	igt_object_release(obj);
 
-	/*
-	 * Even though we have enough free space, we don't have a big enough
-	 * contiguous block. Make sure that holds true.
-	 */
+	 
 
 	do {
 		bool should_fail = target > min;
@@ -377,11 +369,7 @@ static int igt_mock_splintered_region(void *arg)
 	u64 size;
 	int err = 0;
 
-	/*
-	 * Sanity check we can still allocate everything even if the
-	 * mm.max_order != mm.size. i.e our starting address space size is not a
-	 * power-of-two.
-	 */
+	 
 
 	size = (SZ_4G - 1) & PAGE_MASK;
 	mem = mock_region_create(i915, 0, size, PAGE_SIZE, 0, 0);
@@ -413,13 +401,7 @@ static int igt_mock_splintered_region(void *arg)
 
 	close_objects(mem, &objects);
 
-	/*
-	 * While we should be able allocate everything without any flag
-	 * restrictions, if we consider I915_BO_ALLOC_CONTIGUOUS then we are
-	 * actually limited to the largest power-of-two for the region size i.e
-	 * max_order, due to the inner workings of the buddy allocator. So make
-	 * sure that does indeed hold true.
-	 */
+	 
 
 	obj = igt_object_create(mem, &objects, size, I915_BO_ALLOC_CONTIGUOUS);
 	if (!IS_ERR(obj)) {
@@ -466,17 +448,12 @@ static int igt_mock_max_segment(void *arg)
 	u64 size;
 	int err = 0;
 
-	/*
-	 * While we may create very large contiguous blocks, we may need
-	 * to break those down for consumption elsewhere. In particular,
-	 * dma-mapping with scatterlist elements have an implicit limit of
-	 * UINT_MAX on each element.
-	 */
+	 
 
 	size = SZ_8G;
 	ps = PAGE_SIZE;
 	if (i915_prandom_u64_state(&prng) & 1)
-		ps = SZ_64K; /* For something like DG2 */
+		ps = SZ_64K;  
 
 	max_segment = round_down(UINT_MAX, ps);
 
@@ -568,7 +545,7 @@ static int igt_mock_io_size(void *arg)
 
 	ps = SZ_4K;
 	if (i915_prandom_u64_state(&prng) & 1)
-		ps = SZ_64K; /* For something like DG2 */
+		ps = SZ_64K;  
 
 	div64_u64_rem(i915_prandom_u64_state(&prng), SZ_8G, &total);
 	total = round_down(total, ps);
@@ -576,7 +553,7 @@ static int igt_mock_io_size(void *arg)
 
 	div64_u64_rem(i915_prandom_u64_state(&prng), total - ps, &io_size);
 	io_size = round_down(io_size, ps);
-	io_size = max_t(u64, io_size, SZ_256M); /* 256M seems to be the common lower limit */
+	io_size = max_t(u64, io_size, SZ_256M);  
 
 	pr_info("%s with ps=%llx, io_size=%llx, total=%llx\n",
 		__func__, ps, io_size, total);
@@ -613,10 +590,7 @@ static int igt_mock_io_size(void *arg)
 		(u64)io_size >> 20,
 		(u64)total >> 20);
 
-	/*
-	 * Even if we allocate all of the non-mappable portion, we should still
-	 * be able to dip into the mappable portion.
-	 */
+	 
 	obj = igt_object_create(mr, &objects, io_size,
 				I915_BO_ALLOC_GPU_ONLY);
 	if (IS_ERR(obj)) {
@@ -650,10 +624,7 @@ static int igt_mock_io_size(void *arg)
 		rem -= size;
 	} while (rem);
 
-	/*
-	 * We assume CPU access is required by default, which should result in a
-	 * failure here, even though the non-mappable portion is free.
-	 */
+	 
 	obj = igt_object_create(mr, &objects, ps, 0);
 	if (!IS_ERR(obj)) {
 		pr_err("%s allocation unexpectedly succeeded\n", __func__);
@@ -890,13 +861,7 @@ static int igt_lmem_create_cleared_cpu(void *arg)
 		u32 dword, val;
 		void *vaddr;
 
-		/*
-		 * Alternate between cleared and uncleared allocations, while
-		 * also dirtying the pages each time to check that the pages are
-		 * always cleared if requested, since we should get some overlap
-		 * of the underlying pages, if not all, since we are the only
-		 * user.
-		 */
+		 
 
 		flags = I915_BO_ALLOC_CPU_CLEAR;
 		if (i & 1)
@@ -1022,10 +987,10 @@ static int igt_lmem_write_cpu(void *arg)
 	I915_RND_STATE(prng);
 	IGT_TIMEOUT(end_time);
 	u32 bytes[] = {
-		0, /* rng placeholder */
+		0,  
 		sizeof(u32),
 		sizeof(u64),
-		64, /* cl */
+		64,  
 		PAGE_SIZE,
 		PAGE_SIZE - sizeof(u32),
 		PAGE_SIZE - sizeof(u64),
@@ -1067,7 +1032,7 @@ static int igt_lmem_write_cpu(void *arg)
 		goto out_put;
 	}
 
-	/* Put the pages into a known state -- from the gpu for added fun */
+	 
 	intel_engine_pm_get(engine);
 	err = intel_context_migrate_clear(engine->gt->migrate.context, NULL,
 					  obj->mm.pages->sgl,
@@ -1094,7 +1059,7 @@ static int igt_lmem_write_cpu(void *arg)
 		goto out_unpin;
 	}
 
-	/* A random multiple of u32, picked between [64, PAGE_SIZE - 64] */
+	 
 	bytes[0] = igt_random_offset(&prng, 64, PAGE_SIZE - 64, 0, sizeof(u32));
 	GEM_BUG_ON(!IS_ALIGNED(bytes[0], sizeof(u32)));
 
@@ -1121,10 +1086,7 @@ static int igt_lmem_write_cpu(void *arg)
 		memset32(vaddr + offset / sizeof(u32), val ^ 0xdeadbeaf,
 			 size / sizeof(u32));
 
-		/*
-		 * Sample random dw -- don't waste precious time reading every
-		 * single dw.
-		 */
+		 
 		dword = igt_random_offset(&prng, offset,
 					  offset + size,
 					  sizeof(u32), sizeof(u32));
@@ -1167,7 +1129,7 @@ create_region_for_mapping(struct intel_memory_region *mr, u64 size, u32 type,
 
 	obj = i915_gem_object_create_region(mr, size, 0, 0);
 	if (IS_ERR(obj)) {
-		if (PTR_ERR(obj) == -ENOSPC) /* Stolen memory */
+		if (PTR_ERR(obj) == -ENOSPC)  
 			return ERR_PTR(-ENODEV);
 		return obj;
 	}
@@ -1272,7 +1234,7 @@ static int _perf_memcpy(struct intel_memory_region *src_mr,
 
 		sort(t, ARRAY_SIZE(t), sizeof(*t), wrap_ktime_compare, NULL);
 		if (t[0] <= 0) {
-			/* ignore the impossible to protect our sanity */
+			 
 			pr_debug("Skipping %s src(%s, %s) -> dst(%s, %s) %14s %4lluKiB copy, unstable measurement [%lld, %lld]\n",
 				 __func__,
 				 src_mr->name, repr_type(src_type),

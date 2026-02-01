@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+ 
+ 
 
 #ifdef CONFIG_DRM_EXYNOS_G2D
 extern int exynos_g2d_get_ver_ioctl(struct drm_device *dev, void *data,

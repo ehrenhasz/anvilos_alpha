@@ -1,18 +1,10 @@
-/*
- * Copyright (c) Yann Collet, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+ 
 
 #ifndef ZSTD_COMPRESS_SEQUENCES_H
 #define ZSTD_COMPRESS_SEQUENCES_H
 
-#include "../common/fse.h" /* FSE_repeat, FSE_CTable */
-#include "../common/zstd_internal.h" /* symbolEncodingType_e, ZSTD_strategy */
+#include "../common/fse.h"  
+#include "../common/zstd_internal.h"  
 
 typedef enum {
     ZSTD_defaultDisallowed = 0,
@@ -51,4 +43,4 @@ size_t ZSTD_fseBitCost(
 
 size_t ZSTD_crossEntropyCost(short const* norm, unsigned accuracyLog,
                              unsigned const* count, unsigned const max);
-#endif /* ZSTD_COMPRESS_SEQUENCES_H */
+#endif  

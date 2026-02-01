@@ -1,36 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Global definitions for the ANSI FDDI interface.
- *
- * Version:	@(#)if_fddi.h	1.0.2	Sep 29 2004
- *
- * Author:	Lawrence V. Stefani, <stefani@lkg.dec.com>
- *
- *		if_fddi.h is based on previous if_ether.h and if_tr.h work by
- *			Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *			Donald Becker, <becker@super.org>
- *			Alan Cox, <alan@lxorguk.ukuu.org.uk>
- *			Steve Whitehouse, <gw7rrm@eeshack3.swan.ac.uk>
- *			Peter De Schrijver, <stud11@cc4.kuleuven.ac.be>
- */
+ 
+ 
 #ifndef _LINUX_IF_FDDI_H
 #define _LINUX_IF_FDDI_H
 
 #include <linux/netdevice.h>
 #include <uapi/linux/if_fddi.h>
 
-/* Define FDDI statistics structure */
+ 
 struct fddi_statistics {
 
-	/* Generic statistics. */
+	 
 
 	struct net_device_stats gen;
 
-	/* Detailed FDDI statistics.  Adopted from RFC 1512 */
+	 
 
 	__u8	smt_station_id[8];
 	__u32	smt_op_version_id;
@@ -114,4 +97,4 @@ struct fddi_statistics {
 	__u32	port_ler_flag[2];
 	__u32	port_hardware_present[2];
 };
-#endif	/* _LINUX_IF_FDDI_H */
+#endif	 

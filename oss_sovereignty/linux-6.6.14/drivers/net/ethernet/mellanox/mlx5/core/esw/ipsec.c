@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/mlx5/device.h>
 #include <linux/mlx5/vport.h>
@@ -47,9 +47,7 @@ int mlx5_esw_ipsec_vf_offload_get(struct mlx5_core_dev *dev, struct mlx5_vport *
 	bool ipsec_enabled;
 	int err;
 
-	/* Querying IPsec caps only makes sense when generic ipsec_offload
-	 * HCA cap is enabled
-	 */
+	 
 	err = esw_ipsec_vf_query_generic(dev, vport->vport, &ipsec_enabled);
 	if (err)
 		return err;
@@ -233,9 +231,7 @@ static int esw_ipsec_vf_offload_set_bytype(struct mlx5_eswitch *esw, struct mlx5
 		if (err)
 			return err;
 
-		/* The generic ipsec_offload cap can be disabled only if both
-		 * ipsec_crypto_offload and ipsec_full_offload aren't enabled.
-		 */
+		 
 		if (!vport->info.ipsec_crypto_enabled &&
 		    !vport->info.ipsec_packet_enabled) {
 			err = esw_ipsec_vf_set_generic(dev, vport->vport, enable);
@@ -282,11 +278,7 @@ free:
 
 bool mlx5_esw_ipsec_vf_offload_supported(struct mlx5_core_dev *dev)
 {
-	/* Old firmware doesn't support ipsec_offload capability for VFs. This
-	 * can be detected by checking reformat_add_esp_trasport capability -
-	 * when this cap isn't supported it means firmware cannot be trusted
-	 * about what it reports for ipsec_offload cap.
-	 */
+	 
 	return MLX5_CAP_FLOWTABLE_NIC_TX(dev, reformat_add_esp_trasport);
 }
 

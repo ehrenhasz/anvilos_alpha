@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* Copyright 2021 Marvell. All rights reserved. */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -61,7 +61,7 @@ static int qed_sp_nvmetcp_func_start(struct qed_hwfn *p_hwfn,
 	u16 val;
 	u8 i;
 
-	/* Get SPQ entry */
+	 
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = comp_mode;
@@ -124,7 +124,7 @@ static int qed_sp_nvmetcp_func_stop(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -181,7 +181,7 @@ static int qed_nvmetcp_stop(struct qed_dev *cdev)
 		return -EINVAL;
 	}
 
-	/* Stop the nvmetcp */
+	 
 	rc = qed_sp_nvmetcp_func_stop(QED_AFFIN_HWFN(cdev), QED_SPQ_MODE_EBLOCK,
 				      NULL);
 	cdev->flags &= ~QED_FLAG_STORAGE_STARTED;
@@ -234,7 +234,7 @@ static int qed_nvmetcp_start(struct qed_dev *cdev,
 		return rc;
 	}
 
-	/* Fill task information */
+	 
 	tasks->size = tid_info->tid_size;
 	tasks->num_tids_per_block = tid_info->num_tids_per_block;
 	memcpy(tasks->blocks, tid_info->blocks,
@@ -279,7 +279,7 @@ static int qed_sp_nvmetcp_conn_offload(struct qed_hwfn *p_hwfn,
 	int rc = 0;
 	u8 i;
 
-	/* Get SPQ entry */
+	 
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = comp_mode;
@@ -292,12 +292,12 @@ static int qed_sp_nvmetcp_conn_offload(struct qed_hwfn *p_hwfn,
 
 	p_ramrod = &p_ent->ramrod.nvmetcp_conn_offload;
 
-	/* Transmission PQ is the first of the PF */
+	 
 	physical_q = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_OFLD);
 	p_conn->physical_q0 = cpu_to_le16(physical_q);
 	p_ramrod->nvmetcp.physical_q0 = cpu_to_le16(physical_q);
 
-	/* nvmetcp Pure-ACK PQ */
+	 
 	physical_q = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_ACK);
 	p_conn->physical_q1 = cpu_to_le16(physical_q);
 	p_ramrod->nvmetcp.physical_q1 = cpu_to_le16(physical_q);
@@ -364,7 +364,7 @@ static int qed_sp_nvmetcp_conn_update(struct qed_hwfn *p_hwfn,
 	int rc = -EINVAL;
 	u32 dval;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -400,7 +400,7 @@ static int qed_sp_nvmetcp_conn_terminate(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -428,7 +428,7 @@ static int qed_sp_nvmetcp_conn_clear_sq(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -461,7 +461,7 @@ static int qed_nvmetcp_allocate_connection(struct qed_hwfn *p_hwfn,
 	struct qed_nvmetcp_conn *p_conn = NULL;
 	int rc = 0;
 
-	/* Try finding a free connection that can be used */
+	 
 	spin_lock_bh(&p_hwfn->p_nvmetcp_info->lock);
 	if (!list_empty(&p_hwfn->p_nvmetcp_info->free_list))
 		p_conn = list_first_entry(&p_hwfn->p_nvmetcp_info->free_list,
@@ -475,7 +475,7 @@ static int qed_nvmetcp_allocate_connection(struct qed_hwfn *p_hwfn,
 	}
 	spin_unlock_bh(&p_hwfn->p_nvmetcp_info->lock);
 
-	/* Need to allocate a new connection */
+	 
 	p_params = &p_hwfn->pf_params.nvmetcp_pf_params;
 	p_conn = kzalloc(sizeof(*p_conn), GFP_KERNEL);
 	if (!p_conn)
@@ -610,12 +610,12 @@ static int qed_nvmetcp_acquire_conn(struct qed_dev *cdev,
 	struct qed_hash_nvmetcp_con *hash_con;
 	int rc;
 
-	/* Allocate a hashed connection */
+	 
 	hash_con = kzalloc(sizeof(*hash_con), GFP_ATOMIC);
 	if (!hash_con)
 		return -ENOMEM;
 
-	/* Acquire the connection */
+	 
 	rc = qed_nvmetcp_acquire_connection(QED_AFFIN_HWFN(cdev),
 					    &hash_con->con);
 	if (rc) {
@@ -625,7 +625,7 @@ static int qed_nvmetcp_acquire_conn(struct qed_dev *cdev,
 		return rc;
 	}
 
-	/* Added the connection to hash table */
+	 
 	*handle = hash_con->con->icid;
 	*fw_cid = hash_con->con->fw_cid;
 	hash_add(cdev->connections, &hash_con->node, *handle);
@@ -669,10 +669,10 @@ static int qed_nvmetcp_offload_conn(struct qed_dev *cdev, u32 handle,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 
-	/* FW initializations */
+	 
 	con->layer_code = NVMETCP_SLOW_PATH_LAYER_CODE;
 	con->sq_pbl_addr = conn_info->sq_pbl_addr;
 	con->nvmetcp_cccid_max_range = conn_info->nvmetcp_cccid_max_range;
@@ -682,7 +682,7 @@ static int qed_nvmetcp_offload_conn(struct qed_dev *cdev, u32 handle,
 	SET_FIELD(con->offl_flags, NVMETCP_CONN_OFFLOAD_PARAMS_NVMETCP_MODE, 1);
 	SET_FIELD(con->offl_flags, NVMETCP_CONN_OFFLOAD_PARAMS_TCP_ON_CHIP_1B, 1);
 
-	/* Networking and TCP stack initializations */
+	 
 	ether_addr_copy(con->local_mac, conn_info->src.mac);
 	ether_addr_copy(con->remote_mac, conn_info->dst.mac);
 	memcpy(con->local_ip, conn_info->src.ip, sizeof(con->local_ip));
@@ -735,7 +735,7 @@ static int qed_nvmetcp_update_conn(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 	SET_FIELD(con->update_flag,
 		  ISCSI_CONN_UPDATE_RAMROD_PARAMS_INITIAL_R2T, 0);
@@ -747,7 +747,7 @@ static int qed_nvmetcp_update_conn(struct qed_dev *cdev,
 	if (conn_info->data_digest_en)
 		SET_FIELD(con->update_flag, ISCSI_CONN_UPDATE_RAMROD_PARAMS_DD_EN, 1);
 
-	/* Placeholder - initialize pfv, cpda, hpda */
+	 
 
 	con->max_seq_size = conn_info->max_io_size;
 	con->max_recv_pdu_length = conn_info->max_recv_pdu_length;

@@ -1,21 +1,4 @@
-/* getugroups.c -- return a list of the groups a user is in
-
-   Copyright (C) 1990-1991, 1998-2000, 2003-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie. */
+ 
 
 #include <config.h>
 
@@ -23,17 +6,13 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <stdio.h> /* grp.h on alpha OSF1 V2.0 uses "FILE *". */
+#include <stdio.h>  
 #include <string.h>
 #include <unistd.h>
 
 #if !HAVE_GRP_H || defined __ANDROID__
 
-/* Mingw lacks all things related to group management.  The best we
-   can do is fail with ENOSYS.
-
-   Bionic declares e.g. getgrent() in <grp.h> but it isn't actually
-   defined in the library.  */
+ 
 
 int
 getugroups (_GL_UNUSED int maxcount,
@@ -45,17 +24,12 @@ getugroups (_GL_UNUSED int maxcount,
   return -1;
 }
 
-#else /* HAVE_GRP_H */
+#else  
 # include <grp.h>
 
 # define STREQ(a, b) (strcmp (a, b) == 0)
 
-/* Like 'getgroups', but for user USERNAME instead of for the current
-   process.  Store at most MAXCOUNT group IDs in the GROUPLIST array.
-   If GID is not -1, store it first (if possible).  GID should be the
-   group ID (pw_gid) obtained from getpwuid, in case USERNAME is not
-   listed in /etc/groups.  Upon failure, set errno and return -1.
-   Otherwise, return the number of IDs we've written into GROUPLIST.  */
+ 
 
 int
 getugroups (int maxcount, gid_t *grouplist, char const *username,
@@ -88,12 +62,12 @@ getugroups (int maxcount, gid_t *grouplist, char const *username,
           if ( ! STREQ (username, *cp))
             continue;
 
-          /* See if this group number is already on the list.  */
+           
           for (n = 0; n < count; ++n)
             if (grouplist && grouplist[n] == grp->gr_gid)
               break;
 
-          /* If it's a new group number, then try to add it to the list.  */
+           
           if (n == count)
             {
               if (maxcount != 0)
@@ -125,4 +99,4 @@ getugroups (int maxcount, gid_t *grouplist, char const *username,
   return count;
 }
 
-#endif /* HAVE_GRP_H */
+#endif  

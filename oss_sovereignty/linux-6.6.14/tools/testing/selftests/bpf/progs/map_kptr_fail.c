@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -246,7 +246,7 @@ int reject_untrusted_store_to_ref(struct __sk_buff *ctx)
 	p = v->ref_ptr;
 	if (!p)
 		return 0;
-	/* Checkmate, clang */
+	 
 	*(struct prog_test_ref_kfunc * volatile *)&v->ref_ptr = p;
 	return 0;
 }
@@ -377,7 +377,7 @@ int kptr_xchg_possibly_null(struct __sk_buff *ctx)
 
 	p = bpf_kfunc_call_test_acquire(&(unsigned long){0});
 
-	/* PTR_TO_BTF_ID | PTR_MAYBE_NULL passed to bpf_kptr_xchg() */
+	 
 	p = bpf_kptr_xchg(&v->ref_ptr, p);
 	if (p)
 		bpf_kfunc_call_test_release(p);

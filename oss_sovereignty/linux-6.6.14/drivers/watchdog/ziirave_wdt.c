@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Zodiac Inflight Innovations
- *
- * Author: Martyn Welch <martyn.welch@collabora.co.uk>
- *
- * Based on twl4030_wdt.c by Timo Kokkonen <timo.t.kokkonen at nokia.com>:
- *
- * Copyright (C) Nokia Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -54,10 +46,10 @@ static char *ziirave_reasons[] = {"power cycle", "hw watchdog", NULL, NULL,
 #define ZIIRAVE_FIRM_FLASH_MEMORY_END	(2 * 0x2bbf)
 #define ZIIRAVE_FIRM_PAGE_SIZE		128
 
-/* Received and ready for next Download packet. */
+ 
 #define ZIIRAVE_FIRM_DOWNLOAD_ACK	1
 
-/* Firmware commands */
+ 
 #define ZIIRAVE_CMD_DOWNLOAD_START		0x10
 #define ZIIRAVE_CMD_DOWNLOAD_END		0x11
 #define ZIIRAVE_CMD_DOWNLOAD_SET_READ_ADDR	0x12
@@ -199,18 +191,7 @@ static bool ziirave_firm_addr_readonly(u32 addr)
 	       addr > ZIIRAVE_FIRM_FLASH_MEMORY_END;
 }
 
-/*
- * ziirave_firm_write_pkt() - Build and write a firmware packet
- *
- * A packet to send to the firmware is composed by following bytes:
- *     Length | Addr0 | Addr1 | Data0 .. Data15 | Checksum |
- * Where,
- *     Length: A data byte containing the length of the data.
- *     Addr0: Low byte of the address.
- *     Addr1: High byte of the address.
- *     Data0 .. Data15: Array of 16 bytes of data.
- *     Checksum: Checksum byte to verify data integrity.
- */
+ 
 static int __ziirave_firm_write_pkt(struct watchdog_device *wdd,
 				    u32 addr, const u8 *data, u8 len)
 {
@@ -219,32 +200,26 @@ static int __ziirave_firm_write_pkt(struct watchdog_device *wdd,
 	u8 i, checksum = 0, packet[ZIIRAVE_FIRM_PKT_TOTAL_SIZE];
 	int ret;
 
-	/* Check max data size */
+	 
 	if (len > ZIIRAVE_FIRM_PKT_DATA_SIZE) {
 		dev_err(&client->dev, "Firmware packet too long (%d)\n",
 			len);
 		return -EMSGSIZE;
 	}
 
-	/*
-	 * Ignore packets that are targeting program memory outisde of
-	 * app partition, since they will be ignored by the
-	 * bootloader. At the same time, we need to make sure we'll
-	 * allow zero length packet that will be sent as the last step
-	 * of firmware update
-	 */
+	 
 	if (len && ziirave_firm_addr_readonly(addr))
 		return 0;
 
-	/* Packet length */
+	 
 	packet[0] = len;
-	/* Packet address */
+	 
 	put_unaligned_le16(addr16, packet + 1);
 
 	memcpy(packet + 3, data, len);
 	memset(packet + 3 + len, 0, ZIIRAVE_FIRM_PKT_DATA_SIZE - len);
 
-	/* Packet checksum */
+	 
 	for (i = 0; i < len + 3; i++)
 		checksum += packet[i];
 	packet[ZIIRAVE_FIRM_PKT_TOTAL_SIZE - 1] = checksum;
@@ -274,10 +249,7 @@ static int ziirave_firm_write_pkt(struct watchdog_device *wdd,
 	int ret;
 
 	if (len > max_write_len) {
-		/*
-		 * If data crossed page boundary we need to split this
-		 * write in two
-		 */
+		 
 		ret = __ziirave_firm_write_pkt(wdd, addr, data, max_write_len);
 		if (ret)
 			return ret;
@@ -372,20 +344,17 @@ static int ziirave_firm_upload(struct watchdog_device *wdd,
 			return ret;
 	}
 
-	/*
-	 * Finish firmware download process by sending a zero length
-	 * payload
-	 */
+	 
 	ret = ziirave_firm_write_pkt(wdd, 0, NULL, 0);
 	if (ret) {
 		dev_err(&client->dev, "Failed to send EMPTY packet: %d\n", ret);
 		return ret;
 	}
 
-	/* This sleep seems to be required */
+	 
 	msleep(20);
 
-	/* Start firmware verification */
+	 
 	ret = ziirave_firm_verify(wdd, fw);
 	if (ret) {
 		dev_err(&client->dev,
@@ -393,7 +362,7 @@ static int ziirave_firm_upload(struct watchdog_device *wdd,
 		return ret;
 	}
 
-	/* End download operation */
+	 
 	ret = i2c_smbus_write_byte(client, ZIIRAVE_CMD_DOWNLOAD_END);
 	if (ret) {
 		dev_err(&client->dev,
@@ -401,7 +370,7 @@ static int ziirave_firm_upload(struct watchdog_device *wdd,
 		return ret;
 	}
 
-	/* Reset the processor */
+	 
 	ret = i2c_smbus_write_byte_data(client,
 					ZIIRAVE_CMD_RESET_PROCESSOR,
 					ZIIRAVE_CMD_RESET_PROCESSOR_MAGIC);
@@ -525,7 +494,7 @@ static ssize_t ziirave_wdt_sysfs_store_firm(struct device *dev,
 		goto unlock_mutex;
 	}
 
-	/* Update firmware version */
+	 
 	err = ziirave_wdt_revision(client, &w_priv->firmware_rev,
 				   ZIIRAVE_WDT_FIRM_VER_MAJOR);
 	if (err) {
@@ -538,7 +507,7 @@ static ssize_t ziirave_wdt_sysfs_store_firm(struct device *dev,
 		 "Firmware updated to version 02.%02u.%02u\n",
 		 w_priv->firmware_rev.major, w_priv->firmware_rev.minor);
 
-	/* Restore the watchdog timeout */
+	 
 	err = ziirave_wdt_set_timeout(&w_priv->wdd, w_priv->wdd.timeout);
 	if (err)
 		dev_err(&client->dev, "Failed to set timeout: %d\n", err);
@@ -569,7 +538,7 @@ static int ziirave_wdt_init_duration(struct i2c_client *client)
 	int ret;
 
 	if (!reset_duration) {
-		/* See if the reset pulse duration is provided in an of_node */
+		 
 		if (!client->dev.of_node)
 			ret = -ENODEV;
 		else
@@ -620,11 +589,7 @@ static int ziirave_wdt_probe(struct i2c_client *client)
 
 	watchdog_init_timeout(&w_priv->wdd, wdt_timeout, &client->dev);
 
-	/*
-	 * The default value set in the watchdog should be perfectly valid, so
-	 * pass that in if we haven't provided one via the module parameter or
-	 * of property.
-	 */
+	 
 	if (w_priv->wdd.timeout == 0) {
 		val = i2c_smbus_read_byte_data(client, ZIIRAVE_WDT_TIMEOUT);
 		if (val < 0) {
@@ -651,7 +616,7 @@ static int ziirave_wdt_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, w_priv);
 
-	/* If in unconfigured state, set to stopped */
+	 
 	val = i2c_smbus_read_byte_data(client, ZIIRAVE_WDT_STATE);
 	if (val < 0) {
 		dev_err(&client->dev, "Failed to read state\n");

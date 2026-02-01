@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for VMX-pmu perf capability msr
- *
- * Copyright (C) 2021 Intel Corporation
- *
- * Test to check the effect of various CPUID settings on
- * MSR_IA32_PERF_CAPABILITIES MSR, and check that what
- * we write with KVM_SET_MSR is _not_ modified by the guest
- * and check it can be retrieved with KVM_GET_MSR, also test
- * the invalid LBR formats are rejected.
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <sys/ioctl.h>
 
 #include <linux/bitmap.h>
@@ -34,10 +24,7 @@ union perf_capabilities {
 	u64	capabilities;
 };
 
-/*
- * The LBR format and most PEBS features are immutable, all other features are
- * fungible (if supported by the host and KVM).
- */
+ 
 static const union perf_capabilities immutable_caps = {
 	.lbr_format = -1,
 	.pebs_trap  = 1,
@@ -73,11 +60,7 @@ static void guest_code(uint64_t current_val)
 	GUEST_DONE();
 }
 
-/*
- * Verify that guest WRMSRs to PERF_CAPABILITIES #GP regardless of the value
- * written, that the guest always sees the userspace controlled value, and that
- * PERF_CAPABILITIES is immutable after KVM_RUN.
- */
+ 
 static void test_guest_wrmsr_perf_capabilities(union perf_capabilities host_cap)
 {
 	struct kvm_vcpu *vcpu;
@@ -121,10 +104,7 @@ static void test_guest_wrmsr_perf_capabilities(union perf_capabilities host_cap)
 	kvm_vm_free(vm);
 }
 
-/*
- * Verify KVM allows writing PERF_CAPABILITIES with all KVM-supported features
- * enabled, as well as '0' (to disable all features).
- */
+ 
 static void test_basic_perf_capabilities(union perf_capabilities host_cap)
 {
 	struct kvm_vcpu *vcpu;
@@ -154,12 +134,7 @@ static void test_fungible_perf_capabilities(union perf_capabilities host_cap)
 	kvm_vm_free(vm);
 }
 
-/*
- * Verify KVM rejects attempts to set unsupported and/or immutable features in
- * PERF_CAPABILITIES.  Note, LBR format and PEBS format need to be validated
- * separately as they are multi-bit values, e.g. toggling or setting a single
- * bit can generate a false positive without dedicated safeguards.
- */
+ 
 static void test_immutable_perf_capabilities(union perf_capabilities host_cap)
 {
 	const uint64_t reserved_caps = (~host_cap.capabilities |
@@ -179,10 +154,7 @@ static void test_immutable_perf_capabilities(union perf_capabilities host_cap)
 			    BIT_ULL(bit), bit);
 	}
 
-	/*
-	 * KVM only supports the host's native LBR format, as well as '0' (to
-	 * disable LBR support).  Verify KVM rejects all other LBR formats.
-	 */
+	 
 	for (val.lbr_format = 1; val.lbr_format; val.lbr_format++) {
 		if (val.lbr_format == host_cap.lbr_format)
 			continue;
@@ -192,7 +164,7 @@ static void test_immutable_perf_capabilities(union perf_capabilities host_cap)
 			    val.lbr_format, host_cap.lbr_format);
 	}
 
-	/* Ditto for the PEBS format. */
+	 
 	for (val.pebs_format = 1; val.pebs_format; val.pebs_format++) {
 		if (val.pebs_format == host_cap.pebs_format)
 			continue;
@@ -205,12 +177,7 @@ static void test_immutable_perf_capabilities(union perf_capabilities host_cap)
 	kvm_vm_free(vm);
 }
 
-/*
- * Test that LBR MSRs are writable when LBRs are enabled, and then verify that
- * disabling the vPMU via CPUID also disables LBR support.  Set bits 2:0 of
- * LBR_TOS as those bits are writable across all uarch implementations (arch
- * LBRs will need to poke a different MSR).
- */
+ 
 static void test_lbr_perf_capabilities(union perf_capabilities host_cap)
 {
 	struct kvm_vcpu *vcpu;

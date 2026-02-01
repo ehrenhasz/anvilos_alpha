@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_hw_utils.c: Definitions of helper functions used across
- * hardware layer.
- */
+ 
+
+ 
 
 #include "aq_hw_utils.h"
 
@@ -53,10 +47,7 @@ void aq_hw_write_reg(struct aq_hw_s *hw, u32 reg, u32 value)
 	writel(value, hw->mmio + reg);
 }
 
-/* Most of 64-bit registers are in LSW, MSW form.
-   Counters are normally implemented by HW as latched pairs:
-   reading LSW first locks MSW, to overcome LSW overflow
- */
+ 
 u64 aq_hw_read_reg64(struct aq_hw_s *hw, u32 reg)
 {
 	u64 value = U64_MAX;

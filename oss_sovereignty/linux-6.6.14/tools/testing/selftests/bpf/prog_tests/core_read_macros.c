@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 
@@ -8,11 +8,7 @@ struct callback_head {
 	void (*func)(struct callback_head *head);
 };
 
-/* ___shuffled flavor is just an illusion for BPF code, it doesn't really
- * exist and user-space needs to provide data in the memory layout that
- * matches callback_head. We just defined ___shuffled flavor to make it easier
- * to work with the skeleton
- */
+ 
 struct callback_head___shuffled {
 	struct callback_head___shuffled *next;
 	void (*func)(struct callback_head *head);
@@ -34,7 +30,7 @@ void test_core_read_macros(void)
 	bss = skel->bss;
 	bss->my_pid = getpid();
 
-	/* next pointers have to be set from the kernel side */
+	 
 	bss->k_probe_in.func = (void *)(long)0x1234;
 	bss->k_core_in.func = (void *)(long)0xabcd;
 
@@ -50,7 +46,7 @@ void test_core_read_macros(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	ASSERT_EQ(bss->k_probe_out, 0x1234, "k_probe_out");

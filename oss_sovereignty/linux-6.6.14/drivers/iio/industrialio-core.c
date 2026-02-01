@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * The industrial I/O core
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * Based on elements of hwmon and input subsystems.
- */
+
+ 
 
 #define pr_fmt(fmt) "iio-core: " fmt
 
@@ -36,7 +30,7 @@
 #include "iio_core.h"
 #include "iio_core_trigger.h"
 
-/* IDA to assign each registered device a unique id */
+ 
 static DEFINE_IDA(iio_ida);
 
 static dev_t iio_devt;
@@ -145,7 +139,7 @@ static const char * const iio_modifier_names[] = {
 	[IIO_MOD_ROLL] = "roll",
 };
 
-/* relies on pairs of these shared then separate */
+ 
 static const char * const iio_chan_info_postfix[] = {
 	[IIO_CHAN_INFO_RAW] = "raw",
 	[IIO_CHAN_INFO_PROCESSED] = "input",
@@ -179,15 +173,7 @@ static const char * const iio_chan_info_postfix[] = {
 	[IIO_CHAN_INFO_CALIBAMBIENT] = "calibambient",
 	[IIO_CHAN_INFO_ZEROPOINT] = "zeropoint",
 };
-/**
- * iio_device_id() - query the unique ID for the device
- * @indio_dev:		Device structure whose ID is being queried
- *
- * The IIO device ID is a unique index used for example for the naming
- * of the character device /dev/iio\:device[ID].
- *
- * Returns: Unique ID for the device.
- */
+ 
 int iio_device_id(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -196,12 +182,7 @@ int iio_device_id(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL_GPL(iio_device_id);
 
-/**
- * iio_buffer_enabled() - helper function to test if the buffer is enabled
- * @indio_dev:		IIO device structure for device
- *
- * Returns: True, if the buffer is enabled.
- */
+ 
 bool iio_buffer_enabled(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -213,10 +194,7 @@ bool iio_buffer_enabled(struct iio_dev *indio_dev)
 EXPORT_SYMBOL_GPL(iio_buffer_enabled);
 
 #if defined(CONFIG_DEBUG_FS)
-/*
- * There's also a CONFIG_DEBUG_FS guard in include/linux/iio/iio.h for
- * iio_get_debugfs_dentry() to make it inline if CONFIG_DEBUG_FS is undefined
- */
+ 
 struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -226,14 +204,7 @@ struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
 EXPORT_SYMBOL_GPL(iio_get_debugfs_dentry);
 #endif
 
-/**
- * iio_find_channel_from_si() - get channel from its scan index
- * @indio_dev:		device
- * @si:			scan index to match
- *
- * Returns:
- * Constant pointer to iio_chan_spec, if scan index matches, NULL on failure.
- */
+ 
 const struct iio_chan_spec
 *iio_find_channel_from_si(struct iio_dev *indio_dev, int si)
 {
@@ -245,7 +216,7 @@ const struct iio_chan_spec
 	return NULL;
 }
 
-/* This turns up an awful lot */
+ 
 ssize_t iio_read_const_attr(struct device *dev,
 			    struct device_attribute *attr,
 			    char *buf)
@@ -254,13 +225,7 @@ ssize_t iio_read_const_attr(struct device *dev,
 }
 EXPORT_SYMBOL(iio_read_const_attr);
 
-/**
- * iio_device_set_clock() - Set current timestamping clock for the device
- * @indio_dev: IIO device structure containing the device
- * @clock_id: timestamping clock POSIX identifier to set.
- *
- * Returns: 0 on success, or a negative error code.
- */
+ 
 int iio_device_set_clock(struct iio_dev *indio_dev, clockid_t clock_id)
 {
 	int ret;
@@ -282,12 +247,7 @@ int iio_device_set_clock(struct iio_dev *indio_dev, clockid_t clock_id)
 }
 EXPORT_SYMBOL(iio_device_set_clock);
 
-/**
- * iio_device_get_clock() - Retrieve current timestamping clock for the device
- * @indio_dev: IIO device structure containing the device
- *
- * Returns: Clock ID of the current timestamping clock for the device.
- */
+ 
 clockid_t iio_device_get_clock(const struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -296,12 +256,7 @@ clockid_t iio_device_get_clock(const struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL(iio_device_get_clock);
 
-/**
- * iio_get_time_ns() - utility function to get a time stamp for events etc
- * @indio_dev: device
- *
- * Returns: Timestamp of the event in nanoseconds.
- */
+ 
 s64 iio_get_time_ns(const struct iio_dev *indio_dev)
 {
 	struct timespec64 tp;
@@ -332,7 +287,7 @@ static int __init iio_init(void)
 {
 	int ret;
 
-	/* Register sysfs bus */
+	 
 	ret  = bus_register(&iio_bus_type);
 	if (ret < 0) {
 		pr_err("could not register bus type\n");
@@ -473,7 +428,7 @@ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
 static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
 {
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static ssize_t iio_read_channel_ext_info(struct device *dev,
 				     struct device_attribute *attr,
@@ -518,7 +473,7 @@ ssize_t iio_enum_available_read(struct iio_dev *indio_dev,
 		len += sysfs_emit_at(buf, len, "%s ", e->items[i]);
 	}
 
-	/* replace last space with a newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -598,17 +553,7 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
 }
 EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
 
-/**
- * iio_read_mount_matrix() - retrieve iio device mounting matrix from
- *                           device "mount-matrix" property
- * @dev:	device the mounting matrix property is assigned to
- * @matrix:	where to store retrieved matrix
- *
- * If device is assigned no mounting matrix property, a default 3x3 identity
- * matrix will be filled in.
- *
- * Returns: 0 if success, or a negative error code on failure.
- */
+ 
 int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
 {
 	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation);
@@ -619,14 +564,14 @@ int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
 		return 0;
 
 	if (err >= 0)
-		/* Invalid number of matrix entries. */
+		 
 		return -EINVAL;
 
 	if (err != -EINVAL)
-		/* Invalid matrix declaration format. */
+		 
 		return err;
 
-	/* Matrix was not declared at all: fallback to identity. */
+	 
 	return iio_setup_mount_idmatrix(dev, matrix);
 }
 EXPORT_SYMBOL(iio_read_mount_matrix);
@@ -695,20 +640,7 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
 	}
 }
 
-/**
- * iio_format_value() - Formats a IIO value into its string representation
- * @buf:	The buffer to which the formatted value gets written
- *		which is assumed to be big enough (i.e. PAGE_SIZE).
- * @type:	One of the IIO_VAL_* constants. This decides how the val
- *		and val2 parameters are formatted.
- * @size:	Number of IIO value entries contained in vals
- * @vals:	Pointer to the values, exact meaning depends on the
- *		type parameter.
- *
- * Returns:
- * 0 by default, a negative number on failure or the total number of characters
- * written for a type that belongs to the IIO_VAL_* constant.
- */
+ 
 ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
 {
 	ssize_t len;
@@ -808,11 +740,7 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
 {
 	int length;
 
-	/*
-	 * length refers to the array size , not the number of elements.
-	 * The purpose is to print the range [min , step ,max] so length should
-	 * be 3 in case of int, and 6 for other types.
-	 */
+	 
 	switch (type) {
 	case IIO_VAL_INT:
 		length = 3;
@@ -852,17 +780,7 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
 	}
 }
 
-/**
- * __iio_str_to_fixpoint() - Parse a fixed-point number from a string
- * @str: The string to parse
- * @fract_mult: Multiplier for the first decimal place, should be a power of 10
- * @integer: The integer part of the number
- * @fract: The fractional part of the number
- * @scale_db: True if this should parse as dB
- *
- * Returns:
- * 0 on success, or a negative error code if the string could not be parsed.
- */
+ 
 static int __iio_str_to_fixpoint(const char *str, int fract_mult,
 				 int *integer, int *fract, bool scale_db)
 {
@@ -895,11 +813,11 @@ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
 				break;
 			return -EINVAL;
 		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
-			/* Ignore the dB suffix */
+			 
 			str += sizeof(" dB") - 1;
 			continue;
 		} else if (!strncmp(str, "dB", sizeof("dB") - 1) && scale_db) {
-			/* Ignore the dB suffix */
+			 
 			str += sizeof("dB") - 1;
 			continue;
 		} else if (*str == '.' && integer_part) {
@@ -923,16 +841,7 @@ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
 	return 0;
 }
 
-/**
- * iio_str_to_fixpoint() - Parse a fixed-point number from a string
- * @str: The string to parse
- * @fract_mult: Multiplier for the first decimal place, should be a power of 10
- * @integer: The integer part of the number
- * @fract: The fractional part of the number
- *
- * Returns:
- * 0 on success, or a negative error code if the string could not be parsed.
- */
+ 
 int iio_str_to_fixpoint(const char *str, int fract_mult,
 			int *integer, int *fract)
 {
@@ -952,7 +861,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
 	bool is_char = false;
 	bool scale_db = false;
 
-	/* Assumes decimal - precision based on number of digits */
+	 
 	if (!indio_dev->info->write_raw)
 		return -EINVAL;
 
@@ -1018,7 +927,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 
 	sysfs_attr_init(&dev_attr->attr);
 
-	/* Build up postfix of <extend_name>_<modifier>_postfix */
+	 
 	if (chan->modified && (shared_by == IIO_SEPARATE)) {
 		if (chan->extend_name)
 			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
@@ -1041,7 +950,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 	if (full_postfix == NULL)
 		return -ENOMEM;
 
-	if (chan->differential) { /* Differential can not have modifier */
+	if (chan->differential) {  
 		switch (shared_by) {
 		case IIO_SHARED_BY_ALL:
 			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
@@ -1074,7 +983,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 					    full_postfix);
 			break;
 		}
-	} else { /* Single ended */
+	} else {  
 		switch (shared_by) {
 		case IIO_SHARED_BY_ALL:
 			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
@@ -1373,13 +1282,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
 	return attrcount;
 }
 
-/**
- * iio_free_chan_devattr_list() - Free a list of IIO device attributes
- * @attr_list: List of IIO device attributes
- *
- * This function frees the memory allocated for each of the IIO device
- * attributes in the list.
- */
+ 
 void iio_free_chan_devattr_list(struct list_head *attr_list)
 {
 	struct iio_dev_attr *p, *n;
@@ -1509,17 +1412,14 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 	struct iio_dev_attr *p;
 	struct attribute **attr, *clk = NULL;
 
-	/* First count elements in any existing group */
+	 
 	if (indio_dev->info->attrs) {
 		attr = indio_dev->info->attrs->attrs;
 		while (*attr++ != NULL)
 			attrcount_orig++;
 	}
 	attrcount = attrcount_orig;
-	/*
-	 * New channel registration method - relies on the fact a group does
-	 * not need to be initialized if its name is NULL.
-	 */
+	 
 	if (indio_dev->channels)
 		for (i = 0; i < indio_dev->num_channels; i++) {
 			const struct iio_chan_spec *chan =
@@ -1552,7 +1452,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 		ret = -ENOMEM;
 		goto error_clear_attrs;
 	}
-	/* Copy across original attributes, and point to original binary attributes */
+	 
 	if (indio_dev->info->attrs) {
 		memcpy(iio_dev_opaque->chan_attr_group.attrs,
 		       indio_dev->info->attrs->attrs,
@@ -1564,7 +1464,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 			indio_dev->info->attrs->bin_attrs;
 	}
 	attrn = attrcount_orig;
-	/* Add all elements from the list. */
+	 
 	list_for_each_entry(p, &iio_dev_opaque->channel_attr_list, l)
 		iio_dev_opaque->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
 	if (indio_dev->name)
@@ -1621,14 +1521,7 @@ const struct device_type iio_device_type = {
 	.release = iio_dev_release,
 };
 
-/**
- * iio_device_alloc() - allocate an iio_dev from a driver
- * @parent:		Parent device.
- * @sizeof_priv:	Space to allocate for private structure.
- *
- * Returns:
- * Pointer to allocated iio_dev on success, NULL on failure.
- */
+ 
 struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
 {
 	struct iio_dev_opaque *iio_dev_opaque;
@@ -1659,7 +1552,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
 
 	iio_dev_opaque->id = ida_alloc(&iio_ida, GFP_KERNEL);
 	if (iio_dev_opaque->id < 0) {
-		/* cannot use a dev_err as the name isn't available */
+		 
 		pr_err("failed to get device id\n");
 		kfree(iio_dev_opaque);
 		return NULL;
@@ -1681,10 +1574,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
 }
 EXPORT_SYMBOL(iio_device_alloc);
 
-/**
- * iio_device_free() - free an iio_dev from a driver
- * @dev:		the iio_dev associated with the device
- */
+ 
 void iio_device_free(struct iio_dev *dev)
 {
 	if (dev)
@@ -1697,17 +1587,7 @@ static void devm_iio_device_release(void *iio_dev)
 	iio_device_free(iio_dev);
 }
 
-/**
- * devm_iio_device_alloc - Resource-managed iio_device_alloc()
- * @parent:		Device to allocate iio_dev for, and parent for this IIO device
- * @sizeof_priv:	Space to allocate for private structure.
- *
- * Managed iio_device_alloc. iio_dev allocated with this function is
- * automatically freed on driver detach.
- *
- * Returns:
- * Pointer to allocated iio_dev on success, NULL on failure.
- */
+ 
 struct iio_dev *devm_iio_device_alloc(struct device *parent, int sizeof_priv)
 {
 	struct iio_dev *iio_dev;
@@ -1726,14 +1606,7 @@ struct iio_dev *devm_iio_device_alloc(struct device *parent, int sizeof_priv)
 }
 EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
 
-/**
- * iio_chrdev_open() - chrdev file open for buffer access and ioctls
- * @inode:	Inode structure for identifying the device in the file system
- * @filp:	File structure for iio device used to keep and later access
- *		private data
- *
- * Returns: 0 on success or -EBUSY if the device is already opened
- */
+ 
 static int iio_chrdev_open(struct inode *inode, struct file *filp)
 {
 	struct iio_dev_opaque *iio_dev_opaque =
@@ -1761,13 +1634,7 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * iio_chrdev_release() - chrdev file close buffer access and ioctls
- * @inode:	Inode structure pointer for the char device
- * @filp:	File structure pointer for the char device
- *
- * Returns: 0 for successful release.
- */
+ 
 static int iio_chrdev_release(struct inode *inode, struct file *filp)
 {
 	struct iio_dev_buffer_pair *ib = filp->private_data;
@@ -1805,11 +1672,7 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	mutex_lock(&iio_dev_opaque->info_exist_lock);
 
-	/*
-	 * The NULL check here is required to prevent crashing when a device
-	 * is being removed while userspace would still have open file handles
-	 * to try to access this device.
-	 */
+	 
 	if (!indio_dev->info)
 		goto out_unlock;
 
@@ -1903,10 +1766,10 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
 
 	iio_dev_opaque->driver_module = this_mod;
 
-	/* If the calling driver did not initialize firmware node, do it here */
+	 
 	if (dev_fwnode(&indio_dev->dev))
 		fwnode = dev_fwnode(&indio_dev->dev);
-	/* The default dummy IIO device has no parent */
+	 
 	else if (indio_dev->dev.parent)
 		fwnode = dev_fwnode(indio_dev->dev.parent);
 	device_set_node(&indio_dev->dev, fwnode);
@@ -1959,7 +1822,7 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
 		iio_dev_opaque->chrdev.owner = this_mod;
 	}
 
-	/* assign device groups now; they should be all registered now */
+	 
 	indio_dev->dev.groups = iio_dev_opaque->groups;
 
 	ret = cdev_device_add(&iio_dev_opaque->chrdev, &indio_dev->dev);
@@ -1980,10 +1843,7 @@ error_unreg_debugfs:
 }
 EXPORT_SYMBOL(__iio_device_register);
 
-/**
- * iio_device_unregister() - unregister a device from the IIO subsystem
- * @indio_dev:		Device structure representing the device.
- */
+ 
 void iio_device_unregister(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -2025,17 +1885,7 @@ int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
 }
 EXPORT_SYMBOL_GPL(__devm_iio_device_register);
 
-/**
- * iio_device_claim_direct_mode - Keep device in direct mode
- * @indio_dev:	the iio_dev associated with the device
- *
- * If the device is in direct mode it is guaranteed to stay
- * that way until iio_device_release_direct_mode() is called.
- *
- * Use with iio_device_release_direct_mode()
- *
- * Returns: 0 on success, -EBUSY on failure.
- */
+ 
 int iio_device_claim_direct_mode(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -2050,32 +1900,14 @@ int iio_device_claim_direct_mode(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL_GPL(iio_device_claim_direct_mode);
 
-/**
- * iio_device_release_direct_mode - releases claim on direct mode
- * @indio_dev:	the iio_dev associated with the device
- *
- * Release the claim. Device is no longer guaranteed to stay
- * in direct mode.
- *
- * Use with iio_device_claim_direct_mode()
- */
+ 
 void iio_device_release_direct_mode(struct iio_dev *indio_dev)
 {
 	mutex_unlock(&to_iio_dev_opaque(indio_dev)->mlock);
 }
 EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
 
-/**
- * iio_device_claim_buffer_mode - Keep device in buffer mode
- * @indio_dev:	the iio_dev associated with the device
- *
- * If the device is in buffer mode it is guaranteed to stay
- * that way until iio_device_release_buffer_mode() is called.
- *
- * Use with iio_device_release_buffer_mode().
- *
- * Returns: 0 on success, -EBUSY on failure.
- */
+ 
 int iio_device_claim_buffer_mode(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -2090,26 +1922,14 @@ int iio_device_claim_buffer_mode(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL_GPL(iio_device_claim_buffer_mode);
 
-/**
- * iio_device_release_buffer_mode - releases claim on buffer mode
- * @indio_dev:	the iio_dev associated with the device
- *
- * Release the claim. Device is no longer guaranteed to stay
- * in buffer mode.
- *
- * Use with iio_device_claim_buffer_mode().
- */
+ 
 void iio_device_release_buffer_mode(struct iio_dev *indio_dev)
 {
 	mutex_unlock(&to_iio_dev_opaque(indio_dev)->mlock);
 }
 EXPORT_SYMBOL_GPL(iio_device_release_buffer_mode);
 
-/**
- * iio_device_get_current_mode() - helper function providing read-only access to
- *				   the opaque @currentmode variable
- * @indio_dev:			   IIO device structure for device
- */
+ 
 int iio_device_get_current_mode(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);

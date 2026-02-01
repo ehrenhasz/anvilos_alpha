@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Power domain driver for Broadcom BCM2835
- *
- * Copyright (C) 2018 Broadcom
- */
+
+ 
 
 #include <dt-bindings/soc/bcm2835-pm.h>
 #include <linux/clk.h>
@@ -58,9 +54,7 @@
 #define PM_HDMI_CTRLEN			BIT(0)
 
 #define PM_USB				0x5c
-/* The power gates must be enabled with this bit before enabling the LDO in the
- * USB block.
- */
+ 
 #define PM_USB_CTRLEN			BIT(0)
 
 #define PM_PXLDO			0x60
@@ -137,11 +131,11 @@ struct bcm2835_power_domain {
 
 struct bcm2835_power {
 	struct device		*dev;
-	/* PM registers. */
+	 
 	void __iomem		*base;
-	/* AXI Async bridge registers. */
+	 
 	void __iomem		*asb;
-	/* RPiVid bridge registers. */
+	 
 	void __iomem		*rpivid_asb;
 
 	struct genpd_onecell_data pd_xlate;
@@ -167,7 +161,7 @@ static int bcm2835_asb_control(struct bcm2835_power *power, u32 reg, bool enable
 
 	start = ktime_get_ns();
 
-	/* Enable the module's async AXI bridges. */
+	 
 	if (enable) {
 		val = readl(base + reg) & ~ASB_REQ_STOP;
 	} else {
@@ -198,17 +192,17 @@ static int bcm2835_power_power_off(struct bcm2835_power_domain *pd, u32 pm_reg)
 {
 	struct bcm2835_power *power = pd->power;
 
-	/* We don't run this on BCM2711 */
+	 
 	if (power->rpivid_asb)
 		return 0;
 
-	/* Enable functional isolation */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) & ~PM_ISFUNC);
 
-	/* Enable electrical isolation */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) & ~PM_ISPOW);
 
-	/* Open the power switches. */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) & ~PM_POWUP);
 
 	return 0;
@@ -223,18 +217,15 @@ static int bcm2835_power_power_on(struct bcm2835_power_domain *pd, u32 pm_reg)
 	int inrush;
 	bool powok;
 
-	/* We don't run this on BCM2711 */
+	 
 	if (power->rpivid_asb)
 		return 0;
 
-	/* If it was already powered on by the fw, leave it that way. */
+	 
 	if (PM_READ(pm_reg) & PM_POWUP)
 		return 0;
 
-	/* Enable power.  Allowing too much current at once may result
-	 * in POWOK never getting set, so start low and ramp it up as
-	 * necessary to succeed.
-	 */
+	 
 	powok = false;
 	for (inrush = PM_INRUSH_3_5_MA; inrush <= PM_INRUSH_20_MA; inrush++) {
 		PM_WRITE(pm_reg,
@@ -256,10 +247,10 @@ static int bcm2835_power_power_on(struct bcm2835_power_domain *pd, u32 pm_reg)
 		goto err_disable_powup;
 	}
 
-	/* Disable electrical isolation */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) | PM_ISPOW);
 
-	/* Repair memory */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) | PM_MEMREP);
 	start = ktime_get_ns();
 	while (!(PM_READ(pm_reg) & PM_MRDONE)) {
@@ -272,7 +263,7 @@ static int bcm2835_power_power_on(struct bcm2835_power_domain *pd, u32 pm_reg)
 		}
 	}
 
-	/* Disable functional isolation */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) | PM_ISFUNC);
 
 	return 0;
@@ -300,12 +291,12 @@ static int bcm2835_asb_power_on(struct bcm2835_power_domain *pd,
 		return ret;
 	}
 
-	/* Wait 32 clocks for reset to propagate, 1 us will be enough */
+	 
 	udelay(1);
 
 	clk_disable_unprepare(pd->clk);
 
-	/* Deassert the resets. */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) | reset_flags);
 
 	ret = clk_prepare_enable(pd->clk);
@@ -364,7 +355,7 @@ static int bcm2835_asb_power_off(struct bcm2835_power_domain *pd,
 
 	clk_disable_unprepare(pd->clk);
 
-	/* Assert the resets. */
+	 
 	PM_WRITE(pm_reg, PM_READ(pm_reg) & ~reset_flags);
 
 	return 0;
@@ -513,9 +504,7 @@ bcm2835_init_power_domain(struct bcm2835_power *power,
 		if (ret == -EPROBE_DEFER)
 			return ret;
 
-		/* Some domains don't have a clk, so make sure that we
-		 * don't deref an error pointer later.
-		 */
+		 
 		dom->clk = NULL;
 	}
 
@@ -526,7 +515,7 @@ bcm2835_init_power_domain(struct bcm2835_power *power,
 	dom->domain = pd_xlate_index;
 	dom->power = power;
 
-	/* XXX: on/off at boot? */
+	 
 	pm_genpd_init(&dom->base, NULL, true);
 
 	power->pd_xlate.domains[pd_xlate_index] = &dom->base;
@@ -534,14 +523,7 @@ bcm2835_init_power_domain(struct bcm2835_power *power,
 	return 0;
 }
 
-/** bcm2835_reset_reset - Resets a block that has a reset line in the
- * PM block.
- *
- * The consumer of the reset controller must have the power domain up
- * -- there's no reset ability with the power domain down.  To reset
- * the sub-block, we just disable its access to memory through the
- * ASB, reset, and re-enable.
- */
+ 
 static int bcm2835_reset_reset(struct reset_controller_dev *rcdev,
 			       unsigned long id)
 {
@@ -643,14 +625,14 @@ static int bcm2835_power_probe(struct platform_device *pdev)
 	power->rpivid_asb = pm->rpivid_asb;
 
 	id = readl(power->asb + ASB_AXI_BRDG_ID);
-	if (id != BCM2835_BRDG_ID /* "BRDG" */) {
+	if (id != BCM2835_BRDG_ID  ) {
 		dev_err(dev, "ASB register ID returned 0x%08x\n", id);
 		return -ENODEV;
 	}
 
 	if (power->rpivid_asb) {
 		id = readl(power->rpivid_asb + ASB_AXI_BRDG_ID);
-		if (id != BCM2835_BRDG_ID /* "BRDG" */) {
+		if (id != BCM2835_BRDG_ID  ) {
 			dev_err(dev, "RPiVid ASB register ID returned 0x%08x\n",
 				     id);
 			return -ENODEV;

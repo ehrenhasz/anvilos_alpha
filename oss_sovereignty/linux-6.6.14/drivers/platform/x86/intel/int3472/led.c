@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Hans de Goede <hdegoede@redhat.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gpio/consumer.h>
@@ -34,10 +34,10 @@ int skl_int3472_register_pled(struct int3472_discrete_device *int3472,
 	if (polarity == GPIO_ACTIVE_LOW)
 		gpiod_toggle_active_low(int3472->pled.gpio);
 
-	/* Ensure the pin is in output mode and non-active state */
+	 
 	gpiod_direction_output(int3472->pled.gpio, 0);
 
-	/* Generate the name, replacing the ':' in the ACPI devname with '_' */
+	 
 	snprintf(int3472->pled.name, sizeof(int3472->pled.name),
 		 "%s::privacy_led", acpi_dev_name(int3472->sensor));
 	p = strchr(int3472->pled.name, ':');

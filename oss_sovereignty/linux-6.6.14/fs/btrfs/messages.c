@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "fs.h"
 #include "messages.h"
@@ -12,10 +12,7 @@
 #define STATE_STRING_PREFACE	": state "
 #define STATE_STRING_BUF_LEN	(sizeof(STATE_STRING_PREFACE) + BTRFS_FS_STATE_COUNT + 1)
 
-/*
- * Characters to print to indicate error conditions or uncommon filesystem state.
- * RO is not an error.
- */
+ 
 static const char fs_state_chars[] = {
 	[BTRFS_FS_STATE_REMOUNTING]		= 'M',
 	[BTRFS_FS_STATE_RO]			= 0,
@@ -49,7 +46,7 @@ static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
 		}
 	}
 
-	/* If no states were printed, reset the buffer */
+	 
 	if (!states_printed)
 		curr = buf;
 
@@ -57,51 +54,37 @@ static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
 }
 #endif
 
-/*
- * Generally the error codes correspond to their respective errors, but there
- * are a few special cases.
- *
- * EUCLEAN: Any sort of corruption that we encounter.  The tree-checker for
- *          instance will return EUCLEAN if any of the blocks are corrupted in
- *          a way that is problematic.  We want to reserve EUCLEAN for these
- *          sort of corruptions.
- *
- * EROFS: If we check BTRFS_FS_STATE_ERROR and fail out with a return error, we
- *        need to use EROFS for this case.  We will have no idea of the
- *        original failure, that will have been reported at the time we tripped
- *        over the error.  Each subsequent error that doesn't have any context
- *        of the original error should use EROFS when handling BTRFS_FS_STATE_ERROR.
- */
+ 
 const char * __attribute_const__ btrfs_decode_error(int errno)
 {
 	char *errstr = "unknown";
 
 	switch (errno) {
-	case -ENOENT:		/* -2 */
+	case -ENOENT:		 
 		errstr = "No such entry";
 		break;
-	case -EIO:		/* -5 */
+	case -EIO:		 
 		errstr = "IO failure";
 		break;
-	case -ENOMEM:		/* -12*/
+	case -ENOMEM:		 
 		errstr = "Out of memory";
 		break;
-	case -EEXIST:		/* -17 */
+	case -EEXIST:		 
 		errstr = "Object already exists";
 		break;
-	case -ENOSPC:		/* -28 */
+	case -ENOSPC:		 
 		errstr = "No space left";
 		break;
-	case -EROFS:		/* -30 */
+	case -EROFS:		 
 		errstr = "Readonly filesystem";
 		break;
-	case -EOPNOTSUPP:	/* -95 */
+	case -EOPNOTSUPP:	 
 		errstr = "Operation not supported";
 		break;
-	case -EUCLEAN:		/* -117 */
+	case -EUCLEAN:		 
 		errstr = "Filesystem corrupted";
 		break;
-	case -EDQUOT:		/* -122 */
+	case -EDQUOT:		 
 		errstr = "Quota exceeded";
 		break;
 	}
@@ -109,10 +92,7 @@ const char * __attribute_const__ btrfs_decode_error(int errno)
 	return errstr;
 }
 
-/*
- * __btrfs_handle_fs_error decodes expected errors from the caller and
- * invokes the appropriate error response.
- */
+ 
 __cold
 void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function,
 		       unsigned int line, int errno, const char *fmt, ...)
@@ -128,10 +108,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
 		"BTRFS: error (device %s%s) in %s:%d: errno=%d %s", KERN_CRIT, fmt);
 #endif
 
-	/*
-	 * Special case: if the error is EROFS, and we're already under
-	 * SB_RDONLY, then it is safe here.
-	 */
+	 
 	if (errno == -EROFS && sb_rdonly(sb))
 		return;
 
@@ -155,13 +132,10 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
 	}
 #endif
 
-	/*
-	 * Today we only save the error info to memory.  Long term we'll also
-	 * send it down to the disk.
-	 */
+	 
 	WRITE_ONCE(fs_info->fs_error, errno);
 
-	/* Don't go through full error handling during mount. */
+	 
 	if (!(sb->s_flags & SB_BORN))
 		return;
 
@@ -170,17 +144,10 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
 
 	btrfs_discard_stop(fs_info);
 
-	/* Handle error by forcing the filesystem readonly. */
+	 
 	btrfs_set_sb_rdonly(sb);
 	btrfs_info(fs_info, "forced readonly");
-	/*
-	 * Note that a running device replace operation is not canceled here
-	 * although there is no way to update the progress. It would add the
-	 * risk of a deadlock, therefore the canceling is omitted. The only
-	 * penalty is that some I/O remains active until the procedure
-	 * completes. The next time when the filesystem is mounted writable
-	 * again, the device replace operation continues.
-	 */
+	 
 }
 
 #ifdef CONFIG_PRINTK
@@ -195,10 +162,7 @@ static const char * const logtypes[] = {
 	"debug",
 };
 
-/*
- * Use one ratelimit state per log level so that a flood of less important
- * messages doesn't cause more important ones to be dropped.
- */
+ 
 static struct ratelimit_state printk_limits[] = {
 	RATELIMIT_STATE_INIT(printk_limits[0], DEFAULT_RATELIMIT_INTERVAL, 100),
 	RATELIMIT_STATE_INIT(printk_limits[1], DEFAULT_RATELIMIT_INTERVAL, 100),
@@ -282,10 +246,7 @@ void __cold btrfs_err_32bit_limit(struct btrfs_fs_info *fs_info)
 }
 #endif
 
-/*
- * __btrfs_panic decodes unexpected, fatal errors from the caller, issues an
- * alert, and either panics or BUGs, depending on mount options.
- */
+ 
 __cold
 void __btrfs_panic(struct btrfs_fs_info *fs_info, const char *function,
 		   unsigned int line, int errno, const char *fmt, ...)
@@ -309,5 +270,5 @@ void __btrfs_panic(struct btrfs_fs_info *fs_info, const char *function,
 	btrfs_crit(fs_info, "panic in %s:%d: %pV (errno=%d %s)",
 		   function, line, &vaf, errno, errstr);
 	va_end(args);
-	/* Caller calls BUG() */
+	 
 }

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include "mt7921.h"
 #include "mcu.h"
@@ -9,7 +9,7 @@ enum mt7921_testmode_attr {
 	MT7921_TM_ATTR_QUERY,
 	MT7921_TM_ATTR_RSP,
 
-	/* keep last */
+	 
 	NUM_MT7921_TM_ATTRS,
 	MT7921_TM_ATTR_MAX = NUM_MT7921_TM_ATTRS - 1,
 };
@@ -53,7 +53,7 @@ mt7921_tm_set(struct mt792x_dev *dev, struct mt7921_tm_cmd *req)
 	}
 
 	if (testmode) {
-		/* Make sure testmode running on full power mode */
+		 
 		pm->enable = false;
 		cancel_delayed_work_sync(&pm->ps_work);
 		cancel_work_sync(&pm->wake_work);
@@ -71,7 +71,7 @@ mt7921_tm_set(struct mt792x_dev *dev, struct mt7921_tm_cmd *req)
 		goto out;
 
 	if (normal) {
-		/* Switch back to the normal world */
+		 
 		phy->test.state = MT76_TM_STATE_OFF;
 		pm->enable = true;
 	}

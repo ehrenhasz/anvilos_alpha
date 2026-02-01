@@ -1,12 +1,4 @@
-/*
- * EIM driver for Freescale's i.MX chips
- *
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -71,14 +63,14 @@ struct weim_priv {
 };
 
 static const struct of_device_id weim_id_table[] = {
-	/* i.MX1/21 */
+	 
 	{ .compatible = "fsl,imx1-weim", .data = &imx1_weim_devtype, },
-	/* i.MX25/27/31/35 */
+	 
 	{ .compatible = "fsl,imx27-weim", .data = &imx27_weim_devtype, },
-	/* i.MX50/53/6Q */
+	 
 	{ .compatible = "fsl,imx50-weim", .data = &imx50_weim_devtype, },
 	{ .compatible = "fsl,imx6q-weim", .data = &imx50_weim_devtype, },
-	/* i.MX51 */
+	 
 	{ .compatible = "fsl,imx51-weim", .data = &imx51_weim_devtype, },
 	{ }
 };
@@ -91,10 +83,10 @@ static int imx_weim_gpr_setup(struct platform_device *pdev)
 	struct of_range range;
 	struct regmap *gpr;
 	u32 gprvals[4] = {
-		05,	/* CS0(128M) CS1(0M)  CS2(0M)  CS3(0M)  */
-		033,	/* CS0(64M)  CS1(64M) CS2(0M)  CS3(0M)  */
-		0113,	/* CS0(64M)  CS1(32M) CS2(32M) CS3(0M)  */
-		01111,	/* CS0(32M)  CS1(32M) CS2(32M) CS3(32M) */
+		05,	 
+		033,	 
+		0113,	 
+		01111,	 
 	};
 	u32 gprval = 0;
 	u32 val;
@@ -122,7 +114,7 @@ static int imx_weim_gpr_setup(struct platform_device *pdev)
 
 	for (i = 0; i < ARRAY_SIZE(gprvals); i++) {
 		if (gprval == gprvals[i]) {
-			/* Found it. Set up IOMUXC_GPR1[11:0] with it. */
+			 
 			regmap_update_bits(gpr, IOMUXC_GPR1, 0xfff, gprval);
 			return 0;
 		}
@@ -133,7 +125,7 @@ err:
 	return -EINVAL;
 }
 
-/* Parse and set the timing for this device. */
+ 
 static int weim_timing_setup(struct device *dev, struct device_node *np,
 			     const struct imx_weim_devtype *devtype)
 {
@@ -159,17 +151,14 @@ static int weim_timing_setup(struct device *dev, struct device_node *np,
 	if (ret)
 		return ret;
 
-	/*
-	 * the child node's "reg" property may contain multiple address ranges,
-	 * extract the chip select for each.
-	 */
+	 
 	num_regs = of_property_count_elems_of_size(np, "reg", OF_REG_SIZE);
 	if (num_regs < 0)
 		return num_regs;
 	if (!num_regs)
 		return -EINVAL;
 	for (reg_idx = 0; reg_idx < num_regs; reg_idx++) {
-		/* get the CS index from this child node's "reg" property. */
+		 
 		ret = of_property_read_u32_index(np, "reg",
 					reg_idx * OF_REG_SIZE, &cs_idx);
 		if (ret)
@@ -178,7 +167,7 @@ static int weim_timing_setup(struct device *dev, struct device_node *np,
 		if (cs_idx >= devtype->cs_count)
 			return -EINVAL;
 
-		/* prevent re-configuring a CS that's already been configured */
+		 
 		cst = &ts->cs[cs_idx];
 		if (cst->is_applied && memcmp(value, cst->regs,
 					devtype->cs_regs_count * sizeof(u32))) {
@@ -186,7 +175,7 @@ static int weim_timing_setup(struct device *dev, struct device_node *np,
 			return -EINVAL;
 		}
 
-		/* set the timing for WEIM */
+		 
 		for (i = 0; i < devtype->cs_regs_count; i++)
 			writel(value[i],
 				base + cs_idx * devtype->cs_stride + i * 4);
@@ -272,7 +261,7 @@ static int weim_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* get the resource */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -280,7 +269,7 @@ static int weim_probe(struct platform_device *pdev)
 	priv->base = base;
 	dev_set_drvdata(&pdev->dev, priv);
 
-	/* get the clock */
+	 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
@@ -289,7 +278,7 @@ static int weim_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* parse the device node */
+	 
 	ret = weim_parse_dt(pdev);
 	if (ret)
 		clk_disable_unprepare(clk);
@@ -313,7 +302,7 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
 	case OF_RECONFIG_CHANGE_ADD:
 		of_id = of_match_node(weim_id_table, rd->dn->parent);
 		if (!of_id)
-			return NOTIFY_OK; /* not for us */
+			return NOTIFY_OK;  
 
 		devtype = of_id->data;
 
@@ -330,11 +319,7 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
 				 "Failed to setup timing for '%pOF'\n", rd->dn);
 
 		if (!of_node_check_flag(rd->dn, OF_POPULATED)) {
-			/*
-			 * Clear the flag before adding the device so that
-			 * fw_devlink doesn't skip adding consumers to this
-			 * device.
-			 */
+			 
 			rd->dn->fwnode.flags &= ~FWNODE_FLAG_NOT_DEVICE;
 			if (!of_platform_device_create(rd->dn, NULL, &pdev->dev)) {
 				dev_err(&pdev->dev,
@@ -349,11 +334,11 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
 		break;
 	case OF_RECONFIG_CHANGE_REMOVE:
 		if (!of_node_check_flag(rd->dn, OF_POPULATED))
-			return NOTIFY_OK; /* device already destroyed */
+			return NOTIFY_OK;  
 
 		of_id = of_match_node(weim_id_table, rd->dn->parent);
 		if (!of_id)
-			return NOTIFY_OK; /* not for us */
+			return NOTIFY_OK;  
 
 		pdev = of_find_device_by_node(rd->dn);
 		if (!pdev) {
@@ -377,7 +362,7 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
 static struct notifier_block weim_of_notifier = {
 	.notifier_call = of_weim_notify,
 };
-#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
+#endif  
 
 static struct platform_driver weim_driver = {
 	.driver = {
@@ -391,7 +376,7 @@ static int __init weim_init(void)
 {
 #if IS_ENABLED(CONFIG_OF_DYNAMIC)
 	WARN_ON(of_reconfig_notifier_register(&weim_of_notifier));
-#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
+#endif  
 
 	return platform_driver_register(&weim_driver);
 }
@@ -401,7 +386,7 @@ static void __exit weim_exit(void)
 {
 #if IS_ENABLED(CONFIG_OF_DYNAMIC)
 	of_reconfig_notifier_unregister(&weim_of_notifier);
-#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
+#endif  
 
 	return platform_driver_unregister(&weim_driver);
 

@@ -1,31 +1,5 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-/*
- * link_encoder.h
- *
- *  Created on: Oct 6, 2015
- *      Author: yonsun
- */
+ 
+ 
 
 #ifndef LINK_ENCODER_H_
 #define LINK_ENCODER_H_
@@ -45,7 +19,7 @@ struct encoder_init_data {
 	enum channel_id channel;
 	struct graphics_object_id connector;
 	enum hpd_source_id hpd_source;
-	/* TODO: in DAL2, here was pointer to EventManagerInterface */
+	 
 	struct graphics_object_id encoder;
 	struct dc_context *ctx;
 	enum transmitter transmitter;
@@ -171,13 +145,7 @@ struct link_encoder_funcs {
 			struct link_encoder *enc, uint8_t pix_per_container);
 };
 
-/*
- * Used to track assignments of links (display endpoints) to link encoders.
- *
- * Entry in link_enc_assignments table in struct resource_context.
- * Entries only marked valid once encoder assigned to a link and invalidated once unassigned.
- * Uses engine ID as identifier since PHY ID not relevant for USB4 DPIA endpoint.
- */
+ 
 struct link_enc_assignment {
 	bool valid;
 	struct display_endpoint_id ep_id;
@@ -186,8 +154,8 @@ struct link_enc_assignment {
 };
 
 enum link_enc_cfg_mode {
-	LINK_ENC_CFG_STEADY, /* Normal operation - use current_state. */
-	LINK_ENC_CFG_TRANSIENT /* During commit state - use state to be committed. */
+	LINK_ENC_CFG_STEADY,  
+	LINK_ENC_CFG_TRANSIENT  
 };
 
 enum dp2_link_mode {
@@ -276,4 +244,4 @@ struct hpo_dp_link_encoder_funcs {
 		uint8_t ffe_preset);
 };
 
-#endif /* LINK_ENCODER_H_ */
+#endif  

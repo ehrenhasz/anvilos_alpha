@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 - 2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors:
- *    Jyri Sarha <jsarha@ti.com>
- *    Sergej Sawazki <ce3a@gmx.de>
- *
- * Gpio controlled clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/export.h>
@@ -18,29 +10,9 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/**
- * DOC: basic gpio gated clock which can be enabled and disabled
- *      with gpio output
- * Traits of this clock:
- * prepare - clk_(un)prepare only ensures parent is (un)prepared
- * enable - clk_enable and clk_disable are functional & control gpio
- * rate - inherits rate from parent.  No clk_set_rate support
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
-/**
- * struct clk_gpio - gpio gated clock
- *
- * @hw:		handle between common and hardware-specific interfaces
- * @gpiod:	gpio descriptor
- *
- * Clock with a gpio control for enabling and disabling the parent clock
- * or switching between two parents by asserting or deasserting the gpio.
- *
- * Implements .enable, .disable and .is_enabled or
- * .get_parent, .set_parent and .determine_rate depending on which clk_ops
- * is used.
- */
+ 
 struct clk_gpio {
 	struct clk_hw	hw;
 	struct gpio_desc *gpiod;
@@ -106,13 +78,7 @@ static const struct clk_ops clk_sleeping_gpio_gate_ops = {
 	.is_prepared = clk_sleeping_gpio_gate_is_prepared,
 };
 
-/**
- * DOC: basic clock multiplexer which can be controlled with a gpio output
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * rate - rate is only affected by parent switching.  No clk_set_rate support
- * parent - parent is adjustable through clk_set_parent
- */
+ 
 
 static u8 clk_gpio_mux_get_parent(struct clk_hw *hw)
 {

@@ -1,28 +1,6 @@
-/* $OpenBSD: auth2-gss.c,v 1.34 2023/03/31 04:22:27 djm Exp $ */
+ 
 
-/*
- * Copyright (c) 2001-2003 Simon Wilkinson. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -57,10 +35,7 @@ static int input_gssapi_mic(int type, u_int32_t plen, struct ssh *ssh);
 static int input_gssapi_exchange_complete(int type, u_int32_t plen, struct ssh *ssh);
 static int input_gssapi_errtok(int, u_int32_t, struct ssh *);
 
-/*
- * We only support those mechanisms that we know about (ie ones that we know
- * how to check local user kuserok and the like)
- */
+ 
 static int
 userauth_gssapi(struct ssh *ssh, const char *method)
 {
@@ -126,7 +101,7 @@ userauth_gssapi(struct ssh *ssh, const char *method)
 
 	authctxt->methoddata = (void *)ctxt;
 
-	/* Return the OID that we received */
+	 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_USERAUTH_GSSAPI_RESPONSE)) != 0 ||
 	    (r = sshpkt_put_string(ssh, doid, len)) != 0 ||
 	    (r = sshpkt_send(ssh)) != 0)
@@ -227,27 +202,23 @@ input_gssapi_errtok(int type, u_int32_t plen, struct ssh *ssh)
 	recv_tok.value = p;
 	recv_tok.length = len;
 
-	/* Push the error token into GSSAPI to see what it says */
+	 
 	maj_status = PRIVSEP(ssh_gssapi_accept_ctx(gssctxt, &recv_tok,
 	    &send_tok, NULL));
 
 	free(recv_tok.value);
 
-	/* We can't return anything to the client, even if we wanted to */
+	 
 	ssh_dispatch_set(ssh, SSH2_MSG_USERAUTH_GSSAPI_TOKEN, NULL);
 	ssh_dispatch_set(ssh, SSH2_MSG_USERAUTH_GSSAPI_ERRTOK, NULL);
 
-	/* The client will have already moved on to the next auth */
+	 
 
 	gss_release_buffer(&maj_status, &send_tok);
 	return 0;
 }
 
-/*
- * This is called when the client thinks we've completed authentication.
- * It should only be enabled in the dispatch handler by the function above,
- * which only enables it once the GSSAPI exchange is complete.
- */
+ 
 
 static int
 input_gssapi_exchange_complete(int type, u_int32_t plen, struct ssh *ssh)
@@ -259,10 +230,7 @@ input_gssapi_exchange_complete(int type, u_int32_t plen, struct ssh *ssh)
 	if (authctxt == NULL || (authctxt->methoddata == NULL && !use_privsep))
 		fatal("No authentication or GSSAPI context");
 
-	/*
-	 * We don't need to check the status, because we're only enabled in
-	 * the dispatcher once the exchange is complete
-	 */
+	 
 
 	if ((r = sshpkt_get_end(ssh)) != 0)
 		fatal_fr(r, "parse packet");
@@ -340,4 +308,4 @@ Authmethod method_gssapi = {
 	&options.gss_authentication
 };
 
-#endif /* GSSAPI */
+#endif  

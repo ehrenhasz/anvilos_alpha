@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Technologic Systems TS-5500 Single Board Computer support
- *
- * Copyright (C) 2013-2014 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- *
- * This driver registers the Technologic Systems TS-5500 Single Board Computer
- * (SBC) and its devices, and exposes information to userspace such as jumpers'
- * state or available options. For further information about sysfs entries, see
- * Documentation/ABI/testing/sysfs-platform-ts5500.
- *
- * This code may be extended to support similar x86-based platforms.
- * Actually, the TS-5500 and TS-5400 are supported.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -23,53 +10,43 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Product code register */
+ 
 #define TS5500_PRODUCT_CODE_ADDR	0x74
-#define TS5500_PRODUCT_CODE		0x60	/* TS-5500 product code */
-#define TS5400_PRODUCT_CODE		0x40	/* TS-5400 product code */
+#define TS5500_PRODUCT_CODE		0x60	 
+#define TS5400_PRODUCT_CODE		0x40	 
 
-/* SRAM/RS-485/ADC options, and RS-485 RTS/Automatic RS-485 flags register */
+ 
 #define TS5500_SRAM_RS485_ADC_ADDR	0x75
-#define TS5500_SRAM			BIT(0)	/* SRAM option */
-#define TS5500_RS485			BIT(1)	/* RS-485 option */
-#define TS5500_ADC			BIT(2)	/* A/D converter option */
-#define TS5500_RS485_RTS		BIT(6)	/* RTS for RS-485 */
-#define TS5500_RS485_AUTO		BIT(7)	/* Automatic RS-485 */
+#define TS5500_SRAM			BIT(0)	 
+#define TS5500_RS485			BIT(1)	 
+#define TS5500_ADC			BIT(2)	 
+#define TS5500_RS485_RTS		BIT(6)	 
+#define TS5500_RS485_AUTO		BIT(7)	 
 
-/* External Reset/Industrial Temperature Range options register */
+ 
 #define TS5500_ERESET_ITR_ADDR		0x76
-#define TS5500_ERESET			BIT(0)	/* External Reset option */
-#define TS5500_ITR			BIT(1)	/* Indust. Temp. Range option */
+#define TS5500_ERESET			BIT(0)	 
+#define TS5500_ITR			BIT(1)	 
 
-/* LED/Jumpers register */
+ 
 #define TS5500_LED_JP_ADDR		0x77
-#define TS5500_LED			BIT(0)	/* LED flag */
-#define TS5500_JP1			BIT(1)	/* Automatic CMOS */
-#define TS5500_JP2			BIT(2)	/* Enable Serial Console */
-#define TS5500_JP3			BIT(3)	/* Write Enable Drive A */
-#define TS5500_JP4			BIT(4)	/* Fast Console (115K baud) */
-#define TS5500_JP5			BIT(5)	/* User Jumper */
-#define TS5500_JP6			BIT(6)	/* Console on COM1 (req. JP2) */
-#define TS5500_JP7			BIT(7)	/* Undocumented (Unused) */
+#define TS5500_LED			BIT(0)	 
+#define TS5500_JP1			BIT(1)	 
+#define TS5500_JP2			BIT(2)	 
+#define TS5500_JP3			BIT(3)	 
+#define TS5500_JP4			BIT(4)	 
+#define TS5500_JP5			BIT(5)	 
+#define TS5500_JP6			BIT(6)	 
+#define TS5500_JP7			BIT(7)	 
 
-/* A/D Converter registers */
-#define TS5500_ADC_CONV_BUSY_ADDR	0x195	/* Conversion state register */
+ 
+#define TS5500_ADC_CONV_BUSY_ADDR	0x195	 
 #define TS5500_ADC_CONV_BUSY		BIT(0)
-#define TS5500_ADC_CONV_INIT_LSB_ADDR	0x196	/* Start conv. / LSB register */
-#define TS5500_ADC_CONV_MSB_ADDR	0x197	/* MSB register */
-#define TS5500_ADC_CONV_DELAY		12	/* usec */
+#define TS5500_ADC_CONV_INIT_LSB_ADDR	0x196	 
+#define TS5500_ADC_CONV_MSB_ADDR	0x197	 
+#define TS5500_ADC_CONV_DELAY		12	 
 
-/**
- * struct ts5500_sbc - TS-5500 board description
- * @name:	Board model name.
- * @id:		Board product ID.
- * @sram:	Flag for SRAM option.
- * @rs485:	Flag for RS-485 option.
- * @adc:	Flag for Analog/Digital converter option.
- * @ereset:	Flag for External Reset option.
- * @itr:	Flag for Industrial Temperature Range option.
- * @jumpers:	Bitfield for jumpers' state.
- */
+ 
 struct ts5500_sbc {
 	const char *name;
 	int	id;
@@ -81,7 +58,7 @@ struct ts5500_sbc {
 	u8	jumpers;
 };
 
-/* Board signatures in BIOS shadow RAM */
+ 
 static const struct {
 	const char * const string;
 	const ssize_t offset;
@@ -249,19 +226,15 @@ static int ts5500_adc_convert(u8 ctrl)
 {
 	u8 lsb, msb;
 
-	/* Start conversion (ensure the 3 MSB are set to 0) */
+	 
 	outb(ctrl & 0x1f, TS5500_ADC_CONV_INIT_LSB_ADDR);
 
-	/*
-	 * The platform has CPLD logic driving the A/D converter.
-	 * The conversion must complete within 11 microseconds,
-	 * otherwise we have to re-initiate a conversion.
-	 */
+	 
 	udelay(TS5500_ADC_CONV_DELAY);
 	if (inb(TS5500_ADC_CONV_BUSY_ADDR) & TS5500_ADC_CONV_BUSY)
 		return -EBUSY;
 
-	/* Read the raw data */
+	 
 	lsb = inb(TS5500_ADC_CONV_INIT_LSB_ADDR);
 	msb = inb(TS5500_ADC_CONV_MSB_ADDR);
 
@@ -286,11 +259,7 @@ static int __init ts5500_init(void)
 	struct ts5500_sbc *sbc;
 	int err;
 
-	/*
-	 * There is no DMI available or PCI bridge subvendor info,
-	 * only the BIOS provides a 16-bit identification call.
-	 * It is safer to find a signature in the BIOS shadow RAM.
-	 */
+	 
 	err = ts5500_check_signature();
 	if (err)
 		return err;

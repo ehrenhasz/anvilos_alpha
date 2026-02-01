@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DVB USB Linux driver for Anysee E30 DVB-C & DVB-T USB2.0 receiver
- *
- * Copyright (C) 2007 Antti Palosaari <crope@iki.fi>
- *
- * TODO:
- * - add smart card reader support for Conditional Access (CA)
- *
- * Card reader in Anysee is nothing more than ISO 7816 card reader.
- * There is no hardware CAM in any Anysee device sold.
- * In my understanding it should be implemented by making own module
- * for ISO 7816 card reader, like dvb_ca_en50221 is implemented. This
- * module registers serial interface that can be used to communicate
- * with any ISO 7816 smart card.
- *
- * Any help according to implement serial smart card reader support
- * is highly welcome!
- */
+
+ 
 
 #include "anysee.h"
 #include "dvb-pll.h"
@@ -46,27 +29,17 @@ static int anysee_ctrl_msg(struct dvb_usb_device *d,
 
 	dev_dbg(&d->udev->dev, "%s: >>> %*ph\n", __func__, slen, state->buf);
 
-	/* We need receive one message more after dvb_usb_generic_rw due
-	   to weird transaction flow, which is 1 x send + 2 x receive. */
+	 
 	ret = dvb_usbv2_generic_rw_locked(d, state->buf, sizeof(state->buf),
 			state->buf, sizeof(state->buf));
 	if (ret)
 		goto error_unlock;
 
-	/* TODO FIXME: dvb_usb_generic_rw() fails rarely with error code -32
-	 * (EPIPE, Broken pipe). Function supports currently msleep() as a
-	 * parameter but I would not like to use it, since according to
-	 * Documentation/timers/timers-howto.rst it should not be used such
-	 * short, under < 20ms, sleeps. Repeating failed message would be
-	 * better choice as not to add unwanted delays...
-	 * Fixing that correctly is one of those or both;
-	 * 1) use repeat if possible
-	 * 2) add suitable delay
-	 */
+	 
 
-	/* get answer, retry few times if error returned */
+	 
 	for (i = 0; i < 3; i++) {
-		/* receive 2nd answer */
+		 
 		ret = usb_bulk_msg(d->udev, usb_rcvbulkpipe(d->udev,
 				d->props->generic_bulk_ctrl_endpoint),
 				state->buf, sizeof(state->buf), &act_len, 2000);
@@ -86,13 +59,13 @@ static int anysee_ctrl_msg(struct dvb_usb_device *d,
 	}
 
 	if (ret) {
-		/* all retries failed, it is fatal */
+		 
 		dev_err(&d->udev->dev, "%s: recv bulk message failed=%d\n",
 				KBUILD_MODNAME, ret);
 		goto error_unlock;
 	}
 
-	/* read request, copy returned data to return buf */
+	 
 	if (rbuf && rlen)
 		memcpy(rbuf, state->buf, rlen);
 
@@ -117,14 +90,14 @@ static int anysee_write_reg(struct dvb_usb_device *d, u16 reg, u8 val)
 	return anysee_ctrl_msg(d, buf, sizeof(buf), NULL, 0);
 }
 
-/* write single register with mask */
+ 
 static int anysee_wr_reg_mask(struct dvb_usb_device *d, u16 reg, u8 val,
 	u8 mask)
 {
 	int ret;
 	u8 tmp;
 
-	/* no need for read if whole reg is written */
+	 
 	if (mask != 0xff) {
 		ret = anysee_read_reg(d, reg, &tmp);
 		if (ret)
@@ -138,7 +111,7 @@ static int anysee_wr_reg_mask(struct dvb_usb_device *d, u16 reg, u8 val,
 	return anysee_write_reg(d, reg, val);
 }
 
-/* read single register with mask */
+ 
 static int anysee_rd_reg_mask(struct dvb_usb_device *d, u16 reg, u8 *val,
 	u8 mask)
 {
@@ -151,7 +124,7 @@ static int anysee_rd_reg_mask(struct dvb_usb_device *d, u16 reg, u8 *val,
 
 	tmp &= mask;
 
-	/* find position of the first bit */
+	 
 	for (i = 0; i < 8; i++) {
 		if ((mask >> i) & 0x01)
 			break;
@@ -189,13 +162,13 @@ static int anysee_ir_ctrl(struct dvb_usb_device *d, u8 onoff)
 	return anysee_ctrl_msg(d, buf, sizeof(buf), NULL, 0);
 }
 
-/* I2C */
+ 
 static int anysee_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msg,
 	int num)
 {
 	struct dvb_usb_device *d = i2c_get_adapdata(adap);
 	int ret = 0, inc, i = 0;
-	u8 buf[52]; /* 4 + 48 (I2C WR USB command header + I2C WR max) */
+	u8 buf[52];  
 
 	if (mutex_lock_interruptible(&d->i2c_mutex) < 0)
 		return -EAGAIN;
@@ -270,7 +243,7 @@ static int anysee_mt352_demod_init(struct dvb_frontend *fe)
 	return 0;
 }
 
-/* Callbacks for DVB USB */
+ 
 static struct tda10023_config anysee_tda10023_config = {
 	.demod_address = (0x1a >> 1),
 	.invert = 0,
@@ -348,7 +321,7 @@ static struct stv0900_config anysee_stv0900_config = {
 	.clkmode = 3,
 	.diseqc_mode = 2,
 	.tun1_maddress = 0,
-	.tun1_adc = 1, /* 1 Vpp */
+	.tun1_adc = 1,  
 	.path1_mode = 3,
 };
 
@@ -366,125 +339,11 @@ static struct isl6423_config anysee_isl6423_config = {
 };
 
 static struct cxd2820r_config anysee_cxd2820r_config = {
-	.i2c_address = 0x6d, /* (0xda >> 1) */
+	.i2c_address = 0x6d,  
 	.ts_mode = 0x38,
 };
 
-/*
- * New USB device strings: Mfr=1, Product=2, SerialNumber=0
- * Manufacturer: AMT.CO.KR
- *
- * E30 VID=04b4 PID=861f HW=2 FW=2.1 Product=????????
- * PCB: ?
- * parts: DNOS404ZH102A(MT352, DTT7579(?))
- *
- * E30 VID=04b4 PID=861f HW=2 FW=2.1 "anysee-T(LP)"
- * PCB: PCB 507T (rev1.61)
- * parts: DNOS404ZH103A(ZL10353, DTT7579(?))
- * OEA=0a OEB=00 OEC=00 OED=ff OEE=00
- * IOA=45 IOB=ff IOC=00 IOD=ff IOE=00
- *
- * E30 Plus VID=04b4 PID=861f HW=6 FW=1.0 "anysee"
- * PCB: 507CD (rev1.1)
- * parts: DNOS404ZH103A(ZL10353, DTT7579(?)), CST56I01
- * OEA=80 OEB=00 OEC=00 OED=ff OEE=fe
- * IOA=4f IOB=ff IOC=00 IOD=06 IOE=01
- * IOD[0] ZL10353 1=enabled
- * IOA[7] TS 0=enabled
- * tuner is not behind ZL10353 I2C-gate (no care if gate disabled or not)
- *
- * E30 C Plus VID=04b4 PID=861f HW=10 FW=1.0 "anysee-DC(LP)"
- * PCB: 507DC (rev0.2)
- * parts: TDA10023, DTOS403IH102B TM, CST56I01
- * OEA=80 OEB=00 OEC=00 OED=ff OEE=fe
- * IOA=4f IOB=ff IOC=00 IOD=26 IOE=01
- * IOD[0] TDA10023 1=enabled
- *
- * E30 S2 Plus VID=04b4 PID=861f HW=11 FW=0.1 "anysee-S2(LP)"
- * PCB: 507SI (rev2.1)
- * parts: BS2N10WCC01(CX24116, CX24118), ISL6423, TDA8024
- * OEA=80 OEB=00 OEC=ff OED=ff OEE=fe
- * IOA=4d IOB=ff IOC=00 IOD=26 IOE=01
- * IOD[0] CX24116 1=enabled
- *
- * E30 C Plus VID=1c73 PID=861f HW=15 FW=1.2 "anysee-FA(LP)"
- * PCB: 507FA (rev0.4)
- * parts: TDA10023, DTOS403IH102B TM, TDA8024
- * OEA=80 OEB=00 OEC=ff OED=ff OEE=ff
- * IOA=4d IOB=ff IOC=00 IOD=00 IOE=c0
- * IOD[5] TDA10023 1=enabled
- * IOE[0] tuner 1=enabled
- *
- * E30 Combo Plus VID=1c73 PID=861f HW=15 FW=1.2 "anysee-FA(LP)"
- * PCB: 507FA (rev1.1)
- * parts: ZL10353, TDA10023, DTOS403IH102B TM, TDA8024
- * OEA=80 OEB=00 OEC=ff OED=ff OEE=ff
- * IOA=4d IOB=ff IOC=00 IOD=00 IOE=c0
- * DVB-C:
- * IOD[5] TDA10023 1=enabled
- * IOE[0] tuner 1=enabled
- * DVB-T:
- * IOD[0] ZL10353 1=enabled
- * IOE[0] tuner 0=enabled
- * tuner is behind ZL10353 I2C-gate
- * tuner is behind TDA10023 I2C-gate
- *
- * E7 TC VID=1c73 PID=861f HW=18 FW=0.7 AMTCI=0.5 "anysee-E7TC(LP)"
- * PCB: 508TC (rev0.6)
- * parts: ZL10353, TDA10023, DNOD44CDH086A(TDA18212)
- * OEA=80 OEB=00 OEC=03 OED=f7 OEE=ff
- * IOA=4d IOB=00 IOC=cc IOD=48 IOE=e4
- * IOA[7] TS 1=enabled
- * IOE[4] TDA18212 1=enabled
- * DVB-C:
- * IOD[6] ZL10353 0=disabled
- * IOD[5] TDA10023 1=enabled
- * IOE[0] IF 1=enabled
- * DVB-T:
- * IOD[5] TDA10023 0=disabled
- * IOD[6] ZL10353 1=enabled
- * IOE[0] IF 0=enabled
- *
- * E7 S2 VID=1c73 PID=861f HW=19 FW=0.4 AMTCI=0.5 "anysee-E7S2(LP)"
- * PCB: 508S2 (rev0.7)
- * parts: DNBU10512IST(STV0903, STV6110), ISL6423
- * OEA=80 OEB=00 OEC=03 OED=f7 OEE=ff
- * IOA=4d IOB=00 IOC=c4 IOD=08 IOE=e4
- * IOA[7] TS 1=enabled
- * IOE[5] STV0903 1=enabled
- *
- * E7 T2C VID=1c73 PID=861f HW=20 FW=0.1 AMTCI=0.5 "anysee-E7T2C(LP)"
- * PCB: 508T2C (rev0.3)
- * parts: DNOQ44QCH106A(CXD2820R, TDA18212), TDA8024
- * OEA=80 OEB=00 OEC=03 OED=f7 OEE=ff
- * IOA=4d IOB=00 IOC=cc IOD=48 IOE=e4
- * IOA[7] TS 1=enabled
- * IOE[5] CXD2820R 1=enabled
- *
- * E7 PTC VID=1c73 PID=861f HW=21 FW=0.1 AMTCI=?? "anysee-E7PTC(LP)"
- * PCB: 508PTC (rev0.5)
- * parts: ZL10353, TDA10023, DNOD44CDH086A(TDA18212)
- * OEA=80 OEB=00 OEC=03 OED=f7 OEE=ff
- * IOA=4d IOB=00 IOC=cc IOD=48 IOE=e4
- * IOA[7] TS 1=enabled
- * IOE[4] TDA18212 1=enabled
- * DVB-C:
- * IOD[6] ZL10353 0=disabled
- * IOD[5] TDA10023 1=enabled
- * IOE[0] IF 1=enabled
- * DVB-T:
- * IOD[5] TDA10023 0=disabled
- * IOD[6] ZL10353 1=enabled
- * IOE[0] IF 0=enabled
- *
- * E7 PS2 VID=1c73 PID=861f HW=22 FW=0.1 AMTCI=?? "anysee-E7PS2(LP)"
- * PCB: 508PS2 (rev0.4)
- * parts: DNBU10512IST(STV0903, STV6110), ISL6423
- * OEA=80 OEB=00 OEC=03 OED=f7 OEE=ff
- * IOA=4d IOB=00 IOC=c4 IOD=08 IOE=e4
- * IOA[7] TS 1=enabled
- * IOE[5] STV0903 1=enabled
- */
+ 
 
 static int anysee_read_config(struct dvb_usb_device *d)
 {
@@ -492,10 +351,7 @@ static int anysee_read_config(struct dvb_usb_device *d)
 	int ret;
 	u8 hw_info[3];
 
-	/*
-	 * Check which hardware we have.
-	 * We must do this call two times to get reliable values (hw/fw bug).
-	 */
+	 
 	ret = anysee_get_hw_info(d, hw_info);
 	if (ret)
 		goto error;
@@ -504,9 +360,7 @@ static int anysee_read_config(struct dvb_usb_device *d)
 	if (ret)
 		goto error;
 
-	/*
-	 * Meaning of these info bytes are guessed.
-	 */
+	 
 	dev_info(&d->udev->dev, "%s: firmware version %d.%d hardware id %d\n",
 			KBUILD_MODNAME, hw_info[1], hw_info[2], hw_info[0]);
 
@@ -515,10 +369,10 @@ error:
 	return ret;
 }
 
-/* external I2C gate used for DNOD44CDH086A(TDA18212) tuner module */
+ 
 static int anysee_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 {
-	/* enable / disable tuner access on IOE[4] */
+	 
 	return anysee_wr_reg_mask(fe_to_d(fe), REG_IOE, (enable << 4), 0x10);
 }
 
@@ -529,80 +383,80 @@ static int anysee_frontend_ctrl(struct dvb_frontend *fe, int onoff)
 	int ret;
 	dev_dbg(&d->udev->dev, "%s: fe=%d onoff=%d\n", __func__, fe->id, onoff);
 
-	/* no frontend sleep control */
+	 
 	if (onoff == 0)
 		return 0;
 
 	switch (state->hw) {
-	case ANYSEE_HW_507FA: /* 15 */
-		/* E30 Combo Plus */
-		/* E30 C Plus */
+	case ANYSEE_HW_507FA:  
+		 
+		 
 
 		if (fe->id == 0)  {
-			/* disable DVB-T demod on IOD[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 0), 0x01);
 			if (ret)
 				goto error;
 
-			/* enable DVB-C demod on IOD[5] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 5), 0x20);
 			if (ret)
 				goto error;
 
-			/* enable DVB-C tuner on IOE[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOE, (1 << 0), 0x01);
 			if (ret)
 				goto error;
 		} else {
-			/* disable DVB-C demod on IOD[5] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 5), 0x20);
 			if (ret)
 				goto error;
 
-			/* enable DVB-T demod on IOD[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 0), 0x01);
 			if (ret)
 				goto error;
 
-			/* enable DVB-T tuner on IOE[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOE, (0 << 0), 0x01);
 			if (ret)
 				goto error;
 		}
 
 		break;
-	case ANYSEE_HW_508TC: /* 18 */
-	case ANYSEE_HW_508PTC: /* 21 */
-		/* E7 TC */
-		/* E7 PTC */
+	case ANYSEE_HW_508TC:  
+	case ANYSEE_HW_508PTC:  
+		 
+		 
 
 		if (fe->id == 0)  {
-			/* disable DVB-T demod on IOD[6] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 6), 0x40);
 			if (ret)
 				goto error;
 
-			/* enable DVB-C demod on IOD[5] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 5), 0x20);
 			if (ret)
 				goto error;
 
-			/* enable IF route on IOE[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOE, (1 << 0), 0x01);
 			if (ret)
 				goto error;
 		} else {
-			/* disable DVB-C demod on IOD[5] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 5), 0x20);
 			if (ret)
 				goto error;
 
-			/* enable DVB-T demod on IOD[6] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 6), 0x40);
 			if (ret)
 				goto error;
 
-			/* enable IF route on IOE[0] */
+			 
 			ret = anysee_wr_reg_mask(d, REG_IOE, (0 << 0), 0x01);
 			if (ret)
 				goto error;
@@ -631,7 +485,7 @@ static int anysee_add_i2c_dev(struct dvb_usb_device *d, const char *type,
 
 	strscpy(board_info.type, type, I2C_NAME_SIZE);
 
-	/* find first free client */
+	 
 	for (num = 0; num < ANYSEE_I2C_CLIENT_MAX; num++) {
 		if (state->i2c_client[num] == NULL)
 			break;
@@ -648,14 +502,14 @@ static int anysee_add_i2c_dev(struct dvb_usb_device *d, const char *type,
 
 	request_module("%s", board_info.type);
 
-	/* register I2C device */
+	 
 	client = i2c_new_client_device(adapter, &board_info);
 	if (!i2c_client_has_driver(client)) {
 		ret = -ENODEV;
 		goto err;
 	}
 
-	/* increase I2C driver usage count */
+	 
 	if (!try_module_get(client->dev.driver->owner)) {
 		i2c_unregister_device(client);
 		ret = -ENODEV;
@@ -675,7 +529,7 @@ static void anysee_del_i2c_dev(struct dvb_usb_device *d)
 	struct anysee_state *state = d_to_priv(d);
 	struct i2c_client *client;
 
-	/* find last used client */
+	 
 	num = ANYSEE_I2C_CLIENT_MAX;
 	while (num--) {
 		if (state->i2c_client[num] != NULL)
@@ -692,10 +546,10 @@ static void anysee_del_i2c_dev(struct dvb_usb_device *d)
 
 	client = state->i2c_client[num];
 
-	/* decrease I2C driver usage count */
+	 
 	module_put(client->dev.driver->owner);
 
-	/* unregister I2C device */
+	 
 	i2c_unregister_device(client);
 
 	state->i2c_client[num] = NULL;
@@ -724,74 +578,74 @@ static int anysee_frontend_attach(struct dvb_usb_adapter *adap)
 	};
 
 	switch (state->hw) {
-	case ANYSEE_HW_507T: /* 2 */
-		/* E30 */
+	case ANYSEE_HW_507T:  
+		 
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(mt352_attach, &anysee_mt352_config,
 				&d->i2c_adap);
 		if (adap->fe[0])
 			break;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(zl10353_attach, &anysee_zl10353_config,
 				&d->i2c_adap);
 
 		break;
-	case ANYSEE_HW_507CD: /* 6 */
-		/* E30 Plus */
+	case ANYSEE_HW_507CD:  
+		 
 
-		/* enable DVB-T demod on IOD[0] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 0), 0x01);
 		if (ret)
 			goto error;
 
-		/* enable transport stream on IOA[7] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOA, (0 << 7), 0x80);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(zl10353_attach, &anysee_zl10353_config,
 				&d->i2c_adap);
 
 		break;
-	case ANYSEE_HW_507DC: /* 10 */
-		/* E30 C Plus */
+	case ANYSEE_HW_507DC:  
+		 
 
-		/* enable DVB-C demod on IOD[0] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 0), 0x01);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(tda10023_attach,
 				&anysee_tda10023_config, &d->i2c_adap, 0x48);
 
 		break;
-	case ANYSEE_HW_507SI: /* 11 */
-		/* E30 S2 Plus */
+	case ANYSEE_HW_507SI:  
+		 
 
-		/* enable DVB-S/S2 demod on IOD[0] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 0), 0x01);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(cx24116_attach, &anysee_cx24116_config,
 				&d->i2c_adap);
 
 		break;
-	case ANYSEE_HW_507FA: /* 15 */
-		/* E30 Combo Plus */
-		/* E30 C Plus */
+	case ANYSEE_HW_507FA:  
+		 
+		 
 
-		/* enable tuner on IOE[4] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOE, (1 << 4), 0x10);
 		if (ret)
 			goto error;
 
-		/* probe TDA18212 */
+		 
 		tmp = 0;
 		ret = i2c_transfer(&d->i2c_adap, msg, 2);
 		if (ret == 2 && tmp == 0xc7) {
@@ -802,148 +656,148 @@ static int anysee_frontend_attach(struct dvb_usb_adapter *adap)
 		else
 			tmp = 0;
 
-		/* disable tuner on IOE[4] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOE, (0 << 4), 0x10);
 		if (ret)
 			goto error;
 
-		/* disable DVB-T demod on IOD[0] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 0), 0x01);
 		if (ret)
 			goto error;
 
-		/* enable DVB-C demod on IOD[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		if (tmp == 0xc7) {
-			/* TDA18212 config */
+			 
 			adap->fe[0] = dvb_attach(tda10023_attach,
 					&anysee_tda10023_tda18212_config,
 					&d->i2c_adap, 0x48);
 
-			/* I2C gate for DNOD44CDH086A(TDA18212) tuner module */
+			 
 			if (adap->fe[0])
 				adap->fe[0]->ops.i2c_gate_ctrl =
 						anysee_i2c_gate_ctrl;
 		} else {
-			/* PLL config */
+			 
 			adap->fe[0] = dvb_attach(tda10023_attach,
 					&anysee_tda10023_config,
 					&d->i2c_adap, 0x48);
 		}
 
-		/* break out if first frontend attaching fails */
+		 
 		if (!adap->fe[0])
 			break;
 
-		/* disable DVB-C demod on IOD[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* enable DVB-T demod on IOD[0] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 0), 0x01);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		if (tmp == 0xc7) {
-			/* TDA18212 config */
+			 
 			adap->fe[1] = dvb_attach(zl10353_attach,
 					&anysee_zl10353_tda18212_config2,
 					&d->i2c_adap);
 
-			/* I2C gate for DNOD44CDH086A(TDA18212) tuner module */
+			 
 			if (adap->fe[1])
 				adap->fe[1]->ops.i2c_gate_ctrl =
 						anysee_i2c_gate_ctrl;
 		} else {
-			/* PLL config */
+			 
 			adap->fe[1] = dvb_attach(zl10353_attach,
 					&anysee_zl10353_config,
 					&d->i2c_adap);
 		}
 
 		break;
-	case ANYSEE_HW_508TC: /* 18 */
-	case ANYSEE_HW_508PTC: /* 21 */
-		/* E7 TC */
-		/* E7 PTC */
+	case ANYSEE_HW_508TC:  
+	case ANYSEE_HW_508PTC:  
+		 
+		 
 
-		/* disable DVB-T demod on IOD[6] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 6), 0x40);
 		if (ret)
 			goto error;
 
-		/* enable DVB-C demod on IOD[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(tda10023_attach,
 				&anysee_tda10023_tda18212_config,
 				&d->i2c_adap, 0x48);
 
-		/* I2C gate for DNOD44CDH086A(TDA18212) tuner module */
+		 
 		if (adap->fe[0])
 			adap->fe[0]->ops.i2c_gate_ctrl = anysee_i2c_gate_ctrl;
 
-		/* break out if first frontend attaching fails */
+		 
 		if (!adap->fe[0])
 			break;
 
-		/* disable DVB-C demod on IOD[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (0 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* enable DVB-T demod on IOD[6] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOD, (1 << 6), 0x40);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[1] = dvb_attach(zl10353_attach,
 				&anysee_zl10353_tda18212_config,
 				&d->i2c_adap);
 
-		/* I2C gate for DNOD44CDH086A(TDA18212) tuner module */
+		 
 		if (adap->fe[1])
 			adap->fe[1]->ops.i2c_gate_ctrl = anysee_i2c_gate_ctrl;
 
 		state->has_ci = true;
 
 		break;
-	case ANYSEE_HW_508S2: /* 19 */
-	case ANYSEE_HW_508PS2: /* 22 */
-		/* E7 S2 */
-		/* E7 PS2 */
+	case ANYSEE_HW_508S2:  
+	case ANYSEE_HW_508PS2:  
+		 
+		 
 
-		/* enable DVB-S/S2 demod on IOE[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOE, (1 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(stv0900_attach,
 				&anysee_stv0900_config, &d->i2c_adap, 0);
 
 		state->has_ci = true;
 
 		break;
-	case ANYSEE_HW_508T2C: /* 20 */
-		/* E7 T2C */
+	case ANYSEE_HW_508T2C:  
+		 
 
-		/* enable DVB-T/T2/C demod on IOE[5] */
+		 
 		ret = anysee_wr_reg_mask(d, REG_IOE, (1 << 5), 0x20);
 		if (ret)
 			goto error;
 
-		/* attach demod */
+		 
 		adap->fe[0] = dvb_attach(cxd2820r_attach,
 				&anysee_cxd2820r_config, &d->i2c_adap, NULL);
 
@@ -953,7 +807,7 @@ static int anysee_frontend_attach(struct dvb_usb_adapter *adap)
 	}
 
 	if (!adap->fe[0]) {
-		/* we have no frontend :-( */
+		 
 		ret = -ENODEV;
 		dev_err(&d->udev->dev,
 				"%s: Unsupported Anysee version. Please report to <linux-media@vger.kernel.org>.\n",
@@ -972,46 +826,45 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 	dev_dbg(&d->udev->dev, "%s:\n", __func__);
 
 	switch (state->hw) {
-	case ANYSEE_HW_507T: /* 2 */
-		/* E30 */
+	case ANYSEE_HW_507T:  
+		 
 
-		/* attach tuner */
+		 
 		fe = dvb_attach(dvb_pll_attach, adap->fe[0], (0xc2 >> 1), NULL,
 				DVB_PLL_THOMSON_DTT7579);
 
 		break;
-	case ANYSEE_HW_507CD: /* 6 */
-		/* E30 Plus */
+	case ANYSEE_HW_507CD:  
+		 
 
-		/* attach tuner */
+		 
 		fe = dvb_attach(dvb_pll_attach, adap->fe[0], (0xc2 >> 1),
 				&d->i2c_adap, DVB_PLL_THOMSON_DTT7579);
 
 		break;
-	case ANYSEE_HW_507DC: /* 10 */
-		/* E30 C Plus */
+	case ANYSEE_HW_507DC:  
+		 
 
-		/* attach tuner */
+		 
 		fe = dvb_attach(dvb_pll_attach, adap->fe[0], (0xc0 >> 1),
 				&d->i2c_adap, DVB_PLL_SAMSUNG_DTOS403IH102A);
 
 		break;
-	case ANYSEE_HW_507SI: /* 11 */
-		/* E30 S2 Plus */
+	case ANYSEE_HW_507SI:  
+		 
 
-		/* attach LNB controller */
+		 
 		fe = dvb_attach(isl6423_attach, adap->fe[0], &d->i2c_adap,
 				&anysee_isl6423_config);
 
 		break;
-	case ANYSEE_HW_507FA: /* 15 */
-		/* E30 Combo Plus */
-		/* E30 C Plus */
+	case ANYSEE_HW_507FA:  
+		 
+		 
 
-		/* Try first attach TDA18212 silicon tuner on IOE[4], if that
-		 * fails attach old simple PLL. */
+		 
 
-		/* attach tuner */
+		 
 		if (state->has_tda18212) {
 			struct tda18212_config tda18212_config =
 					anysee_tda18212_config;
@@ -1022,7 +875,7 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 			if (ret)
 				goto err;
 
-			/* copy tuner ops for 2nd FE as tuner is shared */
+			 
 			if (adap->fe[1]) {
 				adap->fe[1]->tuner_priv =
 						adap->fe[0]->tuner_priv;
@@ -1033,13 +886,13 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 
 			return 0;
 		} else {
-			/* attach tuner */
+			 
 			fe = dvb_attach(dvb_pll_attach, adap->fe[0],
 					(0xc0 >> 1), &d->i2c_adap,
 					DVB_PLL_SAMSUNG_DTOS403IH102A);
 
 			if (fe && adap->fe[1]) {
-				/* attach tuner for 2nd FE */
+				 
 				fe = dvb_attach(dvb_pll_attach, adap->fe[1],
 						(0xc0 >> 1), &d->i2c_adap,
 						DVB_PLL_SAMSUNG_DTOS403IH102A);
@@ -1047,11 +900,11 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 		}
 
 		break;
-	case ANYSEE_HW_508TC: /* 18 */
-	case ANYSEE_HW_508PTC: /* 21 */
+	case ANYSEE_HW_508TC:  
+	case ANYSEE_HW_508PTC:  
 	{
-		/* E7 TC */
-		/* E7 PTC */
+		 
+		 
 		struct tda18212_config tda18212_config = anysee_tda18212_config;
 
 		tda18212_config.fe = adap->fe[0];
@@ -1059,7 +912,7 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 		if (ret)
 			goto err;
 
-		/* copy tuner ops for 2nd FE as tuner is shared */
+		 
 		if (adap->fe[1]) {
 			adap->fe[1]->tuner_priv = adap->fe[0]->tuner_priv;
 			memcpy(&adap->fe[1]->ops.tuner_ops,
@@ -1069,26 +922,26 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 
 		return 0;
 	}
-	case ANYSEE_HW_508S2: /* 19 */
-	case ANYSEE_HW_508PS2: /* 22 */
-		/* E7 S2 */
-		/* E7 PS2 */
+	case ANYSEE_HW_508S2:  
+	case ANYSEE_HW_508PS2:  
+		 
+		 
 
-		/* attach tuner */
+		 
 		fe = dvb_attach(stv6110_attach, adap->fe[0],
 				&anysee_stv6110_config, &d->i2c_adap);
 
 		if (fe) {
-			/* attach LNB controller */
+			 
 			fe = dvb_attach(isl6423_attach, adap->fe[0],
 					&d->i2c_adap, &anysee_isl6423_config);
 		}
 
 		break;
 
-	case ANYSEE_HW_508T2C: /* 20 */
+	case ANYSEE_HW_508T2C:  
 	{
-		/* E7 T2C */
+		 
 		struct tda18212_config tda18212_config =
 				anysee_tda18212_config2;
 
@@ -1118,13 +971,7 @@ static int anysee_rc_query(struct dvb_usb_device *d)
 	u8 ircode[2];
 	int ret;
 
-	/* Remote controller is basic NEC using address byte 0x08.
-	   Anysee device RC query returns only two bytes, status and code,
-	   address byte is dropped. Also it does not return any value for
-	   NEC RCs having address byte other than 0x08. Due to that, we
-	   cannot use that device as standard NEC receiver.
-	   It could be possible make hack which reads whole code directly
-	   from device memory... */
+	 
 
 	ret = anysee_ctrl_msg(d, buf, sizeof(buf), ircode, sizeof(ircode));
 	if (ret)
@@ -1144,7 +991,7 @@ static int anysee_get_rc_config(struct dvb_usb_device *d, struct dvb_usb_rc *rc)
 {
 	rc->allowed_protos = RC_PROTO_BIT_NEC;
 	rc->query          = anysee_rc_query;
-	rc->interval       = 250;  /* windows driver uses 500ms */
+	rc->interval       = 250;   
 
 	return 0;
 }
@@ -1308,7 +1155,7 @@ static void anysee_ci_release(struct dvb_usb_device *d)
 {
 	struct anysee_state *state = d_to_priv(d);
 
-	/* detach CI */
+	 
 	if (state->ci_attached)
 		dvb_ca_en50221_release(&state->ci);
 
@@ -1320,25 +1167,22 @@ static int anysee_init(struct dvb_usb_device *d)
 	struct anysee_state *state = d_to_priv(d);
 	int ret;
 
-	/* There is one interface with two alternate settings.
-	   Alternate setting 0 is for bulk transfer.
-	   Alternate setting 1 is for isochronous transfer.
-	   We use bulk transfer (alternate setting 0). */
+	 
 	ret = usb_set_interface(d->udev, 0, 0);
 	if (ret)
 		return ret;
 
-	/* LED light */
+	 
 	ret = anysee_led_ctrl(d, 0x01, 0x03);
 	if (ret)
 		return ret;
 
-	/* enable IR */
+	 
 	ret = anysee_ir_ctrl(d, 1);
 	if (ret)
 		return ret;
 
-	/* attach CI */
+	 
 	if (state->has_ci) {
 		ret = anysee_ci_init(d);
 		if (ret)
@@ -1358,7 +1202,7 @@ static void anysee_exit(struct dvb_usb_device *d)
 	return anysee_ci_release(d);
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties anysee_props = {
 	.driver_name = KBUILD_MODNAME,
 	.owner = THIS_MODULE,

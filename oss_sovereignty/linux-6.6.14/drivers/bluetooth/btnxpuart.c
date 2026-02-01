@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  NXP Bluetooth driver
- *  Copyright 2023 NXP
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -30,7 +27,7 @@
 #define BTNXPUART_SERDEV_OPEN		4
 #define BTNXPUART_IR_IN_PROGRESS	5
 
-/* NXP HW err codes */
+ 
 #define BTNXPUART_IR_HW_ERR		0xb0
 
 #define FIRMWARE_W8987		"nxp/uartuart8987_bt.bin"
@@ -62,48 +59,48 @@
 
 #define MAX_FW_FILE_NAME_LEN    50
 
-/* Default ps timeout period in milliseconds */
+ 
 #define PS_DEFAULT_TIMEOUT_PERIOD_MS     2000
 
-/* wakeup methods */
+ 
 #define WAKEUP_METHOD_DTR       0
 #define WAKEUP_METHOD_BREAK     1
 #define WAKEUP_METHOD_EXT_BREAK 2
 #define WAKEUP_METHOD_RTS       3
 #define WAKEUP_METHOD_INVALID   0xff
 
-/* power save mode status */
+ 
 #define PS_MODE_DISABLE         0
 #define PS_MODE_ENABLE          1
 
-/* Power Save Commands to ps_work_func  */
+ 
 #define PS_CMD_EXIT_PS          1
 #define PS_CMD_ENTER_PS         2
 
-/* power save state */
+ 
 #define PS_STATE_AWAKE          0
 #define PS_STATE_SLEEP          1
 
-/* Bluetooth vendor command : Sleep mode */
+ 
 #define HCI_NXP_AUTO_SLEEP_MODE	0xfc23
-/* Bluetooth vendor command : Wakeup method */
+ 
 #define HCI_NXP_WAKEUP_METHOD	0xfc53
-/* Bluetooth vendor command : Set operational baudrate */
+ 
 #define HCI_NXP_SET_OPER_SPEED	0xfc09
-/* Bluetooth vendor command: Independent Reset */
+ 
 #define HCI_NXP_IND_RESET	0xfcfc
 
-/* Bluetooth Power State : Vendor cmd params */
+ 
 #define BT_PS_ENABLE			0x02
 #define BT_PS_DISABLE			0x03
 
-/* Bluetooth Host Wakeup Methods */
+ 
 #define BT_HOST_WAKEUP_METHOD_NONE      0x00
 #define BT_HOST_WAKEUP_METHOD_DTR       0x01
 #define BT_HOST_WAKEUP_METHOD_BREAK     0x02
 #define BT_HOST_WAKEUP_METHOD_GPIO      0x03
 
-/* Bluetooth Chip Wakeup Methods */
+ 
 #define BT_CTRL_WAKEUP_METHOD_DSR       0x00
 #define BT_CTRL_WAKEUP_METHOD_BREAK     0x01
 #define BT_CTRL_WAKEUP_METHOD_GPIO      0x02
@@ -111,9 +108,9 @@
 #define BT_CTRL_WAKEUP_METHOD_RTS       0x05
 
 struct ps_data {
-	u8    target_ps_mode;	/* ps mode to be set */
-	u8    cur_psmode;	/* current ps_mode */
-	u8    ps_state;		/* controller's power save state */
+	u8    target_ps_mode;	 
+	u8    cur_psmode;	 
+	u8    ps_state;		 
 	u8    ps_cmd;
 	u8    h2c_wakeupmode;
 	u8    cur_h2c_wakeupmode;
@@ -239,7 +236,7 @@ struct v3_start_ind {
 	u8 crc;
 } __packed;
 
-/* UART register addresses of BT chip */
+ 
 #define CLKDIVADDR	0x7f00008f
 #define UARTDIVADDR	0x7f000090
 #define UARTMCRADDR	0x7f000091
@@ -278,7 +275,7 @@ struct nxp_bootloader_cmd {
 
 static u8 crc8_table[CRC8_TABLE_SIZE];
 
-/* Default configurations */
+ 
 #define DEFAULT_H2C_WAKEUP_MODE	WAKEUP_METHOD_BREAK
 #define DEFAULT_PS_MODE		PS_MODE_DISABLE
 #define FW_INIT_BAUDRATE	HCI_NXP_PRI_BAUDRATE
@@ -291,9 +288,7 @@ static struct sk_buff *nxp_drv_send_cmd(struct hci_dev *hdev, u16 opcode,
 	struct ps_data *psdata = &nxpdev->psdata;
 	struct sk_buff *skb;
 
-	/* set flag to prevent nxp_enqueue from parsing values from this command and
-	 * calling hci_cmd_sync_queue() again.
-	 */
+	 
 	psdata->driver_sent_cmd = true;
 	skb = __hci_cmd_sync(hdev, opcode, plen, param, HCI_CMD_TIMEOUT);
 	psdata->driver_sent_cmd = false;
@@ -307,7 +302,7 @@ static void btnxpuart_tx_wakeup(struct btnxpuart_dev *nxpdev)
 		set_bit(BTNXPUART_TX_STATE_ACTIVE, &nxpdev->tx_state);
 }
 
-/* NXP Power Save Feature */
+ 
 static void ps_start_timer(struct btnxpuart_dev *nxpdev)
 {
 	struct ps_data *psdata = &nxpdev->psdata;
@@ -524,7 +519,7 @@ static void ps_init(struct hci_dev *hdev)
 		hci_cmd_sync_queue(hdev, send_ps_cmd, NULL, NULL);
 }
 
-/* NXP Firmware Download Feature */
+ 
 static int nxp_download_firmware(struct hci_dev *hdev)
 {
 	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
@@ -543,7 +538,7 @@ static int nxp_download_firmware(struct hci_dev *hdev)
 	serdev_device_set_flow_control(nxpdev->serdev, false);
 	nxpdev->current_baudrate = HCI_NXP_PRI_BAUDRATE;
 
-	/* Wait till FW is downloaded */
+	 
 	err = wait_event_interruptible_timeout(nxpdev->fw_dnld_done_wait_q,
 					       !test_bit(BTNXPUART_FW_DOWNLOADING,
 							 &nxpdev->tx_state),
@@ -557,7 +552,7 @@ static int nxp_download_firmware(struct hci_dev *hdev)
 	release_firmware(nxpdev->fw);
 	memset(nxpdev->fw_name, 0, sizeof(nxpdev->fw_name));
 
-	/* Allow the downloaded FW to initialize */
+	 
 	msleep(1200);
 
 	return 0;
@@ -593,7 +588,7 @@ static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
 		nxp_cmd5.header = __cpu_to_le32(5);
 		nxp_cmd5.arg = 0;
 		nxp_cmd5.payload_len = __cpu_to_le32(sizeof(uart_config));
-		/* FW expects swapped CRC bytes */
+		 
 		nxp_cmd5.crc = __cpu_to_be32(crc32_be(0UL, (char *)&nxp_cmd5,
 						      sizeof(nxp_cmd5) - 4));
 
@@ -612,7 +607,7 @@ static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
 		uart_config.icr.value = __cpu_to_le32(ICR);
 		uart_config.fcr.address = __cpu_to_le32(uartfcraddr);
 		uart_config.fcr.value = __cpu_to_le32(FCR);
-		/* FW expects swapped CRC bytes */
+		 
 		uart_config.crc = __cpu_to_be32(crc32_be(0UL, (char *)&uart_config,
 							 sizeof(uart_config) - 4));
 
@@ -635,7 +630,7 @@ static bool nxp_fw_change_timeout(struct hci_dev *hdev, u16 req_len)
 	nxp_cmd7.header = __cpu_to_le32(7);
 	nxp_cmd7.arg = __cpu_to_le32(0x70);
 	nxp_cmd7.payload_len = 0;
-	/* FW expects swapped CRC bytes */
+	 
 	nxp_cmd7.crc = __cpu_to_be32(crc32_be(0UL, (char *)&nxp_cmd7,
 					      sizeof(nxp_cmd7) - 4));
 	serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd7, sizeof(nxp_cmd7));
@@ -687,7 +682,7 @@ static int nxp_request_firmware(struct hci_dev *hdev, const char *fw_name)
 	return err;
 }
 
-/* for legacy chipsets with V1 bootloader */
+ 
 static int nxp_recv_chip_ver_v1(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
@@ -780,24 +775,13 @@ static int nxp_recv_fw_req_v1(struct hci_dev *hdev, struct sk_buff *skb)
 		goto free_skb;
 	}
 	if (len & 0x01) {
-		/* The CRC did not match at the other end.
-		 * Simply send the same bytes again.
-		 */
+		 
 		len = nxpdev->fw_v1_sent_bytes;
 		bt_dev_dbg(hdev, "CRC error. Resend %d bytes of FW.", len);
 	} else {
 		nxpdev->fw_dnld_v1_offset += nxpdev->fw_v1_sent_bytes;
 
-		/* The FW bin file is made up of many blocks of
-		 * 16 byte header and payload data chunks. If the
-		 * FW has requested a header, read the payload length
-		 * info from the header, before sending the header.
-		 * In the next iteration, the FW should request the
-		 * payload data chunk, which should be equal to the
-		 * payload length read from header. If there is a
-		 * mismatch, clearly the driver and FW are out of sync,
-		 * and we need to re-send the previous header again.
-		 */
+		 
 		if (len == nxpdev->fw_v1_expected_len) {
 			if (len == HDR_LEN)
 				nxpdev->fw_v1_expected_len = nxp_get_data_len(nxpdev->fw->data +
@@ -805,7 +789,7 @@ static int nxp_recv_fw_req_v1(struct hci_dev *hdev, struct sk_buff *skb)
 			else
 				nxpdev->fw_v1_expected_len = HDR_LEN;
 		} else if (len == HDR_LEN) {
-			/* FW download out of sync. Send previous chunk again */
+			 
 			nxpdev->fw_dnld_v1_offset -= nxpdev->fw_v1_sent_bytes;
 			nxpdev->fw_v1_expected_len = HDR_LEN;
 		}
@@ -930,9 +914,7 @@ static int nxp_recv_fw_req_v3(struct hci_dev *hdev, struct sk_buff *skb)
 
 	offset = __le32_to_cpu(req->offset);
 	if (offset < nxpdev->fw_v3_offset_correction) {
-		/* This scenario should ideally never occur. But if it ever does,
-		 * FW is out of sync and needs a power cycle.
-		 */
+		 
 		bt_dev_err(hdev, "Something went wrong during FW download");
 		bt_dev_err(hdev, "Please power cycle and try again");
 		goto free_skb;
@@ -1005,11 +987,11 @@ static int nxp_set_ind_reset(struct hci_dev *hdev, void *data)
 	hci_skb_pkt_type(skb) = HCI_EVENT_PKT;
 	skb_put_data(skb, ir_hw_err, 3);
 
-	/* Inject Hardware Error to upper stack */
+	 
 	return hci_recv_frame(hdev, skb);
 }
 
-/* NXP protocol */
+ 
 static int nxp_setup(struct hci_dev *hdev)
 {
 	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
@@ -1082,7 +1064,7 @@ static int btnxpuart_queue_skb(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 	skb_queue_tail(&nxpdev->txq, skb);
 	btnxpuart_tx_wakeup(nxpdev);
@@ -1098,12 +1080,7 @@ static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb)
 	struct wakeup_cmd_payload wakeup_parm;
 	__le32 baudrate_parm;
 
-	/* if vendor commands are received from user space (e.g. hcitool), update
-	 * driver flags accordingly and ask driver to re-send the command to FW.
-	 * In case the payload for any command does not match expected payload
-	 * length, let the firmware and user space program handle it, or throw
-	 * an error.
-	 */
+	 
 	if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT && !psdata->driver_sent_cmd) {
 		hdr = (struct hci_command_hdr *)skb->data;
 		if (hdr->plen != (skb->len - HCI_COMMAND_HDR_SIZE))
@@ -1176,7 +1153,7 @@ static struct sk_buff *nxp_dequeue(void *data)
 	return skb_dequeue(&nxpdev->txq);
 }
 
-/* btnxpuart based on serdev */
+ 
 static void btnxpuart_tx_work(struct work_struct *work)
 {
 	struct btnxpuart_dev *nxpdev = container_of(work, struct btnxpuart_dev,
@@ -1242,7 +1219,7 @@ static int btnxpuart_flush(struct hci_dev *hdev)
 {
 	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
 
-	/* Flush any pending characters */
+	 
 	serdev_device_write_flush(nxpdev->serdev);
 	skb_queue_purge(&nxpdev->txq);
 
@@ -1275,7 +1252,7 @@ static int btnxpuart_receive_buf(struct serdev_device *serdev, const u8 *data,
 				     nxp_recv_pkts, ARRAY_SIZE(nxp_recv_pkts));
 	if (IS_ERR(nxpdev->rx_skb)) {
 		int err = PTR_ERR(nxpdev->rx_skb);
-		/* Safe to ignore out-of-sync bootloader signatures */
+		 
 		if (!is_fw_downloading(nxpdev))
 			bt_dev_err(nxpdev->hdev, "Frame reassembly failed (%d)", err);
 		nxpdev->rx_skb = NULL;
@@ -1327,7 +1304,7 @@ static int nxp_serdev_probe(struct serdev_device *serdev)
 
 	crc8_populate_msb(crc8_table, POLYNOMIAL8);
 
-	/* Initialize and register HCI device */
+	 
 	hdev = hci_alloc_dev();
 	if (!hdev) {
 		dev_err(&serdev->dev, "Can't allocate HCI device\n");
@@ -1365,10 +1342,7 @@ static void nxp_serdev_remove(struct serdev_device *serdev)
 	struct btnxpuart_dev *nxpdev = serdev_device_get_drvdata(serdev);
 	struct hci_dev *hdev = nxpdev->hdev;
 
-	/* Restore FW baudrate to fw_init_baudrate if changed.
-	 * This will ensure FW baudrate is in sync with
-	 * driver baudrate in case this driver is re-inserted.
-	 */
+	 
 	if (nxpdev->current_baudrate != nxpdev->fw_init_baudrate) {
 		nxpdev->new_baudrate = nxpdev->fw_init_baudrate;
 		nxp_set_baudrate_cmd(hdev, NULL);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
+
+ 
 
 #include "main.h"
 
@@ -60,9 +57,7 @@
 #include "tp_meter.h"
 #include "translation-table.h"
 
-/* List manipulations on hardif_list have to be rtnl_lock()'ed,
- * list traversals just rcu-locked
- */
+ 
 struct list_head batadv_hardif_list;
 unsigned int batadv_hardif_generation;
 static int (*batadv_rx_handler[256])(struct sk_buff *skb,
@@ -141,12 +136,7 @@ static void __exit batadv_exit(void)
 	batadv_tt_cache_destroy();
 }
 
-/**
- * batadv_mesh_init() - Initialize soft interface
- * @soft_iface: netdev struct of the soft interface
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int batadv_mesh_init(struct net_device *soft_iface)
 {
 	struct batadv_priv *bat_priv = netdev_priv(soft_iface);
@@ -251,10 +241,7 @@ err_orig:
 	return ret;
 }
 
-/**
- * batadv_mesh_free() - Deinitialize soft interface
- * @soft_iface: netdev struct of the soft interface
- */
+ 
 void batadv_mesh_free(struct net_device *soft_iface)
 {
 	struct batadv_priv *bat_priv = netdev_priv(soft_iface);
@@ -272,17 +259,10 @@ void batadv_mesh_free(struct net_device *soft_iface)
 
 	batadv_mcast_free(bat_priv);
 
-	/* Free the TT and the originator tables only after having terminated
-	 * all the other depending components which may use these structures for
-	 * their purposes.
-	 */
+	 
 	batadv_tt_free(bat_priv);
 
-	/* Since the originator table clean up routine is accessing the TT
-	 * tables as well, it has to be invoked after the TT tables have been
-	 * freed and marked as empty. This ensures that no cleanup RCU callbacks
-	 * accessing the TT data are scheduled for later execution.
-	 */
+	 
 	batadv_originator_free(bat_priv);
 
 	batadv_gw_free(bat_priv);
@@ -293,14 +273,7 @@ void batadv_mesh_free(struct net_device *soft_iface)
 	atomic_set(&bat_priv->mesh_state, BATADV_MESH_INACTIVE);
 }
 
-/**
- * batadv_is_my_mac() - check if the given mac address belongs to any of the
- *  real interfaces in the current mesh
- * @bat_priv: the bat priv with all the soft interface information
- * @addr: the address to check
- *
- * Return: 'true' if the mac address was found, false otherwise.
- */
+ 
 bool batadv_is_my_mac(struct batadv_priv *bat_priv, const u8 *addr)
 {
 	const struct batadv_hard_iface *hard_iface;
@@ -323,12 +296,7 @@ bool batadv_is_my_mac(struct batadv_priv *bat_priv, const u8 *addr)
 	return is_my_mac;
 }
 
-/**
- * batadv_max_header_len() - calculate maximum encapsulation overhead for a
- *  payload packet
- *
- * Return: the maximum encapsulation overhead in bytes.
- */
+ 
 int batadv_max_header_len(void)
 {
 	int header_len = 0;
@@ -348,14 +316,7 @@ int batadv_max_header_len(void)
 	return header_len + ETH_HLEN;
 }
 
-/**
- * batadv_skb_set_priority() - sets skb priority according to packet content
- * @skb: the packet to be sent
- * @offset: offset to the packet content
- *
- * This function sets a value between 256 and 263 (802.1d priority), which
- * can be interpreted by the cfg80211 or other drivers.
- */
+ 
 void batadv_skb_set_priority(struct sk_buff *skb, int offset)
 {
 	struct iphdr ip_hdr_tmp, *ip_hdr;
@@ -364,7 +325,7 @@ void batadv_skb_set_priority(struct sk_buff *skb, int offset)
 	struct vlan_ethhdr *vhdr, vhdr_tmp;
 	u32 prio;
 
-	/* already set, do nothing */
+	 
 	if (skb->priority >= 256 && skb->priority <= 263)
 		return;
 
@@ -410,19 +371,9 @@ static int batadv_recv_unhandled_packet(struct sk_buff *skb,
 	return NET_RX_DROP;
 }
 
-/* incoming packets with the batman ethertype received on any active hard
- * interface
- */
+ 
 
-/**
- * batadv_batman_skb_recv() - Handle incoming message from an hard interface
- * @skb: the received packet
- * @dev: the net device that the packet was received on
- * @ptype: packet type of incoming packet (ETH_P_BATMAN)
- * @orig_dev: the original receive net device (e.g. bonded device)
- *
- * Return: NET_RX_SUCCESS on success or NET_RX_DROP in case of failure
- */
+ 
 int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 			   struct packet_type *ptype,
 			   struct net_device *orig_dev)
@@ -435,24 +386,21 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 	hard_iface = container_of(ptype, struct batadv_hard_iface,
 				  batman_adv_ptype);
 
-	/* Prevent processing a packet received on an interface which is getting
-	 * shut down otherwise the packet may trigger de-reference errors
-	 * further down in the receive path.
-	 */
+	 
 	if (!kref_get_unless_zero(&hard_iface->refcount))
 		goto err_out;
 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 
-	/* skb was released by skb_share_check() */
+	 
 	if (!skb)
 		goto err_put;
 
-	/* packet should hold at least type and version */
+	 
 	if (unlikely(!pskb_may_pull(skb, 2)))
 		goto err_free;
 
-	/* expect a valid ethernet header here. */
+	 
 	if (unlikely(skb->mac_len != ETH_HLEN || !skb_mac_header(skb)))
 		goto err_free;
 
@@ -464,7 +412,7 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 	if (atomic_read(&bat_priv->mesh_state) != BATADV_MESH_ACTIVE)
 		goto err_free;
 
-	/* discard frames on not active interfaces */
+	 
 	if (hard_iface->if_status != BATADV_IF_ACTIVE)
 		goto err_free;
 
@@ -477,7 +425,7 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 		goto err_free;
 	}
 
-	/* reset control block to avoid left overs from previous users */
+	 
 	memset(skb->cb, 0, sizeof(struct batadv_skb_cb));
 
 	idx = batadv_ogm_packet->packet_type;
@@ -485,10 +433,7 @@ int batadv_batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 
 	batadv_hardif_put(hard_iface);
 
-	/* return NET_RX_SUCCESS in any case as we
-	 * most probably dropped the packet for
-	 * routing-logical reasons.
-	 */
+	 
 	return NET_RX_SUCCESS;
 
 err_free:
@@ -509,7 +454,7 @@ static void batadv_recv_handler_init(void)
 	for (i = BATADV_UNICAST_MIN; i <= BATADV_UNICAST_MAX; i++)
 		batadv_rx_handler[i] = batadv_recv_unhandled_unicast_packet;
 
-	/* compile time checks for sizes */
+	 
 	BUILD_BUG_ON(sizeof(struct batadv_bla_claim_dst) != 6);
 	BUILD_BUG_ON(sizeof(struct batadv_ogm_packet) != 24);
 	BUILD_BUG_ON(sizeof(struct batadv_icmp_header) != 20);
@@ -530,29 +475,23 @@ static void batadv_recv_handler_init(void)
 	i = sizeof_field(struct sk_buff, cb);
 	BUILD_BUG_ON(sizeof(struct batadv_skb_cb) > i);
 
-	/* broadcast packet */
+	 
 	batadv_rx_handler[BATADV_BCAST] = batadv_recv_bcast_packet;
 
-	/* unicast packets ... */
-	/* unicast with 4 addresses packet */
+	 
+	 
 	batadv_rx_handler[BATADV_UNICAST_4ADDR] = batadv_recv_unicast_packet;
-	/* unicast packet */
+	 
 	batadv_rx_handler[BATADV_UNICAST] = batadv_recv_unicast_packet;
-	/* unicast tvlv packet */
+	 
 	batadv_rx_handler[BATADV_UNICAST_TVLV] = batadv_recv_unicast_tvlv;
-	/* batman icmp packet */
+	 
 	batadv_rx_handler[BATADV_ICMP] = batadv_recv_icmp_packet;
-	/* Fragmented packets */
+	 
 	batadv_rx_handler[BATADV_UNICAST_FRAG] = batadv_recv_frag_packet;
 }
 
-/**
- * batadv_recv_handler_register() - Register handler for batman-adv packet type
- * @packet_type: batadv_packettype which should be handled
- * @recv_handler: receive handler for the packet type
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int
 batadv_recv_handler_register(u8 packet_type,
 			     int (*recv_handler)(struct sk_buff *,
@@ -570,27 +509,13 @@ batadv_recv_handler_register(u8 packet_type,
 	return 0;
 }
 
-/**
- * batadv_recv_handler_unregister() - Unregister handler for packet type
- * @packet_type: batadv_packettype which should no longer be handled
- */
+ 
 void batadv_recv_handler_unregister(u8 packet_type)
 {
 	batadv_rx_handler[packet_type] = batadv_recv_unhandled_packet;
 }
 
-/**
- * batadv_skb_crc32() - calculate CRC32 of the whole packet and skip bytes in
- *  the header
- * @skb: skb pointing to fragmented socket buffers
- * @payload_ptr: Pointer to position inside the head buffer of the skb
- *  marking the start of the data to be CRC'ed
- *
- * payload_ptr must always point to an address in the skb head buffer and not to
- * a fragment.
- *
- * Return: big endian crc32c of the checksummed data
- */
+ 
 __be32 batadv_skb_crc32(struct sk_buff *skb, u8 *payload_ptr)
 {
 	u32 crc = 0;
@@ -612,14 +537,7 @@ __be32 batadv_skb_crc32(struct sk_buff *skb, u8 *payload_ptr)
 	return htonl(crc);
 }
 
-/**
- * batadv_get_vid() - extract the VLAN identifier from skb if any
- * @skb: the buffer containing the packet
- * @header_len: length of the batman header preceding the ethernet header
- *
- * Return: VID with the BATADV_VLAN_HAS_TAG flag when the packet embedded in the
- * skb is vlan tagged. Otherwise BATADV_NO_FLAGS.
- */
+ 
 unsigned short batadv_get_vid(struct sk_buff *skb, size_t header_len)
 {
 	struct ethhdr *ethhdr = (struct ethhdr *)(skb->data + header_len);
@@ -639,23 +557,13 @@ unsigned short batadv_get_vid(struct sk_buff *skb, size_t header_len)
 	return vid;
 }
 
-/**
- * batadv_vlan_ap_isola_get() - return AP isolation status for the given vlan
- * @bat_priv: the bat priv with all the soft interface information
- * @vid: the VLAN identifier for which the AP isolation attributed as to be
- *  looked up
- *
- * Return: true if AP isolation is on for the VLAN identified by vid, false
- * otherwise
- */
+ 
 bool batadv_vlan_ap_isola_get(struct batadv_priv *bat_priv, unsigned short vid)
 {
 	bool ap_isolation_enabled = false;
 	struct batadv_softif_vlan *vlan;
 
-	/* if the AP isolation is requested on a VLAN, then check for its
-	 * setting in the proper VLAN private data structure
-	 */
+	 
 	vlan = batadv_softif_vlan_get(bat_priv, vid);
 	if (vlan) {
 		ap_isolation_enabled = atomic_read(&vlan->ap_isolation);
@@ -665,16 +573,7 @@ bool batadv_vlan_ap_isola_get(struct batadv_priv *bat_priv, unsigned short vid)
 	return ap_isolation_enabled;
 }
 
-/**
- * batadv_throw_uevent() - Send an uevent with batman-adv specific env data
- * @bat_priv: the bat priv with all the soft interface information
- * @type: subsystem type of event. Stored in uevent's BATTYPE
- * @action: action type of event. Stored in uevent's BATACTION
- * @data: string with additional information to the event (ignored for
- *  BATADV_UEV_DEL). Stored in uevent's BATDATA
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int batadv_throw_uevent(struct batadv_priv *bat_priv, enum batadv_uev_type type,
 			enum batadv_uev_action action, const char *data)
 {
@@ -696,7 +595,7 @@ int batadv_throw_uevent(struct batadv_priv *bat_priv, enum batadv_uev_type type,
 	if (!uevent_env[1])
 		goto out;
 
-	/* If the event is DEL, ignore the data field */
+	 
 	if (action != BATADV_UEV_DEL) {
 		uevent_env[2] = kasprintf(GFP_ATOMIC,
 					  "%s%s", BATADV_UEV_DATA_VAR, data);

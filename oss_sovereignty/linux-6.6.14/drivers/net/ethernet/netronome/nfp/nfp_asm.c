@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2016-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -170,7 +170,7 @@ int swreg_to_unrestricted(swreg dst, swreg lreg, swreg rreg,
 {
 	memset(reg, 0, sizeof(*reg));
 
-	/* Decode destination */
+	 
 	if (swreg_type(dst) == NN_REG_IMM)
 		return -EFAULT;
 
@@ -180,7 +180,7 @@ int swreg_to_unrestricted(swreg dst, swreg lreg, swreg rreg,
 		reg->wr_both = true;
 	reg->dst = nfp_swreg_to_unreg(dst, true);
 
-	/* Decode source operands */
+	 
 	if (swreg_type(lreg) == swreg_type(rreg) &&
 	    swreg_type(lreg) != NN_REG_NONE)
 		return -EFAULT;
@@ -251,7 +251,7 @@ int swreg_to_restricted(swreg dst, swreg lreg, swreg rreg,
 {
 	memset(reg, 0, sizeof(*reg));
 
-	/* Decode destination */
+	 
 	if (swreg_type(dst) == NN_REG_IMM)
 		return -EFAULT;
 
@@ -261,7 +261,7 @@ int swreg_to_restricted(swreg dst, swreg lreg, swreg rreg,
 		reg->wr_both = true;
 	reg->dst = nfp_swreg_to_rereg(dst, true, false, NULL);
 
-	/* Decode source operands */
+	 
 	if (swreg_type(lreg) == swreg_type(rreg) &&
 	    swreg_type(lreg) != NN_REG_NONE)
 		return -EFAULT;

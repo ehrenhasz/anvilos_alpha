@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/pagewalk.h>
 #include <linux/ptdump.h>
 #include <linux/kasan.h>
 
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-/*
- * This is an optimization for KASAN=y case. Since all kasan page tables
- * eventually point to the kasan_early_shadow_page we could call note_page()
- * right away without walking through lower level page tables. This saves
- * us dozens of seconds (minutes for 5-level config) while checking for
- * W+X mapping or reading kernel_page_tables debugfs file.
- */
+ 
 static inline int note_kasan_page_table(struct mm_walk *walk,
 					unsigned long addr)
 {
@@ -160,6 +154,6 @@ void ptdump_walk_pgd(struct ptdump_state *st, struct mm_struct *mm, pgd_t *pgd)
 	}
 	mmap_write_unlock(mm);
 
-	/* Flush out the last page */
+	 
 	st->note_page(st, 0, -1, 0);
 }

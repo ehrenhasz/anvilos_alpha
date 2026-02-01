@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Zoran zr36057/zr36067 PCI controller driver, for the
- * Pinnacle/Miro DC10/DC10+/DC30/DC30+, Iomega Buz, Linux
- * Media Labs LML33/LML33R10.
- *
- * Copyright (C) 2000 Serguei Miridonov <mirsev@cicese.mx>
- *
- * Changes for BUZ by Wolfgang Scherr <scherr@net4you.net>
- *
- * Changes for DC10/DC30 by Laurent Pinchart <laurent.pinchart@skynet.be>
- *
- * Changes for LML33R10 by Maxim Yevtyushkin <max@linuxmedialabs.com>
- *
- * Changes for videodev2/v4l2 by Ronald Bultje <rbultje@ronald.bitfreak.net>
- *
- * Based on
- *
- * Miro DC10 driver
- * Copyright (C) 1999 Wolfgang Scherr <scherr@net4you.net>
- *
- * Iomega Buz driver version 1.0
- * Copyright (C) 1999 Rainer Johanni <Rainer@Johanni.de>
- *
- * buz.0.0.3
- * Copyright (C) 1998 Dave Perks <dperks@ibm.net>
- *
- * bttv - Bt848 frame grabber driver
- * Copyright (C) 1996,97,98 Ralph  Metzler (rjkm@thp.uni-koeln.de)
- *                        & Marcus Metzler (mocm@thp.uni-koeln.de)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -136,11 +107,7 @@ const struct zoran_format zoran_formats[] = {
 
 #define NUM_FORMATS ARRAY_SIZE(zoran_formats)
 
-	/*
-	 * small helper function for calculating buffersizes for v4l2
-	 * we calculate the nearest higher power-of-two, which
-	 * will be the recommended buffersize
-	 */
+	 
 static __u32 zoran_v4l2_calc_bufsize(struct zoran_jpg_settings *settings)
 {
 	__u8 div = settings->ver_dcm * settings->hor_dcm * settings->tmp_dcm;
@@ -159,15 +126,13 @@ static __u32 zoran_v4l2_calc_bufsize(struct zoran_jpg_settings *settings)
 	return result;
 }
 
-/*
- *   V4L Buffer grabbing
- */
+ 
 static int zoran_v4l_set_format(struct zoran *zr, int width, int height,
 				const struct zoran_format *format)
 {
 	int bpp;
 
-	/* Check size and format of the grab wanted */
+	 
 
 	if (height < BUZ_MIN_HEIGHT || width < BUZ_MIN_WIDTH ||
 	    height > BUZ_MAX_HEIGHT || width > BUZ_MAX_WIDTH) {
@@ -179,14 +144,14 @@ static int zoran_v4l_set_format(struct zoran *zr, int width, int height,
 
 	zr->buffer_size = height * width * bpp;
 
-	/* Check against available buffer size */
+	 
 	if (height * width * bpp > zr->buffer_size) {
 		pci_dbg(zr->pci_dev, "%s - video buffer size (%d kB) is too small\n",
 			__func__, zr->buffer_size >> 10);
 		return -EINVAL;
 	}
 
-	/* The video front end needs 4-byte alinged line sizes */
+	 
 
 	if ((bpp == 2 && (width & 1)) || (bpp == 3 && (width & 3))) {
 		pci_dbg(zr->pci_dev, "%s - wrong frame alignment\n", __func__);
@@ -218,7 +183,7 @@ static int zoran_set_norm(struct zoran *zr, v4l2_std_id norm)
 	decoder_call(zr, video, s_std, norm);
 	encoder_call(zr, video, s_std_output, norm);
 
-	/* Make sure the changes come into effect */
+	 
 	zr->norm = norm;
 
 	return 0;
@@ -241,9 +206,7 @@ static int zoran_set_input(struct zoran *zr, int input)
 	return 0;
 }
 
-/*
- *   ioctl routine
- */
+ 
 
 static int zoran_querycap(struct file *file, void *__fh, struct v4l2_capability *cap)
 {
@@ -268,7 +231,7 @@ static int zoran_enum_fmt(struct zoran *zr, struct v4l2_fmtdesc *fmt, int flag)
 		if (zoran_formats[i].flags & flag && num++ == fmt->index) {
 			strscpy(fmt->description, zoran_formats[i].name,
 				sizeof(fmt->description));
-			/* fmt struct pre-zeroed, so adding '\0' not needed */
+			 
 			fmt->pixelformat = zoran_formats[i].fourcc;
 			if (zoran_formats[i].flags & ZORAN_FORMAT_COMPRESSED)
 				fmt->flags |= V4L2_FMT_FLAG_COMPRESSED;
@@ -340,7 +303,7 @@ static int zoran_try_fmt_vid_out(struct file *file, void *__fh,
 
 	settings = zr->jpg_settings;
 
-	/* we actually need to set 'real' parameters now */
+	 
 	if ((fmt->fmt.pix.height * 2) > BUZ_MAX_HEIGHT)
 		settings.tmp_dcm = 1;
 	else
@@ -369,12 +332,12 @@ static int zoran_try_fmt_vid_out(struct file *file, void *__fh,
 		settings.img_width = BUZ_MAX_WIDTH;
 	}
 
-	/* check */
+	 
 	res = zoran_check_jpg_settings(zr, &settings, 1);
 	if (res)
 		return res;
 
-	/* tell the user what we actually did */
+	 
 	fmt->fmt.pix.width = settings.img_width / settings.hor_dcm;
 	fmt->fmt.pix.height = settings.img_height * 2 /
 		(settings.tmp_dcm * settings.ver_dcm);
@@ -406,7 +369,7 @@ static int zoran_try_fmt_vid_cap(struct file *file, void *__fh,
 			break;
 
 	if (i == NUM_FORMATS) {
-		/* TODO do not return here to fix the TRY_FMT cannot handle an invalid pixelformat*/
+		 
 		return -EINVAL;
 	}
 
@@ -447,7 +410,7 @@ static int zoran_s_fmt_vid_out(struct file *file, void *__fh,
 
 	settings = zr->jpg_settings;
 
-	/* we actually need to set 'real' parameters now */
+	 
 	if (fmt->fmt.pix.height * 2 > BUZ_MAX_HEIGHT)
 		settings.tmp_dcm = 1;
 	else
@@ -476,12 +439,12 @@ static int zoran_s_fmt_vid_out(struct file *file, void *__fh,
 		settings.img_width = BUZ_MAX_WIDTH;
 	}
 
-	/* check */
+	 
 	res = zoran_check_jpg_settings(zr, &settings, 0);
 	if (res)
 		return res;
 
-	/* it's ok, so set them */
+	 
 	zr->jpg_settings = settings;
 
 	if (fmt->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
@@ -491,7 +454,7 @@ static int zoran_s_fmt_vid_out(struct file *file, void *__fh,
 
 	zr->buffer_size = zoran_v4l2_calc_bufsize(&zr->jpg_settings);
 
-	/* tell the user what we actually did */
+	 
 	fmt->fmt.pix.width = settings.img_width / settings.hor_dcm;
 	fmt->fmt.pix.height = settings.img_height * 2 /
 		(settings.tmp_dcm * settings.ver_dcm);
@@ -524,7 +487,7 @@ static int zoran_s_fmt_vid_cap(struct file *file, void *__fh,
 	if (i == NUM_FORMATS) {
 		pci_dbg(zr->pci_dev, "VIDIOC_S_FMT - unknown/unsupported format 0x%x\n",
 			fmt->fmt.pix.pixelformat);
-		/* TODO do not return here to fix the TRY_FMT cannot handle an invalid pixelformat*/
+		 
 		return -EINVAL;
 	}
 
@@ -545,7 +508,7 @@ static int zoran_s_fmt_vid_cap(struct file *file, void *__fh,
 	if (res)
 		return res;
 
-	/* tell the user the results/missing stuff */
+	 
 	fmt->fmt.pix.bytesperline = zr->v4l_settings.bytesperline;
 	fmt->fmt.pix.sizeimage = zr->buffer_size;
 	fmt->fmt.pix.colorspace = zr->v4l_settings.format->colorspace;
@@ -591,7 +554,7 @@ static int zoran_enum_input(struct file *file, void *__fh,
 	inp->type = V4L2_INPUT_TYPE_CAMERA;
 	inp->std = V4L2_STD_NTSC | V4L2_STD_PAL | V4L2_STD_SECAM;
 
-	/* Get status of video decoder */
+	 
 	decoder_call(zr, video, g_input_status, &inp->status);
 	return 0;
 }
@@ -617,7 +580,7 @@ static int zoran_s_input(struct file *file, void *__fh, unsigned int input)
 	return res;
 }
 
-/* cropping (sub-frame capture) */
+ 
 static int zoran_g_selection(struct file *file, void *__fh, struct v4l2_selection *sel)
 {
 	struct zoran *zr = video_drvdata(file);
@@ -676,27 +639,23 @@ static int zoran_s_selection(struct file *file, void *__fh, struct v4l2_selectio
 
 	settings = zr->jpg_settings;
 
-	/* move into a form that we understand */
+	 
 	settings.img_x = sel->r.left;
 	settings.img_y = sel->r.top;
 	settings.img_width = sel->r.width;
 	settings.img_height = sel->r.height;
 
-	/* check validity */
+	 
 	res = zoran_check_jpg_settings(zr, &settings, 0);
 	if (res)
 		return res;
 
-	/* accept */
+	 
 	zr->jpg_settings = settings;
 	return res;
 }
 
-/*
- * Output is disabled temporarily
- * Zoran is picky about jpeg data it accepts. At least it seems to unsupport COM and APPn.
- * So until a way to filter data will be done, disable output.
- */
+ 
 static const struct v4l2_ioctl_ops zoran_ioctl_ops = {
 	.vidioc_querycap		    = zoran_querycap,
 	.vidioc_s_selection		    = zoran_s_selection,
@@ -916,7 +875,7 @@ static void zr_vb2_stop_streaming(struct vb2_queue *vq)
 
 	zoran_set_pci_master(zr, 0);
 
-	if (!pass_through) {	/* Switch to color bar */
+	if (!pass_through) {	 
 		decoder_call(zr, video, s_stream, 0);
 		encoder_call(zr, video, s_routing, 2, 0, 0);
 	}

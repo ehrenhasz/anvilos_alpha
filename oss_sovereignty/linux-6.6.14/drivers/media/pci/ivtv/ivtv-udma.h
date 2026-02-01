@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    Copyright (C) 2003-2004  Kevin Thayer <nufan_wfk at yahoo.com>
-    Copyright (C) 2004  Chris Kennedy <c@groovy.org>
-    Copyright (C) 2006-2007  Hans Verkuil <hverkuil@xs4all.nl>
-
- */
+ 
+ 
 
 #ifndef IVTV_UDMA_H
 #define IVTV_UDMA_H
 
-/* User DMA functions */
+ 
 void ivtv_udma_get_page_info(struct ivtv_dma_page_info *dma_page, unsigned long first, unsigned long size);
 int ivtv_udma_fill_sg_list(struct ivtv_user_dma *dma, struct ivtv_dma_page_info *dma_page, int map_offset);
 void ivtv_udma_fill_sg_array(struct ivtv_user_dma *dma, u32 buffer_offset, u32 buffer_offset_2, u32 split);

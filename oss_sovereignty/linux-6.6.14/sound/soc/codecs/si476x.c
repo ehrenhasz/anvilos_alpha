@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sound/soc/codecs/si476x.c -- Codec driver for SI476X chips
- *
- * Copyright (C) 2012 Innovative Converged Devices(ICD)
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>

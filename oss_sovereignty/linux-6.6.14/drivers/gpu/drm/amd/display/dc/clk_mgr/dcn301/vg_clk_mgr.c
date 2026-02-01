@@ -1,38 +1,15 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dccg.h"
 #include "clk_mgr_internal.h"
 
-// For dce12_get_dp_ref_freq_khz
+
 #include "dce100/dce_clk_mgr.h"
 
-// For dcn20_update_clocks_update_dpp_dto
+
 #include "dcn20/dcn20_clk_mgr.h"
 
-// For DML FPU code
+
 #include "dml/dcn20/dcn20_fpu.h"
 
 #include "vg_clk_mgr.h"
@@ -46,11 +23,11 @@
 #include "clk/clk_11_5_0_offset.h"
 #include "clk/clk_11_5_0_sh_mask.h"
 
-/* Constants */
+ 
 
-#define LPDDR_MEM_RETRAIN_LATENCY 4.977 /* Number obtained from LPDDR4 Training Counter Requirement doc */
+#define LPDDR_MEM_RETRAIN_LATENCY 4.977  
 
-/* Macros */
+ 
 
 #define TO_CLK_MGR_VGH(clk_mgr)\
 	container_of(clk_mgr, struct clk_mgr_vgh, base)
@@ -58,7 +35,7 @@
 #define REG(reg_name) \
 	(CLK_BASE.instance[0].segment[mm ## reg_name ## _BASE_IDX] + mm ## reg_name)
 
-/* TODO: evaluate how to lower or disable all dcn clocks in screen off case */
+ 
 static int vg_get_active_display_cnt_wa(
 		struct dc *dc,
 		struct dc_state *context)
@@ -79,13 +56,13 @@ static int vg_get_active_display_cnt_wa(
 	for (i = 0; i < dc->link_count; i++) {
 		const struct dc_link *link = dc->links[i];
 
-		/* abusing the fact that the dig and phy are coupled to see if the phy is enabled */
+		 
 		if (link->link_enc->funcs->is_dig_enabled &&
 				link->link_enc->funcs->is_dig_enabled(link->link_enc))
 			display_count++;
 	}
 
-	/* WA for hang on HDMI after display off back back on*/
+	 
 	if (display_count == 0 && tmds_present)
 		display_count = 1;
 
@@ -107,16 +84,13 @@ static void vg_update_clocks(struct clk_mgr *clk_mgr_base,
 	if (dc->work_arounds.skip_clock_update)
 		return;
 
-	/*
-	 * if it is safe to lower, but we are already in the lower state, we don't have to do anything
-	 * also if safe to lower is false, we just go in the higher state
-	 */
+	 
 	if (safe_to_lower) {
-		/* check that we're not already in lower */
+		 
 		if (clk_mgr_base->clks.pwr_state != DCN_PWR_STATE_LOW_POWER) {
 
 			display_count = vg_get_active_display_cnt_wa(dc, context);
-			/* if we can go lower, go lower */
+			 
 			if (display_count == 0) {
 				union display_idle_optimization_u idle_info = { 0 };
 
@@ -124,17 +98,17 @@ static void vg_update_clocks(struct clk_mgr *clk_mgr_base,
 				idle_info.idle_info.phy_ref_clk_off = 1;
 
 				dcn301_smu_set_display_idle_optimization(clk_mgr, idle_info.data);
-				/* update power state */
+				 
 				clk_mgr_base->clks.pwr_state = DCN_PWR_STATE_LOW_POWER;
 			}
 		}
 	} else {
-		/* check that we're not already in D0 */
+		 
 		if (clk_mgr_base->clks.pwr_state != DCN_PWR_STATE_MISSION_MODE) {
 			union display_idle_optimization_u idle_info = { 0 };
 
 			dcn301_smu_set_display_idle_optimization(clk_mgr, idle_info.data);
-			/* update power state */
+			 
 			clk_mgr_base->clks.pwr_state = DCN_PWR_STATE_MISSION_MODE;
 		}
 	}
@@ -150,7 +124,7 @@ static void vg_update_clocks(struct clk_mgr *clk_mgr_base,
 		dcn301_smu_set_min_deep_sleep_dcfclk(clk_mgr, clk_mgr_base->clks.dcfclk_deep_sleep_khz);
 	}
 
-	// workaround: Limit dppclk to 100Mhz to avoid lower eDP panel switch to plus 4K monitor underflow.
+	 
 	if (new_clocks->dppclk_khz < 100000)
 		new_clocks->dppclk_khz = 100000;
 
@@ -169,14 +143,14 @@ static void vg_update_clocks(struct clk_mgr *clk_mgr_base,
 	}
 
 	if (dpp_clock_lowered) {
-		// increase per DPP DTO before lowering global dppclk
+		 
 		dcn20_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 		dcn301_smu_set_dppclk(clk_mgr, clk_mgr_base->clks.dppclk_khz);
 	} else {
-		// increase global DPPCLK before lowering per DPP DTO
+		 
 		if (update_dppclk || update_dispclk)
 			dcn301_smu_set_dppclk(clk_mgr, clk_mgr_base->clks.dppclk_khz);
-		// always update dtos unless clock is lowered and not safe to lower
+		 
 		dcn20_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 	}
 }
@@ -184,32 +158,26 @@ static void vg_update_clocks(struct clk_mgr *clk_mgr_base,
 
 static int get_vco_frequency_from_reg(struct clk_mgr_internal *clk_mgr)
 {
-	/* get FbMult value */
+	 
 	struct fixed31_32 pll_req;
 	unsigned int fbmult_frac_val = 0;
 	unsigned int fbmult_int_val = 0;
 
 
-	/*
-	 * Register value of fbmult is in 8.16 format, we are converting to 31.32
-	 * to leverage the fix point operations available in driver
-	 */
+	 
 
-	REG_GET(CLK1_0_CLK1_CLK_PLL_REQ, FbMult_frac, &fbmult_frac_val); /* 16 bit fractional part*/
-	REG_GET(CLK1_0_CLK1_CLK_PLL_REQ, FbMult_int, &fbmult_int_val); /* 8 bit integer part */
+	REG_GET(CLK1_0_CLK1_CLK_PLL_REQ, FbMult_frac, &fbmult_frac_val);  
+	REG_GET(CLK1_0_CLK1_CLK_PLL_REQ, FbMult_int, &fbmult_int_val);  
 
 	pll_req = dc_fixpt_from_int(fbmult_int_val);
 
-	/*
-	 * since fractional part is only 16 bit in register definition but is 32 bit
-	 * in our fix point definiton, need to shift left by 16 to obtain correct value
-	 */
+	 
 	pll_req.value |= fbmult_frac_val << 16;
 
-	/* multiply by REFCLK period */
+	 
 	pll_req = dc_fixpt_mul_int(pll_req, clk_mgr->dfs_ref_freq_khz);
 
-	/* integer part is now VCO frequency in kHz */
+	 
 	return dc_fixpt_floor(pll_req);
 }
 
@@ -220,7 +188,7 @@ static void vg_dump_clk_registers_internal(struct dcn301_clk_internal *internal,
 	internal->CLK1_CLK3_CURRENT_CNT = REG_READ(CLK1_0_CLK1_CLK3_CURRENT_CNT);
 	internal->CLK1_CLK3_BYPASS_CNTL = REG_READ(CLK1_0_CLK1_CLK3_BYPASS_CNTL);
 
-	internal->CLK1_CLK3_DS_CNTL = REG_READ(CLK1_0_CLK1_CLK3_DS_CNTL);	//dcf deep sleep divider
+	internal->CLK1_CLK3_DS_CNTL = REG_READ(CLK1_0_CLK1_CLK3_DS_CNTL);	 
 	internal->CLK1_CLK3_ALLOW_DS = REG_READ(CLK1_0_CLK1_CLK3_ALLOW_DS);
 
 	internal->CLK1_CLK1_CURRENT_CNT = REG_READ(CLK1_0_CLK1_CLK1_CURRENT_CNT);
@@ -233,7 +201,7 @@ static void vg_dump_clk_registers_internal(struct dcn301_clk_internal *internal,
 	internal->CLK1_CLK0_BYPASS_CNTL = REG_READ(CLK1_0_CLK1_CLK0_BYPASS_CNTL);
 }
 
-/* This function collect raw clk register values */
+ 
 static void vg_dump_clk_registers(struct clk_state_registers_and_bypass *regs_and_bypass,
 		struct clk_mgr *clk_mgr_base, struct clk_log_info *log_info)
 {
@@ -293,13 +261,13 @@ static void vg_dump_clk_registers(struct clk_state_registers_and_bypass *regs_an
 		*log_info->sum_chars_printed += chars_printed;
 		log_info->pBuf += chars_printed;
 
-		//split
+		 
 		chars_printed = snprintf_count(log_info->pBuf, remaining_buffer, "SPLIT\n");
 		remaining_buffer -= chars_printed;
 		*log_info->sum_chars_printed += chars_printed;
 		log_info->pBuf += chars_printed;
 
-		// REGISTER VALUES
+		 
 		chars_printed = snprintf_count(log_info->pBuf, remaining_buffer, "reg_name,value,clk_type\n");
 		remaining_buffer -= chars_printed;
 		*log_info->sum_chars_printed += chars_printed;
@@ -377,7 +345,7 @@ static void vg_enable_pme_wa(struct clk_mgr *clk_mgr_base)
 static void vg_init_clocks(struct clk_mgr *clk_mgr)
 {
 	memset(&(clk_mgr->clks), 0, sizeof(struct dc_clocks));
-	// Assumption is that boot state always supports pstate
+	 
 	clk_mgr->clks.p_state_change_support = true;
 	clk_mgr->clks.prev_p_state_change_support = true;
 	clk_mgr->clks.pwr_state = DCN_PWR_STATE_UNKNOWN;
@@ -390,13 +358,13 @@ static void vg_build_watermark_ranges(struct clk_bw_params *bw_params, struct wa
 	num_valid_sets = 0;
 
 	for (i = 0; i < WM_SET_COUNT; i++) {
-		/* skip empty entries, the smu array has no holes*/
+		 
 		if (!bw_params->wm_table.entries[i].valid)
 			continue;
 
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].WmSetting = bw_params->wm_table.entries[i].wm_inst;
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].WmType = bw_params->wm_table.entries[i].wm_type;
-		/* We will not select WM based on fclk, so leave it as unconstrained */
+		 
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinClock = 0;
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].MaxClock = 0xFFFF;
 
@@ -404,7 +372,7 @@ static void vg_build_watermark_ranges(struct clk_bw_params *bw_params, struct wa
 			if (i == 0)
 				table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinMclk = 0;
 			else {
-				/* add 1 to make it non-overlapping with next lvl */
+				 
 				table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinMclk =
 						bw_params->clk_table.entries[i - 1].dcfclk_mhz + 1;
 			}
@@ -412,25 +380,25 @@ static void vg_build_watermark_ranges(struct clk_bw_params *bw_params, struct wa
 					bw_params->clk_table.entries[i].dcfclk_mhz;
 
 		} else {
-			/* unconstrained for memory retraining */
+			 
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinClock = 0;
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets].MaxClock = 0xFFFF;
 
-			/* Modify previous watermark range to cover up to max */
+			 
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxClock = 0xFFFF;
 		}
 		num_valid_sets++;
 	}
 
-	ASSERT(num_valid_sets != 0); /* Must have at least one set of valid watermarks */
+	ASSERT(num_valid_sets != 0);  
 
-	/* modify the min and max to make sure we cover the whole range*/
+	 
 	table->WatermarkRow[WM_DCFCLK][0].MinMclk = 0;
 	table->WatermarkRow[WM_DCFCLK][0].MinClock = 0;
 	table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxMclk = 0xFFFF;
 	table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxClock = 0xFFFF;
 
-	/* This is for writeback only, does not matter currently as no writeback support*/
+	 
 	table->WatermarkRow[WM_SOCCLK][0].WmSetting = WM_A;
 	table->WatermarkRow[WM_SOCCLK][0].MinClock = 0;
 	table->WatermarkRow[WM_SOCCLK][0].MaxClock = 0xFFFF;
@@ -566,7 +534,7 @@ static void vg_clk_mgr_helper_populate_bw_params(
 
 	ASSERT(VG_NUM_FCLK_DPM_LEVELS <= MAX_NUM_DPM_LVL);
 
-	/* Find lowest DPM, FCLK is filled in reverse order*/
+	 
 
 	for (i = VG_NUM_FCLK_DPM_LEVELS - 1; i >= 0; i--) {
 		if (clock_table->DfPstateTable[i].fclk != 0) {
@@ -576,7 +544,7 @@ static void vg_clk_mgr_helper_populate_bw_params(
 	}
 
 	if (j == -1) {
-		/* clock table is all 0s, just use our own hardcode */
+		 
 		ASSERT(0);
 		return;
 	}
@@ -610,9 +578,7 @@ static void vg_clk_mgr_helper_populate_bw_params(
 	}
 
 	if (bw_params->vram_type == LpDdr4MemType) {
-		/*
-		 * WM set D will be re-purposed for memory retraining
-		 */
+		 
 		DC_FP_START();
 		dcn21_clk_mgr_set_bw_params_wm_table(bw_params);
 		DC_FP_END();
@@ -620,7 +586,7 @@ static void vg_clk_mgr_helper_populate_bw_params(
 
 }
 
-/* Temporary Place holder until we can get them from fuse */
+ 
 static struct vg_dpm_clocks dummy_clocks = {
 		.DcfClocks = { 201, 403, 403, 403, 403, 403, 403 },
 		.SocClocks = { 400, 600, 600, 600, 600, 600, 600 },
@@ -707,10 +673,10 @@ void vg_clk_mgr_construct(
 	if (clk_mgr->base.smu_ver)
 		clk_mgr->base.smu_present = true;
 
-	/* TODO: Check we get what we expect during bringup */
+	 
 	clk_mgr->base.base.dentist_vco_freq_khz = get_vco_frequency_from_reg(&clk_mgr->base);
 
-	/* in case we don't get a value from the register, use default */
+	 
 	if (clk_mgr->base.base.dentist_vco_freq_khz == 0)
 		clk_mgr->base.base.dentist_vco_freq_khz = 3600000;
 
@@ -719,7 +685,7 @@ void vg_clk_mgr_construct(
 	} else {
 		vg_bw_params.wm_table = ddr4_wm_table;
 	}
-	/* Saved clocks configured at boot for debug purposes */
+	 
 	vg_dump_clk_registers(&clk_mgr->base.base.boot_snapshot, &clk_mgr->base.base, &log_info);
 
 	clk_mgr->base.base.dprefclk_khz = 600000;

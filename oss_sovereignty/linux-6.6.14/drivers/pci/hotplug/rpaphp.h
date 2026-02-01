@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * PCI Hot Plug Controller Driver for RPA-compliant PPC64 platform.
- *
- * Copyright (C) 2003 Linda Xie <lxie@us.ibm.com>
- *
- * All rights reserved.
- *
- * Send feedback to <lxie@us.ibm.com>,
- *
- */
+ 
+ 
 
 #ifndef _PPC64PHP_H
 #define _PPC64PHP_H
@@ -23,13 +14,13 @@
 #define POWER_OFF	0
 
 #define LED_OFF		0
-#define LED_ON		1	/* continuous on */
-#define LED_ID		2	/* slow blinking */
-#define LED_ACTION	3	/* fast blinking */
+#define LED_ON		1	 
+#define LED_ID		2	 
+#define LED_ACTION	3	 
 
-/* Sensor values from rtas_get-sensor */
-#define EMPTY           0	/* No card in slot */
-#define PRESENT         1	/* Card in slot */
+ 
+#define EMPTY           0	 
+#define PRESENT         1	 
 
 #define MY_NAME "rpaphp"
 extern bool rpaphp_debug;
@@ -43,20 +34,18 @@ extern bool rpaphp_debug;
 #define info(format, arg...) printk(KERN_INFO "%s: " format, MY_NAME, ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format, MY_NAME, ## arg)
 
-/* slot states */
+ 
 
 #define	NOT_VALID	3
 #define	NOT_CONFIGURED	2
 #define	CONFIGURED	1
 #define	EMPTY		0
 
-/* DRC constants */
+ 
 
 #define MAX_DRC_NAME_LEN 64
 
-/*
- * struct slot - slot information for each *physical* slot
- */
+ 
 struct slot {
 	struct list_head rpaphp_slot_list;
 	int state;
@@ -79,21 +68,21 @@ static inline struct slot *to_slot(struct hotplug_slot *hotplug_slot)
 	return container_of(hotplug_slot, struct slot, hotplug_slot);
 }
 
-/* function prototypes */
+ 
 
-/* rpaphp_pci.c */
+ 
 int rpaphp_enable_slot(struct slot *slot);
 int rpaphp_get_sensor_state(struct slot *slot, int *state);
 
-/* rpaphp_core.c */
+ 
 int rpaphp_add_slot(struct device_node *dn);
 int rpaphp_check_drc_props(struct device_node *dn, char *drc_name,
 		char *drc_type);
 
-/* rpaphp_slot.c */
+ 
 void dealloc_slot_struct(struct slot *slot);
 struct slot *alloc_slot_struct(struct device_node *dn, int drc_index, char *drc_name, int power_domain);
 int rpaphp_register_slot(struct slot *slot);
 int rpaphp_deregister_slot(struct slot *slot);
 
-#endif				/* _PPC64PHP_H */
+#endif				 

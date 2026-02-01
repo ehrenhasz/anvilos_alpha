@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -19,7 +17,7 @@ static void write_pm_imr(struct intel_gt *gt)
 
 	if (GRAPHICS_VER(i915) >= 11) {
 		reg = GEN11_GPM_WGBOXPERF_INTR_MASK;
-		mask <<= 16; /* pm is in upper half */
+		mask <<= 16;  
 	} else if (GRAPHICS_VER(i915) >= 8) {
 		reg = GEN8_GT_IMR(2);
 	} else {
@@ -80,7 +78,7 @@ static void write_pm_ier(struct intel_gt *gt)
 
 	if (GRAPHICS_VER(i915) >= 11) {
 		reg = GEN11_GPM_WGBOXPERF_INTR_ENABLE;
-		mask <<= 16; /* pm is in upper half */
+		mask <<= 16;  
 	} else if (GRAPHICS_VER(i915) >= 8) {
 		reg = GEN8_GT_IER(2);
 	} else {

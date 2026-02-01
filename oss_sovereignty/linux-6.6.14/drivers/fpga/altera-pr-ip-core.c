@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Altera Partial Reconfiguration IP Core
- *
- * Copyright (C) 2016-2017 Intel Corporation
- *
- * Based on socfpga-a10.c Copyright (C) 2015-2016 Altera Corporation
- *  by Alan Tull <atull@opensource.altera.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/fpga/altera-pr-ip-core.h>
 #include <linux/fpga/fpga-mgr.h>
@@ -111,13 +104,13 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
 	if (!count)
 		return -EINVAL;
 
-	/* Write out the complete 32-bit chunks */
+	 
 	while (count >= sizeof(u32)) {
 		writel(buffer_32[i++], priv->reg_base);
 		count -= sizeof(u32);
 	}
 
-	/* Write out remaining non 32-bit chunks */
+	 
 	switch (count) {
 	case 3:
 		writel(buffer_32[i++] & 0x00ffffff, priv->reg_base);
@@ -131,7 +124,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
 	case 0:
 		break;
 	default:
-		/* This will never happen */
+		 
 		return -EFAULT;
 	}
 

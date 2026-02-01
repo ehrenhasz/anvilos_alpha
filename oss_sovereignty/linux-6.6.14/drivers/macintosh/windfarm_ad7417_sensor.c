@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. AD7417 sensors
- *
- * Copyright 2012 Benjamin Herrenschmidt, IBM Corp.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -43,7 +39,7 @@ static int wf_ad7417_temp_get(struct wf_sensor *sr, s32 *value)
 	*value = 0;
 	mutex_lock(&pv->lock);
 
-	/* Read temp register */
+	 
 	buf[0] = 0;
 	rc = i2c_master_send(pv->i2c, buf, 1);
 	if (rc < 0)
@@ -52,10 +48,10 @@ static int wf_ad7417_temp_get(struct wf_sensor *sr, s32 *value)
 	if (rc < 0)
 		goto error;
 
-	/* Read a a 16-bit signed value */
+	 
 	raw = be16_to_cpup((__le16 *)buf);
 
-	/* Convert 8.8-bit to 16.16 fixed point */
+	 
 	*value = ((s32)raw) << 8;
 
 	mutex_unlock(&pv->lock);
@@ -66,31 +62,26 @@ error:
 	return -1;
 }
 
-/*
- * Scaling factors for the AD7417 ADC converters (except
- * for the CPU diode which is obtained from the EEPROM).
- * Those values are obtained from the property list of
- * the darwin driver
- */
-#define ADC_12V_CURRENT_SCALE	0x0320	/* _AD2 */
-#define ADC_CPU_VOLTAGE_SCALE	0x00a0	/* _AD3 */
-#define ADC_CPU_CURRENT_SCALE	0x1f40	/* _AD4 */
+ 
+#define ADC_12V_CURRENT_SCALE	0x0320	 
+#define ADC_CPU_VOLTAGE_SCALE	0x00a0	 
+#define ADC_CPU_CURRENT_SCALE	0x1f40	 
 
 static void wf_ad7417_adc_convert(struct wf_ad7417_priv *pv,
 				  int chan, s32 raw, s32 *value)
 {
 	switch(chan) {
-	case 1: /* Diode */
+	case 1:  
 		*value = (raw * (s32)pv->mpu->mdiode +
 			((s32)pv->mpu->bdiode << 12)) >> 2;
 		break;
-	case 2: /* 12v current */
+	case 2:  
 		*value = raw * ADC_12V_CURRENT_SCALE;
 		break;
-	case 3: /* core voltage */
+	case 3:  
 		*value = raw * ADC_CPU_VOLTAGE_SCALE;
 		break;
-	case 4: /* core current */
+	case 4:  
 		*value = raw * ADC_CPU_CURRENT_SCALE;
 		break;
 	}
@@ -107,28 +98,28 @@ static int wf_ad7417_adc_get(struct wf_sensor *sr, s32 *value)
 	*value = 0;
 	mutex_lock(&pv->lock);
 	for (i = 0; i < 10; i++) {
-		/* Set channel */
+		 
 		buf[0] = 1;
 		buf[1] = (pv->config & 0x1f) | (chan << 5);
 		rc = i2c_master_send(pv->i2c, buf, 2);
 		if (rc < 0)
 			goto error;
 
-		/* Wait for conversion */
+		 
 		msleep(1);
 
-		/* Switch to data register */
+		 
 		buf[0] = 4;
 		rc = i2c_master_send(pv->i2c, buf, 1);
 		if (rc < 0)
 			goto error;
 
-		/* Read result */
+		 
 		rc = i2c_master_recv(pv->i2c, buf, 2);
 		if (rc < 0)
 			goto error;
 
-		/* Read a a 16-bit signed value */
+		 
 		raw = be16_to_cpup((__le16 *)buf) >> 6;
 		wf_ad7417_adc_convert(pv, chan, raw, value);
 
@@ -193,19 +184,14 @@ static void wf_ad7417_init_chip(struct wf_ad7417_priv *pv)
 	u8 buf[2];
 	u8 config = 0;
 
-	/*
-	 * Read ADC the configuration register and cache it. We
-	 * also make sure Config2 contains proper values, I've seen
-	 * cases where we got stale grabage in there, thus preventing
-	 * proper reading of conv. values
-	 */
+	 
 
-	/* Clear Config2 */
+	 
 	buf[0] = 5;
 	buf[1] = 0;
 	i2c_master_send(pv->i2c, buf, 2);
 
-	/* Read & cache Config1 */
+	 
 	buf[0] = 1;
 	rc = i2c_master_send(pv->i2c, buf, 1);
 	if (rc > 0) {
@@ -216,7 +202,7 @@ static void wf_ad7417_init_chip(struct wf_ad7417_priv *pv)
 			dev_dbg(&pv->i2c->dev, "ADC config reg: %02x\n",
 				config);
 
-			/* Disable shutdown mode */
+			 
 			config &= 0xfe;
 			buf[0] = 1;
 			buf[1] = config;
@@ -242,10 +228,7 @@ static int wf_ad7417_probe(struct i2c_client *client)
 		return -ENXIO;
 	}
 
-	/*
-	 * Identify which CPU we belong to by looking at the first entry
-	 * in the hwsensor-location list
-	 */
+	 
 	if (!strncmp(loc, "CPU A", 5))
 		cpu_nr = 0;
 	else if (!strncmp(loc, "CPU B", 5))
@@ -271,14 +254,10 @@ static int wf_ad7417_probe(struct i2c_client *client)
 	pv->mpu = mpu;
 	dev_set_drvdata(&client->dev, pv);
 
-	/* Initialize the chip */
+	 
 	wf_ad7417_init_chip(pv);
 
-	/*
-	 * We cannot rely on Apple device-tree giving us child
-	 * node with the names of the individual sensors so we
-	 * just hard code what we know about them
-	 */
+	 
 	wf_ad7417_add_sensor(pv, 0, "cpu-amb-temp", &wf_ad7417_temp_ops);
 	wf_ad7417_add_sensor(pv, 1, "cpu-diode-temp", &wf_ad7417_adc_ops);
 	wf_ad7417_add_sensor(pv, 2, "cpu-12v-current", &wf_ad7417_adc_ops);
@@ -293,10 +272,10 @@ static void wf_ad7417_remove(struct i2c_client *client)
 	struct wf_ad7417_priv *pv = dev_get_drvdata(&client->dev);
 	int i;
 
-	/* Mark client detached */
+	 
 	pv->i2c = NULL;
 
-	/* Release sensor */
+	 
 	for (i = 0; i < 5; i++)
 		wf_unregister_sensor(&pv->sensors[i]);
 
@@ -327,7 +306,7 @@ static struct i2c_driver wf_ad7417_driver = {
 
 static int wf_ad7417_init(void)
 {
-	/* This is only supported on these machines */
+	 
 	if (!of_machine_is_compatible("PowerMac7,2") &&
 	    !of_machine_is_compatible("PowerMac7,3") &&
 	    !of_machine_is_compatible("RackMac3,1"))

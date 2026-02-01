@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014-2018 Etnaviv Project
- */
+
+ 
 
 #include <drm/drm_drv.h>
 
@@ -17,9 +15,7 @@
 #include "state_3d.xml.h"
 #include "cmdstream.xml.h"
 
-/*
- * Command Buffer helper:
- */
+ 
 
 
 static inline void OUT(struct etnaviv_cmdbuf *buffer, u32 data)
@@ -39,7 +35,7 @@ static inline void CMD_LOAD_STATE(struct etnaviv_cmdbuf *buffer,
 
 	buffer->user_size = ALIGN(buffer->user_size, 8);
 
-	/* write a register via cmd stream */
+	 
 	OUT(buffer, VIV_FE_LOAD_STATE_HEADER_OP_LOAD_STATE |
 		    VIV_FE_LOAD_STATE_HEADER_COUNT(1) |
 		    VIV_FE_LOAD_STATE_HEADER_OFFSET(index));
@@ -94,12 +90,7 @@ static void etnaviv_cmd_select_pipe(struct etnaviv_gpu *gpu,
 
 	lockdep_assert_held(&gpu->lock);
 
-	/*
-	 * This assumes that if we're switching to 2D, we're switching
-	 * away from 3D, and vice versa.  Hence, if we're switching to
-	 * the 2D core, we need to flush the 3D depth and color caches,
-	 * otherwise we need to flush the 2D pixel engine cache.
-	 */
+	 
 	if (gpu->exec_state == ETNA_PIPE_2D)
 		flush = VIVS_GL_FLUSH_CACHE_PE2D;
 	else if (gpu->exec_state == ETNA_PIPE_3D)
@@ -128,12 +119,7 @@ static void etnaviv_buffer_dump(struct etnaviv_gpu *gpu,
 			ptr, len * 4, 0);
 }
 
-/*
- * Safely replace the WAIT of a waitlink with a new command and argument.
- * The GPU may be executing this WAIT while we're modifying it, so we have
- * to write it in a specific order to avoid the GPU branching to somewhere
- * else.  'wl_offset' is the offset to the first byte of the WAIT command.
- */
+ 
 static void etnaviv_buffer_replace_wait(struct etnaviv_cmdbuf *buffer,
 	unsigned int wl_offset, u32 cmd, u32 arg)
 {
@@ -145,10 +131,7 @@ static void etnaviv_buffer_replace_wait(struct etnaviv_cmdbuf *buffer,
 	mb();
 }
 
-/*
- * Ensure that there is space in the command buffer to contiguously write
- * 'cmd_dwords' 64-bit words into the buffer, wrapping if necessary.
- */
+ 
 static u32 etnaviv_buffer_reserve(struct etnaviv_gpu *gpu,
 	struct etnaviv_cmdbuf *buffer, unsigned int cmd_dwords)
 {
@@ -166,7 +149,7 @@ u16 etnaviv_buffer_init(struct etnaviv_gpu *gpu)
 
 	lockdep_assert_held(&gpu->lock);
 
-	/* initialize buffer */
+	 
 	buffer->user_size = 0;
 
 	CMD_WAIT(buffer, gpu->fe_waitcycles);
@@ -291,13 +274,13 @@ void etnaviv_buffer_end(struct etnaviv_gpu *gpu)
 					    VIV_FE_LINK_HEADER_PREFETCH(dwords),
 					    link_target);
 	} else {
-		/* Replace the last link-wait with an "END" command */
+		 
 		etnaviv_buffer_replace_wait(buffer, waitlink_offset,
 					    VIV_FE_END_HEADER_OP_END, 0);
 	}
 }
 
-/* Append a 'sync point' to the ring buffer. */
+ 
 void etnaviv_sync_point_queue(struct etnaviv_gpu *gpu, unsigned int event)
 {
 	struct etnaviv_cmdbuf *buffer = &gpu->buffer;
@@ -306,37 +289,31 @@ void etnaviv_sync_point_queue(struct etnaviv_gpu *gpu, unsigned int event)
 
 	lockdep_assert_held(&gpu->lock);
 
-	/*
-	 * We need at most 3 dwords in the return target:
-	 * 1 event + 1 end + 1 wait + 1 link.
-	 */
+	 
 	dwords = 4;
 	target = etnaviv_buffer_reserve(gpu, buffer, dwords);
 
-	/* Signal sync point event */
+	 
 	CMD_LOAD_STATE(buffer, VIVS_GL_EVENT, VIVS_GL_EVENT_EVENT_ID(event) |
 		       VIVS_GL_EVENT_FROM_PE);
 
-	/* Stop the FE to 'pause' the GPU */
+	 
 	CMD_END(buffer);
 
-	/* Append waitlink */
+	 
 	CMD_WAIT(buffer, gpu->fe_waitcycles);
 	CMD_LINK(buffer, 2,
 		 etnaviv_cmdbuf_get_va(buffer, &gpu->mmu_context->cmdbuf_mapping)
 		 + buffer->user_size - 4);
 
-	/*
-	 * Kick off the 'sync point' command by replacing the previous
-	 * WAIT with a link to the address in the ring buffer.
-	 */
+	 
 	etnaviv_buffer_replace_wait(buffer, waitlink_offset,
 				    VIV_FE_LINK_HEADER_OP_LINK |
 				    VIV_FE_LINK_HEADER_PREFETCH(dwords),
 				    target);
 }
 
-/* Append a command buffer to the ring buffer. */
+ 
 void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 	struct etnaviv_iommu_context *mmu_context, unsigned int event,
 	struct etnaviv_cmdbuf *cmdbuf)
@@ -361,18 +338,14 @@ void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 					    &gpu->mmu_context->cmdbuf_mapping);
 	link_dwords = cmdbuf->size / 8;
 
-	/*
-	 * If we need maintenance prior to submitting this buffer, we will
-	 * need to append a mmu flush load state, followed by a new
-	 * link to this buffer - a total of four additional words.
-	 */
+	 
 	if (need_flush || switch_context) {
 		u32 target, extra_dwords;
 
-		/* link command */
+		 
 		extra_dwords = 1;
 
-		/* flush command */
+		 
 		if (need_flush) {
 			if (gpu->mmu_context->global->version == ETNAVIV_IOMMU_V1)
 				extra_dwords += 1;
@@ -380,21 +353,16 @@ void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 				extra_dwords += 3;
 		}
 
-		/* pipe switch commands */
+		 
 		if (switch_context)
 			extra_dwords += 4;
 
-		/* PTA load command */
+		 
 		if (switch_mmu_context && gpu->sec_mode == ETNA_SEC_KERNEL)
 			extra_dwords += 1;
 
 		target = etnaviv_buffer_reserve(gpu, buffer, extra_dwords);
-		/*
-		 * Switch MMU context if necessary. Must be done after the
-		 * link target has been calculated, as the jump forward in the
-		 * kernel ring still uses the last active MMU context before
-		 * the switch.
-		 */
+		 
 		if (switch_mmu_context) {
 			struct etnaviv_iommu_context *old_context = gpu->mmu_context;
 
@@ -403,7 +371,7 @@ void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 		}
 
 		if (need_flush) {
-			/* Add the MMU flush */
+			 
 			if (gpu->mmu_context->global->version == ETNAVIV_IOMMU_V1) {
 				CMD_LOAD_STATE(buffer, VIVS_GL_FLUSH_MMU,
 					       VIVS_GL_FLUSH_MMU_FLUSH_FEMMU |
@@ -443,39 +411,27 @@ void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 			gpu->exec_state = exec_state;
 		}
 
-		/* And the link to the submitted buffer */
+		 
 		link_target = etnaviv_cmdbuf_get_va(cmdbuf,
 					&gpu->mmu_context->cmdbuf_mapping);
 		CMD_LINK(buffer, link_dwords, link_target);
 
-		/* Update the link target to point to above instructions */
+		 
 		link_target = target;
 		link_dwords = extra_dwords;
 	}
 
-	/*
-	 * Append a LINK to the submitted command buffer to return to
-	 * the ring buffer.  return_target is the ring target address.
-	 * We need at most 7 dwords in the return target: 2 cache flush +
-	 * 2 semaphore stall + 1 event + 1 wait + 1 link.
-	 */
+	 
 	return_dwords = 7;
 
-	/*
-	 * When the BLT engine is present we need 6 more dwords in the return
-	 * target: 3 enable/flush/disable + 4 enable/semaphore stall/disable,
-	 * but we don't need the normal TS flush state.
-	 */
+	 
 	if (has_blt)
 		return_dwords += 6;
 
 	return_target = etnaviv_buffer_reserve(gpu, buffer, return_dwords);
 	CMD_LINK(cmdbuf, return_dwords, return_target);
 
-	/*
-	 * Append a cache flush, stall, event, wait and link pointing back to
-	 * the wait command to the ring buffer.
-	 */
+	 
 	if (gpu->exec_state == ETNA_PIPE_2D) {
 		CMD_LOAD_STATE(buffer, VIVS_GL_FLUSH_CACHE,
 				       VIVS_GL_FLUSH_CACHE_PE2D);
@@ -525,10 +481,7 @@ void etnaviv_buffer_queue(struct etnaviv_gpu *gpu, u32 exec_state,
 		pr_info("event: %d\n", event);
 	}
 
-	/*
-	 * Kick off the submitted command by replacing the previous
-	 * WAIT with a link to the address in the ring buffer.
-	 */
+	 
 	etnaviv_buffer_replace_wait(buffer, waitlink_offset,
 				    VIV_FE_LINK_HEADER_OP_LINK |
 				    VIV_FE_LINK_HEADER_PREFETCH(link_dwords),

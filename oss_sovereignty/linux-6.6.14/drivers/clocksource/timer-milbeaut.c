@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Socionext Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>

@@ -1,17 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/*
- * Copyright (c) 2021 MediaTek Corporation. All rights reserved.
- *
- *  Header file for the mt8195 DSP clock  definition
- */
+ 
 
 #ifndef __MT8195_CLK_H
 #define __MT8195_CLK_H
 
 struct snd_sof_dev;
 
-/*DSP clock*/
+ 
 enum adsp_clk_id {
 	CLK_TOP_ADSP,
 	CLK_TOP_CLK26M,

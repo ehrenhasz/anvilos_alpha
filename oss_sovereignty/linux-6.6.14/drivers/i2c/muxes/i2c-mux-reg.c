@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * I2C multiplexer using a single register
- *
- * Copyright 2015 Freescale Semiconductor
- * York Sun  <yorksun@freescale.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/i2c-mux.h>
@@ -25,12 +20,7 @@ static int i2c_mux_reg_set(const struct regmux *mux, unsigned int chan_id)
 	if (!mux->data.reg)
 		return -EINVAL;
 
-	/*
-	 * Write to the register, followed by a read to ensure the write is
-	 * completed on a "posted" bus, for example PCI or write buffers.
-	 * The endianness of reading doesn't matter and the return data
-	 * is not used.
-	 */
+	 
 	switch (mux->data.reg_size) {
 	case 4:
 		if (mux->data.little_endian)
@@ -135,7 +125,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
 	if (!of_property_read_u32(np, "idle-state", &mux->data.idle))
 		mux->data.idle_in_use = true;
 
-	/* map address from "reg" if exists */
+	 
 	if (of_address_to_resource(np, 0, &res) == 0) {
 		mux->data.reg_size = resource_size(&res);
 		mux->data.reg = devm_ioremap_resource(&pdev->dev, &res);

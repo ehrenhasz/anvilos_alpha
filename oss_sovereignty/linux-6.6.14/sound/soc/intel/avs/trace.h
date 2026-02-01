@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM intel_avs
 
@@ -145,9 +145,9 @@ TRACE_EVENT(avs_d0ix,
 		  lower_32_bits(__entry->header), upper_32_bits(__entry->header))
 );
 
-#endif /* _TRACE_INTEL_AVS_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lsgpio - example on how to list the GPIO lines on a system
- *
- * Copyright (C) 2015 Linus Walleij
- *
- * Usage:
- *	lsgpio <-n device-name>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -117,7 +110,7 @@ int list_device(const char *device_name)
 		goto exit_free_name;
 	}
 
-	/* Inspect this GPIO chip */
+	 
 	ret = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &cinfo);
 	if (ret == -1) {
 		ret = -errno;
@@ -127,7 +120,7 @@ int list_device(const char *device_name)
 	fprintf(stdout, "GPIO chip: %s, \"%s\", %u GPIO lines\n",
 		cinfo.name, cinfo.label, cinfo.lines);
 
-	/* Loop over the lines and print info */
+	 
 	for (i = 0; i < cinfo.lines; i++) {
 		struct gpio_v2_line_info linfo;
 
@@ -198,7 +191,7 @@ int main(int argc, char **argv)
 		const struct dirent *ent;
 		DIR *dp;
 
-		/* List all GPIO devices one at a time */
+		 
 		dp = opendir("/dev");
 		if (!dp) {
 			ret = -errno;

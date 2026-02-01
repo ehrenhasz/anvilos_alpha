@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * processor_thermal_device.c
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/intel_tcc.h>
 #include <linux/kernel.h>
@@ -220,7 +217,7 @@ int proc_thermal_add(struct device *dev, struct proc_thermal_device *proc_priv)
 
 	status = acpi_evaluate_integer(adev->handle, "_TMP", NULL, &tmp);
 	if (ACPI_FAILURE(status)) {
-		/* there is no _TMP method, add local method */
+		 
 		if (intel_tcc_get_tjmax(-1) > 0)
 			get_temp = proc_thermal_get_zone_temp;
 	}
@@ -289,7 +286,7 @@ int proc_thermal_resume(struct device *dev)
 	proc_dev = dev_get_drvdata(dev);
 	proc_thermal_read_ppcc(proc_dev);
 
-	/* Do not update if saving failed */
+	 
 	if (tcc_offset_save >= 0)
 		intel_tcc_set_offset(-1, tcc_offset_save);
 

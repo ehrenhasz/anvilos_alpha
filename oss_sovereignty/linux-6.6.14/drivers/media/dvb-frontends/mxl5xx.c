@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the MaxLinear MxL5xx family of tuners/demods
- *
- * Copyright (C) 2014-2015 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- *                         developed for Digital Devices GmbH
- *
- * based on code:
- * Copyright (c) 2011-2013 MaxLinear, Inc. All rights reserved
- * which was released under GPL V2
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -100,7 +90,7 @@ static void convert_endian(u8 flag, u32 size, u8 *d)
 	switch (size & 3) {
 	case 0:
 	case 1:
-		/* do nothing */
+		 
 		break;
 	case 2:
 		d[i + 0] ^= d[i + 1];
@@ -334,7 +324,7 @@ static int init(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
 
-	/* init fe stats */
+	 
 	p->strength.len = 1;
 	p->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	p->cnr.len = 1;
@@ -356,7 +346,7 @@ static void release(struct dvb_frontend *fe)
 	struct mxl *state = fe->demodulator_priv;
 
 	list_del(&state->mxl);
-	/* Release one frontend, two more shall take its place! */
+	 
 	state->base->count--;
 	if (state->base->count == 0) {
 		list_del(&state->base->mxllist);
@@ -418,9 +408,9 @@ static int cfg_demod_abort_tune(struct mxl *state)
 static int send_master_cmd(struct dvb_frontend *fe,
 			   struct dvb_diseqc_master_cmd *cmd)
 {
-	/*struct mxl *state = fe->demodulator_priv;*/
+	 
 
-	return 0; /*CfgDemodAbortTune(state);*/
+	return 0;  
 }
 
 static int set_parameters(struct dvb_frontend *fe)
@@ -438,7 +428,7 @@ static int set_parameters(struct dvb_frontend *fe)
 	if (p->symbol_rate < 1000000 || p->symbol_rate > 45000000)
 		return -EINVAL;
 
-	/* CfgDemodAbortTune(state); */
+	 
 
 	switch (p->delivery_system) {
 	case SYS_DSS:
@@ -602,7 +592,7 @@ static int read_signal_strength(struct dvb_frontend *fe)
 	mutex_unlock(&state->base->status_lock);
 
 	p->strength.stat[0].scale = FE_SCALE_DECIBEL;
-	p->strength.stat[0].svalue = (s16) reg_data * 10; /* fix scale */
+	p->strength.stat[0].svalue = (s16) reg_data * 10;  
 
 	return stat;
 }
@@ -623,9 +613,9 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	*status = (reg_data == 1) ? 0x1f : 0;
 
-	/* signal statistics */
+	 
 
-	/* signal strength is always available */
+	 
 	read_signal_strength(fe);
 
 	if (*status & FE_HAS_CARRIER)
@@ -688,13 +678,13 @@ static int get_frontend(struct dvb_frontend *fe,
 	read_register_block(state,
 		(HYDRA_DMD_STANDARD_ADDR_OFFSET +
 		HYDRA_DMD_STATUS_OFFSET(state->demod)),
-		(MXL_DEMOD_CHAN_PARAMS_BUFF_SIZE * 4), /* 25 * 4 bytes */
+		(MXL_DEMOD_CHAN_PARAMS_BUFF_SIZE * 4),  
 		(u8 *) &reg_data[0]);
-	/* read demod channel parameters */
+	 
 	read_register_block(state,
 		(HYDRA_DMD_STATUS_CENTER_FREQ_IN_KHZ_ADDR +
 		HYDRA_DMD_STATUS_OFFSET(state->demod)),
-		(4), /* 4 bytes */
+		(4),  
 		(u8 *) &freq);
 	HYDRA_DEMOD_STATUS_UNLOCK(state, state->demod);
 	mutex_unlock(&state->base->status_lock);
@@ -704,14 +694,7 @@ static int get_frontend(struct dvb_frontend *fe,
 		reg_data[DMD_SYMBOL_RATE_ADDR]);
 	p->symbol_rate = reg_data[DMD_SYMBOL_RATE_ADDR];
 	p->frequency = freq;
-	/*
-	 * p->delivery_system =
-	 *	(MXL_HYDRA_BCAST_STD_E) regData[DMD_STANDARD_ADDR];
-	 * p->inversion =
-	 *	(MXL_HYDRA_SPECTRUM_E) regData[DMD_SPECTRUM_INVERSION_ADDR];
-	 * freqSearchRangeKHz =
-	 *	(regData[DMD_FREQ_SEARCH_RANGE_IN_KHZ_ADDR]);
-	 */
+	 
 
 	p->fec_inner = conv_fec(reg_data[DMD_FEC_CODE_RATE_ADDR]);
 	switch (p->delivery_system) {
@@ -965,13 +948,13 @@ static int firmware_download(struct mxl *state, u8 *mbin, u32 mbin_len)
 	if (check_fw(state, mbin, mbin_len))
 		return -1;
 
-	/* put CPU into reset */
+	 
 	status = update_by_mnemonic(state, 0x8003003C, 0, 1, 0);
 	if (status)
 		return status;
 	usleep_range(1000, 2000);
 
-	/* Reset TX FIFO's, BBAND, XBAR */
+	 
 	status = write_register(state, HYDRA_RESET_TRANSPORT_FIFO_REG,
 				HYDRA_RESET_TRANSPORT_FIFO_DATA);
 	if (status)
@@ -985,14 +968,12 @@ static int firmware_download(struct mxl *state, u8 *mbin, u32 mbin_len)
 	if (status)
 		return status;
 
-	/* Disable clock to Baseband, Wideband, SerDes,
-	 * Alias ext & Transport modules
-	 */
+	 
 	status = write_register(state, HYDRA_MODULES_CLK_2_REG,
 				HYDRA_DISABLE_CLK_2);
 	if (status)
 		return status;
-	/* Clear Software & Host interrupt status - (Clear on read) */
+	 
 	status = read_register(state, HYDRA_PRCM_ROOT_CLK_REG, &reg_data);
 	if (status)
 		return status;
@@ -1003,26 +984,26 @@ static int firmware_download(struct mxl *state, u8 *mbin, u32 mbin_len)
 	if (state->base->type == MXL_HYDRA_DEVICE_568) {
 		usleep_range(10000, 11000);
 
-		/* bring XCPU out of reset */
+		 
 		status = write_register(state, 0x90720000, 1);
 		if (status)
 			return status;
 		msleep(500);
 
-		/* Enable XCPU UART message processing in MCPU */
+		 
 		status = write_register(state, 0x9076B510, 1);
 		if (status)
 			return status;
 	} else {
-		/* Bring CPU out of reset */
+		 
 		status = update_by_mnemonic(state, 0x8003003C, 0, 1, 1);
 		if (status)
 			return status;
-		/* Wait until FW boots */
+		 
 		msleep(150);
 	}
 
-	/* Initialize XPT XBAR */
+	 
 	status = write_register(state, XPT_DMD0_BASEADDR, 0x76543210);
 	if (status)
 		return status;
@@ -1032,9 +1013,7 @@ static int firmware_download(struct mxl *state, u8 *mbin, u32 mbin_len)
 
 	dev_info(state->i2cdev, "Hydra FW alive. Hail!\n");
 
-	/* sometimes register values are wrong shortly
-	 * after first heart beats
-	 */
+	 
 	msleep(50);
 
 	dev_sku_cfg.sku_type = state->base->sku_type;
@@ -1454,10 +1433,10 @@ static int config_ts(struct mxl *state, enum MXL_HYDRA_DEMOD_ID_E demod_id,
 
 	if (state->base->chipversion >= 2) {
 		status |= update_by_mnemonic(state,
-			xpt_nco_clock_rate[demod_id].reg_addr, /* Reg Addr */
-			xpt_nco_clock_rate[demod_id].lsb_pos, /* LSB pos */
-			xpt_nco_clock_rate[demod_id].num_of_bits, /* Num of bits */
-			nco_count_min); /* Data */
+			xpt_nco_clock_rate[demod_id].reg_addr,  
+			xpt_nco_clock_rate[demod_id].lsb_pos,  
+			xpt_nco_clock_rate[demod_id].num_of_bits,  
+			nco_count_min);  
 	} else
 		update_by_mnemonic(state, 0x90700044, 16, 8, nco_count_min);
 
@@ -1796,14 +1775,14 @@ static int probe(struct mxl *state, struct mxl5xx_cfg *cfg)
 	config_mux(state);
 	mpeg_interface_cfg.enable = MXL_ENABLE;
 	mpeg_interface_cfg.lsb_or_msb_first = MXL_HYDRA_MPEG_SERIAL_MSB_1ST;
-	/*  supports only (0-104&139)MHz */
+	 
 	if (cfg->ts_clk)
 		mpeg_interface_cfg.max_mpeg_clk_rate = cfg->ts_clk;
 	else
-		mpeg_interface_cfg.max_mpeg_clk_rate = 69; /* 139; */
+		mpeg_interface_cfg.max_mpeg_clk_rate = 69;  
 	mpeg_interface_cfg.mpeg_clk_phase = MXL_HYDRA_MPEG_CLK_PHASE_SHIFT_0_DEG;
 	mpeg_interface_cfg.mpeg_clk_pol = MXL_HYDRA_MPEG_CLK_IN_PHASE;
-	/* MXL_HYDRA_MPEG_CLK_GAPPED; */
+	 
 	mpeg_interface_cfg.mpeg_clk_type = MXL_HYDRA_MPEG_CLK_CONTINUOUS;
 	mpeg_interface_cfg.mpeg_error_indication =
 		MXL_HYDRA_MPEG_ERR_INDICATION_DISABLED;

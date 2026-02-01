@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LEDs driver for PCEngines WRAP
- *
- * Copyright (C) 2006 Kristian Kielhofner <kris@krisk.org>
- *
- * Based on leds-net48xx.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

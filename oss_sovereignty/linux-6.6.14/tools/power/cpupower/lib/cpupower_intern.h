@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define PATH_TO_CPU "/sys/devices/system/cpu/"
 
 #ifndef MAX_LINE_LEN

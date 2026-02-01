@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
-/* Copyright (C) 2020 Intel Corporation */
+ 
+ 
 
 #ifndef __UAPI_CCS_H__
 #define __UAPI_CCS_H__

@@ -1,4 +1,4 @@
-// cc_fuzz_target test for public key parsing.
+
 
 #include <stddef.h>
 #include <stdio.h>
@@ -59,4 +59,4 @@ int LLVMFuzzerTestOneInput(const uint8_t* sig, size_t slen)
   return 0;
 }
 
-} // extern
+} 

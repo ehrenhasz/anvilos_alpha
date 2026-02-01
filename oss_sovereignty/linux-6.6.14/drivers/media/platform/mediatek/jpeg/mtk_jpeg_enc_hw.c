@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Xia Jiang <xia.jiang@mediatek.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -134,10 +130,7 @@ void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ctx,  void __iomem *base)
 
 	if (enc_format == V4L2_PIX_FMT_NV12M ||
 	    enc_format == V4L2_PIX_FMT_NV21M)
-	    /*
-	     * Total 8 x 8 block number of luma and chroma.
-	     * The number of blocks is counted from 0.
-	     */
+	     
 		blk_num = DIV_ROUND_UP(width, 16) *
 			  DIV_ROUND_UP(height, 16) * 6 - 1;
 	else
@@ -147,11 +140,11 @@ void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ctx,  void __iomem *base)
 
 	if (enc_format == V4L2_PIX_FMT_NV12M ||
 	    enc_format == V4L2_PIX_FMT_NV21M) {
-		/* 4:2:0 */
+		 
 		img_stride = round_up(width, 16);
 		mem_stride = bytesperline;
 	} else {
-		/* 4:2:2 */
+		 
 		img_stride = round_up(width * 2, 32);
 		mem_stride = img_stride;
 	}

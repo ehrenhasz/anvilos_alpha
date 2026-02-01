@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -11,23 +11,12 @@
 #include <media/v4l2-device.h>
 
 #define AK7375_MAX_FOCUS_POS	4095
-/*
- * This sets the minimum granularity for the focus positions.
- * A value of 1 gives maximum accuracy for a desired focus position
- */
+ 
 #define AK7375_FOCUS_STEPS	1
-/*
- * This acts as the minimum granularity of lens movement.
- * Keep this value power of 2, so the control steps can be
- * uniformly adjusted for gradual lens movement, with desired
- * number of control steps.
- */
+ 
 #define AK7375_CTRL_STEPS	64
 #define AK7375_CTRL_DELAY_US	1000
-/*
- * The vcm may take up 10 ms (tDELAY) to power on and start taking
- * I2C messages. Based on AK7371 datasheet.
- */
+ 
 #define AK7375_POWER_DELAY_US	10000
 
 #define AK7375_REG_POSITION	0x0
@@ -40,14 +29,14 @@ static const char * const ak7375_supply_names[] = {
 	"vio",
 };
 
-/* ak7375 device structure */
+ 
 struct ak7375_device {
 	struct v4l2_ctrl_handler ctrls_vcm;
 	struct v4l2_subdev sd;
 	struct v4l2_ctrl *focus;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(ak7375_supply_names)];
 
-	/* active or standby mode */
+	 
 	bool active;
 };
 
@@ -204,11 +193,7 @@ static void ak7375_remove(struct i2c_client *client)
 	pm_runtime_set_suspended(&client->dev);
 }
 
-/*
- * This function sets the vcm position, so it consumes least current
- * The lens position is gradually moved in units of AK7375_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int __maybe_unused ak7375_vcm_suspend(struct device *dev)
 {
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
@@ -243,12 +228,7 @@ static int __maybe_unused ak7375_vcm_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * This function sets the vcm position to the value set by the user
- * through v4l2_ctrl_ops s_ctrl handler
- * The lens position is gradually moved in units of AK7375_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int __maybe_unused ak7375_vcm_resume(struct device *dev)
 {
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
@@ -263,7 +243,7 @@ static int __maybe_unused ak7375_vcm_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Wait for vcm to become ready */
+	 
 	usleep_range(AK7375_POWER_DELAY_US, AK7375_POWER_DELAY_US + 500);
 
 	ret = ak7375_i2c_write(ak7375_dev, AK7375_REG_CONT,
@@ -291,7 +271,7 @@ static int __maybe_unused ak7375_vcm_resume(struct device *dev)
 
 static const struct of_device_id ak7375_of_table[] = {
 	{ .compatible = "asahi-kasei,ak7375" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ak7375_of_table);
 

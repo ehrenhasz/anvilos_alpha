@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*********************************************************************
- *
- * msnd_classic.h
- *
- * Turtle Beach MultiSound Sound Card Driver for Linux
- *
- * Some parts of this header file were derived from the Turtle Beach
- * MultiSound Driver Development Kit.
- *
- * Copyright (C) 1998 Andrew Veliath
- * Copyright (C) 1993 Turtle Beach Systems, Inc.
- *
- ********************************************************************/
+ 
+ 
 #ifndef __MSND_CLASSIC_H
 #define __MSND_CLASSIC_H
 
@@ -66,7 +54,7 @@
 #define MIP_SYNTH				0x00
 #define MIP_INMASK				0x32
 
-/* Classic SMA Common Data */
+ 
 #define SMA_wCurrPlayBytes			0x0000
 #define SMA_wCurrRecordBytes			0x0002
 #define SMA_wCurrPlayVolLeft			0x0004
@@ -113,4 +101,4 @@
 #define PERMCODEFILE		"turtlebeach/msndperm.bin"
 #define LONGNAME		"MultiSound (Classic/Monterey/Tahiti)"
 
-#endif /* __MSND_CLASSIC_H */
+#endif  

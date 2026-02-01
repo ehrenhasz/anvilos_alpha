@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Basic resctrl file system operations
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include <limits.h>
 
 #include "resctrl.h"
@@ -49,14 +41,7 @@ static int find_resctrl_mount(char *buffer)
 	return -ENOENT;
 }
 
-/*
- * mount_resctrlfs - Mount resctrl FS at /sys/fs/resctrl
- *
- * Mounts resctrl FS. Fails if resctrl FS is already mounted to avoid
- * pre-existing settings interfering with the test results.
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 int mount_resctrlfs(void)
 {
 	int ret;
@@ -93,13 +78,7 @@ int umount_resctrlfs(void)
 	return 0;
 }
 
-/*
- * get_resource_id - Get socket number/l3 id for a specified CPU
- * @cpu_no:	CPU number
- * @resource_id: Socket number or l3_id
- *
- * Return: >= 0 on success, < 0 on failure.
- */
+ 
 int get_resource_id(int cpu_no, int *resource_id)
 {
 	char phys_pkg_path[1024];
@@ -129,14 +108,7 @@ int get_resource_id(int cpu_no, int *resource_id)
 	return 0;
 }
 
-/*
- * get_cache_size - Get cache size for a specified CPU
- * @cpu_no:	CPU number
- * @cache_type:	Cache level L2/L3
- * @cache_size:	pointer to cache_size
- *
- * Return: = 0 on success, < 0 on failure.
- */
+ 
 int get_cache_size(int cpu_no, char *cache_type, unsigned long *cache_size)
 {
 	char cache_path[1024], cache_str[64];
@@ -194,13 +166,7 @@ int get_cache_size(int cpu_no, char *cache_type, unsigned long *cache_size)
 
 #define CORE_SIBLINGS_PATH	"/sys/bus/cpu/devices/cpu"
 
-/*
- * get_cbm_mask - Get cbm mask for given cache
- * @cache_type:	Cache level L2/L3
- * @cbm_mask:	cbm_mask returned as a string
- *
- * Return: = 0 on success, < 0 on failure.
- */
+ 
 int get_cbm_mask(char *cache_type, char *cbm_mask)
 {
 	char cbm_mask_path[1024];
@@ -228,12 +194,7 @@ int get_cbm_mask(char *cache_type, char *cbm_mask)
 	return 0;
 }
 
-/*
- * get_core_sibling - Get sibling core id from the same socket for given CPU
- * @cpu_no:	CPU number
- *
- * Return:	> 0 on success, < 0 on failure.
- */
+ 
 int get_core_sibling(int cpu_no)
 {
 	char core_siblings_path[1024], cpu_list_str[64];
@@ -261,7 +222,7 @@ int get_core_sibling(int cpu_no)
 
 	while (token) {
 		sibling_cpu_no = atoi(token);
-		/* Skipping core 0 as we don't want to run test on core 0 */
+		 
 		if (sibling_cpu_no != 0 && sibling_cpu_no != cpu_no)
 			break;
 		token = strtok(NULL, "-,");
@@ -270,13 +231,7 @@ int get_core_sibling(int cpu_no)
 	return sibling_cpu_no;
 }
 
-/*
- * taskset_benchmark - Taskset PID (i.e. benchmark) to a specified cpu
- * @bm_pid:	PID that should be binded
- * @cpu_no:	CPU number at which the PID would be binded
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 int taskset_benchmark(pid_t bm_pid, int cpu_no)
 {
 	cpu_set_t my_set;
@@ -293,15 +248,7 @@ int taskset_benchmark(pid_t bm_pid, int cpu_no)
 	return 0;
 }
 
-/*
- * run_benchmark - Run a specified benchmark or fill_buf (default benchmark)
- *		   in specified signal. Direct benchmark stdio to /dev/null.
- * @signum:	signal number
- * @info:	signal info
- * @ucontext:	user context in signal handling
- *
- * Return: void
- */
+ 
 void run_benchmark(int signum, siginfo_t *info, void *ucontext)
 {
 	int operation, ret, memflush;
@@ -312,16 +259,13 @@ void run_benchmark(int signum, siginfo_t *info, void *ucontext)
 
 	benchmark_cmd = info->si_ptr;
 
-	/*
-	 * Direct stdio of child to /dev/null, so that only parent writes to
-	 * stdio (console)
-	 */
+	 
 	fp = freopen("/dev/null", "w", stdout);
 	if (!fp)
 		PARENT_EXIT("Unable to direct benchmark status to /dev/null");
 
 	if (strcmp(benchmark_cmd[0], "fill_buf") == 0) {
-		/* Execute default fill_buf benchmark */
+		 
 		span = strtoul(benchmark_cmd[1], NULL, 10);
 		memflush =  atoi(benchmark_cmd[2]);
 		operation = atoi(benchmark_cmd[3]);
@@ -335,7 +279,7 @@ void run_benchmark(int signum, siginfo_t *info, void *ucontext)
 		if (run_fill_buf(span, memflush, operation, once))
 			fprintf(stderr, "Error in running fill buffer\n");
 	} else {
-		/* Execute specified benchmark */
+		 
 		ret = execvp(benchmark_cmd[0], benchmark_cmd);
 		if (ret)
 			perror("wrong\n");
@@ -345,29 +289,18 @@ void run_benchmark(int signum, siginfo_t *info, void *ucontext)
 	PARENT_EXIT("Unable to run specified benchmark");
 }
 
-/*
- * create_grp - Create a group only if one doesn't exist
- * @grp_name:	Name of the group
- * @grp:	Full path and name of the group
- * @parent_grp:	Full path and name of the parent group
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 static int create_grp(const char *grp_name, char *grp, const char *parent_grp)
 {
 	int found_grp = 0;
 	struct dirent *ep;
 	DIR *dp;
 
-	/*
-	 * At this point, we are guaranteed to have resctrl FS mounted and if
-	 * length of grp_name == 0, it means, user wants to use root con_mon
-	 * grp, so do nothing
-	 */
+	 
 	if (strlen(grp_name) == 0)
 		return 0;
 
-	/* Check if requested grp exists or not */
+	 
 	dp = opendir(parent_grp);
 	if (dp) {
 		while ((ep = readdir(dp)) != NULL) {
@@ -381,7 +314,7 @@ static int create_grp(const char *grp_name, char *grp, const char *parent_grp)
 		return -1;
 	}
 
-	/* Requested grp doesn't exist, hence create it */
+	 
 	if (found_grp == 0) {
 		if (mkdir(grp, 0) == -1) {
 			perror("Unable to create group");
@@ -414,21 +347,7 @@ static int write_pid_to_tasks(char *tasks, pid_t pid)
 	return 0;
 }
 
-/*
- * write_bm_pid_to_resctrl - Write a PID (i.e. benchmark) to resctrl FS
- * @bm_pid:		PID that should be written
- * @ctrlgrp:		Name of the control monitor group (con_mon grp)
- * @mongrp:		Name of the monitor group (mon grp)
- * @resctrl_val:	Resctrl feature (Eg: mbm, mba.. etc)
- *
- * If a con_mon grp is requested, create it and write pid to it, otherwise
- * write pid to root con_mon grp.
- * If a mon grp is requested, create it and write pid to it, otherwise
- * pid is not written, this means that pid is in con_mon grp and hence
- * should consult con_mon grp's mon_data directory for results.
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 int write_bm_pid_to_resctrl(pid_t bm_pid, char *ctrlgrp, char *mongrp,
 			    char *resctrl_val)
 {
@@ -441,7 +360,7 @@ int write_bm_pid_to_resctrl(pid_t bm_pid, char *ctrlgrp, char *mongrp,
 	else
 		sprintf(controlgroup, "%s", RESCTRL_PATH);
 
-	/* Create control and monitoring group and write pid into it */
+	 
 	ret = create_grp(ctrlgrp, controlgroup, RESCTRL_PATH);
 	if (ret)
 		goto out;
@@ -450,7 +369,7 @@ int write_bm_pid_to_resctrl(pid_t bm_pid, char *ctrlgrp, char *mongrp,
 	if (ret)
 		goto out;
 
-	/* Create mon grp and write pid into it for "mbm" and "cmt" test */
+	 
 	if (!strncmp(resctrl_val, CMT_STR, sizeof(CMT_STR)) ||
 	    !strncmp(resctrl_val, MBM_STR, sizeof(MBM_STR))) {
 		if (strlen(mongrp)) {
@@ -476,18 +395,7 @@ out:
 	return ret;
 }
 
-/*
- * write_schemata - Update schemata of a con_mon grp
- * @ctrlgrp:		Name of the con_mon grp
- * @schemata:		Schemata that should be updated to
- * @cpu_no:		CPU number that the benchmark PID is binded to
- * @resctrl_val:	Resctrl feature (Eg: mbm, mba.. etc)
- *
- * Update schemata of a con_mon grp *only* if requested resctrl feature is
- * allocation type
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 int write_schemata(char *ctrlgrp, char *schemata, int cpu_no, char *resctrl_val)
 {
 	char controlgroup[1024], schema[1024], reason[64];
@@ -604,15 +512,7 @@ char *fgrep(FILE *inf, const char *str)
 	return NULL;
 }
 
-/*
- * validate_resctrl_feature_request - Check if requested feature is valid.
- * @resource:	Required resource (e.g., MB, L3, L2, L3_MON, etc.)
- * @feature:	Required monitor feature (in mon_features file). Can only be
- *		set for L3_MON. Must be NULL for all other resources.
- *
- * Return: True if the resource/feature is supported, else false. False is
- *         also returned if resctrl FS is not mounted.
- */
+ 
 bool validate_resctrl_feature_request(const char *resource, const char *feature)
 {
 	char res_path[PATH_MAX];

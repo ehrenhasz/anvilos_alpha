@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <asm/unaligned.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
@@ -11,12 +7,7 @@
 #include "mvm.h"
 #include "fw-api.h"
 
-/*
- * iwl_mvm_rx_rx_phy_cmd - REPLY_RX_PHY_CMD handler
- *
- * Copies the phy information in mvm->last_phy_info, it will be used when the
- * actual data will come from the fw in the next packet.
- */
+ 
 void iwl_mvm_rx_rx_phy_cmd(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 {
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
@@ -37,11 +28,7 @@ void iwl_mvm_rx_rx_phy_cmd(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 #endif
 }
 
-/*
- * iwl_mvm_pass_packet_to_mac80211 - builds the packet for mac80211
- *
- * Adds the rxb to a new skb and give it to mac80211
- */
+ 
 static void iwl_mvm_pass_packet_to_mac80211(struct iwl_mvm *mvm,
 					    struct ieee80211_sta *sta,
 					    struct napi_struct *napi,
@@ -53,30 +40,10 @@ static void iwl_mvm_pass_packet_to_mac80211(struct iwl_mvm *mvm,
 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
 	unsigned int fraglen;
 
-	/*
-	 * The 'hdrlen' (plus the 8 bytes for the SNAP and the crypt_len,
-	 * but those are all multiples of 4 long) all goes away, but we
-	 * want the *end* of it, which is going to be the start of the IP
-	 * header, to be aligned when it gets pulled in.
-	 * The beginning of the skb->data is aligned on at least a 4-byte
-	 * boundary after allocation. Everything here is aligned at least
-	 * on a 2-byte boundary so we can just take hdrlen & 3 and pad by
-	 * the result.
-	 */
+	 
 	skb_reserve(skb, hdrlen & 3);
 
-	/* If frame is small enough to fit in skb->head, pull it completely.
-	 * If not, only pull ieee80211_hdr (including crypto if present, and
-	 * an additional 8 bytes for SNAP/ethertype, see below) so that
-	 * splice() or TCP coalesce are more efficient.
-	 *
-	 * Since, in addition, ieee80211_data_to_8023() always pull in at
-	 * least 8 bytes (possibly more for mesh) we can do the same here
-	 * to save the cost of doing it later. That still doesn't pull in
-	 * the actual IP header since the typical case has a SNAP header.
-	 * If the latter changes (there are efforts in the standards group
-	 * to do so) we should revisit this and ieee80211_data_to_8023().
-	 */
+	 
 	hdrlen = (len <= skb_tailroom(skb)) ? len : hdrlen + crypt_len + 8;
 
 	skb_put_data(skb, hdr, hdrlen);
@@ -93,12 +60,7 @@ static void iwl_mvm_pass_packet_to_mac80211(struct iwl_mvm *mvm,
 	ieee80211_rx_napi(mvm->hw, sta, skb, napi);
 }
 
-/*
- * iwl_mvm_get_signal_strength - use new rx PHY INFO API
- * values are reported by the fw as positive values - need to negate
- * to obtain their dBM.  Account for missing antennas by replacing 0
- * values by -256dBm: practically 0 power and a non-feasible 8 bit value.
- */
+ 
 static void iwl_mvm_get_signal_strength(struct iwl_mvm *mvm,
 					struct iwl_rx_phy_info *phy_info,
 					struct ieee80211_rx_status *rx_status)
@@ -127,15 +89,7 @@ static void iwl_mvm_get_signal_strength(struct iwl_mvm *mvm,
 	rx_status->chain_signal[1] = energy_b;
 }
 
-/*
- * iwl_mvm_set_mac80211_rx_flag - translate fw status to mac80211 format
- * @mvm: the mvm object
- * @hdr: 80211 header
- * @stats: status in mac80211's format
- * @rx_pkt_status: status coming from fw
- *
- * returns non 0 value if the packet should be dropped
- */
+ 
 static u32 iwl_mvm_set_mac80211_rx_flag(struct iwl_mvm *mvm,
 					struct ieee80211_hdr *hdr,
 					struct ieee80211_rx_status *stats,
@@ -147,14 +101,14 @@ static u32 iwl_mvm_set_mac80211_rx_flag(struct iwl_mvm *mvm,
 			     RX_MPDU_RES_STATUS_SEC_NO_ENC)
 		return 0;
 
-	/* packet was encrypted with unknown alg */
+	 
 	if ((rx_pkt_status & RX_MPDU_RES_STATUS_SEC_ENC_MSK) ==
 					RX_MPDU_RES_STATUS_SEC_ENC_ERR)
 		return 0;
 
 	switch (rx_pkt_status & RX_MPDU_RES_STATUS_SEC_ENC_MSK) {
 	case RX_MPDU_RES_STATUS_SEC_CCM_ENC:
-		/* alg is CCM: check MIC only */
+		 
 		if (!(rx_pkt_status & RX_MPDU_RES_STATUS_MIC_OK))
 			return -1;
 
@@ -163,7 +117,7 @@ static u32 iwl_mvm_set_mac80211_rx_flag(struct iwl_mvm *mvm,
 		return 0;
 
 	case RX_MPDU_RES_STATUS_SEC_TKIP_ENC:
-		/* Don't drop the frame and decrypt it in SW */
+		 
 		if (!fw_has_api(&mvm->fw->ucode_capa,
 				IWL_UCODE_TLV_API_DEPRECATE_TTAK) &&
 		    !(rx_pkt_status & RX_MPDU_RES_STATUS_TTAK_OK))
@@ -188,7 +142,7 @@ static u32 iwl_mvm_set_mac80211_rx_flag(struct iwl_mvm *mvm,
 		return 0;
 
 	default:
-		/* Expected in monitor (not having the keys) */
+		 
 		if (!mvm->monitor_on)
 			IWL_WARN(mvm, "Unhandled alg: 0x%x\n", rx_pkt_status);
 	}
@@ -205,9 +159,9 @@ static void iwl_mvm_rx_handle_tcm(struct iwl_mvm *mvm,
 	struct iwl_mvm_sta *mvmsta;
 	struct iwl_mvm_tcm_mac *mdata;
 	int mac;
-	int ac = IEEE80211_AC_BE; /* treat non-QoS as BE */
+	int ac = IEEE80211_AC_BE;  
 	struct iwl_mvm_vif *mvmvif;
-	/* expected throughput in 100Kbps, single stream, 20 MHz */
+	 
 	static const u8 thresh_tpt[] = {
 		9, 18, 30, 42, 60, 78, 90, 96, 120, 135,
 	};
@@ -228,7 +182,7 @@ static void iwl_mvm_rx_handle_tcm(struct iwl_mvm *mvm,
 	mdata = &mvm->tcm.data[mac];
 	mdata->rx.pkts[ac]++;
 
-	/* count the airtime only once for each ampdu */
+	 
 	if (mdata->rx.last_ampdu_ref != mvm->ampdu_ref) {
 		mdata->rx.last_ampdu_ref = mvm->ampdu_ref;
 		mdata->rx.airtime += le16_to_cpu(phy_info->frame_time);
@@ -280,11 +234,7 @@ static void iwl_mvm_rx_csum(struct ieee80211_sta *sta,
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 }
 
-/*
- * iwl_mvm_rx_rx_mpdu - REPLY_RX_MPDU_CMD handler
- *
- * Handles the actual data of the Rx packet from the fw
- */
+ 
 void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 			struct iwl_rx_cmd_buffer *rxb)
 {
@@ -318,9 +268,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 	rx_pkt_status = get_unaligned_le32((__le32 *)
 		(pkt->data + sizeof(*rx_res) + len));
 
-	/* Dont use dev_alloc_skb(), we'll have enough headroom once
-	 * ieee80211_hdr pulled.
-	 */
+	 
 	skb = alloc_skb(128, GFP_ATOMIC);
 	if (!skb) {
 		IWL_ERR(mvm, "alloc_skb failed\n");
@@ -329,20 +277,17 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 
 	rx_status = IEEE80211_SKB_RXCB(skb);
 
-	/*
-	 * Keep packets with CRC errors (and with overrun) for monitor mode
-	 * (otherwise the firmware discards them) but mark them as bad.
-	 */
+	 
 	if (!(rx_pkt_status & RX_MPDU_RES_STATUS_CRC_OK) ||
 	    !(rx_pkt_status & RX_MPDU_RES_STATUS_OVERRUN_OK)) {
 		IWL_DEBUG_RX(mvm, "Bad CRC or FIFO: 0x%08X.\n", rx_pkt_status);
 		rx_status->flag |= RX_FLAG_FAILED_FCS_CRC;
 	}
 
-	/* This will be used in several places later */
+	 
 	rate_n_flags = le32_to_cpu(phy_info->rate_n_flags);
 
-	/* rx_status carries information about the packet to mac80211 */
+	 
 	rx_status->mactime = le64_to_cpu(phy_info->timestamp);
 	rx_status->device_timestamp = le32_to_cpu(phy_info->system_timestamp);
 	rx_status->band =
@@ -352,7 +297,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 		ieee80211_channel_to_frequency(le16_to_cpu(phy_info->channel),
 					       rx_status->band);
 
-	/* TSF as indicated by the firmware  is at INA time */
+	 
 	rx_status->flag |= RX_FLAG_MACTIME_PLCP_START;
 
 	iwl_mvm_get_signal_strength(mvm, phy_info, rx_status);
@@ -372,9 +317,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 				sta = NULL;
 		}
 	} else if (!is_multicast_ether_addr(hdr->addr2)) {
-		/* This is fine since we prevent two stations with the same
-		 * address from being added.
-		 */
+		 
 		sta = ieee80211_find_sta_by_ifaddr(mvm->hw, hdr->addr2, NULL);
 	}
 
@@ -383,10 +326,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 		struct ieee80211_vif *vif = mvmsta->vif;
 		struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 
-		/*
-		 * Don't even try to decrypt a MCAST frame that was received
-		 * before the managed vif is authorized, we'd fail anyway.
-		 */
+		 
 		if (is_multicast_ether_addr(hdr->addr1) &&
 		    vif->type == NL80211_IFTYPE_STATION &&
 		    !mvmvif->authorized &&
@@ -398,9 +338,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 		}
 	}
 
-	/*
-	 * drop the packet if it has failed being decrypted by HW
-	 */
+	 
 	if (iwl_mvm_set_mac80211_rx_flag(mvm, hdr, rx_status, rx_pkt_status,
 					 &crypt_len)) {
 		IWL_DEBUG_DROP(mvm, "Bad decryption results 0x%08x\n",
@@ -417,10 +355,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 		struct iwl_fw_dbg_trigger_tlv *trig;
 		struct ieee80211_vif *vif = mvmsta->vif;
 
-		/* We have tx blocked stations (with CS bit). If we heard
-		 * frames from a blocked station on a new channel we can
-		 * TX to it again.
-		 */
+		 
 		if (unlikely(tx_blocked_vif) && vif == tx_blocked_vif) {
 			struct iwl_mvm_vif *mvmvif =
 				iwl_mvm_vif_from_mac80211(tx_blocked_vif);
@@ -459,21 +394,17 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
 	}
 	rcu_read_unlock();
 
-	/* set the preamble flag if appropriate */
+	 
 	if (phy_info->phy_flags & cpu_to_le16(RX_RES_PHY_FLAGS_SHORT_PREAMBLE))
 		rx_status->enc_flags |= RX_ENC_FLAG_SHORTPRE;
 
 	if (phy_info->phy_flags & cpu_to_le16(RX_RES_PHY_FLAGS_AGG)) {
-		/*
-		 * We know which subframes of an A-MPDU belong
-		 * together since we get a single PHY response
-		 * from the firmware for all of them
-		 */
+		 
 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
 		rx_status->ampdu_reference = mvm->ampdu_ref;
 	}
 
-	/* Set up the HT phy flags */
+	 
 	switch (rate_n_flags & RATE_MCS_CHAN_WIDTH_MSK_V1) {
 	case RATE_MCS_CHAN_WIDTH_20:
 		break;
@@ -571,7 +502,7 @@ static void iwl_mvm_update_vif_sig(struct ieee80211_vif *vif, int sig)
 
 	mvmvif->bf_data.ave_beacon_signal = sig;
 
-	/* BT Coex */
+	 
 	if (mvmvif->bf_data.bt_coex_min_thold !=
 	    mvmvif->bf_data.bt_coex_max_thold) {
 		last_event = mvmvif->bf_data.last_bt_coex_event;
@@ -595,7 +526,7 @@ static void iwl_mvm_update_vif_sig(struct ieee80211_vif *vif, int sig)
 	if (!(vif->driver_flags & IEEE80211_VIF_SUPPORTS_CQM_RSSI))
 		return;
 
-	/* CQM Notification */
+	 
 	last_event = mvmvif->bf_data.last_cqm_event;
 	if (thold && sig < thold && (last_event == 0 ||
 				     sig < last_event - hyst)) {
@@ -629,10 +560,7 @@ static void iwl_mvm_stat_iterator(void *_data, u8 *mac,
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	u16 vif_id = mvmvif->id;
 
-	/* This doesn't need the MAC ID check since it's not taking the
-	 * data copied into the "data" struct, but rather the data from
-	 * the notification directly.
-	 */
+	 
 	mvmvif->deflink.beacon_stats.num_beacons =
 		le32_to_cpu(data->beacon_counter[vif_id]);
 	mvmvif->deflink.beacon_stats.avg_signal =
@@ -644,9 +572,7 @@ static void iwl_mvm_stat_iterator(void *_data, u8 *mac,
 	if (vif->type != NL80211_IFTYPE_STATION)
 		return;
 
-	/* make sure that beacon statistics don't go backwards with TCM
-	 * request to clear statistics
-	 */
+	 
 	if (le32_to_cpu(data->flags) & IWL_STATISTICS_REPLY_FLG_CLEAR)
 		mvmvif->deflink.beacon_stats.accu_num_beacons +=
 			mvmvif->deflink.beacon_stats.num_beacons;
@@ -676,9 +602,7 @@ static void iwl_mvm_stat_iterator_all_macs(void *_data, u8 *mac,
 	mvmvif->deflink.beacon_stats.avg_signal =
 		-le32_to_cpu(mac_stats->beacon_average_energy);
 
-	/* make sure that beacon statistics don't go backwards with TCM
-	 * request to clear statistics
-	 */
+	 
 	if (le32_to_cpu(data->flags) & IWL_STATISTICS_REPLY_FLG_CLEAR)
 		mvmvif->deflink.beacon_stats.accu_num_beacons +=
 			mvmvif->deflink.beacon_stats.num_beacons;
@@ -743,7 +667,7 @@ iwl_mvm_update_tcm_from_stats(struct iwl_mvm *mvm, __le32 *air_time_le,
 		mdata->rx.airtime += airtime;
 		mdata->uapsd_nonagg_detect.rx_bytes += rx_bytes;
 		if (airtime) {
-			/* re-init every time to store rate from FW */
+			 
 			ewma_rate_init(&mdata->uapsd_nonagg_detect.rate);
 			ewma_rate_add(&mdata->uapsd_nonagg_detect.rate,
 				      rx_bytes * 8 / airtime);
@@ -899,11 +823,7 @@ iwl_mvm_handle_rx_statistics_tlv(struct iwl_mvm *mvm,
 
 	ieee80211_iterate_stations_atomic(mvm->hw, iwl_mvm_stats_energy_iter,
 					  average_energy);
-	/*
-	 * Don't update in case the statistics are not cleared, since
-	 * we will end up counting twice the same airtime, once in TCM
-	 * request and once in statistics notification.
-	 */
+	 
 	if (le32_to_cpu(flags) & IWL_STATISTICS_REPLY_FLG_CLEAR)
 		iwl_mvm_update_tcm_from_stats(mvm, air_time, rx_bytes);
 }
@@ -918,7 +838,7 @@ void iwl_mvm_handle_rx_statistics(struct iwl_mvm *mvm,
 	int expected_size;
 	u8 *energy;
 
-	/* From ver 14 and up we use TLV statistics format */
+	 
 	if (iwl_fw_lookup_notif_ver(mvm->fw, LEGACY_GROUP,
 				    STATISTICS_NOTIFICATION, 0) >= 14)
 		return iwl_mvm_handle_rx_statistics_tlv(mvm, pkt);
@@ -1010,11 +930,7 @@ void iwl_mvm_handle_rx_statistics(struct iwl_mvm *mvm,
 	ieee80211_iterate_stations_atomic(mvm->hw, iwl_mvm_stats_energy_iter,
 					  energy);
 
-	/*
-	 * Don't update in case the statistics are not cleared, since
-	 * we will end up counting twice the same airtime, once in TCM
-	 * request and once in statistics notification.
-	 */
+	 
 	if (le32_to_cpu(flags) & IWL_STATISTICS_REPLY_FLG_CLEAR)
 		iwl_mvm_update_tcm_from_stats(mvm, air_time, bytes);
 
@@ -1047,7 +963,7 @@ void iwl_mvm_window_status_notif(struct iwl_mvm *mvm,
 		u16 received_mpdu;
 
 		ratid = le16_to_cpu(notif->ra_tid[i]);
-		/* check that this TID is valid */
+		 
 		if (!(ratid & BA_WINDOW_STATUS_VALID_MSK))
 			continue;
 
@@ -1056,7 +972,7 @@ void iwl_mvm_window_status_notif(struct iwl_mvm *mvm,
 			continue;
 
 		tid = ratid & BA_WINDOW_STATUS_TID_MSK;
-		/* get the station */
+		 
 		sta_id = (ratid & BA_WINDOW_STATUS_STA_ID_MSK)
 			 >> BA_WINDOW_STATUS_STA_ID_POS;
 		sta = rcu_dereference(mvm->fw_id_to_mac_id[sta_id]);
@@ -1065,7 +981,7 @@ void iwl_mvm_window_status_notif(struct iwl_mvm *mvm,
 		bitmap = le64_to_cpu(notif->bitmap[i]);
 		ssn = le32_to_cpu(notif->start_seq_num[i]);
 
-		/* update mac80211 with the bitmap for the reordering buffer */
+		 
 		ieee80211_mark_rx_ba_filtered_frames(sta, tid, ssn, bitmap,
 						     received_mpdu);
 	}

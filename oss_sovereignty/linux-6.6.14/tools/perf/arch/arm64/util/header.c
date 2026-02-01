@@ -46,7 +46,7 @@ static int _get_cpuid(char *buf, size_t sz, struct perf_cpu_map *cpus)
 		}
 		fclose(file);
 
-		/* got midr break loop */
+		 
 		ret = 0;
 		break;
 	}
@@ -82,7 +82,7 @@ char *get_cpuid_str(struct perf_pmu *pmu)
 	if (!buf)
 		return NULL;
 
-	/* read midr from list of cpus mapped to this pmu */
+	 
 	res = _get_cpuid(buf, MIDR_SIZE, pmu->cpus);
 	if (res) {
 		pr_err("failed to get cpuid string for PMU %s\n", pmu->name);
@@ -93,13 +93,7 @@ char *get_cpuid_str(struct perf_pmu *pmu)
 	return buf;
 }
 
-/*
- * Return 0 if idstr is a higher or equal to version of the same part as
- * mapcpuid. Therefore, if mapcpuid has 0 for revision and variant then any
- * version of idstr will match as long as it's the same CPU type.
- *
- * Return 1 if the CPU type is different or the version of idstr is lower.
- */
+ 
 int strcmp_cpuid_str(const char *mapcpuid, const char *idstr)
 {
 	u64 map_id = strtoull(mapcpuid, NULL, 16);
@@ -110,29 +104,17 @@ int strcmp_cpuid_str(const char *mapcpuid, const char *idstr)
 	char id_revision = FIELD_GET(MIDR_REVISION_MASK, id);
 	u64 id_fields = ~(MIDR_VARIANT_MASK | MIDR_REVISION_MASK);
 
-	/* Compare without version first */
+	 
 	if ((map_id & id_fields) != (id & id_fields))
 		return 1;
 
-	/*
-	 * ID matches, now compare version.
-	 *
-	 * Arm revisions (like r0p0) are compared here like two digit semver
-	 * values eg. 1.3 < 2.0 < 2.1 < 2.2.
-	 *
-	 *  r = high value = 'Variant' field in MIDR
-	 *  p = low value  = 'Revision' field in MIDR
-	 *
-	 */
+	 
 	if (id_variant > map_id_variant)
 		return 0;
 
 	if (id_variant == map_id_variant && id_revision >= map_id_revision)
 		return 0;
 
-	/*
-	 * variant is less than mapfile variant or variants are the same but
-	 * the revision doesn't match. Return no match.
-	 */
+	 
 	return 1;
 }

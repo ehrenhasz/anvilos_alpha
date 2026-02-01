@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * g_ffs.c -- user mode file system API for USB composite function controllers
- *
- * Copyright (C) 2010 Samsung Electronics
- * Author: Michal Nazarewicz <mina86@mina86.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "g_ffs: " fmt
 
@@ -54,8 +49,8 @@ MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR("Michal Nazarewicz");
 MODULE_LICENSE("GPL");
 
-#define GFS_VENDOR_ID	0x1d6b	/* Linux Foundation */
-#define GFS_PRODUCT_ID	0x0105	/* FunctionFS Gadget */
+#define GFS_VENDOR_ID	0x1d6b	 
+#define GFS_PRODUCT_ID	0x0105	 
 
 #define GFS_MAX_DEVS	10
 
@@ -65,7 +60,7 @@ static struct usb_device_descriptor gfs_dev_desc = {
 	.bLength		= sizeof gfs_dev_desc,
 	.bDescriptorType	= USB_DT_DEVICE,
 
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass		= USB_CLASS_PER_INTERFACE,
 
 	.idVendor		= cpu_to_le16(GFS_VENDOR_ID),
@@ -86,7 +81,7 @@ MODULE_PARM_DESC(functions, "USB Functions list");
 
 static const struct usb_descriptor_header *gfs_otg_desc[2];
 
-/* String IDs are assigned dynamically */
+ 
 static struct usb_string gfs_strings[] = {
 	[USB_GADGET_MANUFACTURER_IDX].s = "",
 	[USB_GADGET_PRODUCT_IDX].s = DRIVER_DESC,
@@ -100,12 +95,12 @@ static struct usb_string gfs_strings[] = {
 #ifdef CONFIG_USB_FUNCTIONFS_GENERIC
 	{ .s = "FunctionFS" },
 #endif
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings *gfs_dev_strings[] = {
 	&(struct usb_gadget_strings) {
-		.language	= 0x0409,	/* en-us */
+		.language	= 0x0409,	 
 		.strings	= gfs_strings,
 	},
 	NULL,
@@ -185,9 +180,7 @@ static int __init gfs_init(void)
 		func_num = 1;
 	}
 
-	/*
-	 * Allocate in one chunk for easier maintenance
-	 */
+	 
 	f_ffs[0] = kcalloc(func_num * N_CONF, sizeof(*f_ffs), GFP_KERNEL);
 	if (!f_ffs[0]) {
 		ret = -ENOMEM;
@@ -266,9 +259,7 @@ static void functionfs_release_dev(struct ffs_dev *dev)
 	module_put(THIS_MODULE);
 }
 
-/*
- * The caller of this function takes ffs_lock
- */
+ 
 static int functionfs_ready_callback(struct ffs_data *ffs)
 {
 	int ret = 0;
@@ -290,9 +281,7 @@ static int functionfs_ready_callback(struct ffs_data *ffs)
 	return ret;
 }
 
-/*
- * The caller of this function takes ffs_lock
- */
+ 
 static void functionfs_closed_callback(struct ffs_data *ffs)
 {
 	missing_funcs++;
@@ -302,9 +291,7 @@ static void functionfs_closed_callback(struct ffs_data *ffs)
 	gfs_registered = false;
 }
 
-/*
- * It is assumed that gfs_bind is called from a context where ffs_lock is held
- */
+ 
 static int gfs_bind(struct usb_composite_dev *cdev)
 {
 #if defined CONFIG_USB_FUNCTIONFS_ETH || defined CONFIG_USB_FUNCTIONFS_RNDIS
@@ -379,7 +366,7 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 	rndis_borrow_net(fi_rndis, net);
 #endif
 
-	/* TODO: gstrings_attach? */
+	 
 	ret = usb_string_ids_tab(cdev, gfs_strings);
 	if (unlikely(ret < 0))
 		goto error_rndis;
@@ -416,7 +403,7 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	return 0;
 
-/* TODO */
+ 
 error_unbind:
 	kfree(gfs_otg_desc[0]);
 	gfs_otg_desc[0] = NULL;
@@ -434,9 +421,7 @@ error:
 	return ret;
 }
 
-/*
- * It is assumed that gfs_unbind is called from a context where ffs_lock is held
- */
+ 
 static int gfs_unbind(struct usb_composite_dev *cdev)
 {
 	int i;
@@ -464,10 +449,7 @@ static int gfs_unbind(struct usb_composite_dev *cdev)
 	return 0;
 }
 
-/*
- * It is assumed that gfs_do_config is called from a context where
- * ffs_lock is held
- */
+ 
 static int gfs_do_config(struct usb_configuration *c)
 {
 	struct gfs_configuration *gc =
@@ -502,16 +484,7 @@ static int gfs_do_config(struct usb_configuration *c)
 		}
 	}
 
-	/*
-	 * After previous do_configs there may be some invalid
-	 * pointers in c->interface array.  This happens every time
-	 * a user space function with fewer interfaces than a user
-	 * space function that was run before the new one is run.  The
-	 * compasit's set_config() assumes that if there is no more
-	 * then MAX_CONFIG_INTERFACES interfaces in a configuration
-	 * then there is a NULL pointer after the last interface in
-	 * c->interface array.  We need to make sure this is true.
-	 */
+	 
 	if (c->next_interface_id < ARRAY_SIZE(c->interface))
 		c->interface[c->next_interface_id] = NULL;
 

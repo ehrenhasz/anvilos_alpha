@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_TIMING_GENERATOR_TYPES_H__
 #define __DAL_TIMING_GENERATOR_TYPES_H__
@@ -30,7 +7,7 @@
 
 struct dc_bios;
 
-/* Contains CRTC vertical/horizontal pixel counters */
+ 
 struct crtc_position {
 	int32_t vertical_count;
 	int32_t horizontal_count;
@@ -55,7 +32,7 @@ struct gsl_params {
 	int gsl_window_end_y;
 };
 
-/* define the structure of Dynamic Refresh Mode */
+ 
 struct drr_params {
 	uint32_t vertical_total_min;
 	uint32_t vertical_total_max;
@@ -87,7 +64,7 @@ struct crtc_stereo_flags {
 };
 
 enum crc_selection {
-	/* Order must match values expected by hardware */
+	 
 	UNION_WINDOW_A_B = 0,
 	UNION_WINDOW_A_NOT_B,
 	UNION_WINDOW_NOT_A_B,
@@ -117,7 +94,7 @@ enum timing_synchronization_type {
 };
 
 struct crc_params {
-	/* Regions used to calculate CRC*/
+	 
 	uint16_t windowa_x_start;
 	uint16_t windowa_x_end;
 	uint16_t windowa_y_start;
@@ -137,13 +114,9 @@ struct crc_params {
 	bool enable;
 };
 
-/**
- * struct timing_generator - Entry point to Output Timing Generator feature.
- */
+ 
 struct timing_generator {
-	/**
-	 * @funcs: Timing generator control functions
-	 */
+	 
 	const struct timing_generator_funcs *funcs;
 	struct dc_bios *bp;
 	struct dc_context *ctx;
@@ -154,9 +127,7 @@ struct dc_crtc_timing;
 
 struct drr_params;
 
-/**
- * struct timing_generator_funcs - Control timing generator on a given device.
- */
+ 
 struct timing_generator_funcs {
 	bool (*validate_timing)(struct timing_generator *tg,
 							const struct dc_crtc_timing *timing);
@@ -273,17 +244,11 @@ struct timing_generator_funcs {
 			uint32_t *seg0_src_sel,
 			uint32_t *seg1_src_sel);
 
-	/**
-	 * Configure CRCs for the given timing generator. Return false if TG is
-	 * not on.
-	 */
+	 
 	bool (*configure_crc)(struct timing_generator *tg,
 			       const struct crc_params *params);
 
-	/**
-	 * @get_crc: Get CRCs for the given timing generator. Return false if
-	 * CRCs are not enabled (via configure_crc).
-	 */
+	 
 	bool (*get_crc)(struct timing_generator *tg,
 			uint32_t *r_cr, uint32_t *g_y, uint32_t *b_cb);
 
@@ -303,10 +268,7 @@ struct timing_generator_funcs {
 					uint32_t *dsc_mode);
 	void (*set_odm_bypass)(struct timing_generator *optc, const struct dc_crtc_timing *dc_crtc_timing);
 
-	/**
-	 * @set_odm_combine: Set up the ODM block to read from the correct
-	 * OPP(s) and turn on/off ODM memory.
-	 */
+	 
 	void (*set_odm_combine)(struct timing_generator *optc, int *opp_id, int opp_cnt,
 			struct dc_crtc_timing *timing);
 	void (*set_h_timing_div_manual_mode)(struct timing_generator *optc, bool manual_mode);

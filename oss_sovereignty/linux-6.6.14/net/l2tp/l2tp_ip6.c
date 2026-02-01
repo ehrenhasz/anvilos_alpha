@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* L2TPv3 IP encapsulation support for IPv6
- *
- * Copyright (c) 2012 Katalix Systems Ltd
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,7 +27,7 @@
 #include "l2tp_core.h"
 
 struct l2tp_ip6_sock {
-	/* inet_sock has to be the first member of l2tp_ip6_sock */
+	 
 	struct inet_sock	inet;
 
 	u32			conn_id;
@@ -87,39 +84,7 @@ found:
 	return sk;
 }
 
-/* When processing receive frames, there are two cases to
- * consider. Data frames consist of a non-zero session-id and an
- * optional cookie. Control frames consist of a regular L2TP header
- * preceded by 32-bits of zeros.
- *
- * L2TPv3 Session Header Over IP
- *
- *  0                   1                   2                   3
- *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                           Session ID                          |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |               Cookie (optional, maximum 64 bits)...
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *                                                                 |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * L2TPv3 Control Message Header Over IP
- *
- *  0                   1                   2                   3
- *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                      (32 bits of zeros)                       |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |T|L|x|x|S|x|x|x|x|x|x|x|  Ver  |             Length            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     Control Connection ID                     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |               Ns              |               Nr              |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * All control frames are passed to userspace.
- */
+ 
 static int l2tp_ip6_recv(struct sk_buff *skb)
 {
 	struct net *net = dev_net(skb->dev);
@@ -134,22 +99,19 @@ static int l2tp_ip6_recv(struct sk_buff *skb)
 	if (!pskb_may_pull(skb, 4))
 		goto discard;
 
-	/* Point to L2TP header */
+	 
 	optr = skb->data;
 	ptr = skb->data;
 	session_id = ntohl(*((__be32 *)ptr));
 	ptr += 4;
 
-	/* RFC3931: L2TP/IP packets have the first 4 bytes containing
-	 * the session_id. If it is 0, the packet is a L2TP control
-	 * frame and the session_id value can be discarded.
-	 */
+	 
 	if (session_id == 0) {
 		__skb_pull(skb, 4);
 		goto pass_up;
 	}
 
-	/* Ok, this is a data packet. Lookup the session. */
+	 
 	session = l2tp_session_get(net, session_id);
 	if (!session)
 		goto discard;
@@ -167,7 +129,7 @@ static int l2tp_ip6_recv(struct sk_buff *skb)
 	return 0;
 
 pass_up:
-	/* Get the tunnel_id from the L2TP header */
+	 
 	if (!pskb_may_pull(skb, 12))
 		goto discard;
 
@@ -227,7 +189,7 @@ static void l2tp_ip6_unhash(struct sock *sk)
 
 static int l2tp_ip6_open(struct sock *sk)
 {
-	/* Prevent autobind. We don't have ports. */
+	 
 	inet_sk(sk)->inet_num = IPPROTO_L2TP;
 
 	l2tp_ip6_hash(sk);
@@ -274,11 +236,11 @@ static int l2tp_ip6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 
 	addr_type = ipv6_addr_type(&addr->l2tp_addr);
 
-	/* l2tp_ip6 sockets are IPv6 only */
+	 
 	if (addr_type == IPV6_ADDR_MAPPED)
 		return -EADDRNOTAVAIL;
 
-	/* L2TP is point-point, not multicast */
+	 
 	if (addr_type & IPV6_ADDR_MULTICAST)
 		return -EADDRNOTAVAIL;
 
@@ -293,7 +255,7 @@ static int l2tp_ip6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 
 	bound_dev_if = sk->sk_bound_dev_if;
 
-	/* Check if the address belongs to the host. */
+	 
 	rcu_read_lock();
 	if (addr_type != IPV6_ADDR_ANY) {
 		struct net_device *dev = NULL;
@@ -302,9 +264,7 @@ static int l2tp_ip6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 			if (addr->l2tp_scope_id)
 				bound_dev_if = addr->l2tp_scope_id;
 
-			/* Binding to link-local address requires an
-			 * interface.
-			 */
+			 
 			if (!bound_dev_if)
 				goto out_unlock_rcu;
 
@@ -314,9 +274,7 @@ static int l2tp_ip6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 				goto out_unlock_rcu;
 		}
 
-		/* ipv4 addr of the socket is invalid.  Only the
-		 * unspecified and mapped address have a v4 equivalent.
-		 */
+		 
 		v4addr = LOOPBACK4_IPV6;
 		err = -EADDRNOTAVAIL;
 		if (!ipv6_chk_addr(sock_net(sk), &addr->l2tp_addr, dev, 0))
@@ -383,7 +341,7 @@ static int l2tp_ip6_connect(struct sock *sk, struct sockaddr *uaddr,
 
 	lock_sock(sk);
 
-	 /* Must bind first - autobinding does not work */
+	  
 	if (sock_flag(sk, SOCK_ZAPPED)) {
 		rc = -EINVAL;
 		goto out_sk;
@@ -450,7 +408,7 @@ static int l2tp_ip6_backlog_recv(struct sock *sk, struct sk_buff *skb)
 {
 	int rc;
 
-	/* Charge it to the socket, dropping if the queue is full. */
+	 
 	rc = sock_queue_rcv_skb(sk, skb);
 	if (rc < 0)
 		goto drop;
@@ -482,9 +440,7 @@ out:
 	return err;
 }
 
-/* Userspace will call sendmsg() on the tunnel socket to send L2TP
- * control frames.
- */
+ 
 static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 {
 	struct ipv6_txoptions opt_space;
@@ -498,21 +454,19 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	struct flowi6 fl6;
 	struct ipcm6_cookie ipc6;
 	int addr_len = msg->msg_namelen;
-	int transhdrlen = 4; /* zero session-id */
+	int transhdrlen = 4;  
 	int ulen;
 	int err;
 
-	/* Rough check on arithmetic overflow,
-	 * better check is made in ip6_append_data().
-	 */
+	 
 	if (len > INT_MAX - transhdrlen)
 		return -EMSGSIZE;
 
-	/* Mirror BSD error message compatibility */
+	 
 	if (msg->msg_flags & MSG_OOB)
 		return -EOPNOTSUPP;
 
-	/* Get and verify the address */
+	 
 	memset(&fl6, 0, sizeof(fl6));
 
 	fl6.flowi6_mark = READ_ONCE(sk->sk_mark);
@@ -537,9 +491,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 			}
 		}
 
-		/* Otherwise it will be difficult to maintain
-		 * sk->sk_dst_cache.
-		 */
+		 
 		if (sk->sk_state == TCP_ESTABLISHED &&
 		    ipv6_addr_equal(daddr, &sk->sk_v6_daddr))
 			daddr = &sk->sk_v6_daddr;
@@ -592,7 +544,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 	if (!ipv6_addr_any(daddr))
 		fl6.daddr = *daddr;
 	else
-		fl6.daddr.s6_addr[15] = 0x1; /* :: means loopback (BSD'ism) */
+		fl6.daddr.s6_addr[15] = 0x1;  
 	if (ipv6_addr_any(&fl6.saddr) && !ipv6_addr_any(&np->saddr))
 		fl6.saddr = np->saddr;
 
@@ -685,7 +637,7 @@ static int l2tp_ip6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 
 	sock_recv_timestamp(msg, sk, skb);
 
-	/* Copy the address. */
+	 
 	if (lsa) {
 		lsa->l2tp_family = AF_INET6;
 		lsa->l2tp_unused = 0;
@@ -803,8 +755,6 @@ MODULE_AUTHOR("Chris Elston <celston@katalix.com>");
 MODULE_DESCRIPTION("L2TP IP encapsulation for IPv6");
 MODULE_VERSION("1.0");
 
-/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
- * because __stringify doesn't like enums
- */
+ 
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 115, 2);
 MODULE_ALIAS_NET_PF_PROTO(PF_INET6, 115);

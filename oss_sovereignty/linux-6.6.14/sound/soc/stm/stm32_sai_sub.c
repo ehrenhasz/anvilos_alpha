@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STM32 ALSA SoC Digital Audio Interface (SAI) driver.
- *
- * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
- * Author(s): Olivier Moysan <olivier.moysan@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -61,39 +56,7 @@
 #define SAI_MCLK_NAME_LEN		32
 #define SAI_RATE_11K			11025
 
-/**
- * struct stm32_sai_sub_data - private data of SAI sub block (block A or B)
- * @pdev: device data pointer
- * @regmap: SAI register map pointer
- * @regmap_config: SAI sub block register map configuration pointer
- * @dma_params: dma configuration data for rx or tx channel
- * @cpu_dai_drv: DAI driver data pointer
- * @cpu_dai: DAI runtime data pointer
- * @substream: PCM substream data pointer
- * @pdata: SAI block parent data pointer
- * @np_sync_provider: synchronization provider node
- * @sai_ck: kernel clock feeding the SAI clock generator
- * @sai_mclk: master clock from SAI mclk provider
- * @phys_addr: SAI registers physical base address
- * @mclk_rate: SAI block master clock frequency (Hz). set at init
- * @id: SAI sub block id corresponding to sub-block A or B
- * @dir: SAI block direction (playback or capture). set at init
- * @master: SAI block mode flag. (true=master, false=slave) set at init
- * @spdif: SAI S/PDIF iec60958 mode flag. set at init
- * @fmt: SAI block format. relevant only for custom protocols. set at init
- * @sync: SAI block synchronization mode. (none, internal or external)
- * @synco: SAI block ext sync source (provider setting). (none, sub-block A/B)
- * @synci: SAI block ext sync source (client setting). (SAI sync provider index)
- * @fs_length: frame synchronization length. depends on protocol settings
- * @slots: rx or tx slot number
- * @slot_width: rx or tx slot width in bits
- * @slot_mask: rx or tx active slots mask. set at init or at runtime
- * @data_size: PCM data width. corresponds to PCM substream width.
- * @spdif_frm_cnt: S/PDIF playback frame counter
- * @iec958: iec958 data
- * @ctrl_lock: control lock
- * @irq_lock: prevent race condition with IRQ
- */
+ 
 struct stm32_sai_sub_data {
 	struct platform_device *pdev;
 	struct regmap *regmap;
@@ -123,8 +86,8 @@ struct stm32_sai_sub_data {
 	int data_size;
 	unsigned int spdif_frm_cnt;
 	struct snd_aes_iec958 iec958;
-	struct mutex ctrl_lock; /* protect resources accessed by controls */
-	spinlock_t irq_lock; /* used to prevent race condition with IRQ */
+	struct mutex ctrl_lock;  
+	spinlock_t irq_lock;  
 };
 
 enum stm32_sai_fifo_th {
@@ -461,10 +424,7 @@ static int stm32_sai_add_mclk_provider(struct stm32_sai_sub_data *sai)
 	if (!mclk_name)
 		return -ENOMEM;
 
-	/*
-	 * Forge mclk clock name from parent clock name and suffix.
-	 * String after "_" char is stripped in parent name.
-	 */
+	 
 	p = mclk_name;
 	while (*s && *s != '_' && (i < (SAI_MCLK_NAME_LEN - 7))) {
 		*p++ = *s++;
@@ -484,7 +444,7 @@ static int stm32_sai_add_mclk_provider(struct stm32_sai_sub_data *sai)
 	}
 	sai->sai_mclk = hw->clk;
 
-	/* register mclk provider */
+	 
 	return devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get, hw);
 }
 
@@ -558,9 +518,9 @@ static int stm32_sai_set_sysclk(struct snd_soc_dai *cpu_dai,
 		if (ret < 0)
 			return ret;
 
-		/* Assume shutdown if requested frequency is 0Hz */
+		 
 		if (!freq) {
-			/* Release mclk rate only if rate was actually set */
+			 
 			if (sai->mclk_rate) {
 				clk_rate_exclusive_put(sai->sai_mclk);
 				sai->mclk_rate = 0;
@@ -568,7 +528,7 @@ static int stm32_sai_set_sysclk(struct snd_soc_dai *cpu_dai,
 			return 0;
 		}
 
-		/* If master clock is used, set parent clock now */
+		 
 		ret = stm32_sai_set_parent_clock(sai, freq);
 		if (ret)
 			return ret;
@@ -619,7 +579,7 @@ static int stm32_sai_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai, u32 tx_mask,
 		SAI_XSLOTR_NBSLOT_SET(slots - 1);
 	slotr_mask = SAI_XSLOTR_SLOTSZ_MASK | SAI_XSLOTR_NBSLOT_MASK;
 
-	/* tx/rx mask set in machine init, if slot number defined in DT */
+	 
 	if (STM_SAI_IS_PLAYBACK(sai)) {
 		sai->slot_mask = tx_mask;
 		slotr |= SAI_XSLOTR_SLOTEN_SET(tx_mask);
@@ -649,7 +609,7 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 
 	dev_dbg(cpu_dai->dev, "fmt %x\n", fmt);
 
-	/* Do not generate master by default */
+	 
 	cr1 = SAI_XCR1_NODIV;
 	cr1_mask = SAI_XCR1_NODIV;
 
@@ -662,16 +622,16 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	cr1 |= SAI_XCR1_PRTCFG_SET(SAI_FREE_PROTOCOL);
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
-	/* SCK active high for all protocols */
+	 
 	case SND_SOC_DAIFMT_I2S:
 		cr1 |= SAI_XCR1_CKSTR;
 		frcr |= SAI_XFRCR_FSOFF | SAI_XFRCR_FSDEF;
 		break;
-	/* Left justified */
+	 
 	case SND_SOC_DAIFMT_MSB:
 		frcr |= SAI_XFRCR_FSPOL | SAI_XFRCR_FSDEF;
 		break;
-	/* Right justified */
+	 
 	case SND_SOC_DAIFMT_LSB:
 		frcr |= SAI_XFRCR_FSPOL | SAI_XFRCR_FSDEF;
 		break;
@@ -691,7 +651,7 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	frcr_mask |= SAI_XFRCR_FSPOL | SAI_XFRCR_FSOFF |
 		     SAI_XFRCR_FSDEF;
 
-	/* DAI clock strobing. Invert setting previously set */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -702,7 +662,7 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		frcr ^= SAI_XFRCR_FSPOL;
 		break;
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert fs & sck */
+		 
 		cr1 ^= SAI_XCR1_CKSTR;
 		frcr ^= SAI_XFRCR_FSPOL;
 		break;
@@ -716,10 +676,10 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 
 	stm32_sai_sub_reg_up(sai, STM_SAI_FRCR_REGX, frcr_mask, frcr);
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
-		/* codec is master */
+		 
 		cr1 |= SAI_XCR1_SLAVE;
 		sai->master = false;
 		break;
@@ -732,7 +692,7 @@ static int stm32_sai_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* Set slave mode if sub-block is synchronized with another SAI */
+	 
 	if (sai->sync) {
 		dev_dbg(cpu_dai->dev, "Synchronized SAI configured as slave\n");
 		cr1 |= SAI_XCR1_SLAVE;
@@ -778,7 +738,7 @@ static int stm32_sai_startup(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Enable ITs */
+	 
 	stm32_sai_sub_reg_wr(sai, STM_SAI_CLRFR_REGX,
 			     SAI_XCLRFR_MASK, SAI_XCLRFR_MASK);
 
@@ -807,23 +767,19 @@ static int stm32_sai_set_config(struct snd_soc_dai *cpu_dai,
 	struct stm32_sai_sub_data *sai = snd_soc_dai_get_drvdata(cpu_dai);
 	int cr1, cr1_mask, ret;
 
-	/*
-	 * DMA bursts increment is set to 4 words.
-	 * SAI fifo threshold is set to half fifo, to keep enough space
-	 * for DMA incoming bursts.
-	 */
+	 
 	stm32_sai_sub_reg_wr(sai, STM_SAI_CR2_REGX,
 			     SAI_XCR2_FFLUSH | SAI_XCR2_FTH_MASK,
 			     SAI_XCR2_FFLUSH |
 			     SAI_XCR2_FTH_SET(STM_SAI_FIFO_TH_HALF));
 
-	/* DS bits in CR1 not set for SPDIF (size forced to 24 bits).*/
+	 
 	if (STM_SAI_PROTOCOL_IS_SPDIF(sai)) {
 		sai->spdif_frm_cnt = 0;
 		return 0;
 	}
 
-	/* Mode, data format and channel config */
+	 
 	cr1_mask = SAI_XCR1_DS_MASK;
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S8:
@@ -860,10 +816,7 @@ static int stm32_sai_set_slots(struct snd_soc_dai *cpu_dai)
 
 	stm32_sai_sub_reg_rd(sai, STM_SAI_SLOTR_REGX, &slotr);
 
-	/*
-	 * If SLOTSZ is set to auto in SLOTR, align slot width on data size
-	 * By default slot width = data size, if not forced from DT
-	 */
+	 
 	slot_sz = slotr & SAI_XSLOTR_SLOTSZ_MASK;
 	if (slot_sz == SAI_XSLOTR_SLOTSZ_SET(SAI_SLOT_SIZE_AUTO))
 		sai->slot_width = sai->data_size;
@@ -875,16 +828,16 @@ static int stm32_sai_set_slots(struct snd_soc_dai *cpu_dai)
 		return -EINVAL;
 	}
 
-	/* Slot number is set to 2, if not specified in DT */
+	 
 	if (!sai->slots)
 		sai->slots = 2;
 
-	/* The number of slots in the audio frame is equal to NBSLOT[3:0] + 1*/
+	 
 	stm32_sai_sub_reg_up(sai, STM_SAI_SLOTR_REGX,
 			     SAI_XSLOTR_NBSLOT_MASK,
 			     SAI_XSLOTR_NBSLOT_SET((sai->slots - 1)));
 
-	/* Set default slots mask if not already set from DT */
+	 
 	if (!(slotr & SAI_XSLOTR_SLOTEN_MASK)) {
 		sai->slot_mask = (1 << sai->slots) - 1;
 		stm32_sai_sub_reg_up(sai,
@@ -946,7 +899,7 @@ static void stm32_sai_set_iec958_status(struct stm32_sai_sub_data *sai,
 	if (!runtime)
 		return;
 
-	/* Force the sample rate according to runtime rate */
+	 
 	mutex_lock(&sai->ctrl_lock);
 	switch (runtime->rate) {
 	case 22050:
@@ -1000,13 +953,7 @@ static int stm32_sai_configure_clock(struct snd_soc_dai *cpu_dai,
 	sai_clk_rate = clk_get_rate(sai->sai_ck);
 
 	if (STM_SAI_IS_F4(sai->pdata)) {
-		/* mclk on (NODIV=0)
-		 *   mclk_rate = 256 * fs
-		 *   MCKDIV = 0 if sai_ck < 3/2 * mclk_rate
-		 *   MCKDIV = sai_ck / (2 * mclk_rate) otherwise
-		 * mclk off (NODIV=1)
-		 *   MCKDIV ignored. sck = sai_ck
-		 */
+		 
 		if (!sai->mclk_rate)
 			return 0;
 
@@ -1017,15 +964,7 @@ static int stm32_sai_configure_clock(struct snd_soc_dai *cpu_dai,
 				return div;
 		}
 	} else {
-		/*
-		 * TDM mode :
-		 *   mclk on
-		 *      MCKDIV = sai_ck / (ws x 256)	(NOMCK=0. OSR=0)
-		 *      MCKDIV = sai_ck / (ws x 512)	(NOMCK=0. OSR=1)
-		 *   mclk off
-		 *      MCKDIV = sai_ck / (frl x ws)	(NOMCK=1)
-		 * Note: NOMCK/NODIV correspond to same bit.
-		 */
+		 
 		if (STM_SAI_PROTOCOL_IS_SPDIF(sai)) {
 			div = stm32_sai_get_clk_div(sai, sai_clk_rate,
 						    rate * 128);
@@ -1052,7 +991,7 @@ static int stm32_sai_configure_clock(struct snd_soc_dai *cpu_dai,
 				if (div < 0)
 					return div;
 			} else {
-				/* mclk-fs not set, master clock not active */
+				 
 				den = sai->fs_length * params_rate(params);
 				div = stm32_sai_get_clk_div(sai, sai_clk_rate,
 							    den);
@@ -1075,7 +1014,7 @@ static int stm32_sai_hw_params(struct snd_pcm_substream *substream,
 	sai->data_size = params_width(params);
 
 	if (STM_SAI_PROTOCOL_IS_SPDIF(sai)) {
-		/* Rate not already set in runtime structure */
+		 
 		substream->runtime->rate = params_rate(params);
 		stm32_sai_set_iec958_status(sai, substream->runtime);
 	} else {
@@ -1110,7 +1049,7 @@ static int stm32_sai_trigger(struct snd_pcm_substream *substream, int cmd,
 		stm32_sai_sub_reg_up(sai, STM_SAI_CR1_REGX,
 				     SAI_XCR1_DMAEN, SAI_XCR1_DMAEN);
 
-		/* Enable SAI */
+		 
 		ret = stm32_sai_sub_reg_up(sai, STM_SAI_CR1_REGX,
 					   SAI_XCR1_SAIEN, SAI_XCR1_SAIEN);
 		if (ret < 0)
@@ -1182,15 +1121,11 @@ static int stm32_sai_dai_probe(struct snd_soc_dai *cpu_dai)
 	sai->cpu_dai = cpu_dai;
 
 	sai->dma_params.addr = (dma_addr_t)(sai->phys_addr + STM_SAI_DR_REGX);
-	/*
-	 * DMA supports 4, 8 or 16 burst sizes. Burst size 4 is the best choice,
-	 * as it allows bytes, half-word and words transfers. (See DMA fifos
-	 * constraints).
-	 */
+	 
 	sai->dma_params.maxburst = 4;
 	if (sai->pdata->conf.fifo_size < 8)
 		sai->dma_params.maxburst = 1;
-	/* Buswidth will be set by framework at runtime */
+	 
 	sai->dma_params.addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
 
 	if (STM_SAI_IS_PLAYBACK(sai))
@@ -1198,7 +1133,7 @@ static int stm32_sai_dai_probe(struct snd_soc_dai *cpu_dai)
 	else
 		snd_soc_dai_init_dma_data(cpu_dai, NULL, &sai->dma_params);
 
-	/* Next settings are not relevant for spdif mode */
+	 
 	if (STM_SAI_PROTOCOL_IS_SPDIF(sai))
 		return 0;
 
@@ -1206,9 +1141,9 @@ static int stm32_sai_dai_probe(struct snd_soc_dai *cpu_dai)
 	if (STM_SAI_IS_CAPTURE(sai))
 		cr1 |= SAI_XCR1_RX_TX;
 
-	/* Configure synchronization */
+	 
 	if (sai->sync == SAI_SYNC_EXTERNAL) {
-		/* Configure synchro client and provider */
+		 
 		ret = sai->pdata->set_sync(sai->pdata, sai->np_sync_provider,
 					   sai->synco, sai->synci);
 		if (ret)
@@ -1262,7 +1197,7 @@ static int stm32_sai_pcm_process_spdif(struct snd_pcm_substream *substream,
 	do {
 		*ptr = ((*ptr >> 8) & 0x00ffffff);
 
-		/* Set channel status bit */
+		 
 		byte = frm_cnt >> 3;
 		mask = 1 << (frm_cnt - (byte << 3));
 		if (sai->iec958.status[byte] & mask)
@@ -1280,7 +1215,7 @@ static int stm32_sai_pcm_process_spdif(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* No support of mmap in S/PDIF mode */
+ 
 static const struct snd_pcm_hardware stm32_sai_pcm_hw_spdif = {
 	.info = SNDRV_PCM_INFO_INTERLEAVED,
 	.buffer_bytes_max = 8 * PAGE_SIZE,
@@ -1293,21 +1228,21 @@ static const struct snd_pcm_hardware stm32_sai_pcm_hw_spdif = {
 static const struct snd_pcm_hardware stm32_sai_pcm_hw = {
 	.info = SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_MMAP,
 	.buffer_bytes_max = 8 * PAGE_SIZE,
-	.period_bytes_min = 1024, /* 5ms at 48kHz */
+	.period_bytes_min = 1024,  
 	.period_bytes_max = PAGE_SIZE,
 	.periods_min = 2,
 	.periods_max = 8,
 };
 
 static struct snd_soc_dai_driver stm32_sai_playback_dai = {
-		.id = 1, /* avoid call to fmt_single_name() */
+		.id = 1,  
 		.playback = {
 			.channels_min = 1,
 			.channels_max = 16,
 			.rate_min = 8000,
 			.rate_max = 192000,
 			.rates = SNDRV_PCM_RATE_CONTINUOUS,
-			/* DMA does not support 24 bits transfers */
+			 
 			.formats =
 				SNDRV_PCM_FMTBIT_S8 |
 				SNDRV_PCM_FMTBIT_S16_LE |
@@ -1317,14 +1252,14 @@ static struct snd_soc_dai_driver stm32_sai_playback_dai = {
 };
 
 static struct snd_soc_dai_driver stm32_sai_capture_dai = {
-		.id = 1, /* avoid call to fmt_single_name() */
+		.id = 1,  
 		.capture = {
 			.channels_min = 1,
 			.channels_max = 16,
 			.rate_min = 8000,
 			.rate_max = 192000,
 			.rates = SNDRV_PCM_RATE_CONTINUOUS,
-			/* DMA does not support 24 bits transfers */
+			 
 			.formats =
 				SNDRV_PCM_FMTBIT_S8 |
 				SNDRV_PCM_FMTBIT_S16_LE |
@@ -1377,22 +1312,18 @@ static int stm32_sai_sub_parse_of(struct platform_device *pdev,
 	sai->phys_addr = res->start;
 
 	sai->regmap_config = &stm32_sai_sub_regmap_config_f4;
-	/* Note: PDM registers not available for sub-block B */
+	 
 	if (STM_SAI_HAS_PDM(sai) && STM_SAI_IS_SUB_A(sai))
 		sai->regmap_config = &stm32_sai_sub_regmap_config_h7;
 
-	/*
-	 * Do not manage peripheral clock through regmap framework as this
-	 * can lead to circular locking issue with sai master clock provider.
-	 * Manage peripheral clock directly in driver instead.
-	 */
+	 
 	sai->regmap = devm_regmap_init_mmio(&pdev->dev, base,
 					    sai->regmap_config);
 	if (IS_ERR(sai->regmap))
 		return dev_err_probe(&pdev->dev, PTR_ERR(sai->regmap),
 				     "Regmap init error\n");
 
-	/* Get direction property */
+	 
 	if (of_property_match_string(np, "dma-names", "tx") >= 0) {
 		sai->dir = SNDRV_PCM_STREAM_PLAYBACK;
 	} else if (of_property_match_string(np, "dma-names", "rx") >= 0) {
@@ -1402,7 +1333,7 @@ static int stm32_sai_sub_parse_of(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* Get spdif iec60958 property */
+	 
 	sai->spdif = false;
 	if (of_property_present(np, "st,iec60958")) {
 		if (!STM_SAI_HAS_SPDIF(sai) ||
@@ -1415,7 +1346,7 @@ static int stm32_sai_sub_parse_of(struct platform_device *pdev,
 		sai->master = true;
 	}
 
-	/* Get synchronization property */
+	 
 	args.np = NULL;
 	ret = of_parse_phandle_with_fixed_args(np, "st,sync", 1, 0, &args);
 	if (ret < 0  && ret != -ENOENT) {
@@ -1489,7 +1420,7 @@ static int stm32_sai_sub_parse_of(struct platform_device *pdev,
 	if (STM_SAI_IS_F4(sai->pdata))
 		return 0;
 
-	/* Register mclk provider if requested */
+	 
 	if (of_property_present(np, "#clock-cells")) {
 		ret = stm32_sai_add_mclk_provider(sai);
 		if (ret < 0)
@@ -1610,7 +1541,7 @@ static int stm32_sai_sub_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops stm32_sai_sub_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(stm32_sai_sub_suspend, stm32_sai_sub_resume)

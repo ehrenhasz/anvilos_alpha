@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -77,7 +77,7 @@ static int mvusb_mdio_probe(struct usb_interface *interface,
 	mvusb->mdio = mdio;
 	mvusb->udev = usb_get_dev(interface_to_usbdev(interface));
 
-	/* Reversed from USB PCAPs, no idea what these mean. */
+	 
 	mvusb->buf[MVUSB_CMD_PREAMBLE0] = cpu_to_le16(0xe800);
 	mvusb->buf[MVUSB_CMD_PREAMBLE1] = cpu_to_le16(0x0001);
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * i2c-au1550.c: SMBus (i2c) adapter for Alchemy PSC interface
- * Copyright (C) 2004 Embedded Edge, LLC <dan@embeddededge.com>
- *
- * 2.6 port by Matt Porter <mporter@kernel.crashing.org>
- *
- * The documentation describes this as an SMBus controller, but it doesn't
- * understand any of the SMBus protocol in hardware.  It's really an I2C
- * controller that could emulate most of the SMBus in software.
- *
- * This is just a skeleton adapter to use with the Au1550 PSC
- * algorithm.  It was developed for the Pb1550, but will work with
- * any Au1550 board that has a similar PSC configuration.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -56,7 +43,7 @@ static int wait_xfer_done(struct i2c_au1550_data *adap)
 {
 	int i;
 
-	/* Wait for Tx Buffer Empty */
+	 
 	for (i = 0; i < adap->xfer_timeout; i++) {
 		if (RD(adap, PSC_SMBSTAT) & PSC_SMBSTAT_TE)
 			return 0;
@@ -85,7 +72,7 @@ static int wait_master_done(struct i2c_au1550_data *adap)
 {
 	int i;
 
-	/* Wait for Master Done. */
+	 
 	for (i = 0; i < 2 * adap->xfer_timeout; i++) {
 		if ((RD(adap, PSC_SMBEVNT) & PSC_SMBEVNT_MD) != 0)
 			return 0;
@@ -100,7 +87,7 @@ do_address(struct i2c_au1550_data *adap, unsigned int addr, int rd, int q)
 {
 	unsigned long stat;
 
-	/* Reset the FIFOs, clear events. */
+	 
 	stat = RD(adap, PSC_SMBSTAT);
 	WR(adap, PSC_SMBEVNT, PSC_SMBEVNT_ALLCLR);
 
@@ -111,16 +98,16 @@ do_address(struct i2c_au1550_data *adap, unsigned int addr, int rd, int q)
 		udelay(50);
 	}
 
-	/* Write out the i2c chip address and specify operation */
+	 
 	addr <<= 1;
 	if (rd)
 		addr |= 1;
 
-	/* zero-byte xfers stop immediately */
+	 
 	if (q)
 		addr |= PSC_SMBTXRX_STP;
 
-	/* Put byte into fifo, start up master. */
+	 
 	WR(adap, PSC_SMBTXRX, addr);
 	WR(adap, PSC_SMBPCR, PSC_SMBPCR_MS);
 	if (wait_ack(adap))
@@ -160,10 +147,7 @@ static int i2c_read(struct i2c_au1550_data *adap, unsigned char *buf,
 	if (len == 0)
 		return 0;
 
-	/* A read is performed by stuffing the transmit fifo with
-	 * zero bytes for timing, waiting for bytes to appear in the
-	 * receive fifo, then reading the bytes.
-	 */
+	 
 	i = 0;
 	while (i < (len - 1)) {
 		WR(adap, PSC_SMBTXRX, 0);
@@ -173,7 +157,7 @@ static int i2c_read(struct i2c_au1550_data *adap, unsigned char *buf,
 		i++;
 	}
 
-	/* The last byte has to indicate transfer done. */
+	 
 	WR(adap, PSC_SMBTXRX, PSC_SMBTXRX_STP);
 	if (wait_master_done(adap))
 		return -EIO;
@@ -200,7 +184,7 @@ static int i2c_write(struct i2c_au1550_data *adap, unsigned char *buf,
 		i++;
 	}
 
-	/* The last byte has to indicate transfer done. */
+	 
 	data = buf[i];
 	data |= PSC_SMBTXRX_STP;
 	WR(adap, PSC_SMBTXRX, data);
@@ -230,8 +214,7 @@ au1550_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, int num)
 			err = i2c_write(adap, p->buf, p->len);
 	}
 
-	/* Return the number of messages processed, or the error code.
-	*/
+	 
 	if (err == 0)
 		err = num;
 
@@ -264,16 +247,12 @@ static void i2c_au1550_setup(struct i2c_au1550_data *priv)
 	cfg = PSC_SMBCFG_RT_FIFO8 | PSC_SMBCFG_TT_FIFO8 | PSC_SMBCFG_DD_DISABLE;
 	WR(priv, PSC_SMBCFG, cfg);
 
-	/* Divide by 8 to get a 6.25 MHz clock.  The later protocol
-	 * timings are based on this clock.
-	 */
+	 
 	cfg |= PSC_SMBCFG_SET_DIV(PSC_SMBCFG_DIV8);
 	WR(priv, PSC_SMBCFG, cfg);
 	WR(priv, PSC_SMBMSK, PSC_SMBMSK_ALLMASK);
 
-	/* Set the protocol timer values.  See Table 71 in the
-	 * Au1550 Data Book for standard timing values.
-	 */
+	 
 	WR(priv, PSC_SMBTMR, PSC_SMBTMR_SET_TH(0) | PSC_SMBTMR_SET_PS(20) | \
 		PSC_SMBTMR_SET_PU(20) | PSC_SMBTMR_SET_SH(20) | \
 		PSC_SMBTMR_SET_SU(20) | PSC_SMBTMR_SET_CL(20) | \
@@ -293,11 +272,7 @@ static void i2c_au1550_disable(struct i2c_au1550_data *priv)
 	WR(priv, PSC_CTRL, PSC_CTRL_DISABLE);
 }
 
-/*
- * registering functions to load algorithms at runtime
- * Prior to calling us, the 50MHz clock frequency and routing
- * must have been set up for the PSC indicated by the adapter.
- */
+ 
 static int
 i2c_au1550_probe(struct platform_device *pdev)
 {
@@ -321,7 +296,7 @@ i2c_au1550_probe(struct platform_device *pdev)
 	priv->adap.dev.parent = &pdev->dev;
 	strscpy(priv->adap.name, "Au1xxx PSC I2C", sizeof(priv->adap.name));
 
-	/* Now, set up the PSC for SMBus PIO mode. */
+	 
 	i2c_au1550_setup(priv);
 
 	ret = i2c_add_numbered_adapter(&priv->adap);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/completion.h>
@@ -29,7 +29,7 @@ static pci_ers_result_t adf_error_detected(struct pci_dev *pdev,
 	return PCI_ERS_RESULT_NEED_RESET;
 }
 
-/* reset dev data */
+ 
 struct adf_reset_dev_data {
 	int mode;
 	struct adf_accel_dev *accel_dev;
@@ -90,7 +90,7 @@ static void adf_device_reset_worker(struct work_struct *work)
 
 	adf_dev_restarting_notify(accel_dev);
 	if (adf_dev_restart(accel_dev)) {
-		/* The device hanged and we can't restart it so stop here */
+		 
 		dev_err(&GET_DEV(accel_dev), "Restart device failed\n");
 		if (reset_data->mode == ADF_DEV_RESET_ASYNC)
 			kfree(reset_data);
@@ -100,7 +100,7 @@ static void adf_device_reset_worker(struct work_struct *work)
 	adf_dev_restarted_notify(accel_dev);
 	clear_bit(ADF_STATUS_RESTARTING, &accel_dev->status);
 
-	/* The dev is back alive. Notify the caller if in sync mode */
+	 
 	if (reset_data->mode == ADF_DEV_RESET_SYNC)
 		complete(&reset_data->compl);
 	else
@@ -126,10 +126,10 @@ static int adf_dev_aer_schedule_reset(struct adf_accel_dev *accel_dev,
 	INIT_WORK(&reset_data->reset_work, adf_device_reset_worker);
 	queue_work(device_reset_wq, &reset_data->reset_work);
 
-	/* If in sync mode wait for the result */
+	 
 	if (mode == ADF_DEV_RESET_SYNC) {
 		int ret = 0;
-		/* Maximum device reset time is 10 seconds */
+		 
 		unsigned long wait_jiffies = msecs_to_jiffies(10000);
 		unsigned long timeout = wait_for_completion_timeout(
 				   &reset_data->compl, wait_jiffies);

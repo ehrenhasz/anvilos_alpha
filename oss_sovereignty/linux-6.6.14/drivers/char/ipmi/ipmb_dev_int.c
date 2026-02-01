@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * IPMB driver to receive a request and send a response
- *
- * Copyright (C) 2019 Mellanox Techologies, Ltd.
- *
- * This was inspired by Brendan Higgins' ipmi-bmc-bt-i2c driver.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -45,7 +39,7 @@ struct ipmb_msg {
 	u8 rq_seq_rq_lun;
 	u8 cmd;
 	u8 payload[IPMB_MSG_PAYLOAD_LEN_MAX];
-	/* checksum2 is included in payload */
+	 
 } __packed;
 
 struct ipmb_request_elem {
@@ -117,13 +111,10 @@ static int ipmb_i2c_write(struct i2c_client *client, u8 *msg, u8 addr)
 {
 	struct i2c_msg i2c_msg;
 
-	/*
-	 * subtract 1 byte (rq_sa) from the length of the msg passed to
-	 * raw i2c_transfer
-	 */
+	 
 	i2c_msg.len = msg[IPMB_MSG_LEN_IDX] - 1;
 
-	/* Assign message to buffer except first 2 bytes (length and address) */
+	 
 	i2c_msg.buf = msg + 2;
 
 	i2c_msg.addr = addr;
@@ -153,16 +144,13 @@ static ssize_t ipmb_write(struct file *file, const char __user *buf,
 	rq_sa = GET_7BIT_ADDR(msg[RQ_SA_8BIT_IDX]);
 	netf_rq_lun = msg[NETFN_LUN_IDX];
 
-	/* Check i2c block transfer vs smbus */
+	 
 	if (ipmb_dev->is_i2c_protocol) {
 		ret = ipmb_i2c_write(ipmb_dev->client, msg, rq_sa);
 		return (ret == 1) ? count : ret;
 	}
 
-	/*
-	 * subtract rq_sa and netf_rq_lun from the length of the msg. Fill the
-	 * temporary client. Note that its use is an exception for IPMI.
-	 */
+	 
 	msg_len = msg[IPMB_MSG_LEN_IDX] - SMBUS_MSG_HEADER_LENGTH;
 	temp_client = kmemdup(ipmb_dev->client, sizeof(*temp_client), GFP_KERNEL);
 	if (!temp_client)
@@ -199,7 +187,7 @@ static const struct file_operations ipmb_fops = {
 	.poll	= ipmb_poll,
 };
 
-/* Called with ipmb_dev->lock held. */
+ 
 static void ipmb_handle_request(struct ipmb_dev *ipmb_dev)
 {
 	struct ipmb_request_elem *queue_elem;
@@ -221,15 +209,12 @@ static void ipmb_handle_request(struct ipmb_dev *ipmb_dev)
 
 static u8 ipmb_verify_checksum1(struct ipmb_dev *ipmb_dev, u8 rs_sa)
 {
-	/* The 8 lsb of the sum is 0 when the checksum is valid */
+	 
 	return (rs_sa + ipmb_dev->request.netfn_rs_lun +
 		ipmb_dev->request.checksum1);
 }
 
-/*
- * Verify if message has proper ipmb header with minimum length
- * and correct checksum byte.
- */
+ 
 static bool is_ipmb_msg(struct ipmb_dev *ipmb_dev, u8 rs_sa)
 {
 	if ((ipmb_dev->msg_idx >= IPMB_REQUEST_LEN_MIN) &&
@@ -239,13 +224,7 @@ static bool is_ipmb_msg(struct ipmb_dev *ipmb_dev, u8 rs_sa)
 	return false;
 }
 
-/*
- * The IPMB protocol only supports I2C Writes so there is no need
- * to support I2C_SLAVE_READ* events.
- * This i2c callback function only monitors IPMB request messages
- * and adds them in a queue, so that they can be handled by
- * receive_ipmb_request.
- */
+ 
 static int ipmb_slave_cb(struct i2c_client *client,
 			enum i2c_slave_event event, u8 *val)
 {
@@ -259,22 +238,7 @@ static int ipmb_slave_cb(struct i2c_client *client,
 		memset(&ipmb_dev->request, 0, sizeof(ipmb_dev->request));
 		ipmb_dev->msg_idx = 0;
 
-		/*
-		 * At index 0, ipmb_msg stores the length of msg,
-		 * skip it for now.
-		 * The len will be populated once the whole
-		 * buf is populated.
-		 *
-		 * The I2C bus driver's responsibility is to pass the
-		 * data bytes to the backend driver; it does not
-		 * forward the i2c slave address.
-		 * Since the first byte in the IPMB message is the
-		 * address of the responder, it is the responsibility
-		 * of the IPMB driver to format the message properly.
-		 * So this driver prepends the address of the responder
-		 * to the received i2c data before the request message
-		 * is handled in userland.
-		 */
+		 
 		buf[++ipmb_dev->msg_idx] = GET_8BIT_ADDR(client->addr);
 		break;
 

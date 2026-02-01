@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Microchip AT42QT1050 QTouch Sensor Controller
- *
- *  Copyright (C) 2019 Pengutronix, Marco Felsch <kernel@pengutronix.de>
- *
- *  Base on AT42QT1070 driver by:
- *  Bo Shen <voice.shen@atmel.com>
- *  Copyright (C) 2011 Atmel
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -19,20 +11,20 @@
 #include <linux/of.h>
 #include <linux/regmap.h>
 
-/* Chip ID */
+ 
 #define QT1050_CHIP_ID		0x00
 #define QT1050_CHIP_ID_VER	0x46
 
-/* Firmware version */
+ 
 #define QT1050_FW_VERSION	0x01
 
-/* Detection status */
+ 
 #define QT1050_DET_STATUS	0x02
 
-/* Key status */
+ 
 #define QT1050_KEY_STATUS	0x03
 
-/* Key Signals */
+ 
 #define QT1050_KEY_SIGNAL_0_MSB	0x06
 #define QT1050_KEY_SIGNAL_0_LSB	0x07
 #define QT1050_KEY_SIGNAL_1_MSB	0x08
@@ -44,7 +36,7 @@
 #define QT1050_KEY_SIGNAL_4_MSB	0x10
 #define QT1050_KEY_SIGNAL_4_LSB	0x11
 
-/* Reference data */
+ 
 #define QT1050_REF_DATA_0_MSB	0x14
 #define QT1050_REF_DATA_0_LSB	0x15
 #define QT1050_REF_DATA_1_MSB	0x16
@@ -56,38 +48,38 @@
 #define QT1050_REF_DATA_4_MSB	0x1e
 #define QT1050_REF_DATA_4_LSB	0x1f
 
-/* Negative threshold level */
+ 
 #define QT1050_NTHR_0		0x21
 #define QT1050_NTHR_1		0x22
 #define QT1050_NTHR_2		0x24
 #define QT1050_NTHR_3		0x25
 #define QT1050_NTHR_4		0x26
 
-/* Pulse / Scale  */
+ 
 #define QT1050_PULSE_SCALE_0	0x28
 #define QT1050_PULSE_SCALE_1	0x29
 #define QT1050_PULSE_SCALE_2	0x2b
 #define QT1050_PULSE_SCALE_3	0x2c
 #define QT1050_PULSE_SCALE_4	0x2d
 
-/* Detection integrator counter / AKS */
+ 
 #define QT1050_DI_AKS_0		0x2f
 #define QT1050_DI_AKS_1		0x30
 #define QT1050_DI_AKS_2		0x32
 #define QT1050_DI_AKS_3		0x33
 #define QT1050_DI_AKS_4		0x34
 
-/* Charge Share Delay */
+ 
 #define QT1050_CSD_0		0x36
 #define QT1050_CSD_1		0x37
 #define QT1050_CSD_2		0x39
 #define QT1050_CSD_3		0x3a
 #define QT1050_CSD_4		0x3b
 
-/* Low Power Mode */
+ 
 #define QT1050_LPMODE		0x3d
 
-/* Calibration and Reset */
+ 
 #define QT1050_RES_CAL		0x3f
 #define QT1050_RES_CAL_RESET		BIT(7)
 #define QT1050_RES_CAL_CALIBRATE	BIT(1)
@@ -225,14 +217,14 @@ static bool qt1050_identify(struct qt1050_priv *ts)
 	unsigned int val;
 	int err;
 
-	/* Read Chip ID */
+	 
 	regmap_read(ts->regmap, QT1050_CHIP_ID, &val);
 	if (val != QT1050_CHIP_ID_VER) {
 		dev_err(&ts->client->dev, "ID %d not supported\n", val);
 		return false;
 	}
 
-	/* Read firmware version */
+	 
 	err = regmap_read(ts->regmap, QT1050_FW_VERSION, &val);
 	if (err) {
 		dev_err(&ts->client->dev, "could not read the firmware version\n");
@@ -253,7 +245,7 @@ static irqreturn_t qt1050_irq_threaded(int irq, void *dev_id)
 	unsigned int val;
 	int i, err;
 
-	/* Read the detected status register, thus clearing interrupt */
+	 
 	err = regmap_read(ts->regmap, QT1050_DET_STATUS, &val);
 	if (err) {
 		dev_err(&ts->client->dev, "Fail to read detection status: %d\n",
@@ -261,7 +253,7 @@ static irqreturn_t qt1050_irq_threaded(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* Read which key changed, keys are not continuous */
+	 
 	err = regmap_read(ts->regmap, QT1050_KEY_STATUS, &val);
 	if (err) {
 		dev_err(&ts->client->dev,
@@ -270,7 +262,7 @@ static irqreturn_t qt1050_irq_threaded(int irq, void *dev_id)
 	}
 	new_keys = (val & 0x70) >> 2 | (val & 0x6) >> 1;
 	changed = ts->last_keys ^ new_keys;
-	/* Report registered keys only */
+	 
 	changed &= ts->reg_keys;
 
 	for_each_set_bit(i, &changed, QT1050_MAX_KEYS)
@@ -305,7 +297,7 @@ static int qt1050_apply_fw_data(struct qt1050_priv *ts)
 	const struct qt1050_key_regs *key_regs;
 	int i, err;
 
-	/* Disable all keys and enable only the specified ones */
+	 
 	for (i = 0; i < QT1050_MAX_KEYS; i++) {
 		err = qt1050_set_key(map, i, 0);
 		if (err)
@@ -313,7 +305,7 @@ static int qt1050_apply_fw_data(struct qt1050_priv *ts)
 	}
 
 	for (i = 0; i < QT1050_MAX_KEYS; i++, button++) {
-		/* Keep KEY_RESERVED keys off */
+		 
 		if (button->keycode == KEY_RESERVED)
 			continue;
 
@@ -351,7 +343,7 @@ static int qt1050_parse_fw(struct qt1050_priv *ts)
 	device_for_each_child_node(dev, child) {
 		struct qt1050_key button;
 
-		/* Required properties */
+		 
 		if (fwnode_property_read_u32(child, "linux,code",
 					     &button.keycode)) {
 			dev_err(dev, "Button without keycode\n");
@@ -373,7 +365,7 @@ static int qt1050_parse_fw(struct qt1050_priv *ts)
 
 		ts->reg_keys |= BIT(button.num);
 
-		/* Optional properties */
+		 
 		if (fwnode_property_read_u32(child,
 					     "microchip,pre-charge-time-ns",
 					     &button.charge_delay)) {
@@ -434,7 +426,7 @@ static int qt1050_probe(struct i2c_client *client)
 	unsigned int status, i;
 	int err;
 
-	/* Check basic functionality */
+	 
 	err = i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE);
 	if (!err) {
 		dev_err(&client->dev, "%s adapter not supported\n",
@@ -465,11 +457,11 @@ static int qt1050_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, ts);
 
-	/* Identify the qt1050 chip */
+	 
 	if (!qt1050_identify(ts))
 		return -ENODEV;
 
-	/* Get pdata */
+	 
 	err = qt1050_parse_fw(ts);
 	if (err) {
 		dev_err(dev, "Failed to parse firmware: %d\n", err);
@@ -480,7 +472,7 @@ static int qt1050_probe(struct i2c_client *client)
 	input->dev.parent = &client->dev;
 	input->id.bustype = BUS_I2C;
 
-	/* Add the keycode */
+	 
 	input->keycode = ts->keycodes;
 	input->keycodesize = sizeof(ts->keycodes[0]);
 	input->keycodemax = QT1050_MAX_KEYS;
@@ -491,7 +483,7 @@ static int qt1050_probe(struct i2c_client *client)
 		__set_bit(ts->keycodes[i], input->keybit);
 	}
 
-	/* Trigger re-calibration */
+	 
 	err = regmap_update_bits(ts->regmap, QT1050_RES_CAL, 0x7f,
 				 QT1050_RES_CAL_CALIBRATE);
 	if (err) {
@@ -505,7 +497,7 @@ static int qt1050_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Soft reset to set defaults */
+	 
 	err = regmap_update_bits(ts->regmap, QT1050_RES_CAL,
 				 QT1050_RES_CAL_RESET, QT1050_RES_CAL_RESET);
 	if (err) {
@@ -514,7 +506,7 @@ static int qt1050_probe(struct i2c_client *client)
 	}
 	msleep(QT1050_RESET_TIME);
 
-	/* Set pdata */
+	 
 	err = qt1050_apply_fw_data(ts);
 	if (err) {
 		dev_err(dev, "Failed to set firmware data: %d\n", err);
@@ -529,14 +521,14 @@ static int qt1050_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Clear #CHANGE line */
+	 
 	err = regmap_read(ts->regmap, QT1050_DET_STATUS, &status);
 	if (err) {
 		dev_err(dev, "Failed to clear #CHANGE line level: %d\n", err);
 		return err;
 	}
 
-	/* Register the input device */
+	 
 	err = input_register_device(ts->input);
 	if (err) {
 		dev_err(&client->dev, "Failed to register input device: %d\n",
@@ -554,11 +546,7 @@ static int qt1050_suspend(struct device *dev)
 
 	disable_irq(client->irq);
 
-	/*
-	 * Set measurement interval to 1s (125 x 8ms) if wakeup is allowed
-	 * else turn off. The 1s interval seems to be a good compromise between
-	 * low power and response time.
-	 */
+	 
 	return regmap_write(ts->regmap, QT1050_LPMODE,
 			    device_may_wakeup(dev) ? 125 : 0);
 }
@@ -570,7 +558,7 @@ static int qt1050_resume(struct device *dev)
 
 	enable_irq(client->irq);
 
-	/* Set measurement interval back to 16ms (2 x 8ms) */
+	 
 	return regmap_write(ts->regmap, QT1050_LPMODE, 2);
 }
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* XDP sockets
- *
- * AF_XDP sockets allows a channel between XDP programs and userspace
- * applications.
- * Copyright(c) 2018 Intel Corporation.
- *
- * Author(s): Björn Töpel <bjorn.topel@intel.com>
- *	      Magnus Karlsson <magnus.karlsson@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "AF_XDP: %s: " fmt, __func__
 
@@ -116,10 +108,7 @@ void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id)
 		dev->_tx[queue_id].pool = NULL;
 }
 
-/* The buffer pool is stored both in the _rx struct and the _tx struct as we do
- * not know if the device has more tx queues than rx, or the opposite.
- * This might also change during run time.
- */
+ 
 int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
 			u16 queue_id)
 {
@@ -299,7 +288,7 @@ static bool xsk_tx_writeable(struct xdp_sock *xs)
 static bool xsk_is_bound(struct xdp_sock *xs)
 {
 	if (READ_ONCE(xs->state) == XSK_BOUND) {
-		/* Matches smp_wmb() in bind(). */
+		 
 		smp_rmb();
 		return true;
 	}
@@ -423,11 +412,7 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
 			continue;
 		}
 
-		/* This is the backpressure mechanism for the Tx path.
-		 * Reserve space in the completion queue and only proceed
-		 * if there is space in it. This avoids having to implement
-		 * any buffering in the Tx path.
-		 */
+		 
 		if (xskq_prod_reserve_addr(pool->cq, desc->addr))
 			goto out;
 
@@ -460,7 +445,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 nb_pkts)
 
 	rcu_read_lock();
 	if (!list_is_singular(&pool->xsk_tx_list)) {
-		/* Fallback to the non-batched version */
+		 
 		rcu_read_unlock();
 		return xsk_tx_peek_release_fallback(pool, nb_pkts);
 	}
@@ -473,12 +458,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 nb_pkts)
 
 	nb_pkts = xskq_cons_nb_entries(xs->tx, nb_pkts);
 
-	/* This is the backpressure mechanism for the Tx path. Try to
-	 * reserve space in the completion queue for all packets, but
-	 * if there are fewer slots available, just process that many
-	 * packets. This avoids having to implement any buffering in
-	 * the Tx path.
-	 */
+	 
 	nb_pkts = xskq_prod_nb_free(pool->cq, nb_pkts);
 	if (!nb_pkts)
 		goto out;
@@ -560,7 +540,7 @@ static void xsk_consume_skb(struct sk_buff *skb)
 
 	skb->destructor = sock_wfree;
 	xsk_cq_cancel_locked(xs, xsk_get_num_desc(skb));
-	/* Free skb without triggering the perf drop trace */
+	 
 	consume_skb(skb);
 	xs->skb = NULL;
 }
@@ -693,12 +673,12 @@ static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
 
 free_err:
 	if (err == -EOVERFLOW) {
-		/* Drop the packet */
+		 
 		xsk_set_destructor_arg(xs->skb);
 		xsk_drop_skb(xs->skb);
 		xskq_cons_release(xs->tx);
 	} else {
-		/* Let application retry */
+		 
 		xsk_cq_cancel_locked(xs, 1);
 	}
 
@@ -716,7 +696,7 @@ static int __xsk_generic_xmit(struct sock *sk)
 
 	mutex_lock(&xs->mutex);
 
-	/* Since we dropped the RCU read lock, the socket state might have changed. */
+	 
 	if (unlikely(!xsk_is_bound(xs))) {
 		err = -ENXIO;
 		goto out;
@@ -731,11 +711,7 @@ static int __xsk_generic_xmit(struct sock *sk)
 			goto out;
 		}
 
-		/* This is the backpressure mechanism for the Tx path.
-		 * Reserve space in the completion queue and only proceed
-		 * if there is space in it. This avoids having to implement
-		 * any buffering in the Tx path.
-		 */
+		 
 		if (xsk_cq_reserve_addr_locked(xs, desc.addr))
 			goto out;
 
@@ -757,16 +733,16 @@ static int __xsk_generic_xmit(struct sock *sk)
 
 		err = __dev_direct_xmit(skb, xs->queue_id);
 		if  (err == NETDEV_TX_BUSY) {
-			/* Tell user-space to retry the send */
+			 
 			xskq_cons_cancel_n(xs->tx, xsk_get_num_desc(skb));
 			xsk_consume_skb(skb);
 			err = -EAGAIN;
 			goto out;
 		}
 
-		/* Ignore NET_XMIT_CN as packet might have been sent */
+		 
 		if (err == NET_XMIT_DROP) {
-			/* SKB completed but not sent */
+			 
 			err = -EBUSY;
 			xs->skb = NULL;
 			goto out;
@@ -795,10 +771,10 @@ static int xsk_generic_xmit(struct sock *sk)
 {
 	int ret;
 
-	/* Drop the RCU lock since the SKB path might sleep. */
+	 
 	rcu_read_unlock();
 	ret = __xsk_generic_xmit(sk);
-	/* Reaquire RCU lock before going into common code. */
+	 
 	rcu_read_lock();
 
 	return ret;
@@ -807,7 +783,7 @@ static int xsk_generic_xmit(struct sock *sk)
 static bool xsk_no_wakeup(struct sock *sk)
 {
 #ifdef CONFIG_NET_RX_BUSY_POLL
-	/* Prefer busy-polling, skip the wakeup. */
+	 
 	return READ_ONCE(sk->sk_prefer_busy_poll) && READ_ONCE(sk->sk_ll_usec) &&
 		READ_ONCE(sk->sk_napi_id) >= MIN_NAPI_ID;
 #else
@@ -844,7 +820,7 @@ static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len
 	if (sk_can_busy_loop(sk)) {
 		if (xs->zc)
 			__sk_mark_napi_id_once(sk, xsk_pool_get_napi_id(xs->pool));
-		sk_busy_loop(sk, 1); /* only support non-blocking sockets */
+		sk_busy_loop(sk, 1);  
 	}
 
 	if (xs->zc && xsk_no_wakeup(sk))
@@ -886,7 +862,7 @@ static int __xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int 
 		return -EOPNOTSUPP;
 
 	if (sk_can_busy_loop(sk))
-		sk_busy_loop(sk, 1); /* only support non-blocking sockets */
+		sk_busy_loop(sk, 1);  
 
 	if (xsk_no_wakeup(sk))
 		return 0;
@@ -927,7 +903,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
 		if (xs->zc)
 			xsk_wakeup(xs, pool->cached_need_wakeup);
 		else if (xs->tx)
-			/* Poll needs to drive Tx also in copy mode */
+			 
 			xsk_generic_xmit(sk);
 	}
 
@@ -952,7 +928,7 @@ static int xsk_init_queue(u32 entries, struct xsk_queue **queue,
 	if (!q)
 		return -ENOMEM;
 
-	/* Make sure queue is ready before it can be seen by others */
+	 
 	smp_wmb();
 	WRITE_ONCE(*queue, q);
 	return 0;
@@ -966,7 +942,7 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
 		return;
 	WRITE_ONCE(xs->state, XSK_UNBOUND);
 
-	/* Wait for driver to stop using the xdp socket. */
+	 
 	xp_del_xsk(xs->pool, xs);
 	synchronize_net();
 	dev_put(dev);
@@ -994,21 +970,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
 
 static void xsk_delete_from_maps(struct xdp_sock *xs)
 {
-	/* This function removes the current XDP socket from all the
-	 * maps it resides in. We need to take extra care here, due to
-	 * the two locks involved. Each map has a lock synchronizing
-	 * updates to the entries, and each socket has a lock that
-	 * synchronizes access to the list of maps (map_list). For
-	 * deadlock avoidance the locks need to be taken in the order
-	 * "map lock"->"socket map list lock". We start off by
-	 * accessing the socket map list, and take a reference to the
-	 * map to guarantee existence between the
-	 * xsk_get_map_list_entry() and xsk_map_try_sock_delete()
-	 * calls. Then we ask the map to remove the socket, which
-	 * tries to remove the socket from the map. Note that there
-	 * might be updates to the map between
-	 * xsk_get_map_list_entry() and xsk_map_try_sock_delete().
-	 */
+	 
 	struct xdp_sock __rcu **map_entry = NULL;
 	struct xsk_map *map;
 
@@ -1128,13 +1090,13 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 
 		if ((flags & XDP_COPY) || (flags & XDP_ZEROCOPY) ||
 		    (flags & XDP_USE_NEED_WAKEUP) || (flags & XDP_USE_SG)) {
-			/* Cannot specify flags for shared sockets. */
+			 
 			err = -EINVAL;
 			goto out_unlock;
 		}
 
 		if (xs->umem) {
-			/* We have already our own. */
+			 
 			err = -EINVAL;
 			goto out_unlock;
 		}
@@ -1153,9 +1115,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 		}
 
 		if (umem_xs->queue_id != qid || umem_xs->dev != dev) {
-			/* Share the umem with another socket on another qid
-			 * and/or device.
-			 */
+			 
 			xs->pool = xp_create_and_assign_umem(xs,
 							     umem_xs->umem);
 			if (!xs->pool) {
@@ -1173,9 +1133,9 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 				goto out_unlock;
 			}
 		} else {
-			/* Share the buffer pool with the other socket. */
+			 
 			if (xs->fq_tmp || xs->cq_tmp) {
-				/* Do not allow setting your own fq or cq. */
+				 
 				err = -EINVAL;
 				sockfd_put(sock);
 				goto out_unlock;
@@ -1184,10 +1144,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 			xp_get_pool(umem_xs->pool);
 			xs->pool = umem_xs->pool;
 
-			/* If underlying shared umem was created without Tx
-			 * ring, allocate Tx descs array that Tx batching API
-			 * utilizes
-			 */
+			 
 			if (xs->tx && !xs->pool->tx_descs) {
 				err = xp_alloc_tx_descs(xs->pool, xs);
 				if (err) {
@@ -1206,7 +1163,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 		err = -EINVAL;
 		goto out_unlock;
 	} else {
-		/* This xsk has its own umem. */
+		 
 		xs->pool = xp_create_and_assign_umem(xs, xs->umem);
 		if (!xs->pool) {
 			err = -ENOMEM;
@@ -1221,7 +1178,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 		}
 	}
 
-	/* FQ and CQ are now owned by the buffer pool and cleaned up with it. */
+	 
 	xs->fq_tmp = NULL;
 	xs->cq_tmp = NULL;
 
@@ -1235,9 +1192,7 @@ out_unlock:
 	if (err) {
 		dev_put(dev);
 	} else {
-		/* Matches smp_rmb() in bind() for shared umem
-		 * sockets, and xsk_is_bound().
-		 */
+		 
 		smp_wmb();
 		WRITE_ONCE(xs->state, XSK_BOUND);
 	}
@@ -1248,8 +1203,8 @@ out_release:
 }
 
 struct xdp_umem_reg_v1 {
-	__u64 addr; /* Start of packet data area */
-	__u64 len; /* Length of packet data area */
+	__u64 addr;  
+	__u64 len;  
 	__u32 chunk_size;
 	__u32 headroom;
 };
@@ -1284,7 +1239,7 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
 		q = (optname == XDP_TX_RING) ? &xs->tx : &xs->rx;
 		err = xsk_init_queue(entries, q, false);
 		if (!err && optname == XDP_TX_RING)
-			/* Tx needs to be explicitly woken up the first time */
+			 
 			xs->tx->ring->flags |= XDP_RING_NEED_WAKEUP;
 		mutex_unlock(&xs->mutex);
 		return err;
@@ -1315,7 +1270,7 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
 			return PTR_ERR(umem);
 		}
 
-		/* Make sure umem is ready before it can be seen by others */
+		 
 		smp_wmb();
 		WRITE_ONCE(xs->umem, umem);
 		mutex_unlock(&xs->mutex);
@@ -1434,9 +1389,7 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
 			flags_supported = false;
 
 		if (flags_supported) {
-			/* xdp_ring_offset is identical to xdp_ring_offset_v1
-			 * except for the flags field added to the end.
-			 */
+			 
 			xsk_enter_rxtx_offsets((struct xdp_ring_offset_v1 *)
 					       &off.rx);
 			xsk_enter_rxtx_offsets((struct xdp_ring_offset_v1 *)
@@ -1517,7 +1470,7 @@ static int xsk_mmap(struct file *file, struct socket *sock,
 	} else if (offset == XDP_PGOFF_TX_RING) {
 		q = READ_ONCE(xs->tx);
 	} else {
-		/* Matches the smp_wmb() in XDP_UMEM_REG */
+		 
 		smp_rmb();
 		if (offset == XDP_UMEM_PGOFF_FILL_RING)
 			q = state == XSK_READY ? READ_ONCE(xs->fq_tmp) :
@@ -1530,7 +1483,7 @@ static int xsk_mmap(struct file *file, struct socket *sock,
 	if (!q)
 		return -EINVAL;
 
-	/* Matches the smp_wmb() in xsk_init_queue */
+	 
 	smp_rmb();
 	if (size > q->ring_vmalloc_size)
 		return -EINVAL;
@@ -1559,7 +1512,7 @@ static int xsk_notifier(struct notifier_block *this,
 
 				xsk_unbind_dev(xs);
 
-				/* Clear device references. */
+				 
 				xp_clear_dev(xs->pool);
 			}
 			mutex_unlock(&xs->mutex);
@@ -1685,7 +1638,7 @@ static int __init xsk_init(void)
 {
 	int err, cpu;
 
-	err = proto_register(&xsk_proto, 0 /* no slab */);
+	err = proto_register(&xsk_proto, 0  );
 	if (err)
 		goto out;
 

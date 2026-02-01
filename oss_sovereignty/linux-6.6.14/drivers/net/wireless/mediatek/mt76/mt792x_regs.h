@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2023 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT792X_REGS_H
 #define __MT792X_REGS_H
 
-/* MCU WFDMA1 */
+ 
 #define MT_MCU_WFDMA1_BASE		0x3000
 #define MT_MCU_WFDMA1(ofs)		(MT_MCU_WFDMA1_BASE + (ofs))
 
@@ -25,7 +25,7 @@
 #define MT_PLE_AC_QEMPTY(_n)		MT_PLE(0x500 + 0x40 * (_n))
 #define MT_PLE_AMSDU_PACK_MSDU_CNT(n)	MT_PLE(0x10e0 + ((n) << 2))
 
-/* TMAC: band 0(0x21000), band 1(0xa1000) */
+ 
 #define MT_WF_TMAC_BASE(_band)		((_band) ? 0x820f4000 : 0x820e4000)
 #define MT_WF_TMAC(_band, ofs)		(MT_WF_TMAC_BASE(_band) + (ofs))
 
@@ -58,7 +58,7 @@
 #define MT_DMA_DCR0_MAX_RX_LEN		GENMASK(15, 3)
 #define MT_DMA_DCR0_RXD_G5_EN		BIT(23)
 
-/* WTBLOFF TOP: band 0(0x820e9000),band 1(0x820f9000) */
+ 
 #define MT_WTBLOFF_TOP_BASE(_band)	((_band) ? 0x820f9000 : 0x820e9000)
 #define MT_WTBLOFF_TOP(_band, ofs)	(MT_WTBLOFF_TOP_BASE(_band) + (ofs))
 
@@ -66,7 +66,7 @@
 #define MT_WTBLOFF_TOP_RSCR_RCPI_MODE	GENMASK(31, 30)
 #define MT_WTBLOFF_TOP_RSCR_RCPI_PARAM	GENMASK(25, 24)
 
-/* LPON: band 0(0x24200), band 1(0xa4200) */
+ 
 #define MT_WF_LPON_BASE(_band)		((_band) ? 0x820fb000 : 0x820eb000)
 #define MT_WF_LPON(_band, ofs)		(MT_WF_LPON_BASE(_band) + (ofs))
 
@@ -77,7 +77,7 @@
 #define MT_LPON_TCR_SW_MODE		GENMASK(1, 0)
 #define MT_LPON_TCR_SW_WRITE		BIT(0)
 
-/* ETBF: band 0(0x24000), band 1(0xa4000) */
+ 
 #define MT_WF_ETBF_BASE(_band)		((_band) ? 0x820fa000 : 0x820ea000)
 #define MT_WF_ETBF(_band, ofs)		(MT_WF_ETBF_BASE(_band) + (ofs))
 
@@ -91,7 +91,7 @@
 #define MT_ETBF_RX_FB_VHT		GENMASK(15, 8)
 #define MT_ETBF_RX_FB_HT		GENMASK(7, 0)
 
-/* MIB: band 0(0x24800), band 1(0xa4800) */
+ 
 #define MT_WF_MIB_BASE(_band)		((_band) ? 0x820fd000 : 0x820ed000)
 #define MT_WF_MIB(_band, ofs)		(MT_WF_MIB_BASE(_band) + (ofs))
 
@@ -173,7 +173,7 @@
 					 FIELD_PREP(MT_WTBL_LMAC_ID, _id) | \
 					 FIELD_PREP(MT_WTBL_LMAC_DW, _dw))
 
-/* AGG: band 0(0x20800), band 1(0xa0800) */
+ 
 #define MT_WF_AGG_BASE(_band)		((_band) ? 0x820f2000 : 0x820e2000)
 #define MT_WF_AGG(_band, ofs)		(MT_WF_AGG_BASE(_band) + (ofs))
 
@@ -204,7 +204,7 @@
 #define MT_AGG_ATCR1(_band)		MT_WF_AGG(_band, 0x0f0)
 #define MT_AGG_ATCR3(_band)		MT_WF_AGG(_band, 0x0f4)
 
-/* ARB: band 0(0x20c00), band 1(0xa0c00) */
+ 
 #define MT_WF_ARB_BASE(_band)		((_band) ? 0x820f3000 : 0x820e3000)
 #define MT_WF_ARB(_band, ofs)		(MT_WF_ARB_BASE(_band) + (ofs))
 
@@ -214,7 +214,7 @@
 
 #define MT_ARB_DRNGR0(_band, _n)	MT_WF_ARB(_band, 0x194 + (_n) * 4)
 
-/* RMAC: band 0(0x21400), band 1(0xa1400) */
+ 
 #define MT_WF_RMAC_BASE(_band)		((_band) ? 0x820f5000 : 0x820e5000)
 #define MT_WF_RMAC(_band, ofs)		(MT_WF_RMAC_BASE(_band) + (ofs))
 
@@ -256,7 +256,7 @@
 #define MT_MIB_OBSSTIME_MASK		GENMASK(23, 0)
 #define MT_WF_RMAC_MIB_AIRTIME0(_band)	MT_WF_RMAC(_band, 0x0380)
 
-/* WFDMA0 */
+ 
 #define MT_WFDMA0_BASE			0xd4000
 #define MT_WFDMA0(ofs)			(MT_WFDMA0_BASE + (ofs))
 
@@ -281,11 +281,11 @@
 #define MT_MCU2HOST_SW_INT_ENA		MT_WFDMA0(0x1f4)
 
 #define MT_WFDMA0_HOST_INT_STA		MT_WFDMA0(0x200)
-#define HOST_RX_DONE_INT_STS0		BIT(0)	/* Rx mcu */
-#define HOST_RX_DONE_INT_STS2		BIT(2)	/* Rx data */
-#define HOST_RX_DONE_INT_STS4		BIT(22)	/* Rx mcu after fw downloaded */
+#define HOST_RX_DONE_INT_STS0		BIT(0)	 
+#define HOST_RX_DONE_INT_STS2		BIT(2)	 
+#define HOST_RX_DONE_INT_STS4		BIT(22)	 
 #define HOST_TX_DONE_INT_STS16		BIT(26)
-#define HOST_TX_DONE_INT_STS17		BIT(27) /* MCU tx done*/
+#define HOST_TX_DONE_INT_STS17		BIT(27)  
 
 #define MT_WFDMA0_GLO_CFG		MT_WFDMA0(0x208)
 #define MT_WFDMA0_GLO_CFG_TX_DMA_EN	BIT(0)
@@ -352,7 +352,7 @@
 #define MT_TX_RING_BASE			MT_WFDMA0(0x300)
 #define MT_RX_EVENT_RING_BASE		MT_WFDMA0(0x500)
 
-/* WFDMA CSR */
+ 
 #define MT_WFDMA_EXT_CSR_BASE          0xd7000
 #define MT_WFDMA_EXT_CSR(ofs)          (MT_WFDMA_EXT_CSR_BASE + (ofs))
 #define MT_WFDMA_EXT_CSR_HIF_MISC	MT_WFDMA_EXT_CSR(0x44)
@@ -476,4 +476,4 @@
 #define WFSYS_SW_RST_B			BIT(0)
 #define WFSYS_SW_INIT_DONE		BIT(4)
 
-#endif /* __MT792X_REGS_H */
+#endif  

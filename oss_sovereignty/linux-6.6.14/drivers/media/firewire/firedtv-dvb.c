@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * FireDTV driver (formerly known as FireSAT)
- *
- * Copyright (C) 2004 Andreas Monitzer <andy@monitzer.com>
- * Copyright (C) 2008 Henrik Kurelid <henrik@kurelid.se>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -166,7 +161,7 @@ int fdtv_dvb_register(struct firedtv *fdtv, const char *name)
 	if (err < 0)
 		goto fail_log;
 
-	/*DMX_TS_FILTERING | DMX_SECTION_FILTERING*/
+	 
 	fdtv->demux.dmx.capabilities = 0;
 
 	fdtv->demux.priv	= fdtv;

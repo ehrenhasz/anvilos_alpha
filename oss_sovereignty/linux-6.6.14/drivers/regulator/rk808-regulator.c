@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for Rockchip RK805/RK808/RK818
- *
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
- *
- * Author: Chris Zhong <zyw@rock-chips.com>
- * Author: Zhang Qing <zhangqing@rock-chips.com>
- * Author: Xu Shengfei <xsf@rock-chips.com>
- *
- * Copyright (C) 2016 PHYTEC Messtechnik GmbH
- *
- * Author: Wadim Egorov <w.egorov@phytec.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -25,7 +12,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/gpio/consumer.h>
 
-/* Field Definitions */
+ 
 #define RK808_BUCK_VSEL_MASK	0x3f
 #define RK808_BUCK4_VSEL_MASK	0xf
 #define RK808_LDO_VSEL_MASK	0x1f
@@ -49,7 +36,7 @@
 #define RK806_BUCK_SEL_CNT		0xff
 #define RK806_LDO_SEL_CNT		0xff
 
-/* Ramp rate definitions for buck1 / buck2 only */
+ 
 #define RK808_RAMP_RATE_OFFSET		3
 #define RK808_RAMP_RATE_MASK		(3 << RK808_RAMP_RATE_OFFSET)
 #define RK808_RAMP_RATE_2MV_PER_US	(0 << RK808_RAMP_RATE_OFFSET)
@@ -60,16 +47,16 @@
 #define RK808_DVS2_POL		BIT(2)
 #define RK808_DVS1_POL		BIT(1)
 
-/* Offset from XXX_ON_VSEL to XXX_SLP_VSEL */
+ 
 #define RK808_SLP_REG_OFFSET 1
 
-/* Offset from XXX_ON_VSEL to XXX_DVS_VSEL */
+ 
 #define RK808_DVS_REG_OFFSET 2
 
-/* Offset from XXX_EN_REG to SLEEP_SET_OFF_XXX */
+ 
 #define RK808_SLP_SET_OFF_REG_OFFSET 2
 
-/* max steps for increase voltage of Buck1/2, equal 100mv*/
+ 
 #define MAX_STEPS_ONE_TIME 8
 
 #define ENABLE_MASK(id)			(BIT(id) | BIT(4 + (id)))
@@ -260,7 +247,7 @@ static const unsigned int rk808_buck1_2_ramp_table[] = {
 	2000, 4000, 6000, 10000
 };
 
-/* RK817 RK809 */
+ 
 static const unsigned int rk817_buck1_4_ramp_table[] = {
 	3000, 6300, 12500, 25000
 };
@@ -347,12 +334,7 @@ static int rk806_set_ramp_delay_dcdc(struct regulator_dev *rdev, int ramp_delay)
 	if (ret)
 		return ret;
 
-	/*
-	 * The above is effectively a copy of regulator_set_ramp_delay_regmap(),
-	 * but that only stores the lower 2 bits for rk806 DCDC ramp. The MSB must
-	 * be stored in a separate register, so this open codes the implementation
-	 * to have access to the ramp_value.
-	 */
+	 
 
 	regval = (ramp_value >> 2) & 0x1 ? rk806_dcdc_rate2[rid].bit : 0;
 	return regmap_update_bits(rdev->regmap, rk806_dcdc_rate2[rid].reg,
@@ -430,22 +412,13 @@ static int rk808_buck1_2_i2c_set_voltage_sel(struct regulator_dev *rdev,
 	old_sel >>= ffs(mask) - 1;
 	delta_sel = sel - old_sel;
 
-	/*
-	 * If directly modify the register to change the voltage, we will face
-	 * the risk of overshoot. Put it into a multi-step, can effectively
-	 * avoid this problem, a step is 100mv here.
-	 */
+	 
 	while (delta_sel > MAX_STEPS_ONE_TIME) {
 		old_sel += MAX_STEPS_ONE_TIME;
 		val = old_sel << (ffs(mask) - 1);
 		val |= tmp;
 
-		/*
-		 * i2c is 400kHz (2.5us per bit) and we must transmit _at least_
-		 * 3 bytes (24 bits) plus start and stop so 26 bits.  So we've
-		 * got more than 65 us between each voltage change and thus
-		 * won't ramp faster than ~1500 uV / us.
-		 */
+		 
 		ret = regmap_write(rdev->regmap, rdev->desc->vsel_reg, val);
 		delta_sel = sel - old_sel;
 	}
@@ -454,11 +427,7 @@ static int rk808_buck1_2_i2c_set_voltage_sel(struct regulator_dev *rdev,
 	val = tmp | sel;
 	ret = regmap_write(rdev->regmap, rdev->desc->vsel_reg, val);
 
-	/*
-	 * When we change the voltage register directly, the ramp rate is about
-	 * 100000uv/us, wait 1us to make sure the target voltage to be stable,
-	 * so we needn't wait extra time after that.
-	 */
+	 
 	udelay(1);
 
 	return ret;
@@ -510,7 +479,7 @@ static int rk808_buck1_2_set_voltage_time_sel(struct regulator_dev *rdev,
 	int id = rdev_get_id(rdev);
 	struct gpio_desc *gpio = pdata->dvs_gpio[id];
 
-	/* if there is no dvs1/2 pin, we don't need wait extra time here. */
+	 
 	if (!gpio)
 		return 0;
 
@@ -731,7 +700,7 @@ static int rk8xx_is_enabled_wmsk_regmap(struct regulator_dev *rdev)
 	if (ret != 0)
 		return ret;
 
-	/* add write mask bit */
+	 
 	val |= (rdev->desc->enable_mask & 0xf0);
 	val &= rdev->desc->enable_mask;
 
@@ -1019,14 +988,14 @@ static const struct regulator_desc rk805_reg[] = {
 };
 
 static const struct linear_range rk806_buck_voltage_ranges[] = {
-	REGULATOR_LINEAR_RANGE(500000, 0, 160, 6250), /* 500mV ~ 1500mV */
-	REGULATOR_LINEAR_RANGE(1500000, 161, 237, 25000), /* 1500mV ~ 3400mV */
+	REGULATOR_LINEAR_RANGE(500000, 0, 160, 6250),  
+	REGULATOR_LINEAR_RANGE(1500000, 161, 237, 25000),  
 	REGULATOR_LINEAR_RANGE(3400000, 238, 255, 0),
 };
 
 static const struct linear_range rk806_ldo_voltage_ranges[] = {
-	REGULATOR_LINEAR_RANGE(500000, 0, 232, 12500), /* 500mV ~ 3400mV */
-	REGULATOR_LINEAR_RANGE(3400000, 233, 255, 0), /* 500mV ~ 3400mV */
+	REGULATOR_LINEAR_RANGE(500000, 0, 232, 12500),  
+	REGULATOR_LINEAR_RANGE(3400000, 233, 255, 0),  
 };
 
 static const struct regulator_desc rk806_reg[] = {
@@ -1724,7 +1693,7 @@ static int rk808_regulator_probe(struct platform_device *pdev)
 	config.driver_data = pdata;
 	config.regmap = regmap;
 
-	/* Instantiate the regulators */
+	 
 	for (i = 0; i < nregulators; i++) {
 		rk808_rdev = devm_regulator_register(&pdev->dev,
 						     &regulators[i], &config);

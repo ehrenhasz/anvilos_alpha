@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Microsoft Corporation
- *
- * Author: Tushar Sugandhi <tusharsu@linux.microsoft.com>
- *
- * Enables IMA measurements for DM targets
- */
+
+ 
 
 #include "dm-core.h"
 #include "dm-ima.h"
@@ -18,11 +12,7 @@
 
 #define DM_MSG_PREFIX "ima"
 
-/*
- * Internal function to prefix separator characters in input buffer with escape
- * character, so that they don't interfere with the construction of key-value pairs,
- * and clients can split the key1=val1,key2=val2,key3=val3; pairs properly.
- */
+ 
 static void fix_separator_chars(char **buf)
 {
 	int l = strlen(*buf);
@@ -42,9 +32,7 @@ static void fix_separator_chars(char **buf)
 	}
 }
 
-/*
- * Internal function to allocate memory for IMA measurements.
- */
+ 
 static void *dm_ima_alloc(size_t len, gfp_t flags, bool noio)
 {
 	unsigned int noio_flag;
@@ -61,9 +49,7 @@ static void *dm_ima_alloc(size_t len, gfp_t flags, bool noio)
 	return ptr;
 }
 
-/*
- * Internal function to allocate and copy name and uuid for IMA measurements.
- */
+ 
 static int dm_ima_alloc_and_copy_name_uuid(struct mapped_device *md, char **dev_name,
 					   char **dev_uuid, bool noio)
 {
@@ -96,9 +82,7 @@ error:
 	return r;
 }
 
-/*
- * Internal function to allocate and copy device data for IMA measurements.
- */
+ 
 static int dm_ima_alloc_and_copy_device_data(struct mapped_device *md, char **device_data,
 					     unsigned int num_targets, bool noio)
 {
@@ -125,9 +109,7 @@ error:
 	return r;
 }
 
-/*
- * Internal wrapper function to call IMA to measure DM data.
- */
+ 
 static void dm_ima_measure_data(const char *event_name, const void *buf, size_t buf_len,
 				bool noio)
 {
@@ -143,9 +125,7 @@ static void dm_ima_measure_data(const char *event_name, const void *buf, size_t 
 		memalloc_noio_restore(noio_flag);
 }
 
-/*
- * Internal function to allocate and copy current device capacity for IMA measurements.
- */
+ 
 static int dm_ima_alloc_and_copy_capacity_str(struct mapped_device *md, char **capacity_str,
 					      bool noio)
 {
@@ -163,18 +143,14 @@ static int dm_ima_alloc_and_copy_capacity_str(struct mapped_device *md, char **c
 	return 0;
 }
 
-/*
- * Initialize/reset the dm ima related data structure variables.
- */
+ 
 void dm_ima_reset_data(struct mapped_device *md)
 {
 	memset(&(md->ima), 0, sizeof(md->ima));
 	md->ima.dm_version_str_len = strlen(DM_IMA_VERSION_STR);
 }
 
-/*
- * Build up the IMA data for each target, and finally measure.
- */
+ 
 void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_flags)
 {
 	size_t device_data_buf_len, target_metadata_buf_len, target_data_buf_len, l = 0;
@@ -188,10 +164,7 @@ void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_fl
 	struct crypto_shash *tfm = NULL;
 	u8 *digest = NULL;
 	bool noio = false;
-	/*
-	 * In below hash_alg_prefix_len assignment +1 is for the additional char (':'),
-	 * when prefixing the hash value with the hash algorithm name. e.g. sha256:<hash_value>.
-	 */
+	 
 	const size_t hash_alg_prefix_len = strlen(DM_IMA_TABLE_HASH_ALG) + 1;
 	char table_load_event_name[] = "dm_table_load";
 
@@ -238,17 +211,13 @@ void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_fl
 
 		last_target_measured = 0;
 
-		/*
-		 * First retrieve the target metadata.
-		 */
+		 
 		scnprintf(target_metadata_buf, DM_IMA_TARGET_METADATA_BUF_LEN,
 			  "target_index=%d,target_begin=%llu,target_len=%llu,",
 			  i, ti->begin, ti->len);
 		target_metadata_buf_len = strlen(target_metadata_buf);
 
-		/*
-		 * Then retrieve the actual target data.
-		 */
+		 
 		if (ti->type->status)
 			ti->type->status(ti, type, status_flags, target_data_buf,
 					 DM_IMA_TARGET_DATA_BUF_LEN);
@@ -257,18 +226,10 @@ void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_fl
 
 		target_data_buf_len = strlen(target_data_buf);
 
-		/*
-		 * Check if the total data can fit into the IMA buffer.
-		 */
+		 
 		cur_total_buf_len = l + target_metadata_buf_len + target_data_buf_len;
 
-		/*
-		 * IMA measurements for DM targets are best-effort.
-		 * If the total data buffered so far, including the current target,
-		 * is too large to fit into DM_IMA_MEASUREMENT_BUF_LEN, measure what
-		 * we have in the current buffer, and continue measuring the remaining
-		 * targets by prefixing the device metadata again.
-		 */
+		 
 		if (unlikely(cur_total_buf_len >= DM_IMA_MEASUREMENT_BUF_LEN)) {
 			dm_ima_measure_data(table_load_event_name, ima_buf, l, noio);
 			r = crypto_shash_update(shash, (const u8 *)ima_buf, l);
@@ -278,30 +239,18 @@ void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_fl
 			memset(ima_buf, 0, DM_IMA_MEASUREMENT_BUF_LEN);
 			l = 0;
 
-			/*
-			 * Each new "dm_table_load" entry in IMA log should have device data
-			 * prefix, so that multiple records from the same "dm_table_load" for
-			 * a given device can be linked together.
-			 */
+			 
 			memcpy(ima_buf + l, DM_IMA_VERSION_STR, table->md->ima.dm_version_str_len);
 			l += table->md->ima.dm_version_str_len;
 
 			memcpy(ima_buf + l, device_data_buf, device_data_buf_len);
 			l += device_data_buf_len;
 
-			/*
-			 * If this iteration of the for loop turns out to be the last target
-			 * in the table, dm_ima_measure_data("dm_table_load", ...) doesn't need
-			 * to be called again, just the hash needs to be finalized.
-			 * "last_target_measured" tracks this state.
-			 */
+			 
 			last_target_measured = 1;
 		}
 
-		/*
-		 * Fill-in all the target metadata, so that multiple targets for the same
-		 * device can be linked together.
-		 */
+		 
 		memcpy(ima_buf + l, target_metadata_buf, target_metadata_buf_len);
 		l += target_metadata_buf_len;
 
@@ -317,11 +266,7 @@ void dm_ima_measure_on_table_load(struct dm_table *table, unsigned int status_fl
 			goto error;
 	}
 
-	/*
-	 * Finalize the table hash, and store it in table->md->ima.inactive_table.hash,
-	 * so that the table data can be verified against the future device state change
-	 * events, e.g. resume, rename, remove, table-clear etc.
-	 */
+	 
 	r = crypto_shash_final(shash, digest);
 	if (r < 0)
 		goto error;
@@ -363,9 +308,7 @@ exit:
 	kfree(target_data_buf);
 }
 
-/*
- * Measure IMA data on device resume.
- */
+ 
 void dm_ima_measure_on_device_resume(struct mapped_device *md, bool swap)
 {
 	char *device_table_data, *dev_name = NULL, *dev_uuid = NULL, *capacity_str = NULL;
@@ -468,9 +411,7 @@ error:
 	kfree(device_table_data);
 }
 
-/*
- * Measure IMA data on remove.
- */
+ 
 void dm_ima_measure_on_device_remove(struct mapped_device *md, bool remove_all)
 {
 	char *device_table_data, *dev_name = NULL, *dev_uuid = NULL, *capacity_str = NULL;
@@ -552,11 +493,7 @@ void dm_ima_measure_on_device_remove(struct mapped_device *md, bool remove_all)
 
 		nodata = false;
 	}
-	/*
-	 * In case both active and inactive tables, and corresponding
-	 * device metadata is cleared/missing - record the name and uuid
-	 * in IMA measurements.
-	 */
+	 
 	if (nodata) {
 		if (dm_ima_alloc_and_copy_name_uuid(md, &dev_name, &dev_uuid, noio))
 			goto error;
@@ -599,9 +536,7 @@ exit:
 	kfree(dev_uuid);
 }
 
-/*
- * Measure ima data on table clear.
- */
+ 
 void dm_ima_measure_on_table_clear(struct mapped_device *md, bool new_map)
 {
 	unsigned int l = 0, capacity_len = 0;
@@ -698,9 +633,7 @@ error1:
 	kfree(device_table_data);
 }
 
-/*
- * Measure IMA data on device rename.
- */
+ 
 void dm_ima_measure_on_device_rename(struct mapped_device *md)
 {
 	char *old_device_data = NULL, *new_device_data = NULL, *combined_device_data = NULL;

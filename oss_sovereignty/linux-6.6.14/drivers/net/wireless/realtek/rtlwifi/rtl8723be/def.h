@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723BE_DEF_H__
 #define __RTL8723BE_DEF_H__
@@ -13,7 +13,7 @@
 #define CHIP_8723B				(BIT(1) | BIT(2))
 #define NORMAL_CHIP				BIT(3)
 #define CHIP_VENDOR_SMIC			BIT(8)
-/* Currently only for RTL8723B */
+ 
 #define EXT_VENDOR_ID				(BIT(18) | BIT(19))
 
 enum rtl_desc_qsel {

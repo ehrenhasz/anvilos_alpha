@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "soc15.h"
 
@@ -139,7 +118,7 @@ static int aqua_vanjaram_xcp_sched_list_update(
 
 		aqua_vanjaram_xcp_gpu_sched_update(adev, ring, ring->xcp_id);
 
-		/* VCN is shared by two partitions under CPX MODE */
+		 
 		if ((ring->funcs->type == AMDGPU_RING_TYPE_VCN_ENC ||
 			ring->funcs->type == AMDGPU_RING_TYPE_VCN_JPEG) &&
 			adev->xcp_mgr->mode == AMDGPU_CPX_PARTITION_MODE)
@@ -215,13 +194,12 @@ static int8_t aqua_vanjaram_logical_to_dev_inst(struct amdgpu_device *adev,
 	switch (block) {
 	case GC_HWIP:
 	case SDMA0_HWIP:
-	/* Both JPEG and VCN as JPEG is only alias of VCN */
+	 
 	case VCN_HWIP:
 		dev_inst = adev->ip_map.dev_inst[block][inst];
 		break;
 	default:
-		/* For rest of the IPs, no look up required.
-		 * Assume 'logical instance == physical instance' for all configs. */
+		 
 		dev_inst = inst;
 		break;
 	}
@@ -277,20 +255,16 @@ void aqua_vanjaram_ip_map_init(struct amdgpu_device *adev)
 	adev->ip_map.logical_to_dev_mask = aqua_vanjaram_logical_to_dev_mask;
 }
 
-/* Fixed pattern for smn addressing on different AIDs:
- *   bit[34]: indicate cross AID access
- *   bit[33:32]: indicate target AID id
- * AID id range is 0 ~ 3 as maximum AID number is 4.
- */
+ 
 u64 aqua_vanjaram_encode_ext_smn_addressing(int ext_id)
 {
 	u64 ext_offset;
 
-	/* local routing and bit[34:32] will be zeros */
+	 
 	if (ext_id == 0)
 		return 0;
 
-	/* Initiated from host, accessing to all non-zero aids are cross traffic */
+	 
 	ext_offset = ((u64)(ext_id & 0x3) << 32) | (1ULL << 34);
 
 	return ext_offset;
@@ -387,7 +361,7 @@ static int __aqua_vanjaram_get_xcp_ip_info(struct amdgpu_xcp_mgr *xcp_mgr, int x
 		break;
 	case AMDGPU_XCP_VCN:
 		ip->inst_mask = XCP_INST_MASK(num_vcn_xcp, xcp_id);
-		/* TODO : Assign IP funcs */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -456,9 +430,7 @@ static bool __aqua_vanjaram_is_valid_mode(struct amdgpu_xcp_mgr *xcp_mgr,
 
 static int __aqua_vanjaram_pre_partition_switch(struct amdgpu_xcp_mgr *xcp_mgr, u32 flags)
 {
-	/* TODO:
-	 * Stop user queues and threads, and make sure GPU is empty of work.
-	 */
+	 
 
 	if (flags & AMDGPU_XCP_OPS_KFD)
 		amdgpu_amdkfd_device_fini_sw(xcp_mgr->adev);
@@ -473,7 +445,7 @@ static int __aqua_vanjaram_post_partition_switch(struct amdgpu_xcp_mgr *xcp_mgr,
 	if (flags & AMDGPU_XCP_OPS_KFD) {
 		amdgpu_amdkfd_device_probe(xcp_mgr->adev);
 		amdgpu_amdkfd_device_init(xcp_mgr->adev);
-		/* If KFD init failed, return failure */
+		 
 		if (!xcp_mgr->adev->kfd.init_complete)
 			ret = -EIO;
 	}
@@ -518,7 +490,7 @@ static int aqua_vanjaram_switch_partition_mode(struct amdgpu_xcp_mgr *xcp_mgr,
 		adev->gfx.funcs->switch_partition_mode(xcp_mgr->adev,
 						       num_xcc_per_xcp);
 
-	/* Init info about new xcps */
+	 
 	*num_xcps = num_xcc / num_xcc_per_xcp;
 	amdgpu_xcp_init(xcp_mgr, *num_xcps, mode);
 
@@ -533,7 +505,7 @@ out:
 static int __aqua_vanjaram_get_xcp_mem_id(struct amdgpu_device *adev,
 					  int xcc_id, uint8_t *mem_id)
 {
-	/* memory/spatial modes validation check is already done */
+	 
 	*mem_id = xcc_id / adev->gfx.num_xcc_per_xcp;
 	*mem_id /= adev->xcp_mgr->num_xcp_per_mem_partition;
 
@@ -549,15 +521,10 @@ static int aqua_vanjaram_get_xcp_mem_id(struct amdgpu_xcp_mgr *xcp_mgr,
 	int r, i, xcc_id;
 
 	adev = xcp_mgr->adev;
-	/* TODO: BIOS is not returning the right info now
-	 * Check on this later
-	 */
-	/*
-	if (adev->gmc.gmc_funcs->query_mem_partition_mode)
-		mode = adev->gmc.gmc_funcs->query_mem_partition_mode(adev);
-	*/
+	 
+	 
 	if (adev->gmc.num_mem_partitions == 1) {
-		/* Only one range */
+		 
 		*mem_id = 0;
 		return 0;
 	}
@@ -615,7 +582,7 @@ static int aqua_vanjaram_xcp_mgr_init(struct amdgpu_device *adev)
 	if (ret)
 		return ret;
 
-	/* TODO: Default memory node affinity init */
+	 
 
 	return ret;
 }
@@ -625,7 +592,7 @@ int aqua_vanjaram_init_soc_config(struct amdgpu_device *adev)
 	u32 mask, inst_mask = adev->sdma.sdma_mask;
 	int ret, i;
 
-	/* generally 1 AID supports 4 instances */
+	 
 	adev->sdma.num_inst_per_aid = 4;
 	adev->sdma.num_instances = NUM_SDMA(adev->sdma.sdma_mask);
 
@@ -638,9 +605,7 @@ int aqua_vanjaram_init_soc_config(struct amdgpu_device *adev)
 			adev->aid_mask |= (1 << i);
 	}
 
-	/* Harvest config is not used for aqua vanjaram. VCN and JPEGs will be
-	 * addressed based on logical instance ids.
-	 */
+	 
 	adev->vcn.harvest_config = 0;
 	adev->vcn.num_inst_per_aid = 1;
 	adev->vcn.num_vcn_inst = hweight32(adev->vcn.inst_mask);

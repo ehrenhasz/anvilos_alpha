@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl data for the NVIDIA Tegra210 pinmux
- *
- * Copyright (c) 2015, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -13,10 +9,7 @@
 
 #include "pinctrl-tegra.h"
 
-/*
- * Most pins affected by the pinmux can also be GPIOs. Define these first.
- * These must match how the GPIO driver names/numbers its pins.
- */
+ 
 #define _GPIO(offset)				(offset)
 
 #define TEGRA_PIN_PEX_L0_RST_N_PA0		_GPIO(0)
@@ -174,11 +167,11 @@
 #define TEGRA_PIN_QSPI_IO2_PEE4			_GPIO(244)
 #define TEGRA_PIN_QSPI_IO3_PEE5			_GPIO(245)
 
-/* All non-GPIO pins follow */
+ 
 #define NUM_GPIOS				(TEGRA_PIN_QSPI_IO3_PEE5 + 1)
 #define _PIN(offset)				(NUM_GPIOS + (offset))
 
-/* Non-GPIO pins */
+ 
 #define TEGRA_PIN_CORE_PWR_REQ			_PIN(0)
 #define TEGRA_PIN_CPU_PWR_REQ			_PIN(1)
 #define TEGRA_PIN_PWR_INT_N			_PIN(2)
@@ -1263,8 +1256,8 @@ static const char * const tegra210_functions[] = {
 	FUNCTION(vimclk2),
 };
 
-#define DRV_PINGROUP_REG_A		0x8d4	/* bank 0 */
-#define PINGROUP_REG_A			0x3000	/* bank 1 */
+#define DRV_PINGROUP_REG_A		0x8d4	 
+#define PINGROUP_REG_A			0x3000	 
 
 #define DRV_PINGROUP_REG(r)		((r) - DRV_PINGROUP_REG_A)
 #define PINGROUP_REG(r)			((r) - PINGROUP_REG_A)
@@ -1350,7 +1343,7 @@ static const char * const tegra210_functions[] = {
 	}
 
 static const struct tegra_pingroup tegra210_groups[] = {
-	/*       pg_name,              f0,         f1,     f2,    f3,    r,      hsm, drvtype, e_io_hv, lpdr, rdrv,  drvdn_b, drvdn_w, drvup_b, drvup_w, slwr_b, slwr_w, slwf_b, slwf_w */
+	 
 	PINGROUP(sdmmc1_clk_pm0,       SDMMC1,     RSVD1,  RSVD2, RSVD3, 0x3000, Y,   Y,       N,       N,	-1,    -1,      -1,      -1,      -1,      -1,     -1,     -1,     -1),
 	PINGROUP(sdmmc1_cmd_pm1,       SDMMC1,     SPI3,   RSVD2, RSVD3, 0x3004, Y,   Y,       N,       N,	-1,    -1,      -1,      -1,      -1,      -1,     -1,     -1,     -1),
 	PINGROUP(sdmmc1_dat3_pm2,      SDMMC1,     SPI3,   RSVD2, RSVD3, 0x3008, Y,   Y,       N,       N,	-1,    -1,      -1,      -1,      -1,      -1,     -1,     -1,     -1),
@@ -1514,7 +1507,7 @@ static const struct tegra_pingroup tegra210_groups[] = {
 	PINGROUP(pz4,                  SDMMC1,     RSVD1,  RSVD2, RSVD3, 0x328c, N,   N,       N,       Y,	-1,    -1,      -1,      -1,      -1,      -1,     -1,     -1,     -1),
 	PINGROUP(pz5,                  SOC,        RSVD1,  RSVD2, RSVD3, 0x3290, N,   N,       N,       Y,	-1,    -1,      -1,      -1,      -1,      -1,     -1,     -1,     -1),
 
-	/* pg_name, r, prk_mask, drvdn_b, drvdn_w, drvup_b, drvup_w, slwr_b, slwr_w, slwf_b, slwf_w */
+	 
 	DRV_PINGROUP(pa6,    0x9c0, 0x0,       12, 5,  20, 5,  -1, -1, -1, -1),
 	DRV_PINGROUP(pcc7,   0x9c4, 0x0,       12, 5,  20, 5,  -1, -1, -1, -1),
 	DRV_PINGROUP(pe6,    0x9c8, 0x0,       12, 5,  20, 5,  -1, -1, -1, -1),

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * call-path.h: Manipulate a tree data structure containing function call paths
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/rbtree.h>
 #include <linux/list.h>

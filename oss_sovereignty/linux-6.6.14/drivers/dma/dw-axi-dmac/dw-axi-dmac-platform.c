@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// (C) 2017-2018 Synopsys, Inc. (www.synopsys.com)
 
-/*
- * Synopsys DesignWare AXI DMA Controller driver.
- *
- * Author: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
- */
+
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -33,11 +29,7 @@
 #include "../dmaengine.h"
 #include "../virt-dma.h"
 
-/*
- * The set of bus widths supported by the DMA controller. DW AXI DMAC supports
- * master data bus width up to 512 bits (for both AXI master interfaces), but
- * it depends on IP block configuration.
- */
+ 
 #define AXI_DMA_BUSWIDTHS		  \
 	(DMA_SLAVE_BUSWIDTH_1_BYTE	| \
 	DMA_SLAVE_BUSWIDTH_2_BYTES	| \
@@ -76,10 +68,7 @@ static inline u32 axi_chan_ioread32(struct axi_dma_chan *chan, u32 reg)
 static inline void
 axi_chan_iowrite64(struct axi_dma_chan *chan, u32 reg, u64 val)
 {
-	/*
-	 * We split one 64 bit write for two 32 bit write as some HW doesn't
-	 * support 64 bit access.
-	 */
+	 
 	iowrite32(lower_32_bits(val), chan->chan_regs + reg);
 	iowrite32(upper_32_bits(val), chan->chan_regs + reg + 4);
 }
@@ -372,14 +361,14 @@ static void dw_axi_dma_set_byte_halfword(struct axi_dma_chan *chan, bool set)
 
 	iowrite32(val, chan->chip->apb_regs + offset);
 }
-/* Called in chan locked context */
+ 
 static void axi_chan_block_xfer_start(struct axi_dma_chan *chan,
 				      struct axi_dma_desc *first)
 {
 	u32 priority = chan->chip->dw->hdata->priority[chan->id];
 	struct axi_dma_chan_config config = {};
 	u32 irq_mask;
-	u8 lms = 0; /* Select AXI0 master for LLI fetching */
+	u8 lms = 0;  
 
 	if (unlikely(axi_chan_is_hw_enable(chan))) {
 		dev_err(chan2dev(chan), "%s is non-idle!\n",
@@ -426,7 +415,7 @@ static void axi_chan_block_xfer_start(struct axi_dma_chan *chan,
 	irq_mask = DWAXIDMAC_IRQ_DMA_TRF | DWAXIDMAC_IRQ_ALL_ERR;
 	axi_chan_irq_sig_set(chan, irq_mask);
 
-	/* Generate 'suspend' status but don't generate interrupt */
+	 
 	irq_mask |= DWAXIDMAC_IRQ_SUSPENDED;
 	axi_chan_irq_set(chan, irq_mask);
 
@@ -470,14 +459,14 @@ static int dma_chan_alloc_chan_resources(struct dma_chan *dchan)
 {
 	struct axi_dma_chan *chan = dchan_to_axi_dma_chan(dchan);
 
-	/* ASSERT: channel is idle */
+	 
 	if (axi_chan_is_hw_enable(chan)) {
 		dev_err(chan2dev(chan), "%s is non-idle!\n",
 			axi_chan_name(chan));
 		return -EBUSY;
 	}
 
-	/* LLI address must be aligned to a 64-byte boundary */
+	 
 	chan->desc_pool = dma_pool_create(dev_name(chan2dev(chan)),
 					  chan->chip->dev,
 					  sizeof(struct axi_dma_lli),
@@ -497,7 +486,7 @@ static void dma_chan_free_chan_resources(struct dma_chan *dchan)
 {
 	struct axi_dma_chan *chan = dchan_to_axi_dma_chan(dchan);
 
-	/* ASSERT: channel is idle */
+	 
 	if (axi_chan_is_hw_enable(chan))
 		dev_err(dchan2dev(dchan), "%s is non-idle!\n",
 			axi_chan_name(chan));
@@ -526,11 +515,7 @@ static void dw_axi_dma_set_hw_channel(struct axi_dma_chan *chan, bool set)
 		return;
 	}
 
-	/*
-	 * An unused DMA channel has a default value of 0x3F.
-	 * Lock the DMA channel by assign a handshake number to the channel.
-	 * Unlock the DMA channel by assign 0x3F to the channel.
-	 */
+	 
 	if (set)
 		val = chan->hw_handshake_num;
 	else
@@ -538,8 +523,8 @@ static void dw_axi_dma_set_hw_channel(struct axi_dma_chan *chan, bool set)
 
 	reg_value = lo_hi_readq(chip->apb_regs + DMAC_APB_HW_HS_SEL_0);
 
-	/* Channel is already allocated, set handshake as per channel ID */
-	/* 64 bit write should handle for 8 channels */
+	 
+	 
 
 	reg_value &= ~(DMA_APB_HS_SEL_MASK <<
 			(chan->id * DMA_APB_HS_SEL_BIT_SIZE));
@@ -549,12 +534,7 @@ static void dw_axi_dma_set_hw_channel(struct axi_dma_chan *chan, bool set)
 	return;
 }
 
-/*
- * If DW_axi_dmac sees CHx_CTL.ShadowReg_Or_LLI_Last bit of the fetched LLI
- * as 1, it understands that the current block is the final block in the
- * transfer and completes the DMA transfer operation at the end of current
- * block transfer.
- */
+ 
 static void set_desc_last(struct axi_dma_hw_desc *desc)
 {
 	u32 val;
@@ -578,7 +558,7 @@ static void set_desc_src_master(struct axi_dma_hw_desc *desc)
 {
 	u32 val;
 
-	/* Select AXI0 for source master */
+	 
 	val = le32_to_cpu(desc->lli->ctl_lo);
 	val &= ~CH_CTL_L_SRC_MAST;
 	desc->lli->ctl_lo = cpu_to_le32(val);
@@ -589,7 +569,7 @@ static void set_desc_dest_master(struct axi_dma_hw_desc *hw_desc,
 {
 	u32 val;
 
-	/* Select AXI1 for source master if available */
+	 
 	val = le32_to_cpu(hw_desc->lli->ctl_lo);
 	if (desc->chan->chip->dw->hdata->nr_masters > 1)
 		val |= CH_CTL_L_DST_MAST;
@@ -730,7 +710,7 @@ dw_axi_dma_chan_prep_cyclic(struct dma_chan *dchan, dma_addr_t dma_addr,
 	unsigned int i;
 	int status;
 	u64 llp = 0;
-	u8 lms = 0; /* Select AXI0 master for LLI fetching */
+	u8 lms = 0;  
 
 	num_periods = buf_len / period_len;
 
@@ -762,9 +742,7 @@ dw_axi_dma_chan_prep_cyclic(struct dma_chan *dchan, dma_addr_t dma_addr,
 			goto err_desc_get;
 
 		desc->length += hw_desc->len;
-		/* Set end-of-link to the linked descriptor, so that cyclic
-		 * callback function can be triggered during interrupt.
-		 */
+		 
 		set_desc_last(hw_desc);
 
 		src_addr += segment_len;
@@ -772,7 +750,7 @@ dw_axi_dma_chan_prep_cyclic(struct dma_chan *dchan, dma_addr_t dma_addr,
 
 	llp = desc->hw_desc[0].llp;
 
-	/* Managed transfer list */
+	 
 	do {
 		hw_desc = &desc->hw_desc[--total_segments];
 		write_desc_llp(hw_desc, llp | lms);
@@ -808,7 +786,7 @@ dw_axi_dma_chan_prep_slave_sg(struct dma_chan *dchan, struct scatterlist *sgl,
 	dma_addr_t mem;
 	int status;
 	u64 llp = 0;
-	u8 lms = 0; /* Select AXI0 master for LLI fetching */
+	u8 lms = 0;  
 
 	if (unlikely(!is_slave_direction(direction) || !sg_len))
 		return NULL;
@@ -849,10 +827,10 @@ dw_axi_dma_chan_prep_slave_sg(struct dma_chan *dchan, struct scatterlist *sgl,
 		} while (len >= segment_len);
 	}
 
-	/* Set end-of-link to the last link descriptor of list */
+	 
 	set_desc_last(&desc->hw_desc[num_sgs - 1]);
 
-	/* Managed transfer list */
+	 
 	do {
 		hw_desc = &desc->hw_desc[--num_sgs];
 		write_desc_llp(hw_desc, llp | lms);
@@ -880,7 +858,7 @@ dma_chan_prep_dma_memcpy(struct dma_chan *dchan, dma_addr_t dst_adr,
 	struct axi_dma_desc *desc = NULL;
 	u32 xfer_width, reg, num;
 	u64 llp = 0;
-	u8 lms = 0; /* Select AXI0 master for LLI fetching */
+	u8 lms = 0;  
 
 	dev_dbg(chan2dev(chan), "%s: memcpy: src: %pad dst: %pad length: %zd flags: %#lx",
 		axi_chan_name(chan), &src_adr, &dst_adr, len, flags);
@@ -899,18 +877,10 @@ dma_chan_prep_dma_memcpy(struct dma_chan *dchan, dma_addr_t dst_adr,
 		xfer_len = len;
 
 		hw_desc = &desc->hw_desc[num];
-		/*
-		 * Take care for the alignment.
-		 * Actually source and destination widths can be different, but
-		 * make them same to be simpler.
-		 */
+		 
 		xfer_width = axi_chan_get_xfer_width(chan, src_adr, dst_adr, xfer_len);
 
-		/*
-		 * block_ts indicates the total number of data of width
-		 * to be transferred in a DMA block transfer.
-		 * BLOCK_TS register should be set to block_ts - 1
-		 */
+		 
 		block_ts = xfer_len >> xfer_width;
 		if (block_ts > max_block_ts) {
 			block_ts = max_block_ts;
@@ -949,16 +919,16 @@ dma_chan_prep_dma_memcpy(struct dma_chan *dchan, dma_addr_t dst_adr,
 
 		hw_desc->len = xfer_len;
 		desc->length += hw_desc->len;
-		/* update the length and addresses for the next loop cycle */
+		 
 		len -= xfer_len;
 		dst_adr += xfer_len;
 		src_adr += xfer_len;
 		num++;
 	}
 
-	/* Set end-of-link to the last link descriptor of list */
+	 
 	set_desc_last(&desc->hw_desc[num - 1]);
-	/* Managed transfer list */
+	 
 	do {
 		hw_desc = &desc->hw_desc[--num];
 		write_desc_llp(hw_desc, llp | lms);
@@ -1020,17 +990,17 @@ static noinline void axi_chan_handle_err(struct axi_dma_chan *chan, u32 status)
 
 	axi_chan_disable(chan);
 
-	/* The bad descriptor currently is in the head of vc list */
+	 
 	vd = vchan_next_desc(&chan->vc);
 	if (!vd) {
 		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
 			axi_chan_name(chan));
 		goto out;
 	}
-	/* Remove the completed descriptor from issued list */
+	 
 	list_del(&vd->node);
 
-	/* WARN about bad descriptor */
+	 
 	dev_err(chan2dev(chan),
 		"Bad descriptor submitted for %s, cookie: %d, irq: 0x%08x\n",
 		axi_chan_name(chan), vd->tx.cookie, status);
@@ -1038,7 +1008,7 @@ static noinline void axi_chan_handle_err(struct axi_dma_chan *chan, u32 status)
 
 	vchan_cookie_complete(vd);
 
-	/* Try to restart the controller */
+	 
 	axi_chan_start_first_queued(chan);
 
 out:
@@ -1062,7 +1032,7 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
 		axi_chan_disable(chan);
 	}
 
-	/* The completed descriptor currently is in the head of vc list */
+	 
 	vd = vchan_next_desc(&chan->vc);
 	if (!vd) {
 		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
@@ -1090,11 +1060,11 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
 			axi_chan_enable(chan);
 		}
 	} else {
-		/* Remove the completed descriptor from issued list before completing */
+		 
 		list_del(&vd->node);
 		vchan_cookie_complete(vd);
 
-		/* Submit queued descriptors after processing the completed ones */
+		 
 		axi_chan_start_first_queued(chan);
 	}
 
@@ -1110,10 +1080,10 @@ static irqreturn_t dw_axi_dma_interrupt(int irq, void *dev_id)
 
 	u32 status, i;
 
-	/* Disable DMAC interrupts. We'll enable them after processing channels */
+	 
 	axi_dma_irq_disable(chip);
 
-	/* Poll, clear and process every channel interrupt status */
+	 
 	for (i = 0; i < dw->hdata->nr_channels; i++) {
 		chan = &dw->chan[i];
 		status = axi_chan_irq_read(chan);
@@ -1128,7 +1098,7 @@ static irqreturn_t dw_axi_dma_interrupt(int irq, void *dev_id)
 			axi_chan_block_xfer_complete(chan);
 	}
 
-	/* Re-enable interrupts */
+	 
 	axi_dma_irq_enable(chip);
 
 	return IRQ_HANDLED;
@@ -1174,7 +1144,7 @@ static int dma_chan_pause(struct dma_chan *dchan)
 {
 	struct axi_dma_chan *chan = dchan_to_axi_dma_chan(dchan);
 	unsigned long flags;
-	unsigned int timeout = 20; /* timeout iterations */
+	unsigned int timeout = 20;  
 	u32 val;
 
 	spin_lock_irqsave(&chan->vc.lock, flags);
@@ -1207,7 +1177,7 @@ static int dma_chan_pause(struct dma_chan *dchan)
 	return timeout ? 0 : -EAGAIN;
 }
 
-/* Called in chan locked context */
+ 
 static inline void axi_chan_resume(struct axi_dma_chan *chan)
 {
 	u32 val;
@@ -1348,7 +1318,7 @@ static int parse_device_properties(struct axi_dma_chip *chip)
 					     chip->dw->hdata->nr_channels);
 	if (ret)
 		return ret;
-	/* Priority value must be programmed within [0:nr_channels-1] range */
+	 
 	for (tmp = 0; tmp < chip->dw->hdata->nr_channels; tmp++) {
 		if (carr[tmp] >= chip->dw->hdata->nr_channels)
 			return -EINVAL;
@@ -1356,7 +1326,7 @@ static int parse_device_properties(struct axi_dma_chip *chip)
 		chip->dw->hdata->priority[tmp] = carr[tmp];
 	}
 
-	/* axi-max-burst-len is optional property */
+	 
 	ret = device_property_read_u32(dev, "snps,axi-max-burst-len", &tmp);
 	if (!ret) {
 		if (tmp > DWAXIDMAC_ARWLEN_MAX + 1)
@@ -1459,12 +1429,12 @@ static int dw_probe(struct platform_device *pdev)
 		vchan_init(&chan->vc, &dw->dma);
 	}
 
-	/* Set capabilities */
+	 
 	dma_cap_set(DMA_MEMCPY, dw->dma.cap_mask);
 	dma_cap_set(DMA_SLAVE, dw->dma.cap_mask);
 	dma_cap_set(DMA_CYCLIC, dw->dma.cap_mask);
 
-	/* DMA capabilities */
+	 
 	dw->dma.max_burst = hdata->axi_rw_burst_len;
 	dw->dma.src_addr_widths = AXI_DMA_BUSWIDTHS;
 	dw->dma.dst_addr_widths = AXI_DMA_BUSWIDTHS;
@@ -1488,22 +1458,14 @@ static int dw_probe(struct platform_device *pdev)
 	dw->dma.device_prep_slave_sg = dw_axi_dma_chan_prep_slave_sg;
 	dw->dma.device_prep_dma_cyclic = dw_axi_dma_chan_prep_cyclic;
 
-	/*
-	 * Synopsis DesignWare AxiDMA datasheet mentioned Maximum
-	 * supported blocks is 1024. Device register width is 4 bytes.
-	 * Therefore, set constraint to 1024 * 4.
-	 */
+	 
 	dw->dma.dev->dma_parms = &dw->dma_parms;
 	dma_set_max_seg_size(&pdev->dev, MAX_BLOCK_SIZE);
 	platform_set_drvdata(pdev, chip);
 
 	pm_runtime_enable(chip->dev);
 
-	/*
-	 * We can't just call pm_runtime_get here instead of
-	 * pm_runtime_get_noresume + axi_dma_resume because we need
-	 * driver to work also without Runtime PM.
-	 */
+	 
 	pm_runtime_get_noresume(chip->dev);
 	ret = axi_dma_resume(chip);
 	if (ret < 0)
@@ -1517,7 +1479,7 @@ static int dw_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_pm_disable;
 
-	/* Register with OF helpers for DMA lookups */
+	 
 	ret = of_dma_controller_register(pdev->dev.of_node,
 					 dw_axi_dma_of_xlate, dw);
 	if (ret < 0)
@@ -1542,7 +1504,7 @@ static int dw_remove(struct platform_device *pdev)
 	struct axi_dma_chan *chan, *_chan;
 	u32 i;
 
-	/* Enable clk before accessing to registers */
+	 
 	clk_prepare_enable(chip->cfgr_clk);
 	clk_prepare_enable(chip->core_clk);
 	axi_dma_irq_disable(chip);

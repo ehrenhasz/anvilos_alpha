@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include "amdgpu.h"
 #include "atom.h"
@@ -33,9 +7,7 @@
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/acpi.h>
-/*
- * BIOS.
- */
+ 
 
 #define AMD_VBIOS_SIGNATURE " 761295520"
 #define AMD_VBIOS_SIGNATURE_OFFSET 0x30
@@ -44,9 +16,7 @@
 #define AMD_IS_VALID_VBIOS(p) ((p)[0] == 0x55 && (p)[1] == 0xAA)
 #define AMD_VBIOS_LENGTH(p) ((p)[2] << 9)
 
-/* Check if current bios is an ATOM BIOS.
- * Return true if it is ATOM BIOS. Otherwise, return false.
- */
+ 
 static bool check_atom_bios(uint8_t *bios, size_t size)
 {
 	uint16_t tmp, bios_header_start;
@@ -82,23 +52,18 @@ static bool check_atom_bios(uint8_t *bios, size_t size)
 	return false;
 }
 
-/* If you boot an IGP board with a discrete card as the primary,
- * the IGP rom is not accessible via the rom bar as the IGP rom is
- * part of the system bios.  On boot, the system bios puts a
- * copy of the igp rom at the start of vram if a discrete card is
- * present.
- */
+ 
 static bool igp_read_bios_from_vram(struct amdgpu_device *adev)
 {
 	uint8_t __iomem *bios;
 	resource_size_t vram_base;
-	resource_size_t size = 256 * 1024; /* ??? */
+	resource_size_t size = 256 * 1024;  
 
 	if (!(adev->flags & AMD_IS_APU))
 		if (amdgpu_device_need_post(adev))
 			return false;
 
-	/* FB BAR not enabled */
+	 
 	if (pci_resource_len(adev->pdev, 0) == 0)
 		return false;
 
@@ -131,7 +96,7 @@ bool amdgpu_read_bios(struct amdgpu_device *adev)
 	size_t size;
 
 	adev->bios = NULL;
-	/* XXX: some cards may return 0 for rom size? ddx has a workaround */
+	 
 	bios = pci_map_rom(adev->pdev, &size);
 	if (!bios)
 		return false;
@@ -161,7 +126,7 @@ static bool amdgpu_read_bios_from_rom(struct amdgpu_device *adev)
 	if (!adev->asic_funcs || !adev->asic_funcs->read_bios_from_rom)
 		return false;
 
-	/* validate VBIOS signature */
+	 
 	if (amdgpu_asic_read_bios_from_rom(adev, &header[0], sizeof(header)) == false)
 		return false;
 	header[AMD_VBIOS_SIGNATURE_END] = 0;
@@ -172,7 +137,7 @@ static bool amdgpu_read_bios_from_rom(struct amdgpu_device *adev)
 		       strlen(AMD_VBIOS_SIGNATURE)) != 0)
 		return false;
 
-	/* valid vbios, go on */
+	 
 	len = AMD_VBIOS_LENGTH(header);
 	len = ALIGN(len, 4);
 	adev->bios = kmalloc(len, GFP_KERNEL);
@@ -182,7 +147,7 @@ static bool amdgpu_read_bios_from_rom(struct amdgpu_device *adev)
 	}
 	adev->bios_size = len;
 
-	/* read complete BIOS */
+	 
 	amdgpu_asic_read_bios_from_rom(adev, adev->bios, len);
 
 	if (!check_atom_bios(adev->bios, len)) {
@@ -227,23 +192,10 @@ free_bios:
 }
 
 #ifdef CONFIG_ACPI
-/* ATRM is used to get the BIOS on the discrete cards in
- * dual-gpu systems.
- */
-/* retrieve the ROM in 4k blocks */
+ 
+ 
 #define ATRM_BIOS_PAGE 4096
-/**
- * amdgpu_atrm_call - fetch a chunk of the vbios
- *
- * @atrm_handle: acpi ATRM handle
- * @bios: vbios image pointer
- * @offset: offset of vbios image data to fetch
- * @len: length of vbios image data to fetch
- *
- * Executes ATRM to fetch a chunk of the discrete
- * vbios image on PX systems (all asics).
- * Returns the length of the buffer fetched.
- */
+ 
 static int amdgpu_atrm_call(acpi_handle atrm_handle, uint8_t *bios,
 			    int offset, int len)
 {
@@ -284,11 +236,11 @@ static bool amdgpu_atrm_get_bios(struct amdgpu_device *adev)
 	acpi_status status;
 	bool found = false;
 
-	/* ATRM is for the discrete card only */
+	 
 	if (adev->flags & AMD_IS_APU)
 		return false;
 
-	/* ATRM is for on-platform devices only */
+	 
 	if (dev_is_removable(&adev->pdev->dev))
 		return false;
 
@@ -469,7 +421,7 @@ success:
 	return true;
 }
 
-/* helper function for soc15 and onwards to read bios from rom */
+ 
 bool amdgpu_soc15_read_bios_from_rom(struct amdgpu_device *adev,
 				     u8 *bios, u32 length_bytes)
 {
@@ -483,7 +435,7 @@ bool amdgpu_soc15_read_bios_from_rom(struct amdgpu_device *adev,
 		return false;
 	if (length_bytes == 0)
 		return false;
-	/* APU vbios image is part of sbios image */
+	 
 	if (adev->flags & AMD_IS_APU)
 		return false;
 	if (!adev->smuio.funcs ||
@@ -507,9 +459,9 @@ bool amdgpu_soc15_read_bios_from_rom(struct amdgpu_device *adev,
 		rom_offset = 0;
 	}
 
-	/* set rom index to rom_offset */
+	 
 	WREG32(rom_index_offset, rom_offset);
-	/* read out the rom data */
+	 
 	for (i = 0; i < length_dw; i++)
 		dw_ptr[i] = RREG32(rom_data_offset);
 

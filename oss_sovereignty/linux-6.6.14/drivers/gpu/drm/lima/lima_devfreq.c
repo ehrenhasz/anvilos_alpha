@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *
- * Based on panfrost_devfreq.c:
- *   Copyright 2019 Collabora ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
 #include <linux/devfreq_cooling.h>
@@ -82,7 +77,7 @@ static int lima_devfreq_get_dev_status(struct device *dev,
 
 static struct devfreq_dev_profile lima_devfreq_profile = {
 	.timer = DEVFREQ_TIMER_DELAYED,
-	.polling_ms = 50, /* ~3 frames */
+	.polling_ms = 50,  
 	.target = lima_devfreq_target,
 	.get_dev_status = lima_devfreq_get_dev_status,
 };
@@ -114,22 +109,19 @@ int lima_devfreq_init(struct lima_device *ldev)
 	const char *regulator_names[] = { "mali", NULL };
 
 	if (!device_property_present(dev, "operating-points-v2"))
-		/* Optional, continue without devfreq */
+		 
 		return 0;
 
 	spin_lock_init(&ldevfreq->lock);
 
-	/*
-	 * clkname is set separately so it is not affected by the optional
-	 * regulator setting which may return error.
-	 */
+	 
 	ret = devm_pm_opp_set_clkname(dev, "core");
 	if (ret)
 		return ret;
 
 	ret = devm_pm_opp_set_regulators(dev, regulator_names);
 	if (ret) {
-		/* Continue if the optional regulator is missing */
+		 
 		if (ret != -ENODEV)
 			return ret;
 	}
@@ -149,10 +141,7 @@ int lima_devfreq_init(struct lima_device *ldev)
 	lima_devfreq_profile.initial_freq = cur_freq;
 	dev_pm_opp_put(opp);
 
-	/*
-	 * Setup default thresholds for the simple_ondemand governor.
-	 * The values are chosen based on experiments.
-	 */
+	 
 	ldevfreq->gov_data.upthreshold = 30;
 	ldevfreq->gov_data.downdifferential = 5;
 

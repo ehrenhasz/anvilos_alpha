@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2010 Google, Inc.
- * Copyright (C) 2013 NVIDIA Corporation
- *
- * Author:
- *	Erik Gilling <konkers@google.com>
- *	Benoit Goby <benoit@android.com>
- *	Venu Byravarasu <vbyravarasu@nvidia.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -31,17 +23,17 @@
 
 #define ULPI_VIEWPORT				0x170
 
-/* PORTSC PTS/PHCD bits, Tegra20 only */
+ 
 #define TEGRA_USB_PORTSC1			0x184
 #define TEGRA_USB_PORTSC1_PTS(x)		(((x) & 0x3) << 30)
 #define TEGRA_USB_PORTSC1_PHCD			BIT(23)
 
-/* HOSTPC1 PTS/PHCD bits, Tegra30 and above */
+ 
 #define TEGRA_USB_HOSTPC1_DEVLC			0x1b4
 #define TEGRA_USB_HOSTPC1_DEVLC_PTS(x)		(((x) & 0x7) << 29)
 #define TEGRA_USB_HOSTPC1_DEVLC_PHCD		BIT(22)
 
-/* Bits of PORTSC1, which will get cleared by writing 1 into them */
+ 
 #define TEGRA_PORTSC1_RWC_BITS	(PORT_CSC | PORT_PEC | PORT_OCC)
 
 #define USB_SUSP_CTRL				0x400
@@ -156,7 +148,7 @@
 #define UTMIP_BIAS_CFG1				0x83c
 #define   UTMIP_BIAS_PDTRK_COUNT(x)		(((x) & 0x1f) << 3)
 
-/* For Tegra30 and above only, the address is different in Tegra20 */
+ 
 #define USB_USBMODE				0x1f8
 #define   USB_USBMODE_MASK			(3 << 0)
 #define   USB_USBMODE_HOST			(3 << 0)
@@ -382,12 +374,7 @@ static int utmip_pad_power_off(struct tegra_usb_phy *phy)
 		goto ulock;
 	}
 
-	/*
-	 * In accordance to TRM, OTG and Bias pad circuits could be turned off
-	 * to save power if wake is enabled, but the VBUS-change detection
-	 * method is board-specific and these circuits may need to be enabled
-	 * to generate wakeup event, hence we will just keep them both enabled.
-	 */
+	 
 	if (phy->wakeup_enabled) {
 		phy->pad_wakeup = true;
 		utmip_pad_count++;
@@ -419,11 +406,7 @@ static void utmi_phy_clk_disable(struct tegra_usb_phy *phy)
 	void __iomem *base = phy->regs;
 	u32 val;
 
-	/*
-	 * The USB driver may have already initiated the phy clock
-	 * disable so wait to see if the clock turns off and if not
-	 * then proceed with gating the clock.
-	 */
+	 
 	if (utmi_wait_register(base + USB_SUSP_CTRL, USB_PHY_CLK_VALID, 0) == 0)
 		return;
 
@@ -451,11 +434,7 @@ static void utmi_phy_clk_enable(struct tegra_usb_phy *phy)
 	void __iomem *base = phy->regs;
 	u32 val;
 
-	/*
-	 * The USB driver may have already initiated the phy clock
-	 * enable so wait to see if the clock turns on and if not
-	 * then proceed with ungating the clock.
-	 */
+	 
 	if (utmi_wait_register(base + USB_SUSP_CTRL, USB_PHY_CLK_VALID,
 			       USB_PHY_CLK_VALID) == 0)
 		return;
@@ -651,10 +630,7 @@ static int utmi_phy_power_off(struct tegra_usb_phy *phy)
 	void __iomem *base = phy->regs;
 	u32 val;
 
-	/*
-	 * Give hardware time to settle down after VBUS disconnection,
-	 * otherwise PHY will immediately wake up from suspend.
-	 */
+	 
 	if (phy->wakeup_enabled && phy->mode != USB_DR_MODE_HOST)
 		readl_relaxed_poll_timeout(base + USB_PHY_VBUS_WAKEUP_ID,
 					   val, !(val & VBUS_WAKEUP_STS),
@@ -662,7 +638,7 @@ static int utmi_phy_power_off(struct tegra_usb_phy *phy)
 
 	utmi_phy_clk_disable(phy);
 
-	/* PHY won't resume if reset is asserted */
+	 
 	if (!phy->wakeup_enabled) {
 		val = readl_relaxed(base + USB_SUSP_CTRL);
 		val |= UTMIP_RESET;
@@ -692,10 +668,7 @@ static int utmi_phy_power_off(struct tegra_usb_phy *phy)
 		val |= USB_WAKE_ON_RESUME_EN;
 		writel_relaxed(val, base + USB_SUSP_CTRL);
 
-		/*
-		 * Ask VBUS sensor to generate wake event once cable is
-		 * connected.
-		 */
+		 
 		if (phy->mode != USB_DR_MODE_HOST) {
 			val = readl_relaxed(base + USB_PHY_VBUS_WAKEUP_ID);
 			val |= VBUS_WAKEUP_WAKEUP_EN;
@@ -807,7 +780,7 @@ static int ulpi_phy_power_on(struct tegra_usb_phy *phy)
 	val |= ULPI_DIR_TRIMMER_LOAD;
 	writel_relaxed(val, base + ULPI_TIMING_CTRL_1);
 
-	/* Fix VbusInvalid due to floating VBUS */
+	 
 	err = usb_phy_io_write(phy->ulpi, 0x40, 0x08);
 	if (err) {
 		dev_err(phy->u_phy.dev, "ULPI write failed: %d\n", err);
@@ -843,10 +816,7 @@ static int ulpi_phy_power_off(struct tegra_usb_phy *phy)
 	usleep_range(5000, 6000);
 	clk_disable_unprepare(phy->clk);
 
-	/*
-	 * Wakeup currently unimplemented for ULPI, thus PHY needs to be
-	 * force-resumed.
-	 */
+	 
 	if (WARN_ON_ONCE(phy->wakeup_enabled)) {
 		ulpi_phy_power_on(phy);
 		return -EOPNOTSUPP;
@@ -871,7 +841,7 @@ static int tegra_usb_phy_power_on(struct tegra_usb_phy *phy)
 
 	phy->powered_on = true;
 
-	/* Let PHY settle down */
+	 
 	usleep_range(2000, 2500);
 
 	return 0;
@@ -921,11 +891,7 @@ static irqreturn_t tegra_usb_phy_isr(int irq, void *data)
 	struct tegra_usb_phy *phy = data;
 	void __iomem *base = phy->regs;
 
-	/*
-	 * The PHY interrupt also wakes the USB controller driver since
-	 * interrupt is shared. We don't do anything in the PHY driver,
-	 * so just clear the interrupt.
-	 */
+	 
 	val = readl_relaxed(base + USB_PHY_VBUS_WAKEUP_ID);
 	writel_relaxed(val, base + USB_PHY_VBUS_WAKEUP_ID);
 
@@ -960,11 +926,7 @@ static int tegra_usb_phy_set_wakeup(struct usb_phy *u_phy, bool enable)
 		if (!ret) {
 			disable_irq(phy->irq);
 
-			/*
-			 * USB clock will be resumed once wake event will be
-			 * generated.  The ID-change event requires to have
-			 * interrupts enabled, otherwise it won't be generated.
-			 */
+			 
 			val = readl_relaxed(base + USB_PHY_VBUS_WAKEUP_ID);
 			val |= ID_INT_EN | VBUS_WAKEUP_INT_EN;
 			writel_relaxed(val, base + USB_PHY_VBUS_WAKEUP_ID);
@@ -990,13 +952,7 @@ static int tegra_usb_phy_set_suspend(struct usb_phy *u_phy, int suspend)
 	if (WARN_ON(!phy->freq))
 		return -EINVAL;
 
-	/*
-	 * PHY is sharing IRQ with the CI driver, hence here we either
-	 * disable interrupt for both PHY and CI or for CI only.  The
-	 * interrupt needs to be disabled while hardware is reprogrammed
-	 * because interrupt touches the programmed registers, and thus,
-	 * there could be a race condition.
-	 */
+	 
 	if (phy->irq > 0)
 		disable_irq(phy->irq);
 
@@ -1015,27 +971,23 @@ static int tegra_usb_phy_configure_pmc(struct tegra_usb_phy *phy)
 {
 	int err, val = 0;
 
-	/* older device-trees don't have PMC regmap */
+	 
 	if (!phy->pmc_regmap)
 		return 0;
 
-	/*
-	 * Tegra20 has a different layout of PMC USB register bits and AO is
-	 * enabled by default after system reset on Tegra20, so assume nothing
-	 * to do on Tegra20.
-	 */
+	 
 	if (!phy->soc_config->requires_pmc_ao_power_up)
 		return 0;
 
-	/* enable VBUS wake-up detector */
+	 
 	if (phy->mode != USB_DR_MODE_HOST)
 		val |= VBUS_WAKEUP_PD_P0 << phy->instance * 4;
 
-	/* enable ID-pin ACC detector for OTG mode switching */
+	 
 	if (phy->mode == USB_DR_MODE_OTG)
 		val |= ID_PD_P0 << phy->instance * 4;
 
-	/* disable detectors to reset them */
+	 
 	err = regmap_set_bits(phy->pmc_regmap, PMC_USB_AO, val);
 	if (err) {
 		dev_err(phy->u_phy.dev, "Failed to disable PMC AO: %d\n", err);
@@ -1044,14 +996,14 @@ static int tegra_usb_phy_configure_pmc(struct tegra_usb_phy *phy)
 
 	usleep_range(10, 100);
 
-	/* enable detectors */
+	 
 	err = regmap_clear_bits(phy->pmc_regmap, PMC_USB_AO, val);
 	if (err) {
 		dev_err(phy->u_phy.dev, "Failed to enable PMC AO: %d\n", err);
 		return err;
 	}
 
-	/* detectors starts to work after 10ms */
+	 
 	usleep_range(10000, 15000);
 
 	return 0;
@@ -1192,10 +1144,7 @@ static int utmi_phy_probe(struct tegra_usb_phy *tegra_phy,
 		return  -ENXIO;
 	}
 
-	/*
-	 * Note that UTMI pad registers are shared by all PHYs, therefore
-	 * devm_platform_ioremap_resource() can't be used here.
-	 */
+	 
 	tegra_phy->pad_regs = devm_ioremap(&pdev->dev, res->start,
 					   resource_size(res));
 	if (!tegra_phy->pad_regs) {
@@ -1361,10 +1310,7 @@ static int tegra_usb_phy_probe(struct platform_device *pdev)
 		return  -ENXIO;
 	}
 
-	/*
-	 * Note that PHY and USB controller are using shared registers,
-	 * therefore devm_platform_ioremap_resource() can't be used here.
-	 */
+	 
 	tegra_phy->regs = devm_ioremap(&pdev->dev, res->start,
 				       resource_size(res));
 	if (!tegra_phy->regs) {
@@ -1385,7 +1331,7 @@ static int tegra_usb_phy_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* On some boards, the VBUS regulator doesn't need to be controlled */
+	 
 	tegra_phy->vbus = devm_regulator_get(&pdev->dev, "vbus");
 	if (IS_ERR(tegra_phy->vbus))
 		return PTR_ERR(tegra_phy->vbus);

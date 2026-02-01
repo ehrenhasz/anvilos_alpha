@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier EVEA ADC/DAC codec driver.
-//
-// Copyright (c) 2016-2017 Socionext Inc.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -498,7 +498,7 @@ static int evea_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_out_reset;
 
-	/* ADAMV will hangup if EXIV reset is asserted */
+	 
 	evea->rst_adamv = devm_reset_control_get_shared(&pdev->dev, "adamv");
 	if (IS_ERR(evea->rst_adamv)) {
 		ret = PTR_ERR(evea->rst_adamv);

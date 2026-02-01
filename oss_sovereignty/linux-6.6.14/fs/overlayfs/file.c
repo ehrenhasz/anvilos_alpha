@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Red Hat, Inc.
- */
+
+ 
 
 #include <linux/cred.h>
 #include <linux/file.h>
@@ -33,7 +31,7 @@ static char ovl_whatisit(struct inode *inode, struct inode *realinode)
 		return 'm';
 }
 
-/* No atime modification on underlying */
+ 
 #define OVL_OPEN_FLAGS (O_NOATIME)
 
 static struct file *ovl_open_realfile(const struct file *file,
@@ -114,7 +112,7 @@ static int ovl_real_fdget_meta(const struct file *file, struct fd *real,
 	if (allow_meta) {
 		ovl_path_real(dentry, &realpath);
 	} else {
-		/* lazy lookup and verify of lowerdata */
+		 
 		err = ovl_verify_lowerdata(dentry);
 		if (err)
 			return err;
@@ -124,7 +122,7 @@ static int ovl_real_fdget_meta(const struct file *file, struct fd *real,
 	if (!realpath.dentry)
 		return -EIO;
 
-	/* Has it been copied up since we'd opened it? */
+	 
 	if (unlikely(file_inode(real->file) != d_inode(realpath.dentry))) {
 		real->flags = FDPUT_FPUT;
 		real->file = ovl_open_realfile(file, &realpath);
@@ -132,7 +130,7 @@ static int ovl_real_fdget_meta(const struct file *file, struct fd *real,
 		return PTR_ERR_OR_ZERO(real->file);
 	}
 
-	/* Did the flags change since open? */
+	 
 	if (unlikely((file->f_flags ^ real->file->f_flags) & ~OVL_OPEN_FLAGS))
 		return ovl_change_flags(real->file, file->f_flags);
 
@@ -158,7 +156,7 @@ static int ovl_open(struct inode *inode, struct file *file)
 	struct path realpath;
 	int err;
 
-	/* lazy lookup and verify lowerdata */
+	 
 	err = ovl_verify_lowerdata(dentry);
 	if (err)
 		return err;
@@ -167,7 +165,7 @@ static int ovl_open(struct inode *inode, struct file *file)
 	if (err)
 		return err;
 
-	/* No longer need these flags, so don't pass them on to underlying fs */
+	 
 	file->f_flags &= ~(O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC);
 
 	ovl_path_realdata(dentry, &realpath);
@@ -197,10 +195,7 @@ static loff_t ovl_llseek(struct file *file, loff_t offset, int whence)
 	const struct cred *old_cred;
 	loff_t ret;
 
-	/*
-	 * The two special cases below do not need to involve real fs,
-	 * so we can optimizing concurrent callers.
-	 */
+	 
 	if (offset == 0) {
 		if (whence == SEEK_CUR)
 			return file->f_pos;
@@ -213,13 +208,7 @@ static loff_t ovl_llseek(struct file *file, loff_t offset, int whence)
 	if (ret)
 		return ret;
 
-	/*
-	 * Overlay file f_pos is the master copy that is preserved
-	 * through copy up and modified on read/write, but only real
-	 * fs knows how to SEEK_HOLE/SEEK_DATA and real fs may impose
-	 * limitations that are more strict than ->s_maxbytes for specific
-	 * files, so we use the real file to perform seeks.
-	 */
+	 
 	ovl_inode_lock(inode);
 	real.file->f_pos = file->f_pos;
 
@@ -372,7 +361,7 @@ static ssize_t ovl_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 		return 0;
 
 	inode_lock(inode);
-	/* Update mode */
+	 
 	ovl_copyattr(inode);
 	ret = file_remove_privs(file);
 	if (ret)
@@ -390,10 +379,7 @@ static ssize_t ovl_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 	if (!ovl_should_sync(OVL_FS(inode->i_sb)))
 		ifl &= ~(IOCB_DSYNC | IOCB_SYNC);
 
-	/*
-	 * Overlayfs doesn't support deferred completions, don't copy
-	 * this property in case it is set by the issuer.
-	 */
+	 
 	ifl &= ~IOCB_DIO_CALLER_COMP;
 
 	old_cred = ovl_override_creds(file_inode(file)->i_sb);
@@ -402,7 +388,7 @@ static ssize_t ovl_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 		ret = vfs_iter_write(real.file, iter, &iocb->ki_pos,
 				     ovl_iocb_to_rwf(ifl));
 		file_end_write(real.file);
-		/* Update size */
+		 
 		ovl_copyattr(inode);
 	} else {
 		struct ovl_aio_req *aio_req;
@@ -455,14 +441,7 @@ static ssize_t ovl_splice_read(struct file *in, loff_t *ppos,
 	return ret;
 }
 
-/*
- * Calling iter_file_splice_write() directly from overlay's f_op may deadlock
- * due to lock order inversion between pipe->mutex in iter_file_splice_write()
- * and file_start_write(real.file) in ovl_write_iter().
- *
- * So do everything ovl_write_iter() does and call iter_file_splice_write() on
- * the real file.
- */
+ 
 static ssize_t ovl_splice_write(struct pipe_inode_info *pipe, struct file *out,
 				loff_t *ppos, size_t len, unsigned int flags)
 {
@@ -472,7 +451,7 @@ static ssize_t ovl_splice_write(struct pipe_inode_info *pipe, struct file *out,
 	ssize_t ret;
 
 	inode_lock(inode);
-	/* Update mode */
+	 
 	ovl_copyattr(inode);
 	ret = file_remove_privs(out);
 	if (ret)
@@ -488,7 +467,7 @@ static ssize_t ovl_splice_write(struct pipe_inode_info *pipe, struct file *out,
 	ret = iter_file_splice_write(pipe, real.file, ppos, len, flags);
 
 	file_end_write(real.file);
-	/* Update size */
+	 
 	ovl_copyattr(inode);
 	revert_creds(old_cred);
 	fdput(real);
@@ -513,7 +492,7 @@ static int ovl_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	if (ret)
 		return ret;
 
-	/* Don't sync lower file for fear of receiving EROFS error */
+	 
 	if (file_inode(real.file) == ovl_inode_upper(file_inode(file))) {
 		old_cred = ovl_override_creds(file_inode(file)->i_sb);
 		ret = vfs_fsync_range(real.file, start, end, datasync);
@@ -555,7 +534,7 @@ static long ovl_fallocate(struct file *file, int mode, loff_t offset, loff_t len
 	int ret;
 
 	inode_lock(inode);
-	/* Update mode */
+	 
 	ovl_copyattr(inode);
 	ret = file_remove_privs(file);
 	if (ret)
@@ -569,7 +548,7 @@ static long ovl_fallocate(struct file *file, int mode, loff_t offset, loff_t len
 	ret = vfs_fallocate(real.file, mode, offset, len);
 	revert_creds(old_cred);
 
-	/* Update size */
+	 
 	ovl_copyattr(inode);
 
 	fdput(real);
@@ -616,7 +595,7 @@ static loff_t ovl_copyfile(struct file *file_in, loff_t pos_in,
 
 	inode_lock(inode_out);
 	if (op != OVL_DEDUPE) {
-		/* Update mode */
+		 
 		ovl_copyattr(inode_out);
 		ret = file_remove_privs(file_out);
 		if (ret)
@@ -653,7 +632,7 @@ static loff_t ovl_copyfile(struct file *file_in, loff_t pos_in,
 	}
 	revert_creds(old_cred);
 
-	/* Update size */
+	 
 	ovl_copyattr(inode_out);
 
 	fdput(real_in);
@@ -687,10 +666,7 @@ static loff_t ovl_remap_file_range(struct file *file_in, loff_t pos_in,
 	else
 		op = OVL_CLONE;
 
-	/*
-	 * Don't copy up because of a dedupe request, this wouldn't make sense
-	 * most of the time (data would be duplicated instead of deduplicated).
-	 */
+	 
 	if (op == OVL_DEDUPE &&
 	    (!ovl_inode_upper(file_inode(file_in)) ||
 	     !ovl_inode_upper(file_inode(file_out))))

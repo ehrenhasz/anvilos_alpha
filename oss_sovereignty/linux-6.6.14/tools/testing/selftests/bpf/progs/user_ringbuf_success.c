@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -16,12 +16,12 @@ struct {
 	__uint(type, BPF_MAP_TYPE_RINGBUF);
 } kernel_ringbuf SEC(".maps");
 
-/* inputs */
+ 
 int pid, err, val;
 
 int read = 0;
 
-/* Counter used for end-to-end protocol test */
+ 
 __u64 kern_mutated = 0;
 __u64 user_mutated = 0;
 __u64 expected_user_mutated = 0;

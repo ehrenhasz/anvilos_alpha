@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD ALSA SoC PCM Driver
-//
-//Copyright 2016 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -47,7 +47,7 @@ static int acp3x_i2s_set_tdm_slot(struct snd_soc_dai *cpu_dai,
 
 	adata = snd_soc_dai_get_drvdata(cpu_dai);
 
-	/* These values are as per Hardware Spec */
+	 
 	switch (slot_width) {
 	case SLOT_WIDTH_8:
 		slot_len = 8;
@@ -92,7 +92,7 @@ static int acp3x_i2s_hwparams(struct snd_pcm_substream *substream,
 			rtd->i2s_instance = pinfo->cap_i2s_instance;
 	}
 
-	/* These values are as per Hardware Spec */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_U8:
 	case SNDRV_PCM_FORMAT_S8:

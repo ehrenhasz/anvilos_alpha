@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Microchip USB251xB USB 2.0 Hi-Speed Hub Controller
- * Configuration via SMBus.
- *
- * Copyright (c) 2017 SKIDATA AG
- *
- * This work is based on the USB3503 driver by Dongjin Kim and
- * a not-accepted patch by Fabien Lahoudere, see:
- * https://patchwork.kernel.org/patch/9257715/
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -20,7 +11,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
-/* Internal Register Set Addresses & Default Values acc. to DS00001692C */
+ 
 #define USB251XB_ADDR_VENDOR_ID_LSB	0x00
 #define USB251XB_ADDR_VENDOR_ID_MSB	0x01
 #define USB251XB_DEF_VENDOR_ID		0x0424
@@ -92,11 +83,11 @@
 #define USB251XB_ADDR_PORT_MAP_12	0xFB
 #define USB251XB_DEF_PORT_MAP_12	0x00
 #define USB251XB_ADDR_PORT_MAP_34	0xFC
-#define USB251XB_DEF_PORT_MAP_34	0x00 /* USB251{3B/i,4B/i,7/i} only */
+#define USB251XB_DEF_PORT_MAP_34	0x00  
 #define USB251XB_ADDR_PORT_MAP_56	0xFD
-#define USB251XB_DEF_PORT_MAP_56	0x00 /* USB2517/i only */
+#define USB251XB_DEF_PORT_MAP_56	0x00  
 #define USB251XB_ADDR_PORT_MAP_7	0xFE
-#define USB251XB_DEF_PORT_MAP_7		0x00 /* USB2517/i only */
+#define USB251XB_DEF_PORT_MAP_7		0x00  
 
 #define USB251XB_ADDR_STATUS_COMMAND		0xFF
 #define USB251XB_STATUS_COMMAND_SMBUS_DOWN	0x04
@@ -153,7 +144,7 @@ struct usb251xb_data {
 	u8 port_cnt;
 	bool led_support;
 	bool bat_support;
-	char product_str[USB251XB_STRING_BUFSIZE / 2]; /* ASCII string */
+	char product_str[USB251XB_STRING_BUFSIZE / 2];  
 };
 
 static const struct usb251xb_data usb2422_data = {
@@ -274,11 +265,11 @@ static void usb251xb_reset(struct usb251xb *hub)
 	i2c_lock_bus(hub->i2c->adapter, I2C_LOCK_SEGMENT);
 
 	gpiod_set_value_cansleep(hub->gpio_reset, 1);
-	usleep_range(1, 10);	/* >=1us RESET_N asserted */
+	usleep_range(1, 10);	 
 	gpiod_set_value_cansleep(hub->gpio_reset, 0);
 
-	/* wait for hub recovery/stabilization */
-	usleep_range(500, 750);	/* >=500us after RESET_N deasserted */
+	 
+	usleep_range(500, 750);	 
 
 	i2c_unlock_bus(hub->i2c->adapter, I2C_LOCK_SEGMENT);
 }
@@ -348,14 +339,12 @@ static int usb251xb_connect(struct usb251xb *hub)
 
 	usb251xb_reset(hub);
 
-	/* write registers */
+	 
 	for (i = 0; i < (USB251XB_I2C_REG_SZ / USB251XB_I2C_WRITE_SZ); i++) {
 		int offset = i * USB251XB_I2C_WRITE_SZ;
 		char wbuf[USB251XB_I2C_WRITE_SZ + 1];
 
-		/* The first data byte transferred tells the hub how many data
-		 * bytes will follow (byte count).
-		 */
+		 
 		wbuf[0] = USB251XB_I2C_WRITE_SZ;
 		memcpy(&wbuf[1], &i2c_wb[offset], USB251XB_I2C_WRITE_SZ);
 
@@ -429,7 +418,7 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
 	if (of_property_read_bool(np, "self-powered")) {
 		hub->conf_data1 |= BIT(7);
 
-		/* Configure Over-Current sens when self-powered */
+		 
 		hub->conf_data1 &= ~BIT(2);
 		if (of_property_read_bool(np, "ganged-sensing"))
 			hub->conf_data1 &= ~BIT(1);
@@ -438,7 +427,7 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
 	} else if (of_property_read_bool(np, "bus-powered")) {
 		hub->conf_data1 &= ~BIT(7);
 
-		/* Disable Over-Current sense when bus-powered */
+		 
 		hub->conf_data1 |= BIT(2);
 	}
 
@@ -464,19 +453,19 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
 
 	if (!of_property_read_u32(np, "oc-delay-us", &property_u32)) {
 		if (property_u32 == 100) {
-			/* 100 us*/
+			 
 			hub->conf_data2 &= ~BIT(5);
 			hub->conf_data2 &= ~BIT(4);
 		} else if (property_u32 == 4000) {
-			/* 4 ms */
+			 
 			hub->conf_data2 &= ~BIT(5);
 			hub->conf_data2 |= BIT(4);
 		} else if (property_u32 == 16000) {
-			/* 16 ms */
+			 
 			hub->conf_data2 |= BIT(5);
 			hub->conf_data2 |= BIT(4);
 		} else {
-			/* 8 ms (DEFAULT) */
+			 
 			hub->conf_data2 |= BIT(5);
 			hub->conf_data2 &= ~BIT(4);
 		}
@@ -566,17 +555,12 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
 			      (wchar_t *)hub->serial,
 			      USB251XB_STRING_BUFSIZE);
 
-	/*
-	 * The datasheet documents the register as 'Port Swap' but in real the
-	 * register controls the USB DP/DM signal swapping for each port.
-	 */
+	 
 	hub->port_swap = USB251XB_DEF_PORT_SWAP;
 	usb251xb_get_ports_field(hub, "swap-dx-lanes", data->port_cnt,
 				 false, &hub->port_swap);
 
-	/* The following parameters are currently not exposed to devicetree, but
-	 * may be as soon as needed.
-	 */
+	 
 	hub->bat_charge_en = USB251XB_DEF_BATTERY_CHARGING_ENABLE;
 	hub->boost_57 = USB251XB_DEF_BOOST_57;
 	hub->boost_14 = USB251XB_DEF_BOOST_14;
@@ -617,7 +601,7 @@ static const struct of_device_id usb251xb_of_match[] = {
 		.compatible = "microchip,usb2517i",
 		.data = &usb2517i_data,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, usb251xb_of_match);
@@ -644,21 +628,7 @@ static int usb251xb_probe(struct usb251xb *hub)
 		}
 	}
 
-	/*
-	 * usb251x SMBus-slave SCL lane is muxed with CFG_SEL0 pin. So if anyone
-	 * tries to work with the bus at the moment the hub reset is released,
-	 * it may cause an invalid config being latched by usb251x. Particularly
-	 * one of the config modes makes the hub loading a default registers
-	 * value without SMBus-slave interface activation. If the hub
-	 * accidentally gets this mode, this will cause the driver SMBus-
-	 * functions failure. Normally we could just lock the SMBus-segment the
-	 * hub i2c-interface resides for the device-specific reset timing. But
-	 * the GPIO controller, which is used to handle the hub reset, might be
-	 * placed at the same i2c-bus segment. In this case an error should be
-	 * returned since we can't safely use the GPIO controller to clear the
-	 * reset state (it may affect the hub configuration) and we can't lock
-	 * the i2c-bus segment (it will cause a deadlock).
-	 */
+	 
 	err = usb251x_check_gpio_chip(hub);
 	if (err)
 		return err;
@@ -735,7 +705,7 @@ static const struct i2c_device_id usb251xb_id[] = {
 	{ "usb2514bi", 0 },
 	{ "usb2517", 0 },
 	{ "usb2517i", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, usb251xb_id);
 

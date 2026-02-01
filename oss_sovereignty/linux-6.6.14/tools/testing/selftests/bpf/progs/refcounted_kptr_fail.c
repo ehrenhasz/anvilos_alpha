@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -43,7 +43,7 @@ long rbtree_refcounted_node_ref_escapes(void *ctx)
 
 	bpf_spin_lock(&glock);
 	bpf_rbtree_add(&groot, &n->node, less);
-	/* m becomes an owning ref but is never drop'd or added to a tree */
+	 
 	m = bpf_refcount_acquire(n);
 	bpf_spin_unlock(&glock);
 	if (!m)
@@ -63,7 +63,7 @@ long rbtree_refcounted_node_ref_escapes_owning_input(void *ctx)
 	if (!n)
 		return 1;
 
-	/* m becomes an owning ref but is never drop'd or added to a tree */
+	 
 	m = bpf_refcount_acquire(n);
 	m->key = 2;
 
@@ -86,7 +86,7 @@ int BPF_PROG(rbtree_fail_sleepable_lock_across_rcu,
 	if (!n)
 		return 0;
 
-	/* spin_{lock,unlock} are in different RCU CS */
+	 
 	bpf_rcu_read_lock();
 	bpf_spin_lock(&glock);
 	bpf_rbtree_add(&groot, &n->node, less);

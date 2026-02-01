@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022. Huawei Technologies Co., Ltd */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdbool.h>
@@ -22,7 +22,7 @@ static void test_reenter_update(void)
 	if (!ASSERT_OK_PTR(skel, "htab_update__open"))
 		return;
 
-	/* lookup_elem_raw() may be inlined and find_kernel_btf_id() will return -ESRCH */
+	 
 	bpf_program__set_autoload(skel->progs.lookup_elem_raw, true);
 	err = htab_update__load(skel);
 	if (!ASSERT_TRUE(!err || err == -ESRCH, "htab_update__load") || err)
@@ -33,7 +33,7 @@ static void test_reenter_update(void)
 	if (!ASSERT_OK(err, "htab_update__attach"))
 		goto out;
 
-	/* Will trigger the reentrancy of bpf_map_update_elem() */
+	 
 	key = 0;
 	value = 0;
 	err = bpf_map_update_elem(bpf_map__fd(skel->maps.htab), &key, &value, 0);
@@ -51,7 +51,7 @@ static void *htab_update_thread(void *arg)
 	cpu_set_t cpus;
 	int i;
 
-	/* Pinned on CPU 0 */
+	 
 	CPU_ZERO(&cpus);
 	CPU_SET(0, &cpus);
 	pthread_setaffinity_np(pthread_self(), sizeof(cpus), &cpus);

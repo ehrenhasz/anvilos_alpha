@@ -1,35 +1,27 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *	usbip.h
- *
- *	USBIP uapi defines and function prototypes etc.
-*/
+ 
+ 
 
 #ifndef _UAPI_LINUX_USBIP_H
 #define _UAPI_LINUX_USBIP_H
 
-/* usbip device status - exported in usbip device sysfs status */
+ 
 enum usbip_device_status {
-	/* sdev is available. */
+	 
 	SDEV_ST_AVAILABLE = 0x01,
-	/* sdev is now used. */
+	 
 	SDEV_ST_USED,
-	/* sdev is unusable because of a fatal error. */
+	 
 	SDEV_ST_ERROR,
 
-	/* vdev does not connect a remote device. */
+	 
 	VDEV_ST_NULL,
-	/* vdev is used, but the USB address is not assigned yet */
+	 
 	VDEV_ST_NOTASSIGNED,
 	VDEV_ST_USED,
 	VDEV_ST_ERROR
 };
 
-/* USB URB Transfer flags:
- *
- * USBIP server and client (vchi) pack URBs in TCP packets. The following
- * are the transfer type defines used in USBIP protocol.
- */
+ 
 
 #define USBIP_URB_SHORT_NOT_OK		0x0001
 #define USBIP_URB_ISO_ASAP		0x0002
@@ -50,4 +42,4 @@ enum usbip_device_status {
 #define USBIP_URB_DMA_SG_COMBINED	0x00400000
 #define USBIP_URB_ALIGNED_TEMP_BUFFER	0x00800000
 
-#endif /* _UAPI_LINUX_USBIP_H */
+#endif  

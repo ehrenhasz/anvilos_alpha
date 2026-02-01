@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include "adf_accel_devices.h"
@@ -73,7 +73,7 @@ struct qat_compression_instance *qat_compression_get_instance_node(int node)
 
 	if (!accel_dev) {
 		pr_debug_ratelimited("QAT: Could not find a device on node %d\n", node);
-		/* Get any started device */
+		 
 		list_for_each(itr, adf_devmgr_get_head()) {
 			struct adf_accel_dev *tmp_dev;
 

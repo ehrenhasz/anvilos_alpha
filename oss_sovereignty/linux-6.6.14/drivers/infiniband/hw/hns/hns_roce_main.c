@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/acpi.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -109,9 +78,7 @@ static int handle_en_event(struct hns_roce_dev *hr_dev, u32 port,
 		ret = hns_roce_set_mac(hr_dev, port, netdev->dev_addr);
 		break;
 	case NETDEV_DOWN:
-		/*
-		 * In v1 engine, only support all ports closed together.
-		 */
+		 
 		break;
 	default:
 		dev_dbg(dev, "NETDEV event = 0x%x!\n", (u32)(event));
@@ -223,7 +190,7 @@ static int hns_roce_query_port(struct ib_device *ib_dev, u32 port_num,
 
 	port = port_num - 1;
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	props->max_mtu = hr_dev->caps.max_mtu;
 	props->gid_tbl_len = hr_dev->caps.gid_table_len[port];
@@ -310,7 +277,7 @@ hns_roce_user_mmap_entry_insert(struct ib_ucontext *ucontext, u64 address,
 	entry->mmap_type = mmap_type;
 
 	switch (mmap_type) {
-	/* pgoff 0 must be used by DB for compatibility */
+	 
 	case HNS_ROCE_MMAP_TYPE_DB:
 		ret = rdma_user_mmap_entry_insert_exact(
 				ucontext, &entry->rdma_entry, length, 0);
@@ -912,11 +879,7 @@ err_unmap_dmpt:
 	return ret;
 }
 
-/**
- * hns_roce_setup_hca - setup host channel adapter
- * @hr_dev: pointer to hns roce device
- * Return : int
- */
+ 
 static int hns_roce_setup_hca(struct hns_roce_dev *hr_dev)
 {
 	struct device *dev = hr_dev->dev;
@@ -1034,7 +997,7 @@ int hns_roce_init(struct hns_roce_dev *hr_dev)
 		goto error_failed_cmd_init;
 	}
 
-	/* EQ depends on poll mode, event mode depends on EQ */
+	 
 	ret = hr_dev->hw->init_eq(hr_dev);
 	if (ret) {
 		dev_err(dev, "eq init failed!\n");

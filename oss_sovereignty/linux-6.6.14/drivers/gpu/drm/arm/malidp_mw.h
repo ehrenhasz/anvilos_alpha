@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Brian Starkey <brian.starkey@arm.com>
- *
- */
+ 
+ 
 
 #ifndef __MALIDP_MW_H__
 #define __MALIDP_MW_H__

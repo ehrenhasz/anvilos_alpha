@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __CSIO_SCSI_H__
 #define __CSIO_SCSI_H__
@@ -58,120 +26,79 @@ extern uint32_t csio_max_scan_tmo;
 extern uint32_t csio_delta_scan_tmo;
 extern int csio_lun_qdepth;
 
-/*
- **************************** NOTE *******************************
- * How do we calculate MAX FCoE SCSI SGEs? Here is the math:
- * Max Egress WR size = 512 bytes
- * One SCSI egress WR has the following fixed no of bytes:
- *      48 (sizeof(struct fw_scsi_write[read]_wr)) - FW WR
- *    + 32 (sizeof(struct fc_fcp_cmnd)) - Immediate FCP_CMD
- *    ------
- *      80
- *    ------
- * That leaves us with 512 - 96 = 432 bytes for data SGE. Using
- * struct ulptx_sgl header for the SGE consumes:
- *	- 4 bytes for cmnd_sge.
- *	- 12 bytes for the first SGL.
- * That leaves us with 416 bytes for the remaining SGE pairs. Which is
- * is 416 / 24 (size(struct ulptx_sge_pair)) = 17 SGE pairs,
- * or 34 SGEs. Adding the first SGE fetches us 35 SGEs.
- */
+ 
 #define CSIO_SCSI_MAX_SGE		35
 #define CSIO_SCSI_ABRT_TMO_MS		60000
 #define CSIO_SCSI_LUNRST_TMO_MS		60000
-#define CSIO_SCSI_TM_POLL_MS		2000	/* should be less than
-						 * all TM timeouts.
-						 */
+#define CSIO_SCSI_TM_POLL_MS		2000	 
 #define CSIO_SCSI_IQ_WRSZ		128
 #define CSIO_SCSI_IQSIZE		(csio_scsi_iqlen * CSIO_SCSI_IQ_WRSZ)
 
 #define	CSIO_MAX_SNS_LEN		128
 #define	CSIO_SCSI_RSP_LEN	(FCP_RESP_WITH_EXT + 4 + CSIO_MAX_SNS_LEN)
 
-/* Reference to scsi_cmnd */
+ 
 #define csio_scsi_cmnd(req)		((req)->scratch1)
 
 struct csio_scsi_stats {
-	uint64_t		n_tot_success;	/* Total number of good I/Os */
-	uint32_t		n_rn_nr_error;	/* No. of remote-node-not-
-						 * ready errors
-						 */
-	uint32_t		n_hw_nr_error;	/* No. of hw-module-not-
-						 * ready errors
-						 */
-	uint32_t		n_dmamap_error;	/* No. of DMA map erros */
-	uint32_t		n_unsupp_sge_error; /* No. of too-many-SGes
-						     * errors.
-						     */
-	uint32_t		n_no_req_error;	/* No. of Out-of-ioreqs error */
-	uint32_t		n_busy_error;	/* No. of -EBUSY errors */
-	uint32_t		n_hosterror;	/* No. of FW_HOSTERROR I/O */
-	uint32_t		n_rsperror;	/* No. of response errors */
-	uint32_t		n_autosense;	/* No. of auto sense replies */
-	uint32_t		n_ovflerror;	/* No. of overflow errors */
-	uint32_t		n_unflerror;	/* No. of underflow errors */
-	uint32_t		n_rdev_nr_error;/* No. of rdev not
-						 * ready errors
-						 */
-	uint32_t		n_rdev_lost_error;/* No. of rdev lost errors */
-	uint32_t		n_rdev_logo_error;/* No. of rdev logo errors */
-	uint32_t		n_link_down_error;/* No. of link down errors */
-	uint32_t		n_no_xchg_error; /* No. no exchange error */
-	uint32_t		n_unknown_error;/* No. of unhandled errors */
-	uint32_t		n_aborted;	/* No. of aborted I/Os */
-	uint32_t		n_abrt_timedout; /* No. of abort timedouts */
-	uint32_t		n_abrt_fail;	/* No. of abort failures */
-	uint32_t		n_abrt_dups;	/* No. of duplicate aborts */
-	uint32_t		n_abrt_race_comp; /* No. of aborts that raced
-						   * with completions.
-						   */
-	uint32_t		n_abrt_busy_error;/* No. of abort failures
-						   * due to -EBUSY.
-						   */
-	uint32_t		n_closed;	/* No. of closed I/Os */
-	uint32_t		n_cls_busy_error; /* No. of close failures
-						   * due to -EBUSY.
-						   */
-	uint32_t		n_active;	/* No. of IOs in active_q */
-	uint32_t		n_tm_active;	/* No. of TMs in active_q */
-	uint32_t		n_wcbfn;	/* No. of I/Os in worker
-						 * cbfn q
-						 */
-	uint32_t		n_free_ioreq;	/* No. of freelist entries */
-	uint32_t		n_free_ddp;	/* No. of DDP freelist */
-	uint32_t		n_unaligned;	/* No. of Unaligned SGls */
-	uint32_t		n_inval_cplop;	/* No. invalid CPL op's in IQ */
-	uint32_t		n_inval_scsiop;	/* No. invalid scsi op's in IQ*/
+	uint64_t		n_tot_success;	 
+	uint32_t		n_rn_nr_error;	 
+	uint32_t		n_hw_nr_error;	 
+	uint32_t		n_dmamap_error;	 
+	uint32_t		n_unsupp_sge_error;  
+	uint32_t		n_no_req_error;	 
+	uint32_t		n_busy_error;	 
+	uint32_t		n_hosterror;	 
+	uint32_t		n_rsperror;	 
+	uint32_t		n_autosense;	 
+	uint32_t		n_ovflerror;	 
+	uint32_t		n_unflerror;	 
+	uint32_t		n_rdev_nr_error; 
+	uint32_t		n_rdev_lost_error; 
+	uint32_t		n_rdev_logo_error; 
+	uint32_t		n_link_down_error; 
+	uint32_t		n_no_xchg_error;  
+	uint32_t		n_unknown_error; 
+	uint32_t		n_aborted;	 
+	uint32_t		n_abrt_timedout;  
+	uint32_t		n_abrt_fail;	 
+	uint32_t		n_abrt_dups;	 
+	uint32_t		n_abrt_race_comp;  
+	uint32_t		n_abrt_busy_error; 
+	uint32_t		n_closed;	 
+	uint32_t		n_cls_busy_error;  
+	uint32_t		n_active;	 
+	uint32_t		n_tm_active;	 
+	uint32_t		n_wcbfn;	 
+	uint32_t		n_free_ioreq;	 
+	uint32_t		n_free_ddp;	 
+	uint32_t		n_unaligned;	 
+	uint32_t		n_inval_cplop;	 
+	uint32_t		n_inval_scsiop;	 
 };
 
 struct csio_scsim {
-	struct csio_hw		*hw;		/* Pointer to HW moduel */
-	uint8_t			max_sge;	/* Max SGE */
-	uint8_t			proto_cmd_len;	/* Proto specific SCSI
-						 * cmd length
-						 */
-	uint16_t		proto_rsp_len;	/* Proto specific SCSI
-						 * response length
-						 */
-	spinlock_t		freelist_lock;	/* Lock for ioreq freelist */
-	struct list_head	active_q;	/* Outstanding SCSI I/Os */
-	struct list_head	ioreq_freelist;	/* Free list of ioreq's */
-	struct list_head	ddp_freelist;	/* DDP descriptor freelist */
-	struct csio_scsi_stats	stats;		/* This module's statistics */
+	struct csio_hw		*hw;		 
+	uint8_t			max_sge;	 
+	uint8_t			proto_cmd_len;	 
+	uint16_t		proto_rsp_len;	 
+	spinlock_t		freelist_lock;	 
+	struct list_head	active_q;	 
+	struct list_head	ioreq_freelist;	 
+	struct list_head	ddp_freelist;	 
+	struct csio_scsi_stats	stats;		 
 };
 
-/* State machine defines */
+ 
 enum csio_scsi_ev {
-	CSIO_SCSIE_START_IO = 1,		/* Start a regular SCSI IO */
-	CSIO_SCSIE_START_TM,			/* Start a TM IO */
-	CSIO_SCSIE_COMPLETED,			/* IO Completed */
-	CSIO_SCSIE_ABORT,			/* Abort IO */
-	CSIO_SCSIE_ABORTED,			/* IO Aborted */
-	CSIO_SCSIE_CLOSE,			/* Close exchange */
-	CSIO_SCSIE_CLOSED,			/* Exchange closed */
-	CSIO_SCSIE_DRVCLEANUP,			/* Driver wants to manually
-						 * cleanup this I/O.
-						 */
+	CSIO_SCSIE_START_IO = 1,		 
+	CSIO_SCSIE_START_TM,			 
+	CSIO_SCSIE_COMPLETED,			 
+	CSIO_SCSIE_ABORT,			 
+	CSIO_SCSIE_ABORTED,			 
+	CSIO_SCSIE_CLOSE,			 
+	CSIO_SCSIE_CLOSED,			 
+	CSIO_SCSIE_DRVCLEANUP,			 
 };
 
 enum csio_scsi_lev {
@@ -189,7 +116,7 @@ struct csio_scsi_level_data {
 };
 
 struct csio_cmd_priv {
-	uint8_t fc_tm_flags;	/* task management flags */
+	uint8_t fc_tm_flags;	 
 	uint16_t wr_status;
 };
 
@@ -286,12 +213,7 @@ csio_scsi_drvcleanup(struct csio_ioreq *ioreq)
 	csio_post_event(&ioreq->sm, CSIO_SCSIE_DRVCLEANUP);
 }
 
-/*
- * csio_scsi_start_io - Kick starts the IO SM.
- * @req: io request SM.
- *
- * needs to be called with lock held.
- */
+ 
 static inline int
 csio_scsi_start_io(struct csio_ioreq *ioreq)
 {
@@ -299,12 +221,7 @@ csio_scsi_start_io(struct csio_ioreq *ioreq)
 	return ioreq->drv_status;
 }
 
-/*
- * csio_scsi_start_tm - Kicks off the Task management IO SM.
- * @req: io request SM.
- *
- * needs to be called with lock held.
- */
+ 
 static inline int
 csio_scsi_start_tm(struct csio_ioreq *ioreq)
 {
@@ -312,12 +229,7 @@ csio_scsi_start_tm(struct csio_ioreq *ioreq)
 	return ioreq->drv_status;
 }
 
-/*
- * csio_scsi_abort - Abort an IO request
- * @req: io request SM.
- *
- * needs to be called with lock held.
- */
+ 
 static inline int
 csio_scsi_abort(struct csio_ioreq *ioreq)
 {
@@ -325,12 +237,7 @@ csio_scsi_abort(struct csio_ioreq *ioreq)
 	return ioreq->drv_status;
 }
 
-/*
- * csio_scsi_close - Close an IO request
- * @req: io request SM.
- *
- * needs to be called with lock held.
- */
+ 
 static inline int
 csio_scsi_close(struct csio_ioreq *ioreq)
 {
@@ -349,4 +256,4 @@ int csio_scsi_qconfig(struct csio_hw *);
 int csio_scsim_init(struct csio_scsim *, struct csio_hw *);
 void csio_scsim_exit(struct csio_scsim *);
 
-#endif /* __CSIO_SCSI_H__ */
+#endif  

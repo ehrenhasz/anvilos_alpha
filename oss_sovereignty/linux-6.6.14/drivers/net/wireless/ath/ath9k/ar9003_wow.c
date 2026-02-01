@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include "ath9k.h"
@@ -24,10 +10,7 @@ static void ath9k_hw_set_sta_powersave(struct ath_hw *ah)
 {
 	if (!ath9k_hw_mci_is_enabled(ah))
 		goto set;
-	/*
-	 * If MCI is being used, set PWR_SAV only when MCI's
-	 * PS state is disabled.
-	 */
+	 
 	if (ar9003_mci_state(ah, MCI_STATE_GET_WLAN_PS_STATE) != MCI_PS_DISABLE)
 		return;
 set:
@@ -40,7 +23,7 @@ static void ath9k_hw_set_powermode_wow_sleep(struct ath_hw *ah)
 
 	ath9k_hw_set_sta_powersave(ah);
 
-	/* set rx disable bit */
+	 
 	REG_WRITE(ah, AR_CR, AR_CR_RXD);
 
 	if (!ath9k_hw_wait(ah, AR_CR, AR_CR_RXE(ah), 0, AH_WAIT_TIMEOUT)) {
@@ -76,17 +59,17 @@ static void ath9k_wow_create_keep_alive_pattern(struct ath_hw *ah)
 	memcpy(sta_mac_addr, common->macaddr, ETH_ALEN);
 	memcpy(ap_mac_addr, common->curbssid, ETH_ALEN);
 
-	/* set the transmit buffer */
+	 
 	ctl[0] = (KAL_FRAME_LEN | (MAX_RATE_POWER << 16));
 	ctl[1] = 0;
 	ctl[4] = 0;
 	ctl[7] = (ah->txchainmask) << 2;
-	ctl[2] = 0xf << 16; /* tx_tries 0 */
+	ctl[2] = 0xf << 16;  
 
 	if (IS_CHAN_2GHZ(ah->curchan))
-		ctl[3] = 0x1b;	/* CCK_1M */
+		ctl[3] = 0x1b;	 
 	else
-		ctl[3] = 0xb;	/* OFDM_6M */
+		ctl[3] = 0xb;	 
 
 	for (i = 0; i < KAL_NUM_DESC_WORDS; i++)
 		REG_WRITE(ah, (AR_WOW_KA_DESC_WORD2 + i * 4), ctl[i]);
@@ -104,10 +87,7 @@ static void ath9k_wow_create_keep_alive_pattern(struct ath_hw *ah)
 	data_word[5] = (ap_mac_addr[5] << 8) | (ap_mac_addr[4]);
 
 	if (AR_SREV_9462_20_OR_LATER(ah) || AR_SREV_9565(ah)) {
-		/*
-		 * AR9462 2.0 and AR9565 have an extra descriptor word
-		 * (time based discard) compared to other chips.
-		 */
+		 
 		REG_WRITE(ah, (AR_WOW_KA_DESC_WORD2 + (12 * 4)), 0);
 		wow_ka_data_word0 = AR_WOW_TXBUF(13);
 	} else {
@@ -185,18 +165,11 @@ u32 ath9k_hw_wow_wakeup(struct ath_hw *ah)
 	u32 wow_status = 0;
 	u32 val = 0, rval;
 
-	/*
-	 * Read the WoW status register to know
-	 * the wakeup reason.
-	 */
+	 
 	rval = REG_READ(ah, AR_WOW_PATTERN);
 	val = AR_WOW_STATUS(rval);
 
-	/*
-	 * Mask only the WoW events that we have enabled. Sometimes
-	 * we have spurious WoW events from the AR_WOW_PATTERN
-	 * register. This mask will clean it up.
-	 */
+	 
 	val &= ah->wow.wow_event_mask;
 
 	if (val) {
@@ -219,36 +192,22 @@ u32 ath9k_hw_wow_wakeup(struct ath_hw *ah)
 			wow_status |= AH_WOW_USER_PATTERN_EN;
 	}
 
-	/*
-	 * set and clear WOW_PME_CLEAR registers for the chip to
-	 * generate next wow signal.
-	 * disable D3 before accessing other registers ?
-	 */
+	 
 
-	/* do we need to check the bit value 0x01000000 (7-10) ?? */
+	 
 	REG_RMW(ah, AR_PCIE_PM_CTRL(ah), AR_PMCTRL_WOW_PME_CLR,
 		AR_PMCTRL_PWR_STATE_D1D3);
 
-	/*
-	 * Clear all events.
-	 */
+	 
 	REG_WRITE(ah, AR_WOW_PATTERN,
 		  AR_WOW_CLEAR_EVENTS(REG_READ(ah, AR_WOW_PATTERN)));
 	REG_WRITE(ah, AR_MAC_PCU_WOW4,
 		  AR_WOW_CLEAR_EVENTS2(REG_READ(ah, AR_MAC_PCU_WOW4)));
 
-	/*
-	 * restore the beacon threshold to init value
-	 */
+	 
 	REG_WRITE(ah, AR_RSSI_THR, INIT_RSSI_THR);
 
-	/*
-	 * Restore the way the PCI-E reset, Power-On-Reset, external
-	 * PCIE_POR_SHORT pins are tied to its original value.
-	 * Previously just before WoW sleep, we untie the PCI-E
-	 * reset to our Chip's Power On Reset so that any PCI-E
-	 * reset from the bus will not reset our chip
-	 */
+	 
 	if (ah->is_pciexpress)
 		ath9k_hw_configpcipowersave(ah, false);
 
@@ -273,11 +232,7 @@ static void ath9k_hw_wow_set_arwr_reg(struct ath_hw *ah)
 	if (!ah->is_pciexpress)
 		return;
 
-	/*
-	 * We need to untie the internal POR (power-on-reset)
-	 * to the external PCI-E reset. We also need to tie
-	 * the PCI-E Phy reset to the PCI-E reset.
-	 */
+	 
 	wa_reg = REG_READ(ah, AR_WA(ah));
 	wa_reg &= ~AR_WA_UNTIE_RESET_EN;
 	wa_reg |= AR_WA_RESET_EN;
@@ -293,77 +248,43 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 
 	wow_event_mask = ah->wow.wow_event_mask;
 
-	/*
-	 * AR_PMCTRL_HOST_PME_EN - Override PME enable in configuration
-	 *                         space and allow MAC to generate WoW anyway.
-	 *
-	 * AR_PMCTRL_PWR_PM_CTRL_ENA - ???
-	 *
-	 * AR_PMCTRL_AUX_PWR_DET - PCI core SYS_AUX_PWR_DET signal,
-	 *                         needs to be set for WoW in PCI mode.
-	 *
-	 * AR_PMCTRL_WOW_PME_CLR - WoW Clear Signal going to the MAC.
-	 *
-	 * Set the power states appropriately and enable PME.
-	 *
-	 * Set and clear WOW_PME_CLEAR for the chip
-	 * to generate next wow signal.
-	 */
+	 
 	REG_SET_BIT(ah, AR_PCIE_PM_CTRL(ah), AR_PMCTRL_HOST_PME_EN |
 		    			 AR_PMCTRL_PWR_PM_CTRL_ENA |
 		    			 AR_PMCTRL_AUX_PWR_DET |
 		    			 AR_PMCTRL_WOW_PME_CLR);
 	REG_CLR_BIT(ah, AR_PCIE_PM_CTRL(ah), AR_PMCTRL_WOW_PME_CLR);
 
-	/*
-	 * Random Backoff.
-	 *
-	 * 31:28 in AR_WOW_PATTERN : Indicates the number of bits used in the
-	 *                           contention window. For value N,
-	 *                           the random backoff will be selected between
-	 *                           0 and (2 ^ N) - 1.
-	 */
+	 
 	REG_SET_BIT(ah, AR_WOW_PATTERN,
 		    AR_WOW_BACK_OFF_SHIFT(AR_WOW_PAT_BACKOFF));
 
-	/*
-	 * AIFS time, Slot time, Keep Alive count.
-	 */
+	 
 	REG_SET_BIT(ah, AR_WOW_COUNT, AR_WOW_AIFS_CNT(AR_WOW_CNT_AIFS_CNT) |
 		    		      AR_WOW_SLOT_CNT(AR_WOW_CNT_SLOT_CNT) |
 		    		      AR_WOW_KEEP_ALIVE_CNT(AR_WOW_CNT_KA_CNT));
-	/*
-	 * Beacon timeout.
-	 */
+	 
 	if (pattern_enable & AH_WOW_BEACON_MISS)
 		REG_WRITE(ah, AR_WOW_BCN_TIMO, AR_WOW_BEACON_TIMO);
 	else
 		REG_WRITE(ah, AR_WOW_BCN_TIMO, AR_WOW_BEACON_TIMO_MAX);
 
-	/*
-	 * Keep alive timeout in ms.
-	 */
+	 
 	if (!pattern_enable)
 		REG_WRITE(ah, AR_WOW_KEEP_ALIVE_TIMO, AR_WOW_KEEP_ALIVE_NEVER);
 	else
 		REG_WRITE(ah, AR_WOW_KEEP_ALIVE_TIMO, KAL_TIMEOUT * 32);
 
-	/*
-	 * Keep alive delay in us.
-	 */
+	 
 	REG_WRITE(ah, AR_WOW_KEEP_ALIVE_DELAY, KAL_DELAY * 1000);
 
-	/*
-	 * Create keep alive pattern to respond to beacons.
-	 */
+	 
 	ath9k_wow_create_keep_alive_pattern(ah);
 
-	/*
-	 * Configure keep alive register.
-	 */
+	 
 	keep_alive = REG_READ(ah, AR_WOW_KEEP_ALIVE);
 
-	/* Send keep alive timeouts anyway */
+	 
 	keep_alive &= ~AR_WOW_KEEP_ALIVE_AUTO_DIS;
 
 	if (pattern_enable & AH_WOW_LINK_CHANGE) {
@@ -375,10 +296,7 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 
 	REG_WRITE(ah, AR_WOW_KEEP_ALIVE, keep_alive);
 
-	/*
-	 * We are relying on a bmiss failure, ensure we have
-	 * enough threshold to prevent false positives.
-	 */
+	 
 	REG_RMW_FIELD(ah, AR_RSSI_THR, AR_RSSI_THR_BM_THR,
 		      AR_WOW_BMISSTHRESHOLD);
 
@@ -389,9 +307,7 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 		REG_CLR_BIT(ah, AR_WOW_BCN_EN, AR_WOW_BEACON_FAIL_EN);
 	}
 
-	/*
-	 * Enable the magic packet registers.
-	 */
+	 
 	magic_pattern = REG_READ(ah, AR_WOW_PATTERN);
 	magic_pattern |= AR_WOW_MAC_INTR_EN;
 
@@ -404,16 +320,11 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 
 	REG_WRITE(ah, AR_WOW_PATTERN, magic_pattern);
 
-	/*
-	 * Enable pattern matching for packets which are less
-	 * than 256 bytes.
-	 */
+	 
 	REG_WRITE(ah, AR_WOW_PATTERN_MATCH_LT_256B,
 		  AR_WOW_PATTERN_SUPPORTED);
 
-	/*
-	 * Set the power states appropriately and enable PME.
-	 */
+	 
 	host_pm_ctrl = REG_READ(ah, AR_PCIE_PM_CTRL(ah));
 	host_pm_ctrl |= AR_PMCTRL_PWR_STATE_D1D3 |
 			AR_PMCTRL_HOST_PME_EN |
@@ -421,23 +332,17 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 	host_pm_ctrl &= ~AR_PCIE_PM_CTRL_ENA;
 
 	if (AR_SREV_9462(ah)) {
-		/*
-		 * This is needed to prevent the chip waking up
-		 * the host within 3-4 seconds with certain
-		 * platform/BIOS.
-		 */
+		 
 		host_pm_ctrl &= ~AR_PMCTRL_PWR_STATE_D1D3;
 		host_pm_ctrl |= AR_PMCTRL_PWR_STATE_D1D3_REAL;
 	}
 
 	REG_WRITE(ah, AR_PCIE_PM_CTRL(ah), host_pm_ctrl);
 
-	/*
-	 * Enable sequence number generation when asleep.
-	 */
+	 
 	REG_CLR_BIT(ah, AR_STA_ID1, AR_STA_ID1_PRESERVE_SEQNUM);
 
-	/* To bring down WOW power low margin */
+	 
 	REG_SET_BIT(ah, AR_PCIE_PHY_REG3, BIT(13));
 
 	ath9k_hw_wow_set_arwr_reg(ah);
@@ -445,7 +350,7 @@ void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 	if (ath9k_hw_mci_is_enabled(ah))
 		REG_WRITE(ah, AR_RTC_KEEP_AWAKE, 0x2);
 
-	/* HW WoW */
+	 
 	REG_CLR_BIT(ah, AR_PCU_MISC_MODE3, BIT(5));
 
 	ath9k_hw_set_powermode_wow_sleep(ah);

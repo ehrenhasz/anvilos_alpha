@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <dirent.h>
 #include <errno.h>
 #include <limits.h>
@@ -20,7 +20,7 @@
 #include "event.h"
 #include <internal/threadmap.h>
 
-/* Skip "." and ".." directories */
+ 
 static int filter(const struct dirent *dir)
 {
 	if (dir->d_name[0] == '.')
@@ -95,7 +95,7 @@ static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 		bool grow = false;
 		pid_t pid = strtol(dirent->d_name, &end, 10);
 
-		if (*end) /* only interested in proper numerical dirents */
+		if (*end)  
 			continue;
 
 		snprintf(path, sizeof(path), "/proc/%s", dirent->d_name);
@@ -251,7 +251,7 @@ struct perf_thread_map *thread_map__new_by_tid_str(const char *tid_str)
 	struct strlist_config slist_config = { .dont_dupstr = true, };
 	struct strlist *slist;
 
-	/* perf-stat expects threads to be generated even if tid not given */
+	 
 	if (!tid_str)
 		return perf_thread_map__new_dummy();
 
@@ -327,11 +327,7 @@ static int get_comm(char **comm, pid_t pid)
 
 	err = filename__read_str(path, comm, &size);
 	if (!err) {
-		/*
-		 * We're reading 16 bytes, while filename__read_str
-		 * allocates data per BUFSIZ bytes, so we can safely
-		 * mark the end of the string.
-		 */
+		 
 		(*comm)[size] = 0;
 		strim(*comm);
 	}
@@ -345,16 +341,13 @@ static void comm_init(struct perf_thread_map *map, int i)
 	pid_t pid = perf_thread_map__pid(map, i);
 	char *comm = NULL;
 
-	/* dummy pid comm initialization */
+	 
 	if (pid == -1) {
 		map->map[i].comm = strdup("dummy");
 		return;
 	}
 
-	/*
-	 * The comm name is like extra bonus ;-),
-	 * so just warn if we fail for any reason.
-	 */
+	 
 	if (get_comm(&comm, pid))
 		pr_warning("Couldn't resolve comm name for pid %d\n", pid);
 
@@ -417,9 +410,7 @@ int thread_map__remove(struct perf_thread_map *threads, int idx)
 	if (idx >= threads->nr)
 		return -EINVAL;
 
-	/*
-	 * Free the 'idx' item and shift the rest up.
-	 */
+	 
 	zfree(&threads->map[idx].comm);
 
 	for (i = idx; i < threads->nr - 1; i++)

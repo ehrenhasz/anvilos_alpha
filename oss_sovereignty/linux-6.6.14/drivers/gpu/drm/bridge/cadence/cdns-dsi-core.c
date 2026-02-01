@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright: 2017 Cadence Design Systems, Inc.
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_drv.h>
@@ -532,11 +528,7 @@ static int cdns_dsi_adjust_phy_config(struct cdns_dsi *dsi,
 	dsi_htotal += dsi_cfg->hact;
 	dsi_htotal += dsi_cfg->hfp + DSI_HFP_FRAME_OVERHEAD;
 
-	/*
-	 * Make sure DSI htotal is aligned on a lane boundary when calculating
-	 * the expected data rate. This is done by extending HFP in case of
-	 * misalignment.
-	 */
+	 
 	adj_dsi_htotal = dsi_htotal;
 	if (dsi_htotal % lanes)
 		adj_dsi_htotal += lanes - (dsi_htotal % lanes);
@@ -544,12 +536,12 @@ static int cdns_dsi_adjust_phy_config(struct cdns_dsi *dsi,
 	dpi_hz = (mode_valid_check ? mode->clock : mode->crtc_clock) * 1000;
 	dlane_bps = (unsigned long long)dpi_hz * adj_dsi_htotal;
 
-	/* data rate in bytes/sec is not an integer, refuse the mode. */
+	 
 	dpi_htotal = mode_valid_check ? mode->htotal : mode->crtc_htotal;
 	if (do_div(dlane_bps, lanes * dpi_htotal))
 		return -EINVAL;
 
-	/* data rate was in bytes/sec, convert to bits/sec. */
+	 
 	phy_cfg->hs_clk_rate = dlane_bps * 8;
 
 	dsi_hfp_ext = adj_dsi_htotal - dsi_htotal;
@@ -590,11 +582,7 @@ static int cdns_dsi_check_conf(struct cdns_dsi *dsi,
 	if (output->dev->mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
 		dsi_hss_hsa_hse_hbp += dsi_cfg->hsa + DSI_HSA_FRAME_OVERHEAD;
 
-	/*
-	 * Make sure DPI(HFP) > DSI(HSS+HSA+HSE+HBP) to guarantee that the FIFO
-	 * is empty before we start a receiving a new line on the DPI
-	 * interface.
-	 */
+	 
 	if ((u64)phy_cfg->hs_clk_rate *
 	    mode_to_dpi_hfp(mode, mode_valid_check) * nlanes <
 	    (u64)dsi_hss_hsa_hse_hbp *
@@ -632,18 +620,15 @@ cdns_dsi_bridge_mode_valid(struct drm_bridge *bridge,
 	struct cdns_dsi_cfg dsi_cfg;
 	int bpp, ret;
 
-	/*
-	 * VFP_DSI should be less than VFP_DPI and VFP_DSI should be at
-	 * least 1.
-	 */
+	 
 	if (mode->vtotal - mode->vsync_end < 2)
 		return MODE_V_ILLEGAL;
 
-	/* VSA_DSI = VSA_DPI and must be at least 2. */
+	 
 	if (mode->vsync_end - mode->vsync_start < 2)
 		return MODE_V_ILLEGAL;
 
-	/* HACT must be 32-bits aligned. */
+	 
 	bpp = mipi_dsi_pixel_format_to_bpp(output->dev->format);
 	if ((mode->hdisplay * bpp) % 32)
 		return MODE_H_ILLEGAL;
@@ -690,10 +675,7 @@ static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
 
 	if (dsi->phy_initialized)
 		return;
-	/*
-	 * Power all internal DPHY blocks down and maintain their reset line
-	 * asserted before changing the DPHY config.
-	 */
+	 
 	writel(DPHY_CMN_PSO | DPHY_PLL_PSO | DPHY_ALL_D_PDN | DPHY_C_PDN |
 	       DPHY_CMN_PDN | DPHY_PLL_PDN,
 	       dsi->regs + MCTL_DPHY_CFG0);
@@ -703,13 +685,13 @@ static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
 	phy_configure(dsi->dphy, &output->phy_opts);
 	phy_power_on(dsi->dphy);
 
-	/* Activate the PLL and wait until it's locked. */
+	 
 	writel(PLL_LOCKED, dsi->regs + MCTL_MAIN_STS_CLR);
 	writel(DPHY_CMN_PSO | DPHY_ALL_D_PDN | DPHY_C_PDN | DPHY_CMN_PDN,
 	       dsi->regs + MCTL_DPHY_CFG0);
 	WARN_ON_ONCE(readl_poll_timeout(dsi->regs + MCTL_MAIN_STS, status,
 					status & PLL_LOCKED, 100, 100));
-	/* De-assert data and clock reset lines. */
+	 
 	writel(DPHY_CMN_PSO | DPHY_ALL_D_PDN | DPHY_C_PDN | DPHY_CMN_PDN |
 	       DPHY_D_RSTB(output->dev->lanes) | DPHY_C_RSTB,
 	       dsi->regs + MCTL_DPHY_CFG0);
@@ -735,7 +717,7 @@ static void cdns_dsi_init_link(struct cdns_dsi *dsi)
 
 	writel(val, dsi->regs + MCTL_MAIN_PHY_CTL);
 
-	/* ULPOUT should be set to 1ms and is expressed in sysclk cycles. */
+	 
 	sysclk_period = NSEC_PER_SEC / clk_get_rate(dsi->dsi_sys_clk);
 	ulpout = DIV_ROUND_UP(NSEC_PER_MSEC, sysclk_period);
 	writel(CLK_LANE_ULPOUT_TIME(ulpout) | DATA_LANE_ULPOUT_TIME(ulpout),
@@ -816,11 +798,7 @@ static void cdns_dsi_bridge_enable(struct drm_bridge *bridge)
 	writel(REG_WAKEUP_TIME(reg_wakeup) | REG_LINE_DURATION(tmp),
 	       dsi->regs + VID_DPHY_TIME);
 
-	/*
-	 * HSTX and LPRX timeouts are both expressed in TX byte clk cycles and
-	 * both should be set to at least the time it takes to transmit a
-	 * frame.
-	 */
+	 
 	tmp = NSEC_PER_SEC / drm_mode_vrefresh(mode);
 	tmp /= tx_byte_period;
 
@@ -924,24 +902,15 @@ static int cdns_dsi_attach(struct mipi_dsi_host *host,
 	struct device_node *np;
 	int ret;
 
-	/*
-	 * We currently do not support connecting several DSI devices to the
-	 * same host. In order to support that we'd need the DRM bridge
-	 * framework to allow dynamic reconfiguration of the bridge chain.
-	 */
+	 
 	if (output->dev)
 		return -EBUSY;
 
-	/* We do not support burst mode yet. */
+	 
 	if (dev->mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
 		return -ENOTSUPP;
 
-	/*
-	 * The host <-> device link might be described using an OF-graph
-	 * representation, in this case we extract the device of_node from
-	 * this representation, otherwise we use dsidev->dev.of_node which
-	 * should have been filled by the core.
-	 */
+	 
 	np = of_graph_get_remote_node(dsi->base.dev->of_node, DSI_OUTPUT_PORT,
 				      dev->channel);
 	if (!np)
@@ -970,11 +939,7 @@ static int cdns_dsi_attach(struct mipi_dsi_host *host,
 	output->bridge = bridge;
 	output->panel = panel;
 
-	/*
-	 * The DSI output has been properly configured, we can now safely
-	 * register the input to the bridge framework so that it can take place
-	 * in a display pipeline.
-	 */
+	 
 	drm_bridge_add(&input->bridge);
 
 	return 0;
@@ -1033,19 +998,19 @@ static ssize_t cdns_dsi_transfer(struct mipi_dsi_host *host,
 	tx_len = msg->tx_buf ? msg->tx_len : 0;
 	rx_len = msg->rx_buf ? msg->rx_len : 0;
 
-	/* For read operations, the maximum TX len is 2. */
+	 
 	if (rx_len && tx_len > 2) {
 		ret = -ENOTSUPP;
 		goto out;
 	}
 
-	/* TX len is limited by the CMD FIFO depth. */
+	 
 	if (tx_len > dsi->direct_cmd_fifo_depth) {
 		ret = -ENOTSUPP;
 		goto out;
 	}
 
-	/* RX len is limited by the RX FIFO depth. */
+	 
 	if (rx_len > dsi->rx_fifo_depth) {
 		ret = -ENOTSUPP;
 		goto out;
@@ -1086,7 +1051,7 @@ static ssize_t cdns_dsi_transfer(struct mipi_dsi_host *host,
 		writel(val, dsi->regs + DIRECT_CMD_WRDATA);
 	}
 
-	/* Clear status flags before sending the command. */
+	 
 	writel(wait, dsi->regs + DIRECT_CMD_STS_CLR);
 	writel(wait, dsi->regs + DIRECT_CMD_STS_CTL);
 	reinit_completion(&dsi->direct_cmd_comp);
@@ -1102,13 +1067,13 @@ static ssize_t cdns_dsi_transfer(struct mipi_dsi_host *host,
 	writel(readl(dsi->regs + MCTL_MAIN_DATA_CTL) & ~ctl,
 	       dsi->regs + MCTL_MAIN_DATA_CTL);
 
-	/* We did not receive the events we were waiting for. */
+	 
 	if (!(sts & wait)) {
 		ret = -ETIMEDOUT;
 		goto out;
 	}
 
-	/* 'READ' or 'WRITE with ACK' failed. */
+	 
 	if (sts & (READ_COMPLETED_WITH_ERR | ACK_WITH_ERR_RCVD)) {
 		ret = -EIO;
 		goto out;
@@ -1221,15 +1186,12 @@ static int cdns_dsi_drm_probe(struct platform_device *pdev)
 	writel(0, dsi->regs + MCTL_MAIN_EN);
 	writel(0, dsi->regs + MCTL_MAIN_PHY_CTL);
 
-	/*
-	 * We only support the DPI input, so force input->id to
-	 * CDNS_DPI_INPUT.
-	 */
+	 
 	input->id = CDNS_DPI_INPUT;
 	input->bridge.funcs = &cdns_dsi_bridge_funcs;
 	input->bridge.of_node = pdev->dev.of_node;
 
-	/* Mask all interrupts before registering the IRQ handler. */
+	 
 	writel(0, dsi->regs + MCTL_MAIN_STS_CTL);
 	writel(0, dsi->regs + MCTL_DPHY_ERR_CTL1);
 	writel(0, dsi->regs + CMD_MODE_STS_CTL);

@@ -1,36 +1,14 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (C) 2000-2001 Qualcomm Incorporated
-
-   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #ifndef __HCI_SOCK_H
 #define __HCI_SOCK_H
 
-/* Socket options */
+ 
 #define HCI_DATA_DIR	1
 #define HCI_FILTER	2
 #define HCI_TIME_STAMP	3
 
-/* CMSG flags */
+ 
 #define HCI_CMSG_DIR	0x01
 #define HCI_CMSG_TSTAMP	0x02
 
@@ -64,7 +42,7 @@ struct hci_ufilter {
 #define HCI_FLT_OGF_BITS	63
 #define HCI_FLT_OCF_BITS	127
 
-/* Ioctl defines */
+ 
 #define HCIDEVUP	_IOW('H', 201, int)
 #define HCIDEVDOWN	_IOW('H', 202, int)
 #define HCIDEVRESET	_IOW('H', 203, int)
@@ -91,7 +69,7 @@ struct hci_ufilter {
 
 #define HCIINQUIRY	_IOR('H', 240, int)
 
-/* Ioctl requests structures */
+ 
 struct hci_dev_stats {
 	__u32 err_rx;
 	__u32 err_tx;
@@ -144,7 +122,7 @@ struct hci_dev_req {
 
 struct hci_dev_list_req {
 	__u16  dev_num;
-	struct hci_dev_req dev_req[];	/* hci_dev_req structures */
+	struct hci_dev_req dev_req[];	 
 };
 
 struct hci_conn_list_req {
@@ -173,4 +151,4 @@ struct hci_inquiry_req {
 };
 #define IREQ_CACHE_FLUSH 0x0001
 
-#endif /* __HCI_SOCK_H */
+#endif  

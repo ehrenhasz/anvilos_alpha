@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Linaro Ltd
- */
+
+ 
 #include <linux/module.h>
 #include <linux/ulpi/driver.h>
 #include <linux/ulpi/regs.h>
@@ -42,17 +40,17 @@ static int qcom_usb_hsic_phy_power_on(struct phy *phy)
 	if (ret)
 		goto err_sleep;
 
-	/* Set periodic calibration interval to ~2.048sec in HSIC_IO_CAL_REG */
+	 
 	ret = ulpi_write(ulpi, ULPI_HSIC_IO_CAL, 0xff);
 	if (ret)
 		goto err_ulpi;
 
-	/* Enable periodic IO calibration in HSIC_CFG register */
+	 
 	ret = ulpi_write(ulpi, ULPI_HSIC_CFG, 0xa8);
 	if (ret)
 		goto err_ulpi;
 
-	/* Configure pins for HSIC functionality */
+	 
 	pins_default = pinctrl_lookup_state(uphy->pctl, PINCTRL_STATE_DEFAULT);
 	if (IS_ERR(pins_default)) {
 		ret = PTR_ERR(pins_default);
@@ -63,12 +61,12 @@ static int qcom_usb_hsic_phy_power_on(struct phy *phy)
 	if (ret)
 		goto err_ulpi;
 
-	 /* Enable HSIC mode in HSIC_CFG register */
+	  
 	ret = ulpi_write(ulpi, ULPI_SET(ULPI_HSIC_CFG), 0x01);
 	if (ret)
 		goto err_ulpi;
 
-	/* Disable auto-resume */
+	 
 	ret = ulpi_write(ulpi, ULPI_CLR(ULPI_IFC_CTRL),
 			 ULPI_IFC_CTRL_AUTORESUME);
 	if (ret)

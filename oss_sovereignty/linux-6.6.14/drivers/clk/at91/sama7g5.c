@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SAMA7G5 PMC code.
- *
- * Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries
- *
- * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
@@ -35,16 +28,7 @@ static DEFINE_SPINLOCK(pmc_pll_lock);
 static DEFINE_SPINLOCK(pmc_mck0_lock);
 static DEFINE_SPINLOCK(pmc_mckX_lock);
 
-/*
- * PLL clocks identifiers
- * @PLL_ID_CPU:		CPU PLL identifier
- * @PLL_ID_SYS:		System PLL identifier
- * @PLL_ID_DDR:		DDR PLL identifier
- * @PLL_ID_IMG:		Image subsystem PLL identifier
- * @PLL_ID_BAUD:	Baud PLL identifier
- * @PLL_ID_AUDIO:	Audio PLL identifier
- * @PLL_ID_ETH:		Ethernet PLL identifier
- */
+ 
 enum pll_ids {
 	PLL_ID_CPU,
 	PLL_ID_SYS,
@@ -56,29 +40,20 @@ enum pll_ids {
 	PLL_ID_MAX,
 };
 
-/*
- * PLL component identifier
- * @PLL_COMPID_FRAC: Fractional PLL component identifier
- * @PLL_COMPID_DIV0: 1st PLL divider component identifier
- * @PLL_COMPID_DIV1: 2nd PLL divider component identifier
- */
+ 
 enum pll_component_id {
 	PLL_COMPID_FRAC,
 	PLL_COMPID_DIV0,
 	PLL_COMPID_DIV1,
 };
 
-/*
- * PLL type identifiers
- * @PLL_TYPE_FRAC:	fractional PLL identifier
- * @PLL_TYPE_DIV:	divider PLL identifier
- */
+ 
 enum pll_type {
 	PLL_TYPE_FRAC,
 	PLL_TYPE_DIV,
 };
 
-/* Layout for fractional PLLs. */
+ 
 static const struct clk_pll_layout pll_layout_frac = {
 	.mul_mask	= GENMASK(31, 24),
 	.frac_mask	= GENMASK(21, 0),
@@ -86,7 +61,7 @@ static const struct clk_pll_layout pll_layout_frac = {
 	.frac_shift	= 0,
 };
 
-/* Layout for DIVPMC dividers. */
+ 
 static const struct clk_pll_layout pll_layout_divpmc = {
 	.div_mask	= GENMASK(7, 0),
 	.endiv_mask	= BIT(29),
@@ -94,7 +69,7 @@ static const struct clk_pll_layout pll_layout_divpmc = {
 	.endiv_shift	= 29,
 };
 
-/* Layout for DIVIO dividers. */
+ 
 static const struct clk_pll_layout pll_layout_divio = {
 	.div_mask	= GENMASK(19, 12),
 	.endiv_mask	= BIT(30),
@@ -102,59 +77,38 @@ static const struct clk_pll_layout pll_layout_divio = {
 	.endiv_shift	= 30,
 };
 
-/*
- * CPU PLL output range.
- * Notice: The upper limit has been setup to 1000000002 due to hardware
- * block which cannot output exactly 1GHz.
- */
+ 
 static const struct clk_range cpu_pll_outputs[] = {
 	{ .min = 2343750, .max = 1000000002 },
 };
 
-/* PLL output range. */
+ 
 static const struct clk_range pll_outputs[] = {
 	{ .min = 2343750, .max = 1200000000 },
 };
 
-/* CPU PLL characteristics. */
+ 
 static const struct clk_pll_characteristics cpu_pll_characteristics = {
 	.input = { .min = 12000000, .max = 50000000 },
 	.num_output = ARRAY_SIZE(cpu_pll_outputs),
 	.output = cpu_pll_outputs,
 };
 
-/* PLL characteristics. */
+ 
 static const struct clk_pll_characteristics pll_characteristics = {
 	.input = { .min = 12000000, .max = 50000000 },
 	.num_output = ARRAY_SIZE(pll_outputs),
 	.output = pll_outputs,
 };
 
-/*
- * SAMA7G5 PLL possible parents
- * @SAMA7G5_PLL_PARENT_MAINCK: MAINCK is PLL a parent
- * @SAMA7G5_PLL_PARENT_MAIN_XTAL: MAIN XTAL is a PLL parent
- * @SAMA7G5_PLL_PARENT_FRACCK: Frac PLL is a PLL parent (for PLL dividers)
- */
+ 
 enum sama7g5_pll_parent {
 	SAMA7G5_PLL_PARENT_MAINCK,
 	SAMA7G5_PLL_PARENT_MAIN_XTAL,
 	SAMA7G5_PLL_PARENT_FRACCK,
 };
 
-/*
- * PLL clocks description
- * @n:		clock name
- * @l:		clock layout
- * @c:		clock characteristics
- * @hw:		pointer to clk_hw
- * @t:		clock type
- * @f:		clock flags
- * @p:		clock parent
- * @eid:	export index in sama7g5->chws[] array
- * @safe_div:	intermediate divider need to be set on PRE_RATE_CHANGE
- *		notification
- */
+ 
 static struct sama7g5_pll {
 	const char *n;
 	const struct clk_pll_layout *l;
@@ -173,10 +127,7 @@ static struct sama7g5_pll {
 			.l = &pll_layout_frac,
 			.c = &cpu_pll_characteristics,
 			.t = PLL_TYPE_FRAC,
-			/*
-			 * This feeds cpupll_divpmcck which feeds CPU. It should
-			 * not be disabled.
-			 */
+			 
 			.f = CLK_IS_CRITICAL,
 		},
 
@@ -186,13 +137,10 @@ static struct sama7g5_pll {
 			.l = &pll_layout_divpmc,
 			.c = &cpu_pll_characteristics,
 			.t = PLL_TYPE_DIV,
-			/* This feeds CPU. It should not be disabled. */
+			 
 			.f = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT,
 			.eid = PMC_CPUPLL,
-			/*
-			 * Safe div=15 should be safe even for switching b/w 1GHz and
-			 * 90MHz (frac pll might go up to 1.2GHz).
-			 */
+			 
 			.safe_div = 15,
 		},
 	},
@@ -204,11 +152,7 @@ static struct sama7g5_pll {
 			.l = &pll_layout_frac,
 			.c = &pll_characteristics,
 			.t = PLL_TYPE_FRAC,
-			/*
-			 * This feeds syspll_divpmcck which may feed critical parts
-			 * of the systems like timers. Therefore it should not be
-			 * disabled.
-			 */
+			 
 			.f = CLK_IS_CRITICAL | CLK_SET_RATE_GATE,
 		},
 
@@ -218,10 +162,7 @@ static struct sama7g5_pll {
 			.l = &pll_layout_divpmc,
 			.c = &pll_characteristics,
 			.t = PLL_TYPE_DIV,
-			/*
-			 * This may feed critical parts of the systems like timers.
-			 * Therefore it should not be disabled.
-			 */
+			 
 			.f = CLK_IS_CRITICAL | CLK_SET_RATE_GATE,
 			.eid = PMC_SYSPLL,
 		},
@@ -234,10 +175,7 @@ static struct sama7g5_pll {
 			.l = &pll_layout_frac,
 			.c = &pll_characteristics,
 			.t = PLL_TYPE_FRAC,
-			/*
-			 * This feeds ddrpll_divpmcck which feeds DDR. It should not
-			 * be disabled.
-			 */
+			 
 			.f = CLK_IS_CRITICAL | CLK_SET_RATE_GATE,
 		},
 
@@ -247,7 +185,7 @@ static struct sama7g5_pll {
 			.l = &pll_layout_divpmc,
 			.c = &pll_characteristics,
 			.t = PLL_TYPE_DIV,
-			/* This feeds DDR. It should not be disabled. */
+			 
 			.f = CLK_IS_CRITICAL | CLK_SET_RATE_GATE,
 		},
 	},
@@ -348,23 +286,10 @@ static struct sama7g5_pll {
 	},
 };
 
-/* Used to create an array entry identifying a PLL by its components. */
+ 
 #define PLL_IDS_TO_ARR_ENTRY(_id, _comp) { PLL_ID_##_id, PLL_COMPID_##_comp}
 
-/*
- * Master clock (MCK[1..4]) description
- * @n:			clock name
- * @ep:			extra parents names array (entry formed by PLL components
- *			identifiers (see enum pll_component_id))
- * @hw:			pointer to clk_hw
- * @ep_chg_id:		index in parents array that specifies the changeable
- *			parent
- * @ep_count:		extra parents count
- * @ep_mux_table:	mux table for extra parents
- * @id:			clock id
- * @eid:		export index in sama7g5->chws[] array
- * @c:			true if clock is critical and cannot be disabled
- */
+ 
 static struct {
 	const char *n;
 	struct {
@@ -379,7 +304,7 @@ static struct {
 	u8 eid;
 	u8 c;
 } sama7g5_mckx[] = {
-	{ .n = "mck0", }, /* Dummy entry for MCK0 to store hw in probe. */
+	{ .n = "mck0", },  
 	{ .n = "mck1",
 	  .id = 1,
 	  .ep = { PLL_IDS_TO_ARR_ENTRY(SYS, DIV0), },
@@ -414,11 +339,7 @@ static struct {
 	  .c = 1, },
 };
 
-/*
- * System clock description
- * @n:	clock name
- * @id: clock id
- */
+ 
 static const struct {
 	const char *n;
 	u8 id;
@@ -433,18 +354,10 @@ static const struct {
 	{ .n = "pck7", .id = 15, },
 };
 
-/* Mux table for programmable clocks. */
+ 
 static u32 sama7g5_prog_mux_table[] = { 0, 1, 2, 5, 6, 7, 8, 9, 10, };
 
-/*
- * Peripheral clock parent hw identifier (used to index in sama7g5_mckx[])
- * @PCK_PARENT_HW_MCK0: pck parent hw identifier is MCK0
- * @PCK_PARENT_HW_MCK1: pck parent hw identifier is MCK1
- * @PCK_PARENT_HW_MCK2: pck parent hw identifier is MCK2
- * @PCK_PARENT_HW_MCK3: pck parent hw identifier is MCK3
- * @PCK_PARENT_HW_MCK4: pck parent hw identifier is MCK4
- * @PCK_PARENT_HW_MAX: max identifier
- */
+ 
 enum sama7g5_pck_parent_hw_id {
 	PCK_PARENT_HW_MCK0,
 	PCK_PARENT_HW_MCK1,
@@ -454,14 +367,7 @@ enum sama7g5_pck_parent_hw_id {
 	PCK_PARENT_HW_MAX,
 };
 
-/*
- * Peripheral clock description
- * @n:		clock name
- * @p:		clock parent hw id
- * @r:		clock range values
- * @id:		clock id
- * @chgp:	index in parent array of the changeable parent
- */
+ 
 static struct {
 	const char *n;
 	enum sama7g5_pck_parent_hw_id p;
@@ -543,17 +449,7 @@ static struct {
 	{ .n = "uhphs_clk",	.p = PCK_PARENT_HW_MCK1, .id = 106, },
 };
 
-/*
- * Generic clock description
- * @n:			clock name
- * @pp:			PLL parents (entry formed by PLL components identifiers
- *			(see enum pll_component_id))
- * @pp_mux_table:	PLL parents mux table
- * @r:			clock output range
- * @pp_chg_id:		id in parent array of changeable PLL parent
- * @pp_count:		PLL parents count
- * @id:			clock id
- */
+ 
 static const struct {
 	const char *n;
 	struct {
@@ -946,21 +842,21 @@ static const struct {
 	  .pp_chg_id = INT_MIN, },
 };
 
-/* MCK0 characteristics. */
+ 
 static const struct clk_master_characteristics mck0_characteristics = {
 	.output = { .min = 32768, .max = 200000000 },
 	.divisors = { 1, 2, 4, 3, 5 },
 	.have_div3_pres = 1,
 };
 
-/* MCK0 layout. */
+ 
 static const struct clk_master_layout mck0_layout = {
 	.mask = 0x773,
 	.pres_shift = 4,
 	.offset = 0x28,
 };
 
-/* Programmable clock layout. */
+ 
 static const struct clk_programmable_layout programmable_layout = {
 	.pres_mask = 0xff,
 	.pres_shift = 8,
@@ -969,7 +865,7 @@ static const struct clk_programmable_layout programmable_layout = {
 	.is_pres_direct = 1,
 };
 
-/* Peripheral clock layout. */
+ 
 static const struct clk_pcr_layout sama7g5_pcr_layout = {
 	.offset = 0x88,
 	.cmd = BIT(31),
@@ -1054,7 +950,7 @@ static void __init sama7g5_pmc_setup(struct device_node *np)
 					parent_hw = main_xtal_hw;
 					break;
 				default:
-					/* Should not happen. */
+					 
 					parent_hw = NULL;
 					break;
 				}
@@ -1249,5 +1145,5 @@ err_free:
 	kfree(sama7g5_pmc);
 }
 
-/* Some clks are used for a clocksource */
+ 
 CLK_OF_DECLARE(sama7g5_pmc, "microchip,sama7g5-pmc", sama7g5_pmc_setup);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * h3600 atmel micro companion support, key subdevice
- * based on previous kernel 2.4 version
- * Author : Alessandro Gardich <gremlin@gremlin.it>
- * Author : Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/fs.h>
@@ -27,15 +21,15 @@ struct ipaq_micro_keys {
 };
 
 static const u16 micro_keycodes[] = {
-	KEY_RECORD,		/* 1:  Record button			*/
-	KEY_CALENDAR,		/* 2:  Calendar				*/
-	KEY_ADDRESSBOOK,	/* 3:  Contacts (looks like Outlook)	*/
-	KEY_MAIL,		/* 4:  Envelope (Q on older iPAQs)	*/
-	KEY_HOMEPAGE,		/* 5:  Start (looks like swoopy arrow)	*/
-	KEY_UP,			/* 6:  Up				*/
-	KEY_RIGHT,		/* 7:  Right				*/
-	KEY_LEFT,		/* 8:  Left				*/
-	KEY_DOWN,		/* 9:  Down				*/
+	KEY_RECORD,		 
+	KEY_CALENDAR,		 
+	KEY_ADDRESSBOOK,	 
+	KEY_MAIL,		 
+	KEY_HOMEPAGE,		 
+	KEY_UP,			 
+	KEY_RIGHT,		 
+	KEY_LEFT,		 
+	KEY_DOWN,		 
 };
 
 static void micro_key_receive(void *data, int len, unsigned char *msg)

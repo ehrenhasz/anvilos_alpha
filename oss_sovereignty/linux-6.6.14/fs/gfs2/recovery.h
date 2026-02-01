@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __RECOVERY_DOT_H__
 #define __RECOVERY_DOT_H__
@@ -30,5 +27,5 @@ extern int __get_log_header(struct gfs2_sbd *sdp,
 			    const struct gfs2_log_header *lh, unsigned int blkno,
 			    struct gfs2_log_header_host *head);
 
-#endif /* __RECOVERY_DOT_H__ */
+#endif  
 

@@ -1,24 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * config.c
- *
- * Helper functions for parsing config items.
- * Originally copied from GIT source.
- *
- * Copyright (C) Linus Torvalds, 2005
- * Copyright (C) Johannes Schindelin, 2005
- *
- */
+
+ 
 #include <errno.h>
 #include <sys/param.h>
 #include "cache.h"
 #include "callchain.h"
 #include <subcmd/exec-cmd.h>
-#include "util/event.h"  /* proc_map_timeout */
-#include "util/hist.h"  /* perf_hist_config */
-#include "util/stat.h"  /* perf_stat__set_big_num */
-#include "util/evsel.h"  /* evsel__hw_names, evsel__use_bpf_counters */
-#include "util/srcline.h"  /* addr2line_timeout_ms */
+#include "util/event.h"   
+#include "util/hist.h"   
+#include "util/stat.h"   
+#include "util/evsel.h"   
+#include "util/srcline.h"   
 #include "build-id.h"
 #include "debug.h"
 #include "config.h"
@@ -35,7 +26,7 @@
 #define DEBUG_CACHE_DIR ".debug"
 
 
-char buildid_dir[MAXPATHLEN]; /* root dir for buildid, binary cache */
+char buildid_dir[MAXPATHLEN];  
 
 static FILE *config_file;
 static const char *config_file_name;
@@ -54,7 +45,7 @@ static int get_next_char(void)
 	if ((f = config_file) != NULL) {
 		c = fgetc(f);
 		if (c == '\r') {
-			/* DOS like systems */
+			 
 			c = fgetc(f);
 			if (c != '\n') {
 				ungetc(c, f);
@@ -119,10 +110,10 @@ static char *parse_value(void)
 			case 'n':
 				c = '\n';
 				break;
-			/* Some characters escape as themselves */
+			 
 			case '\\': case '"':
 				break;
-			/* Reject unknown escape sequences */
+			 
 			default:
 				return NULL;
 			}
@@ -147,7 +138,7 @@ static int get_value(config_fn_t fn, void *data, char *name, unsigned int len)
 	int c;
 	char *value;
 
-	/* Get the full name */
+	 
 	for (;;) {
 		c = get_next_char();
 		if (config_file_eof)
@@ -181,7 +172,7 @@ static int get_extended_base_var(char *name, int baselen, int c)
 		c = get_next_char();
 	} while (isspace(c));
 
-	/* We require the format to be '[base "extension"]' */
+	 
 	if (c != '"')
 		return -1;
 	name[baselen++] = '.';
@@ -203,7 +194,7 @@ static int get_extended_base_var(char *name, int baselen, int c)
 			return -1;
 	}
 
-	/* Final ']' */
+	 
 	if (get_next_char() != ']')
 		return -1;
 	return baselen;
@@ -235,7 +226,7 @@ static int perf_parse_file(config_fn_t fn, void *data)
 	int baselen = 0;
 	static char var[MAXNAME];
 
-	/* U+FEFF Byte Order Mark in UTF8 */
+	 
 	static const unsigned char *utf8_bom = (unsigned char *) "\xef\xbb\xbf";
 	const unsigned char *bomptr = utf8_bom;
 
@@ -243,17 +234,15 @@ static int perf_parse_file(config_fn_t fn, void *data)
 		int line, c = get_next_char();
 
 		if (bomptr && *bomptr) {
-			/* We are at the file beginning; skip UTF8-encoded BOM
-			 * if present. Sane editors won't put this in on their
-			 * own, but e.g. Windows Notepad will do it happily. */
+			 
 			if ((unsigned char) c == *bomptr) {
 				bomptr++;
 				continue;
 			} else {
-				/* Do not tolerate partial BOM. */
+				 
 				if (bomptr != utf8_bom)
 					break;
-				/* No BOM at file beginning. Cool. */
+				 
 				bomptr = NULL;
 			}
 		}
@@ -281,10 +270,7 @@ static int perf_parse_file(config_fn_t fn, void *data)
 			break;
 		var[baselen] = tolower(c);
 
-		/*
-		 * The get_value function might or might not reach the '\n',
-		 * so saving the current line number for error reporting.
-		 */
+		 
 		line = config_linenr;
 		if (get_value(fn, data, var, baselen+1) < 0) {
 			config_linenr = line;
@@ -419,7 +405,7 @@ static const char *perf_config_dirname(const char *name, const char *value)
 
 static int perf_buildid_config(const char *var, const char *value)
 {
-	/* same dir for all commands */
+	 
 	if (!strcmp(var, "buildid.dir")) {
 		const char *dir = perf_config_dirname(var, value);
 
@@ -442,13 +428,13 @@ static int perf_default_core_config(const char *var, const char *value)
 	if (!strcmp(var, "core.addr2line-timeout"))
 		addr2line_timeout_ms = strtoul(value, NULL, 10);
 
-	/* Add other config variables here. */
+	 
 	return 0;
 }
 
 static int perf_ui_config(const char *var, const char *value)
 {
-	/* Add other config variables here. */
+	 
 	if (!strcmp(var, "ui.show-headers"))
 		symbol_conf.show_hist_headers = perf_config_bool(var, value);
 
@@ -466,7 +452,7 @@ static int perf_stat_config(const char *var, const char *value)
 	if (!strcmp(var, "stat.bpf-counter-events"))
 		evsel__bpf_counter_events = strdup(value);
 
-	/* Add other config variables here. */
+	 
 	return 0;
 }
 
@@ -491,7 +477,7 @@ int perf_default_config(const char *var, const char *value,
 	if (strstarts(var, "stat."))
 		return perf_stat_config(var, value);
 
-	/* Add other config variables here. */
+	 
 	return 0;
 }
 
@@ -546,11 +532,7 @@ static char *home_perfconfig(void)
 
 	home = getenv("HOME");
 
-	/*
-	 * Skip reading user config if:
-	 *   - there is no place to read it from (HOME)
-	 *   - we are asked not to (PERF_CONFIG_NOGLOBAL=1)
-	 */
+	 
 	if (!home || !*home || !perf_config_global())
 		return NULL;
 
@@ -706,11 +688,7 @@ static int collect_config(const char *var, const char *value,
 			goto out_free;
 	}
 
-	/* perf_config_set can contain both user and system config items.
-	 * So we should know where each value is from.
-	 * The classification would be needed when a particular config file
-	 * is overwritten by setting feature i.e. set_config().
-	 */
+	 
 	if (strcmp(config_file_name, perf_etc_perfconfig()) == 0) {
 		section->from_system_config = true;
 		item->from_system_config = true;
@@ -737,7 +715,7 @@ static int perf_config_set__init(struct perf_config_set *set)
 {
 	int ret = -1;
 
-	/* Setting $PERF_CONFIG makes perf read _only_ the given config file. */
+	 
 	if (config_exclusive_filename)
 		return perf_config_from_file(collect_config, config_exclusive_filename, set);
 	if (perf_config_system() && !access(perf_etc_perfconfig(), R_OK)) {
@@ -803,10 +781,7 @@ int perf_config_set(struct perf_config_set *set,
 			if (ret < 0) {
 				pr_err("Error in the given config file: wrong config key-value pair %s=%s\n",
 				       key, value);
-				/*
-				 * Can't be just a 'break', as perf_config_set__for_each_entry()
-				 * expands to two nested for() loops.
-				 */
+				 
 				goto out;
 			}
 		}
@@ -878,10 +853,7 @@ void perf_config_set__delete(struct perf_config_set *set)
 	free(set);
 }
 
-/*
- * Call this to report error for your variable that should not
- * get a boolean value (i.e. "[my] var" means "true").
- */
+ 
 int config_error_nonbool(const char *var)
 {
 	pr_err("Missing value for '%s'", var);
@@ -893,7 +865,7 @@ void set_buildid_dir(const char *dir)
 	if (dir)
 		scnprintf(buildid_dir, MAXPATHLEN, "%s", dir);
 
-	/* default to $HOME/.debug */
+	 
 	if (buildid_dir[0] == '\0') {
 		char *home = getenv("HOME");
 
@@ -905,7 +877,7 @@ void set_buildid_dir(const char *dir)
 		}
 		buildid_dir[MAXPATHLEN-1] = '\0';
 	}
-	/* for communicating with external commands */
+	 
 	setenv("PERF_BUILDID_DIR", buildid_dir, 1);
 }
 

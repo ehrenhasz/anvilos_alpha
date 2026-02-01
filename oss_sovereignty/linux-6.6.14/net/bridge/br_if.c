@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Userspace interface
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -26,12 +20,7 @@
 
 #include "br_private.h"
 
-/*
- * Determine initial path cost based on speed.
- * using recommendations from 802.1d standard
- *
- * Since driver might sleep need to not be holding any locks.
- */
+ 
 static int port_cost(struct net_device *dev)
 {
 	struct ethtool_link_ksettings ecmd;
@@ -58,18 +47,18 @@ static int port_cost(struct net_device *dev)
 		}
 	}
 
-	/* Old silly heuristics based on name */
+	 
 	if (!strncmp(dev->name, "lec", 3))
 		return 7;
 
 	if (!strncmp(dev->name, "plip", 4))
 		return 2500;
 
-	return 100;	/* assume old 10Mbps */
+	return 100;	 
 }
 
 
-/* Check for port carrier transitions. */
+ 
 void br_port_carrier_check(struct net_bridge_port *p, bool *notified)
 {
 	struct net_device *dev = p->dev;
@@ -117,17 +106,11 @@ static void br_port_clear_promisc(struct net_bridge_port *p)
 {
 	int err;
 
-	/* Check if the port is already non-promisc or if it doesn't
-	 * support UNICAST filtering.  Without unicast filtering support
-	 * we'll end up re-enabling promisc mode anyway, so just check for
-	 * it here.
-	 */
+	 
 	if (!br_promisc_port(p) || !(p->dev->priv_flags & IFF_UNICAST_FLT))
 		return;
 
-	/* Since we'll be clearing the promisc mode, program the port
-	 * first so that we don't have interruption in traffic.
-	 */
+	 
 	err = br_fdb_sync_static(p->br, p);
 	if (err)
 		return;
@@ -136,19 +119,13 @@ static void br_port_clear_promisc(struct net_bridge_port *p)
 	p->flags &= ~BR_PROMISC;
 }
 
-/* When a port is added or removed or when certain port flags
- * change, this function is called to automatically manage
- * promiscuity setting of all the bridge ports.  We are always called
- * under RTNL so can skip using rcu primitives.
- */
+ 
 void br_manage_promisc(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
 	bool set_all = false;
 
-	/* If vlan filtering is disabled or bridge interface is placed
-	 * into promiscuous mode, place all ports in promiscuous mode.
-	 */
+	 
 	if ((br->dev->flags & IFF_PROMISC) || !br_vlan_enabled(br->dev))
 		set_all = true;
 
@@ -156,16 +133,7 @@ void br_manage_promisc(struct net_bridge *br)
 		if (set_all) {
 			br_port_set_promisc(p);
 		} else {
-			/* If the number of auto-ports is <= 1, then all other
-			 * ports will have their output configuration
-			 * statically specified through fdbs.  Since ingress
-			 * on the auto-port becomes forwarding/egress to other
-			 * ports and egress configuration is statically known,
-			 * we can say that ingress configuration of the
-			 * auto-port is also statically known.
-			 * This lets us disable promiscuous mode and write
-			 * this config to hw.
-			 */
+			 
 			if ((p->dev->priv_flags & IFF_UNICAST_FLT) &&
 			    (br->auto_cnt == 0 ||
 			     (br->auto_cnt == 1 && br_auto_port(p))))
@@ -199,7 +167,7 @@ int nbp_backup_change(struct net_bridge_port *p,
 	if (old_backup == backup_p)
 		return 0;
 
-	/* if the backup link is already set, clear it */
+	 
 	if (old_backup)
 		old_backup->backup_redirected_cnt--;
 
@@ -245,10 +213,7 @@ static void nbp_update_port_count(struct net_bridge *br)
 
 static void nbp_delete_promisc(struct net_bridge_port *p)
 {
-	/* If port is currently promiscuous, unset promiscuity.
-	 * Otherwise, it is a static port so remove all addresses
-	 * from it.
-	 */
+	 
 	dev_set_allmulti(p->dev, -1);
 	if (br_promisc_port(p))
 		dev_set_promiscuity(p->dev, -1);
@@ -321,15 +286,7 @@ static void update_headroom(struct net_bridge *br, int new_hr)
 	br->dev->needed_headroom = new_hr;
 }
 
-/* Delete port(interface) from bridge is done in two steps.
- * via RCU. First step, marks device as down. That deletes
- * all the timers and stops new packets from flowing through.
- *
- * Final cleanup doesn't occur until after all CPU's finished
- * processing packets.
- *
- * Protected from multiple admin operations by RTNL mutex
- */
+ 
 static void del_nbp(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
@@ -376,7 +333,7 @@ static void del_nbp(struct net_bridge_port *p)
 	call_rcu(&p->rcu, destroy_nbp_rcu);
 }
 
-/* Delete bridge device */
+ 
 void br_dev_delete(struct net_device *dev, struct list_head *head)
 {
 	struct net_bridge *br = netdev_priv(dev);
@@ -396,7 +353,7 @@ void br_dev_delete(struct net_device *dev, struct list_head *head)
 	unregister_netdevice_queue(br->dev, head);
 }
 
-/* find an available port number */
+ 
 static int find_portno(struct net_bridge *br)
 {
 	int index;
@@ -407,7 +364,7 @@ static int find_portno(struct net_bridge *br)
 	if (!inuse)
 		return -ENOMEM;
 
-	__set_bit(0, inuse);	/* zero is reserved */
+	__set_bit(0, inuse);	 
 	list_for_each_entry(p, &br->port_list, list)
 		__set_bit(p->port_no, inuse);
 
@@ -417,7 +374,7 @@ static int find_portno(struct net_bridge *br)
 	return (index >= BR_MAX_PORTS) ? -EXFULL : index;
 }
 
-/* called with RTNL but without bridge lock */
+ 
 static struct net_bridge_port *new_nbp(struct net_bridge *br,
 				       struct net_device *dev)
 {
@@ -479,15 +436,15 @@ int br_del_bridge(struct net *net, const char *name)
 
 	dev = __dev_get_by_name(net, name);
 	if (dev == NULL)
-		ret =  -ENXIO; 	/* Could not find device */
+		ret =  -ENXIO; 	 
 
 	else if (!netif_is_bridge_master(dev)) {
-		/* Attempt to delete non bridge device! */
+		 
 		ret = -EPERM;
 	}
 
 	else if (dev->flags & IFF_UP) {
-		/* Not shutdown yet. */
+		 
 		ret = -EBUSY;
 	}
 
@@ -497,7 +454,7 @@ int br_del_bridge(struct net *net, const char *name)
 	return ret;
 }
 
-/* MTU of the bridge pseudo-device: ETH_DATA_LEN or the minimum of the ports */
+ 
 static int br_mtu_min(const struct net_bridge *br)
 {
 	const struct net_bridge_port *p;
@@ -514,13 +471,11 @@ void br_mtu_auto_adjust(struct net_bridge *br)
 {
 	ASSERT_RTNL();
 
-	/* if the bridge MTU was manually configured don't mess with it */
+	 
 	if (br_opt_get(br, BROPT_MTU_SET_BY_USER))
 		return;
 
-	/* change to the minimum MTU and clear the flag which was set by
-	 * the bridge ndo_change_mtu callback
-	 */
+	 
 	dev_set_mtu(br->dev, br_mtu_min(br));
 	br_opt_toggle(br, BROPT_MTU_SET_BY_USER, false);
 }
@@ -539,9 +494,7 @@ static void br_set_gso_limits(struct net_bridge *br)
 	netif_set_tso_max_segs(br->dev, tso_max_segs);
 }
 
-/*
- * Recomputes features using slave's features
- */
+ 
 netdev_features_t br_features_recompute(struct net_bridge *br,
 	netdev_features_t features)
 {
@@ -563,7 +516,7 @@ netdev_features_t br_features_recompute(struct net_bridge *br,
 	return features;
 }
 
-/* called with RTNL */
+ 
 int br_add_if(struct net_bridge *br, struct net_device *dev,
 	      struct netlink_ext_ack *extack)
 {
@@ -572,24 +525,24 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 	unsigned br_hr, dev_hr;
 	bool changed_addr, fdb_synced = false;
 
-	/* Don't allow bridging non-ethernet like devices. */
+	 
 	if ((dev->flags & IFF_LOOPBACK) ||
 	    dev->type != ARPHRD_ETHER || dev->addr_len != ETH_ALEN ||
 	    !is_valid_ether_addr(dev->dev_addr))
 		return -EINVAL;
 
-	/* No bridging of bridges */
+	 
 	if (dev->netdev_ops->ndo_start_xmit == br_dev_xmit) {
 		NL_SET_ERR_MSG(extack,
 			       "Can not enslave a bridge to a bridge");
 		return -ELOOP;
 	}
 
-	/* Device has master upper dev */
+	 
 	if (netdev_master_upper_dev_get(dev))
 		return -EBUSY;
 
-	/* No bridging devices that dislike that (e.g. wireless) */
+	 
 	if (dev->priv_flags & IFF_DONT_BRIDGE) {
 		NL_SET_ERR_MSG(extack,
 			       "Device does not allow enslaving to a bridge");
@@ -606,7 +559,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 	if (err) {
 		br_multicast_del_port(p);
 		netdev_put(dev, &p->dev_tracker);
-		kfree(p);	/* kobject not yet init'd, manually free */
+		kfree(p);	 
 		goto err1;
 	}
 
@@ -639,14 +592,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 
 	nbp_update_port_count(br);
 	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
-		/* When updating the port count we also update all ports'
-		 * promiscuous mode.
-		 * A port leaving promiscuous mode normally gets the bridge's
-		 * fdb synced to the unicast filter (if supported), however,
-		 * `br_port_clear_promisc` does not distinguish between
-		 * non-promiscuous ports and *new* ports, so we need to
-		 * sync explicitly here.
-		 */
+		 
 		fdb_synced = br_fdb_sync_static(br, p) == 0;
 		if (!fdb_synced)
 			netdev_err(dev, "failed to sync bridge static fdb addresses to this port\n");
@@ -665,9 +611,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
 		netdev_err(dev, "failed insert local address bridge forwarding table\n");
 
 	if (br->dev->addr_assign_type != NET_ADDR_SET) {
-		/* Ask for permission to use this MAC address now, even if we
-		 * don't end up choosing it below.
-		 */
+		 
 		err = dev_pre_changeaddr_notify(br->dev, dev->dev_addr, extack);
 		if (err)
 			goto err6;
@@ -722,7 +666,7 @@ err1:
 	return err;
 }
 
-/* called with RTNL */
+ 
 int br_del_if(struct net_bridge *br, struct net_device *dev)
 {
 	struct net_bridge_port *p;
@@ -732,10 +676,7 @@ int br_del_if(struct net_bridge *br, struct net_device *dev)
 	if (!p || p->br != br)
 		return -EINVAL;
 
-	/* Since more than one interface can be attached to a bridge,
-	 * there still maybe an alternate path for netconsole to use;
-	 * therefore there is no reason for a NETDEV_RELEASE event.
-	 */
+	 
 	del_nbp(p);
 
 	br_mtu_auto_adjust(br);

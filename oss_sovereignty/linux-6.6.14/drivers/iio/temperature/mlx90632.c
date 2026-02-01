@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mlx90632.c - Melexis MLX90632 contactless IR temperature sensor
- *
- * Copyright (c) 2017 Melexis <cmo@melexis.com>
- *
- * Driver for the Melexis MLX90632 I2C 16-bit IR thermopile sensor
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -26,91 +20,91 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* Memory sections addresses */
-#define MLX90632_ADDR_RAM	0x4000 /* Start address of ram */
-#define MLX90632_ADDR_EEPROM	0x2480 /* Start address of user eeprom */
+ 
+#define MLX90632_ADDR_RAM	0x4000  
+#define MLX90632_ADDR_EEPROM	0x2480  
 
-/* EEPROM addresses - used at startup */
-#define MLX90632_EE_CTRL	0x24d4 /* Control register initial value */
-#define MLX90632_EE_I2C_ADDR	0x24d5 /* I2C address register initial value */
-#define MLX90632_EE_VERSION	0x240b /* EEPROM version reg address */
-#define MLX90632_EE_P_R		0x240c /* P_R calibration register 32bit */
-#define MLX90632_EE_P_G		0x240e /* P_G calibration register 32bit */
-#define MLX90632_EE_P_T		0x2410 /* P_T calibration register 32bit */
-#define MLX90632_EE_P_O		0x2412 /* P_O calibration register 32bit */
-#define MLX90632_EE_Aa		0x2414 /* Aa calibration register 32bit */
-#define MLX90632_EE_Ab		0x2416 /* Ab calibration register 32bit */
-#define MLX90632_EE_Ba		0x2418 /* Ba calibration register 32bit */
-#define MLX90632_EE_Bb		0x241a /* Bb calibration register 32bit */
-#define MLX90632_EE_Ca		0x241c /* Ca calibration register 32bit */
-#define MLX90632_EE_Cb		0x241e /* Cb calibration register 32bit */
-#define MLX90632_EE_Da		0x2420 /* Da calibration register 32bit */
-#define MLX90632_EE_Db		0x2422 /* Db calibration register 32bit */
-#define MLX90632_EE_Ea		0x2424 /* Ea calibration register 32bit */
-#define MLX90632_EE_Eb		0x2426 /* Eb calibration register 32bit */
-#define MLX90632_EE_Fa		0x2428 /* Fa calibration register 32bit */
-#define MLX90632_EE_Fb		0x242a /* Fb calibration register 32bit */
-#define MLX90632_EE_Ga		0x242c /* Ga calibration register 32bit */
+ 
+#define MLX90632_EE_CTRL	0x24d4  
+#define MLX90632_EE_I2C_ADDR	0x24d5  
+#define MLX90632_EE_VERSION	0x240b  
+#define MLX90632_EE_P_R		0x240c  
+#define MLX90632_EE_P_G		0x240e  
+#define MLX90632_EE_P_T		0x2410  
+#define MLX90632_EE_P_O		0x2412  
+#define MLX90632_EE_Aa		0x2414  
+#define MLX90632_EE_Ab		0x2416  
+#define MLX90632_EE_Ba		0x2418  
+#define MLX90632_EE_Bb		0x241a  
+#define MLX90632_EE_Ca		0x241c  
+#define MLX90632_EE_Cb		0x241e  
+#define MLX90632_EE_Da		0x2420  
+#define MLX90632_EE_Db		0x2422  
+#define MLX90632_EE_Ea		0x2424  
+#define MLX90632_EE_Eb		0x2426  
+#define MLX90632_EE_Fa		0x2428  
+#define MLX90632_EE_Fb		0x242a  
+#define MLX90632_EE_Ga		0x242c  
 
-#define MLX90632_EE_Gb		0x242e /* Gb calibration register 16bit */
-#define MLX90632_EE_Ka		0x242f /* Ka calibration register 16bit */
+#define MLX90632_EE_Gb		0x242e  
+#define MLX90632_EE_Ka		0x242f  
 
-#define MLX90632_EE_Ha		0x2481 /* Ha customer calib value reg 16bit */
-#define MLX90632_EE_Hb		0x2482 /* Hb customer calib value reg 16bit */
+#define MLX90632_EE_Ha		0x2481  
+#define MLX90632_EE_Hb		0x2482  
 
-#define MLX90632_EE_MEDICAL_MEAS1      0x24E1 /* Medical measurement 1 16bit */
-#define MLX90632_EE_MEDICAL_MEAS2      0x24E2 /* Medical measurement 2 16bit */
-#define MLX90632_EE_EXTENDED_MEAS1     0x24F1 /* Extended measurement 1 16bit */
-#define MLX90632_EE_EXTENDED_MEAS2     0x24F2 /* Extended measurement 2 16bit */
-#define MLX90632_EE_EXTENDED_MEAS3     0x24F3 /* Extended measurement 3 16bit */
+#define MLX90632_EE_MEDICAL_MEAS1      0x24E1  
+#define MLX90632_EE_MEDICAL_MEAS2      0x24E2  
+#define MLX90632_EE_EXTENDED_MEAS1     0x24F1  
+#define MLX90632_EE_EXTENDED_MEAS2     0x24F2  
+#define MLX90632_EE_EXTENDED_MEAS3     0x24F3  
 
-/* Register addresses - volatile */
-#define MLX90632_REG_I2C_ADDR	0x3000 /* Chip I2C address register */
+ 
+#define MLX90632_REG_I2C_ADDR	0x3000  
 
-/* Control register address - volatile */
-#define MLX90632_REG_CONTROL	0x3001 /* Control Register address */
-#define   MLX90632_CFG_PWR_MASK		GENMASK(2, 1) /* PowerMode Mask */
-#define   MLX90632_CFG_MTYP_MASK		GENMASK(8, 4) /* Meas select Mask */
+ 
+#define MLX90632_REG_CONTROL	0x3001  
+#define   MLX90632_CFG_PWR_MASK		GENMASK(2, 1)  
+#define   MLX90632_CFG_MTYP_MASK		GENMASK(8, 4)  
 #define   MLX90632_CFG_SOB_MASK BIT(11)
 
-/* PowerModes statuses */
+ 
 #define MLX90632_PWR_STATUS(ctrl_val) (ctrl_val << 1)
-#define MLX90632_PWR_STATUS_HALT MLX90632_PWR_STATUS(0) /* hold */
-#define MLX90632_PWR_STATUS_SLEEP_STEP MLX90632_PWR_STATUS(1) /* sleep step */
-#define MLX90632_PWR_STATUS_STEP MLX90632_PWR_STATUS(2) /* step */
-#define MLX90632_PWR_STATUS_CONTINUOUS MLX90632_PWR_STATUS(3) /* continuous */
+#define MLX90632_PWR_STATUS_HALT MLX90632_PWR_STATUS(0)  
+#define MLX90632_PWR_STATUS_SLEEP_STEP MLX90632_PWR_STATUS(1)  
+#define MLX90632_PWR_STATUS_STEP MLX90632_PWR_STATUS(2)  
+#define MLX90632_PWR_STATUS_CONTINUOUS MLX90632_PWR_STATUS(3)  
 
-#define MLX90632_EE_RR GENMASK(10, 8) /* Only Refresh Rate bits */
+#define MLX90632_EE_RR GENMASK(10, 8)  
 #define MLX90632_REFRESH_RATE(ee_val) FIELD_GET(MLX90632_EE_RR, ee_val)
-					/* Extract Refresh Rate from ee register */
+					 
 #define MLX90632_REFRESH_RATE_STATUS(refresh_rate) (refresh_rate << 8)
 
-/* Measurement types */
+ 
 #define MLX90632_MTYP_MEDICAL 0
 #define MLX90632_MTYP_EXTENDED 17
 
-/* Measurement type select*/
+ 
 #define MLX90632_MTYP_STATUS(ctrl_val) (ctrl_val << 4)
 #define MLX90632_MTYP_STATUS_MEDICAL MLX90632_MTYP_STATUS(MLX90632_MTYP_MEDICAL)
 #define MLX90632_MTYP_STATUS_EXTENDED MLX90632_MTYP_STATUS(MLX90632_MTYP_EXTENDED)
 
-/* I2C command register - volatile */
-#define MLX90632_REG_I2C_CMD    0x3005 /* I2C command Register address */
+ 
+#define MLX90632_REG_I2C_CMD    0x3005  
 
-/* Device status register - volatile */
-#define MLX90632_REG_STATUS	0x3fff /* Device status register */
-#define   MLX90632_STAT_BUSY		BIT(10) /* Device busy indicator */
-#define   MLX90632_STAT_EE_BUSY		BIT(9) /* EEPROM busy indicator */
-#define   MLX90632_STAT_BRST		BIT(8) /* Brown out reset indicator */
-#define   MLX90632_STAT_CYCLE_POS	GENMASK(6, 2) /* Data position */
-#define   MLX90632_STAT_DATA_RDY	BIT(0) /* Data ready indicator */
+ 
+#define MLX90632_REG_STATUS	0x3fff  
+#define   MLX90632_STAT_BUSY		BIT(10)  
+#define   MLX90632_STAT_EE_BUSY		BIT(9)  
+#define   MLX90632_STAT_BRST		BIT(8)  
+#define   MLX90632_STAT_CYCLE_POS	GENMASK(6, 2)  
+#define   MLX90632_STAT_DATA_RDY	BIT(0)  
 
-/* RAM_MEAS address-es for each channel */
+ 
 #define MLX90632_RAM_1(meas_num)	(MLX90632_ADDR_RAM + 3 * meas_num)
 #define MLX90632_RAM_2(meas_num)	(MLX90632_ADDR_RAM + 3 * meas_num + 1)
 #define MLX90632_RAM_3(meas_num)	(MLX90632_ADDR_RAM + 3 * meas_num + 2)
 
-/* Name important RAM_MEAS channels */
+ 
 #define MLX90632_RAM_DSP5_EXTENDED_AMBIENT_1 MLX90632_RAM_3(17)
 #define MLX90632_RAM_DSP5_EXTENDED_AMBIENT_2 MLX90632_RAM_3(18)
 #define MLX90632_RAM_DSP5_EXTENDED_OBJECT_1 MLX90632_RAM_1(17)
@@ -120,36 +114,22 @@
 #define MLX90632_RAM_DSP5_EXTENDED_OBJECT_5 MLX90632_RAM_1(19)
 #define MLX90632_RAM_DSP5_EXTENDED_OBJECT_6 MLX90632_RAM_2(19)
 
-/* Magic constants */
-#define MLX90632_ID_MEDICAL	0x0105 /* EEPROM DSPv5 Medical device id */
-#define MLX90632_ID_CONSUMER	0x0205 /* EEPROM DSPv5 Consumer device id */
-#define MLX90632_ID_EXTENDED	0x0505 /* EEPROM DSPv5 Extended range device id */
-#define MLX90632_ID_MASK	GENMASK(14, 0) /* DSP version and device ID in EE_VERSION */
-#define MLX90632_DSP_VERSION	5 /* DSP version */
-#define MLX90632_DSP_MASK	GENMASK(7, 0) /* DSP version in EE_VERSION */
-#define MLX90632_RESET_CMD	0x0006 /* Reset sensor (address or global) */
-#define MLX90632_REF_12 	12LL /* ResCtrlRef value of Ch 1 or Ch 2 */
-#define MLX90632_REF_3		12LL /* ResCtrlRef value of Channel 3 */
-#define MLX90632_MAX_MEAS_NUM	31 /* Maximum measurements in list */
-#define MLX90632_SLEEP_DELAY_MS 6000 /* Autosleep delay */
-#define MLX90632_EXTENDED_LIMIT 27000 /* Extended mode raw value limit */
-#define MLX90632_MEAS_MAX_TIME 2000 /* Max measurement time in ms for the lowest refresh rate */
+ 
+#define MLX90632_ID_MEDICAL	0x0105  
+#define MLX90632_ID_CONSUMER	0x0205  
+#define MLX90632_ID_EXTENDED	0x0505  
+#define MLX90632_ID_MASK	GENMASK(14, 0)  
+#define MLX90632_DSP_VERSION	5  
+#define MLX90632_DSP_MASK	GENMASK(7, 0)  
+#define MLX90632_RESET_CMD	0x0006  
+#define MLX90632_REF_12 	12LL  
+#define MLX90632_REF_3		12LL  
+#define MLX90632_MAX_MEAS_NUM	31  
+#define MLX90632_SLEEP_DELAY_MS 6000  
+#define MLX90632_EXTENDED_LIMIT 27000  
+#define MLX90632_MEAS_MAX_TIME 2000  
 
-/**
- * struct mlx90632_data - private data for the MLX90632 device
- * @client: I2C client of the device
- * @lock: Internal mutex for multiple reads for single measurement
- * @regmap: Regmap of the device
- * @emissivity: Object emissivity from 0 to 1000 where 1000 = 1.
- * @mtyp: Measurement type physical sensor configuration for extended range
- *        calculations
- * @object_ambient_temperature: Ambient temperature at object (might differ of
- *                              the ambient temperature of sensor.
- * @regulator: Regulator of the device
- * @powerstatus: Current POWER status of the device
- * @interaction_ts: Timestamp of the last temperature read that is used
- *		    for power management in jiffies
- */
+ 
 struct mlx90632_data {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -255,10 +235,7 @@ static int mlx90632_pwr_continuous(struct regmap *regmap)
 	return 0;
 }
 
-/**
- * mlx90632_reset_delay() - Give the mlx90632 some time to reset properly
- * If this is not done, the following I2C command(s) will not be accepted.
- */
+ 
 static void mlx90632_reset_delay(void)
 {
 	usleep_range(150, 200);
@@ -321,14 +298,7 @@ static int mlx90632_calculate_dataset_ready_time(struct mlx90632_data *data)
 	return refresh_time;
 }
 
-/**
- * mlx90632_perform_measurement() - Trigger and retrieve current measurement cycle
- * @data: pointer to mlx90632_data object containing regmap information
- *
- * Perform a measurement and return latest measurement cycle position reported
- * by sensor. This is a blocking function for 500ms, as that is default sensor
- * refresh rate.
- */
+ 
 static int mlx90632_perform_measurement(struct mlx90632_data *data)
 {
 	unsigned int reg_status;
@@ -351,15 +321,7 @@ static int mlx90632_perform_measurement(struct mlx90632_data *data)
 	return (reg_status & MLX90632_STAT_CYCLE_POS) >> 2;
 }
 
-/**
- * mlx90632_perform_measurement_burst() - Trigger and retrieve current measurement
- * cycle in step sleep mode
- * @data: pointer to mlx90632_data object containing regmap information
- *
- * Perform a measurement and return 2 as measurement cycle position reported
- * by sensor. This is a blocking function for amount dependent on the sensor
- * refresh rate.
- */
+ 
 static int mlx90632_perform_measurement_burst(struct mlx90632_data *data)
 {
 	unsigned int reg_status;
@@ -374,7 +336,7 @@ static int mlx90632_perform_measurement_burst(struct mlx90632_data *data)
 	if (ret < 0)
 		return ret;
 
-	msleep(ret); /* Wait minimum time for dataset to be ready */
+	msleep(ret);  
 
 	ret = regmap_read_poll_timeout(data->regmap, MLX90632_REG_STATUS,
 				       reg_status,
@@ -529,7 +491,7 @@ static int mlx90632_read_all_channel(struct mlx90632_data *data,
 		goto read_unlock;
 	}
 
-	measurement = ret; /* If we came here ret holds the measurement position */
+	measurement = ret;  
 
 	ret = mlx90632_read_ambient_raw(data->regmap, ambient_new_raw,
 					ambient_old_raw);
@@ -777,7 +739,7 @@ static s32 mlx90632_calc_temp_object(s64 object, s64 ambient, s32 Ea, s32 Eb,
 	TAdut = div64_s64(((ambient - kTA0) * 1000000LL), kTA) + 25 * 1000000LL;
 	TAdut4 = mlx90632_calc_ta4(TAdut, 10000LL);
 
-	/* Iterations of calculation as described in datasheet */
+	 
 	for (i = 0; i < 5; ++i) {
 		temp = mlx90632_calc_temp_object_iteration(temp, object, TAdut, TAdut4,
 							   Fa, Fb, Ga, Ha, Hb,
@@ -801,7 +763,7 @@ static s32 mlx90632_calc_temp_object_extended(s64 object, s64 ambient, s64 refle
 	TAdut4 = mlx90632_calc_ta4(TAdut, 10000LL);
 	TaTr4 = Tr4 - div64_s64(Tr4 - TAdut4, tmp_emi) * 1000;
 
-	/* Iterations of calculation as described in datasheet */
+	 
 	for (i = 0; i < 5; ++i) {
 		temp = mlx90632_calc_temp_object_iteration(temp, object, TAdut, TaTr4,
 							   Fa / 2, Fb, Ga, Ha, Hb,
@@ -865,7 +827,7 @@ static int mlx90632_calc_object_dsp105(struct mlx90632_data *data, int *val)
 		if (ret < 0)
 			return ret;
 
-		/* Use extended mode calculations */
+		 
 		ambient = mlx90632_preprocess_temp_amb(ambient_new_raw,
 						       ambient_old_raw, Gb);
 		object = mlx90632_preprocess_temp_obj_extended(object_new_raw,
@@ -950,14 +912,7 @@ static const int mlx90632_freqs[][2] = {
 	{64, 0}
 };
 
-/**
- * mlx90632_pm_interraction_wakeup() - Measure time between user interactions to change powermode
- * @data: pointer to mlx90632_data object containing interaction_ts information
- *
- * Switch to continuous mode when interaction is faster than MLX90632_MEAS_MAX_TIME. Update the
- * interaction_ts for each function call with the jiffies to enable measurement between function
- * calls. Initial value of the interaction_ts needs to be set before this function call.
- */
+ 
 static int mlx90632_pm_interraction_wakeup(struct mlx90632_data *data)
 {
 	unsigned long now;
@@ -1056,7 +1011,7 @@ static int mlx90632_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_CALIBEMISSIVITY:
-		/* Confirm we are within 0 and 1.0 */
+		 
 		if (val < 0 || val2 < 0 || val > 1 ||
 		    (val == 1 && val2 != 0))
 			return -EINVAL;
@@ -1261,8 +1216,8 @@ static int mlx90632_probe(struct i2c_client *client)
 	}
 
 	mlx90632->emissivity = 1000;
-	mlx90632->object_ambient_temperature = 25000; /* 25 degrees milliCelsius */
-	mlx90632->interaction_ts = jiffies; /* Set initial value */
+	mlx90632->object_ambient_temperature = 25000;  
+	mlx90632->interaction_ts = jiffies;  
 
 	pm_runtime_get_noresume(&client->dev);
 	pm_runtime_set_active(&client->dev);

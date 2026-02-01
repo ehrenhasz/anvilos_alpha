@@ -1,58 +1,19 @@
-/* Test of message digests.
-   Copyright (C) 2018-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-static void
-test_digest_on_files (int (*streamfunc) (FILE *, void *),
-                      const char *streamfunc_name,
-                      size_t digest_size,
-                      const void *expected_for_empty_file,
-                      const void *expected_for_small_file,
-                      const void *expected_for_large_file)
-{
-  int pass;
-  unlink (TESTFILE);
-
-  for (pass = 0; pass < 5; pass++)
-    {
-      {
-        FILE *fp = fopen (TESTFILE, "wb");
-        if (fp == NULL)
-          {
-            fprintf (stderr, "Could not create file %s.\n", TESTFILE);
-            exit (1);
-          }
-        switch (pass)
-          {
-          case 0:
-            /* Nothing to do for the empty file.  */
+ 
             break;
           case 2:
-            /* Fill the small file, with some header that will be skipped.  */
+             
             fputs ("ABCD", fp);
             FALLTHROUGH;
           case 1:
-            /* Fill the small file.  */
+             
             fputs ("The quick brown fox jumps over the lazy dog.\n", fp);
             break;
           case 4:
-            /* Fill the large file, with some header that will be skipped.  */
+             
             fputs ("ABCD", fp);
             FALLTHROUGH;
           case 3:
-            /* Fill the large file (8 MiB).  */
+             
             {
               unsigned int i;
               for (i = 0; i < 0x400000; i++)
@@ -74,7 +35,7 @@ test_digest_on_files (int (*streamfunc) (FILE *, void *),
         fclose (fp);
       }
       {
-        /* Test an unaligned digest.  */
+         
         char *digest = (char *) malloc (digest_size + 1) + 1;
         const void *expected;
         FILE *fp;
@@ -129,7 +90,7 @@ test_digest_on_files (int (*streamfunc) (FILE *, void *),
             fprintf (stderr, "\n");
             exit (1);
           }
-        /* Verify that fp is now positioned at end of file.  */
+         
         if (getc (fp) != EOF)
           {
             fprintf (stderr, "%s left the stream not at EOF\n", streamfunc_name);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip KSZ8795 switch driver
- *
- * Copyright (C) 2017 Microchip Technology Inc.
- *	Tristram Ha <Tristram.Ha@microchip.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -61,13 +56,13 @@ static int ksz8_ind_write8(struct ksz_device *dev, u8 table, u16 addr, u8 data)
 int ksz8_reset_switch(struct ksz_device *dev)
 {
 	if (ksz_is_ksz88x3(dev)) {
-		/* reset switch */
+		 
 		ksz_cfg(dev, KSZ8863_REG_SW_RESET,
 			KSZ8863_GLOBAL_SOFTWARE_RESET | KSZ8863_PCS_RESET, true);
 		ksz_cfg(dev, KSZ8863_REG_SW_RESET,
 			KSZ8863_GLOBAL_SOFTWARE_RESET | KSZ8863_PCS_RESET, false);
 	} else {
-		/* reset switch */
+		 
 		ksz_write8(dev, REG_POWER_MANAGEMENT_1,
 			   SW_SOFTWARE_POWER_DOWN << SW_POWER_MANAGEMENT_MODE_S);
 		ksz_write8(dev, REG_POWER_MANAGEMENT_1, 0);
@@ -131,7 +126,7 @@ static void ksz8795_set_prio_queue(struct ksz_device *dev, int port, int queue)
 {
 	u8 hi, lo;
 
-	/* Number of queues can only be 1, 2, or 4. */
+	 
 	switch (queue) {
 	case 4:
 	case 3:
@@ -154,7 +149,7 @@ static void ksz8795_set_prio_queue(struct ksz_device *dev, int port, int queue)
 	ksz_pwrite8(dev, port, REG_PORT_CTRL_0, lo);
 	ksz_pwrite8(dev, port, P_DROP_TAG_CTRL, hi);
 
-	/* Default is port based for egress rate limit. */
+	 
 	if (queue != PORT_QUEUE_SPLIT_1)
 		ksz_cfg(dev, REG_SW_CTRL_19, SW_OUT_RATE_LIMIT_QUEUE_BASED,
 			true);
@@ -178,9 +173,7 @@ void ksz8_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt)
 	mutex_lock(&dev->alu_mutex);
 	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
 
-	/* It is almost guaranteed to always read the valid bit because of
-	 * slow SPI speed.
-	 */
+	 
 	for (loop = 2; loop > 0; loop--) {
 		ksz_read8(dev, regs[REG_IND_MIB_CHECK], &check);
 
@@ -216,9 +209,7 @@ static void ksz8795_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
 	mutex_lock(&dev->alu_mutex);
 	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
 
-	/* It is almost guaranteed to always read the valid bit because of
-	 * slow SPI speed.
-	 */
+	 
 	for (loop = 2; loop > 0; loop--) {
 		ksz_read8(dev, regs[REG_IND_MIB_CHECK], &check);
 
@@ -294,12 +285,12 @@ void ksz8_freeze_mib(struct ksz_device *dev, int port, bool freeze)
 	if (ksz_is_ksz88x3(dev))
 		return;
 
-	/* enable the port for flush/freeze function */
+	 
 	if (freeze)
 		ksz_cfg(dev, REG_SW_CTRL_6, BIT(port), true);
 	ksz_cfg(dev, REG_SW_CTRL_6, SW_MIB_COUNTER_FREEZE, freeze);
 
-	/* disable the port after freeze is done */
+	 
 	if (!freeze)
 		ksz_cfg(dev, REG_SW_CTRL_6, BIT(port), false);
 }
@@ -310,7 +301,7 @@ void ksz8_port_init_cnt(struct ksz_device *dev, int port)
 	u64 *dropped;
 
 	if (!ksz_is_ksz88x3(dev)) {
-		/* flush all enabled port MIB counters */
+		 
 		ksz_cfg(dev, REG_SW_CTRL_6, BIT(port), true);
 		ksz_cfg(dev, REG_SW_CTRL_6, SW_MIB_COUNTER_FLUSH, true);
 		ksz_cfg(dev, REG_SW_CTRL_6, BIT(port), false);
@@ -318,17 +309,17 @@ void ksz8_port_init_cnt(struct ksz_device *dev, int port)
 
 	mib->cnt_ptr = 0;
 
-	/* Some ports may not have MIB counters before SWITCH_COUNTER_NUM. */
+	 
 	while (mib->cnt_ptr < dev->info->reg_mib_cnt) {
 		dev->dev_ops->r_mib_cnt(dev, port, mib->cnt_ptr,
 					&mib->counters[mib->cnt_ptr]);
 		++mib->cnt_ptr;
 	}
 
-	/* last one in storage */
+	 
 	dropped = &mib->counters[dev->info->mib_cnt];
 
-	/* Some ports may not have MIB counters after SWITCH_COUNTER_NUM. */
+	 
 	while (mib->cnt_ptr < dev->info->mib_cnt) {
 		dev->dev_ops->r_mib_pkt(dev, port, mib->cnt_ptr,
 					dropped, &mib->counters[mib->cnt_ptr]);
@@ -394,14 +385,14 @@ static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
 		timeout--;
 	} while ((*data & masks[DYNAMIC_MAC_TABLE_NOT_READY]) && timeout);
 
-	/* Entry is not ready for accessing. */
+	 
 	if (*data & masks[DYNAMIC_MAC_TABLE_NOT_READY]) {
 		return -EAGAIN;
-	/* Entry is ready for accessing. */
+	 
 	} else {
 		ksz_read8(dev, regs[REG_IND_DATA_8], data);
 
-		/* There is no valid entry in the table. */
+		 
 		if (*data & masks[DYNAMIC_MAC_TABLE_MAC_EMPTY])
 			return -ENXIO;
 	}
@@ -434,7 +425,7 @@ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
 			*entries = 0;
 	} else if (rc == -ENXIO) {
 		*entries = 0;
-	/* At least one valid entry in the table. */
+	 
 	} else {
 		u64 buf = 0;
 		int cnt;
@@ -443,7 +434,7 @@ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
 		data_hi = (u32)(buf >> 32);
 		data_lo = (u32)buf;
 
-		/* Check out how many valid entry in the table. */
+		 
 		cnt = data & masks[DYNAMIC_MAC_TABLE_ENTRIES_H];
 		cnt <<= shifts[DYNAMIC_MAC_ENTRIES_H];
 		cnt |= (data_hi & masks[DYNAMIC_MAC_TABLE_ENTRIES]) >>
@@ -507,10 +498,7 @@ static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
 			shifts[STATIC_MAC_FWD_PORTS];
 	alu->is_override = (data_hi & masks[STATIC_MAC_TABLE_OVERRIDE]) ? 1 : 0;
 
-	/* KSZ8795 family switches have STATIC_MAC_TABLE_USE_FID and
-	 * STATIC_MAC_TABLE_FID definitions off by 1 when doing read on the
-	 * static MAC table compared to doing write.
-	 */
+	 
 	if (ksz_is_ksz87xx(dev))
 		data_hi >>= 1;
 	alu->is_static = true;
@@ -798,7 +786,7 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
 	switch (reg) {
 	case MII_BMCR:
 
-		/* Do not support PHY reset function. */
+		 
 		if (val & BMCR_RESET)
 			break;
 		ret = ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
@@ -833,7 +821,7 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
 			else
 				data &= ~PORT_AUTO_NEG_DISABLE;
 
-			/* Fiber port does not support auto-negotiation. */
+			 
 			if (dev->ports[p].fiber)
 				data |= PORT_AUTO_NEG_DISABLE;
 		}
@@ -955,7 +943,7 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
 		first = port;
 		cnt = port + 1;
 	} else {
-		/* Flush all ports. */
+		 
 		first = 0;
 		cnt = dev->info->port_cnt;
 	}
@@ -1014,7 +1002,7 @@ static int ksz8_add_sta_mac(struct ksz_device *dev, int port,
 		if (ret)
 			return ret;
 		if (!valid) {
-			/* Remember the first empty entry. */
+			 
 			if (!empty)
 				empty = index + 1;
 			continue;
@@ -1024,11 +1012,11 @@ static int ksz8_add_sta_mac(struct ksz_device *dev, int port,
 			break;
 	}
 
-	/* no available entry */
+	 
 	if (index == dev->info->num_statics && !empty)
 		return -ENOSPC;
 
-	/* add entry */
+	 
 	if (index == dev->info->num_statics) {
 		index = empty - 1;
 		memset(&alu, 0, sizeof(alu));
@@ -1039,7 +1027,7 @@ static int ksz8_add_sta_mac(struct ksz_device *dev, int port,
 	if (vid) {
 		alu.is_use_fid = true;
 
-		/* Need a way to map VID to FID. */
+		 
 		alu.fid = vid;
 	}
 
@@ -1065,11 +1053,11 @@ static int ksz8_del_sta_mac(struct ksz_device *dev, int port,
 			break;
 	}
 
-	/* no available entry */
+	 
 	if (index == dev->info->num_statics)
 		return 0;
 
-	/* clear port */
+	 
 	alu.port_forward &= ~BIT(port);
 	if (!alu.port_forward)
 		alu.is_static = false;
@@ -1107,10 +1095,10 @@ int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
 	if (ksz_is_ksz88x3(dev))
 		return -ENOTSUPP;
 
-	/* Discard packets with VID not enabled on the switch */
+	 
 	ksz_cfg(dev, S_MIRROR_CTRL, SW_VLAN_ENABLE, flag);
 
-	/* Discard packets with VID not enabled on the ingress port */
+	 
 	for (port = 0; port < dev->phy_port_cnt; ++port)
 		ksz_port_cfg(dev, port, REG_PORT_CTRL_2, PORT_INGRESS_FILTER,
 			     flag);
@@ -1140,21 +1128,14 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
 	if (ksz_is_ksz88x3(dev))
 		return -ENOTSUPP;
 
-	/* If a VLAN is added with untagged flag different from the
-	 * port's Remove Tag flag, we need to change the latter.
-	 * Ignore VID 0, which is always untagged.
-	 * Ignore CPU port, which will always be tagged.
-	 */
+	 
 	if (untagged != p->remove_tag && vlan->vid != 0 &&
 	    port != dev->cpu_port) {
 		unsigned int vid;
 
-		/* Reject attempts to add a VLAN that requires the
-		 * Remove Tag flag to be changed, unless there are no
-		 * other VLANs currently configured.
-		 */
+		 
 		for (vid = 1; vid < dev->info->num_vlans; ++vid) {
-			/* Skip the VID we are going to add or reconfigure */
+			 
 			if (vid == vlan->vid)
 				continue;
 
@@ -1171,9 +1152,9 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
 	ksz8_r_vlan_table(dev, vlan->vid, &data);
 	ksz8_from_vlan(dev, data, &fid, &member, &valid);
 
-	/* First time to setup the VLAN entry. */
+	 
 	if (!valid) {
-		/* Need to find a way to map VID to FID. */
+		 
 		fid = 1;
 		valid = 1;
 	}
@@ -1182,7 +1163,7 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
 	ksz8_to_vlan(dev, fid, member, valid, &data);
 	ksz8_w_vlan_table(dev, vlan->vid, data);
 
-	/* change PVID */
+	 
 	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
 		new_pvid = vlan->vid;
 
@@ -1217,7 +1198,7 @@ int ksz8_port_vlan_del(struct ksz_device *dev, int port,
 
 	member &= ~BIT(port);
 
-	/* Invalidate the entry if no more member. */
+	 
 	if (!member) {
 		fid = 0;
 		valid = 0;
@@ -1246,7 +1227,7 @@ int ksz8_port_mirror_add(struct ksz_device *dev, int port,
 
 	ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_SNIFFER, false);
 
-	/* configure mirror port */
+	 
 	if (dev->mirror_rx || dev->mirror_tx)
 		ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
 			     PORT_MIRROR_SNIFFER, true);
@@ -1295,20 +1276,20 @@ void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
 
 	masks = dev->info->masks;
 
-	/* enable broadcast storm limit */
+	 
 	ksz_port_cfg(dev, port, P_BCAST_STORM_CTRL, PORT_BROADCAST_STORM, true);
 
 	if (!ksz_is_ksz88x3(dev))
 		ksz8795_set_prio_queue(dev, port, 4);
 
-	/* disable DiffServ priority */
+	 
 	ksz_port_cfg(dev, port, P_PRIO_CTRL, PORT_DIFFSERV_ENABLE, false);
 
-	/* replace priority */
+	 
 	ksz_port_cfg(dev, port, P_802_1P_CTRL,
 		     masks[PORT_802_1P_REMAPPING], false);
 
-	/* enable 802.1p priority */
+	 
 	ksz_port_cfg(dev, port, P_PRIO_CTRL, PORT_802_1P_ENABLE, true);
 
 	if (cpu_port) {
@@ -1364,12 +1345,7 @@ static int ksz8_handle_global_errata(struct dsa_switch *ds)
 	struct ksz_device *dev = ds->priv;
 	int ret = 0;
 
-	/* KSZ87xx Errata DS80000687C.
-	 * Module 2: Link drops with some EEE link partners.
-	 *   An issue with the EEE next page exchange between the
-	 *   KSZ879x/KSZ877x/KSZ876x and some EEE link partners may result in
-	 *   the link dropping.
-	 */
+	 
 	if (dev->info->ksz87xx_eee_link_erratum)
 		ret = ksz8_ind_write8(dev, TABLE_EEE, REG_IND_EEE_GLOB2_HI, 0);
 
@@ -1380,7 +1356,7 @@ int ksz8_enable_stp_addr(struct ksz_device *dev)
 {
 	struct alu_struct alu;
 
-	/* Setup STP address for STP operation. */
+	 
 	memset(&alu, 0, sizeof(alu));
 	ether_addr_copy(alu.mac, eth_stp_addr);
 	alu.is_static = true;
@@ -1397,29 +1373,22 @@ int ksz8_setup(struct dsa_switch *ds)
 
 	ds->mtu_enforcement_ingress = true;
 
-	/* We rely on software untagging on the CPU port, so that we
-	 * can support both tagged and untagged VLANs
-	 */
+	 
 	ds->untag_bridge_pvid = true;
 
-	/* VLAN filtering is partly controlled by the global VLAN
-	 * Enable flag
-	 */
+	 
 	ds->vlan_filtering_is_global = true;
 
 	ksz_cfg(dev, S_REPLACE_VID_CTRL, SW_FLOW_CTRL, true);
 
-	/* Enable automatic fast aging when link changed detected. */
+	 
 	ksz_cfg(dev, S_LINK_AGING_CTRL, SW_LINK_AUTO_AGING, true);
 
-	/* Enable aggressive back off algorithm in half duplex mode. */
+	 
 	regmap_update_bits(ksz_regmap_8(dev), REG_SW_CTRL_1,
 			   SW_AGGR_BACKOFF, SW_AGGR_BACKOFF);
 
-	/*
-	 * Make sure unicast VLAN boundary is set as default and
-	 * enable no excessive collision drop.
-	 */
+	 
 	regmap_update_bits(ksz_regmap_8(dev), REG_SW_CTRL_2,
 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP,
 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP);
@@ -1442,15 +1411,11 @@ void ksz8_get_caps(struct ksz_device *dev, int port,
 {
 	config->mac_capabilities = MAC_10 | MAC_100;
 
-	/* Silicon Errata Sheet (DS80000830A):
-	 * "Port 1 does not respond to received flow control PAUSE frames"
-	 * So, disable Pause support on "Port 1" (port == 0) for all ksz88x3
-	 * switches.
-	 */
+	 
 	if (!ksz_is_ksz88x3(dev) || port)
 		config->mac_capabilities |= MAC_SYM_PAUSE;
 
-	/* Asym pause is not supported on KSZ8863 and KSZ8873 */
+	 
 	if (!ksz_is_ksz88x3(dev))
 		config->mac_capabilities |= MAC_ASYM_PAUSE;
 }

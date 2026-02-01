@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <string.h>
 #include <regex.h>
@@ -92,7 +92,7 @@ static const struct sdt_name_reg sdt_reg_tbl[] = {
 	SDT_NAME_REG(esp, sp),
 	SDT_NAME_REG(spl, sp),
 
-	/* rNN registers */
+	 
 	SDT_NAME_REG(r8b,  r8),
 	SDT_NAME_REG(r8w,  r8),
 	SDT_NAME_REG(r8d,  r8),
@@ -120,29 +120,7 @@ static const struct sdt_name_reg sdt_reg_tbl[] = {
 	SDT_NAME_REG_END,
 };
 
-/*
- * Perf only supports OP which is in  +/-NUM(REG)  form.
- * Here plus-minus sign, NUM and parenthesis are optional,
- * only REG is mandatory.
- *
- * SDT events also supports indirect addressing mode with a
- * symbol as offset, scaled mode and constants in OP. But
- * perf does not support them yet. Below are few examples.
- *
- * OP with scaled mode:
- *     (%rax,%rsi,8)
- *     10(%ras,%rsi,8)
- *
- * OP with indirect addressing mode:
- *     check_action(%rip)
- *     mp_+52(%rip)
- *     44+mp_(%rip)
- *
- * OP with constant values:
- *     $0
- *     $123
- *     $-1
- */
+ 
 #define SDT_OP_REGEX  "^([+\\-]?)([0-9]*)(\\(?)(%[a-z][a-z0-9]+)(\\)?)$"
 
 static regex_t sdt_op_regex;
@@ -165,19 +143,10 @@ static int sdt_init_op_regex(void)
 	return 0;
 }
 
-/*
- * Max x86 register name length is 5(ex: %r15d). So, 6th char
- * should always contain NULL. This helps to find register name
- * length using strlen, instead of maintaining one more variable.
- */
+ 
 #define SDT_REG_NAME_SIZE  6
 
-/*
- * The uprobe parser does not support all gas register names;
- * so, we have to replace them (ex. for x86_64: %rax -> %ax).
- * Note: If register does not require renaming, just copy
- * paste as it is, but don't leave it empty.
- */
+ 
 static void sdt_rename_register(char *sdt_reg, int sdt_len, char *uprobe_reg)
 {
 	int i = 0;
@@ -196,32 +165,16 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 {
 	char new_reg[SDT_REG_NAME_SIZE] = {0};
 	int new_len = 0, ret;
-	/*
-	 * rm[0]:  +/-NUM(REG)
-	 * rm[1]:  +/-
-	 * rm[2]:  NUM
-	 * rm[3]:  (
-	 * rm[4]:  REG
-	 * rm[5]:  )
-	 */
+	 
 	regmatch_t rm[6];
-	/*
-	 * Max prefix length is 2 as it may contains sign(+/-)
-	 * and displacement 0 (Both sign and displacement 0 are
-	 * optional so it may be empty). Use one more character
-	 * to hold last NULL so that strlen can be used to find
-	 * prefix length, instead of maintaining one more variable.
-	 */
+	 
 	char prefix[3] = {0};
 
 	ret = sdt_init_op_regex();
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * If unsupported OR does not match with regex OR
-	 * register name too long, skip it.
-	 */
+	 
 	if (strchr(old_op, ',') || strchr(old_op, '$') ||
 	    regexec(&sdt_op_regex, old_op, 6, rm, 0)   ||
 	    rm[4].rm_eo - rm[4].rm_so > SDT_REG_NAME_SIZE) {
@@ -229,18 +182,7 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 		return SDT_ARG_SKIP;
 	}
 
-	/*
-	 * Prepare prefix.
-	 * If SDT OP has parenthesis but does not provide
-	 * displacement, add 0 for displacement.
-	 *     SDT         Uprobe     Prefix
-	 *     -----------------------------
-	 *     +24(%rdi)   +24(%di)   +
-	 *     24(%rdi)    +24(%di)   +
-	 *     %rdi        %di
-	 *     (%rdi)      +0(%di)    +0
-	 *     -80(%rbx)   -80(%bx)   -
-	 */
+	 
 	if (rm[3].rm_so != rm[3].rm_eo) {
 		if (rm[1].rm_so != rm[1].rm_eo)
 			prefix[0] = *(old_op + rm[1].rm_so);
@@ -250,17 +192,17 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 			scnprintf(prefix, sizeof(prefix), "+0");
 	}
 
-	/* Rename register */
+	 
 	sdt_rename_register(old_op + rm[4].rm_so, rm[4].rm_eo - rm[4].rm_so,
 			    new_reg);
 
-	/* Prepare final OP which should be valid for uprobe_events */
+	 
 	new_len = strlen(prefix)              +
 		  (rm[2].rm_eo - rm[2].rm_so) +
 		  (rm[3].rm_eo - rm[3].rm_so) +
 		  strlen(new_reg)             +
 		  (rm[5].rm_eo - rm[5].rm_so) +
-		  1;					/* NULL */
+		  1;					 
 
 	*new_op = zalloc(new_len);
 	if (!*new_op)
@@ -288,19 +230,14 @@ uint64_t arch__intr_reg_mask(void)
 		.exclude_kernel		= 1,
 	};
 	int fd;
-	/*
-	 * In an unnamed union, init it here to build on older gcc versions
-	 */
+	 
 	attr.sample_period = 1;
 
 	if (perf_pmus__num_core_pmus() > 1) {
 		struct perf_pmu *pmu = NULL;
 		__u64 type = PERF_TYPE_RAW;
 
-		/*
-		 * The same register set is supported among different hybrid PMUs.
-		 * Only check the first available one.
-		 */
+		 
 		while ((pmu = perf_pmus__scan_core(pmu)) != NULL) {
 			type = pmu->type;
 			break;

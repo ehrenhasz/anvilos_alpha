@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
+ 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
@@ -16,7 +16,7 @@ struct {
 	__uint(max_entries, 2);
 } array SEC(".maps");
 
-/* Sample program which should always load for testing control paths. */
+ 
 SEC(".text") int func()
 {
 	__u64 key64 = 0;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef S390_CHSC_H
 #define S390_CHSC_H
 
@@ -51,14 +51,14 @@ struct channel_path;
 struct css_chsc_char {
 	u64 res;
 	u64 : 20;
-	u32 secm : 1; /* bit 84 */
+	u32 secm : 1;  
 	u32 : 1;
-	u32 scmc : 1; /* bit 86 */
+	u32 scmc : 1;  
 	u32 : 20;
-	u32 scssc : 1;  /* bit 107 */
-	u32 scsscf : 1; /* bit 108 */
+	u32 scssc : 1;   
+	u32 scsscf : 1;  
 	u32:7;
-	u32 pnso:1; /* bit 116 */
+	u32 pnso:1;  
 	u32:11;
 } __packed;
 
@@ -171,7 +171,7 @@ int chsc_error_from_response(int response);
 
 int chsc_siosl(struct subchannel_id schid);
 
-/* Functions and definitions to query storage-class memory. */
+ 
 struct sale {
 	u64 sa;
 	u32 p:4;
@@ -214,10 +214,10 @@ int __init chsc_get_cssid_iid(int idx, u8 *cssid, u8 *iid);
 #ifdef CONFIG_SCM_BUS
 int scm_update_information(void);
 int scm_process_availability_information(void);
-#else /* CONFIG_SCM_BUS */
+#else  
 static inline int scm_update_information(void) { return 0; }
 static inline int scm_process_availability_information(void) { return 0; }
-#endif /* CONFIG_SCM_BUS */
+#endif  
 
 
 #endif

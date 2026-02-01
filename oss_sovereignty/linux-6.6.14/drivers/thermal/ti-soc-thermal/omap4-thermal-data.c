@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP4 thermal driver.
- *
- * Copyright (C) 2011-2012 Texas Instruments Inc.
- * Contact:
- *	Eduardo Valentin <eduardo.valentin@ti.com>
- */
+
+ 
 
 #include "ti-thermal.h"
 #include "ti-bandgap.h"
 #include "omap4xxx-bandgap.h"
 
-/*
- * OMAP4430 has one instance of thermal sensor for MPU
- * need to describe the individual bit fields
- */
+ 
 static struct temp_sensor_registers
 omap4430_mpu_temp_sensor_registers = {
 	.temp_sensor_ctrl = OMAP4430_TEMP_SENSOR_CTRL_OFFSET,
@@ -29,17 +20,13 @@ omap4430_mpu_temp_sensor_registers = {
 	.bgap_efuse = OMAP4430_FUSE_OPP_BGAP,
 };
 
-/* Thresholds and limits for OMAP4430 MPU temperature sensor */
+ 
 static struct temp_sensor_data omap4430_mpu_temp_sensor_data = {
 	.min_freq = OMAP4430_MIN_FREQ,
 	.max_freq = OMAP4430_MAX_FREQ,
 };
 
-/*
- * Temperature values in milli degree celsius
- * ADC code values from 13 to 107, see TRM
- * "18.4.10.2.3 ADC Codes Versus Temperature".
- */
+ 
 static const int
 omap4430_adc_to_temp[OMAP4430_ADC_END_VALUE - OMAP4430_ADC_START_VALUE + 1] = {
 	-40000, -38000, -35000, -34000, -32000, -30000, -28000, -26000, -24000,
@@ -54,7 +41,7 @@ omap4430_adc_to_temp[OMAP4430_ADC_END_VALUE - OMAP4430_ADC_START_VALUE + 1] = {
 	115000, 117000, 118500, 120000, 122000, 123500, 125000,
 };
 
-/* OMAP4430 data */
+ 
 const struct ti_bandgap_data omap4430_data = {
 	.features = TI_BANDGAP_FEATURE_MODE_CONFIG |
 			TI_BANDGAP_FEATURE_CLK_CTRL |
@@ -80,10 +67,7 @@ const struct ti_bandgap_data omap4430_data = {
 	},
 	.sensor_count = 1,
 };
-/*
- * OMAP4460 has one instance of thermal sensor for MPU
- * need to describe the individual bit fields
- */
+ 
 static struct temp_sensor_registers
 omap4460_mpu_temp_sensor_registers = {
 	.temp_sensor_ctrl = OMAP4460_TEMP_SENSOR_CTRL_OFFSET,
@@ -117,7 +101,7 @@ omap4460_mpu_temp_sensor_registers = {
 	.bgap_efuse = OMAP4460_FUSE_OPP_BGAP,
 };
 
-/* Thresholds and limits for OMAP4460 MPU temperature sensor */
+ 
 static struct temp_sensor_data omap4460_mpu_temp_sensor_data = {
 	.tshut_hot = OMAP4460_TSHUT_HOT,
 	.tshut_cold = OMAP4460_TSHUT_COLD,
@@ -127,10 +111,7 @@ static struct temp_sensor_data omap4460_mpu_temp_sensor_data = {
 	.max_freq = OMAP4460_MAX_FREQ,
 };
 
-/*
- * Temperature values in milli degree celsius
- * ADC code values from 530 to 923
- */
+ 
 static const int
 omap4460_adc_to_temp[OMAP4460_ADC_END_VALUE - OMAP4460_ADC_START_VALUE + 1] = {
 	-40000, -40000, -40000, -40000, -39800, -39400, -39000, -38600, -38200,
@@ -181,7 +162,7 @@ omap4460_adc_to_temp[OMAP4460_ADC_END_VALUE - OMAP4460_ADC_START_VALUE + 1] = {
 	124600, 124900, 125000, 125000, 125000, 125000
 };
 
-/* OMAP4460 data */
+ 
 const struct ti_bandgap_data omap4460_data = {
 	.features = TI_BANDGAP_FEATURE_TSHUT |
 			TI_BANDGAP_FEATURE_TSHUT_CONFIG |
@@ -212,7 +193,7 @@ const struct ti_bandgap_data omap4460_data = {
 	.sensor_count = 1,
 };
 
-/* OMAP4470 data */
+ 
 const struct ti_bandgap_data omap4470_data = {
 	.features = TI_BANDGAP_FEATURE_TSHUT |
 			TI_BANDGAP_FEATURE_TSHUT_CONFIG |

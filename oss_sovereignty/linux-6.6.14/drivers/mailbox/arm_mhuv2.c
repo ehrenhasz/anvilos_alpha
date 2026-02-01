@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Message Handling Unit Version 2 (MHUv2) driver.
- *
- * Copyright (C) 2020 ARM Ltd.
- * Copyright (C) 2020 Linaro Ltd.
- *
- * An MHUv2 mailbox controller can provide up to 124 channel windows (each 32
- * bit long) and the driver allows any combination of both the transport
- * protocol modes: data-transfer and doorbell, to be used on those channel
- * windows.
- *
- * The transport protocols should be specified in the device tree entry for the
- * device. The transport protocols determine how the underlying hardware
- * resources of the device are utilized when transmitting data. Refer to the
- * device tree bindings of the ARM MHUv2 controller for more details.
- *
- * The number of registered mailbox channels is dependent on both the underlying
- * hardware - mainly the number of channel windows implemented by the platform,
- * as well as the selected transport protocols.
- *
- * The MHUv2 controller can work both as a sender and receiver, but the driver
- * and the DT bindings support unidirectional transfers for better allocation of
- * the channels. That is, this driver will be probed for two separate devices
- * for each mailbox controller, a sender device and a receiver device.
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/interrupt.h>
@@ -33,11 +9,11 @@
 #include <linux/of_address.h>
 #include <linux/spinlock.h>
 
-/* ====== MHUv2 Registers ====== */
+ 
 
-/* Maximum number of channel windows */
+ 
 #define MHUV2_CH_WN_MAX			124
-/* Number of combined interrupt status registers */
+ 
 #define MHUV2_CMB_INT_ST_REG_CNT	4
 #define MHUV2_STAT_BYTES		(sizeof(u32))
 #define MHUV2_STAT_BITS			(MHUV2_STAT_BYTES * __CHAR_BIT__)
@@ -45,27 +21,27 @@
 #define LSB_MASK(n)			((1 << (n * __CHAR_BIT__)) - 1)
 #define MHUV2_PROTOCOL_PROP		"arm,mhuv2-protocols"
 
-/* Register Message Handling Unit Configuration fields */
+ 
 struct mhu_cfg_t {
 	u32 num_ch : 7;
 	u32 pad : 25;
 } __packed;
 
-/* register Interrupt Status fields */
+ 
 struct int_st_t {
 	u32 nr2r : 1;
 	u32 r2nr : 1;
 	u32 pad : 30;
 } __packed;
 
-/* Register Interrupt Clear fields */
+ 
 struct int_clr_t {
 	u32 nr2r : 1;
 	u32 r2nr : 1;
 	u32 pad : 30;
 } __packed;
 
-/* Register Interrupt Enable fields */
+ 
 struct int_en_t {
 	u32 r2nr : 1;
 	u32 nr2r : 1;
@@ -73,7 +49,7 @@ struct int_en_t {
 	u32 pad : 29;
 } __packed;
 
-/* Register Implementer Identification fields */
+ 
 struct iidr_t {
 	u32 implementer : 12;
 	u32 revision : 4;
@@ -81,14 +57,14 @@ struct iidr_t {
 	u32 product_id : 12;
 } __packed;
 
-/* Register Architecture Identification Register fields */
+ 
 struct aidr_t {
 	u32 arch_minor_rev : 4;
 	u32 arch_major_rev : 4;
 	u32 pad : 24;
 } __packed;
 
-/* Sender Channel Window fields */
+ 
 struct mhu2_send_ch_wn_reg {
 	u32 stat;
 	u8 pad1[0x0C - 0x04];
@@ -99,7 +75,7 @@ struct mhu2_send_ch_wn_reg {
 	u8 pad2[0x20 - 0x1C];
 } __packed;
 
-/* Sender frame register fields */
+ 
 struct mhu2_send_frame_reg {
 	struct mhu2_send_ch_wn_reg ch_wn[MHUV2_CH_WN_MAX];
 	struct mhu_cfg_t mhu_cfg;
@@ -116,7 +92,7 @@ struct mhu2_send_frame_reg {
 	struct aidr_t aidr;
 } __packed;
 
-/* Receiver Channel Window fields */
+ 
 struct mhu2_recv_ch_wn_reg {
 	u32 stat;
 	u32 stat_masked;
@@ -128,7 +104,7 @@ struct mhu2_recv_ch_wn_reg {
 	u8 pad[0x20 - 0x1C];
 } __packed;
 
-/* Receiver frame register fields */
+ 
 struct mhu2_recv_frame_reg {
 	struct mhu2_recv_ch_wn_reg ch_wn[MHUV2_CH_WN_MAX];
 	struct mhu_cfg_t mhu_cfg;
@@ -144,7 +120,7 @@ struct mhu2_recv_frame_reg {
 } __packed;
 
 
-/* ====== MHUv2 data structures ====== */
+ 
 
 enum mhuv2_transport_protocol {
 	DOORBELL = 0,
@@ -156,21 +132,7 @@ enum mhuv2_frame {
 	SENDER_FRAME
 };
 
-/**
- * struct mhuv2 - MHUv2 mailbox controller data
- *
- * @mbox:	Mailbox controller belonging to the MHU frame.
- * @send:	Base address of the register mapping region.
- * @recv:	Base address of the register mapping region.
- * @frame:	Frame type: RECEIVER_FRAME or SENDER_FRAME.
- * @irq:	Interrupt.
- * @windows:	Channel windows implemented by the platform.
- * @minor:	Minor version of the controller.
- * @length:	Length of the protocols array in bytes.
- * @protocols:	Raw protocol information, derived from device tree.
- * @doorbell_pending_lock: spinlock required for correct operation of Tx
- *		interrupt for doorbells.
- */
+ 
 struct mhuv2 {
 	struct mbox_controller mbox;
 	union {
@@ -189,20 +151,7 @@ struct mhuv2 {
 
 #define mhu_from_mbox(_mbox) container_of(_mbox, struct mhuv2, mbox)
 
-/**
- * struct mhuv2_protocol_ops - MHUv2 operations
- *
- * Each transport protocol must provide an implementation of the operations
- * provided here.
- *
- * @rx_startup: Startup callback for receiver.
- * @rx_shutdown: Shutdown callback for receiver.
- * @read_data: Reads and clears newly available data.
- * @tx_startup: Startup callback for receiver.
- * @tx_shutdown: Shutdown callback for receiver.
- * @last_tx_done: Report back if the last tx is completed or not.
- * @send_data: Send data to the receiver.
- */
+ 
 struct mhuv2_protocol_ops {
 	int (*rx_startup)(struct mhuv2 *mhu, struct mbox_chan *chan);
 	void (*rx_shutdown)(struct mhuv2 *mhu, struct mbox_chan *chan);
@@ -214,18 +163,7 @@ struct mhuv2_protocol_ops {
 	int (*send_data)(struct mhuv2 *mhu, struct mbox_chan *chan, void *arg);
 };
 
-/*
- * MHUv2 mailbox channel's private information
- *
- * @ops:	protocol specific ops for the channel.
- * @ch_wn_idx:	Channel window index allocated to the channel.
- * @windows:	Total number of windows consumed by the channel, only relevant
- *		in DATA_TRANSFER protocol.
- * @doorbell:	Doorbell bit number within the ch_wn_idx window, only relevant
- *		in DOORBELL protocol.
- * @pending:	Flag indicating pending doorbell interrupt, only relevant in
- *		DOORBELL protocol.
- */
+ 
 struct mhuv2_mbox_chan_priv {
 	const struct mhuv2_protocol_ops *ops;
 	u32 ch_wn_idx;
@@ -238,7 +176,7 @@ struct mhuv2_mbox_chan_priv {
 	};
 };
 
-/* Macro for reading a bitfield within a physically mapped packed struct */
+ 
 #define readl_relaxed_bitfield(_regptr, _type, _field)			\
 	({								\
 		u32 _regval;						\
@@ -246,7 +184,7 @@ struct mhuv2_mbox_chan_priv {
 		(*(_type *)(&_regval))._field;				\
 	})
 
-/* Macro for writing a bitfield within a physically mapped packed struct */
+ 
 #define writel_relaxed_bitfield(_value, _regptr, _type, _field)		\
 	({								\
 		u32 _regval;						\
@@ -256,7 +194,7 @@ struct mhuv2_mbox_chan_priv {
 	})
 
 
-/* =================== Doorbell transport protocol operations =============== */
+ 
 
 static int mhuv2_doorbell_rx_startup(struct mhuv2 *mhu, struct mbox_chan *chan)
 {
@@ -320,7 +258,7 @@ static const struct mhuv2_protocol_ops mhuv2_doorbell_ops = {
 };
 #define IS_PROTOCOL_DOORBELL(_priv) (_priv->ops == &mhuv2_doorbell_ops)
 
-/* ============= Data transfer transport protocol operations ================ */
+ 
 
 static int mhuv2_data_transfer_rx_startup(struct mhuv2 *mhu,
 					  struct mbox_chan *chan)
@@ -328,10 +266,7 @@ static int mhuv2_data_transfer_rx_startup(struct mhuv2 *mhu,
 	struct mhuv2_mbox_chan_priv *priv = chan->con_priv;
 	int i = priv->ch_wn_idx + priv->windows - 1;
 
-	/*
-	 * The protocol mandates that all but the last status register must be
-	 * masked.
-	 */
+	 
 	writel_relaxed(0xFFFFFFFF, &mhu->recv->ch_wn[i].mask_clear);
 	return 0;
 }
@@ -361,18 +296,7 @@ static void *mhuv2_data_transfer_read_data(struct mhuv2 *mhu,
 	data = msg->data = msg + 1;
 	msg->len = windows * MHUV2_STAT_BYTES;
 
-	/*
-	 * Messages are expected in order of most significant word to least
-	 * significant word. Refer mhuv2_data_transfer_send_data() for more
-	 * details.
-	 *
-	 * We also need to read the stat register instead of stat_masked, as we
-	 * masked all but the last window.
-	 *
-	 * Last channel window must be cleared as the final operation. Upon
-	 * clearing the last channel window register, which is unmasked in
-	 * data-transfer protocol, the interrupt is de-asserted.
-	 */
+	 
 	for (i = 0; i < windows; i++) {
 		idx = priv->ch_wn_idx + i;
 		data[windows - 1 - i] = readl_relaxed(&mhu->recv->ch_wn[idx].stat);
@@ -388,7 +312,7 @@ static void mhuv2_data_transfer_tx_startup(struct mhuv2 *mhu,
 	struct mhuv2_mbox_chan_priv *priv = chan->con_priv;
 	int i = priv->ch_wn_idx + priv->windows - 1;
 
-	/* Enable interrupts only for the last window */
+	 
 	if (mhu->minor) {
 		writel_relaxed(0x1, &mhu->send->ch_wn[i].int_clr);
 		writel_relaxed(0x1, &mhu->send->ch_wn[i].int_en);
@@ -411,37 +335,11 @@ static int mhuv2_data_transfer_last_tx_done(struct mhuv2 *mhu,
 	struct mhuv2_mbox_chan_priv *priv = chan->con_priv;
 	int i = priv->ch_wn_idx + priv->windows - 1;
 
-	/* Just checking the last channel window should be enough */
+	 
 	return !readl_relaxed(&mhu->send->ch_wn[i].stat);
 }
 
-/*
- * Message will be transmitted from most significant to least significant word.
- * This is to allow for messages shorter than channel windows to still trigger
- * the receiver interrupt which gets activated when the last stat register is
- * written. As an example, a 6-word message is to be written on a 4-channel MHU
- * connection: Registers marked with '*' are masked, and will not generate an
- * interrupt on the receiver side once written.
- *
- * u32 *data =	[0x00000001], [0x00000002], [0x00000003], [0x00000004],
- *		[0x00000005], [0x00000006]
- *
- * ROUND 1:
- * stat reg		To write	Write sequence
- * [ stat 3 ]	<-	[0x00000001]	4 <- triggers interrupt on receiver
- * [ stat 2 ]	<-	[0x00000002]	3
- * [ stat 1 ]	<-	[0x00000003]	2
- * [ stat 0 ]	<-	[0x00000004]	1
- *
- * data += 4 // Increment data pointer by number of stat regs
- *
- * ROUND 2:
- * stat reg		To write	Write sequence
- * [ stat 3 ]	<-	[0x00000005]	2 <- triggers interrupt on receiver
- * [ stat 2 ]	<-	[0x00000006]	1
- * [ stat 1 ]	<-	[0x00000000]
- * [ stat 0 ]	<-	[0x00000000]
- */
+ 
 static int mhuv2_data_transfer_send_data(struct mhuv2 *mhu,
 					 struct mbox_chan *chan, void *arg)
 {
@@ -463,7 +361,7 @@ static int mhuv2_data_transfer_send_data(struct mhuv2 *mhu,
 		bytes_in_round = min(bytes_left, (int)(windows * MHUV2_STAT_BYTES));
 
 		for (i = windows - 1; i >= 0; i--) {
-			/* Data less than windows can transfer ? */
+			 
 			if (unlikely(bytes_in_round <= i * MHUV2_STAT_BYTES))
 				continue;
 
@@ -495,7 +393,7 @@ static const struct mhuv2_protocol_ops mhuv2_data_transfer_ops = {
 	.send_data = mhuv2_data_transfer_send_data,
 };
 
-/* Interrupt handlers */
+ 
 
 static struct mbox_chan *get_irq_chan_comb(struct mhuv2 *mhu, u32 __iomem *reg)
 {
@@ -524,7 +422,7 @@ static struct mbox_chan *get_irq_chan_comb(struct mhuv2 *mhu, u32 __iomem *reg)
 				continue;
 			}
 
-			/* Return first chan of the window in doorbell mode */
+			 
 			if (protocol == DOORBELL)
 				channel += MHUV2_STAT_BITS * (ch_wn - offset);
 
@@ -565,27 +463,19 @@ static irqreturn_t mhuv2_sender_interrupt(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Clear the interrupt first, so we don't miss any doorbell later */
+	 
 	writel_relaxed(1, &mhu->send->ch_wn[priv->ch_wn_idx].int_clr);
 
-	/*
-	 * In Doorbell mode, make sure no new transitions happen while the
-	 * interrupt handler is trying to find the finished doorbell tx
-	 * operations, else we may think few of the transfers were complete
-	 * before they actually were.
-	 */
+	 
 	spin_lock_irqsave(&mhu->doorbell_pending_lock, flags);
 
-	/*
-	 * In case of doorbell mode, the first channel of the window is returned
-	 * by get_irq_chan_comb(). Find all the pending channels here.
-	 */
+	 
 	stat = readl_relaxed(&mhu->send->ch_wn[priv->ch_wn_idx].stat);
 
 	for (i = 0; i < MHUV2_STAT_BITS; i++) {
 		priv = chan[i].con_priv;
 
-		/* Find cases where pending was 1, but stat's bit is cleared */
+		 
 		if (priv->pending ^ ((stat >> i) & 0x1)) {
 			BUG_ON(!priv->pending);
 
@@ -604,11 +494,7 @@ static irqreturn_t mhuv2_sender_interrupt(int irq, void *data)
 	spin_unlock_irqrestore(&mhu->doorbell_pending_lock, flags);
 
 	if (!found) {
-		/*
-		 * We may have already processed the doorbell in the previous
-		 * iteration if the interrupt came right after we cleared it but
-		 * before we read the stat register.
-		 */
+		 
 		dev_dbg(dev, "Couldn't find the doorbell (%u) for the Tx interrupt interrupt\n",
 			priv->ch_wn_idx);
 		return IRQ_NONE;
@@ -631,10 +517,7 @@ static struct mbox_chan *get_irq_chan_comb_rx(struct mhuv2 *mhu)
 	if (!IS_PROTOCOL_DOORBELL(priv))
 		return chan;
 
-	/*
-	 * In case of doorbell mode, the first channel of the window is returned
-	 * by the routine. Find the exact channel here.
-	 */
+	 
 	stat = readl_relaxed(&mhu->recv->ch_wn[priv->ch_wn_idx].stat_masked);
 	BUG_ON(!stat);
 
@@ -687,7 +570,7 @@ static irqreturn_t mhuv2_receiver_interrupt(int irq, void *arg)
 	}
 	priv = chan->con_priv;
 
-	/* Read and clear the data first */
+	 
 	data = priv->ops->read_data(mhu, chan);
 
 	if (!chan->cl) {
@@ -706,7 +589,7 @@ static irqreturn_t mhuv2_receiver_interrupt(int irq, void *arg)
 	return ret;
 }
 
-/* Sender and receiver ops */
+ 
 static bool mhuv2_sender_last_tx_done(struct mbox_chan *chan)
 {
 	struct mhuv2 *mhu = mhu_from_mbox(chan->mbox);
@@ -912,16 +795,13 @@ static int mhuv2_allocate_channels(struct mhuv2 *mhu)
 				chans++->con_priv = priv;
 			}
 
-			/*
-			 * Permanently enable interrupt as we can't
-			 * control it per doorbell.
-			 */
+			 
 			if (mhu->frame == SENDER_FRAME && mhu->minor)
 				writel_relaxed(0x1, &mhu->send->ch_wn[priv->ch_wn_idx].int_en);
 		}
 	}
 
-	/* Make sure we have initialized all channels */
+	 
 	BUG_ON(chans - mbox->chans != mbox->num_chans);
 
 	return 0;
@@ -977,10 +857,7 @@ static int mhuv2_tx_init(struct amba_device *adev, struct mhuv2 *mhu,
 
 	spin_lock_init(&mhu->doorbell_pending_lock);
 
-	/*
-	 * For minor version 1 and forward, tx interrupt is provided by
-	 * the controller.
-	 */
+	 
 	if (mhu->minor && adev->irq[0]) {
 		ret = devm_request_threaded_irq(dev, adev->irq[0], NULL,
 						mhuv2_sender_interrupt,
@@ -995,7 +872,7 @@ static int mhuv2_tx_init(struct amba_device *adev, struct mhuv2 *mhu,
 
 			writel_relaxed_bitfield(1, &mhu->send->int_en, struct int_en_t, chcomb);
 
-			/* Disable all channel interrupts */
+			 
 			for (i = 0; i < mhu->windows; i++)
 				writel_relaxed(0x0, &mhu->send->ch_wn[i].int_en);
 
@@ -1008,7 +885,7 @@ static int mhuv2_tx_init(struct amba_device *adev, struct mhuv2 *mhu,
 	mhu->mbox.txpoll_period = 1;
 
 out:
-	/* Wait for receiver to be ready */
+	 
 	writel_relaxed(0x1, &mhu->send->access_request);
 	while (!readl_relaxed(&mhu->send->access_ready))
 		continue;
@@ -1043,7 +920,7 @@ static int mhuv2_rx_init(struct amba_device *adev, struct mhuv2 *mhu,
 		return ret;
 	}
 
-	/* Mask all the channel windows */
+	 
 	for (i = 0; i < mhu->windows; i++)
 		writel_relaxed(0xFFFFFFFF, &mhu->recv->ch_wn[i].mask_set);
 
@@ -1082,7 +959,7 @@ static int mhuv2_probe(struct amba_device *adev, const struct amba_id *id)
 	if (ret)
 		return ret;
 
-	/* Channel windows can't be 0 */
+	 
 	BUG_ON(!mhu->windows);
 
 	ret = mhuv2_parse_channels(mhu);
@@ -1108,12 +985,12 @@ static void mhuv2_remove(struct amba_device *adev)
 
 static struct amba_id mhuv2_ids[] = {
 	{
-		/* 2.0 */
+		 
 		.id = 0xbb0d1,
 		.mask = 0xfffff,
 	},
 	{
-		/* 2.1 */
+		 
 		.id = 0xbb076,
 		.mask = 0xfffff,
 	},

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX15301
- *
- * Copyright (c) 2021 Flextronics International Sweden AB
- *
- * Even though the specification does not specifically mention it,
- * extensive empirical testing has revealed that auto-detection of
- * limit-registers will fail in a random fashion unless the delay
- * parameter is set to above about 80us. The default delay is set
- * to 100us to include some safety margin.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,14 +21,14 @@ MODULE_DEVICE_TABLE(i2c, max15301_id);
 
 struct max15301_data {
 	int id;
-	ktime_t access;		/* Chip access time */
-	int delay;		/* Delay between chip accesses in us */
+	ktime_t access;		 
+	int delay;		 
 	struct pmbus_driver_info info;
 };
 
 #define to_max15301_data(x)  container_of(x, struct max15301_data, info)
 
-#define MAX15301_WAIT_TIME		100	/* us	*/
+#define MAX15301_WAIT_TIME		100	 
 
 static ushort delay = MAX15301_WAIT_TIME;
 module_param(delay, ushort, 0644);
@@ -55,7 +45,7 @@ static struct max15301_data max15301_data = {
 	}
 };
 
-/* This chip needs a delay between accesses */
+ 
 static inline void max15301_wait(const struct max15301_data *data)
 {
 	if (data->delay) {

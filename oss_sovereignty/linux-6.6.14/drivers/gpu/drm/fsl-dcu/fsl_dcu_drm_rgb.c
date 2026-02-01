@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/of_graph.h>
@@ -26,7 +22,7 @@ int fsl_dcu_drm_encoder_create(struct fsl_dcu_drm_device *fsl_dev,
 
 	encoder->possible_crtcs = 1;
 
-	/* Use bypass mode for parallel RGB/LVDS encoder */
+	 
 	if (fsl_dev->tcon)
 		fsl_tcon_bypass_enable(fsl_dev->tcon);
 
@@ -115,7 +111,7 @@ int fsl_dcu_create_outputs(struct fsl_dcu_drm_device *fsl_dev)
 	struct drm_bridge *bridge;
 	int ret;
 
-	/* This is for backward compatibility */
+	 
 	panel_node = of_parse_phandle(fsl_dev->np, "fsl,panel", 0);
 	if (panel_node) {
 		fsl_dev->connector.panel = of_drm_find_panel(panel_node);

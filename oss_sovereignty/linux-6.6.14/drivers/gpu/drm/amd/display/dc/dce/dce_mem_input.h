@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #ifndef __DCE_MEM_INPUT_H__
 #define __DCE_MEM_INPUT_H__
 
@@ -107,7 +84,7 @@
 	SR(DCHUB_AGP_TOP)
 
 struct dce_mem_input_registers {
-	/* DCP */
+	 
 	uint32_t GRPH_ENABLE;
 	uint32_t GRPH_CONTROL;
 	uint32_t GRPH_X_START;
@@ -127,7 +104,7 @@ struct dce_mem_input_registers {
 	uint32_t GRPH_PRIMARY_SURFACE_ADDRESS_HIGH;
 	uint32_t GRPH_SECONDARY_SURFACE_ADDRESS;
 	uint32_t GRPH_SECONDARY_SURFACE_ADDRESS_HIGH;
-	/* DMIF_PG */
+	 
 	uint32_t DPG_PIPE_ARBITRATION_CONTROL1;
 #if defined(CONFIG_DRM_AMD_DC_SI)
 	uint32_t DPG_PIPE_ARBITRATION_CONTROL3;
@@ -139,18 +116,18 @@ struct dce_mem_input_registers {
 	uint32_t DPG_PIPE_LOW_POWER_CONTROL;
 	uint32_t DPG_PIPE_STUTTER_CONTROL;
 	uint32_t DPG_PIPE_STUTTER_CONTROL2;
-	/* DCI */
+	 
 	uint32_t DMIF_BUFFER_CONTROL;
-	/* MC_HUB */
+	 
 	uint32_t MC_HUB_RDREQ_DMIF_LIMIT;
-	/*DCHUB*/
+	 
 	uint32_t DCHUB_FB_LOCATION;
 	uint32_t DCHUB_AGP_BASE;
 	uint32_t DCHUB_AGP_BOT;
 	uint32_t DCHUB_AGP_TOP;
 };
 
-/* Set_Filed_for_Block */
+ 
 #define SFB(blk_name, reg_name, field_name, post_fix)\
 	.field_name = blk_name ## reg_name ## __ ## field_name ## post_fix
 
@@ -400,7 +377,7 @@ struct dce_mem_input_registers {
 	type STUTTER_ENTER_SELF_REFRESH_WATERMARK; \
 	type DMIF_BUFFERS_ALLOCATED; \
 	type DMIF_BUFFERS_ALLOCATION_COMPLETED; \
-	type ENABLE; /* MC_HUB_RDREQ_DMIF_LIMIT */\
+	type ENABLE;  \
 	type FB_BASE; \
 	type FB_TOP; \
 	type AGP_BASE; \
@@ -463,4 +440,4 @@ void dce120_mem_input_construct(
 	const struct dce_mem_input_shift *mi_shift,
 	const struct dce_mem_input_mask *mi_mask);
 
-#endif /*__DCE_MEM_INPUT_H__*/
+#endif  

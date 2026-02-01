@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Richtek Technology Corp.
- *
- * Authors:
- *   ChiYuan Huang <cy_huang@richtek.com>
- *   Alice Chen <alice_chen@richtek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -114,17 +108,7 @@ enum mt6370_pattern {
 #define MT6372_PWM_DUTY				(BIT(8) - 1)
 
 struct mt6370_led {
-	/*
-	 * If the color of the LED in DT is set to
-	 *   - 'LED_COLOR_ID_RGB'
-	 *   - 'LED_COLOR_ID_MULTI'
-	 * The member 'index' of this struct will be set to
-	 * 'MT6370_VIRTUAL_MULTICOLOR'.
-	 * If so, this LED will choose 'struct led_classdev_mc mc' to use.
-	 * Instead, if the member 'index' of this struct is set to
-	 * 'MT6370_LED_ISNK1' ~ 'MT6370_LED_ISNK4', then this LED will choose
-	 * 'struct led_classdev isink' to use.
-	 */
+	 
 	union {
 		struct led_classdev isink;
 		struct led_classdev_mc mc;
@@ -143,7 +127,7 @@ struct mt6370_pdata {
 };
 
 struct mt6370_priv {
-	/* Per LED access lock */
+	 
 	struct mutex lock;
 	struct regmap *regmap;
 	struct regmap_field *fields[F_MAX_FIELDS];
@@ -198,7 +182,7 @@ static const struct reg_field mt6372_reg_fields[F_MAX_FIELDS] = {
 	[F_LED4_FREQ]	= REG_FIELD(MT6372_REG_RGB34_FREQ, 2, 4),
 };
 
-/* Current unit: microamp, time unit: millisecond */
+ 
 static const struct linear_range common_led_ranges[R_MAX_RANGES] = {
 	[R_LED123_CURR]	= { 4000, 1, 6, 4000 },
 	[R_LED4_CURR]	= { 2000, 1, 3, 2000 },
@@ -366,15 +350,7 @@ static int mt6370_gen_breath_pattern(struct mt6370_priv *priv, struct led_patter
 	if (len < P_MAX_PATTERNS && val_len < P_MAX_PATTERNS / 2)
 		return -EINVAL;
 
-	/*
-	 * Pattern list
-	 * tr1:	 byte 0, b'[7:4]
-	 * tr2:	 byte 0, b'[3:0]
-	 * tf1:	 byte 1, b'[7:4]
-	 * tf2:	 byte 1, b'[3:0]
-	 * ton:	 byte 2, b'[7:4]
-	 * toff: byte 2, b'[3:0]
-	 */
+	 
 	for (i = 0; i < P_MAX_PATTERNS; i++) {
 		curr = pattern + i;
 
@@ -518,7 +494,7 @@ static int mt6370_mc_blink_set(struct led_classdev *lcdev,
 			goto out_unlock;
 	}
 
-	/* Toggle to make pattern timing the same */
+	 
 	ret = regmap_field_write(priv->fields[F_RGB_EN], disable);
 	if (ret)
 		goto out_unlock;
@@ -569,7 +545,7 @@ static int mt6370_mc_pattern_set(struct led_classdev *lcdev, struct led_pattern 
 			goto out_unlock;
 	}
 
-	/* Toggle to make pattern timing be the same */
+	 
 	ret = regmap_field_write(priv->fields[F_RGB_EN], disable);
 	if (ret)
 		goto out_unlock;
@@ -860,7 +836,7 @@ static int mt6370_led_register(struct device *dev, struct mt6370_led *led,
 	if (led->index == MT6370_VIRTUAL_MULTICOLOR)
 		return mt6370_multicolor_led_register(dev, led, init_data);
 
-	/* If ISNK4 is declared, change its mode from HW auto to SW control */
+	 
 	if (led->index == MT6370_LED_ISNK4) {
 		ret = regmap_field_write(priv->fields[F_CHGIND_EN], 1);
 		if (ret)
@@ -893,7 +869,7 @@ static int mt6370_check_vendor_info(struct mt6370_priv *priv)
 		priv->ranges = mt6372_led_ranges;
 		priv->pdata = &mt6372_pdata;
 	} else {
-		/* Common for MT6370/71 */
+		 
 		priv->reg_fields = common_reg_fields;
 		priv->ranges = common_led_ranges;
 		priv->pdata = &common_pdata;

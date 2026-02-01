@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Samsung Electronics Co.Ltd
- * Authors:
- *	Hyungwon Hwang <human.hwang@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -28,13 +24,13 @@
 #include "exynos_drm_drv.h"
 #include "exynos_drm_crtc.h"
 
-/* Sysreg registers for MIC */
+ 
 #define DSD_CFG_MUX	0x1004
 #define MIC0_RGB_MUX	(1 << 0)
 #define MIC0_I80_MUX	(1 << 1)
 #define MIC0_ON_MUX	(1 << 5)
 
-/* MIC registers */
+ 
 #define MIC_OP				0x0
 #define MIC_IP_VER			0x0004
 #define MIC_V_TIMING_0			0x0008

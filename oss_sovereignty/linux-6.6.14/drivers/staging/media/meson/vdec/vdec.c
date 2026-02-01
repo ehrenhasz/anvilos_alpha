@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/clk.h>
@@ -29,7 +26,7 @@ struct dummy_buf {
 	struct list_head list;
 };
 
-/* 16 MiB for parsed bitstream swap exchange */
+ 
 #define SIZE_VIFIFO SZ_16M
 
 static u32 get_output_size(u32 width, u32 height)
@@ -106,7 +103,7 @@ disable_dos_parser:
 
 static void vdec_wait_inactive(struct amvdec_session *sess)
 {
-	/* We consider 50ms with no IRQ to be inactive. */
+	 
 	while (time_is_after_jiffies64(sess->last_irq_jiffies +
 				       msecs_to_jiffies(50)))
 		msleep(25);
@@ -177,11 +174,7 @@ static void process_num_buffers(struct vb2_queue *q,
 	if (buffers_total > fmt_out->max_buffers)
 		*num_buffers = fmt_out->max_buffers - q->num_buffers;
 
-	/* We need to program the complete CAPTURE buffer list
-	 * in registers during start_streaming, and the firmwares
-	 * are free to choose any of them to write frames to. As such,
-	 * we need all of them to be queued into the driver
-	 */
+	 
 	sess->num_dst_bufs = q->num_buffers + *num_buffers;
 	q->min_buffers_needed = max(fmt_out->min_buffers, sess->num_dst_bufs);
 }
@@ -424,7 +417,7 @@ static void vdec_stop_streaming(struct vb2_queue *q)
 
 		sess->streamon_out = 0;
 	} else {
-		/* Drain remaining refs if was still running */
+		 
 		if (sess->status >= STATUS_RUNNING && codec_ops->drain)
 			codec_ops->drain(sess);
 
@@ -733,7 +726,7 @@ vdec_decoder_cmd(struct file *file, void *fh, struct v4l2_decoder_cmd *cmd)
 		return 0;
 	}
 
-	/* Should not happen */
+	 
 	if (cmd->cmd != V4L2_DEC_CMD_STOP)
 		return -EINVAL;
 

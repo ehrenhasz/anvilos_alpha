@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 Xillybus Ltd, http://xillybus.com
- *
- * Driver for the Xillybus class
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -103,7 +99,7 @@ int xillybus_init_chrdev(struct device *dev,
 		      unit->num_nodes);
 	if (rc) {
 		dev_err(dev, "Failed to add cdev.\n");
-		/* kobject_put() is normally done by cdev_del() */
+		 
 		kobject_put(&unit->cdev->kobj);
 		goto unregister_chrdev;
 	}

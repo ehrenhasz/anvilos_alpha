@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  PS3 virtual uart
- *
- *  Copyright (C) 2006 Sony Computer Entertainment Inc.
- *  Copyright 2006 Sony Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -23,16 +18,7 @@ MODULE_AUTHOR("Sony Corporation");
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("PS3 vuart");
 
-/**
- * vuart - An inter-partition data link service.
- *  port 0: PS3 AV Settings.
- *  port 2: PS3 System Manager.
- *
- * The vuart provides a bi-directional byte stream data link between logical
- * partitions.  Its primary role is as a communications link between the guest
- * OS and the system policy module.  The current HV does not support any
- * connections other than those listed.
- */
+ 
 
 enum {PORT_COUNT = 3,};
 
@@ -40,11 +26,11 @@ enum vuart_param {
 	PARAM_TX_TRIGGER = 0,
 	PARAM_RX_TRIGGER = 1,
 	PARAM_INTERRUPT_MASK = 2,
-	PARAM_RX_BUF_SIZE = 3, /* read only */
-	PARAM_RX_BYTES = 4, /* read only */
-	PARAM_TX_BUF_SIZE = 5, /* read only */
-	PARAM_TX_BYTES = 6, /* read only */
-	PARAM_INTERRUPT_STATUS = 7, /* read only */
+	PARAM_RX_BUF_SIZE = 3,  
+	PARAM_RX_BYTES = 4,  
+	PARAM_TX_BUF_SIZE = 5,  
+	PARAM_TX_BYTES = 6,  
+	PARAM_INTERRUPT_STATUS = 7,  
 };
 
 enum vuart_interrupt_bit {
@@ -59,9 +45,7 @@ enum vuart_interrupt_mask {
 	INTERRUPT_MASK_DISCONNECT = 4,
 };
 
-/**
- * struct ps3_vuart_port_priv - private vuart device data.
- */
+ 
 
 struct ps3_vuart_port_priv {
 	u64 interrupt_mask;
@@ -87,12 +71,7 @@ static struct ps3_vuart_port_priv *to_port_priv(
 	return (struct ps3_vuart_port_priv *)dev->driver_priv;
 }
 
-/**
- * struct ports_bmp - bitmap indicating ports needing service.
- *
- * A 256 bit read only bitmap indicating ports needing service.  Do not write
- * to these bits.  Must not cross a page boundary.
- */
+ 
 
 struct ports_bmp {
 	u64 status;
@@ -239,11 +218,7 @@ static int ps3_vuart_get_rx_bytes_waiting(struct ps3_system_bus_device *dev,
 	return result;
 }
 
-/**
- * ps3_vuart_set_interrupt_mask - Enable/disable the port interrupt sources.
- * @dev: The struct ps3_system_bus_device instance.
- * @bmp: Logical OR of enum vuart_interrupt_mask values. A zero bit disables.
- */
+ 
 
 static int ps3_vuart_set_interrupt_mask(struct ps3_system_bus_device *dev,
 	unsigned long mask)
@@ -341,12 +316,7 @@ int ps3_vuart_disable_interrupt_disconnect(struct ps3_system_bus_device *dev)
 		& ~INTERRUPT_MASK_DISCONNECT) : 0;
 }
 
-/**
- * ps3_vuart_raw_write - Low level write helper.
- * @dev: The struct ps3_system_bus_device instance.
- *
- * Do not call ps3_vuart_raw_write directly, use ps3_vuart_write.
- */
+ 
 
 static int ps3_vuart_raw_write(struct ps3_system_bus_device *dev,
 	const void *buf, unsigned int bytes, u64 *bytes_written)
@@ -371,12 +341,7 @@ static int ps3_vuart_raw_write(struct ps3_system_bus_device *dev,
 	return result;
 }
 
-/**
- * ps3_vuart_raw_read - Low level read helper.
- * @dev: The struct ps3_system_bus_device instance.
- *
- * Do not call ps3_vuart_raw_read directly, use ps3_vuart_read.
- */
+ 
 
 static int ps3_vuart_raw_read(struct ps3_system_bus_device *dev, void *buf,
 	unsigned int bytes, u64 *bytes_read)
@@ -403,13 +368,7 @@ static int ps3_vuart_raw_read(struct ps3_system_bus_device *dev, void *buf,
 	return result;
 }
 
-/**
- * ps3_vuart_clear_rx_bytes - Discard bytes received.
- * @dev: The struct ps3_system_bus_device instance.
- * @bytes: Max byte count to discard, zero = all pending.
- *
- * Used to clear pending rx interrupt source.  Will not block.
- */
+ 
 
 void ps3_vuart_clear_rx_bytes(struct ps3_system_bus_device *dev,
 	unsigned int bytes)
@@ -430,7 +389,7 @@ void ps3_vuart_clear_rx_bytes(struct ps3_system_bus_device *dev,
 	if (!bytes)
 		return;
 
-	/* Add some extra space for recently arrived data. */
+	 
 
 	bytes += 128;
 
@@ -443,15 +402,13 @@ void ps3_vuart_clear_rx_bytes(struct ps3_system_bus_device *dev,
 
 	kfree(tmp);
 
-	/* Don't include these bytes in the stats. */
+	 
 
 	priv->stats.bytes_read -= bytes_waiting;
 }
 EXPORT_SYMBOL_GPL(ps3_vuart_clear_rx_bytes);
 
-/**
- * struct list_buffer - An element for a port device fifo buffer list.
- */
+ 
 
 struct list_buffer {
 	struct list_head link;
@@ -461,15 +418,7 @@ struct list_buffer {
 	unsigned char data[];
 };
 
-/**
- * ps3_vuart_write - the entry point for writing data to a port
- * @dev: The struct ps3_system_bus_device instance.
- *
- * If the port is idle on entry as much of the incoming data is written to
- * the port as the port will accept.  Otherwise a list buffer is created
- * and any remaning incoming data is copied to that buffer.  The buffer is
- * then enqueued for transmision via the transmit interrupt.
- */
+ 
 
 int ps3_vuart_write(struct ps3_system_bus_device *dev, const void *buf,
 	unsigned int bytes)
@@ -532,13 +481,7 @@ int ps3_vuart_write(struct ps3_system_bus_device *dev, const void *buf,
 }
 EXPORT_SYMBOL_GPL(ps3_vuart_write);
 
-/**
- * ps3_vuart_queue_rx_bytes - Queue waiting bytes into the buffer list.
- * @dev: The struct ps3_system_bus_device instance.
- * @bytes_queued: Number of bytes queued to the buffer list.
- *
- * Must be called with priv->rx_list.lock held.
- */
+ 
 
 static int ps3_vuart_queue_rx_bytes(struct ps3_system_bus_device *dev,
 	u64 *bytes_queued)
@@ -560,7 +503,7 @@ static int ps3_vuart_queue_rx_bytes(struct ps3_system_bus_device *dev,
 	if (!bytes)
 		return 0;
 
-	/* Add some extra space for recently arrived data. */
+	 
 
 	bytes += 128;
 
@@ -586,14 +529,7 @@ static int ps3_vuart_queue_rx_bytes(struct ps3_system_bus_device *dev,
 	return 0;
 }
 
-/**
- * ps3_vuart_read - The entry point for reading data from a port.
- *
- * Queue data waiting at the port, and if enough bytes to satisfy the request
- * are held in the buffer list those bytes are dequeued and copied to the
- * caller's buffer.  Emptied list buffers are retiered.  If the request cannot
- * be statified by bytes held in the list buffers -EAGAIN is returned.
- */
+ 
 
 int ps3_vuart_read(struct ps3_system_bus_device *dev, void *buf,
 	unsigned int bytes)
@@ -609,7 +545,7 @@ int ps3_vuart_read(struct ps3_system_bus_device *dev, void *buf,
 
 	spin_lock_irqsave(&priv->rx_list.lock, flags);
 
-	/* Queue rx bytes here for polled reads. */
+	 
 
 	while (priv->rx_list.bytes_held < bytes) {
 		u64 tmp;
@@ -654,9 +590,7 @@ int ps3_vuart_read(struct ps3_system_bus_device *dev, void *buf,
 }
 EXPORT_SYMBOL_GPL(ps3_vuart_read);
 
-/**
- * ps3_vuart_work - Asynchronous read handler.
- */
+ 
 
 static void ps3_vuart_work(struct work_struct *work)
 {
@@ -707,13 +641,7 @@ void ps3_vuart_cancel_async(struct ps3_system_bus_device *dev)
 }
 EXPORT_SYMBOL_GPL(ps3_vuart_cancel_async);
 
-/**
- * ps3_vuart_handle_interrupt_tx - third stage transmit interrupt handler
- *
- * Services the transmit interrupt for the port.  Writes as much data from the
- * buffer list as the port will accept.  Retires any emptied list buffers and
- * adjusts the final list buffer state for a partial write.
- */
+ 
 
 static int ps3_vuart_handle_interrupt_tx(struct ps3_system_bus_device *dev)
 {
@@ -767,13 +695,7 @@ port_full:
 	return result;
 }
 
-/**
- * ps3_vuart_handle_interrupt_rx - third stage receive interrupt handler
- *
- * Services the receive interrupt for the port.  Creates a list buffer and
- * copies all waiting port data to that buffer and enqueues the buffer in the
- * buffer list.  Buffer list data is dequeued via ps3_vuart_read.
- */
+ 
 
 static int ps3_vuart_handle_interrupt_rx(struct ps3_system_bus_device *dev)
 {
@@ -812,13 +734,7 @@ static int ps3_vuart_handle_interrupt_disconnect(
 	return -1;
 }
 
-/**
- * ps3_vuart_handle_port_interrupt - second stage interrupt handler
- *
- * Services any pending interrupt types for the port.  Passes control to the
- * third stage type specific interrupt handler.  Returns control to the first
- * stage handler after one iteration.
- */
+ 
 
 static int ps3_vuart_handle_port_interrupt(struct ps3_system_bus_device *dev)
 {
@@ -866,13 +782,7 @@ static struct vuart_bus_priv {
 	struct ps3_system_bus_device *devices[PORT_COUNT];
 } vuart_bus_priv;
 
-/**
- * ps3_vuart_irq_handler - first stage interrupt handler
- *
- * Loops finding any interrupting port and its associated instance data.
- * Passes control to the second stage port specific interrupt handler.  Loops
- * until all outstanding interrupts are serviced.
- */
+ 
 
 static irqreturn_t ps3_vuart_irq_handler(int irq, void *_private)
 {
@@ -1013,7 +923,7 @@ static int ps3_vuart_probe(struct ps3_system_bus_device *dev)
 
 	vuart_bus_priv.devices[dev->port_number] = dev;
 
-	/* Setup dev->driver_priv. */
+	 
 
 	dev->driver_priv = kzalloc(sizeof(struct ps3_vuart_port_priv),
 		GFP_KERNEL);
@@ -1035,7 +945,7 @@ static int ps3_vuart_probe(struct ps3_system_bus_device *dev)
 	priv->rx_list.work.trigger = 0;
 	priv->rx_list.work.dev = dev;
 
-	/* clear stale pending interrupts */
+	 
 
 	ps3_vuart_clear_rx_bytes(dev, 0);
 
@@ -1075,14 +985,7 @@ fail_setup_interrupt:
 	return result;
 }
 
-/**
- * ps3_vuart_cleanup - common cleanup helper.
- * @dev: The struct ps3_system_bus_device instance.
- *
- * Cleans interrupts and HV resources.  Must be called with
- * vuart_bus_priv.probe_mutex held.  Used by ps3_vuart_remove and
- * ps3_vuart_shutdown.  After this call, polled reading will still work.
- */
+ 
 
 static int ps3_vuart_cleanup(struct ps3_system_bus_device *dev)
 {
@@ -1094,13 +997,7 @@ static int ps3_vuart_cleanup(struct ps3_system_bus_device *dev)
 	return 0;
 }
 
-/**
- * ps3_vuart_remove - Completely clean the device instance.
- * @dev: The struct ps3_system_bus_device instance.
- *
- * Cleans all memory, interrupts and HV resources.  After this call the
- * device can no longer be used.
- */
+ 
 
 static void ps3_vuart_remove(struct ps3_system_bus_device *dev)
 {
@@ -1143,15 +1040,7 @@ static void ps3_vuart_remove(struct ps3_system_bus_device *dev)
 	mutex_unlock(&vuart_bus_priv.probe_mutex);
 }
 
-/**
- * ps3_vuart_shutdown - Cleans interrupts and HV resources.
- * @dev: The struct ps3_system_bus_device instance.
- *
- * Cleans interrupts and HV resources.  After this call the
- * device can still be used in polling mode.  This behavior required
- * by sys-manager to be able to complete the device power operation
- * sequence.
- */
+ 
 
 static void ps3_vuart_shutdown(struct ps3_system_bus_device *dev)
 {
@@ -1214,9 +1103,7 @@ static void __exit ps3_vuart_bus_exit(void)
 core_initcall(ps3_vuart_bus_init);
 module_exit(ps3_vuart_bus_exit);
 
-/**
- * ps3_vuart_port_driver_register - Add a vuart port device driver.
- */
+ 
 
 int ps3_vuart_port_driver_register(struct ps3_vuart_port_driver *drv)
 {
@@ -1236,9 +1123,7 @@ int ps3_vuart_port_driver_register(struct ps3_vuart_port_driver *drv)
 }
 EXPORT_SYMBOL_GPL(ps3_vuart_port_driver_register);
 
-/**
- * ps3_vuart_port_driver_unregister - Remove a vuart port device driver.
- */
+ 
 
 void ps3_vuart_port_driver_unregister(struct ps3_vuart_port_driver *drv)
 {

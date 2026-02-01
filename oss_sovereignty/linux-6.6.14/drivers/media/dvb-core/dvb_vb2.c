@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dvb-vb2.c - dvb-vb2
- *
- * Copyright (C) 2015 Samsung Electronics
- *
- * Author: jh1009.sung@samsung.com
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -36,10 +30,7 @@ static int _queue_setup(struct vb2_queue *vq,
 	*nplanes = 1;
 	sizes[0] = ctx->buf_siz;
 
-	/*
-	 * videobuf2-vmalloc allocator is context-less so no need to set
-	 * alloc_ctxs array.
-	 */
+	 
 
 	dprintk(3, "[%s] count=%d, size=%d\n", ctx->name,
 		*nbuffers, sizes[0]);
@@ -157,9 +148,7 @@ static const struct vb2_buf_ops dvb_vb2_buf_ops = {
 	.fill_vb2_buffer	= _fill_vb2_buffer,
 };
 
-/*
- * Videobuf operations
- */
+ 
 int dvb_vb2_init(struct dvb_vb2_ctx *ctx, const char *name, int nonblocking)
 {
 	struct vb2_queue *q = &ctx->vb_q;
@@ -167,9 +156,9 @@ int dvb_vb2_init(struct dvb_vb2_ctx *ctx, const char *name, int nonblocking)
 
 	memset(ctx, 0, sizeof(struct dvb_vb2_ctx));
 	q->type = DVB_BUF_TYPE_CAPTURE;
-	/**capture type*/
+	 
 	q->is_output = 0;
-	/**only mmap is supported currently*/
+	 
 	q->io_modes = VB2_MMAP;
 	q->drv_priv = ctx;
 	q->buf_struct_size = sizeof(struct dvb_buffer);
@@ -260,10 +249,7 @@ int dvb_vb2_fill_buffer(struct dvb_vb2_ctx *ctx,
 	unsigned char *psrc = (unsigned char *)src;
 	int ll = 0;
 
-	/*
-	 * normal case: This func is called twice from demux driver
-	 * one with valid src pointer, second time with NULL pointer
-	 */
+	 
 	if (!src || !len)
 		return 0;
 	spin_lock_irqsave(&ctx->slock, flags);
@@ -292,7 +278,7 @@ int dvb_vb2_fill_buffer(struct dvb_vb2_ctx *ctx,
 			break;
 		}
 
-		/* Fill buffer */
+		 
 		ll = min(todo, ctx->remain);
 		vbuf = vb2_plane_vaddr(&ctx->buf->vb, 0);
 		memcpy(vbuf + ctx->offset, psrc, ll);
@@ -330,11 +316,11 @@ int dvb_vb2_reqbufs(struct dvb_vb2_ctx *ctx, struct dmx_requestbuffers *req)
 {
 	int ret;
 
-	/* Adjust size to a sane value */
+	 
 	if (req->size > DVB_V2_MAX_SIZE)
 		req->size = DVB_V2_MAX_SIZE;
 
-	/* FIXME: round req->size to a 188 or 204 multiple */
+	 
 
 	ctx->buf_siz = req->size;
 	ctx->buf_cnt = req->count;

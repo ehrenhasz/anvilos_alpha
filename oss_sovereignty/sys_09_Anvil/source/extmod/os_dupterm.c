@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Paul Sokolovsky
- * Copyright (c) 2017-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include "py/mpconfig.h"
@@ -46,7 +21,7 @@ void mp_os_deactivate(size_t dupterm_idx, const char *msg, mp_obj_t exc) {
         mp_obj_print_exception(&mp_plat_print, exc);
     }
     if (term == MP_OBJ_NULL) {
-        // Dupterm was already closed.
+        
         return;
     }
     nlr_buf_t nlr;
@@ -54,7 +29,7 @@ void mp_os_deactivate(size_t dupterm_idx, const char *msg, mp_obj_t exc) {
         mp_stream_close(term);
         nlr_pop();
     } else {
-        // Ignore any errors during stream closing
+        
     }
 }
 
@@ -81,14 +56,14 @@ uintptr_t mp_os_dupterm_poll(uintptr_t poll_flags) {
                 ret = stream_p->ioctl(s, MP_STREAM_POLL, poll_flags, &errcode);
                 nlr_pop();
             } else {
-                // Ignore error with ioctl
+                
             }
         }
 
         if (ret != MP_STREAM_ERROR) {
             poll_flags_out |= ret;
             if (poll_flags_out == poll_flags) {
-                // Finish early if all requested flags are set
+                
                 break;
             }
         }
@@ -99,21 +74,21 @@ uintptr_t mp_os_dupterm_poll(uintptr_t poll_flags) {
 
 int mp_os_dupterm_rx_chr(void) {
     #if MICROPY_PY_OS_DUPTERM_NOTIFY
-    // When os.dupterm_notify() is enabled it is usually called from a scheduled
-    // function, via mp_os_dupterm_notify().  That can lead to recursive calls of
-    // this function when this function is called from mp_hal_stdin_rx_chr():
-    // - mp_hal_stdin_rx_chr()
-    //  - mp_os_dupterm_rx_chr()
-    //   - <Python code>
-    //    - os.dupterm_notify() is scheduled via interrupt/event
-    //     - <Python code> runs scheduled code (eg WebREPL -> rp2.Flash().writeblocks())
-    //      - mp_os_dupterm_notify()
-    //       - mp_os_dupterm_rx_chr()
-    // Break that cycle by locking the scheduler during this function's duration.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     mp_sched_lock();
     #endif
 
-    int ret = -1; // no chars available
+    int ret = -1; 
     for (size_t idx = 0; idx < MICROPY_PY_OS_DUPTERM; ++idx) {
         if (MP_STATE_VM(dupterm_objs[idx]) == MP_OBJ_NULL) {
             continue;
@@ -144,18 +119,18 @@ int mp_os_dupterm_rx_chr(void) {
                 nlr_pop();
                 mp_os_deactivate(idx, "dupterm: EOF received, deactivating\n", MP_OBJ_NULL);
             } else if (out_sz == MP_STREAM_ERROR) {
-                // errcode is valid
+                
                 if (mp_is_nonblocking_error(errcode)) {
                     nlr_pop();
                 } else {
                     mp_raise_OSError(errcode);
                 }
             } else {
-                // read 1 byte
+                
                 nlr_pop();
                 ret = buf[0];
                 if (ret == mp_interrupt_char) {
-                    // Signal keyboard interrupt to be raised as soon as the VM resumes
+                    
                     mp_sched_keyboard_interrupt();
                     ret = -2;
                 }
@@ -174,7 +149,7 @@ int mp_os_dupterm_rx_chr(void) {
 }
 
 int mp_os_dupterm_tx_strn(const char *str, size_t len) {
-    // Returns the minimum successful write length, or -1 if no write is attempted.
+    
     int ret = len;
     bool did_write = false;
     for (size_t idx = 0; idx < MICROPY_PY_OS_DUPTERM; ++idx) {
@@ -243,4 +218,4 @@ MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_os_dupterm_obj, 1, 2, mp_os_dupterm);
 
 MP_REGISTER_ROOT_POINTER(mp_obj_t dupterm_objs[MICROPY_PY_OS_DUPTERM]);
 
-#endif // MICROPY_PY_OS_DUPTERM
+#endif 

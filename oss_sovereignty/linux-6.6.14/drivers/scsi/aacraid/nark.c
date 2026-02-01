@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Adaptec AAC series RAID controller driver
- *
- * based on the old aacraid driver that is..
- * Adaptec aacraid device driver for Linux.
- *
- * Copyright (c) 2000-2010 Adaptec, Inc.
- *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
- *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
- *
- * Module Name:
- *  nark.c
- *
- * Abstract: Hardware Device Interface for NEMER/ARK
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/blkdev.h>
@@ -22,12 +8,7 @@
 
 #include "aacraid.h"
 
-/**
- *	aac_nark_ioremap
- *	@dev: device to ioremap
- *	@size: mapping resize request
- *
- */
+ 
 static int aac_nark_ioremap(struct aac_dev * dev, u32 size)
 {
 	if (!size) {
@@ -54,17 +35,11 @@ static int aac_nark_ioremap(struct aac_dev * dev, u32 size)
 	return 0;
 }
 
-/**
- *	aac_nark_init	-	initialize an NEMER/ARK Split Bar card
- *	@dev: device to configure
- *
- */
+ 
 
 int aac_nark_init(struct aac_dev * dev)
 {
-	/*
-	 *	Fill in the function dispatch table.
-	 */
+	 
 	dev->a_ops.adapter_ioremap = aac_nark_ioremap;
 	dev->a_ops.adapter_comm = aac_rx_select_comm;
 

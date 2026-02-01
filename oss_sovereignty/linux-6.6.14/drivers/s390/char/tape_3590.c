@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    tape device discipline for 3590 tapes.
- *
- *    Copyright IBM Corp. 2001, 2009
- *    Author(s): Stefan Bader <shbader@de.ibm.com>
- *		 Michael Holzheu <holzheu@de.ibm.com>
- *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "tape_3590"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -18,7 +11,7 @@
 #include <asm/ebcdic.h>
 
 #define TAPE_DBF_AREA	tape_3590_dbf
-#define BUFSIZE 512	/* size of buffers for dynamic generated messages */
+#define BUFSIZE 512	 
 
 #include "tape.h"
 #include "tape_std.h"
@@ -26,22 +19,11 @@
 
 static struct workqueue_struct *tape_3590_wq;
 
-/*
- * Pointer to debug area.
- */
+ 
 debug_info_t *TAPE_DBF_AREA = NULL;
 EXPORT_SYMBOL(TAPE_DBF_AREA);
 
-/*******************************************************************
- * Error Recovery functions:
- * - Read Opposite:		 implemented
- * - Read Device (buffered) log: BRA
- * - Read Library log:		 BRA
- * - Swap Devices:		 BRA
- * - Long Busy:			 implemented
- * - Special Intercept:		 BRA
- * - Read Alternate:		 implemented
- *******************************************************************/
+ 
 
 static const char *tape_3590_msg[TAPE_3590_MAX_MSG] = {
 	[0x00] = "",
@@ -195,9 +177,7 @@ invalid:
 	return -EINVAL;
 }
 
-/*
- * Query KEKLs
- */
+ 
 static int tape_3592_kekl_query(struct tape_device *device,
 				struct tape390_kekl_pair *ext_kekls)
 {
@@ -236,9 +216,7 @@ fail_malloc:
 	return rc;
 }
 
-/*
- * IOCTL: Query KEKLs
- */
+ 
 static int tape_3592_ioctl_kekl_query(struct tape_device *device,
 				      unsigned long arg)
 {
@@ -268,9 +246,7 @@ fail:
 
 static int tape_3590_mttell(struct tape_device *device, int mt_count);
 
-/*
- * Set KEKLs
- */
+ 
 static int tape_3592_kekl_set(struct tape_device *device,
 			      struct tape390_kekl_pair *ext_kekls)
 {
@@ -299,9 +275,7 @@ static int tape_3592_kekl_set(struct tape_device *device,
 	return tape_do_io_free(device, request);
 }
 
-/*
- * IOCTL: Set KEKLs
- */
+ 
 static int tape_3592_ioctl_kekl_set(struct tape_device *device,
 				    unsigned long arg)
 {
@@ -321,9 +295,7 @@ static int tape_3592_ioctl_kekl_set(struct tape_device *device,
 	return rc;
 }
 
-/*
- * Enable encryption
- */
+ 
 static struct tape_request *__tape_3592_enable_crypt(struct tape_device *device)
 {
 	struct tape_request *request;
@@ -371,9 +343,7 @@ static void tape_3592_enable_crypt_async(struct tape_device *device)
 		tape_do_io_async_free(device, request);
 }
 
-/*
- * Disable encryption
- */
+ 
 static struct tape_request *__tape_3592_disable_crypt(struct tape_device *device)
 {
 	struct tape_request *request;
@@ -419,9 +389,7 @@ static void tape_3592_disable_crypt_async(struct tape_device *device)
 		tape_do_io_async_free(device, request);
 }
 
-/*
- * IOCTL: Set encryption status
- */
+ 
 static int tape_3592_ioctl_crypt_set(struct tape_device *device,
 				     unsigned long arg)
 {
@@ -442,9 +410,7 @@ static int tape_3592_ioctl_crypt_set(struct tape_device *device,
 
 static int tape_3590_sense_medium(struct tape_device *device);
 
-/*
- * IOCTL: Query enryption status
- */
+ 
 static int tape_3592_ioctl_crypt_query(struct tape_device *device,
 				       unsigned long arg)
 {
@@ -459,9 +425,7 @@ static int tape_3592_ioctl_crypt_query(struct tape_device *device,
 		return 0;
 }
 
-/*
- * 3590 IOCTL Overload
- */
+ 
 static int
 tape_3590_ioctl(struct tape_device *device, unsigned int cmd, unsigned long arg)
 {
@@ -483,13 +447,11 @@ tape_3590_ioctl(struct tape_device *device, unsigned int cmd, unsigned long arg)
 	case TAPE390_CRYPT_QUERY:
 		return tape_3592_ioctl_crypt_query(device, arg);
 	default:
-		return -EINVAL;	/* no additional ioctls */
+		return -EINVAL;	 
 	}
 }
 
-/*
- * SENSE Medium: Get Sense data about medium state
- */
+ 
 static int tape_3590_sense_medium(struct tape_device *device)
 {
 	struct tape_request *request;
@@ -514,9 +476,7 @@ static void tape_3590_sense_medium_async(struct tape_device *device)
 	tape_do_io_async_free(device, request);
 }
 
-/*
- * MTTELL: Tell block. Return the number of block relative to current file.
- */
+ 
 static int
 tape_3590_mttell(struct tape_device *device, int mt_count)
 {
@@ -529,9 +489,7 @@ tape_3590_mttell(struct tape_device *device, int mt_count)
 	return block_id >> 32;
 }
 
-/*
- * MTSEEK: seek to the specified block.
- */
+ 
 static int
 tape_3590_mtseek(struct tape_device *device, int count)
 {
@@ -549,21 +507,14 @@ tape_3590_mtseek(struct tape_device *device, int count)
 	return tape_do_io_free(device, request);
 }
 
-/*
- * Read Opposite Error Recovery Function:
- * Used, when Read Forward does not work
- */
+ 
 static void
 tape_3590_read_opposite(struct tape_device *device,
 			struct tape_request *request)
 {
 	struct tape_3590_disc_data *data;
 
-	/*
-	 * We have allocated 4 ccws in tape_std_read, so we can now
-	 * transform the request to a read backward, followed by a
-	 * forward space block.
-	 */
+	 
 	request->op = TO_RBA;
 	tape_ccw_cc(request->cpaddr, MODE_SET_DB, 1, device->modeset_byte);
 	data = device->discdata;
@@ -574,22 +525,7 @@ tape_3590_read_opposite(struct tape_device *device,
 	DBF_EVENT(6, "xrop ccwg\n");
 }
 
-/*
- * Read Attention Msg
- * This should be done after an interrupt with attention bit (0x80)
- * in device state.
- *
- * After a "read attention message" request there are two possible
- * results:
- *
- * 1. A unit check is presented, when attention sense is present (e.g. when
- * a medium has been unloaded). The attention sense comes then
- * together with the unit check. The recovery action is either "retry"
- * (in case there is an attention message pending) or "permanent error".
- *
- * 2. The attention msg is written to the "read subsystem data" buffer.
- * In this case we probably should print it to the console.
- */
+ 
 static void tape_3590_read_attmsg_async(struct tape_device *device)
 {
 	struct tape_request *request;
@@ -601,20 +537,14 @@ static void tape_3590_read_attmsg_async(struct tape_device *device)
 	request->op = TO_READ_ATTMSG;
 	buf = request->cpdata;
 	buf[0] = PREP_RD_SS_DATA;
-	buf[6] = RD_ATTMSG;	/* read att msg */
+	buf[6] = RD_ATTMSG;	 
 	tape_ccw_cc(request->cpaddr, PERFORM_SS_FUNC, 12, buf);
 	tape_ccw_cc(request->cpaddr + 1, READ_SS_DATA, 4096 - 12, buf + 12);
 	tape_ccw_end(request->cpaddr + 2, NOP, 0, NULL);
 	tape_do_io_async_free(device, request);
 }
 
-/*
- * These functions are used to schedule follow-up actions from within an
- * interrupt context (like unsolicited interrupts).
- * Note: the work handler is called by the system work queue. The tape
- * commands started by the handler need to be asynchrounous, otherwise
- * a deadlock can occur e.g. in case of a deferred cc=1 (see __tape_do_irq).
- */
+ 
 struct work_handler_data {
 	struct tape_device *device;
 	enum tape_op        op;
@@ -698,10 +628,7 @@ static void tape_3590_med_state_set(struct tape_device *device,
 	}
 }
 
-/*
- * The done handler is called at device/channel end and wakes up the sleeping
- * process
- */
+ 
 static int
 tape_3590_done(struct tape_device *device, struct tape_request *request)
 {
@@ -741,8 +668,8 @@ tape_3590_done(struct tape_device *device, struct tape_request *request)
 			&= ~TAPE390_CRYPT_ON_MASK;
 		*(device->modeset_byte) &= ~0x03;
 		break;
-	case TO_RBI:	/* RBI seems to succeed even without medium loaded. */
-	case TO_NOP:	/* Same to NOP. */
+	case TO_RBI:	 
+	case TO_NOP:	 
 	case TO_READ_CONFIG:
 	case TO_READ_ATTMSG:
 	case TO_DIS:
@@ -757,9 +684,7 @@ tape_3590_done(struct tape_device *device, struct tape_request *request)
 	return TAPE_IO_SUCCESS;
 }
 
-/*
- * This function is called, when error recovery was successful
- */
+ 
 static inline int
 tape_3590_erp_succeeded(struct tape_device *device, struct tape_request *request)
 {
@@ -768,9 +693,7 @@ tape_3590_erp_succeeded(struct tape_device *device, struct tape_request *request
 	return tape_3590_done(device, request);
 }
 
-/*
- * This function is called, when error recovery was not successful
- */
+ 
 static inline int
 tape_3590_erp_failed(struct tape_device *device, struct tape_request *request,
 		     struct irb *irb, int rc)
@@ -781,9 +704,7 @@ tape_3590_erp_failed(struct tape_device *device, struct tape_request *request,
 	return rc;
 }
 
-/*
- * Error Recovery do retry
- */
+ 
 static inline int
 tape_3590_erp_retry(struct tape_device *device, struct tape_request *request,
 		    struct irb *irb)
@@ -793,17 +714,15 @@ tape_3590_erp_retry(struct tape_device *device, struct tape_request *request,
 	return TAPE_IO_RETRY;
 }
 
-/*
- * Handle unsolicited interrupts
- */
+ 
 static int
 tape_3590_unsolicited_irq(struct tape_device *device, struct irb *irb)
 {
 	if (irb->scsw.cmd.dstat == DEV_STAT_CHN_END)
-		/* Probably result of halt ssch */
+		 
 		return TAPE_IO_PENDING;
 	else if (irb->scsw.cmd.dstat == 0x85)
-		/* Device Ready */
+		 
 		DBF_EVENT(3, "unsol.irq! tape ready: %08x\n", device->cdev_id);
 	else if (irb->scsw.cmd.dstat & DEV_STAT_ATTENTION) {
 		tape_3590_schedule_work(device, TO_READ_ATTMSG);
@@ -811,14 +730,12 @@ tape_3590_unsolicited_irq(struct tape_device *device, struct irb *irb)
 		DBF_EVENT(3, "unsol.irq! dev end: %08x\n", device->cdev_id);
 		tape_dump_sense_dbf(device, NULL, irb);
 	}
-	/* check medium state */
+	 
 	tape_3590_schedule_work(device, TO_MSEN);
 	return TAPE_IO_SUCCESS;
 }
 
-/*
- * Basic Recovery routine
- */
+ 
 static int
 tape_3590_erp_basic(struct tape_device *device, struct tape_request *request,
 		    struct irb *irb, int rc)
@@ -842,41 +759,27 @@ tape_3590_erp_basic(struct tape_device *device, struct tape_request *request,
 	}
 }
 
-/*
- *  RDL: Read Device (buffered) log
- */
+ 
 static int
 tape_3590_erp_read_buf_log(struct tape_device *device,
 			   struct tape_request *request, struct irb *irb)
 {
-	/*
-	 * We just do the basic error recovery at the moment (retry).
-	 * Perhaps in the future, we read the log and dump it somewhere...
-	 */
+	 
 	return tape_3590_erp_basic(device, request, irb, -EIO);
 }
 
-/*
- *  SWAP: Swap Devices
- */
+ 
 static int
 tape_3590_erp_swap(struct tape_device *device, struct tape_request *request,
 		   struct irb *irb)
 {
-	/*
-	 * This error recovery should swap the tapes
-	 * if the original has a problem. The operation
-	 * should proceed with the new tape... this
-	 * should probably be done in user space!
-	 */
+	 
 	dev_warn (&device->cdev->dev, "The tape medium must be loaded into a "
 		"different tape unit\n");
 	return tape_3590_erp_basic(device, request, irb, -EIO);
 }
 
-/*
- *  LBY: Long Busy
- */
+ 
 static int
 tape_3590_erp_long_busy(struct tape_device *device,
 			struct tape_request *request, struct irb *irb)
@@ -885,9 +788,7 @@ tape_3590_erp_long_busy(struct tape_device *device,
 	return TAPE_IO_LONG_BUSY;
 }
 
-/*
- *  SPI: Special Intercept
- */
+ 
 static int
 tape_3590_erp_special_interrupt(struct tape_device *device,
 				struct tape_request *request, struct irb *irb)
@@ -895,22 +796,14 @@ tape_3590_erp_special_interrupt(struct tape_device *device,
 	return tape_3590_erp_basic(device, request, irb, -EIO);
 }
 
-/*
- *  RDA: Read Alternate
- */
+ 
 static int
 tape_3590_erp_read_alternate(struct tape_device *device,
 			     struct tape_request *request, struct irb *irb)
 {
 	struct tape_3590_disc_data *data;
 
-	/*
-	 * The issued Read Backward or Read Previous command is not
-	 * supported by the device
-	 * The recovery action should be to issue another command:
-	 * Read Revious: if Read Backward is not supported
-	 * Read Backward: if Read Previous is not supported
-	 */
+	 
 	data = device->discdata;
 	if (data->read_back_op == READ_PREVIOUS) {
 		DBF_EVENT(2, "(%08x): No support for READ_PREVIOUS command\n",
@@ -925,23 +818,18 @@ tape_3590_erp_read_alternate(struct tape_device *device,
 	return tape_3590_erp_retry(device, request, irb);
 }
 
-/*
- * Error Recovery read opposite
- */
+ 
 static int
 tape_3590_erp_read_opposite(struct tape_device *device,
 			    struct tape_request *request, struct irb *irb)
 {
 	switch (request->op) {
 	case TO_RFO:
-		/*
-		 * We did read forward, but the data could not be read.
-		 * We will read backward and then skip forward again.
-		 */
+		 
 		tape_3590_read_opposite(device, request);
 		return tape_3590_erp_retry(device, request, irb);
 	case TO_RBA:
-		/* We tried to read forward and backward, but hat no success */
+		 
 		return tape_3590_erp_failed(device, request, irb, -EIO);
 		break;
 	default:
@@ -949,9 +837,7 @@ tape_3590_erp_read_opposite(struct tape_device *device,
 	}
 }
 
-/*
- * Print an MIM (Media Information  Message) (message code f0)
- */
+ 
 static void
 tape_3590_print_mim_msg_f0(struct tape_device *device, struct irb *irb)
 {
@@ -965,7 +851,7 @@ tape_3590_print_mim_msg_f0(struct tape_device *device, struct irb *irb)
 		goto out_nomem;
 
 	sense = (struct tape_3590_sense *) irb->ecw;
-	/* Exception Message */
+	 
 	switch (sense->fmt.f70.emc) {
 	case 0x02:
 		snprintf(exception, BUFSIZE, "Data degraded");
@@ -993,7 +879,7 @@ tape_3590_print_mim_msg_f0(struct tape_device *device, struct irb *irb)
 			sense->fmt.f70.emc);
 		break;
 	}
-	/* Service Message */
+	 
 	switch (sense->fmt.f70.smc) {
 	case 0x02:
 		snprintf(service, BUFSIZE, "Reference Media maintenance "
@@ -1013,9 +899,7 @@ out_nomem:
 	kfree(service);
 }
 
-/*
- * Print an I/O Subsystem Service Information Message (message code f1)
- */
+ 
 static void
 tape_3590_print_io_sim_msg_f1(struct tape_device *device, struct irb *irb)
 {
@@ -1029,7 +913,7 @@ tape_3590_print_io_sim_msg_f1(struct tape_device *device, struct irb *irb)
 		goto out_nomem;
 
 	sense = (struct tape_3590_sense *) irb->ecw;
-	/* Exception Message */
+	 
 	switch (sense->fmt.f71.emc) {
 	case 0x01:
 		snprintf(exception, BUFSIZE, "Effect of failure is unknown");
@@ -1062,7 +946,7 @@ tape_3590_print_io_sim_msg_f1(struct tape_device *device, struct irb *irb)
 		snprintf(exception, BUFSIZE, "0x%02x",
 			sense->fmt.f71.emc);
 	}
-	/* Service Message */
+	 
 	switch (sense->fmt.f71.smc) {
 	case 0x01:
 		snprintf(service, BUFSIZE, "Repair impact is unknown");
@@ -1124,9 +1008,7 @@ out_nomem:
 	kfree(service);
 }
 
-/*
- * Print an Device Subsystem Service Information Message (message code f2)
- */
+ 
 static void
 tape_3590_print_dev_sim_msg_f2(struct tape_device *device, struct irb *irb)
 {
@@ -1140,7 +1022,7 @@ tape_3590_print_dev_sim_msg_f2(struct tape_device *device, struct irb *irb)
 		goto out_nomem;
 
 	sense = (struct tape_3590_sense *) irb->ecw;
-	/* Exception Message */
+	 
 	switch (sense->fmt.f71.emc) {
 	case 0x01:
 		snprintf(exception, BUFSIZE, "Effect of failure is unknown");
@@ -1171,7 +1053,7 @@ tape_3590_print_dev_sim_msg_f2(struct tape_device *device, struct irb *irb)
 		snprintf(exception, BUFSIZE, "0x%02x",
 			sense->fmt.f71.emc);
 	}
-	/* Service Message */
+	 
 	switch (sense->fmt.f71.smc) {
 	case 0x01:
 		snprintf(service, BUFSIZE, "Repair impact is unknown");
@@ -1236,9 +1118,7 @@ out_nomem:
 	kfree(service);
 }
 
-/*
- * Print standard ERA Message
- */
+ 
 static void
 tape_3590_print_era_msg(struct tape_device *device, struct irb *irb)
 {
@@ -1259,7 +1139,7 @@ tape_3590_print_era_msg(struct tape_device *device, struct irb *irb)
 		return;
 	}
 	if (sense->mc == 0xf0) {
-		/* Standard Media Information Message */
+		 
 		dev_warn (&device->cdev->dev, "MIM SEV=%i, MC=%02x, ES=%x/%x, "
 			"RC=%02x-%04x-%02x\n", sense->fmt.f70.sev, sense->mc,
 			sense->fmt.f70.emc, sense->fmt.f70.smc,
@@ -1269,7 +1149,7 @@ tape_3590_print_era_msg(struct tape_device *device, struct irb *irb)
 		return;
 	}
 	if (sense->mc == 0xf1) {
-		/* Standard I/O Subsystem Service Information Message */
+		 
 		dev_warn (&device->cdev->dev, "IOSIM SEV=%i, DEVTYPE=3590/%02x,"
 			" MC=%02x, ES=%x/%x, REF=0x%04x-0x%04x-0x%04x\n",
 			sense->fmt.f71.sev, device->cdev->id.dev_model,
@@ -1280,7 +1160,7 @@ tape_3590_print_era_msg(struct tape_device *device, struct irb *irb)
 		return;
 	}
 	if (sense->mc == 0xf2) {
-		/* Standard Device Service Information Message */
+		 
 		dev_warn (&device->cdev->dev, "DEVSIM SEV=%i, DEVTYPE=3590/%02x"
 			", MC=%02x, ES=%x/%x, REF=0x%04x-0x%04x-0x%04x\n",
 			sense->fmt.f71.sev, device->cdev->id.dev_model,
@@ -1291,7 +1171,7 @@ tape_3590_print_era_msg(struct tape_device *device, struct irb *irb)
 		return;
 	}
 	if (sense->mc == 0xf3) {
-		/* Standard Library Service Information Message */
+		 
 		return;
 	}
 	dev_warn (&device->cdev->dev, "The tape unit has issued an unknown "
@@ -1309,10 +1189,10 @@ static int tape_3590_crypt_error(struct tape_device *device,
 	cu_rc = sense[0];
 	ekm_rc2 = *((u16*) &sense[10]);
 	if ((cu_rc == 0) && (ekm_rc2 == 0xee31))
-		/* key not defined on EKM */
+		 
 		return tape_3590_erp_basic(device, request, irb, -EKEYREJECTED);
 	if ((cu_rc == 1) || (cu_rc == 2))
-		/* No connection to EKM */
+		 
 		return tape_3590_erp_basic(device, request, irb, -ENOTCONN);
 
 	dev_err (&device->cdev->dev, "The tape unit failed to obtain the "
@@ -1321,11 +1201,7 @@ static int tape_3590_crypt_error(struct tape_device *device,
 	return tape_3590_erp_basic(device, request, irb, -ENOKEY);
 }
 
-/*
- *  3590 error Recovery routine:
- *  If possible, it tries to recover from the error. If this is not possible,
- *  inform the user about the problem.
- */
+ 
 static int
 tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 		     struct irb *irb)
@@ -1336,11 +1212,7 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 
 	DBF_EVENT(6, "Unit Check: RQC = %x\n", sense->rc_rqc);
 
-	/*
-	 * First check all RC-QRCs where we want to do something special
-	 *   - "break":     basic error recovery is done
-	 *   - "goto out:": just print error message if available
-	 */
+	 
 	switch (sense->rc_rqc) {
 
 	case 0x1110:
@@ -1382,15 +1254,12 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 		return tape_3590_erp_basic(device, request, irb, 0);
 
 	case 0x4010:
-		/*
-		 * print additional msg since default msg
-		 * "device intervention" is not very meaningfull
-		 */
+		 
 		tape_med_state_set(device, MS_UNLOADED);
 		tape_3590_schedule_work(device, TO_CRYPT_OFF);
 		return tape_3590_erp_basic(device, request, irb, -ENOMEDIUM);
-	case 0x4012:		/* Device Long Busy */
-		/* XXX: Also use long busy handling here? */
+	case 0x4012:		 
+		 
 		DBF_EVENT(6, "(%08x): LONG BUSY\n", device->cdev_id);
 		tape_3590_print_era_msg(device, irb);
 		return tape_3590_erp_basic(device, request, irb, -EBUSY);
@@ -1400,12 +1269,12 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 
 	case 0x5010:
 		if (sense->rac == 0xd0) {
-			/* Swap */
+			 
 			tape_3590_print_era_msg(device, irb);
 			return tape_3590_erp_swap(device, request, irb);
 		}
 		if (sense->rac == 0x26) {
-			/* Read Opposite */
+			 
 			tape_3590_print_era_msg(device, irb);
 			return tape_3590_erp_read_opposite(device, request,
 							   irb);
@@ -1444,9 +1313,7 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 	}
 }
 
-/*
- * 3590 interrupt handler:
- */
+ 
 static int
 tape_3590_irq(struct tape_device *device, struct tape_request *request,
 	      struct irb *irb)
@@ -1457,7 +1324,7 @@ tape_3590_irq(struct tape_device *device, struct tape_request *request,
 	if ((irb->scsw.cmd.dstat & DEV_STAT_UNIT_EXCEP) &&
 	    (irb->scsw.cmd.dstat & DEV_STAT_DEV_END) &&
 	    (request->op == TO_WRI)) {
-		/* Write at end of volume */
+		 
 		DBF_EVENT(2, "End of volume\n");
 		return tape_3590_erp_failed(device, request, irb, -ENOSPC);
 	}
@@ -1511,9 +1378,7 @@ static int tape_3590_read_dev_chars(struct tape_device *device,
 	return rc;
 }
 
-/*
- * Setup device function
- */
+ 
 static int
 tape_3590_setup_device(struct tape_device *device)
 {
@@ -1547,7 +1412,7 @@ tape_3590_setup_device(struct tape_device *device)
 	} else {
 		DBF_EVENT(6, "Device has NO crypto support\n");
 	}
-	/* Try to find out if medium is loaded */
+	 
 	rc = tape_3590_sense_medium(device);
 	if (rc) {
 		DBF_LH(3, "3590 medium sense returned %d\n", rc);
@@ -1562,9 +1427,7 @@ fail_kmalloc:
 	return rc;
 }
 
-/*
- * Cleanup device function
- */
+ 
 static void
 tape_3590_cleanup_device(struct tape_device *device)
 {
@@ -1575,9 +1438,7 @@ tape_3590_cleanup_device(struct tape_device *device)
 	device->discdata = NULL;
 }
 
-/*
- * List of 3590 magnetic tape commands.
- */
+ 
 static tape_mtop_fn tape_3590_mtop[TAPE_NR_MTOPS] = {
 	[MTRESET]	 = tape_std_mtreset,
 	[MTFSF]		 = tape_std_mtfsf,
@@ -1613,9 +1474,7 @@ static tape_mtop_fn tape_3590_mtop[TAPE_NR_MTOPS] = {
 	[MTMKPART]	 = NULL
 };
 
-/*
- * Tape discipline structure for 3590.
- */
+ 
 static struct tape_discipline tape_discipline_3590 = {
 	.owner = THIS_MODULE,
 	.setup_device = tape_3590_setup_device,
@@ -1631,7 +1490,7 @@ static struct tape_discipline tape_discipline_3590 = {
 static struct ccw_device_id tape_3590_ids[] = {
 	{CCW_DEVICE_DEVTYPE(0x3590, 0, 0x3590, 0), .driver_info = tape_3590},
 	{CCW_DEVICE_DEVTYPE(0x3592, 0, 0x3592, 0), .driver_info = tape_3592},
-	{ /* end of list */ }
+	{   }
 };
 
 static int
@@ -1654,9 +1513,7 @@ static struct ccw_driver tape_3590_driver = {
 	.int_class = IRQIO_TAP,
 };
 
-/*
- * Setup discipline structure.
- */
+ 
 static int
 tape_3590_init(void)
 {
@@ -1674,7 +1531,7 @@ tape_3590_init(void)
 	if (!tape_3590_wq)
 		return -ENOMEM;
 
-	/* Register driver for 3590 tapes. */
+	 
 	rc = ccw_driver_register(&tape_3590_driver);
 	if (rc) {
 		destroy_workqueue(tape_3590_wq);

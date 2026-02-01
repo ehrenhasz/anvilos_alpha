@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//#define DEBUG
+
+
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/blkdev.h>
@@ -22,7 +22,7 @@
 #define VQ_NAME_LEN 16
 #define MAX_DISCARD_SEGMENTS 256u
 
-/* The maximum number of sg elements that fit into a virtqueue */
+ 
 #define VIRTIO_BLK_MAX_SG_ELEMS 32768
 
 #ifdef CONFIG_ARCH_NO_SG_CHAIN
@@ -54,51 +54,40 @@ struct virtio_blk_vq {
 } ____cacheline_aligned_in_smp;
 
 struct virtio_blk {
-	/*
-	 * This mutex must be held by anything that may run after
-	 * virtblk_remove() sets vblk->vdev to NULL.
-	 *
-	 * blk-mq, virtqueue processing, and sysfs attribute code paths are
-	 * shut down before vblk->vdev is set to NULL and therefore do not need
-	 * to hold this mutex.
-	 */
+	 
 	struct mutex vdev_mutex;
 	struct virtio_device *vdev;
 
-	/* The disk structure for the kernel. */
+	 
 	struct gendisk *disk;
 
-	/* Block layer tags. */
+	 
 	struct blk_mq_tag_set tag_set;
 
-	/* Process context for config space updates */
+	 
 	struct work_struct config_work;
 
-	/* Ida index - used to track minor number allocations. */
+	 
 	int index;
 
-	/* num of vqs */
+	 
 	int num_vqs;
 	int io_queues[HCTX_MAX_TYPES];
 	struct virtio_blk_vq *vqs;
 
-	/* For zoned device */
+	 
 	unsigned int zone_sectors;
 };
 
 struct virtblk_req {
-	/* Out header */
+	 
 	struct virtio_blk_outhdr out_hdr;
 
-	/* In header */
+	 
 	union {
 		u8 status;
 
-		/*
-		 * The zone append command has an extended in header.
-		 * The status field in zone_append_in_hdr must always
-		 * be the last byte.
-		 */
+		 
 		struct {
 			__virtio64 sector;
 			u8 status;
@@ -173,12 +162,7 @@ static int virtblk_setup_discard_write_zeroes_erase(struct request *req, bool un
 	if (!range)
 		return -ENOMEM;
 
-	/*
-	 * Single max discard segment means multi-range discard isn't
-	 * supported, and block layer only runs contiguity merge like
-	 * normal RW request. So we can't reply on bio for retrieving
-	 * each range info.
-	 */
+	 
 	if (queue_max_discard_segments(req->q) == 1) {
 		range[0].flags = cpu_to_le32(flags);
 		range[0].num_sectors = cpu_to_le32(blk_rq_sectors(req));
@@ -248,7 +232,7 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
 	if (!IS_ENABLED(CONFIG_BLK_DEV_ZONED) && op_is_zone_mgmt(req_op(req)))
 		return BLK_STS_NOTSUPP;
 
-	/* Set fields for all request types */
+	 
 	vbr->out_hdr.ioprio = cpu_to_virtio32(vdev, req_get_ioprio(req));
 
 	switch (req_op(req)) {
@@ -298,17 +282,14 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
 		type = VIRTIO_BLK_T_ZONE_RESET_ALL;
 		break;
 	case REQ_OP_DRV_IN:
-		/*
-		 * Out header has already been prepared by the caller (virtblk_get_id()
-		 * or virtblk_submit_zone_report()), nothing to do here.
-		 */
+		 
 		return 0;
 	default:
 		WARN_ON_ONCE(1);
 		return BLK_STS_IOERR;
 	}
 
-	/* Set fields for non-REQ_OP_DRV_IN request types */
+	 
 	vbr->in_hdr_len = in_hdr_len;
 	vbr->out_hdr.type = cpu_to_virtio32(vdev, type);
 	vbr->out_hdr.sector = cpu_to_virtio64(vdev, sector);
@@ -322,11 +303,7 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
 	return 0;
 }
 
-/*
- * The status byte is always the last byte of the virtblk request
- * in-header. This helper fetches its value for all in-header formats
- * that are currently defined.
- */
+ 
 static inline u8 virtblk_vbr_status(struct virtblk_req *vbr)
 {
 	return *((u8 *)&vbr->in_hdr + vbr->in_hdr_len - 1);
@@ -371,7 +348,7 @@ static void virtblk_done(struct virtqueue *vq)
 			break;
 	} while (!virtqueue_enable_cb(vq));
 
-	/* In case queue is stopped waiting for more buffers. */
+	 
 	if (req_done)
 		blk_mq_start_stopped_hw_queues(vblk->disk->queue, true);
 	spin_unlock_irqrestore(&vblk->vqs[qid].lock, flags);
@@ -446,9 +423,7 @@ static blk_status_t virtio_queue_rq(struct blk_mq_hw_ctx *hctx,
 	err = virtblk_add_req(vblk->vqs[qid].vq, vbr);
 	if (err) {
 		virtqueue_kick(vblk->vqs[qid].vq);
-		/* Don't stop the queue if -ENOMEM: we may have failed to
-		 * bounce the buffer due to global resource outage.
-		 */
+		 
 		if (err == -ENOSPC)
 			blk_mq_stop_hw_queue(hctx);
 		spin_unlock_irqrestore(&vblk->vqs[qid].lock, flags);
@@ -656,10 +631,7 @@ static int virtblk_parse_zone(struct virtio_blk *vblk,
 		return -EIO;
 	}
 
-	/*
-	 * The callback below checks the validity of the reported
-	 * entry data, no need to further validate it here.
-	 */
+	 
 	return cb(&zone, idx, data);
 }
 
@@ -758,7 +730,7 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
 	switch (model) {
 	case VIRTIO_BLK_Z_NONE:
 	case VIRTIO_BLK_Z_HA:
-		/* Present the host-aware device as non-zoned */
+		 
 		return 0;
 	case VIRTIO_BLK_Z_HM:
 		break;
@@ -793,10 +765,7 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
 
 	dev_dbg(&vdev->dev, "write granularity = %u\n", wg);
 
-	/*
-	 * virtio ZBD specification doesn't require zones to be a power of
-	 * two sectors in size, but the code in this driver expects that.
-	 */
+	 
 	virtio_cread(vdev, struct virtio_blk_config, zoned.zone_sectors,
 		     &vblk->zone_sectors);
 	if (vblk->zone_sectors == 0 || !is_power_of_2(vblk->zone_sectors)) {
@@ -834,11 +803,7 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
 
 #else
 
-/*
- * Zoned block device support is not configured in this kernel.
- * Host-managed zoned devices can't be supported, but others are
- * good to go as regular block devices.
- */
+ 
 #define virtblk_report_zones       NULL
 
 static inline void virtblk_revalidate_zones(struct virtio_blk *vblk)
@@ -859,10 +824,9 @@ static inline int virtblk_probe_zoned_device(struct virtio_device *vdev,
 
 	return 0;
 }
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif  
 
-/* return id (s/n) string for *disk to *id_str
- */
+ 
 static int virtblk_get_id(struct gendisk *disk, char *id_str)
 {
 	struct virtio_blk *vblk = disk->private_data;
@@ -891,7 +855,7 @@ out:
 	return err;
 }
 
-/* We provide getgeo only to please some old bootloader/partitioning tools */
+ 
 static int virtblk_getgeo(struct block_device *bd, struct hd_geometry *geo)
 {
 	struct virtio_blk *vblk = bd->bd_disk->private_data;
@@ -904,7 +868,7 @@ static int virtblk_getgeo(struct block_device *bd, struct hd_geometry *geo)
 		goto out;
 	}
 
-	/* see if the host passed in geometry config */
+	 
 	if (virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_GEOMETRY)) {
 		virtio_cread(vblk->vdev, struct virtio_blk_config,
 			     geometry.cylinders, &geo->cylinders);
@@ -913,7 +877,7 @@ static int virtblk_getgeo(struct block_device *bd, struct hd_geometry *geo)
 		virtio_cread(vblk->vdev, struct virtio_blk_config,
 			     geometry.sectors, &geo->sectors);
 	} else {
-		/* some standard values, similar to sd */
+		 
 		geo->heads = 1 << 6;
 		geo->sectors = 1 << 5;
 		geo->cylinders = get_capacity(bd->bd_disk) >> 11;
@@ -955,7 +919,7 @@ static ssize_t serial_show(struct device *dev,
 	struct gendisk *disk = dev_to_disk(dev);
 	int err;
 
-	/* sysfs gives us a PAGE_SIZE buffer */
+	 
 	BUILD_BUG_ON(PAGE_SIZE < VIRTIO_BLK_ID_BYTES);
 
 	buf[VIRTIO_BLK_ID_BYTES] = '\0';
@@ -963,7 +927,7 @@ static ssize_t serial_show(struct device *dev,
 	if (!err)
 		return strlen(buf);
 
-	if (err == -EIO) /* Unsupported? Make it empty. */
+	if (err == -EIO)  
 		return 0;
 
 	return err;
@@ -971,7 +935,7 @@ static ssize_t serial_show(struct device *dev,
 
 static DEVICE_ATTR_RO(serial);
 
-/* The queue's logical block size must be set before calling this */
+ 
 static void virtblk_update_capacity(struct virtio_blk *vblk, bool resize)
 {
 	struct virtio_device *vdev = vblk->vdev;
@@ -980,7 +944,7 @@ static void virtblk_update_capacity(struct virtio_blk *vblk, bool resize)
 	unsigned long long nblocks;
 	u64 capacity;
 
-	/* Host must always specify the capacity. */
+	 
 	virtio_cread(vdev, struct virtio_blk_config, capacity, &capacity);
 
 	nblocks = DIV_ROUND_UP_ULL(capacity, queue_logical_block_size(q) >> 9);
@@ -1080,7 +1044,7 @@ static int init_vq(struct virtio_blk *vblk)
 		names[i] = vblk->vqs[i].name;
 	}
 
-	/* Discover virtqueues and write information to configuration.  */
+	 
 	err = virtio_find_vqs(vdev, num_vqs, vqs, callbacks, names, &desc);
 	if (err)
 		goto out;
@@ -1100,10 +1064,7 @@ out:
 	return err;
 }
 
-/*
- * Legacy naming scheme used for virtio devices.  We are stuck with it for
- * virtio blk but don't ever use it for any new driver.
- */
+ 
 static int virtblk_name_format(char *prefix, int index, char *buf, int buflen)
 {
 	const int base = 'z' - 'a' + 1;
@@ -1137,10 +1098,7 @@ static int virtblk_get_cache_mode(struct virtio_device *vdev)
 				   struct virtio_blk_config, wce,
 				   &writeback);
 
-	/*
-	 * If WCE is not configurable and flush is not available,
-	 * assume no writeback cache is in use.
-	 */
+	 
 	if (err)
 		writeback = virtio_has_feature(vdev, VIRTIO_BLK_F_FLUSH);
 
@@ -1237,11 +1195,7 @@ static void virtblk_map_queues(struct blk_mq_tag_set *set)
 		if (map->nr_queues == 0)
 			continue;
 
-		/*
-		 * Regular queues have interrupts and hence CPU affinity is
-		 * defined by the core virtio code, but polling queues have
-		 * no interrupts so we let the block layer assign CPU affinity.
-		 */
+		 
 		if (i == HCTX_TYPE_POLL)
 			blk_mq_map_queues(&set->map[i]);
 		else
@@ -1327,16 +1281,16 @@ static int virtblk_probe(struct virtio_device *vdev)
 		goto out;
 	index = err;
 
-	/* We need to know how many segments before we allocate. */
+	 
 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_SEG_MAX,
 				   struct virtio_blk_config, seg_max,
 				   &sg_elems);
 
-	/* We need at least one SG element, whatever they say. */
+	 
 	if (err || !sg_elems)
 		sg_elems = 1;
 
-	/* Prevent integer overflows and honor max vq size */
+	 
 	sg_elems = min_t(u32, sg_elems, VIRTIO_BLK_MAX_SG_ELEMS - 2);
 
 	vdev->priv = vblk = kmalloc(sizeof(*vblk), GFP_KERNEL);
@@ -1355,10 +1309,10 @@ static int virtblk_probe(struct virtio_device *vdev)
 	if (err)
 		goto out_free_vblk;
 
-	/* Default queue sizing is to fill the ring. */
+	 
 	if (!virtblk_queue_depth) {
 		queue_depth = vblk->vqs[0].vq->num_free;
-		/* ... but without indirect descs, we use 2 descs per req */
+		 
 		if (!virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC))
 			queue_depth /= 2;
 	} else {
@@ -1399,24 +1353,23 @@ static int virtblk_probe(struct virtio_device *vdev)
 	vblk->disk->fops = &virtblk_fops;
 	vblk->index = index;
 
-	/* configure queue flush support */
+	 
 	virtblk_update_cache_mode(vdev);
 
-	/* If disk is read-only in the host, the guest should obey */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_RO))
 		set_disk_ro(vblk->disk, 1);
 
-	/* We can handle whatever the host told us to handle. */
+	 
 	blk_queue_max_segments(q, sg_elems);
 
-	/* No real sector limit. */
+	 
 	blk_queue_max_hw_sectors(q, UINT_MAX);
 
 	max_dma_size = virtio_max_dma_size(vdev);
 	max_size = max_dma_size > U32_MAX ? U32_MAX : max_dma_size;
 
-	/* Host can optionally specify maximum segment size and number of
-	 * segments. */
+	 
 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_SIZE_MAX,
 				   struct virtio_blk_config, size_max, &v);
 	if (!err)
@@ -1424,7 +1377,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 
 	blk_queue_max_segment_size(q, max_size);
 
-	/* Host can optionally specify the block size of the device */
+	 
 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
 				   struct virtio_blk_config, blk_size,
 				   &blk_size);
@@ -1441,7 +1394,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 	} else
 		blk_size = queue_logical_block_size(q);
 
-	/* Use topology information if available */
+	 
 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_TOPOLOGY,
 				   struct virtio_blk_config, physical_block_exp,
 				   &physical_block_exp);
@@ -1485,26 +1438,13 @@ static int virtblk_probe(struct virtio_device *vdev)
 		blk_queue_max_write_zeroes_sectors(q, v ? v : UINT_MAX);
 	}
 
-	/* The discard and secure erase limits are combined since the Linux
-	 * block layer uses the same limit for both commands.
-	 *
-	 * If both VIRTIO_BLK_F_SECURE_ERASE and VIRTIO_BLK_F_DISCARD features
-	 * are negotiated, we will use the minimum between the limits.
-	 *
-	 * discard sector alignment is set to the minimum between discard_sector_alignment
-	 * and secure_erase_sector_alignment.
-	 *
-	 * max discard sectors is set to the minimum between max_discard_seg and
-	 * max_secure_erase_seg.
-	 */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_SECURE_ERASE)) {
 
 		virtio_cread(vdev, struct virtio_blk_config,
 			     secure_erase_sector_alignment, &v);
 
-		/* secure_erase_sector_alignment should not be zero, the device should set a
-		 * valid number of sectors.
-		 */
+		 
 		if (!v) {
 			dev_err(&vdev->dev,
 				"virtio_blk: secure_erase_sector_alignment can't be 0\n");
@@ -1517,9 +1457,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 		virtio_cread(vdev, struct virtio_blk_config,
 			     max_secure_erase_sectors, &v);
 
-		/* max_secure_erase_sectors should not be zero, the device should set a
-		 * valid number of sectors.
-		 */
+		 
 		if (!v) {
 			dev_err(&vdev->dev,
 				"virtio_blk: max_secure_erase_sectors can't be 0\n");
@@ -1532,9 +1470,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 		virtio_cread(vdev, struct virtio_blk_config,
 			     max_secure_erase_seg, &v);
 
-		/* max_secure_erase_seg should not be zero, the device should set a
-		 * valid number of segments
-		 */
+		 
 		if (!v) {
 			dev_err(&vdev->dev,
 				"virtio_blk: max_secure_erase_seg can't be 0\n");
@@ -1547,11 +1483,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 
 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD) ||
 	    virtio_has_feature(vdev, VIRTIO_BLK_F_SECURE_ERASE)) {
-		/* max_discard_seg and discard_granularity will be 0 only
-		 * if max_discard_seg and discard_sector_alignment fields in the virtio
-		 * config are 0 and VIRTIO_BLK_F_SECURE_ERASE feature is not negotiated.
-		 * In this case, we use default values.
-		 */
+		 
 		if (!max_discard_segs)
 			max_discard_segs = sg_elems;
 
@@ -1567,10 +1499,7 @@ static int virtblk_probe(struct virtio_device *vdev)
 	virtblk_update_capacity(vblk, false);
 	virtio_device_ready(vdev);
 
-	/*
-	 * All steps that follow use the VQs therefore they need to be
-	 * placed after the virtio_device_ready() call above.
-	 */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_ZONED)) {
 		err = virtblk_probe_zoned_device(vdev, vblk, q);
 		if (err)
@@ -1602,7 +1531,7 @@ static void virtblk_remove(struct virtio_device *vdev)
 {
 	struct virtio_blk *vblk = vdev->priv;
 
-	/* Make sure no work handler is accessing the device. */
+	 
 	flush_work(&vblk->config_work);
 
 	del_gendisk(vblk->disk);
@@ -1610,10 +1539,10 @@ static void virtblk_remove(struct virtio_device *vdev)
 
 	mutex_lock(&vblk->vdev_mutex);
 
-	/* Stop all the virtqueues. */
+	 
 	virtio_reset_device(vdev);
 
-	/* Virtqueues are stopped, nothing can use vblk->vdev anymore. */
+	 
 	vblk->vdev = NULL;
 
 	vdev->config->del_vqs(vdev);
@@ -1629,10 +1558,10 @@ static int virtblk_freeze(struct virtio_device *vdev)
 {
 	struct virtio_blk *vblk = vdev->priv;
 
-	/* Ensure we don't receive any more interrupts */
+	 
 	virtio_reset_device(vdev);
 
-	/* Make sure no work handler is accessing the device. */
+	 
 	flush_work(&vblk->config_work);
 
 	blk_mq_quiesce_queue(vblk->disk->queue);

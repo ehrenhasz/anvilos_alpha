@@ -1,26 +1,6 @@
-/* readtokens.c  -- Functions for reading tokens from an input stream.
+ 
 
-   Copyright (C) 1990-1991, 1999-2004, 2006, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Jim Meyering. */
-
-/* This almost supersedes xreadline stuff -- using delim="\n"
-   gives the same functionality, except that these functions
-   would never return empty lines. */
+ 
 
 #include <config.h>
 
@@ -37,7 +17,7 @@
 # include "unlocked-io.h"
 #endif
 
-/* Initialize a tokenbuffer. */
+ 
 
 void
 init_tokenbuffer (token_buffer *tokenbuffer)
@@ -62,18 +42,7 @@ set_nth_bit (size_t n, word *bitset)
   bitset[n / bits_per_word] |= one << n % bits_per_word;
 }
 
-/* Read a token from STREAM into TOKENBUFFER.
-   A token is delimited by any of the N_DELIM bytes in DELIM.
-   Upon return, the token is in tokenbuffer->buffer and
-   has a trailing '\0' instead of any original delimiter.
-   The function value is the length of the token not including
-   the final '\0'.  Upon EOF (i.e. on the call after the last
-   token is read) or error, return -1 without modifying tokenbuffer.
-   The EOF and error conditions may be distinguished in the caller
-   by testing ferror (STREAM).
-
-   This function works properly on lines containing NUL bytes
-   and on files that do not end with a delimiter.  */
+ 
 
 size_t
 readtoken (FILE *stream,
@@ -92,10 +61,10 @@ readtoken (FILE *stream,
       set_nth_bit (ch, isdelim);
     }
 
-  /* skip over any leading delimiters */
+   
   for (c = getc (stream); c >= 0 && get_nth_bit (c, isdelim); c = getc (stream))
     {
-      /* empty */
+       
     }
 
   char *p = tokenbuffer->buffer;
@@ -128,12 +97,7 @@ readtoken (FILE *stream,
   return i;
 }
 
-/* Build a NULL-terminated array of pointers to tokens
-   read from STREAM.  Return the number of tokens read.
-   All storage is obtained through calls to xmalloc-like functions.
-
-   %%% Question: is it worth it to do a single
-   %%% realloc() of 'tokens' just before returning? */
+ 
 
 size_t
 readtokens (FILE *stream,
@@ -151,7 +115,7 @@ readtokens (FILE *stream,
   if (projected_n_tokens == 0)
     projected_n_tokens = 64;
   else
-    projected_n_tokens++;       /* add one for trailing NULL pointer */
+    projected_n_tokens++;        
 
   sz = projected_n_tokens;
   tokens = xnmalloc (sz, sizeof *tokens);
@@ -171,7 +135,7 @@ readtokens (FILE *stream,
 
       if (token_length == (size_t) -1)
         {
-          /* don't increment n_tokens for NULL entry */
+           
           tokens[n_tokens] = NULL;
           lengths[n_tokens] = 0;
           break;

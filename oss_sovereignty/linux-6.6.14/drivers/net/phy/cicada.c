@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/cicada.c
- *
- * Driver for Cicada PHYs
- *
- * Author: Andy Fleming
- *
- * Copyright (c) 2004 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -29,11 +21,11 @@
 #include <asm/irq.h>
 #include <linux/uaccess.h>
 
-/* Cicada Extended Control Register 1 */
+ 
 #define MII_CIS8201_EXT_CON1           0x17
 #define MII_CIS8201_EXTCON1_INIT       0x0000
 
-/* Cicada Interrupt Mask Register */
+ 
 #define MII_CIS8201_IMASK		0x19
 #define MII_CIS8201_IMASK_IEN		0x8000
 #define MII_CIS8201_IMASK_SPEED	0x4000
@@ -41,14 +33,14 @@
 #define MII_CIS8201_IMASK_DUPLEX	0x1000
 #define MII_CIS8201_IMASK_MASK		0xf000
 
-/* Cicada Interrupt Status Register */
+ 
 #define MII_CIS8201_ISTAT		0x1a
 #define MII_CIS8201_ISTAT_STATUS	0x8000
 #define MII_CIS8201_ISTAT_SPEED	0x4000
 #define MII_CIS8201_ISTAT_LINK		0x2000
 #define MII_CIS8201_ISTAT_DUPLEX	0x1000
 
-/* Cicada Auxiliary Control/Status Register */
+ 
 #define MII_CIS8201_AUX_CONSTAT        0x1c
 #define MII_CIS8201_AUXCONSTAT_INIT    0x0004
 #define MII_CIS8201_AUXCONSTAT_DUPLEX  0x0020
@@ -123,13 +115,13 @@ static irqreturn_t cis820x_handle_interrupt(struct phy_device *phydev)
 	return IRQ_HANDLED;
 }
 
-/* Cicada 8201, a.k.a Vitesse VSC8201 */
+ 
 static struct phy_driver cis820x_driver[] = {
 {
 	.phy_id		= 0x000fc410,
 	.name		= "Cicada Cis8201",
 	.phy_id_mask	= 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= &cis820x_config_init,
 	.config_intr	= &cis820x_config_intr,
 	.handle_interrupt = &cis820x_handle_interrupt,
@@ -137,7 +129,7 @@ static struct phy_driver cis820x_driver[] = {
 	.phy_id		= 0x000fc440,
 	.name		= "Cicada Cis8204",
 	.phy_id_mask	= 0x000fffc0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= &cis820x_config_init,
 	.config_intr	= &cis820x_config_intr,
 	.handle_interrupt = &cis820x_handle_interrupt,

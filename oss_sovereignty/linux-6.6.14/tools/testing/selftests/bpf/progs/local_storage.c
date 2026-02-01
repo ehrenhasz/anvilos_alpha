@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include "vmlinux.h"
 #include <errno.h>
@@ -80,7 +78,7 @@ int BPF_PROG(unlink_hook, struct inode *dir, struct dentry *victim)
 	if (!storage)
 		return 0;
 
-	/* Don't let an executable delete itself */
+	 
 	is_self_unlink = storage->exec_inode == victim->d_inode;
 
 	storage = bpf_task_storage_get(&task_storage_map2, task, 0,
@@ -91,10 +89,7 @@ int BPF_PROG(unlink_hook, struct inode *dir, struct dentry *victim)
 	if (bpf_task_storage_delete(&task_storage_map, task))
 		return 0;
 
-	/* Ensure that the task_storage_map is disconnected from the storage.
-	 * The storage memory should not be freed back to the
-	 * bpf_mem_alloc.
-	 */
+	 
 	local_storage = task->bpf_storage;
 	if (!local_storage || local_storage->smap)
 		return 0;
@@ -112,10 +107,7 @@ int BPF_PROG(inode_rename, struct inode *old_dir, struct dentry *old_dentry,
 	struct local_storage *storage;
 	int err;
 
-	/* new_dentry->d_inode can be NULL when the inode is renamed to a file
-	 * that did not exist before. The helper should be able to handle this
-	 * NULL pointer.
-	 */
+	 
 	bpf_inode_storage_get(&inode_storage_map, new_dentry->d_inode, 0,
 			      BPF_LOCAL_STORAGE_GET_F_CREATE);
 
@@ -152,9 +144,7 @@ int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
 	if (storage->value != DUMMY_STORAGE_VALUE)
 		return 0;
 
-	/* This tests that we can associate multiple elements
-	 * with the local storage.
-	 */
+	 
 	storage = bpf_sk_storage_get(&sk_storage_map2, sock->sk, 0,
 				     BPF_LOCAL_STORAGE_GET_F_CREATE);
 	if (!storage)
@@ -171,7 +161,7 @@ int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
 	if (bpf_sk_storage_delete(&sk_storage_map, sock->sk))
 		return 0;
 
-	/* Ensure that the sk_storage_map is disconnected from the storage. */
+	 
 	if (!sock->sk->sk_bpf_storage || sock->sk->sk_bpf_storage->smap)
 		return 0;
 
@@ -199,9 +189,7 @@ int BPF_PROG(socket_post_create, struct socket *sock, int family, int type,
 	return 0;
 }
 
-/* This uses the local storage to remember the inode of the binary that a
- * process was originally executing.
- */
+ 
 SEC("lsm.s/bprm_committed_creds")
 void BPF_PROG(exec, struct linux_binprm *bprm)
 {

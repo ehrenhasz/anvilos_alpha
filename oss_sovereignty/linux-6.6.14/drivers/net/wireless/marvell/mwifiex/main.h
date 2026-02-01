@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: major data structures and prototypes
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_MAIN_H_
 #define _MWIFIEX_MAIN_H_
@@ -122,10 +118,7 @@ enum {
 
 #define PKT_TYPE_MGMT	0xE5
 
-/*
- * Do not check for data_received for USB, as data_received
- * is handled in mwifiex_usb_recv for USB
- */
+ 
 #define IS_CARD_RX_RCVD(adapter) (adapter->cmd_resp_received || \
 				adapter->event_received || \
 				adapter->data_received)
@@ -150,19 +143,17 @@ enum {
 #define MWIFIEX_USB_TYPE_DATA			0xBEADC0DE
 #define MWIFIEX_USB_TYPE_EVENT			0xBEEFFACE
 
-/* Threshold for tx_timeout_cnt before we trigger a card reset */
+ 
 #define TX_TIMEOUT_THRESHOLD	6
 
 #define MWIFIEX_DRV_INFO_SIZE_MAX 0x40000
 
-/* Address alignment */
+ 
 #define MWIFIEX_ALIGN_ADDR(p, a) (((long)(p) + (a) - 1) & ~((a) - 1))
 
 #define MWIFIEX_MAC_LOCAL_ADMIN_BIT		41
 
-/**
- *enum mwifiex_debug_level  -  marvell wifi debug level
- */
+ 
 enum MWIFIEX_DEBUG_LEVEL {
 	MWIFIEX_DBG_MSG		= 0x00000001,
 	MWIFIEX_DBG_FATAL	= 0x00000002,
@@ -207,9 +198,9 @@ do {								\
 			       buf, len, false);		\
 } while (0)
 
-/** Min BGSCAN interval 15 second */
+ 
 #define MWIFIEX_BGSCAN_INTERVAL 15000
-/** default repeat count */
+ 
 #define MWIFIEX_BGSCAN_REPEAT_COUNT 6
 
 struct mwifiex_dbg {
@@ -318,16 +309,16 @@ struct mwifiex_wmm_desc {
 	struct mwifiex_tid_tbl tid_tbl_ptr[MAX_NUM_TID];
 	u32 packets_out[MAX_NUM_TID];
 	u32 pkts_paused[MAX_NUM_TID];
-	/* spin lock to protect ra_list */
+	 
 	spinlock_t ra_list_spinlock;
 	struct mwifiex_wmm_ac_status ac_status[IEEE80211_NUM_ACS];
 	enum mwifiex_wmm_ac_e ac_down_graded_vals[IEEE80211_NUM_ACS];
 	u32 drv_pkt_delay_max;
 	u8 queue_priority[IEEE80211_NUM_ACS];
-	u32 user_pri_pkt_tx_ctrl[WMM_HIGHEST_PRIORITY + 1];	/* UP: 0 to 7 */
-	/* Number of transmit packets queued */
+	u32 user_pri_pkt_tx_ctrl[WMM_HIGHEST_PRIORITY + 1];	 
+	 
 	atomic_t tx_pkts_queued;
-	/* Tracks highest priority with a packet queued */
+	 
 	atomic_t highest_queued_prio;
 };
 
@@ -394,11 +385,7 @@ struct mwifiex_bssdescriptor {
 	u32 bss_mode;
 	u8 supported_rates[MWIFIEX_SUPPORTED_RATES];
 	u8 data_rates[MWIFIEX_SUPPORTED_RATES];
-	/* Network band.
-	 * BAND_B(0x01): 'b' band
-	 * BAND_G(0x02): 'g' band
-	 * BAND_A(0X04): 'a' band
-	 */
+	 
 	u16 bss_band;
 	u64 fw_tsf;
 	u64 timestamp;
@@ -533,7 +520,7 @@ struct mwifiex_private {
 	u8 port_open;
 	u8 usb_port;
 	u32 num_tx_timeout;
-	/* track consecutive timeout */
+	 
 	u8 tx_timeout_cnt;
 	struct net_device *netdev;
 	struct net_device_stats stats;
@@ -592,20 +579,20 @@ struct mwifiex_private {
 	struct mwifiex_wmm_desc wmm;
 	atomic_t wmm_tx_pending[IEEE80211_NUM_ACS];
 	struct list_head sta_list;
-	/* spin lock for associated station/TDLS peers list */
+	 
 	spinlock_t sta_list_spinlock;
 	struct list_head auto_tdls_list;
-	/* spin lock for auto TDLS peer list */
+	 
 	spinlock_t auto_tdls_lock;
 	struct list_head tx_ba_stream_tbl_ptr;
-	/* spin lock for tx_ba_stream_tbl_ptr queue */
+	 
 	spinlock_t tx_ba_stream_tbl_lock;
 	struct mwifiex_tx_aggr aggr_prio_tbl[MAX_NUM_TID];
 	struct mwifiex_add_ba_param add_ba_param;
 	u16 rx_seq[MAX_NUM_TID];
 	u8 tos_to_tid_inv[MAX_NUM_TID];
 	struct list_head rx_reorder_tbl_ptr;
-	/* spin lock for rx_reorder_tbl_ptr queue */
+	 
 	spinlock_t rx_reorder_tbl_lock;
 #define MWIFIEX_ASSOC_RSP_BUF_SIZE  500
 	u8 assoc_rsp_buf[MWIFIEX_ASSOC_RSP_BUF_SIZE];
@@ -623,7 +610,7 @@ struct mwifiex_private {
 
 	u8 *curr_bcn_buf;
 	u32 curr_bcn_size;
-	/* spin lock for beacon buffer */
+	 
 	spinlock_t curr_bcn_buf_lock;
 	struct wireless_dev wdev;
 	struct mwifiex_chan_freq_power cfp;
@@ -665,9 +652,9 @@ struct mwifiex_private {
 	struct timer_list auto_tdls_timer;
 	bool auto_tdls_timer_active;
 	struct idr ack_status_frames;
-	/* spin lock for ack status */
+	 
 	spinlock_t ack_status_lock;
-	/** rx histogram data */
+	 
 	struct mwifiex_histogram_data *hist_data;
 	struct cfg80211_chan_def dfs_chandef;
 	struct workqueue_struct *dfs_cac_workqueue;
@@ -721,7 +708,7 @@ struct mwifiex_bss_prio_node {
 
 struct mwifiex_bss_prio_tbl {
 	struct list_head bss_prio_head;
-	/* spin lock for bss priority  */
+	 
 	spinlock_t bss_prio_lock;
 	struct mwifiex_bss_prio_node *bss_prio_cur;
 };
@@ -772,9 +759,7 @@ struct mwifiex_station_stats {
 	u8 last_tx_htinfo;
 };
 
-/* This is AP/TDLS specific structure which stores information
- * about associated/peer STA
- */
+ 
 struct mwifiex_sta_node {
 	struct list_head list;
 	u8 mac_addr[ETH_ALEN];
@@ -829,7 +814,7 @@ struct mwifiex_if_ops {
 	int (*wakeup) (struct mwifiex_adapter *);
 	int (*wakeup_complete) (struct mwifiex_adapter *);
 
-	/* Interface specific functions */
+	 
 	void (*update_mp_end_port) (struct mwifiex_adapter *, u16);
 	void (*cleanup_mpa_buf) (struct mwifiex_adapter *);
 	int (*cmdrsp_complete) (struct mwifiex_adapter *, struct sk_buff *);
@@ -884,13 +869,13 @@ struct mwifiex_adapter {
 	bool rx_locked;
 	bool main_locked;
 	struct mwifiex_bss_prio_tbl bss_prio_tbl[MWIFIEX_MAX_BSS_NUM];
-	/* spin lock for main process */
+	 
 	spinlock_t main_proc_lock;
 	u32 mwifiex_processing;
 	u8 more_task_flag;
 	u16 tx_buf_size;
 	u16 curr_tx_buf_size;
-	/* sdio single port rx aggregation capability */
+	 
 	bool host_disable_sdio_rx_aggr;
 	bool sdio_rx_aggr_enable;
 	u16 sdio_rx_block_size;
@@ -898,7 +883,7 @@ struct mwifiex_adapter {
 	enum MWIFIEX_HARDWARE_STATUS hw_status;
 	u16 number_of_antenna;
 	u32 fw_cap_info;
-	/* spin lock for interrupt handling */
+	 
 	spinlock_t int_lock;
 	u8 int_status;
 	u32 event_cause;
@@ -912,20 +897,20 @@ struct mwifiex_adapter {
 	u16 seq_num;
 	struct cmd_ctrl_node *cmd_pool;
 	struct cmd_ctrl_node *curr_cmd;
-	/* spin lock for command */
+	 
 	spinlock_t mwifiex_cmd_lock;
 	u16 last_init_cmd;
 	struct timer_list cmd_timer;
 	struct list_head cmd_free_q;
-	/* spin lock for cmd_free_q */
+	 
 	spinlock_t cmd_free_q_lock;
 	struct list_head cmd_pending_q;
-	/* spin lock for cmd_pending_q */
+	 
 	spinlock_t cmd_pending_q_lock;
 	struct list_head scan_pending_q;
-	/* spin lock for scan_pending_q */
+	 
 	spinlock_t scan_pending_q_lock;
-	/* spin lock for RX processing routine */
+	 
 	spinlock_t rx_proc_lock;
 	struct sk_buff_head tx_data_q;
 	atomic_t tx_queued;
@@ -977,13 +962,13 @@ struct mwifiex_adapter {
 	u32 arp_filter_size;
 	struct mwifiex_wait_queue cmd_wait_q;
 	u8 scan_wait_q_woken;
-	spinlock_t queue_lock;		/* lock for tx queues */
+	spinlock_t queue_lock;		 
 	u8 country_code[IEEE80211_COUNTRY_STRING_LEN];
 	u16 max_mgmt_ie_index;
 	const struct firmware *cal_data;
 	struct device_node *dt_node;
 
-	/* 11AC */
+	 
 	u32 is_hw_11ac_capable;
 	u32 hw_dot_11ac_dev_cap;
 	u32 hw_dot_11ac_mcs_support;
@@ -993,7 +978,7 @@ struct mwifiex_adapter {
 
 	atomic_t pending_bridged_pkts;
 
-	/* For synchronizing FW initialization with device lifecycle. */
+	 
 	struct completion *fw_done;
 	bool is_up;
 
@@ -1023,12 +1008,12 @@ struct mwifiex_adapter {
 	struct cfg80211_wowlan_nd_info *nd_info;
 	struct ieee80211_regdomain *regd;
 
-	/* Wake-on-WLAN (WoWLAN) */
+	 
 	int irq_wakeup;
 	bool wake_by_wifi;
-	/* Aggregation parameters*/
+	 
 	struct bus_aggr_params bus_aggr;
-	/* Device dump data/length */
+	 
 	void *devdump_data;
 	int devdump_len;
 	struct delayed_work devdump_work;
@@ -1243,16 +1228,11 @@ int mwifiex_cmd_802_11_bg_scan_config(struct mwifiex_private *priv,
 				      void *data_buf);
 int mwifiex_stop_bg_scan(struct mwifiex_private *priv);
 
-/*
- * This function checks if the queuing is RA based or not.
- */
+ 
 static inline u8
 mwifiex_queuing_ra_based(struct mwifiex_private *priv)
 {
-	/*
-	 * Currently we assume if we are in Infra, then DA=RA. This might not be
-	 * true in the future
-	 */
+	 
 	if ((priv->bss_mode == NL80211_IFTYPE_STATION ||
 	     priv->bss_mode == NL80211_IFTYPE_P2P_CLIENT) &&
 	    (GET_BSS_ROLE(priv) == MWIFIEX_BSS_ROLE_STA))
@@ -1261,9 +1241,7 @@ mwifiex_queuing_ra_based(struct mwifiex_private *priv)
 	return true;
 }
 
-/*
- * This function copies rates.
- */
+ 
 static inline u32
 mwifiex_copy_rates(u8 *dest, u32 pos, u8 *src, int len)
 {
@@ -1278,10 +1256,7 @@ mwifiex_copy_rates(u8 *dest, u32 pos, u8 *src, int len)
 	return pos;
 }
 
-/*
- * This function returns the correct private structure pointer based
- * upon the BSS type and BSS number.
- */
+ 
 static inline struct mwifiex_private *
 mwifiex_get_priv_by_id(struct mwifiex_adapter *adapter,
 		       u8 bss_num, u8 bss_type)
@@ -1298,10 +1273,7 @@ mwifiex_get_priv_by_id(struct mwifiex_adapter *adapter,
 	return ((i < adapter->priv_num) ? adapter->priv[i] : NULL);
 }
 
-/*
- * This function returns the first available private structure pointer
- * based upon the BSS role.
- */
+ 
 static inline struct mwifiex_private *
 mwifiex_get_priv(struct mwifiex_adapter *adapter,
 		 enum mwifiex_bss_role bss_role)
@@ -1319,10 +1291,7 @@ mwifiex_get_priv(struct mwifiex_adapter *adapter,
 	return ((i < adapter->priv_num) ? adapter->priv[i] : NULL);
 }
 
-/*
- * This function checks available bss_num when adding new interface or
- * changing interface type.
- */
+ 
 static inline u8
 mwifiex_get_unused_bss_num(struct mwifiex_adapter *adapter, u8 bss_type)
 {
@@ -1344,9 +1313,7 @@ mwifiex_get_unused_bss_num(struct mwifiex_adapter *adapter, u8 bss_type)
 	return -1;
 }
 
-/*
- * This function returns the first available unused private structure pointer.
- */
+ 
 static inline struct mwifiex_private *
 mwifiex_get_unused_priv_by_bss_type(struct mwifiex_adapter *adapter,
 				    u8 bss_type)
@@ -1364,33 +1331,27 @@ mwifiex_get_unused_priv_by_bss_type(struct mwifiex_adapter *adapter,
 	return ((i < adapter->priv_num) ? adapter->priv[i] : NULL);
 }
 
-/*
- * This function returns the driver private structure of a network device.
- */
+ 
 static inline struct mwifiex_private *
 mwifiex_netdev_get_priv(struct net_device *dev)
 {
 	return (struct mwifiex_private *) (*(unsigned long *) netdev_priv(dev));
 }
 
-/*
- * This function checks if a skb holds a management frame.
- */
+ 
 static inline bool mwifiex_is_skb_mgmt_frame(struct sk_buff *skb)
 {
 	return (get_unaligned_le32(skb->data) == PKT_TYPE_MGMT);
 }
 
-/* This function retrieves channel closed for operation by Channel
- * Switch Announcement.
- */
+ 
 static inline u8
 mwifiex_11h_get_csa_closed_channel(struct mwifiex_private *priv)
 {
 	if (!priv->csa_chan)
 		return 0;
 
-	/* Clear csa channel, if DFS channel move time has passed */
+	 
 	if (time_after(jiffies, priv->csa_expire_time)) {
 		priv->csa_chan = 0;
 		priv->csa_expire_time = 0;
@@ -1433,25 +1394,23 @@ static inline u8 mwifiex_is_tdls_link_setup(u8 status)
 	return false;
 }
 
-/* Disable platform specific wakeup interrupt */
+ 
 static inline void mwifiex_disable_wake(struct mwifiex_adapter *adapter)
 {
 	if (adapter->irq_wakeup >= 0) {
 		disable_irq_wake(adapter->irq_wakeup);
 		disable_irq(adapter->irq_wakeup);
 		if (adapter->wake_by_wifi)
-			/* Undo our disable, since interrupt handler already
-			 * did this.
-			 */
+			 
 			enable_irq(adapter->irq_wakeup);
 
 	}
 }
 
-/* Enable platform specific wakeup interrupt */
+ 
 static inline void mwifiex_enable_wake(struct mwifiex_adapter *adapter)
 {
-	/* Enable platform specific wakeup interrupt */
+	 
 	if (adapter->irq_wakeup >= 0) {
 		adapter->wake_by_wifi = false;
 		enable_irq(adapter->irq_wakeup);
@@ -1696,4 +1655,4 @@ void mwifiex_dev_debugfs_remove(struct mwifiex_private *priv);
 #endif
 int mwifiex_reinit_sw(struct mwifiex_adapter *adapter);
 int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter);
-#endif /* !_MWIFIEX_MAIN_H_ */
+#endif  

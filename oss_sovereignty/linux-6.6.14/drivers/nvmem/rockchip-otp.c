@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip OTP Driver
- *
- * Copyright (c) 2018 Rockchip Electronics Co. Ltd.
- * Author: Finley Xiao <finley.xiao@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +14,7 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
-/* OTP Register Offsets */
+ 
 #define OTPC_SBPI_CTRL			0x0020
 #define OTPC_SBPI_CMD_VALID_PRE		0x0024
 #define OTPC_SBPI_CS_VALID_PRE		0x0028
@@ -32,7 +27,7 @@
 #define OTPC_SBPI_CMD0_OFFSET		0x1000
 #define OTPC_SBPI_CMD1_OFFSET		0x1004
 
-/* OTP Register bits and masks */
+ 
 #define OTPC_USER_ADDR_MASK		GENMASK(31, 16)
 #define OTPC_USE_USER			BIT(0)
 #define OTPC_USE_USER_MASK		GENMASK(16, 16)
@@ -54,7 +49,7 @@
 
 #define OTPC_TIMEOUT			10000
 
-/* RK3588 Register */
+ 
 #define RK3588_OTPC_AUTO_CTRL		0x04
 #define RK3588_OTPC_AUTO_EN		0x08
 #define RK3588_OTPC_INT_ST		0x84
@@ -114,7 +109,7 @@ static int rockchip_otp_wait_status(struct rockchip_otp *otp,
 	if (ret)
 		return ret;
 
-	/* clean int status */
+	 
 	writel(flag, otp->base + reg);
 
 	return 0;
@@ -296,7 +291,7 @@ static const struct of_device_id rockchip_otp_match[] = {
 		.compatible = "rockchip,rk3588-otp",
 		.data = &rk3588_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rockchip_otp_match);
 

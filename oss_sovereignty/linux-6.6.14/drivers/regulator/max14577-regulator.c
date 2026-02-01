@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max14577.c - Regulator driver for the Maxim 14577/77836
-//
-// Copyright (C) 2013,2014 Samsung Electronics
-// Krzysztof Kozlowski <krzk@kernel.org>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -26,7 +26,7 @@ static int max14577_reg_is_enabled(struct regulator_dev *rdev)
 		max14577_read_reg(rmap, MAX14577_CHG_REG_STATUS3, &reg_data);
 		if ((reg_data & STATUS3_CGMBC_MASK) == 0)
 			return 0;
-		/* MBCHOSTEN and CGMBC are on */
+		 
 		return 1;
 	default:
 		return -EINVAL;
@@ -128,7 +128,7 @@ static const struct regulator_ops max77836_ldo_ops = {
 	.map_voltage		= regulator_map_voltage_linear,
 	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
 	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
-	/* TODO: add .set_suspend_mode */
+	 
 };
 
 #define MAX77836_LDO_REG(num)	{ \
@@ -155,12 +155,7 @@ static const struct regulator_desc max77836_supported_regulators[] = {
 	[MAX77836_LDO2] = MAX77836_LDO_REG(2),
 };
 
-/*
- * Registers for regulators of max77836 use different I2C slave addresses so
- * different regmaps must be used for them.
- *
- * Returns proper regmap for accessing regulator passed by id.
- */
+ 
 static struct regmap *max14577_get_regmap(struct max14577 *max14577,
 		int reg_id)
 {
@@ -170,7 +165,7 @@ static struct regmap *max14577_get_regmap(struct max14577 *max14577,
 		case MAX77836_SAFEOUT ... MAX77836_CHARGER:
 			return max14577->regmap;
 		default:
-			/* MAX77836_LDO1 ... MAX77836_LDO2 */
+			 
 			return max14577->regmap_pmic;
 		}
 
@@ -206,10 +201,7 @@ static int max14577_regulator_probe(struct platform_device *pdev)
 
 	for (i = 0; i < supported_regulators_size; i++) {
 		struct regulator_dev *regulator;
-		/*
-		 * Index of supported_regulators[] is also the id and must
-		 * match index of pdata->regulators[].
-		 */
+		 
 		if (pdata && pdata->regulators) {
 			config.init_data = pdata->regulators[i].initdata;
 			config.of_node = pdata->regulators[i].of_node;

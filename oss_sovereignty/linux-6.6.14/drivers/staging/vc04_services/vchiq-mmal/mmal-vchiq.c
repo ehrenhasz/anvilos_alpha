@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Broadcom BCM2835 V4L2 driver
- *
- * Copyright © 2013 Raspberry Pi (Trading) Ltd.
- *
- * Authors: Vincent Sanders @ Collabora
- *          Dave Stevenson @ Broadcom
- *		(now dave.stevenson@raspberrypi.org)
- *          Simon Mellor @ Broadcom
- *          Luke Diamand @ Broadcom
- *
- * V4L2 driver MMAL vchiq interface code
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,19 +18,13 @@
 #include "mmal-vchiq.h"
 #include "mmal-msg.h"
 
-/*
- * maximum number of components supported.
- * This matches the maximum permitted by default on the VPU
- */
+ 
 #define VCHIQ_MMAL_MAX_COMPONENTS 64
 
-/*
- * Timeout for synchronous msg responses in seconds.
- * Helpful to increase this if stopping in the VPU debugger.
- */
+ 
 #define SYNC_MSG_TIMEOUT       3
 
-/*#define FULL_MSG_DUMP 1*/
+ 
 
 #ifdef DEBUG
 static const char *const msg_type_names[] = {
@@ -115,49 +97,47 @@ static const char *const port_action_type_names[] = {
 
 struct vchiq_mmal_instance;
 
-/* normal message context */
+ 
 struct mmal_msg_context {
 	struct vchiq_mmal_instance *instance;
 
-	/* Index in the context_map idr so that we can find the
-	 * mmal_msg_context again when servicing the VCHI reply.
-	 */
+	 
 	int handle;
 
 	union {
 		struct {
-			/* work struct for buffer_cb callback */
+			 
 			struct work_struct work;
-			/* work struct for deferred callback */
+			 
 			struct work_struct buffer_to_host_work;
-			/* mmal instance */
+			 
 			struct vchiq_mmal_instance *instance;
-			/* mmal port */
+			 
 			struct vchiq_mmal_port *port;
-			/* actual buffer used to store bulk reply */
+			 
 			struct mmal_buffer *buffer;
-			/* amount of buffer used */
+			 
 			unsigned long buffer_used;
-			/* MMAL buffer flags */
+			 
 			u32 mmal_flags;
-			/* Presentation and Decode timestamps */
+			 
 			s64 pts;
 			s64 dts;
 
-			int status;	/* context status */
+			int status;	 
 
-		} bulk;		/* bulk data */
+		} bulk;		 
 
 		struct {
-			/* message handle to release */
+			 
 			struct vchiq_header *msg_handle;
-			/* pointer to received message */
+			 
 			struct mmal_msg *msg;
-			/* received message length */
+			 
 			u32 msg_len;
-			/* completion upon reply */
+			 
 			struct completion cmplt;
-		} sync;		/* synchronous response */
+		} sync;		 
 	} u;
 
 };
@@ -165,19 +145,19 @@ struct mmal_msg_context {
 struct vchiq_mmal_instance {
 	unsigned int service_handle;
 
-	/* ensure serialised access to service */
+	 
 	struct mutex vchiq_mutex;
 
 	struct idr context_map;
-	/* protect accesses to context_map */
+	 
 	struct mutex context_map_lock;
 
 	struct vchiq_mmal_component component[VCHIQ_MMAL_MAX_COMPONENTS];
 
-	/* ordered workqueue to process all bulk operations */
+	 
 	struct workqueue_struct *bulk_wq;
 
-	/* handle for a vchiq instance */
+	 
 	struct vchiq_instance *vchiq_instance;
 };
 
@@ -187,16 +167,13 @@ get_msg_context(struct vchiq_mmal_instance *instance)
 	struct mmal_msg_context *msg_context;
 	int handle;
 
-	/* todo: should this be allocated from a pool to avoid kzalloc */
+	 
 	msg_context = kzalloc(sizeof(*msg_context), GFP_KERNEL);
 
 	if (!msg_context)
 		return ERR_PTR(-ENOMEM);
 
-	/* Create an ID that will be passed along with our message so
-	 * that when we service the VCHI reply, we can look up what
-	 * message is being replied to.
-	 */
+	 
 	mutex_lock(&instance->context_map_lock);
 	handle = idr_alloc(&instance->context_map, msg_context,
 			   0, 0, GFP_KERNEL);
@@ -230,7 +207,7 @@ release_msg_context(struct mmal_msg_context *msg_context)
 	kfree(msg_context);
 }
 
-/* deals with receipt of event to host message */
+ 
 static void event_to_host_cb(struct vchiq_mmal_instance *instance,
 			     struct mmal_msg *msg, u32 msg_len)
 {
@@ -242,11 +219,7 @@ static void event_to_host_cb(struct vchiq_mmal_instance *instance,
 		 msg->u.event_to_host.cmd, msg->u.event_to_host.length);
 }
 
-/* workqueue scheduled callback
- *
- * we do this because it is important we do not call any other vchiq
- * sync calls from within the message delivery thread
- */
+ 
 static void buffer_work_cb(struct work_struct *work)
 {
 	struct mmal_msg_context *msg_context =
@@ -272,13 +245,7 @@ static void buffer_work_cb(struct work_struct *work)
 					    msg_context->u.bulk.buffer);
 }
 
-/* workqueue scheduled callback to handle receiving buffers
- *
- * VCHI will allow up to 4 bulk receives to be scheduled before blocking.
- * If we block in the service_callback context then we can't process the
- * VCHI_CALLBACK_BULK_RECEIVED message that would otherwise allow the blocked
- * vchiq_bulk_receive() call to complete.
- */
+ 
 static void buffer_to_host_work_cb(struct work_struct *work)
 {
 	struct mmal_msg_context *msg_context =
@@ -289,15 +256,13 @@ static void buffer_to_host_work_cb(struct work_struct *work)
 	int ret;
 
 	if (!len)
-		/* Dummy receive to ensure the buffers remain in order */
+		 
 		len = 8;
-	/* queue the bulk submission */
+	 
 	vchiq_use_service(instance->vchiq_instance, instance->service_handle);
 	ret = vchiq_bulk_receive(instance->vchiq_instance, instance->service_handle,
 				 msg_context->u.bulk.buffer->buffer,
-				 /* Actual receive needs to be a multiple
-				  * of 4 bytes
-				  */
+				  
 				(len + 3) & ~3,
 				msg_context,
 				VCHIQ_BULK_MODE_CALLBACK);
@@ -309,7 +274,7 @@ static void buffer_to_host_work_cb(struct work_struct *work)
 		       __func__, msg_context, ret);
 }
 
-/* enqueue a bulk receive for a given message context */
+ 
 static int bulk_receive(struct vchiq_mmal_instance *instance,
 			struct mmal_msg *msg,
 			struct mmal_msg_context *msg_context)
@@ -321,29 +286,19 @@ static int bulk_receive(struct vchiq_mmal_instance *instance,
 	if (!msg_context->u.bulk.buffer) {
 		pr_err("bulk.buffer not configured - error in buffer_from_host\n");
 
-		/* todo: this is a serious error, we should never have
-		 * committed a buffer_to_host operation to the mmal
-		 * port without the buffer to back it up (underflow
-		 * handling) and there is no obvious way to deal with
-		 * this - how is the mmal servie going to react when
-		 * we fail to do the xfer and reschedule a buffer when
-		 * it arrives? perhaps a starved flag to indicate a
-		 * waiting bulk receive?
-		 */
+		 
 
 		return -EINVAL;
 	}
 
-	/* ensure we do not overrun the available buffer */
+	 
 	if (rd_len > msg_context->u.bulk.buffer->buffer_size) {
 		rd_len = msg_context->u.bulk.buffer->buffer_size;
 		pr_warn("short read as not enough receive buffer space\n");
-		/* todo: is this the correct response, what happens to
-		 * the rest of the message data?
-		 */
+		 
 	}
 
-	/* store length */
+	 
 	msg_context->u.bulk.buffer_used = rd_len;
 	msg_context->u.bulk.dts = msg->u.buffer_from_host.buffer_header.dts;
 	msg_context->u.bulk.pts = msg->u.buffer_from_host.buffer_header.pts;
@@ -354,7 +309,7 @@ static int bulk_receive(struct vchiq_mmal_instance *instance,
 	return 0;
 }
 
-/* data in message, memcpy from packet into output buffer */
+ 
 static int inline_receive(struct vchiq_mmal_instance *instance,
 			  struct mmal_msg *msg,
 			  struct mmal_msg_context *msg_context)
@@ -369,7 +324,7 @@ static int inline_receive(struct vchiq_mmal_instance *instance,
 	return 0;
 }
 
-/* queue the buffer availability with MMAL_MSG_TYPE_BUFFER_FROM_HOST */
+ 
 static int
 buffer_from_host(struct vchiq_mmal_instance *instance,
 		 struct vchiq_mmal_port *port, struct mmal_buffer *buf)
@@ -383,7 +338,7 @@ buffer_from_host(struct vchiq_mmal_instance *instance,
 
 	pr_debug("instance:%u buffer:%p\n", instance->service_handle, buf);
 
-	/* get context */
+	 
 	if (!buf->msg_context) {
 		pr_err("%s: msg_context not allocated, buf %p\n", __func__,
 		       buf);
@@ -391,49 +346,49 @@ buffer_from_host(struct vchiq_mmal_instance *instance,
 	}
 	msg_context = buf->msg_context;
 
-	/* store bulk message context for when data arrives */
+	 
 	msg_context->u.bulk.instance = instance;
 	msg_context->u.bulk.port = port;
 	msg_context->u.bulk.buffer = buf;
 	msg_context->u.bulk.buffer_used = 0;
 
-	/* initialise work structure ready to schedule callback */
+	 
 	INIT_WORK(&msg_context->u.bulk.work, buffer_work_cb);
 	INIT_WORK(&msg_context->u.bulk.buffer_to_host_work,
 		  buffer_to_host_work_cb);
 
 	atomic_inc(&port->buffers_with_vpu);
 
-	/* prep the buffer from host message */
-	memset(&m, 0xbc, sizeof(m));	/* just to make debug clearer */
+	 
+	memset(&m, 0xbc, sizeof(m));	 
 
 	m.h.type = MMAL_MSG_TYPE_BUFFER_FROM_HOST;
 	m.h.magic = MMAL_MAGIC;
 	m.h.context = msg_context->handle;
 	m.h.status = 0;
 
-	/* drvbuf is our private data passed back */
+	 
 	m.u.buffer_from_host.drvbuf.magic = MMAL_MAGIC;
 	m.u.buffer_from_host.drvbuf.component_handle = port->component->handle;
 	m.u.buffer_from_host.drvbuf.port_handle = port->handle;
 	m.u.buffer_from_host.drvbuf.client_context = msg_context->handle;
 
-	/* buffer header */
+	 
 	m.u.buffer_from_host.buffer_header.cmd = 0;
 	m.u.buffer_from_host.buffer_header.data =
 		(u32)(unsigned long)buf->buffer;
 	m.u.buffer_from_host.buffer_header.alloc_size = buf->buffer_size;
-	m.u.buffer_from_host.buffer_header.length = 0;	/* nothing used yet */
-	m.u.buffer_from_host.buffer_header.offset = 0;	/* no offset */
-	m.u.buffer_from_host.buffer_header.flags = 0;	/* no flags */
+	m.u.buffer_from_host.buffer_header.length = 0;	 
+	m.u.buffer_from_host.buffer_header.offset = 0;	 
+	m.u.buffer_from_host.buffer_header.flags = 0;	 
 	m.u.buffer_from_host.buffer_header.pts = MMAL_TIME_UNKNOWN;
 	m.u.buffer_from_host.buffer_header.dts = MMAL_TIME_UNKNOWN;
 
-	/* clear buffer type specific data */
+	 
 	memset(&m.u.buffer_from_host.buffer_header_type_specific, 0,
 	       sizeof(m.u.buffer_from_host.buffer_header_type_specific));
 
-	/* no payload in message */
+	 
 	m.u.buffer_from_host.payload_in_message = 0;
 
 	vchiq_use_service(instance->vchiq_instance, instance->service_handle);
@@ -449,7 +404,7 @@ buffer_from_host(struct vchiq_mmal_instance *instance,
 	return ret;
 }
 
-/* deals with receipt of buffer to host message */
+ 
 static void buffer_to_host_cb(struct vchiq_mmal_instance *instance,
 			      struct mmal_msg *msg, u32 msg_len)
 {
@@ -477,54 +432,50 @@ static void buffer_to_host_cb(struct vchiq_mmal_instance *instance,
 				msg->u.buffer_from_host.buffer_header.flags;
 
 	if (msg->h.status != MMAL_MSG_STATUS_SUCCESS) {
-		/* message reception had an error */
+		 
 		pr_warn("error %d in reply\n", msg->h.status);
 
 		msg_context->u.bulk.status = msg->h.status;
 
 	} else if (msg->u.buffer_from_host.buffer_header.length == 0) {
-		/* empty buffer */
+		 
 		if (msg->u.buffer_from_host.buffer_header.flags &
 		    MMAL_BUFFER_HEADER_FLAG_EOS) {
 			msg_context->u.bulk.status =
 			    bulk_receive(instance, msg, msg_context);
 			if (msg_context->u.bulk.status == 0)
-				return;	/* successful bulk submission, bulk
-					 * completion will trigger callback
-					 */
+				return;	 
 		} else {
-			/* do callback with empty buffer - not EOS though */
+			 
 			msg_context->u.bulk.status = 0;
 			msg_context->u.bulk.buffer_used = 0;
 		}
 	} else if (msg->u.buffer_from_host.payload_in_message == 0) {
-		/* data is not in message, queue a bulk receive */
+		 
 		msg_context->u.bulk.status =
 		    bulk_receive(instance, msg, msg_context);
 		if (msg_context->u.bulk.status == 0)
-			return;	/* successful bulk submission, bulk
-				 * completion will trigger callback
-				 */
+			return;	 
 
-		/* failed to submit buffer, this will end badly */
+		 
 		pr_err("error %d on bulk submission\n",
 		       msg_context->u.bulk.status);
 
 	} else if (msg->u.buffer_from_host.payload_in_message <=
 		   MMAL_VC_SHORT_DATA) {
-		/* data payload within message */
+		 
 		msg_context->u.bulk.status = inline_receive(instance, msg,
 							    msg_context);
 	} else {
 		pr_err("message with invalid short payload\n");
 
-		/* signal error */
+		 
 		msg_context->u.bulk.status = -EINVAL;
 		msg_context->u.bulk.buffer_used =
 		    msg->u.buffer_from_host.payload_in_message;
 	}
 
-	/* schedule the port callback */
+	 
 	schedule_work(&msg_context->u.bulk.work);
 }
 
@@ -533,7 +484,7 @@ static void bulk_receive_cb(struct vchiq_mmal_instance *instance,
 {
 	msg_context->u.bulk.status = 0;
 
-	/* schedule the port callback */
+	 
 	schedule_work(&msg_context->u.bulk.work);
 }
 
@@ -547,7 +498,7 @@ static void bulk_abort_cb(struct vchiq_mmal_instance *instance,
 	schedule_work(&msg_context->u.bulk.work);
 }
 
-/* incoming event service callback */
+ 
 static int service_callback(struct vchiq_instance *vchiq_instance,
 			    enum vchiq_reason reason, struct vchiq_header *header,
 			    unsigned int handle, void *bulk_ctx)
@@ -569,7 +520,7 @@ static int service_callback(struct vchiq_instance *vchiq_instance,
 
 		DBG_DUMP_MSG(msg, msg_len, "<<< reply message");
 
-		/* handling is different for buffer messages */
+		 
 		switch (msg->h.type) {
 		case MMAL_MSG_TYPE_BUFFER_FROM_HOST:
 			vchiq_release_message(vchiq_instance, handle, header);
@@ -587,7 +538,7 @@ static int service_callback(struct vchiq_instance *vchiq_instance,
 			break;
 
 		default:
-			/* messages dependent on header context to complete */
+			 
 			if (!msg->h.context) {
 				pr_err("received message context was null!\n");
 				vchiq_release_message(vchiq_instance, handle, header);
@@ -603,21 +554,14 @@ static int service_callback(struct vchiq_instance *vchiq_instance,
 				break;
 			}
 
-			/* fill in context values */
+			 
 			msg_context->u.sync.msg_handle = header;
 			msg_context->u.sync.msg = msg;
 			msg_context->u.sync.msg_len = msg_len;
 
-			/* todo: should this check (completion_done()
-			 * == 1) for no one waiting? or do we need a
-			 * flag to tell us the completion has been
-			 * interrupted so we can free the message and
-			 * its context. This probably also solves the
-			 * message arriving after interruption todo
-			 * below
-			 */
+			 
 
-			/* complete message so caller knows it happened */
+			 
 			complete(&msg_context->u.sync.cmplt);
 			break;
 		}
@@ -633,9 +577,7 @@ static int service_callback(struct vchiq_instance *vchiq_instance,
 		break;
 
 	case VCHIQ_SERVICE_CLOSED:
-		/* TODO: consider if this requires action if received when
-		 * driver is not explicitly closing the service
-		 */
+		 
 		break;
 
 	default:
@@ -656,7 +598,7 @@ static int send_synchronous_mmal_msg(struct vchiq_mmal_instance *instance,
 	int ret;
 	unsigned long timeout;
 
-	/* payload size must not cause message to exceed max size */
+	 
 	if (payload_len >
 	    (MMAL_MSG_MAX_SIZE - sizeof(struct mmal_msg_header))) {
 		pr_err("payload length %d exceeds max:%d\n", payload_len,
@@ -697,7 +639,7 @@ static int send_synchronous_mmal_msg(struct vchiq_mmal_instance *instance,
 	if (timeout == 0) {
 		pr_err("timed out waiting for sync completion\n");
 		ret = -ETIME;
-		/* todo: what happens if the message arrives after aborting */
+		 
 		release_msg_context(msg_context);
 		return ret;
 	}
@@ -752,7 +694,7 @@ static void dump_port_info(struct vchiq_mmal_port *port)
 
 static void port_to_mmal_msg(struct vchiq_mmal_port *port, struct mmal_port *p)
 {
-	/* todo do readonly fields need setting at all? */
+	 
 	p->type = port->type;
 	p->index = port->index;
 	p->index_all = 0;
@@ -763,7 +705,7 @@ static void port_to_mmal_msg(struct vchiq_mmal_port *port, struct mmal_port *p)
 	p->buffer_num_recommended = port->recommended_buffer.num;
 	p->buffer_size_recommended = port->recommended_buffer.size;
 
-	/* only three writable fields in a port */
+	 
 	p->buffer_num = port->current_buffer.num;
 	p->buffer_size = port->current_buffer.size;
 	p->userdata = (u32)(unsigned long)port;
@@ -790,7 +732,7 @@ static int port_info_set(struct vchiq_mmal_instance *instance,
 
 	port_to_mmal_msg(port, &m.u.port_info_set.port);
 
-	/* elementary stream format setup */
+	 
 	m.u.port_info_set.format.type = port->format.type;
 	m.u.port_info_set.format.encoding = port->format.encoding;
 	m.u.port_info_set.format.encoding_variant =
@@ -812,12 +754,12 @@ static int port_info_set(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_INFO_SET) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
 
-	/* return operation status */
+	 
 	ret = -rmsg->u.port_info_get_reply.status;
 
 	pr_debug("%s:result:%d component:0x%x port:%d\n", __func__, ret,
@@ -829,7 +771,7 @@ release_msg:
 	return ret;
 }
 
-/* use port info get message to retrieve port information */
+ 
 static int port_info_get(struct vchiq_mmal_instance *instance,
 			 struct vchiq_mmal_port *port)
 {
@@ -838,7 +780,7 @@ static int port_info_get(struct vchiq_mmal_instance *instance,
 	struct mmal_msg *rmsg;
 	struct vchiq_header *rmsg_handle;
 
-	/* port info time */
+	 
 	m.h.type = MMAL_MSG_TYPE_PORT_INFO_GET;
 	m.u.port_info_get.component_handle = port->component->handle;
 	m.u.port_info_get.port_type = port->type;
@@ -851,12 +793,12 @@ static int port_info_get(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_INFO_GET) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
 
-	/* return operation status */
+	 
 	ret = -rmsg->u.port_info_get_reply.status;
 	if (ret != MMAL_MSG_STATUS_SUCCESS)
 		goto release_msg;
@@ -866,12 +808,10 @@ static int port_info_get(struct vchiq_mmal_instance *instance,
 	else
 		port->enabled = true;
 
-	/* copy the values out of the message */
+	 
 	port->handle = rmsg->u.port_info_get_reply.port_handle;
 
-	/* port type and index cached to use on port info set because
-	 * it does not use a port handle
-	 */
+	 
 	port->type = rmsg->u.port_info_get_reply.port_type;
 	port->index = rmsg->u.port_info_get_reply.port_index;
 
@@ -891,7 +831,7 @@ static int port_info_get(struct vchiq_mmal_instance *instance,
 	port->current_buffer.size =
 	    rmsg->u.port_info_get_reply.port.buffer_size;
 
-	/* stream format */
+	 
 	port->format.type = rmsg->u.port_info_get_reply.format.type;
 	port->format.encoding = rmsg->u.port_info_get_reply.format.encoding;
 	port->format.encoding_variant =
@@ -899,7 +839,7 @@ static int port_info_get(struct vchiq_mmal_instance *instance,
 	port->format.bitrate = rmsg->u.port_info_get_reply.format.bitrate;
 	port->format.flags = rmsg->u.port_info_get_reply.format.flags;
 
-	/* elementary stream format */
+	 
 	memcpy(&port->es,
 	       &rmsg->u.port_info_get_reply.es,
 	       sizeof(union mmal_es_specific_format));
@@ -924,7 +864,7 @@ release_msg:
 	return ret;
 }
 
-/* create component on vc */
+ 
 static int create_component(struct vchiq_mmal_instance *instance,
 			    struct vchiq_mmal_component *component,
 			    const char *name)
@@ -934,7 +874,7 @@ static int create_component(struct vchiq_mmal_instance *instance,
 	struct mmal_msg *rmsg;
 	struct vchiq_header *rmsg_handle;
 
-	/* build component create message */
+	 
 	m.h.type = MMAL_MSG_TYPE_COMPONENT_CREATE;
 	m.u.component_create.client_component = component->client_component;
 	strncpy(m.u.component_create.name, name,
@@ -947,7 +887,7 @@ static int create_component(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != m.h.type) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -956,7 +896,7 @@ static int create_component(struct vchiq_mmal_instance *instance,
 	if (ret != MMAL_MSG_STATUS_SUCCESS)
 		goto release_msg;
 
-	/* a valid component response received */
+	 
 	component->handle = rmsg->u.component_create_reply.component_handle;
 	component->inputs = rmsg->u.component_create_reply.input_num;
 	component->outputs = rmsg->u.component_create_reply.output_num;
@@ -972,7 +912,7 @@ release_msg:
 	return ret;
 }
 
-/* destroys a component on vc */
+ 
 static int destroy_component(struct vchiq_mmal_instance *instance,
 			     struct vchiq_mmal_component *component)
 {
@@ -991,7 +931,7 @@ static int destroy_component(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != m.h.type) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1005,7 +945,7 @@ release_msg:
 	return ret;
 }
 
-/* enable a component on vc */
+ 
 static int enable_component(struct vchiq_mmal_instance *instance,
 			    struct vchiq_mmal_component *component)
 {
@@ -1024,7 +964,7 @@ static int enable_component(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != m.h.type) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1037,7 +977,7 @@ release_msg:
 	return ret;
 }
 
-/* disable a component on vc */
+ 
 static int disable_component(struct vchiq_mmal_instance *instance,
 			     struct vchiq_mmal_component *component)
 {
@@ -1056,7 +996,7 @@ static int disable_component(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != m.h.type) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1070,7 +1010,7 @@ release_msg:
 	return ret;
 }
 
-/* get version of mmal implementation */
+ 
 static int get_version(struct vchiq_mmal_instance *instance,
 		       u32 *major_out, u32 *minor_out)
 {
@@ -1088,7 +1028,7 @@ static int get_version(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != m.h.type) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1102,7 +1042,7 @@ release_msg:
 	return ret;
 }
 
-/* do a port action with a port as a parameter */
+ 
 static int port_action_port(struct vchiq_mmal_instance *instance,
 			    struct vchiq_mmal_port *port,
 			    enum mmal_msg_port_action_type action_type)
@@ -1126,7 +1066,7 @@ static int port_action_port(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_ACTION) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1144,7 +1084,7 @@ release_msg:
 	return ret;
 }
 
-/* do a port action with handles as parameters */
+ 
 static int port_action_handle(struct vchiq_mmal_instance *instance,
 			      struct vchiq_mmal_port *port,
 			      enum mmal_msg_port_action_type action_type,
@@ -1173,7 +1113,7 @@ static int port_action_handle(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_ACTION) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1216,7 +1156,7 @@ static int port_parameter_set(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_PARAMETER_SET) {
-		/* got an unexpected message type in reply */
+		 
 		ret = -EINVAL;
 		goto release_msg;
 	}
@@ -1257,7 +1197,7 @@ static int port_parameter_get(struct vchiq_mmal_instance *instance,
 		return ret;
 
 	if (rmsg->h.type != MMAL_MSG_TYPE_PORT_PARAMETER_GET) {
-		/* got an unexpected message type in reply */
+		 
 		pr_err("Incorrect reply type %d\n", rmsg->h.type);
 		ret = -EINVAL;
 		goto release_msg;
@@ -1265,22 +1205,18 @@ static int port_parameter_get(struct vchiq_mmal_instance *instance,
 
 	ret = rmsg->u.port_parameter_get_reply.status;
 
-	/* port_parameter_get_reply.size includes the header,
-	 * whilst *value_size doesn't.
-	 */
+	 
 	rmsg->u.port_parameter_get_reply.size -= (2 * sizeof(u32));
 
 	if (ret || rmsg->u.port_parameter_get_reply.size > *value_size) {
-		/* Copy only as much as we have space for
-		 * but report true size of parameter
-		 */
+		 
 		memcpy(value, &rmsg->u.port_parameter_get_reply.value,
 		       *value_size);
 	} else {
 		memcpy(value, &rmsg->u.port_parameter_get_reply.value,
 		       rmsg->u.port_parameter_get_reply.size);
 	}
-	/* Always report the size of the returned parameter to the caller */
+	 
 	*value_size = rmsg->u.port_parameter_get_reply.size;
 
 	pr_debug("%s:result:%d component:0x%x port:%d parameter:%d\n", __func__,
@@ -1292,7 +1228,7 @@ release_msg:
 	return ret;
 }
 
-/* disables a port and drains buffers from it */
+ 
 static int port_disable(struct vchiq_mmal_instance *instance,
 			struct vchiq_mmal_port *port)
 {
@@ -1308,14 +1244,7 @@ static int port_disable(struct vchiq_mmal_instance *instance,
 	ret = port_action_port(instance, port,
 			       MMAL_MSG_PORT_ACTION_TYPE_DISABLE);
 	if (ret == 0) {
-		/*
-		 * Drain all queued buffers on port. This should only
-		 * apply to buffers that have been queued before the port
-		 * has been enabled. If the port has been enabled and buffers
-		 * passed, then the buffers should have been removed from this
-		 * list, and we should get the relevant callbacks via VCHIQ
-		 * to release the buffers.
-		 */
+		 
 		spin_lock_irqsave(&port->slock, flags);
 
 		list_for_each_safe(buf_head, q, &port->buffers) {
@@ -1342,7 +1271,7 @@ static int port_disable(struct vchiq_mmal_instance *instance,
 	return ret;
 }
 
-/* enable a port */
+ 
 static int port_enable(struct vchiq_mmal_instance *instance,
 		       struct vchiq_mmal_port *port)
 {
@@ -1361,7 +1290,7 @@ static int port_enable(struct vchiq_mmal_instance *instance,
 	port->enabled = true;
 
 	if (port->buffer_cb) {
-		/* send buffer headers to videocore */
+		 
 		hdr_count = 1;
 		list_for_each_safe(buf_head, q, &port->buffers) {
 			struct mmal_buffer *mmalbuf;
@@ -1385,10 +1314,7 @@ done:
 	return ret;
 }
 
-/* ------------------------------------------------------------------
- * Exported API
- *------------------------------------------------------------------
- */
+ 
 
 int vchiq_mmal_port_set_format(struct vchiq_mmal_instance *instance,
 			       struct vchiq_mmal_port *port)
@@ -1402,7 +1328,7 @@ int vchiq_mmal_port_set_format(struct vchiq_mmal_instance *instance,
 	if (ret)
 		goto release_unlock;
 
-	/* read what has actually been set */
+	 
 	ret = port_info_get(instance, port);
 
 release_unlock:
@@ -1446,11 +1372,7 @@ int vchiq_mmal_port_parameter_get(struct vchiq_mmal_instance *instance,
 }
 EXPORT_SYMBOL_GPL(vchiq_mmal_port_parameter_get);
 
-/* enable a port
- *
- * enables a port and queues buffers for satisfying callbacks if we
- * provide a callback handler
- */
+ 
 int vchiq_mmal_port_enable(struct vchiq_mmal_instance *instance,
 			   struct vchiq_mmal_port *port,
 			   vchiq_mmal_buffer_cb buffer_cb)
@@ -1460,7 +1382,7 @@ int vchiq_mmal_port_enable(struct vchiq_mmal_instance *instance,
 	if (mutex_lock_interruptible(&instance->vchiq_mutex))
 		return -EINTR;
 
-	/* already enabled - noop */
+	 
 	if (port->enabled) {
 		ret = 0;
 		goto unlock;
@@ -1498,9 +1420,7 @@ int vchiq_mmal_port_disable(struct vchiq_mmal_instance *instance,
 }
 EXPORT_SYMBOL_GPL(vchiq_mmal_port_disable);
 
-/* ports will be connected in a tunneled manner so data buffers
- * are not handled by client.
- */
+ 
 int vchiq_mmal_port_connect_tunnel(struct vchiq_mmal_instance *instance,
 				   struct vchiq_mmal_port *src,
 				   struct vchiq_mmal_port *dst)
@@ -1510,7 +1430,7 @@ int vchiq_mmal_port_connect_tunnel(struct vchiq_mmal_instance *instance,
 	if (mutex_lock_interruptible(&instance->vchiq_mutex))
 		return -EINTR;
 
-	/* disconnect ports if connected */
+	 
 	if (src->connected) {
 		ret = port_disable(instance, src);
 		if (ret) {
@@ -1518,9 +1438,7 @@ int vchiq_mmal_port_connect_tunnel(struct vchiq_mmal_instance *instance,
 			goto release_unlock;
 		}
 
-		/* do not need to disable the destination port as they
-		 * are connected and it is done automatically
-		 */
+		 
 
 		ret = port_action_handle(instance, src,
 					 MMAL_MSG_PORT_ACTION_TYPE_DISCONNECT,
@@ -1535,13 +1453,13 @@ int vchiq_mmal_port_connect_tunnel(struct vchiq_mmal_instance *instance,
 	}
 
 	if (!dst) {
-		/* do not make new connection */
+		 
 		ret = 0;
 		pr_debug("not making new connection\n");
 		goto release_unlock;
 	}
 
-	/* copy src port format to dst */
+	 
 	dst->format.encoding = src->format.encoding;
 	dst->es.video.width = src->es.video.width;
 	dst->es.video.height = src->es.video.height;
@@ -1552,21 +1470,21 @@ int vchiq_mmal_port_connect_tunnel(struct vchiq_mmal_instance *instance,
 	dst->es.video.frame_rate.numerator = src->es.video.frame_rate.numerator;
 	dst->es.video.frame_rate.denominator = src->es.video.frame_rate.denominator;
 
-	/* set new format */
+	 
 	ret = port_info_set(instance, dst);
 	if (ret) {
 		pr_debug("setting port info failed\n");
 		goto release_unlock;
 	}
 
-	/* read what has actually been set */
+	 
 	ret = port_info_get(instance, dst);
 	if (ret) {
 		pr_debug("read back port info failed\n");
 		goto release_unlock;
 	}
 
-	/* connect two ports together */
+	 
 	ret = port_action_handle(instance, src,
 				 MMAL_MSG_PORT_ACTION_TYPE_CONNECT,
 				 dst->component->handle, dst->handle);
@@ -1595,7 +1513,7 @@ int vchiq_mmal_submit_buffer(struct vchiq_mmal_instance *instance,
 
 	ret = buffer_from_host(instance, port, buffer);
 	if (ret == -EINVAL) {
-		/* Port is disabled. Queue for when it is enabled. */
+		 
 		spin_lock_irqsave(&port->slock, flags);
 		list_add_tail(&buffer->list, &port->buffers);
 		spin_unlock_irqrestore(&port->slock, flags);
@@ -1630,15 +1548,13 @@ int mmal_vchi_buffer_cleanup(struct mmal_buffer *buf)
 }
 EXPORT_SYMBOL_GPL(mmal_vchi_buffer_cleanup);
 
-/* Initialise a mmal component and its ports
- *
- */
+ 
 int vchiq_mmal_component_init(struct vchiq_mmal_instance *instance,
 			      const char *name,
 			      struct vchiq_mmal_component **component_out)
 {
 	int ret;
-	int idx;		/* port index */
+	int idx;		 
 	struct vchiq_mmal_component *component = NULL;
 
 	if (mutex_lock_interruptible(&instance->vchiq_mutex))
@@ -1653,14 +1569,11 @@ int vchiq_mmal_component_init(struct vchiq_mmal_instance *instance,
 	}
 
 	if (!component) {
-		ret = -EINVAL;	/* todo is this correct error? */
+		ret = -EINVAL;	 
 		goto unlock;
 	}
 
-	/* We need a handle to reference back to our component structure.
-	 * Use the array index in instance->component rather than rolling
-	 * another IDR.
-	 */
+	 
 	component->client_component = idx;
 
 	ret = create_component(instance, component, name);
@@ -1670,7 +1583,7 @@ int vchiq_mmal_component_init(struct vchiq_mmal_instance *instance,
 		goto unlock;
 	}
 
-	/* ports info needs gathering */
+	 
 	component->control.type = MMAL_PORT_TYPE_CONTROL;
 	component->control.index = 0;
 	component->control.component = component;
@@ -1730,9 +1643,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(vchiq_mmal_component_init);
 
-/*
- * cause a mmal component to be destroyed
- */
+ 
 int vchiq_mmal_component_finalise(struct vchiq_mmal_instance *instance,
 				  struct vchiq_mmal_component *component)
 {
@@ -1754,9 +1665,7 @@ int vchiq_mmal_component_finalise(struct vchiq_mmal_instance *instance,
 }
 EXPORT_SYMBOL_GPL(vchiq_mmal_component_finalise);
 
-/*
- * cause a mmal component to be enabled
- */
+ 
 int vchiq_mmal_component_enable(struct vchiq_mmal_instance *instance,
 				struct vchiq_mmal_component *component)
 {
@@ -1780,9 +1689,7 @@ int vchiq_mmal_component_enable(struct vchiq_mmal_instance *instance,
 }
 EXPORT_SYMBOL_GPL(vchiq_mmal_component_enable);
 
-/*
- * cause a mmal component to be enabled
- */
+ 
 int vchiq_mmal_component_disable(struct vchiq_mmal_instance *instance,
 				 struct vchiq_mmal_component *component)
 {
@@ -1865,20 +1772,18 @@ int vchiq_mmal_init(struct vchiq_mmal_instance **out_instance)
 		.userdata		= NULL,
 	};
 
-	/* compile time checks to ensure structure size as they are
-	 * directly (de)serialised from memory.
-	 */
+	 
 
-	/* ensure the header structure has packed to the correct size */
+	 
 	BUILD_BUG_ON(sizeof(struct mmal_msg_header) != 24);
 
-	/* ensure message structure does not exceed maximum length */
+	 
 	BUILD_BUG_ON(sizeof(struct mmal_msg) > MMAL_MSG_MAX_SIZE);
 
-	/* mmal port struct is correct size */
+	 
 	BUILD_BUG_ON(sizeof(struct mmal_port) != 64);
 
-	/* create a vchi instance */
+	 
 	status = vchiq_initialise(&vchiq_instance);
 	if (status) {
 		pr_err("Failed to initialise VCHI instance (status=%d)\n",

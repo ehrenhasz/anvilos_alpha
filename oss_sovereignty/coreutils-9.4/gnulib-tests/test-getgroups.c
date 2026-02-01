@@ -1,20 +1,4 @@
-/* Tests of getgroups.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
+ 
 
 #include <config.h>
 
@@ -30,11 +14,7 @@ SIGNATURE_CHECK (getgroups, int, (int, gid_t[]));
 
 #include "macros.h"
 
-/* Tell GCC not to warn about the specific edge cases tested here.
-   GCC >= 10 with glibc >= 2.32 would otherwise trigger warnings, even without
-   any -W options, because getgroups() is declared with
-     __attribute__ ((__access__ (__write_only__, 2, 1)))
- */
+ 
 #if __GNUC__ >= 7
 # pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
@@ -57,10 +37,7 @@ main (int argc, _GL_UNUSED char **argv)
   groups = malloc ((result + 1) * sizeof *groups);
   ASSERT (groups);
   groups[result] = -1;
-  /* Check for EINVAL handling.  Not all processes have supplemental
-     groups, and getgroups does not have to return the effective gid,
-     so a result of 0 is reasonable.  Also, we can't test for EINVAL
-     if result is 1, because of how getgroups treats 0.  */
+   
   if (1 < result)
     {
       errno = 0;
@@ -74,9 +51,7 @@ main (int argc, _GL_UNUSED char **argv)
   ASSERT (getgroups (-1, NULL) == -1);
   ASSERT (errno == EINVAL);
 
-  /* The automated unit test, with no arguments, ends here.  However,
-     for debugging purposes, you can pass a command-line argument to
-     list the returned groups.  */
+   
   if (1 < argc)
     {
       int i;

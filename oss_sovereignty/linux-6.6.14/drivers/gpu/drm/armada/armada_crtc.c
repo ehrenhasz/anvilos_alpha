@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *  Rewritten from the dovefb driver, and Armada510 manuals.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -23,59 +20,7 @@
 #include "armada_plane.h"
 #include "armada_trace.h"
 
-/*
- * A note about interlacing.  Let's consider HDMI 1920x1080i.
- * The timing parameters we have from X are:
- *  Hact HsyA HsyI Htot  Vact VsyA VsyI Vtot
- *  1920 2448 2492 2640  1080 1084 1094 1125
- * Which get translated to:
- *  Hact HsyA HsyI Htot  Vact VsyA VsyI Vtot
- *  1920 2448 2492 2640   540  542  547  562
- *
- * This is how it is defined by CEA-861-D - line and pixel numbers are
- * referenced to the rising edge of VSYNC and HSYNC.  Total clocks per
- * line: 2640.  The odd frame, the first active line is at line 21, and
- * the even frame, the first active line is 584.
- *
- * LN:    560     561     562     563             567     568    569
- * DE:    ~~~|____________________________//__________________________
- * HSYNC: ____|~|_____|~|_____|~|_____|~|_//__|~|_____|~|_____|~|_____
- * VSYNC: _________________________|~~~~~~//~~~~~~~~~~~~~~~|__________
- *  22 blanking lines.  VSYNC at 1320 (referenced to the HSYNC rising edge).
- *
- * LN:    1123   1124    1125      1               5       6      7
- * DE:    ~~~|____________________________//__________________________
- * HSYNC: ____|~|_____|~|_____|~|_____|~|_//__|~|_____|~|_____|~|_____
- * VSYNC: ____________________|~~~~~~~~~~~//~~~~~~~~~~|_______________
- *  23 blanking lines
- *
- * The Armada LCD Controller line and pixel numbers are, like X timings,
- * referenced to the top left of the active frame.
- *
- * So, translating these to our LCD controller:
- *  Odd frame, 563 total lines, VSYNC at line 543-548, pixel 1128.
- *  Even frame, 562 total lines, VSYNC at line 542-547, pixel 2448.
- * Note: Vsync front porch remains constant!
- *
- * if (odd_frame) {
- *   vtotal = mode->crtc_vtotal + 1;
- *   vbackporch = mode->crtc_vsync_start - mode->crtc_vdisplay + 1;
- *   vhorizpos = mode->crtc_hsync_start - mode->crtc_htotal / 2
- * } else {
- *   vtotal = mode->crtc_vtotal;
- *   vbackporch = mode->crtc_vsync_start - mode->crtc_vdisplay;
- *   vhorizpos = mode->crtc_hsync_start;
- * }
- * vfrontporch = mode->crtc_vtotal - mode->crtc_vsync_end;
- *
- * So, we need to reprogram these registers on each vsync event:
- *  LCD_SPU_V_PORCH, LCD_SPU_ADV_REG, LCD_SPUT_V_H_TOTAL
- *
- * Note: we do not use the frame done interrupts because these appear
- * to happen too early, and lead to jitter on the display (presumably
- * they occur at the end of the last active line, before the vsync back
- * porch, which we're reprogramming.)
- */
+ 
 
 void
 armada_drm_crtc_update_regs(struct armada_crtc *dcrtc, struct armada_regs *regs)
@@ -101,12 +46,7 @@ static void armada_drm_crtc_update(struct armada_crtc *dcrtc, bool enable)
 	if (enable)
 		dumb_ctrl |= CFG_DUMB_ENA;
 
-	/*
-	 * When the dumb interface isn't in DUMB24_RGB888_0 mode, it might
-	 * be using SPI or GPIO.  If we set this to DUMB_BLANK, we will
-	 * force LCD_D[23:0] to output blank color, overriding the GPIO or
-	 * SPI usage.  So leave it as-is unless in DUMB24_RGB888_0 mode.
-	 */
+	 
 	if (!enable && (dumb_ctrl & DUMB_MASK) == DUMB24_RGB888_0) {
 		dumb_ctrl &= ~DUMB_MASK;
 		dumb_ctrl |= DUMB_BLANK;
@@ -122,7 +62,7 @@ static void armada_drm_crtc_queue_state_event(struct drm_crtc *crtc)
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 	struct drm_pending_vblank_event *event;
 
-	/* If we have an event, we need vblank events enabled */
+	 
 	event = xchg(&crtc->state->event, NULL);
 	if (event) {
 		WARN_ON(drm_crtc_vblank_get(crtc) != 0);
@@ -182,7 +122,7 @@ static enum drm_mode_status armada_drm_crtc_mode_valid(struct drm_crtc *crtc,
 	if (mode->flags & DRM_MODE_FLAG_HSKEW)
 		return MODE_H_ILLEGAL;
 
-	/* We can't do interlaced modes if we don't have the SPU_ADV_REG */
+	 
 	if (!dcrtc->variant->has_spu_adv_reg &&
 	    mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
@@ -194,28 +134,21 @@ static enum drm_mode_status armada_drm_crtc_mode_valid(struct drm_crtc *crtc,
 	return MODE_OK;
 }
 
-/* The mode_config.mutex will be held for this call */
+ 
 static bool armada_drm_crtc_mode_fixup(struct drm_crtc *crtc,
 	const struct drm_display_mode *mode, struct drm_display_mode *adj)
 {
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 	int ret;
 
-	/*
-	 * Set CRTC modesetting parameters for the adjusted mode.  This is
-	 * applied after the connectors, bridges, and encoders have fixed up
-	 * this mode, as described above drm_atomic_helper_check_modeset().
-	 */
+	 
 	drm_mode_set_crtcinfo(adj, CRTC_INTERLACE_HALVE_V);
 
-	/*
-	 * Validate the adjusted mode in case an encoder/bridge has set
-	 * something we don't support.
-	 */
+	 
 	if (armada_drm_crtc_mode_valid(crtc, adj) != MODE_OK)
 		return false;
 
-	/* Check whether the display mode is possible */
+	 
 	ret = dcrtc->variant->compute_clock(dcrtc, adj, NULL);
 	if (ret)
 		return false;
@@ -223,7 +156,7 @@ static bool armada_drm_crtc_mode_fixup(struct drm_crtc *crtc,
 	return true;
 }
 
-/* These are locked by dev->vbl_lock */
+ 
 static void armada_drm_crtc_disable_irq(struct armada_crtc *dcrtc, u32 mask)
 {
 	if (dcrtc->irq_ena & mask) {
@@ -306,16 +239,12 @@ static irqreturn_t armada_drm_irq(int irq, void *arg)
 	struct armada_crtc *dcrtc = arg;
 	u32 v, stat = readl_relaxed(dcrtc->base + LCD_SPU_IRQ_ISR);
 
-	/*
-	 * Reading the ISR appears to clear bits provided CLEAN_SPU_IRQ_ISR
-	 * is set.  Writing has some other effect to acknowledge the IRQ -
-	 * without this, we only get a single IRQ.
-	 */
+	 
 	writel_relaxed(0, dcrtc->base + LCD_SPU_IRQ_ISR);
 
 	trace_armada_drm_irq(&dcrtc->crtc, stat);
 
-	/* Mask out those interrupts we haven't enabled */
+	 
 	v = stat & dcrtc->irq_ena;
 
 	if (v & (VSYNC_IRQ|GRA_FRAME_IRQ|DUMB_FRAMEDONE)) {
@@ -325,7 +254,7 @@ static irqreturn_t armada_drm_irq(int irq, void *arg)
 	return IRQ_NONE;
 }
 
-/* The mode_config.mutex will be held for this call */
+ 
 static void armada_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 {
 	struct drm_display_mode *adj = &crtc->state->adjusted_mode;
@@ -346,7 +275,7 @@ static void armada_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 		      crtc->base.id, crtc->name, DRM_MODE_ARG(adj));
 	DRM_DEBUG_KMS("lm %d rm %d tm %d bm %d\n", lm, rm, tm, bm);
 
-	/* Now compute the divider for real */
+	 
 	dcrtc->variant->compute_clock(dcrtc, adj, &sclk);
 
 	armada_reg_queue_set(regs, i, sclk, LCD_CFG_SCLK_DIV);
@@ -354,7 +283,7 @@ static void armada_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	spin_lock_irqsave(&dcrtc->irq_lock, flags);
 
 	dcrtc->interlaced = interlaced;
-	/* Even interlaced/progressive frame */
+	 
 	dcrtc->v[1].spu_v_h_total = adj->crtc_vtotal << 16 |
 				    adj->crtc_htotal;
 	dcrtc->v[1].spu_v_porch = tm << 16 | bm;
@@ -362,7 +291,7 @@ static void armada_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	dcrtc->v[1].spu_adv_reg = val << 20 | val | ADV_VSYNCOFFEN;
 
 	if (interlaced) {
-		/* Odd interlaced frame */
+		 
 		val -= adj->crtc_htotal / 2;
 		dcrtc->v[0].spu_adv_reg = val << 20 | val | ADV_VSYNCOFFEN;
 		dcrtc->v[0].spu_v_h_total = dcrtc->v[1].spu_v_h_total +
@@ -388,14 +317,7 @@ static void armada_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	val = adj->flags & DRM_MODE_FLAG_NVSYNC ? CFG_VSYNC_INV : 0;
 	armada_reg_queue_mod(regs, i, val, CFG_VSYNC_INV, LCD_SPU_DMA_CTRL1);
 
-	/*
-	 * The documentation doesn't indicate what the normal state of
-	 * the sync signals are.  Sebastian Hesselbart kindly probed
-	 * these signals on his board to determine their state.
-	 *
-	 * The non-inverted state of the sync signals is active high.
-	 * Setting these bits makes the appropriate signal active low.
-	 */
+	 
 	val = 0;
 	if (adj->flags & DRM_MODE_FLAG_NCSYNC)
 		val |= CFG_INV_CSYNC;
@@ -454,10 +376,7 @@ static void armada_drm_crtc_atomic_flush(struct drm_crtc *crtc,
 
 	armada_reg_queue_end(dcrtc->regs, dcrtc->regs_idx);
 
-	/*
-	 * If we aren't doing a full modeset, then we need to queue
-	 * the event here.
-	 */
+	 
 	if (!drm_atomic_crtc_needs_modeset(crtc_state)) {
 		dcrtc->update_pending = true;
 		armada_drm_crtc_queue_state_event(crtc);
@@ -488,17 +407,11 @@ static void armada_drm_crtc_atomic_disable(struct drm_crtc *crtc,
 	armada_drm_crtc_update(dcrtc, false);
 
 	if (!crtc->state->active) {
-		/*
-		 * This modeset will be leaving the CRTC disabled, so
-		 * call the backend to disable upstream clocks etc.
-		 */
+		 
 		if (dcrtc->variant->disable)
 			dcrtc->variant->disable(dcrtc);
 
-		/*
-		 * We will not receive any further vblank events.
-		 * Send the flip_done event manually.
-		 */
+		 
 		event = crtc->state->event;
 		crtc->state->event = NULL;
 		if (event) {
@@ -519,11 +432,7 @@ static void armada_drm_crtc_atomic_enable(struct drm_crtc *crtc,
 	DRM_DEBUG_KMS("[CRTC:%d:%s]\n", crtc->base.id, crtc->name);
 
 	if (!old_state->active) {
-		/*
-		 * This modeset is enabling the CRTC after it having
-		 * been disabled.  Reverse the call to ->disable in
-		 * the atomic_disable().
-		 */
+		 
 		if (dcrtc->variant->enable)
 			dcrtc->variant->enable(dcrtc, &crtc->state->adjusted_mode);
 	}
@@ -561,13 +470,7 @@ static void armada_load_cursor_argb(void __iomem *base, uint32_t *pix,
 		for (x = 0; x < width; x++, p++) {
 			uint32_t val = *p;
 
-			/*
-			 * In "ARGB888" (HWC32) mode, writing to the SRAM
-			 * requires these bits to contain:
-			 * 31:24 = alpha 23:16 = blue 15:8 = green 7:0 = red
-			 * So, it's actually ABGR8888.  This is independent
-			 * of the SWAPRB bits in DMA control register 0.
-			 */
+			 
 			val = (val & 0xff00ff00) |
 			      (val & 0x000000ff) << 16 |
 			      (val & 0x00ff0000) >> 16;
@@ -591,7 +494,7 @@ static void armada_drm_crtc_cursor_tran(void __iomem *base)
 	unsigned addr;
 
 	for (addr = 0; addr < 256; addr++) {
-		/* write the default value */
+		 
 		writel_relaxed(0x55555555, base + LCD_SPU_SRAM_WRDAT);
 		writel_relaxed(addr | SRAM_WRITE | SRAM_HWC32_TRAN,
 			       base + LCD_SPU_SRAM_CTRL);
@@ -604,10 +507,7 @@ static int armada_drm_crtc_cursor_update(struct armada_crtc *dcrtc, bool reload)
 	uint32_t yoff, yscr, h = dcrtc->cursor_h;
 	uint32_t para1;
 
-	/*
-	 * Calculate the visible width and height of the cursor,
-	 * screen position, and the position in the cursor bitmap.
-	 */
+	 
 	if (dcrtc->cursor_x < 0) {
 		xoff = -dcrtc->cursor_x;
 		xscr = 0;
@@ -634,7 +534,7 @@ static int armada_drm_crtc_cursor_update(struct armada_crtc *dcrtc, bool reload)
 		yscr = dcrtc->cursor_y;
 	}
 
-	/* On interlaced modes, the vertical cursor size must be halved */
+	 
 	s = dcrtc->cursor_w;
 	if (dcrtc->interlaced) {
 		s *= 2;
@@ -656,10 +556,7 @@ static int armada_drm_crtc_cursor_update(struct armada_crtc *dcrtc, bool reload)
 		       dcrtc->base + LCD_SPU_SRAM_PARA1);
 	spin_unlock_irq(&dcrtc->irq_lock);
 
-	/*
-	 * Initialize the transparency if the SRAM was powered down.
-	 * We must also reload the cursor data as well.
-	 */
+	 
 	if (!(para1 & CFG_CSB_256x32)) {
 		armada_drm_crtc_cursor_tran(dcrtc->base);
 		reload = true;
@@ -675,13 +572,13 @@ static int armada_drm_crtc_cursor_update(struct armada_crtc *dcrtc, bool reload)
 	if (reload) {
 		struct armada_gem_object *obj = dcrtc->cursor_obj;
 		uint32_t *pix;
-		/* Set the top-left corner of the cursor image */
+		 
 		pix = obj->addr;
 		pix += yoff * s + xoff;
 		armada_load_cursor_argb(dcrtc->base, pix, s, w, h);
 	}
 
-	/* Reload the cursor position, size and enable in the IRQ handler */
+	 
 	spin_lock_irq(&dcrtc->irq_lock);
 	dcrtc->cursor_hw_pos = yscr << 16 | xscr;
 	dcrtc->cursor_hw_sz = h << 16 | w;
@@ -704,12 +601,12 @@ static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 	struct armada_gem_object *obj = NULL;
 	int ret;
 
-	/* If no cursor support, replicate drm's return value */
+	 
 	if (!dcrtc->variant->has_spu_adv_reg)
 		return -ENXIO;
 
 	if (handle && w > 0 && h > 0) {
-		/* maximum size is 64x32 or 32x64 */
+		 
 		if (w > 64 || h > 64 || (w > 32 && h > 32))
 			return -ENOMEM;
 
@@ -717,7 +614,7 @@ static int armada_drm_crtc_cursor_set(struct drm_crtc *crtc,
 		if (!obj)
 			return -ENOENT;
 
-		/* Must be a kernel-mapped object */
+		 
 		if (!obj->addr) {
 			drm_gem_object_put(&obj->obj);
 			return -EINVAL;
@@ -752,7 +649,7 @@ static int armada_drm_crtc_cursor_move(struct drm_crtc *crtc, int x, int y)
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
 	int ret;
 
-	/* If no cursor support, replicate drm's return value */
+	 
 	if (!dcrtc->variant->has_spu_adv_reg)
 		return -EFAULT;
 
@@ -792,7 +689,7 @@ static int armada_drm_crtc_late_register(struct drm_crtc *crtc)
 	return 0;
 }
 
-/* These are called under the vbl_lock. */
+ 
 static int armada_drm_crtc_enable_vblank(struct drm_crtc *crtc)
 {
 	struct armada_crtc *dcrtc = drm_to_armada_crtc(crtc);
@@ -835,9 +732,9 @@ int armada_crtc_select_clock(struct armada_crtc *dcrtc,
 			     unsigned long desired_khz)
 {
 	unsigned long desired_hz = desired_khz * 1000;
-	unsigned long desired_clk_hz;	// requested clk input
-	unsigned long real_clk_hz;	// actual clk input
-	unsigned long real_hz;		// actual pixel clk
+	unsigned long desired_clk_hz;	
+	unsigned long real_clk_hz;	
+	unsigned long real_hz;		
 	unsigned long permillage;
 	struct clk *clk;
 	u32 div;
@@ -859,26 +756,26 @@ int armada_crtc_select_clock(struct armada_crtc *dcrtc,
 			desired_clk_hz = real_clk_hz;
 		}
 
-		/* If the clock can do exactly the desired rate, we're done */
+		 
 		if (real_clk_hz == desired_hz) {
 			real_hz = real_clk_hz;
 			div = 1;
 			goto found;
 		}
 
-		/* Calculate the divider - if invalid, we can't do this rate */
+		 
 		div = DIV_ROUND_CLOSEST(real_clk_hz, desired_hz);
 		if (div == 0 || div > params->div_max)
 			continue;
 
-		/* Calculate the actual rate - HDMI requires -0.6%..+0.5% */
+		 
 		real_hz = DIV_ROUND_CLOSEST(real_clk_hz, div);
 
 		DRM_DEBUG_KMS("[CRTC:%u:%s] clk=%u %luHz div=%u real=%luHz\n",
 			dcrtc->crtc.base.id, dcrtc->crtc.name,
 			i, real_clk_hz, div, real_hz);
 
-		/* Avoid repeated division */
+		 
 		if (real_hz < desired_hz) {
 			permillage = real_hz / desired_khz;
 			if (permillage < params->permillage_min)
@@ -936,7 +833,7 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 	spin_lock_init(&dcrtc->irq_lock);
 	dcrtc->irq_ena = CLEAN_SPU_IRQ_ISR;
 
-	/* Initialize some registers which we don't otherwise set */
+	 
 	writel_relaxed(0x00000001, dcrtc->base + LCD_CFG_SCLK_DIV);
 	writel_relaxed(0x00000000, dcrtc->base + LCD_SPU_BLANKCOLOR);
 	writel_relaxed(dcrtc->spu_iopad_ctrl,
@@ -961,7 +858,7 @@ static int armada_drm_crtc_create(struct drm_device *drm, struct device *dev,
 			goto err_crtc;
 	}
 
-	/* Ensure AXI pipeline is enabled */
+	 
 	armada_updatel(CFG_ARBFAST_ENA, 0, dcrtc->base + LCD_SPU_DMA_CTRL0);
 
 	priv->dcrtc[dcrtc->num] = dcrtc;

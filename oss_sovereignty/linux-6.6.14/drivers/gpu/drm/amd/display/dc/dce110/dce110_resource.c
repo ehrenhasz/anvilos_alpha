@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -140,11 +117,11 @@ static const struct dce110_timing_generator_offsets dce110_tg_offsets[] = {
 	}
 };
 
-/* set register offset */
+ 
 #define SR(reg_name)\
 	.reg_name = mm ## reg_name
 
-/* set register offset with instance */
+ 
 #define SRI(reg_name, block, id)\
 	.reg_name = mm ## block ## id ## _ ## reg_name
 
@@ -354,7 +331,7 @@ static const struct dce_audio_mask audio_mask = {
 		AUD_COMMON_MASK_SH_LIST(_MASK)
 };
 
-/* AG TBD Needs to be reduced back to 3 pipes once dce10 hw sequencer implemented. */
+ 
 
 
 #define clk_src_regs(id)\
@@ -885,15 +862,12 @@ static void get_pixel_clock_parameters(
 {
 	const struct dc_stream_state *stream = pipe_ctx->stream;
 
-	/*TODO: is this halved for YCbCr 420? in that case we might want to move
-	 * the pixel clock normalization for hdmi up to here instead of doing it
-	 * in pll_adjust_pix_clk
-	 */
+	 
 	pixel_clk_params->requested_pix_clk_100hz = stream->timing.pix_clk_100hz;
 	pixel_clk_params->encoder_object_id = stream->link->link_enc->id;
 	pixel_clk_params->signal_type = pipe_ctx->stream->signal;
 	pixel_clk_params->controller_id = pipe_ctx->stream_res.tg->inst + 1;
-	/* TODO: un-hardcode*/
+	 
 	pixel_clk_params->requested_sym_clk = LINK_RATE_LOW *
 						LINK_RATE_REF_FREQ_IN_KHZ;
 	pixel_clk_params->flags.ENABLE_SS = 0;
@@ -953,7 +927,7 @@ static enum dc_status build_mapped_resource(
 
 	dce110_resource_build_pipe_hw_param(pipe_ctx);
 
-	/* TODO: validate audio ASIC caps, encoder */
+	 
 
 	resource_build_info_frame(pipe_ctx);
 
@@ -1060,23 +1034,18 @@ static bool dce110_validate_surface_sets(
 			struct dc_plane_state *plane =
 				context->stream_status[i].plane_states[j];
 
-			/* underlay validation */
+			 
 			if (plane->format >= SURFACE_PIXEL_FORMAT_VIDEO_BEGIN) {
 
 				if ((plane->src_rect.width > 1920 ||
 					plane->src_rect.height > 1080))
 					return false;
 
-				/* we don't have the logic to support underlay
-				 * only yet so block the use case where we get
-				 * NV12 plane as top layer
-				 */
+				 
 				if (j == 0)
 					return false;
 
-				/* irrespective of plane format,
-				 * stream should be RGB encoded
-				 */
+				 
 				if (context->streams[i]->timing.pixel_encoding
 						!= PIXEL_ENCODING_RGB)
 					return false;
@@ -1136,7 +1105,7 @@ static struct pipe_ctx *dce110_acquire_underlay(
 
 	pipe_ctx->stream_res.tg = pool->timing_generators[underlay_idx];
 	pipe_ctx->plane_res.mi = pool->mis[underlay_idx];
-	/*pipe_ctx->plane_res.ipp = res_ctx->pool->ipps[underlay_idx];*/
+	 
 	pipe_ctx->plane_res.xfm = pool->transforms[underlay_idx];
 	pipe_ctx->stream_res.opp = pool->opps[underlay_idx];
 	pipe_ctx->pipe_idx = underlay_idx;
@@ -1152,10 +1121,7 @@ static struct pipe_ctx *dce110_acquire_underlay(
 				pipe_ctx->stream_res.tg->inst,
 				dcb, PIPE_GATING_CONTROL_DISABLE);
 
-		/*
-		 * This is for powering on underlay, so crtc does not
-		 * need to be enabled
-		 */
+		 
 
 		pipe_ctx->stream_res.tg->funcs->program_timing(pipe_ctx->stream_res.tg,
 				&stream->timing,
@@ -1208,9 +1174,7 @@ struct stream_encoder *dce110_find_first_free_match_stream_enc_for_link(
 	for (i = 0; i < pool->stream_enc_count; i++) {
 		if (!res_ctx->is_stream_enc_acquired[i] &&
 				pool->stream_enc[i]) {
-			/* Store first available for MST second display
-			 * in daisy chain use case
-			 */
+			 
 			j = i;
 			if (pool->stream_enc[i]->id ==
 					link->link_enc->preferred_engine)
@@ -1218,9 +1182,7 @@ struct stream_encoder *dce110_find_first_free_match_stream_enc_for_link(
 		}
 	}
 
-	/*
-	 * For CZ and later, we can allow DIG FE and BE to differ for all display types
-	 */
+	 
 
 	if (j >= 0)
 		return pool->stream_enc[j];
@@ -1272,7 +1234,7 @@ static bool underlay_create(struct dc_context *ctx, struct resource_pool *pool)
 	pool->transforms[pool->pipe_count] = &dce110_xfmv->base;
 	pool->pipe_count++;
 
-	/* update the public caps to indicate an underlay is available */
+	 
 	ctx->dc->caps.max_slave_planes = 1;
 	ctx->dc->caps.max_slave_yuv_planes = 1;
 	ctx->dc->caps.max_slave_rgb_planes = 0;
@@ -1284,12 +1246,12 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 {
 	struct dm_pp_clock_levels clks = {0};
 
-	/*do system clock*/
+	 
 	dm_pp_get_clock_levels_by_type(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_ENGINE_CLK,
 			&clks);
-	/* convert all the clock fro kHz to fix point mHz */
+	 
 	dc->bw_vbios->high_sclk = bw_frc_to_fixed(
 			clks.clocks_in_khz[clks.num_levels-1], 1000);
 	dc->bw_vbios->mid1_sclk  = bw_frc_to_fixed(
@@ -1308,7 +1270,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 			clks.clocks_in_khz[0], 1000);
 	dc->sclk_lvls = clks;
 
-	/*do display clock*/
+	 
 	dm_pp_get_clock_levels_by_type(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_DISPLAY_CLK,
@@ -1320,7 +1282,7 @@ static void bw_calcs_data_update_from_pplib(struct dc *dc)
 	dc->bw_vbios->low_voltage_max_dispclk  = bw_frc_to_fixed(
 			clks.clocks_in_khz[0], 1000);
 
-	/*do memory clock*/
+	 
 	dm_pp_get_clock_levels_by_type(
 			dc->ctx,
 			DM_PP_CLOCK_TYPE_MEMORY_CLK,
@@ -1360,9 +1322,7 @@ static bool dce110_resource_construct(
 	pool->base.res_cap = dce110_resource_cap(&ctx->asic_id);
 	pool->base.funcs = &dce110_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 	pool->base.underlay_pipe_index = pool->base.pipe_count;
@@ -1376,9 +1336,7 @@ static bool dce110_resource_construct(
 	dc->caps.extended_aux_timeout_support = false;
 	dc->debug = debug_defaults;
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	bp = ctx->dc_bios;
 
@@ -1395,7 +1353,7 @@ static bool dce110_resource_construct(
 
 		pool->base.clk_src_count = 2;
 
-		/* TODO: find out if CZ support 3 PLLs */
+		 
 	}
 
 	if (pool->base.dp_clock_source == NULL) {
@@ -1510,7 +1468,7 @@ static bool dce110_resource_construct(
 			&res_create_funcs))
 		goto res_create_fail;
 
-	/* Create hardware sequencer */
+	 
 	dce110_hw_sequencer_construct(dc);
 
 	dc->caps.max_planes =  pool->base.pipe_count;

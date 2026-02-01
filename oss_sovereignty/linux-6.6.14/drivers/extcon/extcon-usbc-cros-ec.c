@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// ChromeOS Embedded Controller extcon
-//
-// Copyright (C) 2017 Google, Inc.
-// Author: Benson Leung <bleung@chromium.org>
+
+
+
+
+
 
 #include <linux/extcon-provider.h>
 #include <linux/kernel.h>
@@ -25,10 +25,10 @@ struct cros_ec_extcon_info {
 
 	struct notifier_block notifier;
 
-	unsigned int dr; /* data role */
-	bool pr; /* power role (true if VBUS enabled) */
-	bool dp; /* DisplayPort enabled */
-	bool mux; /* SuperSpeed (usb3) enabled */
+	unsigned int dr;  
+	bool pr;  
+	bool dp;  
+	bool mux;  
 	unsigned int power_type;
 };
 
@@ -45,18 +45,7 @@ enum usb_data_roles {
 	DR_DEVICE,
 };
 
-/**
- * cros_ec_pd_command() - Send a command to the EC.
- * @info: pointer to struct cros_ec_extcon_info
- * @command: EC command
- * @version: EC command version
- * @outdata: EC command output data
- * @outsize: Size of outdata
- * @indata: EC command input data
- * @insize: Size of indata
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 static int cros_ec_pd_command(struct cros_ec_extcon_info *info,
 			      unsigned int command,
 			      unsigned int version,
@@ -88,13 +77,7 @@ static int cros_ec_pd_command(struct cros_ec_extcon_info *info,
 	return ret;
 }
 
-/**
- * cros_ec_usb_get_power_type() - Get power type info about PD device attached
- * to given port.
- * @info: pointer to struct cros_ec_extcon_info
- *
- * Return: power type on success, <0 on failure.
- */
+ 
 static int cros_ec_usb_get_power_type(struct cros_ec_extcon_info *info)
 {
 	struct ec_params_usb_pd_power_info req;
@@ -110,12 +93,7 @@ static int cros_ec_usb_get_power_type(struct cros_ec_extcon_info *info)
 	return resp.type;
 }
 
-/**
- * cros_ec_usb_get_pd_mux_state() - Get PD mux state for given port.
- * @info: pointer to struct cros_ec_extcon_info
- *
- * Return: PD mux state on success, <0 on failure.
- */
+ 
 static int cros_ec_usb_get_pd_mux_state(struct cros_ec_extcon_info *info)
 {
 	struct ec_params_usb_pd_mux_info req;
@@ -132,15 +110,7 @@ static int cros_ec_usb_get_pd_mux_state(struct cros_ec_extcon_info *info)
 	return resp.flags;
 }
 
-/**
- * cros_ec_usb_get_role() - Get role info about possible PD device attached to a
- * given port.
- * @info: pointer to struct cros_ec_extcon_info
- * @polarity: pointer to cable polarity (return value)
- *
- * Return: role info on success, -ENOTCONN if no cable is connected, <0 on
- * failure.
- */
+ 
 static int cros_ec_usb_get_role(struct cros_ec_extcon_info *info,
 				bool *polarity)
 {
@@ -166,12 +136,7 @@ static int cros_ec_usb_get_role(struct cros_ec_extcon_info *info,
 	return resp.role;
 }
 
-/**
- * cros_ec_pd_get_num_ports() - Get number of EC charge ports.
- * @info: pointer to struct cros_ec_extcon_info
- *
- * Return: number of ports on success, <0 on failure.
- */
+ 
 static int cros_ec_pd_get_num_ports(struct cros_ec_extcon_info *info)
 {
 	struct ec_response_usb_pd_ports resp;
@@ -223,11 +188,7 @@ static bool cros_ec_usb_power_type_is_wall_wart(unsigned int type,
 						unsigned int role)
 {
 	switch (type) {
-	/* FIXME : Guppy, Donnettes, and other chargers will be miscategorized
-	 * because they identify with USB_CHG_TYPE_C, but we can't return true
-	 * here from that code because that breaks Suzy-Q and other kinds of
-	 * USB Type-C cables and peripherals.
-	 */
+	 
 	case USB_CHG_TYPE_PROPRIETARY:
 	case USB_CHG_TYPE_BC12_DCP:
 		return true;
@@ -288,10 +249,7 @@ static int extcon_cros_ec_detect_cable(struct cros_ec_extcon_info *info,
 			role, power_type, dr, pr, polarity, mux, dp, hpd);
 	}
 
-	/*
-	 * When there is no USB host (e.g. USB PD charger),
-	 * we are not really a UFP for the AP.
-	 */
+	 
 	if (dr == DR_DEVICE &&
 	    cros_ec_usb_power_type_is_wall_wart(power_type, role))
 		dr = DR_NONE;
@@ -456,7 +414,7 @@ static int extcon_cros_ec_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, info);
 
-	/* Get PD events from the EC */
+	 
 	info->notifier.notifier_call = extcon_cros_ec_event;
 	ret = blocking_notifier_chain_register(&info->ec->event_notifier,
 					       &info->notifier);
@@ -465,7 +423,7 @@ static int extcon_cros_ec_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Perform initial detection */
+	 
 	ret = extcon_cros_ec_detect_cable(info, true);
 	if (ret < 0) {
 		dev_err(dev, "failed to detect initial cable state\n");
@@ -515,15 +473,15 @@ static const struct dev_pm_ops extcon_cros_ec_dev_pm_ops = {
 #define DEV_PM_OPS	(&extcon_cros_ec_dev_pm_ops)
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_OF
 static const struct of_device_id extcon_cros_ec_of_match[] = {
 	{ .compatible = "google,extcon-usbc-cros-ec" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, extcon_cros_ec_of_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static struct platform_driver extcon_cros_ec_driver = {
 	.driver = {

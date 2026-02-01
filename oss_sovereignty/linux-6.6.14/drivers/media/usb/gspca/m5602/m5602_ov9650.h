@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the ov9650 sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+ 
+ 
 
 #ifndef M5602_OV9650_H_
 #define M5602_OV9650_H_
@@ -18,7 +7,7 @@
 #include <linux/dmi.h>
 #include "m5602_sensor.h"
 
-/*****************************************************************************/
+ 
 
 #define OV9650_GAIN			0x00
 #define OV9650_BLUE			0x01
@@ -127,9 +116,9 @@
 #define BLUE_GAIN_DEFAULT		0x20
 #define EXPOSURE_DEFAULT		0x1ff
 
-/*****************************************************************************/
+ 
 
-/* Kernel module parameters */
+ 
 extern int force_sensor;
 extern bool dump_sensor;
 

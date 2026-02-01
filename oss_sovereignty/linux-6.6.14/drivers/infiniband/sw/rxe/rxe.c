@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <rdma/rdma_netlink.h>
 #include <net/addrconf.h>
@@ -13,9 +10,7 @@ MODULE_AUTHOR("Bob Pearson, Frank Zago, John Groves, Kamal Heib");
 MODULE_DESCRIPTION("Soft RDMA transport");
 MODULE_LICENSE("Dual BSD/GPL");
 
-/* free resources for a rxe device all objects created for this device must
- * have been destroyed
- */
+ 
 void rxe_dealloc(struct ib_device *ib_dev)
 {
 	struct rxe_dev *rxe = container_of(ib_dev, struct rxe_dev, ib_dev);
@@ -35,7 +30,7 @@ void rxe_dealloc(struct ib_device *ib_dev)
 		crypto_free_shash(rxe->tfm);
 }
 
-/* initialize rxe device parameters */
+ 
 static void rxe_init_device_param(struct rxe_dev *rxe)
 {
 	rxe->max_inline_data			= RXE_MAX_INLINE_DATA;
@@ -75,7 +70,7 @@ static void rxe_init_device_param(struct rxe_dev *rxe)
 	rxe->max_ucontext			= RXE_MAX_UCONTEXT;
 }
 
-/* initialize port attributes */
+ 
 static void rxe_init_port_param(struct rxe_port *port)
 {
 	port->attr.state		= IB_PORT_DOWN;
@@ -101,9 +96,7 @@ static void rxe_init_port_param(struct rxe_port *port)
 	port->subnet_prefix		= cpu_to_be64(RXE_PORT_SUBNET_PREFIX);
 }
 
-/* initialize port state, note IB convention that HCA ports are always
- * numbered from 1
- */
+ 
 static void rxe_init_ports(struct rxe_dev *rxe)
 {
 	struct rxe_port *port = &rxe->port;
@@ -114,7 +107,7 @@ static void rxe_init_ports(struct rxe_dev *rxe)
 	spin_lock_init(&port->port_lock);
 }
 
-/* init pools of managed objects */
+ 
 static void rxe_init_pools(struct rxe_dev *rxe)
 {
 	rxe_pool_init(rxe, &rxe->uc_pool, RXE_TYPE_UC);
@@ -127,21 +120,21 @@ static void rxe_init_pools(struct rxe_dev *rxe)
 	rxe_pool_init(rxe, &rxe->mw_pool, RXE_TYPE_MW);
 }
 
-/* initialize rxe device state */
+ 
 static void rxe_init(struct rxe_dev *rxe)
 {
-	/* init default device parameters */
+	 
 	rxe_init_device_param(rxe);
 
 	rxe_init_ports(rxe);
 	rxe_init_pools(rxe);
 
-	/* init pending mmap list */
+	 
 	spin_lock_init(&rxe->mmap_offset_lock);
 	spin_lock_init(&rxe->pending_lock);
 	INIT_LIST_HEAD(&rxe->pending_mmaps);
 
-	/* init multicast support */
+	 
 	spin_lock_init(&rxe->mcg_lock);
 	rxe->mcg_tree = RB_ROOT;
 
@@ -155,7 +148,7 @@ void rxe_set_mtu(struct rxe_dev *rxe, unsigned int ndev_mtu)
 
 	mtu = eth_mtu_int_to_enum(ndev_mtu);
 
-	/* Make sure that new MTU in range */
+	 
 	mtu = mtu ? min_t(enum ib_mtu, mtu, IB_MTU_4096) : IB_MTU_256;
 
 	port->attr.active_mtu = mtu;
@@ -164,9 +157,7 @@ void rxe_set_mtu(struct rxe_dev *rxe, unsigned int ndev_mtu)
 	rxe_info_dev(rxe, "Set mtu to %d", port->mtu_cap);
 }
 
-/* called by ifc layer to create new rxe device.
- * The caller should allocate memory for rxe by calling ib_alloc_device.
- */
+ 
 int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name)
 {
 	rxe_init(rxe);

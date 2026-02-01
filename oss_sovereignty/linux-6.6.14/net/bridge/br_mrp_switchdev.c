@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <net/switchdev.h>
 
@@ -15,16 +15,14 @@ br_mrp_switchdev_port_obj(struct net_bridge *br,
 	else
 		err = switchdev_port_obj_del(br->dev, obj);
 
-	/* In case of success just return and notify the SW that doesn't need
-	 * to do anything
-	 */
+	 
 	if (!err)
 		return BR_MRP_HW;
 
 	if (err != -EOPNOTSUPP)
 		return BR_MRP_NONE;
 
-	/* Continue with SW backup */
+	 
 	return BR_MRP_SW;
 }
 
@@ -83,9 +81,7 @@ br_mrp_switchdev_set_ring_role(struct net_bridge *br, struct br_mrp *mrp,
 	if (support != BR_MRP_SW)
 		return support;
 
-	/* If the driver can't configure to run completely the protocol in HW,
-	 * then try again to configure the HW so the SW can run the protocol.
-	 */
+	 
 	mrp_role.sw_backup = true;
 	if (role != BR_MRP_RING_ROLE_DISABLED)
 		err = switchdev_port_obj_add(br->dev, &mrp_role.obj, NULL);
@@ -161,9 +157,7 @@ br_mrp_switchdev_set_in_role(struct net_bridge *br, struct br_mrp *mrp,
 	if (support != BR_MRP_NONE)
 		return support;
 
-	/* If the driver can't configure to run completely the protocol in HW,
-	 * then try again to configure the HW so the SW can run the protocol.
-	 */
+	 
 	mrp_role.sw_backup = true;
 	if (role != BR_MRP_IN_ROLE_DISABLED)
 		err = switchdev_port_obj_add(br->dev, &mrp_role.obj, NULL);

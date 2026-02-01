@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx SERDES manipulation, via SMI bus
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
@@ -44,9 +38,7 @@ int mv88e6xxx_pcs_decode_state(struct device *dev, u16 bmsr, u16 lpa,
 {
 	state->link = false;
 
-	/* If the BMSR reports that the link had failed, report this to
-	 * phylink.
-	 */
+	 
 	if (!(bmsr & BMSR_LSTATUS))
 		return 0;
 
@@ -54,10 +46,7 @@ int mv88e6xxx_pcs_decode_state(struct device *dev, u16 bmsr, u16 lpa,
 	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
 
 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
-		/* The Spped and Duplex Resolved register is 1 if AN is enabled
-		 * and complete, or if AN is disabled. So with disabled AN we
-		 * still get here on link up.
-		 */
+		 
 		state->duplex = status &
 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
 			                         DUPLEX_FULL : DUPLEX_HALF;
@@ -86,11 +75,7 @@ int mv88e6xxx_pcs_decode_state(struct device *dev, u16 bmsr, u16 lpa,
 		}
 	} else if (state->link &&
 		   state->interface != PHY_INTERFACE_MODE_SGMII) {
-		/* If Speed and Duplex Resolved register is 0 and link is up, it
-		 * means that AN was enabled, but link partner had it disabled
-		 * and the PHY invoked the Auto-Negotiation Bypass feature and
-		 * linked anyway.
-		 */
+		 
 		state->duplex = DUPLEX_FULL;
 		if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
 			state->speed = SPEED_2500;
@@ -353,9 +338,7 @@ int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
 	return lane;
 }
 
-/* Only Ports 0, 9 and 10 have SERDES lanes. Return the SERDES lane address
- * a port is using else Returns -ENODEV.
- */
+ 
 int mv88e6393x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
 {
 	u8 cmode = chip->ports[port].cmode;
@@ -454,7 +437,7 @@ unsigned int mv88e6390_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
 }
 
 static const u16 mv88e6390_serdes_regs[] = {
-	/* SERDES common registers */
+	 
 	0xf00a, 0xf00b, 0xf00c,
 	0xf010, 0xf011, 0xf012, 0xf013,
 	0xf016, 0xf017, 0xf018,
@@ -463,12 +446,12 @@ static const u16 mv88e6390_serdes_regs[] = {
 	0xf028, 0xf029,
 	0xf030, 0xf031, 0xf032, 0xf033, 0xf034, 0xf035, 0xf036, 0xf037,
 	0xf038, 0xf039,
-	/* SGMII */
+	 
 	0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007,
 	0x2008,
 	0x200f,
 	0xa000, 0xa001, 0xa002, 0xa003,
-	/* 10Gbase-X */
+	 
 	0x1000, 0x1001, 0x1002, 0x1003, 0x1004, 0x1005, 0x1006, 0x1007,
 	0x1008,
 	0x100e, 0x100f,
@@ -476,7 +459,7 @@ static const u16 mv88e6390_serdes_regs[] = {
 	0x9000, 0x9001, 0x9002, 0x9003, 0x9004,
 	0x9006,
 	0x9010, 0x9011, 0x9012, 0x9013, 0x9014, 0x9015, 0x9016,
-	/* 10Gbase-R */
+	 
 	0x1020, 0x1021, 0x1022, 0x1023, 0x1024, 0x1025, 0x1026, 0x1027,
 	0x1028, 0x1029, 0x102a, 0x102b,
 };
@@ -510,7 +493,7 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p)
 }
 
 static const int mv88e6352_serdes_p2p_to_reg[] = {
-	/* Index of value in microvolts corresponds to the register value */
+	 
 	14000, 112000, 210000, 308000, 406000, 504000, 602000, 700000,
 };
 

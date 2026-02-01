@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2013 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "ath9k.h"
 
@@ -59,60 +45,31 @@ static int ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
 	memset(dis_deauth_pattern, 0, MAX_PATTERN_SIZE);
 	memset(dis_deauth_mask, 0, MAX_PATTERN_SIZE);
 
-	/*
-	 * Create Dissassociate / Deauthenticate packet filter
-	 *
-	 *     2 bytes        2 byte    6 bytes   6 bytes  6 bytes
-	 *  +--------------+----------+---------+--------+--------+----
-	 *  + Frame Control+ Duration +   DA    +  SA    +  BSSID +
-	 *  +--------------+----------+---------+--------+--------+----
-	 *
-	 * The above is the management frame format for disassociate/
-	 * deauthenticate pattern, from this we need to match the first byte
-	 * of 'Frame Control' and DA, SA, and BSSID fields
-	 * (skipping 2nd byte of FC and Duration feild.
-	 *
-	 * Disassociate pattern
-	 * --------------------
-	 * Frame control = 00 00 1010
-	 * DA, SA, BSSID = x:x:x:x:x:x
-	 * Pattern will be A0000000 | x:x:x:x:x:x | x:x:x:x:x:x
-	 *			    | x:x:x:x:x:x  -- 22 bytes
-	 *
-	 * Deauthenticate pattern
-	 * ----------------------
-	 * Frame control = 00 00 1100
-	 * DA, SA, BSSID = x:x:x:x:x:x
-	 * Pattern will be C0000000 | x:x:x:x:x:x | x:x:x:x:x:x
-	 *			    | x:x:x:x:x:x  -- 22 bytes
-	 */
+	 
 
-	/* Fill out the mask with all FF's */
+	 
 	for (i = 0; i < MAX_PATTERN_MASK_SIZE; i++)
 		dis_deauth_mask[i] = 0xff;
 
-	/* copy the first byte of frame control field */
+	 
 	dis_deauth_pattern[byte_cnt] = 0xa0;
 	byte_cnt++;
 
-	/* skip 2nd byte of frame control and Duration field */
+	 
 	byte_cnt += 3;
 
-	/*
-	 * need not match the destination mac address, it can be a broadcast
-	 * mac address or an unicast to this station
-	 */
+	 
 	byte_cnt += 6;
 
-	/* copy the source mac address */
+	 
 	memcpy((dis_deauth_pattern + byte_cnt), common->curbssid, ETH_ALEN);
 
 	byte_cnt += 6;
 
-	/* copy the bssid, its same as the source mac address */
+	 
 	memcpy((dis_deauth_pattern + byte_cnt), common->curbssid, ETH_ALEN);
 
-	/* Create Disassociate pattern mask */
+	 
 	dis_deauth_mask[0] = 0xfe;
 	dis_deauth_mask[1] = 0x03;
 	dis_deauth_mask[2] = 0xc0;
@@ -123,10 +80,7 @@ static int ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
 		goto exit;
 
 	pattern_count++;
-	/*
-	 * for de-authenticate pattern, only the first byte of the frame
-	 * control field gets changed from 0xA0 to 0xC0
-	 */
+	 
 	dis_deauth_pattern[0] = 0xC0;
 
 	ret = ath9k_hw_wow_apply_pattern(ah, dis_deauth_pattern, dis_deauth_mask,
@@ -224,10 +178,7 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 
 	ath9k_stop_btcoex(sc);
 
-	/*
-	 * Enable wake up on recieving disassoc/deauth
-	 * frame by default.
-	 */
+	 
 	ret = ath9k_wow_add_disassoc_deauth_pattern(sc);
 	if (ret) {
 		ath_err(common,
@@ -245,11 +196,7 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 	}
 
 	spin_lock_bh(&sc->sc_pcu_lock);
-	/*
-	 * To avoid false wake, we enable beacon miss interrupt only
-	 * when we go to sleep. We save the current interrupt mask
-	 * so we can restore it after the system wakes up
-	 */
+	 
 	sc->wow_intr_before_sleep = ah->imask;
 	ah->imask &= ~ATH9K_INT_GLOBAL;
 	ath9k_hw_disable_interrupts(ah);
@@ -259,10 +206,7 @@ int ath9k_suspend(struct ieee80211_hw *hw,
 
 	spin_unlock_bh(&sc->sc_pcu_lock);
 
-	/*
-	 * we can now sync irq and kill any running tasklets, since we already
-	 * disabled interrupts and not holding a spin lock
-	 */
+	 
 	synchronize_irq(sc->irq);
 	tasklet_kill(&sc->intr_tq);
 

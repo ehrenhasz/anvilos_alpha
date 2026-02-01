@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SND_USB_MIXER_QUIRKS_H
 #define SND_USB_MIXER_QUIRKS_H
 
@@ -16,5 +16,5 @@ void snd_usb_mixer_fu_apply_quirk(struct usb_mixer_interface *mixer,
 
 void snd_usb_mixer_resume_quirk(struct usb_mixer_interface *mixer);
 
-#endif /* SND_USB_MIXER_QUIRKS_H */
+#endif  
 

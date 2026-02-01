@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
-/*
- * Copyright 2023 Schweitzer Engineering Laboratories, Inc.
- * 2350 NE Hopkins Court, Pullman, WA 99163 USA
- *
- * Platform support for the b2093 mainboard used in SEL-3350 computers.
- * Consumes GPIO from the SoC to provide standard LED and power supply
- * devices.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gpio/consumer.h>
@@ -16,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
 
-/* Broxton communities */
+ 
 #define BXT_NW "INT3452:01"
 #define BXT_W  "INT3452:02"
 #define BXT_SW "INT3452:03"
@@ -30,7 +23,7 @@
 #define SEL_PS_B_DETECT "sel_ps_b_detect"
 #define SEL_PS_B_GOOD   "sel_ps_b_good"
 
-/* LEDs */
+ 
 static const struct gpio_led sel3350_leds[] = {
 	{ .name = "sel:green:aux1" },
 	{ .name = "sel:green:aux2" },
@@ -50,7 +43,7 @@ static const struct gpio_led_platform_data sel3350_leds_pdata = {
 	.leds = sel3350_leds,
 };
 
-/* Map GPIOs to LEDs */
+ 
 static struct gpiod_lookup_table sel3350_leds_table = {
 	.dev_id = "leds-gpio",
 	.table = {
@@ -68,7 +61,7 @@ static struct gpiod_lookup_table sel3350_leds_table = {
 	}
 };
 
-/* Map GPIOs to power supplies */
+ 
 static struct gpiod_lookup_table sel3350_gpios_table = {
 	.dev_id = B2093_GPIO_ACPI_ID ":00",
 	.table = {
@@ -80,7 +73,7 @@ static struct gpiod_lookup_table sel3350_gpios_table = {
 	}
 };
 
-/* Power Supplies */
+ 
 
 struct sel3350_power_cfg_data {
 	struct gpio_desc *ps_detect;
@@ -173,7 +166,7 @@ static int sel3350_probe(struct platform_device *pdev)
 		goto err_platform;
 	}
 
-	/* Power Supply A */
+	 
 	sel3350->ps_a_cfg_data.ps_detect = devm_gpiod_get(&pdev->dev,
 							  SEL_PS_A_DETECT,
 							  GPIOD_IN);
@@ -190,7 +183,7 @@ static int sel3350_probe(struct platform_device *pdev)
 		goto err_ps;
 	}
 
-	/* Power Supply B */
+	 
 	sel3350->ps_b_cfg_data.ps_detect = devm_gpiod_get(&pdev->dev,
 							  SEL_PS_B_DETECT,
 							  GPIOD_IN);

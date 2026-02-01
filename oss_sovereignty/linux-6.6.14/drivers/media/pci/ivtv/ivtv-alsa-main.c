@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ALSA interface to ivtv PCM capture streams
- *
- *  Copyright (C) 2009,2012  Andy Walls <awalls@md.metrocast.net>
- *  Copyright (C) 2009  Devin Heitmueller <dheitmueller@kernellabs.com>
- *
- *  Portions of this work were sponsored by ONELAN Limited for the cx18 driver
- */
+
+ 
 
 #include "ivtv-driver.h"
 #include "ivtv-version.h"
@@ -56,7 +49,7 @@ static void snd_ivtv_card_free(struct snd_ivtv_card *itvsc)
 	if (itvsc->v4l2_dev != NULL)
 		to_ivtv(itvsc->v4l2_dev)->alsa = NULL;
 
-	/* FIXME - take any other stopping actions needed */
+	 
 
 	kfree(itvsc);
 }
@@ -92,14 +85,14 @@ static int snd_ivtv_card_set_names(struct snd_ivtv_card *itvsc)
 	struct ivtv *itv = to_ivtv(itvsc->v4l2_dev);
 	struct snd_card *sc = itvsc->sc;
 
-	/* sc->driver is used by alsa-lib's configurator: simple, unique */
+	 
 	strscpy(sc->driver, "CX2341[56]", sizeof(sc->driver));
 
-	/* sc->shortname is a symlink in /proc/asound: IVTV-M -> cardN */
+	 
 	snprintf(sc->shortname,  sizeof(sc->shortname), "IVTV-%d",
 		 itv->instance);
 
-	/* sc->longname is read from /proc/asound/cards */
+	 
 	snprintf(sc->longname, sizeof(sc->longname),
 		 "CX2341[56] #%d %s TV/FM Radio/Line-In Capture",
 		 itv->instance, itv->card_name);
@@ -114,17 +107,17 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 	struct snd_ivtv_card *itvsc;
 	int ret, idx;
 
-	/* Numbrs steps from "Writing an ALSA Driver" by Takashi Iwai */
+	 
 
-	/* (1) Check and increment the device index */
-	/* This is a no-op for us.  We'll use the itv->instance */
+	 
+	 
 
-	/* (2) Create a card instance */
-	/* use first available id if not specified otherwise*/
+	 
+	 
 	idx = index[itv->instance] == -1 ? SNDRV_DEFAULT_IDX1 : index[itv->instance];
 	ret = snd_card_new(&itv->pdev->dev,
 			   idx,
-			   SNDRV_DEFAULT_STR1, /* xid from end of shortname*/
+			   SNDRV_DEFAULT_STR1,  
 			   THIS_MODULE, 0, &sc);
 	if (ret) {
 		IVTV_ALSA_ERR("%s: snd_card_new() failed with err %d\n",
@@ -132,7 +125,7 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 		goto err_exit;
 	}
 
-	/* (3) Create a main component */
+	 
 	ret = snd_ivtv_card_create(v4l2_dev, sc, &itvsc);
 	if (ret) {
 		IVTV_ALSA_ERR("%s: snd_ivtv_card_create() failed with err %d\n",
@@ -140,23 +133,23 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 		goto err_exit_free;
 	}
 
-	/* (4) Set the driver ID and name strings */
+	 
 	snd_ivtv_card_set_names(itvsc);
 
-	/* (5) Create other components: PCM, & proc files */
+	 
 	ret = snd_ivtv_pcm_create(itvsc);
 	if (ret) {
 		IVTV_ALSA_ERR("%s: snd_ivtv_pcm_create() failed with err %d\n",
 			      __func__, ret);
 		goto err_exit_free;
 	}
-	/* FIXME - proc files */
+	 
 
-	/* (7) Set the driver data and return 0 */
-	/* We do this out of normal order for PCI drivers to avoid races */
+	 
+	 
 	itv->alsa = itvsc;
 
-	/* (6) Register the card instance */
+	 
 	ret = snd_card_register(sc);
 	if (ret) {
 		itv->alsa = NULL;
@@ -227,7 +220,7 @@ static void __exit snd_ivtv_exit(struct snd_ivtv_card *itvsc)
 {
 	struct ivtv *itv = to_ivtv(itvsc->v4l2_dev);
 
-	/* FIXME - pointer checks & shutdown itvsc */
+	 
 
 	snd_card_free(itvsc->sc);
 	itv->alsa = NULL;
@@ -264,7 +257,7 @@ static void __exit ivtv_alsa_exit(void)
 
 	drv = driver_find("ivtv", &pci_bus_type);
 	ret = driver_for_each_device(drv, NULL, NULL, ivtv_alsa_exit_callback);
-	(void)ret;	/* suppress compiler warning */
+	(void)ret;	 
 
 	ivtv_ext_init = NULL;
 	pr_info("ivtv-alsa: module unload complete\n");

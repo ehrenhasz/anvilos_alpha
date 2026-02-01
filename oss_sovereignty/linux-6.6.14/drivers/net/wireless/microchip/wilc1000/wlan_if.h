@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+ 
+ 
 
 #ifndef WILC_WLAN_IF_H
 #define WILC_WLAN_IF_H
@@ -12,11 +9,7 @@
 
 #define WILC_MAX_ASSOC_RESP_FRAME_SIZE 512
 
-/********************************************
- *
- *      Wlan Configuration ID
- *
- ********************************************/
+ 
 
 enum bss_types {
 	WILC_FW_BSS_TYPE_INFRA = 0,
@@ -25,16 +18,16 @@ enum bss_types {
 };
 
 enum {
-	WILC_FW_OPER_MODE_B_ONLY = 0,	 /* 1, 2 M, otherwise 5, 11 M */
-	WILC_FW_OPER_MODE_G_ONLY,	 /* 6,12,24 otherwise 9,18,36,48,54 */
-	WILC_FW_OPER_MODE_G_MIXED_11B_1, /* 1,2,5.5,11 otherwise all on */
-	WILC_FW_OPER_MODE_G_MIXED_11B_2, /* 1,2,5,11,6,12,24 otherwise all on */
+	WILC_FW_OPER_MODE_B_ONLY = 0,	  
+	WILC_FW_OPER_MODE_G_ONLY,	  
+	WILC_FW_OPER_MODE_G_MIXED_11B_1,  
+	WILC_FW_OPER_MODE_G_MIXED_11B_2,  
 };
 
 enum {
-	WILC_FW_PREAMBLE_SHORT = 0,	/* Short Preamble */
-	WILC_FW_PREAMBLE_LONG = 1,	/* Long Preamble */
-	WILC_FW_PREAMBLE_AUTO = 2,	/* Auto Preamble Selection */
+	WILC_FW_PREAMBLE_SHORT = 0,	 
+	WILC_FW_PREAMBLE_LONG = 1,	 
+	WILC_FW_PREAMBLE_AUTO = 2,	 
 };
 
 enum {
@@ -124,11 +117,11 @@ enum {
 };
 
 enum {
-	WILC_FW_11N_PROT_AUTO = 0,	/* Auto */
-	WILC_FW_11N_NO_PROT,		/* Do not use any protection */
-	WILC_FW_11N_PROT_ERP,		/* Protect all ERP frame exchanges */
-	WILC_FW_11N_PROT_HT,		/* Protect all HT frame exchanges  */
-	WILC_FW_11N_PROT_GF		/* Protect all GF frame exchanges  */
+	WILC_FW_11N_PROT_AUTO = 0,	 
+	WILC_FW_11N_NO_PROT,		 
+	WILC_FW_11N_PROT_ERP,		 
+	WILC_FW_11N_PROT_HT,		 
+	WILC_FW_11N_PROT_GF		 
 };
 
 enum {
@@ -150,16 +143,16 @@ enum {
 };
 
 enum {
-	WILC_FW_HT_PROT_RTS_CTS_NONHT = 0,  /* RTS-CTS at non-HT rate */
-	WILC_FW_HT_PROT_FIRST_FRAME_NONHT,  /* First frame at non-HT rate */
-	WILC_FW_HT_PROT_LSIG_TXOP,	    /* LSIG TXOP Protection */
-	WILC_FW_HT_PROT_FIRST_FRAME_MIXED,  /* First frame at Mixed format */
+	WILC_FW_HT_PROT_RTS_CTS_NONHT = 0,   
+	WILC_FW_HT_PROT_FIRST_FRAME_NONHT,   
+	WILC_FW_HT_PROT_LSIG_TXOP,	     
+	WILC_FW_HT_PROT_FIRST_FRAME_MIXED,   
 };
 
 enum {
 	WILC_FW_SMPS_MODE_STATIC = 1,
 	WILC_FW_SMPS_MODE_DYNAMIC = 2,
-	WILC_FW_SMPS_MODE_MIMO = 3,	/* power save disable */
+	WILC_FW_SMPS_MODE_MIMO = 3,	 
 };
 
 enum {
@@ -210,426 +203,146 @@ struct wid {
 enum {
 	WID_NIL				= 0xffff,
 
-	/*
-	 *  BSS Type
-	 *  -----------------------------------------------------------
-	 *  Configuration : Infrastructure   Independent   Access Point
-	 *  Values to set :         0               1            2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_BSS_TYPE			= 0x0000,
 
-	/*
-	 *  Transmit Rate
-	 *  -----------------------------------------------------------
-	 *  Configuration : 1  2  5.5  11  6  9  12  18  24  36  48  54
-	 *  Values to set : 1  2    5  11  6  9  12  18  24  36  48  54
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_CURRENT_TX_RATE		= 0x0001,
 
-	/*
-	 *  Channel
-	 *  -----------------------------------------------------------
-	 *  Configuration(g) : 1  2  3  4  5  6  7  8  9 10 11 12 13 14
-	 *  Values to set    : 1  2  3  4  5  6  7  8  9 10 11 12 13 14
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_CURRENT_CHANNEL		= 0x0002,
 
-	/*
-	 *  Preamble
-	 *  -----------------------------------------------------------
-	 *  Configuration :    short    long      Auto
-	 *  Values to set :       0       1         2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_PREAMBLE			= 0x0003,
 
-	/*
-	 * 11g operating mode (ignored if 11g not present)
-	 *  -----------------------------------------------------------
-	 *  Configuration :   HighPerf  Compat(RSet #1) Compat(RSet #2)
-	 *  Values to set :          1               2               3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11G_OPERATING_MODE		= 0x0004,
 
-	/*
-	 *  Mac status (response only)
-	 *  -----------------------------------------------------------
-	 *  Configuration :   disconnect  connect
-	 *  Values to get :          0       1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_STATUS			= 0x0005,
 
-	/*
-	 *  Scan type
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Passive Scanning   Active Scanning
-	 *  Values to set :                  0                 1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_SCAN_TYPE			= 0x0007,
 
-	/*
-	 *  Key Id (WEP default key Id)
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Any value between 0 to 3
-	 *  Values to set :   Same value. Default is 0
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_KEY_ID			= 0x0009,
 
-	/*
-	 *  QoS Enable
-	 *  -----------------------------------------------------------
-	 *  Configuration :   QoS Disable   WMM Enable
-	 *  Values to set :   0             1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_QOS_ENABLE			= 0x000A,
 
-	/*
-	 *  Power Management
-	 *  -----------------------------------------------------------
-	 *  Configuration : NO_POWERSAVE MIN_POWERSAVE MAX_POWERSAVE
-	 *  Values to set : 0            1             2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_POWER_MANAGEMENT		= 0x000B,
 
-	/*
-	 *  WEP/802 11I Configuration
-	 *  -----------------------------------------------------------
-	 *  Configuration:Disable WP40 WP104 WPA-AES WPA-TKIP RSN-AES RSN-TKIP
-	 *  Values (0x)  :   00     03   07     29       49       31      51
-	 *  Configuration:WPA-AES+TKIP RSN-AES+TKIP
-	 *  Values (0x)  :      69        71
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11I_MODE			= 0x000C,
 
-	/*
-	 *  WEP Configuration: Used in BSS STA mode only when WEP is enabled
-	 *  -----------------------------------------------------------
-	 *  Configuration : Open System Shared Key Any Type | 802.1x Auth
-	 *  Values (0x)   :    01             02         03 |    BIT2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_AUTH_TYPE			= 0x000D,
 
-	/*
-	 *  Site Survey Type
-	 *  -----------------------------------------------------------
-	 *  Configuration       :  Values to set
-	 *  Survey 1 Channel    :  0
-	 *  survey all Channels :  1
-	 *  Disable Site Survey :  2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_SITE_SURVEY			= 0x000E,
 
-	/*
-	 *  Listen Interval
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Any value between 1 to 255
-	 *  Values to set :   Same value. Default is 3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_LISTEN_INTERVAL		= 0x000F,
 
-	/*
-	 *  DTIM Period
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Any value between 1 to 255
-	 *  Values to set :   Same value. Default is 3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_DTIM_PERIOD			= 0x0010,
 
-	/*
-	 *  ACK Policy
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Normal Ack            No Ack
-	 *  Values to set :       0                   1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_ACK_POLICY			= 0x0011,
 
-	/*
-	 *  Reset MAC (Set only)
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Don't Reset	Reset	No Request
-	 *  Values to set :       0               1	    2
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_RESET			= 0x0012,
 
-	/*
-	 *  Broadcast SSID Option: Setting this will adhere to "" SSID element
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Enable             Disable
-	 *  Values to set :   1                  0
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_BCAST_SSID			= 0x0015,
 
-	/*
-	 *  Disconnect (Station)
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Association ID
-	 *  Values to set :   Association ID
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_DISCONNECT			= 0x0016,
 
-	/*
-	 *  11a Tx Power Level
-	 *  -----------------------------------------------------------
-	 *  Configuration : Sets TX Power (Higher the value greater the power)
-	 *  Values to set : Any value between 0 and 63 (inclusive Default 48)
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_TX_POWER_LEVEL_11A		= 0x0018,
 
-	/*
-	 *  Group Key Update Policy Selection
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disabled timeBased packetBased timePacketBased
-	 *  Values to set :   1            2          3              4
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_REKEY_POLICY		= 0x0019,
 
-	/*
-	 *  Allow Short Slot
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disallow Short Slot      Allow Short Slot
-	 *          (Enable Only Long Slot) (Enable Short Slot if applicable)
-	 *  Values to set :    0         1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_SHORT_SLOT_ALLOWED		= 0x001A,
 
 	WID_PHY_ACTIVE_REG		= 0x001B,
 
-	/*
-	 *  11b Tx Power Level
-	 *  -----------------------------------------------------------
-	 *  Configuration : Sets TX Power (Higher the value greater the power)
-	 *  Values to set : Any value between 0 and 63 (inclusive Default 48)
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_TX_POWER_LEVEL_11B		= 0x001D,
 
-	/*
-	 *  Scan Request
-	 *  -----------------------------------------------------------
-	 *  Configuration : Request default scan
-	 *  Values to set : 0
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_START_SCAN_REQ		= 0x001E,
 
-	/*
-	 *  Rssi (get only)
-	 *  -----------------------------------------------------------
-	 *  Configuration :
-	 *  Values to get : Rssi value
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_RSSI			= 0x001F,
 
-	/*
-	 * Join Request
-	 *  -----------------------------------------------------------
-	 *  Configuration : Request to join
-	 *  Values to set : index of scan result
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_JOIN_REQ			= 0x0020,
 
 	WID_LINKSPEED			= 0x0026,
 
-	/*
-	 *  Enable User Control of TX Power
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disable                  Enable
-	 *  Values to set :    0                       1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_USER_CONTROL_ON_TX_POWER	= 0x0027,
 
 	WID_MEMORY_ACCESS_8BIT		= 0x0029,
 
-	/*
-	 *  Enable Auto RX Sensitivity feature
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disable                  Enable
-	 *  Values to set :    0                       1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_AUTO_RX_SENSITIVITY		= 0x0032,
 
-	/*
-	 *  Receive Buffer Based Ack
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disable                  Enable
-	 *  Values to set :    0                       1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_DATAFLOW_CONTROL		= 0x0033,
 
-	/*
-	 *  Scan Filter
-	 *  -----------------------------------------------------------
-	 *  Configuration : Class       No filter   AP only   Station Only
-	 *  Values to set :                0           1           2
-	 *  Configuration : Priority    High Rssi   Low Rssi     Detect
-	 *  Values to set :                0          0x4         0x0
-	 *  Configuration : Channel     filter off  filter on
-	 *  Values to set :                0          0x10
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_SCAN_FILTER			= 0x0036,
 
-	/*
-	 *  Link Loss Threshold (measure in the beacon period)
-	 *  -----------------------------------------------------------
-	 *  Configuration : Any value between 10 and 254(Set to 255 disable)
-	 *  Values to set : Same value. Default is 10
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_LINK_LOSS_THRESHOLD		= 0x0037,
 
 	WID_ABORT_RUNNING_SCAN		= 0x003E,
 
-	/* NMAC Character WID list */
+	 
 	WID_WPS_START			= 0x0043,
 
-	/*
-	 *  Protection mode for MAC
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Auto  No protection  ERP    HT    GF
-	 *  Values to set :  0     1              2      3     4
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_PROT_MECH		= 0x0080,
 
-	/*
-	 *  ERP Protection type for MAC
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Self-CTS   RTS-CTS
-	 *  Values to set :  0          1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_ERP_PROT_TYPE		= 0x0081,
 
-	/*
-	 *  HT Option Enable
-	 *  -----------------------------------------------------------
-	 *  Configuration :   HT Enable          HT Disable
-	 *  Values to set :   1                  0
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_ENABLE			= 0x0082,
 
-	/*
-	 *  11n Operating mode (Note that 11g operating mode will also be
-	 *  used in addition to this, if this is set to HT Mixed mode)
-	 *  -----------------------------------------------------------
-	 *   Configuration :  HT Mixed  HT Only-20MHz   HT Only-20/40MHz
-	 *  Values to set :     1         2               3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_OPERATING_MODE		= 0x0083,
 
-	/*
-	 *  11n OBSS non-HT STA Detection flag
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Do not detect
-	 *  Values to set :  0
-	 *  Configuration :  Detect, do not protect or report
-	 *  Values to set :  1
-	 *  Configuration :  Detect, protect and do not report
-	 *  Values to set :  2
-	 *  Configuration :  Detect, protect and report to other BSS
-	 *  Values to set :  3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_OBSS_NONHT_DETECTION	= 0x0084,
 
-	/*
-	 *  11n HT Protection Type
-	 *  -----------------------------------------------------------
-	 *  Configuration :  RTS-CTS   First Frame Exchange at non-HT-rate
-	 *  Values to set :  0         1
-	 *  Configuration :  LSIG TXOP First Frame Exchange in Mixed Fmt
-	 *  Values to set :  2         3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_HT_PROT_TYPE		= 0x0085,
 
-	/*
-	 *  11n RIFS Protection Enable Flag
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Disable    Enable
-	 *  Values to set :  0          1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_RIFS_PROT_ENABLE	= 0x0086,
 
-	/*
-	 *  SMPS Mode
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Static   Dynamic   MIMO (Power Save Disabled)
-	 *  Values to set :  1        2         3
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_SMPS_MODE		= 0x0087,
 
-	/*
-	 *  Current transmit MCS
-	 *  -----------------------------------------------------------
-	 *  Configuration :  MCS Index for data rate
-	 *  Values to set :  0 to 7
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_CURRENT_TX_MCS		= 0x0088,
 
 	WID_11N_PRINT_STATS		= 0x0089,
 
-	/*
-	 *  11n Short GI Enable Flag
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Disable    Enable
-	 *  Values to set :  0          1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_SHORT_GI_ENABLE		= 0x008D,
 
-	/*
-	 *  11n RIFS Enable Flag
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Disable    Enable
-	 *  Values to set :  0          1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_RIFS_MODE			= 0x0094,
 
-	/*
-	 *  TX Abort Feature
-	 *  -----------------------------------------------------------
-	 *  Configuration :  Disable Self CTS    Enable Self CTS
-	 *  Values to set :             0                      1
-	 *  Configuration :  Disable TX Abort    Enable TX Abort
-	 *  Values to set :             2                      3
-	 *  Configuration :  Enable HW TX Abort Enable SW TX Abort
-	 *  Values to set :             4                      5
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_TX_ABORT_CONFIG		= 0x00A1,
 
 	WID_REG_TSSI_11B_VALUE		= 0x00A6,
@@ -640,28 +353,16 @@ enum {
 	WID_DSCR_TSSI_11G_VALUE		= 0x00AB,
 	WID_DSCR_TSSI_11N_VALUE		= 0x00AC,
 
-	/*
-	 *  Immediate Block-Ack Support
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disable                  Enable
-	 *  Values to set :    0                       1
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_IMMEDIATE_BA_ENABLED	= 0x00AF,
 
-	/*
-	 *  TXOP Disable Flag
-	 *  -----------------------------------------------------------
-	 *  Configuration : Disable                  Enable
-	 *  Values to set :    1                        0
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_11N_TXOP_PROT_DISABLE	= 0x00B0,
 
 	WID_TX_POWER_LEVEL_11N		= 0x00B1,
 
-	/* Custom Character WID list */
-	/* SCAN Complete notification WID*/
+	 
+	 
 	WID_SCAN_COMPLETE		= 0x00C9,
 
 	WID_DEL_BEACON			= 0x00CA,
@@ -672,23 +373,12 @@ enum {
 	WID_SET_MFP                     = 0x00D0,
 
 	WID_DEFAULT_MGMT_KEY_ID		= 0x00D2,
-	/*  EMAC Short WID list */
-	/*  RTS Threshold */
-	/*
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Any value between 256 to 2347
-	 *  Values to set :   Same value. Default is 2347
-	 *  -----------------------------------------------------------
-	 */
+	 
+	 
+	 
 	WID_RTS_THRESHOLD		= 0x1000,
 
-	/*
-	 *  Fragmentation Threshold
-	 *  -----------------------------------------------------------
-	 *  Configuration :   Any value between 256 to 2346
-	 *  Values to set :   Same value. Default is 2346
-	 *  -----------------------------------------------------------
-	 */
+	 
 	WID_FRAG_THRESHOLD		= 0x1001,
 
 	WID_SHORT_RETRY_LIMIT		= 0x1002,
@@ -701,13 +391,13 @@ enum {
 	WID_11I_PROTOCOL_TIMEOUT	= 0x1012,
 	WID_EAPOL_RESPONSE_TIMEOUT	= 0x1013,
 
-	/* NMAC Short WID list */
+	 
 	WID_11N_SIG_QUAL_VAL		= 0x1085,
 	WID_CCA_THRESHOLD		= 0x1087,
 
-	/* Custom Short WID list */
+	 
 
-	/* EMAC Integer WID list */
+	 
 	WID_FAILED_COUNT		= 0x2000,
 	WID_RETRY_COUNT			= 0x2001,
 	WID_MULTIPLE_RETRY_COUNT	= 0x2002,
@@ -732,10 +422,10 @@ enum {
 	WID_MEMORY_ADDRESS		= 0x201E,
 	WID_MEMORY_ACCESS_32BIT		= 0x201F,
 
-	/* NMAC Integer WID list */
-	/* Custom Integer WID list */
+	 
+	 
 	WID_GET_INACTIVE_TIME		= 0x2084,
-	/* EMAC String WID list */
+	 
 	WID_SSID			= 0x3000,
 	WID_FIRMWARE_VERSION		= 0x3001,
 	WID_OPERATIONAL_RATE_SET	= 0x3002,
@@ -762,12 +452,12 @@ enum {
 	WID_ASSOC_REQ_INFO		= 0x301F,
 	WID_ASSOC_RES_INFO		= 0x3020,
 	WID_ADD_IGTK                    = 0x3022,
-	WID_MANUFACTURER		= 0x3026, /* Added for CAPI tool */
-	WID_MODEL_NAME			= 0x3027, /* Added for CAPI tool */
-	WID_MODEL_NUM			= 0x3028, /* Added for CAPI tool */
-	WID_DEVICE_NAME			= 0x3029, /* Added for CAPI tool */
+	WID_MANUFACTURER		= 0x3026,  
+	WID_MODEL_NAME			= 0x3027,  
+	WID_MODEL_NUM			= 0x3028,  
+	WID_DEVICE_NAME			= 0x3029,  
 
-	/* NMAC String WID list */
+	 
 	WID_SET_OPERATION_MODE		= 0x3079,
 	WID_11N_P_ACTION_REQ		= 0x3080,
 	WID_HUT_TEST_ID			= 0x3081,
@@ -781,9 +471,9 @@ enum {
 
 	WID_IP_ADDRESS			= 0x3999,
 
-	/* Custom String WID list */
+	 
 
-	/* EMAC Binary WID list */
+	 
 	WID_UAPSD_CONFIG		= 0x4001,
 	WID_UAPSD_STATUS		= 0x4002,
 	WID_WMM_AP_AC_PARAMS		= 0x4003,
@@ -792,7 +482,7 @@ enum {
 	WID_STA_JOIN_INFO		= 0x4006,
 	WID_CONNECTED_STA_LIST		= 0x4007,
 
-	/* NMAC Binary WID list */
+	 
 	WID_11N_AUTORATE_TABLE		= 0x4080,
 
 	WID_SCAN_CHANNEL_LIST		= 0x4084,
@@ -806,7 +496,7 @@ enum {
 
 	WID_SETUP_MULTICAST_FILTER	= 0x408b,
 	WID_EXTERNAL_AUTH_PARAM		= 0x408d,
-	/* Miscellaneous WIDs */
+	 
 	WID_ALL				= 0x7FFE,
 	WID_MAX				= 0xFFFF
 };

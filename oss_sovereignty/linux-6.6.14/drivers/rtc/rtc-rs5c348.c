@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A SPI driver for the Ricoh RS5C348 RTC
- *
- * Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
- *
- * The board specific init code should provide characteristics of this
- * device:
- *     Mode 1 (High-Active, Shift-Then-Sample), High Avtive CS
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/delay.h>
@@ -39,16 +31,16 @@
 #define RS5C348_DAY_MASK	0x3f
 #define RS5C348_MONTH_MASK	0x1f
 
-#define RS5C348_BIT_PM	0x20	/* REG_HOURS */
-#define RS5C348_BIT_Y2K	0x80	/* REG_MONTH */
-#define RS5C348_BIT_24H	0x20	/* REG_CTL1 */
-#define RS5C348_BIT_XSTP	0x10	/* REG_CTL2 */
-#define RS5C348_BIT_VDET	0x40	/* REG_CTL2 */
+#define RS5C348_BIT_PM	0x20	 
+#define RS5C348_BIT_Y2K	0x80	 
+#define RS5C348_BIT_24H	0x20	 
+#define RS5C348_BIT_XSTP	0x10	 
+#define RS5C348_BIT_VDET	0x40	 
 
-#define RS5C348_CMD_W(addr)	(((addr) << 4) | 0x08)	/* single write */
-#define RS5C348_CMD_R(addr)	(((addr) << 4) | 0x0c)	/* single read */
-#define RS5C348_CMD_MW(addr)	(((addr) << 4) | 0x00)	/* burst write */
-#define RS5C348_CMD_MR(addr)	(((addr) << 4) | 0x04)	/* burst read */
+#define RS5C348_CMD_W(addr)	(((addr) << 4) | 0x08)	 
+#define RS5C348_CMD_R(addr)	(((addr) << 4) | 0x0c)	 
+#define RS5C348_CMD_MW(addr)	(((addr) << 4) | 0x00)	 
+#define RS5C348_CMD_MR(addr)	(((addr) << 4) | 0x04)	 
 
 struct rs5c348_plat_data {
 	struct rtc_device *rtc;
@@ -74,20 +66,20 @@ rs5c348_rtc_set_time(struct device *dev, struct rtc_time *tm)
 			return ret;
 	}
 
-	/* Transfer 5 bytes before writing SEC.  This gives 31us for carry. */
+	 
 	txp = txbuf;
-	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
-	txbuf[1] = 0;	/* dummy */
-	txbuf[2] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
-	txbuf[3] = 0;	/* dummy */
-	txbuf[4] = RS5C348_CMD_MW(RS5C348_REG_SECS); /* cmd, sec, ... */
+	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2);  
+	txbuf[1] = 0;	 
+	txbuf[2] = RS5C348_CMD_R(RS5C348_REG_CTL2);  
+	txbuf[3] = 0;	 
+	txbuf[4] = RS5C348_CMD_MW(RS5C348_REG_SECS);  
 	txp = &txbuf[5];
 	txp[RS5C348_REG_SECS] = bin2bcd(tm->tm_sec);
 	txp[RS5C348_REG_MINS] = bin2bcd(tm->tm_min);
 	if (pdata->rtc_24h) {
 		txp[RS5C348_REG_HOURS] = bin2bcd(tm->tm_hour);
 	} else {
-		/* hour 0 is AM12, noon is PM12 */
+		 
 		txp[RS5C348_REG_HOURS] = bin2bcd((tm->tm_hour + 11) % 12 + 1) |
 			(tm->tm_hour >= 12 ? RS5C348_BIT_PM : 0);
 	}
@@ -96,9 +88,9 @@ rs5c348_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	txp[RS5C348_REG_MONTH] = bin2bcd(tm->tm_mon + 1) |
 		(tm->tm_year >= 100 ? RS5C348_BIT_Y2K : 0);
 	txp[RS5C348_REG_YEAR] = bin2bcd(tm->tm_year % 100);
-	/* write in one transfer to avoid data inconsistency */
+	 
 	ret = spi_write_then_read(spi, txbuf, sizeof(txbuf), NULL, 0);
-	udelay(62);	/* Tcsr 62us */
+	udelay(62);	 
 	return ret;
 }
 
@@ -120,17 +112,17 @@ rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		return -EINVAL;
 	}
 
-	/* Transfer 5 byte befores reading SEC.  This gives 31us for carry. */
-	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
-	txbuf[1] = 0;	/* dummy */
-	txbuf[2] = RS5C348_CMD_R(RS5C348_REG_CTL2); /* cmd, ctl2 */
-	txbuf[3] = 0;	/* dummy */
-	txbuf[4] = RS5C348_CMD_MR(RS5C348_REG_SECS); /* cmd, sec, ... */
+	 
+	txbuf[0] = RS5C348_CMD_R(RS5C348_REG_CTL2);  
+	txbuf[1] = 0;	 
+	txbuf[2] = RS5C348_CMD_R(RS5C348_REG_CTL2);  
+	txbuf[3] = 0;	 
+	txbuf[4] = RS5C348_CMD_MR(RS5C348_REG_SECS);  
 
-	/* read in one transfer to avoid data inconsistency */
+	 
 	ret = spi_write_then_read(spi, txbuf, sizeof(txbuf),
 				  rxbuf, sizeof(rxbuf));
-	udelay(62);	/* Tcsr 62us */
+	udelay(62);	 
 	if (ret < 0)
 		return ret;
 
@@ -149,7 +141,7 @@ rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mday = bcd2bin(rxbuf[RS5C348_REG_DAY] & RS5C348_DAY_MASK);
 	tm->tm_mon =
 		bcd2bin(rxbuf[RS5C348_REG_MONTH] & RS5C348_MONTH_MASK) - 1;
-	/* year is 1900 + tm->tm_year */
+	 
 	tm->tm_year = bcd2bin(rxbuf[RS5C348_REG_YEAR]) +
 		((rxbuf[RS5C348_REG_MONTH] & RS5C348_BIT_Y2K) ? 100 : 0);
 
@@ -173,7 +165,7 @@ static int rs5c348_probe(struct spi_device *spi)
 		return -ENOMEM;
 	spi->dev.platform_data = pdata;
 
-	/* Check D7 of SECOND register */
+	 
 	ret = spi_w8r8(spi, RS5C348_CMD_R(RS5C348_REG_SECS));
 	if (ret < 0 || (ret & 0x80)) {
 		dev_err(&spi->dev, "not found.\n");

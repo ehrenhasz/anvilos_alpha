@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2012, 2017 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_impl.h>
@@ -118,11 +95,7 @@ dmu_tx_hold_dnode_impl(dmu_tx_t *tx, dnode_t *dn, enum dmu_tx_hold_type type,
 		(void) zfs_refcount_add(&dn->dn_holds, tx);
 		if (tx->tx_txg != 0) {
 			mutex_enter(&dn->dn_mtx);
-			/*
-			 * dn->dn_assigned_txg == tx->tx_txg doesn't pose a
-			 * problem, but there's no way for it to happen (for
-			 * now, at least).
-			 */
+			 
 			ASSERT(dn->dn_assigned_txg == 0);
 			dn->dn_assigned_txg = tx->tx_txg;
 			(void) zfs_refcount_add(&dn->dn_tx_holds, tx);
@@ -167,42 +140,12 @@ dmu_tx_hold_object_impl(dmu_tx_t *tx, objset_t *os, uint64_t object,
 void
 dmu_tx_add_new_object(dmu_tx_t *tx, dnode_t *dn)
 {
-	/*
-	 * If we're syncing, they can manipulate any object anyhow, and
-	 * the hold on the dnode_t can cause problems.
-	 */
+	 
 	if (!dmu_tx_is_syncing(tx))
 		(void) dmu_tx_hold_dnode_impl(tx, dn, THT_NEWOBJECT, 0, 0);
 }
 
-/*
- * This function reads specified data from disk.  The specified data will
- * be needed to perform the transaction -- i.e, it will be read after
- * we do dmu_tx_assign().  There are two reasons that we read the data now
- * (before dmu_tx_assign()):
- *
- * 1. Reading it now has potentially better performance.  The transaction
- * has not yet been assigned, so the TXG is not held open, and also the
- * caller typically has less locks held when calling dmu_tx_hold_*() than
- * after the transaction has been assigned.  This reduces the lock (and txg)
- * hold times, thus reducing lock contention.
- *
- * 2. It is easier for callers (primarily the ZPL) to handle i/o errors
- * that are detected before they start making changes to the DMU state
- * (i.e. now).  Once the transaction has been assigned, and some DMU
- * state has been changed, it can be difficult to recover from an i/o
- * error (e.g. to undo the changes already made in memory at the DMU
- * layer).  Typically code to do so does not exist in the caller -- it
- * assumes that the data has already been cached and thus i/o errors are
- * not possible.
- *
- * It has been observed that the i/o initiated here can be a performance
- * problem, and it appears to be optional, because we don't look at the
- * data which is read.  However, removing this read would only serve to
- * move the work elsewhere (after the dmu_tx_assign()), where it may
- * have a greater impact on performance (in addition to the impact on
- * fault tolerance noted above).
- */
+ 
 static int
 dmu_tx_check_ioerr(zio_t *zio, dnode_t *dn, int level, uint64_t blkid)
 {
@@ -216,10 +159,7 @@ dmu_tx_check_ioerr(zio_t *zio, dnode_t *dn, int level, uint64_t blkid)
 		return (0);
 	if (err != 0)
 		return (err);
-	/*
-	 * PARTIAL_FIRST allows caching for uncacheable blocks.  It will
-	 * be cleared after dmu_buf_will_dirty() call dbuf_read() again.
-	 */
+	 
 	err = dbuf_read(db, zio, DB_RF_CANFAIL | DB_RF_NOPREFETCH |
 	    (level == 0 ? DB_RF_PARTIAL_FIRST : 0));
 	dbuf_rele(db, FTAG);
@@ -240,12 +180,7 @@ dmu_tx_count_write(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 	if (dn == NULL)
 		return;
 
-	/*
-	 * For i/o error checking, read the blocks that will be needed
-	 * to perform the write: the first and last level-0 blocks (if
-	 * they are not aligned, i.e. if they are partial-block writes),
-	 * and all the level-1 blocks.
-	 */
+	 
 	if (dn->dn_maxblkid == 0) {
 		if (off < dn->dn_datablksz &&
 		    (off > 0 || len < dn->dn_datablksz)) {
@@ -258,7 +193,7 @@ dmu_tx_count_write(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 		zio_t *zio = zio_root(dn->dn_objset->os_spa,
 		    NULL, NULL, ZIO_FLAG_CANFAIL);
 
-		/* first level-0 block */
+		 
 		uint64_t start = off >> dn->dn_datablkshift;
 		if (P2PHASE(off, dn->dn_datablksz) || len < dn->dn_datablksz) {
 			err = dmu_tx_check_ioerr(zio, dn, 0, start);
@@ -267,7 +202,7 @@ dmu_tx_count_write(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 			}
 		}
 
-		/* last level-0 block */
+		 
 		uint64_t end = (off + len - 1) >> dn->dn_datablkshift;
 		if (end != start && end <= dn->dn_maxblkid &&
 		    P2PHASE(off + len, dn->dn_datablksz)) {
@@ -277,7 +212,7 @@ dmu_tx_count_write(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 			}
 		}
 
-		/* level-1 blocks */
+		 
 		if (dn->dn_nlevels > 1) {
 			int shft = dn->dn_indblkshift - SPA_BLKPTRSHIFT;
 			for (uint64_t i = (start >> shft) + 1;
@@ -310,11 +245,7 @@ dmu_tx_count_append(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 	if (dn == NULL)
 		return;
 
-	/*
-	 * For i/o error checking, read the blocks that will be needed
-	 * to perform the append; first level-0 block (if not aligned, i.e.
-	 * if they are partial-block writes), no additional blocks are read.
-	 */
+	 
 	if (dn->dn_maxblkid == 0) {
 		if (off < dn->dn_datablksz &&
 		    (off > 0 || len < dn->dn_datablksz)) {
@@ -327,7 +258,7 @@ dmu_tx_count_append(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 		zio_t *zio = zio_root(dn->dn_objset->os_spa,
 		    NULL, NULL, ZIO_FLAG_CANFAIL);
 
-		/* first level-0 block */
+		 
 		uint64_t start = off >> dn->dn_datablkshift;
 		if (P2PHASE(off, dn->dn_datablksz) || len < dn->dn_datablksz) {
 			err = dmu_tx_check_ioerr(zio, dn, 0, start);
@@ -383,11 +314,7 @@ dmu_tx_hold_write_by_dnode(dmu_tx_t *tx, dnode_t *dn, uint64_t off, int len)
 	}
 }
 
-/*
- * Should be used when appending to an object and the exact offset is unknown.
- * The write must occur at or beyond the specified offset.  Only the L0 block
- * at provided offset will be prefetched.
- */
+ 
 void
 dmu_tx_hold_append(dmu_tx_t *tx, uint64_t object, uint64_t off, int len)
 {
@@ -419,14 +346,7 @@ dmu_tx_hold_append_by_dnode(dmu_tx_t *tx, dnode_t *dn, uint64_t off, int len)
 	}
 }
 
-/*
- * This function marks the transaction as being a "net free".  The end
- * result is that refquotas will be disabled for this transaction, and
- * this transaction will be able to use half of the pool space overhead
- * (see dsl_pool_adjustedsize()).  Therefore this function should only
- * be called for transactions that we expect will not cause a net increase
- * in the amount of space used (but it's OK if that is occasionally not true).
- */
+ 
 void
 dmu_tx_mark_netfree(dmu_tx_t *tx)
 {
@@ -447,30 +367,20 @@ dmu_tx_count_free(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 	if (len == DMU_OBJECT_END)
 		len = (dn->dn_maxblkid + 1) * dn->dn_datablksz - off;
 
-	/*
-	 * For i/o error checking, we read the first and last level-0
-	 * blocks if they are not aligned, and all the level-1 blocks.
-	 *
-	 * Note:  dbuf_free_range() assumes that we have not instantiated
-	 * any level-0 dbufs that will be completely freed.  Therefore we must
-	 * exercise care to not read or count the first and last blocks
-	 * if they are blocksize-aligned.
-	 */
+	 
 	if (dn->dn_datablkshift == 0) {
 		if (off != 0 || len < dn->dn_datablksz)
 			dmu_tx_count_write(txh, 0, dn->dn_datablksz);
 	} else {
-		/* first block will be modified if it is not aligned */
+		 
 		if (!IS_P2ALIGNED(off, 1 << dn->dn_datablkshift))
 			dmu_tx_count_write(txh, off, 1);
-		/* last block will be modified if it is not aligned */
+		 
 		if (!IS_P2ALIGNED(off + len, 1 << dn->dn_datablkshift))
 			dmu_tx_count_write(txh, off + len, 1);
 	}
 
-	/*
-	 * Check level-1 blocks.
-	 */
+	 
 	if (dn->dn_nlevels > 1) {
 		int shift = dn->dn_datablkshift + dn->dn_indblkshift -
 		    SPA_BLKPTRSHIFT;
@@ -479,11 +389,7 @@ dmu_tx_count_free(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 
 		ASSERT(dn->dn_indblkshift != 0);
 
-		/*
-		 * dnode_reallocate() can result in an object with indirect
-		 * blocks having an odd data block size.  In this case,
-		 * just check the single block.
-		 */
+		 
 		if (dn->dn_datablkshift == 0)
 			start = end = 0;
 
@@ -548,9 +454,7 @@ static void
 dmu_tx_count_clone(dmu_tx_hold_t *txh, uint64_t off, uint64_t len)
 {
 
-	/*
-	 * Reuse dmu_tx_count_free(), it does exactly what we need for clone.
-	 */
+	 
 	dmu_tx_count_free(txh, off, len);
 }
 
@@ -581,15 +485,7 @@ dmu_tx_hold_zap_impl(dmu_tx_hold_t *txh, const char *name)
 
 	dmu_tx_count_dnode(txh);
 
-	/*
-	 * Modifying a almost-full microzap is around the worst case (128KB)
-	 *
-	 * If it is a fat zap, the worst case would be 7*16KB=112KB:
-	 * - 3 blocks overwritten: target leaf, ptrtbl block, header block
-	 * - 4 new blocks written if adding:
-	 *    - 2 blocks for possibly split leaves,
-	 *    - 2 grown ptrtbl blocks
-	 */
+	 
 	(void) zfs_refcount_add_many(&txh->txh_space_towrite,
 	    zap_micro_max_size, FTAG);
 
@@ -599,20 +495,13 @@ dmu_tx_hold_zap_impl(dmu_tx_hold_t *txh, const char *name)
 	ASSERT3U(DMU_OT_BYTESWAP(dn->dn_type), ==, DMU_BSWAP_ZAP);
 
 	if (dn->dn_maxblkid == 0 || name == NULL) {
-		/*
-		 * This is a microzap (only one block), or we don't know
-		 * the name.  Check the first block for i/o errors.
-		 */
+		 
 		err = dmu_tx_check_ioerr(NULL, dn, 0, 0);
 		if (err != 0) {
 			tx->tx_err = err;
 		}
 	} else {
-		/*
-		 * Access the name so that we'll check for i/o errors to
-		 * the leaf blocks, etc.  We ignore ENOENT, as this name
-		 * may not yet exist.
-		 */
+		 
 		err = zap_lookup_by_dnode(dn, name, 8, 0, NULL);
 		if (err == EIO || err == ECKSUM || err == ENXIO) {
 			tx->tx_err = err;
@@ -704,7 +593,7 @@ dmu_tx_dirty_buf(dmu_tx_t *tx, dmu_buf_impl_t *db)
 		return;
 	}
 
-	/* XXX No checking on the meta dnode for now */
+	 
 	if (db->db.db_object == DMU_META_DNODE_OBJECT) {
 		DB_DNODE_EXIT(db);
 		return;
@@ -726,7 +615,7 @@ dmu_tx_dirty_buf(dmu_tx_t *tx, dmu_buf_impl_t *db)
 			    ((txh->txh_arg1 + txh->txh_arg2 - 1) >> shift);
 			uint64_t blkid = db->db_blkid;
 
-			/* XXX txh_arg2 better not be zero... */
+			 
 
 			dprintf("found txh type %x beginblk=%llx endblk=%llx\n",
 			    txh->txh_type, (u_longlong_t)beginblk,
@@ -736,20 +625,11 @@ dmu_tx_dirty_buf(dmu_tx_t *tx, dmu_buf_impl_t *db)
 			case THT_WRITE:
 				if (blkid >= beginblk && blkid <= endblk)
 					match_offset = TRUE;
-				/*
-				 * We will let this hold work for the bonus
-				 * or spill buffer so that we don't need to
-				 * hold it when creating a new object.
-				 */
+				 
 				if (blkid == DMU_BONUS_BLKID ||
 				    blkid == DMU_SPILL_BLKID)
 					match_offset = TRUE;
-				/*
-				 * They might have to increase nlevels,
-				 * thus dirtying the new TLIBs.  Or the
-				 * might have to change the block size,
-				 * thus dirying the new lvl=0 blk=0.
-				 */
+				 
 				if (blkid == 0)
 					match_offset = TRUE;
 				break;
@@ -758,27 +638,16 @@ dmu_tx_dirty_buf(dmu_tx_t *tx, dmu_buf_impl_t *db)
 				    txh->txh_arg2 == DMU_OBJECT_END))
 					match_offset = TRUE;
 
-				/*
-				 * THT_WRITE used for bonus and spill blocks.
-				 */
+				 
 				ASSERT(blkid != DMU_BONUS_BLKID &&
 				    blkid != DMU_SPILL_BLKID);
 
-				/*
-				 * They might have to increase nlevels,
-				 * thus dirtying the new TLIBs.  Or the
-				 * might have to change the block size,
-				 * thus dirying the new lvl=0 blk=0.
-				 */
+				 
 				if (blkid == 0)
 					match_offset = TRUE;
 				break;
 			case THT_FREE:
-				/*
-				 * We will dirty all the level 1 blocks in
-				 * the free range and perhaps the first and
-				 * last level 0 block.
-				 */
+				 
 				if (blkid >= beginblk && (blkid <= endblk ||
 				    txh->txh_arg2 == DMU_OBJECT_END))
 					match_offset = TRUE;
@@ -818,103 +687,10 @@ dmu_tx_dirty_buf(dmu_tx_t *tx, dmu_buf_impl_t *db)
 }
 #endif
 
-/*
- * If we can't do 10 iops, something is wrong.  Let us go ahead
- * and hit zfs_dirty_data_max.
- */
-static const hrtime_t zfs_delay_max_ns = 100 * MICROSEC; /* 100 milliseconds */
+ 
+static const hrtime_t zfs_delay_max_ns = 100 * MICROSEC;  
 
-/*
- * We delay transactions when we've determined that the backend storage
- * isn't able to accommodate the rate of incoming writes.
- *
- * If there is already a transaction waiting, we delay relative to when
- * that transaction finishes waiting.  This way the calculated min_time
- * is independent of the number of threads concurrently executing
- * transactions.
- *
- * If we are the only waiter, wait relative to when the transaction
- * started, rather than the current time.  This credits the transaction for
- * "time already served", e.g. reading indirect blocks.
- *
- * The minimum time for a transaction to take is calculated as:
- *     min_time = scale * (dirty - min) / (max - dirty)
- *     min_time is then capped at zfs_delay_max_ns.
- *
- * The delay has two degrees of freedom that can be adjusted via tunables.
- * The percentage of dirty data at which we start to delay is defined by
- * zfs_delay_min_dirty_percent. This should typically be at or above
- * zfs_vdev_async_write_active_max_dirty_percent so that we only start to
- * delay after writing at full speed has failed to keep up with the incoming
- * write rate. The scale of the curve is defined by zfs_delay_scale. Roughly
- * speaking, this variable determines the amount of delay at the midpoint of
- * the curve.
- *
- * delay
- *  10ms +-------------------------------------------------------------*+
- *       |                                                             *|
- *   9ms +                                                             *+
- *       |                                                             *|
- *   8ms +                                                             *+
- *       |                                                            * |
- *   7ms +                                                            * +
- *       |                                                            * |
- *   6ms +                                                            * +
- *       |                                                            * |
- *   5ms +                                                           *  +
- *       |                                                           *  |
- *   4ms +                                                           *  +
- *       |                                                           *  |
- *   3ms +                                                          *   +
- *       |                                                          *   |
- *   2ms +                                              (midpoint) *    +
- *       |                                                  |    **     |
- *   1ms +                                                  v ***       +
- *       |             zfs_delay_scale ---------->     ********         |
- *     0 +-------------------------------------*********----------------+
- *       0%                    <- zfs_dirty_data_max ->               100%
- *
- * Note that since the delay is added to the outstanding time remaining on the
- * most recent transaction, the delay is effectively the inverse of IOPS.
- * Here the midpoint of 500us translates to 2000 IOPS. The shape of the curve
- * was chosen such that small changes in the amount of accumulated dirty data
- * in the first 3/4 of the curve yield relatively small differences in the
- * amount of delay.
- *
- * The effects can be easier to understand when the amount of delay is
- * represented on a log scale:
- *
- * delay
- * 100ms +-------------------------------------------------------------++
- *       +                                                              +
- *       |                                                              |
- *       +                                                             *+
- *  10ms +                                                             *+
- *       +                                                           ** +
- *       |                                              (midpoint)  **  |
- *       +                                                  |     **    +
- *   1ms +                                                  v ****      +
- *       +             zfs_delay_scale ---------->        *****         +
- *       |                                             ****             |
- *       +                                          ****                +
- * 100us +                                        **                    +
- *       +                                       *                      +
- *       |                                      *                       |
- *       +                                     *                        +
- *  10us +                                     *                        +
- *       +                                                              +
- *       |                                                              |
- *       +                                                              +
- *       +--------------------------------------------------------------+
- *       0%                    <- zfs_dirty_data_max ->               100%
- *
- * Note here that only as the amount of dirty data approaches its limit does
- * the delay start to increase rapidly. The goal of a properly tuned system
- * should be to keep the amount of dirty data out of that range by first
- * ensuring that the appropriate limits are set for the I/O scheduler to reach
- * optimal throughput on the backend storage, and then by changing the value
- * of zfs_delay_scale to increase the steepness of the curve.
- */
+ 
 static void
 dmu_tx_delay(dmu_tx_t *tx, uint64_t dirty)
 {
@@ -922,23 +698,18 @@ dmu_tx_delay(dmu_tx_t *tx, uint64_t dirty)
 	uint64_t delay_min_bytes, wrlog;
 	hrtime_t wakeup, tx_time = 0, now;
 
-	/* Calculate minimum transaction time for the dirty data amount. */
+	 
 	delay_min_bytes =
 	    zfs_dirty_data_max * zfs_delay_min_dirty_percent / 100;
 	if (dirty > delay_min_bytes) {
-		/*
-		 * The caller has already waited until we are under the max.
-		 * We make them pass us the amount of dirty data so we don't
-		 * have to handle the case of it being >= the max, which
-		 * could cause a divide-by-zero if it's == the max.
-		 */
+		 
 		ASSERT3U(dirty, <, zfs_dirty_data_max);
 
 		tx_time = zfs_delay_scale * (dirty - delay_min_bytes) /
 		    (zfs_dirty_data_max - dirty);
 	}
 
-	/* Calculate minimum transaction time for the TX_WRITE log size. */
+	 
 	wrlog = aggsum_upper_bound(&dp->dp_wrlog_total);
 	delay_min_bytes =
 	    zfs_wrlog_data_max * zfs_delay_min_dirty_percent / 100;
@@ -968,45 +739,7 @@ dmu_tx_delay(dmu_tx_t *tx, uint64_t dirty)
 	zfs_sleep_until(wakeup);
 }
 
-/*
- * This routine attempts to assign the transaction to a transaction group.
- * To do so, we must determine if there is sufficient free space on disk.
- *
- * If this is a "netfree" transaction (i.e. we called dmu_tx_mark_netfree()
- * on it), then it is assumed that there is sufficient free space,
- * unless there's insufficient slop space in the pool (see the comment
- * above spa_slop_shift in spa_misc.c).
- *
- * If it is not a "netfree" transaction, then if the data already on disk
- * is over the allowed usage (e.g. quota), this will fail with EDQUOT or
- * ENOSPC.  Otherwise, if the current rough estimate of pending changes,
- * plus the rough estimate of this transaction's changes, may exceed the
- * allowed usage, then this will fail with ERESTART, which will cause the
- * caller to wait for the pending changes to be written to disk (by waiting
- * for the next TXG to open), and then check the space usage again.
- *
- * The rough estimate of pending changes is comprised of the sum of:
- *
- *  - this transaction's holds' txh_space_towrite
- *
- *  - dd_tempreserved[], which is the sum of in-flight transactions'
- *    holds' txh_space_towrite (i.e. those transactions that have called
- *    dmu_tx_assign() but not yet called dmu_tx_commit()).
- *
- *  - dd_space_towrite[], which is the amount of dirtied dbufs.
- *
- * Note that all of these values are inflated by spa_get_worst_case_asize(),
- * which means that we may get ERESTART well before we are actually in danger
- * of running out of space, but this also mitigates any small inaccuracies
- * in the rough estimate (e.g. txh_space_towrite doesn't take into account
- * indirect blocks, and dd_space_towrite[] doesn't take into account changes
- * to the MOS).
- *
- * Note that due to this algorithm, it is possible to exceed the allowed
- * usage by one transaction.  Also, as we approach the allowed usage,
- * we will allow a very limited amount of changes into each TXG, thus
- * decreasing performance.
- */
+ 
 static int
 dmu_tx_try_assign(dmu_tx_t *tx, uint64_t txg_how)
 {
@@ -1022,15 +755,7 @@ dmu_tx_try_assign(dmu_tx_t *tx, uint64_t txg_how)
 	if (spa_suspended(spa)) {
 		DMU_TX_STAT_BUMP(dmu_tx_suspended);
 
-		/*
-		 * If the user has indicated a blocking failure mode
-		 * then return ERESTART which will block in dmu_tx_wait().
-		 * Otherwise, return EIO so that an error can get
-		 * propagated back to the VOP calls.
-		 *
-		 * Note that we always honor the txg_how flag regardless
-		 * of the failuremode setting.
-		 */
+		 
 		if (spa_get_failmode(spa) == ZIO_FAILURE_MODE_CONTINUE &&
 		    !(txg_how & TXG_WAIT))
 			return (SET_ERROR(EIO));
@@ -1055,11 +780,7 @@ dmu_tx_try_assign(dmu_tx_t *tx, uint64_t txg_how)
 	tx->tx_txg = txg_hold_open(tx->tx_pool, &tx->tx_txgh);
 	tx->tx_needassign_txh = NULL;
 
-	/*
-	 * NB: No error returns are allowed after txg_hold_open, but
-	 * before processing the dnode holds, due to the
-	 * dmu_tx_unassign() logic.
-	 */
+	 
 
 	uint64_t towrite = 0;
 	uint64_t tohold = 0;
@@ -1067,23 +788,7 @@ dmu_tx_try_assign(dmu_tx_t *tx, uint64_t txg_how)
 	    txh = list_next(&tx->tx_holds, txh)) {
 		dnode_t *dn = txh->txh_dnode;
 		if (dn != NULL) {
-			/*
-			 * This thread can't hold the dn_struct_rwlock
-			 * while assigning the tx, because this can lead to
-			 * deadlock. Specifically, if this dnode is already
-			 * assigned to an earlier txg, this thread may need
-			 * to wait for that txg to sync (the ERESTART case
-			 * below).  The other thread that has assigned this
-			 * dnode to an earlier txg prevents this txg from
-			 * syncing until its tx can complete (calling
-			 * dmu_tx_commit()), but it may need to acquire the
-			 * dn_struct_rwlock to do so (e.g. via
-			 * dmu_buf_hold*()).
-			 *
-			 * Note that this thread can't hold the lock for
-			 * read either, but the rwlock doesn't record
-			 * enough information to make that assertion.
-			 */
+			 
 			ASSERT(!RW_WRITE_HELD(&dn->dn_struct_rwlock));
 
 			mutex_enter(&dn->dn_mtx);
@@ -1103,9 +808,9 @@ dmu_tx_try_assign(dmu_tx_t *tx, uint64_t txg_how)
 		tohold += zfs_refcount_count(&txh->txh_memory_tohold);
 	}
 
-	/* needed allocation: worst-case estimate of write space */
+	 
 	uint64_t asize = spa_get_worst_case_asize(tx->tx_pool->dp_spa, towrite);
-	/* calculate memory footprint estimate */
+	 
 	uint64_t memory = towrite + tohold;
 
 	if (tx->tx_dir != NULL && asize != 0) {
@@ -1128,10 +833,7 @@ dmu_tx_unassign(dmu_tx_t *tx)
 
 	txg_rele_to_quiesce(&tx->tx_txgh);
 
-	/*
-	 * Walk the transaction's hold list, removing the hold on the
-	 * associated dnode, and notifying waiters if the refcount drops to 0.
-	 */
+	 
 	for (dmu_tx_hold_t *txh = list_head(&tx->tx_holds);
 	    txh && txh != tx->tx_needassign_txh;
 	    txh = list_next(&tx->tx_holds, txh)) {
@@ -1155,42 +857,7 @@ dmu_tx_unassign(dmu_tx_t *tx)
 	tx->tx_txg = 0;
 }
 
-/*
- * Assign tx to a transaction group; txg_how is a bitmask:
- *
- * If TXG_WAIT is set and the currently open txg is full, this function
- * will wait until there's a new txg. This should be used when no locks
- * are being held. With this bit set, this function will only fail if
- * we're truly out of space (or over quota).
- *
- * If TXG_WAIT is *not* set and we can't assign into the currently open
- * txg without blocking, this function will return immediately with
- * ERESTART. This should be used whenever locks are being held.  On an
- * ERESTART error, the caller should drop all locks, call dmu_tx_wait(),
- * and try again.
- *
- * If TXG_NOTHROTTLE is set, this indicates that this tx should not be
- * delayed due on the ZFS Write Throttle (see comments in dsl_pool.c for
- * details on the throttle). This is used by the VFS operations, after
- * they have already called dmu_tx_wait() (though most likely on a
- * different tx).
- *
- * It is guaranteed that subsequent successful calls to dmu_tx_assign()
- * will assign the tx to monotonically increasing txgs. Of course this is
- * not strong monotonicity, because the same txg can be returned multiple
- * times in a row. This guarantee holds both for subsequent calls from
- * one thread and for multiple threads. For example, it is impossible to
- * observe the following sequence of events:
- *
- *          Thread 1                            Thread 2
- *
- *     dmu_tx_assign(T1, ...)
- *     1 <- dmu_tx_get_txg(T1)
- *                                       dmu_tx_assign(T2, ...)
- *                                       2 <- dmu_tx_get_txg(T2)
- *     dmu_tx_assign(T3, ...)
- *     1 <- dmu_tx_get_txg(T3)
- */
+ 
 int
 dmu_tx_assign(dmu_tx_t *tx, uint64_t txg_how)
 {
@@ -1200,7 +867,7 @@ dmu_tx_assign(dmu_tx_t *tx, uint64_t txg_how)
 	ASSERT0(txg_how & ~(TXG_WAIT | TXG_NOTHROTTLE));
 	ASSERT(!dsl_pool_sync_context(tx->tx_pool));
 
-	/* If we might wait, we must not hold the config lock. */
+	 
 	IMPLY((txg_how & TXG_WAIT), !dsl_pool_config_held(tx->tx_pool));
 
 	if ((txg_how & TXG_NOTHROTTLE))
@@ -1235,11 +902,7 @@ dmu_tx_wait(dmu_tx_t *tx)
 	if (tx->tx_wait_dirty) {
 		uint64_t dirty;
 
-		/*
-		 * dmu_tx_try_assign() has determined that we need to wait
-		 * because we've consumed much or all of the dirty buffer
-		 * space.
-		 */
+		 
 		mutex_enter(&dp->dp_lock);
 		if (dp->dp_dirty_total >= zfs_dirty_data_max)
 			DMU_TX_STAT_BUMP(dmu_tx_dirty_over_max);
@@ -1252,21 +915,10 @@ dmu_tx_wait(dmu_tx_t *tx)
 
 		tx->tx_wait_dirty = B_FALSE;
 
-		/*
-		 * Note: setting tx_dirty_delayed only has effect if the
-		 * caller used TX_WAIT.  Otherwise they are going to
-		 * destroy this tx and try again.  The common case,
-		 * zfs_write(), uses TX_WAIT.
-		 */
+		 
 		tx->tx_dirty_delayed = B_TRUE;
 	} else if (spa_suspended(spa) || tx->tx_lasttried_txg == 0) {
-		/*
-		 * If the pool is suspended we need to wait until it
-		 * is resumed.  Note that it's possible that the pool
-		 * has become active after this thread has tried to
-		 * obtain a tx.  If that's the case then tx_lasttried_txg
-		 * would not have been set.
-		 */
+		 
 		txg_wait_synced(dp, spa_last_synced_txg(spa) + 1);
 	} else if (tx->tx_needassign_txh) {
 		dnode_t *dn = tx->tx_needassign_txh->txh_dnode;
@@ -1277,11 +929,7 @@ dmu_tx_wait(dmu_tx_t *tx)
 		mutex_exit(&dn->dn_mtx);
 		tx->tx_needassign_txh = NULL;
 	} else {
-		/*
-		 * If we have a lot of dirty data just wait until we sync
-		 * out a TXG at which point we'll hopefully have synced
-		 * a portion of the changes.
-		 */
+		 
 		txg_wait_synced(dp, spa_last_synced_txg(spa) + 1);
 	}
 
@@ -1316,10 +964,7 @@ dmu_tx_commit(dmu_tx_t *tx)
 {
 	ASSERT(tx->tx_txg != 0);
 
-	/*
-	 * Go through the transaction's hold list and remove holds on
-	 * associated dnodes, notifying waiters if no holds remain.
-	 */
+	 
 	for (dmu_tx_hold_t *txh = list_head(&tx->tx_holds); txh != NULL;
 	    txh = list_next(&tx->tx_holds, txh)) {
 		dnode_t *dn = txh->txh_dnode;
@@ -1354,9 +999,7 @@ dmu_tx_abort(dmu_tx_t *tx)
 {
 	ASSERT(tx->tx_txg == 0);
 
-	/*
-	 * Call any registered callbacks with an error code.
-	 */
+	 
 	if (!list_is_empty(&tx->tx_callbacks))
 		dmu_tx_do_callbacks(&tx->tx_callbacks, SET_ERROR(ECANCELED));
 
@@ -1390,9 +1033,7 @@ dmu_tx_callback_register(dmu_tx_t *tx, dmu_tx_callback_func_t *func, void *data)
 	list_insert_tail(&tx->tx_callbacks, dcb);
 }
 
-/*
- * Call all the commit callbacks on a list, with a given error code.
- */
+ 
 void
 dmu_tx_do_callbacks(list_t *cb_list, int error)
 {
@@ -1404,20 +1045,9 @@ dmu_tx_do_callbacks(list_t *cb_list, int error)
 	}
 }
 
-/*
- * Interface to hold a bunch of attributes.
- * used for creating new files.
- * attrsize is the total size of all attributes
- * to be added during object creation
- *
- * For updating/adding a single attribute dmu_tx_hold_sa() should be used.
- */
+ 
 
-/*
- * hold necessary attribute name for attribute registration.
- * should be a very rare case where this is needed.  If it does
- * happen it would only happen on the first write to the file system.
- */
+ 
 static void
 dmu_tx_sa_registration_hold(sa_os_t *sa, dmu_tx_t *tx)
 {
@@ -1476,15 +1106,7 @@ dmu_tx_hold_sa_create(dmu_tx_t *tx, int attrsize)
 	    THT_SPILL, 0, 0);
 }
 
-/*
- * Hold SA attribute
- *
- * dmu_tx_hold_sa(dmu_tx_t *tx, sa_handle_t *, attribute, add, size)
- *
- * variable_size is the total size of all variable sized attributes
- * passed to this function.  It is not the total size of all
- * variable size attributes that *may* exist on this object.
- */
+ 
 void
 dmu_tx_hold_sa(dmu_tx_t *tx, sa_handle_t *hdl, boolean_t may_grow)
 {

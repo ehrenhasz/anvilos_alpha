@@ -1,20 +1,4 @@
-/*
- * B53 register access through MII registers
- *
- * Copyright (C) 2011-2013 Jonas Gorski <jogo@openwrt.org>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/phy.h>
@@ -27,13 +11,13 @@
 
 #include "b53_priv.h"
 
-/* MII registers */
-#define REG_MII_PAGE    0x10    /* MII Page register */
-#define REG_MII_ADDR    0x11    /* MII Address register */
-#define REG_MII_DATA0   0x18    /* MII Data register 0 */
-#define REG_MII_DATA1   0x19    /* MII Data register 1 */
-#define REG_MII_DATA2   0x1a    /* MII Data register 2 */
-#define REG_MII_DATA3   0x1b    /* MII Data register 3 */
+ 
+#define REG_MII_PAGE    0x10     
+#define REG_MII_ADDR    0x11     
+#define REG_MII_DATA0   0x18     
+#define REG_MII_DATA1   0x19     
+#define REG_MII_DATA2   0x1a     
+#define REG_MII_DATA3   0x1b     
 
 #define REG_MII_PAGE_ENABLE     BIT(0)
 #define REG_MII_ADDR_WRITE      BIT(0)
@@ -47,7 +31,7 @@ static int b53_mdio_op(struct b53_device *dev, u8 page, u8 reg, u16 op)
 	struct mii_bus *bus = dev->priv;
 
 	if (dev->current_page != page) {
-		/* set page number */
+		 
 		v = (page << 8) | REG_MII_PAGE_ENABLE;
 		ret = mdiobus_write_nested(bus, BRCM_PSEUDO_PHY_ADDR,
 					   REG_MII_PAGE, v);
@@ -56,13 +40,13 @@ static int b53_mdio_op(struct b53_device *dev, u8 page, u8 reg, u16 op)
 		dev->current_page = page;
 	}
 
-	/* set register address */
+	 
 	v = (reg << 8) | op;
 	ret = mdiobus_write_nested(bus, BRCM_PSEUDO_PHY_ADDR, REG_MII_ADDR, v);
 	if (ret)
 		return ret;
 
-	/* check if operation completed */
+	 
 	for (i = 0; i < 5; ++i) {
 		v = mdiobus_read_nested(bus, BRCM_PSEUDO_PHY_ADDR,
 					REG_MII_ADDR);
@@ -295,23 +279,18 @@ static int b53_mdio_probe(struct mdio_device *mdiodev)
 	u32 phy_id;
 	int ret;
 
-	/* allow the generic PHY driver to take over the non-management MDIO
-	 * addresses
-	 */
+	 
 	if (mdiodev->addr != BRCM_PSEUDO_PHY_ADDR && mdiodev->addr != 0) {
 		dev_err(&mdiodev->dev, "leaving address %d to PHY\n",
 			mdiodev->addr);
 		return -ENODEV;
 	}
 
-	/* read the first port's id */
+	 
 	phy_id = mdiobus_read(mdiodev->bus, 0, 2) << 16;
 	phy_id |= mdiobus_read(mdiodev->bus, 0, 3);
 
-	/* BCM5325, BCM539x (OUI_1)
-	 * BCM53125, BCM53128 (OUI_2)
-	 * BCM5365 (OUI_3)
-	 */
+	 
 	if ((phy_id & 0xfffffc00) != B53_BRCM_OUI_1 &&
 	    (phy_id & 0xfffffc00) != B53_BRCM_OUI_2 &&
 	    (phy_id & 0xfffffc00) != B53_BRCM_OUI_3 &&
@@ -321,13 +300,7 @@ static int b53_mdio_probe(struct mdio_device *mdiodev)
 		return -ENODEV;
 	}
 
-	/* First probe will come from SWITCH_MDIO controller on the 7445D0
-	 * switch, which will conflict with the 7445 integrated switch
-	 * pseudo-phy (we end-up programming both). In that case, we return
-	 * -EPROBE_DEFER for the first time we get here, and wait until we come
-	 * back with the slave MDIO bus which has the correct indirection
-	 * layer setup
-	 */
+	 
 	if (of_machine_is_compatible("brcm,bcm7445d0") &&
 	    strcmp(mdiodev->bus->name, "sf2 slave mii"))
 		return -EPROBE_DEFER;
@@ -336,7 +309,7 @@ static int b53_mdio_probe(struct mdio_device *mdiodev)
 	if (!dev)
 		return -ENOMEM;
 
-	/* we don't use page 0xff, so force a page set */
+	 
 	dev->current_page = 0xff;
 	dev->bus = mdiodev->bus;
 
@@ -384,7 +357,7 @@ static const struct of_device_id b53_of_match[] = {
 	{ .compatible = "brcm,bcm5395" },
 	{ .compatible = "brcm,bcm5397" },
 	{ .compatible = "brcm,bcm5398" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, b53_of_match);
 

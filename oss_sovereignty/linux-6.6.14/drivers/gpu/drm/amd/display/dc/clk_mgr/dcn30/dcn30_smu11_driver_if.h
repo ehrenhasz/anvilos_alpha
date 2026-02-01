@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT
-// This is a stripped-down version of the smu11_driver_if.h file for the relevant DAL interfaces.
+
+
 
 #define SMU11_DRIVER_IF_VERSION 0x40
 
-//Only Clks that have DPM descriptors are listed here
+
 typedef enum {
 	PPCLK_GFXCLK = 0,
 	PPCLK_SOCCLK,
@@ -22,8 +22,8 @@ typedef enum {
 } PPCLK_e;
 
 typedef struct {
-	uint16_t MinClock; // This is either DCEFCLK or SOCCLK (in MHz)
-	uint16_t MaxClock; // This is either DCEFCLK or SOCCLK (in MHz)
+	uint16_t MinClock; 
+	uint16_t MaxClock; 
 	uint16_t MinUclk;
 	uint16_t MaxUclk;
 
@@ -49,17 +49,17 @@ typedef enum {
 } WATERMARKS_FLAGS_e;
 
 typedef struct {
-	// Watermarks
+	
 	WatermarkRowGeneric_t WatermarkRow[WM_COUNT][NUM_WM_RANGES];
 } Watermarks_t;
 
 typedef struct {
 	Watermarks_t Watermarks;
 
-	uint32_t     MmHubPadding[8]; // SMU internal use
+	uint32_t     MmHubPadding[8]; 
 } WatermarksExternal_t;
 
-// Table types
+
 #define TABLE_PPTABLE                 0
 #define TABLE_WATERMARKS              1
 #define TABLE_AVFS_PSM_DEBUG          2

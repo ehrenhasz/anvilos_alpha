@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __LINUX_LANTIQ_H
 #define __LINUX_LANTIQ_H
@@ -19,5 +19,5 @@ static inline struct clk *clk_get_fpi(void)
 {
 	return NULL;
 }
-#endif /* CONFIG_LANTIQ */
-#endif /* __LINUX_LANTIQ_H */
+#endif  
+#endif  

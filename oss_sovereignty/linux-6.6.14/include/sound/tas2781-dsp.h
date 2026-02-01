@@ -1,17 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// ALSA SoC Texas Instruments TAS2781 Audio Smart Amplifier
-//
-// Copyright (C) 2022 - 2023 Texas Instruments Incorporated
-// https://www.ti.com
-//
-// The TAS2781 driver implements a flexible and configurable
-// algo coefficient setting for one, two, or even multiple
-// TAS2781 chips.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
-// Author: Kevin Lu <kevin-lu@ti.com>
-//
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef __TASDEVICE_DSP_H__
 #define __TASDEVICE_DSP_H__

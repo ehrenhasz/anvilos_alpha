@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hash function and HMAC support for StarFive driver
- *
- * Copyright (c) 2022 StarFive Technology
- *
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/hash.h>
@@ -222,7 +217,7 @@ void starfive_hash_done_task(unsigned long param)
 	if (!err)
 		err = starfive_hash_copy_hash(cryp->req.hreq);
 
-	/* Reset to clear hash_done in irq register*/
+	 
 	writel(STARFIVE_HASH_RESET, cryp->base + STARFIVE_HASH_SHACSR);
 
 	crypto_finalize_hash_request(cryp->engine, cryp->req.hreq, err);

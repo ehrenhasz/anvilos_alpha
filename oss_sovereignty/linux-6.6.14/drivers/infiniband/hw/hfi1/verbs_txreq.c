@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 - 2018 Intel Corporation.
- */
+
+ 
 
 #include "hfi.h"
 #include "verbs_txreq.h"
@@ -26,7 +24,7 @@ void hfi1_put_txreq(struct verbs_txreq *tx)
 
 	sdma_txclean(dd_from_dev(dev), &tx->txreq);
 
-	/* Free verbs_txreq and return to slab cache */
+	 
 	kmem_cache_free(dev->verbs_txreq_cache, tx);
 
 	do {
@@ -40,7 +38,7 @@ void hfi1_put_txreq(struct verbs_txreq *tx)
 			qp = iowait_to_qp(wait);
 			priv = qp->priv;
 			list_del_init(&priv->s_iowait.list);
-			/* refcount held until actual wake up */
+			 
 			write_sequnlock_irqrestore(&dev->txwait_lock, flags);
 			hfi1_qp_wakeup(qp, RVT_S_WAIT_TX);
 			break;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_rd.c
- *
- * This file contains the Storage Engine <-> Ramdisk transport
- * specific functions.
- *
- * (c) Copyright 2003-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/string.h>
 #include <linux/parser.h>
@@ -105,10 +95,7 @@ static void rd_release_device_space(struct rd_dev *rd_dev)
 }
 
 
-/*	rd_build_device_space():
- *
- *
- */
+ 
 static int rd_allocate_sgl_table(struct rd_dev *rd_dev, struct rd_dev_sg_table *sg_table,
 				 u32 total_sg_needed, unsigned char init_payload)
 {
@@ -125,9 +112,7 @@ static int rd_allocate_sgl_table(struct rd_dev *rd_dev, struct rd_dev_sg_table *
 		sg_per_table = (total_sg_needed > max_sg_per_table) ?
 			max_sg_per_table : total_sg_needed;
 
-		/*
-		 * Reserve extra element for chain entry
-		 */
+		 
 		if (sg_per_table < total_sg_needed)
 			chain_entry = 1;
 
@@ -185,7 +170,7 @@ static int rd_build_device_space(struct rd_dev *rd_dev)
 		return -EINVAL;
 	}
 
-	/* Don't need backing pages for NULLIO */
+	 
 	if (rd_dev->rd_flags & RDF_NULLIO)
 		return 0;
 
@@ -240,12 +225,7 @@ static int rd_build_prot_space(struct rd_dev *rd_dev, int prot_length, int block
 
 	if (rd_dev->rd_flags & RDF_NULLIO)
 		return 0;
-	/*
-	 * prot_length=8byte dif data
-	 * tot sg needed = rd_page_count * (PGSZ/block_size) *
-	 * 		   (prot_length/block_size) + pad
-	 * PGSZ canceled each other.
-	 */
+	 
 	total_sg_needed = (rd_dev->rd_page_count * prot_length / block_size) + 1;
 
 	sg_tables = (total_sg_needed / max_sg_per_table) + 1;
@@ -498,7 +478,7 @@ rd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 			continue;
 		}
 
-		/* rd page completed, next one please */
+		 
 		rd_page++;
 		rd_offset = 0;
 		src_len = PAGE_SIZE;
@@ -513,7 +493,7 @@ rd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 		}
 
-		/* since we increment, the first sg entry is correct */
+		 
 		rd_sg = table->sg_table;
 	}
 	sg_miter_stop(&m);
@@ -610,7 +590,7 @@ static ssize_t rd_show_configfs_dev_params(struct se_device *dev, char *b)
 static u32 rd_get_device_type(struct se_device *dev)
 {
 	if (RD_DEV(dev)->rd_flags & RDF_DUMMY)
-		return 0x3f; /* Unknown device type, not connected */
+		return 0x3f;  
 	else
 		return sbc_get_device_type(dev);
 }

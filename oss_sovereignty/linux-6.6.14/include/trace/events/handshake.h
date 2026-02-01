@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM handshake
 
@@ -193,7 +193,7 @@ DECLARE_EVENT_CLASS(handshake_alert_class,
 	),
 	TP_ARGS(sk, level, description),
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
+		 
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(unsigned int, netns_ino)
@@ -227,9 +227,7 @@ DECLARE_EVENT_CLASS(handshake_alert_class,
 		TP_ARGS(sk, level, description))
 
 
-/*
- * Request lifetime events
- */
+ 
 
 DEFINE_HANDSHAKE_EVENT(handshake_submit);
 DEFINE_HANDSHAKE_ERROR(handshake_submit_err);
@@ -264,9 +262,7 @@ TRACE_EVENT(handshake_complete,
 	)
 );
 
-/*
- * Netlink events
- */
+ 
 
 DEFINE_HANDSHAKE_ERROR(handshake_notify_err);
 DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_accept);
@@ -274,9 +270,7 @@ DEFINE_HANDSHAKE_ERROR(handshake_cmd_accept_err);
 DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_done);
 DEFINE_HANDSHAKE_ERROR(handshake_cmd_done_err);
 
-/*
- * TLS Record events
- */
+ 
 
 TRACE_EVENT(tls_contenttype,
 	TP_PROTO(
@@ -285,7 +279,7 @@ TRACE_EVENT(tls_contenttype,
 	),
 	TP_ARGS(sk, type),
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
+		 
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(unsigned int, netns_ino)
@@ -307,13 +301,11 @@ TRACE_EVENT(tls_contenttype,
 	)
 );
 
-/*
- * TLS Alert events
- */
+ 
 
 DEFINE_HANDSHAKE_ALERT(tls_alert_send);
 DEFINE_HANDSHAKE_ALERT(tls_alert_recv);
 
-#endif /* _TRACE_HANDSHAKE_H */
+#endif  
 
 #include <trace/define_trace.h>

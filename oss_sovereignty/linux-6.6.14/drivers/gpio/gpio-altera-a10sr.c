@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright Intel Corporation (C) 2014-2016. All Rights Reserved
- *
- * GPIO driver for  Altera Arria10 MAX5 System Resource Chip
- *
- * Adapted from gpio-tps65910.c
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/mfd/altera-a10sr.h>
@@ -13,11 +7,7 @@
 #include <linux/module.h>
 #include <linux/property.h>
 
-/**
- * struct altr_a10sr_gpio - Altera Max5 GPIO device private data structure
- * @gp:   : instance of the gpio_chip
- * @regmap: the regmap from the parent device.
- */
+ 
 struct altr_a10sr_gpio {
 	struct gpio_chip gp;
 	struct regmap *regmap;

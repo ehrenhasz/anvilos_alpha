@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * simple driver for PWM (Pulse Width Modulator) controller
- *
- * Derived from pxa PWM driver by eric miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -18,9 +14,9 @@
 #include <linux/pwm.h>
 #include <linux/slab.h>
 
-#define MX1_PWMC			0x00   /* PWM Control Register */
-#define MX1_PWMS			0x04   /* PWM Sample Register */
-#define MX1_PWMP			0x08   /* PWM Period Register */
+#define MX1_PWMC			0x00    
+#define MX1_PWMS			0x04    
+#define MX1_PWMP			0x08    
 
 #define MX1_PWMC_EN			BIT(4)
 
@@ -65,23 +61,7 @@ static int pwm_imx1_config(struct pwm_chip *chip,
 	struct pwm_imx1_chip *imx = to_pwm_imx1_chip(chip);
 	u32 max, p;
 
-	/*
-	 * The PWM subsystem allows for exact frequencies. However,
-	 * I cannot connect a scope on my device to the PWM line and
-	 * thus cannot provide the program the PWM controller
-	 * exactly. Instead, I'm relying on the fact that the
-	 * Bootloader (u-boot or WinCE+haret) has programmed the PWM
-	 * function group already. So I'll just modify the PWM sample
-	 * register to follow the ratio of duty_ns vs. period_ns
-	 * accordingly.
-	 *
-	 * This is good enough for programming the brightness of
-	 * the LCD backlight.
-	 *
-	 * The real implementation would divide PERCLK[0] first by
-	 * both the prescaler (/1 .. /128) and then by CLKSEL
-	 * (/2 .. /16).
-	 */
+	 
 	max = readl(imx->mmio_base + MX1_PWMP);
 	p = mul_u64_u64_div_u64(max, duty_ns, period_ns);
 
@@ -151,7 +131,7 @@ static const struct pwm_ops pwm_imx1_ops = {
 
 static const struct of_device_id pwm_imx1_dt_ids[] = {
 	{ .compatible = "fsl,imx1-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pwm_imx1_dt_ids);
 

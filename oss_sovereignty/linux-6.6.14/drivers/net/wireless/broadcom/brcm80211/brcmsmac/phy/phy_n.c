@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -148,9 +146,9 @@
 
 #define NPHY_ADJUSTED_MINCRSPOWER 0x1e
 
-/* 5357 Chip specific ChipControl register bits */
-#define CCTRL5357_EXTPA            (1<<14) /* extPA in ChipControl 1, bit 14 */
-#define CCTRL5357_ANT_MUX_2o3      (1<<15) /* 2o3 in ChipControl 1, bit 15 */
+ 
+#define CCTRL5357_EXTPA            (1<<14)  
+#define CCTRL5357_ANT_MUX_2o3      (1<<15)  
 
 #define NPHY_CAL_TSSISAMPS      64
 #define NPHY_TEST_TONE_FREQ_40MHz 4000
@@ -17660,7 +17658,7 @@ static void wlc_phy_txpwrctrl_pwr_setup_nphy(struct brcms_phy *pi)
 		}
 	}
 
-	/* use the provided transmit power */
+	 
 	target_pwr_qtrdbm[0] = (s8) pi->tx_power_max;
 	target_pwr_qtrdbm[1] = (s8) pi->tx_power_max;
 
@@ -21991,7 +21989,7 @@ s16 wlc_phy_tempsense_nphy(struct brcms_phy *pi)
 		RfctrlOverride5_save = read_phy_reg(pi, 0x346);
 		RfctrlOverride6_save = read_phy_reg(pi, 0x347);
 		RfctrlMiscReg5_save = read_phy_reg(pi, 0x344);
-		read_phy_reg(pi, 0x345); /* RfctrlMiscReg6_save */
+		read_phy_reg(pi, 0x345);  
 
 		wlc_phy_table_read_nphy(pi, NPHY_TBL_ID_AFECTRL, 1, 0x0A, 16,
 					&auxADC_Vmid_save);
@@ -22939,7 +22937,7 @@ static void wlc_phy_rssi_cal_nphy_rev2(struct brcms_phy *pi, u8 rssi_type)
 	else if (rssi_ctrl_state[0] == RADIO_2055_WBRSSI_G1_SEL)
 		wlc_phy_rssisel_nphy(pi, RADIO_MIMO_CORESEL_CORE1,
 				     NPHY_RSSI_SEL_W1);
-	else /* RADIO_2055_WBRSSI_G2_SEL */
+	else  
 		wlc_phy_rssisel_nphy(pi, RADIO_MIMO_CORESEL_CORE1,
 				     NPHY_RSSI_SEL_W2);
 	if (rssi_ctrl_state[1] == RADIO_2055_NBRSSI_SEL)
@@ -22948,7 +22946,7 @@ static void wlc_phy_rssi_cal_nphy_rev2(struct brcms_phy *pi, u8 rssi_type)
 	else if (rssi_ctrl_state[1] == RADIO_2055_WBRSSI_G1_SEL)
 		wlc_phy_rssisel_nphy(pi, RADIO_MIMO_CORESEL_CORE2,
 				     NPHY_RSSI_SEL_W1);
-	else /* RADIO_2055_WBRSSI_G1_SEL */
+	else  
 		wlc_phy_rssisel_nphy(pi, RADIO_MIMO_CORESEL_CORE2,
 				     NPHY_RSSI_SEL_W2);
 	wlc_phy_rssisel_nphy(pi, RADIO_MIMO_CORESEL_OFF, rssi_type);
@@ -23116,8 +23114,8 @@ wlc_phy_runsamples_nphy(struct brcms_phy *pi, u16 num_samps, u16 loops,
 
 			pi->nphy_sample_play_lpf_bw_ctl_ovr = true;
 		}
-		read_phy_reg(pi, 0x340); /* lpf_bw_ctl_miscreg3 */
-		read_phy_reg(pi, 0x341); /* lpf_bw_ctl_miscreg4 */
+		read_phy_reg(pi, 0x340);  
+		read_phy_reg(pi, 0x341);  
 	}
 
 	if ((pi->nphy_bb_mult_save & BB_MULT_VALID_MASK) == 0) {

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
-/*
- * Copyright 2008 - 2016 Freescale Semiconductor Inc.
- */
+ 
+ 
 
 #ifndef __DPAA_H
 #define __DPAA_H
@@ -16,22 +14,22 @@
 #include "mac.h"
 #include "dpaa_eth_trace.h"
 
-/* Number of prioritised traffic classes */
+ 
 #define DPAA_TC_NUM		4
-/* Number of Tx queues per traffic class */
+ 
 #define DPAA_TC_TXQ_NUM		NR_CPUS
-/* Total number of Tx queues */
+ 
 #define DPAA_ETH_TXQ_NUM	(DPAA_TC_NUM * DPAA_TC_TXQ_NUM)
 
-/* More detailed FQ types - used for fine-grained WQ assignments */
+ 
 enum dpaa_fq_type {
-	FQ_TYPE_RX_DEFAULT = 1, /* Rx Default FQs */
-	FQ_TYPE_RX_ERROR,	/* Rx Error FQs */
-	FQ_TYPE_RX_PCD,		/* Rx Parse Classify Distribute FQs */
-	FQ_TYPE_TX,		/* "Real" Tx FQs */
-	FQ_TYPE_TX_CONFIRM,	/* Tx default Conf FQ (actually an Rx FQ) */
-	FQ_TYPE_TX_CONF_MQ,	/* Tx conf FQs (one for each Tx FQ) */
-	FQ_TYPE_TX_ERROR,	/* Tx Error FQs (these are actually Rx FQs) */
+	FQ_TYPE_RX_DEFAULT = 1,  
+	FQ_TYPE_RX_ERROR,	 
+	FQ_TYPE_RX_PCD,		 
+	FQ_TYPE_TX,		 
+	FQ_TYPE_TX_CONFIRM,	 
+	FQ_TYPE_TX_CONF_MQ,	 
+	FQ_TYPE_TX_ERROR,	 
 };
 
 struct dpaa_fq {
@@ -58,45 +56,42 @@ struct dpaa_fq_cbs {
 struct dpaa_priv;
 
 struct dpaa_bp {
-	/* used in the DMA mapping operations */
+	 
 	struct dpaa_priv *priv;
-	/* current number of buffers in the buffer pool alloted to each CPU */
+	 
 	int __percpu *percpu_count;
-	/* all buffers allocated for this pool have this raw size */
+	 
 	size_t raw_size;
-	/* all buffers in this pool have this same usable size */
+	 
 	size_t size;
-	/* the buffer pools are initialized with config_count buffers for each
-	 * CPU; at runtime the number of buffers per CPU is constantly brought
-	 * back to this level
-	 */
+	 
 	u16 config_count;
 	u8 bpid;
 	struct bman_pool *pool;
-	/* bpool can be seeded before use by this cb */
+	 
 	int (*seed_cb)(struct dpaa_bp *);
-	/* bpool can be emptied before freeing by this cb */
+	 
 	void (*free_buf_cb)(const struct dpaa_bp *, struct bm_buffer *);
 	refcount_t refs;
 };
 
 struct dpaa_rx_errors {
-	u64 dme;		/* DMA Error */
-	u64 fpe;		/* Frame Physical Error */
-	u64 fse;		/* Frame Size Error */
-	u64 phe;		/* Header Error */
+	u64 dme;		 
+	u64 fpe;		 
+	u64 fse;		 
+	u64 phe;		 
 };
 
-/* Counters for QMan ERN frames - one counter per rejection code */
+ 
 struct dpaa_ern_cnt {
-	u64 cg_tdrop;		/* Congestion group taildrop */
-	u64 wred;		/* WRED congestion */
-	u64 err_cond;		/* Error condition */
-	u64 early_window;	/* Order restoration, frame too early */
-	u64 late_window;	/* Order restoration, frame too late */
-	u64 fq_tdrop;		/* FQ taildrop */
-	u64 fq_retired;		/* FQ is retired */
-	u64 orp_zero;		/* ORP disabled */
+	u64 cg_tdrop;		 
+	u64 wred;		 
+	u64 err_cond;		 
+	u64 early_window;	 
+	u64 late_window;	 
+	u64 fq_tdrop;		 
+	u64 fq_retired;		 
+	u64 orp_zero;		 
 };
 
 struct dpaa_napi_portal {
@@ -111,7 +106,7 @@ struct dpaa_percpu_priv {
 	struct dpaa_napi_portal np;
 	u64 in_interrupt;
 	u64 tx_confirm;
-	/* fragmented (non-linear) skbuffs received from the stack */
+	 
 	u64 tx_frag_skbuffs;
 	struct rtnl_link_stats64 stats;
 	struct dpaa_rx_errors rx_errors;
@@ -122,10 +117,7 @@ struct dpaa_buffer_layout {
 	u16 priv_data_size;
 };
 
-/* Information to be used on the Tx confirmation path. Stored just
- * before the start of the transmit buffer. Maximum size allowed
- * is DPAA_TX_PRIV_DATA_SIZE bytes.
- */
+ 
 struct dpaa_eth_swbp {
 	struct sk_buff *skb;
 	struct xdp_frame *xdpf;
@@ -134,9 +126,7 @@ struct dpaa_eth_swbp {
 struct dpaa_priv {
 	struct dpaa_percpu_priv __percpu *percpu_priv;
 	struct dpaa_bp *dpaa_bp;
-	/* Store here the needed Tx headroom for convenience and speed
-	 * (even though it can be computed based on the fields of buf_layout)
-	 */
+	 
 	u16 tx_headroom;
 	struct net_device *net_dev;
 	struct mac_device *mac_dev;
@@ -150,39 +140,35 @@ struct dpaa_priv {
 
 	u8 num_tc;
 	bool keygen_in_use;
-	u32 msg_enable;	/* net_device message level */
+	u32 msg_enable;	 
 
 	struct {
-		/* All egress queues to a given net device belong to one
-		 * (and the same) congestion group.
-		 */
+		 
 		struct qman_cgr cgr;
-		/* If congested, when it began. Used for performance stats. */
+		 
 		u32 congestion_start_jiffies;
-		/* Number of jiffies the Tx port was congested. */
+		 
 		u32 congested_jiffies;
-		/* Counter for the number of times the CGR
-		 * entered congestion state
-		 */
+		 
 		u32 cgr_congested_count;
 	} cgr_data;
-	/* Use a per-port CGR for ingress traffic. */
+	 
 	bool use_ingress_cgr;
 	struct qman_cgr ingress_cgr;
 
 	struct dpaa_buffer_layout buf_layout[2];
 	u16 rx_headroom;
 
-	bool tx_tstamp; /* Tx timestamping enabled */
-	bool rx_tstamp; /* Rx timestamping enabled */
+	bool tx_tstamp;  
+	bool rx_tstamp;  
 
 	struct bpf_prog *xdp_prog;
 };
 
-/* from dpaa_ethtool.c */
+ 
 extern const struct ethtool_ops dpaa_ethtool_ops;
 
-/* from dpaa_eth_sysfs.c */
+ 
 void dpaa_eth_sysfs_remove(struct device *dev);
 void dpaa_eth_sysfs_init(struct device *dev);
-#endif	/* __DPAA_H */
+#endif	 

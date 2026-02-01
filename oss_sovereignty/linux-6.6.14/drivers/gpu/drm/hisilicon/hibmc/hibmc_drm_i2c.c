@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Hisilicon Hibmc SoC drm driver
- *
- * Based on the bochs drm driver.
- *
- * Copyright (c) 2016 Huawei Limited.
- *
- * Author:
- *      Tian Tao <tiantao6@hisilicon.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>

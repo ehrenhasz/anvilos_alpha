@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_PCS_V4_H_
 #define QCOM_PHY_QMP_PCS_V4_H_
 
-/* Only for QMP V4 PHY - USB/PCIe PCS registers */
+ 
 #define QPHY_V4_PCS_SW_RESET				0x000
 #define QPHY_V4_PCS_REVISION_ID0			0x004
 #define QPHY_V4_PCS_REVISION_ID1			0x008

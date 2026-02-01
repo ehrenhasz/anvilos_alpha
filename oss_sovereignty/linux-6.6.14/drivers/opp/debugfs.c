@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic OPP debugfs interface
- *
- * Copyright (C) 2015-2016 Viresh Kumar <viresh.kumar@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -62,7 +58,7 @@ static void opp_debug_create_bw(struct dev_pm_opp *opp,
 	for (i = 0; i < opp_table->path_count; i++) {
 		snprintf(name, sizeof(name), "icc-path-%.1d", i);
 
-		/* Create per-path directory */
+		 
 		d = debugfs_create_dir(name, pdentry);
 
 		debugfs_create_file("name", S_IRUGO, d, opp_table->paths[i],
@@ -104,7 +100,7 @@ static void opp_debug_create_supplies(struct dev_pm_opp *opp,
 
 		snprintf(name, sizeof(name), "supply-%d", i);
 
-		/* Create per-opp directory */
+		 
 		d = debugfs_create_dir(name, pdentry);
 
 		debugfs_create_ulong("u_volt_target", S_IRUGO, d,
@@ -129,15 +125,9 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
 	struct dentry *pdentry = opp_table->dentry;
 	struct dentry *d;
 	unsigned long id;
-	char name[25];	/* 20 chars for 64 bit value + 5 (opp:\0) */
+	char name[25];	 
 
-	/*
-	 * Get directory name for OPP.
-	 *
-	 * - Normally rate is unique to each OPP, use it to get unique opp-name.
-	 * - For some devices rate isn't available or there are multiple, use
-	 *   index instead for them.
-	 */
+	 
 	if (likely(opp_table->clk_count == 1 && opp->rates[0]))
 		id = opp->rates[0];
 	else
@@ -145,7 +135,7 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
 
 	snprintf(name, sizeof(name), "opp:%lu", id);
 
-	/* Create per-opp directory */
+	 
 	d = debugfs_create_dir(name, pdentry);
 
 	debugfs_create_bool("available", S_IRUGO, d, &opp->available);
@@ -174,7 +164,7 @@ static void opp_list_debug_create_dir(struct opp_device *opp_dev,
 
 	opp_set_dev_name(dev, opp_table->dentry_name);
 
-	/* Create device specific directory */
+	 
 	d = debugfs_create_dir(opp_table->dentry_name, rootdir);
 
 	opp_dev->dentry = d;
@@ -188,20 +178,12 @@ static void opp_list_debug_create_link(struct opp_device *opp_dev,
 
 	opp_set_dev_name(opp_dev->dev, name);
 
-	/* Create device specific directory link */
+	 
 	opp_dev->dentry = debugfs_create_symlink(name, rootdir,
 						 opp_table->dentry_name);
 }
 
-/**
- * opp_debug_register - add a device opp node to the debugfs 'opp' directory
- * @opp_dev: opp-dev pointer for device
- * @opp_table: the device-opp being added
- *
- * Dynamically adds device specific directory in debugfs 'opp' directory. If the
- * device-opp is shared with other devices, then links will be created for all
- * devices except the first.
- */
+ 
 void opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
 {
 	if (opp_table->dentry)
@@ -217,7 +199,7 @@ static void opp_migrate_dentry(struct opp_device *opp_dev,
 	const struct device *dev;
 	struct dentry *dentry;
 
-	/* Look for next opp-dev */
+	 
 	list_for_each_entry(iter, &opp_table->dev_list, node)
 		if (iter != opp_dev) {
 			new_dev = iter;
@@ -226,7 +208,7 @@ static void opp_migrate_dentry(struct opp_device *opp_dev,
 
 	BUG_ON(!new_dev);
 
-	/* new_dev is guaranteed to be valid here */
+	 
 	dev = new_dev->dev;
 	debugfs_remove_recursive(new_dev->dentry);
 
@@ -244,18 +226,12 @@ static void opp_migrate_dentry(struct opp_device *opp_dev,
 	opp_table->dentry = dentry;
 }
 
-/**
- * opp_debug_unregister - remove a device opp node from debugfs opp directory
- * @opp_dev: opp-dev pointer for device
- * @opp_table: the device-opp being removed
- *
- * Dynamically removes device specific directory from debugfs 'opp' directory.
- */
+ 
 void opp_debug_unregister(struct opp_device *opp_dev,
 			  struct opp_table *opp_table)
 {
 	if (opp_dev->dentry == opp_table->dentry) {
-		/* Move the real dentry object under another device */
+		 
 		if (!list_is_singular(&opp_table->dev_list)) {
 			opp_migrate_dentry(opp_dev, opp_table);
 			goto out;
@@ -271,7 +247,7 @@ out:
 
 static int __init opp_debug_init(void)
 {
-	/* Create /sys/kernel/debug/opp directory */
+	 
 	rootdir = debugfs_create_dir("opp", NULL);
 
 	return 0;

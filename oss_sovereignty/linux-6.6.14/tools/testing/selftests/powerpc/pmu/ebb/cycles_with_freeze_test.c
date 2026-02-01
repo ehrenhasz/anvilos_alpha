@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +8,7 @@
 #include "ebb.h"
 
 
-/*
- * Test of counting cycles while using MMCR0_FC (freeze counters) to only count
- * parts of the code. This is complicated by the fact that FC is set by the
- * hardware when the event overflows. We may take the EBB after we have set FC,
- * so we have to be careful about whether we clear FC at the end of the EBB
- * handler or not.
- */
+ 
 
 static bool counters_frozen = false;
 static int ebbs_while_frozen = 0;
@@ -75,7 +67,7 @@ int cycles_with_freeze(void)
 
 	fc_cleared = false;
 
-	/* Make sure we loop until we take at least one EBB */
+	 
 	while ((ebb_state.stats.ebb_count < 20 && !fc_cleared) ||
 		ebb_state.stats.ebb_count < 1)
 	{

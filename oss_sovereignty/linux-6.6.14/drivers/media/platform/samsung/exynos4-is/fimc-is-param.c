@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/bitops.h>
@@ -224,17 +217,17 @@ void __is_set_frame_size(struct fimc_is *is, struct v4l2_mbus_framefmt *mf)
 	drc = &is->config[index].drc;
 	fd = &is->config[index].fd;
 
-	/* Update isp size info (OTF only) */
+	 
 	isp->otf_input.width = mf->width;
 	isp->otf_input.height = mf->height;
 	isp->otf_output.width = mf->width;
 	isp->otf_output.height = mf->height;
-	/* Update drc size info (OTF only) */
+	 
 	drc->otf_input.width = mf->width;
 	drc->otf_input.height = mf->height;
 	drc->otf_output.width = mf->width;
 	drc->otf_output.height = mf->height;
-	/* Update fd size info (OTF only) */
+	 
 	fd->otf_input.width = mf->width;
 	fd->otf_input.height = mf->height;
 
@@ -242,7 +235,7 @@ void __is_set_frame_size(struct fimc_is *is, struct v4l2_mbus_framefmt *mf)
 		      &is->config[index].p_region_index[0]))
 		return;
 
-	/* Update field */
+	 
 	fimc_is_set_param_bit(is, PARAM_ISP_OTF_INPUT);
 	fimc_is_set_param_bit(is, PARAM_ISP_OTF_OUTPUT);
 	fimc_is_set_param_bit(is, PARAM_DRC_OTF_INPUT);
@@ -677,11 +670,11 @@ void fimc_is_set_initial_params(struct fimc_is *is)
 	fd = &is->config[index].fd;
 	p_index = &is->config[index].p_region_index[0];
 
-	/* Global */
+	 
 	global->shotmode.cmd = 1;
 	fimc_is_set_param_bit(is, PARAM_GLOBAL_SHOTMODE);
 
-	/* ISP */
+	 
 	isp->control.cmd = CONTROL_COMMAND_START;
 	isp->control.bypass = CONTROL_BYPASS_DISABLE;
 	isp->control.err = CONTROL_ERROR_NONE;
@@ -809,13 +802,13 @@ void fimc_is_set_initial_params(struct fimc_is *is)
 		fimc_is_set_param_bit(is, PARAM_ISP_DMA2_OUTPUT);
 	}
 
-	/* Sensor */
+	 
 	if (!test_bit(PARAM_SENSOR_FRAME_RATE, p_index)) {
 		if (is->config_index == 0)
 			__is_set_sensor(is, 0);
 	}
 
-	/* DRC */
+	 
 	drc->control.cmd = CONTROL_COMMAND_START;
 	__is_set_drc_control(is, CONTROL_BYPASS_ENABLE);
 
@@ -853,7 +846,7 @@ void fimc_is_set_initial_params(struct fimc_is *is)
 	drc->otf_output.order = 0;
 	drc->otf_output.err = OTF_OUTPUT_ERROR_NONE;
 
-	/* FD */
+	 
 	__is_set_fd_control(is, CONTROL_COMMAND_STOP);
 	fd->control.bypass = CONTROL_BYPASS_DISABLE;
 

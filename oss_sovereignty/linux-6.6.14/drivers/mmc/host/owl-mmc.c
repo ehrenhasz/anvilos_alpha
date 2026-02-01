@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Actions Semi Owl SoCs SD/MMC driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Copyright (c) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- *
- * TODO: SDIO support
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,9 +15,7 @@
 #include <linux/reset.h>
 #include <linux/spinlock.h>
 
-/*
- * SDC registers
- */
+ 
 #define OWL_REG_SD_EN			0x0000
 #define OWL_REG_SD_CTL			0x0004
 #define OWL_REG_SD_STATE		0x0008
@@ -40,7 +31,7 @@
 #define OWL_REG_SD_BLK_NUM		0x0030
 #define OWL_REG_SD_BUF_SIZE		0x0034
 
-/* SD_EN Bits */
+ 
 #define OWL_SD_EN_RANE			BIT(31)
 #define OWL_SD_EN_RAN_SEED(x)		(((x) & 0x3f) << 24)
 #define OWL_SD_EN_S18EN			BIT(12)
@@ -53,7 +44,7 @@
 #define OWL_SD_EN_DDREN			BIT(2)
 #define OWL_SD_EN_DATAWID(x)		(((x) & 0x3) << 0)
 
-/* SD_CTL Bits */
+ 
 #define OWL_SD_CTL_TOUTEN		BIT(31)
 #define OWL_SD_CTL_TOUTCNT(x)		(((x) & 0x7f) << 24)
 #define OWL_SD_CTL_DELAY_MSK		GENMASK(23, 16)
@@ -73,7 +64,7 @@
 #define OWL_SD_RDELAY_DDR50		0x0a
 #define OWL_SD_WDELAY_DDR50		0x08
 
-/* SD_STATE Bits */
+ 
 #define OWL_SD_STATE_DAT1BS		BIT(18)
 #define OWL_SD_STATE_SDIOB_P		BIT(17)
 #define OWL_SD_STATE_SDIOB_EN		BIT(16)
@@ -157,7 +148,7 @@ static void owl_mmc_finish_request(struct owl_mmc_host *owl_host)
 	struct mmc_request *mrq = owl_host->mrq;
 	struct mmc_data *data = mrq->data;
 
-	/* Should never be NULL */
+	 
 	WARN_ON(!mrq);
 
 	owl_host->mrq = NULL;
@@ -166,7 +157,7 @@ static void owl_mmc_finish_request(struct owl_mmc_host *owl_host)
 		dma_unmap_sg(owl_host->dma->device->dev, data->sg, data->sg_len,
 			     owl_host->dma_dir);
 
-	/* Finally finish request */
+	 
 	mmc_request_done(owl_host->mmc, mrq);
 }
 
@@ -219,14 +210,14 @@ static void owl_mmc_send_cmd(struct owl_mmc_host *owl_host,
 		return;
 	}
 
-	/* Keep current WDELAY and RDELAY */
+	 
 	mode |= (readl(owl_host->base + OWL_REG_SD_CTL) & (0xff << 16));
 
-	/* Start to send corresponding command type */
+	 
 	writel(cmd->arg, owl_host->base + OWL_REG_SD_ARG);
 	writel(cmd->opcode, owl_host->base + OWL_REG_SD_CMD);
 
-	/* Set LBE to send clk at the end of last read block */
+	 
 	if (data) {
 		mode |= (OWL_SD_CTL_TS | OWL_SD_CTL_LBE | 0x64000000);
 	} else {
@@ -236,7 +227,7 @@ static void owl_mmc_send_cmd(struct owl_mmc_host *owl_host,
 
 	owl_host->cmd = cmd;
 
-	/* Start transfer */
+	 
 	writel(mode, owl_host->base + OWL_REG_SD_CTL);
 
 	if (data)
@@ -395,7 +386,7 @@ static int owl_mmc_set_clk_rate(struct owl_mmc_host *owl_host,
 	reg = readl(owl_host->base + OWL_REG_SD_CTL);
 	reg &= ~OWL_SD_CTL_DELAY_MSK;
 
-	/* Set RDELAY and WDELAY based on the clock */
+	 
 	if (rate <= 1000000) {
 		writel(reg | OWL_SD_CTL_RDELAY(OWL_SD_DELAY_LOW_CLK) |
 		       OWL_SD_CTL_WDELAY(OWL_SD_DELAY_LOW_CLK),
@@ -408,7 +399,7 @@ static int owl_mmc_set_clk_rate(struct owl_mmc_host *owl_host,
 		writel(reg | OWL_SD_CTL_RDELAY(OWL_SD_DELAY_HIGH_CLK) |
 		       OWL_SD_CTL_WDELAY(OWL_SD_DELAY_HIGH_CLK),
 		       owl_host->base + OWL_REG_SD_CTL);
-	/* DDR50 mode has special delay chain */
+	 
 	} else if ((rate > 26000000) && (rate <= 52000000) && owl_host->ddr_50) {
 		writel(reg | OWL_SD_CTL_RDELAY(OWL_SD_RDELAY_DDR50) |
 		       OWL_SD_CTL_WDELAY(OWL_SD_WDELAY_DDR50),
@@ -467,11 +458,11 @@ static void owl_mmc_power_on(struct owl_mmc_host *owl_host)
 
 	init_completion(&owl_host->sdc_complete);
 
-	/* Enable transfer end IRQ */
+	 
 	owl_mmc_update_reg(owl_host->base + OWL_REG_SD_STATE,
 		       OWL_SD_STATE_TEIE, true);
 
-	/* Send init clk */
+	 
 	mode = (readl(owl_host->base + OWL_REG_SD_CTL) & (0xff << 16));
 	mode |= OWL_SD_CTL_TS | OWL_SD_CTL_TCN(5) | OWL_SD_CTL_TM(8);
 	writel(mode, owl_host->base + OWL_REG_SD_CTL);
@@ -490,7 +481,7 @@ static void owl_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	case MMC_POWER_UP:
 		dev_dbg(owl_host->dev, "Powering card up\n");
 
-		/* Reset the SDC controller to clear all previous states */
+		 
 		owl_mmc_ctr_reset(owl_host);
 		clk_prepare_enable(owl_host->clk);
 		writel(OWL_SD_ENABLE | OWL_SD_EN_RESE,
@@ -520,7 +511,7 @@ static void owl_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	owl_mmc_set_bus_width(owl_host, ios);
 
-	/* Enable DDR mode if requested */
+	 
 	if (ios->timing == MMC_TIMING_UHS_DDR50) {
 		owl_host->ddr_50 = true;
 		owl_mmc_update_reg(owl_host->base + OWL_REG_SD_EN,
@@ -535,7 +526,7 @@ static int owl_mmc_start_signal_voltage_switch(struct mmc_host *mmc,
 {
 	struct owl_mmc_host *owl_host = mmc_priv(mmc);
 
-	/* It is enough to change the pad ctrl bit for voltage switch */
+	 
 	switch (ios->signal_voltage) {
 	case MMC_SIGNAL_VOLTAGE_330:
 		owl_mmc_update_reg(owl_host->base + OWL_REG_SD_EN,
@@ -605,7 +596,7 @@ static int owl_mmc_probe(struct platform_device *pdev)
 	mmc->max_segs		= 256;
 	mmc->max_seg_size	= 262144;
 	mmc->max_req_size	= 262144;
-	/* 100kHz ~ 52MHz */
+	 
 	mmc->f_min		= 100000;
 	mmc->f_max		= 52000000;
 	mmc->caps	       |= MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED |
@@ -681,7 +672,7 @@ static void owl_mmc_remove(struct platform_device *pdev)
 
 static const struct of_device_id owl_mmc_of_match[] = {
 	{.compatible = "actions,owl-mmc",},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, owl_mmc_of_match);
 

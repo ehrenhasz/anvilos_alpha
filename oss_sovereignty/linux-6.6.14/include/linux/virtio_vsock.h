@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VIRTIO_VSOCK_H
 #define _LINUX_VIRTIO_VSOCK_H
 
@@ -115,25 +115,25 @@ static inline size_t virtio_vsock_skb_len(struct sk_buff *skb)
 #define VIRTIO_VSOCK_MAX_PKT_BUF_SIZE		(1024 * 64)
 
 enum {
-	VSOCK_VQ_RX     = 0, /* for host to guest data */
-	VSOCK_VQ_TX     = 1, /* for guest to host data */
+	VSOCK_VQ_RX     = 0,  
+	VSOCK_VQ_TX     = 1,  
 	VSOCK_VQ_EVENT  = 2,
 	VSOCK_VQ_MAX    = 3,
 };
 
-/* Per-socket state (accessed via vsk->trans) */
+ 
 struct virtio_vsock_sock {
 	struct vsock_sock *vsk;
 
 	spinlock_t tx_lock;
 	spinlock_t rx_lock;
 
-	/* Protected by tx_lock */
+	 
 	u32 tx_cnt;
 	u32 peer_fwd_cnt;
 	u32 peer_buf_alloc;
 
-	/* Protected by rx_lock */
+	 
 	u32 fwd_cnt;
 	u32 last_fwd_cnt;
 	u32 rx_bytes;
@@ -154,10 +154,10 @@ struct virtio_vsock_pkt_info {
 };
 
 struct virtio_transport {
-	/* This must be the first field */
+	 
 	struct vsock_transport transport;
 
-	/* Takes ownership of the packet */
+	 
 	int (*send_pkt)(struct sk_buff *skb);
 };
 
@@ -247,4 +247,4 @@ void virtio_transport_deliver_tap_pkt(struct sk_buff *skb);
 int virtio_transport_purge_skbs(void *vsk, struct sk_buff_head *list);
 int virtio_transport_read_skb(struct vsock_sock *vsk, skb_read_actor_t read_actor);
 int virtio_transport_notify_set_rcvlowat(struct vsock_sock *vsk, int val);
-#endif /* _LINUX_VIRTIO_VSOCK_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2019-2022, Intel Corporation. All rights reserved.
- *
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mei_aux.h>
@@ -82,12 +78,12 @@ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
 		dev->pxp_mode = MEI_DEV_PXP_INIT;
 	}
 
-	/* use polling */
+	 
 	if (mei_me_hw_use_polling(hw)) {
 		mei_disable_interrupts(dev);
 		mei_clear_interrupts(dev);
 		init_waitqueue_head(&hw->wait_active);
-		hw->is_active = true; /* start in active mode for initialization */
+		hw->is_active = true;  
 		hw->polling_thread = kthread_run(mei_me_polling_thread, dev,
 						 "kmegscirqd/%s", dev_name(device));
 		if (IS_ERR(hw->polling_thread)) {
@@ -110,10 +106,7 @@ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
 	pm_runtime_set_active(device);
 	pm_runtime_enable(device);
 
-	/* Continue to char device setup in spite of firmware handshake failure.
-	 * In order to provide access to the firmware status registers to the user
-	 * space via sysfs.
-	 */
+	 
 	if (mei_start(dev))
 		dev_warn(device, "init hw failure.\n");
 
@@ -201,7 +194,7 @@ static int __maybe_unused mei_gsc_pm_resume(struct device *device)
 	if (err)
 		return err;
 
-	/* Start timer if stopped in suspend */
+	 
 	schedule_delayed_work(&dev->timer_work, HZ);
 
 	return 0;
@@ -293,7 +286,7 @@ static const struct auxiliary_device_id mei_gsc_id_table[] = {
 		.driver_data = MEI_ME_GSCFI_CFG,
 	},
 	{
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(auxiliary, mei_gsc_id_table);
@@ -302,7 +295,7 @@ static struct auxiliary_driver mei_gsc_driver = {
 	.probe	= mei_gsc_probe,
 	.remove = mei_gsc_remove,
 	.driver = {
-		/* auxiliary_driver_register() sets .name to be the modname */
+		 
 		.pm = &mei_gsc_pm_ops,
 	},
 	.id_table = mei_gsc_id_table

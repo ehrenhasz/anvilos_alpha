@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Seccomp filter example for x86 (32-bit and 64-bit) with BPF macros
- *
- * Copyright (c) 2012 The Chromium OS Authors <chromium-os-dev@chromium.org>
- * Author: Will Drewry <wad@chromium.org>
- *
- * The code may be used by anyone for any purpose,
- * and can serve as a starting point for developing
- * applications using prctl(PR_SET_SECCOMP, 2, ...).
- */
+
+ 
 #if defined(__i386__) || defined(__x86_64__)
 #define SUPPORTED_ARCH 1
 #endif
@@ -78,7 +69,7 @@ static void emulator(int nr, siginfo_t *info, void *void_context)
 		return;
 	if (ctx->uc_mcontext.gregs[REG_ARG0] != STDERR_FILENO)
 		return;
-	/* Redirect stderr messages to stdout. Doesn't handle EINTR, etc */
+	 
 	ctx->uc_mcontext.gregs[REG_RESULT] = -1;
 	if (write(STDOUT_FILENO, "[ERR] ", 6) > 0) {
 		bytes = write(STDOUT_FILENO, buf, len);
@@ -111,9 +102,9 @@ static int install_emulator(void)
 static int install_filter(void)
 {
 	struct sock_filter filter[] = {
-		/* Grab the system call number */
+		 
 		BPF_STMT(BPF_LD+BPF_W+BPF_ABS, syscall_nr),
-		/* Jump table for the allowed syscalls */
+		 
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_rt_sigreturn, 0, 1),
 		BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW),
 #ifdef __NR_sigreturn
@@ -127,15 +118,15 @@ static int install_filter(void)
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_read, 1, 0),
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_write, 3, 2),
 
-		/* Check that read is only using stdin. */
+		 
 		BPF_STMT(BPF_LD+BPF_W+BPF_ABS, syscall_arg(0)),
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, STDIN_FILENO, 4, 0),
 		BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL),
 
-		/* Check that write is only using stdout */
+		 
 		BPF_STMT(BPF_LD+BPF_W+BPF_ABS, syscall_arg(0)),
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, STDOUT_FILENO, 1, 0),
-		/* Trap attempts to write to stderr */
+		 
 		BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, STDERR_FILENO, 1, 2),
 
 		BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW),
@@ -178,14 +169,10 @@ int main(int argc, char **argv)
 		payload("Error message going to STDERR\n"));
 	return 0;
 }
-#else	/* SUPPORTED_ARCH */
-/*
- * This sample is x86-only.  Since kernel samples are compiled with the
- * host toolchain, a non-x86 host will result in using only the main()
- * below.
- */
+#else	 
+ 
 int main(void)
 {
 	return 1;
 }
-#endif	/* SUPPORTED_ARCH */
+#endif	 

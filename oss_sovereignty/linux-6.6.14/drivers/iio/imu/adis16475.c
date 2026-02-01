@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADIS16475 IMU driver
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -57,11 +53,11 @@
 #define ADIS16475_REG_FLASH_CNT		0x7c
 #define ADIS16500_BURST32_MASK		BIT(9)
 #define ADIS16500_BURST32(x)		FIELD_PREP(ADIS16500_BURST32_MASK, x)
-/* number of data elements in burst mode */
+ 
 #define ADIS16475_BURST32_MAX_DATA	32
 #define ADIS16475_BURST_MAX_DATA	20
 #define ADIS16475_MAX_SCAN_DATA		20
-/* spi max speed in brust mode */
+ 
 #define ADIS16475_BURST_MAX_SPEED	1000000
 #define ADIS16475_LSB_DEC_MASK		0
 #define ADIS16475_LSB_FIR_MASK		1
@@ -103,7 +99,7 @@ struct adis16475 {
 	bool burst32;
 	unsigned long lsb_flag;
 	u16 sync_mode;
-	/* Alignment needed for the timestamp */
+	 
 	__be16 data[ADIS16475_MAX_SCAN_DATA] __aligned(8);
 };
 
@@ -296,42 +292,18 @@ static int adis16475_set_freq(struct adis16475 *st, const u32 freq)
 		return -EINVAL;
 
 	adis_dev_lock(&st->adis);
-	/*
-	 * When using sync scaled mode, the input clock needs to be scaled so that we have
-	 * an IMU sample rate between (optimally) 1900 and 2100. After this, we can use the
-	 * decimation filter to lower the sampling rate in order to get what the user wants.
-	 * Optimally, the user sample rate is a multiple of both the IMU sample rate and
-	 * the input clock. Hence, calculating the sync_scale dynamically gives us better
-	 * chances of achieving a perfect/integer value for DEC_RATE. The math here is:
-	 *	1. lcm of the input clock and the desired output rate.
-	 *	2. get the highest multiple of the previous result lower than the adis max rate.
-	 *	3. The last result becomes the IMU sample rate. Use that to calculate SYNC_SCALE
-	 *	   and DEC_RATE (to get the user output rate)
-	 */
+	 
 	if (st->sync_mode == ADIS16475_SYNC_SCALED) {
 		unsigned long scaled_rate = lcm(st->clk_freq, freq);
 		int sync_scale;
 
-		/*
-		 * If lcm is bigger than the IMU maximum sampling rate there's no perfect
-		 * solution. In this case, we get the highest multiple of the input clock
-		 * lower than the IMU max sample rate.
-		 */
+		 
 		if (scaled_rate > 2100000)
 			scaled_rate = 2100000 / st->clk_freq * st->clk_freq;
 		else
 			scaled_rate = 2100000 / scaled_rate * scaled_rate;
 
-		/*
-		 * This is not an hard requirement but it's not advised to run the IMU
-		 * with a sample rate lower than 1900Hz due to possible undersampling
-		 * issues. However, there are users that might really want to take the risk.
-		 * Hence, we provide a module parameter for them. If set, we allow sample
-		 * rates lower than 1.9KHz. By default, we won't allow this and we just roundup
-		 * the rate to the next multiple of the input clock bigger than 1.9KHz. This
-		 * is done like this as in some cases (when DEC_RATE is 0) might give
-		 * us the closest value to the one desired by the user...
-		 */
+		 
 		if (scaled_rate < 1900000 && !low_rate_allow)
 			scaled_rate = roundup(1900000, st->clk_freq);
 
@@ -356,10 +328,7 @@ static int adis16475_set_freq(struct adis16475 *st, const u32 freq)
 		goto error;
 
 	adis_dev_unlock(&st->adis);
-	/*
-	 * If decimation is used, then gyro and accel data will have meaningful
-	 * bits on the LSB registers. This info is used on the trigger handler.
-	 */
+	 
 	assign_bit(ADIS16475_LSB_DEC_MASK, &st->lsb_flag, dec);
 
 	return 0;
@@ -368,9 +337,9 @@ error:
 	return ret;
 }
 
-/* The values are approximated. */
+ 
 static const u32 adis16475_3db_freqs[] = {
-	[0] = 720, /* Filter disabled, full BW (~720Hz) */
+	[0] = 720,  
 	[1] = 360,
 	[2] = 164,
 	[3] = 80,
@@ -409,10 +378,7 @@ static int adis16475_set_filter(struct adis16475 *st, const u32 filter)
 	if (ret)
 		return ret;
 
-	/*
-	 * If FIR is used, then gyro and accel data will have meaningful
-	 * bits on the LSB registers. This info is used on the trigger handler.
-	 */
+	 
 	assign_bit(ADIS16475_LSB_FIR_MASK, &st->lsb_flag, i);
 
 	return 0;
@@ -863,7 +829,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16500, &adis1650x_timeouts),
@@ -880,7 +846,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16505, &adis1650x_timeouts),
@@ -897,7 +863,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16505, &adis1650x_timeouts),
@@ -914,7 +880,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16505, &adis1650x_timeouts),
@@ -931,7 +897,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16507, &adis1650x_timeouts),
@@ -948,7 +914,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16507, &adis1650x_timeouts),
@@ -965,7 +931,7 @@ static const struct adis16475_chip_info adis16475_chip_info[] = {
 		.int_clk = 2000,
 		.max_dec = 1999,
 		.sync = adis16475_sync_mode,
-		/* pulse sync not supported */
+		 
 		.num_sync = ARRAY_SIZE(adis16475_sync_mode) - 1,
 		.has_burst32 = true,
 		.adis_data = ADIS16475_DATA(16507, &adis1650x_timeouts),
@@ -983,7 +949,7 @@ static bool adis16475_validate_crc(const u8 *buffer, u16 crc,
 				   const bool burst32)
 {
 	int i;
-	/* extra 6 elements for low gyro and accel */
+	 
 	const u16 sz = burst32 ? ADIS16475_BURST32_MAX_DATA :
 		ADIS16475_BURST_MAX_DATA;
 
@@ -1011,10 +977,7 @@ static void adis16475_burst32_check(struct adis16475 *st)
 
 		st->burst32 = true;
 
-		/*
-		 * In 32-bit mode we need extra 2 bytes for all gyro
-		 * and accel channels.
-		 */
+		 
 		adis->burst_extra_len = 6 * sizeof(u16);
 		adis->xfer[1].len += 6 * sizeof(u16);
 		dev_dbg(&adis->spi->dev, "Enable burst32 mode, xfer:%d",
@@ -1030,7 +993,7 @@ static void adis16475_burst32_check(struct adis16475 *st)
 
 		st->burst32 = false;
 
-		/* Remove the extra bits */
+		 
 		adis->burst_extra_len = 0;
 		adis->xfer[1].len -= 6 * sizeof(u16);
 		dev_dbg(&adis->spi->dev, "Disable burst32 mode, xfer:%d\n",
@@ -1048,7 +1011,7 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
 	__be16 *buffer;
 	u16 crc;
 	bool valid;
-	/* offset until the first element after gyro and accel */
+	 
 	const u8 offset = st->burst32 ? 13 : 7;
 
 	ret = spi_sync(adis->spi, &adis->msg);
@@ -1066,32 +1029,21 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
 
 	for_each_set_bit(bit, indio_dev->active_scan_mask,
 			 indio_dev->masklength) {
-		/*
-		 * When burst mode is used, system flags is the first data
-		 * channel in the sequence, but the scan index is 7.
-		 */
+		 
 		switch (bit) {
 		case ADIS16475_SCAN_TEMP:
 			st->data[i++] = buffer[offset];
 			break;
 		case ADIS16475_SCAN_GYRO_X ... ADIS16475_SCAN_ACCEL_Z:
-			/*
-			 * The first 2 bytes on the received data are the
-			 * DIAG_STAT reg, hence the +1 offset here...
-			 */
+			 
 			if (st->burst32) {
-				/* upper 16 */
+				 
 				st->data[i++] = buffer[bit * 2 + 2];
-				/* lower 16 */
+				 
 				st->data[i++] = buffer[bit * 2 + 1];
 			} else {
 				st->data[i++] = buffer[bit + 1];
-				/*
-				 * Don't bother in doing the manual read if the
-				 * device supports burst32. burst32 will be
-				 * enabled in the next call to
-				 * adis16475_burst32_check()...
-				 */
+				 
 				if (st->lsb_flag && !st->info->has_burst32) {
 					u16 val = 0;
 					const u32 reg = ADIS16475_REG_X_GYRO_L +
@@ -1100,7 +1052,7 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
 					adis_read_reg_16(adis, reg, &val);
 					st->data[i++] = cpu_to_be16(val);
 				} else {
-					/* lower not used */
+					 
 					st->data[i++] = 0;
 				}
 			}
@@ -1110,11 +1062,7 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
 
 	iio_push_to_buffers_with_timestamp(indio_dev, st->data, pf->timestamp);
 check_burst32:
-	/*
-	 * We only check the burst mode at the end of the current capture since
-	 * it takes a full data ready cycle for the device to update the burst
-	 * array.
-	 */
+	 
 	adis16475_burst32_check(st);
 	iio_trigger_notify_done(indio_dev->trig);
 
@@ -1128,7 +1076,7 @@ static int adis16475_config_sync_mode(struct adis16475 *st)
 	const struct adis16475_sync *sync;
 	u32 sync_mode;
 
-	/* default to internal clk */
+	 
 	st->clk_freq = st->info->int_clk * 1000;
 
 	ret = device_property_read_u32(dev, "adi,sync-mode", &sync_mode);
@@ -1144,7 +1092,7 @@ static int adis16475_config_sync_mode(struct adis16475 *st)
 	sync = &st->info->sync[sync_mode];
 	st->sync_mode = sync->sync_mode;
 
-	/* All the other modes require external input signal */
+	 
 	if (sync->sync_mode != ADIS16475_SYNC_OUTPUT) {
 		struct clk *clk = devm_clk_get_enabled(dev, NULL);
 
@@ -1163,12 +1111,7 @@ static int adis16475_config_sync_mode(struct adis16475 *st)
 		if (sync->sync_mode == ADIS16475_SYNC_SCALED) {
 			u16 up_scale;
 
-			/*
-			 * In sync scaled mode, the IMU sample rate is the clk_freq * sync_scale.
-			 * Hence, default the IMU sample rate to the highest multiple of the input
-			 * clock lower than the IMU max sample rate. The optimal range is
-			 * 1900-2100 sps...
-			 */
+			 
 			up_scale = 2100 / st->clk_freq;
 
 			ret = __adis_write_reg_16(&st->adis,
@@ -1180,14 +1123,7 @@ static int adis16475_config_sync_mode(struct adis16475 *st)
 
 		st->clk_freq *= 1000;
 	}
-	/*
-	 * Keep in mind that the mask for the clk modes in adis1650*
-	 * chips is different (1100 instead of 11100). However, we
-	 * are not configuring BIT(4) in these chips and the default
-	 * value is 0, so we are fine in doing the below operations.
-	 * I'm keeping this for simplicity and avoiding extra variables
-	 * in chip_info.
-	 */
+	 
 	ret = __adis_update_bits(&st->adis, ADIS16475_REG_MSG_CTRL,
 				 ADIS16475_SYNC_MODE_MASK, sync->sync_mode);
 	if (ret)
@@ -1212,10 +1148,7 @@ static int adis16475_config_irq_pin(struct adis16475 *st)
 		dev_err(&spi->dev, "Could not find IRQ %d\n", spi->irq);
 		return -EINVAL;
 	}
-	/*
-	 * It is possible to configure the data ready polarity. Furthermore, we
-	 * need to update the adis struct if we want data ready as active low.
-	 */
+	 
 	irq_type = irqd_get_trigger_type(desc);
 	if (irq_type == IRQ_TYPE_EDGE_RISING) {
 		polarity = 1;
@@ -1234,11 +1167,7 @@ static int adis16475_config_irq_pin(struct adis16475 *st)
 				 ADIS16475_MSG_CTRL_DR_POL_MASK, val);
 	if (ret)
 		return ret;
-	/*
-	 * There is a delay writing to any bits written to the MSC_CTRL
-	 * register. It should not be bigger than 200us, so 250 should be more
-	 * than enough!
-	 */
+	 
 	usleep_range(250, 260);
 
 	return 0;

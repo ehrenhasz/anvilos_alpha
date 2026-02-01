@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* Driver for the Texas Instruments TMP464 SMBus temperature sensor IC.
- * Supported models: TMP464, TMP468
 
- * Copyright (C) 2022 Agathe Porte <agathe.porte@nokia.com>
- * Preliminary support by:
- * Lionel Pouliquen <lionel.lp.pouliquen@nokia.com>
- */
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -18,11 +12,11 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b, I2C_CLIENT_END };
 
-#define TMP464_NUM_CHANNELS		5	/* chan 0 is internal, 1-4 are remote */
-#define TMP468_NUM_CHANNELS		9	/* chan 0 is internal, 1-8 are remote */
+#define TMP464_NUM_CHANNELS		5	 
+#define TMP468_NUM_CHANNELS		9	 
 
 #define MAX_CHANNELS			9
 
@@ -42,11 +36,11 @@ static const u8 TMP464_THERM2_LIMIT[MAX_CHANNELS] = {
 #define TMP464_TEMP_HYST_REG			0x38
 #define TMP464_LOCK_REG				0xc4
 
-/* Identification */
+ 
 #define TMP464_MANUFACTURER_ID_REG		0xFE
 #define TMP464_DEVICE_ID_REG			0xFF
 
-/* Flags */
+ 
 #define TMP464_CONFIG_SHUTDOWN			BIT(5)
 #define TMP464_CONFIG_RANGE			0x04
 #define TMP464_CONFIG_REG_REN(x)		(BIT(7 + (x)))
@@ -60,7 +54,7 @@ static const u8 TMP464_THERM2_LIMIT[MAX_CHANNELS] = {
 #define TMP464_LOCK_VAL				0x5ca6
 #define TMP464_LOCKED				0x8000
 
-/* Manufacturer / Device ID's */
+ 
 #define TMP464_MANUFACTURER_ID			0x5449
 #define TMP464_DEVICE_ID			0x1468
 #define TMP468_DEVICE_ID			0x0468
@@ -166,12 +160,7 @@ static int tmp464_temp_read(struct device *dev, u32 attr, int channel, long *val
 		*val = !!(regval & BIT(channel + 7));
 		break;
 	case hwmon_temp_fault:
-		/*
-		 * The chip clears TMP464_REMOTE_OPEN_REG after it is read
-		 * and only updates it after the next measurement cycle is
-		 * complete. That means we have to cache the value internally
-		 * for one measurement cycle and report the cached value.
-		 */
+		 
 		if (!data->valid || time_after(jiffies, data->last_updated +
 					       msecs_to_jiffies(data->update_interval))) {
 			err = regmap_read(regmap, TMP464_REMOTE_OPEN_REG, &regval);
@@ -271,18 +260,7 @@ static int tmp464_set_convrate(struct tmp464_data *data, long interval)
 {
 	int rate;
 
-	/*
-	 * For valid rates, interval in milli-seconds can be calculated as
-	 *      interval = 125 << (7 - rate);
-	 * or
-	 *      interval = (1 << (7 - rate)) * 125;
-	 * The rate is therefore
-	 *      rate = 7 - __fls(interval / 125);
-	 * and the rounded rate is
-	 *      rate = 7 - __fls(interval * 4 / (125 * 3));
-	 * Use clamp_val() to avoid overflows, and to ensure valid input
-	 * for __fls.
-	 */
+	 
 	interval = clamp_val(interval, 125, 16000);
 	rate = 7 - __fls(interval * 4 / (125 * 3));
 	data->update_interval = 125 << (7 - rate);
@@ -313,7 +291,7 @@ static int tmp464_temp_write(struct tmp464_data *data, u32 attr, int channel, lo
 		err = regmap_read(regmap, TMP464_THERM_LIMIT[0], &regval);
 		if (err < 0)
 			break;
-		val = clamp_val(val, -256000, 256000);	/* prevent overflow/underflow */
+		val = clamp_val(val, -256000, 256000);	 
 		val = clamp_val(temp_from_reg(regval) - val, 0, 255000);
 		err = regmap_write(regmap, TMP464_TEMP_HYST_REG,
 				   DIV_ROUND_CLOSEST(val, 1000) << 7);
@@ -434,11 +412,11 @@ static int tmp464_init_client(struct device *dev, struct tmp464_data *data)
 	if (err)
 		return err;
 	if (regval == TMP464_LOCKED) {
-		/* Explicitly unlock chip if it is locked */
+		 
 		err = regmap_write(regmap, TMP464_LOCK_REG, TMP464_UNLOCK_VAL);
 		if (err)
 			return err;
-		/* and lock it again when unloading the driver */
+		 
 		err = devm_add_action_or_reset(dev, tmp464_restore_lock, regmap);
 		if (err)
 			return err;
@@ -452,7 +430,7 @@ static int tmp464_init_client(struct device *dev, struct tmp464_data *data)
 	if (err)
 		return err;
 
-	/* Default to 500 ms update interval */
+	 
 	err = regmap_update_bits(regmap, TMP464_CONFIG_REG,
 				 TMP464_CONFIG_CONVERSION_RATE_MASK | TMP464_CONFIG_SHUTDOWN,
 				 BIT(TMP464_CONFIG_CONVERSION_RATE_B0) |
@@ -481,7 +459,7 @@ static int tmp464_detect(struct i2c_client *client,
 	if (reg != TMP464_MANUFACTURER_ID)
 		return -ENODEV;
 
-	/* Check for "always return zero" bits */
+	 
 	reg = i2c_smbus_read_word_swapped(client, TMP464_THERM_STATUS_REG);
 	if (reg < 0)
 		return reg;
@@ -628,7 +606,7 @@ static const struct hwmon_chip_info tmp464_chip_info = {
 	.info = tmp464_info,
 };
 
-/* regmap */
+ 
 
 static bool tmp464_is_volatile_reg(struct device *dev, unsigned int reg)
 {

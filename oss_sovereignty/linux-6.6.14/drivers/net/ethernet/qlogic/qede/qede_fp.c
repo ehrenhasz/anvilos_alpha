@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -20,9 +17,7 @@
 
 #include <linux/qed/qed_if.h>
 #include "qede.h"
-/*********************************
- * Content also used by slowpath *
- *********************************/
+ 
 
 int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy)
 {
@@ -31,10 +26,7 @@ int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy)
 	dma_addr_t mapping;
 	struct page *data;
 
-	/* In case lazy-allocation is allowed, postpone allocation until the
-	 * end of the NAPI run. We'd still need to make sure the Rx ring has
-	 * sufficient buffers to guarantee an additional Rx interrupt.
-	 */
+	 
 	if (allow_lazy && likely(rxq->filled_buffers > 12)) {
 		rxq->filled_buffers--;
 		return 0;
@@ -44,9 +36,7 @@ int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy)
 	if (unlikely(!data))
 		return -ENOMEM;
 
-	/* Map the entire page as it would be used
-	 * for multiple RX buffer segment size mapping.
-	 */
+	 
 	mapping = dma_map_page(rxq->dev, data, 0,
 			       PAGE_SIZE, rxq->data_direction);
 	if (unlikely(dma_mapping_error(rxq->dev, mapping))) {
@@ -59,7 +49,7 @@ int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy)
 	sw_rx_data->data = data;
 	sw_rx_data->mapping = mapping;
 
-	/* Advance PROD and get BD pointer */
+	 
 	rx_bd = (struct eth_rx_bd *)qed_chain_produce(&rxq->rx_bd_ring);
 	WARN_ON(!rx_bd);
 	rx_bd->addr.hi = cpu_to_le32(upper_32_bits(mapping));
@@ -72,7 +62,7 @@ int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy)
 	return 0;
 }
 
-/* Unmap the data and free skb */
+ 
 int qede_free_tx_pkt(struct qede_dev *edev, struct qede_tx_queue *txq, int *len)
 {
 	u16 idx = txq->sw_tx_cons;
@@ -108,7 +98,7 @@ int qede_free_tx_pkt(struct qede_dev *edev, struct qede_tx_queue *txq, int *len)
 	dma_unmap_single(&edev->pdev->dev, BD_UNMAP_ADDR(first_bd),
 			 BD_UNMAP_LEN(first_bd) + split_bd_len, DMA_TO_DEVICE);
 
-	/* Unmap the data of the skb frags */
+	 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++, bds_consumed++) {
 		tx_data_bd = (struct eth_tx_bd *)
 			qed_chain_consume(&txq->tx_pbl);
@@ -119,7 +109,7 @@ int qede_free_tx_pkt(struct qede_dev *edev, struct qede_tx_queue *txq, int *len)
 	while (bds_consumed++ < nbds)
 		qed_chain_consume(&txq->tx_pbl);
 
-	/* Free skb */
+	 
 	dev_kfree_skb_any(skb);
 	txq->sw_tx_ring.skbs[idx].skb = NULL;
 	txq->sw_tx_ring.skbs[idx].flags = 0;
@@ -127,7 +117,7 @@ int qede_free_tx_pkt(struct qede_dev *edev, struct qede_tx_queue *txq, int *len)
 	return 0;
 }
 
-/* Unmap the data and free skb when mapping failed during start_xmit */
+ 
 static void qede_free_failed_tx_pkt(struct qede_tx_queue *txq,
 				    struct eth_tx_1st_bd *first_bd,
 				    int nbd, bool data_split)
@@ -137,7 +127,7 @@ static void qede_free_failed_tx_pkt(struct qede_tx_queue *txq,
 	struct eth_tx_bd *tx_data_bd;
 	int i, split_bd_len = 0;
 
-	/* Return prod to its position before this skb was handled */
+	 
 	qed_chain_set_prod(&txq->tx_pbl,
 			   le16_to_cpu(txq->tx_db.data.bd_prod), first_bd);
 
@@ -153,7 +143,7 @@ static void qede_free_failed_tx_pkt(struct qede_tx_queue *txq,
 	dma_unmap_single(txq->dev, BD_UNMAP_ADDR(first_bd),
 			 BD_UNMAP_LEN(first_bd) + split_bd_len, DMA_TO_DEVICE);
 
-	/* Unmap the data of the skb frags */
+	 
 	for (i = 0; i < nbd; i++) {
 		tx_data_bd = (struct eth_tx_bd *)
 			qed_chain_produce(&txq->tx_pbl);
@@ -163,11 +153,11 @@ static void qede_free_failed_tx_pkt(struct qede_tx_queue *txq,
 				       BD_UNMAP_LEN(tx_data_bd), DMA_TO_DEVICE);
 	}
 
-	/* Return again prod to its position before this skb was handled */
+	 
 	qed_chain_set_prod(&txq->tx_pbl,
 			   le16_to_cpu(txq->tx_db.data.bd_prod), first_bd);
 
-	/* Free skb */
+	 
 	dev_kfree_skb_any(skb);
 	txq->sw_tx_ring.skbs[idx].skb = NULL;
 	txq->sw_tx_ring.skbs[idx].flags = 0;
@@ -245,13 +235,13 @@ static int map_frag_to_bd(struct qede_tx_queue *txq,
 {
 	dma_addr_t mapping;
 
-	/* Map skb non-linear frag data for DMA */
+	 
 	mapping = skb_frag_dma_map(txq->dev, frag, 0,
 				   skb_frag_size(frag), DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(txq->dev, mapping)))
 		return -ENOMEM;
 
-	/* Setup the data pointer of the frag data */
+	 
 	BD_SET_UNMAP_ADDR_LEN(bd, mapping, skb_frag_size(frag));
 
 	return 0;
@@ -265,7 +255,7 @@ static u16 qede_get_skb_hlen(struct sk_buff *skb, bool is_encap_pkt)
 	return skb_tcp_all_headers(skb);
 }
 
-/* +2 for 1st BD for headers and 2nd BD for headlen (if required) */
+ 
 #if ((MAX_SKB_FRAGS + 2) > ETH_TX_MAX_BDS_PER_NON_LSO_PACKET)
 static bool qede_pkt_req_lin(struct sk_buff *skb, u8 xmit_type)
 {
@@ -276,7 +266,7 @@ static bool qede_pkt_req_lin(struct sk_buff *skb, u8 xmit_type)
 
 		hlen = qede_get_skb_hlen(skb, xmit_type & XMIT_ENC);
 
-		/* linear payload would require its own BD */
+		 
 		if (skb_headlen(skb) > hlen)
 			allowed_frags--;
 	}
@@ -287,17 +277,12 @@ static bool qede_pkt_req_lin(struct sk_buff *skb, u8 xmit_type)
 
 static inline void qede_update_tx_producer(struct qede_tx_queue *txq)
 {
-	/* wmb makes sure that the BDs data is updated before updating the
-	 * producer, otherwise FW may read old data from the BDs.
-	 */
+	 
 	wmb();
 	barrier();
 	writel(txq->tx_db.raw, txq->doorbell_addr);
 
-	/* Fence required to flush the write combined buffer, since another
-	 * CPU may write to the same doorbell address and data may be lost
-	 * due to relaxed order nature of write combined bar.
-	 */
+	 
 	wmb();
 }
 
@@ -323,7 +308,7 @@ static int qede_xdp_xmit(struct qede_tx_queue *txq, dma_addr_t dma, u16 pad,
 
 	bd->data.bitfields = cpu_to_le16(val);
 
-	/* We can safely ignore the offset, as it's 0 for XDP */
+	 
 	BD_SET_UNMAP_ADDR_LEN(bd, dma + pad, len);
 
 	xdp = txq->sw_tx_ring.xdp + txq->sw_tx_prod;
@@ -388,7 +373,7 @@ int qede_txq_has_work(struct qede_tx_queue *txq)
 {
 	u16 hw_bd_cons;
 
-	/* Tell compiler that consumer and producer can change */
+	 
 	barrier();
 	hw_bd_cons = le16_to_cpu(*txq->hw_cons_ptr);
 	if (qed_chain_get_cons_idx(&txq->tx_pbl) == hw_bd_cons + 1)
@@ -460,27 +445,11 @@ static int qede_tx_int(struct qede_dev *edev, struct qede_tx_queue *txq)
 
 	netdev_tx_completed_queue(netdev_txq, pkts_compl, bytes_compl);
 
-	/* Need to make the tx_bd_cons update visible to start_xmit()
-	 * before checking for netif_tx_queue_stopped().  Without the
-	 * memory barrier, there is a small possibility that
-	 * start_xmit() will miss it and cause the queue to be stopped
-	 * forever.
-	 * On the other hand we need an rmb() here to ensure the proper
-	 * ordering of bit testing in the following
-	 * netif_tx_queue_stopped(txq) call.
-	 */
+	 
 	smp_mb();
 
 	if (unlikely(netif_tx_queue_stopped(netdev_txq))) {
-		/* Taking tx_lock is needed to prevent reenabling the queue
-		 * while it's empty. This could have happen if rx_action() gets
-		 * suspended in qede_tx_int() after the condition before
-		 * netif_tx_wake_queue(), while tx_action (qede_start_xmit()):
-		 *
-		 * stops the queue->sees fresh tx_bd_cons->releases the queue->
-		 * sends some packets consuming the whole queue again->
-		 * stops the queue
-		 */
+		 
 
 		__netif_tx_lock(netdev_txq, smp_processor_id());
 
@@ -503,7 +472,7 @@ bool qede_has_rx_work(struct qede_rx_queue *rxq)
 {
 	u16 hw_comp_cons, sw_comp_cons;
 
-	/* Tell compiler that status block fields can change */
+	 
 	barrier();
 
 	hw_comp_cons = le16_to_cpu(*rxq->hw_cons_ptr);
@@ -518,9 +487,7 @@ static inline void qede_rx_bd_ring_consume(struct qede_rx_queue *rxq)
 	rxq->sw_rx_cons++;
 }
 
-/* This function reuses the buffer(from an offset) from
- * consumer index to producer index in the bd ring
- */
+ 
 static inline void qede_reuse_page(struct qede_rx_queue *rxq,
 				   struct sw_rx_data *curr_cons)
 {
@@ -541,9 +508,7 @@ static inline void qede_reuse_page(struct qede_rx_queue *rxq,
 	curr_cons->data = NULL;
 }
 
-/* In case of allocation failures reuse buffers
- * from consumer index to produce buffers for firmware
- */
+ 
 void qede_recycle_rx_bd_ring(struct qede_rx_queue *rxq, u8 count)
 {
 	struct sw_rx_data *curr_cons;
@@ -558,14 +523,12 @@ void qede_recycle_rx_bd_ring(struct qede_rx_queue *rxq, u8 count)
 static inline int qede_realloc_rx_buffer(struct qede_rx_queue *rxq,
 					 struct sw_rx_data *curr_cons)
 {
-	/* Move to the next segment in the page */
+	 
 	curr_cons->page_offset += rxq->rx_buf_seg_size;
 
 	if (curr_cons->page_offset == PAGE_SIZE) {
 		if (unlikely(qede_alloc_rx_buffer(rxq, true))) {
-			/* Since we failed to allocate new buffer
-			 * current buffer can be used again.
-			 */
+			 
 			curr_cons->page_offset -= rxq->rx_buf_seg_size;
 
 			return -ENOMEM;
@@ -574,10 +537,7 @@ static inline int qede_realloc_rx_buffer(struct qede_rx_queue *rxq,
 		dma_unmap_page(rxq->dev, curr_cons->mapping,
 			       PAGE_SIZE, rxq->data_direction);
 	} else {
-		/* Increment refcount of the page as we don't want
-		 * network stack to take the ownership of the page
-		 * which can be recycled multiple times by the driver.
-		 */
+		 
 		page_ref_inc(curr_cons->data);
 		qede_reuse_page(rxq, curr_cons);
 	}
@@ -591,14 +551,11 @@ void qede_update_rx_prod(struct qede_dev *edev, struct qede_rx_queue *rxq)
 	u16 cqe_prod = qed_chain_get_prod_idx(&rxq->rx_comp_ring);
 	struct eth_rx_prod_data rx_prods = {0};
 
-	/* Update producers */
+	 
 	rx_prods.bd_prod = cpu_to_le16(bd_prod);
 	rx_prods.cqe_prod = cpu_to_le16(cqe_prod);
 
-	/* Make sure that the BD and SGE data is updated before updating the
-	 * producers since FW might read the BD/SGE right after the producer
-	 * is updated.
-	 */
+	 
 	wmb();
 
 	internal_ram_wr(rxq->hw_rxq_prod_addr, sizeof(rx_prods),
@@ -673,16 +630,14 @@ static int qede_fill_frag_skb(struct qede_dev *edev,
 	if (unlikely(tpa_info->state != QEDE_AGG_STATE_START))
 		goto out;
 
-	/* Add one frag and update the appropriate fields in the skb */
+	 
 	skb_fill_page_desc(skb, tpa_info->frag_id++,
 			   current_bd->data,
 			   current_bd->page_offset + rxq->rx_headroom,
 			   len_on_bd);
 
 	if (unlikely(qede_realloc_rx_buffer(rxq, current_bd))) {
-		/* Incr page ref count to reuse on allocation failure
-		 * so that it doesn't get freed while freeing SKB.
-		 */
+		 
 		page_ref_inc(current_bd->data);
 		goto out;
 	}
@@ -780,7 +735,7 @@ qede_tpa_rx_build_skb(struct qede_dev *edev,
 		qede_reuse_page(rxq, bd);
 	}
 
-	/* We've consumed the first BD and prepared an SKB */
+	 
 	qede_rx_bd_ring_consume(rxq);
 
 	return skb;
@@ -793,10 +748,7 @@ qede_rx_build_skb(struct qede_dev *edev,
 {
 	struct sk_buff *skb = NULL;
 
-	/* For smaller frames still need to allocate skb, memcpy
-	 * data and benefit in reusing the page segment instead of
-	 * un-mapping it.
-	 */
+	 
 	if ((len + pad <= edev->rx_copybreak)) {
 		unsigned int offset = bd->page_offset + pad;
 
@@ -813,16 +765,13 @@ qede_rx_build_skb(struct qede_dev *edev,
 	skb = qede_build_skb(rxq, bd, len, pad);
 
 	if (unlikely(qede_realloc_rx_buffer(rxq, bd))) {
-		/* Incr page ref count to reuse on allocation failure so
-		 * that it doesn't get freed while freeing SKB [as its
-		 * already mapped there].
-		 */
+		 
 		page_ref_inc(bd->data);
 		dev_kfree_skb_any(skb);
 		return NULL;
 	}
 out:
-	/* We've consumed the first BD and prepared an SKB */
+	 
 	qede_rx_bd_ring_consume(rxq);
 
 	return skb;
@@ -848,10 +797,7 @@ static void qede_tpa_start(struct qede_dev *edev,
 	if (unlikely(!tpa_info->skb)) {
 		DP_NOTICE(edev, "Failed to allocate SKB for gro\n");
 
-		/* Consume from ring but do not produce since
-		 * this might be used by FW still, it will be re-used
-		 * at TPA end.
-		 */
+		 
 		tpa_info->tpa_start_fail = true;
 		qede_rx_bd_ring_consume(rxq);
 		tpa_info->state = QEDE_AGG_STATE_ERROR;
@@ -870,10 +816,10 @@ static void qede_tpa_start(struct qede_dev *edev,
 
 	qede_get_rxhash(tpa_info->skb, cqe->bitfields, cqe->rss_hash);
 
-	/* This is needed in order to enable forwarding support */
+	 
 	qede_set_gro_params(edev, tpa_info->skb, cqe);
 
-cons_buf: /* We still need to handle bd_len_list to consume buffers */
+cons_buf:  
 	if (likely(cqe->bw_ext_bd_len_list[0]))
 		qede_fill_frag_skb(edev, rxq, cqe->tpa_agg_index,
 				   le16_to_cpu(cqe->bw_ext_bd_len_list[0]));
@@ -919,11 +865,7 @@ static void qede_gro_receive(struct qede_dev *edev,
 			     struct sk_buff *skb,
 			     u16 vlan_tag)
 {
-	/* FW can send a single MTU sized packet from gro flow
-	 * due to aggregation timeout/last segment etc. which
-	 * is not expected to be a gro packet. If a skb has zero
-	 * frags then simply push it in the stack as non gso skb.
-	 */
+	 
 	if (unlikely(!skb->data_len)) {
 		skb_shinfo(skb)->gso_type = 0;
 		skb_shinfo(skb)->gso_size = 0;
@@ -995,7 +937,7 @@ static int qede_tpa_end(struct qede_dev *edev,
 	if (unlikely(tpa_info->state != QEDE_AGG_STATE_START))
 		goto err;
 
-	/* Sanity */
+	 
 	if (unlikely(cqe->num_of_bds != tpa_info->frag_id + 1))
 		DP_ERR(edev,
 		       "Strange - TPA had %02x BDs, but SKB has only %d frags\n",
@@ -1005,13 +947,11 @@ static int qede_tpa_end(struct qede_dev *edev,
 		       "Strange - total packet len [cqe] is %4x but SKB has len %04x\n",
 		       le16_to_cpu(cqe->total_packet_len), skb->len);
 
-	/* Finalize the SKB */
+	 
 	skb->protocol = eth_type_trans(skb, edev->ndev);
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 
-	/* tcp_gro_complete() will copy NAPI_GRO_CB(skb)->count
-	 * to skb_shinfo(skb)->gso_segs
-	 */
+	 
 	NAPI_GRO_CB(skb)->count = le16_to_cpu(cqe->num_of_coalesced_segs);
 
 	qede_gro_receive(edev, fp, skb, tpa_info->vlan_tag);
@@ -1075,7 +1015,7 @@ static bool qede_pkt_is_ip_fragmented(struct eth_fast_path_rx_reg_cqe *cqe,
 	return false;
 }
 
-/* Return true iff packet is to be passed to stack */
+ 
 static bool qede_rx_xdp(struct qede_dev *edev,
 			struct qede_fastpath *fp,
 			struct qede_rx_queue *rxq,
@@ -1093,19 +1033,19 @@ static bool qede_rx_xdp(struct qede_dev *edev,
 
 	act = bpf_prog_run_xdp(prog, &xdp);
 
-	/* Recalculate, as XDP might have changed the headers */
+	 
 	*data_offset = xdp.data - xdp.data_hard_start;
 	*len = xdp.data_end - xdp.data;
 
 	if (act == XDP_PASS)
 		return true;
 
-	/* Count number of packets not to be passed to stack */
+	 
 	rxq->xdp_no_pass++;
 
 	switch (act) {
 	case XDP_TX:
-		/* We need the replacement buffer before transmit. */
+		 
 		if (unlikely(qede_alloc_rx_buffer(rxq, true))) {
 			qede_recycle_rx_bd_ring(rxq, 1);
 
@@ -1113,9 +1053,7 @@ static bool qede_rx_xdp(struct qede_dev *edev,
 			break;
 		}
 
-		/* Now if there's a transmission problem, we'd still have to
-		 * throw current buffer, as replacement was already allocated.
-		 */
+		 
 		if (unlikely(qede_xdp_xmit(fp->xdp_tx, bd->mapping,
 					   *data_offset, *len, bd->data,
 					   NULL))) {
@@ -1131,11 +1069,11 @@ static bool qede_rx_xdp(struct qede_dev *edev,
 			fp->xdp_xmit |= QEDE_XDP_TX;
 		}
 
-		/* Regardless, we've consumed an Rx BD */
+		 
 		qede_rx_bd_ring_consume(rxq);
 		break;
 	case XDP_REDIRECT:
-		/* We need the replacement buffer before transmit. */
+		 
 		if (unlikely(qede_alloc_rx_buffer(rxq, true))) {
 			qede_recycle_rx_bd_ring(rxq, 1);
 
@@ -1179,7 +1117,7 @@ static int qede_rx_build_jumbo(struct qede_dev *edev,
 
 	pkt_len -= first_bd_len;
 
-	/* We've already used one BD for the SKB. Now take care of the rest */
+	 
 	for (num_frags = cqe->bd_num - 1; num_frags > 0; num_frags--) {
 		u16 cur_size = pkt_len > rxq->rx_buf_size ? rxq->rx_buf_size :
 		    pkt_len;
@@ -1191,13 +1129,11 @@ static int qede_rx_build_jumbo(struct qede_dev *edev,
 			goto out;
 		}
 
-		/* We need a replacement buffer for each BD */
+		 
 		if (unlikely(qede_alloc_rx_buffer(rxq, true)))
 			goto out;
 
-		/* Now that we've allocated the replacement buffer,
-		 * we can safely consume the next BD and map it to the SKB.
-		 */
+		 
 		bd_cons_idx = rxq->sw_rx_cons & NUM_RX_BDS_MAX;
 		bd = &rxq->sw_rx_ring[bd_cons_idx];
 		qede_rx_bd_ring_consume(rxq);
@@ -1254,11 +1190,11 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 	__le16 flags;
 	u8 csum_flag;
 
-	/* Get the CQE from the completion ring */
+	 
 	cqe = (union eth_rx_cqe *)qed_chain_consume(&rxq->rx_comp_ring);
 	cqe_type = cqe->fast_path_regular.type;
 
-	/* Process an unlikely slowpath event */
+	 
 	if (unlikely(cqe_type == ETH_RX_CQE_TYPE_SLOW_PATH)) {
 		struct eth_slow_path_rx_cqe *sp_cqe;
 
@@ -1267,13 +1203,11 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 		return 0;
 	}
 
-	/* Handle TPA cqes */
+	 
 	if (cqe_type != ETH_RX_CQE_TYPE_REGULAR)
 		return qede_rx_process_tpa_cqe(edev, fp, rxq, cqe, cqe_type);
 
-	/* Get the data from the SW ring; Consume it only after it's evident
-	 * we wouldn't recycle it.
-	 */
+	 
 	bd_cons_idx = rxq->sw_rx_cons & NUM_RX_BDS_MAX;
 	bd = &rxq->sw_rx_ring[bd_cons_idx];
 
@@ -1281,13 +1215,13 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 	len = le16_to_cpu(fp_cqe->len_on_first_bd);
 	pad = fp_cqe->placement_offset + rxq->rx_headroom;
 
-	/* Run eBPF program if one is attached */
+	 
 	if (xdp_prog)
 		if (!qede_rx_xdp(edev, fp, rxq, xdp_prog, bd, fp_cqe,
 				 &pad, &len))
 			return 0;
 
-	/* If this is an error packet then drop it */
+	 
 	flags = cqe->fast_path_regular.pars_flags.flags;
 	parse_flag = le16_to_cpu(flags);
 
@@ -1299,9 +1233,7 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 			rxq->rx_hw_errors++;
 	}
 
-	/* Basic validation passed; Need to prepare an SKB. This would also
-	 * guarantee to finally consume the first BD upon success.
-	 */
+	 
 	skb = qede_rx_build_skb(edev, rxq, bd, len, pad);
 	if (!skb) {
 		rxq->rx_alloc_errors++;
@@ -1309,9 +1241,7 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 		return 0;
 	}
 
-	/* In case of Jumbo packet, several PAGE_SIZEd buffers will be pointed
-	 * by a single cqe.
-	 */
+	 
 	if (fp_cqe->bd_num > 1) {
 		u16 unmapped_frags = qede_rx_build_jumbo(edev, rxq, skb,
 							 fp_cqe, len);
@@ -1323,14 +1253,14 @@ static int qede_rx_process_cqe(struct qede_dev *edev,
 		}
 	}
 
-	/* The SKB contains all the data. Now prepare meta-magic */
+	 
 	skb->protocol = eth_type_trans(skb, edev->ndev);
 	qede_get_rxhash(skb, fp_cqe->bitfields, fp_cqe->rss_hash);
 	qede_set_skb_csum(skb, csum_flag);
 	skb_record_rx_queue(skb, rxq->rxq_id);
 	qede_ptp_record_rx_ts(edev, cqe, skb);
 
-	/* SKB is prepared - pass it to stack */
+	 
 	qede_skb_receive(edev, fp, rxq, skb, le16_to_cpu(fp_cqe->vlan_tag));
 
 	return 1;
@@ -1346,14 +1276,10 @@ static int qede_rx_int(struct qede_fastpath *fp, int budget)
 	hw_comp_cons = le16_to_cpu(*rxq->hw_cons_ptr);
 	sw_comp_cons = qed_chain_get_cons_idx(&rxq->rx_comp_ring);
 
-	/* Memory barrier to prevent the CPU from doing speculative reads of CQE
-	 * / BD in the while-loop before reading hw_comp_cons. If the CQE is
-	 * read before it is written by FW, then FW writes CQE and SB, and then
-	 * the CPU reads the hw_comp_cons, it will use an old CQE.
-	 */
+	 
 	rmb();
 
-	/* Loop to complete all indicated BDs */
+	 
 	while ((sw_comp_cons != hw_comp_cons) && (work_done < budget)) {
 		rcv_pkts += qede_rx_process_cqe(edev, fp, rxq);
 		qed_chain_recycle_consumed(&rxq->rx_comp_ring);
@@ -1363,12 +1289,12 @@ static int qede_rx_int(struct qede_fastpath *fp, int budget)
 
 	rxq->rcv_pkts += rcv_pkts;
 
-	/* Allocate replacement buffers */
+	 
 	while (rxq->num_rx_buffers - rxq->filled_buffers)
 		if (qede_alloc_rx_buffer(rxq, false))
 			break;
 
-	/* Update producers */
+	 
 	qede_update_rx_prod(edev, rxq);
 
 	return work_done;
@@ -1378,16 +1304,7 @@ static bool qede_poll_is_more_work(struct qede_fastpath *fp)
 {
 	qed_sb_update_sb_idx(fp->sb_info);
 
-	/* *_has_*_work() reads the status block, thus we need to ensure that
-	 * status block indices have been actually read (qed_sb_update_sb_idx)
-	 * prior to this check (*_has_*_work) so that we won't write the
-	 * "newer" value of the status block to HW (if there was a DMA right
-	 * after qede_has_rx_work and if there is no rmb, the memory reading
-	 * (qed_sb_update_sb_idx) may be postponed to right before *_ack_sb).
-	 * In this case there will never be another interrupt until there is
-	 * another update of the status block, while there is still unhandled
-	 * work.
-	 */
+	 
 	rmb();
 
 	if (likely(fp->type & QEDE_FASTPATH_RX))
@@ -1410,9 +1327,7 @@ static bool qede_poll_is_more_work(struct qede_fastpath *fp)
 	return false;
 }
 
-/*********************
- * NDO & API related *
- *********************/
+ 
 int qede_poll(struct napi_struct *napi, int budget)
 {
 	struct qede_fastpath *fp = container_of(napi, struct qede_fastpath,
@@ -1442,12 +1357,12 @@ int qede_poll(struct napi_struct *napi, int budget)
 	if (fp->xdp_xmit & QEDE_XDP_REDIRECT)
 		xdp_do_flush();
 
-	/* Handle case where we are called by netpoll with a budget of 0 */
+	 
 	if (rx_work_done < budget || !budget) {
 		if (!qede_poll_is_more_work(fp)) {
 			napi_complete_done(napi, rx_work_done);
 
-			/* Update and reenable interrupts */
+			 
 			qed_sb_ack(fp->sb_info, IGU_INT_ENABLE, 1);
 		} else {
 			rx_work_done = budget;
@@ -1468,13 +1383,13 @@ irqreturn_t qede_msix_fp_int(int irq, void *fp_cookie)
 {
 	struct qede_fastpath *fp = fp_cookie;
 
-	qed_sb_ack(fp->sb_info, IGU_INT_DISABLE, 0 /*do not update*/);
+	qed_sb_ack(fp->sb_info, IGU_INT_DISABLE, 0  );
 
 	napi_schedule_irqoff(&fp->napi);
 	return IRQ_HANDLED;
 }
 
-/* Main transmit function */
+ 
 netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct qede_dev *edev = netdev_priv(ndev);
@@ -1493,7 +1408,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	u16 hlen;
 	bool data_split = false;
 
-	/* Get tx-queue context and netdev index */
+	 
 	txq_index = skb_get_queue_mapping(skb);
 	WARN_ON(txq_index >= QEDE_TSS_COUNT(edev) * edev->dev_info.num_tc);
 	txq = QEDE_NDEV_TXQ_ID_TO_TXQ(edev, txq_index);
@@ -1514,7 +1429,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	}
 #endif
 
-	/* Fill the entry in the SW ring and the BDs in the FW ring */
+	 
 	idx = txq->sw_tx_prod;
 	txq->sw_tx_ring.skbs[idx].skb = skb;
 	first_bd = (struct eth_tx_1st_bd *)
@@ -1526,7 +1441,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
 		qede_ptp_tx_ts(edev, skb);
 
-	/* Map skb linear data for DMA and set in the first BD */
+	 
 	mapping = dma_map_single(txq->dev, skb->data,
 				 skb_headlen(skb), DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(txq->dev, mapping))) {
@@ -1538,9 +1453,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	nbd++;
 	BD_SET_UNMAP_ADDR_LEN(first_bd, mapping, skb_headlen(skb));
 
-	/* In case there is IPv6 with extension headers or LSO we need 2nd and
-	 * 3rd BDs.
-	 */
+	 
 	if (unlikely((xmit_type & XMIT_LSO) | ipv6_ext)) {
 		second_bd = (struct eth_tx_2nd_bd *)
 			qed_chain_produce(&txq->tx_pbl);
@@ -1552,7 +1465,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		memset(third_bd, 0, sizeof(*third_bd));
 
 		nbd++;
-		/* We need to fill in additional data in second_bd... */
+		 
 		tx_data_bd = (struct eth_tx_bd *)second_bd;
 	}
 
@@ -1562,11 +1475,9 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			1 << ETH_TX_1ST_BD_FLAGS_VLAN_INSERTION_SHIFT;
 	}
 
-	/* Fill the parsing flags & params according to the requested offload */
+	 
 	if (xmit_type & XMIT_L4_CSUM) {
-		/* We don't re-calculate IP checksum as it is already done by
-		 * the upper stack
-		 */
+		 
 		first_bd->data.bd_flags.bitfields |=
 			1 << ETH_TX_1ST_BD_FLAGS_L4_CSUM_SHIFT;
 
@@ -1577,17 +1488,11 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			val |= (1 << ETH_TX_DATA_1ST_BD_TUNN_FLAG_SHIFT);
 		}
 
-		/* Legacy FW had flipped behavior in regard to this bit -
-		 * I.e., needed to set to prevent FW from touching encapsulated
-		 * packets when it didn't need to.
-		 */
+		 
 		if (unlikely(txq->is_legacy))
 			val ^= (1 << ETH_TX_DATA_1ST_BD_TUNN_FLAG_SHIFT);
 
-		/* If the packet is IPv6 with extension header, indicate that
-		 * to FW and pass few params, since the device cracker doesn't
-		 * support parsing IPv6 with extension header/s.
-		 */
+		 
 		if (unlikely(ipv6_ext))
 			qede_set_params_for_ipv6_ext(skb, second_bd, third_bd);
 	}
@@ -1614,13 +1519,11 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			hlen = qede_get_skb_hlen(skb, false);
 		}
 
-		/* @@@TBD - if will not be removed need to check */
+		 
 		third_bd->data.bitfields |=
 			cpu_to_le16(1 << ETH_TX_DATA_3RD_BD_HDR_NBD_SHIFT);
 
-		/* Make life easier for FW guys who can't deal with header and
-		 * data on same BD. If we need to split, use the second bd...
-		 */
+		 
 		if (unlikely(skb_headlen(skb) > hlen)) {
 			DP_VERBOSE(edev, NETIF_MSG_TX_QUEUED,
 				   "TSO split header size is %d (%x:%x)\n",
@@ -1635,9 +1538,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 					      le16_to_cpu(first_bd->nbytes) -
 					      hlen);
 
-			/* this marks the BD as one that has no
-			 * individual mapping
-			 */
+			 
 			txq->sw_tx_ring.skbs[idx].flags |= QEDE_TSO_SPLIT_BD;
 
 			first_bd->nbytes = cpu_to_le16(hlen);
@@ -1659,8 +1560,8 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 	first_bd->data.bitfields = cpu_to_le16(val);
 
-	/* Handle fragmented skb */
-	/* special handle for frags inside 2nd and 3rd bds.. */
+	 
+	 
 	while (tx_data_bd && frag_idx < skb_shinfo(skb)->nr_frags) {
 		rc = map_frag_to_bd(txq,
 				    &skb_shinfo(skb)->frags[frag_idx],
@@ -1679,7 +1580,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		frag_idx++;
 	}
 
-	/* map last frags into 4th, 5th .... */
+	 
 	for (; frag_idx < skb_shinfo(skb)->nr_frags; frag_idx++, nbd++) {
 		tx_data_bd = (struct eth_tx_bd *)
 			     qed_chain_produce(&txq->tx_pbl);
@@ -1696,19 +1597,17 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		}
 	}
 
-	/* update the first BD with the actual num BDs */
+	 
 	first_bd->data.nbds = nbd;
 
 	netdev_tx_sent_queue(netdev_txq, skb->len);
 
 	skb_tx_timestamp(skb);
 
-	/* Advance packet producer only before sending the packet since mapping
-	 * of pages may fail.
-	 */
+	 
 	txq->sw_tx_prod = (txq->sw_tx_prod + 1) % txq->num_tx_buffers;
 
-	/* 'next page' entries are counted in the producer value */
+	 
 	txq->tx_db.data.bd_prod =
 		cpu_to_le16(qed_chain_get_prod_idx(&txq->tx_pbl));
 
@@ -1724,10 +1623,7 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		txq->stopped_cnt++;
 		DP_VERBOSE(edev, NETIF_MSG_TX_QUEUED,
 			   "Stop queue was called\n");
-		/* paired memory barrier is in qede_tx_int(), we have to keep
-		 * ordering of set_bit() in netif_tx_stop_queue() and read of
-		 * fp->bd_tx_cons
-		 */
+		 
 		smp_mb();
 
 		if ((qed_chain_get_elem_left(&txq->tx_pbl) >=
@@ -1754,7 +1650,7 @@ u16 qede_select_queue(struct net_device *dev, struct sk_buff *skb,
 		netdev_pick_tx(dev, skb, NULL) % total_txq :  0;
 }
 
-/* 8B udp header + 8B base tunnel header + 32B option length */
+ 
 #define QEDE_MAX_TUN_HDR_LEN 48
 
 netdev_features_t qede_features_check(struct sk_buff *skb,
@@ -1775,10 +1671,7 @@ netdev_features_t qede_features_check(struct sk_buff *skb,
 			return features;
 		}
 
-		/* Disable offloads for geneve tunnels, as HW can't parse
-		 * the geneve header which has option length greater than 32b
-		 * and disable offloads for the ports which are not offloaded.
-		 */
+		 
 		if (l4_proto == IPPROTO_UDP) {
 			struct qede_dev *edev = netdev_priv(dev);
 			u16 hdrlen, vxln_port, gnv_port;
@@ -1794,9 +1687,7 @@ netdev_features_t qede_features_check(struct sk_buff *skb,
 				return features & ~(NETIF_F_CSUM_MASK |
 						    NETIF_F_GSO_MASK);
 		} else if (l4_proto == IPPROTO_IPIP) {
-			/* IPIP tunnels are unknown to the device or at least unsupported natively,
-			 * offloads for them can't be done trivially, so disable them for such skb.
-			 */
+			 
 			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
 		}
 	}

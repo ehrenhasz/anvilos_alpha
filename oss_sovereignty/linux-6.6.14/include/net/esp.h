@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_ESP_H
 #define _NET_ESP_H
 
@@ -14,7 +14,7 @@ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
 
 static inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
 {
-	/* Fill padding... */
+	 
 	if (tfclen) {
 		memset(tail, 0, tfclen);
 		tail += tfclen;

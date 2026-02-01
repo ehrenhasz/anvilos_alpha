@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/backlight.h>
@@ -16,19 +14,7 @@ static bool force;
 module_param(force, bool, 0444);
 MODULE_PARM_DESC(force, "Force loading (disable acpi_backlight=xxx checks");
 
-/**
- * wmi_brightness_notify() - helper function for calling WMI-wrapped ACPI method
- * @w:    Pointer to the struct wmi_device identified by %WMI_BRIGHTNESS_GUID
- * @id:   The WMI method ID to call (e.g. %WMI_BRIGHTNESS_METHOD_LEVEL or
- *        %WMI_BRIGHTNESS_METHOD_SOURCE)
- * @mode: The operation to perform on the method (e.g. %WMI_BRIGHTNESS_MODE_SET
- *        or %WMI_BRIGHTNESS_MODE_GET)
- * @val:  Pointer to a value passed in by the caller when @mode is
- *        %WMI_BRIGHTNESS_MODE_SET, or a value passed out to caller when @mode
- *        is %WMI_BRIGHTNESS_MODE_GET or %WMI_BRIGHTNESS_MODE_GET_MAX_LEVEL.
- *
- * Returns 0 on success, or a negative error number on failure.
- */
+ 
 static int wmi_brightness_notify(struct wmi_device *w, enum wmi_brightness_method id, enum wmi_brightness_mode mode, u32 *val)
 {
 	struct wmi_brightness_args args = {
@@ -94,14 +80,11 @@ static int nvidia_wmi_ec_backlight_probe(struct wmi_device *wdev, const void *ct
 	struct backlight_device *bdev;
 	int ret;
 
-	/* drivers/acpi/video_detect.c also checks that SOURCE == EC */
+	 
 	if (!force && acpi_video_get_backlight_type() != acpi_backlight_nvidia_wmi_ec)
 		return -ENODEV;
 
-	/*
-	 * Identify this backlight device as a firmware device so that it can
-	 * be prioritized over any exposed GPU-driven raw device(s).
-	 */
+	 
 	props.type = BACKLIGHT_FIRMWARE;
 
 	ret = wmi_brightness_notify(wdev, WMI_BRIGHTNESS_METHOD_LEVEL,

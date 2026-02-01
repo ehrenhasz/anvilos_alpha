@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP Remote Processor driver
- *
- * Copyright (C) 2011-2020 Texas Instruments Incorporated - http://www.ti.com/
- * Copyright (C) 2011 Google, Inc.
- *
- * Ohad Ben-Cohen <ohad@wizery.com>
- * Brian Swetland <swetland@google.com>
- * Fernando Guzman Lugo <fernando.lugo@ti.com>
- * Mark Grosen <mgrosen@ti.com>
- * Suman Anna <s-anna@ti.com>
- * Hari Kanigeri <h-kanigeri2@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -40,29 +28,17 @@
 #include "omap_remoteproc.h"
 #include "remoteproc_internal.h"
 
-/* default auto-suspend delay (ms) */
+ 
 #define DEFAULT_AUTOSUSPEND_DELAY		10000
 
-/**
- * struct omap_rproc_boot_data - boot data structure for the DSP omap rprocs
- * @syscon: regmap handle for the system control configuration module
- * @boot_reg: boot register offset within the @syscon regmap
- * @boot_reg_shift: bit-field shift required for the boot address value in
- *		    @boot_reg
- */
+ 
 struct omap_rproc_boot_data {
 	struct regmap *syscon;
 	unsigned int boot_reg;
 	unsigned int boot_reg_shift;
 };
 
-/**
- * struct omap_rproc_mem - internal memory structure
- * @cpu_addr: MPU virtual address of the memory region
- * @bus_addr: bus address used to access the memory region
- * @dev_addr: device address of the memory region from DSP view
- * @size: size of the memory region
- */
+ 
 struct omap_rproc_mem {
 	void __iomem *cpu_addr;
 	phys_addr_t bus_addr;
@@ -70,36 +46,14 @@ struct omap_rproc_mem {
 	size_t size;
 };
 
-/**
- * struct omap_rproc_timer - data structure for a timer used by a omap rproc
- * @odt: timer pointer
- * @timer_ops: OMAP dmtimer ops for @odt timer
- * @irq: timer irq
- */
+ 
 struct omap_rproc_timer {
 	struct omap_dm_timer *odt;
 	const struct omap_dm_timer_ops *timer_ops;
 	int irq;
 };
 
-/**
- * struct omap_rproc - omap remote processor state
- * @mbox: mailbox channel handle
- * @client: mailbox client to request the mailbox channel
- * @boot_data: boot data structure for setting processor boot address
- * @mem: internal memory regions data
- * @num_mems: number of internal memory regions
- * @num_timers: number of rproc timer(s)
- * @num_wd_timers: number of rproc watchdog timers
- * @timers: timer(s) info used by rproc
- * @autosuspend_delay: auto-suspend delay value to be used for runtime pm
- * @need_resume: if true a resume is needed in the system resume callback
- * @rproc: rproc handle
- * @reset: reset handle
- * @pm_comp: completion primitive to sync for suspend response
- * @fck: functional clock for the remoteproc
- * @suspend_acked: state machine flag to store the suspend request ack
- */
+ 
 struct omap_rproc {
 	struct mbox_chan *mbox;
 	struct mbox_client client;
@@ -118,40 +72,19 @@ struct omap_rproc {
 	bool suspend_acked;
 };
 
-/**
- * struct omap_rproc_mem_data - memory definitions for an omap remote processor
- * @name: name for this memory entry
- * @dev_addr: device address for the memory entry
- */
+ 
 struct omap_rproc_mem_data {
 	const char *name;
 	const u32 dev_addr;
 };
 
-/**
- * struct omap_rproc_dev_data - device data for the omap remote processor
- * @device_name: device name of the remote processor
- * @mems: memory definitions for this remote processor
- */
+ 
 struct omap_rproc_dev_data {
 	const char *device_name;
 	const struct omap_rproc_mem_data *mems;
 };
 
-/**
- * omap_rproc_request_timer() - request a timer for a remoteproc
- * @dev: device requesting the timer
- * @np: device node pointer to the desired timer
- * @timer: handle to a struct omap_rproc_timer to return the timer handle
- *
- * This helper function is used primarily to request a timer associated with
- * a remoteproc. The returned handle is stored in the .odt field of the
- * @timer structure passed in, and is used to invoke other timer specific
- * ops (like starting a timer either during device initialization or during
- * a resume operation, or for stopping/freeing a timer).
- *
- * Return: 0 on success, otherwise an appropriate failure
- */
+ 
 static int omap_rproc_request_timer(struct device *dev, struct device_node *np,
 				    struct omap_rproc_timer *timer)
 {
@@ -171,104 +104,43 @@ static int omap_rproc_request_timer(struct device *dev, struct device_node *np,
 		return ret;
 	}
 
-	/* clean counter, remoteproc code will set the value */
+	 
 	timer->timer_ops->set_load(timer->odt, 0);
 
 	return 0;
 }
 
-/**
- * omap_rproc_start_timer() - start a timer for a remoteproc
- * @timer: handle to a OMAP rproc timer
- *
- * This helper function is used to start a timer associated with a remoteproc,
- * obtained using the request_timer ops. The helper function needs to be
- * invoked by the driver to start the timer (during device initialization)
- * or to just resume the timer.
- *
- * Return: 0 on success, otherwise a failure as returned by DMTimer ops
- */
+ 
 static inline int omap_rproc_start_timer(struct omap_rproc_timer *timer)
 {
 	return timer->timer_ops->start(timer->odt);
 }
 
-/**
- * omap_rproc_stop_timer() - stop a timer for a remoteproc
- * @timer: handle to a OMAP rproc timer
- *
- * This helper function is used to disable a timer associated with a
- * remoteproc, and needs to be called either during a device shutdown
- * or suspend operation. The separate helper function allows the driver
- * to just stop a timer without having to release the timer during a
- * suspend operation.
- *
- * Return: 0 on success, otherwise a failure as returned by DMTimer ops
- */
+ 
 static inline int omap_rproc_stop_timer(struct omap_rproc_timer *timer)
 {
 	return timer->timer_ops->stop(timer->odt);
 }
 
-/**
- * omap_rproc_release_timer() - release a timer for a remoteproc
- * @timer: handle to a OMAP rproc timer
- *
- * This helper function is used primarily to release a timer associated
- * with a remoteproc. The dmtimer will be available for other clients to
- * use once released.
- *
- * Return: 0 on success, otherwise a failure as returned by DMTimer ops
- */
+ 
 static inline int omap_rproc_release_timer(struct omap_rproc_timer *timer)
 {
 	return timer->timer_ops->free(timer->odt);
 }
 
-/**
- * omap_rproc_get_timer_irq() - get the irq for a timer
- * @timer: handle to a OMAP rproc timer
- *
- * This function is used to get the irq associated with a watchdog timer. The
- * function is called by the OMAP remoteproc driver to register a interrupt
- * handler to handle watchdog events on the remote processor.
- *
- * Return: irq id on success, otherwise a failure as returned by DMTimer ops
- */
+ 
 static inline int omap_rproc_get_timer_irq(struct omap_rproc_timer *timer)
 {
 	return timer->timer_ops->get_irq(timer->odt);
 }
 
-/**
- * omap_rproc_ack_timer_irq() - acknowledge a timer irq
- * @timer: handle to a OMAP rproc timer
- *
- * This function is used to clear the irq associated with a watchdog timer.
- * The function is called by the OMAP remoteproc upon a watchdog event on the
- * remote processor to clear the interrupt status of the watchdog timer.
- */
+ 
 static inline void omap_rproc_ack_timer_irq(struct omap_rproc_timer *timer)
 {
 	timer->timer_ops->write_status(timer->odt, OMAP_TIMER_INT_OVERFLOW);
 }
 
-/**
- * omap_rproc_watchdog_isr() - Watchdog ISR handler for remoteproc device
- * @irq: IRQ number associated with a watchdog timer
- * @data: IRQ handler data
- *
- * This ISR routine executes the required necessary low-level code to
- * acknowledge a watchdog timer interrupt. There can be multiple watchdog
- * timers associated with a rproc (like IPUs which have 2 watchdog timers,
- * one per Cortex M3/M4 core), so a lookup has to be performed to identify
- * the timer to acknowledge its interrupt.
- *
- * The function also invokes rproc_report_crash to report the watchdog event
- * to the remoteproc driver core, to trigger a recovery.
- *
- * Return: IRQ_HANDLED on success, otherwise IRQ_NONE
- */
+ 
 static irqreturn_t omap_rproc_watchdog_isr(int irq, void *data)
 {
 	struct rproc *rproc = data;
@@ -298,18 +170,7 @@ static irqreturn_t omap_rproc_watchdog_isr(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * omap_rproc_enable_timers() - enable the timers for a remoteproc
- * @rproc: handle of a remote processor
- * @configure: boolean flag used to acquire and configure the timer handle
- *
- * This function is used primarily to enable the timers associated with
- * a remoteproc. The configure flag is provided to allow the driver
- * to either acquire and start a timer (during device initialization) or
- * to just start a timer (during a resume operation).
- *
- * Return: 0 on success, otherwise an appropriate failure
- */
+ 
 static int omap_rproc_enable_timers(struct rproc *rproc, bool configure)
 {
 	int i;
@@ -438,18 +299,7 @@ free_timers:
 	return ret;
 }
 
-/**
- * omap_rproc_disable_timers() - disable the timers for a remoteproc
- * @rproc: handle of a remote processor
- * @configure: boolean flag used to release the timer handle
- *
- * This function is used primarily to disable the timers associated with
- * a remoteproc. The configure flag is provided to allow the driver
- * to either stop and release a timer (during device shutdown) or to just
- * stop a timer (during a suspend operation).
- *
- * Return: 0 on success or no timers
- */
+ 
 static int omap_rproc_disable_timers(struct rproc *rproc, bool configure)
 {
 	int i;
@@ -475,20 +325,7 @@ static int omap_rproc_disable_timers(struct rproc *rproc, bool configure)
 	return 0;
 }
 
-/**
- * omap_rproc_mbox_callback() - inbound mailbox message handler
- * @client: mailbox client pointer used for requesting the mailbox channel
- * @data: mailbox payload
- *
- * This handler is invoked by omap's mailbox driver whenever a mailbox
- * message is received. Usually, the mailbox payload simply contains
- * the index of the virtqueue that is kicked by the remote processor,
- * and we let remoteproc core handle it.
- *
- * In addition to virtqueue indices, we also have some out-of-band values
- * that indicates different events. Those values are deliberately very
- * big so they don't coincide with virtqueue indices.
- */
+ 
 static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 {
 	struct omap_rproc *oproc = container_of(client, struct omap_rproc,
@@ -501,10 +338,7 @@ static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 
 	switch (msg) {
 	case RP_MBOX_CRASH:
-		/*
-		 * remoteproc detected an exception, notify the rproc core.
-		 * The remoteproc core will handle the recovery.
-		 */
+		 
 		dev_err(dev, "omap rproc %s crashed\n", name);
 		rproc_report_crash(oproc->rproc, RPROC_FATAL_ERROR);
 		break;
@@ -523,20 +357,20 @@ static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 			dev_dbg(dev, "dropping unknown message 0x%x", msg);
 			return;
 		}
-		/* msg contains the index of the triggered vring */
+		 
 		if (rproc_vq_interrupt(oproc->rproc, msg) == IRQ_NONE)
 			dev_dbg(dev, "no message was found in vqid %d\n", msg);
 	}
 }
 
-/* kick a virtqueue */
+ 
 static void omap_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct omap_rproc *oproc = rproc->priv;
 	struct device *dev = rproc->dev.parent;
 	int ret;
 
-	/* wake up the rproc before kicking it */
+	 
 	ret = pm_runtime_get_sync(dev);
 	if (WARN_ON(ret < 0)) {
 		dev_err(dev, "pm_runtime_get_sync() failed during kick, ret = %d\n",
@@ -545,7 +379,7 @@ static void omap_rproc_kick(struct rproc *rproc, int vqid)
 		return;
 	}
 
-	/* send the index of the triggered virtqueue in the mailbox payload */
+	 
 	ret = mbox_send_message(oproc->mbox, (void *)vqid);
 	if (ret < 0)
 		dev_err(dev, "failed to send mailbox message, status = %d\n",
@@ -555,14 +389,7 @@ static void omap_rproc_kick(struct rproc *rproc, int vqid)
 	pm_runtime_put_autosuspend(dev);
 }
 
-/**
- * omap_rproc_write_dsp_boot_addr() - set boot address for DSP remote processor
- * @rproc: handle of a remote processor
- *
- * Set boot address for a supported DSP remote processor.
- *
- * Return: 0 on success, or -EINVAL if boot address is not aligned properly
- */
+ 
 static int omap_rproc_write_dsp_boot_addr(struct rproc *rproc)
 {
 	struct device *dev = rproc->dev.parent;
@@ -584,13 +411,7 @@ static int omap_rproc_write_dsp_boot_addr(struct rproc *rproc)
 	return regmap_update_bits(bdata->syscon, offset, mask, value);
 }
 
-/*
- * Power up the remote processor.
- *
- * This function will be invoked only after the firmware for this rproc
- * was loaded, parsed successfully, and all of its resource requirements
- * were met.
- */
+ 
 static int omap_rproc_start(struct rproc *rproc)
 {
 	struct omap_rproc *oproc = rproc->priv;
@@ -618,13 +439,7 @@ static int omap_rproc_start(struct rproc *rproc)
 		return ret;
 	}
 
-	/*
-	 * Ping the remote processor. this is only for sanity-sake;
-	 * there is no functional effect whatsoever.
-	 *
-	 * Note that the reply will _not_ arrive immediately: this message
-	 * will wait in the mailbox fifo until the remote processor is booted.
-	 */
+	 
 	ret = mbox_send_message(oproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
 	if (ret < 0) {
 		dev_err(dev, "mbox_send_message failed: %d\n", ret);
@@ -643,11 +458,7 @@ static int omap_rproc_start(struct rproc *rproc)
 		goto disable_timers;
 	}
 
-	/*
-	 * remote processor is up, so update the runtime pm status and
-	 * enable the auto-suspend. The device usage count is incremented
-	 * manually for balancing it for auto-suspend
-	 */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_get_noresume(dev);
@@ -664,21 +475,14 @@ put_mbox:
 	return ret;
 }
 
-/* power off the remote processor */
+ 
 static int omap_rproc_stop(struct rproc *rproc)
 {
 	struct device *dev = rproc->dev.parent;
 	struct omap_rproc *oproc = rproc->priv;
 	int ret;
 
-	/*
-	 * cancel any possible scheduled runtime suspend by incrementing
-	 * the device usage count, and resuming the device. The remoteproc
-	 * also needs to be woken up if suspended, to avoid the remoteproc
-	 * OS to continue to remember any context that it has saved, and
-	 * avoid potential issues in misindentifying a subsequent device
-	 * reboot as a power restore boot
-	 */
+	 
 	ret = pm_runtime_get_sync(dev);
 	if (ret < 0) {
 		pm_runtime_put_noidle(dev);
@@ -695,10 +499,7 @@ static int omap_rproc_stop(struct rproc *rproc)
 
 	mbox_free_channel(oproc->mbox);
 
-	/*
-	 * update the runtime pm states and status now that the remoteproc
-	 * has stopped
-	 */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_dont_use_autosuspend(dev);
 	pm_runtime_put_noidle(dev);
@@ -709,26 +510,13 @@ static int omap_rproc_stop(struct rproc *rproc)
 enable_device:
 	reset_control_deassert(oproc->reset);
 out:
-	/* schedule the next auto-suspend */
+	 
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_put_autosuspend(dev);
 	return ret;
 }
 
-/**
- * omap_rproc_da_to_va() - internal memory translation helper
- * @rproc: remote processor to apply the address translation for
- * @da: device address to translate
- * @len: length of the memory buffer
- *
- * Custom function implementing the rproc .da_to_va ops to provide address
- * translation (device address to kernel virtual address) for internal RAMs
- * present in a DSP or IPU device). The translated addresses can be used
- * either by the remoteproc core for loading, or by any rpmsg bus drivers.
- *
- * Return: translated virtual address in kernel memory space on success,
- *         or NULL on failure.
- */
+ 
 static void *omap_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_iomem)
 {
 	struct omap_rproc *oproc = rproc->priv;
@@ -745,7 +533,7 @@ static void *omap_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *
 		if (da >= oproc->mem[i].dev_addr && da + len <=
 		    oproc->mem[i].dev_addr + oproc->mem[i].size) {
 			offset = da - oproc->mem[i].dev_addr;
-			/* __force to make sparse happy with type conversion */
+			 
 			return (__force void *)(oproc->mem[i].cpu_addr +
 						offset);
 		}
@@ -767,7 +555,7 @@ static bool _is_rproc_in_standby(struct omap_rproc *oproc)
 	return ti_clk_is_in_standby(oproc->fck);
 }
 
-/* 1 sec is long enough time to let the remoteproc side suspend the device */
+ 
 #define DEF_SUSPEND_TIMEOUT 1000
 static int _omap_rproc_suspend(struct rproc *rproc, bool auto_suspend)
 {
@@ -791,21 +579,7 @@ static int _omap_rproc_suspend(struct rproc *rproc, bool auto_suspend)
 	if (!oproc->suspend_acked)
 		return -EBUSY;
 
-	/*
-	 * The remoteproc side is returning the ACK message before saving the
-	 * context, because the context saving is performed within a SYS/BIOS
-	 * function, and it cannot have any inter-dependencies against the IPC
-	 * layer. Also, as the SYS/BIOS needs to preserve properly the processor
-	 * register set, sending this ACK or signalling the completion of the
-	 * context save through a shared memory variable can never be the
-	 * absolute last thing to be executed on the remoteproc side, and the
-	 * MPU cannot use the ACK message as a sync point to put the remoteproc
-	 * into reset. The only way to ensure that the remote processor has
-	 * completed saving the context is to check that the module has reached
-	 * STANDBY state (after saving the context, the SYS/BIOS executes the
-	 * appropriate target-specific WFI instruction causing the module to
-	 * enter STANDBY).
-	 */
+	 
 	while (!_is_rproc_in_standby(oproc)) {
 		if (time_after(jiffies, ta))
 			return -ETIME;
@@ -825,11 +599,7 @@ static int _omap_rproc_suspend(struct rproc *rproc, bool auto_suspend)
 		goto enable_device;
 	}
 
-	/*
-	 * IOMMUs would have to be disabled specifically for runtime suspend.
-	 * They are handled automatically through System PM callbacks for
-	 * regular system suspend
-	 */
+	 
 	if (auto_suspend) {
 		ret = omap_iommu_domain_deactivate(rproc->domain);
 		if (ret) {
@@ -842,7 +612,7 @@ static int _omap_rproc_suspend(struct rproc *rproc, bool auto_suspend)
 	return 0;
 
 enable_timers:
-	/* ignore errors on re-enabling code */
+	 
 	omap_rproc_enable_timers(rproc, false);
 enable_device:
 	reset_control_deassert(oproc->reset);
@@ -855,11 +625,7 @@ static int _omap_rproc_resume(struct rproc *rproc, bool auto_suspend)
 	struct omap_rproc *oproc = rproc->priv;
 	int ret;
 
-	/*
-	 * IOMMUs would have to be enabled specifically for runtime resume.
-	 * They would have been already enabled automatically through System
-	 * PM callbacks for regular system resume
-	 */
+	 
 	if (auto_suspend) {
 		ret = omap_iommu_domain_activate(rproc->domain);
 		if (ret) {
@@ -868,7 +634,7 @@ static int _omap_rproc_resume(struct rproc *rproc, bool auto_suspend)
 		}
 	}
 
-	/* boot address could be lost after suspend, so restore it */
+	 
 	if (oproc->boot_data) {
 		ret = omap_rproc_write_dsp_boot_addr(rproc);
 		if (ret) {
@@ -924,10 +690,7 @@ static int __maybe_unused omap_rproc_suspend(struct device *dev)
 		goto out;
 	}
 
-	/*
-	 * remoteproc is running at the time of system suspend, so remember
-	 * it so as to wake it up during system resume
-	 */
+	 
 	oproc->need_resume = true;
 	rproc->state = RPROC_SUSPENDED;
 
@@ -951,11 +714,7 @@ static int __maybe_unused omap_rproc_resume(struct device *dev)
 		goto out;
 	}
 
-	/*
-	 * remoteproc was auto-suspended at the time of system suspend,
-	 * so no need to wake-up the processor (leave it in suspended
-	 * state, will be woken up during a subsequent runtime_resume)
-	 */
+	 
 	if (!oproc->need_resume)
 		goto out;
 
@@ -993,10 +752,7 @@ static int omap_rproc_runtime_suspend(struct device *dev)
 		goto out;
 	}
 
-	/*
-	 * do not even attempt suspend if the remote processor is not
-	 * idled for runtime auto-suspend
-	 */
+	 
 	if (!_is_rproc_in_standby(oproc)) {
 		ret = -EBUSY;
 		goto abort;
@@ -1041,7 +797,7 @@ out:
 	mutex_unlock(&rproc->lock);
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct omap_rproc_mem_data ipu_mems[] = {
 	{ .name = "l2ram", .dev_addr = 0x20000000 },
@@ -1109,7 +865,7 @@ static const struct of_device_id omap_rproc_of_match[] = {
 		.data           = &dra7_ipu_dev_data,
 	},
 	{
-		/* end */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, omap_rproc_of_match);
@@ -1249,10 +1005,7 @@ static int omap_rproc_of_get_timers(struct platform_device *pdev,
 	struct device *dev = &pdev->dev;
 	int num_timers;
 
-	/*
-	 * Timer nodes are directly used in client nodes as phandles, so
-	 * retrieve the count using appropriate size
-	 */
+	 
 	oproc->num_timers = of_count_phandle_with_args(np, "ti,timers", NULL);
 	if (oproc->num_timers <= 0) {
 		dev_dbg(dev, "device does not have timers, status = %d\n",
@@ -1313,7 +1066,7 @@ static int omap_rproc_probe(struct platform_device *pdev)
 	oproc = rproc->priv;
 	oproc->rproc = rproc;
 	oproc->reset = reset;
-	/* All existing OMAP IPU and DSP processors have an MMU */
+	 
 	rproc->has_iommu = true;
 
 	ret = omap_rproc_of_get_internal_memories(pdev, rproc);

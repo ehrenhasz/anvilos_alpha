@@ -1,22 +1,6 @@
-/* mbscasecmp - case-insensitive multibyte string comparison. */
+ 
 
-/* Copyright (C) 2009-2015 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -29,7 +13,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-/* Compare MBS1 and MBS2 without regard to case.  */
+ 
 int
 mbscasecmp (mbs1, mbs2)
     const char *mbs1;
@@ -39,7 +23,7 @@ mbscasecmp (mbs1, mbs2)
   wchar_t c1, c2, l1, l2;
 
   len1 = len2 = 0;
-  /* Reset multibyte characters to their initial state.	 */
+   
   (void) mblen ((char *) NULL, 0);
 
   mb_cur_max = MB_CUR_MAX;

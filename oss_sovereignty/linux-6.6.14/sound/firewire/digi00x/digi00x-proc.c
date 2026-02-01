@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-proc.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include "digi00x.h"
 
@@ -69,10 +65,7 @@ void snd_dg00x_proc_init(struct snd_dg00x *dg00x)
 {
 	struct snd_info_entry *root, *entry;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(dg00x->card, "firewire",
 					  dg00x->card->proc_root);
 	if (root == NULL)

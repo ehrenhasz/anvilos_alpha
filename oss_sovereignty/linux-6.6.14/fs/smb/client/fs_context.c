@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2020, Microsoft Corporation.
- *
- *   Author(s): Steve French <stfrench@microsoft.com>
- *              David Howells <dhowells@redhat.com>
- */
 
-/*
-#include <linux/module.h>
-#include <linux/nsproxy.h>
-#include <linux/slab.h>
-#include <linux/magic.h>
-#include <linux/security.h>
-#include <net/net_namespace.h>
-#ifdef CONFIG_CIFS_DFS_UPCALL
-#include "dfs_cache.h"
-#endif
-*/
+ 
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/fs_context.h>
@@ -68,7 +53,7 @@ static const match_table_t cifs_secflavor_tokens = {
 };
 
 const struct fs_parameter_spec smb3_fs_parameters[] = {
-	/* Mount options that take no arguments */
+	 
 	fsparam_flag_no("user_xattr", Opt_user_xattr),
 	fsparam_flag_no("forceuid", Opt_forceuid),
 	fsparam_flag_no("multichannel", Opt_multichannel),
@@ -128,7 +113,7 @@ const struct fs_parameter_spec smb3_fs_parameters[] = {
 	fsparam_flag("compress", Opt_compress),
 	fsparam_flag("witness", Opt_witness),
 
-	/* Mount options which take numeric value */
+	 
 	fsparam_u32("backupuid", Opt_backupuid),
 	fsparam_u32("backupgid", Opt_backupgid),
 	fsparam_u32("uid", Opt_uid),
@@ -155,7 +140,7 @@ const struct fs_parameter_spec smb3_fs_parameters[] = {
 	fsparam_u64("snapshot", Opt_snapshot),
 	fsparam_u32("max_channels", Opt_max_channels),
 
-	/* Mount options which take string value */
+	 
 	fsparam_string("source", Opt_source),
 	fsparam_string("user", Opt_user),
 	fsparam_string("username", Opt_user),
@@ -174,7 +159,7 @@ const struct fs_parameter_spec smb3_fs_parameters[] = {
 	fsparam_string("sec", Opt_sec),
 	fsparam_string("cache", Opt_cache),
 
-	/* Arguments that should be ignored */
+	 
 	fsparam_flag("guest", Opt_ignore),
 	fsparam_flag("noatime", Opt_ignore),
 	fsparam_flag("relatime", Opt_ignore),
@@ -186,10 +171,7 @@ const struct fs_parameter_spec smb3_fs_parameters[] = {
 	fsparam_flag_no("auto", Opt_ignore),
 	fsparam_string("cred", Opt_ignore),
 	fsparam_string("credentials", Opt_ignore),
-	/*
-	 * UNC and prefixpath is now extracted from Opt_source
-	 * in the new mount API so we can just ignore them going forward.
-	 */
+	 
 	fsparam_string("unc", Opt_ignore),
 	fsparam_string("prefixpath", Opt_ignore),
 	{}
@@ -201,10 +183,7 @@ cifs_parse_security_flavors(struct fs_context *fc, char *value, struct smb3_fs_c
 
 	substring_t args[MAX_OPT_ARGS];
 
-	/*
-	 * With mount options, the last one should win. Reset any existing
-	 * settings back to default.
-	 */
+	 
 	ctx->sectype = Unspecified;
 	ctx->sign = false;
 
@@ -320,9 +299,7 @@ smb3_fs_context_dup(struct smb3_fs_context *new_ctx, struct smb3_fs_context *ctx
 	new_ctx->source = NULL;
 	new_ctx->iocharset = NULL;
 	new_ctx->leaf_fullpath = NULL;
-	/*
-	 * Make sure to stay in sync with smb3_cleanup_fs_context_contents()
-	 */
+	 
 	DUP_CTX_STR(prepath);
 	DUP_CTX_STR(username);
 	DUP_CTX_STR(password);
@@ -376,7 +353,7 @@ cifs_parse_smb_version(struct fs_context *fc, char *value, struct smb3_fs_contex
 	case Smb_20:
 		cifs_errorf(fc, "vers=2.0 mount not permitted when legacy dialects disabled\n");
 		return 1;
-#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 	case Smb_21:
 		ctx->ops = &smb21_operations;
 		ctx->vals = &smb21_values;
@@ -386,7 +363,7 @@ cifs_parse_smb_version(struct fs_context *fc, char *value, struct smb3_fs_contex
 		ctx->vals = &smb30_values;
 		break;
 	case Smb_302:
-		ctx->ops = &smb30_operations; /* currently identical with 3.0 */
+		ctx->ops = &smb30_operations;  
 		ctx->vals = &smb302_values;
 		break;
 	case Smb_311:
@@ -394,7 +371,7 @@ cifs_parse_smb_version(struct fs_context *fc, char *value, struct smb3_fs_contex
 		ctx->vals = &smb311_values;
 		break;
 	case Smb_3any:
-		ctx->ops = &smb30_operations; /* currently identical with 3.0 */
+		ctx->ops = &smb30_operations;  
 		ctx->vals = &smb3any_values;
 		break;
 	case Smb_default:
@@ -439,39 +416,29 @@ out:
 	return rc;
 }
 
-/*
- * Remove duplicate path delimiters. Windows is supposed to do that
- * but there are some bugs that prevent rename from working if there are
- * multiple delimiters.
- *
- * Return a sanitized duplicate of @path or NULL for empty prefix paths.
- * Otherwise, return ERR_PTR.
- *
- * @gfp indicates the GFP_* flags for kstrdup.
- * The caller is responsible for freeing the original.
- */
+ 
 #define IS_DELIM(c) ((c) == '/' || (c) == '\\')
 char *cifs_sanitize_prepath(char *prepath, gfp_t gfp)
 {
 	char *cursor1 = prepath, *cursor2 = prepath;
 	char *s;
 
-	/* skip all prepended delimiters */
+	 
 	while (IS_DELIM(*cursor1))
 		cursor1++;
 
-	/* copy the first letter */
+	 
 	*cursor2 = *cursor1;
 
-	/* copy the remainder... */
+	 
 	while (*(cursor1++)) {
-		/* ... skipping all duplicated delimiters */
+		 
 		if (IS_DELIM(*cursor1) && IS_DELIM(*cursor2))
 			continue;
 		*(++cursor2) = *cursor1;
 	}
 
-	/* if the last character is a delimiter, skip it */
+	 
 	if (IS_DELIM(*(cursor2 - 1)))
 		cursor2--;
 
@@ -484,11 +451,7 @@ char *cifs_sanitize_prepath(char *prepath, gfp_t gfp)
 	return s;
 }
 
-/*
- * Return full path based on the values of @ctx->{UNC,prepath}.
- *
- * It is assumed that both values were already parsed by smb3_parse_devname().
- */
+ 
 char *smb3_fs_context_fullpath(const struct smb3_fs_context *ctx, char dirsep)
 {
 	size_t ulen, plen;
@@ -510,11 +473,7 @@ char *smb3_fs_context_fullpath(const struct smb3_fs_context *ctx, char dirsep)
 	return s;
 }
 
-/*
- * Parse a devname into substrings and populate the ctx->UNC and ctx->prepath
- * fields with the result. Returns 0 on success and an error otherwise
- * (e.g. ENOMEM or EINVAL)
- */
+ 
 int
 smb3_parse_devname(const char *devname, struct smb3_fs_context *ctx)
 {
@@ -528,31 +487,31 @@ smb3_parse_devname(const char *devname, struct smb3_fs_context *ctx)
 		return -EINVAL;
 	}
 
-	/* make sure we have a valid UNC double delimiter prefix */
+	 
 	len = strspn(devname, delims);
 	if (len != 2)
 		return -EINVAL;
 
-	/* find delimiter between host and sharename */
+	 
 	pos = strpbrk(devname + 2, delims);
 	if (!pos)
 		return -EINVAL;
 
-	/* record the server hostname */
+	 
 	kfree(ctx->server_hostname);
 	ctx->server_hostname = kstrndup(devname + 2, pos - devname - 2, GFP_KERNEL);
 	if (!ctx->server_hostname)
 		return -ENOMEM;
 
-	/* skip past delimiter */
+	 
 	++pos;
 
-	/* now go until next delimiter or end of string */
+	 
 	len = strcspn(pos, delims);
 	if (!len)
 		return -EINVAL;
 
-	/* move "pos" up to delimiter or NULL */
+	 
 	pos += len;
 	kfree(ctx->UNC);
 	ctx->UNC = kstrndup(devname, pos - devname, GFP_KERNEL);
@@ -561,14 +520,14 @@ smb3_parse_devname(const char *devname, struct smb3_fs_context *ctx)
 
 	convert_delimiter(ctx->UNC, '\\');
 
-	/* skip any delimiter */
+	 
 	if (*pos == '/' || *pos == '\\')
 		pos++;
 
 	kfree(ctx->prepath);
 	ctx->prepath = NULL;
 
-	/* If pos is NULL then no prepath */
+	 
 	if (!*pos)
 		return 0;
 
@@ -598,18 +557,7 @@ static const struct fs_context_operations smb3_fs_context_ops = {
 	.reconfigure		= smb3_reconfigure,
 };
 
-/*
- * Parse a monolithic block of data from sys_mount().
- * smb3_fs_context_parse_monolithic - Parse key[=val][,key[=val]]* mount data
- * @ctx: The superblock configuration to fill in.
- * @data: The data to parse
- *
- * Parse a blob of data that's in key[=val][,key[=val]]* form.  This can be
- * called from the ->monolithic_mount_data() fs_context operation.
- *
- * Returns 0 on success or the error returned by the ->parse_option() fs_context
- * operation on failure.
- */
+ 
 static int smb3_fs_context_parse_monolithic(struct fs_context *fc,
 					   void *data)
 {
@@ -623,7 +571,7 @@ static int smb3_fs_context_parse_monolithic(struct fs_context *fc,
 	if (ret)
 		return ret;
 
-	/* BB Need to add support for sep= here TBD */
+	 
 	while ((key = strsep(&options, ",")) != NULL) {
 		size_t len;
 		char *value;
@@ -631,10 +579,7 @@ static int smb3_fs_context_parse_monolithic(struct fs_context *fc,
 		if (*key == 0)
 			break;
 
-		/* Check if following character is the deliminator If yes,
-		 * we have encountered a double deliminator reset the NULL
-		 * character to the deliminator
-		 */
+		 
 		while (options && options[0] == ',') {
 			len = strlen(key);
 			strcpy(key + len, options);
@@ -661,9 +606,7 @@ static int smb3_fs_context_parse_monolithic(struct fs_context *fc,
 	return ret;
 }
 
-/*
- * Validate the preparsed information in the config.
- */
+ 
 static int smb3_fs_context_validate(struct fs_context *fc)
 {
 	struct smb3_fs_context *ctx = smb3_fc2context(fc);
@@ -674,7 +617,7 @@ static int smb3_fs_context_validate(struct fs_context *fc)
 	}
 
 #ifndef CONFIG_KEYS
-	/* Muliuser mounts require CONFIG_KEYS support */
+	 
 	if (ctx->multiuser) {
 		cifs_errorf(fc, "Multiuser mounts require kernels with CONFIG_KEYS enabled\n");
 		return -1;
@@ -690,7 +633,7 @@ static int smb3_fs_context_validate(struct fs_context *fc)
 		return -1;
 	}
 
-	/* make sure UNC has a share name */
+	 
 	if (strlen(ctx->UNC) < 3 || !strchr(ctx->UNC + 3, '\\')) {
 		cifs_errorf(fc, "Malformed UNC. Unable to find share name.\n");
 		return -ENOENT;
@@ -700,8 +643,8 @@ static int smb3_fs_context_validate(struct fs_context *fc)
 		int len;
 		const char *slash;
 
-		/* No ip= option specified? Try to get it from UNC */
-		/* Use the address part of the UNC. */
+		 
+		 
 		slash = strchr(&ctx->UNC[2], '\\');
 		len = slash - &ctx->UNC[2];
 		if (!cifs_convert_address((struct sockaddr *)&ctx->dstaddr,
@@ -711,7 +654,7 @@ static int smb3_fs_context_validate(struct fs_context *fc)
 		}
 	}
 
-	/* set the port that we got earlier */
+	 
 	cifs_set_port((struct sockaddr *)&ctx->dstaddr, ctx->port);
 
 	if (ctx->override_uid && !ctx->uid_specified) {
@@ -742,9 +685,7 @@ static int smb3_get_tree_common(struct fs_context *fc)
 	return rc;
 }
 
-/*
- * Create an SMB3 superblock from the parameters passed.
- */
+ 
 static int smb3_get_tree(struct fs_context *fc)
 {
 	int err = smb3_fs_context_validate(fc);
@@ -765,10 +706,7 @@ static void smb3_fs_context_free(struct fs_context *fc)
 	smb3_cleanup_fs_context(ctx);
 }
 
-/*
- * Compare the old and new proposed context during reconfigure
- * and check if the changes are compatible.
- */
+ 
 static int smb3_verify_reconfigure_ctx(struct fs_context *fc,
 				       struct smb3_fs_context *new_ctx,
 				       struct smb3_fs_context *old_ctx)
@@ -848,12 +786,7 @@ static int smb3_reconfigure(struct fs_context *fc)
 	if (rc)
 		return rc;
 
-	/*
-	 * We can not change UNC/username/password/domainname/
-	 * workstation_name/nodename/iocharset
-	 * during reconnect so ignore what we have in the new context and
-	 * just use what we already have in cifs_sb->ctx.
-	 */
+	 
 	STEAL_STRING(cifs_sb, ctx, UNC);
 	STEAL_STRING(cifs_sb, ctx, source);
 	STEAL_STRING(cifs_sb, ctx, username);
@@ -862,7 +795,7 @@ static int smb3_reconfigure(struct fs_context *fc)
 	STEAL_STRING(cifs_sb, ctx, nodename);
 	STEAL_STRING(cifs_sb, ctx, iocharset);
 
-	/* if rsize or wsize not passed in on remount, use previous values */
+	 
 	if (ctx->rsize == 0)
 		ctx->rsize = cifs_sb->ctx->rsize;
 	if (ctx->wsize == 0)
@@ -893,10 +826,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 
 	cifs_dbg(FYI, "CIFS: parsing cifs mount option '%s'\n", param->key);
 
-	/*
-	 * fs_parse can not handle string options with an empty value so
-	 * we will need special handling of them.
-	 */
+	 
 	if (param->type == fs_value_is_string && param->string[0] == 0) {
 		if (!strcmp("pass", param->key) || !strcmp("password", param->key)) {
 			skip_parsing = true;
@@ -944,7 +874,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 			ctx->remap = false;
 		else {
 			ctx->remap = true;
-			ctx->sfu_remap = false; /* disable SFU mapping */
+			ctx->sfu_remap = false;  
 		}
 		break;
 	case Opt_mapchars:
@@ -952,7 +882,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 			ctx->sfu_remap = false;
 		else {
 			ctx->sfu_remap = true;
-			ctx->remap = false; /* disable SFM (mapposix) mapping */
+			ctx->remap = false;  
 		}
 		break;
 	case Opt_user_xattr:
@@ -1012,7 +942,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 			ctx->max_channels = 1;
 		} else {
 			ctx->multichannel = true;
-			/* if number of channels not specified, default to 2 */
+			 
 			if (ctx->max_channels < 2)
 				ctx->max_channels = 2;
 		}
@@ -1065,12 +995,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		ctx->min_offload = result.uint_32;
 		break;
 	case Opt_blocksize:
-		/*
-		 * inode blocksize realistically should never need to be
-		 * less than 16K or greater than 16M and default is 1MB.
-		 * Note that small inode block sizes (e.g. 64K) can lead
-		 * to very poor performance of common tools like cp and scp
-		 */
+		 
 		if ((result.uint_32 < CIFS_MAX_MSGSIZE) ||
 		   (result.uint_32 > (4 * SMB3_DEFAULT_IOSIZE))) {
 			cifs_errorf(fc, "%s: Invalid blocksize\n",
@@ -1081,17 +1006,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		ctx->got_bsize = true;
 		break;
 	case Opt_rasize:
-		/*
-		 * readahead size realistically should never need to be
-		 * less than 1M (CIFS_DEFAULT_IOSIZE) or greater than 32M
-		 * (perhaps an exception should be considered in the
-		 * for the case of a large number of channels
-		 * when multichannel is negotiated) since that would lead
-		 * to plenty of parallel I/O in flight to the server.
-		 * Note that smaller read ahead sizes would
-		 * hurt performance of common tools like cp and scp
-		 * which often trigger sequential i/o with read ahead
-		 */
+		 
 		if ((result.uint_32 > (8 * SMB3_DEFAULT_IOSIZE)) ||
 		    (result.uint_32 < CIFS_DEFAULT_IOSIZE)) {
 			cifs_errorf(fc, "%s: Invalid rasize %d vs. %d\n",
@@ -1162,7 +1077,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 			goto cifs_parse_mount_err;
 		}
 		ctx->max_channels = result.uint_32;
-		/* If more than one channel requested ... they want multichan */
+		 
 		if (result.uint_32 > 1)
 			ctx->multichannel = true;
 		break;
@@ -1215,7 +1130,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		if (ctx->nullauth)
 			break;
 		if (strlen(param->string) == 0) {
-			/* null user, ie. anonymous authentication */
+			 
 			ctx->nullauth = 1;
 			break;
 		}
@@ -1294,68 +1209,57 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 				goto cifs_parse_mount_err;
 			}
 		}
-		/* if iocharset not set then load_nls_default
-		 * is used by caller
-		 */
+		 
 		cifs_dbg(FYI, "iocharset set to %s\n", ctx->iocharset);
 		break;
 	case Opt_netbiosname:
 		memset(ctx->source_rfc1001_name, 0x20,
 			RFC1001_NAME_LEN);
-		/*
-		 * FIXME: are there cases in which a comma can
-		 * be valid in workstation netbios name (and
-		 * need special handling)?
-		 */
+		 
 		for (i = 0; i < RFC1001_NAME_LEN; i++) {
-			/* don't ucase netbiosname for user */
+			 
 			if (param->string[i] == 0)
 				break;
 			ctx->source_rfc1001_name[i] = param->string[i];
 		}
-		/* The string has 16th byte zero still from
-		 * set at top of the function
-		 */
+		 
 		if (i == RFC1001_NAME_LEN && param->string[i] != 0)
 			pr_warn("netbiosname longer than 15 truncated\n");
 		break;
 	case Opt_servern:
-		/* last byte, type, is 0x20 for servr type */
+		 
 		memset(ctx->target_rfc1001_name, 0x20,
 			RFC1001_NAME_LEN_WITH_NULL);
-		/*
-		 * BB are there cases in which a comma can be valid in this
-		 * workstation netbios name (and need special handling)?
-		 */
+		 
 
-		/* user or mount helper must uppercase the netbios name */
+		 
 		for (i = 0; i < 15; i++) {
 			if (param->string[i] == 0)
 				break;
 			ctx->target_rfc1001_name[i] = param->string[i];
 		}
 
-		/* The string has 16th byte zero still from set at top of function */
+		 
 		if (i == RFC1001_NAME_LEN && param->string[i] != 0)
 			pr_warn("server netbiosname longer than 15 truncated\n");
 		break;
 	case Opt_ver:
-		/* version of mount userspace tools, not dialect */
-		/* If interface changes in mount.cifs bump to new ver */
+		 
+		 
 		if (strncasecmp(param->string, "1", 1) == 0) {
 			if (strlen(param->string) > 1) {
 				pr_warn("Bad mount helper ver=%s. Did you want SMB1 (CIFS) dialect and mean to type vers=1.0 instead?\n",
 					param->string);
 				goto cifs_parse_mount_err;
 			}
-			/* This is the default */
+			 
 			break;
 		}
-		/* For all other value, error */
+		 
 		pr_warn("Invalid mount helper version specified\n");
 		goto cifs_parse_mount_err;
 	case Opt_vers:
-		/* protocol version (dialect) */
+		 
 		if (cifs_parse_smb_version(fc, param->string, ctx, is_smb3) != 0)
 			goto cifs_parse_mount_err;
 		ctx->got_version = true;
@@ -1407,11 +1311,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		break;
 	case Opt_brl:
 		if (result.negated) {
-			/*
-			 * turn off mandatory locking in mode
-			 * if remote locking is turned off since the
-			 * local vfs will do advisory
-			 */
+			 
 			if (ctx->file_mode ==
 				(S_IALLUGO & ~(S_ISUID | S_IXGRP)))
 				ctx->file_mode = S_IALLUGO;
@@ -1466,11 +1366,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		ctx->ignore_signature = true;
 		break;
 	case Opt_seal:
-		/* we do not do the following in secFlags because seal
-		 * is a per tree connection (mount) not a per socket
-		 * or per-smb connection option in the protocol
-		 * vol->secFlg |= CIFSSEC_MUST_SEAL;
-		 */
+		 
 		ctx->seal = 1;
 		break;
 	case Opt_noac:
@@ -1512,7 +1408,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		break;
 	case Opt_resilient:
 		if (result.negated) {
-			ctx->resilient = false; /* already the default */
+			ctx->resilient = false;  
 		} else {
 			ctx->resilient = true;
 			if (ctx->persistent) {
@@ -1522,7 +1418,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		}
 		break;
 	case Opt_tcp_nodelay:
-		/* tcp nodelay should not usually be needed since we CORK/UNCORK the socket */
+		 
 		if (result.negated)
 			ctx->sockopt_tcp_nodelay = false;
 		else
@@ -1535,7 +1431,7 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
 		ctx->rdma = true;
 		break;
 	}
-	/* case Opt_ignore: - is ignored as expected ... */
+	 
 
 	return 0;
 
@@ -1557,74 +1453,57 @@ int smb3_init_fs_context(struct fs_context *fc)
 
 	strscpy(ctx->workstation_name, nodename, sizeof(ctx->workstation_name));
 
-	/*
-	 * does not have to be perfect mapping since field is
-	 * informational, only used for servers that do not support
-	 * port 445 and it can be overridden at mount time
-	 */
+	 
 	memset(ctx->source_rfc1001_name, 0x20, RFC1001_NAME_LEN);
 	for (i = 0; i < strnlen(nodename, RFC1001_NAME_LEN); i++)
 		ctx->source_rfc1001_name[i] = toupper(nodename[i]);
 
 	ctx->source_rfc1001_name[RFC1001_NAME_LEN] = 0;
-	/*
-	 * null target name indicates to use *SMBSERVR default called name
-	 *  if we end up sending RFC1001 session initialize
-	 */
+	 
 	ctx->target_rfc1001_name[0] = 0;
 	ctx->cred_uid = current_uid();
 	ctx->linux_uid = current_uid();
 	ctx->linux_gid = current_gid();
-	/* By default 4MB read ahead size, 1MB block size */
-	ctx->bsize = CIFS_DEFAULT_IOSIZE; /* can improve cp performance significantly */
-	ctx->rasize = 0; /* 0 = use default (ie negotiated rsize) for read ahead pages */
+	 
+	ctx->bsize = CIFS_DEFAULT_IOSIZE;  
+	ctx->rasize = 0;  
 
-	/*
-	 * default to SFM style remapping of seven reserved characters
-	 * unless user overrides it or we negotiate CIFS POSIX where
-	 * it is unnecessary.  Can not simultaneously use more than one mapping
-	 * since then readdir could list files that open could not open
-	 */
+	 
 	ctx->remap = true;
 
-	/* default to only allowing write access to owner of the mount */
+	 
 	ctx->dir_mode = ctx->file_mode = S_IRUGO | S_IXUGO | S_IWUSR;
 
-	/* ctx->retry default is 0 (i.e. "soft" limited retry not hard retry) */
-	/* default is always to request posix paths. */
+	 
+	 
 	ctx->posix_paths = 1;
-	/* default to using server inode numbers where available */
+	 
 	ctx->server_ino = 1;
 
-	/* default is to use strict cifs caching semantics */
+	 
 	ctx->strict_io = true;
 
 	ctx->acregmax = CIFS_DEF_ACTIMEO;
 	ctx->acdirmax = CIFS_DEF_ACTIMEO;
 	ctx->closetimeo = SMB3_DEF_DCLOSETIMEO;
 	ctx->max_cached_dirs = MAX_CACHED_FIDS;
-	/* Most clients set timeout to 0, allows server to use its default */
-	ctx->handle_timeout = 0; /* See MS-SMB2 spec section 2.2.14.2.12 */
+	 
+	ctx->handle_timeout = 0;  
 
-	/* offer SMB2.1 and later (SMB3 etc). Secure and widely accepted */
+	 
 	ctx->ops = &smb30_operations;
 	ctx->vals = &smbdefault_values;
 
 	ctx->echo_interval = SMB_ECHO_INTERVAL_DEFAULT;
 
-	/* default to no multichannel (single server connection) */
+	 
 	ctx->multichannel = false;
 	ctx->max_channels = 1;
 
-	ctx->backupuid_specified = false; /* no backup intent for a user */
-	ctx->backupgid_specified = false; /* no backup intent for a group */
+	ctx->backupuid_specified = false;  
+	ctx->backupgid_specified = false;  
 
-/*
- *	short int override_uid = -1;
- *	short int override_gid = -1;
- *	char *nodename = strdup(utsname()->nodename);
- *	struct sockaddr *dstaddr = (struct sockaddr *)&vol->dstaddr;
- */
+ 
 
 	fc->fs_private = ctx;
 	fc->ops = &smb3_fs_context_ops;
@@ -1637,9 +1516,7 @@ smb3_cleanup_fs_context_contents(struct smb3_fs_context *ctx)
 	if (ctx == NULL)
 		return;
 
-	/*
-	 * Make sure this stays in sync with smb3_fs_context_dup()
-	 */
+	 
 	kfree(ctx->username);
 	ctx->username = NULL;
 	kfree_sensitive(ctx->password);
@@ -1808,17 +1685,7 @@ void smb3_update_mnt_flags(struct cifs_sb_info *cifs_sb)
 		cifs_sb->mnt_cifs_flags &= ~CIFS_MOUNT_MF_SYMLINKS;
 	if (ctx->mfsymlinks) {
 		if (ctx->sfu_emul) {
-			/*
-			 * Our SFU ("Services for Unix" emulation does not allow
-			 * creating symlinks but does allow reading existing SFU
-			 * symlinks (it does allow both creating and reading SFU
-			 * style mknod and FIFOs though). When "mfsymlinks" and
-			 * "sfu" are both enabled at the same time, it allows
-			 * reading both types of symlinks, but will only create
-			 * them with mfsymlinks format. This allows better
-			 * Apple compatibility (probably better for Samba too)
-			 * while still recognizing old Windows style symlinks.
-			 */
+			 
 			cifs_dbg(VFS, "mount options mfsymlinks and sfu both enabled\n");
 		}
 	}

@@ -1,15 +1,4 @@
-/*
- *  linux/drivers/video/amba-clcd.c
- *
- * Copyright (C) 2001 ARM Limited, by David A Rusling
- * Updated to 2.5, Deep Blue Solutions Ltd.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- *  ARM PrimeCell PL110 Color LCD Controller
- */
+ 
 #include <linux/amba/bus.h>
 #include <linux/amba/clcd.h>
 #include <linux/backlight.h>
@@ -32,7 +21,7 @@
 
 #define to_clcd(info)	container_of(info, struct clcd_fb, fb)
 
-/* This is limited to 16 characters when displayed by X startup */
+ 
 static const char *clcd_name = "CLCD FB";
 
 static inline void clcdfb_set_start(struct clcd_fb *fb)
@@ -71,9 +60,7 @@ static void clcdfb_disable(struct clcd_fb *fb)
 		writel(val, fb->regs + fb->off_cntl);
 	}
 
-	/*
-	 * Disable CLCD clock source.
-	 */
+	 
 	if (fb->clk_enabled) {
 		fb->clk_enabled = false;
 		clk_disable(fb->clk);
@@ -82,39 +69,29 @@ static void clcdfb_disable(struct clcd_fb *fb)
 
 static void clcdfb_enable(struct clcd_fb *fb, u32 cntl)
 {
-	/*
-	 * Enable the CLCD clock source.
-	 */
+	 
 	if (!fb->clk_enabled) {
 		fb->clk_enabled = true;
 		clk_enable(fb->clk);
 	}
 
-	/*
-	 * Bring up by first enabling..
-	 */
+	 
 	cntl |= CNTL_LCDEN;
 	writel(cntl, fb->regs + fb->off_cntl);
 
 	msleep(20);
 
-	/*
-	 * and now apply power.
-	 */
+	 
 	cntl |= CNTL_LCDPWR;
 	writel(cntl, fb->regs + fb->off_cntl);
 
-	/*
-	 * Turn on backlight
-	 */
+	 
 	if (fb->panel->backlight) {
 		fb->panel->backlight->props.power = FB_BLANK_UNBLANK;
 		backlight_update_status(fb->panel->backlight);
 	}
 
-	/*
-	 * finally, enable the interface.
-	 */
+	 
 	if (fb->board->enable)
 		fb->board->enable(fb);
 }
@@ -128,14 +105,14 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 	if (fb->panel->caps && fb->board->caps)
 		caps = fb->panel->caps & fb->board->caps;
 	else {
-		/* Old way of specifying what can be used */
+		 
 		caps = fb->panel->cntl & CNTL_BGR ?
 			CLCD_CAP_BGR : CLCD_CAP_RGB;
-		/* But mask out 444 modes as they weren't supported */
+		 
 		caps &= ~CLCD_CAP_444;
 	}
 
-	/* Only TFT panels can do RGB888/BGR888 */
+	 
 	if (!(fb->panel->cntl & CNTL_LCDTFT))
 		caps &= ~CLCD_CAP_888;
 
@@ -150,7 +127,7 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 	case 2:
 	case 4:
 	case 8:
-		/* If we can't do 5551, reject */
+		 
 		caps &= CLCD_CAP_5551;
 		if (!caps) {
 			ret = -EINVAL;
@@ -166,16 +143,13 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 		break;
 
 	case 16:
-		/* If we can't do 444, 5551 or 565, reject */
+		 
 		if (!(caps & (CLCD_CAP_444 | CLCD_CAP_5551 | CLCD_CAP_565))) {
 			ret = -EINVAL;
 			break;
 		}
 
-		/*
-		 * Green length can be 4, 5 or 6 depending whether
-		 * we're operating in 444, 5551 or 565 mode.
-		 */
+		 
 		if (var->green.length == 4 && caps & CLCD_CAP_444)
 			caps &= CLCD_CAP_444;
 		if (var->green.length == 5 && caps & CLCD_CAP_5551)
@@ -183,10 +157,7 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 		else if (var->green.length == 6 && caps & CLCD_CAP_565)
 			caps &= CLCD_CAP_565;
 		else {
-			/*
-			 * PL110 officially only supports RGB555,
-			 * but may be wired up to allow RGB565.
-			 */
+			 
 			if (caps & CLCD_CAP_565) {
 				var->green.length = 6;
 				caps &= CLCD_CAP_565;
@@ -208,7 +179,7 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 		}
 		break;
 	case 32:
-		/* If we can't do 888, reject */
+		 
 		caps &= CLCD_CAP_888;
 		if (!caps) {
 			ret = -EINVAL;
@@ -224,11 +195,7 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 		break;
 	}
 
-	/*
-	 * >= 16bpp displays have separate colour component bitfields
-	 * encoded in the pixel data.  Calculate their position from
-	 * the bitfield length defined above.
-	 */
+	 
 	if (ret == 0 && var->bits_per_pixel >= 16) {
 		bool bgr, rgb;
 
@@ -236,11 +203,7 @@ clcdfb_set_bitfields(struct clcd_fb *fb, struct fb_var_screeninfo *var)
 		rgb = caps & CLCD_CAP_RGB && var->red.offset == 0;
 
 		if (!bgr && !rgb)
-			/*
-			 * The requested format was not possible, try just
-			 * our capabilities.  One of BGR or RGB must be
-			 * supported.
-			 */
+			 
 			bgr = caps & CLCD_CAP_BGR;
 
 		if (bgr) {
@@ -327,10 +290,7 @@ static inline u32 convert_bitfield(int val, struct fb_bitfield *bf)
 	return (val >> (16 - bf->length) & mask) << bf->offset;
 }
 
-/*
- *  Set a single color register. The values supplied have a 16 bit
- *  magnitude.  Return != 0 for invalid regno.
- */
+ 
 static int
 clcdfb_setcolreg(unsigned int regno, unsigned int red, unsigned int green,
 		 unsigned int blue, unsigned int transp, struct fb_info *info)
@@ -351,10 +311,7 @@ clcdfb_setcolreg(unsigned int regno, unsigned int red, unsigned int green,
 		newval |= (green >> 6) & 0x03e0;
 		newval |= (blue >> 1)  & 0x7c00;
 
-		/*
-		 * 3.2.11: if we're configured for big endian
-		 * byte order, the palette entries are swapped.
-		 */
+		 
 		if (fb->clcd_cntl & CNTL_BEBO)
 			regno ^= 1;
 
@@ -372,16 +329,7 @@ clcdfb_setcolreg(unsigned int regno, unsigned int red, unsigned int green,
 	return regno > 255;
 }
 
-/*
- *  Blank the screen if blank_mode != 0, else unblank. If blank == NULL
- *  then the caller blanks by setting the CLUT (Color Look Up Table) to all
- *  black. Return 0 if blanking succeeded, != 0 if un-/blanking failed due
- *  to e.g. a video mode which doesn't support it. Implements VESA suspend
- *  and powerdown modes on hardware that supports disabling hsync/vsync:
- *    blank_mode == 2: suspend vsync
- *    blank_mode == 3: suspend hsync
- *    blank_mode == 4: powerdown
- */
+ 
 static int clcdfb_blank(int blank_mode, struct fb_info *info)
 {
 	struct clcd_fb *fb = to_clcd(info);
@@ -426,10 +374,7 @@ static int clcdfb_register(struct clcd_fb *fb)
 {
 	int ret;
 
-	/*
-	 * ARM PL111 always has IENB at 0x1c; it's only PL110
-	 * which is reversed on some platforms.
-	 */
+	 
 	if (amba_manf(fb->dev) == 0x41 && amba_part(fb->dev) == 0x111) {
 		fb->off_ienb = CLCD_PL111_IENB;
 		fb->off_cntl = CLCD_PL111_CNTL;
@@ -499,21 +444,15 @@ static int clcdfb_register(struct clcd_fb *fb)
 	fb->fb.monspecs.dclkmin = 1000000;
 	fb->fb.monspecs.dclkmax	= 100000000;
 
-	/*
-	 * Make sure that the bitfields are set appropriately.
-	 */
+	 
 	clcdfb_set_bitfields(fb, &fb->fb.var);
 
-	/*
-	 * Allocate colourmap.
-	 */
+	 
 	ret = fb_alloc_cmap(&fb->fb.cmap, 256, 0);
 	if (ret)
 		goto unmap;
 
-	/*
-	 * Ensure interrupts are disabled.
-	 */
+	 
 	writel(0, fb->regs + fb->off_ienb);
 
 	fb_set_var(&fb->fb, &fb->fb.var);
@@ -558,16 +497,11 @@ static int clcdfb_of_get_dpi_panel_mode(struct device_node *node,
 	if (err)
 		return err;
 
-	/* Set up some inversion flags */
+	 
 	if (timing.flags & DISPLAY_FLAGS_PIXDATA_NEGEDGE)
 		clcd_panel->tim2 |= TIM2_IPC;
 	else if (!(timing.flags & DISPLAY_FLAGS_PIXDATA_POSEDGE))
-		/*
-		 * To preserve backwards compatibility, the IPC (inverted
-		 * pixel clock) flag needs to be set on any display that
-		 * doesn't explicitly specify that the pixel clock is
-		 * active on the negative or positive edge.
-		 */
+		 
 		clcd_panel->tim2 |= TIM2_IPC;
 
 	if (timing.flags & DISPLAY_FLAGS_HSYNC_LOW)
@@ -593,7 +527,7 @@ static int clcdfb_of_get_backlight(struct device *dev,
 {
 	struct backlight_device *backlight;
 
-	/* Look up the optional backlight device */
+	 
 	backlight = devm_of_find_backlight(dev);
 	if (IS_ERR(backlight))
 		return PTR_ERR(backlight);
@@ -610,7 +544,7 @@ static int clcdfb_of_get_mode(struct device *dev, struct device_node *panel,
 	char *name;
 	int len;
 
-	/* Only directly connected DPI panels supported for now */
+	 
 	if (of_device_is_compatible(panel, "panel-dpi"))
 		err = clcdfb_of_get_dpi_panel_mode(panel, clcd_panel);
 	else
@@ -649,15 +583,15 @@ static int clcdfb_of_init_tft_panel(struct clcd_fb *fb, u32 r0, u32 g0, u32 b0)
 	};
 	int i;
 
-	/* Bypass pixel clock divider */
+	 
 	fb->panel->tim2 |= TIM2_BCD;
 
-	/* TFT display, vert. comp. interrupt at the start of the back porch */
+	 
 	fb->panel->cntl |= CNTL_LCDTFT | CNTL_LCDVCOMP(1);
 
 	fb->panel->caps = 0;
 
-	/* Match the setup with known variants */
+	 
 	for (i = 0; i < ARRAY_SIZE(panels) && !fb->panel->caps; i++) {
 		if (amba_part(fb->dev) != panels[i].part)
 			continue;
@@ -667,10 +601,7 @@ static int clcdfb_of_init_tft_panel(struct clcd_fb *fb, u32 r0, u32 g0, u32 b0)
 			fb->panel->caps = panels[i].caps;
 	}
 
-	/*
-	 * If we actually physically connected the R lines to B and
-	 * vice versa
-	 */
+	 
 	if (r0 != 0 && b0 == 0)
 		fb->panel->bgr_connection = true;
 
@@ -689,9 +620,7 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
 	if (!fb->panel)
 		return -ENOMEM;
 
-	/*
-	 * Fetch the panel endpoint.
-	 */
+	 
 	endpoint = of_graph_get_next_endpoint(fb->dev->dev.of_node, NULL);
 	if (!endpoint)
 		return -ENODEV;
@@ -713,13 +642,7 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
 			&max_bandwidth);
 	if (!err) {
-		/*
-		 * max_bandwidth is in bytes per second and pixclock in
-		 * pico-seconds, so the maximum allowed bits per pixel is
-		 *   8 * max_bandwidth / (PICOS2KHZ(pixclock) * 1000)
-		 * Rearrange this calculation to avoid overflow and then ensure
-		 * result is a valid format.
-		 */
+		 
 		bpp = max_bandwidth / (1000 / 8)
 			/ PICOS2KHZ(fb->panel->mode.pixclock);
 		bpp = rounddown_pow_of_two(bpp);

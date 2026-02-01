@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * file.h
- *
- * Function prototypes
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef OCFS2_FILE_H
 #define OCFS2_FILE_H
@@ -70,4 +64,4 @@ int ocfs2_check_range_for_refcount(struct inode *inode, loff_t pos,
 int ocfs2_remove_inode_range(struct inode *inode,
 			     struct buffer_head *di_bh, u64 byte_start,
 			     u64 byte_len);
-#endif /* OCFS2_FILE_H */
+#endif  

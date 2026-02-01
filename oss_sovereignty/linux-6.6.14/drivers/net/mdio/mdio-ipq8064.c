@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Qualcomm IPQ8064 MDIO interface driver
- *
- * Copyright (C) 2019 Christian Lamparter <chunkeey@gmail.com>
- * Copyright (C) 2020 Ansuel Smith <ansuelsmth@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -13,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* MII address register definitions */
+ 
 #define MII_ADDR_REG_ADDR			0x10
 #define MII_BUSY				BIT(0)
 #define MII_WRITE				BIT(1)
@@ -36,7 +32,7 @@
 #define MII_MDIO_RETRY_MSEC			(10)
 
 struct ipq8064_mdio {
-	struct regmap *base; /* NSS_GMAC0_BASE */
+	struct regmap *base;  
 };
 
 static int
@@ -84,9 +80,7 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
 
 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
 
-	/* For the specific reg 31 extra time is needed or the next
-	 * read will produce garbage data.
-	 */
+	 
 	if (reg_offset == 31)
 		usleep_range(30, 43);
 	else
@@ -100,7 +94,7 @@ static const struct regmap_config ipq8064_mdio_regmap_config = {
 	.reg_stride = 4,
 	.val_bits = 32,
 	.can_multi_write = false,
-	/* the mdio lock is used by any user of this mdio driver */
+	 
 	.disable_locking = true,
 
 	.cache_type = REGCACHE_NONE,

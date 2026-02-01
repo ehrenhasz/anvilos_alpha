@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/bitops.h>
@@ -24,17 +21,17 @@
 #include "qed_reg_addr.h"
 #include "qed_sriov.h"
 
-/* QM constants */
-#define QM_PQ_ELEMENT_SIZE	4 /* in bytes */
+ 
+#define QM_PQ_ELEMENT_SIZE	4  
 
-/* Doorbell-Queue constants */
+ 
 #define DQ_RANGE_SHIFT		4
 #define DQ_RANGE_ALIGN		BIT(DQ_RANGE_SHIFT)
 
-/* Searcher constants */
+ 
 #define SRC_MIN_NUM_ELEMS 256
 
-/* Timers constants */
+ 
 #define TM_SHIFT        7
 #define TM_ALIGN        BIT(TM_SHIFT)
 #define TM_ELEM_SIZE    4
@@ -44,7 +41,7 @@
 #define ILT_PAGE_IN_BYTES(hw_p_size)	(1U << ((hw_p_size) + 12))
 #define ILT_CFG_REG(cli, reg)	PSWRQ2_REG_ ## cli ## _ ## reg ## _RT_OFFSET
 
-/* ILT entry structure */
+ 
 #define ILT_ENTRY_PHY_ADDR_MASK		(~0ULL >> 12)
 #define ILT_ENTRY_PHY_ADDR_SHIFT	0
 #define ILT_ENTRY_VALID_MASK		0x1ULL
@@ -52,7 +49,7 @@
 #define ILT_ENTRY_IN_REGS		2
 #define ILT_REG_SIZE_IN_BYTES		4
 
-/* connection context union */
+ 
 union conn_context {
 	struct core_conn_context core_ctx;
 	struct eth_conn_context eth_ctx;
@@ -61,13 +58,13 @@ union conn_context {
 	struct roce_conn_context roce_ctx;
 };
 
-/* TYPE-0 task context - iSCSI, FCOE */
+ 
 union type0_task_context {
 	struct iscsi_task_context iscsi_ctx;
 	struct fcoe_task_context fcoe_ctx;
 };
 
-/* TYPE-1 task context - ROCE */
+ 
 union type1_task_context {
 	struct rdma_task_context roce_ctx;
 };
@@ -77,7 +74,7 @@ struct src_ent {
 	__be64				next;
 };
 
-#define CDUT_SEG_ALIGNMET		3 /* in 4k chunks */
+#define CDUT_SEG_ALIGNMET		3  
 #define CDUT_SEG_ALIGNMET_IN_BYTES	BIT(CDUT_SEG_ALIGNMET + 12)
 
 #define CONN_CXT_SIZE(p_hwfn) \
@@ -89,7 +86,7 @@ struct src_ent {
 #define TYPE0_TASK_CXT_SIZE(p_hwfn) \
 	ALIGNED_TYPE_SIZE(union type0_task_context, p_hwfn)
 
-/* Alignment is inherent to the type1_task_context structure */
+ 
 #define TYPE1_TASK_CXT_SIZE(p_hwfn) sizeof(union type1_task_context)
 
 static bool src_proto(enum protocol_type type)
@@ -112,7 +109,7 @@ static bool tm_tid_proto(enum protocol_type type)
 	return type == PROTOCOLID_FCOE;
 }
 
-/* counts the iids for the CDU/CDUC ILT client configuration */
+ 
 struct qed_cdu_iids {
 	u32 pf_cids;
 	u32 per_vf_cids;
@@ -129,7 +126,7 @@ static void qed_cxt_cdu_iids(struct qed_cxt_mngr *p_mngr,
 	}
 }
 
-/* counts the iids for the Searcher block configuration */
+ 
 struct qed_src_iids {
 	u32 pf_cids;
 	u32 per_vf_cids;
@@ -148,14 +145,14 @@ static void qed_cxt_src_iids(struct qed_cxt_mngr *p_mngr,
 		iids->per_vf_cids += p_mngr->conn_cfg[i].cids_per_vf;
 	}
 
-	/* Add L2 filtering filters in addition */
+	 
 	iids->pf_cids += p_mngr->arfs_count;
 }
 
-/* counts the iids for the Timers block configuration */
+ 
 struct qed_tm_iids {
 	u32 pf_cids;
-	u32 pf_tids[NUM_TASK_PF_SEGMENTS];	/* per segment */
+	u32 pf_tids[NUM_TASK_PF_SEGMENTS];	 
 	u32 pf_tids_total;
 	u32 per_vf_cids;
 	u32 per_vf_tids;
@@ -169,12 +166,7 @@ static void qed_cxt_tm_iids(struct qed_hwfn *p_hwfn,
 	bool tm_required = false;
 	int i, j;
 
-	/* Timers is a special case -> we don't count how many cids require
-	 * timers but what's the max cid that will be used by the timer block.
-	 * therefore we traverse in reverse order, and once we hit a protocol
-	 * that requires the timers memory, we'll sum all the protocols up
-	 * to that one.
-	 */
+	 
 	for (i = MAX_CONN_TYPES - 1; i >= 0; i--) {
 		struct qed_conn_type_cfg *p_cfg = &p_mngr->conn_cfg[i];
 
@@ -195,16 +187,11 @@ static void qed_cxt_tm_iids(struct qed_hwfn *p_hwfn,
 		if (tm_tid_proto(i)) {
 			struct qed_tid_seg *segs = p_cfg->tid_seg;
 
-			/* for each segment there is at most one
-			 * protocol for which count is not 0.
-			 */
+			 
 			for (j = 0; j < NUM_TASK_PF_SEGMENTS; j++)
 				iids->pf_tids[j] += segs[j].count;
 
-			/* The last array elelment is for the VFs. As for PF
-			 * segments there can be only one protocol for
-			 * which this value is not 0.
-			 */
+			 
 			iids->per_vf_tids += segs[NUM_TASK_PF_SEGMENTS].count;
 		}
 	}
@@ -232,16 +219,11 @@ static void qed_cxt_qm_iids(struct qed_hwfn *p_hwfn,
 		vf_cids += p_mngr->conn_cfg[type].cids_per_vf;
 
 		segs = p_mngr->conn_cfg[type].tid_seg;
-		/* for each segment there is at most one
-		 * protocol for which count is not 0.
-		 */
+		 
 		for (j = 0; j < NUM_TASK_PF_SEGMENTS; j++)
 			iids->tids += segs[j].count;
 
-		/* The last array elelment is for the VFs. As for PF
-		 * segments there can be only one protocol for
-		 * which this value is not 0.
-		 */
+		 
 		vf_tids += segs[NUM_TASK_PF_SEGMENTS].count;
 	}
 
@@ -259,9 +241,7 @@ static struct qed_tid_seg *qed_cxt_tid_seg_info(struct qed_hwfn *p_hwfn,
 	struct qed_cxt_mngr *p_cfg = p_hwfn->p_cxt_mngr;
 	u32 i;
 
-	/* Find the protocol with tid count > 0 for this segment.
-	 * Note: there can only be one and this is already validated.
-	 */
+	 
 	for (i = 0; i < MAX_CONN_TYPES; i++)
 		if (p_cfg->conn_cfg[i].tid_seg[seg].count)
 			return &p_cfg->conn_cfg[i].tid_seg[seg];
@@ -304,7 +284,7 @@ u32 qed_cxt_get_total_srq_count(struct qed_hwfn *p_hwfn)
 	return total_srqs;
 }
 
-/* set the iids count per protocol */
+ 
 static void qed_cxt_set_proto_cid_count(struct qed_hwfn *p_hwfn,
 					enum protocol_type type,
 					u32 cid_count, u32 vf_cid_cnt)
@@ -371,7 +351,7 @@ static void qed_ilt_cli_blk_fill(struct qed_ilt_client_cfg *p_cli,
 {
 	u32 ilt_size = ILT_PAGE_IN_BYTES(p_cli->p_size.val);
 
-	/* verify thatits called only once for each block */
+	 
 	if (p_blk->total_size)
 		return;
 
@@ -472,24 +452,22 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 
 	p_mngr->pf_start_line = RESC_START(p_hwfn, QED_ILT);
 
-	/* Reset all ILT blocks at the beginning of ILT computing in order
-	 * to prevent memory allocation for irrelevant blocks afterwards.
-	 */
+	 
 	qed_cxt_ilt_blk_reset(p_hwfn);
 
 	DP_VERBOSE(p_hwfn, QED_MSG_ILT,
 		   "hwfn [%d] - Set context manager starting line to be 0x%08x\n",
 		   p_hwfn->my_id, p_hwfn->p_cxt_mngr->pf_start_line);
 
-	/* CDUC */
+	 
 	p_cli = qed_cxt_set_cli(&p_mngr->clients[ILT_CLI_CDUC]);
 
 	curr_line = p_mngr->pf_start_line;
 
-	/* CDUC PF */
+	 
 	p_cli->pf_total_lines = 0;
 
-	/* get the counters for the CDUC and QM clients  */
+	 
 	qed_cxt_cdu_iids(p_mngr, &cdu_iids);
 
 	p_blk = qed_cxt_set_blk(&p_cli->pf_blks[CDUC_BLK]);
@@ -505,7 +483,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 	p_blk->dynamic_line_cnt = qed_ilt_get_dynamic_line_cnt(p_hwfn,
 							       ILT_CLI_CDUC);
 
-	/* CDUC VF */
+	 
 	p_blk = qed_cxt_set_blk(&p_cli->vf_blks[CDUC_BLK]);
 	total = cdu_iids.per_vf_cids * CONN_CXT_SIZE(p_hwfn);
 
@@ -519,11 +497,11 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		qed_ilt_cli_adv_line(p_hwfn, p_cli, p_blk, &curr_line,
 				     ILT_CLI_CDUC);
 
-	/* CDUT PF */
+	 
 	p_cli = qed_cxt_set_cli(&p_mngr->clients[ILT_CLI_CDUT]);
 	p_cli->first.val = curr_line;
 
-	/* first the 'working' task memory */
+	 
 	for (i = 0; i < NUM_TASK_PF_SEGMENTS; i++) {
 		p_seg = qed_cxt_tid_seg_info(p_hwfn, i);
 		if (!p_seg || p_seg->count == 0)
@@ -538,7 +516,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 				     ILT_CLI_CDUT);
 	}
 
-	/* next the 'init' task memory (forced load memory) */
+	 
 	for (i = 0; i < NUM_TASK_PF_SEGMENTS; i++) {
 		p_seg = qed_cxt_tid_seg_info(p_hwfn, i);
 		if (!p_seg || p_seg->count == 0)
@@ -548,22 +526,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		    qed_cxt_set_blk(&p_cli->pf_blks[CDUT_FL_SEG_BLK(i, PF)]);
 
 		if (!p_seg->has_fl_mem) {
-			/* The segment is active (total size pf 'working'
-			 * memory is > 0) but has no FL (forced-load, Init)
-			 * memory. Thus:
-			 *
-			 * 1.   The total-size in the corrsponding FL block of
-			 *      the ILT client is set to 0 - No ILT line are
-			 *      provisioned and no ILT memory allocated.
-			 *
-			 * 2.   The start-line of said block is set to the
-			 *      start line of the matching working memory
-			 *      block in the ILT client. This is later used to
-			 *      configure the CDU segment offset registers and
-			 *      results in an FL command for TIDs of this
-			 *      segement behaves as regular load commands
-			 *      (loading TIDs from the working memory).
-			 */
+			 
 			line = p_cli->pf_blks[CDUT_SEG_BLK(i)].start_line;
 
 			qed_ilt_cli_blk_fill(p_cli, p_blk, line, 0, 0);
@@ -580,14 +543,12 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 	}
 	p_cli->pf_total_lines = curr_line - p_cli->pf_blks[0].start_line;
 
-	/* CDUT VF */
+	 
 	p_seg = qed_cxt_tid_seg_info(p_hwfn, TASK_SEGMENT_VF);
 	if (p_seg && p_seg->count) {
-		/* Stricly speaking we need to iterate over all VF
-		 * task segment types, but a VF has only 1 segment
-		 */
+		 
 
-		/* 'working' memory */
+		 
 		total = p_seg->count * p_mngr->task_type_size[p_seg->type];
 
 		p_blk = qed_cxt_set_blk(&p_cli->vf_blks[CDUT_SEG_BLK(0)]);
@@ -598,11 +559,11 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		qed_ilt_cli_adv_line(p_hwfn, p_cli, p_blk, &curr_line,
 				     ILT_CLI_CDUT);
 
-		/* 'init' memory */
+		 
 		p_blk =
 		    qed_cxt_set_blk(&p_cli->vf_blks[CDUT_FL_SEG_BLK(0, VF)]);
 		if (!p_seg->has_fl_mem) {
-			/* see comment above */
+			 
 			line = p_cli->vf_blks[CDUT_SEG_BLK(0)].start_line;
 			qed_ilt_cli_blk_fill(p_cli, p_blk, line, 0, 0);
 		} else {
@@ -615,7 +576,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		p_cli->vf_total_lines = curr_line -
 		    p_cli->vf_blks[0].start_line;
 
-		/* Now for the rest of the VFs */
+		 
 		for (i = 1; i < p_mngr->vf_count; i++) {
 			p_blk = &p_cli->vf_blks[CDUT_SEG_BLK(0)];
 			qed_ilt_cli_adv_line(p_hwfn, p_cli, p_blk, &curr_line,
@@ -627,7 +588,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		}
 	}
 
-	/* QM */
+	 
 	p_cli = qed_cxt_set_cli(&p_mngr->clients[ILT_CLI_QM]);
 	p_blk = qed_cxt_set_blk(&p_cli->pf_blks[0]);
 
@@ -652,14 +613,11 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 	qed_ilt_cli_adv_line(p_hwfn, p_cli, p_blk, &curr_line, ILT_CLI_QM);
 	p_cli->pf_total_lines = curr_line - p_blk->start_line;
 
-	/* SRC */
+	 
 	p_cli = qed_cxt_set_cli(&p_mngr->clients[ILT_CLI_SRC]);
 	qed_cxt_src_iids(p_mngr, &src_iids);
 
-	/* Both the PF and VFs searcher connections are stored in the per PF
-	 * database. Thus sum the PF searcher cids and all the VFs searcher
-	 * cids.
-	 */
+	 
 	total = src_iids.pf_cids + src_iids.per_vf_cids * p_mngr->vf_count;
 	if (total) {
 		u32 local_max = max_t(u32, total,
@@ -677,7 +635,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		p_cli->pf_total_lines = curr_line - p_blk->start_line;
 	}
 
-	/* TM PF */
+	 
 	p_cli = qed_cxt_set_cli(&p_mngr->clients[ILT_CLI_TM]);
 	qed_cxt_tm_iids(p_hwfn, p_mngr, &tm_iids);
 	total = tm_iids.pf_cids + tm_iids.pf_tids_total;
@@ -691,7 +649,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 		p_cli->pf_total_lines = curr_line - p_blk->start_line;
 	}
 
-	/* TM VF */
+	 
 	total = tm_iids.per_vf_cids + tm_iids.per_vf_tids;
 	if (total) {
 		p_blk = qed_cxt_set_blk(&p_cli->vf_blks[0]);
@@ -707,7 +665,7 @@ int qed_cxt_cfg_ilt_compute(struct qed_hwfn *p_hwfn, u32 *line_count)
 					     ILT_CLI_TM);
 	}
 
-	/* TSDM (SRQ CONTEXT) */
+	 
 	total = qed_cxt_get_total_srq_count(p_hwfn);
 
 	if (total) {
@@ -828,9 +786,7 @@ static int qed_cxt_src_t2_alloc(struct qed_hwfn *p_hwfn)
 
 	memset(&src_iids, 0, sizeof(src_iids));
 
-	/* if the SRC ILT client is inactive - there are no connection
-	 * requiring the searcer, leave.
-	 */
+	 
 	p_src = &p_hwfn->p_cxt_mngr->clients[ILT_CLI_SRC];
 	if (!p_src->active)
 		return 0;
@@ -839,12 +795,12 @@ static int qed_cxt_src_t2_alloc(struct qed_hwfn *p_hwfn)
 	conn_num = src_iids.pf_cids + src_iids.per_vf_cids * p_mngr->vf_count;
 	total_size = conn_num * sizeof(struct src_ent);
 
-	/* use the same page size as the SRC ILT client */
+	 
 	psz = ILT_PAGE_IN_BYTES(p_src->p_size.val);
 	p_t2 = &p_mngr->src_t2;
 	p_t2->num_pages = DIV_ROUND_UP(total_size, psz);
 
-	/* allocate t2 */
+	 
 	p_t2->dma_mem = kcalloc(p_t2->num_pages, sizeof(struct phys_mem_desc),
 				GFP_KERNEL);
 	if (!p_t2->dma_mem) {
@@ -857,9 +813,9 @@ static int qed_cxt_src_t2_alloc(struct qed_hwfn *p_hwfn)
 	if (rc)
 		goto t2_fail;
 
-	/* Set the t2 pointers */
+	 
 
-	/* entries per page - must be a power of two */
+	 
 	ent_per_page = psz / sizeof(struct src_ent);
 
 	p_t2->first_free = (u64)p_t2->dma_mem[0].phys_addr;
@@ -903,7 +859,7 @@ t2_fail:
 			continue;		\
 		} else				\
 
-/* Total number of ILT lines used by this PF */
+ 
 static u32 qed_cxt_ilt_shadow_size(struct qed_ilt_client_cfg *ilt_clients)
 {
 	u32 size = 0;
@@ -944,7 +900,7 @@ static int qed_ilt_blk_alloc(struct qed_hwfn *p_hwfn,
 	struct phys_mem_desc *ilt_shadow = p_hwfn->p_cxt_mngr->ilt_shadow;
 	u32 lines, line, sz_left, lines_to_skip = 0;
 
-	/* Special handling for RoCE that supports dynamic allocation */
+	 
 	if (QED_IS_RDMA_PERSONALITY(p_hwfn) &&
 	    ((ilt_client == ILT_CLI_CDUT) || ilt_client == ILT_CLI_TSDM))
 		return 0;
@@ -1082,13 +1038,13 @@ static int qed_cid_map_alloc(struct qed_hwfn *p_hwfn)
 		struct qed_conn_type_cfg *p_cfg = &p_mngr->conn_cfg[type];
 		struct qed_cid_acquired_map *p_map;
 
-		/* Handle PF maps */
+		 
 		p_map = &p_mngr->acquired[type];
 		if (qed_cid_map_alloc_single(p_hwfn, type, start_cid,
 					     p_cfg->cid_count, p_map))
 			goto cid_map_fail;
 
-		/* Handle VF maps */
+		 
 		for (vf = 0; vf < MAX_NUM_VFS; vf++) {
 			p_map = &p_mngr->acquired_vf[type][vf];
 			if (qed_cid_map_alloc_single(p_hwfn, type,
@@ -1118,7 +1074,7 @@ int qed_cxt_mngr_alloc(struct qed_hwfn *p_hwfn)
 	if (!p_mngr)
 		return -ENOMEM;
 
-	/* Initialize ILT client registers */
+	 
 	clients = p_mngr->clients;
 	clients[ILT_CLI_CDUC].first.reg = ILT_CFG_REG(CDUC, FIRST_ILT);
 	clients[ILT_CLI_CDUC].last.reg = ILT_CFG_REG(CDUC, LAST_ILT);
@@ -1143,13 +1099,13 @@ int qed_cxt_mngr_alloc(struct qed_hwfn *p_hwfn)
 	clients[ILT_CLI_TSDM].first.reg = ILT_CFG_REG(TSDM, FIRST_ILT);
 	clients[ILT_CLI_TSDM].last.reg = ILT_CFG_REG(TSDM, LAST_ILT);
 	clients[ILT_CLI_TSDM].p_size.reg = ILT_CFG_REG(TSDM, P_SIZE);
-	/* default ILT page size for all clients is 64K */
+	 
 	for (i = 0; i < MAX_ILT_CLIENTS; i++)
 		p_mngr->clients[i].p_size.val = ILT_DEFAULT_HW_P_SIZE;
 
 	p_mngr->conn_ctx_size = CONN_CXT_SIZE(p_hwfn);
 
-	/* Initialize task sizes */
+	 
 	p_mngr->task_type_size[0] = TYPE0_TASK_CXT_SIZE(p_hwfn);
 	p_mngr->task_type_size[1] = TYPE1_TASK_CXT_SIZE(p_hwfn);
 
@@ -1158,10 +1114,10 @@ int qed_cxt_mngr_alloc(struct qed_hwfn *p_hwfn)
 		p_mngr->first_vf_in_pf =
 			p_hwfn->cdev->p_iov_info->first_vf_in_pf;
 	}
-	/* Initialize the dynamic ILT allocation mutex */
+	 
 	mutex_init(&p_mngr->mutex);
 
-	/* Set the cxt mangr pointer priori to further allocations */
+	 
 	p_hwfn->p_cxt_mngr = p_mngr;
 
 	return 0;
@@ -1171,17 +1127,17 @@ int qed_cxt_tables_alloc(struct qed_hwfn *p_hwfn)
 {
 	int rc;
 
-	/* Allocate the ILT shadow table */
+	 
 	rc = qed_ilt_shadow_alloc(p_hwfn);
 	if (rc)
 		goto tables_alloc_fail;
 
-	/* Allocate the T2  table */
+	 
 	rc = qed_cxt_src_t2_alloc(p_hwfn);
 	if (rc)
 		goto tables_alloc_fail;
 
-	/* Allocate and initialize the acquired cids bitmaps */
+	 
 	rc = qed_cid_map_alloc(p_hwfn);
 	if (rc)
 		goto tables_alloc_fail;
@@ -1213,7 +1169,7 @@ void qed_cxt_mngr_setup(struct qed_hwfn *p_hwfn)
 	struct qed_conn_type_cfg *p_cfg;
 	int type;
 
-	/* Reset acquired cids */
+	 
 	for (type = 0; type < MAX_CONN_TYPES; type++) {
 		u32 vf;
 
@@ -1233,7 +1189,7 @@ void qed_cxt_mngr_setup(struct qed_hwfn *p_hwfn)
 	}
 }
 
-/* CDU Common */
+ 
 #define CDUC_CXT_SIZE_SHIFT \
 	CDU_REG_CID_ADDR_PARAMS_CONTEXT_SIZE_SHIFT
 
@@ -1298,7 +1254,7 @@ static void qed_cdu_init_common(struct qed_hwfn *p_hwfn)
 {
 	u32 page_sz, elems_per_page, block_waste, cxt_size, cdu_params = 0;
 
-	/* CDUC - connection configuration */
+	 
 	page_sz = p_hwfn->p_cxt_mngr->clients[ILT_CLI_CDUC].p_size.val;
 	cxt_size = CONN_CXT_SIZE(p_hwfn);
 	elems_per_page = ILT_PAGE_IN_BYTES(page_sz) / cxt_size;
@@ -1309,25 +1265,25 @@ static void qed_cdu_init_common(struct qed_hwfn *p_hwfn)
 	SET_FIELD(cdu_params, CDUC_NCIB, elems_per_page);
 	STORE_RT_REG(p_hwfn, CDU_REG_CID_ADDR_PARAMS_RT_OFFSET, cdu_params);
 
-	/* CDUT - type-0 tasks configuration */
+	 
 	page_sz = p_hwfn->p_cxt_mngr->clients[ILT_CLI_CDUT].p_size.val;
 	cxt_size = p_hwfn->p_cxt_mngr->task_type_size[0];
 	elems_per_page = ILT_PAGE_IN_BYTES(page_sz) / cxt_size;
 	block_waste = ILT_PAGE_IN_BYTES(page_sz) - elems_per_page * cxt_size;
 
-	/* cxt size and block-waste are multipes of 8 */
+	 
 	cdu_params = 0;
 	SET_FIELD(cdu_params, CDUT_TYPE0_CXT_SIZE, (cxt_size >> 3));
 	SET_FIELD(cdu_params, CDUT_TYPE0_BLOCK_WASTE, (block_waste >> 3));
 	SET_FIELD(cdu_params, CDUT_TYPE0_NCIB, elems_per_page);
 	STORE_RT_REG(p_hwfn, CDU_REG_SEGMENT0_PARAMS_RT_OFFSET, cdu_params);
 
-	/* CDUT - type-1 tasks configuration */
+	 
 	cxt_size = p_hwfn->p_cxt_mngr->task_type_size[1];
 	elems_per_page = ILT_PAGE_IN_BYTES(page_sz) / cxt_size;
 	block_waste = ILT_PAGE_IN_BYTES(page_sz) - elems_per_page * cxt_size;
 
-	/* cxt size and block-waste are multipes of 8 */
+	 
 	cdu_params = 0;
 	SET_FIELD(cdu_params, CDUT_TYPE1_CXT_SIZE, (cxt_size >> 3));
 	SET_FIELD(cdu_params, CDUT_TYPE1_BLOCK_WASTE, (block_waste >> 3));
@@ -1335,7 +1291,7 @@ static void qed_cdu_init_common(struct qed_hwfn *p_hwfn)
 	STORE_RT_REG(p_hwfn, CDU_REG_SEGMENT1_PARAMS_RT_OFFSET, cdu_params);
 }
 
-/* CDU PF */
+ 
 #define CDU_SEG_REG_TYPE_SHIFT          CDU_SEG_TYPE_OFFSET_REG_TYPE_SHIFT
 #define CDU_SEG_REG_TYPE_MASK           0x1
 #define CDU_SEG_REG_OFFSET_SHIFT        0
@@ -1364,18 +1320,14 @@ static void qed_cdu_init_pf(struct qed_hwfn *p_hwfn)
 
 	p_cli = &p_hwfn->p_cxt_mngr->clients[ILT_CLI_CDUT];
 
-	/* There are initializations only for CDUT during pf Phase */
+	 
 	for (i = 0; i < NUM_TASK_PF_SEGMENTS; i++) {
-		/* Segment 0 */
+		 
 		p_seg = qed_cxt_tid_seg_info(p_hwfn, i);
 		if (!p_seg)
 			continue;
 
-		/* Note: start_line is already adjusted for the CDU
-		 * segment register granularity, so we just need to
-		 * divide. Adjustment is implicit as we assume ILT
-		 * Page size is larger than 32K!
-		 */
+		 
 		offset = (ILT_PAGE_IN_BYTES(p_cli->p_size.val) *
 			  (p_cli->pf_blks[CDUT_SEG_BLK(i)].start_line -
 			   p_cli->first.val)) / CDUT_SEG_ALIGNMET_IN_BYTES;
@@ -1427,15 +1379,15 @@ void qed_qm_init_pf(struct qed_hwfn *p_hwfn,
 	qed_qm_pf_rt_init(p_hwfn, p_ptt, &params);
 }
 
-/* CM PF */
+ 
 static void qed_cm_init_pf(struct qed_hwfn *p_hwfn)
 {
-	/* XCM pure-LB queue */
+	 
 	STORE_RT_REG(p_hwfn, XCM_REG_CON_PHY_Q3_RT_OFFSET,
 		     qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_LB));
 }
 
-/* DQ PF */
+ 
 static void qed_dq_init_pf(struct qed_hwfn *p_hwfn)
 {
 	struct qed_cxt_mngr *p_mngr = p_hwfn->p_cxt_mngr;
@@ -1477,12 +1429,7 @@ static void qed_dq_init_pf(struct qed_hwfn *p_hwfn)
 	dq_vf_max_cid += (p_mngr->conn_cfg[5].cids_per_vf >> DQ_RANGE_SHIFT);
 	STORE_RT_REG(p_hwfn, DORQ_REG_VF_MAX_ICID_5_RT_OFFSET, dq_vf_max_cid);
 
-	/* Connection types 6 & 7 are not in use, yet they must be configured
-	 * as the highest possible connection. Not configuring them means the
-	 * defaults will be  used, and with a large number of cids a bug may
-	 * occur, if the defaults will be smaller than dq_pf_max_cid /
-	 * dq_vf_max_cid.
-	 */
+	 
 	STORE_RT_REG(p_hwfn, DORQ_REG_PF_MAX_ICID_6_RT_OFFSET, dq_pf_max_cid);
 	STORE_RT_REG(p_hwfn, DORQ_REG_VF_MAX_ICID_6_RT_OFFSET, dq_vf_max_cid);
 
@@ -1513,7 +1460,7 @@ static void qed_ilt_vf_bounds_init(struct qed_hwfn *p_hwfn)
 	struct qed_ilt_client_cfg *p_cli;
 	u32 blk_factor;
 
-	/* For simplicty  we set the 'block' to be an ILT page */
+	 
 	if (p_hwfn->cdev->p_iov_info) {
 		struct qed_hw_sriov_info *p_iov = p_hwfn->cdev->p_iov_info;
 
@@ -1567,7 +1514,7 @@ static void qed_ilt_vf_bounds_init(struct qed_hwfn *p_hwfn)
 	}
 }
 
-/* ILT (PSWRQ2) PF */
+ 
 static void qed_ilt_init_pf(struct qed_hwfn *p_hwfn)
 {
 	struct qed_ilt_client_cfg *clients;
@@ -1583,9 +1530,7 @@ static void qed_ilt_init_pf(struct qed_hwfn *p_hwfn)
 	clients = p_hwfn->p_cxt_mngr->clients;
 
 	for_each_ilt_valid_client(i, clients) {
-		/** Client's 1st val and RT array are absolute, ILT shadows'
-		 *  lines are relative.
-		 */
+		 
 		line = clients[i].first.val - p_mngr->pf_start_line;
 		rt_offst = PSWRQ2_REG_ILT_MEMORY_RT_OFFSET +
 			   clients[i].first.val * ILT_ENTRY_IN_REGS;
@@ -1594,9 +1539,7 @@ static void qed_ilt_init_pf(struct qed_hwfn *p_hwfn)
 		     line++, rt_offst += ILT_ENTRY_IN_REGS) {
 			u64 ilt_hw_entry = 0;
 
-			/** p_virt could be NULL incase of dynamic
-			 *  allocation
-			 */
+			 
 			if (p_shdw[line].virt_addr) {
 				SET_FIELD(ilt_hw_entry, ILT_ENTRY_VALID, 1ULL);
 				SET_FIELD(ilt_hw_entry, ILT_ENTRY_PHY_ADDR,
@@ -1613,7 +1556,7 @@ static void qed_ilt_init_pf(struct qed_hwfn *p_hwfn)
 	}
 }
 
-/* SRC (Searcher) PF */
+ 
 static void qed_src_init_pf(struct qed_hwfn *p_hwfn)
 {
 	struct qed_cxt_mngr *p_mngr = p_hwfn->p_cxt_mngr;
@@ -1639,7 +1582,7 @@ static void qed_src_init_pf(struct qed_hwfn *p_hwfn)
 			 p_hwfn->p_cxt_mngr->src_t2.last_free);
 }
 
-/* Timers PF */
+ 
 #define TM_CFG_NUM_IDS_SHIFT            0
 #define TM_CFG_NUM_IDS_MASK             0xFFFFULL
 #define TM_CFG_PRE_SCAN_OFFSET_SHIFT    16
@@ -1666,9 +1609,9 @@ static void qed_tm_init_pf(struct qed_hwfn *p_hwfn)
 	memset(&tm_iids, 0, sizeof(tm_iids));
 	qed_cxt_tm_iids(p_hwfn, p_mngr, &tm_iids);
 
-	/* @@@TBD No pre-scan for now */
+	 
 
-	/* Note: We assume consecutive VFs for a PF */
+	 
 	for (i = 0; i < p_mngr->vf_count; i++) {
 		cfg_word = 0;
 		SET_FIELD(cfg_word, TM_CFG_NUM_IDS, tm_iids.per_vf_cids);
@@ -1684,23 +1627,23 @@ static void qed_tm_init_pf(struct qed_hwfn *p_hwfn)
 	cfg_word = 0;
 	SET_FIELD(cfg_word, TM_CFG_NUM_IDS, tm_iids.pf_cids);
 	SET_FIELD(cfg_word, TM_CFG_PRE_SCAN_OFFSET, 0);
-	SET_FIELD(cfg_word, TM_CFG_PARENT_PF, 0);	/* n/a for PF */
-	SET_FIELD(cfg_word, TM_CFG_CID_PRE_SCAN_ROWS, 0);	/* scan all   */
+	SET_FIELD(cfg_word, TM_CFG_PARENT_PF, 0);	 
+	SET_FIELD(cfg_word, TM_CFG_CID_PRE_SCAN_ROWS, 0);	 
 
 	rt_reg = TM_REG_CONFIG_CONN_MEM_RT_OFFSET +
 	    (sizeof(cfg_word) / sizeof(u32)) *
 	    (NUM_OF_VFS(p_hwfn->cdev) + p_hwfn->rel_pf_id);
 	STORE_RT_REG_AGG(p_hwfn, rt_reg, cfg_word);
 
-	/* enale scan */
+	 
 	STORE_RT_REG(p_hwfn, TM_REG_PF_ENABLE_CONN_RT_OFFSET,
 		     tm_iids.pf_cids ? 0x1 : 0x0);
 
-	/* @@@TBD how to enable the scan for the VFs */
+	 
 
 	tm_offset = tm_iids.per_vf_cids;
 
-	/* Note: We assume consecutive VFs for a PF */
+	 
 	for (i = 0; i < p_mngr->vf_count; i++) {
 		cfg_word = 0;
 		SET_FIELD(cfg_word, TM_CFG_NUM_IDS, tm_iids.per_vf_tids);
@@ -1741,7 +1684,7 @@ static void qed_tm_init_pf(struct qed_hwfn *p_hwfn)
 
 	STORE_RT_REG(p_hwfn, TM_REG_PF_ENABLE_TASK_RT_OFFSET, active_seg_mask);
 
-	/* @@@TBD how to enable the scan for the VFs */
+	 
 }
 
 static void qed_prs_init_common(struct qed_hwfn *p_hwfn)
@@ -1760,7 +1703,7 @@ static void qed_prs_init_pf(struct qed_hwfn *p_hwfn)
 
 	p_fcoe = &p_mngr->conn_cfg[PROTOCOLID_FCOE];
 
-	/* If FCoE is active set the MAX OX_ID (tid) in the Parser */
+	 
 	if (!p_fcoe->cid_count)
 		return;
 
@@ -1811,7 +1754,7 @@ int _qed_cxt_acquire_cid(struct qed_hwfn *p_hwfn,
 		return -EINVAL;
 	}
 
-	/* Determine the right map to take this CID from */
+	 
 	if (vfid == QED_CXT_PF_CID)
 		p_map = &p_mngr->acquired[type];
 	else
@@ -1855,7 +1798,7 @@ static bool qed_cxt_test_cid_acquired(struct qed_hwfn *p_hwfn,
 	struct qed_cxt_mngr *p_mngr = p_hwfn->p_cxt_mngr;
 	u32 rel_cid;
 
-	/* Iterate over protocols and find matching cid range */
+	 
 	for (*p_type = 0; *p_type < MAX_CONN_TYPES; (*p_type)++) {
 		if (vfid == QED_CXT_PF_CID)
 			*pp_map = &p_mngr->acquired[*p_type];
@@ -1902,7 +1845,7 @@ void _qed_cxt_release_cid(struct qed_hwfn *p_hwfn, u32 cid, u8 vfid)
 		return;
 	}
 
-	/* Test acquired and find matching per-protocol map */
+	 
 	b_acquired = qed_cxt_test_cid_acquired(p_hwfn, cid, vfid,
 					       &type, &p_map);
 
@@ -1930,24 +1873,24 @@ int qed_cxt_get_cid_info(struct qed_hwfn *p_hwfn, struct qed_cxt_info *p_info)
 	enum protocol_type type;
 	bool b_acquired;
 
-	/* Test acquired and find matching per-protocol map */
+	 
 	b_acquired = qed_cxt_test_cid_acquired(p_hwfn, p_info->iid,
 					       QED_CXT_PF_CID, &type, &p_map);
 
 	if (!b_acquired)
 		return -EINVAL;
 
-	/* set the protocl type */
+	 
 	p_info->type = type;
 
-	/* compute context virtual pointer */
+	 
 	hw_p_size = p_hwfn->p_cxt_mngr->clients[ILT_CLI_CDUC].p_size.val;
 
 	conn_cxt_size = CONN_CXT_SIZE(p_hwfn);
 	cxts_per_p = ILT_PAGE_IN_BYTES(hw_p_size) / conn_cxt_size;
 	line = p_info->iid / cxts_per_p;
 
-	/* Make sure context is allocated (dynamic allocation) */
+	 
 	if (!p_mngr->ilt_shadow[line].virt_addr)
 		return -EINVAL;
 
@@ -1976,13 +1919,13 @@ static void qed_rdma_set_pf_params(struct qed_hwfn *p_hwfn,
 
 	switch (p_hwfn->hw_info.personality) {
 	case QED_PCI_ETH_IWARP:
-		/* Each QP requires one connection */
+		 
 		num_cons = min_t(u32, IWARP_MAX_QPS, p_params->num_qps);
 		proto = PROTOCOLID_IWARP;
 		break;
 	case QED_PCI_ETH_ROCE:
 		num_qps = min_t(u32, ROCE_MAX_QPS, p_params->num_qps);
-		num_cons = num_qps * 2;	/* each QP requires two connections */
+		num_cons = num_qps * 2;	 
 		proto = PROTOCOLID_ROCE;
 		break;
 	default:
@@ -1994,16 +1937,14 @@ static void qed_rdma_set_pf_params(struct qed_hwfn *p_hwfn,
 
 		qed_cxt_set_proto_cid_count(p_hwfn, proto, num_cons, 0);
 
-		/* Deliberatly passing ROCE for tasks id. This is because
-		 * iWARP / RoCE share the task id.
-		 */
+		 
 		qed_cxt_set_proto_tid_count(p_hwfn, PROTOCOLID_ROCE,
 					    QED_CXT_ROCE_TID_SEG, 1,
 					    num_tasks, false);
 
 		num_srqs = min_t(u32, QED_RDMA_MAX_SRQS, p_params->num_srqs);
 
-		/* XRC SRQs populate a single ILT page */
+		 
 		num_xrc_srqs = qed_cxt_xrc_srqs_per_page(p_hwfn);
 
 		qed_cxt_set_srq_count(p_hwfn, num_srqs, num_xrc_srqs);
@@ -2015,8 +1956,8 @@ static void qed_rdma_set_pf_params(struct qed_hwfn *p_hwfn,
 
 int qed_cxt_set_pf_params(struct qed_hwfn *p_hwfn, u32 rdma_tasks)
 {
-	/* Set the number of required CORE connections */
-	u32 core_cids = 1; /* SPQ */
+	 
+	u32 core_cids = 1;  
 
 	if (p_hwfn->using_ll2)
 		core_cids += 4;
@@ -2031,7 +1972,7 @@ int qed_cxt_set_pf_params(struct qed_hwfn *p_hwfn, u32 rdma_tasks)
 					       &p_hwfn->
 					       pf_params.rdma_pf_params,
 					       rdma_tasks);
-		/* no need for break since RoCE coexist with Ethernet */
+		 
 	}
 		fallthrough;
 	case QED_PCI_ETH:
@@ -2130,7 +2071,7 @@ int qed_cxt_get_tid_mem_info(struct qed_hwfn *p_hwfn,
 	struct qed_ilt_cli_blk *p_fl_seg;
 	struct qed_tid_seg *p_seg_info;
 
-	/* Verify the personality */
+	 
 	switch (p_hwfn->hw_info.personality) {
 	case QED_PCI_FCOE:
 		proto = PROTOCOLID_FCOE;
@@ -2171,9 +2112,7 @@ int qed_cxt_get_tid_mem_info(struct qed_hwfn *p_hwfn,
 	return 0;
 }
 
-/* This function is very RoCE oriented, if another protocol in the future
- * will want this feature we'll need to modify the function to be more generic
- */
+ 
 int
 qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 			  enum qed_cxt_elem_type elem_type, u32 iid)
@@ -2196,7 +2135,7 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 		p_blk = &p_cli->pf_blks[CDUC_BLK];
 		break;
 	case QED_ELEM_SRQ:
-		/* The first ILT page is not used for regular SRQs. Skip it. */
+		 
 		iid += p_hwfn->p_cxt_mngr->xrc_srq_count;
 		p_cli = &p_hwfn->p_cxt_mngr->clients[ILT_CLI_TSDM];
 		elem_size = SRQ_CXT_SIZE;
@@ -2217,17 +2156,13 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 		return -EOPNOTSUPP;
 	}
 
-	/* Calculate line in ilt */
+	 
 	hw_p_size = p_cli->p_size.val;
 	elems_per_p = ILT_PAGE_IN_BYTES(hw_p_size) / elem_size;
 	line = p_blk->start_line + (iid / elems_per_p);
 	shadow_line = line - p_hwfn->p_cxt_mngr->pf_start_line;
 
-	/* If line is already allocated, do nothing, otherwise allocate it and
-	 * write it to the PSWRQ2 registers.
-	 * This section can be run in parallel from different contexts and thus
-	 * a mutex protection is needed.
-	 */
+	 
 
 	mutex_lock(&p_hwfn->p_cxt_mngr->mutex);
 
@@ -2250,12 +2185,7 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 		goto out1;
 	}
 
-	/* configuration of refTagMask to 0xF is required for RoCE DIF MR only,
-	 * to compensate for a HW bug, but it is configured even if DIF is not
-	 * enabled. This is harmless and allows us to avoid a dedicated API. We
-	 * configure the field for all of the contexts on the newly allocated
-	 * page.
-	 */
+	 
 	if (elem_type == QED_ELEM_TASK) {
 		u32 elem_i;
 		u8 *elem_start = (u8 *)p_virt;
@@ -2278,7 +2208,7 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 	p_hwfn->p_cxt_mngr->ilt_shadow[shadow_line].size =
 	    p_blk->real_size_in_page;
 
-	/* compute absolute offset */
+	 
 	reg_offset = PSWRQ2_REG_ILT_MEMORY +
 	    (line * ILT_REG_SIZE_IN_BYTES * ILT_ENTRY_IN_REGS);
 
@@ -2288,7 +2218,7 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 		  (p_hwfn->p_cxt_mngr->ilt_shadow[shadow_line].phys_addr
 		   >> 12));
 
-	/* Write via DMAE since the PSWRQ2_REG_ILT_MEMORY line is a wide-bus */
+	 
 	qed_dmae_host2grc(p_hwfn, p_ptt, (u64) (uintptr_t)&ilt_hw_entry,
 			  reg_offset, sizeof(ilt_hw_entry) / sizeof(u32),
 			  NULL);
@@ -2297,12 +2227,12 @@ qed_cxt_dynamic_ilt_alloc(struct qed_hwfn *p_hwfn,
 		u32 last_cid_allocated = (1 + (iid / elems_per_p)) *
 		    elems_per_p;
 
-		/* Update the relevant register in the parser */
+		 
 		qed_wr(p_hwfn, p_ptt, PRS_REG_ROCE_DEST_QP_MAX_PF,
 		       last_cid_allocated - 1);
 
 		if (!p_hwfn->b_rdma_enabled_in_prs) {
-			/* Enable RDMA search */
+			 
 			qed_wr(p_hwfn, p_ptt, p_hwfn->rdma_prs_search_reg, 1);
 			p_hwfn->b_rdma_enabled_in_prs = true;
 		}
@@ -2316,9 +2246,7 @@ out0:
 	return rc;
 }
 
-/* This function is very RoCE oriented, if another protocol in the future
- * will want this feature we'll need to modify the function to be more generic
- */
+ 
 static int
 qed_cxt_free_ilt_range(struct qed_hwfn *p_hwfn,
 		       enum qed_cxt_elem_type elem_type,
@@ -2359,7 +2287,7 @@ qed_cxt_free_ilt_range(struct qed_hwfn *p_hwfn,
 		return -EINVAL;
 	}
 
-	/* Calculate line in ilt */
+	 
 	hw_p_size = p_cli->p_size.val;
 	elems_per_p = ILT_PAGE_IN_BYTES(hw_p_size) / elem_size;
 	start_line = p_blk->start_line + (start_iid / elems_per_p);
@@ -2390,14 +2318,12 @@ qed_cxt_free_ilt_range(struct qed_hwfn *p_hwfn,
 		p_hwfn->p_cxt_mngr->ilt_shadow[i].phys_addr = 0;
 		p_hwfn->p_cxt_mngr->ilt_shadow[i].size = 0;
 
-		/* compute absolute offset */
+		 
 		reg_offset = PSWRQ2_REG_ILT_MEMORY +
 		    ((start_line++) * ILT_REG_SIZE_IN_BYTES *
 		     ILT_ENTRY_IN_REGS);
 
-		/* Write via DMAE since the PSWRQ2_REG_ILT_MEMORY line is a
-		 * wide-bus.
-		 */
+		 
 		qed_dmae_host2grc(p_hwfn, p_ptt,
 				  (u64) (uintptr_t) &ilt_hw_entry,
 				  reg_offset,
@@ -2415,7 +2341,7 @@ int qed_cxt_free_proto_ilt(struct qed_hwfn *p_hwfn, enum protocol_type proto)
 	int rc;
 	u32 cid;
 
-	/* Free Connection CXT */
+	 
 	rc = qed_cxt_free_ilt_range(p_hwfn, QED_ELEM_CXT,
 				    qed_cxt_get_proto_cid_start(p_hwfn,
 								proto),
@@ -2425,16 +2351,14 @@ int qed_cxt_free_proto_ilt(struct qed_hwfn *p_hwfn, enum protocol_type proto)
 	if (rc)
 		return rc;
 
-	/* Free Task CXT ( Intentionally RoCE as task-id is shared between
-	 * RoCE and iWARP )
-	 */
+	 
 	proto = PROTOCOLID_ROCE;
 	rc = qed_cxt_free_ilt_range(p_hwfn, QED_ELEM_TASK, 0,
 				    qed_cxt_get_proto_tid_count(p_hwfn, proto));
 	if (rc)
 		return rc;
 
-	/* Free TSDM CXT */
+	 
 	rc = qed_cxt_free_ilt_range(p_hwfn, QED_ELEM_XRC_SRQ, 0,
 				    p_hwfn->p_cxt_mngr->xrc_srq_count);
 
@@ -2457,7 +2381,7 @@ int qed_cxt_get_task_ctx(struct qed_hwfn *p_hwfn,
 	u32 total_lines;
 	u32 proto, seg;
 
-	/* Verify the personality */
+	 
 	switch (p_hwfn->hw_info.personality) {
 	case QED_PCI_FCOE:
 		proto = PROTOCOLID_FCOE;

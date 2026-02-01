@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/regmap.h>
@@ -50,7 +46,7 @@ static void fsl_dcu_drm_crtc_atomic_disable(struct drm_crtc *crtc,
 	struct drm_device *dev = crtc->dev;
 	struct fsl_dcu_drm_device *fsl_dev = dev->dev_private;
 
-	/* always disable planes on the CRTC */
+	 
 	drm_atomic_helper_disable_planes_on_crtc(old_crtc_state, true);
 
 	drm_crtc_vblank_off(crtc);
@@ -92,7 +88,7 @@ static void fsl_dcu_drm_crtc_mode_set_nofb(struct drm_crtc *crtc)
 
 	drm_display_mode_to_videomode(mode, &vm);
 
-	/* INV_PXCK as default (most display sample data on rising edge) */
+	 
 	if (!(con->display_info.bus_flags & DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE))
 		pol |= DCU_SYN_POL_INV_PXCK;
 

@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_PINCTRL_STARFIVE_JH7110_H__
 #define __DT_BINDINGS_PINCTRL_STARFIVE_JH7110_H__
 
-/* sys_iomux pins */
+ 
 #define	PAD_GPIO0		0
 #define	PAD_GPIO1		1
 #define	PAD_GPIO2		2
@@ -104,7 +101,7 @@
 #define	PAD_QSPI_DATA2		93
 #define	PAD_QSPI_DATA3		94
 
-/* aon_iomux pins */
+ 
 #define	PAD_TESTEN		0
 #define	PAD_RGPIO0		1
 #define	PAD_RGPIO1		2

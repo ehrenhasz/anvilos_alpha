@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Toshiba ARM SoC reset controller driver
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+ 
+ 
 
 #ifndef _VISCONTI_RESET_H_
 #define _VISCONTI_RESET_H_
@@ -33,4 +27,4 @@ int visconti_register_reset_controller(struct device *dev,
 				       unsigned int num_resets,
 				       const struct reset_control_ops *reset_ops,
 				       spinlock_t *lock);
-#endif /* _VISCONTI_RESET_H_ */
+#endif  

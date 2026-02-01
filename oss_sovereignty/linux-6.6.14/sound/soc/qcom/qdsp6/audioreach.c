@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020, Linaro Limited
+
+
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -12,7 +12,7 @@
 #include "q6apm.h"
 #include "audioreach.h"
 
-/* SubGraph Config */
+ 
 struct apm_sub_graph_data {
 	struct apm_sub_graph_cfg sub_graph_cfg;
 	struct apm_prop_data perf_data;
@@ -34,23 +34,23 @@ struct apm_sub_graph_params  {
 
 #define APM_SUB_GRAPH_PSIZE(p, n) ALIGN(struct_size(p, sg_cfg, n), 8)
 
-/* container config */
+ 
 struct apm_container_obj  {
 	struct apm_container_cfg container_cfg;
-	/* Capability ID list */
+	 
 	struct apm_prop_data cap_data;
 	uint32_t num_capability_id;
 	uint32_t capability_id;
 
-	/* Container graph Position */
+	 
 	struct apm_prop_data pos_data;
 	struct apm_cont_prop_id_graph_pos pos;
 
-	/* Container Stack size */
+	 
 	struct apm_prop_data stack_data;
 	struct apm_cont_prop_id_stack_size stack;
 
-	/* Container proc domain id */
+	 
 	struct apm_prop_data domain_data;
 	struct apm_cont_prop_id_domain domain;
 } __packed;
@@ -63,9 +63,9 @@ struct apm_container_params  {
 
 #define APM_CONTAINER_PSIZE(p, n) ALIGN(struct_size(p, cont_obj, n), 8)
 
-/* Module List config */
+ 
 struct apm_mod_list_obj {
-	/* Modules list cfg */
+	 
 	uint32_t sub_graph_id;
 	uint32_t container_id;
 	uint32_t num_modules;
@@ -77,12 +77,12 @@ struct apm_mod_list_obj {
 struct apm_module_list_params {
 	struct apm_module_param_data param_data;
 	uint32_t num_modules_list;
-	/* Module list config array */
+	 
 	struct apm_mod_list_obj mod_list_obj[];
 } __packed;
 
 
-/* Module Properties */
+ 
 struct apm_mod_prop_obj {
 	u32 instance_id;
 	u32 num_props;
@@ -99,7 +99,7 @@ struct apm_prop_list_params {
 
 #define APM_MOD_PROP_PSIZE(p, n) ALIGN(struct_size(p, mod_prop_obj, n), 8)
 
-/* Module Connections */
+ 
 struct apm_mod_conn_list_params {
 	struct apm_module_param_data param_data;
 	u32 num_connections;
@@ -138,7 +138,7 @@ struct apm_sh_module_media_fmt_cmd {
 				sizeof(struct apm_sh_module_media_fmt_cmd) + \
 				ch * sizeof(uint8_t), 8)
 
-/* num of channels as argument */
+ 
 #define APM_PCM_MODULE_FMT_CMD_PSIZE(ch) ALIGN( \
 				sizeof(struct apm_pcm_module_media_fmt_cmd) + \
 				ch * sizeof(uint8_t), 8)
@@ -271,27 +271,27 @@ static void apm_populate_container_config(struct apm_container_obj *cfg,
 					  struct audioreach_container *cont)
 {
 
-	/* Container Config */
+	 
 	cfg->container_cfg.container_id = cont->container_id;
 	cfg->container_cfg.num_prop = 4;
 
-	/* Capability list */
+	 
 	cfg->cap_data.prop_id = APM_CONTAINER_PROP_ID_CAPABILITY_LIST;
 	cfg->cap_data.prop_size = APM_CONTAINER_PROP_ID_CAPABILITY_SIZE;
 	cfg->num_capability_id = 1;
 	cfg->capability_id = cont->capability_id;
 
-	/* Graph Position */
+	 
 	cfg->pos_data.prop_id = APM_CONTAINER_PROP_ID_GRAPH_POS;
 	cfg->pos_data.prop_size = sizeof(struct apm_cont_prop_id_graph_pos);
 	cfg->pos.graph_pos = cont->graph_pos;
 
-	/* Stack size */
+	 
 	cfg->stack_data.prop_id = APM_CONTAINER_PROP_ID_STACK_SIZE;
 	cfg->stack_data.prop_size = sizeof(struct apm_cont_prop_id_stack_size);
 	cfg->stack.stack_size = cont->stack_size;
 
-	/* Proc domain */
+	 
 	cfg->domain_data.prop_id = APM_CONTAINER_PROP_ID_PROC_DOMAIN;
 	cfg->domain_data.prop_size = sizeof(struct apm_cont_prop_id_domain);
 	cfg->domain.proc_domain = cont->proc_domain;
@@ -303,17 +303,17 @@ static void apm_populate_sub_graph_config(struct apm_sub_graph_data *cfg,
 	cfg->sub_graph_cfg.sub_graph_id = sg->sub_graph_id;
 	cfg->sub_graph_cfg.num_sub_graph_prop = APM_SUB_GRAPH_CFG_NPROP;
 
-	/* Perf Mode */
+	 
 	cfg->perf_data.prop_id = APM_SUB_GRAPH_PROP_ID_PERF_MODE;
 	cfg->perf_data.prop_size = APM_SG_PROP_ID_PERF_MODE_SIZE;
 	cfg->perf.perf_mode = sg->perf_mode;
 
-	/* Direction */
+	 
 	cfg->dir_data.prop_id = APM_SUB_GRAPH_PROP_ID_DIRECTION;
 	cfg->dir_data.prop_size = APM_SG_PROP_ID_DIR_SIZE;
 	cfg->dir.direction = sg->direction;
 
-	/* Scenario ID */
+	 
 	cfg->sid_data.prop_id = APM_SUB_GRAPH_PROP_ID_SCENARIO_ID;
 	cfg->sid_data.prop_size = APM_SG_PROP_ID_SID_SIZE;
 	cfg->sid.scenario_id = sg->scenario_id;
@@ -448,7 +448,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 	sg_list = &info->sg_list;
 	ml_sz = 0;
 
-	/* add FE-BE connections */
+	 
 	if (info->dst_mod_inst_id && info->src_mod_inst_id)
 		num_connections++;
 
@@ -482,7 +482,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 
 	p = (void *)pkt + GPR_HDR_SIZE + APM_CMD_HDR_SIZE;
 
-	/* SubGraph */
+	 
 	params.sg_data = p;
 	param_data = &params.sg_data->param_data;
 	param_data->module_instance_id = APM_MODULE_INSTANCE_ID;
@@ -491,7 +491,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 	params.sg_data->num_sub_graphs = num_sub_graphs;
 	p += sg_sz;
 
-	/* Container */
+	 
 	params.cont_data = p;
 	param_data = &params.cont_data->param_data;
 	param_data->module_instance_id = APM_MODULE_INSTANCE_ID;
@@ -500,7 +500,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 	params.cont_data->num_containers = num_containers;
 	p += cont_sz;
 
-	/* Module List*/
+	 
 	params.mod_list_data = p;
 	param_data = &params.mod_list_data->param_data;
 	param_data->module_instance_id = APM_MODULE_INSTANCE_ID;
@@ -509,7 +509,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 	params.mod_list_data->num_modules_list = num_modules_list;
 	p += ml_sz;
 
-	/* Module Properties */
+	 
 	params.mod_prop_data = p;
 	param_data = &params.mod_prop_data->param_data;
 	param_data->module_instance_id = APM_MODULE_INSTANCE_ID;
@@ -518,7 +518,7 @@ void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 	params.mod_prop_data->num_modules_prop_cfg = num_modules;
 	p += mp_sz;
 
-	/* Module Connections */
+	 
 	params.mod_conn_list_data = p;
 	param_data = &params.mod_conn_list_data->param_data;
 	param_data->module_instance_id = APM_MODULE_INSTANCE_ID;
@@ -569,7 +569,7 @@ int audioreach_send_cmd_sync(struct device *dev, gpr_device_t *gdev,
 		dev_err(dev, "DSP returned error[%x] %x\n", hdr->opcode, result->status);
 		rc = -EINVAL;
 	} else {
-		/* DSP successfully finished the command */
+		 
 		rc = 0;
 	}
 
@@ -654,7 +654,7 @@ static int audioreach_display_port_set_media_format(struct q6apm_graph *graph,
 	return rc;
 }
 
-/* LPASS Codec DMA port Module Media Format Setup */
+ 
 static int audioreach_codec_dma_set_media_format(struct q6apm_graph *graph,
 						 struct audioreach_module *module,
 						 struct audioreach_module_config *cfg)
@@ -975,7 +975,7 @@ static int audioreach_i2s_set_media_format(struct q6apm_graph *graph,
 		intf_cfg->cfg.ws_src = CONFIG_I2S_WS_SRC_INTERNAL;
 		break;
 	case SND_SOC_DAIFMT_BC_FC:
-		/* CPU is slave */
+		 
 		intf_cfg->cfg.ws_src = CONFIG_I2S_WS_SRC_EXTERNAL;
 		break;
 	default:
@@ -1331,7 +1331,7 @@ int audioreach_map_memory_regions(struct q6apm_graph *graph, unsigned int dir, s
 		num_regions = periods;
 	}
 
-	/* DSP expects size should be aligned to 4K */
+	 
 	buf_sz = ALIGN(buf_sz, 4096);
 
 	payload_size = sizeof(*cmd) + (sizeof(*mregions) * num_regions);

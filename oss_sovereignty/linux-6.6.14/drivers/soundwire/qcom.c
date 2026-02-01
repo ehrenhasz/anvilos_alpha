@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019, Linaro Limited
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -157,10 +157,7 @@ struct qcom_swrm_port_config {
 	u8 lane_control;
 };
 
-/*
- * Internal IDs for different register layouts.  Only few registers differ per
- * each variant, so the list of IDs below does not include all of registers.
- */
+ 
 enum {
 	SWRM_REG_FRAME_GEN_ENABLED,
 	SWRM_REG_INTERRUPT_STATUS,
@@ -186,7 +183,7 @@ struct qcom_swrm_ctrl {
 #endif
 	struct completion broadcast;
 	struct completion enumeration;
-	/* Port alloc/free lock */
+	 
 	struct mutex port_lock;
 	struct clk *hclk;
 	int irq;
@@ -201,7 +198,7 @@ struct qcom_swrm_ctrl {
 	u32 intr_mask;
 	u8 rcmd_id;
 	u8 wcmd_id;
-	/* Port numbers are 1 - 14 */
+	 
 	struct qcom_swrm_port_config pconfig[QCOM_SDW_MAX_PORTS + 1];
 	struct sdw_stream_runtime *sruntime[SWRM_MAX_DAIS];
 	enum sdw_slave_status status[SDW_MAX_DEVICES + 1];
@@ -258,7 +255,7 @@ static const struct qcom_swrm_data swrm_v1_6_data = {
 static const unsigned int swrm_v2_0_reg_layout[] = {
 	[SWRM_REG_FRAME_GEN_ENABLED] = SWRM_V2_0_LINK_STATUS,
 	[SWRM_REG_INTERRUPT_STATUS] = SWRM_V2_0_INTERRUPT_STATUS,
-	[SWRM_REG_INTERRUPT_MASK_ADDR] = 0, /* Not present */
+	[SWRM_REG_INTERRUPT_MASK_ADDR] = 0,  
 	[SWRM_REG_INTERRUPT_CLEAR] = SWRM_V2_0_INTERRUPT_CLEAR,
 	[SWRM_REG_INTERRUPT_CPU_EN] = SWRM_V2_0_INTERRUPT_CPU_EN,
 	[SWRM_REG_CMD_FIFO_WR_CMD] = SWRM_V2_0_CMD_FIFO_WR_CMD,
@@ -283,7 +280,7 @@ static int qcom_swrm_ahb_reg_read(struct qcom_swrm_ctrl *ctrl, int reg,
 	struct regmap *wcd_regmap = ctrl->regmap;
 	int ret;
 
-	/* pg register + offset */
+	 
 	ret = regmap_bulk_write(wcd_regmap, SWRM_AHB_BRIDGE_RD_ADDR_0,
 			  (u8 *)&reg, 4);
 	if (ret < 0)
@@ -302,13 +299,13 @@ static int qcom_swrm_ahb_reg_write(struct qcom_swrm_ctrl *ctrl,
 {
 	struct regmap *wcd_regmap = ctrl->regmap;
 	int ret;
-	/* pg register + offset */
+	 
 	ret = regmap_bulk_write(wcd_regmap, SWRM_AHB_BRIDGE_WR_DATA_0,
 			  (u8 *)&val, 4);
 	if (ret)
 		return SDW_CMD_FAIL;
 
-	/* write address register */
+	 
 	ret = regmap_bulk_write(wcd_regmap, SWRM_AHB_BRIDGE_WR_ADDR_0,
 			  (u8 *)&reg, 4);
 	if (ret)
@@ -355,12 +352,12 @@ static int swrm_wait_for_rd_fifo_avail(struct qcom_swrm_ctrl *ctrl)
 	int fifo_retry_count = SWR_OVERFLOW_RETRY_COUNT;
 
 	do {
-		/* Check for fifo underflow during read */
+		 
 		ctrl->reg_read(ctrl, ctrl->reg_layout[SWRM_REG_CMD_FIFO_STATUS],
 			       &value);
 		fifo_outstanding_data = FIELD_GET(SWRM_RD_CMD_FIFO_CNT_MASK, value);
 
-		/* Check if read data is available in read fifo */
+		 
 		if (fifo_outstanding_data > 0)
 			return 0;
 
@@ -381,12 +378,12 @@ static int swrm_wait_for_wr_fifo_avail(struct qcom_swrm_ctrl *ctrl)
 	int fifo_retry_count = SWR_OVERFLOW_RETRY_COUNT;
 
 	do {
-		/* Check for fifo overflow during write */
+		 
 		ctrl->reg_read(ctrl, ctrl->reg_layout[SWRM_REG_CMD_FIFO_STATUS],
 			       &value);
 		fifo_outstanding_cmds = FIELD_GET(SWRM_WR_CMD_FIFO_CNT_MASK, value);
 
-		/* Check for space in write fifo before writing */
+		 
 		if (fifo_outstanding_cmds < ctrl->wr_fifo_depth)
 			return 0;
 
@@ -406,7 +403,7 @@ static bool swrm_wait_for_wr_fifo_done(struct qcom_swrm_ctrl *ctrl)
 	u32 fifo_outstanding_cmds, value;
 	int fifo_retry_count = SWR_OVERFLOW_RETRY_COUNT;
 
-	/* Check for fifo overflow during write */
+	 
 	ctrl->reg_read(ctrl, ctrl->reg_layout[SWRM_REG_CMD_FIFO_STATUS], &value);
 	fifo_outstanding_cmds = FIELD_GET(SWRM_WR_CMD_FIFO_CNT_MASK, value);
 
@@ -450,7 +447,7 @@ static int qcom_swrm_cmd_fifo_wr_cmd(struct qcom_swrm_ctrl *ctrl, u8 cmd_data,
 	if (cmd_id == SWR_BROADCAST_CMD_ID)
 		reinit_completion(&ctrl->broadcast);
 
-	/* Its assumed that write is okay as we do not get any status back */
+	 
 	ctrl->reg_write(ctrl, ctrl->reg_layout[SWRM_REG_CMD_FIFO_WR_CMD], val);
 
 	if (ctrl->version <= SWRM_VERSION_1_3_0)
@@ -458,10 +455,7 @@ static int qcom_swrm_cmd_fifo_wr_cmd(struct qcom_swrm_ctrl *ctrl, u8 cmd_data,
 
 	if (cmd_id == SWR_BROADCAST_CMD_ID) {
 		swrm_wait_for_wr_fifo_done(ctrl);
-		/*
-		 * sleep for 10ms for MSM soundwire variant to allow broadcast
-		 * command to complete.
-		 */
+		 
 		ret = wait_for_completion_timeout(&ctrl->broadcast,
 						  msecs_to_jiffies(TIMEOUT_MS));
 		if (!ret)
@@ -483,16 +477,13 @@ static int qcom_swrm_cmd_fifo_rd_cmd(struct qcom_swrm_ctrl *ctrl,
 
 	val = swrm_get_packed_reg_val(&ctrl->rcmd_id, len, dev_addr, reg_addr);
 
-	/*
-	 * Check for outstanding cmd wrt. write fifo depth to avoid
-	 * overflow as read will also increase write fifo cnt.
-	 */
+	 
 	swrm_wait_for_wr_fifo_avail(ctrl);
 
-	/* wait for FIFO RD to complete to avoid overflow */
+	 
 	usleep_range(100, 105);
 	ctrl->reg_write(ctrl, ctrl->reg_layout[SWRM_REG_CMD_FIFO_RD_CMD], val);
-	/* wait for FIFO RD CMD complete to avoid overflow */
+	 
 	usleep_range(250, 255);
 
 	if (swrm_wait_for_rd_fifo_avail(ctrl))
@@ -506,7 +497,7 @@ static int qcom_swrm_cmd_fifo_rd_cmd(struct qcom_swrm_ctrl *ctrl,
 
 		if (cmd_id != ctrl->rcmd_id) {
 			if (retry_attempt < (MAX_FIFO_RD_RETRY - 1)) {
-				/* wait 500 us before retry on fifo read failure */
+				 
 				usleep_range(500, 505);
 				ctrl->reg_write(ctrl, SWRM_CMD_FIFO_CMD,
 						SWRM_CMD_FIFO_FLUSH);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -175,7 +171,7 @@ static int mtk_jpeg_calc_dst_size(struct mtk_jpeg_dec_param *param)
 
 		padding_w = param->mcu_w * MTK_JPEG_DCTSIZE *
 				param->sampling_w[i];
-		/* output format is 420/422 */
+		 
 		param->comp_w[i] = padding_w >> brz_w[i];
 		param->comp_w[i] = round_up(param->comp_w[i],
 					    MTK_JPEG_DCTSIZE);
@@ -187,7 +183,7 @@ static int mtk_jpeg_calc_dst_size(struct mtk_jpeg_dec_param *param)
 	param->dec_h = ds_row_h[0] * param->mcu_h;
 
 	for (i = 0; i < MTK_JPEG_COMP_MAX; i++) {
-		/* They must be equal in frame mode. */
+		 
 		param->mem_stride[i] = param->img_stride[i];
 		param->comp_size[i] = param->mem_stride[i] * ds_row_h[i] *
 				      param->mcu_h;

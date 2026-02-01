@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/types.h>
@@ -8,20 +8,7 @@
 #include <linux/ceph/decode.h>
 #include <linux/ceph/libceph.h>
 
-/**
- * ceph_cls_lock - grab rados lock for object
- * @osdc: OSD client instance
- * @oid: object to lock
- * @oloc: object to lock
- * @lock_name: the name of the lock
- * @type: lock type (CEPH_CLS_LOCK_EXCLUSIVE or CEPH_CLS_LOCK_SHARED)
- * @cookie: user-defined identifier for this instance of the lock
- * @tag: user-defined tag
- * @desc: user-defined lock description
- * @flags: lock flags
- *
- * All operations on the same lock should use the same tag.
- */
+ 
 int ceph_cls_lock(struct ceph_osd_client *osdc,
 		  struct ceph_object_id *oid,
 		  struct ceph_object_locator *oloc,
@@ -43,7 +30,7 @@ int ceph_cls_lock(struct ceph_osd_client *osdc,
 			   tag_len + sizeof(__le32) +
 			   desc_len + sizeof(__le32) +
 			   sizeof(struct ceph_timespec) +
-			   /* flag and type */
+			    
 			   sizeof(u8) + sizeof(u8) +
 			   CEPH_ENCODING_START_BLK_LEN;
 	if (lock_op_buf_size > PAGE_SIZE)
@@ -56,7 +43,7 @@ int ceph_cls_lock(struct ceph_osd_client *osdc,
 	p = page_address(lock_op_page);
 	end = p + lock_op_buf_size;
 
-	/* encode cls_lock_lock_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    lock_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);
@@ -64,7 +51,7 @@ int ceph_cls_lock(struct ceph_osd_client *osdc,
 	ceph_encode_string(&p, end, cookie, cookie_len);
 	ceph_encode_string(&p, end, tag, tag_len);
 	ceph_encode_string(&p, end, desc, desc_len);
-	/* only support infinite duration */
+	 
 	memset(&mtime, 0, sizeof(mtime));
 	ceph_encode_timespec64(p, &mtime);
 	p += sizeof(struct ceph_timespec);
@@ -82,14 +69,7 @@ int ceph_cls_lock(struct ceph_osd_client *osdc,
 }
 EXPORT_SYMBOL(ceph_cls_lock);
 
-/**
- * ceph_cls_unlock - release rados lock for object
- * @osdc: OSD client instance
- * @oid: object to lock
- * @oloc: object to lock
- * @lock_name: the name of the lock
- * @cookie: user-defined identifier for this instance of the lock
- */
+ 
 int ceph_cls_unlock(struct ceph_osd_client *osdc,
 		    struct ceph_object_id *oid,
 		    struct ceph_object_locator *oloc,
@@ -115,7 +95,7 @@ int ceph_cls_unlock(struct ceph_osd_client *osdc,
 	p = page_address(unlock_op_page);
 	end = p + unlock_op_buf_size;
 
-	/* encode cls_lock_unlock_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    unlock_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);
@@ -132,15 +112,7 @@ int ceph_cls_unlock(struct ceph_osd_client *osdc,
 }
 EXPORT_SYMBOL(ceph_cls_unlock);
 
-/**
- * ceph_cls_break_lock - release rados lock for object for specified client
- * @osdc: OSD client instance
- * @oid: object to lock
- * @oloc: object to lock
- * @lock_name: the name of the lock
- * @cookie: user-defined identifier for this instance of the lock
- * @locker: current lock owner
- */
+ 
 int ceph_cls_break_lock(struct ceph_osd_client *osdc,
 			struct ceph_object_id *oid,
 			struct ceph_object_locator *oloc,
@@ -168,7 +140,7 @@ int ceph_cls_break_lock(struct ceph_osd_client *osdc,
 	p = page_address(break_op_page);
 	end = p + break_op_buf_size;
 
-	/* encode cls_lock_break_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    break_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);
@@ -217,7 +189,7 @@ int ceph_cls_set_cookie(struct ceph_osd_client *osdc,
 	p = page_address(cookie_op_page);
 	end = p + cookie_op_buf_size;
 
-	/* encode cls_lock_set_cookie_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    cookie_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);
@@ -270,14 +242,14 @@ static int decode_locker(void **p, void *end, struct ceph_locker *locker)
 	if (ret)
 		return ret;
 
-	*p += sizeof(struct ceph_timespec); /* skip expiration */
+	*p += sizeof(struct ceph_timespec);  
 
 	ret = ceph_decode_entity_addr(p, end, &locker->info.addr);
 	if (ret)
 		return ret;
 
 	len = ceph_decode_32(p);
-	*p += len; /* skip description */
+	*p += len;  
 
 	dout("%s %s%llu cookie %s addr %s\n", __func__,
 	     ENTITY_NAME(locker->id.name), locker->id.cookie,
@@ -325,12 +297,7 @@ err_free_lockers:
 	return ret;
 }
 
-/*
- * On success, the caller is responsible for:
- *
- *     kfree(tag);
- *     ceph_free_lockers(lockers, num_lockers);
- */
+ 
 int ceph_cls_lock_info(struct ceph_osd_client *osdc,
 		       struct ceph_object_id *oid,
 		       struct ceph_object_locator *oloc,
@@ -362,7 +329,7 @@ int ceph_cls_lock_info(struct ceph_osd_client *osdc,
 	p = page_address(get_info_op_page);
 	end = p + get_info_op_buf_size;
 
-	/* encode cls_lock_get_info_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    get_info_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);
@@ -415,7 +382,7 @@ int ceph_cls_assert_locked(struct ceph_osd_request *req, int which,
 	p = page_address(pages[0]);
 	end = p + assert_op_buf_size;
 
-	/* encode cls_lock_assert_op struct */
+	 
 	ceph_start_encoding(&p, 1, 1,
 			    assert_op_buf_size - CEPH_ENCODING_START_BLK_LEN);
 	ceph_encode_string(&p, end, lock_name, name_len);

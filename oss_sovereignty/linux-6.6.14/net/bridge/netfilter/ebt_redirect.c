@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_redirect
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  April, 2002
- *
- */
+
+ 
 #include <linux/module.h>
 #include <net/sock.h>
 #include "../br_private.h"
@@ -25,7 +17,7 @@ ebt_redirect_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		return EBT_DROP;
 
 	if (xt_hooknum(par) != NF_BR_BROUTING)
-		/* rcu_read_lock()ed by nf_hook_thresh */
+		 
 		ether_addr_copy(eth_hdr(skb)->h_dest,
 				br_port_get_rcu(xt_in(par))->br->dev->dev_addr);
 	else

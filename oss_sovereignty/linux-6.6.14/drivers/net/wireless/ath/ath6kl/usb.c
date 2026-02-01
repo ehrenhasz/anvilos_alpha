@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2007-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -21,12 +6,12 @@
 #include "debug.h"
 #include "core.h"
 
-/* constants */
+ 
 #define TX_URB_COUNT            32
 #define RX_URB_COUNT            32
 #define ATH6KL_USB_RX_BUFFER_SIZE  4096
 
-/* tx/rx pipes for usb */
+ 
 enum ATH6KL_USB_PIPE_ID {
 	ATH6KL_USB_PIPE_TX_CTRL = 0,
 	ATH6KL_USB_PIPE_TX_DATA_LP,
@@ -60,9 +45,9 @@ struct ath6kl_usb_pipe {
 
 #define ATH6KL_USB_PIPE_FLAG_TX    (1 << 0)
 
-/* usb device object */
+ 
 struct ath6kl_usb {
-	/* protects pipe->urb_list_head and  pipe->urb_cnt */
+	 
 	spinlock_t cs_lock;
 
 	struct usb_device *udev;
@@ -74,7 +59,7 @@ struct ath6kl_usb {
 	struct workqueue_struct *wq;
 };
 
-/* usb urb object */
+ 
 struct ath6kl_urb_context {
 	struct list_head link;
 	struct ath6kl_usb_pipe *pipe;
@@ -82,7 +67,7 @@ struct ath6kl_urb_context {
 	struct ath6kl *ar;
 };
 
-/* USB endpoint definitions */
+ 
 #define ATH6KL_USB_EP_ADDR_APP_CTRL_IN          0x81
 #define ATH6KL_USB_EP_ADDR_APP_DATA_IN          0x82
 #define ATH6KL_USB_EP_ADDR_APP_DATA2_IN         0x83
@@ -93,7 +78,7 @@ struct ath6kl_urb_context {
 #define ATH6KL_USB_EP_ADDR_APP_DATA_MP_OUT      0x03
 #define ATH6KL_USB_EP_ADDR_APP_DATA_HP_OUT      0x04
 
-/* diagnostic command defnitions */
+ 
 #define ATH6KL_USB_CONTROL_REQ_SEND_BMI_CMD        1
 #define ATH6KL_USB_CONTROL_REQ_RECV_BMI_RESP       2
 #define ATH6KL_USB_CONTROL_REQ_DIAG_CMD            3
@@ -118,7 +103,7 @@ struct ath6kl_usb_ctrl_diag_resp_read {
 	__le32 value;
 } __packed;
 
-/* function declarations */
+ 
 static void ath6kl_usb_recv_complete(struct urb *urb);
 
 #define ATH6KL_USB_IS_BULK_EP(attr) (((attr) & 3) == 0x02)
@@ -126,14 +111,14 @@ static void ath6kl_usb_recv_complete(struct urb *urb);
 #define ATH6KL_USB_IS_ISOC_EP(attr)  (((attr) & 3) == 0x01)
 #define ATH6KL_USB_IS_DIR_IN(addr)  ((addr) & 0x80)
 
-/* pipe/urb operations */
+ 
 static struct ath6kl_urb_context *
 ath6kl_usb_alloc_urb_from_pipe(struct ath6kl_usb_pipe *pipe)
 {
 	struct ath6kl_urb_context *urb_context = NULL;
 	unsigned long flags;
 
-	/* bail if this pipe is not initialized */
+	 
 	if (!pipe->ar_usb)
 		return NULL;
 
@@ -155,7 +140,7 @@ static void ath6kl_usb_free_urb_to_pipe(struct ath6kl_usb_pipe *pipe,
 {
 	unsigned long flags;
 
-	/* bail if this pipe is not initialized */
+	 
 	if (!pipe->ar_usb)
 		return;
 
@@ -179,7 +164,7 @@ static inline struct ath6kl_usb *ath6kl_usb_priv(struct ath6kl *ar)
 	return ar->hif_priv;
 }
 
-/* pipe resource allocation/cleanup */
+ 
 static int ath6kl_usb_alloc_pipe_resources(struct ath6kl_usb_pipe *pipe,
 					   int urb_cnt)
 {
@@ -199,10 +184,7 @@ static int ath6kl_usb_alloc_pipe_resources(struct ath6kl_usb_pipe *pipe,
 
 		urb_context->pipe = pipe;
 
-		/*
-		 * we are only allocate the urb contexts here, the actual URB
-		 * is allocated from the kernel as needed to do a transaction
-		 */
+		 
 		pipe->urb_alloc++;
 		ath6kl_usb_free_urb_to_pipe(pipe, urb_context);
 	}
@@ -221,7 +203,7 @@ static void ath6kl_usb_free_pipe_resources(struct ath6kl_usb_pipe *pipe)
 	struct ath6kl_urb_context *urb_context;
 
 	if (pipe->ar_usb == NULL) {
-		/* nothing allocated for this pipe */
+		 
 		return;
 	}
 
@@ -294,7 +276,7 @@ static u8 ath6kl_usb_get_logical_pipe_num(struct ath6kl_usb *ar_usb,
 		*urb_count = TX_URB_COUNT;
 		break;
 	default:
-		/* note: there may be endpoints not currently used */
+		 
 		break;
 	}
 
@@ -312,7 +294,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 
 	ath6kl_dbg(ATH6KL_DBG_USB, "setting up USB Pipes using interface\n");
 
-	/* walk descriptors and setup pipes */
+	 
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
 
@@ -332,7 +314,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 				   le16_to_cpu(endpoint->wMaxPacketSize),
 				   endpoint->bInterval);
 		} else if (ATH6KL_USB_IS_ISOC_EP(endpoint->bmAttributes)) {
-			/* TODO for ISO */
+			 
 			ath6kl_dbg(ATH6KL_DBG_USB,
 				   "%s ISOC Ep:0x%2.2X maxpktsz:%d interval:%d\n",
 				   ATH6KL_USB_IS_DIR_IN
@@ -342,7 +324,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 				   endpoint->bInterval);
 		}
 
-		/* Ignore broken descriptors. */
+		 
 		if (usb_endpoint_maxp(endpoint) == 0)
 			continue;
 
@@ -357,7 +339,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 
 		pipe = &ar_usb->pipes[pipe_num];
 		if (pipe->ar_usb != NULL) {
-			/* hmmm..pipe was already setup */
+			 
 			continue;
 		}
 
@@ -387,7 +369,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 						   pipe->ep_address);
 			}
 		} else if (ATH6KL_USB_IS_ISOC_EP(endpoint->bmAttributes)) {
-			/* TODO for ISO */
+			 
 			if (ATH6KL_USB_IS_DIR_IN(pipe->ep_address)) {
 				pipe->usb_pipe_handle =
 				    usb_rcvisocpipe(ar_usb->udev,
@@ -412,7 +394,7 @@ static int ath6kl_usb_setup_pipe_resources(struct ath6kl_usb *ar_usb)
 	return status;
 }
 
-/* pipe operations */
+ 
 static void ath6kl_usb_post_recv_transfers(struct ath6kl_usb_pipe *recv_pipe,
 					   int buffer_length)
 {
@@ -475,23 +457,13 @@ static void ath6kl_usb_flush_all(struct ath6kl_usb *ar_usb)
 			usb_kill_anchored_urbs(&ar_usb->pipes[i].urb_submitted);
 	}
 
-	/*
-	 * Flushing any pending I/O may schedule work this call will block
-	 * until all scheduled work runs to completion.
-	 */
+	 
 	flush_workqueue(ar_usb->wq);
 }
 
 static void ath6kl_usb_start_recv_pipes(struct ath6kl_usb *ar_usb)
 {
-	/*
-	 * note: control pipe is no longer used
-	 * ar_usb->pipes[ATH6KL_USB_PIPE_RX_CTRL].urb_cnt_thresh =
-	 *      ar_usb->pipes[ATH6KL_USB_PIPE_RX_CTRL].urb_alloc/2;
-	 * ath6kl_usb_post_recv_transfers(&ar_usb->
-	 *		pipes[ATH6KL_USB_PIPE_RX_CTRL],
-	 *		ATH6KL_USB_RX_BUFFER_SIZE);
-	 */
+	 
 
 	ar_usb->pipes[ATH6KL_USB_PIPE_RX_DATA].urb_cnt_thresh = 1;
 
@@ -499,7 +471,7 @@ static void ath6kl_usb_start_recv_pipes(struct ath6kl_usb *ar_usb)
 				       ATH6KL_USB_RX_BUFFER_SIZE);
 }
 
-/* hif usb rx/tx completion functions */
+ 
 static void ath6kl_usb_recv_complete(struct urb *urb)
 {
 	struct ath6kl_urb_context *urb_context = urb->context;
@@ -518,10 +490,7 @@ static void ath6kl_usb_recv_complete(struct urb *urb)
 		case -ECONNRESET:
 		case -ENOENT:
 		case -ESHUTDOWN:
-			/*
-			 * no need to spew these errors when device
-			 * removed or urb killed due to driver shutdown
-			 */
+			 
 			status = -ECANCELED;
 			break;
 		default:
@@ -539,11 +508,11 @@ static void ath6kl_usb_recv_complete(struct urb *urb)
 
 	skb = urb_context->skb;
 
-	/* we are going to pass it up */
+	 
 	urb_context->skb = NULL;
 	skb_put(skb, urb->actual_length);
 
-	/* note: queue implements a lock */
+	 
 	skb_queue_tail(&pipe->io_comp_queue, skb);
 	queue_work(pipe->ar_usb->wq, &pipe->io_complete_work);
 
@@ -552,7 +521,7 @@ cleanup_recv_urb:
 
 	if (status == 0 &&
 	    pipe->urb_cnt >= pipe->urb_cnt_thresh) {
-		/* our free urbs are piling up, post more transfers */
+		 
 		ath6kl_usb_post_recv_transfers(pipe, ATH6KL_USB_RX_BUFFER_SIZE);
 	}
 }
@@ -578,7 +547,7 @@ static void ath6kl_usb_usb_transmit_complete(struct urb *urb)
 	urb_context->skb = NULL;
 	ath6kl_usb_free_urb_to_pipe(urb_context->pipe, urb_context);
 
-	/* note: queue implements a lock */
+	 
 	skb_queue_tail(&pipe->io_comp_queue, skb);
 	queue_work(pipe->ar_usb->wq, &pipe->io_complete_work);
 }
@@ -633,7 +602,7 @@ static struct ath6kl_usb *ath6kl_usb_create(struct usb_interface *interface)
 	int status = 0;
 	int i;
 
-	/* ath6kl_usb_destroy() needs ar_usb != NULL && ar_usb->wq != NULL. */
+	 
 	ar_usb = kzalloc(sizeof(struct ath6kl_usb), GFP_KERNEL);
 	if (ar_usb == NULL)
 		return NULL;
@@ -688,13 +657,13 @@ static void ath6kl_usb_device_detached(struct usb_interface *interface)
 
 	ath6kl_stop_txrx(ar_usb->ar);
 
-	/* Delay to wait for the target to reboot */
+	 
 	mdelay(20);
 	ath6kl_core_cleanup(ar_usb->ar);
 	ath6kl_usb_destroy(ar_usb);
 }
 
-/* exported hif usb APIs for htc pipe */
+ 
 static void hif_start(struct ath6kl *ar)
 {
 	struct ath6kl_usb *device = ath6kl_usb_priv(ar);
@@ -702,7 +671,7 @@ static void hif_start(struct ath6kl *ar)
 
 	ath6kl_usb_start_recv_pipes(device);
 
-	/* set the TX resource avail threshold for each TX pipe */
+	 
 	for (i = ATH6KL_USB_PIPE_TX_CTRL;
 	     i <= ATH6KL_USB_PIPE_TX_DATA_HP; i++) {
 		device->pipes[i].urb_cnt_thresh =
@@ -727,10 +696,7 @@ static int ath6kl_usb_send(struct ath6kl *ar, u8 PipeID,
 	urb_context = ath6kl_usb_alloc_urb_from_pipe(pipe);
 
 	if (urb_context == NULL) {
-		/*
-		 * TODO: it is possible to run out of urbs if
-		 * 2 endpoints map to the same pipe ID
-		 */
+		 
 		ath6kl_dbg(ATH6KL_DBG_USB_BULK,
 			   "%s pipe:%d no urbs left. URB Cnt : %d\n",
 			   __func__, PipeID, pipe->urb_cnt);
@@ -759,7 +725,7 @@ static int ath6kl_usb_send(struct ath6kl *ar, u8 PipeID,
 			  ath6kl_usb_usb_transmit_complete, urb_context);
 
 	if ((len % pipe->max_packet_size) == 0) {
-		/* hit a max packet boundary on this pipe */
+		 
 		urb->transfer_flags |= URB_ZERO_PACKET;
 	}
 
@@ -809,16 +775,13 @@ static int ath6kl_usb_map_service_pipe(struct ath6kl *ar, u16 svc_id,
 	case HTC_CTRL_RSVD_SVC:
 	case WMI_CONTROL_SVC:
 		*ul_pipe = ATH6KL_USB_PIPE_TX_CTRL;
-		/* due to large control packets, shift to data pipe */
+		 
 		*dl_pipe = ATH6KL_USB_PIPE_RX_DATA;
 		break;
 	case WMI_DATA_BE_SVC:
 	case WMI_DATA_BK_SVC:
 		*ul_pipe = ATH6KL_USB_PIPE_TX_DATA_LP;
-		/*
-		* Disable rxdata2 directly, it will be enabled
-		* if FW enable rxdata2
-		*/
+		 
 		*dl_pipe = ATH6KL_USB_PIPE_RX_DATA;
 		break;
 	case WMI_DATA_VI_SVC:
@@ -828,10 +791,7 @@ static int ath6kl_usb_map_service_pipe(struct ath6kl *ar, u16 svc_id,
 			*ul_pipe = ATH6KL_USB_PIPE_TX_DATA_LP;
 		else
 			*ul_pipe = ATH6KL_USB_PIPE_TX_DATA_MP;
-		/*
-		* Disable rxdata2 directly, it will be enabled
-		* if FW enable rxdata2
-		*/
+		 
 		*dl_pipe = ATH6KL_USB_PIPE_RX_DATA;
 		break;
 	case WMI_DATA_VO_SVC:
@@ -841,10 +801,7 @@ static int ath6kl_usb_map_service_pipe(struct ath6kl *ar, u16 svc_id,
 			*ul_pipe = ATH6KL_USB_PIPE_TX_DATA_LP;
 		else
 			*ul_pipe = ATH6KL_USB_PIPE_TX_DATA_MP;
-		/*
-		* Disable rxdata2 directly, it will be enabled
-		* if FW enable rxdata2
-		*/
+		 
 		*dl_pipe = ATH6KL_USB_PIPE_RX_DATA;
 		break;
 	default:
@@ -882,7 +839,7 @@ static int ath6kl_usb_submit_ctrl_out(struct ath6kl_usb *ar_usb,
 			return -ENOMEM;
 	}
 
-	/* note: if successful returns number of bytes transfered */
+	 
 	ret = usb_control_msg(ar_usb->udev,
 			      usb_sndctrlpipe(ar_usb->udev, 0),
 			      req,
@@ -914,7 +871,7 @@ static int ath6kl_usb_submit_ctrl_in(struct ath6kl_usb *ar_usb,
 			return -ENOMEM;
 	}
 
-	/* note: if successful returns number of bytes transfered */
+	 
 	ret = usb_control_msg(ar_usb->udev,
 				 usb_rcvctrlpipe(ar_usb->udev, 0),
 				 req,
@@ -941,7 +898,7 @@ static int ath6kl_usb_ctrl_msg_exchange(struct ath6kl_usb *ar_usb,
 {
 	int ret;
 
-	/* send command */
+	 
 	ret = ath6kl_usb_submit_ctrl_out(ar_usb, req_val, 0, 0,
 					 req_buf, req_len);
 
@@ -949,11 +906,11 @@ static int ath6kl_usb_ctrl_msg_exchange(struct ath6kl_usb *ar_usb,
 		return ret;
 
 	if (resp_buf == NULL) {
-		/* no expected response */
+		 
 		return ret;
 	}
 
-	/* get response */
+	 
 	ret = ath6kl_usb_submit_ctrl_in(ar_usb, resp_val, 0, 0,
 					resp_buf, *resp_len);
 
@@ -1026,7 +983,7 @@ static int ath6kl_usb_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
 	struct ath6kl_usb *ar_usb = ar->hif_priv;
 	int ret;
 
-	/* get response */
+	 
 	ret = ath6kl_usb_submit_ctrl_in(ar_usb,
 					ATH6KL_USB_CONTROL_REQ_RECV_BMI_RESP,
 					0, 0, buf, len);
@@ -1044,7 +1001,7 @@ static int ath6kl_usb_bmi_write(struct ath6kl *ar, u8 *buf, u32 len)
 	struct ath6kl_usb *ar_usb = ar->hif_priv;
 	int ret;
 
-	/* send command */
+	 
 	ret = ath6kl_usb_submit_ctrl_out(ar_usb,
 					 ATH6KL_USB_CONTROL_REQ_SEND_BMI_CMD,
 					 0, 0, buf, len);
@@ -1076,25 +1033,19 @@ static void ath6kl_usb_stop(struct ath6kl *ar)
 
 static void ath6kl_usb_cleanup_scatter(struct ath6kl *ar)
 {
-	/*
-	 * USB doesn't support it. Just return.
-	 */
+	 
 	return;
 }
 
 static int ath6kl_usb_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 {
-	/*
-	 * cfg80211 suspend/WOW currently not supported for USB.
-	 */
+	 
 	return 0;
 }
 
 static int ath6kl_usb_resume(struct ath6kl *ar)
 {
-	/*
-	 * cfg80211 resume currently not supported for USB.
-	 */
+	 
 	return 0;
 }
 
@@ -1115,7 +1066,7 @@ static const struct ath6kl_hif_ops ath6kl_usb_ops = {
 	.resume = ath6kl_usb_resume,
 };
 
-/* ath6kl usb driver registered functions */
+ 
 static int ath6kl_usb_probe(struct usb_interface *interface,
 			    const struct usb_device_id *id)
 {
@@ -1221,12 +1172,12 @@ static int ath6kl_usb_pm_resume(struct usb_interface *interface)
 
 #endif
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id ath6kl_usb_ids[] = {
 	{USB_DEVICE(0x0cf3, 0x9375)},
 	{USB_DEVICE(0x0cf3, 0x9374)},
 	{USB_DEVICE(0x04da, 0x390d)},
-	{ /* Terminating entry */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(usb, ath6kl_usb_ids);

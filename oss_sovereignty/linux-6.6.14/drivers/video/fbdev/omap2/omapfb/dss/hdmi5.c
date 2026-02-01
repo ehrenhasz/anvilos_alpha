@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI driver for OMAP5
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- *
- * Authors:
- *	Yong Zhi
- *	Mythri pk
- *	Archit Taneja <archit@ti.com>
- *	Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMI"
 
@@ -70,23 +60,14 @@ static irqreturn_t hdmi_irq_handler(int irq, void *data)
 	if ((irqstatus & HDMI_IRQ_LINK_CONNECT) &&
 			irqstatus & HDMI_IRQ_LINK_DISCONNECT) {
 		u32 v;
-		/*
-		 * If we get both connect and disconnect interrupts at the same
-		 * time, turn off the PHY, clear interrupts, and restart, which
-		 * raises connect interrupt if a cable is connected, or nothing
-		 * if cable is not connected.
-		 */
+		 
 
 		hdmi_wp_set_phy_pwr(wp, HDMI_PHYPWRCMD_OFF);
 
-		/*
-		 * We always get bogus CONNECT & DISCONNECT interrupts when
-		 * setting the PHY to LDOON. To ignore those, we force the RXDET
-		 * line to 0 until the PHY power state has been changed.
-		 */
+		 
 		v = hdmi_read_reg(hdmi.phy.base, HDMI_TXPHY_PAD_CFG_CTRL);
-		v = FLD_MOD(v, 1, 15, 15); /* FORCE_RXDET_HIGH */
-		v = FLD_MOD(v, 0, 14, 7); /* RXDET_LINE */
+		v = FLD_MOD(v, 1, 15, 15);  
+		v = FLD_MOD(v, 0, 14, 7);  
 		hdmi_write_reg(hdmi.phy.base, HDMI_TXPHY_PAD_CFG_CTRL, v);
 
 		hdmi_wp_set_irqstatus(wp, HDMI_IRQ_LINK_CONNECT |
@@ -135,7 +116,7 @@ static int hdmi_power_on_core(struct omap_dss_device *dssdev)
 	if (r)
 		goto err_runtime_get;
 
-	/* Make selection of HDMI in DSS */
+	 
 	dss_select_hdmi_venc_clk_source(DSS_HDMI_M_PCLK);
 
 	hdmi.core_enabled = true;
@@ -173,7 +154,7 @@ static int hdmi_power_on_full(struct omap_dss_device *dssdev)
 
 	hdmi_pll_compute(&hdmi.pll, p->pixelclock, &hdmi_cinfo);
 
-	/* disable and clear irqs */
+	 
 	hdmi_wp_clear_irqenable(&hdmi.wp, 0xffffffff);
 	hdmi_wp_set_irqstatus(&hdmi.wp,
 			hdmi_wp_get_irqstatus(&hdmi.wp));
@@ -203,10 +184,10 @@ static int hdmi_power_on_full(struct omap_dss_device *dssdev)
 
 	hdmi5_configure(&hdmi.core, &hdmi.wp, &hdmi.cfg);
 
-	/* bypass TV gamma table */
+	 
 	dispc_enable_gamma_table(0);
 
-	/* tv size */
+	 
 	dss_mgr_set_timings(mgr, p);
 
 	r = hdmi_wp_video_start(&hdmi.wp);
@@ -257,7 +238,7 @@ static int hdmi_display_check_timing(struct omap_dss_device *dssdev,
 {
 	struct omap_dss_device *out = &hdmi.output;
 
-	/* TODO: proper interlace support */
+	 
 	if (timings->interlace)
 		return -EINVAL;
 
@@ -314,7 +295,7 @@ static int read_edid(u8 *buf, int len)
 	BUG_ON(r);
 
 	idlemode = REG_GET(hdmi.wp.base, HDMI_WP_SYSCONFIG, 3, 2);
-	/* No-idle mode */
+	 
 	REG_FLD_MOD(hdmi.wp.base, HDMI_WP_SYSCONFIG, 1, 3, 2);
 
 	r = hdmi5_read_edid(&hdmi.core,  buf, len);
@@ -577,7 +558,7 @@ err:
 	return r;
 }
 
-/* Audio callbacks */
+ 
 static int hdmi_audio_startup(struct device *dev,
 			      void (*abort_cb)(struct device *dev))
 {
@@ -703,7 +684,7 @@ static int hdmi_audio_register(struct device *dev)
 	return 0;
 }
 
-/* HDMI HW IP initialisation */
+ 
 static int hdmi5_bind(struct device *dev, struct device *master, void *data)
 {
 	struct platform_device *pdev = to_platform_device(dev);

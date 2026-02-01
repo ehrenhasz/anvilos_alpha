@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * ipmi_si.h
- *
- * Interface from the device-specific interfaces (OF, DMI, ACPI, PCI,
- * etc) to the base ipmi system interface code.
- */
+ 
+ 
 
 #ifndef __IPMI_SI_H__
 #define __IPMI_SI_H__
@@ -18,40 +13,33 @@
 #define DEFAULT_REGSPACING	1
 #define DEFAULT_REGSIZE		1
 
-/* Numbers in this enumerator should be mapped to si_to_str[] */
+ 
 enum si_type {
 	SI_TYPE_INVALID, SI_KCS, SI_SMIC, SI_BT, SI_TYPE_MAX
 };
 
-/* Array is defined in the ipmi_si_intf.c */
+ 
 extern const char *const si_to_str[];
 
 enum ipmi_addr_space {
 	IPMI_IO_ADDR_SPACE, IPMI_MEM_ADDR_SPACE
 };
 
-/*
- * The structure for doing I/O in the state machine.  The state
- * machine doesn't have the actual I/O routines, they are done through
- * this interface.
- */
+ 
 struct si_sm_io {
 	unsigned char (*inputb)(const struct si_sm_io *io, unsigned int offset);
 	void (*outputb)(const struct si_sm_io *io,
 			unsigned int  offset,
 			unsigned char b);
 
-	/*
-	 * Generic info used by the actual handling routines, the
-	 * state machine shouldn't touch these.
-	 */
+	 
 	void __iomem *addr;
 	unsigned int regspacing;
 	unsigned int regsize;
 	unsigned int regshift;
 	enum ipmi_addr_space addr_space;
 	unsigned long addr_data;
-	enum ipmi_addr_src addr_source; /* ACPI, PCI, SMBIOS, hardcode, etc. */
+	enum ipmi_addr_src addr_source;  
 	union ipmi_smi_info_union addr_info;
 
 	int (*io_setup)(struct si_sm_io *info);
@@ -104,4 +92,4 @@ static inline void ipmi_si_parisc_shutdown(void) { }
 int ipmi_si_port_setup(struct si_sm_io *io);
 int ipmi_si_mem_setup(struct si_sm_io *io);
 
-#endif /* __IPMI_SI_H__ */
+#endif  

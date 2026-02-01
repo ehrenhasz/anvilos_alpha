@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	"LAPB via ethernet" driver release 001
- *
- *	This code REQUIRES 2.1.15 or higher/ NET3.038
- *
- *	This is a "pseudo" network driver to allow LAPB over Ethernet.
- *
- *	This driver can use any ethernet destination address, and can be
- *	limited to accept frames from one dedicated ethernet card only.
- *
- *	History
- *	LAPBETH 001	Jonathan Naylor		Cloned from bpqether.c
- *	2000-10-29	Henner Eisen	lapb_data_indication() return status.
- *	2000-11-14	Henner Eisen	dev_hold/put, NETDEV_GOING_DOWN support
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,17 +29,15 @@
 
 static const u8 bcast_addr[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-/* If this number is made larger, check that the temporary string buffer
- * in lapbeth_new_device is large enough to store the probe device name.
- */
+ 
 #define MAXLAPBDEV 100
 
 struct lapbethdev {
 	struct list_head	node;
-	struct net_device	*ethdev;	/* link to ethernet device */
-	struct net_device	*axdev;		/* lapbeth device (lapb#) */
+	struct net_device	*ethdev;	 
+	struct net_device	*axdev;		 
 	bool			up;
-	spinlock_t		up_lock;	/* Protects "up" */
+	spinlock_t		up_lock;	 
 	struct sk_buff_head	rx_queue;
 	struct napi_struct	napi;
 };
@@ -63,10 +47,9 @@ static LIST_HEAD(lapbeth_devices);
 static void lapbeth_connected(struct net_device *dev, int reason);
 static void lapbeth_disconnected(struct net_device *dev, int reason);
 
-/* ------------------------------------------------------------------------ */
+ 
 
-/*	Get the LAPB device for the ethernet device
- */
+ 
 static struct lapbethdev *lapbeth_get_x25_dev(struct net_device *dev)
 {
 	struct lapbethdev *lapbeth;
@@ -83,7 +66,7 @@ static __inline__ int dev_is_ethdev(struct net_device *dev)
 	return dev->type == ARPHRD_ETHER && strncmp(dev->name, "dummy", 5);
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lapbeth_napi_poll(struct napi_struct *napi, int budget)
 {
@@ -105,8 +88,7 @@ static int lapbeth_napi_poll(struct napi_struct *napi, int budget)
 	return processed;
 }
 
-/*	Receive a LAPB frame via an ethernet interface.
- */
+ 
 static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev,
 		       struct packet_type *ptype, struct net_device *orig_dev)
 {
@@ -135,8 +117,8 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev,
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += len;
 
-	skb_pull(skb, 2);	/* Remove the length bytes */
-	skb_trim(skb, len);	/* Set the length of the data */
+	skb_pull(skb, 2);	 
+	skb_trim(skb, len);	 
 
 	err = lapb_data_received(lapbeth->axdev, skb);
 	if (err != LAPB_OK) {
@@ -179,8 +161,7 @@ static int lapbeth_data_indication(struct net_device *dev, struct sk_buff *skb)
 	return NET_RX_SUCCESS;
 }
 
-/*	Send a LAPB frame via an ethernet interface
- */
+ 
 static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
 				struct net_device *dev)
 {
@@ -191,9 +172,7 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
 	if (!lapbeth->up)
 		goto drop;
 
-	/* There should be a pseudo header of 1 byte added by upper layers.
-	 * Check to make sure it is there before reading it.
-	 */
+	 
 	if (skb->len < 1)
 		goto drop;
 
@@ -295,8 +274,7 @@ static void lapbeth_disconnected(struct net_device *dev, int reason)
 	napi_schedule(&lapbeth->napi);
 }
 
-/*	Set AX.25 callsign
- */
+ 
 static int lapbeth_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *sa = addr;
@@ -314,8 +292,7 @@ static const struct lapb_register_struct lapbeth_callbacks = {
 	.data_transmit           = lapbeth_data_transmit,
 };
 
-/* open/close a device
- */
+ 
 static int lapbeth_open(struct net_device *dev)
 {
 	struct lapbethdev *lapbeth = netdev_priv(dev);
@@ -355,7 +332,7 @@ static int lapbeth_close(struct net_device *dev)
 	return 0;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static const struct net_device_ops lapbeth_netdev_ops = {
 	.ndo_open	     = lapbeth_open,
@@ -374,8 +351,7 @@ static void lapbeth_setup(struct net_device *dev)
 	dev->addr_len        = 0;
 }
 
-/*	Setup a new device.
- */
+ 
 static int lapbeth_new_device(struct net_device *dev)
 {
 	struct net_device *ndev;
@@ -392,12 +368,7 @@ static int lapbeth_new_device(struct net_device *dev)
 	if (!ndev)
 		goto out;
 
-	/* When transmitting data:
-	 * first this driver removes a pseudo header of 1 byte,
-	 * then the lapb module prepends an LAPB header of at most 3 bytes,
-	 * then this driver prepends a length field of 2 bytes,
-	 * then the underlying Ethernet device prepends its own header.
-	 */
+	 
 	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
 					   + dev->needed_headroom;
 	ndev->needed_tailroom = dev->needed_tailroom;
@@ -428,8 +399,7 @@ fail:
 	goto out;
 }
 
-/*	Free a lapb network device.
- */
+ 
 static void lapbeth_free_device(struct lapbethdev *lapbeth)
 {
 	dev_put(lapbeth->ethdev);
@@ -437,10 +407,7 @@ static void lapbeth_free_device(struct lapbethdev *lapbeth)
 	unregister_netdevice(lapbeth->axdev);
 }
 
-/*	Handle device status changes.
- *
- * Called from notifier with RTNL held.
- */
+ 
 static int lapbeth_device_event(struct notifier_block *this,
 				unsigned long event, void *ptr)
 {
@@ -455,18 +422,18 @@ static int lapbeth_device_event(struct notifier_block *this,
 
 	switch (event) {
 	case NETDEV_UP:
-		/* New ethernet device -> new LAPB interface	 */
+		 
 		if (!lapbeth_get_x25_dev(dev))
 			lapbeth_new_device(dev);
 		break;
 	case NETDEV_GOING_DOWN:
-		/* ethernet device closes -> close LAPB interface */
+		 
 		lapbeth = lapbeth_get_x25_dev(dev);
 		if (lapbeth)
 			dev_close(lapbeth->axdev);
 		break;
 	case NETDEV_UNREGISTER:
-		/* ethernet device disappears -> remove LAPB interface */
+		 
 		lapbeth = lapbeth_get_x25_dev(dev);
 		if (lapbeth)
 			lapbeth_free_device(lapbeth);
@@ -476,7 +443,7 @@ static int lapbeth_device_event(struct notifier_block *this,
 	return NOTIFY_DONE;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static struct packet_type lapbeth_packet_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_DEC),

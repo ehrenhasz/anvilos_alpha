@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  comedi/drivers/ni_routing/ni_device_routes/pxi-6733.c
- *  List of valid routes for specific NI boards.
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2016 Spencer E. Olson <olsonse@umich.edu>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
 
-/*
- * The contents of this file are generated using the tools in
- * comedi/drivers/ni_routing/tools
- *
- * Please use those tools to help maintain the contents of this file.
- */
+ 
+
+ 
 
 #include "../ni_device_routes.h"
 #include "all.h"
@@ -34,42 +13,42 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 			.dest = NI_PFI(3),
 			.src = (int[]){
 				NI_CtrSource(1),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_PFI(4),
 			.src = (int[]){
 				NI_CtrGate(1),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_PFI(5),
 			.src = (int[]){
 				NI_AO_SampleClock,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_PFI(6),
 			.src = (int[]){
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_PFI(8),
 			.src = (int[]){
 				NI_CtrSource(0),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_PFI(9),
 			.src = (int[]){
 				NI_CtrGate(0),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -81,7 +60,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -93,7 +72,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -105,7 +84,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -117,7 +96,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -129,7 +108,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -141,14 +120,14 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = TRIGGER_LINE(7),
 			.src = (int[]){
 				NI_20MHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -175,7 +154,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_MasterTimebase,
 				NI_20MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -202,7 +181,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_MasterTimebase,
 				NI_20MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -226,7 +205,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(5),
 				NI_CtrInternalOutput(1),
 				PXI_Star,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -250,7 +229,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(5),
 				NI_CtrInternalOutput(0),
 				PXI_Star,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -264,14 +243,14 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(5),
 				NI_CtrInternalOutput(0),
 				PXI_Star,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
 			.dest = NI_CtrOut(1),
 			.src = (int[]){
 				NI_CtrInternalOutput(1),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -283,7 +262,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrOut(0),
 				NI_AO_SampleClock,
 				NI_AO_StartTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -308,7 +287,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_CtrInternalOutput(1),
 				PXI_Star,
 				NI_AO_SampleClockTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -335,7 +314,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				NI_MasterTimebase,
 				NI_20MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -358,7 +337,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(4),
 				TRIGGER_LINE(5),
 				PXI_Star,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -381,7 +360,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(4),
 				TRIGGER_LINE(5),
 				PXI_Star,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -395,7 +374,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(5),
 				PXI_Star,
 				NI_AO_SampleClock,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -409,7 +388,7 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 				TRIGGER_LINE(5),
 				PXI_Star,
 				NI_AO_SampleClock,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -417,10 +396,10 @@ struct ni_device_routes ni_pxi_6733_device_routes = {
 			.src = (int[]){
 				TRIGGER_LINE(7),
 				NI_20MHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
-		{ /* Termination of list */
+		{  
 			.dest = 0,
 		},
 	},

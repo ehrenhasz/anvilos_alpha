@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * max8952.h - Voltage regulation for the Maxim 8952
- *
- *  Copyright (C) 2010 Samsung Electrnoics
- *  MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+ 
+ 
 
 #ifndef REGULATOR_MAX8952
 #define REGULATOR_MAX8952
@@ -86,13 +81,13 @@ enum {
 };
 
 enum {
-	MAX8952_SYNC_FREQ_26MHZ, /* Default */
+	MAX8952_SYNC_FREQ_26MHZ,  
 	MAX8952_SYNC_FREQ_13MHZ,
 	MAX8952_SYNC_FREQ_19_2MHZ,
 };
 
 enum {
-	MAX8952_RAMP_32mV_us = 0, /* Default */
+	MAX8952_RAMP_32mV_us = 0,  
 	MAX8952_RAMP_16mV_us,
 	MAX8952_RAMP_8mV_us,
 	MAX8952_RAMP_4mV_us,
@@ -106,7 +101,7 @@ enum {
 
 struct max8952_platform_data {
 	u32 default_mode;
-	u32 dvs_mode[MAX8952_NUM_DVS_MODE]; /* MAX8952_DVS_MODEx_XXXXmV */
+	u32 dvs_mode[MAX8952_NUM_DVS_MODE];  
 
 	u32 sync_freq;
 	u32 ramp_speed;
@@ -115,4 +110,4 @@ struct max8952_platform_data {
 };
 
 
-#endif /* REGULATOR_MAX8952 */
+#endif  

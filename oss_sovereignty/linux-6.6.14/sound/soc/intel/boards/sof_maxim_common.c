@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
+
+
+
 #include <linux/module.h>
 #include <linux/string.h>
 #include <sound/pcm.h>
@@ -12,7 +12,7 @@
 #include <uapi/sound/asound.h>
 #include "sof_maxim_common.h"
 
-/* helper function to get the number of specific codec */
+ 
 static unsigned int get_num_codecs(const char *hid)
 {
 	struct acpi_device *adev;
@@ -27,7 +27,7 @@ static unsigned int get_num_codecs(const char *hid)
 #define MAX_98373_PIN_NAME 16
 
 const struct snd_soc_dapm_route max_98373_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left BE_OUT" },
 	{ "Right Spk", NULL, "Right BE_OUT" },
 };
@@ -45,11 +45,11 @@ static struct snd_soc_codec_conf max_98373_codec_conf[] = {
 };
 
 struct snd_soc_dai_link_component max_98373_components[] = {
-	{  /* For Right */
+	{   
 		.name = MAX_98373_DEV0_NAME,
 		.dai_name = MAX_98373_CODEC_DAI,
 	},
-	{  /* For Left */
+	{   
 		.name = MAX_98373_DEV1_NAME,
 		.dai_name = MAX_98373_CODEC_DAI,
 	},
@@ -65,11 +65,11 @@ static int max_98373_hw_params(struct snd_pcm_substream *substream,
 
 	for_each_rtd_codec_dais(rtd, j, codec_dai) {
 		if (!strcmp(codec_dai->component->name, MAX_98373_DEV0_NAME)) {
-			/* DEV0 tdm slot configuration */
+			 
 			snd_soc_dai_set_tdm_slot(codec_dai, 0x03, 3, 8, 32);
 		}
 		if (!strcmp(codec_dai->component->name, MAX_98373_DEV1_NAME)) {
-			/* DEV1 tdm slot configuration */
+			 
 			snd_soc_dai_set_tdm_slot(codec_dai, 0x0C, 3, 8, 32);
 		}
 	}
@@ -84,7 +84,7 @@ int max_98373_trigger(struct snd_pcm_substream *substream, int cmd)
 	int j;
 	int ret = 0;
 
-	/* set spk pin by playback only */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		return 0;
 
@@ -147,11 +147,9 @@ void max_98373_set_codec_conf(struct snd_soc_card *card)
 }
 EXPORT_SYMBOL_NS(max_98373_set_codec_conf, SND_SOC_INTEL_SOF_MAXIM_COMMON);
 
-/*
- * Maxim MAX98390
- */
+ 
 static const struct snd_soc_dapm_route max_98390_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left BE_OUT" },
 	{ "Right Spk", NULL, "Right BE_OUT" },
 };
@@ -167,7 +165,7 @@ static const struct snd_soc_dapm_widget max_98390_tt_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route max_98390_tt_dapm_routes[] = {
-	/* Tweeter speaker */
+	 
 	{ "TL Spk", NULL, "Tweeter Left BE_OUT" },
 	{ "TR Spk", NULL, "Tweeter Right BE_OUT" },
 };
@@ -253,13 +251,13 @@ static int max_98390_init(struct snd_soc_pcm_runtime *rtd)
 
 	switch (num_codecs) {
 	case 4:
-		/* add widgets/controls/dapm for tweeter speakers */
+		 
 		ret = snd_soc_dapm_new_controls(&card->dapm, max_98390_tt_dapm_widgets,
 						ARRAY_SIZE(max_98390_tt_dapm_widgets));
 		if (ret) {
 			dev_err(rtd->dev, "unable to add tweeter dapm widgets, ret %d\n",
 				ret);
-			/* Don't need to add routes if widget addition failed */
+			 
 			return ret;
 		}
 
@@ -281,7 +279,7 @@ static int max_98390_init(struct snd_soc_pcm_runtime *rtd)
 
 		fallthrough;
 	case 2:
-		/* add regular speakers dapm route */
+		 
 		ret = snd_soc_dapm_add_routes(&card->dapm, max_98390_dapm_routes,
 					      ARRAY_SIZE(max_98390_dapm_routes));
 		if (ret) {
@@ -343,9 +341,7 @@ void max_98390_set_codec_conf(struct device *dev, struct snd_soc_card *card)
 }
 EXPORT_SYMBOL_NS(max_98390_set_codec_conf, SND_SOC_INTEL_SOF_MAXIM_COMMON);
 
-/*
- * Maxim MAX98357A/MAX98360A
- */
+ 
 static const struct snd_kcontrol_new max_98357a_kcontrols[] = {
 	SOC_DAPM_PIN_SWITCH("Spk"),
 };
@@ -355,7 +351,7 @@ static const struct snd_soc_dapm_widget max_98357a_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route max_98357a_dapm_routes[] = {
-	/* speaker */
+	 
 	{"Spk", NULL, "Speaker"},
 };
 
@@ -382,7 +378,7 @@ static int max_98357a_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(max_98357a_dapm_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add dapm controls, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 

@@ -1,46 +1,5 @@
-/* $OpenBSD: sshd.c,v 1.601 2023/12/18 14:45:49 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * This program is the ssh daemon.  It listens for connections from clients,
- * and performs authentication, executes use commands or shell, and forwards
- * information to/from the application to the user client over an encrypted
- * connection.  This can also handle forwarding of X11, TCP/IP, and
- * authentication agent connections.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- * SSH2 implementation:
- * Privilege Separation:
- *
- * Copyright (c) 2000, 2001, 2002 Markus Friedl.  All rights reserved.
- * Copyright (c) 2002 Niels Provos.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -128,7 +87,7 @@
 #include "srclimit.h"
 #include "dh.h"
 
-/* Re-exec fds */
+ 
 #define REEXEC_DEVCRYPTO_RESERVED_FD	(STDERR_FILENO + 1)
 #define REEXEC_STARTUP_PIPE_FD		(STDERR_FILENO + 2)
 #define REEXEC_CONFIG_PASS_FD		(STDERR_FILENO + 3)
@@ -136,137 +95,99 @@
 
 extern char *__progname;
 
-/* Server configuration options. */
+ 
 ServerOptions options;
 
-/* Name of the server configuration file. */
+ 
 char *config_file_name = _PATH_SERVER_CONFIG_FILE;
 
-/*
- * Debug mode flag.  This can be set on the command line.  If debug
- * mode is enabled, extra debugging output will be sent to the system
- * log, the daemon will not go to background, and will exit after processing
- * the first connection.
- */
+ 
 int debug_flag = 0;
 
-/*
- * Indicating that the daemon should only test the configuration and keys.
- * If test_flag > 1 ("-T" flag), then sshd will also dump the effective
- * configuration, optionally using connection information provided by the
- * "-C" flag.
- */
+ 
 static int test_flag = 0;
 
-/* Flag indicating that the daemon is being started from inetd. */
+ 
 static int inetd_flag = 0;
 
-/* Flag indicating that sshd should not detach and become a daemon. */
+ 
 static int no_daemon_flag = 0;
 
-/* debug goes to stderr unless inetd_flag is set */
+ 
 static int log_stderr = 0;
 
-/* Saved arguments to main(). */
+ 
 static char **saved_argv;
 static int saved_argc;
 
-/* re-exec */
+ 
 static int rexeced_flag = 0;
 static int rexec_flag = 1;
 static int rexec_argc = 0;
 static char **rexec_argv;
 
-/*
- * The sockets that the server is listening; this is used in the SIGHUP
- * signal handler.
- */
+ 
 #define	MAX_LISTEN_SOCKS	16
 static int listen_socks[MAX_LISTEN_SOCKS];
 static int num_listen_socks = 0;
 
-/* Daemon's agent connection */
+ 
 int auth_sock = -1;
 static int have_agent = 0;
 
-/*
- * Any really sensitive data in the application is contained in this
- * structure. The idea is that this structure could be locked into memory so
- * that the pages do not get written into swap.  However, there are some
- * problems. The private key contains BIGNUMs, and we do not (in principle)
- * have access to the internals of them, and locking just the structure is
- * not very useful.  Currently, memory locking is not implemented.
- */
+ 
 struct {
-	struct sshkey	**host_keys;		/* all private host keys */
-	struct sshkey	**host_pubkeys;		/* all public host keys */
-	struct sshkey	**host_certificates;	/* all public host certificates */
+	struct sshkey	**host_keys;		 
+	struct sshkey	**host_pubkeys;		 
+	struct sshkey	**host_certificates;	 
 	int		have_ssh2_key;
 } sensitive_data;
 
-/* This is set to true when a signal is received. */
+ 
 static volatile sig_atomic_t received_sighup = 0;
 static volatile sig_atomic_t received_sigterm = 0;
 
-/* record remote hostname or ip */
+ 
 u_int utmp_len = HOST_NAME_MAX+1;
 
-/*
- * startup_pipes/flags are used for tracking children of the listening sshd
- * process early in their lifespans. This tracking is needed for three things:
- *
- * 1) Implementing the MaxStartups limit of concurrent unauthenticated
- *    connections.
- * 2) Avoiding a race condition for SIGHUP processing, where child processes
- *    may have listen_socks open that could collide with main listener process
- *    after it restarts.
- * 3) Ensuring that rexec'd sshd processes have received their initial state
- *    from the parent listen process before handling SIGHUP.
- *
- * Child processes signal that they have completed closure of the listen_socks
- * and (if applicable) received their rexec state by sending a char over their
- * sock. Child processes signal that authentication has completed by closing
- * the sock (or by exiting).
- */
+ 
 static int *startup_pipes = NULL;
-static int *startup_flags = NULL;	/* Indicates child closed listener */
-static int startup_pipe = -1;		/* in child */
+static int *startup_flags = NULL;	 
+static int startup_pipe = -1;		 
 
-/* variables used for privilege separation */
+ 
 int use_privsep = -1;
 struct monitor *pmonitor = NULL;
 int privsep_is_preauth = 1;
 static int privsep_chroot = 1;
 
-/* global connection state and authentication contexts */
+ 
 Authctxt *the_authctxt = NULL;
 struct ssh *the_active_state;
 
-/* global key/cert auth options. XXX move to permanent ssh->authctxt? */
+ 
 struct sshauthopt *auth_opts = NULL;
 
-/* sshd_config buffer */
+ 
 struct sshbuf *cfg;
 
-/* Included files from the configuration file */
+ 
 struct include_list includes = TAILQ_HEAD_INITIALIZER(includes);
 
-/* message to be displayed after login */
+ 
 struct sshbuf *loginmsg;
 
-/* Unprivileged user */
+ 
 struct passwd *privsep_pw = NULL;
 
-/* Prototypes for various functions defined later in this file. */
+ 
 void destroy_sensitive_data(void);
 void demote_sensitive_data(void);
 static void do_ssh2_kex(struct ssh *);
 
 static char *listener_proctitle;
 
-/*
- * Close all listening sockets
- */
+ 
 static void
 close_listen_socks(void)
 {
@@ -288,11 +209,7 @@ close_startup_pipes(void)
 				close(startup_pipes[i]);
 }
 
-/*
- * Signal handler for SIGHUP.  Sshd execs itself when it receives SIGHUP;
- * the effect is to reread the configuration file (and to regenerate
- * the server key).
- */
+ 
 
 static void
 sighup_handler(int sig)
@@ -300,10 +217,7 @@ sighup_handler(int sig)
 	received_sighup = 1;
 }
 
-/*
- * Called from the main program after receiving SIGHUP.
- * Restarts the server.
- */
+ 
 static void
 sighup_restart(void)
 {
@@ -313,26 +227,21 @@ sighup_restart(void)
 	platform_pre_restart();
 	close_listen_socks();
 	close_startup_pipes();
-	ssh_signal(SIGHUP, SIG_IGN); /* will be restored after exec */
+	ssh_signal(SIGHUP, SIG_IGN);  
 	execv(saved_argv[0], saved_argv);
 	logit("RESTART FAILED: av[0]='%.100s', error: %.100s.", saved_argv[0],
 	    strerror(errno));
 	exit(1);
 }
 
-/*
- * Generic signal handler for terminating signals in the master daemon.
- */
+ 
 static void
 sigterm_handler(int sig)
 {
 	received_sigterm = sig;
 }
 
-/*
- * SIGCHLD handler.  This is called whenever a child dies.  This will then
- * reap any zombies left by exited children.
- */
+ 
 static void
 main_sigchld_handler(int sig)
 {
@@ -346,28 +255,23 @@ main_sigchld_handler(int sig)
 	errno = save_errno;
 }
 
-/*
- * Signal handler for the alarm after the login grace period has expired.
- */
+ 
 static void
 grace_alarm_handler(int sig)
 {
-	/*
-	 * Try to kill any processes that we have spawned, E.g. authorized
-	 * keys command helpers or privsep children.
-	 */
+	 
 	if (getpgid(0) == getpid()) {
 		ssh_signal(SIGTERM, SIG_IGN);
 		kill(0, SIGTERM);
 	}
 
-	/* Log error and exit. */
+	 
 	sigdie("Timeout before authentication for %s port %d",
 	    ssh_remote_ipaddr(the_active_state),
 	    ssh_remote_port(the_active_state));
 }
 
-/* Destroy the host and server keys.  They will no longer be needed. */
+ 
 void
 destroy_sensitive_data(void)
 {
@@ -385,7 +289,7 @@ destroy_sensitive_data(void)
 	}
 }
 
-/* Demote private to public keys for network child */
+ 
 void
 demote_sensitive_data(void)
 {
@@ -402,7 +306,7 @@ demote_sensitive_data(void)
 			sshkey_free(sensitive_data.host_keys[i]);
 			sensitive_data.host_keys[i] = tmp;
 		}
-		/* Certs do not need demotion */
+		 
 	}
 }
 
@@ -414,12 +318,12 @@ reseed_prngs(void)
 #ifdef WITH_OPENSSL
 	RAND_poll();
 #endif
-	arc4random_stir(); /* noop on recent arc4random() implementations */
-	arc4random_buf(rnd, sizeof(rnd)); /* let arc4random notice PID change */
+	arc4random_stir();  
+	arc4random_buf(rnd, sizeof(rnd));  
 
 #ifdef WITH_OPENSSL
 	RAND_seed(rnd, sizeof(rnd));
-	/* give libcrypto a chance to notice the PID change */
+	 
 	if ((RAND_bytes((u_char *)rnd, 1)) != 1)
 		fatal("%s: RAND_bytes failed", __func__);
 #endif
@@ -432,29 +336,29 @@ privsep_preauth_child(void)
 {
 	gid_t gidset[1];
 
-	/* Enable challenge-response authentication for privilege separation */
+	 
 	privsep_challenge_enable();
 
 #ifdef GSSAPI
-	/* Cache supported mechanism OIDs for later use */
+	 
 	ssh_gssapi_prepare_supported_oids();
 #endif
 
 	reseed_prngs();
 
-	/* Demote the private keys to public keys. */
+	 
 	demote_sensitive_data();
 
-	/* Demote the child */
+	 
 	if (privsep_chroot) {
-		/* Change our root directory */
+		 
 		if (chroot(_PATH_PRIVSEP_CHROOT_DIR) == -1)
 			fatal("chroot(\"%s\"): %s", _PATH_PRIVSEP_CHROOT_DIR,
 			    strerror(errno));
 		if (chdir("/") == -1)
 			fatal("chdir(\"/\"): %s", strerror(errno));
 
-		/* Drop our privileges */
+		 
 		debug3("privsep user:group %u:%u", (u_int)privsep_pw->pw_uid,
 		    (u_int)privsep_pw->pw_gid);
 		gidset[0] = privsep_pw->pw_gid;
@@ -471,9 +375,9 @@ privsep_preauth(struct ssh *ssh)
 	pid_t pid;
 	struct ssh_sandbox *box = NULL;
 
-	/* Set up unprivileged child process to deal with network data */
+	 
 	pmonitor = monitor_init();
-	/* Store a pointer to the kex for later rekeying */
+	 
 	pmonitor->m_pkex = &ssh->kex;
 
 	if (use_privsep == PRIVSEP_ON)
@@ -496,7 +400,7 @@ privsep_preauth(struct ssh *ssh)
 			ssh_sandbox_parent_preauth(box, pid);
 		monitor_child_preauth(ssh, pmonitor);
 
-		/* Wait for the child's exit status */
+		 
 		while (waitpid(pid, &status, 0) == -1) {
 			if (errno == EINTR)
 				continue;
@@ -516,11 +420,11 @@ privsep_preauth(struct ssh *ssh)
 			ssh_sandbox_parent_finish(box);
 		return 1;
 	} else {
-		/* child */
+		 
 		close(pmonitor->m_sendfd);
 		close(pmonitor->m_log_recvfd);
 
-		/* Arrange for logging to be sent to the monitor */
+		 
 		set_log_handler(mm_log_handler, pmonitor);
 
 		privsep_preauth_child();
@@ -540,12 +444,12 @@ privsep_postauth(struct ssh *ssh, Authctxt *authctxt)
 #else
 	if (authctxt->pw->pw_uid == 0) {
 #endif
-		/* File descriptor passing is broken or root login */
+		 
 		use_privsep = 0;
 		goto skip;
 	}
 
-	/* New socket pair */
+	 
 	monitor_reinit(pmonitor);
 
 	pmonitor->m_pid = fork();
@@ -557,31 +461,28 @@ privsep_postauth(struct ssh *ssh, Authctxt *authctxt)
 		monitor_clear_keystate(ssh, pmonitor);
 		monitor_child_postauth(ssh, pmonitor);
 
-		/* NEVERREACHED */
+		 
 		exit(0);
 	}
 
-	/* child */
+	 
 
 	close(pmonitor->m_sendfd);
 	pmonitor->m_sendfd = -1;
 
-	/* Demote the private keys to public keys. */
+	 
 	demote_sensitive_data();
 
 	reseed_prngs();
 
-	/* Drop privileges */
+	 
 	do_setusercontext(authctxt->pw);
 
  skip:
-	/* It is safe now to apply the key state */
+	 
 	monitor_apply_keystate(ssh, pmonitor);
 
-	/*
-	 * Tell the packet layer that authentication was successful, since
-	 * this information is not part of the key state.
-	 */
+	 
 	ssh_packet_set_authenticated(ssh);
 }
 
@@ -616,10 +517,10 @@ list_hostkey_types(void)
 			continue;
 		switch (key->type) {
 		case KEY_RSA:
-			/* for RSA we also support SHA2 signatures */
+			 
 			append_hostkey_type(b, "rsa-sha2-512");
 			append_hostkey_type(b, "rsa-sha2-256");
-			/* FALLTHROUGH */
+			 
 		case KEY_DSA:
 		case KEY_ECDSA:
 		case KEY_ED25519:
@@ -629,18 +530,18 @@ list_hostkey_types(void)
 			append_hostkey_type(b, sshkey_ssh_name(key));
 			break;
 		}
-		/* If the private key has a cert peer, then list that too */
+		 
 		key = sensitive_data.host_certificates[i];
 		if (key == NULL)
 			continue;
 		switch (key->type) {
 		case KEY_RSA_CERT:
-			/* for RSA we also support SHA2 signatures */
+			 
 			append_hostkey_type(b,
 			    "rsa-sha2-512-cert-v01@openssh.com");
 			append_hostkey_type(b,
 			    "rsa-sha2-256-cert-v01@openssh.com");
-			/* FALLTHROUGH */
+			 
 		case KEY_DSA_CERT:
 		case KEY_ECDSA_CERT:
 		case KEY_ED25519_CERT:
@@ -690,7 +591,7 @@ get_hostkey_by_type(int type, int nid, int need_private, struct ssh *ssh)
 		case KEY_ECDSA_SK_CERT:
 			if (key->ecdsa_nid != nid)
 				continue;
-			/* FALLTHROUGH */
+			 
 		default:
 			return need_private ?
 			    sensitive_data.host_keys[i] : key;
@@ -753,7 +654,7 @@ get_hostkey_index(struct sshkey *key, int compare, struct ssh *ssh)
 	return (-1);
 }
 
-/* Inform the client of all hostkeys */
+ 
 static void
 notify_hostkeys(struct ssh *ssh)
 {
@@ -763,7 +664,7 @@ notify_hostkeys(struct ssh *ssh)
 	int r;
 	char *fp;
 
-	/* Some clients cannot cope with the hostkeys message, skip those. */
+	 
 	if (ssh->compat & SSH_BUG_HOSTKEYS)
 		return;
 
@@ -779,16 +680,13 @@ notify_hostkeys(struct ssh *ssh)
 		debug3_f("key %d: %s %s", i, sshkey_ssh_name(key), fp);
 		free(fp);
 		if (nkeys == 0) {
-			/*
-			 * Start building the request when we find the
-			 * first usable key.
-			 */
+			 
 			if ((r = sshpkt_start(ssh, SSH2_MSG_GLOBAL_REQUEST)) != 0 ||
 			    (r = sshpkt_put_cstring(ssh, "hostkeys-00@openssh.com")) != 0 ||
-			    (r = sshpkt_put_u8(ssh, 0)) != 0) /* want reply */
+			    (r = sshpkt_put_u8(ssh, 0)) != 0)  
 				sshpkt_fatal(ssh, r, "%s: start request", __func__);
 		}
-		/* Append the key to the request */
+		 
 		sshbuf_reset(buf);
 		if ((r = sshkey_putb(key, buf)) != 0)
 			fatal_fr(r, "couldn't put hostkey %d", i);
@@ -804,12 +702,7 @@ notify_hostkeys(struct ssh *ssh)
 	sshbuf_free(buf);
 }
 
-/*
- * returns 1 if connection should be dropped, 0 otherwise.
- * dropping starts at connection #max_startups_begin with a probability
- * of (max_startups_rate/100). the probability increases linearly until
- * all connections are dropped for startups > max_startups
- */
+ 
 static int
 should_drop_connection(int startups)
 {
@@ -832,13 +725,7 @@ should_drop_connection(int startups)
 	return (r < p) ? 1 : 0;
 }
 
-/*
- * Check whether connection should be accepted by MaxStartups.
- * Returns 0 if the connection is accepted. If the connection is refused,
- * returns 1 and attempts to send notification to client.
- * Logs when the MaxStartups condition is entered or exited, and periodically
- * while in that state.
- */
+ 
 static int
 drop_connection(int sock, int startups, int notify_pipe)
 {
@@ -854,7 +741,7 @@ drop_connection(int sock, int startups, int notify_pipe)
 	    srclimit_check_allow(sock, notify_pipe) == 1) {
 		if (last_drop != 0 &&
 		    startups < options.max_startups_begin - 1) {
-			/* XXX maybe need better hysteresis here */
+			 
 			logit("exited MaxStartups throttling after %s, "
 			    "%u connections dropped",
 			    fmt_timeframe(now - first_drop), ndropped);
@@ -870,7 +757,7 @@ drop_connection(int sock, int startups, int notify_pipe)
 		first_drop = now;
 		ndropped = 0;
 	} else if (last_drop + SSHD_MAXSTARTUPS_LOG_INTERVAL < now) {
-		/* Periodic logs */
+		 
 		error("in MaxStartups throttling for %s, "
 		    "%u connections dropped",
 		    fmt_timeframe(now - first_drop), ndropped + 1);
@@ -886,7 +773,7 @@ drop_connection(int sock, int startups, int notify_pipe)
 	    laddr, get_local_port(sock));
 	free(laddr);
 	free(raddr);
-	/* best-effort notification to client */
+	 
 	(void)write(sock, msg, sizeof(msg) - 1);
 	return 1;
 }
@@ -916,7 +803,7 @@ send_rexec_state(int fd, struct sshbuf *conf)
 	if ((m = sshbuf_new()) == NULL || (inc = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 
-	/* pack includes into a string */
+	 
 	TAILQ_FOREACH(item, &includes, entry) {
 		if ((r = sshbuf_put_cstring(inc, item->selector)) != 0 ||
 		    (r = sshbuf_put_cstring(inc, item->filename)) != 0 ||
@@ -924,15 +811,7 @@ send_rexec_state(int fd, struct sshbuf *conf)
 			fatal_fr(r, "compose includes");
 	}
 
-	/*
-	 * Protocol from reexec master to child:
-	 *	string	configuration
-	 *	string	included_files[] {
-	 *		string	selector
-	 *		string	filename
-	 *		string	contents
-	 *	}
-	 */
+	 
 	if ((r = sshbuf_put_stringb(m, conf)) != 0 ||
 	    (r = sshbuf_put_stringb(m, inc)) != 0)
 		fatal_fr(r, "compose config");
@@ -988,7 +867,7 @@ recv_rexec_state(int fd, struct sshbuf *conf)
 	debug3_f("done");
 }
 
-/* Accept a connection from inetd */
+ 
 static void
 server_accept_inetd(int *sock_in, int *sock_out)
 {
@@ -999,19 +878,13 @@ server_accept_inetd(int *sock_in, int *sock_out)
 		*sock_in = dup(STDIN_FILENO);
 		*sock_out = dup(STDOUT_FILENO);
 	}
-	/*
-	 * We intentionally do not close the descriptors 0, 1, and 2
-	 * as our code for setting the descriptors won't work if
-	 * ttyfd happens to be one of those.
-	 */
+	 
 	if (stdfd_devnull(1, 1, !log_stderr) == -1)
 		error_f("stdfd_devnull failed");
 	debug("inetd sockets after dupping: %d, %d", *sock_in, *sock_out);
 }
 
-/*
- * Listen for TCP connections
- */
+ 
 static void
 listen_on_addrs(struct listenaddr *la)
 {
@@ -1032,11 +905,11 @@ listen_on_addrs(struct listenaddr *la)
 			    ssh_gai_strerror(ret));
 			continue;
 		}
-		/* Create socket for listening. */
+		 
 		listen_sock = socket(ai->ai_family, ai->ai_socktype,
 		    ai->ai_protocol);
 		if (listen_sock == -1) {
-			/* kernel may not support ipv6 */
+			 
 			verbose("socket: %.100s", strerror(errno));
 			continue;
 		}
@@ -1049,7 +922,7 @@ listen_on_addrs(struct listenaddr *la)
 			close(listen_sock);
 			continue;
 		}
-		/* Socket options */
+		 
 		set_reuseaddr(listen_sock);
 		if (la->rdomain != NULL &&
 		    set_rdomain(listen_sock, la->rdomain) == -1) {
@@ -1057,13 +930,13 @@ listen_on_addrs(struct listenaddr *la)
 			continue;
 		}
 
-		/* Only communicate in IPv6 over AF_INET6 sockets. */
+		 
 		if (ai->ai_family == AF_INET6)
 			sock_set_v6only(listen_sock);
 
 		debug("Bind to port %s on %s.", strport, ntop);
 
-		/* Bind the socket to the desired port. */
+		 
 		if (bind(listen_sock, ai->ai_addr, ai->ai_addrlen) == -1) {
 			error("Bind to port %s on %s failed: %.200s.",
 			    strport, ntop, strerror(errno));
@@ -1073,7 +946,7 @@ listen_on_addrs(struct listenaddr *la)
 		listen_socks[num_listen_socks] = listen_sock;
 		num_listen_socks++;
 
-		/* Start listening on the port. */
+		 
 		if (listen(listen_sock, SSH_LISTEN_BACKLOG) == -1)
 			fatal("listen on [%s]:%s: %.100s",
 			    ntop, strport, strerror(errno));
@@ -1089,7 +962,7 @@ server_listen(void)
 {
 	u_int i;
 
-	/* Initialise per-source limit tracking. */
+	 
 	srclimit_init(options.max_startups, options.per_source_max_startups,
 	    options.per_source_masklen_ipv4, options.per_source_masklen_ipv6);
 
@@ -1108,10 +981,7 @@ server_listen(void)
 		fatal("Cannot bind any address.");
 }
 
-/*
- * The main TCP accept loop. Note that, for the non-debug case, returns
- * from this function are in a forked subprocess.
- */
+ 
 static void
 server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 {
@@ -1126,33 +996,25 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 	u_char rnd[256];
 	sigset_t nsigset, osigset;
 
-	/* pipes connected to unauthenticated child sshd processes */
+	 
 	startup_pipes = xcalloc(options.max_startups, sizeof(int));
 	startup_flags = xcalloc(options.max_startups, sizeof(int));
 	startup_pollfd = xcalloc(options.max_startups, sizeof(int));
 	for (i = 0; i < options.max_startups; i++)
 		startup_pipes[i] = -1;
 
-	/*
-	 * Prepare signal mask that we use to block signals that might set
-	 * received_sigterm or received_sighup, so that we are guaranteed
-	 * to immediately wake up the ppoll if a signal is received after
-	 * the flag is checked.
-	 */
+	 
 	sigemptyset(&nsigset);
 	sigaddset(&nsigset, SIGHUP);
 	sigaddset(&nsigset, SIGCHLD);
 	sigaddset(&nsigset, SIGTERM);
 	sigaddset(&nsigset, SIGQUIT);
 
-	/* sized for worst-case */
+	 
 	pfd = xcalloc(num_listen_socks + options.max_startups,
 	    sizeof(struct pollfd));
 
-	/*
-	 * Stay listening for connections until the system crashes or
-	 * the daemon is killed with a signal.
-	 */
+	 
 	for (;;) {
 		sigprocmask(SIG_BLOCK, &nsigset, &osigset);
 		if (received_sigterm) {
@@ -1195,12 +1057,12 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 			}
 		}
 
-		/* Wait until a connection arrives or a child exits. */
+		 
 		ret = ppoll(pfd, npfd, NULL, &osigset);
 		if (ret == -1 && errno != EINTR) {
 			error("ppoll: %.100s", strerror(errno));
 			if (errno == EINVAL)
-				cleanup_exit(1); /* can't recover */
+				cleanup_exit(1);  
 		}
 		sigprocmask(SIG_SETMASK, &osigset, NULL);
 		if (ret == -1)
@@ -1220,9 +1082,9 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 					    "read %s", i, startup_pipes[i],
 					    strerror(errno));
 				}
-				/* FALLTHROUGH */
+				 
 			case 0:
-				/* child exited or completed auth */
+				 
 				close(startup_pipes[i]);
 				srclimit_done(startup_pipes[i]);
 				startup_pipes[i] = -1;
@@ -1231,7 +1093,7 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 					listening--;
 				break;
 			case 1:
-				/* child has finished preliminaries */
+				 
 				if (startup_flags[i]) {
 					listening--;
 					startup_flags[i] = 0;
@@ -1288,16 +1150,9 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 					break;
 				}
 
-			/*
-			 * Got connection.  Fork a child to handle it, unless
-			 * we are in debugging mode.
-			 */
+			 
 			if (debug_flag) {
-				/*
-				 * In debugging mode.  Close the listening
-				 * socket, and start processing the
-				 * connection without forking.
-				 */
+				 
 				debug("Server will not fork when running in debugging mode.");
 				close_listen_socks();
 				*sock_in = *newsock;
@@ -1314,22 +1169,11 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 				return;
 			}
 
-			/*
-			 * Normal production daemon.  Fork, and have
-			 * the child process the connection. The
-			 * parent continues listening.
-			 */
+			 
 			platform_pre_fork();
 			listening++;
 			if ((pid = fork()) == 0) {
-				/*
-				 * Child.  Close the listening and
-				 * max_startup sockets.  Start using
-				 * the accepted socket. Reinitialize
-				 * logging (since our pid has changed).
-				 * We return from this function to handle
-				 * the connection.
-				 */
+				 
 				platform_post_fork_child();
 				startup_pipe = startup_p[1];
 				close_startup_pipes();
@@ -1343,13 +1187,7 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 				if (rexec_flag)
 					close(config_s[0]);
 				else {
-					/*
-					 * Signal parent that the preliminaries
-					 * for this child are complete. For the
-					 * re-exec case, this happens after the
-					 * child has received the rexec state
-					 * from the server.
-					 */
+					 
 					(void)atomicio(vwrite, startup_pipe,
 					    "\0", 1);
 				}
@@ -1357,7 +1195,7 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 				return;
 			}
 
-			/* Parent.  Stay in the loop. */
+			 
 			platform_post_fork_parent(pid);
 			if (pid == -1)
 				error("fork: %.100s", strerror(errno));
@@ -1373,10 +1211,7 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 			}
 			close(*newsock);
 
-			/*
-			 * Ensure that our random state differs
-			 * from that of the child
-			 */
+			 
 			arc4random_stir();
 			arc4random_buf(rnd, sizeof(rnd));
 #ifdef WITH_OPENSSL
@@ -1389,17 +1224,7 @@ server_accept_loop(int *sock_in, int *sock_out, int *newsock, int *config_s)
 	}
 }
 
-/*
- * If IP options are supported, make sure there are none (log and
- * return an error if any are found).  Basically we are worried about
- * source routing; it can be used to pretend you are somebody
- * (ip-address) you are not. That itself may be "almost acceptable"
- * under certain circumstances, but rhosts authentication is useless
- * if source routing is accepted. Notice also that if we just dropped
- * source routing here, the other side could use IP spoofing to do
- * rest of the interaction and could still bypass security.  So we
- * exit here if we detect any IP options.
- */
+ 
 static void
 check_ip_options(struct ssh *ssh)
 {
@@ -1416,7 +1241,7 @@ check_ip_options(struct ssh *ssh)
 		return;
 	if (from.ss_family != AF_INET)
 		return;
-	/* XXX IPv6 options? */
+	 
 
 	if (getsockopt(sock_in, IPPROTO_IP, IP_OPTIONS, opts,
 	    &option_size) >= 0 && option_size != 0) {
@@ -1428,45 +1253,45 @@ check_ip_options(struct ssh *ssh)
 		    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh), text);
 	}
 	return;
-#endif /* IP_OPTIONS */
+#endif  
 }
 
-/* Set the routing domain for this process */
+ 
 static void
 set_process_rdomain(struct ssh *ssh, const char *name)
 {
 #if defined(HAVE_SYS_SET_PROCESS_RDOMAIN)
 	if (name == NULL)
-		return; /* default */
+		return;  
 
 	if (strcmp(name, "%D") == 0) {
-		/* "expands" to routing domain of connection */
+		 
 		if ((name = ssh_packet_rdomain_in(ssh)) == NULL)
 			return;
 	}
-	/* NB. We don't pass 'ssh' to sys_set_process_rdomain() */
+	 
 	return sys_set_process_rdomain(name);
 #elif defined(__OpenBSD__)
 	int rtable, ortable = getrtable();
 	const char *errstr;
 
 	if (name == NULL)
-		return; /* default */
+		return;  
 
 	if (strcmp(name, "%D") == 0) {
-		/* "expands" to routing domain of connection */
+		 
 		if ((name = ssh_packet_rdomain_in(ssh)) == NULL)
 			return;
 	}
 
 	rtable = (int)strtonum(name, 0, 255, &errstr);
-	if (errstr != NULL) /* Shouldn't happen */
+	if (errstr != NULL)  
 		fatal("Invalid routing domain \"%s\": %s", name, errstr);
 	if (rtable != ortable && setrtable(rtable) != 0)
 		fatal("Unable to set routing domain %d: %s",
 		    rtable, strerror(errno));
 	debug_f("set routing domain %d (was %d)", rtable, ortable);
-#else /* defined(__OpenBSD__) */
+#else  
 	fatal("Unable to set routing domain: not supported in this platform");
 #endif
 }
@@ -1483,8 +1308,8 @@ accumulate_host_timing_secret(struct sshbuf *server_cfg,
 
 	if (ctx == NULL && (ctx = ssh_digest_start(SSH_DIGEST_SHA512)) == NULL)
 		fatal_f("ssh_digest_start");
-	if (key == NULL) { /* finalize */
-		/* add server config in case we are using agent for host keys */
+	if (key == NULL) {  
+		 
 		if (ssh_digest_update(ctx, sshbuf_ptr(server_cfg),
 		    sshbuf_len(server_cfg)) != 0)
 			fatal_f("ssh_digest_update");
@@ -1522,10 +1347,7 @@ prepare_proctitle(int ac, char **av)
 static void
 print_config(struct ssh *ssh, struct connection_info *connection_info)
 {
-	/*
-	 * If no connection info was provided by -C then use
-	 * use a blank one that will cause no predicate to match.
-	 */
+	 
 	if (connection_info == NULL)
 		connection_info = get_connection_info(ssh, 0, 0);
 	connection_info->test = 1;
@@ -1534,9 +1356,7 @@ print_config(struct ssh *ssh, struct connection_info *connection_info)
 	exit(0);
 }
 
-/*
- * Main program for the daemon.
- */
+ 
 int
 main(int ac, char **av)
 {
@@ -1566,7 +1386,7 @@ main(int ac, char **av)
 	sigemptyset(&sigmask);
 	sigprocmask(SIG_SETMASK, &sigmask, NULL);
 
-	/* Save argv. Duplicate so setproctitle emulation doesn't clobber it */
+	 
 	saved_argc = ac;
 	rexec_argc = ac;
 	saved_argv = xcalloc(ac + 1, sizeof(*saved_argv));
@@ -1575,7 +1395,7 @@ main(int ac, char **av)
 	saved_argv[i] = NULL;
 
 #ifndef HAVE_SETPROCTITLE
-	/* Prepare for later setproctitle emulation */
+	 
 	compat_init_setproctitle(ac, av);
 	av = saved_argv;
 #endif
@@ -1583,13 +1403,13 @@ main(int ac, char **av)
 	if (geteuid() == 0 && setgroups(0, NULL) == -1)
 		debug("setgroups(): %.200s", strerror(errno));
 
-	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
+	 
 	sanitise_stdfd();
 
-	/* Initialize configuration options to their default values. */
+	 
 	initialize_server_options(&options);
 
-	/* Parse command-line arguments. */
+	 
 	while ((opt = getopt(ac, av,
 	    "C:E:b:c:f:g:h:k:o:p:u:46DGQRTdeiqrtV")) != -1) {
 		switch (opt) {
@@ -1621,7 +1441,7 @@ main(int ac, char **av)
 			break;
 		case 'E':
 			logfile = optarg;
-			/* FALLTHROUGH */
+			 
 		case 'e':
 			log_stderr = 1;
 			break;
@@ -1636,13 +1456,13 @@ main(int ac, char **av)
 			inetd_flag = 1;
 			break;
 		case 'Q':
-			/* ignored */
+			 
 			break;
 		case 'q':
 			options.log_level = SYSLOG_LEVEL_QUIET;
 			break;
 		case 'b':
-			/* protocol 1, ignored */
+			 
 			break;
 		case 'p':
 			options.ports_from_cmdline = 1;
@@ -1663,7 +1483,7 @@ main(int ac, char **av)
 			}
 			break;
 		case 'k':
-			/* protocol 1, ignored */
+			 
 			break;
 		case 'h':
 			servconf_add_hostkey("[command-line]", 0,
@@ -1715,13 +1535,10 @@ main(int ac, char **av)
 
 	seed_rng();
 
-	/* If requested, redirect the logs to the specified logfile. */
+	 
 	if (logfile != NULL)
 		log_redirect_stderr_to(logfile);
-	/*
-	 * Force logging to stderr until we have loaded the private host
-	 * key (unless started from inetd)
-	 */
+	 
 	log_init(__progname,
 	    options.log_level == SYSLOG_LEVEL_NOT_SET ?
 	    SYSLOG_LEVEL_INFO : options.log_level,
@@ -1729,24 +1546,18 @@ main(int ac, char **av)
 	    SYSLOG_FACILITY_AUTH : options.log_facility,
 	    log_stderr || !inetd_flag || debug_flag);
 
-	/*
-	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
-	 * root's environment
-	 */
+	 
 	if (getenv("KRB5CCNAME") != NULL)
 		(void) unsetenv("KRB5CCNAME");
 
 	sensitive_data.have_ssh2_key = 0;
 
-	/*
-	 * If we're not doing an extended test do not silently ignore connection
-	 * test params.
-	 */
+	 
 	if (test_flag < 2 && connection_info != NULL)
 		fatal("Config test connection parameter (-C) provided without "
 		    "test mode (-T)");
 
-	/* Fetch our configuration */
+	 
 	if ((cfg = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 	if (rexeced_flag) {
@@ -1755,10 +1566,7 @@ main(int ac, char **av)
 		if (!debug_flag) {
 			startup_pipe = dup(REEXEC_STARTUP_PIPE_FD);
 			close(REEXEC_STARTUP_PIPE_FD);
-			/*
-			 * Signal parent that this child is at a point where
-			 * they can go away if they have a SIGHUP pending.
-			 */
+			 
 			(void)atomicio(vwrite, startup_pipe, "\0", 1);
 		}
 	} else if (strcasecmp(config_file_name, "none") != 0)
@@ -1772,10 +1580,10 @@ main(int ac, char **av)
 		dh_set_moduli_file(options.moduli_file);
 #endif
 
-	/* Fill in default values for those options not explicitly set. */
+	 
 	fill_default_server_options(&options);
 
-	/* Check that options are sensible */
+	 
 	if (options.authorized_keys_command_user == NULL &&
 	    (options.authorized_keys_command != NULL &&
 	    strcasecmp(options.authorized_keys_command, "none") != 0))
@@ -1787,12 +1595,7 @@ main(int ac, char **av)
 		fatal("AuthorizedPrincipalsCommand set without "
 		    "AuthorizedPrincipalsCommandUser");
 
-	/*
-	 * Check whether there is any path through configured auth methods.
-	 * Unfortunately it is not possible to verify this generally before
-	 * daemonisation in the presence of Match block, but this catches
-	 * and warns for trivial misconfigurations that could break login.
-	 */
+	 
 	if (options.num_auth_methods != 0) {
 		for (i = 0; i < options.num_auth_methods; i++) {
 			if (auth2_methods_valid(options.auth_methods[i],
@@ -1804,7 +1607,7 @@ main(int ac, char **av)
 			    "enabled authentication methods");
 	}
 
-	/* Check that there are no remaining arguments. */
+	 
 	if (optind < ac) {
 		fprintf(stderr, "Extra argument %s.\n", av[optind]);
 		exit(1);
@@ -1815,7 +1618,7 @@ main(int ac, char **av)
 	if (do_dump_cfg)
 		print_config(ssh, connection_info);
 
-	/* Store privilege separation user for later use if required. */
+	 
 	privsep_chroot = use_privsep && (getuid() == 0 || geteuid() == 0);
 	if ((privsep_pw = getpwnam(SSH_PRIVSEP_USER)) == NULL) {
 		if (privsep_chroot || options.kerberos_authentication)
@@ -1828,7 +1631,7 @@ main(int ac, char **av)
 	}
 	endpwent();
 
-	/* load host keys */
+	 
 	sensitive_data.host_keys = xcalloc(options.num_host_key_files,
 	    sizeof(struct sshkey *));
 	sensitive_data.host_pubkeys = xcalloc(options.num_host_key_files,
@@ -1935,10 +1738,7 @@ main(int ac, char **av)
 		exit(1);
 	}
 
-	/*
-	 * Load certificates. They are stored in an array at identical
-	 * indices to the public keys that they relate to.
-	 */
+	 
 	sensitive_data.host_certificates = xcalloc(options.num_host_key_files,
 	    sizeof(struct sshkey *));
 	for (i = 0; i < options.num_host_key_files; i++)
@@ -1959,7 +1759,7 @@ main(int ac, char **av)
 			sshkey_free(key);
 			continue;
 		}
-		/* Find matching private key */
+		 
 		for (j = 0; j < options.num_host_key_files; j++) {
 			if (sshkey_equal_public(key,
 			    sensitive_data.host_pubkeys[j])) {
@@ -2000,17 +1800,11 @@ main(int ac, char **av)
 	if (test_flag > 1)
 		print_config(ssh, connection_info);
 
-	/* Configuration looks good, so exit if in test mode. */
+	 
 	if (test_flag)
 		exit(0);
 
-	/*
-	 * Clear out any supplemental groups we may have inherited.  This
-	 * prevents inadvertent creation of files with bad modes (in the
-	 * portable version at least, it's certainly possible for PAM
-	 * to create a file, and we can't control the code in every
-	 * module which might be used).
-	 */
+	 
 	if (setgroups(0, NULL) < 0)
 		debug("setgroups() failed: %.200s", strerror(errno));
 
@@ -2027,11 +1821,11 @@ main(int ac, char **av)
 	}
 	listener_proctitle = prepare_proctitle(ac, av);
 
-	/* Ensure that umask disallows at least group and world write */
+	 
 	new_umask = umask(0077) | 0022;
 	(void) umask(new_umask);
 
-	/* Initialize the log (it is reinitialized below in case we forked). */
+	 
 	if (debug_flag && (!inetd_flag || rexeced_flag))
 		log_stderr = 1;
 	log_init(__progname, options.log_level,
@@ -2039,11 +1833,7 @@ main(int ac, char **av)
 	for (i = 0; i < options.num_log_verbose; i++)
 		log_verbose_add(options.log_verbose[i]);
 
-	/*
-	 * If not in debugging mode, not started from inetd and not already
-	 * daemonized (eg re-exec via SIGHUP), disconnect from the controlling
-	 * terminal, and fork.  The original process exits.
-	 */
+	 
 	already_daemon = daemonized();
 	if (!(debug_flag || inetd_flag || no_daemon_flag || already_daemon)) {
 
@@ -2052,20 +1842,17 @@ main(int ac, char **av)
 
 		disconnect_controlling_tty();
 	}
-	/* Reinitialize the log (because of the fork above). */
+	 
 	log_init(__progname, options.log_level, options.log_facility, log_stderr);
 
-	/*
-	 * Chdir to the root directory so that the current disk can be
-	 * unmounted if desired.
-	 */
+	 
 	if (chdir("/") == -1)
 		error("chdir(\"/\"): %s", strerror(errno));
 
-	/* ignore SIGPIPE */
+	 
 	ssh_signal(SIGPIPE, SIG_IGN);
 
-	/* Get a connection, either from inetd or a listening TCP socket */
+	 
 	if (inetd_flag) {
 		server_accept_inetd(&sock_in, &sock_out);
 	} else {
@@ -2077,10 +1864,7 @@ main(int ac, char **av)
 		ssh_signal(SIGTERM, sigterm_handler);
 		ssh_signal(SIGQUIT, sigterm_handler);
 
-		/*
-		 * Write out the pid file after the sigterm handler
-		 * is setup and the listen sockets are bound
-		 */
+		 
 		if (options.pid_file != NULL && !debug_flag) {
 			FILE *f = fopen(options.pid_file, "w");
 
@@ -2093,19 +1877,15 @@ main(int ac, char **av)
 			}
 		}
 
-		/* Accept a connection and return in a forked child */
+		 
 		server_accept_loop(&sock_in, &sock_out,
 		    &newsock, config_s);
 	}
 
-	/* This is the child processing a new connection. */
+	 
 	setproctitle("%s", "[accepted]");
 
-	/*
-	 * Create a new session and process group since the 4.4BSD
-	 * setlogin() affects the entire process group.  We don't
-	 * want the child to be able to affect the parent.
-	 */
+	 
 	if (!debug_flag && !inetd_flag && setsid() == -1)
 		error("setsid: %.100s", strerror(errno));
 
@@ -2129,16 +1909,16 @@ main(int ac, char **av)
 			debug3_f("dup2 config_s: %s", strerror(errno));
 		close(config_s[1]);
 
-		ssh_signal(SIGHUP, SIG_IGN); /* avoid reset to SIG_DFL */
+		ssh_signal(SIGHUP, SIG_IGN);  
 		execv(rexec_argv[0], rexec_argv);
 
-		/* Reexec has failed, fall back and continue */
+		 
 		error("rexec of %s failed: %s", rexec_argv[0], strerror(errno));
 		recv_rexec_state(REEXEC_CONFIG_PASS_FD, NULL);
 		log_init(__progname, options.log_level,
 		    options.log_facility, log_stderr);
 
-		/* Clean up fds */
+		 
 		close(REEXEC_CONFIG_PASS_FD);
 		newsock = sock_out = sock_in = dup(STDIN_FILENO);
 		if (stdfd_devnull(1, 1, 0) == -1)
@@ -2147,11 +1927,11 @@ main(int ac, char **av)
 		    sock_in, sock_out, newsock, startup_pipe, config_s[0]);
 	}
 
-	/* Executed child processes don't need these. */
+	 
 	fcntl(sock_out, F_SETFD, FD_CLOEXEC);
 	fcntl(sock_in, F_SETFD, FD_CLOEXEC);
 
-	/* We will not restart on SIGHUP since it no longer makes sense. */
+	 
 	ssh_signal(SIGALRM, SIG_DFL);
 	ssh_signal(SIGHUP, SIG_DFL);
 	ssh_signal(SIGTERM, SIG_DFL);
@@ -2159,10 +1939,7 @@ main(int ac, char **av)
 	ssh_signal(SIGCHLD, SIG_DFL);
 	ssh_signal(SIGINT, SIG_DFL);
 
-	/*
-	 * Register our connection.  This turns encryption off because we do
-	 * not have a key.
-	 */
+	 
 	if ((ssh = ssh_packet_set_connection(NULL, sock_in, sock_out)) == NULL)
 		fatal("Unable to create connection");
 	the_active_state = ssh;
@@ -2170,13 +1947,13 @@ main(int ac, char **av)
 
 	check_ip_options(ssh);
 
-	/* Prepare the channels layer */
+	 
 	channel_init_channels(ssh);
 	channel_set_af(ssh, options.address_family);
 	process_channel_timeouts(ssh, &options);
 	process_permitopen(ssh, &options);
 
-	/* Set SO_KEEPALIVE if requested. */
+	 
 	if (options.tcp_keep_alive && ssh_packet_connection_is_on_socket(ssh) &&
 	    setsockopt(sock_in, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on)) == -1)
 		error("setsockopt SO_KEEPALIVE: %.100s", strerror(errno));
@@ -2189,11 +1966,7 @@ main(int ac, char **av)
 	if (options.routing_domain != NULL)
 		set_process_rdomain(ssh, options.routing_domain);
 
-	/*
-	 * The rest of the code depends on the fact that
-	 * ssh_remote_ipaddr() caches the remote ip, even if
-	 * the socket goes away.
-	 */
+	 
 	remote_ip = ssh_remote_ipaddr(ssh);
 
 #ifdef SSH_AUDIT_EVENTS
@@ -2202,7 +1975,7 @@ main(int ac, char **av)
 
 	rdomain = ssh_packet_rdomain_in(ssh);
 
-	/* Log the connection. */
+	 
 	laddr = get_local_ipaddr(sock_in);
 	verbose("Connection from %s port %d on %s port %d%s%s%s",
 	    remote_ip, remote_port, laddr,  ssh_local_port(ssh),
@@ -2211,14 +1984,7 @@ main(int ac, char **av)
 	    rdomain == NULL ? "" : "\"");
 	free(laddr);
 
-	/*
-	 * We don't want to listen forever unless the other side
-	 * successfully authenticates itself.  So we set up an alarm which is
-	 * cleared after successful authentication.  A limit of zero
-	 * indicates no limit. Note that we don't set the alarm in debugging
-	 * mode; it is just annoying to have the server exit just when you
-	 * are about to discover the bug.
-	 */
+	 
 	ssh_signal(SIGALRM, grace_alarm_handler);
 	if (!debug_flag)
 		alarm(options.login_grace_time);
@@ -2229,20 +1995,20 @@ main(int ac, char **av)
 
 	ssh_packet_set_nonblocking(ssh);
 
-	/* allocate authentication context */
+	 
 	authctxt = xcalloc(1, sizeof(*authctxt));
 	ssh->authctxt = authctxt;
 
 	authctxt->loginmsg = loginmsg;
 
-	/* XXX global for cleanup, access from other modules */
+	 
 	the_authctxt = authctxt;
 
-	/* Set default key authentication options */
+	 
 	if ((auth_opts = sshauthopt_new_with_keys_defaults()) == NULL)
 		fatal("allocation failed");
 
-	/* prepare buffer to collect messages to display to user after login */
+	 
 	if ((loginmsg = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 	auth_debug_reset();
@@ -2257,15 +2023,12 @@ main(int ac, char **av)
 		}
 	}
 
-	/* perform the key exchange */
-	/* authenticate user and start session */
+	 
+	 
 	do_ssh2_kex(ssh);
 	do_authentication2(ssh);
 
-	/*
-	 * If we use privilege separation, the unprivileged child transfers
-	 * the current keystate and exits
-	 */
+	 
 	if (use_privsep) {
 		mm_send_keystate(ssh, pmonitor);
 		ssh_packet_clear_keys(ssh);
@@ -2273,10 +2036,7 @@ main(int ac, char **av)
 	}
 
  authenticated:
-	/*
-	 * Cancel the alarm we set to limit the time taken for
-	 * authentication.
-	 */
+	 
 	alarm(0);
 	ssh_signal(SIGALRM, SIG_DFL);
 	authctxt->authenticated = 1;
@@ -2303,25 +2063,22 @@ main(int ac, char **av)
 	}
 #endif
 
-	/*
-	 * In privilege separation, we fork another child and prepare
-	 * file descriptor passing.
-	 */
+	 
 	if (use_privsep) {
 		privsep_postauth(ssh, authctxt);
-		/* the monitor process [priv] will not return */
+		 
 	}
 
 	ssh_packet_set_timeout(ssh, options.client_alive_interval,
 	    options.client_alive_count_max);
 
-	/* Try to send all our hostkeys to the client */
+	 
 	notify_hostkeys(ssh);
 
-	/* Start session. */
+	 
 	do_authenticated(ssh, authctxt);
 
-	/* The connection has been terminated. */
+	 
 	ssh_packet_get_bytes(ssh, &ibytes, &obytes);
 	verbose("Transferred: sent %llu, received %llu bytes",
 	    (unsigned long long)obytes, (unsigned long long)ibytes);
@@ -2331,7 +2088,7 @@ main(int ac, char **av)
 #ifdef USE_PAM
 	if (options.use_pam)
 		finish_pam();
-#endif /* USE_PAM */
+#endif  
 
 #ifdef SSH_AUDIT_EVENTS
 	PRIVSEP(audit_event(ssh, SSH_CONNECTION_CLOSE));
@@ -2380,7 +2137,7 @@ sshd_hostkey_sign(struct ssh *ssh, struct sshkey *privkey,
 	return 0;
 }
 
-/* SSH2 key exchange */
+ 
 static void
 do_ssh2_kex(struct ssh *ssh)
 {
@@ -2402,7 +2159,7 @@ do_ssh2_kex(struct ssh *ssh)
 
 	free(hkalgs);
 
-	/* start key exchange */
+	 
 	if ((r = kex_setup(ssh, myproposal)) != 0)
 		fatal_r(r, "kex_setup");
 	kex_set_server_sig_algs(ssh, options.pubkey_accepted_algos);
@@ -2430,7 +2187,7 @@ do_ssh2_kex(struct ssh *ssh)
 	ssh_dispatch_run_fatal(ssh, DISPATCH_BLOCK, &kex->done);
 
 #ifdef DEBUG_KEXDH
-	/* send 1st encrypted/maced/compressed message */
+	 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_IGNORE)) != 0 ||
 	    (r = sshpkt_put_cstring(ssh, "markus")) != 0 ||
 	    (r = sshpkt_send(ssh)) != 0 ||
@@ -2441,7 +2198,7 @@ do_ssh2_kex(struct ssh *ssh)
 	debug("KEX done");
 }
 
-/* server specific fatal cleanup */
+ 
 void
 cleanup_exit(int i)
 {
@@ -2458,7 +2215,7 @@ cleanup_exit(int i)
 		}
 	}
 #ifdef SSH_AUDIT_EVENTS
-	/* done after do_cleanup so it can cancel the PAM auth 'thread' */
+	 
 	if (the_active_state != NULL && (!use_privsep || mm_is_monitor()))
 		audit_event(the_active_state, SSH_CONNECTION_ABANDON);
 #endif

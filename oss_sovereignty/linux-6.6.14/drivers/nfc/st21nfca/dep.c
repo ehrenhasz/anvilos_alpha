@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <net/nfc/hci.h>
 
@@ -246,20 +244,14 @@ static int st21nfca_tm_send_psl_res(struct nfc_hci_dev *hdev,
 	if (r < 0)
 		goto error;
 
-	/*
-	 * ST21NFCA only support P2P passive.
-	 * PSL_REQ BRS value != 0 has only a meaning to
-	 * change technology to type F.
-	 * We change to BITRATE 424Kbits.
-	 * In other case switch to BITRATE 106Kbits.
-	 */
+	 
 	if (ST21NFCA_PSL_REQ_SEND_SPEED(psl_req->brs) &&
 	    ST21NFCA_PSL_REQ_RECV_SPEED(psl_req->brs)) {
 		bitrate[0] = ST21NFCA_CARD_BITRATE_424;
 		bitrate[1] = ST21NFCA_CARD_BITRATE_424;
 	}
 
-	/* Send an event to change bitrate change event to card f */
+	 
 	r = nfc_hci_send_event(hdev, ST21NFCA_RF_CARD_F_GATE,
 			ST21NFCA_EVT_CARD_F_BITRATE, bitrate, 2);
 error:
@@ -326,7 +318,7 @@ static int st21nfca_tm_recv_dep_req(struct nfc_hci_dev *hdev,
 	if (skb->len < size)
 		return -EIO;
 
-	/* Receiving DEP_REQ - Decoding */
+	 
 	switch (ST21NFCA_NFC_DEP_PFB_TYPE(dep_req->pfb)) {
 	case ST21NFCA_NFC_DEP_PFB_I_PDU:
 		info->dep_info.curr_nfc_dep_pni =
@@ -375,11 +367,7 @@ static int st21nfca_tm_event_send_data(struct nfc_hci_dev *hdev,
 	return r;
 }
 
-/*
- * Returns:
- * <= 0: driver handled the event, skb consumed
- *    1: driver does not handle the event, please do standard processing
- */
+ 
 int st21nfca_dep_event_received(struct nfc_hci_dev *hdev,
 				u8 event, struct sk_buff *skb)
 {
@@ -537,7 +525,7 @@ int st21nfca_im_send_atr_req(struct nfc_hci_dev *hdev, u8 *gb, size_t gb_len)
 	}
 	atr_req->length = sizeof(struct st21nfca_atr_req) + hdev->gb_len;
 
-	*(u8 *)skb_push(skb, 1) = info->dep_info.to | 0x10; /* timeout */
+	*(u8 *)skb_push(skb, 1) = info->dep_info.to | 0x10;  
 
 	info->async_cb_type = ST21NFCA_CB_TYPE_READER_F;
 	info->async_cb_context = info;
@@ -584,7 +572,7 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
 
 		skb_trim(skb, skb->len - 1);
 
-		/* Receiving DEP_REQ - Decoding */
+		 
 		switch (ST21NFCA_NFC_DEP_PFB_TYPE(dep_res->pfb)) {
 		case ST21NFCA_NFC_DEP_PFB_ACK_NACK_PDU:
 			pr_err("Received a ACK/NACK PDU\n");

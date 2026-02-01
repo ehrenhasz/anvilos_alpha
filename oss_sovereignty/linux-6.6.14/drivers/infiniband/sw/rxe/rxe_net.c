@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/if_arp.h>
@@ -138,9 +135,7 @@ static int rxe_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
 	struct net_device *ndev = skb->dev;
 	struct rxe_pkt_info *pkt = SKB_TO_PKT(skb);
 
-	/* takes a reference on rxe->ib_dev
-	 * drop when skb is freed
-	 */
+	 
 	rxe = rxe_get_dev_from_net(ndev);
 	if (!rxe && is_vlan_dev(ndev))
 		rxe = rxe_get_dev_from_net(vlan_dev_real_dev(ndev));
@@ -159,7 +154,7 @@ static int rxe_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
 	pkt->mask = RXE_GRH_MASK;
 	pkt->paylen = be16_to_cpu(udph->len) - sizeof(*udph);
 
-	/* remove udp header */
+	 
 	skb_pull(skb, sizeof(struct udphdr));
 
 	rxe_rcv(skb);
@@ -188,7 +183,7 @@ static struct socket *rxe_setup_udp_tunnel(struct net *net, __be16 port,
 
 	udp_cfg.local_udp_port = port;
 
-	/* Create UDP socket */
+	 
 	err = udp_sock_create(net, &udp_cfg, &sock);
 	if (err < 0)
 		return ERR_PTR(err);
@@ -196,7 +191,7 @@ static struct socket *rxe_setup_udp_tunnel(struct net *net, __be16 port,
 	tnl_cfg.encap_type = 1;
 	tnl_cfg.encap_rcv = rxe_udp_encap_recv;
 
-	/* Setup UDP tunnel */
+	 
 	setup_udp_tunnel_sock(net, sock, &tnl_cfg);
 
 	return sock;
@@ -387,9 +382,7 @@ static int rxe_send(struct sk_buff *skb, struct rxe_pkt_info *pkt)
 	return 0;
 }
 
-/* fix up a send packet to match the packets
- * received from UDP before looping them back
- */
+ 
 static int rxe_loopback(struct sk_buff *skb, struct rxe_pkt_info *pkt)
 {
 	memcpy(SKB_TO_PKT(skb), pkt, sizeof(*pkt));
@@ -404,7 +397,7 @@ static int rxe_loopback(struct sk_buff *skb, struct rxe_pkt_info *pkt)
 		return -EIO;
 	}
 
-	/* remove udp header */
+	 
 	skb_pull(skb, sizeof(struct udphdr));
 
 	rxe_rcv(skb);
@@ -492,7 +485,7 @@ struct sk_buff *rxe_init_packet(struct rxe_dev *rxe, struct rxe_av *av,
 
 	skb_reserve(skb, hdr_len + LL_RESERVED_SPACE(ndev));
 
-	/* FIXME: hold reference to this netdev until life of this skb. */
+	 
 	skb->dev	= ndev;
 	rcu_read_unlock();
 
@@ -511,10 +504,7 @@ out:
 	return skb;
 }
 
-/*
- * this is required by rxe_cfg to match rxe devices in
- * /sys/class/infiniband up with their underlying ethernet devices
- */
+ 
 const char *rxe_parent_name(struct rxe_dev *rxe, unsigned int port_num)
 {
 	return rxe->ndev->name;
@@ -552,7 +542,7 @@ static void rxe_port_event(struct rxe_dev *rxe,
 	ib_dispatch_event(&ev);
 }
 
-/* Caller must hold net_info_lock */
+ 
 void rxe_port_up(struct rxe_dev *rxe)
 {
 	struct rxe_port *port;
@@ -564,7 +554,7 @@ void rxe_port_up(struct rxe_dev *rxe)
 	dev_info(&rxe->ib_dev.dev, "set active\n");
 }
 
-/* Caller must hold net_info_lock */
+ 
 void rxe_port_down(struct rxe_dev *rxe)
 {
 	struct rxe_port *port;

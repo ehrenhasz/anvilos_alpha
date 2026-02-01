@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 - 2014 Allwinner Tech
- * Pan Nan <pannan@allwinnertech.com>
- *
- * Copyright (C) 2014 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -127,7 +121,7 @@ static inline void sun4i_spi_drain_fifo(struct sun4i_spi *sspi, int len)
 	u32 reg, cnt;
 	u8 byte;
 
-	/* See how much data is available */
+	 
 	reg = sun4i_spi_read(sspi, SUN4I_FIFO_STA_REG);
 	reg &= SUN4I_FIFO_STA_RF_CNT_MASK;
 	cnt = reg >> SUN4I_FIFO_STA_RF_CNT_BITS;
@@ -147,7 +141,7 @@ static inline void sun4i_spi_fill_fifo(struct sun4i_spi *sspi, int len)
 	u32 cnt;
 	u8 byte;
 
-	/* See how much data we can fit */
+	 
 	cnt = SUN4I_FIFO_DEPTH - sun4i_spi_get_tx_fifo_count(sspi);
 
 	len = min3(len, (int)cnt, sspi->len);
@@ -169,7 +163,7 @@ static void sun4i_spi_set_cs(struct spi_device *spi, bool enable)
 	reg &= ~SUN4I_CTL_CS_MASK;
 	reg |= SUN4I_CTL_CS(spi_get_chipselect(spi, 0));
 
-	/* We want to control the chip select manually */
+	 
 	reg |= SUN4I_CTL_CS_MANUAL;
 
 	if (enable)
@@ -177,17 +171,7 @@ static void sun4i_spi_set_cs(struct spi_device *spi, bool enable)
 	else
 		reg &= ~SUN4I_CTL_CS_LEVEL;
 
-	/*
-	 * Even though this looks irrelevant since we are supposed to
-	 * be controlling the chip select manually, this bit also
-	 * controls the levels of the chip select for inactive
-	 * devices.
-	 *
-	 * If we don't set it, the chip select level will go low by
-	 * default when the device is idle, which is not really
-	 * expected in the common case where the chip select is active
-	 * low.
-	 */
+	 
 	if (spi->mode & SPI_CS_HIGH)
 		reg &= ~SUN4I_CTL_CS_ACTIVE_LOW;
 	else
@@ -212,7 +196,7 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 	int ret = 0;
 	u32 reg;
 
-	/* We don't support transfer larger than the FIFO */
+	 
 	if (tfr->len > SUN4I_MAX_XFER_SIZE)
 		return -EMSGSIZE;
 
@@ -224,20 +208,17 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 	sspi->rx_buf = tfr->rx_buf;
 	sspi->len = tfr->len;
 
-	/* Clear pending interrupts */
+	 
 	sun4i_spi_write(sspi, SUN4I_INT_STA_REG, ~0);
 
 
 	reg = sun4i_spi_read(sspi, SUN4I_CTL_REG);
 
-	/* Reset FIFOs */
+	 
 	sun4i_spi_write(sspi, SUN4I_CTL_REG,
 			reg | SUN4I_CTL_RF_RST | SUN4I_CTL_TF_RST);
 
-	/*
-	 * Setup the transfer control register: Chip Select,
-	 * polarities, etc.
-	 */
+	 
 	if (spi->mode & SPI_CPOL)
 		reg |= SUN4I_CTL_CPOL;
 	else
@@ -254,10 +235,7 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 		reg &= ~SUN4I_CTL_LMTF;
 
 
-	/*
-	 * If it's a TX only transfer, we don't want to fill the RX
-	 * FIFO with bogus data
-	 */
+	 
 	if (sspi->rx_buf)
 		reg &= ~SUN4I_CTL_DHB;
 	else
@@ -265,27 +243,14 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 
 	sun4i_spi_write(sspi, SUN4I_CTL_REG, reg);
 
-	/* Ensure that we have a parent clock fast enough */
+	 
 	mclk_rate = clk_get_rate(sspi->mclk);
 	if (mclk_rate < (2 * tfr->speed_hz)) {
 		clk_set_rate(sspi->mclk, 2 * tfr->speed_hz);
 		mclk_rate = clk_get_rate(sspi->mclk);
 	}
 
-	/*
-	 * Setup clock divider.
-	 *
-	 * We have two choices there. Either we can use the clock
-	 * divide rate 1, which is calculated thanks to this formula:
-	 * SPI_CLK = MOD_CLK / (2 ^ (cdr + 1))
-	 * Or we can use CDR2, which is calculated with the formula:
-	 * SPI_CLK = MOD_CLK / (2 * (cdr + 1))
-	 * Whether we use the former or the latter is set through the
-	 * DRS bit.
-	 *
-	 * First try CDR2, and if we can't reach the expected
-	 * frequency, fall back to CDR1.
-	 */
+	 
 	div = mclk_rate / (2 * tfr->speed_hz);
 	if (div <= (SUN4I_CLK_CTL_CDR2_MASK + 1)) {
 		if (div > 0)
@@ -299,29 +264,25 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
 
 	sun4i_spi_write(sspi, SUN4I_CLK_CTL_REG, reg);
 
-	/* Setup the transfer now... */
+	 
 	if (sspi->tx_buf)
 		tx_len = tfr->len;
 
-	/* Setup the counters */
+	 
 	sun4i_spi_write(sspi, SUN4I_BURST_CNT_REG, SUN4I_BURST_CNT(tfr->len));
 	sun4i_spi_write(sspi, SUN4I_XMIT_CNT_REG, SUN4I_XMIT_CNT(tx_len));
 
-	/*
-	 * Fill the TX FIFO
-	 * Filling the FIFO fully causes timeout for some reason
-	 * at least on spi2 on A10s
-	 */
+	 
 	sun4i_spi_fill_fifo(sspi, SUN4I_FIFO_DEPTH - 1);
 
-	/* Enable the interrupts */
+	 
 	sun4i_spi_enable_interrupt(sspi, SUN4I_INT_CTL_TC |
 					 SUN4I_INT_CTL_RF_F34);
-	/* Only enable Tx FIFO interrupt if we really need it */
+	 
 	if (tx_len > SUN4I_FIFO_DEPTH)
 		sun4i_spi_enable_interrupt(sspi, SUN4I_INT_CTL_TF_E34);
 
-	/* Start the transfer */
+	 
 	reg = sun4i_spi_read(sspi, SUN4I_CTL_REG);
 	sun4i_spi_write(sspi, SUN4I_CTL_REG, reg | SUN4I_CTL_XCH);
 
@@ -351,7 +312,7 @@ static irqreturn_t sun4i_spi_handler(int irq, void *dev_id)
 	struct sun4i_spi *sspi = dev_id;
 	u32 status = sun4i_spi_read(sspi, SUN4I_INT_STA_REG);
 
-	/* Transfer complete */
+	 
 	if (status & SUN4I_INT_CTL_TC) {
 		sun4i_spi_write(sspi, SUN4I_INT_STA_REG, SUN4I_INT_CTL_TC);
 		sun4i_spi_drain_fifo(sspi, SUN4I_FIFO_DEPTH);
@@ -359,23 +320,23 @@ static irqreturn_t sun4i_spi_handler(int irq, void *dev_id)
 		return IRQ_HANDLED;
 	}
 
-	/* Receive FIFO 3/4 full */
+	 
 	if (status & SUN4I_INT_CTL_RF_F34) {
 		sun4i_spi_drain_fifo(sspi, SUN4I_FIFO_DEPTH);
-		/* Only clear the interrupt _after_ draining the FIFO */
+		 
 		sun4i_spi_write(sspi, SUN4I_INT_STA_REG, SUN4I_INT_CTL_RF_F34);
 		return IRQ_HANDLED;
 	}
 
-	/* Transmit FIFO 3/4 empty */
+	 
 	if (status & SUN4I_INT_CTL_TF_E34) {
 		sun4i_spi_fill_fifo(sspi, SUN4I_FIFO_DEPTH);
 
 		if (!sspi->len)
-			/* nothing left to transmit */
+			 
 			sun4i_spi_disable_interrupt(sspi, SUN4I_INT_CTL_TF_E34);
 
-		/* Only clear the interrupt _after_ re-seeding the FIFO */
+		 
 		sun4i_spi_write(sspi, SUN4I_INT_STA_REG, SUN4I_INT_CTL_TF_E34);
 
 		return IRQ_HANDLED;
@@ -486,10 +447,7 @@ static int sun4i_spi_probe(struct platform_device *pdev)
 
 	init_completion(&sspi->done);
 
-	/*
-	 * This wake-up/shutdown pattern is to be able to have the
-	 * device woken up, even if runtime_pm is disabled
-	 */
+	 
 	ret = sun4i_spi_runtime_resume(&pdev->dev);
 	if (ret) {
 		dev_err(&pdev->dev, "Couldn't resume the device\n");

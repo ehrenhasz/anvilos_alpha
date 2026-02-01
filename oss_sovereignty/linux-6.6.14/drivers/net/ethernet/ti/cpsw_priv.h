@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Texas Instruments Ethernet Switch Driver
- */
+ 
+ 
 
 #ifndef DRIVERS_NET_ETHERNET_TI_CPSW_PRIV_H_
 #define DRIVERS_NET_ETHERNET_TI_CPSW_PRIV_H_
@@ -119,7 +117,7 @@ do {								\
 #define IRQ_NUM			2
 #define CPSW_MAX_QUEUES		8
 #define CPSW_CPDMA_DESCS_POOL_SIZE_DEFAULT 256
-#define CPSW_ALE_AGEOUT_DEFAULT		10 /* sec */
+#define CPSW_ALE_AGEOUT_DEFAULT		10  
 #define CPSW_FIFO_QUEUE_TYPE_SHIFT	16
 #define CPSW_FIFO_SHAPE_EN_SHIFT	16
 #define CPSW_FIFO_RATE_EN_SHIFT		20
@@ -176,59 +174,59 @@ struct cpsw_ss_regs {
 	u32	dlr_ltype;
 };
 
-/* CPSW_PORT_V1 */
-#define CPSW1_MAX_BLKS      0x00 /* Maximum FIFO Blocks */
-#define CPSW1_BLK_CNT       0x04 /* FIFO Block Usage Count (Read Only) */
-#define CPSW1_TX_IN_CTL     0x08 /* Transmit FIFO Control */
-#define CPSW1_PORT_VLAN     0x0c /* VLAN Register */
-#define CPSW1_TX_PRI_MAP    0x10 /* Tx Header Priority to Switch Pri Mapping */
-#define CPSW1_TS_CTL        0x14 /* Time Sync Control */
-#define CPSW1_TS_SEQ_LTYPE  0x18 /* Time Sync Sequence ID Offset and Msg Type */
-#define CPSW1_TS_VLAN       0x1c /* Time Sync VLAN1 and VLAN2 */
+ 
+#define CPSW1_MAX_BLKS      0x00  
+#define CPSW1_BLK_CNT       0x04  
+#define CPSW1_TX_IN_CTL     0x08  
+#define CPSW1_PORT_VLAN     0x0c  
+#define CPSW1_TX_PRI_MAP    0x10  
+#define CPSW1_TS_CTL        0x14  
+#define CPSW1_TS_SEQ_LTYPE  0x18  
+#define CPSW1_TS_VLAN       0x1c  
 
-/* CPSW_PORT_V2 */
-#define CPSW2_CONTROL       0x00 /* Control Register */
-#define CPSW2_MAX_BLKS      0x08 /* Maximum FIFO Blocks */
-#define CPSW2_BLK_CNT       0x0c /* FIFO Block Usage Count (Read Only) */
-#define CPSW2_TX_IN_CTL     0x10 /* Transmit FIFO Control */
-#define CPSW2_PORT_VLAN     0x14 /* VLAN Register */
-#define CPSW2_TX_PRI_MAP    0x18 /* Tx Header Priority to Switch Pri Mapping */
-#define CPSW2_TS_SEQ_MTYPE  0x1c /* Time Sync Sequence ID Offset and Msg Type */
+ 
+#define CPSW2_CONTROL       0x00  
+#define CPSW2_MAX_BLKS      0x08  
+#define CPSW2_BLK_CNT       0x0c  
+#define CPSW2_TX_IN_CTL     0x10  
+#define CPSW2_PORT_VLAN     0x14  
+#define CPSW2_TX_PRI_MAP    0x18  
+#define CPSW2_TS_SEQ_MTYPE  0x1c  
 
-/* CPSW_PORT_V1 and V2 */
-#define SA_LO               0x20 /* CPGMAC_SL Source Address Low */
-#define SA_HI               0x24 /* CPGMAC_SL Source Address High */
-#define SEND_PERCENT        0x28 /* Transmit Queue Send Percentages */
+ 
+#define SA_LO               0x20  
+#define SA_HI               0x24  
+#define SEND_PERCENT        0x28  
 
-/* CPSW_PORT_V2 only */
-#define RX_DSCP_PRI_MAP0    0x30 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP1    0x34 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP2    0x38 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP3    0x3c /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP4    0x40 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP5    0x44 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP6    0x48 /* Rx DSCP Priority to Rx Packet Mapping */
-#define RX_DSCP_PRI_MAP7    0x4c /* Rx DSCP Priority to Rx Packet Mapping */
+ 
+#define RX_DSCP_PRI_MAP0    0x30  
+#define RX_DSCP_PRI_MAP1    0x34  
+#define RX_DSCP_PRI_MAP2    0x38  
+#define RX_DSCP_PRI_MAP3    0x3c  
+#define RX_DSCP_PRI_MAP4    0x40  
+#define RX_DSCP_PRI_MAP5    0x44  
+#define RX_DSCP_PRI_MAP6    0x48  
+#define RX_DSCP_PRI_MAP7    0x4c  
 
-/* Bit definitions for the CPSW2_CONTROL register */
-#define PASS_PRI_TAGGED     BIT(24) /* Pass Priority Tagged */
-#define VLAN_LTYPE2_EN      BIT(21) /* VLAN LTYPE 2 enable */
-#define VLAN_LTYPE1_EN      BIT(20) /* VLAN LTYPE 1 enable */
-#define DSCP_PRI_EN         BIT(16) /* DSCP Priority Enable */
-#define TS_107              BIT(15) /* Tyme Sync Dest IP Address 107 */
-#define TS_320              BIT(14) /* Time Sync Dest Port 320 enable */
-#define TS_319              BIT(13) /* Time Sync Dest Port 319 enable */
-#define TS_132              BIT(12) /* Time Sync Dest IP Addr 132 enable */
-#define TS_131              BIT(11) /* Time Sync Dest IP Addr 131 enable */
-#define TS_130              BIT(10) /* Time Sync Dest IP Addr 130 enable */
-#define TS_129              BIT(9)  /* Time Sync Dest IP Addr 129 enable */
-#define TS_TTL_NONZERO      BIT(8)  /* Time Sync Time To Live Non-zero enable */
-#define TS_ANNEX_F_EN       BIT(6)  /* Time Sync Annex F enable */
-#define TS_ANNEX_D_EN       BIT(4)  /* Time Sync Annex D enable */
-#define TS_LTYPE2_EN        BIT(3)  /* Time Sync LTYPE 2 enable */
-#define TS_LTYPE1_EN        BIT(2)  /* Time Sync LTYPE 1 enable */
-#define TS_TX_EN            BIT(1)  /* Time Sync Transmit Enable */
-#define TS_RX_EN            BIT(0)  /* Time Sync Receive Enable */
+ 
+#define PASS_PRI_TAGGED     BIT(24)  
+#define VLAN_LTYPE2_EN      BIT(21)  
+#define VLAN_LTYPE1_EN      BIT(20)  
+#define DSCP_PRI_EN         BIT(16)  
+#define TS_107              BIT(15)  
+#define TS_320              BIT(14)  
+#define TS_319              BIT(13)  
+#define TS_132              BIT(12)  
+#define TS_131              BIT(11)  
+#define TS_130              BIT(10)  
+#define TS_129              BIT(9)   
+#define TS_TTL_NONZERO      BIT(8)   
+#define TS_ANNEX_F_EN       BIT(6)   
+#define TS_ANNEX_D_EN       BIT(4)   
+#define TS_LTYPE2_EN        BIT(3)   
+#define TS_LTYPE1_EN        BIT(2)   
+#define TS_TX_EN            BIT(1)   
+#define TS_RX_EN            BIT(0)   
 
 #define CTRL_V2_TS_BITS \
 	(TS_320 | TS_319 | TS_132 | TS_131 | TS_130 | TS_129 |\
@@ -248,21 +246,21 @@ struct cpsw_ss_regs {
 #define CTRL_V3_TX_TS_BITS  (CTRL_V3_TS_BITS | TS_TX_EN)
 #define CTRL_V3_RX_TS_BITS  (CTRL_V3_TS_BITS | TS_RX_EN)
 
-/* Bit definitions for the CPSW2_TS_SEQ_MTYPE register */
-#define TS_SEQ_ID_OFFSET_SHIFT   (16)    /* Time Sync Sequence ID Offset */
+ 
+#define TS_SEQ_ID_OFFSET_SHIFT   (16)     
 #define TS_SEQ_ID_OFFSET_MASK    (0x3f)
-#define TS_MSG_TYPE_EN_SHIFT     (0)     /* Time Sync Message Type Enable */
+#define TS_MSG_TYPE_EN_SHIFT     (0)      
 #define TS_MSG_TYPE_EN_MASK      (0xffff)
 
-/* The PTP event messages - Sync, Delay_Req, Pdelay_Req, and Pdelay_Resp. */
+ 
 #define EVENT_MSG_BITS ((1<<0) | (1<<1) | (1<<2) | (1<<3))
 
-/* Bit definitions for the CPSW1_TS_CTL register */
+ 
 #define CPSW_V1_TS_RX_EN		BIT(0)
 #define CPSW_V1_TS_TX_EN		BIT(4)
 #define CPSW_V1_MSG_TYPE_OFS		16
 
-/* Bit definitions for the CPSW1_TS_SEQ_LTYPE register */
+ 
 #define CPSW_V1_SEQ_ID_OFS_SHIFT	16
 
 #define CPSW_MAX_BLKS_TX		15
@@ -285,21 +283,21 @@ struct cpsw_slave_data {
 	char		phy_id[MII_BUS_ID_SIZE];
 	phy_interface_t	phy_if;
 	u8		mac_addr[ETH_ALEN];
-	u16		dual_emac_res_vlan;	/* Reserved VLAN for DualEMAC */
+	u16		dual_emac_res_vlan;	 
 	struct phy	*ifphy;
 	bool		disabled;
 };
 
 struct cpsw_platform_data {
 	struct cpsw_slave_data	*slave_data;
-	u32	ss_reg_ofs;	/* Subsystem control register offset */
-	u32	channels;	/* number of cpdma channels (symmetric) */
-	u32	slaves;		/* number of slave cpgmac ports */
-	u32	active_slave;/* time stamping, ethtool and SIOCGMIIPHY slave */
-	u32	bd_ram_size;	/*buffer descriptor ram size */
-	u32	mac_control;	/* Mac control register */
-	u16	default_vlan;	/* Def VLAN for ALE lookup in VLAN aware mode*/
-	bool	dual_emac;	/* Enable Dual EMAC mode */
+	u32	ss_reg_ofs;	 
+	u32	channels;	 
+	u32	slaves;		 
+	u32	active_slave; 
+	u32	bd_ram_size;	 
+	u32	mac_control;	 
+	u16	default_vlan;	 
+	bool	dual_emac;	 
 };
 
 struct cpsw_slave {
@@ -401,9 +399,9 @@ extern int (*cpsw_slave_index)(struct cpsw_common *cpsw,
 
 struct addr_sync_ctx {
 	struct net_device *ndev;
-	const u8 *addr;		/* address to be synched */
-	int consumed;		/* number of address instances */
-	int flush;		/* flush flag */
+	const u8 *addr;		 
+	int consumed;		 
+	int flush;		 
 };
 
 #define CPSW_XMETA_OFFSET	ALIGN(sizeof(struct xdp_frame), sizeof(long))
@@ -416,7 +414,7 @@ struct __aligned(sizeof(long)) cpsw_meta_xdp {
 	int ch;
 };
 
-/* The buf includes headroom compatible with both skb and xdpf */
+ 
 #define CPSW_HEADROOM_NA (max(XDP_PACKET_HEADROOM, NET_SKB_PAD) + NET_IP_ALIGN)
 
 static inline int cpsw_is_xdpf_handle(void *handle)
@@ -470,7 +468,7 @@ void cpsw_cbs_resume(struct cpsw_slave *slave, struct cpsw_priv *priv);
 void cpsw_mqprio_resume(struct cpsw_slave *slave, struct cpsw_priv *priv);
 void cpsw_qos_clsflower_resume(struct cpsw_priv *priv);
 
-/* ethtool */
+ 
 u32 cpsw_get_msglevel(struct net_device *ndev);
 void cpsw_set_msglevel(struct net_device *ndev, u32 value);
 int cpsw_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *coal,
@@ -512,4 +510,4 @@ int cpsw_set_channels_common(struct net_device *ndev,
 			     cpdma_handler_fn rx_handler);
 int cpsw_get_ts_info(struct net_device *ndev, struct ethtool_ts_info *info);
 
-#endif /* DRIVERS_NET_ETHERNET_TI_CPSW_PRIV_H_ */
+#endif  

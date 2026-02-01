@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
+ 
 
 #ifndef __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
 #define __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
 
-/* ADC Channel Index */
+ 
 #define MT6370_CHAN_VBUSDIV5	0
 #define MT6370_CHAN_VBUSDIV2	1
 #define MT6370_CHAN_VSYS	2

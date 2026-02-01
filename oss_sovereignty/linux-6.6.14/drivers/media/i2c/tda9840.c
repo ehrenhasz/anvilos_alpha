@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /*
-    tda9840 - i2c-driver for the tda9840 by SGS Thomson
 
-    Copyright (C) 1998-2003 Michael Hunold <michael@mihu.de>
-    Copyright (C) 2008 Hans Verkuil <hverkuil@xs4all.nl>
-
-    The tda9840 is a stereo/dual sound processor with digital
-    identification. It can be found at address 0x84 on the i2c-bus.
-
-    For detailed information download the specifications directly
-    from SGS Thomson at http://www.st.com
-
-  */
+  
 
 
 #include <linux/module.h>
@@ -87,12 +75,12 @@ static int tda9840_s_tuner(struct v4l2_subdev *sd, const struct v4l2_tuner *t)
 		return -EINVAL;
 
 	stat = stat < 0 ? 0 : stat;
-	if (stat == 0 || stat == 0x60) /* mono input */
+	if (stat == 0 || stat == 0x60)  
 		byte = TDA9840_SET_MONO;
-	else if (stat == 0x40) /* stereo input */
+	else if (stat == 0x40)  
 		byte = (t->audmode == V4L2_TUNER_MODE_MONO) ?
 			TDA9840_SET_MONO : TDA9840_SET_STEREO;
-	else { /* bilingual */
+	else {  
 		switch (t->audmode) {
 		case V4L2_TUNER_MODE_LANG1_LANG2:
 			byte = TDA9840_SET_BOTH;
@@ -129,14 +117,14 @@ static int tda9840_g_tuner(struct v4l2_subdev *sd, struct v4l2_tuner *t)
 	case 0x40:
 		t->rxsubchans = V4L2_TUNER_SUB_STEREO | V4L2_TUNER_SUB_MONO;
 		break;
-	default: /* Incorrect detect */
+	default:  
 		t->rxsubchans = V4L2_TUNER_MODE_MONO;
 		break;
 	}
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_subdev_tuner_ops tda9840_tuner_ops = {
 	.s_tuner = tda9840_s_tuner,
@@ -147,13 +135,13 @@ static const struct v4l2_subdev_ops tda9840_ops = {
 	.tuner = &tda9840_tuner_ops,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int tda9840_probe(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd;
 
-	/* let's see whether this adapter can support what we need */
+	 
 	if (!i2c_check_functionality(client->adapter,
 			I2C_FUNC_SMBUS_READ_BYTE_DATA |
 			I2C_FUNC_SMBUS_WRITE_BYTE_DATA))
@@ -167,7 +155,7 @@ static int tda9840_probe(struct i2c_client *client)
 		return -ENOMEM;
 	v4l2_i2c_subdev_init(sd, client, &tda9840_ops);
 
-	/* set initial values for level & stereo - adjustment, mode */
+	 
 	tda9840_write(sd, LEVEL_ADJUST, 0);
 	tda9840_write(sd, STEREO_ADJUST, 0);
 	tda9840_write(sd, SWITCH, TDA9840_SET_STEREO);

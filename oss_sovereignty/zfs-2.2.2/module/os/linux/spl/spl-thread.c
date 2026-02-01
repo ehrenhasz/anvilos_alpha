@@ -1,44 +1,19 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Solaris Porting Layer (SPL) Thread Implementation.
- */
+ 
 
 #include <sys/thread.h>
 #include <sys/kmem.h>
 #include <sys/tsd.h>
 
-/*
- * Thread interfaces
- */
+ 
 typedef struct thread_priv_s {
-	unsigned long tp_magic;		/* Magic */
-	int tp_name_size;		/* Name size */
-	char *tp_name;			/* Name (without _thread suffix) */
-	void (*tp_func)(void *);	/* Registered function */
-	void *tp_args;			/* Args to be passed to function */
-	size_t tp_len;			/* Len to be passed to function */
-	int tp_state;			/* State to start thread at */
-	pri_t tp_pri;			/* Priority to start threat at */
+	unsigned long tp_magic;		 
+	int tp_name_size;		 
+	char *tp_name;			 
+	void (*tp_func)(void *);	 
+	void *tp_args;			 
+	size_t tp_len;			 
+	int tp_state;			 
+	pri_t tp_pri;			 
 } thread_priv_t;
 
 static int
@@ -62,11 +37,7 @@ thread_generic_wrapper(void *arg)
 	return (0);
 }
 
-/*
- * thread_create() may block forever if it cannot create a thread or
- * allocate memory.  This is preferable to returning a NULL which Solaris
- * style callers likely never check for... since it can't fail.
- */
+ 
 kthread_t *
 __thread_create(caddr_t stk, size_t  stksize, thread_func_t func,
     const char *name, void *args, size_t len, proc_t *pp, int state, pri_t pri)
@@ -75,8 +46,8 @@ __thread_create(caddr_t stk, size_t  stksize, thread_func_t func,
 	struct task_struct *tsk;
 	char *p;
 
-	/* Option pp is simply ignored */
-	/* Variable stack size unsupported */
+	 
+	 
 	ASSERT(stk == NULL);
 
 	tp = kmem_alloc(sizeof (thread_priv_t), KM_PUSHPAGE);
@@ -94,10 +65,7 @@ __thread_create(caddr_t stk, size_t  stksize, thread_func_t func,
 
 	strlcpy(tp->tp_name, name, tp->tp_name_size);
 
-	/*
-	 * Strip trailing "_thread" from passed name which will be the func
-	 * name since the exposed API has no parameter for passing a name.
-	 */
+	 
 	p = strstr(tp->tp_name, "_thread");
 	if (p)
 		p[0] = '\0';
@@ -118,11 +86,7 @@ __thread_create(caddr_t stk, size_t  stksize, thread_func_t func,
 }
 EXPORT_SYMBOL(__thread_create);
 
-/*
- * spl_kthread_create - Wrapper providing pre-3.13 semantics for
- * kthread_create() in which it is not killable and less likely
- * to return -ENOMEM.
- */
+ 
 struct task_struct *
 spl_kthread_create(int (*func)(void *), void *data, const char namefmt[], ...)
 {
@@ -150,16 +114,7 @@ spl_kthread_create(int (*func)(void *), void *data, const char namefmt[], ...)
 }
 EXPORT_SYMBOL(spl_kthread_create);
 
-/*
- * The "why" argument indicates the allowable side-effects of the call:
- *
- * FORREAL:  Extract the next pending signal from p_sig into p_cursig;
- * stop the process if a stop has been requested or if a traced signal
- * is pending.
- *
- * JUSTLOOKING:  Don't stop the process, just indicate whether or not
- * a signal might be pending (FORREAL is needed to tell for sure).
- */
+ 
 int
 issig(int why)
 {

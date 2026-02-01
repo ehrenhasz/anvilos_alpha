@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  TW5864 driver - core functions
- *
- *  Copyright (C) 2016 Bluecherry, LLC <maintainers@bluecherrydvr.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/list.h>
@@ -29,46 +25,15 @@ MODULE_AUTHOR("Bluecherry Maintainers <maintainers@bluecherrydvr.com>");
 MODULE_AUTHOR("Andrey Utkin <andrey.utkin@corp.bluecherry.net>");
 MODULE_LICENSE("GPL");
 
-/*
- * BEWARE OF KNOWN ISSUES WITH VIDEO QUALITY
- *
- * This driver was developed by Bluecherry LLC by deducing behaviour of
- * original manufacturer's driver, from both source code and execution traces.
- * It is known that there are some artifacts on output video with this driver:
- *  - on all known hardware samples: random pixels of wrong color (mostly
- *    white, red or blue) appearing and disappearing on sequences of P-frames;
- *  - on some hardware samples (known with H.264 core version e006:2800):
- *    total madness on P-frames: blocks of wrong luminance; blocks of wrong
- *    colors "creeping" across the picture.
- * There is a workaround for both issues: avoid P-frames by setting GOP size
- * to 1. To do that, run this command on device files created by this driver:
- *
- * v4l2-ctl --device /dev/videoX --set-ctrl=video_gop_size=1
- *
- * These issues are not decoding errors; all produced H.264 streams are decoded
- * properly. Streams without P-frames don't have these artifacts so it's not
- * analog-to-digital conversion issues nor internal memory errors; we conclude
- * it's internal H.264 encoder issues.
- * We cannot even check the original driver's behaviour because it has never
- * worked properly at all in our development environment. So these issues may
- * be actually related to firmware or hardware. However it may be that there's
- * just some more register settings missing in the driver which would please
- * the hardware.
- * Manufacturer didn't help much on our inquiries, but feel free to disturb
- * again the support of Intersil (owner of former Techwell).
- */
+ 
 
-/* take first free /dev/videoX indexes by default */
+ 
 static unsigned int video_nr[] = {[0 ... (TW5864_INPUTS - 1)] = -1 };
 
 module_param_array(video_nr, int, NULL, 0444);
 MODULE_PARM_DESC(video_nr, "video devices numbers array");
 
-/*
- * Please add any new PCI IDs to: https://pci-ids.ucw.cz.  This keeps
- * the PCI ID database up to date.  Note that the entries must be
- * added under vendor 0x1797 (Techwell Inc.) as subsystem IDs.
- */
+ 
 static const struct pci_device_id tw5864_pci_tbl[] = {
 	{PCI_DEVICE(PCI_VENDOR_ID_TECHWELL, PCI_DEVICE_ID_TECHWELL_5864)},
 	{0,}
@@ -167,7 +132,7 @@ static void tw5864_h264_isr(struct tw5864_dev *dev)
 	tw_writel(TW5864_VLC_STREAM_BASE_ADDR, cur_frame->vlc.dma_addr);
 	tw_writel(TW5864_MV_STREAM_BASE_ADDR, cur_frame->mv.dma_addr);
 
-	/* Additional ack for this interrupt */
+	 
 	tw_writel(TW5864_VLC_DSP_INTR, 0x00000001);
 	tw_writel(TW5864_PCI_INTR_STATUS, TW5864_VLC_DONE_INTR);
 }
@@ -183,7 +148,7 @@ static void tw5864_timer_isr(struct tw5864_dev *dev)
 	int i;
 	int encoder_busy;
 
-	/* Additional ack for this interrupt */
+	 
 	tw_writel(TW5864_PCI_INTR_STATUS, TW5864_TIMER_INTR);
 
 	spin_lock_irqsave(&dev->slock, flags);
@@ -193,20 +158,17 @@ static void tw5864_timer_isr(struct tw5864_dev *dev)
 	if (encoder_busy)
 		return;
 
-	/*
-	 * Traversing inputs in round-robin fashion, starting from next to the
-	 * last processed one
-	 */
+	 
 	for (i = 0; i < TW5864_INPUTS; i++) {
 		int next_input = (i + dev->next_input) % TW5864_INPUTS;
 		struct tw5864_input *input = &dev->inputs[next_input];
-		int raw_buf_id; /* id of internal buf with last raw frame */
+		int raw_buf_id;  
 
 		spin_lock_irqsave(&input->slock, flags);
 		if (!input->enabled)
 			goto next;
 
-		/* Check if new raw frame is available */
+		 
 		raw_buf_id = tw_mask_shift_readl(TW5864_SENIF_ORG_FRM_PTR1, 0x3,
 						 2 * input->nr);
 
@@ -224,9 +186,9 @@ static void tw5864_timer_isr(struct tw5864_dev *dev)
 			break;
 		}
 
-		/* No new raw frame; check if channel is stuck */
+		 
 		if (time_is_after_jiffies(input->new_frame_deadline)) {
-			/* If stuck, request new raw frames again */
+			 
 			tw_mask_shift_writel(TW5864_ENC_BUF_PTR_REC1, 0x3,
 					     2 * input->nr, input->buf_id + 3);
 			tw5864_input_deadline_update(input);
@@ -252,7 +214,7 @@ static int tw5864_initdev(struct pci_dev *pci_dev,
 	if (err)
 		return err;
 
-	/* pci init */
+	 
 	dev->pci = pci_dev;
 	err = pcim_enable_device(pci_dev);
 	if (err) {
@@ -268,7 +230,7 @@ static int tw5864_initdev(struct pci_dev *pci_dev,
 		goto unreg_v4l2;
 	}
 
-	/* get mmio */
+	 
 	err = pcim_iomap_regions(pci_dev, BIT(0), dev->name);
 	if (err) {
 		dev_err(&dev->pci->dev, "Cannot request regions for MMIO\n");
@@ -288,7 +250,7 @@ static int tw5864_initdev(struct pci_dev *pci_dev,
 	if (err)
 		goto unreg_v4l2;
 
-	/* get irq */
+	 
 	err = devm_request_irq(&pci_dev->dev, pci_dev->irq, tw5864_isr,
 			       IRQF_SHARED, "tw5864", dev);
 	if (err < 0) {
@@ -314,10 +276,10 @@ static void tw5864_finidev(struct pci_dev *pci_dev)
 	struct tw5864_dev *dev =
 		container_of(v4l2_dev, struct tw5864_dev, v4l2_dev);
 
-	/* shutdown subsystems */
+	 
 	tw5864_interrupts_disable(dev);
 
-	/* unregister */
+	 
 	tw5864_video_fini(dev);
 
 	v4l2_device_unregister(&dev->v4l2_dev);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra host1x opcodes
- *
- * Copyright (c) 2022 NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef __HOST1X_OPCODES_H
 #define __HOST1X_OPCODES_H

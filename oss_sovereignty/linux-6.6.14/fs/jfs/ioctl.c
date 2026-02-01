@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/jfs/ioctl.c
- *
- * Copyright (C) 2006 Herbert Poetzl
- * adapted from Remy Card's ext2/ioctl.c
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/ctype.h>
@@ -87,7 +82,7 @@ int jfs_fileattr_set(struct mnt_idmap *idmap,
 	if (!S_ISDIR(inode->i_mode))
 		flags &= ~JFS_DIRSYNC_FL;
 
-	/* Is it quota file? Do not allow user to mess with it */
+	 
 	if (IS_NOQUOTA(inode))
 		return -EPERM;
 

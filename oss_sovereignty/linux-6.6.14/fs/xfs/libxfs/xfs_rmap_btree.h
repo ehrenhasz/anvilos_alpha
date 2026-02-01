@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Red Hat, Inc.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_RMAP_BTREE_H__
 #define __XFS_RMAP_BTREE_H__
 
@@ -11,14 +8,10 @@ struct xfs_btree_cur;
 struct xfs_mount;
 struct xbtree_afakeroot;
 
-/* rmaps only exist on crc enabled filesystems */
+ 
 #define XFS_RMAP_BLOCK_LEN	XFS_BTREE_SBLOCK_CRC_LEN
 
-/*
- * Record, key, and pointer address macros for btree blocks.
- *
- * (note that some of these may appear unused, but they are used in userspace)
- */
+ 
 #define XFS_RMAP_REC_ADDR(block, index) \
 	((struct xfs_rmap_rec *) \
 		((char *)(block) + XFS_RMAP_BLOCK_LEN + \
@@ -64,4 +57,4 @@ unsigned int xfs_rmapbt_maxlevels_ondisk(void);
 int __init xfs_rmapbt_init_cur_cache(void);
 void xfs_rmapbt_destroy_cur_cache(void);
 
-#endif /* __XFS_RMAP_BTREE_H__ */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020-2021, Linaro Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -22,10 +19,7 @@ enum {
 	WEST
 };
 
-/*
- * ACPI DSDT has one single memory resource for TLMM.  The offsets below are
- * used to locate different tiles for ACPI probe.
- */
+ 
 struct tile_info {
 	u32 offset;
 	u32 size;
@@ -44,7 +38,7 @@ static const struct tile_info sc8180x_tile_info[] = {
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -1362,11 +1356,7 @@ static const struct pinfunction sc8180x_functions[] = {
 	MSM_PIN_FUNCTION(wmss_reset),
 };
 
-/* Every pin is maintained as a single group, and missing or non-existing pin
- * would be maintained as dummy group to synchronize pin group index with
- * pin descriptor registered with pinctrl core.
- * Clients would not be able to request these dummy pin groups.
- */
+ 
 static const struct msm_pingroup sc8180x_groups[] = {
 	[0] = PINGROUP(0, WEST, qup0, cci_i2c, _, _, _, _, _, _, _),
 	[1] = PINGROUP(1, WEST, qup0, cci_i2c, _, _, _, _, _, _, _),
@@ -1568,7 +1558,7 @@ static const int sc8180x_acpi_reserved_gpios[] = {
 	0, 1, 2, 3,
 	47, 48, 49, 50,
 	126, 127, 128, 129,
-	-1 /* terminator */
+	-1  
 };
 
 static const struct msm_gpio_wakeirq_map sc8180x_pdc_map[] = {
@@ -1613,12 +1603,7 @@ static const struct msm_pinctrl_soc_data sc8180x_acpi_pinctrl = {
 	.ngpios = 190,
 };
 
-/*
- * ACPI DSDT has one single memory resource for TLMM, which violates the
- * hardware layout of 3 separate tiles.  Let's split the memory resource into
- * 3 named ones, so that msm_pinctrl_probe() can map memory for ACPI in the
- * same way as for DT probe.
- */
+ 
 static int sc8180x_pinctrl_add_tile_resources(struct platform_device *pdev)
 {
 	int nres_num = pdev->num_resources + ARRAY_SIZE(sc8180x_tiles) - 1;
@@ -1626,14 +1611,11 @@ static int sc8180x_pinctrl_add_tile_resources(struct platform_device *pdev)
 	struct resource *nres, *res;
 	int i, ret;
 
-	/*
-	 * DT already has tiles defined properly, so nothing needs to be done
-	 * for DT probe.
-	 */
+	 
 	if (pdev->dev.of_node)
 		return 0;
 
-	/* Allocate for new resources */
+	 
 	nres = devm_kzalloc(&pdev->dev, sizeof(*nres) * nres_num, GFP_KERNEL);
 	if (!nres)
 		return -ENOMEM;
@@ -1643,7 +1625,7 @@ static int sc8180x_pinctrl_add_tile_resources(struct platform_device *pdev)
 	for (i = 0; i < pdev->num_resources; i++) {
 		struct resource *r = &pdev->resource[i];
 
-		/* Save memory resource and copy others */
+		 
 		if (resource_type(r) == IORESOURCE_MEM)
 			mres = r;
 		else
@@ -1653,7 +1635,7 @@ static int sc8180x_pinctrl_add_tile_resources(struct platform_device *pdev)
 	if (!mres)
 		return -EINVAL;
 
-	/* Append tile memory resources */
+	 
 	for (i = 0; i < ARRAY_SIZE(sc8180x_tiles); i++, res++) {
 		const struct tile_info *info = &sc8180x_tile_info[i];
 
@@ -1662,14 +1644,14 @@ static int sc8180x_pinctrl_add_tile_resources(struct platform_device *pdev)
 		res->flags = mres->flags;
 		res->name = sc8180x_tiles[i];
 
-		/* Add new MEM to resource tree */
+		 
 		insert_resource(mres->parent, res);
 	}
 
-	/* Remove old MEM from resource tree */
+	 
 	remove_resource(mres);
 
-	/* Free old resources and install new ones */
+	 
 	ret = platform_device_add_resources(pdev, nres, nres_num);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to add new resources: %d\n", ret);

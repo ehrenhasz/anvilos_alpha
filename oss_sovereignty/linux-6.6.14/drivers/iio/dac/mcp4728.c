@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for Microchip MCP4728
- *
- * Copyright (C) 2023 Andrea Collamati <andrea.collamati@gmail.com>
- *
- * Based on mcp4725 by Peter Meerwald <pmeerw@pmeerw.net>
- *
- * Driver for the Microchip I2C 12-bit digital-to-analog quad channels
- * converter (DAC).
- *
- * (7-bit I2C slave address 0x60, the three LSBs can be configured in
- * hardware)
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -40,8 +28,8 @@
 
 #define MCP4728_RDY_MASK	  BIT(7)
 
-#define MCP4728_MW_CMD		  0x08 /* Multiwrite Command */
-#define MCP4728_SW_CMD		  0x0A /* Sequential Write Command with EEPROM */
+#define MCP4728_MW_CMD		  0x08  
+#define MCP4728_SW_CMD		  0x0A  
 
 #define MCP4728_READ_RESPONSE_LEN (MCP4728_N_CHANNELS * 3 * 2)
 #define MCP4728_WRITE_EEPROM_LEN  (1 + MCP4728_N_CHANNELS * 2)
@@ -69,12 +57,7 @@ struct mcp4728_channel_data {
 	u16 dac_value;
 };
 
-/* MCP4728 Full Scale Ranges
- * the device available ranges are
- * - VREF = VDD				FSR = from 0.0V to VDD
- * - VREF = Internal	Gain = 1	FSR = from 0.0V to VREF
- * - VREF = Internal	Gain = 2	FSR = from 0.0V to 2*VREF
- */
+ 
 enum mcp4728_scale {
 	MCP4728_SCALE_VDD,
 	MCP4728_SCALE_VINT_NO_GAIN,
@@ -152,7 +135,7 @@ static ssize_t mcp4728_store_eeprom(struct device *dev,
 	else if (ret != MCP4728_WRITE_EEPROM_LEN)
 		return -EIO;
 
-	/* wait RDY signal for write complete, takes up to 50ms */
+	 
 	while (tries--) {
 		msleep(20);
 		ret = i2c_master_recv(data->client, inbuf, 3);
@@ -563,12 +546,7 @@ static int mcp4728_probe(struct i2c_client *client)
 	if (err)
 		return err;
 
-	/*
-	 * MCP4728 has internal EEPROM that save each channel boot
-	 * configuration. It means that device configuration is unknown to the
-	 * driver at kernel boot. mcp4728_init_channels_data() reads back DAC
-	 * settings and stores them in data structure.
-	 */
+	 
 	err = mcp4728_init_channels_data(data);
 	if (err) {
 		return dev_err_probe(&client->dev, err,

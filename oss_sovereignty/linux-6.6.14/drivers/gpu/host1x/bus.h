@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012-2013, NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef HOST1X_BUS_H
 #define HOST1X_BUS_H

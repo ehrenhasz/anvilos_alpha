@@ -1,30 +1,4 @@
-/*
- * Copyright 2006 Dave Airlie <airlied@linux.ie>
- * Copyright © 2006-2009 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Jesse Barnes <jesse.barnes@intel.com>
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/hdmi.h>
@@ -210,7 +184,7 @@ static void g4x_write_infoframe(struct intel_encoder *encoder,
 	drm_WARN(&dev_priv->drm, !(val & VIDEO_DIP_ENABLE),
 		 "Writing DIP with CTL reg disabled\n");
 
-	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf); /* clear DIP data offset */
+	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf);  
 	val |= g4x_infoframe_index(type);
 
 	val &= ~g4x_infoframe_enable(type);
@@ -221,7 +195,7 @@ static void g4x_write_infoframe(struct intel_encoder *encoder,
 		intel_de_write(dev_priv, VIDEO_DIP_DATA, *data);
 		data++;
 	}
-	/* Write every possible data byte to force correct ECC calculation. */
+	 
 	for (; i < VIDEO_DIP_DATA_SIZE; i += 4)
 		intel_de_write(dev_priv, VIDEO_DIP_DATA, 0);
 
@@ -280,7 +254,7 @@ static void ibx_write_infoframe(struct intel_encoder *encoder,
 	drm_WARN(&dev_priv->drm, !(val & VIDEO_DIP_ENABLE),
 		 "Writing DIP with CTL reg disabled\n");
 
-	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf); /* clear DIP data offset */
+	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf);  
 	val |= g4x_infoframe_index(type);
 
 	val &= ~g4x_infoframe_enable(type);
@@ -292,7 +266,7 @@ static void ibx_write_infoframe(struct intel_encoder *encoder,
 			       *data);
 		data++;
 	}
-	/* Write every possible data byte to force correct ECC calculation. */
+	 
 	for (; i < VIDEO_DIP_DATA_SIZE; i += 4)
 		intel_de_write(dev_priv, TVIDEO_DIP_DATA(crtc->pipe), 0);
 
@@ -355,11 +329,10 @@ static void cpt_write_infoframe(struct intel_encoder *encoder,
 	drm_WARN(&dev_priv->drm, !(val & VIDEO_DIP_ENABLE),
 		 "Writing DIP with CTL reg disabled\n");
 
-	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf); /* clear DIP data offset */
+	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf);  
 	val |= g4x_infoframe_index(type);
 
-	/* The DIP control register spec says that we need to update the AVI
-	 * infoframe without clearing its enable bit */
+	 
 	if (type != HDMI_INFOFRAME_TYPE_AVI)
 		val &= ~g4x_infoframe_enable(type);
 
@@ -370,7 +343,7 @@ static void cpt_write_infoframe(struct intel_encoder *encoder,
 			       *data);
 		data++;
 	}
-	/* Write every possible data byte to force correct ECC calculation. */
+	 
 	for (; i < VIDEO_DIP_DATA_SIZE; i += 4)
 		intel_de_write(dev_priv, TVIDEO_DIP_DATA(crtc->pipe), 0);
 
@@ -429,7 +402,7 @@ static void vlv_write_infoframe(struct intel_encoder *encoder,
 	drm_WARN(&dev_priv->drm, !(val & VIDEO_DIP_ENABLE),
 		 "Writing DIP with CTL reg disabled\n");
 
-	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf); /* clear DIP data offset */
+	val &= ~(VIDEO_DIP_SELECT_MASK | 0xf);  
 	val |= g4x_infoframe_index(type);
 
 	val &= ~g4x_infoframe_enable(type);
@@ -441,7 +414,7 @@ static void vlv_write_infoframe(struct intel_encoder *encoder,
 			       VLV_TVIDEO_DIP_DATA(crtc->pipe), *data);
 		data++;
 	}
-	/* Write every possible data byte to force correct ECC calculation. */
+	 
 	for (; i < VIDEO_DIP_DATA_SIZE; i += 4)
 		intel_de_write(dev_priv,
 			       VLV_TVIDEO_DIP_DATA(crtc->pipe), 0);
@@ -516,13 +489,13 @@ void hsw_write_infoframe(struct intel_encoder *encoder,
 			       *data);
 		data++;
 	}
-	/* Write every possible data byte to force correct ECC calculation. */
+	 
 	for (; i < data_size; i += 4)
 		intel_de_write(dev_priv,
 			       hsw_dip_data_reg(dev_priv, cpu_transcoder, type, i >> 2),
 			       0);
 
-	/* Wa_14013475917 */
+	 
 	if (IS_DISPLAY_VER(dev_priv, 13, 14) && crtc_state->has_psr && type == DP_SDP_VSC)
 		return;
 
@@ -595,7 +568,7 @@ u32 intel_hdmi_infoframes_enabled(struct intel_encoder *encoder,
 
 	val = dig_port->infoframes_enabled(encoder, crtc_state);
 
-	/* map from hardware bits to dip idx */
+	 
 	for (i = 0; i < ARRAY_SIZE(infoframe_type_to_idx); i++) {
 		unsigned int type = infoframe_type_to_idx[i];
 
@@ -611,23 +584,7 @@ u32 intel_hdmi_infoframes_enabled(struct intel_encoder *encoder,
 	return ret;
 }
 
-/*
- * The data we write to the DIP data buffer registers is 1 byte bigger than the
- * HDMI infoframe size because of an ECC/reserved byte at position 3 (starting
- * at 0). It's also a byte used by DisplayPort so the same DIP registers can be
- * used for both technologies.
- *
- * DW0: Reserved/ECC/DP | HB2 | HB1 | HB0
- * DW1:       DB3       | DB2 | DB1 | DB0
- * DW2:       DB7       | DB6 | DB5 | DB4
- * DW3: ...
- *
- * (HB is Header Byte, DB is Data Byte)
- *
- * The hdmi pack() functions don't know about that hardware specific hole so we
- * trick them by giving an offset into the buffer and moving back the header
- * bytes by one.
- */
+ 
 static void intel_write_infoframe(struct intel_encoder *encoder,
 				  const struct intel_crtc_state *crtc_state,
 				  enum hdmi_infoframe_type type,
@@ -644,12 +601,12 @@ static void intel_write_infoframe(struct intel_encoder *encoder,
 	if (drm_WARN_ON(encoder->base.dev, frame->any.type != type))
 		return;
 
-	/* see comment above for the reason for this offset */
+	 
 	len = hdmi_infoframe_pack_only(frame, buffer + 1, sizeof(buffer) - 1);
 	if (drm_WARN_ON(encoder->base.dev, len < 0))
 		return;
 
-	/* Insert the 'hole' (see big comment above) at position 3 */
+	 
 	memmove(&buffer[0], &buffer[1], 3);
 	buffer[3] = 0;
 	len++;
@@ -673,10 +630,10 @@ void intel_read_infoframe(struct intel_encoder *encoder,
 	dig_port->read_infoframe(encoder, crtc_state,
 				       type, buffer, sizeof(buffer));
 
-	/* Fill the 'hole' (see big comment above) at position 3 */
+	 
 	memmove(&buffer[1], &buffer[0], 3);
 
-	/* see comment above for the reason for this offset */
+	 
 	ret = hdmi_infoframe_unpack(frame, buffer + 1, sizeof(buffer) - 1);
 	if (ret) {
 		drm_dbg_kms(encoder->base.dev,
@@ -721,7 +678,7 @@ intel_hdmi_compute_avi_infoframe(struct intel_encoder *encoder,
 
 	drm_hdmi_avi_infoframe_colorimetry(frame, conn_state);
 
-	/* nonsense combination */
+	 
 	drm_WARN_ON(encoder->base.dev, crtc_state->limited_color_range &&
 		    crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB);
 
@@ -738,7 +695,7 @@ intel_hdmi_compute_avi_infoframe(struct intel_encoder *encoder,
 
 	drm_hdmi_avi_infoframe_content_type(frame, conn_state);
 
-	/* TODO: handle pixel repetition for YCBCR420 outputs */
+	 
 
 	ret = hdmi_avi_infoframe_check(frame);
 	if (drm_WARN_ON(encoder->base.dev, ret))
@@ -858,15 +815,7 @@ static void g4x_set_infoframes(struct intel_encoder *encoder,
 
 	assert_hdmi_port_disabled(intel_hdmi);
 
-	/* If the registers were not initialized yet, they might be zeroes,
-	 * which means we're selecting the AVI DIP and we're setting its
-	 * frequency to once. This seems to really confuse the HW and make
-	 * things stop working (the register spec says the AVI always needs to
-	 * be sent every VSync). So here we avoid writing to the register more
-	 * than we need and also explicitly select the AVI DIP and explicitly
-	 * set its frequency to every VSync. Avoiding to write it twice seems to
-	 * be enough to solve the problem, but being defensive shouldn't hurt us
-	 * either. */
+	 
 	val |= VIDEO_DIP_SELECT_AVI | VIDEO_DIP_FREQ_VSYNC;
 
 	if (!enable) {
@@ -914,16 +863,7 @@ static void g4x_set_infoframes(struct intel_encoder *encoder,
 			      &crtc_state->infoframes.hdmi);
 }
 
-/*
- * Determine if default_phase=1 can be indicated in the GCP infoframe.
- *
- * From HDMI specification 1.4a:
- * - The first pixel of each Video Data Period shall always have a pixel packing phase of 0
- * - The first pixel following each Video Data Period shall have a pixel packing phase of 0
- * - The PP bits shall be constant for all GCPs and will be equal to the last packing phase
- * - The first pixel following every transition of HSYNC or VSYNC shall have a pixel packing
- *   phase of 0
- */
+ 
 static bool gcp_default_phase_possible(int pipe_bpp,
 				       const struct drm_display_mode *mode)
 {
@@ -931,19 +871,19 @@ static bool gcp_default_phase_possible(int pipe_bpp,
 
 	switch (pipe_bpp) {
 	case 30:
-		/* 4 pixels in 5 clocks */
+		 
 		pixels_per_group = 4;
 		break;
 	case 36:
-		/* 2 pixels in 3 clocks */
+		 
 		pixels_per_group = 2;
 		break;
 	case 48:
-		/* 1 pixel in 2 clocks */
+		 
 		pixels_per_group = 1;
 		break;
 	default:
-		/* phase information not relevant for 8bpc */
+		 
 		return false;
 	}
 
@@ -1018,11 +958,11 @@ static void intel_hdmi_compute_gcp_infoframe(struct intel_encoder *encoder,
 	crtc_state->infoframes.enable |=
 		intel_hdmi_infoframe_enable(HDMI_PACKET_TYPE_GENERAL_CONTROL);
 
-	/* Indicate color indication for deep color mode */
+	 
 	if (crtc_state->pipe_bpp > 24)
 		crtc_state->infoframes.gcp |= GCP_COLOR_INDICATION;
 
-	/* Enable default_phase whenever the display mode is suitably aligned */
+	 
 	if (gcp_default_phase_possible(crtc_state->pipe_bpp,
 				       &crtc_state->hw.adjusted_mode))
 		crtc_state->infoframes.gcp |= GCP_DEFAULT_PHASE_ENABLE;
@@ -1043,7 +983,7 @@ static void ibx_set_infoframes(struct intel_encoder *encoder,
 
 	assert_hdmi_port_disabled(intel_hdmi);
 
-	/* See the big comment in g4x_set_infoframes() */
+	 
 	val |= VIDEO_DIP_SELECT_AVI | VIDEO_DIP_FREQ_VSYNC;
 
 	if (!enable) {
@@ -1100,7 +1040,7 @@ static void cpt_set_infoframes(struct intel_encoder *encoder,
 
 	assert_hdmi_port_disabled(intel_hdmi);
 
-	/* See the big comment in g4x_set_infoframes() */
+	 
 	val |= VIDEO_DIP_SELECT_AVI | VIDEO_DIP_FREQ_VSYNC;
 
 	if (!enable) {
@@ -1114,7 +1054,7 @@ static void cpt_set_infoframes(struct intel_encoder *encoder,
 		return;
 	}
 
-	/* Set both together, unset both together: see the spec. */
+	 
 	val |= VIDEO_DIP_ENABLE | VIDEO_DIP_ENABLE_AVI;
 	val &= ~(VIDEO_DIP_ENABLE_VENDOR | VIDEO_DIP_ENABLE_GAMUT |
 		 VIDEO_DIP_ENABLE_SPD | VIDEO_DIP_ENABLE_GCP);
@@ -1150,7 +1090,7 @@ static void vlv_set_infoframes(struct intel_encoder *encoder,
 
 	assert_hdmi_port_disabled(intel_hdmi);
 
-	/* See the big comment in g4x_set_infoframes() */
+	 
 	val |= VIDEO_DIP_SELECT_AVI | VIDEO_DIP_FREQ_VSYNC;
 
 	if (!enable) {
@@ -1501,7 +1441,7 @@ int intel_hdmi_hdcp_toggle_signalling(struct intel_digital_port *dig_port,
 	int ret;
 
 	if (!enable)
-		usleep_range(6, 60); /* Bspec says >= 6us */
+		usleep_range(6, 60);  
 
 	ret = intel_ddi_toggle_hdcp_bits(&dig_port->base,
 					 cpu_transcoder, enable,
@@ -1512,10 +1452,7 @@ int intel_hdmi_hdcp_toggle_signalling(struct intel_digital_port *dig_port,
 		return ret;
 	}
 
-	/*
-	 * WA: To fix incorrect positioning of the window of
-	 * opportunity and enc_en signalling in KABYLAKE.
-	 */
+	 
 	if (IS_KABYLAKE(dev_priv) && enable)
 		return kbl_repositioning_enc_en_signal(connector,
 						       cpu_transcoder);
@@ -1542,7 +1479,7 @@ bool intel_hdmi_hdcp_check_link_once(struct intel_digital_port *dig_port,
 
 	intel_de_write(i915, HDCP_RPRIME(i915, cpu_transcoder, port), ri.reg);
 
-	/* Wait for Ri prime match */
+	 
 	if (wait_for((intel_de_read(i915, HDCP_STATUS(i915, cpu_transcoder, port)) &
 		      (HDCP_STATUS_RI_MATCH | HDCP_STATUS_ENC)) ==
 		     (HDCP_STATUS_RI_MATCH | HDCP_STATUS_ENC), 1)) {
@@ -1689,10 +1626,7 @@ int intel_hdmi_hdcp2_read_msg(struct intel_digital_port *dig_port,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Available msg size should be equal to or lesser than the
-	 * available buffer.
-	 */
+	 
 	if (ret > size) {
 		drm_dbg_kms(&i915->drm,
 			    "msg_sz(%zd) is more than exp size(%zu)\n",
@@ -1720,10 +1654,7 @@ int intel_hdmi_hdcp2_check_link(struct intel_digital_port *dig_port,
 	if (ret)
 		return ret;
 
-	/*
-	 * Re-auth request and Link Integrity Failures are represented by
-	 * same bit. i.e reauth_req.
-	 */
+	 
 	if (HDCP_2_2_HDMI_RXSTATUS_REAUTH_REQ(rx_status[1]))
 		ret = HDCP_REAUTH_REQUEST;
 	else if (HDCP_2_2_HDMI_RXSTATUS_READY(rx_status[1]))
@@ -1840,34 +1771,28 @@ hdmi_port_clock_valid(struct intel_hdmi *hdmi,
 					  has_hdmi_sink))
 		return MODE_CLOCK_HIGH;
 
-	/* GLK DPLL can't generate 446-480 MHz */
+	 
 	if (IS_GEMINILAKE(dev_priv) && clock > 446666 && clock < 480000)
 		return MODE_CLOCK_RANGE;
 
-	/* BXT/GLK DPLL can't generate 223-240 MHz */
+	 
 	if ((IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv)) &&
 	    clock > 223333 && clock < 240000)
 		return MODE_CLOCK_RANGE;
 
-	/* CHV DPLL can't generate 216-240 MHz */
+	 
 	if (IS_CHERRYVIEW(dev_priv) && clock > 216000 && clock < 240000)
 		return MODE_CLOCK_RANGE;
 
-	/* ICL+ combo PHY PLL can't generate 500-533.2 MHz */
+	 
 	if (intel_phy_is_combo(dev_priv, phy) && clock > 500000 && clock < 533200)
 		return MODE_CLOCK_RANGE;
 
-	/* ICL+ TC PHY PLL can't generate 500-532.8 MHz */
+	 
 	if (intel_phy_is_tc(dev_priv, phy) && clock > 500000 && clock < 532800)
 		return MODE_CLOCK_RANGE;
 
-	/*
-	 * SNPS PHYs' MPLLB table-based programming can only handle a fixed
-	 * set of link rates.
-	 *
-	 * FIXME: We will hopefully get an algorithmic way of programming
-	 * the MPLLB for HDMI in the future.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 14)
 		return intel_cx0_phy_check_hdmi_link_rate(hdmi, clock);
 	else if (IS_DG2(dev_priv))
@@ -1879,15 +1804,11 @@ hdmi_port_clock_valid(struct intel_hdmi *hdmi,
 int intel_hdmi_tmds_clock(int clock, int bpc,
 			  enum intel_output_format sink_format)
 {
-	/* YCBCR420 TMDS rate requirement is half the pixel clock */
+	 
 	if (sink_format == INTEL_OUTPUT_FORMAT_YCBCR420)
 		clock /= 2;
 
-	/*
-	 * Need to adjust the port link by:
-	 *  1.5x for 12bpc
-	 *  1.25x for 10bpc
-	 */
+	 
 	return DIV_ROUND_CLOSEST(clock * bpc, 8);
 }
 
@@ -1948,11 +1869,7 @@ intel_hdmi_mode_clock_valid(struct drm_connector *connector, int clock,
 	enum drm_mode_status status = MODE_OK;
 	int bpc;
 
-	/*
-	 * Try all color depths since valid port clock range
-	 * can have holes. Any mode that can be used with at
-	 * least one color depth is accepted.
-	 */
+	 
 	for (bpc = 12; bpc >= 8; bpc -= 2) {
 		int tmds_clock = intel_hdmi_tmds_clock(clock, bpc, sink_format);
 
@@ -1967,7 +1884,7 @@ intel_hdmi_mode_clock_valid(struct drm_connector *connector, int clock,
 			return MODE_OK;
 	}
 
-	/* can never happen */
+	 
 	drm_WARN_ON(&i915->drm, status == MODE_OK);
 
 	return status;
@@ -2002,12 +1919,7 @@ intel_hdmi_mode_valid(struct drm_connector *connector,
 		clock *= 2;
 	}
 
-	/*
-	 * HDMI2.1 requires higher resolution modes like 8k60, 4K120 to be
-	 * enumerated only if FRL is supported. Current platforms do not support
-	 * FRL so prune the higher resolution modes that require doctclock more
-	 * than 600MHz.
-	 */
+	 
 	if (clock > 600000)
 		return MODE_CLOCK_HIGH;
 
@@ -2064,7 +1976,7 @@ static bool hdmi_bpc_possible(const struct intel_crtc_state *crtc_state, int bpc
 	if (!intel_hdmi_source_bpc_possible(dev_priv, bpc))
 		return false;
 
-	/* Display Wa_1405510057:icl,ehl */
+	 
 	if (intel_hdmi_is_ycbcr420(crtc_state) &&
 	    bpc == 10 && DISPLAY_VER(dev_priv) == 11 &&
 	    (adjusted_mode->crtc_hblank_end -
@@ -2081,17 +1993,10 @@ static int intel_hdmi_compute_bpc(struct intel_encoder *encoder,
 	struct intel_hdmi *intel_hdmi = enc_to_intel_hdmi(encoder);
 	int bpc;
 
-	/*
-	 * pipe_bpp could already be below 8bpc due to FDI
-	 * bandwidth constraints. HDMI minimum is 8bpc however.
-	 */
+	 
 	bpc = max(crtc_state->pipe_bpp / 3, 8);
 
-	/*
-	 * We will never exceed downstream TMDS clock limits while
-	 * attempting deep color. If the user insists on forcing an
-	 * out of spec mode they will have to be satisfied with 8bpc.
-	 */
+	 
 	if (!respect_downstream_limits)
 		bpc = 8;
 
@@ -2129,11 +2034,7 @@ static int intel_hdmi_compute_clock(struct intel_encoder *encoder,
 	crtc_state->port_clock =
 		intel_hdmi_tmds_clock(clock, bpc, crtc_state->sink_format);
 
-	/*
-	 * pipe_bpp could already be below 8bpc due to
-	 * FDI bandwidth constraints. We shouldn't bump it
-	 * back up to the HDMI minimum 8bpc in that case.
-	 */
+	 
 	crtc_state->pipe_bpp = min(crtc_state->pipe_bpp, bpc * 3);
 
 	drm_dbg_kms(&i915->drm,
@@ -2151,18 +2052,12 @@ bool intel_hdmi_limited_color_range(const struct intel_crtc_state *crtc_state,
 	const struct drm_display_mode *adjusted_mode =
 		&crtc_state->hw.adjusted_mode;
 
-	/*
-	 * Our YCbCr output is always limited range.
-	 * crtc_state->limited_color_range only applies to RGB,
-	 * and it must never be set for YCbCr or we risk setting
-	 * some conflicting bits in TRANSCONF which will mess up
-	 * the colors on the monitor.
-	 */
+	 
 	if (crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB)
 		return false;
 
 	if (intel_conn_state->broadcast_rgb == INTEL_BROADCAST_RGB_AUTO) {
-		/* See CEA-861-E - 5.1 Default Encoding Parameters */
+		 
 		return crtc_state->has_hdmi_sink &&
 			drm_default_rgb_quant_range(adjusted_mode) ==
 			HDMI_QUANTIZATION_RANGE_LIMITED;
@@ -2254,20 +2149,7 @@ static bool intel_hdmi_is_cloned(const struct intel_crtc_state *crtc_state)
 
 static bool source_supports_scrambling(struct intel_encoder *encoder)
 {
-	/*
-	 * Gen 10+ support HDMI 2.0 : the max tmds clock is 594MHz, and
-	 * scrambling is supported.
-	 * But there seem to be cases where certain platforms that support
-	 * HDMI 2.0, have an HDMI1.4 retimer chip, and the max tmds clock is
-	 * capped by VBT to less than 340MHz.
-	 *
-	 * In such cases when an HDMI2.0 sink is connected, it creates a
-	 * problem : the platform and the sink both support scrambling but the
-	 * HDMI 1.4 retimer chip doesn't.
-	 *
-	 * So go for scrambling, based on the max tmds clock taking into account,
-	 * restrictions coming from VBT.
-	 */
+	 
 	return intel_hdmi_source_max_tmds_clock(encoder) > 340000;
 }
 
@@ -2310,10 +2192,7 @@ int intel_hdmi_compute_config(struct intel_encoder *encoder,
 		intel_hdmi_has_audio(encoder, pipe_config, conn_state) &&
 		intel_audio_compute_config(encoder, pipe_config, conn_state);
 
-	/*
-	 * Try to respect downstream TMDS clock limits first, if
-	 * that fails assume the user might know something we don't.
-	 */
+	 
 	ret = intel_hdmi_compute_output_format(encoder, pipe_config, conn_state, true);
 	if (ret)
 		ret = intel_hdmi_compute_output_format(encoder, pipe_config, conn_state, false);
@@ -2379,10 +2258,7 @@ void intel_hdmi_encoder_shutdown(struct intel_encoder *encoder)
 {
 	struct intel_hdmi *intel_hdmi = enc_to_intel_hdmi(encoder);
 
-	/*
-	 * Give a hand to buggy BIOSen which forget to turn
-	 * the TMDS output buffers back on after a reboot.
-	 */
+	 
 	intel_dp_dual_mode_set_tmds_output(intel_hdmi, true);
 }
 
@@ -2408,15 +2284,7 @@ intel_hdmi_dp_dual_mode_detect(struct drm_connector *connector)
 		intel_gmbus_get_adapter(dev_priv, hdmi->ddc_bus);
 	enum drm_dp_dual_mode_type type = drm_dp_dual_mode_detect(&dev_priv->drm, adapter);
 
-	/*
-	 * Type 1 DVI adaptors are not required to implement any
-	 * registers, so we can't always detect their presence.
-	 * Ideally we should be able to check the state of the
-	 * CONFIG1 pin, but no such luck on our hardware.
-	 *
-	 * The only method left to us is to check the VBT to see
-	 * if the port is a dual mode capable DP port.
-	 */
+	 
 	if (type == DRM_DP_DUAL_MODE_UNKNOWN) {
 		if (!connector->force &&
 		    intel_bios_encoder_supports_dp_dual_mode(encoder->devdata)) {
@@ -2440,7 +2308,7 @@ intel_hdmi_dp_dual_mode_detect(struct drm_connector *connector)
 		    drm_dp_get_dual_mode_type_name(type),
 		    hdmi->dp_dual_mode.max_tmds_clock);
 
-	/* Older VBTs are often buggy and can't be trusted :( Play it safe. */
+	 
 	if ((DISPLAY_VER(dev_priv) >= 8 || IS_HASWELL(dev_priv)) &&
 	    !intel_bios_encoder_supports_dp_dual_mode(encoder->devdata)) {
 		drm_dbg_kms(&dev_priv->drm,
@@ -2474,12 +2342,12 @@ intel_hdmi_set_edid(struct drm_connector *connector)
 		intel_gmbus_force_bit(i2c, false);
 	}
 
-	/* Below we depend on display info having been updated */
+	 
 	drm_edid_connector_update(connector, drm_edid);
 
 	to_intel_connector(connector)->detect_edid = drm_edid;
 
-	/* FIXME: Get rid of drm_edid_raw() */
+	 
 	edid = drm_edid_raw(drm_edid);
 	if (edid && edid->input & DRM_EDID_INPUT_DIGITAL) {
 		intel_hdmi_dp_dual_mode_detect(connector);
@@ -2526,10 +2394,7 @@ out:
 	if (status != connector_status_connected)
 		cec_notifier_phys_addr_invalidate(intel_hdmi->cec_notifier);
 
-	/*
-	 * Make sure the refs for power wells enabled during detect are
-	 * dropped to avoid a new detect cycle triggered by HPD polling.
-	 */
+	 
 	intel_display_power_flush_work(dev_priv);
 
 	return status;
@@ -2553,7 +2418,7 @@ intel_hdmi_force(struct drm_connector *connector)
 
 static int intel_hdmi_get_modes(struct drm_connector *connector)
 {
-	/* drm_edid_connector_update() done in ->detect() or ->force() */
+	 
 	return drm_edid_connector_add_modes(connector);
 }
 
@@ -2661,24 +2526,7 @@ intel_hdmi_add_properties(struct intel_hdmi *intel_hdmi, struct drm_connector *c
 		drm_connector_attach_max_bpc_property(connector, 8, 12);
 }
 
-/*
- * intel_hdmi_handle_sink_scrambling: handle sink scrambling/clock ratio setup
- * @encoder: intel_encoder
- * @connector: drm_connector
- * @high_tmds_clock_ratio = bool to indicate if the function needs to set
- *  or reset the high tmds clock ratio for scrambling
- * @scrambling: bool to Indicate if the function needs to set or reset
- *  sink scrambling
- *
- * This function handles scrambling on HDMI 2.0 capable sinks.
- * If required clock rate is > 340 Mhz && scrambling is supported by sink
- * it enables scrambling. This should be called before enabling the HDMI
- * 2.0 port, as the sink can choose to disable the scrambling if it doesn't
- * detect a scrambled clock within 100 ms.
- *
- * Returns:
- * True on success, false on failure.
- */
+ 
 bool intel_hdmi_handle_sink_scrambling(struct intel_encoder *encoder,
 				       struct drm_connector *connector,
 				       bool high_tmds_clock_ratio,
@@ -2696,7 +2544,7 @@ bool intel_hdmi_handle_sink_scrambling(struct intel_encoder *encoder,
 		    connector->base.id, connector->name,
 		    str_yes_no(scrambling), high_tmds_clock_ratio ? 40 : 10);
 
-	/* Set TMDS bit clock ratio to 1/40 or 1/10, and enable/disable scrambling */
+	 
 	return drm_scdc_set_high_tmds_clock_ratio(connector, high_tmds_clock_ratio) &&
 		drm_scdc_set_scrambling(connector, scrambling);
 }
@@ -2810,12 +2658,7 @@ static u8 rkl_port_to_ddc_pin(struct drm_i915_private *dev_priv, enum port port)
 
 	WARN_ON(port == PORT_C);
 
-	/*
-	 * Pin mapping for RKL depends on which PCH is present.  With TGP, the
-	 * final two outputs use type-c pins, even though they're actually
-	 * combo outputs.  With CMP, the traditional DDI A-D pins are used for
-	 * all outputs.
-	 */
+	 
 	if (INTEL_PCH_TYPE(dev_priv) >= PCH_TGP && phy >= PHY_C)
 		return GMBUS_PIN_9_TC1_ICP + phy - PHY_C;
 
@@ -2828,12 +2671,7 @@ static u8 gen9bc_tgp_port_to_ddc_pin(struct drm_i915_private *i915, enum port po
 
 	drm_WARN_ON(&i915->drm, port == PORT_A);
 
-	/*
-	 * Pin mapping for GEN9 BC depends on which PCH is present.  With TGP,
-	 * final two outputs use type-c pins, even though they're actually
-	 * combo outputs.  With CMP, the traditional DDI A-D pins are used for
-	 * all outputs.
-	 */
+	 
 	if (INTEL_PCH_TYPE(i915) >= PCH_TGP && phy >= PHY_C)
 		return GMBUS_PIN_9_TC1_ICP + phy - PHY_C;
 
@@ -2851,10 +2689,7 @@ static u8 adls_port_to_ddc_pin(struct drm_i915_private *dev_priv, enum port port
 
 	WARN_ON(port == PORT_B || port == PORT_C);
 
-	/*
-	 * Pin mapping for ADL-S requires TC pins for all combo phy outputs
-	 * except first combo output.
-	 */
+	 
 	if (phy == PHY_A)
 		return GMBUS_PIN_1_BXT;
 
@@ -3077,10 +2912,7 @@ void intel_hdmi_init_connector(struct intel_digital_port *dig_port,
 				    "HDCP init failed, skipping.\n");
 	}
 
-	/* For G4X desktop chip, PEG_BAND_GAP_DATA 3:0 must first be written
-	 * 0xd.  Failure to do so will result in spurious interrupts being
-	 * generated on the port when a cable is not attached.
-	 */
+	 
 	if (IS_G45(dev_priv)) {
 		u32 temp = intel_de_read(dev_priv, PEG_BAND_GAP_DATA);
 		intel_de_write(dev_priv, PEG_BAND_GAP_DATA,
@@ -3096,23 +2928,12 @@ void intel_hdmi_init_connector(struct intel_digital_port *dig_port,
 		drm_dbg_kms(&dev_priv->drm, "CEC notifier get failed\n");
 }
 
-/*
- * intel_hdmi_dsc_get_slice_height - get the dsc slice_height
- * @vactive: Vactive of a display mode
- *
- * @return: appropriate dsc slice height for a given mode.
- */
+ 
 int intel_hdmi_dsc_get_slice_height(int vactive)
 {
 	int slice_height;
 
-	/*
-	 * Slice Height determination : HDMI2.1 Section 7.7.5.2
-	 * Select smallest slice height >=96, that results in a valid PPS and
-	 * requires minimum padding lines required for final slice.
-	 *
-	 * Assumption : Vactive is even.
-	 */
+	 
 	for (slice_height = 96; slice_height <= vactive; slice_height += 2)
 		if (vactive % slice_height == 0)
 			return slice_height;
@@ -3120,40 +2941,25 @@ int intel_hdmi_dsc_get_slice_height(int vactive)
 	return 0;
 }
 
-/*
- * intel_hdmi_dsc_get_num_slices - get no. of dsc slices based on dsc encoder
- * and dsc decoder capabilities
- *
- * @crtc_state: intel crtc_state
- * @src_max_slices: maximum slices supported by the DSC encoder
- * @src_max_slice_width: maximum slice width supported by DSC encoder
- * @hdmi_max_slices: maximum slices supported by sink DSC decoder
- * @hdmi_throughput: maximum clock per slice (MHz) supported by HDMI sink
- *
- * @return: num of dsc slices that can be supported by the dsc encoder
- * and decoder.
- */
+ 
 int
 intel_hdmi_dsc_get_num_slices(const struct intel_crtc_state *crtc_state,
 			      int src_max_slices, int src_max_slice_width,
 			      int hdmi_max_slices, int hdmi_throughput)
 {
-/* Pixel rates in KPixels/sec */
+ 
 #define HDMI_DSC_PEAK_PIXEL_RATE		2720000
-/*
- * Rates at which the source and sink are required to process pixels in each
- * slice, can be two levels: either atleast 340000KHz or atleast 40000KHz.
- */
+ 
 #define HDMI_DSC_MAX_ENC_THROUGHPUT_0		340000
 #define HDMI_DSC_MAX_ENC_THROUGHPUT_1		400000
 
-/* Spec limits the slice width to 2720 pixels */
+ 
 #define MAX_HDMI_SLICE_WIDTH			2720
 	int kslice_adjust;
 	int adjusted_clk_khz;
 	int min_slices;
 	int target_slices;
-	int max_throughput; /* max clock freq. in khz per slice */
+	int max_throughput;  
 	int max_slice_width;
 	int slice_width;
 	int pixel_clock = crtc_state->hw.adjusted_mode.crtc_clock;
@@ -3161,26 +2967,14 @@ intel_hdmi_dsc_get_num_slices(const struct intel_crtc_state *crtc_state,
 	if (!hdmi_throughput)
 		return 0;
 
-	/*
-	 * Slice Width determination : HDMI2.1 Section 7.7.5.1
-	 * kslice_adjust factor for 4:2:0, and 4:2:2 formats is 0.5, where as
-	 * for 4:4:4 is 1.0. Multiplying these factors by 10 and later
-	 * dividing adjusted clock value by 10.
-	 */
+	 
 	if (crtc_state->output_format == INTEL_OUTPUT_FORMAT_YCBCR444 ||
 	    crtc_state->output_format == INTEL_OUTPUT_FORMAT_RGB)
 		kslice_adjust = 10;
 	else
 		kslice_adjust = 5;
 
-	/*
-	 * As per spec, the rate at which the source and the sink process
-	 * the pixels per slice are at two levels: atleast 340Mhz or 400Mhz.
-	 * This depends upon the pixel clock rate and output formats
-	 * (kslice adjust).
-	 * If pixel clock * kslice adjust >= 2720MHz slices can be processed
-	 * at max 340MHz, otherwise they can be processed at max 400MHz.
-	 */
+	 
 
 	adjusted_clk_khz = DIV_ROUND_UP(kslice_adjust * pixel_clock, 10);
 
@@ -3189,22 +2983,13 @@ intel_hdmi_dsc_get_num_slices(const struct intel_crtc_state *crtc_state,
 	else
 		max_throughput = HDMI_DSC_MAX_ENC_THROUGHPUT_1;
 
-	/*
-	 * Taking into account the sink's capability for maximum
-	 * clock per slice (in MHz) as read from HF-VSDB.
-	 */
+	 
 	max_throughput = min(max_throughput, hdmi_throughput * 1000);
 
 	min_slices = DIV_ROUND_UP(adjusted_clk_khz, max_throughput);
 	max_slice_width = min(MAX_HDMI_SLICE_WIDTH, src_max_slice_width);
 
-	/*
-	 * Keep on increasing the num of slices/line, starting from min_slices
-	 * per line till we get such a number, for which the slice_width is
-	 * just less than max_slice_width. The slices/line selected should be
-	 * less than or equal to the max horizontal slices that the combination
-	 * of PCON encoder and HDMI decoder can support.
-	 */
+	 
 	slice_width = max_slice_width;
 
 	do {
@@ -3231,19 +3016,7 @@ intel_hdmi_dsc_get_num_slices(const struct intel_crtc_state *crtc_state,
 	return target_slices;
 }
 
-/*
- * intel_hdmi_dsc_get_bpp - get the appropriate compressed bits_per_pixel based on
- * source and sink capabilities.
- *
- * @src_fraction_bpp: fractional bpp supported by the source
- * @slice_width: dsc slice width supported by the source and sink
- * @num_slices: num of slices supported by the source and sink
- * @output_format: video output format
- * @hdmi_all_bpp: sink supports decoding of 1/16th bpp setting
- * @hdmi_max_chunk_bytes: max bytes in a line of chunks supported by sink
- *
- * @return: compressed bits_per_pixel in step of 1/16 of bits_per_pixel
- */
+ 
 int
 intel_hdmi_dsc_get_bpp(int src_fractional_bpp, int slice_width, int num_slices,
 		       int output_format, bool hdmi_all_bpp,
@@ -3256,57 +3029,31 @@ intel_hdmi_dsc_get_bpp(int src_fractional_bpp, int slice_width, int num_slices,
 	int bpp_target;
 	int bpp_target_x16;
 
-	/*
-	 * Get min bpp and max bpp as per Table 7.23, in HDMI2.1 spec
-	 * Start with the max bpp and keep on decrementing with
-	 * fractional bpp, if supported by PCON DSC encoder
-	 *
-	 * for each bpp we check if no of bytes can be supported by HDMI sink
-	 */
+	 
 
-	/* Assuming: bpc as 8*/
+	 
 	if (output_format == INTEL_OUTPUT_FORMAT_YCBCR420) {
 		min_dsc_bpp = 6;
-		max_dsc_bpp = 3 * 4; /* 3*bpc/2 */
+		max_dsc_bpp = 3 * 4;  
 	} else if (output_format == INTEL_OUTPUT_FORMAT_YCBCR444 ||
 		   output_format == INTEL_OUTPUT_FORMAT_RGB) {
 		min_dsc_bpp = 8;
-		max_dsc_bpp = 3 * 8; /* 3*bpc */
+		max_dsc_bpp = 3 * 8;  
 	} else {
-		/* Assuming 4:2:2 encoding */
+		 
 		min_dsc_bpp = 7;
-		max_dsc_bpp = 2 * 8; /* 2*bpc */
+		max_dsc_bpp = 2 * 8;  
 	}
 
-	/*
-	 * Taking into account if all dsc_all_bpp supported by HDMI2.1 sink
-	 * Section 7.7.34 : Source shall not enable compressed Video
-	 * Transport with bpp_target settings above 12 bpp unless
-	 * DSC_all_bpp is set to 1.
-	 */
+	 
 	if (!hdmi_all_bpp)
 		max_dsc_bpp = min(max_dsc_bpp, 12);
 
-	/*
-	 * The Sink has a limit of compressed data in bytes for a scanline,
-	 * as described in max_chunk_bytes field in HFVSDB block of edid.
-	 * The no. of bytes depend on the target bits per pixel that the
-	 * source configures. So we start with the max_bpp and calculate
-	 * the target_chunk_bytes. We keep on decrementing the target_bpp,
-	 * till we get the target_chunk_bytes just less than what the sink's
-	 * max_chunk_bytes, or else till we reach the min_dsc_bpp.
-	 *
-	 * The decrement is according to the fractional support from PCON DSC
-	 * encoder. For fractional BPP we use bpp_target as a multiple of 16.
-	 *
-	 * bpp_target_x16 = bpp_target * 16
-	 * So we need to decrement by {1, 2, 4, 8, 16} for fractional bpps
-	 * {1/16, 1/8, 1/4, 1/2, 1} respectively.
-	 */
+	 
 
 	bpp_target = max_dsc_bpp;
 
-	/* src does not support fractional bpp implies decrement by 16 for bppx16 */
+	 
 	if (!src_fractional_bpp)
 		src_fractional_bpp = 1;
 	bpp_decrement_x16 = DIV_ROUND_UP(16, src_fractional_bpp);

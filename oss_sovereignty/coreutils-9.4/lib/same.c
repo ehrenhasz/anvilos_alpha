@@ -1,21 +1,4 @@
-/* Determine whether two file names refer to the same file.
-
-   Copyright (C) 1997-2000, 2002-2006, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Jim Meyering */
+ 
 
 #include <config.h>
 
@@ -44,17 +27,14 @@
 # define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-/* Whether file name components are silently truncated (behavior that
-   POSIX stopped allowing in 2008).  This enables checks whether
-   truncated base names are the same, while checking the directories.  */
+ 
 #if !_POSIX_NO_TRUNC && HAVE_FPATHCONF && defined _PC_NAME_MAX
 # define CHECK_TRUNCATION true
 #else
 # define CHECK_TRUNCATION false
 #endif
 
-/* Return nonzero if SOURCE and DEST point to the same name in the same
-   directory.  */
+ 
 
 bool
 same_name (const char *source, const char *dest)
@@ -62,14 +42,13 @@ same_name (const char *source, const char *dest)
   return same_nameat (AT_FDCWD, source, AT_FDCWD, dest);
 }
 
-/* Likewise, but interpret the file names relative to SOURCE_FD and DEST_FD,
-   in the style of openat.  */
+ 
 
 bool
 same_nameat (int source_dfd, char const *source,
              int dest_dfd, char const *dest)
 {
-  /* Compare the basenames.  */
+   
   char const *source_basename = last_component (source);
   char const *dest_basename = last_component (dest);
   size_t source_baselen = base_len (source_basename);
@@ -93,12 +72,12 @@ same_nameat (int source_dfd, char const *source,
       struct stat source_dir_stats;
       struct stat dest_dir_stats;
 
-      /* Compare the parent directories (via the device and inode numbers).  */
+       
       char *source_dirname = dir_name (source);
       int flags = AT_SYMLINK_NOFOLLOW;
       if (fstatat (source_dfd, source_dirname, &source_dir_stats, flags) != 0)
         {
-          /* Shouldn't happen.  */
+           
           error (1, errno, "%s", source_dirname);
         }
       free (source_dirname);
@@ -129,13 +108,13 @@ same_nameat (int source_dfd, char const *source,
       close (destdir_fd);
       if (destdir_errno != 0)
         {
-          /* Shouldn't happen.  */
+           
           error (1, destdir_errno, "%s", dest_dirname);
         }
 #else
       if (fstatat (dest_dfd, dest_dirname, &dest_dir_stats, flags) != 0)
         {
-          /* Shouldn't happen.  */
+           
           error (1, errno, "%s", dest_dirname);
         }
       same = SAME_INODE (source_dir_stats, dest_dir_stats);

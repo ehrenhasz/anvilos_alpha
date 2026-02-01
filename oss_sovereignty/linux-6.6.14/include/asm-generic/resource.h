@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_RESOURCE_H
 #define _ASM_GENERIC_RESOURCE_H
 
 #include <uapi/asm-generic/resource.h>
 
 
-/*
- * boot-time rlimit defaults for the init task:
- */
+ 
 #define INIT_RLIMITS							\
 {									\
 	[RLIMIT_CPU]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\

@@ -1,20 +1,4 @@
-/* Determine whether the current process is running under QEMU.
-   Copyright (C) 2021-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2021.  */
+ 
 
 #ifdef __linux__
 # include <fcntl.h>
@@ -22,18 +6,7 @@
 # include <unistd.h>
 #endif
 
-/* This function determines whether the current process is running under QEMU
-   (user-mode).
-
-   It does so by looking at parts of the environment that QEMU does not emulate
-   100% perfectly well.
-
-   For comparison, the techniques given in the paper
-     Thomas Raffetseder, Christopher Kruegel, Engin Kirda
-     "Detecting System Emulators"
-     2007
-     https://publik.tuwien.ac.at/files/pub-inf_5317.pdf
-   apply to both the QEMU system mode and QEMU user mode.  */
+ 
 
 static bool
 is_running_under_qemu_user (void)
@@ -90,8 +63,7 @@ is_running_under_qemu_user (void)
         }
     }
 
-  /* If you need more heuristics, look at system calls that are not perfectly
-     well emulated in qemu/linux-user/syscall.c.  */
+   
 #endif
 
   return false;

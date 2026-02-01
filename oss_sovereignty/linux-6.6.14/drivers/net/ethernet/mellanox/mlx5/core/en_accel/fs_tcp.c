@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include <mlx5_core.h>
 #include "en_accel/fs_tcp.h"
@@ -21,7 +21,7 @@ static enum mlx5_traffic_types fs_accel2tt(enum accel_fs_tcp_type i)
 	switch (i) {
 	case ACCEL_FS_IPV4_TCP:
 		return MLX5_TT_IPV4_TCP;
-	default: /* ACCEL_FS_IPV6_TCP */
+	default:  
 		return MLX5_TT_IPV6_TCP;
 	}
 }
@@ -240,7 +240,7 @@ static int accel_fs_tcp_create_groups(struct mlx5e_flow_table *ft,
 		goto err;
 	ft->num_groups++;
 
-	/* Default Flow Group */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5E_ACCEL_FS_TCP_GROUP2_SIZE;
@@ -306,7 +306,7 @@ static int accel_fs_tcp_disable(struct mlx5e_flow_steering *fs)
 	int err, i;
 
 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++) {
-		/* Modify ttc rules destination to point back to the indir TIRs */
+		 
 		err = mlx5_ttc_fwd_default_dest(ttc, fs_accel2tt(i));
 		if (err) {
 			fs_err(fs,
@@ -330,7 +330,7 @@ static int accel_fs_tcp_enable(struct mlx5e_flow_steering *fs)
 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++) {
 		dest.ft = accel_tcp->tables[i].t;
 
-		/* Modify ttc rules destination to point on the accel_fs FTs */
+		 
 		err = mlx5_ttc_fwd_dest(ttc, fs_accel2tt(i), &dest);
 		if (err) {
 			fs_err(fs, "%s: modify ttc[%d] destination to accel failed, err(%d)\n",

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
 
-/*
- * Functions to build and send ELS/CT/BLS commands and responses.
- */
+ 
+
+ 
 
 #include "efc.h"
 #include "efc_els.h"
@@ -57,14 +52,14 @@ efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
 		return NULL;
 	}
 
-	/* initialize refcount */
+	 
 	kref_init(&els->ref);
 	els->release = _efc_els_io_free;
 
-	/* populate generic io fields */
+	 
 	els->node = node;
 
-	/* now allocate DMA for request and response */
+	 
 	els->io.req.size = reqlen;
 	els->io.req.virt = dma_alloc_coherent(&efc->pci->dev, els->io.req.size,
 					      &els->io.req.phys, GFP_KERNEL);
@@ -84,10 +79,10 @@ efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
 	}
 
 	if (els) {
-		/* initialize fields */
+		 
 		els->els_retries_remaining = EFC_FC_ELS_DEFAULT_RETRIES;
 
-		/* add els structure to ELS IO list */
+		 
 		INIT_LIST_HEAD(&els->list_entry);
 		spin_lock_irqsave(&node->els_ios_lock, flags);
 		list_add_tail(&els->list_entry, &node->els_ios_list);
@@ -119,17 +114,13 @@ _efc_els_io_free(struct kref *arg)
 	spin_lock_irqsave(&node->els_ios_lock, flags);
 
 	list_del(&els->list_entry);
-	/* Send list empty event if the IO allocator
-	 * is disabled, and the list is empty
-	 * If node->els_io_enabled was not checked,
-	 * the event would be posted continually
-	 */
+	 
 	send_empty_event = (!node->els_io_enabled &&
 			   list_empty(&node->els_ios_list));
 
 	spin_unlock_irqrestore(&node->els_ios_lock, flags);
 
-	/* free ELS request and response buffers */
+	 
 	dma_free_coherent(&efc->pci->dev, els->io.rsp.size,
 			  els->io.rsp.virt, els->io.rsp.phys);
 	dma_free_coherent(&efc->pci->dev, els->io.req.size,
@@ -149,7 +140,7 @@ efc_els_delay_timer_cb(struct timer_list *t)
 {
 	struct efc_els_io_req *els = from_timer(els, t, delay_timer);
 
-	/* Retry delay timer expired, retry the ELS request */
+	 
 	efc_els_retry(els);
 }
 
@@ -169,7 +160,7 @@ efc_els_req_cb(void *arg, u32 length, int status, u32 ext_status)
 	if (status)
 		els_io_printf(els, "status x%x ext x%x\n", status, ext_status);
 
-	/* set the response len element of els->rsp */
+	 
 	els->io.rsp.len = length;
 
 	cbdata.status = status;
@@ -177,13 +168,10 @@ efc_els_req_cb(void *arg, u32 length, int status, u32 ext_status)
 	cbdata.header = NULL;
 	cbdata.els_rsp = els->io.rsp;
 
-	/* set the response len element of els->rsp */
+	 
 	cbdata.rsp_len = length;
 
-	/* FW returns the number of bytes received on the link in
-	 * the WCQE, not the amount placed in the buffer; use this info to
-	 * check if there was an overrun.
-	 */
+	 
 	if (length > els->io.rsp.size) {
 		efc_log_warn(efc,
 			     "ELS response returned len=%d > buflen=%zu\n",
@@ -192,7 +180,7 @@ efc_els_req_cb(void *arg, u32 length, int status, u32 ext_status)
 		return 0;
 	}
 
-	/* Post event to ELS IO object */
+	 
 	switch (status) {
 	case SLI4_FC_WCQE_STATUS_SUCCESS:
 		efc_els_io_cleanup(els, EFC_EVT_SRRS_ELS_REQ_OK, &cbdata);
@@ -201,7 +189,7 @@ efc_els_req_cb(void *arg, u32 length, int status, u32 ext_status)
 	case SLI4_FC_WCQE_STATUS_LS_RJT:
 		reason_code = (ext_status >> 16) & 0xff;
 
-		/* delay and retry if reason code is Logical Busy */
+		 
 		switch (reason_code) {
 		case ELS_RJT_BUSY:
 			els->node->els_req_cnt--;
@@ -232,7 +220,7 @@ efc_els_req_cb(void *arg, u32 length, int status, u32 ext_status)
 			break;
 		}
 		break;
-	default:	/* Other error */
+	default:	 
 		efc_log_warn(efc, "els req failed status x%x, ext_status x%x\n",
 			     status, ext_status);
 		efc_els_io_cleanup(els, EFC_EVT_SRRS_ELS_REQ_FAIL, &cbdata);
@@ -260,10 +248,10 @@ static int efc_els_send_req(struct efc_node *node, struct efc_els_io_req *els,
 	struct efc *efc = node->efc;
 	struct efc_node_cb cbdata;
 
-	/* update ELS request counter */
+	 
 	els->node->els_req_cnt++;
 
-	/* Prepare the IO request details */
+	 
 	els->io.io_type = io_type;
 	els->io.xmit_len = els->io.req.size;
 	els->io.rsp_len = els->io.rsp.size;
@@ -332,13 +320,13 @@ efc_els_acc_cb(void *arg, u32 length, int status, u32 ext_status)
 	cbdata.header = NULL;
 	cbdata.els_rsp = els->io.rsp;
 
-	/* Post node event */
+	 
 	switch (status) {
 	case SLI4_FC_WCQE_STATUS_SUCCESS:
 		efc_els_io_cleanup(els, EFC_EVT_SRRS_ELS_CMPL_OK, &cbdata);
 		break;
 
-	default:	/* Other error */
+	default:	 
 		efc_log_warn(efc, "[%s] %-8s failed status x%x, ext x%x\n",
 			     node->display_name, els->display_name,
 			     status, ext_status);
@@ -357,13 +345,13 @@ efc_els_send_rsp(struct efc_els_io_req *els, u32 rsplen)
 	struct efc_node *node = els->node;
 	struct efc *efc = node->efc;
 
-	/* increment ELS completion counter */
+	 
 	node->els_cmpl_cnt++;
 
 	els->io.io_type = EFC_DISC_IO_ELS_RESP;
 	els->cb = efc_els_acc_cb;
 
-	/* Prepare the IO request details */
+	 
 	els->io.xmit_len = rsplen;
 	els->io.rsp_len = els->io.rsp.size;
 	els->io.rpi = node->rnode.indicator;
@@ -405,7 +393,7 @@ efc_send_plogi(struct efc_node *node)
 	}
 	els->display_name = "plogi";
 
-	/* Build PLOGI request */
+	 
 	plogi = els->io.req.virt;
 
 	memcpy(plogi, node->nport->service_params, sizeof(*plogi));
@@ -435,7 +423,7 @@ efc_send_flogi(struct efc_node *node)
 
 	els->display_name = "flogi";
 
-	/* Build FLOGI request */
+	 
 	flogi = els->io.req.virt;
 
 	memcpy(flogi, node->nport->service_params, sizeof(*flogi));
@@ -464,7 +452,7 @@ efc_send_fdisc(struct efc_node *node)
 
 	els->display_name = "fdisc";
 
-	/* Build FDISC request */
+	 
 	fdisc = els->io.req.virt;
 
 	memcpy(fdisc, node->nport->service_params, sizeof(*fdisc));
@@ -494,7 +482,7 @@ efc_send_prli(struct efc_node *node)
 
 	els->display_name = "prli";
 
-	/* Build PRLI request */
+	 
 	pp = els->io.req.virt;
 
 	memset(pp, 0, sizeof(*pp));
@@ -534,7 +522,7 @@ efc_send_logo(struct efc_node *node)
 
 	els->display_name = "logo";
 
-	/* Build LOGO request */
+	 
 
 	logo = els->io.req.virt;
 
@@ -567,7 +555,7 @@ efc_send_adisc(struct efc_node *node)
 
 	els->display_name = "adisc";
 
-	/* Build ADISC request */
+	 
 
 	adisc = els->io.req.virt;
 
@@ -661,12 +649,12 @@ efc_send_plogi_acc(struct efc_node *node, u32 ox_id)
 
 	plogi = els->io.req.virt;
 
-	/* copy our port's service parameters to payload */
+	 
 	memcpy(plogi, node->nport->service_params, sizeof(*plogi));
 	plogi->fl_cmd = ELS_LS_ACC;
 	memset(plogi->_fl_resvd, 0, sizeof(plogi->_fl_resvd));
 
-	/* Set Application header support bit if requested */
+	 
 	if (req->fl_csp.sp_features & cpu_to_be16(FC_SP_FT_BCAST))
 		plogi->fl_csp.sp_features |= cpu_to_be16(FC_SP_FT_BCAST);
 
@@ -696,7 +684,7 @@ efc_send_flogi_p2p_acc(struct efc_node *node, u32 ox_id, u32 s_id)
 
 	flogi = els->io.req.virt;
 
-	/* copy our port's service parameters to payload */
+	 
 	memcpy(flogi, node->nport->service_params, sizeof(*flogi));
 	flogi->fl_cmd = ELS_LS_ACC;
 	memset(flogi->_fl_resvd, 0, sizeof(flogi->_fl_resvd));
@@ -858,7 +846,7 @@ efc_send_adisc_acc(struct efc_node *node, u32 ox_id)
 
 	els->display_name = "adisc_acc";
 
-	/* Go ahead and send the ELS_ACC */
+	 
 	memset(&els->io.iparam, 0, sizeof(els->io.iparam));
 	els->io.iparam.els.ox_id = ox_id;
 
@@ -881,7 +869,7 @@ fcct_build_req_header(struct fc_ct_hdr  *hdr, u16 cmd, u16 max_size)
 	hdr->ct_fs_subtype = FC_NS_SUBTYPE;
 	hdr->ct_options = 0;
 	hdr->ct_cmd = cpu_to_be16(cmd);
-	/* words */
+	 
 	hdr->ct_mr_size = cpu_to_be16(max_size / (sizeof(u32)));
 	hdr->ct_reason = 0;
 	hdr->ct_explan = 0;
@@ -1004,9 +992,7 @@ efc_ns_send_gidpt(struct efc_node *node)
 void
 efc_els_io_cleanup(struct efc_els_io_req *els, int evt, void *arg)
 {
-	/* don't want further events that could come; e.g. abort requests
-	 * from the node state machine; thus, disable state machine
-	 */
+	 
 	els->els_req_free = true;
 	efc_node_post_els_resp(els->node, evt, arg);
 
@@ -1048,7 +1034,7 @@ efc_send_ct_rsp(struct efc *efc, struct efc_node *node, u16 ox_id,
 	els->display_name = "ct_rsp";
 	els->cb = efc_ct_acc_cb;
 
-	/* Prepare the IO request details */
+	 
 	els->io.io_type = EFC_DISC_IO_CT_RESP;
 	els->io.xmit_len = sizeof(*rsp);
 

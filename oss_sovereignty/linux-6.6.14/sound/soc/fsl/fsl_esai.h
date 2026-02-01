@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fsl_esai.h - ALSA ESAI interface for the Freescale i.MX SoC
- *
- * Copyright (C) 2014 Freescale Semiconductor, Inc.
- *
- * Author: Nicolin Chen <Guangyu.Chen@freescale.com>
- */
+ 
+ 
 
 #ifndef _FSL_ESAI_DAI_H
 #define _FSL_ESAI_DAI_H
 
-/* ESAI Register Map */
+ 
 #define REG_ESAI_ETDR		0x00
 #define REG_ESAI_ERDR		0x04
 #define REG_ESAI_ECR		0x08
@@ -49,7 +43,7 @@
 #define REG_ESAI_PRRC		0xF8
 #define REG_ESAI_PCRC		0xFC
 
-/* ESAI Control Register -- REG_ESAI_ECR 0x8 */
+ 
 #define ESAI_ECR_ETI_SHIFT	19
 #define ESAI_ECR_ETI_MASK	(1 << ESAI_ECR_ETI_SHIFT)
 #define ESAI_ECR_ETI		(1 << ESAI_ECR_ETI_SHIFT)
@@ -69,7 +63,7 @@
 #define ESAI_ECR_ESAIEN_MASK	(1 << ESAI_ECR_ESAIEN_SHIFT)
 #define ESAI_ECR_ESAIEN		(1 << ESAI_ECR_ESAIEN_SHIFT)
 
-/* ESAI Status Register -- REG_ESAI_ESR 0xC */
+ 
 #define ESAI_ESR_TINIT_SHIFT	10
 #define ESAI_ESR_TINIT_MASK	(1 << ESAI_ESR_TINIT_SHIFT)
 #define ESAI_ESR_TINIT		(1 << ESAI_ESR_TINIT_SHIFT)
@@ -104,10 +98,7 @@
 #define ESAI_ESR_RD_MASK	(1 << ESAI_ESR_RD_SHIFT)
 #define ESAI_ESR_RD		(1 << ESAI_ESR_RD_SHIFT)
 
-/*
- * Transmit FIFO Configuration Register -- REG_ESAI_TFCR 0x10
- * Receive FIFO Configuration Register -- REG_ESAI_RFCR 0x18
- */
+ 
 #define ESAI_xFCR_TIEN_SHIFT	19
 #define ESAI_xFCR_TIEN_MASK	(1 << ESAI_xFCR_TIEN_SHIFT)
 #define ESAI_xFCR_TIEN		(1 << ESAI_xFCR_TIEN_SHIFT)
@@ -136,10 +127,7 @@
 #define ESAI_xFCR_xFEN_MASK	(1 << ESAI_xFCR_xFEN_SHIFT)
 #define ESAI_xFCR_xFEN		(1 << ESAI_xFCR_xFEN_SHIFT)
 
-/*
- * Transmit FIFO Status Register -- REG_ESAI_TFSR 0x14
- * Receive FIFO Status Register --REG_ESAI_RFSR 0x1C
- */
+ 
 #define ESAI_xFSR_NTFO_SHIFT	12
 #define ESAI_xFSR_NRFI_SHIFT	12
 #define ESAI_xFSR_NTFI_SHIFT	8
@@ -154,12 +142,12 @@
 #define ESAI_xFSR_xFCNT_WIDTH	8
 #define ESAI_xFSR_xFCNT_MASK	(((1 << ESAI_xFSR_xFCNT_WIDTH) - 1) << ESAI_xFSR_xFCNT_SHIFT)
 
-/* ESAI Transmit Slot Register -- REG_ESAI_TSR 0x98 */
+ 
 #define ESAI_TSR_SHIFT		0
 #define ESAI_TSR_WIDTH		24
 #define ESAI_TSR_MASK		(((1 << ESAI_TSR_WIDTH) - 1) << ESAI_TSR_SHIFT)
 
-/* Serial Audio Interface Status Register -- REG_ESAI_SAISR 0xCC */
+ 
 #define ESAI_SAISR_TODFE_SHIFT	17
 #define ESAI_SAISR_TODFE_MASK	(1 << ESAI_SAISR_TODFE_SHIFT)
 #define ESAI_SAISR_TODFE	(1 << ESAI_SAISR_TODFE_SHIFT)
@@ -200,7 +188,7 @@
 #define ESAI_SAISR_IF0_MASK	(1 << ESAI_SAISR_IF0_SHIFT)
 #define ESAI_SAISR_IF0		(1 << ESAI_SAISR_IF0_SHIFT)
 
-/* Serial Audio Interface Control Register -- REG_ESAI_SAICR 0xD0 */
+ 
 #define ESAI_SAICR_ALC_SHIFT	8
 #define ESAI_SAICR_ALC_MASK	(1 << ESAI_SAICR_ALC_SHIFT)
 #define ESAI_SAICR_ALC		(1 << ESAI_SAICR_ALC_SHIFT)
@@ -220,10 +208,7 @@
 #define ESAI_SAICR_OF0_MASK	(1 << ESAI_SAICR_OF0_SHIFT)
 #define ESAI_SAICR_OF0		(1 << ESAI_SAICR_OF0_SHIFT)
 
-/*
- * Transmit Control Register -- REG_ESAI_TCR 0xD4
- * Receive Control Register -- REG_ESAI_RCR 0xDC
- */
+ 
 #define ESAI_xCR_xLIE_SHIFT	23
 #define ESAI_xCR_xLIE_MASK	(1 << ESAI_xCR_xLIE_SHIFT)
 #define ESAI_xCR_xLIE		(1 << ESAI_xCR_xLIE_SHIFT)
@@ -272,10 +257,7 @@
 #define ESAI_xCR_TE(x) 		((ESAI_xCR_TE_MASK >> (ESAI_xCR_TE_WIDTH - x)) & ESAI_xCR_TE_MASK)
 #define ESAI_xCR_RE(x) 		((ESAI_xCR_RE_MASK >> (ESAI_xCR_RE_WIDTH - x)) & ESAI_xCR_RE_MASK)
 
-/*
- * Transmit Clock Control Register -- REG_ESAI_TCCR 0xD8
- * Receive Clock Control Register -- REG_ESAI_RCCR 0xE0
- */
+ 
 #define ESAI_xCCR_xHCKD_SHIFT	23
 #define ESAI_xCCR_xHCKD_MASK	(1 << ESAI_xCCR_xHCKD_SHIFT)
 #define ESAI_xCCR_xHCKD		(1 << ESAI_xCCR_xHCKD_SHIFT)
@@ -311,7 +293,7 @@
 #define ESAI_xCCR_xPM_MASK	(((1 << ESAI_xCCR_xPM_WIDTH) - 1) << ESAI_xCCR_xPM_SHIFT)
 #define ESAI_xCCR_xPM(v)	((((v) - 1) << ESAI_xCCR_xPM_SHIFT) & ESAI_xCCR_xPM_MASK)
 
-/* Transmit Slot Mask Register A/B -- REG_ESAI_TSMA/B 0xE4 ~ 0xF0 */
+ 
 #define ESAI_xSMA_xS_SHIFT	0
 #define ESAI_xSMA_xS_WIDTH	16
 #define ESAI_xSMA_xS_MASK	(((1 << ESAI_xSMA_xS_WIDTH) - 1) << ESAI_xSMA_xS_SHIFT)
@@ -321,13 +303,13 @@
 #define ESAI_xSMB_xS_MASK	(((1 << ESAI_xSMB_xS_WIDTH) - 1) << ESAI_xSMB_xS_SHIFT)
 #define ESAI_xSMB_xS(v)		(((v) >> ESAI_xSMA_xS_WIDTH) & ESAI_xSMB_xS_MASK)
 
-/* Port C Direction Register -- REG_ESAI_PRRC 0xF8 */
+ 
 #define ESAI_PRRC_PDC_SHIFT	0
 #define ESAI_PRRC_PDC_WIDTH	12
 #define ESAI_PRRC_PDC_MASK	(((1 << ESAI_PRRC_PDC_WIDTH) - 1) << ESAI_PRRC_PDC_SHIFT)
 #define ESAI_PRRC_PDC(v)	((v) & ESAI_PRRC_PDC_MASK)
 
-/* Port C Control Register -- REG_ESAI_PCRC 0xFC */
+ 
 #define ESAI_PCRC_PC_SHIFT	0
 #define ESAI_PCRC_PC_WIDTH	12
 #define ESAI_PCRC_PC_MASK	(((1 << ESAI_PCRC_PC_WIDTH) - 1) << ESAI_PCRC_PC_SHIFT)
@@ -335,17 +317,17 @@
 
 #define ESAI_GPIO		0xfff
 
-/* ESAI clock source */
+ 
 #define ESAI_HCKT_FSYS		0
 #define ESAI_HCKT_EXTAL		1
 #define ESAI_HCKR_FSYS		2
 #define ESAI_HCKR_EXTAL		3
 
-/* ESAI clock divider */
+ 
 #define ESAI_TX_DIV_PSR		0
 #define ESAI_TX_DIV_PM		1
 #define ESAI_TX_DIV_FP		2
 #define ESAI_RX_DIV_PSR		3
 #define ESAI_RX_DIV_PM		4
 #define ESAI_RX_DIV_FP		5
-#endif /* _FSL_ESAI_DAI_H */
+#endif  

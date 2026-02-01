@@ -1,34 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2009-2010  Realtek Corporation.
- *
- *****************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
 
 #include <rtw_wifi_regd.h>
 
-/*
- * REG_RULE(freq start, freq end, bandwidth, max gain, eirp, reg_flags)
- */
+ 
 
-/*
- * Only these channels all allow active
- * scan on all world regulatory domains
- */
+ 
 
-/* 2G chan 01 - chan 11 */
+ 
 #define RTW_2GHZ_CH01_11	\
 	REG_RULE(2412 - 10, 2462 + 10, 40, 0, 20, 0)
 
-/*
- * We enable active scan on these a case
- * by case basis by regulatory domain
- */
+ 
 
-/* 2G chan 12 - chan 13, PASSIV SCAN */
+ 
 #define RTW_2GHZ_CH12_13	\
 	REG_RULE(2467 - 10, 2472 + 10, 40, 0, 20,	\
 	NL80211_RRF_PASSIVE_SCAN)
@@ -44,13 +32,13 @@ static const struct ieee80211_regdomain rtw_regdom_rd = {
 
 static int rtw_ieee80211_channel_to_frequency(int chan, int band)
 {
-	/* NL80211_BAND_2GHZ */
+	 
 	if (chan == 14)
 		return 2484;
 	else if (chan < 14)
 		return 2407 + chan * 5;
 	else
-		return 0;	/* not supported */
+		return 0;	 
 }
 
 static void _rtw_reg_apply_flags(struct wiphy *wiphy)
@@ -66,7 +54,7 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 	u16 channel;
 	u32 freq;
 
-	/* all channels disable */
+	 
 	for (i = 0; i < NUM_NL80211_BANDS; i++) {
 		sband = wiphy->bands[i];
 
@@ -80,7 +68,7 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 		}
 	}
 
-	/* channels apply by channel plans. */
+	 
 	for (i = 0; i < max_chan_nums; i++) {
 		channel = channel_set[i].ChannelNum;
 		freq =
@@ -101,7 +89,7 @@ static int _rtw_reg_notifier_apply(struct wiphy *wiphy,
 				   struct regulatory_request *request,
 				   struct rtw_regulatory *reg)
 {
-	/* Hard code flags */
+	 
 	_rtw_reg_apply_flags(wiphy);
 	return 0;
 }
@@ -131,7 +119,7 @@ static void _rtw_regd_init_wiphy(struct rtw_regulatory *reg,
 	regd = _rtw_regdomain_select(reg);
 	wiphy_apply_custom_regulatory(wiphy, regd);
 
-	/* Hard code flags */
+	 
 	_rtw_reg_apply_flags(wiphy);
 }
 

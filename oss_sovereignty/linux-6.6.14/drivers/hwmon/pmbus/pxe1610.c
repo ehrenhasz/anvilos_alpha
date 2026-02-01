@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Infineon PXE1610
- *
- * Copyright (c) 2019 Facebook Inc
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -15,7 +10,7 @@
 
 #define PXE1610_NUM_PAGES 3
 
-/* Identify chip parameters. */
+ 
 static int pxe1610_identify(struct i2c_client *client,
 			     struct pmbus_driver_info *info)
 {
@@ -26,7 +21,7 @@ static int pxe1610_identify(struct i2c_client *client,
 			u8 vout_mode;
 			int ret;
 
-			/* Read the register with VOUT scaling value.*/
+			 
 			ret = pmbus_read_byte_data(client, i, PMBUS_VOUT_MODE);
 			if (ret < 0)
 				return ret;
@@ -41,10 +36,7 @@ static int pxe1610_identify(struct i2c_client *client,
 				info->vrm_version[i] = vr13;
 				break;
 			default:
-				/*
-				 * If prior pages are available limit operation
-				 * to them
-				 */
+				 
 				if (i != 0) {
 					info->pages = i;
 					return 0;
@@ -100,13 +92,10 @@ static int pxe1610_probe(struct i2c_client *client)
 			| I2C_FUNC_SMBUS_READ_BLOCK_DATA))
 		return -ENODEV;
 
-	/*
-	 * By default this device doesn't boot to page 0, so set page 0
-	 * to access all pmbus registers.
-	 */
+	 
 	i2c_smbus_write_byte_data(client, PMBUS_PAGE, 0);
 
-	/* Read Manufacturer id */
+	 
 	ret = i2c_smbus_read_block_data(client, PMBUS_MFR_ID, buf);
 	if (ret < 0) {
 		dev_err(&client->dev, "Failed to read PMBUS_MFR_ID\n");

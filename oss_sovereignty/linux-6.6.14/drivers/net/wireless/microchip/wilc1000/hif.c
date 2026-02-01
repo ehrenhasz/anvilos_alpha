@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include "netdev.h"
 
@@ -50,7 +47,7 @@ struct host_if_msg {
 	bool is_sync;
 };
 
-/* 'msg' should be free by the caller for syc */
+ 
 static struct host_if_msg*
 wilc_alloc_work(struct wilc_vif *vif, void (*work_fun)(struct work_struct *),
 		bool is_sync)
@@ -85,20 +82,13 @@ static int wilc_enqueue_work(struct host_if_msg *msg)
 	return 0;
 }
 
-/* The idx starts from 0 to (NUM_CONCURRENT_IFC - 1), but 0 index used as
- * special purpose in wilc device, so we add 1 to the index to starts from 1.
- * As a result, the returned index will be 1 to NUM_CONCURRENT_IFC.
- */
+ 
 int wilc_get_vif_idx(struct wilc_vif *vif)
 {
 	return vif->idx + 1;
 }
 
-/* We need to minus 1 from idx which is from wilc device to get real index
- * of wilc->vif[], because we add 1 when pass to wilc device in the function
- * wilc_get_vif_idx.
- * As a result, the index should be between 0 and (NUM_CONCURRENT_IFC - 1).
- */
+ 
 static struct wilc_vif *wilc_get_vif_from_idx(struct wilc *wilc, int idx)
 {
 	int index = idx - 1;
@@ -488,13 +478,13 @@ void *wilc_parse_join_bss_param(struct cfg80211_bss *bss,
 		param->mode_802_11i = 2;
 		param->rsn_found = true;
 
-		/* extract RSN capabilities */
+		 
 		if (offset < rsn_ie_len) {
-			/* skip over pairwise suites */
+			 
 			offset += (rsn_ie[offset] * 4) + 2;
 
 			if (offset < rsn_ie_len) {
-				/* skip over authentication suites */
+				 
 				offset += (rsn_ie[offset] * 4) + 2;
 
 				if (offset + 1 < rsn_ie_len)
@@ -1202,7 +1192,7 @@ int wilc_add_rx_gtk(struct wilc_vif *vif, const u8 *rx_gtk, u8 gtk_key_len,
 	if (!gtk_key)
 		return -ENOMEM;
 
-	/* fill bssid value only in station mode */
+	 
 	if (mode == WILC_STATION_MODE &&
 	    vif->hif_drv->hif_state == HOST_IF_CONNECTED)
 		memcpy(gtk_key->mac_addr, vif->hif_drv->assoc_bssid, ETH_ALEN);

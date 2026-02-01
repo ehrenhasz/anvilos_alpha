@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mellanox watchdog driver
- *
- * Copyright (C) 2019 Mellanox Technologies
- * Copyright (C) 2019 Michael Shych <mshych@mellanox.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -26,21 +21,7 @@
 #define MLXREG_WDT_OPTIONS_BASE (WDIOF_KEEPALIVEPING | WDIOF_MAGICCLOSE | \
 				 WDIOF_SETTIMEOUT)
 
-/**
- * struct mlxreg_wdt - wd private data:
- *
- * @wdd:	watchdog device;
- * @device:	basic device;
- * @pdata:	data received from platform driver;
- * @regmap:	register map of parent device;
- * @timeout:	defined timeout in sec.;
- * @action_idx:	index for direct access to action register;
- * @timeout_idx:index for direct access to TO register;
- * @tleft_idx:	index for direct access to time left register;
- * @ping_idx:	index for direct access to ping register;
- * @reset_idx:	index for direct access to reset cause register;
- * @wd_type:	watchdog HW type;
- */
+ 
 struct mlxreg_wdt {
 	struct watchdog_device wdd;
 	struct mlxreg_core_platform_data *pdata;
@@ -120,7 +101,7 @@ static int mlxreg_wdt_set_timeout(struct watchdog_device *wdd,
 
 		hw_timeout = order_base_2(timeout * MLXREG_WDT_CLOCK_SCALE);
 		regval = (regval & reg_data->mask) | hw_timeout;
-		/* Rowndown to actual closest number of sec. */
+		 
 		set_time = BIT(hw_timeout) / MLXREG_WDT_CLOCK_SCALE;
 		rc = regmap_write(wdt->regmap, reg_data->reg, regval);
 		break;
@@ -129,7 +110,7 @@ static int mlxreg_wdt_set_timeout(struct watchdog_device *wdd,
 		rc = regmap_write(wdt->regmap, reg_data->reg, timeout);
 		break;
 	case MLX_WDT_TYPE3:
-		/* WD_TYPE3 has 2B set time register */
+		 
 		set_time = timeout;
 		if (wdt->regmap_val_sz == 1) {
 			regval = timeout & 0xff;
@@ -149,10 +130,7 @@ static int mlxreg_wdt_set_timeout(struct watchdog_device *wdd,
 
 	wdd->timeout = set_time;
 	if (!rc) {
-		/*
-		 * Restart watchdog with new timeout period
-		 * if watchdog is already started.
-		 */
+		 
 		if (watchdog_active(wdd)) {
 			rc = mlxreg_wdt_stop(wdd);
 			if (!rc)
@@ -173,7 +151,7 @@ static unsigned int mlxreg_wdt_get_timeleft(struct watchdog_device *wdd)
 	if (wdt->wdt_type == MLX_WDT_TYPE2) {
 		rc = regmap_read(wdt->regmap, reg_data->reg, &regval);
 	} else {
-		/* WD_TYPE3 has 2 byte timeleft register */
+		 
 		if (wdt->regmap_val_sz == 1) {
 			rc = regmap_read(wdt->regmap, reg_data->reg, &lsb);
 			if (!rc) {
@@ -186,7 +164,7 @@ static unsigned int mlxreg_wdt_get_timeleft(struct watchdog_device *wdd)
 		}
 	}
 
-	/* Return 0 timeleft in case of failure register read. */
+	 
 	return rc == 0 ? regval : 0;
 }
 

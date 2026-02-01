@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip eFuse Driver
- *
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Caesar Wang <wxt@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -84,7 +79,7 @@ static int rockchip_rk3288_efuse_read(void *context, unsigned int offset,
 		udelay(1);
 	}
 
-	/* Switch to standby mode */
+	 
 	writel(RK3288_PGENB | RK3288_CSB, efuse->base + REG_EFUSE_CTRL);
 
 	clk_disable_unprepare(efuse->clk);
@@ -107,7 +102,7 @@ static int rockchip_rk3328_efuse_read(void *context, unsigned int offset,
 		return ret;
 	}
 
-	/* 128 Byte efuse, 96 Byte for secure, 32 Byte for non-secure */
+	 
 	offset += RK3328_SECURE_SIZES;
 	addr_start = rounddown(offset, RK3399_NBYTES) / RK3399_NBYTES;
 	addr_end = roundup(offset + bytes, RK3399_NBYTES) / RK3399_NBYTES;
@@ -191,7 +186,7 @@ static int rockchip_rk3399_efuse_read(void *context, unsigned int offset,
 		i += RK3399_NBYTES;
 	}
 
-	/* Switch to standby mode */
+	 
 	writel(RK3399_PD | RK3399_CSB, efuse->base + REG_EFUSE_CTRL);
 
 	memcpy(val, buf + addr_offset, bytes);
@@ -211,7 +206,7 @@ static struct nvmem_config econfig = {
 };
 
 static const struct of_device_id rockchip_efuse_match[] = {
-	/* deprecated but kept around for dts binding compatibility */
+	 
 	{
 		.compatible = "rockchip,rockchip-efuse",
 		.data = (void *)&rockchip_rk3288_efuse_read,
@@ -244,7 +239,7 @@ static const struct of_device_id rockchip_efuse_match[] = {
 		.compatible = "rockchip,rk3399-efuse",
 		.data = (void *)&rockchip_rk3399_efuse_read,
 	},
-	{ /* sentinel */},
+	{  },
 };
 MODULE_DEVICE_TABLE(of, rockchip_efuse_match);
 

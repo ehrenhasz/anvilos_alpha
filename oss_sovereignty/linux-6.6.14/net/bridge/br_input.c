@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Handle incoming frames
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -40,16 +34,10 @@ static int br_pass_frame_up(struct sk_buff *skb)
 
 	vg = br_vlan_group_rcu(br);
 
-	/* Reset the offload_fwd_mark because there could be a stacked
-	 * bridge above, and it should not think this bridge it doing
-	 * that bridge's work forwarding out its ports.
-	 */
+	 
 	br_switchdev_frame_unmark(skb);
 
-	/* Bridge is just like any other port.  Make sure the
-	 * packet is allowed except in promisc mode when someone
-	 * may be running packet capture.
-	 */
+	 
 	if (!(brdev->flags & IFF_PROMISC) &&
 	    !br_allowed_egress(vg, skb)) {
 		kfree_skb(skb);
@@ -61,7 +49,7 @@ static int br_pass_frame_up(struct sk_buff *skb)
 	skb = br_handle_vlan(br, NULL, vg, skb);
 	if (!skb)
 		return NET_RX_DROP;
-	/* update the multicast stats if the packet is IGMP/MLD */
+	 
 	br_multicast_count(br, NULL, skb, br_multicast_igmp_type(skb),
 			   BR_MCAST_DIR_TX);
 
@@ -70,7 +58,7 @@ static int br_pass_frame_up(struct sk_buff *skb)
 		       br_netif_receive_skb);
 }
 
-/* note: already called with rcu_read_lock */
+ 
 int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
@@ -110,21 +98,17 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
 			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
 
 		if (!fdb_src) {
-			/* FDB miss. Create locked FDB entry if MAB is enabled
-			 * and drop the packet.
-			 */
+			 
 			if (p->flags & BR_PORT_MAB)
 				br_fdb_update(br, p, eth_hdr(skb)->h_source,
 					      vid, BIT(BR_FDB_LOCKED));
 			goto drop;
 		} else if (READ_ONCE(fdb_src->dst) != p ||
 			   test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
-			/* FDB mismatch. Drop the packet without roaming. */
+			 
 			goto drop;
 		} else if (test_bit(BR_FDB_LOCKED, &fdb_src->flags)) {
-			/* FDB match, but entry is locked. Refresh it and drop
-			 * the packet.
-			 */
+			 
 			br_fdb_update(br, p, eth_hdr(skb)->h_source, vid,
 				      BIT(BR_FDB_LOCKED));
 			goto drop;
@@ -133,13 +117,13 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
 
 	nbp_switchdev_frame_mark(p, skb);
 
-	/* insert into forwarding database after filtering to avoid spoofing */
+	 
 	if (p->flags & BR_LEARNING)
 		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, 0);
 
 	local_rcv = !!(br->dev->flags & IFF_PROMISC);
 	if (is_multicast_ether_addr(eth_hdr(skb)->h_dest)) {
-		/* by definition the broadcast is also a multicast address */
+		 
 		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
 			pkt_type = BR_PKT_BROADCAST;
 			local_rcv = true;
@@ -228,7 +212,7 @@ static void __br_handle_local_finish(struct sk_buff *skb)
 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
 	u16 vid = 0;
 
-	/* check if vlan is allowed, to avoid spoofing */
+	 
 	if ((p->flags & BR_LEARNING) &&
 	    nbp_state_should_learn(p) &&
 	    !br_opt_get(p->br, BROPT_NO_LL_LEARN) &&
@@ -236,12 +220,12 @@ static void __br_handle_local_finish(struct sk_buff *skb)
 		br_fdb_update(p->br, p, eth_hdr(skb)->h_source, vid, 0);
 }
 
-/* note: already called with rcu_read_lock */
+ 
 static int br_handle_local_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	__br_handle_local_finish(skb);
 
-	/* return 1 to signal the okfn() was called so it's ok to use the skb */
+	 
 	return 1;
 }
 
@@ -285,7 +269,7 @@ static int nf_hook_bridge_pre(struct sk_buff *skb, struct sk_buff **pskb)
 			if (ret == 1)
 				continue;
 			return RX_HANDLER_CONSUMED;
-		default: /* STOLEN */
+		default:  
 			return RX_HANDLER_CONSUMED;
 		}
 	}
@@ -298,9 +282,7 @@ frame_finish:
 	return RX_HANDLER_CONSUMED;
 }
 
-/* Return 0 if the frame was not processed otherwise 1
- * note: already called with rcu_read_lock
- */
+ 
 static int br_process_frame_type(struct net_bridge_port *p,
 				 struct sk_buff *skb)
 {
@@ -313,10 +295,7 @@ static int br_process_frame_type(struct net_bridge_port *p,
 	return 0;
 }
 
-/*
- * Return NULL if skb is handled
- * note: already called with rcu_read_lock
- */
+ 
 static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
 	struct net_bridge_port *p;
@@ -343,24 +322,11 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 	if (unlikely(is_link_local_ether_addr(dest))) {
 		u16 fwd_mask = p->br->group_fwd_mask_required;
 
-		/*
-		 * See IEEE 802.1D Table 7-10 Reserved addresses
-		 *
-		 * Assignment		 		Value
-		 * Bridge Group Address		01-80-C2-00-00-00
-		 * (MAC Control) 802.3		01-80-C2-00-00-01
-		 * (Link Aggregation) 802.3	01-80-C2-00-00-02
-		 * 802.1X PAE address		01-80-C2-00-00-03
-		 *
-		 * 802.1AB LLDP 		01-80-C2-00-00-0E
-		 *
-		 * Others reserved for future standardization
-		 */
+		 
 		fwd_mask |= p->group_fwd_mask;
 		switch (dest[5]) {
-		case 0x00:	/* Bridge Group Address */
-			/* If STP is turned off,
-			   then must forward to keep loop detection */
+		case 0x00:	 
+			 
 			if (p->br->stp_enabled == BR_NO_STP ||
 			    fwd_mask & (1u << dest[5]))
 				goto forward;
@@ -368,10 +334,10 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 			__br_handle_local_finish(skb);
 			return RX_HANDLER_PASS;
 
-		case 0x01:	/* IEEE MAC (Pause) */
+		case 0x01:	 
 			goto drop;
 
-		case 0x0E:	/* 802.1AB LLDP */
+		case 0x0E:	 
 			fwd_mask |= p->br->group_fwd_mask;
 			if (fwd_mask & (1u << dest[5]))
 				goto forward;
@@ -380,17 +346,13 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 			return RX_HANDLER_PASS;
 
 		default:
-			/* Allow selective forwarding for most other protocols */
+			 
 			fwd_mask |= p->br->group_fwd_mask;
 			if (fwd_mask & (1u << dest[5]))
 				goto forward;
 		}
 
-		/* The else clause should be hit when nf_hook():
-		 *   - returns < 0 (drop/error)
-		 *   - returns = 0 (stolen/nf_queue)
-		 * Thus return 1 from the okfn() to signal the skb is ok to pass
-		 */
+		 
 		if (NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
 			    dev_net(skb->dev), NULL, skb, skb->dev, NULL,
 			    br_handle_local_finish) == 1) {
@@ -422,13 +384,7 @@ drop:
 	return RX_HANDLER_CONSUMED;
 }
 
-/* This function has no purpose other than to appease the br_port_get_rcu/rtnl
- * helpers which identify bridged ports according to the rx_handler installed
- * on them (so there _needs_ to be a bridge rx_handler even if we don't need it
- * to do anything useful). This bridge won't support traffic to/from the stack,
- * but only hardware bridging. So return RX_HANDLER_PASS so we don't steal
- * frames from the ETH_P_XDSA packet_type handler.
- */
+ 
 static rx_handler_result_t br_handle_frame_dummy(struct sk_buff **pskb)
 {
 	return RX_HANDLER_PASS;

@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*  The following is for 8723B 2Ant BT Co-exist definition */
+ 
+ 
+ 
 #define	BT_INFO_8723B_2ANT_B_FTP		BIT7
 #define	BT_INFO_8723B_2ANT_B_A2DP		BIT6
 #define	BT_INFO_8723B_2ANT_B_HID		BIT5
@@ -49,7 +45,7 @@ enum {
 };
 
 struct coex_dm_8723b_2ant {
-	/*  fw mechanism */
+	 
 	u8 preBtDecPwrLvl;
 	u8 curBtDecPwrLvl;
 	u8 preFwDacSwingLvl;
@@ -67,7 +63,7 @@ struct coex_dm_8723b_2ant {
 	bool bPreBtAutoReport;
 	bool bCurBtAutoReport;
 
-	/*  sw mechanism */
+	 
 	bool bPreRfRxLpfShrink;
 	bool bCurRfRxLpfShrink;
 	u32 btRf0x1eBackup;
@@ -91,7 +87,7 @@ struct coex_dm_8723b_2ant {
 	u8 curVal0x6cc;
 	bool bLimitedDig;
 
-	/*  algorithm related */
+	 
 	u8 preAlgorithm;
 	u8 curAlgorithm;
 	u8 btStatus;
@@ -126,9 +122,9 @@ struct coex_sta_8723b_2ant {
 	u8 btInfoExt;
 };
 
-/*  */
-/*  The following is interface which will notify coex module. */
-/*  */
+ 
+ 
+ 
 void EXhalbtc8723b2ant_PowerOnSetting(struct btc_coexist *pBtCoexist);
 void EXhalbtc8723b2ant_InitHwConfig(struct btc_coexist *pBtCoexist, bool bWifiOnly);
 void EXhalbtc8723b2ant_InitCoexDm(struct btc_coexist *pBtCoexist);

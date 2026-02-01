@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  sst-atom-controls.h - Intel MID Platform driver header file
- *
- *  Copyright (C) 2013-14 Intel Corp
- *  Author: Ramesh Babu <ramesh.babu.koul@intel.com>
- *  	Omair M Abdullah <omair.m.abdullah@intel.com>
- *  	Samreen Nilofer <samreen.nilofer@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+ 
+ 
 
 #ifndef __SST_ATOM_CONTROLS_H__
 #define __SST_ATOM_CONTROLS_H__
@@ -23,7 +13,7 @@ enum {
 	MERR_DPCM_COMPR,
 };
 
-/* define a bit for each mixer input */
+ 
 #define SST_MIX_IP(x)		(x)
 
 #define SST_IP_MODEM		SST_MIX_IP(0)
@@ -52,9 +42,7 @@ enum {
 #define SST_DEFAULT_CELL_NBR	0xFF
 #define SST_DEFAULT_MODULE_ID	0xFFFF
 
-/*
- * Audio DSP Path Ids. Specified by the audio DSP FW
- */
+ 
 enum sst_path_index {
 	SST_PATH_INDEX_MODEM_OUT                = (0x00 << SST_PATH_ID_SHIFT),
 	SST_PATH_INDEX_CODEC_OUT0               = (0x02 << SST_PATH_ID_SHIFT),
@@ -73,7 +61,7 @@ enum sst_path_index {
 	SST_PATH_INDEX_MEDIA1_OUT               = (0x13 << SST_PATH_ID_SHIFT),
 
 
-	/* Start of input paths */
+	 
 	SST_PATH_INDEX_MODEM_IN                 = (0x80 << SST_PATH_ID_SHIFT),
 	SST_PATH_INDEX_CODEC_IN0                = (0x82 << SST_PATH_ID_SHIFT),
 	SST_PATH_INDEX_CODEC_IN1                = (0x83 << SST_PATH_ID_SHIFT),
@@ -96,9 +84,7 @@ enum sst_path_index {
 	SST_PATH_INDEX_RESERVED                 = (0xFF << SST_PATH_ID_SHIFT),
 };
 
-/*
- * path IDs
- */
+ 
 enum sst_swm_inputs {
 	SST_SWM_IN_MODEM	= (SST_PATH_INDEX_MODEM_IN	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_IN_CODEC0	= (SST_PATH_INDEX_CODEC_IN0	  | SST_DEFAULT_CELL_NBR),
@@ -109,16 +95,14 @@ enum sst_swm_inputs {
 	SST_SWM_IN_VOIP		= (SST_PATH_INDEX_VOIP_IN	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_IN_PCM0		= (SST_PATH_INDEX_PCM0_IN	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_IN_PCM1		= (SST_PATH_INDEX_PCM1_IN	  | SST_DEFAULT_CELL_NBR),
-	SST_SWM_IN_MEDIA0	= (SST_PATH_INDEX_MEDIA0_IN	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
-	SST_SWM_IN_MEDIA1	= (SST_PATH_INDEX_MEDIA1_IN	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
-	SST_SWM_IN_MEDIA2	= (SST_PATH_INDEX_MEDIA2_IN	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
-	SST_SWM_IN_MEDIA3	= (SST_PATH_INDEX_MEDIA3_IN	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
+	SST_SWM_IN_MEDIA0	= (SST_PATH_INDEX_MEDIA0_IN	  | SST_DEFAULT_CELL_NBR),  
+	SST_SWM_IN_MEDIA1	= (SST_PATH_INDEX_MEDIA1_IN	  | SST_DEFAULT_CELL_NBR),  
+	SST_SWM_IN_MEDIA2	= (SST_PATH_INDEX_MEDIA2_IN	  | SST_DEFAULT_CELL_NBR),  
+	SST_SWM_IN_MEDIA3	= (SST_PATH_INDEX_MEDIA3_IN	  | SST_DEFAULT_CELL_NBR),  
 	SST_SWM_IN_END		= (SST_PATH_INDEX_RESERVED	  | SST_DEFAULT_CELL_NBR)
 };
 
-/*
- * path IDs
- */
+ 
 enum sst_swm_outputs {
 	SST_SWM_OUT_MODEM	= (SST_PATH_INDEX_MODEM_OUT	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_OUT_CODEC0	= (SST_PATH_INDEX_CODEC_OUT0	  | SST_DEFAULT_CELL_NBR),
@@ -130,8 +114,8 @@ enum sst_swm_outputs {
 	SST_SWM_OUT_PCM0	= (SST_PATH_INDEX_PCM0_OUT	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_OUT_PCM1	= (SST_PATH_INDEX_PCM1_OUT	  | SST_DEFAULT_CELL_NBR),
 	SST_SWM_OUT_PCM2	= (SST_PATH_INDEX_PCM2_OUT	  | SST_DEFAULT_CELL_NBR),
-	SST_SWM_OUT_MEDIA0	= (SST_PATH_INDEX_MEDIA0_OUT	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
-	SST_SWM_OUT_MEDIA1	= (SST_PATH_INDEX_MEDIA1_OUT	  | SST_DEFAULT_CELL_NBR), /* Part of Media Mixer */
+	SST_SWM_OUT_MEDIA0	= (SST_PATH_INDEX_MEDIA0_OUT	  | SST_DEFAULT_CELL_NBR),  
+	SST_SWM_OUT_MEDIA1	= (SST_PATH_INDEX_MEDIA1_OUT	  | SST_DEFAULT_CELL_NBR),  
 	SST_SWM_OUT_END		= (SST_PATH_INDEX_RESERVED	  | SST_DEFAULT_CELL_NBR),
 };
 
@@ -161,11 +145,9 @@ enum sst_flag {
 	SST_FLAG_NONBLOCK,
 };
 
-/*
- * Enumeration for indexing the gain cells in VB_SET_GAIN DSP command
- */
+ 
 enum sst_gain_index {
-	/* GAIN IDs for SB task start here */
+	 
 	SST_GAIN_INDEX_CODEC_OUT0,
 	SST_GAIN_INDEX_CODEC_OUT1,
 	SST_GAIN_INDEX_CODEC_IN0,
@@ -188,7 +170,7 @@ enum sst_gain_index {
 	SST_GAIN_INDEX_VOIP_OUT,
 	SST_GAIN_INDEX_VOIP_IN,
 
-	/* Gain IDs for MMX task start here */
+	 
 	SST_GAIN_INDEX_MEDIA0_IN_LEFT,
 	SST_GAIN_INDEX_MEDIA0_IN_RIGHT,
 	SST_GAIN_INDEX_MEDIA1_IN_LEFT,
@@ -200,10 +182,7 @@ enum sst_gain_index {
 	SST_GAIN_INDEX_GAIN_END
 };
 
-/*
- * Audio DSP module IDs specified by FW spec
- * TODO: Update with all modules
- */
+ 
 enum sst_module_id {
 	SST_MODULE_ID_PCM		  = 0x0001,
 	SST_MODULE_ID_MP3		  = 0x0002,
@@ -340,10 +319,10 @@ enum sst_swm_state {
 struct sst_destination_id {
 	union sst_location_id {
 		struct {
-			u8 cell_nbr_idx;	/* module index */
-			u8 path_id;		/* pipe_id */
-		} __packed	p;		/* part */
-		u16		f;		/* full */
+			u8 cell_nbr_idx;	 
+			u8 path_id;		 
+		} __packed	p;		 
+		u16		f;		 
 	} __packed location_id;
 	u16	   module_id;
 } __packed;
@@ -353,11 +332,7 @@ struct sst_dsp_header {
 	u16 length;
 } __packed;
 
-/*
- *
- * Common Commands
- *
- */
+ 
 struct sst_cmd_generic {
 	struct sst_dsp_header header;
 } __packed;
@@ -480,19 +455,19 @@ enum sst_ssp_port_id {
 
 struct sst_cmd_sba_hw_set_ssp {
 	struct sst_dsp_header header;
-	u16 selection;			/* 0:SSP0(def), 1:SSP1, 2:SSP2 */
+	u16 selection;			 
 
 	u16 switch_state;
 
-	u16 nb_bits_per_slots:6;        /* 0-32 bits, 24 (def) */
-	u16 nb_slots:4;			/* 0-8: slots per frame  */
-	u16 mode:3;			/* 0:Master, 1: Slave  */
+	u16 nb_bits_per_slots:6;         
+	u16 nb_slots:4;			 
+	u16 mode:3;			 
 	u16 duplex:3;
 
-	u16 active_tx_slot_map:8;       /* Bit map, 0:off, 1:on */
+	u16 active_tx_slot_map:8;        
 	u16 reserved1:8;
 
-	u16 active_rx_slot_map:8;       /* Bit map 0: Off, 1:On */
+	u16 active_rx_slot_map:8;        
 	u16 reserved2:8;
 
 	u16 frame_sync_frequency;
@@ -500,9 +475,9 @@ struct sst_cmd_sba_hw_set_ssp {
 	u16 frame_sync_polarity:8;
 	u16 data_polarity:8;
 
-	u16 frame_sync_width;           /* 1 to N clocks */
+	u16 frame_sync_width;            
 	u16 ssp_protocol:8;
-	u16 start_delay:8;		/* Start delay in terms of clock ticks */
+	u16 start_delay:8;		 
 } __packed;
 
 #define SST_MAX_TDM_SLOTS 8
@@ -523,7 +498,7 @@ enum {
 	SST_PROBE_INJECTOR = 1,
 };
 
-/**** widget defines *****/
+ 
 
 #define SST_MODULE_GAIN 1
 #define SST_MODULE_ALGO 2
@@ -531,7 +506,7 @@ enum {
 #define SST_FMT_MONO 0
 #define SST_FMT_STEREO 3
 
-/* physical SSP numbers */
+ 
 enum {
 	SST_SSP0 = 0,
 	SST_SSP1,
@@ -539,9 +514,9 @@ enum {
 	SST_SSP_LAST = SST_SSP2,
 };
 
-#define SST_NUM_SSPS		(SST_SSP_LAST + 1)	/* physical SSPs */
-#define SST_MAX_SSP_MUX		2			/* single SSP muxed between pipes */
-#define SST_MAX_SSP_DOMAINS	2			/* domains present in each pipe */
+#define SST_NUM_SSPS		(SST_SSP_LAST + 1)	 
+#define SST_MAX_SSP_MUX		2			 
+#define SST_MAX_SSP_DOMAINS	2			 
 
 struct sst_module {
 	struct snd_kcontrol *kctl;
@@ -651,7 +626,7 @@ struct sst_ids {
 					    .format = wformat,}				\
 }
 
-/* output is triggered before input */
+ 
 #define SST_PATH_INPUT(name, task_id, loc_id, event)					\
 	SST_PATH(name, task_id, loc_id, event, SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD)
 
@@ -706,7 +681,7 @@ struct sst_gain_value {
 	bool mute;
 };
 #define SST_GAIN_VOLUME_DEFAULT		(-1440)
-#define SST_GAIN_RAMP_DURATION_DEFAULT	5 /* timeconstant */
+#define SST_GAIN_RAMP_DURATION_DEFAULT	5  
 #define SST_GAIN_MUTE_DEFAULT		true
 
 #define SST_GAIN_KCONTROL_TLV(xname, xhandler_get, xhandler_put, \
@@ -749,12 +724,7 @@ struct sst_gain_value {
 #define SST_COMBO_CONTROL_NAME(xpname, xmname, xinstance, xtype, xsubmodule) \
 	xpname " " xmname " " #xinstance " " xtype " " xsubmodule
 
-/*
- * 3 Controls for each Gain module
- * e.g.	- pcm0_in Gain 0 Volume
- *	- pcm0_in Gain 0 Ramp Delay
- *	- pcm0_in Gain 0 Switch
- */
+ 
 #define SST_GAIN_KCONTROLS(xpname, xmname, xmin_gain, xmax_gain, xmin_tc, xmax_tc, \
 			   xhandler_get, xhandler_put, \
 			   xmod, xpipe, xinstance, xtask, tlv_array, xgain_val) \
@@ -770,7 +740,7 @@ struct sst_gain_value {
 
 #define SST_GAIN_TC_MIN		5
 #define SST_GAIN_TC_MAX		5000
-#define SST_GAIN_MIN_VALUE	-1440 /* in 0.1 DB units */
+#define SST_GAIN_MIN_VALUE	-1440  
 #define SST_GAIN_MAX_VALUE	360
 
 enum sst_algo_kcontrol_type {
@@ -790,7 +760,7 @@ struct sst_algo_control {
 	struct snd_soc_dapm_widget *w;
 };
 
-/* size of the control = size of params + size of length field */
+ 
 #define SST_ALGO_CTL_VALUE(xcount, xtype, xpipe, xmod, xtask, xcmd)			\
 	(struct sst_algo_control){							\
 		.max = xcount + sizeof(u16), .type = xtype, .module_id = xmod,			\
@@ -842,7 +812,7 @@ struct sst_enum {
 	struct snd_soc_dapm_widget *w;
 };
 
-/* only 4 slots/channels supported atm */
+ 
 #define SST_SSP_SLOT_ENUM(s_ch_no, is_tx, xtexts) \
 	(struct sst_enum){ .reg = s_ch_no, .tx = is_tx, .max = 4+1, .texts = xtexts, }
 

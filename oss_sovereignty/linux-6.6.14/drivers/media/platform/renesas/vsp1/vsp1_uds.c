@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_uds.c  --  R-Car VSP1 Up and Down Scaler
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -23,9 +17,7 @@
 #define UDS_MIN_FACTOR				0x0100
 #define UDS_MAX_FACTOR				0xffff
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_uds_write(struct vsp1_uds *uds,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -33,9 +25,7 @@ static inline void vsp1_uds_write(struct vsp1_uds *uds,
 	vsp1_dl_body_write(dlb, reg + uds->entity.index * VI6_UDS_OFFSET, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Scaling Computation
- */
+ 
 
 void vsp1_uds_set_alpha(struct vsp1_entity *entity, struct vsp1_dl_body *dlb,
 			unsigned int alpha)
@@ -46,15 +36,11 @@ void vsp1_uds_set_alpha(struct vsp1_entity *entity, struct vsp1_dl_body *dlb,
 		       alpha << VI6_UDS_ALPVAL_VAL0_SHIFT);
 }
 
-/*
- * uds_output_size - Return the output size for an input size and scaling ratio
- * @input: input size in pixels
- * @ratio: scaling ratio in U4.12 fixed-point format
- */
+ 
 static unsigned int uds_output_size(unsigned int input, unsigned int ratio)
 {
 	if (ratio > 4096) {
-		/* Down-scaling */
+		 
 		unsigned int mp;
 
 		mp = ratio / 4096;
@@ -62,17 +48,12 @@ static unsigned int uds_output_size(unsigned int input, unsigned int ratio)
 
 		return (input - 1) / mp * mp * 4096 / ratio + 1;
 	} else {
-		/* Up-scaling */
+		 
 		return (input - 1) * 4096 / ratio + 1;
 	}
 }
 
-/*
- * uds_output_limits - Return the min and max output sizes for an input size
- * @input: input size in pixels
- * @minimum: minimum output size (returned)
- * @maximum: maximum output size (returned)
- */
+ 
 static void uds_output_limits(unsigned int input,
 			      unsigned int *minimum, unsigned int *maximum)
 {
@@ -80,14 +61,11 @@ static void uds_output_limits(unsigned int input,
 	*maximum = min(uds_output_size(input, UDS_MIN_FACTOR), UDS_MAX_SIZE);
 }
 
-/*
- * uds_passband_width - Return the passband filter width for a scaling ratio
- * @ratio: scaling ratio in U4.12 fixed-point format
- */
+ 
 static unsigned int uds_passband_width(unsigned int ratio)
 {
 	if (ratio >= 4096) {
-		/* Down-scaling */
+		 
 		unsigned int mp;
 
 		mp = ratio / 4096;
@@ -95,20 +73,18 @@ static unsigned int uds_passband_width(unsigned int ratio)
 
 		return 64 * 4096 * mp / ratio;
 	} else {
-		/* Up-scaling */
+		 
 		return 64;
 	}
 }
 
 static unsigned int uds_compute_ratio(unsigned int input, unsigned int output)
 {
-	/* TODO: This is an approximation that will need to be refined. */
+	 
 	return (input - 1) * 4096 / (output - 1);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static int uds_enum_mbus_code(struct v4l2_subdev *subdev,
 			      struct v4l2_subdev_state *sd_state,
@@ -174,7 +150,7 @@ static void uds_try_format(struct vsp1_uds *uds,
 
 	switch (pad) {
 	case UDS_PAD_SINK:
-		/* Default to YUV if the requested format is not supported. */
+		 
 		if (fmt->code != MEDIA_BUS_FMT_ARGB8888_1X32 &&
 		    fmt->code != MEDIA_BUS_FMT_AYUV8_1X32)
 			fmt->code = MEDIA_BUS_FMT_AYUV8_1X32;
@@ -184,7 +160,7 @@ static void uds_try_format(struct vsp1_uds *uds,
 		break;
 
 	case UDS_PAD_SOURCE:
-		/* The UDS scales but can't perform format conversion. */
+		 
 		format = vsp1_entity_get_pad_format(&uds->entity, sd_state,
 						    UDS_PAD_SINK);
 		fmt->code = format->code;
@@ -224,7 +200,7 @@ static int uds_set_format(struct v4l2_subdev *subdev,
 	*format = fmt->format;
 
 	if (fmt->pad == UDS_PAD_SINK) {
-		/* Propagate the format to the source pad. */
+		 
 		format = vsp1_entity_get_pad_format(&uds->entity, config,
 						    UDS_PAD_SOURCE);
 		*format = fmt->format;
@@ -237,9 +213,7 @@ done:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const struct v4l2_subdev_pad_ops uds_pad_ops = {
 	.init_cfg = vsp1_entity_init_cfg,
@@ -253,9 +227,7 @@ static const struct v4l2_subdev_ops uds_ops = {
 	.pad    = &uds_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void uds_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -279,11 +251,7 @@ static void uds_configure_stream(struct vsp1_entity *entity,
 
 	dev_dbg(uds->entity.vsp1->dev, "hscale %u vscale %u\n", hscale, vscale);
 
-	/*
-	 * Multi-tap scaling can't be enabled along with alpha scaling when
-	 * scaling down with a factor lower than or equal to 1/2 in either
-	 * direction.
-	 */
+	 
 	if (uds->scale_alpha && (hscale >= 8192 || vscale >= 8192))
 		multitap = false;
 	else
@@ -299,7 +267,7 @@ static void uds_configure_stream(struct vsp1_entity *entity,
 		       (uds_passband_width(vscale)
 				<< VI6_UDS_PASS_BWIDTH_V_SHIFT));
 
-	/* Set the scaling ratios. */
+	 
 	vsp1_uds_write(uds, dlb, VI6_UDS_SCALE,
 		       (hscale << VI6_UDS_SCALE_HFRAC_SHIFT) |
 		       (vscale << VI6_UDS_SCALE_VFRAC_SHIFT));
@@ -317,13 +285,13 @@ static void uds_configure_partition(struct vsp1_entity *entity,
 	output = vsp1_entity_get_pad_format(&uds->entity, uds->entity.config,
 					    UDS_PAD_SOURCE);
 
-	/* Input size clipping. */
+	 
 	vsp1_uds_write(uds, dlb, VI6_UDS_HSZCLIP, VI6_UDS_HSZCLIP_HCEN |
 		       (0 << VI6_UDS_HSZCLIP_HCL_OFST_SHIFT) |
 		       (partition->uds_sink.width
 				<< VI6_UDS_HSZCLIP_HCL_SIZE_SHIFT));
 
-	/* Output size clipping. */
+	 
 	vsp1_uds_write(uds, dlb, VI6_UDS_CLIP_SIZE,
 		       (partition->uds_source.width
 				<< VI6_UDS_CLIP_SIZE_HSIZE_SHIFT) |
@@ -345,14 +313,7 @@ static unsigned int uds_max_width(struct vsp1_entity *entity,
 					    UDS_PAD_SOURCE);
 	hscale = output->width / input->width;
 
-	/*
-	 * The maximum width of the UDS is 304 pixels. These are input pixels
-	 * in the event of up-scaling, and output pixels in the event of
-	 * downscaling.
-	 *
-	 * To support overlapping partition windows we clamp at units of 256 and
-	 * the remaining pixels are reserved.
-	 */
+	 
 	if (hscale <= 2)
 		return 256;
 	else if (hscale <= 4)
@@ -363,9 +324,7 @@ static unsigned int uds_max_width(struct vsp1_entity *entity,
 		return 2048;
 }
 
-/* -----------------------------------------------------------------------------
- * Partition Algorithm Support
- */
+ 
 
 static void uds_partition(struct vsp1_entity *entity,
 			  struct vsp1_pipeline *pipe,
@@ -377,7 +336,7 @@ static void uds_partition(struct vsp1_entity *entity,
 	const struct v4l2_mbus_framefmt *output;
 	const struct v4l2_mbus_framefmt *input;
 
-	/* Initialise the partition state. */
+	 
 	partition->uds_sink = *window;
 	partition->uds_source = *window;
 
@@ -401,9 +360,7 @@ static const struct vsp1_entity_operations uds_entity_ops = {
 	.partition = uds_partition,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_uds *vsp1_uds_create(struct vsp1_device *vsp1, unsigned int index)
 {

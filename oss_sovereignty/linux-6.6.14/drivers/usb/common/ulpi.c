@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ulpi.c - USB ULPI PHY bus
- *
- * Copyright (C) 2015 Intel Corporation
- *
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/ulpi/interface.h>
 #include <linux/ulpi/driver.h>
@@ -18,7 +12,7 @@
 #include <linux/of_device.h>
 #include <linux/clk/clk-conf.h>
 
-/* -------------------------------------------------------------------------- */
+ 
 
 int ulpi_read(struct ulpi *ulpi, u8 addr)
 {
@@ -32,7 +26,7 @@ int ulpi_write(struct ulpi *ulpi, u8 addr, u8 val)
 }
 EXPORT_SYMBOL_GPL(ulpi_write);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int ulpi_match(struct device *dev, struct device_driver *driver)
 {
@@ -40,10 +34,7 @@ static int ulpi_match(struct device *dev, struct device_driver *driver)
 	struct ulpi *ulpi = to_ulpi_dev(dev);
 	const struct ulpi_device_id *id;
 
-	/*
-	 * Some ULPI devices don't have a vendor id
-	 * or provide an id_table so rely on OF match.
-	 */
+	 
 	if (ulpi->id.vendor == 0 || !drv->id_table)
 		return of_driver_match_device(dev, driver);
 
@@ -98,7 +89,7 @@ static const struct bus_type ulpi_bus = {
 	.remove = ulpi_remove,
 };
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
@@ -141,15 +132,9 @@ static const struct device_type ulpi_dev_type = {
 	.release = ulpi_dev_release,
 };
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/**
- * __ulpi_register_driver - register a driver with the ULPI bus
- * @drv: driver being registered
- * @module: ends up being THIS_MODULE
- *
- * Registers a driver with the ULPI bus.
- */
+ 
 int __ulpi_register_driver(struct ulpi_driver *drv, struct module *module)
 {
 	if (!drv->probe)
@@ -162,26 +147,21 @@ int __ulpi_register_driver(struct ulpi_driver *drv, struct module *module)
 }
 EXPORT_SYMBOL_GPL(__ulpi_register_driver);
 
-/**
- * ulpi_unregister_driver - unregister a driver with the ULPI bus
- * @drv: driver to unregister
- *
- * Unregisters a driver with the ULPI bus.
- */
+ 
 void ulpi_unregister_driver(struct ulpi_driver *drv)
 {
 	driver_unregister(&drv->driver);
 }
 EXPORT_SYMBOL_GPL(ulpi_unregister_driver);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int ulpi_of_register(struct ulpi *ulpi)
 {
 	struct device_node *np = NULL, *child;
 	struct device *parent;
 
-	/* Find a ulpi bus underneath the parent or the grandparent */
+	 
 	parent = ulpi->dev.parent;
 	if (parent->of_node)
 		np = of_get_child_by_name(parent->of_node, "ulpi");
@@ -204,7 +184,7 @@ static int ulpi_read_id(struct ulpi *ulpi)
 {
 	int ret;
 
-	/* Test the interface */
+	 
 	ret = ulpi_write(ulpi, ULPI_SCRATCH, 0xaa);
 	if (ret < 0)
 		goto err;
@@ -222,7 +202,7 @@ static int ulpi_read_id(struct ulpi *ulpi)
 	ulpi->id.product = ulpi_read(ulpi, ULPI_PRODUCT_ID_LOW);
 	ulpi->id.product |= ulpi_read(ulpi, ULPI_PRODUCT_ID_HIGH) << 8;
 
-	/* Some ULPI devices don't have a vendor id so rely on OF match */
+	 
 	if (ulpi->id.vendor == 0)
 		goto err;
 
@@ -278,7 +258,7 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
 	int ret;
 	struct dentry *root;
 
-	ulpi->dev.parent = dev; /* needed early for ops */
+	ulpi->dev.parent = dev;  
 	ulpi->dev.bus = &ulpi_bus;
 	ulpi->dev.type = &ulpi_dev_type;
 	dev_set_name(&ulpi->dev, "%s.ulpi", dev_name(dev));
@@ -310,14 +290,7 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
 	return 0;
 }
 
-/**
- * ulpi_register_interface - instantiate new ULPI device
- * @dev: USB controller's device interface
- * @ops: ULPI register access
- *
- * Allocates and registers a ULPI device and an interface for it. Called from
- * the USB controller that provides the ULPI interface.
- */
+ 
 struct ulpi *ulpi_register_interface(struct device *dev,
 				     const struct ulpi_ops *ops)
 {
@@ -340,13 +313,7 @@ struct ulpi *ulpi_register_interface(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(ulpi_register_interface);
 
-/**
- * ulpi_unregister_interface - unregister ULPI interface
- * @ulpi: struct ulpi_interface
- *
- * Unregisters a ULPI device and it's interface that was created with
- * ulpi_create_interface().
- */
+ 
 void ulpi_unregister_interface(struct ulpi *ulpi)
 {
 	debugfs_lookup_and_remove(dev_name(&ulpi->dev), ulpi_root);
@@ -354,7 +321,7 @@ void ulpi_unregister_interface(struct ulpi *ulpi)
 }
 EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int __init ulpi_init(void)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob@ti.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 
@@ -15,33 +12,31 @@
 #include "omap_dmm_tiler.h"
 #include "omap_drv.h"
 
-/*
- * framebuffer funcs
- */
+ 
 
 static const u32 formats[] = {
-	/* 16bpp [A]RGB: */
-	DRM_FORMAT_RGB565, /* RGB16-565 */
-	DRM_FORMAT_RGBX4444, /* RGB12x-4444 */
-	DRM_FORMAT_XRGB4444, /* xRGB12-4444 */
-	DRM_FORMAT_RGBA4444, /* RGBA12-4444 */
-	DRM_FORMAT_ARGB4444, /* ARGB16-4444 */
-	DRM_FORMAT_XRGB1555, /* xRGB15-1555 */
-	DRM_FORMAT_ARGB1555, /* ARGB16-1555 */
-	/* 24bpp RGB: */
-	DRM_FORMAT_RGB888,   /* RGB24-888 */
-	/* 32bpp [A]RGB: */
-	DRM_FORMAT_RGBX8888, /* RGBx24-8888 */
-	DRM_FORMAT_XRGB8888, /* xRGB24-8888 */
-	DRM_FORMAT_RGBA8888, /* RGBA32-8888 */
-	DRM_FORMAT_ARGB8888, /* ARGB32-8888 */
-	/* YUV: */
+	 
+	DRM_FORMAT_RGB565,  
+	DRM_FORMAT_RGBX4444,  
+	DRM_FORMAT_XRGB4444,  
+	DRM_FORMAT_RGBA4444,  
+	DRM_FORMAT_ARGB4444,  
+	DRM_FORMAT_XRGB1555,  
+	DRM_FORMAT_ARGB1555,  
+	 
+	DRM_FORMAT_RGB888,    
+	 
+	DRM_FORMAT_RGBX8888,  
+	DRM_FORMAT_XRGB8888,  
+	DRM_FORMAT_RGBA8888,  
+	DRM_FORMAT_ARGB8888,  
+	 
 	DRM_FORMAT_NV12,
 	DRM_FORMAT_YUYV,
 	DRM_FORMAT_UYVY,
 };
 
-/* per-plane info for the fb: */
+ 
 struct plane {
 	dma_addr_t dma_addr;
 };
@@ -53,7 +48,7 @@ struct omap_framebuffer {
 	int pin_count;
 	const struct drm_format_info *format;
 	struct plane planes[2];
-	/* lock for pinning (pin_count and planes.dma_addr) */
+	 
 	struct mutex lock;
 };
 
@@ -100,7 +95,7 @@ bool omap_framebuffer_supports_rotation(struct drm_framebuffer *fb)
 	return omap_gem_flags(fb->obj[0]) & OMAP_BO_TILED_MASK;
 }
 
-/* Note: DRM rotates counter-clockwise, TILER & DSS rotates clockwise */
+ 
 static u32 drm_rotation_to_tiler(unsigned int drm_rot)
 {
 	u32 orient;
@@ -130,8 +125,7 @@ static u32 drm_rotation_to_tiler(unsigned int drm_rot)
 	return orient;
 }
 
-/* update ovl info for scanout, handles cases of multi-planar fb's, etc.
- */
+ 
 void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 		struct drm_plane_state *state,
 		struct omap_overlay_info *info,
@@ -150,7 +144,7 @@ void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 	info->width      = state->src_w >> 16;
 	info->height     = state->src_h >> 16;
 
-	/* DSS driver wants the w & h in rotated orientation */
+	 
 	if (drm_rotation_90_or_270(state->rotation))
 		swap(info->width, info->height);
 
@@ -163,36 +157,31 @@ void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 
 		orient = drm_rotation_to_tiler(state->rotation);
 
-		/*
-		 * omap_gem_rotated_paddr() wants the x & y in tiler units.
-		 * Usually tiler unit size is the same as the pixel size, except
-		 * for YUV422 formats, for which the tiler unit size is 32 bits
-		 * and pixel size is 16 bits.
-		 */
+		 
 		if (fb->format->format == DRM_FORMAT_UYVY ||
 				fb->format->format == DRM_FORMAT_YUYV) {
 			x /= 2;
 			w /= 2;
 		}
 
-		/* adjust x,y offset for invert: */
+		 
 		if (orient & MASK_Y_INVERT)
 			y += h - 1;
 		if (orient & MASK_X_INVERT)
 			x += w - 1;
 
-		/* Note: x and y are in TILER units, not pixels */
+		 
 		omap_gem_rotated_dma_addr(fb->obj[0], orient, x, y,
 					  &info->paddr);
 		info->rotation_type = OMAP_DSS_ROT_TILER;
 		info->rotation = state->rotation ?: DRM_MODE_ROTATE_0;
-		/* Note: stride in TILER units, not pixels */
+		 
 		info->screen_width  = omap_gem_tiled_stride(fb->obj[0], orient);
 	} else {
 		switch (state->rotation & DRM_MODE_ROTATE_MASK) {
 		case 0:
 		case DRM_MODE_ROTATE_0:
-			/* OK */
+			 
 			break;
 
 		default:
@@ -208,7 +197,7 @@ void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 		info->screen_width  = fb->pitches[0];
 	}
 
-	/* convert to pixels: */
+	 
 	info->screen_width /= format->cpp[0];
 
 	if (fb->format->format == DRM_FORMAT_NV12) {
@@ -253,7 +242,7 @@ void omap_framebuffer_update_scanout(struct drm_framebuffer *fb,
 	}
 }
 
-/* pin, prepare for scanout: */
+ 
 int omap_framebuffer_pin(struct drm_framebuffer *fb)
 {
 	struct omap_framebuffer *omap_fb = to_omap_framebuffer(fb);
@@ -293,7 +282,7 @@ fail:
 	return ret;
 }
 
-/* unpin, no longer being scanned out: */
+ 
 void omap_framebuffer_unpin(struct drm_framebuffer *fb)
 {
 	struct omap_framebuffer *omap_fb = to_omap_framebuffer(fb);
@@ -401,11 +390,7 @@ struct drm_framebuffer *omap_framebuffer_init(struct drm_device *dev,
 	omap_fb->format = format;
 	mutex_init(&omap_fb->lock);
 
-	/*
-	 * The code below assumes that no format use more than two planes, and
-	 * that the two planes of multiplane formats need the same number of
-	 * bytes per pixel.
-	 */
+	 
 	if (format->num_planes == 2 && pitch != mode_cmd->pitches[1]) {
 		dev_dbg(dev->dev, "pitches differ between planes 0 and 1\n");
 		ret = -EINVAL;

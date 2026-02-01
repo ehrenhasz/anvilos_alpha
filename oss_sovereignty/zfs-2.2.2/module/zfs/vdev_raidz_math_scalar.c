@@ -1,34 +1,10 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
 
 #include <sys/vdev_raidz_impl.h>
 
-/*
- * Provide native CPU scalar routines.
- * Support 32bit and 64bit CPUs.
- */
+ 
 #if ((~(0x0ULL)) >> 24) == 0xffULL
 #define	ELEM_SIZE	4
 typedef uint32_t iv_t;
@@ -37,43 +13,13 @@ typedef uint32_t iv_t;
 typedef uint64_t iv_t;
 #endif
 
-/*
- * Vector type used in scalar implementation
- *
- * The union is expected to be of native CPU register size. Since addition
- * uses XOR operation, it can be performed an all byte elements at once.
- * Multiplication requires per byte access.
- */
+ 
 typedef union {
 	iv_t e;
 	uint8_t b[ELEM_SIZE];
 } v_t;
 
-/*
- * Precomputed lookup tables for multiplication by a constant
- *
- * Reconstruction path requires multiplication by a constant factors. Instead of
- * performing two step lookup (log & exp tables), a direct lookup can be used
- * instead. Multiplication of element 'a' by a constant 'c' is obtained as:
- *
- * 	r = vdev_raidz_mul_lt[c_log][a];
- *
- * where c_log = vdev_raidz_log2[c]. Log of coefficient factors is used because
- * they are faster to obtain while solving the syndrome equations.
- *
- * PERFORMANCE NOTE:
- * Even though the complete lookup table uses 64kiB, only relatively small
- * portion of it is used at the same time. Following shows number of accessed
- * bytes for different cases:
- * 	- 1 failed disk: 256B (1 mul. coefficient)
- * 	- 2 failed disks: 512B (2 mul. coefficients)
- * 	- 3 failed disks: 1536B (6 mul. coefficients)
- *
- * Size of actually accessed lookup table regions is only larger for
- * reconstruction of 3 failed disks, when compared to traditional log/exp
- * method. But since the result is obtained in one lookup step performance is
- * doubled.
- */
+ 
 static uint8_t vdev_raidz_mul_lt[256][256] __attribute__((aligned(256)));
 
 static void
@@ -96,9 +42,7 @@ raidz_init_scalar(void)
 #define	LOAD(src, val) 		val = ((v_t *)src)[0]
 #define	STORE(dst, val)		((v_t *)dst)[0] = val
 
-/*
- * Constants used for optimized multiplication by 2.
- */
+ 
 static const struct {
 	iv_t mod;
 	iv_t mask;
@@ -252,7 +196,7 @@ DEFINE_REC_METHODS(scalar);
 boolean_t
 raidz_will_scalar_work(void)
 {
-	return (B_TRUE); /* always */
+	return (B_TRUE);  
 }
 
 const raidz_impl_ops_t vdev_raidz_scalar_impl = {
@@ -264,7 +208,7 @@ const raidz_impl_ops_t vdev_raidz_scalar_impl = {
 	.name = "scalar"
 };
 
-/* Powers of 2 in the RAID-Z Galois field. */
+ 
 const uint8_t vdev_raidz_pow2[256] __attribute__((aligned(256))) = {
 	0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
 	0x1d, 0x3a, 0x74, 0xe8, 0xcd, 0x87, 0x13, 0x26,
@@ -300,7 +244,7 @@ const uint8_t vdev_raidz_pow2[256] __attribute__((aligned(256))) = {
 	0x1b, 0x36, 0x6c, 0xd8, 0xad, 0x47, 0x8e, 0x01
 };
 
-/* Logs of 2 in the RAID-Z Galois field. */
+ 
 const uint8_t vdev_raidz_log2[256] __attribute__((aligned(256))) = {
 	0x00, 0x00, 0x01, 0x19, 0x02, 0x32, 0x1a, 0xc6,
 	0x03, 0xdf, 0x33, 0xee, 0x1b, 0x68, 0xc7, 0x4b,

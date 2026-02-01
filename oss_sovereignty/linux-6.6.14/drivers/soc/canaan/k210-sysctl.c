@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2019 Christoph Hellwig.
- * Copyright (c) 2019 Western Digital Corporation or its affiliates.
- */
+
+ 
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/of_platform.h>
@@ -19,7 +16,7 @@ static int k210_sysctl_probe(struct platform_device *pdev)
 
 	dev_info(dev, "K210 system controller\n");
 
-	/* Get power bus clock */
+	 
 	pclk = devm_clk_get(dev, NULL);
 	if (IS_ERR(pclk))
 		return dev_err_probe(dev, PTR_ERR(pclk),
@@ -31,7 +28,7 @@ static int k210_sysctl_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Populate children */
+	 
 	ret = devm_of_platform_populate(dev);
 	if (ret)
 		dev_err(dev, "Populate platform failed %d\n", ret);
@@ -41,7 +38,7 @@ static int k210_sysctl_probe(struct platform_device *pdev)
 
 static const struct of_device_id k210_sysctl_of_match[] = {
 	{ .compatible = "canaan,k210-sysctl", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver k210_sysctl_driver = {
@@ -53,16 +50,11 @@ static struct platform_driver k210_sysctl_driver = {
 };
 builtin_platform_driver(k210_sysctl_driver);
 
-/*
- * System controller registers base address and size.
- */
+ 
 #define K210_SYSCTL_BASE_ADDR	0x50440000ULL
 #define K210_SYSCTL_BASE_SIZE	0x1000
 
-/*
- * This needs to be called very early during initialization, given that
- * PLL1 needs to be enabled to be able to use all SRAM.
- */
+ 
 static void __init k210_soc_early_init(const void *fdt)
 {
 	void __iomem *sysctl_base;

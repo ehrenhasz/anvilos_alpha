@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/types.h>
@@ -73,7 +73,7 @@ static void adf_dev_stop_async(struct work_struct *work)
 	adf_dev_restarting_notify(accel_dev);
 	adf_dev_down(accel_dev, false);
 
-	/* Re-enable PF2VF interrupts */
+	 
 	adf_enable_pf2vf_interrupts(accel_dev);
 	kfree(stop_data);
 }
@@ -104,7 +104,7 @@ static void adf_pf2vf_bh_handler(void *data)
 
 	ret = adf_recv_and_handle_pf2vf_msg(accel_dev);
 	if (ret)
-		/* Re-enable PF2VF interrupts */
+		 
 		adf_enable_pf2vf_interrupts(accel_dev);
 
 	return;
@@ -138,34 +138,31 @@ static irqreturn_t adf_isr(int irq, void *privdata)
 	bool handled = false;
 	u32 v_int, v_mask;
 
-	/* Read VF INT source CSR to determine the source of VF interrupt */
+	 
 	v_int = ADF_CSR_RD(pmisc_bar_addr, ADF_VINTSOU_OFFSET);
 
-	/* Read VF INT mask CSR to determine which sources are masked */
+	 
 	v_mask = ADF_CSR_RD(pmisc_bar_addr, ADF_VINTMSK_OFFSET);
 
-	/*
-	 * Recompute v_int ignoring sources that are masked. This is to
-	 * avoid rescheduling the tasklet for interrupts already handled
-	 */
+	 
 	v_int &= ~v_mask;
 
-	/* Check for PF2VF interrupt */
+	 
 	if (v_int & ADF_VINTSOU_PF2VF) {
-		/* Disable PF to VF interrupt */
+		 
 		adf_disable_pf2vf_interrupts(accel_dev);
 
-		/* Schedule tasklet to handle interrupt BH */
+		 
 		tasklet_hi_schedule(&accel_dev->vf.pf2vf_bh_tasklet);
 		handled = true;
 	}
 
-	/* Check bundle interrupt */
+	 
 	if (v_int & ADF_VINTSOU_BUN) {
 		struct adf_etr_data *etr_data = accel_dev->transport;
 		struct adf_etr_bank_data *bank = &etr_data->banks[0];
 
-		/* Disable Flag and Coalesce Ring Interrupts */
+		 
 		csr_ops->write_csr_int_flag_and_col(bank->csr_addr,
 						    bank->bank_number, 0);
 		tasklet_hi_schedule(&bank->resp_handler);
@@ -215,12 +212,7 @@ static void adf_cleanup_bh(struct adf_accel_dev *accel_dev)
 	tasklet_kill(&priv_data->banks[0].resp_handler);
 }
 
-/**
- * adf_vf_isr_resource_free() - Free IRQ for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function frees interrupts for acceleration device virtual function.
- */
+ 
 void adf_vf_isr_resource_free(struct adf_accel_dev *accel_dev)
 {
 	struct pci_dev *pdev = accel_to_pci_dev(accel_dev);
@@ -235,14 +227,7 @@ void adf_vf_isr_resource_free(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_vf_isr_resource_free);
 
-/**
- * adf_vf_isr_resource_alloc() - Allocate IRQ for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function allocates interrupts for acceleration device virtual function.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_vf_isr_resource_alloc(struct adf_accel_dev *accel_dev)
 {
 	if (adf_enable_msi(accel_dev))
@@ -273,15 +258,7 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(adf_vf_isr_resource_alloc);
 
-/**
- * adf_flush_vf_wq() - Flush workqueue for VF
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function disables the PF/VF interrupts on the VF so that no new messages
- * are received and flushes the workqueue 'adf_vf_stop_wq'.
- *
- * Return: void.
- */
+ 
 void adf_flush_vf_wq(struct adf_accel_dev *accel_dev)
 {
 	adf_disable_pf2vf_interrupts(accel_dev);
@@ -290,13 +267,7 @@ void adf_flush_vf_wq(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_flush_vf_wq);
 
-/**
- * adf_init_vf_wq() - Init workqueue for VF
- *
- * Function init workqueue 'adf_vf_stop_wq' for VF.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int __init adf_init_vf_wq(void)
 {
 	adf_vf_stop_wq = alloc_workqueue("adf_vf_stop_wq", WQ_MEM_RECLAIM, 0);

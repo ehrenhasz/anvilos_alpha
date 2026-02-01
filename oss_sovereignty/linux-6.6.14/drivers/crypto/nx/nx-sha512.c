@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SHA-512 routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2011-2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <crypto/sha2.h>
@@ -74,10 +68,7 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 
 	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
 
-	/* 2 cases for total data len:
-	 *  1: < SHA512_BLOCK_SIZE: copy into state, return 0
-	 *  2: >= SHA512_BLOCK_SIZE: process X blocks, copy in leftover
-	 */
+	 
 	total = (sctx->count[0] % SHA512_BLOCK_SIZE) + len;
 	if (total < SHA512_BLOCK_SIZE) {
 		memcpy(sctx->buf + buf_len, data, len);
@@ -121,13 +112,7 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 			used_sgs = in_sg - nx_ctx->in_sg;
 		}
 
-		/* to_process: SHA512_BLOCK_SIZE aligned chunk to be
-		 * processed in this iteration. This value is restricted
-		 * by sg list limits and number of sgs we already used
-		 * for leftover data. (see above)
-		 * In ideal case, we could allow NX_PAGE_SIZE * max_sg_len,
-		 * but because data may not be aligned, we need to account
-		 * for that too. */
+		 
 		to_process = min_t(u64, total,
 			(max_sg_len - 1 - used_sgs) * NX_PAGE_SIZE);
 		to_process = to_process & ~(SHA512_BLOCK_SIZE - 1);
@@ -146,10 +131,7 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 		to_process = data_len + buf_len;
 		leftover = total - to_process;
 
-		/*
-		 * we've hit the nx chip previously and we're updating
-		 * again, so copy over the partial digest.
-		 */
+		 
 		memcpy(csbcpb->cpb.sha512.input_partial_digest,
 			       csbcpb->cpb.sha512.message_digest,
 			       SHA512_DIGEST_SIZE);
@@ -171,7 +153,7 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 
 	} while (leftover >= SHA512_BLOCK_SIZE);
 
-	/* copy the leftover back into the state struct */
+	 
 	if (leftover)
 		memcpy(sctx->buf, data, leftover);
 	sctx->count[0] += len;
@@ -200,11 +182,9 @@ static int nx_sha512_final(struct shash_desc *desc, u8 *out)
 	max_sg_len = min_t(u64, max_sg_len,
 			nx_ctx->ap->databytelen/NX_PAGE_SIZE);
 
-	/* final is represented by continuing the operation and indicating that
-	 * this is not an intermediate operation */
+	 
 	if (sctx->count[0] >= SHA512_BLOCK_SIZE) {
-		/* we've hit the nx chip previously, now we're finalizing,
-		 * so copy over the partial digest */
+		 
 		memcpy(csbcpb->cpb.sha512.input_partial_digest, sctx->state,
 							SHA512_DIGEST_SIZE);
 		NX_CPB_FDM(csbcpb) &= ~NX_FDM_INTERMEDIATE;

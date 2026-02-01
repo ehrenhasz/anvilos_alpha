@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC-over-SPI driver: SPI interface related functions
- *
- * Copyright (C) 2015, Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -29,16 +25,13 @@ static irqreturn_t nfcmrvl_spi_int_irq_thread_fn(int irq, void *drv_data_ptr)
 	struct nfcmrvl_spi_drv_data *drv_data = drv_data_ptr;
 	struct sk_buff *skb;
 
-	/*
-	 * Special case where we are waiting for SPI_INT deassertion to start a
-	 * transfer.
-	 */
+	 
 	if (test_and_clear_bit(SPI_WAIT_HANDSHAKE, &drv_data->flags)) {
 		complete(&drv_data->handshake_completion);
 		return IRQ_HANDLED;
 	}
 
-	/* Normal case, SPI_INT deasserted by slave to trigger a master read */
+	 
 
 	skb = nci_spi_read(drv_data->nci_spi);
 	if (!skb) {
@@ -68,17 +61,14 @@ static int nfcmrvl_spi_nci_send(struct nfcmrvl_private *priv,
 	struct nfcmrvl_spi_drv_data *drv_data = priv->drv_data;
 	int err;
 
-	/* Reinit completion for slave handshake */
+	 
 	reinit_completion(&drv_data->handshake_completion);
 	set_bit(SPI_WAIT_HANDSHAKE, &drv_data->flags);
 
-	/*
-	 * Append a dummy byte at the end of SPI frame. This is due to a
-	 * specific DMA implementation in the controller
-	 */
+	 
 	skb_put(skb, 1);
 
-	/* Send the SPI packet */
+	 
 	err = nci_spi_send(drv_data->nci_spi, &drv_data->handshake_completion,
 			   skb);
 	if (err)
@@ -169,7 +159,7 @@ static int nfcmrvl_spi_probe(struct spi_device *spi)
 	drv_data->nci_spi = nci_spi_allocate_spi(drv_data->spi, 0, 10,
 						 drv_data->priv->ndev);
 
-	/* Init completion for slave handshake */
+	 
 	init_completion(&drv_data->handshake_completion);
 	return 0;
 }

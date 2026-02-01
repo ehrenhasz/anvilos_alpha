@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * (c) 2004 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- *
- *  Extended 3 / 2005 by Hartmut Hackmann to support various
- *  cards with the tda10046 DVB-T channel decoder
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -23,7 +17,7 @@
 #include <media/dvb_frontend.h>
 
 #include "mt352.h"
-#include "mt352_priv.h" /* FIXME */
+#include "mt352_priv.h"  
 #include "tda1004x.h"
 #include "nxt200x.h"
 #include "xc2028.h"
@@ -65,9 +59,7 @@ MODULE_PARM_DESC(use_frontend,"for cards with multiple frontends (0: terrestrial
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
-/* ------------------------------------------------------------------
- * mt352 based DVB-T cards
- */
+ 
 
 static int pinnacle_antenna_pwr(struct saa7134_dev *dev, int on)
 {
@@ -170,7 +162,7 @@ static int mt352_pinnacle_tuner_set_params(struct dvb_frontend *fe)
 	struct saa7134_dev *dev = fe->dvb->priv;
 	struct v4l2_frequency f;
 
-	/* set frequency (mt2050) */
+	 
 	f.tuner     = 0;
 	f.type      = V4L2_TUNER_DIGITAL_TV;
 	f.frequency = c->frequency / 1000 * 16 / 1000;
@@ -185,7 +177,7 @@ static int mt352_pinnacle_tuner_set_params(struct dvb_frontend *fe)
 
 	pinnacle_antenna_pwr(dev, antenna_pwr);
 
-	/* mt352 setup */
+	 
 	return mt352_pinnacle_init(fe);
 }
 
@@ -216,7 +208,7 @@ static struct tda18271_std_map mb86a20s_tda18271_std_map = {
 static struct tda18271_config kworld_tda18271_config = {
 	.std_map = &mb86a20s_tda18271_std_map,
 	.gate    = TDA18271_GATE_DIGITAL,
-	.config  = 3,	/* Use tuner callback for AGC */
+	.config  = 3,	 
 
 };
 
@@ -249,9 +241,7 @@ static int kworld_sbtvd_gate_ctrl(struct dvb_frontend* fe, int enable)
 	return 0;
 }
 
-/* ==================================================================
- * tda1004x based DVB-T cards, helper functions
- */
+ 
 
 static int philips_tda1004x_request_firmware(struct dvb_frontend *fe,
 					   const struct firmware **fw, char *name)
@@ -260,9 +250,7 @@ static int philips_tda1004x_request_firmware(struct dvb_frontend *fe,
 	return request_firmware(fw, name, &dev->pci->dev);
 }
 
-/* ------------------------------------------------------------------
- * these tuners are tu1216, td1316(a)
- */
+ 
 
 static int philips_tda6651_pll_set(struct dvb_frontend *fe)
 {
@@ -276,7 +264,7 @@ static int philips_tda6651_pll_set(struct dvb_frontend *fe)
 	int tuner_frequency = 0;
 	u8 band, cp, filter;
 
-	/* determine charge pump */
+	 
 	tuner_frequency = c->frequency + 36166000;
 	if (tuner_frequency < 87000000)
 		return -EINVAL;
@@ -301,7 +289,7 @@ static int philips_tda6651_pll_set(struct dvb_frontend *fe)
 	else
 		return -EINVAL;
 
-	/* determine band */
+	 
 	if (c->frequency < 49000000)
 		return -EINVAL;
 	else if (c->frequency < 161000000)
@@ -313,7 +301,7 @@ static int philips_tda6651_pll_set(struct dvb_frontend *fe)
 	else
 		return -EINVAL;
 
-	/* setup PLL filter */
+	 
 	switch (c->bandwidth_hz) {
 	case 6000000:
 		filter = 0;
@@ -331,12 +319,10 @@ static int philips_tda6651_pll_set(struct dvb_frontend *fe)
 		return -EINVAL;
 	}
 
-	/* calculate divisor
-	 * ((36166000+((1000000/6)/2)) + Finput)/(1000000/6)
-	 */
+	 
 	tuner_frequency = (((c->frequency / 1000) * 6) + 217496) / 1000;
 
-	/* setup tuner buffer */
+	 
 	tuner_buf[0] = (tuner_frequency >> 8) & 0x7f;
 	tuner_buf[1] = tuner_frequency & 0xff;
 	tuner_buf[2] = 0xca;
@@ -361,7 +347,7 @@ static int philips_tu1216_init(struct dvb_frontend *fe)
 	static u8 tu1216_init[] = { 0x0b, 0xf5, 0x85, 0xab };
 	struct i2c_msg tuner_msg = {.addr = addr,.flags = 0,.buf = tu1216_init,.len = sizeof(tu1216_init) };
 
-	/* setup PLL configuration */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 	if (i2c_transfer(&dev->i2c_adap, &tuner_msg, 1) != 1)
@@ -371,7 +357,7 @@ static int philips_tu1216_init(struct dvb_frontend *fe)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static struct tda1004x_config philips_tu1216_60_config = {
 	.demod_address = 0x8,
@@ -396,7 +382,7 @@ static struct tda1004x_config philips_tu1216_61_config = {
 	.request_firmware = philips_tda1004x_request_firmware
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int philips_td1316_tuner_init(struct dvb_frontend *fe)
 {
@@ -406,7 +392,7 @@ static int philips_td1316_tuner_init(struct dvb_frontend *fe)
 	static u8 msg[] = { 0x0b, 0xf5, 0x86, 0xab };
 	struct i2c_msg init_msg = {.addr = addr,.flags = 0,.buf = msg,.len = sizeof(msg) };
 
-	/* setup PLL configuration */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 	if (i2c_transfer(&dev->i2c_adap, &init_msg, 1) != 1)
@@ -427,7 +413,7 @@ static int philips_td1316_tuner_sleep(struct dvb_frontend *fe)
 	static u8 msg[] = { 0x0b, 0xdc, 0x86, 0xa4 };
 	struct i2c_msg analog_msg = {.addr = addr,.flags = 0,.buf = msg,.len = sizeof(msg) };
 
-	/* switch the tuner to analog mode */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 	if (i2c_transfer(&dev->i2c_adap, &analog_msg, 1) != 1)
@@ -435,7 +421,7 @@ static int philips_td1316_tuner_sleep(struct dvb_frontend *fe)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int philips_europa_tuner_init(struct dvb_frontend *fe)
 {
@@ -463,7 +449,7 @@ static int philips_europa_tuner_sleep(struct dvb_frontend *fe)
 	if (philips_td1316_tuner_sleep(fe))
 		return -EIO;
 
-	/* switch the board to analog mode */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 	i2c_transfer(&dev->i2c_adap, &analog_msg, 1);
@@ -514,9 +500,7 @@ static struct tda1004x_config technotrend_budget_t3000_config = {
 	.request_firmware = philips_tda1004x_request_firmware
 };
 
-/* ------------------------------------------------------------------
- * tda 1004x based cards with philips silicon tuner
- */
+ 
 
 static int tda8290_i2c_gate_ctrl( struct dvb_frontend* fe, int enable)
 {
@@ -585,7 +569,7 @@ static int configure_tda827x_fe(struct saa7134_dev *dev,
 {
 	struct vb2_dvb_frontend *fe0;
 
-	/* Get the first frontend */
+	 
 	fe0 = vb2_dvb_get_frontend(&dev->frontends, 1);
 
 	if (!fe0)
@@ -606,7 +590,7 @@ static int configure_tda827x_fe(struct saa7134_dev *dev,
 	return -EINVAL;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static struct tda827x_config tda827x_cfg_0 = {
 	.init = philips_tda827x_tuner_init,
@@ -636,7 +620,7 @@ static struct tda827x_config tda827x_cfg_2_sw42 = {
 	.switch_addr = 0x42
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static struct tda1004x_config tda827x_lifeview_config = {
 	.demod_address = 0x08,
@@ -879,15 +863,13 @@ static struct tda1004x_config asus_ps3_100_config = {
 	.request_firmware = philips_tda1004x_request_firmware
 };
 
-/* ------------------------------------------------------------------
- * special case: this card uses saa713x GPIO22 for the mode switch
- */
+ 
 
 static int ads_duo_tuner_init(struct dvb_frontend *fe)
 {
 	struct saa7134_dev *dev = fe->dvb->priv;
 	philips_tda827x_tuner_init(fe);
-	/* route TDA8275a AGC input to the channel decoder */
+	 
 	saa7134_set_gpio(dev, 22, 1);
 	return 0;
 }
@@ -895,7 +877,7 @@ static int ads_duo_tuner_init(struct dvb_frontend *fe)
 static int ads_duo_tuner_sleep(struct dvb_frontend *fe)
 {
 	struct saa7134_dev *dev = fe->dvb->priv;
-	/* route TDA8275a AGC input to the analog IF chip*/
+	 
 	saa7134_set_gpio(dev, 22, 0);
 	philips_tda827x_tuner_sleep(fe);
 	return 0;
@@ -952,9 +934,7 @@ static struct qt1010_config videomate_t750_qt1010_config = {
 };
 
 
-/* ==================================================================
- * tda10086 based DVB-S cards, helper functions
- */
+ 
 
 static struct tda10086_config flydvbs = {
 	.demod_address = 0x0e,
@@ -970,9 +950,7 @@ static struct tda10086_config sd1878_4m = {
 	.xtal_freq = TDA10086_XTAL_4M,
 };
 
-/* ------------------------------------------------------------------
- * special case: lnb supply is connected to the gated i2c
- */
+ 
 
 static int md8800_set_voltage(struct dvb_frontend *fe,
 			      enum fe_sec_voltage voltage)
@@ -1012,7 +990,7 @@ static int md8800_set_voltage2(struct dvb_frontend *fe,
 
 	if (i2c_transfer(&dev->i2c_adap, msg, 2) != 2)
 		return -EIO;
-	/* NOTE: this assumes that gpo1 is used, it might be bit 5 (gpo2) */
+	 
 	if (voltage == SEC_VOLTAGE_18)
 		wbuf[1] = rbuf | 0x10;
 	else
@@ -1029,9 +1007,7 @@ static int md8800_set_high_voltage2(struct dvb_frontend *fe, long arg)
 	return -EIO;
 }
 
-/* ==================================================================
- * nxt200x based ATSC cards, helper functions
- */
+ 
 
 static const struct nxt200x_config avertvhda180 = {
 	.demod_address    = 0x0a,
@@ -1041,7 +1017,7 @@ static const struct nxt200x_config kworldatsc110 = {
 	.demod_address    = 0x0a,
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static struct mt312_config avertv_a700_mt312 = {
 	.demod_address = 0x0e,
@@ -1149,12 +1125,12 @@ static struct lgs8gxx_config prohdtv_pro2_lgs8g75_config = {
 	.serial_ts = 0,
 	.ts_clk_pol = 1,
 	.ts_clk_gated = 0,
-	.if_clk_freq = 30400, /* 30.4 MHz */
-	.if_freq = 4000, /* 4.00 MHz */
+	.if_clk_freq = 30400,  
+	.if_freq = 4000,  
 	.if_neg_center = 0,
 	.ext_adc = 0,
 	.adc_signed = 1,
-	.adc_vpp = 3, /* 2.0 Vpp */
+	.adc_vpp = 3,  
 	.if_neg_edge = 1,
 };
 
@@ -1174,7 +1150,7 @@ static struct tda18271_config kworld_pc150u_tda18271_config = {
 	.std_map = &kworld_tda18271_std_map,
 	.gate    = TDA18271_GATE_ANALOG,
 	.output_opt = TDA18271_OUTPUT_LT_OFF,
-	.config  = 3,	/* Use tuner callback for AGC */
+	.config  = 3,	 
 	.rf_cal_on_startup = 1
 };
 
@@ -1191,7 +1167,7 @@ static struct s5h1411_config kworld_s5h1411_config = {
 
 static struct tda18271_config hdtv200h_tda18271_config = {
 	.gate    = TDA18271_GATE_ANALOG,
-	.config  = 3	/* Use tuner callback for AGC */
+	.config  = 3	 
 };
 
 static struct s5h1411_config hdtv200h_s5h1411_config = {
@@ -1206,9 +1182,7 @@ static struct s5h1411_config hdtv200h_s5h1411_config = {
 };
 
 
-/* ==================================================================
- * Core code
- */
+ 
 
 static int dvb_init(struct saa7134_dev *dev)
 {
@@ -1217,7 +1191,7 @@ static int dvb_init(struct saa7134_dev *dev)
 	struct vb2_dvb_frontend *fe0;
 	struct vb2_queue *q;
 
-	/* FIXME: add support for multi-frontend */
+	 
 	mutex_init(&dev->frontends.lock);
 	INIT_LIST_HEAD(&dev->frontends.felist);
 
@@ -1228,7 +1202,7 @@ static int dvb_init(struct saa7134_dev *dev)
 		return -ENOMEM;
 	}
 
-	/* init struct vb2_dvb */
+	 
 	dev->ts.nr_bufs    = 32;
 	dev->ts.nr_packets = 32*4;
 	fe0->dvb.name = dev->name;
@@ -1280,19 +1254,7 @@ static int dvb_init(struct saa7134_dev *dev)
 					       &medion_cardbus,
 					       &dev->i2c_adap);
 		if (fe0->dvb.frontend) {
-			/*
-			 * The TV tuner on this board is actually NOT
-			 * behind the demod i2c gate.
-			 * However, the demod EEPROM is indeed there and it
-			 * conflicts with the SAA7134 chip config EEPROM
-			 * if the i2c gate is open (since they have same
-			 * bus addresses) resulting in card PCI SVID / SSID
-			 * being garbage after a reboot from time to time.
-			 *
-			 * Let's just leave the gate permanently closed -
-			 * saa7134_i2c_eeprom_md7134_gate() will close it for
-			 * us at probe time if it was open for some reason.
-			 */
+			 
 			fe0->dvb.frontend->ops.i2c_gate_ctrl = NULL;
 			dvb_attach(simple_tuner_attach, fe0->dvb.frontend,
 				   &dev->i2c_adap, medion_cardbus.tuner_address,
@@ -1406,11 +1368,11 @@ static int dvb_init(struct saa7134_dev *dev)
 			goto detach_frontend;
 		break;
 	case SAA7134_BOARD_FLYDVB_TRIO:
-		if (!use_frontend) {	/* terrestrial */
+		if (!use_frontend) {	 
 			if (configure_tda827x_fe(dev, &lifeview_trio_config,
 						 &tda827x_cfg_0) < 0)
 				goto detach_frontend;
-		} else {		/* satellite */
+		} else {		 
 			fe0->dvb.frontend = dvb_attach(tda10086_attach, &flydvbs, &dev->i2c_adap);
 			if (fe0->dvb.frontend) {
 				if (dvb_attach(tda826x_attach, fe0->dvb.frontend, 0x63,
@@ -1451,11 +1413,11 @@ static int dvb_init(struct saa7134_dev *dev)
 			goto detach_frontend;
 		break;
 	case SAA7134_BOARD_MEDION_MD8800_QUADRO:
-		if (!use_frontend) {     /* terrestrial */
+		if (!use_frontend) {      
 			if (configure_tda827x_fe(dev, &md8800_dvbt_config,
 						 &tda827x_cfg_0) < 0)
 				goto detach_frontend;
-		} else {        /* satellite */
+		} else {         
 			fe0->dvb.frontend = dvb_attach(tda10086_attach,
 							&flydvbs, &dev->i2c_adap);
 			if (fe0->dvb.frontend) {
@@ -1471,7 +1433,7 @@ static int dvb_init(struct saa7134_dev *dev)
 					goto detach_frontend;
 				}
 				if (dev_id != 0x08) {
-					/* we need to open the i2c gate (we know it exists) */
+					 
 					fe->ops.i2c_gate_ctrl(fe, 1);
 					if (dvb_attach(isl6405_attach, fe,
 							&dev->i2c_adap, 0x08, 0, 0) == NULL) {
@@ -1480,8 +1442,7 @@ static int dvb_init(struct saa7134_dev *dev)
 						goto detach_frontend;
 					}
 					if (dev_id == 0x07) {
-						/* fire up the 2nd section of the LNB supply since
-						   we can't do this from the other section */
+						 
 						msg.buf = &data;
 						i2c_transfer(&dev->i2c_adap, &msg, 1);
 					}
@@ -1514,7 +1475,7 @@ static int dvb_init(struct saa7134_dev *dev)
 				   TUNER_PHILIPS_TUV1236D);
 		break;
 	case SAA7134_BOARD_KWORLD_PC150U:
-		saa7134_set_gpio(dev, 18, 1); /* Switch to digital mode */
+		saa7134_set_gpio(dev, 18, 1);  
 		saa7134_tuner_callback(dev, 0,
 				       TDA18271_CALLBACK_CMD_AGC_ENABLE, 1);
 		fe0->dvb.frontend = dvb_attach(s5h1411_attach,
@@ -1650,7 +1611,7 @@ static int dvb_init(struct saa7134_dev *dev)
 					__func__);
 				goto detach_frontend;
 			}
-			/* we need to open the i2c gate (we know it exists) */
+			 
 			fe = fe0->dvb.frontend;
 			fe->ops.i2c_gate_ctrl(fe, 1);
 			if (dvb_attach(isl6405_attach, fe,
@@ -1676,11 +1637,11 @@ static int dvb_init(struct saa7134_dev *dev)
 		attach_xc3028 = 1;
 		break;
 	case SAA7134_BOARD_ASUSTeK_TIGER_3IN1:
-		if (!use_frontend) {     /* terrestrial */
+		if (!use_frontend) {      
 			if (configure_tda827x_fe(dev, &asus_tiger_3in1_config,
 							&tda827x_cfg_2) < 0)
 				goto detach_frontend;
-		} else {		/* satellite */
+		} else {		 
 			fe0->dvb.frontend = dvb_attach(tda10086_attach,
 						&flydvbs, &dev->i2c_adap);
 			if (fe0->dvb.frontend) {
@@ -1701,11 +1662,11 @@ static int dvb_init(struct saa7134_dev *dev)
 	       }
 	       break;
 	case SAA7134_BOARD_ASUSTeK_PS3_100:
-		if (!use_frontend) {     /* terrestrial */
+		if (!use_frontend) {      
 			if (configure_tda827x_fe(dev, &asus_ps3_100_config,
 						 &tda827x_cfg_2) < 0)
 				goto detach_frontend;
-	       } else {                /* satellite */
+	       } else {                 
 			fe0->dvb.frontend = dvb_attach(tda10086_attach,
 						       &flydvbs, &dev->i2c_adap);
 			if (fe0->dvb.frontend) {
@@ -1760,7 +1721,7 @@ static int dvb_init(struct saa7134_dev *dev)
 		break;
 	case SAA7134_BOARD_AVERMEDIA_A700_PRO:
 	case SAA7134_BOARD_AVERMEDIA_A700_HYBRID:
-		/* Zarlink ZL10313 */
+		 
 		fe0->dvb.frontend = dvb_attach(mt312_attach,
 			&avertv_a700_mt312, &dev->i2c_adap);
 		if (fe0->dvb.frontend) {
@@ -1820,7 +1781,7 @@ static int dvb_init(struct saa7134_dev *dev)
 		}
 		break;
 	case SAA7134_BOARD_KWORLD_PCI_SBTVD_FULLSEG:
-		/* Switch to digital mode */
+		 
 		saa7134_tuner_callback(dev, 0,
 				       TDA18271_CALLBACK_CMD_AGC_ENABLE, 1);
 		fe0->dvb.frontend = dvb_attach(mb86a20s_attach,
@@ -1836,7 +1797,7 @@ static int dvb_init(struct saa7134_dev *dev)
 				   &kworld_tda18271_config);
 		}
 
-		/* mb86a20s need to use the I2C gateway */
+		 
 		break;
 	case SAA7134_BOARD_MAGICPRO_PROHDTV_PRO2:
 		fe0->dvb.frontend = dvb_attach(lgs8gxx_attach,
@@ -1852,12 +1813,12 @@ static int dvb_init(struct saa7134_dev *dev)
 		}
 		break;
 	case SAA7134_BOARD_AVERMEDIA_A706:
-		/* Enable all DVB-S devices now */
-		/* CE5039 DVB-S tuner SLEEP pin low */
+		 
+		 
 		saa7134_set_gpio(dev, 23, 0);
-		/* CE6313 DVB-S demod SLEEP pin low */
+		 
 		saa7134_set_gpio(dev, 9, 0);
-		/* CE6313 DVB-S demod RESET# pin high */
+		 
 		saa7134_set_gpio(dev, 25, 1);
 		msleep(1);
 		fe0->dvb.frontend = dvb_attach(mt312_attach,
@@ -1910,10 +1871,10 @@ static int dvb_init(struct saa7134_dev *dev)
 		pr_err("%s/dvb: frontend initialization failed\n", dev->name);
 		goto detach_frontend;
 	}
-	/* define general-purpose callback pointer */
+	 
 	fe0->dvb.frontend->callback = saa7134_tuner_callback;
 
-	/* register everything else */
+	 
 #ifndef CONFIG_MEDIA_CONTROLLER_DVB
 	ret = vb2_dvb_register_bus(&dev->frontends, THIS_MODULE, dev,
 				   &dev->pci->dev, NULL,
@@ -1924,9 +1885,7 @@ static int dvb_init(struct saa7134_dev *dev)
 				   adapter_nr, 0);
 #endif
 
-	/* this sequence is necessary to make the tda1004x load its firmware
-	 * and to enter analog mode of hybrid boards
-	 */
+	 
 	if (!ret) {
 		if (fe0->dvb.frontend->ops.init)
 			fe0->dvb.frontend->ops.init(fe0->dvb.frontend);
@@ -1947,15 +1906,12 @@ static int dvb_fini(struct saa7134_dev *dev)
 {
 	struct vb2_dvb_frontend *fe0;
 
-	/* Get the first frontend */
+	 
 	fe0 = vb2_dvb_get_frontend(&dev->frontends, 1);
 	if (!fe0)
 		return -EINVAL;
 
-	/* FIXME: I suspect that this code is bogus, since the entry for
-	   Pinnacle 300I DVB-T PAL already defines the proper init to allow
-	   the detection of mt2032 (TDA9887_PORT2_INACTIVE)
-	 */
+	 
 	if (dev->board == SAA7134_BOARD_PINNACLE_300I_DVBT_PAL) {
 		struct v4l2_priv_tun_config tda9887_cfg;
 		static int on  = TDA9887_PRESENT | TDA9887_PORT2_INACTIVE;
@@ -1963,11 +1919,11 @@ static int dvb_fini(struct saa7134_dev *dev)
 		tda9887_cfg.tuner = TUNER_TDA9887;
 		tda9887_cfg.priv  = &on;
 
-		/* otherwise we don't detect the tuner on next insmod */
+		 
 		saa_call_all(dev, tuner, s_config, &tda9887_cfg);
 	} else if (dev->board == SAA7134_BOARD_MEDION_MD8800_QUADRO) {
 		if ((dev->eedata[2] == 0x07) && use_frontend) {
-			/* turn off the 2nd lnb supply */
+			 
 			u8 data = 0x80;
 			struct i2c_msg msg = {.addr = 0x08, .buf = &data, .flags = 0, .len = 1};
 			struct dvb_frontend *fe;

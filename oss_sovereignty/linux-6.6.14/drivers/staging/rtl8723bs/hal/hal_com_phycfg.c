@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
@@ -386,21 +382,21 @@ struct adapter *padapter
 		MGN_MCS0, MGN_MCS1, MGN_MCS2, MGN_MCS3, MGN_MCS4, MGN_MCS5, MGN_MCS6, MGN_MCS7
 	};
 	for (path = RF_PATH_A; path < RF_PATH_MAX; ++path) {
-		/*  CCK */
+		 
 		base = PHY_GetTxPowerByRate(padapter, path, MGN_11M);
 		for (i = 0; i < ARRAY_SIZE(cckRates); ++i) {
 			value = PHY_GetTxPowerByRate(padapter, path, cckRates[i]);
 			PHY_SetTxPowerByRate(padapter, path, cckRates[i], value - base);
 		}
 
-		/*  OFDM */
+		 
 		base = PHY_GetTxPowerByRate(padapter, path, MGN_54M);
 		for (i = 0; i < sizeof(ofdmRates); ++i) {
 			value = PHY_GetTxPowerByRate(padapter, path, ofdmRates[i]);
 			PHY_SetTxPowerByRate(padapter, path, ofdmRates[i], value - base);
 		}
 
-		/*  HT MCS0~7 */
+		 
 		base = PHY_GetTxPowerByRate(padapter, path, MGN_MCS7);
 		for (i = 0; i < sizeof(mcs0_7Rates); ++i) {
 			value = PHY_GetTxPowerByRate(padapter, path, mcs0_7Rates[i]);
@@ -409,10 +405,7 @@ struct adapter *padapter
 	}
 }
 
-/*
-  * This function must be called if the value in the PHY_REG_PG.txt(or header)
-  * is exact dBm values
-  */
+ 
 void PHY_TxPowerByRateConfiguration(struct adapter *padapter)
 {
 	phy_StoreTxPowerByRateBase(padapter);
@@ -469,14 +462,14 @@ u8 PHY_GetTxPowerIndexBase(
 	else if (MGN_6M <= Rate)
 		txPower = pHalData->Index24G_BW40_Base[RFPath][chnlIdx];
 
-	/*  OFDM-1T */
+	 
 	if ((MGN_6M <= Rate && Rate <= MGN_54M) && !IS_CCK_RATE(Rate))
 		txPower += pHalData->OFDM_24G_Diff[RFPath][TX_1S];
 
-	if (BandWidth == CHANNEL_WIDTH_20) { /*  BW20-1S, BW20-2S */
+	if (BandWidth == CHANNEL_WIDTH_20) {  
 		if (MGN_MCS0 <= Rate && Rate <= MGN_MCS7)
 			txPower += pHalData->BW20_24G_Diff[RFPath][TX_1S];
-	} else if (BandWidth == CHANNEL_WIDTH_40) { /*  BW40-1S, BW40-2S */
+	} else if (BandWidth == CHANNEL_WIDTH_40) {  
 		if (MGN_MCS0 <= Rate && Rate <= MGN_MCS7)
 			txPower += pHalData->BW40_24G_Diff[RFPath][TX_1S];
 	}
@@ -720,10 +713,10 @@ s8 phy_get_tx_pwr_lmt(struct adapter *adapter, u32 reg_pwr_tbl_sel,
 	idx_bandwidth = get_bandwidth_idx(bandwidth);
 	idx_rate_sctn = get_rate_sctn_idx(data_rate);
 
-	/*  workaround for wrong index combination to obtain tx power limit, */
-	/*  OFDM only exists in BW 20M */
-	/*  CCK table will only be given in BW 20M */
-	/*  HT on 80M will reference to HT on 40M */
+	 
+	 
+	 
+	 
 	if (idx_rate_sctn == 0 || idx_rate_sctn == 1)
 		idx_bandwidth = 0;
 
@@ -768,11 +761,11 @@ void PHY_ConvertTxPowerLimitToPowerIndex(struct adapter *Adapter)
 
 					for (rfPath = RF_PATH_A; rfPath < MAX_RF_PATH_NUM; ++rfPath) {
 						if (pHalData->odmpriv.PhyRegPgValueType == PHY_REG_PG_EXACT_VALUE) {
-							if (rateSection == 2) /*  HT 1T */
+							if (rateSection == 2)  
 								BW40PwrBasedBm2_4G = PHY_GetTxPowerByRateBase(Adapter, rfPath, HT_MCS0_MCS7);
-							else if (rateSection == 1) /*  OFDM */
+							else if (rateSection == 1)  
 								BW40PwrBasedBm2_4G = PHY_GetTxPowerByRateBase(Adapter, rfPath, OFDM);
-							else if (rateSection == 0) /*  CCK */
+							else if (rateSection == 0)  
 								BW40PwrBasedBm2_4G = PHY_GetTxPowerByRateBase(Adapter, rfPath, CCK);
 						} else
 							BW40PwrBasedBm2_4G = Adapter->registrypriv.RegPowerBase * 2;
@@ -975,7 +968,7 @@ void Hal_ChannelPlanToRegulation(struct adapter *Adapter, u16 ChannelPlan)
 	case RT_CHANNEL_DOMAIN_FCC1_FCC10:
 		pHalData->Regulation2_4G = TXPWR_LMT_FCC;
 		break;
-	case RT_CHANNEL_DOMAIN_REALTEK_DEFINE: /* Realtek Reserve */
+	case RT_CHANNEL_DOMAIN_REALTEK_DEFINE:  
 		pHalData->Regulation2_4G = TXPWR_LMT_WW;
 		break;
 	default:

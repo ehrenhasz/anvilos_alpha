@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7921_H
 #define __MT7921_H
@@ -205,7 +205,7 @@ mt7921_reg_map_l1(struct mt792x_dev *dev, u32 addr)
 	u32 base = FIELD_GET(MT_HIF_REMAP_L1_BASE, addr);
 
 	mt76_rmw_field(dev, MT_HIF_REMAP_L1, MT_HIF_REMAP_L1_MASK, base);
-	/* use read to push write */
+	 
 	mt76_rr(dev, MT_HIF_REMAP_L1);
 
 	return MT_HIF_REMAP_BASE_L1 + offset;
@@ -321,7 +321,7 @@ void mt7921_usb_sdio_tx_complete_skb(struct mt76_dev *mdev,
 				     struct mt76_queue_entry *e);
 bool mt7921_usb_sdio_tx_status_data(struct mt76_dev *mdev, u8 *update);
 
-/* usb */
+ 
 int mt7921_mcu_uni_add_beacon_offload(struct mt792x_dev *dev,
 				      struct ieee80211_hw *hw,
 				      struct ieee80211_vif *vif,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SOUND_FIREWIRE_AMDTP_H_INCLUDED
 #define SOUND_FIREWIRE_AMDTP_H_INCLUDED
 
@@ -9,35 +9,7 @@
 #include <sound/asound.h>
 #include "packets-buffer.h"
 
-/**
- * enum cip_flags - describes details of the streaming protocol
- * @CIP_NONBLOCKING: In non-blocking mode, each packet contains
- *	sample_rate/8000 samples, with rounding up or down to adjust
- *	for clock skew and left-over fractional samples.  This should
- *	be used if supported by the device.
- * @CIP_BLOCKING: In blocking mode, each packet contains either zero or
- *	SYT_INTERVAL samples, with these two types alternating so that
- *	the overall sample rate comes out right.
- * @CIP_EMPTY_WITH_TAG0: Only for in-stream. Empty in-packets have TAG0.
- * @CIP_DBC_IS_END_EVENT: The value of dbc in an packet corresponds to the end
- * of event in the packet. Out of IEC 61883.
- * @CIP_WRONG_DBS: Only for in-stream. The value of dbs is wrong in in-packets.
- *	The value of data_block_quadlets is used instead of reported value.
- * @CIP_SKIP_DBC_ZERO_CHECK: Only for in-stream.  Packets with zero in dbc is
- *	skipped for detecting discontinuity.
- * @CIP_EMPTY_HAS_WRONG_DBC: Only for in-stream. The value of dbc in empty
- *	packet is wrong but the others are correct.
- * @CIP_JUMBO_PAYLOAD: Only for in-stream. The number of data blocks in an
- *	packet is larger than IEC 61883-6 defines. Current implementation
- *	allows 5 times as large as IEC 61883-6 defines.
- * @CIP_HEADER_WITHOUT_EOH: Only for in-stream. CIP Header doesn't include
- *	valid EOH.
- * @CIP_NO_HEADERS: a lack of headers in packets
- * @CIP_UNALIGHED_DBC: Only for in-stream. The value of dbc is not alighed to
- *	the value of current SYT_INTERVAL; e.g. initial value is not zero.
- * @CIP_UNAWARE_SYT: For outgoing packet, the value in SYT field of CIP is 0xffff.
- *	For incoming packet, the value in SYT field of CIP is not handled.
- */
+ 
 enum cip_flags {
 	CIP_NONBLOCKING		= 0x00,
 	CIP_BLOCKING		= 0x01,
@@ -53,29 +25,7 @@ enum cip_flags {
 	CIP_UNAWARE_SYT		= 0x400,
 };
 
-/**
- * enum cip_sfc - supported Sampling Frequency Codes (SFCs)
- * @CIP_SFC_32000:   32,000 data blocks
- * @CIP_SFC_44100:   44,100 data blocks
- * @CIP_SFC_48000:   48,000 data blocks
- * @CIP_SFC_88200:   88,200 data blocks
- * @CIP_SFC_96000:   96,000 data blocks
- * @CIP_SFC_176400: 176,400 data blocks
- * @CIP_SFC_192000: 192,000 data blocks
- * @CIP_SFC_COUNT: the number of supported SFCs
- *
- * These values are used to show nominal Sampling Frequency Code in
- * Format Dependent Field (FDF) of AMDTP packet header. In IEC 61883-6:2002,
- * this code means the number of events per second. Actually the code
- * represents the number of data blocks transferred per second in an AMDTP
- * stream.
- *
- * In IEC 61883-6:2005, some extensions were added to support more types of
- * data such as 'One Bit LInear Audio', therefore the meaning of SFC became
- * different depending on the types.
- *
- * Currently our implementation is compatible with IEC 61883-6:2002.
- */
+ 
 enum cip_sfc {
 	CIP_SFC_32000  = 0,
 	CIP_SFC_44100  = 1,
@@ -115,12 +65,12 @@ typedef void (*amdtp_stream_process_ctx_payloads_t)(struct amdtp_stream *s,
 struct amdtp_domain;
 struct amdtp_stream {
 	struct fw_unit *unit;
-	// The combination of cip_flags enumeration-constants.
+	 
 	unsigned int flags;
 	enum amdtp_stream_direction direction;
 	struct mutex mutex;
 
-	/* For packet processing. */
+	 
 	struct fw_iso_context *context;
 	struct iso_packets_buffer buffer;
 	unsigned int queue_size;
@@ -133,15 +83,15 @@ struct amdtp_stream {
 		struct {
 			unsigned int ctx_header_size;
 
-			// limit for payload of iso packet.
+			 
 			unsigned int max_ctx_payload_length;
 
-			// For quirks of CIP headers.
-			// Fixed interval of dbc between previos/current
-			// packets.
+			 
+			 
+			 
 			unsigned int dbc_interval;
 
-			// The device starts multiplexing events to the packet.
+			 
 			bool event_starts;
 
 			struct {
@@ -151,13 +101,13 @@ struct amdtp_stream {
 			} cache;
 		} tx;
 		struct {
-			// To generate CIP header.
+			 
 			unsigned int fdf;
 
-			// To generate constant hardware IRQ.
+			 
 			unsigned int event_count;
 
-			// To calculate CIP data blocks and tstamp.
+			 
 			struct {
 				struct seq_desc *descs;
 				unsigned int size;
@@ -173,35 +123,35 @@ struct amdtp_stream {
 		} rx;
 	} ctx_data;
 
-	/* For CIP headers. */
+	 
 	unsigned int source_node_id_field;
 	unsigned int data_block_quadlets;
 	unsigned int data_block_counter;
 	unsigned int sph;
 	unsigned int fmt;
 
-	// Internal flags.
+	 
 	unsigned int transfer_delay;
 	enum cip_sfc sfc;
 	unsigned int syt_interval;
 
-	/* For a PCM substream processing. */
+	 
 	struct snd_pcm_substream *pcm;
 	snd_pcm_uframes_t pcm_buffer_pointer;
 	unsigned int pcm_period_pointer;
 	unsigned int pcm_frame_multiplier;
 
-	// To start processing content of packets at the same cycle in several contexts for
-	// each direction.
+	 
+	 
 	bool ready_processing;
 	wait_queue_head_t ready_wait;
 	unsigned int next_cycle;
 
-	/* For backends to process data blocks. */
+	 
 	void *protocol;
 	amdtp_stream_process_ctx_payloads_t process_ctx_payloads;
 
-	// For domain.
+	 
 	int channel;
 	int speed;
 	struct list_head list;
@@ -230,62 +180,32 @@ void amdtp_stream_pcm_abort(struct amdtp_stream *s);
 extern const unsigned int amdtp_syt_intervals[CIP_SFC_COUNT];
 extern const unsigned int amdtp_rate_table[CIP_SFC_COUNT];
 
-/**
- * amdtp_stream_running - check stream is running or not
- * @s: the AMDTP stream
- *
- * If this function returns true, the stream is running.
- */
+ 
 static inline bool amdtp_stream_running(struct amdtp_stream *s)
 {
 	return !IS_ERR(s->context);
 }
 
-/**
- * amdtp_streaming_error - check for streaming error
- * @s: the AMDTP stream
- *
- * If this function returns true, the stream's packet queue has stopped due to
- * an asynchronous error.
- */
+ 
 static inline bool amdtp_streaming_error(struct amdtp_stream *s)
 {
 	return s->packet_index < 0;
 }
 
-/**
- * amdtp_stream_pcm_running - check PCM substream is running or not
- * @s: the AMDTP stream
- *
- * If this function returns true, PCM substream in the AMDTP stream is running.
- */
+ 
 static inline bool amdtp_stream_pcm_running(struct amdtp_stream *s)
 {
 	return !!s->pcm;
 }
 
-/**
- * amdtp_stream_pcm_trigger - start/stop playback from a PCM device
- * @s: the AMDTP stream
- * @pcm: the PCM device to be started, or %NULL to stop the current device
- *
- * Call this function on a running isochronous stream to enable the actual
- * transmission of PCM data.  This function should be called from the PCM
- * device's .trigger callback.
- */
+ 
 static inline void amdtp_stream_pcm_trigger(struct amdtp_stream *s,
 					    struct snd_pcm_substream *pcm)
 {
 	WRITE_ONCE(s->pcm, pcm);
 }
 
-/**
- * amdtp_stream_next_packet_desc - retrieve next descriptor for amdtp packet.
- * @s: the AMDTP stream
- * @desc: the descriptor of packet
- *
- * This macro computes next descriptor so that the list of descriptors behaves circular queue.
- */
+ 
 #define amdtp_stream_next_packet_desc(s, desc) \
 	list_next_entry_circular(desc, &s->packet_descs_list, link)
 
@@ -343,13 +263,7 @@ unsigned long amdtp_domain_stream_pcm_pointer(struct amdtp_domain *d,
 					      struct amdtp_stream *s);
 int amdtp_domain_stream_pcm_ack(struct amdtp_domain *d, struct amdtp_stream *s);
 
-/**
- * amdtp_domain_wait_ready - sleep till being ready to process packets or timeout
- * @d: the AMDTP domain
- * @timeout_ms: msec till timeout
- *
- * If this function return false, the AMDTP domain should be stopped.
- */
+ 
 static inline bool amdtp_domain_wait_ready(struct amdtp_domain *d, unsigned int timeout_ms)
 {
 	struct amdtp_stream *s;

@@ -1,20 +1,4 @@
-/* Iterate over arguments from argv or --files0-from=FILE
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering.  */
+ 
 
 #include <config.h>
 #include "argv-iter.h"
@@ -24,14 +8,14 @@
 
 struct argv_iterator
 {
-  /* Test FP to determine whether in read-mode or argv-mode. */
-  /* file-mode: fp records position */
+   
+   
   FILE *fp;
   size_t item_idx;
   char *tok;
   size_t buf_len;
 
-  /* argv-mode: record just argv and current pointer */
+   
   char **arg_list;
   char **p;
 };
@@ -48,8 +32,7 @@ argv_iter_init_argv (char **argv)
   return ai;
 }
 
-/* Initialize to read from the stream, FP.
-   The input is expected to contain a list of NUL-delimited tokens.  */
+ 
 struct argv_iterator *
 argv_iter_init_stream (FILE *fp)
 {

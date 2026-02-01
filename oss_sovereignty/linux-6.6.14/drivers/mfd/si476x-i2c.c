@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/mfd/si476x-i2c.c -- Core device driver for si476x MFD
- * device
- *
- * Copyright (C) 2012 Innovative Converged Devices(ICD)
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+ 
 #include <linux/module.h>
 
 #include <linux/slab.h>
@@ -23,16 +15,7 @@
 #define SI476X_MAX_IO_ERRORS		10
 #define SI476X_DRIVER_RDS_FIFO_DEPTH	128
 
-/**
- * si476x_core_config_pinmux() - pin function configuration function
- *
- * @core: Core device structure
- *
- * Configure the functions of the pins of the radio chip.
- *
- * The function returns zero in case of succes or negative error code
- * otherwise.
- */
+ 
 static int si476x_core_config_pinmux(struct si476x_core *core)
 {
 	int err;
@@ -101,29 +84,7 @@ static inline void si476x_core_schedule_polling_work(struct si476x_core *core)
 			      usecs_to_jiffies(SI476X_STATUS_POLL_US));
 }
 
-/**
- * si476x_core_start() - early chip startup function
- * @core: Core device structure
- * @soft: When set, this flag forces "soft" startup, where "soft"
- * power down is the one done by sending appropriate command instead
- * of using reset pin of the tuner
- *
- * Perform required startup sequence to correctly power
- * up the chip and perform initial configuration. It does the
- * following sequence of actions:
- *       1. Claims and enables the power supplies VD and VIO1 required
- *          for I2C interface of the chip operation.
- *       2. Waits for 100us, pulls the reset line up, enables irq,
- *          waits for another 100us as it is specified by the
- *          datasheet.
- *       3. Sends 'POWER_UP' command to the device with all provided
- *          information about power-up parameters.
- *       4. Configures, pin multiplexor, disables digital audio and
- *          configures interrupt sources.
- *
- * The function returns zero in case of succes or negative error code
- * otherwise.
- */
+ 
 int si476x_core_start(struct si476x_core *core, bool soft)
 {
 	struct i2c_client *client = core->client;
@@ -204,39 +165,21 @@ disable_irq:
 }
 EXPORT_SYMBOL_GPL(si476x_core_start);
 
-/**
- * si476x_core_stop() - chip power-down function
- * @core: Core device structure
- * @soft: When set, function sends a POWER_DOWN command instead of
- * bringing reset line low
- *
- * Power down the chip by performing following actions:
- * 1. Disable IRQ or stop the polling worker
- * 2. Send the POWER_DOWN command if the power down is soft or bring
- *    reset line low if not.
- *
- * The function returns zero in case of succes or negative error code
- * otherwise.
- */
+ 
 int si476x_core_stop(struct si476x_core *core, bool soft)
 {
 	int err = 0;
 	atomic_set(&core->is_alive, 0);
 
 	if (soft) {
-		/* TODO: This probably shoud be a configurable option,
-		 * so it is possible to have the chips keep their
-		 * oscillators running
-		 */
+		 
 		struct si476x_power_down_args args = {
 			.xosc = false,
 		};
 		err = si476x_core_cmd_power_down(core, &args);
 	}
 
-	/* We couldn't disable those before
-	 * 'si476x_core_cmd_power_down' since we expect to get CTS
-	 * interrupt */
+	 
 	if (core->client->irq)
 		disable_irq(core->client->irq);
 	else
@@ -250,26 +193,11 @@ int si476x_core_stop(struct si476x_core *core, bool soft)
 }
 EXPORT_SYMBOL_GPL(si476x_core_stop);
 
-/**
- * si476x_core_set_power_state() - set the level at which the power is
- * supplied for the chip.
- * @core: Core device structure
- * @next_state: enum si476x_power_state describing power state to
- *              switch to.
- *
- * Switch on all the required power supplies
- *
- * This function returns 0 in case of suvccess and negative error code
- * otherwise.
- */
+ 
 int si476x_core_set_power_state(struct si476x_core *core,
 				enum si476x_power_state next_state)
 {
-	/*
-	   It is not clear form the datasheet if it is possible to
-	   work with device if not all power domains are operational.
-	   So for now the power-up policy is "power-up all the things!"
-	 */
+	 
 	int err = 0;
 
 	if (core->power_state == SI476X_POWER_INCONSISTENT) {
@@ -287,11 +215,7 @@ int si476x_core_set_power_state(struct si476x_core *core,
 				core->power_state = SI476X_POWER_INCONSISTENT;
 				break;
 			}
-			/*
-			 * Startup timing diagram recommends to have a
-			 * 100 us delay between enabling of the power
-			 * supplies and turning the tuner on.
-			 */
+			 
 			udelay(100);
 
 			err = si476x_core_start(core, false);
@@ -321,12 +245,7 @@ disable_regulators:
 }
 EXPORT_SYMBOL_GPL(si476x_core_set_power_state);
 
-/**
- * si476x_core_report_drainer_stop() - mark the completion of the RDS
- * buffer drain porcess by the worker.
- *
- * @core: Core device structure
- */
+ 
 static inline void si476x_core_report_drainer_stop(struct si476x_core *core)
 {
 	mutex_lock(&core->rds_drainer_status_lock);
@@ -334,12 +253,7 @@ static inline void si476x_core_report_drainer_stop(struct si476x_core *core)
 	mutex_unlock(&core->rds_drainer_status_lock);
 }
 
-/**
- * si476x_core_start_rds_drainer_once() - start RDS drainer worker if
- * ther is none working, do nothing otherwise
- *
- * @core: Datastructure corresponding to the chip.
- */
+ 
 static inline void si476x_core_start_rds_drainer_once(struct si476x_core *core)
 {
 	mutex_lock(&core->rds_drainer_status_lock);
@@ -349,13 +263,7 @@ static inline void si476x_core_start_rds_drainer_once(struct si476x_core *core)
 	}
 	mutex_unlock(&core->rds_drainer_status_lock);
 }
-/**
- * si476x_core_drain_rds_fifo() - RDS buffer drainer.
- * @work: struct work_struct being ppassed to the function by the
- * kernel.
- *
- * Drain the contents of the RDS FIFO of
- */
+ 
 static void si476x_core_drain_rds_fifo(struct work_struct *work)
 {
 	int err;
@@ -391,22 +299,14 @@ unlock:
 	si476x_core_report_drainer_stop(core);
 }
 
-/**
- * si476x_core_pronounce_dead()
- *
- * @core: Core device structure
- *
- * Mark the device as being dead and wake up all potentially waiting
- * threads of execution.
- *
- */
+ 
 static void si476x_core_pronounce_dead(struct si476x_core *core)
 {
 	dev_info(&core->client->dev, "Core device is dead.\n");
 
 	atomic_set(&core->is_alive, 0);
 
-	/* Wake up al possible waiting processes */
+	 
 	wake_up_interruptible(&core->rds_read_queue);
 
 	atomic_set(&core->cts, 1);
@@ -416,21 +316,7 @@ static void si476x_core_pronounce_dead(struct si476x_core *core)
 	wake_up(&core->tuning);
 }
 
-/**
- * si476x_core_i2c_xfer()
- *
- * @core: Core device structure
- * @type: Transfer type
- * @buf: Transfer buffer for/with data
- * @count: Transfer buffer size
- *
- * Perfrom and I2C transfer(either read or write) and keep a counter
- * of I/O errors. If the error counter rises above the threshold
- * pronounce device dead.
- *
- * The function returns zero on succes or negative error code on
- * failure.
- */
+ 
 int si476x_core_i2c_xfer(struct si476x_core *core,
 		    enum si476x_i2c_type type,
 		    char *buf, int count)
@@ -453,16 +339,7 @@ int si476x_core_i2c_xfer(struct si476x_core *core,
 }
 EXPORT_SYMBOL_GPL(si476x_core_i2c_xfer);
 
-/**
- * si476x_core_get_status()
- * @core: Core device structure
- *
- * Get the status byte of the core device by berforming one byte I2C
- * read.
- *
- * The function returns a status value or a negative error code on
- * error.
- */
+ 
 static int si476x_core_get_status(struct si476x_core *core)
 {
 	u8 response;
@@ -472,14 +349,7 @@ static int si476x_core_get_status(struct si476x_core *core)
 	return (err < 0) ? err : response;
 }
 
-/**
- * si476x_core_get_and_signal_status() - IRQ dispatcher
- * @core: Core device structure
- *
- * Dispatch the arrived interrupt request based on the value of the
- * status byte reported by the tuner.
- *
- */
+ 
 static void si476x_core_get_and_signal_status(struct si476x_core *core)
 {
 	int status = si476x_core_get_status(core);
@@ -489,12 +359,7 @@ static void si476x_core_get_and_signal_status(struct si476x_core *core)
 	}
 
 	if (status & SI476X_CTS) {
-		/* Unfortunately completions could not be used for
-		 * signalling CTS since this flag cannot be cleared
-		 * in status byte, and therefore once it becomes true
-		 * multiple calls to 'complete' would cause the
-		 * commands following the current one to be completed
-		 * before they actually are */
+		 
 		dev_dbg(&core->client->dev, "[interrupt] CTSINT\n");
 		atomic_set(&core->cts, 1);
 		wake_up(&core->command);
@@ -531,24 +396,7 @@ static irqreturn_t si476x_core_interrupt(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/**
- * si476x_core_fwver_to_revision()
- * @core: Core device structure
- * @func: Selects the boot function of the device:
- *         *_BOOTLOADER  - Boot loader
- *         *_FM_RECEIVER - FM receiver
- *         *_AM_RECEIVER - AM receiver
- *         *_WB_RECEIVER - Weatherband receiver
- * @major:  Firmware major number
- * @minor1: Firmware first minor number
- * @minor2: Firmware second minor number
- *
- * Convert a chip's firmware version number into an offset that later
- * will be used to as offset in "vtable" of tuner functions
- *
- * This function returns a positive offset in case of success and a -1
- * in case of failure.
- */
+ 
 static int si476x_core_fwver_to_revision(struct si476x_core *core,
 					 int func, int major,
 					 int minor1, int minor2)
@@ -588,7 +436,7 @@ static int si476x_core_fwver_to_revision(struct si476x_core *core,
 			goto unknown_revision;
 		}
 	case SI476X_FUNC_BOOTLOADER:
-	default:		/* FALLTHROUGH */
+	default:		 
 		BUG();
 		return -1;
 	}
@@ -602,19 +450,7 @@ unknown_revision:
 	return SI476X_REVISION_A10;
 }
 
-/**
- * si476x_core_get_revision_info()
- * @core: Core device structure
- *
- * Get the firmware version number of the device. It is done in
- * following three steps:
- *    1. Power-up the device
- *    2. Send the 'FUNC_INFO' command
- *    3. Powering the device down.
- *
- * The function return zero on success and a negative error code on
- * failure.
- */
+ 
 static int si476x_core_get_revision_info(struct si476x_core *core)
 {
 	int rval;

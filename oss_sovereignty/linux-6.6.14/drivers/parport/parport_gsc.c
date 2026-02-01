@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      Low-level parallel-support for PC-style hardware integrated in the 
- *	LASI-Controller (on GSC-Bus) for HP-PARISC Workstations
- *
- *	(C) 1999-2001 by Helge Deller <deller@gmx.de>
- * 
- * based on parport_pc.c by 
- * 	    Grant Guenther <grant@torque.net>
- * 	    Phil Blundell <philb@gnu.org>
- *          Tim Waugh <tim@cyberelk.demon.co.uk>
- *	    Jose Renau <renau@acm.org>
- *          David Campbell
- *          Andrea Arcangeli
- */
 
-#undef DEBUG	/* undef for production */
+ 
+
+#undef DEBUG	 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -43,11 +30,7 @@ MODULE_DESCRIPTION("HP-PARISC PC-style parallel port driver");
 MODULE_LICENSE("GPL");
 
 
-/*
- * Clear TIMEOUT BIT in EPP MODE
- *
- * This is also used in SPP detection.
- */
+ 
 static int clear_epp_timeout(struct parport *pb)
 {
 	unsigned char r;
@@ -55,23 +38,17 @@ static int clear_epp_timeout(struct parport *pb)
 	if (!(parport_gsc_read_status(pb) & 0x01))
 		return 1;
 
-	/* To clear timeout some chips require double read */
+	 
 	parport_gsc_read_status(pb);
 	r = parport_gsc_read_status(pb);
-	parport_writeb (r | 0x01, STATUS (pb)); /* Some reset by writing 1 */
-	parport_writeb (r & 0xfe, STATUS (pb)); /* Others by writing 0 */
+	parport_writeb (r | 0x01, STATUS (pb));  
+	parport_writeb (r & 0xfe, STATUS (pb));  
 	r = parport_gsc_read_status(pb);
 
 	return !(r & 0x01);
 }
 
-/*
- * Access functions.
- *
- * Most of these aren't static because they may be used by the
- * parport_xxx_yyy macros.  extern __inline__ versions of several
- * of these are in parport_gsc.h.
- */
+ 
 
 void parport_gsc_init_state(struct pardevice *dev, struct parport_state *s)
 {
@@ -125,32 +102,21 @@ struct parport_operations parport_gsc_ops =
 	.owner		= THIS_MODULE,
 };
 
-/* --- Mode detection ------------------------------------- */
+ 
 
-/*
- * Checks for port existence, all ports support SPP MODE
- */
+ 
 static int parport_SPP_supported(struct parport *pb)
 {
 	unsigned char r, w;
 
-	/*
-	 * first clear an eventually pending EPP timeout 
-	 * I (sailer@ife.ee.ethz.ch) have an SMSC chipset
-	 * that does not even respond to SPP cycles if an EPP
-	 * timeout is pending
-	 */
+	 
 	clear_epp_timeout(pb);
 
-	/* Do a simple read-write test to make sure the port exists. */
+	 
 	w = 0xc;
 	parport_writeb (w, CONTROL (pb));
 
-	/* Is there a control register that we can read from?  Some
-	 * ports don't allow reads, so read_control just returns a
-	 * software copy. Some ports _do_ allow reads, so bypass the
-	 * software copy here.  In addition, some bits aren't
-	 * writable. */
+	 
 	r = parport_readb (CONTROL (pb));
 	if ((r & 0xf) == w) {
 		w = 0xe;
@@ -161,8 +127,7 @@ static int parport_SPP_supported(struct parport *pb)
 			return PARPORT_MODE_PCSPP;
 	}
 
-	/* Try the data register.  The data lines aren't tri-stated at
-	 * this stage, so we expect back what we wrote. */
+	 
 	w = 0xaa;
 	parport_gsc_write_data (pb, w);
 	r = parport_gsc_read_data (pb);
@@ -177,22 +142,7 @@ static int parport_SPP_supported(struct parport *pb)
 	return 0;
 }
 
-/* Detect PS/2 support.
- *
- * Bit 5 (0x20) sets the PS/2 data direction; setting this high
- * allows us to read data from the data lines.  In theory we would get back
- * 0xff but any peripheral attached to the port may drag some or all of the
- * lines down to zero.  So if we get back anything that isn't the contents
- * of the data register we deem PS/2 support to be present. 
- *
- * Some SPP ports have "half PS/2" ability - you can't turn off the line
- * drivers, but an external peripheral with sufficiently beefy drivers of
- * its own can overpower them and assert its own levels onto the bus, from
- * where they can then be read back as normal.  Ports with this property
- * and the right type of device attached are likely to fail the SPP test,
- * (as they will appear to have stuck bits) and so the fact that they might
- * be misdetected here is rather academic. 
- */
+ 
 
 static int parport_PS2_supported(struct parport *pb)
 {
@@ -200,7 +150,7 @@ static int parport_PS2_supported(struct parport *pb)
   
 	clear_epp_timeout(pb);
 
-	/* try to tri-state the buffer */
+	 
 	parport_gsc_data_reverse (pb);
 	
 	parport_gsc_write_data(pb, 0x55);
@@ -209,7 +159,7 @@ static int parport_PS2_supported(struct parport *pb)
 	parport_gsc_write_data(pb, 0xaa);
 	if (parport_gsc_read_data(pb) != 0xaa) ok++;
 
-	/* cancel input mode */
+	 
 	parport_gsc_data_forward (pb);
 
 	if (ok) {
@@ -223,7 +173,7 @@ static int parport_PS2_supported(struct parport *pb)
 }
 
 
-/* --- Initialisation code -------------------------------- */
+ 
 
 static struct parport *parport_gsc_probe_port(unsigned long base,
 				       unsigned long base_hi, int irq,
@@ -257,7 +207,7 @@ static struct parport *parport_gsc_probe_port(unsigned long base,
 	p->private_data = priv;
 	p->physport = p;
 	if (!parport_SPP_supported (p)) {
-		/* No port. */
+		 
 		kfree (priv);
 		kfree(ops);
 		return NULL;
@@ -297,8 +247,8 @@ do {									\
 		printmode(TRISTATE);
 		printmode(COMPAT);
 		printmode(EPP);
-//		printmode(ECP);
-//		printmode(DMA);
+
+
 	}
 #undef printmode
 	pr_cont("]\n");
@@ -312,14 +262,12 @@ do {									\
 		}
 	}
 
-	/* Done probing.  Now put the port into a sensible start-up state. */
+	 
 
 	parport_gsc_write_data(p, 0);
 	parport_gsc_data_forward (p);
 
-	/* Now that we've told the sharing engine about the port, and
-	   found out its characteristics, let the high-level drivers
-	   know about it. */
+	 
 	parport_announce_port (p);
 
 	return p;
@@ -343,12 +291,10 @@ static int __init parport_init_chip(struct parisc_device *dev)
 
 	port = dev->hpa.start + PARPORT_GSC_OFFSET;
 	
-	/* some older machines with ASP-chip don't support
-	 * the enhanced parport modes.
-	 */
+	 
 	if (boot_cpu_data.cpu_type > pcxt && !pdc_add_valid(port+4)) {
 
-		/* Initialize bidirectional-mode (0x10) & data-tranfer-mode #1 (0x20) */
+		 
 		pr_info("%s: initialize bidirectional-mode\n", __func__);
 		parport_writeb ( (0x10 + 0x20), port + 4);
 
@@ -374,7 +320,7 @@ static void __exit parport_remove_chip(struct parisc_device *dev)
 			free_irq(p->irq, p);
 		kfree (p->private_data);
 		parport_put_port(p);
-		kfree (ops); /* hope no-one cached it */
+		kfree (ops);  
 	}
 }
 

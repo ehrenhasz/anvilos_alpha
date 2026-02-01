@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/pm_qos.h>
 #include <linux/slab.h>
@@ -93,30 +91,22 @@ u32 intel_crtc_max_vblank_count(const struct intel_crtc_state *crtc_state)
 {
 	struct drm_i915_private *dev_priv = to_i915(crtc_state->uapi.crtc->dev);
 
-	/*
-	 * From Gen 11, In case of dsi cmd mode, frame counter wouldnt
-	 * have updated at the beginning of TE, if we want to use
-	 * the hw counter, then we would find it updated in only
-	 * the next TE, hence switching to sw counter.
-	 */
+	 
 	if (crtc_state->mode_flags & (I915_MODE_FLAG_DSI_USE_TE0 |
 				      I915_MODE_FLAG_DSI_USE_TE1))
 		return 0;
 
-	/*
-	 * On i965gm the hardware frame counter reads
-	 * zero when the TV encoder is enabled :(
-	 */
+	 
 	if (IS_I965GM(dev_priv) &&
 	    (crtc_state->output_types & BIT(INTEL_OUTPUT_TVOUT)))
 		return 0;
 
 	if (DISPLAY_VER(dev_priv) >= 5 || IS_G4X(dev_priv))
-		return 0xffffffff; /* full 32 bit counter */
+		return 0xffffffff;  
 	else if (DISPLAY_VER(dev_priv) >= 3)
-		return 0xffffff; /* only 24 bits of frame count */
+		return 0xffffff;  
 	else
-		return 0; /* Gen2 doesn't have a hardware frame counter */
+		return 0;  
 }
 
 void intel_crtc_vblank_on(const struct intel_crtc_state *crtc_state)
@@ -128,11 +118,7 @@ void intel_crtc_vblank_on(const struct intel_crtc_state *crtc_state)
 				      intel_crtc_max_vblank_count(crtc_state));
 	drm_crtc_vblank_on(&crtc->base);
 
-	/*
-	 * Should really happen exactly when we enable the pipe
-	 * but we want the frame counters in the trace, and that
-	 * requires vblank support on some platforms/outputs.
-	 */
+	 
 	trace_intel_pipe_enable(crtc);
 }
 
@@ -140,11 +126,7 @@ void intel_crtc_vblank_off(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
 
-	/*
-	 * Should really happen exactly when we disable the pipe
-	 * but we want the frame counters in the trace, and that
-	 * requires vblank support on some platforms/outputs.
-	 */
+	 
 	trace_intel_pipe_disable(crtc);
 
 	drm_crtc_vblank_off(&crtc->base);
@@ -288,7 +270,7 @@ static const struct drm_crtc_funcs i915_crtc_funcs = {
 static const struct drm_crtc_funcs i8xx_crtc_funcs = {
 	INTEL_CRTC_FUNCS,
 
-	/* no hw vblank counter */
+	 
 	.enable_vblank = i8xx_enable_vblank,
 	.disable_vblank = i8xx_disable_vblank,
 	.get_vblank_timestamp = intel_crtc_get_vblank_timestamp,
@@ -424,10 +406,7 @@ static void intel_crtc_vblank_work_init(struct intel_crtc_state *crtc_state)
 
 	drm_vblank_work_init(&crtc_state->vblank_work, &crtc->base,
 			     intel_crtc_vblank_work);
-	/*
-	 * Interrupt latency is critical for getting the vblank
-	 * work executed as early as possible during the vblank.
-	 */
+	 
 	cpu_latency_qos_update_request(&crtc->vblank_pm_qos, 0);
 }
 
@@ -450,7 +429,7 @@ void intel_wait_for_vblank_workers(struct intel_atomic_state *state)
 int intel_usecs_to_scanlines(const struct drm_display_mode *adjusted_mode,
 			     int usecs)
 {
-	/* paranoia */
+	 
 	if (!adjusted_mode->crtc_htotal)
 		return 1;
 
@@ -468,18 +447,7 @@ static int intel_mode_vblank_start(const struct drm_display_mode *mode)
 	return vblank_start;
 }
 
-/**
- * intel_pipe_update_start() - start update of a set of display registers
- * @new_crtc_state: the new crtc state
- *
- * Mark the start of an update to pipe registers that should be updated
- * atomically regarding vblank. If the next vblank will happens within
- * the next 100 us, this function waits until the vblank passes.
- *
- * After a successful call to this function, interrupts will be disabled
- * until a subsequent call to intel_pipe_update_end(). That is done to
- * avoid random delays.
- */
+ 
 void intel_pipe_update_start(struct intel_crtc_state *new_crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(new_crtc_state->uapi.crtc);
@@ -509,15 +477,12 @@ void intel_pipe_update_start(struct intel_crtc_state *new_crtc_state)
 		vblank_start = intel_mode_vblank_start(adjusted_mode);
 	}
 
-	/* FIXME needs to be calibrated sensibly */
+	 
 	min = vblank_start - intel_usecs_to_scanlines(adjusted_mode,
 						      VBLANK_EVASION_TIME_US);
 	max = vblank_start - 1;
 
-	/*
-	 * M/N is double buffered on the transcoder's undelayed vblank,
-	 * so with seamless M/N we must evade both vblanks.
-	 */
+	 
 	if (new_crtc_state->seamless_m_n && intel_crtc_needs_fastset(new_crtc_state))
 		min -= adjusted_mode->crtc_vblank_start - adjusted_mode->crtc_vdisplay;
 
@@ -527,11 +492,7 @@ void intel_pipe_update_start(struct intel_crtc_state *new_crtc_state)
 	if (drm_WARN_ON(&dev_priv->drm, drm_crtc_vblank_get(&crtc->base)))
 		goto irq_disable;
 
-	/*
-	 * Wait for psr to idle out after enabling the VBL interrupts
-	 * VBL interrupts will start the PSR exit and prevent a PSR
-	 * re-entry as well.
-	 */
+	 
 	intel_psr_wait_for_idle_locked(new_crtc_state);
 
 	local_irq_disable();
@@ -541,11 +502,7 @@ void intel_pipe_update_start(struct intel_crtc_state *new_crtc_state)
 	trace_intel_pipe_update_start(crtc);
 
 	for (;;) {
-		/*
-		 * prepare_to_wait() has a memory barrier, which guarantees
-		 * other CPUs can see the task state update by the time we
-		 * read the scanline.
-		 */
+		 
 		prepare_to_wait(wq, &wait, TASK_UNINTERRUPTIBLE);
 
 		scanline = intel_get_crtc_scanline(crtc);
@@ -570,21 +527,7 @@ void intel_pipe_update_start(struct intel_crtc_state *new_crtc_state)
 
 	drm_crtc_vblank_put(&crtc->base);
 
-	/*
-	 * On VLV/CHV DSI the scanline counter would appear to
-	 * increment approx. 1/3 of a scanline before start of vblank.
-	 * The registers still get latched at start of vblank however.
-	 * This means we must not write any registers on the first
-	 * line of vblank (since not the whole line is actually in
-	 * vblank). And unfortunately we can't use the interrupt to
-	 * wait here since it will fire too soon. We could use the
-	 * frame start interrupt instead since it will fire after the
-	 * critical scanline, but that would require more changes
-	 * in the interrupt code. So for now we'll just do the nasty
-	 * thing and poll for the bad scanline to pass us by.
-	 *
-	 * FIXME figure out if BXT+ DSI suffers from this as well
-	 */
+	 
 	while (need_vlv_dsi_wa && scanline == vblank_start)
 		scanline = intel_get_crtc_scanline(crtc);
 
@@ -629,14 +572,7 @@ static void dbg_vblank_evade(struct intel_crtc *crtc, ktime_t end)
 static void dbg_vblank_evade(struct intel_crtc *crtc, ktime_t end) {}
 #endif
 
-/**
- * intel_pipe_update_end() - end update of a set of display registers
- * @new_crtc_state: the new crtc state
- *
- * Mark the end of an update started with intel_pipe_update_start(). This
- * re-enables interrupts and verifies the update was actually completed
- * before a vblank.
- */
+ 
 void intel_pipe_update_end(struct intel_crtc_state *new_crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(new_crtc_state->uapi.crtc);
@@ -653,18 +589,12 @@ void intel_pipe_update_end(struct intel_crtc_state *new_crtc_state)
 
 	trace_intel_pipe_update_end(crtc, end_vbl_count, scanline_end);
 
-	/*
-	 * Incase of mipi dsi command mode, we need to set frame update
-	 * request for every commit.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 11 &&
 	    intel_crtc_has_type(new_crtc_state, INTEL_OUTPUT_DSI))
 		icl_dsi_frame_update(new_crtc_state);
 
-	/* We're still in the vblank-evade critical section, this can't race.
-	 * Would be slightly nice to just grab the vblank count and arm the
-	 * event outside of the critical section - the spinlock might spin for a
-	 * while ... */
+	 
 	if (intel_crtc_needs_vblank_work(new_crtc_state)) {
 		drm_vblank_work_schedule(&new_crtc_state->vblank_work,
 					 drm_crtc_accurate_vblank_count(&crtc->base) + 1,
@@ -681,27 +611,10 @@ void intel_pipe_update_end(struct intel_crtc_state *new_crtc_state)
 		new_crtc_state->uapi.event = NULL;
 	}
 
-	/*
-	 * Send VRR Push to terminate Vblank. If we are already in vblank
-	 * this has to be done _after_ sampling the frame counter, as
-	 * otherwise the push would immediately terminate the vblank and
-	 * the sampled frame counter would correspond to the next frame
-	 * instead of the current frame.
-	 *
-	 * There is a tiny race here (iff vblank evasion failed us) where
-	 * we might sample the frame counter just before vmax vblank start
-	 * but the push would be sent just after it. That would cause the
-	 * push to affect the next frame instead of the current frame,
-	 * which would cause the next frame to terminate already at vmin
-	 * vblank start instead of vmax vblank start.
-	 */
+	 
 	intel_vrr_send_push(new_crtc_state);
 
-	/*
-	 * Seamless M/N update may need to update frame timings.
-	 *
-	 * FIXME Should be synchronized with the start of vblank somehow...
-	 */
+	 
 	if (new_crtc_state->seamless_m_n && intel_crtc_needs_fastset(new_crtc_state))
 		intel_crtc_update_active_timings(new_crtc_state,
 						 new_crtc_state->vrr.enable);

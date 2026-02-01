@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arch/arm/mach-tegra/gpio.c
- *
- * Copyright (c) 2010 Google, Inc
- * Copyright (c) 2011-2016, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Erik Gilling <konkers@google.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -62,13 +54,10 @@ struct tegra_gpio_info;
 struct tegra_gpio_bank {
 	unsigned int bank;
 
-	/*
-	 * IRQ-core code uses raw locking, and thus, nested locking also
-	 * should be raw in order not to trip spinlock debug warnings.
-	 */
+	 
 	raw_spinlock_t lvl_lock[4];
 
-	/* Lock for updating debounce count register */
+	 
 	spinlock_t dbc_lock[4];
 
 #ifdef CONFIG_PM_SLEEP
@@ -163,7 +152,7 @@ static int tegra_gpio_get(struct gpio_chip *chip, unsigned int offset)
 	struct tegra_gpio_info *tgi = gpiochip_get_data(chip);
 	unsigned int bval = BIT(GPIO_BIT(offset));
 
-	/* If gpio is in output mode then read from the out value */
+	 
 	if (tegra_gpio_readl(tgi, GPIO_OE(tgi, offset)) & bval)
 		return !!(tegra_gpio_readl(tgi, GPIO_OUT(tgi, offset)) & bval);
 
@@ -245,9 +234,7 @@ static int tegra_gpio_set_debounce(struct gpio_chip *chip, unsigned int offset,
 	debounce_ms = min(debounce_ms, 255U);
 	port = GPIO_PORT(offset);
 
-	/* There is only one debounce count register per port and hence
-	 * set the maximum of current and requested debounce time.
-	 */
+	 
 	spin_lock_irqsave(&bank->dbc_lock[port], flags);
 	if (bank->dbc_cnt[port] < debounce_ms) {
 		tegra_gpio_writel(tgi, debounce_ms, GPIO_DBC_CNT(tgi, offset));
@@ -415,10 +402,7 @@ static void tegra_gpio_irq_handler(struct irq_desc *desc)
 			tegra_gpio_writel(tgi, 1 << pin,
 					  GPIO_INT_CLR(tgi, gpio));
 
-			/* if gpio is edge triggered, clear condition
-			 * before executing the handler so that we don't
-			 * miss edges
-			 */
+			 
 			if (!unmasked && lvl & (0x100 << pin)) {
 				unmasked = true;
 				chained_irq_exit(chip, desc);
@@ -526,7 +510,7 @@ static int tegra_gpio_suspend(struct device *dev)
 			bank->int_lvl[p] = tegra_gpio_readl(tgi,
 						GPIO_INT_LVL(tgi, gpio));
 
-			/* Enable gpio irq for wake up source */
+			 
 			tegra_gpio_writel(tgi, bank->wake_enb[p],
 					  GPIO_INT_ENB(tgi, gpio));
 		}
@@ -686,7 +670,7 @@ static const struct dev_pm_ops tegra_gpio_pm_ops = {
 
 static const struct of_device_id tegra_pmc_of_match[] = {
 	{ .compatible = "nvidia,tegra210-pmc", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int tegra_gpio_probe(struct platform_device *pdev)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek USB3.1 gen2 xsphy Driver
- *
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- *
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -18,16 +12,16 @@
 
 #include "phy-mtk-io.h"
 
-/* u2 phy banks */
+ 
 #define SSUSB_SIFSLV_MISC		0x000
 #define SSUSB_SIFSLV_U2FREQ		0x100
 #define SSUSB_SIFSLV_U2PHY_COM	0x300
 
-/* u3 phy shared banks */
+ 
 #define SSPXTP_SIFSLV_DIG_GLB		0x000
 #define SSPXTP_SIFSLV_PHYA_GLB		0x100
 
-/* u3 phy banks */
+ 
 #define SSPXTP_SIFSLV_DIG_LN_TOP	0x000
 #define SSPXTP_SIFSLV_DIG_LN_TX0	0x100
 #define SSPXTP_SIFSLV_DIG_LN_RX0	0x200
@@ -76,7 +70,7 @@
 #define SSPXTP_PHYA_LN_14	((SSPXTP_SIFSLV_PHYA_LN) + 0x014)
 #define RG_XTP_LN0_RX_IMPSEL		GENMASK(4, 0)
 
-#define XSP_REF_CLK		26	/* MHZ */
+#define XSP_REF_CLK		26	 
 #define XSP_SLEW_RATE_COEF	17
 #define XSP_SR_COEF_DIVISOR	1000
 #define XSP_FM_DET_CYCLE_CNT	1024
@@ -84,14 +78,14 @@
 struct xsphy_instance {
 	struct phy *phy;
 	void __iomem *port_base;
-	struct clk *ref_clk;	/* reference clock of anolog phy */
+	struct clk *ref_clk;	 
 	u32 index;
 	u32 type;
-	/* only for HQA test */
+	 
 	int efuse_intr;
 	int efuse_tx_imp;
 	int efuse_rx_imp;
-	/* u2 eye diagram */
+	 
 	int eye_src;
 	int eye_vrt;
 	int eye_term;
@@ -99,11 +93,11 @@ struct xsphy_instance {
 
 struct mtk_xsphy {
 	struct device *dev;
-	void __iomem *glb_base;	/* only shared u3 sif */
+	void __iomem *glb_base;	 
 	struct xsphy_instance **phys;
 	int nphys;
-	int src_ref_clk; /* MHZ, reference clock for slew rate calibrate */
-	int src_coef;    /* coefficient for slew rate calibrate */
+	int src_ref_clk;  
+	int src_coef;     
 };
 
 static void u2_phy_slew_rate_calibrate(struct mtk_xsphy *xsphy,
@@ -114,53 +108,53 @@ static void u2_phy_slew_rate_calibrate(struct mtk_xsphy *xsphy,
 	int fm_out;
 	u32 tmp;
 
-	/* use force value */
+	 
 	if (inst->eye_src)
 		return;
 
-	/* enable USB ring oscillator */
+	 
 	mtk_phy_set_bits(pbase + XSP_USBPHYACR5, P2A5_RG_HSTX_SRCAL_EN);
-	udelay(1);	/* wait clock stable */
+	udelay(1);	 
 
-	/* enable free run clock */
+	 
 	mtk_phy_set_bits(pbase + XSP_U2FREQ_FMMONR1, P2F_RG_FRCK_EN);
 
-	/* set cycle count as 1024 */
+	 
 	mtk_phy_update_field(pbase + XSP_U2FREQ_FMCR0, P2F_RG_CYCLECNT,
 			     XSP_FM_DET_CYCLE_CNT);
 
-	/* enable frequency meter */
+	 
 	mtk_phy_set_bits(pbase + XSP_U2FREQ_FMCR0, P2F_RG_FREQDET_EN);
 
-	/* ignore return value */
+	 
 	readl_poll_timeout(pbase + XSP_U2FREQ_FMMONR1, tmp,
 			   (tmp & P2F_USB_FM_VALID), 10, 200);
 
 	fm_out = readl(pbase + XSP_U2FREQ_MMONR0);
 
-	/* disable frequency meter */
+	 
 	mtk_phy_clear_bits(pbase + XSP_U2FREQ_FMCR0, P2F_RG_FREQDET_EN);
 
-	/* disable free run clock */
+	 
 	mtk_phy_clear_bits(pbase + XSP_U2FREQ_FMMONR1, P2F_RG_FRCK_EN);
 
 	if (fm_out) {
-		/* (1024 / FM_OUT) x reference clock frequency x coefficient */
+		 
 		tmp = xsphy->src_ref_clk * xsphy->src_coef;
 		tmp = (tmp * XSP_FM_DET_CYCLE_CNT) / fm_out;
 		calib_val = DIV_ROUND_CLOSEST(tmp, XSP_SR_COEF_DIVISOR);
 	} else {
-		/* if FM detection fail, set default value */
+		 
 		calib_val = 3;
 	}
 	dev_dbg(xsphy->dev, "phy.%d, fm_out:%d, calib:%d (clk:%d, coef:%d)\n",
 		inst->index, fm_out, calib_val,
 		xsphy->src_ref_clk, xsphy->src_coef);
 
-	/* set HS slew rate */
+	 
 	mtk_phy_update_field(pbase + XSP_USBPHYACR5, P2A5_RG_HSTX_SRCTRL, calib_val);
 
-	/* disable USB ring oscillator */
+	 
 	mtk_phy_clear_bits(pbase + XSP_USBPHYACR5, P2A5_RG_HSTX_SRCAL_EN);
 }
 
@@ -169,7 +163,7 @@ static void u2_phy_instance_init(struct mtk_xsphy *xsphy,
 {
 	void __iomem *pbase = inst->port_base;
 
-	/* DP/DM BC1.1 path Disable */
+	 
 	mtk_phy_clear_bits(pbase + XSP_USBPHYACR6, P2A6_RG_BC11_SW_EN);
 
 	mtk_phy_set_bits(pbase + XSP_USBPHYACR0, P2A0_RG_INTR_EN);
@@ -453,9 +447,9 @@ static int mtk_xsphy_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, xsphy);
 
 	glb_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	/* optional, may not exist if no u3 phys */
+	 
 	if (glb_res) {
-		/* get banks shared by multiple u3 phys */
+		 
 		xsphy->glb_base = devm_ioremap_resource(dev, glb_res);
 		if (IS_ERR(xsphy->glb_base)) {
 			dev_err(dev, "failed to remap glb regs\n");
@@ -465,7 +459,7 @@ static int mtk_xsphy_probe(struct platform_device *pdev)
 
 	xsphy->src_ref_clk = XSP_REF_CLK;
 	xsphy->src_coef = XSP_SLEW_RATE_COEF;
-	/* update parameters of slew rate calibrate if exist */
+	 
 	device_property_read_u32(dev, "mediatek,src-ref-clk-mhz",
 				 &xsphy->src_ref_clk);
 	device_property_read_u32(dev, "mediatek,src-coef", &xsphy->src_coef);

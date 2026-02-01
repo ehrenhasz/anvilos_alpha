@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_MROUTE_H
 #define __LINUX_MROUTE_H
 
@@ -70,13 +70,7 @@ struct mfc_cache_cmp_arg {
 	__be32 mfc_origin;
 };
 
-/**
- * struct mfc_cache - multicast routing entries
- * @_c: Common multicast routing information; has to be first [for casting]
- * @mfc_mcastgrp: destination multicast group address
- * @mfc_origin: source address
- * @cmparg: used for rhashtable comparisons
- */
+ 
 struct mfc_cache {
 	struct mr_mfc _c;
 	union {

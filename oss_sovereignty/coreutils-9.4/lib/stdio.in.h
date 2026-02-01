@@ -1,42 +1,13 @@
-/* A GNU-like <stdio.h>.
-
-   Copyright (C) 2004, 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-#endif
-@PRAGMA_COLUMNS@
-
-#if defined __need_FILE || defined __need___FILE || defined _GL_ALREADY_INCLUDING_STDIO_H
-/* Special invocation convention:
-   - Inside glibc header files.
-   - On OSF/1 5.1 we have a sequence of nested includes
-     <stdio.h> -> <getopt.h> -> <ctype.h> -> <sys/localedef.h> ->
-     <sys/lc_core.h> -> <nl_types.h> -> <mesg.h> -> <stdio.h>.
-     In this situation, the functions are not yet declared, therefore we cannot
-     provide the C++ aliases.  */
+ 
 
 #@INCLUDE_NEXT@ @NEXT_STDIO_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_STDIO_H
 
-/* Suppress macOS deprecation warnings for sprintf and vsprintf.  */
+ 
 #if (defined __APPLE__ && defined __MACH__) && !defined _POSIX_C_SOURCE
 # define _POSIX_C_SOURCE 200809L
 # define _GL_DEFINED__POSIX_C_SOURCE
@@ -44,7 +15,7 @@
 
 #define _GL_ALREADY_INCLUDING_STDIO_H
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #@INCLUDE_NEXT@ @NEXT_STDIO_H@
 
 #undef _GL_ALREADY_INCLUDING_STDIO_H
@@ -57,50 +28,44 @@
 #ifndef _@GUARD_PREFIX@_STDIO_H
 #define _@GUARD_PREFIX@_STDIO_H
 
-/* This file uses _GL_ATTRIBUTE_DEALLOC, _GL_ATTRIBUTE_FORMAT,
-   _GL_ATTRIBUTE_MALLOC, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* Get va_list.  Needed on many systems, including glibc 2.8.  */
+ 
 #include <stdarg.h>
 
 #include <stddef.h>
 
-/* Get off_t and ssize_t.  Needed on many systems, including glibc 2.8
-   and eglibc 2.11.2.
-   May also define off_t to a 64-bit type on native Windows.  */
+ 
 #include <sys/types.h>
 
-/* Solaris 10 and NetBSD 7.0 declare renameat in <unistd.h>, not in <stdio.h>.  */
-/* But in any case avoid namespace pollution on glibc systems.  */
+ 
+ 
 #if (@GNULIB_RENAMEAT@ || defined GNULIB_POSIXCHECK) && (defined __sun || defined __NetBSD__) \
     && ! defined __GLIBC__
 # include <unistd.h>
 #endif
 
-/* Android 4.3 declares renameat in <sys/stat.h>, not in <stdio.h>.  */
-/* But in any case avoid namespace pollution on glibc systems.  */
+ 
+ 
 #if (@GNULIB_RENAMEAT@ || defined GNULIB_POSIXCHECK) && defined __ANDROID__ \
     && ! defined __GLIBC__
 # include <sys/stat.h>
 #endif
 
-/* MSVC declares 'perror' in <stdlib.h>, not in <stdio.h>.  We must include
-   it before we  #define perror rpl_perror.  */
-/* But in any case avoid namespace pollution on glibc systems.  */
+ 
+ 
 #if (@GNULIB_PERROR@ || defined GNULIB_POSIXCHECK) \
     && (defined _WIN32 && ! defined __CYGWIN__) \
     && ! defined __GLIBC__
 # include <stdlib.h>
 #endif
 
-/* MSVC declares 'remove' in <io.h>, not in <stdio.h>.  We must include
-   it before we  #define remove rpl_remove.  */
-/* MSVC declares 'rename' in <io.h>, not in <stdio.h>.  We must include
-   it before we  #define rename rpl_rename.  */
-/* But in any case avoid namespace pollution on glibc systems.  */
+ 
+ 
+ 
 #if (@GNULIB_REMOVE@ || @GNULIB_RENAME@ || defined GNULIB_POSIXCHECK) \
     && (defined _WIN32 && ! defined __CYGWIN__) \
     && ! defined __GLIBC__
@@ -108,9 +73,7 @@
 #endif
 
 
-/* _GL_ATTRIBUTE_DEALLOC (F, I) declares that the function returns pointers
-   that can be freed by passing them as the Ith argument to the
-   function F.  */
+ 
 #ifndef _GL_ATTRIBUTE_DEALLOC
 # if __GNUC__ >= 11
 #  define _GL_ATTRIBUTE_DEALLOC(f, i) __attribute__ ((__malloc__ (f, i)))
@@ -119,22 +82,16 @@
 # endif
 #endif
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The __-protected variants of the attributes 'format' and 'printf' are
-   accepted by gcc versions 2.6.4 (effectively 2.7) and later.
-   We enable _GL_ATTRIBUTE_FORMAT only if these are supported too, because
-   gnulib and libintl do '#define printf __printf__' when they override
-   the 'printf' function.  */
+ 
 #ifndef _GL_ATTRIBUTE_FORMAT
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7) || defined __clang__
 #  define _GL_ATTRIBUTE_FORMAT(spec) __attribute__ ((__format__ spec))
 # else
-#  define _GL_ATTRIBUTE_FORMAT(spec) /* empty */
+#  define _GL_ATTRIBUTE_FORMAT(spec)  
 # endif
 #endif
 
-/* _GL_ATTRIBUTE_MALLOC declares that the function returns a pointer to freshly
-   allocated memory.  */
+ 
 #ifndef _GL_ATTRIBUTE_MALLOC
 # if __GNUC__ >= 3 || defined __clang__
 #  define _GL_ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
@@ -143,48 +100,31 @@
 # endif
 #endif
 
-/* An __attribute__ __format__ specifier for a function that takes a format
-   string and arguments, where the format string directives are the ones
-   standardized by ISO C99 and POSIX.
-   _GL_ATTRIBUTE_SPEC_PRINTF_STANDARD  */
-/* __gnu_printf__ is supported in GCC >= 4.4.  */
+ 
+ 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
 # define _GL_ATTRIBUTE_SPEC_PRINTF_STANDARD __gnu_printf__
 #else
 # define _GL_ATTRIBUTE_SPEC_PRINTF_STANDARD __printf__
 #endif
 
-/* An __attribute__ __format__ specifier for a function that takes a format
-   string and arguments, where the format string directives are the ones of the
-   system printf(), rather than the ones standardized by ISO C99 and POSIX.
-   _GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM  */
-/* On mingw, Gnulib sets __USE_MINGW_ANSI_STDIO in order to get closer to
-   the standards.  The macro GNULIB_PRINTF_ATTRIBUTE_FLAVOR_GNU indicates
-   whether this change is effective.  On older mingw, it is not.  */
+ 
+ 
 #if GNULIB_PRINTF_ATTRIBUTE_FLAVOR_GNU
 # define _GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM _GL_ATTRIBUTE_SPEC_PRINTF_STANDARD
 #else
 # define _GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM __printf__
 #endif
 
-/* _GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD
-   indicates to GCC that the function takes a format string and arguments,
-   where the format string directives are the ones standardized by ISO C99
-   and POSIX.  */
+ 
 #define _GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD(formatstring_parameter, first_argument) \
   _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, formatstring_parameter, first_argument))
 
-/* _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM is like _GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD,
-   except that it indicates to GCC that the supported format string directives
-   are the ones of the system printf(), rather than the ones standardized by
-   ISO C99 and POSIX.  */
+ 
 #define _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM(formatstring_parameter, first_argument) \
   _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, formatstring_parameter, first_argument))
 
-/* _GL_ATTRIBUTE_FORMAT_SCANF
-   indicates to GCC that the function takes a format string and arguments,
-   where the format string directives are the ones standardized by ISO C99
-   and POSIX.  */
+ 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
 # define _GL_ATTRIBUTE_FORMAT_SCANF(formatstring_parameter, first_argument) \
    _GL_ATTRIBUTE_FORMAT ((__gnu_scanf__, formatstring_parameter, first_argument))
@@ -193,58 +133,48 @@
    _GL_ATTRIBUTE_FORMAT ((__scanf__, formatstring_parameter, first_argument))
 #endif
 
-/* _GL_ATTRIBUTE_FORMAT_SCANF_SYSTEM is like _GL_ATTRIBUTE_FORMAT_SCANF,
-   except that it indicates to GCC that the supported format string directives
-   are the ones of the system scanf(), rather than the ones standardized by
-   ISO C99 and POSIX.  */
+ 
 #define _GL_ATTRIBUTE_FORMAT_SCANF_SYSTEM(formatstring_parameter, first_argument) \
   _GL_ATTRIBUTE_FORMAT ((__scanf__, formatstring_parameter, first_argument))
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
-/* Macros for stringification.  */
+ 
 #define _GL_STDIO_STRINGIZE(token) #token
 #define _GL_STDIO_MACROEXPAND_AND_STRINGIZE(token) _GL_STDIO_STRINGIZE(token)
 
-/* When also using extern inline, suppress the use of static inline in
-   standard headers of problematic Apple configurations, as Libc at
-   least through Libc-825.26 (2013-04-09) mishandles it; see, e.g.,
-   <https://lists.gnu.org/r/bug-gnulib/2012-12/msg00023.html>.
-   Perhaps Apple will fix this some day.  */
+ 
 #if (defined _GL_EXTERN_INLINE_IN_USE && defined __APPLE__ \
      && defined __GNUC__ && defined __STDC__)
 # undef putc_unlocked
 #endif
 
 
-/* Maximum number of characters produced by printing a NaN value.  */
+ 
 #ifndef _PRINTF_NAN_LEN_MAX
 # if defined __FreeBSD__ || defined __DragonFly__ \
      || defined __NetBSD__ \
      || (defined __APPLE__ && defined __MACH__)
-/* On BSD systems, a NaN value prints as just "nan", without a sign.  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 3
 # elif (__GLIBC__ >= 2) || MUSL_LIBC || defined __OpenBSD__ || defined __sun || defined __CYGWIN__
-/* glibc, musl libc, OpenBSD, Solaris libc, and Cygwin produce "[-]nan".  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 4
 # elif defined _AIX
-/* AIX produces "[-]NaNQ".  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 5
 # elif defined _WIN32 && !defined __CYGWIN__
-/* On native Windows, the output can be:
-   - with MSVC ucrt: "[-]nan" or "[-]nan(ind)" or "[-]nan(snan)",
-   - with mingw: "[-]1.#IND" or "[-]1.#QNAN".  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 10
 # elif defined __sgi
-/* On IRIX, the output typically is "[-]nan0xNNNNNNNN" with 8 hexadecimal
-   digits.  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 14
 # else
-/* We don't know, but 32 should be a safe maximum.  */
+ 
 #  define _PRINTF_NAN_LEN_MAX 32
 # endif
 #endif
@@ -279,7 +209,7 @@ _GL_WARN_ON_USE (dprintf, "dprintf is unportable - "
 #endif
 
 #if @GNULIB_FCLOSE@
-/* Close STREAM and its underlying file descriptor.  */
+ 
 # if @REPLACE_FCLOSE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define fclose rpl_fclose
@@ -294,16 +224,13 @@ _GL_CXXALIASWARN (fclose);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef fclose
-/* Assume fclose is always declared.  */
+ 
 _GL_WARN_ON_USE (fclose, "fclose is not always POSIX compliant - "
                  "use gnulib module fclose for portable POSIX compliance");
 #endif
 
 #if @GNULIB_MDA_FCLOSEALL@
-/* On native Windows, map 'fcloseall' to '_fcloseall', so that -loldnames is
-   not required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::fcloseall on all platforms that have
-   it.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef fcloseall
@@ -343,7 +270,7 @@ _GL_CXXALIAS_RPL (fdopen, FILE *, (int fd, const char *mode));
 _GL_CXXALIAS_MDA (fdopen, FILE *, (int fd, const char *mode));
 # else
 #  if __GNUC__ >= 11
-/* For -Wmismatched-dealloc: Associate fdopen with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (fdopen, FILE *,
                   (int fd, const char *mode)
                   _GL_ARG_NONNULL ((2)) _GL_ATTRIBUTE_DEALLOC (fclose, 1)
@@ -354,7 +281,7 @@ _GL_CXXALIAS_SYS (fdopen, FILE *, (int fd, const char *mode));
 _GL_CXXALIASWARN (fdopen);
 #else
 # if @GNULIB_FCLOSE@ && __GNUC__ >= 11 && !defined fdopen
-/* For -Wmismatched-dealloc: Associate fdopen with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (fdopen, FILE *,
                   (int fd, const char *mode)
                   _GL_ARG_NONNULL ((2)) _GL_ATTRIBUTE_DEALLOC (fclose, 1)
@@ -362,13 +289,11 @@ _GL_FUNCDECL_SYS (fdopen, FILE *,
 # endif
 # if defined GNULIB_POSIXCHECK
 #  undef fdopen
-/* Assume fdopen is always declared.  */
+ 
 _GL_WARN_ON_USE (fdopen, "fdopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module fdopen for portability");
 # elif @GNULIB_MDA_FDOPEN@
-/* On native Windows, map 'fdopen' to '_fdopen', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::fdopen always.  */
+ 
 #  if defined _WIN32 && !defined __CYGWIN__
 #   if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #    undef fdopen
@@ -383,12 +308,7 @@ _GL_CXXALIASWARN (fdopen);
 #endif
 
 #if @GNULIB_FFLUSH@
-/* Flush all pending data on STREAM according to POSIX rules.  Both
-   output and seekable input streams are supported.
-   Note! LOSS OF DATA can occur if fflush is applied on an input stream
-   that is _not_seekable_ or on an update stream that is _not_seekable_
-   and in which the most recent operation was input.  Seekability can
-   be tested with lseek(fileno(fp),0,SEEK_CUR).  */
+ 
 # if @REPLACE_FFLUSH@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define fflush rpl_fflush
@@ -403,7 +323,7 @@ _GL_CXXALIASWARN (fflush);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef fflush
-/* Assume fflush is always declared.  */
+ 
 _GL_WARN_ON_USE (fflush, "fflush is not always POSIX compliant - "
                  "use gnulib module fflush for portable POSIX compliance");
 #endif
@@ -445,9 +365,7 @@ _GL_CXXALIASWARN (fgets);
 #endif
 
 #if @GNULIB_MDA_FILENO@
-/* On native Windows, map 'fileno' to '_fileno', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::fileno always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef fileno
@@ -475,7 +393,7 @@ _GL_CXXALIAS_RPL (fopen, FILE *,
                   (const char *restrict filename, const char *restrict mode));
 # else
 #  if __GNUC__ >= 11
-/* For -Wmismatched-dealloc: Associate fopen with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (fopen, FILE *,
                   (const char *restrict filename, const char *restrict mode)
                   _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_DEALLOC (fclose, 1));
@@ -488,14 +406,14 @@ _GL_CXXALIASWARN (fopen);
 # endif
 #else
 # if @GNULIB_FCLOSE@ && __GNUC__ >= 11 && !defined fopen
-/* For -Wmismatched-dealloc: Associate fopen with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (fopen, FILE *,
                   (const char *restrict filename, const char *restrict mode)
                   _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_DEALLOC (fclose, 1));
 # endif
 # if defined GNULIB_POSIXCHECK
 #  undef fopen
-/* Assume fopen is always declared.  */
+ 
 _GL_WARN_ON_USE (fopen, "fopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module fopen for portability");
 # endif
@@ -533,19 +451,14 @@ _GL_CXXALIASWARN (fprintf);
 # if !GNULIB_overrides_fprintf
 #  undef fprintf
 # endif
-/* Assume fprintf is always declared.  */
+ 
 _GL_WARN_ON_USE (fprintf, "fprintf is not always POSIX compliant - "
                  "use gnulib module fprintf-posix for portable "
                  "POSIX compliance");
 #endif
 
 #if @GNULIB_FPURGE@
-/* Discard all pending buffered I/O data on STREAM.
-   STREAM must not be wide-character oriented.
-   When discarding pending output, the file position is set back to where it
-   was before the write calls.  When discarding pending input, the file
-   position is advanced to match the end of the previously read input.
-   Return 0 if successful.  Upon error, return -1 and set errno.  */
+ 
 # if @REPLACE_FPURGE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define fpurge rpl_fpurge
@@ -649,7 +562,7 @@ _GL_CXXALIASWARN (freopen);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef freopen
-/* Assume freopen is always declared.  */
+ 
 _GL_WARN_ON_USE (freopen,
                  "freopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module freopen for portability");
@@ -677,40 +590,11 @@ _GL_CXXALIASWARN (fscanf);
 #endif
 
 
-/* Set up the following warnings, based on which modules are in use.
-   GNU Coding Standards discourage the use of fseek, since it imposes
-   an arbitrary limitation on some 32-bit hosts.  Remember that the
-   fseek module depends on the fseeko module, so we only have three
-   cases to consider:
-
-   1. The developer is not using either module.  Issue a warning under
-   GNULIB_POSIXCHECK for both functions, to remind them that both
-   functions have bugs on some systems.  _GL_NO_LARGE_FILES has no
-   impact on this warning.
-
-   2. The developer is using both modules.  They may be unaware of the
-   arbitrary limitations of fseek, so issue a warning under
-   GNULIB_POSIXCHECK.  On the other hand, they may be using both
-   modules intentionally, so the developer can define
-   _GL_NO_LARGE_FILES in the compilation units where the use of fseek
-   is safe, to silence the warning.
-
-   3. The developer is using the fseeko module, but not fseek.  Gnulib
-   guarantees that fseek will still work around platform bugs in that
-   case, but we presume that the developer is aware of the pitfalls of
-   fseek and was trying to avoid it, so issue a warning even when
-   GNULIB_POSIXCHECK is undefined.  Again, _GL_NO_LARGE_FILES can be
-   defined to silence the warning in particular compilation units.
-   In C++ compilations with GNULIB_NAMESPACE, in order to avoid that
-   fseek gets defined as a macro, it is recommended that the developer
-   uses the fseek module, even if he is not calling the fseek function.
-
-   Most gnulib clients that perform stream operations should fall into
-   category 3.  */
+ 
 
 #if @GNULIB_FSEEK@
 # if defined GNULIB_POSIXCHECK && !defined _GL_NO_LARGE_FILES
-#  define _GL_FSEEK_WARN /* Category 2, above.  */
+#  define _GL_FSEEK_WARN  
 #  undef fseek
 # endif
 # if @REPLACE_FSEEK@
@@ -731,12 +615,11 @@ _GL_CXXALIASWARN (fseek);
 
 #if @GNULIB_FSEEKO@
 # if !@GNULIB_FSEEK@ && !defined _GL_NO_LARGE_FILES
-#  define _GL_FSEEK_WARN /* Category 3, above.  */
+#  define _GL_FSEEK_WARN  
 #  undef fseek
 # endif
 # if @REPLACE_FSEEKO@
-/* Provide an fseeko function that is aware of a preceding fflush(), and which
-   detects pipes.  */
+ 
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef fseeko
 #   define fseeko rpl_fseeko
@@ -753,7 +636,7 @@ _GL_CXXALIAS_SYS (fseeko, int, (FILE *fp, off_t offset, int whence));
 # endif
 _GL_CXXALIASWARN (fseeko);
 #elif defined GNULIB_POSIXCHECK
-# define _GL_FSEEK_WARN /* Category 1, above.  */
+# define _GL_FSEEK_WARN  
 # undef fseek
 # undef fseeko
 # if HAVE_RAW_DECL_FSEEKO
@@ -764,19 +647,18 @@ _GL_WARN_ON_USE (fseeko, "fseeko is unportable - "
 
 #ifdef _GL_FSEEK_WARN
 # undef _GL_FSEEK_WARN
-/* Here, either fseek is undefined (but C89 guarantees that it is
-   declared), or it is defined as rpl_fseek (declared above).  */
+ 
 _GL_WARN_ON_USE (fseek, "fseek cannot handle files larger than 4 GB "
                  "on 32-bit platforms - "
                  "use fseeko function for handling of large files");
 #endif
 
 
-/* ftell, ftello.  See the comments on fseek/fseeko.  */
+ 
 
 #if @GNULIB_FTELL@
 # if defined GNULIB_POSIXCHECK && !defined _GL_NO_LARGE_FILES
-#  define _GL_FTELL_WARN /* Category 2, above.  */
+#  define _GL_FTELL_WARN  
 #  undef ftell
 # endif
 # if @REPLACE_FTELL@
@@ -796,7 +678,7 @@ _GL_CXXALIASWARN (ftell);
 
 #if @GNULIB_FTELLO@
 # if !@GNULIB_FTELL@ && !defined _GL_NO_LARGE_FILES
-#  define _GL_FTELL_WARN /* Category 3, above.  */
+#  define _GL_FTELL_WARN  
 #  undef ftell
 # endif
 # if @REPLACE_FTELLO@
@@ -814,7 +696,7 @@ _GL_CXXALIAS_SYS (ftello, off_t, (FILE *fp));
 # endif
 _GL_CXXALIASWARN (ftello);
 #elif defined GNULIB_POSIXCHECK
-# define _GL_FTELL_WARN /* Category 1, above.  */
+# define _GL_FTELL_WARN  
 # undef ftell
 # undef ftello
 # if HAVE_RAW_DECL_FTELLO
@@ -825,8 +707,7 @@ _GL_WARN_ON_USE (ftello, "ftello is unportable - "
 
 #ifdef _GL_FTELL_WARN
 # undef _GL_FTELL_WARN
-/* Here, either ftell is undefined (but C89 guarantees that it is
-   declared), or it is defined as rpl_ftell (declared above).  */
+ 
 _GL_WARN_ON_USE (ftell, "ftell cannot handle files larger than 4 GB "
                  "on 32-bit platforms - "
                  "use ftello function for handling of large files");
@@ -851,11 +732,7 @@ _GL_CXXALIAS_SYS (fwrite, size_t,
                   (const void *restrict ptr, size_t s, size_t n,
                    FILE *restrict stream));
 
-/* Work around bug 11959 when fortifying glibc 2.4 through 2.15
-   <https://sourceware.org/bugzilla/show_bug.cgi?id=11959>,
-   which sometimes causes an unwanted diagnostic for fwrite calls.
-   This affects only function declaration attributes under certain
-   versions of gcc and clang, and is not needed for C++.  */
+ 
 #  if (0 < __USE_FORTIFY_LEVEL                                          \
        && __GLIBC__ == 2 && 4 <= __GLIBC_MINOR__ && __GLIBC_MINOR__ <= 15 \
        && 3 < __GNUC__ + (4 <= __GNUC_MINOR__)                          \
@@ -912,12 +789,7 @@ _GL_CXXALIASWARN (getchar);
 #endif
 
 #if @GNULIB_GETDELIM@
-/* Read input, up to (and including) the next occurrence of DELIMITER, from
-   STREAM, store it in *LINEPTR (and NUL-terminate it).
-   *LINEPTR is a pointer returned from malloc (or NULL), pointing to *LINESIZE
-   bytes of space.  It is realloc'd as necessary.
-   Return the number of bytes read and stored at *LINEPTR (not including the
-   NUL terminator), or -1 on error or EOF.  */
+ 
 # if @REPLACE_GETDELIM@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef getdelim
@@ -957,12 +829,7 @@ _GL_WARN_ON_USE (getdelim, "getdelim is unportable - "
 #endif
 
 #if @GNULIB_GETLINE@
-/* Read a line, up to (and including) the next newline, from STREAM, store it
-   in *LINEPTR (and NUL-terminate it).
-   *LINEPTR is a pointer returned from malloc (or NULL), pointing to *LINESIZE
-   bytes of space.  It is realloc'd as necessary.
-   Return the number of bytes read and stored at *LINEPTR (not including the
-   NUL terminator), or -1 on error or EOF.  */
+ 
 # if @REPLACE_GETLINE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef getline
@@ -997,18 +864,14 @@ _GL_WARN_ON_USE (getline, "getline is unportable - "
 # endif
 #endif
 
-/* It is very rare that the developer ever has full control of stdin,
-   so any use of gets warrants an unconditional warning; besides, C11
-   removed it.  */
+ 
 #undef gets
 #if HAVE_RAW_DECL_GETS && !defined __cplusplus
 _GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
 #endif
 
 #if @GNULIB_MDA_GETW@
-/* On native Windows, map 'getw' to '_getw', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::getw always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef getw
@@ -1018,7 +881,7 @@ _GL_CXXALIAS_MDA (getw, int, (FILE *restrict stream));
 # else
 #  if @HAVE_DECL_GETW@
 #   if defined __APPLE__ && defined __MACH__
-/* The presence of the declaration depends on _POSIX_C_SOURCE.  */
+ 
 _GL_FUNCDECL_SYS (getw, int, (FILE *restrict stream));
 #   endif
 _GL_CXXALIAS_SYS (getw, int, (FILE *restrict stream));
@@ -1031,11 +894,7 @@ _GL_CXXALIASWARN (getw);
 
 #if @GNULIB_OBSTACK_PRINTF@ || @GNULIB_OBSTACK_PRINTF_POSIX@
 struct obstack;
-/* Grow an obstack with formatted output.  Return the number of
-   bytes added to OBS.  No trailing nul byte is added, and the
-   object should be closed with obstack_finish before use.  Upon
-   memory allocation error, call obstack_alloc_failed_handler.  Upon
-   other error, return -1.  */
+ 
 # if @REPLACE_OBSTACK_PRINTF@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define obstack_printf rpl_obstack_printf
@@ -1095,9 +954,7 @@ _GL_WARN_ON_USE (pclose, "pclose is unportable - "
 #endif
 
 #if @GNULIB_PERROR@
-/* Print a message to standard error, describing the value of ERRNO,
-   (if STRING is not NULL and not empty) prefixed with STRING and ": ",
-   and terminated with a newline.  */
+ 
 # if @REPLACE_PERROR@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define perror rpl_perror
@@ -1112,7 +969,7 @@ _GL_CXXALIASWARN (perror);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef perror
-/* Assume perror is always declared.  */
+ 
 _GL_WARN_ON_USE (perror, "perror is not always POSIX compliant - "
                  "use gnulib module perror for portability");
 #endif
@@ -1140,7 +997,7 @@ _GL_CXXALIAS_SYS (popen, FILE *, (const char *cmd, const char *mode));
 _GL_CXXALIASWARN (popen);
 #else
 # if @GNULIB_PCLOSE@ && __GNUC__ >= 11 && !defined popen
-/* For -Wmismatched-dealloc: Associate popen with pclose or rpl_pclose.  */
+ 
 _GL_FUNCDECL_SYS (popen, FILE *,
                   (const char *cmd, const char *mode)
                   _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_DEALLOC (pclose, 1)
@@ -1160,7 +1017,7 @@ _GL_WARN_ON_USE (popen, "popen is buggy on some platforms - "
      || (@GNULIB_PRINTF@ && @REPLACE_STDIO_WRITE_FUNCS@ && (@GNULIB_STDIO_H_NONBLOCKING@ || @GNULIB_STDIO_H_SIGPIPE@))
 #  if defined __GNUC__ || defined __clang__
 #   if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-/* Don't break __attribute__((format(printf,M,N))).  */
+ 
 #    define printf __printf__
 #   endif
 #   if @GNULIB_PRINTF_POSIX@ || @GNULIB_VFPRINTF_POSIX@
@@ -1201,7 +1058,7 @@ _GL_CXXALIASWARN (printf);
 # if !GNULIB_overrides_printf
 #  undef printf
 # endif
-/* Assume printf is always declared.  */
+ 
 _GL_WARN_ON_USE (printf, "printf is not always POSIX compliant - "
                  "use gnulib module printf-posix for portable "
                  "POSIX compliance");
@@ -1256,9 +1113,7 @@ _GL_CXXALIASWARN (puts);
 #endif
 
 #if @GNULIB_MDA_PUTW@
-/* On native Windows, map 'putw' to '_putw', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::putw always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef putw
@@ -1268,7 +1123,7 @@ _GL_CXXALIAS_MDA (putw, int, (int w, FILE *restrict stream));
 # else
 #  if @HAVE_DECL_PUTW@
 #   if defined __APPLE__ && defined __MACH__
-/* The presence of the declaration depends on _POSIX_C_SOURCE.  */
+ 
 _GL_FUNCDECL_SYS (putw, int, (int w, FILE *restrict stream));
 #   endif
 _GL_CXXALIAS_SYS (putw, int, (int w, FILE *restrict stream));
@@ -1295,7 +1150,7 @@ _GL_CXXALIASWARN (remove);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef remove
-/* Assume remove is always declared.  */
+ 
 _GL_WARN_ON_USE (remove, "remove cannot handle directories on some platforms - "
                  "use gnulib module remove for more portability");
 #endif
@@ -1320,7 +1175,7 @@ _GL_CXXALIASWARN (rename);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef rename
-/* Assume rename is always declared.  */
+ 
 _GL_WARN_ON_USE (rename, "rename is buggy on some platforms - "
                  "use gnulib module rename for more portability");
 #endif
@@ -1359,7 +1214,7 @@ _GL_WARN_ON_USE (renameat, "renameat is not portable - "
 #  if defined __GNUC__ || defined __clang__
 #   if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #    undef scanf
-/* Don't break __attribute__((format(scanf,M,N))).  */
+ 
 #    define scanf __scanf__
 #   endif
 _GL_FUNCDECL_RPL_1 (__scanf__, int,
@@ -1424,14 +1279,7 @@ _GL_WARN_ON_USE (snprintf, "snprintf is unportable - "
 # endif
 #endif
 
-/* Some people would argue that all sprintf uses should be warned about
-   (for example, OpenBSD issues a link warning for it),
-   since it can cause security holes due to buffer overruns.
-   However, we believe that sprintf can be used safely, and is more
-   efficient than snprintf in those safe cases; and as proof of our
-   belief, we use sprintf in several gnulib modules.  So this header
-   intentionally avoids adding a warning to sprintf except when
-   GNULIB_POSIXCHECK is defined.  */
+ 
 
 #if @GNULIB_SPRINTF_POSIX@
 # if @REPLACE_SPRINTF@
@@ -1454,16 +1302,14 @@ _GL_CXXALIASWARN (sprintf);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef sprintf
-/* Assume sprintf is always declared.  */
+ 
 _GL_WARN_ON_USE (sprintf, "sprintf is not always POSIX compliant - "
                  "use gnulib module sprintf-posix for portable "
                  "POSIX compliance");
 #endif
 
 #if @GNULIB_MDA_TEMPNAM@
-/* On native Windows, map 'tempnam' to '_tempnam', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::tempnam always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef tempnam
@@ -1487,7 +1333,7 @@ _GL_FUNCDECL_RPL (tmpfile, FILE *, (void)
 _GL_CXXALIAS_RPL (tmpfile, FILE *, (void));
 # else
 #  if __GNUC__ >= 11
-/* For -Wmismatched-dealloc: Associate tmpfile with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (tmpfile, FILE *, (void)
                                    _GL_ATTRIBUTE_DEALLOC (fclose, 1)
                                    _GL_ATTRIBUTE_MALLOC);
@@ -1499,7 +1345,7 @@ _GL_CXXALIASWARN (tmpfile);
 # endif
 #else
 # if @GNULIB_FCLOSE@ && __GNUC__ >= 11 && !defined tmpfile
-/* For -Wmismatched-dealloc: Associate tmpfile with fclose or rpl_fclose.  */
+ 
 _GL_FUNCDECL_SYS (tmpfile, FILE *, (void)
                                    _GL_ATTRIBUTE_DEALLOC (fclose, 1)
                                    _GL_ATTRIBUTE_MALLOC);
@@ -1514,10 +1360,7 @@ _GL_WARN_ON_USE (tmpfile, "tmpfile is not usable on mingw - "
 #endif
 
 #if @GNULIB_VASPRINTF@
-/* Write formatted output to a string dynamically allocated with malloc().
-   If the memory allocation succeeds, store the address of the string in
-   *RESULT and return the number of resulting bytes, excluding the trailing
-   NUL.  Upon memory allocation error, or some other error, return -1.  */
+ 
 # if @REPLACE_VASPRINTF@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define asprintf rpl_asprintf
@@ -1582,8 +1425,7 @@ _GL_FUNCDECL_SYS (vdprintf, int,
                   _GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD (2, 0)
                   _GL_ARG_NONNULL ((2)));
 #  endif
-/* Need to cast, because on Solaris, the third parameter will likely be
-                                                    __va_list args.  */
+ 
 _GL_CXXALIAS_SYS_CAST (vdprintf, int,
                        (int fd, const char *restrict format, va_list args));
 # endif
@@ -1622,9 +1464,7 @@ _GL_CXXALIAS_RPL (vfprintf, int,
                   (FILE *restrict fp,
                    const char *restrict format, va_list args));
 # else
-/* Need to cast, because on Solaris, the third parameter is
-                                                      __va_list args
-   and GCC's fixincludes did not change this to __gnuc_va_list.  */
+ 
 _GL_CXXALIAS_SYS_CAST (vfprintf, int,
                        (FILE *restrict fp,
                         const char *restrict format, va_list args));
@@ -1637,7 +1477,7 @@ _GL_CXXALIASWARN (vfprintf);
 # if !GNULIB_overrides_vfprintf
 #  undef vfprintf
 # endif
-/* Assume vfprintf is always declared.  */
+ 
 _GL_WARN_ON_USE (vfprintf, "vfprintf is not always POSIX compliant - "
                  "use gnulib module vfprintf-posix for portable "
                       "POSIX compliance");
@@ -1685,9 +1525,7 @@ _GL_FUNCDECL_RPL (vprintf, int, (const char *restrict format, va_list args)
 #  endif
 _GL_CXXALIAS_RPL (vprintf, int, (const char *restrict format, va_list args));
 # else
-/* Need to cast, because on Solaris, the second parameter is
-                                                          __va_list args
-   and GCC's fixincludes did not change this to __gnuc_va_list.  */
+ 
 _GL_CXXALIAS_SYS_CAST (vprintf, int,
                        (const char *restrict format, va_list args));
 # endif
@@ -1699,7 +1537,7 @@ _GL_CXXALIASWARN (vprintf);
 # if !GNULIB_overrides_vprintf
 #  undef vprintf
 # endif
-/* Assume vprintf is always declared.  */
+ 
 _GL_WARN_ON_USE (vprintf, "vprintf is not always POSIX compliant - "
                  "use gnulib module vprintf-posix for portable "
                  "POSIX compliance");
@@ -1775,9 +1613,7 @@ _GL_CXXALIAS_RPL (vsprintf, int,
                   (char *restrict str,
                    const char *restrict format, va_list args));
 # else
-/* Need to cast, because on Solaris, the third parameter is
-                                                       __va_list args
-   and GCC's fixincludes did not change this to __gnuc_va_list.  */
+ 
 _GL_CXXALIAS_SYS_CAST (vsprintf, int,
                        (char *restrict str,
                         const char *restrict format, va_list args));
@@ -1787,12 +1623,12 @@ _GL_CXXALIASWARN (vsprintf);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef vsprintf
-/* Assume vsprintf is always declared.  */
+ 
 _GL_WARN_ON_USE (vsprintf, "vsprintf is not always POSIX compliant - "
                  "use gnulib module vsprintf-posix for portable "
                       "POSIX compliance");
 #endif
 
-#endif /* _@GUARD_PREFIX@_STDIO_H */
-#endif /* _@GUARD_PREFIX@_STDIO_H */
+#endif  
+#endif  
 #endif

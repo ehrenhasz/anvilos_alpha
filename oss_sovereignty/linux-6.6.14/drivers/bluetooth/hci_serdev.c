@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Bluetooth HCI serdev driver lib
- *
- *  Copyright (C) 2017  Linaro, Ltd., Rob Herring <robh@kernel.org>
- *
- *  Based on hci_ldisc.c:
- *
- *  Copyright (C) 2000-2001  Qualcomm Incorporated
- *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -25,7 +15,7 @@ static inline void hci_uart_tx_complete(struct hci_uart *hu, int pkt_type)
 {
 	struct hci_dev *hdev = hu->hdev;
 
-	/* Update HCI stat counters */
+	 
 	switch (pkt_type) {
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
@@ -61,9 +51,7 @@ static void hci_uart_write_work(struct work_struct *work)
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 
-	/* REVISIT:
-	 * should we cope with bad skbs or ->write() returning an error value?
-	 */
+	 
 	do {
 		clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
 
@@ -88,9 +76,9 @@ static void hci_uart_write_work(struct work_struct *work)
 	} while (test_bit(HCI_UART_TX_WAKEUP, &hu->tx_state));
 }
 
-/* ------- Interface to HCI layer ------ */
+ 
 
-/* Reset device */
+ 
 static int hci_uart_flush(struct hci_dev *hdev)
 {
 	struct hci_uart *hu  = hci_get_drvdata(hdev);
@@ -101,7 +89,7 @@ static int hci_uart_flush(struct hci_dev *hdev)
 		kfree_skb(hu->tx_skb); hu->tx_skb = NULL;
 	}
 
-	/* Flush any pending characters in the driver and discipline. */
+	 
 	serdev_device_write_flush(hu->serdev);
 
 	if (test_bit(HCI_UART_PROTO_READY, &hu->flags))
@@ -110,7 +98,7 @@ static int hci_uart_flush(struct hci_dev *hdev)
 	return 0;
 }
 
-/* Initialize device */
+ 
 static int hci_uart_open(struct hci_dev *hdev)
 {
 	struct hci_uart *hu = hci_get_drvdata(hdev);
@@ -118,10 +106,7 @@ static int hci_uart_open(struct hci_dev *hdev)
 
 	BT_DBG("%s %p", hdev->name, hdev);
 
-	/* When Quirk HCI_QUIRK_NON_PERSISTENT_SETUP is set by
-	 * driver, BT SoC is completely turned OFF during
-	 * BT OFF. Upon next BT ON UART port should be opened.
-	 */
+	 
 	if (!test_bit(HCI_UART_PROTO_READY, &hu->flags)) {
 		err = serdev_device_open(hu->serdev);
 		if (err)
@@ -129,13 +114,13 @@ static int hci_uart_open(struct hci_dev *hdev)
 		set_bit(HCI_UART_PROTO_READY, &hu->flags);
 	}
 
-	/* Undo clearing this from hci_uart_close() */
+	 
 	hdev->flush = hci_uart_flush;
 
 	return 0;
 }
 
-/* Close device */
+ 
 static int hci_uart_close(struct hci_dev *hdev)
 {
 	struct hci_uart *hu = hci_get_drvdata(hdev);
@@ -148,10 +133,7 @@ static int hci_uart_close(struct hci_dev *hdev)
 	hci_uart_flush(hdev);
 	hdev->flush = NULL;
 
-	/* When QUIRK HCI_QUIRK_NON_PERSISTENT_SETUP is set by driver,
-	 * BT SOC is completely powered OFF during BT OFF, holding port
-	 * open may drain the battery.
-	 */
+	 
 	if (test_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks)) {
 		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
 		serdev_device_close(hu->serdev);
@@ -160,7 +142,7 @@ static int hci_uart_close(struct hci_dev *hdev)
 	return 0;
 }
 
-/* Send frames from HCI layer */
+ 
 static int hci_uart_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct hci_uart *hu = hci_get_drvdata(hdev);
@@ -183,7 +165,7 @@ static int hci_uart_setup(struct hci_dev *hdev)
 	unsigned int speed;
 	int err;
 
-	/* Init speed if any */
+	 
 	if (hu->init_speed)
 		speed = hu->init_speed;
 	else if (hu->proto->init_speed)
@@ -194,7 +176,7 @@ static int hci_uart_setup(struct hci_dev *hdev)
 	if (speed)
 		serdev_device_set_baudrate(hu->serdev, speed);
 
-	/* Operational speed if any */
+	 
 	if (hu->oper_speed)
 		speed = hu->oper_speed;
 	else if (hu->proto->oper_speed)
@@ -231,21 +213,14 @@ static int hci_uart_setup(struct hci_dev *hdev)
 	return 0;
 }
 
-/* Check if the device is wakeable */
+ 
 static bool hci_uart_wakeup(struct hci_dev *hdev)
 {
-	/* HCI UART devices are assumed to be wakeable by default.
-	 * Implement wakeup callback to override this behavior.
-	 */
+	 
 	return true;
 }
 
-/** hci_uart_write_wakeup - transmit buffer wakeup
- * @serdev: serial device
- *
- * This function is called by the serdev framework when it accepts
- * more data being sent.
- */
+ 
 static void hci_uart_write_wakeup(struct serdev_device *serdev)
 {
 	struct hci_uart *hu = serdev_device_get_drvdata(serdev);
@@ -261,16 +236,7 @@ static void hci_uart_write_wakeup(struct serdev_device *serdev)
 		hci_uart_tx_wakeup(hu);
 }
 
-/** hci_uart_receive_buf - receive buffer wakeup
- * @serdev: serial device
- * @data:   pointer to received data
- * @count:  count of received data in bytes
- *
- * This function is called by the serdev framework when it received data
- * in the RX buffer.
- *
- * Return: number of processed bytes
- */
+ 
 static int hci_uart_receive_buf(struct serdev_device *serdev, const u8 *data,
 				   size_t count)
 {
@@ -284,9 +250,7 @@ static int hci_uart_receive_buf(struct serdev_device *serdev, const u8 *data,
 	if (!test_bit(HCI_UART_PROTO_READY, &hu->flags))
 		return 0;
 
-	/* It does not need a lock here as it is already protected by a mutex in
-	 * tty caller
-	 */
+	 
 	hu->proto->recv(hu, data, count);
 
 	if (hu->hdev)
@@ -324,7 +288,7 @@ int hci_uart_register_device(struct hci_uart *hu,
 	hu->proto = p;
 	set_bit(HCI_UART_PROTO_READY, &hu->flags);
 
-	/* Initialize and register HCI device */
+	 
 	hdev = hci_alloc_dev();
 	if (!hdev) {
 		BT_ERR("Can't allocate HCI device");
@@ -340,10 +304,7 @@ int hci_uart_register_device(struct hci_uart *hu,
 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
 	INIT_WORK(&hu->write_work, hci_uart_write_work);
 
-	/* Only when vendor specific setup callback is provided, consider
-	 * the manufacturer information valid. This avoids filling in the
-	 * value for Ericsson when nothing is specified.
-	 */
+	 
 	if (hu->proto->setup)
 		hdev->manufacturer = hu->proto->manufacturer;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -19,7 +15,7 @@
 #define FW_HB_INTERVAL_IN_SECS		1
 #define FW_HB_MISS_COUNT		10
 
-/* Names of Hardware non-queue generic interrupts */
+ 
 static char *cn93_non_ioq_msix_names[] = {
 	"epf_ire_rint",
 	"epf_ore_rint",
@@ -39,7 +35,7 @@ static char *cn93_non_ioq_msix_names[] = {
 	"epf_rsvd",
 };
 
-/* Dump useful hardware CSRs for debug purpose */
+ 
 static void cn93_dump_regs(struct octep_device *oct, int qno)
 {
 	struct device *dev = &oct->pdev->dev;
@@ -106,7 +102,7 @@ static void cn93_dump_regs(struct octep_device *oct, int qno)
 		 octep_read_csr64(oct, CN93_SDP_R_ERR_TYPE(qno)));
 }
 
-/* Reset Hardware Tx queue */
+ 
 static int cn93_reset_iq(struct octep_device *oct, int q_no)
 {
 	struct octep_config *conf = oct->conf;
@@ -114,13 +110,13 @@ static int cn93_reset_iq(struct octep_device *oct, int q_no)
 
 	dev_dbg(&oct->pdev->dev, "Reset PF IQ-%d\n", q_no);
 
-	/* Get absolute queue number */
+	 
 	q_no += conf->pf_ring_cfg.srn;
 
-	/* Disable the Tx/Instruction Ring */
+	 
 	octep_write_csr64(oct, CN93_SDP_R_IN_ENABLE(q_no), val);
 
-	/* clear the Instruction Ring packet/byte counts and doorbell CSRs */
+	 
 	octep_write_csr64(oct, CN93_SDP_R_IN_CNTS(q_no), val);
 	octep_write_csr64(oct, CN93_SDP_R_IN_INT_LEVELS(q_no), val);
 	octep_write_csr64(oct, CN93_SDP_R_IN_PKT_CNT(q_no), val);
@@ -134,17 +130,17 @@ static int cn93_reset_iq(struct octep_device *oct, int q_no)
 	return 0;
 }
 
-/* Reset Hardware Rx queue */
+ 
 static void cn93_reset_oq(struct octep_device *oct, int q_no)
 {
 	u64 val = 0ULL;
 
 	q_no += CFG_GET_PORTS_PF_SRN(oct->conf);
 
-	/* Disable Output (Rx) Ring */
+	 
 	octep_write_csr64(oct, CN93_SDP_R_OUT_ENABLE(q_no), val);
 
-	/* Clear count CSRs */
+	 
 	val = octep_read_csr(oct, CN93_SDP_R_OUT_CNTS(q_no));
 	octep_write_csr(oct, CN93_SDP_R_OUT_CNTS(q_no), val);
 
@@ -152,7 +148,7 @@ static void cn93_reset_oq(struct octep_device *oct, int q_no)
 	octep_write_csr64(oct, CN93_SDP_R_OUT_SLIST_DBELL(q_no), 0xFFFFFFFF);
 }
 
-/* Reset all hardware Tx/Rx queues */
+ 
 static void octep_reset_io_queues_cn93_pf(struct octep_device *oct)
 {
 	struct pci_dev *pdev = oct->pdev;
@@ -166,7 +162,7 @@ static void octep_reset_io_queues_cn93_pf(struct octep_device *oct)
 	}
 }
 
-/* Initialize windowed addresses to access some hardware registers */
+ 
 static void octep_setup_pci_window_regs_cn93_pf(struct octep_device *oct)
 {
 	u8 __iomem *bar0_pciaddr = oct->mmio[0].hw_addr;
@@ -177,7 +173,7 @@ static void octep_setup_pci_window_regs_cn93_pf(struct octep_device *oct)
 	oct->pci_win_regs.pci_win_rd_data = (u8 __iomem *)(bar0_pciaddr + CN93_SDP_WIN_RD_DATA64);
 }
 
-/* Configure Hardware mapping: inform hardware which rings belong to PF. */
+ 
 static void octep_configure_ring_mapping_cn93_pf(struct octep_device *oct)
 {
 	struct octep_config *conf = oct->conf;
@@ -199,7 +195,7 @@ static void octep_configure_ring_mapping_cn93_pf(struct octep_device *oct)
 	}
 }
 
-/* Initialize configuration limits and initial active config 93xx PF. */
+ 
 static void octep_init_config_cn93_pf(struct octep_device *oct)
 {
 	struct octep_config *conf = oct->conf;
@@ -208,9 +204,7 @@ static void octep_init_config_cn93_pf(struct octep_device *oct)
 	u64 val;
 	int pos;
 
-	/* Read ring configuration:
-	 * PF ring count, number of VFs and rings per VF supported
-	 */
+	 
 	val = octep_read_csr64(oct, CN93_SDP_EPF_RINFO);
 	conf->sriov_cfg.max_rings_per_vf = CN93_SDP_EPF_RINFO_RPVF(val);
 	conf->sriov_cfg.active_rings_per_vf = conf->sriov_cfg.max_rings_per_vf;
@@ -258,7 +252,7 @@ static void octep_init_config_cn93_pf(struct octep_device *oct)
 
 }
 
-/* Setup registers for a hardware Tx Queue  */
+ 
 static void octep_setup_iq_regs_cn93_pf(struct octep_device *oct, int iq_no)
 {
 	struct octep_iq *iq = oct->iq[iq_no];
@@ -268,7 +262,7 @@ static void octep_setup_iq_regs_cn93_pf(struct octep_device *oct, int iq_no)
 	iq_no += CFG_GET_PORTS_PF_SRN(oct->conf);
 	reg_val = octep_read_csr64(oct, CN93_SDP_R_IN_CONTROL(iq_no));
 
-	/* wait for IDLE to set to 1 */
+	 
 	if (!(reg_val & CN93_R_IN_CTL_IDLE)) {
 		do {
 			reg_val = octep_read_csr64(oct, CN93_SDP_R_IN_CONTROL(iq_no));
@@ -280,15 +274,13 @@ static void octep_setup_iq_regs_cn93_pf(struct octep_device *oct, int iq_no)
 	reg_val |= CN93_R_IN_CTL_ESR;
 	octep_write_csr64(oct, CN93_SDP_R_IN_CONTROL(iq_no), reg_val);
 
-	/* Write the start of the input queue's ring and its size  */
+	 
 	octep_write_csr64(oct, CN93_SDP_R_IN_INSTR_BADDR(iq_no),
 			  iq->desc_ring_dma);
 	octep_write_csr64(oct, CN93_SDP_R_IN_INSTR_RSIZE(iq_no),
 			  iq->max_count);
 
-	/* Remember the doorbell & instruction count register addr
-	 * for this queue
-	 */
+	 
 	iq->doorbell_reg = oct->mmio[0].hw_addr +
 			   CN93_SDP_R_IN_INSTR_DBELL(iq_no);
 	iq->inst_cnt_reg = oct->mmio[0].hw_addr +
@@ -296,16 +288,16 @@ static void octep_setup_iq_regs_cn93_pf(struct octep_device *oct, int iq_no)
 	iq->intr_lvl_reg = oct->mmio[0].hw_addr +
 			   CN93_SDP_R_IN_INT_LEVELS(iq_no);
 
-	/* Store the current instruction counter (used in flush_iq calculation) */
+	 
 	reset_instr_cnt = readl(iq->inst_cnt_reg);
 	writel(reset_instr_cnt, iq->inst_cnt_reg);
 
-	/* INTR_THRESHOLD is set to max(FFFFFFFF) to disable the INTR */
+	 
 	reg_val = CFG_GET_IQ_INTR_THRESHOLD(oct->conf) & 0xffffffff;
 	octep_write_csr64(oct, CN93_SDP_R_IN_INT_LEVELS(iq_no), reg_val);
 }
 
-/* Setup registers for a hardware Rx Queue  */
+ 
 static void octep_setup_oq_regs_cn93_pf(struct octep_device *oct, int oq_no)
 {
 	u64 reg_val;
@@ -316,7 +308,7 @@ static void octep_setup_oq_regs_cn93_pf(struct octep_device *oct, int oq_no)
 	oq_no += CFG_GET_PORTS_PF_SRN(oct->conf);
 	reg_val = octep_read_csr64(oct, CN93_SDP_R_OUT_CONTROL(oq_no));
 
-	/* wait for IDLE to set to 1 */
+	 
 	if (!(reg_val & CN93_R_OUT_CTL_IDLE)) {
 		do {
 			reg_val = octep_read_csr64(oct, CN93_SDP_R_OUT_CONTROL(oq_no));
@@ -341,11 +333,11 @@ static void octep_setup_oq_regs_cn93_pf(struct octep_device *oct, int oq_no)
 			  oq->max_count);
 
 	oq_ctl = octep_read_csr64(oct, CN93_SDP_R_OUT_CONTROL(oq_no));
-	oq_ctl &= ~0x7fffffULL;	//clear the ISIZE and BSIZE (22-0)
-	oq_ctl |= (oq->buffer_size & 0xffff);	//populate the BSIZE (15-0)
+	oq_ctl &= ~0x7fffffULL;	
+	oq_ctl |= (oq->buffer_size & 0xffff);	
 	octep_write_csr64(oct, CN93_SDP_R_OUT_CONTROL(oq_no), oq_ctl);
 
-	/* Get the mapped address of the pkt_sent and pkts_credit regs */
+	 
 	oq->pkts_sent_reg = oct->mmio[0].hw_addr + CN93_SDP_R_OUT_CNTS(oq_no);
 	oq->pkts_credit_reg = oct->mmio[0].hw_addr +
 			      CN93_SDP_R_OUT_SLIST_DBELL(oq_no);
@@ -356,32 +348,30 @@ static void octep_setup_oq_regs_cn93_pf(struct octep_device *oct, int oq_no)
 	octep_write_csr64(oct, CN93_SDP_R_OUT_INT_LEVELS(oq_no), reg_val);
 }
 
-/* Setup registers for a PF mailbox */
+ 
 static void octep_setup_mbox_regs_cn93_pf(struct octep_device *oct, int q_no)
 {
 	struct octep_mbox *mbox = oct->mbox[q_no];
 
 	mbox->q_no = q_no;
 
-	/* PF mbox interrupt reg */
+	 
 	mbox->mbox_int_reg = oct->mmio[0].hw_addr + CN93_SDP_EPF_MBOX_RINT(0);
 
-	/* PF to VF DATA reg. PF writes into this reg */
+	 
 	mbox->mbox_write_reg = oct->mmio[0].hw_addr + CN93_SDP_R_MBOX_PF_VF_DATA(q_no);
 
-	/* VF to PF DATA reg. PF reads from this reg */
+	 
 	mbox->mbox_read_reg = oct->mmio[0].hw_addr + CN93_SDP_R_MBOX_VF_PF_DATA(q_no);
 }
 
-/* Process non-ioq interrupts required to keep pf interface running.
- * OEI_RINT is needed for control mailbox
- */
+ 
 static bool octep_poll_non_ioq_interrupts_cn93_pf(struct octep_device *oct)
 {
 	bool handled = false;
 	u64 reg0;
 
-	/* Check for OEI INTR */
+	 
 	reg0 = octep_read_csr64(oct, CN93_SDP_EPF_OEI_RINT);
 	if (reg0) {
 		dev_info(&oct->pdev->dev,
@@ -399,7 +389,7 @@ static bool octep_poll_non_ioq_interrupts_cn93_pf(struct octep_device *oct)
 	return handled;
 }
 
-/* Interrupts handler for all non-queue generic interrupts. */
+ 
 static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 {
 	struct octep_device *oct = (struct octep_device *)dev;
@@ -407,7 +397,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 	u64 reg_val = 0;
 	int i = 0;
 
-	/* Check for IRERR INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_IRERR_RINT);
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -428,7 +418,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for ORERR INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_ORERR_RINT);
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -448,7 +438,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for VFIRE INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_VFIRE_RINT(0));
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -457,7 +447,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for VFORE INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_VFORE_RINT(0));
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -466,18 +456,18 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for MBOX INTR and OEI INTR */
+	 
 	if (octep_poll_non_ioq_interrupts_cn93_pf(oct))
 		goto irq_handled;
 
-	/* Check for DMA INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_DMA_RINT);
 	if (reg_val) {
 		octep_write_csr64(oct, CN93_SDP_EPF_DMA_RINT, reg_val);
 		goto irq_handled;
 	}
 
-	/* Check for DMA VF INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_DMA_VF_RINT(0));
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -486,7 +476,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for PPVF INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_PP_VF_RINT(0));
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -495,7 +485,7 @@ static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)
 		goto irq_handled;
 	}
 
-	/* Check for MISC INTR */
+	 
 	reg_val = octep_read_csr64(oct, CN93_SDP_EPF_MISC_RINT);
 	if (reg_val) {
 		dev_info(&pdev->dev,
@@ -509,7 +499,7 @@ irq_handled:
 	return IRQ_HANDLED;
 }
 
-/* Tx/Rx queue interrupt handler */
+ 
 static irqreturn_t octep_ioq_intr_handler_cn93_pf(void *data)
 {
 	struct octep_ioq_vector *vector = (struct octep_ioq_vector *)data;
@@ -519,24 +509,24 @@ static irqreturn_t octep_ioq_intr_handler_cn93_pf(void *data)
 	return IRQ_HANDLED;
 }
 
-/* soft reset of 93xx */
+ 
 static int octep_soft_reset_cn93_pf(struct octep_device *oct)
 {
 	dev_info(&oct->pdev->dev, "CN93XX: Doing soft reset\n");
 
 	octep_write_csr64(oct, CN93_SDP_WIN_WR_MASK_REG, 0xFF);
 
-	/* Set core domain reset bit */
+	 
 	OCTEP_PCI_WIN_WRITE(oct, CN93_RST_CORE_DOMAIN_W1S, 1);
-	/* Wait for 100ms as Octeon resets. */
+	 
 	mdelay(100);
-	/* clear core domain reset bit */
+	 
 	OCTEP_PCI_WIN_WRITE(oct, CN93_RST_CORE_DOMAIN_W1C, 1);
 
 	return 0;
 }
 
-/* Re-initialize Octeon hardware registers */
+ 
 static void octep_reinit_regs_cn93_pf(struct octep_device *oct)
 {
 	u32 i;
@@ -554,7 +544,7 @@ static void octep_reinit_regs_cn93_pf(struct octep_device *oct)
 		writel(oct->oq[i]->max_count, oct->oq[i]->pkts_credit_reg);
 }
 
-/* Enable all interrupts */
+ 
 static void octep_enable_interrupts_cn93_pf(struct octep_device *oct)
 {
 	u64 intr_mask = 0ULL;
@@ -573,7 +563,7 @@ static void octep_enable_interrupts_cn93_pf(struct octep_device *oct)
 	octep_write_csr64(oct, CN93_SDP_EPF_DMA_RINT_ENA_W1S, intr_mask);
 }
 
-/* Disable all interrupts */
+ 
 static void octep_disable_interrupts_cn93_pf(struct octep_device *oct)
 {
 	u64 intr_mask = 0ULL;
@@ -592,7 +582,7 @@ static void octep_disable_interrupts_cn93_pf(struct octep_device *oct)
 	octep_write_csr64(oct, CN93_SDP_EPF_DMA_RINT_ENA_W1C, intr_mask);
 }
 
-/* Get new Octeon Read Index: index of descriptor that Octeon reads next. */
+ 
 static u32 octep_update_iq_read_index_cn93_pf(struct octep_iq *iq)
 {
 	u32 pkt_in_done = readl(iq->inst_cnt_reg);
@@ -606,7 +596,7 @@ static u32 octep_update_iq_read_index_cn93_pf(struct octep_iq *iq)
 	return new_idx;
 }
 
-/* Enable a hardware Tx Queue */
+ 
 static void octep_enable_iq_cn93_pf(struct octep_device *oct, int iq_no)
 {
 	u64 loop = HZ;
@@ -630,7 +620,7 @@ static void octep_enable_iq_cn93_pf(struct octep_device *oct, int iq_no)
 	octep_write_csr64(oct, CN93_SDP_R_IN_ENABLE(iq_no), reg_val);
 }
 
-/* Enable a hardware Rx Queue */
+ 
 static void octep_enable_oq_cn93_pf(struct octep_device *oct, int oq_no)
 {
 	u64 reg_val = 0ULL;
@@ -648,7 +638,7 @@ static void octep_enable_oq_cn93_pf(struct octep_device *oct, int oq_no)
 	octep_write_csr64(oct, CN93_SDP_R_OUT_ENABLE(oq_no), reg_val);
 }
 
-/* Enable all hardware Tx/Rx Queues assined to PF */
+ 
 static void octep_enable_io_queues_cn93_pf(struct octep_device *oct)
 {
 	u8 q;
@@ -659,7 +649,7 @@ static void octep_enable_io_queues_cn93_pf(struct octep_device *oct)
 	}
 }
 
-/* Disable a hardware Tx Queue assined to PF */
+ 
 static void octep_disable_iq_cn93_pf(struct octep_device *oct, int iq_no)
 {
 	u64 reg_val = 0ULL;
@@ -671,7 +661,7 @@ static void octep_disable_iq_cn93_pf(struct octep_device *oct, int iq_no)
 	octep_write_csr64(oct, CN93_SDP_R_IN_ENABLE(iq_no), reg_val);
 }
 
-/* Disable a hardware Rx Queue assined to PF */
+ 
 static void octep_disable_oq_cn93_pf(struct octep_device *oct, int oq_no)
 {
 	u64 reg_val = 0ULL;
@@ -682,7 +672,7 @@ static void octep_disable_oq_cn93_pf(struct octep_device *oct, int oq_no)
 	octep_write_csr64(oct, CN93_SDP_R_OUT_ENABLE(oq_no), reg_val);
 }
 
-/* Disable all hardware Tx/Rx Queues assined to PF */
+ 
 static void octep_disable_io_queues_cn93_pf(struct octep_device *oct)
 {
 	int q = 0;
@@ -693,7 +683,7 @@ static void octep_disable_io_queues_cn93_pf(struct octep_device *oct)
 	}
 }
 
-/* Dump hardware registers (including Tx/Rx queues) for debugging. */
+ 
 static void octep_dump_registers_cn93_pf(struct octep_device *oct)
 {
 	u8 srn, num_rings, q;
@@ -705,17 +695,7 @@ static void octep_dump_registers_cn93_pf(struct octep_device *oct)
 		cn93_dump_regs(oct, q);
 }
 
-/**
- * octep_device_setup_cn93_pf() - Setup Octeon device.
- *
- * @oct: Octeon device private data structure.
- *
- * - initialize hardware operations.
- * - get target side pcie port number for the device.
- * - setup window access to hardware registers.
- * - set initial configuration and max limits.
- * - setup hardware mapping of rings to the PF device.
- */
+ 
 void octep_device_setup_cn93_pf(struct octep_device *oct)
 {
 	oct->hw_ops.setup_iq_regs = octep_setup_iq_regs_cn93_pf;

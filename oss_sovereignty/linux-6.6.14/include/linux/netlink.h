@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_NETLINK_H
 #define __LINUX_NETLINK_H
 
@@ -19,11 +19,11 @@ static inline struct nlmsghdr *nlmsg_hdr(const struct sk_buff *skb)
 }
 
 enum netlink_skb_flags {
-	NETLINK_SKB_DST		= 0x8,	/* Dst set in sendto or sendmsg */
+	NETLINK_SKB_DST		= 0x8,	 
 };
 
 struct netlink_skb_parms {
-	struct scm_creds	creds;		/* Skb credentials	*/
+	struct scm_creds	creds;		 
 	__u32			portid;
 	__u32			dst_group;
 	__u32			flags;
@@ -42,7 +42,7 @@ void netlink_table_ungrab(void);
 #define NL_CFG_F_NONROOT_RECV	(1 << 0)
 #define NL_CFG_F_NONROOT_SEND	(1 << 1)
 
-/* optional Netlink kernel configuration parameters */
+ 
 struct netlink_kernel_cfg {
 	unsigned int	groups;
 	unsigned int	flags;
@@ -62,23 +62,11 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
 	return __netlink_kernel_create(net, unit, THIS_MODULE, cfg);
 }
 
-/* this can be increased when necessary - don't expose to userland */
+ 
 #define NETLINK_MAX_COOKIE_LEN	20
 #define NETLINK_MAX_FMTMSG_LEN	80
 
-/**
- * struct netlink_ext_ack - netlink extended ACK report struct
- * @_msg: message string to report - don't access directly, use
- *	%NL_SET_ERR_MSG
- * @bad_attr: attribute with error
- * @policy: policy for a bad attribute
- * @miss_type: attribute type which was missing
- * @miss_nest: nest missing an attribute (%NULL if missing top level attr)
- * @cookie: cookie data to return to userspace (for success)
- * @cookie_len: actual cookie data length
- * @_msg_buf: output buffer for formatted message strings - don't access
- *	directly, use %NL_SET_ERR_MSG_FMT
- */
+ 
 struct netlink_ext_ack {
 	const char *_msg;
 	const struct nlattr *bad_attr;
@@ -90,11 +78,7 @@ struct netlink_ext_ack {
 	char _msg_buf[NETLINK_MAX_FMTMSG_LEN];
 };
 
-/* Always use this macro, this allows later putting the
- * message into a separate section or such for things
- * like translation or listing all possible messages.
- * If string formatting is needed use NL_SET_ERR_MSG_FMT.
- */
+ 
 #define NL_SET_ERR_MSG(extack, msg) do {		\
 	static const char __msg[] = msg;		\
 	struct netlink_ext_ack *__extack = (extack);	\
@@ -105,9 +89,7 @@ struct netlink_ext_ack {
 		__extack->_msg = __msg;			\
 } while (0)
 
-/* We splice fmt with %s at each end even in the snprintf so that both calls
- * can use the same string constant, avoiding its duplication in .ro
- */
+ 
 #define NL_SET_ERR_MSG_FMT(extack, fmt, args...) do {			       \
 	struct netlink_ext_ack *__extack = (extack);			       \
 									       \
@@ -237,7 +219,7 @@ int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
 int netlink_register_notifier(struct notifier_block *nb);
 int netlink_unregister_notifier(struct notifier_block *nb);
 
-/* finegrained unicast helpers: */
+ 
 struct sock *netlink_getsockbyfilp(struct file *filp);
 int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 		      long *timeo, struct sock *ssk);
@@ -253,19 +235,14 @@ netlink_skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 	if (!nskb)
 		return NULL;
 
-	/* This is a large skb, set destructor callback to release head */
+	 
 	if (is_vmalloc_addr(skb->head))
 		nskb->destructor = skb->destructor;
 
 	return nskb;
 }
 
-/*
- *	skb should fit one page. This choice is good for headerless malloc.
- *	But we should limit to 8K so that userspace does not have to
- *	use enormous buffer sizes on recvmsg() calls just to avoid
- *	MSG_TRUNC when PAGE_SIZE is very large.
- */
+ 
 #if PAGE_SIZE < 8192UL
 #define NLMSG_GOODSIZE	SKB_WITH_OVERHEAD(PAGE_SIZE)
 #else
@@ -282,7 +259,7 @@ struct netlink_callback {
 					struct netlink_callback *cb);
 	int			(*done)(struct netlink_callback *cb);
 	void			*data;
-	/* the module that dump function belong to */
+	 
 	struct module		*module;
 	struct netlink_ext_ack	*extack;
 	u16			family;
@@ -293,9 +270,7 @@ struct netlink_callback {
 	union {
 		u8		ctx[48];
 
-		/* args is deprecated. Cast a struct over ctx instead
-		 * for proper type safety.
-		 */
+		 
 		long		args[6];
 	};
 };
@@ -352,4 +327,4 @@ bool netlink_ns_capable(const struct sk_buff *skb,
 bool netlink_capable(const struct sk_buff *skb, int cap);
 bool netlink_net_capable(const struct sk_buff *skb, int cap);
 
-#endif	/* __LINUX_NETLINK_H */
+#endif	 

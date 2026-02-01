@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * POWER Data Stream Control Register (DSCR) explicit test
- *
- * This test modifies the DSCR value using mtspr instruction and
- * verifies the change with mfspr instruction. It uses both the
- * privilege state SPR and the problem state SPR for this purpose.
- *
- * When using the privilege state SPR, the instructions such as
- * mfspr or mtspr are privileged and the kernel emulates them
- * for us. Instructions using problem state SPR can be executed
- * directly without any emulation if the HW supports them. Else
- * they also get emulated by the kernel.
- *
- * Copyright 2012, Anton Blanchard, IBM Corporation.
- * Copyright 2015, Anshuman Khandual, IBM Corporation.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -53,7 +38,7 @@ int dscr_explicit_lockstep_test(void)
 {
 	pthread_t thread;
 	sem_t semaphores[2];
-	sem_t *prev = &semaphores[1];  /* reversed prev/next than for the other thread */
+	sem_t *prev = &semaphores[1];   
 	sem_t *next = &semaphores[0];
 	unsigned long expected_dscr = 0;
 
@@ -63,7 +48,7 @@ int dscr_explicit_lockstep_test(void)
 	set_dscr(expected_dscr);
 
 	FAIL_IF(sem_init(prev, 0, 0));
-	FAIL_IF(sem_init(next, 0, 1));  /* other thread starts first */
+	FAIL_IF(sem_init(next, 0, 1));   
 	FAIL_IF(bind_to_cpu(BIND_CPU_ANY) < 0);
 	FAIL_IF(pthread_create(&thread, NULL, dscr_explicit_lockstep_thread, (void *)semaphores));
 

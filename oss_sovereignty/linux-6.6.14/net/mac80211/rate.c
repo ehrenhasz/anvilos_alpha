@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright (c) 2006 Jiri Benc <jbenc@suse.cz>
- * Copyright 2017	Intel Deutschland GmbH
- * Copyright (C) 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rtnetlink.h>
@@ -52,7 +46,7 @@ void rate_control_rate_init(struct sta_info *sta)
 
 	sband = local->hw.wiphy->bands[chanctx_conf->def.chan->band];
 
-	/* TODO: check for minstrel_s1g ? */
+	 
 	if (sband->band == NL80211_BAND_S1GHZ) {
 		ieee80211_s1g_sta_rate_init(sta);
 		rcu_read_unlock();
@@ -132,7 +126,7 @@ int ieee80211_rate_control_register(const struct rate_control_ops *ops)
 	mutex_lock(&rate_ctrl_mutex);
 	list_for_each_entry(alg, &rate_ctrl_algs, list) {
 		if (!strcmp(alg->ops->name, ops->name)) {
-			/* don't register an algorithm twice */
+			 
 			WARN_ON(1);
 			mutex_unlock(&rate_ctrl_mutex);
 			return -EALREADY;
@@ -189,7 +183,7 @@ ieee80211_try_rate_control_ops_get(const char *name)
 	return ops;
 }
 
-/* Get the rate control algorithm. */
+ 
 static const struct rate_control_ops *
 ieee80211_rate_control_ops_get(const char *name)
 {
@@ -204,12 +198,12 @@ ieee80211_rate_control_ops_get(const char *name)
 
 	ops = ieee80211_try_rate_control_ops_get(alg_name);
 	if (!ops && name)
-		/* try default if specific alg requested but not found */
+		 
 		ops = ieee80211_try_rate_control_ops_get(ieee80211_default_rc_algo);
 
-	/* Note: check for > 0 is intentional to avoid clang warning */
+	 
 	if (!ops && (strlen(CONFIG_MAC80211_RC_DEFAULT) > 0))
-		/* try built-in one if specific alg requested but not found */
+		 
 		ops = ieee80211_try_rate_control_ops_get(CONFIG_MAC80211_RC_DEFAULT);
 
 	kernel_param_unlock(THIS_MODULE);
@@ -283,7 +277,7 @@ void ieee80211_check_rate_mask(struct ieee80211_link_data *link)
 
 	band = link->conf->chandef.chan->band;
 	if (band == NL80211_BAND_S1GHZ) {
-		/* TODO */
+		 
 		return;
 	}
 
@@ -319,18 +313,18 @@ static void rc_send_low_basicrate(struct ieee80211_tx_rate *rate,
 	u8 i;
 
 	if (sband->band == NL80211_BAND_S1GHZ) {
-		/* TODO */
+		 
 		rate->flags |= IEEE80211_TX_RC_S1G_MCS;
 		rate->idx = 0;
 		return;
 	}
 
 	if (basic_rates == 0)
-		return; /* assume basic rates unknown and accept rate */
+		return;  
 	if (rate->idx < 0)
 		return;
 	if (basic_rates & (1 << rate->idx))
-		return; /* selected rate is a basic rate */
+		return;  
 
 	for (i = rate->idx + 1; i <= sband->n_bitrates; i++) {
 		if (basic_rates & (1 << i)) {
@@ -339,7 +333,7 @@ static void rc_send_low_basicrate(struct ieee80211_tx_rate *rate,
 		}
 	}
 
-	/* could not find a basic rate; use original selection */
+	 
 }
 
 static void __rate_control_send_low(struct ieee80211_hw *hw,
@@ -431,19 +425,19 @@ static bool rate_idx_match_legacy_mask(s8 *rate_idx, int n_bitrates, u32 mask)
 {
 	int j;
 
-	/* See whether the selected rate or anything below it is allowed. */
+	 
 	for (j = *rate_idx; j >= 0; j--) {
 		if (mask & (1 << j)) {
-			/* Okay, found a suitable rate. Use it. */
+			 
 			*rate_idx = j;
 			return true;
 		}
 	}
 
-	/* Try to find a higher rate that would be allowed */
+	 
 	for (j = *rate_idx + 1; j < n_bitrates; j++) {
 		if (mask & (1 << j)) {
-			/* Okay, found a suitable rate. Use it. */
+			 
 			*rate_idx = j;
 			return true;
 		}
@@ -459,11 +453,11 @@ static bool rate_idx_match_mcs_mask(s8 *rate_idx, u8 *mcs_mask)
 	ridx = *rate_idx / 8;
 	rbit = *rate_idx % 8;
 
-	/* sanity check */
+	 
 	if (ridx < 0 || ridx >= IEEE80211_HT_MCS_MASK_LEN)
 		return false;
 
-	/* See whether the selected rate or anything below it is allowed. */
+	 
 	for (i = ridx; i >= 0; i--) {
 		for (j = rbit; j >= 0; j--)
 			if (mcs_mask[i] & BIT(j)) {
@@ -473,7 +467,7 @@ static bool rate_idx_match_mcs_mask(s8 *rate_idx, u8 *mcs_mask)
 		rbit = 7;
 	}
 
-	/* Try to find a higher rate that would be allowed */
+	 
 	ridx = (*rate_idx + 1) / 8;
 	rbit = (*rate_idx + 1) % 8;
 
@@ -499,7 +493,7 @@ static bool rate_idx_match_vht_mcs_mask(s8 *rate_idx, u16 *vht_mask)
 	if (ridx < 0 || ridx >= NL80211_VHT_NSS_MAX)
 		return false;
 
-	/* See whether the selected rate or anything below it is allowed. */
+	 
 	for (i = ridx; i >= 0; i--) {
 		for (j = rbit; j >= 0; j--) {
 			if (vht_mask[i] & BIT(j)) {
@@ -510,7 +504,7 @@ static bool rate_idx_match_vht_mcs_mask(s8 *rate_idx, u16 *vht_mask)
 		rbit = 15;
 	}
 
-	/* Try to find a higher rate that would be allowed */
+	 
 	ridx = (*rate_idx + 1) >> 4;
 	rbit = (*rate_idx + 1) & 0xf;
 
@@ -534,12 +528,12 @@ static void rate_idx_match_mask(s8 *rate_idx, u16 *rate_flags,
 				u16 vht_mask[NL80211_VHT_NSS_MAX])
 {
 	if (*rate_flags & IEEE80211_TX_RC_VHT_MCS) {
-		/* handle VHT rates */
+		 
 		if (rate_idx_match_vht_mcs_mask(rate_idx, vht_mask))
 			return;
 
 		*rate_idx = 0;
-		/* keep protection flags */
+		 
 		*rate_flags &= (IEEE80211_TX_RC_USE_RTS_CTS |
 				IEEE80211_TX_RC_USE_CTS_PROTECT |
 				IEEE80211_TX_RC_USE_SHORT_PREAMBLE);
@@ -551,20 +545,20 @@ static void rate_idx_match_mask(s8 *rate_idx, u16 *rate_flags,
 		if (rate_idx_match_mcs_mask(rate_idx, mcs_mask))
 			return;
 
-		/* also try the legacy rates. */
+		 
 		*rate_flags &= ~(IEEE80211_TX_RC_MCS |
 				 IEEE80211_TX_RC_40_MHZ_WIDTH);
 		if (rate_idx_match_legacy_mask(rate_idx, sband->n_bitrates,
 					       mask))
 			return;
 	} else if (*rate_flags & IEEE80211_TX_RC_MCS) {
-		/* handle HT rates */
+		 
 		if (rate_idx_match_mcs_mask(rate_idx, mcs_mask))
 			return;
 
-		/* also try the legacy rates. */
+		 
 		*rate_idx = 0;
-		/* keep protection flags */
+		 
 		*rate_flags &= (IEEE80211_TX_RC_USE_RTS_CTS |
 				IEEE80211_TX_RC_USE_CTS_PROTECT |
 				IEEE80211_TX_RC_USE_SHORT_PREAMBLE);
@@ -572,12 +566,12 @@ static void rate_idx_match_mask(s8 *rate_idx, u16 *rate_flags,
 					       mask))
 			return;
 	} else {
-		/* handle legacy rates */
+		 
 		if (rate_idx_match_legacy_mask(rate_idx, sband->n_bitrates,
 					       mask))
 			return;
 
-		/* if HT BSS, and we handle a data frame, also try HT rates */
+		 
 		switch (chan_width) {
 		case NL80211_CHAN_WIDTH_20_NOHT:
 		case NL80211_CHAN_WIDTH_5:
@@ -588,7 +582,7 @@ static void rate_idx_match_mask(s8 *rate_idx, u16 *rate_flags,
 		}
 
 		*rate_idx = 0;
-		/* keep protection flags */
+		 
 		*rate_flags &= (IEEE80211_TX_RC_USE_RTS_CTS |
 				IEEE80211_TX_RC_USE_CTS_PROTECT |
 				IEEE80211_TX_RC_USE_SHORT_PREAMBLE);
@@ -602,13 +596,7 @@ static void rate_idx_match_mask(s8 *rate_idx, u16 *rate_flags,
 			return;
 	}
 
-	/*
-	 * Uh.. No suitable rate exists. This should not really happen with
-	 * sane TX rate mask configurations. However, should someone manage to
-	 * configure supported rates and TX rate mask in incompatible way,
-	 * allow the frame to be transmitted with whatever the rate control
-	 * selected.
-	 */
+	 
 }
 
 static void rate_fixup_ratelist(struct ieee80211_vif *vif,
@@ -621,14 +609,7 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 	bool inval = false;
 	int i;
 
-	/*
-	 * Set up the RTS/CTS rate as the fastest basic rate
-	 * that is not faster than the data rate unless there
-	 * is no basic rate slower than the data rate, in which
-	 * case we pick the slowest basic rate
-	 *
-	 * XXX: Should this check all retry rates?
-	 */
+	 
 	if (!(rates[0].flags &
 	      (IEEE80211_TX_RC_MCS | IEEE80211_TX_RC_VHT_MCS))) {
 		u32 basic_rates = vif->bss_conf.basic_rates;
@@ -637,13 +618,13 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 		rate = &sband->bitrates[rates[0].idx];
 
 		for (i = 0; i < sband->n_bitrates; i++) {
-			/* must be a basic rate */
+			 
 			if (!(basic_rates & BIT(i)))
 				continue;
-			/* must not be faster than the data rate */
+			 
 			if (sband->bitrates[i].bitrate > rate->bitrate)
 				continue;
-			/* maximum */
+			 
 			if (sband->bitrates[baserate].bitrate <
 			     sband->bitrates[i].bitrate)
 				baserate = i;
@@ -653,11 +634,7 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 	}
 
 	for (i = 0; i < max_rates; i++) {
-		/*
-		 * make sure there's no valid rate following
-		 * an invalid one, just in case drivers don't
-		 * take the API seriously to stop at -1.
-		 */
+		 
 		if (inval) {
 			rates[i].idx = -1;
 			continue;
@@ -667,10 +644,7 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 			continue;
 		}
 
-		/*
-		 * For now assume MCS is already set up correctly, this
-		 * needs to be fixed.
-		 */
+		 
 		if (rates[i].flags & IEEE80211_TX_RC_MCS) {
 			WARN_ON(rates[i].idx > 76);
 
@@ -686,13 +660,13 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 			continue;
 		}
 
-		/* set up RTS protection if desired */
+		 
 		if (info->control.use_rts) {
 			rates[i].flags |= IEEE80211_TX_RC_USE_RTS_CTS;
 			info->control.use_cts_prot = false;
 		}
 
-		/* RC is busted */
+		 
 		if (WARN_ON_ONCE(rates[i].idx >= sband->n_bitrates)) {
 			rates[i].idx = -1;
 			continue;
@@ -700,12 +674,12 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
 
 		rate = &sband->bitrates[rates[i].idx];
 
-		/* set up short preamble */
+		 
 		if (info->control.short_preamble &&
 		    rate->flags & IEEE80211_RATE_SHORT_PREAMBLE)
 			rates[i].flags |= IEEE80211_TX_RC_USE_SHORT_PREAMBLE;
 
-		/* set up G protection */
+		 
 		if (!(rates[i].flags & IEEE80211_TX_RC_USE_RTS_CTS) &&
 		    info->control.use_cts_prot &&
 		    rate->flags & IEEE80211_RATE_ERP_G)
@@ -725,7 +699,7 @@ static void rate_control_fill_sta_table(struct ieee80211_sta *sta,
 	if (sta && !info->control.skip_table)
 		ratetbl = rcu_dereference(sta->rates);
 
-	/* Fill remaining rate slots with data from the sta rate table. */
+	 
 	max_rates = min_t(int, max_rates, IEEE80211_TX_RATE_TABLE_SIZE);
 	for (i = 0; i < max_rates; i++) {
 		if (i < ARRAY_SIZE(info->control.rates) &&
@@ -788,7 +762,7 @@ static bool rate_control_cap_mask(struct ieee80211_sub_if_data *sdata,
 		__le16 sta_vht_cap;
 		u16 sta_vht_mask[NL80211_VHT_NSS_MAX];
 
-		/* Filter out rates that the STA does not support */
+		 
 		*mask &= sta->deflink.supp_rates[sband->band];
 		for (i = 0; i < IEEE80211_HT_MCS_MASK_LEN; i++)
 			mcs_mask[i] &= sta->deflink.ht_cap.mcs.rx_mask[i];
@@ -840,23 +814,15 @@ static void rate_control_apply_mask(struct ieee80211_sub_if_data *sdata,
 	u16 rate_flags, vht_mask[NL80211_VHT_NSS_MAX];
 	int i;
 
-	/*
-	 * Try to enforce the rateidx mask the user wanted. skip this if the
-	 * default mask (allow all rates) is used to save some processing for
-	 * the common case.
-	 */
+	 
 	if (!rate_control_cap_mask(sdata, sband, sta, &mask, mcs_mask,
 				   vht_mask))
 		return;
 
-	/*
-	 * Make sure the rate index selected for each TX rate is
-	 * included in the configured mask and change the rate indexes
-	 * if needed.
-	 */
+	 
 	chan_width = sdata->vif.bss_conf.chandef.width;
 	for (i = 0; i < max_rates; i++) {
-		/* Skip invalid rates */
+		 
 		if (rates[i].idx < 0)
 			break;
 
@@ -952,12 +918,7 @@ int rate_control_set_rates(struct ieee80211_hw *hw,
 	if (!sband)
 		return -EINVAL;
 	rate_control_apply_mask_ratetbl(sta, sband, rates);
-	/*
-	 * mac80211 guarantees that this function will not be called
-	 * concurrently, so the following RCU access is safe, even without
-	 * extra locking. This can not be checked easily, so we just set
-	 * the condition to true.
-	 */
+	 
 	old = rcu_dereference_protected(pubsta->rates, true);
 	rcu_assign_pointer(pubsta->rates, rates);
 	if (old)

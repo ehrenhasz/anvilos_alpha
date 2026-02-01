@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra_asoc_machine.c - Universal ASoC machine driver for NVIDIA Tegra boards.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/export.h>
@@ -20,7 +18,7 @@
 
 #include "tegra_asoc_machine.h"
 
-/* Headphones Jack */
+ 
 
 static struct snd_soc_jack tegra_machine_hp_jack;
 
@@ -35,7 +33,7 @@ static struct snd_soc_jack_gpio tegra_machine_hp_jack_gpio = {
 	.debounce_time = 150,
 };
 
-/* Headset Jack */
+ 
 
 static struct snd_soc_jack tegra_machine_headset_jack;
 
@@ -50,12 +48,12 @@ static struct snd_soc_jack_gpio tegra_machine_headset_jack_gpio = {
 	.debounce_time = 150,
 };
 
-/* Mic Jack */
+ 
 static int coupled_mic_hp_check(void *data)
 {
 	struct tegra_machine *machine = (struct tegra_machine *)data;
 
-	/* Detect mic insertion only if 3.5 jack is in */
+	 
 	if (gpiod_get_value_cansleep(machine->gpiod_hp_det) &&
 	    gpiod_get_value_cansleep(machine->gpiod_mic_det))
 		return SND_JACK_MICROPHONE;
@@ -346,7 +344,7 @@ static int tegra_machine_hw_params(struct snd_pcm_substream *substream,
 			return err;
 		}
 
-		/* Don't set cdev1/extern1 rate; it's locked to pll_a_out0 */
+		 
 
 		err = clk_prepare_enable(machine->clk_cdev1);
 		if (err) {
@@ -544,10 +542,7 @@ int tegra_asoc_machine_probe(struct platform_device *pdev)
 		return PTR_ERR(machine->clk_cdev1);
 	}
 
-	/*
-	 * If clock parents are not set in DT, configure here to use clk_out_1
-	 * as mclk and extern1 as parent for Tegra30 and higher.
-	 */
+	 
 	if (!of_property_present(dev->of_node, "assigned-clock-parents") &&
 	    !of_machine_is_compatible("nvidia,tegra20")) {
 		struct clk *clk_out_1, *clk_extern1;
@@ -583,10 +578,7 @@ int tegra_asoc_machine_probe(struct platform_device *pdev)
 	}
 
 	if (asoc->set_ac97) {
-		/*
-		 * AC97 rate is fixed at 24.576MHz and is used for both the
-		 * host controller and the external codec
-		 */
+		 
 		err = clk_set_rate(machine->clk_pll_a, 73728000);
 		if (err) {
 			dev_err(dev, "Can't set pll_a rate: %d\n", err);
@@ -603,11 +595,7 @@ int tegra_asoc_machine_probe(struct platform_device *pdev)
 		machine->set_mclk = 24576000;
 	}
 
-	/*
-	 * FIXME: There is some unknown dependency between audio MCLK disable
-	 * and suspend-resume functionality on Tegra30, although audio MCLK is
-	 * only needed for audio.
-	 */
+	 
 	err = clk_prepare_enable(machine->clk_cdev1);
 	if (err) {
 		dev_err(dev, "Can't enable cdev1: %d\n", err);
@@ -622,7 +610,7 @@ int tegra_asoc_machine_probe(struct platform_device *pdev)
 }
 EXPORT_SYMBOL_GPL(tegra_asoc_machine_probe);
 
-/* WM8753 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(wm8753_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -652,7 +640,7 @@ static const struct tegra_asoc_data tegra_wm8753_data = {
 	.add_common_snd_ops = true,
 };
 
-/* WM9712 machine */
+ 
 
 static int tegra_wm9712_init(struct snd_soc_pcm_runtime *rtd)
 {
@@ -685,7 +673,7 @@ static const struct tegra_asoc_data tegra_wm9712_data = {
 	.set_ac97 = true,
 };
 
-/* MAX98090 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(max98090_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -720,7 +708,7 @@ static const struct tegra_asoc_data tegra_max98090_data = {
 	.add_hp_jack = true,
 };
 
-/* MAX98088 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(max98088_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -754,7 +742,7 @@ static const struct tegra_asoc_data tegra_max98088_data = {
 	.add_hp_jack = true,
 };
 
-/* SGTL5000 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(sgtl5000_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -784,7 +772,7 @@ static const struct tegra_asoc_data tegra_sgtl5000_data = {
 	.add_common_snd_ops = true,
 };
 
-/* TLV320AIC23 machine */
+ 
 
 static const struct snd_soc_dapm_widget trimslice_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Line Out", NULL),
@@ -831,7 +819,7 @@ static const struct tegra_asoc_data tegra_trimslice_data = {
 	.add_common_snd_ops = true,
 };
 
-/* RT5677 machine */
+ 
 
 static int tegra_rt5677_init(struct snd_soc_pcm_runtime *rtd)
 {
@@ -879,7 +867,7 @@ static const struct tegra_asoc_data tegra_rt5677_data = {
 	.add_hp_jack = true,
 };
 
-/* RT5640 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(rt5640_aif1,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -912,7 +900,7 @@ static const struct tegra_asoc_data tegra_rt5640_data = {
 	.add_hp_jack = true,
 };
 
-/* RT5632 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(rt5632_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),
@@ -945,7 +933,7 @@ static const struct tegra_asoc_data tegra_rt5632_data = {
 	.add_headset_jack = true,
 };
 
-/* RT5631 machine */
+ 
 
 SND_SOC_DAILINK_DEFS(rt5631_hifi,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()),

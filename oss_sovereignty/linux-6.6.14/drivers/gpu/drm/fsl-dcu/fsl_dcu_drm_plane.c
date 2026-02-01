@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+
+ 
 
 #include <linux/regmap.h>
 
@@ -214,7 +210,7 @@ struct drm_plane *fsl_dcu_drm_primary_create_plane(struct drm_device *dev)
 		return NULL;
 	}
 
-	/* possible_crtc's will be filled in later by crtc_init */
+	 
 	ret = drm_universal_plane_init(dev, primary, 0,
 				       &fsl_dcu_drm_plane_funcs,
 				       fsl_dcu_drm_plane_formats,

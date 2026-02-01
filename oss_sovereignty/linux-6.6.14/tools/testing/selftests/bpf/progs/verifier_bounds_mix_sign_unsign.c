@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/bounds_mix_sign_unsign.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -390,7 +390,7 @@ __naked void signed_and_unsigned_variant_11(void)
 	r1 = *(u64*)(r10 - 16);				\
 	r2 = -1;					\
 	if r2 >= r1 goto l1_%=;				\
-	/* Dead branch. */				\
+	 				\
 	r0 = 0;						\
 	exit;						\
 l1_%=:	if r1 s> 1 goto l0_%=;				\

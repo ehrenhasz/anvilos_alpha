@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// imx51 pinctrl driver based on imx pinmux core
-//
-// Copyright (C) 2012 Freescale Semiconductor, Inc.
-// Copyright (C) 2012 Linaro, Inc.
-//
-// Author: Dong Aisheng <dong.aisheng@linaro.org>
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -386,7 +386,7 @@ enum imx51_pads {
 	MX51_PAD_CSI1_MCLK = 366,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx51_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX51_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX51_PAD_RESERVE1),
@@ -764,7 +764,7 @@ static const struct imx_pinctrl_soc_info imx51_pinctrl_info = {
 
 static const struct of_device_id imx51_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx51-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx51_pinctrl_probe(struct platform_device *pdev)

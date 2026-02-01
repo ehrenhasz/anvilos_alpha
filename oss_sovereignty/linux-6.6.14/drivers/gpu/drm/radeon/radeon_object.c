@@ -1,34 +1,5 @@
-/*
- * Copyright 2009 Jerome Glisse.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors:
- *    Jerome Glisse <glisse@freedesktop.org>
- *    Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
- *    Dave Airlie
- */
+ 
+ 
 
 #include <linux/io.h>
 #include <linux/list.h>
@@ -44,10 +15,7 @@
 
 static void radeon_bo_clear_surface_reg(struct radeon_bo *bo);
 
-/*
- * To exclude mutual BO access we rely on bo_reserve exclusion, as all
- * function are calling it.
- */
+ 
 
 static void radeon_ttm_bo_destroy(struct ttm_buffer_object *tbo)
 {
@@ -80,9 +48,7 @@ void radeon_ttm_placement_from_domain(struct radeon_bo *rbo, u32 domain)
 	rbo->placement.placement = rbo->placements;
 	rbo->placement.busy_placement = rbo->placements;
 	if (domain & RADEON_GEM_DOMAIN_VRAM) {
-		/* Try placing BOs which don't need CPU access outside of the
-		 * CPU accessible part of VRAM
-		 */
+		 
 		if ((rbo->flags & RADEON_GEM_NO_CPU_ACCESS) &&
 		    rbo->rdev->mc.visible_vram_size < rbo->rdev->mc.real_vram_size) {
 			rbo->placements[c].fpfn =
@@ -162,26 +128,19 @@ int radeon_bo_create(struct radeon_device *rdev,
 				       RADEON_GEM_DOMAIN_CPU);
 
 	bo->flags = flags;
-	/* PCI GART is always snooped */
+	 
 	if (!(rdev->flags & RADEON_IS_PCIE))
 		bo->flags &= ~(RADEON_GEM_GTT_WC | RADEON_GEM_GTT_UC);
 
-	/* Write-combined CPU mappings of GTT cause GPU hangs with RV6xx
-	 * See https://bugs.freedesktop.org/show_bug.cgi?id=91268
-	 */
+	 
 	if (rdev->family >= CHIP_RV610 && rdev->family <= CHIP_RV635)
 		bo->flags &= ~(RADEON_GEM_GTT_WC | RADEON_GEM_GTT_UC);
 
 #ifdef CONFIG_X86_32
-	/* XXX: Write-combined CPU mappings of GTT seem broken on 32-bit
-	 * See https://bugs.freedesktop.org/show_bug.cgi?id=84627
-	 */
+	 
 	bo->flags &= ~(RADEON_GEM_GTT_WC | RADEON_GEM_GTT_UC);
 #elif defined(CONFIG_X86) && !defined(CONFIG_X86_PAT)
-	/* Don't try to enable write-combining when it can't work, or things
-	 * may be slow
-	 * See https://bugs.freedesktop.org/show_bug.cgi?id=88758
-	 */
+	 
 #ifndef CONFIG_COMPILE_TEST
 #warning Please enable CONFIG_MTRR and CONFIG_X86_PAT for better performance \
 	 thanks to write-combining
@@ -192,15 +151,13 @@ int radeon_bo_create(struct radeon_device *rdev,
 			      "better performance thanks to write-combining\n");
 	bo->flags &= ~(RADEON_GEM_GTT_WC | RADEON_GEM_GTT_UC);
 #else
-	/* For architectures that don't support WC memory,
-	 * mask out the WC flag from the BO
-	 */
+	 
 	if (!drm_arch_can_wc_memory())
 		bo->flags &= ~RADEON_GEM_GTT_WC;
 #endif
 
 	radeon_ttm_placement_from_domain(bo, domain);
-	/* Kernel allocation are uninterruptible */
+	 
 	down_read(&rdev->pm.mclk_lock);
 	r = ttm_bo_init_validate(&rdev->mman.bdev, &bo->tbo, type,
 				 &bo->placement, page_align, !kernel, sg, resv,
@@ -301,13 +258,13 @@ int radeon_bo_pin_restricted(struct radeon_bo *bo, u32 domain, u64 max_offset,
 		return 0;
 	}
 	if (bo->prime_shared_count && domain == RADEON_GEM_DOMAIN_VRAM) {
-		/* A BO shared as a dma-buf cannot be sensibly migrated to VRAM */
+		 
 		return -EINVAL;
 	}
 
 	radeon_ttm_placement_from_domain(bo, domain);
 	for (i = 0; i < bo->placement.num_placement; i++) {
-		/* force to pin into visible video ram */
+		 
 		if ((bo->placements[i].mem_type == TTM_PL_VRAM) &&
 		    !(bo->flags & RADEON_GEM_NO_CPU_ACCESS) &&
 		    (!max_offset || max_offset > bo->rdev->mc.visible_vram_size))
@@ -353,11 +310,11 @@ int radeon_bo_evict_vram(struct radeon_device *rdev)
 	struct ttm_device *bdev = &rdev->mman.bdev;
 	struct ttm_resource_manager *man;
 
-	/* late 2.6.33 fix IGP hibernate - we need pm ops to do this correct */
+	 
 #ifndef CONFIG_HIBERNATION
 	if (rdev->flags & RADEON_IS_IGP) {
 		if (rdev->mc.igp_sideport_enabled == false)
-			/* Useless to evict on IGP chips */
+			 
 			return 0;
 	}
 #endif
@@ -382,18 +339,18 @@ void radeon_bo_force_delete(struct radeon_device *rdev)
 		mutex_lock(&bo->rdev->gem.mutex);
 		list_del_init(&bo->list);
 		mutex_unlock(&bo->rdev->gem.mutex);
-		/* this should unref the ttm bo */
+		 
 		drm_gem_object_put(&bo->tbo.base);
 	}
 }
 
 int radeon_bo_init(struct radeon_device *rdev)
 {
-	/* reserve PAT memory space to WC for VRAM */
+	 
 	arch_io_reserve_memtype_wc(rdev->mc.aper_base,
 				   rdev->mc.aper_size);
 
-	/* Add an MTRR for the VRAM */
+	 
 	if (!rdev->fastfb_working) {
 		rdev->mc.vram_mtrr = arch_phys_wc_add(rdev->mc.aper_base,
 						      rdev->mc.aper_size);
@@ -413,8 +370,7 @@ void radeon_bo_fini(struct radeon_device *rdev)
 	arch_io_free_memtype_wc(rdev->mc.aper_base, rdev->mc.aper_size);
 }
 
-/* Returns how many bytes TTM can move per IB.
- */
+ 
 static u64 radeon_bo_get_threshold_for_moves(struct radeon_device *rdev)
 {
 	u64 real_vram_size = rdev->mc.real_vram_size;
@@ -422,44 +378,7 @@ static u64 radeon_bo_get_threshold_for_moves(struct radeon_device *rdev)
 		ttm_manager_type(&rdev->mman.bdev, TTM_PL_VRAM);
 	u64 vram_usage = ttm_resource_manager_usage(man);
 
-	/* This function is based on the current VRAM usage.
-	 *
-	 * - If all of VRAM is free, allow relocating the number of bytes that
-	 *   is equal to 1/4 of the size of VRAM for this IB.
-
-	 * - If more than one half of VRAM is occupied, only allow relocating
-	 *   1 MB of data for this IB.
-	 *
-	 * - From 0 to one half of used VRAM, the threshold decreases
-	 *   linearly.
-	 *         __________________
-	 * 1/4 of -|\               |
-	 * VRAM    | \              |
-	 *         |  \             |
-	 *         |   \            |
-	 *         |    \           |
-	 *         |     \          |
-	 *         |      \         |
-	 *         |       \________|1 MB
-	 *         |----------------|
-	 *    VRAM 0 %             100 %
-	 *         used            used
-	 *
-	 * Note: It's a threshold, not a limit. The threshold must be crossed
-	 * for buffer relocations to stop, so any buffer of an arbitrary size
-	 * can be moved as long as the threshold isn't crossed before
-	 * the relocation takes place. We don't want to disable buffer
-	 * relocations completely.
-	 *
-	 * The idea is that buffers should be placed in VRAM at creation time
-	 * and TTM should only do a minimum number of relocations during
-	 * command submission. In practice, you need to submit at least
-	 * a dozen IBs to move all buffers to VRAM if they are in GTT.
-	 *
-	 * Also, things can get pretty crazy under memory pressure and actual
-	 * VRAM usage can change a lot, so playing safe even at 50% does
-	 * consistently increase performance.
-	 */
+	 
 
 	u64 half_vram = real_vram_size >> 1;
 	u64 half_free_vram = vram_usage >= half_vram ? 0 : half_vram - vram_usage;
@@ -492,18 +411,11 @@ int radeon_bo_list_validate(struct radeon_device *rdev,
 			u32 current_domain =
 				radeon_mem_type_to_domain(bo->tbo.resource->mem_type);
 
-			/* Check if this buffer will be moved and don't move it
-			 * if we have moved too many buffers for this IB already.
-			 *
-			 * Note that this allows moving at least one buffer of
-			 * any size, because it doesn't take the current "bo"
-			 * into account. We don't want to disallow buffer moves
-			 * completely.
-			 */
+			 
 			if ((allowed & current_domain) != 0 &&
-			    (domain & current_domain) == 0 && /* will be moved */
+			    (domain & current_domain) == 0 &&  
 			    bytes_moved > bytes_moved_threshold) {
-				/* don't move it */
+				 
 				domain = current_domain;
 			}
 
@@ -569,14 +481,14 @@ int radeon_bo_get_surface_reg(struct radeon_bo *bo)
 			steal = i;
 	}
 
-	/* if we are all out */
+	 
 	if (i == RADEON_GEM_MAX_SURFACES) {
 		if (steal == -1)
 			return -ENOMEM;
-		/* find someone with a surface reg and nuke their BO */
+		 
 		reg = &rdev->surface_regs[steal];
 		old_object = reg->bo;
-		/* blow away the mapping */
+		 
 		DRM_DEBUG("stealing surface reg %d from %p\n", steal, old_object);
 		ttm_bo_unmap_virtual(&old_object->tbo);
 		old_object->surface_reg = -1;
@@ -742,15 +654,15 @@ vm_fault_t radeon_bo_fault_reserve_notify(struct ttm_buffer_object *bo)
 	if ((offset + size) <= rdev->mc.visible_vram_size)
 		return 0;
 
-	/* Can't move a pinned BO to visible VRAM */
+	 
 	if (rbo->tbo.pin_count > 0)
 		return VM_FAULT_SIGBUS;
 
-	/* hurrah the memory is not visible ! */
+	 
 	radeon_ttm_placement_from_domain(rbo, RADEON_GEM_DOMAIN_VRAM);
 	lpfn =	rdev->mc.visible_vram_size >> PAGE_SHIFT;
 	for (i = 0; i < rbo->placement.num_placement; i++) {
-		/* Force into visible VRAM */
+		 
 		if ((rbo->placements[i].mem_type == TTM_PL_VRAM) &&
 		    (!rbo->placements[i].lpfn || rbo->placements[i].lpfn > lpfn))
 			rbo->placements[i].lpfn = lpfn;
@@ -761,7 +673,7 @@ vm_fault_t radeon_bo_fault_reserve_notify(struct ttm_buffer_object *bo)
 		r = ttm_bo_validate(bo, &rbo->placement, &ctx);
 	} else if (likely(!r)) {
 		offset = bo->resource->start << PAGE_SHIFT;
-		/* this should never happen */
+		 
 		if ((offset + size) > rdev->mc.visible_vram_size)
 			return VM_FAULT_SIGBUS;
 	}
@@ -775,14 +687,7 @@ vm_fault_t radeon_bo_fault_reserve_notify(struct ttm_buffer_object *bo)
 	return 0;
 }
 
-/**
- * radeon_bo_fence - add fence to buffer object
- *
- * @bo: buffer object in question
- * @fence: fence to add
- * @shared: true if fence should be added shared
- *
- */
+ 
 void radeon_bo_fence(struct radeon_bo *bo, struct radeon_fence *fence,
 		     bool shared)
 {
@@ -791,7 +696,7 @@ void radeon_bo_fence(struct radeon_bo *bo, struct radeon_fence *fence,
 
 	r = dma_resv_reserve_fences(resv, 1);
 	if (r) {
-		/* As last resort on OOM we block for the fence */
+		 
 		dma_fence_wait(&fence->base, false);
 		return;
 	}

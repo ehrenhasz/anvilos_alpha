@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SPS30 particulate matter sensor i2c driver
- *
- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
- *
- * I2C slave address: 0x69
- */
+
+ 
 #include <asm/unaligned.h>
 #include <linux/crc8.h>
 #include <linux/delay.h>
@@ -19,7 +13,7 @@
 #include "sps30.h"
 
 #define SPS30_I2C_CRC8_POLYNOMIAL 0x31
-/* max number of bytes needed to store PM measurements or serial string */
+ 
 #define SPS30_I2C_MAX_BUF_SIZE 48
 
 DECLARE_CRC8_TABLE(sps30_i2c_crc8_table);
@@ -40,10 +34,7 @@ static int sps30_i2c_xfer(struct sps30_state *state, unsigned char *txbuf, size_
 	struct i2c_client *client = to_i2c_client(state->dev);
 	int ret;
 
-	/*
-	 * Sensor does not support repeated start so instead of
-	 * sending two i2c messages in a row we just send one by one.
-	 */
+	 
 	ret = i2c_master_send(client, txbuf, txsize);
 	if (ret < 0)
 		return ret;
@@ -65,17 +56,7 @@ static int sps30_i2c_xfer(struct sps30_state *state, unsigned char *txbuf, size_
 static int sps30_i2c_command(struct sps30_state *state, u16 cmd, void *arg, size_t arg_size,
 			     void *rsp, size_t rsp_size)
 {
-	/*
-	 * Internally sensor stores measurements in a following manner:
-	 *
-	 * PM1:   upper two bytes, crc8, lower two bytes, crc8
-	 * PM2P5: upper two bytes, crc8, lower two bytes, crc8
-	 * PM4:   upper two bytes, crc8, lower two bytes, crc8
-	 * PM10:  upper two bytes, crc8, lower two bytes, crc8
-	 *
-	 * What follows next are number concentration measurements and
-	 * typical particle size measurement which we omit.
-	 */
+	 
 	unsigned char buf[SPS30_I2C_MAX_BUF_SIZE];
 	unsigned char *tmp;
 	unsigned char crc;
@@ -86,7 +67,7 @@ static int sps30_i2c_command(struct sps30_state *state, u16 cmd, void *arg, size
 	i = 2;
 
 	if (rsp) {
-		/* each two bytes are followed by a crc8 */
+		 
 		rsp_size += rsp_size / 2;
 	} else {
 		tmp = arg;
@@ -104,7 +85,7 @@ static int sps30_i2c_command(struct sps30_state *state, u16 cmd, void *arg, size
 	if (ret)
 		return ret;
 
-	/* validate received data and strip off crc bytes */
+	 
 	tmp = rsp;
 	for (i = 0; i < rsp_size; i += 3) {
 		crc = crc8(sps30_i2c_crc8_table, buf + i, 2, CRC8_INIT_VALUE);
@@ -122,7 +103,7 @@ static int sps30_i2c_command(struct sps30_state *state, u16 cmd, void *arg, size
 
 static int sps30_i2c_start_meas(struct sps30_state *state)
 {
-	/* request BE IEEE754 formatted data */
+	 
 	unsigned char buf[] = { 0x03, 0x00 };
 
 	return sps30_i2c_command(state, SPS30_I2C_START_MEAS, buf, sizeof(buf), NULL, 0);
@@ -139,12 +120,7 @@ static int sps30_i2c_reset(struct sps30_state *state)
 
 	ret = sps30_i2c_command(state, SPS30_I2C_RESET, NULL, 0, NULL, 0);
 	msleep(500);
-	/*
-	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
-	 * some controllers end up in error state. Recover simply by placing
-	 * some data on the bus, for example STOP_MEAS command, which
-	 * is NOP in this case.
-	 */
+	 
 	sps30_i2c_stop_meas(state);
 
 	return ret;
@@ -164,7 +140,7 @@ static bool sps30_i2c_meas_ready(struct sps30_state *state)
 
 static int sps30_i2c_read_meas(struct sps30_state *state, __be32 *meas, size_t num)
 {
-	/* measurements are ready within a second */
+	 
 	if (msleep_interruptible(1000))
 		return -EINTR;
 
@@ -191,7 +167,7 @@ static int sps30_i2c_write_cleaning_period(struct sps30_state *state, __be32 per
 
 static int sps30_i2c_show_info(struct sps30_state *state)
 {
-	/* extra nul just in case */
+	 
 	unsigned char buf[32 + 1] = { 0x00 };
 	int ret;
 

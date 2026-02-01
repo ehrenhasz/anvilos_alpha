@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Leilk Liu <leilk.liu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -110,15 +107,7 @@
 #define DMA_ADDR_EXT_BITS		(36)
 #define DMA_ADDR_DEF_BITS		(32)
 
-/**
- * struct mtk_spi_compatible - device data structure
- * @need_pad_sel:	Enable pad (pins) selection in SPI controller
- * @must_tx:		Must explicitly send dummy TX bytes to do RX only transfer
- * @enhance_timing:	Enable adjusting cfg register to enhance time accuracy
- * @dma_ext:		DMA address extension supported
- * @no_need_unprepare:	Don't unprepare the SPI clk during runtime
- * @ipm_design:		Adjust/extend registers to support IPM design IP features
- */
+ 
 struct mtk_spi_compatible {
 	bool need_pad_sel;
 	bool must_tx;
@@ -128,31 +117,7 @@ struct mtk_spi_compatible {
 	bool ipm_design;
 };
 
-/**
- * struct mtk_spi - SPI driver instance
- * @base:		Start address of the SPI controller registers
- * @state:		SPI controller state
- * @pad_num:		Number of pad_sel entries
- * @pad_sel:		Groups of pins to select
- * @parent_clk:		Parent of sel_clk
- * @sel_clk:		SPI master mux clock
- * @spi_clk:		Peripheral clock
- * @spi_hclk:		AHB bus clock
- * @cur_transfer:	Currently processed SPI transfer
- * @xfer_len:		Number of bytes to transfer
- * @num_xfered:		Number of transferred bytes
- * @tx_sgl:		TX transfer scatterlist
- * @rx_sgl:		RX transfer scatterlist
- * @tx_sgl_len:		Size of TX DMA transfer
- * @rx_sgl_len:		Size of RX DMA transfer
- * @dev_comp:		Device data structure
- * @spi_clk_hz:		Current SPI clock in Hz
- * @spimem_done:	SPI-MEM operation completion
- * @use_spimem:		Enables SPI-MEM
- * @dev:		Device pointer
- * @tx_dma:		DMA start for SPI-MEM TX
- * @rx_dma:		DMA start for SPI-MEM RX
- */
+ 
 struct mtk_spi {
 	void __iomem *base;
 	u32 state;
@@ -216,10 +181,7 @@ static const struct mtk_spi_compatible mt6893_compat = {
 	.no_need_unprepare = true,
 };
 
-/*
- * A piece of default chip info unless the platform
- * supplies it.
- */
+ 
 static const struct mtk_chip_config mtk_default_chip_info = {
 	.sample_sel = 0,
 	.tick_delay = 0,
@@ -270,7 +232,7 @@ static void mtk_spi_reset(struct mtk_spi *mdata)
 {
 	u32 reg_val;
 
-	/* set the software reset bit in SPI_CMD_REG. */
+	 
 	reg_val = readl(mdata->base + SPI_CMD_REG);
 	reg_val |= SPI_CMD_RST;
 	writel(reg_val, mdata->base + SPI_CMD_REG);
@@ -360,7 +322,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
 
 	reg_val = readl(mdata->base + SPI_CMD_REG);
 	if (mdata->dev_comp->ipm_design) {
-		/* SPI transfer without idle time until packet length done */
+		 
 		reg_val |= SPI_CMD_IPM_NONIDLE_MODE;
 		if (spi->mode & SPI_LOOP)
 			reg_val |= SPI_CMD_IPM_SPIM_LOOP;
@@ -377,7 +339,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
 	else
 		reg_val &= ~SPI_CMD_CPOL;
 
-	/* set the mlsbx and mlsbtx */
+	 
 	if (spi->mode & SPI_LSB_FIRST) {
 		reg_val &= ~SPI_CMD_TXMSBF;
 		reg_val &= ~SPI_CMD_RXMSBF;
@@ -386,7 +348,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
 		reg_val |= SPI_CMD_RXMSBF;
 	}
 
-	/* set the tx/rx endian */
+	 
 #ifdef __LITTLE_ENDIAN
 	reg_val &= ~SPI_CMD_TX_ENDIAN;
 	reg_val &= ~SPI_CMD_RX_ENDIAN;
@@ -396,7 +358,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
 #endif
 
 	if (mdata->dev_comp->enhance_timing) {
-		/* set CS polarity */
+		 
 		if (spi->mode & SPI_CS_HIGH)
 			reg_val |= SPI_CMD_CS_POL;
 		else
@@ -408,23 +370,23 @@ static int mtk_spi_hw_init(struct spi_master *master,
 			reg_val &= ~SPI_CMD_SAMPLE_SEL;
 	}
 
-	/* set finish and pause interrupt always enable */
+	 
 	reg_val |= SPI_CMD_FINISH_IE | SPI_CMD_PAUSE_IE;
 
-	/* disable dma mode */
+	 
 	reg_val &= ~(SPI_CMD_TX_DMA | SPI_CMD_RX_DMA);
 
-	/* disable deassert mode */
+	 
 	reg_val &= ~SPI_CMD_DEASSERT;
 
 	writel(reg_val, mdata->base + SPI_CMD_REG);
 
-	/* pad select */
+	 
 	if (mdata->dev_comp->need_pad_sel)
 		writel(mdata->pad_sel[spi_get_chipselect(spi, 0)],
 		       mdata->base + SPI_PAD_SEL_REG);
 
-	/* tick delay */
+	 
 	if (mdata->dev_comp->enhance_timing) {
 		if (mdata->dev_comp->ipm_design) {
 			reg_val = readl(mdata->base + SPI_CMD_REG);
@@ -447,7 +409,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
 		writel(reg_val, mdata->base + SPI_CFG1_REG);
 	}
 
-	/* set hw cs timing */
+	 
 	mtk_spi_set_hw_cs_timing(spi);
 	return 0;
 }
@@ -702,7 +664,7 @@ static int mtk_spi_transfer_one(struct spi_master *master,
 	struct mtk_spi *mdata = spi_master_get_devdata(spi->master);
 	u32 reg_val = 0;
 
-	/* prepare xfer direction and duplex mode */
+	 
 	if (mdata->dev_comp->ipm_design) {
 		if (!xfer->tx_buf || !xfer->rx_buf) {
 			reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_EN;
@@ -722,7 +684,7 @@ static bool mtk_spi_can_dma(struct spi_master *master,
 			    struct spi_device *spi,
 			    struct spi_transfer *xfer)
 {
-	/* Buffers for DMA transactions must be 4-byte aligned */
+	 
 	return (xfer->len > MTK_SPI_MAX_FIFO_SIZE &&
 		(unsigned long)xfer->tx_buf % 4 == 0 &&
 		(unsigned long)xfer->rx_buf % 4 == 0);
@@ -736,7 +698,7 @@ static int mtk_spi_setup(struct spi_device *spi)
 		spi->controller_data = (void *)&mtk_default_chip_info;
 
 	if (mdata->dev_comp->need_pad_sel && spi_get_csgpiod(spi, 0))
-		/* CS de-asserted, gpiolib will handle inversion */
+		 
 		gpiod_direction_output(spi_get_csgpiod(spi, 0), 0);
 
 	return 0;
@@ -755,7 +717,7 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
 	else
 		mdata->state = MTK_SPI_IDLE;
 
-	/* SPI-MEM ops */
+	 
 	if (mdata->use_spimem) {
 		complete(&mdata->spimem_done);
 		return IRQ_HANDLED;
@@ -826,7 +788,7 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
 	}
 
 	if (!mdata->tx_sgl && !mdata->rx_sgl) {
-		/* spi disable dma */
+		 
 		cmd = readl(mdata->base + SPI_CMD_REG);
 		cmd &= ~SPI_CMD_TX_DMA;
 		cmd &= ~SPI_CMD_RX_DMA;
@@ -853,7 +815,7 @@ static int mtk_spi_mem_adjust_op_size(struct spi_mem *mem,
 		opcode_len = 1 + op->addr.nbytes + op->dummy.nbytes;
 		if (opcode_len + op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
 			op->data.nbytes = MTK_SPI_IPM_PACKET_SIZE - opcode_len;
-			/* force data buffer dma-aligned. */
+			 
 			op->data.nbytes -= op->data.nbytes % 4;
 		}
 	}
@@ -912,19 +874,15 @@ static int mtk_spi_transfer_wait(struct spi_mem *mem,
 				 const struct spi_mem_op *op)
 {
 	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
-	/*
-	 * For each byte we wait for 8 cycles of the SPI clock.
-	 * Since speed is defined in Hz and we want milliseconds,
-	 * so it should be 8 * 1000.
-	 */
+	 
 	u64 ms = 8000LL;
 
 	if (op->data.dir == SPI_MEM_NO_DATA)
-		ms *= 32; /* prevent we may get 0 for short transfers. */
+		ms *= 32;  
 	else
 		ms *= op->data.nbytes;
 	ms = div_u64(ms, mem->spi->max_speed_hz);
-	ms += ms + 1000; /* 1s tolerance */
+	ms += ms + 1000;  
 
 	if (ms > UINT_MAX)
 		ms = UINT_MAX;
@@ -954,17 +912,17 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 	mtk_spi_prepare_transfer(mem->spi->master, mem->spi->max_speed_hz);
 
 	reg_val = readl(mdata->base + SPI_CFG3_IPM_REG);
-	/* opcode byte len */
+	 
 	reg_val &= ~SPI_CFG3_IPM_CMD_BYTELEN_MASK;
 	reg_val |= 1 << SPI_CFG3_IPM_CMD_BYTELEN_OFFSET;
 
-	/* addr & dummy byte len */
+	 
 	reg_val &= ~SPI_CFG3_IPM_ADDR_BYTELEN_MASK;
 	if (op->addr.nbytes || op->dummy.nbytes)
 		reg_val |= (op->addr.nbytes + op->dummy.nbytes) <<
 			    SPI_CFG3_IPM_ADDR_BYTELEN_OFFSET;
 
-	/* data byte len */
+	 
 	if (op->data.dir == SPI_MEM_NO_DATA) {
 		reg_val |= SPI_CFG3_IPM_NODATA_FLAG;
 		writel(0, mdata->base + SPI_CFG1_REG);
@@ -1073,12 +1031,12 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 
 	mtk_spi_enable_transfer(mem->spi->master);
 
-	/* Wait for the interrupt. */
+	 
 	ret = mtk_spi_transfer_wait(mem, op);
 	if (ret)
 		goto unmap_rx_dma;
 
-	/* spi disable dma */
+	 
 	reg_val = readl(mdata->base + SPI_CMD_REG);
 	reg_val &= ~SPI_CMD_TX_DMA;
 	if (op->data.dir == SPI_MEM_DATA_IN)
@@ -1283,11 +1241,7 @@ static void mtk_spi_remove(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_warn(&pdev->dev, "Failed to resume hardware (%pe)\n", ERR_PTR(ret));
 	} else {
-		/*
-		 * If pm runtime resume failed, clks are disabled and
-		 * unprepared. So don't access the hardware and skip clk
-		 * unpreparing.
-		 */
+		 
 		mtk_spi_reset(mdata);
 
 		if (mdata->dev_comp->no_need_unprepare) {
@@ -1348,7 +1302,7 @@ static int mtk_spi_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int mtk_spi_runtime_suspend(struct device *dev)
@@ -1402,7 +1356,7 @@ static int mtk_spi_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops mtk_spi_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(mtk_spi_suspend, mtk_spi_resume)

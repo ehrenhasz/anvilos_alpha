@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/clk/at91_pmc.h>
 #include <linux/of.h>
@@ -104,7 +104,7 @@ static void __init of_sama5d2_clk_audio_pll_pmc_setup(struct device_node *np)
 CLK_OF_DECLARE(of_sama5d2_clk_audio_pll_pmc_setup,
 	       "atmel,sama5d2-clk-audio-pll-pmc",
 	       of_sama5d2_clk_audio_pll_pmc_setup);
-#endif /* CONFIG_HAVE_AT91_AUDIO_PLL */
+#endif  
 
 static const struct clk_pcr_layout dt_pcr_layout = {
 	.offset = 0x10c,
@@ -182,7 +182,7 @@ static void __init of_sama5d2_clk_generated_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(of_sama5d2_clk_generated_setup, "atmel,sama5d2-clk-generated",
 	       of_sama5d2_clk_generated_setup);
-#endif /* CONFIG_HAVE_AT91_GENERATED_CLK */
+#endif  
 
 #ifdef CONFIG_HAVE_AT91_H32MX
 static void __init of_sama5d4_clk_h32mx_setup(struct device_node *np)
@@ -209,7 +209,7 @@ static void __init of_sama5d4_clk_h32mx_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(of_sama5d4_clk_h32mx_setup, "atmel,sama5d4-clk-h32mx",
 	       of_sama5d4_clk_h32mx_setup);
-#endif /* CONFIG_HAVE_AT91_H32MX */
+#endif  
 
 #ifdef CONFIG_HAVE_AT91_I2S_MUX_CLK
 #define	I2S_BUS_NR	2
@@ -248,7 +248,7 @@ static void __init of_sama5d2_clk_i2s_mux_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(sama5d2_clk_i2s_mux, "atmel,sama5d2-clk-i2s-mux",
 	       of_sama5d2_clk_i2s_mux_setup);
-#endif /* CONFIG_HAVE_AT91_I2S_MUX_CLK */
+#endif  
 
 static void __init of_at91rm9200_clk_main_osc_setup(struct device_node *np)
 {
@@ -499,11 +499,7 @@ of_at91_clk_periph_setup(struct device_node *np, u8 type)
 					      "atmel,clk-output-range",
 					      &range);
 
-			/*
-			 * mpddr_clk feed DDR controller and is enabled by
-			 * bootloader thus we need to keep it enabled in case
-			 * there is no Linux consumer for it.
-			 */
+			 
 			if (!strcmp(periphclknp->name, "mpddr_clk"))
 				flags = CLK_IS_CRITICAL;
 
@@ -867,7 +863,7 @@ static void __init of_at91sam9x5_clk_smd_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(at91sam9x5_clk_smd, "atmel,at91sam9x5-clk-smd",
 	       of_at91sam9x5_clk_smd_setup);
-#endif /* CONFIG_HAVE_AT91_SMD */
+#endif  
 
 static void __init of_at91rm9200_clk_sys_setup(struct device_node *np)
 {
@@ -900,11 +896,7 @@ static void __init of_at91rm9200_clk_sys_setup(struct device_node *np)
 
 		parent_name = of_clk_get_parent_name(sysclknp, 0);
 
-		/*
-		 * ddrck feeds DDR controller and is enabled by bootloader thus
-		 * we need to keep it enabled in case there is no Linux consumer
-		 * for it.
-		 */
+		 
 		if (!strcmp(sysclknp->name, "ddrck"))
 			flags = CLK_IS_CRITICAL;
 
@@ -1016,7 +1008,7 @@ static void __init of_at91rm9200_clk_usb_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(at91rm9200_clk_usb, "atmel,at91rm9200-clk-usb",
 	       of_at91rm9200_clk_usb_setup);
-#endif /* CONFIG_HAVE_AT91_USB_CLK */
+#endif  
 
 #ifdef CONFIG_HAVE_AT91_UTMI
 static void __init of_at91sam9x5_clk_utmi_setup(struct device_node *np)
@@ -1037,17 +1029,7 @@ static void __init of_at91sam9x5_clk_utmi_setup(struct device_node *np)
 	if (IS_ERR(regmap_pmc))
 		return;
 
-	/*
-	 * If the device supports different mainck rates, this value has to be
-	 * set in the UTMI Clock Trimming register.
-	 * - 9x5: mainck supports several rates but it is indicated that a
-	 *   12 MHz is needed in case of USB.
-	 * - sama5d3 and sama5d2: mainck supports several rates. Configuring
-	 *   the FREQ field of the UTMI Clock Trimming register is mandatory.
-	 * - sama5d4: mainck is at 12 MHz.
-	 *
-	 * We only need to retrieve sama5d3 or sama5d2 sfr regmap.
-	 */
+	 
 	regmap_sfr = syscon_regmap_lookup_by_compatible("atmel,sama5d3-sfr");
 	if (IS_ERR(regmap_sfr)) {
 		regmap_sfr = syscon_regmap_lookup_by_compatible("atmel,sama5d2-sfr");
@@ -1063,4 +1045,4 @@ static void __init of_at91sam9x5_clk_utmi_setup(struct device_node *np)
 }
 CLK_OF_DECLARE(at91sam9x5_clk_utmi, "atmel,at91sam9x5-clk-utmi",
 	       of_at91sam9x5_clk_utmi_setup);
-#endif /* CONFIG_HAVE_AT91_UTMI */
+#endif  

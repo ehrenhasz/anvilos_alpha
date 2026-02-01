@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isphist.c
- *
- * TI OMAP3 ISP - Histogram module
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: David Cohen <dacohen@gmail.com>
- *	     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -24,9 +13,7 @@
 
 #define HIST_CONFIG_DMA	1
 
-/*
- * hist_reset_mem - clear Histogram memory before start stats engine.
- */
+ 
 static void hist_reset_mem(struct ispstat *hist)
 {
 	struct isp_device *isp = hist->isp;
@@ -35,16 +22,10 @@ static void hist_reset_mem(struct ispstat *hist)
 
 	isp_reg_writel(isp, 0, OMAP3_ISP_IOMEM_HIST, ISPHIST_ADDR);
 
-	/*
-	 * By setting it, the histogram internal buffer is being cleared at the
-	 * same time it's being read. This bit must be cleared afterwards.
-	 */
+	 
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_CNT, ISPHIST_CNT_CLEAR);
 
-	/*
-	 * We'll clear 4 words at each iteration for optimization. It avoids
-	 * 3/4 of the jumps. We also know HIST_MEM_SIZE is divisible by 4.
-	 */
+	 
 	for (i = OMAP3ISP_HIST_MEM_SIZE / 4; i > 0; i--) {
 		isp_reg_readl(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_DATA);
 		isp_reg_readl(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_DATA);
@@ -56,9 +37,7 @@ static void hist_reset_mem(struct ispstat *hist)
 	hist->wait_acc_frames = conf->num_acc_frames;
 }
 
-/*
- * hist_setup_regs - Helper function to update Histogram registers.
- */
+ 
 static void hist_setup_regs(struct ispstat *hist, void *priv)
 {
 	struct isp_device *isp = hist->isp;
@@ -81,7 +60,7 @@ static void hist_setup_regs(struct ispstat *hist, void *priv)
 	if (conf->cfa == OMAP3ISP_HIST_CFA_BAYER)
 		wb_gain |= conf->wg[3] << ISPHIST_WB_GAIN_WG03_SHIFT;
 
-	/* Regions size and position */
+	 
 	for (c = 0; c < OMAP3ISP_HIST_MAX_REGIONS; c++) {
 		if (c < conf->num_regions) {
 			reg_hor[c] = (conf->region[c].h_start <<
@@ -112,7 +91,7 @@ static void hist_setup_regs(struct ispstat *hist, void *priv)
 		cnt |= (ISPHIST_IN_BIT_WIDTH_CCDC - 6) <<
 			ISPHIST_CNT_SHIFT_SHIFT;
 		break;
-	default: /* OMAP3ISP_HIST_BINS_32 */
+	default:  
 		cnt |= (ISPHIST_IN_BIT_WIDTH_CCDC - 5) <<
 			ISPHIST_CNT_SHIFT_SHIFT;
 		break;
@@ -160,7 +139,7 @@ static void hist_dma_cb(void *data)
 {
 	struct ispstat *hist = data;
 
-	/* FIXME: The DMA engine API can't report transfer errors :-/ */
+	 
 
 	isp_reg_clr(hist->isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_CNT,
 		    ISPHIST_CNT_CLEAR);
@@ -240,18 +219,10 @@ static int hist_buf_pio(struct ispstat *hist)
 
 	isp_reg_writel(isp, 0, OMAP3_ISP_IOMEM_HIST, ISPHIST_ADDR);
 
-	/*
-	 * By setting it, the histogram internal buffer is being cleared at the
-	 * same time it's being read. This bit must be cleared just after all
-	 * data is acquired.
-	 */
+	 
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_CNT, ISPHIST_CNT_CLEAR);
 
-	/*
-	 * We'll read 4 times a 4-bytes-word at each iteration for
-	 * optimization. It avoids 3/4 of the jumps. We also know buf_size is
-	 * divisible by 16.
-	 */
+	 
 	for (i = hist->buf_size / 16; i > 0; i--) {
 		*buf++ = isp_reg_readl(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_DATA);
 		*buf++ = isp_reg_readl(isp, OMAP3_ISP_IOMEM_HIST, ISPHIST_DATA);
@@ -264,9 +235,7 @@ static int hist_buf_pio(struct ispstat *hist)
 	return STAT_BUF_DONE;
 }
 
-/*
- * hist_buf_process - Callback from ISP driver for HIST interrupt.
- */
+ 
 static int hist_buf_process(struct ispstat *hist)
 {
 	struct omap3isp_hist_config *user_cfg = hist->priv;
@@ -295,12 +264,7 @@ static u32 hist_get_buf_size(struct omap3isp_hist_config *conf)
 	return OMAP3ISP_HIST_MEM_SIZE_BINS(conf->hist_bins) * conf->num_regions;
 }
 
-/*
- * hist_validate_params - Helper function to check user given params.
- * @new_conf: Pointer to user configuration structure.
- *
- * Returns 0 on success configuration.
- */
+ 
 static int hist_validate_params(struct ispstat *hist, void *new_conf)
 {
 	struct omap3isp_hist_config *user_cfg = new_conf;
@@ -310,13 +274,13 @@ static int hist_validate_params(struct ispstat *hist, void *new_conf)
 	if (user_cfg->cfa > OMAP3ISP_HIST_CFA_FOVEONX3)
 		return -EINVAL;
 
-	/* Regions size and position */
+	 
 
 	if ((user_cfg->num_regions < OMAP3ISP_HIST_MIN_REGIONS) ||
 	    (user_cfg->num_regions > OMAP3ISP_HIST_MAX_REGIONS))
 		return -EINVAL;
 
-	/* Regions */
+	 
 	for (c = 0; c < user_cfg->num_regions; c++) {
 		if (user_cfg->region[c].h_start & ~ISPHIST_REG_START_END_MASK)
 			return -EINVAL;
@@ -341,7 +305,7 @@ static int hist_validate_params(struct ispstat *hist, void *new_conf)
 		if (user_cfg->hist_bins > OMAP3ISP_HIST_BINS_128)
 			return -EINVAL;
 		break;
-	default: /* 3 or 4 */
+	default:  
 		if (user_cfg->hist_bins > OMAP3ISP_HIST_BINS_64)
 			return -EINVAL;
 		break;
@@ -349,7 +313,7 @@ static int hist_validate_params(struct ispstat *hist, void *new_conf)
 
 	buf_size = hist_get_buf_size(user_cfg);
 	if (buf_size > user_cfg->buf_size)
-		/* User's buf_size request wasn't enough */
+		 
 		user_cfg->buf_size = buf_size;
 	else if (user_cfg->buf_size > OMAP3ISP_HIST_MAX_BUF_SIZE)
 		user_cfg->buf_size = OMAP3ISP_HIST_MAX_BUF_SIZE;
@@ -382,7 +346,7 @@ static int hist_comp_params(struct ispstat *hist,
 	if (cur_cfg->num_regions != user_cfg->num_regions)
 		return 1;
 
-	/* Regions */
+	 
 	for (c = 0; c < user_cfg->num_regions; c++) {
 		if (cur_cfg->region[c].h_start != user_cfg->region[c].h_start)
 			return 1;
@@ -397,10 +361,7 @@ static int hist_comp_params(struct ispstat *hist,
 	return 0;
 }
 
-/*
- * hist_update_params - Helper function to check and store user given params.
- * @new_conf: Pointer to user configuration structure.
- */
+ 
 static void hist_set_params(struct ispstat *hist, void *new_conf)
 {
 	struct omap3isp_hist_config *user_cfg = new_conf;
@@ -412,12 +373,7 @@ static void hist_set_params(struct ispstat *hist, void *new_conf)
 			user_cfg->num_acc_frames = 1;
 		hist->inc_config++;
 		hist->update = 1;
-		/*
-		 * User might be asked for a bigger buffer than necessary for
-		 * this configuration. In order to return the right amount of
-		 * data during buffer request, let's calculate the size here
-		 * instead of stick with user_cfg->buf_size.
-		 */
+		 
 		cur_cfg->buf_size = hist_get_buf_size(cur_cfg);
 
 	}
@@ -468,9 +424,7 @@ static const struct v4l2_subdev_ops hist_subdev_ops = {
 	.video = &hist_subdev_video_ops,
 };
 
-/*
- * omap3isp_hist_init - Module Initialization.
- */
+ 
 int omap3isp_hist_init(struct isp_device *isp)
 {
 	struct ispstat *hist = &isp->isp_hist;
@@ -486,13 +440,7 @@ int omap3isp_hist_init(struct isp_device *isp)
 	if (HIST_CONFIG_DMA) {
 		dma_cap_mask_t mask;
 
-		/*
-		 * We need slave capable channel without DMA request line for
-		 * reading out the data.
-		 * For this we can use dma_request_chan_by_mask() as we are
-		 * happy with any channel as long as it is capable of slave
-		 * configuration.
-		 */
+		 
 		dma_cap_zero(mask);
 		dma_cap_set(DMA_SLAVE, mask);
 		hist->dma_ch = dma_request_chan_by_mask(&mask);
@@ -526,9 +474,7 @@ err:
 	return ret;
 }
 
-/*
- * omap3isp_hist_cleanup - Module cleanup.
- */
+ 
 void omap3isp_hist_cleanup(struct isp_device *isp)
 {
 	struct ispstat *hist = &isp->isp_hist;

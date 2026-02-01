@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -107,72 +107,37 @@ static const unsigned char mlxsw_sp2_mac_mask[ETH_ALEN] = {
 	0xff, 0xff, 0xff, 0xff, 0xf0, 0x00
 };
 
-/* tx_hdr_version
- * Tx header version.
- * Must be set to 1.
- */
+ 
 MLXSW_ITEM32(tx, hdr, version, 0x00, 28, 4);
 
-/* tx_hdr_ctl
- * Packet control type.
- * 0 - Ethernet control (e.g. EMADs, LACP)
- * 1 - Ethernet data
- */
+ 
 MLXSW_ITEM32(tx, hdr, ctl, 0x00, 26, 2);
 
-/* tx_hdr_proto
- * Packet protocol type. Must be set to 1 (Ethernet).
- */
+ 
 MLXSW_ITEM32(tx, hdr, proto, 0x00, 21, 3);
 
-/* tx_hdr_rx_is_router
- * Packet is sent from the router. Valid for data packets only.
- */
+ 
 MLXSW_ITEM32(tx, hdr, rx_is_router, 0x00, 19, 1);
 
-/* tx_hdr_fid_valid
- * Indicates if the 'fid' field is valid and should be used for
- * forwarding lookup. Valid for data packets only.
- */
+ 
 MLXSW_ITEM32(tx, hdr, fid_valid, 0x00, 16, 1);
 
-/* tx_hdr_swid
- * Switch partition ID. Must be set to 0.
- */
+ 
 MLXSW_ITEM32(tx, hdr, swid, 0x00, 12, 3);
 
-/* tx_hdr_control_tclass
- * Indicates if the packet should use the control TClass and not one
- * of the data TClasses.
- */
+ 
 MLXSW_ITEM32(tx, hdr, control_tclass, 0x00, 6, 1);
 
-/* tx_hdr_etclass
- * Egress TClass to be used on the egress device on the egress port.
- */
+ 
 MLXSW_ITEM32(tx, hdr, etclass, 0x00, 0, 4);
 
-/* tx_hdr_port_mid
- * Destination local port for unicast packets.
- * Destination multicast ID for multicast packets.
- *
- * Control packets are directed to a specific egress port, while data
- * packets are transmitted through the CPU port (0) into the switch partition,
- * where forwarding rules are applied.
- */
+ 
 MLXSW_ITEM32(tx, hdr, port_mid, 0x04, 16, 16);
 
-/* tx_hdr_fid
- * Forwarding ID used for L2 forwarding lookup. Valid only if 'fid_valid' is
- * set, otherwise calculated based on the packet's VID using VID to FID mapping.
- * Valid for data packets only.
- */
+ 
 MLXSW_ITEM32(tx, hdr, fid, 0x08, 16, 16);
 
-/* tx_hdr_type
- * 0 - Data packets
- * 6 - Control packets
- */
+ 
 MLXSW_ITEM32(tx, hdr, type, 0x0C, 0, 4);
 
 int mlxsw_sp_flow_counter_get(struct mlxsw_sp *mlxsw_sp,
@@ -304,10 +269,7 @@ static int mlxsw_sp_txhdr_handle(struct mlxsw_core *mlxsw_core,
 {
 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
 
-	/* In Spectrum-2 and Spectrum-3, PTP events that require a time stamp
-	 * need special handling and cannot be transmitted as regular control
-	 * packets.
-	 */
+	 
 	if (unlikely(mlxsw_sp_skb_requires_ts(skb)))
 		return mlxsw_sp->ptp_ops->txhdr_construct(mlxsw_core,
 							  mlxsw_sp_port, skb,
@@ -668,7 +630,7 @@ mlxsw_sp_port_module_map(struct mlxsw_sp *mlxsw_sp, u16 local_port,
 		mlxsw_reg_pmlp_slot_index_set(pmlp_pl, i,
 					      port_mapping->slot_index);
 		mlxsw_reg_pmlp_module_set(pmlp_pl, i, port_mapping->module);
-		mlxsw_reg_pmlp_tx_lane_set(pmlp_pl, i, port_mapping->lane + i); /* Rx & Tx */
+		mlxsw_reg_pmlp_tx_lane_set(pmlp_pl, i, port_mapping->lane + i);  
 	}
 
 	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(pmlp), pmlp_pl);
@@ -758,14 +720,10 @@ static netdev_tx_t mlxsw_sp_port_xmit(struct sk_buff *skb,
 	if (err)
 		return NETDEV_TX_OK;
 
-	/* TX header is consumed by HW on the way so we shouldn't count its
-	 * bytes as being sent.
-	 */
+	 
 	len = skb->len - MLXSW_TXHDR_LEN;
 
-	/* Due to a race we might fail here because of a full queue. In that
-	 * unlikely case we simply drop the packet.
-	 */
+	 
 	err = mlxsw_core_skb_transmit(mlxsw_sp->core, skb, &tx_info);
 
 	if (!err) {
@@ -856,7 +814,7 @@ mlxsw_sp_port_get_sw_stats64(const struct net_device *dev,
 		stats->rx_bytes		+= rx_bytes;
 		stats->tx_packets	+= tx_packets;
 		stats->tx_bytes		+= tx_bytes;
-		/* tx_dropped is u32, updated without syncp protection. */
+		 
 		tx_dropped	+= p->tx_dropped;
 	}
 	stats->tx_dropped	= tx_dropped;
@@ -986,9 +944,7 @@ static void update_stats_cache(struct work_struct *work)
 			     periodic_hw_stats.update_dw.work);
 
 	if (!netif_carrier_ok(mlxsw_sp_port->dev))
-		/* Note: mlxsw_sp_port_down_wipe_counters() clears the cache as
-		 * necessary when port goes down.
-		 */
+		 
 		goto out;
 
 	mlxsw_sp_port_get_hw_stats(mlxsw_sp_port->dev,
@@ -1001,9 +957,7 @@ out:
 			       MLXSW_HW_STATS_UPDATE_TIME);
 }
 
-/* Return the stats from a cache that is updated periodically,
- * as this function might get called in an atomic context.
- */
+ 
 static void
 mlxsw_sp_port_get_stats64(struct net_device *dev,
 			  struct rtnl_link_stats64 *stats)
@@ -1123,9 +1077,7 @@ static int mlxsw_sp_port_add_vid(struct net_device *dev,
 {
 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
 
-	/* VLAN 0 is added to HW filter when device goes up, but it is
-	 * reserved in our case, so simply return.
-	 */
+	 
 	if (!vid)
 		return 0;
 
@@ -1138,9 +1090,7 @@ int mlxsw_sp_port_kill_vid(struct net_device *dev,
 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
 	struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
 
-	/* VLAN 0 is removed from HW filter when device goes down, but
-	 * it is reserved in our case, so simply return.
-	 */
+	 
 	if (!vid)
 		return 0;
 
@@ -1365,9 +1315,7 @@ mlxsw_sp_port_speed_by_width_set(struct mlxsw_sp_port *mlxsw_sp_port)
 
 	ops = mlxsw_sp->port_type_speed_ops;
 
-	/* Set advertised speeds to speeds supported by both the driver
-	 * and the device.
-	 */
+	 
 	ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl, mlxsw_sp_port->local_port,
 			       0, false);
 	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
@@ -1464,9 +1412,7 @@ static int mlxsw_sp_port_ets_init(struct mlxsw_sp_port *mlxsw_sp_port)
 {
 	int err, i;
 
-	/* Setup the elements hierarcy, so that each TC is linked to
-	 * one subgroup, which are all member in the same group.
-	 */
+	 
 	err = mlxsw_sp_port_ets_set(mlxsw_sp_port,
 				    MLXSW_REG_QEEC_HR_GROUP, 0, 0, false, 0);
 	if (err)
@@ -1493,10 +1439,7 @@ static int mlxsw_sp_port_ets_init(struct mlxsw_sp_port *mlxsw_sp_port)
 			return err;
 	}
 
-	/* Make sure the max shaper is disabled in all hierarchies that support
-	 * it. Note that this disables ptps (PTP shaper), but that is intended
-	 * for the initial configuration.
-	 */
+	 
 	err = mlxsw_sp_port_ets_maxrate_set(mlxsw_sp_port,
 					    MLXSW_REG_QEEC_HR_PORT, 0, 0,
 					    MLXSW_REG_QEEC_MAS_DIS, 0);
@@ -1526,7 +1469,7 @@ static int mlxsw_sp_port_ets_init(struct mlxsw_sp_port *mlxsw_sp_port)
 			return err;
 	}
 
-	/* Configure the min shaper for multicast TCs. */
+	 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
 		err = mlxsw_sp_port_min_bw_set(mlxsw_sp_port,
 					       MLXSW_REG_QEEC_HR_TC,
@@ -1536,7 +1479,7 @@ static int mlxsw_sp_port_ets_init(struct mlxsw_sp_port *mlxsw_sp_port)
 			return err;
 	}
 
-	/* Map all priorities to traffic class 0. */
+	 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
 		err = mlxsw_sp_port_prio_tc_set(mlxsw_sp_port, i, 0);
 		if (err)
@@ -1698,9 +1641,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u16 local_port,
 	dev->min_mtu = 0;
 	dev->max_mtu = ETH_MAX_MTU;
 
-	/* Each packet needs to have a Tx header (metadata) on top all other
-	 * headers.
-	 */
+	 
 	dev->needed_headroom = MLXSW_TXHDR_LEN;
 
 	err = mlxsw_sp_port_system_port_mapping_set(mlxsw_sp_port);
@@ -1764,7 +1705,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u16 local_port,
 		goto err_port_tc_mc_mode;
 	}
 
-	/* ETS and buffers must be initialized before DCB. */
+	 
 	err = mlxsw_sp_port_dcb_init(mlxsw_sp_port);
 	if (err) {
 		dev_err(mlxsw_sp->bus_info->dev, "Port %d: Failed to initialize DCB\n",
@@ -1819,9 +1760,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u16 local_port,
 	}
 	mlxsw_sp_port->default_vlan = mlxsw_sp_port_vlan;
 
-	/* Set SPVC.et0=true and SPVC.et1=false to make the local port to treat
-	 * only packets with 802.1q header as tagged packets.
-	 */
+	 
 	err = mlxsw_sp_port_vlan_classification_set(mlxsw_sp_port, false, true);
 	if (err) {
 		dev_err(mlxsw_sp->bus_info->dev, "Port %d: Failed to set default VLAN classification\n",
@@ -1904,7 +1843,7 @@ static void mlxsw_sp_port_remove(struct mlxsw_sp *mlxsw_sp, u16 local_port)
 
 	cancel_delayed_work_sync(&mlxsw_sp_port->periodic_hw_stats.update_dw);
 	cancel_delayed_work_sync(&mlxsw_sp_port->ptp.shaper_dw);
-	unregister_netdev(mlxsw_sp_port->dev); /* This calls ndo_stop */
+	unregister_netdev(mlxsw_sp_port->dev);  
 	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
 	mlxsw_sp_port_vlan_classification_set(mlxsw_sp_port, true, true);
 	mlxsw_sp->ports[local_port] = NULL;
@@ -2069,7 +2008,7 @@ __mlxsw_sp_port_mapping_events_cancel(struct mlxsw_sp *mlxsw_sp)
 
 	events = &mlxsw_sp->port_mapping_events;
 
-	/* Caller needs to make sure that no new event is going to appear. */
+	 
 	cancel_work_sync(&events->work);
 	list_for_each_entry_safe(event, next_event, &events->queue, list) {
 		list_del(&event->list);
@@ -2084,7 +2023,7 @@ static void mlxsw_sp_ports_remove(struct mlxsw_sp *mlxsw_sp)
 
 	for (i = 1; i < max_ports; i++)
 		mlxsw_sp_port_mapping_event_set(mlxsw_sp, i, false);
-	/* Make sure all scheduled events are processed */
+	 
 	__mlxsw_sp_port_mapping_events_cancel(mlxsw_sp);
 
 	for (i = 1; i < max_ports; i++)
@@ -2158,7 +2097,7 @@ err_cpu_port_create:
 err_event_enable:
 	for (i--; i >= 1; i--)
 		mlxsw_sp_port_mapping_event_set(mlxsw_sp, i, false);
-	/* Make sure all scheduled events are processed */
+	 
 	__mlxsw_sp_port_mapping_events_cancel(mlxsw_sp);
 	kfree(mlxsw_sp->ports);
 	mlxsw_sp->ports = NULL;
@@ -2238,7 +2177,7 @@ static void mlxsw_sp_port_unsplit_create(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_port_mapping *port_mapping;
 	int i;
 
-	/* Go over original unsplit ports in the gap and recreate them. */
+	 
 	for (i = 0; i < count; i++) {
 		u16 local_port = mlxsw_reg_pmtdb_port_num_get(pmtdb_pl, i);
 
@@ -2510,11 +2449,11 @@ void mlxsw_sp_ptp_receive(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
 	MLXSW_EVENTL(_func, _trap_id, SP_EVENT)
 
 static const struct mlxsw_listener mlxsw_sp_listener[] = {
-	/* Events */
+	 
 	MLXSW_SP_EVENTL(mlxsw_sp_pude_event_func, PUDE),
-	/* L2 traps */
+	 
 	MLXSW_SP_RXL_NO_MARK(FID_MISS, TRAP_TO_CPU, FID_MISS, false),
-	/* L3 traps */
+	 
 	MLXSW_SP_RXL_MARK(IPV6_UNSPECIFIED_ADDRESS, TRAP_TO_CPU, ROUTER_EXP,
 			  false),
 	MLXSW_SP_RXL_MARK(IPV6_LINK_LOCAL_SRC, TRAP_TO_CPU, ROUTER_EXP, false),
@@ -2528,21 +2467,21 @@ static const struct mlxsw_listener mlxsw_sp_listener[] = {
 			     ROUTER_EXP, false),
 	MLXSW_SP_RXL_NO_MARK(DISCARD_ING_ROUTER_DIP_LINK_LOCAL, FORWARD,
 			     ROUTER_EXP, false),
-	/* Multicast Router Traps */
+	 
 	MLXSW_SP_RXL_MARK(ACL1, TRAP_TO_CPU, MULTICAST, false),
 	MLXSW_SP_RXL_L3_MARK(ACL2, TRAP_TO_CPU, MULTICAST, false),
-	/* NVE traps */
+	 
 	MLXSW_SP_RXL_MARK(NVE_ENCAP_ARP, TRAP_TO_CPU, NEIGH_DISCOVERY, false),
 };
 
 static const struct mlxsw_listener mlxsw_sp1_listener[] = {
-	/* Events */
+	 
 	MLXSW_EVENTL(mlxsw_sp1_ptp_egr_fifo_event_func, PTP_EGR_FIFO, SP_PTP0),
 	MLXSW_EVENTL(mlxsw_sp1_ptp_ing_fifo_event_func, PTP_ING_FIFO, SP_PTP0),
 };
 
 static const struct mlxsw_listener mlxsw_sp2_listener[] = {
-	/* Events */
+	 
 	MLXSW_SP_EVENTL(mlxsw_sp_port_mapping_listener_func, PMLPE),
 };
 
@@ -2811,7 +2750,7 @@ mlxsw_sp_sample_trigger_key_init(struct mlxsw_sp_sample_trigger *key,
 	key->local_port = trigger->local_port;
 }
 
-/* RCU read lock must be held */
+ 
 struct mlxsw_sp_sample_params *
 mlxsw_sp_sample_trigger_params_lookup(struct mlxsw_sp *mlxsw_sp,
 				      const struct mlxsw_sp_sample_trigger *trigger)
@@ -3149,9 +3088,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
 		goto err_lag_init;
 	}
 
-	/* Initialize SPAN before router and switchdev, so that those components
-	 * can call mlxsw_sp_span_respin().
-	 */
+	 
 	err = mlxsw_sp_span_init(mlxsw_sp);
 	if (err) {
 		dev_err(mlxsw_sp->bus_info->dev, "Failed to init span system\n");
@@ -3207,7 +3144,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
 	}
 
 	if (mlxsw_sp->bus_info->read_clock_capable) {
-		/* NULL is a valid return value from clock_init */
+		 
 		mlxsw_sp->clock =
 			mlxsw_sp->ptp_ops->clock_init(mlxsw_sp,
 						      mlxsw_sp->bus_info->dev);
@@ -3219,7 +3156,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
 	}
 
 	if (mlxsw_sp->clock) {
-		/* NULL is a valid return value from ptp_ops->init */
+		 
 		mlxsw_sp->ptp_state = mlxsw_sp->ptp_ops->init(mlxsw_sp);
 		if (IS_ERR(mlxsw_sp->ptp_state)) {
 			err = PTR_ERR(mlxsw_sp->ptp_state);
@@ -3228,9 +3165,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
 		}
 	}
 
-	/* Initialize netdevice notifier after SPAN is initialized, so that the
-	 * event handler can call SPAN respin.
-	 */
+	 
 	mlxsw_sp->netdevice_nb.notifier_call = mlxsw_sp_netdevice_event;
 	err = register_netdevice_notifier_net(mlxsw_sp_net(mlxsw_sp),
 					      &mlxsw_sp->netdevice_nb);
@@ -3528,10 +3463,7 @@ static const struct mlxsw_config_profile mlxsw_sp2_config_profile = {
 	.cqe_time_stamp_type		= MLXSW_CMD_MBOX_CONFIG_PROFILE_CQE_TIME_STAMP_TYPE_UTC,
 };
 
-/* Reduce number of LAGs from full capacity (256) to the maximum supported LAGs
- * in Spectrum-2/3, to avoid regression in number of free entries in the PGT
- * table.
- */
+ 
 #define MLXSW_SP4_CONFIG_PROFILE_MAX_LAG 128
 
 static const struct mlxsw_config_profile mlxsw_sp4_config_profile = {
@@ -3860,13 +3792,7 @@ static int mlxsw_sp_kvd_sizes_get(struct mlxsw_core *mlxsw_core,
 	    !MLXSW_CORE_RES_VALID(mlxsw_core, KVD_DOUBLE_MIN_SIZE))
 		return -EIO;
 
-	/* The hash part is what left of the kvd without the
-	 * linear part. It is split to the single size and
-	 * double size by the parts ratio from the profile.
-	 * Both sizes must be a multiplications of the
-	 * granularity from the profile. In case the user
-	 * provided the sizes they are obtained via devlink.
-	 */
+	 
 	err = devl_resource_size_get(devlink,
 				     MLXSW_SP_RESOURCE_KVD_LINEAR,
 				     p_linear_size);
@@ -3893,7 +3819,7 @@ static int mlxsw_sp_kvd_sizes_get(struct mlxsw_core *mlxsw_core,
 		*p_single_size = MLXSW_CORE_RES_GET(mlxsw_core, KVD_SIZE) -
 				 *p_double_size - *p_linear_size;
 
-	/* Check results are legal. */
+	 
 	if (*p_single_size < MLXSW_CORE_RES_GET(mlxsw_core, KVD_SINGLE_MIN_SIZE) ||
 	    *p_double_size < MLXSW_CORE_RES_GET(mlxsw_core, KVD_DOUBLE_MIN_SIZE) ||
 	    MLXSW_CORE_RES_GET(mlxsw_core, KVD_SIZE) < *p_linear_size)
@@ -4442,11 +4368,11 @@ static int mlxsw_sp_port_lag_join(struct mlxsw_sp_port *mlxsw_sp_port,
 	mlxsw_sp_port->lagged = 1;
 	lag->ref_count++;
 
-	/* Port is no longer usable as a router interface */
+	 
 	if (mlxsw_sp_port->default_vlan->fid)
 		mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port->default_vlan);
 
-	/* Join a router interface configured on the LAG, if exists */
+	 
 	err = mlxsw_sp_router_port_join_lag(mlxsw_sp_port, lag_dev,
 					    extack);
 	if (err)
@@ -4488,12 +4414,10 @@ static void mlxsw_sp_port_lag_leave(struct mlxsw_sp_port *mlxsw_sp_port,
 
 	mlxsw_sp_lag_col_port_remove(mlxsw_sp_port, lag_id);
 
-	/* Any VLANs configured on the port are no longer valid */
+	 
 	mlxsw_sp_port_vlan_flush(mlxsw_sp_port, false);
 	mlxsw_sp_port_vlan_cleanup(mlxsw_sp_port->default_vlan);
-	/* Make the LAG and its directly linked uppers leave bridges they
-	 * are memeber in
-	 */
+	 
 	mlxsw_sp_port_lag_uppers_cleanup(mlxsw_sp_port, lag_dev);
 
 	if (lag->ref_count == 1)
@@ -4504,7 +4428,7 @@ static void mlxsw_sp_port_lag_leave(struct mlxsw_sp_port *mlxsw_sp_port,
 	mlxsw_sp_port->lagged = 0;
 	lag->ref_count--;
 
-	/* Make sure untagged frames are allowed to ingress */
+	 
 	mlxsw_sp_port_pvid_set(mlxsw_sp_port, MLXSW_SP_DEFAULT_VID,
 			       ETH_P_8021Q);
 }
@@ -4746,12 +4670,7 @@ static int mlxsw_sp_netdevice_validate_uppers(struct mlxsw_sp *mlxsw_sp,
 			.upper_dev = upper_dev,
 			.linking = true,
 
-			/* upper_info is relevant for LAG devices. But we would
-			 * only need this if LAG were a valid upper above
-			 * another upper (e.g. a bridge that is a member of a
-			 * LAG), and that is never a valid configuration. So we
-			 * can keep this as NULL.
-			 */
+			 
 			.upper_info = NULL,
 		};
 
@@ -4969,9 +4888,7 @@ static int mlxsw_sp_netdevice_port_event(struct net_device *lower_dev,
 	return 0;
 }
 
-/* Called for LAG or its upper VLAN after the per-LAG-lower processing was done,
- * to do any per-LAG / per-LAG-upper processing.
- */
+ 
 static int mlxsw_sp_netdevice_post_lag_event(struct net_device *dev,
 					     unsigned long event,
 					     void *ptr)
@@ -5264,18 +5181,13 @@ static int mlxsw_sp_netdevice_vxlan_event(struct mlxsw_sp *mlxsw_sp,
 		if (cu_info->linking) {
 			if (!netif_running(dev))
 				return 0;
-			/* When the bridge is VLAN-aware, the VNI of the VxLAN
-			 * device needs to be mapped to a VLAN, but at this
-			 * point no VLANs are configured on the VxLAN device
-			 */
+			 
 			if (br_vlan_enabled(upper_dev))
 				return 0;
 			return mlxsw_sp_bridge_vxlan_join(mlxsw_sp, upper_dev,
 							  dev, 0, extack);
 		} else {
-			/* VLANs were already flushed, which triggered the
-			 * necessary cleanup
-			 */
+			 
 			if (br_vlan_enabled(upper_dev))
 				return 0;
 			mlxsw_sp_bridge_vxlan_leave(mlxsw_sp, dev);

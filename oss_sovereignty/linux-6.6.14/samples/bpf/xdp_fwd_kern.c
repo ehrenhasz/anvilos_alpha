@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2017-18 David Ahern <dsahern@gmail.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- */
+
+ 
 #define KBUILD_MODNAME "foo"
 #include <uapi/linux/bpf.h>
 #include <linux/in.h>
@@ -30,7 +20,7 @@ struct {
 	__uint(max_entries, 64);
 } xdp_tx_ports SEC(".maps");
 
-/* from include/net/ip.h */
+ 
 static __always_inline int ip_decrease_ttl(struct iphdr *iph)
 {
 	u32 check = (__force u32)iph->check;
@@ -102,31 +92,9 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
 	fib_params.ifindex = ctx->ingress_ifindex;
 
 	rc = bpf_fib_lookup(ctx, &fib_params, sizeof(fib_params), flags);
-	/*
-	 * Some rc (return codes) from bpf_fib_lookup() are important,
-	 * to understand how this XDP-prog interacts with network stack.
-	 *
-	 * BPF_FIB_LKUP_RET_NO_NEIGH:
-	 *  Even if route lookup was a success, then the MAC-addresses are also
-	 *  needed.  This is obtained from arp/neighbour table, but if table is
-	 *  (still) empty then BPF_FIB_LKUP_RET_NO_NEIGH is returned.  To avoid
-	 *  doing ARP lookup directly from XDP, then send packet to normal
-	 *  network stack via XDP_PASS and expect it will do ARP resolution.
-	 *
-	 * BPF_FIB_LKUP_RET_FWD_DISABLED:
-	 *  The bpf_fib_lookup respect sysctl net.ipv{4,6}.conf.all.forwarding
-	 *  setting, and will return BPF_FIB_LKUP_RET_FWD_DISABLED if not
-	 *  enabled this on ingress device.
-	 */
+	 
 	if (rc == BPF_FIB_LKUP_RET_SUCCESS) {
-		/* Verify egress index has been configured as TX-port.
-		 * (Note: User can still have inserted an egress ifindex that
-		 * doesn't support XDP xmit, which will result in packet drops).
-		 *
-		 * Note: lookup in devmap supported since 0cdbb4b09a0.
-		 * If not supported will fail with:
-		 *  cannot pass map_type 14 into func bpf_map_lookup_elem#1:
-		 */
+		 
 		if (!bpf_map_lookup_elem(&xdp_tx_ports, &fib_params.ifindex))
 			return XDP_PASS;
 

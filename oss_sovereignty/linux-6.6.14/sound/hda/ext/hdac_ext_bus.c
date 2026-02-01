@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  hdac-ext-bus.c - HD-audio extended core bus functions.
- *
- *  Copyright (C) 2014-2015 Intel Corp
- *  Author: Jeeja KP <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,15 +9,7 @@
 MODULE_DESCRIPTION("HDA extended core");
 MODULE_LICENSE("GPL v2");
 
-/**
- * snd_hdac_ext_bus_init - initialize a HD-audio extended bus
- * @bus: the pointer to HDAC bus object
- * @dev: device pointer
- * @ops: bus verb operators
- * @ext_ops: operators used for ASoC HDA codec drivers
- *
- * Returns 0 if successful, or a negative error code.
- */
+ 
 int snd_hdac_ext_bus_init(struct hdac_bus *bus, struct device *dev,
 			const struct hdac_bus_ops *ops,
 			const struct hdac_ext_bus_ops *ext_ops)
@@ -37,11 +21,7 @@ int snd_hdac_ext_bus_init(struct hdac_bus *bus, struct device *dev,
 		return ret;
 
 	bus->ext_ops = ext_ops;
-	/* FIXME:
-	 * Currently only one bus is supported, if there is device with more
-	 * buses, bus->idx should be greater than 0, but there needs to be a
-	 * reliable way to always assign same number.
-	 */
+	 
 	bus->idx = 0;
 	bus->cmd_dma_state = true;
 
@@ -49,10 +29,7 @@ int snd_hdac_ext_bus_init(struct hdac_bus *bus, struct device *dev,
 }
 EXPORT_SYMBOL_GPL(snd_hdac_ext_bus_init);
 
-/**
- * snd_hdac_ext_bus_exit - clean up a HD-audio extended bus
- * @bus: the pointer to HDAC bus object
- */
+ 
 void snd_hdac_ext_bus_exit(struct hdac_bus *bus)
 {
 	snd_hdac_bus_exit(bus);
@@ -60,18 +37,11 @@ void snd_hdac_ext_bus_exit(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_ext_bus_exit);
 
-/**
- * snd_hdac_ext_bus_device_remove - remove HD-audio extended codec base devices
- *
- * @bus: the pointer to HDAC bus object
- */
+ 
 void snd_hdac_ext_bus_device_remove(struct hdac_bus *bus)
 {
 	struct hdac_device *codec, *__codec;
-	/*
-	 * we need to remove all the codec devices objects created in the
-	 * snd_hdac_ext_bus_device_init
-	 */
+	 
 	list_for_each_entry_safe(codec, __codec, &bus->codec_list, list) {
 		snd_hdac_device_unregister(codec);
 		put_device(&codec->dev);
@@ -108,16 +78,12 @@ static void hdac_ext_drv_shutdown(struct device *dev)
 	return (get_hdrv(dev))->shutdown(get_hdev(dev));
 }
 
-/**
- * snd_hda_ext_driver_register - register a driver for ext hda devices
- *
- * @drv: ext hda driver structure
- */
+ 
 int snd_hda_ext_driver_register(struct hdac_driver *drv)
 {
 	drv->type = HDA_DEV_ASOC;
 	drv->driver.bus = &snd_hda_bus_type;
-	/* we use default match */
+	 
 
 	if (drv->probe)
 		drv->driver.probe = hda_ext_drv_probe;
@@ -130,11 +96,7 @@ int snd_hda_ext_driver_register(struct hdac_driver *drv)
 }
 EXPORT_SYMBOL_GPL(snd_hda_ext_driver_register);
 
-/**
- * snd_hda_ext_driver_unregister - unregister a driver for ext hda devices
- *
- * @drv: ext hda driver structure
- */
+ 
 void snd_hda_ext_driver_unregister(struct hdac_driver *drv)
 {
 	driver_unregister(&drv->driver);

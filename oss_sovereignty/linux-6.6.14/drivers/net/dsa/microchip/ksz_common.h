@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip switch driver common header
- *
- * Copyright (C) 2017-2019 Microchip Technology Inc.
- */
+ 
+ 
 
 #ifndef __KSZ_COMMON_H
 #define __KSZ_COMMON_H
@@ -34,7 +31,7 @@ struct vlan_table {
 };
 
 struct ksz_port_mib {
-	struct mutex cnt_mutex;		/* structure access */
+	struct mutex cnt_mutex;		 
 	u8 cnt_ptr;
 	u64 *counters;
 	struct rtnl_link_stats64 stats64;
@@ -102,15 +99,15 @@ struct ksz_ptp_irq {
 };
 
 struct ksz_port {
-	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
+	bool remove_tag;		 
 	bool learning;
 	int stp_state;
 	struct phy_device phydev;
 
-	u32 fiber:1;			/* port is fiber */
+	u32 fiber:1;			 
 	u32 force:1;
-	u32 read:1;			/* read MIB counters in background */
-	u32 freeze:1;			/* MIB counter freeze is enabled */
+	u32 read:1;			 
+	u32 freeze:1;			 
 
 	struct ksz_port_mib mib;
 	phy_interface_t interface;
@@ -135,10 +132,10 @@ struct ksz_device {
 	struct ksz_platform_data *pdata;
 	const struct ksz_chip_data *info;
 
-	struct mutex dev_mutex;		/* device access */
-	struct mutex regmap_mutex;	/* regmap access */
-	struct mutex alu_mutex;		/* ALU access */
-	struct mutex vlan_mutex;	/* vlan access */
+	struct mutex dev_mutex;		 
+	struct mutex regmap_mutex;	 
+	struct mutex alu_mutex;		 
+	struct mutex vlan_mutex;	 
 	const struct ksz_dev_ops *dev_ops;
 
 	struct device *dev;
@@ -147,12 +144,12 @@ struct ksz_device {
 	void *priv;
 	int irq;
 
-	struct gpio_desc *reset_gpio;	/* Optional reset GPIO */
+	struct gpio_desc *reset_gpio;	 
 
-	/* chip specific data */
+	 
 	u32 chip_id;
 	u8 chip_rev;
-	int cpu_port;			/* port connected to CPU */
+	int cpu_port;			 
 	int phy_port_cnt;
 	phy_interface_t compat_interface;
 	bool synclko_125;
@@ -166,12 +163,12 @@ struct ksz_device {
 	u16 mirror_rx;
 	u16 mirror_tx;
 	u16 port_mask;
-	struct mutex lock_irq;		/* IRQ Access */
+	struct mutex lock_irq;		 
 	struct ksz_irq girq;
 	struct ksz_ptp_data ptp_data;
 };
 
-/* List of supported models */
+ 
 enum ksz_model {
 	KSZ8563,
 	KSZ8795,
@@ -289,19 +286,19 @@ enum ksz_xmii_ctrl1 {
 };
 
 struct alu_struct {
-	/* entry 1 */
+	 
 	u8	is_static:1;
 	u8	is_src_filter:1;
 	u8	is_dst_filter:1;
 	u8	prio_age:3;
 	u32	_reserv_0_1:23;
 	u8	mstp:3;
-	/* entry 2 */
+	 
 	u8	is_override:1;
 	u8	is_use_fid:1;
 	u32	_reserv_1_1:23;
 	u8	port_forward:7;
-	/* entry 3 & 4*/
+	 
 	u32	_reserv_2_1:9;
 	u8	fid:7;
 	u8	mac[ETH_ALEN];
@@ -381,7 +378,7 @@ bool ksz_get_gbit(struct ksz_device *dev, int port);
 phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit);
 extern const struct ksz_chip_data ksz_switch_chips[];
 
-/* Common register access functions */
+ 
 static inline struct regmap *ksz_regmap_8(struct ksz_device *dev)
 {
 	return dev->regmap[KSZ_REGMAP_8];
@@ -517,7 +514,7 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
 {
 	u32 val[2];
 
-	/* Ick! ToDo: Add 64bit R/W to regmap on 32bit systems */
+	 
 	value = swab64(value);
 	val[0] = swab32(value & 0xffffffffULL);
 	val[1] = swab32(value >> 32ULL);
@@ -622,12 +619,12 @@ static inline int is_lan937x(struct ksz_device *dev)
 		dev->chip_id == LAN9374_CHIP_ID;
 }
 
-/* STP State Defines */
+ 
 #define PORT_TX_ENABLE			BIT(2)
 #define PORT_RX_ENABLE			BIT(1)
 #define PORT_LEARN_DISABLE		BIT(0)
 
-/* Switch ID Defines */
+ 
 #define REG_CHIP_ID0			0x00
 
 #define SW_FAMILY_ID_M			GENMASK(15, 8)
@@ -644,15 +641,15 @@ static inline int is_lan937x(struct ksz_device *dev)
 
 #define SW_REV_ID_M			GENMASK(7, 4)
 
-/* KSZ9893, KSZ9563, KSZ8563 specific register  */
+ 
 #define REG_CHIP_ID4			0x0f
 #define SKU_ID_KSZ8563			0x3c
 #define SKU_ID_KSZ9563			0x1c
 
-/* Driver set switch broadcast storm protection at 10% rate. */
+ 
 #define BROADCAST_STORM_PROT_RATE	10
 
-/* 148,800 frames * 67 ms / 100 */
+ 
 #define BROADCAST_STORM_VALUE		9969
 
 #define BROADCAST_STORM_RATE_HI		0x07
@@ -663,7 +660,7 @@ static inline int is_lan937x(struct ksz_device *dev)
 
 #define SW_START			0x01
 
-/* xMII configuration */
+ 
 #define P_MII_DUPLEX_M			BIT(6)
 #define P_MII_100MBIT_M			BIT(4)
 
@@ -673,7 +670,7 @@ static inline int is_lan937x(struct ksz_device *dev)
 #define P_MII_MAC_MODE			BIT(2)
 #define P_MII_SEL_M			0x3
 
-/* Interrupt */
+ 
 #define REG_SW_PORT_INT_STATUS__1	0x001B
 #define REG_SW_PORT_INT_MASK__1		0x001F
 
@@ -697,7 +694,7 @@ static inline int is_lan937x(struct ksz_device *dev)
 #define KSZ9477_PORT_TC_MAP_S		4
 #define KSZ9477_MAX_TC_PRIO		7
 
-/* CBS related registers */
+ 
 #define REG_PORT_MTI_QUEUE_INDEX__4	0x0900
 
 #define REG_PORT_MTI_QUEUE_CTRL_0	0x0914
@@ -716,7 +713,7 @@ static inline int is_lan937x(struct ksz_device *dev)
 #define REG_PORT_MTI_HI_WATER_MARK	0x0916
 #define REG_PORT_MTI_LO_WATER_MARK	0x0918
 
-/* Regmap tables generation */
+ 
 #define KSZ_SPI_OP_RD		3
 #define KSZ_SPI_OP_WR		2
 

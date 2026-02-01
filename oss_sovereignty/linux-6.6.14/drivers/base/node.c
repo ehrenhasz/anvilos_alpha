@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Basic Node interface support
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -68,14 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
 
 static BIN_ATTR_RO(cpulist, CPULIST_FILE_MAX_BYTES);
 
-/**
- * struct node_access_nodes - Access class device to hold user visible
- * 			      relationships to other nodes.
- * @dev:	Device for this memory access class
- * @list_node:	List element in the node's access list
- * @access:	The access class rank
- * @hmem_attrs: Heterogeneous memory performance attributes
- */
+ 
 struct node_access_nodes {
 	struct device		dev;
 	struct list_head	list_node;
@@ -184,12 +175,7 @@ static struct attribute *access_attrs[] = {
 	NULL,
 };
 
-/**
- * node_set_perf_attrs - Set the performance values for given access class
- * @nid: Node identifier to be set
- * @hmem_attrs: Heterogeneous memory performance attributes
- * @access: The access class the for the given attributes
- */
+ 
 void node_set_perf_attrs(unsigned int nid, struct node_hmem_attrs *hmem_attrs,
 			 unsigned int access)
 {
@@ -216,12 +202,7 @@ void node_set_perf_attrs(unsigned int nid, struct node_hmem_attrs *hmem_attrs,
 	}
 }
 
-/**
- * struct node_cache_info - Internal tracking for memory node caches
- * @dev:	Device represeting the cache level
- * @node:	List element for tracking in the node
- * @cache_attrs:Attributes for this cache level
- */
+ 
 struct node_cache_info {
 	struct device dev;
 	struct list_head node;
@@ -288,11 +269,7 @@ put_device:
 	put_device(dev);
 }
 
-/**
- * node_add_cache() - add cache attribute to a memory node
- * @nid: Node identifier that has new cache attributes
- * @cache_attrs: Attributes for the cache being added
- */
+ 
 void node_add_cache(unsigned int nid, struct node_cache_attrs *cache_attrs)
 {
 	struct node_cache_info *info;
@@ -553,10 +530,7 @@ static ssize_t node_read_distance(struct device *dev,
 	int len = 0;
 	int i;
 
-	/*
-	 * buf is currently PAGE_SIZE in length and each node needs 4 chars
-	 * at the most (distance + space or newline).
-	 */
+	 
 	BUILD_BUG_ON(MAX_NUMNODES * 4 > PAGE_SIZE);
 
 	for_each_online_node(i) {
@@ -604,12 +578,7 @@ static void node_device_release(struct device *dev)
 	kfree(to_node(dev));
 }
 
-/*
- * register_node - Setup a sysfs device for a node.
- * @num - Node number to use when creating the device.
- *
- * Initialize and register the node device.
- */
+ 
 static int register_node(struct node *node, int num)
 {
 	int error;
@@ -630,13 +599,7 @@ static int register_node(struct node *node, int num)
 	return error;
 }
 
-/**
- * unregister_node - unregister a node device
- * @node: node going away
- *
- * Unregisters a node device @node.  All the devices on the node must be
- * unregistered before calling this function.
- */
+ 
 void unregister_node(struct node *node)
 {
 	hugetlb_unregister_node(node);
@@ -648,9 +611,7 @@ void unregister_node(struct node *node)
 
 struct node *node_devices[MAX_NUMNODES];
 
-/*
- * register cpu under node
- */
+ 
 int register_cpu_under_node(unsigned int cpu, unsigned int nid)
 {
 	int ret;
@@ -674,19 +635,7 @@ int register_cpu_under_node(unsigned int cpu, unsigned int nid)
 				 kobject_name(&node_devices[nid]->dev.kobj));
 }
 
-/**
- * register_memory_node_under_compute_node - link memory node to its compute
- *					     node for a given access class.
- * @mem_nid:	Memory node number
- * @cpu_nid:	Cpu  node number
- * @access:	Access class to register
- *
- * Description:
- * 	For use with platforms that may have separate memory and compute nodes.
- * 	This function will export node relationships linking which memory
- * 	initiator nodes can access memory targets at a given ranked access
- * 	class.
- */
+ 
 int register_memory_node_under_compute_node(unsigned int mem_nid,
 					    unsigned int cpu_nid,
 					    unsigned int access)
@@ -779,7 +728,7 @@ static void do_register_memory_block_under_node(int nid,
 				    ret);
 }
 
-/* register memory section under specified node if it spans that node */
+ 
 static int register_mem_block_under_node_early(struct memory_block *mem_blk,
 					       void *arg)
 {
@@ -792,20 +741,14 @@ static int register_mem_block_under_node_early(struct memory_block *mem_blk,
 	for (pfn = start_pfn; pfn <= end_pfn; pfn++) {
 		int page_nid;
 
-		/*
-		 * memory block could have several absent sections from start.
-		 * skip pfn range from absent section
-		 */
+		 
 		if (!pfn_in_present_section(pfn)) {
 			pfn = round_down(pfn + PAGES_PER_SECTION,
 					 PAGES_PER_SECTION) - 1;
 			continue;
 		}
 
-		/*
-		 * We need to check if page belongs to nid only at the boot
-		 * case because node's ranges can be interleaved.
-		 */
+		 
 		page_nid = get_nid_for_pfn(pfn);
 		if (page_nid < 0)
 			continue;
@@ -815,14 +758,11 @@ static int register_mem_block_under_node_early(struct memory_block *mem_blk,
 		do_register_memory_block_under_node(nid, mem_blk, MEMINIT_EARLY);
 		return 0;
 	}
-	/* mem section does not span the specified node */
+	 
 	return 0;
 }
 
-/*
- * During hotplug we know that all pages in the memory block belong to the same
- * node.
- */
+ 
 static int register_mem_block_under_node_hotplug(struct memory_block *mem_blk,
 						 void *arg)
 {
@@ -832,10 +772,7 @@ static int register_mem_block_under_node_hotplug(struct memory_block *mem_blk,
 	return 0;
 }
 
-/*
- * Unregister a memory block device under the node it spans. Memory blocks
- * with multiple nodes cannot be offlined and therefore also never be removed.
- */
+ 
 void unregister_memory_block_under_nodes(struct memory_block *mem_blk)
 {
 	if (mem_blk->nid == NUMA_NO_NODE)
@@ -862,7 +799,7 @@ void register_memory_blocks_under_node(int nid, unsigned long start_pfn,
 			   (void *)&nid, func);
 	return;
 }
-#endif /* CONFIG_MEMORY_HOTPLUG */
+#endif  
 
 int __register_one_node(int nid)
 {
@@ -879,7 +816,7 @@ int __register_one_node(int nid)
 
 	error = register_node(node_devices[nid], nid);
 
-	/* link cpu under this node */
+	 
 	for_each_present_cpu(cpu) {
 		if (cpu_to_node(cpu) == nid)
 			register_cpu_under_node(cpu, nid);
@@ -899,9 +836,7 @@ void unregister_one_node(int nid)
 	node_devices[nid] = NULL;
 }
 
-/*
- * node states attributes
- */
+ 
 
 struct node_attr {
 	struct device_attribute attr;
@@ -966,10 +901,7 @@ void __init node_dev_init(void)
 	if (ret)
 		panic("%s() failed to register subsystem: %d\n", __func__, ret);
 
-	/*
-	 * Create all node devices, which will properly link the node
-	 * to applicable memory block devices and already created cpu devices.
-	 */
+	 
 	for_each_online_node(i) {
 		ret = register_one_node(i);
 		if (ret)

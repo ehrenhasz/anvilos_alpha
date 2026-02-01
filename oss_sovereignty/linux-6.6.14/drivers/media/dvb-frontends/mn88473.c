@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Panasonic MN88473 DVB-T/T2/C demodulator driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "mn88473_priv.h"
 
@@ -81,7 +77,7 @@ static int mn88473_set_frontend(struct dvb_frontend *fe)
 		break;
 	}
 
-	/* Program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params) {
 		ret = fe->ops.tuner_ops.set_params(fe);
 		if (ret)
@@ -99,7 +95,7 @@ static int mn88473_set_frontend(struct dvb_frontend *fe)
 		goto err;
 	}
 
-	/* Calculate IF registers */
+	 
 	uitmp = DIV_ROUND_CLOSEST_ULL((u64) if_frequency * 0x1000000, dev->clk);
 	if_val[0] = (uitmp >> 16) & 0xff;
 	if_val[1] = (uitmp >>  8) & 0xff;
@@ -214,7 +210,7 @@ static int mn88473_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* PLP */
+	 
 	if (c->delivery_system == SYS_DVBT2) {
 		ret = regmap_write(dev->regmap[2], 0x36,
 				(c->stream_id == NO_STREAM_ID_FILTER) ? 0 :
@@ -223,7 +219,7 @@ static int mn88473_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* Reset FSM */
+	 
 	ret = regmap_write(dev->regmap[2], 0xf8, 0x9f);
 	if (ret)
 		goto err;
@@ -248,7 +244,7 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		goto err;
 	}
 
-	/* Lock detection */
+	 
 	switch (c->delivery_system) {
 	case SYS_DVBT:
 		ret = regmap_read(dev->regmap[0], 0x62, &utmp);
@@ -308,7 +304,7 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		goto err;
 	}
 
-	/* Signal strength */
+	 
 	if (*status & FE_HAS_SIGNAL) {
 		for (i = 0; i < 2; i++) {
 			ret = regmap_bulk_read(dev->regmap[2], 0x86 + i,
@@ -317,7 +313,7 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 				goto err;
 		}
 
-		/* AGCRD[15:6] gives us a 10bit value ([5:0] are always 0) */
+		 
 		utmp1 = buf[0] << 8 | buf[1] << 0 | buf[0] >> 2;
 		dev_dbg(&client->dev, "strength=%u\n", utmp1);
 
@@ -327,17 +323,17 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (*status & FE_HAS_VITERBI && c->delivery_system == SYS_DVBT) {
-		/* DVB-T CNR */
+		 
 		ret = regmap_bulk_read(dev->regmap[0], 0x8f, buf, 2);
 		if (ret)
 			goto err;
 
 		utmp = buf[0] << 8 | buf[1] << 0;
 		if (utmp) {
-			/* CNR[dB]: 10 * (log10(65536 / value) + 0.2) */
-			/* log10(65536) = 80807124, 0.2 = 3355443 */
+			 
+			 
 			stmp = div_u64(((u64)80807124 - intlog10(utmp)
 					+ 3355443) * 10000, 1 << 24);
 			dev_dbg(&client->dev, "cnr=%d value=%u\n", stmp, utmp);
@@ -349,7 +345,7 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 	} else if (*status & FE_HAS_VITERBI &&
 		   c->delivery_system == SYS_DVBT2) {
-		/* DVB-T2 CNR */
+		 
 		for (i = 0; i < 3; i++) {
 			ret = regmap_bulk_read(dev->regmap[2], 0xb7 + i,
 					       &buf[i], 1);
@@ -358,18 +354,18 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		}
 
 		utmp = buf[1] << 8 | buf[2] << 0;
-		utmp1 = (buf[0] >> 2) & 0x01; /* 0=SISO, 1=MISO */
+		utmp1 = (buf[0] >> 2) & 0x01;  
 		if (utmp) {
 			if (utmp1) {
-				/* CNR[dB]: 10 * (log10(16384 / value) - 0.6) */
-				/* log10(16384) = 70706234, 0.6 = 10066330 */
+				 
+				 
 				stmp = div_u64(((u64)70706234 - intlog10(utmp)
 						- 10066330) * 10000, 1 << 24);
 				dev_dbg(&client->dev, "cnr=%d value=%u MISO\n",
 					stmp, utmp);
 			} else {
-				/* CNR[dB]: 10 * (log10(65536 / value) + 0.2) */
-				/* log10(65536) = 80807124, 0.2 = 3355443 */
+				 
+				 
 				stmp = div_u64(((u64)80807124 - intlog10(utmp)
 						+ 3355443) * 10000, 1 << 24);
 				dev_dbg(&client->dev, "cnr=%d value=%u SISO\n",
@@ -383,16 +379,16 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 	} else if (*status & FE_HAS_VITERBI &&
 		   c->delivery_system == SYS_DVBC_ANNEX_A) {
-		/* DVB-C CNR */
+		 
 		ret = regmap_bulk_read(dev->regmap[1], 0xa1, buf, 4);
 		if (ret)
 			goto err;
 
-		utmp1 = buf[0] << 8 | buf[1] << 0; /* signal */
-		utmp2 = buf[2] << 8 | buf[3] << 0; /* noise */
+		utmp1 = buf[0] << 8 | buf[1] << 0;  
+		utmp2 = buf[2] << 8 | buf[3] << 0;  
 		if (utmp1 && utmp2) {
-			/* CNR[dB]: 10 * log10(8 * (signal / noise)) */
-			/* log10(8) = 15151336 */
+			 
+			 
 			stmp = div_u64(((u64)15151336 + intlog10(utmp1)
 					- intlog10(utmp2)) * 10000, 1 << 24);
 			dev_dbg(&client->dev, "cnr=%d signal=%u noise=%u\n",
@@ -407,10 +403,10 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* BER */
+	 
 	if (*status & FE_HAS_LOCK && (c->delivery_system == SYS_DVBT ||
 				      c->delivery_system == SYS_DVBC_ANNEX_A)) {
-		/* DVB-T & DVB-C BER */
+		 
 		ret = regmap_bulk_read(dev->regmap[0], 0x92, buf, 5);
 		if (ret)
 			goto err;
@@ -430,7 +426,7 @@ static int mn88473_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->post_bit_count.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* PER */
+	 
 	if (*status & FE_HAS_LOCK) {
 		ret = regmap_bulk_read(dev->regmap[0], 0xdd, buf, 4);
 		if (ret)
@@ -468,7 +464,7 @@ static int mn88473_init(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Check if firmware is already running */
+	 
 	ret = regmap_read(dev->regmap[0], 0xf5, &uitmp);
 	if (ret)
 		goto err;
@@ -476,7 +472,7 @@ static int mn88473_init(struct dvb_frontend *fe)
 	if (!(uitmp & 0x01))
 		goto warm;
 
-	/* Request the firmware, this will block and timeout */
+	 
 	ret = request_firmware(&fw, name, &client->dev);
 	if (ret) {
 		dev_err(&client->dev, "firmware file '%s' not found\n", name);
@@ -502,7 +498,7 @@ static int mn88473_init(struct dvb_frontend *fe)
 
 	release_firmware(fw);
 
-	/* Parity check of firmware */
+	 
 	ret = regmap_read(dev->regmap[0], 0xf8, &uitmp);
 	if (ret)
 		goto err;
@@ -517,7 +513,7 @@ static int mn88473_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 warm:
-	/* TS config */
+	 
 	ret = regmap_write(dev->regmap[2], 0x09, 0x08);
 	if (ret)
 		goto err;
@@ -527,7 +523,7 @@ warm:
 
 	dev->active = true;
 
-	/* init stats here to indicate which stats are supported */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.len = 1;
@@ -619,7 +615,7 @@ static int mn88473_probe(struct i2c_client *client)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Caller really need to provide pointer for frontend we create */
+	 
 	if (config->fe == NULL) {
 		dev_err(&client->dev, "frontend pointer not defined\n");
 		ret = -EINVAL;
@@ -648,14 +644,7 @@ static int mn88473_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/*
-	 * Chip has three I2C addresses for different register banks. Used
-	 * addresses are 0x18, 0x1a and 0x1c. We register two dummy clients,
-	 * 0x1a and 0x1c, in order to get own I2C client for each register bank.
-	 *
-	 * Also, register bank 2 do not support sequential I/O. Only single
-	 * register write or read is allowed to that bank.
-	 */
+	 
 	dev->client[1] = i2c_new_dummy_device(client->adapter, 0x1a);
 	if (IS_ERR(dev->client[1])) {
 		ret = PTR_ERR(dev->client[1]);
@@ -682,7 +671,7 @@ static int mn88473_probe(struct i2c_client *client)
 	}
 	i2c_set_clientdata(dev->client[2], dev);
 
-	/* Check demod answers with correct chip id */
+	 
 	ret = regmap_read(dev->regmap[2], 0xff, &uitmp);
 	if (ret)
 		goto err_regmap_2_regmap_exit;
@@ -694,12 +683,12 @@ static int mn88473_probe(struct i2c_client *client)
 		goto err_regmap_2_regmap_exit;
 	}
 
-	/* Sleep because chip is active by default */
+	 
 	ret = regmap_write(dev->regmap[2], 0x05, 0x3e);
 	if (ret)
 		goto err_regmap_2_regmap_exit;
 
-	/* Create dvb frontend */
+	 
 	memcpy(&dev->frontend.ops, &mn88473_ops, sizeof(dev->frontend.ops));
 	dev->frontend.demodulator_priv = client;
 	*config->fe = &dev->frontend;

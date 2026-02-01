@@ -1,19 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright 2022 StarFive Technology Co., Ltd.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_STARFIVE_JH7110_CRG_H__
 #define __DT_BINDINGS_CLOCK_STARFIVE_JH7110_CRG_H__
 
-/* PLL clocks */
+ 
 #define JH7110_PLLCLK_PLL0_OUT			0
 #define JH7110_PLLCLK_PLL1_OUT			1
 #define JH7110_PLLCLK_PLL2_OUT			2
 #define JH7110_PLLCLK_END			3
 
-/* SYSCRG clocks */
+ 
 #define JH7110_SYSCLK_CPU_ROOT			0
 #define JH7110_SYSCLK_CPU_CORE			1
 #define JH7110_SYSCLK_CPU_BUS			2
@@ -207,7 +204,7 @@
 
 #define JH7110_SYSCLK_END			190
 
-/* AONCRG clocks */
+ 
 #define JH7110_AONCLK_OSC_DIV4			0
 #define JH7110_AONCLK_APB_FUNC			1
 #define JH7110_AONCLK_GMAC0_AHB			2
@@ -225,7 +222,7 @@
 
 #define JH7110_AONCLK_END			14
 
-/* STGCRG clocks */
+ 
 #define JH7110_STGCLK_HIFI4_CLK_CORE		0
 #define JH7110_STGCLK_USB0_APB			1
 #define JH7110_STGCLK_USB0_UTMI_APB		2
@@ -258,7 +255,7 @@
 
 #define JH7110_STGCLK_END			29
 
-/* ISPCRG clocks */
+ 
 #define JH7110_ISPCLK_DOM4_APB_FUNC		0
 #define JH7110_ISPCLK_MIPI_RX0_PXL		1
 #define JH7110_ISPCLK_DVP_INV			2
@@ -276,7 +273,7 @@
 
 #define JH7110_ISPCLK_END			14
 
-/* VOUTCRG clocks */
+ 
 #define JH7110_VOUTCLK_APB			0
 #define JH7110_VOUTCLK_DC8200_PIX		1
 #define JH7110_VOUTCLK_DSI_SYS			2
@@ -298,4 +295,4 @@
 
 #define JH7110_VOUTCLK_END			18
 
-#endif /* __DT_BINDINGS_CLOCK_STARFIVE_JH7110_CRG_H__ */
+#endif  

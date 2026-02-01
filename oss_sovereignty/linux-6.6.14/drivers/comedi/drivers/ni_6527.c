@@ -1,33 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ni_6527.c
- * Comedi driver for National Instruments PCI-6527
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999,2002,2003 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_6527
- * Description: National Instruments 6527
- * Devices: [National Instruments] PCI-6527 (pci-6527), PXI-6527 (pxi-6527)
- * Author: David A. Schleef <ds@schleef.org>
- * Updated: Sat, 25 Jan 2003 13:24:40 -0800
- * Status: works
- *
- * Configuration Options: not applicable, uses PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI BAR1 - Register memory map
- *
- * Manuals (available from ftp://ftp.natinst.com/support/manuals)
- *	370106b.pdf	6527 Register Level Programmer Manual
- */
+ 
 #define NI6527_DI_REG(x)		(0x00 + (x))
 #define NI6527_DO_REG(x)		(0x03 + (x))
 #define NI6527_ID_REG			0x06
@@ -117,11 +97,7 @@ static int ni6527_di_insn_config(struct comedi_device *dev,
 
 	switch (data[0]) {
 	case INSN_CONFIG_FILTER:
-		/*
-		 * The deglitch filter interval is specified in nanoseconds.
-		 * The hardware supports intervals in 200ns increments. Round
-		 * the user values up and return the actual interval.
-		 */
+		 
 		interval = (data[1] + 100) / 200;
 		data[1] = interval * 200;
 
@@ -165,7 +141,7 @@ static int ni6527_do_insn_bits(struct comedi_device *dev,
 
 	mask = comedi_dio_update_state(s, data);
 	if (mask) {
-		/* Outputs are inverted */
+		 
 		unsigned int val = s->state ^ 0xffffff;
 
 		if (mask & 0x0000ff)
@@ -211,7 +187,7 @@ static int ni6527_intr_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_OTHER);
@@ -222,10 +198,10 @@ static int ni6527_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -237,9 +213,9 @@ static int ni6527_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -281,19 +257,19 @@ static void ni6527_set_edge_detection(struct comedi_device *dev,
 	for (i = 0; i < 2; i++) {
 		if (mask & 0xff) {
 			if (~mask & 0xff) {
-				/* preserve rising-edge detection channels */
+				 
 				rising |= readb(dev->mmio +
 						NI6527_RISING_EDGE_REG(i)) &
 					  (~mask & 0xff);
-				/* preserve falling-edge detection channels */
+				 
 				falling |= readb(dev->mmio +
 						 NI6527_FALLING_EDGE_REG(i)) &
 					   (~mask & 0xff);
 			}
-			/* update rising-edge detection channels */
+			 
 			writeb(rising & 0xff,
 			       dev->mmio + NI6527_RISING_EDGE_REG(i));
-			/* update falling-edge detection channels */
+			 
 			writeb(falling & 0xff,
 			       dev->mmio + NI6527_FALLING_EDGE_REG(i));
 		}
@@ -313,7 +289,7 @@ static int ni6527_intr_insn_config(struct comedi_device *dev,
 
 	switch (data[0]) {
 	case INSN_CONFIG_CHANGE_NOTIFY:
-		/* check_insn_config_length() does not check this instruction */
+		 
 		if (insn->n != 3)
 			return -EINVAL;
 		rising = data[1];
@@ -321,17 +297,17 @@ static int ni6527_intr_insn_config(struct comedi_device *dev,
 		ni6527_set_edge_detection(dev, mask, rising, falling);
 		break;
 	case INSN_CONFIG_DIGITAL_TRIG:
-		/* check trigger number */
+		 
 		if (data[1] != 0)
 			return -EINVAL;
-		/* check digital trigger operation */
+		 
 		switch (data[2]) {
 		case COMEDI_DIGITAL_TRIG_DISABLE:
 			rising = 0;
 			falling = 0;
 			break;
 		case COMEDI_DIGITAL_TRIG_ENABLE_EDGES:
-			/* check shift amount */
+			 
 			shift = data[3];
 			if (shift >= 32) {
 				mask = 0;
@@ -357,10 +333,10 @@ static int ni6527_intr_insn_config(struct comedi_device *dev,
 
 static void ni6527_reset(struct comedi_device *dev)
 {
-	/* disable deglitch filters on all channels */
+	 
 	ni6527_set_filter_enable(dev, 0);
 
-	/* disable edge detection */
+	 
 	ni6527_set_edge_detection(dev, 0xffffffff, 0, 0);
 
 	writeb(NI6527_CLR_IRQS | NI6527_CLR_RESET_FILT,
@@ -396,7 +372,7 @@ static int ni6527_auto_attach(struct comedi_device *dev,
 	if (!dev->mmio)
 		return -ENOMEM;
 
-	/* make sure this is actually a 6527 device */
+	 
 	if (readb(dev->mmio + NI6527_ID_REG) != 0x27)
 		return -ENODEV;
 
@@ -411,7 +387,7 @@ static int ni6527_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -421,7 +397,7 @@ static int ni6527_auto_attach(struct comedi_device *dev,
 	s->insn_config	= ni6527_di_insn_config;
 	s->insn_bits	= ni6527_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -430,7 +406,7 @@ static int ni6527_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= ni6527_do_insn_bits;
 
-	/* Edge detection interrupt subdevice */
+	 
 	s = &dev->subdevices[2];
 	if (dev->irq) {
 		dev->read_subdev = s;

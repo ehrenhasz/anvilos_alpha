@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * BTF-to-C dumper test for topological sorting of dependent structs.
- *
- * Copyright (c) 2019 Facebook
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+
+ 
+ 
 struct s1 {};
 
 struct s3;
@@ -55,7 +51,7 @@ struct root_struct {
 	struct callback_head cb;
 };
 
-/*------ END-EXPECTED-OUTPUT ------ */
+ 
 
 int f(struct root_struct *root)
 {

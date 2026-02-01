@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Broadcom */
 
-/*
- * This module contains USB PHY initialization for power up and S3 resume
- * for newer Synopsys based USB hardware first used on the bcm7216.
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -14,7 +11,7 @@
 
 #define PHY_LOCK_TIMEOUT_MS 200
 
-/* Register definitions for syscon piarbctl registers */
+ 
 #define PIARBCTL_CAM			0x00
 #define PIARBCTL_SPLITTER		0x04
 #define PIARBCTL_MISC			0x08
@@ -33,7 +30,7 @@
 	 PIARBCTL_MISC_USB_PRIORITY_MASK |	\
 	 PIARBCTL_MISC_USB_MEM_PAGE_MASK)
 
-/* Register definitions for the USB CTRL block */
+ 
 #define USB_CTRL_SETUP			0x00
 #define   USB_CTRL_SETUP_IOC_MASK			BIT(4)
 #define   USB_CTRL_SETUP_IPP_MASK			BIT(5)
@@ -62,7 +59,7 @@
 #define USB_CTRL_P0_U2PHY_CFG1		0x68
 #define   USB_CTRL_P0_U2PHY_CFG1_COMMONONN_MASK		BIT(10)
 
-/* Register definitions for the USB_PHY block in 7211b0 */
+ 
 #define USB_PHY_PLL_CTL			0x00
 #define   USB_PHY_PLL_CTL_PLL_SUSPEND_MASK		BIT(27)
 #define   USB_PHY_PLL_CTL_PLL_RESETB_MASK		BIT(30)
@@ -79,15 +76,11 @@
 #define USB_PHY_STATUS			0x20
 #define   USB_PHY_STATUS_pll_lock_MASK			BIT(0)
 
-/* Register definitions for the MDIO registers in the DWC2 block of
- * the 7211b0.
- * NOTE: The PHY's MDIO registers are only accessible through the
- * legacy DesignWare USB controller even though it's not being used.
- */
+ 
 #define USB_GMDIOCSR	0
 #define USB_GMDIOGEN	4
 
-/* Register definitions for the BDC EC block in 7211b0 */
+ 
 #define BDC_EC_AXIRDA			0x0c
 #define   BDC_EC_AXIRDA_RTS_MASK			GENMASK(31, 28)
 #define   BDC_EC_AXIRDA_RTS_SHIFT			28
@@ -100,7 +93,7 @@ static void usb_mdio_write_7211b0(struct brcm_usb_init_params *params,
 {
 	void __iomem *usb_mdio = params->regs[BRCM_REGS_USB_MDIO];
 
-	addr &= 0x1f; /* 5-bit address */
+	addr &= 0x1f;  
 	brcm_usb_writel(0xffffffff, usb_mdio + USB_GMDIOGEN);
 	while (brcm_usb_readl(usb_mdio + USB_GMDIOCSR) & (1<<31))
 		;
@@ -118,7 +111,7 @@ static uint16_t __maybe_unused usb_mdio_read_7211b0(
 {
 	void __iomem *usb_mdio = params->regs[BRCM_REGS_USB_MDIO];
 
-	addr &= 0x1f; /* 5-bit address */
+	addr &= 0x1f;  
 	brcm_usb_writel(0xffffffff, usb_mdio + USB_GMDIOGEN);
 	while (brcm_usb_readl(usb_mdio + USB_GMDIOCSR) & (1<<31))
 		;
@@ -133,10 +126,10 @@ static uint16_t __maybe_unused usb_mdio_read_7211b0(
 
 static void usb2_eye_fix_7211b0(struct brcm_usb_init_params *params)
 {
-	/* select bank */
+	 
 	usb_mdio_write_7211b0(params, 0x1f, 0x80a0);
 
-	/* Set the eye */
+	 
 	usb_mdio_write_7211b0(params, 0x0a, 0xc6a0);
 }
 
@@ -146,13 +139,13 @@ static void xhci_soft_reset(struct brcm_usb_init_params *params,
 	void __iomem *ctrl = params->regs[BRCM_REGS_CTRL];
 	void __iomem *xhci_gbl = params->regs[BRCM_REGS_XHCI_GBL];
 
-	/* Assert reset */
+	 
 	if (on_off) {
 		USB_CTRL_UNSET(ctrl, USB_PM, XHC_SOFT_RESETB);
-	/* De-assert reset */
+	 
 	} else {
 		USB_CTRL_SET(ctrl, USB_PM, XHC_SOFT_RESETB);
-		/* Required for COMMONONN to be set */
+		 
 		USB_XHCI_GBL_UNSET(xhci_gbl, GUSB2PHYCFG, U2_FREECLK_EXISTS);
 	}
 }
@@ -167,10 +160,10 @@ static void usb_init_ipp(struct brcm_usb_init_params *params)
 
 	orig_reg = reg = brcm_usb_readl(USB_CTRL_REG(ctrl, SETUP));
 	if (params->ipp != 2)
-		/* override ipp strap pin (if it exits) */
+		 
 		reg &= ~(USB_CTRL_MASK(SETUP, STRAP_IPP_SEL));
 
-	/* Override the default OC and PP polarity */
+	 
 	reg &= ~(USB_CTRL_MASK(SETUP, IPP) | USB_CTRL_MASK(SETUP, IOC));
 	if (params->ioc)
 		reg |= USB_CTRL_MASK(SETUP, IOC);
@@ -178,17 +171,14 @@ static void usb_init_ipp(struct brcm_usb_init_params *params)
 		reg |= USB_CTRL_MASK(SETUP, IPP);
 	brcm_usb_writel(reg, USB_CTRL_REG(ctrl, SETUP));
 
-	/*
-	 * If we're changing IPP, make sure power is off long enough
-	 * to turn off any connected devices.
-	 */
+	 
 	if ((reg ^ orig_reg) & USB_CTRL_MASK(SETUP, IPP))
 		msleep(50);
 }
 
 static void syscon_piarbctl_init(struct regmap *rmap)
 {
-	/* Switch from legacy USB OTG controller to new STB USB controller */
+	 
 	regmap_update_bits(rmap, PIARBCTL_MISC, PIARBCTL_MISC_USB_ONLY_MASK,
 			   PIARBCTL_MISC_USB_SELECT_MASK |
 			   PIARBCTL_MISC_USB_4G_SDRAM_MASK);
@@ -256,30 +246,30 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
 	usb_wake_enable_7211b0(params, false);
 	if (!params->wake_enabled) {
 
-		/* undo possible suspend settings */
+		 
 		brcm_usb_writel(0, usb_phy + USB_PHY_IDDQ);
 		reg = brcm_usb_readl(usb_phy + USB_PHY_PLL_CTL);
 		reg |= USB_PHY_PLL_CTL_PLL_RESETB_MASK;
 		brcm_usb_writel(reg, usb_phy + USB_PHY_PLL_CTL);
 
-		/* temporarily enable FSM so PHY comes up properly */
+		 
 		reg = brcm_usb_readl(usb_phy + USB_PHY_UTMI_CTL_1);
 		reg |= USB_PHY_UTMI_CTL_1_POWER_UP_FSM_EN_MASK;
 		brcm_usb_writel(reg, usb_phy + USB_PHY_UTMI_CTL_1);
 	}
 
-	/* Disable PLL auto suspend */
+	 
 	reg = brcm_usb_readl(usb_phy + USB_PHY_PLL_CTL);
 	reg |= USB_PHY_PLL_CTL_PLL_SUSPEND_MASK;
 	brcm_usb_writel(reg, usb_phy + USB_PHY_PLL_CTL);
 
-	/* Init the PHY */
+	 
 	reg = USB_PHY_PLL_LDO_CTL_AFE_CORERDY_MASK |
 		USB_PHY_PLL_LDO_CTL_AFE_LDO_PWRDWNB_MASK |
 		USB_PHY_PLL_LDO_CTL_AFE_BG_PWRDWNB_MASK;
 	brcm_usb_writel(reg, usb_phy + USB_PHY_PLL_LDO_CTL);
 
-	/* wait for lock */
+	 
 	while (timeout_ms-- > 0) {
 		reg = brcm_usb_readl(usb_phy + USB_PHY_STATUS);
 		if (reg & USB_PHY_STATUS_pll_lock_MASK)
@@ -287,7 +277,7 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
 		usleep_range(1000, 2000);
 	}
 
-	/* Set the PHY_MODE */
+	 
 	reg = brcm_usb_readl(usb_phy + USB_PHY_UTMI_CTL_1);
 	reg &= ~USB_PHY_UTMI_CTL_1_PHY_MODE_MASK;
 	reg |= params->supported_port_modes << USB_PHY_UTMI_CTL_1_PHY_MODE_SHIFT;
@@ -295,11 +285,7 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
 
 	usb_init_common(params);
 
-	/*
-	 * The BDC controller will get occasional failures with
-	 * the default "Read Transaction Size" of 6 (1024 bytes).
-	 * Set it to 4 (256 bytes).
-	 */
+	 
 	if ((params->supported_port_modes != USB_CTLR_MODE_HOST) && bdc_ec) {
 		reg = brcm_usb_readl(bdc_ec + BDC_EC_AXIRDA);
 		reg &= ~BDC_EC_AXIRDA_RTS_MASK;
@@ -307,10 +293,7 @@ static void usb_init_common_7211b0(struct brcm_usb_init_params *params)
 		brcm_usb_writel(reg, bdc_ec + BDC_EC_AXIRDA);
 	}
 
-	/*
-	 * Disable FSM, otherwise the PHY will auto suspend when no
-	 * device is connected and will be reset on resume.
-	 */
+	 
 	reg = brcm_usb_readl(usb_phy + USB_PHY_UTMI_CTL_1);
 	reg &= ~USB_PHY_UTMI_CTL_1_POWER_UP_FSM_EN_MASK;
 	brcm_usb_writel(reg, usb_phy + USB_PHY_UTMI_CTL_1);
@@ -325,10 +308,10 @@ static void usb_init_common_7216(struct brcm_usb_init_params *params)
 	USB_CTRL_UNSET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
 	USB_CTRL_UNSET(ctrl, USB_PM, USB_PWRDN);
 
-	/* 1 millisecond - for USB clocks to settle down */
+	 
 	usleep_range(1000, 2000);
 
-	/* Disable PHY when port is suspended */
+	 
 	USB_CTRL_SET(ctrl, P0_U2PHY_CFG1, COMMONONN);
 
 	usb_wake_enable_7216(params, false);
@@ -349,7 +332,7 @@ static void usb_uninit_common_7216(struct brcm_usb_init_params *params)
 	pr_debug("%s\n", __func__);
 
 	if (params->wake_enabled) {
-		/* Switch to using slower clock during suspend to save power */
+		 
 		USB_CTRL_SET(ctrl, USB_PM, XHC_S2_CLK_SWITCH_EN);
 		usb_wake_enable_7216(params, true);
 	} else {

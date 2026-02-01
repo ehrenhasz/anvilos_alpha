@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7100 Audio Clock Driver
- *
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -17,7 +13,7 @@
 
 #include "clk-starfive-jh71x0.h"
 
-/* external clocks */
+ 
 #define JH7100_AUDCLK_AUDIO_SRC			(JH7100_AUDCLK_END + 0)
 #define JH7100_AUDCLK_AUDIO_12288		(JH7100_AUDCLK_END + 1)
 #define JH7100_AUDCLK_DOM7AHB_BUS		(JH7100_AUDCLK_END + 2)
@@ -151,7 +147,7 @@ static int jh7100_audclk_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7100_audclk_match[] = {
 	{ .compatible = "starfive,jh7100-audclk" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7100_audclk_match);
 

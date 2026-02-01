@@ -1,28 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  synth callback routines for Emu10k1
- *
- *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/export.h>
 #include "emu10k1_synth_local.h"
 #include <sound/asoundef.h>
 
-/* voice status */
+ 
 enum {
 	V_FREE=0, V_OFF, V_RELEASED, V_PLAYING, V_END
 };
 
-/* Keeps track of what we are finding */
+ 
 struct best_voice {
 	unsigned int time;
 	int voice;
 };
 
-/*
- * prototypes
- */
+ 
 static void lookup_voices(struct snd_emux *emux, struct snd_emu10k1 *hw,
 			  struct best_voice *best, int active_only);
 static struct snd_emux_voice *get_voice(struct snd_emux *emux,
@@ -37,17 +31,12 @@ static u32 make_fmmod(struct snd_emux_voice *vp);
 static u32 make_fm2frq2(struct snd_emux_voice *vp);
 static int get_pitch_shift(struct snd_emux *emu);
 
-/*
- * Ensure a value is between two points
- * macro evaluates its args more than once, so changed to upper-case.
- */
+ 
 #define LIMITVALUE(x, a, b) do { if ((x) < (a)) (x) = (a); else if ((x) > (b)) (x) = (b); } while (0)
 #define LIMITMAX(x, a) do {if ((x) > (a)) (x) = (a); } while (0)
 
 
-/*
- * set up operators
- */
+ 
 static const struct snd_emux_operators emu10k1_ops = {
 	.owner =	THIS_MODULE,
 	.get_voice =	get_voice,
@@ -69,13 +58,7 @@ snd_emu10k1_ops_setup(struct snd_emux *emux)
 }
 
 
-/*
- * get more voice for pcm
- *
- * terminate most inactive voice and give it as a pcm voice.
- *
- * voice_lock is already held.
- */
+ 
 int
 snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw)
 {
@@ -86,17 +69,14 @@ snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw)
 
 	emu = hw->synth;
 
-	lookup_voices(emu, hw, best, 1); /* no OFF voices */
+	lookup_voices(emu, hw, best, 1);  
 	for (i = 0; i < V_END; i++) {
 		if (best[i].voice >= 0) {
 			int ch;
 			vp = &emu->voices[best[i].voice];
 			ch = vp->ch;
 			if (ch < 0) {
-				/*
-				dev_warn(emu->card->dev,
-				       "synth_get_voice: ch < 0 (%d) ??", i);
-				*/
+				 
 				continue;
 			}
 			vp->emu->num_voices--;
@@ -106,14 +86,12 @@ snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw)
 		}
 	}
 
-	/* not found */
+	 
 	return -ENOMEM;
 }
 
 
-/*
- * turn off the voice (not terminated)
- */
+ 
 static void
 release_voice(struct snd_emux_voice *vp)
 {
@@ -127,9 +105,7 @@ release_voice(struct snd_emux_voice *vp)
 }
 
 
-/*
- * terminate the voice
- */
+ 
 static void
 terminate_voice(struct snd_emux_voice *vp)
 {
@@ -153,19 +129,17 @@ terminate_voice(struct snd_emux_voice *vp)
 	}
 }
 
-/*
- * release the voice to system
- */
+ 
 static void
 free_voice(struct snd_emux_voice *vp)
 {
 	struct snd_emu10k1 *hw;
 	
 	hw = vp->hw;
-	/* FIXME: emu10k1_synth is broken. */
-	/* This can get called with hw == 0 */
-	/* Problem apparent on plug, unplug then plug */
-	/* on the Audigy 2 ZS Notebook. */
+	 
+	 
+	 
+	 
 	if (hw && (vp->ch >= 0)) {
 		snd_emu10k1_voice_free(hw, &hw->voices[vp->ch]);
 		vp->emu->num_voices--;
@@ -174,9 +148,7 @@ free_voice(struct snd_emux_voice *vp)
 }
 
 
-/*
- * update registers
- */
+ 
 static void
 update_voice(struct snd_emux_voice *vp, int update)
 {
@@ -202,10 +174,8 @@ update_voice(struct snd_emux_voice *vp, int update)
 }
 
 
-/*
- * look up voice table - get the best voice in order of preference
- */
-/* spinlock held! */
+ 
+ 
 static void
 lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 	      struct best_voice *best, int active_only)
@@ -215,14 +185,11 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 	int  i;
 
 	for (i = 0; i < V_END; i++) {
-		best[i].time = (unsigned int)-1; /* XXX MAX_?INT really */
+		best[i].time = (unsigned int)-1;  
 		best[i].voice = -1;
 	}
 
-	/*
-	 * Go through them all and get a best one to use.
-	 * NOTE: could also look at volume and pick the quietest one.
-	 */
+	 
 	for (i = 0; i < emu->max_voices; i++) {
 		int state, val;
 
@@ -252,7 +219,7 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 		else
 			continue;
 
-		/* check if sample is finished playing (non-looping only) */
+		 
 		if (bp != best + V_OFF && bp != best + V_FREE &&
 		    (vp->reg.sample_mode & SNDRV_SFNT_SAMPLE_SINGLESHOT)) {
 			val = snd_emu10k1_ptr_read(hw, CCCA_CURRADDR, vp->ch) - 64;
@@ -267,11 +234,7 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 	}
 }
 
-/*
- * get an empty voice
- *
- * emu->voice_lock is already held.
- */
+ 
 static struct snd_emux_voice *
 get_voice(struct snd_emux *emu, struct snd_emux_port *port)
 {
@@ -287,7 +250,7 @@ get_voice(struct snd_emux *emu, struct snd_emux_port *port)
 		if (best[i].voice >= 0) {
 			vp = &emu->voices[best[i].voice];
 			if (vp->ch < 0) {
-				/* allocate a voice */
+				 
 				struct snd_emu10k1_voice *hwvoice;
 				if (snd_emu10k1_voice_alloc(hw, EMU10K1_SYNTH, 1, 1, NULL, &hwvoice) < 0)
 					continue;
@@ -298,13 +261,11 @@ get_voice(struct snd_emux *emu, struct snd_emux_port *port)
 		}
 	}
 
-	/* not found */
+	 
 	return NULL;
 }
 
-/*
- * prepare envelopes and LFOs
- */
+ 
 static int
 start_voice(struct snd_emux_voice *vp)
 {
@@ -327,7 +288,7 @@ start_voice(struct snd_emux_voice *vp)
 		return -EINVAL;
 	emem->map_locked++;
 	if (snd_emu10k1_memblk_map(hw, emem) < 0) {
-		/* dev_err(hw->card->devK, "emu: cannot map!\n"); */
+		 
 		return -ENOMEM;
 	}
 	mapped_offset = snd_emu10k1_memblk_offset(emem) >> 1;
@@ -336,8 +297,8 @@ start_voice(struct snd_emux_voice *vp)
 	vp->reg.loopstart += mapped_offset;
 	vp->reg.loopend += mapped_offset;
 
-	/* set channel routing */
-	/* A = left(0), B = right(1), C = reverb(c), D = chorus(d) */
+	 
+	 
 	if (hw->audigy) {
 		temp = FXBUS_MIDI_LEFT | (FXBUS_MIDI_RIGHT << 8) | 
 			(FXBUS_MIDI_REVERB << 16) | (FXBUS_MIDI_CHORUS << 24);
@@ -377,63 +338,62 @@ start_voice(struct snd_emux_voice *vp)
 	vtarget = (unsigned int)vp->vtarget << 16;
 
 	snd_emu10k1_ptr_write_multiple(hw, ch,
-		/* channel to be silent and idle */
+		 
 		DCYSUSV, 0,
 		VTFT, VTFT_FILTERTARGET_MASK,
 		CVCF, CVCF_CURRENTFILTER_MASK,
 		PTRX, 0,
 		CPF, 0,
 
-		/* set pitch offset */
+		 
 		IP, vp->apitch,
 
-		/* set envelope parameters */
+		 
 		ENVVAL, vp->reg.parm.moddelay,
 		ATKHLDM, vp->reg.parm.modatkhld,
 		DCYSUSM, vp->reg.parm.moddcysus,
 		ENVVOL, vp->reg.parm.voldelay,
 		ATKHLDV, vp->reg.parm.volatkhld,
-		/* decay/sustain parameter for volume envelope is used
-		   for triggerg the voice */
+		 
 
-		/* cutoff and volume */
+		 
 		IFATN, (unsigned int)vp->acutoff << 8 | (unsigned char)vp->avol,
 
-		/* modulation envelope heights */
+		 
 		PEFE, vp->reg.parm.pefe,
 
-		/* lfo1/2 delay */
+		 
 		LFOVAL1, vp->reg.parm.lfo1delay,
 		LFOVAL2, vp->reg.parm.lfo2delay,
 
-		/* lfo1 pitch & cutoff shift */
+		 
 		FMMOD, make_fmmod(vp),
-		/* lfo1 volume & freq */
+		 
 		TREMFRQ, vp->reg.parm.tremfrq,
-		/* lfo2 pitch & freq */
+		 
 		FM2FRQ2, make_fm2frq2(vp),
 
-		/* reverb and loop start (reverb 8bit, MSB) */
+		 
 		PSST, psst,
 
-		/* chorus & loop end (chorus 8bit, MSB) */
+		 
 		DSL, dsl,
 
-		/* clear filter delay memory */
+		 
 		Z1, 0,
 		Z2, 0,
 
-		/* invalidate maps */
+		 
 		MAPA, map,
 		MAPB, map,
 
-		/* Q & current address (Q 4bit value, MSB) */
+		 
 		CCCA, ccca,
 
-		/* cache */
+		 
 		CCR, REG_VAL_PUT(CCR_CACHEINVALIDSIZE, 64),
 
-		/* reset volume */
+		 
 		VTFT, vtarget | vp->ftarget,
 		CVCF, vtarget | CVCF_CURRENTFILTER_MASK,
 
@@ -443,9 +403,7 @@ start_voice(struct snd_emux_voice *vp)
 	return 0;
 }
 
-/*
- * Start envelope
- */
+ 
 static void
 trigger_voice(struct snd_emux_voice *vp)
 {
@@ -457,7 +415,7 @@ trigger_voice(struct snd_emux_voice *vp)
 
 	emem = (struct snd_emu10k1_memblk *)vp->block;
 	if (! emem || emem->mapped_page < 0)
-		return; /* not mapped */
+		return;  
 
 #if 0
 	ptarget = (unsigned int)vp->ptarget << 16;
@@ -465,13 +423,13 @@ trigger_voice(struct snd_emux_voice *vp)
 	ptarget = IP_TO_CP(vp->apitch);
 #endif
 	snd_emu10k1_ptr_write_multiple(hw, vp->ch,
-		/* set pitch target and pan (volume) */
+		 
 		PTRX, ptarget | (vp->apan << 8) | vp->aaux,
 
-		/* current pitch and fractional address */
+		 
 		CPF, ptarget,
 
-		/* enable envelope engine */
+		 
 		DCYSUSV, vp->reg.parm.voldcysus | DCYSUSV_CHANNELENABLE_MASK,
 
 		REGLIST_END);
@@ -479,7 +437,7 @@ trigger_voice(struct snd_emux_voice *vp)
 
 #define MOD_SENSE 18
 
-/* calculate lfo1 modulation height and cutoff register */
+ 
 static u32
 make_fmmod(struct snd_emux_voice *vp)
 {
@@ -495,7 +453,7 @@ make_fmmod(struct snd_emux_voice *vp)
 	return ((unsigned char)pitch << 8) | cutoff;
 }
 
-/* calculate set lfo2 pitch & frequency register */
+ 
 static u32
 make_fm2frq2(struct snd_emux_voice *vp)
 {

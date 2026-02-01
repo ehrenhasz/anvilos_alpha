@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Atmel AC97C
- *
- * Copyright (C) 2005-2009 Atmel Corporation
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/bitmap.h>
@@ -28,7 +24,7 @@
 
 #include "ac97c.h"
 
-/* Serialize access to opened variable */
+ 
 static DEFINE_MUTEX(opened_mutex);
 
 struct atmel_ac97c {
@@ -45,7 +41,7 @@ struct atmel_ac97c {
 	u64				cur_format;
 	unsigned int			cur_rate;
 	int				playback_period, capture_period;
-	/* Serialize access to opened variable */
+	 
 	spinlock_t			lock;
 	void __iomem			*regs;
 	int				irq;
@@ -159,7 +155,7 @@ static int atmel_ac97c_playback_hw_params(struct snd_pcm_substream *substream,
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
 
-	/* Set restrictions to params. */
+	 
 	mutex_lock(&opened_mutex);
 	chip->cur_rate = params_rate(hw_params);
 	chip->cur_format = params_format(hw_params);
@@ -173,7 +169,7 @@ static int atmel_ac97c_capture_hw_params(struct snd_pcm_substream *substream,
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
 
-	/* Set restrictions to params. */
+	 
 	mutex_lock(&opened_mutex);
 	chip->cur_rate = params_rate(hw_params);
 	chip->cur_format = params_format(hw_params);
@@ -193,7 +189,7 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 	chip->playback_period = 0;
 	word &= ~(AC97C_CH_MASK(PCM_LEFT) | AC97C_CH_MASK(PCM_RIGHT));
 
-	/* assign channels to AC97C channel A */
+	 
 	switch (runtime->channels) {
 	case 1:
 		word |= AC97C_CH_ASSIGN(PCM_LEFT, A);
@@ -203,12 +199,12 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 			| AC97C_CH_ASSIGN(PCM_RIGHT, A);
 		break;
 	default:
-		/* TODO: support more than two channels */
+		 
 		return -EINVAL;
 	}
 	ac97c_writel(chip, OCA, word);
 
-	/* configure sample format and size */
+	 
 	word = ac97c_readl(chip, CAMR);
 	if (chip->opened <= 1)
 		word = AC97C_CMR_DMAEN | AC97C_CMR_SIZE_16;
@@ -228,17 +224,17 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 		return -EINVAL;
 	}
 
-	/* Enable underrun interrupt on channel A */
+	 
 	word |= AC97C_CSR_UNRUN;
 
 	ac97c_writel(chip, CAMR, word);
 
-	/* Enable channel A event interrupt */
+	 
 	word = ac97c_readl(chip, IMR);
 	word |= AC97C_SR_CAEVT;
 	ac97c_writel(chip, IER, word);
 
-	/* set variable rate if needed */
+	 
 	if (runtime->rate != 48000) {
 		word = ac97c_readl(chip, MR);
 		word |= AC97C_MR_VRA;
@@ -255,7 +251,7 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 		dev_dbg(&chip->pdev->dev, "could not set rate %d Hz\n",
 				runtime->rate);
 
-	/* Initialize and start the PDC */
+	 
 	writel(runtime->dma_addr, chip->regs + ATMEL_PDC_TPR);
 	writel(block_size / 2, chip->regs + ATMEL_PDC_TCR);
 	writel(runtime->dma_addr + block_size, chip->regs + ATMEL_PDC_TNPR);
@@ -275,7 +271,7 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 	chip->capture_period = 0;
 	word &= ~(AC97C_CH_MASK(PCM_LEFT) | AC97C_CH_MASK(PCM_RIGHT));
 
-	/* assign channels to AC97C channel A */
+	 
 	switch (runtime->channels) {
 	case 1:
 		word |= AC97C_CH_ASSIGN(PCM_LEFT, A);
@@ -285,12 +281,12 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 			| AC97C_CH_ASSIGN(PCM_RIGHT, A);
 		break;
 	default:
-		/* TODO: support more than two channels */
+		 
 		return -EINVAL;
 	}
 	ac97c_writel(chip, ICA, word);
 
-	/* configure sample format and size */
+	 
 	word = ac97c_readl(chip, CAMR);
 	if (chip->opened <= 1)
 		word = AC97C_CMR_DMAEN | AC97C_CMR_SIZE_16;
@@ -310,17 +306,17 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 		return -EINVAL;
 	}
 
-	/* Enable overrun interrupt on channel A */
+	 
 	word |= AC97C_CSR_OVRUN;
 
 	ac97c_writel(chip, CAMR, word);
 
-	/* Enable channel A event interrupt */
+	 
 	word = ac97c_readl(chip, IMR);
 	word |= AC97C_SR_CAEVT;
 	ac97c_writel(chip, IER, word);
 
-	/* set variable rate if needed */
+	 
 	if (runtime->rate != 48000) {
 		word = ac97c_readl(chip, MR);
 		word |= AC97C_MR_VRA;
@@ -337,7 +333,7 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 		dev_dbg(&chip->pdev->dev, "could not set rate %d Hz\n",
 				runtime->rate);
 
-	/* Initialize and start the PDC */
+	 
 	writel(runtime->dma_addr, chip->regs + ATMEL_PDC_RPR);
 	writel(block_size / 2, chip->regs + ATMEL_PDC_RCR);
 	writel(runtime->dma_addr + block_size, chip->regs + ATMEL_PDC_RNPR);
@@ -537,7 +533,7 @@ static irqreturn_t atmel_ac97c_interrupt(int irq, void *dev)
 }
 
 static const struct ac97_pcm at91_ac97_pcm_defs[] = {
-	/* Playback */
+	 
 	{
 		.exclusive = 1,
 		.r = { {
@@ -545,7 +541,7 @@ static const struct ac97_pcm at91_ac97_pcm_defs[] = {
 				  | (1 << AC97_SLOT_PCM_RIGHT)),
 		} },
 	},
-	/* PCM in */
+	 
 	{
 		.stream = 1,
 		.exclusive = 1,
@@ -554,7 +550,7 @@ static const struct ac97_pcm at91_ac97_pcm_defs[] = {
 					| (1 << AC97_SLOT_PCM_RIGHT)),
 		} }
 	},
-	/* Mic in */
+	 
 	{
 		.stream = 1,
 		.exclusive = 1,
@@ -678,7 +674,7 @@ static void atmel_ac97c_reset(struct atmel_ac97c *chip)
 
 	if (!IS_ERR(chip->reset_pin)) {
 		gpiod_set_value(chip->reset_pin, 0);
-		/* AC97 v2.2 specifications says minimum 1 us. */
+		 
 		udelay(2);
 		gpiod_set_value(chip->reset_pin, 1);
 	} else {
@@ -769,7 +765,7 @@ static int atmel_ac97c_probe(struct platform_device *pdev)
 
 	atmel_ac97c_reset(chip);
 
-	/* Enable overrun interrupt from codec channel */
+	 
 	ac97c_writel(chip, COMR, AC97C_CSR_OVRUN);
 	ac97c_writel(chip, IER, ac97c_readl(chip, IMR) | AC97C_SR_COEVT);
 

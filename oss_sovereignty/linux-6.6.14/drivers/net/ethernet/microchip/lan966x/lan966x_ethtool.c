@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/netdevice.h>
 
 #include "lan966x_main.h"
 
-/* Number of traffic classes */
+ 
 #define LAN966X_NUM_TC			8
 #define LAN966X_STATS_CHECK_DELAY	(2 * HZ)
 
@@ -145,7 +145,7 @@ static const struct lan966x_stat_layout lan966x_stats_layout[] = {
 	{ .name = "dr_green_prio_7", .offset = 0x111 },
 };
 
-/* The following numbers are indexes into lan966x_stats_layout[] */
+ 
 #define SYS_COUNT_RX_OCT		  0
 #define SYS_COUNT_RX_UC			  1
 #define SYS_COUNT_RX_MC			  2
@@ -281,11 +281,11 @@ static const struct lan966x_stat_layout lan966x_stats_layout[] = {
 #define SYS_COUNT_DR_GREEN_PRIO_6	130
 #define SYS_COUNT_DR_GREEN_PRIO_7	131
 
-/* Add a possibly wrapping 32 bit value to a 64 bit counter */
+ 
 static void lan966x_add_cnt(u64 *cnt, u32 val)
 {
 	if (val < (*cnt & U32_MAX))
-		*cnt += (u64)1 << 32; /* value has wrapped */
+		*cnt += (u64)1 << 32;  
 
 	*cnt = (*cnt & ~(u64)U32_MAX) + val;
 }
@@ -345,10 +345,10 @@ static void lan966x_get_ethtool_stats(struct net_device *dev,
 	struct lan966x *lan966x = port->lan966x;
 	int i;
 
-	/* check and update now */
+	 
 	lan966x_stats_update(lan966x);
 
-	/* Copy all counters */
+	 
 	for (i = 0; i < lan966x->num_stats; i++)
 		*data++ = lan966x->stats[port->chip_port *
 					 lan966x->num_stats + i];
@@ -672,7 +672,7 @@ void lan966x_stats_get(struct net_device *dev,
 			 lan966x->stats[idx + SYS_COUNT_DR_GREEN_PRIO_0 + i]);
 	}
 
-	/* Get Tx stats */
+	 
 	stats->tx_bytes = lan966x->stats[idx + SYS_COUNT_TX_OCT] +
 		lan966x->stats[idx + SYS_COUNT_TX_PMAC_OCT];
 
@@ -711,7 +711,7 @@ int lan966x_stats_init(struct lan966x *lan966x)
 	if (!lan966x->stats)
 		return -ENOMEM;
 
-	/* Init stats worker */
+	 
 	mutex_init(&lan966x->stats_lock);
 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
 		 dev_name(lan966x->dev));

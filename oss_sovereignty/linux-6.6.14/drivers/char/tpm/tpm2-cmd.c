@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014, 2015 Intel Corporation
- *
- * Authors:
- * Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * This file contains TPM2 protocol implementations of the commands
- * used by the kernel internally.
- */
+
+ 
 
 #include "tpm.h"
 #include <crypto/hash_info.h>
@@ -24,18 +14,18 @@ static struct tpm2_hash tpm2_hash_map[] = {
 
 int tpm2_get_timeouts(struct tpm_chip *chip)
 {
-	/* Fixed timeouts for TPM2 */
+	 
 	chip->timeout_a = msecs_to_jiffies(TPM2_TIMEOUT_A);
 	chip->timeout_b = msecs_to_jiffies(TPM2_TIMEOUT_B);
 	chip->timeout_c = msecs_to_jiffies(TPM2_TIMEOUT_C);
 	chip->timeout_d = msecs_to_jiffies(TPM2_TIMEOUT_D);
 
-	/* PTP spec timeouts */
+	 
 	chip->duration[TPM_SHORT] = msecs_to_jiffies(TPM2_DURATION_SHORT);
 	chip->duration[TPM_MEDIUM] = msecs_to_jiffies(TPM2_DURATION_MEDIUM);
 	chip->duration[TPM_LONG] = msecs_to_jiffies(TPM2_DURATION_LONG);
 
-	/* Key creation commands long timeouts */
+	 
 	chip->duration[TPM_LONG_LONG] =
 		msecs_to_jiffies(TPM2_DURATION_LONG_LONG);
 
@@ -44,70 +34,51 @@ int tpm2_get_timeouts(struct tpm_chip *chip)
 	return 0;
 }
 
-/**
- * tpm2_ordinal_duration_index() - returns an index to the chip duration table
- * @ordinal: TPM command ordinal.
- *
- * The function returns an index to the chip duration table
- * (enum tpm_duration), that describes the maximum amount of
- * time the chip could take to return the result for a  particular ordinal.
- *
- * The values of the MEDIUM, and LONG durations are taken
- * from the PC Client Profile (PTP) specification (750, 2000 msec)
- *
- * LONG_LONG is for commands that generates keys which empirically takes
- * a longer time on some systems.
- *
- * Return:
- * * TPM_MEDIUM
- * * TPM_LONG
- * * TPM_LONG_LONG
- * * TPM_UNDEFINED
- */
+ 
 static u8 tpm2_ordinal_duration_index(u32 ordinal)
 {
 	switch (ordinal) {
-	/* Startup */
-	case TPM2_CC_STARTUP:                 /* 144 */
+	 
+	case TPM2_CC_STARTUP:                  
 		return TPM_MEDIUM;
 
-	case TPM2_CC_SELF_TEST:               /* 143 */
+	case TPM2_CC_SELF_TEST:                
 		return TPM_LONG;
 
-	case TPM2_CC_GET_RANDOM:              /* 17B */
+	case TPM2_CC_GET_RANDOM:               
 		return TPM_LONG;
 
-	case TPM2_CC_SEQUENCE_UPDATE:         /* 15C */
+	case TPM2_CC_SEQUENCE_UPDATE:          
 		return TPM_MEDIUM;
-	case TPM2_CC_SEQUENCE_COMPLETE:       /* 13E */
+	case TPM2_CC_SEQUENCE_COMPLETE:        
 		return TPM_MEDIUM;
-	case TPM2_CC_EVENT_SEQUENCE_COMPLETE: /* 185 */
+	case TPM2_CC_EVENT_SEQUENCE_COMPLETE:  
 		return TPM_MEDIUM;
-	case TPM2_CC_HASH_SEQUENCE_START:     /* 186 */
+	case TPM2_CC_HASH_SEQUENCE_START:      
 		return TPM_MEDIUM;
 
-	case TPM2_CC_VERIFY_SIGNATURE:        /* 177 */
+	case TPM2_CC_VERIFY_SIGNATURE:         
 		return TPM_LONG_LONG;
 
-	case TPM2_CC_PCR_EXTEND:              /* 182 */
+	case TPM2_CC_PCR_EXTEND:               
 		return TPM_MEDIUM;
 
-	case TPM2_CC_HIERARCHY_CONTROL:       /* 121 */
+	case TPM2_CC_HIERARCHY_CONTROL:        
 		return TPM_LONG;
-	case TPM2_CC_HIERARCHY_CHANGE_AUTH:   /* 129 */
+	case TPM2_CC_HIERARCHY_CHANGE_AUTH:    
 		return TPM_LONG;
 
-	case TPM2_CC_GET_CAPABILITY:          /* 17A */
+	case TPM2_CC_GET_CAPABILITY:           
 		return TPM_MEDIUM;
 
-	case TPM2_CC_NV_READ:                 /* 14E */
+	case TPM2_CC_NV_READ:                  
 		return TPM_LONG;
 
-	case TPM2_CC_CREATE_PRIMARY:          /* 131 */
+	case TPM2_CC_CREATE_PRIMARY:           
 		return TPM_LONG_LONG;
-	case TPM2_CC_CREATE:                  /* 153 */
+	case TPM2_CC_CREATE:                   
 		return TPM_LONG_LONG;
-	case TPM2_CC_CREATE_LOADED:           /* 191 */
+	case TPM2_CC_CREATE_LOADED:            
 		return TPM_LONG_LONG;
 
 	default:
@@ -115,16 +86,7 @@ static u8 tpm2_ordinal_duration_index(u32 ordinal)
 	}
 }
 
-/**
- * tpm2_calc_ordinal_duration() - calculate the maximum command duration
- * @chip:    TPM chip to use.
- * @ordinal: TPM command ordinal.
- *
- * The function returns the maximum amount of time the chip could take
- * to return the result for a particular ordinal in jiffies.
- *
- * Return: A maximal duration time for an ordinal in jiffies.
- */
+ 
 unsigned long tpm2_calc_ordinal_duration(struct tpm_chip *chip, u32 ordinal)
 {
 	unsigned int index;
@@ -149,15 +111,7 @@ struct tpm2_pcr_read_out {
 	u8	digest[];
 } __packed;
 
-/**
- * tpm2_pcr_read() - read a PCR value
- * @chip:	TPM chip to use.
- * @pcr_idx:	index of the PCR to read.
- * @digest:	PCR bank and buffer current PCR value is written to.
- * @digest_size_ptr:	pointer to variable that stores the digest size.
- *
- * Return: Same as with tpm_transmit_cmd.
- */
+ 
 int tpm2_pcr_read(struct tpm_chip *chip, u32 pcr_idx,
 		  struct tpm_digest *digest, u16 *digest_size_ptr)
 {
@@ -223,15 +177,7 @@ struct tpm2_null_auth_area {
 	__be16  auth_size;
 } __packed;
 
-/**
- * tpm2_pcr_extend() - extend a PCR value
- *
- * @chip:	TPM chip to use.
- * @pcr_idx:	index of the PCR.
- * @digests:	list of pcr banks and corresponding digest values to extend.
- *
- * Return: Same as with tpm_transmit_cmd.
- */
+ 
 int tpm2_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
 		    struct tpm_digest *digests)
 {
@@ -274,17 +220,7 @@ struct tpm2_get_random_out {
 	u8 buffer[TPM_MAX_RNG_DATA];
 } __packed;
 
-/**
- * tpm2_get_random() - get random bytes from the TPM RNG
- *
- * @chip:	a &tpm_chip instance
- * @dest:	destination buffer
- * @max:	the max number of random bytes to pull
- *
- * Return:
- *   size of the buffer on success,
- *   -errno otherwise (positive TPM return codes are masked to -EIO)
- */
+ 
 int tpm2_get_random(struct tpm_chip *chip, u8 *dest, size_t max)
 {
 	struct tpm2_get_random_out *out;
@@ -340,11 +276,7 @@ out:
 	return err;
 }
 
-/**
- * tpm2_flush_context() - execute a TPM2_FlushContext command
- * @chip:	TPM chip to use
- * @handle:	context handle
- */
+ 
 void tpm2_flush_context(struct tpm_chip *chip, u32 handle)
 {
 	struct tpm_buf buf;
@@ -372,17 +304,7 @@ struct tpm2_get_cap_out {
 	__be32 value;
 } __packed;
 
-/**
- * tpm2_get_tpm_pt() - get value of a TPM_CAP_TPM_PROPERTIES type property
- * @chip:		a &tpm_chip instance
- * @property_id:	property ID.
- * @value:		output variable.
- * @desc:		passed to tpm_transmit_cmd()
- *
- * Return:
- *   0 on success,
- *   -errno or a TPM return code otherwise
- */
+ 
 ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
 			const char *desc)
 {
@@ -400,12 +322,7 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
 	if (!rc) {
 		out = (struct tpm2_get_cap_out *)
 			&buf.data[TPM_HEADER_SIZE];
-		/*
-		 * To prevent failing boot up of some systems, Infineon TPM2.0
-		 * returns SUCCESS on TPM2_Startup in field upgrade mode. Also
-		 * the TPM2_Getcapability command returns a zero length list
-		 * in field upgrade mode.
-		 */
+		 
 		if (be32_to_cpu(out->property_cnt) > 0)
 			*value = be32_to_cpu(out->value);
 		else
@@ -416,16 +333,7 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
 }
 EXPORT_SYMBOL_GPL(tpm2_get_tpm_pt);
 
-/**
- * tpm2_shutdown() - send a TPM shutdown command
- *
- * Sends a TPM shutdown command. The shutdown command is used in call
- * sites where the system is going down. If it fails, there is not much
- * that can be done except print an error message.
- *
- * @chip:		a &tpm_chip instance
- * @shutdown_type:	TPM_SU_CLEAR or TPM_SU_STATE.
- */
+ 
 void tpm2_shutdown(struct tpm_chip *chip, u16 shutdown_type)
 {
 	struct tpm_buf buf;
@@ -439,19 +347,7 @@ void tpm2_shutdown(struct tpm_chip *chip, u16 shutdown_type)
 	tpm_buf_destroy(&buf);
 }
 
-/**
- * tpm2_do_selftest() - ensure that all self tests have passed
- *
- * @chip: TPM chip to use
- *
- * Return: Same as with tpm_transmit_cmd.
- *
- * The TPM can either run all self tests synchronously and then return
- * RC_SUCCESS once all tests were successful. Or it can choose to run the tests
- * asynchronously and return RC_TESTING immediately while the self tests still
- * execute in the background. This function handles both cases and waits until
- * all tests have completed.
- */
+ 
 static int tpm2_do_selftest(struct tpm_chip *chip)
 {
 	struct tpm_buf buf;
@@ -477,18 +373,7 @@ static int tpm2_do_selftest(struct tpm_chip *chip)
 	return rc;
 }
 
-/**
- * tpm2_probe() - probe for the TPM 2.0 protocol
- * @chip:	a &tpm_chip instance
- *
- * Send an idempotent TPM 2.0 command and see whether there is TPM2 chip in the
- * other end based on the response tag. The flag TPM_CHIP_FLAG_TPM2 is set by
- * this function if this is the case.
- *
- * Return:
- *   0 on success,
- *   -errno otherwise
- */
+ 
 int tpm2_probe(struct tpm_chip *chip)
 {
 	struct tpm_header *out;
@@ -502,7 +387,7 @@ int tpm2_probe(struct tpm_chip *chip)
 	tpm_buf_append_u32(&buf, TPM_PT_TOTAL_COMMANDS);
 	tpm_buf_append_u32(&buf, 1);
 	rc = tpm_transmit_cmd(chip, &buf, 0, NULL);
-	/* We ignore TPM return codes on purpose. */
+	 
 	if (rc >=  0) {
 		out = (struct tpm_header *)buf.data;
 		if (be16_to_cpu(out->tag) == TPM2_ST_NO_SESSIONS)
@@ -519,10 +404,7 @@ static int tpm2_init_bank_info(struct tpm_chip *chip, u32 bank_index)
 	struct tpm_digest digest = { .alg_id = bank->alg_id };
 	int i;
 
-	/*
-	 * Avoid unnecessary PCR read operations to reduce overhead
-	 * and obtain identifiers of the crypto subsystem.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(tpm2_hash_map); i++) {
 		enum hash_algo crypto_algo = tpm2_hash_map[i].crypto_id;
 
@@ -693,16 +575,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(tpm2_get_cc_attrs_tbl);
 
-/**
- * tpm2_startup - turn on the TPM
- * @chip: TPM chip to use
- *
- * Normally the firmware should start the TPM. This function is provided as a
- * workaround if this does not happen. A legal case for this could be for
- * example when a TPM emulator is used.
- *
- * Return: same as tpm_transmit_cmd()
- */
+ 
 
 static int tpm2_startup(struct tpm_chip *chip)
 {
@@ -722,13 +595,7 @@ static int tpm2_startup(struct tpm_chip *chip)
 	return rc;
 }
 
-/**
- * tpm2_auto_startup - Perform the standard automatic TPM initialization
- *                     sequence
- * @chip: TPM chip to use
- *
- * Returns 0 on success, < 0 in case of fatal error.
- */
+ 
 int tpm2_auto_startup(struct tpm_chip *chip)
 {
 	int rc;
@@ -760,10 +627,7 @@ int tpm2_auto_startup(struct tpm_chip *chip)
 	}
 
 out:
-	/*
-	 * Infineon TPM in field upgrade mode will return no data for the number
-	 * of supported commands.
-	 */
+	 
 	if (rc == TPM2_RC_UPGRADE || rc == -ENODATA) {
 		dev_info(&chip->dev, "TPM in field upgrade mode, requires firmware upgrade\n");
 		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+ 
+ 
 
 #ifndef WILC_NETDEV_H
 #define WILC_NETDEV_H
@@ -49,7 +46,7 @@ struct sta_info {
 	u8 sta_associated_bss[WILC_MAX_NUM_STA][ETH_ALEN];
 };
 
-/* Parameters needed for host interface for remaining on channel */
+ 
 struct wilc_wfi_p2p_listen_params {
 	struct ieee80211_channel *listen_ch;
 	u32 listen_duration;
@@ -125,14 +122,14 @@ struct wilc_priv {
 	struct host_if_drv *hif_drv;
 	struct wilc_pmkid_attr pmkid_list;
 
-	/* The real interface that the monitor is on */
+	 
 	struct net_device *real_ndev;
 	struct wilc_wfi_key *wilc_gtk[WILC_MAX_NUM_STA];
 	struct wilc_wfi_key *wilc_ptk[WILC_MAX_NUM_STA];
 	struct wilc_wfi_key *wilc_igtk[2];
 	u8 wilc_groupkey;
 
-	/* mutexes */
+	 
 	struct mutex scan_req_lock;
 	bool p2p_listen_state;
 	int scanned_cnt;
@@ -210,21 +207,21 @@ struct wilc {
 	u8 vif_num;
 	struct list_head vif_list;
 
-	/* protect vif list */
+	 
 	struct mutex vif_mutex;
 	struct srcu_struct srcu;
 	u8 open_ifcs;
 
-	/* protect head of transmit queue */
+	 
 	struct mutex txq_add_to_head_cs;
 
-	/* protect txq_entry_t transmit queue */
+	 
 	spinlock_t txq_spinlock;
 
-	/* protect rxq_entry_t receiver queue */
+	 
 	struct mutex rxq_cs;
 
-	/* lock to protect hif access */
+	 
 	struct mutex hif_cs;
 
 	struct completion cfg_event;
@@ -236,7 +233,7 @@ struct wilc {
 
 	int quit;
 
-	/* lock to protect issue of wid command to firmware */
+	 
 	struct mutex cfg_cmd_lock;
 	struct wilc_cfg_frame cfg_frame;
 	u32 cfg_frame_offset;
@@ -263,7 +260,7 @@ struct wilc {
 	void *bus_data;
 	struct net_device *monitor_dev;
 
-	/* deinit lock */
+	 
 	struct mutex deinit_lock;
 	u8 sta_ch;
 	u8 op_ch;

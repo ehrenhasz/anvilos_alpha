@@ -1,6 +1,4 @@
-/* Define the magic numbers as given by statfs(2).
-   Please send additions to bug-coreutils@gnu.org and meskes@debian.org.
-   This file is generated automatically from ./src/stat.c. */
+ 
 
 #if defined __linux__ || defined __ANDROID__
 # define S_MAGIC_AAFS 0x5A3C69F0

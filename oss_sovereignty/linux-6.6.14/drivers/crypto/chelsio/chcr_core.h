@@ -1,37 +1,4 @@
-/*
- * This file is part of the Chelsio T6 Crypto driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #ifndef __CHCR_CORE_H__
 #define __CHCR_CORE_H__
@@ -57,7 +24,7 @@
 #define MAX_SALT                4
 #define CIP_WR_MIN_LEN (sizeof(struct chcr_wr) + \
 		    sizeof(struct cpl_rx_phys_dsgl) + \
-		    sizeof(struct ulptx_sgl) + 16) //IV
+		    sizeof(struct ulptx_sgl) + 16) 
 
 #define HASH_WR_MIN_LEN (sizeof(struct chcr_wr) + \
 			DUMMY_BYTES + \
@@ -108,12 +75,7 @@ struct uld_ctx {
 	struct chcr_dev dev;
 };
 
-/*
- *      sgl_len - calculates the size of an SGL of the given capacity
- *      @n: the number of SGL entries
- *      Calculates the number of flits needed for a scatter/gather list that
- *      can hold the given number of entries.
- */
+ 
 static inline unsigned int sgl_len(unsigned int n)
 {
 	n--;
@@ -135,4 +97,4 @@ int chcr_uld_rx_handler(void *handle, const __be64 *rsp,
 			const struct pkt_gl *pgl);
 int chcr_handle_resp(struct crypto_async_request *req, unsigned char *input,
 		     int err);
-#endif /* __CHCR_CORE_H__ */
+#endif  

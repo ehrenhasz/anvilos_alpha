@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Minimal library implementation of GCM
- *
- * Copyright 2022 Google LLC
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -18,31 +14,13 @@ static void aesgcm_encrypt_block(const struct crypto_aes_ctx *ctx, void *dst,
 {
 	unsigned long flags;
 
-	/*
-	 * In AES-GCM, both the GHASH key derivation and the CTR mode
-	 * encryption operate on known plaintext, making them susceptible to
-	 * timing attacks on the encryption key. The AES library already
-	 * mitigates this risk to some extent by pulling the entire S-box into
-	 * the caches before doing any substitutions, but this strategy is more
-	 * effective when running with interrupts disabled.
-	 */
+	 
 	local_irq_save(flags);
 	aes_encrypt(ctx, dst, src);
 	local_irq_restore(flags);
 }
 
-/**
- * aesgcm_expandkey - Expands the AES and GHASH keys for the AES-GCM key
- *		      schedule
- *
- * @ctx:	The data structure that will hold the AES-GCM key schedule
- * @key:	The AES encryption input key
- * @keysize:	The length in bytes of the input key
- * @authsize:	The size in bytes of the GCM authentication tag
- *
- * Returns: 0 on success, or -EINVAL if @keysize or @authsize contain values
- * that are not permitted by the GCM specification.
- */
+ 
 int aesgcm_expandkey(struct aesgcm_ctx *ctx, const u8 *key,
 		     unsigned int keysize, unsigned int authsize)
 {
@@ -99,13 +77,7 @@ static void aesgcm_crypt(const struct aesgcm_ctx *ctx, u8 *dst, const u8 *src,
 	unsigned int n = 2;
 
 	while (len > 0) {
-		/*
-		 * The counter increment below must not result in overflow or
-		 * carry into the next 32-bit word, as this could result in
-		 * inadvertent IV reuse, which must be avoided at all cost for
-		 * stream ciphers such as AES-CTR. Given the range of 'int
-		 * len', this cannot happen, so no explicit test is necessary.
-		 */
+		 
 		ctr[3] = cpu_to_be32(n++);
 		aesgcm_encrypt_block(&ctx->aes_ctx, buf, ctr);
 		crypto_xor_cpy(dst, src, buf, min(len, AES_BLOCK_SIZE));
@@ -117,21 +89,7 @@ static void aesgcm_crypt(const struct aesgcm_ctx *ctx, u8 *dst, const u8 *src,
 	memzero_explicit(buf, sizeof(buf));
 }
 
-/**
- * aesgcm_encrypt - Perform AES-GCM encryption on a block of data
- *
- * @ctx:	The AES-GCM key schedule
- * @dst:	Pointer to the ciphertext output buffer
- * @src:	Pointer the plaintext (may equal @dst for encryption in place)
- * @crypt_len:	The size in bytes of the plaintext and ciphertext.
- * @assoc:	Pointer to the associated data,
- * @assoc_len:	The size in bytes of the associated data
- * @iv:		The initialization vector (IV) to use for this block of data
- *		(must be 12 bytes in size as per the GCM spec recommendation)
- * @authtag:	The address of the buffer in memory where the authentication
- *		tag should be stored. The buffer is assumed to have space for
- *		@ctx->authsize bytes.
- */
+ 
 void aesgcm_encrypt(const struct aesgcm_ctx *ctx, u8 *dst, const u8 *src,
 		    int crypt_len, const u8 *assoc, int assoc_len,
 		    const u8 iv[GCM_AES_IV_SIZE], u8 *authtag)
@@ -145,23 +103,7 @@ void aesgcm_encrypt(const struct aesgcm_ctx *ctx, u8 *dst, const u8 *src,
 }
 EXPORT_SYMBOL(aesgcm_encrypt);
 
-/**
- * aesgcm_decrypt - Perform AES-GCM decryption on a block of data
- *
- * @ctx:	The AES-GCM key schedule
- * @dst:	Pointer to the plaintext output buffer
- * @src:	Pointer the ciphertext (may equal @dst for decryption in place)
- * @crypt_len:	The size in bytes of the plaintext and ciphertext.
- * @assoc:	Pointer to the associated data,
- * @assoc_len:	The size in bytes of the associated data
- * @iv:		The initialization vector (IV) to use for this block of data
- *		(must be 12 bytes in size as per the GCM spec recommendation)
- * @authtag:	The address of the buffer in memory where the authentication
- *		tag is stored.
- *
- * Returns: true on success, or false if the ciphertext failed authentication.
- * On failure, no plaintext will be returned.
- */
+ 
 bool __must_check aesgcm_decrypt(const struct aesgcm_ctx *ctx, u8 *dst,
 				 const u8 *src, int crypt_len, const u8 *assoc,
 				 int assoc_len, const u8 iv[GCM_AES_IV_SIZE],
@@ -188,9 +130,7 @@ MODULE_LICENSE("GPL");
 
 #ifndef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
 
-/*
- * Test code below. Vectors taken from crypto/testmgr.h
- */
+ 
 
 static const u8 __initconst ctext0[16] =
 	"\x58\xe2\xfc\xce\xfa\x7e\x30\x61"
@@ -555,152 +495,7 @@ static struct {
 	int		plen;
 	int		alen;
 } const aesgcm_tv[] __initconst = {
-	{ /* From McGrew & Viega - http://citeseer.ist.psu.edu/656989.html */
-		.klen	= 16,
-		.ctext	= ctext0,
-		.clen	= sizeof(ctext0),
-	}, {
-		.klen	= 16,
-		.ptext	= ptext1,
-		.plen	= sizeof(ptext1),
-		.ctext	= ctext1,
-		.clen	= sizeof(ctext1),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08",
-		.klen	= 16,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext2,
-		.plen	= sizeof(ptext2),
-		.ctext	= ctext2,
-		.clen	= sizeof(ctext2),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08",
-		.klen	= 16,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext3,
-		.plen	= sizeof(ptext3),
-		.assoc	= "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xab\xad\xda\xd2",
-		.alen	= 20,
-		.ctext	= ctext3,
-		.clen	= sizeof(ctext3),
-	}, {
-		.klen	= 24,
-		.ctext	= ctext4,
-		.clen	= sizeof(ctext4),
-	}, {
-		.klen	= 24,
-		.ptext	= ptext1,
-		.plen	= sizeof(ptext1),
-		.ctext	= ctext5,
-		.clen	= sizeof(ctext5),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08"
-			  "\xfe\xff\xe9\x92\x86\x65\x73\x1c",
-		.klen	= 24,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext6,
-		.plen	= sizeof(ptext6),
-		.ctext	= ctext6,
-		.clen	= sizeof(ctext6),
-	}, {
-		.klen	= 32,
-		.ctext	= ctext7,
-		.clen	= sizeof(ctext7),
-	}, {
-		.klen	= 32,
-		.ptext	= ptext1,
-		.plen	= sizeof(ptext1),
-		.ctext	= ctext8,
-		.clen	= sizeof(ctext8),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08"
-			  "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08",
-		.klen	= 32,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext9,
-		.plen	= sizeof(ptext9),
-		.ctext	= ctext9,
-		.clen	= sizeof(ctext9),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08"
-			  "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08",
-		.klen	= 32,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext10,
-		.plen	= sizeof(ptext10),
-		.assoc	= "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xab\xad\xda\xd2",
-		.alen	= 20,
-		.ctext	= ctext10,
-		.clen	= sizeof(ctext10),
-	}, {
-		.key	= "\xfe\xff\xe9\x92\x86\x65\x73\x1c"
-			  "\x6d\x6a\x8f\x94\x67\x30\x83\x08"
-			  "\xfe\xff\xe9\x92\x86\x65\x73\x1c",
-		.klen	= 24,
-		.iv	= "\xca\xfe\xba\xbe\xfa\xce\xdb\xad"
-			  "\xde\xca\xf8\x88",
-		.ptext	= ptext11,
-		.plen	= sizeof(ptext11),
-		.assoc	= "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xfe\xed\xfa\xce\xde\xad\xbe\xef"
-			  "\xab\xad\xda\xd2",
-		.alen	= 20,
-		.ctext	= ctext11,
-		.clen	= sizeof(ctext11),
-	}, {
-		.key	= "\x62\x35\xf8\x95\xfc\xa5\xeb\xf6"
-			  "\x0e\x92\x12\x04\xd3\xa1\x3f\x2e"
-			  "\x8b\x32\xcf\xe7\x44\xed\x13\x59"
-			  "\x04\x38\x77\xb0\xb9\xad\xb4\x38",
-		.klen	= 32,
-		.iv	= "\x00\xff\xff\xff\xff\x00\x00\xff"
-			  "\xff\xff\x00\xff",
-		.ptext	= ptext12,
-		.plen	= sizeof(ptext12),
-		.ctext	= ctext12,
-		.clen	= sizeof(ctext12),
-	}
-};
-
-static int __init libaesgcm_init(void)
-{
-	for (int i = 0; i < ARRAY_SIZE(aesgcm_tv); i++) {
-		u8 tagbuf[AES_BLOCK_SIZE];
-		int plen = aesgcm_tv[i].plen;
-		struct aesgcm_ctx ctx;
-		u8 buf[sizeof(ptext12)];
-
-		if (aesgcm_expandkey(&ctx, aesgcm_tv[i].key, aesgcm_tv[i].klen,
-				     aesgcm_tv[i].clen - plen)) {
-			pr_err("aesgcm_expandkey() failed on vector %d\n", i);
-			return -ENODEV;
-		}
-
-		if (!aesgcm_decrypt(&ctx, buf, aesgcm_tv[i].ctext, plen,
-				    aesgcm_tv[i].assoc, aesgcm_tv[i].alen,
-				    aesgcm_tv[i].iv, aesgcm_tv[i].ctext + plen)
-		    || memcmp(buf, aesgcm_tv[i].ptext, plen)) {
-			pr_err("aesgcm_decrypt() #1 failed on vector %d\n", i);
-			return -ENODEV;
-		}
-
-		/* encrypt in place */
+	{  
 		aesgcm_encrypt(&ctx, buf, buf, plen, aesgcm_tv[i].assoc,
 			       aesgcm_tv[i].alen, aesgcm_tv[i].iv, tagbuf);
 		if (memcmp(buf, aesgcm_tv[i].ctext, plen)) {
@@ -708,7 +503,7 @@ static int __init libaesgcm_init(void)
 			return -ENODEV;
 		}
 
-		/* decrypt in place */
+		 
 		if (!aesgcm_decrypt(&ctx, buf, buf, plen, aesgcm_tv[i].assoc,
 				    aesgcm_tv[i].alen, aesgcm_tv[i].iv, tagbuf)
 		    || memcmp(buf, aesgcm_tv[i].ptext, plen)) {

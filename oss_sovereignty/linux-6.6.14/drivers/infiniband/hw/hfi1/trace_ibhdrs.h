@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2017 Intel Corporation.
- */
+ 
+ 
 
 #if !defined(__HFI1_TRACE_IBHDRS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_IBHDRS_H
@@ -144,7 +142,7 @@ DECLARE_EVENT_CLASS(hfi1_input_ibhdr_template,
 			__field(u32, slid)
 			__field(u32, dest_qpn)
 			__field(u32, src_qpn)
-			/* extended headers */
+			 
 			__dynamic_array(u8, ehdrs,
 					hfi1_trace_packet_hdr_len(packet))
 			),
@@ -208,7 +206,7 @@ DECLARE_EVENT_CLASS(hfi1_input_ibhdr_template,
 							  &__entry->psn,
 							  &__entry->qpn);
 			}
-			/* extended headers */
+			 
 			if (__entry->l4 != OPA_16B_L4_FM)
 				memcpy(__get_dynamic_array(ehdrs),
 				       &packet->ohdr->u,
@@ -256,7 +254,7 @@ DECLARE_EVENT_CLASS(hfi1_input_ibhdr_template,
 						  __entry->qpn,
 						  __entry->dest_qpn,
 						  __entry->src_qpn),
-			      /* extended headers */
+			       
 			      __get_dynamic_array_len(ehdrs),
 			      __parse_ib_ehdrs(
 					__entry->opcode,
@@ -303,7 +301,7 @@ DECLARE_EVENT_CLASS(hfi1_output_ibhdr_template,
 			__field(u32, slid)
 			__field(u32, dest_qpn)
 			__field(u32, src_qpn)
-			/* extended headers */
+			 
 			__dynamic_array(u8, ehdrs,
 					hfi1_trace_opa_hdr_len(opah))
 			),
@@ -377,7 +375,7 @@ DECLARE_EVENT_CLASS(hfi1_output_ibhdr_template,
 							&__entry->qpn);
 			}
 
-			/* extended headers */
+			 
 			if (__entry->l4 != OPA_16B_L4_FM)
 				memcpy(__get_dynamic_array(ehdrs),
 				       &ohdr->u, __get_dynamic_array_len(ehdrs));
@@ -419,7 +417,7 @@ DECLARE_EVENT_CLASS(hfi1_output_ibhdr_template,
 						  __entry->qpn,
 						  __entry->dest_qpn,
 						  __entry->src_qpn),
-			      /* extended headers */
+			       
 			      __get_dynamic_array_len(ehdrs),
 			      __parse_ib_ehdrs(
 					__entry->opcode,
@@ -446,7 +444,7 @@ DEFINE_EVENT(hfi1_output_ibhdr_template, sdma_output_ibhdr,
 	     TP_ARGS(dd, opah, sc5));
 
 
-#endif /* __HFI1_TRACE_IBHDRS_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

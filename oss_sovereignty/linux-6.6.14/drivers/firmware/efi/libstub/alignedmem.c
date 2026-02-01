@@ -1,26 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/efi.h>
 #include <asm/efi.h>
 
 #include "efistub.h"
 
-/**
- * efi_allocate_pages_aligned() - Allocate memory pages
- * @size:	minimum number of bytes to allocate
- * @addr:	On return the address of the first allocated page. The first
- *		allocated page has alignment EFI_ALLOC_ALIGN which is an
- *		architecture dependent multiple of the page size.
- * @max:	the address that the last allocated memory page shall not
- *		exceed
- * @align:	minimum alignment of the base of the allocation
- *
- * Allocate pages as EFI_LOADER_DATA. The allocated pages are aligned according
- * to @align, which should be >= EFI_ALLOC_ALIGN. The last allocated page will
- * not exceed the address given by @max.
- *
- * Return:	status code
- */
+ 
 efi_status_t efi_allocate_pages_aligned(unsigned long size, unsigned long *addr,
 					unsigned long max, unsigned long align,
 					int memory_type)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7778 Core CPG Clocks
- *
- * Copyright (C) 2014  Ulrich Hecht
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk/renesas.h>
@@ -11,7 +7,7 @@
 #include <linux/slab.h>
 #include <linux/soc/renesas/rcar-rst.h>
 
-/* PLL multipliers per bits 11, 12, and 18 of MODEMR */
+ 
 static const struct {
 	unsigned long plla_mult;
 	unsigned long pllb_mult;
@@ -25,7 +21,7 @@ static const struct {
 	[7] = { 32, 24 },
 };
 
-/* Clock dividers per bits 1 and 2 of MODEMR */
+ 
 static const struct {
 	const char *name;
 	unsigned int div[4];
@@ -96,9 +92,7 @@ static void __init r8a7778_cpg_clocks_init(struct device_node *np)
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	clks = kcalloc(num_clks, sizeof(*clks), GFP_KERNEL);
 	if (data == NULL || clks == NULL) {
-		/* We're leaking memory on purpose, there's no point in cleaning
-		 * up as the system won't boot anyway.
-		 */
+		 
 		return;
 	}
 

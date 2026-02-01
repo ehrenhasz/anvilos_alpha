@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Sean Young <sean@mess.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -50,10 +48,7 @@ static int gpio_ir_tx_set_carrier(struct rc_dev *dev, u32 carrier)
 
 static void delay_until(ktime_t until)
 {
-	/*
-	 * delta should never exceed 0.5 seconds (IR_MAX_DURATION) and on
-	 * m68k ndelay(s64) does not compile; so use s32 rather than s64.
-	 */
+	 
 	s32 delta;
 
 	while (true) {
@@ -61,7 +56,7 @@ static void delay_until(ktime_t until)
 		if (delta <= 0)
 			return;
 
-		/* udelay more than 1ms may not work */
+		 
 		if (delta >= 1000) {
 			mdelay(delta / 1000);
 			continue;
@@ -96,15 +91,12 @@ static void gpio_ir_tx_modulated(struct gpio_ir *gpio_ir, uint *txbuf,
 				 uint count)
 {
 	ktime_t edge;
-	/*
-	 * delta should never exceed 0.5 seconds (IR_MAX_DURATION) and on
-	 * m68k ndelay(s64) does not compile; so use s32 rather than s64.
-	 */
+	 
 	s32 delta;
 	int i;
 	unsigned int pulse, space;
 
-	/* Ensure the dividend fits into 32 bit */
+	 
 	pulse = DIV_ROUND_CLOSEST(gpio_ir->duty_cycle * (NSEC_PER_SEC / 100),
 				  gpio_ir->carrier);
 	space = DIV_ROUND_CLOSEST((100 - gpio_ir->duty_cycle) *
@@ -116,11 +108,11 @@ static void gpio_ir_tx_modulated(struct gpio_ir *gpio_ir, uint *txbuf,
 
 	for (i = 0; i < count; i++) {
 		if (i % 2) {
-			// space
+			
 			edge = ktime_add_us(edge, txbuf[i]);
 			delay_until(edge);
 		} else {
-			// pulse
+			
 			ktime_t last = ktime_add_us(edge, txbuf[i]);
 
 			while (ktime_before(ktime_get(), last)) {

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/media-bus-format.h>
@@ -167,7 +165,7 @@ imx8qm_ldb_bridge_mode_set(struct drm_bridge *bridge,
 				      ret);
 	}
 
-	/* input VSYNC signal from pixel link is active low */
+	 
 	if (ldb_ch->chno == 0 || is_split)
 		ldb->ldb_ctrl |= LDB_DI0_VS_POL_ACT_LOW;
 	if (ldb_ch->chno == 1 || is_split)
@@ -216,7 +214,7 @@ imx8qm_ldb_bridge_atomic_enable(struct drm_bridge *bridge,
 	clk_prepare_enable(imx8qm_ldb->clk_pixel);
 	clk_prepare_enable(imx8qm_ldb->clk_bypass);
 
-	/* both DI0 and DI1 connect with pixel link, so ok to use DI0 only */
+	 
 	if (ldb_ch->chno == 0 || is_split) {
 		ldb->ldb_ctrl &= ~LDB_CH0_MODE_EN_MASK;
 		ldb->ldb_ctrl |= LDB_CH0_MODE_EN_TO_DI0;
@@ -331,10 +329,7 @@ imx8qm_ldb_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	case MEDIA_BUS_FMT_FIXED:
 		di = &conn_state->connector->display_info;
 
-		/*
-		 * Look at the first bus format to determine input format.
-		 * Default to MEDIA_BUS_FMT_RGB888_1X36_CPADLO, if no match.
-		 */
+		 
 		if (di->num_bus_formats) {
 			finfo = drm_format_info(di->bus_formats[0]);
 
@@ -552,7 +547,7 @@ static int __maybe_unused imx8qm_ldb_runtime_resume(struct device *dev)
 	struct imx8qm_ldb *imx8qm_ldb = dev_get_drvdata(dev);
 	struct ldb *ldb = &imx8qm_ldb->base;
 
-	/* disable LDB by resetting the control register to POR default */
+	 
 	regmap_write(ldb->regmap, ldb->ctrl_reg, 0);
 
 	return 0;
@@ -565,7 +560,7 @@ static const struct dev_pm_ops imx8qm_ldb_pm_ops = {
 
 static const struct of_device_id imx8qm_ldb_dt_ids[] = {
 	{ .compatible = "fsl,imx8qm-ldb" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qm_ldb_dt_ids);
 

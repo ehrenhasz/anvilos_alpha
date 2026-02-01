@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Infineon Multi-phase Digital VR Controllers
- *
- * Copyright (c) 2022 Infineon Technologies. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

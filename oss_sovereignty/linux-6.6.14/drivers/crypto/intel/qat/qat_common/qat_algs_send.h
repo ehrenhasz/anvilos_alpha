@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2022 Intel Corporation */
+ 
+ 
 #ifndef QAT_ALGS_SEND_H
 #define QAT_ALGS_SEND_H
 
@@ -8,7 +8,7 @@
 
 struct qat_instance_backlog {
 	struct list_head list;
-	spinlock_t lock; /* protects backlog list */
+	spinlock_t lock;  
 };
 
 struct qat_alg_req {

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2012 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_mad.h>
 
@@ -149,7 +119,7 @@ static union ib_gid gid_from_req_msg(struct ib_device *ibdev, struct ib_mad *mad
 	return msg->primary_path_sgid;
 }
 
-/* Lock should be taken before called */
+ 
 static struct id_map_entry *
 id_map_find_by_sl_id(struct ib_device *ibdev, u32 slave_id, u32 sl_cm_id)
 {
@@ -213,7 +183,7 @@ static void sl_id_map_add(struct ib_device *ibdev, struct id_map_entry *new)
 		return;
 	}
 
-	/* Go to the bottom of the tree */
+	 
 	while (*link) {
 		parent = *link;
 		ent = rb_entry(parent, struct id_map_entry, node);
@@ -255,7 +225,7 @@ id_map_alloc(struct ib_device *ibdev, int slave_id, u32 sl_cm_id)
 		return ent;
 	}
 
-	/*error flow*/
+	 
 	kfree(ent);
 	mlx4_ib_warn(ibdev, "Allocation failed (err:0x%x)\n", ret);
 	return ERR_PTR(-ENOMEM);
@@ -286,12 +256,12 @@ static void schedule_delayed(struct ib_device *ibdev, struct id_map_entry *id)
 
 	spin_lock(&sriov->id_map_lock);
 	spin_lock_irqsave(&sriov->going_down_lock, flags);
-	/*make sure that there is no schedule inside the scheduled work.*/
+	 
 	if (!sriov->is_going_down && !id->scheduled_delete) {
 		id->scheduled_delete = 1;
 		queue_delayed_work(cm_wq, &id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
 	} else if (id->scheduled_delete) {
-		/* Adjust timeout if already scheduled */
+		 
 		mod_delayed_work(cm_wq, &id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
 	}
 	spin_unlock_irqrestore(&sriov->going_down_lock, flags);
@@ -370,7 +340,7 @@ static int alloc_rej_tmout(struct mlx4_ib_sriov *sriov, u32 rem_pv_cm_id, int sl
 		if (xa_err(item))
 			ret =  xa_err(item);
 		else
-			/* If a retry, adjust delayed work */
+			 
 			mod_delayed_work(cm_wq, &item->timeout, CM_CLEANUP_CACHE_TIMEOUT);
 		goto err_or_exists;
 	}
@@ -449,7 +419,7 @@ int mlx4_ib_demux_cm_handler(struct ib_device *ibdev, int port, int *slave,
 
 		sts = alloc_rej_tmout(sriov, rem_pv_cm_id, *slave);
 		if (sts)
-			/* Even if this fails, we pass on the REQ to the slave */
+			 
 			pr_debug("Could not allocate rej_tmout entry. rem_pv_cm_id 0x%x slave %d status %d\n",
 				 rem_pv_cm_id, *slave, sts);
 
@@ -518,8 +488,8 @@ static void rej_tmout_xa_cleanup(struct mlx4_ib_sriov *sriov, int slave)
 		WARN_ON(!xa_empty(&sriov->xa_rej_tmout));
 }
 
-/* slave = -1 ==> all slaves */
-/* TBD -- call paravirt clean for single slave.  Need for slave RESET event */
+ 
+ 
 void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 {
 	struct mlx4_ib_sriov *sriov = &dev->sriov;
@@ -528,7 +498,7 @@ void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 	struct rb_node *nd;
 	int need_flush = 0;
 	struct id_map_entry *map, *tmp_map;
-	/* cancel all delayed work queue entries */
+	 
 	INIT_LIST_HEAD(&lh);
 	spin_lock(&sriov->id_map_lock);
 	list_for_each_entry_safe(map, tmp_map, &dev->sriov.cm_list, list) {
@@ -541,9 +511,9 @@ void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 	spin_unlock(&sriov->id_map_lock);
 
 	if (need_flush)
-		flush_workqueue(cm_wq); /* make sure all timers were flushed */
+		flush_workqueue(cm_wq);  
 
-	/* now, remove all leftover entries from databases*/
+	 
 	spin_lock(&sriov->id_map_lock);
 	if (slave < 0) {
 		while (rb_first(sl_id_map)) {
@@ -556,7 +526,7 @@ void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 		}
 		list_splice_init(&dev->sriov.cm_list, &lh);
 	} else {
-		/* first, move nodes belonging to slave to db remove list */
+		 
 		nd = rb_first(sl_id_map);
 		while (nd) {
 			struct id_map_entry *ent =
@@ -565,13 +535,13 @@ void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 			if (ent->slave_id == slave)
 				list_move_tail(&ent->list, &lh);
 		}
-		/* remove those nodes from databases */
+		 
 		list_for_each_entry_safe(map, tmp_map, &lh, list) {
 			rb_erase(&map->node, sl_id_map);
 			xa_erase(&sriov->pv_id_table, map->pv_cm_id);
 		}
 
-		/* add remaining nodes from cm_list */
+		 
 		list_for_each_entry_safe(map, tmp_map, &dev->sriov.cm_list, list) {
 			if (slave == map->slave_id)
 				list_move_tail(&map->list, &lh);
@@ -580,7 +550,7 @@ void mlx4_ib_cm_paravirt_clean(struct mlx4_ib_dev *dev, int slave)
 
 	spin_unlock(&sriov->id_map_lock);
 
-	/* free any map entries left behind due to cancel_delayed_work above */
+	 
 	list_for_each_entry_safe(map, tmp_map, &lh, list) {
 		list_del(&map->list);
 		kfree(map);

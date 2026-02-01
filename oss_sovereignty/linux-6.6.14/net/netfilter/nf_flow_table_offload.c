@@ -473,13 +473,13 @@ static void flow_offload_port_snat(struct net *net,
 	switch (dir) {
 	case FLOW_OFFLOAD_DIR_ORIGINAL:
 		port = ntohs(flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple.dst_port);
-		offset = 0; /* offsetof(struct tcphdr, source); */
+		offset = 0;  
 		port = htonl(port << 16);
 		mask = ~htonl(0xffff0000);
 		break;
 	case FLOW_OFFLOAD_DIR_REPLY:
 		port = ntohs(flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].tuple.src_port);
-		offset = 0; /* offsetof(struct tcphdr, dest); */
+		offset = 0;  
 		port = htonl(port);
 		mask = ~htonl(0xffff);
 		break;
@@ -503,13 +503,13 @@ static void flow_offload_port_dnat(struct net *net,
 	switch (dir) {
 	case FLOW_OFFLOAD_DIR_ORIGINAL:
 		port = ntohs(flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple.src_port);
-		offset = 0; /* offsetof(struct tcphdr, dest); */
+		offset = 0;  
 		port = htonl(port);
 		mask = ~htonl(0xffff);
 		break;
 	case FLOW_OFFLOAD_DIR_REPLY:
 		port = ntohs(flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].tuple.dst_port);
-		offset = 0; /* offsetof(struct tcphdr, source); */
+		offset = 0;  
 		port = htonl(port << 16);
 		mask = ~htonl(0xffff0000);
 		break;

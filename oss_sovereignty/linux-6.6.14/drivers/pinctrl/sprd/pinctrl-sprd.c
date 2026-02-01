@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Spreadtrum pin controller driver
- * Copyright (C) 2017 Spreadtrum  - http://www.spreadtrum.com
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -95,15 +92,7 @@ enum pin_func_sel {
 	PIN_FUNC_MAX,
 };
 
-/**
- * struct sprd_pin: represent one pin's description
- * @name: pin name
- * @number: pin number
- * @type: pin type, can be GLOBAL_CTRL_PIN/COMMON_PIN/MISC_PIN
- * @reg: pin register address
- * @bit_offset: bit offset in pin register
- * @bit_width: bit width in pin register
- */
+ 
 struct sprd_pin {
 	const char *name;
 	unsigned int number;
@@ -113,26 +102,14 @@ struct sprd_pin {
 	unsigned long bit_width;
 };
 
-/**
- * struct sprd_pin_group: represent one group's description
- * @name: group name
- * @npins: pin numbers of this group
- * @pins: pointer to pins array
- */
+ 
 struct sprd_pin_group {
 	const char *name;
 	unsigned int npins;
 	unsigned int *pins;
 };
 
-/**
- * struct sprd_pinctrl_soc_info: represent the SoC's pins description
- * @groups: pointer to groups of pins
- * @ngroups: group numbers of the whole SoC
- * @pins: pointer to pins description
- * @npins: pin numbers of the whole SoC
- * @grp_names: pointer to group names array
- */
+ 
 struct sprd_pinctrl_soc_info {
 	struct sprd_pin_group *groups;
 	unsigned int ngroups;
@@ -141,13 +118,7 @@ struct sprd_pinctrl_soc_info {
 	const char **grp_names;
 };
 
-/**
- * struct sprd_pinctrl: represent the pin controller device
- * @dev: pointer to the device structure
- * @pctl: pointer to the pinctrl handle
- * @base: base address of the controller
- * @info: pointer to SoC's pins description information
- */
+ 
 struct sprd_pinctrl {
 	struct device *dev;
 	struct pinctrl_dev *pctl;
@@ -480,7 +451,7 @@ static int sprd_pinconf_get(struct pinctrl_dev *pctldev, unsigned int pin_id,
 				DRIVE_STRENGTH_MASK;
 			break;
 		case PIN_CONFIG_BIAS_PULL_DOWN:
-			/* combine sleep pull down and pull down config */
+			 
 			arg = ((reg >> SLEEP_PULL_DOWN_SHIFT) &
 			       SLEEP_PULL_DOWN_MASK) << 16;
 			arg |= (reg >> PULL_DOWN_SHIFT) & PULL_DOWN_MASK;
@@ -489,7 +460,7 @@ static int sprd_pinconf_get(struct pinctrl_dev *pctldev, unsigned int pin_id,
 			arg = (reg >> INPUT_SCHMITT_SHIFT) & INPUT_SCHMITT_MASK;
 			break;
 		case PIN_CONFIG_BIAS_PULL_UP:
-			/* combine sleep pull up and pull up config */
+			 
 			arg = ((reg >> SLEEP_PULL_UP_SHIFT) &
 			       SLEEP_PULL_UP_MASK) << 16;
 			arg |= (reg >> PULL_UP_SHIFT) & PULL_UP_MASK;

@@ -1,29 +1,13 @@
-/* shmbutil.h -- utility functions for multibyte characters. */
+ 
 
-/* Copyright (C) 2002-2019 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
                                  
 #if !defined (_SH_MBUTIL_H_)
 #define _SH_MBUTIL_H_
 
 #include "stdc.h"
 
-/* Include config.h for HANDLE_MULTIBYTE */
+ 
 #include <config.h>
 
 #if defined (HANDLE_MULTIBYTE)
@@ -37,8 +21,8 @@ extern size_t mbstrlen PARAMS((const char *));
 
 extern char *xstrchr PARAMS((const char *, int));
 
-extern int locale_mb_cur_max;	/* XXX */
-extern int locale_utf8locale;	/* XXX */
+extern int locale_mb_cur_max;	 
+extern int locale_utf8locale;	 
 
 #ifndef MB_INVALIDCH
 #define MB_INVALIDCH(x)		((x) == (size_t)-1 || (x) == (size_t)-2)
@@ -55,7 +39,7 @@ extern int locale_utf8locale;	/* XXX */
 #define UTF8_MBFIRSTCHAR(c)	(((c) & 0xc0) == 0xc0)
 #define UTF8_MBCHAR(c)		(((c) & 0xc0) == 0x80)
 
-#else /* !HANDLE_MULTIBYTE */
+#else  
 
 #undef MB_LEN_MAX
 #undef MB_CUR_MAX
@@ -83,28 +67,25 @@ extern int locale_utf8locale;	/* XXX */
 #define UTF8_SINGLEBYTE(c)	(1)
 #define UTF8_MBFIRSTCHAR(c)	(0)
 
-#endif /* !HANDLE_MULTIBYTE */
+#endif  
 
-/* Declare and initialize a multibyte state.  Call must be terminated
-   with `;'. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define DECLARE_MBSTATE \
 	mbstate_t state; \
 	memset (&state, '\0', sizeof (mbstate_t))
 #else
 #  define DECLARE_MBSTATE
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Initialize or reinitialize a multibyte state named `state'.  Call must be
-   terminated with `;'. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define INITIALIZE_MBSTATE memset (&state, '\0', sizeof (mbstate_t))
 #else
 #  define INITIALIZE_MBSTATE
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Advance one (possibly multi-byte) character in string _STR of length
-   _STRSIZE, starting at index _I.  STATE must have already been declared. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define ADVANCE_CHAR(_str, _strsize, _i) \
     do \
@@ -142,11 +123,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define ADVANCE_CHAR(_str, _strsize, _i)	(_i)++
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Advance one (possibly multibyte) character in the string _STR of length
-   _STRSIZE.
-   SPECIAL:  assume that _STR will be incremented by 1 after this call. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define ADVANCE_CHAR_P(_str, _strsize) \
     do \
@@ -180,10 +159,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define ADVANCE_CHAR_P(_str, _strsize)
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Back up one (possibly multi-byte) character in string _STR of length
-   _STRSIZE, starting at index _I.  STATE must have already been declared. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define BACKUP_CHAR(_str, _strsize, _i) \
     do \
@@ -192,7 +170,7 @@ extern int locale_utf8locale;	/* XXX */
 	  { \
 	    mbstate_t state_bak; \
 	    size_t mblength; \
-	    int _x, _p; /* _x == temp index into string, _p == prev index */ \
+	    int _x, _p;   \
 \
 	    _x = _p = 0; \
 	    while (_x < (_i)) \
@@ -209,7 +187,7 @@ extern int locale_utf8locale;	/* XXX */
 		  _x++; \
 		else \
 		  { \
-		    _p = _x; /* _p == start of prev mbchar */ \
+		    _p = _x;   \
 		    _x += mblength; \
 		  } \
 	      } \
@@ -221,11 +199,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define BACKUP_CHAR(_str, _strsize, _i)	(_i)--
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Back up one (possibly multibyte) character in the string _BASE of length
-   _STRSIZE starting at _STR (_BASE <= _STR <= (_BASE + _STRSIZE) ).
-   SPECIAL: DO NOT assume that _STR will be decremented by 1 after this call. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define BACKUP_CHAR_P(_base, _strsize, _str) \
     do \
@@ -234,7 +210,7 @@ extern int locale_utf8locale;	/* XXX */
 	  { \
 	    mbstate_t state_bak; \
 	    size_t mblength; \
-	    char *_x, _p; /* _x == temp pointer into string, _p == prev pointer */ \
+	    char *_x, _p;   \
 \
 	    _x = _p = _base; \
 	    while (_x < (_str)) \
@@ -251,7 +227,7 @@ extern int locale_utf8locale;	/* XXX */
 		  _x++; \
 		else \
 		  { \
-		    _p = _x; /* _p == start of prev mbchar */ \
+		    _p = _x;   \
 		    _x += mblength; \
 		  } \
 	      } \
@@ -263,10 +239,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define BACKUP_CHAR_P(_base, _strsize, _str) (_str)--
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Copy a single character from the string _SRC to the string _DST.
-   _SRCEND is a pointer to the end of _SRC. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define COPY_CHAR_P(_dst, _src, _srcend) \
     do \
@@ -304,10 +279,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define COPY_CHAR_P(_dst, _src, _srcend)	*(_dst)++ = *(_src)++
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/* Copy a single character from the string _SRC at index _SI to the string
-   _DST at index _DI.  _SRCEND is a pointer to the end of _SRC. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define COPY_CHAR_I(_dst, _di, _src, _srcend, _si) \
     do \
@@ -345,13 +319,9 @@ extern int locale_utf8locale;	/* XXX */
     while (0)
 #else
 #  define COPY_CHAR_I(_dst, _di, _src, _srcend, _si)	_dst[_di++] = _src[_si++]
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
-/****************************************************************
- *								*
- * The following are only guaranteed to work in subst.c		*
- *								*
- ****************************************************************/
+ 
 
 #if defined (HANDLE_MULTIBYTE)
 #  define SCOPY_CHAR_I(_dst, _escchar, _sc, _src, _si, _slen) \
@@ -400,7 +370,7 @@ extern int locale_utf8locale;	/* XXX */
 #  define SCOPY_CHAR_I(_dst, _escchar, _sc, _src, _si, _slen) \
     _dst[0] = _escchar; \
     _dst[1] = _sc
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
 #if defined (HANDLE_MULTIBYTE)
 #  define SCOPY_CHAR_M(_dst, _src, _srcend, _si) \
@@ -446,7 +416,7 @@ extern int locale_utf8locale;	/* XXX */
 #  define SCOPY_CHAR_M(_dst, _src, _srcend, _si) \
 	*(_dst)++ = _src[(_si)]; \
 	(_si)++
-#endif  /* !HANDLE_MULTIBYTE */
+#endif   
 
 #if HANDLE_MULTIBYTE
 #  define SADD_MBCHAR(_dst, _src, _si, _srcsize) \
@@ -490,7 +460,7 @@ extern int locale_utf8locale;	/* XXX */
 #  define SADD_MBCHAR(_dst, _src, _si, _srcsize)
 #endif
 
-/* Watch out when using this -- it's just straight textual substitution */
+ 
 #if defined (HANDLE_MULTIBYTE)
 #  define SADD_MBQCHAR_BODY(_dst, _src, _si, _srcsize) \
 \
@@ -555,5 +525,5 @@ extern int locale_utf8locale;	/* XXX */
 \
 	    goto add_string
 
-#endif /* HANDLE_MULTIBYTE */
-#endif /* _SH_MBUTIL_H_ */
+#endif  
+#endif  

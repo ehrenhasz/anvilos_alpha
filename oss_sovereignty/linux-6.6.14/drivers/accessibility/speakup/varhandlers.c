@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ctype.h>
 #include "spk_types.h"
 #include "spk_priv.h"
@@ -178,7 +178,7 @@ struct punc_var_t *spk_get_punc_var(enum var_id_t var_id)
 	return rv;
 }
 
-/* handlers for setting vars */
+ 
 int spk_set_num_var(int input, struct st_var_header *var, int how)
 {
 	int val;
@@ -275,12 +275,7 @@ int spk_set_string_var(const char *page, struct st_var_header *var, int len)
 	return 0;
 }
 
-/*
- * spk_set_mask_bits sets or clears the punc/delim/repeat bits,
- * if input is null uses the defaults.
- * values for how: 0 clears bits of chars supplied,
- * 1 clears allk, 2 sets bits for chars
- */
+ 
 int spk_set_mask_bits(const char *input, const int which, const int how)
 {
 	u_char *cp;
@@ -336,7 +331,7 @@ char *spk_s2uchar(char *start, char *dest)
 {
 	int val;
 
-	/* Do not replace with kstrtoul: here we need start to be updated */
+	 
 	val = simple_strtoul(skip_spaces(start), &start, 10);
 	if (*start == ',')
 		start++;

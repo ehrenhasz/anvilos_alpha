@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Maxim Kaurkin <maxim.kaurkin@baikalelectronics.ru>
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 Process, Voltage, Temperature sensor driver
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -33,11 +25,7 @@
 
 #include "bt1-pvt.h"
 
-/*
- * For the sake of the code simplification we created the sensors info table
- * with the sensor names, activation modes, threshold registers base address
- * and the thresholds bit fields.
- */
+ 
 static const struct pvt_sensor_info pvt_info[] = {
 	PVT_SENSOR_INFO(0, "CPU Core Temperature", hwmon_temp, TEMP, TTHRES),
 	PVT_SENSOR_INFO(0, "CPU Core Voltage", hwmon_in, VOLT, VTHRES),
@@ -46,26 +34,7 @@ static const struct pvt_sensor_info pvt_info[] = {
 	PVT_SENSOR_INFO(3, "CPU Core Standard-Vt", hwmon_in, SVT, STHRES),
 };
 
-/*
- * The original translation formulae of the temperature (in degrees of Celsius)
- * to PVT data and vice-versa are following:
- * N = 1.8322e-8*(T^4) + 2.343e-5*(T^3) + 8.7018e-3*(T^2) + 3.9269*(T^1) +
- *     1.7204e2,
- * T = -1.6743e-11*(N^4) + 8.1542e-8*(N^3) + -1.8201e-4*(N^2) +
- *     3.1020e-1*(N^1) - 4.838e1,
- * where T = [-48.380, 147.438]C and N = [0, 1023].
- * They must be accordingly altered to be suitable for the integer arithmetics.
- * The technique is called 'factor redistribution', which just makes sure the
- * multiplications and divisions are made so to have a result of the operations
- * within the integer numbers limit. In addition we need to translate the
- * formulae to accept millidegrees of Celsius. Here what they look like after
- * the alterations:
- * N = (18322e-20*(T^4) + 2343e-13*(T^3) + 87018e-9*(T^2) + 39269e-3*T +
- *     17204e2) / 1e4,
- * T = -16743e-12*(D^4) + 81542e-9*(D^3) - 182010e-6*(D^2) + 310200e-3*D -
- *     48380,
- * where T = [-48380, 147438] mC and N = [0, 1023].
- */
+ 
 static const struct polynomial __maybe_unused poly_temp_to_N = {
 	.total_divider = 10000,
 	.terms = {
@@ -88,16 +57,7 @@ static const struct polynomial poly_N_to_temp = {
 	}
 };
 
-/*
- * Similar alterations are performed for the voltage conversion equations.
- * The original formulae are:
- * N = 1.8658e3*V - 1.1572e3,
- * V = (N + 1.1572e3) / 1.8658e3,
- * where V = [0.620, 1.168] V and N = [0, 1023].
- * After the optimization they looks as follows:
- * N = (18658e-3*V - 11572) / 10,
- * V = N * 10^5 / 18658 + 11572 * 10^4 / 18658.
- */
+ 
 static const struct polynomial __maybe_unused poly_volt_to_N = {
 	.total_divider = 10,
 	.terms = {
@@ -124,13 +84,7 @@ static inline u32 pvt_update(void __iomem *reg, u32 mask, u32 data)
 	return old & mask;
 }
 
-/*
- * Baikal-T1 PVT mode can be updated only when the controller is disabled.
- * So first we disable it, then set the new mode together with the controller
- * getting back enabled. The same concerns the temperature trim and
- * measurements timeout. If it is necessary the interface mutex is supposed
- * to be locked at the time the operations are performed.
- */
+ 
 static inline void pvt_set_mode(struct pvt_hwmon *pvt, u32 mode)
 {
 	u32 old;
@@ -169,33 +123,7 @@ static inline void pvt_set_tout(struct pvt_hwmon *pvt, u32 tout)
 	pvt_update(pvt->regs + PVT_CTRL, PVT_CTRL_EN, old);
 }
 
-/*
- * This driver can optionally provide the hwmon alarms for each sensor the PVT
- * controller supports. The alarms functionality is made compile-time
- * configurable due to the hardware interface implementation peculiarity
- * described further in this comment. So in case if alarms are unnecessary in
- * your system design it's recommended to have them disabled to prevent the PVT
- * IRQs being periodically raised to get the data cache/alarms status up to
- * date.
- *
- * Baikal-T1 PVT embedded controller is based on the Analog Bits PVT sensor,
- * but is equipped with a dedicated control wrapper. It exposes the PVT
- * sub-block registers space via the APB3 bus. In addition the wrapper provides
- * a common interrupt vector of the sensors conversion completion events and
- * threshold value alarms. Alas the wrapper interface hasn't been fully thought
- * through. There is only one sensor can be activated at a time, for which the
- * thresholds comparator is enabled right after the data conversion is
- * completed. Due to this if alarms need to be implemented for all available
- * sensors we can't just set the thresholds and enable the interrupts. We need
- * to enable the sensors one after another and let the controller to detect
- * the alarms by itself at each conversion. This also makes pointless to handle
- * the alarms interrupts, since in occasion they happen synchronously with
- * data conversion completion. The best driver design would be to have the
- * completion interrupts enabled only and keep the converted value in the
- * driver data cache. This solution is implemented if hwmon alarms are enabled
- * in this driver. In case if the alarms are disabled, the conversion is
- * performed on demand at the time a sensors input file is read.
- */
+ 
 
 #if defined(CONFIG_SENSORS_BT1_PVT_ALARMS)
 
@@ -208,32 +136,16 @@ static irqreturn_t pvt_soft_isr(int irq, void *data)
 	struct pvt_cache *cache;
 	u32 val, thres_sts, old;
 
-	/*
-	 * DVALID bit will be cleared by reading the data. We need to save the
-	 * status before the next conversion happens. Threshold events will be
-	 * handled a bit later.
-	 */
+	 
 	thres_sts = readl(pvt->regs + PVT_RAW_INTR_STAT);
 
-	/*
-	 * Then lets recharge the PVT interface with the next sampling mode.
-	 * Lock the interface mutex to serialize trim, timeouts and alarm
-	 * thresholds settings.
-	 */
+	 
 	cache = &pvt->cache[pvt->sensor];
 	info = &pvt_info[pvt->sensor];
 	pvt->sensor = (pvt->sensor == PVT_SENSOR_LAST) ?
 		      PVT_SENSOR_FIRST : (pvt->sensor + 1);
 
-	/*
-	 * For some reason we have to mask the interrupt before changing the
-	 * mode, otherwise sometimes the temperature mode doesn't get
-	 * activated even though the actual mode in the ctrl register
-	 * corresponds to one. Then we read the data. By doing so we also
-	 * recharge the data conversion. After this the mode corresponding
-	 * to the next sensor in the row is set. Finally we enable the
-	 * interrupts back.
-	 */
+	 
 	mutex_lock(&pvt->iface_mtx);
 
 	old = pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_DVALID,
@@ -247,23 +159,14 @@ static irqreturn_t pvt_soft_isr(int irq, void *data)
 
 	mutex_unlock(&pvt->iface_mtx);
 
-	/*
-	 * We can now update the data cache with data just retrieved from the
-	 * sensor. Lock write-seqlock to make sure the reader has a coherent
-	 * data.
-	 */
+	 
 	write_seqlock(&cache->data_seqlock);
 
 	cache->data = FIELD_GET(PVT_DATA_DATA_MASK, val);
 
 	write_sequnlock(&cache->data_seqlock);
 
-	/*
-	 * While PVT core is doing the next mode data conversion, we'll check
-	 * whether the alarms were triggered for the current sensor. Note that
-	 * according to the documentation only one threshold IRQ status can be
-	 * set at a time, that's why if-else statement is utilized.
-	 */
+	 
 	if ((thres_sts & info->thres_sts_lo) ^ cache->thres_sts_lo) {
 		WRITE_ONCE(cache->thres_sts_lo, thres_sts & info->thres_sts_lo);
 		hwmon_notify_event(pvt->hwmon, info->type, info->attr_min_alarm,
@@ -312,7 +215,7 @@ static int pvt_read_limit(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
 {
 	u32 data;
 
-	/* No need in serialization, since it is just read from MMIO. */
+	 
 	data = readl(pvt->regs + pvt_info[type].thres_base);
 
 	if (is_low)
@@ -342,12 +245,12 @@ static int pvt_write_limit(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
 		data = polynomial_calc(&poly_volt_to_N, val);
 	}
 
-	/* Serialize limit update, since a part of the register is changed. */
+	 
 	ret = mutex_lock_interruptible(&pvt->iface_mtx);
 	if (ret)
 		return ret;
 
-	/* Make sure the upper and lower ranges don't intersect. */
+	 
 	limit = readl(pvt->regs + pvt_info[type].thres_base);
 	if (is_low) {
 		limit = FIELD_GET(PVT_THRES_HI_MASK, limit);
@@ -403,7 +306,7 @@ static const struct hwmon_channel_info * const pvt_channel_info[] = {
 	NULL
 };
 
-#else /* !CONFIG_SENSORS_BT1_PVT_ALARMS */
+#else  
 
 static irqreturn_t pvt_hard_isr(int irq, void *data)
 {
@@ -411,17 +314,11 @@ static irqreturn_t pvt_hard_isr(int irq, void *data)
 	struct pvt_cache *cache;
 	u32 val;
 
-	/*
-	 * Mask the DVALID interrupt so after exiting from the handler a
-	 * repeated conversion wouldn't happen.
-	 */
+	 
 	pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_DVALID,
 		   PVT_INTR_DVALID);
 
-	/*
-	 * Nothing special for alarm-less driver. Just read the data, update
-	 * the cache and notify a waiter of this event.
-	 */
+	 
 	val = readl(pvt->regs + PVT_DATA);
 	if (!(val & PVT_DATA_VALID)) {
 		dev_err(pvt->dev, "Got IRQ when data isn't valid\n");
@@ -457,12 +354,7 @@ static int pvt_read_data(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
 	u32 data;
 	int ret;
 
-	/*
-	 * Lock PVT conversion interface until data cache is updated. The
-	 * data read procedure is following: set the requested PVT sensor
-	 * mode, enable IRQ and conversion, wait until conversion is finished,
-	 * then disable conversion and IRQ, and read the cached data.
-	 */
+	 
 	ret = mutex_lock_interruptible(&pvt->iface_mtx);
 	if (ret)
 		return ret;
@@ -470,19 +362,11 @@ static int pvt_read_data(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
 	pvt->sensor = type;
 	pvt_set_mode(pvt, pvt_info[type].mode);
 
-	/*
-	 * Unmask the DVALID interrupt and enable the sensors conversions.
-	 * Do the reverse procedure when conversion is done.
-	 */
+	 
 	pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_DVALID, 0);
 	pvt_update(pvt->regs + PVT_CTRL, PVT_CTRL_EN, PVT_CTRL_EN);
 
-	/*
-	 * Wait with timeout since in case if the sensor is suddenly powered
-	 * down the request won't be completed and the caller will hang up on
-	 * this procedure until the power is back up again. Multiply the
-	 * timeout by the factor of two to prevent a false timeout.
-	 */
+	 
 	timeout = 2 * usecs_to_jiffies(ktime_to_us(pvt->timeout));
 	ret = wait_for_completion_timeout(&cache->conversion, timeout);
 
@@ -537,7 +421,7 @@ static const struct hwmon_channel_info * const pvt_channel_info[] = {
 	NULL
 };
 
-#endif /* !CONFIG_SENSORS_BT1_PVT_ALARMS */
+#endif  
 
 static inline bool pvt_hwmon_channel_is_valid(enum hwmon_sensor_types type,
 					      int ch)
@@ -555,7 +439,7 @@ static inline bool pvt_hwmon_channel_is_valid(enum hwmon_sensor_types type,
 		break;
 	}
 
-	/* The rest of the types are independent from the channel number. */
+	 
 	return true;
 }
 
@@ -624,10 +508,7 @@ static int pvt_write_trim(struct pvt_hwmon *pvt, long val)
 	u32 trim;
 	int ret;
 
-	/*
-	 * Serialize trim update, since a part of the register is changed and
-	 * the controller is supposed to be disabled during this operation.
-	 */
+	 
 	ret = mutex_lock_interruptible(&pvt->iface_mtx);
 	if (ret)
 		return ret;
@@ -648,7 +529,7 @@ static int pvt_read_timeout(struct pvt_hwmon *pvt, long *val)
 	if (ret)
 		return ret;
 
-	/* Return the result in msec as hwmon sysfs interface requires. */
+	 
 	*val = ktime_to_ms(pvt->timeout);
 
 	mutex_unlock(&pvt->iface_mtx);
@@ -667,35 +548,21 @@ static int pvt_write_timeout(struct pvt_hwmon *pvt, long val)
 	if (!rate)
 		return -ENODEV;
 
-	/*
-	 * If alarms are enabled, the requested timeout must be divided
-	 * between all available sensors to have the requested delay
-	 * applicable to each individual sensor.
-	 */
+	 
 	cache = kt = ms_to_ktime(val);
 #if defined(CONFIG_SENSORS_BT1_PVT_ALARMS)
 	kt = ktime_divns(kt, PVT_SENSORS_NUM);
 #endif
 
-	/*
-	 * Subtract a constant lag, which always persists due to the limited
-	 * PVT sampling rate. Make sure the timeout is not negative.
-	 */
+	 
 	kt = ktime_sub_ns(kt, PVT_TOUT_MIN);
 	if (ktime_to_ns(kt) < 0)
 		kt = ktime_set(0, 0);
 
-	/*
-	 * Finally recalculate the timeout in terms of the reference clock
-	 * period.
-	 */
+	 
 	data = ktime_divns(kt * rate, NSEC_PER_SEC);
 
-	/*
-	 * Update the measurements delay, but lock the interface first, since
-	 * we have to disable PVT in order to have the new delay actually
-	 * updated.
-	 */
+	 
 	ret = mutex_lock_interruptible(&pvt->iface_mtx);
 	if (ret)
 		return ret;
@@ -940,16 +807,7 @@ static int pvt_check_pwr(struct pvt_hwmon *pvt)
 	int ret = 0;
 	u32 data;
 
-	/*
-	 * Test out the sensor conversion functionality. If it is not done on
-	 * time then the domain must have been unpowered and we won't be able
-	 * to use the device later in this driver.
-	 * Note If the power source is lost during the normal driver work the
-	 * data read procedure will either return -ETIMEDOUT (for the
-	 * alarm-less driver configuration) or just stop the repeated
-	 * conversion. In the later case alas we won't be able to detect the
-	 * problem.
-	 */
+	 
 	pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_ALL, PVT_INTR_ALL);
 	pvt_update(pvt->regs + PVT_CTRL, PVT_CTRL_EN, PVT_CTRL_EN);
 	pvt_set_tout(pvt, 0);
@@ -980,33 +838,17 @@ static int pvt_init_iface(struct pvt_hwmon *pvt)
 		return -ENODEV;
 	}
 
-	/*
-	 * Make sure all interrupts and controller are disabled so not to
-	 * accidentally have ISR executed before the driver data is fully
-	 * initialized. Clear the IRQ status as well.
-	 */
+	 
 	pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_ALL, PVT_INTR_ALL);
 	pvt_update(pvt->regs + PVT_CTRL, PVT_CTRL_EN, 0);
 	readl(pvt->regs + PVT_CLR_INTR);
 	readl(pvt->regs + PVT_DATA);
 
-	/* Setup default sensor mode, timeout and temperature trim. */
+	 
 	pvt_set_mode(pvt, pvt_info[pvt->sensor].mode);
 	pvt_set_tout(pvt, PVT_TOUT_DEF);
 
-	/*
-	 * Preserve the current ref-clock based delay (Ttotal) between the
-	 * sensors data samples in the driver data so not to recalculate it
-	 * each time on the data requests and timeout reads. It consists of the
-	 * delay introduced by the internal ref-clock timer (N / Fclk) and the
-	 * constant timeout caused by each conversion latency (Tmin):
-	 *   Ttotal = N / Fclk + Tmin
-	 * If alarms are enabled the sensors are polled one after another and
-	 * in order to get the next measurement of a particular sensor the
-	 * caller will have to wait for at most until all the others are
-	 * polled. In that case the formulae will look a bit different:
-	 *   Ttotal = 5 * (N / Fclk + Tmin)
-	 */
+	 
 #if defined(CONFIG_SENSORS_BT1_PVT_ALARMS)
 	pvt->timeout = ktime_set(PVT_SENSORS_NUM * PVT_TOUT_DEF, 0);
 	pvt->timeout = ktime_divns(pvt->timeout, rate);
@@ -1088,12 +930,7 @@ static int pvt_enable_iface(struct pvt_hwmon *pvt)
 		return ret;
 	}
 
-	/*
-	 * Enable sensors data conversion and IRQ. We need to lock the
-	 * interface mutex since hwmon has just been created and the
-	 * corresponding sysfs files are accessible from user-space,
-	 * which theoretically may cause races.
-	 */
+	 
 	mutex_lock(&pvt->iface_mtx);
 	pvt_update(pvt->regs + PVT_INTR_MASK, PVT_INTR_DVALID, 0);
 	pvt_update(pvt->regs + PVT_CTRL, PVT_CTRL_EN, PVT_CTRL_EN);
@@ -1102,14 +939,14 @@ static int pvt_enable_iface(struct pvt_hwmon *pvt)
 	return 0;
 }
 
-#else /* !CONFIG_SENSORS_BT1_PVT_ALARMS */
+#else  
 
 static int pvt_enable_iface(struct pvt_hwmon *pvt)
 {
 	return 0;
 }
 
-#endif /* !CONFIG_SENSORS_BT1_PVT_ALARMS */
+#endif  
 
 static int pvt_probe(struct platform_device *pdev)
 {

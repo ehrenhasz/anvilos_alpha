@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for the ADT7411 (I2C/SPI 8 channel 10 bit ADC & temperature-sensor)
- *
- *  Copyright (C) 2008, 2010 Pengutronix
- *
- *  TODO: SPI, use power-down mode for suspend?, interrupt handling?
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -99,7 +93,7 @@ static const u8 adt7411_in_alarm_bits[] = {
 };
 
 struct adt7411_data {
-	struct mutex device_lock;	/* for "atomic" device accesses */
+	struct mutex device_lock;	 
 	struct mutex update_lock;
 	unsigned long next_update;
 	long vref_cached;
@@ -107,12 +101,7 @@ struct adt7411_data {
 	bool use_ext_temp;
 };
 
-/*
- * When reading a register containing (up to 4) lsb, all associated
- * msb-registers get locked by the hardware. After _one_ of those msb is read,
- * _all_ are unlocked. In order to use this locking correctly, reading lsb/msb
- * is protected here with a mutex, too.
- */
+ 
 static int adt7411_read_10_bit(struct i2c_client *client, u8 lsb_reg,
 				u8 msb_reg, u8 lsb_shift)
 {
@@ -188,7 +177,7 @@ static ssize_t adt7411_set_bit(struct device *dev,
 
 	ret = adt7411_modify_bit(client, s_attr2->index, s_attr2->nr, flag);
 
-	/* force update */
+	 
 	mutex_lock(&data->update_lock);
 	data->next_update = jiffies;
 	mutex_unlock(&data->update_lock);
@@ -391,7 +380,7 @@ static int adt7411_read_temp(struct device *dev, u32 attr, int channel,
 		ret = adt7411_read_10_bit(client, regl, regh, 0);
 		if (ret < 0)
 			return ret;
-		ret = ret & 0x200 ? ret - 0x400 : ret; /* 10 bit signed */
+		ret = ret & 0x200 ? ret - 0x400 : ret;  
 		*val = ret * 250;
 		return 0;
 	case hwmon_temp_min:
@@ -402,7 +391,7 @@ static int adt7411_read_temp(struct device *dev, u32 attr, int channel,
 		ret = i2c_smbus_read_byte_data(client, reg);
 		if (ret < 0)
 			return ret;
-		ret = ret & 0x80 ? ret - 0x100 : ret; /* 8 bit signed */
+		ret = ret & 0x80 ? ret - 0x100 : ret;  
 		*val = ret * 1000;
 		return 0;
 	case hwmon_temp_min_alarm:
@@ -604,10 +593,7 @@ static int adt7411_init_device(struct adt7411_data *data)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * We must only write zero to bit 1 and bit 2 and only one to bit 3
-	 * according to the datasheet.
-	 */
+	 
 	val = ret;
 	val &= ~(ADT7411_CFG3_RESERVED_BIT1 | ADT7411_CFG3_RESERVED_BIT2);
 	val |= ADT7411_CFG3_RESERVED_BIT3;
@@ -622,15 +608,12 @@ static int adt7411_init_device(struct adt7411_data *data)
 
 	data->use_ext_temp = ret & ADT7411_CFG1_EXT_TDM;
 
-	/*
-	 * We must only write zero to bit 1 and only one to bit 3 according to
-	 * the datasheet.
-	 */
+	 
 	val = ret;
 	val &= ~ADT7411_CFG1_RESERVED_BIT1;
 	val |= ADT7411_CFG1_RESERVED_BIT3;
 
-	/* enable monitoring */
+	 
 	val |= ADT7411_CFG1_START_MONITOR;
 
 	return i2c_smbus_write_byte_data(data->client, ADT7411_REG_CFG1, val);
@@ -686,7 +669,7 @@ static int adt7411_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* force update on first occasion */
+	 
 	data->next_update = jiffies;
 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,

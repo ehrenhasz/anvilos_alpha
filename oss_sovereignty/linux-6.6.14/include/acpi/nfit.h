@@ -1,7 +1,4 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- * Copyright (C) 2018 Intel Corporation
- */
+ 
 
 #ifndef __ACPI_NFIT_H
 #define __ACPI_NFIT_H
@@ -15,4 +12,4 @@ static inline int nfit_get_smbios_id(u32 device_handle, u16 *flags)
 }
 #endif
 
-#endif /* __ACPI_NFIT_H */
+#endif  

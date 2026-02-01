@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Bitmain BM1880 SoC Pinctrl driver
- *
- * Copyright (c) 2019 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -21,16 +16,7 @@
 
 #define BM1880_REG_MUX 0x20
 
-/**
- * struct bm1880_pinctrl - driver data
- * @base:	Pinctrl base address
- * @pctrldev:	Pinctrl device
- * @groups:	Pingroups
- * @ngroups:	Number of @groups
- * @funcs:	Pinmux functions
- * @nfuncs:	Number of @funcs
- * @pinconf:	Pinconf data
- */
+ 
 struct bm1880_pinctrl {
 	void __iomem *base;
 	struct pinctrl_dev *pctrldev;
@@ -41,27 +27,14 @@ struct bm1880_pinctrl {
 	const struct bm1880_pinconf_data *pinconf;
 };
 
-/**
- * struct bm1880_pctrl_group - pinctrl group
- * @name:	Name of the group
- * @pins:	Array of pins belonging to this group
- * @npins:	Number of @pins
- */
+ 
 struct bm1880_pctrl_group {
 	const char *name;
 	const unsigned int *pins;
 	const unsigned int npins;
 };
 
-/**
- * struct bm1880_pinmux_function - a pinmux function
- * @name:	Name of the pinmux function.
- * @groups:	List of pingroups for this function.
- * @ngroups:	Number of entries in @groups.
- * @mux_val:	Selector for this function
- * @mux:	Offset of function specific mux
- * @mux_shift:	Shift for function specific selector
- */
+ 
 struct bm1880_pinmux_function {
 	const char *name;
 	const char * const *groups;
@@ -71,10 +44,7 @@ struct bm1880_pinmux_function {
 	u8 mux_shift;
 };
 
-/**
- * struct bm1880_pinconf_data - pinconf data
- * @drv_bits:	Drive strength bit width
- */
+ 
 struct bm1880_pinconf_data {
 	u32 drv_bits;
 };
@@ -952,7 +922,7 @@ static const struct pinctrl_ops bm1880_pctrl_ops = {
 	.dt_free_map = pinctrl_utils_free_map,
 };
 
-/* pinmux */
+ 
 static int bm1880_pmux_get_functions_count(struct pinctrl_dev *pctldev)
 {
 	struct bm1880_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
@@ -1020,10 +990,7 @@ static int bm1880_pinconf_drv_set(unsigned int mA, u32 width,
 
 	_regval = *regval;
 
-	/*
-	 * There are two sets of drive strength bit width exposed by the
-	 * SoC at 4mA step, hence we need to handle them separately.
-	 */
+	 
 	if (width == 0x03) {
 		switch (mA) {
 		case 4:
@@ -1093,10 +1060,7 @@ static int bm1880_pinconf_drv_get(u32 width, u32 drv)
 {
 	int ret = -ENOTSUPP;
 
-	/*
-	 * There are two sets of drive strength bit width exposed by the
-	 * SoC at 4mA step, hence we need to handle them separately.
-	 */
+	 
 	if (width == 0x03) {
 		switch (drv) {
 		case 0:

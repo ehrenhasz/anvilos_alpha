@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	sc520_freq.c: cpufreq driver for the AMD Elan sc520
- *
- *	Copyright (C) 2005 Sean Young <sean@mess.org>
- *
- *	Based on elanfreq.c
- *
- *	2005-03-30: - initial revision
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,8 +15,8 @@
 #include <asm/cpu_device_id.h>
 #include <asm/msr.h>
 
-#define MMCR_BASE	0xfffef000	/* The default base address */
-#define OFFS_CPUCTL	0x2   /* CPU Control Register */
+#define MMCR_BASE	0xfffef000	 
+#define OFFS_CPUCTL	0x2    
 
 static __u8 __iomem *cpuctl;
 
@@ -65,21 +57,19 @@ static int sc520_freq_target(struct cpufreq_policy *policy, unsigned int state)
 	return 0;
 }
 
-/*
- *	Module init and exit code
- */
+ 
 
 static int sc520_freq_cpu_init(struct cpufreq_policy *policy)
 {
 	struct cpuinfo_x86 *c = &cpu_data(0);
 
-	/* capability check */
+	 
 	if (c->x86_vendor != X86_VENDOR_AMD ||
 	    c->x86 != 4 || c->x86_model != 9)
 		return -ENODEV;
 
-	/* cpuinfo and default policy values */
-	policy->cpuinfo.transition_latency = 1000000; /* 1ms */
+	 
+	policy->cpuinfo.transition_latency = 1000000;  
 	policy->freq_table = sc520_freq_table;
 
 	return 0;

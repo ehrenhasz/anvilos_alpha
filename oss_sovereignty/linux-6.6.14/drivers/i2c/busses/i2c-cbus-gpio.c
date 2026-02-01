@@ -1,20 +1,4 @@
-/*
- * CBUS I2C driver for Nokia Internet Tablets.
- *
- * Copyright (C) 2004-2010 Nokia Corporation
- *
- * Based on code written by Juha Yrjölä, David Weinehall, Mikko Ylinen and
- * Felipe Balbi. Converted to I2C driver by Aaro Koskinen.
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/i2c.h>
@@ -27,26 +11,19 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 
-/*
- * Bit counts are derived from Nokia implementation. These should be checked
- * if other CBUS implementations appear.
- */
+ 
 #define CBUS_ADDR_BITS	3
 #define CBUS_REG_BITS	5
 
 struct cbus_host {
-	spinlock_t	lock;		/* host lock */
+	spinlock_t	lock;		 
 	struct device	*dev;
 	struct gpio_desc *clk;
 	struct gpio_desc *dat;
 	struct gpio_desc *sel;
 };
 
-/**
- * cbus_send_bit - sends one bit over the bus
- * @host: the host we're using
- * @bit: one bit of information to send
- */
+ 
 static void cbus_send_bit(struct cbus_host *host, unsigned bit)
 {
 	gpiod_set_value(host->dat, bit ? 1 : 0);
@@ -54,12 +31,7 @@ static void cbus_send_bit(struct cbus_host *host, unsigned bit)
 	gpiod_set_value(host->clk, 0);
 }
 
-/**
- * cbus_send_data - sends @len amount of data over the bus
- * @host: the host we're using
- * @data: the data to send
- * @len: size of the transfer
- */
+ 
 static void cbus_send_data(struct cbus_host *host, unsigned data, unsigned len)
 {
 	int i;
@@ -68,10 +40,7 @@ static void cbus_send_data(struct cbus_host *host, unsigned data, unsigned len)
 		cbus_send_bit(host, data & (1 << (i - 1)));
 }
 
-/**
- * cbus_receive_bit - receives one bit from the bus
- * @host: the host we're using
- */
+ 
 static int cbus_receive_bit(struct cbus_host *host)
 {
 	int ret;
@@ -82,10 +51,7 @@ static int cbus_receive_bit(struct cbus_host *host)
 	return ret;
 }
 
-/**
- * cbus_receive_word - receives 16-bit word from the bus
- * @host: the host we're using
- */
+ 
 static int cbus_receive_word(struct cbus_host *host)
 {
 	int ret = 0;
@@ -103,36 +69,29 @@ static int cbus_receive_word(struct cbus_host *host)
 	return ret;
 }
 
-/**
- * cbus_transfer - transfers data over the bus
- * @host: the host we're using
- * @rw: read/write flag
- * @dev: device address
- * @reg: register address
- * @data: if @rw == I2C_SBUS_WRITE data to send otherwise 0
- */
+ 
 static int cbus_transfer(struct cbus_host *host, char rw, unsigned dev,
 			 unsigned reg, unsigned data)
 {
 	unsigned long flags;
 	int ret;
 
-	/* We don't want interrupts disturbing our transfer */
+	 
 	spin_lock_irqsave(&host->lock, flags);
 
-	/* Reset state and start of transfer, SEL stays down during transfer */
+	 
 	gpiod_set_value(host->sel, 0);
 
-	/* Set the DAT pin to output */
+	 
 	gpiod_direction_output(host->dat, 1);
 
-	/* Send the device address */
+	 
 	cbus_send_data(host, dev, CBUS_ADDR_BITS);
 
-	/* Send the rw flag */
+	 
 	cbus_send_bit(host, rw == I2C_SMBUS_READ);
 
-	/* Send the register address */
+	 
 	cbus_send_data(host, reg, CBUS_REG_BITS);
 
 	if (rw == I2C_SMBUS_WRITE) {
@@ -153,7 +112,7 @@ static int cbus_transfer(struct cbus_host *host, char rw, unsigned dev,
 		}
 	}
 
-	/* Indicate end of transfer, SEL goes up until next transfer */
+	 
 	gpiod_set_value(host->sel, 1);
 	gpiod_set_value(host->clk, 1);
 	gpiod_set_value(host->clk, 0);

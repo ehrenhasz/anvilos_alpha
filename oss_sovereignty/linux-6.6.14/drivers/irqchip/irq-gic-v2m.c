@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARM GIC v2m MSI(-X) support
- * Support for Message Signaled Interrupts for systems that
- * implement ARM Generic Interrupt Controller: GICv2m.
- *
- * Copyright (C) 2014 Advanced Micro Devices, Inc.
- * Authors: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
- *	    Harish Kasiviswanathan <harish.kasiviswanathan@amd.com>
- *	    Brandon Anderson <brandon.anderson@amd.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "GICv2m: " fmt
 
@@ -26,13 +17,7 @@
 #include <linux/irqchip/arm-gic.h>
 #include <linux/irqchip/arm-gic-common.h>
 
-/*
-* MSI_TYPER:
-*     [31:26] Reserved
-*     [25:16] lowest SPI assigned to MSI
-*     [15:10] Reserved
-*     [9:0]   Numer of SPIs assigned to MSI
-*/
+ 
 #define V2M_MSI_TYPER		       0x008
 #define V2M_MSI_TYPER_BASE_SHIFT       16
 #define V2M_MSI_TYPER_BASE_MASK	       0x3FF
@@ -47,13 +32,13 @@
 
 #define V2M_MSI_TYPER_NUM_SPI(x)       ((x) & V2M_MSI_TYPER_NUM_MASK)
 
-/* APM X-Gene with GICv2m MSI_IIDR register value */
+ 
 #define XGENE_GICV2M_MSI_IIDR		0x06000170
 
-/* Broadcom NS2 GICv2m MSI_IIDR register value */
+ 
 #define BCM_NS2_GICV2M_MSI_IIDR		0x0000013f
 
-/* List of flags for specific v2m implementation */
+ 
 #define GICV2M_NEEDS_SPI_OFFSET		0x00000001
 #define GICV2M_GRAVITON_ADDRESS_ONLY	0x00000002
 
@@ -63,13 +48,13 @@ static DEFINE_SPINLOCK(v2m_lock);
 struct v2m_data {
 	struct list_head entry;
 	struct fwnode_handle *fwnode;
-	struct resource res;	/* GICv2m resource */
-	void __iomem *base;	/* GICv2m virt address */
-	u32 spi_start;		/* The SPI number that MSIs start */
-	u32 nr_spis;		/* The number of SPIs for MSIs */
-	u32 spi_offset;		/* offset to be subtracted from SPI number */
-	unsigned long *bm;	/* MSI vector bitmap */
-	u32 flags;		/* v2m flags for specific implementation */
+	struct resource res;	 
+	void __iomem *base;	 
+	u32 spi_start;		 
+	u32 nr_spis;		 
+	u32 spi_offset;		 
+	unsigned long *bm;	 
+	u32 flags;		 
 };
 
 static void gicv2m_mask_msi_irq(struct irq_data *d)
@@ -159,7 +144,7 @@ static int gicv2m_irq_gic_domain_alloc(struct irq_domain *domain,
 	if (err)
 		return err;
 
-	/* Configure the interrupt line to be edge */
+	 
 	d = irq_domain_get_irq_data(domain->parent, virq);
 	d->chip->irq_set_type(d, IRQ_TYPE_EDGE_RISING);
 	return 0;
@@ -344,7 +329,7 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
 	} else {
 		u32 typer;
 
-		/* Graviton should always have explicit spi_start/nr_spis */
+		 
 		if (v2m->flags & GICV2M_GRAVITON_ADDRESS_ONLY) {
 			ret = -EINVAL;
 			goto err_iounmap;
@@ -360,19 +345,7 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
 		goto err_iounmap;
 	}
 
-	/*
-	 * APM X-Gene GICv2m implementation has an erratum where
-	 * the MSI data needs to be the offset from the spi_start
-	 * in order to trigger the correct MSI interrupt. This is
-	 * different from the standard GICv2m implementation where
-	 * the MSI data is the absolute value within the range from
-	 * spi_start to (spi_start + num_spis).
-	 *
-	 * Broadcom NS2 GICv2m implementation has an erratum where the MSI data
-	 * is 'spi_number - 32'
-	 *
-	 * Reading that register fails on the Graviton implementation
-	 */
+	 
 	if (!(v2m->flags & GICV2M_GRAVITON_ADDRESS_ONLY)) {
 		switch (readl_relaxed(v2m->base + V2M_MSI_IIDR)) {
 		case XGENE_GICV2M_MSI_IIDR:
@@ -461,7 +434,7 @@ static __init struct fwnode_handle *gicv2m_get_fwnode(struct device *dev)
 	if (WARN_ON(acpi_num_msi <= 0))
 		return NULL;
 
-	/* We only return the fwnode of the first MSI frame. */
+	 
 	data = list_first_entry_or_null(&v2m_nodes, struct v2m_data, entry);
 	if (!data)
 		return NULL;
@@ -560,12 +533,12 @@ err_out:
 	gicv2m_teardown();
 	return -EINVAL;
 }
-#else /* CONFIG_ACPI */
+#else  
 static int __init gicv2m_acpi_init(struct irq_domain *parent)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
 int __init gicv2m_init(struct fwnode_handle *parent_handle,
 		       struct irq_domain *parent)

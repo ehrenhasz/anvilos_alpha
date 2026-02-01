@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NOUVEAU_GEM_H__
 #define __NOUVEAU_GEM_H__
 
@@ -13,7 +13,7 @@ nouveau_gem_object(struct drm_gem_object *gem)
 	return gem ? container_of(gem, struct nouveau_bo, bo.base) : NULL;
 }
 
-/* nouveau_gem.c */
+ 
 extern int nouveau_gem_new(struct nouveau_cli *, u64 size, int align,
 			   uint32_t domain, uint32_t tile_mode,
 			   uint32_t tile_flags, struct nouveau_bo **);

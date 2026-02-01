@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sunplus Watchdog Driver
- *
- * Copyright (C) 2021 Sunplus Technology Co., Ltd.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -24,7 +19,7 @@
 #define WDT_LOCK		0xAB01
 #define WDT_CONMAX		0xDEAF
 
-/* TIMEOUT_MAX = ffff0/90kHz =11.65, so longer than 11 seconds will time out. */
+ 
 #define SP_WDT_MAX_TIMEOUT	11U
 #define SP_WDT_DEFAULT_TIMEOUT	10
 
@@ -70,15 +65,11 @@ static int sp_wdt_ping(struct watchdog_device *wdev)
 	u32 count;
 
 	if (wdev->timeout > SP_WDT_MAX_TIMEOUT) {
-		/* WDT_CONMAX sets the count to the maximum (down-counting). */
+		 
 		writel(WDT_CONMAX, base + WDT_CTRL);
 	} else {
 		writel(WDT_UNLOCK, base + WDT_CTRL);
-		/*
-		 * Watchdog timer is a 20-bit down-counting based on STC_CLK.
-		 * This register bits[16:0] is from bit[19:4] of the watchdog
-		 * timer counter.
-		 */
+		 
 		count = (wdev->timeout * STC_CLK) >> 4;
 		writel(count, base + WDT_CNT);
 		writel(WDT_LOCK, base + WDT_CTRL);
@@ -168,7 +159,7 @@ static int sp_wdt_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* The timer and watchdog shared the STC reset */
+	 
 	priv->rstc = devm_reset_control_get_shared(dev, NULL);
 	if (IS_ERR(priv->rstc))
 		return dev_err_probe(dev, PTR_ERR(priv->rstc), "Failed to get reset\n");
@@ -201,7 +192,7 @@ static int sp_wdt_probe(struct platform_device *pdev)
 
 static const struct of_device_id sp_wdt_of_match[] = {
 	{.compatible = "sunplus,sp7021-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sp_wdt_of_match);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2015-2018 Linaro Limited.
- *
- * Author: Tor Jeremiassen <tor@ti.com>
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
- */
+
+ 
 
 #include <asm/bug.h>
 #include <linux/coresight-pmu.h>
@@ -19,7 +14,7 @@
 #include "debug.h"
 #include "intlist.h"
 
-/* use raw logging */
+ 
 #ifdef CS_DEBUG_RAW
 #define CS_LOG_RAW_FRAMES
 #ifdef CS_RAW_PACKED
@@ -30,13 +25,7 @@
 #endif
 #endif
 
-/*
- * Assume a maximum of 0.1ns elapsed per instruction. This would be the
- * case with a theoretical 10GHz core executing 1 instruction per cycle.
- * Used to estimate the sample time for synthesized instructions because
- * Coresight only emits a timestamp for a range of instructions rather
- * than per instruction.
- */
+ 
 const u32 INSTR_PER_NS = 10;
 
 struct cs_etm_decoder {
@@ -99,18 +88,10 @@ int cs_etm_decoder__get_packet(struct cs_etm_packet_queue *packet_queue,
 	if (!packet_queue || !packet)
 		return -EINVAL;
 
-	/* Nothing to do, might as well just return */
+	 
 	if (packet_queue->packet_count == 0)
 		return 0;
-	/*
-	 * The queueing process in function cs_etm_decoder__buffer_packet()
-	 * increments the tail *before* using it.  This is somewhat counter
-	 * intuitive but it has the advantage of centralizing tail management
-	 * at a single location.  Because of that we need to follow the same
-	 * heuristic with the head, i.e we increment it before using its
-	 * value.  Otherwise the first element of the packet queue is not
-	 * used.
-	 */
+	 
 	packet_queue->head = (packet_queue->head + 1) &
 			     (CS_ETM_PACKET_MAX_BUFFER - 1);
 
@@ -121,12 +102,7 @@ int cs_etm_decoder__get_packet(struct cs_etm_packet_queue *packet_queue,
 	return 1;
 }
 
-/*
- * Calculate the number of nanoseconds elapsed.
- *
- * instr_count is updated in place with the remainder of the instructions
- * which didn't make up a whole nanosecond.
- */
+ 
 static u32 cs_etm_decoder__dec_instr_count_to_ns(u32 *instr_count)
 {
 	const u32 instr_copy = *instr_count;
@@ -154,12 +130,7 @@ static int cs_etm_decoder__gen_etmv3_config(struct cs_etm_trace_params *params,
 
 static enum _ocsd_arch_version cs_etm_decoder__get_etmv4_arch_ver(u32 reg_idr1)
 {
-	/*
-	 * For ETMv4 if the trace minor version is 4 or more then we can assume
-	 * the architecture is ARCH_AA64 rather than just V8.
-	 * ARCH_V8 = V8 architecture
-	 * ARCH_AA64 = Min v8r3 plus additional AA64 PE features
-	 */
+	 
 	return TRCIDR1_TRCARCHMIN(reg_idr1) >= 4 ? ARCH_AA64 : ARCH_V8;
 }
 
@@ -216,23 +187,17 @@ cs_etm_decoder__init_def_logger_printing(struct cs_etm_decoder_params *d_params,
 
 	decoder->packet_printer = d_params->packet_printer;
 
-	/*
-	 * Set up a library default logger to process any printers
-	 * (packet/raw frame) we add later.
-	 */
+	 
 	ret = ocsd_def_errlog_init(OCSD_ERR_SEV_ERROR, 1);
 	if (ret != 0)
 		return -1;
 
-	/* no stdout / err / file output */
+	 
 	ret = ocsd_def_errlog_config_output(C_API_MSGLOGOUT_FLG_NONE, NULL);
 	if (ret != 0)
 		return -1;
 
-	/*
-	 * Set the string CB for the default logger, passes strings to
-	 * perf print logger.
-	 */
+	 
 	ret = ocsd_def_errlog_set_strprint_cb(decoder->dcd_tree,
 					      (void *)decoder,
 					      cs_etm_decoder__print_str_cb);
@@ -247,24 +212,20 @@ static void
 cs_etm_decoder__init_raw_frame_logging(struct cs_etm_decoder_params *d_params,
 				       struct cs_etm_decoder *decoder)
 {
-	/* Only log these during a --dump operation */
+	 
 	if (d_params->operation == CS_ETM_OPERATION_PRINT) {
-		/* set up a library default logger to process the
-		 *  raw frame printer we add later
-		 */
+		 
 		ocsd_def_errlog_init(OCSD_ERR_SEV_ERROR, 1);
 
-		/* no stdout / err / file output */
+		 
 		ocsd_def_errlog_config_output(C_API_MSGLOGOUT_FLG_NONE, NULL);
 
-		/* set the string CB for the default logger,
-		 * passes strings to perf print logger.
-		 */
+		 
 		ocsd_def_errlog_set_strprint_cb(decoder->dcd_tree,
 						(void *)decoder,
 						cs_etm_decoder__print_str_cb);
 
-		/* use the built in library printer for the raw frames */
+		 
 		ocsd_dt_set_raw_frame_printer(decoder->dcd_tree,
 					      CS_RAW_DEBUG_FLAGS);
 	}
@@ -285,17 +246,17 @@ cs_etm_decoder__do_soft_timestamp(struct cs_etm_queue *etmq,
 {
 	u64 estimated_ts;
 
-	/* No timestamp packet has been received, nothing to do */
+	 
 	if (!packet_queue->next_cs_timestamp)
 		return OCSD_RESP_CONT;
 
 	estimated_ts = packet_queue->cs_timestamp +
 			cs_etm_decoder__dec_instr_count_to_ns(&packet_queue->instr_count);
 
-	/* Estimated TS can never be higher than the next real one in the trace */
+	 
 	packet_queue->cs_timestamp = min(packet_queue->next_cs_timestamp, estimated_ts);
 
-	/* Tell the front end which traceid_queue needs attention */
+	 
 	cs_etm__etmq_set_traceid_queue_timestamp(etmq, trace_chan_id);
 
 	return OCSD_RESP_WAIT;
@@ -311,39 +272,25 @@ cs_etm_decoder__do_hard_timestamp(struct cs_etm_queue *etmq,
 	u64 converted_timestamp;
 	u64 estimated_first_ts;
 
-	/* First get the packet queue for this traceID */
+	 
 	packet_queue = cs_etm__etmq_get_packet_queue(etmq, trace_chan_id);
 	if (!packet_queue)
 		return OCSD_RESP_FATAL_SYS_ERR;
 
-	/*
-	 * Coresight timestamps are raw timer values which need to be scaled to ns. Assume
-	 * 0 is a bad value so don't try to convert it.
-	 */
+	 
 	converted_timestamp = elem->timestamp ?
 				cs_etm__convert_sample_time(etmq, elem->timestamp) : 0;
 
-	/*
-	 * We've seen a timestamp packet before - simply record the new value.
-	 * Function do_soft_timestamp() will report the value to the front end,
-	 * hence asking the decoder to keep decoding rather than stopping.
-	 */
+	 
 	if (packet_queue->next_cs_timestamp) {
-		/*
-		 * What was next is now where new ranges start from, overwriting
-		 * any previous estimate in cs_timestamp
-		 */
+		 
 		packet_queue->cs_timestamp = packet_queue->next_cs_timestamp;
 		packet_queue->next_cs_timestamp = converted_timestamp;
 		return OCSD_RESP_CONT;
 	}
 
 	if (!converted_timestamp) {
-		/*
-		 * Zero timestamps can be seen due to misconfiguration or hardware bugs.
-		 * Warn once, and don't try to subtract instr_count as it would result in an
-		 * underflow.
-		 */
+		 
 		packet_queue->cs_timestamp = 0;
 		if (!cs_etm__etmq_is_timeless(etmq))
 			pr_warning_once("Zero Coresight timestamp found at Idx:%" OCSD_TRC_IDX_STR
@@ -351,21 +298,11 @@ cs_etm_decoder__do_hard_timestamp(struct cs_etm_queue *etmq,
 					indx);
 
 	} else if (packet_queue->instr_count / INSTR_PER_NS > converted_timestamp) {
-		/*
-		 * Sanity check that the elem->timestamp - packet_queue->instr_count would not
-		 * result in an underflow. Warn and clamp at 0 if it would.
-		 */
+		 
 		packet_queue->cs_timestamp = 0;
 		pr_err("Timestamp calculation underflow at Idx:%" OCSD_TRC_IDX_STR "\n", indx);
 	} else {
-		/*
-		 * This is the first timestamp we've seen since the beginning of traces
-		 * or a discontinuity.  Since timestamps packets are generated *after*
-		 * range packets have been generated, we need to estimate the time at
-		 * which instructions started by subtracting the number of instructions
-		 * executed to the timestamp. Don't estimate earlier than the last used
-		 * timestamp though.
-		 */
+		 
 		estimated_first_ts = converted_timestamp -
 					(packet_queue->instr_count / INSTR_PER_NS);
 		packet_queue->cs_timestamp = max(packet_queue->cs_timestamp, estimated_first_ts);
@@ -373,10 +310,10 @@ cs_etm_decoder__do_hard_timestamp(struct cs_etm_queue *etmq,
 	packet_queue->next_cs_timestamp = converted_timestamp;
 	packet_queue->instr_count = 0;
 
-	/* Tell the front end which traceid_queue needs attention */
+	 
 	cs_etm__etmq_set_traceid_queue_timestamp(etmq, trace_chan_id);
 
-	/* Halt processing until we are being told to proceed */
+	 
 	return OCSD_RESP_WAIT;
 }
 
@@ -475,20 +412,16 @@ cs_etm_decoder__buffer_range(struct cs_etm_queue *etmq,
 
 	packet->last_instr_size = elem->last_instr_sz;
 
-	/* per-thread scenario, no need to generate a timestamp */
+	 
 	if (cs_etm__etmq_is_timeless(etmq))
 		goto out;
 
-	/*
-	 * The packet queue is full and we haven't seen a timestamp (had we
-	 * seen one the packet queue wouldn't be full).  Let the front end
-	 * deal with it.
-	 */
+	 
 	if (ret == OCSD_RESP_WAIT)
 		goto out;
 
 	packet_queue->instr_count += elem->num_instr_range;
-	/* Tell the front end we have a new timestamp to process */
+	 
 	ret = cs_etm_decoder__do_soft_timestamp(etmq, packet_queue,
 						trace_chan_id);
 out:
@@ -499,10 +432,7 @@ static ocsd_datapath_resp_t
 cs_etm_decoder__buffer_discontinuity(struct cs_etm_packet_queue *queue,
 				     const uint8_t trace_chan_id)
 {
-	/*
-	 * Something happened and who knows when we'll get new traces so
-	 * reset time statistics.
-	 */
+	 
 	cs_etm_decoder__reset_timestamp(queue);
 	return cs_etm_decoder__buffer_packet(queue, trace_chan_id,
 					     CS_ETM_DISCONTINUITY);
@@ -542,11 +472,7 @@ cs_etm_decoder__set_tid(struct cs_etm_queue *etmq,
 {
 	pid_t tid = -1;
 
-	/*
-	 * Process the PE_CONTEXT packets if we have a valid contextID or VMID.
-	 * If the kernel is running at EL2, the PID is traced in CONTEXTIDR_EL2
-	 * as VMID, Bit ETM_OPT_CTXTID2 is set in this case.
-	 */
+	 
 	switch (cs_etm__get_pid_fmt(etmq)) {
 	case CS_ETM_PIDFMT_CTXTID:
 		if (elem->context.ctxt_id_valid)
@@ -568,10 +494,7 @@ cs_etm_decoder__set_tid(struct cs_etm_queue *etmq,
 	if (tid == -1)
 		return OCSD_RESP_CONT;
 
-	/*
-	 * A timestamp is generated after a PE_CONTEXT element so make sure
-	 * to rely on that coming one.
-	 */
+	 
 	cs_etm_decoder__reset_timestamp(packet_queue);
 
 	return OCSD_RESP_CONT;
@@ -588,7 +511,7 @@ static ocsd_datapath_resp_t cs_etm_decoder__gen_trace_elem_printer(
 	struct cs_etm_queue *etmq = decoder->data;
 	struct cs_etm_packet_queue *packet_queue;
 
-	/* First get the packet queue for this traceID */
+	 
 	packet_queue = cs_etm__etmq_get_packet_queue(etmq, trace_chan_id);
 	if (!packet_queue)
 		return OCSD_RESP_FATAL_SYS_ERR;
@@ -623,7 +546,7 @@ static ocsd_datapath_resp_t cs_etm_decoder__gen_trace_elem_printer(
 		resp = cs_etm_decoder__set_tid(etmq, packet_queue,
 					       elem, trace_chan_id);
 		break;
-	/* Unused packet types */
+	 
 	case OCSD_GEN_TRC_ELEM_I_RANGE_NOPATH:
 	case OCSD_GEN_TRC_ELEM_ADDR_NACC:
 	case OCSD_GEN_TRC_ELEM_CYCLE_COUNT:
@@ -680,7 +603,7 @@ cs_etm_decoder__create_etm_decoder(struct cs_etm_decoder_params *d_params,
 		return -1;
 	}
 
-	/* if the CPU has no trace ID associated, no decoder needed */
+	 
 	if (csid == CORESIGHT_TRACE_ID_UNUSED_VAL)
 		return 0;
 
@@ -738,24 +661,21 @@ cs_etm_decoder__new(int decoders, struct cs_etm_decoder_params *d_params,
 	flags |= (d_params->hsyncs ? OCSD_DFRMTR_HAS_HSYNCS : 0);
 	flags |= (d_params->frame_aligned ? OCSD_DFRMTR_FRAME_MEM_ALIGN : 0);
 
-	/*
-	 * Drivers may add barrier frames when used with perf, set up to
-	 * handle this. Barriers const of FSYNC packet repeated 4 times.
-	 */
+	 
 	flags |= OCSD_DFRMTR_RESET_ON_4X_FSYNC;
 
-	/* Create decode tree for the data source */
+	 
 	decoder->dcd_tree = ocsd_create_dcd_tree(format, flags);
 
 	if (decoder->dcd_tree == 0)
 		goto err_free_decoder;
 
-	/* init library print logging support */
+	 
 	ret = cs_etm_decoder__init_def_logger_printing(d_params, decoder);
 	if (ret != 0)
 		goto err_free_decoder;
 
-	/* init raw frame logging if required */
+	 
 	cs_etm_decoder__init_raw_frame_logging(d_params, decoder);
 
 	for (i = 0; i < decoders; i++) {
@@ -804,11 +724,7 @@ int cs_etm_decoder__process_data_block(struct cs_etm_decoder *decoder,
 			break;
 		}
 
-		/*
-		 * Return to the input code if the packet buffer is full.
-		 * Flushing will get done once the packet buffer has been
-		 * processed.
-		 */
+		 
 		if (OCSD_DATA_RESP_IS_WAIT(cur))
 			break;
 

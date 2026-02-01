@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Author: Aleksa Sarai <cyphar@cyphar.com>
- * Copyright (C) 2018-2019 SUSE LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -100,7 +97,7 @@ void __attribute__((constructor)) init(void)
 
 	BUILD_BUG_ON(sizeof(struct open_how) != OPEN_HOW_SIZE_VER0);
 
-	/* Check openat2(2) support. */
+	 
 	fd = sys_openat2(AT_FDCWD, ".", &how);
 	openat2_supported = (fd >= 0);
 

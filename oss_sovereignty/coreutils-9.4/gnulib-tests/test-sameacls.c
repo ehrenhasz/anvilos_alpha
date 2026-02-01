@@ -1,20 +1,4 @@
-/* Test whether two files have the same ACLs.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2008.  */
+ 
 
 #include <config.h>
 
@@ -48,7 +32,7 @@ main (int argc, char *argv[])
   file1 = argv[1];
   file2 = argv[2];
 
-  /* Compare the contents of the two files.  */
+   
   {
     size_t size1;
     char *contents1;
@@ -89,7 +73,7 @@ main (int argc, char *argv[])
     free (contents1);
   }
 
-  /* Compare the access permissions of the two files, including ACLs.  */
+   
   {
     struct stat statbuf1;
     struct stat statbuf2;
@@ -115,11 +99,11 @@ main (int argc, char *argv[])
       }
   }
   {
-#if HAVE_ACL_GET_FILE /* Linux, FreeBSD, Mac OS X, IRIX, Tru64 */
+#if HAVE_ACL_GET_FILE  
     static const int types[] =
       {
         ACL_TYPE_ACCESS
-# if HAVE_ACL_TYPE_EXTENDED /* Mac OS X */
+# if HAVE_ACL_TYPE_EXTENDED  
         , ACL_TYPE_EXTENDED
 # endif
       };
@@ -228,15 +212,15 @@ main (int argc, char *argv[])
         if (acl1 != (acl_t)NULL)
           acl_free (acl1);
       }
-#elif HAVE_FACL && defined GETACL /* Solaris, Cygwin, not HP-UX */
+#elif HAVE_FACL && defined GETACL  
   int count1;
   int count2;
 
   count1 = acl (file1, GETACLCNT, 0, NULL);
-  if (count1 < 0 && errno == ENOSYS) /* Can happen on Solaris 10 with ZFS */
+  if (count1 < 0 && errno == ENOSYS)  
     count1 = 0;
   count2 = acl (file2, GETACLCNT, 0, NULL);
-  if (count2 < 0 && errno == ENOSYS) /* Can happen on Solaris 10 with ZFS */
+  if (count2 < 0 && errno == ENOSYS)  
     count2 = 0;
 
   if (count1 < 0)
@@ -381,7 +365,7 @@ main (int argc, char *argv[])
     free (entries1);
   }
 # endif
-#elif HAVE_GETACL /* HP-UX */
+#elif HAVE_GETACL  
   int count1;
   int count2;
 
@@ -455,7 +439,7 @@ main (int argc, char *argv[])
       free (entries1);
     }
 
-# if HAVE_ACLV_H /* HP-UX >= 11.11 */
+# if HAVE_ACLV_H  
   {
     struct acl dummy_entries[NACLVENTRIES];
 
@@ -530,7 +514,7 @@ main (int argc, char *argv[])
       free (entries1);
     }
 # endif
-#elif HAVE_ACLX_GET /* AIX */
+#elif HAVE_ACLX_GET  
   acl_type_t type1;
   char acl1[1000];
   size_t aclsize1 = sizeof (acl1);
@@ -544,8 +528,7 @@ main (int argc, char *argv[])
   char text2[1000];
   size_t textsize2 = sizeof (text2);
 
-  /* The docs say that type1 being 0 is equivalent to ACL_ANY, but it is not
-     true, in AIX 5.3.  */
+   
   type1.u64 = ACL_ANY;
   if (aclx_get (file1, 0, &type1, acl1, &aclsize1, &mode1) < 0)
     {
@@ -566,8 +549,7 @@ main (int argc, char *argv[])
         abort ();
       }
 
-  /* The docs say that type2 being 0 is equivalent to ACL_ANY, but it is not
-     true, in AIX 5.3.  */
+   
   type2.u64 = ACL_ANY;
   if (aclx_get (file2, 0, &type2, acl2, &aclsize2, &mode2) < 0)
     {
@@ -594,7 +576,7 @@ main (int argc, char *argv[])
                file1, file2, text1, text2);
       return 1;
     }
-#elif HAVE_STATACL /* older AIX */
+#elif HAVE_STATACL  
   union { struct acl a; char room[4096]; } acl1;
   union { struct acl a; char room[4096]; } acl2;
   unsigned int i;
@@ -640,7 +622,7 @@ main (int argc, char *argv[])
                file1, file2);
       return 1;
     }
-#elif HAVE_ACLSORT /* NonStop Kernel */
+#elif HAVE_ACLSORT  
   int count1;
   int count2;
 

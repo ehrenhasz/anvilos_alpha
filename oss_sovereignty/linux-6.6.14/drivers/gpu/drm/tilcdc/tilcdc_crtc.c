@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -47,7 +44,7 @@ struct tilcdc_crtc {
 
 	struct drm_framebuffer *next_fb;
 
-	/* Only set if an external encoder is connected */
+	 
 	bool simulate_vesa_sync;
 
 	int sync_lost_count;
@@ -76,11 +73,7 @@ static void set_scanout(struct drm_crtc *crtc, struct drm_framebuffer *fb)
 
 	end = start + (crtc->mode.vdisplay * fb->pitches[0]);
 
-	/* Write LCDC_DMA_FB_BASE_ADDR_0_REG and LCDC_DMA_FB_CEILING_ADDR_0_REG
-	 * with a single insruction, if available. This should make it more
-	 * unlikely that LCDC would fetch the DMA addresses in the middle of
-	 * an update.
-	 */
+	 
 	if (priv->rev == 1)
 		end -= 1;
 
@@ -88,12 +81,7 @@ static void set_scanout(struct drm_crtc *crtc, struct drm_framebuffer *fb)
 	tilcdc_write64(dev, LCDC_DMA_FB_BASE_ADDR_0_REG, dma_base_and_ceiling);
 }
 
-/*
- * The driver currently only supports only true color formats. For
- * true color the palette block is bypassed, but a 32 byte palette
- * should still be loaded. The first 16-bit entry must be 0x4000 while
- * all other entries must be zeroed.
- */
+ 
 static void tilcdc_crtc_load_palette(struct drm_crtc *crtc)
 {
 	struct tilcdc_crtc *tilcdc_crtc = to_tilcdc_crtc(crtc);
@@ -103,25 +91,25 @@ static void tilcdc_crtc_load_palette(struct drm_crtc *crtc)
 
 	reinit_completion(&tilcdc_crtc->palette_loaded);
 
-	/* Tell the LCDC where the palette is located. */
+	 
 	tilcdc_write(dev, LCDC_DMA_FB_BASE_ADDR_0_REG,
 		     tilcdc_crtc->palette_dma_handle);
 	tilcdc_write(dev, LCDC_DMA_FB_CEILING_ADDR_0_REG,
 		     (u32) tilcdc_crtc->palette_dma_handle +
 		     TILCDC_PALETTE_SIZE - 1);
 
-	/* Set dma load mode for palette loading only. */
+	 
 	tilcdc_write_mask(dev, LCDC_RASTER_CTRL_REG,
 			  LCDC_PALETTE_LOAD_MODE(PALETTE_ONLY),
 			  LCDC_PALETTE_LOAD_MODE_MASK);
 
-	/* Enable DMA Palette Loaded Interrupt */
+	 
 	if (priv->rev == 1)
 		tilcdc_set(dev, LCDC_RASTER_CTRL_REG, LCDC_V1_PL_INT_ENA);
 	else
 		tilcdc_write(dev, LCDC_INT_ENABLE_SET_REG, LCDC_V2_PL_INT_ENA);
 
-	/* Enable LCDC DMA and wait for palette to be loaded. */
+	 
 	tilcdc_clear_irqstatus(dev, 0xffffffff);
 	tilcdc_set(dev, LCDC_RASTER_CTRL_REG, LCDC_RASTER_ENABLE);
 
@@ -130,7 +118,7 @@ static void tilcdc_crtc_load_palette(struct drm_crtc *crtc)
 	if (ret == 0)
 		dev_err(dev->dev, "%s: Palette loading timeout", __func__);
 
-	/* Disable LCDC DMA and DMA Palette Loaded Interrupt. */
+	 
 	tilcdc_clear(dev, LCDC_RASTER_CTRL_REG, LCDC_RASTER_ENABLE);
 	if (priv->rev == 1)
 		tilcdc_clear(dev, LCDC_RASTER_CTRL_REG, LCDC_V1_PL_INT_ENA);
@@ -159,7 +147,7 @@ static void tilcdc_crtc_disable_irqs(struct drm_device *dev)
 {
 	struct tilcdc_drm_private *priv = dev->dev_private;
 
-	/* disable irqs that we might have enabled: */
+	 
 	if (priv->rev == 1) {
 		tilcdc_clear(dev, LCDC_RASTER_CTRL_REG,
 			LCDC_V1_SYNC_LOST_INT_ENA | LCDC_V1_FRAME_DONE_INT_ENA |
@@ -187,10 +175,7 @@ static void reset(struct drm_crtc *crtc)
 	tilcdc_clear(dev, LCDC_CLK_RESET_REG, LCDC_CLK_MAIN_RESET);
 }
 
-/*
- * Calculate the percentage difference between the requested pixel clock rate
- * and the effective rate resulting from calculating the clock divider value.
- */
+ 
 static unsigned int tilcdc_pclk_diff(unsigned long rate,
 				     unsigned long real_rate)
 {
@@ -208,24 +193,18 @@ static void tilcdc_crtc_set_clk(struct drm_crtc *crtc)
 	unsigned int clkdiv;
 	int ret;
 
-	clkdiv = 2; /* first try using a standard divider of 2 */
+	clkdiv = 2;  
 
-	/* mode.clock is in KHz, set_rate wants parameter in Hz */
+	 
 	pclk_rate = crtc->mode.clock * 1000;
 
 	ret = clk_set_rate(priv->clk, pclk_rate * clkdiv);
 	clk_rate = clk_get_rate(priv->clk);
 	real_pclk_rate = clk_rate / clkdiv;
 	if (ret < 0 || tilcdc_pclk_diff(pclk_rate, real_pclk_rate) > 5) {
-		/*
-		 * If we fail to set the clock rate (some architectures don't
-		 * use the common clock framework yet and may not implement
-		 * all the clk API calls for every clock), try the next best
-		 * thing: adjusting the clock divider, unless clk_get_rate()
-		 * failed as well.
-		 */
+		 
 		if (!clk_rate) {
-			/* Nothing more we can do. Just bail out. */
+			 
 			dev_err(dev->dev,
 				"failed to set the pixel clock - unable to read current lcdc clock rate\n");
 			return;
@@ -233,13 +212,7 @@ static void tilcdc_crtc_set_clk(struct drm_crtc *crtc)
 
 		clkdiv = DIV_ROUND_CLOSEST(clk_rate, pclk_rate);
 
-		/*
-		 * Emit a warning if the real clock rate resulting from the
-		 * calculated divider differs much from the requested rate.
-		 *
-		 * 5% is an arbitrary value - LCDs are usually quite tolerant
-		 * about pixel clock rates.
-		 */
+		 
 		real_pclk_rate = clk_rate / clkdiv;
 
 		if (tilcdc_pclk_diff(pclk_rate, real_pclk_rate) > 5) {
@@ -254,7 +227,7 @@ static void tilcdc_crtc_set_clk(struct drm_crtc *crtc)
 	DBG("lcd_clk=%u, mode clock=%d, div=%u",
 	    tilcdc_crtc->lcd_fck_rate, crtc->mode.clock, clkdiv);
 
-	/* Configure the LCD clock divisor. */
+	 
 	tilcdc_write(dev, LCDC_CTRL_REG, LCDC_CLK_DIVISOR(clkdiv) |
 		     LCDC_RASTER_MODE);
 
@@ -286,7 +259,7 @@ static void tilcdc_crtc_set_mode(struct drm_crtc *crtc)
 	if (WARN_ON(!fb))
 		return;
 
-	/* Configure the Burst Size and fifo threshold of DMA: */
+	 
 	reg = tilcdc_read(dev, LCDC_DMA_CTRL_REG) & ~0x00000770;
 	switch (info->dma_burst_sz) {
 	case 1:
@@ -311,7 +284,7 @@ static void tilcdc_crtc_set_mode(struct drm_crtc *crtc)
 	reg |= (info->fifo_th << 8);
 	tilcdc_write(dev, LCDC_DMA_CTRL_REG, reg);
 
-	/* Configure timings: */
+	 
 	hbp = mode->htotal - mode->hsync_end;
 	hfp = mode->hsync_start - mode->hdisplay;
 	hsw = mode->hsync_end - mode->hsync_start;
@@ -322,17 +295,14 @@ static void tilcdc_crtc_set_mode(struct drm_crtc *crtc)
 	DBG("%dx%d, hbp=%u, hfp=%u, hsw=%u, vbp=%u, vfp=%u, vsw=%u",
 	    mode->hdisplay, mode->vdisplay, hbp, hfp, hsw, vbp, vfp, vsw);
 
-	/* Set AC Bias Period and Number of Transitions per Interrupt: */
+	 
 	reg = tilcdc_read(dev, LCDC_RASTER_TIMING_2_REG) & ~0x000fff00;
 	reg |= LCDC_AC_BIAS_FREQUENCY(info->ac_bias) |
 		LCDC_AC_BIAS_TRANSITIONS_PER_INT(info->ac_bias_intrpt);
 
-	/*
-	 * subtract one from hfp, hbp, hsw because the hardware uses
-	 * a value of 0 as 1
-	 */
+	 
 	if (priv->rev == 2) {
-		/* clear bits we're going to set */
+		 
 		reg &= ~0x78000033;
 		reg |= ((hfp-1) & 0x300) >> 8;
 		reg |= ((hbp-1) & 0x300) >> 4;
@@ -354,11 +324,7 @@ static void tilcdc_crtc_set_mode(struct drm_crtc *crtc)
 		(((vsw-1) & 0x3f) << 10);
 	tilcdc_write(dev, LCDC_RASTER_TIMING_1_REG, reg);
 
-	/*
-	 * be sure to set Bit 10 for the V2 LCDC controller,
-	 * otherwise limited to 1024 pixels width, stopping
-	 * 1920x1080 being supported.
-	 */
+	 
 	if (priv->rev == 2) {
 		if ((mode->vdisplay - 1) & 0x400) {
 			tilcdc_set(dev, LCDC_RASTER_TIMING_2_REG,
@@ -369,12 +335,12 @@ static void tilcdc_crtc_set_mode(struct drm_crtc *crtc)
 		}
 	}
 
-	/* Configure display type: */
+	 
 	reg = tilcdc_read(dev, LCDC_RASTER_CTRL_REG) &
 		~(LCDC_TFT_MODE | LCDC_MONO_8BIT_MODE | LCDC_MONOCHROME_MODE |
 		  LCDC_V2_TFT_24BPP_MODE | LCDC_V2_TFT_24BPP_UNPACK |
-		  0x000ff000 /* Palette Loading Delay bits */);
-	reg |= LCDC_TFT_MODE; /* no monochrome/passive support */
+		  0x000ff000  );
+	reg |= LCDC_TFT_MODE;  
 	if (info->tft_alt_mode)
 		reg |= LCDC_TFT_ALT_ENABLE;
 	if (priv->rev == 2) {
@@ -465,12 +431,7 @@ static void tilcdc_crtc_enable(struct drm_crtc *crtc)
 			  LCDC_PALETTE_LOAD_MODE(DATA_ONLY),
 			  LCDC_PALETTE_LOAD_MODE_MASK);
 
-	/* There is no real chance for a race here as the time stamp
-	 * is taken before the raster DMA is started. The spin-lock is
-	 * taken to have a memory barrier after taking the time-stamp
-	 * and to avoid a context switch between taking the stamp and
-	 * enabling the raster.
-	 */
+	 
 	spin_lock_irqsave(&tilcdc_crtc->irq_lock, flags);
 	tilcdc_crtc->last_vblank = ktime_get();
 	tilcdc_set(dev, LCDC_RASTER_CTRL_REG, LCDC_RASTER_ENABLE);
@@ -504,10 +465,7 @@ static void tilcdc_crtc_off(struct drm_crtc *crtc, bool shutdown)
 	tilcdc_crtc->frame_done = false;
 	tilcdc_clear(dev, LCDC_RASTER_CTRL_REG, LCDC_RASTER_ENABLE);
 
-	/*
-	 * Wait for framedone irq which will still come before putting
-	 * things to sleep..
-	 */
+	 
 	ret = wait_event_timeout(tilcdc_crtc->frame_done_wq,
 				 tilcdc_crtc->frame_done,
 				 msecs_to_jiffies(500));
@@ -647,12 +605,7 @@ static bool tilcdc_crtc_mode_fixup(struct drm_crtc *crtc,
 	if (!tilcdc_crtc->simulate_vesa_sync)
 		return true;
 
-	/*
-	 * tilcdc does not generate VESA-compliant sync but aligns
-	 * VS on the second edge of HS instead of first edge.
-	 * We use adjusted_mode, to fixup sync by aligning both rising
-	 * edges and add HSKEW offset to fix the sync.
-	 */
+	 
 	adjusted_mode->hskew = mode->hsync_end - mode->hsync_start;
 	adjusted_mode->flags |= DRM_MODE_FLAG_HSKEW;
 
@@ -672,7 +625,7 @@ static int tilcdc_crtc_atomic_check(struct drm_crtc *crtc,
 {
 	struct drm_crtc_state *crtc_state = drm_atomic_get_new_crtc_state(state,
 									  crtc);
-	/* If we are not active we don't care */
+	 
 	if (!crtc_state->active)
 		return 0;
 
@@ -736,10 +689,10 @@ static void tilcdc_crtc_reset(struct drm_crtc *crtc)
 
 	drm_atomic_helper_crtc_reset(crtc);
 
-	/* Turn the raster off if it for some reason is on. */
+	 
 	pm_runtime_get_sync(dev->dev);
 	if (tilcdc_read(dev, LCDC_RASTER_CTRL_REG) & LCDC_RASTER_ENABLE) {
-		/* Enable DMA Frame Done Interrupt */
+		 
 		tilcdc_write(dev, LCDC_INT_ENABLE_SET_REG, LCDC_FRAME_DONE);
 		tilcdc_clear_irqstatus(dev, 0xffffffff);
 
@@ -775,14 +728,11 @@ tilcdc_crtc_mode_valid(struct drm_crtc *crtc,
 	unsigned int bandwidth;
 	uint32_t hbp, hfp, hsw, vbp, vfp, vsw;
 
-	/*
-	 * check to see if the width is within the range that
-	 * the LCD Controller physically supports
-	 */
+	 
 	if (mode->hdisplay > priv->max_width)
 		return MODE_VIRTUAL_X;
 
-	/* width must be multiple of 16 */
+	 
 	if (mode->hdisplay & 0xf)
 		return MODE_VIRTUAL_X;
 
@@ -830,23 +780,17 @@ tilcdc_crtc_mode_valid(struct drm_crtc *crtc,
 		return MODE_VSYNC_WIDE;
 	}
 
-	/*
-	 * some devices have a maximum allowed pixel clock
-	 * configured from the DT
-	 */
+	 
 	if (mode->clock > priv->max_pixelclock) {
 		DBG("Pruning mode: pixel clock too high");
 		return MODE_CLOCK_HIGH;
 	}
 
-	/*
-	 * some devices further limit the max horizontal resolution
-	 * configured from the DT
-	 */
+	 
 	if (mode->hdisplay > priv->max_width)
 		return MODE_BAD_WIDTH;
 
-	/* filter out modes that would require too much memory bandwidth: */
+	 
 	bandwidth = mode->hdisplay * mode->vdisplay *
 		drm_mode_vrefresh(mode);
 	if (bandwidth > priv->max_bandwidth) {
@@ -997,17 +941,15 @@ irqreturn_t tilcdc_crtc_irq(struct drm_crtc *crtc)
 	if (stat & LCDC_FRAME_DONE) {
 		tilcdc_crtc->frame_done = true;
 		wake_up(&tilcdc_crtc->frame_done_wq);
-		/* rev 1 lcdc appears to hang if irq is not disabled here */
+		 
 		if (priv->rev == 1)
 			tilcdc_clear(dev, LCDC_RASTER_CTRL_REG,
 				     LCDC_V1_FRAME_DONE_INT_ENA);
 	}
 
-	/* For revision 2 only */
+	 
 	if (priv->rev == 2) {
-		/* Indicate to LCDC that the interrupt service routine has
-		 * completed, see 13.3.6.1.6 in AM335x TRM.
-		 */
+		 
 		tilcdc_write(dev, LCDC_END_OF_INT_IND_REG, 0);
 	}
 
@@ -1059,7 +1001,7 @@ int tilcdc_crtc_create(struct drm_device *dev)
 
 	if (priv->is_componentized) {
 		crtc->port = of_graph_get_port_by_id(dev->dev->of_node, 0);
-		if (!crtc->port) { /* This should never happen */
+		if (!crtc->port) {  
 			dev_err(dev->dev, "Port node not found in %pOF\n",
 				dev->dev->of_node);
 			ret = -EINVAL;

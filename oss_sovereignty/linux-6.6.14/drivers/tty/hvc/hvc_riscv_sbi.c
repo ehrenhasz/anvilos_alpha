@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2008 David Gibson, IBM Corporation
- * Copyright (C) 2012 Regents of the University of California
- * Copyright (C) 2017 SiFive
- */
+ 
+ 
 
 #include <linux/console.h>
 #include <linux/err.h>

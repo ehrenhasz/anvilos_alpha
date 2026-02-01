@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2017 Samsung Electronics Co., Ltd.
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -17,7 +17,7 @@ struct odroid_priv {
 	struct clk *clk_i2s_bus;
 	struct clk *sclk_i2s;
 
-	/* Spinlock protecting fields below */
+	 
 	spinlock_t lock;
 	unsigned int be_sample_rate;
 	bool be_active;
@@ -86,11 +86,7 @@ static int odroid_card_be_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 *  We add 2 to the rclk_freq value in order to avoid too low clock
-	 *  frequency values due to the EPLL output frequency not being exact
-	 *  multiple of the audio sampling rate.
-	 */
+	 
 	rclk_freq = params_rate(params) * rfs + 2;
 
 	ret = clk_set_rate(priv->sclk_i2s, rclk_freq);
@@ -145,7 +141,7 @@ static const struct snd_soc_ops odroid_card_be_ops = {
 	.trigger = odroid_card_be_trigger,
 };
 
-/* DAPM routes for backward compatibility with old DTS */
+ 
 static const struct snd_soc_dapm_route odroid_dapm_routes[] = {
 	{ "I2S Playback", NULL, "Mixer DAI TX" },
 	{ "HiFi Playback", NULL, "Mixer DAI TX" },
@@ -168,7 +164,7 @@ SND_SOC_DAILINK_DEFS(secondary,
 
 static struct snd_soc_dai_link odroid_card_dais[] = {
 	{
-		/* Primary FE <-> BE link */
+		 
 		.ops = &odroid_card_fe_ops,
 		.name = "Primary",
 		.stream_name = "Primary",
@@ -176,7 +172,7 @@ static struct snd_soc_dai_link odroid_card_dais[] = {
 		.dpcm_playback = 1,
 		SND_SOC_DAILINK_REG(primary),
 	}, {
-		/* BE <-> CODECs link */
+		 
 		.name = "I2S Mixer",
 		.ops = &odroid_card_be_ops,
 		.no_pcm = 1,
@@ -185,7 +181,7 @@ static struct snd_soc_dai_link odroid_card_dais[] = {
 				SND_SOC_DAIFMT_CBS_CFS,
 		SND_SOC_DAILINK_REG(mixer),
 	}, {
-		/* Secondary FE <-> BE link */
+		 
 		.playback_only = 1,
 		.ops = &odroid_card_fe_ops,
 		.name = "Secondary",
@@ -246,11 +242,7 @@ static int odroid_audio_probe(struct platform_device *pdev)
 	link = card->dai_link;
 	codec_link = &card->dai_link[1];
 
-	/*
-	 * For backwards compatibility create the secondary CPU DAI link only
-	 * if there are 2 CPU DAI entries in the cpu sound-dai property in DT.
-	 * Also add required DAPM routes not available in old DTS.
-	 */
+	 
 	num_pcms = of_count_phandle_with_args(cpu, "sound-dai",
 					      "#sound-dai-cells");
 	if (num_pcms == 1) {
@@ -278,7 +270,7 @@ static int odroid_audio_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_put_cpu_dai;
 
-	/* Set capture capability only for boards with the MAX98090 CODEC */
+	 
 	if (codec_link->num_codecs > 1) {
 		card->dai_link[0].dpcm_capture = 1;
 		card->dai_link[1].dpcm_capture = 1;

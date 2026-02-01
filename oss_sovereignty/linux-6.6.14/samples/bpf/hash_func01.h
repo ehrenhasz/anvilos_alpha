@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1
- *
- * Based on Paul Hsieh's (LGPG 2.1) hash function
- * From: http://www.azillionmonkeys.com/qed/hash.html
- */
+ 
 
 #define get16bits(d) (*((const __u16 *) (d)))
 
@@ -17,7 +13,7 @@ __u32 SuperFastHash (const char *data, int len, __u32 initval) {
 	rem = len & 3;
 	len >>= 2;
 
-	/* Main loop */
+	 
 #pragma clang loop unroll(full)
 	for (;len > 0; len--) {
 		hash  += get16bits (data);
@@ -27,7 +23,7 @@ __u32 SuperFastHash (const char *data, int len, __u32 initval) {
 		hash  += hash >> 11;
 	}
 
-	/* Handle end cases */
+	 
 	switch (rem) {
         case 3: hash += get16bits (data);
                 hash ^= hash << 16;
@@ -43,7 +39,7 @@ __u32 SuperFastHash (const char *data, int len, __u32 initval) {
                 hash += hash >> 1;
 	}
 
-	/* Force "avalanching" of final 127 bits */
+	 
 	hash ^= hash << 3;
 	hash += hash >> 5;
 	hash ^= hash << 4;

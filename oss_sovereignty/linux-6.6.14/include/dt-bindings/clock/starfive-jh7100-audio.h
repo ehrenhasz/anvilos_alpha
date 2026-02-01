@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_STARFIVE_JH7100_AUDIO_H__
 #define __DT_BINDINGS_CLOCK_STARFIVE_JH7100_AUDIO_H__
@@ -38,4 +36,4 @@
 
 #define JH7100_AUDCLK_END		29
 
-#endif /* __DT_BINDINGS_CLOCK_STARFIVE_JH7100_AUDIO_H__ */
+#endif  

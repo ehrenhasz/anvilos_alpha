@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright 2022-2023 NXP
- */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM	dsa
@@ -15,7 +13,7 @@
 #include <linux/refcount.h>
 #include <linux/tracepoint.h>
 
-/* Enough to fit "bridge %s num %d" where num has 3 digits */
+ 
 #define DSA_DB_BUFSIZ	(IFNAMSIZ + 16)
 
 void dsa_db_print(const struct dsa_db *db, char buf[DSA_DB_BUFSIZ]);
@@ -53,10 +51,7 @@ DECLARE_EVENT_CLASS(dsa_port_addr_op_hw,
 		  __entry->vid, __entry->db_buf, __entry->err)
 );
 
-/* Add unicast/multicast address to hardware, either on user ports
- * (where no refcounting is kept), or on shared ports when the entry
- * is first seen and its refcount is 1.
- */
+ 
 DEFINE_EVENT(dsa_port_addr_op_hw, dsa_fdb_add_hw,
 	     TP_PROTO(const struct dsa_port *dp, const unsigned char *addr,
 		      u16 vid, const struct dsa_db *db, int err),
@@ -67,9 +62,7 @@ DEFINE_EVENT(dsa_port_addr_op_hw, dsa_mdb_add_hw,
 		      u16 vid, const struct dsa_db *db, int err),
 	     TP_ARGS(dp, addr, vid, db, err));
 
-/* Delete unicast/multicast address from hardware, either on user ports or
- * when the refcount on shared ports reaches 0
- */
+ 
 DEFINE_EVENT(dsa_port_addr_op_hw, dsa_fdb_del_hw,
 	     TP_PROTO(const struct dsa_port *dp, const unsigned char *addr,
 		      u16 vid, const struct dsa_db *db, int err),
@@ -112,7 +105,7 @@ DECLARE_EVENT_CLASS(dsa_port_addr_op_refcount,
 		  __entry->vid, __entry->db_buf, __entry->refcount)
 );
 
-/* Bump the refcount of an existing unicast/multicast address on shared ports */
+ 
 DEFINE_EVENT(dsa_port_addr_op_refcount, dsa_fdb_add_bump,
 	     TP_PROTO(const struct dsa_port *dp, const unsigned char *addr,
 		      u16 vid, const struct dsa_db *db,
@@ -125,9 +118,7 @@ DEFINE_EVENT(dsa_port_addr_op_refcount, dsa_mdb_add_bump,
 		      const refcount_t *refcount),
 	     TP_ARGS(dp, addr, vid, db, refcount));
 
-/* Drop the refcount of a multicast address that we still keep on
- * shared ports
- */
+ 
 DEFINE_EVENT(dsa_port_addr_op_refcount, dsa_fdb_del_drop,
 	     TP_PROTO(const struct dsa_port *dp, const unsigned char *addr,
 		      u16 vid, const struct dsa_db *db,
@@ -170,9 +161,7 @@ DECLARE_EVENT_CLASS(dsa_port_addr_del_not_found,
 		  __entry->addr, __entry->vid, __entry->db_buf)
 );
 
-/* Attempt to delete a unicast/multicast address on shared ports for which
- * the delete operation was called more times than the addition
- */
+ 
 DEFINE_EVENT(dsa_port_addr_del_not_found, dsa_fdb_del_not_found,
 	     TP_PROTO(const struct dsa_port *dp, const unsigned char *addr,
 		      u16 vid, const struct dsa_db *db),
@@ -436,12 +425,12 @@ TRACE_EVENT(dsa_vlan_del_not_found,
 		  __get_str(dev), __get_str(kind), __entry->port, __entry->vid)
 );
 
-#endif /* _NET_DSA_TRACE_H */
+#endif  
 
-/* We don't want to use include/trace/events */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE	trace
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

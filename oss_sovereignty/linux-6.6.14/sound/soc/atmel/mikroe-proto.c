@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ASoC driver for PROTO AudioCODEC (with a WM8731)
- *
- * Author:      Florian Meier, <koalo@koalo.de>
- *	      Copyright 2013
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -16,14 +11,14 @@
 
 #include "../codecs/wm8731.h"
 
-#define XTAL_RATE 12288000	/* This is fixed on this board */
+#define XTAL_RATE 12288000	 
 
 static int snd_proto_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 
-	/* Set proto sysclk */
+	 
 	int ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL,
 					 XTAL_RATE, SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -41,16 +36,16 @@ static const struct snd_soc_dapm_widget snd_proto_widget[] = {
 };
 
 static const struct snd_soc_dapm_route snd_proto_route[] = {
-	/* speaker connected to LHPOUT/RHPOUT */
+	 
 	{"Headphone Jack", NULL, "LHPOUT"},
 	{"Headphone Jack", NULL, "RHPOUT"},
 
-	/* mic is connected to Mic Jack, with WM8731 Mic Bias */
+	 
 	{"MICIN", NULL, "Mic Bias"},
 	{"Mic Bias", NULL, "Microphone Jack"},
 };
 
-/* audio machine driver */
+ 
 static struct snd_soc_card snd_proto = {
 	.name		= "snd_mikroe_proto",
 	.owner		= THIS_MODULE,
@@ -85,7 +80,7 @@ static int snd_proto_probe(struct platform_device *pdev)
 	if (!dai)
 		return -ENOMEM;
 
-	/* for cpus/codecs/platforms */
+	 
 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
 	if (!comp)
 		return -ENOMEM;

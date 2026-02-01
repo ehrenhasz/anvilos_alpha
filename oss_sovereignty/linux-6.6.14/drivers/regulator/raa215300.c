@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas RAA215300 PMIC driver
-//
-// Copyright (C) 2023 Renesas Electronics Corporation
-//
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -81,12 +81,12 @@ static int raa215300_i2c_probe(struct i2c_client *client)
 
 	dev_dbg(dev, "RAA215300 PMIC version 0x%04x\n", pmic_version);
 
-	/* Clear all blocks except RTC, if enabled */
+	 
 	regmap_read(regmap, RAA215300_REG_BLOCK_EN, &val);
 	val &= RAA215300_REG_BLOCK_EN_RTC_EN;
 	regmap_write(regmap, RAA215300_REG_BLOCK_EN, val);
 
-	/* Clear the latched registers */
+	 
 	regmap_read(regmap, RAA215300_FAULT_LATCHED_STATUS_1, &val);
 	regmap_write(regmap, RAA215300_FAULT_LATCHED_STATUS_1, val);
 	regmap_read(regmap, RAA215300_FAULT_LATCHED_STATUS_2, &val);
@@ -98,7 +98,7 @@ static int raa215300_i2c_probe(struct i2c_client *client)
 	regmap_read(regmap, RAA215300_FAULT_LATCHED_STATUS_6, &val);
 	regmap_write(regmap, RAA215300_FAULT_LATCHED_STATUS_6, val);
 
-	/* Mask all the PMIC interrupts */
+	 
 	regmap_write(regmap, RAA215300_INT_MASK_1, RAA215300_INT_MASK_1_ALL);
 	regmap_write(regmap, RAA215300_INT_MASK_2, RAA215300_INT_MASK_2_ALL);
 	regmap_write(regmap, RAA215300_INT_MASK_3, RAA215300_INT_MASK_3_ALL);
@@ -152,7 +152,7 @@ static int raa215300_i2c_probe(struct i2c_client *client)
 			return dev_err_probe(dev, size,
 					     "Invalid device name: %s\n", name);
 
-		/* Enable RTC block */
+		 
 		regmap_update_bits(regmap, RAA215300_REG_BLOCK_EN,
 				   RAA215300_REG_BLOCK_EN_RTC_EN,
 				   RAA215300_REG_BLOCK_EN_RTC_EN);
@@ -173,7 +173,7 @@ static int raa215300_i2c_probe(struct i2c_client *client)
 
 static const struct of_device_id raa215300_dt_match[] = {
 	{ .compatible = "renesas,raa215300" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, raa215300_dt_match);
 

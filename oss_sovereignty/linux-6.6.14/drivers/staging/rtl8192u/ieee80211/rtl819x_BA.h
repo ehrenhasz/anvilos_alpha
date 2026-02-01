@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BATYPE_H_
 #define _BATYPE_H_
 
@@ -51,4 +51,4 @@ struct ba_record {
 	union sequence_control	start_seq_ctrl;
 };
 
-#endif //end _BATYPE_H_
+#endif 

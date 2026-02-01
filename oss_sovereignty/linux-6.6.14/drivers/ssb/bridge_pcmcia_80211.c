@@ -1,10 +1,4 @@
-/*
- * Broadcom 43xx PCMCIA-SSB bridge module
- *
- * Copyright (c) 2007 Michael Buesch <m@bues.ch>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -98,10 +92,10 @@ static int ssb_host_pcmcia_resume(struct pcmcia_device *dev)
 
 	return ssb_bus_resume(ssb);
 }
-#else /* CONFIG_PM */
+#else  
 # define ssb_host_pcmcia_suspend		NULL
 # define ssb_host_pcmcia_resume		NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static struct pcmcia_driver ssb_host_pcmcia_driver = {
 	.owner		= THIS_MODULE,
@@ -115,10 +109,7 @@ static struct pcmcia_driver ssb_host_pcmcia_driver = {
 
 static int pcmcia_init_failed;
 
-/*
- * These are not module init/exit functions!
- * The module_pcmcia_driver() helper cannot be used here.
- */
+ 
 int ssb_host_pcmcia_init(void)
 {
 	pcmcia_init_failed = pcmcia_register_driver(&ssb_host_pcmcia_driver);

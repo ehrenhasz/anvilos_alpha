@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #ifndef __MOCK_CONTEXT_H
 #define __MOCK_CONTEXT_H
@@ -30,4 +26,4 @@ struct i915_gem_context *kernel_context(struct drm_i915_private *i915,
 					struct i915_address_space *vm);
 void kernel_context_close(struct i915_gem_context *ctx);
 
-#endif /* !__MOCK_CONTEXT_H */
+#endif  

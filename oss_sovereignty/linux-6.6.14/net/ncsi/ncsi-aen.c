@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright Gavin Shan, IBM Corporation 2016.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -27,10 +25,7 @@ static int ncsi_validate_aen_pkt(struct ncsi_aen_pkt_hdr *h,
 	if (ntohs(h->common.length) != payload)
 		return -EINVAL;
 
-	/* Validate checksum, which might be zeroes if the
-	 * sender doesn't support checksum according to NCSI
-	 * specification.
-	 */
+	 
 	pchecksum = (__be32 *)((void *)(h + 1) + payload - 4);
 	if (ntohl(*pchecksum) == 0)
 		return 0;
@@ -56,12 +51,12 @@ static int ncsi_aen_handler_lsc(struct ncsi_dev_priv *ndp,
 	bool chained;
 	int state;
 
-	/* Find the NCSI channel */
+	 
 	ncsi_find_package_and_channel(ndp, h->common.channel, NULL, &nc);
 	if (!nc)
 		return -ENODEV;
 
-	/* Update the link status */
+	 
 	lsc = (struct ncsi_aen_lsc_pkt *)h;
 
 	spin_lock_irqsave(&nc->lock, flags);
@@ -98,28 +93,26 @@ static int ncsi_aen_handler_lsc(struct ncsi_dev_priv *ndp,
 			spin_unlock_irqrestore(&ndp->lock, flags);
 			return ncsi_process_next_channel(ndp);
 		}
-		/* Configured channel came up */
+		 
 		return 0;
 	}
 
 	if (had_link) {
 		ncm = &nc->modes[NCSI_MODE_TX_ENABLE];
 		if (ncsi_channel_is_last(ndp, nc)) {
-			/* No channels left, reconfigure */
+			 
 			return ncsi_reset_dev(&ndp->ndev);
 		} else if (ncm->enable) {
-			/* Need to failover Tx channel */
+			 
 			ncsi_update_tx_channel(ndp, nc->package, nc, NULL);
 		}
 	} else if (has_link && nc->package->preferred_channel == nc) {
-		/* Return Tx to preferred channel */
+		 
 		ncsi_update_tx_channel(ndp, nc->package, NULL, nc);
 	} else if (has_link) {
 		NCSI_FOR_EACH_PACKAGE(ndp, np) {
 			NCSI_FOR_EACH_CHANNEL(np, tmp) {
-				/* Enable Tx on this channel if the current Tx
-				 * channel is down.
-				 */
+				 
 				ncm = &tmp->modes[NCSI_MODE_TX_ENABLE];
 				if (ncm->enable &&
 				    !ncsi_channel_has_link(tmp)) {
@@ -131,9 +124,7 @@ static int ncsi_aen_handler_lsc(struct ncsi_dev_priv *ndp,
 		}
 	}
 
-	/* Leave configured channels active in a multi-channel scenario so
-	 * AEN events are still received.
-	 */
+	 
 	return 0;
 }
 
@@ -143,7 +134,7 @@ static int ncsi_aen_handler_cr(struct ncsi_dev_priv *ndp,
 	struct ncsi_channel *nc;
 	unsigned long flags;
 
-	/* Find the NCSI channel */
+	 
 	ncsi_find_package_and_channel(ndp, h->common.channel, NULL, &nc);
 	if (!nc)
 		return -ENODEV;
@@ -178,7 +169,7 @@ static int ncsi_aen_handler_hncdsc(struct ncsi_dev_priv *ndp,
 	struct ncsi_aen_hncdsc_pkt *hncdsc;
 	unsigned long flags;
 
-	/* Find the NCSI channel */
+	 
 	ncsi_find_package_and_channel(ndp, h->common.channel, NULL, &nc);
 	if (!nc)
 		return -ENODEV;
@@ -212,7 +203,7 @@ int ncsi_aen_handler(struct ncsi_dev_priv *ndp, struct sk_buff *skb)
 	struct ncsi_aen_handler *nah = NULL;
 	int i, ret;
 
-	/* Find the handler */
+	 
 	h = (struct ncsi_aen_pkt_hdr *)skb_network_header(skb);
 	for (i = 0; i < ARRAY_SIZE(ncsi_aen_handlers); i++) {
 		if (ncsi_aen_handlers[i].type == h->type) {

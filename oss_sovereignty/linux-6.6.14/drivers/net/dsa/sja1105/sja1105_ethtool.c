@@ -1,11 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+ 
 #include "sja1105.h"
 
 enum sja1105_counter_index {
 	__SJA1105_COUNTER_UNUSED,
-	/* MAC */
+	 
 	N_RUNT,
 	N_SOFERR,
 	N_ALIGNERR,
@@ -30,7 +29,7 @@ enum sja1105_counter_index {
 	DRPNONA664ERR,
 	SPCERR,
 	AGEDRP,
-	/* HL1 */
+	 
 	N_N664ERR,
 	N_VLANERR,
 	N_UNRELEASED,
@@ -43,14 +42,14 @@ enum sja1105_counter_index {
 	N_RXBYTE,
 	N_TXFRM,
 	N_TXBYTE,
-	/* HL2 */
+	 
 	N_QFULL,
 	N_PART_DROP,
 	N_EGR_DISABLED,
 	N_NOT_REACH,
 	__MAX_SJA1105ET_PORT_COUNTER,
-	/* P/Q/R/S only */
-	/* ETHER */
+	 
+	 
 	N_DROPS_NOLEARN = __MAX_SJA1105ET_PORT_COUNTER,
 	N_DROPS_NOROUTE,
 	N_DROPS_ILL_DTAG,
@@ -87,7 +86,7 @@ struct sja1105_port_counter {
 };
 
 static const struct sja1105_port_counter sja1105_port_counters[] = {
-	/* MAC-Level Diagnostic Counters */
+	 
 	[N_RUNT] = {
 		.area = MAC,
 		.name = "n_runt",
@@ -116,7 +115,7 @@ static const struct sja1105_port_counter sja1105_port_counters[] = {
 		.start = 7,
 		.end = 0,
 	},
-	/* MAC-Level Diagnostic Flags */
+	 
 	[TYPEERR] = {
 		.area = MAC,
 		.name = "typeerr",
@@ -257,7 +256,7 @@ static const struct sja1105_port_counter sja1105_port_counters[] = {
 		.start = 0,
 		.end = 0,
 	},
-	/* High-Level Diagnostic Counters */
+	 
 	[N_N664ERR] = {
 		.area = HL1,
 		.name = "n_n664err",
@@ -374,7 +373,7 @@ static const struct sja1105_port_counter sja1105_port_counters[] = {
 		.start = 31,
 		.end = 0,
 	},
-	/* Ether Stats */
+	 
 	[N_DROPS_NOLEARN] = {
 		.area = ETHER,
 		.name = "n_drops_nolearn",

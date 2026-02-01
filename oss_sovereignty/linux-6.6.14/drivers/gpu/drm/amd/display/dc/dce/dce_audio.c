@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dce_audio.h"
@@ -58,11 +35,11 @@ static void write_indirect_azalia_reg(struct audio *audio,
 {
 	struct dce_audio *aud = DCE_AUD(audio);
 
-	/* AZALIA_F0_CODEC_ENDPOINT_INDEX  endpoint index  */
+	 
 	REG_SET(AZALIA_F0_CODEC_ENDPOINT_INDEX, 0,
 			AZALIA_ENDPOINT_REG_INDEX, reg_index);
 
-	/* AZALIA_F0_CODEC_ENDPOINT_DATA  endpoint data  */
+	 
 	REG_SET(AZALIA_F0_CODEC_ENDPOINT_DATA, 0,
 			AZALIA_ENDPOINT_REG_DATA, reg_data);
 }
@@ -73,11 +50,11 @@ static uint32_t read_indirect_azalia_reg(struct audio *audio, uint32_t reg_index
 
 	uint32_t value = 0;
 
-	/* AZALIA_F0_CODEC_ENDPOINT_INDEX  endpoint index  */
+	 
 	REG_SET(AZALIA_F0_CODEC_ENDPOINT_INDEX, 0,
 			AZALIA_ENDPOINT_REG_INDEX, reg_index);
 
-	/* AZALIA_F0_CODEC_ENDPOINT_DATA  endpoint data  */
+	 
 	value = REG_READ(AZALIA_F0_CODEC_ENDPOINT_DATA);
 
 	return value;
@@ -95,32 +72,31 @@ static bool is_audio_format_supported(
 	if (audio_info == NULL)
 		return found;
 
-	/* pass through whole array */
+	 
 	for (index = 0; index < audio_info->mode_count; index++) {
 		if (audio_info->modes[index].format_code == audio_format_code) {
 			if (found) {
-				/* format has multiply entries, choose one with
-				 *  highst number of channels */
+				 
 				if (audio_info->modes[index].channel_count >
 		audio_info->modes[max_channe_index].channel_count) {
 					max_channe_index = index;
 				}
 			} else {
-				/* format found, save it's index */
+				 
 				found = true;
 				max_channe_index = index;
 			}
 		}
 	}
 
-	/* return index */
+	 
 	if (found && format_index != NULL)
 		*format_index = max_channe_index;
 
 	return found;
 }
 
-/*For HDMI, calculate if specified sample rates can fit into a given timing */
+ 
 static void check_audio_bandwidth_hdmi(
 	const struct audio_crtc_info *crtc_info,
 	uint32_t channel_count,
@@ -135,10 +111,10 @@ static void check_audio_bandwidth_hdmi(
 	if (!crtc_info)
 		return;
 
-	/* For two channels supported return whatever sink support,unmodified*/
+	 
 	if (channel_count > 2) {
 
-		/* Based on HDMI spec 1.3 Table 7.5 */
+		 
 		if ((crtc_info->requested_pixel_clock_100Hz <= 270000) &&
 		(crtc_info->v_active <= 576) &&
 		!(crtc_info->interlaced) &&
@@ -159,36 +135,27 @@ static void check_audio_bandwidth_hdmi(
 		}
 	}
 
-	/* Also do some calculation for the available Audio Bandwidth for the
-	 * 8 ch (i.e. for the Layout 1 => ch > 2)
-	 */
+	 
 	h_blank = crtc_info->h_total - crtc_info->h_active;
 
 	if (crtc_info->pixel_repetition)
 		h_blank *= crtc_info->pixel_repetition;
 
-	/*based on HDMI spec 1.3 Table 7.5 */
+	 
 	h_blank -= 58;
-	/*for Control Period */
+	 
 	h_blank -= 16;
 
 	samples = h_blank * 10;
-	/* Number of Audio Packets (multiplied by 10) per Line (for 8 ch number
-	 * of Audio samples per line multiplied by 10 - Layout 1)
-	 */
+	 
 	samples /= 32;
 	samples *= crtc_info->v_active;
-	/*Number of samples multiplied by 10, per second */
+	 
 	samples *= crtc_info->refresh_rate;
-	/*Number of Audio samples per second */
+	 
 	samples /= 10;
 
-	/* @todo do it after deep color is implemented
-	 * 8xx - deep color bandwidth scaling
-	 * Extra bandwidth is avaliable in deep color b/c link runs faster than
-	 * pixel rate. This has the effect of allowing more tmds characters to
-	 * be transmitted during blank
-	 */
+	 
 
 	switch (crtc_info->color_depth) {
 	case COLOR_DEPTH_888:
@@ -207,7 +174,7 @@ static void check_audio_bandwidth_hdmi(
 
 	samples /= 4;
 
-	/*check limitation*/
+	 
 	if (samples < 88200)
 		limit_freq_to_48_khz = true;
 	else if (samples < 96000)
@@ -218,7 +185,7 @@ static void check_audio_bandwidth_hdmi(
 		limit_freq_to_174_4_khz = true;
 
 	if (sample_rates != NULL) {
-		/* limit frequencies */
+		 
 		if (limit_freq_to_174_4_khz)
 			sample_rates->rate.RATE_192 = 0;
 
@@ -240,22 +207,22 @@ static void check_audio_bandwidth_hdmi(
 	}
 }
 
-/*For DP SST, calculate if specified sample rates can fit into a given timing */
+ 
 static void check_audio_bandwidth_dpsst(
 	const struct audio_crtc_info *crtc_info,
 	uint32_t channel_count,
 	union audio_sample_rates *sample_rates)
 {
-	/* do nothing */
+	 
 }
 
-/*For DP MST, calculate if specified sample rates can fit into a given timing */
+ 
 static void check_audio_bandwidth_dpmst(
 	const struct audio_crtc_info *crtc_info,
 	uint32_t channel_count,
 	union audio_sample_rates *sample_rates)
 {
-	/* do nothing  */
+	 
 }
 
 static void check_audio_bandwidth(
@@ -283,14 +250,14 @@ static void check_audio_bandwidth(
 	}
 }
 
-/* expose/not expose HBR capability to Audio driver */
+ 
 static void set_high_bit_rate_capable(
 	struct audio *audio,
 	bool capable)
 {
 	uint32_t value = 0;
 
-	/* set high bit rate audio capable*/
+	 
 	value = AZ_REG_READ(AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR);
 
 	set_reg_field_value(value, capable,
@@ -300,7 +267,7 @@ static void set_high_bit_rate_capable(
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR, value);
 }
 
-/* set video latency in ms/2+1 */
+ 
 static void set_video_latency(
 	struct audio *audio,
 	int latency_in_ms)
@@ -320,7 +287,7 @@ static void set_video_latency(
 		value);
 }
 
-/* set audio latency in ms/2+1 */
+ 
 static void set_audio_latency(
 	struct audio *audio,
 	int latency_in_ms)
@@ -413,10 +380,8 @@ void dce_aud_az_configure(
 			CLOCK_GATING_DISABLE);
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL, value);
 
-	/* Speaker Allocation */
-	/*
-	uint32_t value;
-	uint32_t field = 0;*/
+	 
+	 
 	value = AZ_REG_READ(AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER);
 
 	set_reg_field_value(value,
@@ -424,18 +389,12 @@ void dce_aud_az_configure(
 		AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
 		SPEAKER_ALLOCATION);
 
-	/* LFE_PLAYBACK_LEVEL = LFEPBL
-	 * LFEPBL = 0 : Unknown or refer to other information
-	 * LFEPBL = 1 : 0dB playback
-	 * LFEPBL = 2 : +10dB playback
-	 * LFE_BL = 3 : Reserved
-	 */
+	 
 	set_reg_field_value(value,
 		0,
 		AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
 		LFE_PLAYBACK_LEVEL);
-	/* todo: according to reg spec LFE_PLAYBACK_LEVEL is read only.
-	 *  why are we writing to it?  DCE8 does not write this */
+	 
 
 
 	set_reg_field_value(value,
@@ -459,7 +418,7 @@ void dce_aud_az_configure(
 		AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
 		EXTRA_CONNECTION_INFO);
 
-	/* set audio for output signal */
+	 
 	switch (signal) {
 	case SIGNAL_TYPE_HDMI_TYPE_A:
 		set_reg_field_value(value,
@@ -484,7 +443,7 @@ void dce_aud_az_configure(
 
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER, value);
 
-	/*  ACP Data - Supports AI  */
+	 
 	value = AZ_REG_READ(AZALIA_F0_CODEC_PIN_CONTROL_ACP_DATA);
 
 	set_reg_field_value(
@@ -495,21 +454,21 @@ void dce_aud_az_configure(
 
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_ACP_DATA, value);
 
-	/*  Audio Descriptors   */
-	/* pass through all formats */
+	 
+	 
 	for (format_index = 0; format_index < AUDIO_FORMAT_CODE_COUNT;
 			format_index++) {
 		audio_format_code =
 			(AUDIO_FORMAT_CODE_FIRST + format_index);
 
-		/* those are unsupported, skip programming */
+		 
 		if (audio_format_code == AUDIO_FORMAT_CODE_1BITAUDIO ||
 			audio_format_code == AUDIO_FORMAT_CODE_DST)
 			continue;
 
 		value = 0;
 
-		/* check if supported */
+		 
 		if (is_audio_format_supported(
 				audio_info, audio_format_code, &index)) {
 			const struct audio_mode *audio_mode =
@@ -519,7 +478,7 @@ void dce_aud_az_configure(
 			uint8_t byte2 = audio_mode->max_bit_rate;
 			uint8_t channel_count = audio_mode->channel_count;
 
-			/* adjust specific properties */
+			 
 			switch (audio_format_code) {
 			case AUDIO_FORMAT_CODE_LINEARPCM: {
 
@@ -551,7 +510,7 @@ void dce_aud_az_configure(
 				break;
 			}
 
-			/* fill audio format data */
+			 
 			set_reg_field_value(value,
 					channel_count - 1,
 					AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0,
@@ -566,19 +525,19 @@ void dce_aud_az_configure(
 					byte2,
 					AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0,
 					DESCRIPTOR_BYTE_2);
-		} /* if */
+		}  
 
 		AZ_REG_WRITE(
 				AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0 + format_index,
 				value);
-	} /* for */
+	}  
 
 	if (is_ac3_supported)
-		/* todo: this reg global.  why program global register? */
+		 
 		REG_WRITE(AZALIA_F0_CODEC_FUNCTION_PARAMETER_STREAM_FORMATS,
 				0x05);
 
-	/* check for 192khz/8-Ch support for HBR requirements */
+	 
 	sample_rate.all = 0;
 	sample_rate.rate.RATE_192 = 1;
 
@@ -590,7 +549,7 @@ void dce_aud_az_configure(
 
 	set_high_bit_rate_capable(audio, sample_rate.rate.RATE_192);
 
-	/* Audio and Video Lipsync */
+	 
 	set_video_latency(audio, audio_info->video_latency);
 	set_audio_latency(audio, audio_info->audio_latency);
 
@@ -608,7 +567,7 @@ void dce_aud_az_configure(
 
 	value = 0;
 
-	/*get display name string length */
+	 
 	while (audio_info->display_name[strlen++] != '\0') {
 		if (strlen >=
 		MAX_HW_AUDIO_INFO_DISPLAY_NAME_SIZE_IN_CHARS)
@@ -623,12 +582,7 @@ void dce_aud_az_configure(
 	DC_LOG_HW_AUDIO("\n\tAUDIO:az_configure: index: %u data, 0x%x, displayName %s: \n",
 		audio->inst, value, audio_info->display_name);
 
-	/*
-	*write the port ID:
-	*PORT_ID0 = display index
-	*PORT_ID1 = 16bit BDF
-	*(format MSB->LSB: 8bit Bus, 5bit Device, 3bit Function)
-	*/
+	 
 
 	value = 0;
 
@@ -645,7 +599,7 @@ void dce_aud_az_configure(
 
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3, value);
 
-	/*write the 18 char monitor string */
+	 
 
 	value = 0;
 	set_reg_field_value(value, audio_info->display_name[0],
@@ -740,23 +694,19 @@ void dce_aud_az_configure(
 	AZ_REG_WRITE(AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL, value);
 }
 
-/*
-* todo: wall clk related functionality probably belong to clock_src.
-*/
+ 
 
-/* search pixel clock value for Azalia HDMI Audio */
+ 
 static void get_azalia_clock_info_hdmi(
 	uint32_t crtc_pixel_clock_100hz,
 	uint32_t actual_pixel_clock_100Hz,
 	struct azalia_clock_info *azalia_clock_info)
 {
-	/* audio_dto_phase= 24 * 10,000;
-	 *   24MHz in [100Hz] units */
+	 
 	azalia_clock_info->audio_dto_phase =
 			24 * 10000;
 
-	/* audio_dto_module = PCLKFrequency * 10,000;
-	 *  [khz] -> [100Hz] */
+	 
 	azalia_clock_info->audio_dto_module =
 			actual_pixel_clock_100Hz;
 }
@@ -766,17 +716,12 @@ static void get_azalia_clock_info_dp(
 	const struct audio_pll_info *pll_info,
 	struct azalia_clock_info *azalia_clock_info)
 {
-	/* Reported dpDtoSourceClockInkhz value for
-	 * DCE8 already adjusted for SS, do not need any
-	 * adjustment here anymore
-	 */
+	 
 
-	/*audio_dto_phase = 24 * 10,000;
-	 * 24MHz in [100Hz] units */
+	 
 	azalia_clock_info->audio_dto_phase = 24 * 10000;
 
-	/*audio_dto_module = dpDtoSourceClockInkhz * 10,000;
-	 *  [khz] ->[100Hz] */
+	 
 	azalia_clock_info->audio_dto_module =
 		pll_info->dp_dto_source_clock_in_khz * 10;
 }
@@ -794,12 +739,9 @@ void dce_aud_wall_dto_setup(
 	if (dc_is_hdmi_tmds_signal(signal)) {
 		uint32_t src_sel;
 
-		/*DTO0 Programming goal:
-		-generate 24MHz, 128*Fs from 24MHz
-		-use DTO0 when an active HDMI port is connected
-		(optionally a DP is connected) */
+		 
 
-		/* calculate DTO settings */
+		 
 		get_azalia_clock_info_hdmi(
 			crtc_info->requested_pixel_clock_100Hz,
 			crtc_info->calculated_pixel_clock_100Hz,
@@ -813,56 +755,38 @@ void dce_aud_wall_dto_setup(
 				clock_info.audio_dto_module,\
 				clock_info.audio_dto_phase);
 
-		/* On TN/SI, Program DTO source select and DTO select before
-		programming DTO modulo and DTO phase. These bits must be
-		programmed first, otherwise there will be no HDMI audio at boot
-		up. This is a HW sequence change (different from old ASICs).
-		Caution when changing this programming sequence.
-
-		HDMI enabled, using DTO0
-		program master CRTC for DTO0 */
+		 
 		src_sel = pll_info->dto_source - DTO_SOURCE_ID0;
 		REG_UPDATE_2(DCCG_AUDIO_DTO_SOURCE,
 			DCCG_AUDIO_DTO0_SOURCE_SEL, src_sel,
 			DCCG_AUDIO_DTO_SEL, 0);
 
-		/* module */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO0_MODULE,
 			DCCG_AUDIO_DTO0_MODULE, clock_info.audio_dto_module);
 
-		/* phase */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO0_PHASE,
 			DCCG_AUDIO_DTO0_PHASE, clock_info.audio_dto_phase);
 	} else {
-		/*DTO1 Programming goal:
-		-generate 24MHz, 512*Fs, 128*Fs from 24MHz
-		-default is to used DTO1, and switch to DTO0 when an audio
-		master HDMI port is connected
-		-use as default for DP
-
-		calculate DTO settings */
+		 
 		get_azalia_clock_info_dp(
 			crtc_info->requested_pixel_clock_100Hz,
 			pll_info,
 			&clock_info);
 
-		/* Program DTO select before programming DTO modulo and DTO
-		phase. default to use DTO1 */
+		 
 
 		REG_UPDATE(DCCG_AUDIO_DTO_SOURCE,
 				DCCG_AUDIO_DTO_SEL, 1);
 
-			/* DCCG_AUDIO_DTO2_USE_512FBR_DTO, 1)
-			 * Select 512fs for DP TODO: web register definition
-			 * does not match register header file
-			 * DCE11 version it's commented out while DCE8 it's set to 1
-			*/
+			 
 
-		/* module */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO1_MODULE,
 				DCCG_AUDIO_DTO1_MODULE, clock_info.audio_dto_module);
 
-		/* phase */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO1_PHASE,
 				DCCG_AUDIO_DTO1_PHASE, clock_info.audio_dto_phase);
 
@@ -886,12 +810,9 @@ static void dce60_aud_wall_dto_setup(
 	if (dc_is_hdmi_signal(signal)) {
 		uint32_t src_sel;
 
-		/*DTO0 Programming goal:
-		-generate 24MHz, 128*Fs from 24MHz
-		-use DTO0 when an active HDMI port is connected
-		(optionally a DP is connected) */
+		 
 
-		/* calculate DTO settings */
+		 
 		get_azalia_clock_info_hdmi(
 			crtc_info->requested_pixel_clock_100Hz,
 			crtc_info->calculated_pixel_clock_100Hz,
@@ -905,60 +826,42 @@ static void dce60_aud_wall_dto_setup(
 				clock_info.audio_dto_module,\
 				clock_info.audio_dto_phase);
 
-		/* On TN/SI, Program DTO source select and DTO select before
-		programming DTO modulo and DTO phase. These bits must be
-		programmed first, otherwise there will be no HDMI audio at boot
-		up. This is a HW sequence change (different from old ASICs).
-		Caution when changing this programming sequence.
-
-		HDMI enabled, using DTO0
-		program master CRTC for DTO0 */
+		 
 		src_sel = pll_info->dto_source - DTO_SOURCE_ID0;
 		REG_UPDATE_2(DCCG_AUDIO_DTO_SOURCE,
 			DCCG_AUDIO_DTO0_SOURCE_SEL, src_sel,
 			DCCG_AUDIO_DTO_SEL, 0);
 
-		/* module */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO0_MODULE,
 			DCCG_AUDIO_DTO0_MODULE, clock_info.audio_dto_module);
 
-		/* phase */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO0_PHASE,
 			DCCG_AUDIO_DTO0_PHASE, clock_info.audio_dto_phase);
 	} else {
-		/*DTO1 Programming goal:
-		-generate 24MHz, 128*Fs from 24MHz (DCE6 does not support 512*Fs)
-		-default is to used DTO1, and switch to DTO0 when an audio
-		master HDMI port is connected
-		-use as default for DP
-
-		calculate DTO settings */
+		 
 		get_azalia_clock_info_dp(
 			crtc_info->requested_pixel_clock_100Hz,
 			pll_info,
 			&clock_info);
 
-		/* Program DTO select before programming DTO modulo and DTO
-		phase. default to use DTO1 */
+		 
 
 		REG_UPDATE(DCCG_AUDIO_DTO_SOURCE,
 				DCCG_AUDIO_DTO_SEL, 1);
 
-			/* DCCG_AUDIO_DTO2_USE_512FBR_DTO, 1)
-			 * Cannot select 512fs for DP
-			 *
-			 * DCE6 has no DCCG_AUDIO_DTO2_USE_512FBR_DTO mask
-			*/
+			 
 
-		/* module */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO1_MODULE,
 				DCCG_AUDIO_DTO1_MODULE, clock_info.audio_dto_module);
 
-		/* phase */
+		 
 		REG_UPDATE(DCCG_AUDIO_DTO1_PHASE,
 				DCCG_AUDIO_DTO1_PHASE, clock_info.audio_dto_phase);
 
-		/* DCE6 has no DCCG_AUDIO_DTO2_USE_512FBR_DTO mask in DCCG_AUDIO_DTO_SOURCE reg */
+		 
 
 	}
 }
@@ -979,23 +882,19 @@ static bool dce_aud_endpoint_valid(struct audio *audio)
 	return !(port_connectivity == 1);
 }
 
-/* initialize HW state */
+ 
 void dce_aud_hw_init(
 		struct audio *audio)
 {
 	uint32_t value;
 	struct dce_audio *aud = DCE_AUD(audio);
 
-	/* we only need to program the following registers once, so we only do
-	it for the inst 0*/
+	 
 	if (audio->inst != 0)
 		return;
 
-	/* Suport R5 - 32khz
-	 * Suport R6 - 44.1khz
-	 * Suport R7 - 48khz
-	 */
-	/*disable clock gating before write to endpoint register*/
+	 
+	 
 	value = AZ_REG_READ(AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL);
 	set_reg_field_value(value, 1,
 			AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL,
@@ -1004,7 +903,7 @@ void dce_aud_hw_init(
 	REG_UPDATE(AZALIA_F0_CODEC_FUNCTION_PARAMETER_SUPPORTED_SIZE_RATES,
 			AUDIO_RATE_CAPABILITIES, 0x70);
 
-	/*Keep alive bit to verify HW block in BU. */
+	 
 	REG_UPDATE_2(AZALIA_F0_CODEC_FUNCTION_PARAMETER_POWER_STATES,
 			CLKSTOP, 1,
 			EPSS, 1);

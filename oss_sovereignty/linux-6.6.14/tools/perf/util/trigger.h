@@ -1,26 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __TRIGGER_H_
 #define __TRIGGER_H_ 1
 
 #include "asm/bug.h"
 
-/*
- * Use trigger to model operations which need to be executed when
- * an event (a signal, for example) is observed.
- *
- * States and transits:
- *
- *
- *  OFF--> ON --> READY --(hit)--> HIT
- *                 ^               |
- *                 |            (ready)
- *                 |               |
- *                  \_____________/
- *
- * is_hit and is_ready are two key functions to query the state of
- * a trigger. is_hit means the event already happen; is_ready means the
- * trigger is waiting for the event.
- */
+ 
 
 struct trigger {
 	volatile enum {

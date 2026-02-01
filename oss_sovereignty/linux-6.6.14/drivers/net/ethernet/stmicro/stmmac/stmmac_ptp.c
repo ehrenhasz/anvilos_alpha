@@ -1,26 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  PTP 1588 clock using the STMMAC.
 
-  Copyright (C) 2013  Vayavya Labs Pvt Ltd
-
-
-  Author: Rayagond Kokatanur <rayagond@vayavyalabs.com>
-*******************************************************************************/
+ 
 #include "stmmac.h"
 #include "stmmac_ptp.h"
 #include "dwmac4.h"
 
-/**
- * stmmac_adjust_freq
- *
- * @ptp: pointer to ptp_clock_info structure
- * @scaled_ppm: desired period change in scaled parts per million
- *
- * Description: this function will adjust the frequency of hardware clock.
- *
- * Scaled parts per million is ppm with a 16-bit binary fractional field.
- */
+ 
 static int stmmac_adjust_freq(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct stmmac_priv *priv =
@@ -37,14 +21,7 @@ static int stmmac_adjust_freq(struct ptp_clock_info *ptp, long scaled_ppm)
 	return 0;
 }
 
-/**
- * stmmac_adjust_time
- *
- * @ptp: pointer to ptp_clock_info structure
- * @delta: desired change in nanoseconds
- *
- * Description: this function will shift/adjust the hardware clock time.
- */
+ 
 static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 {
 	struct stmmac_priv *priv =
@@ -67,7 +44,7 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 	sec = quotient;
 	nsec = reminder;
 
-	/* If EST is enabled, disabled it before adjust ptp time. */
+	 
 	if (priv->plat->est && priv->plat->est->enable) {
 		est_rst = true;
 		mutex_lock(&priv->plat->est->lock);
@@ -81,7 +58,7 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 	stmmac_adjust_systime(priv, priv->ptpaddr, sec, nsec, neg_adj, xmac);
 	write_unlock_irqrestore(&priv->ptp_lock, flags);
 
-	/* Caculate new basetime and re-configured EST after PTP time adjust. */
+	 
 	if (est_rst) {
 		struct timespec64 current_time, time;
 		ktime_t current_time_ns, basetime;
@@ -112,15 +89,7 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 	return 0;
 }
 
-/**
- * stmmac_get_time
- *
- * @ptp: pointer to ptp_clock_info structure
- * @ts: pointer to hold time/result
- *
- * Description: this function will read the current time from the
- * hardware clock and store it in @ts.
- */
+ 
 static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec64 *ts)
 {
 	struct stmmac_priv *priv =
@@ -137,15 +106,7 @@ static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec64 *ts)
 	return 0;
 }
 
-/**
- * stmmac_set_time
- *
- * @ptp: pointer to ptp_clock_info structure
- * @ts: time value to set
- *
- * Description: this function will set the current time on the
- * hardware clock.
- */
+ 
 static int stmmac_set_time(struct ptp_clock_info *ptp,
 			   const struct timespec64 *ts)
 {
@@ -173,7 +134,7 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
 
 	switch (rq->type) {
 	case PTP_CLK_REQ_PEROUT:
-		/* Reject requests with unsupported flags */
+		 
 		if (rq->perout.flags)
 			return -EOPNOTSUPP;
 
@@ -200,7 +161,7 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
 		acr_value = readl(ptpaddr + PTP_ACR);
 		acr_value &= ~PTP_ACR_MASK;
 		if (on) {
-			/* Enable External snapshot trigger */
+			 
 			acr_value |= priv->plat->ext_snapshot_num;
 			acr_value |= PTP_ACR_ATSFC;
 			netdev_dbg(priv->dev, "Auxiliary Snapshot %d enabled.\n",
@@ -213,7 +174,7 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
 		}
 		writel(acr_value, ptpaddr + PTP_ACR);
 		mutex_unlock(&priv->aux_ts_lock);
-		/* wait for auxts fifo clear to finish */
+		 
 		ret = readl_poll_timeout(ptpaddr + PTP_ACR, acr_value,
 					 !(acr_value & PTP_ACR_ATSFC),
 					 10, 10000);
@@ -226,14 +187,7 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
 	return ret;
 }
 
-/**
- * stmmac_get_syncdevicetime
- * @device: current device time
- * @system: system counter value read synchronously with device time
- * @ctx: context provided by timekeeping code
- * Description: Read device and system clock simultaneously and return the
- * corrected clock values in ns.
- **/
+ 
 static int stmmac_get_syncdevicetime(ktime_t *device,
 				     struct system_counterval_t *system,
 				     void *ctx)
@@ -256,14 +210,14 @@ static int stmmac_getcrosststamp(struct ptp_clock_info *ptp,
 					     priv, NULL, xtstamp);
 }
 
-/* structure describing a PTP hardware clock */
+ 
 static struct ptp_clock_info stmmac_ptp_clock_ops = {
 	.owner = THIS_MODULE,
 	.name = "stmmac ptp",
 	.max_adj = 62500000,
 	.n_alarm = 0,
-	.n_ext_ts = 0, /* will be overwritten in stmmac_ptp_register */
-	.n_per_out = 0, /* will be overwritten in stmmac_ptp_register */
+	.n_ext_ts = 0,  
+	.n_per_out = 0,  
 	.n_pins = 0,
 	.pps = 0,
 	.adjfine = stmmac_adjust_freq,
@@ -274,12 +228,7 @@ static struct ptp_clock_info stmmac_ptp_clock_ops = {
 	.getcrosststamp = stmmac_getcrosststamp,
 };
 
-/**
- * stmmac_ptp_register
- * @priv: driver private structure
- * Description: this function will register the ptp clock driver
- * to kernel. It also does some house keeping work.
- */
+ 
 void stmmac_ptp_register(struct stmmac_priv *priv)
 {
 	int i;
@@ -293,7 +242,7 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
 	if (priv->plat->ptp_max_adj)
 		stmmac_ptp_clock_ops.max_adj = priv->plat->ptp_max_adj;
 
-	/* Calculate the clock domain crossing (CDC) error if necessary */
+	 
 	priv->plat->cdc_error_adj = 0;
 	if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate)
 		priv->plat->cdc_error_adj = (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
@@ -314,12 +263,7 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
 		netdev_info(priv->dev, "registered PTP clock\n");
 }
 
-/**
- * stmmac_ptp_unregister
- * @priv: driver private structure
- * Description: this function will remove/unregister the ptp clock driver
- * from the kernel.
- */
+ 
 void stmmac_ptp_unregister(struct stmmac_priv *priv)
 {
 	if (priv->ptp_clock) {

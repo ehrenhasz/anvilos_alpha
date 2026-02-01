@@ -1,47 +1,13 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2010,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1995                    *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Juergen Pfeifer                         1996-1999,2008          *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/* panel.c -- implementation of panels library, some core routines */
+ 
 #include "panel.priv.h"
 
 MODULE_ID("$Id: panel.c,v 1.30 2020/09/26 18:05:17 tom Exp $")
 
-/*+-------------------------------------------------------------------------
-	_nc_retrace_panel (pan)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(PANEL *)
 _nc_retrace_panel(PANEL * pan)
@@ -51,9 +17,7 @@ _nc_retrace_panel(PANEL * pan)
 }
 #endif
 
-/*+-------------------------------------------------------------------------
-	_nc_my_visbuf(ptr)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 #ifndef TRACE_TXT
 PANEL_EXPORT(const char *)
@@ -70,9 +34,7 @@ _nc_my_visbuf(const void *ptr, int n)
 #endif
 #endif
 
-/*+-------------------------------------------------------------------------
-	dPanel(text,pan)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(void)
 _nc_dPanel(const char *text, const PANEL * pan)
@@ -85,9 +47,7 @@ _nc_dPanel(const char *text, const PANEL * pan)
 }
 #endif
 
-/*+-------------------------------------------------------------------------
-	dStack(fmt,num,pan)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(void)
 _nc_dStack(const char *fmt, int num, const PANEL * pan)
@@ -111,9 +71,7 @@ _nc_dStack(const char *fmt, int num, const PANEL * pan)
 }
 #endif
 
-/*+-------------------------------------------------------------------------
-	Wnoutrefresh(pan) - debugging hook for wnoutrefresh
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(void)
 _nc_Wnoutrefresh(const PANEL * pan)
@@ -123,9 +81,7 @@ _nc_Wnoutrefresh(const PANEL * pan)
 }
 #endif
 
-/*+-------------------------------------------------------------------------
-	Touchpan(pan)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(void)
 _nc_Touchpan(const PANEL * pan)
@@ -135,9 +91,7 @@ _nc_Touchpan(const PANEL * pan)
 }
 #endif
 
-/*+-------------------------------------------------------------------------
-	Touchline(pan,start,count)
---------------------------------------------------------------------------*/
+ 
 #ifdef TRACE
 PANEL_EXPORT(void)
 _nc_Touchline(const PANEL * pan, int start, int count)
@@ -152,7 +106,7 @@ _nc_Touchline(const PANEL * pan, int start, int count)
 
 #ifndef TRACE
 #  ifndef __GNUC__
-     /* Some C compilers need something defined in a source file */
+      
 extern void _nc_dummy_panel(void);
 void
 _nc_dummy_panel(void)

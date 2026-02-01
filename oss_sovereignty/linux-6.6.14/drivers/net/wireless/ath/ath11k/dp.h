@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_DP_H
 #define ATH11K_DP_H
@@ -26,7 +23,7 @@ struct dp_rx_tid {
 	u32 ba_win_sz;
 	bool active;
 
-	/* Info related to rx fragments */
+	 
 	u32 cur_sn;
 	u16 last_frag_no;
 	u16 rx_frag_bitmap;
@@ -34,7 +31,7 @@ struct dp_rx_tid {
 	struct sk_buff_head rx_frags;
 	struct hal_reo_dest_ring *dst_ring_desc;
 
-	/* Timer info related to fragments */
+	 
 	struct timer_list frag_timer;
 	struct ath11k_base *ab;
 };
@@ -71,7 +68,7 @@ struct dp_srng {
 struct dp_rxdma_ring {
 	struct dp_srng refill_buf_ring;
 	struct idr bufs_idr;
-	/* Protects bufs_idr */
+	 
 	spinlock_t idr_lock;
 	int bufs_max;
 };
@@ -83,7 +80,7 @@ struct dp_tx_ring {
 	struct dp_srng tcl_data_ring;
 	struct dp_srng tcl_comp_ring;
 	struct idr txbuf_idr;
-	/* Protects txbuf_idr and num_pending */
+	 
 	spinlock_t tx_idr_lock;
 	struct hal_wbm_release_ring *tx_status;
 	int tx_status_head;
@@ -91,15 +88,15 @@ struct dp_tx_ring {
 };
 
 enum dp_mon_status_buf_state {
-	/* PPDU id matches in dst ring and status ring */
+	 
 	DP_MON_STATUS_MATCH,
-	/* status ring dma is not done */
+	 
 	DP_MON_STATUS_NO_DMA,
-	/* status ring is lagging, reap status ring */
+	 
 	DP_MON_STATUS_LAG,
-	/* status ring is leading, reap dst ring and drop */
+	 
 	DP_MON_STATUS_LEAD,
-	/* replinish monitor status ring */
+	 
 	DP_MON_STATUS_REPLINISH,
 };
 
@@ -134,7 +131,7 @@ struct dp_link_desc_bank {
 	u32 size;
 };
 
-/* Size to enforce scatter idle list mode */
+ 
 #define DP_LINK_DESC_ALLOC_SIZE_THRESH 0x200000
 #define DP_LINK_DESC_BANKS_MAX 8
 
@@ -163,7 +160,7 @@ struct ath11k_mon_data {
 	struct dp_full_mon_mpdu *mon_mpdu;
 	struct hal_sw_mon_ring_entries sw_mon_entries;
 	struct ath11k_pdev_mon_stats rx_mon_stats;
-	/* lock for monitor data */
+	 
 	spinlock_t mon_lock;
 	struct sk_buff_head rx_status_q;
 };
@@ -193,7 +190,7 @@ struct ath11k_pdev_dp {
 #define DP_AVG_MPDUS_PER_TID_MAX 128
 #define DP_AVG_MSDUS_PER_MPDU 4
 
-#define DP_RX_HASH_ENABLE	1 /* Enable hash based Rx steering */
+#define DP_RX_HASH_ENABLE	1  
 
 #define DP_BA_WIN_SZ_MAX	256
 
@@ -277,35 +274,30 @@ struct ath11k_dp {
 	struct list_head reo_cmd_cache_flush_list;
 	struct list_head dp_full_mon_mpdu_list;
 	u32 reo_cmd_cache_flush_count;
-	/**
-	 * protects access to below fields,
-	 * - reo_cmd_list
-	 * - reo_cmd_cache_flush_list
-	 * - reo_cmd_cache_flush_count
-	 */
+	 
 	spinlock_t reo_cmd_lock;
 	struct ath11k_hp_update_timer reo_cmd_timer;
 	struct ath11k_hp_update_timer tx_ring_timer[DP_TCL_NUM_RING_MAX];
 };
 
-/* HTT definitions */
+ 
 
 #define HTT_TCL_META_DATA_TYPE			BIT(0)
 #define HTT_TCL_META_DATA_VALID_HTT		BIT(1)
 
-/* vdev meta data */
+ 
 #define HTT_TCL_META_DATA_VDEV_ID		GENMASK(9, 2)
 #define HTT_TCL_META_DATA_PDEV_ID		GENMASK(11, 10)
 #define HTT_TCL_META_DATA_HOST_INSPECTED	BIT(12)
 
-/* peer meta data */
+ 
 #define HTT_TCL_META_DATA_PEER_ID		GENMASK(15, 2)
 
 #define HTT_TX_WBM_COMP_STATUS_OFFSET 8
 
 #define HTT_INVALID_PEER_ID	0xffff
 
-/* HTT tx completion is overlaid in wbm_release_ring */
+ 
 #define HTT_TX_WBM_COMP_INFO0_STATUS		GENMASK(12, 9)
 #define HTT_TX_WBM_COMP_INFO0_REINJECT_REASON	GENMASK(16, 13)
 #define HTT_TX_WBM_COMP_INFO0_REINJECT_REASON	GENMASK(16, 13)
@@ -353,132 +345,7 @@ enum htt_srng_ring_id {
 	HTT_RXDMA_NON_MONITOR_DEST_RING,
 };
 
-/* host -> target  HTT_SRING_SETUP message
- *
- * After target is booted up, Host can send SRING setup message for
- * each host facing LMAC SRING. Target setups up HW registers based
- * on setup message and confirms back to Host if response_required is set.
- * Host should wait for confirmation message before sending new SRING
- * setup message
- *
- * The message would appear as follows:
- *
- * |31            24|23    20|19|18 16|15|14          8|7                0|
- * |--------------- +-----------------+----------------+------------------|
- * |    ring_type   |      ring_id    |    pdev_id     |     msg_type     |
- * |----------------------------------------------------------------------|
- * |                          ring_base_addr_lo                           |
- * |----------------------------------------------------------------------|
- * |                         ring_base_addr_hi                            |
- * |----------------------------------------------------------------------|
- * |ring_misc_cfg_flag|ring_entry_size|            ring_size              |
- * |----------------------------------------------------------------------|
- * |                         ring_head_offset32_remote_addr_lo            |
- * |----------------------------------------------------------------------|
- * |                         ring_head_offset32_remote_addr_hi            |
- * |----------------------------------------------------------------------|
- * |                         ring_tail_offset32_remote_addr_lo            |
- * |----------------------------------------------------------------------|
- * |                         ring_tail_offset32_remote_addr_hi            |
- * |----------------------------------------------------------------------|
- * |                          ring_msi_addr_lo                            |
- * |----------------------------------------------------------------------|
- * |                          ring_msi_addr_hi                            |
- * |----------------------------------------------------------------------|
- * |                          ring_msi_data                               |
- * |----------------------------------------------------------------------|
- * |         intr_timer_th            |IM|      intr_batch_counter_th     |
- * |----------------------------------------------------------------------|
- * |          reserved        |RR|PTCF|        intr_low_threshold         |
- * |----------------------------------------------------------------------|
- * Where
- *     IM = sw_intr_mode
- *     RR = response_required
- *     PTCF = prefetch_timer_cfg
- *
- * The message is interpreted as follows:
- * dword0  - b'0:7   - msg_type: This will be set to
- *                     HTT_H2T_MSG_TYPE_SRING_SETUP
- *           b'8:15  - pdev_id:
- *                     0 (for rings at SOC/UMAC level),
- *                     1/2/3 mac id (for rings at LMAC level)
- *           b'16:23 - ring_id: identify which ring is to setup,
- *                     more details can be got from enum htt_srng_ring_id
- *           b'24:31 - ring_type: identify type of host rings,
- *                     more details can be got from enum htt_srng_ring_type
- * dword1  - b'0:31  - ring_base_addr_lo: Lower 32bits of ring base address
- * dword2  - b'0:31  - ring_base_addr_hi: Upper 32bits of ring base address
- * dword3  - b'0:15  - ring_size: size of the ring in unit of 4-bytes words
- *           b'16:23 - ring_entry_size: Size of each entry in 4-byte word units
- *           b'24:31 - ring_misc_cfg_flag: Valid only for HW_TO_SW_RING and
- *                     SW_TO_HW_RING.
- *                     Refer to HTT_SRING_SETUP_RING_MISC_CFG_RING defs.
- * dword4  - b'0:31  - ring_head_off32_remote_addr_lo:
- *                     Lower 32 bits of memory address of the remote variable
- *                     storing the 4-byte word offset that identifies the head
- *                     element within the ring.
- *                     (The head offset variable has type u32.)
- *                     Valid for HW_TO_SW and SW_TO_SW rings.
- * dword5  - b'0:31  - ring_head_off32_remote_addr_hi:
- *                     Upper 32 bits of memory address of the remote variable
- *                     storing the 4-byte word offset that identifies the head
- *                     element within the ring.
- *                     (The head offset variable has type u32.)
- *                     Valid for HW_TO_SW and SW_TO_SW rings.
- * dword6  - b'0:31  - ring_tail_off32_remote_addr_lo:
- *                     Lower 32 bits of memory address of the remote variable
- *                     storing the 4-byte word offset that identifies the tail
- *                     element within the ring.
- *                     (The tail offset variable has type u32.)
- *                     Valid for HW_TO_SW and SW_TO_SW rings.
- * dword7  - b'0:31  - ring_tail_off32_remote_addr_hi:
- *                     Upper 32 bits of memory address of the remote variable
- *                     storing the 4-byte word offset that identifies the tail
- *                     element within the ring.
- *                     (The tail offset variable has type u32.)
- *                     Valid for HW_TO_SW and SW_TO_SW rings.
- * dword8  - b'0:31  - ring_msi_addr_lo: Lower 32bits of MSI cfg address
- *                     valid only for HW_TO_SW_RING and SW_TO_HW_RING
- * dword9  - b'0:31  - ring_msi_addr_hi: Upper 32bits of MSI cfg address
- *                     valid only for HW_TO_SW_RING and SW_TO_HW_RING
- * dword10 - b'0:31  - ring_msi_data: MSI data
- *                     Refer to HTT_SRING_SETUP_RING_MSC_CFG_xxx defs
- *                     valid only for HW_TO_SW_RING and SW_TO_HW_RING
- * dword11 - b'0:14  - intr_batch_counter_th:
- *                     batch counter threshold is in units of 4-byte words.
- *                     HW internally maintains and increments batch count.
- *                     (see SRING spec for detail description).
- *                     When batch count reaches threshold value, an interrupt
- *                     is generated by HW.
- *           b'15    - sw_intr_mode:
- *                     This configuration shall be static.
- *                     Only programmed at power up.
- *                     0: generate pulse style sw interrupts
- *                     1: generate level style sw interrupts
- *           b'16:31 - intr_timer_th:
- *                     The timer init value when timer is idle or is
- *                     initialized to start downcounting.
- *                     In 8us units (to cover a range of 0 to 524 ms)
- * dword12 - b'0:15  - intr_low_threshold:
- *                     Used only by Consumer ring to generate ring_sw_int_p.
- *                     Ring entries low threshold water mark, that is used
- *                     in combination with the interrupt timer as well as
- *                     the clearing of the level interrupt.
- *           b'16:18 - prefetch_timer_cfg:
- *                     Used only by Consumer ring to set timer mode to
- *                     support Application prefetch handling.
- *                     The external tail offset/pointer will be updated
- *                     at following intervals:
- *                     3'b000: (Prefetch feature disabled; used only for debug)
- *                     3'b001: 1 usec
- *                     3'b010: 4 usec
- *                     3'b011: 8 usec (default)
- *                     3'b100: 16 usec
- *                     Others: Reserved
- *           b'19    - response_required:
- *                     Host needs HTT_T2H_MSG_TYPE_SRING_SETUP_DONE as response
- *           b'20:31 - reserved:  reserved for future use
- */
+ 
 
 #define HTT_SRNG_SETUP_CMD_INFO0_MSG_TYPE	GENMASK(7, 0)
 #define HTT_SRNG_SETUP_CMD_INFO0_PDEV_ID	GENMASK(15, 8)
@@ -516,38 +383,7 @@ struct htt_srng_setup_cmd {
 	u32 info2;
 } __packed;
 
-/* host -> target FW  PPDU_STATS config message
- *
- * @details
- * The following field definitions describe the format of the HTT host
- * to target FW for PPDU_STATS_CFG msg.
- * The message allows the host to configure the PPDU_STATS_IND messages
- * produced by the target.
- *
- * |31          24|23          16|15           8|7            0|
- * |-----------------------------------------------------------|
- * |    REQ bit mask             |   pdev_mask  |   msg type   |
- * |-----------------------------------------------------------|
- * Header fields:
- *  - MSG_TYPE
- *    Bits 7:0
- *    Purpose: identifies this is a req to configure ppdu_stats_ind from target
- *    Value: 0x11
- *  - PDEV_MASK
- *    Bits 8:15
- *    Purpose: identifies which pdevs this PPDU stats configuration applies to
- *    Value: This is a overloaded field, refer to usage and interpretation of
- *           PDEV in interface document.
- *           Bit   8    :  Reserved for SOC stats
- *           Bit 9 - 15 :  Indicates PDEV_MASK in DBDC
- *                         Indicates MACID_MASK in DBS
- *  - REQ_TLV_BIT_MASK
- *    Bits 16:31
- *    Purpose: each set bit indicates the corresponding PPDU stats TLV type
- *        needs to be included in the target's PPDU_STATS_IND messages.
- *    Value: refer htt_ppdu_stats_tlv_tag_t <<<???
- *
- */
+ 
 
 struct htt_ppdu_stats_cfg_cmd {
 	u32 msg;
@@ -574,7 +410,7 @@ enum htt_ppdu_stats_tag_type {
 	HTT_PPDU_STATS_TAG_INFO,
 	HTT_PPDU_STATS_TAG_TX_MGMTCTRL_PAYLOAD,
 
-	/* New TLV's are added above to this line */
+	 
 	HTT_PPDU_STATS_TAG_MAX,
 };
 
@@ -595,75 +431,7 @@ enum htt_ppdu_stats_tag_type {
 				    BIT(HTT_PPDU_STATS_TAG_TX_MGMTCTRL_PAYLOAD) | \
 				    HTT_PPDU_STATS_TAG_DEFAULT)
 
-/* HTT_H2T_MSG_TYPE_RX_RING_SELECTION_CFG Message
- *
- * details:
- *    HTT_H2T_MSG_TYPE_RX_RING_SELECTION_CFG message is sent by host to
- *    configure RXDMA rings.
- *    The configuration is per ring based and includes both packet subtypes
- *    and PPDU/MPDU TLVs.
- *
- *    The message would appear as follows:
- *
- *    |31       26|25|24|23            16|15             8|7             0|
- *    |-----------------+----------------+----------------+---------------|
- *    |   rsvd1   |PS|SS|     ring_id    |     pdev_id    |    msg_type   |
- *    |-------------------------------------------------------------------|
- *    |              rsvd2               |           ring_buffer_size     |
- *    |-------------------------------------------------------------------|
- *    |                        packet_type_enable_flags_0                 |
- *    |-------------------------------------------------------------------|
- *    |                        packet_type_enable_flags_1                 |
- *    |-------------------------------------------------------------------|
- *    |                        packet_type_enable_flags_2                 |
- *    |-------------------------------------------------------------------|
- *    |                        packet_type_enable_flags_3                 |
- *    |-------------------------------------------------------------------|
- *    |                         tlv_filter_in_flags                       |
- *    |-------------------------------------------------------------------|
- * Where:
- *     PS = pkt_swap
- *     SS = status_swap
- * The message is interpreted as follows:
- * dword0 - b'0:7   - msg_type: This will be set to
- *                    HTT_H2T_MSG_TYPE_RX_RING_SELECTION_CFG
- *          b'8:15  - pdev_id:
- *                    0 (for rings at SOC/UMAC level),
- *                    1/2/3 mac id (for rings at LMAC level)
- *          b'16:23 - ring_id : Identify the ring to configure.
- *                    More details can be got from enum htt_srng_ring_id
- *          b'24    - status_swap: 1 is to swap status TLV
- *          b'25    - pkt_swap:  1 is to swap packet TLV
- *          b'26:31 - rsvd1:  reserved for future use
- * dword1 - b'0:16  - ring_buffer_size: size of buffers referenced by rx ring,
- *                    in byte units.
- *                    Valid only for HW_TO_SW_RING and SW_TO_HW_RING
- *        - b'16:31 - rsvd2: Reserved for future use
- * dword2 - b'0:31  - packet_type_enable_flags_0:
- *                    Enable MGMT packet from 0b0000 to 0b1001
- *                    bits from low to high: FP, MD, MO - 3 bits
- *                        FP: Filter_Pass
- *                        MD: Monitor_Direct
- *                        MO: Monitor_Other
- *                    10 mgmt subtypes * 3 bits -> 30 bits
- *                    Refer to PKT_TYPE_ENABLE_FLAG0_xxx_MGMT_xxx defs
- * dword3 - b'0:31  - packet_type_enable_flags_1:
- *                    Enable MGMT packet from 0b1010 to 0b1111
- *                    bits from low to high: FP, MD, MO - 3 bits
- *                    Refer to PKT_TYPE_ENABLE_FLAG1_xxx_MGMT_xxx defs
- * dword4 - b'0:31 -  packet_type_enable_flags_2:
- *                    Enable CTRL packet from 0b0000 to 0b1001
- *                    bits from low to high: FP, MD, MO - 3 bits
- *                    Refer to PKT_TYPE_ENABLE_FLAG2_xxx_CTRL_xxx defs
- * dword5 - b'0:31  - packet_type_enable_flags_3:
- *                    Enable CTRL packet from 0b1010 to 0b1111,
- *                    MCAST_DATA, UCAST_DATA, NULL_DATA
- *                    bits from low to high: FP, MD, MO - 3 bits
- *                    Refer to PKT_TYPE_ENABLE_FLAG3_xxx_CTRL_xxx defs
- * dword6 - b'0:31 -  tlv_filter_in_flags:
- *                    Filter in Attention/MPDU/PPDU/Header/User tlvs
- *                    Refer to CFG_TLV_FILTER_IN_FLAG defs
- */
+ 
 
 #define HTT_RX_RING_SELECTION_CFG_CMD_INFO0_MSG_TYPE	GENMASK(7, 0)
 #define HTT_RX_RING_SELECTION_CFG_CMD_INFO0_PDEV_ID	GENMASK(15, 8)
@@ -986,11 +754,11 @@ struct htt_rx_ring_selection_cfg_cmd {
 } __packed;
 
 struct htt_rx_ring_tlv_filter {
-	u32 rx_filter; /* see htt_rx_filter_tlv_flags */
-	u32 pkt_filter_flags0; /* MGMT */
-	u32 pkt_filter_flags1; /* MGMT */
-	u32 pkt_filter_flags2; /* CTRL */
-	u32 pkt_filter_flags3; /* DATA */
+	u32 rx_filter;  
+	u32 pkt_filter_flags0;  
+	u32 pkt_filter_flags1;  
+	u32 pkt_filter_flags2;  
+	u32 pkt_filter_flags3;  
 };
 
 #define HTT_RX_FULL_MON_MODE_CFG_CMD_INFO0_MSG_TYPE	GENMASK(7, 0)
@@ -1001,12 +769,7 @@ struct htt_rx_ring_tlv_filter {
 #define HTT_RX_FULL_MON_MODE_CFG_CMD_CFG_NON_ZERO_MPDUS_END	BIT(2)
 #define HTT_RX_FULL_MON_MODE_CFG_CMD_CFG_RELEASE_RING		GENMASK(10, 3)
 
-/* Enumeration for full monitor mode destination ring select
- * 0 - REO destination ring select
- * 1 - FW destination ring select
- * 2 - SW destination ring select
- * 3 - Release destination ring select
- */
+ 
 enum htt_rx_full_mon_release_ring {
 	HTT_RX_MON_RING_REO,
 	HTT_RX_MON_RING_FW,
@@ -1019,7 +782,7 @@ struct htt_rx_full_monitor_mode_cfg_cmd {
 	u32 cfg;
 } __packed;
 
-/* HTT message target->host */
+ 
 
 enum htt_t2h_msg_type {
 	HTT_T2H_MSG_TYPE_VERSION_CONF,
@@ -1130,47 +893,7 @@ enum htt_backpressure_lmac_ringid {
 	HTT_SW_LMAC_RING_IDX_MAX,
 };
 
-/* ppdu stats
- *
- * @details
- * The following field definitions describe the format of the HTT target
- * to host ppdu stats indication message.
- *
- *
- * |31                         16|15   12|11   10|9      8|7            0 |
- * |----------------------------------------------------------------------|
- * |    payload_size             | rsvd  |pdev_id|mac_id  |    msg type   |
- * |----------------------------------------------------------------------|
- * |                          ppdu_id                                     |
- * |----------------------------------------------------------------------|
- * |                        Timestamp in us                               |
- * |----------------------------------------------------------------------|
- * |                          reserved                                    |
- * |----------------------------------------------------------------------|
- * |                    type-specific stats info                          |
- * |                     (see htt_ppdu_stats.h)                           |
- * |----------------------------------------------------------------------|
- * Header fields:
- *  - MSG_TYPE
- *    Bits 7:0
- *    Purpose: Identifies this is a PPDU STATS indication
- *             message.
- *    Value: 0x1d
- *  - mac_id
- *    Bits 9:8
- *    Purpose: mac_id of this ppdu_id
- *    Value: 0-3
- *  - pdev_id
- *    Bits 11:10
- *    Purpose: pdev_id of this ppdu_id
- *    Value: 0-3
- *     0 (for rings at SOC level),
- *     1/2/3 PDEV -> 0/1/2
- *  - payload_size
- *    Bits 31:16
- *    Purpose: total tlv size
- *    Value: payload_size in bytes
- */
+ 
 
 #define HTT_T2H_PPDU_STATS_INFO_PDEV_ID GENMASK(11, 10)
 #define HTT_T2H_PPDU_STATS_INFO_PAYLOAD_SIZE GENMASK(31, 16)
@@ -1197,13 +920,13 @@ enum HTT_PPDU_STATS_BW {
 	HTT_PPDU_STATS_BANDWIDTH_20MHZ  = 2,
 	HTT_PPDU_STATS_BANDWIDTH_40MHZ  = 3,
 	HTT_PPDU_STATS_BANDWIDTH_80MHZ  = 4,
-	HTT_PPDU_STATS_BANDWIDTH_160MHZ = 5, /* includes 80+80 */
+	HTT_PPDU_STATS_BANDWIDTH_160MHZ = 5,  
 	HTT_PPDU_STATS_BANDWIDTH_DYN    = 6,
 };
 
 #define HTT_PPDU_STATS_CMN_FLAGS_FRAME_TYPE_M	GENMASK(7, 0)
 #define HTT_PPDU_STATS_CMN_FLAGS_QUEUE_TYPE_M	GENMASK(15, 8)
-/* bw - HTT_PPDU_STATS_BW */
+ 
 #define HTT_PPDU_STATS_CMN_FLAGS_BW_M		GENMASK(19, 16)
 
 struct htt_ppdu_stats_common {
@@ -1211,15 +934,13 @@ struct htt_ppdu_stats_common {
 	u16 sched_cmdid;
 	u8 ring_id;
 	u8 num_users;
-	u32 flags; /* %HTT_PPDU_STATS_COMMON_FLAGS_*/
+	u32 flags;  
 	u32 chain_mask;
-	u32 fes_duration_us; /* frame exchange sequence */
+	u32 fes_duration_us;  
 	u32 ppdu_sch_eval_start_tstmp_us;
 	u32 ppdu_sch_end_tstmp_us;
 	u32 ppdu_start_tstmp_us;
-	/* BIT [15 :  0] - phy mode (WLAN_PHY_MODE) with which ppdu was transmitted
-	 * BIT [31 : 16] - bandwidth (in MHz) with which ppdu was transmitted
-	 */
+	 
 	u16 phy_mode;
 	u16 bw_mhz;
 } __packed;
@@ -1278,15 +999,15 @@ struct htt_ppdu_stats_user_rate {
 	u8 tid_num;
 	u8 reserved0;
 	u16 sw_peer_id;
-	u32 info0; /* %HTT_PPDU_STATS_USER_RATE_INFO0_*/
+	u32 info0;  
 	u16 ru_end;
 	u16 ru_start;
 	u16 resp_ru_end;
 	u16 resp_ru_start;
-	u32 info1; /* %HTT_PPDU_STATS_USER_RATE_INFO1_ */
-	u32 rate_flags; /* %HTT_PPDU_STATS_USER_RATE_FLAGS_ */
-	/* Note: resp_rate_info is only valid for if resp_type is UL */
-	u32 resp_rate_flags; /* %HTT_PPDU_STATS_USER_RATE_RESP_FLAGS_ */
+	u32 info1;  
+	u32 rate_flags;  
+	 
+	u32 resp_rate_flags;  
 } __packed;
 
 #define HTT_PPDU_STATS_TX_INFO_FLAGS_RATECODE_M		GENMASK(7, 0)
@@ -1310,11 +1031,11 @@ struct htt_tx_ppdu_stats_info {
 	u32 tx_success_bytes;
 	u32 tx_retry_bytes;
 	u32 tx_failed_bytes;
-	u32 flags; /* %HTT_PPDU_STATS_TX_INFO_FLAGS_ */
+	u32 flags;  
 	u16 tx_success_msdus;
 	u16 tx_retry_msdus;
 	u16 tx_failed_msdus;
-	u16 tx_duration; /* united in us */
+	u16 tx_duration;  
 } __packed;
 
 enum  htt_ppdu_stats_usr_compln_status {
@@ -1341,11 +1062,11 @@ struct htt_ppdu_stats_usr_cmpltn_cmn {
 	u8 status;
 	u8 tid_num;
 	u16 sw_peer_id;
-	/* RSSI value of last ack packet (units = dB above noise floor) */
+	 
 	u32 ack_rssi;
 	u16 mpdu_tried;
 	u16 mpdu_success;
-	u32 flags; /* %HTT_PPDU_STATS_USR_CMPLTN_CMN_FLAGS_LONG_RETRIES*/
+	u32 flags;  
 } __packed;
 
 #define HTT_PPDU_STATS_ACK_BA_INFO_NUM_MPDU_M	GENMASK(8, 0)
@@ -1358,7 +1079,7 @@ struct htt_ppdu_stats_usr_cmpltn_ack_ba_status {
 	u32 ppdu_id;
 	u16 sw_peer_id;
 	u16 reserved0;
-	u32 info; /* %HTT_PPDU_STATS_USR_CMPLTN_CMN_INFO_ */
+	u32 info;  
 	u16 current_seq;
 	u16 start_seq;
 	u32 success_bytes;
@@ -1367,11 +1088,7 @@ struct htt_ppdu_stats_usr_cmpltn_ack_ba_status {
 struct htt_ppdu_stats_usr_cmn_array {
 	struct htt_tlv tlv_hdr;
 	u32 num_ppdu_stats;
-	/* tx_ppdu_stats_info is filled by multiple struct htt_tx_ppdu_stats_info
-	 * elements.
-	 * tx_ppdu_stats_info is variable length, with length =
-	 *     number_of_ppdu_stats * sizeof (struct htt_tx_ppdu_stats_info)
-	 */
+	 
 	struct htt_tx_ppdu_stats_info tx_ppdu_info[];
 } __packed;
 
@@ -1398,120 +1115,13 @@ struct htt_ppdu_stats_info {
 	struct list_head list;
 };
 
-/* @brief target -> host packet log message
- *
- * @details
- * The following field definitions describe the format of the packet log
- * message sent from the target to the host.
- * The message consists of a 4-octet header,followed by a variable number
- * of 32-bit character values.
- *
- * |31                         16|15  12|11   10|9    8|7            0|
- * |------------------------------------------------------------------|
- * |        payload_size         | rsvd |pdev_id|mac_id|   msg type   |
- * |------------------------------------------------------------------|
- * |                              payload                             |
- * |------------------------------------------------------------------|
- *   - MSG_TYPE
- *     Bits 7:0
- *     Purpose: identifies this as a pktlog message
- *     Value: HTT_T2H_MSG_TYPE_PKTLOG
- *   - mac_id
- *     Bits 9:8
- *     Purpose: identifies which MAC/PHY instance generated this pktlog info
- *     Value: 0-3
- *   - pdev_id
- *     Bits 11:10
- *     Purpose: pdev_id
- *     Value: 0-3
- *     0 (for rings at SOC level),
- *     1/2/3 PDEV -> 0/1/2
- *   - payload_size
- *     Bits 31:16
- *     Purpose: explicitly specify the payload size
- *     Value: payload size in bytes (payload size is a multiple of 4 bytes)
- */
+ 
 struct htt_pktlog_msg {
 	u32 hdr;
 	u8 payload[];
 };
 
-/* @brief host -> target FW extended statistics retrieve
- *
- * @details
- * The following field definitions describe the format of the HTT host
- * to target FW extended stats retrieve message.
- * The message specifies the type of stats the host wants to retrieve.
- *
- * |31          24|23          16|15           8|7            0|
- * |-----------------------------------------------------------|
- * |   reserved   | stats type   |   pdev_mask  |   msg type   |
- * |-----------------------------------------------------------|
- * |                   config param [0]                        |
- * |-----------------------------------------------------------|
- * |                   config param [1]                        |
- * |-----------------------------------------------------------|
- * |                   config param [2]                        |
- * |-----------------------------------------------------------|
- * |                   config param [3]                        |
- * |-----------------------------------------------------------|
- * |                         reserved                          |
- * |-----------------------------------------------------------|
- * |                        cookie LSBs                        |
- * |-----------------------------------------------------------|
- * |                        cookie MSBs                        |
- * |-----------------------------------------------------------|
- * Header fields:
- *  - MSG_TYPE
- *    Bits 7:0
- *    Purpose: identifies this is a extended stats upload request message
- *    Value: 0x10
- *  - PDEV_MASK
- *    Bits 8:15
- *    Purpose: identifies the mask of PDEVs to retrieve stats from
- *    Value: This is a overloaded field, refer to usage and interpretation of
- *           PDEV in interface document.
- *           Bit   8    :  Reserved for SOC stats
- *           Bit 9 - 15 :  Indicates PDEV_MASK in DBDC
- *                         Indicates MACID_MASK in DBS
- *  - STATS_TYPE
- *    Bits 23:16
- *    Purpose: identifies which FW statistics to upload
- *    Value: Defined by htt_dbg_ext_stats_type (see htt_stats.h)
- *  - Reserved
- *    Bits 31:24
- *  - CONFIG_PARAM [0]
- *    Bits 31:0
- *    Purpose: give an opaque configuration value to the specified stats type
- *    Value: stats-type specific configuration value
- *           Refer to htt_stats.h for interpretation for each stats sub_type
- *  - CONFIG_PARAM [1]
- *    Bits 31:0
- *    Purpose: give an opaque configuration value to the specified stats type
- *    Value: stats-type specific configuration value
- *           Refer to htt_stats.h for interpretation for each stats sub_type
- *  - CONFIG_PARAM [2]
- *    Bits 31:0
- *    Purpose: give an opaque configuration value to the specified stats type
- *    Value: stats-type specific configuration value
- *           Refer to htt_stats.h for interpretation for each stats sub_type
- *  - CONFIG_PARAM [3]
- *    Bits 31:0
- *    Purpose: give an opaque configuration value to the specified stats type
- *    Value: stats-type specific configuration value
- *           Refer to htt_stats.h for interpretation for each stats sub_type
- *  - Reserved [31:0] for future use.
- *  - COOKIE_LSBS
- *    Bits 31:0
- *    Purpose: Provide a mechanism to match a target->host stats confirmation
- *        message with its preceding host->target stats request message.
- *    Value: LSBs of the opaque cookie specified by the host-side requestor
- *  - COOKIE_MSBS
- *    Bits 31:0
- *    Purpose: Provide a mechanism to match a target->host stats confirmation
- *        message with its preceding host->target stats request message.
- *    Value: MSBs of the opaque cookie specified by the host-side requestor
- */
+ 
 
 struct htt_ext_stats_cfg_hdr {
 	u8 msg_type;
@@ -1531,7 +1141,7 @@ struct htt_ext_stats_cfg_cmd {
 	u32 cookie_msb;
 } __packed;
 
-/* htt stats config default params */
+ 
 #define HTT_STAT_DEFAULT_RESET_START_OFFSET 0
 #define HTT_STAT_DEFAULT_CFG0_ALL_HWQS 0xffffffff
 #define HTT_STAT_DEFAULT_CFG0_ALL_TXQS 0xffffffff
@@ -1541,29 +1151,11 @@ struct htt_ext_stats_cfg_cmd {
 #define HTT_STAT_DEFAULT_CFG0_CCA_CUMULATIVE 0x00
 #define HTT_STAT_DEFAULT_CFG0_ACTIVE_VDEVS 0x00
 
-/* HTT_DBG_EXT_STATS_PEER_INFO
- * PARAMS:
- * @config_param0:
- *  [Bit0] - [0] for sw_peer_id, [1] for mac_addr based request
- *  [Bit15 : Bit 1] htt_peer_stats_req_mode_t
- *  [Bit31 : Bit16] sw_peer_id
- * @config_param1:
- *  peer_stats_req_type_mask:32 (enum htt_peer_stats_tlv_enum)
- *   0 bit htt_peer_stats_cmn_tlv
- *   1 bit htt_peer_details_tlv
- *   2 bit htt_tx_peer_rate_stats_tlv
- *   3 bit htt_rx_peer_rate_stats_tlv
- *   4 bit htt_tx_tid_stats_tlv/htt_tx_tid_stats_v1_tlv
- *   5 bit htt_rx_tid_stats_tlv
- *   6 bit htt_msdu_flow_stats_tlv
- * @config_param2: [Bit31 : Bit0] mac_addr31to0
- * @config_param3: [Bit15 : Bit0] mac_addr47to32
- *                [Bit31 : Bit16] reserved
- */
+ 
 #define HTT_STAT_PEER_INFO_MAC_ADDR BIT(0)
 #define HTT_STAT_DEFAULT_PEER_REQ_TYPE 0x7f
 
-/* Used to set different configs to the specified stats type.*/
+ 
 struct htt_ext_stats_cfg_params {
 	u32 cfg0;
 	u32 cfg1;
@@ -1571,79 +1163,7 @@ struct htt_ext_stats_cfg_params {
 	u32 cfg3;
 };
 
-/* @brief target -> host extended statistics upload
- *
- * @details
- * The following field definitions describe the format of the HTT target
- * to host stats upload confirmation message.
- * The message contains a cookie echoed from the HTT host->target stats
- * upload request, which identifies which request the confirmation is
- * for, and a single stats can span over multiple HTT stats indication
- * due to the HTT message size limitation so every HTT ext stats indication
- * will have tag-length-value stats information elements.
- * The tag-length header for each HTT stats IND message also includes a
- * status field, to indicate whether the request for the stat type in
- * question was fully met, partially met, unable to be met, or invalid
- * (if the stat type in question is disabled in the target).
- * A Done bit 1's indicate the end of the of stats info elements.
- *
- *
- * |31                         16|15    12|11|10 8|7   5|4       0|
- * |--------------------------------------------------------------|
- * |                   reserved                   |    msg type   |
- * |--------------------------------------------------------------|
- * |                         cookie LSBs                          |
- * |--------------------------------------------------------------|
- * |                         cookie MSBs                          |
- * |--------------------------------------------------------------|
- * |      stats entry length     | rsvd   | D|  S |   stat type   |
- * |--------------------------------------------------------------|
- * |                   type-specific stats info                   |
- * |                      (see htt_stats.h)                       |
- * |--------------------------------------------------------------|
- * Header fields:
- *  - MSG_TYPE
- *    Bits 7:0
- *    Purpose: Identifies this is a extended statistics upload confirmation
- *             message.
- *    Value: 0x1c
- *  - COOKIE_LSBS
- *    Bits 31:0
- *    Purpose: Provide a mechanism to match a target->host stats confirmation
- *        message with its preceding host->target stats request message.
- *    Value: LSBs of the opaque cookie specified by the host-side requestor
- *  - COOKIE_MSBS
- *    Bits 31:0
- *    Purpose: Provide a mechanism to match a target->host stats confirmation
- *        message with its preceding host->target stats request message.
- *    Value: MSBs of the opaque cookie specified by the host-side requestor
- *
- * Stats Information Element tag-length header fields:
- *  - STAT_TYPE
- *    Bits 7:0
- *    Purpose: identifies the type of statistics info held in the
- *        following information element
- *    Value: htt_dbg_ext_stats_type
- *  - STATUS
- *    Bits 10:8
- *    Purpose: indicate whether the requested stats are present
- *    Value: htt_dbg_ext_stats_status
- *  - DONE
- *    Bits 11
- *    Purpose:
- *        Indicates the completion of the stats entry, this will be the last
- *        stats conf HTT segment for the requested stats type.
- *    Value:
- *        0 -> the stats retrieval is ongoing
- *        1 -> the stats retrieval is complete
- *  - LENGTH
- *    Bits 31:16
- *    Purpose: indicate the stats information size
- *    Value: This field specifies the number of bytes of stats information
- *       that follows the element tag-length header.
- *       It is expected but not required that this length is a multiple of
- *       4 bytes.
- */
+ 
 
 #define HTT_T2H_EXT_STATS_INFO1_DONE	BIT(11)
 #define HTT_T2H_EXT_STATS_INFO1_LENGTH   GENMASK(31, 16)

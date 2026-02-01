@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2001-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_error.h"
 
@@ -48,7 +45,7 @@ xfs_panic_mask_proc_handler(
 	}
 	return ret;
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 STATIC int
 xfs_deprecated_dointvec_minmax(
@@ -194,7 +191,7 @@ static struct ctl_table xfs_table[] = {
 		.extra1		= &xfs_params.blockgc_timer.min,
 		.extra2		= &xfs_params.blockgc_timer.max,
 	},
-	/* please keep this the last entry */
+	 
 #ifdef CONFIG_PROC_FS
 	{
 		.procname	= "stats_clear",
@@ -205,7 +202,7 @@ static struct ctl_table xfs_table[] = {
 		.extra1		= &xfs_params.stats_clear.min,
 		.extra2		= &xfs_params.stats_clear.max
 	},
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 	{}
 };

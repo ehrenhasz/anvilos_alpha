@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xhci-dbgtty.c - tty glue for xHCI debug capability
- *
- * Copyright (C) 2017 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/tty.h>
@@ -511,7 +505,7 @@ int xhci_dbc_tty_probe(struct device *dev, void __iomem *base, struct xhci_hcd *
 
 	dbc->priv = port;
 
-	/* get rid of xhci once this is a real driver binding to a device */
+	 
 	xhci->dbc = dbc;
 
 	return 0;
@@ -521,10 +515,7 @@ out2:
 	return status;
 }
 
-/*
- * undo what probe did, assume dbc is stopped already.
- * we also assume tty_unregister_device() is called before this
- */
+ 
 void xhci_dbc_tty_remove(struct xhci_dbc *dbc)
 {
 	struct dbc_port         *port = dbc_to_port(dbc);

@@ -1,18 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+ 
 
 #ifndef __T7XX_HIF_DPMA_RX_H__
 #define __T7XX_HIF_DPMA_RX_H__
@@ -27,7 +13,7 @@
 #define PKT_TYPE_IP4		0
 #define PKT_TYPE_IP6		1
 
-/* Structure of DL PIT */
+ 
 struct dpmaif_pit {
 	__le32 header;
 	union {
@@ -44,13 +30,13 @@ struct dpmaif_pit {
 	};
 };
 
-/* PIT header fields */
+ 
 #define PD_PIT_DATA_LEN		GENMASK(31, 16)
 #define PD_PIT_BUFFER_ID	GENMASK(15, 3)
 #define PD_PIT_BUFFER_TYPE	BIT(2)
 #define PD_PIT_CONT		BIT(1)
 #define PD_PIT_PACKET_TYPE	BIT(0)
-/* PIT footer fields */
+ 
 #define PD_PIT_DLQ_DONE		GENMASK(31, 30)
 #define PD_PIT_ULQ_DONE		GENMASK(29, 24)
 #define PD_PIT_HEADER_OFFSET	GENMASK(23, 19)
@@ -114,4 +100,4 @@ void t7xx_dpmaif_bat_free(const struct dpmaif_ctrl *dpmaif_ctrl,
 			  struct dpmaif_bat_request *bat_req);
 int t7xx_dpmaif_napi_rx_poll(struct napi_struct *napi, const int budget);
 
-#endif /* __T7XX_HIF_DPMA_RX_H__ */
+#endif  

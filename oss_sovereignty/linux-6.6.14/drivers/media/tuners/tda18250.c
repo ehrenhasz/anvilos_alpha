@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NXP TDA18250 silicon tuner driver
- *
- * Copyright (C) 2017 Olli Salonen <olli.salonen@iki.fi>
- */
+
+ 
 
 #include "tda18250_priv.h"
 #include <linux/regmap.h>
@@ -93,7 +89,7 @@ static int tda18250_wait_for_irq(struct dvb_frontend *fe,
 	triggered = false;
 	timeout = jiffies + msecs_to_jiffies(maxwait);
 	while (!time_after(jiffies, timeout)) {
-		// check for the IRQ
+		
 		ret = regmap_read(dev->regmap, R08_IRQ1, &utmp);
 		if (ret)
 			goto err;
@@ -123,7 +119,7 @@ static int tda18250_init(struct dvb_frontend *fe)
 	struct tda18250_dev *dev = i2c_get_clientdata(client);
 	int ret, i;
 
-	/* default values for various regs */
+	 
 	static const u8 init_regs[][2] = {
 		{ R0C_AGC11, 0xc7 },
 		{ R0D_AGC12, 0x5d },
@@ -161,9 +157,9 @@ static int tda18250_init(struct dvb_frontend *fe)
 		{ R5C_AGC_DEBUG, 0x00 },
 	};
 
-	/* crystal related regs depend on frequency */
+	 
 	static const u8 xtal_regs[][5] = {
-					/* reg:   4d    4e    4f    50    51 */
+					 
 		[TDA18250_XTAL_FREQ_16MHZ]  = { 0x3e, 0x80, 0x50, 0x00, 0x20 },
 		[TDA18250_XTAL_FREQ_24MHZ]  = { 0x5d, 0xc0, 0xec, 0x00, 0x18 },
 		[TDA18250_XTAL_FREQ_25MHZ]  = { 0x61, 0xa8, 0xec, 0x80, 0x19 },
@@ -182,7 +178,7 @@ static int tda18250_init(struct dvb_frontend *fe)
 	if (dev->warm)
 		goto warm;
 
-	/* set initial register values */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_regs); i++) {
 		ret = regmap_write(dev->regmap, init_regs[i][0],
 				init_regs[i][1]);
@@ -190,7 +186,7 @@ static int tda18250_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* set xtal related regs */
+	 
 	ret = regmap_bulk_write(dev->regmap, R4D_XTALFLX1,
 			xtal_regs[dev->xtal_freq], 5);
 	if (ret)
@@ -201,12 +197,12 @@ static int tda18250_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* clear IRQ */
+	 
 	ret = regmap_write(dev->regmap, R0A_IRQ3, TDA18250_IRQ_HW_INIT);
 	if (ret)
 		goto err;
 
-	/* start HW init */
+	 
 	ret = regmap_write(dev->regmap, R2A_MSM1, 0x70);
 	if (ret)
 		goto err;
@@ -219,7 +215,7 @@ static int tda18250_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* tuner calibration */
+	 
 	ret = regmap_write(dev->regmap, R2A_MSM1, 0x02);
 	if (ret)
 		goto err;
@@ -235,7 +231,7 @@ static int tda18250_init(struct dvb_frontend *fe)
 	dev->warm = true;
 
 warm:
-	/* power up LNA */
+	 
 	ret = regmap_write_bits(dev->regmap, R0C_AGC11, 0x80, 0x00);
 	if (ret)
 		goto err;
@@ -268,19 +264,19 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* AGC1 */
+	 
 	switch (c->delivery_system) {
 	case SYS_ATSC:
 	case SYS_DVBT:
 	case SYS_DVBT2:
 		utmp = 4;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		switch (c->bandwidth_hz) {
 		case 6000000:
 			utmp = (c->frequency < 800000000) ? 6 : 4;
 			break;
-		default: /* 7.935 and 8 MHz */
+		default:  
 			utmp = (c->frequency < 100000000) ? 2 : 3;
 			break;
 		}
@@ -291,7 +287,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* AGC2 */
+	 
 	switch (c->delivery_system) {
 	case SYS_ATSC:
 	case SYS_DVBT:
@@ -299,7 +295,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 		utmp = (c->frequency < 320000000) ? 20 : 16;
 		utmp2 = (c->frequency < 320000000) ? 22 : 18;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		switch (c->bandwidth_hz) {
 		case 6000000:
 			if (c->frequency < 600000000) {
@@ -313,7 +309,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 				utmp2 = 16;
 			}
 			break;
-		default: /* 7.935 and 8 MHz */
+		default:  
 			utmp = (c->frequency < 320000000) ? 16 : 18;
 			utmp2 = (c->frequency < 320000000) ? 18 : 20;
 			break;
@@ -336,7 +332,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	case SYS_DVBT2:
 		utmp = 98;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		utmp = 90;
 		break;
 	}
@@ -349,7 +345,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* AGC3 */
+	 
 	switch (c->delivery_system) {
 	case SYS_ATSC:
 	case SYS_DVBT:
@@ -357,7 +353,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 		utmp = (c->frequency < 320000000) ? 5 : 7;
 		utmp2 = (c->frequency < 320000000) ? 10 : 12;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		utmp = 7;
 		utmp2 = 12;
 		break;
@@ -366,7 +362,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* S2D */
+	 
 	switch (c->delivery_system) {
 	case SYS_ATSC:
 	case SYS_DVBT:
@@ -376,11 +372,11 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 		else
 			utmp = (c->frequency < 320000000) ? 0x04 : 0x02;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		if (c->bandwidth_hz == 6000000)
 			utmp = ((c->frequency > 172544000) &&
 				(c->frequency < 320000000)) ? 0x04 : 0x02;
-		else /* 7.935 and 8 MHz */
+		else  
 			utmp = ((c->frequency > 320000000) &&
 				(c->frequency < 600000000)) ? 0x02 : 0x04;
 		break;
@@ -395,7 +391,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 	case SYS_DVBT2:
 		utmp = 0;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		utmp = (c->frequency < 600000000) ? 0 : 3;
 		break;
 	}
@@ -411,7 +407,7 @@ static int tda18250_set_agc(struct dvb_frontend *fe)
 		if (c->bandwidth_hz == 8000000)
 			utmp = 0x0c;
 		break;
-	default: /* DVB-C/QAM */
+	default:  
 		utmp = 0x0c;
 		break;
 	}
@@ -581,7 +577,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 		goto err;
 	}
 
-	/* set delivery system dependent registers */
+	 
 	for (i = 0; i < 16; i++) {
 		ret = regmap_write_bits(dev->regmap, delsys_params[REG][i],
 			 delsys_params[MASK][i],  delsys_params[j][i]);
@@ -589,7 +585,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* set IF if needed */
+	 
 	if (dev->if_frequency != if_khz) {
 		utmp = DIV_ROUND_CLOSEST(if_khz, 50);
 		ret = regmap_write(dev->regmap, R26_IF, utmp);
@@ -612,7 +608,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* set frequency */
+	 
 	buf[0] = ((c->frequency / 1000) >> 16) & 0xff;
 	buf[1] = ((c->frequency / 1000) >>  8) & 0xff;
 	buf[2] = ((c->frequency / 1000) >>  0) & 0xff;
@@ -624,7 +620,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* initial tune */
+	 
 	ret = regmap_write(dev->regmap, R2A_MSM1, 0x01);
 	if (ret)
 		goto err;
@@ -637,7 +633,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* calc ndiv and rdiv */
+	 
 	ret = tda18250_pll_calc(fe, &buf[0], &buf[1], &buf[2]);
 	if (ret)
 		goto err;
@@ -647,7 +643,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* clear IRQ */
+	 
 	ret = regmap_write(dev->regmap, R0A_IRQ3, TDA18250_IRQ_TUNE);
 	if (ret)
 		goto err;
@@ -660,12 +656,12 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* tune again */
-	ret = regmap_write(dev->regmap, R2A_MSM1, 0x01); /* tune */
+	 
+	ret = regmap_write(dev->regmap, R2A_MSM1, 0x01);  
 	if (ret)
 		goto err;
 
-	ret = regmap_write(dev->regmap, R2B_MSM2, 0x01); /* go */
+	ret = regmap_write(dev->regmap, R2B_MSM2, 0x01);  
 	if (ret)
 		goto err;
 
@@ -673,7 +669,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* pll locking */
+	 
 	msleep(20);
 
 	ret = regmap_write_bits(dev->regmap, R2B_MSM2, 0x04, 0x04);
@@ -682,7 +678,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 
 	msleep(20);
 
-	/* restore AGCK */
+	 
 	ret = regmap_write_bits(dev->regmap, R1A_AGCK, 0x03, 0x03);
 	if (ret)
 		goto err;
@@ -691,7 +687,7 @@ static int tda18250_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* charge pump */
+	 
 	ret = regmap_write_bits(dev->regmap, R46_CPUMP, 0x07, buf[2]);
 
 	return 0;
@@ -716,12 +712,12 @@ static int tda18250_sleep(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* power down LNA */
+	 
 	ret = regmap_write_bits(dev->regmap, R0C_AGC11, 0x80, 0x00);
 	if (ret)
 		return ret;
 
-	/* set if freq to 0 in order to make sure it's set after wake up */
+	 
 	dev->if_frequency = 0;
 
 	ret = tda18250_power_control(fe, TDA18250_POWER_STANDBY);
@@ -749,7 +745,7 @@ static int tda18250_probe(struct i2c_client *client)
 	int ret;
 	unsigned char chip_id[3];
 
-	/* some registers are always read from HW */
+	 
 	static const struct regmap_range tda18250_yes_ranges[] = {
 		regmap_reg_range(R05_POWER1, R0B_IRQ4),
 		regmap_reg_range(R21_IF_AGC, R21_IF_AGC),
@@ -802,7 +798,7 @@ static int tda18250_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* read the three chip ID registers */
+	 
 	regmap_bulk_read(dev->regmap, R00_ID1, &chip_id, 3);
 	dev_dbg(&client->dev, "chip_id=%02x:%02x:%02x",
 			chip_id[0], chip_id[1], chip_id[2]);
@@ -844,7 +840,7 @@ static int tda18250_probe(struct i2c_client *client)
 	memcpy(&fe->ops.tuner_ops, &tda18250_ops,
 			sizeof(struct dvb_tuner_ops));
 
-	/* put the tuner in standby */
+	 
 	tda18250_power_control(fe, TDA18250_POWER_STANDBY);
 
 	return 0;

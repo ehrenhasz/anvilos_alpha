@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 NXP
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -112,7 +110,7 @@ enum imx8ulp_pads {
 	IMX8ULP_PAD_PTF31,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx8ulp_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(IMX8ULP_PAD_PTD0),
 	IMX_PINCTRL_PIN(IMX8ULP_PAD_PTD1),
@@ -250,7 +248,7 @@ static const struct imx_pinctrl_soc_info imx8ulp_pinctrl_info = {
 
 static const struct of_device_id imx8ulp_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx8ulp-iomuxc1", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx8ulp_pinctrl_probe(struct platform_device *pdev)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/init.h>
@@ -20,17 +18,17 @@
 struct ddr_pmu {
 	struct pmu pmu;
 	struct dmc_info info;
-	struct dmc_counter counters;	/* save counters from hw */
+	struct dmc_counter counters;	 
 	bool pmu_enabled;
 	struct device *dev;
 	char *name;
 	struct hlist_node node;
 	enum cpuhp_state cpuhp_state;
-	int cpu;			/* for cpu hotplug */
+	int cpu;			 
 };
 
 #define DDR_PERF_DEV_NAME "meson_ddr_bw"
-#define MAX_AXI_PORTS_OF_CHANNEL	4	/* A DMC channel can monitor max 4 axi ports */
+#define MAX_AXI_PORTS_OF_CHANNEL	4	 
 
 #define to_ddr_pmu(p)		container_of(p, struct ddr_pmu, pmu)
 #define dmc_info_to_pmu(p)	container_of(p, struct ddr_pmu, info)
@@ -90,7 +88,7 @@ static void meson_ddr_perf_event_update(struct perf_event *event)
 	int idx;
 	int chann_nr = pmu->info.hw_info->chann_nr;
 
-	/* get the remain counters in register. */
+	 
 	pmu->info.hw_info->get_counters(&pmu->info, &dc);
 
 	ddr_cnt_addition(&sum_dc, &pmu->counters, &dc, chann_nr);
@@ -130,7 +128,7 @@ static int meson_ddr_perf_event_init(struct perf_event *event)
 	if (event->cpu < 0)
 		return -EOPNOTSUPP;
 
-	/* check if the number of parameters is too much */
+	 
 	if (event->attr.config != ALL_CHAN_COUNTER_ID &&
 	    hweight64(config1) + hweight64(config2) > MAX_AXI_PORTS_OF_CHANNEL)
 		return -EOPNOTSUPP;
@@ -227,7 +225,7 @@ static ssize_t
 event_show_scale(struct device *dev, struct device_attribute *attr,
 		 char *page)
 {
-	/* one count = 16byte = 1.52587890625e-05 MB */
+	 
 	return sysfs_emit(page, "1.52587890625e-05\n");
 }
 
@@ -279,7 +277,7 @@ static struct perf_pmu_events_attr event_attrs[] = {
 	AML_DDR_PMU_EVENT_ATTR(chan_8_rw_bytes, CHAN8_COUNTER_ID),
 };
 
-/* three attrs are combined an event */
+ 
 static struct attribute *ddr_perf_events_attrs[COUNTER_MAX_ID * 3];
 
 static struct attribute_group ddr_perf_events_attr_group = {
@@ -296,7 +294,7 @@ static umode_t meson_ddr_perf_format_attr_visible(struct kobject *kobj,
 	const u64 *capability = ddr_pmu->info.hw_info->capability;
 	struct device_attribute *dev_attr;
 	int id;
-	char value[20]; // config1:xxx, 20 is enough
+	char value[20]; 
 
 	dev_attr = container_of(attr, struct device_attribute, attr);
 	dev_attr->show(NULL, NULL, value);
@@ -364,11 +362,7 @@ static irqreturn_t dmc_irq_handler(int irq, void *dev_id)
 		sum_cnter->channel_cnt[i] += counters.channel_cnt[i];
 
 	if (pmu->pmu_enabled)
-		/*
-		 * the timer interrupt only supprt
-		 * one shot mode, we have to re-enable
-		 * it in ISR to support continue mode.
-		 */
+		 
 		info->hw_info->enable(info);
 
 	dev_dbg(pmu->dev, "counts: %llu %llu %llu, %llu, %llu, %llu\t\t"
@@ -418,21 +412,21 @@ static void fill_event_attr(struct ddr_pmu *pmu)
 	j = 0;
 	k = 0;
 
-	/* fill ALL_CHAN_COUNTER_ID event */
+	 
 	dst[j++] = &event_attrs[k].attr.attr;
 	dst[j++] = &event_unit_attrs[k].attr;
 	dst[j++] = &event_scale_attrs[k].attr;
 
 	k++;
 
-	/* fill each channel event */
+	 
 	for (i = 0; i < pmu->info.hw_info->chann_nr; i++, k++) {
 		dst[j++] = &event_attrs[k].attr.attr;
 		dst[j++] = &event_unit_attrs[k].attr;
 		dst[j++] = &event_scale_attrs[k].attr;
 	}
 
-	dst[j] = NULL; /* mark end */
+	dst[j] = NULL;  
 }
 
 static void fmt_attr_fill(struct attribute **fmt_attr)
@@ -449,7 +443,7 @@ static int ddr_pmu_parse_dt(struct platform_device *pdev,
 	info->hw_info = of_device_get_match_data(&pdev->dev);
 
 	for (i = 0; i < info->hw_info->dmc_nr; i++) {
-		/* resource 0 for ddr register base */
+		 
 		base = devm_platform_ioremap_resource(pdev, i);
 		if (IS_ERR(base))
 			return PTR_ERR(base);
@@ -457,7 +451,7 @@ static int ddr_pmu_parse_dt(struct platform_device *pdev,
 		info->ddr_reg[i] = base;
 	}
 
-	/* resource i for pll register base */
+	 
 	base = devm_platform_ioremap_resource(pdev, i);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -523,7 +517,7 @@ int meson_ddr_pmu_create(struct platform_device *pdev)
 
 	pmu->cpuhp_state = ret;
 
-	/* Register the pmu instance for cpu hotplug */
+	 
 	ret = cpuhp_state_add_instance_nocalls(pmu->cpuhp_state, &pmu->node);
 	if (ret)
 		goto cpuhp_instance_err;

@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2016-2018 NXP
- */
+ 
+ 
 
 #ifndef __FSL_DPRTC_H
 #define __FSL_DPRTC_H
 
-/* Data Path Real Time Counter API
- * Contains initialization APIs and runtime control APIs for RTC
- */
+ 
 
 struct fsl_mc_io;
 
@@ -65,4 +60,4 @@ int dprtc_clear_irq_status(struct fsl_mc_io *mc_io,
 			   u8 irq_index,
 			   u32 status);
 
-#endif /* __FSL_DPRTC_H */
+#endif  

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "dm_common.h"
 #include "../rtl8723ae/dm.h"
 #include <linux/module.h>
 
-/* These routines are common to RTL8723AE and RTL8723bE */
+ 
 
 void rtl8723_dm_init_dynamic_txpower(struct ieee80211_hw *hw)
 {

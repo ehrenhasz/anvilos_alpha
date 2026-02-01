@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/of_gpio.h>
 #include <linux/phy/phy.h>
@@ -46,13 +44,7 @@ static int dp_parser_ctrl_res(struct dp_parser *parser)
 
 	dss->aux.base = dp_ioremap(pdev, 1, &dss->aux.len);
 	if (IS_ERR(dss->aux.base)) {
-		/*
-		 * The initial binding had a single reg, but in order to
-		 * support variation in the sub-region sizes this was split.
-		 * dp_ioremap() will fail with -EINVAL here if only a single
-		 * reg is specified, so fill in the sub-region offsets and
-		 * lengths based on this single region.
-		 */
+		 
 		if (PTR_ERR(dss->aux.base) == -EINVAL) {
 			if (dss->ahb.len < DP_DEFAULT_P0_OFFSET + DP_DEFAULT_P0_SIZE) {
 				DRM_ERROR("legacy memory region not large enough\n");
@@ -97,7 +89,7 @@ static u32 dp_parser_link_frequencies(struct device_node *of_node)
 	u64 frequency = 0;
 	int cnt;
 
-	endpoint = of_graph_get_endpoint_by_regs(of_node, 1, 0); /* port@1 */
+	endpoint = of_graph_get_endpoint_by_regs(of_node, 1, 0);  
 	if (!endpoint)
 		return 0;
 
@@ -109,8 +101,8 @@ static u32 dp_parser_link_frequencies(struct device_node *of_node)
 	of_node_put(endpoint);
 
 	do_div(frequency,
-		10 * /* from symbol rate to link rate */
-		1000); /* kbytes */
+		10 *  
+		1000);  
 
 	return frequency;
 }
@@ -120,19 +112,17 @@ static int dp_parser_misc(struct dp_parser *parser)
 	struct device_node *of_node = parser->pdev->dev.of_node;
 	int cnt;
 
-	/*
-	 * data-lanes is the property of dp_out endpoint
-	 */
+	 
 	cnt = drm_of_get_data_lanes_count_ep(of_node, 1, 0, 1, DP_MAX_NUM_DP_LANES);
 	if (cnt < 0) {
-		/* legacy code, data-lanes is the property of mdss_dp node */
+		 
 		cnt = drm_of_get_data_lanes_count(of_node, 1, DP_MAX_NUM_DP_LANES);
 	}
 
 	if (cnt > 0)
 		parser->max_dp_lanes = cnt;
 	else
-		parser->max_dp_lanes = DP_MAX_NUM_DP_LANES; /* 4 lanes */
+		parser->max_dp_lanes = DP_MAX_NUM_DP_LANES;  
 
 	parser->max_dp_link_rate = dp_parser_link_frequencies(of_node);
 	if (!parser->max_dp_link_rate)
@@ -179,7 +169,7 @@ static int dp_parser_init_clk_data(struct dp_parser *parser)
 			stream_clk_count++;
 	}
 
-	/* Initialize the CORE power module */
+	 
 	if (core_clk_count == 0) {
 		DRM_ERROR("no core clocks are defined\n");
 		return -EINVAL;
@@ -192,7 +182,7 @@ static int dp_parser_init_clk_data(struct dp_parser *parser)
 	if (!core_power->clocks)
 		return -ENOMEM;
 
-	/* Initialize the CTRL power module */
+	 
 	if (ctrl_clk_count == 0) {
 		DRM_ERROR("no ctrl clocks are defined\n");
 		return -EINVAL;
@@ -207,7 +197,7 @@ static int dp_parser_init_clk_data(struct dp_parser *parser)
 		return -ENOMEM;
 	}
 
-	/* Initialize the STREAM power module */
+	 
 	if (stream_clk_count == 0) {
 		DRM_ERROR("no stream (pixel) clocks are defined\n");
 		return -EINVAL;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit test for hw_breakpoint constraints accounting logic.
- *
- * Copyright (C) 2022, Google LLC.
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/cpumask.h>
@@ -72,11 +68,7 @@ static void fill_one_bp_slot(struct kunit *test, int *id, int cpu, struct task_s
 	test_bps[(*id)++] = bp;
 }
 
-/*
- * Fills up the given @cpu/@tsk with breakpoints, only leaving @skip slots free.
- *
- * Returns true if this can be called again, continuing at @id.
- */
+ 
 static bool fill_bp_slots(struct kunit *test, int *id, int cpu, struct task_struct *tsk, int skip)
 {
 	for (int i = 0; i < get_test_bp_slots() - skip; ++i)
@@ -117,7 +109,7 @@ static int get_test_cpu(int num)
 	return cpu;
 }
 
-/* ===== Test cases ===== */
+ 
 
 static void test_one_cpu(struct kunit *test)
 {
@@ -133,7 +125,7 @@ static void test_many_cpus(struct kunit *test)
 	int idx = 0;
 	int cpu;
 
-	/* Test that CPUs are independent. */
+	 
 	for_each_online_cpu(cpu) {
 		bool do_continue = fill_bp_slots(test, &idx, cpu, NULL, 0);
 
@@ -151,7 +143,7 @@ static void test_one_task_on_all_cpus(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(-1, current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
-	/* Remove one and adding back CPU-target should work. */
+	 
 	unregister_test_bp(&test_bps[0]);
 	fill_one_bp_slot(test, &idx, get_test_cpu(0), NULL);
 }
@@ -160,7 +152,7 @@ static void test_two_tasks_on_all_cpus(struct kunit *test)
 {
 	int idx = 0;
 
-	/* Test that tasks are independent. */
+	 
 	fill_bp_slots(test, &idx, -1, current, 0);
 	fill_bp_slots(test, &idx, -1, get_other_task(test), 0);
 
@@ -169,7 +161,7 @@ static void test_two_tasks_on_all_cpus(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), get_other_task(test), idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
-	/* Remove one from first task and adding back CPU-target should not work. */
+	 
 	unregister_test_bp(&test_bps[0]);
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
 }
@@ -182,10 +174,7 @@ static void test_one_task_on_one_cpu(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(-1, current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
-	/*
-	 * Remove one and adding back CPU-target should work; this case is
-	 * special vs. above because the task's constraints are CPU-dependent.
-	 */
+	 
 	unregister_test_bp(&test_bps[0]);
 	fill_one_bp_slot(test, &idx, get_test_cpu(0), NULL);
 }
@@ -202,7 +191,7 @@ static void test_one_task_mixed(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
 
-	/* Transition from CPU-dependent pinned count to CPU-independent. */
+	 
 	unregister_test_bp(&test_bps[0]);
 	unregister_test_bp(&test_bps[1]);
 	fill_one_bp_slot(test, &idx, get_test_cpu(0), NULL);
@@ -222,7 +211,7 @@ static void test_two_tasks_on_one_cpu(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), get_other_task(test), idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
-	/* Can still create breakpoints on some other CPU. */
+	 
 	fill_bp_slots(test, &idx, get_test_cpu(1), NULL, 0);
 }
 
@@ -238,7 +227,7 @@ static void test_two_tasks_on_one_all_cpus(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), get_other_task(test), idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
-	/* Cannot create breakpoints on some other CPU either. */
+	 
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(1), NULL, idx));
 }
 
@@ -250,7 +239,7 @@ static void test_task_on_all_and_one_cpu(struct kunit *test)
 	TEST_REQUIRES_BP_SLOTS(test, 3);
 
 	fill_bp_slots(test, &idx, -1, current, 2);
-	/* Transitioning from only all CPU breakpoints to mixed. */
+	 
 	tsk_on_cpu_idx = idx;
 	fill_one_bp_slot(test, &idx, get_test_cpu(0), current);
 	fill_one_bp_slot(test, &idx, -1, current);
@@ -259,16 +248,16 @@ static void test_task_on_all_and_one_cpu(struct kunit *test)
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), current, idx));
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(0), NULL, idx));
 
-	/* We should still be able to use up another CPU's slots. */
+	 
 	cpu_idx = idx;
 	fill_one_bp_slot(test, &idx, get_test_cpu(1), NULL);
 	TEST_EXPECT_NOSPC(register_test_bp(get_test_cpu(1), NULL, idx));
 
-	/* Transitioning back to task target on all CPUs. */
+	 
 	unregister_test_bp(&test_bps[tsk_on_cpu_idx]);
-	/* Still have a CPU target breakpoint in get_test_cpu(1). */
+	 
 	TEST_EXPECT_NOSPC(register_test_bp(-1, current, idx));
-	/* Remove it and try again. */
+	 
 	unregister_test_bp(&test_bps[cpu_idx]);
 	fill_one_bp_slot(test, &idx, -1, current);
 
@@ -293,11 +282,11 @@ static struct kunit_case hw_breakpoint_test_cases[] = {
 
 static int test_init(struct kunit *test)
 {
-	/* Most test cases want 2 distinct CPUs. */
+	 
 	if (num_online_cpus() < 2)
 		kunit_skip(test, "not enough cpus");
 
-	/* Want the system to not use breakpoints elsewhere. */
+	 
 	if (hw_breakpoint_is_used())
 		kunit_skip(test, "hw breakpoint already in use");
 
@@ -316,7 +305,7 @@ static void test_exit(struct kunit *test)
 		__other_task = NULL;
 	}
 
-	/* Verify that internal state agrees that no breakpoints are in use. */
+	 
 	KUNIT_EXPECT_FALSE(test, hw_breakpoint_is_used());
 }
 

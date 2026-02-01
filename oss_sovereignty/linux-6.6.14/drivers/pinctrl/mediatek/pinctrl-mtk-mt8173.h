@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+ 
+ 
 
 #ifndef __PINCTRL_MTK_MT8173_H
 #define __PINCTRL_MTK_MT8173_H
@@ -1080,4 +1077,4 @@ static const struct mtk_desc_pin mtk_pins_mt8173[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT8173_H */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STV0900/0903 Multistandard Broadcast Frontend driver
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #ifndef __STV090x_PRIV_H
 #define __STV090x_PRIV_H
@@ -201,11 +195,11 @@ struct stv090x_long_frame_crloop {
 struct stv090x_short_frame_crloop {
 	enum stv090x_modulation	modulation;
 
-	u8 crl_2;  /*      SR <   3M */
-	u8 crl_5;  /*  3 < SR <=  7M */
-	u8 crl_10; /*  7 < SR <= 15M */
-	u8 crl_20; /* 10 < SR <= 25M */
-	u8 crl_30; /* 10 < SR <= 45M */
+	u8 crl_2;   
+	u8 crl_5;   
+	u8 crl_10;  
+	u8 crl_20;  
+	u8 crl_30;  
 };
 
 struct stv090x_reg {
@@ -222,9 +216,9 @@ struct stv090x_internal {
 	struct i2c_adapter	*i2c_adap;
 	u8			i2c_addr;
 
-	struct mutex		demod_lock; /* Lock access to shared register */
-	struct mutex		tuner_lock; /* Lock access to tuners */
-	s32			mclk; /* Masterclock Divider factor */
+	struct mutex		demod_lock;  
+	struct mutex		tuner_lock;  
+	s32			mclk;  
 	u32			dev_ver;
 
 	int			num_used;
@@ -240,7 +234,7 @@ struct stv090x_state {
 	struct stv090x_config	*config;
 	struct dvb_frontend		frontend;
 
-	u32				*verbose; /* Cached module verbosity */
+	u32				*verbose;  
 
 	enum stv090x_delsys		delsys;
 	enum stv090x_fec		fec;
@@ -264,4 +258,4 @@ struct stv090x_state {
 	s32				FecTimeout;
 };
 
-#endif /* __STV090x_PRIV_H */
+#endif  

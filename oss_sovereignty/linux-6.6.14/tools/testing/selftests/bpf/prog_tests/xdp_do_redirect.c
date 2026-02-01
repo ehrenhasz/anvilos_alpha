@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <net/if.h>
@@ -35,7 +35,7 @@ static struct udp_packet pkt_udp = {
 	.udp.dest = bpf_htons(1),
 	.udp.len = bpf_htons(sizeof(struct udp_packet)
 			     - offsetof(struct udp_packet, udp)),
-	.payload = {0x42}, /* receiver XDP program matches on this */
+	.payload = {0x42},  
 };
 
 static int attach_tc_prog(struct bpf_tc_hook *hook, int fd)
@@ -56,10 +56,7 @@ static int attach_tc_prog(struct bpf_tc_hook *hook, int fd)
 	return 0;
 }
 
-/* The maximum permissible size is: PAGE_SIZE - sizeof(struct xdp_page_head) -
- * SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) - XDP_PACKET_HEADROOM =
- * 3408 bytes for 64-byte cacheline and 3216 for 256-byte one.
- */
+ 
 #if defined(__s390x__)
 #define MAX_PKT_SIZE 3216
 #else
@@ -107,19 +104,14 @@ void test_xdp_do_redirect(void)
 			    .attach_point = BPF_TC_INGRESS);
 
 	memcpy(&data[sizeof(__u64)], &pkt_udp, sizeof(pkt_udp));
-	*((__u32 *)data) = 0x42; /* metadata test value */
+	*((__u32 *)data) = 0x42;  
 	*((__u32 *)data + 4) = 0;
 
 	skel = test_xdp_do_redirect__open();
 	if (!ASSERT_OK_PTR(skel, "skel"))
 		return;
 
-	/* The XDP program we run with bpf_prog_run() will cycle through all
-	 * three xmit (PASS/TX/REDIRECT) return codes starting from above, and
-	 * ending up with PASS, so we should end up with two packets on the dst
-	 * iface and NUM_PKTS-2 in the TC hook. We match the packets on the UDP
-	 * payload.
-	 */
+	 
 	SYS(out, "ip netns add testns");
 	nstoken = open_netns("testns");
 	if (!ASSERT_OK_PTR(nstoken, "setns"))
@@ -134,17 +126,7 @@ void test_xdp_do_redirect(void)
 	SYS(out, "ip addr add dev veth_dst fc00::2/64");
 	SYS(out, "ip neigh add fc00::2 dev veth_src lladdr 66:77:88:99:aa:bb");
 
-	/* We enable forwarding in the test namespace because that will cause
-	 * the packets that go through the kernel stack (with XDP_PASS) to be
-	 * forwarded back out the same interface (because of the packet dst
-	 * combined with the interface addresses). When this happens, the
-	 * regular forwarding path will end up going through the same
-	 * veth_xdp_xmit() call as the XDP_REDIRECT code, which can cause a
-	 * deadlock if it happens on the same CPU. There's a local_bh_disable()
-	 * in the test_run code to prevent this, but an earlier version of the
-	 * code didn't have this, so we keep the test behaviour to make sure the
-	 * bug doesn't resurface.
-	 */
+	 
 	SYS(out, "sysctl -qw net.ipv6.conf.all.forwarding=1");
 
 	ifindex_src = if_nametoindex("veth_src");
@@ -153,7 +135,7 @@ void test_xdp_do_redirect(void)
 	    !ASSERT_NEQ(ifindex_dst, 0, "ifindex_dst"))
 		goto out;
 
-	/* Check xdp features supported by veth driver */
+	 
 	err = bpf_xdp_query(ifindex_src, XDP_FLAGS_DRV_MODE, &query_opts);
 	if (!ASSERT_OK(err, "veth_src bpf_xdp_query"))
 		goto out;
@@ -174,7 +156,7 @@ void test_xdp_do_redirect(void)
 		       "veth_dst query_opts.feature_flags"))
 		goto out;
 
-	/* Enable GRO */
+	 
 	SYS(out, "ethtool -K veth_src gro on");
 	SYS(out, "ethtool -K veth_dst gro on");
 
@@ -201,7 +183,7 @@ void test_xdp_do_redirect(void)
 		goto out;
 
 	memcpy(skel->rodata->expect_dst, &pkt_udp.eth.h_dest, ETH_ALEN);
-	skel->rodata->ifindex_out = ifindex_src; /* redirect back to the same iface */
+	skel->rodata->ifindex_out = ifindex_src;  
 	skel->rodata->ifindex_in = ifindex_src;
 	ctx_in.ingress_ifindex = ifindex_src;
 	tc_hook.ifindex = ifindex_src;
@@ -223,15 +205,10 @@ void test_xdp_do_redirect(void)
 	if (!ASSERT_OK(err, "prog_run"))
 		goto out_tc;
 
-	/* wait for the packets to be flushed */
+	 
 	kern_sync_rcu();
 
-	/* There will be one packet sent through XDP_REDIRECT and one through
-	 * XDP_TX; these will show up on the XDP counting program, while the
-	 * rest will be counted at the TC ingress hook (and the counting program
-	 * resets the packet payload so they don't get counted twice even though
-	 * they are re-xmited out the veth device
-	 */
+	 
 	ASSERT_EQ(skel->bss->pkts_seen_xdp, 2, "pkt_count_xdp");
 	ASSERT_EQ(skel->bss->pkts_seen_zero, 2, "pkt_count_zero");
 	ASSERT_EQ(skel->bss->pkts_seen_tc, NUM_PKTS - 2, "pkt_count_tc");

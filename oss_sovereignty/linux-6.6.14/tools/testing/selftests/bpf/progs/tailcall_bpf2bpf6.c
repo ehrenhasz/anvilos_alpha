@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include "bpf_misc.h"
@@ -24,7 +24,7 @@ int classifier_0(struct __sk_buff *skb __unused)
 static __noinline
 int subprog_tail(struct __sk_buff *skb)
 {
-	/* Don't propagate the constant to the caller */
+	 
 	volatile int ret = 1;
 
 	bpf_tail_call_static(skb, &jmp_table, 0);
@@ -34,7 +34,7 @@ int subprog_tail(struct __sk_buff *skb)
 SEC("tc")
 int entry(struct __sk_buff *skb)
 {
-	/* Have data on stack which size is not a multiple of 8 */
+	 
 	volatile char arr[1] = {};
 
 	__sink(arr[0]);

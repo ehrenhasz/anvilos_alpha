@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* ----------------------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
+ 
+ 
 
 #include <linux/linkage.h>
 
-/*
- * Memory copy routines
- */
+ 
 
 	.code16
 	.text

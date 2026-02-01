@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -11,12 +11,7 @@
 
 struct mlxsw_sp2_kvdl_part_info {
 	u8 res_type;
-	/* For each defined partititon we need to know how many
-	 * usage bits we need and how many indexes there are
-	 * represented by a single bit. This could be got from FW
-	 * querying appropriate resources. So have the resource
-	 * ids for this purpose in partition definition.
-	 */
+	 
 	enum mlxsw_res_id usage_bit_count_res_id;
 	enum mlxsw_res_id index_range_res_id;
 };
@@ -46,7 +41,7 @@ struct mlxsw_sp2_kvdl_part {
 	unsigned int usage_bit_count;
 	unsigned int indexes_per_usage_bit;
 	unsigned int last_allocated_bit;
-	unsigned long usage[];	/* Usage bits */
+	unsigned long usage[];	 
 };
 
 struct mlxsw_sp2_kvdl {
@@ -130,7 +125,7 @@ static void mlxsw_sp2_kvdl_part_free(struct mlxsw_sp *mlxsw_sp,
 	unsigned int i;
 	int err;
 
-	/* We need to ask FW to delete previously used KVD linear index */
+	 
 	err = mlxsw_sp2_kvdl_rec_del(mlxsw_sp, part->info->res_type,
 				     size, kvdl_index);
 	if (err)
@@ -196,10 +191,7 @@ mlxsw_sp2_kvdl_part_init(struct mlxsw_sp *mlxsw_sp,
 	index_range = mlxsw_core_res_get(mlxsw_sp->core,
 					 info->index_range_res_id);
 
-	/* For some partitions, one usage bit represents a group of indexes.
-	 * That's why we compute the number of indexes per usage bit here,
-	 * according to queried resources.
-	 */
+	 
 	indexes_per_usage_bit = index_range / usage_bit_count;
 
 	usage_size = BITS_TO_LONGS(usage_bit_count) * sizeof(unsigned long);

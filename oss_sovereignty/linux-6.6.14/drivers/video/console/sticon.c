@@ -1,39 +1,4 @@
-/*
- *  linux/drivers/video/console/sticon.c - console driver using HP's STI firmware
- *
- *	Copyright (C) 2000 Philipp Rumpf <prumpf@tux.org>
- *	Copyright (C) 2002-2020 Helge Deller <deller@gmx.de>
- *
- *  Based on linux/drivers/video/vgacon.c and linux/drivers/video/fbcon.c,
- *  which were
- *
- *	Created 28 Sep 1997 by Geert Uytterhoeven
- *	Rewritten by Martin Mares <mj@ucw.cz>, July 1998
- *	Copyright (C) 1991, 1992  Linus Torvalds
- *			    1995  Jay Estabrook
- *	Copyright (C) 1995 Geert Uytterhoeven
- *	Copyright (C) 1993 Bjoern Brauel
- *			   Roman Hodek
- *	Copyright (C) 1993 Hamish Macdonald
- *			   Greg Harp
- *	Copyright (C) 1994 David Carter [carter@compsci.bristol.ac.uk]
- *
- *	      with work by William Rucklidge (wjr@cs.cornell.edu)
- *			   Geert Uytterhoeven
- *			   Jes Sorensen (jds@kom.auc.dk)
- *			   Martin Apel
- *	      with work by Guenther Kelleter
- *			   Martin Schaller
- *			   Andreas Schwab
- *			   Emmanuel Marty (core@ggi-project.org)
- *			   Jakub Jelinek (jj@ultra.linux.cz)
- *			   Martin Mares <mj@ucw.cz>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive for
- *  more details.
- *
- */
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -52,18 +17,18 @@
 
 #include <video/sticore.h>
 
-/* switching to graphics mode */
+ 
 #define BLANK 0
 static int vga_is_gfx;
 
 #define STI_DEF_FONT	sticon_sti->font
 
-/* borrowed from fbcon.c */
+ 
 #define FNTREFCOUNT(fd)	(fd->refcount)
 #define FNTCRC(fd)	(fd->crc)
 static struct sti_cooked_font *font_data[MAX_NR_CONSOLES];
 
-/* this is the sti_struct used for this console */
+ 
 static struct sti_struct *sticon_sti;
 
 static const char *sticon_startup(void)
@@ -101,7 +66,7 @@ static void sticon_cursor(struct vc_data *conp, int mode)
 {
     unsigned short car1;
 
-    /* no cursor update if screen is blanked */
+     
     if (vga_is_gfx || console_blanked)
 	return;
 
@@ -209,7 +174,7 @@ static int sticon_set_font(struct vc_data *vc, struct console_font *op,
 	cooked_font->raw_ptr = new_font;
 	cooked_font->width = w;
 	cooked_font->height = h;
-	FNTREFCOUNT(cooked_font) = 0;	/* usage counter */
+	FNTREFCOUNT(cooked_font) = 0;	 
 
 	p = (unsigned char *) new_font;
 	p += sizeof(*new_font);
@@ -222,13 +187,13 @@ static int sticon_set_font(struct vc_data *vc, struct console_font *op,
 	sti_font_convert_bytemode(sti, cooked_font);
 	new_font = cooked_font->raw_ptr;
 
-	/* check if font is already used by other console */
+	 
 	for (i = 0; i < MAX_NR_CONSOLES; i++) {
 		if (font_data[i] != STI_DEF_FONT
 		    && (FNTCRC(font_data[i]) == FNTCRC(cooked_font))) {
 			kfree(new_font);
 			kfree(cooked_font);
-			/* current font is the same as the new one */
+			 
 			if (i == unit)
 				return 0;
 			cooked_font = font_data[i];
@@ -237,13 +202,13 @@ static int sticon_set_font(struct vc_data *vc, struct console_font *op,
 		}
 	}
 
-	/* clear screen with old font: we now may have less rows */
+	 
 	vc_old_rows = vc->vc_rows;
 	vc_old_cols = vc->vc_cols;
 	sti_clear(sticon_sti, 0, 0, vc_old_rows, vc_old_cols,
 		  vc->vc_video_erase_char, font_data[vc->vc_num]);
 
-	/* delete old font in case it is a user font */
+	 
 	sticon_set_def_font(unit);
 
 	FNTREFCOUNT(cooked_font)++;
@@ -253,7 +218,7 @@ static int sticon_set_font(struct vc_data *vc, struct console_font *op,
 	vc_rows = sti_onscreen_y(sti) / cooked_font->height;
 	vc_resize(vc, vc_cols, vc_rows);
 
-	/* need to repaint screen if cols & rows are same as old font */
+	 
 	if (vc_cols == vc_old_cols && vc_rows == vc_old_rows)
 		update_screen(vc);
 
@@ -295,7 +260,7 @@ static void sticon_deinit(struct vc_data *c)
 {
     int i;
 
-    /* free memory used by user font */
+     
     for (i = 0; i < MAX_NR_CONSOLES; i++)
 	sticon_set_def_font(i);
 }
@@ -312,7 +277,7 @@ static void sticon_clear(struct vc_data *conp, int sy, int sx, int height,
 
 static int sticon_switch(struct vc_data *conp)
 {
-    return 1;	/* needs refreshing */
+    return 1;	 
 }
 
 static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
@@ -345,7 +310,7 @@ static u8 sticon_build_attr(struct vc_data *conp, u8 color,
 
 static void sticon_invert_region(struct vc_data *conp, u16 *p, int count)
 {
-    int col = 1; /* vga_can_do_color; */
+    int col = 1;  
 
     while (count--) {
 	u16 a = scr_readw(p);
@@ -383,7 +348,7 @@ static int __init sticonsole_init(void)
 {
     int err, i;
 
-    /* already initialized ? */
+     
     if (sticon_sti)
 	 return 0;
 

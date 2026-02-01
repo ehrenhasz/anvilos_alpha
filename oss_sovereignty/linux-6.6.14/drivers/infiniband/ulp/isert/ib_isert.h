@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/socket.h>
 #include <linux/in.h>
 #include <linux/in6.h>
@@ -35,21 +35,18 @@
 #define isert_err(fmt, arg...) \
 	pr_err(PFX "%s: " fmt, __func__ , ## arg)
 
-/* Constant PDU lengths calculations */
+ 
 #define ISER_HEADERS_LEN	(sizeof(struct iser_ctrl) + \
 				 sizeof(struct iscsi_hdr))
 #define ISER_RX_PAYLOAD_SIZE	(ISER_HEADERS_LEN + ISCSI_DEF_MAX_RECV_SEG_LEN)
 
-/* QP settings */
-/* Maximal bounds on received asynchronous PDUs */
-#define ISERT_MAX_TX_MISC_PDUS	4 /* NOOP_IN(2) , ASYNC_EVENT(2)   */
+ 
+ 
+#define ISERT_MAX_TX_MISC_PDUS	4  
 
-#define ISERT_MAX_RX_MISC_PDUS	6 /*
-				   * NOOP_OUT(2), TEXT(1),
-				   * SCSI_TMFUNC(2), LOGOUT(1)
-				   */
+#define ISERT_MAX_RX_MISC_PDUS	6  
 
-#define ISCSI_DEF_XMIT_CMDS_MAX 128 /* from libiscsi.h, must be power of 2 */
+#define ISCSI_DEF_XMIT_CMDS_MAX 128  
 
 #define ISERT_QP_MAX_RECV_DTOS	(ISCSI_DEF_XMIT_CMDS_MAX)
 
@@ -59,16 +56,13 @@
 				ISERT_MAX_TX_MISC_PDUS	+ \
 				ISERT_MAX_RX_MISC_PDUS)
 
-/*
- * RX size is default of 8k plus headers, but data needs to align to
- * 512 boundary, so use 1024 to have the extra space for alignment.
- */
+ 
 #define ISER_RX_SIZE		(ISCSI_DEF_MAX_RECV_SEG_LEN + 1024)
 
-/* Minimum I/O size is 512KB */
+ 
 #define ISCSI_ISER_MIN_SG_TABLESIZE 128
 
-/* Maximum support is 16MB I/O size */
+ 
 #define ISCSI_ISER_MAX_SG_TABLESIZE	4096
 
 enum isert_desc_type {

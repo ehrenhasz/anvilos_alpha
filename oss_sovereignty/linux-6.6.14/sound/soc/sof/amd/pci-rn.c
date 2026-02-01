@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc. All rights reserved.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * PCI interface for Renoir ACP device
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -82,7 +80,7 @@ static void acp_pci_rn_remove(struct pci_dev *pci)
 	return sof_pci_remove(pci);
 }
 
-/* PCI IDs */
+ 
 static const struct pci_device_id rn_pci_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, ACP_PCI_DEV_ID),
 	.driver_data = (unsigned long)&renoir_desc},
@@ -90,7 +88,7 @@ static const struct pci_device_id rn_pci_ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, rn_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_amd_rn_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = rn_pci_ids,

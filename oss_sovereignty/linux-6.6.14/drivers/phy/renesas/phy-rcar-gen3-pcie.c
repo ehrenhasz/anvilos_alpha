@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car Gen3 PCIe PHY driver
- *
- * Copyright (C) 2018 Cogent Embedded, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -13,9 +9,9 @@
 #include <linux/platform_device.h>
 #include <linux/spinlock.h>
 
-#define PHY_CTRL		0x4000		/* R8A77980 only */
+#define PHY_CTRL		0x4000		 
 
-/* PHY control register (PHY_CTRL) */
+ 
 #define PHY_CTRL_PHY_PWDN	BIT(2)
 
 struct rcar_gen3_phy {
@@ -44,7 +40,7 @@ static void rcar_gen3_phy_pcie_modify_reg(struct phy *p, unsigned int reg,
 
 static int r8a77980_phy_pcie_power_on(struct phy *p)
 {
-	/* Power on the PCIe PHY */
+	 
 	rcar_gen3_phy_pcie_modify_reg(p, PHY_CTRL, PHY_CTRL_PHY_PWDN, 0);
 
 	return 0;
@@ -52,7 +48,7 @@ static int r8a77980_phy_pcie_power_on(struct phy *p)
 
 static int r8a77980_phy_pcie_power_off(struct phy *p)
 {
-	/* Power off the PCIe PHY */
+	 
 	rcar_gen3_phy_pcie_modify_reg(p, PHY_CTRL, 0, PHY_CTRL_PHY_PWDN);
 
 	return 0;
@@ -96,10 +92,7 @@ static int rcar_gen3_phy_pcie_probe(struct platform_device *pdev)
 
 	phy->base = base;
 
-	/*
-	 * devm_phy_create() will call pm_runtime_enable(&phy->dev);
-	 * And then, phy-core will manage runtime PM for this device.
-	 */
+	 
 	pm_runtime_enable(dev);
 
 	phy->phy = devm_phy_create(dev, NULL, &r8a77980_phy_pcie_ops);

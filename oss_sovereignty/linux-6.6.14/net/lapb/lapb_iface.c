@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	LAPB release 002
- *
- *	This code REQUIRES 2.1.15 or higher/ NET3.038
- *
- *	History
- *	LAPB 001	Jonathan Naylor	Started Coding
- *	LAPB 002	Jonathan Naylor	New timer architecture.
- *	2000-10-29	Henner Eisen	lapb_data_indication() return status.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,9 +30,7 @@
 static LIST_HEAD(lapb_list);
 static DEFINE_RWLOCK(lapb_list_lock);
 
-/*
- *	Free an allocated lapb control block.
- */
+ 
 static void lapb_free_cb(struct lapb_cb *lapb)
 {
 	kfree(lapb);
@@ -58,9 +47,7 @@ static __inline__ void lapb_put(struct lapb_cb *lapb)
 		lapb_free_cb(lapb);
 }
 
-/*
- *	Socket removal during an interrupt is now safe.
- */
+ 
 static void __lapb_remove_cb(struct lapb_cb *lapb)
 {
 	if (lapb->node.next) {
@@ -69,9 +56,7 @@ static void __lapb_remove_cb(struct lapb_cb *lapb)
 	}
 }
 
-/*
- *	Add a socket to the bound sockets list.
- */
+ 
 static void __lapb_insert_cb(struct lapb_cb *lapb)
 {
 	list_add(&lapb->node, &lapb_list);
@@ -105,9 +90,7 @@ static struct lapb_cb *lapb_devtostruct(struct net_device *dev)
 
 	return rc;
 }
-/*
- *	Create an empty LAPB control block.
- */
+ 
 static struct lapb_cb *lapb_create_cb(void)
 {
 	struct lapb_cb *lapb = kzalloc(sizeof(*lapb), GFP_ATOMIC);
@@ -180,7 +163,7 @@ int lapb_unregister(struct net_device *dev)
 		goto out;
 	lapb_put(lapb);
 
-	/* Wait for other refs to "lapb" to drop */
+	 
 	while (refcount_read(&lapb->refcnt) > 2)
 		usleep_range(1, 10);
 
@@ -193,7 +176,7 @@ int lapb_unregister(struct net_device *dev)
 
 	spin_unlock_bh(&lapb->lock);
 
-	/* Wait for running timers to stop */
+	 
 	del_timer_sync(&lapb->t1timer);
 	del_timer_sync(&lapb->t2timer);
 
@@ -436,7 +419,7 @@ int lapb_data_indication(struct lapb_cb *lapb, struct sk_buff *skb)
 		return lapb->callbacks->data_indication(lapb->dev, skb);
 
 	kfree_skb(skb);
-	return NET_RX_SUCCESS; /* For now; must be != NET_RX_DROP */
+	return NET_RX_SUCCESS;  
 }
 
 int lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *skb)
@@ -451,7 +434,7 @@ int lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *skb)
 	return used;
 }
 
-/* Handle device status changes. */
+ 
 static int lapb_device_event(struct notifier_block *this, unsigned long event,
 			     void *ptr)
 {

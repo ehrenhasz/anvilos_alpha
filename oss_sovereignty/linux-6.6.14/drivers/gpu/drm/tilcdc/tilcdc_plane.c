@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Texas Instruments
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -44,7 +41,7 @@ static int tilcdc_plane_atomic_check(struct drm_plane *plane,
 
 	crtc_state = drm_atomic_get_existing_crtc_state(state,
 							new_state->crtc);
-	/* we should have a crtc state if the plane is attached to a crtc */
+	 
 	if (WARN_ON(!crtc_state))
 		return 0;
 

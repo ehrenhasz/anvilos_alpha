@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Nuvoton Technology Corp.
- * Author: Chi-Fang Li <cfli0@nuvoton.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
@@ -18,7 +15,7 @@ static DEFINE_SPINLOCK(ma35d1_lock);
 
 #define PLL_MAX_NUM		5
 
-/* Clock Control Registers Offset */
+ 
 #define REG_CLK_PWRCTL		0x00
 #define REG_CLK_SYSCLK0		0x04
 #define REG_CLK_SYSCLK1		0x08
@@ -532,7 +529,7 @@ static int ma35d1_clocks_probe(struct platform_device *pdev)
 					  ARRAY_SIZE(sysclk1_sel_clks));
 	hws[SYSCLK1_DIV2] = ma35d1_clk_fixed_factor(dev, "sysclk1_div2", "sysclk1_mux", 1, 2);
 
-	/* HCLK0~3 & PCLK0~4 */
+	 
 	hws[HCLK0] = ma35d1_clk_fixed_factor(dev, "hclk0", "sysclk1_mux", 1, 1);
 	hws[HCLK1] = ma35d1_clk_fixed_factor(dev, "hclk1", "sysclk1_mux", 1, 1);
 	hws[HCLK2] = ma35d1_clk_fixed_factor(dev, "hclk2", "sysclk1_mux", 1, 1);
@@ -547,7 +544,7 @@ static int ma35d1_clocks_probe(struct platform_device *pdev)
 	hws[USBPHY0] = ma35d1_clk_fixed("usbphy0", 480000000);
 	hws[USBPHY1] = ma35d1_clk_fixed("usbphy1", 480000000);
 
-	/* DDR */
+	 
 	hws[DDR0_GATE] = ma35d1_clk_gate(dev, "ddr0_gate", "ddrpll",
 					 clk_base + REG_CLK_SYSCLK0, 4);
 	hws[DDR6_GATE] = ma35d1_clk_gate(dev, "ddr6_gate", "ddrpll",

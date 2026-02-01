@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/stddef.h>
 #include <linux/bpf.h>
@@ -10,7 +10,7 @@
 
 #include <bpf_sockopt_helpers.h>
 
-#define SERV4_IP		0xc0a801feU /* 192.168.1.254 */
+#define SERV4_IP		0xc0a801feU  
 #define SERV4_PORT		4040
 
 SEC("cgroup/recvmsg4")

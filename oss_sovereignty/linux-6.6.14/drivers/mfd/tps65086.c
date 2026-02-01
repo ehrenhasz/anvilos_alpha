@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *
- * Based on the TPS65912 driver
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -57,7 +52,7 @@ static struct regmap_irq_chip tps65086_irq_chip = {
 
 static const struct of_device_id tps65086_of_match_table[] = {
 	{ .compatible = "ti,tps65086", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tps65086_of_match_table);
 
@@ -81,7 +76,7 @@ static int tps65086_probe(struct i2c_client *client)
 		return PTR_ERR(tps->regmap);
 	}
 
-	/* Store device ID to load regulator configuration that fit to IC variant */
+	 
 	ret = regmap_read(tps->regmap, TPS65086_DEVICEID1, &tps->chip_id);
 	if (ret) {
 		dev_err(tps->dev, "Failed to read revision register 1\n");
@@ -127,7 +122,7 @@ static void tps65086_remove(struct i2c_client *client)
 
 static const struct i2c_device_id tps65086_id_table[] = {
 	{ "tps65086", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, tps65086_id_table);
 

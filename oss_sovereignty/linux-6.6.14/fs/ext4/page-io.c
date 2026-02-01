@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext4/page-io.c
- *
- * This contains the new page_io functions for ext4
- *
- * Written by Theodore Ts'o, 2010.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/time.h>
@@ -83,13 +77,7 @@ struct ext4_io_end_vec *ext4_last_io_end_vec(ext4_io_end_t *io_end)
 	return list_last_entry(&io_end->list_vec, struct ext4_io_end_vec, list);
 }
 
-/*
- * Print an buffer I/O error compatible with the fs/buffer.c.  This
- * provides compatibility with dmesg scrapers that look for a specific
- * buffer I/O error message.  We really need a unified error reporting
- * structure to userspace ala Digital Unix's uerf system, but it's
- * probably not going to happen in my lifetime, due to LKML politics...
- */
+ 
 static void buffer_io_error(struct buffer_head *bh)
 {
 	printk_ratelimited(KERN_ERR "Buffer I/O error on device %pg, logical block %llu\n",
@@ -121,10 +109,7 @@ static void ext4_finish_bio(struct bio *bio)
 			mapping_set_error(folio->mapping, err);
 		}
 		bh = head = folio_buffers(folio);
-		/*
-		 * We check all buffers in the folio under b_uptodate_lock
-		 * to avoid races with other end io clearing async_write flags
-		 */
+		 
 		spin_lock_irqsave(&head->b_uptodate_lock, flags);
 		do {
 			if (bh_offset(bh) < bio_start ||
@@ -164,14 +149,7 @@ static void ext4_release_io_end(ext4_io_end_t *io_end)
 	kmem_cache_free(io_end_cachep, io_end);
 }
 
-/*
- * Check a range of space and convert unwritten extents to written. Note that
- * we are protected from truncate touching same part of extent tree by the
- * fact that truncate code waits for all DIO to finish (thus exclusion from
- * direct IO is achieved) and also waits for PageWriteback bits. Thus we
- * cannot get to ext4_ext_truncate() before all IOs overlapping that range are
- * completed (happens from ext4_free_ioend()).
- */
+ 
 static int ext4_end_io_end(ext4_io_end_t *io_end)
 {
 	struct inode *inode = io_end->inode;
@@ -182,7 +160,7 @@ static int ext4_end_io_end(ext4_io_end_t *io_end)
 		   "list->prev 0x%p\n",
 		   io_end, inode->i_ino, io_end->list.next, io_end->list.prev);
 
-	io_end->handle = NULL;	/* Following call will use up the handle */
+	io_end->handle = NULL;	 
 	ret = ext4_convert_unwritten_io_end_vec(handle, io_end);
 	if (ret < 0 && !ext4_forced_shutdown(inode->i_sb)) {
 		ext4_msg(inode->i_sb, KERN_EMERG,
@@ -218,7 +196,7 @@ static void dump_completed_IO(struct inode *inode, struct list_head *head)
 #endif
 }
 
-/* Add the io_end to per-inode completed end_io list. */
+ 
 static void ext4_add_complete_io(ext4_io_end_t *io_end)
 {
 	struct ext4_inode_info *ei = EXT4_I(io_end->inode);
@@ -226,7 +204,7 @@ static void ext4_add_complete_io(ext4_io_end_t *io_end)
 	struct workqueue_struct *wq;
 	unsigned long flags;
 
-	/* Only reserved conversions from writeback should enter here */
+	 
 	WARN_ON(!(io_end->flag & EXT4_IO_END_UNWRITTEN));
 	WARN_ON(!io_end->handle && sbi->s_journal);
 	spin_lock_irqsave(&ei->i_completed_io_lock, flags);
@@ -263,9 +241,7 @@ static int ext4_do_flush_completed_IO(struct inode *inode,
 	return ret;
 }
 
-/*
- * work on completed IO, to convert unwritten extents to extents
- */
+ 
 void ext4_end_io_rsv_work(struct work_struct *work)
 {
 	struct ext4_inode_info *ei = container_of(work, struct ext4_inode_info,
@@ -320,7 +296,7 @@ ext4_io_end_t *ext4_get_io_end(ext4_io_end_t *io_end)
 	return io_end;
 }
 
-/* BIO completion function for page writeback */
+ 
 static void ext4_end_bio(struct bio *bio)
 {
 	ext4_io_end_t *io_end = bio->bi_private;
@@ -350,18 +326,11 @@ static void ext4_end_bio(struct bio *bio)
 	}
 
 	if (io_end->flag & EXT4_IO_END_UNWRITTEN) {
-		/*
-		 * Link bio into list hanging from io_end. We have to do it
-		 * atomically as bio completions can be racing against each
-		 * other.
-		 */
+		 
 		bio->bi_private = xchg(&io_end->bio, bio);
 		ext4_put_io_end_defer(io_end);
 	} else {
-		/*
-		 * Drop io_end reference early. Inode can get freed once
-		 * we finish the bio.
-		 */
+		 
 		ext4_put_io_end_defer(io_end);
 		ext4_finish_bio(bio);
 		bio_put(bio);
@@ -393,10 +362,7 @@ static void io_submit_init_bio(struct ext4_io_submit *io,
 {
 	struct bio *bio;
 
-	/*
-	 * bio_alloc will _always_ be able to allocate a bio if
-	 * __GFP_DIRECT_RECLAIM is set, see comments for bio_alloc_bioset().
-	 */
+	 
 	bio = bio_alloc(bh->b_bdev, BIO_MAX_VECS, REQ_OP_WRITE, GFP_NOIO);
 	fscrypt_set_bio_crypt_ctx_bh(bio, bh, GFP_NOIO);
 	bio->bi_iter.bi_sector = bh->b_blocknr * (bh->b_size >> 9);
@@ -443,24 +409,10 @@ int ext4_bio_write_folio(struct ext4_io_submit *io, struct folio *folio,
 
 	folio_clear_error(folio);
 
-	/*
-	 * Comments copied from block_write_full_page:
-	 *
-	 * The folio straddles i_size.  It must be zeroed out on each and every
-	 * writepage invocation because it may be mmapped.  "A file is mapped
-	 * in multiples of the page size.  For a file that is not a multiple of
-	 * the page size, the remaining memory is zeroed when mapped, and
-	 * writes to that region are not written out to the file."
-	 */
+	 
 	if (len < folio_size(folio))
 		folio_zero_segment(folio, len, folio_size(folio));
-	/*
-	 * In the first loop we prepare and mark buffers to submit. We have to
-	 * mark all buffers in the folio before submitting so that
-	 * folio_end_writeback() cannot be called from ext4_end_bio() when IO
-	 * on the first buffer finishes and we are still working on submitting
-	 * the second buffer.
-	 */
+	 
 	bh = head = folio_buffers(folio);
 	do {
 		block_start = bh_offset(bh);
@@ -471,17 +423,10 @@ int ext4_bio_write_folio(struct ext4_io_submit *io, struct folio *folio,
 		}
 		if (!buffer_dirty(bh) || buffer_delay(bh) ||
 		    !buffer_mapped(bh) || buffer_unwritten(bh)) {
-			/* A hole? We can safely clear the dirty bit */
+			 
 			if (!buffer_mapped(bh))
 				clear_buffer_dirty(bh);
-			/*
-			 * Keeping dirty some buffer we cannot write? Make sure
-			 * to redirty the folio and keep TOWRITE tag so that
-			 * racing WB_SYNC_ALL writeback does not skip the folio.
-			 * This happens e.g. when doing writeout for
-			 * transaction commit or when journalled data is not
-			 * yet committed.
-			 */
+			 
 			if (buffer_dirty(bh) ||
 			    (buffer_jbd(bh) && buffer_jbddirty(bh))) {
 				if (!folio_test_dirty(folio))
@@ -497,29 +442,19 @@ int ext4_bio_write_folio(struct ext4_io_submit *io, struct folio *folio,
 		nr_to_submit++;
 	} while ((bh = bh->b_this_page) != head);
 
-	/* Nothing to submit? Just unlock the folio... */
+	 
 	if (!nr_to_submit)
 		return 0;
 
 	bh = head = folio_buffers(folio);
 
-	/*
-	 * If any blocks are being written to an encrypted file, encrypt them
-	 * into a bounce page.  For simplicity, just encrypt until the last
-	 * block which might be needed.  This may cause some unneeded blocks
-	 * (e.g. holes) to be unnecessarily encrypted, but this is rare and
-	 * can't happen in the common case of blocksize == PAGE_SIZE.
-	 */
+	 
 	if (fscrypt_inode_uses_fs_layer_crypto(inode)) {
 		gfp_t gfp_flags = GFP_NOFS;
 		unsigned int enc_bytes = round_up(len, i_blocksize(inode));
 		struct page *bounce_page;
 
-		/*
-		 * Since bounce page allocation uses a mempool, we can only use
-		 * a waiting mask (i.e. request guaranteed allocation) on the
-		 * first page of the bio.  Otherwise it can deadlock.
-		 */
+		 
 		if (io->io_bio)
 			gfp_flags = GFP_NOWAIT | __GFP_NOWARN;
 	retry_encrypt:
@@ -556,7 +491,7 @@ int ext4_bio_write_folio(struct ext4_io_submit *io, struct folio *folio,
 
 	__folio_start_writeback(folio, keep_towrite);
 
-	/* Now submit buffers to write */
+	 
 	do {
 		if (!buffer_async_write(bh))
 			continue;

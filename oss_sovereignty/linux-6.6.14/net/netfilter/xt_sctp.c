@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -110,7 +110,7 @@ match_packet(const struct sk_buff *skb,
 		return true;
 	}
 
-	/* This will never be reached, but required to stop compiler whine */
+	 
 	return false;
 }
 

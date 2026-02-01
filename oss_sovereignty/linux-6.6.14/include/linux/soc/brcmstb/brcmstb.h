@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BRCMSTB_SOC_H
 #define __BRCMSTB_SOC_H
 
@@ -16,10 +16,7 @@ static inline u32 BRCM_REV(u32 reg)
 
 #if IS_ENABLED(CONFIG_SOC_BRCMSTB)
 
-/*
- * Helper functions for getting family or product id from the
- * SoC driver.
- */
+ 
 u32 brcmstb_get_family_id(void);
 u32 brcmstb_get_product_id(void);
 
@@ -35,4 +32,4 @@ static inline u32 brcmstb_get_product_id(void)
 }
 #endif
 
-#endif /* __BRCMSTB_SOC_H */
+#endif  

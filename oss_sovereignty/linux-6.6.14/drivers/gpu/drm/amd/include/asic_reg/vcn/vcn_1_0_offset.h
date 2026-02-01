@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _vcn_1_0_OFFSET_HEADER
 #define _vcn_1_0_OFFSET_HEADER
 
 
 
-// addressBlock: uvd_uvd_pg_dec
-// base address: 0x1fb00
+
+
 #define mmUVD_PGFSM_CONFIG                                                                             0x00c0
 #define mmUVD_PGFSM_CONFIG_BASE_IDX                                                                    1
 #define mmUVD_PGFSM_STATUS                                                                             0x00c1
@@ -77,8 +58,8 @@
 #define mmUVD_DPG_VCPU_CACHE_OFFSET0_BASE_IDX                                                          1
 
 
-// addressBlock: uvd_uvdgendec
-// base address: 0x1fc00
+
+
 #define mmUVD_LCM_CGC_CNTRL                                                                            0x0123
 #define mmUVD_LCM_CGC_CNTRL_BASE_IDX                                                                   1
 
@@ -95,8 +76,8 @@
 #define mmUVD_MIF_RECON1_ADDR_CONFIG                                                                   0x01c5
 #define mmUVD_MIF_RECON1_ADDR_CONFIG_BASE_IDX                                                          1
 
-// addressBlock: uvd_uvdnpdec
-// base address: 0x20000
+
+
 #define mmUVD_JPEG_CNTL                                                                                0x0200
 #define mmUVD_JPEG_CNTL_BASE_IDX                                                                       1
 #define mmUVD_JPEG_RB_BASE                                                                             0x0201
@@ -243,8 +224,8 @@
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_LOW_BASE_IDX                                                        1
 
 
-// addressBlock: uvd_uvddec
-// base address: 0x20c00
+
+
 #define mmUVD_SEMA_CNTL                                                                                0x0500
 #define mmUVD_SEMA_CNTL_BASE_IDX                                                                       1
 #define mmUVD_LMI_JRBC_RB_64BIT_BAR_LOW                                                                0x0503

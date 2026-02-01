@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic SoCs USB PHY driver
- * Copyright (c) Paul Cercueil <paul@crapouillou.net>
- * Copyright (c) 漆鹏振 (Qi Pengzhen) <aric.pzqi@ingenic.com>
- * Copyright (c) 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -16,13 +11,13 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
-/* OTGPHY register offsets */
+ 
 #define REG_USBPCR_OFFSET			0x00
 #define REG_USBRDT_OFFSET			0x04
 #define REG_USBVBFIL_OFFSET			0x08
 #define REG_USBPCR1_OFFSET			0x0c
 
-/* bits within the USBPCR register */
+ 
 #define USBPCR_USB_MODE				BIT(31)
 #define USBPCR_AVLD_REG				BIT(30)
 #define USBPCR_COMMONONN			BIT(25)
@@ -67,7 +62,7 @@
 #define USBPCR_TXVREFTUNE_INC_25PPT	0x7
 #define USBPCR_TXVREFTUNE_DFT		0x5
 
-/* bits within the USBRDTR register */
+ 
 #define USBRDT_UTMI_RST				BIT(27)
 #define USBRDT_HB_MASK				BIT(26)
 #define USBRDT_VBFIL_LD_EN			BIT(25)
@@ -75,7 +70,7 @@
 #define USBRDT_IDDIG_REG			BIT(23)
 #define USBRDT_VBFIL_EN				BIT(2)
 
-/* bits within the USBPCR1 register */
+ 
 #define USBPCR1_BVLD_REG			BIT(31)
 #define USBPCR1_DPPD				BIT(29)
 #define USBPCR1_DMPD				BIT(28)
@@ -110,7 +105,7 @@ static int ingenic_usb_phy_init(struct phy *phy)
 
 	priv->soc_info->usb_phy_init(phy);
 
-	/* Wait for PHY to reset */
+	 
 	usleep_range(30, 300);
 	reg = readl(priv->base + REG_USBPCR_OFFSET);
 	writel(reg & ~USBPCR_POR, priv->base + REG_USBPCR_OFFSET);
@@ -265,7 +260,7 @@ static void x1830_usb_phy_init(struct phy *phy)
 	struct ingenic_usb_phy *priv = phy_get_drvdata(phy);
 	u32 reg;
 
-	/* rdt */
+	 
 	writel(USBRDT_VBFIL_EN | USBRDT_UTMI_RST, priv->base + REG_USBRDT_OFFSET);
 
 	reg = readl(priv->base + REG_USBPCR1_OFFSET) | USBPCR1_WORD_IF_16BIT |
@@ -370,7 +365,7 @@ static const struct of_device_id ingenic_usb_phy_of_matches[] = {
 	{ .compatible = "ingenic,x1000-phy", .data = &x1000_soc_info },
 	{ .compatible = "ingenic,x1830-phy", .data = &x1830_soc_info },
 	{ .compatible = "ingenic,x2000-phy", .data = &x2000_soc_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ingenic_usb_phy_of_matches);
 

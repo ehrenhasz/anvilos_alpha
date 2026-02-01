@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 #include <net/mana/mana_auxiliary.h>
@@ -71,10 +69,7 @@ static int mana_ib_probe(struct auxiliary_device *adev,
 	dev->gdma_dev = mdev;
 	dev->ib_dev.node_type = RDMA_NODE_IB_CA;
 
-	/*
-	 * num_comp_vectors needs to set to the max MSIX index
-	 * when interrupts and event queues are implemented
-	 */
+	 
 	dev->ib_dev.num_comp_vectors = 1;
 	dev->ib_dev.dev.parent = mdev->gdma_context->dev;
 

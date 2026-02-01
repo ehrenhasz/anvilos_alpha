@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2019 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __CRYPTO_CTX_H__
 #define __CRYPTO_CTX_H__
@@ -63,4 +61,4 @@ struct ksmbd_crypto_ctx *ksmbd_crypto_ctx_find_ccm(void);
 void ksmbd_crypto_destroy(void);
 int ksmbd_crypto_create(void);
 
-#endif /* __CRYPTO_CTX_H__ */
+#endif  

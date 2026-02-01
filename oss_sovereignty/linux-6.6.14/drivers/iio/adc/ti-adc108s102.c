@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI ADC108S102 SPI ADC driver
- *
- * Copyright (c) 2013-2015 Intel Corporation.
- * Copyright (c) 2017 Siemens AG
- *
- * This IIO device driver is designed to work with the following
- * analog to digital converters from Texas Instruments:
- *  ADC108S102
- *  ADC128S102
- * The communication with ADC chip is via the SPI bus (mode 3).
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/iio/iio.h>
@@ -25,58 +14,33 @@
 #include <linux/regulator/consumer.h>
 #include <linux/spi/spi.h>
 
-/*
- * In case of ACPI, we use the hard-wired 5000 mV of the Galileo and IOT2000
- * boards as default for the reference pin VA. Device tree users encode that
- * via the vref-supply regulator.
- */
+ 
 #define ADC108S102_VA_MV_ACPI_DEFAULT	5000
 
-/*
- * Defining the ADC resolution being 12 bits, we can use the same driver for
- * both ADC108S102 (10 bits resolution) and ADC128S102 (12 bits resolution)
- * chips. The ADC108S102 effectively returns a 12-bit result with the 2
- * least-significant bits unset.
- */
+ 
 #define ADC108S102_BITS		12
 #define ADC108S102_MAX_CHANNELS	8
 
-/*
- * 16-bit SPI command format:
- *   [15:14] Ignored
- *   [13:11] 3-bit channel address
- *   [10:0]  Ignored
- */
+ 
 #define ADC108S102_CMD(ch)		((u16)(ch) << 11)
 
-/*
- * 16-bit SPI response format:
- *   [15:12] Zeros
- *   [11:0]  12-bit ADC sample (for ADC108S102, [1:0] will always be 0).
- */
+ 
 #define ADC108S102_RES_DATA(res)	((u16)res & GENMASK(11, 0))
 
 struct adc108s102_state {
 	struct spi_device		*spi;
 	struct regulator		*reg;
 	u32				va_millivolt;
-	/* SPI transfer used by triggered buffer handler*/
+	 
 	struct spi_transfer		ring_xfer;
-	/* SPI transfer used by direct scan */
+	 
 	struct spi_transfer		scan_single_xfer;
-	/* SPI message used by ring_xfer SPI transfer */
+	 
 	struct spi_message		ring_msg;
-	/* SPI message used by scan_single_xfer SPI transfer */
+	 
 	struct spi_message		scan_single_msg;
 
-	/*
-	 * SPI message buffers:
-	 *  tx_buf: |C0|C1|C2|C3|C4|C5|C6|C7|XX|
-	 *  rx_buf: |XX|R0|R1|R2|R3|R4|R5|R6|R7|tt|tt|tt|tt|
-	 *
-	 *  tx_buf: 8 channel read commands, plus 1 dummy command
-	 *  rx_buf: 1 dummy response, 8 channel responses
-	 */
+	 
 	__be16				rx_buf[9] __aligned(IIO_DMA_MINALIGN);
 	__be16				tx_buf[9] __aligned(IIO_DMA_MINALIGN);
 };
@@ -116,18 +80,15 @@ static int adc108s102_update_scan_mode(struct iio_dev *indio_dev,
 	struct adc108s102_state *st = iio_priv(indio_dev);
 	unsigned int bit, cmds;
 
-	/*
-	 * Fill in the first x shorts of tx_buf with the number of channels
-	 * enabled for sampling by the triggered buffer.
-	 */
+	 
 	cmds = 0;
 	for_each_set_bit(bit, active_scan_mask, ADC108S102_MAX_CHANNELS)
 		st->tx_buf[cmds++] = cpu_to_be16(ADC108S102_CMD(bit));
 
-	/* One dummy command added, to clock in the last response */
+	 
 	st->tx_buf[cmds++] = 0x00;
 
-	/* build SPI ring message */
+	 
 	st->ring_xfer.tx_buf = &st->tx_buf[0];
 	st->ring_xfer.rx_buf = &st->rx_buf[0];
 	st->ring_xfer.len = cmds * sizeof(st->tx_buf[0]);
@@ -148,7 +109,7 @@ static irqreturn_t adc108s102_trigger_handler(int irq, void *p)
 	if (ret < 0)
 		goto out_notify;
 
-	/* Skip the dummy response in the first slot */
+	 
 	iio_push_to_buffers_with_ts_unaligned(indio_dev,
 					      &st->rx_buf[1],
 					      st->ring_xfer.len - sizeof(st->rx_buf[1]),
@@ -169,7 +130,7 @@ static int adc108s102_scan_direct(struct adc108s102_state *st, unsigned int ch)
 	if (ret)
 		return ret;
 
-	/* Skip the dummy response in the first slot */
+	 
 	return be16_to_cpu(st->rx_buf[1]);
 }
 
@@ -267,7 +228,7 @@ static int adc108s102_probe(struct spi_device *spi)
 	indio_dev->num_channels = ARRAY_SIZE(adc108s102_channels);
 	indio_dev->info = &adc108s102_info;
 
-	/* Setup default message */
+	 
 	st->scan_single_xfer.tx_buf = st->tx_buf;
 	st->scan_single_xfer.rx_buf = st->rx_buf;
 	st->scan_single_xfer.len = 2 * sizeof(st->tx_buf[0]);

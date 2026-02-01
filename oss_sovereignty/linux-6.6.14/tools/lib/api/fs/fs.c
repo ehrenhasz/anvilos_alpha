@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -212,16 +212,12 @@ static void mem_toupper(char *f, size_t len)
 	}
 }
 
-/*
- * Check for "NAME_PATH" environment variable to override fs location (for
- * testing). This matches the recommendation in Documentation/admin-guide/sysfs-rules.rst
- * for SYSFS_PATH.
- */
+ 
 static bool fs__env_override(struct fs *fs)
 {
 	char *override_path;
 	size_t name_len = strlen(fs->name);
-	/* name + "_PATH" + '\0' */
+	 
 	char upper_name[name_len + 5 + 1];
 
 	memcpy(upper_name, fs->name, name_len);
@@ -257,7 +253,7 @@ static const char *fs__mountpoint(const struct fs *fs)
 static const char *mount_overload(struct fs *fs)
 {
 	size_t name_len = strlen(fs->name);
-	/* "PERF_" + name + "_ENVIRONMENT" + '\0' */
+	 
 	char upper_name[5 + name_len + 12 + 1];
 
 	snprintf(upper_name, name_len, "PERF_%s_ENVIRONMENT", fs->name);
@@ -272,7 +268,7 @@ static const char *fs__mount(struct fs *fs)
 
 	pthread_mutex_lock(&fs->mount_mutex);
 
-	/* Check if path found inside the mutex to avoid races with other callers of mount. */
+	 
 	mountpoint = fs__mountpoint(fs);
 	if (mountpoint)
 		goto out;
@@ -325,26 +321,19 @@ static int filename__read_ull_base(const char *filename,
 	return err;
 }
 
-/*
- * Parses @value out of @filename with strtoull.
- * By using 16 for base to treat the number as hex.
- */
+ 
 int filename__read_xll(const char *filename, unsigned long long *value)
 {
 	return filename__read_ull_base(filename, value, 16);
 }
 
-/*
- * Parses @value out of @filename with strtoull.
- * By using 0 for base, the strtoull detects the
- * base automatically (see man strtoull).
- */
+ 
 int filename__read_ull(const char *filename, unsigned long long *value)
 {
 	return filename__read_ull_base(filename, value, 0);
 }
 
-#define STRERR_BUFSIZE  128     /* For the buffer size of strerror_r */
+#define STRERR_BUFSIZE  128      
 
 int filename__read_str(const char *filename, char **buf, size_t *sizep)
 {

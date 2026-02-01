@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LTC2632 Digital to analog convertors spi driver
- *
- * Copyright 2017 Maxime Roussin-Bélanger
- * expanded by Silvan Murer <silvan.murer@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/spi/spi.h>
@@ -24,25 +19,14 @@
 #define LTC2632_CMD_INTERNAL_REFER              0x6
 #define LTC2632_CMD_EXTERNAL_REFER              0x7
 
-/**
- * struct ltc2632_chip_info - chip specific information
- * @channels:		channel spec for the DAC
- * @num_channels:	DAC channel count of the chip
- * @vref_mv:		internal reference voltage
- */
+ 
 struct ltc2632_chip_info {
 	const struct iio_chan_spec *channels;
 	const size_t num_channels;
 	const int vref_mv;
 };
 
-/**
- * struct ltc2632_state - driver instance specific data
- * @spi_dev:			pointer to the spi_device struct
- * @powerdown_cache_mask:	used to show current channel powerdown state
- * @vref_mv:			used reference voltage (internal or external)
- * @vref_reg:		regulator for the reference voltage
- */
+ 
 struct ltc2632_state {
 	struct spi_device *spi_dev;
 	unsigned int powerdown_cache_mask;
@@ -77,13 +61,7 @@ static int ltc2632_spi_write(struct spi_device *spi,
 	u32 data;
 	u8 msg[3];
 
-	/*
-	 * The input shift register is 24 bits wide.
-	 * The next four are the command bits, C3 to C0,
-	 * followed by the 4-bit DAC address, A3 to A0, and then the
-	 * 12-, 10-, 8-bit data-word. The data-word comprises the 12-,
-	 * 10-, 8-bit input code followed by 4, 6, or 8 don't care bits.
-	 */
+	 
 	data = (cmd << 20) | (addr << 16) | (val << shift);
 	put_unaligned_be24(data, &msg[0]);
 
@@ -326,7 +304,7 @@ static int ltc2632_probe(struct spi_device *spi)
 
 	st->vref_reg = devm_regulator_get_optional(&spi->dev, "vref");
 	if (PTR_ERR(st->vref_reg) == -ENODEV) {
-		/* use internal reference voltage */
+		 
 		st->vref_reg = NULL;
 		st->vref_mv = chip_info->vref_mv;
 
@@ -343,7 +321,7 @@ static int ltc2632_probe(struct spi_device *spi)
 				"Error getting voltage reference regulator\n");
 		return PTR_ERR(st->vref_reg);
 	} else {
-		/* use external reference voltage */
+		 
 		ret = regulator_enable(st->vref_reg);
 		if (ret) {
 			dev_err(&spi->dev,

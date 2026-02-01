@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * atmel_wm8904 - Atmel ASoC driver for boards with WM8904 codec.
- *
- * Copyright (C) 2012 Atmel
- *
- * Author: Bo Shen <voice.shen@atmel.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -37,11 +31,7 @@ static int atmel_asoc_wm8904_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/*
-	 * As here wm8904 use FLL output as its system clock
-	 * so calling set_sysclk won't care freq parameter
-	 * then we pass 0
-	 */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8904_CLK_FLL,
 			0, SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -193,7 +183,7 @@ static struct platform_driver atmel_asoc_wm8904_driver = {
 
 module_platform_driver(atmel_asoc_wm8904_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Bo Shen <voice.shen@atmel.com>");
 MODULE_DESCRIPTION("ALSA SoC machine driver for Atmel EK with WM8904 codec");
 MODULE_LICENSE("GPL");

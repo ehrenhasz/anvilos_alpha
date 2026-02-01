@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * AMD MP2 platform driver
- *
- * Setup the I2C adapters enumerated in the ACPI namespace.
- * MP2 controllers have 2 separate busses, up to 2 I2C adapters may be listed.
- *
- * Authors: Nehal Bakulchandra Shah <Nehal-bakulchandra.shah@amd.com>
- *          Elie Morisse <syniurge@gmail.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -21,13 +13,7 @@
 #define AMD_MP2_I2C_MAX_RW_LENGTH ((1 << 12) - 1)
 #define AMD_I2C_TIMEOUT (msecs_to_jiffies(250))
 
-/**
- * struct amd_i2c_dev - MP2 bus/i2c adapter context
- * @common: shared context with the MP2 PCI driver
- * @pdev: platform driver node
- * @adap: i2c adapter
- * @cmd_complete: xfer completion object
- */
+ 
 struct amd_i2c_dev {
 	struct amd_i2c_common common;
 	struct platform_device *pdev;
@@ -156,7 +142,7 @@ static int i2c_amd_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	struct i2c_msg *pmsg;
 	int err = 0;
 
-	/* the adapter might have been deleted while waiting for the bus lock */
+	 
 	if (unlikely(!i2c_dev->common.mp2_dev))
 		return -EINVAL;
 
@@ -214,7 +200,7 @@ static enum speed_enum i2c_amd_get_bus_speed(struct platform_device *pdev)
 	int i;
 
 	acpi_speed = i2c_acpi_find_bus_speed(&pdev->dev);
-	/* round down to the lowest standard speed */
+	 
 	for (i = 0; i < ARRAY_SIZE(supported_speeds); i++) {
 		if (acpi_speed >= supported_speeds[i])
 			break;
@@ -257,13 +243,10 @@ static int i2c_amd_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, -EINVAL, "incorrect UID/bus id \"%llu\"!\n", uid);
 	dev_dbg(dev, "bus id is %llu\n", uid);
 
-	/* The ACPI namespace doesn't contain information about which MP2 PCI
-	 * device an AMDI0011 ACPI device is related to, so assume that there's
-	 * only one MP2 PCI device per system.
-	 */
+	 
 	mp2_dev = amd_mp2_find_device();
 	if (!mp2_dev || !mp2_dev->probed)
-		/* The MP2 PCI device should get probed later */
+		 
 		return -EPROBE_DEFER;
 
 	i2c_dev = devm_kzalloc(&pdev->dev, sizeof(*i2c_dev), GFP_KERNEL);
@@ -281,7 +264,7 @@ static int i2c_amd_probe(struct platform_device *pdev)
 	i2c_dev->common.resume = &i2c_amd_resume;
 #endif
 
-	/* Register the adapter */
+	 
 	amd_mp2_pm_runtime_get(mp2_dev);
 
 	i2c_dev->common.reqcmd = i2c_none;
@@ -292,7 +275,7 @@ static int i2c_amd_probe(struct platform_device *pdev)
 
 	i2c_dev->common.i2c_speed = i2c_amd_get_bus_speed(pdev);
 
-	/* Setup i2c adapter description */
+	 
 	i2c_dev->adap.owner = THIS_MODULE;
 	i2c_dev->adap.algo = &i2c_amd_algorithm;
 	i2c_dev->adap.quirks = &amd_i2c_dev_quirks;
@@ -307,11 +290,11 @@ static int i2c_amd_probe(struct platform_device *pdev)
 
 	init_completion(&i2c_dev->cmd_complete);
 
-	/* Enable the bus */
+	 
 	if (i2c_amd_enable_set(i2c_dev, true))
 		dev_err(&pdev->dev, "initial bus enable failed\n");
 
-	/* Attach to the i2c layer */
+	 
 	ret = i2c_add_adapter(&i2c_dev->adap);
 
 	amd_mp2_pm_runtime_put(mp2_dev);

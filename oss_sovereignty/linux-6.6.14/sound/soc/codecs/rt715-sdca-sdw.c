@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt715-sdca-sdw.c -- rt715 ALSA SoC audio driver
-//
-// Copyright(c) 2020 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -47,8 +47,8 @@ static bool rt715_sdca_volatile_register(struct device *dev, unsigned int reg)
 	case 0x2021:
 	case 0x2023:
 	case 0x2230:
-	case 0x202d ... 0x202f: /* BRA */
-	case 0x2200 ... 0x2212: /* i2c debug */
+	case 0x202d ... 0x202f:  
+	case 0x2200 ... 0x2212:  
 	case 0x2f07:
 	case 0x2f1b ... 0x2f1e:
 	case 0x2f30 ... 0x2f34:
@@ -56,7 +56,7 @@ static bool rt715_sdca_volatile_register(struct device *dev, unsigned int reg)
 	case 0x2f53 ... 0x2f59:
 	case 0x2f5c ... 0x2f5f:
 	case SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_SMPU_TRIG_ST_EN,
-		RT715_SDCA_SMPU_TRIG_ST_CTRL, CH_00): /* VAD Searching status */
+		RT715_SDCA_SMPU_TRIG_ST_CTRL, CH_00):  
 		return true;
 	default:
 		return false;
@@ -121,14 +121,11 @@ static int rt715_sdca_update_status(struct sdw_slave *slave,
 {
 	struct rt715_sdca_priv *rt715 = dev_get_drvdata(&slave->dev);
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt715->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt715_sdca_io_init(&slave->dev, slave);
 }
 
@@ -142,9 +139,9 @@ static int rt715_sdca_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x50;/* BITMAP: 01010000 */
-	prop->sink_ports = 0x0;	/* BITMAP:  00000000 */
+	 
+	prop->source_ports = 0x50; 
+	prop->sink_ports = 0x0;	 
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -163,7 +160,7 @@ static int rt715_sdca_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 200;
 
 	return 0;
@@ -179,7 +176,7 @@ static int rt715_sdca_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *mbq_regmap, *regmap;
 
-	/* Regmap Initialization */
+	 
 	mbq_regmap = devm_regmap_init_sdw_mbq(slave, &rt715_sdca_mbq_regmap);
 	if (IS_ERR(mbq_regmap))
 		return PTR_ERR(mbq_regmap);

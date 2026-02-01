@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/libgcc.h>
@@ -11,7 +10,7 @@
 #define __ll_lowpart(t) ((unsigned long) (t) & (__ll_B - 1))
 #define __ll_highpart(t) ((unsigned long) (t) >> (W_TYPE_SIZE / 2))
 
-/* If we still don't have umul_ppmm, define it using plain C.  */
+ 
 #if !defined(umul_ppmm)
 #define umul_ppmm(w1, w0, u, v)						\
 	do {								\
@@ -28,10 +27,10 @@
 		__x2 = (unsigned long) __uh * __vl;			\
 		__x3 = (unsigned long) __uh * __vh;			\
 									\
-		__x1 += __ll_highpart(__x0); /* this can't give carry */\
-		__x1 += __x2; /* but this indeed can */			\
-		if (__x1 < __x2) /* did we get it? */			\
-		__x3 += __ll_B; /* yes, add it in the proper pos */	\
+		__x1 += __ll_highpart(__x0);  \
+		__x1 += __x2;  			\
+		if (__x1 < __x2)  			\
+		__x3 += __ll_B;  	\
 									\
 		(w1) = __x3 + __ll_highpart(__x1);			\
 		(w0) = __ll_lowpart(__x1) * __ll_B + __ll_lowpart(__x0);\

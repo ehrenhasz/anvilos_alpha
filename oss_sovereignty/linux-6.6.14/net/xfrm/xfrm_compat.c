@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XFRM compat layer
- * Author: Dmitry Safonov <dima@arista.com>
- * Based on code and translator idea by: Florian Westphal <fw@strlen.de>
- */
+
+ 
 #include <linux/compat.h>
 #include <linux/nospec.h>
 #include <linux/xfrm.h>
@@ -14,11 +10,11 @@ struct compat_xfrm_lifetime_cfg {
 	compat_u64 soft_packet_limit, hard_packet_limit;
 	compat_u64 soft_add_expires_seconds, hard_add_expires_seconds;
 	compat_u64 soft_use_expires_seconds, hard_use_expires_seconds;
-}; /* same size on 32bit, but only 4 byte alignment required */
+};  
 
 struct compat_xfrm_lifetime_cur {
 	compat_u64 bytes, packets, add_time, use_time;
-}; /* same size on 32bit, but only 4 byte alignment required */
+};  
 
 struct compat_xfrm_userpolicy_info {
 	struct xfrm_selector sel;
@@ -26,7 +22,7 @@ struct compat_xfrm_userpolicy_info {
 	struct compat_xfrm_lifetime_cur curlft;
 	__u32 priority, index;
 	u8 dir, action, flags, share;
-	/* 4 bytes additional padding on 64bit */
+	 
 };
 
 struct compat_xfrm_usersa_info {
@@ -39,7 +35,7 @@ struct compat_xfrm_usersa_info {
 	__u32 seq, reqid;
 	u16 family;
 	u8 mode, replay_window, flags;
-	/* 4 bytes additional padding on 64bit */
+	 
 };
 
 struct compat_xfrm_user_acquire {
@@ -47,25 +43,25 @@ struct compat_xfrm_user_acquire {
 	xfrm_address_t saddr;
 	struct xfrm_selector sel;
 	struct compat_xfrm_userpolicy_info policy;
-	/* 4 bytes additional padding on 64bit */
+	 
 	__u32 aalgos, ealgos, calgos, seq;
 };
 
 struct compat_xfrm_userspi_info {
 	struct compat_xfrm_usersa_info info;
-	/* 4 bytes additional padding on 64bit */
+	 
 	__u32 min, max;
 };
 
 struct compat_xfrm_user_expire {
 	struct compat_xfrm_usersa_info state;
-	/* 8 bytes additional padding on 64bit */
+	 
 	u8 hard;
 };
 
 struct compat_xfrm_user_polexpire {
 	struct compat_xfrm_userpolicy_info pol;
-	/* 8 bytes additional padding on 64bit */
+	 
 	u8 hard;
 };
 
@@ -138,7 +134,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 	int src_len = xfrm_msg_min[type];
 	struct nlmsghdr *nlh_dst;
 
-	/* Compat messages are shorter or equal to native (+padding) */
+	 
 	if (WARN_ON_ONCE(src_len < payload))
 		return ERR_PTR(-EMSGSIZE);
 
@@ -150,7 +146,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 	memset(nlmsg_data(nlh_dst), 0, payload);
 
 	switch (nlh_src->nlmsg_type) {
-	/* Compat message has the same layout as native */
+	 
 	case XFRM_MSG_DELSA:
 	case XFRM_MSG_DELPOLICY:
 	case XFRM_MSG_FLUSHSA:
@@ -164,7 +160,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 		WARN_ON_ONCE(src_len != payload);
 		memcpy(nlmsg_data(nlh_dst), nlmsg_data(nlh_src), src_len);
 		break;
-	/* 4 byte alignment for trailing u64 on native, but not on compat */
+	 
 	case XFRM_MSG_NEWSA:
 	case XFRM_MSG_NEWPOLICY:
 	case XFRM_MSG_UPDSA:
@@ -176,7 +172,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 		const struct xfrm_user_expire *src_ue  = nlmsg_data(nlh_src);
 		struct compat_xfrm_user_expire *dst_ue = nlmsg_data(nlh_dst);
 
-		/* compat_xfrm_user_expire has 4-byte smaller state */
+		 
 		memcpy(dst_ue, src_ue, sizeof(dst_ue->state));
 		dst_ue->hard = src_ue->hard;
 		break;
@@ -196,7 +192,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 		const struct xfrm_user_polexpire *src_upe  = nlmsg_data(nlh_src);
 		struct compat_xfrm_user_polexpire *dst_upe = nlmsg_data(nlh_dst);
 
-		/* compat_xfrm_user_polexpire has 4-byte smaller state */
+		 
 		memcpy(dst_upe, src_upe, sizeof(dst_upe->pol));
 		dst_upe->hard = src_upe->hard;
 		break;
@@ -205,13 +201,13 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
 		const struct xfrm_userspi_info *src_usi = nlmsg_data(nlh_src);
 		struct compat_xfrm_userspi_info *dst_usi = nlmsg_data(nlh_dst);
 
-		/* compat_xfrm_user_polexpire has 4-byte smaller state */
+		 
 		memcpy(dst_usi, src_usi, sizeof(src_usi->info));
 		dst_usi->min = src_usi->min;
 		dst_usi->max = src_usi->max;
 		break;
 	}
-	/* Not being sent by kernel */
+	 
 	case XFRM_MSG_GETSA:
 	case XFRM_MSG_GETPOLICY:
 	case XFRM_MSG_GETAE:
@@ -234,7 +230,7 @@ static int xfrm_xlate64_attr(struct sk_buff *dst, const struct nlattr *src)
 {
 	switch (src->nla_type) {
 	case XFRMA_PAD:
-		/* Ignore */
+		 
 		return 0;
 	case XFRMA_UNSPEC:
 	case XFRMA_ALG_AUTH:
@@ -285,7 +281,7 @@ static int xfrm_xlate64_attr(struct sk_buff *dst, const struct nlattr *src)
 	}
 }
 
-/* Take kernel-built (64bit layout) and create 32bit layout for userspace */
+ 
 static int xfrm_xlate64(struct sk_buff *dst, const struct nlmsghdr *nlh_src)
 {
 	u16 type = nlh_src->nlmsg_type - XFRM_MSG_BASE;
@@ -350,7 +346,7 @@ static int xfrm_alloc_compat(struct sk_buff *skb, const struct nlmsghdr *nlh_src
 	return 0;
 }
 
-/* Calculates len of translated 64-bit message. */
+ 
 static size_t xfrm_user_rcv_calculate_len64(const struct nlmsghdr *src,
 					    struct nlattr *attrs[XFRMA_MAX + 1],
 					    int maxtype)
@@ -371,16 +367,13 @@ static size_t xfrm_user_rcv_calculate_len64(const struct nlmsghdr *src,
 		len += 8;
 		break;
 	case XFRM_MSG_NEWSPDINFO:
-		/* attirbutes are xfrm_spdattr_type_t, not xfrm_attr_type_t */
+		 
 		return len;
 	default:
 		break;
 	}
 
-	/* Unexpected for anything, but XFRM_MSG_NEWSPDINFO, please
-	 * correct both 64=>32-bit and 32=>64-bit translators to copy
-	 * new attributes.
-	 */
+	 
 	if (WARN_ON_ONCE(maxtype))
 		return len;
 
@@ -389,9 +382,7 @@ static size_t xfrm_user_rcv_calculate_len64(const struct nlmsghdr *src,
 	if (attrs[XFRMA_POLICY])
 		len += 4;
 
-	/* XXX: some attrs may need to be realigned
-	 * if !CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-	 */
+	 
 
 	return len;
 }
@@ -402,10 +393,7 @@ static int xfrm_attr_cpy32(void *dst, size_t *pos, const struct nlattr *src,
 	struct nlmsghdr *nlmsg = dst;
 	struct nlattr *nla;
 
-	/* xfrm_user_rcv_msg_compat() relies on fact that 32-bit messages
-	 * have the same len or shorted than 64-bit ones.
-	 * 32-bit translation that is bigger than 64-bit original is unexpected.
-	 */
+	 
 	if (WARN_ON_ONCE(copy_len > payload))
 		copy_len = payload;
 
@@ -447,7 +435,7 @@ static int xfrm_xlate32_attr(void *dst, const struct nlattr *nla,
 	pol_len32 = compat_policy[type].len;
 	pol_len64 = xfrma_policy[type].len;
 
-	/* XFRMA_SA and XFRMA_POLICY - need to know how-to translate */
+	 
 	if (pol_len32 != pol_len64) {
 		if (nla_len(nla) != compat_policy[type].len) {
 			NL_SET_ERR_MSG(extack, "Attribute bad length");
@@ -474,7 +462,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 	memset(nlmsg_data(dst), 0, xfrm_msg_min[type]);
 
 	switch (src->nlmsg_type) {
-	/* Compat message has the same layout as native */
+	 
 	case XFRM_MSG_DELSA:
 	case XFRM_MSG_GETSA:
 	case XFRM_MSG_DELPOLICY:
@@ -492,7 +480,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 	case XFRM_MSG_MAPPING:
 		memcpy(nlmsg_data(dst), nlmsg_data(src), compat_msg_min[type]);
 		break;
-	/* 4 byte alignment for trailing u64 on native, but not on compat */
+	 
 	case XFRM_MSG_NEWSA:
 	case XFRM_MSG_NEWPOLICY:
 	case XFRM_MSG_UPDSA:
@@ -503,7 +491,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 		const struct compat_xfrm_user_expire *src_ue = nlmsg_data(src);
 		struct xfrm_user_expire *dst_ue = nlmsg_data(dst);
 
-		/* compat_xfrm_user_expire has 4-byte smaller state */
+		 
 		memcpy(dst_ue, src_ue, sizeof(src_ue->state));
 		dst_ue->hard = src_ue->hard;
 		break;
@@ -523,7 +511,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 		const struct compat_xfrm_user_polexpire *src_upe = nlmsg_data(src);
 		struct xfrm_user_polexpire *dst_upe = nlmsg_data(dst);
 
-		/* compat_xfrm_user_polexpire has 4-byte smaller state */
+		 
 		memcpy(dst_upe, src_upe, sizeof(src_upe->pol));
 		dst_upe->hard = src_upe->hard;
 		break;
@@ -532,7 +520,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 		const struct compat_xfrm_userspi_info *src_usi = nlmsg_data(src);
 		struct xfrm_userspi_info *dst_usi = nlmsg_data(dst);
 
-		/* compat_xfrm_user_polexpire has 4-byte smaller state */
+		 
 		memcpy(dst_usi, src_usi, sizeof(src_usi->info));
 		dst_usi->min = src_usi->min;
 		dst_usi->max = src_usi->max;
@@ -545,7 +533,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 	pos = dst->nlmsg_len;
 
 	if (maxtype) {
-		/* attirbutes are xfrm_spdattr_type_t, not xfrm_attr_type_t */
+		 
 		WARN_ON_ONCE(src->nlmsg_type != XFRM_MSG_NEWSPDINFO);
 
 		for (i = 1; i <= maxtype; i++) {
@@ -554,7 +542,7 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
 			if (!attrs[i])
 				continue;
 
-			/* just copy - no need for translation */
+			 
 			err = xfrm_attr_cpy32(dst, &pos, attrs[i], size,
 					nla_len(attrs[i]), nla_len(attrs[i]));
 			if (err)
@@ -584,7 +572,7 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
 			int maxtype, const struct nla_policy *policy,
 			struct netlink_ext_ack *extack)
 {
-	/* netlink_rcv_skb() checks if a message has full (struct nlmsghdr) */
+	 
 	u16 type = h32->nlmsg_type - XFRM_MSG_BASE;
 	struct nlattr *attrs[XFRMA_MAX+1];
 	struct nlmsghdr *h64;
@@ -596,7 +584,7 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
 	if (type >= ARRAY_SIZE(xfrm_msg_min))
 		return ERR_PTR(-EINVAL);
 
-	/* Don't call parse: the message might have only nlmsg header */
+	 
 	if ((h32->nlmsg_type == XFRM_MSG_GETSA ||
 	     h32->nlmsg_type == XFRM_MSG_GETPOLICY) &&
 	    (h32->nlmsg_flags & NLM_F_DUMP))
@@ -608,7 +596,7 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
 		return ERR_PTR(err);
 
 	len = xfrm_user_rcv_calculate_len64(h32, attrs, maxtype);
-	/* The message doesn't need translation */
+	 
 	if (len == nlmsg_len(h32))
 		return NULL;
 

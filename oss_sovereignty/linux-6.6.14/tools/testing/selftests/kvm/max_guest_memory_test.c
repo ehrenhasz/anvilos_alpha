@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -68,7 +68,7 @@ static void *vcpu_worker(void *data)
 
 	vcpu_args_set(vcpu, 3, info->start_gpa, info->end_gpa, vm->page_size);
 
-	/* Snapshot regs before the first run. */
+	 
 	vcpu_regs_get(vcpu, &regs);
 	rendezvous_with_boss();
 
@@ -77,7 +77,7 @@ static void *vcpu_worker(void *data)
 	vcpu_regs_set(vcpu, &regs);
 	vcpu_sregs_get(vcpu, &sregs);
 #ifdef __x86_64__
-	/* Toggle CR0.WP to trigger a MMU context reset. */
+	 
 	sregs.cr0 ^= X86_CR0_WP;
 #endif
 	vcpu_sregs_set(vcpu, &sregs);
@@ -133,7 +133,7 @@ static void rendezvous_with_vcpus(struct timespec *time, const char *name)
 
 	clock_gettime(CLOCK_MONOTONIC, time);
 
-	/* Release the vCPUs after getting the time of the previous action. */
+	 
 	pr_info("\rAll vCPUs finished %s, releasing...\n", name);
 	if (rendezvoused > 0)
 		atomic_set(&rendezvous, -nr_vcpus - 1);
@@ -156,13 +156,7 @@ static void calc_default_nr_vcpus(void)
 
 int main(int argc, char *argv[])
 {
-	/*
-	 * Skip the first 4gb and slot0.  slot0 maps <1gb and is used to back
-	 * the guest's code, stack, and page tables.  Because selftests creates
-	 * an IRQCHIP, a.k.a. a local APIC, KVM creates an internal memslot
-	 * just below the 4gb boundary.  This test could create memory at
-	 * 1gb-3gb,but it's simpler to skip straight to 4gb.
-	 */
+	 
 	const uint64_t start_gpa = SZ_4G;
 	const int first_slot = 1;
 
@@ -175,17 +169,13 @@ int main(int argc, char *argv[])
 	struct kvm_vm *vm;
 	void *mem;
 
-	/*
-	 * Default to 2gb so that maxing out systems with MAXPHADDR=46, which
-	 * are quite common for x86, requires changing only max_mem (KVM allows
-	 * 32k memslots, 32k * 2gb == ~64tb of guest memory).
-	 */
+	 
 	slot_size = SZ_2G;
 
 	max_slots = kvm_check_cap(KVM_CAP_NR_MEMSLOTS);
 	TEST_ASSERT(max_slots > first_slot, "KVM is broken");
 
-	/* All KVM MMUs should be able to survive a 128gb guest. */
+	 
 	max_mem = 128ull * SZ_1G;
 
 	calc_default_nr_vcpus();
@@ -225,7 +215,7 @@ int main(int argc, char *argv[])
 
 	TEST_ASSERT(!madvise(mem, slot_size, MADV_NOHUGEPAGE), "madvise() failed");
 
-	/* Pre-fault the memory to avoid taking mmap_sem on guest page faults. */
+	 
 	for (i = 0; i < slot_size; i += vm->page_size)
 		((uint8_t *)mem)[i] = 0xaa;
 
@@ -241,7 +231,7 @@ int main(int argc, char *argv[])
 		vm_set_user_memory_region(vm, slot, 0, gpa, slot_size, mem);
 
 #ifdef __x86_64__
-		/* Identity map memory in the guest using 1gb pages. */
+		 
 		for (i = 0; i < slot_size; i += SZ_1G)
 			__virt_pg_map(vm, gpa + i, gpa + i, PG_LEVEL_1G);
 #else
@@ -273,22 +263,15 @@ int main(int argc, char *argv[])
 		time_reset.tv_sec, time_reset.tv_nsec,
 		time_run2.tv_sec, time_run2.tv_nsec);
 
-	/*
-	 * Delete even numbered slots (arbitrary) and unmap the first half of
-	 * the backing (also arbitrary) to verify KVM correctly drops all
-	 * references to the removed regions.
-	 */
+	 
 	for (slot = (slot - 1) & ~1ull; slot >= first_slot; slot -= 2)
 		vm_set_user_memory_region(vm, slot, 0, 0, 0, NULL);
 
 	munmap(mem, slot_size / 2);
 
-	/* Sanity check that the vCPUs actually ran. */
+	 
 	for (i = 0; i < nr_vcpus; i++)
 		pthread_join(threads[i], NULL);
 
-	/*
-	 * Deliberately exit without deleting the remaining memslots or closing
-	 * kvm_fd to test cleanup via mmu_notifier.release.
-	 */
+	 
 }

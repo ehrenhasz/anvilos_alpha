@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 #ifndef INTEL_SCALER_H
 #define INTEL_SCALER_H
 

@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_sshbuf_getput_crypto.c,v 1.3 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for sshbuf.h buffer API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -35,7 +31,7 @@ sshbuf_getput_crypto_tests(void)
 	struct sshbuf *p1;
 	BIGNUM *bn, *bn2;
 	const char *hexbn1 = "0102030405060708090a0b0c0d0e0f10";
-	/* This one has MSB set to test bignum2 encoding negative-avoidance */
+	 
 	const char *hexbn2 = "f0e0d0c0b0a0908070605040302010007fff11";
 	u_char expbn1[] = {
 		0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
@@ -106,7 +102,7 @@ sshbuf_getput_crypto_tests(void)
 	p1 = sshbuf_new();
 	ASSERT_PTR_NE(p1, NULL);
 	ASSERT_INT_EQ(sshbuf_put_bignum2(p1, bn), 0);
-	ASSERT_SIZE_T_EQ(sshbuf_len(p1), sizeof(expbn2) + 4 + 1); /* MSB */
+	ASSERT_SIZE_T_EQ(sshbuf_len(p1), sizeof(expbn2) + 4 + 1);  
 	ASSERT_U32_EQ(PEEK_U32(sshbuf_ptr(p1)), (u_int32_t)BN_num_bytes(bn) + 1);
 	ASSERT_U8_EQ(*(sshbuf_ptr(p1) + 4), 0x00);
 	ASSERT_MEM_EQ(sshbuf_ptr(p1) + 5, expbn2, sizeof(expbn2));
@@ -177,7 +173,7 @@ sshbuf_getput_crypto_tests(void)
 	MKBN(hexbn2, bn);
 	p1 = sshbuf_new();
 	ASSERT_PTR_NE(p1, NULL);
-	ASSERT_INT_EQ(sshbuf_put_u32(p1, BN_num_bytes(bn) + 1), 0); /* MSB */
+	ASSERT_INT_EQ(sshbuf_put_u32(p1, BN_num_bytes(bn) + 1), 0);  
 	ASSERT_INT_EQ(sshbuf_put_u8(p1, 0x00), 0);
 	ASSERT_INT_EQ(sshbuf_put(p1, expbn2, sizeof(expbn2)), 0);
 	ASSERT_SIZE_T_EQ(sshbuf_len(p1), 4 + 1 + sizeof(expbn2));
@@ -277,4 +273,4 @@ sshbuf_getput_crypto_tests(void)
 #endif
 }
 
-#endif /* WITH_OPENSSL */
+#endif  

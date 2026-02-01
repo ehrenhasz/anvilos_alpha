@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/uio/uio.c
- *
- * Copyright(C) 2005, Benedikt Spranger <b.spranger@linutronix.de>
- * Copyright(C) 2005, Thomas Gleixner <tglx@linutronix.de>
- * Copyright(C) 2006, Hans J. Koch <hjk@hansjkoch.de>
- * Copyright(C) 2006, Greg Kroah-Hartman <greg@kroah.com>
- *
- * Userspace IO
- *
- * Base Functions
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,12 +21,10 @@ static struct cdev *uio_cdev;
 static DEFINE_IDR(uio_idr);
 static const struct file_operations uio_fops;
 
-/* Protect idr accesses */
+ 
 static DEFINE_MUTEX(minor_lock);
 
-/*
- * attributes
- */
+ 
 
 struct uio_map {
 	struct kobject kobj;
@@ -88,7 +75,7 @@ static struct attribute *map_attrs[] = {
 	&addr_attribute.attr,
 	&size_attribute.attr,
 	&offset_attribute.attr,
-	NULL,	/* need to NULL terminate the list of attributes */
+	NULL,	 
 };
 ATTRIBUTE_GROUPS(map);
 
@@ -270,7 +257,7 @@ static struct attribute *uio_attrs[] = {
 };
 ATTRIBUTE_GROUPS(uio);
 
-/* UIO class infrastructure */
+ 
 static struct class uio_class = {
 	.name = "uio",
 	.dev_groups = uio_groups,
@@ -278,9 +265,7 @@ static struct class uio_class = {
 
 static bool uio_class_registered;
 
-/*
- * device functions
- */
+ 
 static int uio_dev_add_attributes(struct uio_device *idev)
 {
 	int ret;
@@ -422,10 +407,7 @@ static void uio_free_minor(unsigned long minor)
 	mutex_unlock(&minor_lock);
 }
 
-/**
- * uio_event_notify - trigger an interrupt event
- * @info: UIO device capabilities
- */
+ 
 void uio_event_notify(struct uio_info *info)
 {
 	struct uio_device *idev = info->uio_dev;
@@ -436,11 +418,7 @@ void uio_event_notify(struct uio_info *info)
 }
 EXPORT_SYMBOL_GPL(uio_event_notify);
 
-/**
- * uio_interrupt - hardware interrupt handler
- * @irq: IRQ number, can be UIO_IRQ_CYCLIC for cyclic timer
- * @dev_id: Pointer to the devices uio_device structure
- */
+ 
 static irqreturn_t uio_interrupt(int irq, void *dev_id)
 {
 	struct uio_device *idev = (struct uio_device *)dev_id;
@@ -687,10 +665,7 @@ static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
 		goto out;
 	}
 
-	/*
-	 * We need to subtract mi because userspace uses offset = N*PAGE_SIZE
-	 * to use mem[N].
-	 */
+	 
 	offset = (vmf->pgoff - mi) << PAGE_SHIFT;
 
 	addr = (void *)(unsigned long)idev->info->mem[mi].addr + offset;
@@ -743,15 +718,7 @@ static int uio_mmap_physical(struct vm_area_struct *vma)
 	if (idev->info->mem[mi].memtype == UIO_MEM_PHYS)
 		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
-	/*
-	 * We cannot use the vm_iomap_memory() helper here,
-	 * because vma->vm_pgoff is the map index we looked
-	 * up above in uio_find_mem_index(), rather than an
-	 * actual page offset into the mmap.
-	 *
-	 * So we just do the physical mmap without a page
-	 * offset.
-	 */
+	 
 	return remap_pfn_range(vma,
 			       vma->vm_start,
 			       mem->addr >> PAGE_SHIFT,
@@ -872,7 +839,7 @@ static int init_uio_class(void)
 {
 	int ret;
 
-	/* This is the first time in here, set everything up properly */
+	 
 	ret = uio_major_init();
 	if (ret)
 		goto exit;
@@ -907,14 +874,7 @@ static void uio_device_release(struct device *dev)
 	kfree(idev);
 }
 
-/**
- * __uio_register_device - register a new userspace IO device
- * @owner:	module that creates the new device
- * @parent:	parent device
- * @info:	UIO device capabilities
- *
- * returns zero on success or a negative error code.
- */
+ 
 int __uio_register_device(struct module *owner,
 			  struct device *parent,
 			  struct uio_info *info)
@@ -969,14 +929,7 @@ int __uio_register_device(struct module *owner,
 	info->uio_dev = idev;
 
 	if (info->irq && (info->irq != UIO_IRQ_CUSTOM)) {
-		/*
-		 * Note that we deliberately don't use devm_request_irq
-		 * here. The parent module can unregister the UIO device
-		 * and call pci_disable_msi, which requires that this
-		 * irq has been freed. However, the device may have open
-		 * FDs at the time of unregister and therefore may not be
-		 * freed until they are released.
-		 */
+		 
 		ret = request_irq(info->irq, uio_interrupt,
 				  info->irq_flags, info->name, idev);
 		if (ret) {
@@ -1003,14 +956,7 @@ static void devm_uio_unregister_device(struct device *dev, void *res)
 	uio_unregister_device(*(struct uio_info **)res);
 }
 
-/**
- * __devm_uio_register_device - Resource managed uio_register_device()
- * @owner:	module that creates the new device
- * @parent:	parent device
- * @info:	UIO device capabilities
- *
- * returns zero on success or a negative error code.
- */
+ 
 int __devm_uio_register_device(struct module *owner,
 			       struct device *parent,
 			       struct uio_info *info)
@@ -1036,11 +982,7 @@ int __devm_uio_register_device(struct module *owner,
 }
 EXPORT_SYMBOL_GPL(__devm_uio_register_device);
 
-/**
- * uio_unregister_device - unregister a industrial IO device
- * @info:	UIO device capabilities
- *
- */
+ 
 void uio_unregister_device(struct uio_info *info)
 {
 	struct uio_device *idev;

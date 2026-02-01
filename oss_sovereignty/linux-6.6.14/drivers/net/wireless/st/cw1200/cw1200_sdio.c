@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mac80211 SDIO driver for ST-Ericsson CW1200 device
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -28,14 +23,14 @@ MODULE_LICENSE("GPL");
 
 #define SDIO_BLOCK_SIZE (512)
 
-/* Default platform data for Sagrad modules */
+ 
 static struct cw1200_platform_data_sdio sagrad_109x_evk_platform_data = {
 	.ref_clk = 38400,
 	.have_5ghz = false,
 	.sdd_file = "sdd_sagrad_1091_1098.bin",
 };
 
-/* Allow platform data to be overridden */
+ 
 static struct cw1200_platform_data_sdio *global_plat_data = &sagrad_109x_evk_platform_data;
 
 void __init cw1200_sdio_set_platform_data(struct cw1200_platform_data_sdio *pdata)
@@ -51,11 +46,11 @@ struct hwbus_priv {
 
 static const struct sdio_device_id cw1200_sdio_ids[] = {
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_STE, SDIO_DEVICE_ID_STE_CW1200) },
-	{ /* end: all zeroes */			},
+	{  			},
 };
 MODULE_DEVICE_TABLE(sdio, cw1200_sdio_ids);
 
-/* hwbus_ops implemetation */
+ 
 
 static int cw1200_sdio_memcpy_fromio(struct hwbus_priv *self,
 				     unsigned int addr,
@@ -85,7 +80,7 @@ static void cw1200_sdio_irq_handler(struct sdio_func *func)
 {
 	struct hwbus_priv *self = sdio_get_drvdata(func);
 
-	/* note:  sdio_host already claimed here. */
+	 
 	if (self->core)
 		cw1200_irq_handler(self->core);
 }
@@ -118,10 +113,10 @@ static int cw1200_request_irq(struct hwbus_priv *self)
 	if (WARN_ON(ret))
 		goto err;
 
-	/* Master interrupt enable ... */
+	 
 	cccr |= BIT(0);
 
-	/* ... for our function */
+	 
 	cccr |= BIT(self->func->num);
 
 	sdio_f0_writeb(self->func, cccr, SDIO_CCCR_IENx, &ret);
@@ -132,7 +127,7 @@ static int cw1200_request_irq(struct hwbus_priv *self)
 	if (WARN_ON(ret))
 		goto err;
 
-	/* Request the IRQ */
+	 
 	ret =  request_threaded_irq(self->pdata->irq, cw1200_gpio_hardirq,
 				    cw1200_gpio_irq,
 				    IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
@@ -182,7 +177,7 @@ static int cw1200_sdio_off(const struct cw1200_platform_data_sdio *pdata)
 {
 	if (pdata->reset) {
 		gpio_set_value(pdata->reset, 0);
-		msleep(30); /* Min is 2 * CLK32K cycles */
+		msleep(30);  
 		gpio_free(pdata->reset);
 	}
 
@@ -196,7 +191,7 @@ static int cw1200_sdio_off(const struct cw1200_platform_data_sdio *pdata)
 
 static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
 {
-	/* Ensure I/Os are pulled low */
+	 
 	if (pdata->reset) {
 		gpio_request(pdata->reset, "cw1200_wlan_reset");
 		gpio_direction_output(pdata->reset, 0);
@@ -206,9 +201,9 @@ static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
 		gpio_direction_output(pdata->powerup, 0);
 	}
 	if (pdata->reset || pdata->powerup)
-		msleep(10); /* Settle time? */
+		msleep(10);  
 
-	/* Enable 3v3 and 1v8 to hardware */
+	 
 	if (pdata->power_ctrl) {
 		if (pdata->power_ctrl(pdata, true)) {
 			pr_err("power_ctrl() failed!\n");
@@ -216,24 +211,24 @@ static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
 		}
 	}
 
-	/* Enable CLK32K */
+	 
 	if (pdata->clk_ctrl) {
 		if (pdata->clk_ctrl(pdata, true)) {
 			pr_err("clk_ctrl() failed!\n");
 			return -1;
 		}
-		msleep(10); /* Delay until clock is stable for 2 cycles */
+		msleep(10);  
 	}
 
-	/* Enable POWERUP signal */
+	 
 	if (pdata->powerup) {
 		gpio_set_value(pdata->powerup, 1);
-		msleep(250); /* or more..? */
+		msleep(250);  
 	}
-	/* Enable RSTn signal */
+	 
 	if (pdata->reset) {
 		gpio_set_value(pdata->reset, 1);
-		msleep(50); /* Or more..? */
+		msleep(50);  
 	}
 	return 0;
 }
@@ -266,7 +261,7 @@ static const struct hwbus_ops cw1200_sdio_hwbus_ops = {
 	.power_mgmt		= cw1200_sdio_pm,
 };
 
-/* Probe Function to be called by SDIO stack when device is discovered */
+ 
 static int cw1200_sdio_probe(struct sdio_func *func,
 			     const struct sdio_device_id *id)
 {
@@ -275,7 +270,7 @@ static int cw1200_sdio_probe(struct sdio_func *func,
 
 	pr_info("cw1200_wlan_sdio: Probe called\n");
 
-	/* We are only able to handle the wlan function */
+	 
 	if (func->num != 0x01)
 		return -ENODEV;
 
@@ -287,7 +282,7 @@ static int cw1200_sdio_probe(struct sdio_func *func,
 
 	func->card->quirks |= MMC_QUIRK_LENIENT_FN0;
 
-	self->pdata = global_plat_data; /* FIXME */
+	self->pdata = global_plat_data;  
 	self->func = func;
 	sdio_set_drvdata(func, self);
 	sdio_claim_host(func);
@@ -314,9 +309,7 @@ static int cw1200_sdio_probe(struct sdio_func *func,
 	return status;
 }
 
-/* Disconnect Function to be called by SDIO stack when
- * device is disconnected
- */
+ 
 static void cw1200_sdio_disconnect(struct sdio_func *func)
 {
 	struct hwbus_priv *self = sdio_get_drvdata(func);
@@ -345,7 +338,7 @@ static int cw1200_sdio_suspend(struct device *dev)
 	if (!cw1200_can_suspend(self->core))
 		return -EAGAIN;
 
-	/* Notify SDIO that CW1200 will remain powered during suspend */
+	 
 	ret = sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 	if (ret)
 		pr_err("Error setting SDIO pm flags: %i\n", ret);
@@ -376,13 +369,13 @@ static struct sdio_driver sdio_driver = {
 #endif
 };
 
-/* Init Module function -> Called by insmod */
+ 
 static int __init cw1200_sdio_init(void)
 {
 	const struct cw1200_platform_data_sdio *pdata;
 	int ret;
 
-	/* FIXME -- this won't support multiple devices */
+	 
 	pdata = global_plat_data;
 
 	if (cw1200_sdio_on(pdata)) {
@@ -401,12 +394,12 @@ err:
 	return ret;
 }
 
-/* Called at Driver Unloading */
+ 
 static void __exit cw1200_sdio_exit(void)
 {
 	const struct cw1200_platform_data_sdio *pdata;
 
-	/* FIXME -- this won't support multiple devices */
+	 
 	pdata = global_plat_data;
 	sdio_unregister_driver(&sdio_driver);
 	cw1200_sdio_off(pdata);

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/fou.yaml */
-/* YNL-GEN user source */
+
+ 
+ 
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
 
-/* Enums */
+ 
 static const char * const fou_op_strmap[] = {
 	[FOU_CMD_ADD] = "add",
 	[FOU_CMD_DEL] = "del",
@@ -39,7 +39,7 @@ const char *fou_encap_type_str(int value)
 	return fou_encap_type_strmap[value];
 }
 
-/* Policies */
+ 
 struct ynl_policy_attr fou_policy[FOU_ATTR_MAX + 1] = {
 	[FOU_ATTR_UNSPEC] = { .name = "unspec", .type = YNL_PT_REJECT, },
 	[FOU_ATTR_PORT] = { .name = "port", .type = YNL_PT_U16, },
@@ -60,9 +60,9 @@ struct ynl_policy_nest fou_nest = {
 	.table = fou_policy,
 };
 
-/* Common nested types */
-/* ============== FOU_CMD_ADD ============== */
-/* FOU_CMD_ADD - do */
+ 
+ 
+ 
 void fou_add_req_free(struct fou_add_req *req)
 {
 	free(req->local_v6);
@@ -106,8 +106,8 @@ int fou_add(struct ynl_sock *ys, struct fou_add_req *req)
 	return 0;
 }
 
-/* ============== FOU_CMD_DEL ============== */
-/* FOU_CMD_DEL - do */
+ 
+ 
 void fou_del_req_free(struct fou_del_req *req)
 {
 	free(req->local_v6);
@@ -147,8 +147,8 @@ int fou_del(struct ynl_sock *ys, struct fou_del_req *req)
 	return 0;
 }
 
-/* ============== FOU_CMD_GET ============== */
-/* FOU_CMD_GET - do */
+ 
+ 
 void fou_get_req_free(struct fou_get_req *req)
 {
 	free(req->local_v6);
@@ -283,7 +283,7 @@ err_free:
 	return NULL;
 }
 
-/* FOU_CMD_GET - dump */
+ 
 void fou_get_list_free(struct fou_get_list *rsp)
 {
 	struct fou_get_list *next = rsp;

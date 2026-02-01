@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014-2017 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/builtin.h"
 #include "py/objlist.h"
@@ -46,7 +21,7 @@
 
 #if MICROPY_PY_SYS
 
-// defined per port; type of these is irrelevant, just need pointer
+
 extern struct _mp_dummy_t mp_sys_stdin_obj;
 extern struct _mp_dummy_t mp_sys_stdout_obj;
 extern struct _mp_dummy_t mp_sys_stderr_obj;
@@ -55,15 +30,15 @@ extern struct _mp_dummy_t mp_sys_stderr_obj;
 const mp_print_t mp_sys_stdout_print = {&mp_sys_stdout_obj, mp_stream_write_adaptor};
 #endif
 
-// version - Python language version that this implementation conforms to, as a string
+
 static const MP_DEFINE_STR_OBJ(mp_sys_version_obj, "3.4.0; " MICROPY_BANNER_NAME_AND_VERSION);
 
-// version_info - Python language version that this implementation conforms to, as a tuple of ints
-// TODO: CPython is now at 5-element array (major, minor, micro, releaselevel, serial), but save 2 els so far...
+
+
 static const mp_rom_obj_tuple_t mp_sys_version_info_obj = {{&mp_type_tuple}, 3, {MP_ROM_INT(3), MP_ROM_INT(4), MP_ROM_INT(0)}};
 
-// sys.implementation object
-// this holds the MicroPython version
+
+
 static const mp_rom_obj_tuple_t mp_sys_implementation_version_info_obj = {
     {&mp_type_tuple},
     4,
@@ -122,11 +97,11 @@ static MP_DEFINE_ATTRTUPLE(
 static const mp_rom_obj_tuple_t mp_sys_implementation_obj = {
     {&mp_type_tuple},
     3 + MICROPY_PERSISTENT_CODE_LOAD,
-    // Do not include SYS_IMPLEMENTATION_ELEMS__V2 because
-    // SYS_IMPLEMENTATION_ELEMS__MPY may be empty if
-    // MICROPY_PERSISTENT_CODE_LOAD is disabled, which means they'll share
-    // the same index. Cannot query _v2 if MICROPY_PY_ATTRTUPLE is
-    // disabled.
+    
+    
+    
+    
+    
     {
         SYS_IMPLEMENTATION_ELEMS_BASE
                                 SYS_IMPLEMENTATION_ELEMS__MPY
@@ -137,13 +112,13 @@ static const mp_rom_obj_tuple_t mp_sys_implementation_obj = {
 #undef I
 
 #ifdef MICROPY_PY_SYS_PLATFORM
-// platform - the platform that MicroPython is running on
+
 static const MP_DEFINE_STR_OBJ(mp_sys_platform_obj, MICROPY_PY_SYS_PLATFORM);
 #endif
 
 #ifdef MICROPY_PY_SYS_EXECUTABLE
-// executable - the path to the micropython binary
-// This object is non-const and is populated at startup in main()
+
+
 MP_DEFINE_STR_OBJ(mp_sys_executable_obj, "");
 #endif
 
@@ -151,7 +126,7 @@ MP_DEFINE_STR_OBJ(mp_sys_executable_obj, "");
 MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_intern_obj, mp_obj_str_intern_checked);
 #endif
 
-// exit([retval]): raise SystemExit, with optional argument given to the exception
+
 static mp_obj_t mp_sys_exit(size_t n_args, const mp_obj_t *args) {
     if (n_args == 0) {
         mp_raise_type(&mp_type_SystemExit);
@@ -208,7 +183,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_getsizeof_obj, mp_sys_getsizeof);
 #endif
 
 #if MICROPY_PY_SYS_ATEXIT
-// atexit(callback): Callback is called when sys.exit is called.
+
 static mp_obj_t mp_sys_atexit(mp_obj_t obj) {
     mp_obj_t old = MP_STATE_VM(sys_exitfunc);
     MP_STATE_VM(sys_exitfunc) = obj;
@@ -218,12 +193,12 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_atexit_obj, mp_sys_atexit);
 #endif
 
 #if MICROPY_PY_SYS_SETTRACE
-// settrace(tracefunc): Set the system's trace function.
+
 static mp_obj_t mp_sys_settrace(mp_obj_t obj) {
     return mp_prof_settrace(obj);
 }
 MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_settrace_obj, mp_sys_settrace);
-#endif // MICROPY_PY_SYS_SETTRACE
+#endif 
 
 #if MICROPY_PY_SYS_PATH && !MICROPY_PY_SYS_ATTR_DELEGATION
 #error "MICROPY_PY_SYS_PATH requires MICROPY_PY_SYS_ATTR_DELEGATION"
@@ -242,11 +217,11 @@ MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_settrace_obj, mp_sys_settrace);
 #endif
 
 #if MICROPY_PY_SYS_ATTR_DELEGATION
-// Must be kept in sync with the enum at the top of mpstate.h.
+
 static const uint16_t sys_mutable_keys[] = {
     #if MICROPY_PY_SYS_PATH
-    // Code should access this (as an mp_obj_t) for use with e.g.
-    // mp_obj_list_append by using the `mp_sys_path` macro defined in runtime.h.
+    
+    
     MP_QSTR_path,
     #endif
     #if MICROPY_PY_SYS_PS1_PS2
@@ -286,11 +261,11 @@ static const mp_rom_map_elem_t mp_module_sys_globals_table[] = {
 
     #if MICROPY_PY_SYS_MAXSIZE
     #if MICROPY_LONGINT_IMPL == MICROPY_LONGINT_IMPL_NONE
-    // Maximum mp_int_t value is not representable as small int, so we have
-    // little choice but to use MP_SMALL_INT_MAX. Apps also should be careful
-    // to not try to compare sys.maxsize to some literal number (as this
-    // number might not fit in available int size), but instead count number
-    // of "one" bits in sys.maxsize.
+    
+    
+    
+    
+    
     { MP_ROM_QSTR(MP_QSTR_maxsize), MP_ROM_INT(MP_SMALL_INT_MAX) },
     #else
     { MP_ROM_QSTR(MP_QSTR_maxsize), MP_ROM_PTR(&mp_sys_maxsize_obj) },
@@ -329,9 +304,7 @@ static const mp_rom_map_elem_t mp_module_sys_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_executable), MP_ROM_PTR(&mp_sys_executable_obj) },
     #endif
 
-    /*
-     * Extensions to CPython
-     */
+     
 
     { MP_ROM_QSTR(MP_QSTR_print_exception), MP_ROM_PTR(&mp_sys_print_exception_obj) },
     #if MICROPY_PY_SYS_ATEXIT
@@ -346,31 +319,31 @@ const mp_obj_module_t mp_module_sys = {
     .globals = (mp_obj_dict_t *)&mp_module_sys_globals,
 };
 
-// Unlike the other CPython-compatible modules, sys is not extensible from the
-// filesystem. We rely on it to work so that things like sys.path are always
-// available.
+
+
+
 MP_REGISTER_MODULE(MP_QSTR_sys, mp_module_sys);
 
 #if MICROPY_PY_SYS_ARGV
-// Code should access this (as an mp_obj_t) for use with e.g.
-// mp_obj_list_append by using the `mp_sys_argv` macro defined in runtime.h.
+
+
 MP_REGISTER_ROOT_POINTER(mp_obj_list_t mp_sys_argv_obj);
 #endif
 
 #if MICROPY_PY_SYS_EXC_INFO
-// current exception being handled, for sys.exc_info()
+
 MP_REGISTER_ROOT_POINTER(mp_obj_base_t * cur_exception);
 #endif
 
 #if MICROPY_PY_SYS_ATEXIT
-// exposed through sys.atexit function
+
 MP_REGISTER_ROOT_POINTER(mp_obj_t sys_exitfunc);
 #endif
 
 #if MICROPY_PY_SYS_ATTR_DELEGATION
-// Contains mutable sys attributes.
+
 MP_REGISTER_ROOT_POINTER(mp_obj_t sys_mutable[MP_SYS_MUTABLE_NUM]);
 MP_REGISTER_MODULE_DELEGATION(mp_module_sys, mp_module_sys_attr);
 #endif
 
-#endif // MICROPY_PY_SYS
+#endif 

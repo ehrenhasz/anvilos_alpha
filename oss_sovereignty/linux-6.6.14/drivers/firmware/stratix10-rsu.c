@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2019, Intel Corporation
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/bitfield.h>
@@ -40,32 +38,7 @@
 
 typedef void (*rsu_callback)(struct stratix10_svc_client *client,
 			     struct stratix10_svc_cb_data *data);
-/**
- * struct stratix10_rsu_priv - rsu data structure
- * @chan: pointer to the allocated service channel
- * @client: active service client
- * @completion: state for callback completion
- * @lock: a mutex to protect callback completion state
- * @status.current_image: address of image currently running in flash
- * @status.fail_image: address of failed image in flash
- * @status.version: the interface version number of RSU firmware
- * @status.state: the state of RSU system
- * @status.error_details: error code
- * @status.error_location: the error offset inside the image that failed
- * @dcmf_version.dcmf0: Quartus dcmf0 version
- * @dcmf_version.dcmf1: Quartus dcmf1 version
- * @dcmf_version.dcmf2: Quartus dcmf2 version
- * @dcmf_version.dcmf3: Quartus dcmf3 version
- * @dcmf_status.dcmf0: dcmf0 status
- * @dcmf_status.dcmf1: dcmf1 status
- * @dcmf_status.dcmf2: dcmf2 status
- * @dcmf_status.dcmf3: dcmf3 status
- * @retry_counter: the current image's retry counter
- * @max_retry: the preset max retry value
- * @spt0_address: address of spt0
- * @spt1_address: address of spt1
- * @get_spt_response_buf: response from sdm for get_spt command
- */
+ 
 struct stratix10_rsu_priv {
 	struct stratix10_svc_chan *chan;
 	struct stratix10_svc_client client;
@@ -103,15 +76,7 @@ struct stratix10_rsu_priv {
 	unsigned int *get_spt_response_buf;
 };
 
-/**
- * rsu_status_callback() - Status callback from Intel Service Layer
- * @client: pointer to service client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for RSU status request. Status is
- * only updated after a system reboot, so a get updated status call is
- * made during driver probe.
- */
+ 
 static void rsu_status_callback(struct stratix10_svc_client *client,
 				struct stratix10_svc_cb_data *data)
 {
@@ -142,13 +107,7 @@ static void rsu_status_callback(struct stratix10_svc_client *client,
 	complete(&priv->completion);
 }
 
-/**
- * rsu_command_callback() - Update callback from Intel Service Layer
- * @client: pointer to client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for RSU commands.
- */
+ 
 static void rsu_command_callback(struct stratix10_svc_client *client,
 				 struct stratix10_svc_cb_data *data)
 {
@@ -163,16 +122,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
 	complete(&priv->completion);
 }
 
-/**
- * rsu_retry_callback() - Callback from Intel service layer for getting
- * the current image's retry counter from the firmware
- * @client: pointer to client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for retry counter, which is used by
- * user to know how many times the images is still allowed to reload
- * itself before giving up and starting RSU fail-over flow.
- */
+ 
 static void rsu_retry_callback(struct stratix10_svc_client *client,
 			       struct stratix10_svc_cb_data *data)
 {
@@ -190,14 +140,7 @@ static void rsu_retry_callback(struct stratix10_svc_client *client,
 	complete(&priv->completion);
 }
 
-/**
- * rsu_max_retry_callback() - Callback from Intel service layer for getting
- * the max retry value from the firmware
- * @client: pointer to client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for max retry.
- */
+ 
 static void rsu_max_retry_callback(struct stratix10_svc_client *client,
 				   struct stratix10_svc_cb_data *data)
 {
@@ -215,14 +158,7 @@ static void rsu_max_retry_callback(struct stratix10_svc_client *client,
 	complete(&priv->completion);
 }
 
-/**
- * rsu_dcmf_version_callback() - Callback from Intel service layer for getting
- * the DCMF version
- * @client: pointer to client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for DCMF version number
- */
+ 
 static void rsu_dcmf_version_callback(struct stratix10_svc_client *client,
 				      struct stratix10_svc_cb_data *data)
 {
@@ -241,14 +177,7 @@ static void rsu_dcmf_version_callback(struct stratix10_svc_client *client,
 	complete(&priv->completion);
 }
 
-/**
- * rsu_dcmf_status_callback() - Callback from Intel service layer for getting
- * the DCMF status
- * @client: pointer to client
- * @data: pointer to callback data structure
- *
- * Callback from Intel service layer for DCMF status
- */
+ 
 static void rsu_dcmf_status_callback(struct stratix10_svc_client *client,
 				     struct stratix10_svc_cb_data *data)
 {
@@ -300,19 +229,7 @@ complete:
 	complete(&priv->completion);
 }
 
-/**
- * rsu_send_msg() - send a message to Intel service layer
- * @priv: pointer to rsu private data
- * @command: RSU status or update command
- * @arg: the request argument, the bitstream address or notify status
- * @callback: function pointer for the callback (status or update)
- *
- * Start an Intel service layer transaction to perform the SMC call that
- * is necessary to get RSU boot log or set the address of bitstream to
- * boot after reboot.
- *
- * Returns 0 on success or -ETIMEDOUT on error.
- */
+ 
 static int rsu_send_msg(struct stratix10_rsu_priv *priv,
 			enum stratix10_svc_command_code command,
 			unsigned long arg,
@@ -362,12 +279,7 @@ status_done:
 	return ret;
 }
 
-/*
- * This driver exposes some optional features of the Intel Stratix 10 SoC FPGA.
- * The sysfs interfaces exposed here are FPGA Remote System Update (RSU)
- * related. They allow user space software to query the configuration system
- * status and to request optional reboot behavior specific to Intel FPGAs.
- */
+ 
 
 static ssize_t current_image_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
@@ -604,7 +516,7 @@ static ssize_t notify_store(struct device *dev,
 		return ret;
 	}
 
-	/* to get the updated state */
+	 
 	ret = rsu_send_msg(priv, COMMAND_RSU_STATUS,
 			   0, rsu_status_callback);
 	if (ret) {
@@ -740,7 +652,7 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
 	init_completion(&priv->completion);
 	platform_set_drvdata(pdev, priv);
 
-	/* get the initial state from firmware */
+	 
 	ret = rsu_send_msg(priv, COMMAND_RSU_STATUS,
 			   0, rsu_status_callback);
 	if (ret) {
@@ -748,7 +660,7 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
 		stratix10_svc_free_channel(priv->chan);
 	}
 
-	/* get DCMF version from firmware */
+	 
 	ret = rsu_send_msg(priv, COMMAND_RSU_DCMF_VERSION,
 			   0, rsu_dcmf_version_callback);
 	if (ret) {

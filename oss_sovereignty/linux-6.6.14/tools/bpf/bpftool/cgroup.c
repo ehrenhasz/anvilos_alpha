@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2017 Facebook
-// Author: Roman Gushchin <guro@fb.com>
+
+
+
 
 #define _XOPEN_SOURCE 500
 #include <errno.h>
@@ -53,9 +53,7 @@ static enum bpf_attach_type parse_attach_type(const char *str)
 			return type;
 	}
 
-	/* Also check traditionally used attach type strings. For these we keep
-	 * allowing prefixed usage.
-	 */
+	 
 	for (type = 0; ; type++) {
 		attach_type_str = bpf_attach_type_input_str(type);
 		if (!attach_type_str)
@@ -337,12 +335,7 @@ static int do_show(int argc, char **argv)
 
 	btf_vmlinux = libbpf_find_kernel_btf();
 	for (type = 0; type < __MAX_BPF_ATTACH_TYPE; type++) {
-		/*
-		 * Not all attach types may be supported, so it's expected,
-		 * that some requests will fail.
-		 * If we were able to get the show for at least one
-		 * attach type, let's return 0.
-		 */
+		 
 		if (show_bpf_progs(cgroup_fd, type, 0) == 0)
 			ret = 0;
 	}
@@ -356,11 +349,7 @@ exit:
 	return ret;
 }
 
-/*
- * To distinguish nftw() errors and do_show_tree_fn() errors
- * and avoid duplicating error messages, let's return -2
- * from do_show_tree_fn() in case of error.
- */
+ 
 #define NFTW_ERR		-1
 #define SHOW_TREE_FN_ERR	-2
 static int do_show_tree_fn(const char *fpath, const struct stat *sb,
@@ -404,10 +393,7 @@ static int do_show_tree_fn(const char *fpath, const struct stat *sb,
 		show_bpf_progs(cgroup_fd, type, ftw->level);
 
 	if (errno == EINVAL)
-		/* Last attach type does not support query.
-		 * Do not report an error for this, especially because batch
-		 * mode would stop processing commands.
-		 */
+		 
 		errno = 0;
 
 	if (json_output) {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <net/act_api.h>
@@ -18,9 +18,7 @@ struct flow_rule *flow_rule_alloc(unsigned int num_actions)
 		return NULL;
 
 	rule->action.num_entries = num_actions;
-	/* Pre-fill each action hw_stats with DONT_CARE.
-	 * Caller can override this if it wants stats for a given action.
-	 */
+	 
 	for (i = 0; i < num_actions; i++)
 		rule->action.entries[i].hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
 
@@ -39,9 +37,7 @@ struct flow_offload_action *offload_action_alloc(unsigned int num_actions)
 		return NULL;
 
 	fl_action->action.num_entries = num_actions;
-	/* Pre-fill each action hw_stats with DONT_CARE.
-	 * Caller can override this if it wants stats for a given action.
-	 */
+	 
 	for (i = 0; i < num_actions; i++)
 		fl_action->action.entries[i].hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
 

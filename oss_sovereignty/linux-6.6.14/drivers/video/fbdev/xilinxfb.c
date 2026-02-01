@@ -1,24 +1,6 @@
-/*
- * Xilinx TFT frame buffer driver
- *
- * Author: MontaVista Software, Inc.
- *         source@mvista.com
- *
- * 2002-2007 (c) MontaVista Software, Inc.
- * 2007 (c) Secret Lab Technologies, Ltd.
- * 2009 (c) Xilinx Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
-/*
- * This driver was based on au1100fb.c by MontaVista rewritten for 2.6
- * by Embedded Alley Solutions <source@embeddedalley.com>, which in turn
- * was based on skeletonfb.c, Skeleton for a frame buffer device by
- * Geert Uytterhoeven.
- */
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -40,38 +22,14 @@
 
 #define DRIVER_NAME		"xilinxfb"
 
-/*
- * Xilinx calls it "TFT LCD Controller" though it can also be used for
- * the VGA port on the Xilinx ML40x board. This is a hardware display
- * controller for a 640x480 resolution TFT or VGA screen.
- *
- * The interface to the framebuffer is nice and simple.  There are two
- * control registers.  The first tells the LCD interface where in memory
- * the frame buffer is (only the 11 most significant bits are used, so
- * don't start thinking about scrolling).  The second allows the LCD to
- * be turned on or off as well as rotated 180 degrees.
- *
- * In case of direct BUS access the second control register will be at
- * an offset of 4 as compared to the DCR access where the offset is 1
- * i.e. REG_CTRL. So this is taken care in the function
- * xilinx_fb_out32 where it left shifts the offset 2 times in case of
- * direct BUS access.
- */
+ 
 #define NUM_REGS	2
 #define REG_FB_ADDR	0
 #define REG_CTRL	1
 #define REG_CTRL_ENABLE	 0x0001
 #define REG_CTRL_ROTATE	 0x0002
 
-/*
- * The hardware only handles a single mode: 640x480 24 bit true
- * color. Each pixel gets a word (32 bits) of memory.  Within each word,
- * the 8 most significant bits are ignored, the next 8 bits are the red
- * level, the next 8 bits are the green level and the 8 least
- * significant bits are the blue level.  Each row of the LCD uses 1024
- * words, but only the first 640 pixels are displayed with the other 384
- * words being ignored.  There are 480 rows.
- */
+ 
 #define BYTES_PER_PIXEL	4
 #define BITS_PER_PIXEL	(BYTES_PER_PIXEL * 8)
 
@@ -79,26 +37,21 @@
 #define GREEN_SHIFT	8
 #define BLUE_SHIFT	0
 
-#define PALETTE_ENTRIES_NO	16	/* passed to fb_alloc_cmap() */
+#define PALETTE_ENTRIES_NO	16	 
 
-/* ML300/403 reference design framebuffer driver platform data struct */
+ 
 struct xilinxfb_platform_data {
-	u32 rotate_screen;      /* Flag to rotate display 180 degrees */
-	u32 screen_height_mm;   /* Physical dimensions of screen in mm */
+	u32 rotate_screen;       
+	u32 screen_height_mm;    
 	u32 screen_width_mm;
-	u32 xres, yres;         /* resolution of screen in pixels */
-	u32 xvirt, yvirt;       /* resolution of memory buffer */
+	u32 xres, yres;          
+	u32 xvirt, yvirt;        
 
-	/* Physical address of framebuffer memory; If non-zero, driver
-	 * will use provided memory address instead of allocating one from
-	 * the consistent pool.
-	 */
+	 
 	u32 fb_phys;
 };
 
-/*
- * Default xilinxfb configuration
- */
+ 
 static const struct xilinxfb_platform_data xilinx_fb_default_pdata = {
 	.xres = 640,
 	.yres = 480,
@@ -106,9 +59,7 @@ static const struct xilinxfb_platform_data xilinx_fb_default_pdata = {
 	.yvirt = 480,
 };
 
-/*
- * Here are the default fb_fix_screeninfo and fb_var_screeninfo structures
- */
+ 
 static const struct fb_fix_screeninfo xilinx_fb_fix = {
 	.id =		"Xilinx",
 	.type =		FB_TYPE_PACKED_PIXELS,
@@ -127,42 +78,34 @@ static const struct fb_var_screeninfo xilinx_fb_var = {
 	.activate =	FB_ACTIVATE_NOW
 };
 
-#define BUS_ACCESS_FLAG		0x1 /* 1 = BUS, 0 = DCR */
-#define LITTLE_ENDIAN_ACCESS	0x2 /* LITTLE ENDIAN IO functions */
+#define BUS_ACCESS_FLAG		0x1  
+#define LITTLE_ENDIAN_ACCESS	0x2  
 
 struct xilinxfb_drvdata {
-	struct fb_info	info;		/* FB driver info record */
+	struct fb_info	info;		 
 
-	phys_addr_t	regs_phys;	/* phys. address of the control
-					 * registers
-					 */
-	void __iomem	*regs;		/* virt. address of the control
-					 * registers
-					 */
+	phys_addr_t	regs_phys;	 
+	void __iomem	*regs;		 
 #ifdef CONFIG_PPC_DCR
 	dcr_host_t      dcr_host;
 	unsigned int    dcr_len;
 #endif
-	void		*fb_virt;	/* virt. address of the frame buffer */
-	dma_addr_t	fb_phys;	/* phys. address of the frame buffer */
-	int		fb_alloced;	/* Flag, was the fb memory alloced? */
+	void		*fb_virt;	 
+	dma_addr_t	fb_phys;	 
+	int		fb_alloced;	 
 
-	u8		flags;		/* features of the driver */
+	u8		flags;		 
 
 	u32		reg_ctrl_default;
 
 	u32		pseudo_palette[PALETTE_ENTRIES_NO];
-					/* Fake palette of 16 colors */
+					 
 };
 
 #define to_xilinxfb_drvdata(_info) \
 	container_of(_info, struct xilinxfb_drvdata, info)
 
-/*
- * The XPS TFT Controller can be accessed through BUS or DCR interface.
- * To perform the read/write on the registers we need to check on
- * which bus its connected and call the appropriate write API.
- */
+ 
 static void xilinx_fb_out32(struct xilinxfb_drvdata *drvdata, u32 offset,
 			    u32 val)
 {
@@ -203,17 +146,15 @@ xilinx_fb_setcolreg(unsigned int regno, unsigned int red, unsigned int green,
 		return -EINVAL;
 
 	if (fbi->var.grayscale) {
-		/* Convert color to grayscale.
-		 * grayscale = 0.30*R + 0.59*G + 0.11*B
-		 */
+		 
 		blue = (red * 77 + green * 151 + blue * 28 + 127) >> 8;
 		green = blue;
 		red = green;
 	}
 
-	/* fbi->fix.visual is always FB_VISUAL_TRUECOLOR */
+	 
 
-	/* We only handle 8 bits of each color. */
+	 
 	red >>= 8;
 	green >>= 8;
 	blue >>= 8;
@@ -230,7 +171,7 @@ xilinx_fb_blank(int blank_mode, struct fb_info *fbi)
 
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
-		/* turn on panel */
+		 
 		xilinx_fb_out32(drvdata, REG_CTRL, drvdata->reg_ctrl_default);
 		break;
 
@@ -238,14 +179,14 @@ xilinx_fb_blank(int blank_mode, struct fb_info *fbi)
 	case FB_BLANK_VSYNC_SUSPEND:
 	case FB_BLANK_HSYNC_SUSPEND:
 	case FB_BLANK_POWERDOWN:
-		/* turn off panel */
+		 
 		xilinx_fb_out32(drvdata, REG_CTRL, 0);
 		break;
 
 	default:
 		break;
 	}
-	return 0; /* success */
+	return 0;  
 }
 
 static const struct fb_ops xilinxfb_ops = {
@@ -255,9 +196,7 @@ static const struct fb_ops xilinxfb_ops = {
 	.fb_blank		= xilinx_fb_blank,
 };
 
-/* ---------------------------------------------------------------------
- * Bus independent setup/teardown
- */
+ 
 
 static int xilinxfb_assign(struct platform_device *pdev,
 			   struct xilinxfb_drvdata *drvdata,
@@ -277,7 +216,7 @@ static int xilinxfb_assign(struct platform_device *pdev,
 		drvdata->regs_phys = res->start;
 	}
 
-	/* Allocate the framebuffer memory */
+	 
 	if (pdata->fb_phys) {
 		drvdata->fb_phys = pdata->fb_phys;
 		drvdata->fb_virt = ioremap(pdata->fb_phys, fbsize);
@@ -293,25 +232,25 @@ static int xilinxfb_assign(struct platform_device *pdev,
 		return -ENOMEM;
 	}
 
-	/* Clear (turn to black) the framebuffer */
+	 
 	memset_io((void __iomem *)drvdata->fb_virt, 0, fbsize);
 
-	/* Tell the hardware where the frame buffer is */
+	 
 	xilinx_fb_out32(drvdata, REG_FB_ADDR, drvdata->fb_phys);
 	rc = xilinx_fb_in32(drvdata, REG_FB_ADDR);
-	/* Endianness detection */
+	 
 	if (rc != drvdata->fb_phys) {
 		drvdata->flags |= LITTLE_ENDIAN_ACCESS;
 		xilinx_fb_out32(drvdata, REG_FB_ADDR, drvdata->fb_phys);
 	}
 
-	/* Turn on the display */
+	 
 	drvdata->reg_ctrl_default = REG_CTRL_ENABLE;
 	if (pdata->rotate_screen)
 		drvdata->reg_ctrl_default |= REG_CTRL_ROTATE;
 	xilinx_fb_out32(drvdata, REG_CTRL, drvdata->reg_ctrl_default);
 
-	/* Fill struct fb_info */
+	 
 	drvdata->info.device = dev;
 	drvdata->info.screen_base = (void __iomem *)drvdata->fb_virt;
 	drvdata->info.fbops = &xilinxfb_ops;
@@ -329,7 +268,7 @@ static int xilinxfb_assign(struct platform_device *pdev,
 	drvdata->info.var.xres_virtual = pdata->xvirt;
 	drvdata->info.var.yres_virtual = pdata->yvirt;
 
-	/* Allocate a colour map */
+	 
 	rc = fb_alloc_cmap(&drvdata->info.cmap, PALETTE_ENTRIES_NO, 0);
 	if (rc) {
 		dev_err(dev, "Fail to allocate colormap (%d entries)\n",
@@ -337,7 +276,7 @@ static int xilinxfb_assign(struct platform_device *pdev,
 		goto err_cmap;
 	}
 
-	/* Register new frame buffer */
+	 
 	rc = register_framebuffer(&drvdata->info);
 	if (rc) {
 		dev_err(dev, "Could not register frame buffer\n");
@@ -345,15 +284,15 @@ static int xilinxfb_assign(struct platform_device *pdev,
 	}
 
 	if (drvdata->flags & BUS_ACCESS_FLAG) {
-		/* Put a banner in the log (for DEBUG) */
+		 
 		dev_dbg(dev, "regs: phys=%pa, virt=%p\n",
 			&drvdata->regs_phys, drvdata->regs);
 	}
-	/* Put a banner in the log (for DEBUG) */
+	 
 	dev_dbg(dev, "fb: phys=%llx, virt=%p, size=%x\n",
 		(unsigned long long)drvdata->fb_phys, drvdata->fb_virt, fbsize);
 
-	return 0;	/* success */
+	return 0;	 
 
 err_regfb:
 	fb_dealloc_cmap(&drvdata->info.cmap);
@@ -365,7 +304,7 @@ err_cmap:
 	else
 		iounmap(drvdata->fb_virt);
 
-	/* Turn off the display */
+	 
 	xilinx_fb_out32(drvdata, REG_CTRL, 0);
 
 	return rc;
@@ -389,19 +328,17 @@ static void xilinxfb_release(struct device *dev)
 	else
 		iounmap(drvdata->fb_virt);
 
-	/* Turn off the display */
+	 
 	xilinx_fb_out32(drvdata, REG_CTRL, 0);
 
 #ifdef CONFIG_PPC_DCR
-	/* Release the resources, as allocated based on interface */
+	 
 	if (!(drvdata->flags & BUS_ACCESS_FLAG))
 		dcr_unmap(drvdata->dcr_host, drvdata->dcr_len);
 #endif
 }
 
-/* ---------------------------------------------------------------------
- * OF bus binding
- */
+ 
 
 static int xilinxfb_of_probe(struct platform_device *pdev)
 {
@@ -411,25 +348,19 @@ static int xilinxfb_of_probe(struct platform_device *pdev)
 	int size;
 	struct xilinxfb_drvdata *drvdata;
 
-	/* Copy with the default pdata (not a ptr reference!) */
+	 
 	pdata = xilinx_fb_default_pdata;
 
-	/* Allocate the driver data region */
+	 
 	drvdata = devm_kzalloc(&pdev->dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
 		return -ENOMEM;
 
-	/*
-	 * To check whether the core is connected directly to DCR or BUS
-	 * interface and initialize the tft_access accordingly.
-	 */
+	 
 	of_property_read_u32(pdev->dev.of_node, "xlnx,dcr-splb-slave-if",
 			     &tft_access);
 
-	/*
-	 * Fill the resource structure if its direct BUS interface
-	 * otherwise fill the dcr_host structure.
-	 */
+	 
 	if (tft_access)
 		drvdata->flags |= BUS_ACCESS_FLAG;
 #ifdef CONFIG_PPC_DCR
@@ -475,7 +406,7 @@ static void xilinxfb_of_remove(struct platform_device *op)
 	xilinxfb_release(&op->dev);
 }
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id xilinxfb_of_match[] = {
 	{ .compatible = "xlnx,xps-tft-1.00.a", },
 	{ .compatible = "xlnx,xps-tft-2.00.a", },

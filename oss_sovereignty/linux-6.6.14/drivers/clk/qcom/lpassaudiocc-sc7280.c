@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -67,7 +65,7 @@ static struct clk_branch lpass_q6ss_ahbs_clk = {
 	},
 };
 
-/* 1128.96MHz configuration */
+ 
 static const struct alpha_pll_config lpass_audio_cc_pll_config = {
 	.l = 0x3a,
 	.alpha = 0xcccc,
@@ -120,7 +118,7 @@ static const struct pll_vco lucid_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 614.4 MHz configuration */
+ 
 static const struct alpha_pll_config lpass_aon_cc_pll_config = {
 	.l = 0x20,
 	.alpha = 0x0,
@@ -768,7 +766,7 @@ static int lpass_audio_cc_sc7280_probe(struct platform_device *pdev)
 
 	clk_zonda_pll_configure(&lpass_audio_cc_pll, regmap, &lpass_audio_cc_pll_config);
 
-	/* PLL settings */
+	 
 	regmap_write(regmap, 0x4, 0x3b);
 	regmap_write(regmap, 0x8, 0xff05);
 

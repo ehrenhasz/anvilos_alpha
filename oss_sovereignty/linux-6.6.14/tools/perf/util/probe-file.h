@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PROBE_FILE_H
 #define __PROBE_FILE_H
 
@@ -7,7 +7,7 @@
 struct strlist;
 struct strfilter;
 
-/* Cache of probe definitions */
+ 
 struct probe_cache_entry {
 	struct list_head	node;
 	bool			sdt;
@@ -35,7 +35,7 @@ enum probe_type {
 #define for_each_probe_cache_entry(entry, pcache) \
 	list_for_each_entry(entry, &pcache->entries, node)
 
-/* probe-file.c depends on libelf */
+ 
 #ifdef HAVE_LIBELF_SUPPORT
 int open_trace_file(const char *trace_file, bool readwrite);
 int probe_file__open(int flag);
@@ -73,7 +73,7 @@ bool uprobe_ref_ctr_is_supported(void);
 bool user_access_is_supported(void);
 bool multiprobe_event_is_supported(void);
 bool immediate_value_is_supported(void);
-#else	/* ! HAVE_LIBELF_SUPPORT */
+#else	 
 static inline struct probe_cache *probe_cache__new(const char *tgt __maybe_unused, struct nsinfo *nsi __maybe_unused)
 {
 	return NULL;

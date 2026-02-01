@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Marek Vasut <marex@denx.de>
- *
- * This code is based on drivers/video/fbdev/mxsfb.c :
- * Copyright (C) 2010 Juergen Beisert, Pengutronix
- * Copyright (C) 2008-2009 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2008 Embedded Alley Solutions, Inc All Rights Reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -31,12 +24,10 @@
 #include "mxsfb_drv.h"
 #include "mxsfb_regs.h"
 
-/* 1 second delay should be plenty of time for block reset */
+ 
 #define RESET_TIMEOUT		1000000
 
-/* -----------------------------------------------------------------------------
- * CRTC
- */
+ 
 
 static u32 set_hsync_pulse_width(struct mxsfb_drm_private *mxsfb, u32 val)
 {
@@ -44,10 +35,7 @@ static u32 set_hsync_pulse_width(struct mxsfb_drm_private *mxsfb, u32 val)
 		mxsfb->devdata->hs_wdth_shift;
 }
 
-/*
- * Setup the MXSFB registers for decoding the pixels out of the framebuffer and
- * outputting them on the bus.
- */
+ 
 static void mxsfb_set_formats(struct mxsfb_drm_private *mxsfb,
 			      const u32 bus_format)
 {
@@ -60,7 +48,7 @@ static void mxsfb_set_formats(struct mxsfb_drm_private *mxsfb,
 
 	ctrl = CTRL_BYPASS_COUNT | CTRL_MASTER;
 
-	/* CTRL1 contains IRQ config and status bits, preserve those. */
+	 
 	ctrl1 = readl(mxsfb->base + LCDC_CTRL1);
 	ctrl1 &= CTRL1_CUR_FRAME_DONE_IRQ_EN | CTRL1_CUR_FRAME_DONE_IRQ;
 
@@ -73,7 +61,7 @@ static void mxsfb_set_formats(struct mxsfb_drm_private *mxsfb,
 	case DRM_FORMAT_XRGB8888:
 		dev_dbg(drm->dev, "Setting up XRGB8888 mode\n");
 		ctrl |= CTRL_WORD_LENGTH_24;
-		/* Do not use packed pixels = one pixel per word instead. */
+		 
 		ctrl1 |= CTRL1_SET_BYTE_PACKAGING(0x7);
 		break;
 	}
@@ -108,7 +96,7 @@ static void mxsfb_set_mode(struct mxsfb_drm_private *mxsfb, u32 bus_flags)
 
 	vsync_pulse_len = m->crtc_vsync_end - m->crtc_vsync_start;
 
-	vdctrl0 = VDCTRL0_ENABLE_PRESENT |	/* Always in DOTCLOCK mode */
+	vdctrl0 = VDCTRL0_ENABLE_PRESENT |	 
 		  VDCTRL0_VSYNC_PERIOD_UNIT |
 		  VDCTRL0_VSYNC_PULSE_WIDTH_UNIT |
 		  VDCTRL0_SET_VSYNC_PULSE_WIDTH(vsync_pulse_len);
@@ -116,24 +104,19 @@ static void mxsfb_set_mode(struct mxsfb_drm_private *mxsfb, u32 bus_flags)
 		vdctrl0 |= VDCTRL0_HSYNC_ACT_HIGH;
 	if (m->flags & DRM_MODE_FLAG_PVSYNC)
 		vdctrl0 |= VDCTRL0_VSYNC_ACT_HIGH;
-	/* Make sure Data Enable is high active by default */
+	 
 	if (!(bus_flags & DRM_BUS_FLAG_DE_LOW))
 		vdctrl0 |= VDCTRL0_ENABLE_ACT_HIGH;
-	/*
-	 * DRM_BUS_FLAG_PIXDATA_DRIVE_ defines are controller centric,
-	 * controllers VDCTRL0_DOTCLK is display centric.
-	 * Drive on positive edge       -> display samples on falling edge
-	 * DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE -> VDCTRL0_DOTCLK_ACT_FALLING
-	 */
+	 
 	if (bus_flags & DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE)
 		vdctrl0 |= VDCTRL0_DOTCLK_ACT_FALLING;
 
 	writel(vdctrl0, mxsfb->base + LCDC_VDCTRL0);
 
-	/* Frame length in lines. */
+	 
 	writel(m->crtc_vtotal, mxsfb->base + LCDC_VDCTRL1);
 
-	/* Line length in units of clocks or pixels. */
+	 
 	hsync_pulse_len = m->crtc_hsync_end - m->crtc_hsync_start;
 	writel(set_hsync_pulse_width(mxsfb, hsync_pulse_len) |
 	       VDCTRL2_SET_HSYNC_PERIOD(m->crtc_htotal),
@@ -156,7 +139,7 @@ static void mxsfb_enable_controller(struct mxsfb_drm_private *mxsfb)
 		clk_prepare_enable(mxsfb->clk_disp_axi);
 	clk_prepare_enable(mxsfb->clk);
 
-	/* Increase number of outstanding requests on all supported IPs */
+	 
 	if (mxsfb->devdata->has_ctrl2) {
 		reg = readl(mxsfb->base + LCDC_V4_CTRL2);
 		reg &= ~CTRL2_SET_OUTSTANDING_REQS_MASK;
@@ -164,39 +147,15 @@ static void mxsfb_enable_controller(struct mxsfb_drm_private *mxsfb)
 		writel(reg, mxsfb->base + LCDC_V4_CTRL2);
 	}
 
-	/* If it was disabled, re-enable the mode again */
+	 
 	writel(CTRL_DOTCLK_MODE, mxsfb->base + LCDC_CTRL + REG_SET);
 
-	/* Enable the SYNC signals first, then the DMA engine */
+	 
 	reg = readl(mxsfb->base + LCDC_VDCTRL4);
 	reg |= VDCTRL4_SYNC_SIGNALS_ON;
 	writel(reg, mxsfb->base + LCDC_VDCTRL4);
 
-	/*
-	 * Enable recovery on underflow.
-	 *
-	 * There is some sort of corner case behavior of the controller,
-	 * which could rarely be triggered at least on i.MX6SX connected
-	 * to 800x480 DPI panel and i.MX8MM connected to DPI->DSI->LVDS
-	 * bridged 1920x1080 panel (and likely on other setups too), where
-	 * the image on the panel shifts to the right and wraps around.
-	 * This happens either when the controller is enabled on boot or
-	 * even later during run time. The condition does not correct
-	 * itself automatically, i.e. the display image remains shifted.
-	 *
-	 * It seems this problem is known and is due to sporadic underflows
-	 * of the LCDIF FIFO. While the LCDIF IP does have underflow/overflow
-	 * IRQs, neither of the IRQs trigger and neither IRQ status bit is
-	 * asserted when this condition occurs.
-	 *
-	 * All known revisions of the LCDIF IP have CTRL1 RECOVER_ON_UNDERFLOW
-	 * bit, which is described in the reference manual since i.MX23 as
-	 * "
-	 *   Set this bit to enable the LCDIF block to recover in the next
-	 *   field/frame if there was an underflow in the current field/frame.
-	 * "
-	 * Enable this bit to mitigate the sporadic underflows.
-	 */
+	 
 	reg = readl(mxsfb->base + LCDC_CTRL1);
 	reg |= CTRL1_RECOVER_ON_UNDERFLOW;
 	writel(reg, mxsfb->base + LCDC_CTRL1);
@@ -208,10 +167,7 @@ static void mxsfb_disable_controller(struct mxsfb_drm_private *mxsfb)
 {
 	u32 reg;
 
-	/*
-	 * Even if we disable the controller here, it will still continue
-	 * until its FIFOs are running out of data
-	 */
+	 
 	writel(CTRL_DOTCLK_MODE, mxsfb->base + LCDC_CTRL + REG_CLR);
 
 	readl_poll_timeout(mxsfb->base + LCDC_CTRL, reg, !(reg & CTRL_RUN),
@@ -226,11 +182,7 @@ static void mxsfb_disable_controller(struct mxsfb_drm_private *mxsfb)
 		clk_disable_unprepare(mxsfb->clk_disp_axi);
 }
 
-/*
- * Clear the bit and poll it cleared.  This is usually called with
- * a reset address and mask being either SFTRST(bit 31) or CLKGATE
- * (bit 30).
- */
+ 
 static int clear_poll_bit(void __iomem *addr, u32 mask)
 {
 	u32 reg;
@@ -243,11 +195,7 @@ static int mxsfb_reset_block(struct mxsfb_drm_private *mxsfb)
 {
 	int ret;
 
-	/*
-	 * It seems, you can't re-program the controller if it is still
-	 * running. This may lead to shifted pictures (FIFO issue?), so
-	 * first stop the controller and drain its FIFOs.
-	 */
+	 
 
 	ret = clear_poll_bit(mxsfb->base + LCDC_CTRL, CTRL_SFTRST);
 	if (ret)
@@ -263,7 +211,7 @@ static int mxsfb_reset_block(struct mxsfb_drm_private *mxsfb)
 	if (ret)
 		return ret;
 
-	/* Clear the FIFOs */
+	 
 	writel(CTRL1_FIFO_CLEAR, mxsfb->base + LCDC_CTRL1 + REG_SET);
 	readl(mxsfb->base + LCDC_CTRL1);
 	writel(CTRL1_FIFO_CLEAR, mxsfb->base + LCDC_CTRL1 + REG_CLR);
@@ -296,7 +244,7 @@ static void mxsfb_crtc_mode_set_nofb(struct mxsfb_drm_private *mxsfb,
 			     bus_flags);
 	DRM_DEV_DEBUG_DRIVER(drm->dev, "Mode flags: 0x%08X\n", m->flags);
 
-	/* Mandatory eLCDIF reset as per the Reference Manual */
+	 
 	err = mxsfb_reset_block(mxsfb);
 	if (err)
 		return;
@@ -316,11 +264,11 @@ static int mxsfb_crtc_atomic_check(struct drm_crtc *crtc,
 	bool has_primary = crtc_state->plane_mask &
 			   drm_plane_mask(crtc->primary);
 
-	/* The primary plane has to be enabled when the CRTC is active. */
+	 
 	if (crtc_state->active && !has_primary)
 		return -EINVAL;
 
-	/* TODO: Is this needed ? */
+	 
 	return drm_atomic_add_affected_planes(state, crtc);
 }
 
@@ -359,7 +307,7 @@ static void mxsfb_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	drm_crtc_vblank_on(crtc);
 
-	/* If there is a bridge attached to the LCDIF, use its bus format */
+	 
 	if (mxsfb->bridge) {
 		bridge_state =
 			drm_atomic_get_new_bridge_state(state,
@@ -377,17 +325,17 @@ static void mxsfb_crtc_atomic_enable(struct drm_crtc *crtc,
 		}
 	}
 
-	/* If there is no bridge, use bus format from connector */
+	 
 	if (!bus_format && mxsfb->connector->display_info.num_bus_formats)
 		bus_format = mxsfb->connector->display_info.bus_formats[0];
 
-	/* If all else fails, default to RGB888_1X24 */
+	 
 	if (!bus_format)
 		bus_format = MEDIA_BUS_FMT_RGB888_1X24;
 
 	mxsfb_crtc_mode_set_nofb(mxsfb, bridge_state, bus_format);
 
-	/* Write cur_buf as well to avoid an initial corrupt frame */
+	 
 	dma_addr = drm_fb_dma_get_gem_addr(new_pstate->fb, new_pstate, 0);
 	if (dma_addr) {
 		writel(dma_addr, mxsfb->base + mxsfb->devdata->cur_buf);
@@ -424,7 +372,7 @@ static int mxsfb_crtc_enable_vblank(struct drm_crtc *crtc)
 {
 	struct mxsfb_drm_private *mxsfb = to_mxsfb_drm_private(crtc->dev);
 
-	/* Clear and enable VBLANK IRQ */
+	 
 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
 	writel(CTRL1_CUR_FRAME_DONE_IRQ_EN, mxsfb->base + LCDC_CTRL1 + REG_SET);
 
@@ -435,7 +383,7 @@ static void mxsfb_crtc_disable_vblank(struct drm_crtc *crtc)
 {
 	struct mxsfb_drm_private *mxsfb = to_mxsfb_drm_private(crtc->dev);
 
-	/* Disable and clear VBLANK IRQ */
+	 
 	writel(CTRL1_CUR_FRAME_DONE_IRQ_EN, mxsfb->base + LCDC_CTRL1 + REG_CLR);
 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
 }
@@ -506,17 +454,13 @@ static const struct drm_crtc_funcs mxsfb_crtc_with_crc_funcs = {
 	.verify_crc_source = mxsfb_crtc_verify_crc_source,
 };
 
-/* -----------------------------------------------------------------------------
- * Encoder
- */
+ 
 
 static const struct drm_encoder_funcs mxsfb_encoder_funcs = {
 	.destroy = drm_encoder_cleanup,
 };
 
-/* -----------------------------------------------------------------------------
- * Planes
- */
+ 
 
 static int mxsfb_plane_atomic_check(struct drm_plane *plane,
 				    struct drm_atomic_state *state)
@@ -565,20 +509,12 @@ static void mxsfb_plane_overlay_atomic_update(struct drm_plane *plane,
 		return;
 	}
 
-	/*
-	 * HACK: The hardware seems to output 64 bytes of data of unknown
-	 * origin, and then to proceed with the framebuffer. Until the reason
-	 * is understood, live with the 16 initial invalid pixels on the first
-	 * line and start 64 bytes within the framebuffer.
-	 */
+	 
 	dma_addr += 64;
 
 	writel(dma_addr, mxsfb->base + LCDC_AS_NEXT_BUF);
 
-	/*
-	 * If the plane was previously disabled, write LCDC_AS_BUF as well to
-	 * provide the first buffer.
-	 */
+	 
 	if (!old_pstate->fb)
 		writel(dma_addr, mxsfb->base + LCDC_AS_BUF);
 
@@ -667,9 +603,7 @@ static const uint64_t mxsfb_modifiers[] = {
 	DRM_FORMAT_MOD_INVALID
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization
- */
+ 
 
 int mxsfb_kms_init(struct mxsfb_drm_private *mxsfb)
 {

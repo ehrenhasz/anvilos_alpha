@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Houlong Wei <houlong.wei@mediatek.com>
- *         Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- */
+
+ 
 
 #include "mtk_mdp_core.h"
 #include "mtk_mdp_vpu.h"
@@ -20,7 +16,7 @@ static void mtk_mdp_vpu_handle_init_ack(const struct mdp_ipi_comm_ack *msg)
 	struct mtk_mdp_vpu *vpu = (struct mtk_mdp_vpu *)
 					(unsigned long)msg->ap_inst;
 
-	/* mapping VPU address to kernel virtual address */
+	 
 	vpu->vsi = (struct mdp_process_vsi *)
 			vpu_mapping_dm_addr(vpu->pdev, msg->vpu_inst_addr);
 	vpu->inst_addr = msg->vpu_inst_addr;

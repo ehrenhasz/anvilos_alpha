@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sound.c - Sound component for Mostcore
- *
- * Copyright (C) 2015 Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,23 +20,7 @@
 
 static struct most_component comp;
 
-/**
- * struct channel - private structure to keep channel specific data
- * @substream: stores the substream structure
- * @pcm_hardware: low-level hardware description
- * @iface: interface for which the channel belongs to
- * @cfg: channel configuration
- * @card: registered sound card
- * @list: list for private use
- * @id: channel index
- * @period_pos: current period position (ring buffer)
- * @buffer_pos: current buffer position (ring buffer)
- * @is_stream_running: identifies whether a stream is running or not
- * @opened: set when the stream is opened
- * @playback_task: playback thread
- * @playback_waitq: waitq used by playback thread
- * @copy_fn: copy function for PCM-specific format and width
- */
+ 
 struct channel {
 	struct snd_pcm_substream *substream;
 	struct snd_pcm_hardware pcm_hardware;
@@ -148,16 +128,7 @@ static void most_to_alsa_copy32(void *alsa, void *most, unsigned int bytes)
 	swap_copy32(alsa, most, bytes);
 }
 
-/**
- * get_channel - get pointer to channel
- * @iface: interface structure
- * @channel_id: channel ID
- *
- * This traverses the channel list and returns the channel matching the
- * ID and interface.
- *
- * Returns pointer to channel on success or NULL otherwise.
- */
+ 
 static struct channel *get_channel(struct most_interface *iface,
 				   int channel_id)
 {
@@ -171,13 +142,7 @@ static struct channel *get_channel(struct most_interface *iface,
 	return NULL;
 }
 
-/**
- * copy_data - implements data copying function
- * @channel: channel
- * @mbo: MBO from core
- *
- * Copy data from/to ring buffer to/from MBO and update the buffer position
- */
+ 
 static bool copy_data(struct channel *channel, struct mbo *mbo)
 {
 	struct snd_pcm_runtime *const runtime = channel->substream->runtime;
@@ -197,7 +162,7 @@ static bool copy_data(struct channel *channel, struct mbo *mbo)
 			 fr0 * frame_bytes);
 
 	if (frames > fr0) {
-		/* wrap around at end of ring buffer */
+		 
 		channel->copy_fn(runtime->dma_area,
 				 mbo->virt_address + fr0 * frame_bytes,
 				 (frames - fr0) * frame_bytes);
@@ -214,16 +179,7 @@ static bool copy_data(struct channel *channel, struct mbo *mbo)
 	return false;
 }
 
-/**
- * playback_thread - function implements the playback thread
- * @data: private data
- *
- * Thread which does the playback functionality in a loop. It waits for a free
- * MBO from mostcore for a particular channel and copy the data from ring buffer
- * to MBO. Submit the MBO back to mostcore, after copying the data.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int playback_thread(void *data)
 {
 	struct channel *const channel = data;
@@ -253,15 +209,7 @@ static int playback_thread(void *data)
 	return 0;
 }
 
-/**
- * pcm_open - implements open callback function for PCM middle layer
- * @substream: pointer to ALSA PCM substream
- *
- * This is called when a PCM substream is opened. At least, the function should
- * initialize the runtime->hw record.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int pcm_open(struct snd_pcm_substream *substream)
 {
 	struct channel *channel = substream->private_data;
@@ -292,16 +240,7 @@ static int pcm_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/**
- * pcm_close - implements close callback function for PCM middle layer
- * @substream: sub-stream pointer
- *
- * Obviously, this is called when a PCM substream is closed. Any private
- * instance for a PCM substream allocated in the open callback will be
- * released here.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int pcm_close(struct snd_pcm_substream *substream)
 {
 	struct channel *channel = substream->private_data;
@@ -312,15 +251,7 @@ static int pcm_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/**
- * pcm_prepare - implements prepare callback function for PCM middle layer
- * @substream: substream pointer
- *
- * This callback is called when the PCM is "prepared". Format rate, sample rate,
- * etc., can be set here. This callback can be called many times at each setup.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int pcm_prepare(struct snd_pcm_substream *substream)
 {
 	struct channel *channel = substream->private_data;
@@ -357,16 +288,7 @@ static int pcm_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/**
- * pcm_trigger - implements trigger callback function for PCM middle layer
- * @substream: substream pointer
- * @cmd: action to perform
- *
- * This is called when the PCM is started, stopped or paused. The action will be
- * specified in the second argument, SNDRV_PCM_TRIGGER_XXX
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct channel *channel = substream->private_data;
@@ -387,14 +309,7 @@ static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	return 0;
 }
 
-/**
- * pcm_pointer - implements pointer callback function for PCM middle layer
- * @substream: substream pointer
- *
- * This callback is called when the PCM middle layer inquires the current
- * hardware position on the buffer. The position must be returned in frames,
- * ranging from 0 to buffer_size-1.
- */
+ 
 static snd_pcm_uframes_t pcm_pointer(struct snd_pcm_substream *substream)
 {
 	struct channel *channel = substream->private_data;
@@ -402,9 +317,7 @@ static snd_pcm_uframes_t pcm_pointer(struct snd_pcm_substream *substream)
 	return channel->buffer_pos;
 }
 
-/*
- * Initialization of struct snd_pcm_ops
- */
+ 
 static const struct snd_pcm_ops pcm_ops = {
 	.open       = pcm_open,
 	.close      = pcm_close,
@@ -498,18 +411,7 @@ static void release_adapter(struct sound_adapter *adpt)
 	kfree(adpt);
 }
 
-/**
- * audio_probe_channel - probe function of the driver module
- * @iface: pointer to interface instance
- * @channel_id: channel index/ID
- * @cfg: pointer to actual channel configuration
- * @device_name: name of the device to be created in /dev
- * @arg_list: string that provides the desired audio resolution
- *
- * Creates sound card, pcm device, sets pcm ops and registers sound card.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int audio_probe_channel(struct most_interface *iface, int channel_id,
 			       struct most_channel_config *cfg,
 			       char *device_name, char *arg_list)
@@ -628,15 +530,7 @@ adpt_alloc:
 	return 0;
 }
 
-/**
- * audio_disconnect_channel - function to disconnect a channel
- * @iface: pointer to interface instance
- * @channel_id: channel index
- *
- * This frees allocated memory and removes the sound card from ALSA
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int audio_disconnect_channel(struct most_interface *iface,
 				    int channel_id)
 {
@@ -655,15 +549,7 @@ static int audio_disconnect_channel(struct most_interface *iface,
 	return 0;
 }
 
-/**
- * audio_rx_completion - completion handler for rx channels
- * @mbo: pointer to buffer object that has completed
- *
- * This searches for the channel this MBO belongs to and copy the data from MBO
- * to ring buffer
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int audio_rx_completion(struct mbo *mbo)
 {
 	struct channel *channel = get_channel(mbo->ifp, mbo->hdm_channel_id);
@@ -679,17 +565,7 @@ static int audio_rx_completion(struct mbo *mbo)
 	return 0;
 }
 
-/**
- * audio_tx_completion - completion handler for tx channels
- * @iface: pointer to interface instance
- * @channel_id: channel index/ID
- *
- * This searches the channel that belongs to this combination of interface
- * pointer and channel ID and wakes a process sitting in the wait queue of
- * this channel.
- *
- * Returns 0 on success or error code otherwise.
- */
+ 
 static int audio_tx_completion(struct most_interface *iface, int channel_id)
 {
 	struct channel *channel = get_channel(iface, channel_id);
@@ -701,9 +577,7 @@ static int audio_tx_completion(struct most_interface *iface, int channel_id)
 	return 0;
 }
 
-/*
- * Initialization of the struct most_component
- */
+ 
 static struct most_component comp = {
 	.mod = THIS_MODULE,
 	.name = DRIVER_NAME,

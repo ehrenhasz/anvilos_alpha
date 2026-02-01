@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -29,9 +29,7 @@ struct io_cancel {
 			 IORING_ASYNC_CANCEL_ANY | IORING_ASYNC_CANCEL_FD_FIXED | \
 			 IORING_ASYNC_CANCEL_USERDATA | IORING_ASYNC_CANCEL_OP)
 
-/*
- * Returns true if the request matches the criteria outlined by 'cd'.
- */
+ 
 bool io_cancel_req_match(struct io_kiocb *req, struct io_cancel_data *cd)
 {
 	bool match_user_data = cd->flags & IORING_ASYNC_CANCEL_USERDATA;
@@ -108,10 +106,7 @@ int io_try_cancel(struct io_uring_task *tctx, struct io_cancel_data *cd,
 	WARN_ON_ONCE(!io_wq_current_is_worker() && tctx != current->io_uring);
 
 	ret = io_async_cancel_one(tctx, cd);
-	/*
-	 * Fall-through even for -EALREADY, as we may have poll armed
-	 * that need unarming.
-	 */
+	 
 	if (!ret)
 		return 0;
 
@@ -171,7 +166,7 @@ static int __io_async_cancel(struct io_cancel_data *cd,
 		nr++;
 	} while (1);
 
-	/* slow path, try all io-wq's */
+	 
 	io_ring_submit_lock(ctx, issue_flags);
 	ret = -ENOENT;
 	list_for_each_entry(node, &ctx->tctx_list, ctx_node) {
@@ -240,7 +235,7 @@ static int __io_sync_cancel(struct io_uring_task *tctx,
 {
 	struct io_ring_ctx *ctx = cd->ctx;
 
-	/* fixed must be grabbed every time since we drop the uring_lock */
+	 
 	if ((cd->flags & IORING_ASYNC_CANCEL_FD) &&
 	    (cd->flags & IORING_ASYNC_CANCEL_FD_FIXED)) {
 		if (unlikely(fd >= ctx->nr_user_files))
@@ -282,7 +277,7 @@ int io_sync_cancel(struct io_ring_ctx *ctx, void __user *arg)
 	cd.flags = sc.flags;
 	cd.opcode = sc.opcode;
 
-	/* we can grab a normal file descriptor upfront */
+	 
 	if ((cd.flags & IORING_ASYNC_CANCEL_FD) &&
 	   !(cd.flags & IORING_ASYNC_CANCEL_FD_FIXED)) {
 		file = fget(sc.fd);
@@ -293,7 +288,7 @@ int io_sync_cancel(struct io_ring_ctx *ctx, void __user *arg)
 
 	ret = __io_sync_cancel(current->io_uring, &cd, sc.fd);
 
-	/* found something, done! */
+	 
 	if (ret != -EALREADY)
 		goto out;
 
@@ -306,10 +301,7 @@ int io_sync_cancel(struct io_ring_ctx *ctx, void __user *arg)
 		timeout = ktime_add_ns(timespec64_to_ktime(ts), ktime_get_ns());
 	}
 
-	/*
-	 * Keep looking until we get -ENOENT. we'll get woken everytime
-	 * every time a request completes and will retry the cancelation.
-	 */
+	 
 	do {
 		cd.seq = atomic_inc_return(&ctx->cancel_seq);
 

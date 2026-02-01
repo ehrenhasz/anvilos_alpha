@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Cloudflare */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -44,9 +44,7 @@ int copy(struct bpf_iter__sockmap *ctx)
 
 	elems++;
 
-	/* We need a temporary buffer on the stack, since the verifier doesn't
-	 * let us use the pointer from the context as an argument to the helper.
-	 */
+	 
 	tmp = *key;
 
 	if (sk) {

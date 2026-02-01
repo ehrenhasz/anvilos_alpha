@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Analog Devices ADV748X 8 channel analog front end (AFE) receiver
- * with standard definition processor (SDP)
- *
- * Copyright (C) 2017 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -18,9 +13,7 @@
 
 #include "adv748x.h"
 
-/* -----------------------------------------------------------------------------
- * SDP
- */
+ 
 
 #define ADV748X_AFE_STD_AD_PAL_BG_NTSC_J_SECAM		0x0
 #define ADV748X_AFE_STD_AD_PAL_BG_NTSC_J_SECAM_PED	0x1
@@ -43,7 +36,7 @@ static int adv748x_afe_read_ro_map(struct adv748x_state *state, u8 reg)
 {
 	int ret;
 
-	/* Select SDP Read-Only Main Map */
+	 
 	ret = sdp_write(state, ADV748X_SDP_MAP_SEL,
 			ADV748X_SDP_MAP_SEL_RO_MAIN);
 	if (ret < 0)
@@ -58,7 +51,7 @@ static int adv748x_afe_status(struct adv748x_afe *afe, u32 *signal,
 	struct adv748x_state *state = adv748x_afe_to_state(afe);
 	int info;
 
-	/* Read status from reg 0x10 of SDP RO Map */
+	 
 	info = adv748x_afe_read_ro_map(state, ADV748X_SDP_RO_10);
 	if (info < 0)
 		return info;
@@ -70,7 +63,7 @@ static int adv748x_afe_status(struct adv748x_afe *afe, u32 *signal,
 	if (!std)
 		return 0;
 
-	/* Standard not valid if there is no signal */
+	 
 	if (!(info & ADV748X_SDP_RO_10_IN_LOCK)) {
 		*std = V4L2_STD_UNKNOWN;
 		return 0;
@@ -121,7 +114,7 @@ static void adv748x_afe_fill_format(struct adv748x_afe *afe,
 	fmt->width = 720;
 	fmt->height = afe->curr_norm & V4L2_STD_525_60 ? 480 : 576;
 
-	/* Field height */
+	 
 	fmt->height /= 2;
 }
 
@@ -177,9 +170,7 @@ static int adv748x_afe_g_pixelaspect(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_video_ops
- */
+ 
 
 static int adv748x_afe_g_std(struct v4l2_subdev *sd, v4l2_std_id *norm)
 {
@@ -223,20 +214,20 @@ static int adv748x_afe_querystd(struct v4l2_subdev *sd, v4l2_std_id *std)
 		goto unlock;
 	}
 
-	/* Set auto detect mode */
+	 
 	adv748x_afe_set_video_standard(state,
 				       ADV748X_AFE_STD_AD_PAL_BG_NTSC_J_SECAM);
 
 	msleep(100);
 
-	/* Read detected standard */
+	 
 	ret = adv748x_afe_status(afe, NULL, std);
 
 	afe_std = adv748x_afe_std(afe->curr_norm);
 	if (afe_std < 0)
 		goto unlock;
 
-	/* Restore original state */
+	 
 	adv748x_afe_set_video_standard(state, afe_std);
 
 unlock:
@@ -310,9 +301,7 @@ static const struct v4l2_subdev_video_ops adv748x_afe_video_ops = {
 	.g_pixelaspect = adv748x_afe_g_pixelaspect,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_pad_ops
- */
+ 
 
 static int adv748x_afe_propagate_pixelrate(struct adv748x_afe *afe)
 {
@@ -322,11 +311,7 @@ static int adv748x_afe_propagate_pixelrate(struct adv748x_afe *afe)
 	if (!tx)
 		return -ENOLINK;
 
-	/*
-	 * The ADV748x ADC sampling frequency is twice the externally supplied
-	 * clock whose frequency is required to be 28.63636 MHz. It oversamples
-	 * with a factor of 4 resulting in a pixel rate of 14.3180180 MHz.
-	 */
+	 
 	return adv748x_csi2_set_pixelrate(tx, 14318180);
 }
 
@@ -349,7 +334,7 @@ static int adv748x_afe_get_format(struct v4l2_subdev *sd,
 	struct adv748x_afe *afe = adv748x_sd_to_afe(sd);
 	struct v4l2_mbus_framefmt *mbusformat;
 
-	/* It makes no sense to get the format of the analog sink pads */
+	 
 	if (sdformat->pad != ADV748X_AFE_SOURCE)
 		return -EINVAL;
 
@@ -371,7 +356,7 @@ static int adv748x_afe_set_format(struct v4l2_subdev *sd,
 {
 	struct v4l2_mbus_framefmt *mbusformat;
 
-	/* It makes no sense to get the format of the analog sink pads */
+	 
 	if (sdformat->pad != ADV748X_AFE_SOURCE)
 		return -EINVAL;
 
@@ -390,18 +375,14 @@ static const struct v4l2_subdev_pad_ops adv748x_afe_pad_ops = {
 	.get_fmt = adv748x_afe_get_format,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_ops
- */
+ 
 
 static const struct v4l2_subdev_ops adv748x_afe_ops = {
 	.video = &adv748x_afe_video_ops,
 	.pad = &adv748x_afe_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static const char * const afe_ctrl_frp_menu[] = {
 	"Disabled",
@@ -429,7 +410,7 @@ static int adv748x_afe_s_ctrl(struct v4l2_ctrl *ctrl)
 		ret = sdp_write(state, ADV748X_SDP_BRI, ctrl->val);
 		break;
 	case V4L2_CID_HUE:
-		/* Hue is inverted according to HSL chart */
+		 
 		ret = sdp_write(state, ADV748X_SDP_HUE, -ctrl->val);
 		break;
 	case V4L2_CID_CONTRAST:
@@ -444,7 +425,7 @@ static int adv748x_afe_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_TEST_PATTERN:
 		enable = !!ctrl->val;
 
-		/* Enable/Disable Color bar test patterns */
+		 
 		ret = sdp_clrset(state, ADV748X_SDP_DEF, ADV748X_SDP_DEF_VAL_EN,
 				enable);
 		if (ret)
@@ -469,7 +450,7 @@ static int adv748x_afe_init_controls(struct adv748x_afe *afe)
 
 	v4l2_ctrl_handler_init(&afe->ctrl_hdl, 5);
 
-	/* Use our mutex for the controls */
+	 
 	afe->ctrl_hdl.lock = &state->mutex;
 
 	v4l2_ctrl_new_std(&afe->ctrl_hdl, &adv748x_afe_ctrl_ops,
@@ -512,9 +493,9 @@ int adv748x_afe_init(struct adv748x_afe *afe)
 	adv748x_subdev_init(&afe->sd, state, &adv748x_afe_ops,
 			    MEDIA_ENT_F_ATV_DECODER, "afe");
 
-	/* Identify the first connector found as a default input if set */
+	 
 	for (i = ADV748X_PORT_AIN0; i <= ADV748X_PORT_AIN7; i++) {
-		/* Inputs and ports are 1-indexed to match the data sheet */
+		 
 		if (state->endpoints[i]) {
 			afe->input = i;
 			break;
@@ -525,7 +506,7 @@ int adv748x_afe_init(struct adv748x_afe *afe)
 
 	adv_dbg(state, "AFE Default input set to %d\n", afe->input);
 
-	/* Entity pads and sinks are 0-indexed to match the pads */
+	 
 	for (i = ADV748X_AFE_SINK_AIN0; i <= ADV748X_AFE_SINK_AIN7; i++)
 		afe->pads[i].flags = MEDIA_PAD_FL_SINK;
 

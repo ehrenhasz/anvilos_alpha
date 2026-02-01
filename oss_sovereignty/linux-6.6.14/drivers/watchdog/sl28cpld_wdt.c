@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sl28cpld watchdog driver
- *
- * Copyright 2020 Kontron Europe GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
@@ -13,9 +9,7 @@
 #include <linux/regmap.h>
 #include <linux/watchdog.h>
 
-/*
- * Watchdog timer block registers.
- */
+ 
 #define WDT_CTRL			0x00
 #define  WDT_CTRL_EN			BIT(0)
 #define  WDT_CTRL_LOCK			BIT(2)
@@ -143,7 +137,7 @@ static int sl28cpld_wdt_probe(struct platform_device *pdev)
 	wdt->assert_wdt_timeout = device_property_read_bool(&pdev->dev,
 							    "kontron,assert-wdt-timeout-pin");
 
-	/* initialize struct watchdog_device */
+	 
 	wdd = &wdt->wdd;
 	wdd->parent = &pdev->dev;
 	wdd->info = &sl28cpld_wdt_info;
@@ -154,23 +148,12 @@ static int sl28cpld_wdt_probe(struct platform_device *pdev)
 	watchdog_set_drvdata(wdd, wdt);
 	watchdog_stop_on_reboot(wdd);
 
-	/*
-	 * Read the status early, in case of an error, we haven't modified the
-	 * hardware.
-	 */
+	 
 	ret = regmap_read(wdt->regmap, wdt->offset + WDT_CTRL, &status);
 	if (ret)
 		return ret;
 
-	/*
-	 * Initial timeout value, may be overwritten by device tree or module
-	 * parameter in watchdog_init_timeout().
-	 *
-	 * Reading a zero here means that either the hardware has a default
-	 * value of zero (which is very unlikely and definitely a hardware
-	 * bug) or the bootloader set it to zero. In any case, we handle
-	 * this case gracefully and set out own timeout.
-	 */
+	 
 	ret = regmap_read(wdt->regmap, wdt->offset + WDT_TIMEOUT, &val);
 	if (ret)
 		return ret;
@@ -183,15 +166,12 @@ static int sl28cpld_wdt_probe(struct platform_device *pdev)
 	watchdog_init_timeout(wdd, timeout, &pdev->dev);
 	sl28cpld_wdt_set_timeout(wdd, wdd->timeout);
 
-	/* if the watchdog is locked, we set nowayout */
+	 
 	if (status & WDT_CTRL_LOCK)
 		nowayout = true;
 	watchdog_set_nowayout(wdd, nowayout);
 
-	/*
-	 * If watchdog is already running, keep it enabled, but make
-	 * sure its mode is set correctly.
-	 */
+	 
 	if (status & WDT_CTRL_EN) {
 		sl28cpld_wdt_start(wdd);
 		set_bit(WDOG_HW_RUNNING, &wdd->status);

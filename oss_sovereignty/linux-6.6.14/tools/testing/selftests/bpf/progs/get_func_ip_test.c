@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -15,9 +15,7 @@ extern const void bpf_fentry_test7 __ksym;
 
 extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
 
-/* This function is here to have CONFIG_X86_KERNEL_IBT
- * used and added to object BTF.
- */
+ 
 int unused(void)
 {
 	return CONFIG_X86_KERNEL_IBT ? 0 : 1;

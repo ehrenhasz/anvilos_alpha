@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CLx support
- *
- * Copyright (C) 2020 - 2023, Intel Corporation
- * Authors: Gil Fine <gil.fine@intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -64,17 +58,17 @@ static int tb_port_pm_secondary_disable(struct tb_port *port)
 	return tb_port_pm_secondary_set(port, false);
 }
 
-/* Called for USB4 or Titan Ridge routers only */
+ 
 static bool tb_port_clx_supported(struct tb_port *port, unsigned int clx)
 {
 	u32 val, mask = 0;
 	bool ret;
 
-	/* Don't enable CLx in case of two single-lane links */
+	 
 	if (!port->bonded && port->dual_link_port)
 		return false;
 
-	/* Don't enable CLx in case of inter-domain link */
+	 
 	if (port->xdomain)
 		return false;
 
@@ -162,27 +156,13 @@ static int tb_port_clx(struct tb_port *port)
 	return ret;
 }
 
-/**
- * tb_port_clx_is_enabled() - Is given CL state enabled
- * @port: USB4 port to check
- * @clx: Mask of CL states to check
- *
- * Returns true if any of the given CL states is enabled for @port.
- */
+ 
 bool tb_port_clx_is_enabled(struct tb_port *port, unsigned int clx)
 {
 	return !!(tb_port_clx(port) & clx);
 }
 
-/**
- * tb_switch_clx_init() - Initialize router CL states
- * @sw: Router
- *
- * Can be called for any router. Initializes the current CL state by
- * reading it from the hardware.
- *
- * Returns %0 in case of success and negative errno in case of failure.
- */
+ 
 int tb_switch_clx_init(struct tb_switch *sw)
 {
 	struct tb_port *up, *down;
@@ -235,20 +215,14 @@ static int tb_switch_mask_clx_objections(struct tb_switch *sw)
 	u32 offset, val[2], mask_obj, unmask_obj;
 	int ret, i;
 
-	/* Only Titan Ridge of pre-USB4 devices support CLx states */
+	 
 	if (!tb_switch_is_titan_ridge(sw))
 		return 0;
 
 	if (!tb_route(sw))
 		return 0;
 
-	/*
-	 * In Titan Ridge there are only 2 dual-lane Thunderbolt ports:
-	 * Port A consists of lane adapters 1,2 and
-	 * Port B consists of lane adapters 3,4
-	 * If upstream port is A, (lanes are 1,2), we mask objections from
-	 * port B (lanes 3,4) and unmask objections from Port A and vice-versa.
-	 */
+	 
 	if (up_port == 1) {
 		mask_obj = TB_LOW_PWR_C0_PORT_B_MASK;
 		unmask_obj = TB_LOW_PWR_C1_PORT_A_MASK;
@@ -273,10 +247,7 @@ static int tb_switch_mask_clx_objections(struct tb_switch *sw)
 			   sw->cap_lp + offset, ARRAY_SIZE(val));
 }
 
-/**
- * tb_switch_clx_is_supported() - Is CLx supported on this type of router
- * @sw: The router to check CLx support for
- */
+ 
 bool tb_switch_clx_is_supported(const struct tb_switch *sw)
 {
 	if (!clx_enabled)
@@ -285,10 +256,7 @@ bool tb_switch_clx_is_supported(const struct tb_switch *sw)
 	if (sw->quirks & QUIRK_NO_CLX)
 		return false;
 
-	/*
-	 * CLx is not enabled and validated on Intel USB4 platforms
-	 * before Alder Lake.
-	 */
+	 
 	if (tb_switch_is_tiger_lake(sw))
 		return false;
 
@@ -297,24 +265,13 @@ bool tb_switch_clx_is_supported(const struct tb_switch *sw)
 
 static bool validate_mask(unsigned int clx)
 {
-	/* Previous states need to be enabled */
+	 
 	if (clx & TB_CL1)
 		return (clx & TB_CL0S) == TB_CL0S;
 	return true;
 }
 
-/**
- * tb_switch_clx_enable() - Enable CLx on upstream port of specified router
- * @sw: Router to enable CLx for
- * @clx: The CLx state to enable
- *
- * CLx is enabled only if both sides of the link support CLx, and if both sides
- * of the link are not configured as two single lane links and only if the link
- * is not inter-domain link. The complete set of conditions is described in CM
- * Guide 1.0 section 8.1.
- *
- * Returns %0 on success or an error code on failure.
- */
+ 
 int tb_switch_clx_enable(struct tb_switch *sw, unsigned int clx)
 {
 	bool up_clx_support, down_clx_support;
@@ -336,7 +293,7 @@ int tb_switch_clx_enable(struct tb_switch *sw, unsigned int clx)
 	    !tb_switch_clx_is_supported(sw))
 		return 0;
 
-	/* Only support CL2 for v2 routers */
+	 
 	if ((clx & TB_CL2) &&
 	    (usb4_switch_version(parent_sw) < 2 ||
 	     usb4_switch_version(sw) < 2))
@@ -383,16 +340,7 @@ int tb_switch_clx_enable(struct tb_switch *sw, unsigned int clx)
 	return 0;
 }
 
-/**
- * tb_switch_clx_disable() - Disable CLx on upstream port of specified router
- * @sw: Router to disable CLx for
- *
- * Disables all CL states of the given router. Can be called on any
- * router and if the states were not enabled already does nothing.
- *
- * Returns the CL states that were disabled or negative errno in case of
- * failure.
- */
+ 
 int tb_switch_clx_disable(struct tb_switch *sw)
 {
 	unsigned int clx = sw->clx;

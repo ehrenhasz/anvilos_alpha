@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2002 ARM Limited, All Rights Reserved.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -53,10 +51,7 @@ int gic_configure_irq(unsigned int irq, unsigned int type,
 	int ret = 0;
 	unsigned long flags;
 
-	/*
-	 * Read current configuration register, and insert the config
-	 * for "irq", depending on "type".
-	 */
+	 
 	raw_spin_lock_irqsave(&irq_controller_lock, flags);
 	val = oldval = readl_relaxed(base + confoff);
 	if (type & IRQ_TYPE_LEVEL_MASK)
@@ -64,20 +59,13 @@ int gic_configure_irq(unsigned int irq, unsigned int type,
 	else if (type & IRQ_TYPE_EDGE_BOTH)
 		val |= confmask;
 
-	/* If the current configuration is the same, then we are done */
+	 
 	if (val == oldval) {
 		raw_spin_unlock_irqrestore(&irq_controller_lock, flags);
 		return 0;
 	}
 
-	/*
-	 * Write back the new configuration, and possibly re-enable
-	 * the interrupt. If we fail to write a new configuration for
-	 * an SPI then WARN and return an error. If we fail to write the
-	 * configuration for a PPI this is most likely because the GIC
-	 * does not allow us to set the configuration or we are in a
-	 * non-secure mode, and hence it may not be catastrophic.
-	 */
+	 
 	writel_relaxed(val, base + confoff);
 	if (readl_relaxed(base + confoff) != val)
 		ret = -EINVAL;
@@ -95,23 +83,16 @@ void gic_dist_config(void __iomem *base, int gic_irqs,
 {
 	unsigned int i;
 
-	/*
-	 * Set all global interrupts to be level triggered, active low.
-	 */
+	 
 	for (i = 32; i < gic_irqs; i += 16)
 		writel_relaxed(GICD_INT_ACTLOW_LVLTRIG,
 					base + GIC_DIST_CONFIG + i / 4);
 
-	/*
-	 * Set priority on all global interrupts.
-	 */
+	 
 	for (i = 32; i < gic_irqs; i += 4)
 		writel_relaxed(GICD_INT_DEF_PRI_X4, base + GIC_DIST_PRI + i);
 
-	/*
-	 * Deactivate and disable all SPIs. Leave the PPI and SGIs
-	 * alone as they are in the redistributor registers on GICv3.
-	 */
+	 
 	for (i = 32; i < gic_irqs; i += 32) {
 		writel_relaxed(GICD_INT_EN_CLR_X32,
 			       base + GIC_DIST_ACTIVE_CLEAR + i / 8);
@@ -127,10 +108,7 @@ void gic_cpu_config(void __iomem *base, int nr, void (*sync_access)(void))
 {
 	int i;
 
-	/*
-	 * Deal with the banked PPI and SGI interrupts - disable all
-	 * private interrupts. Make sure everything is deactivated.
-	 */
+	 
 	for (i = 0; i < nr; i += 32) {
 		writel_relaxed(GICD_INT_EN_CLR_X32,
 			       base + GIC_DIST_ACTIVE_CLEAR + i / 8);
@@ -138,9 +116,7 @@ void gic_cpu_config(void __iomem *base, int nr, void (*sync_access)(void))
 			       base + GIC_DIST_ENABLE_CLEAR + i / 8);
 	}
 
-	/*
-	 * Set priority on PPI and SGI interrupts
-	 */
+	 
 	for (i = 0; i < nr; i += 4)
 		writel_relaxed(GICD_INT_DEF_PRI_X4,
 					base + GIC_DIST_PRI + i * 4 / 4);

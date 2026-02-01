@@ -1,79 +1,47 @@
-/* $OpenBSD: channels.h,v 1.154 2023/12/18 14:47:20 djm Exp $ */
+ 
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
-/*
- * Copyright (c) 1999, 2000, 2001, 2002 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-/* Definitions for channel types. */
-#define SSH_CHANNEL_X11_LISTENER	1	/* Listening for inet X11 conn. */
-#define SSH_CHANNEL_PORT_LISTENER	2	/* Listening on a port. */
-#define SSH_CHANNEL_OPENING		3	/* waiting for confirmation */
-#define SSH_CHANNEL_OPEN		4	/* normal open two-way channel */
-#define SSH_CHANNEL_CLOSED		5	/* waiting for close confirmation */
-#define SSH_CHANNEL_AUTH_SOCKET		6	/* authentication socket */
-#define SSH_CHANNEL_X11_OPEN		7	/* reading first X11 packet */
-#define SSH_CHANNEL_LARVAL		10	/* larval session */
-#define SSH_CHANNEL_RPORT_LISTENER	11	/* Listening to a R-style port  */
+ 
+#define SSH_CHANNEL_X11_LISTENER	1	 
+#define SSH_CHANNEL_PORT_LISTENER	2	 
+#define SSH_CHANNEL_OPENING		3	 
+#define SSH_CHANNEL_OPEN		4	 
+#define SSH_CHANNEL_CLOSED		5	 
+#define SSH_CHANNEL_AUTH_SOCKET		6	 
+#define SSH_CHANNEL_X11_OPEN		7	 
+#define SSH_CHANNEL_LARVAL		10	 
+#define SSH_CHANNEL_RPORT_LISTENER	11	 
 #define SSH_CHANNEL_CONNECTING		12
 #define SSH_CHANNEL_DYNAMIC		13
-#define SSH_CHANNEL_ZOMBIE		14	/* Almost dead. */
-#define SSH_CHANNEL_MUX_LISTENER	15	/* Listener for mux conn. */
-#define SSH_CHANNEL_MUX_CLIENT		16	/* Conn. to mux client */
-#define SSH_CHANNEL_ABANDONED		17	/* Abandoned session, eg mux */
-#define SSH_CHANNEL_UNIX_LISTENER	18	/* Listening on a domain socket. */
-#define SSH_CHANNEL_RUNIX_LISTENER	19	/* Listening to a R-style domain socket. */
-#define SSH_CHANNEL_MUX_PROXY		20	/* proxy channel for mux-client */
-#define SSH_CHANNEL_RDYNAMIC_OPEN	21	/* reverse SOCKS, parsing request */
-#define SSH_CHANNEL_RDYNAMIC_FINISH	22	/* reverse SOCKS, finishing connect */
+#define SSH_CHANNEL_ZOMBIE		14	 
+#define SSH_CHANNEL_MUX_LISTENER	15	 
+#define SSH_CHANNEL_MUX_CLIENT		16	 
+#define SSH_CHANNEL_ABANDONED		17	 
+#define SSH_CHANNEL_UNIX_LISTENER	18	 
+#define SSH_CHANNEL_RUNIX_LISTENER	19	 
+#define SSH_CHANNEL_MUX_PROXY		20	 
+#define SSH_CHANNEL_RDYNAMIC_OPEN	21	 
+#define SSH_CHANNEL_RDYNAMIC_FINISH	22	 
 #define SSH_CHANNEL_MAX_TYPE		23
 
 #define CHANNEL_CANCEL_PORT_STATIC	-1
 
-/* nonblocking flags for channel_new */
-#define CHANNEL_NONBLOCK_LEAVE	0 /* don't modify non-blocking state */
-#define CHANNEL_NONBLOCK_SET	1 /* set non-blocking state */
-#define CHANNEL_NONBLOCK_STDIO	2 /* set non-blocking and restore on close */
+ 
+#define CHANNEL_NONBLOCK_LEAVE	0  
+#define CHANNEL_NONBLOCK_SET	1  
+#define CHANNEL_NONBLOCK_STDIO	2  
 
-/* c->restore_block mask flags */
+ 
 #define CHANNEL_RESTORE_RFD	0x01
 #define CHANNEL_RESTORE_WFD	0x02
 #define CHANNEL_RESTORE_EFD	0x04
 
-/* TCP forwarding */
+ 
 #define FORWARD_DENY		0
 #define FORWARD_REMOTE		(1)
 #define FORWARD_LOCAL		(1<<1)
@@ -94,7 +62,7 @@ typedef void channel_filter_cleanup_fn(struct ssh *, int, void *);
 typedef u_char *channel_outfilter_fn(struct ssh *, struct Channel *,
     u_char **, size_t *);
 
-/* Channel success/failure callbacks */
+ 
 typedef void channel_confirm_cb(struct ssh *, int, struct Channel *, void *);
 typedef void channel_confirm_abandon_cb(struct ssh *, struct Channel *, void *);
 struct channel_confirm {
@@ -105,67 +73,56 @@ struct channel_confirm {
 };
 TAILQ_HEAD(channel_confirms, channel_confirm);
 
-/* Context for non-blocking connects */
+ 
 struct channel_connect {
 	char *host;
 	int port;
 	struct addrinfo *ai, *aitop;
 };
 
-/* Callbacks for mux channels back into client-specific code */
+ 
 typedef int mux_callback_fn(struct ssh *, struct Channel *);
 
-/*
- * NB. channel IDs on the wire and in c->remote_id are uint32, but local
- * channel IDs (e.g. c->self) only ever use the int32 subset of this range,
- * because we use local channel ID -1 for housekeeping. Remote channels have
- * a dedicated "have_remote_id" flag to indicate their validity.
- */
+ 
 
 struct Channel {
-	int     type;		/* channel type/state */
+	int     type;		 
 
-	int     self;		/* my own channel identifier */
-	uint32_t remote_id;	/* channel identifier for remote peer */
-	int	have_remote_id;	/* non-zero if remote_id is valid */
+	int     self;		 
+	uint32_t remote_id;	 
+	int	have_remote_id;	 
 
-	u_int   istate;		/* input from channel (state of receive half) */
-	u_int   ostate;		/* output to channel  (state of transmit half) */
-	int     flags;		/* close sent/rcvd */
-	int     rfd;		/* read fd */
-	int     wfd;		/* write fd */
-	int     efd;		/* extended fd */
-	int     sock;		/* sock fd */
-	u_int	io_want;	/* bitmask of SSH_CHAN_IO_* */
-	u_int	io_ready;	/* bitmask of SSH_CHAN_IO_* */
-	int	pfds[4];	/* pollfd entries for rfd/wfd/efd/sock */
-	int     ctl_chan;	/* control channel (multiplexed connections) */
-	int     isatty;		/* rfd is a tty */
+	u_int   istate;		 
+	u_int   ostate;		 
+	int     flags;		 
+	int     rfd;		 
+	int     wfd;		 
+	int     efd;		 
+	int     sock;		 
+	u_int	io_want;	 
+	u_int	io_ready;	 
+	int	pfds[4];	 
+	int     ctl_chan;	 
+	int     isatty;		 
 #ifdef _AIX
-	int     wfd_isatty;	/* wfd is a tty */
+	int     wfd_isatty;	 
 #endif
-	int	client_tty;	/* (client) TTY has been requested */
-	int     force_drain;	/* force close on iEOF */
-	time_t	notbefore;	/* Pause IO until deadline (time_t) */
-	int     delayed;	/* post-IO handlers for newly created
-				 * channels are delayed until the first call
-				 * to a matching pre-IO handler.
-				 * this way post-IO handlers are not
-				 * accidentally called if a FD gets reused */
-	int	restore_block;	/* fd mask to restore blocking status */
-	int	restore_flags[3];/* flags to restore */
-	struct sshbuf *input;	/* data read from socket, to be sent over
-				 * encrypted connection */
-	struct sshbuf *output;	/* data received over encrypted connection for
-				 * send on socket */
+	int	client_tty;	 
+	int     force_drain;	 
+	time_t	notbefore;	 
+	int     delayed;	 
+	int	restore_block;	 
+	int	restore_flags[3]; 
+	struct sshbuf *input;	 
+	struct sshbuf *output;	 
 	struct sshbuf *extended;
 
 	char    *path;
-		/* path for unix domain sockets, or host name for forwards */
-	int     listening_port;	/* port being listened for forwards */
-	char   *listening_addr;	/* addr being listened for forwards */
-	int     host_port;	/* remote port to connect for forwards */
-	char   *remote_name;	/* remote hostname */
+		 
+	int     listening_port;	 
+	char   *listening_addr;	 
+	int     host_port;	 
+	char   *remote_name;	 
 
 	u_int	remote_window;
 	u_int	remote_maxpacket;
@@ -177,40 +134,40 @@ struct Channel {
 	int     extended_usage;
 	int	single_connection;
 
-	char   *ctype;		/* const type - NB. not freed on channel_free */
-	char   *xctype;		/* extended type */
+	char   *ctype;		 
+	char   *xctype;		 
 
-	/* callback */
+	 
 	channel_open_fn		*open_confirm;
 	void			*open_confirm_ctx;
 	channel_callback_fn	*detach_user;
 	int			detach_close;
 	struct channel_confirms	status_confirms;
 
-	/* filter */
+	 
 	channel_infilter_fn	*input_filter;
 	channel_outfilter_fn	*output_filter;
 	void			*filter_ctx;
 	channel_filter_cleanup_fn *filter_cleanup;
 
-	/* keep boundaries */
+	 
 	int			datagram;
 
-	/* non-blocking connect */
-	/* XXX make this a pointer so the structure can be opaque */
+	 
+	 
 	struct channel_connect	connect_ctx;
 
-	/* multiplexing protocol hook, called for each packet received */
+	 
 	mux_callback_fn		*mux_rcb;
 	void			*mux_ctx;
 	int			mux_pause;
 	int			mux_downstream_id;
 
-	/* Inactivity timeouts */
+	 
 
-	/* Last traffic seen for OPEN channels */
+	 
 	time_t			lastused;
-	/* Inactivity timeout deadline in seconds (0 = no timeout) */
+	 
 	int			inactive_deadline;
 };
 
@@ -218,7 +175,7 @@ struct Channel {
 #define CHAN_EXTENDED_READ		1
 #define CHAN_EXTENDED_WRITE		2
 
-/* default window/packet sizes for tcp/x11-fwd-channel */
+ 
 #define CHAN_SES_PACKET_DEFAULT	(32*1024)
 #define CHAN_SES_WINDOW_DEFAULT	(64*CHAN_SES_PACKET_DEFAULT)
 #define CHAN_TCP_PACKET_DEFAULT	(32*1024)
@@ -226,13 +183,13 @@ struct Channel {
 #define CHAN_X11_PACKET_DEFAULT	(16*1024)
 #define CHAN_X11_WINDOW_DEFAULT	(4*CHAN_X11_PACKET_DEFAULT)
 
-/* possible input states */
+ 
 #define CHAN_INPUT_OPEN			0
 #define CHAN_INPUT_WAIT_DRAIN		1
 #define CHAN_INPUT_WAIT_OCLOSE		2
 #define CHAN_INPUT_CLOSED		3
 
-/* possible output states */
+ 
 #define CHAN_OUTPUT_OPEN		0
 #define CHAN_OUTPUT_WAIT_DRAIN		1
 #define CHAN_OUTPUT_WAIT_IEOF		2
@@ -244,7 +201,7 @@ struct Channel {
 #define CHAN_EOF_RCVD			0x08
 #define CHAN_LOCAL			0x10
 
-/* file descriptor events */
+ 
 #define SSH_CHAN_IO_RFD			0x01
 #define SSH_CHAN_IO_WFD			0x02
 #define SSH_CHAN_IO_EFD_R		0x04
@@ -254,19 +211,19 @@ struct Channel {
 #define SSH_CHAN_IO_SOCK_W		0x20
 #define SSH_CHAN_IO_SOCK		(SSH_CHAN_IO_SOCK_R|SSH_CHAN_IO_SOCK_W)
 
-/* Read buffer size */
+ 
 #define CHAN_RBUF	(16*1024)
 
-/* Maximum size for direct reads to buffers */
+ 
 #define CHANNEL_MAX_READ	CHAN_SES_PACKET_DEFAULT
 
-/* Maximum channel input buffer size */
+ 
 #define CHAN_INPUT_MAX	(16*1024*1024)
 
-/* Hard limit on number of channels */
+ 
 #define CHANNELS_MAX_CHANNELS	(16*1024)
 
-/* check whether 'efd' is still in use */
+ 
 #define CHANNEL_EFD_INPUT_ACTIVE(c) \
 	(c->extended_usage == CHAN_EXTENDED_READ && \
 	(c->efd != -1 || \
@@ -276,10 +233,10 @@ struct Channel {
 	c->efd != -1 && (!(c->flags & (CHAN_EOF_RCVD|CHAN_CLOSE_RCVD)) || \
 	sshbuf_len(c->extended) > 0))
 
-/* Add channel management structures to SSH transport instance */
+ 
 void channel_init_channels(struct ssh *ssh);
 
-/* channel management */
+ 
 
 Channel	*channel_by_id(struct ssh *, int);
 Channel	*channel_by_remote_id(struct ssh *, u_int);
@@ -308,16 +265,16 @@ void	 channel_cancel_cleanup(struct ssh *, int);
 int	 channel_close_fd(struct ssh *, Channel *, int *);
 void	 channel_send_window_changes(struct ssh *);
 
-/* channel inactivity timeouts */
+ 
 void channel_add_timeout(struct ssh *, const char *, int);
 void channel_clear_timeouts(struct ssh *);
 
-/* mux proxy support */
+ 
 
 int	 channel_proxy_downstream(struct ssh *, Channel *mc);
 int	 channel_proxy_upstream(Channel *, int, u_int32_t, struct ssh *);
 
-/* protocol handler */
+ 
 
 int	 channel_input_data(int, u_int32_t, struct ssh *);
 int	 channel_input_extended_data(int, u_int32_t, struct ssh *);
@@ -329,7 +286,7 @@ int	 channel_input_port_open(int, u_int32_t, struct ssh *);
 int	 channel_input_window_adjust(int, u_int32_t, struct ssh *);
 int	 channel_input_status_confirm(int, u_int32_t, struct ssh *);
 
-/* file descriptor handling (read/write) */
+ 
 struct pollfd;
 struct timespec;
 
@@ -346,7 +303,7 @@ const char *channel_format_extended_usage(const Channel *);
 char	*channel_open_message(struct ssh *);
 int	 channel_find_open(struct ssh *);
 
-/* tcp forwarding */
+ 
 struct Forward;
 struct ForwardOptions;
 void	 channel_set_af(struct ssh *, int af);
@@ -375,7 +332,7 @@ int	 channel_cancel_lport_listener(struct ssh *, struct Forward *,
 	    int, struct ForwardOptions *);
 int	 permitopen_port(const char *);
 
-/* x11 forwarding */
+ 
 
 void	 channel_set_x11_refuse_time(struct ssh *, time_t);
 int	 x11_connect_display(struct ssh *);
@@ -383,12 +340,12 @@ int	 x11_create_display_inet(struct ssh *, int, int, int, u_int *, int **);
 void	 x11_request_forwarding_with_spoofing(struct ssh *, int,
 	    const char *, const char *, const char *, int);
 
-/* channel close */
+ 
 
 int	 chan_is_dead(struct ssh *, Channel *, int);
 void	 chan_mark_dead(struct ssh *, Channel *);
 
-/* channel events */
+ 
 
 void	 chan_rcvd_oclose(struct ssh *, Channel *);
 void	 chan_rcvd_eow(struct ssh *, Channel *);

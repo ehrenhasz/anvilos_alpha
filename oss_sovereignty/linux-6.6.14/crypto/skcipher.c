@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Symmetric key cipher operations.
- *
- * Generic encrypt/decrypt wrapper for ciphers, handles operations across
- * multiple page boundaries by using temporary blocks.  In user context,
- * the kernel is given a chance to schedule us once per page.
- *
- * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/cipher.h>
@@ -70,9 +62,7 @@ static inline gfp_t skcipher_walk_gfp(struct skcipher_walk *walk)
 	return walk->flags & SKCIPHER_WALK_SLEEP ? GFP_KERNEL : GFP_ATOMIC;
 }
 
-/* Get a spot of the specified length that does not straddle a page.
- * The caller needs to ensure that there is enough space for this operation.
- */
+ 
 static inline u8 *skcipher_get_spot(u8 *start, unsigned int len)
 {
 	u8 *end_page = (u8 *)(((unsigned long)(start + len - 1)) & PAGE_MASK);
@@ -148,12 +138,7 @@ unmap_src:
 		skcipher_unmap_dst(walk);
 	} else if (unlikely(walk->flags & SKCIPHER_WALK_SLOW)) {
 		if (err > 0) {
-			/*
-			 * Didn't process all bytes.  Either the algorithm is
-			 * broken, or this was the last step and it turned out
-			 * the message wasn't evenly divisible into blocks but
-			 * the algorithm requires it.
-			 */
+			 
 			err = -EINVAL;
 			nbytes = 0;
 		} else
@@ -178,7 +163,7 @@ unmap_src:
 	}
 
 finish:
-	/* Short-circuit for the common/fast path. */
+	 
 	if (!((unsigned long)walk->buffer | (unsigned long)walk->page))
 		goto out;
 
@@ -258,20 +243,20 @@ static int skcipher_next_slow(struct skcipher_walk *walk, unsigned int bsize)
 			goto ok;
 	}
 
-	/* Start with the minimum alignment of kmalloc. */
+	 
 	a = crypto_tfm_ctx_alignment() - 1;
 	n = bsize;
 
 	if (phys) {
-		/* Calculate the minimum alignment of p->buffer. */
+		 
 		a &= (sizeof(*p) ^ (sizeof(*p) - 1)) >> 1;
 		n += sizeof(*p);
 	}
 
-	/* Minimum size to align p->buffer by alignmask. */
+	 
 	n += alignmask & ~a;
 
-	/* Minimum size to ensure p->buffer does not straddle a page. */
+	 
 	n += (bsize - 1) & ~(alignmask | a);
 
 	v = kzalloc(n, skcipher_walk_gfp(walk));
@@ -424,7 +409,7 @@ static int skcipher_copy_iv(struct skcipher_walk *walk)
 
 	aligned_bs = ALIGN(bs, alignmask + 1);
 
-	/* Minimum size to align buffer by alignmask. */
+	 
 	size = alignmask & ~a;
 
 	if (walk->flags & SKCIPHER_WALK_PHYS)
@@ -432,7 +417,7 @@ static int skcipher_copy_iv(struct skcipher_walk *walk)
 	else {
 		size += aligned_bs + ivsize;
 
-		/* Minimum size to ensure buffer does not straddle a page. */
+		 
 		size += (bs - 1) & ~(alignmask | a);
 	}
 
@@ -809,15 +794,12 @@ struct crypto_sync_skcipher *crypto_alloc_sync_skcipher(
 {
 	struct crypto_skcipher *tfm;
 
-	/* Only sync algorithms allowed. */
+	 
 	mask |= CRYPTO_ALG_ASYNC | CRYPTO_ALG_SKCIPHER_REQSIZE_LARGE;
 
 	tfm = crypto_alloc_tfm(alg_name, &crypto_skcipher_type, type, mask);
 
-	/*
-	 * Make sure we do not allocate something that might get used with
-	 * an on-stack request: check the request size.
-	 */
+	 
 	if (!IS_ERR(tfm) && WARN_ON(crypto_skcipher_reqsize(tfm) >
 				    MAX_SYNC_SKCIPHER_REQSIZE)) {
 		crypto_free_skcipher(tfm);
@@ -961,22 +943,7 @@ static void skcipher_free_instance_simple(struct skcipher_instance *inst)
 	kfree(inst);
 }
 
-/**
- * skcipher_alloc_instance_simple - allocate instance of simple block cipher mode
- *
- * Allocate an skcipher_instance for a simple block cipher mode of operation,
- * e.g. cbc or ecb.  The instance context will have just a single crypto_spawn,
- * that for the underlying cipher.  The {min,max}_keysize, ivsize, blocksize,
- * alignmask, and priority are set from the underlying cipher but can be
- * overridden if needed.  The tfm context defaults to skcipher_ctx_simple, and
- * default ->setkey(), ->init(), and ->exit() methods are installed.
- *
- * @tmpl: the template being instantiated
- * @tb: the template parameters
- *
- * Return: a pointer to the new instance, or an ERR_PTR().  The caller still
- *	   needs to register the instance.
- */
+ 
 struct skcipher_instance *skcipher_alloc_instance_simple(
 	struct crypto_template *tmpl, struct rtattr **tb)
 {
@@ -1008,7 +975,7 @@ struct skcipher_instance *skcipher_alloc_instance_simple(
 
 	inst->free = skcipher_free_instance_simple;
 
-	/* Default algorithm properties, can be overridden */
+	 
 	inst->alg.base.cra_blocksize = cipher_alg->cra_blocksize;
 	inst->alg.base.cra_alignmask = cipher_alg->cra_alignmask;
 	inst->alg.base.cra_priority = cipher_alg->cra_priority;
@@ -1016,7 +983,7 @@ struct skcipher_instance *skcipher_alloc_instance_simple(
 	inst->alg.max_keysize = cipher_alg->cra_cipher.cia_max_keysize;
 	inst->alg.ivsize = cipher_alg->cra_blocksize;
 
-	/* Use skcipher_ctx_simple by default, can be overridden */
+	 
 	inst->alg.base.cra_ctxsize = sizeof(struct skcipher_ctx_simple);
 	inst->alg.setkey = skcipher_setkey_simple;
 	inst->alg.init = skcipher_init_tfm_simple;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __VLV_DSI_REGS_H__
 #define __VLV_DSI_REGS_H__
@@ -13,10 +11,10 @@
 
 #define _MIPI_MMIO_BASE(__i915) ((__i915)->display.dsi.mmio_base)
 
-#define _MIPI_PORT(port, a, c)	(((port) == PORT_A) ? a : c)	/* ports A and C only */
+#define _MIPI_PORT(port, a, c)	(((port) == PORT_A) ? a : c)	 
 #define _MMIO_MIPI(port, a, c)	_MMIO(_MIPI_PORT(port, a, c))
 
-/* BXT MIPI mode configure */
+ 
 #define  _BXT_MIPIA_TRANS_HACTIVE			0x6B0F8
 #define  _BXT_MIPIC_TRANS_HACTIVE			0x6B8F8
 #define  BXT_MIPI_TRANS_HACTIVE(tc)	_MMIO_MIPI(tc, \
@@ -42,21 +40,21 @@
 #define _MIPIC_PORT_CTRL			(VLV_DISPLAY_BASE + 0x61700)
 #define MIPI_PORT_CTRL(port)	_MMIO_MIPI(port, _MIPIA_PORT_CTRL, _MIPIC_PORT_CTRL)
 
- /* BXT port control */
+  
 #define _BXT_MIPIA_PORT_CTRL				0x6B0C0
 #define _BXT_MIPIC_PORT_CTRL				0x6B8C0
 #define BXT_MIPI_PORT_CTRL(tc)	_MMIO_MIPI(tc, _BXT_MIPIA_PORT_CTRL, _BXT_MIPIC_PORT_CTRL)
 
-#define  DPI_ENABLE					(1 << 31) /* A + C */
+#define  DPI_ENABLE					(1 << 31)  
 #define  MIPIA_MIPI4DPHY_DELAY_COUNT_SHIFT		27
 #define  MIPIA_MIPI4DPHY_DELAY_COUNT_MASK		(0xf << 27)
 #define  DUAL_LINK_MODE_SHIFT				26
 #define  DUAL_LINK_MODE_MASK				(1 << 26)
 #define  DUAL_LINK_MODE_FRONT_BACK			(0 << 26)
 #define  DUAL_LINK_MODE_PIXEL_ALTERNATIVE		(1 << 26)
-#define  DITHERING_ENABLE				(1 << 25) /* A + C */
+#define  DITHERING_ENABLE				(1 << 25)  
 #define  FLOPPED_HSTX					(1 << 23)
-#define  DE_INVERT					(1 << 19) /* XXX */
+#define  DE_INVERT					(1 << 19)  
 #define  MIPIA_FLISDSI_DELAY_COUNT_SHIFT		18
 #define  MIPIA_FLISDSI_DELAY_COUNT_MASK			(0xf << 18)
 #define  AFE_LATCHOUT					(1 << 17)
@@ -75,8 +73,8 @@
 #define  BANDGAP_LNC_CIRCUIT				(1 << 8)
 #define  MIPIC_FLISDSI_DELAY_COUNT_LOW_SHIFT		5
 #define  MIPIC_FLISDSI_DELAY_COUNT_LOW_MASK		(7 << 5)
-#define  TEARING_EFFECT_DELAY				(1 << 4) /* A + C */
-#define  TEARING_EFFECT_SHIFT				2 /* A + C */
+#define  TEARING_EFFECT_DELAY				(1 << 4)  
+#define  TEARING_EFFECT_SHIFT				2  
 #define  TEARING_EFFECT_MASK				(3 << 2)
 #define  TEARING_EFFECT_OFF				(0 << 2)
 #define  TEARING_EFFECT_DSI				(1 << 2)
@@ -93,15 +91,15 @@
 #define  TEARING_EFFECT_DELAY_SHIFT			0
 #define  TEARING_EFFECT_DELAY_MASK			(0xffff << 0)
 
-/* XXX: all bits reserved */
+ 
 #define _MIPIA_AUTOPWG			(VLV_DISPLAY_BASE + 0x611a0)
 
-/* MIPI DSI Controller and D-PHY registers */
+ 
 
 #define _MIPIA_DEVICE_READY		(_MIPI_MMIO_BASE(dev_priv) + 0xb000)
 #define _MIPIC_DEVICE_READY		(_MIPI_MMIO_BASE(dev_priv) + 0xb800)
 #define MIPI_DEVICE_READY(port)		_MMIO_MIPI(port, _MIPIA_DEVICE_READY, _MIPIC_DEVICE_READY)
-#define  BUS_POSSESSION					(1 << 3) /* set to give bus to receiver */
+#define  BUS_POSSESSION					(1 << 3)  
 #define  ULPS_STATE_MASK				(3 << 1)
 #define  ULPS_STATE_ENTER				(2 << 1)
 #define  ULPS_STATE_EXIT				(1 << 1)
@@ -205,7 +203,7 @@
 #define  DBI_FIFO_EMPTY_QUARTER				(1 << 0)
 #define  DBI_FIFO_EMPTY_7_LOCATIONS			(2 << 0)
 
-/* regs below are bits 15:0 */
+ 
 #define _MIPIA_HSYNC_PADDING_COUNT	(_MIPI_MMIO_BASE(dev_priv) + 0xb028)
 #define _MIPIC_HSYNC_PADDING_COUNT	(_MIPI_MMIO_BASE(dev_priv) + 0xb828)
 #define MIPI_HSYNC_PADDING_COUNT(port)	_MMIO_MIPI(port, _MIPIA_HSYNC_PADDING_COUNT, _MIPIC_HSYNC_PADDING_COUNT)
@@ -306,12 +304,12 @@
 #define _MIPIC_CLK_LANE_TIMING		(_MIPI_MMIO_BASE(dev_priv) + 0xb898)
 #define MIPI_CLK_LANE_TIMING(port)	 _MMIO_MIPI(port, _MIPIA_CLK_LANE_TIMING, _MIPIC_CLK_LANE_TIMING)
 
-/* bits 31:0 */
+ 
 #define _MIPIA_LP_GEN_DATA		(_MIPI_MMIO_BASE(dev_priv) + 0xb064)
 #define _MIPIC_LP_GEN_DATA		(_MIPI_MMIO_BASE(dev_priv) + 0xb864)
 #define MIPI_LP_GEN_DATA(port)		_MMIO_MIPI(port, _MIPIA_LP_GEN_DATA, _MIPIC_LP_GEN_DATA)
 
-/* bits 31:0 */
+ 
 #define _MIPIA_HS_GEN_DATA		(_MIPI_MMIO_BASE(dev_priv) + 0xb068)
 #define _MIPIC_HS_GEN_DATA		(_MIPI_MMIO_BASE(dev_priv) + 0xb868)
 #define MIPI_HS_GEN_DATA(port)		_MMIO_MIPI(port, _MIPIA_HS_GEN_DATA, _MIPIC_HS_GEN_DATA)
@@ -330,7 +328,7 @@
 #define  VIRTUAL_CHANNEL_MASK				(3 << 6)
 #define  DATA_TYPE_SHIFT				0
 #define  DATA_TYPE_MASK					(0x3f << 0)
-/* data type values, see include/video/mipi_display.h */
+ 
 
 #define _MIPIA_GEN_FIFO_STAT		(_MIPI_MMIO_BASE(dev_priv) + 0xb074)
 #define _MIPIC_GEN_FIFO_STAT		(_MIPI_MMIO_BASE(dev_priv) + 0xb874)
@@ -395,7 +393,7 @@
 #define MIPI_INTR_EN_REG_1(port)	_MMIO_MIPI(port, _MIPIA_INTR_EN_REG_1, _MIPIC_INTR_EN_REG_1)
 #define  RX_CONTENTION_DETECTED				(1 << 0)
 
-/* XXX: only pipe A ?!? */
+ 
 #define MIPIA_DBI_TYPEC_CTRL		(_MIPI_MMIO_BASE(dev_priv) + 0xb100)
 #define  DBI_TYPEC_ENABLE				(1 << 31)
 #define  DBI_TYPEC_WIP					(1 << 30)
@@ -407,12 +405,12 @@
 #define  DBI_TYPEC_OVERRIDE_COUNTER_SHIFT		0
 #define  DBI_TYPEC_OVERRIDE_COUNTER_MASK		(0xff << 0)
 
-/* MIPI adapter registers */
+ 
 
 #define _MIPIA_CTRL			(_MIPI_MMIO_BASE(dev_priv) + 0xb104)
 #define _MIPIC_CTRL			(_MIPI_MMIO_BASE(dev_priv) + 0xb904)
 #define MIPI_CTRL(port)			_MMIO_MIPI(port, _MIPIA_CTRL, _MIPIC_CTRL)
-#define  ESCAPE_CLOCK_DIVIDER_SHIFT			5 /* A only */
+#define  ESCAPE_CLOCK_DIVIDER_SHIFT			5  
 #define  ESCAPE_CLOCK_DIVIDER_MASK			(3 << 5)
 #define  ESCAPE_CLOCK_DIVIDER_1				(0 << 5)
 #define  ESCAPE_CLOCK_DIVIDER_2				(1 << 5)
@@ -426,11 +424,11 @@
 #define  BXT_PIPE_SELECT_SHIFT				7
 #define  BXT_PIPE_SELECT_MASK				(7 << 7)
 #define  BXT_PIPE_SELECT(pipe)				((pipe) << 7)
-#define  GLK_PHY_STATUS_PORT_READY			(1 << 31) /* RO */
-#define  GLK_ULPS_NOT_ACTIVE				(1 << 30) /* RO */
+#define  GLK_PHY_STATUS_PORT_READY			(1 << 31)  
+#define  GLK_ULPS_NOT_ACTIVE				(1 << 30)  
 #define  GLK_MIPIIO_RESET_RELEASED			(1 << 28)
-#define  GLK_CLOCK_LANE_STOP_STATE			(1 << 27) /* RO */
-#define  GLK_DATA_LANE_STOP_STATE			(1 << 26) /* RO */
+#define  GLK_CLOCK_LANE_STOP_STATE			(1 << 27)  
+#define  GLK_DATA_LANE_STOP_STATE			(1 << 26)  
 #define  GLK_LP_WAKE					(1 << 22)
 #define  GLK_LP11_LOW_PWR_MODE				(1 << 21)
 #define  GLK_LP00_LOW_PWR_MODE				(1 << 20)
@@ -439,7 +437,7 @@
 #define  BXT_PIXEL_OVERLAP_CNT_SHIFT			10
 #define  BXT_DSC_ENABLE					(1 << 3)
 #define  BXT_RGB_FLIP					(1 << 2)
-#define  GLK_MIPIIO_PORT_POWERED			(1 << 1) /* RO */
+#define  GLK_MIPIIO_PORT_POWERED			(1 << 1)  
 #define  GLK_MIPIIO_ENABLE				(1 << 0)
 
 #define _MIPIA_DATA_ADDRESS		(_MIPI_MMIO_BASE(dev_priv) + 0xb108)
@@ -467,16 +465,16 @@
 #define _MIPIA_COMMAND_LENGTH		(_MIPI_MMIO_BASE(dev_priv) + 0xb114)
 #define _MIPIC_COMMAND_LENGTH		(_MIPI_MMIO_BASE(dev_priv) + 0xb914)
 #define MIPI_COMMAND_LENGTH(port)	_MMIO_MIPI(port, _MIPIA_COMMAND_LENGTH, _MIPIC_COMMAND_LENGTH)
-#define  COMMAND_LENGTH_SHIFT(n)			(8 * (n)) /* n: 0...3 */
+#define  COMMAND_LENGTH_SHIFT(n)			(8 * (n))  
 #define  COMMAND_LENGTH_MASK(n)				(0xff << (8 * (n)))
 
 #define _MIPIA_READ_DATA_RETURN0	(_MIPI_MMIO_BASE(dev_priv) + 0xb118)
 #define _MIPIC_READ_DATA_RETURN0	(_MIPI_MMIO_BASE(dev_priv) + 0xb918)
-#define MIPI_READ_DATA_RETURN(port, n) _MMIO(_MIPI(port, _MIPIA_READ_DATA_RETURN0, _MIPIC_READ_DATA_RETURN0) + 4 * (n)) /* n: 0...7 */
+#define MIPI_READ_DATA_RETURN(port, n) _MMIO(_MIPI(port, _MIPIA_READ_DATA_RETURN0, _MIPIC_READ_DATA_RETURN0) + 4 * (n))  
 
 #define _MIPIA_READ_DATA_VALID		(_MIPI_MMIO_BASE(dev_priv) + 0xb138)
 #define _MIPIC_READ_DATA_VALID		(_MIPI_MMIO_BASE(dev_priv) + 0xb938)
 #define MIPI_READ_DATA_VALID(port)	_MMIO_MIPI(port, _MIPIA_READ_DATA_VALID, _MIPIC_READ_DATA_VALID)
 #define  READ_DATA_VALID(n)				(1 << (n))
 
-#endif /* __VLV_DSI_REGS_H__ */
+#endif  

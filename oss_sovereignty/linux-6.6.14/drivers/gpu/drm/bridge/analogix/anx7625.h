@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020, Analogix Semiconductor. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __ANX7625_H__
 #define __ANX7625_H__
 
 #define ANX7625_DRV_VERSION "0.1.04"
 
-/* Loading OCM re-trying times */
+ 
 #define OCM_LOADING_TIME 10
 
-/*********  ANX7625 Register  **********/
+ 
 #define TX_P0_ADDR				0x70
 #define TX_P1_ADDR				0x7A
 #define TX_P2_ADDR				0x72
@@ -29,7 +26,7 @@
 
 #define TCPC_INTERFACE_ADDR			0x58
 
-/* Clock frequency in Hz */
+ 
 #define XTAL_FRQ        (27 * 1000000)
 
 #define  POST_DIVIDER_MIN	1
@@ -40,8 +37,8 @@
 #define  PLL_OUT_FREQ_ABS_MAX	800000000UL
 #define  MAX_UNSIGNED_24BIT	16777215UL
 
-/***************************************************************/
-/* Register definition of device address 0x58 */
+ 
+ 
 
 #define PRODUCT_ID_L 0x02
 #define PRODUCT_ID_H 0x03
@@ -55,10 +52,10 @@
 #define HPD_STATUS_CHANGE 0x80
 #define HPD_STATUS 0x80
 
-/******** END of I2C Address 0x58 ********/
+ 
 
-/***************************************************************/
-/* Register definition of device address 0x70 */
+ 
+ 
 #define TX_HDCP_CTRL0			0x01
 #define STORE_AN			BIT(7)
 #define RX_REPEATER			BIT(6)
@@ -90,8 +87,8 @@
 #define HDCP14KEY_START_ADDR		(KEY_START_ADDR + KEY_RESERVED)
 #define HDCP14KEY_SIZE			624
 
-/***************************************************************/
-/* Register definition of device address 0x72 */
+ 
+ 
 #define AUX_RST	0x04
 #define RST_CTRL2 0x07
 
@@ -135,7 +132,7 @@
 #define HPD_DET_TIMER_BIT0_7   0xea
 #define HPD_DET_TIMER_BIT8_15  0xeb
 #define HPD_DET_TIMER_BIT16_23 0xec
-/* HPD debounce time 2ms for 27M clock */
+ 
 #define HPD_TIME               54000
 
 #define AUDIO_CONTROL_REGISTER 0xe6
@@ -150,33 +147,33 @@
 #define VIDEO_CONTROL_0	0x08
 
 #define  ACTIVE_LINES_L         0x14
-#define  ACTIVE_LINES_H         0x15  /* Bit[7:6] are reserved */
+#define  ACTIVE_LINES_H         0x15   
 #define  VERTICAL_FRONT_PORCH   0x16
 #define  VERTICAL_SYNC_WIDTH    0x17
 #define  VERTICAL_BACK_PORCH    0x18
 
 #define  HORIZONTAL_TOTAL_PIXELS_L    0x19
-#define  HORIZONTAL_TOTAL_PIXELS_H    0x1A  /* Bit[7:6] are reserved */
+#define  HORIZONTAL_TOTAL_PIXELS_H    0x1A   
 #define  HORIZONTAL_ACTIVE_PIXELS_L   0x1B
-#define  HORIZONTAL_ACTIVE_PIXELS_H   0x1C  /* Bit[7:6] are reserved */
+#define  HORIZONTAL_ACTIVE_PIXELS_H   0x1C   
 #define  HORIZONTAL_FRONT_PORCH_L     0x1D
-#define  HORIZONTAL_FRONT_PORCH_H     0x1E  /* Bit[7:4] are reserved */
+#define  HORIZONTAL_FRONT_PORCH_H     0x1E   
 #define  HORIZONTAL_SYNC_WIDTH_L      0x1F
-#define  HORIZONTAL_SYNC_WIDTH_H      0x20  /* Bit[7:4] are reserved */
+#define  HORIZONTAL_SYNC_WIDTH_H      0x20   
 #define  HORIZONTAL_BACK_PORCH_L      0x21
-#define  HORIZONTAL_BACK_PORCH_H      0x22  /* Bit[7:4] are reserved */
+#define  HORIZONTAL_BACK_PORCH_H      0x22   
 
-/******** END of I2C Address 0x72 *********/
+ 
 
-/***************************************************************/
-/* Register definition of device address 0x7a */
+ 
+ 
 #define DP_TX_SWING_REG_CNT		0x14
 #define DP_TX_LANE0_SWING_REG0		0x00
 #define DP_TX_LANE1_SWING_REG0		0x14
-/******** END of I2C Address 0x7a *********/
+ 
 
-/***************************************************************/
-/* Register definition of device address 0x7e */
+ 
+ 
 
 #define  I2C_ADDR_7E_FLASH_CONTROLLER  0x7E
 
@@ -189,7 +186,7 @@
 #define FLASH_LOAD_STA_CHK	BIT(7)
 
 #define R_RAM_CTRL              0x05
-/* bit positions */
+ 
 #define FLASH_DONE              BIT(7)
 #define BOOT_LOAD_DONE          BIT(6)
 #define CRC_OK                  BIT(5)
@@ -204,7 +201,7 @@
 #define FLASH_LEN_HIGH          0x31
 #define FLASH_LEN_LOW           0x32
 #define R_FLASH_RW_CTRL         0x33
-/* bit positions */
+ 
 #define READ_DELAY_SELECT       BIT(7)
 #define GENERAL_INSTRUCTION_EN  BIT(6)
 #define FLASH_ERASE_EN          BIT(5)
@@ -218,17 +215,17 @@
 #define FLASH_BUF_LEN           0x20
 
 #define  XTAL_FRQ_SEL    0x3F
-/* bit field positions */
+ 
 #define  XTAL_FRQ_SEL_POS    5
-/* bit field values */
+ 
 #define  XTAL_FRQ_19M2   (0 << XTAL_FRQ_SEL_POS)
 #define  XTAL_FRQ_27M    (4 << XTAL_FRQ_SEL_POS)
 
 #define  R_DSC_CTRL_0    0x40
 #define  READ_STATUS_EN  7
-#define  CLK_1MEG_RB     6  /* 1MHz clock reset; 0=reset, 0=reset release */
-#define  DSC_BIST_DONE   1  /* Bit[5:1]: 1=DSC MBIST pass */
-#define  DSC_EN          0x01  /* 1=DSC enabled, 0=DSC disabled */
+#define  CLK_1MEG_RB     6   
+#define  DSC_BIST_DONE   1   
+#define  DSC_EN          0x01   
 
 #define OCM_FW_VERSION   0x31
 #define OCM_FW_REVERSION 0x32
@@ -237,7 +234,7 @@
 #define AP_AUX_ADDR_15_8  0x12
 #define AP_AUX_ADDR_19_16 0x13
 
-/* Bit[0:3] AUX status, bit 4 op_en, bit 5 address only */
+ 
 #define AP_AUX_CTRL_STATUS 0x14
 #define AP_AUX_CTRL_OP_EN 0x10
 #define AP_AUX_CTRL_ADDRONLY 0x20
@@ -246,21 +243,21 @@
 #define PIXEL_CLOCK_L	0x25
 #define PIXEL_CLOCK_H	0x26
 
-#define AP_AUX_COMMAND	0x27  /* com+len */
+#define AP_AUX_COMMAND	0x27   
 #define LENGTH_SHIFT	4
 #define DPCD_CMD(len, cmd)	((((len) - 1) << LENGTH_SHIFT) | (cmd))
 
-/* Bit 0&1: 3D video structure */
-/* 0x01: frame packing,  0x02:Line alternative, 0x03:Side-by-side(full) */
+ 
+ 
 #define AP_AV_STATUS 0x28
 #define AP_VIDEO_CHG  BIT(2)
 #define AP_AUDIO_CHG  BIT(3)
-#define AP_MIPI_MUTE  BIT(4) /* 1:MIPI input mute, 0: ummute */
-#define AP_MIPI_RX_EN BIT(5) /* 1: MIPI RX input in  0: no RX in */
+#define AP_MIPI_MUTE  BIT(4)  
+#define AP_MIPI_RX_EN BIT(5)  
 #define AP_DISABLE_PD BIT(6)
 #define AP_DISABLE_DISPLAY BIT(7)
-/***************************************************************/
-/* Register definition of device address 0x84 */
+ 
+ 
 #define  MIPI_PHY_CONTROL_3            0x03
 #define  MIPI_HS_PWD_CLK               7
 #define  MIPI_HS_RT_CLK                6
@@ -274,10 +271,7 @@
 #define  MIPI_LANE_CTRL_0		0x05
 #define  MIPI_TIME_HS_PRPR		0x08
 
-/*
- * After MIPI RX protocol layer received video frames,
- * Protocol layer starts to reconstruct video stream from PHY
- */
+ 
 #define  MIPI_VIDEO_STABLE_CNT           0x0A
 
 #define  MIPI_LANE_CTRL_10               0x0F
@@ -293,44 +287,44 @@
 #define  MIPI_PLL_N_NUM_7_0     0x23
 
 #define  MIPI_DIGITAL_PLL_6     0x2A
-/* Bit[7:6]: VCO band control, only effective */
+ 
 #define  MIPI_M_NUM_READY        0x10
 #define  MIPI_N_NUM_READY        0x08
 #define  STABLE_INTEGER_CNT_EN   0x04
 #define  MIPI_PLL_TEST_BIT       0
-/* Bit[1:0]: test point output select - */
-/* 00: VCO power, 01: dvdd_pdt, 10: dvdd, 11: vcox */
+ 
+ 
 
 #define  MIPI_DIGITAL_PLL_7      0x2B
 #define  MIPI_PLL_FORCE_N_EN     7
 #define  MIPI_PLL_FORCE_BAND_EN  6
 
 #define  MIPI_PLL_VCO_TUNE_REG   4
-/* Bit[5:4]: VCO metal capacitance - */
-/* 00: +20% fast, 01: +10% fast (default), 10: typical, 11: -10% slow */
+ 
+ 
 #define  MIPI_PLL_VCO_TUNE_REG_VAL   0x30
 
 #define  MIPI_PLL_PLL_LDO_BIT    2
-/* Bit[3:2]: vco_v2i power - */
-/* 00: 1.40V, 01: 1.45V (default), 10: 1.50V, 11: 1.55V */
+ 
+ 
 #define  MIPI_PLL_RESET_N        0x02
 #define  MIPI_FRQ_FORCE_NDET     0
 
 #define  MIPI_ALERT_CLR_0        0x2D
 #define  HS_link_error_clear     7
-/* This bit itself is S/C, and it clears 0x84:0x31[7] */
+ 
 
 #define  MIPI_ALERT_OUT_0        0x31
 #define  check_sum_err_hs_sync   7
-/* This bit is cleared by 0x84:0x2D[7] */
+ 
 
 #define  MIPI_DIGITAL_PLL_8    0x33
 #define  MIPI_POST_DIV_VAL     4
-/* N means divided by (n+1), n = 0~15 */
+ 
 #define  MIPI_EN_LOCK_FRZ      3
 #define  MIPI_FRQ_COUNTER_RST  2
 #define  MIPI_FRQ_SET_REG_8    1
-/* Bit 0 is reserved */
+ 
 
 #define  MIPI_DIGITAL_PLL_9    0x34
 
@@ -340,7 +334,7 @@
 #define  MIPI_REG_FORCE_SEL_EN         5
 #define  MIPI_REG_SEL_DIV_REG          4
 #define  MIPI_REG_FORCE_PRE_DIV_EN     3
-/* Bit 2 is reserved */
+ 
 #define  MIPI_FREF_D_IND               1
 #define  REF_CLK_27000KHZ    1
 #define  REF_CLK_19200KHZ    0
@@ -355,27 +349,27 @@
 #define  REG_BAUD_DIV_RATIO     0
 
 #define  H_BLANK_L            0x3E
-/* For DSC only */
+ 
 #define  H_BLANK_H            0x3F
-/* For DSC only; note: bit[7:6] are reserved */
+ 
 #define  MIPI_SWAP  0x4A
 #define  MIPI_SWAP_CH0    7
 #define  MIPI_SWAP_CH1    6
 #define  MIPI_SWAP_CH2    5
 #define  MIPI_SWAP_CH3    4
 #define  MIPI_SWAP_CLK    3
-/* Bit[2:0] are reserved */
+ 
 
-/******** END of I2C Address 0x84 *********/
+ 
 
-/* DPCD regs */
+ 
 #define DPCD_DPCD_REV                  0x00
 #define DPCD_MAX_LINK_RATE             0x01
 #define DPCD_MAX_LANE_COUNT            0x02
 
-/*********  ANX7625 Register End  **********/
+ 
 
-/***************** Display *****************/
+ 
 enum audio_fs {
 	AUDIO_FS_441K  = 0x00,
 	AUDIO_FS_48K   = 0x02,
@@ -418,7 +412,7 @@ struct s_edid_data {
 	u8 edid_raw_data[FOUR_BLOCK_SIZE];
 };
 
-/***************** Display End *****************/
+ 
 
 #define MAX_LANES_SUPPORT	4
 
@@ -456,7 +450,7 @@ struct anx7625_data {
 	int hpd_high_cnt;
 	int dp_en;
 	int hdcp_cp;
-	/* Lock for work queue */
+	 
 	struct mutex lock;
 	struct device *dev;
 	struct anx7625_i2c_client i2c;
@@ -469,7 +463,7 @@ struct anx7625_data {
 	struct workqueue_struct *workqueue;
 	struct delayed_work hdcp_work;
 	struct workqueue_struct *hdcp_workqueue;
-	/* Lock for hdcp work queue */
+	 
 	struct mutex hdcp_wq_lock;
 	char edid_block;
 	struct display_timing dt;
@@ -481,4 +475,4 @@ struct anx7625_data {
 	struct drm_dp_aux aux;
 };
 
-#endif  /* __ANX7625_H__ */
+#endif   

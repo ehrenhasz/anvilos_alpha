@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include "fm10k.h"
 
@@ -8,7 +8,7 @@
 
 static struct dentry *dbg_root;
 
-/* Descriptor Seq Functions */
+ 
 
 static void *fm10k_dbg_desc_seq_start(struct seq_file *s, loff_t *pos)
 {
@@ -29,7 +29,7 @@ static void *fm10k_dbg_desc_seq_next(struct seq_file *s,
 static void fm10k_dbg_desc_seq_stop(struct seq_file __always_unused *s,
 				    void __always_unused *v)
 {
-	/* Do nothing. */
+	 
 }
 
 static void fm10k_dbg_desc_break(struct seq_file *s, int i)
@@ -47,13 +47,13 @@ static int fm10k_dbg_tx_desc_seq_show(struct seq_file *s, void *v)
 	static const char tx_desc_hdr[] =
 		"DES BUFFER_ADDRESS     LENGTH VLAN   MSS    HDRLEN FLAGS\n";
 
-	/* Generate header */
+	 
 	if (!i) {
 		seq_printf(s, tx_desc_hdr);
 		fm10k_dbg_desc_break(s, sizeof(tx_desc_hdr) - 1);
 	}
 
-	/* Validate descriptor allocation */
+	 
 	if (!ring->desc) {
 		seq_printf(s, "%03X Descriptor ring not allocated.\n", i);
 	} else {
@@ -74,13 +74,13 @@ static int fm10k_dbg_rx_desc_seq_show(struct seq_file *s, void *v)
 	static const char rx_desc_hdr[] =
 	"DES DATA       RSS        STATERR    LENGTH VLAN   DGLORT SGLORT TIMESTAMP\n";
 
-	/* Generate header */
+	 
 	if (!i) {
 		seq_printf(s, rx_desc_hdr);
 		fm10k_dbg_desc_break(s, sizeof(rx_desc_hdr) - 1);
 	}
 
-	/* Validate descriptor allocation */
+	 
 	if (!ring->desc) {
 		seq_printf(s, "%03X Descriptor ring not allocated.\n", i);
 	} else {
@@ -139,14 +139,7 @@ static const struct file_operations fm10k_dbg_desc_fops = {
 	.release = seq_release,
 };
 
-/**
- * fm10k_dbg_q_vector_init - setup debugfs for the q_vectors
- * @q_vector: q_vector to allocate directories for
- *
- * A folder is created for each q_vector found. In each q_vector
- * folder, a debugfs file is created for each tx and rx ring
- * allocated to the q_vector.
- **/
+ 
 void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 {
 	struct fm10k_intfc *interface = q_vector->interface;
@@ -156,12 +149,12 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 	if (!interface->dbg_intfc)
 		return;
 
-	/* Generate a folder for each q_vector */
+	 
 	snprintf(name, sizeof(name), "q_vector.%03d", q_vector->v_idx);
 
 	q_vector->dbg_q_vector = debugfs_create_dir(name, interface->dbg_intfc);
 
-	/* Generate a file for each rx ring in the q_vector */
+	 
 	for (i = 0; i < q_vector->tx.count; i++) {
 		struct fm10k_ring *ring = &q_vector->tx.ring[i];
 
@@ -172,7 +165,7 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 				    &fm10k_dbg_desc_fops);
 	}
 
-	/* Generate a file for each rx ring in the q_vector */
+	 
 	for (i = 0; i < q_vector->rx.count; i++) {
 		struct fm10k_ring *ring = &q_vector->rx.ring[i];
 
@@ -184,10 +177,7 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
 	}
 }
 
-/**
- * fm10k_dbg_q_vector_exit - setup debugfs for the q_vectors
- * @q_vector: q_vector to allocate directories for
- **/
+ 
 void fm10k_dbg_q_vector_exit(struct fm10k_q_vector *q_vector)
 {
 	struct fm10k_intfc *interface = q_vector->interface;
@@ -197,10 +187,7 @@ void fm10k_dbg_q_vector_exit(struct fm10k_q_vector *q_vector)
 	q_vector->dbg_q_vector = NULL;
 }
 
-/**
- * fm10k_dbg_intfc_init - setup the debugfs directory for the intferface
- * @interface: the interface that is starting up
- **/
+ 
 
 void fm10k_dbg_intfc_init(struct fm10k_intfc *interface)
 {
@@ -210,10 +197,7 @@ void fm10k_dbg_intfc_init(struct fm10k_intfc *interface)
 		interface->dbg_intfc = debugfs_create_dir(name, dbg_root);
 }
 
-/**
- * fm10k_dbg_intfc_exit - clean out the interface's debugfs entries
- * @interface: the interface that is stopping
- **/
+ 
 void fm10k_dbg_intfc_exit(struct fm10k_intfc *interface)
 {
 	if (dbg_root)
@@ -221,17 +205,13 @@ void fm10k_dbg_intfc_exit(struct fm10k_intfc *interface)
 	interface->dbg_intfc = NULL;
 }
 
-/**
- * fm10k_dbg_init - start up debugfs for the driver
- **/
+ 
 void fm10k_dbg_init(void)
 {
 	dbg_root = debugfs_create_dir(fm10k_driver_name, NULL);
 }
 
-/**
- * fm10k_dbg_exit - clean out the driver's debugfs entries
- **/
+ 
 void fm10k_dbg_exit(void)
 {
 	debugfs_remove_recursive(dbg_root);

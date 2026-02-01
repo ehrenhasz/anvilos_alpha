@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Aspeed 24XX/25XX I2C Interrupt Controller.
- *
- *  Copyright (C) 2012-2017 ASPEED Technology Inc.
- *  Copyright 2017 IBM Corporation
- *  Copyright 2017 Google, Inc.
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/irqchip.h>
@@ -24,11 +18,7 @@ struct aspeed_i2c_ic {
 	struct irq_domain	*irq_domain;
 };
 
-/*
- * The aspeed chip provides a single hardware interrupt for all of the I2C
- * busses, so we use a dummy interrupt chip to translate this single interrupt
- * into multiple interrupts, each associated with a single I2C bus.
- */
+ 
 static void aspeed_i2c_ic_irq_handler(struct irq_desc *desc)
 {
 	struct aspeed_i2c_ic *i2c_ic = irq_desc_get_handler_data(desc);
@@ -43,10 +33,7 @@ static void aspeed_i2c_ic_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/*
- * Set simple handler and mark IRQ as valid. Nothing interesting to do here
- * since we are using a dummy interrupt chip.
- */
+ 
 static int aspeed_i2c_ic_map_irq_domain(struct irq_domain *domain,
 					unsigned int irq, irq_hw_number_t hwirq)
 {

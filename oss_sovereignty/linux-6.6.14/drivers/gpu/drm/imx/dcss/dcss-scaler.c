@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- *
- * Scaling algorithms were contributed by Dzung Hoang <dzung.hoang@nxp.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -90,7 +86,7 @@ struct dcss_scaler {
 	struct dcss_scaler_ch ch[3];
 };
 
-/* scaler coefficients generator */
+ 
 #define PSC_FRAC_BITS 30
 #define PSC_FRAC_SCALE BIT(PSC_FRAC_BITS)
 #define PSC_BITS_FOR_PHASE 4
@@ -104,11 +100,7 @@ struct dcss_scaler {
 #define PSC_Q_FRACTION 19
 #define PSC_Q_ROUND_OFFSET (1 << (PSC_Q_FRACTION - 1))
 
-/**
- * mult_q() - Performs fixed-point multiplication.
- * @A: multiplier
- * @B: multiplicand
- */
+ 
 static int mult_q(int A, int B)
 {
 	int result;
@@ -120,11 +112,7 @@ static int mult_q(int A, int B)
 	return result;
 }
 
-/**
- * div_q() - Performs fixed-point division.
- * @A: dividend
- * @B: divisor
- */
+ 
 static int div_q(int A, int B)
 {
 	int result;
@@ -140,11 +128,7 @@ static int div_q(int A, int B)
 	return result;
 }
 
-/**
- * exp_approx_q() - Compute approximation to exp(x) function using Taylor
- *		    series.
- * @x: fixed-point argument of exp function
- */
+ 
 static int exp_approx_q(int x)
 {
 	int sum = 1 << PSC_Q_FRACTION;
@@ -162,12 +146,7 @@ static int exp_approx_q(int x)
 	return sum;
 }
 
-/**
- * dcss_scaler_gaussian_filter() - Generate gaussian prototype filter.
- * @fc_q: fixed-point cutoff frequency normalized to range [0, 1]
- * @use_5_taps: indicates whether to use 5 taps or 7 taps
- * @coef: output filter coefficients
- */
+ 
 static void dcss_scaler_gaussian_filter(int fc_q, bool use_5_taps,
 					bool phase0_identity,
 					int coef[][PSC_NUM_TAPS])
@@ -185,14 +164,14 @@ static void dcss_scaler_gaussian_filter(int fc_q, bool use_5_taps,
 			coef[phase][PSC_NUM_TAPS - 1] = 0;
 		}
 
-	/* seed coefficient scanner */
+	 
 	taps = use_5_taps ? PSC_NUM_TAPS_RGBA : PSC_NUM_TAPS;
 	mid = (PSC_NUM_PHASES * taps) / 2 - 1;
 	phase_cnt = (PSC_NUM_PHASES * (PSC_NUM_TAPS + 1)) / 2;
 	tap_cnt1 = (PSC_NUM_PHASES * PSC_NUM_TAPS) / 2;
 	tap_cnt2 = (PSC_NUM_PHASES * PSC_NUM_TAPS) / 2;
 
-	/* seed gaussian filter generator */
+	 
 	sigma_q = div_q(PSC_Q_ROUND_OFFSET, fc_q);
 	g0_q = 1 << PSC_Q_FRACTION;
 	g1_q = exp_approx_q(div_q(-PSC_Q_ROUND_OFFSET,
@@ -222,13 +201,13 @@ static void dcss_scaler_gaussian_filter(int fc_q, bool use_5_taps,
 	tap_cnt1--;
 	coef[phase_cnt & PSC_PHASE_MASK][tap_cnt1 >> PSC_BITS_FOR_PHASE] = 0;
 
-	/* override phase 0 with identity filter if specified */
+	 
 	if (phase0_identity)
 		for (i = 0; i < PSC_NUM_TAPS; i++)
 			coef[0][i] = i == (PSC_NUM_TAPS >> 1) ?
 						(1 << PSC_COEFF_PRECISION) : 0;
 
-	/* normalize coef */
+	 
 	for (phase = 0; phase < PSC_STORED_PHASES; phase++) {
 		int sum = 0;
 		s64 ll_temp;
@@ -256,14 +235,7 @@ static void dcss_scaler_nearest_neighbor_filter(bool use_5_taps,
 						(1 << PSC_COEFF_PRECISION) : 0;
 }
 
-/**
- * dcss_scaler_filter_design() - Compute filter coefficients using
- *				 Gaussian filter.
- * @src_length: length of input
- * @dst_length: length of output
- * @use_5_taps: 0 for 7 taps per phase, 1 for 5 taps
- * @coef: output coefficients
- */
+ 
 static void dcss_scaler_filter_design(int src_length, int dst_length,
 				      bool use_5_taps, bool phase0_identity,
 				      int coef[][PSC_NUM_TAPS],
@@ -271,7 +243,7 @@ static void dcss_scaler_filter_design(int src_length, int dst_length,
 {
 	int fc_q;
 
-	/* compute cutoff frequency */
+	 
 	if (dst_length >= src_length)
 		fc_q = div_q(1, PSC_NUM_PHASES);
 	else
@@ -280,7 +252,7 @@ static void dcss_scaler_filter_design(int src_length, int dst_length,
 	if (nn_interpolation)
 		dcss_scaler_nearest_neighbor_filter(use_5_taps, coef);
 	else
-		/* compute gaussian filter coefficients */
+		 
 		dcss_scaler_gaussian_filter(fc_q, use_5_taps, phase0_identity, coef);
 }
 
@@ -454,7 +426,7 @@ static void dcss_scaler_res_set(struct dcss_scaler_ch *ch,
 	if (dst_format == BUF_FMT_YUV422)
 		cdst_xres >>= 1;
 
-	/* for 4:4:4 to 4:2:2 conversion, source height should be 1 less */
+	 
 	if (src_is_444 && dst_format == BUF_FMT_YUV422) {
 		lsrc_yres--;
 		csrc_yres--;
@@ -504,35 +476,29 @@ static void dcss_scaler_fractions_set(struct dcss_scaler_ch *ch,
 	c_vstart = 0;
 	c_hstart = 0;
 
-	/* adjustments for source chroma location */
+	 
 	if (src_format == BUF_FMT_YUV420) {
-		/* vertical input chroma position adjustment */
+		 
 		switch (src_chroma_loc) {
 		case PSC_LOC_HORZ_0_VERT_1_OVER_4:
 		case PSC_LOC_HORZ_1_OVER_4_VERT_1_OVER_4:
-			/*
-			 * move chroma up to first luma line
-			 * (1/4 chroma input line spacing)
-			 */
+			 
 			c_vstart -= (1 << (PSC_PHASE_FRACTION_BITS - 2));
 			break;
 		case PSC_LOC_HORZ_0_VERT_1_OVER_2:
 		case PSC_LOC_HORZ_1_OVER_4_VERT_1_OVER_2:
-			/*
-			 * move chroma up to first luma line
-			 * (1/2 chroma input line spacing)
-			 */
+			 
 			c_vstart -= (1 << (PSC_PHASE_FRACTION_BITS - 1));
 			break;
 		default:
 			break;
 		}
-		/* horizontal input chroma position adjustment */
+		 
 		switch (src_chroma_loc) {
 		case PSC_LOC_HORZ_1_OVER_4_VERT_1_OVER_4:
 		case PSC_LOC_HORZ_1_OVER_4_VERT_0:
 		case PSC_LOC_HORZ_1_OVER_4_VERT_1_OVER_2:
-			/* move chroma left 1/4 chroma input sample spacing */
+			 
 			c_hstart -= (1 << (PSC_PHASE_FRACTION_BITS - 2));
 			break;
 		default:
@@ -540,7 +506,7 @@ static void dcss_scaler_fractions_set(struct dcss_scaler_ch *ch,
 		}
 	}
 
-	/* adjustments to chroma resolution */
+	 
 	if (src_format == BUF_FMT_YUV420) {
 		src_c_xres >>= 1;
 		src_c_yres >>= 1;
@@ -556,7 +522,7 @@ static void dcss_scaler_fractions_set(struct dcss_scaler_ch *ch,
 	l_hinc = ((src_xres << 13) + (dst_xres >> 1)) / dst_xres;
 	c_hinc = ((src_c_xres << 13) + (dst_c_xres >> 1)) / dst_c_xres;
 
-	/* save chroma start phase */
+	 
 	ch->c_vstart = c_vstart;
 	ch->c_hstart = c_hstart;
 
@@ -601,7 +567,7 @@ static void dcss_scaler_program_5_coef_set(struct dcss_scaler_ch *ch,
 				  base_addr + 0x80 + i * sizeof(u32));
 	}
 
-	/* reverse both phase and tap orderings */
+	 
 	for (phase = (PSC_NUM_PHASES >> 1) - 1;
 			i < PSC_NUM_PHASES; i++, phase--) {
 		dcss_scaler_write(ch, ((coef[phase][5] & 0xfff) << 16 |
@@ -638,7 +604,7 @@ static void dcss_scaler_program_7_coef_set(struct dcss_scaler_ch *ch,
 				  base_addr + 0x80 + i * sizeof(u32));
 	}
 
-	/* reverse both phase and tap orderings */
+	 
 	for (phase = (PSC_NUM_PHASES >> 1) - 1;
 			i < PSC_NUM_PHASES; i++, phase--) {
 		dcss_scaler_write(ch, ((coef[phase][6] & 0xfff) << 16 |
@@ -668,13 +634,13 @@ static void dcss_scaler_yuv_coef_set(struct dcss_scaler_ch *ch,
 			      (dst_format == BUF_FMT_YUV422 &&
 			       src_format == BUF_FMT_ARGB8888_YUV444);
 
-	/* horizontal luma */
+	 
 	dcss_scaler_filter_design(src_xres, dst_xres, false,
 				  src_xres == dst_xres, coef,
 				  ch->use_nn_interpolation);
 	dcss_scaler_program_7_coef_set(ch, DCSS_SCALER_COEF_HLUM, coef);
 
-	/* vertical luma */
+	 
 	dcss_scaler_filter_design(src_yres, dst_yres, program_5_taps,
 				  src_yres == dst_yres, coef,
 				  ch->use_nn_interpolation);
@@ -684,24 +650,24 @@ static void dcss_scaler_yuv_coef_set(struct dcss_scaler_ch *ch,
 	else
 		dcss_scaler_program_7_coef_set(ch, DCSS_SCALER_COEF_VLUM, coef);
 
-	/* adjust chroma resolution */
+	 
 	if (src_format != BUF_FMT_ARGB8888_YUV444)
 		src_xres >>= 1;
 	if (src_format == BUF_FMT_YUV420)
 		src_yres >>= 1;
 	if (dst_format != BUF_FMT_ARGB8888_YUV444)
 		dst_xres >>= 1;
-	if (dst_format == BUF_FMT_YUV420) /* should not happen */
+	if (dst_format == BUF_FMT_YUV420)  
 		dst_yres >>= 1;
 
-	/* horizontal chroma */
+	 
 	dcss_scaler_filter_design(src_xres, dst_xres, false,
 				  (src_xres == dst_xres) && (ch->c_hstart == 0),
 				  coef, ch->use_nn_interpolation);
 
 	dcss_scaler_program_7_coef_set(ch, DCSS_SCALER_COEF_HCHR, coef);
 
-	/* vertical chroma */
+	 
 	dcss_scaler_filter_design(src_yres, dst_yres, program_5_taps,
 				  (src_yres == dst_yres) && (ch->c_vstart == 0),
 				  coef, ch->use_nn_interpolation);
@@ -717,13 +683,13 @@ static void dcss_scaler_rgb_coef_set(struct dcss_scaler_ch *ch,
 {
 	int coef[PSC_STORED_PHASES][PSC_NUM_TAPS];
 
-	/* horizontal RGB */
+	 
 	dcss_scaler_filter_design(src_xres, dst_xres, false,
 				  src_xres == dst_xres, coef,
 				  ch->use_nn_interpolation);
 	dcss_scaler_program_7_coef_set(ch, DCSS_SCALER_COEF_HLUM, coef);
 
-	/* vertical RGB */
+	 
 	dcss_scaler_filter_design(src_yres, dst_yres, false,
 				  src_yres == dst_yres, coef,
 				  ch->use_nn_interpolation);
@@ -834,7 +800,7 @@ void dcss_scaler_setup(struct dcss_scaler *scl, int ch_num,
 			    pix_format, dst_format);
 }
 
-/* This function will be called from interrupt context. */
+ 
 void dcss_scaler_write_sclctrl(struct dcss_scaler *scl)
 {
 	int chnum;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NCI based driver for Samsung S3FWRN5 NFC chip
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/firmware.h>
@@ -81,7 +76,7 @@ static int s3fwrn5_fw_get_bootinfo(struct s3fwrn5_fw_info *fw_info,
 	struct s3fwrn5_fw_header *hdr;
 	int ret;
 
-	/* Send GET_BOOTINFO command */
+	 
 
 	ret = s3fwrn5_fw_prep_msg(fw_info, &msg, S3FWRN5_FW_MSG_CMD,
 		S3FWRN5_FW_CMD_GET_BOOTINFO, NULL, 0);
@@ -115,7 +110,7 @@ static int s3fwrn5_fw_enter_update_mode(struct s3fwrn5_fw_info *fw_info,
 	struct s3fwrn5_fw_header *hdr;
 	int ret;
 
-	/* Send ENTER_UPDATE_MODE command */
+	 
 
 	args.hashcode_size = hash_size;
 	args.signature_size = sig_size;
@@ -138,7 +133,7 @@ static int s3fwrn5_fw_enter_update_mode(struct s3fwrn5_fw_info *fw_info,
 
 	kfree_skb(rsp);
 
-	/* Send hashcode data */
+	 
 
 	ret = s3fwrn5_fw_prep_msg(fw_info, &msg, S3FWRN5_FW_MSG_DATA, 0,
 		hash_data, hash_size);
@@ -158,7 +153,7 @@ static int s3fwrn5_fw_enter_update_mode(struct s3fwrn5_fw_info *fw_info,
 
 	kfree_skb(rsp);
 
-	/* Send signature data */
+	 
 
 	ret = s3fwrn5_fw_prep_msg(fw_info, &msg, S3FWRN5_FW_MSG_DATA, 0,
 		sig_data, sig_size);
@@ -187,7 +182,7 @@ static int s3fwrn5_fw_update_sector(struct s3fwrn5_fw_info *fw_info,
 	struct s3fwrn5_fw_header *hdr;
 	int ret, i;
 
-	/* Send UPDATE_SECTOR command */
+	 
 
 	args.base_address = base_addr;
 
@@ -209,7 +204,7 @@ static int s3fwrn5_fw_update_sector(struct s3fwrn5_fw_info *fw_info,
 
 	kfree_skb(rsp);
 
-	/* Send data split into 256-byte packets */
+	 
 
 	for (i = 0; i < 16; ++i) {
 		ret = s3fwrn5_fw_prep_msg(fw_info, &msg,
@@ -244,7 +239,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
 	struct s3fwrn5_fw_header *hdr;
 	int ret;
 
-	/* Send COMPLETE_UPDATE_MODE command */
+	 
 
 	ret = s3fwrn5_fw_prep_msg(fw_info, &msg, S3FWRN5_FW_MSG_CMD,
 		S3FWRN5_FW_CMD_COMPLETE_UPDATE_MODE, NULL, 0);
@@ -265,18 +260,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
 	return ret;
 }
 
-/*
- * Firmware header structure:
- *
- * 0x00 - 0x0B : Date and time string (w/o NUL termination)
- * 0x10 - 0x13 : Firmware version
- * 0x14 - 0x17 : Signature address
- * 0x18 - 0x1B : Signature size
- * 0x1C - 0x1F : Firmware image address
- * 0x20 - 0x23 : Firmware sectors count
- * 0x24 - 0x27 : Custom signature address
- * 0x28 - 0x2B : Custom signature size
- */
+ 
 
 #define S3FWRN5_FW_IMAGE_HEADER_SIZE 44
 
@@ -361,7 +345,7 @@ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info)
 	struct s3fwrn5_fw_cmd_get_bootinfo_rsp bootinfo;
 	int ret;
 
-	/* Get bootloader info */
+	 
 
 	ret = s3fwrn5_fw_get_bootinfo(fw_info, &bootinfo);
 	if (ret < 0) {
@@ -369,7 +353,7 @@ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info)
 		goto err;
 	}
 
-	/* Match hardware version to obtain firmware base address */
+	 
 
 	ret = s3fwrn5_fw_get_base_addr(&bootinfo, &fw_info->base_addr);
 	if (ret < 0) {
@@ -417,7 +401,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
 
 	image_size = fw_info->sector_size * fw->image_sectors;
 
-	/* Compute SHA of firmware data */
+	 
 
 	tfm = crypto_alloc_shash("sha1", 0, 0);
 	if (IS_ERR(tfm)) {
@@ -433,7 +417,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
 		return ret;
 	}
 
-	/* Firmware update process */
+	 
 
 	dev_info(dev, "Firmware update: %s\n", fw_info->fw_name);
 

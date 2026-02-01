@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 NXP
- * Copyright (C) 2019 Boundary Devices
- * Copyright (C) 2020 Amarula Solutions(India)
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -14,7 +10,7 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 
-/* registers */
+ 
 #define PF8X00_DEVICEID			0x00
 #define PF8X00_REVID			0x01
 #define PF8X00_EMREV			0x02
@@ -68,7 +64,7 @@
 #define PF8X00_VSNVS_CONFIG1		0x9d
 #define PF8X00_PAGE_SELECT		0x9f
 
-/* regulators */
+ 
 enum pf8x00_regulators {
 	PF8X00_LDO1,
 	PF8X00_LDO2,
@@ -145,25 +141,25 @@ static const struct regmap_config pf8x00_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/* VLDOx output: 1.5V to 5.0V */
+ 
 static const int pf8x00_ldo_voltages[] = {
 	1500000, 1600000, 1800000, 1850000, 2150000, 2500000, 2800000, 3000000,
 	3100000, 3150000, 3200000, 3300000, 3350000, 1650000, 1700000, 5000000,
 };
 
-/* Output: 2.1A to 4.5A */
+ 
 static const unsigned int pf8x00_sw_current_table[] = {
 	2100000, 2600000, 3000000, 4500000,
 };
 
-/* Output: 0.4V to 1.8V */
+ 
 #define PF8XOO_SW1_6_VOLTAGE_NUM 0xB2
 static const struct linear_range pf8x00_sw1_to_6_voltages[] = {
 	REGULATOR_LINEAR_RANGE(400000, 0x00, 0xB0, 6250),
 	REGULATOR_LINEAR_RANGE(1800000, 0xB1, 0xB1, 0),
 };
 
-/* Output: 1.0V to 4.1V */
+ 
 static const int pf8x00_sw7_voltages[] = {
 	1000000, 1100000, 1200000, 1250000, 1300000, 1350000, 1500000, 1600000,
 	1800000, 1850000, 2000000, 2100000, 2150000, 2250000, 2300000, 2400000,
@@ -171,7 +167,7 @@ static const int pf8x00_sw7_voltages[] = {
 	3500000, 3800000, 4000000, 4100000, 4100000, 4100000, 4100000, 4100000,
 };
 
-/* Output: 1.8V, 3.0V, or 3.3V */
+ 
 static const int pf8x00_vsnvs_voltages[] = {
 	0, 1800000, 3000000, 3300000,
 };

@@ -1,27 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #ifndef __DISPLAY_MODE_ENUMS_H__
 #define __DISPLAY_MODE_ENUMS_H__
 
@@ -106,28 +83,15 @@ enum cursor_bpp {
 	dm_cur_2bit = 0, dm_cur_32bit = 1, dm_cur_64bit = 2
 };
 
-/**
- * @enum clock_change_support - It represents possible reasons to change the DRAM clock.
- *
- * DC may change the DRAM clock during its execution, and this enum tracks all
- * the available methods. Note that every ASIC has their specific way to deal
- * with these clock switch.
- */
+ 
 enum clock_change_support {
-	/**
-	 * @dm_dram_clock_change_uninitialized: If you see this, we might have
-	 * a code initialization issue
-	 */
+	 
 	dm_dram_clock_change_uninitialized = 0,
 
-	/**
-	 * @dm_dram_clock_change_vactive: Support DRAM switch in VActive
-	 */
+	 
 	dm_dram_clock_change_vactive,
 
-	/**
-	 * @dm_dram_clock_change_vblank: Support DRAM switch in VBlank
-	 */
+	 
 	dm_dram_clock_change_vblank,
 
 	dm_dram_clock_change_vactive_w_mall_full_frame,
@@ -135,9 +99,7 @@ enum clock_change_support {
 	dm_dram_clock_change_vblank_w_mall_full_frame,
 	dm_dram_clock_change_vblank_w_mall_sub_vp,
 
-	/**
-	 * @dm_dram_clock_change_unsupported: Do not support DRAM switch
-	 */
+	 
 	dm_dram_clock_change_unsupported
 };
 

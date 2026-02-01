@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Driver for Analogix ANX7411 USB Type-C and PD controller
- *
- * Copyright(c) 2022, Analogix Semiconductor. All rights reserved.
- *
- */
+
+ 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -45,7 +40,7 @@ struct anx7411_i2c_select {
 #define VID_ANALOGIX		0x1F29
 #define PID_ANALOGIX		0x7411
 
-/* TCPC register define */
+ 
 
 #define ANALOG_CTRL_10		0xAA
 
@@ -82,7 +77,7 @@ struct anx7411_i2c_select {
 #define FW_CTRL_2		0xF7
 #define SINK_CTRL_DIS_FLAG	BIT(5)
 
-/* SPI register define */
+ 
 #define OCM_CTRL_0		0x6E
 #define OCM_RESET		BIT(6)
 
@@ -91,10 +86,10 @@ struct anx7411_i2c_select {
 #define MIN_POWER		0xAE
 
 #define REQUEST_VOLTAGE		0xAF
-#define VOLTAGE_UNIT		100 /* mV per unit */
+#define VOLTAGE_UNIT		100  
 
 #define REQUEST_CURRENT		0xB1
-#define CURRENT_UNIT		50 /* mA per unit */
+#define CURRENT_UNIT		50  
 
 #define CMD_SEND_BUF		0xC0
 #define CMD_RECV_BUF		0xE0
@@ -148,17 +143,17 @@ enum anx7411_typec_message_type {
 #define HPD_STATUS_CHANGE	BIT(7)
 
 #define SYSTEM_STSTUS		0xB8
-/* 0: SINK off; 1: SINK on */
+ 
 #define SINK_STATUS		BIT(1)
-/* 0: VCONN off; 1: VCONN on*/
+ 
 #define VCONN_STATUS		BIT(2)
-/* 0: vbus off; 1: vbus on*/
+ 
 #define VBUS_STATUS		BIT(3)
-/* 1: host; 0:device*/
+ 
 #define DATA_ROLE		BIT(5)
-/* 0: Chunking; 1: Unchunked*/
+ 
 #define SUPPORT_UNCHUNKING	BIT(6)
-/* 0: HPD low; 1: HPD high*/
+ 
 #define HPD_STATUS		BIT(7)
 
 #define DATA_DFP		1
@@ -219,21 +214,18 @@ enum anx7411_typec_message_type {
 #define HAS_SINK_WATT		BIT(2)
 
 enum anx7411_psy_state {
-	/* copy from drivers/usb/typec/tcpm */
+	 
 	ANX7411_PSY_OFFLINE = 0,
 	ANX7411_PSY_FIXED_ONLINE,
 
-	/* private */
-	/* PD keep in, but disconnct power to bq25700,
-	 * this state can be active when higher capacity adapter plug in,
-	 * and change to ONLINE state when higher capacity adapter plug out
-	 */
+	 
+	 
 	ANX7411_PSY_HANG = 0xff,
 };
 
 struct typec_params {
-	int request_current; /* ma */
-	int request_voltage; /* mv */
+	int request_current;  
+	int request_voltage;  
 	int cc_connect;
 	int cc_orientation_valid;
 	int cc_status;
@@ -281,7 +273,7 @@ struct anx7411_data {
 	int intp_irq;
 	struct work_struct work;
 	struct workqueue_struct *workqueue;
-	/* Lock for interrupt work queue */
+	 
 	struct mutex lock;
 
 	enum anx7411_psy_state psy_online;
@@ -292,9 +284,9 @@ struct anx7411_data {
 };
 
 static u8 snk_identity[] = {
-	LOBYTE(VID_ANALOGIX), HIBYTE(VID_ANALOGIX), 0x00, 0x82, /* snk_id_hdr */
-	0x00, 0x00, 0x00, 0x00,                                 /* snk_cert */
-	0x00, 0x00, LOBYTE(PID_ANALOGIX), HIBYTE(PID_ANALOGIX), /* 5snk_ama */
+	LOBYTE(VID_ANALOGIX), HIBYTE(VID_ANALOGIX), 0x00, 0x82,  
+	0x00, 0x00, 0x00, 0x00,                                  
+	0x00, 0x00, LOBYTE(PID_ANALOGIX), HIBYTE(PID_ANALOGIX),  
 };
 
 static u8 dp_caps[4] = {0xC6, 0x00, 0x00, 0x00};
@@ -339,13 +331,13 @@ static int anx7411_detect_power_mode(struct anx7411_data *ctx)
 	if (ret < 0)
 		return ret;
 
-	ctx->typec.request_current = ret * CURRENT_UNIT; /* 50ma per unit */
+	ctx->typec.request_current = ret * CURRENT_UNIT;  
 
 	ret = anx7411_reg_read(ctx->spi_client, REQUEST_VOLTAGE);
 	if (ret < 0)
 		return ret;
 
-	ctx->typec.request_voltage = ret * VOLTAGE_UNIT; /* 100mv per unit */
+	ctx->typec.request_voltage = ret * VOLTAGE_UNIT;  
 
 	if (ctx->psy_online == ANX7411_PSY_OFFLINE) {
 		ctx->psy_online = ANX7411_PSY_FIXED_ONLINE;
@@ -412,7 +404,7 @@ static int anx7411_detect_cc_orientation(struct anx7411_data *ctx)
 	cc1_rp = CC1_RP(ret);
 	cc2_rp = CC2_RP(ret);
 
-	/* Debug cable, nothing to do */
+	 
 	if (cc1_rd && cc2_rd) {
 		ctx->typec.cc_orientation_valid = 0;
 		return anx7411_register_partner(ctx, 0, TYPEC_ACCESSORY_DEBUG);
@@ -450,16 +442,16 @@ static int anx7411_set_mux(struct anx7411_data *ctx, int pin_assignment)
 
 	switch (pin_assignment) {
 	case SELECT_PIN_ASSIGMENT_U:
-		/* default 4 line USB 3.1 */
+		 
 		mode = TYPEC_STATE_MODAL;
 		break;
 	case SELECT_PIN_ASSIGMENT_C:
 	case SELECT_PIN_ASSIGMENT_E:
-		/* 4 line DP */
+		 
 		mode = TYPEC_STATE_SAFE;
 		break;
 	case SELECT_PIN_ASSIGMENT_D:
-		/* 2 line DP, 2 line USB */
+		 
 		mode = TYPEC_MODE_USB3;
 		break;
 	default:
@@ -560,7 +552,7 @@ static int anx7411_typec_register_altmode(struct anx7411_data *ctx,
 		if (!ctx->typec.amode[i])
 			break;
 
-	desc.mode = i + 1; /* start with 1 */
+	desc.mode = i + 1;  
 
 	if (i >= MAX_ALTMODE) {
 		dev_err(dev, "no altmode space for registering\n");
@@ -669,12 +661,12 @@ static int anx7411_parse_cmd(struct anx7411_data *ctx, u8 type, u8 *buf, u8 len)
 	case TYPE_SNK_IDENTITY:
 		break;
 	case TYPE_GET_DP_ALT_ENTER:
-		/* DP alt mode enter success */
+		 
 		if (buf[0])
 			anx7411_update_altmode(ctx, DP_SVID);
 		break;
 	case TYPE_DP_ALT_ENTER:
-		/* Update DP altmode */
+		 
 		anx7411_update_altmode(ctx, DP_SVID);
 		break;
 	case TYPE_OBJ_REQ:
@@ -684,13 +676,13 @@ static int anx7411_parse_cmd(struct anx7411_data *ctx, u8 type, u8 *buf, u8 len)
 		anx7411_set_mux(ctx, buf[1]);
 		break;
 	case TYPE_DP_DISCOVER_MODES_INFO:
-		/* Make sure discover modes valid */
+		 
 		if (buf[0] | buf[1])
-			/* Register DP Altmode */
+			 
 			anx7411_register_altmode(ctx, 1, buf);
 		break;
 	case TYPE_VDM:
-		/* Register other altmode */
+		 
 		anx7411_register_altmode(ctx, 0, buf);
 		break;
 	default:
@@ -736,10 +728,10 @@ static int anx7411_send_msg(struct anx7411_data *ctx, u8 type, u8 *buf, u8 size)
 	size = min_t(u8, size, (u8)MAX_BUF_LEN);
 	memcpy(msg->buf, buf, size);
 	msg->msg_type = type;
-	/* msg len equals buffer length + msg_type */
+	 
 	msg->msg_len = size + 1;
 
-	/* Do CRC check for all buffer data and msg_len and msg_type */
+	 
 	crc = checksum(dev, (u8 *)msg, size + HEADER_LEN);
 	msg->buf[size] = 0 - crc;
 
@@ -763,7 +755,7 @@ static int anx7411_process_cmd(struct anx7411_data *ctx)
 	u8 crc;
 	int ret;
 
-	/* Read message from firmware */
+	 
 	ret = anx7411_reg_block_read(ctx->spi_client, CMD_RECV_BUF,
 				     MSG_LEN, (u8 *)msg);
 	if (ret < 0)
@@ -809,7 +801,7 @@ static int anx7411_config(struct anx7411_data *ctx)
 	__le32 payload[PDO_MAX_OBJECTS];
 	int ret;
 
-	/* Config PD FW work under PD 2.0 */
+	 
 	ret = anx7411_reg_write(ctx->spi_client, PD_REV_INIT, PD_REV20);
 	ret |= anx7411_reg_write(ctx->tcpc_client, FW_CTRL_0,
 				 UNSTRUCT_VDM_EN | DELAY_200MS |
@@ -817,11 +809,11 @@ static int anx7411_config(struct anx7411_data *ctx)
 	ret |= anx7411_reg_write(ctx->spi_client, FW_CTRL_1,
 				 AUTO_PD_EN | FORCE_SEND_RDO);
 
-	/* Set VBUS current threshold */
+	 
 	ret |= anx7411_reg_write(ctx->tcpc_client, VBUS_THRESHOLD_H, 0xff);
 	ret |= anx7411_reg_write(ctx->tcpc_client, VBUS_THRESHOLD_L, 0x03);
 
-	/* Fix dongle compatible issue */
+	 
 	ret |= anx7411_reg_write(ctx->tcpc_client, FW_PARAM,
 				 anx7411_reg_read(ctx->tcpc_client, FW_PARAM) |
 				 DONGLE_IOP);
@@ -853,7 +845,7 @@ static int anx7411_config(struct anx7411_data *ctx)
 		if (typecp->sink_watt) {
 			ret |= anx7411_reg_write(ctx->spi_client, MAX_POWER,
 						 typecp->sink_watt);
-			/* Set min power to 1W */
+			 
 			ret |= anx7411_reg_write(ctx->spi_client, MIN_POWER, 2);
 		}
 
@@ -883,17 +875,17 @@ static void anx7411_chip_standby(struct anx7411_data *ctx)
 				anx7411_reg_read(ctx->spi_client, OCM_CTRL_0) |
 				OCM_RESET);
 	ret |= anx7411_reg_write(ctx->tcpc_client, ANALOG_CTRL_10, 0x80);
-	/* Set TCPC to RD and DRP enable */
+	 
 	cc1 = TCPC_ROLE_CTRL_CC_RD << TCPC_ROLE_CTRL_CC1_SHIFT;
 	cc2 = TCPC_ROLE_CTRL_CC_RD << TCPC_ROLE_CTRL_CC2_SHIFT;
 	ret |= anx7411_reg_write(ctx->tcpc_client, TCPC_ROLE_CTRL,
 				 TCPC_ROLE_CTRL_DRP | cc1 | cc2);
 
-	/* Send DRP toggle command */
+	 
 	ret |= anx7411_reg_write(ctx->tcpc_client, TCPC_COMMAND,
 				 TCPC_CMD_LOOK4CONNECTION);
 
-	/* Send TCPC enter standby command */
+	 
 	ret |= anx7411_reg_write(ctx->tcpc_client,
 				 TCPC_COMMAND, TCPC_CMD_I2C_IDLE);
 	if (ret)
@@ -904,24 +896,24 @@ static void anx7411_work_func(struct work_struct *work)
 {
 	int ret;
 	u8 buf[STATUS_LEN];
-	u8 int_change; /* Interrupt change */
-	u8 int_status; /* Firmware status update */
-	u8 alert0, alert1; /* Interrupt alert source */
+	u8 int_change;  
+	u8 int_status;  
+	u8 alert0, alert1;  
 	struct anx7411_data *ctx = container_of(work, struct anx7411_data, work);
 	struct device *dev = &ctx->spi_client->dev;
 
 	mutex_lock(&ctx->lock);
 
-	/* Read interrupt change status */
+	 
 	ret = anx7411_reg_block_read(ctx->spi_client, INT_STS, STATUS_LEN, buf);
 	if (ret < 0) {
-		/* Power standby mode, just return */
+		 
 		goto unlock;
 	}
 	int_change = buf[0];
 	int_status = buf[1];
 
-	/* Read alert register */
+	 
 	ret = anx7411_reg_block_read(ctx->tcpc_client, ALERT_0, STATUS_LEN, buf);
 	if (ret < 0)
 		goto unlock;
@@ -929,7 +921,7 @@ static void anx7411_work_func(struct work_struct *work)
 	alert0 = buf[0];
 	alert1 = buf[1];
 
-	/* Clear interrupt and alert status */
+	 
 	ret = anx7411_reg_write(ctx->spi_client, INT_STS, 0);
 	ret |= anx7411_reg_write(ctx->tcpc_client, ALERT_0, alert0);
 	ret |= anx7411_reg_write(ctx->tcpc_client, ALERT_1, alert1);
@@ -1038,7 +1030,7 @@ static int anx7411_usb_mux_set(struct typec_mux_dev *mux,
 static int anx7411_usb_set_orientation(struct typec_switch_dev *sw,
 				       enum typec_orientation orientation)
 {
-	/* No need set */
+	 
 
 	return 0;
 }
@@ -1183,7 +1175,7 @@ static int anx7411_typec_port_probe(struct anx7411_data *ctx,
 		return ret;
 	cap->prefer_role = ret;
 
-	/* Get source pdos */
+	 
 	ret = fwnode_property_count_u32(fwnode, "source-pdos");
 	if (ret > 0) {
 		typecp->src_pdo_nr = min_t(u8, ret, PDO_MAX_OBJECTS);
@@ -1225,7 +1217,7 @@ static int anx7411_typec_port_probe(struct anx7411_data *ctx,
 				break;
 			}
 
-			/* 100mv per unit */
+			 
 			typecp->sink_voltage = max(5000, ret) / 100;
 		}
 
@@ -1233,7 +1225,7 @@ static int anx7411_typec_port_probe(struct anx7411_data *ctx,
 	}
 
 	if (!fwnode_property_read_u32(fwnode, "op-sink-microwatt", &ret)) {
-		typecp->sink_watt = ret / 500000; /* 500mw per unit */
+		typecp->sink_watt = ret / 500000;  
 		typecp->caps_flags |= HAS_SINK_WATT;
 	}
 
@@ -1265,9 +1257,9 @@ static int anx7411_typec_check_connection(struct anx7411_data *ctx)
 
 	ret = anx7411_reg_read(ctx->spi_client, FW_VER);
 	if (ret < 0)
-		return 0; /* No device attached in typec port */
+		return 0;  
 
-	/* Clear interrupt and alert status */
+	 
 	ret = anx7411_reg_write(ctx->spi_client, INT_STS, 0);
 	ret |= anx7411_reg_write(ctx->tcpc_client, ALERT_0, 0xFF);
 	ret |= anx7411_reg_write(ctx->tcpc_client, ALERT_1, 0xFF);
@@ -1308,7 +1300,7 @@ static int __maybe_unused anx7411_runtime_pm_resume(struct device *dev)
 	struct anx7411_data *ctx = dev_get_drvdata(dev);
 
 	mutex_lock(&ctx->lock);
-	/* Detect PD connection */
+	 
 	if (anx7411_typec_check_connection(ctx))
 		dev_err(dev, "check connection");
 

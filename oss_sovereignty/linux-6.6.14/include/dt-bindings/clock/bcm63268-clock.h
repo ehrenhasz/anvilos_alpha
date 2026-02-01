@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_BCM63268_H
 #define __DT_BINDINGS_CLOCK_BCM63268_H
@@ -40,4 +40,4 @@
 #define BCM63268_TCLK_UTO_EXTIN		17
 #define BCM63268_TCLK_USB_REF		18
 
-#endif /* __DT_BINDINGS_CLOCK_BCM63268_H */
+#endif  

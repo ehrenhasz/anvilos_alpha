@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/ioport.h>
@@ -29,11 +24,7 @@
 #include "sunxi_engine.h"
 #include "sun4i_tcon.h"
 
-/*
- * While this isn't really working in the DRM theory, in practice we
- * can only ever have one encoder per TCON since we have a mux in our
- * TCON.
- */
+ 
 static struct drm_encoder *sun4i_crtc_get_encoder(struct drm_crtc *crtc)
 {
 	struct drm_encoder *encoder;
@@ -204,14 +195,14 @@ struct sun4i_crtc *sun4i_crtc_init(struct drm_device *drm,
 	scrtc->engine = engine;
 	scrtc->tcon = tcon;
 
-	/* Create our layers */
+	 
 	planes = sunxi_engine_layers_init(drm, engine);
 	if (IS_ERR(planes)) {
 		dev_err(drm->dev, "Couldn't create the planes\n");
 		return NULL;
 	}
 
-	/* find primary and cursor planes for drm_crtc_init_with_planes */
+	 
 	for (i = 0; planes[i]; i++) {
 		struct drm_plane *plane = planes[i];
 
@@ -239,11 +230,11 @@ struct sun4i_crtc *sun4i_crtc_init(struct drm_device *drm,
 
 	drm_crtc_helper_add(&scrtc->crtc, &sun4i_crtc_helper_funcs);
 
-	/* Set crtc.port to output port node of the tcon */
+	 
 	scrtc->crtc.port = of_graph_get_port_by_id(scrtc->tcon->dev->of_node,
 						   1);
 
-	/* Set possible_crtcs to this crtc for overlay planes */
+	 
 	for (i = 0; planes[i]; i++) {
 		uint32_t possible_crtcs = drm_crtc_mask(&scrtc->crtc);
 		struct drm_plane *plane = planes[i];

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* linux/net/inet/arp.h */
+ 
+ 
 #ifndef _ARP_H
 #define _ARP_H
 
@@ -74,4 +74,4 @@ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
 			   const unsigned char *target_hw);
 void arp_xmit(struct sk_buff *skb);
 
-#endif	/* _ARP_H */
+#endif	 

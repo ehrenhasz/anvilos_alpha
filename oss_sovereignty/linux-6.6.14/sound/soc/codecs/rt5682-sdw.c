@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt5682-sdw.c  --  RT5682 ALSA SoC audio component driver
-//
-// Copyright 2019 Realtek Semiconductor Corp.
-// Author: Oder Chiou <oder_chiou@realtek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -121,7 +121,7 @@ static int rt5682_sdw_hw_params(struct snd_pcm_substream *substream,
 	if (!rt5682->slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -328,10 +328,7 @@ static int rt5682_sdw_init(struct device *dev, struct regmap *regmap,
 	regcache_cache_only(rt5682->sdw_regmap, true);
 	regcache_cache_only(rt5682->regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt5682->hw_init = false;
 	rt5682->first_hw_init = false;
 
@@ -345,20 +342,16 @@ static int rt5682_sdw_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -381,11 +374,9 @@ static int rt5682_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt5682->first_hw_init)
 		regcache_cache_bypass(rt5682->regmap, true);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!rt5682->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 	pm_runtime_get_noresume(&slave->dev);
@@ -412,7 +403,7 @@ static int rt5682_io_init(struct device *dev, struct sdw_slave *slave)
 		regcache_mark_dirty(rt5682->regmap);
 		regcache_sync(rt5682->regmap);
 
-		/* volatile registers */
+		 
 		regmap_update_bits(rt5682->regmap, RT5682_CBJ_CTRL_2,
 			RT5682_EXT_JD_SRC, RT5682_EXT_JD_SRC_MANUAL);
 
@@ -435,7 +426,7 @@ static int rt5682_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_update_bits(rt5682->regmap, RT5682_HP_CHARGE_PUMP_1,
 		RT5682_PM_HP_MASK, RT5682_PM_HP_HV);
 
-	/* Soundwire */
+	 
 	regmap_write(rt5682->regmap, RT5682_PLL2_INTERNAL, 0xa266);
 	regmap_write(rt5682->regmap, RT5682_PLL2_CTRL_1, 0x1700);
 	regmap_write(rt5682->regmap, RT5682_PLL2_CTRL_2, 0x0006);
@@ -469,7 +460,7 @@ reinit:
 	mod_delayed_work(system_power_efficient_wq,
 		&rt5682->jack_detect_work, msecs_to_jiffies(250));
 
-	/* Mark Slave initialization complete */
+	 
 	rt5682->hw_init = true;
 	rt5682->first_hw_init = true;
 
@@ -517,14 +508,11 @@ static int rt5682_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt5682->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt5682->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt5682_io_init(&slave->dev, slave);
 }
 
@@ -542,9 +530,9 @@ static int rt5682_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = false;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x4;	/* BITMAP: 00000100 */
-	prop->sink_ports = 0x2;		/* BITMAP: 00000010 */
+	 
+	prop->source_ports = 0x4;	 
+	prop->sink_ports = 0x2;		 
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -564,7 +552,7 @@ static int rt5682_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 					   sizeof(*prop->sink_dpn_prop),
@@ -583,16 +571,16 @@ static int rt5682_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 1;
 
 	return 0;
 }
 
-/* Bus clock frequency */
+ 
 #define RT5682_CLK_FREQ_9600000HZ 9600000
 #define RT5682_CLK_FREQ_12000000HZ 12000000
 #define RT5682_CLK_FREQ_6000000HZ 6000000
@@ -683,7 +671,7 @@ static int rt5682_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &rt5682_sdw_regmap);
 	if (IS_ERR(regmap))
 		return -EINVAL;
@@ -734,11 +722,7 @@ static int __maybe_unused rt5682_dev_system_suspend(struct device *dev)
 	if (!rt5682->hw_init)
 		return 0;
 
-	/*
-	 * prevent new interrupts from being handled after the
-	 * deferred work completes and before the parent disables
-	 * interrupts on the link
-	 */
+	 
 	mutex_lock(&rt5682->disable_irq_lock);
 	rt5682->disable_irq = true;
 	ret = sdw_update_no_pm(slave, SDW_SCP_INTMASK1,
@@ -746,7 +730,7 @@ static int __maybe_unused rt5682_dev_system_suspend(struct device *dev)
 	mutex_unlock(&rt5682->disable_irq_lock);
 
 	if (ret < 0) {
-		/* log but don't prevent suspend from happening */
+		 
 		dev_dbg(&slave->dev, "%s: could not disable imp-def interrupts\n:", __func__);
 	}
 

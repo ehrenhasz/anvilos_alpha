@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/em_u32.c	U32 Ematch
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *		Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- * Based on net/sched/cls_u32.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>

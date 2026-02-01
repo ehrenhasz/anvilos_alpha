@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth HCI UART driver for Intel devices
- *
- *  Copyright (C) 2015  Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -175,12 +170,12 @@ static int intel_lpm_suspend(struct hci_uart *hu)
 
 	set_bit(STATE_LPM_TRANSACTION, &intel->flags);
 
-	/* LPM flow is a priority, enqueue packet at list head */
+	 
 	skb_queue_head(&intel->txq, skb);
 	hci_uart_tx_wakeup(hu);
 
 	intel_wait_lpm_transaction(hu);
-	/* Even in case of failure, continue and test the suspended flag */
+	 
 
 	clear_bit(STATE_LPM_TRANSACTION, &intel->flags);
 
@@ -219,12 +214,12 @@ static int intel_lpm_resume(struct hci_uart *hu)
 
 	set_bit(STATE_LPM_TRANSACTION, &intel->flags);
 
-	/* LPM flow is a priority, enqueue packet at list head */
+	 
 	skb_queue_head(&intel->txq, skb);
 	hci_uart_tx_wakeup(hu);
 
 	intel_wait_lpm_transaction(hu);
-	/* Even in case of failure, continue and test the suspended flag */
+	 
 
 	clear_bit(STATE_LPM_TRANSACTION, &intel->flags);
 
@@ -237,7 +232,7 @@ static int intel_lpm_resume(struct hci_uart *hu)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static int intel_lpm_host_wake(struct hci_uart *hu)
 {
@@ -258,7 +253,7 @@ static int intel_lpm_host_wake(struct hci_uart *hu)
 	skb_put_data(skb, lpm_resume_ack, sizeof(lpm_resume_ack));
 	hci_skb_pkt_type(skb) = HCI_LPM_PKT;
 
-	/* LPM flow is a priority, enqueue packet at list head */
+	 
 	skb_queue_head(&intel->txq, skb);
 	hci_uart_tx_wakeup(hu);
 
@@ -278,7 +273,7 @@ static irqreturn_t intel_irq(int irq, void *dev_id)
 		intel_lpm_host_wake(idev->hu);
 	mutex_unlock(&idev->hu_lock);
 
-	/* Host/Controller are now LPM resumed, trigger a new delayed suspend */
+	 
 	pm_runtime_get(&idev->pdev->dev);
 	pm_runtime_mark_last_busy(&idev->pdev->dev);
 	pm_runtime_put_autosuspend(&idev->pdev->dev);
@@ -297,9 +292,7 @@ static int intel_set_power(struct hci_uart *hu, bool powered)
 	mutex_lock(&intel_device_list_lock);
 
 	list_for_each_entry(idev, &intel_device_list, list) {
-		/* tty device and pdev device should share the same parent
-		 * which is the UART port.
-		 */
+		 
 		if (hu->tty->dev->parent != idev->pdev->dev.parent)
 			continue;
 
@@ -313,11 +306,7 @@ static int intel_set_power(struct hci_uart *hu, bool powered)
 
 		gpiod_set_value(idev->reset, powered);
 
-		/* Provide to idev a hu reference which is used to run LPM
-		 * transactions (lpm suspend/resume) from PM callbacks.
-		 * hu needs to be protected against concurrent removing during
-		 * these PM ops.
-		 */
+		 
 		mutex_lock(&idev->hu_lock);
 		idev->hu = powered ? hu : NULL;
 		mutex_unlock(&idev->hu_lock);
@@ -366,7 +355,7 @@ static void intel_busy_work(struct work_struct *work)
 	if (!intel->hu->tty->dev)
 		return;
 
-	/* Link is busy, delay the suspend */
+	 
 	mutex_lock(&intel_device_list_lock);
 	list_for_each_entry(idev, &intel_device_list, list) {
 		if (intel->hu->tty->dev->parent == idev->pdev->dev.parent) {
@@ -467,14 +456,12 @@ static int intel_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	struct sk_buff *skb;
 	int err;
 
-	/* This can be the first command sent to the chip, check
-	 * that the controller is ready.
-	 */
+	 
 	err = intel_wait_booting(hu);
 
 	clear_bit(STATE_BOOTING, &intel->flags);
 
-	/* In case of timeout, try to continue anyway */
+	 
 	if (err && err != -ETIMEDOUT)
 		return err;
 
@@ -486,9 +473,7 @@ static int intel_set_baudrate(struct hci_uart *hu, unsigned int speed)
 		return -EINVAL;
 	}
 
-	/* Device will not accept speed change if Intel version has not been
-	 * previously requested.
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc05, 0, NULL, HCI_CMD_TIMEOUT);
 	if (IS_ERR(skb)) {
 		bt_dev_err(hdev, "Reading Intel version information failed (%ld)",
@@ -511,7 +496,7 @@ static int intel_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	skb_queue_tail(&intel->txq, skb);
 	hci_uart_tx_wakeup(hu);
 
-	/* wait 100ms to change baudrate on controller side */
+	 
 	msleep(100);
 
 	hci_uart_set_baudrate(hu, speed);
@@ -542,10 +527,7 @@ static int intel_setup(struct hci_uart *hu)
 	hu->hdev->set_diag = btintel_set_diag;
 	hu->hdev->set_bdaddr = btintel_set_bdaddr;
 
-	/* Set the default boot parameter to 0x0 and it is updated to
-	 * SKU specific boot parameter after reading Intel_Write_Boot_Params
-	 * command while downloading the firmware.
-	 */
+	 
 	boot_param = 0x00000000;
 
 	calltime = ktime_get();
@@ -563,44 +545,34 @@ static int intel_setup(struct hci_uart *hu)
 	if (oper_speed && init_speed && oper_speed != init_speed)
 		speed_change = 1;
 
-	/* Check that the controller is ready */
+	 
 	err = intel_wait_booting(hu);
 
 	clear_bit(STATE_BOOTING, &intel->flags);
 
-	/* In case of timeout, try to continue anyway */
+	 
 	if (err && err != -ETIMEDOUT)
 		return err;
 
 	set_bit(STATE_BOOTLOADER, &intel->flags);
 
-	/* Read the Intel version information to determine if the device
-	 * is in bootloader mode or if it already has operational firmware
-	 * loaded.
-	 */
+	 
 	err = btintel_read_version(hdev, &ver);
 	if (err)
 		return err;
 
-	/* The hardware platform number has a fixed value of 0x37 and
-	 * for now only accept this single value.
-	 */
+	 
 	if (ver.hw_platform != 0x37) {
 		bt_dev_err(hdev, "Unsupported Intel hardware platform (%u)",
 			   ver.hw_platform);
 		return -EINVAL;
 	}
 
-        /* Check for supported iBT hardware variants of this firmware
-         * loading method.
-         *
-         * This check has been put in place to ensure correct forward
-         * compatibility options when newer hardware variants come along.
-         */
+         
 	switch (ver.hw_variant) {
-	case 0x0b:	/* LnP */
-	case 0x0c:	/* WsP */
-	case 0x12:	/* ThP */
+	case 0x0b:	 
+	case 0x0c:	 
+	case 0x12:	 
 		break;
 	default:
 		bt_dev_err(hdev, "Unsupported Intel hardware variant (%u)",
@@ -610,86 +582,46 @@ static int intel_setup(struct hci_uart *hu)
 
 	btintel_version_info(hdev, &ver);
 
-	/* The firmware variant determines if the device is in bootloader
-	 * mode or is running operational firmware. The value 0x06 identifies
-	 * the bootloader and the value 0x23 identifies the operational
-	 * firmware.
-	 *
-	 * When the operational firmware is already present, then only
-	 * the check for valid Bluetooth device address is needed. This
-	 * determines if the device will be added as configured or
-	 * unconfigured controller.
-	 *
-	 * It is not possible to use the Secure Boot Parameters in this
-	 * case since that command is only available in bootloader mode.
-	 */
+	 
 	if (ver.fw_variant == 0x23) {
 		clear_bit(STATE_BOOTLOADER, &intel->flags);
 		btintel_check_bdaddr(hdev);
 		return 0;
 	}
 
-	/* If the device is not in bootloader mode, then the only possible
-	 * choice is to return an error and abort the device initialization.
-	 */
+	 
 	if (ver.fw_variant != 0x06) {
 		bt_dev_err(hdev, "Unsupported Intel firmware variant (%u)",
 			   ver.fw_variant);
 		return -ENODEV;
 	}
 
-	/* Read the secure boot parameters to identify the operating
-	 * details of the bootloader.
-	 */
+	 
 	err = btintel_read_boot_params(hdev, &params);
 	if (err)
 		return err;
 
-	/* It is required that every single firmware fragment is acknowledged
-	 * with a command complete event. If the boot parameters indicate
-	 * that this bootloader does not send them, then abort the setup.
-	 */
+	 
 	if (params.limited_cce != 0x00) {
 		bt_dev_err(hdev, "Unsupported Intel firmware loading method (%u)",
 			   params.limited_cce);
 		return -EINVAL;
 	}
 
-	/* If the OTP has no valid Bluetooth device address, then there will
-	 * also be no valid address for the operational firmware.
-	 */
+	 
 	if (!bacmp(&params.otp_bdaddr, BDADDR_ANY)) {
 		bt_dev_info(hdev, "No device address configured");
 		set_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks);
 	}
 
-	/* With this Intel bootloader only the hardware variant and device
-	 * revision information are used to select the right firmware for SfP
-	 * and WsP.
-	 *
-	 * The firmware filename is ibt-<hw_variant>-<dev_revid>.sfi.
-	 *
-	 * Currently the supported hardware variants are:
-	 *   11 (0x0b) for iBT 3.0 (LnP/SfP)
-	 *   12 (0x0c) for iBT 3.5 (WsP)
-	 *
-	 * For ThP/JfP and for future SKU's, the FW name varies based on HW
-	 * variant, HW revision and FW revision, as these are dependent on CNVi
-	 * and RF Combination.
-	 *
-	 *   18 (0x12) for iBT3.5 (ThP/JfP)
-	 *
-	 * The firmware file name for these will be
-	 * ibt-<hw_variant>-<hw_revision>-<fw_revision>.sfi.
-	 *
-	 */
+	 
 	switch (ver.hw_variant) {
-	case 0x0b:      /* SfP */
-	case 0x0c:      /* WsP */
+	case 0x0b:       
+	case 0x0c:       
 		snprintf(fwname, sizeof(fwname), "intel/ibt-%u-%u.sfi",
 			 ver.hw_variant, le16_to_cpu(params.dev_revid));
 		break;
-	case 0x12:      /* ThP */
+	case 0x12:       
 		snprintf(fwname, sizeof(fwname), "intel/ibt-%u-%u-%u.sfi",
 			 ver.hw_variant, ver.hw_revision, ver.fw_revision);
 		break;
@@ -708,14 +640,14 @@ static int intel_setup(struct hci_uart *hu)
 
 	bt_dev_info(hdev, "Found device firmware: %s", fwname);
 
-	/* Save the DDC file name for later */
+	 
 	switch (ver.hw_variant) {
-	case 0x0b:      /* SfP */
-	case 0x0c:      /* WsP */
+	case 0x0b:       
+	case 0x0c:       
 		snprintf(fwname, sizeof(fwname), "intel/ibt-%u-%u.ddc",
 			 ver.hw_variant, le16_to_cpu(params.dev_revid));
 		break;
-	case 0x12:      /* ThP */
+	case 0x12:       
 		snprintf(fwname, sizeof(fwname), "intel/ibt-%u-%u-%u.ddc",
 			 ver.hw_variant, ver.hw_revision, ver.fw_revision);
 		break;
@@ -734,7 +666,7 @@ static int intel_setup(struct hci_uart *hu)
 
 	set_bit(STATE_DOWNLOADING, &intel->flags);
 
-	/* Start firmware downloading and get boot parameter */
+	 
 	err = btintel_download_firmware(hdev, &ver, fw, &boot_param);
 	if (err < 0)
 		goto done;
@@ -743,17 +675,7 @@ static int intel_setup(struct hci_uart *hu)
 
 	bt_dev_info(hdev, "Waiting for firmware download to complete");
 
-	/* Before switching the device into operational mode and with that
-	 * booting the loaded firmware, wait for the bootloader notification
-	 * that all fragments have been successfully received.
-	 *
-	 * When the event processing receives the notification, then the
-	 * STATE_DOWNLOADING flag will be cleared.
-	 *
-	 * The firmware loading should not take longer than 5 seconds
-	 * and thus just timeout if that happens and fail the setup
-	 * of this device.
-	 */
+	 
 	err = wait_on_bit_timeout(&intel->flags, STATE_DOWNLOADING,
 				  TASK_INTERRUPTIBLE,
 				  msecs_to_jiffies(5000));
@@ -784,13 +706,11 @@ static int intel_setup(struct hci_uart *hu)
 done:
 	release_firmware(fw);
 
-	/* Check if there was an error and if is not -EALREADY which means the
-	 * firmware has already been loaded.
-	 */
+	 
 	if (err < 0 && err != -EALREADY)
 		return err;
 
-	/* We need to restore the default speed before Intel reset */
+	 
 	if (speed_change) {
 		err = intel_set_baudrate(hu, init_speed);
 		if (err)
@@ -805,13 +725,7 @@ done:
 	if (err)
 		return err;
 
-	/* The bootloader will not indicate when the device is ready. This
-	 * is done by the operational firmware sending bootup notification.
-	 *
-	 * Booting into operational firmware should not take longer than
-	 * 1 second. However if that happens, then just fail the setup
-	 * since something went wrong.
-	 */
+	 
 	bt_dev_info(hdev, "Waiting for device to boot");
 
 	err = intel_wait_booting(hu);
@@ -826,9 +740,7 @@ done:
 
 	bt_dev_info(hdev, "Device booted in %llu usecs", duration);
 
-	/* Enable LPM if matching pdev with wakeup enabled, set TX active
-	 * until further LPM TX notification.
-	 */
+	 
 	mutex_lock(&intel_device_list_lock);
 	list_for_each_entry(idev, &intel_device_list, list) {
 		if (!hu->tty->dev)
@@ -843,7 +755,7 @@ done:
 	}
 	mutex_unlock(&intel_device_list_lock);
 
-	/* Ignore errors, device can work without DDC parameters */
+	 
 	btintel_load_ddc_config(hdev, fwname);
 
 	skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_CMD_TIMEOUT);
@@ -876,10 +788,7 @@ static int intel_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
 
 	hdr = (void *)skb->data;
 
-	/* When the firmware loading completes the device sends
-	 * out a vendor specific event indicating the result of
-	 * the firmware loading.
-	 */
+	 
 	if (skb->len == 7 && hdr->evt == 0xff && hdr->plen == 0x05 &&
 	    skb->data[2] == 0x06) {
 		if (skb->data[3] != 0x00)
@@ -889,10 +798,7 @@ static int intel_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
 		    test_bit(STATE_FIRMWARE_LOADED, &intel->flags))
 			wake_up_bit(&intel->flags, STATE_DOWNLOADING);
 
-	/* When switching to the operational firmware the device
-	 * sends a vendor specific event indicating that the bootup
-	 * completed.
-	 */
+	 
 	} else if (skb->len == 9 && hdr->evt == 0xff && hdr->plen == 0x07 &&
 		   skb->data[2] == 0x02) {
 		if (test_and_clear_bit(STATE_BOOTING, &intel->flags))
@@ -995,9 +901,7 @@ static int intel_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	if (!hu->tty->dev)
 		goto out_enqueue;
 
-	/* Be sure our controller is resumed and potential LPM transaction
-	 * completed before enqueuing any packet.
-	 */
+	 
 	mutex_lock(&intel_device_list_lock);
 	list_for_each_entry(idev, &intel_device_list, list) {
 		if (hu->tty->dev->parent == idev->pdev->dev.parent) {
@@ -1028,16 +932,12 @@ static struct sk_buff *intel_dequeue(struct hci_uart *hu)
 		struct hci_command_hdr *cmd = (void *)skb->data;
 		__u16 opcode = le16_to_cpu(cmd->opcode);
 
-		/* When the 0xfc01 command is issued to boot into
-		 * the operational firmware, it will actually not
-		 * send a command complete event. To keep the flow
-		 * control working inject that event here.
-		 */
+		 
 		if (opcode == 0xfc01)
 			inject_cmd_complete(hu->hdev, opcode);
 	}
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 
 	return skb;
@@ -1172,14 +1072,14 @@ static int intel_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Only enable wake-up/irq when controller is powered */
+	 
 	device_set_wakeup_capable(&pdev->dev, true);
 	device_wakeup_disable(&pdev->dev);
 
 no_irq:
 	platform_set_drvdata(pdev, idev);
 
-	/* Place this instance on the device list */
+	 
 	mutex_lock(&intel_device_list_lock);
 	list_add_tail(&idev->list, &intel_device_list);
 	mutex_unlock(&intel_device_list_lock);

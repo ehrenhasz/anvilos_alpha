@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd */
+
+ 
 #include <linux/mlx5/driver.h>
 #include "vhca_event.h"
 #include "priv.h"
@@ -31,7 +31,7 @@ enum mlx5_sf_hwc_index {
 
 struct mlx5_sf_hw_table {
 	struct mlx5_core_dev *dev;
-	struct mutex table_lock; /* Serializes sf deletion and vhca state change handler. */
+	struct mutex table_lock;  
 	struct notifier_block vhca_nb;
 	struct mlx5_sf_hwc_table hwc[MLX5_SF_HWC_MAX];
 };
@@ -136,9 +136,7 @@ int mlx5_sf_hw_table_sf_alloc(struct mlx5_core_dev *dev, u32 controller, u32 usr
 		goto vhca_err;
 
 	if (controller) {
-		/* If this SF is for external controller, SF manager
-		 * needs to arm firmware to receive the events.
-		 */
+		 
 		err = mlx5_vhca_event_arm(dev, hw_fn_id);
 		if (err)
 			goto vhca_err;
@@ -361,9 +359,7 @@ static int mlx5_sf_hw_vhca_event(struct notifier_block *nb, unsigned long opcode
 	sf_hw = &hwc->sfs[sw_id];
 
 	mutex_lock(&table->table_lock);
-	/* SF driver notified through firmware that SF is finally detached.
-	 * Hence recycle the sf hardware id for reuse.
-	 */
+	 
 	if (sf_hw->allocated && sf_hw->pending_delete)
 		mlx5_sf_hw_table_hwc_sf_free(table->dev, hwc, sw_id);
 	mutex_unlock(&table->table_lock);
@@ -389,7 +385,7 @@ void mlx5_sf_hw_table_destroy(struct mlx5_core_dev *dev)
 		return;
 
 	mlx5_vhca_event_notifier_unregister(dev, &table->vhca_nb);
-	/* Dealloc SFs whose firmware event has been missed. */
+	 
 	mlx5_sf_hw_table_dealloc_all(table);
 }
 

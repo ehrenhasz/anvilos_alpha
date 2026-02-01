@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SH7757 (B0 step) Pinmux
- *
- *  Copyright (C) 2009-2010  Renesas Solutions Corp.
- *
- *  Author : Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
- *
- * Based on SH7723 Pinmux
- *  Copyright (C) 2008  Magnus Damm
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <cpu/sh7757.h>
@@ -341,116 +332,116 @@ enum {
 	PINMUX_FUNCTION_END,
 
 	PINMUX_MARK_BEGIN,
-	/* PTA (mobule: LBSC, RGMII) */
+	 
 	BS_MARK,	RDWR_MARK,	WE1_MARK,	RDY_MARK,
 	ET0_MDC_MARK,	ET0_MDIO_MARK,	ET1_MDC_MARK,	ET1_MDIO_MARK,
 
-	/* PTB (mobule: INTC, ONFI, TMU) */
+	 
 	IRQ15_MARK,	IRQ14_MARK,	IRQ13_MARK,	IRQ12_MARK,
 	IRQ11_MARK,	IRQ10_MARK,	IRQ9_MARK,	IRQ8_MARK,
 	ON_NRE_MARK,	ON_NWE_MARK,	ON_NWP_MARK,	ON_NCE0_MARK,
 	ON_R_B0_MARK,	ON_ALE_MARK,	ON_CLE_MARK,	TCLK_MARK,
 
-	/* PTC (mobule: IRQ, PWMU) */
+	 
 	IRQ7_MARK,	IRQ6_MARK,	IRQ5_MARK,	IRQ4_MARK,
 	IRQ3_MARK,	IRQ2_MARK,	IRQ1_MARK,	IRQ0_MARK,
 	PWMU0_MARK,	PWMU1_MARK,	PWMU2_MARK,	PWMU3_MARK,
 	PWMU4_MARK,	PWMU5_MARK,
 
-	/* PTD (mobule: SPI0, DMAC) */
+	 
 	SP0_MOSI_MARK,	SP0_MISO_MARK,	SP0_SCK_MARK,	SP0_SCK_FB_MARK,
 	SP0_SS0_MARK,	SP0_SS1_MARK,	SP0_SS2_MARK,	SP0_SS3_MARK,
 	DREQ0_MARK,	DACK0_MARK,	TEND0_MARK,
 
-	/* PTE (mobule: RMII) */
+	 
 	RMII0_CRS_DV_MARK,	RMII0_TXD1_MARK,
 	RMII0_TXD0_MARK,	RMII0_TXEN_MARK,
 	RMII0_REFCLK_MARK,	RMII0_RXD1_MARK,
 	RMII0_RXD0_MARK,	RMII0_RX_ER_MARK,
 
-	/* PTF (mobule: RMII, SerMux) */
+	 
 	RMII1_CRS_DV_MARK,	RMII1_TXD1_MARK,
 	RMII1_TXD0_MARK,	RMII1_TXEN_MARK,
 	RMII1_REFCLK_MARK,	RMII1_RXD1_MARK,
 	RMII1_RXD0_MARK,	RMII1_RX_ER_MARK,
 	RAC_RI_MARK,
 
-	/* PTG (mobule: system, LBSC, LPC, WDT, LPC, eMMC) */
+	 
 	BOOTFMS_MARK,	BOOTWP_MARK,	A25_MARK,	A24_MARK,
 	SERIRQ_MARK,	WDTOVF_MARK,	LPCPD_MARK,	LDRQ_MARK,
 	MMCCLK_MARK,	MMCCMD_MARK,
 
-	/* PTH (mobule: SPI1, LPC, DMAC, ADC) */
+	 
 	SP1_MOSI_MARK,	SP1_MISO_MARK,	SP1_SCK_MARK,	SP1_SCK_FB_MARK,
 	SP1_SS0_MARK,	SP1_SS1_MARK,	WP_MARK,	FMS0_MARK,
 	TEND1_MARK,	DREQ1_MARK,	DACK1_MARK,	ADTRG1_MARK,
 	ADTRG0_MARK,
 
-	/* PTI (mobule: LBSC, SDHI) */
+	 
 	D15_MARK,	D14_MARK,	D13_MARK,	D12_MARK,
 	D11_MARK,	D10_MARK,	D9_MARK,	D8_MARK,
 	SD_WP_MARK,	SD_CD_MARK,	SD_CLK_MARK,	SD_CMD_MARK,
 	SD_D3_MARK,	SD_D2_MARK,	SD_D1_MARK,	SD_D0_MARK,
 
-	/* PTJ (mobule: SCIF234) */
+	 
 	RTS3_MARK,	CTS3_MARK,	TXD3_MARK,	RXD3_MARK,
 	RTS4_MARK,	RXD4_MARK,	TXD4_MARK,
 
-	/* PTK (mobule: SERMUX, LBSC, SCIF) */
+	 
 	COM2_TXD_MARK,	COM2_RXD_MARK,	COM2_RTS_MARK,	COM2_CTS_MARK,
 	COM2_DTR_MARK,	COM2_DSR_MARK,	COM2_DCD_MARK,	CLKOUT_MARK,
 	SCK2_MARK,	SCK4_MARK,	SCK3_MARK,
 
-	/* PTL (mobule: SERMUX, SCIF, LBSC, AUD) */
+	 
 	RAC_RXD_MARK,	RAC_RTS_MARK,	RAC_CTS_MARK,	RAC_DTR_MARK,
 	RAC_DSR_MARK,	RAC_DCD_MARK,	RAC_TXD_MARK,	RXD2_MARK,
 	CS5_MARK,	CS6_MARK,	AUDSYNC_MARK,	AUDCK_MARK,
 	TXD2_MARK,
 
-	/* PTM (mobule: LBSC, IIC) */
+	 
 	CS4_MARK,	RD_MARK,	WE0_MARK,	CS0_MARK,
 	SDA6_MARK,	SCL6_MARK,	SDA7_MARK,	SCL7_MARK,
 
-	/* PTN (mobule: USB, JMC, SGPIO, WDT) */
+	 
 	VBUS_EN_MARK,	VBUS_OC_MARK,	JMCTCK_MARK,	JMCTMS_MARK,
 	JMCTDO_MARK,	JMCTDI_MARK,	JMCTRST_MARK,
 	SGPIO1_CLK_MARK,	SGPIO1_LOAD_MARK,	SGPIO1_DI_MARK,
 	SGPIO1_DO_MARK,		SUB_CLKIN_MARK,
 
-	/* PTO (mobule: SGPIO, SerMux) */
+	 
 	SGPIO0_CLK_MARK,	SGPIO0_LOAD_MARK,	SGPIO0_DI_MARK,
 	SGPIO0_DO_MARK,		SGPIO2_CLK_MARK,	SGPIO2_LOAD_MARK,
 	SGPIO2_DI_MARK,		SGPIO2_DO_MARK,
 	COM1_TXD_MARK,	COM1_RXD_MARK,	COM1_RTS_MARK,	COM1_CTS_MARK,
 
-	/* PTQ (mobule: LPC) */
+	 
 	LAD3_MARK,	LAD2_MARK,	LAD1_MARK,	LAD0_MARK,
 	LFRAME_MARK,	LRESET_MARK,	LCLK_MARK,
 
-	/* PTR (mobule: GRA, IIC) */
+	 
 	DDC3_MARK,	DDC2_MARK,	SDA2_MARK,	SCL2_MARK,
 	SDA1_MARK,	SCL1_MARK,	SDA0_MARK,	SCL0_MARK,
 	SDA8_MARK,	SCL8_MARK,
 
-	/* PTS (mobule: GRA, IIC) */
+	 
 	DDC1_MARK,	DDC0_MARK,	SDA5_MARK,	SCL5_MARK,
 	SDA4_MARK,	SCL4_MARK,	SDA3_MARK,	SCL3_MARK,
 	SDA9_MARK,	SCL9_MARK,
 
-	/* PTT (mobule: PWMX, AUD) */
+	 
 	PWMX7_MARK,	PWMX6_MARK,	PWMX5_MARK,	PWMX4_MARK,
 	PWMX3_MARK,	PWMX2_MARK,	PWMX1_MARK,	PWMX0_MARK,
 	AUDATA3_MARK,	AUDATA2_MARK,	AUDATA1_MARK,	AUDATA0_MARK,
 	STATUS1_MARK,	STATUS0_MARK,
 
-	/* PTU (mobule: LPC, APM) */
+	 
 	LGPIO7_MARK,	LGPIO6_MARK,	LGPIO5_MARK,	LGPIO4_MARK,
 	LGPIO3_MARK,	LGPIO2_MARK,	LGPIO1_MARK,	LGPIO0_MARK,
 	APMONCTL_O_MARK,	APMPWBTOUT_O_MARK,	APMSCI_O_MARK,
 	APMVDDON_MARK,	APMSLPBTN_MARK,	APMPWRBTN_MARK,	APMS5N_MARK,
 	APMS3N_MARK,
 
-	/* PTV (mobule: LBSC, SerMux, R-SPI, EVC, GRA) */
+	 
 	A23_MARK,	A22_MARK,	A21_MARK,	A20_MARK,
 	A19_MARK,	A18_MARK,	A17_MARK,	A16_MARK,
 	COM2_RI_MARK,		R_SPI_MOSI_MARK,	R_SPI_MISO_MARK,
@@ -458,22 +449,22 @@ enum {
 	EVENT7_MARK,	EVENT6_MARK,	VBIOS_DI_MARK,	VBIOS_DO_MARK,
 	VBIOS_CLK_MARK,	VBIOS_CS_MARK,
 
-	/* PTW (mobule: LBSC, EVC, SCIF) */
+	 
 	A15_MARK,	A14_MARK,	A13_MARK,	A12_MARK,
 	A11_MARK,	A10_MARK,	A9_MARK,	A8_MARK,
 	EVENT5_MARK,	EVENT4_MARK,	EVENT3_MARK,	EVENT2_MARK,
 	EVENT1_MARK,	EVENT0_MARK,	CTS4_MARK,	CTS2_MARK,
 
-	/* PTX (mobule: LBSC, SCIF, SIM) */
+	 
 	A7_MARK,	A6_MARK,	A5_MARK,	A4_MARK,
 	A3_MARK,	A2_MARK,	A1_MARK,	A0_MARK,
 	RTS2_MARK,	SIM_D_MARK,	SIM_CLK_MARK,	SIM_RST_MARK,
 
-	/* PTY (mobule: LBSC) */
+	 
 	D7_MARK,	D6_MARK,	D5_MARK,	D4_MARK,
 	D3_MARK,	D2_MARK,	D1_MARK,	D0_MARK,
 
-	/* PTZ (mobule: eMMC, ONFI) */
+	 
 	MMCDAT7_MARK,	MMCDAT6_MARK,	MMCDAT5_MARK,	MMCDAT4_MARK,
 	MMCDAT3_MARK,	MMCDAT2_MARK,	MMCDAT1_MARK,	MMCDAT0_MARK,
 	ON_DQ7_MARK,	ON_DQ6_MARK,	ON_DQ5_MARK,	ON_DQ4_MARK,
@@ -483,7 +474,7 @@ enum {
 };
 
 static const u16 pinmux_data[] = {
-	/* PTA GPIO */
+	 
 	PINMUX_DATA(PTA7_DATA, PTA7_IN, PTA7_OUT),
 	PINMUX_DATA(PTA6_DATA, PTA6_IN, PTA6_OUT),
 	PINMUX_DATA(PTA5_DATA, PTA5_IN, PTA5_OUT),
@@ -493,7 +484,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTA1_DATA, PTA1_IN, PTA1_OUT),
 	PINMUX_DATA(PTA0_DATA, PTA0_IN, PTA0_OUT),
 
-	/* PTB GPIO */
+	 
 	PINMUX_DATA(PTB7_DATA, PTB7_IN, PTB7_OUT),
 	PINMUX_DATA(PTB6_DATA, PTB6_IN, PTB6_OUT),
 	PINMUX_DATA(PTB5_DATA, PTB5_IN, PTB5_OUT),
@@ -503,7 +494,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTB1_DATA, PTB1_IN, PTB1_OUT),
 	PINMUX_DATA(PTB0_DATA, PTB0_IN, PTB0_OUT),
 
-	/* PTC GPIO */
+	 
 	PINMUX_DATA(PTC7_DATA, PTC7_IN, PTC7_OUT),
 	PINMUX_DATA(PTC6_DATA, PTC6_IN, PTC6_OUT),
 	PINMUX_DATA(PTC5_DATA, PTC5_IN, PTC5_OUT),
@@ -513,7 +504,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTC1_DATA, PTC1_IN, PTC1_OUT),
 	PINMUX_DATA(PTC0_DATA, PTC0_IN, PTC0_OUT),
 
-	/* PTD GPIO */
+	 
 	PINMUX_DATA(PTD7_DATA, PTD7_IN, PTD7_OUT),
 	PINMUX_DATA(PTD6_DATA, PTD6_IN, PTD6_OUT),
 	PINMUX_DATA(PTD5_DATA, PTD5_IN, PTD5_OUT),
@@ -523,7 +514,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTD1_DATA, PTD1_IN, PTD1_OUT),
 	PINMUX_DATA(PTD0_DATA, PTD0_IN, PTD0_OUT),
 
-	/* PTE GPIO */
+	 
 	PINMUX_DATA(PTE7_DATA, PTE7_IN, PTE7_OUT),
 	PINMUX_DATA(PTE6_DATA, PTE6_IN, PTE6_OUT),
 	PINMUX_DATA(PTE5_DATA, PTE5_IN, PTE5_OUT),
@@ -533,7 +524,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTE1_DATA, PTE1_IN, PTE1_OUT),
 	PINMUX_DATA(PTE0_DATA, PTE0_IN, PTE0_OUT),
 
-	/* PTF GPIO */
+	 
 	PINMUX_DATA(PTF7_DATA, PTF7_IN, PTF7_OUT),
 	PINMUX_DATA(PTF6_DATA, PTF6_IN, PTF6_OUT),
 	PINMUX_DATA(PTF5_DATA, PTF5_IN, PTF5_OUT),
@@ -543,7 +534,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTF1_DATA, PTF1_IN, PTF1_OUT),
 	PINMUX_DATA(PTF0_DATA, PTF0_IN, PTF0_OUT),
 
-	/* PTG GPIO */
+	 
 	PINMUX_DATA(PTG7_DATA, PTG7_IN, PTG7_OUT),
 	PINMUX_DATA(PTG6_DATA, PTG6_IN, PTG6_OUT),
 	PINMUX_DATA(PTG5_DATA, PTG5_IN, PTG5_OUT),
@@ -553,7 +544,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTG1_DATA, PTG1_IN, PTG1_OUT),
 	PINMUX_DATA(PTG0_DATA, PTG0_IN, PTG0_OUT),
 
-	/* PTH GPIO */
+	 
 	PINMUX_DATA(PTH7_DATA, PTH7_IN, PTH7_OUT),
 	PINMUX_DATA(PTH6_DATA, PTH6_IN, PTH6_OUT),
 	PINMUX_DATA(PTH5_DATA, PTH5_IN, PTH5_OUT),
@@ -563,7 +554,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTH1_DATA, PTH1_IN, PTH1_OUT),
 	PINMUX_DATA(PTH0_DATA, PTH0_IN, PTH0_OUT),
 
-	/* PTI GPIO */
+	 
 	PINMUX_DATA(PTI7_DATA, PTI7_IN, PTI7_OUT),
 	PINMUX_DATA(PTI6_DATA, PTI6_IN, PTI6_OUT),
 	PINMUX_DATA(PTI5_DATA, PTI5_IN, PTI5_OUT),
@@ -573,7 +564,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTI1_DATA, PTI1_IN, PTI1_OUT),
 	PINMUX_DATA(PTI0_DATA, PTI0_IN, PTI0_OUT),
 
-	/* PTJ GPIO */
+	 
 	PINMUX_DATA(PTJ6_DATA, PTJ6_IN, PTJ6_OUT),
 	PINMUX_DATA(PTJ5_DATA, PTJ5_IN, PTJ5_OUT),
 	PINMUX_DATA(PTJ4_DATA, PTJ4_IN, PTJ4_OUT),
@@ -582,7 +573,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTJ1_DATA, PTJ1_IN, PTJ1_OUT),
 	PINMUX_DATA(PTJ0_DATA, PTJ0_IN, PTJ0_OUT),
 
-	/* PTK GPIO */
+	 
 	PINMUX_DATA(PTK7_DATA, PTK7_IN, PTK7_OUT),
 	PINMUX_DATA(PTK6_DATA, PTK6_IN, PTK6_OUT),
 	PINMUX_DATA(PTK5_DATA, PTK5_IN, PTK5_OUT),
@@ -592,7 +583,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTK1_DATA, PTK1_IN, PTK1_OUT),
 	PINMUX_DATA(PTK0_DATA, PTK0_IN, PTK0_OUT),
 
-	/* PTL GPIO */
+	 
 	PINMUX_DATA(PTL6_DATA, PTL6_IN, PTL6_OUT),
 	PINMUX_DATA(PTL5_DATA, PTL5_IN, PTL5_OUT),
 	PINMUX_DATA(PTL4_DATA, PTL4_IN, PTL4_OUT),
@@ -601,7 +592,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTL1_DATA, PTL1_IN, PTL1_OUT),
 	PINMUX_DATA(PTL0_DATA, PTL0_IN, PTL0_OUT),
 
-	/* PTM GPIO */
+	 
 	PINMUX_DATA(PTM6_DATA, PTM6_IN, PTM6_OUT),
 	PINMUX_DATA(PTM5_DATA, PTM5_IN, PTM5_OUT),
 	PINMUX_DATA(PTM4_DATA, PTM4_IN, PTM4_OUT),
@@ -610,7 +601,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTM1_DATA, PTM1_IN, PTM1_OUT),
 	PINMUX_DATA(PTM0_DATA, PTM0_IN, PTM0_OUT),
 
-	/* PTN GPIO */
+	 
 	PINMUX_DATA(PTN6_DATA, PTN6_IN, PTN6_OUT),
 	PINMUX_DATA(PTN5_DATA, PTN5_IN, PTN5_OUT),
 	PINMUX_DATA(PTN4_DATA, PTN4_IN, PTN4_OUT),
@@ -619,7 +610,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTN1_DATA, PTN1_IN, PTN1_OUT),
 	PINMUX_DATA(PTN0_DATA, PTN0_IN, PTN0_OUT),
 
-	/* PTO GPIO */
+	 
 	PINMUX_DATA(PTO7_DATA, PTO7_IN, PTO7_OUT),
 	PINMUX_DATA(PTO6_DATA, PTO6_IN, PTO6_OUT),
 	PINMUX_DATA(PTO5_DATA, PTO5_IN, PTO5_OUT),
@@ -629,7 +620,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTO1_DATA, PTO1_IN, PTO1_OUT),
 	PINMUX_DATA(PTO0_DATA, PTO0_IN, PTO0_OUT),
 
-	/* PTQ GPIO */
+	 
 	PINMUX_DATA(PTQ6_DATA, PTQ6_IN, PTQ6_OUT),
 	PINMUX_DATA(PTQ5_DATA, PTQ5_IN, PTQ5_OUT),
 	PINMUX_DATA(PTQ4_DATA, PTQ4_IN, PTQ4_OUT),
@@ -638,7 +629,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTQ1_DATA, PTQ1_IN, PTQ1_OUT),
 	PINMUX_DATA(PTQ0_DATA, PTQ0_IN, PTQ0_OUT),
 
-	/* PTR GPIO */
+	 
 	PINMUX_DATA(PTR7_DATA, PTR7_IN, PTR7_OUT),
 	PINMUX_DATA(PTR6_DATA, PTR6_IN, PTR6_OUT),
 	PINMUX_DATA(PTR5_DATA, PTR5_IN, PTR5_OUT),
@@ -648,7 +639,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTR1_DATA, PTR1_IN, PTR1_OUT),
 	PINMUX_DATA(PTR0_DATA, PTR0_IN, PTR0_OUT),
 
-	/* PTS GPIO */
+	 
 	PINMUX_DATA(PTS7_DATA, PTS7_IN, PTS7_OUT),
 	PINMUX_DATA(PTS6_DATA, PTS6_IN, PTS6_OUT),
 	PINMUX_DATA(PTS5_DATA, PTS5_IN, PTS5_OUT),
@@ -658,7 +649,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTS1_DATA, PTS1_IN, PTS1_OUT),
 	PINMUX_DATA(PTS0_DATA, PTS0_IN, PTS0_OUT),
 
-	/* PTT GPIO */
+	 
 	PINMUX_DATA(PTT7_DATA, PTT7_IN, PTT7_OUT),
 	PINMUX_DATA(PTT6_DATA, PTT6_IN, PTT6_OUT),
 	PINMUX_DATA(PTT5_DATA, PTT5_IN, PTT5_OUT),
@@ -668,7 +659,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTT1_DATA, PTT1_IN, PTT1_OUT),
 	PINMUX_DATA(PTT0_DATA, PTT0_IN, PTT0_OUT),
 
-	/* PTU GPIO */
+	 
 	PINMUX_DATA(PTU7_DATA, PTU7_IN, PTU7_OUT),
 	PINMUX_DATA(PTU6_DATA, PTU6_IN, PTU6_OUT),
 	PINMUX_DATA(PTU5_DATA, PTU5_IN, PTU5_OUT),
@@ -678,7 +669,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTU1_DATA, PTU1_IN, PTU1_OUT),
 	PINMUX_DATA(PTU0_DATA, PTU0_IN, PTU0_OUT),
 
-	/* PTV GPIO */
+	 
 	PINMUX_DATA(PTV7_DATA, PTV7_IN, PTV7_OUT),
 	PINMUX_DATA(PTV6_DATA, PTV6_IN, PTV6_OUT),
 	PINMUX_DATA(PTV5_DATA, PTV5_IN, PTV5_OUT),
@@ -688,7 +679,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTV1_DATA, PTV1_IN, PTV1_OUT),
 	PINMUX_DATA(PTV0_DATA, PTV0_IN, PTV0_OUT),
 
-	/* PTW GPIO */
+	 
 	PINMUX_DATA(PTW7_DATA, PTW7_IN, PTW7_OUT),
 	PINMUX_DATA(PTW6_DATA, PTW6_IN, PTW6_OUT),
 	PINMUX_DATA(PTW5_DATA, PTW5_IN, PTW5_OUT),
@@ -698,7 +689,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTW1_DATA, PTW1_IN, PTW1_OUT),
 	PINMUX_DATA(PTW0_DATA, PTW0_IN, PTW0_OUT),
 
-	/* PTX GPIO */
+	 
 	PINMUX_DATA(PTX7_DATA, PTX7_IN, PTX7_OUT),
 	PINMUX_DATA(PTX6_DATA, PTX6_IN, PTX6_OUT),
 	PINMUX_DATA(PTX5_DATA, PTX5_IN, PTX5_OUT),
@@ -708,7 +699,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTX1_DATA, PTX1_IN, PTX1_OUT),
 	PINMUX_DATA(PTX0_DATA, PTX0_IN, PTX0_OUT),
 
-	/* PTY GPIO */
+	 
 	PINMUX_DATA(PTY7_DATA, PTY7_IN, PTY7_OUT),
 	PINMUX_DATA(PTY6_DATA, PTY6_IN, PTY6_OUT),
 	PINMUX_DATA(PTY5_DATA, PTY5_IN, PTY5_OUT),
@@ -718,7 +709,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTY1_DATA, PTY1_IN, PTY1_OUT),
 	PINMUX_DATA(PTY0_DATA, PTY0_IN, PTY0_OUT),
 
-	/* PTZ GPIO */
+	 
 	PINMUX_DATA(PTZ7_DATA, PTZ7_IN, PTZ7_OUT),
 	PINMUX_DATA(PTZ6_DATA, PTZ6_IN, PTZ6_OUT),
 	PINMUX_DATA(PTZ5_DATA, PTZ5_IN, PTZ5_OUT),
@@ -728,7 +719,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PTZ1_DATA, PTZ1_IN, PTZ1_OUT),
 	PINMUX_DATA(PTZ0_DATA, PTZ0_IN, PTZ0_OUT),
 
-	/* PTA FN */
+	 
 	PINMUX_DATA(BS_MARK, PTA7_FN),
 	PINMUX_DATA(RDWR_MARK, PTA6_FN),
 	PINMUX_DATA(WE1_MARK, PTA5_FN),
@@ -738,7 +729,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(ET1_MDC_MARK, PTA1_FN),
 	PINMUX_DATA(ET1_MDIO_MARK, PTA0_FN),
 
-	/* PTB FN */
+	 
 	PINMUX_DATA(IRQ15_MARK, PS0_15_FN1, PTB7_FN),
 	PINMUX_DATA(ON_NRE_MARK, PS0_15_FN2, PTB7_FN),
 	PINMUX_DATA(IRQ14_MARK, PS0_14_FN1, PTB6_FN),
@@ -756,7 +747,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(IRQ8_MARK, PS0_8_FN1, PTB0_FN),
 	PINMUX_DATA(TCLK_MARK, PS0_8_FN2, PTB0_FN),
 
-	/* PTC FN */
+	 
 	PINMUX_DATA(IRQ7_MARK, PS0_7_FN1, PTC7_FN),
 	PINMUX_DATA(PWMU0_MARK, PS0_7_FN2, PTC7_FN),
 	PINMUX_DATA(IRQ6_MARK, PS0_6_FN1, PTC6_FN),
@@ -772,7 +763,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(IRQ1_MARK, PTC1_FN),
 	PINMUX_DATA(IRQ0_MARK, PTC0_FN),
 
-	/* PTD FN */
+	 
 	PINMUX_DATA(SP0_MOSI_MARK, PTD7_FN),
 	PINMUX_DATA(SP0_MISO_MARK, PTD6_FN),
 	PINMUX_DATA(SP0_SCK_MARK, PTD5_FN),
@@ -785,7 +776,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SP0_SS3_MARK, PS1_8_FN1, PTD0_FN),
 	PINMUX_DATA(TEND0_MARK, PS1_8_FN2, PTD0_FN),
 
-	/* PTE FN */
+	 
 	PINMUX_DATA(RMII0_CRS_DV_MARK, PTE7_FN),
 	PINMUX_DATA(RMII0_TXD1_MARK, PTE6_FN),
 	PINMUX_DATA(RMII0_TXD0_MARK, PTE5_FN),
@@ -795,7 +786,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(RMII0_RXD0_MARK, PTE1_FN),
 	PINMUX_DATA(RMII0_RX_ER_MARK, PTE0_FN),
 
-	/* PTF FN */
+	 
 	PINMUX_DATA(RMII1_CRS_DV_MARK, PTF7_FN),
 	PINMUX_DATA(RMII1_TXD1_MARK, PTF6_FN),
 	PINMUX_DATA(RMII1_TXD0_MARK, PTF5_FN),
@@ -806,7 +797,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(RMII1_RXD0_MARK, PTF1_FN),
 	PINMUX_DATA(RMII1_RX_ER_MARK, PTF0_FN),
 
-	/* PTG FN */
+	 
 	PINMUX_DATA(BOOTFMS_MARK, PTG7_FN),
 	PINMUX_DATA(BOOTWP_MARK, PTG6_FN),
 	PINMUX_DATA(A25_MARK, PS2_13_FN1, PTG5_FN),
@@ -818,7 +809,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(LPCPD_MARK, PTG1_FN),
 	PINMUX_DATA(LDRQ_MARK, PTG0_FN),
 
-	/* PTH FN */
+	 
 	PINMUX_DATA(SP1_MOSI_MARK, PS2_7_FN1, PTH7_FN),
 	PINMUX_DATA(TEND1_MARK, PS2_7_FN2, PTH7_FN),
 	PINMUX_DATA(SP1_MISO_MARK, PS2_6_FN1, PTH6_FN),
@@ -833,7 +824,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(WP_MARK, PTH1_FN),
 	PINMUX_DATA(FMS0_MARK, PTH0_FN),
 
-	/* PTI FN */
+	 
 	PINMUX_DATA(D15_MARK, PS3_15_FN1, PTI7_FN),
 	PINMUX_DATA(SD_WP_MARK, PS3_15_FN2, PTI7_FN),
 	PINMUX_DATA(D14_MARK, PS3_14_FN1, PTI6_FN),
@@ -851,7 +842,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(D8_MARK, PS3_8_FN1, PTI0_FN),
 	PINMUX_DATA(SD_D0_MARK, PS3_8_FN2, PTI0_FN),
 
-	/* PTJ FN */
+	 
 	PINMUX_DATA(RTS3_MARK, PTJ6_FN),
 	PINMUX_DATA(CTS3_MARK, PTJ5_FN),
 	PINMUX_DATA(TXD3_MARK, PTJ4_FN),
@@ -860,7 +851,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(RXD4_MARK, PTJ1_FN),
 	PINMUX_DATA(TXD4_MARK, PTJ0_FN),
 
-	/* PTK FN */
+	 
 	PINMUX_DATA(COM2_TXD_MARK, PS3_7_FN1, PTK7_FN),
 	PINMUX_DATA(SCK2_MARK, PS3_7_FN2, PTK7_FN),
 	PINMUX_DATA(COM2_RXD_MARK, PTK6_FN),
@@ -873,7 +864,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SCK3_MARK, PS3_1_FN2, PTK1_FN),
 	PINMUX_DATA(CLKOUT_MARK, PTK0_FN),
 
-	/* PTL FN */
+	 
 	PINMUX_DATA(RAC_RXD_MARK, PS4_14_FN1, PTL6_FN),
 	PINMUX_DATA(RXD2_MARK, PS4_14_FN2, PTL6_FN),
 	PINMUX_DATA(RAC_RTS_MARK, PS4_13_FN1, PTL5_FN),
@@ -888,7 +879,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(RAC_TXD_MARK, PS4_8_FN1, PTL0_FN),
 	PINMUX_DATA(TXD2_MARK, PS4_8_FN1, PTL0_FN),
 
-	/* PTM FN */
+	 
 	PINMUX_DATA(CS4_MARK, PTM7_FN),
 	PINMUX_DATA(RD_MARK, PTM6_FN),
 	PINMUX_DATA(WE0_MARK, PTM7_FN),
@@ -898,7 +889,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SDA7_MARK, PTM1_FN),
 	PINMUX_DATA(SCL7_MARK, PTM0_FN),
 
-	/* PTN FN */
+	 
 	PINMUX_DATA(VBUS_EN_MARK, PTN6_FN),
 	PINMUX_DATA(VBUS_OC_MARK, PTN5_FN),
 	PINMUX_DATA(JMCTCK_MARK, PS4_4_FN1, PTN4_FN),
@@ -912,7 +903,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(JMCTRST_MARK, PS4_0_FN1, PTN0_FN),
 	PINMUX_DATA(SUB_CLKIN_MARK, PS4_0_FN2, PTN0_FN),
 
-	/* PTO FN */
+	 
 	PINMUX_DATA(SGPIO0_CLK_MARK, PTO7_FN),
 	PINMUX_DATA(SGPIO0_LOAD_MARK, PTO6_FN),
 	PINMUX_DATA(SGPIO0_DI_MARK, PTO5_FN),
@@ -926,9 +917,9 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SGPIO2_DO_MARK, PS5_8_FN1, PTO0_FN),
 	PINMUX_DATA(COM1_CTS_MARK, PS5_8_FN2, PTO0_FN),
 
-	/* PTP FN */
+	 
 
-	/* PTQ FN */
+	 
 	PINMUX_DATA(LAD3_MARK, PTQ6_FN),
 	PINMUX_DATA(LAD2_MARK, PTQ5_FN),
 	PINMUX_DATA(LAD1_MARK, PTQ4_FN),
@@ -937,9 +928,9 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(LRESET_MARK, PTQ1_FN),
 	PINMUX_DATA(LCLK_MARK, PTQ0_FN),
 
-	/* PTR FN */
-	PINMUX_DATA(SDA8_MARK, PTR7_FN),	/* DDC3? */
-	PINMUX_DATA(SCL8_MARK, PTR6_FN),	/* DDC2? */
+	 
+	PINMUX_DATA(SDA8_MARK, PTR7_FN),	 
+	PINMUX_DATA(SCL8_MARK, PTR6_FN),	 
 	PINMUX_DATA(SDA2_MARK, PTR5_FN),
 	PINMUX_DATA(SCL2_MARK, PTR4_FN),
 	PINMUX_DATA(SDA1_MARK, PTR3_FN),
@@ -947,9 +938,9 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SDA0_MARK, PTR1_FN),
 	PINMUX_DATA(SCL0_MARK, PTR0_FN),
 
-	/* PTS FN */
-	PINMUX_DATA(SDA9_MARK, PTS7_FN),	/* DDC1? */
-	PINMUX_DATA(SCL9_MARK, PTS6_FN),	/* DDC0? */
+	 
+	PINMUX_DATA(SDA9_MARK, PTS7_FN),	 
+	PINMUX_DATA(SCL9_MARK, PTS6_FN),	 
 	PINMUX_DATA(SDA5_MARK, PTS5_FN),
 	PINMUX_DATA(SCL5_MARK, PTS4_FN),
 	PINMUX_DATA(SDA4_MARK, PTS3_FN),
@@ -957,7 +948,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SDA3_MARK, PTS1_FN),
 	PINMUX_DATA(SCL3_MARK, PTS0_FN),
 
-	/* PTT FN */
+	 
 	PINMUX_DATA(PWMX7_MARK, PS5_7_FN1, PTT7_FN),
 	PINMUX_DATA(AUDATA3_MARK, PS5_7_FN2, PTT7_FN),
 	PINMUX_DATA(PWMX6_MARK, PS5_6_FN1, PTT6_FN),
@@ -973,7 +964,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PWMX1_MARK, PTT1_FN),
 	PINMUX_DATA(PWMX0_MARK, PTT0_FN),
 
-	/* PTU FN */
+	 
 	PINMUX_DATA(LGPIO7_MARK, PS6_15_FN1, PTU7_FN),
 	PINMUX_DATA(APMONCTL_O_MARK, PS6_15_FN2, PTU7_FN),
 	PINMUX_DATA(LGPIO6_MARK, PS6_14_FN1, PTU6_FN),
@@ -991,7 +982,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(LGPIO0_MARK, PS6_8_FN1, PTU0_FN),
 	PINMUX_DATA(APMS3N_MARK, PS6_8_FN2, PTU0_FN),
 
-	/* PTV FN */
+	 
 	PINMUX_DATA(A23_MARK, PS6_7_FN1, PTV7_FN),
 	PINMUX_DATA(COM2_RI_MARK, PS6_7_FN2, PTV7_FN),
 	PINMUX_DATA(A22_MARK, PS6_6_FN1, PTV6_FN),
@@ -1009,7 +1000,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(A16_MARK, PS6_0_FN1, PTV0_FN),
 	PINMUX_DATA(EVENT6_MARK, PS6_0_FN1, PTV0_FN),
 
-	/* PTW FN */
+	 
 	PINMUX_DATA(A15_MARK, PS7_15_FN1, PTW7_FN),
 	PINMUX_DATA(EVENT5_MARK, PS7_15_FN2, PTW7_FN),
 	PINMUX_DATA(A14_MARK, PS7_14_FN1, PTW6_FN),
@@ -1027,7 +1018,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(A8_MARK, PS7_8_FN1, PTW0_FN),
 	PINMUX_DATA(CTS2_MARK, PS7_8_FN2, PTW0_FN),
 
-	/* PTX FN */
+	 
 	PINMUX_DATA(A7_MARK, PS7_7_FN1, PTX7_FN),
 	PINMUX_DATA(RTS2_MARK, PS7_7_FN2, PTX7_FN),
 	PINMUX_DATA(A6_MARK, PS7_6_FN1, PTX6_FN),
@@ -1041,7 +1032,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(A1_MARK, PTX1_FN),
 	PINMUX_DATA(A0_MARK, PTX0_FN),
 
-	/* PTY FN */
+	 
 	PINMUX_DATA(D7_MARK, PTY7_FN),
 	PINMUX_DATA(D6_MARK, PTY6_FN),
 	PINMUX_DATA(D5_MARK, PTY5_FN),
@@ -1051,7 +1042,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(D1_MARK, PTY1_FN),
 	PINMUX_DATA(D0_MARK, PTY0_FN),
 
-	/* PTZ FN */
+	 
 	PINMUX_DATA(MMCDAT7_MARK, PS8_15_FN1, PTZ7_FN),
 	PINMUX_DATA(ON_DQ7_MARK, PS8_15_FN2, PTZ7_FN),
 	PINMUX_DATA(MMCDAT6_MARK, PS8_14_FN1, PTZ6_FN),
@@ -1071,7 +1062,7 @@ static const u16 pinmux_data[] = {
 };
 
 static const struct sh_pfc_pin pinmux_pins[] = {
-	/* PTA */
+	 
 	PINMUX_GPIO(PTA7),
 	PINMUX_GPIO(PTA6),
 	PINMUX_GPIO(PTA5),
@@ -1081,7 +1072,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTA1),
 	PINMUX_GPIO(PTA0),
 
-	/* PTB */
+	 
 	PINMUX_GPIO(PTB7),
 	PINMUX_GPIO(PTB6),
 	PINMUX_GPIO(PTB5),
@@ -1091,7 +1082,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTB1),
 	PINMUX_GPIO(PTB0),
 
-	/* PTC */
+	 
 	PINMUX_GPIO(PTC7),
 	PINMUX_GPIO(PTC6),
 	PINMUX_GPIO(PTC5),
@@ -1101,7 +1092,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTC1),
 	PINMUX_GPIO(PTC0),
 
-	/* PTD */
+	 
 	PINMUX_GPIO(PTD7),
 	PINMUX_GPIO(PTD6),
 	PINMUX_GPIO(PTD5),
@@ -1111,7 +1102,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTD1),
 	PINMUX_GPIO(PTD0),
 
-	/* PTE */
+	 
 	PINMUX_GPIO(PTE7),
 	PINMUX_GPIO(PTE6),
 	PINMUX_GPIO(PTE5),
@@ -1121,7 +1112,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTE1),
 	PINMUX_GPIO(PTE0),
 
-	/* PTF */
+	 
 	PINMUX_GPIO(PTF7),
 	PINMUX_GPIO(PTF6),
 	PINMUX_GPIO(PTF5),
@@ -1131,7 +1122,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTF1),
 	PINMUX_GPIO(PTF0),
 
-	/* PTG */
+	 
 	PINMUX_GPIO(PTG7),
 	PINMUX_GPIO(PTG6),
 	PINMUX_GPIO(PTG5),
@@ -1141,7 +1132,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTG1),
 	PINMUX_GPIO(PTG0),
 
-	/* PTH */
+	 
 	PINMUX_GPIO(PTH7),
 	PINMUX_GPIO(PTH6),
 	PINMUX_GPIO(PTH5),
@@ -1151,7 +1142,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTH1),
 	PINMUX_GPIO(PTH0),
 
-	/* PTI */
+	 
 	PINMUX_GPIO(PTI7),
 	PINMUX_GPIO(PTI6),
 	PINMUX_GPIO(PTI5),
@@ -1161,7 +1152,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTI1),
 	PINMUX_GPIO(PTI0),
 
-	/* PTJ */
+	 
 	PINMUX_GPIO(PTJ6),
 	PINMUX_GPIO(PTJ5),
 	PINMUX_GPIO(PTJ4),
@@ -1170,7 +1161,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTJ1),
 	PINMUX_GPIO(PTJ0),
 
-	/* PTK */
+	 
 	PINMUX_GPIO(PTK7),
 	PINMUX_GPIO(PTK6),
 	PINMUX_GPIO(PTK5),
@@ -1180,7 +1171,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTK1),
 	PINMUX_GPIO(PTK0),
 
-	/* PTL */
+	 
 	PINMUX_GPIO(PTL6),
 	PINMUX_GPIO(PTL5),
 	PINMUX_GPIO(PTL4),
@@ -1189,7 +1180,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTL1),
 	PINMUX_GPIO(PTL0),
 
-	/* PTM */
+	 
 	PINMUX_GPIO(PTM7),
 	PINMUX_GPIO(PTM6),
 	PINMUX_GPIO(PTM5),
@@ -1199,7 +1190,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTM1),
 	PINMUX_GPIO(PTM0),
 
-	/* PTN */
+	 
 	PINMUX_GPIO(PTN6),
 	PINMUX_GPIO(PTN5),
 	PINMUX_GPIO(PTN4),
@@ -1208,7 +1199,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTN1),
 	PINMUX_GPIO(PTN0),
 
-	/* PTO */
+	 
 	PINMUX_GPIO(PTO7),
 	PINMUX_GPIO(PTO6),
 	PINMUX_GPIO(PTO5),
@@ -1218,7 +1209,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTO1),
 	PINMUX_GPIO(PTO0),
 
-	/* PTP */
+	 
 	PINMUX_GPIO(PTP7),
 	PINMUX_GPIO(PTP6),
 	PINMUX_GPIO(PTP5),
@@ -1228,7 +1219,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTP1),
 	PINMUX_GPIO(PTP0),
 
-	/* PTQ */
+	 
 	PINMUX_GPIO(PTQ6),
 	PINMUX_GPIO(PTQ5),
 	PINMUX_GPIO(PTQ4),
@@ -1237,7 +1228,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTQ1),
 	PINMUX_GPIO(PTQ0),
 
-	/* PTR */
+	 
 	PINMUX_GPIO(PTR7),
 	PINMUX_GPIO(PTR6),
 	PINMUX_GPIO(PTR5),
@@ -1247,7 +1238,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTR1),
 	PINMUX_GPIO(PTR0),
 
-	/* PTS */
+	 
 	PINMUX_GPIO(PTS7),
 	PINMUX_GPIO(PTS6),
 	PINMUX_GPIO(PTS5),
@@ -1257,7 +1248,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTS1),
 	PINMUX_GPIO(PTS0),
 
-	/* PTT */
+	 
 	PINMUX_GPIO(PTT7),
 	PINMUX_GPIO(PTT6),
 	PINMUX_GPIO(PTT5),
@@ -1267,7 +1258,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTT1),
 	PINMUX_GPIO(PTT0),
 
-	/* PTU */
+	 
 	PINMUX_GPIO(PTU7),
 	PINMUX_GPIO(PTU6),
 	PINMUX_GPIO(PTU5),
@@ -1277,7 +1268,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTU1),
 	PINMUX_GPIO(PTU0),
 
-	/* PTV */
+	 
 	PINMUX_GPIO(PTV7),
 	PINMUX_GPIO(PTV6),
 	PINMUX_GPIO(PTV5),
@@ -1287,7 +1278,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTV1),
 	PINMUX_GPIO(PTV0),
 
-	/* PTW */
+	 
 	PINMUX_GPIO(PTW7),
 	PINMUX_GPIO(PTW6),
 	PINMUX_GPIO(PTW5),
@@ -1297,7 +1288,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTW1),
 	PINMUX_GPIO(PTW0),
 
-	/* PTX */
+	 
 	PINMUX_GPIO(PTX7),
 	PINMUX_GPIO(PTX6),
 	PINMUX_GPIO(PTX5),
@@ -1307,7 +1298,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTX1),
 	PINMUX_GPIO(PTX0),
 
-	/* PTY */
+	 
 	PINMUX_GPIO(PTY7),
 	PINMUX_GPIO(PTY6),
 	PINMUX_GPIO(PTY5),
@@ -1317,7 +1308,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PTY1),
 	PINMUX_GPIO(PTY0),
 
-	/* PTZ */
+	 
 	PINMUX_GPIO(PTZ7),
 	PINMUX_GPIO(PTZ6),
 	PINMUX_GPIO(PTZ5),
@@ -1331,7 +1322,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 #define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
 
 static const struct pinmux_func pinmux_func_gpios[] = {
-	/* PTA (mobule: LBSC, RGMII) */
+	 
 	GPIO_FN(BS),
 	GPIO_FN(RDWR),
 	GPIO_FN(WE1),
@@ -1341,7 +1332,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(ET1_MDC),
 	GPIO_FN(ET1_MDIO),
 
-	/* PTB (mobule: INTC, ONFI, TMU) */
+	 
 	GPIO_FN(IRQ15),
 	GPIO_FN(IRQ14),
 	GPIO_FN(IRQ13),
@@ -1359,7 +1350,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(ON_CLE),
 	GPIO_FN(TCLK),
 
-	/* PTC (mobule: IRQ, PWMU) */
+	 
 	GPIO_FN(IRQ7),
 	GPIO_FN(IRQ6),
 	GPIO_FN(IRQ5),
@@ -1375,7 +1366,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(PWMU4),
 	GPIO_FN(PWMU5),
 
-	/* PTD (mobule: SPI0, DMAC) */
+	 
 	GPIO_FN(SP0_MOSI),
 	GPIO_FN(SP0_MISO),
 	GPIO_FN(SP0_SCK),
@@ -1388,7 +1379,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DACK0),
 	GPIO_FN(TEND0),
 
-	/* PTE (mobule: RMII) */
+	 
 	GPIO_FN(RMII0_CRS_DV),
 	GPIO_FN(RMII0_TXD1),
 	GPIO_FN(RMII0_TXD0),
@@ -1398,7 +1389,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RMII0_RXD0),
 	GPIO_FN(RMII0_RX_ER),
 
-	/* PTF (mobule: RMII, SerMux) */
+	 
 	GPIO_FN(RMII1_CRS_DV),
 	GPIO_FN(RMII1_TXD1),
 	GPIO_FN(RMII1_TXD0),
@@ -1409,7 +1400,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RMII1_RX_ER),
 	GPIO_FN(RAC_RI),
 
-	/* PTG (mobule: system, LBSC, LPC, WDT, LPC, eMMC) */
+	 
 	GPIO_FN(BOOTFMS),
 	GPIO_FN(BOOTWP),
 	GPIO_FN(A25),
@@ -1421,7 +1412,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(MMCCLK),
 	GPIO_FN(MMCCMD),
 
-	/* PTH (mobule: SPI1, LPC, DMAC, ADC) */
+	 
 	GPIO_FN(SP1_MOSI),
 	GPIO_FN(SP1_MISO),
 	GPIO_FN(SP1_SCK),
@@ -1436,7 +1427,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(ADTRG1),
 	GPIO_FN(ADTRG0),
 
-	/* PTI (mobule: LBSC, SDHI) */
+	 
 	GPIO_FN(D15),
 	GPIO_FN(D14),
 	GPIO_FN(D13),
@@ -1454,7 +1445,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SD_D1),
 	GPIO_FN(SD_D0),
 
-	/* PTJ (mobule: SCIF234, SERMUX) */
+	 
 	GPIO_FN(RTS3),
 	GPIO_FN(CTS3),
 	GPIO_FN(TXD3),
@@ -1463,7 +1454,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RXD4),
 	GPIO_FN(TXD4),
 
-	/* PTK (mobule: SERMUX, LBSC, SCIF) */
+	 
 	GPIO_FN(COM2_TXD),
 	GPIO_FN(COM2_RXD),
 	GPIO_FN(COM2_RTS),
@@ -1476,7 +1467,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SCK4),
 	GPIO_FN(SCK3),
 
-	/* PTL (mobule: SERMUX, SCIF, LBSC, AUD) */
+	 
 	GPIO_FN(RAC_RXD),
 	GPIO_FN(RAC_RTS),
 	GPIO_FN(RAC_CTS),
@@ -1491,7 +1482,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(AUDCK),
 	GPIO_FN(TXD2),
 
-	/* PTM (mobule: LBSC, IIC) */
+	 
 	GPIO_FN(CS4),
 	GPIO_FN(RD),
 	GPIO_FN(WE0),
@@ -1501,7 +1492,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SDA7),
 	GPIO_FN(SCL7),
 
-	/* PTN (mobule: USB, JMC, SGPIO, WDT) */
+	 
 	GPIO_FN(VBUS_EN),
 	GPIO_FN(VBUS_OC),
 	GPIO_FN(JMCTCK),
@@ -1515,7 +1506,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SGPIO1_DO),
 	GPIO_FN(SUB_CLKIN),
 
-	/* PTO (mobule: SGPIO, SerMux) */
+	 
 	GPIO_FN(SGPIO0_CLK),
 	GPIO_FN(SGPIO0_LOAD),
 	GPIO_FN(SGPIO0_DI),
@@ -1529,9 +1520,9 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(COM1_RTS),
 	GPIO_FN(COM1_CTS),
 
-	/* PTP (mobule: EVC, ADC) */
+	 
 
-	/* PTQ (mobule: LPC) */
+	 
 	GPIO_FN(LAD3),
 	GPIO_FN(LAD2),
 	GPIO_FN(LAD1),
@@ -1540,7 +1531,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(LRESET),
 	GPIO_FN(LCLK),
 
-	/* PTR (mobule: GRA, IIC) */
+	 
 	GPIO_FN(DDC3),
 	GPIO_FN(DDC2),
 	GPIO_FN(SDA8),
@@ -1552,7 +1543,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SDA0),
 	GPIO_FN(SCL0),
 
-	/* PTS (mobule: GRA, IIC) */
+	 
 	GPIO_FN(DDC1),
 	GPIO_FN(DDC0),
 	GPIO_FN(SDA9),
@@ -1564,7 +1555,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SDA3),
 	GPIO_FN(SCL3),
 
-	/* PTT (mobule: PWMX, AUD) */
+	 
 	GPIO_FN(PWMX7),
 	GPIO_FN(PWMX6),
 	GPIO_FN(PWMX5),
@@ -1580,7 +1571,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(STATUS1),
 	GPIO_FN(STATUS0),
 
-	/* PTU (mobule: LPC, APM) */
+	 
 	GPIO_FN(LGPIO7),
 	GPIO_FN(LGPIO6),
 	GPIO_FN(LGPIO5),
@@ -1598,7 +1589,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(APMS5N),
 	GPIO_FN(APMS3N),
 
-	/* PTV (mobule: LBSC, SerMux, R-SPI, EVC, GRA) */
+	 
 	GPIO_FN(A23),
 	GPIO_FN(A22),
 	GPIO_FN(A21),
@@ -1620,7 +1611,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(VBIOS_CLK),
 	GPIO_FN(VBIOS_CS),
 
-	/* PTW (mobule: LBSC, EVC, SCIF) */
+	 
 	GPIO_FN(A15),
 	GPIO_FN(A14),
 	GPIO_FN(A13),
@@ -1638,7 +1629,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(CTS4),
 	GPIO_FN(CTS2),
 
-	/* PTX (mobule: LBSC) */
+	 
 	GPIO_FN(A7),
 	GPIO_FN(A6),
 	GPIO_FN(A5),
@@ -1652,7 +1643,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SIM_CLK),
 	GPIO_FN(SIM_RST),
 
-	/* PTY (mobule: LBSC) */
+	 
 	GPIO_FN(D7),
 	GPIO_FN(D6),
 	GPIO_FN(D5),
@@ -1662,7 +1653,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(D1),
 	GPIO_FN(D0),
 
-	/* PTZ (mobule: eMMC, ONFI) */
+	 
 	GPIO_FN(MMCDAT7),
 	GPIO_FN(MMCDAT6),
 	GPIO_FN(MMCDAT5),
@@ -1773,7 +1764,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PTI0_FN, PTI0_OUT, PTI0_IN, 0 ))
 	},
 	{ PINMUX_CFG_REG("PJCR", 0xffec0012, 16, 2, GROUP(
-		0, 0, 0, 0,	/* reserved: always set 1 */
+		0, 0, 0, 0,	 
 		PTJ6_FN, PTJ6_OUT, PTJ6_IN, 0,
 		PTJ5_FN, PTJ5_OUT, PTJ5_IN, 0,
 		PTJ4_FN, PTJ4_OUT, PTJ4_IN, 0,
@@ -1793,7 +1784,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PTK0_FN, PTK0_OUT, PTK0_IN, 0 ))
 	},
 	{ PINMUX_CFG_REG("PLCR", 0xffec0016, 16, 2, GROUP(
-		0, 0, 0, 0,	/* reserved: always set 1 */
+		0, 0, 0, 0,	 
 		PTL6_FN, PTL6_OUT, PTL6_IN, 0,
 		PTL5_FN, PTL5_OUT, PTL5_IN, 0,
 		PTL4_FN, PTL4_OUT, PTL4_IN, 0,
@@ -1813,7 +1804,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PTM0_FN, PTM0_OUT, PTM0_IN, 0 ))
 	},
 	{ PINMUX_CFG_REG("PNCR", 0xffec001a, 16, 2, GROUP(
-		0, 0, 0, 0,	/* reserved: always set 1 */
+		0, 0, 0, 0,	 
 		PTN6_FN, PTN6_OUT, PTN6_IN, 0,
 		PTN5_FN, PTN5_OUT, PTN5_IN, 0,
 		PTN4_FN, PTN4_OUT, PTN4_IN, 0,
@@ -1832,9 +1823,9 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PTO1_FN, PTO1_OUT, PTO1_IN, 0,
 		PTO0_FN, PTO0_OUT, PTO0_IN, 0 ))
 	},
-#if 0	/* FIXME: Remove it? */
+#if 0	 
 	{ PINMUX_CFG_REG("PPCR", 0xffec001e, 16, 2, GROUP(
-		0, 0, 0, 0,	/* reserved: always set 1 */
+		0, 0, 0, 0,	 
 		PTP6_FN, PTP6_OUT, PTP6_IN, 0,
 		PTP5_FN, PTP5_OUT, PTP5_IN, 0,
 		PTP4_FN, PTP4_OUT, PTP4_IN, 0,
@@ -1845,7 +1836,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	},
 #endif
 	{ PINMUX_CFG_REG("PQCR", 0xffec0020, 16, 2, GROUP(
-		0, 0, 0, 0,	/* reserved: always set 1 */
+		0, 0, 0, 0,	 
 		PTQ6_FN, PTQ6_OUT, PTQ6_IN, 0,
 		PTQ5_FN, PTQ5_OUT, PTQ5_IN, 0,
 		PTQ4_FN, PTQ4_OUT, PTQ4_IN, 0,
@@ -1966,28 +1957,28 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PSEL1", 0xffec0072, 16,
 			     GROUP(-5, 1, 1, 1, -5, 1, -2),
 			     GROUP(
-		/* RESERVED [5] */
+		 
 		PS1_10_FN1, PS1_10_FN2,
 		PS1_9_FN1, PS1_9_FN2,
 		PS1_8_FN1, PS1_8_FN2,
-		/* RESERVED [5] */
+		 
 		PS1_2_FN1, PS1_2_FN2,
-		/* RESERVED [2] */ ))
+		  ))
 	},
 	{ PINMUX_CFG_REG_VAR("PSEL2", 0xffec0074, 16,
 			     GROUP(-2, 1, 1, -4, 1, 1, 1, 1, -1, 1, -2),
 			     GROUP(
-		/* RESERVED [2] */
+		 
 		PS2_13_FN1, PS2_13_FN2,
 		PS2_12_FN1, PS2_12_FN2,
-		/* RESERVED [4] */
+		 
 		PS2_7_FN1, PS2_7_FN2,
 		PS2_6_FN1, PS2_6_FN2,
 		PS2_5_FN1, PS2_5_FN2,
 		PS2_4_FN1, PS2_4_FN2,
-		/* RESERVED [1] */
+		 
 		PS2_2_FN1, PS2_2_FN2,
-		/* RESERVED [2] */ ))
+		  ))
 	},
 	{ PINMUX_CFG_REG_VAR("PSEL3", 0xffec0076, 16,
 			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, 1, -4, 1, 1, -1),
@@ -2001,25 +1992,25 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PS3_9_FN1, PS3_9_FN2,
 		PS3_8_FN1, PS3_8_FN2,
 		PS3_7_FN1, PS3_7_FN2,
-		/* RESERVED [4] */
+		 
 		PS3_2_FN1, PS3_2_FN2,
 		PS3_1_FN1, PS3_1_FN2,
-		/* RESERVED [1] */ ))
+		  ))
 	},
 
 	{ PINMUX_CFG_REG_VAR("PSEL4", 0xffec0078, 16,
 			     GROUP(-1, 1, 1, 1, -1, 1, 1, 1, -3, 1, 1, 1,
 				   1, 1),
 			     GROUP(
-		/* RESERVED [1] */
+		 
 		PS4_14_FN1, PS4_14_FN2,
 		PS4_13_FN1, PS4_13_FN2,
 		PS4_12_FN1, PS4_12_FN2,
-		/* RESERVED [1] */
+		 
 		PS4_10_FN1, PS4_10_FN2,
 		PS4_9_FN1, PS4_9_FN2,
 		PS4_8_FN1, PS4_8_FN2,
-		/* RESERVED [3] */
+		 
 		PS4_4_FN1, PS4_4_FN2,
 		PS4_3_FN1, PS4_3_FN2,
 		PS4_2_FN1, PS4_2_FN2,
@@ -2029,7 +2020,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PSEL5", 0xffec007a, 16,
 			     GROUP(-4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -2),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 		PS5_11_FN1, PS5_11_FN2,
 		PS5_10_FN1, PS5_10_FN2,
 		PS5_9_FN1, PS5_9_FN2,
@@ -2040,7 +2031,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PS5_4_FN1, PS5_4_FN2,
 		PS5_3_FN1, PS5_3_FN2,
 		PS5_2_FN1, PS5_2_FN2,
-		/* RESERVED [2] */ ))
+		  ))
 	},
 	{ PINMUX_CFG_REG("PSEL6", 0xffec007c, 16, 1, GROUP(
 		PS6_15_FN1, PS6_15_FN2,
@@ -2074,7 +2065,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PS7_7_FN1, PS7_7_FN2,
 		PS7_6_FN1, PS7_6_FN2,
 		PS7_5_FN1, PS7_5_FN2,
-		/* RESERVED [5] */ ))
+		  ))
 	},
 	{ PINMUX_CFG_REG_VAR("PSEL8", 0xffec0084, 16,
 			     GROUP(1, 1, 1, 1, 1, 1, 1, 1, -8),
@@ -2087,9 +2078,9 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PS8_10_FN1, PS8_10_FN2,
 		PS8_9_FN1, PS8_9_FN2,
 		PS8_8_FN1, PS8_8_FN2,
-		/* RESERVED [8] */ ))
+		  ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_data_reg pinmux_data_regs[] = {
@@ -2197,7 +2188,7 @@ static const struct pinmux_data_reg pinmux_data_regs[] = {
 		PTZ7_DATA, PTZ6_DATA, PTZ5_DATA, PTZ4_DATA,
 		PTZ3_DATA, PTZ2_DATA, PTZ1_DATA, PTZ0_DATA ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 const struct sh_pfc_soc_info sh7757_pinmux_info = {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * qdio queue initialization
- *
- * Copyright IBM Corp. 2008
- * Author(s): Jan Glauber <jang@linux.vnet.ibm.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -25,11 +20,7 @@
 
 static struct kmem_cache *qdio_q_cache;
 
-/**
- * qdio_free_buffers() - free qdio buffers
- * @buf: array of pointers to qdio buffers
- * @count: number of qdio buffers to free
- */
+ 
 void qdio_free_buffers(struct qdio_buffer **buf, unsigned int count)
 {
 	int pos;
@@ -39,11 +30,7 @@ void qdio_free_buffers(struct qdio_buffer **buf, unsigned int count)
 }
 EXPORT_SYMBOL_GPL(qdio_free_buffers);
 
-/**
- * qdio_alloc_buffers() - allocate qdio buffers
- * @buf: array of pointers to qdio buffers
- * @count: number of qdio buffers to allocate
- */
+ 
 int qdio_alloc_buffers(struct qdio_buffer **buf, unsigned int count)
 {
 	int pos;
@@ -62,11 +49,7 @@ int qdio_alloc_buffers(struct qdio_buffer **buf, unsigned int count)
 }
 EXPORT_SYMBOL_GPL(qdio_alloc_buffers);
 
-/**
- * qdio_reset_buffers() - reset qdio buffers
- * @buf: array of pointers to qdio buffers
- * @count: number of qdio buffers that will be zeroed
- */
+ 
 void qdio_reset_buffers(struct qdio_buffer **buf, unsigned int count)
 {
 	int pos;
@@ -144,7 +127,7 @@ static void setup_queues_misc(struct qdio_q *q, struct qdio_irq *irq_ptr,
 {
 	struct slib *slib = q->slib;
 
-	/* queue must be cleared for qdio_establish */
+	 
 	memset(q, 0, sizeof(*q));
 	memset(slib, 0, PAGE_SIZE);
 	q->slib = slib;
@@ -163,11 +146,11 @@ static void setup_storage_lists(struct qdio_q *q, struct qdio_irq *irq_ptr,
 	DBF_HEX(&q, sizeof(void *));
 	q->sl = (struct sl *)((char *)q->slib + PAGE_SIZE / 2);
 
-	/* fill in sbal */
+	 
 	for (j = 0; j < QDIO_MAX_BUFFERS_PER_Q; j++)
 		q->sbal[j] = *sbals_array++;
 
-	/* fill in slib */
+	 
 	if (i > 0) {
 		prev = (q->is_input_q) ? irq_ptr->input_qs[i - 1]
 			: irq_ptr->output_qs[i - 1];
@@ -177,7 +160,7 @@ static void setup_storage_lists(struct qdio_q *q, struct qdio_irq *irq_ptr,
 	q->slib->sla = (unsigned long)q->sl;
 	q->slib->slsba = (unsigned long)&q->slsb.val[0];
 
-	/* fill in sl */
+	 
 	for (j = 0; j < QDIO_MAX_BUFFERS_PER_Q; j++)
 		q->sl->element[j].sbal = virt_to_phys(q->sbal[j]);
 }
@@ -229,10 +212,7 @@ no_qebsm:
 	DBF_EVENT("noV=V");
 }
 
-/*
- * If there is a qdio_irq we use the chsc_page and store the information
- * in the qdio_irq, otherwise we copy it to the specified structure.
- */
+ 
 int qdio_setup_get_ssqd(struct qdio_irq *irq_ptr,
 			struct subchannel_id *schid,
 			struct qdio_ssqd_desc *data)
@@ -277,7 +257,7 @@ void qdio_setup_ssqd_info(struct qdio_irq *irq_ptr)
 	if (rc) {
 		DBF_ERROR("%4x ssqd ERR", irq_ptr->schid.sch_no);
 		DBF_ERROR("rc:%x", rc);
-		/* all flags set, worst case */
+		 
 		qdioac = AC1_SIGA_INPUT_NEEDED | AC1_SIGA_OUTPUT_NEEDED |
 			 AC1_SIGA_SYNC_NEEDED;
 	} else
@@ -313,7 +293,7 @@ static void setup_qdr(struct qdio_irq *irq_ptr,
 	irq_ptr->qdr->ac = qdio_init->qdr_ac;
 	irq_ptr->qdr->iqdcnt = qdio_init->no_input_qs;
 	irq_ptr->qdr->oqdcnt = qdio_init->no_output_qs;
-	irq_ptr->qdr->iqdsz = sizeof(struct qdesfmt0) / 4; /* size in words */
+	irq_ptr->qdr->iqdsz = sizeof(struct qdesfmt0) / 4;  
 	irq_ptr->qdr->oqdsz = sizeof(struct qdesfmt0) / 4;
 	irq_ptr->qdr->qiba = virt_to_phys(&irq_ptr->qib);
 	irq_ptr->qdr->qkey = PAGE_DEFAULT_KEY >> 4;
@@ -375,12 +355,12 @@ void qdio_setup_irq(struct qdio_irq *irq_ptr, struct qdio_initialize *init_data)
 
 	setup_qib(irq_ptr, init_data);
 
-	/* fill input and output descriptors */
+	 
 	setup_qdr(irq_ptr, init_data);
 
-	/* qdr, qib, sls, slsbs, slibs, sbales are filled now */
+	 
 
-	/* set our IRQ handler */
+	 
 	spin_lock_irq(get_ccwdev_lock(cdev));
 	irq_ptr->orig_handler = cdev->handler;
 	cdev->handler = qdio_int_handler;
@@ -391,7 +371,7 @@ void qdio_shutdown_irq(struct qdio_irq *irq)
 {
 	struct ccw_device *cdev = irq->cdev;
 
-	/* restore IRQ handler */
+	 
 	spin_lock_irq(get_ccwdev_lock(cdev));
 	cdev->handler = irq->orig_handler;
 	cdev->private->intparm = 0;
@@ -421,11 +401,11 @@ int __init qdio_setup_init(void)
 	if (!qdio_q_cache)
 		return -ENOMEM;
 
-	/* Check for OSA/FCP thin interrupts (bit 67). */
+	 
 	DBF_EVENT("thinint:%1d",
 		  (css_general_characteristics.aif_osa) ? 1 : 0);
 
-	/* Check for QEBSM support in general (bit 58). */
+	 
 	DBF_EVENT("cssQEBSM:%1d", css_general_characteristics.qebsm);
 
 	return 0;

@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2018 Netronome Systems, Inc */
-/* Copyright (C) 2021 Corigine, Inc */
+ 
+ 
+ 
 
 #ifndef _NFP_XSK_H_
 #define _NFP_XSK_H_
 
 #include <net/xdp_sock_drv.h>
 
-#define NFP_NET_XSK_TX_BATCH 16		/* XSK TX transmission batch size. */
+#define NFP_NET_XSK_TX_BATCH 16		 
 
 static inline bool nfp_net_has_xsk_pool_slow(struct nfp_net_dp *dp,
 					     unsigned int qid)
@@ -38,4 +38,4 @@ void nfp_net_xsk_rx_ring_fill_freelist(struct nfp_net_rx_ring *rx_ring);
 
 int nfp_net_xsk_wakeup(struct net_device *netdev, u32 queue_id, u32 flags);
 
-#endif /* _NFP_XSK_H_ */
+#endif  

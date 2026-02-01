@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drm gem framebuffer helper functions
- *
- * Copyright (C) 2017 Noralf Trønnes
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -27,29 +23,9 @@ MODULE_IMPORT_NS(DMA_BUF);
 #define AFBC_SUPERBLOCK_ALIGNMENT	128
 #define AFBC_TH_BODY_START_ALIGNMENT	4096
 
-/**
- * DOC: overview
- *
- * This library provides helpers for drivers that don't subclass
- * &drm_framebuffer and use &drm_gem_object for their backing storage.
- *
- * Drivers without additional needs to validate framebuffers can simply use
- * drm_gem_fb_create() and everything is wired up automatically. Other drivers
- * can use all parts independently.
- */
+ 
 
-/**
- * drm_gem_fb_get_obj() - Get GEM object backing the framebuffer
- * @fb: Framebuffer
- * @plane: Plane index
- *
- * No additional reference is taken beyond the one that the &drm_frambuffer
- * already holds.
- *
- * Returns:
- * Pointer to &drm_gem_object for the given framebuffer and plane index or NULL
- * if it does not exist.
- */
+ 
 struct drm_gem_object *drm_gem_fb_get_obj(struct drm_framebuffer *fb,
 					  unsigned int plane)
 {
@@ -86,14 +62,7 @@ drm_gem_fb_init(struct drm_device *dev,
 	return ret;
 }
 
-/**
- * drm_gem_fb_destroy - Free GEM backed framebuffer
- * @fb: Framebuffer
- *
- * Frees a GEM backed framebuffer with its backing buffer(s) and the structure
- * itself. Drivers can use this as their &drm_framebuffer_funcs->destroy
- * callback.
- */
+ 
 void drm_gem_fb_destroy(struct drm_framebuffer *fb)
 {
 	unsigned int i;
@@ -106,19 +75,7 @@ void drm_gem_fb_destroy(struct drm_framebuffer *fb)
 }
 EXPORT_SYMBOL(drm_gem_fb_destroy);
 
-/**
- * drm_gem_fb_create_handle - Create handle for GEM backed framebuffer
- * @fb: Framebuffer
- * @file: DRM file to register the handle for
- * @handle: Pointer to return the created handle
- *
- * This function creates a handle for the GEM object backing the framebuffer.
- * Drivers can use this as their &drm_framebuffer_funcs->create_handle
- * callback. The GETFB IOCTL calls into this callback.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_fb_create_handle(struct drm_framebuffer *fb, struct drm_file *file,
 			     unsigned int *handle)
 {
@@ -126,28 +83,7 @@ int drm_gem_fb_create_handle(struct drm_framebuffer *fb, struct drm_file *file,
 }
 EXPORT_SYMBOL(drm_gem_fb_create_handle);
 
-/**
- * drm_gem_fb_init_with_funcs() - Helper function for implementing
- *				  &drm_mode_config_funcs.fb_create
- *				  callback in cases when the driver
- *				  allocates a subclass of
- *				  struct drm_framebuffer
- * @dev: DRM device
- * @fb: framebuffer object
- * @file: DRM file that holds the GEM handle(s) backing the framebuffer
- * @mode_cmd: Metadata from the userspace framebuffer creation request
- * @funcs: vtable to be used for the new framebuffer object
- *
- * This function can be used to set &drm_framebuffer_funcs for drivers that need
- * custom framebuffer callbacks. Use drm_gem_fb_create() if you don't need to
- * change &drm_framebuffer_funcs. The function does buffer size validation.
- * The buffer size validation is for a general case, though, so users should
- * pay attention to the checks being appropriate for them or, at least,
- * non-conflicting.
- *
- * Returns:
- * Zero or a negative error code.
- */
+ 
 int drm_gem_fb_init_with_funcs(struct drm_device *dev,
 			       struct drm_framebuffer *fb,
 			       struct drm_file *file,
@@ -214,22 +150,7 @@ err_gem_object_put:
 }
 EXPORT_SYMBOL_GPL(drm_gem_fb_init_with_funcs);
 
-/**
- * drm_gem_fb_create_with_funcs() - Helper function for the
- *                                  &drm_mode_config_funcs.fb_create
- *                                  callback
- * @dev: DRM device
- * @file: DRM file that holds the GEM handle(s) backing the framebuffer
- * @mode_cmd: Metadata from the userspace framebuffer creation request
- * @funcs: vtable to be used for the new framebuffer object
- *
- * This function can be used to set &drm_framebuffer_funcs for drivers that need
- * custom framebuffer callbacks. Use drm_gem_fb_create() if you don't need to
- * change &drm_framebuffer_funcs. The function does buffer size validation.
- *
- * Returns:
- * Pointer to a &drm_framebuffer on success or an error pointer on failure.
- */
+ 
 struct drm_framebuffer *
 drm_gem_fb_create_with_funcs(struct drm_device *dev, struct drm_file *file,
 			     const struct drm_mode_fb_cmd2 *mode_cmd,
@@ -257,28 +178,7 @@ static const struct drm_framebuffer_funcs drm_gem_fb_funcs = {
 	.create_handle	= drm_gem_fb_create_handle,
 };
 
-/**
- * drm_gem_fb_create() - Helper function for the
- *                       &drm_mode_config_funcs.fb_create callback
- * @dev: DRM device
- * @file: DRM file that holds the GEM handle(s) backing the framebuffer
- * @mode_cmd: Metadata from the userspace framebuffer creation request
- *
- * This function creates a new framebuffer object described by
- * &drm_mode_fb_cmd2. This description includes handles for the buffer(s)
- * backing the framebuffer.
- *
- * If your hardware has special alignment or pitch requirements these should be
- * checked before calling this function. The function does buffer size
- * validation. Use drm_gem_fb_create_with_dirty() if you need framebuffer
- * flushing.
- *
- * Drivers can use this as their &drm_mode_config_funcs.fb_create callback.
- * The ADDFB2 IOCTL calls into this callback.
- *
- * Returns:
- * Pointer to a &drm_framebuffer on success or an error pointer on failure.
- */
+ 
 struct drm_framebuffer *
 drm_gem_fb_create(struct drm_device *dev, struct drm_file *file,
 		  const struct drm_mode_fb_cmd2 *mode_cmd)
@@ -294,29 +194,7 @@ static const struct drm_framebuffer_funcs drm_gem_fb_funcs_dirtyfb = {
 	.dirty		= drm_atomic_helper_dirtyfb,
 };
 
-/**
- * drm_gem_fb_create_with_dirty() - Helper function for the
- *                       &drm_mode_config_funcs.fb_create callback
- * @dev: DRM device
- * @file: DRM file that holds the GEM handle(s) backing the framebuffer
- * @mode_cmd: Metadata from the userspace framebuffer creation request
- *
- * This function creates a new framebuffer object described by
- * &drm_mode_fb_cmd2. This description includes handles for the buffer(s)
- * backing the framebuffer. drm_atomic_helper_dirtyfb() is used for the dirty
- * callback giving framebuffer flushing through the atomic machinery. Use
- * drm_gem_fb_create() if you don't need the dirty callback.
- * The function does buffer size validation.
- *
- * Drivers should also call drm_plane_enable_fb_damage_clips() on all planes
- * to enable userspace to use damage clips also with the ATOMIC IOCTL.
- *
- * Drivers can use this as their &drm_mode_config_funcs.fb_create callback.
- * The ADDFB2 IOCTL calls into this callback.
- *
- * Returns:
- * Pointer to a &drm_framebuffer on success or an error pointer on failure.
- */
+ 
 struct drm_framebuffer *
 drm_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
 			     const struct drm_mode_fb_cmd2 *mode_cmd)
@@ -326,29 +204,7 @@ drm_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
 }
 EXPORT_SYMBOL_GPL(drm_gem_fb_create_with_dirty);
 
-/**
- * drm_gem_fb_vmap - maps all framebuffer BOs into kernel address space
- * @fb: the framebuffer
- * @map: returns the mapping's address for each BO
- * @data: returns the data address for each BO, can be NULL
- *
- * This function maps all buffer objects of the given framebuffer into
- * kernel address space and stores them in struct iosys_map. If the
- * mapping operation fails for one of the BOs, the function unmaps the
- * already established mappings automatically.
- *
- * Callers that want to access a BO's stored data should pass @data.
- * The argument returns the addresses of the data stored in each BO. This
- * is different from @map if the framebuffer's offsets field is non-zero.
- *
- * Both, @map and @data, must each refer to arrays with at least
- * fb->format->num_planes elements.
- *
- * See drm_gem_fb_vunmap() for unmapping.
- *
- * Returns:
- * 0 on success, or a negative errno code otherwise.
- */
+ 
 int drm_gem_fb_vmap(struct drm_framebuffer *fb, struct iosys_map *map,
 		    struct iosys_map *data)
 {
@@ -390,15 +246,7 @@ err_drm_gem_vunmap:
 }
 EXPORT_SYMBOL(drm_gem_fb_vmap);
 
-/**
- * drm_gem_fb_vunmap - unmaps framebuffer BOs from kernel address space
- * @fb: the framebuffer
- * @map: mapping addresses as returned by drm_gem_fb_vmap()
- *
- * This function unmaps all buffer objects of the given framebuffer.
- *
- * See drm_gem_fb_vmap() for more information.
- */
+ 
 void drm_gem_fb_vunmap(struct drm_framebuffer *fb, struct iosys_map *map)
 {
 	unsigned int i = fb->format->num_planes;
@@ -438,20 +286,7 @@ static void __drm_gem_fb_end_cpu_access(struct drm_framebuffer *fb, enum dma_dat
 	}
 }
 
-/**
- * drm_gem_fb_begin_cpu_access - prepares GEM buffer objects for CPU access
- * @fb: the framebuffer
- * @dir: access mode
- *
- * Prepares a framebuffer's GEM buffer objects for CPU access. This function
- * must be called before accessing the BO data within the kernel. For imported
- * BOs, the function calls dma_buf_begin_cpu_access().
- *
- * See drm_gem_fb_end_cpu_access() for signalling the end of CPU access.
- *
- * Returns:
- * 0 on success, or a negative errno code otherwise.
- */
+ 
 int drm_gem_fb_begin_cpu_access(struct drm_framebuffer *fb, enum dma_data_direction dir)
 {
 	struct dma_buf_attachment *import_attach;
@@ -481,25 +316,15 @@ err___drm_gem_fb_end_cpu_access:
 }
 EXPORT_SYMBOL(drm_gem_fb_begin_cpu_access);
 
-/**
- * drm_gem_fb_end_cpu_access - signals end of CPU access to GEM buffer objects
- * @fb: the framebuffer
- * @dir: access mode
- *
- * Signals the end of CPU access to the given framebuffer's GEM buffer objects. This
- * function must be paired with a corresponding call to drm_gem_fb_begin_cpu_access().
- * For imported BOs, the function calls dma_buf_end_cpu_access().
- *
- * See also drm_gem_fb_begin_cpu_access().
- */
+ 
 void drm_gem_fb_end_cpu_access(struct drm_framebuffer *fb, enum dma_data_direction dir)
 {
 	__drm_gem_fb_end_cpu_access(fb, dir, fb->format->num_planes);
 }
 EXPORT_SYMBOL(drm_gem_fb_end_cpu_access);
 
-// TODO Drop this function and replace by drm_format_info_bpp() once all
-// DRM_FORMAT_* provide proper block info in drivers/gpu/drm/drm_fourcc.c
+ 
+ 
 static __u32 drm_gem_afbc_get_bpp(struct drm_device *dev,
 				  const struct drm_mode_fb_cmd2 *mode_cmd)
 {
@@ -524,7 +349,7 @@ static int drm_gem_afbc_min_size(struct drm_device *dev,
 				 struct drm_afbc_framebuffer *afbc_fb)
 {
 	__u32 n_blocks, w_alignment, h_alignment, hdr_alignment;
-	/* remove bpp when all users properly encode cpp in drm_format_info */
+	 
 	__u32 bpp;
 
 	switch (mode_cmd->modifier[0] & AFBC_FORMAT_MOD_BLOCK_SIZE_MASK) {
@@ -536,7 +361,7 @@ static int drm_gem_afbc_min_size(struct drm_device *dev,
 		afbc_fb->block_width = 32;
 		afbc_fb->block_height = 8;
 		break;
-	/* no user exists yet - fall through */
+	 
 	case AFBC_FORMAT_MOD_BLOCK_SIZE_64x4:
 	case AFBC_FORMAT_MOD_BLOCK_SIZE_32x8_64x4:
 	default:
@@ -546,7 +371,7 @@ static int drm_gem_afbc_min_size(struct drm_device *dev,
 		return -EINVAL;
 	}
 
-	/* tiled header afbc */
+	 
 	w_alignment = afbc_fb->block_width;
 	h_alignment = afbc_fb->block_height;
 	hdr_alignment = AFBC_HDR_ALIGN;
@@ -575,25 +400,7 @@ static int drm_gem_afbc_min_size(struct drm_device *dev,
 	return 0;
 }
 
-/**
- * drm_gem_fb_afbc_init() - Helper function for drivers using afbc to
- *			    fill and validate all the afbc-specific
- *			    struct drm_afbc_framebuffer members
- *
- * @dev: DRM device
- * @afbc_fb: afbc-specific framebuffer
- * @mode_cmd: Metadata from the userspace framebuffer creation request
- * @afbc_fb: afbc framebuffer
- *
- * This function can be used by drivers which support afbc to complete
- * the preparation of struct drm_afbc_framebuffer. It must be called after
- * allocating the said struct and calling drm_gem_fb_init_with_funcs().
- * It is caller's responsibility to put afbc_fb->base.obj objects in case
- * the call is unsuccessful.
- *
- * Returns:
- * Zero on success or a negative error value on failure.
- */
+ 
 int drm_gem_fb_afbc_init(struct drm_device *dev,
 			 const struct drm_mode_fb_cmd2 *mode_cmd,
 			 struct drm_afbc_framebuffer *afbc_fb)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API for algorithms (i.e., low-level API).
- *
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/simd.h>
@@ -45,14 +41,14 @@ static int crypto_check_alg(struct crypto_alg *alg)
 	if (alg->cra_alignmask & (alg->cra_alignmask + 1))
 		return -EINVAL;
 
-	/* General maximums for all algs. */
+	 
 	if (alg->cra_alignmask > MAX_ALGAPI_ALIGNMASK)
 		return -EINVAL;
 
 	if (alg->cra_blocksize > MAX_ALGAPI_BLOCKSIZE)
 		return -EINVAL;
 
-	/* Lower maximums for specific alg types. */
+	 
 	if (!alg->cra_type && (alg->cra_flags & CRYPTO_ALG_TYPE_MASK) ==
 			       CRYPTO_ALG_TYPE_CIPHER) {
 		if (alg->cra_alignmask > MAX_CIPHER_ALIGNMASK)
@@ -95,15 +91,7 @@ static void crypto_destroy_instance(struct crypto_alg *alg)
 	schedule_work(&inst->free_work);
 }
 
-/*
- * This function adds a spawn to the list secondary_spawns which
- * will be used at the end of crypto_remove_spawns to unregister
- * instances, unless the spawn happens to be one that is depended
- * on by the new algorithm (nalg in crypto_remove_spawns).
- *
- * This function is also responsible for resurrecting any algorithms
- * in the dependency chain of nalg by unsetting n->dead.
- */
+ 
 static struct list_head *crypto_more_spawns(struct crypto_alg *alg,
 					    struct list_head *stack,
 					    struct list_head *top,
@@ -148,12 +136,7 @@ static void crypto_remove_instance(struct crypto_instance *inst,
 	BUG_ON(!list_empty(&inst->alg.cra_users));
 }
 
-/*
- * Given an algorithm alg, remove all algorithms that depend on it
- * through spawns.  If nalg is not null, then exempt any algorithms
- * that is depended on by nalg.  This is useful when nalg itself
- * depends on alg.
- */
+ 
 void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 			  struct crypto_alg *nalg)
 {
@@ -172,11 +155,7 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 		list_move(&spawn->list, &top);
 	}
 
-	/*
-	 * Perform a depth-first walk starting from alg through
-	 * the cra_users tree.  The list stack records the path
-	 * from alg to the current spawn.
-	 */
+	 
 	spawns = &top;
 	do {
 		while (!list_empty(spawns)) {
@@ -199,32 +178,14 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 
 			spawns = &inst->alg.cra_users;
 
-			/*
-			 * Even if spawn->registered is true, the
-			 * instance itself may still be unregistered.
-			 * This is because it may have failed during
-			 * registration.  Therefore we still need to
-			 * make the following test.
-			 *
-			 * We may encounter an unregistered instance here, since
-			 * an instance's spawns are set up prior to the instance
-			 * being registered.  An unregistered instance will have
-			 * NULL ->cra_users.next, since ->cra_users isn't
-			 * properly initialized until registration.  But an
-			 * unregistered instance cannot have any users, so treat
-			 * it the same as ->cra_users being empty.
-			 */
+			 
 			if (spawns->next == NULL)
 				break;
 		}
 	} while ((spawns = crypto_more_spawns(alg, &stack, &top,
 					      &secondary_spawns)));
 
-	/*
-	 * Remove all instances that are marked as dead.  Also
-	 * complete the resurrection of the others by moving them
-	 * back to the cra_users list.
-	 */
+	 
 	list_for_each_entry_safe(spawn, n, &secondary_spawns, list) {
 		if (!spawn->dead)
 			list_move(&spawn->list, &spawn->alg->cra_users);
@@ -250,11 +211,7 @@ static void crypto_alg_finish_registration(struct crypto_alg *alg,
 		if (crypto_is_larval(q)) {
 			struct crypto_larval *larval = (void *)q;
 
-			/*
-			 * Check to see if either our generic name or
-			 * specific name can satisfy the name requested
-			 * by the larval entry q.
-			 */
+			 
 			if (strcmp(alg->cra_name, q->cra_name) &&
 			    strcmp(alg->cra_driver_name, q->cra_name))
 				continue;
@@ -292,7 +249,7 @@ static struct crypto_larval *crypto_alloc_test_larval(struct crypto_alg *alg)
 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER) ||
 	    IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) ||
 	    (alg->cra_flags & CRYPTO_ALG_INTERNAL))
-		return NULL; /* No self-test needed */
+		return NULL;  
 
 	larval = crypto_larval_alloc(alg->cra_name,
 				     alg->cra_flags | CRYPTO_ALG_TESTED, 0);
@@ -352,7 +309,7 @@ __crypto_register_alg(struct crypto_alg *alg, struct list_head *algs_to_put)
 	list_add(&alg->cra_list, &crypto_alg_list);
 
 	if (larval) {
-		/* No cheating! */
+		 
 		alg->cra_flags &= ~CRYPTO_ALG_TESTED;
 
 		list_add(&larval->alg.cra_list, &crypto_alg_list);
@@ -407,10 +364,7 @@ found:
 
 	alg->cra_flags |= CRYPTO_ALG_TESTED;
 
-	/*
-	 * If a higher-priority implementation of the same algorithm is
-	 * currently being tested, then don't fulfill request larvals.
-	 */
+	 
 	best = true;
 	list_for_each_entry(q, &crypto_alg_list, cra_list) {
 		if (crypto_is_moribund(q) || !crypto_is_larval(q))
@@ -729,7 +683,7 @@ int crypto_grab_spawn(struct crypto_spawn *spawn, struct crypto_instance *inst,
 	if (WARN_ON_ONCE(inst == NULL))
 		return -EINVAL;
 
-	/* Allow the result of crypto_attr_alg_name() to be passed directly */
+	 
 	if (IS_ERR(name))
 		return PTR_ERR(name);
 
@@ -758,7 +712,7 @@ EXPORT_SYMBOL_GPL(crypto_grab_spawn);
 
 void crypto_drop_spawn(struct crypto_spawn *spawn)
 {
-	if (!spawn->alg) /* not yet initialized? */
+	if (!spawn->alg)  
 		return;
 
 	down_write(&crypto_alg_sem);
@@ -873,22 +827,7 @@ struct crypto_attr_type *crypto_get_attr_type(struct rtattr **tb)
 }
 EXPORT_SYMBOL_GPL(crypto_get_attr_type);
 
-/**
- * crypto_check_attr_type() - check algorithm type and compute inherited mask
- * @tb: the template parameters
- * @type: the algorithm type the template would be instantiated as
- * @mask_ret: (output) the mask that should be passed to crypto_grab_*()
- *	      to restrict the flags of any inner algorithms
- *
- * Validate that the algorithm type the user requested is compatible with the
- * one the template would actually be instantiated as.  E.g., if the user is
- * doing crypto_alloc_shash("cbc(aes)", ...), this would return an error because
- * the "cbc" template creates an "skcipher" algorithm, not an "shash" algorithm.
- *
- * Also compute the mask to use to restrict the flags of any inner algorithms.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 int crypto_check_attr_type(struct rtattr **tb, u32 type, u32 *mask_ret)
 {
 	struct crypto_attr_type *algt;
@@ -1106,10 +1045,7 @@ static void __exit crypto_algapi_exit(void)
 	crypto_exit_proc();
 }
 
-/*
- * We run this at late_initcall so that all the built-in algorithms
- * have had a chance to register themselves first.
- */
+ 
 late_initcall(crypto_algapi_init);
 module_exit(crypto_algapi_exit);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Synopsys, Inc. and/or its affiliates.
- * stmmac Selftests Support
- *
- * Author: Jose Abreu <joabreu@synopsys.com>
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/completion.h>
@@ -120,7 +115,7 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
 	} else {
 		__be16 *ptr = (__be16 *)ehdr;
 
-		/* HACK */
+		 
 		ptr[3] = htons(ETH_P_IP);
 	}
 
@@ -404,21 +399,17 @@ static int stmmac_test_mmc(struct stmmac_priv *priv)
 	if (!priv->dma_cap.rmon)
 		return -EOPNOTSUPP;
 
-	/* Save previous results into internal struct */
+	 
 	stmmac_mmc_read(priv, priv->mmcaddr, &priv->mmc);
 
 	ret = stmmac_test_mac_loopback(priv);
 	if (ret)
 		return ret;
 
-	/* These will be loopback results so no need to save them */
+	 
 	stmmac_mmc_read(priv, priv->mmcaddr, &final);
 
-	/*
-	 * The number of MMC counters available depends on HW configuration
-	 * so we just use this one to validate the feature. I hope there is
-	 * not a version without this counter.
-	 */
+	 
 	if (final.mmc_tx_framecount_g <= initial.mmc_tx_framecount_g)
 		return -EINVAL;
 
@@ -450,7 +441,7 @@ static int stmmac_test_eee(struct stmmac_priv *priv)
 	if (ret)
 		goto out_free_final;
 
-	/* We have no traffic in the line so, sooner or later it will go LPI */
+	 
 	while (--retries) {
 		memcpy(final, &priv->xstats, sizeof(*final));
 
@@ -499,19 +490,19 @@ static bool stmmac_hash_check(struct stmmac_priv *priv, unsigned char *addr)
 	struct netdev_hw_addr *ha;
 	u32 hash, hash_nr;
 
-	/* First compute the hash for desired addr */
+	 
 	hash = bitrev32(~crc32_le(~0, addr, 6)) >> mc_offset;
 	hash_nr = hash >> 5;
 	hash = 1 << (hash & 0x1f);
 
-	/* Now, check if it collides with any existing one */
+	 
 	netdev_for_each_mc_addr(ha, priv->dev) {
 		u32 nr = bitrev32(~crc32_le(~0, ha->addr, ETH_ALEN)) >> mc_offset;
 		if (((nr >> 5) == hash_nr) && ((1 << (nr & 0x1f)) == hash))
 			return false;
 	}
 
-	/* No collisions, address is good to go */
+	 
 	return true;
 }
 
@@ -519,13 +510,13 @@ static bool stmmac_perfect_check(struct stmmac_priv *priv, unsigned char *addr)
 {
 	struct netdev_hw_addr *ha;
 
-	/* Check if it collides with any existing one */
+	 
 	netdev_for_each_uc_addr(ha, priv->dev) {
 		if (!memcmp(ha->addr, addr, ETH_ALEN))
 			return false;
 	}
 
-	/* No collisions, address is good to go */
+	 
 	return true;
 }
 
@@ -544,7 +535,7 @@ static int stmmac_test_hfilt(struct stmmac_priv *priv)
 		return -EOPNOTSUPP;
 
 	while (--tries) {
-		/* We only need to check the bd_addr for collisions */
+		 
 		bd_addr[ETH_ALEN - 1] = tries;
 		if (stmmac_hash_check(priv, bd_addr))
 			break;
@@ -559,14 +550,14 @@ static int stmmac_test_hfilt(struct stmmac_priv *priv)
 
 	attr.dst = gd_addr;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup;
 
 	attr.dst = bd_addr;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -588,7 +579,7 @@ static int stmmac_test_pfilt(struct stmmac_priv *priv)
 		return -EOPNOTSUPP;
 
 	while (--tries) {
-		/* We only need to check the bd_addr for collisions */
+		 
 		bd_addr[ETH_ALEN - 1] = tries;
 		if (stmmac_perfect_check(priv, bd_addr))
 			break;
@@ -603,14 +594,14 @@ static int stmmac_test_pfilt(struct stmmac_priv *priv)
 
 	attr.dst = gd_addr;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup;
 
 	attr.dst = bd_addr;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -634,7 +625,7 @@ static int stmmac_test_mcfilt(struct stmmac_priv *priv)
 		return -EOPNOTSUPP;
 
 	while (--tries) {
-		/* We only need to check the mc_addr for collisions */
+		 
 		mc_addr[ETH_ALEN - 1] = tries;
 		if (stmmac_hash_check(priv, mc_addr))
 			break;
@@ -649,14 +640,14 @@ static int stmmac_test_mcfilt(struct stmmac_priv *priv)
 
 	attr.dst = uc_addr;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup;
 
 	attr.dst = mc_addr;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -680,7 +671,7 @@ static int stmmac_test_ucfilt(struct stmmac_priv *priv)
 		return -EOPNOTSUPP;
 
 	while (--tries) {
-		/* We only need to check the uc_addr for collisions */
+		 
 		uc_addr[ETH_ALEN - 1] = tries;
 		if (stmmac_perfect_check(priv, uc_addr))
 			break;
@@ -695,14 +686,14 @@ static int stmmac_test_ucfilt(struct stmmac_priv *priv)
 
 	attr.dst = mc_addr;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup;
 
 	attr.dst = uc_addr;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -756,7 +747,7 @@ static int stmmac_test_flowctrl(struct stmmac_priv *priv)
 	tpriv->pt.af_packet_priv = tpriv;
 	dev_add_pack(&tpriv->pt);
 
-	/* Compute minimum number of packets to make FIFO full */
+	 
 	pkt_count = priv->plat->rx_fifo_size;
 	if (!pkt_count)
 		pkt_count = priv->dma_cap.rx_fifo_size;
@@ -788,7 +779,7 @@ static int stmmac_test_flowctrl(struct stmmac_priv *priv)
 			break;
 	}
 
-	/* Wait for some time in case RX Watchdog is enabled */
+	 
 	msleep(200);
 
 	for (i = 0; i < rx_cnt; i++) {
@@ -858,7 +849,7 @@ static int stmmac_test_vlan_validate(struct sk_buff *skb,
 		if (skb->vlan_proto != htons(proto))
 			goto out;
 		if (skb->vlan_tci != tpriv->vlan_id) {
-			/* Means filter did not work. */
+			 
 			tpriv->ok = false;
 			complete(&tpriv->comp);
 			goto out;
@@ -911,11 +902,7 @@ static int __stmmac_test_vlanfilt(struct stmmac_priv *priv)
 	tpriv->pt.af_packet_priv = tpriv;
 	tpriv->packet = &attr;
 
-	/*
-	 * As we use HASH filtering, false positives may appear. This is a
-	 * specially chosen ID so that adjacent IDs (+4) have different
-	 * HASH values.
-	 */
+	 
 	tpriv->vlan_id = 0x123;
 	dev_add_pack(&tpriv->pt);
 
@@ -1005,11 +992,7 @@ static int __stmmac_test_dvlanfilt(struct stmmac_priv *priv)
 	tpriv->pt.af_packet_priv = tpriv;
 	tpriv->packet = &attr;
 
-	/*
-	 * As we use HASH filtering, false positives may appear. This is a
-	 * specially chosen ID so that adjacent IDs (+4) have different
-	 * HASH values.
-	 */
+	 
 	tpriv->vlan_id = 0x123;
 	dev_add_pack(&tpriv->pt);
 
@@ -1145,7 +1128,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
 	attr.src = addr;
 
 	ret = __stmmac_test_loopback(priv, &attr);
-	ret = ret ? 0 : -EINVAL; /* Shall NOT receive packet */
+	ret = ret ? 0 : -EINVAL;  
 
 	cls_u32.command = TC_CLSU32_DELETE_KNODE;
 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
@@ -1393,7 +1376,7 @@ static int __stmmac_test_l3filt(struct stmmac_priv *priv, u32 dst, u32 src,
 	attr.ip_dst = dst;
 	attr.ip_src = src;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup_rule;
@@ -1402,7 +1385,7 @@ static int __stmmac_test_l3filt(struct stmmac_priv *priv, u32 dst, u32 src,
 	if (ret)
 		goto cleanup_rule;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -1524,7 +1507,7 @@ static int __stmmac_test_l4filt(struct stmmac_priv *priv, u32 dst, u32 src,
 	attr.dport = dst;
 	attr.ip_dst = 0;
 
-	/* Shall receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	if (ret)
 		goto cleanup_rule;
@@ -1533,7 +1516,7 @@ static int __stmmac_test_l4filt(struct stmmac_priv *priv, u32 dst, u32 src,
 	if (ret)
 		goto cleanup_rule;
 
-	/* Shall NOT receive packet */
+	 
 	ret = __stmmac_test_loopback(priv, &attr);
 	ret = ret ? 0 : -EINVAL;
 
@@ -1724,7 +1707,7 @@ static int stmmac_test_sph(struct stmmac_priv *priv)
 	if (!priv->sph)
 		return -EOPNOTSUPP;
 
-	/* Check for UDP first */
+	 
 	attr.dst = priv->dev->dev_addr;
 	attr.tcp = false;
 
@@ -1736,7 +1719,7 @@ static int stmmac_test_sph(struct stmmac_priv *priv)
 	if (cnt_end <= cnt_start)
 		return -EINVAL;
 
-	/* Check for TCP now */
+	 
 	cnt_start = cnt_end;
 
 	attr.dst = priv->dev->dev_addr;
@@ -1755,7 +1738,7 @@ static int stmmac_test_sph(struct stmmac_priv *priv)
 
 static int stmmac_test_tbs(struct stmmac_priv *priv)
 {
-#define STMMAC_TBS_LT_OFFSET		(500 * 1000 * 1000) /* 500 ms*/
+#define STMMAC_TBS_LT_OFFSET		(500 * 1000 * 1000)  
 	struct stmmac_packet_attrs attr = { };
 	struct tc_etf_qopt_offload qopt;
 	u64 start_time, curr_time = 0;
@@ -1765,7 +1748,7 @@ static int stmmac_test_tbs(struct stmmac_priv *priv)
 	if (!priv->hwts_tx_en)
 		return -EOPNOTSUPP;
 
-	/* Find first TBS enabled Queue, if any */
+	 
 	for (i = 0; i < priv->plat->tx_queues_to_use; i++)
 		if (priv->dma_conf.tx_queue[i].tbs & STMMAC_TBS_AVAIL)
 			break;
@@ -1801,7 +1784,7 @@ static int stmmac_test_tbs(struct stmmac_priv *priv)
 	if (ret)
 		goto fail_disable;
 
-	/* Check if expected time has elapsed */
+	 
 	read_lock_irqsave(&priv->ptp_lock, flags);
 	stmmac_get_systime(priv, priv->ptpaddr, &curr_time);
 	read_unlock_irqrestore(&priv->ptp_lock, flags);
@@ -1830,7 +1813,7 @@ static const struct stmmac_test {
 		.fn = stmmac_test_mac_loopback,
 	}, {
 		.name = "PHY Loopback               ",
-		.lb = STMMAC_LOOPBACK_NONE, /* Test will handle it */
+		.lb = STMMAC_LOOPBACK_NONE,  
 		.fn = stmmac_test_phy_loopback,
 	}, {
 		.name = "MMC Counters               ",
@@ -1975,7 +1958,7 @@ void stmmac_selftest_run(struct net_device *dev,
 		return;
 	}
 
-	/* Wait for queues drain */
+	 
 	msleep(200);
 
 	for (i = 0; i < count; i++) {
@@ -1999,10 +1982,7 @@ void stmmac_selftest_run(struct net_device *dev,
 			break;
 		}
 
-		/*
-		 * First tests will always be MAC / PHY loobpack. If any of
-		 * them is not supported we abort earlier.
-		 */
+		 
 		if (ret) {
 			netdev_err(priv->dev, "Loopback is not supported\n");
 			etest->flags |= ETH_TEST_FL_FAILED;

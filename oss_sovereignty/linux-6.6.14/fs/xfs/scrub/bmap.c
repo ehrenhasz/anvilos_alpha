@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -24,7 +21,7 @@
 #include "scrub/btree.h"
 #include "xfs_ag.h"
 
-/* Set us up with an inode's bmap. */
+ 
 int
 xchk_setup_inode_bmap(
 	struct xfs_scrub	*sc)
@@ -40,11 +37,7 @@ xchk_setup_inode_bmap(
 
 	xchk_ilock(sc, XFS_IOLOCK_EXCL);
 
-	/*
-	 * We don't want any ephemeral data/cow fork updates sitting around
-	 * while we inspect block mappings, so wait for directio to finish
-	 * and flush dirty data if we have delalloc reservations.
-	 */
+	 
 	if (S_ISREG(VFS_I(sc->ip)->i_mode) &&
 	    sc->sm->sm_type != XFS_SCRUB_TYPE_BMBTA) {
 		struct address_space	*mapping = VFS_I(sc->ip)->i_mapping;
@@ -53,19 +46,7 @@ xchk_setup_inode_bmap(
 
 		inode_dio_wait(VFS_I(sc->ip));
 
-		/*
-		 * Try to flush all incore state to disk before we examine the
-		 * space mappings for the data fork.  Leave accumulated errors
-		 * in the mapping for the writer threads to consume.
-		 *
-		 * On ENOSPC or EIO writeback errors, we continue into the
-		 * extent mapping checks because write failures do not
-		 * necessarily imply anything about the correctness of the file
-		 * metadata.  The metadata and the file data could be on
-		 * completely separate devices; a media failure might only
-		 * affect a subset of the disk, etc.  We can handle delalloc
-		 * extents in the scrubber, so leaving them in memory is fine.
-		 */
+		 
 		error = filemap_fdatawrite(mapping);
 		if (!error)
 			error = filemap_fdatawait_keep_errors(mapping);
@@ -73,47 +54,42 @@ xchk_setup_inode_bmap(
 			goto out;
 	}
 
-	/* Got the inode, lock it and we're ready to go. */
+	 
 	error = xchk_trans_alloc(sc, 0);
 	if (error)
 		goto out;
 
 	xchk_ilock(sc, XFS_ILOCK_EXCL);
 out:
-	/* scrub teardown will unlock and release the inode */
+	 
 	return error;
 }
 
-/*
- * Inode fork block mapping (BMBT) scrubber.
- * More complex than the others because we have to scrub
- * all the extents regardless of whether or not the fork
- * is in btree format.
- */
+ 
 
 struct xchk_bmap_info {
 	struct xfs_scrub	*sc;
 
-	/* Incore extent tree cursor */
+	 
 	struct xfs_iext_cursor	icur;
 
-	/* Previous fork mapping that we examined */
+	 
 	struct xfs_bmbt_irec	prev_rec;
 
-	/* Is this a realtime fork? */
+	 
 	bool			is_rt;
 
-	/* May mappings point to shared space? */
+	 
 	bool			is_shared;
 
-	/* Was the incore extent tree loaded? */
+	 
 	bool			was_loaded;
 
-	/* Which inode fork are we checking? */
+	 
 	int			whichfork;
 };
 
-/* Look for a corresponding rmap for this irec. */
+ 
 static inline bool
 xchk_bmap_get_rmap(
 	struct xchk_bmap_info	*info,
@@ -132,20 +108,13 @@ xchk_bmap_get_rmap(
 	if (irec->br_state == XFS_EXT_UNWRITTEN)
 		rflags |= XFS_RMAP_UNWRITTEN;
 
-	/*
-	 * CoW staging extents are owned (on disk) by the refcountbt, so
-	 * their rmaps do not have offsets.
-	 */
+	 
 	if (info->whichfork == XFS_COW_FORK)
 		offset = 0;
 	else
 		offset = irec->br_startoff;
 
-	/*
-	 * If the caller thinks this could be a shared bmbt extent (IOWs,
-	 * any data fork extent of a reflink inode) then we have to use the
-	 * range rmap lookup to make sure we get the correct owner/offset.
-	 */
+	 
 	if (info->is_shared) {
 		error = xfs_rmap_lookup_le_range(info->sc->sa.rmap_cur, agbno,
 				owner, offset, rflags, rmap, &has_rmap);
@@ -162,7 +131,7 @@ xchk_bmap_get_rmap(
 	return has_rmap;
 }
 
-/* Make sure that we have rmapbt records for this data/attr fork extent. */
+ 
 STATIC void
 xchk_bmap_xref_rmap(
 	struct xchk_bmap_info	*info,
@@ -176,14 +145,11 @@ xchk_bmap_xref_rmap(
 	if (!info->sc->sa.rmap_cur || xchk_skip_xref(info->sc->sm))
 		return;
 
-	/* Find the rmap record for this irec. */
+	 
 	if (!xchk_bmap_get_rmap(info, irec, agbno, owner, &rmap))
 		return;
 
-	/*
-	 * The rmap must be an exact match for this incore file mapping record,
-	 * which may have arisen from multiple ondisk records.
-	 */
+	 
 	if (rmap.rm_startblock != agbno)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
@@ -193,7 +159,7 @@ xchk_bmap_xref_rmap(
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/* Check the logical offsets. */
+	 
 	if (rmap.rm_offset != irec->br_startoff)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
@@ -203,18 +169,12 @@ xchk_bmap_xref_rmap(
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/* Check the owner */
+	 
 	if (rmap.rm_owner != owner)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/*
-	 * Check for discrepancies between the unwritten flag in the irec and
-	 * the rmap.  Note that the (in-memory) CoW fork distinguishes between
-	 * unwritten and written extents, but we don't track that in the rmap
-	 * records because the blocks are owned (on-disk) by the refcountbt,
-	 * which doesn't track unwritten state.
-	 */
+	 
 	if (!!(irec->br_state == XFS_EXT_UNWRITTEN) !=
 	    !!(rmap.rm_flags & XFS_RMAP_UNWRITTEN))
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
@@ -229,7 +189,7 @@ xchk_bmap_xref_rmap(
 				irec->br_startoff);
 }
 
-/* Make sure that we have rmapbt records for this COW fork extent. */
+ 
 STATIC void
 xchk_bmap_xref_rmap_cow(
 	struct xchk_bmap_info	*info,
@@ -243,15 +203,11 @@ xchk_bmap_xref_rmap_cow(
 	if (!info->sc->sa.rmap_cur || xchk_skip_xref(info->sc->sm))
 		return;
 
-	/* Find the rmap record for this irec. */
+	 
 	if (!xchk_bmap_get_rmap(info, irec, agbno, owner, &rmap))
 		return;
 
-	/*
-	 * CoW staging extents are owned by the refcount btree, so the rmap
-	 * can start before and end after the physical space allocated to this
-	 * mapping.  There are no offsets to check.
-	 */
+	 
 	if (rmap.rm_startblock > agbno)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
@@ -261,17 +217,12 @@ xchk_bmap_xref_rmap_cow(
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/* Check the owner */
+	 
 	if (rmap.rm_owner != owner)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/*
-	 * No flags allowed.  Note that the (in-memory) CoW fork distinguishes
-	 * between unwritten and written extents, but we don't track that in
-	 * the rmap records because the blocks are owned (on-disk) by the
-	 * refcountbt, which doesn't track unwritten state.
-	 */
+	 
 	if (rmap.rm_flags & XFS_RMAP_ATTR_FORK)
 		xchk_fblock_xref_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
@@ -283,7 +234,7 @@ xchk_bmap_xref_rmap_cow(
 				irec->br_startoff);
 }
 
-/* Cross-reference a single rtdev extent record. */
+ 
 STATIC void
 xchk_bmap_rt_iextent_xref(
 	struct xfs_inode	*ip,
@@ -294,7 +245,7 @@ xchk_bmap_rt_iextent_xref(
 			irec->br_blockcount);
 }
 
-/* Cross-reference a single datadev extent record. */
+ 
 STATIC void
 xchk_bmap_iextent_xref(
 	struct xfs_inode	*ip,
@@ -359,10 +310,7 @@ out_free:
 	xchk_ag_free(info->sc, &info->sc->sa);
 }
 
-/*
- * Directories and attr forks should never have blocks that can't be addressed
- * by a xfs_dablk_t.
- */
+ 
 STATIC void
 xchk_bmap_dirattr_extent(
 	struct xfs_inode	*ip,
@@ -384,7 +332,7 @@ xchk_bmap_dirattr_extent(
 		xchk_fblock_set_corrupt(info->sc, info->whichfork, off);
 }
 
-/* Scrub a single extent record. */
+ 
 STATIC void
 xchk_bmap_iextent(
 	struct xfs_inode	*ip,
@@ -393,10 +341,7 @@ xchk_bmap_iextent(
 {
 	struct xfs_mount	*mp = info->sc->mp;
 
-	/*
-	 * Check for out-of-order extents.  This record could have come
-	 * from the incore list, for which there is no ordering check.
-	 */
+	 
 	if (irec->br_startoff < info->prev_rec.br_startoff +
 				info->prev_rec.br_blockcount)
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
@@ -408,7 +353,7 @@ xchk_bmap_iextent(
 
 	xchk_bmap_dirattr_extent(ip, info, irec);
 
-	/* Make sure the extent points to a valid place. */
+	 
 	if (info->is_rt &&
 	    !xfs_verify_rtext(mp, irec->br_startblock, irec->br_blockcount))
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
@@ -418,7 +363,7 @@ xchk_bmap_iextent(
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/* We don't allow unwritten extents on attr forks. */
+	 
 	if (irec->br_state == XFS_EXT_UNWRITTEN &&
 	    info->whichfork == XFS_ATTR_FORK)
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
@@ -433,7 +378,7 @@ xchk_bmap_iextent(
 		xchk_bmap_iextent_xref(ip, info, irec);
 }
 
-/* Scrub a bmbt record. */
+ 
 STATIC int
 xchk_bmapbt_rec(
 	struct xchk_btree	*bs,
@@ -450,10 +395,7 @@ xchk_bmapbt_rec(
 	uint64_t		owner;
 	int			i;
 
-	/*
-	 * Check the owners of the btree blocks up to the level below
-	 * the root since the verifiers don't do that.
-	 */
+	 
 	if (xfs_has_crc(bs->cur->bc_mp) &&
 	    bs->cur->bc_levels[0].ptr == 1) {
 		for (i = 0; i < bs->cur->bc_nlevels - 1; i++) {
@@ -465,13 +407,7 @@ xchk_bmapbt_rec(
 		}
 	}
 
-	/*
-	 * Check that the incore extent tree contains an extent that matches
-	 * this one exactly.  We validate those cached bmaps later, so we don't
-	 * need to check them here.  If the incore extent tree was just loaded
-	 * from disk by the scrubber, we assume that its contents match what's
-	 * on disk (we still hold the ILOCK) and skip the equivalence check.
-	 */
+	 
 	if (!info->was_loaded)
 		return 0;
 
@@ -493,7 +429,7 @@ xchk_bmapbt_rec(
 	return 0;
 }
 
-/* Scan the btree records. */
+ 
 STATIC int
 xchk_bmap_btree(
 	struct xfs_scrub	*sc,
@@ -507,14 +443,14 @@ xchk_bmap_btree(
 	struct xfs_btree_cur	*cur;
 	int			error;
 
-	/* Load the incore bmap cache if it's not loaded. */
+	 
 	info->was_loaded = !xfs_need_iread_extents(ifp);
 
 	error = xfs_iread_extents(sc->tp, ip, whichfork);
 	if (!xchk_fblock_process_error(sc, whichfork, 0, &error))
 		goto out;
 
-	/* Check the btree structure. */
+	 
 	cur = xfs_bmbt_init_cursor(mp, sc->tp, ip, whichfork);
 	xfs_rmap_ino_bmbt_owner(&oinfo, ip->i_ino, whichfork);
 	error = xchk_btree(sc, cur, xchk_bmapbt_rec, &oinfo, info);
@@ -529,7 +465,7 @@ struct xchk_bmap_check_rmap_info {
 	struct xfs_iext_cursor	icur;
 };
 
-/* Can we find bmaps that fit this rmap? */
+ 
 STATIC int
 xchk_bmap_check_rmap(
 	struct xfs_btree_cur		*cur,
@@ -543,7 +479,7 @@ xchk_bmap_check_rmap(
 	struct xfs_scrub		*sc = sbcri->sc;
 	bool				have_map;
 
-	/* Is this even the right fork? */
+	 
 	if (rec->rm_owner != sc->ip->i_ino)
 		return 0;
 	if ((sbcri->whichfork == XFS_ATTR_FORK) ^
@@ -552,7 +488,7 @@ xchk_bmap_check_rmap(
 	if (rec->rm_flags & XFS_RMAP_BMBT_BLOCK)
 		return 0;
 
-	/* Now look up the bmbt record. */
+	 
 	ifp = xfs_ifork_ptr(sc->ip, sbcri->whichfork);
 	if (!ifp) {
 		xchk_fblock_set_corrupt(sc, sbcri->whichfork,
@@ -564,13 +500,7 @@ xchk_bmap_check_rmap(
 	if (!have_map)
 		xchk_fblock_set_corrupt(sc, sbcri->whichfork,
 				rec->rm_offset);
-	/*
-	 * bmap extent record lengths are constrained to 2^21 blocks in length
-	 * because of space constraints in the on-disk metadata structure.
-	 * However, rmap extent record lengths are constrained only by AG
-	 * length, so we have to loop through the bmbt to make sure that the
-	 * entire rmap is covered by bmbt records.
-	 */
+	 
 	check_rec = *rec;
 	while (have_map) {
 		if (irec.br_startoff != check_rec.rm_offset)
@@ -603,7 +533,7 @@ out:
 	return 0;
 }
 
-/* Make sure each rmap has a corresponding bmbt entry. */
+ 
 STATIC int
 xchk_bmap_check_ag_rmaps(
 	struct xfs_scrub		*sc,
@@ -632,10 +562,7 @@ xchk_bmap_check_ag_rmaps(
 	return error;
 }
 
-/*
- * Decide if we want to walk every rmap btree in the fs to make sure that each
- * rmap for this file fork has corresponding bmbt entries.
- */
+ 
 static bool
 xchk_bmap_want_check_rmaps(
 	struct xchk_bmap_info	*info)
@@ -650,18 +577,11 @@ xchk_bmap_want_check_rmaps(
 	if (sc->sm->sm_flags & XFS_SCRUB_OFLAG_CORRUPT)
 		return false;
 
-	/* Don't support realtime rmap checks yet. */
+	 
 	if (info->is_rt)
 		return false;
 
-	/*
-	 * The inode repair code zaps broken inode forks by resetting them back
-	 * to EXTENTS format and zero extent records.  If we encounter a fork
-	 * in this state along with evidence that the fork isn't supposed to be
-	 * empty, we need to scan the reverse mappings to decide if we're going
-	 * to rebuild the fork.  Data forks with nonzero file size are scanned.
-	 * xattr forks are never empty of content, so they are always scanned.
-	 */
+	 
 	ifp = xfs_ifork_ptr(sc->ip, info->whichfork);
 	if (ifp->if_format == XFS_DINODE_FMT_EXTENTS && ifp->if_nextents == 0) {
 		if (info->whichfork == XFS_DATA_FORK &&
@@ -674,7 +594,7 @@ xchk_bmap_want_check_rmaps(
 	return false;
 }
 
-/* Make sure each rmap has a corresponding bmbt entry. */
+ 
 STATIC int
 xchk_bmap_check_rmaps(
 	struct xfs_scrub	*sc,
@@ -696,7 +616,7 @@ xchk_bmap_check_rmaps(
 	return 0;
 }
 
-/* Scrub a delalloc reservation from the incore extent map tree. */
+ 
 STATIC void
 xchk_bmap_iextent_delalloc(
 	struct xfs_inode	*ip,
@@ -705,10 +625,7 @@ xchk_bmap_iextent_delalloc(
 {
 	struct xfs_mount	*mp = info->sc->mp;
 
-	/*
-	 * Check for out-of-order extents.  This record could have come
-	 * from the incore list, for which there is no ordering check.
-	 */
+	 
 	if (irec->br_startoff < info->prev_rec.br_startoff +
 				info->prev_rec.br_blockcount)
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
@@ -718,19 +635,19 @@ xchk_bmap_iextent_delalloc(
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 
-	/* Make sure the extent points to a valid place. */
+	 
 	if (irec->br_blockcount > XFS_MAX_BMBT_EXTLEN)
 		xchk_fblock_set_corrupt(info->sc, info->whichfork,
 				irec->br_startoff);
 }
 
-/* Decide if this individual fork mapping is ok. */
+ 
 static bool
 xchk_bmap_iext_mapping(
 	struct xchk_bmap_info		*info,
 	const struct xfs_bmbt_irec	*irec)
 {
-	/* There should never be a "hole" extent in either extent list. */
+	 
 	if (irec->br_startblock == HOLESTARTBLOCK)
 		return false;
 	if (irec->br_blockcount > XFS_MAX_BMBT_EXTLEN)
@@ -738,19 +655,19 @@ xchk_bmap_iext_mapping(
 	return true;
 }
 
-/* Are these two mappings contiguous with each other? */
+ 
 static inline bool
 xchk_are_bmaps_contiguous(
 	const struct xfs_bmbt_irec	*b1,
 	const struct xfs_bmbt_irec	*b2)
 {
-	/* Don't try to combine unallocated mappings. */
+	 
 	if (!xfs_bmap_is_real_extent(b1))
 		return false;
 	if (!xfs_bmap_is_real_extent(b2))
 		return false;
 
-	/* Does b2 come right after b1 in the logical and physical range? */
+	 
 	if (b1->br_startoff + b1->br_blockcount != b2->br_startoff)
 		return false;
 	if (b1->br_startblock + b1->br_blockcount != b2->br_startblock)
@@ -760,12 +677,7 @@ xchk_are_bmaps_contiguous(
 	return true;
 }
 
-/*
- * Walk the incore extent records, accumulating consecutive contiguous records
- * into a single incore mapping.  Returns true if @irec has been set to a
- * mapping or false if there are no more mappings.  Caller must ensure that
- * @info.icur is zeroed before the first call.
- */
+ 
 static bool
 xchk_bmap_iext_iter(
 	struct xchk_bmap_info	*info,
@@ -777,7 +689,7 @@ xchk_bmap_iext_iter(
 
 	ifp = xfs_ifork_ptr(info->sc->ip, info->whichfork);
 
-	/* Advance to the next iextent record and check the mapping. */
+	 
 	xfs_iext_next(ifp, &info->icur);
 	if (!xfs_iext_get_extent(ifp, &info->icur, irec))
 		return false;
@@ -789,10 +701,7 @@ xchk_bmap_iext_iter(
 	}
 	nr++;
 
-	/*
-	 * Iterate subsequent iextent records and merge them with the one
-	 * that we just read, if possible.
-	 */
+	 
 	while (xfs_iext_peek_next_extent(ifp, &info->icur, &got)) {
 		if (!xchk_are_bmaps_contiguous(irec, &got))
 			break;
@@ -808,11 +717,7 @@ xchk_bmap_iext_iter(
 		xfs_iext_next(ifp, &info->icur);
 	}
 
-	/*
-	 * If the merged mapping could be expressed with fewer bmbt records
-	 * than we actually found, notify the user that this fork could be
-	 * optimized.  CoW forks only exist in memory so we ignore them.
-	 */
+	 
 	if (nr > 1 && info->whichfork != XFS_COW_FORK &&
 	    howmany_64(irec->br_blockcount, XFS_MAX_BMBT_EXTLEN) < nr)
 		xchk_ino_set_preen(info->sc, info->sc->ip->i_ino);
@@ -820,12 +725,7 @@ xchk_bmap_iext_iter(
 	return true;
 }
 
-/*
- * Scrub an inode fork's block mappings.
- *
- * First we scan every record in every btree block, if applicable.
- * Then we unconditionally scan the incore extent cache.
- */
+ 
 STATIC int
 xchk_bmap(
 	struct xfs_scrub	*sc,
@@ -839,7 +739,7 @@ xchk_bmap(
 	xfs_fileoff_t		endoff;
 	int			error = 0;
 
-	/* Non-existent forks can be ignored. */
+	 
 	if (!ifp)
 		return -ENOENT;
 
@@ -850,7 +750,7 @@ xchk_bmap(
 
 	switch (whichfork) {
 	case XFS_COW_FORK:
-		/* No CoW forks on non-reflink filesystems. */
+		 
 		if (!xfs_has_reflink(mp)) {
 			xchk_ino_set_corrupt(sc, sc->ip->i_ino);
 			return 0;
@@ -865,12 +765,12 @@ xchk_bmap(
 		break;
 	}
 
-	/* Check the fork values */
+	 
 	switch (ifp->if_format) {
 	case XFS_DINODE_FMT_UUID:
 	case XFS_DINODE_FMT_DEV:
 	case XFS_DINODE_FMT_LOCAL:
-		/* No mappings to check. */
+		 
 		if (whichfork == XFS_COW_FORK)
 			xchk_fblock_set_corrupt(sc, whichfork, 0);
 		return 0;
@@ -894,19 +794,12 @@ xchk_bmap(
 	if (sc->sm->sm_flags & XFS_SCRUB_OFLAG_CORRUPT)
 		return 0;
 
-	/* Find the offset of the last extent in the mapping. */
+	 
 	error = xfs_bmap_last_offset(ip, &endoff, whichfork);
 	if (!xchk_fblock_process_error(sc, whichfork, 0, &error))
 		return error;
 
-	/*
-	 * Scrub extent records.  We use a special iterator function here that
-	 * combines adjacent mappings if they are logically and physically
-	 * contiguous.   For large allocations that require multiple bmbt
-	 * records, this reduces the number of cross-referencing calls, which
-	 * reduces runtime.  Cross referencing with the rmap is simpler because
-	 * the rmap must match the combined mapping exactly.
-	 */
+	 
 	while (xchk_bmap_iext_iter(&info, &irec)) {
 		if (xchk_should_terminate(sc, &error) ||
 		    (sc->sm->sm_flags & XFS_SCRUB_OFLAG_CORRUPT))
@@ -934,7 +827,7 @@ xchk_bmap(
 	return 0;
 }
 
-/* Scrub an inode's data fork. */
+ 
 int
 xchk_bmap_data(
 	struct xfs_scrub	*sc)
@@ -942,7 +835,7 @@ xchk_bmap_data(
 	return xchk_bmap(sc, XFS_DATA_FORK);
 }
 
-/* Scrub an inode's attr fork. */
+ 
 int
 xchk_bmap_attr(
 	struct xfs_scrub	*sc)
@@ -950,7 +843,7 @@ xchk_bmap_attr(
 	return xchk_bmap(sc, XFS_ATTR_FORK);
 }
 
-/* Scrub an inode's CoW fork. */
+ 
 int
 xchk_bmap_cow(
 	struct xfs_scrub	*sc)

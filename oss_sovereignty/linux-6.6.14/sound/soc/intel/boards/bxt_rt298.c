@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Broxton-P I2S Machine Driver
- *
- * Copyright (C) 2014-2016, Intel Corporation. All rights reserved.
- *
- * Modified from:
- *   Intel Skylake I2S Machine driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -20,7 +13,7 @@
 #include "../../codecs/rt298.h"
 #include "hda_dsp_common.h"
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack broxton_headset;
 static struct snd_soc_jack broxton_hdmi[3];
 
@@ -74,17 +67,17 @@ static const struct snd_soc_dapm_widget broxton_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route broxton_rt298_map[] = {
-	/* speaker */
+	 
 	{"Speaker", NULL, "SPOR"},
 	{"Speaker", NULL, "SPOL"},
 
-	/* HP jack connectors - unknown if we have jack detect */
+	 
 	{"Headphone Jack", NULL, "HPO Pin"},
 
-	/* other jacks */
+	 
 	{"MIC1", NULL, "Mic Jack"},
 
-	/* digital mics */
+	 
 	{"DMIC1 Pin", NULL, "DMIC2"},
 	{"DMic", NULL, "SoC DMIC"},
 
@@ -92,7 +85,7 @@ static const struct snd_soc_dapm_route broxton_rt298_map[] = {
 	{"HDMI2", NULL, "hif6-0 Output"},
 	{"HDMI2", NULL, "hif7-0 Output"},
 
-	/* CODEC BE connections */
+	 
 	{ "AIF1 Playback", NULL, "ssp5 Tx"},
 	{ "ssp5 Tx", NULL, "codec0_out"},
 	{ "ssp5 Tx", NULL, "codec1_out"},
@@ -112,17 +105,17 @@ static const struct snd_soc_dapm_route broxton_rt298_map[] = {
 };
 
 static const struct snd_soc_dapm_route geminilake_rt298_map[] = {
-	/* speaker */
+	 
 	{"Speaker", NULL, "SPOR"},
 	{"Speaker", NULL, "SPOL"},
 
-	/* HP jack connectors - unknown if we have jack detect */
+	 
 	{"Headphone Jack", NULL, "HPO Pin"},
 
-	/* other jacks */
+	 
 	{"MIC1", NULL, "Mic Jack"},
 
-	/* digital mics */
+	 
 	{"DMIC1 Pin", NULL, "DMIC2"},
 	{"DMic", NULL, "SoC DMIC"},
 
@@ -130,7 +123,7 @@ static const struct snd_soc_dapm_route geminilake_rt298_map[] = {
 	{"HDMI2", NULL, "hif6-0 Output"},
 	{"HDMI2", NULL, "hif7-0 Output"},
 
-	/* CODEC BE connections */
+	 
 	{ "AIF1 Playback", NULL, "ssp2 Tx"},
 	{ "ssp2 Tx", NULL, "codec0_out"},
 	{ "ssp2 Tx", NULL, "codec1_out"},
@@ -210,11 +203,11 @@ static int broxton_ssp5_fixup(struct snd_soc_pcm_runtime *rtd,
 					SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = 2;
 
-	/* set SSP5 to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 
@@ -302,12 +295,7 @@ static int bxt_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * on this platform for PCM device we support:
-	 *      48Khz
-	 *      stereo
-	 *	16-bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = 2;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -383,9 +371,9 @@ SND_SOC_DAILINK_DEF(idisp3_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:0e.0")));
 
-/* broxton digital audio interface glue - connects codec <--> CPU */
+ 
 static struct snd_soc_dai_link broxton_rt298_dais[] = {
-	/* Front End DAI links */
+	 
 	[BXT_DPCM_AUDIO_PB] =
 	{
 		.name = "Bxt Audio Port",
@@ -460,9 +448,9 @@ static struct snd_soc_dai_link broxton_rt298_dais[] = {
 		.dynamic = 1,
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
-	/* Back End DAI links */
+	 
 	{
-		/* SSP5 - Codec */
+		 
 		.name = "SSP5-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -561,7 +549,7 @@ static int bxt_card_late_probe(struct snd_soc_card *card)
 }
 
 
-/* broxton audio machine driver for SPT + RT298S */
+ 
 static struct snd_soc_card broxton_rt298 = {
 	.name = "broxton-rt298",
 	.owner = THIS_MODULE,
@@ -627,7 +615,7 @@ static int broxton_audio_probe(struct platform_device *pdev)
 	card->dev = &pdev->dev;
 	snd_soc_card_set_drvdata(card, ctx);
 
-	/* override platform name, if required */
+	 
 	mach = pdev->dev.platform_data;
 	platform_name = mach->mach_params.platform;
 
@@ -660,7 +648,7 @@ static struct platform_driver broxton_audio = {
 };
 module_platform_driver(broxton_audio)
 
-/* Module information */
+ 
 MODULE_AUTHOR("Ramesh Babu <Ramesh.Babu@intel.com>");
 MODULE_AUTHOR("Senthilnathan Veppur <senthilnathanx.veppur@intel.com>");
 MODULE_DESCRIPTION("Intel SST Audio for Broxton");

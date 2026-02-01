@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel-based Virtual Machine -- Performance Monitoring Unit support
- *
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
- *
- * Authors:
- *   Avi Kivity   <avi@redhat.com>
- *   Gleb Natapov <gleb@redhat.com>
- *   Wei Huang    <wei@redhat.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/types.h>
@@ -23,54 +14,28 @@
 #include "lapic.h"
 #include "pmu.h"
 
-/* This is enough to filter the vast majority of currently defined events. */
+ 
 #define KVM_PMU_EVENT_FILTER_MAX_EVENTS 300
 
 struct x86_pmu_capability __read_mostly kvm_pmu_cap;
 EXPORT_SYMBOL_GPL(kvm_pmu_cap);
 
-/* Precise Distribution of Instructions Retired (PDIR) */
+ 
 static const struct x86_cpu_id vmx_pebs_pdir_cpu[] = {
 	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D, NULL),
 	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, NULL),
-	/* Instruction-Accurate PDIR (PDIR++) */
+	 
 	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X, NULL),
 	{}
 };
 
-/* Precise Distribution (PDist) */
+ 
 static const struct x86_cpu_id vmx_pebs_pdist_cpu[] = {
 	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X, NULL),
 	{}
 };
 
-/* NOTE:
- * - Each perf counter is defined as "struct kvm_pmc";
- * - There are two types of perf counters: general purpose (gp) and fixed.
- *   gp counters are stored in gp_counters[] and fixed counters are stored
- *   in fixed_counters[] respectively. Both of them are part of "struct
- *   kvm_pmu";
- * - pmu.c understands the difference between gp counters and fixed counters.
- *   However AMD doesn't support fixed-counters;
- * - There are three types of index to access perf counters (PMC):
- *     1. MSR (named msr): For example Intel has MSR_IA32_PERFCTRn and AMD
- *        has MSR_K7_PERFCTRn and, for families 15H and later,
- *        MSR_F15H_PERF_CTRn, where MSR_F15H_PERF_CTR[0-3] are
- *        aliased to MSR_K7_PERFCTRn.
- *     2. MSR Index (named idx): This normally is used by RDPMC instruction.
- *        For instance AMD RDPMC instruction uses 0000_0003h in ECX to access
- *        C001_0007h (MSR_K7_PERCTR3). Intel has a similar mechanism, except
- *        that it also supports fixed counters. idx can be used to as index to
- *        gp and fixed counters.
- *     3. Global PMC Index (named pmc): pmc is an index specific to PMU
- *        code. Each pmc, stored in kvm_pmc.idx field, is unique across
- *        all perf counters (both gp and fixed). The mapping relationship
- *        between pmc and perf counters is as the following:
- *        * Intel: [0 .. KVM_INTEL_PMC_MAX_GENERIC-1] <=> gp counters
- *                 [INTEL_PMC_IDX_FIXED .. INTEL_PMC_IDX_FIXED + 2] <=> fixed
- *        * AMD:   [0 .. AMD64_NUM_COUNTERS-1] and, for families 15H
- *          and later, [0 .. AMD64_NUM_COUNTERS_CORE-1] <=> gp counters
- */
+ 
 
 static struct kvm_pmu_ops kvm_pmu_ops __read_mostly;
 
@@ -100,15 +65,10 @@ static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
 
 	if (pmc->perf_event && pmc->perf_event->attr.precise_ip) {
 		if (!in_pmi) {
-			/*
-			 * TODO: KVM is currently _choosing_ to not generate records
-			 * for emulated instructions, avoiding BUFFER_OVF PMI when
-			 * there are no records. Strictly speaking, it should be done
-			 * as well in the right context to improve sampling accuracy.
-			 */
+			 
 			skip_pmi = true;
 		} else {
-			/* Indicate PEBS overflow PMI to guest. */
+			 
 			skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
 						      (unsigned long *)&pmu->global_status);
 		}
@@ -126,11 +86,7 @@ static void kvm_perf_overflow(struct perf_event *perf_event,
 {
 	struct kvm_pmc *pmc = perf_event->overflow_handler_context;
 
-	/*
-	 * Ignore overflow events for counters that are scheduled to be
-	 * reprogrammed, e.g. if a PMI for the previous event races with KVM's
-	 * handling of a related guest WRMSR.
-	 */
+	 
 	if (test_and_set_bit(pmc->idx, pmc_to_pmu(pmc)->reprogram_pmi))
 		return;
 
@@ -141,23 +97,12 @@ static void kvm_perf_overflow(struct perf_event *perf_event,
 
 static u64 pmc_get_pebs_precise_level(struct kvm_pmc *pmc)
 {
-	/*
-	 * For some model specific pebs counters with special capabilities
-	 * (PDIR, PDIR++, PDIST), KVM needs to raise the event precise
-	 * level to the maximum value (currently 3, backwards compatible)
-	 * so that the perf subsystem would assign specific hardware counter
-	 * with that capability for vPMC.
-	 */
+	 
 	if ((pmc->idx == 0 && x86_match_cpu(vmx_pebs_pdist_cpu)) ||
 	    (pmc->idx == 32 && x86_match_cpu(vmx_pebs_pdir_cpu)))
 		return 3;
 
-	/*
-	 * The non-zero precision level of guest event makes the ordinary
-	 * guest event becomes a guest PEBS event and triggers the host
-	 * PEBS PMI handler to determine whether the PEBS overflow PMI
-	 * comes from the host counters or the guest.
-	 */
+	 
 	return 1;
 }
 
@@ -183,20 +128,11 @@ static int pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type, u64 config,
 
 	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
 	    guest_cpuid_is_intel(pmc->vcpu)) {
-		/*
-		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
-		 * period. Just clear the sample period so at least
-		 * allocating the counter doesn't fail.
-		 */
+		 
 		attr.sample_period = 0;
 	}
 	if (pebs) {
-		/*
-		 * For most PEBS hardware events, the difference in the software
-		 * precision levels of guest and host PEBS events will not affect
-		 * the accuracy of the PEBS profiling result, because the "event IP"
-		 * in the PEBS record is calibrated on the guest side.
-		 */
+		 
 		attr.precise_ip = pmc_get_pebs_precise_level(pmc);
 	}
 
@@ -222,7 +158,7 @@ static void pmc_pause_counter(struct kvm_pmc *pmc)
 	if (!pmc->perf_event || pmc->is_paused)
 		return;
 
-	/* update counter, reset event value to avoid redundant accumulation */
+	 
 	counter += perf_event_pause(pmc->perf_event, true);
 	pmc->counter = counter & pmc_bitmask(pmc);
 	pmc->is_paused = true;
@@ -233,7 +169,7 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
 	if (!pmc->perf_event)
 		return false;
 
-	/* recalibrate sample period and check if it's accepted by perf core */
+	 
 	if (is_sampling_event(pmc->perf_event) &&
 	    perf_event_period(pmc->perf_event,
 			      get_sample_period(pmc, pmc->counter)))
@@ -243,7 +179,7 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
 	    (!!pmc->perf_event->attr.precise_ip))
 		return false;
 
-	/* reuse perf_event to serve as pmc_reprogram_counter() does*/
+	 
 	perf_event_enable(pmc->perf_event);
 	pmc->is_paused = false;
 
@@ -283,11 +219,7 @@ static int filter_sort_cmp(const void *pa, const void *pb)
 				   KVM_PMU_MASKED_ENTRY_EXCLUDE));
 }
 
-/*
- * For the event filter, searching is done on the 'includes' list and
- * 'excludes' list separately rather than on the 'events' list (which
- * has both).  As a result the exclude bit can be ignored.
- */
+ 
 static int filter_event_cmp(const void *pa, const void *pb)
 {
 	return filter_cmp(pa, pb, (KVM_PMU_MASKED_ENTRY_EVENT_SELECT));
@@ -326,10 +258,7 @@ static bool filter_contains_match(u64 *events, u64 nevents, u64 eventsel)
 	if (index < 0)
 		return false;
 
-	/*
-	 * Entries are sorted by the event select.  Walk the list in both
-	 * directions to process all entries with the targeted event select.
-	 */
+	 
 	for (i = index; i < nevents; i++) {
 		if (filter_event_cmp(&events[i], &event_select))
 			break;
@@ -433,12 +362,7 @@ static void reprogram_counter(struct kvm_pmc *pmc)
 
 	pmc->current_config = new_config;
 
-	/*
-	 * If reprogramming fails, e.g. due to contention, leave the counter's
-	 * regprogram bit set, i.e. opportunistically try again on the next PMU
-	 * refresh.  Don't make a new request as doing so can stall the guest
-	 * if reprogramming repeatedly fails.
-	 */
+	 
 	if (pmc_reprogram_counter(pmc, PERF_TYPE_RAW,
 				  (eventsel & pmu->raw_event_mask),
 				  !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
@@ -467,16 +391,12 @@ void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
 		reprogram_counter(pmc);
 	}
 
-	/*
-	 * Unused perf_events are only released if the corresponding MSRs
-	 * weren't accessed during the last vCPU time slice. kvm_arch_sched_in
-	 * triggers KVM_REQ_PMU if cleanup is needed.
-	 */
+	 
 	if (unlikely(pmu->need_cleanup))
 		kvm_pmu_cleanup(vcpu);
 }
 
-/* check if idx is a valid index to access PMU */
+ 
 bool kvm_pmu_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
 {
 	return static_call(kvm_x86_pmu_is_valid_rdpmc_ecx)(vcpu, idx);
@@ -605,17 +525,14 @@ int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 	u64 data = msr_info->data;
 	u64 diff;
 
-	/*
-	 * Note, AMD ignores writes to reserved bits and read-only PMU MSRs,
-	 * whereas Intel generates #GP on attempts to write reserved/RO MSRs.
-	 */
+	 
 	switch (msr) {
 	case MSR_CORE_PERF_GLOBAL_STATUS:
 		if (!msr_info->host_initiated)
-			return 1; /* RO MSR */
+			return 1;  
 		fallthrough;
 	case MSR_AMD64_PERF_CNTR_GLOBAL_STATUS:
-		/* Per PPR, Read-only MSR. Writes are ignored. */
+		 
 		if (!msr_info->host_initiated)
 			break;
 
@@ -638,10 +555,7 @@ int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 		}
 		break;
 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
-		/*
-		 * GLOBAL_OVF_CTRL, a.k.a. GLOBAL STATUS_RESET, clears bits in
-		 * GLOBAL_STATUS, and so the set of reserved bits is the same.
-		 */
+		 
 		if (data & pmu->global_status_mask)
 			return 1;
 		fallthrough;
@@ -685,19 +599,13 @@ void kvm_pmu_reset(struct kvm_vcpu *vcpu)
 }
 
 
-/*
- * Refresh the PMU configuration for the vCPU, e.g. if userspace changes CPUID
- * and/or PERF_CAPABILITIES.
- */
+ 
 void kvm_pmu_refresh(struct kvm_vcpu *vcpu)
 {
 	if (KVM_BUG_ON(kvm_vcpu_has_run(vcpu), vcpu->kvm))
 		return;
 
-	/*
-	 * Stop/release all existing counters/events before realizing the new
-	 * vPMU model.
-	 */
+	 
 	kvm_pmu_reset(vcpu);
 
 	bitmap_zero(vcpu_to_pmu(vcpu)->all_valid_pmc_idx, X86_PMC_IDX_MAX);
@@ -715,7 +623,7 @@ void kvm_pmu_init(struct kvm_vcpu *vcpu)
 	kvm_pmu_refresh(vcpu);
 }
 
-/* Release perf_events for vPMCs that have been unused for a full time slice.  */
+ 
 void kvm_pmu_cleanup(struct kvm_vcpu *vcpu)
 {
 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
@@ -790,7 +698,7 @@ void kvm_pmu_trigger_event(struct kvm_vcpu *vcpu, u64 perf_hw_id)
 		if (!pmc || !pmc_event_is_allowed(pmc))
 			continue;
 
-		/* Ignore checks for edge detect, pin control, invert and CMASK bits */
+		 
 		if (eventsel_match_perf_hw_id(pmc, perf_hw_id) && cpl_is_matched(pmc))
 			kvm_pmu_incr_counter(pmc);
 	}
@@ -818,23 +726,11 @@ static void convert_to_masked_filter(struct kvm_x86_pmu_event_filter *filter)
 	int i, j;
 
 	for (i = 0, j = 0; i < filter->nevents; i++) {
-		/*
-		 * Skip events that are impossible to match against a guest
-		 * event.  When filtering, only the event select + unit mask
-		 * of the guest event is used.  To maintain backwards
-		 * compatibility, impossible filters can't be rejected :-(
-		 */
+		 
 		if (filter->events[i] & ~(kvm_pmu_ops.EVENTSEL_EVENT |
 					  ARCH_PERFMON_EVENTSEL_UMASK))
 			continue;
-		/*
-		 * Convert userspace events to a common in-kernel event so
-		 * only one code path is needed to support both events.  For
-		 * the in-kernel events use masked events because they are
-		 * flexible enough to handle both cases.  To convert to masked
-		 * events all that's needed is to add an "all ones" umask_mask,
-		 * (unmasked filter events don't support EXCLUDE).
-		 */
+		 
 		filter->events[j++] = filter->events[i] |
 				      (0xFFULL << KVM_PMU_MASKED_ENTRY_UMASK_MASK_SHIFT);
 	}
@@ -851,18 +747,12 @@ static int prepare_filter_lists(struct kvm_x86_pmu_event_filter *filter)
 	else if (!is_masked_filter_valid(filter))
 		return -EINVAL;
 
-	/*
-	 * Sort entries by event select and includes vs. excludes so that all
-	 * entries for a given event select can be processed efficiently during
-	 * filtering.  The EXCLUDE flag uses a more significant bit than the
-	 * event select, and so the sorted list is also effectively split into
-	 * includes and excludes sub-lists.
-	 */
+	 
 	sort(&filter->events, filter->nevents, sizeof(filter->events[0]),
 	     filter_sort_cmp, NULL);
 
 	i = filter->nevents;
-	/* Find the first EXCLUDE event (only supported for masked events). */
+	 
 	if (filter->flags & KVM_PMU_EVENT_FLAG_MASKED_EVENTS) {
 		for (i = 0; i < filter->nevents; i++) {
 			if (filter->events[i] & KVM_PMU_MASKED_ENTRY_EXCLUDE)

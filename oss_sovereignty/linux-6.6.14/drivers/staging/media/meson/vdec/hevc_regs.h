@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __MESON_VDEC_HEVC_REGS_H_
 #define __MESON_VDEC_HEVC_REGS_H_

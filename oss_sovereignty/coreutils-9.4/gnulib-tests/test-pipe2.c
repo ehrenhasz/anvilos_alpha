@@ -1,33 +1,7 @@
-/* Test of pipe2.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <unistd.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (pipe2, int, (int[2], int));
-
-#include <fcntl.h>
-
-#if defined _WIN32 && ! defined __CYGWIN__
-/* Get declarations of the native Windows API functions.  */
+ 
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
-/* Get _get_osfhandle.  */
+ 
 # if GNULIB_MSVC_NOTHROW
 #  include "msvc-nothrow.h"
 # else
@@ -41,14 +15,12 @@ SIGNATURE_CHECK (pipe2, int, (int[2], int));
 # include "nonblocking.h"
 #endif
 
-/* Return true if FD is open.  */
+ 
 static bool
 is_open (int fd)
 {
 #if defined _WIN32 && ! defined __CYGWIN__
-  /* On native Windows, the initial state of unassigned standard file
-     descriptors is that they are open but point to an
-     INVALID_HANDLE_VALUE, and there is no fcntl.  */
+   
   return (HANDLE) _get_osfhandle (fd) != INVALID_HANDLE_VALUE;
 #else
 # ifndef F_GETFL
@@ -58,7 +30,7 @@ is_open (int fd)
 #endif
 }
 
-/* Return true if FD is not inherited to child processes.  */
+ 
 static bool
 is_cloexec (int fd)
 {

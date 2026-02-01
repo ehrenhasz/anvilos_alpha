@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2010 NXP Semiconductors
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -13,9 +11,7 @@
 #include <linux/io.h>
 #include <linux/of.h>
 
-/*
- * Clock and Power control register offsets
- */
+ 
 #define LPC32XX_RTC_UCOUNT		0x00
 #define LPC32XX_RTC_DCOUNT		0x04
 #define LPC32XX_RTC_MATCH0		0x08
@@ -71,7 +67,7 @@ static int lpc32xx_rtc_set_time(struct device *dev, struct rtc_time *time)
 
 	spin_lock_irq(&rtc->lock);
 
-	/* RTC must be disabled during count update */
+	 
 	tmp = rtc_readl(rtc, LPC32XX_RTC_CTRL);
 	rtc_writel(rtc, LPC32XX_RTC_CTRL, tmp | LPC32XX_RTC_CTRL_CNTR_DIS);
 	rtc_writel(rtc, LPC32XX_RTC_UCOUNT, secs);
@@ -107,7 +103,7 @@ static int lpc32xx_rtc_set_alarm(struct device *dev,
 
 	spin_lock_irq(&rtc->lock);
 
-	/* Disable alarm during update */
+	 
 	tmp = rtc_readl(rtc, LPC32XX_RTC_CTRL);
 	rtc_writel(rtc, LPC32XX_RTC_CTRL, tmp & ~LPC32XX_RTC_CTRL_MATCH0);
 
@@ -155,16 +151,13 @@ static irqreturn_t lpc32xx_rtc_alarm_interrupt(int irq, void *dev)
 
 	spin_lock(&rtc->lock);
 
-	/* Disable alarm interrupt */
+	 
 	rtc_writel(rtc, LPC32XX_RTC_CTRL,
 		rtc_readl(rtc, LPC32XX_RTC_CTRL) &
 			  ~LPC32XX_RTC_CTRL_MATCH0);
 	rtc->alarm_enabled = 0;
 
-	/*
-	 * Write a large value to the match value so the RTC won't
-	 * keep firing the match status
-	 */
+	 
 	rtc_writel(rtc, LPC32XX_RTC_MATCH0, 0xFFFFFFFF);
 	rtc_writel(rtc, LPC32XX_RTC_INTSTAT, LPC32XX_RTC_INTSTAT_MATCH0);
 
@@ -199,11 +192,7 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 
 	spin_lock_init(&rtc->lock);
 
-	/*
-	 * The RTC is on a separate power domain and can keep it's state
-	 * across a chip power cycle. If the RTC has never been previously
-	 * setup, then set it up now for the first time.
-	 */
+	 
 	tmp = rtc_readl(rtc, LPC32XX_RTC_CTRL);
 	if (rtc_readl(rtc, LPC32XX_RTC_KEY) != LPC32XX_RTC_KEY_ONSW_LOADVAL) {
 		tmp &= ~(LPC32XX_RTC_CTRL_SW_RESET |
@@ -215,14 +204,14 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 			LPC32XX_RTC_CTRL_ONSW_FORCE_HI);
 		rtc_writel(rtc, LPC32XX_RTC_CTRL, tmp);
 
-		/* Clear latched interrupt states */
+		 
 		rtc_writel(rtc, LPC32XX_RTC_MATCH0, 0xFFFFFFFF);
 		rtc_writel(rtc, LPC32XX_RTC_INTSTAT,
 			   LPC32XX_RTC_INTSTAT_MATCH0 |
 			   LPC32XX_RTC_INTSTAT_MATCH1 |
 			   LPC32XX_RTC_INTSTAT_ONSW);
 
-		/* Write key value to RTC so it won't reload on reset */
+		 
 		rtc_writel(rtc, LPC32XX_RTC_KEY,
 			   LPC32XX_RTC_KEY_ONSW_LOADVAL);
 	} else {
@@ -243,10 +232,7 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * IRQ is enabled after device registration in case alarm IRQ
-	 * is pending upon suspend exit.
-	 */
+	 
 	rtc->irq = platform_get_irq(pdev, 0);
 	if (rtc->irq < 0) {
 		dev_warn(&pdev->dev, "Can't get interrupt resource\n");
@@ -289,7 +275,7 @@ static int lpc32xx_rtc_resume(struct device *dev)
 	return 0;
 }
 
-/* Unconditionally disable the alarm */
+ 
 static int lpc32xx_rtc_freeze(struct device *dev)
 {
 	struct lpc32xx_rtc *rtc = dev_get_drvdata(dev);

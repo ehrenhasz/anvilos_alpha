@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. */
+
+ 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -10,31 +10,9 @@
 
 #include "core.h"
 
-/**
- * DOC: cxl registers
- *
- * CXL device capabilities are enumerated by PCI DVSEC (Designated
- * Vendor-specific) and / or descriptors provided by platform firmware.
- * They can be defined as a set like the device and component registers
- * mandated by CXL Section 8.1.12.2 Memory Device PCIe Capabilities and
- * Extended Capabilities, or they can be individual capabilities
- * appended to bridged and endpoint devices.
- *
- * Provide common infrastructure for enumerating and mapping these
- * discrete capabilities.
- */
+ 
 
-/**
- * cxl_probe_component_regs() - Detect CXL Component register blocks
- * @dev: Host device of the @base mapping
- * @base: Mapping containing the HDM Decoder Capability Header
- * @map: Map object describing the register block information found
- *
- * See CXL 2.0 8.2.4 Component Register Layout and Definition
- * See CXL 2.0 8.2.5.5 CXL Device Register Interface
- *
- * Probe for component register information and return it in map object.
- */
+ 
 void cxl_probe_component_regs(struct device *dev, void __iomem *base,
 			      struct cxl_component_reg_map *map)
 {
@@ -43,10 +21,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
 
 	*map = (struct cxl_component_reg_map) { 0 };
 
-	/*
-	 * CXL.cache and CXL.mem registers are at offset 0x1000 as defined in
-	 * CXL 2.0 8.2.4 Table 141.
-	 */
+	 
 	base += CXL_CM_OFFSET;
 
 	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
@@ -57,7 +32,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
 		return;
 	}
 
-	/* It's assumed that future versions will be backward compatible */
+	 
 	cap_count = FIELD_GET(CXL_CM_CAP_HDR_ARRAY_SIZE_MASK, cap_array);
 
 	for (cap = 1; cap <= cap_count; cap++) {
@@ -108,14 +83,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_probe_component_regs, CXL);
 
-/**
- * cxl_probe_device_regs() - Detect CXL Device register blocks
- * @dev: Host device of the @base mapping
- * @base: Mapping of CXL 2.0 8.2.8 CXL Device Register Interface
- * @map: Map object describing the register block information found
- *
- * Probe for device register information and return it in map object.
- */
+ 
 void cxl_probe_device_regs(struct device *dev, void __iomem *base,
 			   struct cxl_device_reg_map *map)
 {
@@ -288,19 +256,7 @@ static bool cxl_decode_regblock(struct pci_dev *pdev, u32 reg_lo, u32 reg_hi,
 	return true;
 }
 
-/**
- * cxl_find_regblock_instance() - Locate a register block by type / index
- * @pdev: The CXL PCI device to enumerate.
- * @type: Register Block Indicator id
- * @map: Enumeration output, clobbered on error
- * @index: Index into which particular instance of a regblock wanted in the
- *	   order found in register locator DVSEC.
- *
- * Return: 0 if register block enumerated, negative error code otherwise
- *
- * A CXL DVSEC may point to one or more register blocks, search for them
- * by @type and @index.
- */
+ 
 int cxl_find_regblock_instance(struct pci_dev *pdev, enum cxl_regloc_type type,
 			       struct cxl_register_map *map, int index)
 {
@@ -345,17 +301,7 @@ int cxl_find_regblock_instance(struct pci_dev *pdev, enum cxl_regloc_type type,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_find_regblock_instance, CXL);
 
-/**
- * cxl_find_regblock() - Locate register blocks by type
- * @pdev: The CXL PCI device to enumerate.
- * @type: Register Block Indicator id
- * @map: Enumeration output, clobbered on error
- *
- * Return: 0 if register block enumerated, negative error code otherwise
- *
- * A CXL DVSEC may point to one or more register blocks, search for them
- * by @type.
- */
+ 
 int cxl_find_regblock(struct pci_dev *pdev, enum cxl_regloc_type type,
 		      struct cxl_register_map *map)
 {
@@ -363,15 +309,7 @@ int cxl_find_regblock(struct pci_dev *pdev, enum cxl_regloc_type type,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_find_regblock, CXL);
 
-/**
- * cxl_count_regblock() - Count instances of a given regblock type.
- * @pdev: The CXL PCI device to enumerate.
- * @type: Register Block Indicator id
- *
- * Some regblocks may be repeated. Count how many instances.
- *
- * Return: count of matching regblocks.
- */
+ 
 int cxl_count_regblock(struct pci_dev *pdev, enum cxl_regloc_type type)
 {
 	struct cxl_register_map map;
@@ -483,12 +421,7 @@ resource_size_t __rcrb_to_component(struct device *dev, struct cxl_rcrb_info *ri
 	if (which == CXL_RCRB_UPSTREAM)
 		rcrb += SZ_4K;
 
-	/*
-	 * RCRB's BAR[0..1] point to component block containing CXL
-	 * subsystem component registers. MEMBAR extraction follows
-	 * the PCI Base spec here, esp. 64 bit extraction and memory
-	 * ranges alignment (6.0, 7.5.1.2.1).
-	 */
+	 
 	if (!request_mem_region(rcrb, SZ_4K, "CXL RCRB"))
 		return CXL_RESOURCE_NONE;
 	addr = ioremap(rcrb, SZ_4K);
@@ -505,10 +438,7 @@ resource_size_t __rcrb_to_component(struct device *dev, struct cxl_rcrb_info *ri
 	iounmap(addr);
 	release_mem_region(rcrb, SZ_4K);
 
-	/*
-	 * Sanity check, see CXL 3.0 Figure 9-8 CXL Device that Does Not
-	 * Remap Upstream Port and Component Registers
-	 */
+	 
 	if (id == U32_MAX) {
 		if (which == CXL_RCRB_DOWNSTREAM)
 			dev_err(dev, "Failed to access Downstream Port RCRB\n");
@@ -516,7 +446,7 @@ resource_size_t __rcrb_to_component(struct device *dev, struct cxl_rcrb_info *ri
 	}
 	if (!(cmd & PCI_COMMAND_MEMORY))
 		return CXL_RESOURCE_NONE;
-	/* The RCRB is a Memory Window, and the MEM_TYPE_1M bit is obsolete */
+	 
 	if (bar0 & (PCI_BASE_ADDRESS_MEM_TYPE_1M | PCI_BASE_ADDRESS_SPACE_IO))
 		return CXL_RESOURCE_NONE;
 
@@ -527,7 +457,7 @@ resource_size_t __rcrb_to_component(struct device *dev, struct cxl_rcrb_info *ri
 	if (!component_reg_phys)
 		return CXL_RESOURCE_NONE;
 
-	/* MEMBAR is block size (64k) aligned. */
+	 
 	if (!IS_ALIGNED(component_reg_phys, CXL_COMPONENT_REG_BLOCK_SIZE))
 		return CXL_RESOURCE_NONE;
 

@@ -1,11 +1,4 @@
-/*
- * Test functionality of BPF filters for SO_REUSEPORT.  The tests below will use
- * a BPF program (both classic and extended) to read the first word from an
- * incoming packet (expected to be in network byte-order), calculate a modulus
- * of that number, and then dispatch the packet to the Nth socket using the
- * result.  These tests are run for each supported address family and protocol.
- * Additionally, a few edge cases in the implementation are tested.
- */
+ 
 
 #include <errno.h>
 #include <error.h>
@@ -96,13 +89,13 @@ static void attach_ebpf(int fd, uint16_t mod)
 
 	int bpf_fd;
 	const struct bpf_insn prog[] = {
-		/* BPF_MOV64_REG(BPF_REG_6, BPF_REG_1) */
+		 
 		{ BPF_ALU64 | BPF_MOV | BPF_X, BPF_REG_6, BPF_REG_1, 0, 0 },
-		/* BPF_LD_ABS(BPF_W, 0) R0 = (uint32_t)skb[0] */
+		 
 		{ BPF_LD | BPF_ABS | BPF_W, 0, 0, 0, 0 },
-		/* BPF_ALU64_IMM(BPF_MOD, BPF_REG_0, mod) */
+		 
 		{ BPF_ALU64 | BPF_MOD | BPF_K, BPF_REG_0, 0, 0, mod },
-		/* BPF_EXIT_INSN() */
+		 
 		{ BPF_JMP | BPF_EXIT, 0, 0, 0, 0 }
 	};
 	union bpf_attr attr;
@@ -131,11 +124,11 @@ static void attach_ebpf(int fd, uint16_t mod)
 static void attach_cbpf(int fd, uint16_t mod)
 {
 	struct sock_filter code[] = {
-		/* A = (uint32_t)skb[0] */
+		 
 		{ BPF_LD  | BPF_W | BPF_ABS, 0, 0, 0 },
-		/* A = A % mod */
+		 
 		{ BPF_ALU | BPF_MOD, 0, 0, mod },
-		/* return A */
+		 
 		{ BPF_RET | BPF_A, 0, 0, 0 },
 	};
 	struct sock_fprog p = {
@@ -411,7 +404,7 @@ static void test_filter_without_bind(void)
 void enable_fastopen(void)
 {
 	int fd = open("/proc/sys/net/ipv4/tcp_fastopen", 0);
-	int rw_mask = 3;  /* bit 1: client side; bit-2 server side */
+	int rw_mask = 3;   
 	int val, size;
 	char buf[16];
 
@@ -458,9 +451,7 @@ static __attribute__((destructor)) void main_dtor(void)
 int main(void)
 {
 	fprintf(stderr, "---- IPv4 UDP ----\n");
-	/* NOTE: UDP socket lookups traverse a different code path when there
-	 * are > 10 sockets in a group.  Run the bpf test through both paths.
-	 */
+	 
 	test_reuseport_ebpf((struct test_params) {
 		.recv_family = AF_INET,
 		.send_family = AF_INET,
@@ -566,7 +557,7 @@ int main(void)
 		.recv_port = 8007,
 		.send_port_min = 9100});
 
-	/* TCP fastopen is required for the TCP tests */
+	 
 	enable_fastopen();
 	fprintf(stderr, "---- IPv4 TCP ----\n");
 	test_reuseport_ebpf((struct test_params) {

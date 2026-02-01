@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt6795-clk.h>
 #include <linux/module.h>
@@ -29,7 +26,7 @@ static const struct mtk_gate_regs mm1_cg_regs = {
 };
 
 static const struct mtk_gate mm_gates[] = {
-	/* MM0 */
+	 
 	GATE_MM0(CLK_MM_SMI_COMMON, "mm_smi_common", "mm_sel", 0),
 	GATE_MM0(CLK_MM_SMI_LARB0, "mm_smi_larb0", "mm_sel", 1),
 	GATE_MM0(CLK_MM_CAM_MDP, "mm_cam_mdp", "mm_sel", 2),
@@ -63,7 +60,7 @@ static const struct mtk_gate mm_gates[] = {
 	GATE_MM0(CLK_MM_DISP_MERGE, "mm_disp_merge", "mm_sel", 30),
 	GATE_MM0(CLK_MM_DISP_OD, "mm_disp_od", "mm_sel", 31),
 
-	/* MM1 */
+	 
 	GATE_MM1(CLK_MM_DISP_PWM0MM, "mm_disp_pwm0mm", "mm_sel", 0),
 	GATE_MM1(CLK_MM_DISP_PWM026M, "mm_disp_pwm026m", "pwm_sel", 1),
 	GATE_MM1(CLK_MM_DISP_PWM1MM, "mm_disp_pwm1mm", "mm_sel", 2),
@@ -83,7 +80,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt6795_mm_id_table[] = {
 	{ .name = "clk-mt6795-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt6795_mm_id_table);
 

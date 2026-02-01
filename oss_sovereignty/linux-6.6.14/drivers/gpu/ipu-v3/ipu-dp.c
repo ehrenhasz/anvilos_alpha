@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -152,7 +149,7 @@ static void ipu_dp_csc_init(struct ipu_flow *flow,
 		writel(0x200 | (2 << 14) | (0x200 << 16) | (2 << 30),
 				flow->base + DP_CSC_1);
 	} else if (ycbcr_enc == DRM_COLOR_YCBCR_BT709) {
-		/* Rec.709 limited range */
+		 
 		writel(0x095 | (0x000 << 16), flow->base + DP_CSC_A_0);
 		writel(0x0e5 | (0x095 << 16), flow->base + DP_CSC_A_1);
 		writel(0x3e5 | (0x3bc << 16), flow->base + DP_CSC_A_2);
@@ -162,7 +159,7 @@ static void ipu_dp_csc_init(struct ipu_flow *flow,
 		writel(0x09a | (1 << 14) | (0x3dbe << 16) | (1 << 30),
 				flow->base + DP_CSC_1);
 	} else {
-		/* BT.601 limited range */
+		 
 		writel(0x095 | (0x000 << 16), flow->base + DP_CSC_A_0);
 		writel(0x0cc | (0x095 << 16), flow->base + DP_CSC_A_1);
 		writel(0x3ce | (0x398 << 16), flow->base + DP_CSC_A_2);
@@ -195,20 +192,14 @@ int ipu_dp_setup_channel(struct ipu_dp *dp,
 		flow->out_cs = out;
 
 	if (flow->foreground.in_cs == flow->background.in_cs) {
-		/*
-		 * foreground and background are of same colorspace, put
-		 * colorspace converter after combining unit.
-		 */
+		 
 		ipu_dp_csc_init(flow, ycbcr_enc, range,
 				flow->foreground.in_cs, flow->out_cs,
 				DP_COM_CONF_CSC_DEF_BOTH);
 	} else {
 		if (flow->foreground.in_cs == IPUV3_COLORSPACE_UNKNOWN ||
 		    flow->foreground.in_cs == flow->out_cs)
-			/*
-			 * foreground identical to output, apply color
-			 * conversion on background
-			 */
+			 
 			ipu_dp_csc_init(flow, ycbcr_enc, range,
 					flow->background.in_cs,
 					flow->out_cs, DP_COM_CONF_CSC_DEF_BG);

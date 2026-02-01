@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -20,10 +20,7 @@
 #include <linux/zalloc.h>
 #include "debug.h"
 
-/*
- * Include definition of find_map() also used in perf-read-vdso.c for
- * building perf-read-vdso32 and perf-read-vdsox32.
- */
+ 
 #include "find-map.c"
 
 #define VDSO__TEMP_FILE_NAME "/tmp/perf-vdso.so-XXXXXX"
@@ -133,7 +130,7 @@ static struct dso *__machine__addnew_vdso(struct machine *machine, const char *s
 	if (dso != NULL) {
 		__dsos__add(&machine->dsos, dso);
 		dso__set_long_name(dso, long_name, false);
-		/* Put dso here because __dsos_add already got it */
+		 
 		dso__put(dso);
 	}
 

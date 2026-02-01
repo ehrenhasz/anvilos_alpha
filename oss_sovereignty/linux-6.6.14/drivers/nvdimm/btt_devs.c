@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/device.h>
 #include <linux/sizes.h>
@@ -130,7 +128,7 @@ static ssize_t size_show(struct device *dev,
 	if (dev->driver)
 		rc = sprintf(buf, "%llu\n", nd_btt->size);
 	else {
-		/* no size to convey if the btt instance is disabled */
+		 
 		rc = -ENXIO;
 	}
 	device_unlock(dev);
@@ -232,18 +230,7 @@ struct device *nd_btt_create(struct nd_region *nd_region)
 	return dev;
 }
 
-/**
- * nd_btt_arena_is_valid - check if the metadata layout is valid
- * @nd_btt:	device with BTT geometry and backing device info
- * @super:	pointer to the arena's info block being tested
- *
- * Check consistency of the btt info block with itself by validating
- * the checksum, and with the parent namespace by verifying the
- * parent_uuid contained in the info block with the one supplied in.
- *
- * Returns:
- * false for an invalid info block, true for a valid one
- */
+ 
 bool nd_btt_arena_is_valid(struct nd_btt *nd_btt, struct btt_sb *super)
 {
 	const uuid_t *ns_uuid = nd_dev_to_uuid(&nd_btt->ndns->dev);
@@ -264,7 +251,7 @@ bool nd_btt_arena_is_valid(struct nd_btt *nd_btt, struct btt_sb *super)
 		return false;
 	super->checksum = cpu_to_le64(checksum);
 
-	/* TODO: figure out action for this */
+	 
 	if ((le32_to_cpu(super->flags) & IB_FLAG_ERROR_MASK) != 0)
 		dev_info(&nd_btt->dev, "Found arena with an error flag\n");
 
@@ -276,7 +263,7 @@ int nd_btt_version(struct nd_btt *nd_btt, struct nd_namespace_common *ndns,
 		struct btt_sb *btt_sb)
 {
 	if (ndns->claim_class == NVDIMM_CCLASS_BTT2) {
-		/* Probe/setup for BTT v2.0 */
+		 
 		nd_btt->initial_offset = 0;
 		nd_btt->version_major = 2;
 		nd_btt->version_minor = 0;
@@ -288,10 +275,7 @@ int nd_btt_version(struct nd_btt *nd_btt, struct nd_namespace_common *ndns,
 				(le16_to_cpu(btt_sb->version_minor) != 0))
 			return -ENODEV;
 	} else {
-		/*
-		 * Probe/setup for BTT v1.1 (NVDIMM_CCLASS_NONE or
-		 * NVDIMM_CCLASS_BTT)
-		 */
+		 
 		nd_btt->initial_offset = SZ_4K;
 		nd_btt->version_major = 1;
 		nd_btt->version_minor = 1;

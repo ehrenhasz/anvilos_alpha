@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tascam.h - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+ 
+ 
 
 #ifndef SOUND_TASCAM_H_INCLUDED
 #define SOUND_TASCAM_H_INCLUDED
@@ -82,14 +78,14 @@ struct snd_tscm {
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
 
-	/* For MIDI message incoming transactions. */
+	 
 	struct fw_address_handler async_handler;
 	struct snd_rawmidi_substream *tx_midi_substreams[TSCM_MIDI_IN_PORT_MAX];
 
-	/* For MIDI message outgoing transactions. */
+	 
 	struct snd_fw_async_midi_port out_ports[TSCM_MIDI_OUT_PORT_MAX];
 
-	// A cache of status information in tx isoc packets.
+	
 	__be32 state[SNDRV_FIREWIRE_TASCAM_STATE_COUNT];
 	struct snd_hwdep *hwdep;
 	struct snd_firewire_tascam_change queue[SND_TSCM_QUEUE_COUNT];
@@ -111,12 +107,12 @@ struct snd_tscm {
 #define TSCM_OFFSET_UNKNOWN		0x0204
 #define TSCM_OFFSET_START_STREAMING	0x0208
 #define TSCM_OFFSET_ISOC_RX_CH		0x020c
-#define TSCM_OFFSET_ISOC_RX_ON		0x0210	/* Little conviction. */
+#define TSCM_OFFSET_ISOC_RX_ON		0x0210	 
 #define TSCM_OFFSET_TX_PCM_CHANNELS	0x0214
 #define TSCM_OFFSET_RX_PCM_CHANNELS	0x0218
 #define TSCM_OFFSET_MULTIPLEX_MODE	0x021c
 #define TSCM_OFFSET_ISOC_TX_ON		0x0220
-/* Unknown				0x0224 */
+ 
 #define TSCM_OFFSET_CLOCK_STATUS	0x0228
 #define TSCM_OFFSET_SET_OPTION		0x022c
 
@@ -128,25 +124,25 @@ struct snd_tscm {
 
 #define TSCM_OFFSET_MIDI_RX_QUAD	0x4000
 
-// Although FE-8 supports the above registers, it has no I/O interfaces for
-// audio samples and music messages. Otherwise it supports another notification
-// for status and control message as well as LED brightening. The message
-// consists of quadlet-aligned data up to 32 quadlets. The first byte of message
-// is fixed to 0x40. The second byte is between 0x00 to 0x1f and represent each
-// control:
-//   fader:	0x00-0x07
-//   button:	0x0d, 0x0e
-//   knob:	0x14-0x1b
-//   sensing:	0x0b
-//
-// The rest two bytes represent state of the controls; e.g. current value for
-// fader and knob, bitmasks for button and sensing.
-// Just after turning on, 32 quadlets messages with 0x00-0x1f are immediately
-// sent in one transaction. After, several quadlets are sent in one transaction.
-//
-// TSCM_OFFSET_FE8_CTL_TX_ON		0x0310
-// TSCM_OFFSET_FE8_CTL_TX_ADDR_HI	0x0314
-// TSCM_OFFSET_FE8_CTL_TX_ADDR_LO	0x0318
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 enum snd_tscm_clock {
 	SND_TSCM_CLOCK_INTERNAL = 0,

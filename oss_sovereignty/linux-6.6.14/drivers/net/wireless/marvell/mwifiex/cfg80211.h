@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: CFG80211
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef __MWIFIEX_CFG80211__
 #define __MWIFIEX_CFG80211__

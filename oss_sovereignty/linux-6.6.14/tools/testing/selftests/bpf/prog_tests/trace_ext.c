@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <test_progs.h>
@@ -30,7 +30,7 @@ void test_trace_ext(void)
 		.repeat = 1,
 	);
 
-	/* open/load/attach test_pkt_md_access */
+	 
 	skel_pkt = test_pkt_md_access__open_and_load();
 	if (CHECK(!skel_pkt, "setup", "classifier/test_pkt_md_access open failed\n"))
 		goto cleanup;
@@ -42,16 +42,16 @@ void test_trace_ext(void)
 	prog = skel_pkt->progs.test_pkt_md_access;
 	pkt_fd = bpf_program__fd(prog);
 
-	/* open extension */
+	 
 	skel_ext = test_trace_ext__open();
 	if (CHECK(!skel_ext, "setup", "freplace/test_pkt_md_access open failed\n"))
 		goto cleanup;
 
-	/* set extension's attach target - test_pkt_md_access  */
+	 
 	prog = skel_ext->progs.test_pkt_md_access_new;
 	bpf_program__set_attach_target(prog, pkt_fd, "test_pkt_md_access");
 
-	/* load/attach extension */
+	 
 	err = test_trace_ext__load(skel_ext);
 	if (CHECK(err, "setup", "freplace/test_pkt_md_access load failed\n")) {
 		libbpf_strerror(err, buf, sizeof(buf));
@@ -66,20 +66,20 @@ void test_trace_ext(void)
 	prog = skel_ext->progs.test_pkt_md_access_new;
 	ext_fd = bpf_program__fd(prog);
 
-	/* open tracing  */
+	 
 	skel_trace = test_trace_ext_tracing__open();
 	if (CHECK(!skel_trace, "setup", "tracing/test_pkt_md_access_new open failed\n"))
 		goto cleanup;
 
-	/* set tracing's attach target - fentry */
+	 
 	prog = skel_trace->progs.fentry;
 	bpf_program__set_attach_target(prog, ext_fd, "test_pkt_md_access_new");
 
-	/* set tracing's attach target - fexit */
+	 
 	prog = skel_trace->progs.fexit;
 	bpf_program__set_attach_target(prog, ext_fd, "test_pkt_md_access_new");
 
-	/* load/attach tracing */
+	 
 	err = test_trace_ext_tracing__load(skel_trace);
 	if (!ASSERT_OK(err, "tracing/test_pkt_md_access_new load")) {
 		libbpf_strerror(err, buf, sizeof(buf));
@@ -91,7 +91,7 @@ void test_trace_ext(void)
 	if (!ASSERT_OK(err, "tracing/test_pkt_md_access_new attach"))
 		goto cleanup;
 
-	/* trigger the test */
+	 
 	err = bpf_prog_test_run_opts(pkt_fd, &topts);
 	ASSERT_OK(err, "test_run_opts err");
 	ASSERT_OK(topts.retval, "test_run_opts retval");

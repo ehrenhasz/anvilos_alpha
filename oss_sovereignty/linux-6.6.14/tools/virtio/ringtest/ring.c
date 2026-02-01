@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Simple descriptor-based ring. virtio 0.9 compatible event index is used for
- * signalling, unconditionally.
- */
+
+ 
 #define _GNU_SOURCE
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-/* Next - Where next entry will be written.
- * Prev - "Next" value when event triggered previously.
- * Event - Peer requested event after writing this entry.
- */
+ 
 static inline bool need_event(unsigned short event,
 			      unsigned short next,
 			      unsigned short prev)
@@ -23,11 +14,7 @@ static inline bool need_event(unsigned short event,
 	return (unsigned short)(next - event - 1) < (unsigned short)(next - prev);
 }
 
-/* Design:
- * Guest adds descriptors with unique index values and DESC_HW in flags.
- * Host overwrites used descriptors with correct len, index, and DESC_HW clear.
- * Flags are always set last.
- */
+ 
 #define DESC_HW 0x1
 
 struct desc {
@@ -37,10 +24,10 @@ struct desc {
 	unsigned long long addr;
 };
 
-/* how much padding is needed to avoid false cache sharing */
+ 
 #define HOST_GUEST_PADDING 0x80
 
-/* Mostly read */
+ 
 struct event {
 	unsigned short kick_index;
 	unsigned char reserved0[HOST_GUEST_PADDING - 2];
@@ -49,7 +36,7 @@ struct event {
 };
 
 struct data {
-	void *buf; /* descriptor is writeable, we can't get buf from there */
+	void *buf;  
 	void *data;
 } *data;
 
@@ -65,15 +52,13 @@ struct guest {
 } guest;
 
 struct host {
-	/* we do not need to track last avail index
-	 * unless we have more than one in flight.
-	 */
+	 
 	unsigned used_idx;
 	unsigned called_used_idx;
 	unsigned char reserved[HOST_GUEST_PADDING - 4];
 } host;
 
-/* implemented by ring */
+ 
 void alloc_ring(void)
 {
 	int ret;
@@ -108,7 +93,7 @@ void alloc_ring(void)
 	}
 }
 
-/* guest side */
+ 
 int add_inbuf(unsigned len, void *buf, void *datap)
 {
 	unsigned head, index;
@@ -119,21 +104,15 @@ int add_inbuf(unsigned len, void *buf, void *datap)
 	guest.num_free--;
 	head = (ring_size - 1) & (guest.avail_idx++);
 
-	/* Start with a write. On MESI architectures this helps
-	 * avoid a shared state with consumer that is polling this descriptor.
-	 */
+	 
 	ring[head].addr = (unsigned long)(void*)buf;
 	ring[head].len = len;
-	/* read below might bypass write above. That is OK because it's just an
-	 * optimization. If this happens, we will get the cache line in a
-	 * shared state which is unfortunate, but probably not worth it to
-	 * add an explicit full barrier to avoid this.
-	 */
+	 
 	barrier();
 	index = ring[head].index;
 	data[index].buf = buf;
 	data[index].data = datap;
-	/* Barrier A (for pairing) */
+	 
 	smp_release();
 	ring[head].flags = DESC_HW;
 
@@ -148,7 +127,7 @@ void *get_buf(unsigned *lenp, void **bufp)
 
 	if (ring[head].flags & DESC_HW)
 		return NULL;
-	/* Barrier B (for pairing) */
+	 
 	smp_acquire();
 	*lenp = ring[head].len;
 	index = ring[head].index & (ring_size - 1);
@@ -170,16 +149,14 @@ bool used_empty()
 
 void disable_call()
 {
-	/* Doing nothing to disable calls might cause
-	 * extra interrupts, but reduces the number of cache misses.
-	 */
+	 
 }
 
 bool enable_call()
 {
 	event->call_index = guest.last_used_idx;
-	/* Flush call index write */
-	/* Barrier D (for pairing) */
+	 
+	 
 	smp_mb();
 	return used_empty();
 }
@@ -188,8 +165,8 @@ void kick_available(void)
 {
 	bool need;
 
-	/* Flush in previous flags write */
-	/* Barrier C (for pairing) */
+	 
+	 
 	smp_mb();
 	need = need_event(event->kick_index,
 			   guest.avail_idx,
@@ -200,18 +177,16 @@ void kick_available(void)
 		kick();
 }
 
-/* host side */
+ 
 void disable_kick()
 {
-	/* Doing nothing to disable kicks might cause
-	 * extra interrupts, but reduces the number of cache misses.
-	 */
+	 
 }
 
 bool enable_kick()
 {
 	event->kick_index = host.used_idx;
-	/* Barrier C (for pairing) */
+	 
 	smp_mb();
 	return avail_empty();
 }
@@ -230,21 +205,14 @@ bool use_buf(unsigned *lenp, void **bufp)
 	if (!(ring[head].flags & DESC_HW))
 		return false;
 
-	/* make sure length read below is not speculated */
-	/* Barrier A (for pairing) */
+	 
+	 
 	smp_acquire();
 
-	/* simple in-order completion: we don't need
-	 * to touch index at all. This also means we
-	 * can just modify the descriptor in-place.
-	 */
+	 
 	ring[head].len--;
-	/* Make sure len is valid before flags.
-	 * Note: alternative is to write len and flags in one access -
-	 * possible on 64 bit architectures but wmb is free on Intel anyway
-	 * so I have no way to test whether it's a gain.
-	 */
-	/* Barrier B (for pairing) */
+	 
+	 
 	smp_release();
 	ring[head].flags = 0;
 	host.used_idx++;
@@ -255,8 +223,8 @@ void call_used(void)
 {
 	bool need;
 
-	/* Flush in previous flags write */
-	/* Barrier D (for pairing) */
+	 
+	 
 	smp_mb();
 
 	need = need_event(event->call_index,

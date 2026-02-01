@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * imx214.c - imx214 sensor driver
- *
- * Copyright 2018 Qtechnology A/S
- *
- * Ricardo Ribalda <ribalda@kernel.org>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -53,10 +47,7 @@ struct imx214 {
 
 	struct gpio_desc *enable_gpio;
 
-	/*
-	 * Serialize control access, get/set format, get selection
-	 * and start streaming.
-	 */
+	 
 	struct mutex mutex;
 
 	bool streaming;
@@ -74,7 +65,7 @@ enum {
 	IMX214_WAIT_MS
 };
 
-/*From imx214_mode_tbls.h*/
+ 
 static const struct reg_8 mode_4096x2304[] = {
 	{0x0114, 0x03},
 	{0x0220, 0x00},
@@ -284,20 +275,20 @@ static const struct reg_8 mode_1920x1080[] = {
 };
 
 static const struct reg_8 mode_table_common[] = {
-	/* software reset */
+	 
 
-	/* software standby settings */
+	 
 	{0x0100, 0x00},
 
-	/* ATR setting */
+	 
 	{0x9300, 0x02},
 
-	/* external clock setting */
+	 
 	{0x0136, 0x18},
 	{0x0137, 0x00},
 
-	/* global setting */
-	/* basic config */
+	 
+	 
 	{0x0101, 0x00},
 	{0x0105, 0x01},
 	{0x0106, 0x01},
@@ -319,7 +310,7 @@ static const struct reg_8 mode_table_common[] = {
 	{0xA80B, 0x83},
 	{0xAE33, 0x00},
 
-	/* analog setting */
+	 
 	{0x4174, 0x00},
 	{0x4175, 0x11},
 	{0x4612, 0x29},
@@ -344,7 +335,7 @@ static const struct reg_8 mode_table_common[] = {
 	{0x4A85, 0x00},
 	{0x4A87, 0xFF},
 
-	/* embedded data */
+	 
 	{0x5041, 0x04},
 	{0x583C, 0x04},
 	{0x620E, 0x04},
@@ -352,8 +343,8 @@ static const struct reg_8 mode_table_common[] = {
 	{0x6EB3, 0x00},
 	{0x9300, 0x02},
 
-	/* imagequality */
-	/* HDR setting */
+	 
+	 
 	{0x3001, 0x07},
 	{0x6D12, 0x3F},
 	{0x6D13, 0xFF},
@@ -372,18 +363,18 @@ static const struct reg_8 mode_table_common[] = {
 	{0x9E28, 0x00},
 	{0x9E29, 0x96},
 
-	/* CNR parameter setting */
+	 
 	{0x69DB, 0x01},
 
-	/* Moire reduction */
+	 
 	{0x6957, 0x01},
 
-	/* image enhancement */
+	 
 	{0x6987, 0x17},
 	{0x698A, 0x03},
 	{0x698B, 0x03},
 
-	/* white balanace */
+	 
 	{0x0B8E, 0x01},
 	{0x0B8F, 0x00},
 	{0x0B90, 0x01},
@@ -393,7 +384,7 @@ static const struct reg_8 mode_table_common[] = {
 	{0x0B94, 0x01},
 	{0x0B95, 0x00},
 
-	/* ATR setting */
+	 
 	{0x6E50, 0x00},
 	{0x6E51, 0x32},
 	{0x9340, 0x00},
@@ -403,10 +394,7 @@ static const struct reg_8 mode_table_common[] = {
 	{IMX214_TABLE_END, 0x00}
 };
 
-/*
- * Declare modes in order, from biggest
- * to smallest height.
- */
+ 
 static const struct imx214_mode {
 	u32 width;
 	u32 height;
@@ -656,10 +644,7 @@ static int imx214_set_ctrl(struct v4l2_ctrl *ctrl)
 	u8 vals[2];
 	int ret;
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(imx214->dev))
 		return 0;
 
@@ -997,10 +982,7 @@ static int imx214_probe(struct i2c_client *client)
 
 	v4l2_i2c_subdev_init(&imx214->sd, client, &imx214_subdev_ops);
 
-	/*
-	 * Enable power initially, to avoid warnings
-	 * from clk_disable on power_off
-	 */
+	 
 	imx214_power_on(imx214->dev);
 
 	pm_runtime_set_active(imx214->dev);
@@ -1020,16 +1002,7 @@ static int imx214_probe(struct i2c_client *client)
 	if (imx214->link_freq)
 		imx214->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/*
-	 * WARNING!
-	 * Values obtained reverse engineering blobs and/or devices.
-	 * Ranges and functionality might be wrong.
-	 *
-	 * Sony, please release some register set documentation for the
-	 * device.
-	 *
-	 * Yours sincerely, Ricardo.
-	 */
+	 
 	imx214->exposure = v4l2_ctrl_new_std(&imx214->ctrls, &imx214_ctrl_ops,
 					     V4L2_CID_EXPOSURE,
 					     0, 3184, 1, 0x0c70);

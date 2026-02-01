@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An implementation of host initiated guest snapshot.
- *
- * Copyright (C) 2013, Microsoft, Inc.
- * Author : K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/net.h>
@@ -31,42 +26,26 @@ static const int fw_versions[] = {
 	UTIL_FW_VERSION
 };
 
-/* See comment with struct hv_vss_msg regarding the max VMbus packet size */
+ 
 #define VSS_MAX_PKT_SIZE (HV_HYP_PAGE_SIZE * 2)
 
-/*
- * Timeout values are based on expecations from host
- */
+ 
 #define VSS_FREEZE_TIMEOUT (15 * 60)
 
-/*
- * Global state maintained for transaction that is being processed. For a class
- * of integration services, including the "VSS service", the specified protocol
- * is a "request/response" protocol which means that there can only be single
- * outstanding transaction from the host at any given point in time. We use
- * this to simplify memory management in this driver - we cache and process
- * only one message at a time.
- *
- * While the request/response protocol is guaranteed by the host, we further
- * ensure this by serializing packet processing in this driver - we do not
- * read additional packets from the VMBUs until the current packet is fully
- * handled.
- */
+ 
 
 static struct {
-	int state;   /* hvutil_device_state */
-	int recv_len; /* number of bytes received. */
-	struct vmbus_channel *recv_channel; /* chn we got the request */
-	u64 recv_req_id; /* request ID. */
-	struct hv_vss_msg  *msg; /* current message */
+	int state;    
+	int recv_len;  
+	struct vmbus_channel *recv_channel;  
+	u64 recv_req_id;  
+	struct hv_vss_msg  *msg;  
 } vss_transaction;
 
 
 static void vss_respond_to_host(int error);
 
-/*
- * This state maintains the version number registered by the daemon.
- */
+ 
 static int dm_reg_value;
 
 static const char vss_devname[] = "vmbus/hv_vss";
@@ -81,20 +60,16 @@ static DECLARE_WORK(vss_handle_request_work, vss_handle_request);
 
 static void vss_poll_wrapper(void *channel)
 {
-	/* Transaction is finished, reset the state here to avoid races. */
+	 
 	vss_transaction.state = HVUTIL_READY;
 	tasklet_schedule(&((struct vmbus_channel *)channel)->callback_event);
 }
 
-/*
- * Callback when data is received from user mode.
- */
+ 
 
 static void vss_timeout_func(struct work_struct *dummy)
 {
-	/*
-	 * Timeout waiting for userspace component to reply happened.
-	 */
+	 
 	pr_warn("VSS: timeout waiting for daemon to reply\n");
 	vss_respond_to_host(HV_E_FAIL);
 
@@ -113,11 +88,11 @@ static int vss_handle_handshake(struct hv_vss_msg *vss_msg)
 
 	switch (vss_msg->vss_hdr.operation) {
 	case VSS_OP_REGISTER:
-		/* Daemon doesn't expect us to reply */
+		 
 		dm_reg_value = VSS_OP_REGISTER;
 		break;
 	case VSS_OP_REGISTER1:
-		/* Daemon expects us to reply with our own version */
+		 
 		if (hvutil_transport_send(hvt, &our_ver, sizeof(our_ver),
 					  vss_register_done))
 			return -EFAULT;
@@ -141,10 +116,7 @@ static int vss_on_msg(void *msg, int len)
 
 	if (vss_msg->vss_hdr.operation == VSS_OP_REGISTER ||
 	    vss_msg->vss_hdr.operation == VSS_OP_REGISTER1) {
-		/*
-		 * Don't process registration messages if we're in the middle
-		 * of a transaction processing.
-		 */
+		 
 		if (vss_transaction.state > HVUTIL_READY) {
 			pr_debug("VSS: Got unexpected registration request\n");
 			return -EINVAL;
@@ -160,12 +132,12 @@ static int vss_on_msg(void *msg, int len)
 
 		if (cancel_delayed_work_sync(&vss_timeout_work)) {
 			vss_respond_to_host(vss_msg->error);
-			/* Transaction is finished, reset the state. */
+			 
 			hv_poll_channel(vss_transaction.recv_channel,
 					vss_poll_wrapper);
 		}
 	} else {
-		/* This is a spurious call! */
+		 
 		pr_debug("VSS: Transaction not active\n");
 		return -EINVAL;
 	}
@@ -178,7 +150,7 @@ static void vss_send_op(void)
 	int rc;
 	struct hv_vss_msg *vss_msg;
 
-	/* The transaction state is wrong. */
+	 
 	if (vss_transaction.state != HVUTIL_HOSTMSG_RECEIVED) {
 		pr_debug("VSS: Unexpected attempt to send to daemon\n");
 		return;
@@ -210,18 +182,12 @@ static void vss_send_op(void)
 static void vss_handle_request(struct work_struct *dummy)
 {
 	switch (vss_transaction.msg->vss_hdr.operation) {
-	/*
-	 * Initiate a "freeze/thaw" operation in the guest.
-	 * We respond to the host once the operation is complete.
-	 *
-	 * We send the message to the user space daemon and the operation is
-	 * performed in the daemon.
-	 */
+	 
 	case VSS_OP_THAW:
 	case VSS_OP_FREEZE:
 	case VSS_OP_HOT_BACKUP:
 		if (vss_transaction.state < HVUTIL_READY) {
-			/* Userspace is not registered yet */
+			 
 			pr_debug("VSS: Not ready for request.\n");
 			vss_respond_to_host(HV_E_FAIL);
 			return;
@@ -243,9 +209,7 @@ static void vss_handle_request(struct work_struct *dummy)
 	hv_poll_channel(vss_transaction.recv_channel, vss_poll_wrapper);
 }
 
-/*
- * Send a response back to the host.
- */
+ 
 
 static void
 vss_respond_to_host(int error)
@@ -255,10 +219,7 @@ vss_respond_to_host(int error)
 	struct vmbus_channel *channel;
 	u64	req_id;
 
-	/*
-	 * Copy the global state for completing the transaction. Note that
-	 * only one transaction can be active at a time.
-	 */
+	 
 
 	buf_len = vss_transaction.recv_len;
 	channel = vss_transaction.recv_channel;
@@ -268,10 +229,7 @@ vss_respond_to_host(int error)
 			&recv_buffer[sizeof(struct vmbuspipe_hdr)];
 
 	if (channel->onchannel_callback == NULL)
-		/*
-		 * We have raced with util driver being unloaded;
-		 * silently return.
-		 */
+		 
 		return;
 
 	icmsghdrp->status = error;
@@ -283,10 +241,7 @@ vss_respond_to_host(int error)
 
 }
 
-/*
- * This callback is invoked when we get a VSS message from the host.
- * The host ensures that only one VSS transaction can be active at a time.
- */
+ 
 
 void hv_vss_onchannelcallback(void *context)
 {
@@ -309,7 +264,7 @@ void hv_vss_onchannelcallback(void *context)
 	if (!recvlen)
 		return;
 
-	/* Ensure recvlen is big enough to read header data */
+	 
 	if (recvlen < ICMSG_HDR) {
 		pr_err_ratelimited("VSS request received. Packet length too small: %d\n",
 				   recvlen);
@@ -330,7 +285,7 @@ void hv_vss_onchannelcallback(void *context)
 				vss_srv_version & 0xFFFF);
 		}
 	} else if (icmsghdrp->icmsgtype == ICMSGTYPE_VSS) {
-		/* Ensure recvlen is big enough to contain hv_vss_msg */
+		 
 		if (recvlen < ICMSG_HDR + sizeof(struct hv_vss_msg)) {
 			pr_err_ratelimited("Invalid VSS msg. Packet length too small: %u\n",
 					   recvlen);
@@ -338,10 +293,7 @@ void hv_vss_onchannelcallback(void *context)
 		}
 		vss_msg = (struct hv_vss_msg *)&recv_buffer[ICMSG_HDR];
 
-		/*
-		 * Stash away this global state for completing the
-		 * transaction; note transactions are serialized.
-		 */
+		 
 
 		vss_transaction.recv_len = recvlen;
 		vss_transaction.recv_req_id = requestid;
@@ -380,12 +332,7 @@ hv_vss_init(struct hv_util_service *srv)
 	vss_transaction.recv_channel = srv->channel;
 	vss_transaction.recv_channel->max_pkt_size = VSS_MAX_PKT_SIZE;
 
-	/*
-	 * When this driver loads, the user level daemon that
-	 * processes the host requests may not yet be running.
-	 * Defer processing channel callbacks until the daemon
-	 * has registered.
-	 */
+	 
 	vss_transaction.state = HVUTIL_DEVICE_INIT;
 
 	hvt = hvutil_transport_init(vss_devname, CN_VSS_IDX, CN_VSS_VAL,
@@ -409,14 +356,7 @@ int hv_vss_pre_suspend(void)
 	struct vmbus_channel *channel = vss_transaction.recv_channel;
 	struct hv_vss_msg *vss_msg;
 
-	/*
-	 * Fake a THAW message for the user space daemon in case the daemon
-	 * has frozen the file systems. It doesn't matter if there is already
-	 * a message pending to be delivered to the user space since we force
-	 * vss_transaction.state to be HVUTIL_READY, so the user space daemon's
-	 * write() will fail with EINVAL (see vss_on_msg()), and the daemon
-	 * will reset the device by closing and re-opening it.
-	 */
+	 
 	vss_msg = kzalloc(sizeof(*vss_msg), GFP_KERNEL);
 	if (!vss_msg)
 		return -ENOMEM;
@@ -425,17 +365,17 @@ int hv_vss_pre_suspend(void)
 
 	vss_msg->vss_hdr.operation = VSS_OP_THAW;
 
-	/* Cancel any possible pending work. */
+	 
 	hv_vss_cancel_work();
 
-	/* We don't care about the return value. */
+	 
 	hvutil_transport_send(hvt, vss_msg, sizeof(*vss_msg), NULL);
 
 	kfree(vss_msg);
 
 	vss_transaction.state = HVUTIL_READY;
 
-	/* tasklet_enable() will be called in hv_vss_pre_resume(). */
+	 
 	return 0;
 }
 

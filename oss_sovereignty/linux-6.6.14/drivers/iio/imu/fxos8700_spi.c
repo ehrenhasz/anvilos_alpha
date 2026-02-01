@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FXOS8700 - NXP IMU, SPI bits
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>

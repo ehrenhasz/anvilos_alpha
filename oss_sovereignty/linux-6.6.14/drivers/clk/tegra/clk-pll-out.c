@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -109,7 +107,7 @@ struct clk *tegra_clk_register_pll_out(const char *name,
 	pll_out->flags = pll_out_flags;
 	pll_out->lock = lock;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	pll_out->hw.init = &init;
 
 	clk = clk_register(NULL, &pll_out->hw);

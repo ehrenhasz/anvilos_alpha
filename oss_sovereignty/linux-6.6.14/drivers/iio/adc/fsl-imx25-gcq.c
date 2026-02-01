@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
- *
- * This is the driver for the imx25 GCQ (Generic Conversion Queue)
- * connected to the imx25 ADC.
- */
+
+ 
 
 #include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
 #include <linux/clk.h>
@@ -40,14 +35,7 @@ struct mx25_gcq_priv {
 	int irq;
 	struct regulator *vref[4];
 	u32 channel_vref_mv[MX25_NUM_CFGS];
-	/*
-	 * Lock to protect the device state during a potential concurrent
-	 * read access from userspace. Reading a raw value requires a sequence
-	 * of register writes, then a wait for a completion callback,
-	 * and finally a register read, during which userspace could issue
-	 * another read request. This lock protects a read access from
-	 * ocurring before another one has finished.
-	 */
+	 
 	struct mutex lock;
 };
 
@@ -91,10 +79,10 @@ static irqreturn_t mx25_gcq_irq(int irq, void *data)
 		complete(&priv->completed);
 	}
 
-	/* Disable conversion queue run */
+	 
 	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS, 0);
 
-	/* Acknowledge all possible irqs */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_FRR |
 		     MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR |
 		     MX25_ADCQ_SR_EOQ | MX25_ADCQ_SR_PD);
@@ -110,13 +98,13 @@ static int mx25_gcq_get_raw_value(struct device *dev,
 	long timeout;
 	u32 data;
 
-	/* Setup the configuration we want to use */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
 		     MX25_ADCQ_ITEM(0, chan->channel));
 
 	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_EOQ_IRQ, 0);
 
-	/* Trigger queue for one run */
+	 
 	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS,
 			   MX25_ADCQ_CR_FQS);
 
@@ -203,10 +191,7 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
 	struct device *dev = &pdev->dev;
 	int ret, i;
 
-	/*
-	 * Setup all configurations registers with a default conversion
-	 * configuration for each input
-	 */
+	 
 	for (i = 0; i < MX25_NUM_CFGS; ++i)
 		regmap_write(priv->regs, MX25_ADCQ_CFG(i),
 			     MX25_ADCQ_CFG_YPLL_OFF |
@@ -249,7 +234,7 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
 			}
 			priv->channel_vref_mv[reg] =
 				regulator_get_voltage(priv->vref[refp]);
-			/* Conversion from uV to mV */
+			 
 			priv->channel_vref_mv[reg] /= 1000;
 			break;
 		case MX25_ADC_REFP_INT:
@@ -261,10 +246,7 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
 			return -EINVAL;
 		}
 
-		/*
-		 * Shift the read values to the correct positions within the
-		 * register.
-		 */
+		 
 		refp = MX25_ADCQ_CFG_REFP(refp);
 		refn = MX25_ADCQ_CFG_REFN(refn);
 
@@ -403,7 +385,7 @@ static int mx25_gcq_remove(struct platform_device *pdev)
 
 static const struct of_device_id mx25_gcq_ids[] = {
 	{ .compatible = "fsl,imx25-gcq", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mx25_gcq_ids);
 

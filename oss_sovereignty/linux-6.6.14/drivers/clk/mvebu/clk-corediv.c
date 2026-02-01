@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MVEBU Core divider clock
- *
- * Copyright (C) 2013 Marvell
- *
- * Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -18,25 +11,14 @@
 
 #define CORE_CLK_DIV_RATIO_MASK		0xff
 
-/*
- * This structure describes the hardware details (bit offset and mask)
- * to configure one particular core divider clock. Those hardware
- * details may differ from one SoC to another. This structure is
- * therefore typically instantiated statically to describe the
- * hardware details.
- */
+ 
 struct clk_corediv_desc {
 	unsigned int mask;
 	unsigned int offset;
 	unsigned int fieldbit;
 };
 
-/*
- * This structure describes the hardware details to configure the core
- * divider clocks on a given SoC. Amongst others, it points to the
- * array of core divider clock descriptors for this SoC, as well as
- * the corresponding operations to manipulate them.
- */
+ 
 struct clk_corediv_soc_desc {
 	const struct clk_corediv_desc *descs;
 	unsigned int ndescs;
@@ -46,11 +28,7 @@ struct clk_corediv_soc_desc {
 	u32 ratio_offset;
 };
 
-/*
- * This structure represents one core divider clock for the clock
- * framework, and is dynamically allocated for each core divider clock
- * existing in the current SoC.
- */
+ 
 struct clk_corediv {
 	struct clk_hw hw;
 	void __iomem *reg;
@@ -61,17 +39,13 @@ struct clk_corediv {
 
 static struct clk_onecell_data clk_data;
 
-/*
- * Description of the core divider clocks available. For now, we
- * support only NAND, and it is available at the same register
- * locations regardless of the SoC.
- */
+ 
 static const struct clk_corediv_desc mvebu_corediv_desc[] = {
-	{ .mask = 0x3f, .offset = 8, .fieldbit = 1 }, /* NAND clock */
+	{ .mask = 0x3f, .offset = 8, .fieldbit = 1 },  
 };
 
 static const struct clk_corediv_desc mv98dx3236_corediv_desc[] = {
-	{ .mask = 0x0f, .offset = 6, .fieldbit = 27 }, /* NAND clock */
+	{ .mask = 0x0f, .offset = 6, .fieldbit = 27 },  
 };
 
 #define to_corediv_clk(p) container_of(p, struct clk_corediv, hw)
@@ -138,7 +112,7 @@ static unsigned long clk_corediv_recalc_rate(struct clk_hw *hwclk,
 static long clk_corediv_round_rate(struct clk_hw *hwclk, unsigned long rate,
 			       unsigned long *parent_rate)
 {
-	/* Valid ratio are 1:4, 1:5, 1:6 and 1:8 */
+	 
 	u32 div;
 
 	div = *parent_rate / rate;
@@ -163,24 +137,21 @@ static int clk_corediv_set_rate(struct clk_hw *hwclk, unsigned long rate,
 
 	spin_lock_irqsave(&corediv->lock, flags);
 
-	/* Write new divider to the divider ratio register */
+	 
 	reg = readl(corediv->reg + soc_desc->ratio_offset);
 	reg &= ~(desc->mask << desc->offset);
 	reg |= (div & desc->mask) << desc->offset;
 	writel(reg, corediv->reg + soc_desc->ratio_offset);
 
-	/* Set reload-force for this clock */
+	 
 	reg = readl(corediv->reg) | BIT(desc->fieldbit);
 	writel(reg, corediv->reg);
 
-	/* Now trigger the clock update */
+	 
 	reg = readl(corediv->reg) | soc_desc->ratio_reload;
 	writel(reg, corediv->reg);
 
-	/*
-	 * Wait for clocks to settle down, and then clear all the
-	 * ratios request and the reload request.
-	 */
+	 
 	udelay(1000);
 	reg &= ~(CORE_CLK_DIV_RATIO_MASK | soc_desc->ratio_reload);
 	writel(reg, corediv->reg);
@@ -267,12 +238,12 @@ mvebu_corediv_clk_init(struct device_node *node,
 
 	clk_data.clk_num = soc_desc->ndescs;
 
-	/* clks holds the clock array */
+	 
 	clks = kcalloc(clk_data.clk_num, sizeof(struct clk *),
 				GFP_KERNEL);
 	if (WARN_ON(!clks))
 		goto err_unmap;
-	/* corediv holds the clock specific array */
+	 
 	corediv = kcalloc(clk_data.clk_num, sizeof(struct clk_corediv),
 				GFP_KERNEL);
 	if (WARN_ON(!corediv))

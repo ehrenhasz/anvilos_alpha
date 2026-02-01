@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel ACPI functions
- *
- * _DSM related code stolen from nouveau_acpi.c.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -13,14 +9,14 @@
 #include "intel_acpi.h"
 #include "intel_display_types.h"
 
-#define INTEL_DSM_REVISION_ID 1 /* For Calpella anyway... */
-#define INTEL_DSM_FN_PLATFORM_MUX_INFO 1 /* No args */
+#define INTEL_DSM_REVISION_ID 1  
+#define INTEL_DSM_FN_PLATFORM_MUX_INFO 1  
 
 static const guid_t intel_dsm_guid =
 	GUID_INIT(0x7ed873d3, 0xc2d0, 0x4e4f,
 		  0xa8, 0x54, 0x0f, 0x13, 0x17, 0xb0, 0x1c, 0x2c);
 
-#define INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED 0 /* No args */
+#define INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED 0  
 
 static const guid_t intel_dsm_guid2 =
 	GUID_INIT(0x3e5b41c6, 0xeb1d, 0x4260,
@@ -199,10 +195,7 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
 		ACPI_FREE(obj);
 }
 
-/*
- * ACPI Specification, Revision 5.0, Appendix B.3.2 _DOD (Enumerate All Devices
- * Attached to the Display Adapter).
- */
+ 
 #define ACPI_DISPLAY_INDEX_SHIFT		0
 #define ACPI_DISPLAY_INDEX_MASK			(0xf << 0)
 #define ACPI_DISPLAY_PORT_ATTACHMENT_SHIFT	4
@@ -270,14 +263,14 @@ void intel_acpi_device_id_update(struct drm_i915_private *dev_priv)
 	struct drm_connector_list_iter conn_iter;
 	u8 display_index[16] = {};
 
-	/* Populate the ACPI IDs for all connectors for a given drm_device */
+	 
 	drm_connector_list_iter_begin(drm_dev, &conn_iter);
 	for_each_intel_connector_iter(connector, &conn_iter) {
 		u32 device_id, type;
 
 		device_id = acpi_display_type(connector);
 
-		/* Use display type specific display index. */
+		 
 		type = (device_id & ACPI_DISPLAY_TYPE_MASK)
 			>> ACPI_DISPLAY_TYPE_SHIFT;
 		device_id |= display_index[type]++ << ACPI_DISPLAY_INDEX_SHIFT;
@@ -287,7 +280,7 @@ void intel_acpi_device_id_update(struct drm_i915_private *dev_priv)
 	drm_connector_list_iter_end(&conn_iter);
 }
 
-/* NOTE: The connector order must be final before this is called. */
+ 
 void intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915)
 {
 	struct drm_connector_list_iter conn_iter;
@@ -298,7 +291,7 @@ void intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915)
 
 	drm_connector_list_iter_begin(drm_dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
-		/* Always getting the next, even when the last was not used. */
+		 
 		fwnode = device_get_next_child_node(drm_dev->dev, fwnode);
 		if (!fwnode)
 			break;
@@ -307,10 +300,7 @@ void intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915)
 		case DRM_MODE_CONNECTOR_LVDS:
 		case DRM_MODE_CONNECTOR_eDP:
 		case DRM_MODE_CONNECTOR_DSI:
-			/*
-			 * Integrated displays have a specific address 0x1f on
-			 * most Intel platforms, but not on all of them.
-			 */
+			 
 			adev = acpi_find_child_device(ACPI_COMPANION(drm_dev->dev),
 						      0x1f, 0);
 			if (adev) {
@@ -325,11 +315,7 @@ void intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915)
 		}
 	}
 	drm_connector_list_iter_end(&conn_iter);
-	/*
-	 * device_get_next_child_node() takes a reference on the fwnode, if
-	 * we stopped iterating because we are out of connectors we need to
-	 * put this, otherwise fwnode is NULL and the put is a no-op.
-	 */
+	 
 	fwnode_handle_put(fwnode);
 }
 
@@ -340,13 +326,7 @@ void intel_acpi_video_register(struct drm_i915_private *i915)
 
 	acpi_video_register();
 
-	/*
-	 * If i915 is driving an internal panel without registering its native
-	 * backlight handler try to register the acpi_video backlight.
-	 * For panels not driven by i915 another GPU driver may still register
-	 * a native backlight later and acpi_video_register_backlight() should
-	 * only be called after any native backlights have been registered.
-	 */
+	 
 	drm_connector_list_iter_begin(&i915->drm, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
 		struct intel_panel *panel = &to_intel_connector(connector)->panel;

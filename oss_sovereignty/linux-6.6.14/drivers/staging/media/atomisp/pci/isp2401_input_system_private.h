@@ -1,29 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __INPUT_SYSTEM_PRIVATE_H_INCLUDED__
 #define __INPUT_SYSTEM_PRIVATE_H_INCLUDED__
 
 #include "input_system_public.h"
 
-#include "device_access.h"	/* ia_css_device_load_uint32 */
+#include "device_access.h"	 
 
-#include "assert_support.h" /* assert */
-#include "print_support.h" /* print */
+#include "assert_support.h"  
+#include "print_support.h"  
 
-/* Load the register value */
+ 
 static inline hrt_data ibuf_ctrl_reg_load(const ibuf_ctrl_ID_t ID,
 					  const hrt_address reg)
 {
@@ -32,7 +20,7 @@ static inline hrt_data ibuf_ctrl_reg_load(const ibuf_ctrl_ID_t ID,
 	return ia_css_device_load_uint32(IBUF_CTRL_BASE[ID] + reg * sizeof(hrt_data));
 }
 
-/* Store a value to the register */
+ 
 static inline void ibuf_ctrl_reg_store(const ibuf_ctrl_ID_t ID,
 				       const hrt_address reg,
 				       const hrt_data value)
@@ -43,7 +31,7 @@ static inline void ibuf_ctrl_reg_store(const ibuf_ctrl_ID_t ID,
 	ia_css_device_store_uint32(IBUF_CTRL_BASE[ID] + reg * sizeof(hrt_data), value);
 }
 
-/* Get the state of the ibuf-controller process */
+ 
 static inline void ibuf_ctrl_get_proc_state(const ibuf_ctrl_ID_t ID,
 					    const u32 proc_id,
 					    ibuf_ctrl_proc_state_t *state)
@@ -132,7 +120,7 @@ static inline void ibuf_ctrl_get_proc_state(const ibuf_ctrl_ID_t ID,
 	    ibuf_ctrl_reg_load(ID, reg_bank_offset + _IBUF_CNTRL_ISP_SYNC_STATE);
 }
 
-/* Get the ibuf-controller state. */
+ 
 static inline void ibuf_ctrl_get_state(const ibuf_ctrl_ID_t ID,
 				       ibuf_ctrl_state_t *state)
 {
@@ -143,10 +131,7 @@ static inline void ibuf_ctrl_get_state(const ibuf_ctrl_ID_t ID,
 	state->arbiters =
 	    ibuf_ctrl_reg_load(ID, _IBUF_CNTRL_ARBITERS_STATUS);
 
-	/*
-	 * Get the values of the register-set per
-	 * ibuf-controller process.
-	 */
+	 
 	for (i = 0; i < N_IBUF_CTRL_PROCS[ID]; i++) {
 		ibuf_ctrl_get_proc_state(
 		    ID,
@@ -155,7 +140,7 @@ static inline void ibuf_ctrl_get_state(const ibuf_ctrl_ID_t ID,
 	}
 }
 
-/* Dump the ibuf-controller state */
+ 
 static inline void ibuf_ctrl_dump_state(const ibuf_ctrl_ID_t ID,
 					ibuf_ctrl_state_t *state)
 {
@@ -165,10 +150,7 @@ static inline void ibuf_ctrl_dump_state(const ibuf_ctrl_ID_t ID,
 		     state->recalc_words);
 	ia_css_print("IBUF controller ID %d arbiters 0x%x\n", ID, state->arbiters);
 
-	/*
-	 * Dump the values of the register-set per
-	 * ibuf-controller process.
-	 */
+	 
 	for (i = 0; i < N_IBUF_CTRL_PROCS[ID]; i++) {
 		ia_css_print("IBUF controller ID %d Process ID %d num_items 0x%x\n", ID, i,
 			     state->proc_state[i].num_items);
@@ -239,47 +221,47 @@ input_system_get_state(const input_system_ID_t ID,
 
 	(void)(ID);
 
-	/*  get the states of all CSI RX frontend devices */
+	 
 	for (i = 0; i < N_CSI_RX_FRONTEND_ID; i++) {
 		csi_rx_fe_ctrl_get_state(
 		    (csi_rx_frontend_ID_t)i,
 		    &state->csi_rx_fe_ctrl_state[i]);
 	}
 
-	/*  get the states of all CIS RX backend devices */
+	 
 	for (i = 0; i < N_CSI_RX_BACKEND_ID; i++) {
 		csi_rx_be_ctrl_get_state(
 		    (csi_rx_backend_ID_t)i,
 		    &state->csi_rx_be_ctrl_state[i]);
 	}
 
-	/* get the states of all pixelgen devices */
+	 
 	for (i = 0; i < N_PIXELGEN_ID; i++) {
 		pixelgen_ctrl_get_state(
 		    (pixelgen_ID_t)i,
 		    &state->pixelgen_ctrl_state[i]);
 	}
 
-	/* get the states of all stream2mmio devices */
+	 
 	for (i = 0; i < N_STREAM2MMIO_ID; i++) {
 		stream2mmio_get_state(
 		    (stream2mmio_ID_t)i,
 		    &state->stream2mmio_state[i]);
 	}
 
-	/* get the states of all ibuf-controller devices */
+	 
 	for (i = 0; i < N_IBUF_CTRL_ID; i++) {
 		ibuf_ctrl_get_state(
 		    (ibuf_ctrl_ID_t)i,
 		    &state->ibuf_ctrl_state[i]);
 	}
 
-	/* get the states of all isys irq controllers */
+	 
 	for (i = 0; i < N_ISYS_IRQ_ID; i++) {
 		isys_irqc_state_get((isys_irq_ID_t)i, &state->isys_irqc_state[i]);
 	}
 
-	/* TODO: get the states of all ISYS2401 DMA devices  */
+	 
 	for (i = 0; i < N_ISYS2401_DMA_ID; i++) {
 	}
 
@@ -293,50 +275,50 @@ static inline void input_system_dump_state(const input_system_ID_t ID,
 
 	(void)(ID);
 
-	/*  dump the states of all CSI RX frontend devices */
+	 
 	for (i = 0; i < N_CSI_RX_FRONTEND_ID; i++) {
 		csi_rx_fe_ctrl_dump_state(
 		    (csi_rx_frontend_ID_t)i,
 		    &state->csi_rx_fe_ctrl_state[i]);
 	}
 
-	/*  dump the states of all CIS RX backend devices */
+	 
 	for (i = 0; i < N_CSI_RX_BACKEND_ID; i++) {
 		csi_rx_be_ctrl_dump_state(
 		    (csi_rx_backend_ID_t)i,
 		    &state->csi_rx_be_ctrl_state[i]);
 	}
 
-	/* dump the states of all pixelgen devices */
+	 
 	for (i = 0; i < N_PIXELGEN_ID; i++) {
 		pixelgen_ctrl_dump_state(
 		    (pixelgen_ID_t)i,
 		    &state->pixelgen_ctrl_state[i]);
 	}
 
-	/* dump the states of all st2mmio devices */
+	 
 	for (i = 0; i < N_STREAM2MMIO_ID; i++) {
 		stream2mmio_dump_state(
 		    (stream2mmio_ID_t)i,
 		    &state->stream2mmio_state[i]);
 	}
 
-	/* dump the states of all ibuf-controller devices */
+	 
 	for (i = 0; i < N_IBUF_CTRL_ID; i++) {
 		ibuf_ctrl_dump_state(
 		    (ibuf_ctrl_ID_t)i,
 		    &state->ibuf_ctrl_state[i]);
 	}
 
-	/* dump the states of all isys irq controllers */
+	 
 	for (i = 0; i < N_ISYS_IRQ_ID; i++) {
 		isys_irqc_state_dump((isys_irq_ID_t)i, &state->isys_irqc_state[i]);
 	}
 
-	/* TODO: dump the states of all ISYS2401 DMA devices  */
+	 
 	for (i = 0; i < N_ISYS2401_DMA_ID; i++) {
 	}
 
 	return;
 }
-#endif /* __INPUT_SYSTEM_PRIVATE_H_INCLUDED__ */
+#endif  

@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include <linux/ip.h>
 #include <linux/ipv6.h>
@@ -16,7 +11,7 @@
 
 #define DEFAULT_PKTGEN_UDP_PORT 9
 
-/* copy of 'struct ethhdr' without __packed */
+ 
 struct eth_hdr {
 	unsigned char   h_dest[ETH_ALEN];
 	unsigned char   h_source[ETH_ALEN];
@@ -32,7 +27,7 @@ int handle_ingress(struct __sk_buff *skb)
 	struct udphdr *udp = data + sizeof(*eth) + sizeof(*iph);
 	void *data_end = (void *)(long)skb->data_end;
 
-	/* single length check */
+	 
 	if (data + sizeof(*eth) + sizeof(*iph) + sizeof(*udp) > data_end)
 		return 0;
 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Trace point definitions for the RDMA Connect Manager.
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rdma_cma
@@ -135,9 +129,7 @@ DEFINE_CMA_QP_EVENT(send_req);
 DEFINE_CMA_QP_EVENT(send_rep);
 DEFINE_CMA_QP_EVENT(qp_destroy);
 
-/*
- * enum ib_wp_type, from include/rdma/ib_verbs.h
- */
+ 
 #define IB_QP_TYPE_LIST				\
 	ib_qp_type(SMI)				\
 	ib_qp_type(GSI)				\
@@ -352,7 +344,7 @@ DECLARE_EVENT_CLASS(cma_client_class,
 DEFINE_CMA_CLIENT_EVENT(add_one);
 DEFINE_CMA_CLIENT_EVENT(remove_one);
 
-#endif /* _TRACE_RDMA_CMA_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

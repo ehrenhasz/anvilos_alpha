@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_DISPLAY_H_
 #define _DP_DISPLAY_H_
@@ -42,4 +40,4 @@ void dp_display_signal_audio_start(struct msm_dp *dp_display);
 void dp_display_signal_audio_complete(struct msm_dp *dp_display);
 void dp_display_set_psr(struct msm_dp *dp, bool enter);
 
-#endif /* _DP_DISPLAY_H_ */
+#endif  

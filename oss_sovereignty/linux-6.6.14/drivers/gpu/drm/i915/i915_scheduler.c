@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #include <linux/mutex.h>
 
@@ -70,7 +66,7 @@ i915_sched_lookup_priolist(struct i915_sched_engine *sched_engine, int prio)
 		prio = I915_PRIORITY_NORMAL;
 
 find_priolist:
-	/* most positive priority is scheduled first, equal priorities fifo */
+	 
 	rb = NULL;
 	parent = &sched_engine->queue.rb_root.rb_node;
 	while (*parent) {
@@ -90,18 +86,11 @@ find_priolist:
 		p = &sched_engine->default_priolist;
 	} else {
 		p = kmem_cache_alloc(slab_priorities, GFP_ATOMIC);
-		/* Convert an allocation failure to a priority bump */
+		 
 		if (unlikely(!p)) {
-			prio = I915_PRIORITY_NORMAL; /* recurses just once */
+			prio = I915_PRIORITY_NORMAL;  
 
-			/* To maintain ordering with all rendering, after an
-			 * allocation failure we have to disable all scheduling.
-			 * Requests will then be executed in fifo, and schedule
-			 * will ensure that dependencies are emitted in fifo.
-			 * There will be still some reordering with existing
-			 * requests, so if userspace lied about their
-			 * dependencies that reordering may be visible.
-			 */
+			 
 			sched_engine->no_priolist = true;
 			goto find_priolist;
 		}
@@ -135,12 +124,7 @@ lock_sched_engine(struct i915_sched_node *node,
 
 	GEM_BUG_ON(!locked);
 
-	/*
-	 * Virtual engines complicate acquiring the engine timeline lock,
-	 * as their rq->engine pointer is not stable until under that
-	 * engine lock. The simple ploy we use is to take the lock then
-	 * check that the rq still belongs to the newly locked engine.
-	 */
+	 
 	while (locked != (sched_engine = READ_ONCE(rq->engine)->sched_engine)) {
 		spin_unlock(&locked->lock);
 		memset(cache, 0, sizeof(*cache));
@@ -162,7 +146,7 @@ static void __i915_schedule(struct i915_sched_node *node,
 	struct sched_cache cache;
 	LIST_HEAD(dfs);
 
-	/* Needed in order to use the temporary link inside i915_dependency */
+	 
 	lockdep_assert_held(&schedule_lock);
 	GEM_BUG_ON(prio == I915_PRIORITY_INVALID);
 
@@ -172,39 +156,17 @@ static void __i915_schedule(struct i915_sched_node *node,
 	stack.signaler = node;
 	list_add(&stack.dfs_link, &dfs);
 
-	/*
-	 * Recursively bump all dependent priorities to match the new request.
-	 *
-	 * A naive approach would be to use recursion:
-	 * static void update_priorities(struct i915_sched_node *node, prio) {
-	 *	list_for_each_entry(dep, &node->signalers_list, signal_link)
-	 *		update_priorities(dep->signal, prio)
-	 *	queue_request(node);
-	 * }
-	 * but that may have unlimited recursion depth and so runs a very
-	 * real risk of overunning the kernel stack. Instead, we build
-	 * a flat list of all dependencies starting with the current request.
-	 * As we walk the list of dependencies, we add all of its dependencies
-	 * to the end of the list (this may include an already visited
-	 * request) and continue to walk onwards onto the new dependencies. The
-	 * end result is a topological list of requests in reverse order, the
-	 * last element in the list is the request we must execute first.
-	 */
+	 
 	list_for_each_entry(dep, &dfs, dfs_link) {
 		struct i915_sched_node *node = dep->signaler;
 
-		/* If we are already flying, we know we have no signalers */
+		 
 		if (node_started(node))
 			continue;
 
-		/*
-		 * Within an engine, there can be no cycle, but we may
-		 * refer to the same dependency chain multiple times
-		 * (redundant dependencies are not eliminated) and across
-		 * engines.
-		 */
+		 
 		list_for_each_entry(p, &node->signalers_list, signal_link) {
-			GEM_BUG_ON(p == dep); /* no cycles! */
+			GEM_BUG_ON(p == dep);  
 
 			if (node_signaled(p->signaler))
 				continue;
@@ -214,12 +176,7 @@ static void __i915_schedule(struct i915_sched_node *node,
 		}
 	}
 
-	/*
-	 * If we didn't need to bump any existing priorities, and we haven't
-	 * yet submitted this request (i.e. there is no potential race with
-	 * execlists_submit_request()), we can set our own priority and skip
-	 * acquiring the engine locks.
-	 */
+	 
 	if (node->attr.priority == I915_PRIORITY_INVALID) {
 		GEM_BUG_ON(!list_empty(&node->link));
 		node->attr = *attr;
@@ -234,7 +191,7 @@ static void __i915_schedule(struct i915_sched_node *node,
 	sched_engine = node_to_request(node)->engine->sched_engine;
 	spin_lock(&sched_engine->lock);
 
-	/* Fifo and depth-first replacement ensure our deps execute before us */
+	 
 	sched_engine = lock_sched_engine(node, sched_engine, &cache);
 	list_for_each_entry_safe_reverse(dep, p, &dfs, dfs_link) {
 		struct i915_request *from = container_of(dep->signaler,
@@ -246,27 +203,20 @@ static void __i915_schedule(struct i915_sched_node *node,
 		sched_engine = lock_sched_engine(node, sched_engine, &cache);
 		lockdep_assert_held(&sched_engine->lock);
 
-		/* Recheck after acquiring the engine->timeline.lock */
+		 
 		if (prio <= node->attr.priority || node_signaled(node))
 			continue;
 
 		GEM_BUG_ON(node_to_request(node)->engine->sched_engine !=
 			   sched_engine);
 
-		/* Must be called before changing the nodes priority */
+		 
 		if (sched_engine->bump_inflight_request_prio)
 			sched_engine->bump_inflight_request_prio(from, prio);
 
 		WRITE_ONCE(node->attr.priority, prio);
 
-		/*
-		 * Once the request is ready, it will be placed into the
-		 * priority lists and then onto the HW runlist. Before the
-		 * request is ready, it does not contribute to our preemption
-		 * decisions and we can safely ignore it, as it will, and
-		 * any preemption required, be dealt with upon submission.
-		 * See engine->submit_request()
-		 */
+		 
 		if (list_empty(&node->link))
 			continue;
 
@@ -278,7 +228,7 @@ static void __i915_schedule(struct i915_sched_node *node,
 			list_move_tail(&node->link, cache.priolist);
 		}
 
-		/* Defer (tasklet) submission until after all of our updates. */
+		 
 		if (sched_engine->kick_backend)
 			sched_engine->kick_backend(node_to_request(node), prio);
 	}
@@ -340,11 +290,11 @@ bool __i915_sched_node_add_dependency(struct i915_sched_node *node,
 		dep->waiter = node;
 		dep->flags = flags;
 
-		/* All set, now publish. Beware the lockless walkers. */
+		 
 		list_add_rcu(&dep->signal_link, &node->signalers_list);
 		list_add_rcu(&dep->wait_link, &signal->waiters_list);
 
-		/* Propagate the chains */
+		 
 		node->flags |= signal->flags;
 		ret = true;
 	}
@@ -377,12 +327,7 @@ void i915_sched_node_fini(struct i915_sched_node *node)
 
 	spin_lock_irq(&schedule_lock);
 
-	/*
-	 * Everyone we depended upon (the fences we wait to be signaled)
-	 * should retire before us and remove themselves from our list.
-	 * However, retirement is run independently on each timeline and
-	 * so we may be called out-of-order.
-	 */
+	 
 	list_for_each_entry_safe(dep, tmp, &node->signalers_list, signal_link) {
 		GEM_BUG_ON(!list_empty(&dep->dfs_link));
 
@@ -392,7 +337,7 @@ void i915_sched_node_fini(struct i915_sched_node *node)
 	}
 	INIT_LIST_HEAD(&node->signalers_list);
 
-	/* Remove ourselves from everyone who depends upon us */
+	 
 	list_for_each_entry_safe(dep, tmp, &node->waiters_list, wait_link) {
 		GEM_BUG_ON(dep->signaler != node);
 		GEM_BUG_ON(!list_empty(&dep->dfs_link));
@@ -422,7 +367,7 @@ void i915_request_show_with_schedule(struct drm_printer *m,
 		const struct i915_request *signaler =
 			node_to_request(dep->signaler);
 
-		/* Dependencies along the same timeline are expected. */
+		 
 		if (signaler->timeline == rq->timeline)
 			continue;
 
@@ -439,7 +384,7 @@ static void default_destroy(struct kref *kref)
 	struct i915_sched_engine *sched_engine =
 		container_of(kref, typeof(*sched_engine), ref);
 
-	tasklet_kill(&sched_engine->tasklet); /* flush the callback */
+	tasklet_kill(&sched_engine->tasklet);  
 	kfree(sched_engine);
 }
 
@@ -470,11 +415,7 @@ i915_sched_engine_create(unsigned int subclass)
 	spin_lock_init(&sched_engine->lock);
 	lockdep_set_subclass(&sched_engine->lock, subclass);
 
-	/*
-	 * Due to an interesting quirk in lockdep's internal debug tracking,
-	 * after setting a subclass we must ensure the lock is used. Otherwise,
-	 * nr_unused_locks is incremented once too often.
-	 */
+	 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	local_irq_disable();
 	lock_map_acquire(&sched_engine->lock.dep_map);

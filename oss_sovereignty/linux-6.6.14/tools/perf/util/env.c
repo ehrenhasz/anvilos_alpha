@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cpumap.h"
 #include "debug.h"
 #include "env.h"
@@ -147,7 +147,7 @@ struct btf_node *__perf_env__find_btf(struct perf_env *env, __u32 btf_id)
 	return NULL;
 }
 
-/* purge data in bpf_progs.infos tree */
+ 
 static void perf_env__purge_bpf(struct perf_env *env)
 {
 	struct rb_root *root;
@@ -186,11 +186,11 @@ static void perf_env__purge_bpf(struct perf_env *env)
 
 	up_write(&env->bpf_progs.lock);
 }
-#else // HAVE_LIBBPF_SUPPORT
+#else 
 static void perf_env__purge_bpf(struct perf_env *env __maybe_unused)
 {
 }
-#endif // HAVE_LIBBPF_SUPPORT
+#endif 
 
 void perf_env__exit(struct perf_env *env)
 {
@@ -278,15 +278,12 @@ int perf_env__set_cmdline(struct perf_env *env, int argc, const char *argv[])
 {
 	int i;
 
-	/* do not include NULL termination */
+	 
 	env->cmdline_argv = calloc(argc, sizeof(char *));
 	if (env->cmdline_argv == NULL)
 		goto out_enomem;
 
-	/*
-	 * Must copy argv contents because it gets moved around during option
-	 * parsing:
-	 */
+	 
 	for (i = 0; i < argc ; i++) {
 		env->cmdline_argv[i] = argv[i];
 		if (env->cmdline_argv[i] == NULL)
@@ -353,7 +350,7 @@ int perf_env__read_pmu_mappings(struct perf_env *env)
 	while ((pmu = perf_pmus__scan(pmu))) {
 		if (strbuf_addf(&sb, "%u:%s", pmu->type, pmu->name) < 0)
 			goto error;
-		/* include a NULL character at the end */
+		 
 		if (strbuf_add(&sb, "", 1) < 0)
 			goto error;
 	}
@@ -420,10 +417,7 @@ void cpu_cache_level__free(struct cpu_cache_level *cache)
 	zfree(&cache->size);
 }
 
-/*
- * Return architecture name in a normalized form.
- * The conversion logic comes from the Makefile.
- */
+ 
 static const char *normalize_arch(char *arch)
 {
 	if (!strcmp(arch, "x86_64"))
@@ -456,7 +450,7 @@ const char *perf_env__arch(struct perf_env *env)
 {
 	char *arch_name;
 
-	if (!env || !env->arch) { /* Assume local operation */
+	if (!env || !env->arch) {  
 		static struct utsname uts = { .machine[0] = '\0', };
 		if (uts.machine[0] == '\0' && uname(&uts) < 0)
 			return NULL;
@@ -471,7 +465,7 @@ const char *perf_env__cpuid(struct perf_env *env)
 {
 	int status;
 
-	if (!env || !env->cpuid) { /* Assume local operation */
+	if (!env || !env->cpuid) {  
 		status = perf_env__read_cpuid(env);
 		if (status)
 			return NULL;
@@ -484,7 +478,7 @@ int perf_env__nr_pmu_mappings(struct perf_env *env)
 {
 	int status;
 
-	if (!env || !env->nr_pmu_mappings) { /* Assume local operation */
+	if (!env || !env->nr_pmu_mappings) {  
 		status = perf_env__read_pmu_mappings(env);
 		if (status)
 			return 0;
@@ -497,7 +491,7 @@ const char *perf_env__pmu_mappings(struct perf_env *env)
 {
 	int status;
 
-	if (!env || !env->pmu_mappings) { /* Assume local operation */
+	if (!env || !env->pmu_mappings) {  
 		status = perf_env__read_pmu_mappings(env);
 		if (status)
 			return NULL;
@@ -519,10 +513,7 @@ int perf_env__numa_node(struct perf_env *env, struct perf_cpu cpu)
 
 		nr++;
 
-		/*
-		 * We initialize the numa_map array to prepare
-		 * it for missing cpus, which return node -1
-		 */
+		 
 		env->numa_map = malloc(nr * sizeof(int));
 		if (!env->numa_map)
 			return -1;

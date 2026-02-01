@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 MediaTek Inc.
- * Copyright (c) 2022 BayLibre, SAS
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8365-clk.h>
 #include <linux/clk-provider.h>
@@ -32,7 +29,7 @@ static const struct mtk_gate_regs mm1_cg_regs = {
 			 &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate mm_clks[] = {
-	/* MM0 */
+	 
 	GATE_MM0(CLK_MM_MM_MDP_RDMA0, "mm_mdp_rdma0", "mm_sel", 0),
 	GATE_MM0(CLK_MM_MM_MDP_CCORR0, "mm_mdp_ccorr0", "mm_sel", 1),
 	GATE_MM0(CLK_MM_MM_MDP_RSZ0, "mm_mdp_rsz0", "mm_sel", 2),
@@ -65,7 +62,7 @@ static const struct mtk_gate mm_clks[] = {
 	GATE_MM0(CLK_MM_IMG_IMG_DL_RELAY, "mm_dl_relay", "mm_sel", 29),
 	GATE_MM0(CLK_MM_IMG_IMG_DL_ASYNC_TOP, "mm_dl_async_top", "mm_sel", 30),
 	GATE_MM0(CLK_MM_DSI0_DIG_DSI, "mm_dsi0_dig_dsi", "dsi0_lntc_dsick", 31),
-	/* MM1 */
+	 
 	GATE_MM1(CLK_MM_26M_HRTWT, "mm_f26m_hrtwt", "clk26m", 0),
 	GATE_MM1(CLK_MM_MM_DPI0, "mm_dpi0", "mm_sel", 1),
 	GATE_MM1(CLK_MM_LVDSTX_PXL, "mm_flvdstx_pxl", "vpll_dpix", 2),
@@ -79,7 +76,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt8365_mm_id_table[] = {
 	{ .name = "clk-mt8365-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt8365_mm_id_table);
 

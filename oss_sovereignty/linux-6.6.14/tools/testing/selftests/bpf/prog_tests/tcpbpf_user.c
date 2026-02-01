@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -19,7 +19,7 @@ static void verify_result(struct tcpbpf_globals *result)
 				 (1 << BPF_SOCK_OPS_STATE_CB) |
 				 (1 << BPF_SOCK_OPS_TCP_LISTEN_CB));
 
-	/* check global map */
+	 
 	ASSERT_EQ(expected_events, result->event_map, "event_map");
 
 	ASSERT_EQ(result->bytes_received, 501, "bytes_received");
@@ -30,16 +30,16 @@ static void verify_result(struct tcpbpf_globals *result)
 	ASSERT_EQ(result->good_cb_test_rv, 0, "good_cb_test_rv");
 	ASSERT_EQ(result->num_listen, 1, "num_listen");
 
-	/* 3 comes from one listening socket + both ends of the connection */
+	 
 	ASSERT_EQ(result->num_close_events, 3, "num_close_events");
 
-	/* check setsockopt for SAVE_SYN */
+	 
 	ASSERT_EQ(result->tcp_save_syn, 0, "tcp_save_syn");
 
-	/* check getsockopt for SAVED_SYN */
+	 
 	ASSERT_EQ(result->tcp_saved_syn, 1, "tcp_saved_syn");
 
-	/* check getsockopt for window_clamp */
+	 
 	ASSERT_EQ(result->window_clamp_client, 9216, "window_clamp_client");
 	ASSERT_EQ(result->window_clamp_server, 9216, "window_clamp_server");
 }
@@ -63,7 +63,7 @@ static void run_test(struct tcpbpf_globals *result)
 	if (!ASSERT_NEQ(accept_fd, -1, "accept(listen_fd)"))
 		goto done;
 
-	/* Send 1000B of '+'s from cli_fd -> accept_fd */
+	 
 	for (i = 0; i < 1000; i++)
 		buf[i] = '+';
 
@@ -75,7 +75,7 @@ static void run_test(struct tcpbpf_globals *result)
 	if (!ASSERT_EQ(rv, 1000, "recv(accept_fd)"))
 		goto done;
 
-	/* Send 500B of '.'s from accept_fd ->cli_fd */
+	 
 	for (i = 0; i < 500; i++)
 		buf[i] = '.';
 
@@ -87,10 +87,7 @@ static void run_test(struct tcpbpf_globals *result)
 	if (!ASSERT_EQ(rv, 500, "recv(cli_fd)"))
 		goto done;
 
-	/*
-	 * shutdown accept first to guarantee correct ordering for
-	 * bytes_received and bytes_acked when we go to verify the results.
-	 */
+	 
 	shutdown(accept_fd, SHUT_WR);
 	err = recv(cli_fd, buf, 1, 0);
 	if (!ASSERT_OK(err, "recv(cli_fd) for fin"))

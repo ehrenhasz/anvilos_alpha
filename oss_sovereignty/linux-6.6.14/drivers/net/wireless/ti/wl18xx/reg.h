@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+ 
+ 
 
 #ifndef __REG_H__
 #define __REG_H__
@@ -55,7 +51,7 @@
 #define WL18XX_SLV_MEM_DATA		(WL18XX_HOST_BASE + 0x0018)
 #define WL18XX_SLV_REG_DATA		(WL18XX_HOST_BASE + 0x0008)
 
-/* Scratch Pad registers*/
+ 
 #define WL18XX_SCR_PAD0			(WL18XX_REGISTERS_BASE + 0x0154EC)
 #define WL18XX_SCR_PAD1			(WL18XX_REGISTERS_BASE + 0x0154F0)
 #define WL18XX_SCR_PAD2			(WL18XX_REGISTERS_BASE + 0x0154F4)
@@ -71,7 +67,7 @@
 #define WL18XX_SCR_PAD8			(WL18XX_REGISTERS_BASE + 0x01551C)
 #define WL18XX_SCR_PAD9			(WL18XX_REGISTERS_BASE + 0x015520)
 
-/* Spare registers*/
+ 
 #define WL18XX_SPARE_A1			(WL18XX_REGISTERS_BASE + 0x002194)
 #define WL18XX_SPARE_A2			(WL18XX_REGISTERS_BASE + 0x002198)
 #define WL18XX_SPARE_A3			(WL18XX_REGISTERS_BASE + 0x00219C)
@@ -97,7 +93,7 @@
 #define WL18XX_ENABLE			(WL18XX_REGISTERS_BASE + 0x01543C)
 #define TOP_FN0_CCCR_REG_32		(WL18XX_TOP_OCP_BASE + 0x64)
 
-/* PRCM registers */
+ 
 #define PLATFORM_DETECTION		0xA0E3E0
 #define OCS_EN				0xA02080
 #define PRIMARY_CLK_DETECT		0xA020A6
@@ -158,26 +154,13 @@
 #define CHIP_ID_185x_PG10              (0x06030101)
 #define CHIP_ID_185x_PG20              (0x06030111)
 
-/*
- * Host Command Interrupt. Setting this bit masks
- * the interrupt that the host issues to inform
- * the FW that it has sent a command
- * to the Wlan hardware Command Mailbox.
- */
+ 
 #define WL18XX_INTR_TRIG_CMD       BIT(28)
 
-/*
- * Host Event Acknowlegde Interrupt. The host
- * sets this bit to acknowledge that it received
- * the unsolicited information from the event
- * mailbox.
- */
+ 
 #define WL18XX_INTR_TRIG_EVENT_ACK BIT(29)
 
-/*
- * To boot the firmware in PLT mode we need to write this value in
- * SCR_PAD8 before starting.
- */
+ 
 #define WL18XX_SCR_PAD8_PLT	0xBABABEBE
 
 enum {
@@ -220,16 +203,16 @@ enum wl18xx_rdl_num {
 };
 
 
-/* FPGA_SPARE_1 register - used to change the PHY ATPG clock at boot time */
+ 
 #define WL18XX_PHY_FPGA_SPARE_1		0x8093CA40
 
-/* command to disable FDSP clock */
+ 
 #define MEM_FDSP_CLK_120_DISABLE        0x80000000
 
-/* command to set ATPG clock toward FDSP Code RAM rather than its own clock */
+ 
 #define MEM_FDSP_CODERAM_FUNC_CLK_SEL	0xC0000000
 
-/* command to re-enable FDSP clock */
+ 
 #define MEM_FDSP_CLK_120_ENABLE		0x40000000
 
-#endif /* __REG_H__ */
+#endif  

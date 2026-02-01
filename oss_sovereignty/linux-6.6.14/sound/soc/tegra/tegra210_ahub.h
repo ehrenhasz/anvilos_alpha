@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_ahub.h - TEGRA210 AHUB
- *
- * Copyright (c) 2020-2022, NVIDIA CORPORATION.  All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA210_AHUB__H__
 #define __TEGRA210_AHUB__H__
 
-/* Tegra210 specific */
+ 
 #define TEGRA210_XBAR_PART1_RX				0x200
 #define TEGRA210_XBAR_PART2_RX				0x400
 #define TEGRA210_XBAR_RX_STRIDE				0x4
@@ -19,7 +14,7 @@
 #define TEGRA210_XBAR_REG_MASK_2			0xff1cf313
 #define TEGRA210_XBAR_REG_MASK_3			0x0
 #define TEGRA210_XBAR_UPDATE_MAX_REG			3
-/* Tegra186 specific */
+ 
 #define TEGRA186_XBAR_PART3_RX				0x600
 #define TEGRA186_XBAR_AUDIO_RX_COUNT			115
 #define TEGRA186_XBAR_REG_MASK_0			0xf3fffff

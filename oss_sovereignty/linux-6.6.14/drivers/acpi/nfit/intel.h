@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2018 Intel Corporation. All rights reserved.
- * Intel specific definitions for NVDIMM Firmware Interface Table - NFIT
- */
+
+ 
 #ifndef _NFIT_INTEL_H_
 #define _NFIT_INTEL_H_
 
@@ -140,7 +137,7 @@ struct nd_intel_fw_activate_arm {
 	u32 status;
 } __packed;
 
-/* Root device command payloads */
+ 
 #define ND_INTEL_BUS_FWA_CAP_FWQUIESCE (1 << 0)
 #define ND_INTEL_BUS_FWA_CAP_OSQUIESCE (1 << 1)
 #define ND_INTEL_BUS_FWA_CAP_RESET     (1 << 2)

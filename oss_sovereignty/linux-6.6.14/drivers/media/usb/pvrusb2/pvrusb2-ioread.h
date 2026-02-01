@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- */
+ 
+ 
 #ifndef __PVRUSB2_IOREAD_H
 #define __PVRUSB2_IOREAD_H
 
@@ -21,4 +18,4 @@ int pvr2_ioread_set_enabled(struct pvr2_ioread *,int fl);
 int pvr2_ioread_read(struct pvr2_ioread *,void __user *buf,unsigned int cnt);
 int pvr2_ioread_avail(struct pvr2_ioread *);
 
-#endif /* __PVRUSB2_IOREAD_H */
+#endif  

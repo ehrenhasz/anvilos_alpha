@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -*- linux-c -*- *
- *
- * ALSA driver for the digigram lx6464es interface
- *
- * Copyright (c) 2008, 2009 Tim Blechmann <tim@klingt.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -42,19 +37,19 @@ static const struct pci_device_id snd_lx6464es_ids[] = {
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
 			 PCI_VENDOR_ID_DIGIGRAM,
 			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_SERIAL_SUBSYSTEM),
-	},			/* LX6464ES */
+	},			 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
 			 PCI_VENDOR_ID_DIGIGRAM,
 			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_CAE_SERIAL_SUBSYSTEM),
-	},			/* LX6464ES-CAE */
+	},			 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
 			 PCI_VENDOR_ID_DIGIGRAM,
 			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ESE_SERIAL_SUBSYSTEM),
-	},			/* LX6464ESe */
+	},			 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_LX6464ES,
 			 PCI_VENDOR_ID_DIGIGRAM,
 			 PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ESE_CAE_SERIAL_SUBSYSTEM),
-	},			/* LX6464ESe-CAE */
+	},			 
 	{ 0, },
 };
 
@@ -62,11 +57,11 @@ MODULE_DEVICE_TABLE(pci, snd_lx6464es_ids);
 
 
 
-/* PGO pour USERo dans le registre pci_0x06/loc_0xEC */
+ 
 #define CHIPSC_RESET_XILINX (1L<<16)
 
 
-/* alsa callbacks */
+ 
 static const struct snd_pcm_hardware lx_caps = {
 	.info             = (SNDRV_PCM_INFO_MMAP |
 			     SNDRV_PCM_INFO_INTERLEAVED |
@@ -209,11 +204,11 @@ static int lx_pcm_open(struct snd_pcm_substream *substream)
 	dev_dbg(chip->card->dev, "->lx_pcm_open\n");
 	mutex_lock(&chip->setup_mutex);
 
-	/* copy the struct snd_pcm_hardware struct */
+	 
 	runtime->hw = lx_caps;
 
 #if 0
-	/* buffer-size should better be multiple of period-size */
+	 
 	err = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (err < 0) {
@@ -222,7 +217,7 @@ static int lx_pcm_open(struct snd_pcm_substream *substream)
 	}
 #endif
 
-	/* the clock rate cannot be changed */
+	 
 	board_rate = chip->board_sample_rate;
 	err = snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_RATE,
 					   board_rate);
@@ -232,7 +227,7 @@ static int lx_pcm_open(struct snd_pcm_substream *substream)
 		goto exit;
 	}
 
-	/* constrain period size */
+	 
 	err = snd_pcm_hw_constraint_minmax(runtime,
 					   SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 					   MICROBLAZE_IBL_MIN,
@@ -531,7 +526,7 @@ static void snd_lx6464es_free(struct snd_card *card)
 	lx_irq_disable(chip);
 }
 
-/* reset the dsp during initialization */
+ 
 static int lx_init_xilinx_reset(struct lx6464es *chip)
 {
 	int i;
@@ -539,7 +534,7 @@ static int lx_init_xilinx_reset(struct lx6464es *chip)
 
 	dev_dbg(chip->card->dev, "->lx_init_xilinx_reset\n");
 
-	/* activate reset of xilinx */
+	 
 	plx_reg &= ~CHIPSC_RESET_XILINX;
 
 	lx_plx_reg_write(chip, ePLX_CHIPSC, plx_reg);
@@ -551,7 +546,7 @@ static int lx_init_xilinx_reset(struct lx6464es *chip)
 	plx_reg |= CHIPSC_RESET_XILINX;
 	lx_plx_reg_write(chip, ePLX_CHIPSC, plx_reg);
 
-	/* deactivate reset of xilinx */
+	 
 	for (i = 0; i != 100; ++i) {
 		u32 reg_mbox3;
 		msleep(10);
@@ -563,12 +558,12 @@ static int lx_init_xilinx_reset(struct lx6464es *chip)
 		}
 	}
 
-	/* todo: add some error handling? */
+	 
 
-	/* clear mr */
+	 
 	lx_dsp_reg_write(chip, eReg_CSM, 0);
 
-	/* le xilinx ES peut ne pas etre encore pret, on attend. */
+	 
 	msleep(600);
 
 	return 0;
@@ -580,7 +575,7 @@ static int lx_init_xilinx_test(struct lx6464es *chip)
 
 	dev_dbg(chip->card->dev, "->lx_init_xilinx_test\n");
 
-	/* TEST if we have access to Xilinx/MicroBlaze */
+	 
 	lx_dsp_reg_write(chip, eReg_CSM, 0);
 
 	reg = lx_dsp_reg_read(chip, eReg_CSM);
@@ -588,13 +583,13 @@ static int lx_init_xilinx_test(struct lx6464es *chip)
 	if (reg) {
 		dev_err(chip->card->dev, "Problem: Reg_CSM %x.\n", reg);
 
-		/* PCI9056_SPACE0_REMAP */
+		 
 		lx_plx_reg_write(chip, ePLX_PCICR, 1);
 
 		reg = lx_dsp_reg_read(chip, eReg_CSM);
 		if (reg) {
 			dev_err(chip->card->dev, "Error: Reg_CSM %x.\n", reg);
-			return -EAGAIN; /* seems to be appropriate */
+			return -EAGAIN;  
 		}
 	}
 
@@ -603,13 +598,13 @@ static int lx_init_xilinx_test(struct lx6464es *chip)
 	return 0;
 }
 
-/* initialize ethersound */
+ 
 static int lx_init_ethersound_config(struct lx6464es *chip)
 {
 	int i;
 	u32 orig_conf_es = lx_dsp_reg_read(chip, eReg_CONFES);
 
-	/* configure 64 io channels */
+	 
 	u32 conf_es = (orig_conf_es & CONFES_READ_PART_MASK) |
 		(64 << IOCR_INPUTS_OFFSET) |
 		(64 << IOCR_OUTPUTS_OFFSET) |
@@ -619,12 +614,7 @@ static int lx_init_ethersound_config(struct lx6464es *chip)
 
 	chip->freq_ratio = FREQ_RATIO_SINGLE_MODE;
 
-	/*
-	 * write it to the card !
-	 * this actually kicks the ES xilinx, the first time since poweron.
-	 * the MAC address in the Reg_ADMACESMSB Reg_ADMACESLSB registers
-	 * is not ready before this is done, and the bit 2 in Reg_CSES is set.
-	 * */
+	 
 	lx_dsp_reg_write(chip, eReg_CONFES, conf_es);
 
 	for (i = 0; i != 1000; ++i) {
@@ -661,14 +651,13 @@ static int lx_init_get_version_features(struct lx6464es *chip)
 			   (dsp_version>>16) & 0xff, (dsp_version>>8) & 0xff,
 			   dsp_version & 0xff);
 
-		/* later: what firmware version do we expect? */
+		 
 
-		/* retrieve Play/Rec features */
-		/* done here because we may have to handle alternate
-		 * DSP files. */
-		/* later */
+		 
+		 
+		 
 
-		/* init the EtherSound sample rate */
+		 
 		err = lx_dsp_get_clock_frequency(chip, &freq);
 		if (err == 0)
 			chip->board_sample_rate = freq;
@@ -688,7 +677,7 @@ static int lx_set_granularity(struct lx6464es *chip, u32 gran)
 
 	dev_dbg(chip->card->dev, "->lx_set_granularity\n");
 
-	/* blocksize is a power of 2 */
+	 
 	while ((snapped_gran < gran) &&
 	       (snapped_gran < MICROBLAZE_IBL_MAX)) {
 		snapped_gran *= 2;
@@ -712,7 +701,7 @@ static int lx_set_granularity(struct lx6464es *chip, u32 gran)
 	return err;
 }
 
-/* initialize and test the xilinx dsp chip */
+ 
 static int lx_init_dsp(struct lx6464es *chip)
 {
 	int err;
@@ -737,8 +726,7 @@ static int lx_init_dsp(struct lx6464es *chip)
 
 	lx_irq_enable(chip);
 
-	/** \todo the mac address should be ready by not, but it isn't,
-	 *  so we wait for it */
+	 
 	for (i = 0; i != 1000; ++i) {
 		err = lx_dsp_get_mac(chip);
 		if (err)
@@ -793,15 +781,15 @@ static int lx_pcm_create(struct lx6464es *chip)
 	int err;
 	struct snd_pcm *pcm;
 
-	u32 size = 64 *		     /* channels */
-		3 *		     /* 24 bit samples */
-		MAX_STREAM_BUFFER *  /* periods */
-		MICROBLAZE_IBL_MAX * /* frames per period */
-		2;		     /* duplex */
+	u32 size = 64 *		      
+		3 *		      
+		MAX_STREAM_BUFFER *   
+		MICROBLAZE_IBL_MAX *  
+		2;		      
 
 	size = PAGE_ALIGN(size);
 
-	/* hardcoded device name & channel count */
+	 
 	err = snd_pcm_new(chip->card, (char *)card_name, 0,
 			  1, 1, &pcm);
 	if (err < 0)
@@ -919,14 +907,14 @@ static int snd_lx6464es_create(struct snd_card *card,
 
 	dev_dbg(card->dev, "->snd_lx6464es_create\n");
 
-	/* enable PCI device */
+	 
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
 
 	pci_set_master(pci);
 
-	/* check if we can restrict PCI DMA transfers to 32 bits */
+	 
 	err = dma_set_mask(&pci->dev, DMA_BIT_MASK(32));
 	if (err < 0) {
 		dev_err(card->dev,
@@ -938,24 +926,24 @@ static int snd_lx6464es_create(struct snd_card *card,
 	chip->pci = pci;
 	chip->irq = -1;
 
-	/* initialize synchronization structs */
+	 
 	mutex_init(&chip->lock);
 	mutex_init(&chip->msg_lock);
 	mutex_init(&chip->setup_mutex);
 
-	/* request resources */
+	 
 	err = pci_request_regions(pci, card_name);
 	if (err < 0)
 		return err;
 
-	/* plx port */
+	 
 	chip->port_plx = pci_resource_start(pci, 1);
 	chip->port_plx_remapped = devm_ioport_map(&pci->dev, chip->port_plx,
 						  pci_resource_len(pci, 1));
 	if (!chip->port_plx_remapped)
 		return -ENOMEM;
 
-	/* dsp port */
+	 
 	chip->port_dsp_bar = pcim_iomap(pci, 2, 0);
 	if (!chip->port_dsp_bar)
 		return -ENOMEM;

@@ -1,54 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
 
-/*
- * Implements Extendible Hashing as described in:
- *   "Extendible Hashing" by Fagin, et al in
- *     __ACM Trans. on Database Systems__, Sept 1979.
- *
- *
- * Here's the layout of dirents which is essentially the same as that of ext2
- * within a single block. The field de_name_len is the number of bytes
- * actually required for the name (no null terminator). The field de_rec_len
- * is the number of bytes allocated to the dirent. The offset of the next
- * dirent in the block is (dirent + dirent->de_rec_len). When a dirent is
- * deleted, the preceding dirent inherits its allocated space, ie
- * prev->de_rec_len += deleted->de_rec_len. Since the next dirent is obtained
- * by adding de_rec_len to the current dirent, this essentially causes the
- * deleted dirent to get jumped over when iterating through all the dirents.
- *
- * When deleting the first dirent in a block, there is no previous dirent so
- * the field de_ino is set to zero to designate it as deleted. When allocating
- * a dirent, gfs2_dirent_alloc iterates through the dirents in a block. If the
- * first dirent has (de_ino == 0) and de_rec_len is large enough, this first
- * dirent is allocated. Otherwise it must go through all the 'used' dirents
- * searching for one in which the amount of total space minus the amount of
- * used space will provide enough space for the new dirent.
- *
- * There are two types of blocks in which dirents reside. In a stuffed dinode,
- * the dirents begin at offset sizeof(struct gfs2_dinode) from the beginning of
- * the block.  In leaves, they begin at offset sizeof(struct gfs2_leaf) from the
- * beginning of the leaf block. The dirents reside in leaves when
- *
- * dip->i_diskflags & GFS2_DIF_EXHASH is true
- *
- * Otherwise, the dirents are "linear", within a single stuffed dinode block.
- *
- * When the dirents are in leaves, the actual contents of the directory file are
- * used as an array of 64-bit block pointers pointing to the leaf blocks. The
- * dirents are NOT in the directory file itself. There can be more than one
- * block pointer in the array that points to the same leaf. In fact, when a
- * directory is first converted from linear to exhash, all of the pointers
- * point to the same leaf.
- *
- * When a leaf is completely full, the size of the hash table can be
- * doubled unless it is already at the maximum size which is hard coded into
- * GFS2_DIR_MAX_DEPTH. After that, leaves are chained together in a linked list,
- * but never before the maximum hash table size has been reached.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -73,7 +26,7 @@
 #include "bmap.h"
 #include "util.h"
 
-#define MAX_RA_BLOCKS 32 /* max read-ahead blocks */
+#define MAX_RA_BLOCKS 32  
 
 #define gfs2_disk_hash2offset(h) (((u64)(h)) >> 1)
 #define gfs2_dir_offset2hash(p) ((u32)(((u64)(p)) << 1))
@@ -140,15 +93,7 @@ static int gfs2_dir_write_stuffed(struct gfs2_inode *ip, const char *buf,
 
 
 
-/**
- * gfs2_dir_write_data - Write directory information to the inode
- * @ip: The GFS2 inode
- * @buf: The buffer containing information to be written
- * @offset: The file offset to start writing at
- * @size: The amount of data to write
- *
- * Returns: The number of bytes correctly written or error code
- */
+ 
 static int gfs2_dir_write_data(struct gfs2_inode *ip, const char *buf,
 			       u64 offset, unsigned int size)
 {
@@ -256,14 +201,7 @@ static int gfs2_dir_read_stuffed(struct gfs2_inode *ip, __be64 *buf,
 }
 
 
-/**
- * gfs2_dir_read_data - Read a data from a directory inode
- * @ip: The GFS2 Inode
- * @buf: The buffer to place result into
- * @size: Amount of data to transfer
- *
- * Returns: The amount of data actually copied or the error
- */
+ 
 static int gfs2_dir_read_data(struct gfs2_inode *ip, __be64 *buf,
 			      unsigned int size)
 {
@@ -324,12 +262,7 @@ fail:
 	return (copied) ? copied : error;
 }
 
-/**
- * gfs2_dir_get_hash_table - Get pointer to the dir hash table
- * @ip: The inode in question
- *
- * Returns: The hash table or an error
- */
+ 
 
 static __be64 *gfs2_dir_get_hash_table(struct gfs2_inode *ip)
 {
@@ -375,12 +308,7 @@ static __be64 *gfs2_dir_get_hash_table(struct gfs2_inode *ip)
 	return ip->i_hash_cache;
 }
 
-/**
- * gfs2_dir_hash_inval - Invalidate dir hash
- * @ip: The directory inode
- *
- * Must be called with an exclusive glock, or during glock invalidation.
- */
+ 
 void gfs2_dir_hash_inval(struct gfs2_inode *ip)
 {
 	__be64 *hc;
@@ -423,10 +351,7 @@ static int gfs2_dirent_prev(const struct gfs2_dirent *dent,
 	return __gfs2_dirent_find(dent, name, 2);
 }
 
-/*
- * name->name holds ptr to start of block.
- * name->len holds size of block.
- */
+ 
 static int gfs2_dirent_last(const struct gfs2_dirent *dent,
 			    const struct qstr *name,
 			    void *opaque)
@@ -438,8 +363,7 @@ static int gfs2_dirent_last(const struct gfs2_dirent *dent,
 	return 0;
 }
 
-/* Look for the dirent that contains the offset specified in data. Once we
- * find that dirent, there must be space available there for the new dirent */
+ 
 static int gfs2_dirent_find_offset(const struct gfs2_dirent *dent,
 				  const struct qstr *name,
 				  void *ptr)
@@ -490,15 +414,7 @@ static int gfs2_dirent_gather(const struct gfs2_dirent *dent,
 	return 0;
 }
 
-/*
- * Other possible things to check:
- * - Inode located within filesystem size (and on valid block)
- * - Valid directory entry type
- * Not sure how heavy-weight we want to make this... could also check
- * hash is correct for example, but that would take a lot of extra time.
- * For now the most important thing is to check that the various sizes
- * are correct.
- */
+ 
 static int gfs2_check_dirent(struct gfs2_sbd *sdp,
 			     struct gfs2_dirent *dent, unsigned int offset,
 			     unsigned int size, unsigned int len, int first)
@@ -621,14 +537,7 @@ broken:
 	return -EIO;
 }
 
-/**
- * dirent_next - Next dirent
- * @dip: the directory
- * @bh: The buffer
- * @dent: Pointer to list of dirents
- *
- * Returns: 0 on success, error code otherwise
- */
+ 
 
 static int dirent_next(struct gfs2_inode *dip, struct buffer_head *bh,
 		       struct gfs2_dirent **dent)
@@ -646,7 +555,7 @@ static int dirent_next(struct gfs2_inode *dip, struct buffer_head *bh,
 	if (ret == -EIO)
 		return ret;
 
-        /* Only the first dent could ever have de_inum.no_addr == 0 */
+         
 	if (gfs2_dirent_sentinel(tmp)) {
 		gfs2_consist_inode(dip);
 		return -EIO;
@@ -656,14 +565,7 @@ static int dirent_next(struct gfs2_inode *dip, struct buffer_head *bh,
 	return 0;
 }
 
-/**
- * dirent_del - Delete a dirent
- * @dip: The GFS2 inode
- * @bh: The buffer
- * @prev: The previous dirent
- * @cur: The current dirent
- *
- */
+ 
 
 static void dirent_del(struct gfs2_inode *dip, struct buffer_head *bh,
 		       struct gfs2_dirent *prev, struct gfs2_dirent *cur)
@@ -677,9 +579,7 @@ static void dirent_del(struct gfs2_inode *dip, struct buffer_head *bh,
 
 	gfs2_trans_add_meta(dip->i_gl, bh);
 
-	/* If there is no prev entry, this is the first entry in the block.
-	   The de_rec_len is already as big as it needs to be.  Just zero
-	   out the inode number and return.  */
+	 
 
 	if (!prev) {
 		cur->de_inum.no_addr = 0;
@@ -687,7 +587,7 @@ static void dirent_del(struct gfs2_inode *dip, struct buffer_head *bh,
 		return;
 	}
 
-	/*  Combine this dentry with the previous one.  */
+	 
 
 	prev_rec_len = be16_to_cpu(prev->de_rec_len);
 	cur_rec_len = be16_to_cpu(cur->de_rec_len);
@@ -722,10 +622,7 @@ static struct gfs2_dirent *do_init_dirent(struct inode *inode,
 }
 
 
-/*
- * Takes a dent from which to grab space as an argument. Returns the
- * newly created dent.
- */
+ 
 static struct gfs2_dirent *gfs2_init_dirent(struct inode *inode,
 					    struct gfs2_dirent *dent,
 					    const struct qstr *name,
@@ -759,21 +656,14 @@ static int get_leaf(struct gfs2_inode *dip, u64 leaf_no,
 
 	error = gfs2_meta_read(dip->i_gl, leaf_no, DIO_WAIT, 0, bhp);
 	if (!error && gfs2_metatype_check(GFS2_SB(&dip->i_inode), *bhp, GFS2_METATYPE_LF)) {
-		/* pr_info("block num=%llu\n", leaf_no); */
+		 
 		error = -EIO;
 	}
 
 	return error;
 }
 
-/**
- * get_leaf_nr - Get a leaf number associated with the index
- * @dip: The GFS2 inode
- * @index: hash table index of the targeted leaf
- * @leaf_out: Resulting leaf block number
- *
- * Returns: 0 on success, error code otherwise
- */
+ 
 
 static int get_leaf_nr(struct gfs2_inode *dip, u32 index, u64 *leaf_out)
 {
@@ -894,12 +784,7 @@ static struct gfs2_leaf *new_leaf(struct inode *inode, struct buffer_head **pbh,
 	return leaf;
 }
 
-/**
- * dir_make_exhash - Convert a stuffed directory into an ExHash directory
- * @inode: The directory inode to be converted to exhash
- *
- * Returns: 0 on success, error code otherwise
- */
+ 
 
 static int dir_make_exhash(struct inode *inode)
 {
@@ -919,7 +804,7 @@ static int dir_make_exhash(struct inode *inode)
 	if (error)
 		return error;
 
-	/*  Turn over a new leaf  */
+	 
 
 	leaf = new_leaf(inode, &bh, 0);
 	if (!leaf)
@@ -929,12 +814,12 @@ static int dir_make_exhash(struct inode *inode)
 	gfs2_assert(sdp, dip->i_entries < BIT(16));
 	leaf->lf_entries = cpu_to_be16(dip->i_entries);
 
-	/*  Copy dirents  */
+	 
 
 	gfs2_buffer_copy_tail(bh, sizeof(struct gfs2_leaf), dibh,
 			     sizeof(struct gfs2_dinode));
 
-	/*  Find last entry  */
+	 
 
 	x = 0;
 	args.len = bh->b_size - sizeof(struct gfs2_dinode) +
@@ -953,8 +838,7 @@ static int dir_make_exhash(struct inode *inode)
 		return PTR_ERR(dent);
 	}
 
-	/*  Adjust the last dirent's record length
-	   (Remember that dent still points to the last entry.)  */
+	 
 
 	dent->de_rec_len = cpu_to_be16(be16_to_cpu(dent->de_rec_len) +
 		sizeof(struct gfs2_dinode) -
@@ -962,8 +846,7 @@ static int dir_make_exhash(struct inode *inode)
 
 	brelse(bh);
 
-	/*  We're done with the new leaf block, now setup the new
-	    hash table.  */
+	 
 
 	gfs2_trans_add_meta(dip->i_gl, dibh);
 	gfs2_buffer_clear_tail(dibh, sizeof(struct gfs2_dinode));
@@ -987,13 +870,7 @@ static int dir_make_exhash(struct inode *inode)
 	return 0;
 }
 
-/**
- * dir_split_leaf - Split a leaf block into two
- * @inode: The directory inode to be split
- * @name: name of the dirent we're trying to insert
- *
- * Returns: 0 on success, error code on failure
- */
+ 
 
 static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 {
@@ -1013,7 +890,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	if (error)
 		return error;
 
-	/*  Get the old leaf block  */
+	 
 	error = get_leaf(dip, leaf_no, &obh);
 	if (error)
 		return error;
@@ -1021,7 +898,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	oleaf = (struct gfs2_leaf *)obh->b_data;
 	if (dip->i_depth == be16_to_cpu(oleaf->lf_depth)) {
 		brelse(obh);
-		return 1; /* can't split */
+		return 1;  
 	}
 
 	gfs2_trans_add_meta(dip->i_gl, obh);
@@ -1033,7 +910,7 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 	}
 	bn = nbh->b_blocknr;
 
-	/*  Compute the start and len of leaf pointers in the hash table.  */
+	 
 	len = BIT(dip->i_depth - be16_to_cpu(oleaf->lf_depth));
 	half_len = len >> 1;
 	if (!half_len) {
@@ -1046,16 +923,14 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 
 	start = (index & ~(len - 1));
 
-	/* Change the pointers.
-	   Don't bother distinguishing stuffed from non-stuffed.
-	   This code is complicated enough already. */
+	 
 	lp = kmalloc_array(half_len, sizeof(__be64), GFP_NOFS);
 	if (!lp) {
 		error = -ENOMEM;
 		goto fail_brelse;
 	}
 
-	/*  Change the pointers  */
+	 
 	for (x = 0; x < half_len; x++)
 		lp[x] = cpu_to_be64(bn);
 
@@ -1071,10 +946,10 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 
 	kfree(lp);
 
-	/*  Compute the divider  */
+	 
 	divider = (start + half_len) << (32 - dip->i_depth);
 
-	/*  Copy the entries  */
+	 
 	dent = (struct gfs2_dirent *)(obh->b_data + sizeof(struct gfs2_leaf));
 
 	do {
@@ -1095,8 +970,8 @@ static int dir_split_leaf(struct inode *inode, const struct qstr *name)
 				break;
 			}
 
-			new->de_inum = dent->de_inum; /* No endian worries */
-			new->de_type = dent->de_type; /* No endian worries */
+			new->de_inum = dent->de_inum;  
+			new->de_type = dent->de_type;  
 			be16_add_cpu(&nleaf->lf_entries, 1);
 
 			dirent_del(dip, obh, prev, dent);
@@ -1137,12 +1012,7 @@ fail_brelse:
 	return error;
 }
 
-/**
- * dir_double_exhash - Double size of ExHash table
- * @dip: The GFS2 dinode
- *
- * Returns: 0 on success, error code on failure
- */
+ 
 
 static int dir_double_exhash(struct gfs2_inode *dip)
 {
@@ -1191,7 +1061,7 @@ static int dir_double_exhash(struct gfs2_inode *dip)
 	return 0;
 
 fail:
-	/* Replace original hash table & size */
+	 
 	gfs2_dir_write_data(dip, (char *)hc, 0, hsize_bytes);
 	i_size_write(&dip->i_inode, hsize_bytes);
 	gfs2_dinode_out(dip, dibh->b_data);
@@ -1201,16 +1071,7 @@ out_kfree:
 	return error;
 }
 
-/**
- * compare_dents - compare directory entries by hash value
- * @a: first dent
- * @b: second dent
- *
- * When comparing the hash entries of @a to @b:
- *   gt: returns 1
- *   lt: returns -1
- *   eq: returns 0
- */
+ 
 
 static int compare_dents(const void *a, const void *b)
 {
@@ -1243,22 +1104,7 @@ static int compare_dents(const void *a, const void *b)
 	return ret;
 }
 
-/**
- * do_filldir_main - read out directory entries
- * @dip: The GFS2 inode
- * @ctx: what to feed the entries to
- * @darr: an array of struct gfs2_dirent pointers to read
- * @entries: the number of entries in darr
- * @sort_start: index of the directory array to start our sort
- * @copied: pointer to int that's non-zero if a entry has been copied out
- *
- * Jump through some hoops to make sure that if there are hash collsions,
- * they are read out at the beginning of a buffer.  We want to minimize
- * the possibility that they will fall into different readdir buffers or
- * that someone will want to seek to that location.
- *
- * Returns: errno, >0 if the actor tells you to stop
- */
+ 
 
 static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 			   struct gfs2_dirent **darr, u32 entries,
@@ -1309,9 +1155,7 @@ static int do_filldir_main(struct gfs2_inode *dip, struct dir_context *ctx,
 		*copied = 1;
 	}
 
-	/* Increment the ctx->pos by one, so the next time we come into the
-	   do_filldir fxn, we get the next entry instead of the last one in the
-	   current leaf */
+	 
 
 	ctx->pos++;
 
@@ -1401,12 +1245,7 @@ static int gfs2_dir_read_leaf(struct inode *inode, struct dir_context *ctx,
 		return 0;
 
 	error = -ENOMEM;
-	/*
-	 * The extra 99 entries are not normally used, but are a buffer
-	 * zone in case the number of entries in the leaf is corrupt.
-	 * 99 is the maximum number of entries that can fit in a single
-	 * leaf block.
-	 */
+	 
 	larr = gfs2_alloc_sort_buffer((leaves + entries + 99) * sizeof(void *));
 	if (!larr)
 		goto out;
@@ -1464,18 +1303,7 @@ out:
 	return error;
 }
 
-/**
- * gfs2_dir_readahead - Issue read-ahead requests for leaf blocks.
- * @inode: the directory inode
- * @hsize: hash table size
- * @index: index into the hash table
- * @f_ra: read-ahead parameters
- *
- * Note: we can't calculate each index like dir_e_read can because we don't
- * have the leaf, and therefore we don't have the depth, and therefore we
- * don't have the length. So we have to just read enough ahead to make up
- * for the loss of information.
- */
+ 
 static void gfs2_dir_readahead(struct inode *inode, unsigned hsize, u32 index,
 			       struct file_ra_state *f_ra)
 {
@@ -1485,13 +1313,13 @@ static void gfs2_dir_readahead(struct inode *inode, unsigned hsize, u32 index,
 	u64 blocknr = 0, last;
 	unsigned count;
 
-	/* First check if we've already read-ahead for the whole range. */
+	 
 	if (index + MAX_RA_BLOCKS < f_ra->start)
 		return;
 
 	f_ra->start = max((pgoff_t)index, f_ra->start);
 	for (count = 0; count < MAX_RA_BLOCKS; count++) {
-		if (f_ra->start >= hsize) /* if exceeded the hash table */
+		if (f_ra->start >= hsize)  
 			break;
 
 		last = blocknr;
@@ -1516,14 +1344,7 @@ static void gfs2_dir_readahead(struct inode *inode, unsigned hsize, u32 index,
 	}
 }
 
-/**
- * dir_e_read - Reads the entries from a directory into a filldir buffer
- * @inode: the directory inode
- * @ctx: actor to feed the entries to
- * @f_ra: read-ahead parameters
- *
- * Returns: errno
- */
+ 
 
 static int dir_e_read(struct inode *inode, struct dir_context *ctx,
 		      struct file_ra_state *f_ra)
@@ -1591,7 +1412,7 @@ int gfs2_dir_read(struct inode *inode, struct dir_context *ctx,
 		return error;
 
 	error = -ENOMEM;
-	/* 96 is max number of dirents which can be stuffed into an inode */
+	 
 	darr = kmalloc_array(96, sizeof(struct gfs2_dirent *), GFP_NOFS);
 	if (darr) {
 		g.pdent = (const struct gfs2_dirent **)darr;
@@ -1627,17 +1448,7 @@ out:
 	return error;
 }
 
-/**
- * gfs2_dir_search - Search a directory
- * @dir: The GFS2 directory inode
- * @name: The name we are looking up
- * @fail_on_exist: Fail if the name exists rather than looking it up
- *
- * This routine searches a directory for a file or another directory.
- * Assumes a glock is held on dip.
- *
- * Returns: errno
- */
+ 
 
 struct inode *gfs2_dir_search(struct inode *dir, const struct qstr *name,
 			      bool fail_on_exist)
@@ -1662,7 +1473,7 @@ struct inode *gfs2_dir_search(struct inode *dir, const struct qstr *name,
 		if (fail_on_exist)
 			return ERR_PTR(-EEXIST);
 		inode = gfs2_inode_lookup(dir->i_sb, dtype, addr, formal_ino,
-					  GFS2_BLKST_FREE /* ignore */);
+					  GFS2_BLKST_FREE  );
 		if (!IS_ERR(inode))
 			GFS2_I(inode)->i_rahead = rahead;
 		return inode;
@@ -1701,24 +1512,7 @@ out:
 	return ret;
 }
 
-/**
- * dir_new_leaf - Add a new leaf onto hash chain
- * @inode: The directory
- * @name: The name we are adding
- *
- * This adds a new dir leaf onto an existing leaf when there is not
- * enough space to add a new dir entry. This is a last resort after
- * we've expanded the hash table to max size and also split existing
- * leaf blocks, so it will only occur for very large directories.
- *
- * The dist parameter is set to 1 for leaf blocks directly attached
- * to the hash table, 2 for one layer of indirection, 3 for two layers
- * etc. We are thus able to tell the difference between an old leaf
- * with dist set to zero (i.e. "don't know") and a new one where we
- * set this information for debug/fsck purposes.
- *
- * Returns: 0 on success, or -ve on error
- */
+ 
 
 static int dir_new_leaf(struct inode *inode, const struct qstr *name)
 {
@@ -1776,21 +1570,7 @@ static u16 gfs2_inode_ra_len(const struct gfs2_inode *ip)
 	return 0;
 }
 
-/**
- * gfs2_dir_add - Add new filename into directory
- * @inode: The directory inode
- * @name: The new name
- * @nip: The GFS2 inode to be linked in to the directory
- * @da: The directory addition info
- *
- * If the call to gfs2_diradd_alloc_required resulted in there being
- * no need to allocate any new directory blocks, then it will contain
- * a pointer to the directory entry and the bh in which it resides. We
- * can use that without having to repeat the search. If there was no
- * free space, then we must now create more space.
- *
- * Returns: 0 on success, error code on failure
- */
+ 
 
 int gfs2_dir_add(struct inode *inode, const struct qstr *name,
 		 const struct gfs2_inode *nip, struct gfs2_diradd *da)
@@ -1863,13 +1643,7 @@ int gfs2_dir_add(struct inode *inode, const struct qstr *name,
 }
 
 
-/**
- * gfs2_dir_del - Delete a directory entry
- * @dip: The GFS2 inode
- * @dentry: The directory entry we want to delete
- *
- * Returns: 0 on success, error code on failure
- */
+ 
 
 int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 {
@@ -1878,8 +1652,7 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 	struct buffer_head *bh;
 	struct timespec64 tv;
 
-	/* Returns _either_ the entry (if its first in block) or the
-	   previous entry otherwise */
+	 
 	dent = gfs2_dirent_search(&dip->i_inode, name, gfs2_dirent_prev, &bh);
 	if (!dent) {
 		gfs2_consist_inode(dip);
@@ -1889,7 +1662,7 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 		gfs2_consist_inode(dip);
 		return PTR_ERR(dent);
 	}
-	/* If not first in block, adjust pointers accordingly */
+	 
 	if (gfs2_dirent_find(dent, name, NULL) == 0) {
 		prev = dent;
 		dent = (struct gfs2_dirent *)((char *)dent + be16_to_cpu(prev->de_rec_len));
@@ -1919,19 +1692,7 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 	return 0;
 }
 
-/**
- * gfs2_dir_mvino - Change inode number of directory entry
- * @dip: The GFS2 directory inode
- * @filename: the filename to be moved
- * @nip: the new GFS2 inode
- * @new_type: the de_type of the new dirent
- *
- * This routine changes the inode number of a directory entry.  It's used
- * by rename to change ".." when a directory is moved.
- * Assumes a glock is held on dvp.
- *
- * Returns: errno
- */
+ 
 
 int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
 		   const struct gfs2_inode *nip, unsigned int new_type)
@@ -1957,17 +1718,7 @@ int gfs2_dir_mvino(struct gfs2_inode *dip, const struct qstr *filename,
 	return 0;
 }
 
-/**
- * leaf_dealloc - Deallocate a directory leaf
- * @dip: the directory
- * @index: the hash table offset in the directory
- * @len: the number of pointers to this leaf
- * @leaf_no: the leaf number
- * @leaf_bh: buffer_head for the starting leaf
- * @last_dealloc: 1 if this is the final dealloc for the leaf, else 0
- *
- * Returns: errno
- */
+ 
 
 static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 			u64 leaf_no, struct buffer_head *leaf_bh,
@@ -1999,7 +1750,7 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 	if (error)
 		goto out;
 
-	/*  Count the number of leaves  */
+	 
 	bh = leaf_bh;
 
 	for (blk = leaf_no; blk; blk = nblk) {
@@ -2068,8 +1819,7 @@ static int leaf_dealloc(struct gfs2_inode *dip, u32 index, u32 len,
 		goto out_end_trans;
 
 	gfs2_trans_add_meta(dip->i_gl, dibh);
-	/* On the last dealloc, make this a regular file in case we crash.
-	   (We don't want to free these blocks a second time.)  */
+	 
 	if (last_dealloc)
 		dip->i_inode.i_mode = S_IFREG;
 	gfs2_dinode_out(dip, dibh->b_data);
@@ -2087,15 +1837,7 @@ out:
 	return error;
 }
 
-/**
- * gfs2_dir_exhash_dealloc - free all the leaf blocks in a directory
- * @dip: the directory
- *
- * Dealloc all on-disk directory leaves to FREEMETA state
- * Change on-disk inode type to "regular file"
- *
- * Returns: errno
- */
+ 
 
 int gfs2_dir_exhash_dealloc(struct gfs2_inode *dip)
 {
@@ -2144,14 +1886,7 @@ out:
 	return error;
 }
 
-/**
- * gfs2_diradd_alloc_required - find if adding entry will require an allocation
- * @inode: the directory inode being written to
- * @name: the filename that's going to be added
- * @da: The structure to return dir alloc info
- *
- * Returns: 0 if ok, -ve on error
- */
+ 
 
 int gfs2_diradd_alloc_required(struct inode *inode, const struct qstr *name,
 			       struct gfs2_diradd *da)

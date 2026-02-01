@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
- */
+
+ 
 
 #include "cmd.h"
 
@@ -46,12 +44,7 @@ int mlx5vf_cmd_suspend_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod)
 	if (mvdev->mdev_detach)
 		return -ENOTCONN;
 
-	/*
-	 * In case PRE_COPY is used, saving_migf is exposed while the device is
-	 * running. Make sure to run only once there is no active save command.
-	 * Running both in parallel, might end-up with a failure in the save
-	 * command once it will try to turn on 'tracking' on a suspended device.
-	 */
+	 
 	if (migf) {
 		err = wait_for_completion_interruptible(&migf->save_comp);
 		if (err)
@@ -97,22 +90,14 @@ int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
 	if (mvdev->mdev_detach)
 		return -ENOTCONN;
 
-	/*
-	 * In case PRE_COPY is used, saving_migf is exposed while device is
-	 * running. Make sure to run only once there is no active save command.
-	 * Running both in parallel, might end-up with a failure in the
-	 * incremental query command on un-tracked vhca.
-	 */
+	 
 	if (inc) {
 		ret = wait_for_completion_interruptible(&mvdev->saving_migf->save_comp);
 		if (ret)
 			return ret;
 		if (mvdev->saving_migf->state ==
 		    MLX5_MIGF_STATE_PRE_COPY_ERROR) {
-			/*
-			 * In case we had a PRE_COPY error, only query full
-			 * image for final image
-			 */
+			 
 			if (!(query_flags & MLX5VF_QUERY_FINAL)) {
 				*state_size = 0;
 				complete(&mvdev->saving_migf->save_comp);
@@ -144,7 +129,7 @@ int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
 
 static void set_tracker_error(struct mlx5vf_pci_core_device *mvdev)
 {
-	/* Mark the tracker under an error and wake it up if it's running */
+	 
 	mvdev->tracker.is_err = true;
 	complete(&mvdev->tracker_comp);
 }
@@ -179,7 +164,7 @@ void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev)
 	if (!mvdev->migrate_cap)
 		return;
 
-	/* Must be done outside the lock to let it progress */
+	 
 	set_tracker_error(mvdev);
 	mutex_lock(&mvdev->state_mutex);
 	mlx5vf_disable_fds(mvdev);
@@ -385,7 +370,7 @@ void mlx5vf_free_data_buffer(struct mlx5_vhca_data_buffer *buf)
 				  buf->dma_dir, 0);
 	}
 
-	/* Undo alloc_pages_bulk_array() */
+	 
 	for_each_sgtable_page(&buf->table.sgt, &sg_iter, 0)
 		__free_page(sg_page_iter_page(&sg_iter));
 	sg_free_append_table(&buf->table);
@@ -453,12 +438,7 @@ mlx5vf_get_data_buffer(struct mlx5_vf_migration_file *migf,
 				spin_unlock_irq(&migf->list_lock);
 				goto found;
 			}
-			/*
-			 * Prevent holding redundant buffers. Put in a free
-			 * list and call at the end not under the spin lock
-			 * (&migf->list_lock) to mlx5vf_free_data_buffer which
-			 * might sleep.
-			 */
+			 
 			list_add(&buf->buf_elm, &free_list);
 		}
 	}
@@ -563,10 +543,7 @@ static void mlx5vf_save_callback(int status, struct mlx5_async_work *context)
 	}
 
 err:
-	/*
-	 * The error and the cleanup flows can't run from an
-	 * interrupt context
-	 */
+	 
 	if (status == -EREMOTEIO)
 		status = MLX5_GET(save_vhca_state_out, async_data->out, status);
 	async_data->status = status;
@@ -593,10 +570,7 @@ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
 		return err;
 
 	if (migf->state == MLX5_MIGF_STATE_PRE_COPY_ERROR)
-		/*
-		 * In case we had a PRE_COPY error, SAVE is triggered only for
-		 * the final image, read device full image.
-		 */
+		 
 		inc = false;
 
 	MLX5_SET(save_vhca_state_in, in, opcode,
@@ -1111,7 +1085,7 @@ static void mlx5vf_post_recv(struct mlx5_vhca_qp *qp)
 	data->lkey = cpu_to_be32(qp->recv_buf.mkey);
 	data->addr = cpu_to_be64(qp->recv_buf.next_rq_offset);
 	qp->rq.pc++;
-	/* Make sure that descriptors are written before doorbell record. */
+	 
 	dma_wmb();
 	*qp->rq.db = cpu_to_be32(qp->rq.pc & 0xffff);
 }
@@ -1126,7 +1100,7 @@ static int mlx5vf_activate_qp(struct mlx5_core_dev *mdev,
 	void *qpc;
 	int ret;
 
-	/* Init */
+	 
 	qpc = MLX5_ADDR_OF(rst2init_qp_in, init_in, qpc);
 	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, 1);
 	MLX5_SET(qpc, qpc, pm_state, MLX5_QPC_PM_STATE_MIGRATED);
@@ -1148,7 +1122,7 @@ static int mlx5vf_activate_qp(struct mlx5_core_dev *mdev,
 		}
 	}
 
-	/* RTR */
+	 
 	qpc = MLX5_ADDR_OF(init2rtr_qp_in, rtr_in, qpc);
 	MLX5_SET(init2rtr_qp_in, rtr_in, qpn, qp->qpn);
 	MLX5_SET(qpc, qpc, mtu, IB_MTU_4096);
@@ -1163,12 +1137,12 @@ static int mlx5vf_activate_qp(struct mlx5_core_dev *mdev,
 	if (ret || host_qp)
 		return ret;
 
-	/* RTS */
+	 
 	qpc = MLX5_ADDR_OF(rtr2rts_qp_in, rts_in, qpc);
 	MLX5_SET(rtr2rts_qp_in, rts_in, qpn, qp->qpn);
 	MLX5_SET(qpc, qpc, retry_count, 7);
-	MLX5_SET(qpc, qpc, rnr_retry, 7); /* Infinite retry if RNR NACK */
-	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8); /* ~1ms */
+	MLX5_SET(qpc, qpc, rnr_retry, 7);  
+	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8);  
 	MLX5_SET(rtr2rts_qp_in, rts_in, opcode, MLX5_CMD_OP_RTR2RTS_QP);
 	MLX5_SET(rtr2rts_qp_in, rts_in, qpn, qp->qpn);
 
@@ -1193,7 +1167,7 @@ static void free_recv_pages(struct mlx5_vhca_recv_buf *recv_buf)
 {
 	int i;
 
-	/* Undo alloc_pages_bulk_array() */
+	 
 	for (i = 0; i < recv_buf->npages; i++)
 		__free_page(recv_buf->page_list[i]);
 
@@ -1507,7 +1481,7 @@ mlx5vf_rq_cqe(struct mlx5_vhca_qp *qp, struct mlx5_cqe64 *cqe,
 	size = be32_to_cpu(cqe->byte_cnt);
 	ix = be16_to_cpu(cqe->wqe_counter) & (qp->rq.wqe_cnt - 1);
 
-	/* zero length CQE, no data */
+	 
 	WARN_ON(!size && *tracker_status == MLX5_PAGE_TRACK_STATE_REPORTING);
 	if (size)
 		set_report_output(size, ix, qp, dirty);
@@ -1548,10 +1522,7 @@ mlx5vf_cq_poll_one(struct mlx5_vhca_cq *cq, struct mlx5_vhca_qp *qp,
 		return CQ_EMPTY;
 
 	++cq->mcq.cons_index;
-	/*
-	 * Make sure we read CQ entry contents after we've checked the
-	 * ownership bit.
-	 */
+	 
 	rmb();
 	opcode = get_cqe_opcode(cqe);
 	switch (opcode) {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include "mt7915.h"
 #include "../dma.h"
@@ -123,7 +123,7 @@ static void __mt7915_dma_prefetch(struct mt7915_dev *dev, u32 ofs)
 #define PREFETCH(_base, _depth)	((_base) << 16 | (_depth))
 	u32 base = 0;
 
-	/* prefetch SRAM wrapping boundary for tx/rx ring. */
+	 
 	mt76_wr(dev, MT_MCUQ_EXT_CTRL(MT_MCUQ_FWDL) + ofs, PREFETCH(0x0, 0x4));
 	mt76_wr(dev, MT_MCUQ_EXT_CTRL(MT_MCUQ_WM) + ofs, PREFETCH(0x40, 0x4));
 	mt76_wr(dev, MT_TXQ_EXT_CTRL(0) + ofs, PREFETCH(0x80, 0x4));
@@ -146,9 +146,7 @@ static void __mt7915_dma_prefetch(struct mt7915_dev *dev, u32 ofs)
 	mt76_wr(dev, MT_RXQ_BAND1_CTRL(MT_RXQ_BAND1) + ofs,
 		PREFETCH(0x240 + base, 0x4));
 
-	/* for mt7915, the ring which is next the last
-	 * used ring must be initialized.
-	 */
+	 
 	if (is_mt7915(&dev->mt76)) {
 		ofs += 0x4;
 		mt76_wr(dev, MT_MCUQ_EXT_CTRL(MT_MCUQ_WA) + ofs,
@@ -175,7 +173,7 @@ static void mt7915_dma_disable(struct mt7915_dev *dev, bool rst)
 	if (dev->hif2)
 		hif1_ofs = MT_WFDMA0_PCIE1(0) - MT_WFDMA0(0);
 
-	/* reset */
+	 
 	if (rst) {
 		mt76_clear(dev, MT_WFDMA0_RST,
 			   MT_WFDMA0_RST_DMASHDL_ALL_RST |
@@ -216,7 +214,7 @@ static void mt7915_dma_disable(struct mt7915_dev *dev, bool rst)
 		}
 	}
 
-	/* disable */
+	 
 	mt76_clear(dev, MT_WFDMA0_GLO_CFG,
 		   MT_WFDMA0_GLO_CFG_TX_DMA_EN |
 		   MT_WFDMA0_GLO_CFG_RX_DMA_EN |
@@ -259,7 +257,7 @@ int mt7915_dma_start(struct mt7915_dev *dev, bool reset, bool wed_reset)
 	if (dev->hif2)
 		hif1_ofs = MT_WFDMA0_PCIE1(0) - MT_WFDMA0(0);
 
-	/* enable wpdma tx/rx */
+	 
 	if (!reset) {
 		mt76_set(dev, MT_WFDMA0_GLO_CFG,
 			MT_WFDMA0_GLO_CFG_TX_DMA_EN |
@@ -293,7 +291,7 @@ int mt7915_dma_start(struct mt7915_dev *dev, bool reset, bool wed_reset)
 		}
 	}
 
-	/* enable interrupts for TX/RX rings */
+	 
 	irq_mask = MT_INT_RX_DONE_MCU |
 		   MT_INT_TX_DONE_MCU |
 		   MT_INT_MCU_CMD;
@@ -337,7 +335,7 @@ static int mt7915_dma_enable(struct mt7915_dev *dev, bool reset)
 	if (dev->hif2)
 		hif1_ofs = MT_WFDMA0_PCIE1(0) - MT_WFDMA0(0);
 
-	/* reset dma idx */
+	 
 	mt76_wr(dev, MT_WFDMA0_RST_DTX_PTR, ~0);
 	if (is_mt7915(mdev))
 		mt76_wr(dev, MT_WFDMA1_RST_DTX_PTR, ~0);
@@ -347,7 +345,7 @@ static int mt7915_dma_enable(struct mt7915_dev *dev, bool reset)
 			mt76_wr(dev, MT_WFDMA1_RST_DTX_PTR + hif1_ofs, ~0);
 	}
 
-	/* configure delay interrupt off */
+	 
 	mt76_wr(dev, MT_WFDMA0_PRI_DLY_INT_CFG0, 0);
 	if (is_mt7915(mdev)) {
 		mt76_wr(dev, MT_WFDMA1_PRI_DLY_INT_CFG0, 0);
@@ -369,10 +367,10 @@ static int mt7915_dma_enable(struct mt7915_dev *dev, bool reset)
 		}
 	}
 
-	/* configure perfetch settings */
+	 
 	mt7915_dma_prefetch(dev);
 
-	/* hif wait WFDMA idle */
+	 
 	mt76_set(dev, MT_WFDMA0_BUSY_ENA,
 		 MT_WFDMA0_BUSY_ENA_TX_FIFO0 |
 		 MT_WFDMA0_BUSY_ENA_TX_FIFO1 |
@@ -438,7 +436,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 		mt76_clear(dev, MT_WFDMA_HOST_CONFIG, MT_WFDMA_HOST_CONFIG_WED);
 	}
 
-	/* init tx queue */
+	 
 	ret = mt7915_init_tx_queues(&dev->phy,
 				    MT_TXQ_ID(dev->phy.mt76->band_idx),
 				    MT7915_TX_RING_SIZE,
@@ -455,7 +453,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 			return ret;
 	}
 
-	/* command to WM */
+	 
 	ret = mt76_init_mcu_queue(&dev->mt76, MT_MCUQ_WM,
 				  MT_MCUQ_ID(MT_MCUQ_WM),
 				  MT7915_TX_MCU_RING_SIZE,
@@ -463,7 +461,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 	if (ret)
 		return ret;
 
-	/* command to WA */
+	 
 	ret = mt76_init_mcu_queue(&dev->mt76, MT_MCUQ_WA,
 				  MT_MCUQ_ID(MT_MCUQ_WA),
 				  MT7915_TX_MCU_RING_SIZE,
@@ -471,7 +469,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 	if (ret)
 		return ret;
 
-	/* firmware download */
+	 
 	ret = mt76_init_mcu_queue(&dev->mt76, MT_MCUQ_FWDL,
 				  MT_MCUQ_ID(MT_MCUQ_FWDL),
 				  MT7915_TX_FWDL_RING_SIZE,
@@ -479,7 +477,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 	if (ret)
 		return ret;
 
-	/* event from WM */
+	 
 	ret = mt76_queue_alloc(dev, &dev->mt76.q_rx[MT_RXQ_MCU],
 			       MT_RXQ_ID(MT_RXQ_MCU),
 			       MT7915_RX_MCU_RING_SIZE,
@@ -488,7 +486,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 	if (ret)
 		return ret;
 
-	/* event from WA */
+	 
 	if (mtk_wed_device_active(&mdev->mmio.wed) && is_mt7915(mdev)) {
 		wa_rx_base = MT_WED_RX_RING_BASE;
 		wa_rx_idx = MT7915_RXQ_MCU_WA;
@@ -503,7 +501,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 	if (ret)
 		return ret;
 
-	/* rx data queue for band0 */
+	 
 	if (!dev->phy.mt76->band_idx) {
 		if (mtk_wed_device_active(&mdev->mmio.wed) &&
 		    mtk_wed_get_rx_capa(&mdev->mmio.wed)) {
@@ -521,7 +519,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 			return ret;
 	}
 
-	/* tx free notify event from WA for band0 */
+	 
 	if (!is_mt7915(mdev)) {
 		wa_rx_base = MT_RXQ_RING_BASE(MT_RXQ_MAIN_WA);
 		wa_rx_idx = MT_RXQ_ID(MT_RXQ_MAIN_WA);
@@ -549,7 +547,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 			dev->mt76.rx_token_size += MT7915_RX_RING_SIZE;
 		}
 
-		/* rx data queue for band1 */
+		 
 		ret = mt76_queue_alloc(dev, &dev->mt76.q_rx[MT_RXQ_BAND1],
 				       MT_RXQ_ID(MT_RXQ_BAND1),
 				       MT7915_RX_RING_SIZE,
@@ -558,7 +556,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
 		if (ret)
 			return ret;
 
-		/* tx free notify event from WA for band1 */
+		 
 		ret = mt76_queue_alloc(dev, &dev->mt76.q_rx[MT_RXQ_BAND1_WA],
 				       MT_RXQ_ID(MT_RXQ_BAND1_WA),
 				       MT7915_RX_MCU_RING_SIZE,
@@ -609,7 +607,7 @@ int mt7915_dma_reset(struct mt7915_dev *dev, bool force)
 	struct mtk_wed_device *wed = &dev->mt76.mmio.wed;
 	int i;
 
-	/* clean up hw queues */
+	 
 	for (i = 0; i < ARRAY_SIZE(dev->mt76.phy.q_tx); i++) {
 		mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[i], true);
 		if (mphy_ext)
@@ -622,7 +620,7 @@ int mt7915_dma_reset(struct mt7915_dev *dev, bool force)
 	mt76_for_each_q_rx(&dev->mt76, i)
 		mt76_queue_rx_cleanup(dev, &dev->mt76.q_rx[i]);
 
-	/* reset wfsys */
+	 
 	if (force)
 		mt7915_wfsys_reset(dev);
 
@@ -632,7 +630,7 @@ int mt7915_dma_reset(struct mt7915_dev *dev, bool force)
 	mt7915_dma_disable(dev, force);
 	mt7915_dma_wed_reset(dev);
 
-	/* reset hw queues */
+	 
 	for (i = 0; i < __MT_TXQ_MAX; i++) {
 		mt7915_dma_reset_tx_queue(dev, dev->mphy.q_tx[i]);
 		if (mphy_ext)

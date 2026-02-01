@@ -1,49 +1,37 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
 #ifndef _EFCT_HW_H
 #define _EFCT_HW_H
 
 #include "../libefc_sli/sli4.h"
 
-/*
- * EFCT PCI IDs
- */
+ 
 #define EFCT_VENDOR_ID			0x10df
-/* LightPulse 16Gb x 4 FC (lancer-g6) */
+ 
 #define EFCT_DEVICE_LANCER_G6		0xe307
-/* LightPulse 32Gb x 4 FC (lancer-g7) */
+ 
 #define EFCT_DEVICE_LANCER_G7		0xf407
 
-/*Default RQ entries len used by driver*/
+ 
 #define EFCT_HW_RQ_ENTRIES_MIN		512
 #define EFCT_HW_RQ_ENTRIES_DEF		1024
 #define EFCT_HW_RQ_ENTRIES_MAX		4096
 
-/*Defines the size of the RQ buffers used for each RQ*/
+ 
 #define EFCT_HW_RQ_SIZE_HDR             128
 #define EFCT_HW_RQ_SIZE_PAYLOAD         1024
 
-/*Define the maximum number of multi-receive queues*/
+ 
 #define EFCT_HW_MAX_MRQS		8
 
-/*
- * Define count of when to set the WQEC bit in a submitted
- * WQE, causing a consummed/released completion to be posted.
- */
+ 
 #define EFCT_HW_WQEC_SET_COUNT		32
 
-/*Send frame timeout in seconds*/
+ 
 #define EFCT_HW_SEND_FRAME_TIMEOUT	10
 
-/*
- * FDT Transfer Hint value, reads greater than this value
- * will be segmented to implement fairness. A value of zero disables
- * the feature.
- */
+ 
 #define EFCT_HW_FDT_XFER_HINT		8192
 
 #define EFCT_HW_TIMECHECK_ITERATIONS	100
@@ -58,11 +46,7 @@
 #define EFCT_HW_MQ_DEPTH		128
 #define EFCT_HW_EQ_DEPTH		1024
 
-/*
- * A CQ will be assinged to each WQ
- * (CQ must have 2X entries of the WQ for abort
- * processing), plus a separate one for each RQ PAIR and one for MQ
- */
+ 
 #define EFCT_HW_MAX_NUM_CQ \
 	((EFCT_HW_MAX_NUM_WQ * 2) + 1 + (OCE_HW_MAX_NUM_MRQ_PAIRS * 2))
 
@@ -72,11 +56,11 @@
 
 #define EFCT_HW_REQUE_XRI_REGTAG	65534
 
-/* Options for efct_hw_command() */
+ 
 enum efct_cmd_opts {
-	/* command executes synchronously and busy-waits for completion */
+	 
 	EFCT_CMD_POLL,
-	/* command executes asynchronously. Uses callback */
+	 
 	EFCT_CMD_NOWAIT,
 };
 
@@ -94,7 +78,7 @@ enum efct_hw_topo {
 	EFCT_HW_TOPOLOGY_MAX
 };
 
-/* pack fw revision values into a single uint64_t */
+ 
 #define HW_FWREV(a, b, c, d) (((uint64_t)(a) << 48) | ((uint64_t)(b) << 32) \
 			| ((uint64_t)(c) << 16) | ((uint64_t)(d)))
 
@@ -128,17 +112,14 @@ struct efct_hw;
 struct efct_io;
 
 #define EFCT_CMD_CTX_POOL_SZ	32
-/**
- * HW command context.
- * Stores the state for the asynchronous commands sent to the hardware.
- */
+ 
 struct efct_command_ctx {
 	struct list_head	list_entry;
 	int (*cb)(struct efct_hw *hw, int status, u8 *mqe, void *arg);
-	void			*arg;	/* Argument for callback */
-	/* buffer holding command / results */
+	void			*arg;	 
+	 
 	u8			buf[SLI4_BMBX_SIZE];
-	void			*ctx;	/* upper layer context */
+	void			*ctx;	 
 };
 
 struct efct_hw_sgl {
@@ -153,14 +134,14 @@ union efct_hw_io_param_u {
 	struct sli_fcp_tgt_params fcp_tgt;
 };
 
-/* WQ steering mode */
+ 
 enum efct_hw_wq_steering {
 	EFCT_HW_WQ_STEERING_CLASS,
 	EFCT_HW_WQ_STEERING_REQUEST,
 	EFCT_HW_WQ_STEERING_CPU,
 };
 
-/* HW wqe object */
+ 
 struct efct_hw_wqe {
 	struct list_head	list_entry;
 	bool			abort_wqe_submit_needed;
@@ -171,47 +152,11 @@ struct efct_hw_wqe {
 };
 
 struct efct_hw_io;
-/* Typedef for HW "done" callback */
+ 
 typedef int (*efct_hw_done_t)(struct efct_hw_io *, u32 len, int status,
 			      u32 ext, void *ul_arg);
 
-/**
- * HW IO object.
- *
- * Stores the per-IO information necessary
- * for both SLI and efct.
- * @ref:		reference counter for hw io object
- * @state:		state of IO: free, busy, wait_free
- * @list_entry		used for busy, wait_free, free lists
- * @wqe			Work queue object, with link for pending
- * @hw			pointer back to hardware context
- * @xfer_rdy		transfer ready data
- * @type		IO type
- * @xbusy		Exchange is active in FW
- * @abort_in_progress	if TRUE, abort is in progress
- * @status_saved	if TRUE, latched status should be returned
- * @wq_class		WQ class if steering mode is Class
- * @reqtag		request tag for this HW IO
- * @wq			WQ assigned to the exchange
- * @done		Function called on IO completion
- * @arg			argument passed to IO done callback
- * @abort_done		Function called on abort completion
- * @abort_arg		argument passed to abort done callback
- * @wq_steering		WQ steering mode request
- * @saved_status	Saved status
- * @saved_len		Status length
- * @saved_ext		Saved extended status
- * @eq			EQ on which this HIO came up
- * @sge_offset		SGE data offset
- * @def_sgl_count	Count of SGEs in default SGL
- * @abort_reqtag	request tag for an abort of this HW IO
- * @indicator		Exchange indicator
- * @def_sgl		default SGL
- * @sgl			pointer to current active SGL
- * @sgl_count		count of SGEs in io->sgl
- * @first_data_sge	index of first data SGE
- * @n_sge		number of active SGEs
- */
+ 
 struct efct_hw_io {
 	struct kref		ref;
 	enum efct_hw_io_state	state;
@@ -257,7 +202,7 @@ enum efct_hw_port {
 	EFCT_HW_PORT_SHUTDOWN,
 };
 
-/* Node group rpi reference */
+ 
 struct efct_hw_rpi_ref {
 	atomic_t rpi_count;
 	atomic_t rpi_attached;
@@ -322,23 +267,23 @@ struct efct_hw_host_stat_counts {
 	u32		counter;
 };
 
-/* Structure used for the hash lookup of queue IDs */
+ 
 struct efct_queue_hash {
 	bool		in_use;
 	u16		id;
 	u16		index;
 };
 
-/* WQ callback object */
+ 
 struct hw_wq_callback {
-	u16		instance_index;	/* use for request tag */
+	u16		instance_index;	 
 	void (*callback)(void *arg, u8 *cqe, int status);
 	void		*arg;
 	struct list_head list_entry;
 };
 
 struct reqtag_pool {
-	spinlock_t lock;	/* pool lock */
+	spinlock_t lock;	 
 	struct hw_wq_callback *tags[U16_MAX];
 	struct list_head freelist;
 };
@@ -353,12 +298,12 @@ struct efct_hw_config {
 	u32		n_sgl;
 	u32		speed;
 	u32		topology;
-	/* size of the buffers for first burst */
+	 
 	u32		rq_default_buffer_size;
 	u8		esoc;
-	/* MRQ RQ selection policy */
+	 
 	u8		rq_selection_policy;
-	/* RQ quanta if rq_selection_policy == 2 */
+	 
 	u8		rr_quanta;
 	u32		filter_def[SLI4_CMD_REG_FCFI_NUM_RQ_CFG];
 };
@@ -374,13 +319,13 @@ struct efct_hw {
 	u8			sliport_healthcheck;
 	u16			fcf_indicator;
 
-	/* HW configuration */
+	 
 	struct efct_hw_config	config;
 
-	/* calculated queue sizes for each type */
+	 
 	u32			num_qentries[SLI4_QTYPE_MAX];
 
-	/* Storage for SLI queue objects */
+	 
 	struct sli4_queue	wq[EFCT_HW_MAX_NUM_WQ];
 	struct sli4_queue	rq[EFCT_HW_MAX_NUM_RQ];
 	u16			hw_rq_lookup[EFCT_HW_MAX_NUM_RQ];
@@ -388,7 +333,7 @@ struct efct_hw {
 	struct sli4_queue	cq[EFCT_HW_MAX_NUM_CQ];
 	struct sli4_queue	eq[EFCT_HW_MAX_NUM_EQ];
 
-	/* HW queue */
+	 
 	u32			eq_count;
 	u32			cq_count;
 	u32			mq_count;
@@ -401,23 +346,23 @@ struct efct_hw {
 	struct efct_queue_hash	rq_hash[EFCT_HW_Q_HASH_SIZE];
 	struct efct_queue_hash	wq_hash[EFCT_HW_Q_HASH_SIZE];
 
-	/* Storage for HW queue objects */
+	 
 	struct hw_wq		*hw_wq[EFCT_HW_MAX_NUM_WQ];
 	struct hw_rq		*hw_rq[EFCT_HW_MAX_NUM_RQ];
 	struct hw_mq		*hw_mq[EFCT_HW_MAX_NUM_MQ];
 	struct hw_cq		*hw_cq[EFCT_HW_MAX_NUM_CQ];
 	struct hw_eq		*hw_eq[EFCT_HW_MAX_NUM_EQ];
-	/* count of hw_rq[] entries */
+	 
 	u32			hw_rq_count;
-	/* count of multirq RQs */
+	 
 	u32			hw_mrq_count;
 
 	struct hw_wq		**wq_cpu_array;
 
-	/* Sequence objects used in incoming frame processing */
+	 
 	struct efc_hw_sequence	*seq_pool;
 
-	/* Maintain an ordered, linked list of outstanding HW commands. */
+	 
 	struct mutex            bmbx_lock;
 	spinlock_t		cmd_lock;
 	struct list_head	cmd_head;
@@ -427,18 +372,18 @@ struct efct_hw {
 
 	struct sli4_link_event	link;
 
-	/* pointer array of IO objects */
+	 
 	struct efct_hw_io	**io;
-	/* array of WQE buffs mapped to IO objects */
+	 
 	u8			*wqe_buffs;
 
-	/* IO lock to synchronize list access */
+	 
 	spinlock_t		io_lock;
-	/* List of IO objects in use */
+	 
 	struct list_head	io_inuse;
-	/* List of IO objects waiting to be freed */
+	 
 	struct list_head	io_wait_free;
-	/* List of IO objects available for allocation */
+	 
 	struct list_head	io_free;
 
 	struct efc_dma		loop_map;
@@ -449,9 +394,9 @@ struct efct_hw {
 
 	atomic_t		io_alloc_failed_count;
 
-	/* stat: wq sumbit count */
+	 
 	u32			tcmd_wq_submit[EFCT_HW_MAX_NUM_WQ];
-	/* stat: wq complete count */
+	 
 	u32			tcmd_wq_complete[EFCT_HW_MAX_NUM_WQ];
 
 	atomic_t		send_frame_seq_id;
@@ -465,7 +410,7 @@ enum efct_hw_io_count_type {
 	EFCT_HW_IO_N_TOTAL_IO_COUNT,
 };
 
-/* HW queue data structures */
+ 
 struct hw_eq {
 	struct list_head	list_entry;
 	enum sli4_qtype		type;
@@ -520,17 +465,17 @@ struct hw_wq {
 	struct sli4_queue	*queue;
 	u32			class;
 
-	/* WQ consumed */
+	 
 	u32			wqec_set_count;
 	u32			wqec_count;
 	u32			free_count;
 	u32			total_submit_count;
 	struct list_head	pending_list;
 
-	/* HW IO allocated for use with Send Frame */
+	 
 	struct efct_hw_io	*send_frame_io;
 
-	/* Stats */
+	 
 	u32			use_count;
 	u32			wq_pending_count;
 };
@@ -558,7 +503,7 @@ struct hw_rq {
 	struct efc_hw_rq_buffer	*hdr_buf;
 	struct efc_hw_rq_buffer	*fb_buf;
 	struct efc_hw_rq_buffer	*payload_buf;
-	/* RQ tracker for this RQ */
+	 
 	struct efc_hw_sequence	**rq_tracker;
 };
 
@@ -569,7 +514,7 @@ struct efct_hw_send_frame_context {
 	void (*callback)(int status, void *arg);
 	void			*arg;
 
-	/* General purpose elements */
+	 
 	struct efc_hw_sequence	*seq;
 	struct efc_dma		payload;
 };
@@ -640,7 +585,7 @@ struct efct_hw_io
 void efct_hw_io_abort_all(struct efct_hw *hw);
 void efct_hw_io_free_internal(struct kref *arg);
 
-/* HW WQ request tag API */
+ 
 struct reqtag_pool *efct_hw_reqtag_pool_alloc(struct efct_hw *hw);
 void efct_hw_reqtag_pool_free(struct efct_hw *hw);
 struct hw_wq_callback
@@ -652,7 +597,7 @@ efct_hw_reqtag_free(struct efct_hw *hw, struct hw_wq_callback *wqcb);
 struct hw_wq_callback
 *efct_hw_reqtag_get_instance(struct efct_hw *hw, u32 instance_index);
 
-/* RQ completion handlers for RQ pair mode */
+ 
 int
 efct_hw_rqpair_process_rq(struct efct_hw *hw,
 			  struct hw_cq *cq, u8 *cqe);
@@ -662,7 +607,7 @@ static inline void
 efct_hw_sequence_copy(struct efc_hw_sequence *dst,
 		      struct efc_hw_sequence *src)
 {
-	/* Copy src to dst, then zero out the linked list link */
+	 
 	*dst = *src;
 }
 
@@ -672,7 +617,7 @@ efct_efc_hw_sequence_free(struct efc *efc, struct efc_hw_sequence *seq);
 static inline int
 efct_hw_sequence_free(struct efct_hw *hw, struct efc_hw_sequence *seq)
 {
-	/* Only RQ pair mode is supported */
+	 
 	return efct_hw_rqpair_sequence_free(hw, seq);
 }
 
@@ -705,7 +650,7 @@ int
 efct_hw_bls_send(struct efct *efct, u32 type, struct sli_bls_params *bls_params,
 		 void *cb, void *arg);
 
-/* Function for retrieving link statistics */
+ 
 int
 efct_hw_get_link_stats(struct efct_hw *hw,
 		       u8 req_ext_counters,
@@ -715,7 +660,7 @@ efct_hw_get_link_stats(struct efct_hw *hw,
 						      u32 num_counters,
 		       struct efct_hw_link_stat_counts *counters, void *arg),
 		       void *arg);
-/* Function for retrieving host statistics */
+ 
 int
 efct_hw_get_host_stats(struct efct_hw *hw,
 		       u8 cc,
@@ -761,4 +706,4 @@ efct_hw_port_control(struct efct_hw *hw, enum efct_hw_port ctrl,
 		void (*cb)(int status, uintptr_t value, void *arg),
 		void *arg);
 
-#endif /* __EFCT_H__ */
+#endif  

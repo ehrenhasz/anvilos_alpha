@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2015 Synaptics Incorporated
- * Copyright (C) 2016 Zodiac Inflight Innovations
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -12,15 +9,15 @@
 
 #define F55_NAME		"rmi4_f55"
 
-/* F55 data offsets */
+ 
 #define F55_NUM_RX_OFFSET	0
 #define F55_NUM_TX_OFFSET	1
 #define F55_PHYS_CHAR_OFFSET	2
 
-/* Only read required query registers */
+ 
 #define F55_QUERY_LEN		3
 
-/* F55 capabilities */
+ 
 #define F55_CAP_SENSOR_ASSIGN	BIT(0)
 
 struct f55_data {
@@ -63,13 +60,7 @@ static int rmi_f55_detect(struct rmi_function *fn)
 		int i, total;
 		u8 buf[256];
 
-		/*
-		 * Calculate the number of enabled receive and transmit
-		 * electrodes by reading F55:Ctrl1 (sensor receiver assignment)
-		 * and F55:Ctrl2 (sensor transmitter assignment). The number of
-		 * enabled electrodes is the sum of all field entries with a
-		 * value other than 0xff.
-		 */
+		 
 		error = rmi_read_block(fn->rmi_dev,
 				       fn->fd.control_base_addr + 1,
 				       buf, f55->num_rx_electrodes);

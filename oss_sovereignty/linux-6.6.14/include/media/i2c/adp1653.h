@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * include/media/i2c/adp1653.h
- *
- * Copyright (C) 2008--2011 Nokia Corporation
- *
- * Contact: Sakari Ailus <sakari.ailus@iki.fi>
- *
- * Contributors:
- *	Sakari Ailus <sakari.ailus@iki.fi>
- *	Tuukka Toivonen <tuukkat76@gmail.com>
- */
+ 
+ 
 
 #ifndef ADP1653_H
 #define ADP1653_H
@@ -23,7 +13,7 @@
 #define ADP1653_NAME				"adp1653"
 #define ADP1653_I2C_ADDR			(0x60 >> 1)
 
-/* Register definitions */
+ 
 #define ADP1653_REG_OUT_SEL			0x00
 #define ADP1653_REG_OUT_SEL_HPLED_TORCH_MIN	0x01
 #define ADP1653_REG_OUT_SEL_HPLED_TORCH_MAX	0x0b
@@ -85,12 +75,12 @@
 struct adp1653_platform_data {
 	int (*power)(struct v4l2_subdev *sd, int on);
 
-	u32 max_flash_timeout;		/* flash light timeout in us */
-	u32 max_flash_intensity;	/* led intensity, flash mode, mA */
-	u32 max_torch_intensity;	/* led intensity, torch mode, mA */
-	u32 max_indicator_intensity;	/* indicator led intensity, uA */
+	u32 max_flash_timeout;		 
+	u32 max_flash_intensity;	 
+	u32 max_torch_intensity;	 
+	u32 max_indicator_intensity;	 
 
-	struct gpio_desc *enable_gpio;	/* for device-tree based boot */
+	struct gpio_desc *enable_gpio;	 
 };
 
 #define to_adp1653_flash(sd)	container_of(sd, struct adp1653_flash, subdev)
@@ -111,4 +101,4 @@ struct adp1653_flash {
 	int fault;
 };
 
-#endif /* ADP1653_H */
+#endif  

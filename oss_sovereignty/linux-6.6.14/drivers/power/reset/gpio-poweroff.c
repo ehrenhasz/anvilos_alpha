@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toggles a GPIO pin to power down a device
- *
- * Jamie Lentin <jm@lentin.co.uk>
- * Andrew Lunn <andrew@lunn.ch>
- *
- * Copyright (C) 2012 Jamie Lentin
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -17,10 +10,7 @@
 #include <linux/module.h>
 
 #define DEFAULT_TIMEOUT_MS 3000
-/*
- * Hold configuration here, cannot be more than one instance of the driver
- * since pm_power_off itself is global.
- */
+ 
 static struct gpio_desc *reset_gpio;
 static u32 timeout = DEFAULT_TIMEOUT_MS;
 static u32 active_delay = 100;
@@ -30,18 +20,18 @@ static void gpio_poweroff_do_poweroff(void)
 {
 	BUG_ON(!reset_gpio);
 
-	/* drive it active, also inactive->active edge */
+	 
 	gpiod_direction_output(reset_gpio, 1);
 	mdelay(active_delay);
 
-	/* drive inactive, also active->inactive edge */
+	 
 	gpiod_set_value_cansleep(reset_gpio, 0);
 	mdelay(inactive_delay);
 
-	/* drive it active, also inactive->active edge */
+	 
 	gpiod_set_value_cansleep(reset_gpio, 1);
 
-	/* give it some time */
+	 
 	mdelay(timeout);
 
 	WARN_ON(1);
@@ -52,7 +42,7 @@ static int gpio_poweroff_probe(struct platform_device *pdev)
 	bool input = false;
 	enum gpiod_flags flags;
 
-	/* If a pm_power_off function has already been added, leave it alone */
+	 
 	if (pm_power_off != NULL) {
 		dev_err(&pdev->dev,
 			"%s: pm_power_off function already registered\n",

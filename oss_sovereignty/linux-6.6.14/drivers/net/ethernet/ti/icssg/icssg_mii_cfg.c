@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments ICSSG Ethernet Driver
- *
- * Copyright (C) 2018-2022 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/regmap.h>

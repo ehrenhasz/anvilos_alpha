@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
-* Copyright(c) 2015 - 2020 Intel Corporation.
-*/
+ 
+ 
 
 #if !defined(__HFI1_TRACE_CTXTS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_CTXTS_H
@@ -106,7 +104,7 @@ TRACE_EVENT(ctxt_rsm_hist,
 	    TP_printk("%s", hfi1_trace_print_rsm_hist(p, __entry->ctxt))
 );
 
-#endif /* __HFI1_TRACE_CTXTS_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

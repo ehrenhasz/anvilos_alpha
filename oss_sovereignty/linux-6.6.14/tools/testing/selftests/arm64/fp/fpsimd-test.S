@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015-2019 ARM Limited.
-// Original author: Dave Martin <Dave.Martin@arm.com>
-//
-// Simple FPSIMD context switch test
-// Repeatedly writes unique test patterns into each FPSIMD register
-// and reads them back to verify integrity.
-//
-// for x in `seq 1 NR_CPUS`; do fpsimd-test & pids=$pids\ $! ; done
-// (leave it running for as long as you want...)
-// kill $pids
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 #include <asm/unistd.h>
 #include "assembler.h"
@@ -25,15 +25,15 @@
 	st1	{v\Vn\().2d}, [x\Xt]
 .endm
 
-// Generate accessor functions to read/write programmatically selected
-// FPSIMD registers.
-// x0 is the register index to access
-// x1 is the memory address to read from (getv,setp) or store to (setv,setp)
-// All clobber x0-x2
+ 
+ 
+ 
+ 
+ 
 define_accessor setv, NVR, _vldr
 define_accessor getv, NVR, _vstr
 
-// Declare some storate space to shadow the SVE register contents:
+ 
 .pushsection .text
 .data
 .align 4
@@ -43,10 +43,10 @@ scratch:
 	.space	MAXVL_B
 .popsection
 
-// Generate a test pattern for storage in SVE registers
-// x0: pid	(16 bits)
-// x1: register number (6 bits)
-// x2: generation (4 bits)
+ 
+ 
+ 
+ 
 function pattern
 	orr	w1, w0, w1, lsl #16
 	orr	w2, w1, w2, lsl #28
@@ -62,17 +62,17 @@ function pattern
 	ret
 endfunction
 
-// Get the address of shadow data for FPSIMD V-register V<xn>
+ 
 .macro _adrv xd, xn, nrtmp
 	ldr	\xd, =vref
 	mov	x\nrtmp, #16
 	madd	\xd, x\nrtmp, \xn, \xd
 .endm
 
-// Set up test pattern in a FPSIMD V-register
-// x0: pid
-// x1: register number
-// x2: generation
+ 
+ 
+ 
+ 
 function setup_vreg
 	mov	x4, x30
 
@@ -90,10 +90,10 @@ function setup_vreg
 	ret	x4
 endfunction
 
-// Trivial memory compare: compare x2 bytes starting at address x0 with
-// bytes starting at address x1.
-// Returns only if all bytes match; otherwise, the program is aborted.
-// Clobbers x0-x5.
+ 
+ 
+ 
+ 
 function memcmp
 	cbz	x2, 1f
 
@@ -109,9 +109,9 @@ function memcmp
 1:	ret
 endfunction
 
-// Verify that a FPSIMD V-register matches its shadow in memory, else abort
-// x0: reg number
-// Clobbers x0-x5.
+ 
+ 
+ 
 function check_vreg
 	mov	x3, x30
 
@@ -134,15 +134,15 @@ function check_vreg
 	b	memcmp
 endfunction
 
-// Any SVE register modified here can cause corruption in the main
-// thread -- but *only* the registers modified here.
+ 
+ 
 function irritator_handler
-	// Increment the irritation signal count (x23):
+	 
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
 
-	// Corrupt some random V-regs
+	 
 	adr	x0, .text + (irritator_handler - .text) / 16 * 16
 	movi	v0.8b, #7
 	movi	v9.16b, #9
@@ -152,7 +152,7 @@ function irritator_handler
 endfunction
 
 function tickle_handler
-	// Increment the signal count (x23):
+	 
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
@@ -179,10 +179,10 @@ function terminate_handler
 	svc	#0
 endfunction
 
-// w0: signal number
-// x1: sa_action
-// w2: sa_flags
-// Clobbers x0-x6,x8
+ 
+ 
+ 
+ 
 function setsignal
 	str	x30, [sp, #-((sa_sz + 15) / 16 * 16 + 16)]!
 
@@ -212,10 +212,10 @@ function setsignal
 	ret
 endfunction
 
-// Main program entry point
+ 
 .globl _start
 function _start
-	mov	x23, #0		// signal count
+	mov	x23, #0		 
 
 	mov	w0, #SIGINT
 	adr	x1, terminate_handler
@@ -239,7 +239,7 @@ function _start
 	orr	w2, w2, #SA_NODEFER
 	bl	setsignal
 
-	// Sanity-check and report the vector length
+	 
 
 	mov	x19, #128
 	cmp	x19, #128
@@ -259,7 +259,7 @@ function _start
 	bl	putdec
 	puts	" bits\n"
 
-	// Obtain our PID, to ensure test pattern uniqueness between processes
+	 
 
 	mov	x8, #__NR_getpid
 	svc	#0
@@ -269,10 +269,10 @@ function _start
 	mov	x0, x20
 	bl	putdecn
 
-	mov	x22, #0		// generation number, increments per iteration
+	mov	x22, #0		 
 .Ltest_loop:
 
-	mov	x21, #0		// Set up V-regs & shadow with test pattern
+	mov	x21, #0		 
 0:	mov	x0, x20
 	mov	x1, x21
 	and	x2, x22, #0xf
@@ -281,8 +281,8 @@ function _start
 	cmp	x21, #NVR
 	b.lo	0b
 
-// Can't do this when SVE state is volatile across SVC:
-	mov	x8, #__NR_sched_yield	// Encourage preemption
+ 
+	mov	x8, #__NR_sched_yield	 
 	svc	#0
 
 	mov	x21, #0
@@ -303,9 +303,9 @@ function _start
 endfunction
 
 function barf
-	mov	x10, x0	// expected data
-	mov	x11, x1	// actual data
-	mov	x12, x2	// data size
+	mov	x10, x0	 
+	mov	x11, x1	 
+	mov	x12, x2	 
 
 	puts	"Mismatch: PID="
 	mov	x0, x20

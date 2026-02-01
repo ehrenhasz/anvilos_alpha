@@ -1,53 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * dt3000.c
- * Data Translation DT3000 series driver
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: dt3000
- * Description: Data Translation DT3000 series
- * Devices: [Data Translation] DT3001 (dt3000), DT3001-PGL, DT3002, DT3003,
- *   DT3003-PGL, DT3004, DT3005, DT3004-200
- * Author: ds
- * Updated: Mon, 14 Apr 2008 15:41:24 +0100
- * Status: works
- *
- * Configuration Options: not applicable, uses PCI auto config
- *
- * There is code to support AI commands, but it may not work.
- *
- * AO commands are not supported.
- */
+ 
 
-/*
- * The DT3000 series is Data Translation's attempt to make a PCI
- * data acquisition board.  The design of this series is very nice,
- * since each board has an on-board DSP (Texas Instruments TMS320C52).
- * However, a few details are a little annoying.  The boards lack
- * bus-mastering DMA, which eliminates them from serious work.
- * They also are not capable of autocalibration, which is a common
- * feature in modern hardware.  The default firmware is pretty bad,
- * making it nearly impossible to write an RT compatible driver.
- * It would make an interesting project to write a decent firmware
- * for these boards.
- *
- * Data Translation originally wanted an NDA for the documentation
- * for the 3k series.  However, if you ask nicely, they might send
- * you the docs without one, also.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI BAR0 - dual-ported RAM location definitions (dev->mmio)
- */
+ 
 #define DPR_DAC_BUFFER		(4 * 0x000)
 #define DPR_ADC_BUFFER		(4 * 0x800)
 #define DPR_COMMAND		(4 * 0xfd3)
@@ -208,7 +171,7 @@ static const struct dt3k_boardtype dt3k_boardtypes[] = {
 		.has_ao		= 1,
 	},
 	[BOARD_DT3005] = {
-		.name		= "dt3005",	/* a.k.a. 3004-200 */
+		.name		= "dt3005",	 
 		.adchan		= 16,
 		.adrange	= &range_dt3000_ai,
 		.ai_speed	= 5000,
@@ -311,8 +274,8 @@ static int dt3k_ai_cancel(struct comedi_device *dev,
 
 static int debug_n_ints;
 
-/* FIXME! Assumes shared interrupt is for this card. */
-/* What's this debug_n_ints stuff? Obviously needs some work... */
+ 
+ 
 static irqreturn_t dt3k_interrupt(int irq, void *d)
 {
 	struct comedi_device *dev = d;
@@ -343,8 +306,8 @@ static int dt3k_ns_to_timer(unsigned int timer_base, unsigned int *nanosec,
 {
 	unsigned int divider, base, prescale;
 
-	/* This function needs improvement */
-	/* Don't know if divider==0 works. */
+	 
+	 
 
 	for (prescale = 0; prescale < 16; prescale++) {
 		base = timer_base * (prescale + 1);
@@ -380,7 +343,7 @@ static int dt3k_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
@@ -391,10 +354,10 @@ static int dt3k_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 
@@ -417,13 +380,13 @@ static int dt3k_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_max(&cmd->stop_arg, 0x00ffffff);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	if (cmd->scan_begin_src == TRIG_TIMER) {
 		arg = cmd->scan_begin_arg;
@@ -510,7 +473,7 @@ static int dt3k_ai_insn_read(struct comedi_device *dev,
 
 	chan = CR_CHAN(insn->chanspec);
 	gain = CR_RANGE(insn->chanspec);
-	/* XXX docs don't explain how to select aref */
+	 
 
 	for (i = 0; i < insn->n; i++)
 		data[i] = dt3k_readsingle(dev, DPR_SUBSYS_AI, chan, gain);
@@ -538,12 +501,12 @@ static int dt3k_ao_insn_write(struct comedi_device *dev,
 
 static void dt3k_dio_config(struct comedi_device *dev, int bits)
 {
-	/* XXX */
+	 
 	writew(DPR_SUBSYS_DOUT, dev->mmio + DPR_SUBSYS);
 
 	writew(bits, dev->mmio + DPR_PARAMS(0));
 
-	/* XXX write 0 to DPR_PARAMS(1) and DPR_PARAMS(2) ? */
+	 
 
 	dt3k_send_cmd(dev, DPR_CMD_CONFIG);
 }
@@ -644,13 +607,13 @@ static int dt3000_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND | SDF_DIFF;
 	s->n_chan	= board->adchan;
 	s->maxdata	= board->ai_is_16bit ? 0xffff : 0x0fff;
-	s->range_table	= &range_dt3000_ai;	/* XXX */
+	s->range_table	= &range_dt3000_ai;	 
 	s->insn_read	= dt3k_ai_insn_read;
 	if (dev->irq) {
 		dev->read_subdev = s;
@@ -661,7 +624,7 @@ static int dt3000_auto_attach(struct comedi_device *dev,
 		s->cancel	= dt3k_ai_cancel;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (board->has_ao) {
 		s->type		= COMEDI_SUBD_AO;
@@ -679,7 +642,7 @@ static int dt3000_auto_attach(struct comedi_device *dev,
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Digital I/O subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DIO;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;
@@ -689,7 +652,7 @@ static int dt3000_auto_attach(struct comedi_device *dev,
 	s->insn_config	= dt3k_dio_insn_config;
 	s->insn_bits	= dt3k_dio_insn_bits;
 
-	/* Memory subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_MEMORY;
 	s->subdev_flags	= SDF_READABLE;

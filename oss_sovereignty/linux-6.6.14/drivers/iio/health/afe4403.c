@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
- *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -29,44 +24,34 @@
 
 #define AFE4403_DRIVER_NAME		"afe4403"
 
-/* AFE4403 Registers */
+ 
 #define AFE4403_TIAGAIN			0x20
 #define AFE4403_TIA_AMB_GAIN		0x21
 
 enum afe4403_fields {
-	/* Gains */
+	 
 	F_RF_LED1, F_CF_LED1,
 	F_RF_LED, F_CF_LED,
 
-	/* LED Current */
+	 
 	F_ILED1, F_ILED2,
 
-	/* sentinel */
+	 
 	F_MAX_FIELDS
 };
 
 static const struct reg_field afe4403_reg_fields[] = {
-	/* Gains */
+	 
 	[F_RF_LED1]	= REG_FIELD(AFE4403_TIAGAIN, 0, 2),
 	[F_CF_LED1]	= REG_FIELD(AFE4403_TIAGAIN, 3, 7),
 	[F_RF_LED]	= REG_FIELD(AFE4403_TIA_AMB_GAIN, 0, 2),
 	[F_CF_LED]	= REG_FIELD(AFE4403_TIA_AMB_GAIN, 3, 7),
-	/* LED Current */
+	 
 	[F_ILED1]	= REG_FIELD(AFE440X_LEDCNTRL, 0, 7),
 	[F_ILED2]	= REG_FIELD(AFE440X_LEDCNTRL, 8, 15),
 };
 
-/**
- * struct afe4403_data - AFE4403 device instance data
- * @dev: Device structure
- * @spi: SPI device handle
- * @regmap: Register map of the device
- * @fields: Register fields of the device
- * @regulator: Pointer to the regulator for the IC
- * @trig: IIO trigger for this device
- * @irq: ADC_RDY line interrupt number
- * @buffer: Used to construct data layout to push into IIO buffer.
- */
+ 
 struct afe4403_data {
 	struct device *dev;
 	struct spi_device *spi;
@@ -75,7 +60,7 @@ struct afe4403_data {
 	struct regulator *regulator;
 	struct iio_trigger *trig;
 	int irq;
-	/* Ensure suitable alignment for timestamp */
+	 
 	s32 buffer[8] __aligned(8);
 };
 
@@ -103,14 +88,14 @@ static const unsigned int afe4403_channel_leds[] = {
 };
 
 static const struct iio_chan_spec afe4403_channels[] = {
-	/* ADC values */
+	 
 	AFE440X_INTENSITY_CHAN(LED2, 0),
 	AFE440X_INTENSITY_CHAN(ALED2, 0),
 	AFE440X_INTENSITY_CHAN(LED1, 0),
 	AFE440X_INTENSITY_CHAN(ALED1, 0),
 	AFE440X_INTENSITY_CHAN(LED2_ALED2, 0),
 	AFE440X_INTENSITY_CHAN(LED1_ALED1, 0),
-	/* LED current */
+	 
 	AFE440X_CURRENT_CHAN(LED2),
 	AFE440X_CURRENT_CHAN(LED1),
 };
@@ -220,7 +205,7 @@ static int afe4403_read(struct afe4403_data *afe, unsigned int reg, u32 *val)
 	u8 rx[3];
 	int ret;
 
-	/* Enable reading from the device */
+	 
 	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
 	if (ret)
 		return ret;
@@ -231,7 +216,7 @@ static int afe4403_read(struct afe4403_data *afe, unsigned int reg, u32 *val)
 
 	*val = get_unaligned_be24(&rx[0]);
 
-	/* Disable reading from the device */
+	 
 	tx[3] = AFE440X_CONTROL0_WRITE;
 	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
 	if (ret)
@@ -316,7 +301,7 @@ static irqreturn_t afe4403_trigger_handler(int irq, void *private)
 	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
 	u8 rx[3];
 
-	/* Enable reading from the device */
+	 
 	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
 	if (ret)
 		goto err;
@@ -332,7 +317,7 @@ static irqreturn_t afe4403_trigger_handler(int irq, void *private)
 		afe->buffer[i++] = get_unaligned_be24(&rx[0]);
 	}
 
-	/* Disable reading from the device */
+	 
 	tx[3] = AFE440X_CONTROL0_WRITE;
 	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
 	if (ret)
@@ -405,7 +390,7 @@ static const struct regmap_config afe4403_regmap_config = {
 
 static const struct of_device_id afe4403_of_match[] = {
 	{ .compatible = "ti,afe4403", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, afe4403_of_match);
 
@@ -592,7 +577,7 @@ static void afe4403_remove(struct spi_device *spi)
 
 static const struct spi_device_id afe4403_ids[] = {
 	{ "afe4403", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, afe4403_ids);
 

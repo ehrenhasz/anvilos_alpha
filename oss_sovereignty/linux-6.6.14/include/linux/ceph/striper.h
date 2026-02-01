@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_CEPH_STRIPER_H
 #define _LINUX_CEPH_STRIPER_H
 
@@ -23,13 +23,7 @@ static inline void ceph_object_extent_init(struct ceph_object_extent *ex)
 	INIT_LIST_HEAD(&ex->oe_item);
 }
 
-/*
- * Called for each mapped stripe unit.
- *
- * @bytes: number of bytes mapped, i.e. the minimum of the full length
- *         requested (file extent length) or the remainder of the stripe
- *         unit within an object
- */
+ 
 typedef void (*ceph_object_extent_fn_t)(struct ceph_object_extent *ex,
 					u32 bytes, void *arg);
 

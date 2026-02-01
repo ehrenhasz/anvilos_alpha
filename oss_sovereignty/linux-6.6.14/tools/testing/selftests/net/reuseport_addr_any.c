@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Test that sockets listening on a specific address are preferred
- * over sockets listening on addr_any.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -64,10 +62,7 @@ static void build_rcv_fd(int family, int proto, int *rcv_fds, int count,
 		break;
 	default:
 		error(1, 0, "Unsupported family %d", family);
-		/* clang does not recognize error() above as terminating
-		 * the program, so it complains that saddr, sz are
-		 * not initialized when this code path is taken. Silence it.
-		 */
+		 
 		return;
 	}
 
@@ -137,10 +132,7 @@ static int connect_and_send(int family, int proto)
 	break;
 	default:
 		error(1, 0, "Unsupported family %d", family);
-		/* clang does not recognize error() above as terminating
-		 * the program, so it complains that saddr, daddr, sz are
-		 * not initialized when this code path is taken. Silence it.
-		 */
+		 
 		return -1;
 	}
 
@@ -221,13 +213,7 @@ static void test(int *rcv_fds, int count, int family, int proto, int fd)
 static void run_one_test(int fam_send, int fam_rcv, int proto,
 			 const char *addr_str)
 {
-	/* Below we test that a socket listening on a specific address
-	 * is always selected in preference over a socket listening
-	 * on addr_any. Bugs where this is not the case often result
-	 * in sockets created first or last to get picked. So below
-	 * we make sure that there are always addr_any sockets created
-	 * before and after a specific socket is created.
-	 */
+	 
 	int rcv_fds[10], i;
 
 	build_rcv_fd(AF_INET, proto, rcv_fds, 2, NULL);

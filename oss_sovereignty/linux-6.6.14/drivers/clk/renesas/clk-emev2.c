@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * EMMA Mobile EV2 common clock framework support
- *
- * Copyright (C) 2013 Takashi Yoshii <takashi.yoshii.ze@renesas.com>
- * Copyright (C) 2012 Magnus Damm
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 
-/* EMEV2 SMU registers */
+ 
 #define USIAU0_RSTCTRL 0x094
 #define USIBU1_RSTCTRL 0x0ac
 #define USIBU2_RSTCTRL 0x0b0
@@ -22,7 +17,7 @@
 
 static DEFINE_SPINLOCK(lock);
 
-/* not pretty, but hey */
+ 
 static void __iomem *smu_base;
 
 static void __init emev2_smu_write(unsigned long value, int offs)
@@ -46,17 +41,17 @@ static void __init emev2_smu_init(void)
 	BUG_ON(!smu_base);
 	of_node_put(np);
 
-	/* setup STI timer to run on 32.768 kHz and deassert reset */
+	 
 	emev2_smu_write(0, STI_CLKSEL);
 	emev2_smu_write(1, STI_RSTCTRL);
 
-	/* deassert reset for UART0->UART3 */
+	 
 	emev2_smu_write(2, USIAU0_RSTCTRL);
 	emev2_smu_write(2, USIBU1_RSTCTRL);
 	emev2_smu_write(2, USIBU2_RSTCTRL);
 	emev2_smu_write(2, USIBU3_RSTCTRL);
 
-	/* deassert reset for IIC0->IIC1 */
+	 
 	emev2_smu_write(1, IIC0_RSTCTRL);
 	emev2_smu_write(1, IIC1_RSTCTRL);
 }

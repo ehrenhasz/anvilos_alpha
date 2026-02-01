@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2016 Broadcom
- */
+ 
+ 
 
 #ifndef _UTIL_H
 #define _UTIL_H
@@ -56,7 +54,7 @@ void __dump_sg(struct scatterlist *sg, unsigned int skip, unsigned int len);
 
 #define dump_sg(sg, skip, len)     __dump_sg(sg, skip, len)
 
-#else /* !DEBUG_ON */
+#else  
 
 static inline void flow_log(const char *format, ...)
 {
@@ -79,15 +77,15 @@ static inline void dump_sg(struct scatterlist *sg, unsigned int skip,
 {
 }
 
-#endif /* DEBUG_ON */
+#endif  
 
 int spu_sg_at_offset(struct scatterlist *sg, unsigned int skip,
 		     struct scatterlist **sge, unsigned int *sge_offset);
 
-/* Copy sg data, from skip, length len, to dest */
+ 
 void sg_copy_part_to_buf(struct scatterlist *src, u8 *dest,
 			 unsigned int len, unsigned int skip);
-/* Copy src into scatterlist from offset, length len */
+ 
 void sg_copy_part_from_buf(struct scatterlist *dest, u8 *src,
 			   unsigned int len, unsigned int skip);
 
@@ -98,7 +96,7 @@ u32 spu_msg_sg_add(struct scatterlist **to_sg,
 
 void add_to_ctr(u8 *ctr_pos, unsigned int increment);
 
-/* produce a message digest from data of length n bytes */
+ 
 int do_shash(unsigned char *name, unsigned char *result,
 	     const u8 *data1, unsigned int data1_len,
 	     const u8 *data2, unsigned int data2_len,

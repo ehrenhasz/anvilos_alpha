@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/io.h>
@@ -23,14 +17,10 @@
 #include <linux/set_memory.h>
 #include "hyperv_vmbus.h"
 
-/* The one and only */
+ 
 struct hv_context hv_context;
 
-/*
- * hv_init - Main initialization routine.
- *
- * This routine must be called before any other routines in here are called
- */
+ 
 int hv_init(void)
 {
 	hv_context.cpu_context = alloc_percpu(struct hv_per_cpu_context);
@@ -39,11 +29,7 @@ int hv_init(void)
 	return 0;
 }
 
-/*
- * hv_post_message - Post a message using the hypervisor message IPC.
- *
- * This involves a hypercall.
- */
+ 
 int hv_post_message(union hv_connection_id connection_id,
 		  enum hv_message_type message_type,
 		  void *payload, size_t payload_size)
@@ -57,12 +43,7 @@ int hv_post_message(union hv_connection_id connection_id,
 
 	local_irq_save(flags);
 
-	/*
-	 * A TDX VM with the paravisor must use the decrypted post_msg_page: see
-	 * the comment in struct hv_per_cpu_context. A SNP VM with the paravisor
-	 * can use the encrypted hyperv_pcpu_input_arg because it copies the
-	 * input into the GHCB page, which has been decrypted by the paravisor.
-	 */
+	 
 	if (hv_isolation_type_tdx() && ms_hyperv.paravisor_present)
 		aligned_msg = this_cpu_ptr(hv_context.cpu_context)->post_msg_page;
 	else
@@ -99,11 +80,7 @@ int hv_synic_alloc(void)
 	int cpu, ret = -ENOMEM;
 	struct hv_per_cpu_context *hv_cpu;
 
-	/*
-	 * First, zero all per-cpu memory areas so hv_synic_free() can
-	 * detect what memory has been allocated and cleanup properly
-	 * after any failures.
-	 */
+	 
 	for_each_present_cpu(cpu) {
 		hv_cpu = per_cpu_ptr(hv_context.cpu_context, cpu);
 		memset(hv_cpu, 0, sizeof(*hv_cpu));
@@ -132,7 +109,7 @@ int hv_synic_alloc(void)
 			ret = set_memory_decrypted((unsigned long)hv_cpu->post_msg_page, 1);
 			if (ret) {
 				pr_err("Failed to decrypt post msg page: %d\n", ret);
-				/* Just leak the page, as it's unsafe to free the page. */
+				 
 				hv_cpu->post_msg_page = NULL;
 				goto err;
 			}
@@ -140,10 +117,7 @@ int hv_synic_alloc(void)
 			memset(hv_cpu->post_msg_page, 0, PAGE_SIZE);
 		}
 
-		/*
-		 * Synic message and event pages are allocated by paravisor.
-		 * Skip these pages allocation here.
-		 */
+		 
 		if (!ms_hyperv.paravisor_present && !hv_root_partition) {
 			hv_cpu->synic_message_page =
 				(void *)get_zeroed_page(GFP_ATOMIC);
@@ -171,10 +145,7 @@ int hv_synic_alloc(void)
 				pr_err("Failed to decrypt SYNIC msg page: %d\n", ret);
 				hv_cpu->synic_message_page = NULL;
 
-				/*
-				 * Free the event page here so that hv_synic_free()
-				 * won't later try to re-encrypt it.
-				 */
+				 
 				free_page((unsigned long)hv_cpu->synic_event_page);
 				hv_cpu->synic_event_page = NULL;
 				goto err;
@@ -196,10 +167,7 @@ int hv_synic_alloc(void)
 	return 0;
 
 err:
-	/*
-	 * Any memory allocations that succeeded will be freed when
-	 * the caller cleans up by calling hv_synic_free()
-	 */
+	 
 	return ret;
 }
 
@@ -212,7 +180,7 @@ void hv_synic_free(void)
 		struct hv_per_cpu_context *hv_cpu
 			= per_cpu_ptr(hv_context.cpu_context, cpu);
 
-		/* It's better to leak the page if the encryption fails. */
+		 
 		if (ms_hyperv.paravisor_present && hv_isolation_type_tdx()) {
 			if (hv_cpu->post_msg_page) {
 				ret = set_memory_encrypted((unsigned long)
@@ -253,13 +221,7 @@ void hv_synic_free(void)
 	kfree(hv_context.hv_numa_map);
 }
 
-/*
- * hv_synic_init - Initialize the Synthetic Interrupt Controller.
- *
- * If it is already initialized by another entity (ie x2v shim), we need to
- * retrieve the initialized message and event pages.  Otherwise, we create and
- * initialize the message and event pages.
- */
+ 
 void hv_synic_enable_regs(unsigned int cpu)
 {
 	struct hv_per_cpu_context *hv_cpu
@@ -269,12 +231,12 @@ void hv_synic_enable_regs(unsigned int cpu)
 	union hv_synic_sint shared_sint;
 	union hv_synic_scontrol sctrl;
 
-	/* Setup the Synic's message page */
+	 
 	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
 	simp.simp_enabled = 1;
 
 	if (ms_hyperv.paravisor_present || hv_root_partition) {
-		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
+		 
 		u64 base = (simp.base_simp_gpa << HV_HYP_PAGE_SHIFT) &
 				~ms_hyperv.shared_gpa_boundary;
 		hv_cpu->synic_message_page
@@ -288,12 +250,12 @@ void hv_synic_enable_regs(unsigned int cpu)
 
 	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
 
-	/* Setup the Synic's event page */
+	 
 	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
 	siefp.siefp_enabled = 1;
 
 	if (ms_hyperv.paravisor_present || hv_root_partition) {
-		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
+		 
 		u64 base = (siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT) &
 				~ms_hyperv.shared_gpa_boundary;
 		hv_cpu->synic_event_page
@@ -307,7 +269,7 @@ void hv_synic_enable_regs(unsigned int cpu)
 
 	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
 
-	/* Setup the shared SINT. */
+	 
 	if (vmbus_irq != -1)
 		enable_percpu_irq(vmbus_irq, 0);
 	shared_sint.as_uint64 = hv_get_register(HV_REGISTER_SINT0 +
@@ -316,10 +278,7 @@ void hv_synic_enable_regs(unsigned int cpu)
 	shared_sint.vector = vmbus_interrupt;
 	shared_sint.masked = false;
 
-	/*
-	 * On architectures where Hyper-V doesn't support AEOI (e.g., ARM64),
-	 * it doesn't provide a recommendation flag and AEOI must be disabled.
-	 */
+	 
 #ifdef HV_DEPRECATING_AEOI_RECOMMENDED
 	shared_sint.auto_eoi =
 			!(ms_hyperv.hints & HV_DEPRECATING_AEOI_RECOMMENDED);
@@ -329,7 +288,7 @@ void hv_synic_enable_regs(unsigned int cpu)
 	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
 				shared_sint.as_uint64);
 
-	/* Enable the global synic bit */
+	 
 	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
 	sctrl.enable = 1;
 
@@ -345,9 +304,7 @@ int hv_synic_init(unsigned int cpu)
 	return 0;
 }
 
-/*
- * hv_synic_cleanup - Cleanup routine for hv_synic_init().
- */
+ 
 void hv_synic_disable_regs(unsigned int cpu)
 {
 	struct hv_per_cpu_context *hv_cpu
@@ -362,18 +319,13 @@ void hv_synic_disable_regs(unsigned int cpu)
 
 	shared_sint.masked = 1;
 
-	/* Need to correctly cleanup in the case of SMP!!! */
-	/* Disable the interrupt */
+	 
+	 
 	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
 				shared_sint.as_uint64);
 
 	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
-	/*
-	 * In Isolation VM, sim and sief pages are allocated by
-	 * paravisor. These pages also will be used by kdump
-	 * kernel. So just reset enable bit here and keep page
-	 * addresses.
-	 */
+	 
 	simp.simp_enabled = 0;
 	if (ms_hyperv.paravisor_present || hv_root_partition) {
 		iounmap(hv_cpu->synic_message_page);
@@ -396,7 +348,7 @@ void hv_synic_disable_regs(unsigned int cpu)
 
 	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
 
-	/* Disable the global synic bit */
+	 
 	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
 	sctrl.enable = 0;
 	hv_set_register(HV_REGISTER_SCONTROL, sctrl.as_uint64);
@@ -406,21 +358,13 @@ void hv_synic_disable_regs(unsigned int cpu)
 }
 
 #define HV_MAX_TRIES 3
-/*
- * Scan the event flags page of 'this' CPU looking for any bit that is set.  If we find one
- * bit set, then wait for a few milliseconds.  Repeat these steps for a maximum of 3 times.
- * Return 'true', if there is still any set bit after this operation; 'false', otherwise.
- *
- * If a bit is set, that means there is a pending channel interrupt.  The expectation is
- * that the normal interrupt handling mechanism will find and process the channel interrupt
- * "very soon", and in the process clear the bit.
- */
+ 
 static bool hv_synic_event_pending(void)
 {
 	struct hv_per_cpu_context *hv_cpu = this_cpu_ptr(hv_context.cpu_context);
 	union hv_synic_event_flags *event =
 		(union hv_synic_event_flags *)hv_cpu->synic_event_page + VMBUS_MESSAGE_SINT;
-	unsigned long *recv_int_page = event->flags; /* assumes VMBus version >= VERSION_WIN8 */
+	unsigned long *recv_int_page = event->flags;  
 	bool pending;
 	u32 relid;
 	int tries = 0;
@@ -428,7 +372,7 @@ static bool hv_synic_event_pending(void)
 retry:
 	pending = false;
 	for_each_set_bit(relid, recv_int_page, HV_EVENT_FLAGS_COUNT) {
-		/* Special case - VMBus channel protocol messages */
+		 
 		if (relid == 0)
 			continue;
 		pending = true;
@@ -449,23 +393,11 @@ int hv_synic_cleanup(unsigned int cpu)
 	if (vmbus_connection.conn_state != CONNECTED)
 		goto always_cleanup;
 
-	/*
-	 * Hyper-V does not provide a way to change the connect CPU once
-	 * it is set; we must prevent the connect CPU from going offline
-	 * while the VM is running normally. But in the panic or kexec()
-	 * path where the vmbus is already disconnected, the CPU must be
-	 * allowed to shut down.
-	 */
+	 
 	if (cpu == VMBUS_CONNECT_CPU)
 		return -EBUSY;
 
-	/*
-	 * Search for channels which are bound to the CPU we're about to
-	 * cleanup.  In case we find one and vmbus is still connected, we
-	 * fail; this will effectively prevent CPU offlining.
-	 *
-	 * TODO: Re-bind the channels to different CPUs.
-	 */
+	 
 	mutex_lock(&vmbus_connection.channel_mutex);
 	list_for_each_entry(channel, &vmbus_connection.chn_list, listentry) {
 		if (channel->target_cpu == cpu) {
@@ -486,14 +418,7 @@ int hv_synic_cleanup(unsigned int cpu)
 	if (channel_found)
 		return -EBUSY;
 
-	/*
-	 * channel_found == false means that any channels that were previously
-	 * assigned to the CPU have been reassigned elsewhere with a call of
-	 * vmbus_send_modifychannel().  Scan the event flags page looking for
-	 * bits that are set and waiting with a timeout for vmbus_chan_sched()
-	 * to process such bits.  If bits are still set after this operation
-	 * and VMBus is connected, fail the CPU offlining operation.
-	 */
+	 
 	if (vmbus_proto_version >= VERSION_WIN10_V4_1 && hv_synic_event_pending())
 		return -EBUSY;
 

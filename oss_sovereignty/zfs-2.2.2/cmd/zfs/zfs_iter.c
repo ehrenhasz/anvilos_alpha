@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012 Pawel Jakub Dawidek <pawel@dawidek.net>.
- * Copyright 2013 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2013 by Delphix. All rights reserved.
- */
+ 
 
 #include <libintl.h>
 #include <libuutil.h>
@@ -38,17 +14,7 @@
 #include "zfs_util.h"
 #include "zfs_iter.h"
 
-/*
- * This is a private interface used to gather up all the datasets specified on
- * the command line so that we can iterate over them in order.
- *
- * First, we iterate over all filesystems, gathering them together into an
- * AVL tree.  We report errors for any explicitly specified datasets
- * that we couldn't open.
- *
- * When finished, we have an AVL tree of ZFS handles.  We go through and execute
- * the provided callback for each one, passing whatever data the user supplied.
- */
+ 
 
 typedef struct zfs_node {
 	zfs_handle_t	*zn_handle;
@@ -68,10 +34,7 @@ typedef struct callback_data {
 
 uu_avl_pool_t *avl_pool;
 
-/*
- * Include snaps if they were requested or if this a zfs list where types
- * were not specified and the "listsnapshots" property is set on this pool.
- */
+ 
 static boolean_t
 zfs_include_snapshots(zfs_handle_t *zhp, callback_data_t *cb)
 {
@@ -84,10 +47,7 @@ zfs_include_snapshots(zfs_handle_t *zhp, callback_data_t *cb)
 	return (zpool_get_prop_int(zph, ZPOOL_PROP_LISTSNAPS, NULL));
 }
 
-/*
- * Called for each dataset.  If the object is of an appropriate type,
- * add it to the avl tree and recurse over any children as necessary.
- */
+ 
 static int
 zfs_callback(zfs_handle_t *zhp, void *data)
 {
@@ -126,18 +86,13 @@ zfs_callback(zfs_handle_t *zhp, void *data)
 		}
 	}
 
-	/*
-	 * Recurse if necessary.
-	 */
+	 
 	if (cb->cb_flags & ZFS_ITER_RECURSE &&
 	    ((cb->cb_flags & ZFS_ITER_DEPTH_LIMIT) == 0 ||
 	    cb->cb_depth < cb->cb_depth_limit)) {
 		cb->cb_depth++;
 
-		/*
-		 * If we are not looking for filesystems, we don't need to
-		 * recurse into filesystems when we are at our depth limit.
-		 */
+		 
 		if ((cb->cb_depth < cb->cb_depth_limit ||
 		    (cb->cb_flags & ZFS_ITER_DEPTH_LIMIT) == 0 ||
 		    (cb->cb_types &
@@ -212,11 +167,7 @@ zfs_free_sort_columns(zfs_sort_column_t *sc)
 	}
 }
 
-/*
- * Return true if all of the properties to be sorted are populated by
- * dsl_dataset_fast_stat(). Note that sc == NULL (no sort) means we
- * don't need any extra properties, so returns true.
- */
+ 
 boolean_t
 zfs_sort_only_by_fast(const zfs_sort_column_t *sc)
 {
@@ -243,7 +194,7 @@ boolean_t
 zfs_list_only_by_fast(const zprop_list_t *p)
 {
 	if (p == NULL) {
-		/* NULL means 'all' so we can't use simple mode */
+		 
 		return (B_FALSE);
 	}
 
@@ -287,28 +238,17 @@ zfs_compare(const void *larg, const void *rarg)
 
 	ret = strcmp(lname, rname);
 	if (ret == 0 && (lat != NULL || rat != NULL)) {
-		/*
-		 * If we're comparing a dataset to one of its snapshots, we
-		 * always make the full dataset first.
-		 */
+		 
 		if (lat == NULL) {
 			ret = -1;
 		} else if (rat == NULL) {
 			ret = 1;
 		} else {
-			/*
-			 * If we have two snapshots from the same dataset, then
-			 * we want to sort them according to creation time.  We
-			 * use the hidden CREATETXG property to get an absolute
-			 * ordering of snapshots.
-			 */
+			 
 			lcreate = zfs_prop_get_int(l, ZFS_PROP_CREATETXG);
 			rcreate = zfs_prop_get_int(r, ZFS_PROP_CREATETXG);
 
-			/*
-			 * Both lcreate and rcreate being 0 means we don't have
-			 * properties and we should compare full name.
-			 */
+			 
 			if (lcreate == 0 && rcreate == 0)
 				ret = strcmp(lat + 1, rat + 1);
 			else if (lcreate < rcreate)
@@ -326,18 +266,7 @@ zfs_compare(const void *larg, const void *rarg)
 	return (ret);
 }
 
-/*
- * Sort datasets by specified columns.
- *
- * o  Numeric types sort in ascending order.
- * o  String types sort in alphabetical order.
- * o  Types inappropriate for a row sort that row to the literal
- *    bottom, regardless of the specified ordering.
- *
- * If no sort columns are specified, or two datasets compare equally
- * across all specified columns, they are sorted alphabetically by name
- * with snapshots grouped under their parents.
- */
+ 
 static int
 zfs_sort(const void *larg, const void *rarg, void *data)
 {
@@ -353,11 +282,7 @@ zfs_sort(const void *larg, const void *rarg, void *data)
 		boolean_t lvalid, rvalid;
 		int ret = 0;
 
-		/*
-		 * We group the checks below the generic code.  If 'lstr' and
-		 * 'rstr' are non-NULL, then we do a string based comparison.
-		 * Otherwise, we compare 'lnum' and 'rnum'.
-		 */
+		 
 		lstr = rstr = NULL;
 		if (psc->sc_prop == ZPROP_USERPROP) {
 			nvlist_t *luser, *ruser;
@@ -450,18 +375,7 @@ zfs_for_each(int argc, char **argv, int flags, zfs_type_t types,
 	cb.cb_proplist = proplist;
 	cb.cb_types = types;
 	cb.cb_depth_limit = limit;
-	/*
-	 * If cb_proplist is provided then in the zfs_handles created we
-	 * retain only those properties listed in cb_proplist and sortcol.
-	 * The rest are pruned. So, the caller should make sure that no other
-	 * properties other than those listed in cb_proplist/sortcol are
-	 * accessed.
-	 *
-	 * If cb_proplist is NULL then we retain all the properties.  We
-	 * always retain the zoned property, which some other properties
-	 * need (userquota & friends), and the createtxg property, which
-	 * we need to sort snapshots.
-	 */
+	 
 	if (cb.cb_proplist && *cb.cb_proplist) {
 		zprop_list_t *p = *cb.cb_proplist;
 
@@ -492,20 +406,14 @@ zfs_for_each(int argc, char **argv, int flags, zfs_type_t types,
 		nomem();
 
 	if (argc == 0) {
-		/*
-		 * If given no arguments, iterate over all datasets.
-		 */
+		 
 		cb.cb_flags |= ZFS_ITER_RECURSE;
 		ret = zfs_iter_root(g_zfs, zfs_callback, &cb);
 	} else {
 		zfs_handle_t *zhp = NULL;
 		zfs_type_t argtype = types;
 
-		/*
-		 * If we're recursive, then we always allow filesystems as
-		 * arguments.  If we also are interested in snapshots or
-		 * bookmarks, then we can take volumes as well.
-		 */
+		 
 		if (flags & ZFS_ITER_RECURSE) {
 			argtype |= ZFS_TYPE_FILESYSTEM;
 			if (types & (ZFS_TYPE_SNAPSHOT | ZFS_TYPE_BOOKMARK))
@@ -526,17 +434,12 @@ zfs_for_each(int argc, char **argv, int flags, zfs_type_t types,
 		}
 	}
 
-	/*
-	 * At this point we've got our AVL tree full of zfs handles, so iterate
-	 * over each one and execute the real user callback.
-	 */
+	 
 	for (node = uu_avl_first(cb.cb_avl); node != NULL;
 	    node = uu_avl_next(cb.cb_avl, node))
 		ret |= callback(node->zn_handle, data);
 
-	/*
-	 * Finally, clean up the AVL tree.
-	 */
+	 
 	if ((walk = uu_avl_walk_start(cb.cb_avl, UU_WALK_ROBUST)) == NULL)
 		nomem();
 

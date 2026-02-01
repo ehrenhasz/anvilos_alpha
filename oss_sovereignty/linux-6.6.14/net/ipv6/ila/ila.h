@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 Tom Herbert <tom@herbertland.com>
- */
+ 
+ 
 
 #ifndef __ILA_H
 #define __ILA_H
@@ -98,7 +96,7 @@ void ila_init_saved_csum(struct ila_params *p);
 struct ila_net {
 	struct {
 		struct rhashtable rhash_table;
-		spinlock_t *locks; /* Bucket locks for entry manipulation */
+		spinlock_t *locks;  
 		unsigned int locks_mask;
 		bool hooks_registered;
 	} xlat;
@@ -122,4 +120,4 @@ extern unsigned int ila_net_id;
 
 extern struct genl_family ila_nl_family;
 
-#endif /* __ILA_H */
+#endif  

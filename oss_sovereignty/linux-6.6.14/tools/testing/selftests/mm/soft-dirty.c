@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -30,7 +30,7 @@ static void test_simple(int pagemap_fd, int pagesize)
 		}
 
 		clear_softdirty();
-		// Write something to the page to get the dirty bit enabled on the page
+		
 		map[0]++;
 
 		if (pagemap_is_softdirty(pagemap_fd, map) == 0) {
@@ -53,7 +53,7 @@ static void test_vma_reuse(int pagemap_fd, int pagesize)
 	if (map == MAP_FAILED)
 		ksft_exit_fail_msg("mmap failed");
 
-	// The kernel always marks new regions as soft dirty
+	
 	ksft_test_result(pagemap_is_softdirty(pagemap_fd, map) == 1,
 			 "Test %s dirty bit of allocated page\n", __func__);
 
@@ -64,7 +64,7 @@ static void test_vma_reuse(int pagemap_fd, int pagesize)
 	if (map2 == MAP_FAILED)
 		ksft_exit_fail_msg("mmap failed");
 
-	// Dirty bit is set for new regions even if they are reused
+	
 	if (map == map2)
 		ksft_test_result(pagemap_is_softdirty(pagemap_fd, map2) == 1,
 				 "Test %s dirty bit of reused address page\n", __func__);
@@ -105,7 +105,7 @@ static void test_hugepage(int pagemap_fd, int pagesize)
 			}
 
 			clear_softdirty();
-			// Write something to the page to get the dirty bit enabled on the page
+			
 			map[0]++;
 
 			if (pagemap_is_softdirty(pagemap_fd, map) == 0) {
@@ -117,7 +117,7 @@ static void test_hugepage(int pagemap_fd, int pagesize)
 
 		ksft_test_result(i == TEST_ITERATIONS, "Test %s huge page dirty bit\n", __func__);
 	} else {
-		// hugepage allocation failed. skip these tests
+		
 		ksft_test_result_skip("Test %s huge page allocation\n", __func__);
 		ksft_test_result_skip("Test %s huge page dirty bit\n", __func__);
 	}

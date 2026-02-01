@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2024 Angus Gratton
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 
@@ -32,9 +8,9 @@
 #include "py/mperrno.h"
 #include "py/objstr.h"
 
-// Implements the singleton runtime USB object
-//
-// Currently this implementation references TinyUSB directly.
+
+
+
 
 #ifndef NO_QSTR
 #include "device/usbd_pvt.h"
@@ -65,7 +41,7 @@ static mp_obj_t usb_device_make_new(const mp_obj_type_t *type, size_t n_args, si
             o->xfer_data[i][1] = mp_const_none;
         }
         o->builtin_driver = MP_OBJ_FROM_PTR(&mp_type_usb_device_builtin_none);
-        o->active = false; // Builtin USB may be active already, but runtime is inactive
+        o->active = false; 
         o->trigger = false;
         o->control_data = MP_OBJ_TO_PTR(mp_obj_new_memoryview('B', 0, NULL));
         o->num_pend_excs = 0;
@@ -79,8 +55,8 @@ static mp_obj_t usb_device_make_new(const mp_obj_type_t *type, size_t n_args, si
     return MP_STATE_VM(usbd);
 }
 
-// Utility helper to raise an error if USB device is not active
-// (or if a change of active state is triggered but not processed.)
+
+
 static void usb_device_check_active(mp_obj_usb_device_t *usbd) {
     if (!usbd->active || usbd->trigger) {
         mp_raise_OSError(MP_EINVAL);
@@ -95,7 +71,7 @@ static mp_obj_t usb_device_submit_xfer(mp_obj_t self, mp_obj_t ep, mp_obj_t buff
 
     usb_device_check_active(usbd);
 
-    // Unmarshal arguments, raises TypeError if invalid
+    
     ep_addr = mp_obj_get_int(ep);
     mp_get_buffer_raise(buffer, &buf_info, ep_addr & TUSB_DIR_IN_MASK ? MP_BUFFER_READ : MP_BUFFER_RW);
 
@@ -103,11 +79,11 @@ static mp_obj_t usb_device_submit_xfer(mp_obj_t self, mp_obj_t ep, mp_obj_t buff
     uint8_t ep_dir = tu_edpt_dir(ep_addr);
 
     if (ep_num == 0 || ep_num >= CFG_TUD_ENDPPOINT_MAX) {
-        // TinyUSB usbd API doesn't range check arguments, so this check avoids
-        // out of bounds array access, or submitting transfers on the control endpoint.
-        //
-        // This C layer doesn't otherwise keep track of which endpoints the host
-        // is aware of (or not).
+        
+        
+        
+        
+        
         mp_raise_ValueError("ep");
     }
 
@@ -118,7 +94,7 @@ static mp_obj_t usb_device_submit_xfer(mp_obj_t self, mp_obj_t ep, mp_obj_t buff
     result = usbd_edpt_xfer(USBD_RHPORT, ep_addr, buf_info.buf, buf_info.len);
 
     if (result) {
-        // Store the buffer object until the transfer completes
+        
         usbd->xfer_data[ep_num][ep_dir] = buffer;
     }
 
@@ -137,17 +113,17 @@ static mp_obj_t usb_device_active(size_t n_args, const mp_obj_t *args) {
             if (value
                 && !mp_usb_device_builtin_enabled(usbd)
                 && usbd->desc_dev == mp_const_none) {
-                // Only allow activating if config() has already been called to set some descriptors, or a
-                // built-in driver is enabled
+                
+                
                 mp_raise_OSError(MP_EINVAL);
             }
 
-            // Any change to active state is triggered here and processed
-            // from the TinyUSB task.
+            
+            
             usbd->active = value;
             usbd->trigger = true;
             if (value) {
-                mp_usbd_init(); // Ensure TinyUSB has initialised by this point
+                mp_usbd_init(); 
             }
             mp_usbd_schedule_task();
         }
@@ -165,7 +141,7 @@ static mp_obj_t usb_device_stall(size_t n_args, const mp_obj_t *args) {
 
     mp_obj_t res = mp_obj_new_bool(usbd_edpt_stalled(USBD_RHPORT, epnum));
 
-    if (n_args == 3) { // Set stall state
+    if (n_args == 3) { 
         mp_obj_t stall = args[2];
         if (mp_obj_is_true(stall)) {
             usbd_edpt_stall(USBD_RHPORT, epnum);
@@ -178,8 +154,8 @@ static mp_obj_t usb_device_stall(size_t n_args, const mp_obj_t *args) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(usb_device_stall_obj, 2, 3, usb_device_stall);
 
-// Configure the singleton USB device with all of the relevant transfer and descriptor
-// callbacks for dynamic devices.
+
+
 static mp_obj_t usb_device_config(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     mp_obj_usb_device_t *self = (mp_obj_usb_device_t *)MP_OBJ_TO_PTR(pos_args[0]);
 
@@ -197,7 +173,7 @@ static mp_obj_t usb_device_config(size_t n_args, const mp_obj_t *pos_args, mp_ma
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    // Check descriptor arguments
+    
     mp_obj_t desc_dev = args[ARG_desc_dev].u_obj;
     mp_obj_t desc_cfg = args[ARG_desc_cfg].u_obj;
     mp_obj_t desc_strs = args[ARG_desc_strs].u_obj;
@@ -228,8 +204,8 @@ static const MP_DEFINE_BYTES_OBJ(builtin_default_desc_dev_obj,
     &mp_usbd_builtin_desc_dev, sizeof(tusb_desc_device_t));
 
 #if HAS_BUILTIN_DRIVERS
-// BUILTIN_DEFAULT Python object holds properties of the built-in USB configuration
-// (i.e. values used by the C implementation of TinyUSB devices.)
+
+
 static const MP_DEFINE_BYTES_OBJ(builtin_default_desc_cfg_obj,
     mp_usbd_builtin_desc_cfg, MP_USBD_BUILTIN_DESC_CFG_LEN);
 
@@ -248,9 +224,9 @@ MP_DEFINE_CONST_OBJ_TYPE(
     MP_TYPE_FLAG_NONE,
     locals_dict, &usb_device_builtin_default_dict
     );
-#endif // HAS_BUILTIN_DRIVERS
+#endif 
 
-// BUILTIN_NONE holds properties for no enabled built-in USB device support
+
 static const mp_rom_map_elem_t usb_device_builtin_none_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_itf_max), MP_OBJ_NEW_SMALL_INT(0) },
     { MP_ROM_QSTR(MP_QSTR_ep_max), MP_OBJ_NEW_SMALL_INT(0) },
@@ -273,17 +249,17 @@ static const mp_rom_map_elem_t usb_device_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_active), MP_ROM_PTR(&usb_device_active_obj) },
     { MP_ROM_QSTR(MP_QSTR_stall), MP_ROM_PTR(&usb_device_stall_obj) },
 
-    // Built-in driver constants
+    
     { MP_ROM_QSTR(MP_QSTR_BUILTIN_NONE), MP_ROM_PTR(&mp_type_usb_device_builtin_none) },
 
     #if !HAS_BUILTIN_DRIVERS
-    // No builtin-in drivers, so BUILTIN_DEFAULT is BUILTIN_NONE
+    
     { MP_ROM_QSTR(MP_QSTR_BUILTIN_DEFAULT), MP_ROM_PTR(&mp_type_usb_device_builtin_none) },
     #else
     { MP_ROM_QSTR(MP_QSTR_BUILTIN_DEFAULT), MP_ROM_PTR(&mp_type_usb_device_builtin_default) },
 
-    // Specific driver constant names are to support future switching of built-in drivers,
-    // but currently only one is present and it maps directly to BUILTIN_DEFAULT
+    
+    
     #if MICROPY_HW_USB_CDC && !MICROPY_HW_USB_MSC
     { MP_ROM_QSTR(MP_QSTR_BUILTIN_CDC), MP_ROM_PTR(&mp_type_usb_device_builtin_default) },
     #endif
@@ -293,28 +269,28 @@ static const mp_rom_map_elem_t usb_device_locals_dict_table[] = {
     #if MICROPY_HW_USB_CDC && MICROPY_HW_USB_MSC
     { MP_ROM_QSTR(MP_QSTR_BUILTIN_CDC_MSC), MP_ROM_PTR(&mp_type_usb_device_builtin_default) },
     #endif
-    #endif // !HAS_BUILTIN_DRIVERS
+    #endif 
 };
 static MP_DEFINE_CONST_DICT(usb_device_locals_dict, usb_device_locals_dict_table);
 
 static void usb_device_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     mp_obj_usb_device_t *self = MP_OBJ_TO_PTR(self_in);
     if (dest[0] == MP_OBJ_NULL) {
-        // Load attribute.
+        
         if (attr == MP_QSTR_builtin_driver) {
             dest[0] = self->builtin_driver;
         } else {
-            // Continue lookup in locals_dict.
+            
             dest[1] = MP_OBJ_SENTINEL;
         }
     } else if (dest[1] != MP_OBJ_NULL) {
-        // Store attribute.
+        
         if (attr == MP_QSTR_builtin_driver) {
             if (self->active) {
-                mp_raise_OSError(MP_EINVAL); // Need to deactivate first
+                mp_raise_OSError(MP_EINVAL); 
             }
-            // Note: this value should be one of the BUILTIN_nnn constants,
-            // but not checked here to save code size in a low level API
+            
+            
             self->builtin_driver = dest[1];
             dest[0] = MP_OBJ_NULL;
         }

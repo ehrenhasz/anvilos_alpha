@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
+ 
+ 
 
 #ifndef __MFD_MT6397_CORE_H__
 #define __MFD_MT6397_CORE_H__
@@ -77,4 +74,4 @@ struct mt6397_chip {
 int mt6358_irq_init(struct mt6397_chip *chip);
 int mt6397_irq_init(struct mt6397_chip *chip);
 
-#endif /* __MFD_MT6397_CORE_H__ */
+#endif  

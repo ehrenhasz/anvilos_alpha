@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Simple Reset Controller Driver
- *
- * Copyright (C) 2017 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- *
- * Based on Allwinner SoCs Reset Controller driver
- *
- * Copyright 2013 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -103,16 +93,7 @@ const struct reset_control_ops reset_simple_ops = {
 };
 EXPORT_SYMBOL_GPL(reset_simple_ops);
 
-/**
- * struct reset_simple_devdata - simple reset controller properties
- * @reg_offset: offset between base address and first reset register.
- * @nr_resets: number of resets. If not set, default to resource size in bits.
- * @active_low: if true, bits are cleared to assert the reset. Otherwise, bits
- *              are set to assert the reset.
- * @status_active_low: if true, bits read back as cleared while the reset is
- *                     asserted. Otherwise, bits read back as set while the
- *                     reset is asserted.
- */
+ 
 struct reset_simple_devdata {
 	u32 reg_offset;
 	u32 nr_resets;
@@ -151,7 +132,7 @@ static const struct of_device_id reset_simple_dt_ids[] = {
 	{ .compatible = "snps,dw-high-reset" },
 	{ .compatible = "snps,dw-low-reset",
 		.data = &reset_simple_active_low },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int reset_simple_probe(struct platform_device *pdev)

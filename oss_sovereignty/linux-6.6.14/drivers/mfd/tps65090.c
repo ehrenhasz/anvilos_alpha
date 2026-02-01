@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for TI TPS65090 PMIC family
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Venu Byravarasu <vbyravarasu@nvidia.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -63,7 +57,7 @@ static struct mfd_cell tps65090s[] = {
 };
 
 static const struct regmap_irq tps65090_irqs[] = {
-	/* INT1 IRQs*/
+	 
 	[TPS65090_IRQ_VAC_STATUS_CHANGE] = {
 		.mask = TPS65090_INT1_MASK_VAC_STATUS_CHANGE,
 	},
@@ -85,7 +79,7 @@ static const struct regmap_irq tps65090_irqs[] = {
 	[TPS65090_IRQ_OVERLOAD_DCDC2] = {
 		.mask = TPS65090_INT1_MASK_OVERLOAD_DCDC2,
 	},
-	/* INT2 IRQs*/
+	 
 	[TPS65090_IRQ_OVERLOAD_DCDC3] = {
 		.reg_offset = 1,
 		.mask = TPS65090_INT2_MASK_OVERLOAD_DCDC3,
@@ -131,7 +125,7 @@ static struct regmap_irq_chip tps65090_irq_chip = {
 
 static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* Nearly all registers have status bits mixed in, except a few */
+	 
 	switch (reg) {
 	case TPS65090_REG_INTR_MASK:
 	case TPS65090_REG_INTR_MASK2:
@@ -202,7 +196,7 @@ static int tps65090_i2c_probe(struct i2c_client *client)
 			return ret;
 		}
 	} else {
-		/* Don't tell children they have an IRQ that'll never fire */
+		 
 		tps65090s[CHARGER].num_resources = 0;
 	}
 

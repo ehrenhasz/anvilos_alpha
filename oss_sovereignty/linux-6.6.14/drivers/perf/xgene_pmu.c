@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM X-Gene SoC PMU (Performance Monitor Unit)
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Author: Hoan Tran <hotran@apm.com>
- *         Tai Nguyen <ttnguyen@apm.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -73,7 +67,7 @@
 #define PMU_PMOVSR		0xC80
 #define PMU_PMCR		0xE04
 
-/* PMU registers for V3 */
+ 
 #define PMU_PMOVSCLR		0xC80
 #define PMU_PMOVSSET		0xCC0
 
@@ -161,9 +155,7 @@ enum xgene_pmu_dev_type {
 	PMU_TYPE_MC,
 };
 
-/*
- * sysfs format attributes
- */
+ 
 static ssize_t xgene_pmu_format_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -272,9 +264,7 @@ static const struct attribute_group mc_pmu_v3_format_attr_group = {
 	.attrs = mc_pmu_v3_format_attrs,
 };
 
-/*
- * sysfs event attributes
- */
+ 
 static ssize_t xgene_pmu_event_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -598,9 +588,7 @@ static const struct attribute_group mc_pmu_v3_events_attr_group = {
 	.attrs = mc_pmu_v3_events_attrs,
 };
 
-/*
- * sysfs cpumask attributes
- */
+ 
 static ssize_t cpumask_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
@@ -620,9 +608,7 @@ static const struct attribute_group pmu_cpumask_attr_group = {
 	.attrs = xgene_pmu_cpumask_attrs,
 };
 
-/*
- * Per PMU device attribute groups of PMU v1 and v2
- */
+ 
 static const struct attribute_group *l3c_pmu_attr_groups[] = {
 	&l3c_pmu_format_attr_group,
 	&pmu_cpumask_attr_group,
@@ -651,9 +637,7 @@ static const struct attribute_group *mc_pmu_attr_groups[] = {
 	NULL
 };
 
-/*
- * Per PMU device attribute groups of PMU v3
- */
+ 
 static const struct attribute_group *l3c_pmu_v3_attr_groups[] = {
 	&l3c_pmu_v3_format_attr_group,
 	&pmu_cpumask_attr_group,
@@ -739,12 +723,7 @@ static inline u64 xgene_pmu_read_counter64(struct xgene_pmu_dev *pmu_dev,
 {
 	u32 lo, hi;
 
-	/*
-	 * v3 has 64-bit counter registers composed by 2 32-bit registers
-	 * This can be a problem if the counter increases and carries
-	 * out of bit [31] between 2 reads. The extra reads would help
-	 * to prevent this issue.
-	 */
+	 
 	do {
 		hi = xgene_pmu_read_counter32(pmu_dev, 2 * idx + 1);
 		lo = xgene_pmu_read_counter32(pmu_dev, 2 * idx);
@@ -767,7 +746,7 @@ xgene_pmu_write_counter64(struct xgene_pmu_dev *pmu_dev, int idx, u64 val)
 	cnt_hi = upper_32_bits(val);
 	cnt_lo = lower_32_bits(val);
 
-	/* v3 has 64-bit counter registers composed by 2 32-bit registers */
+	 
 	xgene_pmu_write_counter32(pmu_dev, 2 * idx, cnt_lo);
 	xgene_pmu_write_counter32(pmu_dev, 2 * idx + 1, cnt_hi);
 }
@@ -890,44 +869,24 @@ static int xgene_perf_event_init(struct perf_event *event)
 	struct hw_perf_event *hw = &event->hw;
 	struct perf_event *sibling;
 
-	/* Test the event attr type check for PMU enumeration */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * SOC PMU counters are shared across all cores.
-	 * Therefore, it does not support per-process mode.
-	 * Also, it does not support event sampling mode.
-	 */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EINVAL;
 
 	if (event->cpu < 0)
 		return -EINVAL;
-	/*
-	 * Many perf core operations (eg. events rotation) operate on a
-	 * single CPU context. This is obvious for CPU PMUs, where one
-	 * expects the same sets of events being observed on all CPUs,
-	 * but can lead to issues for off-core PMUs, where each
-	 * event could be theoretically assigned to a different CPU. To
-	 * mitigate this, we enforce CPU assignment to one, selected
-	 * processor (the one described in the "cpumask" attribute).
-	 */
+	 
 	event->cpu = cpumask_first(&pmu_dev->parent->cpu);
 
 	hw->config = event->attr.config;
-	/*
-	 * Each bit of the config1 field represents an agent from which the
-	 * request of the event come. The event is counted only if it's caused
-	 * by a request of an agent has the bit cleared.
-	 * By default, the event is counted for all agents.
-	 */
+	 
 	hw->config_base = event->attr.config1;
 
-	/*
-	 * We must NOT create groups containing mixed PMUs, although software
-	 * events are acceptable
-	 */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 			!is_software_event(event->group_leader))
 		return -EINVAL;
@@ -971,13 +930,7 @@ static void xgene_perf_event_set_period(struct perf_event *event)
 	struct xgene_pmu_dev *pmu_dev = to_pmu_dev(event->pmu);
 	struct xgene_pmu *xgene_pmu = pmu_dev->parent;
 	struct hw_perf_event *hw = &event->hw;
-	/*
-	 * For 32 bit counter, it has a period of 2^32. To account for the
-	 * possibility of extreme interrupt latency we program for a period of
-	 * half that. Hopefully, we can handle the interrupt before another 2^31
-	 * events occur and the counter overtakes its previous value.
-	 * For 64 bit counter, we don't expect it overflow.
-	 */
+	 
 	u64 val = 1ULL << 31;
 
 	local64_set(&hw->prev_count, val);
@@ -1059,12 +1012,12 @@ static int xgene_perf_add(struct perf_event *event, int flags)
 
 	hw->state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
 
-	/* Allocate an event counter */
+	 
 	hw->idx = get_next_avail_cntr(pmu_dev);
 	if (hw->idx < 0)
 		return -EAGAIN;
 
-	/* Update counter event pointer for Interrupt handler */
+	 
 	pmu_dev->pmu_counter_event[hw->idx] = event;
 
 	if (flags & PERF_EF_START)
@@ -1080,7 +1033,7 @@ static void xgene_perf_del(struct perf_event *event, int flags)
 
 	xgene_perf_stop(event, PERF_EF_UPDATE);
 
-	/* clear the assigned counter */
+	 
 	clear_avail_cntr(pmu_dev, GET_CNTR(event));
 
 	perf_event_update_userpage(event);
@@ -1095,14 +1048,14 @@ static int xgene_init_perf(struct xgene_pmu_dev *pmu_dev, char *name)
 		pmu_dev->max_period = PMU_V3_CNT_MAX_PERIOD;
 	else
 		pmu_dev->max_period = PMU_CNT_MAX_PERIOD;
-	/* First version PMU supports only single event counter */
+	 
 	xgene_pmu = pmu_dev->parent;
 	if (xgene_pmu->version == PCP_PMU_V1)
 		pmu_dev->max_counters = 1;
 	else
 		pmu_dev->max_counters = PMU_MAX_COUNTERS;
 
-	/* Perf driver registration */
+	 
 	pmu_dev->pmu = (struct pmu) {
 		.attr_groups	= pmu_dev->attr_groups,
 		.task_ctx_nr	= perf_invalid_context,
@@ -1117,7 +1070,7 @@ static int xgene_init_perf(struct xgene_pmu_dev *pmu_dev, char *name)
 		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
 	};
 
-	/* Hardware counter init */
+	 
 	xgene_pmu->ops->stop_counters(pmu_dev);
 	xgene_pmu->ops->reset_counters(pmu_dev);
 
@@ -1203,7 +1156,7 @@ static void _xgene_pmu_isr(int irq, struct xgene_pmu_dev *pmu_dev)
 	if (!pmovsr)
 		goto out;
 
-	/* Clear interrupt flag */
+	 
 	if (xgene_pmu->version == PCP_PMU_V1)
 		writel(0x0, csr + PMU_PMOVSR);
 	else if (xgene_pmu->version == PCP_PMU_V2)
@@ -1215,7 +1168,7 @@ static void _xgene_pmu_isr(int irq, struct xgene_pmu_dev *pmu_dev)
 		struct perf_event *event = pmu_dev->pmu_counter_event[idx];
 		int overflowed = pmovsr & BIT(idx);
 
-		/* Ignore if we don't have an event. */
+		 
 		if (!event || !overflowed)
 			continue;
 		xgene_perf_event_update(event);
@@ -1235,7 +1188,7 @@ static irqreturn_t xgene_pmu_isr(int irq, void *dev_id)
 
 	raw_spin_lock(&xgene_pmu->lock);
 
-	/* Get Interrupt PMU source */
+	 
 	val = readl(xgene_pmu->pcppmu_csr + PCPPMU_INTSTATUS_REG);
 	if (xgene_pmu->version == PCP_PMU_V3) {
 		intr_mcu = PCPPMU_V3_INT_MCU;
@@ -1302,16 +1255,16 @@ static int acpi_pmu_probe_active_mcb_mcu_l3c(struct xgene_pmu *xgene_pmu,
 
 	reg = readl(csw_csr + CSW_CSWCR);
 	if (reg & CSW_CSWCR_DUALMCB_MASK) {
-		/* Dual MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x3;
-		/* Probe all active MC(s) */
+		 
 		reg = readl(mcbb_csr + CSW_CSWCR);
 		xgene_pmu->mc_active_mask =
 			(reg & MCBADDRMR_DUALMCU_MODE_MASK) ? 0xF : 0x5;
 	} else {
-		/* Single MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x1;
-		/* Probe all active MC(s) */
+		 
 		reg = readl(mcba_csr + CSW_CSWCR);
 		xgene_pmu->mc_active_mask =
 			(reg & MCBADDRMR_DUALMCU_MODE_MASK) ? 0x3 : 0x1;
@@ -1338,11 +1291,11 @@ static int acpi_pmu_v3_probe_active_mcb_mcu_l3c(struct xgene_pmu *xgene_pmu,
 	mcb0routing = CSW_CSWCR_MCB0_ROUTING(reg);
 	mcb1routing = CSW_CSWCR_MCB1_ROUTING(reg);
 	if (reg & CSW_CSWCR_DUALMCB_MASK) {
-		/* Dual MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x3;
-		/* Probe all active L3C(s), maximum is 8 */
+		 
 		xgene_pmu->l3c_active_mask = 0xFF;
-		/* Probe all active MC(s), maximum is 8 */
+		 
 		if ((mcb0routing == 0x2) && (mcb1routing == 0x2))
 			xgene_pmu->mc_active_mask = 0xFF;
 		else if ((mcb0routing == 0x1) && (mcb1routing == 0x1))
@@ -1350,11 +1303,11 @@ static int acpi_pmu_v3_probe_active_mcb_mcu_l3c(struct xgene_pmu *xgene_pmu,
 		else
 			xgene_pmu->mc_active_mask =  0x11;
 	} else {
-		/* Single MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x1;
-		/* Probe all active L3C(s), maximum is 4 */
+		 
 		xgene_pmu->l3c_active_mask = 0x0F;
-		/* Probe all active MC(s), maximum is 4 */
+		 
 		if (mcb0routing == 0x2)
 			xgene_pmu->mc_active_mask = 0x0F;
 		else if (mcb0routing == 0x1)
@@ -1396,17 +1349,17 @@ static int fdt_pmu_probe_active_mcb_mcu_l3c(struct xgene_pmu *xgene_pmu,
 		return -EINVAL;
 
 	if (reg & CSW_CSWCR_DUALMCB_MASK) {
-		/* Dual MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x3;
-		/* Probe all active MC(s) */
+		 
 		if (regmap_read(mcbb_map, MCBADDRMR, &reg))
 			return 0;
 		xgene_pmu->mc_active_mask =
 			(reg & MCBADDRMR_DUALMCU_MODE_MASK) ? 0xF : 0x5;
 	} else {
-		/* Single MCB active */
+		 
 		xgene_pmu->mcb_active_mask = 0x1;
-		/* Probe all active MC(s) */
+		 
 		if (regmap_read(mcba_map, MCBADDRMR, &reg))
 			return 0;
 		xgene_pmu->mc_active_mask =
@@ -1495,7 +1448,7 @@ xgene_pmu_dev_ctx *acpi_get_pmu_hw_inf(struct xgene_pmu *xgene_pmu,
 		return NULL;
 	}
 
-	/* A PMU device node without enable-bit-index is always enabled */
+	 
 	rc = acpi_dev_get_property(adev, "enable-bit-index",
 				   ACPI_TYPE_INTEGER, &obj);
 	if (rc < 0)
@@ -1566,7 +1519,7 @@ static acpi_status acpi_pmu_dev_add(acpi_handle handle, u32 level,
 		return AE_OK;
 
 	if (xgene_pmu_dev_add(xgene_pmu, ctx)) {
-		/* Can't add the PMU device, skip it */
+		 
 		devm_kfree(xgene_pmu->dev, ctx);
 		return AE_OK;
 	}
@@ -1645,7 +1598,7 @@ xgene_pmu_dev_ctx *fdt_get_pmu_hw_inf(struct xgene_pmu *xgene_pmu,
 		return NULL;
 	}
 
-	/* A PMU device node without enable-bit-index is always enabled */
+	 
 	if (of_property_read_u32(np, "enable-bit-index", &enable_bit))
 		enable_bit = 0;
 
@@ -1688,7 +1641,7 @@ static int fdt_pmu_probe_pmu_dev(struct xgene_pmu *xgene_pmu,
 			continue;
 
 		if (xgene_pmu_dev_add(xgene_pmu, ctx)) {
-			/* Can't add the PMU device, skip it */
+			 
 			devm_kfree(xgene_pmu->dev, ctx);
 			continue;
 		}
@@ -1789,7 +1742,7 @@ static int xgene_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 	if (cpumask_empty(&xgene_pmu->cpu))
 		cpumask_set_cpu(cpu, &xgene_pmu->cpu);
 
-	/* Overflow interrupt also should use the same CPU */
+	 
 	WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
 
 	return 0;
@@ -1822,7 +1775,7 @@ static int xgene_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	}
 
 	cpumask_set_cpu(target, &xgene_pmu->cpu);
-	/* Overflow interrupt also should use the same CPU */
+	 
 	WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
 
 	return 0;
@@ -1836,7 +1789,7 @@ static int xgene_pmu_probe(struct platform_device *pdev)
 	int irq, rc;
 	int version;
 
-	/* Install a hook to update the reader CPU in case it goes offline */
+	 
 	rc = cpuhp_setup_state_multi(CPUHP_AP_PERF_ARM_APM_XGENE_ONLINE,
 				      "CPUHP_AP_PERF_ARM_APM_XGENE_ONLINE",
 				      xgene_pmu_online_cpu,
@@ -1904,7 +1857,7 @@ static int xgene_pmu_probe(struct platform_device *pdev)
 
 	raw_spin_lock_init(&xgene_pmu->lock);
 
-	/* Check for active MCBs and MCUs */
+	 
 	rc = xgene_pmu_probe_active_mcb_mcu_l3c(xgene_pmu, pdev);
 	if (rc) {
 		dev_warn(&pdev->dev, "Unknown MCB/MCU active status\n");
@@ -1912,7 +1865,7 @@ static int xgene_pmu_probe(struct platform_device *pdev)
 		xgene_pmu->mc_active_mask = 0x1;
 	}
 
-	/* Add this instance to the list used by the hotplug callback */
+	 
 	rc = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_APM_XGENE_ONLINE,
 				      &xgene_pmu->node);
 	if (rc) {
@@ -1920,14 +1873,14 @@ static int xgene_pmu_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Walk through the tree for all PMU perf devices */
+	 
 	rc = xgene_pmu_probe_pmu_dev(xgene_pmu, pdev);
 	if (rc) {
 		dev_err(&pdev->dev, "No PMU perf devices found!\n");
 		goto out_unregister;
 	}
 
-	/* Enable interrupt */
+	 
 	xgene_pmu->ops->unmask_int(xgene_pmu);
 
 	return 0;

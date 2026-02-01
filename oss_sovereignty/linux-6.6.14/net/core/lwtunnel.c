@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lwtunnel	Infrastructure for light weight tunnels like mpls
- *
- * Authors:	Roopa Prabhu, <roopa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/module.h>
@@ -30,9 +26,7 @@ EXPORT_SYMBOL_GPL(nf_hooks_lwtunnel_enabled);
 
 static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
 {
-	/* Only lwt encaps implemented without using an interface for
-	 * the encap need to return a string here.
-	 */
+	 
 	switch (encap_type) {
 	case LWTUNNEL_ENCAP_MPLS:
 		return "MPLS";
@@ -49,20 +43,20 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
 	case LWTUNNEL_ENCAP_IOAM6:
 		return "IOAM6";
 	case LWTUNNEL_ENCAP_XFRM:
-		/* module autoload not supported for encap type */
+		 
 		return NULL;
 	case LWTUNNEL_ENCAP_IP6:
 	case LWTUNNEL_ENCAP_IP:
 	case LWTUNNEL_ENCAP_NONE:
 	case __LWTUNNEL_ENCAP_MAX:
-		/* should not have got here */
+		 
 		WARN_ON(1);
 		break;
 	}
 	return NULL;
 }
 
-#endif /* CONFIG_MODULES */
+#endif  
 
 struct lwtunnel_state *lwtunnel_state_alloc(int encap_len)
 {
@@ -136,9 +130,7 @@ int lwtunnel_build_state(struct net *net, u16 encap_type,
 		if (ret)
 			module_put(ops->owner);
 	} else {
-		/* don't rely on -EOPNOTSUPP to detect match as build_state
-		 * handlers could return it
-		 */
+		 
 		NL_SET_ERR_MSG_ATTR(extack, encap,
 				    "LWT encapsulation type not supported");
 	}

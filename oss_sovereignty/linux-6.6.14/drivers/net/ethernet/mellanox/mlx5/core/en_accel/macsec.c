@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <linux/mlx5/device.h>
 #include <linux/mlx5/mlx5_ifc.h>
@@ -93,11 +93,11 @@ struct mlx5e_macsec_umr {
 };
 
 struct mlx5e_macsec_aso {
-	/* ASO */
+	 
 	struct mlx5_aso *maso;
-	/* Protects macsec ASO */
+	 
 	struct mutex aso_lock;
-	/* UMR */
+	 
 	struct mlx5e_macsec_umr *umr;
 
 	u32 pdn;
@@ -114,14 +114,14 @@ struct mlx5e_macsec_device {
 struct mlx5e_macsec {
 	struct list_head macsec_device_list_head;
 	int num_of_devices;
-	struct mutex lock; /* Protects mlx5e_macsec internal contexts */
+	struct mutex lock;  
 
-	/* Rx fs_id -> rx_sc mapping */
+	 
 	struct xarray sc_xarray;
 
 	struct mlx5_core_dev *mdev;
 
-	/* ASO */
+	 
 	struct mlx5e_macsec_aso aso;
 
 	struct notifier_block nb;
@@ -255,7 +255,7 @@ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
 	MLX5_SET(macsec_offload_obj, obj, macsec_aso_access_pd, attrs->aso_pdn);
 	MLX5_SET(macsec_aso, aso_ctx, mode_parameter, attrs->next_pn);
 
-	/* Epn */
+	 
 	if (attrs->epn_state.epn_enabled) {
 		void *salt_p;
 		int i;
@@ -281,7 +281,7 @@ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
 			return err;
 	}
 
-	/* general object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
 
@@ -798,11 +798,7 @@ static void macsec_del_rxsc_ctx(struct mlx5e_macsec *macsec, struct mlx5e_macsec
 		rx_sc->rx_sa[i] = NULL;
 	}
 
-	/* At this point the relevant MACsec offload Rx rule already removed at
-	 * mlx5e_macsec_cleanup_sa need to wait for datapath to finish current
-	 * Rx related data propagating using xa_erase which uses rcu to sync,
-	 * once fs_id is erased then this rx_sc is hidden from datapath.
-	 */
+	 
 	list_del_rcu(&rx_sc->rx_sc_list_element);
 	xa_erase(&macsec->sc_xarray, rx_sc->sc_xarray_element->fs_id);
 	metadata_dst_free(rx_sc->md_dst);
@@ -913,7 +909,7 @@ static int mlx5e_macsec_add_rxsa(struct macsec_context *ctx)
 	if (!rx_sa->active)
 		goto out;
 
-	//TODO - add support for both authentication and encryption flows
+	
 	err = mlx5e_macsec_init_sa(ctx, rx_sa, true, false, &rx_sc->sc_xarray_element->fs_id);
 	if (err)
 		goto destroy_encryption_key;
@@ -1137,12 +1133,7 @@ out:
 	return err;
 }
 
-/* this function is called from 2 macsec ops functions:
- *  macsec_set_mac_address – MAC address was changed, therefore we need to destroy
- *  and create new Tx contexts(macsec object + steering).
- *  macsec_changelink – in this case the tx SC or SecY may be changed, therefore need to
- *  destroy Tx and Rx contexts(macsec object + steering)
- */
+ 
 static int mlx5e_macsec_upd_secy(struct macsec_context *ctx)
 {
 	struct mlx5e_priv *priv = macsec_netdev_priv(ctx->netdev);
@@ -1166,7 +1157,7 @@ static int mlx5e_macsec_upd_secy(struct macsec_context *ctx)
 		goto out;
 	}
 
-	/* if the dev_addr hasn't change, it mean the callback is from macsec_changelink */
+	 
 	if (!memcmp(macsec_device->dev_addr, dev->dev_addr, dev->addr_len)) {
 		err = macsec_upd_secy_hw_address(ctx, macsec_device);
 		if (err)
@@ -1293,7 +1284,7 @@ static int mlx5e_macsec_modify_obj(struct mlx5_core_dev *mdev, struct mlx5_macse
 	void *obj;
 	int err;
 
-	/* General object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, macsec_id);
@@ -1307,7 +1298,7 @@ static int mlx5e_macsec_modify_obj(struct mlx5_core_dev *mdev, struct mlx5_macse
 	obj = MLX5_ADDR_OF(query_macsec_obj_out, out, macsec_object);
 	modify_field_select = MLX5_GET64(macsec_offload_obj, obj, modify_field_select);
 
-	/* EPN */
+	 
 	if (!(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_OVERLAP) ||
 	    !(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_MSB)) {
 		mlx5_core_dbg(mdev, "MACsec object field is not modifiable (Object id %d)\n",
@@ -1321,7 +1312,7 @@ static int mlx5e_macsec_modify_obj(struct mlx5_core_dev *mdev, struct mlx5_macse
 	MLX5_SET(macsec_offload_obj, obj, epn_msb, attrs->epn_state.epn_msb);
 	MLX5_SET(macsec_offload_obj, obj, epn_overlap, attrs->epn_state.overlap);
 
-	/* General object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
 
 	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
@@ -1463,13 +1454,7 @@ static void macsec_epn_update(struct mlx5e_macsec *macsec, struct mlx5_core_dev 
 	struct mlx5_macsec_obj_attrs attrs = {};
 	struct mlx5e_macsec_aso_in in = {};
 
-	/* When the bottom of the replay protection window (mode_param) crosses 2^31 (half sequence
-	 * number wraparound) hence mode_param > MLX5_MACSEC_EPN_SCOPE_MID the SW should update the
-	 * esn_overlap to OLD (1).
-	 * When the bottom of the replay protection window (mode_param) crosses 2^32 (full sequence
-	 * number wraparound) hence mode_param < MLX5_MACSEC_EPN_SCOPE_MID since it did a
-	 * wraparound, the SW should update the esn_overlap to NEW (0), and increment the esn_msb.
-	 */
+	 
 
 	if (mode_param < MLX5_MACSEC_EPN_SCOPE_MID) {
 		sa->epn_state.epn_msb++;
@@ -1481,7 +1466,7 @@ static void macsec_epn_update(struct mlx5e_macsec *macsec, struct mlx5_core_dev 
 	macsec_build_accel_attrs(sa, &attrs);
 	mlx5e_macsec_modify_obj(mdev, &attrs, obj_id);
 
-	/* Re-set EPN arm event */
+	 
 	in.obj_id = obj_id;
 	in.mode = MLX5_MACSEC_EPN;
 	macsec_aso_set_arm_event(mdev, macsec, &in);
@@ -1512,11 +1497,11 @@ static void macsec_async_event(struct work_struct *work)
 		}
 	}
 
-	/* Query MACsec ASO context */
+	 
 	in.obj_id = obj_id;
 	macsec_aso_query(mdev, macsec, &in, &out);
 
-	/* EPN case */
+	 
 	if (macsec_sa->epn_state.epn_enabled && !(out.event_arm & MLX5E_ASO_EPN_ARM))
 		macsec_epn_update(macsec, mdev, macsec_sa, obj_id, out.mode_param);
 
@@ -1689,7 +1674,7 @@ void mlx5e_macsec_build_netdev(struct mlx5e_priv *priv)
 	if (!mlx5e_is_macsec_device(priv->mdev))
 		return;
 
-	/* Enable MACsec */
+	 
 	mlx5_core_dbg(priv->mdev, "mlx5e: MACsec acceleration enabled\n");
 	netdev->macsec_ops = &macsec_offload_ops;
 	netdev->features |= NETIF_F_HW_MACSEC;

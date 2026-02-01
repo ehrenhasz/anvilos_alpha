@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+ 
+ 
 
 #ifndef __LP872X_REGULATOR_H__
 #define __LP872X_REGULATOR_H__
@@ -45,36 +41,20 @@ enum lp872x_dvs_sel {
 	SEL_V2,
 };
 
-/**
- * lp872x_dvs
- * @gpio       : gpio descriptor for dvs control
- * @vsel       : dvs selector for buck v1 or buck v2 register
- * @init_state : initial dvs pin state
- */
+ 
 struct lp872x_dvs {
 	struct gpio_desc *gpio;
 	enum lp872x_dvs_sel vsel;
 	enum gpiod_flags init_state;
 };
 
-/**
- * lp872x_regdata
- * @id        : regulator id
- * @init_data : init data for each regulator
- */
+ 
 struct lp872x_regulator_data {
 	enum lp872x_regulator_id id;
 	struct regulator_init_data *init_data;
 };
 
-/**
- * lp872x_platform_data
- * @general_config    : the value of LP872X_GENERAL_CFG register
- * @update_config     : if LP872X_GENERAL_CFG register is updated, set true
- * @regulator_data    : platform regulator id and init data
- * @dvs               : dvs data for buck voltage control
- * @enable_gpio       : gpio descriptor for enable control
- */
+ 
 struct lp872x_platform_data {
 	u8 general_config;
 	bool update_config;

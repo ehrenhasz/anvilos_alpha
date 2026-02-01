@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* TI K3 CPPI5 descriptors pool API
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,7 +14,7 @@
 struct k3_cppi_desc_pool {
 	struct device		*dev;
 	dma_addr_t		dma_addr;
-	void			*cpumem;	/* dma_alloc map */
+	void			*cpumem;	 
 	size_t			desc_size;
 	size_t			mem_size;
 	size_t			num_desc;
@@ -37,7 +34,7 @@ void k3_cppi_desc_pool_destroy(struct k3_cppi_desc_pool *pool)
 		dma_free_coherent(pool->dev, pool->mem_size, pool->cpumem,
 				  pool->dma_addr);
 
-	gen_pool_destroy(pool->gen_pool);	/* frees pool->name */
+	gen_pool_destroy(pool->gen_pool);	 
 }
 EXPORT_SYMBOL_GPL(k3_cppi_desc_pool_destroy);
 
@@ -94,7 +91,7 @@ gen_pool_add_virt_fail:
 	dma_free_coherent(pool->dev, pool->mem_size, pool->cpumem,
 			  pool->dma_addr);
 dma_alloc_fail:
-	gen_pool_destroy(pool->gen_pool);	/* frees pool->name */
+	gen_pool_destroy(pool->gen_pool);	 
 gen_pool_create_fail:
 	devm_kfree(pool->dev, pool);
 	return ERR_PTR(ret);

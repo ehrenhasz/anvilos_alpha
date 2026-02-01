@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A module for stripping a specific TCP option from TCP packets.
- *
- * Copyright (C) 2007 Sven Schnelle <svens@bitebene.org>
- * Copyright © CC Computer Consultants GmbH, 2007
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -18,7 +13,7 @@
 
 static inline unsigned int optlen(const u_int8_t *opt, unsigned int offset)
 {
-	/* Beware zero-length options: make finite progress */
+	 
 	if (opt[offset] <= TCPOPT_NOP || opt[offset+1] == 0)
 		return 1;
 	else
@@ -37,7 +32,7 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 	u_int8_t *opt;
 	int tcp_hdrlen;
 
-	/* This is a fragment, no TCP header is available */
+	 
 	if (par->fragoff != 0)
 		return XT_CONTINUE;
 
@@ -52,14 +47,11 @@ tcpoptstrip_mangle_packet(struct sk_buff *skb,
 	if (skb_ensure_writable(skb, tcphoff + tcp_hdrlen))
 		return NF_DROP;
 
-	/* must reload tcph, might have been moved */
+	 
 	tcph = (struct tcphdr *)(skb_network_header(skb) + tcphoff);
 	opt  = (u8 *)tcph;
 
-	/*
-	 * Walk through all TCP options - if we find some option to remove,
-	 * set all octets to %TCPOPT_NOP and adjust checksum.
-	 */
+	 
 	for (i = sizeof(struct tcphdr); i < tcp_hdrlen - 1; i += optl) {
 		optl = optlen(opt, i);
 

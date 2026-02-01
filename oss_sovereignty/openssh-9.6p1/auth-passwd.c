@@ -1,40 +1,5 @@
-/* $OpenBSD: auth-passwd.c,v 1.48 2020/10/18 11:32:01 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Password authentication.  This file contains the functions to check whether
- * the password is valid for the user.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- * Copyright (c) 1999 Dug Song.  All rights reserved.
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -64,15 +29,12 @@ extern login_cap_t *lc;
 #endif
 
 
-#define DAY		(24L * 60 * 60) /* 1 day in seconds */
-#define TWO_WEEKS	(2L * 7 * DAY)	/* 2 weeks in seconds */
+#define DAY		(24L * 60 * 60)  
+#define TWO_WEEKS	(2L * 7 * DAY)	 
 
 #define MAX_PASSWORD_LEN	1024
 
-/*
- * Tries to authenticate the user using password.  Returns true if
- * authentication succeeds.
- */
+ 
 int
 auth_password(struct ssh *ssh, const char *password)
 {
@@ -98,7 +60,7 @@ auth_password(struct ssh *ssh, const char *password)
 		int ret = auth_krb5_password(authctxt, password);
 		if (ret == 1 || ret == 0)
 			return ret && ok;
-		/* Fall back to ordinary passwd authentication. */
+		 
 	}
 #endif
 #ifdef HAVE_CYGWIN
@@ -195,28 +157,22 @@ sys_auth_passwd(struct ssh *ssh, const char *password)
 	struct passwd *pw = authctxt->pw;
 	char *encrypted_password, *salt = NULL;
 
-	/* Just use the supplied fake password if authctxt is invalid */
+	 
 	char *pw_password = authctxt->valid ? shadow_pw(pw) : pw->pw_passwd;
 
 	if (pw_password == NULL)
 		return 0;
 
-	/* Check for users with no password. */
+	 
 	if (strcmp(pw_password, "") == 0 && strcmp(password, "") == 0)
 		return (1);
 
-	/*
-	 * Encrypt the candidate password using the proper salt, or pass a
-	 * NULL and let xcrypt pick one.
-	 */
+	 
 	if (authctxt->valid && pw_password[0] && pw_password[1])
 		salt = pw_password;
 	encrypted_password = xcrypt(password, salt);
 
-	/*
-	 * Authentication is accepted if the encrypted passwords
-	 * are identical.
-	 */
+	 
 	return encrypted_password != NULL &&
 	    strcmp(encrypted_password, pw_password) == 0;
 }

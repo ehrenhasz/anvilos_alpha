@@ -1,42 +1,20 @@
 #ifndef DC_DSC_H_
 #define DC_DSC_H_
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Author: AMD
- */
+ 
 
-/* put it here temporarily until linux has the new addresses official defined */
-/* DP Extended DSC Capabilities */
-#define DP_DSC_BRANCH_OVERALL_THROUGHPUT_0  0x0a0   /* DP 1.4a SCR */
+ 
+ 
+#define DP_DSC_BRANCH_OVERALL_THROUGHPUT_0  0x0a0    
 #define DP_DSC_BRANCH_OVERALL_THROUGHPUT_1  0x0a1
 #define DP_DSC_BRANCH_MAX_LINE_WIDTH        0x0a2
 #include "dc_types.h"
 
 struct dc_dsc_bw_range {
-	uint32_t min_kbps; /* Bandwidth if min_target_bpp_x16 is used */
+	uint32_t min_kbps;  
 	uint32_t min_target_bpp_x16;
-	uint32_t max_kbps; /* Bandwidth if max_target_bpp_x16 is used */
+	uint32_t max_kbps;  
 	uint32_t max_target_bpp_x16;
-	uint32_t stream_kbps; /* Uncompressed stream bandwidth */
+	uint32_t stream_kbps;  
 };
 
 struct display_stream_compressor {
@@ -47,8 +25,8 @@ struct display_stream_compressor {
 
 struct dc_dsc_policy {
 	bool use_min_slices_h;
-	int max_slices_h; // Maximum available if 0
-	int min_slice_height; // Must not be less than 8
+	int max_slices_h; 
+	int min_slice_height; 
 	uint32_t max_target_bpp;
 	uint32_t min_target_bpp;
 	bool enable_dsc_when_not_needed;
@@ -93,11 +71,7 @@ uint32_t dc_dsc_stream_bandwidth_overhead_in_kbps(
 		const int num_slices_h,
 		const bool is_dp);
 
-/* TODO - Hardware/specs limitation should be owned by dc dsc and returned to DM,
- * and DM can choose to OVERRIDE the limitation on CASE BY CASE basis.
- * Hardware/specs limitation should not be writable by DM.
- * It should be decoupled from DM specific policy and named differently.
- */
+ 
 void dc_dsc_get_policy_for_timing(const struct dc_crtc_timing *timing,
 		uint32_t max_target_bpp_limit_override_x16,
 		struct dc_dsc_policy *policy);

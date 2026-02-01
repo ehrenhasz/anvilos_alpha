@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS42L43 Pinctrl and GPIO driver
-//
-// Copyright (c) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/build_bug.h>
@@ -329,7 +329,7 @@ static inline int cs42l43_pin_get_db(struct cs42l43_pin *priv, unsigned int pin)
 	if (val & (CS42L43_GPIO1_DEGLITCH_BYP_MASK << pin))
 		return 0;
 
-	return 85; // Debounce is roughly 85uS
+	return 85; 
 }
 
 static inline int cs42l43_pin_set_db(struct cs42l43_pin *priv, unsigned int pin,

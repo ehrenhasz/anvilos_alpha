@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2021 Christian Hewitt <christianshewitt@gmail.com>
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-//
-// Keytable for the Mecool Kii Pro remote control
-//
+
+
+
 
 static struct rc_map_table mecool_kii_pro[] = {
 	{ 0x59, KEY_POWER },
@@ -31,7 +31,7 @@ static struct rc_map_table mecool_kii_pro[] = {
 	{ 0x4d, KEY_EPG },
 	{ 0x02, KEY_INFO },
 	{ 0x09, KEY_SUBTITLE },
-	{ 0x01, KEY_LANGUAGE }, // AUDIO
+	{ 0x01, KEY_LANGUAGE }, 
 
 	{ 0x0d, KEY_HOME },
 	{ 0x11, KEY_TV },
@@ -46,10 +46,10 @@ static struct rc_map_table mecool_kii_pro[] = {
 
 	{ 0x13, KEY_VOLUMEUP },
 	{ 0x17, KEY_VOLUMEDOWN },
-	{ 0x58, KEY_APPSELECT }, // APPS
-	{ 0x12, KEY_CONTEXT_MENU }, // MOUSE
-	{ 0x55, KEY_CHANNELUP }, // PAGE_UP
-	{ 0x15, KEY_CHANNELDOWN }, // PAGE_DOWN
+	{ 0x58, KEY_APPSELECT }, 
+	{ 0x12, KEY_CONTEXT_MENU }, 
+	{ 0x55, KEY_CHANNELUP }, 
+	{ 0x15, KEY_CHANNELDOWN }, 
 
 	{ 0x52, KEY_1 },
 	{ 0x50, KEY_2 },

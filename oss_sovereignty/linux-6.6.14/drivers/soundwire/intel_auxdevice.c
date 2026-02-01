@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-// Copyright(c) 2015-22 Intel Corporation.
 
-/*
- * Soundwire Intel Manager Driver
- */
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
@@ -25,12 +23,7 @@
 
 #define INTEL_MASTER_SUSPEND_DELAY_MS	3000
 
-/*
- * debug/config flags for the Intel SoundWire Master.
- *
- * Since we may have multiple masters active, we can have up to 8
- * flags reused in each byte, with master0 using the ls-byte, etc.
- */
+ 
 
 #define SDW_INTEL_MASTER_DISABLE_PM_RUNTIME		BIT(0)
 #define SDW_INTEL_MASTER_DISABLE_CLOCK_STOP		BIT(1)
@@ -108,7 +101,7 @@ static void generic_new_peripheral_assigned(struct sdw_bus *bus,
 		dev_num_max = SDW_INTEL_DEV_NUM_IDA_MIN - 1;
 	}
 
-	/* paranoia check, this should never happen */
+	 
 	if (dev_num < dev_num_min || dev_num > dev_num_max)  {
 		dev_err(bus->dev, "%s: invalid dev_num %d, wake supported %d\n",
 			__func__, dev_num, slave->prop.wake_capable);
@@ -126,7 +119,7 @@ static int sdw_master_read_intel_prop(struct sdw_bus *bus)
 	char name[32];
 	u32 quirk_mask;
 
-	/* Find master handle */
+	 
 	snprintf(name, sizeof(name),
 		 "mipi-sdw-link-%d-subproperties", bus->link_id);
 
@@ -140,7 +133,7 @@ static int sdw_master_read_intel_prop(struct sdw_bus *bus)
 				 "intel-sdw-ip-clock",
 				 &prop->mclk_freq);
 
-	/* the values reported by BIOS are the 2x clock, not the bus clock */
+	 
 	prop->mclk_freq /= 2;
 
 	fwnode_property_read_u32(link,
@@ -158,10 +151,10 @@ static int sdw_master_read_intel_prop(struct sdw_bus *bus)
 
 static int intel_prop_read(struct sdw_bus *bus)
 {
-	/* Initialize with default handler to read all DisCo properties */
+	 
 	sdw_master_read_prop(bus);
 
-	/* read Intel-specific properties */
+	 
 	sdw_master_read_intel_prop(bus);
 
 	return 0;
@@ -205,9 +198,7 @@ static struct sdw_master_ops sdw_intel_ops = {
 	.new_peripheral_assigned = generic_new_peripheral_assigned,
 };
 
-/*
- * probe and init (aux_dev_id argument is required by function prototype but not used)
- */
+ 
 static int intel_link_probe(struct auxiliary_device *auxdev,
 			    const struct auxiliary_device_id *aux_dev_id)
 
@@ -239,16 +230,16 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
 
 	sdw_cdns_probe(cdns);
 
-	/* Set ops */
+	 
 	bus->ops = &sdw_intel_ops;
 
-	/* set driver data, accessed by snd_soc_dai_get_drvdata() */
+	 
 	auxiliary_set_drvdata(auxdev, cdns);
 
-	/* use generic bandwidth allocation algorithm */
+	 
 	sdw->cdns.bus.compute_params = sdw_compute_params;
 
-	/* avoid resuming from pm_runtime suspend if it's not required */
+	 
 	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND);
 
 	ret = sdw_bus_master_add(bus, dev, dev->fwnode);
@@ -261,10 +252,7 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
 		dev_info(dev,
 			 "SoundWire master %d is disabled, will be ignored\n",
 			 bus->link_id);
-	/*
-	 * Ignore BIOS err_threshold, it's a really bad idea when dealing
-	 * with multiple hardware synchronized links
-	 */
+	 
 	bus->prop.err_threshold = 0;
 
 	return 0;
@@ -293,22 +281,17 @@ int intel_link_startup(struct auxiliary_device *auxdev)
 	if (!multi_link) {
 		dev_dbg(dev, "Multi-link is disabled\n");
 	} else {
-		/*
-		 * hardware-based synchronization is required regardless
-		 * of the number of segments used by a stream: SSP-based
-		 * synchronization is gated by gsync when the multi-master
-		 * mode is set.
-		 */
+		 
 		bus->hw_sync_min_links = 1;
 	}
 	bus->multi_link = multi_link;
 
-	/* Initialize shim, controller */
+	 
 	ret = sdw_intel_link_power_up(sdw);
 	if (ret)
 		goto err_init;
 
-	/* Register DAIs */
+	 
 	ret = sdw_intel_register_dai(sdw);
 	if (ret) {
 		dev_err(dev, "DAI registration failed: %d\n", ret);
@@ -317,7 +300,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
 
 	sdw_intel_debugfs_init(sdw);
 
-	/* Enable runtime PM */
+	 
 	if (!(link_flags & SDW_INTEL_MASTER_DISABLE_PM_RUNTIME)) {
 		pm_runtime_set_autosuspend_delay(dev,
 						 INTEL_MASTER_SUSPEND_DELAY_MS);
@@ -330,7 +313,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
 		pm_runtime_resume(bus->dev);
 	}
 
-	/* start bus */
+	 
 	ret = sdw_intel_start_bus(sdw);
 	if (ret) {
 		dev_err(dev, "bus start failed: %d\n", ret);
@@ -339,31 +322,11 @@ int intel_link_startup(struct auxiliary_device *auxdev)
 
 	clock_stop_quirks = sdw->link_res->clock_stop_quirks;
 	if (clock_stop_quirks & SDW_INTEL_CLK_STOP_NOT_ALLOWED) {
-		/*
-		 * To keep the clock running we need to prevent
-		 * pm_runtime suspend from happening by increasing the
-		 * reference count.
-		 * This quirk is specified by the parent PCI device in
-		 * case of specific latency requirements. It will have
-		 * no effect if pm_runtime is disabled by the user via
-		 * a module parameter for testing purposes.
-		 */
+		 
 		pm_runtime_get_noresume(dev);
 	}
 
-	/*
-	 * The runtime PM status of Slave devices is "Unsupported"
-	 * until they report as ATTACHED. If they don't, e.g. because
-	 * there are no Slave devices populated or if the power-on is
-	 * delayed or dependent on a power switch, the Master will
-	 * remain active and prevent its parent from suspending.
-	 *
-	 * Conditionally force the pm_runtime core to re-evaluate the
-	 * Master status in the absence of any Slave activity. A quirk
-	 * is provided to e.g. deal with Slaves that may be powered on
-	 * with a delay. A more complete solution would require the
-	 * definition of Master properties.
-	 */
+	 
 	if (!(link_flags & SDW_INTEL_MASTER_DISABLE_PM_RUNTIME_IDLE)) {
 		pm_runtime_mark_last_busy(bus->dev);
 		pm_runtime_mark_last_busy(dev);
@@ -388,11 +351,7 @@ static void intel_link_remove(struct auxiliary_device *auxdev)
 	struct sdw_intel *sdw = cdns_to_intel(cdns);
 	struct sdw_bus *bus = &cdns->bus;
 
-	/*
-	 * Since pm_runtime is already disabled, we don't decrease
-	 * the refcount when the clock_stop_quirk is
-	 * SDW_INTEL_CLK_STOP_NOT_ALLOWED
-	 */
+	 
 	if (!bus->prop.hw_disabled) {
 		sdw_intel_debugfs_exit(sdw);
 		sdw_cdns_enable_interrupt(cdns, false);
@@ -418,24 +377,16 @@ int intel_link_process_wakeen_event(struct auxiliary_device *auxdev)
 	if (!sdw_intel_shim_check_wake(sdw))
 		return 0;
 
-	/* disable WAKEEN interrupt ASAP to prevent interrupt flood */
+	 
 	sdw_intel_shim_wake(sdw, false);
 
-	/*
-	 * resume the Master, which will generate a bus reset and result in
-	 * Slaves re-attaching and be re-enumerated. The SoundWire physical
-	 * device which generated the wake will trigger an interrupt, which
-	 * will in turn cause the corresponding Linux Slave device to be
-	 * resumed and the Slave codec driver to check the status.
-	 */
+	 
 	pm_request_resume(dev);
 
 	return 0;
 }
 
-/*
- * PM calls
- */
+ 
 
 static int intel_resume_child_device(struct device *dev, void *data)
 {
@@ -480,37 +431,18 @@ static int __maybe_unused intel_pm_prepare(struct device *dev)
 	    pm_runtime_suspended(dev->parent) &&
 	    ((clock_stop_quirks & SDW_INTEL_CLK_STOP_BUS_RESET) ||
 	     !clock_stop_quirks)) {
-		/*
-		 * if we've enabled clock stop, and the parent is suspended, the SHIM registers
-		 * are not accessible and the shim wake cannot be disabled.
-		 * The only solution is to resume the entire bus to full power
-		 */
+		 
 
-		/*
-		 * If any operation in this block fails, we keep going since we don't want
-		 * to prevent system suspend from happening and errors should be recoverable
-		 * on resume.
-		 */
+		 
 
-		/*
-		 * first resume the device for this link. This will also by construction
-		 * resume the PCI parent device.
-		 */
+		 
 		ret = pm_request_resume(dev);
 		if (ret < 0) {
 			dev_err(dev, "%s: pm_request_resume failed: %d\n", __func__, ret);
 			return 0;
 		}
 
-		/*
-		 * Continue resuming the entire bus (parent + child devices) to exit
-		 * the clock stop mode. If there are no devices connected on this link
-		 * this is a no-op.
-		 * The resume to full power could have been implemented with a .prepare
-		 * step in SoundWire codec drivers. This would however require a lot
-		 * of code to handle an Intel-specific corner case. It is simpler in
-		 * practice to add a loop at the link level.
-		 */
+		 
 		ret = device_for_each_child(bus->dev, NULL, intel_resume_child_device);
 
 		if (ret < 0)
@@ -543,10 +475,7 @@ static int __maybe_unused intel_suspend(struct device *dev)
 		    !clock_stop_quirks) {
 
 			if (pm_runtime_suspended(dev->parent)) {
-				/*
-				 * paranoia check: this should not happen with the .prepare
-				 * resume to full power
-				 */
+				 
 				dev_err(dev, "%s: invalid config: parent is suspended\n", __func__);
 			} else {
 				sdw_intel_shim_wake(sdw, false);
@@ -623,7 +552,7 @@ static int __maybe_unused intel_resume(struct device *dev)
 	if (pm_runtime_suspended(dev)) {
 		dev_dbg(dev, "pm_runtime status was suspended, forcing active\n");
 
-		/* follow required sequence from runtime_pm.rst */
+		 
 		pm_runtime_disable(dev);
 		pm_runtime_set_active(dev);
 		pm_runtime_mark_last_busy(dev);
@@ -643,10 +572,7 @@ static int __maybe_unused intel_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * make sure all Slaves are tagged as UNATTACHED and provide
-	 * reason for reinitialization
-	 */
+	 
 	sdw_clear_slave_status(bus, SDW_UNATTACH_REQUEST_MASTER_RESET);
 
 	ret = sdw_intel_start_bus(sdw);
@@ -656,16 +582,7 @@ static int __maybe_unused intel_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * after system resume, the pm_runtime suspend() may kick in
-	 * during the enumeration, before any children device force the
-	 * master device to remain active.  Using pm_runtime_get()
-	 * routines is not really possible, since it'd prevent the
-	 * master from suspending.
-	 * A reasonable compromise is to update the pm_runtime
-	 * counters and delay the pm_runtime suspend by several
-	 * seconds, by when all enumeration should be complete.
-	 */
+	 
 	pm_runtime_mark_last_busy(bus->dev);
 	pm_runtime_mark_last_busy(dev);
 
@@ -686,7 +603,7 @@ static int __maybe_unused intel_resume_runtime(struct device *dev)
 		return 0;
 	}
 
-	/* unconditionally disable WAKEEN interrupt */
+	 
 	sdw_intel_shim_wake(sdw, false);
 
 	clock_stop_quirks = sdw->link_res->clock_stop_quirks;
@@ -698,10 +615,7 @@ static int __maybe_unused intel_resume_runtime(struct device *dev)
 			return ret;
 		}
 
-		/*
-		 * make sure all Slaves are tagged as UNATTACHED and provide
-		 * reason for reinitialization
-		 */
+		 
 		sdw_clear_slave_status(bus, SDW_UNATTACH_REQUEST_MASTER_RESET);
 
 		ret = sdw_intel_start_bus(sdw);
@@ -765,7 +679,7 @@ static struct auxiliary_driver sdw_intel_drv = {
 	.probe = intel_link_probe,
 	.remove = intel_link_remove,
 	.driver = {
-		/* auxiliary_driver_register() sets .name to be the modname */
+		 
 		.pm = &intel_pm,
 	},
 	.id_table = intel_link_id_table

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2021 ROHM Semiconductors
-// regulator IRQ based event notification helpers
-//
-// Logic has been partially adapted from qcom-labibb driver.
-//
-// Author: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -29,9 +29,7 @@ struct regulator_irq {
 	struct delayed_work isr_work;
 };
 
-/*
- * Should only be called from threaded handler to prevent potential deadlock
- */
+ 
 static void rdev_flag_err(struct regulator_dev *rdev, int err)
 {
 	spin_lock(&rdev->err_lock);
@@ -67,26 +65,19 @@ reread:
 			return hw_protection_shutdown("Regulator HW failure? - no IC recovery",
 						      REGULATOR_FORCED_SAFETY_SHUTDOWN_WAIT_MS);
 		ret = d->die(rid);
-		/*
-		 * If the 'last resort' IC recovery failed we will have
-		 * nothing else left to do...
-		 */
+		 
 		if (ret)
 			return hw_protection_shutdown("Regulator HW failure. IC recovery failed",
 						      REGULATOR_FORCED_SAFETY_SHUTDOWN_WAIT_MS);
 
-		/*
-		 * If h->die() was implemented we assume recovery has been
-		 * attempted (probably regulator was shut down) and we
-		 * just enable IRQ and bail-out.
-		 */
+		 
 		goto enable_out;
 	}
 	if (d->renable) {
 		ret = d->renable(rid);
 
 		if (ret == REGULATOR_FAILED_RETRY) {
-			/* Driver could not get current status */
+			 
 			h->retry_cnt++;
 			if (!d->reread_ms)
 				goto reread;
@@ -96,10 +87,7 @@ reread:
 		}
 
 		if (ret) {
-			/*
-			 * IC status reading succeeded. update error info
-			 * just in case the renable changed it.
-			 */
+			 
 			for (i = 0; i < num_rdevs; i++) {
 				struct regulator_err_state *stat;
 				struct regulator_dev *rdev;
@@ -110,21 +98,13 @@ reread:
 						      stat->possible_errs);
 			}
 			h->retry_cnt++;
-			/*
-			 * The IC indicated problem is still ON - no point in
-			 * re-enabling the IRQ. Retry later.
-			 */
+			 
 			tmo = d->irq_off_ms;
 			goto reschedule;
 		}
 	}
 
-	/*
-	 * Either IC reported problem cleared or no status checker was provided.
-	 * If problems are gone - good. If not - then the IRQ will fire again
-	 * and we'll have a new nice loop. In any case we should clear error
-	 * flags here and re-enable IRQs.
-	 */
+	 
 	for (i = 0; i < num_rdevs; i++) {
 		struct regulator_err_state *stat;
 		struct regulator_dev *rdev;
@@ -134,9 +114,7 @@ reread:
 		rdev_clear_err(rdev, stat->possible_errs);
 	}
 
-	/*
-	 * Things have been seemingly successful => zero retry-counter.
-	 */
+	 
 	h->retry_cnt = 0;
 
 enable_out:
@@ -169,43 +147,19 @@ static irqreturn_t regulator_notifier_isr(int irq, void *data)
 	if (d->fatal_cnt)
 		h->retry_cnt++;
 
-	/*
-	 * we spare a few cycles by not clearing statuses prior to this call.
-	 * The IC driver must initialize the status buffers for rdevs
-	 * which it indicates having active events via rdev_map.
-	 *
-	 * Maybe we should just to be on a safer side(?)
-	 */
+	 
 	ret = d->map_event(irq, rid, &rdev_map);
 
-	/*
-	 * If status reading fails (which is unlikely) we don't ack/disable
-	 * IRQ but just increase fail count and retry when IRQ fires again.
-	 * If retry_count exceeds the given safety limit we call IC specific die
-	 * handler which can try disabling regulator(s).
-	 *
-	 * If no die handler is given we will just power-off as a last resort.
-	 *
-	 * We could try disabling all associated rdevs - but we might shoot
-	 * ourselves in the head and leave the problematic regulator enabled. So
-	 * if IC has no die-handler populated we just assume the regulator
-	 * can't be disabled.
-	 */
+	 
 	if (unlikely(ret == REGULATOR_FAILED_RETRY))
 		goto fail_out;
 
 	h->retry_cnt = 0;
-	/*
-	 * Let's not disable IRQ if there were no status bits for us. We'd
-	 * better leave spurious IRQ handling to genirq
-	 */
+	 
 	if (ret || !rdev_map)
 		return IRQ_NONE;
 
-	/*
-	 * Some events are bogus if the regulator is disabled. Skip such events
-	 * if all relevant regulators are disabled
-	 */
+	 
 	if (d->skip_off) {
 		for_each_set_bit(i, &rdev_map, num_rdevs) {
 			struct regulator_dev *rdev;
@@ -214,10 +168,7 @@ static irqreturn_t regulator_notifier_isr(int irq, void *data)
 			rdev = rid->states[i].rdev;
 			ops = rdev->desc->ops;
 
-			/*
-			 * If any of the flagged regulators is enabled we do
-			 * handle this
-			 */
+			 
 			if (ops->is_enabled(rdev))
 				break;
 		}
@@ -225,14 +176,11 @@ static irqreturn_t regulator_notifier_isr(int irq, void *data)
 			return IRQ_NONE;
 	}
 
-	/* Disable IRQ if HW keeps line asserted */
+	 
 	if (d->irq_off_ms)
 		disable_irq_nosync(irq);
 
-	/*
-	 * IRQ seems to be for us. Let's fire correct notifiers / store error
-	 * flags
-	 */
+	 
 	for_each_set_bit(i, &rdev_map, num_rdevs) {
 		struct regulator_err_state *stat;
 		struct regulator_dev *rdev;
@@ -261,13 +209,13 @@ static irqreturn_t regulator_notifier_isr(int irq, void *data)
 
 fail_out:
 	if (d->fatal_cnt && h->retry_cnt > d->fatal_cnt) {
-		/* If we have no recovery, just try shut down straight away */
+		 
 		if (!d->die) {
 			hw_protection_shutdown("Regulator failure. Retry count exceeded",
 					       REGULATOR_FORCED_SAFETY_SHUTDOWN_WAIT_MS);
 		} else {
 			ret = d->die(rid);
-			/* If die() failed shut down as a last attempt to save the HW */
+			 
 			if (ret)
 				hw_protection_shutdown("Regulator failure. Recovery failed",
 						       REGULATOR_FORCED_SAFETY_SHUTDOWN_WAIT_MS);
@@ -310,31 +258,7 @@ static void init_rdev_errors(struct regulator_irq *h)
 			h->rdata.states[i].rdev->use_cached_err = true;
 }
 
-/**
- * regulator_irq_helper - register IRQ based regulator event/error notifier
- *
- * @dev:		device providing the IRQs
- * @d:			IRQ helper descriptor.
- * @irq:		IRQ used to inform events/errors to be notified.
- * @irq_flags:		Extra IRQ flags to be OR'ed with the default
- *			IRQF_ONESHOT when requesting the (threaded) irq.
- * @common_errs:	Errors which can be flagged by this IRQ for all rdevs.
- *			When IRQ is re-enabled these errors will be cleared
- *			from all associated regulators. Use this instead of the
- *			per_rdev_errs if you use
- *			regulator_irq_map_event_simple() for event mapping.
- * @per_rdev_errs:	Optional error flag array describing errors specific
- *			for only some of the regulators. These errors will be
- *			or'ed with common errors. If this is given the array
- *			should contain rdev_amount flags. Can be set to NULL
- *			if there is no regulator specific error flags for this
- *			IRQ.
- * @rdev:		Array of pointers to regulators associated with this
- *			IRQ.
- * @rdev_amount:	Amount of regulators associated with this IRQ.
- *
- * Return: handle to irq_helper or an ERR_PTR() encoded error code.
- */
+ 
 void *regulator_irq_helper(struct device *dev,
 			   const struct regulator_irq_desc *d, int irq,
 			   int irq_flags, int common_errs, int *per_rdev_errs,
@@ -375,15 +299,7 @@ void *regulator_irq_helper(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(regulator_irq_helper);
 
-/**
- * regulator_irq_helper_cancel - drop IRQ based regulator event/error notifier
- *
- * @handle:		Pointer to handle returned by a successful call to
- *			regulator_irq_helper(). Will be NULLed upon return.
- *
- * The associated IRQ is released and work is cancelled when the function
- * returns.
- */
+ 
 void regulator_irq_helper_cancel(void **handle)
 {
 	if (handle && *handle) {
@@ -398,32 +314,14 @@ void regulator_irq_helper_cancel(void **handle)
 }
 EXPORT_SYMBOL_GPL(regulator_irq_helper_cancel);
 
-/**
- * regulator_irq_map_event_simple - regulator IRQ notification for trivial IRQs
- *
- * @irq:	Number of IRQ that occurred
- * @rid:	Information about the event IRQ indicates
- * @dev_mask:	mask indicating the regulator originating the IRQ
- *
- * Regulators whose IRQ has single, well defined purpose (always indicate
- * exactly one event, and are relevant to exactly one regulator device) can
- * use this function as their map_event callbac for their regulator IRQ
- * notification helperk. Exactly one rdev and exactly one error (in
- * "common_errs"-field) can be given at IRQ helper registration for
- * regulator_irq_map_event_simple() to be viable.
- */
+ 
 int regulator_irq_map_event_simple(int irq, struct regulator_irq_data *rid,
 			    unsigned long *dev_mask)
 {
 	int err = rid->states[0].possible_errs;
 
 	*dev_mask = 1;
-	/*
-	 * This helper should only be used in a situation where the IRQ
-	 * can indicate only one type of problem for one specific rdev.
-	 * Something fishy is going on if we are having multiple rdevs or ERROR
-	 * flags here.
-	 */
+	 
 	if (WARN_ON(rid->num_states != 1 || hweight32(err) != 1))
 		return 0;
 

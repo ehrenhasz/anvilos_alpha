@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Epson RTC-9701JE
- *
- * Copyright (C) 2008 Magnus Damm
- *
- * Based on rtc-max6902.c
- *
- * Copyright (C) 2006 8D Technologies inc.
- * Copyright (C) 2004 Compulab Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,21 +12,21 @@
 #include <linux/delay.h>
 #include <linux/bitops.h>
 
-#define RSECCNT	0x00	/* Second Counter */
-#define RMINCNT	0x01	/* Minute Counter */
-#define RHRCNT	0x02	/* Hour Counter */
-#define RWKCNT	0x03	/* Week Counter */
-#define RDAYCNT	0x04	/* Day Counter */
-#define RMONCNT	0x05	/* Month Counter */
-#define RYRCNT	0x06	/* Year Counter */
-#define R100CNT	0x07	/* Y100 Counter */
-#define RMINAR	0x08	/* Minute Alarm */
-#define RHRAR	0x09	/* Hour Alarm */
-#define RWKAR	0x0a	/* Week/Day Alarm */
-#define RTIMCNT	0x0c	/* Interval Timer */
-#define REXT	0x0d	/* Extension Register */
-#define RFLAG	0x0e	/* RTC Flag Register */
-#define RCR	0x0f	/* RTC Control Register */
+#define RSECCNT	0x00	 
+#define RMINCNT	0x01	 
+#define RHRCNT	0x02	 
+#define RWKCNT	0x03	 
+#define RDAYCNT	0x04	 
+#define RMONCNT	0x05	 
+#define RYRCNT	0x06	 
+#define R100CNT	0x07	 
+#define RMINAR	0x08	 
+#define RHRAR	0x09	 
+#define RWKAR	0x0a	 
+#define RTIMCNT	0x0c	 
+#define REXT	0x0d	 
+#define RFLAG	0x0e	 
+#define RCR	0x0f	 
 
 static int write_reg(struct device *dev, int address, unsigned char data)
 {
@@ -75,13 +66,13 @@ static int r9701_get_datetime(struct device *dev, struct rtc_time *dt)
 	if (ret)
 		return ret;
 
-	dt->tm_sec = bcd2bin(buf[0]); /* RSECCNT */
-	dt->tm_min = bcd2bin(buf[1]); /* RMINCNT */
-	dt->tm_hour = bcd2bin(buf[2]); /* RHRCNT */
+	dt->tm_sec = bcd2bin(buf[0]);  
+	dt->tm_min = bcd2bin(buf[1]);  
+	dt->tm_hour = bcd2bin(buf[2]);  
 
-	dt->tm_mday = bcd2bin(buf[3]); /* RDAYCNT */
-	dt->tm_mon = bcd2bin(buf[4]) - 1; /* RMONCNT */
-	dt->tm_year = bcd2bin(buf[5]) + 100; /* RYRCNT */
+	dt->tm_mday = bcd2bin(buf[3]);  
+	dt->tm_mon = bcd2bin(buf[4]) - 1;  
+	dt->tm_year = bcd2bin(buf[5]) + 100;  
 
 	return 0;
 }

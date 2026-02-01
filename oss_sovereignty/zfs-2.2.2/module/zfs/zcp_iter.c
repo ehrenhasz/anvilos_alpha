@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2016, 2018 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/lua/lua.h>
 #include <sys/lua/lauxlib.h>
@@ -126,14 +111,10 @@ zcp_clones_list(lua_State *state)
 	const char *snapname = lua_tostring(state, 1);
 	dsl_pool_t *dp = zcp_run_info(state)->zri_pool;
 
-	/*
-	 * zcp_dataset_hold will either successfully return the requested
-	 * dataset or throw a lua error and longjmp out of the zfs.list.clones
-	 * call without returning.
-	 */
+	 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, snapname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 	boolean_t issnap = ds->ds_is_snapshot;
 	uint64_t cursor = 0;
 	uint64_t dsobj = ds->ds_object;
@@ -217,7 +198,7 @@ zcp_snapshots_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, fsname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 	issnap = ds->ds_is_snapshot;
 	dsobj = ds->ds_object;
 	dsl_dataset_rele(ds, FTAG);
@@ -304,7 +285,7 @@ zcp_children_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, fsname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	issnap = ds->ds_is_snapshot;
 	dsobj = ds->ds_object;
@@ -375,14 +356,7 @@ static const zcp_list_info_t zcp_user_props_list_info = {
 	}
 };
 
-/*
- * 'properties' was the initial name for 'user_properties' seen
- * above. 'user_properties' is a better name as it distinguishes
- * these properties from 'system_properties' which are different.
- * In order to avoid breaking compatibility between different
- * versions of ZFS, we declare 'properties' as an alias for
- * 'user_properties'.
- */
+ 
 static const zcp_list_info_t zcp_props_list_info = {
 	.name = "properties",
 	.func = zcp_user_props_list,
@@ -407,15 +381,12 @@ zcp_user_props_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dsname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 	VERIFY0(dmu_objset_from_ds(ds, &os));
 	VERIFY0(dsl_prop_get_all(os, props));
 	dsl_dataset_rele(ds, FTAG);
 
-	/*
-	 * Set the metatable for the properties list to free it on
-	 * completion.
-	 */
+	 
 	luaL_getmetatable(state, zcp_user_props_list_info.name);
 	(void) lua_setmetatable(state, -2);
 
@@ -425,18 +396,15 @@ zcp_user_props_list(lua_State *state)
 }
 
 
-/*
- * Populate nv with all valid system properties and their values for the given
- * dataset.
- */
+ 
 static void
 zcp_dataset_system_props(dsl_dataset_t *ds, nvlist_t *nv)
 {
 	for (int prop = ZFS_PROP_TYPE; prop < ZFS_NUM_PROPS; prop++) {
-		/* Do not display hidden props */
+		 
 		if (!zfs_prop_visible(prop))
 			continue;
-		/* Do not display props not valid for this dataset */
+		 
 		if (!prop_valid_for_ds(ds, prop))
 			continue;
 		fnvlist_add_boolean(nv, zfs_prop_to_name(prop));
@@ -456,10 +424,7 @@ static const zcp_list_info_t zcp_system_props_list_info = {
 	}
 };
 
-/*
- * Get a list of all visible system properties and their values for a given
- * dataset. Returned on the stack as a Lua table.
- */
+ 
 static int
 zcp_system_props_list(lua_State *state)
 {
@@ -474,13 +439,13 @@ zcp_system_props_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dataset_name, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
-	/* Get the names of all valid system properties for this dataset */
+	 
 	zcp_dataset_system_props(ds, nv);
 	dsl_dataset_rele(ds, FTAG);
 
-	/* push list as lua table */
+	 
 	error = zcp_nvlist_to_lua(state, nv, errbuf, sizeof (errbuf));
 	nvlist_free(nv);
 	if (error != 0) {
@@ -529,7 +494,7 @@ zcp_bookmarks_iter(lua_State *state)
 		return (0);
 	}
 
-	/* Store the dataset's name so we can append the bookmark's name */
+	 
 	dsl_dataset_name(ds, ds_name);
 
 	zap_cursor_init_serialized(&zc, ds->ds_dir->dd_pool->dp_meta_objset,
@@ -550,7 +515,7 @@ zcp_bookmarks_iter(lua_State *state)
 	cursor = zap_cursor_serialize(&zc);
 	zap_cursor_fini(&zc);
 
-	/* Create the full "pool/fs#bookmark" string to return */
+	 
 	int n = snprintf(bookmark_name, ZFS_MAX_DATASET_NAME_LEN, "%s#%s",
 	    ds_name, za.za_name);
 	if (n >= ZFS_MAX_DATASET_NAME_LEN) {
@@ -586,7 +551,7 @@ zcp_bookmarks_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dsname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	boolean_t issnap = ds->ds_is_snapshot;
 	uint64_t dsobj = ds->ds_object;
@@ -667,10 +632,7 @@ static const zcp_list_info_t zcp_holds_list_info = {
 	}
 };
 
-/*
- * Iterate over all the holds for a given dataset. Each iteration returns
- * a hold's tag and its timestamp as an integer.
- */
+ 
 static int
 zcp_holds_list(lua_State *state)
 {
@@ -679,7 +641,7 @@ zcp_holds_list(lua_State *state)
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, snapname, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	boolean_t issnap = ds->ds_is_snapshot;
 	uint64_t dsobj = ds->ds_object;
@@ -728,11 +690,7 @@ zcp_load_list_lib(lua_State *state)
 		const zcp_list_info_t *info = zcp_list_funcs[i];
 
 		if (info->gc != NULL) {
-			/*
-			 * If the function requires garbage collection, create
-			 * a metatable with its name and register the __gc
-			 * function.
-			 */
+			 
 			(void) luaL_newmetatable(state, info->name);
 			(void) lua_pushstring(state, "__gc");
 			lua_pushcfunction(state, info->gc);

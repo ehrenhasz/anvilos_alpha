@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * bebob.h - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+ 
+ 
 
 #ifndef SOUND_BEBOB_H_INCLUDED
 #define SOUND_BEBOB_H_INCLUDED
@@ -34,7 +30,7 @@
 #include "../amdtp-am824.h"
 #include "../cmp.h"
 
-/* basic register addresses on DM1000/DM1100/DM1500 */
+ 
 #define BEBOB_ADDR_REG_INFO	0xffffc8020000ULL
 #define BEBOB_ADDR_REG_REQ	0xffffc8021000ULL
 
@@ -45,10 +41,10 @@ struct snd_bebob_stream_formation {
 	unsigned int pcm;
 	unsigned int midi;
 };
-/* this is a lookup table for index of stream formations */
+ 
 extern const unsigned int snd_bebob_rate_table[SND_BEBOB_STRM_FMT_ENTRIES];
 
-/* device specific operations */
+ 
 enum snd_bebob_clock_type {
 	SND_BEBOB_CLOCK_TYPE_INTERNAL = 0,
 	SND_BEBOB_CLOCK_TYPE_EXTERNAL,
@@ -89,7 +85,7 @@ struct snd_bebob {
 	spinlock_t lock;
 
 	const struct snd_bebob_spec *spec;
-	unsigned int quirks;	// Combination of snd_bebob_quirk enumerations.
+	unsigned int quirks;	
 
 	unsigned int midi_input_ports;
 	unsigned int midi_output_ports;
@@ -107,12 +103,12 @@ struct snd_bebob {
 
 	int sync_input_plug;
 
-	/* for uapi */
+	 
 	int dev_lock_count;
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
 
-	/* for M-Audio special devices */
+	 
 	void *maudio_special_quirk;
 
 	struct amdtp_domain domain;
@@ -134,16 +130,13 @@ snd_bebob_read_quad(struct fw_unit *unit, u64 addr, u32 *buf)
 				  (void *)buf, sizeof(u32), 0);
 }
 
-/* AV/C Audio Subunit Specification 1.0 (Oct 2000, 1394TA) */
+ 
 int avc_audio_set_selector(struct fw_unit *unit, unsigned int subunit_id,
 			   unsigned int fb_id, unsigned int num);
 int avc_audio_get_selector(struct fw_unit *unit, unsigned  int subunit_id,
 			   unsigned int fb_id, unsigned int *num);
 
-/*
- * AVC command extensions, AV/C Unit and Subunit, Revision 17
- * (Nov 2003, BridgeCo)
- */
+ 
 #define	AVC_BRIDGECO_ADDR_BYTES	6
 enum avc_bridgeco_plug_dir {
 	AVC_BRIDGECO_PLUG_DIR_IN	= 0x00,
@@ -174,24 +167,24 @@ avc_bridgeco_fill_unit_addr(u8 buf[AVC_BRIDGECO_ADDR_BYTES],
 			    enum avc_bridgeco_plug_unit unit,
 			    unsigned int pid)
 {
-	buf[0] = 0xff;	/* Unit */
+	buf[0] = 0xff;	 
 	buf[1] = dir;
 	buf[2] = AVC_BRIDGECO_PLUG_MODE_UNIT;
 	buf[3] = unit;
 	buf[4] = 0xff & pid;
-	buf[5] = 0xff;	/* reserved */
+	buf[5] = 0xff;	 
 }
 static inline void
 avc_bridgeco_fill_msu_addr(u8 buf[AVC_BRIDGECO_ADDR_BYTES],
 			   enum avc_bridgeco_plug_dir dir,
 			   unsigned int pid)
 {
-	buf[0] = 0x60;	/* Music subunit */
+	buf[0] = 0x60;	 
 	buf[1] = dir;
 	buf[2] = AVC_BRIDGECO_PLUG_MODE_SUBUNIT;
 	buf[3] = 0xff & pid;
-	buf[4] = 0xff;	/* reserved */
-	buf[5] = 0xff;	/* reserved */
+	buf[4] = 0xff;	 
+	buf[5] = 0xff;	 
 }
 int avc_bridgeco_get_plug_ch_pos(struct fw_unit *unit,
 				 u8 addr[AVC_BRIDGECO_ADDR_BYTES],
@@ -211,7 +204,7 @@ int avc_bridgeco_get_plug_strm_fmt(struct fw_unit *unit,
 				   u8 addr[AVC_BRIDGECO_ADDR_BYTES], u8 *buf,
 				   unsigned int *len, unsigned int eid);
 
-/* for AMDTP streaming */
+ 
 int snd_bebob_stream_get_rate(struct snd_bebob *bebob, unsigned int *rate);
 int snd_bebob_stream_set_rate(struct snd_bebob *bebob, unsigned int rate);
 int snd_bebob_stream_get_clock_src(struct snd_bebob *bebob,
@@ -237,7 +230,7 @@ int snd_bebob_create_pcm_devices(struct snd_bebob *bebob);
 
 int snd_bebob_create_hwdep_device(struct snd_bebob *bebob);
 
-/* model specific operations */
+ 
 extern const struct snd_bebob_spec phase88_rack_spec;
 extern const struct snd_bebob_spec yamaha_terratec_spec;
 extern const struct snd_bebob_spec saffirepro_26_spec;

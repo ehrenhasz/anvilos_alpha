@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kvm_create_max_vcpus
- *
- * Copyright (C) 2019, Google LLC.
- *
- * Test for KVM_CAP_MAX_VCPUS and KVM_CAP_MAX_VCPU_ID.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +25,7 @@ void test_vcpu_creation(int first_vcpu_id, int num_vcpus)
 	vm = vm_create_barebones();
 
 	for (i = first_vcpu_id; i < first_vcpu_id + num_vcpus; i++)
-		/* This asserts that the vCPU was created. */
+		 
 		__vm_vcpu_add(vm, i);
 
 	kvm_vm_free(vm);
@@ -41,20 +35,14 @@ int main(int argc, char *argv[])
 {
 	int kvm_max_vcpu_id = kvm_check_cap(KVM_CAP_MAX_VCPU_ID);
 	int kvm_max_vcpus = kvm_check_cap(KVM_CAP_MAX_VCPUS);
-	/*
-	 * Number of file descriptors reqired, KVM_CAP_MAX_VCPUS for vCPU fds +
-	 * an arbitrary number for everything else.
-	 */
+	 
 	int nr_fds_wanted = kvm_max_vcpus + 100;
 	struct rlimit rl;
 
 	pr_info("KVM_CAP_MAX_VCPU_ID: %d\n", kvm_max_vcpu_id);
 	pr_info("KVM_CAP_MAX_VCPUS: %d\n", kvm_max_vcpus);
 
-	/*
-	 * Check that we're allowed to open nr_fds_wanted file descriptors and
-	 * try raising the limits if needed.
-	 */
+	 
 	TEST_ASSERT(!getrlimit(RLIMIT_NOFILE, &rl), "getrlimit() failed!");
 
 	if (rl.rlim_cur < nr_fds_wanted) {
@@ -72,11 +60,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/*
-	 * Upstream KVM prior to 4.8 does not support KVM_CAP_MAX_VCPU_ID.
-	 * Userspace is supposed to use KVM_CAP_MAX_VCPUS as the maximum ID
-	 * in this case.
-	 */
+	 
 	if (!kvm_max_vcpu_id)
 		kvm_max_vcpu_id = kvm_max_vcpus;
 

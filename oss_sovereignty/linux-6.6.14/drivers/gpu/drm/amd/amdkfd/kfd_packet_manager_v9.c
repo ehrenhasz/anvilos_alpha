@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2016-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include "kfd_kernel_queue.h"
 #include "kfd_device_queue_manager.h"
@@ -62,9 +41,7 @@ static int pm_map_process_v9(struct packet_manager *pm,
 	packet->sh_mem_bases = qpd->sh_mem_bases;
 	if (qpd->tba_addr) {
 		packet->sq_shader_tba_lo = lower_32_bits(qpd->tba_addr >> 8);
-		/* On GFX9, unlike GFX10, bit TRAP_EN of SQ_SHADER_TBA_HI is
-		 * not defined, so setting it won't do any harm.
-		 */
+		 
 		packet->sq_shader_tba_hi = upper_32_bits(qpd->tba_addr >> 8)
 				| 1 << SQ_SHADER_TBA_HI__TRAP_EN__SHIFT;
 
@@ -145,15 +122,7 @@ static int pm_runlist_v9(struct packet_manager *pm, uint32_t *buffer,
 	int concurrent_proc_cnt = 0;
 	struct kfd_node *kfd = pm->dqm->dev;
 
-	/* Determine the number of processes to map together to HW:
-	 * it can not exceed the number of VMIDs available to the
-	 * scheduler, and it is determined by the smaller of the number
-	 * of processes in the runlist and kfd module parameter
-	 * hws_max_conc_proc.
-	 * Note: the arbitration between the number of VMIDs and
-	 * hws_max_conc_proc has been done in
-	 * kgd2kfd_device_init().
-	 */
+	 
 	concurrent_proc_cnt = min(pm->dqm->processes_count,
 			kfd->max_proc_per_quantum);
 
@@ -243,17 +212,13 @@ static int pm_map_queues_v9(struct packet_manager *pm, uint32_t *buffer,
 		break;
 	case KFD_QUEUE_TYPE_SDMA:
 	case KFD_QUEUE_TYPE_SDMA_XGMI:
-		use_static = false; /* no static queues under SDMA */
+		use_static = false;  
 		if (q->properties.sdma_engine_id < 2 &&
 		    !pm_use_ext_eng(q->device->kfd))
 			packet->bitfields2.engine_sel = q->properties.sdma_engine_id +
 				engine_sel__mes_map_queues__sdma0_vi;
 		else {
-			/*
-			 * For GFX9.4.3, SDMA engine id can be greater than 8.
-			 * For such cases, set extended_engine_sel to 2 and
-			 * ensure engine_sel lies between 0-7.
-			 */
+			 
 			if (q->properties.sdma_engine_id >= 8)
 				packet->bitfields2.extended_engine_sel =
 					extended_engine_sel__mes_map_queues__sdma8_to_15_sel;
@@ -359,7 +324,7 @@ static int pm_unmap_queues_v9(struct packet_manager *pm, uint32_t *buffer,
 			queue_sel__mes_unmap_queues__unmap_all_queues;
 		break;
 	case KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES:
-		/* in this case, we do not preempt static queues */
+		 
 		packet->bitfields2.queue_sel =
 			queue_sel__mes_unmap_queues__unmap_all_non_static_queues;
 		break;

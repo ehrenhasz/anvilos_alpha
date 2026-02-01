@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/bitfield.h>

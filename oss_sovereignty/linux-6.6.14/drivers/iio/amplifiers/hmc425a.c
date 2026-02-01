@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HMC425A and similar Gain Amplifiers
- *
- * Copyright 2020 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -34,7 +30,7 @@ struct hmc425a_chip_info {
 };
 
 struct hmc425a_state {
-	struct	mutex lock; /* protect sensor state */
+	struct	mutex lock;  
 	struct	hmc425a_chip_info *chip_info;
 	struct	gpio_descs *gpios;
 	enum	hmc425a_type type;
@@ -154,7 +150,7 @@ static const struct iio_chan_spec hmc425a_channels[] = {
 	HMC425A_CHAN(0),
 };
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id hmc425a_of_match[] = {
 	{ .compatible = "adi,hmc425a", .data = (void *)ID_HMC425A },
 	{},
@@ -169,7 +165,7 @@ static struct hmc425a_chip_info hmc425a_chip_info_tbl[] = {
 		.num_gpios = 6,
 		.gain_min = -31500,
 		.gain_max = 0,
-		.default_gain = -0x40, /* set default gain -31.5db*/
+		.default_gain = -0x40,  
 	},
 };
 

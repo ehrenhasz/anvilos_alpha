@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Shunli Wang <shunli.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -15,11 +12,7 @@
 
 #include <dt-bindings/clock/mt2701-clk.h>
 
-/*
- * For some clocks, we don't care what their actual rates are. And these
- * clocks may change their rate on different products or different scenarios.
- * So we model these clocks' rate as 0, to denote it's not an actual rate.
- */
+ 
 #define DUMMY_RATE		0
 
 static DEFINE_SPINLOCK(mt2701_clk_lock);
@@ -727,13 +720,13 @@ static u16 infrasys_rst_ofs[] = { 0x30, 0x34, };
 static u16 pericfg_rst_ofs[] = { 0x0, 0x4, };
 
 static const struct mtk_clk_rst_desc clk_rst_desc[] = {
-	/* infrasys */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = infrasys_rst_ofs,
 		.rst_bank_nr = ARRAY_SIZE(infrasys_rst_ofs),
 	},
-	/* pericfg */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = pericfg_rst_ofs,
@@ -1000,7 +993,7 @@ static const struct of_device_id of_match_clk_mt2701[] = {
 		.compatible = "mediatek,mt2701-apmixedsys",
 		.data = mtk_apmixedsys_init,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt2701);

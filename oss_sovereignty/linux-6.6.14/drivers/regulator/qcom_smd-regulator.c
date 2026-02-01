@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -36,9 +33,9 @@ struct rpm_regulator_req {
 	__le32 value;
 };
 
-#define RPM_KEY_SWEN	0x6e657773 /* "swen" */
-#define RPM_KEY_UV	0x00007675 /* "uv" */
-#define RPM_KEY_MA	0x0000616d /* "ma" */
+#define RPM_KEY_SWEN	0x6e657773  
+#define RPM_KEY_UV	0x00007675  
+#define RPM_KEY_MA	0x0000616d  
 
 static int rpm_reg_write_active(struct qcom_rpm_reg *vreg)
 {
@@ -875,7 +872,7 @@ static const struct rpm_regulator_data rpm_pm660_regulators[] = {
 	{ "l1", QCOM_SMD_RPM_LDOA, 1, &pm660_nldo660, "vdd_l1_l6_l7" },
 	{ "l2", QCOM_SMD_RPM_LDOA, 2, &pm660_ht_nldo, "vdd_l2_l3" },
 	{ "l3", QCOM_SMD_RPM_LDOA, 3, &pm660_nldo660, "vdd_l2_l3" },
-	/* l4 is unaccessible on PM660 */
+	 
 	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm660_ht_nldo, "vdd_l5" },
 	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm660_ht_nldo, "vdd_l1_l6_l7" },
 	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm660_ht_nldo, "vdd_l1_l6_l7" },
@@ -1058,13 +1055,13 @@ static const struct rpm_regulator_data rpm_pm8950_regulators[] = {
 	{ "s2", QCOM_SMD_RPM_SMPA, 2, &pm8950_hfsmps, "vdd_s2" },
 	{ "s3", QCOM_SMD_RPM_SMPA, 3, &pm8950_hfsmps, "vdd_s3" },
 	{ "s4", QCOM_SMD_RPM_SMPA, 4, &pm8950_hfsmps, "vdd_s4" },
-	/* S5 is managed via SPMI. */
+	 
 	{ "s6", QCOM_SMD_RPM_SMPA, 6, &pm8950_hfsmps, "vdd_s6" },
 
 	{ "l1", QCOM_SMD_RPM_LDOA, 1, &pm8950_ult_nldo, "vdd_l1_l19" },
 	{ "l2", QCOM_SMD_RPM_LDOA, 2, &pm8950_ult_nldo, "vdd_l2_l23" },
 	{ "l3", QCOM_SMD_RPM_LDOA, 3, &pm8950_ult_nldo, "vdd_l3" },
-	/* L4 seems not to exist. */
+	 
 	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
 	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
 	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
@@ -1078,9 +1075,9 @@ static const struct rpm_regulator_data rpm_pm8950_regulators[] = {
 	{ "l15", QCOM_SMD_RPM_LDOA, 15, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
 	{ "l16", QCOM_SMD_RPM_LDOA, 16, &pm8950_ult_pldo, "vdd_l5_l6_l7_l16" },
 	{ "l17", QCOM_SMD_RPM_LDOA, 17, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
-	/* L18 seems not to exist. */
+	 
 	{ "l19", QCOM_SMD_RPM_LDOA, 19, &pm8950_pldo, "vdd_l1_l19" },
-	/* L20 & L21 seem not to exist. */
+	 
 	{ "l22", QCOM_SMD_RPM_LDOA, 22, &pm8950_pldo, "vdd_l8_l11_l12_l17_l22" },
 	{ "l23", QCOM_SMD_RPM_LDOA, 23, &pm8950_pldo, "vdd_l2_l23" },
 	{}
@@ -1343,18 +1340,7 @@ static const struct of_device_id rpm_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, rpm_of_match);
 
-/**
- * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
- * @vreg:		Pointer to the individual qcom_smd-regulator resource
- * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
- * @node:		Pointer to the individual qcom_smd-regulator resource
- *			device node
- * @rpm:		Pointer to the rpm bus node
- * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
- *			resources defined for the top level PMIC device
- *
- * Return: 0 on success, errno on failure
- */
+ 
 static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
 				   struct device_node *node, struct qcom_smd_rpm *rpm,
 				   const struct rpm_regulator_data *pmic_rpm_data)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/delay.h>
@@ -25,14 +23,14 @@
 #include "sprd_dpu.h"
 #include "sprd_dsi.h"
 
-/* Global control registers */
+ 
 #define REG_DPU_CTRL	0x04
 #define REG_DPU_CFG0	0x08
 #define REG_PANEL_SIZE	0x20
 #define REG_BLEND_SIZE	0x24
 #define REG_BG_COLOR	0x2C
 
-/* Layer0 control registers */
+ 
 #define REG_LAY_BASE_ADDR0	0x30
 #define REG_LAY_BASE_ADDR1	0x34
 #define REG_LAY_BASE_ADDR2	0x38
@@ -43,17 +41,17 @@
 #define REG_LAY_ALPHA		0x50
 #define REG_LAY_CROP_START	0x5C
 
-/* Interrupt control registers */
+ 
 #define REG_DPU_INT_EN		0x1E0
 #define REG_DPU_INT_CLR		0x1E4
 #define REG_DPU_INT_STS		0x1E8
 
-/* DPI control registers */
+ 
 #define REG_DPI_CTRL		0x1F0
 #define REG_DPI_H_TIMING	0x1F4
 #define REG_DPI_V_TIMING	0x1F8
 
-/* MMU control registers */
+ 
 #define REG_MMU_EN			0x800
 #define REG_MMU_VPN_RANGE		0x80C
 #define REG_MMU_PPN1			0x83C
@@ -61,13 +59,13 @@
 #define REG_MMU_PPN2			0x844
 #define REG_MMU_RANGE2			0x848
 
-/* Global control bits */
+ 
 #define BIT_DPU_RUN			BIT(0)
 #define BIT_DPU_STOP			BIT(1)
 #define BIT_DPU_REG_UPDATE		BIT(2)
 #define BIT_DPU_IF_EDPI			BIT(0)
 
-/* Layer control bits */
+ 
 #define BIT_DPU_LAY_EN				BIT(0)
 #define BIT_DPU_LAY_LAYER_ALPHA			(0x01 << 2)
 #define BIT_DPU_LAY_COMBO_ALPHA			(0x02 << 2)
@@ -91,14 +89,14 @@
 #define BIT_DPU_LAY_ROTATION_180_M	(0x06 << 20)
 #define BIT_DPU_LAY_ROTATION_270_M	(0x07 << 20)
 
-/* Interrupt control & status bits */
+ 
 #define BIT_DPU_INT_DONE		BIT(0)
 #define BIT_DPU_INT_TE			BIT(1)
 #define BIT_DPU_INT_ERR			BIT(2)
 #define BIT_DPU_INT_UPDATE_DONE		BIT(4)
 #define BIT_DPU_INT_VSYNC		BIT(5)
 
-/* DPI control bits */
+ 
 #define BIT_DPU_EDPI_TE_EN		BIT(8)
 #define BIT_DPU_EDPI_FROM_EXTERNAL_PAD	BIT(10)
 #define BIT_DPU_DPI_HALT_EN		BIT(16)
@@ -171,80 +169,80 @@ static u32 drm_format_to_dpu(struct drm_framebuffer *fb)
 
 	switch (fb->format->format) {
 	case DRM_FORMAT_BGRA8888:
-		/* BGRA8888 -> ARGB8888 */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B3B2B1B0;
 		format |= BIT_DPU_LAY_FORMAT_ARGB8888;
 		break;
 	case DRM_FORMAT_RGBX8888:
 	case DRM_FORMAT_RGBA8888:
-		/* RGBA8888 -> ABGR8888 */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B3B2B1B0;
 		fallthrough;
 	case DRM_FORMAT_ABGR8888:
-		/* RB switch */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		fallthrough;
 	case DRM_FORMAT_ARGB8888:
 		format |= BIT_DPU_LAY_FORMAT_ARGB8888;
 		break;
 	case DRM_FORMAT_XBGR8888:
-		/* RB switch */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		fallthrough;
 	case DRM_FORMAT_XRGB8888:
 		format |= BIT_DPU_LAY_FORMAT_ARGB8888;
 		break;
 	case DRM_FORMAT_BGR565:
-		/* RB switch */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		fallthrough;
 	case DRM_FORMAT_RGB565:
 		format |= BIT_DPU_LAY_FORMAT_RGB565;
 		break;
 	case DRM_FORMAT_NV12:
-		/* 2-Lane: Yuv420 */
+		 
 		format |= BIT_DPU_LAY_FORMAT_YUV420_2PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B0B1B2B3;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_NO_SWITCH;
 		break;
 	case DRM_FORMAT_NV21:
-		/* 2-Lane: Yuv420 */
+		 
 		format |= BIT_DPU_LAY_FORMAT_YUV420_2PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B0B1B2B3;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		break;
 	case DRM_FORMAT_NV16:
-		/* 2-Lane: Yuv422 */
+		 
 		format |= BIT_DPU_LAY_FORMAT_YUV422_2PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B3B2B1B0;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		break;
 	case DRM_FORMAT_NV61:
-		/* 2-Lane: Yuv422 */
+		 
 		format |= BIT_DPU_LAY_FORMAT_YUV422_2PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B0B1B2B3;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_NO_SWITCH;
 		break;
 	case DRM_FORMAT_YUV420:
 		format |= BIT_DPU_LAY_FORMAT_YUV420_3PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B0B1B2B3;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_NO_SWITCH;
 		break;
 	case DRM_FORMAT_YVU420:
 		format |= BIT_DPU_LAY_FORMAT_YUV420_3PLANE;
-		/* Y endian */
+		 
 		format |= BIT_DPU_LAY_DATA_ENDIAN_B0B1B2B3;
-		/* UV endian */
+		 
 		format |= BIT_DPU_LAY_RB_OR_UV_SWITCH;
 		break;
 	default:
@@ -295,21 +293,21 @@ static u32 drm_blend_to_dpu(struct drm_plane_state *state)
 
 	switch (state->pixel_blend_mode) {
 	case DRM_MODE_BLEND_COVERAGE:
-		/* alpha mode select - combo alpha */
+		 
 		blend |= BIT_DPU_LAY_COMBO_ALPHA;
-		/* Normal mode */
+		 
 		blend |= BIT_DPU_LAY_MODE_BLEND_NORMAL;
 		break;
 	case DRM_MODE_BLEND_PREMULTI:
-		/* alpha mode select - combo alpha */
+		 
 		blend |= BIT_DPU_LAY_COMBO_ALPHA;
-		/* Pre-mult mode */
+		 
 		blend |= BIT_DPU_LAY_MODE_BLEND_PREMULT;
 		break;
 	case DRM_MODE_BLEND_PIXEL_NONE:
 	default:
-		/* don't do blending, maybe RGBX */
-		/* alpha mode select - layer alpha */
+		 
+		 
 		blend |= BIT_DPU_LAY_LAYER_ALPHA;
 		break;
 	}
@@ -349,7 +347,7 @@ static void sprd_dpu_layer(struct sprd_dpu *dpu, struct drm_plane_state *state)
 	}
 
 	if (fb->format->num_planes == 3) {
-		/* UV pitch is 1/2 of Y pitch */
+		 
 		pitch = (fb->pitches[0] / fb->format->cpp[0]) |
 				(fb->pitches[0] / fb->format->cpp[0] << 15);
 	} else {
@@ -378,15 +376,11 @@ static void sprd_dpu_flip(struct sprd_dpu *dpu)
 {
 	struct dpu_context *ctx = &dpu->ctx;
 
-	/*
-	 * Make sure the dpu is in stop status. DPU has no shadow
-	 * registers in EDPI mode. So the config registers can only be
-	 * updated in the rising edge of DPU_RUN bit.
-	 */
+	 
 	if (ctx->if_type == SPRD_DPU_IF_EDPI)
 		dpu_wait_stop_done(dpu);
 
-	/* update trigger and wait */
+	 
 	if (ctx->if_type == SPRD_DPU_IF_DPI) {
 		if (!ctx->stopped) {
 			dpu_reg_set(ctx, REG_DPU_CTRL, BIT_DPU_REG_UPDATE);
@@ -415,34 +409,34 @@ static void sprd_dpu_init(struct sprd_dpu *dpu)
 	writel(0x1ffff, ctx->base + REG_MMU_VPN_RANGE);
 
 	if (ctx->if_type == SPRD_DPU_IF_DPI) {
-		/* use dpi as interface */
+		 
 		dpu_reg_clr(ctx, REG_DPU_CFG0, BIT_DPU_IF_EDPI);
-		/* disable Halt function for SPRD DSI */
+		 
 		dpu_reg_clr(ctx, REG_DPI_CTRL, BIT_DPU_DPI_HALT_EN);
-		/* select te from external pad */
+		 
 		dpu_reg_set(ctx, REG_DPI_CTRL, BIT_DPU_EDPI_FROM_EXTERNAL_PAD);
 
-		/* enable dpu update done INT */
+		 
 		int_mask |= BIT_DPU_INT_UPDATE_DONE;
-		/* enable dpu done INT */
+		 
 		int_mask |= BIT_DPU_INT_DONE;
-		/* enable dpu dpi vsync */
+		 
 		int_mask |= BIT_DPU_INT_VSYNC;
-		/* enable dpu TE INT */
+		 
 		int_mask |= BIT_DPU_INT_TE;
-		/* enable underflow err INT */
+		 
 		int_mask |= BIT_DPU_INT_ERR;
 	} else if (ctx->if_type == SPRD_DPU_IF_EDPI) {
-		/* use edpi as interface */
+		 
 		dpu_reg_set(ctx, REG_DPU_CFG0, BIT_DPU_IF_EDPI);
-		/* use external te */
+		 
 		dpu_reg_set(ctx, REG_DPI_CTRL, BIT_DPU_EDPI_FROM_EXTERNAL_PAD);
-		/* enable te */
+		 
 		dpu_reg_set(ctx, REG_DPI_CTRL, BIT_DPU_EDPI_TE_EN);
 
-		/* enable stop done INT */
+		 
 		int_mask |= BIT_DPU_INT_DONE;
-		/* enable TE INT */
+		 
 		int_mask |= BIT_DPU_INT_TE;
 	}
 
@@ -468,7 +462,7 @@ static void sprd_dpi_init(struct sprd_dpu *dpu)
 	writel(size, ctx->base + REG_BLEND_SIZE);
 
 	if (ctx->if_type == SPRD_DPU_IF_DPI) {
-		/* set dpi timing */
+		 
 		reg_val = ctx->vm.hsync_len << 0 |
 			  ctx->vm.hback_porch << 8 |
 			  ctx->vm.hfront_porch << 20;
@@ -532,7 +526,7 @@ static void sprd_plane_atomic_update(struct drm_plane *drm_plane,
 									   drm_plane);
 	struct sprd_dpu *dpu = to_sprd_crtc(new_state->crtc);
 
-	/* start configure dpu layers */
+	 
 	sprd_dpu_layer(dpu, new_state);
 }
 
@@ -552,19 +546,19 @@ static void sprd_plane_create_properties(struct sprd_plane *plane, int index)
 				       BIT(DRM_MODE_BLEND_PREMULTI) |
 				       BIT(DRM_MODE_BLEND_COVERAGE);
 
-	/* create rotation property */
+	 
 	drm_plane_create_rotation_property(&plane->base,
 					   DRM_MODE_ROTATE_0,
 					   DRM_MODE_ROTATE_MASK |
 					   DRM_MODE_REFLECT_MASK);
 
-	/* create alpha property */
+	 
 	drm_plane_create_alpha_property(&plane->base);
 
-	/* create blend mode property */
+	 
 	drm_plane_create_blend_mode_property(&plane->base, supported_modes);
 
-	/* create zpos property */
+	 
 	drm_plane_create_zpos_immutable_property(&plane->base, index);
 }
 
@@ -729,9 +723,7 @@ static struct sprd_dpu *sprd_crtc_init(struct drm_device *drm,
 	}
 	drm_crtc_helper_add(&dpu->base, &sprd_crtc_helper_funcs);
 
-	/*
-	 * set crtc port so that drm_of_find_possible_crtcs call works
-	 */
+	 
 	port = of_graph_get_port_by_id(dev->of_node, 0);
 	if (!port) {
 		drm_err(drm, "failed to found crtc output port for %s\n",
@@ -752,19 +744,19 @@ static irqreturn_t sprd_dpu_isr(int irq, void *data)
 
 	reg_val = readl(ctx->base + REG_DPU_INT_STS);
 
-	/* disable err interrupt */
+	 
 	if (reg_val & BIT_DPU_INT_ERR) {
 		int_mask |= BIT_DPU_INT_ERR;
 		drm_warn(dpu->drm, "Warning: dpu underflow!\n");
 	}
 
-	/* dpu update done isr */
+	 
 	if (reg_val & BIT_DPU_INT_UPDATE_DONE) {
 		ctx->evt_update = true;
 		wake_up_interruptible_all(&ctx->wait_queue);
 	}
 
-	/* dpu stop done isr */
+	 
 	if (reg_val & BIT_DPU_INT_DONE) {
 		ctx->evt_stop = true;
 		wake_up_interruptible_all(&ctx->wait_queue);
@@ -803,7 +795,7 @@ static int sprd_dpu_context_init(struct sprd_dpu *dpu,
 	if (ctx->irq < 0)
 		return ctx->irq;
 
-	/* disable and clear interrupts before register dpu IRQ. */
+	 
 	writel(0x00, ctx->base + REG_DPU_INT_EN);
 	writel(0xff, ctx->base + REG_DPU_INT_CLR);
 
@@ -850,7 +842,7 @@ static const struct component_ops dpu_component_ops = {
 
 static const struct of_device_id dpu_match_table[] = {
 	{ .compatible = "sprd,sharkl3-dpu" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, dpu_match_table);
 

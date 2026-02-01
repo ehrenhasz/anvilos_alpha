@@ -1,14 +1,4 @@
-/*
- * Conexant Digicolor SoCs IRQ chip driver
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Copyright (C) 2014 Paradox Innovation Ltd.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -82,7 +72,7 @@ static int __init digicolor_of_init(struct device_node *node,
 		return -ENXIO;
 	}
 
-	/* disable all interrupts */
+	 
 	writel(0, reg_base + IC_INT0ENABLE_LO);
 	writel(0, reg_base + IC_INT0ENABLE_XLO);
 
@@ -91,7 +81,7 @@ static int __init digicolor_of_init(struct device_node *node,
 		pr_err("%pOF: unable to map UC registers\n", node);
 		return PTR_ERR(ucregs);
 	}
-	/* channel 1, regular IRQs */
+	 
 	regmap_write(ucregs, UC_IRQ_CONTROL, 1);
 
 	digicolor_irq_domain =

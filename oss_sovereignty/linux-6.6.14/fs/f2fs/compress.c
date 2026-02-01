@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs compress support
- *
- * Copyright (c) 2019 Chao Yu <chao@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -92,7 +88,7 @@ static void f2fs_set_compressed_page(struct page *page,
 {
 	attach_page_private(page, (void *)data);
 
-	/* i_crypto_info and iv index */
+	 
 	page->index = index;
 	page->mapping = inode->i_mapping;
 }
@@ -250,11 +246,7 @@ static int lz4_init_compress_ctx(struct compress_ctx *cc)
 	if (!cc->private)
 		return -ENOMEM;
 
-	/*
-	 * we do not change cc->clen to LZ4_compressBound(inputsize) to
-	 * adapt worst compress case, because lz4 compressor can handle
-	 * output budget properly.
-	 */
+	 
 	cc->clen = cc->rlen - PAGE_SIZE - COMPRESS_HEADER_SIZE;
 	return 0;
 }
@@ -336,7 +328,7 @@ static int zstd_init_compress_ctx(struct compress_ctx *cc)
 	unsigned int workspace_size;
 	unsigned char level = F2FS_I(cc->inode)->i_compress_level;
 
-	/* Need to remain this for backward compatibility */
+	 
 	if (!level)
 		level = F2FS_ZSTD_DEFAULT_CLEVEL;
 
@@ -404,10 +396,7 @@ static int zstd_compress_pages(struct compress_ctx *cc)
 		return -EIO;
 	}
 
-	/*
-	 * there is compressed data remained in intermediate buffer due to
-	 * no more space in cbuf.cdata
-	 */
+	 
 	if (ret)
 		return -EAGAIN;
 
@@ -687,7 +676,7 @@ static int f2fs_compress_pages(struct compress_ctx *cc)
 
 	new_nr_cpages = DIV_ROUND_UP(cc->clen + COMPRESS_HEADER_SIZE, PAGE_SIZE);
 
-	/* zero out any unused part of the last page */
+	 
 	memset(&cc->cbuf->cdata[cc->clen], 0,
 			(new_nr_cpages * PAGE_SIZE) -
 			(cc->clen + COMPRESS_HEADER_SIZE));
@@ -763,7 +752,7 @@ void f2fs_decompress_cluster(struct decompress_io_ctx *dic, bool in_task)
 	if (dic->clen > PAGE_SIZE * dic->nr_cpages - COMPRESS_HEADER_SIZE) {
 		ret = -EFSCORRUPTED;
 
-		/* Avoid f2fs_commit_super in irq context */
+		 
 		if (!in_task)
 			f2fs_handle_error_async(sbi, ERROR_FAIL_DECOMPRESSION);
 		else
@@ -798,12 +787,7 @@ out_end_io:
 	f2fs_decompress_end_io(dic, ret, in_task);
 }
 
-/*
- * This is called when a page of a compressed cluster has been read from disk
- * (or failed to be read from disk).  It checks whether this page was the last
- * page being waited on in the cluster, and if so, it decompresses the cluster
- * (or in the case of a failure, cleans up without actually decompressing).
- */
+ 
 void f2fs_end_read_compressed_page(struct page *page, bool failed,
 		block_t blkaddr, bool in_task)
 {
@@ -853,10 +837,7 @@ bool f2fs_all_cluster_page_ready(struct compress_ctx *cc, struct page **pages,
 	unsigned long pgidx = pages[index]->index;
 	int i = uptodate ? 0 : 1;
 
-	/*
-	 * when uptodate set to true, try to check all pages in cluster is
-	 * uptodate or not.
-	 */
+	 
 	if (uptodate && (pgidx % cc->cluster_size))
 		return false;
 
@@ -884,7 +865,7 @@ static bool cluster_has_invalid_data(struct compress_ctx *cc)
 
 		f2fs_bug_on(F2FS_I_SB(cc->inode), !page);
 
-		/* beyond EOF */
+		 
 		if (page->index >= nr_pages)
 			return true;
 	}
@@ -903,7 +884,7 @@ bool f2fs_sanity_check_cluster(struct dnode_of_data *dn)
 	if (!compressed)
 		return false;
 
-	/* [..., COMPR_ADDR, ...] */
+	 
 	if (dn->ofs_in_node % cluster_size) {
 		reason = "[*|C|*|*]";
 		goto out;
@@ -913,7 +894,7 @@ bool f2fs_sanity_check_cluster(struct dnode_of_data *dn)
 		block_t blkaddr = data_blkaddr(dn->inode, dn->node_page,
 							dn->ofs_in_node + i);
 
-		/* [COMPR_ADDR, ..., COMPR_ADDR] */
+		 
 		if (blkaddr == COMPRESS_ADDR) {
 			reason = "[C|*|C|*]";
 			goto out;
@@ -923,7 +904,7 @@ bool f2fs_sanity_check_cluster(struct dnode_of_data *dn)
 				cluster_end = i;
 			continue;
 		}
-		/* [COMPR_ADDR, NULL_ADDR or NEW_ADDR, valid_blkaddr] */
+		 
 		if (cluster_end) {
 			reason = "[C|N|N|V]";
 			goto out;
@@ -987,13 +968,13 @@ fail:
 	return ret;
 }
 
-/* return # of compressed blocks in compressed cluster */
+ 
 static int f2fs_compressed_blocks(struct compress_ctx *cc)
 {
 	return __f2fs_cluster_blocks(cc->inode, cc->cluster_idx, true);
 }
 
-/* return # of valid blocks in compressed cluster */
+ 
 int f2fs_is_compressed_cluster(struct inode *inode, pgoff_t index)
 {
 	return __f2fs_cluster_blocks(inode,
@@ -1053,7 +1034,7 @@ retry:
 	if (ret)
 		return ret;
 
-	/* keep page reference to avoid page reclaim */
+	 
 	for (i = 0; i < cc->cluster_size; i++) {
 		page = f2fs_pagecache_get_page(mapping, start_idx + i,
 							fgp_flag, GFP_NOFS);
@@ -1090,7 +1071,7 @@ retry:
 
 		page = find_lock_page(mapping, start_idx + i);
 		if (!page) {
-			/* page can be truncated */
+			 
 			goto release_and_retry;
 		}
 
@@ -1169,15 +1150,15 @@ int f2fs_truncate_partial_cluster(struct inode *inode, u64 from, bool lock)
 	if (err < 0)
 		return err;
 
-	/* truncate normal cluster */
+	 
 	if (!err)
 		return f2fs_do_truncate_blocks(inode, from, lock);
 
-	/* truncate compressed cluster */
+	 
 	err = f2fs_prepare_compress_overwrite(inode, &pagep,
 						start_idx, &fsdata);
 
-	/* should not be a normal cluster */
+	 
 	f2fs_bug_on(F2FS_I_SB(inode), err == 0);
 
 	if (err <= 0)
@@ -1238,18 +1219,14 @@ static int f2fs_write_compressed_pages(struct compress_ctx *cc,
 	int i, err;
 	bool quota_inode = IS_NOQUOTA(inode);
 
-	/* we should bypass data pages to proceed the kworker jobs */
+	 
 	if (unlikely(f2fs_cp_error(sbi))) {
 		mapping_set_error(cc->rpages[0]->mapping, -EIO);
 		goto out_free;
 	}
 
 	if (quota_inode) {
-		/*
-		 * We need to wait for node_write to avoid block allocation during
-		 * checkpoint. This can only happen to quota writes which can cause
-		 * the below discard race condition.
-		 */
+		 
 		f2fs_down_read(&sbi->node_write);
 	} else if (!f2fs_trylock_op(sbi)) {
 		goto out_free;
@@ -1296,7 +1273,7 @@ static int f2fs_write_compressed_pages(struct compress_ctx *cc,
 		fio.old_blkaddr = data_blkaddr(dn.inode, dn.node_page,
 						dn.ofs_in_node + i + 1);
 
-		/* wait for GCed page writeback via META_MAPPING */
+		 
 		f2fs_wait_on_block_writeback(inode, fio.old_blkaddr);
 
 		if (fio.encrypted) {
@@ -1320,7 +1297,7 @@ static int f2fs_write_compressed_pages(struct compress_ctx *cc,
 		fio.page = cc->rpages[i];
 		fio.old_blkaddr = blkaddr;
 
-		/* cluster header */
+		 
 		if (i == 0) {
 			if (blkaddr == COMPRESS_ADDR)
 				fio.compr_blocks++;
@@ -1486,11 +1463,7 @@ continue_unlock:
 				unlock_page(cc->rpages[i]);
 				ret = 0;
 			} else if (ret == -EAGAIN) {
-				/*
-				 * for quota file, just redirty left pages to
-				 * avoid deadlock caused by cluster update race
-				 * from foreground operation.
-				 */
+				 
 				if (IS_NOQUOTA(cc->inode))
 					return 0;
 				ret = 0;
@@ -1723,7 +1696,7 @@ static void f2fs_verify_cluster(struct work_struct *work)
 		container_of(work, struct decompress_io_ctx, verity_work);
 	int i;
 
-	/* Verify, update, and unlock the decompressed pages. */
+	 
 	for (i = 0; i < dic->cluster_size; i++) {
 		struct page *rpage = dic->rpages[i];
 
@@ -1740,28 +1713,20 @@ static void f2fs_verify_cluster(struct work_struct *work)
 	f2fs_put_dic(dic, true);
 }
 
-/*
- * This is called when a compressed cluster has been decompressed
- * (or failed to be read and/or decompressed).
- */
+ 
 void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed,
 				bool in_task)
 {
 	int i;
 
 	if (!failed && dic->need_verity) {
-		/*
-		 * Note that to avoid deadlocks, the verity work can't be done
-		 * on the decompression workqueue.  This is because verifying
-		 * the data pages can involve reading metadata pages from the
-		 * file, and these metadata pages may be compressed.
-		 */
+		 
 		INIT_WORK(&dic->verity_work, f2fs_verify_cluster);
 		fsverity_enqueue_verify_work(&dic->verity_work);
 		return;
 	}
 
-	/* Update and unlock the cluster's pagecache pages. */
+	 
 	for (i = 0; i < dic->cluster_size; i++) {
 		struct page *rpage = dic->rpages[i];
 
@@ -1775,18 +1740,11 @@ void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed,
 		unlock_page(rpage);
 	}
 
-	/*
-	 * Release the reference to the decompress_io_ctx that was being held
-	 * for I/O completion.
-	 */
+	 
 	f2fs_put_dic(dic, in_task);
 }
 
-/*
- * Put a reference to a compressed page's decompress_io_ctx.
- *
- * This is called when the page is no longer needed and can be freed.
- */
+ 
 void f2fs_put_page_dic(struct page *page, bool in_task)
 {
 	struct decompress_io_ctx *dic =
@@ -1795,10 +1753,7 @@ void f2fs_put_page_dic(struct page *page, bool in_task)
 	f2fs_put_dic(dic, in_task);
 }
 
-/*
- * check whether cluster blocks are contiguous, and add extent cache entry
- * only if cluster blocks are logically and physically contiguous.
- */
+ 
 unsigned int f2fs_cluster_blocks_are_contiguous(struct dnode_of_data *dn)
 {
 	bool compressed = f2fs_data_blkaddr(dn) == COMPRESS_ADDR;

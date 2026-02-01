@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- * Copyright (c) 2016 Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/if_vlan.h>
@@ -16,7 +11,7 @@
 #include <net/netfilter/nf_tables_core.h>
 #include <net/netfilter/nf_tables.h>
 #include <net/netfilter/nf_tables_offload.h>
-/* For layer 4 checksum field offset. */
+ 
 #include <linux/tcp.h>
 #include <linux/udp.h>
 #include <net/gre.h>
@@ -38,7 +33,7 @@ static bool nft_payload_rebuild_vlan_hdr(const struct sk_buff *skb, int mac_off,
 	return true;
 }
 
-/* add vlan header into the user buffer for if tag was removed by offloads */
+ 
 static bool
 nft_payload_copy_vlan(u32 *d, const struct sk_buff *skb, u8 offset, u8 len)
 {
@@ -158,7 +153,7 @@ static bool nft_payload_need_vlan_copy(const struct nft_payload *priv)
 {
 	unsigned int len = priv->offset + priv->len;
 
-	/* data past ether src/dst requested, copy needed */
+	 
 	if (len > offsetof(struct ethhdr, h_proto))
 		return true;
 
@@ -684,7 +679,7 @@ static const struct nft_expr_ops nft_payload_inner_ops = {
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_payload)),
 	.init		= nft_payload_inner_init,
 	.dump		= nft_payload_dump,
-	/* direct call to nft_payload_inner_eval(). */
+	 
 };
 
 static inline void nft_csum_replace(__sum16 *sum, __wsum fsum, __wsum tsum)
@@ -754,18 +749,14 @@ static int nft_payload_l4csum_update(const struct nft_pktinfo *pkt,
 	int l4csum_offset;
 	__sum16 sum;
 
-	/* If we cannot determine layer 4 checksum offset or this packet doesn't
-	 * require layer 4 checksum recalculation, skip this packet.
-	 */
+	 
 	if (nft_payload_l4csum_offset(pkt, skb, &l4csum_offset) < 0)
 		return 0;
 
 	if (skb_copy_bits(skb, l4csum_offset, &sum, sizeof(sum)) < 0)
 		return -1;
 
-	/* Checksum mangling for an arbitrary amount of bytes, based on
-	 * inet_proto_csum_replace*() functions.
-	 */
+	 
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
 		nft_csum_replace(&sum, fsum, tsum);
 		if (skb->ip_summed == CHECKSUM_COMPLETE) {

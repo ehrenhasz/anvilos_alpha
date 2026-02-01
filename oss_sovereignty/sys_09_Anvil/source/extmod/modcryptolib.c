@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017-2018 Paul Sokolovsky
- * Copyright (c) 2018 Yonatan Goldschmidt
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 
@@ -34,12 +9,12 @@
 
 #include "py/runtime.h"
 
-// This module implements crypto ciphers API, roughly following
-// https://www.python.org/dev/peps/pep-0272/ . Exact implementation
-// of PEP 272 can be made with a simple wrapper which adds all the
-// needed boilerplate.
 
-// values follow PEP 272
+
+
+
+
+
 enum {
     UCRYPTOLIB_MODE_ECB = 1,
     UCRYPTOLIB_MODE_CBC = 2,
@@ -47,10 +22,10 @@ enum {
 };
 
 struct ctr_params {
-    // counter is the IV of the AES context.
+    
 
-    size_t offset; // in encrypted_counter
-    // encrypted counter
+    size_t offset; 
+    
     uint8_t encrypted_counter[16];
 };
 
@@ -63,9 +38,9 @@ struct ctr_params {
 #if MICROPY_SSL_MBEDTLS
 #include <mbedtls/aes.h>
 
-// we can't run mbedtls AES key schedule until we know whether we're used for encrypt or decrypt.
-// therefore, we store the key & keysize and on the first call to encrypt/decrypt we override them
-// with the mbedtls_aes_context, as they are not longer required. (this is done to save space)
+
+
+
 struct mbedtls_aes_ctx_with_key {
     union {
         mbedtls_aes_context mbedtls_ctx;
@@ -87,7 +62,7 @@ typedef struct _mp_obj_aes_t {
 #define AES_KEYTYPE_ENC  1
 #define AES_KEYTYPE_DEC  2
     uint8_t key_type : 2;
-    struct ctr_params ctr_params[]; // optional
+    struct ctr_params ctr_params[]; 
 } mp_obj_aes_t;
 
 static inline bool is_ctr_mode(int block_mode) {
@@ -116,9 +91,9 @@ static void aes_final_set_key_impl(AES_CTX_IMPL *ctx, bool encrypt) {
 
 static void aes_process_ecb_impl(AES_CTX_IMPL *ctx, const uint8_t in[16], uint8_t out[16], bool encrypt) {
     memcpy(out, in, 16);
-    // We assume that out (vstr.buf or given output buffer) is uint32_t aligned
+    
     uint32_t *p = (uint32_t *)out;
-    // axTLS likes it weird and complicated with byteswaps
+    
     for (int i = 0; i < 4; i++) {
         p[i] = MP_HTOBE32(p[i]);
     }
@@ -141,7 +116,7 @@ static void aes_process_cbc_impl(AES_CTX_IMPL *ctx, const uint8_t *in, uint8_t *
 }
 
 #if MICROPY_PY_CRYPTOLIB_CTR
-// axTLS doesn't have CTR support out of the box. This implements the counter part using the ECB primitive.
+
 static void aes_process_ctr_impl(AES_CTX_IMPL *ctx, const uint8_t *in, uint8_t *out, size_t in_len, struct ctr_params *ctr_params) {
     size_t n = ctr_params->offset;
     uint8_t *const counter = ctx->iv;
@@ -150,7 +125,7 @@ static void aes_process_ctr_impl(AES_CTX_IMPL *ctx, const uint8_t *in, uint8_t *
         if (n == 0) {
             aes_process_ecb_impl(ctx, counter, ctr_params->encrypted_counter, true);
 
-            // increment the 128-bit counter
+            
             for (int i = 15; i >= 0; --i) {
                 if (++counter[i] != 0) {
                     break;
@@ -179,14 +154,14 @@ static void aes_initial_set_key_impl(AES_CTX_IMPL *ctx, const uint8_t *key, size
 }
 
 static void aes_final_set_key_impl(AES_CTX_IMPL *ctx, bool encrypt) {
-    // first, copy key aside
+    
     uint8_t key[32];
     uint8_t keysize = ctx->u.init_data.keysize;
     memcpy(key, ctx->u.init_data.key, keysize);
-    // now, override key with the mbedtls context object
+    
     mbedtls_aes_init(&ctx->u.mbedtls_ctx);
 
-    // setkey call will succeed, we've already checked the keysize earlier.
+    
     assert(16 == keysize || 32 == keysize);
     if (encrypt) {
         mbedtls_aes_setkey_enc(&ctx->u.mbedtls_ctx, key, keysize * 8);
@@ -292,7 +267,7 @@ static mp_obj_t aes_process(size_t n_args, const mp_obj_t *args, bool encrypt) {
     }
 
     if (AES_KEYTYPE_NONE == self->key_type) {
-        // always set key for encryption if CTR mode.
+        
         const bool encrypt_mode = encrypt || is_ctr_mode(self->block_mode);
         aes_final_set_key_impl(&self->ctx, encrypt_mode);
         self->key_type = encrypt ? AES_KEYTYPE_ENC : AES_KEYTYPE_DEC;
@@ -375,10 +350,10 @@ const mp_obj_module_t mp_module_cryptolib = {
     .globals = (mp_obj_dict_t *)&mp_module_cryptolib_globals,
 };
 
-// This module should not be extensible (as it is not a CPython standard
-// library nor is it necessary to override from the filesystem), however it
-// has previously been known as `ucryptolib`, so by making it extensible the
-// `ucryptolib` alias will continue to work.
+
+
+
+
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_cryptolib, mp_module_cryptolib);
 
-#endif // MICROPY_PY_CRYPTOLIB
+#endif 

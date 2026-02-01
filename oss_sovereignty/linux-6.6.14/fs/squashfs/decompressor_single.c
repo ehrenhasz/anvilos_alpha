@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -14,10 +11,7 @@
 #include "decompressor.h"
 #include "squashfs.h"
 
-/*
- * This file implements single-threaded decompression in the
- * decompressor framework
- */
+ 
 
 struct squashfs_stream {
 	void		*stream;

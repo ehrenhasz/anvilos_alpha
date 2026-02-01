@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 ARM Limited
- *
- * Verify that the TPIDR2 register context in signal frames is set up as
- * expected.
- */
+
+ 
 
 #include <signal.h>
 #include <ucontext.h>
@@ -63,14 +58,7 @@ int tpidr2_present(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 
 	td->pass = (in_sigframe == have_sme);
 
-	/*
-	 * Check that the value we read back was the one present at
-	 * the time that the signal was triggered.  TPIDR2 is owned by
-	 * libc so we can't safely choose the value and it is possible
-	 * that we may need to revisit this in future if something
-	 * starts deciding to set a new TPIDR2 between us reading and
-	 * the signal.
-	 */
+	 
 	if (have_sme && tpidr2_ctx) {
 		if (tpidr2_ctx->tpidr2 != orig_tpidr2) {
 			fprintf(stderr, "TPIDR2 in frame is %llx, was %llx\n",

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 Bosch Sensortec GmbH
- * Copyright (c) 2011 Unixphere
- *
- * This driver adds support for Bosch Sensortec's digital acceleration
- * sensors BMA150 and SMB380.
- * The SMB380 is fully compatible with BMA150 and only differs in packaging.
- *
- * The datasheet for the BMA150 chip can be found here:
- * http://www.bosch-sensortec.com/content/language1/downloads/BST-BMA150-DS000-07.pdf
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -24,10 +14,10 @@
 #define ABSMAX_ACC_VAL		0x01FF
 #define ABSMIN_ACC_VAL		-(ABSMAX_ACC_VAL)
 
-/* Each axis is represented by a 2-byte data word */
+ 
 #define BMA150_XYZ_DATA_SIZE	6
 
-/* Input poll interval in milliseconds */
+ 
 #define BMA150_POLL_INTERVAL	10
 #define BMA150_POLL_MAX		200
 #define BMA150_POLL_MIN		0
@@ -36,18 +26,18 @@
 #define BMA150_MODE_SLEEP	2
 #define BMA150_MODE_WAKE_UP	3
 
-/* Data register addresses */
+ 
 #define BMA150_DATA_0_REG	0x00
 #define BMA150_DATA_1_REG	0x01
 #define BMA150_DATA_2_REG	0x02
 
-/* Control register addresses */
+ 
 #define BMA150_CTRL_0_REG	0x0A
 #define BMA150_CTRL_1_REG	0x0B
 #define BMA150_CTRL_2_REG	0x14
 #define BMA150_CTRL_3_REG	0x15
 
-/* Configuration/Setting register addresses */
+ 
 #define BMA150_CFG_0_REG	0x0C
 #define BMA150_CFG_1_REG	0x0D
 #define BMA150_CFG_2_REG	0x0E
@@ -80,7 +70,7 @@
 #define BMA150_SW_RES_MSK	0x02
 #define BMA150_SW_RES_REG	BMA150_CTRL_0_REG
 
-/* Any-motion interrupt register fields */
+ 
 #define BMA150_ANY_MOTION_EN_POS	6
 #define BMA150_ANY_MOTION_EN_MSK	0x40
 #define BMA150_ANY_MOTION_EN_REG	BMA150_CTRL_1_REG
@@ -91,12 +81,12 @@
 
 #define BMA150_ANY_MOTION_THRES_REG	BMA150_CFG_4_REG
 
-/* Advanced interrupt register fields */
+ 
 #define BMA150_ADV_INT_EN_POS		6
 #define BMA150_ADV_INT_EN_MSK		0x40
 #define BMA150_ADV_INT_EN_REG		BMA150_CTRL_3_REG
 
-/* High-G interrupt register fields */
+ 
 #define BMA150_HIGH_G_EN_POS		1
 #define BMA150_HIGH_G_EN_MSK		0x02
 #define BMA150_HIGH_G_EN_REG		BMA150_CTRL_1_REG
@@ -108,7 +98,7 @@
 #define BMA150_HIGH_G_DUR_REG		BMA150_CFG_3_REG
 #define BMA150_HIGH_G_THRES_REG		BMA150_CFG_2_REG
 
-/* Low-G interrupt register fields */
+ 
 #define BMA150_LOW_G_EN_POS		0
 #define BMA150_LOW_G_EN_MSK		0x01
 #define BMA150_LOW_G_EN_REG		BMA150_CTRL_1_REG
@@ -126,11 +116,7 @@ struct bma150_data {
 	u8 mode;
 };
 
-/*
- * The settings for the given range, bandwidth and interrupt features
- * are stated and verified by Bosch Sensortec where they are configured
- * to provide a generic sensitivity performance.
- */
+ 
 static const struct bma150_cfg default_cfg = {
 	.any_motion_int = 1,
 	.hg_int = 1,
@@ -151,7 +137,7 @@ static int bma150_write_byte(struct i2c_client *client, u8 reg, u8 val)
 {
 	s32 ret;
 
-	/* As per specification, disable irq in between register writes */
+	 
 	if (client->irq)
 		disable_irq_nosync(client->irq);
 
@@ -350,10 +336,7 @@ static int bma150_open(struct input_dev *input)
 	if (error < 0 && error != -ENOSYS)
 		return error;
 
-	/*
-	 * See if runtime PM woke up the device. If runtime PM
-	 * is disabled we need to do it ourselves.
-	 */
+	 
 	if (bma150->mode != BMA150_MODE_NORMAL) {
 		error = bma150_set_mode(bma150, BMA150_MODE_NORMAL);
 		if (error)

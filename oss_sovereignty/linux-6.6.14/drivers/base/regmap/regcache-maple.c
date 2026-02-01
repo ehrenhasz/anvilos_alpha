@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register cache access API - maple tree based cache
-//
-// Copyright 2023 Arm, Ltd
-//
-// Author: Mark Brown <broonie@kernel.org>
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -54,7 +54,7 @@ static int regcache_maple_write(struct regmap *map, unsigned int reg,
 		return 0;
 	}
 
-	/* Any adjacent entries to extend/merge? */
+	 
 	mas_set_range(&mas, reg - 1, reg + 1);
 	index = reg;
 	last = reg;
@@ -84,11 +84,7 @@ static int regcache_maple_write(struct regmap *map, unsigned int reg,
 	if (upper)
 		memcpy(&entry[reg - index + 1], upper, upper_sz);
 
-	/*
-	 * This is safe because the regmap lock means the Maple lock
-	 * is redundant, but we need to take it due to lockdep asserts
-	 * in the maple tree code.
-	 */
+	 
 	mas_lock(&mas);
 
 	mas_set_range(&mas, index, last);
@@ -120,14 +116,10 @@ static int regcache_maple_drop(struct regmap *map, unsigned int min,
 	mas_lock(&mas);
 
 	mas_for_each(&mas, entry, max) {
-		/*
-		 * This is safe because the regmap lock means the
-		 * Maple lock is redundant, but we need to take it due
-		 * to lockdep asserts in the maple tree code.
-		 */
+		 
 		mas_unlock(&mas);
 
-		/* Do we need to save any of this entry? */
+		 
 		if (mas.index < min) {
 			lower_index = mas.index;
 			lower_last = min -1;
@@ -159,7 +151,7 @@ static int regcache_maple_drop(struct regmap *map, unsigned int min,
 		mas_lock(&mas);
 		mas_erase(&mas);
 
-		/* Insert new nodes with the saved data */
+		 
 		if (lower) {
 			mas_set_range(&mas, lower_index, lower_last);
 			ret = mas_store_gfp(&mas, lower, map->alloc_flags);
@@ -198,11 +190,7 @@ static int regcache_maple_sync_block(struct regmap *map, unsigned long *entry,
 	mas_pause(mas);
 	rcu_read_unlock();
 
-	/*
-	 * Use a raw write if writing more than one register to a
-	 * device that supports raw writes to reduce transaction
-	 * overheads.
-	 */
+	 
 	if (max - min > 1 && regmap_can_raw_write(map)) {
 		buf = kmalloc(val_bytes * (max - min), map->alloc_flags);
 		if (!buf) {
@@ -210,7 +198,7 @@ static int regcache_maple_sync_block(struct regmap *map, unsigned long *entry,
 			goto out;
 		}
 
-		/* Render the data for a raw write */
+		 
 		for (r = min; r < max; r++) {
 			regcache_set_val(map, buf, r - min,
 					 entry[r - mas->index]);
@@ -296,7 +284,7 @@ static int regcache_maple_exit(struct regmap *map)
 	MA_STATE(mas, mt, 0, UINT_MAX);
 	unsigned int *entry;;
 
-	/* if we've already been called then just return */
+	 
 	if (!mt)
 		return 0;
 
@@ -360,7 +348,7 @@ static int regcache_maple_init(struct regmap *map)
 
 	range_start = 0;
 
-	/* Scan for ranges of contiguous registers */
+	 
 	for (i = 1; i < map->num_reg_defaults; i++) {
 		if (map->reg_defaults[i].reg !=
 		    map->reg_defaults[i - 1].reg + 1) {
@@ -373,7 +361,7 @@ static int regcache_maple_init(struct regmap *map)
 		}
 	}
 
-	/* Add the last block */
+	 
 	ret = regcache_maple_insert_block(map, range_start,
 					  map->num_reg_defaults - 1);
 	if (ret != 0)

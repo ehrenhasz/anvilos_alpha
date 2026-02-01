@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OMAP thermal definitions
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
- * Contact:
- *   Eduardo Valentin <eduardo.valentin@ti.com>
- */
+ 
+ 
 #ifndef __TI_THERMAL_H
 #define __TI_THERMAL_H
 
 #include "ti-bandgap.h"
 
-/* PCB sensor calculation constants */
+ 
 #define OMAP_GRADIENT_SLOPE_W_PCB_4430				0
 #define OMAP_GRADIENT_CONST_W_PCB_4430				20000
 #define OMAP_GRADIENT_SLOPE_W_PCB_4460				1142
@@ -27,7 +21,7 @@
 #define DRA752_GRADIENT_SLOPE_W_PCB				0
 #define DRA752_GRADIENT_CONST_W_PCB				2000
 
-/* trip points of interest in milicelsius (at hotspot level) */
+ 
 #define OMAP_TRIP_COLD						100000
 #define OMAP_TRIP_HOT						110000
 #define OMAP_TRIP_SHUTDOWN					125000
@@ -35,7 +29,7 @@
 #define OMAP_TRIP_STEP							\
 	((OMAP_TRIP_SHUTDOWN - OMAP_TRIP_HOT) / (OMAP_TRIP_NUMBER - 1))
 
-/* Update rates */
+ 
 #define FAST_TEMP_MONITORING_RATE				250
 
 #ifdef CONFIG_TI_THERMAL

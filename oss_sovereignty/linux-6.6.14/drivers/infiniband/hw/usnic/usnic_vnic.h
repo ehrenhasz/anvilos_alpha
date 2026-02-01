@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #ifndef USNIC_VNIC_H_
 #define USNIC_VNIC_H_
@@ -38,7 +7,7 @@
 
 #include "vnic_dev.h"
 
-/*                      =USNIC_VNIC_RES_TYPE= =VNIC_RES=   =DESC= */
+ 
 #define USNIC_VNIC_RES_TYPES \
 	DEFINE_USNIC_VNIC_RES_AT(EOL, RES_TYPE_EOL, "EOL", 0) \
 	DEFINE_USNIC_VNIC_RES(WQ, RES_TYPE_WQ, "WQ") \
@@ -115,4 +84,4 @@ struct usnic_vnic *usnic_vnic_alloc(struct pci_dev *pdev);
 void usnic_vnic_free(struct usnic_vnic *vnic);
 u16 usnic_vnic_get_index(struct usnic_vnic *vnic);
 
-#endif /*!USNIC_VNIC_H_*/
+#endif  

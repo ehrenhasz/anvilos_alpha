@@ -1,58 +1,21 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2006 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
 
 #include <sys/isa_defs.h>
 #include <sys/nvpair.h>
 #include <sys/sysmacros.h>
 
-/*
- * This allocator is very simple.
- *  - it uses a pre-allocated buffer for memory allocations.
- *  - it does _not_ free memory in the pre-allocated buffer.
- *
- * The reason for the selected implementation is simplicity.
- * This allocator is designed for the usage in interrupt context when
- * the caller may not wait for free memory.
- */
+ 
 
-/* pre-allocated buffer for memory allocations */
+ 
 typedef struct nvbuf {
-	uintptr_t	nvb_buf;	/* address of pre-allocated buffer */
-	uintptr_t 	nvb_lim;	/* limit address in the buffer */
-	uintptr_t	nvb_cur;	/* current address in the buffer */
+	uintptr_t	nvb_buf;	 
+	uintptr_t 	nvb_lim;	 
+	uintptr_t	nvb_cur;	 
 } nvbuf_t;
 
-/*
- * Initialize the pre-allocated buffer allocator. The caller needs to supply
- *
- *   buf	address of pre-allocated buffer
- *   bufsz	size of pre-allocated buffer
- *
- * nv_fixed_init() calculates the remaining members of nvbuf_t.
- */
+ 
 static int
 nv_fixed_init(nv_alloc_t *nva, va_list valist)
 {
@@ -88,7 +51,7 @@ nv_fixed_alloc(nv_alloc_t *nva, size_t size)
 static void
 nv_fixed_free(nv_alloc_t *nva, void *buf, size_t size)
 {
-	/* don't free memory in the pre-allocated buffer */
+	 
 	(void) nva, (void) buf, (void) size;
 }
 

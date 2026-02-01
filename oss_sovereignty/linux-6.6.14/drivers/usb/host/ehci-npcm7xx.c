@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Nuvoton NPCM7xx driver for EHCI HCD
- *
- * Copyright (C) 2018 Nuvoton Technologies,
- * Avi Fishman <avi.fishman@nuvoton.com> <avifishman70@gmail.com>
- * Tomer Maimon <tomer.maimon@nuvoton.com> <tmaimon77@gmail.com>
- *
- * Based on various ehci-spear.c driver
- */
+
+ 
 
 
 #include <linux/dma-mapping.h>
@@ -64,11 +56,7 @@ static int npcm7xx_ehci_hcd_drv_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/*
-	 * Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we have dma capability bindings this can go away.
-	 */
+	 
 	retval = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (retval)
 		goto fail;
@@ -87,7 +75,7 @@ static int npcm7xx_ehci_hcd_drv_probe(struct platform_device *pdev)
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
-	/* registers start at offset 0x0 */
+	 
 	hcd_to_ehci(hcd)->caps = hcd->regs;
 
 	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);

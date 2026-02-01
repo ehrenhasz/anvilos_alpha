@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 HiSilicon Limited, All Rights Reserved.
- * Author: Jun Ma <majun258@huawei.com>
- * Author: Yun Wu <wuyun.wu@huawei.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/interrupt.h>
@@ -16,49 +12,32 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Interrupt numbers per mbigen node supported */
+ 
 #define IRQS_PER_MBIGEN_NODE		128
 
-/* 64 irqs (Pin0-pin63) are reserved for each mbigen chip */
+ 
 #define RESERVED_IRQ_PER_MBIGEN_CHIP	64
 
-/* The maximum IRQ pin number of mbigen chip(start from 0) */
+ 
 #define MAXIMUM_IRQ_PIN_NUM		1407
 
-/*
- * In mbigen vector register
- * bit[21:12]:	event id value
- * bit[11:0]:	device id
- */
+ 
 #define IRQ_EVENT_ID_SHIFT		12
 #define IRQ_EVENT_ID_MASK		0x3ff
 
-/* register range of each mbigen node */
+ 
 #define MBIGEN_NODE_OFFSET		0x1000
 
-/* offset of vector register in mbigen node */
+ 
 #define REG_MBIGEN_VEC_OFFSET		0x200
 
-/*
- * offset of clear register in mbigen node
- * This register is used to clear the status
- * of interrupt
- */
+ 
 #define REG_MBIGEN_CLEAR_OFFSET		0xa000
 
-/*
- * offset of interrupt type register
- * This register is used to configure interrupt
- * trigger type
- */
+ 
 #define REG_MBIGEN_TYPE_OFFSET		0x0
 
-/**
- * struct mbigen_device - holds the information of mbigen device.
- *
- * @pdev:		pointer to the platform device structure of mbigen chip.
- * @base:		mapped address of this mbigen chip.
- */
+ 
 struct mbigen_device {
 	struct platform_device	*pdev;
 	void __iomem		*base;
@@ -159,9 +138,7 @@ static void mbigen_write_msg(struct msi_desc *desc, struct msi_msg *msg)
 	val &= ~(IRQ_EVENT_ID_MASK << IRQ_EVENT_ID_SHIFT);
 	val |= (msg->data << IRQ_EVENT_ID_SHIFT);
 
-	/* The address of doorbell is encoded in mbigen register by default
-	 * So,we don't need to program the doorbell address at here
-	 */
+	 
 	writel_relaxed(val, base);
 }
 
@@ -180,7 +157,7 @@ static int mbigen_domain_translate(struct irq_domain *d,
 		else
 			*hwirq = fwspec->param[0];
 
-		/* If there is no valid irq type, just use the default type */
+		 
 		if ((fwspec->param[1] == IRQ_TYPE_EDGE_RISING) ||
 			(fwspec->param[1] == IRQ_TYPE_LEVEL_HIGH))
 			*type = fwspec->param[1];
@@ -294,29 +271,7 @@ static int mbigen_acpi_create_domain(struct platform_device *pdev,
 	u32 num_pins = 0;
 	int ret;
 
-	/*
-	 * "num-pins" is the total number of interrupt pins implemented in
-	 * this mbigen instance, and mbigen is an interrupt controller
-	 * connected to ITS  converting wired interrupts into MSI, so we
-	 * use "num-pins" to alloc MSI vectors which are needed by client
-	 * devices connected to it.
-	 *
-	 * Here is the DSDT device node used for mbigen in firmware:
-	 *	Device(MBI0) {
-	 *		Name(_HID, "HISI0152")
-	 *		Name(_UID, Zero)
-	 *		Name(_CRS, ResourceTemplate() {
-	 *			Memory32Fixed(ReadWrite, 0xa0080000, 0x10000)
-	 *		})
-	 *
-	 *		Name(_DSD, Package () {
-	 *			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-	 *			Package () {
-	 *				Package () {"num-pins", 378}
-	 *			}
-	 *		})
-	 *	}
-	 */
+	 
 	ret = device_property_read_u32(&pdev->dev, "num-pins", &num_pins);
 	if (ret || num_pins == 0)
 		return -EINVAL;
@@ -379,7 +334,7 @@ static int mbigen_device_probe(struct platform_device *pdev)
 
 static const struct of_device_id mbigen_of_match[] = {
 	{ .compatible = "hisilicon,mbigen-v2" },
-	{ /* END */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mbigen_of_match);
 

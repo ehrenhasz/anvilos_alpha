@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * This file is written based on mt76/usb.c.
- *
- * Author: Felix Fietkau <nbd@nbd.name>
- *	   Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/kernel.h>
@@ -236,7 +229,7 @@ int mt76s_hw_init(struct mt76_dev *dev, struct sdio_func *func, int hw_ver)
 	if (ret < 0)
 		goto release;
 
-	/* Get ownership from the device */
+	 
 	sdio_writel(func, WHLPCR_INT_EN_CLR | WHLPCR_FW_OWN_REQ_CLR,
 		    MCR_WHLPCR, &ret);
 	if (ret < 0)
@@ -253,7 +246,7 @@ int mt76s_hw_init(struct mt76_dev *dev, struct sdio_func *func, int hw_ver)
 	if (ret < 0)
 		goto disable_func;
 
-	/* Enable interrupt */
+	 
 	sdio_writel(func, WHLPCR_INT_EN_SET, MCR_WHLPCR, &ret);
 	if (ret < 0)
 		goto disable_func;
@@ -267,7 +260,7 @@ int mt76s_hw_init(struct mt76_dev *dev, struct sdio_func *func, int hw_ver)
 
 	switch (hw_ver) {
 	case MT76_CONNAC_SDIO:
-		/* set WHISR as read clear and Rx aggregation number as 16 */
+		 
 		ctrl = FIELD_PREP(MAX_HIF_RX_LEN_NUM, 16);
 		break;
 	default:
@@ -275,7 +268,7 @@ int mt76s_hw_init(struct mt76_dev *dev, struct sdio_func *func, int hw_ver)
 		if (ret < 0)
 			goto disable_func;
 		ctrl &= ~MAX_HIF_RX_LEN_NUM_CONNAC2;
-		ctrl &= ~W_INT_CLR_CTRL; /* read clear */
+		ctrl &= ~W_INT_CLR_CTRL;  
 		ctrl |= FIELD_PREP(MAX_HIF_RX_LEN_NUM_CONNAC2, 0);
 		break;
 	}
@@ -563,7 +556,7 @@ mt76s_tx_queue_skb_raw(struct mt76_dev *dev, struct mt76_queue *q,
 	q->entry[q->head].buf_sz = len;
 	q->entry[q->head].skb = skb;
 
-	/* ensure the entry fully updated before bus access */
+	 
 	smp_wmb();
 
 	q->head = (q->head + 1) % q->ndesc;

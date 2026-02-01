@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef ASIC_REG_GAUDI_REGS_H_
 #define ASIC_REG_GAUDI_REGS_H_
@@ -322,4 +317,4 @@
 
 #define mmPCIE_WRAP_RR_ELBI_RD_SEC_REG_CTRL                          0xC01208
 
-#endif /* ASIC_REG_GAUDI_REGS_H_ */
+#endif  

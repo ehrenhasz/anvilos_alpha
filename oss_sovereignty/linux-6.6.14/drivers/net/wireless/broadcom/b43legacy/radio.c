@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43legacy wireless driver
-
-  Copyright (c) 2005 Martin Langer <martin-langer@gmx.de>,
-		     Stefano Brivio <stefano.brivio@polimi.it>
-		     Michael Buesch <m@bues.ch>
-		     Danny van Dyk <kugelfang@gentoo.org>
-		     Andreas Jaggi <andreas.jaggi@waterwave.ch>
-  Copyright (c) 2007 Larry Finger <Larry.Finger@lwfinger.net>
-
-  Some parts of the code in this file are derived from the ipw2200
-  driver  Copyright(c) 2003 - 2004 Intel Corporation.
-
-
-*/
+ 
 
 #include <linux/delay.h>
 
@@ -25,7 +10,7 @@
 #include "ilt.h"
 
 
-/* Table for b43legacy_radio_calibrationvalue() */
+ 
 static const u16 rcc_table[16] = {
 	0x0002, 0x0003, 0x0001, 0x000F,
 	0x0006, 0x0007, 0x0005, 0x000F,
@@ -33,9 +18,7 @@ static const u16 rcc_table[16] = {
 	0x000E, 0x000F, 0x000D, 0x000F,
 };
 
-/* Reverse the bits of a 4bit value.
- * Example:  1101 is flipped 1011
- */
+ 
 static u16 flip_4bit(u16 value)
 {
 	u16 flipped = 0x0000;
@@ -50,13 +33,11 @@ static u16 flip_4bit(u16 value)
 	return flipped;
 }
 
-/* Get the freq, as it has to be written to the device. */
+ 
 static inline
 u16 channel2freq_bg(u8 channel)
 {
-	/* Frequencies are given as frequencies_bg[index] + 2.4GHz
-	 * Starting with channel 1
-	 */
+	 
 	static const u16 frequencies_bg[14] = {
 		12, 17, 22, 27,
 		32, 37, 42, 47,
@@ -89,7 +70,7 @@ void b43legacy_radio_unlock(struct b43legacy_wldev *dev)
 {
 	u32 status;
 
-	b43legacy_read16(dev, B43legacy_MMIO_PHY_VER); /* dummy read */
+	b43legacy_read16(dev, B43legacy_MMIO_PHY_VER);  
 	status = b43legacy_read32(dev, B43legacy_MMIO_MACCTL);
 	B43legacy_WARN_ON(!(status & B43legacy_MACCTL_RADIOLOCK));
 	status &= ~B43legacy_MACCTL_RADIOLOCK;
@@ -204,7 +185,7 @@ static void b43legacy_set_original_gains(struct b43legacy_wldev *dev)
 	b43legacy_dummy_transmission(dev);
 }
 
-/* Synthetic PU workaround */
+ 
 static void b43legacy_synth_pu_workaround(struct b43legacy_wldev *dev,
 					  u8 channel)
 {
@@ -213,7 +194,7 @@ static void b43legacy_synth_pu_workaround(struct b43legacy_wldev *dev,
 	might_sleep();
 
 	if (phy->radio_ver != 0x2050 || phy->radio_rev >= 6)
-		/* We do not need the workaround. */
+		 
 		return;
 
 	if (channel <= 10)
@@ -244,7 +225,7 @@ u8 b43legacy_radio_aci_detect(struct b43legacy_wldev *dev, u8 channel)
 		rssi = b43legacy_phy_read(dev, 0x048A) & 0x3F;
 	else
 		rssi = saved & 0x3F;
-	/* clamp temp to signed 5bit */
+	 
 	if (rssi > 32)
 		rssi -= 64;
 	for (i = 0; i < 100; i++) {
@@ -313,517 +294,7 @@ u8 b43legacy_radio_aci_scan(struct b43legacy_wldev *dev)
 	return ret[channel - 1];
 }
 
-/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
-void b43legacy_nrssi_hw_write(struct b43legacy_wldev *dev, u16 offset, s16 val)
-{
-	b43legacy_phy_write(dev, B43legacy_PHY_NRSSILT_CTRL, offset);
-	b43legacy_phy_write(dev, B43legacy_PHY_NRSSILT_DATA, (u16)val);
-}
-
-/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
-s16 b43legacy_nrssi_hw_read(struct b43legacy_wldev *dev, u16 offset)
-{
-	u16 val;
-
-	b43legacy_phy_write(dev, B43legacy_PHY_NRSSILT_CTRL, offset);
-	val = b43legacy_phy_read(dev, B43legacy_PHY_NRSSILT_DATA);
-
-	return (s16)val;
-}
-
-/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
-void b43legacy_nrssi_hw_update(struct b43legacy_wldev *dev, u16 val)
-{
-	u16 i;
-	s16 tmp;
-
-	for (i = 0; i < 64; i++) {
-		tmp = b43legacy_nrssi_hw_read(dev, i);
-		tmp -= val;
-		tmp = clamp_val(tmp, -32, 31);
-		b43legacy_nrssi_hw_write(dev, i, tmp);
-	}
-}
-
-/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
-void b43legacy_nrssi_mem_update(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	s16 i;
-	s16 delta;
-	s32 tmp;
-
-	delta = 0x1F - phy->nrssi[0];
-	for (i = 0; i < 64; i++) {
-		tmp = (i - delta) * phy->nrssislope;
-		tmp /= 0x10000;
-		tmp += 0x3A;
-		tmp = clamp_val(tmp, 0, 0x3F);
-		phy->nrssi_lt[i] = tmp;
-	}
-}
-
-static void b43legacy_calc_nrssi_offset(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	u16 backup[20] = { 0 };
-	s16 v47F;
-	u16 i;
-	u16 saved = 0xFFFF;
-
-	backup[0] = b43legacy_phy_read(dev, 0x0001);
-	backup[1] = b43legacy_phy_read(dev, 0x0811);
-	backup[2] = b43legacy_phy_read(dev, 0x0812);
-	backup[3] = b43legacy_phy_read(dev, 0x0814);
-	backup[4] = b43legacy_phy_read(dev, 0x0815);
-	backup[5] = b43legacy_phy_read(dev, 0x005A);
-	backup[6] = b43legacy_phy_read(dev, 0x0059);
-	backup[7] = b43legacy_phy_read(dev, 0x0058);
-	backup[8] = b43legacy_phy_read(dev, 0x000A);
-	backup[9] = b43legacy_phy_read(dev, 0x0003);
-	backup[10] = b43legacy_radio_read16(dev, 0x007A);
-	backup[11] = b43legacy_radio_read16(dev, 0x0043);
-
-	b43legacy_phy_write(dev, 0x0429,
-			    b43legacy_phy_read(dev, 0x0429) & 0x7FFF);
-	b43legacy_phy_write(dev, 0x0001,
-			    (b43legacy_phy_read(dev, 0x0001) & 0x3FFF)
-			    | 0x4000);
-	b43legacy_phy_write(dev, 0x0811,
-			    b43legacy_phy_read(dev, 0x0811) | 0x000C);
-	b43legacy_phy_write(dev, 0x0812,
-			    (b43legacy_phy_read(dev, 0x0812) & 0xFFF3)
-			    | 0x0004);
-	b43legacy_phy_write(dev, 0x0802,
-			    b43legacy_phy_read(dev, 0x0802) & ~(0x1 | 0x2));
-	if (phy->rev >= 6) {
-		backup[12] = b43legacy_phy_read(dev, 0x002E);
-		backup[13] = b43legacy_phy_read(dev, 0x002F);
-		backup[14] = b43legacy_phy_read(dev, 0x080F);
-		backup[15] = b43legacy_phy_read(dev, 0x0810);
-		backup[16] = b43legacy_phy_read(dev, 0x0801);
-		backup[17] = b43legacy_phy_read(dev, 0x0060);
-		backup[18] = b43legacy_phy_read(dev, 0x0014);
-		backup[19] = b43legacy_phy_read(dev, 0x0478);
-
-		b43legacy_phy_write(dev, 0x002E, 0);
-		b43legacy_phy_write(dev, 0x002F, 0);
-		b43legacy_phy_write(dev, 0x080F, 0);
-		b43legacy_phy_write(dev, 0x0810, 0);
-		b43legacy_phy_write(dev, 0x0478,
-				    b43legacy_phy_read(dev, 0x0478) | 0x0100);
-		b43legacy_phy_write(dev, 0x0801,
-				    b43legacy_phy_read(dev, 0x0801) | 0x0040);
-		b43legacy_phy_write(dev, 0x0060,
-				    b43legacy_phy_read(dev, 0x0060) | 0x0040);
-		b43legacy_phy_write(dev, 0x0014,
-				    b43legacy_phy_read(dev, 0x0014) | 0x0200);
-	}
-	b43legacy_radio_write16(dev, 0x007A,
-				b43legacy_radio_read16(dev, 0x007A) | 0x0070);
-	b43legacy_radio_write16(dev, 0x007A,
-				b43legacy_radio_read16(dev, 0x007A) | 0x0080);
-	udelay(30);
-
-	v47F = (s16)((b43legacy_phy_read(dev, 0x047F) >> 8) & 0x003F);
-	if (v47F >= 0x20)
-		v47F -= 0x40;
-	if (v47F == 31) {
-		for (i = 7; i >= 4; i--) {
-			b43legacy_radio_write16(dev, 0x007B, i);
-			udelay(20);
-			v47F = (s16)((b43legacy_phy_read(dev, 0x047F) >> 8)
-							 & 0x003F);
-			if (v47F >= 0x20)
-				v47F -= 0x40;
-			if (v47F < 31 && saved == 0xFFFF)
-				saved = i;
-		}
-		if (saved == 0xFFFF)
-			saved = 4;
-	} else {
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					& 0x007F);
-		b43legacy_phy_write(dev, 0x0814,
-				    b43legacy_phy_read(dev, 0x0814) | 0x0001);
-		b43legacy_phy_write(dev, 0x0815,
-				    b43legacy_phy_read(dev, 0x0815) & 0xFFFE);
-		b43legacy_phy_write(dev, 0x0811,
-				    b43legacy_phy_read(dev, 0x0811) | 0x000C);
-		b43legacy_phy_write(dev, 0x0812,
-				    b43legacy_phy_read(dev, 0x0812) | 0x000C);
-		b43legacy_phy_write(dev, 0x0811,
-				    b43legacy_phy_read(dev, 0x0811) | 0x0030);
-		b43legacy_phy_write(dev, 0x0812,
-				    b43legacy_phy_read(dev, 0x0812) | 0x0030);
-		b43legacy_phy_write(dev, 0x005A, 0x0480);
-		b43legacy_phy_write(dev, 0x0059, 0x0810);
-		b43legacy_phy_write(dev, 0x0058, 0x000D);
-		if (phy->analog == 0)
-			b43legacy_phy_write(dev, 0x0003, 0x0122);
-		else
-			b43legacy_phy_write(dev, 0x000A,
-					    b43legacy_phy_read(dev, 0x000A)
-					    | 0x2000);
-		b43legacy_phy_write(dev, 0x0814,
-				    b43legacy_phy_read(dev, 0x0814) | 0x0004);
-		b43legacy_phy_write(dev, 0x0815,
-				    b43legacy_phy_read(dev, 0x0815) & 0xFFFB);
-		b43legacy_phy_write(dev, 0x0003,
-				    (b43legacy_phy_read(dev, 0x0003) & 0xFF9F)
-				    | 0x0040);
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					| 0x000F);
-		b43legacy_set_all_gains(dev, 3, 0, 1);
-		b43legacy_radio_write16(dev, 0x0043,
-					(b43legacy_radio_read16(dev, 0x0043)
-					& 0x00F0) | 0x000F);
-		udelay(30);
-		v47F = (s16)((b43legacy_phy_read(dev, 0x047F) >> 8) & 0x003F);
-		if (v47F >= 0x20)
-			v47F -= 0x40;
-		if (v47F == -32) {
-			for (i = 0; i < 4; i++) {
-				b43legacy_radio_write16(dev, 0x007B, i);
-				udelay(20);
-				v47F = (s16)((b43legacy_phy_read(dev, 0x047F) >>
-								 8) & 0x003F);
-				if (v47F >= 0x20)
-					v47F -= 0x40;
-				if (v47F > -31 && saved == 0xFFFF)
-					saved = i;
-			}
-			if (saved == 0xFFFF)
-				saved = 3;
-		} else
-			saved = 0;
-	}
-	b43legacy_radio_write16(dev, 0x007B, saved);
-
-	if (phy->rev >= 6) {
-		b43legacy_phy_write(dev, 0x002E, backup[12]);
-		b43legacy_phy_write(dev, 0x002F, backup[13]);
-		b43legacy_phy_write(dev, 0x080F, backup[14]);
-		b43legacy_phy_write(dev, 0x0810, backup[15]);
-	}
-	b43legacy_phy_write(dev, 0x0814, backup[3]);
-	b43legacy_phy_write(dev, 0x0815, backup[4]);
-	b43legacy_phy_write(dev, 0x005A, backup[5]);
-	b43legacy_phy_write(dev, 0x0059, backup[6]);
-	b43legacy_phy_write(dev, 0x0058, backup[7]);
-	b43legacy_phy_write(dev, 0x000A, backup[8]);
-	b43legacy_phy_write(dev, 0x0003, backup[9]);
-	b43legacy_radio_write16(dev, 0x0043, backup[11]);
-	b43legacy_radio_write16(dev, 0x007A, backup[10]);
-	b43legacy_phy_write(dev, 0x0802,
-			    b43legacy_phy_read(dev, 0x0802) | 0x1 | 0x2);
-	b43legacy_phy_write(dev, 0x0429,
-			    b43legacy_phy_read(dev, 0x0429) | 0x8000);
-	b43legacy_set_original_gains(dev);
-	if (phy->rev >= 6) {
-		b43legacy_phy_write(dev, 0x0801, backup[16]);
-		b43legacy_phy_write(dev, 0x0060, backup[17]);
-		b43legacy_phy_write(dev, 0x0014, backup[18]);
-		b43legacy_phy_write(dev, 0x0478, backup[19]);
-	}
-	b43legacy_phy_write(dev, 0x0001, backup[0]);
-	b43legacy_phy_write(dev, 0x0812, backup[2]);
-	b43legacy_phy_write(dev, 0x0811, backup[1]);
-}
-
-void b43legacy_calc_nrssi_slope(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	u16 backup[18] = { 0 };
-	u16 tmp;
-	s16 nrssi0;
-	s16 nrssi1;
-
-	switch (phy->type) {
-	case B43legacy_PHYTYPE_B:
-		backup[0] = b43legacy_radio_read16(dev, 0x007A);
-		backup[1] = b43legacy_radio_read16(dev, 0x0052);
-		backup[2] = b43legacy_radio_read16(dev, 0x0043);
-		backup[3] = b43legacy_phy_read(dev, 0x0030);
-		backup[4] = b43legacy_phy_read(dev, 0x0026);
-		backup[5] = b43legacy_phy_read(dev, 0x0015);
-		backup[6] = b43legacy_phy_read(dev, 0x002A);
-		backup[7] = b43legacy_phy_read(dev, 0x0020);
-		backup[8] = b43legacy_phy_read(dev, 0x005A);
-		backup[9] = b43legacy_phy_read(dev, 0x0059);
-		backup[10] = b43legacy_phy_read(dev, 0x0058);
-		backup[11] = b43legacy_read16(dev, 0x03E2);
-		backup[12] = b43legacy_read16(dev, 0x03E6);
-		backup[13] = b43legacy_read16(dev, B43legacy_MMIO_CHANNEL_EXT);
-
-		tmp  = b43legacy_radio_read16(dev, 0x007A);
-		tmp &= (phy->rev >= 5) ? 0x007F : 0x000F;
-		b43legacy_radio_write16(dev, 0x007A, tmp);
-		b43legacy_phy_write(dev, 0x0030, 0x00FF);
-		b43legacy_write16(dev, 0x03EC, 0x7F7F);
-		b43legacy_phy_write(dev, 0x0026, 0x0000);
-		b43legacy_phy_write(dev, 0x0015,
-				    b43legacy_phy_read(dev, 0x0015) | 0x0020);
-		b43legacy_phy_write(dev, 0x002A, 0x08A3);
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					| 0x0080);
-
-		nrssi0 = (s16)b43legacy_phy_read(dev, 0x0027);
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					& 0x007F);
-		if (phy->analog >= 2)
-			b43legacy_write16(dev, 0x03E6, 0x0040);
-		else if (phy->analog == 0)
-			b43legacy_write16(dev, 0x03E6, 0x0122);
-		else
-			b43legacy_write16(dev, B43legacy_MMIO_CHANNEL_EXT,
-					  b43legacy_read16(dev,
-					  B43legacy_MMIO_CHANNEL_EXT) & 0x2000);
-		b43legacy_phy_write(dev, 0x0020, 0x3F3F);
-		b43legacy_phy_write(dev, 0x0015, 0xF330);
-		b43legacy_radio_write16(dev, 0x005A, 0x0060);
-		b43legacy_radio_write16(dev, 0x0043,
-					b43legacy_radio_read16(dev, 0x0043)
-					& 0x00F0);
-		b43legacy_phy_write(dev, 0x005A, 0x0480);
-		b43legacy_phy_write(dev, 0x0059, 0x0810);
-		b43legacy_phy_write(dev, 0x0058, 0x000D);
-		udelay(20);
-
-		nrssi1 = (s16)b43legacy_phy_read(dev, 0x0027);
-		b43legacy_phy_write(dev, 0x0030, backup[3]);
-		b43legacy_radio_write16(dev, 0x007A, backup[0]);
-		b43legacy_write16(dev, 0x03E2, backup[11]);
-		b43legacy_phy_write(dev, 0x0026, backup[4]);
-		b43legacy_phy_write(dev, 0x0015, backup[5]);
-		b43legacy_phy_write(dev, 0x002A, backup[6]);
-		b43legacy_synth_pu_workaround(dev, phy->channel);
-		if (phy->analog != 0)
-			b43legacy_write16(dev, 0x03F4, backup[13]);
-
-		b43legacy_phy_write(dev, 0x0020, backup[7]);
-		b43legacy_phy_write(dev, 0x005A, backup[8]);
-		b43legacy_phy_write(dev, 0x0059, backup[9]);
-		b43legacy_phy_write(dev, 0x0058, backup[10]);
-		b43legacy_radio_write16(dev, 0x0052, backup[1]);
-		b43legacy_radio_write16(dev, 0x0043, backup[2]);
-
-		if (nrssi0 == nrssi1)
-			phy->nrssislope = 0x00010000;
-		else
-			phy->nrssislope = 0x00400000 / (nrssi0 - nrssi1);
-
-		if (nrssi0 <= -4) {
-			phy->nrssi[0] = nrssi0;
-			phy->nrssi[1] = nrssi1;
-		}
-		break;
-	case B43legacy_PHYTYPE_G:
-		if (phy->radio_rev >= 9)
-			return;
-		if (phy->radio_rev == 8)
-			b43legacy_calc_nrssi_offset(dev);
-
-		b43legacy_phy_write(dev, B43legacy_PHY_G_CRS,
-				    b43legacy_phy_read(dev, B43legacy_PHY_G_CRS)
-				    & 0x7FFF);
-		b43legacy_phy_write(dev, 0x0802,
-				    b43legacy_phy_read(dev, 0x0802) & 0xFFFC);
-		backup[7] = b43legacy_read16(dev, 0x03E2);
-		b43legacy_write16(dev, 0x03E2,
-				  b43legacy_read16(dev, 0x03E2) | 0x8000);
-		backup[0] = b43legacy_radio_read16(dev, 0x007A);
-		backup[1] = b43legacy_radio_read16(dev, 0x0052);
-		backup[2] = b43legacy_radio_read16(dev, 0x0043);
-		backup[3] = b43legacy_phy_read(dev, 0x0015);
-		backup[4] = b43legacy_phy_read(dev, 0x005A);
-		backup[5] = b43legacy_phy_read(dev, 0x0059);
-		backup[6] = b43legacy_phy_read(dev, 0x0058);
-		backup[8] = b43legacy_read16(dev, 0x03E6);
-		backup[9] = b43legacy_read16(dev, B43legacy_MMIO_CHANNEL_EXT);
-		if (phy->rev >= 3) {
-			backup[10] = b43legacy_phy_read(dev, 0x002E);
-			backup[11] = b43legacy_phy_read(dev, 0x002F);
-			backup[12] = b43legacy_phy_read(dev, 0x080F);
-			backup[13] = b43legacy_phy_read(dev,
-						B43legacy_PHY_G_LO_CONTROL);
-			backup[14] = b43legacy_phy_read(dev, 0x0801);
-			backup[15] = b43legacy_phy_read(dev, 0x0060);
-			backup[16] = b43legacy_phy_read(dev, 0x0014);
-			backup[17] = b43legacy_phy_read(dev, 0x0478);
-			b43legacy_phy_write(dev, 0x002E, 0);
-			b43legacy_phy_write(dev, B43legacy_PHY_G_LO_CONTROL, 0);
-			switch (phy->rev) {
-			case 4: case 6: case 7:
-				b43legacy_phy_write(dev, 0x0478,
-						    b43legacy_phy_read(dev,
-						    0x0478) | 0x0100);
-				b43legacy_phy_write(dev, 0x0801,
-						    b43legacy_phy_read(dev,
-						    0x0801) | 0x0040);
-				break;
-			case 3: case 5:
-				b43legacy_phy_write(dev, 0x0801,
-						    b43legacy_phy_read(dev,
-						    0x0801) & 0xFFBF);
-				break;
-			}
-			b43legacy_phy_write(dev, 0x0060,
-					    b43legacy_phy_read(dev, 0x0060)
-					    | 0x0040);
-			b43legacy_phy_write(dev, 0x0014,
-					    b43legacy_phy_read(dev, 0x0014)
-					    | 0x0200);
-		}
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					| 0x0070);
-		b43legacy_set_all_gains(dev, 0, 8, 0);
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					& 0x00F7);
-		if (phy->rev >= 2) {
-			b43legacy_phy_write(dev, 0x0811,
-					    (b43legacy_phy_read(dev, 0x0811)
-					    & 0xFFCF) | 0x0030);
-			b43legacy_phy_write(dev, 0x0812,
-					    (b43legacy_phy_read(dev, 0x0812)
-					    & 0xFFCF) | 0x0010);
-		}
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					| 0x0080);
-		udelay(20);
-
-		nrssi0 = (s16)((b43legacy_phy_read(dev, 0x047F) >> 8) & 0x003F);
-		if (nrssi0 >= 0x0020)
-			nrssi0 -= 0x0040;
-
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					& 0x007F);
-		if (phy->analog >= 2)
-			b43legacy_phy_write(dev, 0x0003,
-					    (b43legacy_phy_read(dev, 0x0003)
-					    & 0xFF9F) | 0x0040);
-
-		b43legacy_write16(dev, B43legacy_MMIO_CHANNEL_EXT,
-				  b43legacy_read16(dev,
-				  B43legacy_MMIO_CHANNEL_EXT) | 0x2000);
-		b43legacy_radio_write16(dev, 0x007A,
-					b43legacy_radio_read16(dev, 0x007A)
-					| 0x000F);
-		b43legacy_phy_write(dev, 0x0015, 0xF330);
-		if (phy->rev >= 2) {
-			b43legacy_phy_write(dev, 0x0812,
-					    (b43legacy_phy_read(dev, 0x0812)
-					    & 0xFFCF) | 0x0020);
-			b43legacy_phy_write(dev, 0x0811,
-					    (b43legacy_phy_read(dev, 0x0811)
-					    & 0xFFCF) | 0x0020);
-		}
-
-		b43legacy_set_all_gains(dev, 3, 0, 1);
-		if (phy->radio_rev == 8)
-			b43legacy_radio_write16(dev, 0x0043, 0x001F);
-		else {
-			tmp = b43legacy_radio_read16(dev, 0x0052) & 0xFF0F;
-			b43legacy_radio_write16(dev, 0x0052, tmp | 0x0060);
-			tmp = b43legacy_radio_read16(dev, 0x0043) & 0xFFF0;
-			b43legacy_radio_write16(dev, 0x0043, tmp | 0x0009);
-		}
-		b43legacy_phy_write(dev, 0x005A, 0x0480);
-		b43legacy_phy_write(dev, 0x0059, 0x0810);
-		b43legacy_phy_write(dev, 0x0058, 0x000D);
-		udelay(20);
-		nrssi1 = (s16)((b43legacy_phy_read(dev, 0x047F) >> 8) & 0x003F);
-		if (nrssi1 >= 0x0020)
-			nrssi1 -= 0x0040;
-		if (nrssi0 == nrssi1)
-			phy->nrssislope = 0x00010000;
-		else
-			phy->nrssislope = 0x00400000 / (nrssi0 - nrssi1);
-		if (nrssi0 >= -4) {
-			phy->nrssi[0] = nrssi1;
-			phy->nrssi[1] = nrssi0;
-		}
-		if (phy->rev >= 3) {
-			b43legacy_phy_write(dev, 0x002E, backup[10]);
-			b43legacy_phy_write(dev, 0x002F, backup[11]);
-			b43legacy_phy_write(dev, 0x080F, backup[12]);
-			b43legacy_phy_write(dev, B43legacy_PHY_G_LO_CONTROL,
-					    backup[13]);
-		}
-		if (phy->rev >= 2) {
-			b43legacy_phy_write(dev, 0x0812,
-					    b43legacy_phy_read(dev, 0x0812)
-					    & 0xFFCF);
-			b43legacy_phy_write(dev, 0x0811,
-					    b43legacy_phy_read(dev, 0x0811)
-					    & 0xFFCF);
-		}
-
-		b43legacy_radio_write16(dev, 0x007A, backup[0]);
-		b43legacy_radio_write16(dev, 0x0052, backup[1]);
-		b43legacy_radio_write16(dev, 0x0043, backup[2]);
-		b43legacy_write16(dev, 0x03E2, backup[7]);
-		b43legacy_write16(dev, 0x03E6, backup[8]);
-		b43legacy_write16(dev, B43legacy_MMIO_CHANNEL_EXT, backup[9]);
-		b43legacy_phy_write(dev, 0x0015, backup[3]);
-		b43legacy_phy_write(dev, 0x005A, backup[4]);
-		b43legacy_phy_write(dev, 0x0059, backup[5]);
-		b43legacy_phy_write(dev, 0x0058, backup[6]);
-		b43legacy_synth_pu_workaround(dev, phy->channel);
-		b43legacy_phy_write(dev, 0x0802,
-				    b43legacy_phy_read(dev, 0x0802) | 0x0003);
-		b43legacy_set_original_gains(dev);
-		b43legacy_phy_write(dev, B43legacy_PHY_G_CRS,
-				    b43legacy_phy_read(dev, B43legacy_PHY_G_CRS)
-				    | 0x8000);
-		if (phy->rev >= 3) {
-			b43legacy_phy_write(dev, 0x0801, backup[14]);
-			b43legacy_phy_write(dev, 0x0060, backup[15]);
-			b43legacy_phy_write(dev, 0x0014, backup[16]);
-			b43legacy_phy_write(dev, 0x0478, backup[17]);
-		}
-		b43legacy_nrssi_mem_update(dev);
-		b43legacy_calc_nrssi_threshold(dev);
-		break;
-	default:
-		B43legacy_BUG_ON(1);
-	}
-}
-
-void b43legacy_calc_nrssi_threshold(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	s32 threshold;
-	s32 a;
-	s32 b;
-	s16 tmp16;
-	u16 tmp_u16;
-
-	switch (phy->type) {
-	case B43legacy_PHYTYPE_B: {
-		if (phy->radio_ver != 0x2050)
-			return;
-		if (!(dev->dev->bus->sprom.boardflags_lo &
-		    B43legacy_BFL_RSSI))
-			return;
-
-		if (phy->radio_rev >= 6) {
-			threshold = (phy->nrssi[1] - phy->nrssi[0]) * 32;
-			threshold += 20 * (phy->nrssi[0] + 1);
-			threshold /= 40;
-		} else
-			threshold = phy->nrssi[1] - 5;
-
-		threshold = clamp_val(threshold, 0, 0x3E);
-		b43legacy_phy_read(dev, 0x0020); /* dummy read */
+ 
 		b43legacy_phy_write(dev, 0x0020, (((u16)threshold) << 8)
 				    | 0x001C);
 
@@ -897,10 +368,7 @@ void b43legacy_calc_nrssi_threshold(struct b43legacy_wldev *dev)
 	}
 }
 
-/* Stack implementation to save/restore values from the
- * interference mitigation code.
- * It is save to restore values in random order.
- */
+ 
 static void _stack_save(u32 *_stackptr, size_t *stackidx,
 			u8 id, u16 offset, u16 value)
 {
@@ -1519,7 +987,7 @@ u16 b43legacy_radio_init2050(struct b43legacy_wldev *dev)
 			b43legacy_phy_write(dev, 0x0802,
 					    (b43legacy_phy_read(dev, 0x0802)
 					    & 0xFFFC));
-			if (phy->rev > 1) { /* loopback gain enabled */
+			if (phy->rev > 1) {  
 				backup[19] = b43legacy_phy_read(dev, 0x080F);
 				backup[20] = b43legacy_phy_read(dev, 0x0810);
 				if (phy->rev >= 3)
@@ -1550,7 +1018,7 @@ u16 b43legacy_radio_init2050(struct b43legacy_wldev *dev)
 	backup[11] = b43legacy_read16(dev, 0x03E6);
 	backup[12] = b43legacy_read16(dev, B43legacy_MMIO_CHANNEL_EXT);
 
-	/* Initialization */
+	 
 	if (phy->analog == 0)
 		b43legacy_write16(dev, 0x03E6, 0x0122);
 	else {
@@ -1669,7 +1137,7 @@ u16 b43legacy_radio_init2050(struct b43legacy_wldev *dev)
 			break;
 	}
 
-	/* Restore the registers */
+	 
 	b43legacy_phy_write(dev, 0x0015, backup[1]);
 	b43legacy_radio_write16(dev, 0x0051, backup[14]);
 	b43legacy_radio_write16(dev, 0x0052, backup[15]);
@@ -1726,7 +1194,7 @@ int b43legacy_radio_selectchannel(struct b43legacy_wldev *dev,
 		}
 	}
 
-/* TODO: Check if channel is valid - return -EINVAL if not */
+ 
 	if (synthetic_pu_workaround)
 		b43legacy_synth_pu_workaround(dev, channel);
 
@@ -1734,7 +1202,7 @@ int b43legacy_radio_selectchannel(struct b43legacy_wldev *dev,
 			  channel2freq_bg(channel));
 
 	if (channel == 14) {
-		if (dev->dev->bus->sprom.country_code == 5)   /* JAPAN) */
+		if (dev->dev->bus->sprom.country_code == 5)    
 			b43legacy_shm_write32(dev, B43legacy_SHM_SHARED,
 					      B43legacy_UCODEFLAGS_OFFSET,
 					      b43legacy_shm_read32(dev,
@@ -1757,8 +1225,7 @@ int b43legacy_radio_selectchannel(struct b43legacy_wldev *dev,
 				  B43legacy_MMIO_CHANNEL_EXT) & 0xF7BF);
 
 	phy->channel = channel;
-	/*XXX: Using the longer of 2 timeouts (8000 vs 2000 usecs). Specs states
-	 *     that 2000 usecs might suffice. */
+	 
 	msleep(8);
 
 	return 0;
@@ -1777,104 +1244,7 @@ void b43legacy_radio_set_txantenna(struct b43legacy_wldev *dev, u32 val)
 	b43legacy_shm_write16(dev, B43legacy_SHM_SHARED, 0x0054, tmp | val);
 }
 
-/* http://bcm-specs.sipsolutions.net/TX_Gain_Base_Band */
-static u16 b43legacy_get_txgain_base_band(u16 txpower)
-{
-	u16 ret;
-
-	B43legacy_WARN_ON(txpower > 63);
-
-	if (txpower >= 54)
-		ret = 2;
-	else if (txpower >= 49)
-		ret = 4;
-	else if (txpower >= 44)
-		ret = 5;
-	else
-		ret = 6;
-
-	return ret;
-}
-
-/* http://bcm-specs.sipsolutions.net/TX_Gain_Radio_Frequency_Power_Amplifier */
-static u16 b43legacy_get_txgain_freq_power_amp(u16 txpower)
-{
-	u16 ret;
-
-	B43legacy_WARN_ON(txpower > 63);
-
-	if (txpower >= 32)
-		ret = 0;
-	else if (txpower >= 25)
-		ret = 1;
-	else if (txpower >= 20)
-		ret = 2;
-	else if (txpower >= 12)
-		ret = 3;
-	else
-		ret = 4;
-
-	return ret;
-}
-
-/* http://bcm-specs.sipsolutions.net/TX_Gain_Digital_Analog_Converter */
-static u16 b43legacy_get_txgain_dac(u16 txpower)
-{
-	u16 ret;
-
-	B43legacy_WARN_ON(txpower > 63);
-
-	if (txpower >= 54)
-		ret = txpower - 53;
-	else if (txpower >= 49)
-		ret = txpower - 42;
-	else if (txpower >= 44)
-		ret = txpower - 37;
-	else if (txpower >= 32)
-		ret = txpower - 32;
-	else if (txpower >= 25)
-		ret = txpower - 20;
-	else if (txpower >= 20)
-		ret = txpower - 13;
-	else if (txpower >= 12)
-		ret = txpower - 8;
-	else
-		ret = txpower;
-
-	return ret;
-}
-
-void b43legacy_radio_set_txpower_a(struct b43legacy_wldev *dev, u16 txpower)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	u16 pamp;
-	u16 base;
-	u16 dac;
-	u16 ilt;
-
-	txpower = clamp_val(txpower, 0, 63);
-
-	pamp = b43legacy_get_txgain_freq_power_amp(txpower);
-	pamp <<= 5;
-	pamp &= 0x00E0;
-	b43legacy_phy_write(dev, 0x0019, pamp);
-
-	base = b43legacy_get_txgain_base_band(txpower);
-	base &= 0x000F;
-	b43legacy_phy_write(dev, 0x0017, base | 0x0020);
-
-	ilt = b43legacy_ilt_read(dev, 0x3001);
-	ilt &= 0x0007;
-
-	dac = b43legacy_get_txgain_dac(txpower);
-	dac <<= 3;
-	dac |= ilt;
-
-	b43legacy_ilt_write(dev, 0x3001, dac);
-
-	phy->txpwr_offset = txpower;
-
-	/* TODO: FuncPlaceholder (Adjust BB loft cancel) */
+ 
 }
 
 void b43legacy_radio_set_txpower_bg(struct b43legacy_wldev *dev,
@@ -1909,7 +1279,7 @@ void b43legacy_radio_set_txpower_bg(struct b43legacy_wldev *dev,
 		b43legacy_radio_write16(dev, 0x0052,
 					(b43legacy_radio_read16(dev, 0x0052)
 					& ~0x0070) | ((txpower << 4) & 0x0070));
-	/* FIXME: The spec is very weird and unclear here. */
+	 
 	if (phy->type == B43legacy_PHYTYPE_G)
 		b43legacy_phy_lo_adjust(dev, 0);
 }
@@ -2044,7 +1414,7 @@ void b43legacy_radio_turn_on(struct b43legacy_wldev *dev)
 		b43legacy_phy_write(dev, 0x0015,
 				    (phy->gmode ? 0x00C0 : 0x0000));
 		if (phy->radio_off_context.valid) {
-			/* Restore the RFover values. */
+			 
 			b43legacy_phy_write(dev, B43legacy_PHY_RFOVER,
 					    phy->radio_off_context.rfover);
 			b43legacy_phy_write(dev, B43legacy_PHY_RFOVERVAL,

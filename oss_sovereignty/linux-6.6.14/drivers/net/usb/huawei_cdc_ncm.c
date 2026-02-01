@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* huawei_cdc_ncm.c - handles Huawei devices using the CDC NCM protocol as
- * transport layer.
- * Copyright (C) 2013	 Enrico Mioso <mrkiko.rs@gmail.com>
- *
- * ABSTRACT:
- * This driver handles devices resembling the CDC NCM standard, but
- * encapsulating another protocol inside it. An example are some Huawei 3G
- * devices, exposing an embedded AT channel where you can set up the NCM
- * connection.
- * This code has been heavily inspired by the cdc_mbim.c driver, which is
- * Copyright (c) 2012  Smith Micro Software, Inc.
- * Copyright (c) 2012  Bjørn Mork <bjorn@mork.no>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -25,7 +13,7 @@
 #include <linux/usb/cdc-wdm.h>
 #include <linux/usb/cdc_ncm.h>
 
-/* Driver data */
+ 
 struct huawei_cdc_ncm_state {
 	struct cdc_ncm_ctx *ctx;
 	atomic_t pmcount;
@@ -54,7 +42,7 @@ static int huawei_cdc_ncm_wdm_manage_power(struct usb_interface *intf,
 {
 	struct usbnet *usbnet_dev = usb_get_intfdata(intf);
 
-	/* can be called while disconnecting */
+	 
 	if (!usbnet_dev)
 		return 0;
 
@@ -71,15 +59,10 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
 	struct huawei_cdc_ncm_state *drvstate = (void *)&usbnet_dev->data;
 	int drvflags = 0;
 
-	/* altsetting should always be 1 for NCM devices - so we hard-coded
-	 * it here. Some huawei devices will need the NDP part of the NCM package to
-	 * be at the end of the frame.
-	 */
+	 
 	drvflags |= CDC_NCM_FLAG_NDP_TO_END;
 
-	/* For many Huawei devices the NTB32 mode is the default and the best mode
-	 * they work with. Huawei E5785 and E5885 devices refuse to work in NTB16 mode at all.
-	 */
+	 
 	drvflags |= CDC_NCM_FLAG_PREFER_NTB32;
 
 	ret = cdc_ncm_bind_common(usbnet_dev, intf, 1, drvflags);
@@ -89,13 +72,10 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
 	ctx = drvstate->ctx;
 
 	if (usbnet_dev->status)
-		/* The wMaxCommand buffer must be big enough to hold
-		 * any message from the modem. Experience has shown
-		 * that some replies are more than 256 bytes long
-		 */
+		 
 		subdriver = usb_cdc_wdm_register(ctx->control,
 						 &usbnet_dev->status->desc,
-						 1024, /* wMaxCommand */
+						 1024,  
 						 WWAN_PORT_AT,
 						 huawei_cdc_ncm_wdm_manage_power);
 	if (IS_ERR(subdriver)) {
@@ -104,7 +84,7 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
 		goto err;
 	}
 
-	/* Prevent usbnet from using the status descriptor */
+	 
 	usbnet_dev->status = NULL;
 
 	drvstate->subdriver = subdriver;
@@ -162,7 +142,7 @@ static int huawei_cdc_ncm_resume(struct usb_interface *intf)
 	bool callsub;
 	struct cdc_ncm_ctx *ctx = drvstate->ctx;
 
-	/* should we call subdriver's resume function? */
+	 
 	callsub =
 		(intf == ctx->control &&
 		drvstate->subdriver &&
@@ -190,7 +170,7 @@ static const struct driver_info huawei_cdc_ncm_info = {
 };
 
 static const struct usb_device_id huawei_cdc_ncm_devs[] = {
-	/* Huawei NCM devices disguised as vendor specific */
+	 
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x12d1, 0xff, 0x02, 0x16),
 	  .driver_info = (unsigned long)&huawei_cdc_ncm_info,
 	},
@@ -204,7 +184,7 @@ static const struct usb_device_id huawei_cdc_ncm_devs[] = {
 	  .driver_info = (unsigned long)&huawei_cdc_ncm_info,
 	},
 
-	/* Terminating entry */
+	 
 	{
 	},
 };

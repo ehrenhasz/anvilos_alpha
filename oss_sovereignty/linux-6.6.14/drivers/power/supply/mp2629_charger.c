@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MP2629 battery charger driver
- *
- * Copyright 2020 Monolithic Power Systems, Inc
- *
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/iio/consumer.h>
@@ -538,7 +532,7 @@ static ssize_t batt_impedance_compensation_store(struct device *dev,
 	if (val > 140)
 		return -ERANGE;
 
-	/* multiples of 10 mohm so round off */
+	 
 	val = val / 10;
 	ret = regmap_update_bits(charger->regmap, MP2629_REG_IMPEDANCE_COMP,
 					MP2629_MASK_IMPEDANCE, val << 4);

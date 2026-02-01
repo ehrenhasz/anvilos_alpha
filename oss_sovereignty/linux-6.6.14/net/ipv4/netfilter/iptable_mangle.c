@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is the 1999 rewrite of IP Firewalling, aiming for kernel 2.3.x.
- *
- * Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
- * Copyright (C) 2000-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <linux/netdevice.h>
@@ -43,7 +38,7 @@ ipt_mangle_out(void *priv, struct sk_buff *skb, const struct nf_hook_state *stat
 	u_int32_t mark;
 	int err;
 
-	/* Save things which could affect route */
+	 
 	mark = skb->mark;
 	iph = ip_hdr(skb);
 	saddr = iph->saddr;
@@ -51,7 +46,7 @@ ipt_mangle_out(void *priv, struct sk_buff *skb, const struct nf_hook_state *stat
 	tos = iph->tos;
 
 	ret = ipt_do_table(priv, skb, state);
-	/* Reroute for ANY change. */
+	 
 	if (ret != NF_DROP && ret != NF_STOLEN) {
 		iph = ip_hdr(skb);
 
@@ -68,7 +63,7 @@ ipt_mangle_out(void *priv, struct sk_buff *skb, const struct nf_hook_state *stat
 	return ret;
 }
 
-/* The work comes in here from netfilter.c. */
+ 
 static unsigned int
 iptable_mangle_hook(void *priv,
 		     struct sk_buff *skb,

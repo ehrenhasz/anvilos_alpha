@@ -70,7 +70,7 @@ add_key(const char *privkey, const char *certpath)
 	if (sshkey_is_sk(id->key))
 		id->sk_provider = xstrdup("internal");
 
-	/* Now the cert too */
+	 
 	id = xcalloc(1, sizeof(Identity));
 	TAILQ_INSERT_TAIL(&idtab->idlist, id, next);
 	idtab->nentries++;
@@ -110,7 +110,7 @@ reset_idtab(void)
 {
 	cleanup_idtab();
 	idtab_init();
-	// Load keys.
+	
 	add_key(PRIV_RSA, CERT_RSA);
 	add_key(PRIV_DSA, CERT_DSA);
 	add_key(PRIV_ECDSA, CERT_ECDSA);
@@ -159,7 +159,7 @@ test_one(const uint8_t* s, size_t slen)
 		    SYSLOG_FACILITY_AUTH, 1);
 		devnull = devnull_or_die();
 		allowed_providers = xstrdup("");
-		setenv("DISPLAY", "", 1); /* ban askpass */
+		setenv("DISPLAY", "", 1);  
 	}
 
 	reset_idtab();

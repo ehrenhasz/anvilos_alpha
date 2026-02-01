@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Power supply driver for the RICOH RN5T618 power management chip family
- *
- * Copyright (C) 2020 Andreas Kemnade
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -45,12 +41,7 @@
 
 #define FG_ENABLE 1
 
-/*
- * Formula seems accurate for battery current, but for USB current around 70mA
- * per step was seen on Kobo Clara HD but all sources show the same formula
- * also fur USB current. To avoid accidentially unwanted high currents we stick
- * to that formula
- */
+ 
 #define TO_CUR_REG(x) ((x) / 100000 - 1)
 #define FROM_CUR_REG(x) ((((x) & 0x1f) + 1) * 100000)
 #define CHG_MIN_CUR 100000
@@ -78,7 +69,7 @@ static enum power_supply_usb_type rn5t618_usb_types[] = {
 };
 
 static enum power_supply_property rn5t618_usb_props[] = {
-	/* input current limit is not very accurate */
+	 
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_STATUS,
@@ -87,7 +78,7 @@ static enum power_supply_property rn5t618_usb_props[] = {
 };
 
 static enum power_supply_property rn5t618_adp_props[] = {
-	/* input current limit is not very accurate */
+	 
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_STATUS,
@@ -118,7 +109,7 @@ static int rn5t618_battery_read_doublereg(struct rn5t618_power_info *info,
 	u16 old, new;
 
 	old = 0;
-	/* Prevent races when registers are changing. */
+	 
 	for (i = 0; i < 3; i++) {
 		ret = regmap_bulk_read(info->rn5t618->regmap,
 				       reg, data, sizeof(data));
@@ -171,7 +162,7 @@ static int rn5t618_battery_status(struct rn5t618_power_info *info,
 
 	val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
 
-	if (v & 0xc0) { /* USB or ADP plugged */
+	if (v & 0xc0) {  
 		val->intval = rn5t618_decode_status(v);
 	} else
 		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
@@ -223,7 +214,7 @@ static int rn5t618_battery_current_now(struct rn5t618_power_info *info,
 	if (ret)
 		return ret;
 
-	/* current is negative when discharging */
+	 
 	val->intval = sign_extend32(res, 13) * 1000;
 
 	return 0;
@@ -753,11 +744,7 @@ static int rn5t618_power_probe(struct platform_device *pdev)
 		return ret;
 
 	if (!(v & FG_ENABLE)) {
-		/* E.g. the vendor kernels of various Kobo and Tolino Ebook
-		 * readers disable the fuel gauge on shutdown. If a kernel
-		 * without fuel gauge support is booted after that, the fuel
-		 * gauge will get decalibrated.
-		 */
+		 
 		dev_info(&pdev->dev, "Fuel gauge not enabled, enabling now\n");
 		dev_info(&pdev->dev, "Expect imprecise results\n");
 		regmap_update_bits(info->rn5t618->regmap, RN5T618_CONTROL,

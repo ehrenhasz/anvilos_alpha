@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Cobalt CPLD functions
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -124,10 +119,7 @@ struct multiplier {
 	unsigned mult, hsdiv, n1;
 };
 
-/* List all possible multipliers (= hsdiv * n1). There are lots of duplicates,
-   which are all removed in this list to keep the list as short as possible.
-   The values for hsdiv and n1 are the actual values, not the register values.
- */
+ 
 static const struct multiplier multipliers[] = {
 	{    4,  4,   1 }, {    5,  5,   1 }, {    6,  6,   1 },
 	{    7,  7,   1 }, {    8,  4,   2 }, {    9,  9,   1 },
@@ -227,7 +219,7 @@ static const struct multiplier multipliers[] = {
 
 bool cobalt_cpld_set_freq(struct cobalt *cobalt, unsigned f_out)
 {
-	const unsigned f_xtal = 39170000;	/* xtal for si598 */
+	const unsigned f_xtal = 39170000;	 
 	u64 dco;
 	u64 rfreq;
 	unsigned delta = 0xffffffff;
@@ -268,12 +260,7 @@ bool cobalt_cpld_set_freq(struct cobalt *cobalt, unsigned f_out)
 	regs[4] = (rfreq >> 8) & 0xff;
 	regs[5] = rfreq & 0xff;
 
-	/* The sequence of clock_ctrl flags to set is very weird. It looks
-	   like I have to reset it, then set the new frequency and reset it
-	   again. It shouldn't be necessary to do a reset, but if I don't,
-	   then a strange frequency is set (156.412034 MHz, or register values
-	   0x01, 0xc7, 0xfc, 0x7f, 0x53, 0x62).
-	 */
+	 
 
 	cobalt_dbg(1, "%u: %6ph\n", f_out, regs);
 

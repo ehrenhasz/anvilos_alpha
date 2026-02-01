@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * s390 TRNG device driver
- *
- * Driver for the TRNG (true random number generation) command
- * available via CPACF extension MSA 7 on the s390 arch.
 
- * Copyright IBM Corp. 2017
- * Author(s): Harald Freudenberger <freude@de.ibm.com>
- */
+ 
 
 #define KMSG_COMPONENT "trng"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -30,7 +22,7 @@ MODULE_AUTHOR("IBM Corporation");
 MODULE_DESCRIPTION("s390 CPACF TRNG device driver");
 
 
-/* trng related debug feature things */
+ 
 
 static debug_info_t *debug_info;
 
@@ -40,13 +32,13 @@ static debug_info_t *debug_info;
 #define DEBUG_ERR(...)	debug_sprintf_event(debug_info, 3, ##__VA_ARGS__)
 
 
-/* trng helpers */
+ 
 
 static atomic64_t trng_dev_counter = ATOMIC64_INIT(0);
 static atomic64_t trng_hwrng_counter = ATOMIC64_INIT(0);
 
 
-/* file io functions */
+ 
 
 static int trng_open(struct inode *inode, struct file *file)
 {
@@ -61,11 +53,7 @@ static ssize_t trng_read(struct file *file, char __user *ubuf,
 	unsigned int n;
 	ssize_t ret = 0;
 
-	/*
-	 * use buf for requests <= sizeof(buf),
-	 * otherwise allocate one page and fetch
-	 * pagewise.
-	 */
+	 
 
 	if (nbytes > sizeof(buf)) {
 		p = (u8 *) __get_free_page(GFP_KERNEL);
@@ -102,7 +90,7 @@ static ssize_t trng_read(struct file *file, char __user *ubuf,
 }
 
 
-/* sysfs */
+ 
 
 static ssize_t trng_counter_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
@@ -152,7 +140,7 @@ static struct miscdevice trng_dev = {
 };
 
 
-/* hwrng_register */
+ 
 
 static inline void _trng_hwrng_read(u8 *buf, size_t len)
 {
@@ -182,12 +170,7 @@ static int trng_hwrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 	return len;
 }
 
-/*
- * hwrng register struct
- * The trng is supposed to have 100% entropy, and thus we register with a very
- * high quality value. If we ever have a better driver in the future, we should
- * change this value again when we merge this driver.
- */
+ 
 static struct hwrng trng_hwrng_dev = {
 	.name		= "s390-trng",
 	.data_read	= trng_hwrng_data_read,
@@ -195,7 +178,7 @@ static struct hwrng trng_hwrng_dev = {
 };
 
 
-/* init and exit */
+ 
 
 static void __init trng_debug_init(void)
 {
@@ -215,7 +198,7 @@ static int __init trng_init(void)
 
 	trng_debug_init();
 
-	/* check if subfunction CPACF_PRNO_TRNG is available */
+	 
 	if (!cpacf_query_func(CPACF_PRNO, CPACF_PRNO_TRNG)) {
 		DEBUG_INFO("trng_init CPACF_PRNO_TRNG not available\n");
 		ret = -ENODEV;

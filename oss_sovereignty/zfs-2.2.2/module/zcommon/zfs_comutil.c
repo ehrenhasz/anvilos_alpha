@@ -1,33 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2017 by Delphix. All rights reserved.
- */
+ 
+ 
 
-/*
- * This file is intended for functions that ought to be common between user
- * land (libzfs) and the kernel. When many common routines need to be shared
- * then a separate file should be created.
- */
+ 
 
 #if !defined(_KERNEL)
 #include <string.h>
@@ -39,9 +13,7 @@
 #include "zfs_comutil.h"
 #include <sys/zfs_ratelimit.h>
 
-/*
- * Are there allocatable vdevs?
- */
+ 
 boolean_t
 zfs_allocatable_devs(nvlist_t *nv)
 {
@@ -64,9 +36,7 @@ zfs_allocatable_devs(nvlist_t *nv)
 	return (B_FALSE);
 }
 
-/*
- * Are there special vdevs?
- */
+ 
 boolean_t
 zfs_special_devs(nvlist_t *nv, const char *type)
 {
@@ -100,7 +70,7 @@ zpool_get_load_policy(nvlist_t *nvl, zpool_load_policy_t *zlpp)
 	nvpair_t *elem;
 	const char *nm;
 
-	/* Defaults */
+	 
 	zlpp->zlp_rewind = ZPOOL_NO_REWIND;
 	zlpp->zlp_maxmeta = 0;
 	zlpp->zlp_maxdata = UINT64_MAX;
@@ -137,9 +107,7 @@ typedef struct zfs_version_spa_map {
 	int	version_spa;
 } zfs_version_spa_map_t;
 
-/*
- * Keep this table in monotonically increasing version number order.
- */
+ 
 static zfs_version_spa_map_t zfs_version_table[] = {
 	{ZPL_VERSION_INITIAL, SPA_VERSION_INITIAL},
 	{ZPL_VERSION_DIRENT_TYPE, SPA_VERSION_INITIAL},
@@ -149,10 +117,7 @@ static zfs_version_spa_map_t zfs_version_table[] = {
 	{0, 0}
 };
 
-/*
- * Return the max zpl version for a corresponding spa version
- * -1 is returned if no mapping exists.
- */
+ 
 int
 zfs_zpl_version_map(int spa_version)
 {
@@ -165,10 +130,7 @@ zfs_zpl_version_map(int spa_version)
 	return (version);
 }
 
-/*
- * Return the min spa version for a corresponding spa version
- * -1 is returned if no mapping exists.
- */
+ 
 int
 zfs_spa_version_map(int zpl_version)
 {
@@ -179,10 +141,7 @@ zfs_spa_version_map(int zpl_version)
 	return (-1);
 }
 
-/*
- * This is the table of legacy internal event names; it should not be modified.
- * The internal events are now stored in the history log as strings.
- */
+ 
 const char *const zfs_history_event_names[ZFS_NUM_LEGACY_HISTORY_EVENTS] = {
 	"invalid event",
 	"pool create",
@@ -230,11 +189,7 @@ const char *const zfs_history_event_names[ZFS_NUM_LEGACY_HISTORY_EVENTS] = {
 boolean_t
 zfs_dataset_name_hidden(const char *name)
 {
-	/*
-	 * Skip over datasets that are not visible in this zone,
-	 * internal datasets (which have a $ in their name), and
-	 * temporary datasets (which have a % in their name).
-	 */
+	 
 	if (strpbrk(name, "$%") != NULL)
 		return (B_TRUE);
 	if (!INGLOBALZONE(curproc) && !zone_dataset_visible(name, NULL))

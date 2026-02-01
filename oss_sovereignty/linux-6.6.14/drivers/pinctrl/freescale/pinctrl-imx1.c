@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// i.MX1 pinctrl driver based on imx pinmux core
-//
-// Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -130,7 +130,7 @@ enum imx1_pads {
 	MX1_PAD_TMR2OUT		= PAD_ID(PD, 31),
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx1_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX1_PAD_A24),
 	IMX_PINCTRL_PIN(MX1_PAD_TIN),

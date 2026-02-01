@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Marvell Technology Group Ltd.
- *
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -300,7 +295,7 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 		return;
 	}
 
-	/* BG2Q CPU PLL is not part of global registers */
+	 
 	cpupll_base = of_iomap(parent_np, 1);
 	of_node_put(parent_np);
 	if (!cpupll_base) {
@@ -309,14 +304,14 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 		return;
 	}
 
-	/* overwrite default clock names with DT provided ones */
+	 
 	clk = of_clk_get_by_name(np, clk_names[REFCLK]);
 	if (!IS_ERR(clk)) {
 		clk_names[REFCLK] = __clk_get_name(clk);
 		clk_put(clk);
 	}
 
-	/* simple register PLLs */
+	 
 	ret = berlin2_pll_register(&bg2q_pll_map, gbase + REG_SYSPLLCTL0,
 				   clk_names[SYSPLL], clk_names[REFCLK], 0);
 	if (ret)
@@ -327,14 +322,11 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 	if (ret)
 		goto bg2q_fail;
 
-	/* TODO: add BG2Q AVPLL */
+	 
 
-	/*
-	 * TODO: add reference clock bypass switches:
-	 * memPLLSWBypass, cpuPLLSWBypass, and sysPLLSWBypass
-	 */
+	 
 
-	/* clock divider cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(bg2q_divs); n++) {
 		const struct berlin2_div_data *dd = &bg2q_divs[n];
 		int k;
@@ -347,7 +339,7 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 				dd->num_parents, dd->flags, &lock);
 	}
 
-	/* clock gate cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(bg2q_gates); n++) {
 		const struct berlin2_gate_data *gd = &bg2q_gates[n];
 
@@ -356,15 +348,15 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 			    gd->bit_idx, 0, &lock);
 	}
 
-	/* cpuclk divider is fixed to 1 */
+	 
 	hws[CLKID_CPU] =
 		clk_hw_register_fixed_factor(NULL, "cpu", clk_names[CPUPLL],
 					  0, 1, 1);
-	/* twdclk is derived from cpu/3 */
+	 
 	hws[CLKID_TWD] =
 		clk_hw_register_fixed_factor(NULL, "twd", "cpu", 0, 1, 3);
 
-	/* check for errors on leaf clocks */
+	 
 	for (n = 0; n < MAX_CLKS; n++) {
 		if (!IS_ERR(hws[n]))
 			continue;
@@ -373,7 +365,7 @@ static void __init berlin2q_clock_setup(struct device_node *np)
 		goto bg2q_fail;
 	}
 
-	/* register clk-provider */
+	 
 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_data);
 
 	return;

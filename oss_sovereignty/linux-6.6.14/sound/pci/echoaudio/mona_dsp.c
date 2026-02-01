@@ -1,32 +1,4 @@
-/****************************************************************************
-
-   Copyright Echo Digital Audio Corporation (c) 1998 - 2004
-   All rights reserved
-   www.echoaudio.com
-
-   This file is part of Echo Digital Audio's generic driver library.
-
-   Echo Digital Audio's generic driver library is free software;
-   you can redistribute it and/or modify it under the terms of
-   the GNU General Public License as published by the Free Software
-   Foundation.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-   MA  02111-1307, USA.
-
-   *************************************************************************
-
- Translation from C++ and adaptation for use in ALSA-Driver
- were made by Giuliano Pochini <pochini@shiny.it>
-
-****************************************************************************/
+ 
 
 
 static int write_control_reg(struct echoaudio *chip, u32 value, char force);
@@ -62,7 +34,7 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 		ECHOCAPS_HAS_DIGITAL_MODE_SPDIF_OPTICAL |
 		ECHOCAPS_HAS_DIGITAL_MODE_ADAT;
 
-	/* Mona comes in both '301 and '361 flavors */
+	 
 	if (chip->device_id == DEVICE_ID_56361)
 		chip->dsp_code_to_load = FW_MONA_361_DSP;
 	else
@@ -92,8 +64,7 @@ static u32 detect_input_clocks(const struct echoaudio *chip)
 {
 	u32 clocks_from_dsp, clock_bits;
 
-	/* Map the DSP clock detect bits to the generic driver clock
-	   detect bits */
+	 
 	clocks_from_dsp = le32_to_cpu(chip->comm_page->status_clocks);
 
 	clock_bits = ECHO_CLOCK_BIT_INTERNAL;
@@ -112,8 +83,7 @@ static u32 detect_input_clocks(const struct echoaudio *chip)
 
 
 
-/* Mona has an ASIC on the PCI card and another ASIC in the external box; 
-both need to be loaded. */
+ 
 static int load_asic(struct echoaudio *chip)
 {
 	u32 control_reg;
@@ -137,7 +107,7 @@ static int load_asic(struct echoaudio *chip)
 	chip->asic_code = asic;
 	mdelay(10);
 
-	/* Do the external one */
+	 
 	err = load_asic_generic(chip, DSP_FNC_LOAD_MONA_EXTERNAL_ASIC,
 				FW_MONA_2_ASIC);
 	if (err < 0)
@@ -146,8 +116,7 @@ static int load_asic(struct echoaudio *chip)
 	mdelay(10);
 	err = check_asic_status(chip);
 
-	/* Set up the control register if the load succeeded -
-	   48 kHz, internal clock, S/PDIF RCA mode */
+	 
 	if (!err) {
 		control_reg = GML_CONVERTER_ENABLE | GML_48KHZ;
 		err = write_control_reg(chip, control_reg, true);
@@ -158,17 +127,13 @@ static int load_asic(struct echoaudio *chip)
 
 
 
-/* Depending on what digital mode you want, Mona needs different ASICs
-loaded.  This function checks the ASIC needed for the new mode and sees
-if it matches the one already loaded. */
+ 
 static int switch_asic(struct echoaudio *chip, char double_speed)
 {
 	int err;
 	short asic;
 
-	/* Check the clock detect bits to see if this is
-	a single-speed clock or a double-speed clock; load
-	a new ASIC if necessary. */
+	 
 	if (chip->device_id == DEVICE_ID_56361) {
 		if (double_speed)
 			asic = FW_MONA_361_1_ASIC96;
@@ -182,7 +147,7 @@ static int switch_asic(struct echoaudio *chip, char double_speed)
 	}
 
 	if (asic != chip->asic_code) {
-		/* Load the desired ASIC */
+		 
 		err = load_asic_generic(chip, DSP_FNC_LOAD_MONA_PCI_CARD_ASIC,
 					asic);
 		if (err < 0)
@@ -201,17 +166,17 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 	short asic;
 	char force_write;
 
-	/* Only set the clock for internal mode. */
+	 
 	if (chip->input_clock != ECHO_CLOCK_INTERNAL) {
 		dev_dbg(chip->card->dev,
 			"Cannot set sample rate - clock not set to CLK_CLOCKININTERNAL\n");
-		/* Save the rate anyhow */
+		 
 		chip->comm_page->sample_rate = cpu_to_le32(rate);
 		chip->sample_rate = rate;
 		return 0;
 	}
 
-	/* Now, check to see if the required ASIC is loaded */
+	 
 	if (rate >= 88200) {
 		if (chip->digital_mode == DIGITAL_MODE_ADAT)
 			return -EINVAL;
@@ -229,7 +194,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 	force_write = 0;
 	if (asic != chip->asic_code) {
 		int err;
-		/* Load the desired ASIC (load_asic_generic() can sleep) */
+		 
 		spin_unlock_irq(&chip->lock);
 		err = load_asic_generic(chip, DSP_FNC_LOAD_MONA_PCI_CARD_ASIC,
 					asic);
@@ -241,7 +206,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		force_write = 1;
 	}
 
-	/* Compute the new control register value */
+	 
 	clock = 0;
 	control_reg = le32_to_cpu(chip->comm_page->control_register);
 	control_reg &= GML_CLOCK_CLEAR_MASK;
@@ -259,7 +224,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		break;
 	case 44100:
 		clock = GML_44KHZ;
-		/* Professional mode */
+		 
 		if (control_reg & GML_SPDIF_PRO_MODE)
 			clock |= GML_SPDIF_SAMPLE_RATE0;
 		break;
@@ -287,7 +252,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 
 	control_reg |= clock;
 
-	chip->comm_page->sample_rate = cpu_to_le32(rate);	/* ignored by the DSP */
+	chip->comm_page->sample_rate = cpu_to_le32(rate);	 
 	chip->sample_rate = rate;
 	dev_dbg(chip->card->dev,
 		"set_sample_rate: %d clock %d\n", rate, clock);
@@ -302,7 +267,7 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 	u32 control_reg, clocks_from_dsp;
 	int err;
 
-	/* Mask off the clock select bits */
+	 
 	control_reg = le32_to_cpu(chip->comm_page->control_register) &
 		GML_CLOCK_CLEAR_MASK;
 	clocks_from_dsp = le32_to_cpu(chip->comm_page->status_clocks);
@@ -363,7 +328,7 @@ static int dsp_set_digital_mode(struct echoaudio *chip, u8 mode)
 	u32 control_reg;
 	int err, incompatible_clock;
 
-	/* Set clock to "internal" if it's not compatible with the new mode */
+	 
 	incompatible_clock = false;
 	switch (mode) {
 	case DIGITAL_MODE_SPDIF_OPTICAL:
@@ -383,26 +348,25 @@ static int dsp_set_digital_mode(struct echoaudio *chip, u8 mode)
 
 	spin_lock_irq(&chip->lock);
 
-	if (incompatible_clock) {	/* Switch to 48KHz, internal */
+	if (incompatible_clock) {	 
 		chip->sample_rate = 48000;
 		set_input_clock(chip, ECHO_CLOCK_INTERNAL);
 	}
 
-	/* Clear the current digital mode */
+	 
 	control_reg = le32_to_cpu(chip->comm_page->control_register);
 	control_reg &= GML_DIGITAL_MODE_CLEAR_MASK;
 
-	/* Tweak the control reg */
+	 
 	switch (mode) {
 	case DIGITAL_MODE_SPDIF_OPTICAL:
 		control_reg |= GML_SPDIF_OPTICAL_MODE;
 		break;
 	case DIGITAL_MODE_SPDIF_RCA:
-		/* GML_SPDIF_OPTICAL_MODE bit cleared */
+		 
 		break;
 	case DIGITAL_MODE_ADAT:
-		/* If the current ASIC is the 96KHz ASIC, switch the ASIC
-		   and set to 48 KHz */
+		 
 		if (chip->asic_code == FW_MONA_361_1_ASIC96 ||
 		    chip->asic_code == FW_MONA_301_1_ASIC96) {
 			set_sample_rate(chip, 48000);

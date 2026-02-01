@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *  Author: Dong Aisheng <aisheng.dong@nxp.com>
- *
- * File containing client-side RPC functions for the MISC service. These
- * function are ported to clients that communicate to the SC.
- *
- */
+
+ 
 
 #include <linux/firmware/imx/svc/misc.h>
 
@@ -37,16 +29,7 @@ struct imx_sc_msg_resp_misc_get_ctrl {
 	u32 val;
 } __packed __aligned(4);
 
-/*
- * This function sets a miscellaneous control value.
- *
- * @param[in]     ipc         IPC handle
- * @param[in]     resource    resource the control is associated with
- * @param[in]     ctrl        control to change
- * @param[in]     val         value to apply to the control
- *
- * @return Returns 0 for success and < 0 for errors.
- */
+ 
 
 int imx_sc_misc_set_control(struct imx_sc_ipc *ipc, u32 resource,
 			    u8 ctrl, u32 val)
@@ -67,16 +50,7 @@ int imx_sc_misc_set_control(struct imx_sc_ipc *ipc, u32 resource,
 }
 EXPORT_SYMBOL(imx_sc_misc_set_control);
 
-/*
- * This function gets a miscellaneous control value.
- *
- * @param[in]     ipc         IPC handle
- * @param[in]     resource    resource the control is associated with
- * @param[in]     ctrl        control to get
- * @param[out]    val         pointer to return the control value
- *
- * @return Returns 0 for success and < 0 for errors.
- */
+ 
 
 int imx_sc_misc_get_control(struct imx_sc_ipc *ipc, u32 resource,
 			    u8 ctrl, u32 *val)
@@ -106,16 +80,7 @@ int imx_sc_misc_get_control(struct imx_sc_ipc *ipc, u32 resource,
 }
 EXPORT_SYMBOL(imx_sc_misc_get_control);
 
-/*
- * This function starts/stops a CPU identified by @resource
- *
- * @param[in]     ipc         IPC handle
- * @param[in]     resource    resource the control is associated with
- * @param[in]     enable      true for start, false for stop
- * @param[in]     phys_addr   initial instruction address to be executed
- *
- * @return Returns 0 for success and < 0 for errors.
- */
+ 
 int imx_sc_pm_cpu_start(struct imx_sc_ipc *ipc, u32 resource,
 			bool enable, u64 phys_addr)
 {

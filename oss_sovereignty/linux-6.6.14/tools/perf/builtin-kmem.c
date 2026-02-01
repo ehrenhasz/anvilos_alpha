@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "builtin.h"
 
 #include "util/dso.h"
@@ -45,7 +45,7 @@ static long	kmem_page_size;
 static enum {
 	KMEM_SLAB,
 	KMEM_PAGE,
-} kmem_default = KMEM_SLAB;  /* for backward compatibility */
+} kmem_default = KMEM_SLAB;   
 
 struct alloc_stat;
 typedef int (*sort_fn_t)(void *, void *);
@@ -80,7 +80,7 @@ static struct rb_root root_caller_sorted;
 static unsigned long total_requested, total_allocated, total_freed;
 static unsigned long nr_allocs, nr_cross_allocs;
 
-/* filters for controlling start and stop of time of analysis */
+ 
 static struct perf_time_interval ptime;
 const char *time_str;
 
@@ -187,27 +187,14 @@ static int evsel__process_alloc_event(struct evsel *evsel, struct perf_sample *s
 
 	nr_allocs++;
 
-	/*
-	 * Commit 11e9734bcb6a ("mm/slab_common: unify NUMA and UMA
-	 * version of tracepoints") adds the field "node" into the
-	 * tracepoints 'kmalloc' and 'kmem_cache_alloc'.
-	 *
-	 * The legacy tracepoints 'kmalloc_node' and 'kmem_cache_alloc_node'
-	 * also contain the field "node".
-	 *
-	 * If the tracepoint contains the field "node" the tool stats the
-	 * cross allocation.
-	 */
+	 
 	if (evsel__field(evsel, "node")) {
 		int node1, node2;
 
 		node1 = cpu__get_node((struct perf_cpu){.cpu = sample->cpu});
 		node2 = evsel__intval(evsel, sample, "node");
 
-		/*
-		 * If the field "node" is NUMA_NO_NODE (-1), we don't take it
-		 * as a cross allocation.
-		 */
+		 
 		if ((node2 != NUMA_NO_NODE) && (node1 != node2))
 			nr_cross_allocs++;
 	}
@@ -390,10 +377,7 @@ static int build_alloc_func_list(void)
 	return 0;
 }
 
-/*
- * Find first non-memory allocation function from callchain.
- * The allocation functions are in the 'alloc_func_list'.
- */
+ 
 static u64 find_callsite(struct evsel *evsel, struct perf_sample *sample)
 {
 	struct addr_location al;
@@ -429,7 +413,7 @@ static u64 find_callsite(struct evsel *evsel, struct perf_sample *sample)
 		caller = bsearch(&key, alloc_func_list, nr_alloc_funcs,
 				 sizeof(key), callcmp);
 		if (!caller) {
-			/* found */
+			 
 			if (node->ms.map)
 				addr = map__dso_unmap_ip(node->ms.map, node->ip);
 			else
@@ -643,7 +627,7 @@ static int gfpcmp(const void *a, const void *b)
 	return fa->flags - fb->flags;
 }
 
-/* see include/trace/events/mmflags.h */
+ 
 static const struct {
 	const char *original;
 	const char *compact;
@@ -839,10 +823,7 @@ static int evsel__process_page_alloc_event(struct evsel *evsel, struct perf_samp
 
 	callsite = find_callsite(evsel, sample);
 
-	/*
-	 * This is to find the current page (with correct gfp flags and
-	 * migrate type) at free event.
-	 */
+	 
 	this.page = page;
 	pstat = page_stat__findnew_page(&this);
 	if (pstat == NULL)
@@ -945,7 +926,7 @@ static int evsel__process_page_free_event(struct evsel *evsel, struct perf_sampl
 
 static bool perf_kmem__skip_sample(struct perf_sample *sample)
 {
-	/* skip sample based on time? */
+	 
 	if (perf_time__skip_sample(&ptime, sample->time))
 		return true;
 
@@ -1387,14 +1368,14 @@ static int __cmd_kmem(struct perf_session *session)
 	int err = -EINVAL;
 	struct evsel *evsel;
 	const struct evsel_str_handler kmem_tracepoints[] = {
-		/* slab allocator */
+		 
 		{ "kmem:kmalloc",		evsel__process_alloc_event, },
 		{ "kmem:kmem_cache_alloc",	evsel__process_alloc_event, },
 		{ "kmem:kmalloc_node",		evsel__process_alloc_event, },
 		{ "kmem:kmem_cache_alloc_node", evsel__process_alloc_event, },
 		{ "kmem:kfree",			evsel__process_free_event, },
 		{ "kmem:kmem_cache_free",	evsel__process_free_event, },
-		/* page allocator */
+		 
 		{ "kmem:mm_page_alloc",		evsel__process_page_alloc_event, },
 		{ "kmem:mm_page_free",		evsel__process_page_free_event, },
 	};
@@ -1427,7 +1408,7 @@ out:
 	return err;
 }
 
-/* slab sort keys */
+ 
 static int ptr_cmp(void *a, void *b)
 {
 	struct alloc_stat *l = a;
@@ -1534,7 +1515,7 @@ static struct sort_dimension pingpong_sort_dimension = {
 	.cmp	= pingpong_cmp,
 };
 
-/* page sort keys */
+ 
 static int page_cmp(void *a, void *b)
 {
 	struct page_stat *l = a;
@@ -1625,7 +1606,7 @@ static int migrate_type_cmp(void *a, void *b)
 	struct page_stat *l = a;
 	struct page_stat *r = b;
 
-	/* for internal use to find free'd page */
+	 
 	if (l->migrate_type == -1U)
 		return 0;
 
@@ -1646,7 +1627,7 @@ static int gfp_flags_cmp(void *a, void *b)
 	struct page_stat *l = a;
 	struct page_stat *r = b;
 
-	/* for internal use to find free'd page */
+	 
 	if (l->gfp_flags == -1U)
 		return 0;
 
@@ -1847,13 +1828,7 @@ static int parse_line_opt(const struct option *opt __maybe_unused,
 
 static bool slab_legacy_tp_is_exposed(void)
 {
-	/*
-	 * The tracepoints "kmem:kmalloc_node" and
-	 * "kmem:kmem_cache_alloc_node" have been removed on the latest
-	 * kernel, if the tracepoint "kmem:kmalloc_node" is existed it
-	 * means the tool is running on an old kernel, we need to
-	 * rollback to support these legacy tracepoints.
-	 */
+	 
 	return IS_ERR(trace_event__tp_format("kmem", "kmalloc_node")) ?
 		false : true;
 }
@@ -1888,7 +1863,7 @@ static int __cmd_record(int argc, const char **argv)
 			rec_argc += ARRAY_SIZE(slab_legacy_events);
 	}
 	if (kmem_page)
-		rec_argc += ARRAY_SIZE(page_events) + 1; /* for -g */
+		rec_argc += ARRAY_SIZE(page_events) + 1;  
 
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Macronix external hardware ECC engine for NAND devices, also
- * called DPE for Data Processing Engine.
- *
- * Copyright © 2019 Macronix
- * Author: Miquel Raynal <miquel.raynal@bootlin.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
@@ -23,11 +17,11 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* DPE Configuration */
+ 
 #define DP_CONFIG 0x00
 #define   ECC_EN BIT(0)
 #define   ECC_TYP(idx) (((idx) << 3) & GENMASK(6, 3))
-/* DPE Interrupt Status */
+ 
 #define INTRPT_STS 0x04
 #define   TRANS_CMPLT BIT(0)
 #define   SDMA_MAIN BIT(1)
@@ -35,49 +29,49 @@
 #define   ECC_ERR BIT(3)
 #define   TO_SPARE BIT(4)
 #define   TO_MAIN BIT(5)
-/* DPE Interrupt Status Enable */
+ 
 #define INTRPT_STS_EN 0x08
-/* DPE Interrupt Signal Enable */
+ 
 #define INTRPT_SIG_EN 0x0C
-/* Host Controller Configuration */
+ 
 #define HC_CONFIG 0x10
-#define   DEV2MEM 0 /* TRANS_TYP_DMA in the spec */
-#define   MEM2MEM BIT(4) /* TRANS_TYP_IO in the spec */
-#define   MAPPING BIT(5) /* TRANS_TYP_MAPPING in the spec */
-#define   ECC_PACKED 0 /* LAYOUT_TYP_INTEGRATED in the spec */
-#define   ECC_INTERLEAVED BIT(2) /* LAYOUT_TYP_DISTRIBUTED in the spec */
+#define   DEV2MEM 0  
+#define   MEM2MEM BIT(4)  
+#define   MAPPING BIT(5)  
+#define   ECC_PACKED 0  
+#define   ECC_INTERLEAVED BIT(2)  
 #define   BURST_TYP_FIXED 0
 #define   BURST_TYP_INCREASING BIT(0)
-/* Host Controller Slave Address */
+ 
 #define HC_SLV_ADDR 0x14
-/* ECC Chunk Size */
+ 
 #define CHUNK_SIZE 0x20
-/* Main Data Size */
+ 
 #define MAIN_SIZE 0x24
-/* Spare Data Size */
+ 
 #define SPARE_SIZE 0x28
 #define   META_SZ(reg) ((reg) & GENMASK(7, 0))
 #define   PARITY_SZ(reg) (((reg) & GENMASK(15, 8)) >> 8)
 #define   RSV_SZ(reg) (((reg) & GENMASK(23, 16)) >> 16)
 #define   SPARE_SZ(reg) ((reg) >> 24)
-/* ECC Chunk Count */
+ 
 #define CHUNK_CNT 0x30
-/* SDMA Control */
+ 
 #define SDMA_CTRL 0x40
 #define   WRITE_NAND 0
 #define   READ_NAND BIT(1)
 #define   CONT_NAND BIT(29)
-#define   CONT_SYSM BIT(30) /* Continue System Memory? */
+#define   CONT_SYSM BIT(30)  
 #define   SDMA_STRT BIT(31)
-/* SDMA Address of Main Data */
+ 
 #define SDMA_MAIN_ADDR 0x44
-/* SDMA Address of Spare Data */
+ 
 #define SDMA_SPARE_ADDR 0x48
-/* DPE Version Number */
+ 
 #define DP_VER 0xD0
 #define   DP_VER_OFFSET 16
 
-/* Status bytes between each chunk of spare data */
+ 
 #define STAT_BYTES 4
 #define   NO_ERR 0x00
 #define   MAX_CORR_ERR 0x28
@@ -95,7 +89,7 @@ struct mxic_ecc_engine {
 };
 
 struct mxic_ecc_ctx {
-	/* ECC machinery */
+	 
 	unsigned int data_step_sz;
 	unsigned int oob_step_sz;
 	unsigned int parity_sz;
@@ -103,7 +97,7 @@ struct mxic_ecc_ctx {
 	u8 *status;
 	int steps;
 
-	/* DMA boilerplate */
+	 
 	struct nand_ecc_req_tweak_ctx req_ctx;
 	u8 *oobwithstat;
 	struct scatterlist sg[2];
@@ -236,7 +230,7 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 
 	nand->ecc.ctx.priv = ctx;
 
-	/* Only large page NAND chips may use BCH */
+	 
 	if (mtd->oobsize < 64) {
 		pr_err("BCH cannot be used with small page NAND chips\n");
 		return -EINVAL;
@@ -244,11 +238,11 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 
 	mtd_set_ooblayout(mtd, &mxic_ecc_ooblayout_ops);
 
-	/* Enable all status bits */
+	 
 	writel(TRANS_CMPLT | SDMA_MAIN | SDMA_SPARE | ECC_ERR |
 	       TO_SPARE | TO_MAIN, mxic->regs + INTRPT_STS_EN);
 
-	/* Configure the correction depending on the NAND device topology */
+	 
 	if (user->step_size && user->strength) {
 		step_size = user->step_size;
 		strength = user->strength;
@@ -262,7 +256,7 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 		desired_correction = steps * strength;
 	}
 
-	/* Step size is fixed to 1kiB, strength may vary (4 possible values) */
+	 
 	conf->step_size = SZ_1K;
 	steps = mtd->writesize / conf->step_size;
 
@@ -280,21 +274,21 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 		idx = min_t(unsigned int, idx,
 			    ARRAY_SIZE(possible_strength) - 1);
 	} else {
-		/* Missing data, maximize the correction */
+		 
 		idx = ARRAY_SIZE(possible_strength) - 1;
 	}
 
-	/* Tune the selected strength until it fits in the OOB area */
+	 
 	for (; idx >= 0; idx--) {
 		if (spare_size[idx] * steps <= mtd->oobsize)
 			break;
 	}
 
-	/* This engine cannot be used with this NAND device */
+	 
 	if (idx < 0)
 		return -EINVAL;
 
-	/* Configure the engine for the desired strength */
+	 
 	writel(ECC_TYP(idx), mxic->regs + DP_CONFIG);
 	conf->strength = possible_strength[idx];
 	spare_reg = readl(mxic->regs + SPARE_SIZE);
@@ -305,7 +299,7 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 	ctx->parity_sz = PARITY_SZ(spare_reg);
 	ctx->meta_sz = META_SZ(spare_reg);
 
-	/* Ensure buffers will contain enough bytes to store the STAT_BYTES */
+	 
 	ctx->req_ctx.oob_buffer_size = nanddev_per_page_oobsize(nand) +
 					(ctx->steps * STAT_BYTES);
 	ret = nand_ecc_init_req_tweaking(&ctx->req_ctx, nand);
@@ -321,7 +315,7 @@ static int mxic_ecc_init_ctx(struct nand_device *nand, struct device *dev)
 
 	sg_init_table(ctx->sg, 2);
 
-	/* Configuration dump and sanity checks */
+	 
 	dev_err(dev, "DPE version number: %d\n",
 		readl(mxic->regs + DP_VER) >> DP_VER_OFFSET);
 	dev_err(dev, "Chunk size: %d\n", readl(mxic->regs + CHUNK_SIZE));
@@ -369,7 +363,7 @@ static int mxic_ecc_init_ctx_external(struct nand_device *nand)
 	if (ret)
 		return ret;
 
-	/* Trigger each step manually */
+	 
 	writel(1, mxic->regs + CHUNK_CNT);
 	writel(BURST_TYP_INCREASING | ECC_PACKED | MEM2MEM,
 	       mxic->regs + HC_CONFIG);
@@ -396,13 +390,10 @@ static int mxic_ecc_init_ctx_pipelined(struct nand_device *nand)
 
 	ctx = nand_to_ecc_ctx(nand);
 
-	/* All steps should be handled in one go directly by the internal DMA */
+	 
 	writel(ctx->steps, mxic->regs + CHUNK_CNT);
 
-	/*
-	 * Interleaved ECC scheme cannot be used otherwise factory bad block
-	 * markers would be lost. A packed layout is mandatory.
-	 */
+	 
 	writel(BURST_TYP_INCREASING | ECC_PACKED | MAPPING,
 	       mxic->regs + HC_CONFIG);
 
@@ -454,10 +445,10 @@ static int mxic_ecc_process_data(struct mxic_ecc_engine *mxic,
 
 	mxic_ecc_enable_engine(mxic);
 
-	/* Trigger processing */
+	 
 	writel(SDMA_STRT | dir, mxic->regs + SDMA_CTRL);
 
-	/* Wait for completion */
+	 
 	ret = mxic_ecc_data_xfer_wait_for_completion(mxic);
 
 	mxic_ecc_disable_engine(mxic);
@@ -483,7 +474,7 @@ static void mxic_ecc_extract_status_bytes(struct mxic_ecc_ctx *ctx)
 	int next_stat_pos;
 	int step;
 
-	/* Extract the ECC status */
+	 
 	for (step = 0; step < ctx->steps; step++) {
 		next_stat_pos = ctx->oob_step_sz +
 				((STAT_BYTES + ctx->oob_step_sz) * step);
@@ -497,7 +488,7 @@ static void mxic_ecc_reconstruct_oobbuf(struct mxic_ecc_ctx *ctx,
 {
 	int step;
 
-	/* Reconstruct the OOB buffer linearly (without the ECC status bytes) */
+	 
 	for (step = 0; step < ctx->steps; step++)
 		memcpy(dst + (step * ctx->oob_step_sz),
 		       src + (step * (ctx->oob_step_sz + STAT_BYTES)),
@@ -509,7 +500,7 @@ static void mxic_ecc_add_room_in_oobbuf(struct mxic_ecc_ctx *ctx,
 {
 	int step;
 
-	/* Add some space in the OOB buffer for the status bytes */
+	 
 	for (step = 0; step < ctx->steps; step++)
 		memcpy(dst + (step * (ctx->oob_step_sz + STAT_BYTES)),
 		       src + (step * ctx->oob_step_sz),
@@ -548,7 +539,7 @@ static int mxic_ecc_count_biterrs(struct mxic_ecc_engine *mxic,
 	return failure ? -EBADMSG : max_bf;
 }
 
-/* External ECC engine helpers */
+ 
 static int mxic_ecc_prepare_io_req_external(struct nand_device *nand,
 					    struct nand_page_io_req *req)
 {
@@ -596,7 +587,7 @@ static int mxic_ecc_prepare_io_req_external(struct nand_device *nand,
 	if (ret)
 		return ret;
 
-	/* Retrieve the calculated ECC bytes */
+	 
 	for (step = 0; step < ctx->steps; step++) {
 		offset = ctx->meta_sz + (step * ctx->oob_step_sz);
 		mtd_ooblayout_get_eccbytes(mtd,
@@ -624,7 +615,7 @@ static int mxic_ecc_finish_io_req_external(struct nand_device *nand,
 		return 0;
 	}
 
-	/* Copy the OOB buffer and add room for the ECC engine status bytes */
+	 
 	mxic_ecc_add_room_in_oobbuf(ctx, ctx->oobwithstat, ctx->req->oobbuf.in);
 
 	sg_set_buf(&ctx->sg[0], req->databuf.in, req->datalen);
@@ -655,7 +646,7 @@ static int mxic_ecc_finish_io_req_external(struct nand_device *nand,
 		return ret;
 	}
 
-	/* Extract the status bytes and reconstruct the buffer */
+	 
 	mxic_ecc_extract_status_bytes(ctx);
 	mxic_ecc_reconstruct_oobbuf(ctx, ctx->req->oobbuf.in, ctx->oobwithstat);
 
@@ -664,7 +655,7 @@ static int mxic_ecc_finish_io_req_external(struct nand_device *nand,
 	return mxic_ecc_count_biterrs(mxic, nand);
 }
 
-/* Pipelined ECC engine helpers */
+ 
 static int mxic_ecc_prepare_io_req_pipelined(struct nand_device *nand,
 					     struct nand_page_io_req *req)
 {
@@ -678,7 +669,7 @@ static int mxic_ecc_prepare_io_req_pipelined(struct nand_device *nand,
 	nand_ecc_tweak_req(&ctx->req_ctx, req);
 	ctx->req = req;
 
-	/* Copy the OOB buffer and add room for the ECC engine status bytes */
+	 
 	mxic_ecc_add_room_in_oobbuf(ctx, ctx->oobwithstat, ctx->req->oobbuf.in);
 
 	sg_set_buf(&ctx->sg[0], req->databuf.in, req->datalen);
@@ -749,12 +740,12 @@ mxic_ecc_get_pdev(struct platform_device *spi_pdev)
 	struct platform_device *eng_pdev;
 	struct device_node *np;
 
-	/* Retrieve the nand-ecc-engine phandle */
+	 
 	np = of_parse_phandle(spi_pdev->dev.of_node, "nand-ecc-engine", 0);
 	if (!np)
 		return NULL;
 
-	/* Jump to the engine's device node */
+	 
 	eng_pdev = of_find_device_by_node(np);
 	of_node_put(np);
 
@@ -789,10 +780,7 @@ mxic_ecc_get_pipelined_engine(struct platform_device *spi_pdev)
 }
 EXPORT_SYMBOL_GPL(mxic_ecc_get_pipelined_engine);
 
-/*
- * Only the external ECC engine is exported as the pipelined is SoC specific, so
- * it is registered directly by the drivers that wrap it.
- */
+ 
 static int mxic_ecc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -805,10 +793,7 @@ static int mxic_ecc_probe(struct platform_device *pdev)
 
 	mxic->dev = &pdev->dev;
 
-	/*
-	 * Both memory regions for the ECC engine itself and the AXI slave
-	 * address are mandatory.
-	 */
+	 
 	mxic->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(mxic->regs)) {
 		dev_err(&pdev->dev, "Missing memory region\n");
@@ -818,7 +803,7 @@ static int mxic_ecc_probe(struct platform_device *pdev)
 	mxic_ecc_disable_engine(mxic);
 	mxic_ecc_disable_int(mxic);
 
-	/* IRQ is optional yet much more efficient */
+	 
 	mxic->irq = platform_get_irq_byname_optional(pdev, "ecc-engine");
 	if (mxic->irq > 0) {
 		ret = devm_request_irq(&pdev->dev, mxic->irq, mxic_ecc_isr, 0,
@@ -832,11 +817,7 @@ static int mxic_ecc_probe(struct platform_device *pdev)
 
 	mutex_init(&mxic->lock);
 
-	/*
-	 * In external mode, the device is the ECC engine. In pipelined mode,
-	 * the device is the host controller. The device is used to match the
-	 * right ECC engine based on the DT properties.
-	 */
+	 
 	mxic->external_engine.dev = &pdev->dev;
 	mxic->external_engine.integration = NAND_ECC_ENGINE_INTEGRATION_EXTERNAL;
 	mxic->external_engine.ops = &mxic_ecc_engine_external_ops;
@@ -859,7 +840,7 @@ static const struct of_device_id mxic_ecc_of_ids[] = {
 	{
 		.compatible = "mxicy,nand-ecc-engine-rev3",
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mxic_ecc_of_ids);
 

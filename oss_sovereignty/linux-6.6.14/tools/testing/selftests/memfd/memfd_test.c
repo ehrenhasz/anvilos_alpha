@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #define __EXPORTED_HEADERS__
 
@@ -39,9 +39,7 @@
 
 #define MFD_NOEXEC_SEAL	0x0008U
 
-/*
- * Default is not to test hugetlbfs
- */
+ 
 static size_t mfd_def_size = MFD_DEF_SIZE;
 static const char *memfd_str = MEMFD_STR;
 static int newpid_thread_fn2(void *arg);
@@ -59,9 +57,7 @@ static ssize_t fd2name(int fd, char *buf, size_t bufsize)
 		abort();
 	}
 
-	/*
-	 * reserver one byte for string termination.
-	 */
+	 
 	nbytes = readlink(buf1, buf, bufsize-1);
 	if (nbytes == -1) {
 		printf("readlink(%s) failed %m\n", buf1);
@@ -137,7 +133,7 @@ static void sysctl_assert_equal(const char *val)
 		abort();
 	}
 
-	/* Strip trailing whitespace. */
+	 
 	p = buf;
 	while (!isspace(*p))
 		p++;
@@ -342,7 +338,7 @@ static void mfd_assert_read(int fd)
 		abort();
 	}
 
-	/* verify PROT_READ *is* allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ,
@@ -355,7 +351,7 @@ static void mfd_assert_read(int fd)
 	}
 	munmap(p, mfd_def_size);
 
-	/* verify MAP_PRIVATE is *always* allowed (even writable) */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ | PROT_WRITE,
@@ -369,12 +365,12 @@ static void mfd_assert_read(int fd)
 	munmap(p, mfd_def_size);
 }
 
-/* Test that PROT_READ + MAP_SHARED mappings work. */
+ 
 static void mfd_assert_read_shared(int fd)
 {
 	void *p;
 
-	/* verify PROT_READ and MAP_SHARED *is* allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ,
@@ -428,12 +424,9 @@ static void mfd_assert_write(int fd)
 	void *p;
 	int r;
 
-	/*
-	 * huegtlbfs does not support write, but we want to
-	 * verify everything else here.
-	 */
+	 
 	if (!hugetlbfs_test) {
-		/* verify write() succeeds */
+		 
 		l = write(fd, "\0\0\0\0", 4);
 		if (l != 4) {
 			printf("write() failed: %m\n");
@@ -441,7 +434,7 @@ static void mfd_assert_write(int fd)
 		}
 	}
 
-	/* verify PROT_READ | PROT_WRITE is allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ | PROT_WRITE,
@@ -455,7 +448,7 @@ static void mfd_assert_write(int fd)
 	*(char *)p = 0;
 	munmap(p, mfd_def_size);
 
-	/* verify PROT_WRITE is allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_WRITE,
@@ -469,8 +462,7 @@ static void mfd_assert_write(int fd)
 	*(char *)p = 0;
 	munmap(p, mfd_def_size);
 
-	/* verify PROT_READ with MAP_SHARED is allowed and a following
-	 * mprotect(PROT_WRITE) allows writing */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ,
@@ -491,7 +483,7 @@ static void mfd_assert_write(int fd)
 	*(char *)p = 0;
 	munmap(p, mfd_def_size);
 
-	/* verify PUNCH_HOLE works */
+	 
 	r = fallocate(fd,
 		      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
 		      0,
@@ -508,14 +500,14 @@ static void mfd_fail_write(int fd)
 	void *p;
 	int r;
 
-	/* verify write() fails */
+	 
 	l = write(fd, "data", 4);
 	if (l != -EPERM) {
 		printf("expected EPERM on write(), but got %d: %m\n", (int)l);
 		abort();
 	}
 
-	/* verify PROT_READ | PROT_WRITE is not allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ | PROT_WRITE,
@@ -527,7 +519,7 @@ static void mfd_fail_write(int fd)
 		abort();
 	}
 
-	/* verify PROT_WRITE is not allowed */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_WRITE,
@@ -539,8 +531,7 @@ static void mfd_fail_write(int fd)
 		abort();
 	}
 
-	/* Verify PROT_READ with MAP_SHARED with a following mprotect is not
-	 * allowed. Note that for r/w the kernel already prevents the mmap. */
+	 
 	p = mmap(NULL,
 		 mfd_def_size,
 		 PROT_READ,
@@ -556,7 +547,7 @@ static void mfd_fail_write(int fd)
 		munmap(p, mfd_def_size);
 	}
 
-	/* verify PUNCH_HOLE fails */
+	 
 	r = fallocate(fd,
 		      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
 		      0,
@@ -651,7 +642,7 @@ static void mfd_assert_grow_write(int fd)
 	static char *buf;
 	ssize_t l;
 
-	/* hugetlbfs does not support write */
+	 
 	if (hugetlbfs_test)
 		return;
 
@@ -675,7 +666,7 @@ static void mfd_fail_grow_write(int fd)
 	static char *buf;
 	ssize_t l;
 
-	/* hugetlbfs does not support write */
+	 
 	if (hugetlbfs_test)
 		return;
 
@@ -746,7 +737,7 @@ static void mfd_fail_chmod(int fd, int mode)
 		abort();
 	}
 
-	/* verify that file mode bits did not change */
+	 
 	mfd_assert_mode(fd, st.st_mode & 07777);
 }
 
@@ -755,7 +746,7 @@ static int idle_thread_fn(void *arg)
 	sigset_t set;
 	int sig;
 
-	/* dummy waiter; SIGTERM terminates us anyway */
+	 
 	sigemptyset(&set);
 	sigaddset(&set, SIGTERM);
 	sigwait(&set, &sig);
@@ -816,11 +807,7 @@ static void join_idle_thread(pid_t pid)
 	waitpid(pid, NULL, 0);
 }
 
-/*
- * Test memfd_create() syscall
- * Verify syscall-argument validation, including name checks, flag validation
- * and more.
- */
+ 
 static void test_create(void)
 {
 	char buf[2048];
@@ -828,49 +815,46 @@ static void test_create(void)
 
 	printf("%s CREATE\n", memfd_str);
 
-	/* test NULL name */
+	 
 	mfd_fail_new(NULL, 0);
 
-	/* test over-long name (not zero-terminated) */
+	 
 	memset(buf, 0xff, sizeof(buf));
 	mfd_fail_new(buf, 0);
 
-	/* test over-long zero-terminated name */
+	 
 	memset(buf, 0xff, sizeof(buf));
 	buf[sizeof(buf) - 1] = 0;
 	mfd_fail_new(buf, 0);
 
-	/* verify "" is a valid name */
+	 
 	fd = mfd_assert_new("", 0, 0);
 	close(fd);
 
-	/* verify invalid O_* open flags */
+	 
 	mfd_fail_new("", 0x0100);
 	mfd_fail_new("", ~MFD_CLOEXEC);
 	mfd_fail_new("", ~MFD_ALLOW_SEALING);
 	mfd_fail_new("", ~0);
 	mfd_fail_new("", 0x80000000U);
 
-	/* verify EXEC and NOEXEC_SEAL can't both be set */
+	 
 	mfd_fail_new("", MFD_EXEC | MFD_NOEXEC_SEAL);
 
-	/* verify MFD_CLOEXEC is allowed */
+	 
 	fd = mfd_assert_new("", 0, MFD_CLOEXEC);
 	close(fd);
 
-	/* verify MFD_ALLOW_SEALING is allowed */
+	 
 	fd = mfd_assert_new("", 0, MFD_ALLOW_SEALING);
 	close(fd);
 
-	/* verify MFD_ALLOW_SEALING | MFD_CLOEXEC is allowed */
+	 
 	fd = mfd_assert_new("", 0, MFD_ALLOW_SEALING | MFD_CLOEXEC);
 	close(fd);
 }
 
-/*
- * Test basic sealing
- * A very basic sealing test to see whether setting/retrieving seals works.
- */
+ 
 static void test_basic(void)
 {
 	int fd;
@@ -881,33 +865,33 @@ static void test_basic(void)
 			    mfd_def_size,
 			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
 
-	/* add basic seals */
+	 
 	mfd_assert_has_seals(fd, 0);
 	mfd_assert_add_seals(fd, F_SEAL_SHRINK |
 				 F_SEAL_WRITE);
 	mfd_assert_has_seals(fd, F_SEAL_SHRINK |
 				 F_SEAL_WRITE);
 
-	/* add them again */
+	 
 	mfd_assert_add_seals(fd, F_SEAL_SHRINK |
 				 F_SEAL_WRITE);
 	mfd_assert_has_seals(fd, F_SEAL_SHRINK |
 				 F_SEAL_WRITE);
 
-	/* add more seals and seal against sealing */
+	 
 	mfd_assert_add_seals(fd, F_SEAL_GROW | F_SEAL_SEAL);
 	mfd_assert_has_seals(fd, F_SEAL_SHRINK |
 				 F_SEAL_GROW |
 				 F_SEAL_WRITE |
 				 F_SEAL_SEAL);
 
-	/* verify that sealing no longer works */
+	 
 	mfd_fail_add_seals(fd, F_SEAL_GROW);
 	mfd_fail_add_seals(fd, 0);
 
 	close(fd);
 
-	/* verify sealing does not work without MFD_ALLOW_SEALING */
+	 
 	fd = mfd_assert_new("kern_memfd_basic",
 			    mfd_def_size,
 			    MFD_CLOEXEC);
@@ -919,10 +903,7 @@ static void test_basic(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_WRITE
- * Test whether SEAL_WRITE actually prevents modifications.
- */
+ 
 static void test_seal_write(void)
 {
 	int fd;
@@ -945,10 +926,7 @@ static void test_seal_write(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_FUTURE_WRITE
- * Test whether SEAL_FUTURE_WRITE actually prevents modifications.
- */
+ 
 static void test_seal_future_write(void)
 {
 	int fd, fd2;
@@ -967,13 +945,13 @@ static void test_seal_future_write(void)
 	mfd_assert_add_seals(fd, F_SEAL_FUTURE_WRITE);
 	mfd_assert_has_seals(fd, F_SEAL_FUTURE_WRITE);
 
-	/* read should pass, writes should fail */
+	 
 	mfd_assert_read(fd);
 	mfd_assert_read_shared(fd);
 	mfd_fail_write(fd);
 
 	fd2 = mfd_assert_reopen_fd(fd);
-	/* read should pass, writes should still fail */
+	 
 	mfd_assert_read(fd2);
 	mfd_assert_read_shared(fd2);
 	mfd_fail_write(fd2);
@@ -985,10 +963,7 @@ static void test_seal_future_write(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_SHRINK
- * Test whether SEAL_SHRINK actually prevents shrinking
- */
+ 
 static void test_seal_shrink(void)
 {
 	int fd;
@@ -1011,10 +986,7 @@ static void test_seal_shrink(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_GROW
- * Test whether SEAL_GROW actually prevents growing
- */
+ 
 static void test_seal_grow(void)
 {
 	int fd;
@@ -1037,10 +1009,7 @@ static void test_seal_grow(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_SHRINK | SEAL_GROW
- * Test whether SEAL_SHRINK | SEAL_GROW actually prevents resizing
- */
+ 
 static void test_seal_resize(void)
 {
 	int fd;
@@ -1063,11 +1032,7 @@ static void test_seal_resize(void)
 	close(fd);
 }
 
-/*
- * Test SEAL_EXEC
- * Test fd is created with exec and allow sealing.
- * chmod() cannot change x bits after sealing.
- */
+ 
 static void test_exec_seal(void)
 {
 	int fd;
@@ -1114,17 +1079,14 @@ static void test_exec_seal(void)
 	close(fd);
 }
 
-/*
- * Test EXEC_NO_SEAL
- * Test fd is created with exec and not allow sealing.
- */
+ 
 static void test_exec_no_seal(void)
 {
 	int fd;
 
 	printf("%s EXEC_NO_SEAL\n", memfd_str);
 
-	/* Create with EXEC but without ALLOW_SEALING */
+	 
 	fd = mfd_assert_new("kern_memfd_exec_no_sealing",
 			    mfd_def_size,
 			    MFD_CLOEXEC | MFD_EXEC);
@@ -1134,16 +1096,14 @@ static void test_exec_no_seal(void)
 	close(fd);
 }
 
-/*
- * Test memfd_create with MFD_NOEXEC flag
- */
+ 
 static void test_noexec_seal(void)
 {
 	int fd;
 
 	printf("%s NOEXEC_SEAL\n", memfd_str);
 
-	/* Create with NOEXEC and ALLOW_SEALING */
+	 
 	fd = mfd_assert_new("kern_memfd_noexec",
 			    mfd_def_size,
 			    MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_NOEXEC_SEAL);
@@ -1152,7 +1112,7 @@ static void test_noexec_seal(void)
 	mfd_fail_chmod(fd, 0777);
 	close(fd);
 
-	/* Create with NOEXEC but without ALLOW_SEALING */
+	 
 	fd = mfd_assert_new("kern_memfd_noexec",
 			    mfd_def_size,
 			    MFD_CLOEXEC | MFD_NOEXEC_SEAL);
@@ -1278,10 +1238,7 @@ static int sysctl_simple_child(void *arg)
 	return 0;
 }
 
-/*
- * Test sysctl
- * A very basic test to make sure the core sysctl semantics work.
- */
+ 
 static void test_sysctl_simple(void)
 {
 	int pid = spawn_thread(CLONE_NEWPID, sysctl_simple_child, NULL);
@@ -1299,7 +1256,7 @@ static int sysctl_nested(void *arg)
 
 static int sysctl_nested_wait(void *arg)
 {
-	/* Wait for a SIGCONT. */
+	 
 	kill(getpid(), SIGSTOP);
 	return sysctl_nested(arg);
 }
@@ -1326,37 +1283,37 @@ static int sysctl_nested_child(void *arg)
 
 	printf("%s nested sysctl 0\n", memfd_str);
 	sysctl_assert_write("0");
-	/* A further nested pidns works the same. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_simple_child, NULL);
 	join_thread(pid);
 
 	printf("%s nested sysctl 1\n", memfd_str);
 	sysctl_assert_write("1");
-	/* Child inherits our setting. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested, test_sysctl_sysctl1);
 	join_thread(pid);
-	/* Child cannot raise the setting. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested,
 			   test_sysctl_sysctl1_failset);
 	join_thread(pid);
-	/* Child can lower the setting. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested,
 			   test_sysctl_set_sysctl2);
 	join_thread(pid);
-	/* Child lowering the setting has no effect on our setting. */
+	 
 	test_sysctl_sysctl1();
 
 	printf("%s nested sysctl 2\n", memfd_str);
 	sysctl_assert_write("2");
-	/* Child inherits our setting. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested, test_sysctl_sysctl2);
 	join_thread(pid);
-	/* Child cannot raise the setting. */
+	 
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested,
 			   test_sysctl_sysctl2_failset);
 	join_thread(pid);
 
-	/* Verify that the rules are actually inherited after fork. */
+	 
 	printf("%s nested sysctl 0 -> 1 after fork\n", memfd_str);
 	sysctl_assert_write("0");
 
@@ -1375,11 +1332,7 @@ static int sysctl_nested_child(void *arg)
 	kill(pid, SIGCONT);
 	join_thread(pid);
 
-	/*
-	 * Verify that the current effective setting is saved on fork, meaning
-	 * that the parent lowering the sysctl doesn't affect already-forked
-	 * children.
-	 */
+	 
 	printf("%s nested sysctl 2 -> 1 after fork\n", memfd_str);
 	sysctl_assert_write("2");
 	pid = spawn_thread(CLONE_NEWPID, sysctl_nested_wait,
@@ -1407,10 +1360,7 @@ static int sysctl_nested_child(void *arg)
 	return 0;
 }
 
-/*
- * Test sysctl with nested pid namespaces
- * Make sure that the sysctl nesting semantics work correctly.
- */
+ 
 static void test_sysctl_nested(void)
 {
 	int pid = spawn_thread(CLONE_NEWPID, sysctl_nested_child, NULL);
@@ -1418,10 +1368,7 @@ static void test_sysctl_nested(void)
 	join_thread(pid);
 }
 
-/*
- * Test sharing via dup()
- * Test that seals are shared between dupped FDs and they're all equal.
- */
+ 
 static void test_share_dup(char *banner, char *b_suffix)
 {
 	int fd, fd2;
@@ -1459,10 +1406,7 @@ static void test_share_dup(char *banner, char *b_suffix)
 	close(fd);
 }
 
-/*
- * Test sealing with active mmap()s
- * Modifying seals is only allowed if no other mmap() refs exist.
- */
+ 
 static void test_share_mmap(char *banner, char *b_suffix)
 {
 	int fd;
@@ -1475,7 +1419,7 @@ static void test_share_mmap(char *banner, char *b_suffix)
 			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
 	mfd_assert_has_seals(fd, 0);
 
-	/* shared/writable ref prevents sealing WRITE, but allows others */
+	 
 	p = mfd_assert_mmap_shared(fd);
 	mfd_fail_add_seals(fd, F_SEAL_WRITE);
 	mfd_assert_has_seals(fd, 0);
@@ -1483,7 +1427,7 @@ static void test_share_mmap(char *banner, char *b_suffix)
 	mfd_assert_has_seals(fd, F_SEAL_SHRINK);
 	munmap(p, mfd_def_size);
 
-	/* readable ref allows sealing */
+	 
 	p = mfd_assert_mmap_private(fd);
 	mfd_assert_add_seals(fd, F_SEAL_WRITE);
 	mfd_assert_has_seals(fd, F_SEAL_WRITE | F_SEAL_SHRINK);
@@ -1492,12 +1436,7 @@ static void test_share_mmap(char *banner, char *b_suffix)
 	close(fd);
 }
 
-/*
- * Test sealing with open(/proc/self/fd/%d)
- * Via /proc we can get access to a separate file-context for the same memfd.
- * This is *not* like dup(), but like a real separate open(). Make sure the
- * semantics are as expected and we correctly check for RDONLY / WRONLY / RDWR.
- */
+ 
 static void test_share_open(char *banner, char *b_suffix)
 {
 	int fd, fd2;
@@ -1536,10 +1475,7 @@ static void test_share_open(char *banner, char *b_suffix)
 	close(fd);
 }
 
-/*
- * Test sharing via fork()
- * Test whether seal-modifications work as expected with forked childs.
- */
+ 
 static void test_share_fork(char *banner, char *b_suffix)
 {
 	int fd;
@@ -1609,8 +1545,7 @@ int main(int argc, char **argv)
 	test_share_open("SHARE-OPEN", "");
 	test_share_fork("SHARE-FORK", "");
 
-	/* Run test-suite in a multi-threaded environment with a shared
-	 * file-table. */
+	 
 	pid = spawn_idle_thread(CLONE_FILES | CLONE_FS | CLONE_VM);
 	test_share_dup("SHARE-DUP", SHARED_FT_STR);
 	test_share_mmap("SHARE-MMAP", SHARED_FT_STR);

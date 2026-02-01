@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An I2C driver for the PCF85063 RTC
- * Copyright 2014 Rose Technology
- *
- * Author: Søren Andersen <san@rosetechnology.dk>
- * Maintainers: http://www.nslu2-linux.org/
- *
- * Copyright (C) 2019 Micro Crystal AG
- * Author: Alexandre Belloni <alexandre.belloni@bootlin.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/i2c.h>
 #include <linux/bcd.h>
@@ -18,20 +9,9 @@
 #include <linux/pm_wakeirq.h>
 #include <linux/regmap.h>
 
-/*
- * Information for this driver was pulled from the following datasheets.
- *
- *  https://www.nxp.com/docs/en/data-sheet/PCF85063A.pdf
- *  https://www.nxp.com/docs/en/data-sheet/PCF85063TP.pdf
- *
- *  PCF85063A -- Rev. 7 — 30 March 2018
- *  PCF85063TP -- Rev. 4 — 6 May 2015
- *
- *  https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-8263-C7_App-Manual.pdf
- *  RV8263 -- Rev. 1.0 — January 2019
- */
+ 
 
-#define PCF85063_REG_CTRL1		0x00 /* status */
+#define PCF85063_REG_CTRL1		0x00  
 #define PCF85063_REG_CTRL1_CAP_SEL	BIT(0)
 #define PCF85063_REG_CTRL1_STOP		BIT(5)
 #define PCF85063_REG_CTRL1_EXT_TEST	BIT(7)
@@ -41,18 +21,18 @@
 #define PCF85063_CTRL2_AIE		BIT(7)
 
 #define PCF85063_REG_OFFSET		0x02
-#define PCF85063_OFFSET_SIGN_BIT	6	/* 2's complement sign bit */
+#define PCF85063_OFFSET_SIGN_BIT	6	 
 #define PCF85063_OFFSET_MODE		BIT(7)
 #define PCF85063_OFFSET_STEP0		4340
 #define PCF85063_OFFSET_STEP1		4069
 
-#define PCF85063_REG_CLKO_F_MASK	0x07 /* frequency mask */
+#define PCF85063_REG_CLKO_F_MASK	0x07  
 #define PCF85063_REG_CLKO_F_32768HZ	0x00
 #define PCF85063_REG_CLKO_F_OFF		0x07
 
 #define PCF85063_REG_RAM		0x03
 
-#define PCF85063_REG_SC			0x04 /* datetime */
+#define PCF85063_REG_SC			0x04  
 #define PCF85063_REG_SC_OS		0x80
 
 #define PCF85063_REG_ALM_S		0x0b
@@ -78,18 +58,13 @@ static int pcf85063_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	int rc;
 	u8 regs[7];
 
-	/*
-	 * while reading, the time/date registers are blocked and not updated
-	 * anymore until the access is finished. To not lose a second
-	 * event, the access must be finished within one second. So, read all
-	 * time/date registers in one turn.
-	 */
+	 
 	rc = regmap_bulk_read(pcf85063->regmap, PCF85063_REG_SC, regs,
 			      sizeof(regs));
 	if (rc)
 		return rc;
 
-	/* if the clock has lost its power it makes no sense to use its time */
+	 
 	if (regs[0] & PCF85063_REG_SC_OS) {
 		dev_warn(&pcf85063->rtc->dev, "Power loss detected, invalid time\n");
 		return -EINVAL;
@@ -97,10 +72,10 @@ static int pcf85063_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_sec = bcd2bin(regs[0] & 0x7F);
 	tm->tm_min = bcd2bin(regs[1] & 0x7F);
-	tm->tm_hour = bcd2bin(regs[2] & 0x3F); /* rtc hr 0-23 */
+	tm->tm_hour = bcd2bin(regs[2] & 0x3F);  
 	tm->tm_mday = bcd2bin(regs[3] & 0x3F);
 	tm->tm_wday = regs[4] & 0x07;
-	tm->tm_mon = bcd2bin(regs[5] & 0x1F) - 1; /* rtc mn 1-12 */
+	tm->tm_mon = bcd2bin(regs[5] & 0x1F) - 1;  
 	tm->tm_year = bcd2bin(regs[6]);
 	tm->tm_year += 100;
 
@@ -113,10 +88,7 @@ static int pcf85063_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	int rc;
 	u8 regs[7];
 
-	/*
-	 * to accurately set the time, reset the divider chain and keep it in
-	 * reset state until all time/date registers are written
-	 */
+	 
 	rc = regmap_update_bits(pcf85063->regmap, PCF85063_REG_CTRL1,
 				PCF85063_REG_CTRL1_EXT_TEST |
 				PCF85063_REG_CTRL1_STOP,
@@ -124,35 +96,31 @@ static int pcf85063_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (rc)
 		return rc;
 
-	/* hours, minutes and seconds */
-	regs[0] = bin2bcd(tm->tm_sec) & 0x7F; /* clear OS flag */
+	 
+	regs[0] = bin2bcd(tm->tm_sec) & 0x7F;  
 
 	regs[1] = bin2bcd(tm->tm_min);
 	regs[2] = bin2bcd(tm->tm_hour);
 
-	/* Day of month, 1 - 31 */
+	 
 	regs[3] = bin2bcd(tm->tm_mday);
 
-	/* Day, 0 - 6 */
+	 
 	regs[4] = tm->tm_wday & 0x07;
 
-	/* month, 1 - 12 */
+	 
 	regs[5] = bin2bcd(tm->tm_mon + 1);
 
-	/* year and century */
+	 
 	regs[6] = bin2bcd(tm->tm_year - 100);
 
-	/* write all registers at once */
+	 
 	rc = regmap_bulk_write(pcf85063->regmap, PCF85063_REG_SC,
 			       regs, sizeof(regs));
 	if (rc)
 		return rc;
 
-	/*
-	 * Write the control register as a separate action since the size of
-	 * the register space is different between the PCF85063TP and
-	 * PCF85063A devices.  The rollover point can not be used.
-	 */
+	 
 	return regmap_update_bits(pcf85063->regmap, PCF85063_REG_CTRL1,
 				  PCF85063_REG_CTRL1_STOP, 0);
 }
@@ -193,7 +161,7 @@ static int pcf85063_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	buf[1] = bin2bcd(alrm->time.tm_min);
 	buf[2] = bin2bcd(alrm->time.tm_hour);
 	buf[3] = bin2bcd(alrm->time.tm_mday);
-	buf[4] = PCF85063_AEN; /* Do not match on week day */
+	buf[4] = PCF85063_AEN;  
 
 	ret = regmap_update_bits(pcf85063->regmap, PCF85063_REG_CTRL2,
 				 PCF85063_CTRL2_AIE | PCF85063_CTRL2_AF, 0);
@@ -360,9 +328,7 @@ static int pcf85063_load_capacitance(struct pcf85063 *pcf85063,
 }
 
 #ifdef CONFIG_COMMON_CLK
-/*
- * Handling of the clkout
- */
+ 
 
 #define clkout_hw_to_pcf85063(_hw) container_of(_hw, struct pcf85063, clkout_hw)
 
@@ -485,11 +451,7 @@ static struct clk *pcf85063_clkout_register_clk(struct pcf85063 *pcf85063)
 
 	fixed_clock = of_get_child_by_name(node, "clock");
 	if (fixed_clock) {
-		/*
-		 * skip registering square wave clock when a fixed
-		 * clock has been registered. The fixed clock is
-		 * registered automatically when being referenced.
-		 */
+		 
 		of_node_put(fixed_clock);
 		return NULL;
 	}
@@ -501,10 +463,10 @@ static struct clk *pcf85063_clkout_register_clk(struct pcf85063 *pcf85063)
 	init.num_parents = 0;
 	pcf85063->clkout_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string(node, "clock-output-names", &init.name);
 
-	/* register the clock */
+	 
 	clk = devm_clk_register(&pcf85063->rtc->dev, &pcf85063->clkout_hw);
 
 	if (!IS_ERR(clk))
@@ -630,7 +592,7 @@ static int pcf85063_probe(struct i2c_client *client)
 	devm_rtc_nvmem_register(pcf85063->rtc, &nvmem_cfg);
 
 #ifdef CONFIG_COMMON_CLK
-	/* register clk in common clk framework */
+	 
 	pcf85063_clkout_register_clk(pcf85063);
 #endif
 

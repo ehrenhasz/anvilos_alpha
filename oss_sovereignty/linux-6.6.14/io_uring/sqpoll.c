@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Contains the core associated with submission side polling of the SQ
- * ring, offloading submissions from the application to a kernel thread.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -29,10 +26,7 @@ void io_sq_thread_unpark(struct io_sq_data *sqd)
 {
 	WARN_ON_ONCE(sqd->thread == current);
 
-	/*
-	 * Do the dance but not conditional clear_bit() because it'd race with
-	 * other threads incrementing park_pending and setting the bit.
-	 */
+	 
 	clear_bit(IO_SQ_THREAD_SHOULD_PARK, &sqd->state);
 	if (atomic_dec_return(&sqd->park_pending))
 		set_bit(IO_SQ_THREAD_SHOULD_PARK, &sqd->state);
@@ -141,7 +135,7 @@ static struct io_sq_data *io_get_sq_data(struct io_uring_params *p,
 			*attached = true;
 			return sqd;
 		}
-		/* fall through for EPERM case, setup new sqd/task */
+		 
 		if (PTR_ERR(sqd) != -EPERM)
 			return sqd;
 	}
@@ -170,7 +164,7 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, bool cap_entries)
 	int ret = 0;
 
 	to_submit = io_sqring_entries(ctx);
-	/* if we're handling multiple rings, cap submit size for fairness */
+	 
 	if (cap_entries && to_submit > IORING_SQPOLL_CAP_ENTRIES_VALUE)
 		to_submit = IORING_SQPOLL_CAP_ENTRIES_VALUE;
 
@@ -184,10 +178,7 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, bool cap_entries)
 		if (!wq_list_empty(&ctx->iopoll_list))
 			io_do_iopoll(ctx, true);
 
-		/*
-		 * Don't submit if refs are dying, good for io_uring_register(),
-		 * but also it is relied upon by io_ring_exit_work()
-		 */
+		 
 		if (to_submit && likely(!percpu_ref_is_dying(&ctx->refs)) &&
 		    !(ctx->flags & IORING_SETUP_R_DISABLED))
 			ret = io_submit_sqes(ctx, to_submit);
@@ -230,7 +221,7 @@ static int io_sq_thread(void *data)
 	snprintf(buf, sizeof(buf), "iou-sqp-%d", sqd->task_pid);
 	set_task_comm(current, buf);
 
-	/* reset to our pid after we've set task_comm, for fdinfo */
+	 
 	sqd->task_pid = current->pid;
 
 	if (sqd->sq_cpu != -1) {
@@ -285,10 +276,7 @@ static int io_sq_thread(void *data)
 					break;
 				}
 
-				/*
-				 * Ensure the store of the wakeup flag is not
-				 * reordered with the load of the SQ tail
-				 */
+				 
 				smp_mb__after_atomic();
 
 				if (io_sqring_entries(ctx)) {
@@ -345,7 +333,7 @@ __cold int io_sq_offload_create(struct io_ring_ctx *ctx,
 {
 	int ret;
 
-	/* Retain compatibility with failing for an invalid attach attempt */
+	 
 	if ((ctx->flags & (IORING_SETUP_ATTACH_WQ | IORING_SETUP_SQPOLL)) ==
 				IORING_SETUP_ATTACH_WQ) {
 		struct fd f;
@@ -383,7 +371,7 @@ __cold int io_sq_offload_create(struct io_ring_ctx *ctx,
 		io_sq_thread_park(sqd);
 		list_add(&ctx->sqd_list, &sqd->ctx_list);
 		io_sqd_update_thread_idle(sqd);
-		/* don't attach to a dying SQPOLL thread, would be racy */
+		 
 		ret = (attached && !sqd->thread) ? -ENXIO : 0;
 		io_sq_thread_unpark(sqd);
 
@@ -417,7 +405,7 @@ __cold int io_sq_offload_create(struct io_ring_ctx *ctx,
 		if (ret)
 			goto err;
 	} else if (p->flags & IORING_SETUP_SQ_AFF) {
-		/* Can't have SQ_AFF without SQPOLL */
+		 
 		ret = -EINVAL;
 		goto err;
 	}
@@ -438,7 +426,7 @@ __cold int io_sqpoll_wq_cpu_affinity(struct io_ring_ctx *ctx,
 
 	if (sqd) {
 		io_sq_thread_park(sqd);
-		/* Don't set affinity for a dying thread */
+		 
 		if (sqd->thread)
 			ret = io_wq_cpu_affinity(sqd->thread->io_uring, mask);
 		io_sq_thread_unpark(sqd);

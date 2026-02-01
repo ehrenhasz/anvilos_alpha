@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -32,17 +32,17 @@ int test_mmap(void *ctx)
 
 	out_val = in_val;
 
-	/* data_map[2] = in_val; */
+	 
 	bpf_map_update_elem(&data_map, &two, (const void *)&in_val, 0);
 
-	/* data_map[1] = data_map[0] * 2; */
+	 
 	p = bpf_map_lookup_elem(&data_map, &zero);
 	if (p) {
 		val = (*p) * 2;
 		bpf_map_update_elem(&data_map, &one, &val, 0);
 	}
 
-	/* data_map[far] = in_val * 3; */
+	 
 	val = in_val * 3;
 	bpf_map_update_elem(&data_map, &far, &val, 0);
 

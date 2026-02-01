@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * AMD Encrypted Register State Support
- *
- * Author: Joerg Roedel <jroedel@suse.de>
- */
+ 
+ 
 
 #ifndef __ASM_ENCRYPTED_STATE_H
 #define __ASM_ENCRYPTED_STATE_H
@@ -23,12 +19,12 @@
 #define	VMGEXIT()			{ asm volatile("rep; vmmcall\n\r"); }
 
 enum es_result {
-	ES_OK,			/* All good */
-	ES_UNSUPPORTED,		/* Requested operation not supported */
-	ES_VMM_ERROR,		/* Unexpected state from the VMM */
-	ES_DECODE_FAILED,	/* Instruction decoding failed */
-	ES_EXCEPTION,		/* Instruction caused exception */
-	ES_RETRY,		/* Retry instruction emulation */
+	ES_OK,			 
+	ES_UNSUPPORTED,		 
+	ES_VMM_ERROR,		 
+	ES_DECODE_FAILED,	 
+	ES_EXCEPTION,		 
+	ES_RETRY,		 
 };
 
 struct es_fault_info {
@@ -39,18 +35,14 @@ struct es_fault_info {
 
 struct pt_regs;
 
-/* ES instruction emulation context */
+ 
 struct es_em_ctxt {
 	struct pt_regs *regs;
 	struct insn insn;
 	struct es_fault_info fi;
 };
 
-/*
- * AMD SEV Confidential computing blob structure. The structure is
- * defined in OVMF UEFI firmware header:
- * https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Guid/ConfidentialComputingSevSnpBlob.h
- */
+ 
 #define CC_BLOB_SEV_HDR_MAGIC	0x45444d41
 struct cc_blob_sev_info {
 	u32 magic;
@@ -76,24 +68,24 @@ static inline u64 lower_bits(u64 val, unsigned int bits)
 struct real_mode_header;
 enum stack_type;
 
-/* Early IDT entry points for #VC handler */
+ 
 extern void vc_no_ghcb(void);
 extern void vc_boot_ghcb(void);
 extern bool handle_vc_boot_ghcb(struct pt_regs *regs);
 
-/* PVALIDATE return codes */
+ 
 #define PVALIDATE_FAIL_SIZEMISMATCH	6
 
-/* Software defined (when rFlags.CF = 1) */
+ 
 #define PVALIDATE_FAIL_NOUPDATE		255
 
-/* RMP page size */
+ 
 #define RMP_PG_SIZE_4K			0
 #define RMP_PG_SIZE_2M			1
 
 #define RMPADJUST_VMSA_PAGE_BIT		BIT(16)
 
-/* SNP Guest message request */
+ 
 struct snp_req_data {
 	unsigned long req_gpa;
 	unsigned long resp_gpa;
@@ -105,13 +97,7 @@ struct sev_guest_platform_data {
 	u64 secrets_gpa;
 };
 
-/*
- * The secrets page contains 96-bytes of reserved field that can be used by
- * the guest OS. The guest OS uses the area to save the message sequence
- * number for each VMPCK.
- *
- * See the GHCB spec section Secret page layout for the format for this area.
- */
+ 
 struct secrets_os_area {
 	u32 msg_seqno_0;
 	u32 msg_seqno_1;
@@ -124,7 +110,7 @@ struct secrets_os_area {
 
 #define VMPCK_KEY_LEN		32
 
-/* See the SNP spec version 0.9 for secrets page format */
+ 
 struct snp_secrets_page_layout {
 	u32 version;
 	u32 imien	: 1,
@@ -170,7 +156,7 @@ static inline int rmpadjust(unsigned long vaddr, bool rmp_psize, unsigned long a
 {
 	int rc;
 
-	/* "rmpadjust" mnemonic support in binutils 2.36 and newer */
+	 
 	asm volatile(".byte 0xF3,0x0F,0x01,0xFE\n\t"
 		     : "=a"(rc)
 		     : "a"(vaddr), "c"(rmp_psize), "d"(attrs)
@@ -183,7 +169,7 @@ static inline int pvalidate(unsigned long vaddr, bool rmp_psize, bool validate)
 	bool no_rmpupdate;
 	int rc;
 
-	/* "pvalidate" mnemonic support in binutils 2.36 and newer */
+	 
 	asm volatile(".byte 0xF2, 0x0F, 0x01, 0xFF\n\t"
 		     CC_SET(c)
 		     : CC_OUT(c) (no_rmpupdate), "=a"(rc)

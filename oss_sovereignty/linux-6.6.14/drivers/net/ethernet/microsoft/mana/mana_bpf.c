@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <linux/inetdevice.h>
 #include <linux/etherdevice.h>
@@ -145,7 +145,7 @@ static struct bpf_prog *mana_chn_xdp_get(struct mana_port_context *apc)
 	return rtnl_dereference(apc->rxqs[0]->bpf_prog);
 }
 
-/* Set xdp program on channels */
+ 
 void mana_chn_setxdp(struct mana_port_context *apc, struct bpf_prog *prog)
 {
 	struct bpf_prog *old_prog = mana_chn_xdp_get(apc);
@@ -190,9 +190,7 @@ static int mana_xdp_set(struct net_device *ndev, struct bpf_prog *prog,
 		return -EOPNOTSUPP;
 	}
 
-	/* One refcnt of the prog is hold by the caller already, so
-	 * don't increase refcnt for this one.
-	 */
+	 
 	apc->bpf_prog = prog;
 
 	if (old_prog)

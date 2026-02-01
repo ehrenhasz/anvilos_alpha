@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/crypto.h>
@@ -42,13 +42,13 @@ static int nitrox_aes_gcm_setkey(struct crypto_aead *aead, const u8 *key,
 	if (aes_keylen < 0)
 		return -EINVAL;
 
-	/* fill crypto context */
+	 
 	fctx = nctx->u.fctx;
 	flags.fu = be64_to_cpu(fctx->flags.f);
 	flags.w0.aes_keylen = aes_keylen;
 	fctx->flags.f = cpu_to_be64(flags.fu);
 
-	/* copy enc key to context */
+	 
 	memset(&fctx->crypto, 0, sizeof(fctx->crypto));
 	memcpy(fctx->crypto.u.key, key, keylen);
 
@@ -100,9 +100,9 @@ static int alloc_src_sglist(struct nitrox_kcrypt_request *nkreq,
 	if (nents < 0)
 		return nents;
 
-	/* IV entry */
+	 
 	nents += 1;
-	/* Allocate buffer to hold IV and input scatterlist array */
+	 
 	ret = alloc_src_req_buf(nkreq, nents, ivsize);
 	if (ret)
 		return ret;
@@ -122,11 +122,9 @@ static int alloc_dst_sglist(struct nitrox_kcrypt_request *nkreq,
 	if (nents < 0)
 		return nents;
 
-	/* IV, ORH, COMPLETION entries */
+	 
 	nents += 3;
-	/* Allocate buffer to hold ORH, COMPLETION and output scatterlist
-	 * array
-	 */
+	 
 	ret = alloc_dst_req_buf(nkreq, nents);
 	if (ret)
 		return ret;
@@ -239,7 +237,7 @@ static int nitrox_aes_gcm_enc(struct aead_request *areq)
 	if (ret)
 		return ret;
 
-	/* send the crypto request */
+	 
 	return nitrox_process_se_request(nctx->ndev, creq, nitrox_aead_callback,
 					 areq);
 }
@@ -273,7 +271,7 @@ static int nitrox_aes_gcm_dec(struct aead_request *areq)
 	if (ret)
 		return ret;
 
-	/* send the crypto request */
+	 
 	return nitrox_process_se_request(nctx->ndev, creq, nitrox_aead_callback,
 					 areq);
 }
@@ -283,12 +281,12 @@ static int nitrox_aead_init(struct crypto_aead *aead)
 	struct nitrox_crypto_ctx *nctx = crypto_aead_ctx(aead);
 	struct crypto_ctx_hdr *chdr;
 
-	/* get the first device */
+	 
 	nctx->ndev = nitrox_get_first_device();
 	if (!nctx->ndev)
 		return -ENODEV;
 
-	/* allocate nitrox crypto context */
+	 
 	chdr = crypto_alloc_context(nctx->ndev);
 	if (!chdr) {
 		nitrox_put_device(nctx->ndev);
@@ -316,7 +314,7 @@ static int nitrox_gcm_common_init(struct crypto_aead *aead)
 	flags->w0.cipher_type = CIPHER_AES_GCM;
 	flags->w0.hash_type = AUTH_NULL;
 	flags->w0.iv_source = IV_FROM_DPTR;
-	/* ask microcode to calculate ipad/opad */
+	 
 	flags->w0.auth_input_type = 1;
 	flags->f = cpu_to_be64(flags->fu);
 
@@ -342,7 +340,7 @@ static void nitrox_aead_exit(struct crypto_aead *aead)
 {
 	struct nitrox_crypto_ctx *nctx = crypto_aead_ctx(aead);
 
-	/* free the nitrox crypto context */
+	 
 	if (nctx->u.ctx_handle) {
 		struct flexi_crypto_context *fctx = nctx->u.fctx;
 
@@ -464,7 +462,7 @@ static int nitrox_rfc4106_enc(struct aead_request *areq)
 	if (ret)
 		return ret;
 
-	/* send the crypto request */
+	 
 	return nitrox_process_se_request(nctx->ndev, creq,
 					 nitrox_rfc4106_callback, areq);
 }
@@ -497,7 +495,7 @@ static int nitrox_rfc4106_dec(struct aead_request *areq)
 	if (ret)
 		return ret;
 
-	/* send the crypto request */
+	 
 	return nitrox_process_se_request(nctx->ndev, creq,
 					 nitrox_rfc4106_callback, areq);
 }

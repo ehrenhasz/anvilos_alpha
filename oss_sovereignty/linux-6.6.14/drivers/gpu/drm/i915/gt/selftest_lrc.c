@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/prime_numbers.h>
 
@@ -25,7 +23,7 @@
 
 #define CS_GPR(engine, n) ((engine)->mmio_base + 0x600 + (n) * 4)
 #define NUM_GPR 16
-#define NUM_GPR_DW (NUM_GPR * 2) /* each GPR is 2 dwords */
+#define NUM_GPR_DW (NUM_GPR * 2)  
 
 #define LRI_HEADER MI_INSTR(0x22, 0)
 #define LRI_LENGTH_MASK GENMASK(7, 0)
@@ -53,17 +51,17 @@ static int wait_for_submit(struct intel_engine_cs *engine,
 			   struct i915_request *rq,
 			   unsigned long timeout)
 {
-	/* Ignore our own attempts to suppress excess tasklets */
+	 
 	tasklet_hi_schedule(&engine->sched_engine->tasklet);
 
 	timeout += jiffies;
 	do {
 		bool done = time_after(jiffies, timeout);
 
-		if (i915_request_completed(rq)) /* that was quick! */
+		if (i915_request_completed(rq))  
 			return 0;
 
-		/* Wait until the HW has acknowleged the submission (or err) */
+		 
 		intel_engine_flush_submission(engine);
 		if (!READ_ONCE(engine->execlists.pending[0]) && is_active(rq))
 			return 0;
@@ -127,7 +125,7 @@ static int context_flush(struct intel_context *ce, long timeout)
 		err = -ETIME;
 	i915_request_put(rq);
 
-	rmb(); /* We know the request is written, make sure all state is too! */
+	rmb();  
 	return err;
 }
 
@@ -160,12 +158,9 @@ static int live_lrc_layout(void *arg)
 	u32 *lrc;
 	int err;
 
-	/*
-	 * Check the registers offsets we use to create the initial reg state
-	 * match the layout saved by HW.
-	 */
+	 
 
-	lrc = (u32 *)__get_free_page(GFP_KERNEL); /* requires page alignment */
+	lrc = (u32 *)__get_free_page(GFP_KERNEL);  
 	if (!lrc)
 		return -ENOMEM;
 	GEM_BUG_ON(offset_in_page(lrc));
@@ -219,16 +214,7 @@ static int live_lrc_layout(void *arg)
 				break;
 			}
 
-			/*
-			 * When bit 19 of MI_LOAD_REGISTER_IMM instruction
-			 * opcode is set on Gen12+ devices, HW does not
-			 * care about certain register address offsets, and
-			 * instead check the following for valid address
-			 * ranges on specific engines:
-			 * RCS && CCS: BITS(0 - 10)
-			 * BCS: BITS(0 - 11)
-			 * VECS && VCS: BITS(0 - 13)
-			 */
+			 
 			lri_mask = get_lri_mask(engine, lri);
 
 			lri &= 0x7f;
@@ -245,10 +231,7 @@ static int live_lrc_layout(void *arg)
 					break;
 				}
 
-				/*
-				 * Skip over the actual register value as we
-				 * expect that to differ.
-				 */
+				 
 				dw += 2;
 				lri -= 2;
 			}
@@ -289,10 +272,7 @@ static int live_lrc_fixed(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Check the assumed register offsets match the actual locations in
-	 * the context image.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		const struct {
@@ -507,10 +487,7 @@ static int live_lrc_state(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Check the live register state matches what we expect for this
-	 * intel_context.
-	 */
+	 
 
 	scratch = create_scratch(gt);
 	if (IS_ERR(scratch))
@@ -623,7 +600,7 @@ static int __live_lrc_gpr(struct intel_engine_cs *engine,
 	int n;
 
 	if (GRAPHICS_VER(engine->i915) < 9 && engine->class != RENDER_CLASS)
-		return 0; /* GPR only on rcs0 for gen8 */
+		return 0;  
 
 	err = gpr_make_dirty(engine->kernel_context);
 	if (err)
@@ -701,10 +678,7 @@ static int live_lrc_gpr(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Check that GPR registers are cleared in new contexts as we need
-	 * to avoid leaking any information from previous contexts.
-	 */
+	 
 
 	scratch = create_scratch(gt);
 	if (IS_ERR(scratch))
@@ -820,7 +794,7 @@ static int __lrc_timestamp(const struct lrc_timestamp *arg, bool preempt)
 		wmb();
 	}
 
-	/* And wait for switch to kernel (to save our context to memory) */
+	 
 	err = context_flush(arg->ce[0], HZ / 2);
 	if (err)
 		goto err;
@@ -858,14 +832,7 @@ static int live_lrc_timestamp(void *arg)
 		U32_MAX,
 	};
 
-	/*
-	 * We want to verify that the timestamp is saved and restore across
-	 * context switches and is monotonic.
-	 *
-	 * So we do this with a little bit of LRC poisoning to check various
-	 * boundary conditions, and see what happens if we preempt the context
-	 * with a second request (carrying more poison into the timestamp).
-	 */
+	 
 
 	for_each_engine(data.engine, gt, id) {
 		int i, err = 0;
@@ -949,11 +916,7 @@ create_user_vma(struct i915_address_space *vm, unsigned long size)
 
 static u32 safe_poison(u32 offset, u32 poison)
 {
-	/*
-	 * Do not enable predication as it will nop all subsequent commands,
-	 * not only disabling the tests (by preventing all the other SRM) but
-	 * also preventing the arbitration events at the end of the request.
-	 */
+	 
 	if (offset == i915_mmio_reg_offset(RING_PREDICATE_RESULT(0)))
 		poison &= ~REG_BIT(0);
 
@@ -991,17 +954,7 @@ store_context(struct intel_context *ce, struct i915_vma *scratch)
 	do {
 		u32 len = hw[dw] & LRI_LENGTH_MASK;
 
-		/*
-		 * Keep it simple, skip parsing complex commands
-		 *
-		 * At present, there are no more MI_LOAD_REGISTER_IMM
-		 * commands after the first 3D state command. Rather
-		 * than include a table (see i915_cmd_parser.c) of all
-		 * the possible commands and their instruction lengths
-		 * (or mask for variable length instructions), assume
-		 * we have gathered the complete list of registers and
-		 * bail out.
-		 */
+		 
 		if ((hw[dw] >> INSTR_CLIENT_SHIFT) != INSTR_MI_CLIENT)
 			break;
 
@@ -1011,7 +964,7 @@ store_context(struct intel_context *ce, struct i915_vma *scratch)
 		}
 
 		if ((hw[dw] & GENMASK(31, 23)) != LRI_HEADER) {
-			/* Assume all other MI commands match LRI length mask */
+			 
 			dw += len + 2;
 			continue;
 		}
@@ -1161,7 +1114,7 @@ static struct i915_vma *load_context(struct intel_context *ce, u32 poison)
 	do {
 		u32 len = hw[dw] & LRI_LENGTH_MASK;
 
-		/* For simplicity, break parsing at the first complex command */
+		 
 		if ((hw[dw] >> INSTR_CLIENT_SHIFT) != INSTR_MI_CLIENT)
 			break;
 
@@ -1314,7 +1267,7 @@ static int compare_isolation(struct intel_engine_cs *engine,
 	do {
 		u32 len = hw[dw] & LRI_LENGTH_MASK;
 
-		/* For simplicity, break parsing at the first complex command */
+		 
 		if ((hw[dw] >> INSTR_CLIENT_SHIFT) != INSTR_MI_CLIENT)
 			break;
 
@@ -1341,8 +1294,8 @@ static int compare_isolation(struct intel_engine_cs *engine,
 			if (!is_moving(A[0][x], A[1][x]) &&
 			    (A[0][x] != B[0][x] || A[1][x] != B[1][x])) {
 				switch (hw[dw] & 4095) {
-				case 0x30: /* RING_HEAD */
-				case 0x34: /* RING_TAIL */
+				case 0x30:  
+				case 0x34:  
 					break;
 
 				default:
@@ -1384,7 +1337,7 @@ create_result_vma(struct i915_address_space *vm, unsigned long sz)
 	if (IS_ERR(vma))
 		return vma;
 
-	/* Set the results to a known value distinct from the poison */
+	 
 	ptr = i915_gem_object_pin_map_unlocked(vma->obj, I915_MAP_WC);
 	if (IS_ERR(ptr)) {
 		i915_vma_put(vma);
@@ -1469,7 +1422,7 @@ static int __lrc_isolation(struct intel_engine_cs *engine, u32 poison)
 		err = -ETIME;
 	}
 
-	/* Always cancel the semaphore wait, just in case the GPU gets stuck */
+	 
 	WRITE_ONCE(*sema, -1);
 	i915_request_put(rq);
 	if (err)
@@ -1517,18 +1470,12 @@ static int live_lrc_isolation(void *arg)
 	};
 	int err = 0;
 
-	/*
-	 * Our goal is try and verify that per-context state cannot be
-	 * tampered with by another non-privileged client.
-	 *
-	 * We take the list of context registers from the LRI in the default
-	 * context image and attempt to modify that list from a remote context.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		int i;
 
-		/* Just don't even ask */
+		 
 		if (!IS_ENABLED(CONFIG_DRM_I915_SELFTEST_BROKEN) &&
 		    skip_isolation(engine))
 			continue;
@@ -1653,20 +1600,14 @@ static int __live_lrc_indirect_ctx_bb(struct intel_engine_cs *engine)
 	if (err)
 		goto put_b;
 
-	/* We use the already reserved extra page in context state */
+	 
 	if (!a->wa_bb_page) {
 		GEM_BUG_ON(b->wa_bb_page);
 		GEM_BUG_ON(GRAPHICS_VER(engine->i915) == 12);
 		goto unpin_b;
 	}
 
-	/*
-	 * In order to test that our per context bb is truly per context,
-	 * and executes at the intended spot on context restoring process,
-	 * make the batch store the ring start value to memory.
-	 * As ring start is restored apriori of starting the indirect ctx bb and
-	 * as it will be different for each context, it fits to this purpose.
-	 */
+	 
 	indirect_ctx_bb_setup(a);
 	indirect_ctx_bb_setup(b);
 
@@ -1813,10 +1754,7 @@ static int live_lrc_garbage(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * Verify that we can recover if one context state is completely
-	 * corrupted.
-	 */
+	 
 
 	if (!IS_ENABLED(CONFIG_DRM_I915_SELFTEST_BROKEN))
 		return 0;
@@ -1918,10 +1856,7 @@ static int live_pphwsp_runtime(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Check that cumulative context runtime as stored in the pphwsp[16]
-	 * is monotonic.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		err = __live_pphwsp_runtime(engine);

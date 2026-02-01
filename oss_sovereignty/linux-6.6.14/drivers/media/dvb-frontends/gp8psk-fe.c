@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Frontend driver for the GENPIX 8pks/qpsk/DCII USB2.0 DVB-S module
- *
- * Copyright (C) 2006,2007 Alan Nisota (alannisota@gmail.com)
- * Copyright (C) 2006,2007 Genpix Electronics (genpix@genpix-electronics.com)
- *
- * Thanks to GENPIX for the sample code used to implement this module.
- *
- * This module is based off the vp7045 and vp702x modules
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -82,7 +73,7 @@ static int gp8psk_fe_read_status(struct dvb_frontend *fe,
 	return 0;
 }
 
-/* not supported by this Frontend */
+ 
 static int gp8psk_fe_read_ber(struct dvb_frontend* fe, u32 *ber)
 {
 	(void) fe;
@@ -90,7 +81,7 @@ static int gp8psk_fe_read_ber(struct dvb_frontend* fe, u32 *ber)
 	return 0;
 }
 
-/* not supported by this Frontend */
+ 
 static int gp8psk_fe_read_unc_blocks(struct dvb_frontend* fe, u32 *unc)
 {
 	(void) fe;
@@ -102,7 +93,7 @@ static int gp8psk_fe_read_snr(struct dvb_frontend* fe, u16 *snr)
 {
 	struct gp8psk_fe_state *st = fe->demodulator_priv;
 	gp8psk_fe_update_status(st);
-	/* snr is reported in dBu*256 */
+	 
 	*snr = st->snr;
 	return 0;
 }
@@ -111,13 +102,13 @@ static int gp8psk_fe_read_signal_strength(struct dvb_frontend* fe, u16 *strength
 {
 	struct gp8psk_fe_state *st = fe->demodulator_priv;
 	gp8psk_fe_update_status(st);
-	/* snr is reported in dBu*256 */
-	/* snr / 38.4 ~= 100% strength */
-	/* snr * 17 returns 100% strength as 65535 */
+	 
+	 
+	 
 	if (st->snr > 0xf00)
 		*strength = 0xffff;
 	else
-		*strength = (st->snr << 4) + st->snr; /* snr*17 */
+		*strength = (st->snr << 4) + st->snr;  
 	return 0;
 }
 
@@ -141,7 +132,7 @@ static int gp8psk_fe_set_frontend(struct dvb_frontend *fe)
 	cmd[6] = (freq >> 16) & 0xff;
 	cmd[7] = (freq >> 24) & 0xff;
 
-	/* backwards compatibility: DVB-S + 8-PSK were used for Turbo-FEC */
+	 
 	if (c->delivery_system == SYS_DVBS && c->modulation == PSK_8)
 		c->delivery_system = SYS_TURBO;
 
@@ -154,7 +145,7 @@ static int gp8psk_fe_set_frontend(struct dvb_frontend *fe)
 		}
 		c->fec_inner = FEC_AUTO;
 		break;
-	case SYS_DVBS2: /* kept for backwards compatibility */
+	case SYS_DVBS2:  
 		dprintk("%s: DVB-S2 delivery system selected\n", __func__);
 		break;
 	case SYS_TURBO:
@@ -197,7 +188,7 @@ static int gp8psk_fe_set_frontend(struct dvb_frontend *fe)
 		else
 			cmd[8] = ADV_MOD_DVB_QPSK;
 		break;
-	case PSK_8: /* PSK_8 is for compatibility with DN */
+	case PSK_8:  
 		cmd[8] = ADV_MOD_TURBO_8PSK;
 		switch (c->fec_inner) {
 		case FEC_2_3:
@@ -214,11 +205,11 @@ static int gp8psk_fe_set_frontend(struct dvb_frontend *fe)
 			cmd[9] = 0; break;
 		}
 		break;
-	case QAM_16: /* QAM_16 is for compatibility with DN */
+	case QAM_16:  
 		cmd[8] = ADV_MOD_TURBO_16QAM;
 		cmd[9] = 0;
 		break;
-	default: /* Unknown modulation */
+	default:  
 		dprintk("%s: unsupported modulation selected (%d)\n",
 			__func__, c->modulation);
 		return -EOPNOTSUPP;
@@ -257,7 +248,7 @@ static int gp8psk_fe_send_diseqc_burst(struct dvb_frontend *fe,
 
 	dprintk("%s\n", __func__);
 
-	/* These commands are certainly wrong */
+	 
 	cmd = (burst == SEC_MINI_A) ? 0x00 : 0x01;
 
 	if (st->ops->out(st->priv, SEND_DISEQC_COMMAND, cmd, 0,
@@ -357,14 +348,11 @@ static const struct dvb_frontend_ops gp8psk_fe_ops = {
 		.frequency_stepsize_hz	=  100 * kHz,
 		.symbol_rate_min        = 1000000,
 		.symbol_rate_max        = 45000000,
-		.symbol_rate_tolerance  = 500,  /* ppm */
+		.symbol_rate_tolerance  = 500,   
 		.caps = FE_CAN_INVERSION_AUTO |
 			FE_CAN_FEC_1_2 | FE_CAN_FEC_2_3 | FE_CAN_FEC_3_4 |
 			FE_CAN_FEC_5_6 | FE_CAN_FEC_7_8 | FE_CAN_FEC_AUTO |
-			/*
-			 * FE_CAN_QAM_16 is for compatibility
-			 * (Myth incorrectly detects Turbo-QPSK as plain QAM-16)
-			 */
+			 
 			FE_CAN_QPSK | FE_CAN_QAM_16 | FE_CAN_TURBO_FEC
 	},
 

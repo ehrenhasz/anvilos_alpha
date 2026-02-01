@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_SYS_NVPAIR_H
 #define	_SYS_NVPAIR_H extern __attribute__((visibility("default")))
@@ -71,40 +49,40 @@ typedef enum {
 } data_type_t;
 
 typedef struct nvpair {
-	int32_t nvp_size;	/* size of this nvpair */
-	int16_t	nvp_name_sz;	/* length of name string */
-	int16_t	nvp_reserve;	/* not used */
-	int32_t	nvp_value_elem;	/* number of elements for array types */
-	data_type_t nvp_type;	/* type of value */
-	char	nvp_name[];	/* name string */
-	/* aligned ptr array for string arrays */
-	/* aligned array of data for value */
+	int32_t nvp_size;	 
+	int16_t	nvp_name_sz;	 
+	int16_t	nvp_reserve;	 
+	int32_t	nvp_value_elem;	 
+	data_type_t nvp_type;	 
+	char	nvp_name[];	 
+	 
+	 
 } nvpair_t;
 
-/* nvlist header */
+ 
 typedef struct nvlist {
 	int32_t		nvl_version;
-	uint32_t	nvl_nvflag;	/* persistent flags */
-	uint64_t	nvl_priv;	/* ptr to private data if not packed */
+	uint32_t	nvl_nvflag;	 
+	uint64_t	nvl_priv;	 
 	uint32_t	nvl_flag;
-	int32_t		nvl_pad;	/* currently not used, for alignment */
+	int32_t		nvl_pad;	 
 } nvlist_t;
 
-/* nvp implementation version */
+ 
 #define	NV_VERSION	0
 
-/* nvlist pack encoding */
+ 
 #define	NV_ENCODE_NATIVE	0
 #define	NV_ENCODE_XDR		1
 
-/* nvlist persistent unique name flags, stored in nvl_nvflags */
+ 
 #define	NV_UNIQUE_NAME		0x1
 #define	NV_UNIQUE_NAME_TYPE	0x2
 
-/* nvlist lookup pairs related flags */
+ 
 #define	NV_FLAG_NOENTOK		0x1
 
-/* convenience macros */
+ 
 #define	NV_ALIGN(x)		(((ulong_t)(x) + 7ul) & ~7ul)
 #define	NV_ALIGN4(x)		(((x) + 3) & ~3)
 
@@ -119,7 +97,7 @@ typedef struct nvlist {
 #define	NVL_SIZE(nvl)		((nvl)->nvl_size)
 #define	NVL_FLAG(nvl)		((nvl)->nvl_flag)
 
-/* NV allocator framework */
+ 
 typedef struct nv_alloc_ops nv_alloc_ops_t;
 
 typedef struct nv_alloc {
@@ -144,11 +122,11 @@ _SYS_NVPAIR_H nv_alloc_t *const nv_alloc_pushpage;
 #endif
 
 _SYS_NVPAIR_H int nv_alloc_init(nv_alloc_t *, const nv_alloc_ops_t *,
-	/* args */ ...);
+	  ...);
 _SYS_NVPAIR_H void nv_alloc_reset(nv_alloc_t *);
 _SYS_NVPAIR_H void nv_alloc_fini(nv_alloc_t *);
 
-/* list management */
+ 
 _SYS_NVPAIR_H int nvlist_alloc(nvlist_t **, uint_t, int);
 _SYS_NVPAIR_H void nvlist_free(nvlist_t *);
 _SYS_NVPAIR_H int nvlist_size(nvlist_t *, size_t *, int);
@@ -272,7 +250,7 @@ _SYS_NVPAIR_H int nvlist_lookup_nvpair_embedded_index(nvlist_t *, const char *,
 _SYS_NVPAIR_H boolean_t nvlist_exists(const nvlist_t *, const char *);
 _SYS_NVPAIR_H boolean_t nvlist_empty(const nvlist_t *);
 
-/* processing nvpair */
+ 
 _SYS_NVPAIR_H nvpair_t *nvlist_next_nvpair(nvlist_t *, const nvpair_t *);
 _SYS_NVPAIR_H nvpair_t *nvlist_prev_nvpair(nvlist_t *, const nvpair_t *);
 _SYS_NVPAIR_H const char *nvpair_name(const nvpair_t *);
@@ -416,4 +394,4 @@ _SYS_NVPAIR_H nvlist_t *fnvpair_value_nvlist(nvpair_t *nvp);
 }
 #endif
 
-#endif	/* _SYS_NVPAIR_H */
+#endif	 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARM DMC-620 memory controller PMU driver
- *
- * Copyright (C) 2020 Ampere Computing LLC.
- */
+
+ 
 
 #define DMC620_PMUNAME		"arm_dmc620"
 #define DMC620_DRVNAME		DMC620_PMUNAME "_pmu"
@@ -36,15 +32,7 @@
 #define DMC620_PMU_MAX_COUNTERS				\
 	(DMC620_PMU_CLKDIV2_MAX_COUNTERS + DMC620_PMU_CLK_MAX_COUNTERS)
 
-/*
- * The PMU registers start at 0xA00 in the DMC-620 memory map, and these
- * offsets are relative to that base.
- *
- * Each counter has a group of control/value registers, and the
- * DMC620_PMU_COUNTERn offsets are within a counter group.
- *
- * The counter registers groups start at 0xA10.
- */
+ 
 #define DMC620_PMU_OVERFLOW_STATUS_CLKDIV2		0x8
 #define  DMC620_PMU_OVERFLOW_STATUS_CLKDIV2_MASK	\
 		(DMC620_PMU_CLKDIV2_MAX_COUNTERS - 1)
@@ -62,14 +50,11 @@
 #define  DMC620_PMU_COUNTERn_CONTROL_EVENT_MUX		GENMASK(6, 2)
 #define  DMC620_PMU_COUNTERn_CONTROL_INCR_MUX		GENMASK(8, 7)
 #define DMC620_PMU_COUNTERn_VALUE			0x20
-/* Offset of the registers for a given counter, relative to 0xA00 */
+ 
 #define DMC620_PMU_COUNTERn_OFFSET(n) \
 	(DMC620_PMU_COUNTERS_BASE + 0x28 * (n))
 
-/*
- * dmc620_pmu_irqs_lock: protects dmc620_pmu_irqs list
- * dmc620_pmu_node_lock: protects pmus_node lists in all dmc620_pmu instances
- */
+ 
 static DEFINE_MUTEX(dmc620_pmu_irqs_lock);
 static DEFINE_MUTEX(dmc620_pmu_node_lock);
 static LIST_HEAD(dmc620_pmu_irqs);
@@ -90,12 +75,7 @@ struct dmc620_pmu {
 	struct dmc620_pmu_irq *irq;
 	struct list_head pmus_node;
 
-	/*
-	 * We put all clkdiv2 and clk counters to a same array.
-	 * The first DMC620_PMU_CLKDIV2_MAX_COUNTERS bits belong to
-	 * clkdiv2 counters, the last DMC620_PMU_CLK_MAX_COUNTERS
-	 * belong to clk counters.
-	 */
+	 
 	DECLARE_BITMAP(used_mask, DMC620_PMU_MAX_COUNTERS);
 	struct perf_event *events[DMC620_PMU_MAX_COUNTERS];
 };
@@ -129,7 +109,7 @@ dmc620_pmu_event_show(struct device *dev,
 	}})[0].attr.attr)
 
 static struct attribute *dmc620_pmu_events_attrs[] = {
-	/* clkdiv2 events list */
+	 
 	DMC620_PMU_EVENT_ATTR(clkdiv2_cycle_count, 0x0, 1),
 	DMC620_PMU_EVENT_ATTR(clkdiv2_allocate, 0x1, 1),
 	DMC620_PMU_EVENT_ATTR(clkdiv2_queue_depth, 0x2, 1),
@@ -157,7 +137,7 @@ static struct attribute *dmc620_pmu_events_attrs[] = {
 	DMC620_PMU_EVENT_ATTR(clkdiv2_ranks_in_pwr_down, 0x18, 1),
 	DMC620_PMU_EVENT_ATTR(clkdiv2_ranks_in_sref, 0x19, 1),
 
-	/* clk events list */
+	 
 	DMC620_PMU_EVENT_ATTR(clk_cycle_count, 0x0, 0),
 	DMC620_PMU_EVENT_ATTR(clk_request, 0x1, 0),
 	DMC620_PMU_EVENT_ATTR(clk_upload_stall, 0x2, 0),
@@ -169,7 +149,7 @@ static const struct attribute_group dmc620_pmu_events_attr_group = {
 	.attrs = dmc620_pmu_events_attrs,
 };
 
-/* User ABI */
+ 
 #define ATTR_CFG_FLD_mask_CFG		config
 #define ATTR_CFG_FLD_mask_LO		0
 #define ATTR_CFG_FLD_mask_HI		44
@@ -308,7 +288,7 @@ static int dmc620_get_event_idx(struct perf_event *event)
 			return idx;
 	}
 
-	/* The counters are all in use. */
+	 
 	return -EAGAIN;
 }
 
@@ -327,7 +307,7 @@ static void dmc620_pmu_event_update(struct perf_event *event)
 	u64 delta, prev_count, new_count;
 
 	do {
-		/* We may also be called from the irq handler */
+		 
 		prev_count = local64_read(&hwc->prev_count);
 		new_count = dmc620_pmu_read_counter(event);
 	} while (local64_cmpxchg(&hwc->prev_count,
@@ -375,11 +355,7 @@ static irqreturn_t dmc620_pmu_handle_irq(int irq_num, void *data)
 		struct perf_event *event;
 		unsigned int idx;
 
-		/*
-		 * HW doesn't provide a control to atomically disable all counters.
-		 * To prevent race condition (overflow happens while clearing status register),
-		 * disable all events before continuing
-		 */
+		 
 		for (idx = 0; idx < DMC620_PMU_MAX_COUNTERS; idx++) {
 			event = dmc620_pmu->events[idx];
 			if (!event)
@@ -438,7 +414,7 @@ static struct dmc620_pmu_irq *__dmc620_pmu_get_irq(int irq_num)
 
 	INIT_LIST_HEAD(&irq->pmus_node);
 
-	/* Pick one CPU to be the preferred one to use */
+	 
 	irq->cpu = raw_smp_processor_id();
 	refcount_set(&irq->refcount, 1);
 
@@ -518,10 +494,7 @@ static int dmc620_pmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * DMC 620 PMUs are shared across all cpus and cannot
-	 * support task bound and sampling events.
-	 */
+	 
 	if (is_sampling_event(event) ||
 		event->attach_state & PERF_ATTACH_TASK) {
 		dev_dbg(dmc620_pmu->pmu.dev,
@@ -529,23 +502,12 @@ static int dmc620_pmu_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * Many perf core operations (eg. events rotation) operate on a
-	 * single CPU context. This is obvious for CPU PMUs, where one
-	 * expects the same sets of events being observed on all CPUs,
-	 * but can lead to issues for off-core PMUs, where each
-	 * event could be theoretically assigned to a different CPU. To
-	 * mitigate this, we enforce CPU assignment to one, selected
-	 * processor.
-	 */
+	 
 	event->cpu = dmc620_pmu->irq->cpu;
 	if (event->cpu < 0)
 		return -EINVAL;
 
-	/*
-	 * We can't atomically disable all HW counters so only one event allowed,
-	 * although software events are acceptable.
-	 */
+	 
 	if (event->group_leader != event &&
 			!is_software_event(event->group_leader))
 		return -EINVAL;
@@ -644,7 +606,7 @@ static int dmc620_pmu_cpu_teardown(unsigned int cpu,
 	if (target >= nr_cpu_ids)
 		return 0;
 
-	/* We're only reading, but this isn't the place to be involving RCU */
+	 
 	mutex_lock(&dmc620_pmu_node_lock);
 	list_for_each_entry(dmc620_pmu, &irq->pmus_node, pmus_node)
 		perf_pmu_migrate_context(&dmc620_pmu->pmu, irq->cpu, target);
@@ -688,7 +650,7 @@ static int dmc620_pmu_device_probe(struct platform_device *pdev)
 	if (IS_ERR(dmc620_pmu->base))
 		return PTR_ERR(dmc620_pmu->base);
 
-	/* Make sure device is reset before enabling interrupt */
+	 
 	for (i = 0; i < DMC620_PMU_MAX_COUNTERS; i++)
 		dmc620_pmu_creg_write(dmc620_pmu, i, DMC620_PMU_COUNTERn_CONTROL, 0);
 	writel(0, dmc620_pmu->base + DMC620_PMU_OVERFLOW_STATUS_CLKDIV2);
@@ -730,7 +692,7 @@ static int dmc620_pmu_device_remove(struct platform_device *pdev)
 
 	dmc620_pmu_put_irq(dmc620_pmu);
 
-	/* perf will synchronise RCU before devres can free dmc620_pmu */
+	 
 	perf_pmu_unregister(&dmc620_pmu->pmu);
 
 	return 0;

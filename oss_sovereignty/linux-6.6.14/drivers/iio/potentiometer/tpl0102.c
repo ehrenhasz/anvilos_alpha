@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * tpl0102.c - Support for Texas Instruments digital potentiometers
- *
- * Copyright (C) 2016, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * TODO: enable/disable hi-z output control
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -27,10 +20,10 @@ enum tpl0102_type {
 };
 
 static const struct tpl0102_cfg tpl0102_cfg[] = {
-	/* on-semiconductor parts */
+	 
 	[CAT5140_503] = { .wipers = 1, .avail = { 0, 1, 255 }, .kohms = 50, },
 	[CAT5140_104] = { .wipers = 1, .avail = { 0, 1, 255 }, .kohms = 100, },
-	/* ti parts */
+	 
 	[TPL0102_104] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100 },
 	[TPL0401_103] = { .wipers = 1, .avail = { 0, 1, 127 }, .kohms = 10, },
 };

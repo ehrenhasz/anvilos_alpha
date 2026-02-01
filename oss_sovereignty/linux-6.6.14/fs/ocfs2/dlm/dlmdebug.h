@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * dlmdebug.h
- *
- * Copyright (C) 2008 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef DLMDEBUG_H
 #define DLMDEBUG_H
@@ -45,5 +41,5 @@ static inline void dlm_destroy_debugfs_root(void)
 {
 }
 
-#endif	/* CONFIG_DEBUG_FS */
-#endif	/* DLMDEBUG_H */
+#endif	 
+#endif	 

@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * consolemap.c
- *
- * Mapping from internal code (such as Latin-1 or Unicode or IBM PC code)
- * to font positions.
- *
- * aeb, 950210
- *
- * Support for multiple unimaps by Jakub Jelinek <jj@ultra.linux.cz>, July 1998
- *
- * Fix bug in inverse translation. Stanislav Voronyi <stas@cnti.uanet.kharkov.ua>, Dec 1998
- *
- * In order to prevent the following circular lock dependency:
- *   &mm->mmap_lock --> cpu_hotplug.lock --> console_lock --> &mm->mmap_lock
- *
- * We cannot allow page fault to happen while holding the console_lock.
- * Therefore, all the userspace copy operations have to be done outside
- * the console_lock critical sections.
- *
- * As all the affected functions are all called directly from vt_ioctl(), we
- * can allocate some small buffers directly on stack without worrying about
- * stack overflow.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -39,7 +17,7 @@
 #include <linux/string.h>
 
 static unsigned short translations[][E_TABSZ] = {
-  /* 8-bit Latin-1 mapped to Unicode -- trivial mapping */
+   
   [LAT1_MAP] = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
@@ -74,7 +52,7 @@ static unsigned short translations[][E_TABSZ] = {
     0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7,
     0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff
   },
-  /* VT100 graphics mapped to Unicode */
+   
   [GRAF_MAP] = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
@@ -109,7 +87,7 @@ static unsigned short translations[][E_TABSZ] = {
     0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7,
     0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff
   },
-  /* IBM Codepage 437 mapped to Unicode */
+   
   [IBMPC_MAP] = {
     0x0000, 0x263a, 0x263b, 0x2665, 0x2666, 0x2663, 0x2660, 0x2022,
     0x25d8, 0x25cb, 0x25d9, 0x2642, 0x2640, 0x266a, 0x266b, 0x263c,
@@ -144,7 +122,7 @@ static unsigned short translations[][E_TABSZ] = {
     0x2261, 0x00b1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00f7, 0x2248,
     0x00b0, 0x2219, 0x00b7, 0x221a, 0x207f, 0x00b2, 0x25a0, 0x00a0
   },
-  /* User mapping -- default to codes for direct font mapping */
+   
   [USER_MAP] = {
     0xf000, 0xf001, 0xf002, 0xf003, 0xf004, 0xf005, 0xf006, 0xf007,
     0xf008, 0xf009, 0xf00a, 0xf00b, 0xf00c, 0xf00d, 0xf00e, 0xf00f,
@@ -181,10 +159,9 @@ static unsigned short translations[][E_TABSZ] = {
   }
 };
 
-/* The standard kernel character-to-font mappings are not invertible
-   -- this is just a best effort. */
+ 
 
-#define MAX_GLYPH 512		/* Max possible glyph value */
+#define MAX_GLYPH 512		 
 
 static enum translation_map inv_translate[MAX_NR_CONSOLES];
 
@@ -204,15 +181,7 @@ static enum translation_map inv_translate[MAX_NR_CONSOLES];
 				 FIELD_PREP(UNI_ROW_BITS, (row)) | \
 				 FIELD_PREP(UNI_GLYPH_BITS, (glyph)))
 
-/**
- * struct uni_pagedict -- unicode directory
- *
- * @uni_pgdir: 32*32*64 table with glyphs
- * @refcount: reference count of this structure
- * @sum: checksum
- * @inverse_translations: best-effort inverse mapping
- * @inverse_trans_unicode: best-effort inverse mapping to unicode
- */
+ 
 struct uni_pagedict {
 	u16		**uni_pgdir[UNI_DIRS];
 	unsigned long	refcount;
@@ -244,7 +213,7 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *dict,
 	for (unsigned int ch = 0; ch < ARRAY_SIZE(translations[m]); ch++) {
 		int glyph = conv_uni_to_pc(conp, t[ch]);
 		if (glyph >= 0 && glyph < MAX_GLYPH && inv[glyph] < 32) {
-			/* prefer '-' above SHY etc. */
+			 
 			inv[glyph] = ch;
 		}
 	}
@@ -290,13 +259,7 @@ unsigned short *set_translate(enum translation_map m, struct vc_data *vc)
 	return translations[m];
 }
 
-/*
- * Inverse translation is impossible for several reasons:
- * 1. The font<->character maps are not 1-1.
- * 2. The text may have been written while a different translation map
- *    was active.
- * Still, it is now possible to a certain extent to cut and paste non-ASCII.
- */
+ 
 u16 inverse_translate(const struct vc_data *conp, u16 glyph, bool use_unicode)
 {
 	struct uni_pagedict *p;
@@ -341,14 +304,7 @@ static void update_user_maps(void)
 	}
 }
 
-/*
- * Load customizable translation table
- * arg points to a 256 byte translation table.
- *
- * The "old" variants are for translation directly to font (using the
- * 0xf000-0xf0ff "transparent" Unicodes) whereas the "new" variants set
- * Unicodes explicitly.
- */
+ 
 int con_set_trans_old(unsigned char __user * arg)
 {
 	unsigned short inbuf[E_TABSZ];
@@ -410,17 +366,9 @@ int con_get_trans_new(ushort __user * arg)
 	return copy_to_user(arg, outbuf, sizeof(outbuf)) ? -EFAULT : 0;
 }
 
-/*
- * Unicode -> current font conversion
- *
- * A font has at most 512 chars, usually 256.
- * But one font position may represent several Unicode chars.
- * A hashtable is somewhat of a pain to deal with, so use a
- * "paged table" instead.  Simulation has shown the memory cost of
- * this 3-level paged table scheme to be comparable to a hash table.
- */
+ 
 
-extern u8 dfont_unicount[];	/* Defined in console_defmap.c */
+extern u8 dfont_unicount[];	 
 extern u16 dfont_unitable[];
 
 static void con_release_unimap(struct uni_pagedict *dict)
@@ -449,7 +397,7 @@ static void con_release_unimap(struct uni_pagedict *dict)
 	dict->inverse_trans_unicode = NULL;
 }
 
-/* Caller must hold the console lock */
+ 
 void con_free_unimap(struct vc_data *vc)
 {
 	struct uni_pagedict *p;
@@ -527,7 +475,7 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
 				GFP_KERNEL);
 		if (!row)
 			return -ENOMEM;
-		/* No glyphs for the characters (yet) */
+		 
 		memset(row, 0xff, UNI_ROW_GLYPHS * sizeof(*row));
 	}
 
@@ -555,7 +503,7 @@ static int con_allocate_new(struct vc_data *vc)
 	return 0;
 }
 
-/* Caller must hold the lock */
+ 
 static int con_do_clear_unimap(struct vc_data *vc)
 {
 	struct uni_pagedict *old = *vc->uni_pagedict_loc;
@@ -592,15 +540,11 @@ static struct uni_pagedict *con_unshare_unimap(struct vc_data *vc,
 
 	new = *vc->uni_pagedict_loc;
 
-	/*
-	 * uni_pgdir is a 32*32*64 table with rows allocated when its first
-	 * entry is added. The unicode value must still be incremented for
-	 * empty rows. We are copying entries from "old" to "new".
-	 */
+	 
 	for (d = 0; d < UNI_DIRS; d++) {
 		u16 **dir = old->uni_pgdir[d];
 		if (!dir) {
-			/* Account for empty table */
+			 
 			uni += UNI_DIR_ROWS * UNI_ROW_GLYPHS;
 			continue;
 		}
@@ -608,7 +552,7 @@ static struct uni_pagedict *con_unshare_unimap(struct vc_data *vc,
 		for (r = 0; r < UNI_DIR_ROWS; r++) {
 			u16 *row = dir[r];
 			if (!row) {
-				/* Account for row of 64 empty entries */
+				 
 				uni += UNI_ROW_GLYPHS;
 				continue;
 			}
@@ -616,10 +560,7 @@ static struct uni_pagedict *con_unshare_unimap(struct vc_data *vc,
 			for (g = 0; g < UNI_ROW_GLYPHS; g++, uni++) {
 				if (row[g] == 0xffff)
 					continue;
-				/*
-				 * Found one, copy entry for unicode uni with
-				 * fontpos value row[g].
-				 */
+				 
 				ret = con_insert_unipair(new, uni, row[g]);
 				if (ret) {
 					old->refcount++;
@@ -650,7 +591,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
 
 	console_lock();
 
-	/* Save original vc_unipagdir_loc in case we allocate a new one */
+	 
 	dict = *vc->uni_pagedict_loc;
 	if (!dict) {
 		err = -EINVAL;
@@ -667,18 +608,14 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
 		dflt = NULL;
 	}
 
-	/*
-	 * Insert user specified unicode pairs into new table.
-	 */
+	 
 	for (plist = unilist; ct; ct--, plist++) {
 		err1 = con_insert_unipair(dict, plist->unicode, plist->fontpos);
 		if (err1)
 			err = err1;
 	}
 
-	/*
-	 * Merge with fontmaps of any other virtual consoles.
-	 */
+	 
 	if (con_unify_unimap(vc, dict))
 		goto out_unlock;
 
@@ -692,17 +629,7 @@ out_unlock:
 	return err;
 }
 
-/**
- *	con_set_default_unimap	-	set default unicode map
- *	@vc: the console we are updating
- *
- *	Loads the unimap for the hardware font, as defined in uni_hash.tbl.
- *	The representation used was the most compact I could come up
- *	with.  This routine is executed at video setup, and when the
- *	PIO_FONTRESET ioctl is called.
- *
- *	The caller must hold the console lock
- */
+ 
 int con_set_default_unimap(struct vc_data *vc)
 {
 	struct uni_pagedict *dict;
@@ -724,7 +651,7 @@ int con_set_default_unimap(struct vc_data *vc)
 		return 0;
 	}
 
-	/* The default font is always 256 characters */
+	 
 
 	err = con_do_clear_unimap(vc);
 	if (err)
@@ -753,13 +680,7 @@ int con_set_default_unimap(struct vc_data *vc)
 }
 EXPORT_SYMBOL(con_set_default_unimap);
 
-/**
- *	con_copy_unimap		-	copy unimap between two vts
- *	@dst_vc: target
- *	@src_vc: source
- *
- *	The caller must hold the console lock when invoking this method
- */
+ 
 int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
 {
 	struct uni_pagedict *src;
@@ -776,12 +697,7 @@ int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
 }
 EXPORT_SYMBOL(con_copy_unimap);
 
-/*
- *	con_get_unimap		-	get the unicode map
- *
- *	Read the console unicode data for this console. Called from the ioctl
- *	handlers.
- */
+ 
 int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
 		struct unipair __user *list)
 {
@@ -833,17 +749,8 @@ unlock:
 	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
 }
 
-/*
- * Always use USER_MAP. These functions are used by the keyboard,
- * which shouldn't be affected by G0/G1 switching, etc.
- * If the user map still contains default values, i.e. the
- * direct-to-font mapping, then assume user is using Latin1.
- *
- * FIXME: at some point we need to decide if we want to lock the table
- * update element itself via the keyboard_event_lock for consistency with the
- * keyboard driver as well as the consoles
- */
-/* may be called during an interrupt */
+ 
+ 
 u32 conv_8bit_to_uni(unsigned char c)
 {
 	unsigned short uni = translations[USER_MAP][c];
@@ -865,18 +772,14 @@ int conv_uni_to_pc(struct vc_data *conp, long ucs)
 	struct uni_pagedict *dict;
 	u16 **dir, *row, glyph;
 
-	/* Only 16-bit codes supported at this time */
+	 
 	if (ucs > 0xffff)
-		return -4;		/* Not found */
+		return -4;		 
 	else if (ucs < 0x20)
-		return -1;		/* Not a printable character */
+		return -1;		 
 	else if (ucs == 0xfeff || (ucs >= 0x200b && ucs <= 0x200f))
-		return -2;			/* Zero-width space */
-	/*
-	 * UNI_DIRECT_BASE indicates the start of the region in the User Zone
-	 * which always has a 1:1 mapping to the currently loaded font.  The
-	 * UNI_DIRECT_MASK indicates the bit span of the region.
-	 */
+		return -2;			 
+	 
 	else if ((ucs & ~UNI_DIRECT_MASK) == UNI_DIRECT_BASE)
 		return ucs & UNI_DIRECT_MASK;
 
@@ -899,11 +802,7 @@ int conv_uni_to_pc(struct vc_data *conp, long ucs)
 	return glyph;
 }
 
-/*
- * This is called at sys_setup time, after memory and the console are
- * initialized.  It must be possible to call kmalloc(..., GFP_KERNEL)
- * from this function, hence the call from sys_setup.
- */
+ 
 void __init
 console_map_init(void)
 {

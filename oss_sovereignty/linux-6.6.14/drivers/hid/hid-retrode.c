@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for Retrode 2 controller adapter and plug-in extensions
- *
- *  Copyright (c) 2017 Bastien Nocera <hadess@hadess.net>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -65,7 +60,7 @@ static int retrode_probe(struct hid_device *hdev,
 
 	int ret;
 
-	/* Has no effect on the mouse device */
+	 
 	hdev->quirks |= HID_QUIRK_MULTI_INPUT;
 
 	ret = hid_parse(hdev);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Author: Aleksa Sarai <cyphar@cyphar.com>
- * Copyright (C) 2018-2019 SUSE LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -25,19 +22,13 @@
 #include "../kselftest.h"
 #include "helpers.h"
 
-/* Construct a test directory with the following structure:
- *
- * root/
- * |-- a/
- * |   `-- c/
- * `-- b/
- */
+ 
 int setup_testdir(void)
 {
 	int dfd;
 	char dirname[] = "/tmp/ksft-openat2-rename-attack.XXXXXX";
 
-	/* Make the top-level directory. */
+	 
 	if (!mkdtemp(dirname))
 		ksft_exit_fail_msg("setup_testdir: failed to create tmpdir\n");
 	dfd = open(dirname, O_PATH | O_DIRECTORY);
@@ -51,17 +42,17 @@ int setup_testdir(void)
 	return dfd;
 }
 
-/* Swap @dirfd/@a and @dirfd/@b constantly. Parent must kill this process. */
+ 
 pid_t spawn_attack(int dirfd, char *a, char *b)
 {
 	pid_t child = fork();
 	if (child != 0)
 		return child;
 
-	/* If the parent (the test process) dies, kill ourselves too. */
+	 
 	E_prctl(PR_SET_PDEATHSIG, SIGKILL);
 
-	/* Swap @a and @b. */
+	 
 	for (;;)
 		renameat2(dirfd, a, dirfd, b, RENAME_EXCHANGE);
 	exit(1);
@@ -120,14 +111,14 @@ void test_rename_attack(int resolve)
 			else if (fd == -EXDEV)
 				exdevs++;
 			else if (fd == -ENOENT)
-				escapes++; /* escaped outside and got ENOENT... */
+				escapes++;  
 			else
-				other_errs++; /* unexpected error */
+				other_errs++;  
 		} else {
 			if (fdequal(fd, afd, NULL))
 				successes++;
 			else
-				escapes++; /* we got an unexpected fd */
+				escapes++;  
 		}
 		close(fd);
 	}
@@ -139,7 +130,7 @@ void test_rename_attack(int resolve)
 	resultfn("rename attack with %s (%d runs, got %d escapes)\n",
 		 flagname(resolve), ROUNDS, escapes);
 
-	/* Should be killed anyway, but might as well make sure. */
+	 
 	E_kill(child, SIGKILL);
 }
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2022 Microchip Technology Inc. */
+ 
+ 
 
 #ifndef _GPIO_PCI1XXXX_H
 #define _GPIO_PCI1XXXX_H
@@ -10,9 +10,7 @@
 #include <linux/types.h>
 #include <linux/auxiliary_bus.h>
 
-/* Perform operations like variable length write, read and write with read back for OTP / EEPROM
- * Perform bit mode write in OTP
- */
+ 
 
 struct gp_aux_data_type {
 	int irq_num;

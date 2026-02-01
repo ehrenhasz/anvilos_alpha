@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel-based Virtual Machine driver for Linux
- *
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_host.h>
@@ -78,10 +74,7 @@ void kvm_arch_create_vcpu_debugfs(struct kvm_vcpu *vcpu, struct dentry *debugfs_
 	}
 }
 
-/*
- * This covers statistics <1024 (11=log(1024)+1), which should be enough to
- * cover RMAP_RECYCLE_THRESHOLD.
- */
+ 
 #define  RMAP_LOG_SIZE  11
 
 static const char *kvm_lpage_str[KVM_NR_PAGE_SIZES] = { "4K", "2M", "1G" };
@@ -93,7 +86,7 @@ static int kvm_mmu_rmaps_stat_show(struct seq_file *m, void *v)
 	struct kvm_memory_slot *slot;
 	struct kvm_memslots *slots;
 	unsigned int lpage_size, index;
-	/* Still small enough to be on the stack */
+	 
 	unsigned int *log[KVM_NR_PAGE_SIZES], *cur;
 	int i, j, k, l, ret;
 
@@ -132,7 +125,7 @@ static int kvm_mmu_rmaps_stat_show(struct seq_file *m, void *v)
 	write_unlock(&kvm->mmu_lock);
 	mutex_unlock(&kvm->slots_lock);
 
-	/* index=0 counts no rmap; index=1 counts 1 rmap */
+	 
 	seq_printf(m, "Rmap_Count:\t0\t1\t");
 	for (i = 2; i < RMAP_LOG_SIZE; i++) {
 		j = 1 << (i - 1);

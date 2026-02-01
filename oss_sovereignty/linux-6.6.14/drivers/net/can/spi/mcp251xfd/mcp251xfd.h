@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * mcp251xfd - Microchip MCP251xFD Family CAN controller driver
- *
- * Copyright (c) 2019, 2020, 2021 Pengutronix,
- *               Marc Kleine-Budde <kernel@pengutronix.de>
- * Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
- */
+ 
 
 #ifndef _MCP251XFD_H
 #define _MCP251XFD_H
@@ -23,9 +16,9 @@
 #include <linux/timecounter.h>
 #include <linux/workqueue.h>
 
-/* MPC251x registers */
+ 
 
-/* CAN FD Controller Module SFR */
+ 
 #define MCP251XFD_REG_CON 0x00
 #define MCP251XFD_REG_CON_TXBWS_MASK GENMASK(31, 28)
 #define MCP251XFD_REG_CON_ABAT BIT(27)
@@ -121,7 +114,7 @@
 #define MCP251XFD_REG_INT_TBCIF BIT(2)
 #define MCP251XFD_REG_INT_RXIF BIT(1)
 #define MCP251XFD_REG_INT_TXIF BIT(0)
-/* These IRQ flags must be cleared by SW in the CAN_INT register */
+ 
 #define MCP251XFD_REG_INT_IF_CLEARABLE_MASK \
 	(MCP251XFD_REG_INT_IVMIF | MCP251XFD_REG_INT_WAKIF | \
 	 MCP251XFD_REG_INT_CERRIF |  MCP251XFD_REG_INT_SERRIF | \
@@ -293,11 +286,11 @@
 #define MCP251XFD_REG_MASK_MEID_MASK GENMASK(28, 11)
 #define MCP251XFD_REG_MASK_MSID_MASK GENMASK(10, 0)
 
-/* RAM */
+ 
 #define MCP251XFD_RAM_START 0x400
 #define MCP251XFD_RAM_SIZE SZ_2K
 
-/* Message Object */
+ 
 #define MCP251XFD_OBJ_ID_SID11 BIT(29)
 #define MCP251XFD_OBJ_ID_EID_MASK GENMASK(28, 11)
 #define MCP251XFD_OBJ_ID_SID_MASK GENMASK(10, 0)
@@ -314,7 +307,7 @@
 #define MCP251XFD_REG_FRAME_EFF_SID_MASK GENMASK(28, 18)
 #define MCP251XFD_REG_FRAME_EFF_EID_MASK GENMASK(17, 0)
 
-/* MCP2517/18FD SFR */
+ 
 #define MCP251XFD_REG_OSC 0xe00
 #define MCP251XFD_REG_OSC_SCLKRDY BIT(12)
 #define MCP251XFD_REG_OSC_OSCRDY BIT(10)
@@ -325,7 +318,7 @@
 #define MCP251XFD_REG_OSC_CLKODIV_1 0
 #define MCP251XFD_REG_OSC_CLKODIV_MASK GENMASK(6, 5)
 #define MCP251XFD_REG_OSC_SCLKDIV BIT(4)
-#define MCP251XFD_REG_OSC_LPMEN BIT(3)	/* MCP2518FD only */
+#define MCP251XFD_REG_OSC_LPMEN BIT(3)	 
 #define MCP251XFD_REG_OSC_OSCDIS BIT(2)
 #define MCP251XFD_REG_OSC_PLLEN BIT(0)
 
@@ -363,11 +356,11 @@
 #define MCP251XFD_REG_ECCSTAT_DEDIF BIT(2)
 #define MCP251XFD_REG_ECCSTAT_SECIF BIT(1)
 
-#define MCP251XFD_REG_DEVID 0xe14	/* MCP2518FD only */
+#define MCP251XFD_REG_DEVID 0xe14	 
 #define MCP251XFD_REG_DEVID_ID_MASK GENMASK(7, 4)
 #define MCP251XFD_REG_DEVID_REV_MASK GENMASK(3, 0)
 
-/* SPI commands */
+ 
 #define MCP251XFD_SPI_INSTRUCTION_RESET 0x0000
 #define MCP251XFD_SPI_INSTRUCTION_WRITE 0x2000
 #define MCP251XFD_SPI_INSTRUCTION_READ 0x3000
@@ -389,7 +382,7 @@ static_assert(MCP251XFD_TIMESTAMP_WORK_DELAY_SEC <
 #define MCP251XFD_POLL_TIMEOUT_US (USEC_PER_MSEC)
 #define MCP251XFD_FRAME_LEN_MAX_BITS (736)
 
-/* Misc */
+ 
 #define MCP251XFD_NAPI_WEIGHT 32
 #define MCP251XFD_SOFTRESET_RETRIES_MAX 3
 #define MCP251XFD_READ_CRC_RETRIES_MAX 3
@@ -397,7 +390,7 @@ static_assert(MCP251XFD_TIMESTAMP_WORK_DELAY_SEC <
 #define MCP251XFD_SANITIZE_SPI 1
 #define MCP251XFD_SANITIZE_CAN 1
 
-/* FIFO and Ring */
+ 
 #define MCP251XFD_FIFO_TEF_NUM 1U
 #define MCP251XFD_FIFO_RX_NUM 3U
 #define MCP251XFD_FIFO_TX_NUM 1U
@@ -420,17 +413,17 @@ static_assert(MCP251XFD_FIFO_TEF_NUM == 1U);
 static_assert(MCP251XFD_FIFO_TEF_NUM == MCP251XFD_FIFO_TX_NUM);
 static_assert(MCP251XFD_FIFO_RX_NUM <= 4U);
 
-/* Silence TX MAB overflow warnings */
+ 
 #define MCP251XFD_QUIRK_MAB_NO_WARN BIT(0)
-/* Use CRC to access registers */
+ 
 #define MCP251XFD_QUIRK_CRC_REG BIT(1)
-/* Use CRC to access RX/TEF-RAM */
+ 
 #define MCP251XFD_QUIRK_CRC_RX BIT(2)
-/* Use CRC to access TX-RAM */
+ 
 #define MCP251XFD_QUIRK_CRC_TX BIT(3)
-/* Enable ECC for RAM */
+ 
 #define MCP251XFD_QUIRK_ECC BIT(4)
-/* Use Half Duplex SPI transfers */
+ 
 #define MCP251XFD_QUIRK_HALF_DUPLEX BIT(5)
 
 struct mcp251xfd_hw_tef_obj {
@@ -439,9 +432,7 @@ struct mcp251xfd_hw_tef_obj {
 	u32 ts;
 };
 
-/* The tx_obj_raw version is used in spi async, i.e. without
- * regmap. We have to take care of endianness ourselves.
- */
+ 
 struct __packed mcp251xfd_hw_tx_obj_raw {
 	__le32 id;
 	__le32 flags;
@@ -522,8 +513,8 @@ struct mcp251xfd_tef_ring {
 	unsigned int head;
 	unsigned int tail;
 
-	/* u8 obj_num equals tx_ring->obj_num */
-	/* u8 obj_size equals sizeof(struct mcp251xfd_hw_tef_obj) */
+	 
+	 
 
 	union mcp251xfd_write_reg_buf irq_enable_buf;
 	struct spi_transfer irq_enable_xfer;
@@ -593,7 +584,7 @@ enum mcp251xfd_model {
 	MCP251XFD_MODEL_MCP2517FD = 0x2517,
 	MCP251XFD_MODEL_MCP2518FD = 0x2518,
 	MCP251XFD_MODEL_MCP251863 = 0x251863,
-	MCP251XFD_MODEL_MCP251XFD = 0xffffffff,	/* autodetect model */
+	MCP251XFD_MODEL_MCP251XFD = 0xffffffff,	 
 };
 
 struct mcp251xfd_devtype_data {
@@ -613,8 +604,8 @@ struct mcp251xfd_priv {
 	struct can_rx_offload offload;
 	struct net_device *ndev;
 
-	struct regmap *map_reg;			/* register access */
-	struct regmap *map_rx;			/* RX/TEF RAM access */
+	struct regmap *map_reg;			 
+	struct regmap *map_rx;			 
 
 	struct regmap *map_nocrc;
 	struct mcp251xfd_map_buf_nocrc *map_buf_nocrc_rx;
@@ -676,7 +667,7 @@ MCP251XFD_IS(251XFD);
 
 static inline bool mcp251xfd_is_fd_mode(const struct mcp251xfd_priv *priv)
 {
-	/* listen-only mode works like FD mode */
+	 
 	return priv->can.ctrlmode & (CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_FD);
 }
 
@@ -724,7 +715,7 @@ static inline void
 __mcp251xfd_spi_cmd_crc_set_len(struct mcp251xfd_buf_cmd_crc *cmd,
 				u16 len, bool in_ram)
 {
-	/* Number of u32 for RAM access, number of u8 otherwise. */
+	 
 	if (in_ram)
 		cmd->len = len >> 2;
 	else

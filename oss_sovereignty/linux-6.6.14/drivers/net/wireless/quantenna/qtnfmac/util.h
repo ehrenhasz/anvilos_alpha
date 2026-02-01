@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef QTNFMAC_UTIL_H
 #define QTNFMAC_UTIL_H
@@ -31,4 +31,4 @@ static inline bool qtnf_sta_list_empty(const struct qtnf_sta_list *list)
 	return list_empty(&list->head);
 }
 
-#endif /* QTNFMAC_UTIL_H */
+#endif  

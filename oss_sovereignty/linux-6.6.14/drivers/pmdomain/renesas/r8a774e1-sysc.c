@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2H System Controller
- * Copyright (C) 2020 Renesas Electronics Corp.
- *
- * Based on Renesas R-Car H3 System Controller
- * Copyright (C) 2016-2017 Glider bvba
- */
+
+ 
 
 #include <linux/kernel.h>
 

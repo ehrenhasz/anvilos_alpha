@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1+
-// Copyright (C) 2022, Linaro Ltd - Daniel Lezcano <daniel.lezcano@linaro.org>
+
+
 #include <linux/netlink.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,13 +9,7 @@
 #include <thermal.h>
 #include "thermal_nl.h"
 
-/*
- * Optimization: fill this array to tell which event we do want to pay
- * attention to. That happens at init time with the ops
- * structure. Each ops will enable the event and the general handler
- * will be able to discard the event if there is not ops associated
- * with it.
- */
+ 
 static int enabled_ops[__THERMAL_GENL_EVENT_MAX];
 
 static int handle_thermal_event(struct nl_msg *n, void *arg)
@@ -30,9 +24,7 @@ static int handle_thermal_event(struct nl_msg *n, void *arg)
 
 	arg = thp->arg;
 
-	/*
-	 * This is an event we don't care of, bail out.
-	 */
+	 
 	if (!enabled_ops[genlhdr->cmd])
 		return THERMAL_SUCCESS;
 

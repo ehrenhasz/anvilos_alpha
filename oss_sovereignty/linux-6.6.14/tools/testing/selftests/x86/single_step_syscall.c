@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * single_step_syscall.c - single-steps various x86 syscalls
- * Copyright (c) 2014-2015 Andrew Lutomirski
- *
- * This is a very simple series of tests that makes system calls with
- * the TF flag set.  This exercises some nasty kernel code in the
- * SYSENTER case: SYSENTER does not clear TF, so SYSENTER with TF set
- * immediately issues #DB from CPL 0.  This requires special handling in
- * the kernel.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -130,7 +121,7 @@ static void fast_syscall_no_tf(void)
 {
 	sig_traps = 0;
 	printf("[RUN]\tFast syscall with TF cleared\n");
-	fflush(stdout);  /* Force a syscall */
+	fflush(stdout);   
 	if (get_eflags() & X86_EFLAGS_TF) {
 		printf("[FAIL]\tTF is now set\n");
 		exit(1);
@@ -174,37 +165,17 @@ int main()
 	check_result();
 #endif
 
-	/*
-	 * This test is particularly interesting if fast syscalls use
-	 * SYSENTER: it triggers a nasty design flaw in SYSENTER.
-	 * Specifically, SYSENTER does not clear TF, so either SYSENTER
-	 * or the next instruction traps at CPL0.  (Of course, Intel
-	 * mostly forgot to document exactly what happens here.)  So we
-	 * get a CPL0 fault with usergs (on 64-bit kernels) and possibly
-	 * no stack.  The only sane way the kernel can possibly handle
-	 * it is to clear TF on return from the #DB handler, but this
-	 * happens way too early to set TF in the saved pt_regs, so the
-	 * kernel has to do something clever to avoid losing track of
-	 * the TF bit.
-	 *
-	 * Needless to say, we've had bugs in this area.
-	 */
-	syscall(SYS_getpid);  /* Force symbol binding without TF set. */
+	 
+	syscall(SYS_getpid);   
 	printf("[RUN]\tSet TF and check a fast syscall\n");
 	set_eflags(get_eflags() | X86_EFLAGS_TF);
 	syscall(SYS_getpid);
 	check_result();
 
-	/* Now make sure that another fast syscall doesn't set TF again. */
+	 
 	fast_syscall_no_tf();
 
-	/*
-	 * And do a forced SYSENTER to make sure that this works even if
-	 * fast syscalls don't use SYSENTER.
-	 *
-	 * Invoking SYSENTER directly breaks all the rules.  Just handle
-	 * the SIGSEGV.
-	 */
+	 
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		unsigned long nr = SYS_getpid;
 		printf("[RUN]\tSet TF and check SYSENTER\n");
@@ -219,14 +190,14 @@ int main()
 		sethandler(SIGILL, print_and_longjmp, SA_RESETHAND);
 		set_eflags(get_eflags() | X86_EFLAGS_TF);
 		free(stack.ss_sp);
-		/* Clear EBP first to make sure we segfault cleanly. */
+		 
 		asm volatile ("xorl %%ebp, %%ebp; SYSENTER" : "+a" (nr) :: "flags", "rcx"
 #ifdef __x86_64__
 				, "r11"
 #endif
 			);
 
-		/* We're unreachable here.  SYSENTER forgets RIP. */
+		 
 	}
 	clearhandler(SIGSEGV);
 	clearhandler(SIGILL);
@@ -235,7 +206,7 @@ int main()
 		exit(1);
 	}
 
-	/* Now make sure that another fast syscall doesn't set TF again. */
+	 
 	fast_syscall_no_tf();
 
 	return 0;

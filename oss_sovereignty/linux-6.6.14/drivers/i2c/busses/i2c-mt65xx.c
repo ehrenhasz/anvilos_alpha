@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Xudong Chen <xudong.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -84,15 +81,7 @@
 
 #define I2C_DRV_NAME		"i2c-mt65xx"
 
-/**
- * enum i2c_mt65xx_clks - Clocks enumeration for MT65XX I2C
- *
- * @I2C_MT65XX_CLK_MAIN: main clock for i2c bus
- * @I2C_MT65XX_CLK_DMA:  DMA clock for i2c via DMA
- * @I2C_MT65XX_CLK_PMIC: PMIC clock for i2c from PMIC
- * @I2C_MT65XX_CLK_ARB:  Arbitrator clock for i2c
- * @I2C_MT65XX_CLK_MAX:  Number of supported clocks
- */
+ 
 enum i2c_mt65xx_clks {
 	I2C_MT65XX_CLK_MAIN = 0,
 	I2C_MT65XX_CLK_DMA,
@@ -284,21 +273,21 @@ struct mtk_i2c_ac_timing {
 };
 
 struct mtk_i2c {
-	struct i2c_adapter adap;	/* i2c host adapter */
+	struct i2c_adapter adap;	 
 	struct device *dev;
 	struct completion msg_complete;
 	struct i2c_timings timing_info;
 
-	/* set in i2c probe */
-	void __iomem *base;		/* i2c base addr */
-	void __iomem *pdmabase;		/* dma base address*/
-	struct clk_bulk_data clocks[I2C_MT65XX_CLK_MAX]; /* clocks for i2c */
-	bool have_pmic;			/* can use i2c pins from PMIC */
-	bool use_push_pull;		/* IO config push-pull mode */
+	 
+	void __iomem *base;		 
+	void __iomem *pdmabase;		 
+	struct clk_bulk_data clocks[I2C_MT65XX_CLK_MAX];  
+	bool have_pmic;			 
+	bool use_push_pull;		 
 
-	u16 irq_stat;			/* interrupt status */
+	u16 irq_stat;			 
 	unsigned int clk_src_div;
-	unsigned int speed_hz;		/* The speed in transfer */
+	unsigned int speed_hz;		 
 	enum mtk_trans_op op;
 	u16 timing_reg;
 	u16 high_speed_reg;
@@ -309,13 +298,7 @@ struct mtk_i2c {
 	const struct mtk_i2c_compatible *dev_comp;
 };
 
-/**
- * struct i2c_spec_values:
- * @min_low_ns: min LOW period of the SCL clock
- * @min_su_sta_ns: min set-up time for a repeated START condition
- * @max_hd_dat_ns: max data hold time
- * @min_su_dat_ns: min data set-up time
- */
+ 
 struct i2c_spec_values {
 	unsigned int min_low_ns;
 	unsigned int min_su_sta_ns;
@@ -578,7 +561,7 @@ static void mtk_i2c_init_hw(struct mtk_i2c *i2c)
 		mtk_i2c_writew(i2c, I2C_SOFT_RST, OFFSET_SOFTRESET);
 	}
 
-	/* Set ioconfig */
+	 
 	if (i2c->use_push_pull)
 		mtk_i2c_writew(i2c, I2C_IO_CONFIG_PUSH_PULL, OFFSET_IO_CONFIG);
 	else
@@ -625,7 +608,7 @@ static void mtk_i2c_init_hw(struct mtk_i2c *i2c)
 	}
 	mtk_i2c_writew(i2c, ext_conf_val, OFFSET_EXT_CONF);
 
-	/* If use i2c pin from PMIC mt6397 side, need set PATH_DIR first */
+	 
 	if (i2c->have_pmic)
 		mtk_i2c_writew(i2c, I2C_CONTROL_WRAPPER, OFFSET_PATH_DIR);
 
@@ -681,18 +664,7 @@ static int mtk_i2c_get_clk_div_restri(struct mtk_i2c *i2c,
 	return clk_div_restri;
 }
 
-/*
- * Check and Calculate i2c ac-timing
- *
- * Hardware design:
- * sample_ns = (1000000000 * (sample_cnt + 1)) / clk_src
- * xxx_cnt_div =  spec->min_xxx_ns / sample_ns
- *
- * Sample_ns is rounded down for xxx_cnt_div would be greater
- * than the smallest spec.
- * The sda_timing is chosen as the middle value between
- * the largest and smallest.
- */
+ 
 static int mtk_i2c_check_ac_timing(struct mtk_i2c *i2c,
 				   unsigned int clk_src,
 				   unsigned int check_speed,
@@ -784,17 +756,7 @@ static int mtk_i2c_check_ac_timing(struct mtk_i2c *i2c,
 	return 0;
 }
 
-/*
- * Calculate i2c port speed
- *
- * Hardware design:
- * i2c_bus_freq = parent_clk / (clock_div * 2 * sample_cnt * step_cnt)
- * clock_div: fixed in hardware, but may be various in different SoCs
- *
- * The calculation want to pick the highest bus frequency that is still
- * less than or equal to i2c->speed_hz. The calculation try to get
- * sample_cnt and step_cn
- */
+ 
 static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
 				   unsigned int target_speed,
 				   unsigned int *timing_step_cnt,
@@ -816,16 +778,11 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
 
 	max_step_cnt = mtk_i2c_max_step_cnt(target_speed);
 	base_step_cnt = max_step_cnt;
-	/* Find the best combination */
+	 
 	opt_div = DIV_ROUND_UP(clk_src >> 1, target_speed);
 	best_mul = MAX_SAMPLE_CNT_DIV * max_step_cnt;
 
-	/* Search for the best pair (sample_cnt, step_cnt) with
-	 * 0 < sample_cnt < MAX_SAMPLE_CNT_DIV
-	 * 0 < step_cnt < max_step_cnt
-	 * sample_cnt * step_cnt >= opt_div
-	 * optimizing for sample_cnt * step_cnt being minimal
-	 */
+	 
 	for (sample_cnt = 1; sample_cnt <= MAX_SAMPLE_CNT_DIV; sample_cnt++) {
 		clk_div_restri = mtk_i2c_get_clk_div_restri(i2c, sample_cnt);
 		step_cnt = DIV_ROUND_UP(opt_div + clk_div_restri, sample_cnt);
@@ -855,9 +812,7 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
 
 	if ((clk_src / (2 * (sample_cnt * step_cnt - clk_div_restri))) >
 		target_speed) {
-		/* In this case, hardware can't support such
-		 * low i2c_bus_freq
-		 */
+		 
 		dev_dbg(i2c->dev, "Unsupported speed (%uhz)\n",	target_speed);
 		return -EINVAL;
 	}
@@ -895,7 +850,7 @@ static int mtk_i2c_set_speed(struct mtk_i2c *i2c, unsigned int parent_clk)
 		i2c->ac_timing.inter_clk_div = clk_div - 1;
 
 		if (target_speed > I2C_MAX_FAST_MODE_PLUS_FREQ) {
-			/* Set master code speed register */
+			 
 			ret = mtk_i2c_calculate_speed(i2c, clk_src,
 						      I2C_MAX_FAST_MODE_FREQ,
 						      &l_step_cnt,
@@ -905,7 +860,7 @@ static int mtk_i2c_set_speed(struct mtk_i2c *i2c, unsigned int parent_clk)
 
 			i2c->timing_reg = (l_sample_cnt << 8) | l_step_cnt;
 
-			/* Set the high speed mode register */
+			 
 			ret = mtk_i2c_calculate_speed(i2c, clk_src,
 						      target_speed, &step_cnt,
 						      &sample_cnt);
@@ -928,7 +883,7 @@ static int mtk_i2c_set_speed(struct mtk_i2c *i2c, unsigned int parent_clk)
 
 			i2c->timing_reg = (l_sample_cnt << 8) | l_step_cnt;
 
-			/* Disable the high speed transaction */
+			 
 			i2c->high_speed_reg = I2C_TIME_CLR_VALUE;
 
 			if (i2c->dev_comp->ltiming_adjust)
@@ -1052,17 +1007,17 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
 	addr_reg = i2c_8bit_addr_from_msg(msgs);
 	mtk_i2c_writew(i2c, addr_reg, OFFSET_SLAVE_ADDR);
 
-	/* Clear interrupt status */
+	 
 	mtk_i2c_writew(i2c, restart_flag | I2C_HS_NACKERR | I2C_ACKERR |
 			    I2C_ARB_LOST | I2C_TRANSAC_COMP, OFFSET_INTR_STAT);
 
 	mtk_i2c_writew(i2c, I2C_FIFO_ADDR_CLR, OFFSET_FIFO_ADDR_CLR);
 
-	/* Enable interrupt */
+	 
 	mtk_i2c_writew(i2c, restart_flag | I2C_HS_NACKERR | I2C_ACKERR |
 			    I2C_ARB_LOST | I2C_TRANSAC_COMP, OFFSET_INTR_MASK);
 
-	/* Set transfer and transaction len */
+	 
 	if (i2c->op == I2C_MASTER_WRRD) {
 		if (i2c->dev_comp->aux_len_reg) {
 			mtk_i2c_writew(i2c, msgs->len, OFFSET_TRANSFER_LEN);
@@ -1084,7 +1039,7 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
 			dma_sync |= I2C_DMA_DIR_CHANGE;
 	}
 
-	/* Prepare buffer data to start transfer */
+	 
 	if (i2c->op == I2C_MASTER_RD) {
 		writel(I2C_DMA_INT_FLAG_NONE, i2c->pdmabase + OFFSET_INT_FLAG);
 		writel(I2C_DMA_CON_RX | dma_sync, i2c->pdmabase + OFFSET_CON);
@@ -1198,7 +1153,7 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
 	ret = wait_for_completion_timeout(&i2c->msg_complete,
 					  i2c->adap.timeout);
 
-	/* Clear interrupt mask */
+	 
 	mtk_i2c_writew(i2c, ~(restart_flag | I2C_HS_NACKERR | I2C_ACKERR |
 			    I2C_ARB_LOST | I2C_TRANSAC_COMP), OFFSET_INTR_MASK);
 
@@ -1251,7 +1206,7 @@ static int mtk_i2c_transfer(struct i2c_adapter *adap,
 
 	i2c->auto_restart = i2c->dev_comp->auto_restart;
 
-	/* checking if we can skip restart and optimize using WRRD mode */
+	 
 	if (i2c->auto_restart && num == 2) {
 		if (!(msgs[0].flags & I2C_M_RD) && (msgs[1].flags & I2C_M_RD) &&
 		    msgs[0].addr == msgs[1].addr) {
@@ -1261,9 +1216,7 @@ static int mtk_i2c_transfer(struct i2c_adapter *adap,
 
 	if (i2c->auto_restart && num >= 2 &&
 		i2c->speed_hz > I2C_MAX_FAST_MODE_PLUS_FREQ)
-		/* ignore the first restart irq after the master code,
-		 * otherwise the first transfer will be discarded.
-		 */
+		 
 		i2c->ignore_restart_irq = true;
 	else
 		i2c->ignore_restart_irq = false;
@@ -1282,20 +1235,20 @@ static int mtk_i2c_transfer(struct i2c_adapter *adap,
 
 		if (!i2c->auto_restart) {
 			if (num > 1) {
-				/* combined two messages into one transaction */
+				 
 				i2c->op = I2C_MASTER_WRRD;
 				left_num--;
 			}
 		}
 
-		/* always use DMA mode. */
+		 
 		ret = mtk_i2c_do_transfer(i2c, msgs, num, left_num);
 		if (ret < 0)
 			goto err_exit;
 
 		msgs++;
 	}
-	/* the return value is number of executed messages */
+	 
 	ret = num;
 
 err_exit:
@@ -1315,11 +1268,7 @@ static irqreturn_t mtk_i2c_irq(int irqno, void *dev_id)
 	intr_stat = mtk_i2c_readw(i2c, OFFSET_INTR_STAT);
 	mtk_i2c_writew(i2c, intr_stat, OFFSET_INTR_STAT);
 
-	/*
-	 * when occurs ack error, i2c controller generate two interrupts
-	 * first is the ack error interrupt, then the complete interrupt
-	 * i2c->irq_stat need keep the two interrupt value.
-	 */
+	 
 	i2c->irq_stat |= intr_stat;
 
 	if (i2c->ignore_restart_irq && (i2c->irq_stat & restart_flag)) {
@@ -1421,11 +1370,11 @@ static int mtk_i2c_probe(struct platform_device *pdev)
 	if (i2c->have_pmic && !i2c->dev_comp->pmic_i2c)
 		return -EINVAL;
 
-	/* Fill in clk-bulk IDs */
+	 
 	for (i = 0; i < I2C_MT65XX_CLK_MAX; i++)
 		i2c->clocks[i].id = i2c_mt65xx_clk_ids[i];
 
-	/* Get clocks one by one, some may be optional */
+	 
 	i2c->clocks[I2C_MT65XX_CLK_MAIN].clk = devm_clk_get(&pdev->dev, "main");
 	if (IS_ERR(i2c->clocks[I2C_MT65XX_CLK_MAIN].clk)) {
 		dev_err(&pdev->dev, "cannot get main clock\n");

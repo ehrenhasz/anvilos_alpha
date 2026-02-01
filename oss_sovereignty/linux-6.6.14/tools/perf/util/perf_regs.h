@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_REGS_H
 #define __PERF_REGS_H
 
@@ -96,5 +96,5 @@ static inline uint64_t perf_arch_reg_sp(const char *arch __maybe_unused)
 	return 0;
 }
 
-#endif /* HAVE_PERF_REGS_SUPPORT */
-#endif /* __PERF_REGS_H */
+#endif  
+#endif  

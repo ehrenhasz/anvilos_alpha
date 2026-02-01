@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max1619.c - Part of lm_sensors, Linux kernel modules for hardware
- *             monitoring
- * Copyright (C) 2003-2004 Oleksij Rempel <bug-track@fisher-privat.net>
- *                         Jean Delvare <jdelvare@suse.de>
- *
- * Based on the lm90 driver. The MAX1619 is a sensor chip made by Maxim.
- * It reports up to two temperatures (its own plus up to
- * one external one). Complete datasheet can be
- * obtained from Maxim's website at:
- *   http://pdfserv.maxim-ic.com/en/ds/MAX1619.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,9 +15,7 @@
 static const unsigned short normal_i2c[] = {
 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x4c, 0x4d, 0x4e, I2C_CLIENT_END };
 
-/*
- * The MAX1619 registers
- */
+ 
 
 #define MAX1619_REG_R_MAN_ID		0xFE
 #define MAX1619_REG_R_CHIP_ID		0xFF
@@ -48,9 +35,7 @@ static const unsigned short normal_i2c[] = {
 #define MAX1619_REG_R_TCRIT_HYST	0x11
 #define MAX1619_REG_W_TCRIT_HYST	0x13
 
-/*
- * Conversions
- */
+ 
 
 static int temp_from_reg(int val)
 {
@@ -72,18 +57,16 @@ enum temp_index {
 	t_num_regs
 };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct max1619_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid; /* false until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	/* registers values */
-	u8 temp[t_num_regs];	/* index with enum temp_index */
+	 
+	u8 temp[t_num_regs];	 
 	u8 alarms;
 };
 
@@ -118,7 +101,7 @@ static struct max1619_data *max1619_update_device(struct device *dev)
 					regs_read[i]);
 		data->alarms = i2c_smbus_read_byte_data(client,
 					MAX1619_REG_R_STATUS);
-		/* If OVERT polarity is low, reverse alarm bit */
+		 
 		config = i2c_smbus_read_byte_data(client, MAX1619_REG_R_CONFIG);
 		if (!(config & 0x20))
 			data->alarms ^= 0x02;
@@ -132,9 +115,7 @@ static struct max1619_data *max1619_update_device(struct device *dev)
 	return data;
 }
 
-/*
- * Sysfs stuff
- */
+ 
 
 static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
@@ -210,7 +191,7 @@ static struct attribute *max1619_attrs[] = {
 };
 ATTRIBUTE_GROUPS(max1619);
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int max1619_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -220,7 +201,7 @@ static int max1619_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* detection */
+	 
 	reg_config = i2c_smbus_read_byte_data(client, MAX1619_REG_R_CONFIG);
 	reg_convrate = i2c_smbus_read_byte_data(client, MAX1619_REG_R_CONVRATE);
 	reg_status = i2c_smbus_read_byte_data(client, MAX1619_REG_R_STATUS);
@@ -231,7 +212,7 @@ static int max1619_detect(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-	/* identification */
+	 
 	man_id = i2c_smbus_read_byte_data(client, MAX1619_REG_R_MAN_ID);
 	chip_id = i2c_smbus_read_byte_data(client, MAX1619_REG_R_CHIP_ID);
 	if (man_id != 0x4D || chip_id != 0x04) {
@@ -250,15 +231,13 @@ static void max1619_init_client(struct i2c_client *client)
 {
 	u8 config;
 
-	/*
-	 * Start the conversions.
-	 */
+	 
 	i2c_smbus_write_byte_data(client, MAX1619_REG_W_CONVRATE,
-				  5); /* 2 Hz */
+				  5);  
 	config = i2c_smbus_read_byte_data(client, MAX1619_REG_R_CONFIG);
 	if (config & 0x40)
 		i2c_smbus_write_byte_data(client, MAX1619_REG_W_CONFIG,
-					  config & 0xBF); /* run */
+					  config & 0xBF);  
 }
 
 static int max1619_probe(struct i2c_client *new_client)
@@ -274,7 +253,7 @@ static int max1619_probe(struct i2c_client *new_client)
 	data->client = new_client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the MAX1619 chip */
+	 
 	max1619_init_client(new_client);
 
 	hwmon_dev = devm_hwmon_device_register_with_groups(&new_client->dev,

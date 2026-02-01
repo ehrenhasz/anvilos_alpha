@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2011 Pablo Neira Ayuso <pablo@netfilter.org>
- * (C) 2011 Intra2net AG <https://www.intra2net.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -54,7 +51,7 @@ static inline struct nfnl_acct_net *nfnl_acct_pernet(struct net *net)
 }
 
 #define NFACCT_F_QUOTA (NFACCT_F_QUOTA_PKTS | NFACCT_F_QUOTA_BYTES)
-#define NFACCT_OVERQUOTA_BIT	2	/* NFACCT_F_OVERQUOTA */
+#define NFACCT_OVERQUOTA_BIT	2	 
 
 static int nfnl_acct_new(struct sk_buff *skb, const struct nfnl_info *info,
 			 const struct nlattr * const tb[])
@@ -85,11 +82,11 @@ static int nfnl_acct_new(struct sk_buff *skb, const struct nfnl_info *info,
 
 	if (matching) {
 		if (info->nlh->nlmsg_flags & NLM_F_REPLACE) {
-			/* reset counters if you request a replacement. */
+			 
 			atomic64_set(&matching->pkts, 0);
 			atomic64_set(&matching->bytes, 0);
 			smp_mb__before_atomic();
-			/* reset overquota flag if quota is enabled. */
+			 
 			if ((matching->flags & NFACCT_F_QUOTA))
 				clear_bit(NFACCT_OVERQUOTA_BIT,
 					  &matching->flags);
@@ -322,16 +319,14 @@ static int nfnl_acct_get(struct sk_buff *skb, const struct nfnl_info *info,
 	return ret;
 }
 
-/* try to delete object, fail if it is still in use. */
+ 
 static int nfnl_acct_try_del(struct nf_acct *cur)
 {
 	int ret = 0;
 
-	/* We want to avoid races with nfnl_acct_put. So only when the current
-	 * refcnt is 1, we decrease it to 0.
-	 */
+	 
 	if (refcount_dec_if_one(&cur->refcnt)) {
-		/* We are protected by nfnl mutex. */
+		 
 		list_del_rcu(&cur->head);
 		kfree_rcu(cur, rcu_head);
 	} else {
@@ -481,7 +476,7 @@ int nfnl_acct_overquota(struct net *net, struct nf_acct *nfacct)
 	u64 *quota;
 	int ret = NFACCT_UNDERQUOTA;
 
-	/* no place here if we don't have a quota */
+	 
 	if (!(nfacct->flags & NFACCT_F_QUOTA))
 		return NFACCT_NO_QUOTA;
 

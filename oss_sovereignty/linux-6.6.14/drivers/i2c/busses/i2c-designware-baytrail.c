@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel BayTrail PMIC I2C bus semaphore implementation
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/acpi.h>
 #include <linux/i2c.h>

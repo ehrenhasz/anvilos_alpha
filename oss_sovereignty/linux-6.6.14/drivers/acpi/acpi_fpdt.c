@@ -1,34 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * FPDT support for exporting boot and suspend/resume performance data
- *
- * Copyright (C) 2021 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI FPDT: " fmt
 
 #include <linux/acpi.h>
 
-/*
- * FPDT contains ACPI table header and a number of fpdt_subtable_entries.
- * Each fpdt_subtable_entry points to a subtable: FBPT or S3PT.
- * Each FPDT subtable (FBPT/S3PT) is composed of a fpdt_subtable_header
- * and a number of fpdt performance records.
- * Each FPDT performance record is composed of a fpdt_record_header and
- * performance data fields, for boot or suspend or resume phase.
- */
+ 
 enum fpdt_subtable_type {
 	SUBTABLE_FBPT,
 	SUBTABLE_S3PT,
 };
 
 struct fpdt_subtable_entry {
-	u16 type;		/* refer to enum fpdt_subtable_type */
+	u16 type;		 
 	u8 length;
 	u8 revision;
 	u32 reserved;
-	u64 address;		/* physical address of the S3PT/FBPT table */
+	u64 address;		 
 };
 
 struct fpdt_subtable_header {
@@ -43,7 +32,7 @@ enum fpdt_record_type {
 };
 
 struct fpdt_record_header {
-	u16 type;		/* refer to enum fpdt_record_type */
+	u16 type;		 
 	u8 length;
 	u8 revision;
 };
@@ -147,10 +136,7 @@ static struct kobject *fpdt_kobj;
 #include <linux/processor.h>
 static bool fpdt_address_valid(u64 address)
 {
-	/*
-	 * On some systems the table contains invalid addresses
-	 * with unsuppored high address bits set, check for this.
-	 */
+	 
 	return !(address >> boot_cpu_data.x86_phys_bits);
 }
 #else
@@ -250,7 +236,7 @@ static int fpdt_process_subtable(u64 address, u32 subtable_type)
 			break;
 
 		default:
-			/* Other types are reserved in ACPI 6.4 spec. */
+			 
 			break;
 		}
 	}
@@ -299,7 +285,7 @@ static int __init acpi_init_fpdt(void)
 				goto err_subtable;
 			break;
 		default:
-			/* Other types are reserved in ACPI 6.4 spec. */
+			 
 			break;
 		}
 		offset += sizeof(*subtable);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "kprobe_multi.skel.h"
 #include "trace_helpers.h"
@@ -235,7 +235,7 @@ static void test_attach_api_fails(void)
 
 	skel->bss->pid = getpid();
 
-	/* fail_1 - pattern and opts NULL */
+	 
 	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_manual,
 						     NULL, NULL);
 	if (!ASSERT_ERR_PTR(link, "fail_1"))
@@ -244,7 +244,7 @@ static void test_attach_api_fails(void)
 	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_1_error"))
 		goto cleanup;
 
-	/* fail_2 - both addrs and syms set */
+	 
 	opts.addrs = (const unsigned long *) addrs;
 	opts.syms = syms;
 	opts.cnt = ARRAY_SIZE(syms);
@@ -258,7 +258,7 @@ static void test_attach_api_fails(void)
 	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_2_error"))
 		goto cleanup;
 
-	/* fail_3 - pattern and addrs set */
+	 
 	opts.addrs = (const unsigned long *) addrs;
 	opts.syms = NULL;
 	opts.cnt = ARRAY_SIZE(syms);
@@ -272,7 +272,7 @@ static void test_attach_api_fails(void)
 	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_3_error"))
 		goto cleanup;
 
-	/* fail_4 - pattern and cnt set */
+	 
 	opts.addrs = NULL;
 	opts.syms = NULL;
 	opts.cnt = ARRAY_SIZE(syms);
@@ -286,7 +286,7 @@ static void test_attach_api_fails(void)
 	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_4_error"))
 		goto cleanup;
 
-	/* fail_5 - pattern and cookies */
+	 
 	opts.addrs = NULL;
 	opts.syms = NULL;
 	opts.cnt = 0;
@@ -324,13 +324,7 @@ static int get_syms(char ***symsp, size_t *cntp, bool kernel)
 	FILE *f;
 	int err = 0;
 
-	/*
-	 * The available_filter_functions contains many duplicates,
-	 * but other than that all symbols are usable in kprobe multi
-	 * interface.
-	 * Filtering out duplicates by using hashmap__add, which won't
-	 * add existing entry.
-	 */
+	 
 
 	if (access("/sys/kernel/tracing/trace", F_OK) == 0)
 		f = fopen("/sys/kernel/tracing/available_filter_functions", "r");
@@ -355,12 +349,7 @@ static int get_syms(char ***symsp, size_t *cntp, bool kernel)
 		free(name);
 		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
 			continue;
-		/*
-		 * We attach to almost all kernel functions and some of them
-		 * will cause 'suspicious RCU usage' when fprobe is attached
-		 * to them. Filter out the current culprits - arch_cpu_idle
-		 * default_idle and rcu_* functions.
-		 */
+		 
 		if (!strcmp(name, "arch_cpu_idle"))
 			continue;
 		if (!strcmp(name, "default_idle"))
@@ -463,10 +452,7 @@ static void test_attach_override(void)
 	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
 		goto cleanup;
 
-	/* The test_override calls bpf_override_return so it should fail
-	 * to attach to bpf_fentry_test1 function, which is not on error
-	 * injection list.
-	 */
+	 
 	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_override,
 						     "bpf_fentry_test1", NULL);
 	if (!ASSERT_ERR_PTR(link, "override_attached_bpf_fentry_test1")) {
@@ -474,9 +460,7 @@ static void test_attach_override(void)
 		goto cleanup;
 	}
 
-	/* The should_fail_bio function is on error injection list,
-	 * attach should succeed.
-	 */
+	 
 	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_override,
 						     "should_fail_bio", NULL);
 	if (!ASSERT_OK_PTR(link, "override_attached_should_fail_bio"))

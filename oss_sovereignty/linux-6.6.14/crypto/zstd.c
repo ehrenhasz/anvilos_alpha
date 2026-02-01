@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- *
- * Copyright (c) 2017-present, Facebook, Inc.
- */
+
+ 
 #include <linux/crypto.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>

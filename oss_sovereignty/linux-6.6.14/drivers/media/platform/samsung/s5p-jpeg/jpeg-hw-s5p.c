@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* linux/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw.h
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/videodev2.h>
@@ -20,7 +14,7 @@ void s5p_jpeg_reset(void __iomem *regs)
 
 	writel(1, regs + S5P_JPG_SW_RESET);
 	reg = readl(regs + S5P_JPG_SW_RESET);
-	/* no other way but polling for when JPEG IP becomes operational */
+	 
 	while (reg != 0) {
 		cpu_relax();
 		reg = readl(regs + S5P_JPG_SW_RESET);
@@ -113,7 +107,7 @@ void s5p_jpeg_htbl_ac(void __iomem *regs, unsigned int t)
 
 	reg = readl(regs + S5P_JPG_HTBL);
 	reg &= ~S5P_HT_NUMt_AC_MASK(t);
-	/* this driver uses table 0 for all color components */
+	 
 	reg |= (0 << S5P_HT_NUMt_AC_SHIFT(t)) & S5P_HT_NUMt_AC_MASK(t);
 	writel(reg, regs + S5P_JPG_HTBL);
 }
@@ -124,7 +118,7 @@ void s5p_jpeg_htbl_dc(void __iomem *regs, unsigned int t)
 
 	reg = readl(regs + S5P_JPG_HTBL);
 	reg &= ~S5P_HT_NUMt_DC_MASK(t);
-	/* this driver uses table 0 for all color components */
+	 
 	reg |= (0 << S5P_HT_NUMt_DC_SHIFT(t)) & S5P_HT_NUMt_DC_MASK(t);
 	writel(reg, regs + S5P_JPG_HTBL);
 }

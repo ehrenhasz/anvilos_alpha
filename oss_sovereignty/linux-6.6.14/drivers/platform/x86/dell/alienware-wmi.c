@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Alienware AlienFX control
- *
- * Copyright (C) 2014 Dell Inc <Dell.Client.Kernel@dell.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -233,9 +229,7 @@ static u8 interface;
 static u8 lighting_control_state;
 static u8 global_brightness;
 
-/*
- * Helpers used for zone control
- */
+ 
 static int parse_rgb(const char *buf, struct platform_zone *zone)
 {
 	long unsigned int rgb;
@@ -249,7 +243,7 @@ static int parse_rgb(const char *buf, struct platform_zone *zone)
 	if (ret)
 		return ret;
 
-	/* RGB triplet notation is 24-bit hexadecimal */
+	 
 	if (rgb > 0xFFFFFF)
 		return -EINVAL;
 
@@ -274,9 +268,7 @@ static struct platform_zone *match_zone(struct device_attribute *attr)
 	return NULL;
 }
 
-/*
- * Individual RGB zone control
- */
+ 
 static int alienware_update_led(struct platform_zone *zone)
 {
 	int method_id;
@@ -347,9 +339,7 @@ static ssize_t zone_set(struct device *dev, struct device_attribute *attr,
 	return ret ? ret : count;
 }
 
-/*
- * LED Brightness (Global)
- */
+ 
 static int wmax_brightness(int brightness)
 {
 	acpi_status status;
@@ -391,9 +381,7 @@ static struct led_classdev global_led = {
 	.name = "alienware::global_brightness",
 };
 
-/*
- * Lighting control state device attribute (Global)
- */
+ 
 static ssize_t show_control_state(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -440,13 +428,7 @@ static int alienware_zone_init(struct platform_device *dev)
 	global_led.max_brightness = 0x0F;
 	global_brightness = global_led.max_brightness;
 
-	/*
-	 *      - zone_dev_attrs num_zones + 1 is for individual zones and then
-	 *        null terminated
-	 *      - zone_attrs num_zones + 2 is for all attrs in zone_dev_attrs +
-	 *        the lighting control + null terminated
-	 *      - zone_data num_zones is for the distinct zones
-	 */
+	 
 	zone_dev_attrs =
 	    kcalloc(quirks->num_zones + 1, sizeof(struct device_attribute),
 		    GFP_KERNEL);
@@ -530,10 +512,7 @@ static acpi_status alienware_wmax_command(struct wmax_basic_args *in_args,
 	return status;
 }
 
-/*
- *	The HDMI mux sysfs node indicates the status of the HDMI input mux.
- *	It can toggle between standard system GPU output and HDMI input.
- */
+ 
 static ssize_t show_hdmi_cable(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -630,11 +609,7 @@ static int create_hdmi(struct platform_device *dev)
 	return ret;
 }
 
-/*
- * Alienware GFX amplifier support
- * - Currently supports reading cable status
- * - Leaving expansion room to possibly support dock/undock events later
- */
+ 
 static ssize_t show_amplifier_status(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -684,10 +659,7 @@ static int create_amplifier(struct platform_device *dev)
 	return ret;
 }
 
-/*
- * Deep Sleep Control support
- * - Modifies BIOS setting for deep sleep control allowing extra wakeup events
- */
+ 
 static ssize_t show_deepsleep_status(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {

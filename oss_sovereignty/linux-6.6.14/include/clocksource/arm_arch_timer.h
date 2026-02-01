@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 ARM Ltd.
- */
+ 
+ 
 #ifndef __CLKSOURCE_ARM_ARCH_TIMER_H
 #define __CLKSOURCE_ARM_ARCH_TIMER_H
 
@@ -50,14 +48,14 @@ enum arch_timer_spi_nr {
 
 #define ARCH_TIMER_MEM_MAX_FRAMES	8
 
-#define ARCH_TIMER_USR_PCT_ACCESS_EN	(1 << 0) /* physical counter */
-#define ARCH_TIMER_USR_VCT_ACCESS_EN	(1 << 1) /* virtual counter */
+#define ARCH_TIMER_USR_PCT_ACCESS_EN	(1 << 0)  
+#define ARCH_TIMER_USR_VCT_ACCESS_EN	(1 << 1)  
 #define ARCH_TIMER_VIRT_EVT_EN		(1 << 2)
 #define ARCH_TIMER_EVT_TRIGGER_SHIFT	(4)
 #define ARCH_TIMER_EVT_TRIGGER_MASK	(0xF << ARCH_TIMER_EVT_TRIGGER_SHIFT)
-#define ARCH_TIMER_USR_VT_ACCESS_EN	(1 << 8) /* virtual timer registers */
-#define ARCH_TIMER_USR_PT_ACCESS_EN	(1 << 9) /* physical timer registers */
-#define ARCH_TIMER_EVT_INTERVAL_SCALE	(1 << 17) /* EVNTIS in the ARMv8 ARM */
+#define ARCH_TIMER_USR_VT_ACCESS_EN	(1 << 8)  
+#define ARCH_TIMER_USR_PT_ACCESS_EN	(1 << 9)  
+#define ARCH_TIMER_EVT_INTERVAL_SCALE	(1 << 17)  
 
 #define ARCH_TIMER_EVT_STREAM_PERIOD_US	100
 #define ARCH_TIMER_EVT_STREAM_FREQ				\

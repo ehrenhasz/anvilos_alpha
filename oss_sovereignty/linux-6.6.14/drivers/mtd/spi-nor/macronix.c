@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
@@ -13,15 +10,7 @@ mx25l25635_post_bfpt_fixups(struct spi_nor *nor,
 			    const struct sfdp_parameter_header *bfpt_header,
 			    const struct sfdp_bfpt *bfpt)
 {
-	/*
-	 * MX25L25635F supports 4B opcodes but MX25L25635E does not.
-	 * Unfortunately, Macronix has re-used the same JEDEC ID for both
-	 * variants which prevents us from defining a new entry in the parts
-	 * table.
-	 * We need a way to differentiate MX25L25635E and MX25L25635F, and it
-	 * seems that the F version advertises support for Fast Read 4-4-4 in
-	 * its BFPT table.
-	 */
+	 
 	if (bfpt->dwords[SFDP_DWORD(5)] & BFPT_DWORD5_FAST_READ_4_4_4)
 		nor->flags |= SNOR_F_4B_OPCODES;
 
@@ -33,7 +22,7 @@ static const struct spi_nor_fixups mx25l25635_fixups = {
 };
 
 static const struct flash_info macronix_nor_parts[] = {
-	/* Macronix */
+	 
 	{ "mx25l512e",   INFO(0xc22010, 0, 64 * 1024,   1)
 		NO_SFDP_FLAGS(SECT_4K) },
 	{ "mx25l2005a",  INFO(0xc22012, 0, 64 * 1024,   4)

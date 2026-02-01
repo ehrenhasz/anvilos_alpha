@@ -1,26 +1,10 @@
-/* Test of <signal.h> substitute.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
+ 
 
 #include <config.h>
 
 #include <signal.h>
 
-/* Check for required types.  */
+ 
 struct
 {
   size_t a;
@@ -29,13 +13,13 @@ struct
   sigset_t d;
   pid_t e;
 #if 0
-  /* Not guaranteed by gnulib.  */
+   
   pthread_t f;
   struct timespec g;
 #endif
 } s;
 
-/* Check that NSIG is defined.  */
+ 
 int nsig = NSIG;
 
 int
@@ -43,7 +27,7 @@ main (void)
 {
   switch (0)
     {
-      /* The following are guaranteed by C.  */
+       
     case 0:
     case SIGABRT:
     case SIGFPE:
@@ -51,15 +35,15 @@ main (void)
     case SIGINT:
     case SIGSEGV:
     case SIGTERM:
-      /* The following is guaranteed by gnulib.  */
+       
 #if GNULIB_SIGPIPE || defined SIGPIPE
     case SIGPIPE:
 #endif
-      /* Ensure no conflict with other standardized names.  */
+       
 #ifdef SIGALRM
     case SIGALRM:
 #endif
-      /* On Haiku, SIGBUS is mistakenly equal to SIGSEGV.  */
+       
 #if defined SIGBUS && SIGBUS != SIGSEGV
     case SIGBUS:
 #endif
@@ -114,7 +98,7 @@ main (void)
 #ifdef SIGXFSZ
     case SIGXFSZ:
 #endif
-      /* SIGRTMIN and SIGRTMAX need not be compile-time constants.  */
+       
 #if 0
 # ifdef SIGRTMIN
     case SIGRTMIN:

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __QCOM_MDT_LOADER_H__
 #define __QCOM_MDT_LOADER_H__
 
@@ -30,7 +30,7 @@ int qcom_mdt_load_no_init(struct device *dev, const struct firmware *fw,
 void *qcom_mdt_read_metadata(const struct firmware *fw, size_t *data_len,
 			     const char *fw_name, struct device *dev);
 
-#else /* !IS_ENABLED(CONFIG_QCOM_MDT_LOADER) */
+#else  
 
 static inline ssize_t qcom_mdt_get_size(const struct firmware *fw)
 {
@@ -69,6 +69,6 @@ static inline void *qcom_mdt_read_metadata(const struct firmware *fw,
 	return ERR_PTR(-ENODEV);
 }
 
-#endif /* !IS_ENABLED(CONFIG_QCOM_MDT_LOADER) */
+#endif  
 
 #endif

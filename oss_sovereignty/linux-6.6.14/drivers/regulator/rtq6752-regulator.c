@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -177,13 +177,13 @@ static int rtq6752_init_device_properties(struct rtq6752_priv *priv)
 	u8 raw_vals[] = { 0, 0 };
 	int ret;
 
-	/* Configure PAVDD on and softstart delay time to the minimum */
+	 
 	ret = regmap_raw_write(priv->regmap, RTQ6752_REG_PAVDDONDLY, raw_vals,
 			       ARRAY_SIZE(raw_vals));
 	if (ret)
 		return ret;
 
-	/* Configure NAVDD on and softstart delay time to the minimum */
+	 
 	return regmap_raw_write(priv->regmap, RTQ6752_REG_NAVDDONDLY, raw_vals,
 				ARRAY_SIZE(raw_vals));
 }
@@ -237,7 +237,7 @@ static int rtq6752_probe(struct i2c_client *i2c)
 	}
 
 	usleep_range(RTQ6752_I2CRDY_TIMEUS, RTQ6752_I2CRDY_TIMEUS + 100);
-	/* Default EN pin to high, PAVDD and NAVDD will be on */
+	 
 	priv->enable_flag = RTQ6752_ENABLE_MASK;
 
 	priv->regmap = devm_regmap_init_i2c(i2c, &rtq6752_regmap_config);

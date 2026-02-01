@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* (C) COPYRIGHT 2014-2018 ARM Limited. All rights reserved. */
-/* Copyright 2019 Linaro, Ltd., Rob Herring <robh@kernel.org> */
+ 
+ 
+ 
 #ifndef __PANFROST_FEATURES_H__
 #define __PANFROST_FEATURES_H__
 

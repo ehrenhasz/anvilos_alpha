@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell MV98DX3236 SoC clocks
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -17,33 +8,14 @@
 #include "common.h"
 
 
-/*
- * For 98DX4251 Sample At Reset the CPU, DDR and Main PLL clocks are all
- * defined at the same time
- *
- * SAR1[20:18]   : CPU frequency    DDR frequency   MPLL frequency
- *		 0  =  400 MHz	    400 MHz	    800 MHz
- *		 2  =  667 MHz	    667 MHz	    2000 MHz
- *		 3  =  800 MHz	    800 MHz	    1600 MHz
- *		 others reserved.
- *
- * For 98DX3236 Sample At Reset the CPU, DDR and Main PLL clocks are all
- * defined at the same time
- *
- * SAR1[20:18]   : CPU frequency    DDR frequency   MPLL frequency
- *		 1  =  667 MHz	    667 MHz	    2000 MHz
- *		 2  =  400 MHz	    400 MHz	    400 MHz
- *		 3  =  800 MHz	    800 MHz	    800 MHz
- *		 5  =  800 MHz	    400 MHz	    800 MHz
- *		 others reserved.
- */
+ 
 
 #define SAR1_MV98DX3236_CPU_DDR_MPLL_FREQ_OPT		18
 #define SAR1_MV98DX3236_CPU_DDR_MPLL_FREQ_OPT_MASK	0x7
 
 static u32 __init mv98dx3236_get_tclk_freq(void __iomem *sar)
 {
-	/* Tclk = 200MHz, no SaR dependency */
+	 
 	return 200000000;
 }
 
@@ -151,9 +123,7 @@ static const struct coreclk_soc_desc mv98dx3236_core_clocks = {
 };
 
 
-/*
- * Clock Gating Control
- */
+ 
 
 static const struct clk_gating_soc_desc mv98dx3236_gating_desc[] __initconst = {
 	{ "ge1", NULL, 3, 0 },

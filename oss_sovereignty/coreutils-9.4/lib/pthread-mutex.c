@@ -1,24 +1,8 @@
-/* POSIX mutexes (locks).
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert, 2010, and Bruno Haible <bruno@clisp.org>, 2019.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <pthread.h>
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
@@ -104,13 +88,12 @@ pthread_mutexattr_setrobust (pthread_mutexattr_t *attr, int robust)
 #endif
 
 #if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS
-/* Use Windows threads.  */
+ 
 
 int
 pthread_mutex_init (pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
 {
-  /* This implementation does not support PTHREAD_MUTEX_ERRORCHECK
-     and ignores the 'robust' attribute.  */
+   
   if (attr != NULL
       && (*attr & (PTHREAD_MUTEX_DEFAULT | PTHREAD_MUTEX_NORMAL
                    | PTHREAD_MUTEX_ERRORCHECK | PTHREAD_MUTEX_RECURSIVE))
@@ -198,35 +181,32 @@ pthread_mutex_destroy (pthread_mutex_t *mutex)
 }
 
 #elif HAVE_PTHREAD_H
-/* Provide workarounds for POSIX threads.  */
+ 
 
-/* pthread_mutex_timedlock is defined by the 'pthread_mutex_timedlock'
-   module.  */
+ 
 
 #else
-/* Provide a dummy implementation for single-threaded applications.  */
+ 
 
 int
 pthread_mutex_init (_GL_UNUSED pthread_mutex_t *mutex,
                     _GL_UNUSED const pthread_mutexattr_t *attr)
 {
-  /* MUTEX is never seriously used.  */
+   
   return 0;
 }
 
 int
 pthread_mutex_lock (_GL_UNUSED pthread_mutex_t *mutex)
 {
-  /* There is only one thread, so it always gets the lock.  This
-     implementation does not support PTHREAD_MUTEX_ERRORCHECK.  */
+   
   return 0;
 }
 
 int
 pthread_mutex_trylock (_GL_UNUSED pthread_mutex_t *mutex)
 {
-  /* There is only one thread, so it always gets the lock.  This
-     implementation does not support PTHREAD_MUTEX_ERRORCHECK.  */
+   
   return 0;
 }
 
@@ -234,24 +214,21 @@ int
 pthread_mutex_timedlock (_GL_UNUSED pthread_mutex_t *mutex,
                          _GL_UNUSED const struct timespec *abstime)
 {
-  /* There is only one thread, so it always gets the lock.  This
-     implementation does not support PTHREAD_MUTEX_ERRORCHECK.  */
+   
   return 0;
 }
 
 int
 pthread_mutex_unlock (_GL_UNUSED pthread_mutex_t *mutex)
 {
-  /* There is only one thread, so it always unlocks successfully.
-     This implementation does not support robust mutexes or
-     PTHREAD_MUTEX_ERRORCHECK.  */
+   
   return 0;
 }
 
 int
 pthread_mutex_destroy (_GL_UNUSED pthread_mutex_t *mutex)
 {
-  /* MUTEX is never seriously used.  */
+   
   return 0;
 }
 

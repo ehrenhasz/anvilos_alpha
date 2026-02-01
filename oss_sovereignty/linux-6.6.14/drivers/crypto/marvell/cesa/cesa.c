@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for Marvell's Cryptographic Engine and Security Accelerator (CESA)
- * that can be found on the following platform: Orion, Kirkwood, Armada. This
- * driver supports the TDMA engine on platforms on which it is available.
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- * Author: Arnaud Ebalard <arno@natisbad.org>
- *
- * This work is based on an initial version written by
- * Sebastian Andrzej Siewior < sebastian at breakpoint dot cc >
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -29,7 +19,7 @@
 
 #include "cesa.h"
 
-/* Limit of the crypto queue before reaching the backlog */
+ 
 #define CESA_CRYPTO_DEFAULT_MAX_QLEN 128
 
 struct mv_cesa_dev *cesa_dev;
@@ -127,14 +117,11 @@ static irqreturn_t mv_cesa_int(int irq, void *priv)
 		if (!(status & mask))
 			break;
 
-		/*
-		 * TODO: avoid clearing the FPGA_INT_STATUS if this not
-		 * relevant on some platforms.
-		 */
+		 
 		writel(~status, engine->regs + CESA_SA_FPGA_INT_STATUS);
 		writel(~status, engine->regs + CESA_SA_INT_STATUS);
 
-		/* Process fetched requests */
+		 
 		res = mv_cesa_int_process(engine, status & mask);
 		ret = IRQ_HANDLED;
 
@@ -149,10 +136,10 @@ static irqreturn_t mv_cesa_int(int irq, void *priv)
 		if (res && res != -EINPROGRESS)
 			mv_cesa_complete_req(ctx, req, res);
 
-		/* Launch the next pending request */
+		 
 		mv_cesa_rearm_engine(engine);
 
-		/* Iterate over the complete queue */
+		 
 		while (true) {
 			req = mv_cesa_engine_dequeue_complete_request(engine);
 			if (!req)
@@ -505,10 +492,7 @@ static int mv_cesa_probe(struct platform_device *pdev)
 
 		engine->irq = irq;
 
-		/*
-		 * Not all platforms can gate the CESA clocks: do not complain
-		 * if the clock does not exist.
-		 */
+		 
 		snprintf(res_name, sizeof(res_name), "cesa%d", i);
 		engine->clk = devm_clk_get(dev, res_name);
 		if (IS_ERR(engine->clk)) {
@@ -548,7 +532,7 @@ static int mv_cesa_probe(struct platform_device *pdev)
 		if (ret)
 			goto err_cleanup;
 
-		/* Set affinity */
+		 
 		cpu = cpumask_local_spread(engine->id, NUMA_NO_NODE);
 		irq_set_affinity_hint(irq, get_cpu_mask(cpu));
 
@@ -600,7 +584,7 @@ static int mv_cesa_remove(struct platform_device *pdev)
 
 static const struct platform_device_id mv_cesa_plat_id_table[] = {
 	{ .name = "mv_crypto" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mv_cesa_plat_id_table);
 

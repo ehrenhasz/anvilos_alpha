@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (c) Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
- *
- * Maxim MAX30208 digital temperature sensor with 0.1°C accuracy
- * (7-bit I2C slave address (0x50 - 0x53))
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -35,7 +30,7 @@
 struct max30208_data {
 	struct i2c_client *client;
 	struct iio_dev *indio_dev;
-	struct mutex lock; /* Lock to prevent concurrent reads of temperature readings */
+	struct mutex lock;  
 };
 
 static const struct iio_chan_spec max30208_channels[] = {
@@ -45,18 +40,10 @@ static const struct iio_chan_spec max30208_channels[] = {
 	},
 };
 
-/**
- * max30208_request() - Request a reading
- * @data: Struct comprising member elements of the device
- *
- * Requests a reading from the device and waits until the conversion is ready.
- */
+ 
 static int max30208_request(struct max30208_data *data)
 {
-	/*
-	 * Sensor can take up to 500 ms to respond so execute a total of
-	 * 10 retries to give the device sufficient time.
-	 */
+	 
 	int retries = 10;
 	u8 regval;
 	int ret;
@@ -122,12 +109,7 @@ unlock:
 	return ret;
 }
 
-/**
- * max30208_config_setup() - Set up FIFO configuration register
- * @data: Struct comprising member elements of the device
- *
- * Sets the rollover bit to '1' to enable overwriting FIFO during overflow.
- */
+ 
 static int max30208_config_setup(struct max30208_data *data)
 {
 	u8 regval;

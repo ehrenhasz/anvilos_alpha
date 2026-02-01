@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,20 +22,20 @@ struct qcom_coincell {
 
 static const int qcom_rset_map[] = { 2100, 1700, 1200, 800 };
 static const int qcom_vset_map[] = { 2500, 3200, 3100, 3000 };
-/* NOTE: for pm8921 and others, voltage of 2500 is 16 (10000b), not 0 */
+ 
 
-/* if enable==0, rset and vset are ignored */
+ 
 static int qcom_coincell_chgr_config(struct qcom_coincell *chgr, int rset,
 				     int vset, bool enable)
 {
 	int i, j, rc;
 
-	/* if disabling, just do that and skip other operations */
+	 
 	if (!enable)
 		return regmap_write(chgr->regmap,
 			  chgr->base_addr + QCOM_COINCELL_REG_ENABLE, 0);
 
-	/* find index for current-limiting resistor */
+	 
 	for (i = 0; i < ARRAY_SIZE(qcom_rset_map); i++)
 		if (rset == qcom_rset_map[i])
 			break;
@@ -47,7 +45,7 @@ static int qcom_coincell_chgr_config(struct qcom_coincell *chgr, int rset,
 		return -EINVAL;
 	}
 
-	/* find index for charge voltage */
+	 
 	for (j = 0; j < ARRAY_SIZE(qcom_vset_map); j++)
 		if (vset == qcom_vset_map[j])
 			break;
@@ -60,12 +58,7 @@ static int qcom_coincell_chgr_config(struct qcom_coincell *chgr, int rset,
 	rc = regmap_write(chgr->regmap,
 			  chgr->base_addr + QCOM_COINCELL_REG_RSET, i);
 	if (rc) {
-		/*
-		 * This is mainly to flag a bad base_addr (reg) from dts.
-		 * Other failures writing to the registers should be
-		 * extremely rare, or indicative of problems that
-		 * should be reported elsewhere (eg. spmi failure).
-		 */
+		 
 		dev_err(chgr->dev, "could not write to RSET register\n");
 		return rc;
 	}
@@ -75,7 +68,7 @@ static int qcom_coincell_chgr_config(struct qcom_coincell *chgr, int rset,
 	if (rc)
 		return rc;
 
-	/* set 'enable' register */
+	 
 	return regmap_write(chgr->regmap,
 			    chgr->base_addr + QCOM_COINCELL_REG_ENABLE,
 			    QCOM_COINCELL_ENABLE);

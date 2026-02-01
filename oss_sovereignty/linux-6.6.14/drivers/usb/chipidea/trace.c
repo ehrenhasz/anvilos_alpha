@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Chipidea Device Mode Trace Support
- *
- * Copyright (C) 2020 NXP
- *
- * Author: Peter Chen <peter.chen@nxp.com>
- */
+
+ 
 
 #define CREATE_TRACE_POINTS
 #include "trace.h"

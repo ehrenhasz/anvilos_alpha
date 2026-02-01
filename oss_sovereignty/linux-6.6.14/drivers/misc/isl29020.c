@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isl29020.c - Intersil  ALS Driver
- *
- * Copyright (C) 2008 Intel Corp
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * Data sheet at: http://www.intersil.com/data/fn/fn6505.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -47,14 +37,14 @@ static ssize_t als_lux_input_data_show(struct device *dev,
 	msleep(100);
 
 	mutex_lock(&mutex);
-	temp = i2c_smbus_read_byte_data(client, 0x02); /* MSB data */
+	temp = i2c_smbus_read_byte_data(client, 0x02);  
 	if (temp < 0) {
 		pm_runtime_put_sync(dev);
 		mutex_unlock(&mutex);
 		return temp;
 	}
 
-	ret_val = i2c_smbus_read_byte_data(client, 0x01); /* LSB data */
+	ret_val = i2c_smbus_read_byte_data(client, 0x01);  
 	mutex_unlock(&mutex);
 
 	if (ret_val < 0) {
@@ -85,7 +75,7 @@ static ssize_t als_sensing_range_store(struct device *dev,
 	if (val < 1 || val > 64000)
 		return -EINVAL;
 
-	/* Pick the smallest sensor range that will meet our requirements */
+	 
 	if (val <= 1000)
 		val = 1;
 	else if (val <= 4000)
@@ -99,7 +89,7 @@ static ssize_t als_sensing_range_store(struct device *dev,
 	if (ret_val < 0)
 		return ret_val;
 
-	ret_val &= 0xFC; /*reset the bit before setting them */
+	ret_val &= 0xFC;  
 	ret_val |= val - 1;
 	ret_val = i2c_smbus_write_byte_data(client, 0x00, ret_val);
 
@@ -205,9 +195,9 @@ static const struct dev_pm_ops isl29020_pm_ops = {
 };
 
 #define ISL29020_PM_OPS (&isl29020_pm_ops)
-#else	/* CONFIG_PM */
+#else	 
 #define ISL29020_PM_OPS NULL
-#endif	/* CONFIG_PM */
+#endif	 
 
 static struct i2c_driver isl29020_driver = {
 	.driver = {

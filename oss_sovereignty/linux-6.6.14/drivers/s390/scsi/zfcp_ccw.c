@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * zfcp device driver
- *
- * Registration and callback for the s390 common I/O layer.
- *
- * Copyright IBM Corp. 2002, 2010
- */
+
+ 
 
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -40,12 +34,7 @@ void zfcp_ccw_adapter_put(struct zfcp_adapter *adapter)
 	spin_unlock_irqrestore(&zfcp_ccw_adapter_ref_lock, flags);
 }
 
-/**
- * zfcp_ccw_activate - activate adapter and wait for it to finish
- * @cdev: pointer to belonging ccw device
- * @clear: Status flags to clear.
- * @tag: s390dbf trace record tag
- */
+ 
 static int zfcp_ccw_activate(struct ccw_device *cdev, int clear, char *tag)
 {
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);
@@ -58,18 +47,7 @@ static int zfcp_ccw_activate(struct ccw_device *cdev, int clear, char *tag)
 	zfcp_erp_adapter_reopen(adapter, ZFCP_STATUS_COMMON_ERP_FAILED,
 				tag);
 
-	/*
-	 * We want to scan ports here, with some random backoff and without
-	 * rate limit. Recovery has already scheduled a port scan for us,
-	 * but with both random delay and rate limit. Nevertheless we get
-	 * what we want here by flushing the scheduled work after sleeping
-	 * an equivalent random time.
-	 * Let the port scan random delay elapse first. If recovery finishes
-	 * up to that point in time, that would be perfect for both recovery
-	 * and port scan. If not, i.e. recovery takes ages, there was no
-	 * point in waiting a random delay on top of the time consumed by
-	 * recovery.
-	 */
+	 
 	msleep(zfcp_fc_port_scan_backoff());
 	zfcp_erp_wait(adapter);
 	flush_delayed_work(&adapter->scan_work);
@@ -86,29 +64,13 @@ static struct ccw_device_id zfcp_ccw_device_id[] = {
 };
 MODULE_DEVICE_TABLE(ccw, zfcp_ccw_device_id);
 
-/**
- * zfcp_ccw_probe - probe function of zfcp driver
- * @cdev: pointer to belonging ccw device
- *
- * This function gets called by the common i/o layer for each FCP
- * device found on the current system. This is only a stub to make cio
- * work: To only allocate adapter resources for devices actually used,
- * the allocation is deferred to the first call to ccw_set_online.
- */
+ 
 static int zfcp_ccw_probe(struct ccw_device *cdev)
 {
 	return 0;
 }
 
-/**
- * zfcp_ccw_remove - remove function of zfcp driver
- * @cdev: pointer to belonging ccw device
- *
- * This function gets called by the common i/o layer and removes an adapter
- * from the system. Task of this function is to get rid of all units and
- * ports that belong to this adapter. And in addition all resources of this
- * adapter will be freed too.
- */
+ 
 static void zfcp_ccw_remove(struct ccw_device *cdev)
 {
 	struct zfcp_adapter *adapter;
@@ -131,7 +93,7 @@ static void zfcp_ccw_remove(struct ccw_device *cdev)
 	}
 	list_splice_init(&adapter->port_list, &port_remove_lh);
 	write_unlock_irq(&adapter->port_list_lock);
-	zfcp_ccw_adapter_put(adapter); /* put from zfcp_ccw_adapter_by_cdev */
+	zfcp_ccw_adapter_put(adapter);  
 
 	list_for_each_entry_safe(unit, u, &unit_remove_lh, list)
 		device_unregister(&unit->dev);
@@ -142,19 +104,7 @@ static void zfcp_ccw_remove(struct ccw_device *cdev)
 	zfcp_adapter_unregister(adapter);
 }
 
-/**
- * zfcp_ccw_set_online - set_online function of zfcp driver
- * @cdev: pointer to belonging ccw device
- *
- * This function gets called by the common i/o layer and sets an
- * adapter into state online.  The first call will allocate all
- * adapter resources that will be retained until the device is removed
- * via zfcp_ccw_remove.
- *
- * Setting an fcp device online means that it will be registered with
- * the SCSI stack, that the QDIO queues will be set up and that the
- * adapter will be opened.
- */
+ 
 static int zfcp_ccw_set_online(struct ccw_device *cdev)
 {
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);
@@ -171,35 +121,20 @@ static int zfcp_ccw_set_online(struct ccw_device *cdev)
 		kref_get(&adapter->ref);
 	}
 
-	/* initialize request counter */
+	 
 	BUG_ON(!zfcp_reqlist_isempty(adapter->req_list));
 	adapter->req_no = 0;
 
 	zfcp_ccw_activate(cdev, 0, "ccsonl1");
 
-	/*
-	 * We want to scan ports here, always, with some random delay and
-	 * without rate limit - basically what zfcp_ccw_activate() has
-	 * achieved for us. Not quite! That port scan depended on
-	 * !no_auto_port_rescan. So let's cover the no_auto_port_rescan
-	 * case here to make sure a port scan is done unconditionally.
-	 * Since zfcp_ccw_activate() has waited the desired random time,
-	 * we can immediately schedule and flush a port scan for the
-	 * remaining cases.
-	 */
+	 
 	zfcp_fc_inverse_conditional_port_scan(adapter);
 	flush_delayed_work(&adapter->scan_work);
 	zfcp_ccw_adapter_put(adapter);
 	return 0;
 }
 
-/**
- * zfcp_ccw_set_offline - set_offline function of zfcp driver
- * @cdev: pointer to belonging ccw device
- *
- * This function gets called by the common i/o layer and sets an adapter
- * into state offline.
- */
+ 
 static int zfcp_ccw_set_offline(struct ccw_device *cdev)
 {
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);
@@ -215,14 +150,7 @@ static int zfcp_ccw_set_offline(struct ccw_device *cdev)
 	return 0;
 }
 
-/**
- * zfcp_ccw_notify - ccw notify function
- * @cdev: pointer to belonging ccw device
- * @event: indicates if adapter was detached or attached
- *
- * This function gets called by the common i/o layer if an adapter has gone
- * or reappeared.
- */
+ 
 static int zfcp_ccw_notify(struct ccw_device *cdev, int event)
 {
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);
@@ -258,10 +186,7 @@ static int zfcp_ccw_notify(struct ccw_device *cdev, int event)
 	return 1;
 }
 
-/**
- * zfcp_ccw_shutdown - handle shutdown from cio
- * @cdev: device for adapter to shutdown.
- */
+ 
 static void zfcp_ccw_shutdown(struct ccw_device *cdev)
 {
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Driver for the Macintosh 68K onboard MACE controller with PSC
- *	driven DMA. The MACE driver code is derived from mace.c. The
- *	Mac68k theory of operation is courtesy of the MacBSD wizards.
- *
- *	Copyright (C) 1996 Paul Mackerras.
- *	Copyright (C) 1998 Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- *	Modified heavily by Joshua M. Thompson based on Dave Huang's NetBSD driver
- *
- *	Copyright (C) 2007 Finn Thain
- *
- *	Converted to DMA API, converted to unified driver model,
- *	sync'd some routines with mace.c and fixed various bugs.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -45,10 +31,10 @@ static char mac_mace_string[] = "macmace";
 
 #define MACE_BUFF_SIZE	0x800
 
-/* Chip rev needs workaround on HW & multicast addr change */
+ 
 #define BROKEN_ADDRCHG_REV	0x0941
 
-/* The MACE is simply wired down on a Mac68K box */
+ 
 
 #define MACE_BASE	(void *)(0x50F1C000)
 #define MACE_PROM	(void *)(0x50F08001)
@@ -78,7 +64,7 @@ struct mace_frame {
 	u32	pad5;
 	u32	pad6;
 	DECLARE_FLEX_ARRAY(u8, data);
-	/* And frame continues.. */
+	 
 };
 
 #define PRIV_BYTES	sizeof(struct mace_data)
@@ -94,9 +80,7 @@ static irqreturn_t mace_dma_intr(int irq, void *dev_id);
 static void mace_tx_timeout(struct net_device *dev, unsigned int txqueue);
 static void __mace_set_address(struct net_device *dev, const void *addr);
 
-/*
- * Load a receive DMA channel with a base address and ring length
- */
+ 
 
 static void mace_load_rxdma_base(struct net_device *dev, int set)
 {
@@ -109,9 +93,7 @@ static void mace_load_rxdma_base(struct net_device *dev, int set)
 	mp->rx_tail = 0;
 }
 
-/*
- * Reset the receive DMA subsystem
- */
+ 
 
 static void mace_rxdma_reset(struct net_device *dev)
 {
@@ -136,9 +118,7 @@ static void mace_rxdma_reset(struct net_device *dev)
 	psc_write_word(PSC_ENETRD_CMD + PSC_SET1, 0x9800);
 }
 
-/*
- * Reset the transmit DMA subsystem
- */
+ 
 
 static void mace_txdma_reset(struct net_device *dev)
 {
@@ -158,9 +138,7 @@ static void mace_txdma_reset(struct net_device *dev)
 	mace->maccc = maccc;
 }
 
-/*
- * Disable DMA
- */
+ 
 
 static void mace_dma_off(struct net_device *dev)
 {
@@ -185,10 +163,7 @@ static const struct net_device_ops mace_netdev_ops = {
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
-/*
- * Not really much of a probe. The hardware table tells us if this
- * model of Macintrash has a MACE (AV macintoshes)
- */
+ 
 
 static int mace_probe(struct platform_device *pdev)
 {
@@ -218,12 +193,7 @@ static int mace_probe(struct platform_device *pdev)
 
 	mp->chipid = mp->mace->chipid_hi << 8 | mp->mace->chipid_lo;
 
-	/*
-	 * The PROM contains 8 bytes which total 0xFF when XOR'd
-	 * together. Due to the usual peculiar apple brain damage
-	 * the bytes are spaced out in a strange boundary and the
-	 * bits are reversed.
-	 */
+	 
 
 	addr = MACE_PROM;
 
@@ -256,9 +226,7 @@ static int mace_probe(struct platform_device *pdev)
 	return err;
 }
 
-/*
- * Reset the chip.
- */
+ 
 
 static void mace_reset(struct net_device *dev)
 {
@@ -266,7 +234,7 @@ static void mace_reset(struct net_device *dev)
 	volatile struct mace *mb = mp->mace;
 	int i;
 
-	/* soft-reset the chip */
+	 
 	i = 200;
 	while (--i) {
 		mb->biucc = SWRST;
@@ -281,21 +249,21 @@ static void mace_reset(struct net_device *dev)
 		return;
 	}
 
-	mb->maccc = 0;	/* turn off tx, rx */
-	mb->imr = 0xFF;	/* disable all intrs for now */
+	mb->maccc = 0;	 
+	mb->imr = 0xFF;	 
 	i = mb->ir;
 
 	mb->biucc = XMTSP_64;
 	mb->utr = RTRD;
 	mb->fifocc = XMTFW_8 | RCVFW_64 | XMTFWU | RCVFWU;
 
-	mb->xmtfc = AUTO_PAD_XMIT; /* auto-pad short frames */
+	mb->xmtfc = AUTO_PAD_XMIT;  
 	mb->rcvfc = 0;
 
-	/* load up the hardware address */
+	 
 	__mace_set_address(dev, dev->dev_addr);
 
-	/* clear the multicast filter */
+	 
 	if (mp->chipid == BROKEN_ADDRCHG_REV)
 		mb->iac = LOGADDR;
 	else {
@@ -306,16 +274,14 @@ static void mace_reset(struct net_device *dev)
 	for (i = 0; i < 8; ++i)
 		mb->ladrf = 0;
 
-	/* done changing address */
+	 
 	if (mp->chipid != BROKEN_ADDRCHG_REV)
 		mb->iac = 0;
 
 	mb->plscc = PORTSEL_AUI;
 }
 
-/*
- * Load the address on a mace controller.
- */
+ 
 
 static void __mace_set_address(struct net_device *dev, const void *addr)
 {
@@ -325,7 +291,7 @@ static void __mace_set_address(struct net_device *dev, const void *addr)
 	u8 macaddr[ETH_ALEN];
 	int i;
 
-	/* load up the hardware address */
+	 
 	if (mp->chipid == BROKEN_ADDRCHG_REV)
 		mb->iac = PHYADDR;
 	else {
@@ -360,17 +326,14 @@ static int mace_set_address(struct net_device *dev, void *addr)
 	return 0;
 }
 
-/*
- * Open the Macintosh MACE. Most of this is playing with the DMA
- * engine. The ethernet chip is quite friendly.
- */
+ 
 
 static int mace_open(struct net_device *dev)
 {
 	struct mace_data *mp = netdev_priv(dev);
 	volatile struct mace *mb = mp->mace;
 
-	/* reset the chip */
+	 
 	mace_reset(dev);
 
 	if (request_irq(dev->irq, mace_interrupt, 0, dev->name, dev)) {
@@ -383,7 +346,7 @@ static int mace_open(struct net_device *dev)
 		return -EAGAIN;
 	}
 
-	/* Allocate the DMA ring buffers */
+	 
 
 	mp->tx_ring = dma_alloc_coherent(mp->device,
 					 N_TX_RING * MACE_BUFF_SIZE,
@@ -399,7 +362,7 @@ static int mace_open(struct net_device *dev)
 
 	mace_dma_off(dev);
 
-	/* Not sure what these do */
+	 
 
 	psc_write_word(PSC_ENETWR_CTL, 0x9000);
 	psc_write_word(PSC_ENETRD_CTL, 0x9000);
@@ -409,9 +372,9 @@ static int mace_open(struct net_device *dev)
 	mace_rxdma_reset(dev);
 	mace_txdma_reset(dev);
 
-	/* turn it on! */
+	 
 	mb->maccc = ENXMT | ENRCV;
-	/* enable all interrupts except receive interrupts */
+	 
 	mb->imr = RCVINT;
 	return 0;
 
@@ -424,32 +387,28 @@ out1:
 	return -ENOMEM;
 }
 
-/*
- * Shut down the mace and its interrupt channel
- */
+ 
 
 static int mace_close(struct net_device *dev)
 {
 	struct mace_data *mp = netdev_priv(dev);
 	volatile struct mace *mb = mp->mace;
 
-	mb->maccc = 0;		/* disable rx and tx	 */
-	mb->imr = 0xFF;		/* disable all irqs	 */
-	mace_dma_off(dev);	/* disable rx and tx dma */
+	mb->maccc = 0;		 
+	mb->imr = 0xFF;		 
+	mace_dma_off(dev);	 
 
 	return 0;
 }
 
-/*
- * Transmit a frame
- */
+ 
 
 static netdev_tx_t mace_xmit_start(struct sk_buff *skb, struct net_device *dev)
 {
 	struct mace_data *mp = netdev_priv(dev);
 	unsigned long flags;
 
-	/* Stop the queue since there's only the one buffer */
+	 
 
 	local_irq_save(flags);
 	netif_stop_queue(dev);
@@ -464,10 +423,10 @@ static netdev_tx_t mace_xmit_start(struct sk_buff *skb, struct net_device *dev)
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 
-	/* We need to copy into our xmit buffer to take care of alignment and caching issues */
+	 
 	skb_copy_from_linear_data(skb, mp->tx_ring, skb->len);
 
-	/* load the Tx DMA and fire it off */
+	 
 
 	psc_write_long(PSC_ENETWR_ADDR + mp->tx_slot, (u32)  mp->tx_ring_phys);
 	psc_write_long(PSC_ENETWR_LEN + mp->tx_slot, skb->len);
@@ -508,7 +467,7 @@ static void mace_set_multicast(struct net_device *dev)
 				multicast_filter[i] = 0;
 			netdev_for_each_mc_addr(ha, dev) {
 				crc = ether_crc_le(6, ha->addr);
-				/* bit number in multicast_filter */
+				 
 				i = crc >> 26;
 				multicast_filter[i >> 3] |= 1 << (i & 7);
 			}
@@ -539,10 +498,10 @@ static void mace_handle_misc_intrs(struct net_device *dev, int intr)
 
 	if (intr & MPCO)
 		dev->stats.rx_missed_errors += 256;
-	dev->stats.rx_missed_errors += mb->mpc;   /* reading clears it */
+	dev->stats.rx_missed_errors += mb->mpc;    
 	if (intr & RNTPCO)
 		dev->stats.rx_length_errors += 256;
-	dev->stats.rx_length_errors += mb->rntpc; /* reading clears it */
+	dev->stats.rx_length_errors += mb->rntpc;  
 	if (intr & CERR)
 		++dev->stats.tx_heartbeat_errors;
 	if (intr & BABBLE)
@@ -561,10 +520,10 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	int intr, fs;
 	unsigned long flags;
 
-	/* don't want the dma interrupt handler to fire */
+	 
 	local_irq_save(flags);
 
-	intr = mb->ir; /* read interrupt register */
+	intr = mb->ir;  
 	mace_handle_misc_intrs(dev, intr);
 
 	if (intr & XMTINT) {
@@ -572,16 +531,13 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 		if ((fs & XMTSV) == 0) {
 			printk(KERN_ERR "macmace: xmtfs not valid! (fs=%x)\n", fs);
 			mace_reset(dev);
-			/*
-			 * XXX mace likes to hang the machine after a xmtfs error.
-			 * This is hard to reproduce, resetting *may* help
-			 */
+			 
 		}
-		/* dma should have finished */
+		 
 		if (!mp->tx_count) {
 			printk(KERN_DEBUG "macmace: tx ring ran out? (fs=%x)\n", fs);
 		}
-		/* Update stats */
+		 
 		if (fs & (UFLO|LCOL|LCAR|RTRY)) {
 			++dev->stats.tx_errors;
 			if (fs & LCAR)
@@ -612,29 +568,27 @@ static void mace_tx_timeout(struct net_device *dev, unsigned int txqueue)
 
 	local_irq_save(flags);
 
-	/* turn off both tx and rx and reset the chip */
+	 
 	mb->maccc = 0;
 	printk(KERN_ERR "macmace: transmit timeout - resetting\n");
 	mace_txdma_reset(dev);
 	mace_reset(dev);
 
-	/* restart rx dma */
+	 
 	mace_rxdma_reset(dev);
 
 	mp->tx_count = N_TX_RING;
 	netif_wake_queue(dev);
 
-	/* turn it on! */
+	 
 	mb->maccc = ENXMT | ENRCV;
-	/* enable all interrupts except receive interrupts */
+	 
 	mb->imr = RCVINT;
 
 	local_irq_restore(flags);
 }
 
-/*
- * Handle a newly arrived frame
- */
+ 
 
 static void mace_dma_rx_frame(struct net_device *dev, struct mace_frame *mf)
 {
@@ -669,9 +623,7 @@ static void mace_dma_rx_frame(struct net_device *dev, struct mace_frame *mf)
 	}
 }
 
-/*
- * The PSC has passed us a DMA interrupt event.
- */
+ 
 
 static irqreturn_t mace_dma_intr(int irq, void *dev_id)
 {
@@ -681,14 +633,12 @@ static irqreturn_t mace_dma_intr(int irq, void *dev_id)
 	u16 status;
 	u32 baka;
 
-	/* Not sure what this does */
+	 
 
 	while ((baka = psc_read_long(PSC_MYSTERY)) != psc_read_long(PSC_MYSTERY));
 	if (!(baka & 0x60000000)) return IRQ_NONE;
 
-	/*
-	 * Process the read queue
-	 */
+	 
 
 	status = psc_read_word(PSC_ENETRD_CTL);
 
@@ -700,7 +650,7 @@ static irqreturn_t mace_dma_intr(int irq, void *dev_id)
 		left = psc_read_long(PSC_ENETRD_LEN + mp->rx_slot);
 		head = N_RX_RING - left;
 
-		/* Loop through the ring buffer and process new packages */
+		 
 
 		while (mp->rx_tail < head) {
 			mace_dma_rx_frame(dev, (struct mace_frame*) (mp->rx_ring
@@ -708,8 +658,8 @@ static irqreturn_t mace_dma_intr(int irq, void *dev_id)
 			mp->rx_tail++;
 		}
 
-		/* If we're out of buffers in this ring then switch to */
-		/* the other set, otherwise just reactivate this one.  */
+		 
+		 
 
 		if (!left) {
 			mace_load_rxdma_base(dev, mp->rx_slot);
@@ -719,9 +669,7 @@ static irqreturn_t mace_dma_intr(int irq, void *dev_id)
 		}
 	}
 
-	/*
-	 * Process the write queue
-	 */
+	 
 
 	status = psc_read_word(PSC_ENETWR_CTL);
 

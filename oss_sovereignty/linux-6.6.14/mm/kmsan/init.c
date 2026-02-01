@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KMSAN initialization routines.
- *
- * Copyright (C) 2017-2021 Google LLC
- * Author: Alexander Potapenko <glider@google.com>
- *
- */
+
+ 
 
 #include "kmsan.h"
 
@@ -23,10 +17,7 @@ struct start_end_pair {
 static struct start_end_pair start_end_pairs[NUM_FUTURE_RANGES] __initdata;
 static int future_index __initdata;
 
-/*
- * Record a range of memory for which the metadata pages will be created once
- * the page allocator becomes available.
- */
+ 
 static void __init kmsan_record_future_shadow_range(void *start, void *end)
 {
 	u64 nstart = (u64)start, nend = (u64)end, cstart, cend;
@@ -37,19 +28,13 @@ static void __init kmsan_record_future_shadow_range(void *start, void *end)
 	nstart = ALIGN_DOWN(nstart, PAGE_SIZE);
 	nend = ALIGN(nend, PAGE_SIZE);
 
-	/*
-	 * Scan the existing ranges to see if any of them overlaps with
-	 * [start, end). In that case, merge the two ranges instead of
-	 * creating a new one.
-	 * The number of ranges is less than 20, so there is no need to organize
-	 * them into a more intelligent data structure.
-	 */
+	 
 	for (int i = 0; i < future_index; i++) {
 		cstart = start_end_pairs[i].start;
 		cend = start_end_pairs[i].end;
 		if ((cstart < nstart && cend < nstart) ||
 		    (cstart > nend && cend > nend))
-			/* ranges are disjoint - do not merge */
+			 
 			continue;
 		start_end_pairs[i].start = min(nstart, cstart);
 		start_end_pairs[i].end = max(nend, cend);
@@ -63,13 +48,7 @@ static void __init kmsan_record_future_shadow_range(void *start, void *end)
 	future_index++;
 }
 
-/*
- * Initialize the shadow for existing mappings during kernel initialization.
- * These include kernel text/data sections, NODE_DATA and future ranges
- * registered while creating other data (e.g. percpu).
- *
- * Allocations via memblock can be only done before slab is initialized.
- */
+ 
 void __init kmsan_init_shadow(void)
 {
 	const size_t nd_size = roundup(sizeof(pg_data_t), PAGE_SIZE);
@@ -80,7 +59,7 @@ void __init kmsan_init_shadow(void)
 	for_each_reserved_mem_range(loop, &p_start, &p_end)
 		kmsan_record_future_shadow_range(phys_to_virt(p_start),
 						 phys_to_virt(p_end));
-	/* Allocate shadow for .data */
+	 
 	kmsan_record_future_shadow_range(_sdata, _edata);
 
 	for_each_online_node(nid)
@@ -98,19 +77,7 @@ struct metadata_page_pair {
 };
 static struct metadata_page_pair held_back[MAX_ORDER + 1] __initdata;
 
-/*
- * Eager metadata allocation. When the memblock allocator is freeing pages to
- * pagealloc, we use 2/3 of them as metadata for the remaining 1/3.
- * We store the pointers to the returned blocks of pages in held_back[] grouped
- * by their order: when kmsan_memblock_free_pages() is called for the first
- * time with a certain order, it is reserved as a shadow block, for the second
- * time - as an origin block. On the third time the incoming block receives its
- * shadow and origin ranges from the previously saved shadow and origin blocks,
- * after which held_back[order] can be used again.
- *
- * At the very end there may be leftover blocks in held_back[]. They are
- * collected later by kmsan_memblock_discard().
- */
+ 
 bool kmsan_memblock_free_pages(struct page *page, unsigned int order)
 {
 	struct page *shadow, *origin;
@@ -194,23 +161,10 @@ static void collect_split(void)
 	__memcpy(&collect, &tmp, sizeof(tmp));
 }
 
-/*
- * Memblock is about to go away. Split the page blocks left over in held_back[]
- * and return 1/3 of that memory to the system.
- */
+ 
 static void kmsan_memblock_discard(void)
 {
-	/*
-	 * For each order=N:
-	 *  - push held_back[N].shadow and .origin to @collect;
-	 *  - while there are >= 3 elements in @collect, do garbage collection:
-	 *    - pop 3 ranges from @collect;
-	 *    - use two of them as shadow and origin for the third one;
-	 *    - repeat;
-	 *  - split each remaining element from @collect into 2 ranges of
-	 *    order=N-1,
-	 *  - repeat.
-	 */
+	 
 	collect.order = MAX_ORDER;
 	for (int i = MAX_ORDER; i >= 0; i--) {
 		if (held_back[i].shadow)
@@ -226,7 +180,7 @@ static void kmsan_memblock_discard(void)
 
 void __init kmsan_init_runtime(void)
 {
-	/* Assuming current is init_task */
+	 
 	kmsan_internal_task_create(current);
 	kmsan_memblock_discard();
 	pr_info("Starting KernelMemorySanitizer\n");

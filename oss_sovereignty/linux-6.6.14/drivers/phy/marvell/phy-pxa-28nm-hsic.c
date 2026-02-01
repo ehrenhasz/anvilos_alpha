@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Linaro, Ltd.
- * Rob Herring <robh@kernel.org>
- *
- * Based on vendor driver:
- * Copyright (C) 2013 Marvell Inc.
- * Author: Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -62,18 +55,18 @@ static int mv_hsic_phy_init(struct phy *phy)
 
 	clk_prepare_enable(mv_phy->clk);
 
-	/* Set reference clock */
+	 
 	writel(0x1 << PHY_28NM_HSIC_PLL_SELLPFR_SHIFT |
 		0xf0 << PHY_28NM_HSIC_PLL_FBDIV_SHIFT |
 		0xd << PHY_28NM_HSIC_PLL_REFDIV_SHIFT,
 		base + PHY_28NM_HSIC_PLL_CTRL01);
 
-	/* Turn on PLL */
+	 
 	writel(readl(base + PHY_28NM_HSIC_PLL_CTRL2) |
 		PHY_28NM_HSIC_S2H_PU_PLL,
 		base + PHY_28NM_HSIC_PLL_CTRL2);
 
-	/* Make sure PHY PLL is locked */
+	 
 	ret = wait_for_reg(base + PHY_28NM_HSIC_PLL_CTRL2,
 			   PHY_28NM_HSIC_H2S_PLL_LOCK, 100);
 	if (ret) {
@@ -93,21 +86,14 @@ static int mv_hsic_phy_power_on(struct phy *phy)
 	int ret;
 
 	reg = readl(base + PHY_28NM_HSIC_CTRL);
-	/* Avoid SE0 state when resume for some device will take it as reset */
+	 
 	reg &= ~S2H_DRV_SE0_4RESUME;
-	reg |= PHY_28NM_HSIC_S2H_HSIC_EN;	/* Enable HSIC PHY */
+	reg |= PHY_28NM_HSIC_S2H_HSIC_EN;	 
 	writel(reg, base + PHY_28NM_HSIC_CTRL);
 
-	/*
-	 *  Calibration Timing
-	 *		   ____________________________
-	 *  CAL START   ___|
-	 *			   ____________________
-	 *  CAL_DONE    ___________|
-	 *		   | 400us |
-	 */
+	 
 
-	/* Make sure PHY Calibration is ready */
+	 
 	ret = wait_for_reg(base + PHY_28NM_HSIC_IMPCAL_CAL,
 			   PHY_28NM_HSIC_H2S_IMPCAL_DONE, 100);
 	if (ret) {
@@ -115,7 +101,7 @@ static int mv_hsic_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Waiting for HSIC connect int*/
+	 
 	ret = wait_for_reg(base + PHY_28NM_HSIC_INT,
 			   PHY_28NM_HSIC_CONNECT_INT, 200);
 	if (ret)
@@ -140,7 +126,7 @@ static int mv_hsic_phy_exit(struct phy *phy)
 	struct mv_hsic_phy *mv_phy = phy_get_drvdata(phy);
 	void __iomem *base = mv_phy->base;
 
-	/* Turn off PLL */
+	 
 	writel(readl(base + PHY_28NM_HSIC_PLL_CTRL2) &
 		~PHY_28NM_HSIC_S2H_PU_PLL,
 		base + PHY_28NM_HSIC_PLL_CTRL2);

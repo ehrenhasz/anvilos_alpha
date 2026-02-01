@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -31,7 +10,7 @@
 
 #include <libzutil.h>
 
-/* Substring from after the last slash, or the string itself if none */
+ 
 const char *
 zfs_basename(const char *path)
 {
@@ -39,7 +18,7 @@ zfs_basename(const char *path)
 	return (bn ? bn + 1 : path);
 }
 
-/* Return index of last slash or -1 if none */
+ 
 ssize_t
 zfs_dirnamelen(const char *path)
 {
@@ -47,12 +26,7 @@ zfs_dirnamelen(const char *path)
 	return (end ? end - path : -1);
 }
 
-/*
- * Given a shorthand device name check if a file by that name exists in any
- * of the 'zpool_default_import_path' or ZPOOL_IMPORT_PATH directories.  If
- * one is found, store its fully qualified path in the 'path' buffer passed
- * by the caller and return 0, otherwise return an error.
- */
+ 
 int
 zfs_resolve_shortname(const char *name, char *path, size_t len)
 {
@@ -88,13 +62,7 @@ zfs_resolve_shortname(const char *name, char *path, size_t len)
 	return (errno = ENOENT);
 }
 
-/*
- * Given a shorthand device name look for a match against 'cmp_name'.  This
- * is done by checking all prefix expansions using either the default
- * 'zpool_default_import_paths' or the ZPOOL_IMPORT_PATH environment
- * variable.  Proper partition suffixes will be appended if this is a
- * whole disk.  When a match is found 0 is returned otherwise ENOENT.
- */
+ 
 static int
 zfs_strcmp_shortname(const char *name, const char *cmp_name, int wholedisk)
 {
@@ -116,7 +84,7 @@ zfs_strcmp_shortname(const char *name, const char *cmp_name, int wholedisk)
 	}
 
 	while (dir) {
-		/* Trim trailing directory slashes from ZPOOL_IMPORT_PATH */
+		 
 		if (env) {
 			while (dir[strlen(dir)-1] == '/')
 				dir[strlen(dir)-1] = '\0';
@@ -146,11 +114,7 @@ zfs_strcmp_shortname(const char *name, const char *cmp_name, int wholedisk)
 	return (error);
 }
 
-/*
- * Given either a shorthand or fully qualified path name look for a match
- * against 'cmp'.  The passed name will be expanded as needed for comparison
- * purposes and redundant slashes stripped to ensure an accurate match.
- */
+ 
 int
 zfs_strcmp_pathname(const char *name, const char *cmp, int wholedisk)
 {
@@ -159,7 +123,7 @@ zfs_strcmp_pathname(const char *name, const char *cmp, int wholedisk)
 	char cmp_name[MAXPATHLEN];
 	char *dir, *tmp = NULL;
 
-	/* Strip redundant slashes if they exist due to ZPOOL_IMPORT_PATH */
+	 
 	cmp_name[0] = '\0';
 	(void) strlcpy(path_name, cmp, sizeof (path_name));
 	for (dir = strtok_r(path_name, "/", &tmp);

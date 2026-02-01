@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test sigreturn to an unaligned address, ie. low 2 bits set.
- * Nothing bad should happen.
- * This was able to trigger warnings with CONFIG_PPC_RFI_SRR_DEBUG=y.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>

@@ -1,19 +1,5 @@
 
-/*
- * Copyright (c) 1999-2004 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -37,10 +23,7 @@
 char *__progname;
 #endif
 
-/*
- * NB. duplicate __progname in case it is an alias for argv[0]
- * Otherwise it may get clobbered by setproctitle()
- */
+ 
 char *ssh_get_progname(char *argv0)
 {
 	char *p, *q;
@@ -50,7 +33,7 @@ char *ssh_get_progname(char *argv0)
 	p = __progname;
 #else
 	if (argv0 == NULL)
-		return ("unknown");	/* XXX */
+		return ("unknown");	 
 	p = strrchr(argv0, '/');
 	if (p == NULL)
 		p = argv0;
@@ -69,7 +52,7 @@ int setlogin(const char *name)
 {
 	return (0);
 }
-#endif /* !HAVE_SETLOGIN */
+#endif  
 
 #ifndef HAVE_INNETGR
 int innetgr(const char *netgroup, const char *host,
@@ -77,21 +60,21 @@ int innetgr(const char *netgroup, const char *host,
 {
 	return (0);
 }
-#endif /* HAVE_INNETGR */
+#endif  
 
 #if !defined(HAVE_SETEUID) && defined(HAVE_SETREUID)
 int seteuid(uid_t euid)
 {
 	return (setreuid(-1, euid));
 }
-#endif /* !defined(HAVE_SETEUID) && defined(HAVE_SETREUID) */
+#endif  
 
 #if !defined(HAVE_SETEGID) && defined(HAVE_SETRESGID)
 int setegid(uid_t egid)
 {
 	return(setresgid(-1, egid, -1));
 }
-#endif /* !defined(HAVE_SETEGID) && defined(HAVE_SETRESGID) */
+#endif  
 
 #if !defined(HAVE_STRERROR) && defined(HAVE_SYS_ERRLIST) && defined(HAVE_SYS_NERR)
 const char *strerror(int e)
@@ -119,11 +102,7 @@ int utimes(const char *filename, struct timeval *tvp)
 #endif
 
 #ifndef HAVE_UTIMENSAT
-/*
- * A limited implementation of utimensat() that only implements the
- * functionality used by OpenSSH, currently only AT_FDCWD and
- * AT_SYMLINK_NOFOLLOW.
- */
+ 
 int
 utimensat(int fd, const char *path, const struct timespec times[2],
     int flag)
@@ -148,7 +127,7 @@ utimensat(int fd, const char *path, const struct timespec times[2],
 #  ifdef O_NOFOLLOW
 	if (flag & AT_SYMLINK_NOFOLLOW)
 		oflags |= O_NOFOLLOW;
-#  endif /* O_NOFOLLOW */
+#  endif  
 	if ((fd = open(path, oflags)) == -1)
 		return -1;
 	ret = futimes(fd, tv);
@@ -159,11 +138,7 @@ utimensat(int fd, const char *path, const struct timespec times[2],
 #endif
 
 #ifndef HAVE_FCHOWNAT
-/*
- * A limited implementation of fchownat() that only implements the
- * functionality used by OpenSSH, currently only AT_FDCWD and
- * AT_SYMLINK_NOFOLLOW.
- */
+ 
 int
 fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag)
 {
@@ -179,7 +154,7 @@ fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag)
 #  ifdef O_NOFOLLOW
 	if (flag & AT_SYMLINK_NOFOLLOW)
 		oflags |= O_NOFOLLOW;
-#  endif /* O_NOFOLLOW */
+#  endif  
 	if ((fd = open(path, oflags)) == -1)
 		return -1;
 	ret = fchown(fd, owner, group);
@@ -190,11 +165,7 @@ fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag)
 #endif
 
 #ifndef HAVE_FCHMODAT
-/*
- * A limited implementation of fchmodat() that only implements the
- * functionality used by OpenSSH, currently only AT_FDCWD and
- * AT_SYMLINK_NOFOLLOW.
- */
+ 
 int
 fchmodat(int fd, const char *path, mode_t mode, int flag)
 {
@@ -210,7 +181,7 @@ fchmodat(int fd, const char *path, mode_t mode, int flag)
 #  ifdef O_NOFOLLOW
 	if (flag & AT_SYMLINK_NOFOLLOW)
 		oflags |= O_NOFOLLOW;
-#  endif /* O_NOFOLLOW */
+#  endif  
 	if ((fd = open(path, oflags)) == -1)
 		return -1;
 	ret = fchmod(fd, mode);
@@ -237,7 +208,7 @@ int truncate(const char *path, off_t length)
 
 	return(ret);
 }
-#endif /* HAVE_TRUNCATE */
+#endif  
 
 #if !defined(HAVE_NANOSLEEP) && !defined(HAVE_NSLEEP)
 int nanosleep(const struct timespec *req, struct timespec *rem)
@@ -292,7 +263,7 @@ tcgetpgrp(int fd)
 	else
 		return(ctty_pgrp);
 }
-#endif /* HAVE_TCGETPGRP */
+#endif  
 
 #ifndef HAVE_TCSENDBREAK
 int
@@ -313,7 +284,7 @@ tcsendbreak(int fd, int duration)
 	return -1;
 # endif
 }
-#endif /* HAVE_TCSENDBREAK */
+#endif  
 
 #ifndef HAVE_STRDUP
 char *
@@ -363,12 +334,12 @@ pledge(const char *promises, const char *paths[])
 #endif
 
 #ifndef HAVE_MBTOWC
-/* a mbtowc that only supports ASCII */
+ 
 int
 mbtowc(wchar_t *pwc, const char *s, size_t n)
 {
 	if (s == NULL || *s == '\0')
-		return 0;	/* ASCII is not state-dependent */
+		return 0;	 
 	if (*s < 0 || *s > 0x7f || n < 1) {
 		errno = EOPNOTSUPP;
 		return -1;

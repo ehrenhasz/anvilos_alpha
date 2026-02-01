@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -69,20 +49,20 @@ MODULE_FIRMWARE("amdgpu/dimgrey_cavefish_ta.bin");
 MODULE_FIRMWARE("amdgpu/beige_goby_sos.bin");
 MODULE_FIRMWARE("amdgpu/beige_goby_ta.bin");
 
-/* address block */
+ 
 #define smnMP1_FIRMWARE_FLAGS		0x3010024
-/* navi10 reg offset define */
+ 
 #define mmRLC_GPM_UCODE_ADDR_NV10	0x5b61
 #define mmRLC_GPM_UCODE_DATA_NV10	0x5b62
 #define mmSDMA0_UCODE_ADDR_NV10		0x5880
 #define mmSDMA0_UCODE_DATA_NV10		0x5881
-/* memory training timeout define */
+ 
 #define MEM_TRAIN_SEND_MSG_TIMEOUT_US	3000000
 
-/* For large FW files the time to complete can be very long */
+ 
 #define USBC_PD_POLLING_LIMIT_S 240
 
-/* Read USB-PD from LFB */
+ 
 #define GFX_CMD_USB_PD_USE_LFB 0x480
 
 static int psp_v11_0_init_microcode(struct psp_context *psp)
@@ -149,8 +129,7 @@ static int psp_v11_0_wait_for_bootloader(struct psp_context *psp)
 	int retry_loop;
 
 	for (retry_loop = 0; retry_loop < 10; retry_loop++) {
-		/* Wait for bootloader to signify that is
-		    ready having bit 31 of C2PMSG_35 set to 1 */
+		 
 		ret = psp_wait_for(psp,
 				   SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_35),
 				   0x80000000,
@@ -182,9 +161,7 @@ static int psp_v11_0_bootloader_load_component(struct psp_context  	*psp,
 	uint32_t psp_gfxdrv_command_reg = 0;
 	struct amdgpu_device *adev = psp->adev;
 
-	/* Check sOS sign of life register to confirm sys driver and sOS
-	 * are already been loaded.
-	 */
+	 
 	if (psp_v11_0_is_sos_alive(psp))
 		return 0;
 
@@ -192,10 +169,10 @@ static int psp_v11_0_bootloader_load_component(struct psp_context  	*psp,
 	if (ret)
 		return ret;
 
-	/* Copy PSP System Driver binary to memory */
+	 
 	psp_copy_fw(psp, bin_desc->start_addr, bin_desc->size_bytes);
 
-	/* Provide the sys driver to bootloader */
+	 
 	WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_36,
 	       (uint32_t)(psp->fw_pri_mc_addr >> 20));
 	psp_gfxdrv_command_reg = bl_cmd;
@@ -228,9 +205,7 @@ static int psp_v11_0_bootloader_load_sos(struct psp_context *psp)
 	unsigned int psp_gfxdrv_command_reg = 0;
 	struct amdgpu_device *adev = psp->adev;
 
-	/* Check sOS sign of life register to confirm sys driver and sOS
-	 * are already been loaded.
-	 */
+	 
 	if (psp_v11_0_is_sos_alive(psp))
 		return 0;
 
@@ -238,17 +213,17 @@ static int psp_v11_0_bootloader_load_sos(struct psp_context *psp)
 	if (ret)
 		return ret;
 
-	/* Copy Secure OS binary to PSP memory */
+	 
 	psp_copy_fw(psp, psp->sos.start_addr, psp->sos.size_bytes);
 
-	/* Provide the PSP secure OS to bootloader */
+	 
 	WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_36,
 	       (uint32_t)(psp->fw_pri_mc_addr >> 20));
 	psp_gfxdrv_command_reg = PSP_BL__LOAD_SOSDRV;
 	WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_35,
 	       psp_gfxdrv_command_reg);
 
-	/* there might be handshake issue with hardware which needs delay */
+	 
 	mdelay(20);
 	ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_81),
 			   RREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_81),
@@ -263,7 +238,7 @@ static int psp_v11_0_ring_stop(struct psp_context *psp,
 	int ret = 0;
 	struct amdgpu_device *adev = psp->adev;
 
-	/* Write the ring destroy command*/
+	 
 	if (amdgpu_sriov_vf(adev))
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_101,
 				     GFX_CTRL_CMD_ID_DESTROY_GPCOM_RING);
@@ -271,10 +246,10 @@ static int psp_v11_0_ring_stop(struct psp_context *psp,
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_64,
 				     GFX_CTRL_CMD_ID_DESTROY_RINGS);
 
-	/* there might be handshake issue with hardware which needs delay */
+	 
 	mdelay(20);
 
-	/* Wait for response flag (bit 31) */
+	 
 	if (amdgpu_sriov_vf(adev))
 		ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_101),
 				   0x80000000, 0x80000000, false);
@@ -301,26 +276,26 @@ static int psp_v11_0_ring_create(struct psp_context *psp,
 			return ret;
 		}
 
-		/* Write low address of the ring to C2PMSG_102 */
+		 
 		psp_ring_reg = lower_32_bits(ring->ring_mem_mc_addr);
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_102, psp_ring_reg);
-		/* Write high address of the ring to C2PMSG_103 */
+		 
 		psp_ring_reg = upper_32_bits(ring->ring_mem_mc_addr);
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_103, psp_ring_reg);
 
-		/* Write the ring initialization command to C2PMSG_101 */
+		 
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_101,
 					     GFX_CTRL_CMD_ID_INIT_GPCOM_RING);
 
-		/* there might be handshake issue with hardware which needs delay */
+		 
 		mdelay(20);
 
-		/* Wait for response flag (bit 31) in C2PMSG_101 */
+		 
 		ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_101),
 				   0x80000000, 0x8000FFFF, false);
 
 	} else {
-		/* Wait for sOS ready for ring creation */
+		 
 		ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_64),
 				   0x80000000, 0x80000000, false);
 		if (ret) {
@@ -328,24 +303,24 @@ static int psp_v11_0_ring_create(struct psp_context *psp,
 			return ret;
 		}
 
-		/* Write low address of the ring to C2PMSG_69 */
+		 
 		psp_ring_reg = lower_32_bits(ring->ring_mem_mc_addr);
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_69, psp_ring_reg);
-		/* Write high address of the ring to C2PMSG_70 */
+		 
 		psp_ring_reg = upper_32_bits(ring->ring_mem_mc_addr);
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_70, psp_ring_reg);
-		/* Write size of ring to C2PMSG_71 */
+		 
 		psp_ring_reg = ring->ring_size;
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_71, psp_ring_reg);
-		/* Write the ring initialization command to C2PMSG_64 */
+		 
 		psp_ring_reg = ring_type;
 		psp_ring_reg = psp_ring_reg << 16;
 		WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_64, psp_ring_reg);
 
-		/* there might be handshake issue with hardware which needs delay */
+		 
 		mdelay(20);
 
-		/* Wait for response flag (bit 31) in C2PMSG_64 */
+		 
 		ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_64),
 				   0x80000000, 0x8000FFFF, false);
 	}
@@ -387,7 +362,7 @@ static int psp_v11_0_mode1_reset(struct psp_context *psp)
 		return -EINVAL;
 	}
 
-	/*send the mode 1 reset command*/
+	 
 	WREG32(offset, GFX_CTRL_CMD_ID_MODE1_RST);
 
 	msleep(500);
@@ -437,9 +412,7 @@ static int psp_v11_0_memory_training_send_msg(struct psp_context *psp, int msg)
 	return ret;
 }
 
-/*
- * save and restore process
- */
+ 
 static int psp_v11_0_memory_training(struct psp_context *psp, uint32_t ops)
 {
 	struct psp_memory_training_context *ctx = &psp->mem_train_ctx;
@@ -500,12 +473,7 @@ static int psp_v11_0_memory_training(struct psp_context *psp, uint32_t ops)
 	DRM_DEBUG("Memory training ops:%x.\n", ops);
 
 	if (ops & PSP_MEM_TRAIN_SEND_LONG_MSG) {
-		/*
-		 * Long training will encroach a certain amount on the bottom of VRAM;
-		 * save the content from the bottom of VRAM to system memory
-		 * before training, and restore it after training to avoid
-		 * VRAM corruption.
-		 */
+		 
 		sz = GDDR6_MEM_TRAINING_ENCROACHED_SIZE;
 
 		if (adev->gmc.visible_vram_size < sz || !adev->mman.aper_base_kaddr) {
@@ -592,11 +560,7 @@ static int psp_v11_0_load_usbc_pd_fw(struct psp_context *psp, uint64_t fw_pri_mc
 	uint32_t reg_status;
 	int ret, i = 0;
 
-	/*
-	 * LFB address which is aligned to 1MB address and has to be
-	 * right-shifted by 20 so that LFB address can be passed on a 32-bit C2P
-	 * register
-	 */
+	 
 	WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_36, (fw_pri_mc_addr >> 20));
 
 	ret = psp_wait_for(psp, SOC15_REG_OFFSET(MP0, 0, mmMP0_SMN_C2PMSG_35),
@@ -604,10 +568,10 @@ static int psp_v11_0_load_usbc_pd_fw(struct psp_context *psp, uint64_t fw_pri_mc
 	if (ret)
 		return ret;
 
-	/* Fireup interrupt so PSP can pick up the address */
+	 
 	WREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_35, (GFX_CMD_USB_PD_USE_LFB << 16));
 
-	/* FW load takes very long time */
+	 
 	do {
 		msleep(1000);
 		reg_status = RREG32_SOC15(MP0, 0, mmMP0_SMN_C2PMSG_35);

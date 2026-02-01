@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
 #include "core.h"
 
 static const struct flash_info catalyst_nor_parts[] = {
-	/* Catalyst / On Semiconductor -- non-JEDEC */
+	 
 	{ "cat25c11", CAT25_INFO(16, 8, 16, 1) },
 	{ "cat25c03", CAT25_INFO(32, 8, 16, 2) },
 	{ "cat25c09", CAT25_INFO(128, 8, 32, 2) },

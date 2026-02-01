@@ -1,12 +1,4 @@
-/*
- * Marvell Orion SoCs IRQ chip driver.
- *
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -17,9 +9,7 @@
 #include <asm/exception.h>
 #include <asm/mach/irq.h>
 
-/*
- * Orion SoC main interrupt controller
- */
+ 
 #define ORION_IRQS_PER_CHIP		32
 
 #define ORION_IRQ_CAUSE			0x00
@@ -56,7 +46,7 @@ static int __init orion_irq_init(struct device_node *np,
 	int n, ret, base, num_chips = 0;
 	struct resource r;
 
-	/* count number of irq chips by valid reg addresses */
+	 
 	num_chips = of_address_count(np);
 
 	orion_irq_domain = irq_domain_add_linear(np,
@@ -90,7 +80,7 @@ static int __init orion_irq_init(struct device_node *np,
 		gc->chip_types[0].chip.irq_mask = irq_gc_mask_clr_bit;
 		gc->chip_types[0].chip.irq_unmask = irq_gc_mask_set_bit;
 
-		/* mask all interrupts */
+		 
 		writel(0, gc->reg_base + ORION_IRQ_MASK);
 	}
 
@@ -99,9 +89,7 @@ static int __init orion_irq_init(struct device_node *np,
 }
 IRQCHIP_DECLARE(orion_intc, "marvell,orion-intc", orion_irq_init);
 
-/*
- * Orion SoC bridge interrupt controller
- */
+ 
 #define ORION_BRIDGE_IRQ_CAUSE	0x00
 #define ORION_BRIDGE_IRQ_MASK	0x04
 
@@ -121,10 +109,7 @@ static void orion_bridge_irq_handler(struct irq_desc *desc)
 	}
 }
 
-/*
- * Bridge IRQ_CAUSE is asserted regardless of IRQ_MASK register.
- * To avoid interrupt events on stale irqs, we clear them before unmask.
- */
+ 
 static unsigned int orion_bridge_irq_startup(struct irq_data *d)
 {
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
@@ -143,7 +128,7 @@ static int __init orion_bridge_irq_init(struct device_node *np,
 	struct irq_chip_generic *gc;
 	int ret, irq, nrirqs = 32;
 
-	/* get optional number of interrupts provided */
+	 
 	of_property_read_u32(np, "marvell,#interrupts", &nrirqs);
 
 	domain = irq_domain_add_linear(np, nrirqs,
@@ -171,7 +156,7 @@ static int __init orion_bridge_irq_init(struct device_node *np,
 		return -ENOMEM;
 	}
 
-	/* Map the parent interrupt for the chained handler */
+	 
 	irq = irq_of_parse_and_map(np, 0);
 	if (irq <= 0) {
 		pr_err("%pOFn: unable to parse irq\n", np);
@@ -192,7 +177,7 @@ static int __init orion_bridge_irq_init(struct device_node *np,
 	gc->chip_types[0].chip.irq_mask = irq_gc_mask_clr_bit;
 	gc->chip_types[0].chip.irq_unmask = irq_gc_mask_set_bit;
 
-	/* mask and clear all interrupts */
+	 
 	writel(0, gc->reg_base + ORION_BRIDGE_IRQ_MASK);
 	writel(0, gc->reg_base + ORION_BRIDGE_IRQ_CAUSE);
 

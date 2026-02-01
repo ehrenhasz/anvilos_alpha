@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cyttsp4_core.c
- * Cypress TrueTouch(TM) Standard Product V4 Core driver module.
- * For use with Cypress Txx4xx parts.
- * Supported parts include:
- * TMA4XX
- * TMA1036
- *
- * Copyright (C) 2012 Cypress Semiconductor
- *
- * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
- */
+
+ 
 
 #include "cyttsp4_core.h"
 #include <linux/delay.h>
@@ -21,7 +10,7 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 
-/* Timeout in ms. */
+ 
 #define CY_CORE_REQUEST_EXCLUSIVE_TIMEOUT	500
 #define CY_CORE_SLEEP_REQUEST_EXCLUSIVE_TIMEOUT	5000
 #define CY_CORE_MODE_CHANGE_TIMEOUT		1000
@@ -104,10 +93,7 @@ static int cyttsp4_handshake(struct cyttsp4 *cd, u8 mode)
 	u8 cmd = mode ^ CY_HST_TOGGLE;
 	int rc;
 
-	/*
-	 * Mode change issued, handshaking now will cause endless mode change
-	 * requests, for sync mode modechange will do same with handshake
-	 * */
+	 
 	if (mode & CY_HST_MODE_CHANGE)
 		return 0;
 
@@ -150,11 +136,7 @@ static int cyttsp4_hw_reset(struct cyttsp4 *cd)
 	return rc;
 }
 
-/*
- * Gets number of bits for a touch filed as parameter,
- * sets maximum value for field which is used as bit mask
- * and returns number of bytes required for that field
- */
+ 
 static int cyttsp4_bits_2_bytes(unsigned int nbits, size_t *max)
 {
 	*max = 1UL << nbits;
@@ -172,11 +154,11 @@ static int cyttsp4_si_data_offsets(struct cyttsp4 *cd)
 		return rc;
 	}
 
-	/* Print sysinfo data offsets */
+	 
 	cyttsp4_pr_buf(cd->dev, cd->pr_buf, (u8 *)&si->si_data,
 		       sizeof(si->si_data), "sysinfo_data_offsets");
 
-	/* convert sysinfo data offset bytes into integers */
+	 
 
 	si->si_ofs.map_sz = merge_bytes(si->si_data.map_szh,
 			si->si_data.map_szl);
@@ -226,7 +208,7 @@ static int cyttsp4_si_get_cydata(struct cyttsp4 *cd)
 
 	read_offset = si->si_ofs.cydata_ofs;
 
-	/* Read the CYDA registers up to MFGID field */
+	 
 	rc = cyttsp4_adap_read(cd, read_offset,
 			offsetof(struct cyttsp4_cydata, mfgid_sz)
 				+ sizeof(si->si_ptrs.cydata->mfgid_sz),
@@ -237,7 +219,7 @@ static int cyttsp4_si_get_cydata(struct cyttsp4 *cd)
 		return rc;
 	}
 
-	/* Check MFGID size */
+	 
 	mfgid_sz = si->si_ptrs.cydata->mfgid_sz;
 	calc_mfgid_sz = si->si_ofs.cydata_size - sizeof(struct cyttsp4_cydata);
 	if (mfgid_sz != calc_mfgid_sz) {
@@ -249,7 +231,7 @@ static int cyttsp4_si_get_cydata(struct cyttsp4 *cd)
 	read_offset += offsetof(struct cyttsp4_cydata, mfgid_sz)
 			+ sizeof(si->si_ptrs.cydata->mfgid_sz);
 
-	/* Read the CYDA registers for MFGID field */
+	 
 	rc = cyttsp4_adap_read(cd, read_offset, si->si_ptrs.cydata->mfgid_sz,
 			si->si_ptrs.cydata->mfg_id);
 	if (rc < 0) {
@@ -260,7 +242,7 @@ static int cyttsp4_si_get_cydata(struct cyttsp4 *cd)
 
 	read_offset += si->si_ptrs.cydata->mfgid_sz;
 
-	/* Read the rest of the CYDA registers */
+	 
 	rc = cyttsp4_adap_read(cd, read_offset,
 			sizeof(struct cyttsp4_cydata)
 				- offsetof(struct cyttsp4_cydata, cyito_idh),
@@ -431,7 +413,7 @@ static int cyttsp4_si_get_opcfg_data(struct cyttsp4 *cd)
 	si->si_ofs.tch_rec_size = si->si_ptrs.opcfg->tch_rec_size &
 		CY_BYTE_OFS_MASK;
 
-	/* Get the old touch fields */
+	 
 	for (abs = CY_TCH_X; abs < CY_NUM_TCH_FIELDS; abs++) {
 		tch = &si->si_ofs.tch_abs[abs];
 		tch_old = &si->si_ptrs.opcfg->tch_rec_old[abs];
@@ -442,13 +424,13 @@ static int cyttsp4_si_get_opcfg_data(struct cyttsp4 *cd)
 		tch->bofs = (tch_old->loc & CY_BOFS_MASK) >> CY_BOFS_SHIFT;
 	}
 
-	/* button fields */
+	 
 	si->si_ofs.btn_rec_size = si->si_ptrs.opcfg->btn_rec_size;
 	si->si_ofs.btn_diff_ofs = si->si_ptrs.opcfg->btn_diff_ofs;
 	si->si_ofs.btn_diff_size = si->si_ptrs.opcfg->btn_diff_size;
 
 	if (si->si_ofs.tch_rec_size > CY_TMA1036_TCH_REC_SIZE) {
-		/* Get the extended touch fields */
+		 
 		for (i = 0; i < CY_NUM_EXT_TCH_FIELDS; abs++, i++) {
 			tch = &si->si_ofs.tch_abs[abs];
 			tch_new = &si->si_ptrs.opcfg->tch_rec_new[i];
@@ -726,7 +708,7 @@ static int cyttsp4_get_sysinfo_regs(struct cyttsp4 *cd)
 
 	cyttsp4_si_put_log_data(cd);
 
-	/* provide flow control handshake */
+	 
 	rc = cyttsp4_handshake(cd, si->si_data.hst_mode);
 	if (rc < 0)
 		dev_err(cd->dev, "%s: handshake fail on sysinfo reg\n",
@@ -888,7 +870,7 @@ static void cyttsp4_get_mt_touches(struct cyttsp4_mt_data *md, int num_cur_tch)
 			continue;
 		}
 
-		/* use 0 based track id's */
+		 
 		sig = md->pdata->frmwrk->abs
 			[(CY_ABS_ID_OST * CY_NUM_ABS_SET) + 0];
 		if (sig != CY_IGNORE_VALUE) {
@@ -905,7 +887,7 @@ static void cyttsp4_get_mt_touches(struct cyttsp4_mt_data *md, int num_cur_tch)
 			ids[t] = true;
 		}
 
-		/* all devices: position and pressure fields */
+		 
 		for (j = 0; j <= CY_ABS_W_OST; j++) {
 			sig = md->pdata->frmwrk->abs[((CY_ABS_X_OST + j) *
 				CY_NUM_ABS_SET) + 0];
@@ -914,16 +896,11 @@ static void cyttsp4_get_mt_touches(struct cyttsp4_mt_data *md, int num_cur_tch)
 					tch.abs[CY_TCH_X + j]);
 		}
 		if (si->si_ofs.tch_rec_size > CY_TMA1036_TCH_REC_SIZE) {
-			/*
-			 * TMA400 size and orientation fields:
-			 * if pressure is non-zero and major touch
-			 * signal is zero, then set major and minor touch
-			 * signals to minimum non-zero value
-			 */
+			 
 			if (tch.abs[CY_TCH_P] > 0 && tch.abs[CY_TCH_MAJ] == 0)
 				tch.abs[CY_TCH_MAJ] = tch.abs[CY_TCH_MIN] = 1;
 
-			/* Get the extended touch fields */
+			 
 			for (j = 0; j < CY_NUM_EXT_TCH_FIELDS; j++) {
 				sig = md->pdata->frmwrk->abs
 					[((CY_ABS_MAJ_OST + j) *
@@ -963,7 +940,7 @@ cyttsp4_get_mt_touches_pr_tch:
 	return;
 }
 
-/* read xy_data for all current touches */
+ 
 static int cyttsp4_xy_worker(struct cyttsp4 *cd)
 {
 	struct cyttsp4_mt_data *md = &cd->md;
@@ -976,17 +953,8 @@ static int cyttsp4_xy_worker(struct cyttsp4 *cd)
 	u8 tt_stat;
 	int rc = 0;
 
-	/*
-	 * Get event data from cyttsp4 device.
-	 * The event data includes all data
-	 * for all active touches.
-	 * Event data also includes button data
-	 */
-	/*
-	 * Use 2 reads:
-	 * 1st read to get mode + button bytes + touch count (core)
-	 * 2nd read (optional) to get touch 1 - touch n data
-	 */
+	 
+	 
 	hst_mode = si->xy_mode[CY_REG_BASE];
 	rep_len = si->xy_mode[si->si_ofs.rep_ofs];
 	rep_stat = si->xy_mode[si->si_ofs.rep_ofs + 1];
@@ -1004,7 +972,7 @@ static int cyttsp4_xy_worker(struct cyttsp4 *cd)
 		goto cyttsp4_xy_worker_exit;
 	}
 
-	/* read touches */
+	 
 	if (num_cur_tch > 0) {
 		rc = cyttsp4_adap_read(cd, si->si_ofs.tt_stat_ofs + 1,
 				num_cur_tch * si->si_ofs.tch_rec_size,
@@ -1016,11 +984,11 @@ static int cyttsp4_xy_worker(struct cyttsp4 *cd)
 		}
 	}
 
-	/* print xy data */
+	 
 	cyttsp4_pr_buf(dev, cd->pr_buf, si->xy_data, num_cur_tch *
 		si->si_ofs.tch_rec_size, "xy_data");
 
-	/* check any error conditions */
+	 
 	if (IS_BAD_PKT(rep_stat)) {
 		dev_dbg(dev, "%s: Invalid buffer detected\n", __func__);
 		rc = 0;
@@ -1036,7 +1004,7 @@ static int cyttsp4_xy_worker(struct cyttsp4 *cd)
 		num_cur_tch = si->si_ofs.max_tchs;
 	}
 
-	/* extract xy_data for all currently reported touches */
+	 
 	dev_vdbg(dev, "%s: extract data num_cur_tch=%d\n", __func__,
 		num_cur_tch);
 	if (num_cur_tch)
@@ -1061,7 +1029,7 @@ static int cyttsp4_mt_attention(struct cyttsp4 *cd)
 
 	mutex_lock(&md->report_lock);
 	if (!md->is_suspended) {
-		/* core handles handshake */
+		 
 		rc = cyttsp4_xy_worker(cd);
 	} else {
 		dev_vdbg(dev, "%s: Ignoring report while suspended\n",
@@ -1083,11 +1051,7 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 	u8 mode[3];
 	int rc;
 
-	/*
-	 * Check whether this IRQ should be ignored (external)
-	 * This should be the very first thing to check since
-	 * ignore_irq may be set for a very short period of time
-	 */
+	 
 	if (atomic_read(&cd->ignore_irq)) {
 		dev_vdbg(dev, "%s: Ignoring IRQ\n", __func__);
 		return IRQ_HANDLED;
@@ -1097,7 +1061,7 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 
 	mutex_lock(&cd->system_lock);
 
-	/* Just to debug */
+	 
 	if (cd->sleep_state == SS_SLEEP_ON || cd->sleep_state == SS_SLEEPING)
 		dev_vdbg(dev, "%s: Received IRQ while in sleep\n", __func__);
 
@@ -1113,28 +1077,24 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		cur_mode = CY_MODE_BOOTLOADER;
 		dev_vdbg(dev, "%s: bl running\n", __func__);
 		if (cd->mode == CY_MODE_BOOTLOADER) {
-			/* Signal bootloader heartbeat heard */
+			 
 			wake_up(&cd->wait_q);
 			goto cyttsp4_irq_exit;
 		}
 
-		/* switch to bootloader */
+		 
 		dev_dbg(dev, "%s: restart switch to bl m=%d -> m=%d\n",
 			__func__, cd->mode, cur_mode);
 
-		/* catch operation->bl glitch */
+		 
 		if (cd->mode != CY_MODE_UNKNOWN) {
-			/* Incase startup_state do not let startup_() */
+			 
 			cd->mode = CY_MODE_UNKNOWN;
 			cyttsp4_queue_startup_(cd);
 			goto cyttsp4_irq_exit;
 		}
 
-		/*
-		 * do not wake thread on this switch since
-		 * it is possible to get an early heartbeat
-		 * prior to performing the reset
-		 */
+		 
 		cd->mode = cur_mode;
 
 		goto cyttsp4_irq_exit;
@@ -1160,13 +1120,13 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		break;
 	}
 
-	/* Check whether this IRQ should be ignored (internal) */
+	 
 	if (cd->int_status & CY_INT_IGNORE) {
 		dev_vdbg(dev, "%s: Ignoring IRQ\n", __func__);
 		goto cyttsp4_irq_exit;
 	}
 
-	/* Check for wake up interrupt */
+	 
 	if (cd->int_status & CY_INT_AWAKE) {
 		cd->int_status &= ~CY_INT_AWAKE;
 		wake_up(&cd->wait_q);
@@ -1174,7 +1134,7 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		goto cyttsp4_irq_handshake;
 	}
 
-	/* Expecting mode change interrupt */
+	 
 	if ((cd->int_status & CY_INT_MODE_CHANGE)
 			&& (mode[0] & CY_HST_MODE_CHANGE) == 0) {
 		cd->int_status &= ~CY_INT_MODE_CHANGE;
@@ -1185,11 +1145,11 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		goto cyttsp4_irq_handshake;
 	}
 
-	/* compare current core mode to current device mode */
+	 
 	dev_vdbg(dev, "%s: cd->mode=%d cur_mode=%d\n",
 			__func__, cd->mode, cur_mode);
 	if ((mode[0] & CY_HST_MODE_CHANGE) == 0 && cd->mode != cur_mode) {
-		/* Unexpected mode change occurred */
+		 
 		dev_err(dev, "%s %d->%d 0x%x\n", __func__, cd->mode,
 				cur_mode, cd->int_status);
 		dev_dbg(dev, "%s: Unexpected mode change, startup\n",
@@ -1198,7 +1158,7 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		goto cyttsp4_irq_exit;
 	}
 
-	/* Expecting command complete interrupt */
+	 
 	dev_vdbg(dev, "%s: command byte:0x%x\n", __func__, mode[cmd_ofs]);
 	if ((cd->int_status & CY_INT_EXEC_CMD)
 			&& mode[cmd_ofs] & CY_CMD_COMPLETE) {
@@ -1206,14 +1166,10 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 		dev_vdbg(dev, "%s: Received command complete interrupt\n",
 				__func__);
 		wake_up(&cd->wait_q);
-		/*
-		 * It is possible to receive a single interrupt for
-		 * command complete and touch/button status report.
-		 * Continue processing for a possible status report.
-		 */
+		 
 	}
 
-	/* This should be status report, read status regs */
+	 
 	if (cd->mode == CY_MODE_OPERATIONAL) {
 		dev_vdbg(dev, "%s: Read status registers\n", __func__);
 		rc = cyttsp4_load_status_regs(cd);
@@ -1225,7 +1181,7 @@ static irqreturn_t cyttsp4_irq(int irq, void *handle)
 	cyttsp4_mt_attention(cd);
 
 cyttsp4_irq_handshake:
-	/* handshake the event */
+	 
 	dev_vdbg(dev, "%s: Handshake mode=0x%02X r=%d\n",
 			__func__, mode[0], rc);
 	rc = cyttsp4_handshake(cd, mode[0]);
@@ -1233,11 +1189,7 @@ cyttsp4_irq_handshake:
 		dev_err(dev, "%s: Fail handshake mode=0x%02X r=%d\n",
 				__func__, mode[0], rc);
 
-	/*
-	 * a non-zero udelay period is required for using
-	 * IRQF_TRIGGER_LOW in order to delay until the
-	 * device completes isr deassert
-	 */
+	 
 	udelay(cd->cpdata->level_irq_udelay);
 
 cyttsp4_irq_exit:
@@ -1259,10 +1211,7 @@ static void cyttsp4_stop_wd_timer(struct cyttsp4 *cd)
 	if (!CY_WATCHDOG_TIMEOUT)
 		return;
 
-	/*
-	 * Ensure we wait until the watchdog timer
-	 * running on a different CPU finishes
-	 */
+	 
 	timer_shutdown_sync(&cd->watchdog_timer);
 	cancel_work_sync(&cd->watchdog_work);
 }
@@ -1317,9 +1266,7 @@ exit:
 	return 0;
 }
 
-/*
- * returns error if was not owned
- */
+ 
 static int cyttsp4_release_exclusive(struct cyttsp4 *cd, void *ownptr)
 {
 	mutex_lock(&cd->system_lock);
@@ -1341,7 +1288,7 @@ static int cyttsp4_wait_bl_heartbeat(struct cyttsp4 *cd)
 	long t;
 	int rc = 0;
 
-	/* wait heartbeat */
+	 
 	dev_vdbg(cd->dev, "%s: wait heartbeat...\n", __func__);
 	t = wait_event_timeout(cd->wait_q, cd->mode == CY_MODE_BOOTLOADER,
 			msecs_to_jiffies(CY_CORE_RESET_AND_WAIT_TIMEOUT));
@@ -1378,7 +1325,7 @@ static int cyttsp4_reset_and_wait(struct cyttsp4 *cd)
 {
 	int rc;
 
-	/* reset hardware */
+	 
 	mutex_lock(&cd->system_lock);
 	dev_dbg(cd->dev, "%s: reset hw...\n", __func__);
 	rc = cyttsp4_hw_reset(cd);
@@ -1392,10 +1339,7 @@ static int cyttsp4_reset_and_wait(struct cyttsp4 *cd)
 	return cyttsp4_wait_bl_heartbeat(cd);
 }
 
-/*
- * returns err if refused or timeout; block until mode change complete
- * bit is set (mode change interrupt)
- */
+ 
 static int cyttsp4_set_mode(struct cyttsp4 *cd, int new_mode)
 {
 	u8 new_dev_mode;
@@ -1419,7 +1363,7 @@ static int cyttsp4_set_mode(struct cyttsp4 *cd, int new_mode)
 		return -EINVAL;
 	}
 
-	/* change mode */
+	 
 	dev_dbg(cd->dev, "%s: %s=%p new_dev_mode=%02X new_mode=%d\n",
 			__func__, "have exclusive", cd->exclusive_dev,
 			new_dev_mode, new_mode);
@@ -1433,7 +1377,7 @@ static int cyttsp4_set_mode(struct cyttsp4 *cd, int new_mode)
 		goto exit;
 	}
 
-	/* Clear device mode bits and set to new mode */
+	 
 	mode &= ~CY_HST_MODE;
 	mode |= new_dev_mode | CY_HST_MODE_CHANGE;
 
@@ -1446,7 +1390,7 @@ static int cyttsp4_set_mode(struct cyttsp4 *cd, int new_mode)
 		goto exit;
 	}
 
-	/* wait for mode change done interrupt */
+	 
 	t = wait_event_timeout(cd->wait_q,
 			(cd->int_status & CY_INT_MODE_CHANGE) == 0,
 			msecs_to_jiffies(CY_CORE_MODE_CHANGE_TIMEOUT));
@@ -1504,7 +1448,7 @@ static int cyttsp4_core_sleep_(struct cyttsp4 *cd)
 	int rc = 0;
 	u8 mode[2];
 
-	/* Already in sleep mode? */
+	 
 	mutex_lock(&cd->system_lock);
 	if (cd->sleep_state == SS_SLEEP_ON) {
 		mutex_unlock(&cd->system_lock);
@@ -1515,7 +1459,7 @@ static int cyttsp4_core_sleep_(struct cyttsp4 *cd)
 
 	cyttsp4_stop_wd_timer(cd);
 
-	/* Wait until currently running IRQ handler exits and disable IRQ */
+	 
 	disable_irq(cd->irq);
 
 	dev_vdbg(cd->dev, "%s: write DEEP SLEEP...\n", __func__);
@@ -1556,7 +1500,7 @@ static int cyttsp4_core_sleep_(struct cyttsp4 *cd)
 		goto error;
 	}
 
-	/* Give time to FW to sleep */
+	 
 	msleep(50);
 
 	goto exit;
@@ -1587,7 +1531,7 @@ reset:
 		dev_dbg(cd->dev, "%s: Retry %d\n", __func__,
 			CY_CORE_STARTUP_RETRY_COUNT - retry);
 
-	/* reset hardware and wait for heartbeat */
+	 
 	rc = cyttsp4_reset_and_wait(cd);
 	if (rc < 0) {
 		dev_err(cd->dev, "%s: Error on h/w reset r=%d\n", __func__, rc);
@@ -1596,7 +1540,7 @@ reset:
 		goto exit;
 	}
 
-	/* exit bl into sysinfo mode */
+	 
 	dev_vdbg(cd->dev, "%s: write exit ldr...\n", __func__);
 	mutex_lock(&cd->system_lock);
 	cd->int_status &= ~CY_INT_IGNORE;
@@ -1617,7 +1561,7 @@ reset:
 		u8 buf[sizeof(ldr_err_app)];
 		int rc1;
 
-		/* Check for invalid/corrupted touch application */
+		 
 		rc1 = cyttsp4_adap_read(cd, CY_REG_BASE, sizeof(ldr_err_app),
 				buf);
 		if (rc1) {
@@ -1640,7 +1584,7 @@ reset:
 	cd->invalid_touch_app = false;
 	mutex_unlock(&cd->system_lock);
 
-	/* read sysinfo data */
+	 
 	dev_vdbg(cd->dev, "%s: get sysinfo regs..\n", __func__);
 	rc = cyttsp4_get_sysinfo_regs(cd);
 	if (rc < 0) {
@@ -1662,7 +1606,7 @@ reset:
 
 	cyttsp4_lift_all(&cd->md);
 
-	/* restore to sleep if was suspended */
+	 
 	mutex_lock(&cd->system_lock);
 	if (cd->sleep_state == SS_SLEEP_ON) {
 		cd->sleep_state = SS_SLEEP_OFF;
@@ -1697,7 +1641,7 @@ static int cyttsp4_startup(struct cyttsp4 *cd)
 	rc = cyttsp4_startup_(cd);
 
 	if (cyttsp4_release_exclusive(cd, cd->dev) < 0)
-		/* Don't return fail code, mode is already changed. */
+		 
 		dev_err(cd->dev, "%s: fail to release exclusive\n", __func__);
 	else
 		dev_vdbg(cd->dev, "%s: pass release exclusive\n", __func__);
@@ -1707,7 +1651,7 @@ exit:
 	cd->startup_state = STARTUP_NONE;
 	mutex_unlock(&cd->system_lock);
 
-	/* Wake the waiters for end of startup */
+	 
 	wake_up(&cd->wait_q);
 
 	return rc;
@@ -1772,7 +1716,7 @@ static int cyttsp4_core_wake_(struct cyttsp4 *cd)
 	u8 mode;
 	int t;
 
-	/* Already woken? */
+	 
 	mutex_lock(&cd->system_lock);
 	if (cd->sleep_state == SS_SLEEP_OFF) {
 		mutex_unlock(&cd->system_lock);
@@ -1793,7 +1737,7 @@ static int cyttsp4_core_wake_(struct cyttsp4 *cd)
 		dev_err(dev, "%s: HW Power up fails r=%d\n",
 				__func__, rc);
 
-		/* Initiate a read transaction to wake up */
+		 
 		cyttsp4_adap_read(cd, CY_REG_BASE, sizeof(mode), &mode);
 	} else
 		dev_vdbg(cd->dev, "%s: HW power up succeeds\n",
@@ -1807,7 +1751,7 @@ static int cyttsp4_core_wake_(struct cyttsp4 *cd)
 		dev_err(dev, "%s: TMO waiting for wakeup\n", __func__);
 		mutex_lock(&cd->system_lock);
 		cd->int_status &= ~CY_INT_AWAKE;
-		/* Try starting up */
+		 
 		cyttsp4_queue_startup_(cd);
 		mutex_unlock(&cd->system_lock);
 	}
@@ -1913,7 +1857,7 @@ static int cyttsp4_setup_input_device(struct cyttsp4 *cd)
 	max_x_tmp = md->si->si_ofs.max_x;
 	max_y_tmp = md->si->si_ofs.max_y;
 
-	/* get maximum values from the sysinfo data */
+	 
 	if (md->pdata->flags & CY_FLAG_FLIP) {
 		max_x = max_y_tmp - 1;
 		max_y = max_x_tmp - 1;
@@ -1923,7 +1867,7 @@ static int cyttsp4_setup_input_device(struct cyttsp4 *cd)
 	}
 	max_p = md->si->si_ofs.max_p;
 
-	/* set event signal capabilities */
+	 
 	for (i = 0; i < (md->pdata->frmwrk->size / CY_NUM_ABS_SET); i++) {
 		signal = md->pdata->frmwrk->abs
 			[(i * CY_NUM_ABS_SET) + CY_SIGNAL_OST];
@@ -1934,7 +1878,7 @@ static int cyttsp4_setup_input_device(struct cyttsp4 *cd)
 			max = md->pdata->frmwrk->abs
 				[(i * CY_NUM_ABS_SET) + CY_MAX_OST];
 			if (i == CY_ABS_ID_OST) {
-				/* shift track ids down to start at 0 */
+				 
 				max = max - min;
 				min = min - min;
 			} else if (i == CY_ABS_X_OST)
@@ -1975,7 +1919,7 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 
 	mutex_init(&md->report_lock);
 	md->pdata = pdata;
-	/* Create the input device and register it. */
+	 
 	dev_vdbg(dev, "%s: Create the input device and register it\n",
 		__func__);
 	md->input = input_allocate_device();
@@ -1995,7 +1939,7 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 	md->input->close = cyttsp4_mt_close;
 	input_set_drvdata(md->input, md);
 
-	/* get sysinfo */
+	 
 	md->si = &cd->sysinfo;
 
 	rc = cyttsp4_setup_input_device(cd);
@@ -2039,24 +1983,24 @@ struct cyttsp4 *cyttsp4_probe(const struct cyttsp4_bus_ops *ops,
 		goto error_free_cd;
 	}
 
-	/* Initialize device info */
+	 
 	cd->dev = dev;
 	cd->pdata = pdata;
 	cd->cpdata = pdata->core_pdata;
 	cd->bus_ops = ops;
 
-	/* Initialize mutexes and spinlocks */
+	 
 	mutex_init(&cd->system_lock);
 	mutex_init(&cd->adap_lock);
 
-	/* Initialize wait queue */
+	 
 	init_waitqueue_head(&cd->wait_q);
 
-	/* Initialize works */
+	 
 	INIT_WORK(&cd->startup_work, cyttsp4_startup_work_function);
 	INIT_WORK(&cd->watchdog_work, cyttsp4_watchdog_work);
 
-	/* Initialize IRQ */
+	 
 	cd->irq = gpio_to_irq(cd->cpdata->irq_gpio);
 	if (cd->irq < 0) {
 		rc = -EINVAL;
@@ -2065,7 +2009,7 @@ struct cyttsp4 *cyttsp4_probe(const struct cyttsp4_bus_ops *ops,
 
 	dev_set_drvdata(dev, cd);
 
-	/* Call platform init function */
+	 
 	if (cd->cpdata->init) {
 		dev_dbg(cd->dev, "%s: Init HW\n", __func__);
 		rc = cd->cpdata->init(cd->cpdata, 1, cd->dev);
@@ -2078,10 +2022,10 @@ struct cyttsp4 *cyttsp4_probe(const struct cyttsp4_bus_ops *ops,
 
 	dev_dbg(dev, "%s: initialize threaded irq=%d\n", __func__, cd->irq);
 	if (cd->cpdata->level_irq_udelay > 0)
-		/* use level triggered interrupts */
+		 
 		irq_flags = IRQF_TRIGGER_LOW | IRQF_ONESHOT;
 	else
-		/* use edge triggered interrupts */
+		 
 		irq_flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT;
 
 	rc = request_threaded_irq(cd->irq, NULL, cyttsp4_irq, irq_flags,
@@ -2091,16 +2035,13 @@ struct cyttsp4 *cyttsp4_probe(const struct cyttsp4_bus_ops *ops,
 		goto error_request_irq;
 	}
 
-	/* Setup watchdog timer */
+	 
 	timer_setup(&cd->watchdog_timer, cyttsp4_watchdog_timer, 0);
 
-	/*
-	 * call startup directly to ensure that the device
-	 * is tested before leaving the probe
-	 */
+	 
 	rc = cyttsp4_startup(cd);
 
-	/* Do not fail probe if startup fails but the device is detected */
+	 
 	if (rc < 0 && cd->mode == CY_MODE_UNKNOWN) {
 		dev_err(cd->dev, "%s: Fail initial startup r=%d\n",
 			__func__, rc);
@@ -2149,10 +2090,7 @@ int cyttsp4_remove(struct cyttsp4 *cd)
 
 	cyttsp4_mt_release(&cd->md);
 
-	/*
-	 * Suspend the device before freeing the startup_work and stopping
-	 * the watchdog since sleep function restarts watchdog on failure
-	 */
+	 
 	pm_runtime_suspend(dev);
 	pm_runtime_disable(dev);
 

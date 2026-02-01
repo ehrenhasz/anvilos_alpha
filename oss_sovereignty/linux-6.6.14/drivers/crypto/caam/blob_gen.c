@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Pengutronix, Steffen Trumtrar <kernel@pengutronix.de>
- * Copyright (C) 2021 Pengutronix, Ahmad Fatoum <kernel@pengutronix.de>
- */
+
+ 
 
 #define pr_fmt(fmt) "caam blob_gen: " fmt
 
@@ -19,15 +16,15 @@
 #include "regs.h"
 
 #define CAAM_BLOB_DESC_BYTES_MAX					\
-	/* Command to initialize & stating length of descriptor */	\
+	 	\
 	(CAAM_CMD_SZ +							\
-	/* Command to append the key-modifier + key-modifier data */	\
+	 	\
 	 CAAM_CMD_SZ + CAAM_BLOB_KEYMOD_LENGTH +			\
-	/* Command to include input key + pointer to the input key */	\
+	 	\
 	 CAAM_CMD_SZ + CAAM_PTR_SZ_MAX +				\
-	/* Command to include output key + pointer to the output key */	\
+	 	\
 	 CAAM_CMD_SZ + CAAM_PTR_SZ_MAX +				\
-	/* Command describing the operation to perform */		\
+	 		\
 	 CAAM_CMD_SZ)
 
 struct caam_blob_priv {
@@ -51,11 +48,7 @@ static void caam_blob_job_done(struct device *dev, u32 *desc, u32 err, void *con
 
 	res->err = ecode;
 
-	/*
-	 * Upon completion, desc points to a buffer containing a CAAM job
-	 * descriptor which encapsulates data into an externally-storable
-	 * blob.
-	 */
+	 
 	complete(&res->completion);
 }
 
@@ -109,13 +102,7 @@ int caam_process_blob(struct caam_blob_priv *priv,
 		dev_warn(jrdev,
 			 "using insecure test key, enable HAB to use unique device key!\n");
 
-	/*
-	 * A data blob is encrypted using a blob key (BK); a random number.
-	 * The BK is used as an AES-CCM key. The initial block (B0) and the
-	 * initial counter (Ctr0) are generated automatically and stored in
-	 * Class 1 Context DWords 0+1+2+3. The random BK is stored in the
-	 * Class 1 Key Register. Operation Mode is set to AES-CCM.
-	 */
+	 
 
 	init_job_desc(desc, 0);
 	append_key_as_imm(desc, info->key_mod, info->key_mod_len,
@@ -161,11 +148,7 @@ struct caam_blob_priv *caam_blob_gen_init(void)
 	struct caam_drv_private *ctrlpriv;
 	struct device *jrdev;
 
-	/*
-	 * caam_blob_gen_init() may expectedly fail with -ENODEV, e.g. when
-	 * CAAM driver didn't probe or when SoC lacks BLOB support. An
-	 * error would be harsh in this case, so we stick to info level.
-	 */
+	 
 
 	jrdev = caam_jr_alloc();
 	if (IS_ERR(jrdev)) {

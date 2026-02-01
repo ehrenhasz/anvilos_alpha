@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Linus Lüssing
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_BAT_ALGO_H_
 #define _NET_BATMAN_ADV_BAT_ALGO_H_
@@ -22,4 +19,4 @@ int batadv_algo_register(struct batadv_algo_ops *bat_algo_ops);
 int batadv_algo_select(struct batadv_priv *bat_priv, const char *name);
 int batadv_algo_dump(struct sk_buff *msg, struct netlink_callback *cb);
 
-#endif /* _NET_BATMAN_ADV_BAT_ALGO_H_ */
+#endif  

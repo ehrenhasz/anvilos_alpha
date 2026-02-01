@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Front panel driver for Linux
- * Copyright (C) 2000-2008, Willy Tarreau <w@1wt.eu>
- * Copyright (C) 2016-2017 Glider bvba
- *
- * This code drives an LCD module (/dev/lcd), and a keypad (/dev/keypad)
- * connected to a parallel printer port.
- *
- * The LCD module may either be an HD44780-like 8-bit parallel LCD, or a 1-bit
- * serial module compatible with Samsung's KS0074. The pins may be connected in
- * any combination, everything is programmable.
- *
- * The keypad consists in a matrix of push buttons connecting input pins to
- * data output pins or to the ground. The combinations have to be hard-coded
- * in the driver, though several profiles exist and adding new ones is easy.
- *
- * Several profiles are provided for commonly found LCD+keypad modules on the
- * market, such as those found in Nexcom's appliances.
- *
- * FIXME:
- *      - the initialization/deinitialization process is very dirty and should
- *        be rewritten. It may even be buggy.
- *
- * TODO:
- *	- document 24 keys keyboard (3 rows of 8 cols, 32 diodes + 2 inputs)
- *      - make the LCD a part of a virtual screen of Vx*Vy
- *	- make the inputs list smp-safe
- *      - change the keyboard to a double mapping : signals -> key_id -> values
- *        so that applications can change values without knowing signals
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -58,33 +28,33 @@
 #include "charlcd.h"
 #include "hd44780_common.h"
 
-#define LCD_MAXBYTES		256	/* max burst write */
+#define LCD_MAXBYTES		256	 
 
 #define KEYPAD_BUFFER		64
 
-/* poll the keyboard this every second */
+ 
 #define INPUT_POLL_TIME		(HZ / 50)
-/* a key starts to repeat after this times INPUT_POLL_TIME */
+ 
 #define KEYPAD_REP_START	(10)
-/* a key repeats this times INPUT_POLL_TIME */
+ 
 #define KEYPAD_REP_DELAY	(2)
 
-/* converts an r_str() input to an active high, bits string : 000BAOSE */
+ 
 #define PNL_PINPUT(a)		((((unsigned char)(a)) ^ 0x7F) >> 3)
 
-#define PNL_PBUSY		0x80	/* inverted input, active low */
-#define PNL_PACK		0x40	/* direct input, active low */
-#define PNL_POUTPA		0x20	/* direct input, active high */
-#define PNL_PSELECD		0x10	/* direct input, active high */
-#define PNL_PERRORP		0x08	/* direct input, active low */
+#define PNL_PBUSY		0x80	 
+#define PNL_PACK		0x40	 
+#define PNL_POUTPA		0x20	 
+#define PNL_PSELECD		0x10	 
+#define PNL_PERRORP		0x08	 
 
-#define PNL_PBIDIR		0x20	/* bi-directional ports */
-/* high to read data in or-ed with data out */
+#define PNL_PBIDIR		0x20	 
+ 
 #define PNL_PINTEN		0x10
-#define PNL_PSELECP		0x08	/* inverted output, active low */
-#define PNL_PINITP		0x04	/* direct output, active low */
-#define PNL_PAUTOLF		0x02	/* inverted output, active low */
-#define PNL_PSTROBE		0x01	/* inverted output */
+#define PNL_PSELECP		0x08	 
+#define PNL_PINITP		0x04	 
+#define PNL_PAUTOLF		0x02	 
+#define PNL_PSTROBE		0x01	 
 
 #define PNL_PD0			0x01
 #define PNL_PD1			0x02
@@ -112,17 +82,17 @@
 
 #define NOT_SET			-1
 
-/* macros to simplify use of the parallel port */
+ 
 #define r_ctr(x)        (parport_read_control((x)->port))
 #define r_dtr(x)        (parport_read_data((x)->port))
 #define r_str(x)        (parport_read_status((x)->port))
 #define w_ctr(x, y)     (parport_write_control((x)->port, (y)))
 #define w_dtr(x, y)     (parport_write_data((x)->port, (y)))
 
-/* this defines which bits are to be used and which ones to be ignored */
-/* logical or of the output bits involved in the scan matrix */
+ 
+ 
 static __u8 scan_mask_o;
-/* logical or of the input bits involved in the scan matrix */
+ 
 static __u8 scan_mask_i;
 
 enum input_type {
@@ -147,13 +117,13 @@ struct logical_input {
 	__u8 rise_timer, fall_timer, high_timer;
 
 	union {
-		struct {	/* valid when type == INPUT_TYPE_STD */
+		struct {	 
 			void (*press_fct)(int);
 			void (*release_fct)(int);
 			int press_data;
 			int release_data;
 		} std;
-		struct {	/* valid when type == INPUT_TYPE_KBD */
+		struct {	 
 			char press_str[sizeof(void *) + sizeof(int)] __nonstring;
 			char repeat_str[sizeof(void *) + sizeof(int)] __nonstring;
 			char release_str[sizeof(void *) + sizeof(int)] __nonstring;
@@ -161,31 +131,22 @@ struct logical_input {
 	} u;
 };
 
-static LIST_HEAD(logical_inputs);	/* list of all defined logical inputs */
+static LIST_HEAD(logical_inputs);	 
 
-/* physical contacts history
- * Physical contacts are a 45 bits string of 9 groups of 5 bits each.
- * The 8 lower groups correspond to output bits 0 to 7, and the 9th group
- * corresponds to the ground.
- * Within each group, bits are stored in the same order as read on the port :
- * BAPSE (busy=4, ack=3, paper empty=2, select=1, error=0).
- * So, each __u64 is represented like this :
- * 0000000000000000000BAPSEBAPSEBAPSEBAPSEBAPSEBAPSEBAPSEBAPSEBAPSE
- * <-----unused------><gnd><d07><d06><d05><d04><d03><d02><d01><d00>
- */
+ 
 
-/* what has just been read from the I/O ports */
+ 
 static __u64 phys_read;
-/* previous phys_read */
+ 
 static __u64 phys_read_prev;
-/* stabilized phys_read (phys_read|phys_read_prev) */
+ 
 static __u64 phys_curr;
-/* previous phys_curr */
+ 
 static __u64 phys_prev;
-/* 0 means that at least one logical signal needs be computed */
+ 
 static char inputs_stable;
 
-/* these variables are specific to the keypad */
+ 
 static struct {
 	bool enabled;
 } keypad;
@@ -196,7 +157,7 @@ static int keypad_start;
 static char keypressed;
 static wait_queue_head_t keypad_read_wait;
 
-/* lcd-specific variables */
+ 
 static struct {
 	bool enabled;
 	bool initialized;
@@ -204,7 +165,7 @@ static struct {
 	int charset;
 	int proto;
 
-	/* TODO: use union here? */
+	 
 	struct {
 		int e;
 		int rs;
@@ -217,21 +178,15 @@ static struct {
 	struct charlcd *charlcd;
 } lcd;
 
-/* Needed only for init */
+ 
 static int selected_lcd_type = NOT_SET;
 
-/*
- * Bit masks to convert LCD signals to parallel port outputs.
- * _d_ are values for data port, _c_ are for control port.
- * [0] = signal OFF, [1] = signal ON, [2] = mask
- */
+ 
 #define BIT_CLR		0
 #define BIT_SET		1
 #define BIT_MSK		2
 #define BIT_STATES	3
-/*
- * one entry for each bit on the LCD
- */
+ 
 #define LCD_BIT_E	0
 #define LCD_BIT_RS	1
 #define LCD_BIT_RW	2
@@ -240,31 +195,23 @@ static int selected_lcd_type = NOT_SET;
 #define LCD_BIT_DA	5
 #define LCD_BITS	6
 
-/*
- * each bit can be either connected to a DATA or CTRL port
- */
+ 
 #define LCD_PORT_C	0
 #define LCD_PORT_D	1
 #define LCD_PORTS	2
 
 static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 
-/*
- * LCD protocols
- */
+ 
 #define LCD_PROTO_PARALLEL      0
 #define LCD_PROTO_SERIAL        1
 #define LCD_PROTO_TI_DA8XX_LCD	2
 
-/*
- * LCD character sets
- */
+ 
 #define LCD_CHARSET_NORMAL      0
 #define LCD_CHARSET_KS0074      1
 
-/*
- * LCD types
- */
+ 
 #define LCD_TYPE_NONE		0
 #define LCD_TYPE_CUSTOM		1
 #define LCD_TYPE_OLD		2
@@ -272,17 +219,13 @@ static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 #define LCD_TYPE_HANTRONIX	4
 #define LCD_TYPE_NEXCOM		5
 
-/*
- * keypad types
- */
+ 
 #define KEYPAD_TYPE_NONE	0
 #define KEYPAD_TYPE_OLD		1
 #define KEYPAD_TYPE_NEW		2
 #define KEYPAD_TYPE_NEXCOM	3
 
-/*
- * panel profiles
- */
+ 
 #define PANEL_PROFILE_CUSTOM	0
 #define PANEL_PROFILE_OLD	1
 #define PANEL_PROFILE_NEW	2
@@ -290,9 +233,7 @@ static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 #define PANEL_PROFILE_NEXCOM	4
 #define PANEL_PROFILE_LARGE	5
 
-/*
- * Construct custom config from the kernel's configuration
- */
+ 
 #define DEFAULT_PARPORT         0
 #define DEFAULT_PROFILE         PANEL_PROFILE_LARGE
 #define DEFAULT_KEYPAD_TYPE     KEYPAD_TYPE_OLD
@@ -319,7 +260,7 @@ static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 #define DEFAULT_PROFILE CONFIG_PANEL_PROFILE
 #endif
 
-#if DEFAULT_PROFILE == 0	/* custom */
+#if DEFAULT_PROFILE == 0	 
 #ifdef CONFIG_PANEL_KEYPAD
 #undef DEFAULT_KEYPAD_TYPE
 #define DEFAULT_KEYPAD_TYPE CONFIG_PANEL_KEYPAD
@@ -390,11 +331,11 @@ static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 #define DEFAULT_LCD_PIN_BL CONFIG_PANEL_LCD_PIN_BL
 #endif
 
-#endif /* DEFAULT_PROFILE == 0 */
+#endif  
 
-/* global variables */
+ 
 
-/* Device single-open policy control */
+ 
 static atomic_t keypad_available = ATOMIC_INIT(1);
 
 static struct pardevice *pprt;
@@ -434,11 +375,11 @@ static int lcd_width = NOT_SET;
 module_param(lcd_width, int, 0000);
 MODULE_PARM_DESC(lcd_width, "Number of columns on the LCD");
 
-static int lcd_bwidth = NOT_SET;	/* internal buffer width (usually 40) */
+static int lcd_bwidth = NOT_SET;	 
 module_param(lcd_bwidth, int, 0000);
 MODULE_PARM_DESC(lcd_bwidth, "Internal LCD line width (40)");
 
-static int lcd_hwidth = NOT_SET;	/* hardware buffer width (usually 64) */
+static int lcd_hwidth = NOT_SET;	 
 module_param(lcd_hwidth, int, 0000);
 MODULE_PARM_DESC(lcd_hwidth, "LCD line hardware address (64)");
 
@@ -451,14 +392,7 @@ module_param(lcd_proto, int, 0000);
 MODULE_PARM_DESC(lcd_proto,
 		 "LCD communication: 0=parallel (//), 1=serial, 2=TI LCD Interface");
 
-/*
- * These are the parallel port pins the LCD control signals are connected to.
- * Set this to 0 if the signal is not used. Set it to its opposite value
- * (negative) if the signal is negated. -MAXINT is used to indicate that the
- * pin has not been explicitly specified.
- *
- * WARNING! no check will be performed about collisions with keypad !
- */
+ 
 
 static int lcd_e_pin  = PIN_NOT_SET;
 module_param(lcd_e_pin, int, 0000);
@@ -490,7 +424,7 @@ module_param(lcd_bl_pin, int, 0000);
 MODULE_PARM_DESC(lcd_bl_pin,
 		 "# of the // port pin connected to LCD backlight, with polarity (-17..17)");
 
-/* Deprecated module parameters - consider not using them anymore */
+ 
 
 static int lcd_enabled = NOT_SET;
 module_param(lcd_enabled, int, 0000);
@@ -500,41 +434,41 @@ static int keypad_enabled = NOT_SET;
 module_param(keypad_enabled, int, 0000);
 MODULE_PARM_DESC(keypad_enabled, "Deprecated option, use keypad_type instead");
 
-/* for some LCD drivers (ks0074) we need a charset conversion table. */
+ 
 static const unsigned char lcd_char_conv_ks0074[256] = {
-	/*          0|8   1|9   2|A   3|B   4|C   5|D   6|E   7|F */
-	/* 0x00 */ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-	/* 0x08 */ 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-	/* 0x10 */ 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-	/* 0x18 */ 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-	/* 0x20 */ 0x20, 0x21, 0x22, 0x23, 0xa2, 0x25, 0x26, 0x27,
-	/* 0x28 */ 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
-	/* 0x30 */ 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-	/* 0x38 */ 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
-	/* 0x40 */ 0xa0, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-	/* 0x48 */ 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
-	/* 0x50 */ 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
-	/* 0x58 */ 0x58, 0x59, 0x5a, 0xfa, 0xfb, 0xfc, 0x1d, 0xc4,
-	/* 0x60 */ 0x96, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-	/* 0x68 */ 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
-	/* 0x70 */ 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
-	/* 0x78 */ 0x78, 0x79, 0x7a, 0xfd, 0xfe, 0xff, 0xce, 0x20,
-	/* 0x80 */ 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
-	/* 0x88 */ 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
-	/* 0x90 */ 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97,
-	/* 0x98 */ 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
-	/* 0xA0 */ 0x20, 0x40, 0xb1, 0xa1, 0x24, 0xa3, 0xfe, 0x5f,
-	/* 0xA8 */ 0x22, 0xc8, 0x61, 0x14, 0x97, 0x2d, 0xad, 0x96,
-	/* 0xB0 */ 0x80, 0x8c, 0x82, 0x83, 0x27, 0x8f, 0x86, 0xdd,
-	/* 0xB8 */ 0x2c, 0x81, 0x6f, 0x15, 0x8b, 0x8a, 0x84, 0x60,
-	/* 0xC0 */ 0xe2, 0xe2, 0xe2, 0x5b, 0x5b, 0xae, 0xbc, 0xa9,
-	/* 0xC8 */ 0xc5, 0xbf, 0xc6, 0xf1, 0xe3, 0xe3, 0xe3, 0xe3,
-	/* 0xD0 */ 0x44, 0x5d, 0xa8, 0xe4, 0xec, 0xec, 0x5c, 0x78,
-	/* 0xD8 */ 0xab, 0xa6, 0xe5, 0x5e, 0x5e, 0xe6, 0xaa, 0xbe,
-	/* 0xE0 */ 0x7f, 0xe7, 0xaf, 0x7b, 0x7b, 0xaf, 0xbd, 0xc8,
-	/* 0xE8 */ 0xa4, 0xa5, 0xc7, 0xf6, 0xa7, 0xe8, 0x69, 0x69,
-	/* 0xF0 */ 0xed, 0x7d, 0xa8, 0xe4, 0xec, 0x5c, 0x5c, 0x25,
-	/* 0xF8 */ 0xac, 0xa6, 0xea, 0xef, 0x7e, 0xeb, 0xb2, 0x79,
+	 
+	  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+	  0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+	  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+	  0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+	  0x20, 0x21, 0x22, 0x23, 0xa2, 0x25, 0x26, 0x27,
+	  0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+	  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+	  0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+	  0xa0, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+	  0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+	  0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+	  0x58, 0x59, 0x5a, 0xfa, 0xfb, 0xfc, 0x1d, 0xc4,
+	  0x96, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
+	  0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+	  0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+	  0x78, 0x79, 0x7a, 0xfd, 0xfe, 0xff, 0xce, 0x20,
+	  0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
+	  0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
+	  0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97,
+	  0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
+	  0x20, 0x40, 0xb1, 0xa1, 0x24, 0xa3, 0xfe, 0x5f,
+	  0x22, 0xc8, 0x61, 0x14, 0x97, 0x2d, 0xad, 0x96,
+	  0x80, 0x8c, 0x82, 0x83, 0x27, 0x8f, 0x86, 0xdd,
+	  0x2c, 0x81, 0x6f, 0x15, 0x8b, 0x8a, 0x84, 0x60,
+	  0xe2, 0xe2, 0xe2, 0x5b, 0x5b, 0xae, 0xbc, 0xa9,
+	  0xc5, 0xbf, 0xc6, 0xf1, 0xe3, 0xe3, 0xe3, 0xe3,
+	  0x44, 0x5d, 0xa8, 0xe4, 0xec, 0xec, 0x5c, 0x78,
+	  0xab, 0xa6, 0xe5, 0x5e, 0x5e, 0xe6, 0xaa, 0xbe,
+	  0x7f, 0xe7, 0xaf, 0x7b, 0x7b, 0xaf, 0xbd, 0xc8,
+	  0xa4, 0xa5, 0xc7, 0xf6, 0xa7, 0xe8, 0x69, 0x69,
+	  0xed, 0x7d, 0xa8, 0xe4, 0xec, 0x5c, 0x5c, 0x25,
+	  0xac, 0xa6, 0xea, 0xef, 0x7e, 0xeb, 0xb2, 0x79,
 };
 
 static const char old_keypad_profile[][4][9] = {
@@ -547,7 +481,7 @@ static const char old_keypad_profile[][4][9] = {
 	{"", "", "", ""}
 };
 
-/* signals, press, repeat, release */
+ 
 static const char new_keypad_profile[][4][9] = {
 	{"S0", "Left\n", "Left\n", ""},
 	{"S1", "Down\n", "Down\n", ""},
@@ -556,17 +490,17 @@ static const char new_keypad_profile[][4][9] = {
 	{"S4s5", "", "Esc\n", "Esc\n"},
 	{"s4S5", "", "Ret\n", "Ret\n"},
 	{"S4S5", "Help\n", "", ""},
-	/* add new signals above this line */
+	 
 	{"", "", "", ""}
 };
 
-/* signals, press, repeat, release */
+ 
 static const char nexcom_keypad_profile[][4][9] = {
 	{"a-p-e-", "Down\n", "Down\n", ""},
 	{"a-p-E-", "Ret\n", "Ret\n", ""},
 	{"a-P-E-", "Esc\n", "Esc\n", ""},
 	{"a-P-e-", "Up\n", "Up\n", ""},
-	/* add new signals above this line */
+	 
 	{"", "", "", ""}
 };
 
@@ -585,7 +519,7 @@ static void lcd_get_bits(unsigned int port, int *val)
 	}
 }
 
-/* sets data port bits according to current signals values */
+ 
 static int set_data_bits(void)
 {
 	int val;
@@ -596,7 +530,7 @@ static int set_data_bits(void)
 	return val;
 }
 
-/* sets ctrl port bits according to current signals values */
+ 
 static int set_ctrl_bits(void)
 {
 	int val;
@@ -607,22 +541,14 @@ static int set_ctrl_bits(void)
 	return val;
 }
 
-/* sets ctrl & data port bits according to current signals values */
+ 
 static void panel_set_bits(void)
 {
 	set_data_bits();
 	set_ctrl_bits();
 }
 
-/*
- * Converts a parallel port pin (from -25 to 25) to data and control ports
- * masks, and data and control port bits. The signal will be considered
- * unconnected if it's on pin 0 or an invalid pin (<-25 or >25).
- *
- * Result will be used this way :
- *   out(dport, in(dport) & d_val[2] | d_val[signal_state])
- *   out(cport, in(cport) & c_val[2] | c_val[signal_state])
- */
+ 
 static void pin_to_bits(int pin, unsigned char *d_val, unsigned char *c_val)
 {
 	int d_bit, c_bit, inv;
@@ -645,25 +571,25 @@ static void pin_to_bits(int pin, unsigned char *d_val, unsigned char *c_val)
 	c_bit = 0;
 
 	switch (pin) {
-	case PIN_STROBE:	/* strobe, inverted */
+	case PIN_STROBE:	 
 		c_bit = PNL_PSTROBE;
 		inv = !inv;
 		break;
-	case PIN_D0...PIN_D7:	/* D0 - D7 = 2 - 9 */
+	case PIN_D0...PIN_D7:	 
 		d_bit = 1 << (pin - 2);
 		break;
-	case PIN_AUTOLF:	/* autofeed, inverted */
+	case PIN_AUTOLF:	 
 		c_bit = PNL_PAUTOLF;
 		inv = !inv;
 		break;
-	case PIN_INITP:		/* init, direct */
+	case PIN_INITP:		 
 		c_bit = PNL_PINITP;
 		break;
-	case PIN_SELECP:	/* select_in, inverted */
+	case PIN_SELECP:	 
 		c_bit = PNL_PSELECP;
 		inv = !inv;
 		break;
-	default:		/* unknown pin, ignore */
+	default:		 
 		break;
 	}
 
@@ -676,20 +602,14 @@ static void pin_to_bits(int pin, unsigned char *d_val, unsigned char *c_val)
 	}
 }
 
-/*
- * send a serial byte to the LCD panel. The caller is responsible for locking
- * if needed.
- */
+ 
 static void lcd_send_serial(int byte)
 {
 	int bit;
 
-	/*
-	 * the data bit is set on D0, and the clock on STROBE.
-	 * LCD reads D0 on STROBE's rising edge.
-	 */
+	 
 	for (bit = 0; bit < 8; bit++) {
-		clear_bit(LCD_BIT_CL, bits);	/* CLK low */
+		clear_bit(LCD_BIT_CL, bits);	 
 		panel_set_bits();
 		if (byte & 1) {
 			set_bit(LCD_BIT_DA, bits);
@@ -698,21 +618,21 @@ static void lcd_send_serial(int byte)
 		}
 
 		panel_set_bits();
-		udelay(2);  /* maintain the data during 2 us before CLK up */
-		set_bit(LCD_BIT_CL, bits);	/* CLK high */
+		udelay(2);   
+		set_bit(LCD_BIT_CL, bits);	 
 		panel_set_bits();
-		udelay(1);  /* maintain the strobe during 1 us */
+		udelay(1);   
 		byte >>= 1;
 	}
 }
 
-/* turn the backlight on or off */
+ 
 static void lcd_backlight(struct charlcd *charlcd, enum charlcd_onoff on)
 {
 	if (lcd.pins.bl == PIN_NONE)
 		return;
 
-	/* The backlight is activated by setting the AUTOFEED line to +5V  */
+	 
 	spin_lock_irq(&pprt_lock);
 	if (on)
 		set_bit(LCD_BIT_BL, bits);
@@ -722,87 +642,87 @@ static void lcd_backlight(struct charlcd *charlcd, enum charlcd_onoff on)
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send a command to the LCD panel in serial mode */
+ 
 static void lcd_write_cmd_s(struct hd44780_common *hdc, int cmd)
 {
 	spin_lock_irq(&pprt_lock);
-	lcd_send_serial(0x1F);	/* R/W=W, RS=0 */
+	lcd_send_serial(0x1F);	 
 	lcd_send_serial(cmd & 0x0F);
 	lcd_send_serial((cmd >> 4) & 0x0F);
-	udelay(40);		/* the shortest command takes at least 40 us */
+	udelay(40);		 
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send data to the LCD panel in serial mode */
+ 
 static void lcd_write_data_s(struct hd44780_common *hdc, int data)
 {
 	spin_lock_irq(&pprt_lock);
-	lcd_send_serial(0x5F);	/* R/W=W, RS=1 */
+	lcd_send_serial(0x5F);	 
 	lcd_send_serial(data & 0x0F);
 	lcd_send_serial((data >> 4) & 0x0F);
-	udelay(40);		/* the shortest data takes at least 40 us */
+	udelay(40);		 
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send a command to the LCD panel in 8 bits parallel mode */
+ 
 static void lcd_write_cmd_p8(struct hd44780_common *hdc, int cmd)
 {
 	spin_lock_irq(&pprt_lock);
-	/* present the data to the data port */
+	 
 	w_dtr(pprt, cmd);
-	udelay(20);	/* maintain the data during 20 us before the strobe */
+	udelay(20);	 
 
 	set_bit(LCD_BIT_E, bits);
 	clear_bit(LCD_BIT_RS, bits);
 	clear_bit(LCD_BIT_RW, bits);
 	set_ctrl_bits();
 
-	udelay(40);	/* maintain the strobe during 40 us */
+	udelay(40);	 
 
 	clear_bit(LCD_BIT_E, bits);
 	set_ctrl_bits();
 
-	udelay(120);	/* the shortest command takes at least 120 us */
+	udelay(120);	 
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send data to the LCD panel in 8 bits parallel mode */
+ 
 static void lcd_write_data_p8(struct hd44780_common *hdc, int data)
 {
 	spin_lock_irq(&pprt_lock);
-	/* present the data to the data port */
+	 
 	w_dtr(pprt, data);
-	udelay(20);	/* maintain the data during 20 us before the strobe */
+	udelay(20);	 
 
 	set_bit(LCD_BIT_E, bits);
 	set_bit(LCD_BIT_RS, bits);
 	clear_bit(LCD_BIT_RW, bits);
 	set_ctrl_bits();
 
-	udelay(40);	/* maintain the strobe during 40 us */
+	udelay(40);	 
 
 	clear_bit(LCD_BIT_E, bits);
 	set_ctrl_bits();
 
-	udelay(45);	/* the shortest data takes at least 45 us */
+	udelay(45);	 
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send a command to the TI LCD panel */
+ 
 static void lcd_write_cmd_tilcd(struct hd44780_common *hdc, int cmd)
 {
 	spin_lock_irq(&pprt_lock);
-	/* present the data to the control port */
+	 
 	w_ctr(pprt, cmd);
 	udelay(60);
 	spin_unlock_irq(&pprt_lock);
 }
 
-/* send data to the TI LCD panel */
+ 
 static void lcd_write_data_tilcd(struct hd44780_common *hdc, int data)
 {
 	spin_lock_irq(&pprt_lock);
-	/* present the data to the data port */
+	 
 	w_dtr(pprt, data);
 	udelay(60);
 	spin_unlock_irq(&pprt_lock);
@@ -825,7 +745,7 @@ static const struct charlcd_ops charlcd_ops = {
 	.redefine_char	= hd44780_common_redefine_char,
 };
 
-/* initialize the LCD driver */
+ 
 static void lcd_init(void)
 {
 	struct charlcd *charlcd;
@@ -844,10 +764,7 @@ static void lcd_init(void)
 	hdc->hd44780 = &lcd;
 	charlcd->drvdata = hdc;
 
-	/*
-	 * Init lcd struct with load-time values to preserve exact
-	 * current functionality (at least for now).
-	 */
+	 
 	charlcd->height = lcd_height;
 	charlcd->width = lcd_width;
 	hdc->bwidth = lcd_bwidth;
@@ -855,7 +772,7 @@ static void lcd_init(void)
 
 	switch (selected_lcd_type) {
 	case LCD_TYPE_OLD:
-		/* parallel mode, 8 bits */
+		 
 		lcd.proto = LCD_PROTO_PARALLEL;
 		lcd.charset = LCD_CHARSET_NORMAL;
 		lcd.pins.e = PIN_STROBE;
@@ -867,7 +784,7 @@ static void lcd_init(void)
 		charlcd->height = 2;
 		break;
 	case LCD_TYPE_KS0074:
-		/* serial mode, ks0074 */
+		 
 		lcd.proto = LCD_PROTO_SERIAL;
 		lcd.charset = LCD_CHARSET_KS0074;
 		lcd.pins.bl = PIN_AUTOLF;
@@ -880,7 +797,7 @@ static void lcd_init(void)
 		charlcd->height = 2;
 		break;
 	case LCD_TYPE_NEXCOM:
-		/* parallel mode, 8 bits, generic */
+		 
 		lcd.proto = LCD_PROTO_PARALLEL;
 		lcd.charset = LCD_CHARSET_NORMAL;
 		lcd.pins.e = PIN_AUTOLF;
@@ -893,13 +810,13 @@ static void lcd_init(void)
 		charlcd->height = 2;
 		break;
 	case LCD_TYPE_CUSTOM:
-		/* customer-defined */
+		 
 		lcd.proto = DEFAULT_LCD_PROTO;
 		lcd.charset = DEFAULT_LCD_CHARSET;
-		/* default geometry will be set later */
+		 
 		break;
 	case LCD_TYPE_HANTRONIX:
-		/* parallel mode, 8 bits, hantronix-like */
+		 
 	default:
 		lcd.proto = LCD_PROTO_PARALLEL;
 		lcd.charset = LCD_CHARSET_NORMAL;
@@ -913,7 +830,7 @@ static void lcd_init(void)
 		break;
 	}
 
-	/* Overwrite with module params set on loading */
+	 
 	if (lcd_height != NOT_SET)
 		charlcd->height = lcd_height;
 	if (lcd_width != NOT_SET)
@@ -939,7 +856,7 @@ static void lcd_init(void)
 	if (lcd_bl_pin != PIN_NOT_SET)
 		lcd.pins.bl = lcd_bl_pin;
 
-	/* this is used to catch wrong and default values */
+	 
 	if (charlcd->width <= 0)
 		charlcd->width = DEFAULT_LCD_WIDTH;
 	if (hdc->bwidth <= 0)
@@ -949,7 +866,7 @@ static void lcd_init(void)
 	if (charlcd->height <= 0)
 		charlcd->height = DEFAULT_LCD_HEIGHT;
 
-	if (lcd.proto == LCD_PROTO_SERIAL) {	/* SERIAL */
+	if (lcd.proto == LCD_PROTO_SERIAL) {	 
 		charlcd->ops = &charlcd_ops;
 		hdc->write_data = lcd_write_data_s;
 		hdc->write_cmd = lcd_write_cmd_s;
@@ -959,7 +876,7 @@ static void lcd_init(void)
 		if (lcd.pins.da == PIN_NOT_SET)
 			lcd.pins.da = DEFAULT_LCD_PIN_SDA;
 
-	} else if (lcd.proto == LCD_PROTO_PARALLEL) {	/* PARALLEL */
+	} else if (lcd.proto == LCD_PROTO_PARALLEL) {	 
 		charlcd->ops = &charlcd_ops;
 		hdc->write_data = lcd_write_data_p8;
 		hdc->write_cmd = lcd_write_cmd_p8;
@@ -1017,9 +934,7 @@ static void lcd_init(void)
 	lcd.initialized = true;
 }
 
-/*
- * These are the file operation function for user access to /dev/keypad
- */
+ 
 
 static ssize_t keypad_read(struct file *file,
 			   char __user *buf, size_t count, loff_t *ppos)
@@ -1052,13 +967,13 @@ static int keypad_open(struct inode *inode, struct file *file)
 
 	ret = -EBUSY;
 	if (!atomic_dec_and_test(&keypad_available))
-		goto fail;	/* open only once at a time */
+		goto fail;	 
 
 	ret = -EPERM;
-	if (file->f_mode & FMODE_WRITE)	/* device is read-only */
+	if (file->f_mode & FMODE_WRITE)	 
 		goto fail;
 
-	keypad_buflen = 0;	/* flush the buffer on opening */
+	keypad_buflen = 0;	 
 	return 0;
  fail:
 	atomic_inc(&keypad_available);
@@ -1072,9 +987,9 @@ static int keypad_release(struct inode *inode, struct file *file)
 }
 
 static const struct file_operations keypad_fops = {
-	.read    = keypad_read,		/* read */
-	.open    = keypad_open,		/* open */
-	.release = keypad_release,	/* close */
+	.read    = keypad_read,		 
+	.open    = keypad_open,		 
+	.release = keypad_release,	 
 	.llseek  = default_llseek,
 };
 
@@ -1086,7 +1001,7 @@ static struct miscdevice keypad_dev = {
 
 static void keypad_send_key(const char *string, int max_len)
 {
-	/* send the key to the device only if a process is attached to it. */
+	 
 	if (!atomic_read(&keypad_available)) {
 		while (max_len-- && keypad_buflen < KEYPAD_BUFFER && *string) {
 			keypad_buffer[(keypad_start + keypad_buflen++) %
@@ -1096,16 +1011,7 @@ static void keypad_send_key(const char *string, int max_len)
 	}
 }
 
-/* this function scans all the bits involving at least one logical signal,
- * and puts the results in the bitfield "phys_read" (one bit per established
- * contact), and sets "phys_read_prev" to "phys_read".
- *
- * Note: to debounce input signals, we will only consider as switched a signal
- * which is stable across 2 measures. Signals which are different between two
- * reads will be kept as they previously were in their logical form (phys_prev).
- * A signal which has just switched will have a 1 in
- * (phys_read ^ phys_read_prev).
- */
+ 
 static void phys_scan_contacts(void)
 {
 	int bit, bitval;
@@ -1115,50 +1021,41 @@ static void phys_scan_contacts(void)
 
 	phys_prev = phys_curr;
 	phys_read_prev = phys_read;
-	phys_read = 0;		/* flush all signals */
+	phys_read = 0;		 
 
-	/* keep track of old value, with all outputs disabled */
+	 
 	oldval = r_dtr(pprt) | scan_mask_o;
-	/* activate all keyboard outputs (active low) */
+	 
 	w_dtr(pprt, oldval & ~scan_mask_o);
 
-	/* will have a 1 for each bit set to gnd */
+	 
 	bitmask = PNL_PINPUT(r_str(pprt)) & scan_mask_i;
-	/* disable all matrix signals */
+	 
 	w_dtr(pprt, oldval);
 
-	/* now that all outputs are cleared, the only active input bits are
-	 * directly connected to the ground
-	 */
+	 
 
-	/* 1 for each grounded input */
+	 
 	gndmask = PNL_PINPUT(r_str(pprt)) & scan_mask_i;
 
-	/* grounded inputs are signals 40-44 */
+	 
 	phys_read |= (__u64)gndmask << 40;
 
 	if (bitmask != gndmask) {
-		/*
-		 * since clearing the outputs changed some inputs, we know
-		 * that some input signals are currently tied to some outputs.
-		 * So we'll scan them.
-		 */
+		 
 		for (bit = 0; bit < 8; bit++) {
 			bitval = BIT(bit);
 
-			if (!(scan_mask_o & bitval))	/* skip unused bits */
+			if (!(scan_mask_o & bitval))	 
 				continue;
 
-			w_dtr(pprt, oldval & ~bitval);	/* enable this output */
+			w_dtr(pprt, oldval & ~bitval);	 
 			bitmask = PNL_PINPUT(r_str(pprt)) & ~gndmask;
 			phys_read |= (__u64)bitmask << (5 * bit);
 		}
-		w_dtr(pprt, oldval);	/* disable all outputs */
+		w_dtr(pprt, oldval);	 
 	}
-	/*
-	 * this is easy: use old bits when they are flapping,
-	 * use new ones when stable
-	 */
+	 
 	phys_curr = (phys_prev & (phys_read ^ phys_read_prev)) |
 		    (phys_read & ~(phys_read ^ phys_read_prev));
 }
@@ -1166,26 +1063,12 @@ static void phys_scan_contacts(void)
 static inline int input_state_high(struct logical_input *input)
 {
 #if 0
-	/* FIXME:
-	 * this is an invalid test. It tries to catch
-	 * transitions from single-key to multiple-key, but
-	 * doesn't take into account the contacts polarity.
-	 * The only solution to the problem is to parse keys
-	 * from the most complex to the simplest combinations,
-	 * and mark them as 'caught' once a combination
-	 * matches, then unmatch it for all other ones.
-	 */
+	 
 
-	/* try to catch dangerous transitions cases :
-	 * someone adds a bit, so this signal was a false
-	 * positive resulting from a transition. We should
-	 * invalidate the signal immediately and not call the
-	 * release function.
-	 * eg: 0 -(press A)-> A -(press B)-> AB : don't match A's release.
-	 */
+	 
 	if (((phys_prev & input->mask) == input->value) &&
 	    ((phys_curr & input->mask) >  input->value)) {
-		input->state = INPUT_ST_LOW; /* invalidate */
+		input->state = INPUT_ST_LOW;  
 		return 1;
 	}
 #endif
@@ -1197,7 +1080,7 @@ static inline int input_state_high(struct logical_input *input)
 			if (input->u.std.press_fct)
 				input->u.std.press_fct(input->u.std.press_data);
 		} else if (input->type == INPUT_TYPE_KBD) {
-			/* will turn on the light */
+			 
 			keypressed = 1;
 
 			if (input->high_timer == 0) {
@@ -1219,7 +1102,7 @@ static inline int input_state_high(struct logical_input *input)
 					input->high_timer -= KEYPAD_REP_DELAY;
 					keypad_send_key(repeat_str, s);
 				}
-				/* we will need to come back here soon */
+				 
 				inputs_stable = 0;
 			}
 
@@ -1229,7 +1112,7 @@ static inline int input_state_high(struct logical_input *input)
 		return 1;
 	}
 
-	/* else signal falling down. Let's fall through. */
+	 
 	input->state = INPUT_ST_FALLING;
 	input->fall_timer = 0;
 
@@ -1239,17 +1122,17 @@ static inline int input_state_high(struct logical_input *input)
 static inline void input_state_falling(struct logical_input *input)
 {
 #if 0
-	/* FIXME !!! same comment as in input_state_high */
+	 
 	if (((phys_prev & input->mask) == input->value) &&
 	    ((phys_curr & input->mask) >  input->value)) {
-		input->state = INPUT_ST_LOW;	/* invalidate */
+		input->state = INPUT_ST_LOW;	 
 		return;
 	}
 #endif
 
 	if ((phys_curr & input->mask) == input->value) {
 		if (input->type == INPUT_TYPE_KBD) {
-			/* will turn on the light */
+			 
 			keypressed = 1;
 
 			if (input->u.kbd.repeat_str[0]) {
@@ -1261,7 +1144,7 @@ static inline void input_state_falling(struct logical_input *input)
 					input->high_timer -= KEYPAD_REP_DELAY;
 					keypad_send_key(repeat_str, s);
 				}
-				/* we will need to come back here soon */
+				 
 				inputs_stable = 0;
 			}
 
@@ -1270,7 +1153,7 @@ static inline void input_state_falling(struct logical_input *input)
 		}
 		input->state = INPUT_ST_HIGH;
 	} else if (input->fall_timer >= input->fall_time) {
-		/* call release event */
+		 
 		if (input->type == INPUT_TYPE_STD) {
 			void (*release_fct)(int) = input->u.std.release_fct;
 
@@ -1304,13 +1187,7 @@ static void panel_process_inputs(void)
 		case INPUT_ST_LOW:
 			if ((phys_curr & input->mask) != input->value)
 				break;
-			/* if all needed ones were already set previously,
-			 * this means that this logical signal has been
-			 * activated by the releasing of another combined
-			 * signal, so we don't want to match.
-			 * eg: AB -(release B)-> A -(release A)-> 0 :
-			 *     don't match A.
-			 */
+			 
 			if ((phys_prev & input->mask) == input->value)
 				break;
 			input->rise_timer = 0;
@@ -1345,7 +1222,7 @@ static void panel_scan_timer(struct timer_list *unused)
 		if (spin_trylock_irq(&pprt_lock)) {
 			phys_scan_contacts();
 
-			/* no need for the parport anymore */
+			 
 			spin_unlock_irq(&pprt_lock);
 		}
 
@@ -1362,18 +1239,14 @@ static void panel_scan_timer(struct timer_list *unused)
 static void init_scan_timer(void)
 {
 	if (scan_timer.function)
-		return;		/* already started */
+		return;		 
 
 	timer_setup(&scan_timer, panel_scan_timer, 0);
 	scan_timer.expires = jiffies + INPUT_POLL_TIME;
 	add_timer(&scan_timer);
 }
 
-/* converts a name of the form "({BbAaPpSsEe}{01234567-})*" to a series of bits.
- * if <omask> or <imask> are non-null, they will be or'ed with the bits
- * corresponding to out and in bits respectively.
- * returns 1 if ok, 0 if error (in which case, nothing is written).
- */
+ 
 static u8 input_name2mask(const char *name, __u64 *mask, __u64 *value,
 			  u8 *imask, u8 *omask)
 {
@@ -1391,10 +1264,10 @@ static u8 input_name2mask(const char *name, __u64 *mask, __u64 *value,
 
 		idx = strchr(sigtab, *name);
 		if (!idx)
-			return 0;	/* input name not found */
+			return 0;	 
 
 		in = idx - sigtab;
-		neg = (in & 1);	/* odd (lower) names are negated */
+		neg = (in & 1);	 
 		in >>= 1;
 		im |= BIT(in);
 
@@ -1405,7 +1278,7 @@ static u8 input_name2mask(const char *name, __u64 *mask, __u64 *value,
 		} else if (*name == '-') {
 			out = 8;
 		} else {
-			return 0;	/* unknown bit name */
+			return 0;	 
 		}
 
 		bit = (out * 5) + in;
@@ -1424,10 +1297,7 @@ static u8 input_name2mask(const char *name, __u64 *mask, __u64 *value,
 	return 1;
 }
 
-/* tries to bind a key to the signal name <name>. The key will send the
- * strings <press>, <repeat>, <release> for these respective events.
- * Returns the pointer to the new key if ok, NULL if the key could not be bound.
- */
+ 
 static struct logical_input *panel_bind_key(const char *name, const char *press,
 					    const char *repeat,
 					    const char *release)
@@ -1458,12 +1328,7 @@ static struct logical_input *panel_bind_key(const char *name, const char *press,
 }
 
 #if 0
-/* tries to bind a callback function to the signal name <name>. The function
- * <press_fct> will be called with the <press_data> arg when the signal is
- * activated, and so on for <release_fct>/<release_data>
- * Returns the pointer to the new signal if ok, NULL if the signal could not
- * be bound.
- */
+ 
 static struct logical_input *panel_bind_callback(char *name,
 						 void (*press_fct)(int),
 						 int press_data,
@@ -1499,9 +1364,9 @@ static void keypad_init(void)
 	int keynum;
 
 	init_waitqueue_head(&keypad_read_wait);
-	keypad_buflen = 0;	/* flushes any eventual noisy keystroke */
+	keypad_buflen = 0;	 
 
-	/* Let's create all known keys */
+	 
 
 	for (keynum = 0; keypad_profile[keynum][0][0]; keynum++) {
 		panel_bind_key(keypad_profile[keynum][0],
@@ -1514,9 +1379,9 @@ static void keypad_init(void)
 	keypad_initialized = 1;
 }
 
-/**************************************************/
-/* device initialization                          */
-/**************************************************/
+ 
+ 
+ 
 
 static void panel_attach(struct parport *port)
 {
@@ -1533,7 +1398,7 @@ static void panel_attach(struct parport *port)
 
 	memset(&panel_cb, 0, sizeof(panel_cb));
 	panel_cb.private = &pprt;
-	/* panel_cb.flags = 0 should be PARPORT_DEV_EXCL? */
+	 
 
 	pprt = parport_register_dev_model(port, "panel", &panel_cb, 0);
 	if (!pprt) {
@@ -1548,9 +1413,7 @@ static void panel_attach(struct parport *port)
 		goto err_unreg_device;
 	}
 
-	/* must init LCD first, just in case an IRQ from the keypad is
-	 * generated at keypad init
-	 */
+	 
 	if (lcd.enabled) {
 		lcd_init();
 		if (!lcd.charlcd || charlcd_register(lcd.charlcd))
@@ -1602,7 +1465,7 @@ static void panel_detach(struct parport *port)
 		lcd.charlcd = NULL;
 	}
 
-	/* TODO: free all input signals */
+	 
 	parport_release(pprt);
 	parport_unregister_device(pprt);
 	pprt = NULL;
@@ -1615,55 +1478,52 @@ static struct parport_driver panel_driver = {
 	.devmodel = true,
 };
 
-/* init function */
+ 
 static int __init panel_init_module(void)
 {
 	int selected_keypad_type = NOT_SET, err;
 
-	/* take care of an eventual profile */
+	 
 	switch (profile) {
 	case PANEL_PROFILE_CUSTOM:
-		/* custom profile */
+		 
 		selected_keypad_type = DEFAULT_KEYPAD_TYPE;
 		selected_lcd_type = DEFAULT_LCD_TYPE;
 		break;
 	case PANEL_PROFILE_OLD:
-		/* 8 bits, 2*16, old keypad */
+		 
 		selected_keypad_type = KEYPAD_TYPE_OLD;
 		selected_lcd_type = LCD_TYPE_OLD;
 
-		/* TODO: This two are a little hacky, sort it out later */
+		 
 		if (lcd_width == NOT_SET)
 			lcd_width = 16;
 		if (lcd_hwidth == NOT_SET)
 			lcd_hwidth = 16;
 		break;
 	case PANEL_PROFILE_NEW:
-		/* serial, 2*16, new keypad */
+		 
 		selected_keypad_type = KEYPAD_TYPE_NEW;
 		selected_lcd_type = LCD_TYPE_KS0074;
 		break;
 	case PANEL_PROFILE_HANTRONIX:
-		/* 8 bits, 2*16 hantronix-like, no keypad */
+		 
 		selected_keypad_type = KEYPAD_TYPE_NONE;
 		selected_lcd_type = LCD_TYPE_HANTRONIX;
 		break;
 	case PANEL_PROFILE_NEXCOM:
-		/* generic 8 bits, 2*16, nexcom keypad, eg. Nexcom. */
+		 
 		selected_keypad_type = KEYPAD_TYPE_NEXCOM;
 		selected_lcd_type = LCD_TYPE_NEXCOM;
 		break;
 	case PANEL_PROFILE_LARGE:
-		/* 8 bits, 2*40, old keypad */
+		 
 		selected_keypad_type = KEYPAD_TYPE_OLD;
 		selected_lcd_type = LCD_TYPE_OLD;
 		break;
 	}
 
-	/*
-	 * Overwrite selection with module param values (both keypad and lcd),
-	 * where the deprecated params have lower prio.
-	 */
+	 
 	if (keypad_enabled != NOT_SET)
 		selected_keypad_type = keypad_enabled;
 	if (keypad_type != NOT_SET)
@@ -1679,10 +1539,7 @@ static int __init panel_init_module(void)
 	lcd.enabled = (selected_lcd_type > 0);
 
 	if (lcd.enabled) {
-		/*
-		 * Init lcd struct with load-time values to preserve exact
-		 * current functionality (at least for now).
-		 */
+		 
 		lcd.charset = lcd_charset;
 		lcd.proto = lcd_proto;
 		lcd.pins.e = lcd_e_pin;
@@ -1709,7 +1566,7 @@ static int __init panel_init_module(void)
 	}
 
 	if (!lcd.enabled && !keypad.enabled) {
-		/* no device enabled, let's exit */
+		 
 		pr_err("panel driver disabled.\n");
 		return -ENODEV;
 	}

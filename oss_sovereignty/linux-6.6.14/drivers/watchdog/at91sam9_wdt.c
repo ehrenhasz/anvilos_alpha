@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for Atmel AT91SAM9x processors.
- *
- * Copyright (C) 2008 Renaud CERRATO r.cerrato@til-technologies.fr
- *
- */
 
-/*
- * The Watchdog Timer Mode Register can be only written to once. If the
- * timeout need to be set from Linux, be sure that the bootstrap or the
- * bootloader doesn't write to this register.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,10 +33,7 @@
 #define wdt_write(wtd, field, val) \
 	writel_relaxed((val), (wdt)->base + (field))
 
-/* AT91SAM9 watchdog runs a 12bit counter @ 256Hz,
- * use this to convert a watchdog
- * value from/to milliseconds.
- */
+ 
 #define ticks_to_hz_rounddown(t)	((((t) + 1) * HZ) >> 8)
 #define ticks_to_hz_roundup(t)		(((((t) + 1) * HZ) + 255) >> 8)
 #define ticks_to_secs(t)		(((t) + 1) >> 8)
@@ -53,19 +41,19 @@
 
 #define WDT_MR_RESET	0x3FFF2FFF
 
-/* Watchdog max counter value in ticks */
+ 
 #define WDT_COUNTER_MAX_TICKS	0xFFF
 
-/* Watchdog max delta/value in secs */
+ 
 #define WDT_COUNTER_MAX_SECS	ticks_to_secs(WDT_COUNTER_MAX_TICKS)
 
-/* Hardware timeout in seconds */
+ 
 #define WDT_HW_TIMEOUT 2
 
-/* Timer heartbeat (500ms) */
+ 
 #define WDT_TIMEOUT	(HZ/2)
 
-/* User land timeout */
+ 
 #define WDT_HEARTBEAT 15
 static int heartbeat;
 module_param(heartbeat, int, 0);
@@ -81,17 +69,17 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
 struct at91wdt {
 	struct watchdog_device wdd;
 	void __iomem *base;
-	unsigned long next_heartbeat;	/* the next_heartbeat for the timer */
-	struct timer_list timer;	/* The timer that pings the watchdog */
+	unsigned long next_heartbeat;	 
+	struct timer_list timer;	 
 	u32 mr;
 	u32 mr_mask;
-	unsigned long heartbeat;	/* WDT heartbeat in jiffies */
+	unsigned long heartbeat;	 
 	bool nowayout;
 	unsigned int irq;
 	struct clk *sclk;
 };
 
-/* ......................................................................... */
+ 
 
 static irqreturn_t wdt_interrupt(int irq, void *dev_id)
 {
@@ -106,17 +94,13 @@ static irqreturn_t wdt_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Reload the watchdog timer.  (ie, pat the watchdog)
- */
+ 
 static inline void at91_wdt_reset(struct at91wdt *wdt)
 {
 	wdt_write(wdt, AT91_WDT_CR, AT91_WDT_KEY | AT91_WDT_WDRSTT);
 }
 
-/*
- * Timer tick
- */
+ 
 static void at91_ping(struct timer_list *t)
 {
 	struct at91wdt *wdt = from_timer(wdt, t, timer);
@@ -132,14 +116,14 @@ static void at91_ping(struct timer_list *t)
 static int at91_wdt_start(struct watchdog_device *wdd)
 {
 	struct at91wdt *wdt = to_wdt(wdd);
-	/* calculate when the next userspace timeout will be */
+	 
 	wdt->next_heartbeat = jiffies + wdd->timeout * HZ;
 	return 0;
 }
 
 static int at91_wdt_stop(struct watchdog_device *wdd)
 {
-	/* The watchdog timer hardware can not be stopped... */
+	 
 	return 0;
 }
 
@@ -188,12 +172,7 @@ static int at91_wdt_init(struct platform_device *pdev, struct at91wdt *wdt)
 		return -EINVAL;
 	}
 
-	/*
-	 * Try to reset the watchdog counter 4 or 2 times more often than
-	 * actually requested, to avoid spurious watchdog reset.
-	 * If this is not possible because of the min_heartbeat value, reset
-	 * it at the min_heartbeat period.
-	 */
+	 
 	if ((max_heartbeat / 4) >= min_heartbeat)
 		wdt->heartbeat = max_heartbeat / 4;
 	else if ((max_heartbeat / 2) >= min_heartbeat)
@@ -220,16 +199,10 @@ static int at91_wdt_init(struct platform_device *pdev, struct at91wdt *wdt)
 
 	timer_setup(&wdt->timer, at91_ping, 0);
 
-	/*
-	 * Use min_heartbeat the first time to avoid spurious watchdog reset:
-	 * we don't know for how long the watchdog counter is running, and
-	 *  - resetting it right now might trigger a watchdog fault reset
-	 *  - waiting for heartbeat time might lead to a watchdog timeout
-	 *    reset
-	 */
+	 
 	mod_timer(&wdt->timer, jiffies + min_heartbeat);
 
-	/* Try to set timeout from device tree first */
+	 
 	if (watchdog_init_timeout(&wdt->wdd, 0, dev))
 		watchdog_init_timeout(&wdt->wdd, heartbeat, dev);
 	watchdog_set_nowayout(&wdt->wdd, wdt->nowayout);
@@ -246,7 +219,7 @@ out_stop_timer:
 	return err;
 }
 
-/* ......................................................................... */
+ 
 
 static const struct watchdog_info at91_wdt_info = {
 	.identity	= DRV_NAME,
@@ -268,7 +241,7 @@ static int of_at91wdt_init(struct device_node *np, struct at91wdt *wdt)
 	u32 max = WDT_COUNTER_MAX_SECS;
 	const char *tmp;
 
-	/* Get the interrupts property */
+	 
 	wdt->irq = irq_of_parse_and_map(np, 0);
 	if (!wdt->irq)
 		dev_warn(wdt->wdd.parent, "failed to get IRQ from DT\n");
@@ -396,7 +369,7 @@ static int __exit at91wdt_remove(struct platform_device *pdev)
 #if defined(CONFIG_OF)
 static const struct of_device_id at91_wdt_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9260-wdt" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, at91_wdt_dt_ids);

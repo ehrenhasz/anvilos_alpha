@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm BAM-DMUX WWAN network driver
- * Copyright (c) 2020, Stephan Gerhold <stephan@gerhold.net>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitops.h>
@@ -78,7 +75,7 @@ struct bam_dmux {
 	struct dma_chan *rx, *tx;
 	struct bam_dmux_skb_dma rx_skbs[BAM_DMUX_NUM_SKB];
 	struct bam_dmux_skb_dma tx_skbs[BAM_DMUX_NUM_SKB];
-	spinlock_t tx_lock; /* Protect tx_skbs, tx_next_skb */
+	spinlock_t tx_lock;  
 	unsigned int tx_next_skb;
 	atomic_long_t tx_deferred_skb;
 	struct work_struct tx_wakeup_work;
@@ -355,7 +352,7 @@ static netdev_tx_t bam_dmux_netdev_start_xmit(struct sk_buff *skb,
 		goto drop;
 
 	if (active <= 0) {
-		/* Cannot sleep here so mark skb for wakeup handler and return */
+		 
 		if (!atomic_long_fetch_or(BIT(skb_dma - dmux->tx_skbs),
 					  &dmux->tx_deferred_skb))
 			queue_pm_work(&dmux->tx_wakeup_work);
@@ -422,10 +419,10 @@ static void bam_dmux_netdev_setup(struct net_device *dev)
 	dev->mtu = ETH_DATA_LEN;
 	dev->max_mtu = BAM_DMUX_MAX_DATA_SIZE;
 	dev->needed_headroom = sizeof(struct bam_dmux_hdr);
-	dev->needed_tailroom = sizeof(u32); /* word-aligned */
+	dev->needed_tailroom = sizeof(u32);  
 	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
 
-	/* This perm addr will be used as interface identifier by IPv6 */
+	 
 	dev->addr_assign_type = NET_ADDR_RANDOM;
 	eth_random_addr(dev->perm_addr);
 }
@@ -517,13 +514,13 @@ static void bam_dmux_cmd_data(struct bam_dmux_skb_dma *skb_dma)
 		return;
 	}
 
-	skb_dma->skb = NULL; /* Hand over to network stack */
+	skb_dma->skb = NULL;  
 
 	skb_pull(skb, sizeof(*hdr));
 	skb_trim(skb, hdr->len);
 	skb->dev = netdev;
 
-	/* Only Raw-IP/QMAP is supported by this driver */
+	 
 	switch (skb->data[0] & 0xf0) {
 	case 0x40:
 		skb->protocol = htons(ETH_P_IP);
@@ -553,7 +550,7 @@ static void bam_dmux_cmd_open(struct bam_dmux *dmux, struct bam_dmux_hdr *hdr)
 	if (netdev) {
 		netif_device_attach(netdev);
 	} else {
-		/* Cannot sleep here, schedule work to register the netdev */
+		 
 		schedule_work(&dmux->register_netdev_work);
 	}
 }
@@ -722,35 +719,35 @@ static int __maybe_unused bam_dmux_runtime_resume(struct device *dev)
 
 	dev_dbg(dev, "runtime resume\n");
 
-	/* Wait until previous power down was acked */
+	 
 	if (!wait_for_completion_timeout(&dmux->pc_ack_completion,
 					 BAM_DMUX_REMOTE_TIMEOUT))
 		return -ETIMEDOUT;
 
-	/* Vote for power state */
+	 
 	bam_dmux_pc_vote(dmux, true);
 
-	/* Wait for ack */
+	 
 	if (!wait_for_completion_timeout(&dmux->pc_ack_completion,
 					 BAM_DMUX_REMOTE_TIMEOUT)) {
 		bam_dmux_pc_vote(dmux, false);
 		return -ETIMEDOUT;
 	}
 
-	/* Wait until we're up */
+	 
 	if (!wait_event_timeout(dmux->pc_wait, dmux->pc_state,
 				BAM_DMUX_REMOTE_TIMEOUT)) {
 		bam_dmux_pc_vote(dmux, false);
 		return -ETIMEDOUT;
 	}
 
-	/* Ensure that we actually initialized successfully */
+	 
 	if (!dmux->rx) {
 		bam_dmux_pc_vote(dmux, false);
 		return -ENXIO;
 	}
 
-	/* Request TX channel if necessary */
+	 
 	if (dmux->tx)
 		return 0;
 
@@ -812,10 +809,7 @@ static int bam_dmux_probe(struct platform_device *pdev)
 		dmux->tx_skbs[i].dmux = dmux;
 	}
 
-	/* Runtime PM manages our own power vote.
-	 * Note that the RX path may be active even if we are runtime suspended,
-	 * since it is controlled by the remote side.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(dev, BAM_DMUX_AUTOSUSPEND_DELAY);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_enable(dev);
@@ -835,7 +829,7 @@ static int bam_dmux_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Check if remote finished initialization before us */
+	 
 	if (dmux->pc_state) {
 		if (bam_dmux_power_on(dmux))
 			bam_dmux_pc_ack(dmux);
@@ -853,7 +847,7 @@ static int bam_dmux_remove(struct platform_device *pdev)
 	LIST_HEAD(list);
 	int i;
 
-	/* Unregister network interfaces */
+	 
 	cancel_work_sync(&dmux->register_netdev_work);
 	rtnl_lock();
 	for (i = 0; i < BAM_DMUX_NUM_CH; ++i)
@@ -863,17 +857,17 @@ static int bam_dmux_remove(struct platform_device *pdev)
 	rtnl_unlock();
 	cancel_work_sync(&dmux->tx_wakeup_work);
 
-	/* Drop our own power vote */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_dont_use_autosuspend(dev);
 	bam_dmux_runtime_suspend(dev);
 	pm_runtime_set_suspended(dev);
 
-	/* Try to wait for remote side to drop power vote */
+	 
 	if (!wait_event_timeout(dmux->pc_wait, !dmux->rx, BAM_DMUX_REMOTE_TIMEOUT))
 		dev_err(dev, "Timed out waiting for remote side to suspend\n");
 
-	/* Make sure everything is cleaned up before we return */
+	 
 	disable_irq(dmux->pc_irq);
 	bam_dmux_power_off(dmux);
 	bam_dmux_free_skbs(dmux->tx_skbs, DMA_TO_DEVICE);
@@ -887,7 +881,7 @@ static const struct dev_pm_ops bam_dmux_pm_ops = {
 
 static const struct of_device_id bam_dmux_of_match[] = {
 	{ .compatible = "qcom,bam-dmux" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bam_dmux_of_match);
 

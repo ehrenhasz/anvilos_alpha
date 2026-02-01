@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- *               Weiyi Lu <weiyi.lu@mediatek.com>
- * Copyright (c) 2023 Collabora, Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8183-clk.h>
 #include <linux/clk.h>
@@ -28,12 +23,9 @@ static const struct mtk_gate_regs apmixed_cg_regs = {
 #define GATE_APMIXED(_id, _name, _parent, _shift)			\
 	GATE_APMIXED_FLAGS(_id, _name, _parent, _shift,	0)
 
-/*
- * CRITICAL CLOCK:
- * apmixed_appll26m is the toppest clock gate of all PLLs.
- */
+ 
 static const struct mtk_gate apmixed_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_APMIXED(CLK_APMIXED_SSUSB_26M, "apmixed_ssusb26m", "f_f26m_ck", 4),
 	GATE_APMIXED_FLAGS(CLK_APMIXED_APPLL_26M, "apmixed_appll26m",
 			   "f_f26m_ck", 5, CLK_IS_CRITICAL),
@@ -95,7 +87,7 @@ static const struct mtk_pll_div_table armpll_div_table[] = {
 	{ .div = 2, .freq = 750 * MHZ },
 	{ .div = 3, .freq = 375 * MHZ },
 	{ .div = 4, .freq = 187500000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_div_table mfgpll_div_table[] = {
@@ -104,7 +96,7 @@ static const struct mtk_pll_div_table mfgpll_div_table[] = {
 	{ .div = 2, .freq = 800 * MHZ },
 	{ .div = 3, .freq = 400 * MHZ },
 	{ .div = 4, .freq = 200 * MHZ },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -180,7 +172,7 @@ unregister_plls:
 
 static const struct of_device_id of_match_clk_mt8183_apmixed[] = {
 	{ .compatible = "mediatek,mt8183-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8183_apmixed);
 

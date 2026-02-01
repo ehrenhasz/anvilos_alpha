@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2013-2014, 2018-2019, 2022-2023 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- */
+
+ 
 #include "mvm.h"
 
-/* For counting bound interfaces */
+ 
 struct iwl_mvm_active_iface_iterator_data {
 	struct ieee80211_vif *ignore_vif;
 	struct ieee80211_sta *sta_vif_ap_sta;
@@ -13,10 +10,7 @@ struct iwl_mvm_active_iface_iterator_data {
 	u32 num_active_macs;
 };
 
-/*
- * Count bound interfaces which are not p2p, besides data->ignore_vif.
- * data->station_vif will point to one bound vif of type station, if exists.
- */
+ 
 static void iwl_mvm_bound_iface_iterator(void *_data, u8 *mac,
 					 struct ieee80211_vif *vif)
 {
@@ -38,10 +32,7 @@ static void iwl_mvm_bound_iface_iterator(void *_data, u8 *mac,
 	}
 }
 
-/*
- * Aging and idle timeouts for the different possible scenarios
- * in default configuration
- */
+ 
 static const
 __le32 sf_full_timeout_def[SF_NUM_SCENARIO][SF_NUM_TIMEOUT_TYPES] = {
 	{
@@ -66,10 +57,7 @@ __le32 sf_full_timeout_def[SF_NUM_SCENARIO][SF_NUM_TIMEOUT_TYPES] = {
 	},
 };
 
-/*
- * Aging and idle timeouts for the different possible scenarios
- * in single BSS MAC configuration.
- */
+ 
 static const __le32 sf_full_timeout[SF_NUM_SCENARIO][SF_NUM_TIMEOUT_TYPES] = {
 	{
 		cpu_to_le32(SF_SINGLE_UNICAST_AGING_TIMER),
@@ -105,12 +93,9 @@ static void iwl_mvm_fill_sf_command(struct iwl_mvm *mvm,
 
 	sf_cmd->watermark[SF_LONG_DELAY_ON] = cpu_to_le32(SF_W_MARK_SCAN);
 
-	/*
-	 * If we are in association flow - check antenna configuration
-	 * capabilities of the AP station, and choose the watermark accordingly.
-	 */
+	 
 	if (sta) {
-		/* find the maximal NSS number among all links (if relevant) */
+		 
 		rcu_read_lock();
 		for (link_id = 0; link_id < ARRAY_SIZE(sta->link); link_id++) {
 			link_sta = rcu_dereference(sta->link[link_id]);
@@ -142,7 +127,7 @@ static void iwl_mvm_fill_sf_command(struct iwl_mvm *mvm,
 		} else {
 			watermark = SF_W_MARK_LEGACY;
 		}
-	/* default watermark value for unassociated mode. */
+	 
 	} else {
 		watermark = SF_W_MARK_MIMO2;
 	}
@@ -180,10 +165,7 @@ static int iwl_mvm_sf_config(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 	};
 	int ret = 0;
 
-	/*
-	 * If an associated AP sta changed its antenna configuration, the state
-	 * will remain FULL_ON but SF parameters need to be reconsidered.
-	 */
+	 
 	if (new_state != SF_FULL_ON && mvm->sf_state == new_state)
 		return 0;
 
@@ -216,11 +198,7 @@ static int iwl_mvm_sf_config(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 	return ret;
 }
 
-/*
- * Update Smart fifo:
- * Count bound interfaces that are not to be removed, ignoring p2p devices,
- * and set new state accordingly.
- */
+ 
 int iwl_mvm_sf_update(struct iwl_mvm *mvm, struct ieee80211_vif *changed_vif,
 		      bool remove_vif)
 {
@@ -232,10 +210,7 @@ int iwl_mvm_sf_update(struct iwl_mvm *mvm, struct ieee80211_vif *changed_vif,
 	};
 	struct ieee80211_sta *sta = NULL;
 
-	/*
-	 * Ignore the call if we are in HW Restart flow, or if the handled
-	 * vif is a p2p device.
-	 */
+	 
 	if (test_bit(IWL_MVM_STATUS_IN_HW_RESTART, &mvm->status) ||
 	    (changed_vif && changed_vif->type == NL80211_IFTYPE_P2P_DEVICE))
 		return 0;
@@ -245,20 +220,18 @@ int iwl_mvm_sf_update(struct iwl_mvm *mvm, struct ieee80211_vif *changed_vif,
 						   iwl_mvm_bound_iface_iterator,
 						   &data);
 
-	/* If changed_vif exists and is not to be removed, add to the count */
+	 
 	if (changed_vif && !remove_vif)
 		data.num_active_macs++;
 
 	switch (data.num_active_macs) {
 	case 0:
-		/* If there are no active macs - change state to SF_INIT_OFF */
+		 
 		new_state = SF_INIT_OFF;
 		break;
 	case 1:
 		if (remove_vif) {
-			/* The one active mac left is of type station
-			 * and we filled the relevant data during iteration
-			 */
+			 
 			new_state = data.sta_vif_state;
 			sta = data.sta_vif_ap_sta;
 		} else {
@@ -277,7 +250,7 @@ int iwl_mvm_sf_update(struct iwl_mvm *mvm, struct ieee80211_vif *changed_vif,
 		}
 		break;
 	default:
-		/* If there are multiple active macs - change to SF_UNINIT */
+		 
 		new_state = SF_UNINIT;
 	}
 

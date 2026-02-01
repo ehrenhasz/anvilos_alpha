@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2015 PLUMgrid, http://plumgrid.com
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -132,7 +131,7 @@ int main(int ac, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

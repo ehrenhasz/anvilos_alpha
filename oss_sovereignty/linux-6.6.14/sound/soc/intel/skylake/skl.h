@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  skl.h - HD Audio skylake definitions.
- *
- *  Copyright (C) 2015 Intel Corp
- *  Author: Jeeja KP <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_SKL_H
 #define __SOUND_SOC_SKL_H
@@ -29,9 +21,9 @@
 #define AZX_PCIREG_CGCTL		0x48
 #define AZX_CGCTL_MISCBDCGE_MASK	(1 << 6)
 #define AZX_CGCTL_ADSPDCGE		BIT(1)
-/* D0I3C Register fields */
-#define AZX_REG_VS_D0I3C_CIP      0x1 /* Command in progress */
-#define AZX_REG_VS_D0I3C_I3       0x4 /* D0i3 enable */
+ 
+#define AZX_REG_VS_D0I3C_CIP      0x1  
+#define AZX_REG_VS_D0I3C_I3       0x4  
 #define SKL_MAX_DMACTRL_CFG	18
 #define DMA_CLK_CONTROLS	1
 #define DMA_TRANSMITION_START	2
@@ -60,14 +52,14 @@ struct skl_dev {
 	struct hda_bus hbus;
 	struct pci_dev *pci;
 
-	unsigned int init_done:1; /* delayed init status */
+	unsigned int init_done:1;  
 	struct platform_device *dmic_dev;
 	struct platform_device *i2s_dev;
 	struct platform_device *clk_dev;
 	struct snd_soc_component *component;
 	struct snd_soc_dai_driver *dais;
 
-	struct nhlt_acpi_table *nhlt; /* nhlt ptr */
+	struct nhlt_acpi_table *nhlt;  
 
 	struct list_head ppl_list;
 	struct list_head bind_list;
@@ -90,47 +82,47 @@ struct skl_dev {
 	struct device *dev;
 	struct sst_dsp *dsp;
 
-	/* boot */
+	 
 	wait_queue_head_t boot_wait;
 	bool boot_complete;
 
-	/* module load */
+	 
 	wait_queue_head_t mod_load_wait;
 	bool mod_load_complete;
 	bool mod_load_status;
 
-	/* IPC messaging */
+	 
 	struct sst_generic_ipc ipc;
 
-	/* callback for miscbdge */
+	 
 	void (*enable_miscbdcge)(struct device *dev, bool enable);
-	/* Is CGCTL.MISCBDCGE disabled */
+	 
 	bool miscbdcg_disabled;
 
-	/* Populate module information */
+	 
 	struct list_head uuid_list;
 
-	/* Is firmware loaded */
+	 
 	bool fw_loaded;
 
-	/* first boot ? */
+	 
 	bool is_first_boot;
 
-	/* multi-core */
+	 
 	struct skl_dsp_cores cores;
 
-	/* library info */
+	 
 	struct skl_lib_info  lib_info[SKL_MAX_LIB];
 	int lib_count;
 
-	/* Callback to update D0i3C register */
+	 
 	void (*update_d0i3c)(struct device *dev, bool enable);
 
 	struct skl_d0i3_data d0i3;
 
 	const struct skl_dsp_ops *dsp_ops;
 
-	/* Callback to update dynamic clock and power gating registers */
+	 
 	void (*clock_power_gating)(struct device *dev, bool enable);
 };
 
@@ -140,14 +132,14 @@ struct skl_dev {
 #define skl_to_hbus(s) (&(s)->hbus)
 #define hbus_to_skl(hbus) container_of((hbus), struct skl_dev, (hbus))
 
-/* to pass dai dma data */
+ 
 struct skl_dma_params {
 	u32 format;
 	u8 stream_tag;
 };
 
 struct skl_machine_pdata {
-	bool use_tplg_pcm; /* use dais and dai links from topology */
+	bool use_tplg_pcm;  
 };
 
 struct skl_dsp_ops {
@@ -204,4 +196,4 @@ static inline void skl_debug_init_module(struct skl_debug *d,
 {}
 #endif
 
-#endif /* __SOUND_SOC_SKL_H */
+#endif  

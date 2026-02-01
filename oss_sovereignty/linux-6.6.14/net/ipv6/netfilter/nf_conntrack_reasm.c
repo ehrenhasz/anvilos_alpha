@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPv6 fragment reassembly for connection tracking
- *
- * Copyright (C)2004 USAGI/WIDE Project
- *
- * Author:
- *	Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
- *
- * Based on: net/ipv6/reassembly.c
- */
+
+ 
 
 #define pr_fmt(fmt) "IPv6-nf: " fmt
 
@@ -141,7 +132,7 @@ static void nf_ct_frag6_expire(struct timer_list *t)
 	ip6frag_expire_frag_queue(fq->q.fqdir->net, fq);
 }
 
-/* Creation primitives. */
+ 
 static struct frag_queue *fq_find(struct net *net, __be32 id, u32 user,
 				  const struct ipv6hdr *hdr, int iif)
 {
@@ -197,11 +188,9 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 						  0));
 	}
 
-	/* Is this the final fragment? */
+	 
 	if (!(fhdr->frag_off & htons(IP6_MF))) {
-		/* If we already have some bits beyond end
-		 * or have different end, the segment is corrupted.
-		 */
+		 
 		if (end < fq->q.len ||
 		    ((fq->q.flags & INET_FRAG_LAST_IN) && end != fq->q.len)) {
 			pr_debug("already received last fragment\n");
@@ -210,19 +199,15 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		fq->q.flags |= INET_FRAG_LAST_IN;
 		fq->q.len = end;
 	} else {
-		/* Check if the fragment is rounded to 8 bytes.
-		 * Required by the RFC.
-		 */
+		 
 		if (end & 0x7) {
-			/* RFC2460 says always send parameter problem in
-			 * this case. -DaveM
-			 */
+			 
 			pr_debug("end of fragment not rounded to 8 bytes.\n");
 			inet_frag_kill(&fq->q);
 			return -EPROTO;
 		}
 		if (end > fq->q.len) {
-			/* Some bits beyond end -> corruption. */
+			 
 			if (fq->q.flags & INET_FRAG_LAST_IN) {
 				pr_debug("last packet already reached.\n");
 				goto err;
@@ -234,7 +219,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 	if (end == offset)
 		goto err;
 
-	/* Point into the IP datagram 'data' part. */
+	 
 	if (!pskb_pull(skb, (u8 *) (fhdr + 1) - skb->data)) {
 		pr_debug("queue: message is too short.\n");
 		goto err;
@@ -244,16 +229,16 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		goto err;
 	}
 
-	/* Note : skb->rbnode and skb->dev share the same location. */
+	 
 	dev = skb->dev;
-	/* Makes sure compiler wont do silly aliasing games */
+	 
 	barrier();
 
 	prev = fq->q.fragments_tail;
 	err = inet_frag_queue_insert(&fq->q, skb, offset, end);
 	if (err) {
 		if (err == IPFRAG_DUP) {
-			/* No error for duplicates, pretend they got queued. */
+			 
 			kfree_skb_reason(skb, SKB_DROP_REASON_DUP_FRAG);
 			return -EINPROGRESS;
 		}
@@ -271,9 +256,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		fq->q.max_size = payload_len;
 	add_frag_mem_limit(fq->q.fqdir, skb->truesize);
 
-	/* The first fragment.
-	 * nhoffset is obtained from the first fragment, of course.
-	 */
+	 
 	if (offset == 0) {
 		fq->nhoffset = nhoff;
 		fq->q.flags |= INET_FRAG_FIRST_IN;
@@ -287,9 +270,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		err = nf_ct_frag6_reasm(fq, skb, prev, dev);
 		skb->_skb_refdst = orefdst;
 
-		/* After queue has assumed skb ownership, only 0 or
-		 * -EINPROGRESS must be returned.
-		 */
+		 
 		return err ? -EINPROGRESS : 0;
 	}
 
@@ -303,13 +284,7 @@ err:
 	return -EINVAL;
 }
 
-/*
- *	Check if this packet is complete.
- *
- *	It is called with locked fq, and caller must check that
- *	queue is eligible for reassembly i.e. it is not COMPLETE,
- *	the last and the first frames arrived and all the bits are here.
- */
+ 
 static int nf_ct_frag6_reasm(struct frag_queue *fq, struct sk_buff *skb,
 			     struct sk_buff *prev_tail, struct net_device *dev)
 {
@@ -336,8 +311,7 @@ static int nf_ct_frag6_reasm(struct frag_queue *fq, struct sk_buff *skb,
 		goto err;
 	}
 
-	/* We have to remove fragment header from datagram and to relocate
-	 * header in order to calculate ICV correctly. */
+	 
 	skb_network_header(skb)[fq->nhoffset] = skb_transport_header(skb)[0];
 	memmove(skb->head + sizeof(struct frag_hdr), skb->head,
 		(skb->data - skb->head) - sizeof(struct frag_hdr));
@@ -355,7 +329,7 @@ static int nf_ct_frag6_reasm(struct frag_queue *fq, struct sk_buff *skb,
 	IP6CB(skb)->frag_max_size = sizeof(struct ipv6hdr) + fq->q.max_size;
 	IP6CB(skb)->flags |= IP6SKB_FRAGMENTED;
 
-	/* Yes, and fold redundant checksum back. 8) */
+	 
 	if (skb->ip_summed == CHECKSUM_COMPLETE)
 		skb->csum = csum_partial(skb_network_header(skb),
 					 skb_network_header_len(skb),
@@ -372,19 +346,7 @@ err:
 	return -EINVAL;
 }
 
-/*
- * find the header just before Fragment Header.
- *
- * if success return 0 and set ...
- * (*prevhdrp): the value of "Next Header Field" in the header
- *		just before Fragment Header.
- * (*prevhoff): the offset of "Next Header Field" in the header
- *		just before Fragment Header.
- * (*fhoff)   : the offset of Fragment Header.
- *
- * Based on ipv6_skip_hdr() in net/ipv6/exthdr.c
- *
- */
+ 
 static int
 find_prev_fhdr(struct sk_buff *skb, u8 *prevhdrp, int *prevhoff, int *fhoff)
 {
@@ -445,7 +407,7 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
 	struct ipv6hdr *hdr;
 	u8 prevhdr;
 
-	/* Jumbo payload inhibits frag. header */
+	 
 	if (ipv6_hdr(skb)->payload_len == 0) {
 		pr_debug("payload len = 0\n");
 		return 0;
@@ -454,9 +416,7 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
 	if (find_prev_fhdr(skb, &prevhdr, &nhoff, &fhoff) < 0)
 		return 0;
 
-	/* Discard the first fragment if it does not include all headers
-	 * RFC 8200, Section 4.5
-	 */
+	 
 	if (ipv6frag_thdr_truncated(skb, fhoff, &nexthdr)) {
 		pr_debug("Drop incomplete fragment\n");
 		return 0;

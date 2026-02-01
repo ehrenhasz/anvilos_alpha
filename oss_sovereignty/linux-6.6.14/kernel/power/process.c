@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/power/process.c - Functions for starting/stopping processes on
- *                           suspend transitions.
- *
- * Originally from swsusp.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/oom.h>
@@ -20,9 +15,7 @@
 #include <trace/events/power.h>
 #include <linux/cpuset.h>
 
-/*
- * Timeout for stopping processes
- */
+ 
 unsigned int __read_mostly freeze_timeout_msecs = 20 * MSEC_PER_SEC;
 
 static int try_to_freeze_tasks(bool user_only)
@@ -71,11 +64,7 @@ static int try_to_freeze_tasks(bool user_only)
 			break;
 		}
 
-		/*
-		 * We need to retry, but first give the freezing tasks some
-		 * time to enter the refrigerator.  Start with an initial
-		 * 1 ms sleep followed by exponential backoff until 8 ms.
-		 */
+		 
 		usleep_range(sleep_usecs / 2, sleep_usecs);
 		if (sleep_usecs < 8 * USEC_PER_MSEC)
 			sleep_usecs *= 2;
@@ -111,13 +100,7 @@ static int try_to_freeze_tasks(bool user_only)
 	return todo ? -EBUSY : 0;
 }
 
-/**
- * freeze_processes - Signal user space processes to enter the refrigerator.
- * The current thread will not be frozen.  The same process that calls
- * freeze_processes must later call thaw_processes.
- *
- * On success, returns 0.  On failure, -errno and system is fully thawed.
- */
+ 
 int freeze_processes(void)
 {
 	int error;
@@ -126,7 +109,7 @@ int freeze_processes(void)
 	if (error)
 		return error;
 
-	/* Make sure this task doesn't get frozen */
+	 
 	current->flags |= PF_SUSPEND_TASK;
 
 	if (!pm_freezing)
@@ -140,12 +123,7 @@ int freeze_processes(void)
 
 	BUG_ON(in_atomic());
 
-	/*
-	 * Now that the whole userspace is frozen we need to disable
-	 * the OOM killer to disallow any further interference with
-	 * killable tasks. There is no guarantee oom victims will
-	 * ever reach a point they go away we have to wait with a timeout.
-	 */
+	 
 	if (!error && !oom_killer_disable(msecs_to_jiffies(freeze_timeout_msecs)))
 		error = -EBUSY;
 
@@ -154,14 +132,7 @@ int freeze_processes(void)
 	return error;
 }
 
-/**
- * freeze_kernel_threads - Make freezable kernel threads go to the refrigerator.
- *
- * On success, returns 0.  On failure, -errno and only the kernel threads are
- * thawed, so as to give a chance to the caller to do additional cleanups
- * (if any) before thawing the userspace tasks. So, it is the responsibility
- * of the caller to thaw the userspace tasks, when the time is right.
- */
+ 
 int freeze_kernel_threads(void)
 {
 	int error;
@@ -198,7 +169,7 @@ void thaw_processes(void)
 
 	read_lock(&tasklist_lock);
 	for_each_process_thread(g, p) {
-		/* No other threads should have PF_SUSPEND_TASK set */
+		 
 		WARN_ON((p != curr) && (p->flags & PF_SUSPEND_TASK));
 		__thaw_task(p);
 	}

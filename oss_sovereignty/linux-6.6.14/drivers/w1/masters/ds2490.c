@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	ds2490.c  USB to one wire bridge
- *
- * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -13,16 +9,16 @@
 
 #include <linux/w1.h>
 
-/* USB Standard */
-/* USB Control request vendor type */
+ 
+ 
 #define VENDOR				0x40
 
-/* COMMAND TYPE CODES */
+ 
 #define CONTROL_CMD			0x00
 #define COMM_CMD			0x01
 #define MODE_CMD			0x02
 
-/* CONTROL COMMAND CODES */
+ 
 #define CTL_RESET_DEVICE		0x0000
 #define CTL_START_EXE			0x0001
 #define CTL_RESUME_EXE			0x0002
@@ -33,7 +29,7 @@
 #define CTL_FLUSH_XMT_BUFFER		0x0009
 #define CTL_GET_COMM_CMDS		0x000A
 
-/* MODE COMMAND CODES */
+ 
 #define MOD_PULSE_EN			0x0000
 #define MOD_SPEED_CHANGE_EN		0x0001
 #define MOD_1WIRE_SPEED			0x0002
@@ -43,7 +39,7 @@
 #define MOD_WRITE1_LOWTIME		0x0006
 #define MOD_DSOW0_TREC			0x0007
 
-/* COMMUNICATION COMMAND CODES */
+ 
 #define COMM_ERROR_ESCAPE		0x0601
 #define COMM_SET_DURATION		0x0012
 #define COMM_BIT_IO			0x0020
@@ -61,7 +57,7 @@
 #define COMM_READ_REDIRECT_PAGE_CRC	0x21E4
 #define COMM_SEARCH_ACCESS		0x00F4
 
-/* Communication command bits */
+ 
 #define COMM_TYPE			0x0008
 #define COMM_SE				0x0008
 #define COMM_D				0x0008
@@ -88,27 +84,27 @@
 #define BRANCH_MAIN			0xCC
 #define BRANCH_AUX			0x33
 
-/* Status flags */
-#define ST_SPUA				0x01  /* Strong Pull-up is active */
-#define ST_PRGA				0x02  /* 12V programming pulse is being generated */
-#define ST_12VP				0x04  /* external 12V programming voltage is present */
-#define ST_PMOD				0x08  /* DS2490 powered from USB and external sources */
-#define ST_HALT				0x10  /* DS2490 is currently halted */
-#define ST_IDLE				0x20  /* DS2490 is currently idle */
+ 
+#define ST_SPUA				0x01   
+#define ST_PRGA				0x02   
+#define ST_12VP				0x04   
+#define ST_PMOD				0x08   
+#define ST_HALT				0x10   
+#define ST_IDLE				0x20   
 #define ST_EPOF				0x80
-/* Status transfer size, 16 bytes status, 16 byte result flags */
+ 
 #define ST_SIZE				0x20
 
-/* Result Register flags */
-#define RR_DETECT			0xA5 /* New device detected */
-#define RR_NRS				0x01 /* Reset no presence or ... */
-#define RR_SH				0x02 /* short on reset or set path */
-#define RR_APP				0x04 /* alarming presence on reset */
-#define RR_VPP				0x08 /* 12V expected not seen */
-#define RR_CMP				0x10 /* compare error */
-#define RR_CRC				0x20 /* CRC error detected */
-#define RR_RDP				0x40 /* redirected page */
-#define RR_EOS				0x80 /* end of search error */
+ 
+#define RR_DETECT			0xA5  
+#define RR_NRS				0x01  
+#define RR_SH				0x02  
+#define RR_APP				0x04  
+#define RR_VPP				0x08  
+#define RR_CMP				0x10  
+#define RR_CRC				0x20  
+#define RR_RDP				0x40  
+#define RR_EOS				0x80  
 
 #define SPEED_NORMAL			0x00
 #define SPEED_FLEXIBLE			0x01
@@ -128,13 +124,9 @@ struct ds_device {
 
 	int			ep[NUM_EP];
 
-	/* Strong PullUp
-	 * 0: pullup not active, else duration in milliseconds
-	 */
+	 
 	int			spu_sleep;
-	/* spu_bit contains COMM_SPU or 0 depending on if the strong pullup
-	 * should be active or not for writes.
-	 */
+	 
 	u16			spu_bit;
 
 	u8			st_buf[ST_SIZE];
@@ -294,15 +286,13 @@ static int ds_recv_status(struct ds_device *dev, struct ds_status *st)
 static void ds_reset_device(struct ds_device *dev)
 {
 	ds_send_control_cmd(dev, CTL_RESET_DEVICE, 0);
-	/* Always allow strong pullup which allow individual writes to use
-	 * the strong pullup.
-	 */
+	 
 	if (ds_send_control_mode(dev, MOD_PULSE_EN, PULSE_SPUE))
 		dev_err(&dev->udev->dev,
 			"%s: Error allowing strong pullup\n", __func__);
-	/* Chip strong pullup time was cleared. */
+	 
 	if (dev->spu_sleep) {
-		/* lower 4 bits are 0, see ds_set_pullup */
+		 
 		u8 del = dev->spu_sleep>>4;
 
 		if (ds_send_control(dev, COMM_SET_DURATION | COMM_IM, del))
@@ -315,15 +305,7 @@ static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 {
 	int count, err;
 
-	/* Careful on size.  If size is less than what is available in
-	 * the input buffer, the device fails the bulk transfer and
-	 * clears the input buffer.  It could read the maximum size of
-	 * the data buffer, but then do you return the first, last, or
-	 * some set of the middle size bytes?  As long as the rest of
-	 * the code is correct there will be size bytes waiting.  A
-	 * call to ds_wait_status will wait until the device is idle
-	 * and any data to be received would have been available.
-	 */
+	 
 	count = 0;
 	err = usb_bulk_msg(dev->udev, usb_rcvbulkpipe(dev->udev, dev->ep[EP_DATA_IN]),
 				buf, size, &count, 1000);
@@ -333,7 +315,7 @@ static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 		dev_info(&dev->udev->dev, "Clearing ep0x%x.\n", dev->ep[EP_DATA_IN]);
 		usb_clear_halt(dev->udev, usb_rcvbulkpipe(dev->udev, dev->ep[EP_DATA_IN]));
 
-		/* status might tell us why endpoint is stuck? */
+		 
 		recv_len = ds_recv_status(dev, NULL);
 		if (recv_len >= 0)
 			ds_dump_status(dev, dev->st_buf, recv_len);
@@ -422,7 +404,7 @@ int ds_detect(struct ds_device *dev, struct ds_status *st)
 	return err;
 }
 
-#endif  /*  0  */
+#endif   
 
 static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 {
@@ -445,21 +427,15 @@ static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 	if (err >= 16 && st->status & ST_EPOF) {
 		dev_info(&dev->udev->dev, "Resetting device after ST_EPOF.\n");
 		ds_reset_device(dev);
-		/* Always dump the device status. */
+		 
 		count = 101;
 	}
 
-	/* Dump the status for errors or if there is extended return data.
-	 * The extended status includes new device detection (maybe someone
-	 * can do something with it).
-	 */
+	 
 	if (err > 16 || count >= 100 || err < 0)
 		ds_dump_status(dev, dev->st_buf, err);
 
-	/* Extended data isn't an error.  Well, a short is, but the dump
-	 * would have already told the user that and we can't do anything
-	 * about it in software anyway.
-	 */
+	 
 	if (count >= 100 || err < 0)
 		return -1;
 	else
@@ -470,15 +446,7 @@ static int ds_reset(struct ds_device *dev)
 {
 	int err;
 
-	/* Other potentionally interesting flags for reset.
-	 *
-	 * COMM_NTF: Return result register feedback.  This could be used to
-	 * detect some conditions such as short, alarming presence, or
-	 * detect if a new device was detected.
-	 *
-	 * COMM_SE which allows SPEED_NORMAL, SPEED_FLEXIBLE, SPEED_OVERDRIVE:
-	 * Select the data transfer rate.
-	 */
+	 
 	err = ds_send_control(dev, COMM_1_WIRE_RESET | COMM_IM, SPEED_NORMAL);
 	if (err)
 		return err;
@@ -505,22 +473,18 @@ static int ds_set_speed(struct ds_device *dev, int speed)
 
 	return err;
 }
-#endif  /*  0  */
+#endif   
 
 static int ds_set_pullup(struct ds_device *dev, int delay)
 {
 	int err = 0;
 	u8 del = 1 + (u8)(delay >> 4);
-	/* Just storing delay would not get the trunication and roundup. */
+	 
 	int ms = del<<4;
 
-	/* Enable spu_bit if a delay is set. */
+	 
 	dev->spu_bit = delay ? COMM_SPU : 0;
-	/* If delay is zero, it has already been disabled, if the time is
-	 * the same as the hardware was last programmed to, there is also
-	 * nothing more to do.  Compare with the recalculated value ms
-	 * rather than del or delay which can have a different value.
-	 */
+	 
 	if (delay == 0 || ms == dev->spu_sleep)
 		return err;
 
@@ -558,10 +522,7 @@ static int ds_write_bit(struct ds_device *dev, u8 bit)
 	int err;
 	struct ds_status st;
 
-	/* Set COMM_ICP to write without a readback.  Note, this will
-	 * produce one time slot, a down followed by an up with COMM_D
-	 * only determing the timing.
-	 */
+	 
 	err = ds_send_control(dev, COMM_BIT_IO | COMM_IM | COMM_ICP |
 		(bit ? COMM_D : 0), 0);
 	if (err)
@@ -668,14 +629,7 @@ static int ds_write_block(struct ds_device *dev, u8 *buf, int len)
 static void ds9490r_search(void *data, struct w1_master *master,
 	u8 search_type, w1_slave_found_callback callback)
 {
-	/* When starting with an existing id, the first id returned will
-	 * be that device (if it is still on the bus most likely).
-	 *
-	 * If the number of devices found is less than or equal to the
-	 * search_limit, that number of IDs will be returned.  If there are
-	 * more, search_limit IDs will be returned followed by a non-zero
-	 * discrepency value.
-	 */
+	 
 	struct ds_device *dev = data;
 	int err;
 	u16 value, index;
@@ -684,13 +638,9 @@ static void ds9490r_search(void *data, struct w1_master *master,
 	int found = 0;
 	int i;
 
-	/* DS18b20 spec, 13.16 ms per device, 75 per second, sleep for
-	 * discovering 8 devices (1 bulk transfer and 1/2 FIFO size) at a time.
-	 */
+	 
 	const unsigned long jtime = msecs_to_jiffies(1000*8/75);
-	/* FIFO 128 bytes, bulk packet size 64, read a multiple of the
-	 * packet size.
-	 */
+	 
 	const size_t bufsize = 2 * 64;
 	u64 *buf, *found_ids;
 
@@ -698,10 +648,7 @@ static void ds9490r_search(void *data, struct w1_master *master,
 	if (!buf)
 		return;
 
-	/*
-	 * We are holding the bus mutex during the scan, but adding devices via the
-	 * callback needs the bus to be unlocked. So we queue up found ids here.
-	 */
+	 
 	found_ids = kmalloc_array(master->max_slave_count, sizeof(u64), GFP_KERNEL);
 	if (!found_ids) {
 		kfree(buf);
@@ -710,7 +657,7 @@ static void ds9490r_search(void *data, struct w1_master *master,
 
 	mutex_lock(&master->bus_mutex);
 
-	/* address to start searching at */
+	 
 	if (ds_send_data(dev, (u8 *)&master->search_id, 8) < 0)
 		goto search_out;
 	master->search_id = 0;
@@ -732,23 +679,13 @@ static void ds9490r_search(void *data, struct w1_master *master,
 			break;
 
 		if (st.data_in_buffer_status) {
-			/*
-			 * Bulk in can receive partial ids, but when it does
-			 * they fail crc and will be discarded anyway.
-			 * That has only been seen when status in buffer
-			 * is 0 and bulk is read anyway, so don't read
-			 * bulk without first checking if status says there
-			 * is data to read.
-			 */
+			 
 			err = ds_recv_data(dev, (u8 *)buf, bufsize);
 			if (err < 0)
 				break;
 			for (i = 0; i < err/8; ++i) {
 				found_ids[found++] = buf[i];
-				/*
-				 * can't know if there will be a discrepancy
-				 * value after until the next id
-				 */
+				 
 				if (found == search_limit) {
 					master->search_id = buf[i];
 					break;
@@ -760,18 +697,11 @@ static void ds9490r_search(void *data, struct w1_master *master,
 			break;
 	} while (!(st.status & (ST_IDLE | ST_HALT)));
 
-	/* only continue the search if some weren't found */
+	 
 	if (found <= search_limit) {
 		master->search_id = 0;
 	} else if (!test_bit(W1_WARN_MAX_COUNT, &master->flags)) {
-		/*
-		 * Only max_slave_count will be scanned in a search,
-		 * but it will start where it left off next search
-		 * until all ids are identified and then it will start
-		 * over.  A continued search will report the previous
-		 * last id as the first id (provided it is still on the
-		 * bus).
-		 */
+		 
 		dev_info(&dev->udev->dev, "%s: max_slave_count %d reached, "
 			"will continue next search.\n", __func__,
 			master->max_slave_count);
@@ -782,16 +712,13 @@ search_out:
 	mutex_unlock(&master->bus_mutex);
 	kfree(buf);
 
-	for (i = 0; i < found; i++) /* run callback for all queued up IDs */
+	for (i = 0; i < found; i++)  
 		callback(master, found_ids[i]);
 	kfree(found_ids);
 }
 
 #if 0
-/*
- * FIXME: if this disabled code is ever used in the future all ds_send_data()
- * calls must be changed to use a DMAable buffer.
- */
+ 
 static int ds_match_access(struct ds_device *dev, u64 init)
 {
 	int err;
@@ -836,7 +763,7 @@ static int ds_set_path(struct ds_device *dev, u64 init)
 	return 0;
 }
 
-#endif  /*  0  */
+#endif   
 
 static u8 ds9490r_touch_bit(void *data, u8 bit)
 {
@@ -953,29 +880,12 @@ static int ds_w1_init(struct ds_device *dev)
 {
 	memset(&dev->master, 0, sizeof(struct w1_bus_master));
 
-	/* Reset the device as it can be in a bad state.
-	 * This is necessary because a block write will wait for data
-	 * to be placed in the output buffer and block any later
-	 * commands which will keep accumulating and the device will
-	 * not be idle.  Another case is removing the ds2490 module
-	 * while a bus search is in progress, somehow a few commands
-	 * get through, but the input transfers fail leaving data in
-	 * the input buffer.  This will cause the next read to fail
-	 * see the note in ds_recv_data.
-	 */
+	 
 	ds_reset_device(dev);
 
 	dev->master.data	= dev;
 	dev->master.touch_bit	= &ds9490r_touch_bit;
-	/* read_bit and write_bit in w1_bus_master are expected to set and
-	 * sample the line level.  For write_bit that means it is expected to
-	 * set it to that value and leave it there.  ds2490 only supports an
-	 * individual time slot at the lowest level.  The requirement from
-	 * pulling the bus state down to reading the state is 15us, something
-	 * that isn't realistic on the USB bus anyway.
-	dev->master.read_bit	= &ds9490r_read_bit;
-	dev->master.write_bit	= &ds9490r_write_bit;
-	*/
+	 
 	dev->master.read_byte	= &ds9490r_read_byte;
 	dev->master.write_byte	= &ds9490r_write_byte;
 	dev->master.read_block	= &ds9490r_read_block;
@@ -1021,7 +931,7 @@ static int ds_probe(struct usb_interface *intf,
 		goto err_out_clear;
 	}
 
-	/* alternative 3, 1ms interrupt (greatly speeds search), 64 byte bulk */
+	 
 	alt = 3;
 	err = usb_set_interface(dev->udev,
 		intf->cur_altsetting->desc.bInterfaceNumber, alt);
@@ -1040,10 +950,7 @@ static int ds_probe(struct usb_interface *intf,
 		goto err_out_clear;
 	}
 
-	/*
-	 * This loop doesn'd show control 0 endpoint,
-	 * so we will fill only 1-3 endpoints entry.
-	 */
+	 
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
 

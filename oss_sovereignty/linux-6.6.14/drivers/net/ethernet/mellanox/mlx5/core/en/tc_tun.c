@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2018 Mellanox Technologies. */
+ 
+ 
 
 #include <net/inet_ecn.h>
 #include <net/vxlan.h>
@@ -64,10 +64,7 @@ static int get_route_and_out_devs(struct mlx5e_priv *priv,
 
 	rcu_read_lock();
 	uplink_upper = netdev_master_upper_dev_get_rcu(uplink_dev);
-	/* mlx5_lag_is_sriov() is a blocking function which can't be called
-	 * while holding rcu read lock. Take the net_device for correctness
-	 * sake.
-	 */
+	 
 	if (uplink_upper)
 		dev_hold(uplink_upper);
 	rcu_read_unlock();
@@ -79,9 +76,7 @@ static int get_route_and_out_devs(struct mlx5e_priv *priv,
 	if (uplink_upper)
 		dev_put(uplink_upper);
 
-	/* if the egress device isn't on the same HW e-switch or
-	 * it's a LAG device, use the uplink
-	 */
+	 
 	*route_dev = dev;
 	if (!netdev_port_same_parent_id(priv->netdev, real_dev) ||
 	    dst_is_lag_dev || is_vlan_dev(*route_dev) ||
@@ -235,7 +230,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
 	u8 nud_state;
 	int err;
 
-	/* add the IP fields */
+	 
 	attr.fl.fl4.flowi4_tos = tun_key->tos & ~INET_ECN_MASK;
 	attr.fl.fl4.daddr = tun_key->u.ipv4.dst;
 	attr.fl.fl4.saddr = tun_key->u.ipv4.src;
@@ -268,11 +263,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
 	e->out_dev = attr.out_dev;
 	e->route_dev_ifindex = attr.route_dev->ifindex;
 
-	/* It's important to add the neigh to the hash table before checking
-	 * the neigh validity state. So if we'll get a notification, in case the
-	 * neigh changes it's validity state, we would find the relevant neigh
-	 * in the hash.
-	 */
+	 
 	err = mlx5e_rep_encap_entry_attach(netdev_priv(attr.out_dev), e, &m_neigh, attr.n->dev);
 	if (err)
 		goto free_encap;
@@ -282,11 +273,11 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
 	ether_addr_copy(e->h_dest, attr.n->ha);
 	read_unlock_bh(&attr.n->lock);
 
-	/* add ethernet header */
+	 
 	ip = (struct iphdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
 					     ETH_P_IP);
 
-	/* add ip header */
+	 
 	ip->tos = tun_key->tos;
 	ip->version = 0x4;
 	ip->ihl = 0x5;
@@ -294,7 +285,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
 	ip->daddr = attr.fl.fl4.daddr;
 	ip->saddr = attr.fl.fl4.saddr;
 
-	/* add tunneling protocol header */
+	 
 	err = mlx5e_gen_ip_tunnel_header((char *)ip + sizeof(struct iphdr),
 					 &ip->protocol, e);
 	if (err)
@@ -305,9 +296,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
 
 	if (!(nud_state & NUD_VALID)) {
 		neigh_event_send(attr.n, NULL);
-		/* the encap entry will be made valid on neigh update event
-		 * and not used before that.
-		 */
+		 
 		goto release_neigh;
 	}
 
@@ -350,7 +339,7 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
 	u8 nud_state;
 	int err;
 
-	/* add the IP fields */
+	 
 	attr.fl.fl4.flowi4_tos = tun_key->tos & ~INET_ECN_MASK;
 	attr.fl.fl4.daddr = tun_key->u.ipv4.dst;
 	attr.fl.fl4.saddr = tun_key->u.ipv4.src;
@@ -386,11 +375,11 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
 	WRITE_ONCE(e->nhe->neigh_dev, attr.n->dev);
 	read_unlock_bh(&attr.n->lock);
 
-	/* add ethernet header */
+	 
 	ip = (struct iphdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
 					     ETH_P_IP);
 
-	/* add ip header */
+	 
 	ip->tos = tun_key->tos;
 	ip->version = 0x4;
 	ip->ihl = 0x5;
@@ -398,7 +387,7 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
 	ip->daddr = attr.fl.fl4.daddr;
 	ip->saddr = attr.fl.fl4.saddr;
 
-	/* add tunneling protocol header */
+	 
 	err = mlx5e_gen_ip_tunnel_header((char *)ip + sizeof(struct iphdr),
 					 &ip->protocol, e);
 	if (err)
@@ -410,9 +399,7 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
 
 	if (!(nud_state & NUD_VALID)) {
 		neigh_event_send(attr.n, NULL);
-		/* the encap entry will be made valid on neigh update event
-		 * and not used before that.
-		 */
+		 
 		goto release_neigh;
 	}
 
@@ -537,11 +524,7 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
 	e->out_dev = attr.out_dev;
 	e->route_dev_ifindex = attr.route_dev->ifindex;
 
-	/* It's important to add the neigh to the hash table before checking
-	 * the neigh validity state. So if we'll get a notification, in case the
-	 * neigh changes it's validity state, we would find the relevant neigh
-	 * in the hash.
-	 */
+	 
 	err = mlx5e_rep_encap_entry_attach(netdev_priv(attr.out_dev), e, &m_neigh, attr.n->dev);
 	if (err)
 		goto free_encap;
@@ -551,18 +534,18 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
 	ether_addr_copy(e->h_dest, attr.n->ha);
 	read_unlock_bh(&attr.n->lock);
 
-	/* add ethernet header */
+	 
 	ip6h = (struct ipv6hdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
 						 ETH_P_IPV6);
 
-	/* add ip header */
+	 
 	ip6_flow_hdr(ip6h, tun_key->tos, 0);
-	/* the HW fills up ipv6 payload len */
+	 
 	ip6h->hop_limit   = attr.ttl;
 	ip6h->daddr	  = attr.fl.fl6.daddr;
 	ip6h->saddr	  = attr.fl.fl6.saddr;
 
-	/* add tunneling protocol header */
+	 
 	err = mlx5e_gen_ip_tunnel_header((char *)ip6h + sizeof(struct ipv6hdr),
 					 &ip6h->nexthdr, e);
 	if (err)
@@ -573,9 +556,7 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
 
 	if (!(nud_state & NUD_VALID)) {
 		neigh_event_send(attr.n, NULL);
-		/* the encap entry will be made valid on neigh update event
-		 * and not used before that.
-		 */
+		 
 		goto release_neigh;
 	}
 
@@ -654,18 +635,18 @@ int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
 	WRITE_ONCE(e->nhe->neigh_dev, attr.n->dev);
 	read_unlock_bh(&attr.n->lock);
 
-	/* add ethernet header */
+	 
 	ip6h = (struct ipv6hdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
 						 ETH_P_IPV6);
 
-	/* add ip header */
+	 
 	ip6_flow_hdr(ip6h, tun_key->tos, 0);
-	/* the HW fills up ipv6 payload len */
+	 
 	ip6h->hop_limit   = attr.ttl;
 	ip6h->daddr	  = attr.fl.fl6.daddr;
 	ip6h->saddr	  = attr.fl.fl6.saddr;
 
-	/* add tunneling protocol header */
+	 
 	err = mlx5e_gen_ip_tunnel_header((char *)ip6h + sizeof(struct ipv6hdr),
 					 &ip6h->nexthdr, e);
 	if (err)
@@ -677,9 +658,7 @@ int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
 
 	if (!(nud_state & NUD_VALID)) {
 		neigh_event_send(attr.n, NULL);
-		/* the encap entry will be made valid on neigh update event
-		 * and not used before that.
-		 */
+		 
 		goto release_neigh;
 	}
 
@@ -720,14 +699,14 @@ int mlx5e_tc_tun_route_lookup(struct mlx5e_priv *priv,
 	int err = 0;
 
 	if (flow_attr->tun_ip_version == 4) {
-		/* Addresses are swapped for decap */
+		 
 		attr.fl.fl4.saddr = esw_attr->rx_tun_attr->dst_ip.v4;
 		attr.fl.fl4.daddr = esw_attr->rx_tun_attr->src_ip.v4;
 		err = mlx5e_route_lookup_ipv4_get(priv, filter_dev, &attr);
 	}
 #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
 	else if (flow_attr->tun_ip_version == 6) {
-		/* Addresses are swapped for decap */
+		 
 		attr.fl.fl6.saddr = esw_attr->rx_tun_attr->dst_ip.v6;
 		attr.fl.fl6.daddr = esw_attr->rx_tun_attr->src_ip.v6;
 		err = mlx5e_route_lookup_ipv6_get(priv, filter_dev, &attr);
@@ -846,7 +825,7 @@ int mlx5e_tc_tun_parse(struct net_device *filter_dev,
 		flow_rule_match_enc_control(rule, &match);
 		addr_type = match.key->addr_type;
 
-		/* For tunnel addr_type used same key id`s as for non-tunnel */
+		 
 		if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
 			struct flow_match_ipv4_addrs match;
 
@@ -926,7 +905,7 @@ int mlx5e_tc_tun_parse(struct net_device *filter_dev,
 		}
 	}
 
-	/* let software handle IP fragments */
+	 
 	MLX5_SET(fte_match_set_lyr_2_4, headers_c, frag, 1);
 	MLX5_SET(fte_match_set_lyr_2_4, headers_v, frag, 0);
 
@@ -946,7 +925,7 @@ int mlx5e_tc_tun_parse_udp_ports(struct mlx5e_priv *priv,
 	struct netlink_ext_ack *extack = f->common.extack;
 	struct flow_match_ports enc_ports;
 
-	/* Full udp dst port must be given */
+	 
 
 	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) {
 		NL_SET_ERR_MSG_MOD(extack,
@@ -967,7 +946,7 @@ int mlx5e_tc_tun_parse_udp_ports(struct mlx5e_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* match on UDP protocol and dst port number */
+	 
 
 	MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, ip_protocol);
 	MLX5_SET(fte_match_set_lyr_2_4, headers_v, ip_protocol, IPPROTO_UDP);
@@ -977,10 +956,7 @@ int mlx5e_tc_tun_parse_udp_ports(struct mlx5e_priv *priv,
 	MLX5_SET(fte_match_set_lyr_2_4, headers_v, udp_dport,
 		 ntohs(enc_ports.key->dst));
 
-	/* UDP src port on outer header is generated by HW,
-	 * so it is probably a bad idea to request matching it.
-	 * Nonetheless, it is allowed.
-	 */
+	 
 
 	MLX5_SET(fte_match_set_lyr_2_4, headers_c, udp_sport,
 		 ntohs(enc_ports.mask->src));

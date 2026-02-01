@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arch_timer.c - Tests the aarch64 timer IRQ functionality
- *
- * The test validates both the virtual and physical timer IRQs using
- * CVAL and TVAL registers. This consitutes the four stages in the test.
- * The guest's main thread configures the timer interrupt for a stage
- * and waits for it to fire, with a timeout equal to the timer period.
- * It asserts that the timeout doesn't exceed the timer period.
- *
- * On the other hand, upon receipt of an interrupt, the guest's interrupt
- * handler validates the interrupt by checking if the architectural state
- * is in compliance with the specifications.
- *
- * The test provides command-line options to configure the timer's
- * period (-p), number of vCPUs (-n), and iterations per stage (-i).
- * To stress-test the timer stack even more, an option to migrate the
- * vCPUs across pCPUs (-m), at a particular rate, is also provided.
- *
- * Copyright (c) 2021, Google LLC.
- */
+
+ 
 #define _GNU_SOURCE
 
 #include <stdlib.h>
@@ -70,7 +51,7 @@ enum guest_stage {
 	GUEST_STAGE_MAX,
 };
 
-/* Shared variables between host and guest */
+ 
 struct test_vcpu_shared_data {
 	int nr_iter;
 	enum guest_stage guest_stage;
@@ -153,10 +134,10 @@ static void guest_validate_irq(unsigned int intid,
 
 	xcnt_diff_us = cycles_to_usec(xcnt - shared_data->xcnt);
 
-	/* Make sure we are dealing with the correct timer IRQ */
+	 
 	GUEST_ASSERT_EQ(intid, timer_irq);
 
-	/* Basic 'timer condition met' check */
+	 
 	__GUEST_ASSERT(xcnt >= cval,
 		       "xcnt = 0x%llx, cval = 0x%llx, xcnt_diff_us = 0x%llx",
 		       xcnt, cval, xcnt_diff_us);
@@ -185,10 +166,10 @@ static void guest_run_stage(struct test_vcpu_shared_data *shared_data,
 	shared_data->nr_iter = 0;
 
 	for (config_iter = 0; config_iter < test_args.nr_iter; config_iter++) {
-		/* Setup the next interrupt */
+		 
 		guest_configure_timer_action(shared_data);
 
-		/* Setup a timeout for the interrupt to arrive */
+		 
 		udelay(msecs_to_usecs(test_args.timer_period_ms) +
 			TIMER_TEST_ERR_MARGIN_US);
 
@@ -232,7 +213,7 @@ static void *test_vcpu_run(void *arg)
 
 	vcpu_run(vcpu);
 
-	/* Currently, any exit from guest is an indication of completion */
+	 
 	pthread_mutex_lock(&vcpu_done_map_lock);
 	__set_bit(vcpu_idx, vcpu_done_map);
 	pthread_mutex_unlock(&vcpu_done_map_lock);
@@ -263,7 +244,7 @@ static uint32_t test_get_pcpu(void)
 	nproc_conf = get_nprocs_conf();
 	sched_getaffinity(0, sizeof(cpu_set_t), &online_cpuset);
 
-	/* Randomly find an available pCPU to place a vCPU on */
+	 
 	do {
 		pcpu = rand() % nproc_conf;
 	} while (!CPU_ISSET(pcpu, &online_cpuset));
@@ -285,7 +266,7 @@ static int test_migrate_vcpu(unsigned int vcpu_idx)
 	ret = pthread_setaffinity_np(pt_vcpu_run[vcpu_idx],
 				     sizeof(cpuset), &cpuset);
 
-	/* Allow the error where the vCPU thread is already finished */
+	 
 	TEST_ASSERT(ret == 0 || ret == ESRCH,
 		    "Failed to migrate the vCPU:%u to pCPU: %u; ret: %d\n",
 		    vcpu_idx, new_pcpu, ret);
@@ -334,7 +315,7 @@ static void test_run(struct kvm_vm *vm)
 		TEST_ASSERT(!ret, "Failed to create vCPU-%d pthread\n", i);
 	}
 
-	/* Spawn a thread to control the vCPU migrations */
+	 
 	if (test_args.migration_freq_ms) {
 		srand(time(NULL));
 
@@ -355,7 +336,7 @@ static void test_run(struct kvm_vm *vm)
 
 static void test_init_timer_irq(struct kvm_vm *vm)
 {
-	/* Timer initid should be same for all the vCPUs, so query only vCPU-0 */
+	 
 	vcpu_device_attr_get(vcpus[0], KVM_ARM_VCPU_TIMER_CTRL,
 			     KVM_ARM_VCPU_TIMER_IRQ_PTIMER, &ptimer_irq);
 	vcpu_device_attr_get(vcpus[0], KVM_ARM_VCPU_TIMER_CTRL,
@@ -394,7 +375,7 @@ static struct kvm_vm *test_vm_create(void)
 	gic_fd = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
 	__TEST_REQUIRE(gic_fd >= 0, "Failed to create vgic-v3");
 
-	/* Make all the test's cmdline args visible to the guest */
+	 
 	sync_global_to_guest(vm, test_args);
 
 	return vm;

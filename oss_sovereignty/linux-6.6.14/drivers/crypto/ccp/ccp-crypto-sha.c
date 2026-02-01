@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) SHA crypto API support
- *
- * Copyright (C) 2013,2018 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -35,7 +28,7 @@ static int ccp_sha_complete(struct crypto_async_request *async_req, int ret)
 		goto e_free;
 
 	if (rctx->hash_rem) {
-		/* Save remaining data to buffer */
+		 
 		unsigned int offset = rctx->nbytes - rctx->hash_rem;
 
 		scatterwalk_map_and_copy(rctx->buf, rctx->src,
@@ -45,7 +38,7 @@ static int ccp_sha_complete(struct crypto_async_request *async_req, int ret)
 		rctx->buf_count = 0;
 	}
 
-	/* Update result area if supplied */
+	 
 	if (req->result && rctx->final)
 		memcpy(req->result, rctx->ctx, digest_size);
 
@@ -86,19 +79,17 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 	rctx->hash_rem = final ? 0 : len & (block_size - 1);
 	rctx->hash_cnt = len - rctx->hash_rem;
 	if (!final && !rctx->hash_rem) {
-		/* CCP can't do zero length final, so keep some data around */
+		 
 		rctx->hash_cnt -= block_size;
 		rctx->hash_rem = block_size;
 	}
 
-	/* Initialize the context scatterlist */
+	 
 	sg_init_one(&rctx->ctx_sg, rctx->ctx, sizeof(rctx->ctx));
 
 	sg = NULL;
 	if (rctx->buf_count && nbytes) {
-		/* Build the data scatterlist table - allocate enough entries
-		 * for both data pieces (buffer and input data)
-		 */
+		 
 		gfp = req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP ?
 			GFP_KERNEL : GFP_ATOMIC;
 		sg_count = sg_nents(req->src) + 1;
@@ -128,7 +119,7 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 		sg = req->src;
 	}
 
-	rctx->msg_bits += (rctx->hash_cnt << 3);	/* Total in bits */
+	rctx->msg_bits += (rctx->hash_cnt << 3);	 
 
 	memset(&rctx->cmd, 0, sizeof(rctx->cmd));
 	INIT_LIST_HEAD(&rctx->cmd.entry);
@@ -153,7 +144,7 @@ static int ccp_do_sha_update(struct ahash_request *req, unsigned int nbytes,
 		rctx->cmd.u.sha.ctx_len = SHA512_DIGEST_SIZE;
 		break;
 	default:
-		/* Should never get here */
+		 
 		break;
 	}
 
@@ -195,7 +186,7 @@ static int ccp_sha_init(struct ahash_request *req)
 	rctx->first = 1;
 
 	if (ctx->u.sha.key_len) {
-		/* Buffer the HMAC key for first update */
+		 
 		memcpy(rctx->buf, ctx->u.sha.ipad, block_size);
 		rctx->buf_count = block_size;
 	}
@@ -234,7 +225,7 @@ static int ccp_sha_export(struct ahash_request *req, void *out)
 	struct ccp_sha_req_ctx *rctx = ahash_request_ctx_dma(req);
 	struct ccp_sha_exp_ctx state;
 
-	/* Don't let anything leak to 'out' */
+	 
 	memset(&state, 0, sizeof(state));
 
 	state.type = rctx->type;
@@ -244,7 +235,7 @@ static int ccp_sha_export(struct ahash_request *req, void *out)
 	state.buf_count = rctx->buf_count;
 	memcpy(state.buf, rctx->buf, sizeof(state.buf));
 
-	/* 'out' may not be aligned so memcpy from local variable */
+	 
 	memcpy(out, &state, sizeof(state));
 
 	return 0;
@@ -255,7 +246,7 @@ static int ccp_sha_import(struct ahash_request *req, const void *in)
 	struct ccp_sha_req_ctx *rctx = ahash_request_ctx_dma(req);
 	struct ccp_sha_exp_ctx state;
 
-	/* 'in' may not be aligned so memcpy to local variable */
+	 
 	memcpy(&state, in, sizeof(state));
 
 	memset(rctx, 0, sizeof(*rctx));
@@ -278,16 +269,14 @@ static int ccp_sha_setkey(struct crypto_ahash *tfm, const u8 *key,
 	unsigned int digest_size = crypto_shash_digestsize(shash);
 	int i, ret;
 
-	/* Set to zero until complete */
+	 
 	ctx->u.sha.key_len = 0;
 
-	/* Clear key area to provide zero padding for keys smaller
-	 * than the block size
-	 */
+	 
 	memset(ctx->u.sha.key, 0, sizeof(ctx->u.sha.key));
 
 	if (key_len > block_size) {
-		/* Must hash the input key */
+		 
 		ret = crypto_shash_tfm_digest(shash, key, key_len,
 					      ctx->u.sha.key);
 		if (ret)
@@ -422,7 +411,7 @@ static int ccp_register_hmac_alg(struct list_head *head,
 	if (!ccp_alg)
 		return -ENOMEM;
 
-	/* Copy the base algorithm and only change what's necessary */
+	 
 	*ccp_alg = *base_alg;
 	INIT_LIST_HEAD(&ccp_alg->entry);
 

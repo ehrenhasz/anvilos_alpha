@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM userfaultfd util
- * Adapted from demand_paging_test.c
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2019-2022 Google LLC
- */
 
-#define _GNU_SOURCE /* for pipe2 */
+ 
+
+#define _GNU_SOURCE  
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -127,7 +121,7 @@ struct uffd_desc *uffd_setup_demand_paging(int uffd_mode, useconds_t delay,
 	uffd_desc = malloc(sizeof(struct uffd_desc));
 	TEST_ASSERT(uffd_desc, "malloc failed");
 
-	/* In order to get minor faults, prefault via the alias. */
+	 
 	if (is_minor)
 		expected_ioctls = ((uint64_t) 1) << _UFFDIO_CONTINUE;
 
@@ -183,4 +177,4 @@ void uffd_stop_demand_paging(struct uffd_desc *uffd)
 	free(uffd);
 }
 
-#endif /* __NR_userfaultfd */
+#endif  

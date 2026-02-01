@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/delay.h>
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -26,7 +26,7 @@
 #define DESC_TYPE_USB	(5 << 26)
 #define DESC_PD_COMPLETE	(1 << 31)
 
-/* DMA engine */
+ 
 #define DMA_TDFDQ	4
 #define DMA_TXGCR(x)	(0x800 + (x) * 0x20)
 #define DMA_RXGCR(x)	(0x808 + (x) * 0x20)
@@ -37,7 +37,7 @@
 #define GCR_STARV_RETRY		(1 << 24)
 #define GCR_DESC_TYPE_HOST	(1 << 14)
 
-/* DMA scheduler */
+ 
 #define DMA_SCHED_CTRL		0
 #define DMA_SCHED_CTRL_EN	(1 << 31)
 #define DMA_SCHED_WORD(x)	((x) * 4 + 0x800)
@@ -54,8 +54,8 @@
 #define SCHED_ENTRY3_CHAN(x)	((x) << 24)
 #define SCHED_ENTRY3_IS_RX	(1 << 31)
 
-/* Queue manager */
-/* 4 KiB of memory for descriptors, 2 for each endpoint */
+ 
+ 
 #define ALLOC_DECS_NUM		128
 #define DESCS_AREAS		1
 #define TOTAL_DESCS_NUM		(ALLOC_DECS_NUM * DESCS_AREAS)
@@ -79,7 +79,7 @@
 #define QMGR_QUEUE_C(n)	(0x2008 + (n) * 0x10)
 #define QMGR_QUEUE_D(n)	(0x200c + (n) * 0x10)
 
-/* Packet Descriptor */
+ 
 #define PD2_ZERO_LENGTH		(1 << 19)
 
 struct cppi41_channel {
@@ -101,7 +101,7 @@ struct cppi41_channel {
 	unsigned td_seen:1;
 	unsigned td_desc_seen:1;
 
-	struct list_head node;		/* Node for pending list */
+	struct list_head node;		 
 };
 
 struct cppi41_desc {
@@ -143,17 +143,17 @@ struct cppi41_dd {
 	u32 n_chans;
 	u8 platform;
 
-	struct list_head pending;	/* Pending queued transfers */
-	spinlock_t lock;		/* Lock for pending list */
+	struct list_head pending;	 
+	spinlock_t lock;		 
 
-	/* context for suspend/resume */
+	 
 	unsigned int dma_tdfdq;
 
 	bool is_suspended;
 };
 
 static struct chan_queues am335x_usb_queues_tx[] = {
-	/* USB0 ENDP 1 */
+	 
 	[ 0] = { .submit = 32, .complete =  93},
 	[ 1] = { .submit = 34, .complete =  94},
 	[ 2] = { .submit = 36, .complete =  95},
@@ -170,7 +170,7 @@ static struct chan_queues am335x_usb_queues_tx[] = {
 	[13] = { .submit = 58, .complete = 106},
 	[14] = { .submit = 60, .complete = 107},
 
-	/* USB1 ENDP1 */
+	 
 	[15] = { .submit = 62, .complete = 125},
 	[16] = { .submit = 64, .complete = 126},
 	[17] = { .submit = 66, .complete = 127},
@@ -189,7 +189,7 @@ static struct chan_queues am335x_usb_queues_tx[] = {
 };
 
 static const struct chan_queues am335x_usb_queues_rx[] = {
-	/* USB0 ENDP 1 */
+	 
 	[ 0] = { .submit =  1, .complete = 109},
 	[ 1] = { .submit =  2, .complete = 110},
 	[ 2] = { .submit =  3, .complete = 111},
@@ -206,7 +206,7 @@ static const struct chan_queues am335x_usb_queues_rx[] = {
 	[13] = { .submit = 14, .complete = 122},
 	[14] = { .submit = 15, .complete = 123},
 
-	/* USB1 ENDP 1 */
+	 
 	[15] = { .submit = 16, .complete = 141},
 	[16] = { .submit = 17, .complete = 142},
 	[17] = { .submit = 18, .complete = 143},
@@ -269,7 +269,7 @@ static struct cppi41_channel *desc_to_chan(struct cppi41_dd *cdd, u32 desc)
 	c = cdd->chan_busy[desc_num];
 	cdd->chan_busy[desc_num] = NULL;
 
-	/* Usecount for chan_busy[], paired with push_desc_queue() */
+	 
 	pm_runtime_put(cdd->ddev.dev);
 
 	return c;
@@ -315,11 +315,11 @@ static irqreturn_t cppi41_irq(int irq, void *data)
 		val = cppi_readl(cdd->qmgr_mem + QMGR_PEND(i));
 		if (i == QMGR_PENDING_SLOT_Q(first_completion_queue) && val) {
 			u32 mask;
-			/* set corresponding bit for completion Q 93 */
+			 
 			mask = 1 << QMGR_PENDING_BIT_Q(first_completion_queue);
-			/* not set all bits for queues less than Q 93 */
+			 
 			mask--;
-			/* now invert and keep only Q 93+ set */
+			 
 			val &= ~mask;
 		}
 
@@ -329,10 +329,7 @@ static irqreturn_t cppi41_irq(int irq, void *data)
 		while (val) {
 			u32 desc, len;
 
-			/*
-			 * This should never trigger, see the comments in
-			 * push_desc_queue()
-			 */
+			 
 			WARN_ON(cdd->is_suspended);
 
 			q_num = __fls(val);
@@ -446,20 +443,10 @@ static void push_desc_queue(struct cppi41_channel *c)
 
 	cppi_writel(reg, c->gcr_reg);
 
-	/*
-	 * We don't use writel() but __raw_writel() so we have to make sure
-	 * that the DMA descriptor in coherent memory made to the main memory
-	 * before starting the dma engine.
-	 */
+	 
 	__iowmb();
 
-	/*
-	 * DMA transfers can take at least 200ms to complete with USB mass
-	 * storage connected. To prevent autosuspend timeouts, we must use
-	 * pm_runtime_get/put() when chan_busy[] is modified. This will get
-	 * cleared in desc_to_chan() or cppi41_stop_chan() depending on the
-	 * outcome of the transfer.
-	 */
+	 
 	pm_runtime_get(cdd->ddev.dev);
 
 	desc_phys = lower_32_bits(c->desc_phys);
@@ -472,11 +459,7 @@ static void push_desc_queue(struct cppi41_channel *c)
 	cppi_writel(reg, cdd->qmgr_mem + QMGR_QUEUE_D(c->q_num));
 }
 
-/*
- * Caller must hold cdd->lock to prevent push_desc_queue()
- * getting called out of order. We have both cppi41_dma_issue_pending()
- * and cppi41_runtime_resume() call this function.
- */
+ 
 static void cppi41_run_queue(struct cppi41_dd *cdd)
 {
 	struct cppi41_channel *c, *_c;
@@ -546,7 +529,7 @@ static u32 get_host_pd3(u32 length)
 {
 	u32 reg;
 
-	/* PD3 = packet size */
+	 
 	reg = length;
 
 	return reg;
@@ -556,7 +539,7 @@ static u32 get_host_pd6(u32 length)
 {
 	u32 reg;
 
-	/* PD6 buffer size */
+	 
 	reg = DESC_PD_COMPLETE;
 	reg |= length;
 
@@ -608,7 +591,7 @@ static struct dma_async_tx_descriptor *cppi41_dma_prep_slave_sg(
 		u32 addr;
 		u32 len;
 
-		/* We need to use more than one desc once musb supports sg */
+		 
 		addr = lower_32_bits(sg_dma_address(sg));
 		len = sg_dma_len(sg);
 
@@ -697,16 +680,7 @@ static int cppi41_tear_down_chan(struct cppi41_channel *c)
 		}
 	}
 	c->td_retry--;
-	/*
-	 * If the TX descriptor / channel is in use, the caller needs to poke
-	 * his TD bit multiple times. After that he hardware releases the
-	 * transfer descriptor followed by TD descriptor. Waiting seems not to
-	 * cause any difference.
-	 * RX seems to be thrown out right away. However once the TearDown
-	 * descriptor gets through we are done. If we have seen the transfer
-	 * descriptor before the TD we fetch it from enqueue, it has to be
-	 * there waiting for us.
-	 */
+	 
 	if (!c->td_seen && c->td_retry) {
 		udelay(1);
 		return -EAGAIN;
@@ -725,7 +699,7 @@ static int cppi41_tear_down_chan(struct cppi41_channel *c)
 	c->td_desc_seen = 0;
 	cppi_writel(0, c->gcr_reg);
 
-	/* Invoke the callback to do the necessary clean-up */
+	 
 	abort_result.result = DMA_TRANS_ABORTED;
 	dma_cookie_complete(&c->txd);
 	dmaengine_desc_get_callback_invoke(&c->txd, &abort_result);
@@ -746,11 +720,7 @@ static int cppi41_stop_chan(struct dma_chan *chan)
 	if (!cdd->chan_busy[desc_num]) {
 		struct cppi41_channel *cc, *_ct;
 
-		/*
-		 * channels might still be in the pending list if
-		 * cppi41_dma_issue_pending() is called after
-		 * cppi41_runtime_suspend() is called
-		 */
+		 
 		list_for_each_entry_safe(cc, _ct, &cdd->pending, node) {
 			if (cc != c)
 				continue;
@@ -767,7 +737,7 @@ static int cppi41_stop_chan(struct dma_chan *chan)
 	WARN_ON(!cdd->chan_busy[desc_num]);
 	cdd->chan_busy[desc_num] = NULL;
 
-	/* Usecount for chan_busy[], paired with push_desc_queue() */
+	 
 	pm_runtime_put(cdd->ddev.dev);
 
 	return 0;
@@ -779,10 +749,7 @@ static int cppi41_add_chans(struct device *dev, struct cppi41_dd *cdd)
 	int i;
 	u32 n_chans = cdd->n_chans;
 
-	/*
-	 * The channels can only be used as TX or as RX. So we add twice
-	 * that much dma channels because USB can only do RX or TX.
-	 */
+	 
 	n_chans *= 2;
 
 	chans = devm_kcalloc(dev, n_chans, sizeof(*chans), GFP_KERNEL);
@@ -934,12 +901,7 @@ err_td:
 }
 
 static struct platform_driver cpp41_dma_driver;
-/*
- * The param format is:
- * X Y
- * X: Port
- * Y: 0 = RX else TX
- */
+ 
 #define INFO_PORT	0
 #define INFO_IS_TX	1
 
@@ -1101,7 +1063,7 @@ static int cppi41_dma_probe(struct platform_device *pdev)
 	cdd->qmgr_num_pend = glue_info->qmgr_num_pend;
 	cdd->first_completion_queue = glue_info->first_completion_queue;
 
-	/* Parse new and deprecated dma-channels properties */
+	 
 	ret = of_property_read_u32(dev->of_node,
 				   "dma-channels", &cdd->n_chans);
 	if (ret)

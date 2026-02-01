@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Peer event handling, typically ICMP messages.
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/net.h>
@@ -22,9 +18,7 @@ static void rxrpc_store_error(struct rxrpc_peer *, struct sk_buff *);
 static void rxrpc_distribute_error(struct rxrpc_peer *, struct sk_buff *,
 				   enum rxrpc_call_completion, int);
 
-/*
- * Find the peer associated with a local error.
- */
+ 
 static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
 						      const struct sk_buff *skb,
 						      struct sockaddr_rxrpc *srx)
@@ -38,9 +32,7 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
 	srx->transport_len = local->srx.transport_len;
 	srx->transport.family = local->srx.transport.family;
 
-	/* Can we see an ICMP4 packet on an ICMP6 listening socket?  and vice
-	 * versa?
-	 */
+	 
 	switch (srx->transport.family) {
 	case AF_INET:
 		srx->transport_len = sizeof(srx->transport.sin);
@@ -97,17 +89,15 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
 	return rxrpc_lookup_peer_rcu(local, srx);
 }
 
-/*
- * Handle an MTU/fragmentation problem.
- */
+ 
 static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
 {
-	/* wind down the local interface MTU */
+	 
 	if (mtu > 0 && peer->if_mtu == 65535 && mtu < peer->if_mtu)
 		peer->if_mtu = mtu;
 
 	if (mtu == 0) {
-		/* they didn't give us a size, estimate one */
+		 
 		mtu = peer->if_mtu;
 		if (mtu > 1500) {
 			mtu >>= 1;
@@ -128,9 +118,7 @@ static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
 	}
 }
 
-/*
- * Handle an error received on the local endpoint.
- */
+ 
 void rxrpc_input_error(struct rxrpc_local *local, struct sk_buff *skb)
 {
 	struct sock_exterr_skb *serr = SKB_EXT_ERR(skb);
@@ -166,9 +154,7 @@ out:
 	rxrpc_put_peer(peer, rxrpc_peer_put_input_error);
 }
 
-/*
- * Map an error report to error codes on the peer record.
- */
+ 
 static void rxrpc_store_error(struct rxrpc_peer *peer, struct sk_buff *skb)
 {
 	enum rxrpc_call_completion compl = RXRPC_CALL_NETWORK_ERROR;
@@ -196,9 +182,7 @@ static void rxrpc_store_error(struct rxrpc_peer *peer, struct sk_buff *skb)
 	rxrpc_distribute_error(peer, skb, compl, err);
 }
 
-/*
- * Distribute an error that occurred on a peer.
- */
+ 
 static void rxrpc_distribute_error(struct rxrpc_peer *peer, struct sk_buff *skb,
 				   enum rxrpc_call_completion compl, int err)
 {
@@ -224,9 +208,7 @@ static void rxrpc_distribute_error(struct rxrpc_peer *peer, struct sk_buff *skb,
 	spin_unlock(&peer->lock);
 }
 
-/*
- * Perform keep-alive pings.
- */
+ 
 static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
 					  struct list_head *collector,
 					  time64_t base,
@@ -263,10 +245,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
 				slot = RXRPC_KEEPALIVE_TIME;
 			}
 
-			/* A transmission to this peer occurred since last we
-			 * examined it so put it into the appropriate future
-			 * bucket.
-			 */
+			 
 			slot += cursor;
 			slot &= mask;
 			spin_lock(&rxnet->peer_hash_lock);
@@ -282,9 +261,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
 	spin_unlock(&rxnet->peer_hash_lock);
 }
 
-/*
- * Perform keep-alive pings with VERSION packets to keep any NAT alive.
- */
+ 
 void rxrpc_peer_keepalive_worker(struct work_struct *work)
 {
 	struct rxrpc_net *rxnet =
@@ -302,13 +279,7 @@ void rxrpc_peer_keepalive_worker(struct work_struct *work)
 	if (!rxnet->live)
 		return;
 
-	/* Remove to a temporary list all the peers that are currently lodged
-	 * in expired buckets plus all new peers.
-	 *
-	 * Everything in the bucket at the cursor is processed this
-	 * second; the bucket at cursor + 1 goes at now + 1s and so
-	 * on...
-	 */
+	 
 	spin_lock(&rxnet->peer_hash_lock);
 	list_splice_init(&rxnet->peer_keepalive_new, &collector);
 
@@ -328,7 +299,7 @@ void rxrpc_peer_keepalive_worker(struct work_struct *work)
 	rxrpc_peer_keepalive_dispatch(rxnet, &collector, base, cursor);
 	ASSERT(list_empty(&collector));
 
-	/* Schedule the timer for the next occupied timeslot. */
+	 
 	cursor = rxnet->peer_keepalive_cursor;
 	stop = cursor + RXRPC_KEEPALIVE_TIME - 1;
 	for (; (s8)(cursor - stop) < 0; cursor++) {

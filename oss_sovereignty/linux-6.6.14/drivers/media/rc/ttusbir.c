@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TechnoTrend USB IR Receiver
- *
- * Copyright (C) 2012 Sean Young <sean@mess.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -14,11 +10,7 @@
 
 #define DRIVER_NAME	"ttusbir"
 #define DRIVER_DESC	"TechnoTrend USB IR Receiver"
-/*
- * The Windows driver uses 8 URBS, the original lirc drivers has a
- * configurable amount (2 default, 4 max). This device generates about 125
- * messages per second (!), whether IR is idle or not.
- */
+ 
 #define NUM_URBS	4
 #define US_PER_BYTE	62
 #define US_PER_BIT	(US_PER_BYTE / 8)
@@ -75,9 +67,7 @@ static void ttusbir_brightness_set(struct led_classdev *led_dev, enum
 	ttusbir_set_led(tt);
 }
 
-/*
- * The urb cannot be reused until the urb completes
- */
+ 
 static void ttusbir_bulk_complete(struct urb *urb)
 {
 	struct ttusbir *tt = urb->context;
@@ -100,11 +90,7 @@ static void ttusbir_bulk_complete(struct urb *urb)
 	ttusbir_set_led(tt);
 }
 
-/*
- * The data is one bit per sample, a set bit signifying silence and samples
- * being MSB first. Bit 0 can contain garbage so take it to be whatever
- * bit 1 is, so we don't have unexpected edges.
- */
+ 
 static void ttusbir_process_ir_data(struct ttusbir *tt, uint8_t *buf)
 {
 	struct ir_raw_event rawir = {};
@@ -127,7 +113,7 @@ static void ttusbir_process_ir_data(struct ttusbir *tt, uint8_t *buf)
 				event = true;
 			break;
 		default:
-			/* one edge per byte */
+			 
 			if (v & 2) {
 				b = ffz(v | 1);
 				rawir.pulse = true;
@@ -148,7 +134,7 @@ static void ttusbir_process_ir_data(struct ttusbir *tt, uint8_t *buf)
 		}
 	}
 
-	/* don't wakeup when there's nothing to do */
+	 
 	if (event)
 		ir_raw_event_handle(tt->rc);
 }
@@ -194,7 +180,7 @@ static int ttusbir_probe(struct usb_interface *intf,
 		goto out;
 	}
 
-	/* find the correct alt setting */
+	 
 	for (i = 0; i < intf->num_altsetting && altsetting == -1; i++) {
 		int max_packet, bulk_out_endp = -1, iso_in_endp = -1;
 
@@ -308,10 +294,7 @@ static int ttusbir_probe(struct usb_interface *intf,
 	rc->timeout = IR_DEFAULT_TIMEOUT;
 	rc->max_timeout = 10 * IR_DEFAULT_TIMEOUT;
 
-	/*
-	 * The precision is US_PER_BIT, but since every 8th bit can be
-	 * overwritten with garbage the accuracy is at best 2 * US_PER_BIT.
-	 */
+	 
 	rc->rx_resolution = 2 * US_PER_BIT;
 
 	ret = rc_register_device(rc);

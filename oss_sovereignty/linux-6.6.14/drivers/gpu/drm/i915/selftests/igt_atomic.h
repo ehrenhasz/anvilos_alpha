@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef IGT_ATOMIC_H
 #define IGT_ATOMIC_H
@@ -14,4 +12,4 @@ struct igt_atomic_section {
 
 extern const struct igt_atomic_section igt_atomic_phases[];
 
-#endif /* IGT_ATOMIC_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - Common definitions
- *
- * Copyright (C) 2019 Collabora, Ltd.
- */
+
+ 
 
 #include <media/mipi-csi2.h>
 #include <media/v4l2-rect.h>

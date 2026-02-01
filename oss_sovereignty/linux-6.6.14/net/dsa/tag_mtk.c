@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediatek DSA Tag support
- * Copyright (C) 2017 Landen Chao <landen.chao@mediatek.com>
- *		      Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_vlan.h>
@@ -29,12 +25,7 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
 
 	skb_set_queue_mapping(skb, dp->index);
 
-	/* Build the special tag after the MAC Source Address. If VLAN header
-	 * is present, it's required that VLAN header and special tag is
-	 * being combined. Only in this way we can allow the switch can parse
-	 * the both special and VLAN tag at the same time and then look up VLAN
-	 * table with VID.
-	 */
+	 
 	switch (skb->protocol) {
 	case htons(ETH_P_8021Q):
 		xmit_tpid = MTK_HDR_XMIT_TAGGED_TPID_8100;
@@ -50,13 +41,11 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
 
 	mtk_tag = dsa_etype_header_pos_tx(skb);
 
-	/* Mark tag attribute on special tag insertion to notify hardware
-	 * whether that's a combined special tag with 802.1Q header.
-	 */
+	 
 	mtk_tag[0] = xmit_tpid;
 	mtk_tag[1] = (1 << dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
 
-	/* Tag control information is kept for 802.1Q */
+	 
 	if (xmit_tpid == MTK_HDR_XMIT_UNTAGGED) {
 		mtk_tag[2] = 0;
 		mtk_tag[3] = 0;
@@ -77,12 +66,12 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev)
 	phdr = dsa_etype_header_pos_rx(skb);
 	hdr = ntohs(*phdr);
 
-	/* Remove MTK tag and recalculate checksum. */
+	 
 	skb_pull_rcsum(skb, MTK_HDR_LEN);
 
 	dsa_strip_etype_header(skb, MTK_HDR_LEN);
 
-	/* Get source port information */
+	 
 	port = (hdr & MTK_HDR_RECV_SOURCE_PORT_MASK);
 
 	skb->dev = dsa_master_find_slave(dev, 0, port);

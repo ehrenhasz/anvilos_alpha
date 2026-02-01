@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019-2022 MediaTek Inc.
- * Copyright (c) 2022 BayLibre
- */
+
+ 
 
 #include <drm/display/drm_dp_aux_bus.h>
 #include <drm/display/drm_dp.h>
@@ -69,7 +66,7 @@ enum {
 struct mtk_dp_train_info {
 	bool sink_ssc;
 	bool cable_plugged_in;
-	/* link_rate is in multiple of 0.27Gbps */
+	 
 	int link_rate;
 	int lane_count;
 	unsigned int channel_eq_pattern;
@@ -107,7 +104,7 @@ struct mtk_dp {
 	u8 rx_cap[DP_RECEIVER_CAP_SIZE];
 	u32 cal_data[MTK_DP_CAL_MAX];
 	u32 irq_thread_handle;
-	/* irq_thread_lock is used to protect irq_thread_handle */
+	 
 	spinlock_t irq_thread_lock;
 
 	struct device *dev;
@@ -126,13 +123,13 @@ struct mtk_dp {
 	struct regmap *regs;
 	struct timer_list debounce_timer;
 
-	/* For audio */
+	 
 	bool audio_enable;
 	hdmi_codec_plugged_cb plugged_cb;
 	struct platform_device *audio_pdev;
 
 	struct device *codec_dev;
-	/* protect the plugged_cb as it's used in both bridge ops and audio */
+	 
 	struct mutex update_plugged_status_lock;
 };
 
@@ -365,7 +362,7 @@ static void mtk_dp_bulk_16bit_write(struct mtk_dp *mtk_dp, u32 offset, u8 *buf,
 {
 	int i;
 
-	/* 2 bytes per register */
+	 
 	for (i = 0; i < length; i += 2) {
 		u32 val = buf[i] | (i + 1 < length ? buf[i + 1] << 8 : 0);
 
@@ -392,7 +389,7 @@ static void mtk_dp_set_msa(struct mtk_dp *mtk_dp)
 
 	drm_display_mode_from_videomode(vm, &mode);
 
-	/* horizontal */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3010,
 			   mode.htotal, HTOTAL_SW_DP_ENC0_P0_MASK);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3018,
@@ -405,7 +402,7 @@ static void mtk_dp_set_msa(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3020,
 			   vm->hactive, HWIDTH_SW_DP_ENC0_P0_MASK);
 
-	/* vertical */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3014,
 			   mode.vtotal, VTOTAL_SW_DP_ENC0_P0_MASK);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_301C,
@@ -418,7 +415,7 @@ static void mtk_dp_set_msa(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3024,
 			   vm->vactive, VHEIGHT_SW_DP_ENC0_P0_MASK);
 
-	/* horizontal */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3064,
 			   vm->hactive, HDE_NUM_LAST_DP_ENC0_P0_MASK);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3154,
@@ -436,7 +433,7 @@ static void mtk_dp_set_msa(struct mtk_dp *mtk_dp)
 			   vm->hactive,
 			   PGEN_HFDE_ACTIVE_WIDTH_DP_ENC0_P0_MASK);
 
-	/* vertical */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3168,
 			   mode.vtotal,
 			   PGEN_VTOTAL_DP_ENC0_P0_MASK);
@@ -459,7 +456,7 @@ static int mtk_dp_set_color_format(struct mtk_dp *mtk_dp,
 {
 	u32 val;
 
-	/* update MISC0 */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3034,
 			   color_format << DP_TEST_COLOR_FORMAT_SHIFT,
 			   DP_TEST_COLOR_FORMAT_MASK);
@@ -484,8 +481,8 @@ static int mtk_dp_set_color_format(struct mtk_dp *mtk_dp,
 
 static void mtk_dp_set_color_depth(struct mtk_dp *mtk_dp)
 {
-	/* Only support 8 bits currently */
-	/* Update MISC0 */
+	 
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3034,
 			   DP_MSA_MISC_8_BPC, DP_TEST_BIT_DEPTH_MASK);
 
@@ -496,7 +493,7 @@ static void mtk_dp_set_color_depth(struct mtk_dp *mtk_dp)
 
 static void mtk_dp_config_mn_mode(struct mtk_dp *mtk_dp)
 {
-	/* 0: hw mode, 1: sw mode */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3004,
 			   0, VIDEO_M_CODE_SEL_DP_ENC0_P0_MASK);
 }
@@ -545,7 +542,7 @@ static void mtk_dp_audio_setup_channels(struct mtk_dp *mtk_dp,
 			   AUDIO_SOURCE_MUX_DP_ENC1_P0_DPRX,
 			   AUDIO_SOURCE_MUX_DP_ENC1_P0_MASK);
 
-	/* audio channel count change reset */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4,
 			   DP_ENC_DUMMY_RW_1, DP_ENC_DUMMY_RW_1);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3304,
@@ -575,10 +572,10 @@ static void mtk_dp_audio_setup_channels(struct mtk_dp *mtk_dp,
 			   AUDIO_8CH_EN_DP_ENC0_P0_MASK |
 			   AU_EN_DP_ENC0_P0);
 
-	/* audio channel count change reset */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4, 0, DP_ENC_DUMMY_RW_1);
 
-	/* enable audio reset */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4,
 			   DP_ENC_DUMMY_RW_1_AUDIO_RST_EN,
 			   DP_ENC_DUMMY_RW_1_AUDIO_RST_EN);
@@ -629,7 +626,7 @@ static void mtk_dp_audio_channel_status_set(struct mtk_dp *mtk_dp,
 		iec.status[4] = IEC958_AES4_CON_WORDLEN_NOTID;
 	}
 
-	/* IEC 60958 consumer channel status bits */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_308C,
 			   0, CH_STATUS_0_DP_ENC0_P0_MASK);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3090,
@@ -677,7 +674,7 @@ static void mtk_dp_sdp_set_header_aui(struct mtk_dp *mtk_dp,
 
 static void mtk_dp_disable_sdp_aui(struct mtk_dp *mtk_dp)
 {
-	/* Disable periodic send */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30A8 & 0xfffc, 0,
 			   0xff << ((MTK_DP_ENC0_P0_30A8 & 3) * 8));
 }
@@ -694,7 +691,7 @@ static void mtk_dp_setup_sdp_aui(struct mtk_dp *mtk_dp,
 	shift = (MTK_DP_ENC0_P0_30A8 & 3) * 8;
 
 	mtk_dp_sdp_trigger_aui(mtk_dp);
-	/* Enable periodic sending */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30A8 & 0xfffc,
 			   0x05 << shift, 0xff << shift);
 }
@@ -749,7 +746,7 @@ static void mtk_dp_aux_read_rx_fifo(struct mtk_dp *mtk_dp, u8 *buf,
 				   AUX_RX_FIFO_READ_PULSE_TX_P0,
 				   AUX_RX_FIFO_READ_PULSE_TX_P0);
 
-		/* Hardware needs time to update the data */
+		 
 		usleep_range(read_delay, read_delay * 2);
 		buf[read_pos] = (u8)(mtk_dp_read(mtk_dp, MTK_DP_AUX_P0_3620) &
 				     AUX_RX_FIFO_READ_DATA_AUX_TX_P0_MASK);
@@ -800,7 +797,7 @@ static int mtk_dp_aux_wait_for_completion(struct mtk_dp *mtk_dp, bool is_read)
 		if (aux_irq_status & AUX_400US_TIMEOUT_IRQ_AUX_TX_P0)
 			return -ETIMEDOUT;
 
-		/* Give the hardware a chance to reach completion before retrying */
+		 
 		usleep_range(100, 500);
 	}
 
@@ -821,7 +818,7 @@ static int mtk_dp_aux_do_transfer(struct mtk_dp *mtk_dp, bool is_read, u8 cmd,
 				   AUX_TX_FIFO_NEW_MODE_EN_AUX_TX_P0,
 				   AUX_TX_FIFO_NEW_MODE_EN_AUX_TX_P0);
 
-	/* We need to clear fifo and irq before sending commands to the sink device. */
+	 
 	mtk_dp_aux_clear_fifo(mtk_dp);
 	mtk_dp_aux_irq_clear(mtk_dp);
 
@@ -839,7 +836,7 @@ static int mtk_dp_aux_do_transfer(struct mtk_dp *mtk_dp, bool is_read, u8 cmd,
 
 	mtk_dp_aux_request_ready(mtk_dp);
 
-	/* Wait for feedback from sink device. */
+	 
 	ret = mtk_dp_aux_wait_for_completion(mtk_dp, is_read);
 
 	*reply_cmd = mtk_dp_read(mtk_dp, MTK_DP_AUX_P0_3624) &
@@ -969,7 +966,7 @@ static void mtk_dp_initialize_settings(struct mtk_dp *mtk_dp)
 static void mtk_dp_initialize_hpd_detect_settings(struct mtk_dp *mtk_dp)
 {
 	u32 val;
-	/* Debounce threshold */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3410,
 			   8, HPD_DEB_THD_DP_TRANS_P0_MASK);
 
@@ -978,10 +975,7 @@ static void mtk_dp_initialize_hpd_detect_settings(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3410,
 			   val, HPD_INT_THD_DP_TRANS_P0_MASK);
 
-	/*
-	 * Connect threshold 1.5ms + 5 x 0.1ms = 2ms
-	 * Disconnect threshold 1.5ms + 5 x 0.1ms = 2ms
-	 */
+	 
 	val = (5 << 8) | (5 << 12);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3410,
 			   val,
@@ -994,17 +988,17 @@ static void mtk_dp_initialize_hpd_detect_settings(struct mtk_dp *mtk_dp)
 
 static void mtk_dp_initialize_aux_settings(struct mtk_dp *mtk_dp)
 {
-	/* modify timeout threshold = 0x1595 */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_360C,
 			   AUX_TIMEOUT_THR_AUX_TX_P0_VAL,
 			   AUX_TIMEOUT_THR_AUX_TX_P0_MASK);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3658,
 			   0, AUX_TX_OV_EN_AUX_TX_P0_MASK);
-	/* 25 for 26M */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3634,
 			   AUX_TX_OVER_SAMPLE_RATE_FOR_26M << 8,
 			   AUX_TX_OVER_SAMPLE_RATE_AUX_TX_P0_MASK);
-	/* 13 for 26M */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3614,
 			   AUX_RX_UI_CNT_THR_AUX_FOR_26M,
 			   AUX_RX_UI_CNT_THR_AUX_TX_P0_MASK);
@@ -1012,7 +1006,7 @@ static void mtk_dp_initialize_aux_settings(struct mtk_dp *mtk_dp)
 			   MTK_ATOP_EN_AUX_TX_P0,
 			   MTK_ATOP_EN_AUX_TX_P0);
 
-	/* Set complete reply mode for AUX */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3690,
 			   RX_REPLY_COMPLETE_MODE_AUX_TX_P0,
 			   RX_REPLY_COMPLETE_MODE_AUX_TX_P0);
@@ -1027,12 +1021,12 @@ static void mtk_dp_initialize_digital_settings(struct mtk_dp *mtk_dp)
 			   BS2BS_MODE_DP_ENC1_P0_VAL << 12,
 			   BS2BS_MODE_DP_ENC1_P0_MASK);
 
-	/* dp tx encoder reset all sw */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3004,
 			   DP_TX_ENCODER_4P_RESET_SW_DP_ENC0_P0,
 			   DP_TX_ENCODER_4P_RESET_SW_DP_ENC0_P0);
 
-	/* Wait for sw reset to complete */
+	 
 	usleep_range(1000, 5000);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3004,
 			   0, DP_TX_ENCODER_4P_RESET_SW_DP_ENC0_P0);
@@ -1044,7 +1038,7 @@ static void mtk_dp_digital_sw_reset(struct mtk_dp *mtk_dp)
 			   DP_TX_TRANSMITTER_4P_RESET_SW_DP_TRANS_P0,
 			   DP_TX_TRANSMITTER_4P_RESET_SW_DP_TRANS_P0);
 
-	/* Wait for sw reset to complete */
+	 
 	usleep_range(1000, 5000);
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_340C,
 			   0, DP_TX_TRANSMITTER_4P_RESET_SW_DP_TRANS_P0);
@@ -1186,7 +1180,7 @@ static void mtk_dp_set_idle_pattern(struct mtk_dp *mtk_dp, bool enable)
 
 static void mtk_dp_train_set_pattern(struct mtk_dp *mtk_dp, int pattern)
 {
-	/* TPS1 */
+	 
 	if (pattern == 1)
 		mtk_dp_set_idle_pattern(mtk_dp, false);
 
@@ -1244,7 +1238,7 @@ static void mtk_dp_audio_mute(struct mtk_dp *mtk_dp, bool mute)
 	} else {
 		val[0] = 0;
 		val[1] = AU_EN_DP_ENC0_P0;
-		/* Send one every two frames */
+		 
 		val[2] = 0x0F;
 	}
 
@@ -1261,20 +1255,20 @@ static void mtk_dp_audio_mute(struct mtk_dp *mtk_dp, bool mute)
 static void mtk_dp_aux_panel_poweron(struct mtk_dp *mtk_dp, bool pwron)
 {
 	if (pwron) {
-		/* power on aux */
+		 
 		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
 				   DP_PWR_STATE_BANDGAP_TPLL_LANE,
 				   DP_PWR_STATE_MASK);
 
-		/* power on panel */
+		 
 		drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
 		usleep_range(2000, 5000);
 	} else {
-		/* power off panel */
+		 
 		drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D3);
 		usleep_range(2000, 3000);
 
-		/* power off aux */
+		 
 		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
 				   DP_PWR_STATE_BANDGAP_TPLL,
 				   DP_PWR_STATE_MASK);
@@ -1286,7 +1280,7 @@ static void mtk_dp_power_enable(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_RESET_AND_PROBE,
 			   0, SW_RST_B_PHYD);
 
-	/* Wait for power enable */
+	 
 	usleep_range(10, 200);
 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_RESET_AND_PROBE,
@@ -1306,7 +1300,7 @@ static void mtk_dp_power_disable(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_0034,
 			   DA_CKM_CKTX0_EN_FORCE_EN, DA_CKM_CKTX0_EN_FORCE_EN);
 
-	/* Disable RX */
+	 
 	mtk_dp_write(mtk_dp, MTK_DP_1040, 0);
 	mtk_dp_write(mtk_dp, MTK_DP_TOP_MEM_PD,
 		     0x550 | FUSE_SEL | MEM_ISO_EN);
@@ -1344,7 +1338,7 @@ static void mtk_dp_sdp_set_down_cnt_init(struct mtk_dp *mtk_dp,
 		sdp_down_cnt_init = max_t(u32, sdp_down_cnt_init, 0x1A);
 		break;
 	case 2:
-		/* case for LowResolution && High Audio Sample Rate */
+		 
 		sdp_down_cnt_init = max_t(u32, sdp_down_cnt_init, 0x10);
 		sdp_down_cnt_init += mode.vtotal <= 525 ? 4 : 0;
 		break;
@@ -1509,7 +1503,7 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 
 	mtk_dp_pattern(mtk_dp, true);
 
-	/* In DP spec 1.4, the retry count of CR is defined as 10. */
+	 
 	do {
 		train_retries++;
 		if (!mtk_dp->train_info.cable_plugged_in) {
@@ -1525,7 +1519,7 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		drm_dp_link_train_clock_recovery_delay(&mtk_dp->aux,
 						       mtk_dp->rx_cap);
 
-		/* check link status from sink device */
+		 
 		drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
 		if (drm_dp_clock_recovery_ok(link_status,
 					     target_lane_count)) {
@@ -1533,36 +1527,23 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 			return 0;
 		}
 
-		/*
-		 * In DP spec 1.4, if current voltage level is the same
-		 * with previous voltage level, we need to retry 5 times.
-		 */
+		 
 		if (prev_lane_adjust == link_status[4]) {
 			voltage_retries++;
-			/*
-			 * Condition of CR fail:
-			 * 1. Failed to pass CR using the same voltage
-			 *    level over five times.
-			 * 2. Failed to pass CR when the current voltage
-			 *    level is the same with previous voltage
-			 *    level and reach max voltage level (3).
-			 */
+			 
 			if (voltage_retries > MTK_DP_TRAIN_VOLTAGE_LEVEL_RETRY ||
 			    (prev_lane_adjust & DP_ADJUST_VOLTAGE_SWING_LANE0_MASK) == 3) {
 				dev_dbg(mtk_dp->dev, "Link train CR fail\n");
 				break;
 			}
 		} else {
-			/*
-			 * If the voltage level is changed, we need to
-			 * re-calculate this retry count.
-			 */
+			 
 			voltage_retries = 0;
 		}
 		prev_lane_adjust = link_status[4];
 	} while (train_retries < MTK_DP_TRAIN_DOWNSCALE_RETRY);
 
-	/* Failed to train CR, and disable pattern. */
+	 
 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
 			   DP_TRAINING_PATTERN_DISABLE);
 	mtk_dp_train_set_pattern(mtk_dp, 0);
@@ -1593,12 +1574,12 @@ static int mtk_dp_train_eq(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		drm_dp_link_train_channel_eq_delay(&mtk_dp->aux,
 						   mtk_dp->rx_cap);
 
-		/* check link status from sink device */
+		 
 		drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
 		if (drm_dp_channel_eq_ok(link_status, target_lane_count)) {
 			dev_dbg(mtk_dp->dev, "Link train EQ pass\n");
 
-			/* Training done, and disable pattern. */
+			 
 			drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
 					   DP_TRAINING_PATTERN_DISABLE);
 			mtk_dp_train_set_pattern(mtk_dp, 0);
@@ -1607,7 +1588,7 @@ static int mtk_dp_train_eq(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		dev_dbg(mtk_dp->dev, "Link train EQ fail\n");
 	} while (train_retries < MTK_DP_TRAIN_DOWNSCALE_RETRY);
 
-	/* Failed to train EQ, and disable pattern. */
+	 
 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
 			   DP_TRAINING_PATTERN_DISABLE);
 	mtk_dp_train_set_pattern(mtk_dp, 0);
@@ -1620,11 +1601,7 @@ static int mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
 	u8 val;
 	ssize_t ret;
 
-	/*
-	 * If we're eDP and capabilities were already parsed we can skip
-	 * reading again because eDP panels aren't hotpluggable hence the
-	 * caps and training information won't ever change in a boot life
-	 */
+	 
 	if (mtk_dp->bridge.type == DRM_MODE_CONNECTOR_eDP &&
 	    mtk_dp->rx_cap[DP_MAX_LINK_RATE] &&
 	    mtk_dp->train_info.sink_ssc)
@@ -1650,7 +1627,7 @@ static int mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
 	}
 
 	if (val & DP_MST_CAP) {
-		/* Clear DP_DEVICE_SERVICE_IRQ_VECTOR_ESI0 */
+		 
 		ret = drm_dp_dpcd_readb(&mtk_dp->aux,
 					DP_DEVICE_SERVICE_IRQ_VECTOR_ESI0,
 					&val);
@@ -1702,11 +1679,7 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
 	lane_count = min_t(u8, mtk_dp->max_lanes,
 			   drm_dp_max_lane_count(mtk_dp->rx_cap));
 
-	/*
-	 * TPS are generated by the hardware pattern generator. From the
-	 * hardware setting we need to disable this scramble setting before
-	 * use the TPS pattern generator.
-	 */
+	 
 	mtk_dp_training_set_scramble(mtk_dp, false);
 
 	for (train_limit = 6; train_limit > 0; train_limit--) {
@@ -1720,7 +1693,7 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
 		if (ret == -ENODEV) {
 			return ret;
 		} else if (ret) {
-			/* reduce link rate */
+			 
 			switch (link_rate) {
 			case DP_LINK_BW_1_62:
 				lane_count = lane_count / 2;
@@ -1747,14 +1720,14 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
 		if (ret == -ENODEV) {
 			return ret;
 		} else if (ret) {
-			/* reduce lane count */
+			 
 			if (lane_count == 0)
 				return -EIO;
 			lane_count /= 2;
 			continue;
 		}
 
-		/* if we can run to this, training is done. */
+		 
 		break;
 	}
 
@@ -1764,10 +1737,7 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
 	mtk_dp->train_info.link_rate = link_rate;
 	mtk_dp->train_info.lane_count = lane_count;
 
-	/*
-	 * After training done, we need to output normal stream instead of TPS,
-	 * so we need to enable scramble.
-	 */
+	 
 	mtk_dp_training_set_scramble(mtk_dp, true);
 	mtk_dp_set_enhanced_frame_mode(mtk_dp);
 
@@ -1776,7 +1746,7 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
 
 static void mtk_dp_video_enable(struct mtk_dp *mtk_dp, bool enable)
 {
-	/* the mute sequence is different between enable and disable */
+	 
 	if (enable) {
 		mtk_dp_msa_bypass_enable(mtk_dp, false);
 		mtk_dp_pg_enable(mtk_dp, false);
@@ -1901,7 +1871,7 @@ static irqreturn_t mtk_dp_hpd_event(int hpd, void *dev)
 	if (irq_status & MTK_DP_HPD_INTERRUPT)
 		mtk_dp->irq_thread_handle |= MTK_DP_THREAD_HPD_EVENT;
 
-	/* Cable state is changed. */
+	 
 	if (irq_status != MTK_DP_HPD_INTERRUPT) {
 		mtk_dp->irq_thread_handle |= MTK_DP_THREAD_CABLE_STATE_CHG;
 		cable_sta_chg = true;
@@ -2010,13 +1980,7 @@ static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
 	if (!enabled)
 		mtk_dp_aux_panel_poweron(mtk_dp, true);
 
-	/*
-	 * Some dongles still source HPD when they do not connect to any
-	 * sink device. To avoid this, we need to read the sink count
-	 * to make sure we do connect to sink devices. After this detect
-	 * function, we just need to check the HPD connection to check
-	 * whether we connect to a sink device.
-	 */
+	 
 	drm_dp_dpcd_readb(&mtk_dp->aux, DP_SINK_COUNT, &sink_count);
 	if (DP_GET_SINK_COUNT(sink_count))
 		ret = connector_status_connected;
@@ -2042,10 +2006,7 @@ static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
 
 	new_edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
 
-	/*
-	 * Parse capability here to let atomic_get_input_bus_fmts and
-	 * mode_valid use the capability to calculate sink bitrates.
-	 */
+	 
 	if (mtk_dp_parse_capabilities(mtk_dp)) {
 		drm_err(mtk_dp->drm_dev, "Can't parse capabilities\n");
 		kfree(new_edid);
@@ -2230,7 +2191,7 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
 
 	mtk_dp_aux_panel_poweron(mtk_dp, true);
 
-	/* Training */
+	 
 	ret = mtk_dp_training(mtk_dp);
 	if (ret) {
 		drm_err(mtk_dp->drm_dev, "Training failed, %d\n", ret);
@@ -2279,12 +2240,12 @@ static void mtk_dp_bridge_atomic_disable(struct drm_bridge *bridge,
 		usleep_range(2000, 3000);
 	}
 
-	/* power off aux */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
 			   DP_PWR_STATE_BANDGAP_TPLL,
 			   DP_PWR_STATE_MASK);
 
-	/* Ensure the sink is muted */
+	 
 	msleep(20);
 }
 
@@ -2348,11 +2309,7 @@ static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 
 	*num_input_fmts = 0;
 
-	/*
-	 * If the linkrate is smaller than datarate of RGB888, larger than
-	 * datarate of YUV422 and sink device supports YUV422, we output YUV422
-	 * format. Use this condition, we can support more resolution.
-	 */
+	 
 	if ((rate < (mode->clock * 24 / 8)) &&
 	    (rate > (mode->clock * 16 / 8)) &&
 	    (display_info->color_formats & DRM_COLOR_FORMAT_YCBCR422)) {
@@ -2429,9 +2386,7 @@ static void mtk_dp_debounce_timer(struct timer_list *t)
 	mtk_dp->need_debounce = true;
 }
 
-/*
- * HDMI audio codec callbacks
- */
+ 
 static int mtk_dp_audio_hw_params(struct device *dev, void *data,
 				  struct hdmi_codec_daifmt *daifmt,
 				  struct hdmi_codec_params *params)
@@ -2554,7 +2509,7 @@ static int mtk_dp_edp_link_panel(struct drm_dp_aux *mtk_aux)
 
 	mtk_dp->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 1, 0);
 
-	/* Power off the DP and AUX: either detection is done, or no panel present */
+	 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
 			   DP_PWR_STATE_BANDGAP_TPLL,
 			   DP_PWR_STATE_MASK);
@@ -2566,7 +2521,7 @@ static int mtk_dp_edp_link_panel(struct drm_dp_aux *mtk_aux)
 		return ret;
 	}
 
-	/* For eDP, we add the bridge only if the panel was found */
+	 
 	ret = devm_drm_bridge_add(dev, &mtk_dp->bridge);
 	if (ret)
 		return ret;
@@ -2591,13 +2546,7 @@ static int mtk_dp_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to parse dt\n");
 
-	/*
-	 * Request the interrupt and install service routine only if we are
-	 * on full DisplayPort.
-	 * For eDP, polling the HPD instead is more convenient because we
-	 * don't expect any (un)plug events during runtime, hence we can
-	 * avoid some locking.
-	 */
+	 
 	if (mtk_dp->data->bridge_type != DRM_MODE_CONNECTOR_eDP) {
 		mtk_dp->irq = platform_get_irq(pdev, 0);
 		if (mtk_dp->irq < 0)
@@ -2647,31 +2596,22 @@ static int mtk_dp_probe(struct platform_device *pdev)
 	mtk_dp->bridge.type = mtk_dp->data->bridge_type;
 
 	if (mtk_dp->bridge.type == DRM_MODE_CONNECTOR_eDP) {
-		/*
-		 * Set the data lanes to idle in case the bootloader didn't
-		 * properly close the eDP port to avoid stalls and then
-		 * reinitialize, reset and power on the AUX block.
-		 */
+		 
 		mtk_dp_set_idle_pattern(mtk_dp, true);
 		mtk_dp_initialize_aux_settings(mtk_dp);
 		mtk_dp_power_enable(mtk_dp);
 
-		/* Disable HW interrupts: we don't need any for eDP */
+		 
 		mtk_dp_hwirq_enable(mtk_dp, false);
 
-		/*
-		 * Power on the AUX to allow reading the EDID from aux-bus:
-		 * please note that it is necessary to call power off in the
-		 * .done_probing() callback (mtk_dp_edp_link_panel), as only
-		 * there we can safely assume that we finished reading EDID.
-		 */
+		 
 		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
 				   DP_PWR_STATE_BANDGAP_TPLL_LANE,
 				   DP_PWR_STATE_MASK);
 
 		ret = devm_of_dp_aux_populate_bus(&mtk_dp->aux, mtk_dp_edp_link_panel);
 		if (ret) {
-			/* -ENODEV this means that the panel is not on the aux-bus */
+			 
 			if (ret == -ENODEV) {
 				ret = mtk_dp_edp_link_panel(&mtk_dp->aux);
 				if (ret)

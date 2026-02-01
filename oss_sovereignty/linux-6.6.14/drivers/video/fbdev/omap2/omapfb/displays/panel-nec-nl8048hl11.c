@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NEC NL8048HL11 Panel driver
- *
- * Copyright (C) 2010 Texas Instruments Inc.
- * Author: Erik Gilling <konkers@android.com>
- * Converted to new DSS device model: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -31,10 +25,7 @@ struct panel_drv_data {
 
 #define LCD_XRES		800
 #define LCD_YRES		480
-/*
- * NEC PIX Clock Ratings
- * MIN:21.8MHz TYP:23.8MHz MAX:25.7MHz
- */
+ 
 #define LCD_PIXEL_CLOCK		23800000
 
 static const struct {
@@ -87,8 +78,8 @@ static int nec_8048_spi_send(struct spi_device *spi, unsigned char reg_addr,
 	int ret = 0;
 	unsigned int cmd = 0, data = 0;
 
-	cmd = 0x0000 | reg_addr; /* register address write */
-	data = 0x0100 | reg_data; /* register data write */
+	cmd = 0x0000 | reg_addr;  
+	data = 0x0100 | reg_data;  
 	data = (cmd << 16) | data;
 
 	ret = spi_write(spi, (unsigned char *)&data, 4);
@@ -101,8 +92,8 @@ static int nec_8048_spi_send(struct spi_device *spi, unsigned char reg_addr,
 static int init_nec_8048_wvga_lcd(struct spi_device *spi)
 {
 	unsigned int i;
-	/* Initialization Sequence */
-	/* nec_8048_spi_send(spi, REG, VAL) */
+	 
+	 
 	for (i = 0; i < (ARRAY_SIZE(nec_8048_init_seq) - 1); i++)
 		nec_8048_spi_send(spi, nec_8048_init_seq[i].addr,
 				nec_8048_init_seq[i].dat);
@@ -154,7 +145,7 @@ static int nec_8048_enable(struct omap_dss_device *dssdev)
 	if (r)
 		return r;
 
-	/* Apparently existing DTSes use incorrect polarity (active high) */
+	 
 	gpiod_set_value_cansleep(ddata->res_gpio, 1);
 
 	dssdev->state = OMAP_DSS_DISPLAY_ACTIVE;
@@ -170,7 +161,7 @@ static void nec_8048_disable(struct omap_dss_device *dssdev)
 	if (!omapdss_device_is_enabled(dssdev))
 		return;
 
-	/* Apparently existing DTSes use incorrect polarity (active high) */
+	 
 	gpiod_set_value_cansleep(ddata->res_gpio, 0);
 
 	in->ops.dpi->disable(in);
@@ -321,7 +312,7 @@ static int nec_8048_resume(struct device *dev)
 {
 	struct spi_device *spi = to_spi_device(dev);
 
-	/* reinitialize the panel */
+	 
 	spi_setup(spi);
 	nec_8048_spi_send(spi, 2, 0x00);
 	init_nec_8048_wvga_lcd(spi);

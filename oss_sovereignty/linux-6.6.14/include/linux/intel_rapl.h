@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Data types and headers for RAPL support
- *
- *  Copyright (C) 2019  Intel Corporation.
- *
- *  Author: Zhang Rui <rui.zhang@intel.com>
- */
+ 
+ 
 
 #ifndef __INTEL_RAPL_H__
 #define __INTEL_RAPL_H__
@@ -15,17 +9,17 @@
 #include <linux/cpuhotplug.h>
 
 enum rapl_if_type {
-	RAPL_IF_MSR,	/* RAPL I/F using MSR registers */
-	RAPL_IF_MMIO,	/* RAPL I/F using MMIO registers */
-	RAPL_IF_TPMI,	/* RAPL I/F using TPMI registers */
+	RAPL_IF_MSR,	 
+	RAPL_IF_MMIO,	 
+	RAPL_IF_TPMI,	 
 };
 
 enum rapl_domain_type {
-	RAPL_DOMAIN_PACKAGE,	/* entire package/socket */
-	RAPL_DOMAIN_PP0,	/* core power plane */
-	RAPL_DOMAIN_PP1,	/* graphics uncore */
-	RAPL_DOMAIN_DRAM,	/* DRAM control_type */
-	RAPL_DOMAIN_PLATFORM,	/* PSys control_type */
+	RAPL_DOMAIN_PACKAGE,	 
+	RAPL_DOMAIN_PP0,	 
+	RAPL_DOMAIN_PP1,	 
+	RAPL_DOMAIN_DRAM,	 
+	RAPL_DOMAIN_PLATFORM,	 
 	RAPL_DOMAIN_MAX,
 };
 
@@ -54,14 +48,14 @@ enum rapl_primitives {
 	PL2_LOCK,
 	PL4_LOCK,
 
-	PL1_ENABLE,		/* power limit 1, aka long term */
-	PL1_CLAMP,		/* allow frequency to go below OS request */
-	PL2_ENABLE,		/* power limit 2, aka short term, instantaneous */
+	PL1_ENABLE,		 
+	PL1_CLAMP,		 
+	PL2_ENABLE,		 
 	PL2_CLAMP,
-	PL4_ENABLE,		/* power limit 4, aka max peak power */
+	PL4_ENABLE,		 
 
-	TIME_WINDOW1,		/* long term */
-	TIME_WINDOW2,		/* short term */
+	TIME_WINDOW1,		 
+	TIME_WINDOW2,		 
 	THERMAL_SPEC_POWER,
 	MAX_POWER,
 
@@ -76,7 +70,7 @@ enum rapl_primitives {
 	PSYS_PL2_ENABLE,
 	PSYS_TIME_WINDOW1,
 	PSYS_TIME_WINDOW2,
-	/* below are not raw primitive data */
+	 
 	AVERAGE_POWER,
 	NR_RAPL_PRIMITIVES,
 };
@@ -113,7 +107,7 @@ struct rapl_domain {
 	struct powercap_zone power_zone;
 	struct rapl_domain_data rdd;
 	struct rapl_power_limit rpl[NR_POWER_LIMITS];
-	u64 attr_map;		/* track capabilities */
+	u64 attr_map;		 
 	unsigned int state;
 	unsigned int power_unit;
 	unsigned int energy_unit;
@@ -128,23 +122,7 @@ struct reg_action {
 	int err;
 };
 
-/**
- * struct rapl_if_priv: private data for different RAPL interfaces
- * @control_type:		Each RAPL interface must have its own powercap
- *				control type.
- * @platform_rapl_domain:	Optional. Some RAPL interface may have platform
- *				level RAPL control.
- * @pcap_rapl_online:		CPU hotplug state for each RAPL interface.
- * @reg_unit:			Register for getting energy/power/time unit.
- * @regs:			Register sets for different RAPL Domains.
- * @limits:			Number of power limits supported by each domain.
- * @read_raw:			Callback for reading RAPL interface specific
- *				registers.
- * @write_raw:			Callback for writing RAPL interface specific
- *				registers.
- * @defaults:			internal pointer to interface default settings
- * @rpi:			internal pointer to interface primitive info
- */
+ 
 struct rapl_if_priv {
 	enum rapl_if_type type;
 	struct powercap_control_type *control_type;
@@ -158,21 +136,19 @@ struct rapl_if_priv {
 	void *rpi;
 };
 
-/* maximum rapl package domain name: package-%d-die-%d */
+ 
 #define PACKAGE_DOMAIN_NAME_LENGTH 30
 
 struct rapl_package {
-	unsigned int id;	/* logical die id, equals physical 1-die systems */
+	unsigned int id;	 
 	unsigned int nr_domains;
-	unsigned long domain_map;	/* bit map of active domains */
-	struct rapl_domain *domains;	/* array of domains, sized at runtime */
-	struct powercap_zone *power_zone;	/* keep track of parent zone */
-	unsigned long power_limit_irq;	/* keep track of package power limit
-					 * notify interrupt enable status.
-					 */
+	unsigned long domain_map;	 
+	struct rapl_domain *domains;	 
+	struct powercap_zone *power_zone;	 
+	unsigned long power_limit_irq;	 
 	struct list_head plist;
-	int lead_cpu;		/* one active cpu per package for access */
-	/* Track active cpus */
+	int lead_cpu;		 
+	 
 	struct cpumask cpumask;
 	char name[PACKAGE_DOMAIN_NAME_LENGTH];
 	struct rapl_if_priv *priv;
@@ -182,4 +158,4 @@ struct rapl_package *rapl_find_package_domain(int id, struct rapl_if_priv *priv,
 struct rapl_package *rapl_add_package(int id, struct rapl_if_priv *priv, bool id_is_cpu);
 void rapl_remove_package(struct rapl_package *rp);
 
-#endif /* __INTEL_RAPL_H__ */
+#endif  

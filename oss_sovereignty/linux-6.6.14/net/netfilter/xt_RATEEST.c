@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2007 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/gen_stats.h>
@@ -80,10 +78,7 @@ void xt_rateest_put(struct net *net, struct xt_rateest *est)
 	if (--est->refcnt == 0) {
 		hlist_del(&est->list);
 		gen_kill_estimator(&est->rate_est);
-		/*
-		 * gen_estimator est_timer() might access est->lock or bstats,
-		 * wait a RCU grace period before freeing 'est'
-		 */
+		 
 		kfree_rcu(est, rcu);
 	}
 	mutex_unlock(&xn->hash_lock);
@@ -124,10 +119,7 @@ static int xt_rateest_tg_checkentry(const struct xt_tgchk_param *par)
 	est = __xt_rateest_lookup(xn, info->name);
 	if (est) {
 		mutex_unlock(&xn->hash_lock);
-		/*
-		 * If estimator parameters are specified, they must match the
-		 * existing estimator.
-		 */
+		 
 		if ((!info->interval && !info->ewma_log) ||
 		    (info->interval != est->params.interval ||
 		     info->ewma_log != est->params.ewma_log)) {

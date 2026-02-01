@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 Linaro Ltd. <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt)	"efi: memattr: " fmt
 
@@ -15,10 +13,7 @@
 static int __initdata tbl_size;
 unsigned long __ro_after_init efi_mem_attr_table = EFI_INVALID_TABLE_ADDR;
 
-/*
- * Reserve the memory associated with the Memory Attributes configuration
- * table, if it exists.
- */
+ 
 int __init efi_memattr_init(void)
 {
 	efi_memory_attributes_table_t *tbl;
@@ -48,11 +43,7 @@ unmap:
 	return 0;
 }
 
-/*
- * Returns a copy @out of the UEFI memory descriptor @in if it is covered
- * entirely by a UEFI memory map entry with matching attributes. The virtual
- * address of @out is set according to the matching entry that was found.
- */
+ 
 static bool entry_is_valid(const efi_memory_desc_t *in, efi_memory_desc_t *out)
 {
 	u64 in_paddr = in->phys_addr;
@@ -70,13 +61,7 @@ static bool entry_is_valid(const efi_memory_desc_t *in, efi_memory_desc_t *out)
 	if (PAGE_SIZE > EFI_PAGE_SIZE &&
 	    (!PAGE_ALIGNED(in->phys_addr) ||
 	     !PAGE_ALIGNED(in->num_pages << EFI_PAGE_SHIFT))) {
-		/*
-		 * Since arm64 may execute with page sizes of up to 64 KB, the
-		 * UEFI spec mandates that RuntimeServices memory regions must
-		 * be 64 KB aligned. We need to validate this here since we will
-		 * not be able to tighten permissions on such regions without
-		 * affecting adjacent regions.
-		 */
+		 
 		pr_warn("Entry address region misaligned\n");
 		return false;
 	}
@@ -88,17 +73,14 @@ static bool entry_is_valid(const efi_memory_desc_t *in, efi_memory_desc_t *out)
 		if (!(md->attribute & EFI_MEMORY_RUNTIME))
 			continue;
 		if (md->virt_addr == 0 && md->phys_addr != 0) {
-			/* no virtual mapping has been installed by the stub */
+			 
 			break;
 		}
 
 		if (md_paddr > in_paddr || (in_paddr - md_paddr) >= md_size)
 			continue;
 
-		/*
-		 * This entry covers the start of @in, check whether
-		 * it covers the end as well.
-		 */
+		 
 		if (md_paddr + md_size < in_paddr + in_size) {
 			pr_warn("Entry covers multiple EFI memory map regions\n");
 			return false;
@@ -118,13 +100,7 @@ static bool entry_is_valid(const efi_memory_desc_t *in, efi_memory_desc_t *out)
 	return false;
 }
 
-/*
- * To be called after the EFI page tables have been populated. If a memory
- * attributes table is available, its contents will be used to update the
- * mappings with tightened permissions as described by the table.
- * This requires the UEFI memory map to have already been populated with
- * virtual addresses.
- */
+ 
 int __init efi_memattr_apply_permissions(struct mm_struct *mm,
 					 efi_memattr_perm_setter fn)
 {
@@ -135,12 +111,7 @@ int __init efi_memattr_apply_permissions(struct mm_struct *mm,
 	if (tbl_size <= sizeof(*tbl))
 		return 0;
 
-	/*
-	 * We need the EFI memory map to be setup so we can use it to
-	 * lookup the virtual addresses of all entries in the  of EFI
-	 * Memory Attributes table. If it isn't available, this
-	 * function should not be called.
-	 */
+	 
 	if (WARN_ON(!efi_enabled(EFI_MEMMAP)))
 		return 0;
 

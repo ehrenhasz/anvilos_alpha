@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018-2019 HiSilicon Limited. */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
@@ -82,7 +82,7 @@
 #define HPRE_PREFETCH_DISABLE		BIT(30)
 #define HPRE_SVA_DISABLE_READY		(BIT(4) | BIT(8))
 
-/* clock gate */
+ 
 #define HPRE_CLKGATE_CTL		0x301a10
 #define HPRE_PEH_CFG_AUTO_GATE		0x301a2c
 #define HPRE_CLUSTER_DYN_CTL		0x302010
@@ -155,7 +155,7 @@ static const struct qm_dev_alg hpre_dev_algs[] = {
 		.alg_msk = BIT(6),
 		.alg = "x448\n"
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
@@ -286,7 +286,7 @@ static const struct hpre_hw_error hpre_hw_errors[] = {
 		.int_msk = BIT(24),
 		.msg = "sva_int_set"
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
@@ -340,7 +340,7 @@ static const char *hpre_dfx_files[HPRE_DFX_FILE_NUM] = {
 	"invalid_req_cnt"
 };
 
-/* define the HPRE's dfx regs region and region length */
+ 
 static struct dfx_diff_registers hpre_diff_regs[] = {
 	{
 		.reg_offset = HPRE_DFX_BASE,
@@ -403,10 +403,7 @@ static const struct kernel_param_ops hpre_uacce_mode_ops = {
 	.get = param_get_int,
 };
 
-/*
- * uacce_mode = 0 means hpre only register to crypto,
- * uacce_mode = 1 means hpre both register to crypto and uacce.
- */
+ 
 static u32 uacce_mode = UACCE_MODE_NOUACCE;
 module_param_cb(uacce_mode, &hpre_uacce_mode_ops, &uacce_mode, 0444);
 MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
@@ -446,10 +443,7 @@ struct hisi_qp *hpre_create_qp(u8 type)
 	if (type != HPRE_V2_ALG_TYPE && type != HPRE_V3_ECC_ALG_TYPE)
 		return NULL;
 
-	/*
-	 * type: 0 - RSA/DH. algorithm supported in V2,
-	 *       1 - ECC algorithm in V3.
-	 */
+	 
 	ret = hisi_qm_alloc_qps_node(&hpre_devices, 1, type, node, &qp);
 	if (!ret)
 		return qp;
@@ -488,7 +482,7 @@ static int hpre_cfg_by_dsm(struct hisi_qm *qm)
 		return -EINVAL;
 	}
 
-	/* Switch over to MSI handling due to non-standard PCI implementation */
+	 
 	obj = acpi_evaluate_dsm(ACPI_HANDLE(dev), &guid,
 				0, HPRE_VIA_MSI_DSM, NULL);
 	if (!obj) {
@@ -515,7 +509,7 @@ static int hpre_set_cluster(struct hisi_qm *qm)
 	for (i = 0; i < clusters_num; i++) {
 		offset = i * HPRE_CLSTR_ADDR_INTRVL;
 
-		/* clusters initiating */
+		 
 		writel(cluster_core_mask,
 		       qm->io_base + offset + HPRE_CORE_ENB);
 		writel(0x1, qm->io_base + offset + HPRE_CORE_INI_CFG);
@@ -535,11 +529,7 @@ static int hpre_set_cluster(struct hisi_qm *qm)
 	return 0;
 }
 
-/*
- * For Kunpeng 920, we should disable FLR triggered by hardware (BME/PM/SRIOV).
- * Or it may stay in D3 state when we bind and unbind hpre quickly,
- * as it does FLR triggered by hardware.
- */
+ 
 static void disable_flr_of_bme(struct hisi_qm *qm)
 {
 	u32 val;
@@ -559,7 +549,7 @@ static void hpre_open_sva_prefetch(struct hisi_qm *qm)
 	if (!test_bit(QM_SUPPORT_SVA_PREFETCH, &qm->caps))
 		return;
 
-	/* Enable prefetch */
+	 
 	val = readl_relaxed(qm->io_base + HPRE_PREFETCH_CFG);
 	val &= HPRE_PREFETCH_ENABLE;
 	writel(val, qm->io_base + HPRE_PREFETCH_CFG);
@@ -646,14 +636,14 @@ static int hpre_set_user_domain_and_cache(struct hisi_qm *qm)
 	u32 val;
 	int ret;
 
-	/* disabel dynamic clock gate before sram init */
+	 
 	hpre_disable_clock_gate(qm);
 
 	writel(HPRE_QM_USR_CFG_MASK, qm->io_base + QM_ARUSER_M_CFG_ENABLE);
 	writel(HPRE_QM_USR_CFG_MASK, qm->io_base + QM_AWUSER_M_CFG_ENABLE);
 	writel_relaxed(HPRE_QM_AXI_CFG_MASK, qm->io_base + QM_AXI_M_CFG);
 
-	/* HPRE need more time, we close this interrupt */
+	 
 	val = readl_relaxed(qm->io_base + HPRE_QM_ABNML_INT_MASK);
 	val |= BIT(HPRE_TIMEOUT_ABNML_BIT);
 	writel_relaxed(val, qm->io_base + HPRE_QM_ABNML_INT_MASK);
@@ -687,7 +677,7 @@ static int hpre_set_user_domain_and_cache(struct hisi_qm *qm)
 	if (ret)
 		return -ETIMEDOUT;
 
-	/* This setting is only needed by Kunpeng 920. */
+	 
 	if (qm->ver == QM_HW_V2) {
 		ret = hpre_cfg_by_dsm(qm);
 		if (ret)
@@ -696,7 +686,7 @@ static int hpre_set_user_domain_and_cache(struct hisi_qm *qm)
 		disable_flr_of_bme(qm);
 	}
 
-	/* Config data buffer pasid needed by Kunpeng 920 */
+	 
 	hpre_config_pasid(qm);
 
 	hpre_enable_clock_gate(qm);
@@ -710,14 +700,14 @@ static void hpre_cnt_regs_clear(struct hisi_qm *qm)
 	u8 clusters_num;
 	int i;
 
-	/* clear clusterX/cluster_ctrl */
+	 
 	clusters_num = qm->cap_tables.dev_cap_table[HPRE_CLUSTER_NUM_CAP_IDX].cap_val;
 	for (i = 0; i < clusters_num; i++) {
 		offset = HPRE_CLSTR_BASE + i * HPRE_CLSTR_ADDR_INTRVL;
 		writel(0x0, qm->io_base + offset + HPRE_CLUSTER_INQURY);
 	}
 
-	/* clear rdclr_en */
+	 
 	writel(0x0, qm->io_base + HPRE_CTRL_CNT_CLR_CE);
 
 	hisi_qm_debug_regs_clear(qm);
@@ -750,9 +740,9 @@ static void hpre_hw_error_disable(struct hisi_qm *qm)
 	ce = hisi_qm_get_hw_info(qm, hpre_basic_info, HPRE_CE_MASK_CAP, qm->cap_ver);
 	nfe = hisi_qm_get_hw_info(qm, hpre_basic_info, HPRE_NFE_MASK_CAP, qm->cap_ver);
 
-	/* disable hpre hw error interrupts */
+	 
 	writel(ce | nfe | HPRE_HAC_RAS_FE_ENABLE, qm->io_base + HPRE_INT_MASK);
-	/* disable HPRE block master OOO when nfe occurs on Kunpeng930 */
+	 
 	hpre_master_ooo_ctrl(qm, false);
 }
 
@@ -763,18 +753,18 @@ static void hpre_hw_error_enable(struct hisi_qm *qm)
 	ce = hisi_qm_get_hw_info(qm, hpre_basic_info, HPRE_CE_MASK_CAP, qm->cap_ver);
 	nfe = hisi_qm_get_hw_info(qm, hpre_basic_info, HPRE_NFE_MASK_CAP, qm->cap_ver);
 
-	/* clear HPRE hw error source if having */
+	 
 	writel(ce | nfe | HPRE_HAC_RAS_FE_ENABLE, qm->io_base + HPRE_HAC_SOURCE_INT);
 
-	/* configure error type */
+	 
 	writel(ce, qm->io_base + HPRE_RAS_CE_ENB);
 	writel(nfe, qm->io_base + HPRE_RAS_NFE_ENB);
 	writel(HPRE_HAC_RAS_FE_ENABLE, qm->io_base + HPRE_RAS_FE_ENB);
 
-	/* enable HPRE block master OOO when nfe occurs on Kunpeng930 */
+	 
 	hpre_master_ooo_ctrl(qm, true);
 
-	/* enable hpre hw error interrupts */
+	 
 	writel(HPRE_CORE_INT_ENABLE, qm->io_base + HPRE_INT_MASK);
 }
 
@@ -1171,7 +1161,7 @@ static int hpre_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
 		return ret;
 	}
 
-	/* Fetch and save the value of capability registers */
+	 
 	ret = hpre_pre_store_cap_reg(qm);
 	if (ret) {
 		pci_err(pdev, "Failed to pre-store capability registers!\n");
@@ -1245,7 +1235,7 @@ static void hpre_show_last_dfx_regs(struct hisi_qm *qm)
 	if (qm->fun_type == QM_HW_VF || !debug->last_words)
 		return;
 
-	/* dumps last word of the debugging registers during controller reset */
+	 
 	for (i = 0; i < com_dfx_regs_num; i++) {
 		val = readl_relaxed(qm->io_base + hpre_com_dfx_regs[i].offset);
 		if (debug->last_words[i] != val)
@@ -1370,7 +1360,7 @@ static int hpre_probe_init(struct hpre *hpre)
 		ret = hpre_pf_probe_init(hpre);
 		if (ret)
 			return ret;
-		/* Enable shaper type 0 */
+		 
 		if (qm->ver >= QM_HW_V3) {
 			type_rate |= QM_SHAPER_ENABLE;
 			qm->type_rate = type_rate;

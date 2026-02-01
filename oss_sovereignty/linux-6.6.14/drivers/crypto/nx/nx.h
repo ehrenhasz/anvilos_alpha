@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __NX_H__
 #define __NX_H__
@@ -9,7 +9,7 @@
 #define NX_STRING	"IBM Power7+ Nest Accelerator Crypto Driver"
 #define NX_VERSION	"1.0"
 
-/* a scatterlist in the format PHYP is expecting */
+ 
 struct nx_sg {
 	u64 addr;
 	u32 rsvd;
@@ -25,8 +25,7 @@ enum nx_status {
 	NX_OKAY
 };
 
-/* msc_triplet and max_sync_cop are used only to assist in parsing the
- * openFirmware property */
+ 
 struct msc_triplet {
 	u32 keybitlen;
 	u32 databytelen;
@@ -115,21 +114,20 @@ struct nx_ctr_priv {
 };
 
 struct nx_crypto_ctx {
-	spinlock_t lock;	  /* synchronize access to the context */
-	void *kmem;		  /* unaligned, kmalloc'd buffer */
-	size_t kmem_len;	  /* length of kmem */
-	struct nx_csbcpb *csbcpb; /* aligned page given to phyp @ hcall time */
-	struct vio_pfo_op op;     /* operation struct with hcall parameters */
-	struct nx_csbcpb *csbcpb_aead; /* secondary csbcpb used by AEAD algs */
-	struct vio_pfo_op op_aead;/* operation struct for csbcpb_aead */
+	spinlock_t lock;	   
+	void *kmem;		   
+	size_t kmem_len;	   
+	struct nx_csbcpb *csbcpb;  
+	struct vio_pfo_op op;      
+	struct nx_csbcpb *csbcpb_aead;  
+	struct vio_pfo_op op_aead; 
 
-	struct nx_sg *in_sg;      /* aligned pointer into kmem to an sg list */
-	struct nx_sg *out_sg;     /* aligned pointer into kmem to an sg list */
+	struct nx_sg *in_sg;       
+	struct nx_sg *out_sg;      
 
-	struct alg_props *ap;	  /* pointer into props based on our key size */
-	struct alg_props props[3];/* openFirmware properties for requests */
-	struct nx_stats *stats;   /* pointer into an nx_crypto_driver for stats
-				     reporting */
+	struct alg_props *ap;	   
+	struct alg_props props[3]; 
+	struct nx_stats *stats;    
 
 	union {
 		struct nx_gcm_priv gcm;
@@ -141,7 +139,7 @@ struct nx_crypto_ctx {
 
 struct crypto_aead;
 
-/* prototypes */
+ 
 int nx_crypto_ctx_aes_ccm_init(struct crypto_aead *tfm);
 int nx_crypto_ctx_aes_gcm_init(struct crypto_aead *tfm);
 int nx_crypto_ctx_aes_xcbc_init(struct crypto_tfm *tfm);

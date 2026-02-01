@@ -1,9 +1,5 @@
-/* 	$OpenBSD: common.c,v 1.5 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Helpers for key API tests
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -25,8 +21,8 @@
 #include <openssl/objects.h>
 #ifdef OPENSSL_HAS_NISTP256
 # include <openssl/ec.h>
-#endif /* OPENSSL_HAS_NISTP256 */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 #include "openbsd-compat/openssl-compat.h"
 
@@ -55,7 +51,7 @@ load_text_file(const char *name)
 	struct sshbuf *ret = load_file(name);
 	const u_char *p;
 
-	/* Trim whitespace at EOL */
+	 
 	for (p = sshbuf_ptr(ret); sshbuf_len(ret) > 0;) {
 		if (p[sshbuf_len(ret) - 1] == '\r' ||
 		    p[sshbuf_len(ret) - 1] == '\t' ||
@@ -65,7 +61,7 @@ load_text_file(const char *name)
 		else
 			break;
 	}
-	/* \0 terminate */
+	 
 	ASSERT_INT_EQ(sshbuf_put_u8(ret, 0), 0);
 	return ret;
 }
@@ -159,5 +155,5 @@ dsa_priv_key(struct sshkey *k)
 	DSA_get0_key(k->dsa, NULL, &priv_key);
 	return priv_key;
 }
-#endif /* WITH_OPENSSL */
+#endif  
 

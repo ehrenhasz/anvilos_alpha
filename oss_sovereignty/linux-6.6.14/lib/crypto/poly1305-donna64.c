@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This is based in part on Andrew Moon's poly1305-donna, which is in the
- * public domain.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <asm/unaligned.h>
@@ -15,7 +10,7 @@ void poly1305_core_setkey(struct poly1305_core_key *key,
 {
 	u64 t0, t1;
 
-	/* r &= 0xffffffc0ffffffc0ffffffc0fffffff */
+	 
 	t0 = get_unaligned_le64(&raw_key[0]);
 	t1 = get_unaligned_le64(&raw_key[8]);
 
@@ -23,7 +18,7 @@ void poly1305_core_setkey(struct poly1305_core_key *key,
 	key->key.r64[1] = ((t0 >> 44) | (t1 << 20)) & 0xfffffc0ffffULL;
 	key->key.r64[2] = ((t1 >> 24)) & 0x00ffffffc0fULL;
 
-	/* s = 20*r */
+	 
 	key->precomputed_s.r64[0] = key->key.r64[1] * 20;
 	key->precomputed_s.r64[1] = key->key.r64[2] * 20;
 }
@@ -60,7 +55,7 @@ void poly1305_core_blocks(struct poly1305_state *state,
 	do {
 		u64 t0, t1;
 
-		/* h += m[i] */
+		 
 		t0 = get_unaligned_le64(&input[0]);
 		t1 = get_unaligned_le64(&input[8]);
 
@@ -68,7 +63,7 @@ void poly1305_core_blocks(struct poly1305_state *state,
 		h1 += ((t0 >> 44) | (t1 << 20)) & 0xfffffffffffULL;
 		h2 += (((t1 >> 24)) & 0x3ffffffffffULL) | hibit64;
 
-		/* h *= r */
+		 
 		d0 = (u128)h0 * r0;
 		d = (u128)h1 * s2;
 		d0 += d;
@@ -85,7 +80,7 @@ void poly1305_core_blocks(struct poly1305_state *state,
 		d = (u128)h2 * r0;
 		d2 += d;
 
-		/* (partial) h %= p */
+		 
 		c = (u64)(d0 >> 44);
 		h0 = (u64)d0 & 0xfffffffffffULL;
 		d1 += c;
@@ -116,7 +111,7 @@ void poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],
 	u64 g0, g1, g2;
 	u64 t0, t1;
 
-	/* fully carry h */
+	 
 	h0 = state->h64[0];
 	h1 = state->h64[1];
 	h2 = state->h64[2];
@@ -140,7 +135,7 @@ void poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],
 	h0 &= 0xfffffffffffULL;
 	h1 += c;
 
-	/* compute h + -p */
+	 
 	g0 = h0 + 5;
 	c  = g0 >> 44;
 	g0 &= 0xfffffffffffULL;
@@ -149,7 +144,7 @@ void poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],
 	g1 &= 0xfffffffffffULL;
 	g2 = h2 + c - (1ULL << 42);
 
-	/* select h if h < p, or h + -p if h >= p */
+	 
 	c = (g2 >> ((sizeof(u64) * 8) - 1)) - 1;
 	g0 &= c;
 	g1 &= c;
@@ -160,7 +155,7 @@ void poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],
 	h2 = (h2 & c) | g2;
 
 	if (likely(nonce)) {
-		/* h = (h + nonce) */
+		 
 		t0 = ((u64)nonce[1] << 32) | nonce[0];
 		t1 = ((u64)nonce[3] << 32) | nonce[2];
 
@@ -174,7 +169,7 @@ void poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],
 		h2 &= 0x3ffffffffffULL;
 	}
 
-	/* mac = h % (2^128) */
+	 
 	h0 = h0 | (h1 << 44);
 	h1 = (h1 >> 20) | (h2 << 24);
 

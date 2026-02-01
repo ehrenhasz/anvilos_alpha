@@ -1,28 +1,6 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- * The full GNU General Public License is included in this distribution
- * in the file called LICENSE.GPL.
- */
+ 
 
-/* probe_roms - scan for oem parameters */
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -63,7 +41,7 @@ struct isci_orom *isci_request_oprom(struct pci_dev *pdev)
 	for (i = 0; i < len && rom; i += ISCI_OEM_SIG_SIZE) {
 		memcpy_fromio(oem_sig, oprom + i, ISCI_OEM_SIG_SIZE);
 
-		/* we think we found the OEM table */
+		 
 		if (memcmp(oem_sig, ISCI_OEM_SIG, ISCI_OEM_SIG_SIZE) == 0) {
 			size_t copy_len;
 
@@ -76,7 +54,7 @@ struct isci_orom *isci_request_oprom(struct pci_dev *pdev)
 				      oprom + i + sizeof(oem_hdr),
 				      copy_len);
 
-			/* calculate checksum */
+			 
 			tmp = (u8 *)&oem_hdr;
 			for (j = 0, sum = 0; j < sizeof(oem_hdr); j++, tmp++)
 				sum += *tmp;
@@ -91,7 +69,7 @@ struct isci_orom *isci_request_oprom(struct pci_dev *pdev)
 				continue;
 			}
 
-			/* keep going if that's not the oem param table */
+			 
 			if (memcmp(rom->hdr.signature,
 				   ISCI_ROM_SIG,
 				   ISCI_ROM_SIG_SIZE) != 0)
@@ -138,10 +116,7 @@ struct isci_orom *isci_request_firmware(struct pci_dev *pdev, const struct firmw
 	if (is_c0(pdev) || is_c1(pdev))
 		goto out;
 
-	/*
-	 * deprecated: override default amp_control for pre-preproduction
-	 * silicon revisions
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(orom->ctrl); i++)
 		for (j = 0; j < ARRAY_SIZE(orom->ctrl[i].phys); j++) {
 			orom->ctrl[i].phys[j].afe_tx_amp_control0 = 0xe7c03;
@@ -208,7 +183,7 @@ struct isci_orom *isci_get_efi_var(struct pci_dev *pdev)
 		return NULL;
 	}
 
-	/* calculate checksum */
+	 
 	tmp = (u8 *)efi_data;
 	for (j = 0, sum = 0; j < (sizeof(*oem_hdr) + sizeof(*rom)); j++, tmp++)
 		sum += *tmp;

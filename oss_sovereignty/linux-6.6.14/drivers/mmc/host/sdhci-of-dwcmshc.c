@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Synopsys DesignWare Cores Mobile Storage Host Controller
- *
- * Copyright (C) 2018 Synaptics Incorporated
- *
- * Author: Jisheng Zhang <jszhang@kernel.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -23,20 +17,20 @@
 
 #define SDHCI_DWCMSHC_ARG2_STUFF	GENMASK(31, 16)
 
-/* DWCMSHC specific Mode Select value */
+ 
 #define DWCMSHC_CTRL_HS400		0x7
 
-/* DWC IP vendor area 1 pointer */
+ 
 #define DWCMSHC_P_VENDOR_AREA1		0xe8
 #define DWCMSHC_AREA1_MASK		GENMASK(11, 0)
-/* Offset inside the  vendor area 1 */
+ 
 #define DWCMSHC_HOST_CTRL3		0x8
 #define DWCMSHC_EMMC_CONTROL		0x2c
 #define DWCMSHC_CARD_IS_EMMC		BIT(0)
 #define DWCMSHC_ENHANCED_STROBE		BIT(8)
 #define DWCMSHC_EMMC_ATCTRL		0x40
 
-/* Rockchip specific Registers */
+ 
 #define DWCMSHC_EMMC_DLL_CTRL		0x800
 #define DWCMSHC_EMMC_DLL_RXCLK		0x804
 #define DWCMSHC_EMMC_DLL_TXCLK		0x808
@@ -81,7 +75,7 @@ enum dwcmshc_rk_type {
 };
 
 struct rk35xx_priv {
-	/* Rockchip specified optional clocks */
+	 
 	struct clk_bulk_data rockchip_clks[RK35xx_MAX_CLKS];
 	struct reset_control *reset;
 	enum dwcmshc_rk_type devtype;
@@ -90,14 +84,11 @@ struct rk35xx_priv {
 
 struct dwcmshc_priv {
 	struct clk	*bus_clk;
-	int vendor_specific_area1; /* P_VENDOR_SPECIFIC_AREA reg */
-	void *priv; /* pointer to SoC private stuff */
+	int vendor_specific_area1;  
+	void *priv;  
 };
 
-/*
- * If DMA addr spans 128MB boundary, we split the DMA transfer into two
- * so that each DMA transfer doesn't exceed the boundary.
- */
+ 
 static void dwcmshc_adma_write_desc(struct sdhci_host *host, void **desc,
 				    dma_addr_t addr, int len, unsigned int cmd)
 {
@@ -139,11 +130,7 @@ static void dwcmshc_check_auto_cmd23(struct mmc_host *mmc,
 {
 	struct sdhci_host *host = mmc_priv(mmc);
 
-	/*
-	 * No matter V4 is enabled or not, ARGUMENT2 register is 32-bit
-	 * block count register which doesn't support stuff bits of
-	 * CMD23 argument on dwcmsch host controller.
-	 */
+	 
 	if (mrq->sbc && (mrq->sbc->arg & SDHCI_DWCMSHC_ARG2_STUFF))
 		host->flags &= ~SDHCI_AUTO_CMD23;
 	else
@@ -165,7 +152,7 @@ static void dwcmshc_set_uhs_signaling(struct sdhci_host *host,
 	u16 ctrl, ctrl_2;
 
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	if ((timing == MMC_TIMING_MMC_HS200) ||
 	    (timing == MMC_TIMING_UHS_SDR104))
@@ -181,7 +168,7 @@ static void dwcmshc_set_uhs_signaling(struct sdhci_host *host,
 		 (timing == MMC_TIMING_MMC_DDR52))
 		ctrl_2 |= SDHCI_CTRL_UHS_DDR50;
 	else if (timing == MMC_TIMING_MMC_HS400) {
-		/* set CARD_IS_EMMC bit to enable Data Strobe for HS400 */
+		 
 		ctrl = sdhci_readw(host, priv->vendor_specific_area1 + DWCMSHC_EMMC_CONTROL);
 		ctrl |= DWCMSHC_CARD_IS_EMMC;
 		sdhci_writew(host, ctrl, priv->vendor_specific_area1 + DWCMSHC_EMMC_CONTROL);
@@ -222,12 +209,12 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
 	host->mmc->actual_clock = 0;
 
 	if (clock == 0) {
-		/* Disable interface clock at initial state. */
+		 
 		sdhci_set_clock(host, clock);
 		return;
 	}
 
-	/* Rockchip platform only support 375KHz for identify mode */
+	 
 	if (clock <= 400000)
 		clock = 375000;
 
@@ -237,26 +224,19 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
 
 	sdhci_set_clock(host, clock);
 
-	/* Disable cmd conflict check */
+	 
 	reg = dwc_priv->vendor_specific_area1 + DWCMSHC_HOST_CTRL3;
 	extra = sdhci_readl(host, reg);
 	extra &= ~BIT(0);
 	sdhci_writel(host, extra, reg);
 
 	if (clock <= 52000000) {
-		/*
-		 * Disable DLL and reset both of sample and drive clock.
-		 * The bypass bit and start bit need to be set if DLL is not locked.
-		 */
+		 
 		sdhci_writel(host, DWCMSHC_EMMC_DLL_BYPASS | DWCMSHC_EMMC_DLL_START, DWCMSHC_EMMC_DLL_CTRL);
 		sdhci_writel(host, DLL_RXCLK_ORI_GATE, DWCMSHC_EMMC_DLL_RXCLK);
 		sdhci_writel(host, 0, DWCMSHC_EMMC_DLL_TXCLK);
 		sdhci_writel(host, 0, DECMSHC_EMMC_DLL_CMDOUT);
-		/*
-		 * Before switching to hs400es mode, the driver will enable
-		 * enhanced strobe first. PHY needs to configure the parameters
-		 * of enhanced strobe first.
-		 */
+		 
 		extra = DWCMSHC_EMMC_DLL_DLYENA |
 			DLL_STRBIN_DELAY_NUM_SEL |
 			DLL_STRBIN_DELAY_NUM_DEFAULT << DLL_STRBIN_DELAY_NUM_OFFSET;
@@ -264,21 +244,18 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
 		return;
 	}
 
-	/* Reset DLL */
+	 
 	sdhci_writel(host, BIT(1), DWCMSHC_EMMC_DLL_CTRL);
 	udelay(1);
 	sdhci_writel(host, 0x0, DWCMSHC_EMMC_DLL_CTRL);
 
-	/*
-	 * We shouldn't set DLL_RXCLK_NO_INVERTER for identify mode but
-	 * we must set it in higher speed mode.
-	 */
+	 
 	extra = DWCMSHC_EMMC_DLL_DLYENA;
 	if (priv->devtype == DWCMSHC_RK3568)
 		extra |= DLL_RXCLK_NO_INVERTER << DWCMSHC_EMMC_DLL_RXCLK_SRCSEL;
 	sdhci_writel(host, extra, DWCMSHC_EMMC_DLL_RXCLK);
 
-	/* Init DLL settings */
+	 
 	extra = 0x5 << DWCMSHC_EMMC_DLL_START_POINT |
 		0x2 << DWCMSHC_EMMC_DLL_INC |
 		DWCMSHC_EMMC_DLL_START;
@@ -291,9 +268,9 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
 		return;
 	}
 
-	extra = 0x1 << 16 | /* tune clock stop en */
-		0x3 << 17 | /* pre-change delay */
-		0x3 << 19;  /* post-change delay */
+	extra = 0x1 << 16 |  
+		0x3 << 17 |  
+		0x3 << 19;   
 	sdhci_writel(host, extra, dwc_priv->vendor_specific_area1 + DWCMSHC_EMMC_ATCTRL);
 
 	if (host->mmc->ios.timing == MMC_TIMING_MMC_HS200 ||
@@ -411,9 +388,9 @@ static int dwcmshc_rk35xx_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
 				&priv->txclk_tapnum))
 		priv->txclk_tapnum = DLL_TXCLK_TAPNUM_DEFAULT;
 
-	/* Disable cmd conflict check */
+	 
 	sdhci_writel(host, 0x0, dwc_priv->vendor_specific_area1 + DWCMSHC_HOST_CTRL3);
-	/* Reset previous settings */
+	 
 	sdhci_writel(host, 0, DWCMSHC_EMMC_DLL_TXCLK);
 	sdhci_writel(host, 0, DWCMSHC_EMMC_DLL_STRBIN);
 
@@ -422,10 +399,7 @@ static int dwcmshc_rk35xx_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
 
 static void dwcmshc_rk35xx_postinit(struct sdhci_host *host, struct dwcmshc_priv *dwc_priv)
 {
-	/*
-	 * Don't support highspeed bus mode with low clk speed as we
-	 * cannot use DLL for this condition.
-	 */
+	 
 	if (host->mmc->f_max <= 52000000) {
 		dev_info(mmc_dev(host->mmc), "Disabling HS200/HS400, frequency too low (%d)\n",
 			 host->mmc->f_max);
@@ -484,9 +458,7 @@ static int dwcmshc_probe(struct platform_device *pdev)
 	if (IS_ERR(host))
 		return PTR_ERR(host);
 
-	/*
-	 * extra adma table cnt for cross 128M boundary handling.
-	 */
+	 
 	extra = DIV_ROUND_UP_ULL(dma_get_required_mask(dev), SZ_128M);
 	if (extra > SDHCI_MAX_SEGS)
 		extra = SDHCI_MAX_SEGS;

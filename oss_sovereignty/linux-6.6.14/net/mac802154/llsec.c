@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Fraunhofer ITWM
- *
- * Written by:
- * Phoebe Buckheister <phoebe.buckheister@itwm.fraunhofer.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/bug.h>
@@ -230,10 +225,7 @@ int mac802154_llsec_key_add(struct mac802154_llsec *sec,
 
 		mkey = container_of(pos->key, struct mac802154_llsec_key, key);
 
-		/* Don't allow multiple instances of the same AES key to have
-		 * different allowed frame types/command frame ids, as this is
-		 * not possible in the 802.15.4 PIB.
-		 */
+		 
 		if (pos->key->frame_types != key->frame_types ||
 		    pos->key->cmd_frame_ids != key->cmd_frame_ids)
 			return -EEXIST;
@@ -599,7 +591,7 @@ static void llsec_geniv(u8 iv[16], __le64 addr,
 	__be64 addr_bytes = (__force __be64) swab64((__force u64) addr);
 	__be32 frame_counter = (__force __be32) swab32((__force u32) sec->frame_counter);
 
-	iv[0] = 1; /* L' = L - 1 = 1 */
+	iv[0] = 1;  
 	memcpy(iv + 1, &addr_bytes, sizeof(addr_bytes));
 	memcpy(iv + 9, &frame_counter, sizeof(frame_counter));
 	iv[13] = sec->level;
@@ -619,7 +611,7 @@ llsec_do_encrypt_unauth(struct sk_buff *skb, const struct mac802154_llsec *sec,
 	unsigned char *data;
 
 	llsec_geniv(iv, sec->params.hwaddr, &hdr->sec);
-	/* Compute data payload offset and data length */
+	 
 	data = skb_mac_header(skb) + skb->mac_len;
 	datalen = skb_tail_pointer(skb) - data;
 	sg_init_one(&src, data, datalen);
@@ -707,7 +699,7 @@ int mac802154_llsec_encrypt(struct mac802154_llsec *sec, struct sk_buff *skb)
 
 	hlen = ieee802154_hdr_pull(skb, &hdr);
 
-	/* TODO: control frames security support */
+	 
 	if (hlen < 0 ||
 	    (hdr.fc.type != IEEE802154_FC_TYPE_DATA &&
 	     hdr.fc.type != IEEE802154_FC_TYPE_BEACON))

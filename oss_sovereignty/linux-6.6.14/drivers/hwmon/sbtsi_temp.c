@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sbtsi_temp.c - hwmon driver for a SBI Temperature Sensor Interface (SB-TSI)
- *                compliant AMD SoC temperature device.
- *
- * Copyright (c) 2020, Google Inc.
- * Copyright (c) 2020, Kun Yi <kunyi@google.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -15,53 +9,34 @@
 #include <linux/mutex.h>
 #include <linux/of.h>
 
-/*
- * SB-TSI registers only support SMBus byte data access. "_INT" registers are
- * the integer part of a temperature value or limit, and "_DEC" registers are
- * corresponding decimal parts.
- */
-#define SBTSI_REG_TEMP_INT		0x01 /* RO */
-#define SBTSI_REG_STATUS		0x02 /* RO */
-#define SBTSI_REG_CONFIG		0x03 /* RO */
-#define SBTSI_REG_TEMP_HIGH_INT		0x07 /* RW */
-#define SBTSI_REG_TEMP_LOW_INT		0x08 /* RW */
-#define SBTSI_REG_TEMP_DEC		0x10 /* RW */
-#define SBTSI_REG_TEMP_HIGH_DEC		0x13 /* RW */
-#define SBTSI_REG_TEMP_LOW_DEC		0x14 /* RW */
+ 
+#define SBTSI_REG_TEMP_INT		0x01  
+#define SBTSI_REG_STATUS		0x02  
+#define SBTSI_REG_CONFIG		0x03  
+#define SBTSI_REG_TEMP_HIGH_INT		0x07  
+#define SBTSI_REG_TEMP_LOW_INT		0x08  
+#define SBTSI_REG_TEMP_DEC		0x10  
+#define SBTSI_REG_TEMP_HIGH_DEC		0x13  
+#define SBTSI_REG_TEMP_LOW_DEC		0x14  
 
 #define SBTSI_CONFIG_READ_ORDER_SHIFT	5
 
 #define SBTSI_TEMP_MIN	0
 #define SBTSI_TEMP_MAX	255875
 
-/* Each client has this additional data */
+ 
 struct sbtsi_data {
 	struct i2c_client *client;
 	struct mutex lock;
 };
 
-/*
- * From SB-TSI spec: CPU temperature readings and limit registers encode the
- * temperature in increments of 0.125 from 0 to 255.875. The "high byte"
- * register encodes the base-2 of the integer portion, and the upper 3 bits of
- * the "low byte" encode in base-2 the decimal portion.
- *
- * e.g. INT=0x19, DEC=0x20 represents 25.125 degrees Celsius
- *
- * Therefore temperature in millidegree Celsius =
- *   (INT + DEC / 256) * 1000 = (INT * 8 + DEC / 32) * 125
- */
+ 
 static inline int sbtsi_reg_to_mc(s32 integer, s32 decimal)
 {
 	return ((integer << 3) + (decimal >> 5)) * 125;
 }
 
-/*
- * Inversely, given temperature in millidegree Celsius
- *   INT = (TEMP / 125) / 8
- *   DEC = ((TEMP / 125) % 8) * 32
- * Caller have to make sure temp doesn't exceed 255875, the max valid value.
- */
+ 
 static inline void sbtsi_mc_to_reg(s32 temp, u8 *integer, u8 *decimal)
 {
 	temp /= 125;
@@ -78,13 +53,7 @@ static int sbtsi_read(struct device *dev, enum hwmon_sensor_types type,
 
 	switch (attr) {
 	case hwmon_temp_input:
-		/*
-		 * ReadOrder bit specifies the reading order of integer and
-		 * decimal part of CPU temp for atomic reads. If bit == 0,
-		 * reading integer part triggers latching of the decimal part,
-		 * so integer part should be read first. If bit == 1, read
-		 * order should be reversed.
-		 */
+		 
 		err = i2c_smbus_read_byte_data(data->client, SBTSI_REG_CONFIG);
 		if (err < 0)
 			return err;

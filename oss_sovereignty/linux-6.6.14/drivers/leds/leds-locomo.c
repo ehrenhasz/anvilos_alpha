@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/leds/leds-locomo.c
- *
- * Copyright (C) 2005 John Lenz <lenz@cs.wisc.edu>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

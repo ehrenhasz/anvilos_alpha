@@ -1,20 +1,4 @@
-/* comm -- compare two sorted files line by line.
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Richard Stallman and David MacKenzie. */
+ 
 
 #include <config.h>
 
@@ -29,42 +13,42 @@
 #include "memcmp2.h"
 #include "xmemcoll.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "comm"
 
 #define AUTHORS \
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-/* Undefine, to avoid warning about redefinition on some systems.  */
+ 
 #undef min
 #define min(x, y) ((x) < (y) ? (x) : (y))
 
-/* True if the LC_COLLATE locale is hard.  */
+ 
 static bool hard_LC_COLLATE;
 
-/* If true, print lines that are found only in file 1. */
+ 
 static bool only_file_1;
 
-/* If true, print lines that are found only in file 2. */
+ 
 static bool only_file_2;
 
-/* If true, print lines that are found in both files. */
+ 
 static bool both;
 
-/* If nonzero, we have seen at least one unpairable line. */
+ 
 static bool seen_unpairable;
 
-/* If nonzero, we have warned about disorder in that file. */
+ 
 static bool issued_disorder_warning[2];
 
-/* line delimiter.  */
+ 
 static unsigned char delim = '\n';
 
-/* If true, print a summary.  */
+ 
 static bool total_option;
 
-/* If nonzero, check that the input is correctly ordered. */
+ 
 static enum
   {
     CHECK_ORDER_DEFAULT,
@@ -72,13 +56,11 @@ static enum
     CHECK_ORDER_DISABLED
   } check_input_order;
 
-/* Output columns will be delimited with this string, which may be set
-   on the command-line with --output-delimiter=STR.  */
+ 
 static char const *col_sep = "\t";
 static size_t col_sep_len = 0;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   CHECK_ORDER_OPTION = CHAR_MAX + 1,

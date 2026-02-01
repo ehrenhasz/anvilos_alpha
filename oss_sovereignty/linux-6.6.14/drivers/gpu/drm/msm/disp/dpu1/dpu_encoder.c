@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Copyright (c) 2014-2018, 2020-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- *
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 #include <linux/debugfs.h>
@@ -39,11 +33,7 @@
 #define DPU_ERROR_ENC(e, fmt, ...) DPU_ERROR("enc%d " fmt,\
 		(e) ? (e)->base.base.id : -1, ##__VA_ARGS__)
 
-/*
- * Two to anticipate panels that can do cmd/vid dynamic switching
- * plan is to create all possible physical encoder types, and switch between
- * them at runtime
- */
+ 
 #define NUM_PHYS_ENCODER_TYPES 2
 
 #define MAX_PHYS_ENCODERS_PER_VIRTUAL \
@@ -55,40 +45,10 @@
 
 #define MAX_HDISPLAY_SPLIT 1080
 
-/* timeout in frames waiting for frame done */
+ 
 #define DPU_ENCODER_FRAME_DONE_TIMEOUT_FRAMES 5
 
-/**
- * enum dpu_enc_rc_events - events for resource control state machine
- * @DPU_ENC_RC_EVENT_KICKOFF:
- *	This event happens at NORMAL priority.
- *	Event that signals the start of the transfer. When this event is
- *	received, enable MDP/DSI core clocks. Regardless of the previous
- *	state, the resource should be in ON state at the end of this event.
- * @DPU_ENC_RC_EVENT_FRAME_DONE:
- *	This event happens at INTERRUPT level.
- *	Event signals the end of the data transfer after the PP FRAME_DONE
- *	event. At the end of this event, a delayed work is scheduled to go to
- *	IDLE_PC state after IDLE_TIMEOUT time.
- * @DPU_ENC_RC_EVENT_PRE_STOP:
- *	This event happens at NORMAL priority.
- *	This event, when received during the ON state, leave the RC STATE
- *	in the PRE_OFF state. It should be followed by the STOP event as
- *	part of encoder disable.
- *	If received during IDLE or OFF states, it will do nothing.
- * @DPU_ENC_RC_EVENT_STOP:
- *	This event happens at NORMAL priority.
- *	When this event is received, disable all the MDP/DSI core clocks, and
- *	disable IRQs. It should be called from the PRE_OFF or IDLE states.
- *	IDLE is expected when IDLE_PC has run, and PRE_OFF did nothing.
- *	PRE_OFF is expected when PRE_STOP was executed during the ON state.
- *	Resource state should be in OFF at the end of the event.
- * @DPU_ENC_RC_EVENT_ENTER_IDLE:
- *	This event happens at NORMAL priority from a work item.
- *	Event signals that there were no frame updates for IDLE_TIMEOUT time.
- *	This would disable MDP/DSI core clocks and change the resource state
- *	to IDLE.
- */
+ 
 enum dpu_enc_rc_events {
 	DPU_ENC_RC_EVENT_KICKOFF = 1,
 	DPU_ENC_RC_EVENT_FRAME_DONE,
@@ -97,14 +57,7 @@ enum dpu_enc_rc_events {
 	DPU_ENC_RC_EVENT_ENTER_IDLE
 };
 
-/*
- * enum dpu_enc_rc_states - states that the resource control maintains
- * @DPU_ENC_RC_STATE_OFF: Resource is in OFF state
- * @DPU_ENC_RC_STATE_PRE_OFF: Resource is transitioning to OFF state
- * @DPU_ENC_RC_STATE_ON: Resource is in ON state
- * @DPU_ENC_RC_STATE_MODESET: Resource is in modeset state
- * @DPU_ENC_RC_STATE_IDLE: Resource is in IDLE state
- */
+ 
 enum dpu_enc_rc_states {
 	DPU_ENC_RC_STATE_OFF,
 	DPU_ENC_RC_STATE_PRE_OFF,
@@ -112,58 +65,7 @@ enum dpu_enc_rc_states {
 	DPU_ENC_RC_STATE_IDLE
 };
 
-/**
- * struct dpu_encoder_virt - virtual encoder. Container of one or more physical
- *	encoders. Virtual encoder manages one "logical" display. Physical
- *	encoders manage one intf block, tied to a specific panel/sub-panel.
- *	Virtual encoder defers as much as possible to the physical encoders.
- *	Virtual encoder registers itself with the DRM Framework as the encoder.
- * @base:		drm_encoder base class for registration with DRM
- * @enc_spinlock:	Virtual-Encoder-Wide Spin Lock for IRQ purposes
- * @enabled:		True if the encoder is active, protected by enc_lock
- * @num_phys_encs:	Actual number of physical encoders contained.
- * @phys_encs:		Container of physical encoders managed.
- * @cur_master:		Pointer to the current master in this mode. Optimization
- *			Only valid after enable. Cleared as disable.
- * @cur_slave:		As above but for the slave encoder.
- * @hw_pp:		Handle to the pingpong blocks used for the display. No.
- *			pingpong blocks can be different than num_phys_encs.
- * @hw_dsc:		Handle to the DSC blocks used for the display.
- * @dsc_mask:		Bitmask of used DSC blocks.
- * @intfs_swapped:	Whether or not the phys_enc interfaces have been swapped
- *			for partial update right-only cases, such as pingpong
- *			split where virtual pingpong does not generate IRQs
- * @crtc:		Pointer to the currently assigned crtc. Normally you
- *			would use crtc->state->encoder_mask to determine the
- *			link between encoder/crtc. However in this case we need
- *			to track crtc in the disable() hook which is called
- *			_after_ encoder_mask is cleared.
- * @connector:		If a mode is set, cached pointer to the active connector
- * @crtc_kickoff_cb:		Callback into CRTC that will flush & start
- *				all CTL paths
- * @crtc_kickoff_cb_data:	Opaque user data given to crtc_kickoff_cb
- * @debugfs_root:		Debug file system root file node
- * @enc_lock:			Lock around physical encoder
- *				create/destroy/enable/disable
- * @frame_busy_mask:		Bitmask tracking which phys_enc we are still
- *				busy processing current command.
- *				Bit0 = phys_encs[0] etc.
- * @crtc_frame_event_cb:	callback handler for frame event
- * @crtc_frame_event_cb_data:	callback handler private data
- * @frame_done_timeout_ms:	frame done timeout in ms
- * @frame_done_timer:		watchdog timer for frame done event
- * @disp_info:			local copy of msm_display_info struct
- * @idle_pc_supported:		indicate if idle power collaps is supported
- * @rc_lock:			resource control mutex lock to protect
- *				virt encoder over various state changes
- * @rc_state:			resource controller state
- * @delayed_off_work:		delayed worker to schedule disabling of
- *				clks and resources after IDLE_TIMEOUT time.
- * @topology:                   topology of the display
- * @idle_timeout:		idle timeout duration in milliseconds
- * @wide_bus_en:		wide bus is enabled on this interface
- * @dsc:			drm_dsc_config pointer, for DSC-enabled encoders
- */
+ 
 struct dpu_encoder_virt {
 	struct drm_encoder base;
 	spinlock_t enc_spinlock;
@@ -205,7 +107,7 @@ struct dpu_encoder_virt {
 
 	bool wide_bus_en;
 
-	/* DSC configuration */
+	 
 	struct drm_dsc_config *dsc;
 };
 
@@ -358,9 +260,9 @@ int dpu_encoder_helper_wait_for_irq(struct dpu_encoder_phys *phys_enc,
 		DPU_ERROR("invalid params\n");
 		return -EINVAL;
 	}
-	/* note: do master / slave checking outside */
+	 
 
-	/* return EWOULDBLOCK since we know the wait isn't necessary */
+	 
 	if (phys_enc->enable_state == DPU_ENC_DISABLED) {
 		DRM_ERROR("encoder is disabled id=%u, callback=%ps, irq=%d\n",
 			  DRMID(phys_enc->parent), func,
@@ -495,12 +397,7 @@ void dpu_encoder_helper_split_config(
 	if (disp_info->intf_type != INTF_DSI)
 		return;
 
-	/**
-	 * disable split modes since encoder will be operating in as the only
-	 * encoder, either for the entire use case in the case of, for example,
-	 * single DSI, or for this frame in the case of left/right only partial
-	 * update.
-	 */
+	 
 	if (phys_enc->split_role == ENC_ROLE_SOLO) {
 		if (hw_mdptop->ops.setup_split_pipe)
 			hw_mdptop->ops.setup_split_pipe(hw_mdptop, &cfg);
@@ -532,7 +429,7 @@ bool dpu_encoder_use_dsc_merge(struct drm_encoder *drm_enc)
 		if (dpu_enc->phys_encs[i])
 			intf_count++;
 
-	/* See dpu_encoder_get_topology, we only support 2:2:1 topology */
+	 
 	if (dpu_enc->dsc)
 		num_dsc = 2;
 
@@ -565,17 +462,7 @@ static struct msm_display_topology dpu_encoder_get_topology(
 		if (dpu_enc->phys_encs[i])
 			intf_count++;
 
-	/* Datapath topology selection
-	 *
-	 * Dual display
-	 * 2 LM, 2 INTF ( Split display using 2 interfaces)
-	 *
-	 * Single display
-	 * 1 LM, 1 INTF
-	 * 2 LM, 1 INTF (stream merge to support high resolution interfaces)
-	 *
-	 * Add dspps to the reservation requirements if ctm is requested
-	 */
+	 
 	if (intf_count == 2)
 		topology.num_lm = 2;
 	else if (!dpu_kms->catalog->caps->has_3d_merge)
@@ -589,12 +476,7 @@ static struct msm_display_topology dpu_encoder_get_topology(
 	topology.num_intf = intf_count;
 
 	if (dsc) {
-		/*
-		 * In case of Display Stream Compression (DSC), we would use
-		 * 2 DSC encoders, 2 layer mixers and 1 interface
-		 * this is power optimal and can drive up to (including) 4k
-		 * screens
-		 */
+		 
 		topology.num_dsc = 2;
 		topology.num_lm = 2;
 		topology.num_intf = 1;
@@ -636,7 +518,7 @@ static int dpu_encoder_virt_atomic_check(
 
 	trace_dpu_enc_atomic_check(DRMID(drm_enc));
 
-	/* perform atomic check on the first physical encoder (master) */
+	 
 	for (i = 0; i < dpu_enc->num_phys_encs; i++) {
 		struct dpu_encoder_phys *phys = dpu_enc->phys_encs[i];
 
@@ -654,10 +536,7 @@ static int dpu_encoder_virt_atomic_check(
 
 	topology = dpu_encoder_get_topology(dpu_enc, dpu_kms, adj_mode, crtc_state, dsc);
 
-	/*
-	 * Release and Allocate resources on every modeset
-	 * Dont allocate when active is false.
-	 */
+	 
 	if (drm_atomic_crtc_needs_modeset(crtc_state)) {
 		dpu_rm_release(global_state, drm_enc);
 
@@ -694,7 +573,7 @@ static void _dpu_encoder_update_vsync_source(struct dpu_encoder_virt *dpu_enc,
 	}
 
 	drm_enc = &dpu_enc->base;
-	/* this pointers are checked in virt_enable_helper */
+	 
 	priv = drm_enc->dev->dev_private;
 
 	dpu_kms = to_dpu_kms(priv->kms);
@@ -770,17 +649,17 @@ static void _dpu_encoder_resource_control_helper(struct drm_encoder *drm_enc,
 	}
 
 	if (enable) {
-		/* enable DPU core clks */
+		 
 		pm_runtime_get_sync(&dpu_kms->pdev->dev);
 
-		/* enable all the irq */
+		 
 		_dpu_encoder_irq_control(drm_enc, true);
 
 	} else {
-		/* disable all the irq */
+		 
 		_dpu_encoder_irq_control(drm_enc, false);
 
-		/* disable DPU core clks */
+		 
 		pm_runtime_put_sync(&dpu_kms->pdev->dev);
 	}
 
@@ -801,10 +680,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 	priv = drm_enc->dev->dev_private;
 	is_vid_mode = !dpu_enc->disp_info.is_cmd_mode;
 
-	/*
-	 * when idle_pc is not supported, process only KICKOFF, STOP and MODESET
-	 * events and return early for other events (ie wb display).
-	 */
+	 
 	if (!dpu_enc->idle_pc_supported &&
 			(sw_event != DPU_ENC_RC_EVENT_KICKOFF &&
 			sw_event != DPU_ENC_RC_EVENT_STOP &&
@@ -816,14 +692,14 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 
 	switch (sw_event) {
 	case DPU_ENC_RC_EVENT_KICKOFF:
-		/* cancel delayed off work, if any */
+		 
 		if (cancel_delayed_work_sync(&dpu_enc->delayed_off_work))
 			DPU_DEBUG_ENC(dpu_enc, "sw_event:%d, work cancelled\n",
 					sw_event);
 
 		mutex_lock(&dpu_enc->rc_lock);
 
-		/* return if the resource control is already in ON state */
+		 
 		if (dpu_enc->rc_state == DPU_ENC_RC_STATE_ON) {
 			DRM_DEBUG_ATOMIC("id;%u, sw_event:%d, rc in ON state\n",
 				      DRMID(drm_enc), sw_event);
@@ -853,12 +729,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 		break;
 
 	case DPU_ENC_RC_EVENT_FRAME_DONE:
-		/*
-		 * mutex lock is not used as this event happens at interrupt
-		 * context. And locking is not required as, the other events
-		 * like KICKOFF and STOP does a wait-for-idle before executing
-		 * the resource_control
-		 */
+		 
 		if (dpu_enc->rc_state != DPU_ENC_RC_STATE_ON) {
 			DRM_DEBUG_KMS("id:%d, sw_event:%d,rc:%d-unexpected\n",
 				      DRMID(drm_enc), sw_event,
@@ -866,10 +737,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 			return -EINVAL;
 		}
 
-		/*
-		 * schedule off work item only when there are no
-		 * frames pending
-		 */
+		 
 		if (dpu_crtc_frame_pending(drm_enc->crtc) > 1) {
 			DRM_DEBUG_KMS("id:%d skip schedule work\n",
 				      DRMID(drm_enc));
@@ -885,7 +753,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 		break;
 
 	case DPU_ENC_RC_EVENT_PRE_STOP:
-		/* cancel delayed off work, if any */
+		 
 		if (cancel_delayed_work_sync(&dpu_enc->delayed_off_work))
 			DPU_DEBUG_ENC(dpu_enc, "sw_event:%d, work cancelled\n",
 					sw_event);
@@ -896,7 +764,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 			  dpu_enc->rc_state == DPU_ENC_RC_STATE_IDLE) {
 			_dpu_encoder_irq_control(drm_enc, true);
 		}
-		/* skip if is already OFF or IDLE, resources are off already */
+		 
 		else if (dpu_enc->rc_state == DPU_ENC_RC_STATE_OFF ||
 				dpu_enc->rc_state == DPU_ENC_RC_STATE_IDLE) {
 			DRM_DEBUG_KMS("id:%u, sw_event:%d, rc in %d state\n",
@@ -918,7 +786,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 	case DPU_ENC_RC_EVENT_STOP:
 		mutex_lock(&dpu_enc->rc_lock);
 
-		/* return if the resource control is already in OFF state */
+		 
 		if (dpu_enc->rc_state == DPU_ENC_RC_STATE_OFF) {
 			DRM_DEBUG_KMS("id: %u, sw_event:%d, rc in OFF state\n",
 				      DRMID(drm_enc), sw_event);
@@ -931,10 +799,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 			return -EINVAL;
 		}
 
-		/**
-		 * expect to arrive here only if in either idle state or pre-off
-		 * and in IDLE state the resources are already disabled
-		 */
+		 
 		if (dpu_enc->rc_state == DPU_ENC_RC_STATE_PRE_OFF)
 			_dpu_encoder_resource_control_helper(drm_enc, false);
 
@@ -957,10 +822,7 @@ static int dpu_encoder_resource_control(struct drm_encoder *drm_enc,
 			return 0;
 		}
 
-		/*
-		 * if we are in ON but a frame was just kicked off,
-		 * ignore the IDLE event, it's probably a stale timer event
-		 */
+		 
 		if (dpu_enc->frame_busy_mask[0]) {
 			DRM_ERROR("id:%u, sw_event:%d, rc:%d frame pending\n",
 				  DRMID(drm_enc), sw_event, dpu_enc->rc_state);
@@ -1068,7 +930,7 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
 
 	trace_dpu_enc_mode_set(DRMID(drm_enc));
 
-	/* Query resource that have been reserved in atomic check step. */
+	 
 	num_pp = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
 		drm_enc->base.id, DPU_HW_BLK_PINGPONG, hw_pp,
 		ARRAY_SIZE(hw_pp));
@@ -1205,7 +1067,7 @@ static void dpu_encoder_virt_atomic_enable(struct drm_encoder *drm_enc,
 	trace_dpu_enc_enable(DRMID(drm_enc), cur_mode->hdisplay,
 			     cur_mode->vdisplay);
 
-	/* always enable slave encoder before master */
+	 
 	if (dpu_enc->cur_slave && dpu_enc->cur_slave->ops.enable)
 		dpu_enc->cur_slave->ops.enable(dpu_enc->cur_slave);
 
@@ -1242,10 +1104,7 @@ static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
 	if (crtc)
 		old_state = drm_atomic_get_old_crtc_state(state, crtc);
 
-	/*
-	 * The encoder is already disabled if self refresh mode was set earlier,
-	 * in the old_state for the corresponding crtc.
-	 */
+	 
 	if (old_state && old_state->self_refresh_active)
 		return;
 
@@ -1254,7 +1113,7 @@ static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
 
 	trace_dpu_enc_disable(DRMID(drm_enc));
 
-	/* wait for idle */
+	 
 	dpu_encoder_wait_for_event(drm_enc, MSM_ENC_TX_COMPLETE);
 
 	dpu_encoder_resource_control(drm_enc, DPU_ENC_RC_EVENT_PRE_STOP);
@@ -1267,7 +1126,7 @@ static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
 	}
 
 
-	/* after phys waits for frame-done, should be no more frames pending */
+	 
 	if (atomic_xchg(&dpu_enc->frame_done_timeout_ms, 0)) {
 		DPU_ERROR("enc%d timeout pending\n", drm_enc->base.id);
 		del_timer_sync(&dpu_enc->frame_done_timer);
@@ -1332,7 +1191,7 @@ void dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
 	DPU_ATRACE_BEGIN("encoder_underrun_callback");
 	atomic_inc(&phy_enc->underrun_cnt);
 
-	/* trigger dump only on the first underrun */
+	 
 	if (atomic_read(&phy_enc->underrun_cnt) == 1)
 		msm_disp_snapshot_state(drm_enc->dev);
 
@@ -1347,7 +1206,7 @@ void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct drm_crtc *crtc)
 	unsigned long lock_flags;
 
 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
-	/* crtc should always be cleared before re-assigning */
+	 
 	WARN_ON(crtc && dpu_enc->crtc);
 	dpu_enc->crtc = crtc;
 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
@@ -1411,10 +1270,7 @@ void dpu_encoder_frame_done_callback(
 			| DPU_ENCODER_FRAME_EVENT_PANEL_DEAD)) {
 
 		if (!dpu_enc->frame_busy_mask[0]) {
-			/**
-			 * suppress frame_done without waiter,
-			 * likely autorefresh
-			 */
+			 
 			trace_dpu_enc_frame_done_cb_not_busy(DRMID(drm_enc), event,
 					dpu_encoder_helper_get_intf_type(ready_phys->intf_mode),
 					ready_phys->hw_intf ? ready_phys->hw_intf->idx : -1,
@@ -1422,7 +1278,7 @@ void dpu_encoder_frame_done_callback(
 			return;
 		}
 
-		/* One of the physical encoders has become idle */
+		 
 		for (i = 0; i < dpu_enc->num_phys_encs; i++) {
 			if (dpu_enc->phys_encs[i] == ready_phys) {
 				trace_dpu_enc_frame_done_cb(DRMID(drm_enc), i,
@@ -1462,12 +1318,7 @@ static void dpu_encoder_off_work(struct work_struct *work)
 				DPU_ENCODER_FRAME_EVENT_IDLE);
 }
 
-/**
- * _dpu_encoder_trigger_flush - trigger flush for a physical encoder
- * @drm_enc: Pointer to drm encoder structure
- * @phys: Pointer to physical encoder structure
- * @extra_flush_bits: Additional bit mask to include in flush trigger
- */
+ 
 static void _dpu_encoder_trigger_flush(struct drm_encoder *drm_enc,
 		struct dpu_encoder_phys *phys, uint32_t extra_flush_bits)
 {
@@ -1504,10 +1355,7 @@ static void _dpu_encoder_trigger_flush(struct drm_encoder *drm_enc,
 			extra_flush_bits, ret);
 }
 
-/**
- * _dpu_encoder_trigger_start - trigger start for a physical encoder
- * @phys: Pointer to physical encoder structure
- */
+ 
 static void _dpu_encoder_trigger_start(struct dpu_encoder_phys *phys)
 {
 	if (!phys) {
@@ -1553,7 +1401,7 @@ static int dpu_encoder_helper_wait_event_timeout(
 		trace_dpu_enc_wait_event_timeout(drm_id, irq_idx, rc, time,
 						 expected_time,
 						 atomic_read(info->atomic_cnt));
-	/* If we timed out, counter is valid and time is less, wait again */
+	 
 	} while (atomic_read(info->atomic_cnt) && (rc == 0) &&
 			(time < expected_time));
 
@@ -1586,15 +1434,7 @@ static void dpu_encoder_helper_hw_reset(struct dpu_encoder_phys *phys_enc)
 	phys_enc->enable_state = DPU_ENC_ENABLED;
 }
 
-/**
- * _dpu_encoder_kickoff_phys - handle physical encoder kickoff
- *	Iterate through the physical encoders and perform consolidated flush
- *	and/or control start triggering as needed. This is done in the virtual
- *	encoder rather than the individual physical ones in order to handle
- *	use cases that require visibility into multiple physical encoders at
- *	a time.
- * @dpu_enc: Pointer to virtual encoder structure
- */
+ 
 static void _dpu_encoder_kickoff_phys(struct dpu_encoder_virt *dpu_enc)
 {
 	struct dpu_hw_ctl *ctl;
@@ -1603,10 +1443,10 @@ static void _dpu_encoder_kickoff_phys(struct dpu_encoder_virt *dpu_enc)
 
 	pending_flush = 0x0;
 
-	/* update pending counts and trigger kickoff ctl flush atomically */
+	 
 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
 
-	/* don't perform flush/start operations for slave encoders */
+	 
 	for (i = 0; i < dpu_enc->num_phys_encs; i++) {
 		struct dpu_encoder_phys *phys = dpu_enc->phys_encs[i];
 
@@ -1615,11 +1455,7 @@ static void _dpu_encoder_kickoff_phys(struct dpu_encoder_virt *dpu_enc)
 
 		ctl = phys->hw_ctl;
 
-		/*
-		 * This is cleared in frame_done worker, which isn't invoked
-		 * for async commits. So don't set this for async, since it'll
-		 * roll over to the next commit.
-		 */
+		 
 		if (phys->split_role != ENC_ROLE_SLAVE)
 			set_bit(i, dpu_enc->frame_busy_mask);
 
@@ -1630,7 +1466,7 @@ static void _dpu_encoder_kickoff_phys(struct dpu_encoder_virt *dpu_enc)
 			pending_flush |= ctl->ops.get_pending_flush(ctl);
 	}
 
-	/* for split flush, combine pending flush masks and send to master */
+	 
 	if (pending_flush && dpu_enc->cur_master) {
 		_dpu_encoder_trigger_flush(
 				&dpu_enc->base,
@@ -1665,7 +1501,7 @@ void dpu_encoder_trigger_kickoff_pending(struct drm_encoder *drm_enc)
 		if (ctl->ops.clear_pending_flush)
 			ctl->ops.clear_pending_flush(ctl);
 
-		/* update only for command mode primary ctl */
+		 
 		if ((phys == dpu_enc->cur_master) &&
 		    disp_info->is_cmd_mode
 		    && ctl->ops.trigger_pending)
@@ -1680,9 +1516,7 @@ static u32 _dpu_encoder_calculate_linetime(struct dpu_encoder_virt *dpu_enc,
 	u32 pclk_period;
 	u32 line_time;
 
-	/*
-	 * For linetime calculation, only operate on master encoder.
-	 */
+	 
 	if (!dpu_enc->cur_master)
 		return 0;
 
@@ -1691,7 +1525,7 @@ static u32 _dpu_encoder_calculate_linetime(struct dpu_encoder_virt *dpu_enc,
 		return 0;
 	}
 
-	pclk_rate = mode->clock; /* pixel clock in kHz */
+	pclk_rate = mode->clock;  
 	if (pclk_rate == 0) {
 		DPU_ERROR("pclk is 0, cannot calculate line time\n");
 		return 0;
@@ -1703,10 +1537,7 @@ static u32 _dpu_encoder_calculate_linetime(struct dpu_encoder_virt *dpu_enc,
 		return 0;
 	}
 
-	/*
-	 * Line time calculation based on Pixel clock and HTOTAL.
-	 * Final unit is in ns.
-	 */
+	 
 	line_time = (pclk_period * mode->htotal) / 1000;
 	if (line_time == 0) {
 		DPU_ERROR("line time calculation is 0\n");
@@ -1774,16 +1605,7 @@ dpu_encoder_dsc_initial_line_calc(struct drm_dsc_config *dsc,
 
 	soft_slice_per_enc = enc_ip_width / dsc->slice_width;
 
-	/*
-	 * minimum number of initial line pixels is a sum of:
-	 * 1. sub-stream multiplexer delay (83 groups for 8bpc,
-	 *    91 for 10 bpc) * 3
-	 * 2. for two soft slice cases, add extra sub-stream multiplexer * 3
-	 * 3. the initial xmit delay
-	 * 4. total pipeline delay through the "lock step" of encoder (47)
-	 * 5. 6 additional pixels as the output of the rate buffer is
-	 *    48 bits wide
-	 */
+	 
 	ssm_delay = ((dsc->bits_per_component < 10) ? 84 : 92);
 	total_pixels = ssm_delay * 3 + dsc->initial_xmit_delay + 47;
 	if (soft_slice_per_enc > 1)
@@ -1820,7 +1642,7 @@ static void dpu_encoder_dsc_pipe_cfg(struct dpu_hw_ctl *ctl,
 static void dpu_encoder_prep_dsc(struct dpu_encoder_virt *dpu_enc,
 				 struct drm_dsc_config *dsc)
 {
-	/* coding only for 2LM, 2enc, 1 dsc config */
+	 
 	struct dpu_encoder_phys *enc_master = dpu_enc->cur_master;
 	struct dpu_hw_ctl *ctl = enc_master->hw_ctl;
 	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
@@ -1852,10 +1674,7 @@ static void dpu_encoder_prep_dsc(struct dpu_encoder_virt *dpu_enc,
 	this_frame_slices = pic_width / dsc->slice_width;
 	intf_ip_w = this_frame_slices * dsc->slice_width;
 
-	/*
-	 * dsc merge case: when using 2 encoders for the same stream,
-	 * no. of slices need to be same on both the encoders.
-	 */
+	 
 	enc_ip_w = intf_ip_w / 2;
 	initial_lines = dpu_encoder_dsc_initial_line_calc(dsc, enc_ip_w);
 
@@ -1875,7 +1694,7 @@ void dpu_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc)
 
 	trace_dpu_enc_prepare_kickoff(DRMID(drm_enc));
 
-	/* prepare for next kickoff, may include waiting on previous kickoff */
+	 
 	DPU_ATRACE_BEGIN("enc_prepare_for_kickoff");
 	for (i = 0; i < dpu_enc->num_phys_encs; i++) {
 		phys = dpu_enc->phys_encs[i];
@@ -1888,7 +1707,7 @@ void dpu_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc)
 
 	dpu_encoder_resource_control(drm_enc, DPU_ENC_RC_EVENT_KICKOFF);
 
-	/* if any phys needs reset, reset all phys, in-order */
+	 
 	if (needs_hw_reset) {
 		trace_dpu_enc_prepare_kickoff_reset(DRMID(drm_enc));
 		for (i = 0; i < dpu_enc->num_phys_encs; i++) {
@@ -1940,10 +1759,10 @@ void dpu_encoder_kickoff(struct drm_encoder *drm_enc)
 	mod_timer(&dpu_enc->frame_done_timer,
 			jiffies + msecs_to_jiffies(timeout_ms));
 
-	/* All phys encs are ready to go, trigger the kickoff */
+	 
 	_dpu_encoder_kickoff_phys(dpu_enc);
 
-	/* allow phys encs to handle any post-kickoff business */
+	 
 	for (i = 0; i < dpu_enc->num_phys_encs; i++) {
 		phys = dpu_enc->phys_encs[i];
 		if (phys->ops.handle_post_kickoff)
@@ -1964,7 +1783,7 @@ static void dpu_encoder_helper_reset_mixers(struct dpu_encoder_phys *phys_enc)
 
 	memset(&mixer, 0, sizeof(mixer));
 
-	/* reset all mixers for this encoder */
+	 
 	if (phys_enc->hw_ctl->ops.clear_all_blendstages)
 		phys_enc->hw_ctl->ops.clear_all_blendstages(phys_enc->hw_ctl);
 
@@ -1978,7 +1797,7 @@ static void dpu_encoder_helper_reset_mixers(struct dpu_encoder_phys *phys_enc)
 		if (phys_enc->hw_ctl->ops.update_pending_flush_mixer)
 			phys_enc->hw_ctl->ops.update_pending_flush_mixer(ctl, hw_mixer[i]->idx);
 
-		/* clear all blendstages */
+		 
 		if (phys_enc->hw_ctl->ops.setup_blendstage)
 			phys_enc->hw_ctl->ops.setup_blendstage(ctl, hw_mixer[i]->idx, NULL);
 	}
@@ -2003,7 +1822,7 @@ static void dpu_encoder_dsc_pipe_clr(struct dpu_hw_ctl *ctl,
 
 static void dpu_encoder_unprep_dsc(struct dpu_encoder_virt *dpu_enc)
 {
-	/* coding only for 2LM, 2enc, 1 dsc config */
+	 
 	struct dpu_encoder_phys *enc_master = dpu_enc->cur_master;
 	struct dpu_hw_ctl *ctl = enc_master->hw_ctl;
 	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
@@ -2032,17 +1851,13 @@ void dpu_encoder_helper_phys_cleanup(struct dpu_encoder_phys *phys_enc)
 
 	dpu_encoder_helper_reset_mixers(phys_enc);
 
-	/*
-	 * TODO: move the once-only operation like CTL flush/trigger
-	 * into dpu_encoder_virt_disable() and all operations which need
-	 * to be done per phys encoder into the phys_disable() op.
-	 */
+	 
 	if (phys_enc->hw_wb) {
-		/* disable the PP block */
+		 
 		if (phys_enc->hw_wb->ops.bind_pingpong_blk)
 			phys_enc->hw_wb->ops.bind_pingpong_blk(phys_enc->hw_wb, PINGPONG_NONE);
 
-		/* mark WB flush as pending */
+		 
 		if (phys_enc->hw_ctl->ops.update_pending_flush_wb)
 			phys_enc->hw_ctl->ops.update_pending_flush_wb(ctl, phys_enc->hw_wb->idx);
 	} else {
@@ -2052,14 +1867,14 @@ void dpu_encoder_helper_phys_cleanup(struct dpu_encoder_phys *phys_enc)
 						dpu_enc->phys_encs[i]->hw_intf,
 						PINGPONG_NONE);
 
-			/* mark INTF flush as pending */
+			 
 			if (phys_enc->hw_ctl->ops.update_pending_flush_intf)
 				phys_enc->hw_ctl->ops.update_pending_flush_intf(phys_enc->hw_ctl,
 						dpu_enc->phys_encs[i]->hw_intf->idx);
 		}
 	}
 
-	/* reset the merge 3D HW block */
+	 
 	if (phys_enc->hw_pp->merge_3d) {
 		phys_enc->hw_pp->merge_3d->ops.setup_3d_mode(phys_enc->hw_pp->merge_3d,
 				BLEND_3D_NONE);
@@ -2073,7 +1888,7 @@ void dpu_encoder_helper_phys_cleanup(struct dpu_encoder_phys *phys_enc)
 		dpu_enc->dsc = NULL;
 	}
 
-	intf_cfg.stream_sel = 0; /* Don't care value for video mode */
+	intf_cfg.stream_sel = 0;  
 	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
 	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
 
@@ -2131,11 +1946,11 @@ static int _dpu_encoder_init_debugfs(struct drm_encoder *drm_enc)
 
 	snprintf(name, sizeof(name), "encoder%u", drm_enc->base.id);
 
-	/* create overall sub-directory for the encoder */
+	 
 	dpu_enc->debugfs_root = debugfs_create_dir(name,
 			drm_enc->dev->primary->debugfs_root);
 
-	/* don't error check these */
+	 
 	debugfs_create_file("status", 0600,
 		dpu_enc->debugfs_root, dpu_enc, &_dpu_encoder_status_fops);
 
@@ -2169,10 +1984,7 @@ static int dpu_encoder_virt_add_phys_encs(
 
 	DPU_DEBUG_ENC(dpu_enc, "\n");
 
-	/*
-	 * We may create up to NUM_PHYS_ENCODER_TYPES physical encoder types
-	 * in this function, check up-front.
-	 */
+	 
 	if (dpu_enc->num_phys_encs + NUM_PHYS_ENCODER_TYPES >=
 			ARRAY_SIZE(dpu_enc->phys_encs)) {
 		DPU_ERROR_ENC(dpu_enc, "too many physical encoders %d\n",
@@ -2254,11 +2066,7 @@ static int dpu_encoder_setup_display(struct dpu_encoder_virt *dpu_enc,
 
 	mutex_lock(&dpu_enc->enc_lock);
 	for (i = 0; i < disp_info->num_of_h_tiles && !ret; i++) {
-		/*
-		 * Left-most tile is at index 0, content is controller id
-		 * h_tile_instance_ids[2] = {0, 1}; DSI0 = left, DSI1 = right
-		 * h_tile_instance_ids[2] = {1, 0}; DSI1 = left, DSI0 = right
-		 */
+		 
 		u32 controller_id = disp_info->h_tile_instance[i];
 
 		if (disp_info->num_of_h_tiles > 1) {

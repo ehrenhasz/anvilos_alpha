@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common values for serpent algorithms
- */
+ 
+ 
 
 #ifndef _CRYPTO_SERPENT_H
 #define _CRYPTO_SERPENT_H

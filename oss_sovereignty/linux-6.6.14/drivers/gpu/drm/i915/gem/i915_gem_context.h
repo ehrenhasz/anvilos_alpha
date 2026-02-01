@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #ifndef __I915_GEM_CONTEXT_H__
 #define __I915_GEM_CONTEXT_H__
@@ -114,7 +110,7 @@ i915_gem_context_uses_protected_content(const struct i915_gem_context *ctx)
 	return ctx->uses_protected_content;
 }
 
-/* i915_gem_context.c */
+ 
 void i915_gem_init__contexts(struct drm_i915_private *i915);
 
 int i915_gem_context_open(struct drm_i915_private *i915,
@@ -209,7 +205,7 @@ i915_gem_context_get_engine(struct i915_gem_context *ctx, unsigned int idx)
 
 	rcu_read_lock(); {
 		struct i915_gem_engines *e = rcu_dereference(ctx->engines);
-		if (unlikely(!e)) /* context was closed! */
+		if (unlikely(!e))  
 			ce = ERR_PTR(-ENOENT);
 		else if (likely(idx < e->num_engines && e->engines[idx]))
 			ce = intel_context_get(e->engines[idx]);
@@ -245,4 +241,4 @@ int i915_gem_user_to_context_sseu(struct intel_gt *gt,
 				  const struct drm_i915_gem_context_param_sseu *user,
 				  struct intel_sseu *context);
 
-#endif /* !__I915_GEM_CONTEXT_H__ */
+#endif  

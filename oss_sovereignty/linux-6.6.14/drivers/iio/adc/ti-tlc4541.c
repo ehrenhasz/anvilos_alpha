@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI tlc4541 ADC Driver
- *
- * Copyright (C) 2017 Phil Reid
- *
- * Datasheets can be found here:
- * https://www.ti.com/lit/gpn/tlc3541
- * https://www.ti.com/lit/gpn/tlc4541
- *
- * The tlc4541 requires 24 clock cycles to start a transfer.
- * Conversion then takes 2.94us to complete before data is ready
- * Data is returned MSB first.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -36,12 +24,7 @@ struct tlc4541_state {
 	struct spi_transfer             scan_single_xfer[3];
 	struct spi_message              scan_single_msg;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * 2 bytes data + 6 bytes padding + 8 bytes timestamp when
-	 * call iio_push_to_buffers_with_timestamp.
-	 */
+	 
 	__be16                          rx_buf[8] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -183,10 +166,10 @@ static int tlc4541_probe(struct spi_device *spi)
 	indio_dev->num_channels = info->num_channels;
 	indio_dev->info = &tlc4541_info;
 
-	/* perform reset */
+	 
 	spi_write(spi, &device_init, 1);
 
-	/* Setup default message */
+	 
 	st->scan_single_xfer[0].rx_buf = &st->rx_buf[0];
 	st->scan_single_xfer[0].len = 3;
 	st->scan_single_xfer[1].delay.value = 3;

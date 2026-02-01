@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2011-2013 Freescale Semiconductor, Inc.
- * Copyright (C) 2019, 2020 Paul Boddie <paul@boddie.org.uk>
- *
- * Derived from dw_hdmi-imx.c with i.MX portions removed.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -22,7 +18,7 @@ static const struct dw_hdmi_mpll_config ingenic_mpll_cfg[] = {
 };
 
 static const struct dw_hdmi_curr_ctrl ingenic_cur_ctr[] = {
-	/*pixelclk     bpp8    bpp10   bpp12 */
+	 
 	{ 54000000,  { 0x091c, 0x091c, 0x06dc } },
 	{ 58400000,  { 0x091c, 0x06dc, 0x06dc } },
 	{ 72000000,  { 0x06dc, 0x06dc, 0x091c } },
@@ -32,13 +28,9 @@ static const struct dw_hdmi_curr_ctrl ingenic_cur_ctr[] = {
 	{ ~0UL,      { 0x0000, 0x0000, 0x0000 } },
 };
 
-/*
- * Resistance term 133Ohm Cfg
- * PREEMP config 0.00
- * TX/CK level 10
- */
+ 
 static const struct dw_hdmi_phy_config ingenic_phy_config[] = {
-	/*pixelclk   symbol   term   vlev */
+	 
 	{ 216000000, 0x800d, 0x0005, 0x01ad},
 	{ ~0UL,      0x0000, 0x0000, 0x0000}
 };
@@ -50,7 +42,7 @@ ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
 {
 	if (mode->clock < 13500)
 		return MODE_CLOCK_LOW;
-	/* FIXME: Hardware is capable of 270MHz, but setup data is missing. */
+	 
 	if (mode->clock > 216000)
 		return MODE_CLOCK_HIGH;
 
@@ -67,7 +59,7 @@ static struct dw_hdmi_plat_data ingenic_dw_hdmi_plat_data = {
 
 static const struct of_device_id ingenic_dw_hdmi_dt_ids[] = {
 	{ .compatible = "ingenic,jz4780-dw-hdmi" },
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ingenic_dw_hdmi_dt_ids);
 

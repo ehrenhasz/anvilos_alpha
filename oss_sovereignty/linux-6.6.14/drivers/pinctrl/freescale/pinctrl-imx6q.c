@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// imx6q pinctrl driver based on imx pinmux core
-//
-// Copyright (C) 2012 Freescale Semiconductor, Inc.
-// Copyright (C) 2012 Linaro, Inc.
-//
-// Author: Dong Aisheng <dong.aisheng@linaro.org>
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -235,7 +235,7 @@ enum imx6q_pads {
 	MX6Q_PAD_SD2_DAT3 = 215,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx6q_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX6Q_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX6Q_PAD_RESERVE1),
@@ -463,7 +463,7 @@ static const struct imx_pinctrl_soc_info imx6q_pinctrl_info = {
 
 static const struct of_device_id imx6q_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx6q-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx6q_pinctrl_probe(struct platform_device *pdev)

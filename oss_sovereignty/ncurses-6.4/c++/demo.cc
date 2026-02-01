@@ -1,43 +1,7 @@
-// * This makes emacs happy -*-Mode: C++;-*-
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2012,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
 
-/*
- *   Silly demo program for the NCursesPanel class.
- *
- *   written by Anatoly Ivasyuk (anatoly@nick.csh.rit.edu)
- *
- *   Demo code for NCursesMenu and NCursesForm written by
- *   Juergen Pfeifer
- *
- * $Id: demo.cc,v 1.50 2021/09/04 10:52:55 tom Exp $
- */
+ 
+
+ 
 
 #include "internal.h"
 #include "cursesapp.h"
@@ -51,11 +15,11 @@
 extern "C" unsigned int sleep(unsigned int);
 #endif
 
-#undef index // needed for NeXT
+#undef index 
 
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class SillyDemo
 {
   public:
@@ -63,7 +27,7 @@ class SillyDemo
 
     NCursesPanel *mystd = new NCursesPanel();
 
-    //  Make a few small demo panels
+    
 
     NCursesPanel *u = new NCursesPanel(8, 20, 12, 4);
     NCursesPanel *v = new NCursesPanel(8, 20, 10, 6);
@@ -72,8 +36,8 @@ class SillyDemo
     NCursesPanel *y = new NCursesPanel(8, 20, 4, 12);
     NCursesPanel *z = new NCursesPanel(8, 30, 2, 14);
 
-    //  Draw something on the main screen, so we can see what happens
-    //  when panels get moved or deleted.
+    
+    
 
     mystd->box();
     mystd->move(mystd->height()/2, 1);
@@ -86,8 +50,8 @@ class SillyDemo
     mystd->addch(mystd->height()/2, mystd->width()-1, ACS_RTEE);
     mystd->addch(mystd->height()/2, mystd->width()/2, ACS_PLUS);
 
-    //  Draw frames with titles around panels so that we can see where
-    //  the panels are located.
+    
+    
     u->boldframe("Win U");
     v->frame("Win V");
     w->boldframe("Win W");
@@ -103,14 +67,14 @@ class SillyDemo
       z->bkgd(' '|COLOR_PAIR(2));
     }
 
-    //  A refresh to any valid panel updates all panels and refreshes
-    //  the screen.  Using mystd is just convenient - We know it is always
-    //  valid until the end of the program.
+    
+    
+    
 
     mystd->refresh();
     sleep(sleeptime);
 
-    //  Show what happens when panels are deleted and moved.
+    
 
     sleep(sleeptime);
     delete u;
@@ -124,7 +88,7 @@ class SillyDemo
     delete v;
     mystd->refresh();
 
-    // show how it looks when a panel moves
+    
     sleep(sleeptime);
     y->mvwin(5, 30);
     mystd->refresh();
@@ -133,7 +97,7 @@ class SillyDemo
     delete y;
     mystd->refresh();
 
-    // show how it looks when you raise a panel
+    
     sleep(sleeptime);
     w->top();
     mystd->refresh();
@@ -148,9 +112,9 @@ class SillyDemo
     mystd->clear();
     mystd->refresh();
 
-    //  Don't forget to clean up the main screen.  Since this is the
-    //  last thing using NCursesWindow, this has the effect of
-    //  shutting down ncurses and restoring the terminal state.
+    
+    
+    
 
     sleep(sleeptime);
     delete mystd;
@@ -165,9 +129,9 @@ public:
   UserData(int x) : u(x) {}
   int sleeptime() const { return u; }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 template<class T> class MyAction : public NCursesUserItem<T>
 {
 public:
@@ -198,9 +162,9 @@ public:
     return TRUE;
   }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class Label : public NCursesFormField
 {
 public:
@@ -211,9 +175,9 @@ public:
       options_off(O_EDIT|O_ACTIVE);
   }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class MyFieldType : public UserDefinedFieldType
 {
 private:
@@ -230,9 +194,9 @@ public:
   MyFieldType(int x) : chk(x) {
   }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class TestForm : public NCursesForm
 {
 private:
@@ -275,11 +239,11 @@ public:
     F[6]->set_fieldtype(*ift);
 
     F[7]->set_fieldtype(*mft);
-    F[7]->set_maximum_growth(20); // max. 20 characters
-    F[7]->options_off(O_STATIC);  // make field dynamic
+    F[7]->set_maximum_growth(20); 
+    F[7]->options_off(O_STATIC);  
 
-    F[8]->set_maximum_growth(10); // max. 10 lines
-    F[8]->options_off(O_STATIC);  // make field dynamic
+    F[8]->set_maximum_growth(10); 
+    F[8]->options_off(O_STATIC);  
   }
 
   TestForm& operator=(const TestForm& rhs)
@@ -305,9 +269,9 @@ public:
 const char* TestForm::weekdays[] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
     "Friday", "Saturday", NULL };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class FormAction : public NCursesMenuItem
 {
 public:
@@ -321,8 +285,8 @@ public:
       char buf[8];
       assert(i < 100);
       ::_nc_SPRINTF(buf, _nc_SLIMIT(sizeof(buf)) "Frm%02d", i % 100);
-      (*S)[i] = buf;                                      // Text
-      (*S)[i] = Soft_Label_Key_Set::Soft_Label_Key::Left; // Justification
+      (*S)[i] = buf;                                      
+      (*S)[i] = Soft_Label_Key_Set::Soft_Label_Key::Left; 
     }
     NCursesApplication::getApplication()->push(*S);
     F();
@@ -331,9 +295,9 @@ public:
     return FALSE;
   }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class PadAction : public NCursesMenuItem
 {
 public:
@@ -373,9 +337,9 @@ public:
   }
 };
 
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class PassiveItem : public NCursesMenuItem
 {
 public:
@@ -384,9 +348,9 @@ public:
   }
 };
 
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class ScanAction : public NCursesMenuItem
 {
 public:
@@ -426,9 +390,9 @@ public:
   }
 };
 
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class MyMenu : public NCursesMenu
 {
 private:
@@ -451,7 +415,7 @@ public:
     I[4] = new PadAction("Pad");
     I[5] = new ScanAction("Scan");
     I[6] = new QuitItem();
-    I[7] = new NCursesMenuItem(); // Terminating empty item
+    I[7] = new NCursesMenuItem(); 
 
     InitMenu(I, TRUE, TRUE);
 
@@ -515,9 +479,9 @@ public:
     refresh();
   }
 };
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 class TestApplication : public NCursesApplication
 {
 protected:
@@ -541,8 +505,8 @@ void TestApplication::init_labels(Soft_Label_Key_Set& S) const
     char buf[8];
     assert(i < 100);
     ::_nc_SPRINTF(buf, _nc_SLIMIT(sizeof(buf)) "Key%02d", i % 100);
-    S[i] = buf;                                      // Text
-    S[i] = Soft_Label_Key_Set::Soft_Label_Key::Left; // Justification
+    S[i] = buf;                                      
+    S[i] = Soft_Label_Key_Set::Soft_Label_Key::Left; 
   }
 }
 
@@ -564,12 +528,12 @@ int TestApplication::run()
   return 0;
 }
 
-//
-// -------------------------------------------------------------------------
-//
+
+
+
 static TestApplication *Demo = new TestApplication();
 
 #if (defined(_WIN32) || defined(_WIN64))
-// This is actually only needed when ncurses is a dll
+
 NCURSES_CXX_MAIN
 #endif

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 Sensoray Company Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -58,7 +56,7 @@ static int go7007_loader_probe(struct usb_interface *interface,
 		    fw_configs[i].product == product)
 			break;
 
-	/* Should never happen */
+	 
 	if (fw_configs[i].fw_name1 == NULL)
 		goto failed2;
 
@@ -114,7 +112,7 @@ static const struct usb_device_id go7007_loader_ids[] = {
 	{ USB_DEVICE(0x093b, 0xa004) },
 	{ USB_DEVICE(0x0eb1, 0x6666) },
 	{ USB_DEVICE(0x0eb1, 0x6668) },
-	{}                          /* Terminating entry */
+	{}                           
 };
 
 MODULE_DEVICE_TABLE(usb, go7007_loader_ids);

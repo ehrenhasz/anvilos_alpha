@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/net/l3mdev.h - L3 master device API
- * Copyright (c) 2015 Cumulus Networks
- * Copyright (c) 2015 David Ahern <dsa@cumulusnetworks.com>
- */
+ 
+ 
 #ifndef _NET_L3MDEV_H_
 #define _NET_L3MDEV_H_
 
@@ -20,17 +16,7 @@ enum l3mdev_type {
 
 typedef int (*lookup_by_table_id_t)(struct net *net, u32 table_d);
 
-/**
- * struct l3mdev_ops - l3mdev operations
- *
- * @l3mdev_fib_table: Get FIB table id to use for lookups
- *
- * @l3mdev_l3_rcv:    Hook in L3 receive path
- *
- * @l3mdev_l3_out:    Hook in L3 output path
- *
- * @l3mdev_link_scope_lookup: IPv6 lookup for linklocal and mcast destinations
- */
+ 
 
 struct l3mdev_ops {
 	u32		(*l3mdev_fib_table)(const struct net_device *dev);
@@ -40,7 +26,7 @@ struct l3mdev_ops {
 					  struct sock *sk, struct sk_buff *skb,
 					  u16 proto);
 
-	/* IPv6 ops */
+	 
 	struct dst_entry * (*l3mdev_link_scope_lookup)(const struct net_device *dev,
 						 struct flowi6 *fl6);
 };
@@ -94,12 +80,7 @@ static inline int l3mdev_master_ifindex_by_index(struct net *net, int ifindex)
 static inline
 struct net_device *l3mdev_master_dev_rcu(const struct net_device *_dev)
 {
-	/* netdev_master_upper_dev_get_rcu calls
-	 * list_first_or_null_rcu to walk the upper dev list.
-	 * list_first_or_null_rcu does not handle a const arg. We aren't
-	 * making changes, just want the master device from that list so
-	 * typecast to remove the const
-	 */
+	 
 	struct net_device *dev = (struct net_device *)_dev;
 	struct net_device *master;
 
@@ -331,4 +312,4 @@ void l3mdev_update_flow(struct net *net, struct flowi *fl)
 }
 #endif
 
-#endif /* _NET_L3MDEV_H_ */
+#endif  

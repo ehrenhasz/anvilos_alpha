@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PWM Controller Driver for HiSilicon BVT SoCs
- *
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -163,10 +159,7 @@ static int hibvt_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	    state->duty_cycle != pwm->state.duty_cycle) {
 		hibvt_pwm_config(chip, pwm, state->duty_cycle, state->period);
 
-		/*
-		 * Some implementations require the PWM to be enabled twice
-		 * each time the duty cycle is refreshed.
-		 */
+		 
 		if (hi_pwm_chip->soc->quirk_force_enable && state->enabled)
 			hibvt_pwm_enable(chip, pwm);
 	}

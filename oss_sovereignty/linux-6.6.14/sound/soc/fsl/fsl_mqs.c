@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC IMX MQS driver
-//
-// Copyright (C) 2014-2015 Freescale Semiconductor, Inc.
-// Copyright 2019 NXP
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -30,20 +30,7 @@
 #define MQS_CLK_DIV_MASK		(0xFF << 0)
 #define MQS_CLK_DIV_SHIFT		(0)
 
-/**
- * struct fsl_mqs_soc_data - soc specific data
- *
- * @use_gpr: control register is in General Purpose Register group
- * @ctrl_off: control register offset
- * @en_mask: enable bit mask
- * @en_shift: enable bit shift
- * @rst_mask: reset bit mask
- * @rst_shift: reset bit shift
- * @osr_mask: oversample bit mask
- * @osr_shift: oversample bit shift
- * @div_mask: clock divider mask
- * @div_shift: clock divider bit shift
- */
+ 
 struct fsl_mqs_soc_data {
 	bool use_gpr;
 	int  ctrl_off;
@@ -57,7 +44,7 @@ struct fsl_mqs_soc_data {
 	int  div_shift;
 };
 
-/* codec private data */
+ 
 struct fsl_mqs {
 	struct regmap *regmap;
 	struct clk *mclk;
@@ -83,11 +70,7 @@ static int fsl_mqs_hw_params(struct snd_pcm_substream *substream,
 	mclk_rate = clk_get_rate(mqs_priv->mclk);
 	lrclk = params_rate(params);
 
-	/*
-	 * mclk_rate / (oversample(32,64) * FS * 2 * divider ) = repeat_rate;
-	 * if repeat_rate is 8, mqs can achieve better quality.
-	 * oversample rate is fix to 32 currently.
-	 */
+	 
 	div = mclk_rate / (32 * lrclk * 2 * 8);
 	res = mclk_rate % (32 * lrclk * 2 * 8);
 
@@ -106,7 +89,7 @@ static int fsl_mqs_hw_params(struct snd_pcm_substream *substream,
 
 static int fsl_mqs_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-	/* Only LEFT_J & SLAVE mode is supported. */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_LEFT_J:
 		break;
@@ -196,10 +179,7 @@ static int fsl_mqs_probe(struct platform_device *pdev)
 	if (!mqs_priv)
 		return -ENOMEM;
 
-	/* On i.MX6sx the MQS control register is in GPR domain
-	 * But in i.MX8QM/i.MX8QXP the control register is moved
-	 * to its own domain.
-	 */
+	 
 	mqs_priv->soc = of_device_get_match_data(&pdev->dev);
 
 	if (mqs_priv->soc->use_gpr) {

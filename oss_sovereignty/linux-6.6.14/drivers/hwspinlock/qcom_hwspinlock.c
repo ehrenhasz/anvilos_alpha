@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2015, Sony Mobile Communications AB
- */
+
+ 
 
 #include <linux/hwspinlock.h>
 #include <linux/io.h>
@@ -226,7 +223,7 @@ static int __init qcom_hwspinlock_init(void)
 {
 	return platform_driver_register(&qcom_hwspinlock_driver);
 }
-/* board init code might need to reserve hwspinlocks for predefined purposes */
+ 
 postcore_initcall(qcom_hwspinlock_init);
 
 static void __exit qcom_hwspinlock_exit(void)

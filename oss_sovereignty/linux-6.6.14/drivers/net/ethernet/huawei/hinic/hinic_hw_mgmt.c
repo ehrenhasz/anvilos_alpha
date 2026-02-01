@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -40,7 +37,7 @@
 
 #define MAX_PF_MGMT_BUF_SIZE            2048
 
-/* Data should be SEG LEN size aligned */
+ 
 #define MAX_MSG_LEN                     2016
 
 #define MSG_NOT_RESP                    0xFFFF
@@ -71,13 +68,7 @@ enum msg_ack_type {
 	MSG_NO_ACK      = 1,
 };
 
-/**
- * hinic_register_mgmt_msg_cb - register msg handler for a msg from a module
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that this handler will handle its messages
- * @handle: private data for the callback
- * @callback: the handler that will handle messages
- **/
+ 
 void hinic_register_mgmt_msg_cb(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				enum hinic_mod_type mod,
 				void *handle,
@@ -93,11 +84,7 @@ void hinic_register_mgmt_msg_cb(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	mgmt_cb->state = HINIC_MGMT_CB_ENABLED;
 }
 
-/**
- * hinic_unregister_mgmt_msg_cb - unregister msg handler for a msg from a module
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that this handler handles its messages
- **/
+ 
 void hinic_unregister_mgmt_msg_cb(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				  enum hinic_mod_type mod)
 {
@@ -111,18 +98,7 @@ void hinic_unregister_mgmt_msg_cb(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	mgmt_cb->cb = NULL;
 }
 
-/**
- * prepare_header - prepare the header of the message
- * @pf_to_mgmt: PF to MGMT channel
- * @msg_len: the length of the message
- * @mod: module in the chip that will get the message
- * @ack_type: ask for response
- * @direction: the direction of the message
- * @cmd: command of the message
- * @msg_id: message id
- *
- * Return the prepared header value
- **/
+ 
 static u64 prepare_header(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			  u16 msg_len, enum hinic_mod_type mod,
 			  enum msg_ack_type ack_type,
@@ -145,13 +121,7 @@ static u64 prepare_header(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	       HINIC_MSG_HEADER_SET(msg_id, MSG_ID);
 }
 
-/**
- * prepare_mgmt_cmd - prepare the mgmt command
- * @mgmt_cmd: pointer to the command to prepare
- * @header: pointer of the header for the message
- * @msg: the data of the message
- * @msg_len: the length of the message
- **/
+ 
 static void prepare_mgmt_cmd(u8 *mgmt_cmd, u64 *header, u8 *msg, u16 msg_len)
 {
 	memset(mgmt_cmd, 0, MGMT_MSG_RSVD_FOR_DEV);
@@ -163,15 +133,10 @@ static void prepare_mgmt_cmd(u8 *mgmt_cmd, u64 *header, u8 *msg, u16 msg_len)
 	memcpy(mgmt_cmd, msg, msg_len);
 }
 
-/**
- * mgmt_msg_len - calculate the total message length
- * @msg_data_len: the length of the message data
- *
- * Return the total message length
- **/
+ 
 static u16 mgmt_msg_len(u16 msg_data_len)
 {
-	/* RSVD + HEADER_SIZE + DATA_LEN */
+	 
 	u16 msg_len = MGMT_MSG_RSVD_FOR_DEV + sizeof(u64) + msg_data_len;
 
 	if (msg_len > MGMT_MSG_LEN_MIN)
@@ -184,19 +149,7 @@ static u16 mgmt_msg_len(u16 msg_data_len)
 	return msg_len;
 }
 
-/**
- * send_msg_to_mgmt - send message to mgmt by API CMD
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that will get the message
- * @cmd: command of the message
- * @data: the msg data
- * @data_len: the msg data length
- * @ack_type: ask for response
- * @direction: the direction of the original message
- * @resp_msg_id: msg id to response for
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int send_msg_to_mgmt(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			    enum hinic_mod_type mod, u8 cmd,
 			    u8 *data, u16 data_len,
@@ -227,21 +180,7 @@ static int send_msg_to_mgmt(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				   mgmt_msg_len(data_len));
 }
 
-/**
- * msg_to_mgmt_sync - send sync message to mgmt
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that will get the message
- * @cmd: command of the message
- * @buf_in: the msg data
- * @in_size: the msg data length
- * @buf_out: response
- * @out_size: response length
- * @direction: the direction of the original message
- * @resp_msg_id: msg id to response for
- * @timeout: time-out period of waiting for response
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			    enum hinic_mod_type mod, u8 cmd,
 			    u8 *buf_in, u16 in_size,
@@ -257,7 +196,7 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	u16 msg_id;
 	int err;
 
-	/* Lock the sync_msg_buf */
+	 
 	down(&pf_to_mgmt->sync_msg_lock);
 
 	recv_msg = &pf_to_mgmt->recv_resp_msg_from_mgmt;
@@ -286,7 +225,7 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
 		goto unlock_sync_msg;
 	}
 
-	smp_rmb();      /* verify reading after completion */
+	smp_rmb();       
 
 	if (recv_msg->msg_id != msg_id) {
 		dev_err(&pdev->dev, "incorrect MSG for id = %d\n", msg_id);
@@ -304,18 +243,7 @@ unlock_sync_msg:
 	return err;
 }
 
-/**
- * msg_to_mgmt_async - send message to mgmt without response
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that will get the message
- * @cmd: command of the message
- * @buf_in: the msg data
- * @in_size: the msg data length
- * @direction: the direction of the original message
- * @resp_msg_id: msg id to response for
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int msg_to_mgmt_async(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			     enum hinic_mod_type mod, u8 cmd,
 			     u8 *buf_in, u16 in_size,
@@ -324,7 +252,7 @@ static int msg_to_mgmt_async(struct hinic_pf_to_mgmt *pf_to_mgmt,
 {
 	int err;
 
-	/* Lock the sync_msg_buf */
+	 
 	down(&pf_to_mgmt->sync_msg_lock);
 
 	err = send_msg_to_mgmt(pf_to_mgmt, mod, cmd, buf_in, in_size,
@@ -334,19 +262,7 @@ static int msg_to_mgmt_async(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	return err;
 }
 
-/**
- * hinic_msg_to_mgmt - send message to mgmt
- * @pf_to_mgmt: PF to MGMT channel
- * @mod: module in the chip that will get the message
- * @cmd: command of the message
- * @buf_in: the msg data
- * @in_size: the msg data length
- * @buf_out: response
- * @out_size: returned response length
- * @sync: sync msg or async msg
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_msg_to_mgmt(struct hinic_pf_to_mgmt *pf_to_mgmt,
 		      enum hinic_mod_type mod, u8 cmd,
 		      void *buf_in, u16 in_size, void *buf_out, u16 *out_size,
@@ -422,7 +338,7 @@ static void recv_mgmt_msg_work_handler(struct work_struct *work)
 	mgmt_cb->state &= ~HINIC_MGMT_CB_RUNNING;
 
 	if (!mgmt_work->async_mgmt_to_pf)
-		/* MGMT sent sync msg, send the response */
+		 
 		msg_to_mgmt_async(pf_to_mgmt, mgmt_work->mod, mgmt_work->cmd,
 				  buf_out, out_size, MGMT_RESP,
 				  mgmt_work->msg_id);
@@ -431,11 +347,7 @@ static void recv_mgmt_msg_work_handler(struct work_struct *work)
 	kfree(mgmt_work);
 }
 
-/**
- * mgmt_recv_msg_handler - handler for message from mgmt cpu
- * @pf_to_mgmt: PF to MGMT channel
- * @recv_msg: received message details
- **/
+ 
 static void mgmt_recv_msg_handler(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				  struct hinic_recv_msg *recv_msg)
 {
@@ -465,25 +377,16 @@ static void mgmt_recv_msg_handler(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	queue_work(pf_to_mgmt->workq, &mgmt_work->work);
 }
 
-/**
- * mgmt_resp_msg_handler - handler for a response message from mgmt cpu
- * @pf_to_mgmt: PF to MGMT channel
- * @recv_msg: received message details
- **/
+ 
 static void mgmt_resp_msg_handler(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				  struct hinic_recv_msg *recv_msg)
 {
-	wmb();  /* verify writing all, before reading */
+	wmb();   
 
 	complete(&recv_msg->recv_done);
 }
 
-/**
- * recv_mgmt_msg_handler - handler for a message from mgmt cpu
- * @pf_to_mgmt: PF to MGMT channel
- * @header: the header of the message
- * @recv_msg: received message details
- **/
+ 
 static void recv_mgmt_msg_handler(struct hinic_pf_to_mgmt *pf_to_mgmt,
 				  u64 *header, struct hinic_recv_msg *recv_msg)
 {
@@ -519,12 +422,7 @@ static void recv_mgmt_msg_handler(struct hinic_pf_to_mgmt *pf_to_mgmt,
 		mgmt_recv_msg_handler(pf_to_mgmt, recv_msg);
 }
 
-/**
- * mgmt_msg_aeqe_handler - handler for a mgmt message event
- * @handle: PF to MGMT channel
- * @data: the header of the message
- * @size: unused
- **/
+ 
 static void mgmt_msg_aeqe_handler(void *handle, void *data, u8 size)
 {
 	struct hinic_pf_to_mgmt *pf_to_mgmt = handle;
@@ -539,13 +437,7 @@ static void mgmt_msg_aeqe_handler(void *handle, void *data, u8 size)
 	recv_mgmt_msg_handler(pf_to_mgmt, header, recv_msg);
 }
 
-/**
- * alloc_recv_msg - allocate receive message memory
- * @pf_to_mgmt: PF to MGMT channel
- * @recv_msg: pointer that will hold the allocated data
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int alloc_recv_msg(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			  struct hinic_recv_msg *recv_msg)
 {
@@ -565,12 +457,7 @@ static int alloc_recv_msg(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	return 0;
 }
 
-/**
- * alloc_msg_buf - allocate all the message buffers of PF to MGMT channel
- * @pf_to_mgmt: PF to MGMT channel
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int alloc_msg_buf(struct hinic_pf_to_mgmt *pf_to_mgmt)
 {
 	struct hinic_hwif *hwif = pf_to_mgmt->hwif;
@@ -606,13 +493,7 @@ static int alloc_msg_buf(struct hinic_pf_to_mgmt *pf_to_mgmt)
 	return 0;
 }
 
-/**
- * hinic_pf_to_mgmt_init - initialize PF to MGMT channel
- * @pf_to_mgmt: PF to MGMT channel
- * @hwif: HW interface the PF to MGMT will use for accessing HW
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
 			  struct hinic_hwif *hwif)
 {
@@ -662,10 +543,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
 	return 0;
 }
 
-/**
- * hinic_pf_to_mgmt_free - free PF to MGMT channel
- * @pf_to_mgmt: PF to MGMT channel
- **/
+ 
 void hinic_pf_to_mgmt_free(struct hinic_pf_to_mgmt *pf_to_mgmt)
 {
 	struct hinic_pfhwdev *pfhwdev = mgmt_to_pfhwdev(pf_to_mgmt);

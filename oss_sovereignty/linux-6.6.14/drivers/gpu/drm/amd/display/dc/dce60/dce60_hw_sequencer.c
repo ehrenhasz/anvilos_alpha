@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Mauro Rossi <issor.oruam@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -32,21 +9,17 @@
 #include "dce110/dce110_hw_sequencer.h"
 #include "dce100/dce100_hw_sequencer.h"
 
-/* include DCE6 register header files */
+ 
 #include "dce/dce_6_0_d.h"
 #include "dce/dce_6_0_sh_mask.h"
 
 #define DC_LOGGER_INIT()
 
-/*******************************************************************************
- * Private definitions
- ******************************************************************************/
+ 
 
-/***************************PIPE_CONTROL***********************************/
+ 
 
-/*
- *  Check if FBC can be enabled
- */
+ 
 static bool dce60_should_enable_fbc(struct dc *dc,
 		struct dc_state *context,
 		uint32_t *pipe_idx)
@@ -59,11 +32,11 @@ static bool dce60_should_enable_fbc(struct dc *dc,
 
 	ASSERT(dc->fbc_compressor);
 
-	/* FBC memory should be allocated */
+	 
 	if (!dc->ctx->fbc_gpu_addr)
 		return false;
 
-	/* Only supports single display */
+	 
 	if (context->stream_count != 1)
 		return false;
 
@@ -75,7 +48,7 @@ static bool dce60_should_enable_fbc(struct dc *dc,
 			if (!pipe_ctx)
 				continue;
 
-			/* fbc not applicable on underlay pipe */
+			 
 			if (pipe_ctx->pipe_idx != underlay_idx) {
 				*pipe_idx = i;
 				break;
@@ -89,28 +62,26 @@ static bool dce60_should_enable_fbc(struct dc *dc,
 	if (!pipe_ctx->stream->link)
 		return false;
 
-	/* Only supports eDP */
+	 
 	if (pipe_ctx->stream->link->connector_signal != SIGNAL_TYPE_EDP)
 		return false;
 
-	/* PSR should not be enabled */
+	 
 	if (pipe_ctx->stream->link->psr_settings.psr_feature_enabled)
 		return false;
 
-	/* Nothing to compress */
+	 
 	if (!pipe_ctx->plane_state)
 		return false;
 
-	/* Only for non-linear tiling */
+	 
 	if (pipe_ctx->plane_state->tiling_info.gfx8.array_mode == DC_ARRAY_LINEAR_GENERAL)
 		return false;
 
 	return true;
 }
 
-/*
- *  Enable FBC
- */
+ 
 static void dce60_enable_fbc(
 		struct dc *dc,
 		struct dc_state *context)
@@ -118,7 +89,7 @@ static void dce60_enable_fbc(
 	uint32_t pipe_idx = 0;
 
 	if (dce60_should_enable_fbc(dc, context, &pipe_idx)) {
-		/* Program GRPH COMPRESSED ADDRESS and PITCH */
+		 
 		struct compr_addr_and_pitch_params params = {0, 0, 0};
 		struct compressor *compr = dc->fbc_compressor;
 		struct pipe_ctx *pipe_ctx = &context->res_ctx.pipe_ctx[pipe_idx];
@@ -136,9 +107,7 @@ static void dce60_enable_fbc(
 }
 
 
-/*******************************************************************************
- * Front End programming
- ******************************************************************************/
+ 
 
 static void dce60_set_default_colors(struct pipe_ctx *pipe_ctx)
 {
@@ -150,45 +119,29 @@ static void dce60_set_default_colors(struct pipe_ctx *pipe_ctx)
 	default_adjust.csc_adjust_type = GRAPHICS_CSC_ADJUST_TYPE_SW;
 	default_adjust.surface_pixel_format = pipe_ctx->plane_res.scl_data.format;
 
-	/* display color depth */
+	 
 	default_adjust.color_depth =
 		pipe_ctx->stream->timing.display_color_depth;
 
-	/* Lb color depth */
+	 
 	default_adjust.lb_color_depth = pipe_ctx->plane_res.scl_data.lb_params.depth;
 
 	pipe_ctx->plane_res.xfm->funcs->opp_set_csc_default(
 					pipe_ctx->plane_res.xfm, &default_adjust);
 }
 
-/*******************************************************************************
- * In order to turn on surface we will program
- * CRTC
- *
- * DCE6 has no bottom_pipe and no Blender HW
- * We need to set 'blank_target' to false in order to turn on the display
- *
- * |-----------|------------|---------|
- * |curr pipe  | set_blank  |         |
- * |Surface    |blank_target|  CRCT   |
- * |visibility |  argument  |         |
- * |-----------|------------|---------|
- * |    off    |   true     | blank   |
- * |    on     |   false    | unblank |
- * |-----------|------------|---------|
- *
- ******************************************************************************/
+ 
 static void dce60_program_surface_visibility(const struct dc *dc,
 		struct pipe_ctx *pipe_ctx)
 {
 	bool blank_target = false;
 
-	/* DCE6 has no bottom_pipe and no Blender HW */
+	 
 
 	if (!pipe_ctx->plane_state->visible)
 		blank_target = true;
 
-	/* DCE6 skip dce_set_blender_mode() but then proceed to 'unblank' CRTC */
+	 
 	pipe_ctx->stream_res.tg->funcs->set_blank(pipe_ctx->stream_res.tg, blank_target);
 
 }
@@ -201,25 +154,25 @@ static void dce60_get_surface_visual_confirm_color(const struct pipe_ctx *pipe_c
 
 	switch (pipe_ctx->plane_res.scl_data.format) {
 	case PIXEL_FORMAT_ARGB8888:
-		/* set boarder color to red */
+		 
 		color->color_r_cr = color_value;
 		break;
 
 	case PIXEL_FORMAT_ARGB2101010:
-		/* set boarder color to blue */
+		 
 		color->color_b_cb = color_value;
 		break;
 	case PIXEL_FORMAT_420BPP8:
-		/* set boarder color to green */
+		 
 		color->color_g_y = color_value;
 		break;
 	case PIXEL_FORMAT_420BPP10:
-		/* set boarder color to yellow */
+		 
 		color->color_g_y = color_value;
 		color->color_r_cr = color_value;
 		break;
 	case PIXEL_FORMAT_FP16:
-		/* set boarder color to white */
+		 
 		color->color_r_cr = color_value;
 		color->color_b_cb = color_value;
 		color->color_g_y = color_value;
@@ -234,7 +187,7 @@ static void dce60_program_scaler(const struct dc *dc,
 {
 	struct tg_color color = {0};
 
-	/* DCE6 skips DCN TOFPGA check for transform_set_pixel_storage_depth == NULL */
+	 
 
 	if (dc->debug.visual_confirm == VISUAL_CONFIRM_SURFACE)
 		dce60_get_surface_visual_confirm_color(pipe_ctx, &color);
@@ -249,11 +202,7 @@ static void dce60_program_scaler(const struct dc *dc,
 		&pipe_ctx->stream->bit_depth_params);
 
 	if (pipe_ctx->stream_res.tg->funcs->set_overscan_blank_color) {
-		/*
-		 * The way 420 is packed, 2 channels carry Y component, 1 channel
-		 * alternate between Cb and Cr, so both channels need the pixel
-		 * value for Y
-		 */
+		 
 		if (pipe_ctx->stream->timing.pixel_encoding == PIXEL_ENCODING_YCBCR420)
 			color.color_r_cr = color.color_g_y;
 
@@ -331,7 +280,7 @@ dce60_program_front_end_for_pipe(
 				&plane_state->tiling_info,
 				plane_state->rotation);
 
-	/* Moved programming gamma from dc to hwss */
+	 
 	if (pipe_ctx->plane_state->update_flags.bits.full_update ||
 			pipe_ctx->plane_state->update_flags.bits.in_transfer_func_change ||
 			pipe_ctx->plane_state->update_flags.bits.gamma_change)
@@ -398,7 +347,7 @@ static void dce60_apply_ctx_for_surface(
 		if (pipe_ctx->stream != stream)
 			continue;
 
-		/* Need to allocate mem before program front end for Fiji */
+		 
 		pipe_ctx->plane_res.mi->funcs->allocate_mem_input(
 				pipe_ctx->plane_res.mi,
 				pipe_ctx->stream->timing.h_total,

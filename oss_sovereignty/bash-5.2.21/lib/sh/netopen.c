@@ -1,27 +1,6 @@
-/*   
- * netopen.c -- functions to make tcp/udp connections
- *
- * Chet Ramey
- * chet@ins.CWRU.Edu
- */
+ 
 
-/* Copyright (C) 1987-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -70,15 +49,14 @@ extern int inet_aton PARAMS((const char *, struct in_addr *));
 static int _getaddr PARAMS((char *, struct in_addr *));
 static int _getserv PARAMS((char *, int, unsigned short *));
 static int _netopen4 PARAMS((char *, char *, int));
-#else /* HAVE_GETADDRINFO */
+#else  
 static int _netopen6 PARAMS((char *, char *, int));
 #endif
 
 static int _netopen PARAMS((char *, char *, int));
 
 #ifndef HAVE_GETADDRINFO
-/* Stuff the internet address corresponding to HOST into AP, in network
-   byte order.  Return 1 on success, 0 on failure. */
+ 
 
 static int
 _getaddr (host, ap)
@@ -91,8 +69,7 @@ _getaddr (host, ap)
   r = 0;
   if (host[0] >= '0' && host[0] <= '9')
     {
-      /* If the first character is a digit, guess that it's an
-	 Internet address and return immediately if inet_aton succeeds. */
+       
       r = inet_aton (host, ap);
       if (r)
 	return r;
@@ -111,8 +88,7 @@ _getaddr (host, ap)
   
 }
 
-/* Return 1 if SERV is a valid port number and stuff the converted value into
-   PP in network byte order. */   
+    
 static int
 _getserv (serv, proto, pp)
      char *serv;
@@ -141,18 +117,15 @@ _getserv (serv, proto, pp)
       if (se == 0)
 	return 0;
       if (pp)
-	*pp = se->s_port;	/* ports returned in network byte order */
+	*pp = se->s_port;	 
       return 1;
     }
-#else /* !HAVE_GETSERVBYNAME */
+#else  
     return 0;
-#endif /* !HAVE_GETSERVBYNAME */
+#endif  
 }
 
-/*
- * Open a TCP or UDP connection to HOST on port SERV.  Uses the
- * traditional BSD mechanisms.  Returns the connected socket or -1 on error.
- */
+ 
 static int 
 _netopen4(host, serv, typ)
      char *host, *serv;
@@ -200,14 +173,10 @@ _netopen4(host, serv, typ)
 
   return(s);
 }
-#endif /* ! HAVE_GETADDRINFO */
+#endif  
 
 #ifdef HAVE_GETADDRINFO
-/*
- * Open a TCP or UDP connection to HOST on port SERV.  Uses getaddrinfo(3)
- * which provides support for IPv6.  Returns the connected socket or -1
- * on error.
- */
+ 
 static int
 _netopen6 (host, serv, typ)
      char *host, *serv;
@@ -218,8 +187,8 @@ _netopen6 (host, serv, typ)
   int gerr;
 
   memset ((char *)&hints, 0, sizeof (hints));
-  /* XXX -- if problems with IPv6, set to PF_INET for IPv4 only */
-#ifdef DEBUG	/* PF_INET is the one that works for me */
+   
+#ifdef DEBUG	 
   hints.ai_family = PF_INET;
 #else
   hints.ai_family = PF_UNSPEC;
@@ -266,13 +235,9 @@ _netopen6 (host, serv, typ)
     }
   return s;
 }
-#endif /* HAVE_GETADDRINFO */
+#endif  
 
-/*
- * Open a TCP or UDP connection to HOST on port SERV.  Uses getaddrinfo(3)
- * if available, falling back to the traditional BSD mechanisms otherwise.
- * Returns the connected socket or -1 on error.
- */
+ 
 static int 
 _netopen(host, serv, typ)
      char *host, *serv;
@@ -285,10 +250,7 @@ _netopen(host, serv, typ)
 #endif
 }
 
-/*
- * Open a TCP or UDP connection given a path like `/dev/tcp/host/port' to
- * host `host' on port `port' and return the connected socket.
- */
+ 
 int
 netopen (path)
      char *path;
@@ -315,10 +277,7 @@ netopen (path)
 }
 
 #if 0
-/*
- * Open a TCP connection to host `host' on the port defined for service
- * `serv' and return the connected socket.
- */
+ 
 int
 tcpopen (host, serv)
      char *host, *serv;
@@ -326,10 +285,7 @@ tcpopen (host, serv)
   return (_netopen (host, serv, 't'));
 }
 
-/*
- * Open a UDP connection to host `host' on the port defined for service
- * `serv' and return the connected socket.
- */
+ 
 int
 udpopen (host, serv)
      char *host, *serv;
@@ -338,7 +294,7 @@ udpopen (host, serv)
 }
 #endif
 
-#else /* !HAVE_NETWORK */
+#else  
 
 int
 netopen (path)
@@ -348,4 +304,4 @@ netopen (path)
   return -1;
 }
 
-#endif /* !HAVE_NETWORK */
+#endif  

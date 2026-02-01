@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2017 Broadcom
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/clk-provider.h>
@@ -397,7 +395,7 @@ static const struct of_device_id sr_clk_dt_ids[] = {
 	{ .compatible = "brcm,sr-lcpll0", .data = sr_lcpll0_clk_init },
 	{ .compatible = "brcm,sr-lcpll1", .data = sr_lcpll1_clk_init },
 	{ .compatible = "brcm,sr-lcpll-pcie", .data = sr_lcpll_pcie_clk_init },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int sr_clk_probe(struct platform_device *pdev)

@@ -1,47 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * QNX4 file system, Linux implementation.
- *
- * Version : 0.2.1
- *
- * Using parts of the xiafs filesystem.
- *
- * History :
- *
- * 28-05-1998 by Richard Frowijn : first release.
- * 20-06-1998 by Frank Denis : Linux 2.1.99+ & dcache support.
- */
+
+ 
 
 #include <linux/buffer_head.h>
 #include "qnx4.h"
 
-/*
- * A qnx4 directory entry is an inode entry or link info
- * depending on the status field in the last byte. The
- * first byte is where the name start either way, and a
- * zero means it's empty.
- *
- * Also, due to a bug in gcc, we don't want to use the
- * real (differently sized) name arrays in the inode and
- * link entries, but always the 'de_name[]' one in the
- * fake struct entry.
- *
- * See
- *
- *   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578#c6
- *
- * for details, but basically gcc will take the size of the
- * 'name' array from one of the used union entries randomly.
- *
- * This use of 'de_name[]' (48 bytes) avoids the false positive
- * warnings that would happen if gcc decides to use 'inode.di_name'
- * (16 bytes) even when the pointer and size were to come from
- * 'link.dl_name' (48 bytes).
- *
- * In all cases the actual name pointer itself is the same, it's
- * only the gcc internal 'what is the size of this field' logic
- * that can get confused.
- */
+ 
 union qnx4_directory_entry {
 	struct {
 		const char de_name[48];

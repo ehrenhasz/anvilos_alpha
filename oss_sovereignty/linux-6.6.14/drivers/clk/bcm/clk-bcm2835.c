@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2010,2015 Broadcom
- * Copyright (C) 2012 Stephen Warren
- */
 
-/**
- * DOC: BCM2835 CPRMAN (clock manager for the "audio" domain)
- *
- * The clock tree on the 2835 has several levels.  There's a root
- * oscillator running at 19.2Mhz.  After the oscillator there are 5
- * PLLs, roughly divided as "camera", "ARM", "core", "DSI displays",
- * and "HDMI displays".  Those 5 PLLs each can divide their output to
- * produce up to 4 channels.  Finally, there is the level of clocks to
- * be consumed by other hardware components (like "H264" or "HDMI
- * state machine"), which divide off of some subset of the PLL
- * channels.
- *
- * All of the clocks in the tree are exposed in the DT, because the DT
- * may want to make assignments of the final layer of clocks to the
- * PLL channels, and some components of the hardware will actually
- * skip layers of the tree (for example, the pixel clock comes
- * directly from the PLLH PIX channel without using a CM_*CTL clock
- * generator).
- */
+ 
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -88,7 +67,7 @@
 #define CM_SLIMDIV		0x0ac
 #define CM_SMICTL		0x0b0
 #define CM_SMIDIV		0x0b4
-/* no definition for 0x0b8  and 0x0bc */
+ 
 #define CM_TCNTCTL		0x0c0
 # define CM_TCNT_SRC1_SHIFT		12
 #define CM_TCNTCNT		0x0c4
@@ -118,7 +97,7 @@
 #define CM_EMMC2CTL		0x1d0
 #define CM_EMMC2DIV		0x1d4
 
-/* General bits for the CM_*CTL regs */
+ 
 # define CM_ENABLE			BIT(4)
 # define CM_KILL			BIT(5)
 # define CM_GATE_BIT			6
@@ -296,11 +275,7 @@
 #define SOC_BCM2711		BIT(1)
 #define SOC_ALL			(SOC_BCM2835 | SOC_BCM2711)
 
-/*
- * Names of clocks used within the driver that need to be replaced
- * with an external parent's name.  This array is in the order that
- * the clocks node in the DT references external clocks.
- */
+ 
 static const char *const cprman_parent_names[] = {
 	"xosc",
 	"dsi0_byte",
@@ -314,17 +289,13 @@ static const char *const cprman_parent_names[] = {
 struct bcm2835_cprman {
 	struct device *dev;
 	void __iomem *regs;
-	spinlock_t regs_lock; /* spinlock for all clocks */
+	spinlock_t regs_lock;  
 	unsigned int soc;
 
-	/*
-	 * Real names of cprman clock parents looked up through
-	 * of_clk_get_parent_name(), which will be used in the
-	 * parent_names[] arrays for clock registration.
-	 */
+	 
 	const char *real_parent_names[ARRAY_SIZE(cprman_parent_names)];
 
-	/* Must be last */
+	 
 	struct clk_hw_onecell_data onecell;
 };
 
@@ -342,13 +313,11 @@ static inline u32 cprman_read(struct bcm2835_cprman *cprman, u32 reg)
 	return readl(cprman->regs + reg);
 }
 
-/* Does a cycle of measuring a clock through the TCNT clock, which may
- * source from many other clocks in the system.
- */
+ 
 static unsigned long bcm2835_measure_tcnt_mux(struct bcm2835_cprman *cprman,
 					      u32 tcnt_mux)
 {
-	u32 osccount = 19200; /* 1ms */
+	u32 osccount = 19200;  
 	u32 count;
 	ktime_t timeout;
 
@@ -362,10 +331,10 @@ static unsigned long bcm2835_measure_tcnt_mux(struct bcm2835_cprman *cprman,
 
 	cprman_write(cprman, CM_OSCCOUNT, osccount);
 
-	/* do a kind delay at the start */
+	 
 	mdelay(1);
 
-	/* Finish off whatever is left of OSCCOUNT */
+	 
 	timeout = ktime_add_ns(ktime_get(), LOCK_TIMEOUT_NS);
 	while (cprman_read(cprman, CM_OSCCOUNT)) {
 		if (ktime_after(ktime_get(), timeout)) {
@@ -376,7 +345,7 @@ static unsigned long bcm2835_measure_tcnt_mux(struct bcm2835_cprman *cprman,
 		cpu_relax();
 	}
 
-	/* Wait for BUSY to clear. */
+	 
 	timeout = ktime_add_ns(ktime_get(), LOCK_TIMEOUT_NS);
 	while (cprman_read(cprman, CM_TCNTCTL) & CM_BUSY) {
 		if (ktime_after(ktime_get(), timeout)) {
@@ -421,7 +390,7 @@ struct bcm2835_pll_data {
 	u32 frac_reg;
 	u32 ana_reg_base;
 	u32 reference_enable_mask;
-	/* Bit in CM_LOCK to indicate when the PLL has locked. */
+	 
 	u32 lock_mask;
 	u32 flags;
 
@@ -429,10 +398,7 @@ struct bcm2835_pll_data {
 
 	unsigned long min_rate;
 	unsigned long max_rate;
-	/*
-	 * Highest rate for the VCO before we have to use the
-	 * pre-divide-by-2.
-	 */
+	 
 	unsigned long max_fb_rate;
 };
 
@@ -485,15 +451,15 @@ struct bcm2835_clock_data {
 	const char *const *parents;
 	int num_mux_parents;
 
-	/* Bitmap encoding which parents accept rate change propagation. */
+	 
 	unsigned int set_rate_parent;
 
 	u32 ctl_reg;
 	u32 div_reg;
 
-	/* Number of integer bits in the divider */
+	 
 	u32 int_bits;
-	/* Number of fractional bits in the divider */
+	 
 	u32 frac_bits;
 
 	u32 flags;
@@ -533,11 +499,7 @@ static int bcm2835_pll_is_on(struct clk_hw *hw)
 static u32 bcm2835_pll_get_prediv_mask(struct bcm2835_cprman *cprman,
 				       const struct bcm2835_pll_data *data)
 {
-	/*
-	 * On BCM2711 there isn't a pre-divisor available in the PLL feedback
-	 * loop. Bits 13:14 of ANA1 (PLLA,PLLB,PLLC,PLLD) have been re-purposed
-	 * for to for VCO RANGE bits.
-	 */
+	 
 	if (cprman->soc & SOC_BCM2711)
 		return 0;
 
@@ -636,13 +598,13 @@ static int bcm2835_pll_on(struct clk_hw *hw)
 		     cprman_read(cprman, data->a2w_ctrl_reg) &
 		     ~A2W_PLL_CTRL_PWRDN);
 
-	/* Take the PLL out of reset. */
+	 
 	spin_lock(&cprman->regs_lock);
 	cprman_write(cprman, data->cm_ctrl_reg,
 		     cprman_read(cprman, data->cm_ctrl_reg) & ~CM_PLL_ANARST);
 	spin_unlock(&cprman->regs_lock);
 
-	/* Wait for the PLL to lock. */
+	 
 	timeout = ktime_add_ns(ktime_get(), LOCK_TIMEOUT_NS);
 	while (!(cprman_read(cprman, CM_LOCK) & data->lock_mask)) {
 		if (ktime_after(ktime_get(), timeout)) {
@@ -666,14 +628,7 @@ bcm2835_pll_write_ana(struct bcm2835_cprman *cprman, u32 ana_reg_base, u32 *ana)
 {
 	int i;
 
-	/*
-	 * ANA register setup is done as a series of writes to
-	 * ANA3-ANA0, in that order.  This lets us write all 4
-	 * registers as a single cycle of the serdes interface (taking
-	 * 100 xosc clocks), whereas if we were to update ana0, 1, and
-	 * 3 individually through their partial-write registers, each
-	 * would be their own serdes cycle.
-	 */
+	 
 	for (i = 3; i >= 0; i--)
 		cprman_write(cprman, ana_reg_base + i * 4, ana[i]);
 }
@@ -721,7 +676,7 @@ static int bcm2835_pll_set_rate(struct clk_hw *hw,
 		do_ana_setup_first = true;
 	}
 
-	/* Unmask the reference clock from the oscillator. */
+	 
 	spin_lock(&cprman->regs_lock);
 	cprman_write(cprman, A2W_XOSC_CTRL,
 		     cprman_read(cprman, A2W_XOSC_CTRL) |
@@ -731,7 +686,7 @@ static int bcm2835_pll_set_rate(struct clk_hw *hw,
 	if (do_ana_setup_first)
 		bcm2835_pll_write_ana(cprman, data->ana_reg_base, ana);
 
-	/* Set the PLL multiplier from the oscillator. */
+	 
 	cprman_write(cprman, data->frac_reg, fdiv);
 
 	a2w_ctl = cprman_read(cprman, data->a2w_ctrl_reg);
@@ -907,12 +862,7 @@ static const struct clk_ops bcm2835_pll_divider_clk_ops = {
 	.debug_init = bcm2835_pll_divider_debug_init,
 };
 
-/*
- * The CM dividers do fixed-point division, so we can't use the
- * generic integer divider code like the PLL dividers do (and we can't
- * fake it by having some fixed shifts preceding it in the clock tree,
- * because we'd run out of bits in a 32-bit unsigned long).
- */
+ 
 struct bcm2835_clock {
 	struct clk_hw hw;
 	struct bcm2835_cprman *cprman;
@@ -948,21 +898,21 @@ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
 	div = temp;
 	div &= ~unused_frac_mask;
 
-	/* different clamping limits apply for a mash clock */
+	 
 	if (data->is_mash_clock) {
-		/* clamp to min divider of 2 */
+		 
 		mindiv = 2 << CM_DIV_FRAC_BITS;
-		/* clamp to the highest possible integer divider */
+		 
 		maxdiv = (BIT(data->int_bits) - 1) << CM_DIV_FRAC_BITS;
 	} else {
-		/* clamp to min divider of 1 */
+		 
 		mindiv = 1 << CM_DIV_FRAC_BITS;
-		/* clamp to the highest possible fractional divider */
+		 
 		maxdiv = GENMASK(data->int_bits + CM_DIV_FRAC_BITS - 1,
 				 CM_DIV_FRAC_BITS - data->frac_bits);
 	}
 
-	/* apply the clamping  limits */
+	 
 	div = max_t(u32, div, mindiv);
 	div = min_t(u32, div, maxdiv);
 
@@ -979,10 +929,7 @@ static unsigned long bcm2835_clock_rate_from_divisor(struct bcm2835_clock *clock
 	if (data->int_bits == 0 && data->frac_bits == 0)
 		return parent_rate;
 
-	/*
-	 * The divisor is a 12.12 fixed point field, but only some of
-	 * the bits are populated in any given clock.
-	 */
+	 
 	div >>= CM_DIV_FRAC_BITS - data->frac_bits;
 	div &= (1 << (data->int_bits + data->frac_bits)) - 1;
 
@@ -1007,10 +954,7 @@ static unsigned long bcm2835_round_rate(unsigned long rate)
 	while (scaler < limit)
 		scaler *= 10;
 
-	/*
-	 * If increasing a clock by less than 0.1% changes it
-	 * from ..999.. to ..000.., round up.
-	 */
+	 
 	if ((rate + scaler - 1) / scaler % 1000 == 0)
 		rate = roundup(rate, scaler);
 
@@ -1066,7 +1010,7 @@ static void bcm2835_clock_off(struct clk_hw *hw)
 		     cprman_read(cprman, data->ctl_reg) & ~CM_ENABLE);
 	spin_unlock(&cprman->regs_lock);
 
-	/* BUSY will remain high until the divider completes its cycle. */
+	 
 	bcm2835_clock_wait_busy(clock);
 }
 
@@ -1083,9 +1027,7 @@ static int bcm2835_clock_on(struct clk_hw *hw)
 		     CM_GATE);
 	spin_unlock(&cprman->regs_lock);
 
-	/* Debug code to measure the clock once it's turned on to see
-	 * if it's ticking at the rate we expect.
-	 */
+	 
 	if (data->tcnt_mux && false) {
 		dev_info(cprman->dev,
 			 "clk %s: rate %ld, measure %ld\n",
@@ -1108,14 +1050,7 @@ static int bcm2835_clock_set_rate(struct clk_hw *hw,
 
 	spin_lock(&cprman->regs_lock);
 
-	/*
-	 * Setting up frac support
-	 *
-	 * In principle it is recommended to stop/start the clock first,
-	 * but as we set CLK_SET_RATE_GATE during registration of the
-	 * clock this requirement should be take care of by the
-	 * clk-framework.
-	 */
+	 
 	ctl = cprman_read(cprman, data->ctl_reg) & ~CM_FRAC;
 	ctl |= (div & CM_DIV_FRAC_MASK) ? CM_FRAC : 0;
 	cprman_write(cprman, data->ctl_reg, ctl);
@@ -1168,10 +1103,7 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
 			low = bcm2835_clock_rate_from_divisor(clock, *prate,
 							      int_div);
 
-			/*
-			 * Return a value which is the maximum deviation
-			 * below the ideal rate, for use as a metric.
-			 */
+			 
 			return *avgrate - max(*avgrate - low, high - *avgrate);
 		}
 		return *avgrate;
@@ -1181,11 +1113,11 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
 		dev_warn(cprman->dev,
 			"frac bits are not used when propagating rate change");
 
-	/* clamp to min divider of 2 if we're dealing with a mash clock */
+	 
 	mindiv = data->is_mash_clock ? 2 : 1;
 	maxdiv = BIT(data->int_bits) - 1;
 
-	/* TODO: Be smart, and only test a subset of the available divisors. */
+	 
 	for (curdiv = mindiv; curdiv <= maxdiv; curdiv++) {
 		unsigned long tmp_rate;
 
@@ -1219,21 +1151,13 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
 
 	current_parent_is_pllc = bcm2835_clk_is_pllc(clk_hw_get_parent(hw));
 
-	/*
-	 * Select parent clock that results in the closest but lower rate
-	 */
+	 
 	for (i = 0; i < clk_hw_get_num_parents(hw); ++i) {
 		parent = clk_hw_get_parent_by_index(hw, i);
 		if (!parent)
 			continue;
 
-		/*
-		 * Don't choose a PLLC-derived clock as our parent
-		 * unless it had been manually set that way.  PLLC's
-		 * frequency gets adjusted by the firmware due to
-		 * over-temp or under-voltage conditions, without
-		 * prior notification to our clock consumer.
-		 */
+		 
 		if (bcm2835_clk_is_pllc(parent) && !current_parent_is_pllc)
 			continue;
 
@@ -1321,10 +1245,7 @@ static int bcm2835_vpu_clock_is_on(struct clk_hw *hw)
 	return true;
 }
 
-/*
- * The VPU clock can never be disabled (it doesn't have an ENABLE
- * bit), so it gets its own set of clock ops.
- */
+ 
 static const struct clk_ops bcm2835_vpu_clock_clk_ops = {
 	.is_prepared = bcm2835_vpu_clock_is_on,
 	.recalc_rate = bcm2835_clock_get_rate,
@@ -1345,7 +1266,7 @@ static struct clk_hw *bcm2835_register_pll(struct bcm2835_cprman *cprman,
 
 	memset(&init, 0, sizeof(init));
 
-	/* All of the PLLs derive from the external oscillator. */
+	 
 	init.parent_names = &cprman->real_parent_names[0];
 	init.num_parents = 1;
 	init.name = pll_data->name;
@@ -1414,10 +1335,7 @@ bcm2835_register_pll_divider(struct bcm2835_cprman *cprman,
 	if (ret)
 		return ERR_PTR(ret);
 
-	/*
-	 * PLLH's channels have a fixed divide by 10 afterwards, which
-	 * is what our consumers are actually using.
-	 */
+	 
 	if (divider_data->fixed_divider != 1) {
 		return clk_hw_register_fixed_factor(cprman->dev,
 						    divider_data->name,
@@ -1440,10 +1358,7 @@ static struct clk_hw *bcm2835_register_clock(struct bcm2835_cprman *cprman,
 	size_t i;
 	int ret;
 
-	/*
-	 * Replace our strings referencing parent clocks with the
-	 * actual clock-output-name of the parent.
-	 */
+	 
 	for (i = 0; i < clock_data->num_mux_parents; i++) {
 		parents[i] = clock_data->parents[i];
 
@@ -1460,10 +1375,7 @@ static struct clk_hw *bcm2835_register_clock(struct bcm2835_cprman *cprman,
 	init.name = clock_data->name;
 	init.flags = clock_data->flags | CLK_IGNORE_UNUSED;
 
-	/*
-	 * Pass the CLK_SET_RATE_PARENT flag if we are allowed to propagate
-	 * rate changes on at least of the parents.
-	 */
+	 
 	if (clock_data->set_rate_parent)
 		init.flags |= CLK_SET_RATE_PARENT;
 
@@ -1473,9 +1385,7 @@ static struct clk_hw *bcm2835_register_clock(struct bcm2835_cprman *cprman,
 		init.ops = &bcm2835_clock_clk_ops;
 		init.flags |= CLK_SET_RATE_GATE | CLK_SET_PARENT_GATE;
 
-		/* If the clock wasn't actually enabled at boot, it's not
-		 * critical.
-		 */
+		 
 		if (!(cprman_read(cprman, clock_data->ctl_reg) & CM_ENABLE))
 			init.flags &= ~CLK_IS_CRITICAL;
 	}
@@ -1513,7 +1423,7 @@ struct bcm2835_clk_desc {
 	const void *data;
 };
 
-/* assignment helper macros for different clock types */
+ 
 #define _REGISTER(f, s, ...) { .clk_register = f, \
 			       .supported = s,				\
 			       .data = __VA_ARGS__ }
@@ -1534,9 +1444,9 @@ struct bcm2835_clk_desc {
 					  &(struct bcm2835_gate_data)	\
 					  {__VA_ARGS__})
 
-/* parent mux arrays plus helper macros */
+ 
 
-/* main oscillator parent mux */
+ 
 static const char *const bcm2835_clock_osc_parents[] = {
 	"gnd",
 	"xosc",
@@ -1550,7 +1460,7 @@ static const char *const bcm2835_clock_osc_parents[] = {
 	.parents = bcm2835_clock_osc_parents,				\
 	__VA_ARGS__)
 
-/* main peripherial parent mux */
+ 
 static const char *const bcm2835_clock_per_parents[] = {
 	"gnd",
 	"xosc",
@@ -1568,15 +1478,7 @@ static const char *const bcm2835_clock_per_parents[] = {
 	.parents = bcm2835_clock_per_parents,				\
 	__VA_ARGS__)
 
-/*
- * Restrict clock sources for the PCM peripheral to the oscillator and
- * PLLD_PER because other source may have varying rates or be switched
- * off.
- *
- * Prevent other sources from being selected by replacing their names in
- * the list of potential parents with dummy entries (entry index is
- * significant).
- */
+ 
 static const char *const bcm2835_pcm_per_parents[] = {
 	"-",
 	"xosc",
@@ -1594,7 +1496,7 @@ static const char *const bcm2835_pcm_per_parents[] = {
 	.parents = bcm2835_pcm_per_parents,				\
 	__VA_ARGS__)
 
-/* main vpu parent mux */
+ 
 static const char *const bcm2835_clock_vpu_parents[] = {
 	"gnd",
 	"xosc",
@@ -1614,11 +1516,7 @@ static const char *const bcm2835_clock_vpu_parents[] = {
 	.parents = bcm2835_clock_vpu_parents,				\
 	__VA_ARGS__)
 
-/*
- * DSI parent clocks.  The DSI byte/DDR/DDR2 clocks come from the DSI
- * analog PHY.  The _inv variants are generated internally to cprman,
- * but we don't use them so they aren't hooked up.
- */
+ 
 static const char *const bcm2835_clock_dsi0_parents[] = {
 	"gnd",
 	"xosc",
@@ -1657,20 +1555,11 @@ static const char *const bcm2835_clock_dsi1_parents[] = {
 	.parents = bcm2835_clock_dsi1_parents,				\
 	__VA_ARGS__)
 
-/*
- * the real definition of all the pll, pll_dividers and clocks
- * these make use of the above REGISTER_* macros
- */
+ 
 static const struct bcm2835_clk_desc clk_desc_array[] = {
-	/* the PLL + PLL dividers */
+	 
 
-	/*
-	 * PLLA is the auxiliary PLL, used to drive the CCP2
-	 * (Compact Camera Port 2) transmitter clock.
-	 *
-	 * It is in the PX LDO power domain, which is on when the
-	 * AUDIO domain is on.
-	 */
+	 
 	[BCM2835_PLLA]		= REGISTER_PLL(
 		SOC_ALL,
 		.name = "plla",
@@ -1726,7 +1615,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.fixed_divider = 1,
 		.flags = CLK_SET_RATE_PARENT),
 
-	/* PLLB is used for the ARM's clock. */
+	 
 	[BCM2835_PLLB]		= REGISTER_PLL(
 		SOC_ALL,
 		.name = "pllb",
@@ -1754,12 +1643,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.fixed_divider = 1,
 		.flags = CLK_SET_RATE_PARENT | CLK_GET_RATE_NOCACHE),
 
-	/*
-	 * PLLC is the core PLL, used to drive the core VPU clock.
-	 *
-	 * It is in the PX LDO power domain, which is on when the
-	 * AUDIO domain is on.
-	 */
+	 
 	[BCM2835_PLLC]		= REGISTER_PLL(
 		SOC_ALL,
 		.name = "pllc",
@@ -1816,12 +1700,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.fixed_divider = 1,
 		.flags = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 
-	/*
-	 * PLLD is the display PLL, used to drive DSI display panels.
-	 *
-	 * It is in the PX LDO power domain, which is on when the
-	 * AUDIO domain is on.
-	 */
+	 
 	[BCM2835_PLLD]		= REGISTER_PLL(
 		SOC_ALL,
 		.name = "plld",
@@ -1847,11 +1726,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.hold_mask = CM_PLLD_HOLDCORE,
 		.fixed_divider = 1,
 		.flags = CLK_SET_RATE_PARENT),
-	/*
-	 * VPU firmware assumes that PLLD_PER isn't disabled by the ARM core.
-	 * Otherwise this could cause firmware lookups. That's why we mark
-	 * it as critical.
-	 */
+	 
 	[BCM2835_PLLD_PER]	= REGISTER_PLL_DIV(
 		SOC_ALL,
 		.name = "plld_per",
@@ -1881,12 +1756,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.hold_mask = CM_PLLD_HOLDDSI1,
 		.fixed_divider = 1),
 
-	/*
-	 * PLLH is used to supply the pixel clock or the AUX clock for the
-	 * TV encoder.
-	 *
-	 * It is in the HDMI power domain.
-	 */
+	 
 	[BCM2835_PLLH]		= REGISTER_PLL(
 		SOC_BCM2835,
 		"pllh",
@@ -1933,11 +1803,11 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.fixed_divider = 10,
 		.flags = CLK_SET_RATE_PARENT),
 
-	/* the clocks */
+	 
 
-	/* clocks with oscillator parent mux */
+	 
 
-	/* One Time Programmable Memory clock.  Maximum 10Mhz. */
+	 
 	[BCM2835_CLOCK_OTP]	= REGISTER_OSC_CLK(
 		SOC_ALL,
 		.name = "otp",
@@ -1946,10 +1816,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.int_bits = 4,
 		.frac_bits = 0,
 		.tcnt_mux = 6),
-	/*
-	 * Used for a 1Mhz clock for the system clocksource, and also used
-	 * bythe watchdog timer and the camera pulse generator.
-	 */
+	 
 	[BCM2835_CLOCK_TIMER]	= REGISTER_OSC_CLK(
 		SOC_ALL,
 		.name = "timer",
@@ -1957,10 +1824,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.div_reg = CM_TIMERDIV,
 		.int_bits = 6,
 		.frac_bits = 12),
-	/*
-	 * Clock for the temperature sensor.
-	 * Generally run at 2Mhz, max 5Mhz.
-	 */
+	 
 	[BCM2835_CLOCK_TSENS]	= REGISTER_OSC_CLK(
 		SOC_ALL,
 		.name = "tsens",
@@ -1976,7 +1840,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.int_bits = 6,
 		.frac_bits = 0),
 
-	/* clocks with vpu parent mux */
+	 
 	[BCM2835_CLOCK_H264]	= REGISTER_VPU_CLK(
 		SOC_ALL,
 		.name = "h264",
@@ -1994,10 +1858,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 8,
 		.tcnt_mux = 2),
 
-	/*
-	 * Secondary SDRAM clock.  Used for low-voltage modes when the PLL
-	 * in the SDRAM controller can't be used.
-	 */
+	 
 	[BCM2835_CLOCK_SDRAM]	= REGISTER_VPU_CLK(
 		SOC_ALL,
 		.name = "sdram",
@@ -2014,12 +1875,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.int_bits = 4,
 		.frac_bits = 8,
 		.tcnt_mux = 4),
-	/*
-	 * VPU clock.  This doesn't have an enable bit, since it drives
-	 * the bus for everything else, and is special so it doesn't need
-	 * to be gated for rate changes.  It is also known as "clk_audio"
-	 * in various hardware documentation.
-	 */
+	 
 	[BCM2835_CLOCK_VPU]	= REGISTER_VPU_CLK(
 		SOC_ALL,
 		.name = "vpu",
@@ -2031,7 +1887,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.is_vpu_clock = true,
 		.tcnt_mux = 5),
 
-	/* clocks with per parent mux */
+	 
 	[BCM2835_CLOCK_AVEO]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "aveo",
@@ -2072,7 +1928,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 8,
 		.tcnt_mux = 17),
 
-	/* Arasan EMMC clock */
+	 
 	[BCM2835_CLOCK_EMMC]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "emmc",
@@ -2082,7 +1938,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 8,
 		.tcnt_mux = 39),
 
-	/* EMMC2 clock (only available for BCM2711) */
+	 
 	[BCM2711_CLOCK_EMMC2]	= REGISTER_PER_CLK(
 		SOC_BCM2711,
 		.name = "emmc2",
@@ -2092,7 +1948,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 8,
 		.tcnt_mux = 42),
 
-	/* General purpose (GPIO) clocks */
+	 
 	[BCM2835_CLOCK_GP0]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "gp0",
@@ -2121,7 +1977,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 12,
 		.flags = CLK_IS_CRITICAL),
 
-	/* HDMI state machine */
+	 
 	[BCM2835_CLOCK_HSM]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "hsm",
@@ -2176,7 +2032,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.tcnt_mux = 28,
 		.round_up = true),
 
-	/* TV encoder clock.  Only operating frequency is 108Mhz.  */
+	 
 	[BCM2835_CLOCK_VEC]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "vec",
@@ -2184,14 +2040,11 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.div_reg = CM_VECDIV,
 		.int_bits = 4,
 		.frac_bits = 0,
-		/*
-		 * Allow rate change propagation only on PLLH_AUX which is
-		 * assigned index 7 in the parent array.
-		 */
+		 
 		.set_rate_parent = BIT(7),
 		.tcnt_mux = 29),
 
-	/* dsi clocks */
+	 
 	[BCM2835_CLOCK_DSI0E]	= REGISTER_PER_CLK(
 		SOC_ALL,
 		.name = "dsi0e",
@@ -2225,14 +2078,9 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.frac_bits = 0,
 		.tcnt_mux = 13),
 
-	/* the gates */
+	 
 
-	/*
-	 * CM_PERIICTL (and CM_PERIACTL, CM_SYSCTL and CM_VPUCTL if
-	 * you have the debug bit set in the power manager, which we
-	 * don't bother exposing) are individual gates off of the
-	 * non-stop vpu clock.
-	 */
+	 
 	[BCM2835_CLOCK_PERI_IMAGE] = REGISTER_GATE(
 		SOC_ALL,
 		.name = "peri_image",
@@ -2240,15 +2088,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
 		.ctl_reg = CM_PERIICTL),
 };
 
-/*
- * Permanently take a reference on the parent of the SDRAM clock.
- *
- * While the SDRAM is being driven by its dedicated PLL most of the
- * time, there is a little loop running in the firmware that
- * periodically switches the SDRAM to using our CM clock to do PVT
- * recalibration, with the assumption that the previously configured
- * SDRAM parent is still enabled and running.
- */
+ 
 static int bcm2835_mark_sdc_parent_critical(struct clk *sdc)
 {
 	struct clk *parent = clk_get_parent(sdc);
@@ -2291,13 +2131,7 @@ static int bcm2835_clk_probe(struct platform_device *pdev)
 	of_clk_parent_fill(dev->of_node, cprman->real_parent_names,
 			   ARRAY_SIZE(cprman_parent_names));
 
-	/*
-	 * Make sure the external oscillator has been registered.
-	 *
-	 * The other (DSI) clocks are not present on older device
-	 * trees, which we still need to support for backwards
-	 * compatibility.
-	 */
+	 
 	if (!cprman->real_parent_names[0])
 		return -ENODEV;
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * isl29501.c: ISL29501 Time of Flight sensor driver.
- *
- * Copyright (C) 2018
- * Author: Mathieu Othacehe <m.othacehe@gmail.com>
- *
- * 7-bit I2C slave address: 0x57
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,15 +13,15 @@
 #include <linux/iio/buffer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/* Control, setting and status registers */
+ 
 #define ISL29501_DEVICE_ID			0x00
 #define ISL29501_ID				0x0A
 
-/* Sampling control registers */
+ 
 #define ISL29501_INTEGRATION_PERIOD		0x10
 #define ISL29501_SAMPLE_PERIOD			0x11
 
-/* Closed loop calibration registers */
+ 
 #define ISL29501_CROSSTALK_I_MSB		0x24
 #define ISL29501_CROSSTALK_I_LSB		0x25
 #define ISL29501_CROSSTALK_I_EXPONENT		0x26
@@ -43,18 +36,18 @@
 #define ISL29501_PHASE_OFFSET_MSB		0x2F
 #define ISL29501_PHASE_OFFSET_LSB		0x30
 
-/* Analog control registers */
+ 
 #define ISL29501_DRIVER_RANGE			0x90
 #define ISL29501_EMITTER_DAC			0x91
 
 #define ISL29501_COMMAND_REGISTER		0xB0
 
-/* Commands */
+ 
 #define ISL29501_EMUL_SAMPLE_START_PIN		0x49
 #define ISL29501_RESET_ALL_REGISTERS		0xD7
 #define ISL29501_RESET_INT_SM			0xD1
 
-/* Ambiant light and temperature corrections */
+ 
 #define ISL29501_TEMP_REFERENCE			0x31
 #define ISL29501_PHASE_EXPONENT			0x33
 #define ISL29501_TEMP_COEFF_A			0x34
@@ -62,7 +55,7 @@
 #define ISL29501_AMBIANT_COEFF_A		0x36
 #define ISL29501_AMBIANT_COEFF_B		0x3B
 
-/* Data output registers */
+ 
 #define ISL29501_DISTANCE_MSB_DATA		0xD1
 #define ISL29501_DISTANCE_LSB_DATA		0xD2
 #define ISL29501_PRECISION_MSB			0xD3
@@ -106,7 +99,7 @@ enum isl29501_correction_coeff {
 struct isl29501_private {
 	struct i2c_client *client;
 	struct mutex lock;
-	/* Exact representation of correction coefficients. */
+	 
 	unsigned int shadow_coeffs[COEFF_MAX];
 };
 
@@ -354,16 +347,7 @@ static unsigned int isl29501_find_corr_exp(unsigned int val,
 {
 	unsigned int exp = 1;
 
-	/*
-	 * Correction coefficients are represented under
-	 * mantissa * 2^exponent form, where mantissa and exponent
-	 * are stored in two separate registers of the sensor.
-	 *
-	 * Compute and return the lowest exponent such as:
-	 *	     mantissa = value / 2^exponent
-	 *
-	 *  where mantissa < max_mantissa.
-	 */
+	 
 	if (val <= max_mantissa)
 		return 0;
 
@@ -411,15 +395,12 @@ static ssize_t isl29501_write_ext(struct iio_dev *indio_dev,
 		if (val > (U8_MAX << ISL29501_MAX_EXP_VAL))
 			return -ERANGE;
 
-		/* Store the correction coefficient under its exact form. */
+		 
 		ret = isl29501_set_shadow_coeff(isl29501, reg, val);
 		if (ret < 0)
 			return ret;
 
-		/*
-		 * Find the highest exponent needed to represent
-		 * correction coefficients.
-		 */
+		 
 		for (i = 0; i < COEFF_MAX; i++) {
 			int corr;
 			int corr_exp;
@@ -434,11 +415,7 @@ static ssize_t isl29501_write_ext(struct iio_dev *indio_dev,
 			max_exp = max(max_exp, corr_exp);
 		}
 
-		/*
-		 * Represent every correction coefficient under
-		 * mantissa * 2^max_exponent form and force the
-		 * writing of those coefficients on the sensor.
-		 */
+		 
 		for (i = 0; i < COEFF_MAX; i++) {
 			int corr;
 			int mantissa;
@@ -595,18 +572,18 @@ static const int isl29501_current_scale_table[][2] = {
 };
 
 static const int isl29501_int_time[][2] = {
-	{0, 70},    /* 0.07 ms */
-	{0, 140},   /* 0.14 ms */
-	{0, 280},   /* 0.28 ms */
-	{0, 570},   /* 0.57 ms */
-	{0, 1140},  /* 1.14 ms */
-	{0, 2280},  /* 2.28 ms */
-	{0, 4550},  /* 4.55 ms */
-	{0, 9100},  /* 9.11 ms */
-	{0, 18200}, /* 18.2 ms */
-	{0, 36400}, /* 36.4 ms */
-	{0, 72810}, /* 72.81 ms */
-	{0, 145610} /* 145.28 ms */
+	{0, 70},     
+	{0, 140},    
+	{0, 280},    
+	{0, 570},    
+	{0, 1140},   
+	{0, 2280},   
+	{0, 4550},   
+	{0, 9100},   
+	{0, 18200},  
+	{0, 36400},  
+	{0, 72810},  
+	{0, 145610}  
 };
 
 static int isl29501_get_raw(struct isl29501_private *isl29501,
@@ -662,19 +639,19 @@ static int isl29501_get_scale(struct isl29501_private *isl29501,
 
 	switch (chan->type) {
 	case IIO_PROXIMITY:
-		/* distance = raw_distance * 33.31 / 65536 (m) */
+		 
 		*val = 3331;
 		*val2 = 6553600;
 
 		return IIO_VAL_FRACTIONAL;
 	case IIO_PHASE:
-		/* phase = raw_phase * 2pi / 65536 (rad) */
+		 
 		*val = 0;
 		*val2 = 95874;
 
 		return IIO_VAL_INT_PLUS_NANO;
 	case IIO_INTENSITY:
-		/* light = raw_light * 35 / 10000 (mA) */
+		 
 		*val = 35;
 		*val2 = 10000;
 
@@ -700,7 +677,7 @@ static int isl29501_get_scale(struct isl29501_private *isl29501,
 
 		return IIO_VAL_INT_PLUS_MICRO;
 	case IIO_TEMP:
-		/* temperature = raw_temperature * 125 / 100000 (milli °C) */
+		 
 		*val = 125;
 		*val2 = 100000;
 
@@ -759,7 +736,7 @@ static int isl29501_get_freq(struct isl29501_private *isl29501,
 	if (ret < 0)
 		return ret;
 
-	/* freq = 1 / (0.000450 * (sample_time + 1) * 10^-6) */
+	 
 	freq = 1000000ULL * 1000000ULL;
 
 	do_div(freq, 450 * (sample_time + 1));
@@ -867,7 +844,7 @@ static int isl29501_set_freq(struct isl29501_private *isl29501,
 	int freq;
 	unsigned long long sample_time;
 
-	/* sample_freq = 1 / (0.000450 * (sample_time + 1) * 10^-6) */
+	 
 	freq = val * 1000000 + val2 % 1000000;
 	sample_time = 2222ULL * 1000000ULL;
 	do_div(sample_time, freq);
@@ -938,7 +915,7 @@ static irqreturn_t isl29501_trigger_handler(int irq, void *p)
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct isl29501_private *isl29501 = iio_priv(indio_dev);
 	const unsigned long *active_mask = indio_dev->active_scan_mask;
-	u32 buffer[4] __aligned(8) = {}; /* 1x16-bit + naturally aligned ts */
+	u32 buffer[4] __aligned(8) = {};  
 
 	if (test_bit(ISL29501_DISTANCE_SCAN_INDEX, active_mask))
 		isl29501_register_read(isl29501, REG_DISTANCE, buffer);

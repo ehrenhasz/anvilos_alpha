@@ -1,13 +1,4 @@
-/*
- * Kernel CAPI 2.0 Module - /proc/capi handling
- *
- * Copyright 1999 by Carsten Paeth <calle@calle.de>
- * Copyright 2002 by Kai Germaschewski <kai@germaschewski.name>
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- *
- */
+ 
 
 
 #include "kcapi.h"
@@ -26,14 +17,14 @@ static char *state2str(unsigned short state)
 	}
 }
 
-// /proc/capi
-// ===========================================================================
 
-// /proc/capi/controller:
-//      cnr driver cardstate name driverinfo
-// /proc/capi/contrstats:
-//      cnr nrecvctlpkt nrecvdatapkt nsentctlpkt nsentdatapkt
-// ---------------------------------------------------------------------------
+
+
+
+
+
+
+
 
 static void *controller_start(struct seq_file *seq, loff_t *pos)
 	__acquires(capi_controller_lock)
@@ -108,11 +99,11 @@ static const struct seq_operations seq_contrstats_ops = {
 	.show	= contrstats_show,
 };
 
-// /proc/capi/applications:
-//      applid l3cnt dblkcnt dblklen #ncci recvqueuelen
-// /proc/capi/applstats:
-//      applid nrecvctlpkt nrecvdatapkt nsentctlpkt nsentdatapkt
-// ---------------------------------------------------------------------------
+
+
+
+
+
 
 static void *applications_start(struct seq_file *seq, loff_t *pos)
 	__acquires(capi_controller_lock)
@@ -190,9 +181,9 @@ static const struct seq_operations seq_applstats_ops = {
 	.show	= applstats_show,
 };
 
-// ---------------------------------------------------------------------------
 
-/* /proc/capi/drivers is always empty */
+
+ 
 static ssize_t empty_read(struct file *file, char __user *buf,
 			  size_t size, loff_t *off)
 {
@@ -204,7 +195,7 @@ static const struct proc_ops empty_proc_ops = {
 	.proc_lseek	= default_llseek,
 };
 
-// ---------------------------------------------------------------------------
+
 
 void __init
 kcapi_proc_init(void)

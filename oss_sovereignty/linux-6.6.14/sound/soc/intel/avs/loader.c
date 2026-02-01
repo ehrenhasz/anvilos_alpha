@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -40,7 +40,7 @@
 #define APL_MANIFEST_MAGIC		0x44504324
 #define APL_ADSPFW_OFFSET		0x2000
 
-/* Occasionally, engineering (release candidate) firmware is provided for testing. */
+ 
 static bool debug_ignore_fw_version;
 module_param_named(ignore_fw_version, debug_ignore_fw_version, bool, 0444);
 MODULE_PARM_DESC(ignore_fw_version, "Ignore firmware version check 0=no (default), 1=yes");
@@ -83,7 +83,7 @@ static int avs_fw_ext_manifest_strip(struct firmware *fw)
 
 static int avs_fw_manifest_offset(struct firmware *fw)
 {
-	/* Header type found in first DWORD of fw binary. */
+	 
 	u32 magic = *(u32 *)fw->data;
 
 	switch (magic) {
@@ -160,7 +160,7 @@ int avs_cldma_load_basefw(struct avs_dev *adev, struct firmware *fw)
 	reinit_completion(&adev->fw_ready);
 	avs_dsp_op(adev, int_control, true);
 
-	/* await ROM init */
+	 
 	ret = snd_hdac_adsp_readl_poll(adev, AVS_FW_REG_STATUS(adev), reg,
 				       (reg & AVS_ROM_INIT_DONE) == AVS_ROM_INIT_DONE,
 				       AVS_ROM_INIT_POLLING_US, SKL_ROM_INIT_TIMEOUT_US);
@@ -171,7 +171,7 @@ int avs_cldma_load_basefw(struct avs_dev *adev, struct firmware *fw)
 	}
 
 	hda_cldma_set_data(cl, (void *)fw->data, fw->size);
-	/* transfer firmware */
+	 
 	hda_cldma_transfer(cl, 0);
 	ret = snd_hdac_adsp_readl_poll(adev, AVS_FW_REG_STATUS(adev), reg,
 				       (reg & AVS_ROM_STS_MASK) == SKL_ROM_BASEFW_ENTERED,
@@ -192,10 +192,10 @@ int avs_cldma_load_library(struct avs_dev *adev, struct firmware *lib, u32 id)
 	int ret;
 
 	hda_cldma_set_data(cl, (void *)lib->data, lib->size);
-	/* transfer modules manifest */
+	 
 	hda_cldma_transfer(cl, msecs_to_jiffies(AVS_CLDMA_START_DELAY_MS));
 
-	/* DMA id ignored as there is only ever one code-loader DMA */
+	 
 	ret = avs_ipc_load_library(adev, 0, id);
 	hda_cldma_stop(cl);
 
@@ -252,7 +252,7 @@ int avs_cldma_transfer_modules(struct avs_dev *adev, bool load,
 	u16 *mod_ids;
 	int ret, i;
 
-	/* Either load to DSP or unload them to free space. */
+	 
 	if (load) {
 		for (i = 0; i < num_mods; i++) {
 			ret = avs_cldma_load_module(adev, &mods[i]);
@@ -298,14 +298,14 @@ avs_hda_init_rom(struct avs_dev *adev, unsigned int dma_id, bool purge)
 	reinit_completion(&adev->fw_ready);
 	avs_dsp_op(adev, int_control, true);
 
-	/* set boot config */
+	 
 	ret = avs_ipc_set_boot_config(adev, dma_id, purge);
 	if (ret) {
 		ret = AVS_IPC_RET(ret);
 		goto err;
 	}
 
-	/* await ROM init */
+	 
 	ret = snd_hdac_adsp_readq_poll(adev, spec->rom_status, reg,
 				       (reg & 0xF) == AVS_ROM_INIT_DONE ||
 				       (reg & 0xF) == APL_ROM_FW_ENTERED,
@@ -315,7 +315,7 @@ avs_hda_init_rom(struct avs_dev *adev, unsigned int dma_id, bool purge)
 		goto err;
 	}
 
-	/* power down non-main cores */
+	 
 	if (corex_mask) {
 		ret = avs_dsp_op(adev, power, corex_mask, false);
 		if (ret < 0)
@@ -333,7 +333,7 @@ static int avs_imr_load_basefw(struct avs_dev *adev)
 {
 	int ret;
 
-	/* DMA id ignored when flashing from IMR as no transfer occurs. */
+	 
 	ret = avs_hda_init_rom(adev, 0, false);
 	if (ret < 0) {
 		dev_err(adev->dev, "rom init failed: %d\n", ret);
@@ -361,7 +361,7 @@ int avs_hda_load_basefw(struct avs_dev *adev, struct firmware *fw)
 	unsigned int sdfmt, reg;
 	int ret, i;
 
-	/* configure hda dma */
+	 
 	memset(&substream, 0, sizeof(substream));
 	substream.stream = SNDRV_PCM_STREAM_PLAYBACK;
 	estream = snd_hdac_ext_stream_assign(bus, &substream,
@@ -370,13 +370,13 @@ int avs_hda_load_basefw(struct avs_dev *adev, struct firmware *fw)
 		return -ENODEV;
 	hstream = hdac_stream(estream);
 
-	/* code loading performed with default format */
+	 
 	sdfmt = snd_hdac_calc_stream_format(48000, 1, SNDRV_PCM_FORMAT_S32_LE, 32, 0);
 	ret = snd_hdac_dsp_prepare(hstream, sdfmt, fw->size, &dmab);
 	if (ret < 0)
 		goto release_stream;
 
-	/* enable SPIB for hda stream */
+	 
 	snd_hdac_stream_spbcap_enable(bus, true, hstream->index);
 	ret = snd_hdac_stream_set_spib(bus, hstream, fw->size);
 	if (ret)
@@ -395,7 +395,7 @@ int avs_hda_load_basefw(struct avs_dev *adev, struct firmware *fw)
 	if (ret < 0)
 		goto cleanup_resources;
 
-	/* transfer firmware */
+	 
 	snd_hdac_dsp_trigger(hstream, true);
 	ret = snd_hdac_adsp_readl_poll(adev, AVS_FW_REG_STATUS(adev), reg,
 				       (reg & AVS_ROM_STS_MASK) == APL_ROM_FW_ENTERED,
@@ -407,7 +407,7 @@ int avs_hda_load_basefw(struct avs_dev *adev, struct firmware *fw)
 	}
 
 cleanup_resources:
-	/* disable SPIB for hda stream */
+	 
 	snd_hdac_stream_spbcap_enable(bus, false, hstream->index);
 	snd_hdac_stream_set_spib(bus, hstream, 0);
 
@@ -428,7 +428,7 @@ int avs_hda_load_library(struct avs_dev *adev, struct firmware *lib, u32 id)
 	unsigned int sdfmt;
 	int ret;
 
-	/* configure hda dma */
+	 
 	memset(&substream, 0, sizeof(substream));
 	substream.stream = SNDRV_PCM_STREAM_PLAYBACK;
 	estream = snd_hdac_ext_stream_assign(bus, &substream,
@@ -437,19 +437,19 @@ int avs_hda_load_library(struct avs_dev *adev, struct firmware *lib, u32 id)
 		return -ENODEV;
 	stream = hdac_stream(estream);
 
-	/* code loading performed with default format */
+	 
 	sdfmt = snd_hdac_calc_stream_format(48000, 1, SNDRV_PCM_FORMAT_S32_LE, 32, 0);
 	ret = snd_hdac_dsp_prepare(stream, sdfmt, lib->size, &dmab);
 	if (ret < 0)
 		goto release_stream;
 
-	/* enable SPIB for hda stream */
+	 
 	snd_hdac_stream_spbcap_enable(bus, true, stream->index);
 	snd_hdac_stream_set_spib(bus, stream, lib->size);
 
 	memcpy(dmab.area, lib->data, lib->size);
 
-	/* transfer firmware */
+	 
 	snd_hdac_dsp_trigger(stream, true);
 	ret = avs_ipc_load_library(adev, stream->stream_tag - 1, id);
 	snd_hdac_dsp_trigger(stream, false);
@@ -458,7 +458,7 @@ int avs_hda_load_library(struct avs_dev *adev, struct firmware *lib, u32 id)
 		ret = AVS_IPC_RET(ret);
 	}
 
-	/* disable SPIB for hda stream */
+	 
 	snd_hdac_stream_spbcap_enable(bus, false, stream->index);
 	snd_hdac_stream_set_spib(bus, stream, 0);
 
@@ -472,10 +472,7 @@ release_stream:
 int avs_hda_transfer_modules(struct avs_dev *adev, bool load,
 			     struct avs_module_entry *mods, u32 num_mods)
 {
-	/*
-	 * All platforms without CLDMA are equipped with IMR,
-	 * and thus the module transferring is offloaded to DSP.
-	 */
+	 
 	return 0;
 }
 
@@ -484,7 +481,7 @@ int avs_dsp_load_libraries(struct avs_dev *adev, struct avs_tplg_library *libs, 
 	int start, id, i = 0;
 	int ret;
 
-	/* Calculate the id to assign for the next lib. */
+	 
 	for (id = 0; id < adev->fw_cfg.max_libs_count; id++)
 		if (adev->lib_names[id][0] == '\0')
 			break;
@@ -504,11 +501,7 @@ int avs_dsp_load_libraries(struct avs_dev *adev, struct avs_tplg_library *libs, 
 		if (!filename)
 			return -ENOMEM;
 
-		/*
-		 * If any call after this one fails, requested firmware is not released with
-		 * avs_release_last_firmware() as failing to load code results in need for reload
-		 * of entire driver module. And then avs_release_firmwares() is in place already.
-		 */
+		 
 		ret = avs_request_firmware(adev, &fw, filename);
 		kfree(filename);
 		if (ret < 0)
@@ -526,7 +519,7 @@ int avs_dsp_load_libraries(struct avs_dev *adev, struct avs_tplg_library *libs, 
 			return ret;
 		man = (struct avs_fw_manifest *)(stripped_fw.data + ret);
 
-		/* Don't load anything that's already in DSP memory. */
+		 
 		for (j = 0; j < id; j++)
 			if (!strncmp(adev->lib_names[j], man->name, AVS_LIB_NAME_SIZE))
 				goto next_lib;
@@ -600,7 +593,7 @@ int avs_dsp_boot_firmware(struct avs_dev *adev, bool purge)
 	struct avs_soc_component *acomp;
 	int ret, i;
 
-	/* Forgo full boot if flash from IMR succeeds. */
+	 
 	if (!purge && avs_platattr_test(adev, IMR)) {
 		ret = avs_imr_load_basefw(adev);
 		if (!ret)
@@ -609,7 +602,7 @@ int avs_dsp_boot_firmware(struct avs_dev *adev, bool purge)
 		dev_dbg(adev->dev, "firmware flash from imr failed: %d\n", ret);
 	}
 
-	/* Full boot, clear cached data except for basefw (slot 0). */
+	 
 	for (i = 1; i < adev->fw_cfg.max_libs_count; i++)
 		memset(adev->lib_names[i], 0, AVS_LIB_NAME_SIZE);
 
@@ -639,7 +632,7 @@ reenable_gating:
 	if (ret < 0)
 		return ret;
 
-	/* With all code loaded, refresh module information. */
+	 
 	ret = avs_module_info_init(adev, true);
 	if (ret) {
 		dev_err(adev->dev, "init module info failed: %d\n", ret);
@@ -693,7 +686,7 @@ int avs_dsp_first_boot_firmware(struct avs_dev *adev)
 			return -ENOMEM;
 	}
 
-	/* basefw always occupies slot 0 */
+	 
 	strcpy(&adev->lib_names[0][0], "BASEFW");
 
 	ida_init(&adev->ppl_ida);

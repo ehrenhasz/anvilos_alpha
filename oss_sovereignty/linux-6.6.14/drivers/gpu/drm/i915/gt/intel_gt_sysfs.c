@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_device.h>
 #include <linux/device.h>
@@ -26,16 +24,7 @@ bool is_object_gt(struct kobject *kobj)
 struct intel_gt *intel_gt_sysfs_get_drvdata(struct kobject *kobj,
 					    const char *name)
 {
-	/*
-	 * We are interested at knowing from where the interface
-	 * has been called, whether it's called from gt/ or from
-	 * the parent directory.
-	 * From the interface position it depends also the value of
-	 * the private data.
-	 * If the interface is called from gt/ then private data is
-	 * of the "struct intel_gt *" type, otherwise it's * a
-	 * "struct drm_i915_private *" type.
-	 */
+	 
 	if (!is_object_gt(kobj)) {
 		struct device *dev = kobj_to_dev(kobj);
 		struct drm_i915_private *i915 = kdev_minor_to_i915(dev);
@@ -67,7 +56,7 @@ static struct attribute *id_attrs[] = {
 };
 ATTRIBUTE_GROUPS(id);
 
-/* A kobject needs a release() method even if it does nothing */
+ 
 static void kobj_gt_release(struct kobject *kobj)
 {
 }
@@ -80,18 +69,11 @@ static const struct kobj_type kobj_gt_type = {
 
 void intel_gt_sysfs_register(struct intel_gt *gt)
 {
-	/*
-	 * We need to make things right with the
-	 * ABI compatibility. The files were originally
-	 * generated under the parent directory.
-	 *
-	 * We generate the files only for gt 0
-	 * to avoid duplicates.
-	 */
+	 
 	if (gt_is_root(gt))
 		intel_gt_sysfs_pm_init(gt, gt_get_parent_obj(gt));
 
-	/* init and xfer ownership to sysfs tree */
+	 
 	if (kobject_init_and_add(&gt->sysfs_gt, &kobj_gt_type,
 				 gt->i915->sysfs_gt, "gt%d", gt->info.id))
 		goto exit_fail;

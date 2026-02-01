@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Texas Instruments' Palmas Power Button Input Driver
- *
- * Copyright (C) 2012-2014 Texas Instruments Incorporated - http://www.ti.com/
- *	Girish S Ghongdemath
- *	Nishanth Menon
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/init.h>
@@ -22,13 +16,7 @@
 #define PALMAS_PWRON_DEBOUNCE_MASK	0x03
 #define PALMAS_PWR_KEY_Q_TIME_MS	20
 
-/**
- * struct palmas_pwron - Palmas power on data
- * @palmas:		pointer to palmas device
- * @input_dev:		pointer to input device
- * @input_work:		work for detecting release of key
- * @irq:		irq that we are hooked on to
- */
+ 
 struct palmas_pwron {
 	struct palmas *palmas;
 	struct input_dev *input_dev;
@@ -36,20 +24,13 @@ struct palmas_pwron {
 	int irq;
 };
 
-/**
- * struct palmas_pwron_config - configuration of palmas power on
- * @long_press_time_val:	value for long press h/w shutdown event
- * @pwron_debounce_val:		value for debounce of power button
- */
+ 
 struct palmas_pwron_config {
 	u8 long_press_time_val;
 	u8 pwron_debounce_val;
 };
 
-/**
- * palmas_power_button_work() - Detects the button release event
- * @work:	work item to detect button release
- */
+ 
 static void palmas_power_button_work(struct work_struct *work)
 {
 	struct palmas_pwron *pwron = container_of(work,
@@ -65,23 +46,17 @@ static void palmas_power_button_work(struct work_struct *work)
 		dev_err(input_dev->dev.parent,
 			"Cannot read palmas PWRON status: %d\n", error);
 	} else if (reg & BIT(1)) {
-		/* The button is released, report event. */
+		 
 		input_report_key(input_dev, KEY_POWER, 0);
 		input_sync(input_dev);
 	} else {
-		/* The button is still depressed, keep checking. */
+		 
 		schedule_delayed_work(&pwron->input_work,
 				msecs_to_jiffies(PALMAS_PWR_KEY_Q_TIME_MS));
 	}
 }
 
-/**
- * pwron_irq() - button press isr
- * @irq:		irq
- * @palmas_pwron:	pwron struct
- *
- * Return: IRQ_HANDLED
- */
+ 
 static irqreturn_t pwron_irq(int irq, void *palmas_pwron)
 {
 	struct palmas_pwron *pwron = palmas_pwron;
@@ -97,11 +72,7 @@ static irqreturn_t pwron_irq(int irq, void *palmas_pwron)
 	return IRQ_HANDLED;
 }
 
-/**
- * palmas_pwron_params_ofinit() - device tree parameter parser
- * @dev:	palmas button device
- * @config:	configuration params that this fills up
- */
+ 
 static void palmas_pwron_params_ofinit(struct device *dev,
 				       struct palmas_pwron_config *config)
 {
@@ -113,7 +84,7 @@ static void palmas_pwron_params_ofinit(struct device *dev,
 
 	memset(config, 0, sizeof(*config));
 
-	/* Default config parameters */
+	 
 	config->long_press_time_val = ARRAY_SIZE(lpk_times) - 1;
 
 	np = dev->of_node;
@@ -146,12 +117,7 @@ static void palmas_pwron_params_ofinit(struct device *dev,
 		 lpk_times[config->long_press_time_val]);
 }
 
-/**
- * palmas_pwron_probe() - probe
- * @pdev:	platform device for the button
- *
- * Return: 0 for successful probe else appropriate error
- */
+ 
 static int palmas_pwron_probe(struct platform_device *pdev)
 {
 	struct palmas *palmas = dev_get_drvdata(pdev->dev.parent);
@@ -181,10 +147,7 @@ static int palmas_pwron_probe(struct platform_device *pdev)
 
 	input_set_capability(input_dev, EV_KEY, KEY_POWER);
 
-	/*
-	 * Setup default hardware shutdown option (long key press)
-	 * and debounce.
-	 */
+	 
 	val = FIELD_PREP(PALMAS_LPK_TIME_MASK, config.long_press_time_val) |
 	      FIELD_PREP(PALMAS_PWRON_DEBOUNCE_MASK, config.pwron_debounce_val);
 	error = palmas_update_bits(palmas, PALMAS_PMU_CONTROL_BASE,
@@ -239,12 +202,7 @@ err_free_mem:
 	return error;
 }
 
-/**
- * palmas_pwron_remove() - Cleanup on removal
- * @pdev:	platform device for the button
- *
- * Return: 0
- */
+ 
 static int palmas_pwron_remove(struct platform_device *pdev)
 {
 	struct palmas_pwron *pwron = platform_get_drvdata(pdev);
@@ -258,14 +216,7 @@ static int palmas_pwron_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * palmas_pwron_suspend() - suspend handler
- * @dev:	power button device
- *
- * Cancel all pending work items for the power button, setup irq for wakeup
- *
- * Return: 0
- */
+ 
 static int palmas_pwron_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -279,14 +230,7 @@ static int palmas_pwron_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * palmas_pwron_resume() - resume handler
- * @dev:	power button device
- *
- * Just disable the wakeup capability of irq here.
- *
- * Return: 0
- */
+ 
 static int palmas_pwron_resume(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);

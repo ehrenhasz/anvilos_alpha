@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2018 Broadcom
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -28,34 +22,17 @@
 #include "vc4_drv.h"
 #include "vc4_regs.h"
 
-/* Base address of the output.  Raster formats must be 4-byte aligned,
- * T and LT must be 16-byte aligned or maybe utile-aligned (docs are
- * inconsistent, but probably utile).
- */
+ 
 #define TXP_DST_PTR		0x00
 
-/* Pitch in bytes for raster images, 16-byte aligned.  For tiled, it's
- * the width in tiles.
- */
+ 
 #define TXP_DST_PITCH		0x04
-/* For T-tiled imgaes, DST_PITCH should be the number of tiles wide,
- * shifted up.
- */
+ 
 # define TXP_T_TILE_WIDTH_SHIFT		7
-/* For LT-tiled images, DST_PITCH should be the number of utiles wide,
- * shifted up.
- */
+ 
 # define TXP_LT_TILE_WIDTH_SHIFT	4
 
-/* Pre-rotation width/height of the image.  Must match HVS config.
- *
- * If TFORMAT and 32-bit, limit is 1920 for 32-bit and 3840 to 16-bit
- * and width/height must be tile or utile-aligned as appropriate.  If
- * transposing (rotating), width is limited to 1920.
- *
- * Height is limited to various numbers between 4088 and 4095.  I'd
- * just use 4088 to be safe.
- */
+ 
 #define TXP_DIM			0x08
 # define TXP_HEIGHT_SHIFT		16
 # define TXP_HEIGHT_MASK		GENMASK(31, 16)
@@ -63,45 +40,35 @@
 # define TXP_WIDTH_MASK			GENMASK(15, 0)
 
 #define TXP_DST_CTRL		0x0c
-/* These bits are set to 0x54 */
+ 
 #define TXP_PILOT_SHIFT			24
 #define TXP_PILOT_MASK			GENMASK(31, 24)
-/* Bits 22-23 are set to 0x01 */
+ 
 #define TXP_VERSION_SHIFT		22
 #define TXP_VERSION_MASK		GENMASK(23, 22)
 
-/* Powers down the internal memory. */
+ 
 # define TXP_POWERDOWN			BIT(21)
 
-/* Enables storing the alpha component in 8888/4444, instead of
- * filling with ~ALPHA_INVERT.
- */
+ 
 # define TXP_ALPHA_ENABLE		BIT(20)
 
-/* 4 bits, each enables stores for a channel in each set of 4 bytes.
- * Set to 0xf for normal operation.
- */
+ 
 # define TXP_BYTE_ENABLE_SHIFT		16
 # define TXP_BYTE_ENABLE_MASK		GENMASK(19, 16)
 
-/* Debug: Generate VSTART again at EOF. */
+ 
 # define TXP_VSTART_AT_EOF		BIT(15)
 
-/* Debug: Terminate the current frame immediately.  Stops AXI
- * writes.
- */
+ 
 # define TXP_ABORT			BIT(14)
 
 # define TXP_DITHER			BIT(13)
 
-/* Inverts alpha if TXP_ALPHA_ENABLE, chooses fill value for
- * !TXP_ALPHA_ENABLE.
- */
+ 
 # define TXP_ALPHA_INVERT		BIT(12)
 
-/* Note: I've listed the channels here in high bit (in byte 3/2/1) to
- * low bit (in byte 0) order.
- */
+ 
 # define TXP_FORMAT_SHIFT		8
 # define TXP_FORMAT_MASK		GENMASK(11, 8)
 # define TXP_FORMAT_ABGR4444		0
@@ -110,7 +77,7 @@
 # define TXP_FORMAT_RGBA4444		3
 # define TXP_FORMAT_BGR565		6
 # define TXP_FORMAT_RGB565		7
-/* 888s are non-rotated, raster-only */
+ 
 # define TXP_FORMAT_BGR888		8
 # define TXP_FORMAT_RGB888		9
 # define TXP_FORMAT_ABGR8888		12
@@ -118,31 +85,31 @@
 # define TXP_FORMAT_BGRA8888		14
 # define TXP_FORMAT_RGBA8888		15
 
-/* If TFORMAT is set, generates LT instead of T format. */
+ 
 # define TXP_LINEAR_UTILE		BIT(7)
 
-/* Rotate output by 90 degrees. */
+ 
 # define TXP_TRANSPOSE			BIT(6)
 
-/* Generate a tiled format for V3D. */
+ 
 # define TXP_TFORMAT			BIT(5)
 
-/* Generates some undefined test mode output. */
+ 
 # define TXP_TEST_MODE			BIT(4)
 
-/* Request odd field from HVS. */
+ 
 # define TXP_FIELD			BIT(3)
 
-/* Raise interrupt when idle. */
+ 
 # define TXP_EI				BIT(2)
 
-/* Set when generating a frame, clears when idle. */
+ 
 # define TXP_BUSY			BIT(1)
 
-/* Starts a frame.  Self-clearing. */
+ 
 # define TXP_GO				BIT(0)
 
-/* Number of lines received and committed to memory. */
+ 
 #define TXP_PROGRESS		0x10
 
 #define TXP_READ(offset)								\
@@ -270,7 +237,7 @@ static int vc4_txp_connector_atomic_check(struct drm_connector *conn,
 	if (i == ARRAY_SIZE(drm_fmts))
 		return -EINVAL;
 
-	/* Pitch must be aligned on 16 bytes. */
+	 
 	if (fb->pitches[0] & GENMASK(3, 0))
 		return -EINVAL;
 
@@ -314,10 +281,7 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
 	if (fb->format->has_alpha)
 		ctrl |= TXP_ALPHA_ENABLE;
 	else
-		/*
-		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
-		 * hardware will force the output padding to be 0xff.
-		 */
+		 
 		ctrl |= TXP_ALPHA_INVERT;
 
 	if (!drm_dev_enter(drm, &idx))
@@ -435,15 +399,12 @@ static void vc4_txp_atomic_disable(struct drm_crtc *crtc,
 {
 	struct drm_device *dev = crtc->dev;
 
-	/* Disable vblank irq handling before crtc is disabled. */
+	 
 	drm_crtc_vblank_off(crtc);
 
 	vc4_hvs_atomic_disable(crtc, state);
 
-	/*
-	 * Make sure we issue a vblank event after disabling the CRTC if
-	 * someone was waiting it.
-	 */
+	 
 	if (crtc->state->event) {
 		unsigned long flags;
 
@@ -467,16 +428,7 @@ static irqreturn_t vc4_txp_interrupt(int irq, void *data)
 	struct vc4_txp *txp = data;
 	struct vc4_crtc *vc4_crtc = &txp->base;
 
-	/*
-	 * We don't need to protect the register access using
-	 * drm_dev_enter() there because the interrupt handler lifetime
-	 * is tied to the device itself, and not to the DRM device.
-	 *
-	 * So when the device will be gone, one of the first thing we
-	 * will be doing will be to unregister the interrupt handler,
-	 * and then unregister the DRM device. drm_dev_enter() would
-	 * thus always succeed if we are here.
-	 */
+	 
 	TXP_WRITE(TXP_DST_CTRL, TXP_READ(TXP_DST_CTRL) & ~TXP_EI);
 	vc4_crtc_handle_vblank(vc4_crtc);
 	drm_writeback_signal_completion(&txp->connector, 0);
@@ -580,7 +532,7 @@ static void vc4_txp_remove(struct platform_device *pdev)
 
 static const struct of_device_id vc4_txp_dt_match[] = {
 	{ .compatible = "brcm,bcm2835-txp" },
-	{ /* sentinel */ },
+	{   },
 };
 
 struct platform_driver vc4_txp_driver = {

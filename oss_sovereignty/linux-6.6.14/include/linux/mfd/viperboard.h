@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  include/linux/mfd/viperboard.h
- *
- *  Nano River Technologies viperboard definitions
- *
- *  (C) 2012 by Lemonage GmbH
- *  Author: Lars Poeschel <poeschel@lemonage.de>
- *  All rights reserved.
- */
+ 
+ 
 
 #ifndef __MFD_VIPERBOARD_H__
 #define __MFD_VIPERBOARD_H__
@@ -18,17 +10,17 @@
 #define VPRBRD_EP_OUT               0x02
 #define VPRBRD_EP_IN                0x86
 
-#define VPRBRD_I2C_MSG_LEN          512 /* max length of a msg on USB level */
+#define VPRBRD_I2C_MSG_LEN          512  
 
-#define VPRBRD_I2C_FREQ_6MHZ        1                        /*   6 MBit/s */
-#define VPRBRD_I2C_FREQ_3MHZ        2                        /*   3 MBit/s */
-#define VPRBRD_I2C_FREQ_1MHZ        3                        /*   1 MBit/s */
-#define VPRBRD_I2C_FREQ_FAST        4                        /* 400 kbit/s */
+#define VPRBRD_I2C_FREQ_6MHZ        1                         
+#define VPRBRD_I2C_FREQ_3MHZ        2                         
+#define VPRBRD_I2C_FREQ_1MHZ        3                         
+#define VPRBRD_I2C_FREQ_FAST        4                         
 #define VPRBRD_I2C_FREQ_400KHZ      VPRBRD_I2C_FREQ_FAST
-#define VPRBRD_I2C_FREQ_200KHZ      5                        /* 200 kbit/s */
-#define VPRBRD_I2C_FREQ_STD         6                        /* 100 kbit/s */
+#define VPRBRD_I2C_FREQ_200KHZ      5                         
+#define VPRBRD_I2C_FREQ_STD         6                         
 #define VPRBRD_I2C_FREQ_100KHZ      VPRBRD_I2C_FREQ_STD
-#define VPRBRD_I2C_FREQ_10KHZ       7                        /*  10 kbit/s */
+#define VPRBRD_I2C_FREQ_10KHZ       7                         
 
 #define VPRBRD_I2C_CMD_WRITE        0x00
 #define VPRBRD_I2C_CMD_READ         0x01
@@ -64,8 +56,8 @@ struct vprbrd_i2c_read_hdr {
 	u8 len3;
 	u8 len4;
 	u8 len5;
-	u16 tf1;                        /* transfer 1 length */
-	u16 tf2;                        /* transfer 2 length */
+	u16 tf1;                         
+	u16 tf2;                         
 } __packed;
 
 struct vprbrd_i2c_status {
@@ -94,12 +86,12 @@ struct vprbrd_i2c_addr_msg {
 	u8 unknown3;
 } __packed;
 
-/* Structure to hold all device specific stuff */
+ 
 struct vprbrd {
-	struct usb_device *usb_dev; /* the usb device for this device */
+	struct usb_device *usb_dev;  
 	struct mutex lock;
 	u8 buf[sizeof(struct vprbrd_i2c_write_msg)];
 	struct platform_device pdev;
 };
 
-#endif /* __MFD_VIPERBOARD_H__ */
+#endif  

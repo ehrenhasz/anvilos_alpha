@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dice-alesis.c - a part of driver for DICE based devices
- *
- * Copyright (c) 2018 Takashi Sakamoto
- */
+
+ 
 
 #include "dice.h"
 
 static const unsigned int
 alesis_io14_tx_pcm_chs[MAX_STREAMS][SND_DICE_RATE_MODE_COUNT] = {
-	{6, 6, 4},	/* Tx0 = Analog + S/PDIF. */
-	{8, 4, 0},	/* Tx1 = ADAT1. */
+	{6, 6, 4},	 
+	{8, 4, 0},	 
 };
 
 static const unsigned int
 alesis_io26_tx_pcm_chs[MAX_STREAMS][SND_DICE_RATE_MODE_COUNT] = {
-	{10, 10, 4},	/* Tx0 = Analog + S/PDIF. */
-	{16, 4, 0},	/* Tx1 = ADAT1 + ADAT2 (available at low rate). */
+	{10, 10, 4},	 
+	{16, 4, 0},	 
 };
 
 int snd_dice_detect_alesis_formats(struct snd_dice *dice)

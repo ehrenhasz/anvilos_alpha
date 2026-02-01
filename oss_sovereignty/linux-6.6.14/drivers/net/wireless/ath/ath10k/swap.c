@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2015-2016 Qualcomm Atheros, Inc.
- */
 
-/* This file has implementation for code swap logic. With code swap feature,
- * target can run the fw binary with even smaller IRAM size by using host
- * memory to store some of the code segments.
- */
+ 
+
+ 
 
 #include "core.h"
 #include "bmi.h"
@@ -25,10 +20,7 @@ static int ath10k_swap_code_seg_fill(struct ath10k *ar,
 	u32 total_payload_len = 0;
 	u32 size_left = data_len;
 
-	/* Parse swap bin and copy the content to host allocated memory.
-	 * The format is Address, length and value. The last 4-bytes is
-	 * target write address. Currently address field is not used.
-	 */
+	 
 	seg_info->target_addr = -1;
 	while (size_left >= sizeof(*swap_item)) {
 		swap_item = (union ath10k_swap_code_seg_item *)fw_data;
@@ -151,9 +143,7 @@ void ath10k_swap_code_seg_release(struct ath10k *ar,
 {
 	ath10k_swap_code_seg_free(ar, fw_file->firmware_swap_code_seg_info);
 
-	/* FIXME: these two assignments look to bein wrong place! Shouldn't
-	 * they be in ath10k_core_free_firmware_files() like the rest?
-	 */
+	 
 	fw_file->codeswap_data = NULL;
 	fw_file->codeswap_len = 0;
 

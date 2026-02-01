@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2017, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 #include <rdma/uverbs_ioctl.h>
 #include <rdma/rdma_user_ioctl.h>
 #include <linux/bitops.h>
@@ -112,9 +110,7 @@ static int uapi_merge_method(struct uverbs_api *uapi,
 	if (IS_ERR(method_elm))
 		return PTR_ERR(method_elm);
 	if (exists) {
-		/*
-		 * This occurs when a driver uses ADD_UVERBS_ATTRIBUTES_SIMPLE
-		 */
+		 
 		if (WARN_ON(method->handler))
 			return -EINVAL;
 	} else {
@@ -131,18 +127,11 @@ static int uapi_merge_method(struct uverbs_api *uapi,
 		if (!attr)
 			continue;
 
-		/*
-		 * ENUM_IN contains the 'ids' pointer to the driver's .rodata,
-		 * so if it is specified by a driver then it always makes this
-		 * into a driver method.
-		 */
+		 
 		if (attr->attr.type == UVERBS_ATTR_TYPE_ENUM_IN)
 			method_elm->driver_method |= is_driver;
 
-		/*
-		 * Like other uobject based things we only support a single
-		 * uobject being NEW'd or DESTROY'd
-		 */
+		 
 		if (attr->attr.type == UVERBS_ATTR_TYPE_IDRS_ARRAY) {
 			u8 access = attr->attr.u2.objs_arr.access;
 
@@ -154,7 +143,7 @@ static int uapi_merge_method(struct uverbs_api *uapi,
 		attr_slot =
 			uapi_add_elm(uapi, method_key | uapi_key_attr(attr->id),
 				     sizeof(*attr_slot));
-		/* Attributes are not allowed to be modified by drivers */
+		 
 		if (IS_ERR(attr_slot))
 			return PTR_ERR(attr_slot);
 
@@ -186,16 +175,7 @@ static int uapi_merge_obj_tree(struct uverbs_api *uapi,
 		obj_elm->id = obj->id;
 		obj_elm->type_attrs = obj->type_attrs;
 		obj_elm->type_class = obj->type_attrs->type_class;
-		/*
-		 * Today drivers are only permitted to use idr_class and
-		 * fd_class types. We can revoke the IDR types during
-		 * disassociation, and the FD types require the driver to use
-		 * struct file_operations.owner to prevent the driver module
-		 * code from unloading while the file is open. This provides
-		 * enough safety that uverbs_uobject_fd_release() will
-		 * continue to work.  Drivers using FD are responsible to
-		 * handle disassociation of the device on their own.
-		 */
+		 
 		if (WARN_ON(is_driver &&
 			    obj->type_attrs->type_class != &uverbs_idr_class &&
 			    obj->type_attrs->type_class != &uverbs_fd_class))
@@ -382,11 +362,7 @@ uapi_finalize_ioctl_method(struct uverbs_api *uapi,
 		    type == UVERBS_ATTR_TYPE_FD) {
 			u8 access = elm->spec.u.obj.access;
 
-			/*
-			 * Verbs specs may only have one NEW/DESTROY, we don't
-			 * have the infrastructure to abort multiple NEW's or
-			 * cope with multiple DESTROY failure.
-			 */
+			 
 			if (access == UVERBS_ACCESS_NEW ||
 			    access == UVERBS_ACCESS_DESTROY) {
 				if (WARN_ON(single_uobj))
@@ -539,7 +515,7 @@ again:
 				rcu_dereference_protected(*slot, true);
 
 			if (obj_elm->disabled) {
-				/* Have to check all the attrs again */
+				 
 				scan_again = true;
 				starting_key = iter.index;
 				uapi_remove_object(uapi, iter.index);
@@ -578,11 +554,7 @@ again:
 			const struct uverbs_api_object *tmp_obj;
 			u32 obj_key;
 
-			/*
-			 * If the method has a mandatory object handle
-			 * attribute which relies on an object which is not
-			 * present then the entire method is uncallable.
-			 */
+			 
 			if (!attr_elm->spec.mandatory)
 				continue;
 			obj_key = uapi_get_obj_id(&attr_elm->spec);
@@ -676,11 +648,7 @@ err:
 	return ERR_PTR(rc);
 }
 
-/*
- * The pre version is done before destroying the HW objects, it only blocks
- * off method access. All methods that require the ib_dev or the module data
- * must test one of these assignments prior to continuing.
- */
+ 
 void uverbs_disassociate_api_pre(struct ib_uverbs_device *uverbs_dev)
 {
 	struct uverbs_api *uapi = uverbs_dev->uapi;
@@ -702,11 +670,7 @@ void uverbs_disassociate_api_pre(struct ib_uverbs_device *uverbs_dev)
 	synchronize_srcu(&uverbs_dev->disassociate_srcu);
 }
 
-/*
- * Called when a driver disassociates from the ib_uverbs_device. The
- * assumption is that the driver module will unload after. Replace everything
- * related to the driver with NULL as a safety measure.
- */
+ 
 void uverbs_disassociate_api(struct uverbs_api *uapi)
 {
 	struct radix_tree_iter iter;
@@ -717,11 +681,7 @@ void uverbs_disassociate_api(struct uverbs_api *uapi)
 			struct uverbs_api_object *object_elm =
 				rcu_dereference_protected(*slot, true);
 
-			/*
-			 * Some type_attrs are in the driver module. We don't
-			 * bother to keep track of which since there should be
-			 * no use of this after disassociate.
-			 */
+			 
 			object_elm->type_attrs = NULL;
 		} else if (uapi_key_is_attr(iter.index)) {
 			struct uverbs_api_attr *elm =

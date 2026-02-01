@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 
 #include "rxe.h"
 #include "rxe_loc.h"
 
-/* check that QP matches packet opcode type and is in a valid state */
+ 
 static int check_type_state(struct rxe_dev *rxe, struct rxe_pkt_info *pkt,
 			    struct rxe_qp *qp)
 {
@@ -202,22 +199,18 @@ static void rxe_rcv_mcast_pkt(struct rxe_dev *rxe, struct sk_buff *skb)
 	else if (skb->protocol == htons(ETH_P_IPV6))
 		memcpy(&dgid, &ipv6_hdr(skb)->daddr, sizeof(dgid));
 
-	/* lookup mcast group corresponding to mgid, takes a ref */
+	 
 	mcg = rxe_lookup_mcg(rxe, &dgid);
 	if (!mcg)
-		goto drop;	/* mcast group not registered */
+		goto drop;	 
 
 	spin_lock_bh(&rxe->mcg_lock);
 
-	/* this is unreliable datagram service so we let
-	 * failures to deliver a multicast packet to a
-	 * single QP happen and just move on and try
-	 * the rest of them on the list
-	 */
+	 
 	list_for_each_entry(mca, &mcg->qp_list, qp_list) {
 		qp = mca->qp;
 
-		/* validate qp for incoming packet */
+		 
 		err = check_type_state(rxe, pkt, qp);
 		if (err)
 			continue;
@@ -226,10 +219,7 @@ static void rxe_rcv_mcast_pkt(struct rxe_dev *rxe, struct sk_buff *skb)
 		if (err)
 			continue;
 
-		/* for all but the last QP create a new clone of the
-		 * skb and pass to the QP. Pass the original skb to
-		 * the last QP in the list.
-		 */
+		 
 		if (mca->qp_list.next != &mcg->qp_list) {
 			struct sk_buff *cskb;
 			struct rxe_pkt_info *cpkt;
@@ -251,7 +241,7 @@ static void rxe_rcv_mcast_pkt(struct rxe_dev *rxe, struct sk_buff *skb)
 			pkt->qp = qp;
 			rxe_get(qp);
 			rxe_rcv_pkt(pkt, skb);
-			skb = NULL;	/* mark consumed */
+			skb = NULL;	 
 		}
 	}
 
@@ -262,25 +252,14 @@ static void rxe_rcv_mcast_pkt(struct rxe_dev *rxe, struct sk_buff *skb)
 	if (likely(!skb))
 		return;
 
-	/* This only occurs if one of the checks fails on the last
-	 * QP in the list above
-	 */
+	 
 
 drop:
 	kfree_skb(skb);
 	ib_device_put(&rxe->ib_dev);
 }
 
-/**
- * rxe_chk_dgid - validate destination IP address
- * @rxe: rxe device that received packet
- * @skb: the received packet buffer
- *
- * Accept any loopback packets
- * Extract IP address from packet and
- * Accept if multicast packet
- * Accept if matches an SGID table entry
- */
+ 
 static int rxe_chk_dgid(struct rxe_dev *rxe, struct sk_buff *skb)
 {
 	struct rxe_pkt_info *pkt = SKB_TO_PKT(skb);
@@ -312,7 +291,7 @@ static int rxe_chk_dgid(struct rxe_dev *rxe, struct sk_buff *skb)
 	return 0;
 }
 
-/* rxe_rcv is called from the interface driver */
+ 
 void rxe_rcv(struct sk_buff *skb)
 {
 	int err;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Purna Chandra Mandal,<purna.mandal@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -14,14 +11,14 @@
 
 #include "clk-core.h"
 
-/* OSCCON Reg fields */
+ 
 #define OSC_CUR_MASK		0x07
 #define OSC_CUR_SHIFT		12
 #define OSC_NEW_MASK		0x07
 #define OSC_NEW_SHIFT		8
 #define OSC_SWEN		BIT(0)
 
-/* SPLLCON Reg fields */
+ 
 #define PLL_RANGE_MASK		0x07
 #define PLL_RANGE_SHIFT		0
 #define PLL_ICLK_MASK		0x01
@@ -36,7 +33,7 @@
 #define PLL_ODIV_MIN		1
 #define PLL_ODIV_MAX		5
 
-/* Peripheral Bus Clock Reg Fields */
+ 
 #define PB_DIV_MASK		0x7f
 #define PB_DIV_SHIFT		0
 #define PB_DIV_READY		BIT(11)
@@ -44,7 +41,7 @@
 #define PB_DIV_MAX		128
 #define PB_DIV_MIN		0
 
-/* Reference Oscillator Control Reg fields */
+ 
 #define REFO_SEL_MASK		0x0f
 #define REFO_SEL_SHIFT		0
 #define REFO_ACTIVE		BIT(8)
@@ -54,13 +51,13 @@
 #define REFO_DIV_SHIFT		16
 #define REFO_DIV_MASK		0x7fff
 
-/* Reference Oscillator Trim Register Fields */
+ 
 #define REFO_TRIM_REG		0x10
 #define REFO_TRIM_MASK		0x1ff
 #define REFO_TRIM_SHIFT		23
 #define REFO_TRIM_MAX		511
 
-/* Mux Slew Control Register fields */
+ 
 #define SLEW_BUSY		BIT(0)
 #define SLEW_DOWNEN		BIT(1)
 #define SLEW_UPEN		BIT(2)
@@ -69,13 +66,13 @@
 #define SLEW_SYSDIV		0x0f
 #define SLEW_SYSDIV_SHIFT	20
 
-/* Clock Poll Timeout */
+ 
 #define LOCK_TIMEOUT_US         USEC_PER_MSEC
 
-/* SoC specific clock needed during SPLL clock rate switch */
+ 
 static struct clk_hw *pic32_sclk_hw;
 
-/* add instruction pipeline delay while CPU clock is in-transition. */
+ 
 #define cpu_nop5()			\
 do {					\
 	__asm__ __volatile__("nop");	\
@@ -85,7 +82,7 @@ do {					\
 	__asm__ __volatile__("nop");	\
 } while (0)
 
-/* Perpheral bus clocks */
+ 
 struct pic32_periph_clk {
 	struct clk_hw hw;
 	void __iomem *ctrl_reg;
@@ -124,10 +121,7 @@ static unsigned long calc_best_divided_rate(unsigned long rate,
 	unsigned long divided_rate, divided_rate_down, best_rate;
 	unsigned long div, div_up;
 
-	/* eq. clk_rate = parent_rate / divider.
-	 *
-	 * Find best divider to produce closest of target divided rate.
-	 */
+	 
 	div = parent_rate / rate;
 	div = clamp_val(div, divider_min, divider_max);
 	div_up = clamp_val(div + 1, divider_min, divider_max);
@@ -170,18 +164,18 @@ static int pbclk_set_rate(struct clk_hw *hw, unsigned long rate,
 	u32 v, div;
 	int err;
 
-	/* check & wait for DIV_READY */
+	 
 	err = readl_poll_timeout(pb->ctrl_reg, v, v & PB_DIV_READY,
 				 1, LOCK_TIMEOUT_US);
 	if (err)
 		return err;
 
-	/* calculate clkdiv and best rate */
+	 
 	div = DIV_ROUND_CLOSEST(parent_rate, rate);
 
 	spin_lock_irqsave(&pb->core->reg_lock, flags);
 
-	/* apply new div */
+	 
 	v = readl(pb->ctrl_reg);
 	v &= ~PB_DIV_MASK;
 	v |= (div - 1);
@@ -192,13 +186,13 @@ static int pbclk_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	spin_unlock_irqrestore(&pb->core->reg_lock, flags);
 
-	/* wait again for DIV_READY */
+	 
 	err = readl_poll_timeout(pb->ctrl_reg, v, v & PB_DIV_READY,
 				 1, LOCK_TIMEOUT_US);
 	if (err)
 		return err;
 
-	/* confirm that new div is applied correctly */
+	 
 	return (pbclk_read_pbdiv(pb) == div) ? 0 : -EBUSY;
 }
 
@@ -234,7 +228,7 @@ struct clk *pic32_periph_clk_register(const struct pic32_periph_clk_data *desc,
 	return clk;
 }
 
-/* Reference oscillator operations */
+ 
 struct pic32_ref_osc {
 	struct clk_hw hw;
 	void __iomem *ctrl_reg;
@@ -268,7 +262,7 @@ static void roclk_disable(struct clk_hw *hw)
 
 static int roclk_init(struct clk_hw *hw)
 {
-	/* initialize clock in disabled state */
+	 
 	roclk_disable(hw);
 
 	return 0;
@@ -296,11 +290,7 @@ static unsigned long roclk_calc_rate(unsigned long parent_rate,
 {
 	u64 rate64;
 
-	/* fout = fin / [2 * {div + (trim / 512)}]
-	 *	= fin * 512 / [1024 * div + 2 * trim]
-	 *	= fin * 256 / (512 * div + trim)
-	 *	= (fin << 8) / ((div << 9) + trim)
-	 */
+	 
 	if (rotrim) {
 		rodiv = (rodiv << 9) + rotrim;
 		rate64 = parent_rate;
@@ -321,17 +311,7 @@ static void roclk_calc_div_trim(unsigned long rate,
 	u32 div, rotrim, rodiv;
 	u64 frac;
 
-	/* Find integer approximation of floating-point arithmetic.
-	 *      fout = fin / [2 * {rodiv + (rotrim / 512)}] ... (1)
-	 * i.e. fout = fin / 2 * DIV
-	 *      whereas DIV = rodiv + (rotrim / 512)
-	 *
-	 * Since kernel does not perform floating-point arithmatic so
-	 * (rotrim/512) will be zero. And DIV & rodiv will result same.
-	 *
-	 * ie. fout = (fin * 256) / [(512 * rodiv) + rotrim]  ... from (1)
-	 * ie. rotrim = ((fin * 256) / fout) - (512 * DIV)
-	 */
+	 
 	if (parent_rate <= rate) {
 		div = 0;
 		frac = 0;
@@ -361,11 +341,11 @@ static unsigned long roclk_recalc_rate(struct clk_hw *hw,
 	struct pic32_ref_osc *refo = clkhw_to_refosc(hw);
 	u32 v, rodiv, rotrim;
 
-	/* get rodiv */
+	 
 	v = readl(refo->ctrl_reg);
 	rodiv = (v >> REFO_DIV_SHIFT) & REFO_DIV_MASK;
 
-	/* get trim */
+	 
 	v = readl(refo->ctrl_reg + REFO_TRIM_REG);
 	rotrim = (v >> REFO_TRIM_SHIFT) & REFO_TRIM_MASK;
 
@@ -377,10 +357,10 @@ static long roclk_round_rate(struct clk_hw *hw, unsigned long rate,
 {
 	u32 rotrim, rodiv;
 
-	/* calculate dividers for new rate */
+	 
 	roclk_calc_div_trim(rate, *parent_rate, &rodiv, &rotrim);
 
-	/* caclulate new rate (rounding) based on new rodiv & rotrim */
+	 
 	return roclk_calc_rate(*parent_rate, rodiv, rotrim);
 }
 
@@ -392,14 +372,14 @@ static int roclk_determine_rate(struct clk_hw *hw,
 	unsigned long parent_rate, best_parent_rate = 0;
 	unsigned long best = 0, nearest_rate;
 
-	/* find a parent which can generate nearest clkrate >= rate */
+	 
 	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
-		/* get parent */
+		 
 		parent_clk = clk_hw_get_parent_by_index(hw, i);
 		if (!parent_clk)
 			continue;
 
-		/* skip if parent runs slower than target rate */
+		 
 		parent_rate = clk_hw_get_rate(parent_clk);
 		if (req->rate > parent_rate)
 			continue;
@@ -417,7 +397,7 @@ static int roclk_determine_rate(struct clk_hw *hw,
 		}
 	}
 
-	/* if no match found, retain old rate */
+	 
 	if (!best_parent_clk) {
 		pr_err("%s:%s, no parent found for rate %lu.\n",
 		       __func__, clk_hw_get_name(hw), req->rate);
@@ -448,7 +428,7 @@ static int roclk_set_parent(struct clk_hw *hw, u8 index)
 	if (refo->parent_map)
 		index = refo->parent_map[index];
 
-	/* wait until ACTIVE bit is zero or timeout */
+	 
 	err = readl_poll_timeout(refo->ctrl_reg, v, !(v & REFO_ACTIVE),
 				 1, LOCK_TIMEOUT_US);
 	if (err) {
@@ -460,7 +440,7 @@ static int roclk_set_parent(struct clk_hw *hw, u8 index)
 
 	pic32_syskey_unlock();
 
-	/* calculate & apply new */
+	 
 	v = readl(refo->ctrl_reg);
 	v &= ~(REFO_SEL_MASK << REFO_SEL_SHIFT);
 	v |= index << REFO_SEL_SHIFT;
@@ -482,13 +462,13 @@ static int roclk_set_rate_and_parent(struct clk_hw *hw,
 	u32 trim, rodiv, v;
 	int err;
 
-	/* calculate new rodiv & rotrim for new rate */
+	 
 	roclk_calc_div_trim(rate, parent_rate, &rodiv, &trim);
 
 	pr_debug("parent_rate = %lu, rate = %lu, div = %d, trim = %d\n",
 		 parent_rate, rate, rodiv, trim);
 
-	/* wait till source change is active */
+	 
 	err = readl_poll_timeout(refo->ctrl_reg, v,
 				 !(v & (REFO_ACTIVE | REFO_DIVSW_EN)),
 				 1, LOCK_TIMEOUT_US);
@@ -502,31 +482,31 @@ static int roclk_set_rate_and_parent(struct clk_hw *hw,
 
 	pic32_syskey_unlock();
 
-	/* apply parent, if required */
+	 
 	if (refo->parent_map)
 		index = refo->parent_map[index];
 
 	v &= ~(REFO_SEL_MASK << REFO_SEL_SHIFT);
 	v |= index << REFO_SEL_SHIFT;
 
-	/* apply RODIV */
+	 
 	v &= ~(REFO_DIV_MASK << REFO_DIV_SHIFT);
 	v |= rodiv << REFO_DIV_SHIFT;
 	writel(v, refo->ctrl_reg);
 
-	/* apply ROTRIM */
+	 
 	v = readl(refo->ctrl_reg + REFO_TRIM_REG);
 	v &= ~(REFO_TRIM_MASK << REFO_TRIM_SHIFT);
 	v |= trim << REFO_TRIM_SHIFT;
 	writel(v, refo->ctrl_reg + REFO_TRIM_REG);
 
-	/* enable & activate divider switching */
+	 
 	writel(REFO_ON | REFO_DIVSW_EN, PIC32_SET(refo->ctrl_reg));
 
-	/* wait till divswen is in-progress */
+	 
 	err = readl_poll_timeout_atomic(refo->ctrl_reg, v, !(v & REFO_DIVSW_EN),
 					1, LOCK_TIMEOUT_US);
-	/* leave the clk gated as it was */
+	 
 	writel(REFO_ON, PIC32_CLR(refo->ctrl_reg));
 
 	spin_unlock_irqrestore(&refo->core->reg_lock, flags);
@@ -582,7 +562,7 @@ struct pic32_sys_pll {
 	void __iomem *ctrl_reg;
 	void __iomem *status_reg;
 	u32 lock_mask;
-	u32 idiv; /* PLL iclk divider, treated fixed */
+	u32 idiv;  
 	struct pic32_clk_common *core;
 };
 
@@ -654,9 +634,7 @@ static unsigned long spll_clk_recalc_rate(struct clk_hw *hw,
 	mult = ((v >> PLL_MULT_SHIFT) & PLL_MULT_MASK) + 1;
 	div = spll_odiv_to_divider(odiv);
 
-	/* pll_in_rate = parent_rate / idiv
-	 * pll_out_rate = pll_in_rate * mult / div;
-	 */
+	 
 	pll_in_rate = parent_rate / pll->idiv;
 	rate64 = pll_in_rate;
 	rate64 *= mult;
@@ -685,12 +663,9 @@ static int spll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!ret)
 		return -EINVAL;
 
-	/*
-	 * We can't change SPLL counters when it is in-active use
-	 * by SYSCLK. So check before applying new counters/rate.
-	 */
+	 
 
-	/* Is spll_clk active parent of sys_clk ? */
+	 
 	if (unlikely(clk_hw_get_parent(pic32_sclk_hw) == hw)) {
 		pr_err("%s: failed, clk in-use\n", __func__);
 		return -EBUSY;
@@ -698,23 +673,23 @@ static int spll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	spin_lock_irqsave(&pll->core->reg_lock, flags);
 
-	/* apply new multiplier & divisor */
+	 
 	v = readl(pll->ctrl_reg);
 	v &= ~(PLL_MULT_MASK << PLL_MULT_SHIFT);
 	v &= ~(PLL_ODIV_MASK << PLL_ODIV_SHIFT);
 	v |= (mult << PLL_MULT_SHIFT) | (odiv << PLL_ODIV_SHIFT);
 
-	/* sys unlock before write */
+	 
 	pic32_syskey_unlock();
 
 	writel(v, pll->ctrl_reg);
 	cpu_relax();
 
-	/* insert few nops (5-stage) to ensure CPU does not hang */
+	 
 	cpu_nop5();
 	cpu_nop5();
 
-	/* Wait until PLL is locked (maximum 100 usecs). */
+	 
 	err = readl_poll_timeout_atomic(pll->status_reg, v,
 					v & pll->lock_mask, 1, 100);
 	spin_unlock_irqrestore(&pll->core->reg_lock, flags);
@@ -722,7 +697,7 @@ static int spll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	return err;
 }
 
-/* SPLL clock operation */
+ 
 const struct clk_ops pic32_spll_ops = {
 	.recalc_rate	= spll_clk_recalc_rate,
 	.round_rate	= spll_clk_round_rate,
@@ -745,7 +720,7 @@ struct clk *pic32_spll_clk_register(const struct pic32_sys_pll_data *data,
 	spll->status_reg = data->status_reg + core->iobase;
 	spll->lock_mask = data->lock_mask;
 
-	/* cache PLL idiv; PLL driver uses it as constant.*/
+	 
 	spll->idiv = (readl(spll->ctrl_reg) >> PLL_IDIV_SHIFT) & PLL_IDIV_MASK;
 	spll->idiv += 1;
 
@@ -756,7 +731,7 @@ struct clk *pic32_spll_clk_register(const struct pic32_sys_pll_data *data,
 	return clk;
 }
 
-/* System mux clock(aka SCLK) */
+ 
 
 struct pic32_sys_clk {
 	struct clk_hw hw;
@@ -775,7 +750,7 @@ static unsigned long sclk_get_rate(struct clk_hw *hw, unsigned long parent_rate)
 	u32 div;
 
 	div = (readl(sclk->slew_reg) >> SLEW_SYSDIV_SHIFT) & SLEW_SYSDIV;
-	div += 1; /* sys-div to divider */
+	div += 1;  
 
 	return parent_rate / div;
 }
@@ -798,7 +773,7 @@ static int sclk_set_rate(struct clk_hw *hw,
 
 	spin_lock_irqsave(&sclk->core->reg_lock, flags);
 
-	/* apply new div */
+	 
 	v = readl(sclk->slew_reg);
 	v &= ~(SLEW_SYSDIV << SLEW_SYSDIV_SHIFT);
 	v |= (div - 1) << SLEW_SYSDIV_SHIFT;
@@ -807,7 +782,7 @@ static int sclk_set_rate(struct clk_hw *hw,
 
 	writel(v, sclk->slew_reg);
 
-	/* wait until BUSY is cleared */
+	 
 	err = readl_poll_timeout_atomic(sclk->slew_reg, v,
 					!(v & SLEW_BUSY), 1, LOCK_TIMEOUT_US);
 
@@ -841,10 +816,10 @@ static int sclk_set_parent(struct clk_hw *hw, u8 index)
 
 	spin_lock_irqsave(&sclk->core->reg_lock, flags);
 
-	/* find new_osc */
+	 
 	nosc = sclk->parent_map ? sclk->parent_map[index] : index;
 
-	/* set new parent */
+	 
 	v = readl(sclk->mux_reg);
 	v &= ~(OSC_NEW_MASK << OSC_NEW_SHIFT);
 	v |= nosc << OSC_NEW_SHIFT;
@@ -853,25 +828,20 @@ static int sclk_set_parent(struct clk_hw *hw, u8 index)
 
 	writel(v, sclk->mux_reg);
 
-	/* initate switch */
+	 
 	writel(OSC_SWEN, PIC32_SET(sclk->mux_reg));
 	cpu_relax();
 
-	/* add nop to flush pipeline (as cpu_clk is in-flux) */
+	 
 	cpu_nop5();
 
-	/* wait for SWEN bit to clear */
+	 
 	err = readl_poll_timeout_atomic(sclk->slew_reg, v,
 					!(v & OSC_SWEN), 1, LOCK_TIMEOUT_US);
 
 	spin_unlock_irqrestore(&sclk->core->reg_lock, flags);
 
-	/*
-	 * SCLK clock-switching logic might reject a clock switching request
-	 * if pre-requisites (like new clk_src not present or unstable) are
-	 * not met.
-	 * So confirm before claiming success.
-	 */
+	 
 	cosc = (readl(sclk->mux_reg) >> OSC_CUR_SHIFT) & OSC_CUR_MASK;
 	if (cosc != nosc) {
 		pr_err("%s: err, failed to set_parent() to %d, current %d\n",
@@ -888,10 +858,10 @@ static int sclk_init(struct clk_hw *hw)
 	unsigned long flags;
 	u32 v;
 
-	/* Maintain reference to this clk, required in spll_clk_set_rate() */
+	 
 	pic32_sclk_hw = hw;
 
-	/* apply slew divider on both up and down scaling */
+	 
 	if (sclk->slew_div) {
 		spin_lock_irqsave(&sclk->core->reg_lock, flags);
 		v = readl(sclk->slew_reg);
@@ -905,7 +875,7 @@ static int sclk_init(struct clk_hw *hw)
 	return 0;
 }
 
-/* sclk with post-divider */
+ 
 const struct clk_ops pic32_sclk_ops = {
 	.get_parent	= sclk_get_parent,
 	.set_parent	= sclk_set_parent,
@@ -916,7 +886,7 @@ const struct clk_ops pic32_sclk_ops = {
 	.determine_rate = __clk_mux_determine_rate,
 };
 
-/* sclk with no slew and no post-divider */
+ 
 const struct clk_ops pic32_sclk_no_div_ops = {
 	.get_parent	= sclk_get_parent,
 	.set_parent	= sclk_set_parent,
@@ -948,7 +918,7 @@ struct clk *pic32_sys_clk_register(const struct pic32_sys_clk_data *data,
 	return clk;
 }
 
-/* secondary oscillator */
+ 
 struct pic32_sec_osc {
 	struct clk_hw hw;
 	void __iomem *enable_reg;
@@ -965,11 +935,11 @@ static int sosc_clk_enable(struct clk_hw *hw)
 	struct pic32_sec_osc *sosc = clkhw_to_sosc(hw);
 	u32 v;
 
-	/* enable SOSC */
+	 
 	pic32_syskey_unlock();
 	writel(sosc->enable_mask, PIC32_SET(sosc->enable_reg));
 
-	/* wait till warm-up period expires or ready-status is updated */
+	 
 	return readl_poll_timeout_atomic(sosc->status_reg, v,
 					 v & sosc->status_mask, 1, 100);
 }
@@ -987,7 +957,7 @@ static int sosc_clk_is_enabled(struct clk_hw *hw)
 	struct pic32_sec_osc *sosc = clkhw_to_sosc(hw);
 	u32 enabled, ready;
 
-	/* check enabled and ready status */
+	 
 	enabled = readl(sosc->enable_reg) & sosc->enable_mask;
 	ready = readl(sosc->status_reg) & sosc->status_mask;
 

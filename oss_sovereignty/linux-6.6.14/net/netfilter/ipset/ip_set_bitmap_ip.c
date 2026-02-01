@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2000-2002 Joakim Axelsson <gozem@linux.nu>
- *                         Patrick Schaaf <bof@bof.de>
- * Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org>
- */
 
-/* Kernel module implementing an IP set type: the bitmap:ip type */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/ip.h>
@@ -23,9 +20,9 @@
 #include <linux/netfilter/ipset/ip_set_bitmap.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1	   Counter support added */
-/*				2	   Comment support added */
-#define IPSET_TYPE_REV_MAX	3	/* skbinfo support added */
+ 
+ 
+#define IPSET_TYPE_REV_MAX	3	 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
@@ -35,22 +32,22 @@ MODULE_ALIAS("ip_set_bitmap:ip");
 #define MTYPE		bitmap_ip
 #define HOST_MASK	32
 
-/* Type structure */
+ 
 struct bitmap_ip {
-	unsigned long *members;	/* the set members */
-	u32 first_ip;		/* host byte order, included in range */
-	u32 last_ip;		/* host byte order, included in range */
-	u32 elements;		/* number of max elements in the set */
-	u32 hosts;		/* number of hosts in a subnet */
-	size_t memsize;		/* members size */
-	u8 netmask;		/* subnet netmask */
-	struct timer_list gc;	/* garbage collection */
-	struct ip_set *set;	/* attached to this ip_set */
-	unsigned char extensions[]	/* data extensions */
+	unsigned long *members;	 
+	u32 first_ip;		 
+	u32 last_ip;		 
+	u32 elements;		 
+	u32 hosts;		 
+	size_t memsize;		 
+	u8 netmask;		 
+	struct timer_list gc;	 
+	struct ip_set *set;	 
+	unsigned char extensions[]	 
 		__aligned(__alignof__(u64));
 };
 
-/* ADT structure for generic function args */
+ 
 struct bitmap_ip_adt_elem {
 	u16 id;
 };
@@ -61,7 +58,7 @@ ip_to_id(const struct bitmap_ip *m, u32 ip)
 	return ((ip & ip_set_hostmask(m->netmask)) - m->first_ip) / m->hosts;
 }
 
-/* Common functions */
+ 
 
 static int
 bitmap_ip_do_test(const struct bitmap_ip_adt_elem *e,
@@ -206,14 +203,14 @@ bitmap_ip_same_set(const struct ip_set *a, const struct ip_set *b)
 	       a->extensions == b->extensions;
 }
 
-/* Plain variant */
+ 
 
 struct bitmap_ip_elem {
 };
 
 #include "ip_set_bitmap_gen.h"
 
-/* Create bitmap:ip type of sets */
+ 
 
 static bool
 init_map_ip(struct ip_set *set, struct bitmap_ip *map,

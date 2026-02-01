@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -57,23 +57,23 @@ static int eee_reply_size(const struct ethnl_req_info *req_base,
 	BUILD_BUG_ON(sizeof(eee->lp_advertised) * BITS_PER_BYTE !=
 		     EEE_MODES_COUNT);
 
-	/* MODES_OURS */
+	 
 	ret = ethnl_bitset32_size(&eee->advertised, &eee->supported,
 				  EEE_MODES_COUNT, link_mode_names, compact);
 	if (ret < 0)
 		return ret;
 	len += ret;
-	/* MODES_PEERS */
+	 
 	ret = ethnl_bitset32_size(&eee->lp_advertised, NULL,
 				  EEE_MODES_COUNT, link_mode_names, compact);
 	if (ret < 0)
 		return ret;
 	len += ret;
 
-	len += nla_total_size(sizeof(u8)) +	/* _EEE_ACTIVE */
-	       nla_total_size(sizeof(u8)) +	/* _EEE_ENABLED */
-	       nla_total_size(sizeof(u8)) +	/* _EEE_TX_LPI_ENABLED */
-	       nla_total_size(sizeof(u32));	/* _EEE_TX_LPI_TIMER */
+	len += nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u32));	 
 
 	return len;
 }
@@ -108,7 +108,7 @@ static int eee_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* EEE_SET */
+ 
 
 const struct nla_policy ethnl_eee_set_policy[] = {
 	[ETHTOOL_A_EEE_HEADER]		=

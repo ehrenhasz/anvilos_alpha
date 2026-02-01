@@ -33,10 +33,7 @@ enum vc4_hdmi_field {
 	HDMI_CEC_CPU_STATUS,
 	HDMI_CEC_CPU_SET,
 
-	/*
-	 * Transmit data, first byte is low byte of the 32-bit reg.
-	 * MSB of each byte transmitted first.
-	 */
+	 
 	HDMI_CEC_RX_DATA_1,
 	HDMI_CEC_RX_DATA_2,
 	HDMI_CEC_RX_DATA_3,
@@ -57,10 +54,7 @@ enum vc4_hdmi_field {
 	HDMI_CSC_CHANNEL_CTL,
 	HDMI_CSC_CTL,
 
-	/*
-	 * 20-bit fields containing CTS values to be transmitted if
-	 * !EXTERNAL_CTS_EN
-	 */
+	 
 	HDMI_CTS_0,
 	HDMI_CTS_1,
 	HDMI_DEEP_COLOR_CONFIG_1,
@@ -74,24 +68,18 @@ enum vc4_hdmi_field {
 	HDMI_HOTPLUG,
 	HDMI_HOTPLUG_INT,
 
-	/*
-	 * 3 bits per field, where each field maps from that
-	 * corresponding MAI bus channel to the given HDMI channel.
-	 */
+	 
 	HDMI_MAI_CHANNEL_MAP,
 	HDMI_MAI_CONFIG,
 	HDMI_MAI_CTL,
 
-	/*
-	 * Register for DMAing in audio data to be transported over
-	 * the MAI bus to the Falcon core.
-	 */
+	 
 	HDMI_MAI_DATA,
 
-	/* Format header to be placed on the MAI data. Unused. */
+	 
 	HDMI_MAI_FMT,
 
-	/* Last received format word on the MAI bus. */
+	 
 	HDMI_MAI_FORMAT,
 	HDMI_MAI_SMP,
 	HDMI_MAI_THR,
@@ -505,4 +493,4 @@ static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
 }
 #define HDMI_WRITE(reg, val)	vc4_hdmi_write(vc4_hdmi, reg, val)
 
-#endif /* _VC4_HDMI_REGS_H_ */
+#endif  

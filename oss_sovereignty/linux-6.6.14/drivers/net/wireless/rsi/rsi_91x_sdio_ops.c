@@ -1,33 +1,11 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <net/rsi_91x.h>
 #include "rsi_sdio.h"
 #include "rsi_common.h"
 
-/**
- * rsi_sdio_master_access_msword() - This function sets the AHB master access
- *				     MS word in the SDIO slave registers.
- * @adapter: Pointer to the adapter structure.
- * @ms_word: ms word need to be initialized.
- *
- * Return: status: 0 on success, -1 on failure.
- */
+ 
 int rsi_sdio_master_access_msword(struct rsi_hw *adapter, u16 ms_word)
 {
 	u8 byte;
@@ -78,13 +56,7 @@ void rsi_sdio_rx_thread(struct rsi_common *common)
 	kthread_complete_and_exit(&sdev->rx_thread.completion, 0);
 }
 
-/**
- * rsi_process_pkt() - This Function reads rx_blocks register and figures out
- *		       the size of the rx pkt.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int rsi_process_pkt(struct rsi_common *common)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -137,13 +109,7 @@ static int rsi_process_pkt(struct rsi_common *common)
 	return 0;
 }
 
-/**
- * rsi_init_sdio_slave_regs() - This function does the actual initialization
- *				of SDBUS slave registers.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: status: 0 on success, -1 on failure.
- */
+ 
 int rsi_init_sdio_slave_regs(struct rsi_hw *adapter)
 {
 	struct rsi_91x_sdiodev *dev = adapter->rsi_dev;
@@ -181,7 +147,7 @@ int rsi_init_sdio_slave_regs(struct rsi_hw *adapter)
 		}
 	}
 
-	/* This tells SDIO FIFO when to start read to host */
+	 
 	rsi_dbg(INIT_ZONE, "%s: Initializing SDIO read start level\n", __func__);
 	byte = 0x24;
 
@@ -222,12 +188,7 @@ int rsi_init_sdio_slave_regs(struct rsi_hw *adapter)
 	return 0;
 }
 
-/**
- * rsi_rx_handler() - Read and process SDIO interrupts.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: None.
- */
+ 
 static void rsi_rx_handler(struct rsi_hw *adapter)
 {
 	struct rsi_common *common = adapter->priv;
@@ -330,9 +291,7 @@ static void rsi_rx_handler(struct rsi_hw *adapter)
 	} while (1);
 }
 
-/* This function is used to read buffer status register and
- * set relevant fields in rsi_91x_sdiodev struct.
- */
+ 
 int rsi_sdio_check_buffer_status(struct rsi_hw *adapter, u8 q_num)
 {
 	struct rsi_common *common = adapter->priv;
@@ -396,18 +355,12 @@ out:
 	return QUEUE_NOT_FULL;
 }
 
-/**
- * rsi_sdio_determine_event_timeout() - This Function determines the event
- *					timeout duration.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: timeout duration is returned.
- */
+ 
 int rsi_sdio_determine_event_timeout(struct rsi_hw *adapter)
 {
 	struct rsi_91x_sdiodev *dev = adapter->rsi_dev;
 
-	/* Once buffer full is seen, event timeout to occur every 2 msecs */
+	 
 	if (dev->rx_info.buffer_full)
 		return 2;
 

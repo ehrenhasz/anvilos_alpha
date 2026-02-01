@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2007-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2016-2017 Erik Stromdahl <erik.stromdahl@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -18,7 +14,7 @@
 static void ath10k_usb_post_recv_transfers(struct ath10k *ar,
 					   struct ath10k_usb_pipe *recv_pipe);
 
-/* inlined helper functions */
+ 
 
 static inline enum ath10k_htc_ep_id
 eid_from_htc_hdr(struct ath10k_htc_hdr *htc_hdr)
@@ -31,14 +27,14 @@ static inline bool is_trailer_only_msg(struct ath10k_htc_hdr *htc_hdr)
 	return __le16_to_cpu(htc_hdr->len) == htc_hdr->trailer_len;
 }
 
-/* pipe/urb operations */
+ 
 static struct ath10k_urb_context *
 ath10k_usb_alloc_urb_from_pipe(struct ath10k_usb_pipe *pipe)
 {
 	struct ath10k_urb_context *urb_context = NULL;
 	unsigned long flags;
 
-	/* bail if this pipe is not initialized */
+	 
 	if (!pipe->ar_usb)
 		return NULL;
 
@@ -59,7 +55,7 @@ static void ath10k_usb_free_urb_to_pipe(struct ath10k_usb_pipe *pipe,
 {
 	unsigned long flags;
 
-	/* bail if this pipe is not initialized */
+	 
 	if (!pipe->ar_usb)
 		return;
 
@@ -85,7 +81,7 @@ static void ath10k_usb_free_pipe_resources(struct ath10k *ar,
 	struct ath10k_urb_context *urb_context;
 
 	if (!pipe->ar_usb) {
-		/* nothing allocated for this pipe */
+		 
 		return;
 	}
 
@@ -120,7 +116,7 @@ static void ath10k_usb_cleanup_pipe_resources(struct ath10k *ar)
 		ath10k_usb_free_pipe_resources(ar, &ar_usb->pipes[i]);
 }
 
-/* hif usb rx/tx completion functions */
+ 
 
 static void ath10k_usb_recv_complete(struct urb *urb)
 {
@@ -141,9 +137,7 @@ static void ath10k_usb_recv_complete(struct urb *urb)
 		case -ECONNRESET:
 		case -ENOENT:
 		case -ESHUTDOWN:
-			/* no need to spew these errors when device
-			 * removed or urb killed due to driver shutdown
-			 */
+			 
 			status = -ECANCELED;
 			break;
 		default:
@@ -161,11 +155,11 @@ static void ath10k_usb_recv_complete(struct urb *urb)
 
 	skb = urb_context->skb;
 
-	/* we are going to pass it up */
+	 
 	urb_context->skb = NULL;
 	skb_put(skb, urb->actual_length);
 
-	/* note: queue implements a lock */
+	 
 	skb_queue_tail(&pipe->io_comp_queue, skb);
 	schedule_work(&pipe->io_complete_work);
 
@@ -174,7 +168,7 @@ cleanup_recv_urb:
 
 	if (status == 0 &&
 	    pipe->urb_cnt >= pipe->urb_cnt_thresh) {
-		/* our free urbs are piling up, post more transfers */
+		 
 		ath10k_usb_post_recv_transfers(ar, pipe);
 	}
 }
@@ -196,12 +190,12 @@ static void ath10k_usb_transmit_complete(struct urb *urb)
 	urb_context->skb = NULL;
 	ath10k_usb_free_urb_to_pipe(urb_context->pipe, urb_context);
 
-	/* note: queue implements a lock */
+	 
 	skb_queue_tail(&pipe->io_comp_queue, skb);
 	schedule_work(&pipe->io_complete_work);
 }
 
-/* pipe operations */
+ 
 static void ath10k_usb_post_recv_transfers(struct ath10k *ar,
 					   struct ath10k_usb_pipe *recv_pipe)
 {
@@ -286,7 +280,7 @@ static void ath10k_usb_tx_complete(struct ath10k *ar, struct sk_buff *skb)
 	htc_hdr = (struct ath10k_htc_hdr *)skb->data;
 	ep = &ar->htc.endpoint[htc_hdr->eid];
 	ath10k_htc_notify_tx_completion(ep, skb);
-	/* The TX complete handler now owns the skb... */
+	 
 }
 
 static void ath10k_usb_rx_complete(struct ath10k *ar, struct sk_buff *skb)
@@ -335,15 +329,13 @@ static void ath10k_usb_rx_complete(struct ath10k *ar, struct sk_buff *skb)
 		if (is_trailer_only_msg(htc_hdr))
 			goto out_free_skb;
 
-		/* strip off the trailer from the skb since it should not
-		 * be passed on to upper layers
-		 */
+		 
 		skb_trim(skb, skb->len - htc_hdr->trailer_len);
 	}
 
 	skb_pull(skb, sizeof(*htc_hdr));
 	ep->ep_ops.ep_rx_complete(ar, skb);
-	/* The RX complete handler now owns the skb... */
+	 
 
 	if (test_bit(ATH10K_FLAG_CORE_REGISTERED, &ar->dev_flags)) {
 		local_bh_disable();
@@ -396,7 +388,7 @@ static int ath10k_usb_hif_start(struct ath10k *ar)
 	ath10k_core_napi_enable(ar);
 	ath10k_usb_start_recv_pipes(ar);
 
-	/* set the TX resource avail threshold for each TX pipe */
+	 
 	for (i = ATH10K_USB_PIPE_TX_CTRL;
 	     i <= ATH10K_USB_PIPE_TX_DATA_HP; i++) {
 		ar_usb->pipes[i].urb_cnt_thresh =
@@ -440,7 +432,7 @@ static int ath10k_usb_hif_tx_sg(struct ath10k *ar, u8 pipe_id,
 				  ath10k_usb_transmit_complete, urb_context);
 
 		if (!(skb->len % pipe->max_packet_size)) {
-			/* hit a max packet boundary on this pipe */
+			 
 			urb->transfer_flags |= URB_ZERO_PACKET;
 		}
 
@@ -493,7 +485,7 @@ static int ath10k_usb_submit_ctrl_out(struct ath10k *ar,
 			return -ENOMEM;
 	}
 
-	/* note: if successful returns number of bytes transferred */
+	 
 	ret = usb_control_msg(ar_usb->udev,
 			      usb_sndctrlpipe(ar_usb->udev, 0),
 			      req,
@@ -527,7 +519,7 @@ static int ath10k_usb_submit_ctrl_in(struct ath10k *ar,
 			return -ENOMEM;
 	}
 
-	/* note: if successful returns number of bytes transferred */
+	 
 	ret = usb_control_msg(ar_usb->udev,
 			      usb_rcvctrlpipe(ar_usb->udev, 0),
 			      req,
@@ -556,13 +548,13 @@ static int ath10k_usb_ctrl_msg_exchange(struct ath10k *ar,
 {
 	int ret;
 
-	/* send command */
+	 
 	ret = ath10k_usb_submit_ctrl_out(ar, req_val, 0, 0,
 					 req_buf, req_len);
 	if (ret)
 		goto err;
 
-	/* get response */
+	 
 	if (resp_buf) {
 		ret = ath10k_usb_submit_ctrl_in(ar, resp_val, 0, 0,
 						resp_buf, *resp_len);
@@ -684,14 +676,12 @@ static int ath10k_usb_hif_map_service_to_pipe(struct ath10k *ar, u16 svc_id,
 	case ATH10K_HTC_SVC_ID_RSVD_CTRL:
 	case ATH10K_HTC_SVC_ID_WMI_CONTROL:
 		*ul_pipe = ATH10K_USB_PIPE_TX_CTRL;
-		/* due to large control packets, shift to data pipe */
+		 
 		*dl_pipe = ATH10K_USB_PIPE_RX_DATA;
 		break;
 	case ATH10K_HTC_SVC_ID_HTT_DATA_MSG:
 		*ul_pipe = ATH10K_USB_PIPE_TX_DATA_LP;
-		/* Disable rxdata2 directly, it will be enabled
-		 * if FW enable rxdata2
-		 */
+		 
 		*dl_pipe = ATH10K_USB_PIPE_RX_DATA;
 		break;
 	default:
@@ -781,7 +771,7 @@ static u8 ath10k_usb_get_logical_pipe_num(u8 ep_address, int *urb_count)
 		*urb_count = TX_URB_COUNT;
 		break;
 	default:
-		/* note: there may be endpoints not currently used */
+		 
 		break;
 	}
 
@@ -805,9 +795,7 @@ static int ath10k_usb_alloc_pipe_resources(struct ath10k *ar,
 
 		urb_context->pipe = pipe;
 
-		/* we are only allocate the urb contexts here, the actual URB
-		 * is allocated from the kernel as needed to do a transaction
-		 */
+		 
 		pipe->urb_alloc++;
 		ath10k_usb_free_urb_to_pipe(pipe, urb_context);
 	}
@@ -832,7 +820,7 @@ static int ath10k_usb_setup_pipe_resources(struct ath10k *ar,
 
 	ath10k_dbg(ar, ATH10K_DBG_USB, "usb setting up pipes using interface\n");
 
-	/* walk descriptors and setup pipes */
+	 
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
 
@@ -852,7 +840,7 @@ static int ath10k_usb_setup_pipe_resources(struct ath10k *ar,
 				   le16_to_cpu(endpoint->wMaxPacketSize),
 				   endpoint->bInterval);
 		} else if (ATH10K_USB_IS_ISOC_EP(endpoint->bmAttributes)) {
-			/* TODO for ISO */
+			 
 			ath10k_dbg(ar, ATH10K_DBG_USB,
 				   "usb %s isoc ep 0x%2.2x maxpktsz %d interval %d\n",
 				   ATH10K_USB_IS_DIR_IN
@@ -862,7 +850,7 @@ static int ath10k_usb_setup_pipe_resources(struct ath10k *ar,
 				   endpoint->bInterval);
 		}
 
-		/* Ignore broken descriptors. */
+		 
 		if (usb_endpoint_maxp(endpoint) == 0)
 			continue;
 
@@ -876,7 +864,7 @@ static int ath10k_usb_setup_pipe_resources(struct ath10k *ar,
 
 		pipe = &ar_usb->pipes[pipe_num];
 		if (pipe->ar_usb)
-			/* hmmm..pipe was already setup */
+			 
 			continue;
 
 		pipe->ar_usb = ar_usb;
@@ -905,7 +893,7 @@ static int ath10k_usb_setup_pipe_resources(struct ath10k *ar,
 						   pipe->ep_address);
 			}
 		} else if (ATH10K_USB_IS_ISOC_EP(endpoint->bmAttributes)) {
-			/* TODO for ISO */
+			 
 			if (ATH10K_USB_IS_DIR_IN(pipe->ep_address)) {
 				pipe->usb_pipe_handle =
 				    usb_rcvisocpipe(ar_usb->udev,
@@ -988,7 +976,7 @@ static int ath10k_usb_napi_poll(struct napi_struct *ctx, int budget)
 	return done;
 }
 
-/* ath10k usb driver registered functions */
+ 
 static int ath10k_usb_probe(struct usb_interface *interface,
 			    const struct usb_device_id *id)
 {
@@ -999,12 +987,7 @@ static int ath10k_usb_probe(struct usb_interface *interface,
 	enum ath10k_hw_rev hw_rev;
 	struct ath10k_bus_params bus_params = {};
 
-	/* Assumption: All USB based chipsets (so far) are QCA9377 based.
-	 * If there will be newer chipsets that does not use the hw reg
-	 * setup as defined in qca6174_regs and qca6174_values, this
-	 * assumption is no longer valid and hw_rev must be setup differently
-	 * depending on chipset.
-	 */
+	 
 	hw_rev = ATH10K_HW_QCA9377;
 
 	ar = ath10k_core_create(sizeof(*ar_usb), &dev->dev, ATH10K_BUS_USB,
@@ -1035,7 +1018,7 @@ static int ath10k_usb_probe(struct usb_interface *interface,
 	ar->id.device = product_id;
 
 	bus_params.dev_type = ATH10K_DEV_TYPE_HL;
-	/* TODO: don't know yet how to get chip_id with USB */
+	 
 	bus_params.chip_id = 0;
 	bus_params.hl_msdu_ids = true;
 	ret = ath10k_core_register(ar, &bus_params);
@@ -1044,7 +1027,7 @@ static int ath10k_usb_probe(struct usb_interface *interface,
 		goto err_usb_destroy;
 	}
 
-	/* TODO: remove this once USB support is fully implemented */
+	 
 	ath10k_warn(ar, "Warning: ath10k USB support is incomplete, don't expect anything to work!\n");
 
 	return 0;
@@ -1104,10 +1087,10 @@ static int ath10k_usb_pm_resume(struct usb_interface *interface)
 
 #endif
 
-/* table of devices that work with this driver */
+ 
 static struct usb_device_id ath10k_usb_ids[] = {
-	{USB_DEVICE(0x13b1, 0x0042)}, /* Linksys WUSB6100M */
-	{ /* Terminating entry */ },
+	{USB_DEVICE(0x13b1, 0x0042)},  
+	{   },
 };
 
 MODULE_DEVICE_TABLE(usb, ath10k_usb_ids);

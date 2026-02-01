@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2016-2018 NXP
- * Copyright (c) 2018, Sensor-Technik Wiedemann GmbH
- * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+ 
 #include <linux/spi/spi.h>
 #include <linux/packing.h>
 #include "sja1105.h"
@@ -25,12 +22,7 @@ sja1105_spi_message_pack(void *buf, const struct sja1105_spi_message *msg)
 	sja1105_pack(buf, &msg->address,    24,  4, size);
 }
 
-/* If @rw is:
- * - SPI_WRITE: creates and sends an SPI write message at absolute
- *		address reg_addr, taking @len bytes from *buf
- * - SPI_READ:  creates and sends an SPI read message from absolute
- *		address reg_addr, writing @len bytes into *buf
- */
+ 
 static int sja1105_xfer(const struct sja1105_private *priv,
 			sja1105_spi_rw_mode_t rw, u64 reg_addr, u8 *buf,
 			size_t len, struct ptp_system_timestamp *ptp_sts)
@@ -57,37 +49,26 @@ static int sja1105_xfer(const struct sja1105_private *priv,
 		struct spi_transfer *ptp_sts_xfer;
 		struct sja1105_spi_message msg;
 
-		/* Populate the transfer's header buffer */
+		 
 		msg.address = chunk.reg_addr;
 		msg.access = rw;
 		if (rw == SPI_READ)
 			msg.read_count = chunk.len / 4;
 		else
-			/* Ignored */
+			 
 			msg.read_count = 0;
 		sja1105_spi_message_pack(hdr_buf, &msg);
 		hdr_xfer->tx_buf = hdr_buf;
 		hdr_xfer->len = SJA1105_SIZE_SPI_MSG_HEADER;
 
-		/* Populate the transfer's data buffer */
+		 
 		if (rw == SPI_READ)
 			chunk_xfer->rx_buf = chunk.buf;
 		else
 			chunk_xfer->tx_buf = chunk.buf;
 		chunk_xfer->len = chunk.len;
 
-		/* Request timestamping for the transfer. Instead of letting
-		 * callers specify which byte they want to timestamp, we can
-		 * make certain assumptions:
-		 * - A read operation will request a software timestamp when
-		 *   what's being read is the PTP time. That is snapshotted by
-		 *   the switch hardware at the end of the command portion
-		 *   (hdr_xfer).
-		 * - A write operation will request a software timestamp on
-		 *   actions that modify the PTP time. Taking clock stepping as
-		 *   an example, the switch writes the PTP time at the end of
-		 *   the data portion (chunk_xfer).
-		 */
+		 
 		if (rw == SPI_READ)
 			ptp_sts_xfer = hdr_xfer;
 		else
@@ -96,7 +77,7 @@ static int sja1105_xfer(const struct sja1105_private *priv,
 		ptp_sts_xfer->ptp_sts_word_post = ptp_sts_xfer->len - 1;
 		ptp_sts_xfer->ptp_sts = ptp_sts;
 
-		/* Calculate next chunk */
+		 
 		chunk.buf += chunk.len;
 		chunk.reg_addr += chunk.len / 4;
 		chunk.len = min_t(size_t, (ptrdiff_t)(buf + len - chunk.buf),
@@ -119,15 +100,7 @@ int sja1105_xfer_buf(const struct sja1105_private *priv,
 	return sja1105_xfer(priv, rw, reg_addr, buf, len, NULL);
 }
 
-/* If @rw is:
- * - SPI_WRITE: creates and sends an SPI write message at absolute
- *		address reg_addr
- * - SPI_READ:  creates and sends an SPI read message from absolute
- *		address reg_addr
- *
- * The u64 *value is unpacked, meaning that it's stored in the native
- * CPU endianness and directly usable by software running on the core.
- */
+ 
 int sja1105_xfer_u64(const struct sja1105_private *priv,
 		     sja1105_spi_rw_mode_t rw, u64 reg_addr, u64 *value,
 		     struct ptp_system_timestamp *ptp_sts)
@@ -146,7 +119,7 @@ int sja1105_xfer_u64(const struct sja1105_private *priv,
 	return rc;
 }
 
-/* Same as above, but transfers only a 4 byte word */
+ 
 int sja1105_xfer_u32(const struct sja1105_private *priv,
 		     sja1105_spi_rw_mode_t rw, u64 reg_addr, u32 *value,
 		     struct ptp_system_timestamp *ptp_sts)
@@ -156,9 +129,7 @@ int sja1105_xfer_u32(const struct sja1105_private *priv,
 	int rc;
 
 	if (rw == SPI_WRITE) {
-		/* The packing API only supports u64 as CPU word size,
-		 * so we need to convert.
-		 */
+		 
 		tmp = *value;
 		sja1105_pack(packed_buf, &tmp, 31, 0, 4);
 	}
@@ -179,7 +150,7 @@ static int sja1105et_reset_cmd(struct dsa_switch *ds)
 	const struct sja1105_regs *regs = priv->info->regs;
 	u32 cold_reset = BIT(3);
 
-	/* Cold reset */
+	 
 	return sja1105_xfer_u32(priv, SPI_WRITE, regs->rgu, &cold_reset, NULL);
 }
 
@@ -189,7 +160,7 @@ static int sja1105pqrs_reset_cmd(struct dsa_switch *ds)
 	const struct sja1105_regs *regs = priv->info->regs;
 	u32 cold_reset = BIT(2);
 
-	/* Cold reset */
+	 
 	return sja1105_xfer_u32(priv, SPI_WRITE, regs->rgu, &cold_reset, NULL);
 }
 
@@ -199,11 +170,7 @@ static int sja1110_reset_cmd(struct dsa_switch *ds)
 	const struct sja1105_regs *regs = priv->info->regs;
 	u32 switch_reset = BIT(20);
 
-	/* Only reset the switch core.
-	 * A full cold reset would re-enable the BASE_MCSS_CLOCK PLL which
-	 * would turn on the microcontroller, potentially letting it execute
-	 * code which could interfere with our configuration.
-	 */
+	 
 	return sja1105_xfer_u32(priv, SPI_WRITE, regs->rgu, &switch_reset, NULL);
 }
 
@@ -235,20 +202,13 @@ struct sja1105_status {
 	u64 crcchkg;
 };
 
-/* This is not reading the entire General Status area, which is also
- * divergent between E/T and P/Q/R/S, but only the relevant bits for
- * ensuring that the static config upload procedure was successful.
- */
+ 
 static void sja1105_status_unpack(void *buf, struct sja1105_status *status)
 {
-	/* So that addition translates to 4 bytes */
+	 
 	u32 *p = buf;
 
-	/* device_id is missing from the buffer, but we don't
-	 * want to diverge from the manual definition of the
-	 * register addresses, so we'll back off one step with
-	 * the register pointer, and never access p[0].
-	 */
+	 
 	p--;
 	sja1105_unpack(p + 0x1, &status->configs,   31, 31, 4);
 	sja1105_unpack(p + 0x1, &status->crcchkl,   30, 30, 4);
@@ -272,10 +232,7 @@ static int sja1105_status_get(struct sja1105_private *priv,
 	return 0;
 }
 
-/* Not const because unpacking priv->static_config into buffers and preparing
- * for upload requires the recalculation of table CRCs and updating the
- * structures with these.
- */
+ 
 int static_config_buf_prepare_for_upload(struct sja1105_private *priv,
 					 void *config_buf, int buf_len)
 {
@@ -293,18 +250,16 @@ int static_config_buf_prepare_for_upload(struct sja1105_private *priv,
 		return -EINVAL;
 	}
 
-	/* Write Device ID and config tables to config_buf */
+	 
 	sja1105_static_config_pack(config_buf, config);
-	/* Recalculate CRC of the last header (right now 0xDEADBEEF).
-	 * Don't include the CRC field itself.
-	 */
+	 
 	crc_len = buf_len - 4;
-	/* Read the whole table header */
+	 
 	final_header_ptr = config_buf + buf_len - SJA1105_SIZE_TABLE_HEADER;
 	sja1105_table_header_packing(final_header_ptr, &final_header, UNPACK);
-	/* Modify */
+	 
 	final_header.crc = sja1105_crc32(config_buf, crc_len);
-	/* Rewrite */
+	 
 	sja1105_table_header_packing(final_header_ptr, &final_header, PACK);
 
 	return 0;
@@ -334,38 +289,32 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
 		rc = -EINVAL;
 		goto out;
 	}
-	/* Prevent PHY jabbering during switch reset by inhibiting
-	 * Tx on all ports and waiting for current packet to drain.
-	 * Otherwise, the PHY will see an unterminated Ethernet packet.
-	 */
+	 
 	rc = sja1105_inhibit_tx(priv, GENMASK_ULL(ds->num_ports - 1, 0), true);
 	if (rc < 0) {
 		dev_err(dev, "Failed to inhibit Tx on ports\n");
 		rc = -ENXIO;
 		goto out;
 	}
-	/* Wait for an eventual egress packet to finish transmission
-	 * (reach IFG). It is guaranteed that a second one will not
-	 * follow, and that switch cold reset is thus safe
-	 */
+	 
 	usleep_range(500, 1000);
 	do {
-		/* Put the SJA1105 in programming mode */
+		 
 		rc = priv->info->reset_cmd(priv->ds);
 		if (rc < 0) {
 			dev_err(dev, "Failed to reset switch, retrying...\n");
 			continue;
 		}
-		/* Wait for the switch to come out of reset */
+		 
 		usleep_range(1000, 5000);
-		/* Upload the static config to the device */
+		 
 		rc = sja1105_xfer_buf(priv, SPI_WRITE, regs->config,
 				      config_buf, buf_len);
 		if (rc < 0) {
 			dev_err(dev, "Failed to upload config, retrying...\n");
 			continue;
 		}
-		/* Check that SJA1105 responded well to the config upload */
+		 
 		rc = sja1105_status_get(priv, &status);
 		if (rc < 0)
 			continue;
@@ -391,7 +340,7 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
 				"invalid, retrying...\n");
 			continue;
 		}
-		/* Success! */
+		 
 		break;
 	} while (--retries);
 
@@ -416,7 +365,7 @@ static const struct sja1105_regs sja1105et_regs = {
 	.vl_status = 0x10000,
 	.config = 0x020000,
 	.rgu = 0x100440,
-	/* UM10944.pdf, Table 86, ACU Register overview */
+	 
 	.pad_mii_tx = {0x100800, 0x100802, 0x100804, 0x100806, 0x100808},
 	.pad_mii_rx = {0x100801, 0x100803, 0x100805, 0x100807, 0x100809},
 	.rmii_pll1 = 0x10000A,
@@ -424,7 +373,7 @@ static const struct sja1105_regs sja1105et_regs = {
 	.stats[MAC] = {0x200, 0x202, 0x204, 0x206, 0x208},
 	.stats[HL1] = {0x400, 0x410, 0x420, 0x430, 0x440},
 	.stats[HL2] = {0x600, 0x610, 0x620, 0x630, 0x640},
-	/* UM10944.pdf, Table 78, CGU Register overview */
+	 
 	.mii_tx_clk = {0x100013, 0x10001A, 0x100021, 0x100028, 0x10002F},
 	.mii_rx_clk = {0x100014, 0x10001B, 0x100022, 0x100029, 0x100030},
 	.mii_ext_tx_clk = {0x100018, 0x10001F, 0x100026, 0x10002D, 0x100034},
@@ -433,11 +382,11 @@ static const struct sja1105_regs sja1105et_regs = {
 	.rmii_ref_clk = {0x100015, 0x10001C, 0x100023, 0x10002A, 0x100031},
 	.rmii_ext_tx_clk = {0x100018, 0x10001F, 0x100026, 0x10002D, 0x100034},
 	.ptpegr_ts = {0xC0, 0xC2, 0xC4, 0xC6, 0xC8},
-	.ptpschtm = 0x12, /* Spans 0x12 to 0x13 */
+	.ptpschtm = 0x12,  
 	.ptppinst = 0x14,
 	.ptppindur = 0x16,
 	.ptp_control = 0x17,
-	.ptpclkval = 0x18, /* Spans 0x18 to 0x19 */
+	.ptpclkval = 0x18,  
 	.ptpclkrate = 0x1A,
 	.ptpclkcorp = 0x1D,
 	.mdio_100base_tx = SJA1105_RSV_ADDR,
@@ -452,7 +401,7 @@ static const struct sja1105_regs sja1105pqrs_regs = {
 	.vl_status = 0x10000,
 	.config = 0x020000,
 	.rgu = 0x100440,
-	/* UM10944.pdf, Table 86, ACU Register overview */
+	 
 	.pad_mii_tx = {0x100800, 0x100802, 0x100804, 0x100806, 0x100808},
 	.pad_mii_rx = {0x100801, 0x100803, 0x100805, 0x100807, 0x100809},
 	.pad_mii_id = {0x100810, 0x100811, 0x100812, 0x100813, 0x100814},
@@ -462,7 +411,7 @@ static const struct sja1105_regs sja1105pqrs_regs = {
 	.stats[HL1] = {0x400, 0x410, 0x420, 0x430, 0x440},
 	.stats[HL2] = {0x600, 0x610, 0x620, 0x630, 0x640},
 	.stats[ETHER] = {0x1400, 0x1418, 0x1430, 0x1448, 0x1460},
-	/* UM11040.pdf, Table 114 */
+	 
 	.mii_tx_clk = {0x100013, 0x100019, 0x10001F, 0x100025, 0x10002B},
 	.mii_rx_clk = {0x100014, 0x10001A, 0x100020, 0x100026, 0x10002C},
 	.mii_ext_tx_clk = {0x100017, 0x10001D, 0x100023, 0x100029, 0x10002F},
@@ -471,7 +420,7 @@ static const struct sja1105_regs sja1105pqrs_regs = {
 	.rmii_ref_clk = {0x100015, 0x10001B, 0x100021, 0x100027, 0x10002D},
 	.rmii_ext_tx_clk = {0x100017, 0x10001D, 0x100023, 0x100029, 0x10002F},
 	.ptpegr_ts = {0xC0, 0xC4, 0xC8, 0xCC, 0xD0},
-	.ptpschtm = 0x13, /* Spans 0x13 to 0x14 */
+	.ptpschtm = 0x13,  
 	.ptppinst = 0x15,
 	.ptppindur = 0x17,
 	.ptp_control = 0x18,
@@ -487,13 +436,11 @@ static const struct sja1105_regs sja1110_regs = {
 	.device_id = SJA1110_SPI_ADDR(0x0),
 	.prod_id = SJA1110_ACU_ADDR(0xf00),
 	.status = SJA1110_SPI_ADDR(0x4),
-	.port_control = SJA1110_SPI_ADDR(0x50), /* actually INHIB_TX */
+	.port_control = SJA1110_SPI_ADDR(0x50),  
 	.vl_status = 0x10000,
 	.config = 0x020000,
-	.rgu = SJA1110_RGU_ADDR(0x100), /* Reset Control Register 0 */
-	/* Ports 2 and 3 are capable of xMII, but there isn't anything to
-	 * configure in the CGU/ACU for them.
-	 */
+	.rgu = SJA1110_RGU_ADDR(0x100),  
+	 
 	.pad_mii_tx = {SJA1105_RSV_ADDR, SJA1105_RSV_ADDR,
 		       SJA1105_RSV_ADDR, SJA1105_RSV_ADDR,
 		       SJA1105_RSV_ADDR, SJA1105_RSV_ADDR,
@@ -594,7 +541,7 @@ const struct sja1105_info sja1105e_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},
@@ -626,7 +573,7 @@ const struct sja1105_info sja1105t_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},
@@ -659,7 +606,7 @@ const struct sja1105_info sja1105p_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},
@@ -692,7 +639,7 @@ const struct sja1105_info sja1105q_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},
@@ -727,7 +674,7 @@ const struct sja1105_info sja1105r_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},
@@ -763,7 +710,7 @@ const struct sja1105_info sja1105s_info = {
 		[SJA1105_SPEED_10MBPS] = 3,
 		[SJA1105_SPEED_100MBPS] = 2,
 		[SJA1105_SPEED_1000MBPS] = 1,
-		[SJA1105_SPEED_2500MBPS] = 0, /* Not supported */
+		[SJA1105_SPEED_2500MBPS] = 0,  
 	},
 	.supports_mii		= {true, true, true, true, true},
 	.supports_rmii		= {true, true, true, true, true},

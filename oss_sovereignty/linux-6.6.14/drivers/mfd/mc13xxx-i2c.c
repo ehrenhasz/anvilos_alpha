@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2009-2010 Creative Product Design
- * Marc Reilly marc@cpdesign.com.au
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -24,7 +21,7 @@ static const struct i2c_device_id mc13xxx_i2c_device_id[] = {
 		.name = "mc34708",
 		.driver_data = (kernel_ulong_t)&mc13xxx_variant_mc34708,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(i2c, mc13xxx_i2c_device_id);
@@ -37,7 +34,7 @@ static const struct of_device_id mc13xxx_dt_ids[] = {
 		.compatible = "fsl,mc34708",
 		.data = &mc13xxx_variant_mc34708,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, mc13xxx_dt_ids);

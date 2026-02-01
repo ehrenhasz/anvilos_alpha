@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cec-core.c - HDMI Consumer Electronics Control framework - Core
- *
- * Copyright 2016 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -20,16 +16,7 @@
 #define CEC_NUM_DEVICES	256
 #define CEC_NAME	"cec"
 
-/*
- * 400 ms is the time it takes for one 16 byte message to be
- * transferred and 5 is the maximum number of retries. Add
- * another 100 ms as a margin. So if the transmit doesn't
- * finish before that time something is really wrong and we
- * have to time out.
- *
- * This is a sign that something it really wrong and a warning
- * will be issued.
- */
+ 
 #define CEC_XFER_TIMEOUT_MS (5 * 400 + 100)
 
 int cec_debug;
@@ -42,34 +29,25 @@ MODULE_PARM_DESC(debug_phys_addr, "add CEC_CAP_PHYS_ADDR if set");
 
 static dev_t cec_dev_t;
 
-/* Active devices */
+ 
 static DEFINE_MUTEX(cec_devnode_lock);
 static DECLARE_BITMAP(cec_devnode_nums, CEC_NUM_DEVICES);
 
 static struct dentry *top_cec_dir;
 
-/* dev to cec_devnode */
+ 
 #define to_cec_devnode(cd) container_of(cd, struct cec_devnode, dev)
 
 int cec_get_device(struct cec_devnode *devnode)
 {
-	/*
-	 * Check if the cec device is available. This needs to be done with
-	 * the devnode->lock held to prevent an open/unregister race:
-	 * without the lock, the device could be unregistered and freed between
-	 * the devnode->registered check and get_device() calls, leading to
-	 * a crash.
-	 */
+	 
 	mutex_lock(&devnode->lock);
-	/*
-	 * return ENXIO if the cec device has been removed
-	 * already or if it is not registered anymore.
-	 */
+	 
 	if (!devnode->registered) {
 		mutex_unlock(&devnode->lock);
 		return -ENXIO;
 	}
-	/* and increase the device refcount */
+	 
 	get_device(&devnode->dev);
 	mutex_unlock(&devnode->lock);
 	return 0;
@@ -80,13 +58,13 @@ void cec_put_device(struct cec_devnode *devnode)
 	put_device(&devnode->dev);
 }
 
-/* Called when the last user of the cec device exits. */
+ 
 static void cec_devnode_release(struct device *cd)
 {
 	struct cec_devnode *devnode = to_cec_devnode(cd);
 
 	mutex_lock(&cec_devnode_lock);
-	/* Mark device node number as free */
+	 
 	clear_bit(devnode->minor, cec_devnode_nums);
 	mutex_unlock(&cec_devnode_lock);
 
@@ -97,26 +75,14 @@ static struct bus_type cec_bus_type = {
 	.name = CEC_NAME,
 };
 
-/*
- * Register a cec device node
- *
- * The registration code assigns minor numbers and registers the new device node
- * with the kernel. An error is returned if no free minor number can be found,
- * or if the registration of the device node fails.
- *
- * Zero is returned on success.
- *
- * Note that if the cec_devnode_register call fails, the release() callback of
- * the cec_devnode structure is *not* called, so the caller is responsible for
- * freeing any data.
- */
+ 
 static int __must_check cec_devnode_register(struct cec_devnode *devnode,
 					     struct module *owner)
 {
 	int minor;
 	int ret;
 
-	/* Part 1: Find a free minor number */
+	 
 	mutex_lock(&cec_devnode_lock);
 	minor = find_first_zero_bit(cec_devnode_nums, CEC_NUM_DEVICES);
 	if (minor == CEC_NUM_DEVICES) {
@@ -135,7 +101,7 @@ static int __must_check cec_devnode_register(struct cec_devnode *devnode,
 	dev_set_name(&devnode->dev, "cec%d", devnode->minor);
 	device_initialize(&devnode->dev);
 
-	/* Part 2: Initialize and register the character device */
+	 
 	cdev_init(&devnode->cdev, &cec_devnode_fops);
 	devnode->cdev.owner = owner;
 	kobject_set_name(&devnode->cdev.kobj, "cec%d", devnode->minor);
@@ -157,15 +123,7 @@ clr_bit:
 	return ret;
 }
 
-/*
- * Unregister a cec device node
- *
- * This unregisters the passed device. Future open calls will be met with
- * errors.
- *
- * This function can safely be called if the device node has never been
- * registered or has already been unregistered.
- */
+ 
 static void cec_devnode_unregister(struct cec_adapter *adap)
 {
 	struct cec_devnode *devnode = &adap->devnode;
@@ -173,7 +131,7 @@ static void cec_devnode_unregister(struct cec_adapter *adap)
 
 	mutex_lock(&devnode->lock);
 
-	/* Check if devnode was never registered or already unregistered */
+	 
 	if (!devnode->registered || devnode->unregistered) {
 		mutex_unlock(&devnode->lock);
 		return;
@@ -191,7 +149,7 @@ static void cec_devnode_unregister(struct cec_adapter *adap)
 	mutex_lock(&adap->lock);
 	__cec_s_phys_addr(adap, CEC_PHYS_ADDR_INVALID, false);
 	__cec_s_log_addrs(adap, NULL, false);
-	// Disable the adapter (since adap->devnode.unregistered is true)
+	 
 	cec_adap_enable(adap);
 	mutex_unlock(&adap->lock);
 
@@ -286,7 +244,7 @@ struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
 	INIT_LIST_HEAD(&adap->wait_queue);
 	init_waitqueue_head(&adap->kthread_waitq);
 
-	/* adap->devnode initialization */
+	 
 	INIT_LIST_HEAD(&adap->devnode.fhs);
 	mutex_init(&adap->devnode.lock_fhs);
 	mutex_init(&adap->devnode.lock);
@@ -303,7 +261,7 @@ struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
 	if (!(caps & CEC_CAP_RC))
 		return adap;
 
-	/* Prepare the RC input device */
+	 
 	adap->rc = rc_allocate_device(RC_DRIVER_SCANCODE);
 	if (!adap->rc) {
 		pr_err("cec-%s: failed to allocate memory for rc_dev\n",
@@ -366,7 +324,7 @@ int cec_register_adapter(struct cec_adapter *adap,
 	res = cec_devnode_register(&adap->devnode, adap->owner);
 	if (res) {
 #ifdef CONFIG_MEDIA_CEC_RC
-		/* Note: rc_unregister also calls rc_free */
+		 
 		rc_unregister_device(adap->rc);
 		adap->rc = NULL;
 #endif
@@ -399,7 +357,7 @@ void cec_unregister_adapter(struct cec_adapter *adap)
 		return;
 
 #ifdef CONFIG_MEDIA_CEC_RC
-	/* Note: rc_unregister also calls rc_free */
+	 
 	rc_unregister_device(adap->rc);
 	adap->rc = NULL;
 #endif
@@ -427,9 +385,7 @@ void cec_delete_adapter(struct cec_adapter *adap)
 }
 EXPORT_SYMBOL_GPL(cec_delete_adapter);
 
-/*
- *	Initialise cec for linux
- */
+ 
 static int __init cec_devnode_init(void)
 {
 	int ret = alloc_chrdev_region(&cec_dev_t, 0, CEC_NUM_DEVICES, CEC_NAME);

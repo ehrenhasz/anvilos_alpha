@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include "lib/devcom.h"
 #include "bridge.h"
@@ -211,7 +211,7 @@ int mlx5_esw_bridge_port_mdb_attach(struct net_device *dev, struct mlx5_esw_brid
 	err = mlx5_esw_bridge_mdb_port_insert(port, entry);
 	if (err) {
 		if (!entry->num_ports)
-			mlx5_esw_bridge_port_mdb_entry_cleanup(bridge, entry); /* new mdb entry */
+			mlx5_esw_bridge_port_mdb_entry_cleanup(bridge, entry);  
 		esw_warn(bridge->br_offloads->esw->dev,
 			 "MDB attach failed to insert port (MAC=%pM,vid=%u,vport=%u,err=%d)\n",
 			 addr, vid, port->vport_num, err);
@@ -220,9 +220,7 @@ int mlx5_esw_bridge_port_mdb_attach(struct net_device *dev, struct mlx5_esw_brid
 
 	err = mlx5_esw_bridge_port_mdb_offload(port, entry);
 	if (err)
-		/* Single mdb can be used by multiple ports, so just log the
-		 * error and continue.
-		 */
+		 
 		esw_warn(bridge->br_offloads->esw->dev, "MDB attach failed to offload (MAC=%pM,vid=%u,vport=%u,err=%d)\n",
 			 addr, vid, port->vport_num, err);
 
@@ -244,9 +242,7 @@ static void mlx5_esw_bridge_port_mdb_entry_detach(struct mlx5_esw_bridge_port *p
 
 	err = mlx5_esw_bridge_port_mdb_offload(port, entry);
 	if (err)
-		/* Single mdb can be used by multiple ports, so just log the
-		 * error and continue.
-		 */
+		 
 		esw_warn(bridge->br_offloads->esw->dev, "MDB detach failed to offload (MAC=%pM,vid=%u,vport=%u)\n",
 			 entry->key.addr, entry->key.vid, port->vport_num);
 }
@@ -1069,7 +1065,7 @@ static int mlx5_esw_brige_mcast_global_enable(struct mlx5_esw_bridge_offloads *b
 	int err;
 
 	if (br_offloads->ingress_igmp_fg)
-		return 0; /* already enabled by another bridge */
+		return 0;  
 
 	err = mlx5_esw_bridge_ingress_mcast_fgs_init(br_offloads);
 	if (err) {
@@ -1099,9 +1095,7 @@ static void mlx5_esw_brige_mcast_global_disable(struct mlx5_esw_bridge_offloads 
 	struct mlx5_esw_bridge *br;
 
 	list_for_each_entry(br, &br_offloads->bridges, list) {
-		/* Ingress table is global, so only disable snooping when all
-		 * bridges on esw have multicast disabled.
-		 */
+		 
 		if (br->flags & MLX5_ESW_BRIDGE_MCAST_FLAG)
 			return;
 	}

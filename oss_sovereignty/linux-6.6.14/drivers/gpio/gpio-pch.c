@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -44,28 +42,18 @@ struct pch_regs {
 
 enum pch_type_t {
 	INTEL_EG20T_PCH,
-	OKISEMI_ML7223m_IOH, /* LAPIS Semiconductor ML7223 IOH PCIe Bus-m */
-	OKISEMI_ML7223n_IOH  /* LAPIS Semiconductor ML7223 IOH PCIe Bus-n */
+	OKISEMI_ML7223m_IOH,  
+	OKISEMI_ML7223n_IOH   
 };
 
-/* Specifies number of GPIO PINS */
+ 
 static int gpio_pins[] = {
 	[INTEL_EG20T_PCH] = 12,
 	[OKISEMI_ML7223m_IOH] = 8,
 	[OKISEMI_ML7223n_IOH] = 8,
 };
 
-/**
- * struct pch_gpio_reg_data - The register store data.
- * @ien_reg:	To store contents of IEN register.
- * @imask_reg:	To store contents of IMASK register.
- * @po_reg:	To store contents of PO register.
- * @pm_reg:	To store contents of PM register.
- * @im0_reg:	To store contents of IM0 register.
- * @im1_reg:	To store contents of IM1 register.
- * @gpio_use_sel_reg : To store contents of GPIO_USE_SEL register.
- *		       (Only ML7223 Bus-n)
- */
+ 
 struct pch_gpio_reg_data {
 	u32 ien_reg;
 	u32 imask_reg;
@@ -76,19 +64,7 @@ struct pch_gpio_reg_data {
 	u32 gpio_use_sel_reg;
 };
 
-/**
- * struct pch_gpio - GPIO private data structure.
- * @base:			PCI base address of Memory mapped I/O register.
- * @reg:			Memory mapped PCH GPIO register list.
- * @dev:			Pointer to device structure.
- * @gpio:			Data for GPIO infrastructure.
- * @pch_gpio_reg:		Memory mapped Register data is saved here
- *				when suspend.
- * @lock:			Used for register access protection
- * @irq_base:		Save base of IRQ number for interrupt
- * @ioh:		IOH ID
- * @spinlock:		Used for register access protection
- */
+ 
 struct pch_gpio {
 	void __iomem *base;
 	struct pch_regs __iomem *reg;
@@ -167,9 +143,7 @@ static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned int nr)
 	return 0;
 }
 
-/*
- * Save register configuration and disable interrupts.
- */
+ 
 static void __maybe_unused pch_gpio_save_reg_conf(struct pch_gpio *chip)
 {
 	chip->pch_gpio_reg.ien_reg = ioread32(&chip->reg->ien);
@@ -183,16 +157,14 @@ static void __maybe_unused pch_gpio_save_reg_conf(struct pch_gpio *chip)
 		chip->pch_gpio_reg.gpio_use_sel_reg = ioread32(&chip->reg->gpio_use_sel);
 }
 
-/*
- * This function restores the register configuration of the GPIO device.
- */
+ 
 static void __maybe_unused pch_gpio_restore_reg_conf(struct pch_gpio *chip)
 {
 	iowrite32(chip->pch_gpio_reg.ien_reg, &chip->reg->ien);
 	iowrite32(chip->pch_gpio_reg.imask_reg, &chip->reg->imask);
-	/* to store contents of PO register */
+	 
 	iowrite32(chip->pch_gpio_reg.po_reg, &chip->reg->po);
-	/* to store contents of PM register */
+	 
 	iowrite32(chip->pch_gpio_reg.pm_reg, &chip->reg->pm);
 	iowrite32(chip->pch_gpio_reg.im0_reg, &chip->reg->im0);
 	if (chip->ioh == INTEL_EG20T_PCH)
@@ -266,11 +238,11 @@ static int pch_irq_type(struct irq_data *d, unsigned int type)
 
 	spin_lock_irqsave(&chip->spinlock, flags);
 
-	/* Set interrupt mode */
+	 
 	im = ioread32(im_reg) & ~(PCH_IM_MASK << (im_pos * 4));
 	iowrite32(im | (val << (im_pos * 4)), im_reg);
 
-	/* And the handler */
+	 
 	if (type & IRQ_TYPE_LEVEL_MASK)
 		irq_set_handler_locked(d, handle_level_irq);
 	else if (type & IRQ_TYPE_EDGE_BOTH)
@@ -389,7 +361,7 @@ static int pch_gpio_probe(struct pci_dev *pdev,
 	}
 	chip->irq_base = irq_base;
 
-	/* Mask all interrupts, but enable them */
+	 
 	iowrite32(BIT(gpio_pins[chip->ioh]) - 1, &chip->reg->imask);
 	iowrite32(BIT(gpio_pins[chip->ioh]) - 1, &chip->reg->ien);
 

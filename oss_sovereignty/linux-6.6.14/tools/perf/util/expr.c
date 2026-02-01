@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
@@ -43,11 +43,11 @@ struct expr_id_data {
 	};
 
 	enum {
-		/* Holding a double value. */
+		 
 		EXPR_ID_DATA__VALUE,
-		/* Reference to another metric. */
+		 
 		EXPR_ID_DATA__REF,
-		/* A reference but the value has been computed. */
+		 
 		EXPR_ID_DATA__REF_VALUE,
 	} kind;
 };
@@ -145,19 +145,19 @@ struct hashmap *ids__union(struct hashmap *ids1, struct hashmap *ids2)
 	return ids1;
 }
 
-/* Caller must make sure id is allocated */
+ 
 int expr__add_id(struct expr_parse_ctx *ctx, const char *id)
 {
 	return ids__insert(ctx->ids, id);
 }
 
-/* Caller must make sure id is allocated */
+ 
 int expr__add_id_val(struct expr_parse_ctx *ctx, const char *id, double val)
 {
-	return expr__add_id_val_source_count(ctx, id, val, /*source_count=*/1);
+	return expr__add_id_val_source_count(ctx, id, val,  1);
 }
 
-/* Caller must make sure id is allocated */
+ 
 int expr__add_id_val_source_count(struct expr_parse_ctx *ctx, const char *id,
 				  double val, int source_count)
 {
@@ -197,12 +197,7 @@ int expr__add_ref(struct expr_parse_ctx *ctx, struct metric_ref *ref)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Intentionally passing just const char pointers,
-	 * originally from 'struct pmu_event' object.
-	 * We don't need to change them, so there's no
-	 * need to create our own copy.
-	 */
+	 
 	data_ptr->ref.metric_name = ref->metric_name;
 	data_ptr->ref.metric_expr = ref->metric_expr;
 	data_ptr->kind = EXPR_ID_DATA__REF;
@@ -272,7 +267,7 @@ int expr__resolve_id(struct expr_parse_ctx *ctx, const char *id,
 			data->ref.val, data->ref.metric_name);
 		break;
 	default:
-		assert(0);  /* Unreachable. */
+		assert(0);   
 	}
 
 	return 0;
@@ -369,13 +364,13 @@ __expr__parse(double *val, struct expr_parse_ctx *ctx, const char *expr,
 int expr__parse(double *final_val, struct expr_parse_ctx *ctx,
 		const char *expr)
 {
-	return __expr__parse(final_val, ctx, expr, /*compute_ids=*/false) ? -1 : 0;
+	return __expr__parse(final_val, ctx, expr,  false) ? -1 : 0;
 }
 
 int expr__find_ids(const char *expr, const char *one,
 		   struct expr_parse_ctx *ctx)
 {
-	int ret = __expr__parse(NULL, ctx, expr, /*compute_ids=*/true);
+	int ret = __expr__parse(NULL, ctx, expr,  true);
 
 	if (one)
 		expr__del_id(ctx, one);
@@ -440,12 +435,7 @@ double expr__get_literal(const char *literal, const struct expr_scanner_ctx *ctx
 		goto out;
 	}
 
-	/*
-	 * Assume that topology strings are consistent, such as CPUs "0-1"
-	 * wouldn't be listed as "0,1", and so after deduplication the number of
-	 * these strings gives an indication of the number of packages, dies,
-	 * etc.
-	 */
+	 
 	if (!strcasecmp("#smt_on", literal)) {
 		result = smt_on() ? 1.0 : 0.0;
 		goto out;
@@ -485,13 +475,13 @@ out:
 	return result;
 }
 
-/* Does the event 'id' parse? Determine via ctx->ids if possible. */
+ 
 double expr__has_event(const struct expr_parse_ctx *ctx, bool compute_ids, const char *id)
 {
 	struct evlist *tmp;
 	double ret;
 
-	if (hashmap__find(ctx->ids, id, /*value=*/NULL))
+	if (hashmap__find(ctx->ids, id,  NULL))
 		return 1.0;
 
 	if (!compute_ids)

@@ -1,38 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Google Inc.
- * Author: Willem de Bruijn (willemb@google.com)
- *
- * A basic test of packet socket fanout behavior.
- *
- * Control:
- * - create fanout fails as expected with illegal flag combinations
- * - join   fanout fails as expected with diverging types or flags
- *
- * Datapath:
- *   Open a pair of packet sockets and a pair of INET sockets, send a known
- *   number of packets across the two INET sockets and count the number of
- *   packets enqueued onto the two packet sockets.
- *
- *   The test currently runs for
- *   - PACKET_FANOUT_HASH
- *   - PACKET_FANOUT_HASH with PACKET_FANOUT_FLAG_ROLLOVER
- *   - PACKET_FANOUT_LB
- *   - PACKET_FANOUT_CPU
- *   - PACKET_FANOUT_ROLLOVER
- *   - PACKET_FANOUT_CBPF
- *   - PACKET_FANOUT_EBPF
- *
- * Todo:
- * - functionality: PACKET_FANOUT_FLAG_DEFRAG
- */
 
-#define _GNU_SOURCE		/* for sched_setaffinity */
+ 
+
+#define _GNU_SOURCE		 
 
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/unistd.h>	/* for __NR_bpf */
+#include <linux/unistd.h>	 
 #include <linux/filter.h>
 #include <linux/bpf.h>
 #include <linux/if_packet.h>
@@ -59,8 +33,7 @@
 
 static uint32_t cfg_max_num_members;
 
-/* Open a socket in a given fanout mode.
- * @return -1 if mode is bad, a valid socket otherwise */
+ 
 static int sock_fanout_open(uint16_t typeflags, uint16_t group_id)
 {
 	struct sockaddr_ll addr = {0};
@@ -112,8 +85,8 @@ static int sock_fanout_open(uint16_t typeflags, uint16_t group_id)
 static void sock_fanout_set_cbpf(int fd)
 {
 	struct sock_filter bpf_filter[] = {
-		BPF_STMT(BPF_LD | BPF_B | BPF_ABS, 80),	      /* ldb [80] */
-		BPF_STMT(BPF_RET | BPF_A, 0),		      /* ret A */
+		BPF_STMT(BPF_LD | BPF_B | BPF_ABS, 80),	       
+		BPF_STMT(BPF_RET | BPF_A, 0),		       
 	};
 	struct sock_fprog bpf_prog;
 
@@ -251,7 +224,7 @@ static int sock_fanout_read(int fds[], char *rings[], const int expect[])
 	return 0;
 }
 
-/* Test illegal mode + flag combination */
+ 
 static void test_control_single(void)
 {
 	fprintf(stderr, "test: control single socket\n");
@@ -263,7 +236,7 @@ static void test_control_single(void)
 	}
 }
 
-/* Test illegal group with different modes or flags */
+ 
 static void test_control_group(void)
 {
 	int fds[2];
@@ -300,14 +273,14 @@ static void test_control_group(void)
 	}
 }
 
-/* Test illegal max_num_members values */
+ 
 static void test_control_group_max_num_members(void)
 {
 	int fds[3];
 
 	fprintf(stderr, "test: control multiple sockets, max_num_members\n");
 
-	/* expected failure on greater than PACKET_FANOUT_MAX */
+	 
 	cfg_max_num_members = (1 << 16) + 1;
 	if (sock_fanout_open(PACKET_FANOUT_HASH, 0) != -1) {
 		fprintf(stderr, "ERROR: max_num_members > PACKET_FANOUT_MAX\n");
@@ -321,14 +294,14 @@ static void test_control_group_max_num_members(void)
 		exit(1);
 	}
 
-	/* expected failure on joining group with different max_num_members */
+	 
 	cfg_max_num_members = 257;
 	if (sock_fanout_open(PACKET_FANOUT_HASH, 0) != -1) {
 		fprintf(stderr, "ERROR: set different max_num_members\n");
 		exit(1);
 	}
 
-	/* success on joining group with same max_num_members */
+	 
 	cfg_max_num_members = 256;
 	fds[1] = sock_fanout_open(PACKET_FANOUT_HASH, 0);
 	if (fds[1] == -1) {
@@ -336,7 +309,7 @@ static void test_control_group_max_num_members(void)
 		exit(1);
 	}
 
-	/* success on joining group with max_num_members unspecified */
+	 
 	cfg_max_num_members = 0;
 	fds[2] = sock_fanout_open(PACKET_FANOUT_HASH, 0);
 	if (fds[2] == -1) {
@@ -350,7 +323,7 @@ static void test_control_group_max_num_members(void)
 	}
 }
 
-/* Test creating a unique fanout group ids */
+ 
 static void test_unique_fanout_group_ids(void)
 {
 	int fds[3];
@@ -434,14 +407,14 @@ static int test_datapath(uint16_t typeflags, int port_off,
 	pair_udp_open(fds_udp[1], PORT_BASE + port_off);
 	sock_fanout_read(fds, rings, expect0);
 
-	/* Send data, but not enough to overflow a queue */
+	 
 	pair_udp_send(fds_udp[0], 15);
 	pair_udp_send_char(fds_udp[1], 5, DATA_CHAR_1);
 	ret = sock_fanout_read(fds, rings, expect1);
 
-	/* Send more data, overflow the queue */
+	 
 	pair_udp_send_char(fds_udp[0], 15, DATA_CHAR_1);
-	/* TODO: ensure consistent order between expect1 and expect2 */
+	 
 	ret |= sock_fanout_read(fds, rings, expect2);
 
 	if (munmap(rings[1], RING_NUM_FRAMES * getpagesize()) ||
@@ -493,9 +466,9 @@ int main(int argc, char **argv)
 	test_control_group_max_num_members();
 	test_unique_fanout_group_ids();
 
-	/* PACKET_FANOUT_MAX */
+	 
 	cfg_max_num_members = 1 << 16;
-	/* find a set of ports that do not collide onto the same socket */
+	 
 	ret = test_datapath(PACKET_FANOUT_HASH, port_off,
 			    expect_hash[0], expect_hash[1]);
 	while (ret) {
@@ -524,7 +497,7 @@ int main(int argc, char **argv)
 	ret |= test_datapath(PACKET_FANOUT_CPU, port_off,
 			     expect_cpu0[0], expect_cpu0[1]);
 	if (!set_cpuaffinity(1))
-		/* TODO: test that choice alternates with previous */
+		 
 		ret |= test_datapath(PACKET_FANOUT_CPU, port_off,
 				     expect_cpu1[0], expect_cpu1[1]);
 

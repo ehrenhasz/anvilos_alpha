@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/input.h>
@@ -63,7 +60,7 @@ static int rt5120_pwrkey_probe(struct platform_device *pdev)
 	if (release_irq < 0)
 		return release_irq;
 
-	/* Make input device be device resource managed */
+	 
 	priv->input = devm_input_allocate_device(dev);
 	if (!priv->input)
 		return -ENOMEM;

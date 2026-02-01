@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * irq.h: in kernel interrupt controller related definitions
- * Copyright (c) 2007, Intel Corporation.
- *
- * Authors:
- *   Yaozu (Eddie) Dong <Eddie.dong@intel.com>
- */
+ 
+ 
 
 #ifndef __IRQ_H
 #define __IRQ_H
@@ -26,11 +20,11 @@ struct kvm;
 struct kvm_vcpu;
 
 struct kvm_kpic_state {
-	u8 last_irr;	/* edge detection */
-	u8 irr;		/* interrupt request register */
-	u8 imr;		/* interrupt mask register */
-	u8 isr;		/* interrupt service register */
-	u8 priority_add;	/* highest irq priority */
+	u8 last_irr;	 
+	u8 irr;		 
+	u8 imr;		 
+	u8 isr;		 
+	u8 priority_add;	 
 	u8 irq_base;
 	u8 read_reg_select;
 	u8 poll;
@@ -39,10 +33,10 @@ struct kvm_kpic_state {
 	u8 auto_eoi;
 	u8 rotate_on_auto_eoi;
 	u8 special_fully_nested_mode;
-	u8 init4;		/* true if 4 byte init */
-	u8 elcr;		/* PIIX edge/trigger selection */
+	u8 init4;		 
+	u8 elcr;		 
 	u8 elcr_mask;
-	u8 isr_ack;	/* interrupt ack detection */
+	u8 isr_ack;	 
 	struct kvm_pic *pics_state;
 };
 
@@ -51,8 +45,8 @@ struct kvm_pic {
 	bool wakeup_needed;
 	unsigned pending_acks;
 	struct kvm *kvm;
-	struct kvm_kpic_state pics[2]; /* 0 is master pic, 1 is slave pic */
-	int output;		/* intr from master PIC */
+	struct kvm_kpic_state pics[2];  
+	int output;		 
 	struct kvm_io_device dev_master;
 	struct kvm_io_device dev_slave;
 	struct kvm_io_device dev_elcr;
@@ -68,7 +62,7 @@ static inline int irqchip_split(struct kvm *kvm)
 {
 	int mode = kvm->arch.irqchip_mode;
 
-	/* Matches smp_wmb() when setting irqchip_mode */
+	 
 	smp_rmb();
 	return mode == KVM_IRQCHIP_SPLIT;
 }
@@ -77,7 +71,7 @@ static inline int irqchip_kernel(struct kvm *kvm)
 {
 	int mode = kvm->arch.irqchip_mode;
 
-	/* Matches smp_wmb() when setting irqchip_mode */
+	 
 	smp_rmb();
 	return mode == KVM_IRQCHIP_KERNEL;
 }
@@ -91,7 +85,7 @@ static inline int irqchip_in_kernel(struct kvm *kvm)
 {
 	int mode = kvm->arch.irqchip_mode;
 
-	/* Matches smp_wmb() when setting irqchip_mode */
+	 
 	smp_rmb();
 	return mode != KVM_IRQCHIP_NONE;
 }

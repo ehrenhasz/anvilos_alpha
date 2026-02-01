@@ -1,36 +1,7 @@
-// * this is for making emacs happy: -*-Mode: C++;-*-
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2005,2011 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
 
-/****************************************************************************
- *   Author: Juergen Pfeifer, 1997                                          *
- ****************************************************************************/
+ 
+
+ 
 
 #include "internal.h"
 #include "cursesf.h"
@@ -44,9 +15,7 @@ NCursesFormField::~NCursesFormField () THROWS(NCursesException)
     OnError(::free_field (field));
 }
 
-/* Construct a FIELD* array from an array of NCursesFormField
- * objects.
- */
+ 
 FIELD**
 NCursesForm::mapFields(NCursesFormField* nfields[])
 {
@@ -173,7 +142,7 @@ NCursesForm::~NCursesForm() THROWS(NCursesException)
     }
 
     ::free_form(form);
-    // It's essential to do this after free_form()
+    
     delete[] fields;
   }
 }
@@ -191,11 +160,7 @@ NCursesForm::setSubWindow(NCursesWindow& nsub)
   }
 }
 
-/* Internal hook functions. They will route the hook
- * calls to virtual methods of the NCursesForm class,
- * so in C++ providing a hook is done simply by
- * implementing a virtual method in a derived class
- */
+ 
 void
 _nc_xx_frm_init(FORM *f)
 {
@@ -244,7 +209,7 @@ NCursesForm::On_Field_Termination(NCursesFormField& field)
   (void) field;
 }
 
-// call the form driver and do basic error checking.
+
 int
 NCursesForm::driver (int c)
 {
@@ -316,10 +281,10 @@ NCursesForm::operator()(void)
   return my_fields[::field_index (::current_field (form))];
 }
 
-// Provide a default key virtualization. Translate the keyboard
-// code c into a form request code.
-// The default implementation provides a hopefully straightforward
-// mapping for the most common keystrokes and form requests.
+
+
+
+
 int
 NCursesForm::virtualize(int c)
 {
@@ -340,14 +305,14 @@ NCursesForm::virtualize(int c)
   case KEY_ENTER     : return(REQ_NEW_LINE);
   case KEY_CLEAR     : return(REQ_CLR_FIELD);
 
-  case CTRL('X')     : return(CMD_QUIT);        // eXit
+  case CTRL('X')     : return(CMD_QUIT);        
 
-  case CTRL('F')     : return(REQ_NEXT_FIELD);  // Forward
-  case CTRL('B')     : return(REQ_PREV_FIELD);  // Backward
-  case CTRL('L')     : return(REQ_LEFT_FIELD);  // Left
-  case CTRL('R')     : return(REQ_RIGHT_FIELD); // Right
-  case CTRL('U')     : return(REQ_UP_FIELD);    // Up
-  case CTRL('D')     : return(REQ_DOWN_FIELD);  // Down
+  case CTRL('F')     : return(REQ_NEXT_FIELD);  
+  case CTRL('B')     : return(REQ_PREV_FIELD);  
+  case CTRL('L')     : return(REQ_LEFT_FIELD);  
+  case CTRL('R')     : return(REQ_RIGHT_FIELD); 
+  case CTRL('U')     : return(REQ_UP_FIELD);    
+  case CTRL('D')     : return(REQ_DOWN_FIELD);  
 
   case CTRL('W')     : return(REQ_NEXT_WORD);
   case CTRL('T')     : return(REQ_PREV_WORD);
@@ -372,11 +337,11 @@ NCursesForm::virtualize(int c)
     return(c);
   }
 }
-//
-// -------------------------------------------------------------------------
-// User Defined Fieldtypes
-// -------------------------------------------------------------------------
-//
+
+
+
+
+
 bool _nc_xx_fld_fcheck(FIELD *f, const void *u)
 {
   (void) f;

@@ -1,27 +1,8 @@
-/* typemax.h -- encapsulate max values for long, long long, etc. */
+ 
 
-/* Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/*
- * NOTE:  This should be included after config.h, limits.h, stdint.h, and
- *	  inttypes.h
- */
+ 
 
 #ifndef _SH_TYPEMAX_H
 #define _SH_TYPEMAX_H
@@ -30,7 +11,7 @@
 #  define CHAR_BIT 8
 #endif
 
-/* Nonzero if the integer type T is signed.  */
+ 
 #ifndef TYPE_SIGNED
 #  define TYPE_SIGNED(t)	(! ((t) 0 < (t) -1))
 #endif
@@ -73,7 +54,7 @@
 #  define LONG_MIN	((long int) (-LONG_MAX - 1L))
 #endif
 
-#ifndef INT_MAX		/* ouch */
+#ifndef INT_MAX		 
 #  define INT_MAX	TYPE_MAXIMUM(int)
 #  define INT_MIN	TYPE_MINIMUM(int)
 #  define UINT_MAX	((unsigned int) ~(unsigned int)0)
@@ -89,7 +70,7 @@
 #  define UCHAR_MAX	255
 #endif
 
-/* workaround for gcc bug in versions < 2.7 */
+ 
 #if defined (HAVE_LONG_LONG_INT) && __GNUC__ == 2 && __GNUC_MINOR__ < 7
 static const unsigned long long int maxquad = ULLONG_MAX;
 #  undef ULLONG_MAX
@@ -123,19 +104,16 @@ static const unsigned long long int maxquad = ULLONG_MAX;
 #  define sh_imaxabs(x)	(((x) >= 0) ? (x) : -(x))
 #endif
 
-/* Handle signed arithmetic overflow and underflow.  Have to do it this way
-   to avoid compilers optimizing out simpler overflow checks. */
+ 
 
-/* Make sure that a+b does not exceed MAXV or is smaller than MINV (if b < 0).
-   Assumes that b > 0 if a > 0 and b < 0 if a < 0 */
+ 
 #define ADDOVERFLOW(a,b,minv,maxv) \
 	((((a) > 0) && ((b) > ((maxv) - (a)))) || \
 	 (((a) < 0) && ((b) < ((minv) - (a)))))
 
-/* Make sure that a-b is not smaller than MINV or exceeds MAXV (if b < 0).
-   Assumes that b > 0 if a > 0 and b < 0 if a < 0 */
+ 
 #define SUBOVERFLOW(a,b,minv,maxv) \
 	((((b) > 0) && ((a) < ((minv) + (b)))) || \
 	 (((b) < 0) && ((a) > ((maxv) + (b)))))
 
-#endif /* _SH_TYPEMAX_H */
+#endif  

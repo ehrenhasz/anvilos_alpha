@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ERR_H
 #define ERR_H
 #define MAX_ERRNO	4095
@@ -24,4 +24,4 @@ static inline long __must_check IS_ERR_OR_NULL(const void *ptr)
 {
 	return !ptr || IS_ERR_VALUE((unsigned long)ptr);
 }
-#endif /* ERR_H */
+#endif  

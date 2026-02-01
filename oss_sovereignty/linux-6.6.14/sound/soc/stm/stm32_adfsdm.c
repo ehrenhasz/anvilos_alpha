@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is part of STM32 DFSDM ASoC DAI driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
- *          Olivier Moysan <olivier.moysan@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -30,16 +24,16 @@ struct stm32_adfsdm_priv {
 	struct snd_pcm_substream *substream;
 	struct device *dev;
 
-	/* IIO */
+	 
 	struct iio_channel *iio_ch;
 	struct iio_cb_buffer *iio_cb;
 	bool iio_active;
 
-	/* PCM buffer */
+	 
 	unsigned char *pcm_buff;
 	unsigned int pos;
 
-	struct mutex lock; /* protect against race condition on iio state */
+	struct mutex lock;  
 };
 
 static const struct snd_pcm_hardware stm32_adfsdm_pcm_hw = {
@@ -115,7 +109,7 @@ static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 
 	dev_dbg(dai->dev, "%s: Enter for freq %d\n", __func__, freq);
 
-	/* Set IIO frequency if CODEC is master as clock comes from SPI_IN */
+	 
 
 	snprintf(str_freq, sizeof(str_freq), "%u\n", freq);
 	size = iio_write_channel_ext_info(priv->iio_ch, "spi_clk_freq",
@@ -296,11 +290,7 @@ static int stm32_adfsdm_pcm_new(struct snd_soc_component *component,
 
 static int stm32_adfsdm_dummy_cb(const void *data, void *private)
 {
-	/*
-	 * This dummy callback is requested by iio_channel_get_all_cb() API,
-	 * but the stm32_dfsdm_get_buff_cb() API is used instead, to optimize
-	 * DMA transfers.
-	 */
+	 
 	return 0;
 }
 
@@ -346,7 +336,7 @@ static int stm32_adfsdm_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Associate iio channel */
+	 
 	priv->iio_ch  = devm_iio_channel_get_all(&pdev->dev);
 	if (IS_ERR(priv->iio_ch))
 		return PTR_ERR(priv->iio_ch);

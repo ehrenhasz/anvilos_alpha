@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext4/acl.c
- *
- * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
- */
+
+ 
 
 #include <linux/quotaops.h>
 #include "ext4_jbd2.h"
@@ -11,9 +7,7 @@
 #include "xattr.h"
 #include "acl.h"
 
-/*
- * Convert from filesystem to in-memory representation.
- */
+ 
 static struct posix_acl *
 ext4_acl_from_disk(const void *value, size_t size)
 {
@@ -84,9 +78,7 @@ fail:
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * Convert from in-memory to filesystem representation.
- */
+ 
 static void *
 ext4_acl_to_disk(const struct posix_acl *acl, size_t *size)
 {
@@ -136,11 +128,7 @@ fail:
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * Inode operation get_posix_acl().
- *
- * inode->i_rwsem: don't care
- */
+ 
 struct posix_acl *
 ext4_get_acl(struct inode *inode, int type, bool rcu)
 {
@@ -180,11 +168,7 @@ ext4_get_acl(struct inode *inode, int type, bool rcu)
 	return acl;
 }
 
-/*
- * Set the access or default ACL of an inode.
- *
- * inode->i_rwsem: down unless called from ext4_new_inode
- */
+ 
 static int
 __ext4_set_acl(handle_t *handle, struct inode *inode, int type,
 	     struct posix_acl *acl, int xattr_flags)
@@ -239,7 +223,7 @@ ext4_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (error)
 		return error;
 retry:
-	error = ext4_xattr_set_credits(inode, acl_size, false /* is_create */,
+	error = ext4_xattr_set_credits(inode, acl_size, false  ,
 				       &credits);
 	if (error)
 		return error;
@@ -256,7 +240,7 @@ retry:
 			update_mode = 1;
 	}
 
-	error = __ext4_set_acl(handle, inode, type, acl, 0 /* xattr_flags */);
+	error = __ext4_set_acl(handle, inode, type, acl, 0  );
 	if (!error && update_mode) {
 		inode->i_mode = mode;
 		inode_set_ctime_current(inode);
@@ -269,12 +253,7 @@ out_stop:
 	return error;
 }
 
-/*
- * Initialize the ACLs of a new inode. Called from ext4_new_inode.
- *
- * dir->i_rwsem: down
- * inode->i_rwsem: up (access to inode is still exclusive)
- */
+ 
 int
 ext4_init_acl(handle_t *handle, struct inode *inode, struct inode *dir)
 {

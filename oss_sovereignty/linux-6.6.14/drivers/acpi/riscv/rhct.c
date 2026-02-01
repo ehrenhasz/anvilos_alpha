@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022-2023, Ventana Micro Systems Inc
- *	Author: Sunil V L <sunilvl@ventanamicro.com>
- *
- */
+
+ 
 
 #define pr_fmt(fmt)     "ACPI: RHCT: " fmt
 
@@ -14,10 +10,7 @@ static struct acpi_table_header *acpi_get_rhct(void)
 	static struct acpi_table_header *rhct;
 	acpi_status status;
 
-	/*
-	 * RHCT will be used at runtime on every CPU, so we
-	 * don't need to call acpi_put_table() to release the table mapping.
-	 */
+	 
 	if (!rhct) {
 		status = acpi_get_table(ACPI_SIG_RHCT, 0, &rhct);
 		if (ACPI_FAILURE(status)) {
@@ -29,11 +22,7 @@ static struct acpi_table_header *acpi_get_rhct(void)
 	return rhct;
 }
 
-/*
- * During early boot, the caller should call acpi_get_table() and pass its pointer to
- * these functions(and free up later). At run time, since this table can be used
- * multiple times, NULL may be passed in order to use the cached table.
- */
+ 
 int acpi_get_riscv_isa(struct acpi_table_header *table, unsigned int cpu, const char **isa)
 {
 	struct acpi_rhct_node_header *node, *ref_node, *end;

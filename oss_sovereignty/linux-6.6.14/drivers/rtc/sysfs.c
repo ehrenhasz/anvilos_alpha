@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC subsystem, sysfs interface
- *
- * Copyright (C) 2005 Tower Technologies
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- */
+
+ 
 
 #include <linux/kstrtox.h>
 #include <linux/module.h>
@@ -12,14 +7,9 @@
 
 #include "rtc-core.h"
 
-/* device attributes */
+ 
 
-/*
- * NOTE:  RTC times displayed in sysfs use the RTC's timezone.  That's
- * ideally UTC.  However, PCs that also boot to MS-Windows normally use
- * the local time and change to match daylight savings time.  That affects
- * attributes including date, time, since_epoch, and wakealarm.
- */
+ 
 
 static ssize_t
 name_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -102,15 +92,7 @@ max_user_freq_store(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RW(max_user_freq);
 
-/**
- * hctosys_show - indicate if the given RTC set the system time
- * @dev: The device that the attribute belongs to.
- * @attr: The attribute being read.
- * @buf: The result buffer.
- *
- * buf is "1" if the system clock was set by this RTC at the last
- * boot or resume event.
- */
+ 
 static ssize_t
 hctosys_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -131,14 +113,7 @@ wakealarm_show(struct device *dev, struct device_attribute *attr, char *buf)
 	time64_t alarm;
 	struct rtc_wkalrm alm;
 
-	/* Don't show disabled alarms.  For uniformity, RTC alarms are
-	 * conceptually one-shot, even though some common RTCs (on PCs)
-	 * don't actually work that way.
-	 *
-	 * NOTE: RTC implementations where the alarm doesn't match an
-	 * exact YYYY-MM-DD HH:MM[:SS] date *must* disable their RTC
-	 * alarms after they trigger, to ensure one-shot semantics.
-	 */
+	 
 	retval = rtc_read_alarm(to_rtc_device(dev), &alm);
 	if (retval == 0 && alm.enabled) {
 		alarm = rtc_tm_to_time64(&alm.time);
@@ -160,9 +135,7 @@ wakealarm_store(struct device *dev, struct device_attribute *attr,
 	const char *buf_ptr;
 	int adjust = 0;
 
-	/* Only request alarms that trigger in the future.  Disable them
-	 * by writing another time, e.g. 0 meaning Jan 1 1970 UTC.
-	 */
+	 
 	retval = rtc_read_time(rtc, &alm.time);
 	if (retval < 0)
 		return retval;
@@ -184,10 +157,7 @@ wakealarm_store(struct device *dev, struct device_attribute *attr,
 	if (adjust)
 		alarm += now;
 	if (alarm > now || push) {
-		/* Avoid accidentally clobbering active alarms; we can't
-		 * entirely prevent that here, without even the minimal
-		 * locking from the /dev/rtcN api.
-		 */
+		 
 		retval = rtc_read_alarm(rtc, &alm);
 		if (retval < 0)
 			return retval;
@@ -203,9 +173,7 @@ wakealarm_store(struct device *dev, struct device_attribute *attr,
 	} else {
 		alm.enabled = 0;
 
-		/* Provide a valid future alarm time.  Linux isn't EFI,
-		 * this time won't be ignored when disabling the alarm.
-		 */
+		 
 		alarm = now + 300;
 	}
 	rtc_time64_to_tm(alarm, &alm.time);
@@ -264,11 +232,7 @@ static struct attribute *rtc_attrs[] = {
 	NULL,
 };
 
-/* The reason to trigger an alarm with no process watching it (via sysfs)
- * is its side effect:  waking from a system state like suspend-to-RAM or
- * suspend-to-disk.  So: no attribute unless that side effect is possible.
- * (Userspace may disable that mechanism later.)
- */
+ 
 static bool rtc_does_wakealarm(struct rtc_device *rtc)
 {
 	if (!device_can_wakeup(rtc->dev.parent))

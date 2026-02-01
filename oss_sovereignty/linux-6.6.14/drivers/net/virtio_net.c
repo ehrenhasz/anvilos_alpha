@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* A network driver using virtio.
- *
- * Copyright 2007 Rusty Russell <rusty@rustcorp.com.au> IBM Corporation
- */
-//#define DEBUG
+
+ 
+
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -32,26 +29,22 @@ module_param(csum, bool, 0444);
 module_param(gso, bool, 0444);
 module_param(napi_tx, bool, 0644);
 
-/* FIXME: MTU in config. */
+ 
 #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
 #define GOOD_COPY_LEN	128
 
 #define VIRTNET_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
 
-/* Amount of XDP headroom to prepend to packets for use by xdp_adjust_head */
+ 
 #define VIRTIO_XDP_HEADROOM 256
 
-/* Separating two types of XDP xmit */
+ 
 #define VIRTIO_XDP_TX		BIT(0)
 #define VIRTIO_XDP_REDIR	BIT(1)
 
 #define VIRTIO_XDP_FLAG	BIT(0)
 
-/* RX packet size EWMA. The average packet size is used to determine the packet
- * buffer size when refilling RX rings. As the entire RX ring may be refilled
- * at once, the weight is chosen so that the EWMA will be insensitive to short-
- * term, transient changes in packet size.
- */
+ 
 DECLARE_EWMA(pkt_len, 0, 64)
 
 #define VIRTNET_DRIVER_VERSION "1.0.0"
@@ -132,7 +125,7 @@ struct virtnet_interrupt_coalesce {
 	u32 max_usecs;
 };
 
-/* The dma information of pages allocated at a time. */
+ 
 struct virtnet_rq_dma {
 	dma_addr_t addr;
 	u32 ref;
@@ -140,15 +133,15 @@ struct virtnet_rq_dma {
 	u16 need_sync;
 };
 
-/* Internal representation of a send virtqueue */
+ 
 struct send_queue {
-	/* Virtqueue associated with this send _queue */
+	 
 	struct virtqueue *vq;
 
-	/* TX: fragments + linear part + virtio header */
+	 
 	struct scatterlist sg[MAX_SKB_FRAGS + 2];
 
-	/* Name of the send queue: output.$index */
+	 
 	char name[16];
 
 	struct virtnet_sq_stats stats;
@@ -157,13 +150,13 @@ struct send_queue {
 
 	struct napi_struct napi;
 
-	/* Record whether sq is in reset state. */
+	 
 	bool reset;
 };
 
-/* Internal representation of a receive virtqueue */
+ 
 struct receive_queue {
-	/* Virtqueue associated with this receive_queue */
+	 
 	struct virtqueue *vq;
 
 	struct napi_struct napi;
@@ -174,39 +167,34 @@ struct receive_queue {
 
 	struct virtnet_interrupt_coalesce intr_coal;
 
-	/* Chain pages by the private ptr. */
+	 
 	struct page *pages;
 
-	/* Average packet length for mergeable receive buffers. */
+	 
 	struct ewma_pkt_len mrg_avg_pkt_len;
 
-	/* Page frag for packet buffer allocation. */
+	 
 	struct page_frag alloc_frag;
 
-	/* RX: fragments + linear part + virtio header */
+	 
 	struct scatterlist sg[MAX_SKB_FRAGS + 2];
 
-	/* Min single buffer size for mergeable buffers case. */
+	 
 	unsigned int min_buf_len;
 
-	/* Name of this receive queue: input.$index */
+	 
 	char name[16];
 
 	struct xdp_rxq_info xdp_rxq;
 
-	/* Record the last dma info to free after new pages is allocated. */
+	 
 	struct virtnet_rq_dma *last_dma;
 
-	/* Do dma by self */
+	 
 	bool do_dma;
 };
 
-/* This structure can contain rss message with maximum settings for indirection table and keysize
- * Note, that default structure that describes RSS configuration virtio_net_rss_config
- * contains same info but can't handle table values.
- * In any case, structure would be passed to virtio hw through sg_buf split by parts
- * because table sizes may be differ according to the device configuration.
- */
+ 
 #define VIRTIO_NET_RSS_MAX_KEY_SIZE     40
 #define VIRTIO_NET_RSS_MAX_TABLE_LEN    128
 struct virtio_net_ctrl_rss {
@@ -219,7 +207,7 @@ struct virtio_net_ctrl_rss {
 	u8 key[VIRTIO_NET_RSS_MAX_KEY_SIZE];
 };
 
-/* Control VQ buffers: protected by the rtnl lock */
+ 
 struct control_buf {
 	struct virtio_net_ctrl_hdr hdr;
 	virtio_net_ctrl_ack status;
@@ -242,28 +230,28 @@ struct virtnet_info {
 	struct receive_queue *rq;
 	unsigned int status;
 
-	/* Max # of queue pairs supported by the device */
+	 
 	u16 max_queue_pairs;
 
-	/* # of queue pairs currently used by the driver */
+	 
 	u16 curr_queue_pairs;
 
-	/* # of XDP queue pairs currently used by the driver */
+	 
 	u16 xdp_queue_pairs;
 
-	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+	 
 	bool xdp_enabled;
 
-	/* I like... big packets and I cannot lie! */
+	 
 	bool big_packets;
 
-	/* number of sg entries allocated for big packets */
+	 
 	unsigned int big_packets_num_skbfrags;
 
-	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+	 
 	bool mergeable_rx_bufs;
 
-	/* Host supports rss and/or hash report */
+	 
 	bool has_rss;
 	bool has_rss_hash_report;
 	u8 rss_key_size;
@@ -271,58 +259,54 @@ struct virtnet_info {
 	u32 rss_hash_types_supported;
 	u32 rss_hash_types_saved;
 
-	/* Has control virtqueue */
+	 
 	bool has_cvq;
 
-	/* Host can handle any s/g split between our header and packet data */
+	 
 	bool any_header_sg;
 
-	/* Packet virtio header size */
+	 
 	u8 hdr_len;
 
-	/* Work struct for delayed refilling if we run low on memory. */
+	 
 	struct delayed_work refill;
 
-	/* Is delayed refill enabled? */
+	 
 	bool refill_enabled;
 
-	/* The lock to synchronize the access to refill_enabled */
+	 
 	spinlock_t refill_lock;
 
-	/* Work struct for config space updates */
+	 
 	struct work_struct config_work;
 
-	/* Does the affinity hint is set for virtqueues? */
+	 
 	bool affinity_hint_set;
 
-	/* CPU hotplug instances for online & dead */
+	 
 	struct hlist_node node;
 	struct hlist_node node_dead;
 
 	struct control_buf *ctrl;
 
-	/* Ethtool settings */
+	 
 	u8 duplex;
 	u32 speed;
 
-	/* Interrupt coalescing settings */
+	 
 	struct virtnet_interrupt_coalesce intr_coal_tx;
 	struct virtnet_interrupt_coalesce intr_coal_rx;
 
 	unsigned long guest_offloads;
 	unsigned long guest_offloads_capable;
 
-	/* failover when STANDBY feature enabled */
+	 
 	struct failover *failover;
 };
 
 struct padded_vnet_hdr {
 	struct virtio_net_hdr_v1_hash hdr;
-	/*
-	 * hdr is in a separate sg buffer, and data sg buffer shares same page
-	 * with this header sg. This padding makes next sg 16 byte aligned
-	 * after the header.
-	 */
+	 
 	char padding[12];
 };
 
@@ -351,9 +335,7 @@ static struct xdp_frame *ptr_to_xdp(void *ptr)
 	return (struct xdp_frame *)((unsigned long)ptr & ~VIRTIO_XDP_FLAG);
 }
 
-/* Converting between virtqueue no. and kernel tx/rx queue no.
- * 0:rx0 1:tx0 2:rx1 3:tx1 ... 2N:rxN 2N+1:txN 2N+2:cvq
- */
+ 
 static int vq2txq(struct virtqueue *vq)
 {
 	return (vq->index - 1) / 2;
@@ -380,15 +362,12 @@ skb_vnet_common_hdr(struct sk_buff *skb)
 	return (struct virtio_net_common_hdr *)skb->cb;
 }
 
-/*
- * private is used to chain pages for big packets, put the whole
- * most recent used list in the beginning for reuse
- */
+ 
 static void give_pages(struct receive_queue *rq, struct page *page)
 {
 	struct page *end;
 
-	/* Find end of list, sew whole thing into vi->rq.pages. */
+	 
 	for (end = page; end->private; end = (struct page *)end->private);
 	end->private = (unsigned long)rq->pages;
 	rq->pages = page;
@@ -400,7 +379,7 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
 
 	if (p) {
 		rq->pages = (struct page *)p->private;
-		/* clear private here, it is used to chain pages */
+		 
 		p->private = 0;
 	} else
 		p = alloc_page(gfp_mask);
@@ -460,13 +439,13 @@ static void skb_xmit_done(struct virtqueue *vq)
 	struct virtnet_info *vi = vq->vdev->priv;
 	struct napi_struct *napi = &vi->sq[vq2txq(vq)].napi;
 
-	/* Suppress further interrupts. */
+	 
 	virtqueue_disable_cb(vq);
 
 	if (napi->weight)
 		virtqueue_napi_schedule(napi, vq);
 	else
-		/* We were probably waiting for more output buffers. */
+		 
 		netif_wake_subqueue(vi->dev, vq2txq(vq));
 }
 
@@ -503,7 +482,7 @@ static struct sk_buff *virtnet_build_skb(void *buf, unsigned int buflen,
 	return skb;
 }
 
-/* Called from bottom half context */
+ 
 static struct sk_buff *page_to_skb(struct virtnet_info *vi,
 				   struct receive_queue *rq,
 				   struct page *page, unsigned int offset,
@@ -534,7 +513,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
 
 	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 
-	/* copy small packet so we can reuse these pages */
+	 
 	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
 		skb = virtnet_build_skb(buf, truesize, p - buf, len);
 		if (unlikely(!skb))
@@ -546,14 +525,12 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
 		goto ok;
 	}
 
-	/* copy small packet so we can reuse these pages for small data */
+	 
 	skb = napi_alloc_skb(&rq->napi, GOOD_COPY_LEN);
 	if (unlikely(!skb))
 		return NULL;
 
-	/* Copy all frame if it fits skb->head, otherwise
-	 * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
-	 */
+	 
 	if (len <= skb_tailroom(skb))
 		copy = len;
 	else
@@ -571,12 +548,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
 		goto ok;
 	}
 
-	/*
-	 * Verify that we can indeed put this data into a skb.
-	 * This is here to handle cases when the device erroneously
-	 * tries to receive more than is possible. This is usually
-	 * the case of a broken device.
-	 */
+	 
 	if (unlikely(len > MAX_SKB_FRAGS * PAGE_SIZE)) {
 		net_dbg_ratelimited("%s: too much data\n", skb->dev->name);
 		dev_kfree_skb(skb);
@@ -684,13 +656,10 @@ static void *virtnet_rq_alloc(struct receive_queue *rq, u32 size, gfp_t gfp)
 	if (rq->do_dma) {
 		dma = head;
 
-		/* new pages */
+		 
 		if (!alloc_frag->offset) {
 			if (rq->last_dma) {
-				/* Now, the new page is allocated, the last dma
-				 * will not be used. So the dma can be unmapped
-				 * if the ref is 0.
-				 */
+				 
 				virtnet_rq_unmap(rq, rq->last_dma, 0);
 				rq->last_dma = NULL;
 			}
@@ -705,10 +674,7 @@ static void *virtnet_rq_alloc(struct receive_queue *rq, u32 size, gfp_t gfp)
 			dma->addr = addr;
 			dma->need_sync = virtqueue_dma_need_sync(rq->vq, addr);
 
-			/* Add a reference to dma to prevent the entire dma from
-			 * being released during error handling. This reference
-			 * will be freed after the pages are no longer used.
-			 */
+			 
 			get_page(alloc_frag->page);
 			dma->ref = 1;
 			alloc_frag->offset = sizeof(*dma);
@@ -731,7 +697,7 @@ static void virtnet_rq_set_premapped(struct virtnet_info *vi)
 {
 	int i;
 
-	/* disable for big mode */
+	 
 	if (!vi->mergeable_rx_bufs && vi->big_packets)
 		return;
 
@@ -781,9 +747,7 @@ static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
 		packets++;
 	}
 
-	/* Avoid overhead when no packets have been processed
-	 * happens when called speculatively from start_xmit.
-	 */
+	 
 	if (!packets)
 		return;
 
@@ -812,23 +776,14 @@ static void check_sq_full_and_disable(struct virtnet_info *vi,
 
 	qnum = sq - vi->sq;
 
-	/* If running out of space, stop queue to avoid getting packets that we
-	 * are then unable to transmit.
-	 * An alternative would be to force queuing layer to requeue the skb by
-	 * returning NETDEV_TX_BUSY. However, NETDEV_TX_BUSY should not be
-	 * returned in a normal path of operation: it means that driver is not
-	 * maintaining the TX queue stop/start state properly, and causes
-	 * the stack to do a non-trivial amount of useless work.
-	 * Since most packets only take 1 or 2 ring slots, stopping the queue
-	 * early means 16 slots are typically wasted.
-	 */
+	 
 	if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
 		netif_stop_subqueue(dev, qnum);
 		if (use_napi) {
 			if (unlikely(!virtqueue_enable_cb_delayed(sq->vq)))
 				virtqueue_napi_schedule(&sq->napi, sq->vq);
 		} else if (unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
-			/* More just got used, free them then recheck. */
+			 
 			free_old_xmit_skbs(sq, false);
 			if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
 				netif_start_subqueue(dev, qnum);
@@ -855,16 +810,10 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
 		nr_frags = shinfo->nr_frags;
 	}
 
-	/* In wrapping function virtnet_xdp_xmit(), we need to free
-	 * up the pending old buffers, where we need to calculate the
-	 * position of skb_shared_info in xdp_get_frame_len() and
-	 * xdp_return_frame(), which will involve to xdpf->data and
-	 * xdpf->headroom. Therefore, we need to update the value of
-	 * headroom synchronously here.
-	 */
+	 
 	xdpf->headroom -= vi->hdr_len;
 	xdpf->data -= vi->hdr_len;
-	/* Zero header and leave csum up to XDP layers */
+	 
 	hdr = xdpf->data;
 	memset(hdr, 0, vi->hdr_len);
 	xdpf->len   += vi->hdr_len;
@@ -881,19 +830,12 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
 	err = virtqueue_add_outbuf(sq->vq, sq->sg, nr_frags + 1,
 				   xdp_to_ptr(xdpf), GFP_ATOMIC);
 	if (unlikely(err))
-		return -ENOSPC; /* Caller handle free/refcnt */
+		return -ENOSPC;  
 
 	return 0;
 }
 
-/* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
- * the current cpu, so it does not need to be locked.
- *
- * Here we use marco instead of inline functions because we have to deal with
- * three issues at the same time: 1. the choice of sq. 2. judge and execute the
- * lock/unlock of txq 3. make sparse happy. It is difficult for two inline
- * functions to perfectly solve these three problems at the same time.
- */
+ 
 #define virtnet_xdp_get_sq(vi) ({                                       \
 	int cpu = smp_processor_id();                                   \
 	struct netdev_queue *txq;                                       \
@@ -940,9 +882,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
 	int ret;
 	int i;
 
-	/* Only allow ndo_xdp_xmit if XDP is loaded on dev, as this
-	 * indicate XDP resources have been successfully allocated.
-	 */
+	 
 	xdp_prog = rcu_access_pointer(rq->xdp_prog);
 	if (!xdp_prog)
 		return -ENXIO;
@@ -954,7 +894,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
 		goto out;
 	}
 
-	/* Free up any pending old buffers before queueing new ones. */
+	 
 	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
 		if (likely(is_xdp_frame(ptr))) {
 			struct xdp_frame *frame = ptr_to_xdp(ptr);
@@ -1073,20 +1013,7 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
 	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
 }
 
-/* We copy the packet for XDP in the following cases:
- *
- * 1) Packet is scattered across multiple rx buffers.
- * 2) Headroom space is insufficient.
- *
- * This is inefficient but it's a temporary condition that
- * we hit right after XDP is enabled and until queue is refilled
- * with large buffers with sufficient headroom - so it should affect
- * at most queue size packets.
- * Afterwards, the conditions to enable
- * XDP should preclude the underlying device from sending packets
- * across multiple buffers (num_buf > 1), and we make sure buffers
- * have enough headroom.
- */
+ 
 static struct page *xdp_linearize_page(struct receive_queue *rq,
 				       int *num_buf,
 				       struct page *p,
@@ -1119,9 +1046,7 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
 		p = virt_to_head_page(buf);
 		off = buf - page_address(p);
 
-		/* guard against a misconfigured or uncooperative backend that
-		 * is sending packet larger than the MTU.
-		 */
+		 
 		if ((page_off + buflen + tailroom) > PAGE_SIZE) {
 			put_page(p);
 			goto err_buf;
@@ -1133,7 +1058,7 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
 		put_page(p);
 	}
 
-	/* Headroom does not contribute to packet length */
+	 
 	*len = page_off - VIRTIO_XDP_HEADROOM;
 	return page;
 err_buf:
@@ -1222,7 +1147,7 @@ static struct sk_buff *receive_small_xdp(struct net_device *dev,
 
 	switch (act) {
 	case XDP_PASS:
-		/* Recalculate length in case bpf program changed it */
+		 
 		len = xdp.data_end - xdp.data;
 		metasize = xdp.data - xdp.data_meta;
 		break;
@@ -1345,13 +1270,7 @@ static void mergeable_buf_free(struct receive_queue *rq, int num_buf,
 	}
 }
 
-/* Why not use xdp_build_skb_from_frame() ?
- * XDP core assumes that xdp frags are PAGE_SIZE in length, while in
- * virtio-net there are 2 points that do not match its requirements:
- *  1. The size of the prefilled buffer is not fixed before xdp is set.
- *  2. xdp_build_skb_from_frame() does more checks that we don't need,
- *     like eth_type_trans() (which virtio-net does in receive_buf()).
- */
+ 
 static struct sk_buff *build_skb_from_xdp_buff(struct net_device *dev,
 					       struct virtnet_info *vi,
 					       struct xdp_buff *xdp,
@@ -1394,7 +1313,7 @@ static struct sk_buff *build_skb_from_xdp_buff(struct net_device *dev,
 	return skb;
 }
 
-/* TODO: build xdp in big mode */
+ 
 static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
 				      struct virtnet_info *vi,
 				      struct receive_queue *rq,
@@ -1424,10 +1343,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
 		return 0;
 
 	if (*num_buf > 1) {
-		/* If we want to build multi-buffer xdp, we need
-		 * to specify that the flags of xdp_buff have the
-		 * XDP_FLAGS_HAS_FRAG bit.
-		 */
+		 
 		if (!xdp_buff_has_frags(xdp))
 			xdp_buff_set_frags_flag(xdp);
 
@@ -1500,18 +1416,11 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
 	struct page *xdp_page;
 	unsigned int xdp_room;
 
-	/* Transient failure which in theory could occur if
-	 * in-flight packets from before XDP was enabled reach
-	 * the receive path after XDP is loaded.
-	 */
+	 
 	if (unlikely(hdr->hdr.gso_type))
 		return NULL;
 
-	/* Now XDP core assumes frag size is PAGE_SIZE, but buffers
-	 * with headroom may add hole in truesize, which
-	 * make their length exceed PAGE_SIZE. So we disabled the
-	 * hole mechanism for xdp. See add_recvbuf_mergeable().
-	 */
+	 
 	*frame_sz = truesize;
 
 	if (likely(headroom >= virtnet_get_headroom(vi) &&
@@ -1519,16 +1428,9 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
 		return page_address(*page) + offset;
 	}
 
-	/* This happens when headroom is not enough because
-	 * of the buffer was prefilled before XDP is set.
-	 * This should only happen for the first several packets.
-	 * In fact, vq reset can be used here to help us clean up
-	 * the prefilled buffers, but many existing devices do not
-	 * support it, and we don't want to bother users who are
-	 * using xdp normally.
-	 */
+	 
 	if (!xdp_prog->aux->xdp_has_frags) {
-		/* linearize data for XDP */
+		 
 		xdp_page = xdp_linearize_page(rq, num_buf,
 					      *page, offset,
 					      VIRTIO_XDP_HEADROOM,
@@ -1820,11 +1722,7 @@ frame_err:
 	dev_kfree_skb(skb);
 }
 
-/* Unlike mergeable buffers, all buffers are allocated to the
- * same size, except for the headroom. For this reason we do
- * not need to use  mergeable_len_to_ctx here - it is enough
- * to store the headroom as the context ignoring the truesize.
- */
+ 
 static int add_recvbuf_small(struct virtnet_info *vi, struct receive_queue *rq,
 			     gfp_t gfp)
 {
@@ -1863,7 +1761,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
 
 	sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
 
-	/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
+	 
 	for (i = vi->big_packets_num_skbfrags + 1; i > 1; --i) {
 		first = get_a_page(rq, gfp);
 		if (!first) {
@@ -1873,7 +1771,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
 		}
 		sg_set_buf(&rq->sg[i], page_address(first), PAGE_SIZE);
 
-		/* chain new page in list head to match sg */
+		 
 		first->private = (unsigned long)list;
 		list = first;
 	}
@@ -1885,15 +1783,15 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
 	}
 	p = page_address(first);
 
-	/* rq->sg[0], rq->sg[1] share the same page */
-	/* a separated rq->sg[0] for header - required in case !any_header_sg */
+	 
+	 
 	sg_set_buf(&rq->sg[0], p, vi->hdr_len);
 
-	/* rq->sg[1] for data packet, from offset */
+	 
 	offset = sizeof(struct padded_vnet_hdr);
 	sg_set_buf(&rq->sg[1], p + offset, PAGE_SIZE - offset);
 
-	/* chain first in list head */
+	 
 	first->private = (unsigned long)list;
 	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrags + 2,
 				  first, gfp);
@@ -1932,25 +1830,17 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
 	char *buf;
 	int err;
 
-	/* Extra tailroom is needed to satisfy XDP's assumption. This
-	 * means rx frags coalescing won't work, but consider we've
-	 * disabled GSO for XDP, it won't be a big issue.
-	 */
+	 
 	len = get_mergeable_buf_len(rq, &rq->mrg_avg_pkt_len, room);
 
 	buf = virtnet_rq_alloc(rq, len + room, gfp);
 	if (unlikely(!buf))
 		return -ENOMEM;
 
-	buf += headroom; /* advance address leaving hole at front of pkt */
+	buf += headroom;  
 	hole = alloc_frag->size - alloc_frag->offset;
 	if (hole < len + room) {
-		/* To avoid internal fragmentation, if there is very likely not
-		 * enough space for another buffer, add the remaining space to
-		 * the current buffer.
-		 * XDP core assumes that frame_size of xdp_buff and the length
-		 * of the frag are PAGE_SIZE, so we disable the hole mechanism.
-		 */
+		 
 		if (!headroom)
 			len += hole;
 		alloc_frag->offset += hole;
@@ -1969,13 +1859,7 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
 	return err;
 }
 
-/*
- * Returns false if we couldn't fill entirely (OOM).
- *
- * Normally run in the receive path, but can also be run from ndo_open
- * before we're receiving packets, or from refill_work which is
- * careful to disable receiving (using napi_disable).
- */
+ 
 static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
 			  gfp_t gfp)
 {
@@ -2017,10 +1901,7 @@ static void virtnet_napi_enable(struct virtqueue *vq, struct napi_struct *napi)
 {
 	napi_enable(napi);
 
-	/* If all buffers were filled by other side before we napi_enabled, we
-	 * won't get another interrupt, so process any outstanding packets now.
-	 * Call local_bh_enable after to trigger softIRQ processing.
-	 */
+	 
 	local_bh_disable();
 	virtqueue_napi_schedule(napi, vq);
 	local_bh_enable();
@@ -2033,9 +1914,7 @@ static void virtnet_napi_tx_enable(struct virtnet_info *vi,
 	if (!napi->weight)
 		return;
 
-	/* Tx napi touches cachelines on the cpu handling tx interrupts. Only
-	 * enable the feature if this is likely affine with the transmit path.
-	 */
+	 
 	if (!vi->affinity_hint_set) {
 		napi->weight = 0;
 		return;
@@ -2064,9 +1943,7 @@ static void refill_work(struct work_struct *work)
 		still_empty = !try_fill_recv(vi, rq, GFP_KERNEL);
 		virtnet_napi_enable(rq->vq, &rq->napi);
 
-		/* In theory, this can happen: if we don't get any buffers in
-		 * we will *never* try to fill again.
-		 */
+		 
 		if (still_empty)
 			schedule_delayed_work(&vi->refill, HZ/2);
 	}
@@ -2166,7 +2043,7 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
 	if (xdp_xmit & VIRTIO_XDP_REDIR)
 		xdp_do_flush();
 
-	/* Out of packets? */
+	 
 	if (received < budget)
 		virtqueue_napi_complete(napi, rq->vq, received);
 
@@ -2224,7 +2101,7 @@ static int virtnet_open(struct net_device *dev)
 
 	for (i = 0; i < vi->max_queue_pairs; i++) {
 		if (i < vi->curr_queue_pairs)
-			/* Make sure we have some buffers: if oom use wq. */
+			 
 			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
 				schedule_delayed_work(&vi->refill, 0);
 
@@ -2254,7 +2131,7 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
 	bool done;
 
 	if (unlikely(is_xdp_raw_buffer_queue(vi, index))) {
-		/* We don't need to enable cb for XDP */
+		 
 		napi_complete_done(napi, 0);
 		return 0;
 	}
@@ -2304,8 +2181,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
 	can_push = vi->any_header_sg &&
 		!((unsigned long)skb->data & (__alignof__(*hdr) - 1)) &&
 		!skb_header_cloned(skb) && skb_headroom(skb) >= hdr_len;
-	/* Even if we can, don't push here yet as this would skew
-	 * csum_start offset below. */
+	 
 	if (can_push)
 		hdr = (struct virtio_net_hdr_mrg_rxbuf *)(skb->data - hdr_len);
 	else
@@ -2325,7 +2201,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
 		num_sg = skb_to_sgvec(skb, sq->sg, 0, skb->len);
 		if (unlikely(num_sg < 0))
 			return num_sg;
-		/* Pull header back to avoid skew in tx bytes calculations. */
+		 
 		__skb_pull(skb, hdr_len);
 	} else {
 		sg_set_buf(sq->sg, hdr, hdr_len);
@@ -2347,7 +2223,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
 	bool kick = !netdev_xmit_more();
 	bool use_napi = sq->napi.weight;
 
-	/* Free up any pending old buffers before queueing new ones. */
+	 
 	do {
 		if (use_napi)
 			virtqueue_disable_cb(sq->vq);
@@ -2357,13 +2233,13 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
 	} while (use_napi && kick &&
 	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
 
-	/* timestamp packet in software */
+	 
 	skb_tx_timestamp(skb);
 
-	/* Try to transmit */
+	 
 	err = xmit_skb(sq, skb);
 
-	/* This should not happen! */
+	 
 	if (unlikely(err)) {
 		DEV_STATS_INC(dev, tx_fifo_errors);
 		if (net_ratelimit())
@@ -2375,7 +2251,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_OK;
 	}
 
-	/* Don't wait up for transmitted skbs to be freed. */
+	 
 	if (!use_napi) {
 		skb_orphan(skb);
 		nf_reset_ct(skb);
@@ -2431,15 +2307,13 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
 
 	txq = netdev_get_tx_queue(vi->dev, qindex);
 
-	/* 1. wait all ximt complete
-	 * 2. fix the race of netif_stop_subqueue() vs netif_start_subqueue()
-	 */
+	 
 	__netif_tx_lock_bh(txq);
 
-	/* Prevent rx poll from accessing sq. */
+	 
 	sq->reset = true;
 
-	/* Prevent the upper layer from trying to send packets. */
+	 
 	netif_stop_subqueue(vi->dev, qindex);
 
 	__netif_tx_unlock_bh(txq);
@@ -2458,11 +2332,7 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
 	return err;
 }
 
-/*
- * Send command via the control virtqueue and check status.  Commands
- * supported by the hypervisor, as indicated by feature bits, should
- * never fail unless improperly formatted.
- */
+ 
 static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
 				 struct scatterlist *out)
 {
@@ -2470,20 +2340,20 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
 	unsigned out_num = 0, tmp;
 	int ret;
 
-	/* Caller should know better */
+	 
 	BUG_ON(!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_VQ));
 
 	vi->ctrl->status = ~0;
 	vi->ctrl->hdr.class = class;
 	vi->ctrl->hdr.cmd = cmd;
-	/* Add header */
+	 
 	sg_init_one(&hdr, &vi->ctrl->hdr, sizeof(vi->ctrl->hdr));
 	sgs[out_num++] = &hdr;
 
 	if (out)
 		sgs[out_num++] = out;
 
-	/* Add return status. */
+	 
 	sg_init_one(&stat, &vi->ctrl->status, sizeof(vi->ctrl->status));
 	sgs[out_num] = &stat;
 
@@ -2498,9 +2368,7 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
 	if (unlikely(!virtqueue_kick(vi->cvq)))
 		return vi->ctrl->status == VIRTIO_NET_OK;
 
-	/* Spin for a response, the kick causes an ioport write, trapping
-	 * into the hypervisor, so the request should be handled immediately.
-	 */
+	 
 	while (!virtqueue_get_buf(vi->cvq, &tmp) &&
 	       !virtqueue_is_broken(vi->cvq))
 		cpu_relax();
@@ -2540,7 +2408,7 @@ static int virtnet_set_mac_address(struct net_device *dev, void *p)
 		   !virtio_has_feature(vdev, VIRTIO_F_VERSION_1)) {
 		unsigned int i;
 
-		/* Naturally, this has an atomicity problem. */
+		 
 		for (i = 0; i < dev->addr_len; i++)
 			virtio_cwrite8(vdev,
 				       offsetof(struct virtio_net_config, mac) +
@@ -2622,7 +2490,7 @@ static int _virtnet_set_queues(struct virtnet_info *vi, u16 queue_pairs)
 		return -EINVAL;
 	} else {
 		vi->curr_queue_pairs = queue_pairs;
-		/* virtnet_open() will refill when device is going to up. */
+		 
 		if (dev->flags & IFF_UP)
 			schedule_delayed_work(&vi->refill, 0);
 	}
@@ -2645,9 +2513,9 @@ static int virtnet_close(struct net_device *dev)
 	struct virtnet_info *vi = netdev_priv(dev);
 	int i;
 
-	/* Make sure NAPI doesn't schedule refill work */
+	 
 	disable_delayed_refill(vi);
-	/* Make sure refill_work doesn't re-enable napi! */
+	 
 	cancel_delayed_work_sync(&vi->refill);
 
 	for (i = 0; i < vi->max_queue_pairs; i++)
@@ -2667,7 +2535,7 @@ static void virtnet_set_rx_mode(struct net_device *dev)
 	void *buf;
 	int i;
 
-	/* We can't dynamically set ndo_set_rx_mode, so return gracefully */
+	 
 	if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_RX))
 		return;
 
@@ -2690,7 +2558,7 @@ static void virtnet_set_rx_mode(struct net_device *dev)
 
 	uc_count = netdev_uc_count(dev);
 	mc_count = netdev_mc_count(dev);
-	/* MAC filter - use one buffer for both lists */
+	 
 	buf = kzalloc(((uc_count + mc_count) * ETH_ALEN) +
 		      (2 * sizeof(mac_data->entries)), GFP_ATOMIC);
 	mac_data = buf;
@@ -2699,7 +2567,7 @@ static void virtnet_set_rx_mode(struct net_device *dev)
 
 	sg_init_table(sg, 2);
 
-	/* Store the unicast list and count in the front of the buffer */
+	 
 	mac_data->entries = cpu_to_virtio32(vi->vdev, uc_count);
 	i = 0;
 	netdev_for_each_uc_addr(ha, dev)
@@ -2708,7 +2576,7 @@ static void virtnet_set_rx_mode(struct net_device *dev)
 	sg_set_buf(&sg[0], mac_data,
 		   sizeof(mac_data->entries) + (uc_count * ETH_ALEN));
 
-	/* multicast list and count fill the end */
+	 
 	mac_data = (void *)&mac_data->macs[uc_count][0];
 
 	mac_data->entries = cpu_to_virtio32(vi->vdev, mc_count);
@@ -2910,11 +2778,7 @@ static int virtnet_set_ringparam(struct net_device *dev,
 			if (err)
 				return err;
 
-			/* Upon disabling and re-enabling a transmit virtqueue, the device must
-			 * set the coalescing parameters of the virtqueue to those configured
-			 * through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or, if the driver
-			 * did not set any TX coalescing parameters, to 0.
-			 */
+			 
 			err = virtnet_send_ctrl_coal_vq_cmd(vi, txq2vq(i),
 							    vi->intr_coal_tx.max_usecs,
 							    vi->intr_coal_tx.max_packets);
@@ -2930,7 +2794,7 @@ static int virtnet_set_ringparam(struct net_device *dev,
 			if (err)
 				return err;
 
-			/* The reason is same as the transmit virtqueue reset */
+			 
 			err = virtnet_send_ctrl_coal_vq_cmd(vi, rxq2vq(i),
 							    vi->intr_coal_rx.max_usecs,
 							    vi->intr_coal_rx.max_packets);
@@ -2951,7 +2815,7 @@ static bool virtnet_commit_rss_command(struct virtnet_info *vi)
 	struct scatterlist sgs[4];
 	unsigned int sg_buf_size;
 
-	/* prepare sgs */
+	 
 	sg_init_table(sgs, 4);
 
 	sg_buf_size = offsetof(struct virtio_net_ctrl_rss, indirection_table);
@@ -3056,7 +2920,7 @@ static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *
 	bool is_disable = info->data & RXH_DISCARD;
 	bool is_l4 = info->data == (RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 | RXH_L4_B_2_3);
 
-	/* supports only 'sd', 'sdfn' and 'r' */
+	 
 	if (!((info->data == (RXH_IP_SRC | RXH_IP_DST)) | is_l4 | is_disable))
 		return false;
 
@@ -3096,11 +2960,11 @@ static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *
 			new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv6;
 		break;
 	default:
-		/* unsupported flow */
+		 
 		return false;
 	}
 
-	/* if unsupported hashtype was set */
+	 
 	if (new_hashtypes != (new_hashtypes & vi->rss_hash_types_supported))
 		return false;
 
@@ -3126,7 +2990,7 @@ static void virtnet_get_drvinfo(struct net_device *dev,
 
 }
 
-/* TODO: Eliminate OOO packets during switching */
+ 
 static int virtnet_set_channels(struct net_device *dev,
 				struct ethtool_channels *channels)
 {
@@ -3134,19 +2998,14 @@ static int virtnet_set_channels(struct net_device *dev,
 	u16 queue_pairs = channels->combined_count;
 	int err;
 
-	/* We don't support separate rx/tx channels.
-	 * We don't allow setting 'other' channels.
-	 */
+	 
 	if (channels->rx_count || channels->tx_count || channels->other_count)
 		return -EINVAL;
 
 	if (queue_pairs > vi->max_queue_pairs || queue_pairs == 0)
 		return -EINVAL;
 
-	/* For now we don't support modifying channels while XDP is loaded
-	 * also when XDP is loaded all RX queues have XDP programs so we only
-	 * need to check a single RX queue.
-	 */
+	 
 	if (vi->rq[0].xdp_prog)
 		return -EINVAL;
 
@@ -3290,7 +3149,7 @@ static int virtnet_send_notf_coal_cmds(struct virtnet_info *vi,
 				  &sgs_tx))
 		return -EINVAL;
 
-	/* Save parameters */
+	 
 	vi->intr_coal_tx.max_usecs = ec->tx_coalesce_usecs;
 	vi->intr_coal_tx.max_packets = ec->tx_max_coalesced_frames;
 	for (i = 0; i < vi->max_queue_pairs; i++) {
@@ -3307,7 +3166,7 @@ static int virtnet_send_notf_coal_cmds(struct virtnet_info *vi,
 				  &sgs_rx))
 		return -EINVAL;
 
-	/* Save parameters */
+	 
 	vi->intr_coal_rx.max_usecs = ec->rx_coalesce_usecs;
 	vi->intr_coal_rx.max_packets = ec->rx_max_coalesced_frames;
 	for (i = 0; i < vi->max_queue_pairs; i++) {
@@ -3365,9 +3224,7 @@ static int virtnet_send_notf_coal_vq_cmds(struct virtnet_info *vi,
 
 static int virtnet_coal_params_supported(struct ethtool_coalesce *ec)
 {
-	/* usecs coalescing is supported only if VIRTIO_NET_F_NOTF_COAL
-	 * feature is negotiated.
-	 */
+	 
 	if (ec->rx_coalesce_usecs || ec->tx_coalesce_usecs)
 		return -EOPNOTSUPP;
 
@@ -3399,7 +3256,7 @@ static int virtnet_set_coalesce(struct net_device *dev,
 	int ret, queue_number, napi_weight;
 	bool update_napi = false;
 
-	/* Can't change NAPI weight if the link is up */
+	 
 	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
 	for (queue_number = 0; queue_number < vi->max_queue_pairs; queue_number++) {
 		ret = virtnet_should_update_vq_weight(dev->flags, napi_weight,
@@ -3409,9 +3266,7 @@ static int virtnet_set_coalesce(struct net_device *dev,
 			return ret;
 
 		if (update_napi) {
-			/* All queues that belong to [queue_number, vi->max_queue_pairs] will be
-			 * updated for the sake of simplicity, which might not be necessary
-			 */
+			 
 			break;
 		}
 	}
@@ -3465,7 +3320,7 @@ static int virtnet_set_per_queue_coalesce(struct net_device *dev,
 	if (queue >= vi->max_queue_pairs)
 		return -EINVAL;
 
-	/* Can't change NAPI weight if the link is up */
+	 
 	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
 	ret = virtnet_should_update_vq_weight(dev->flags, napi_weight,
 					      vi->sq[queue].napi.weight,
@@ -3655,7 +3510,7 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
 {
 	struct virtnet_info *vi = vdev->priv;
 
-	/* Make sure no work handler is accessing the device */
+	 
 	flush_work(&vi->config_work);
 
 	netif_tx_lock_bh(vi->dev);
@@ -3766,7 +3621,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
 	if (prog)
 		xdp_qp = nr_cpu_ids;
 
-	/* XDP requires extra queues for XDP_TX */
+	 
 	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
 		netdev_warn_once(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
 				 curr_qp + xdp_qp, vi->max_queue_pairs);
@@ -3780,7 +3635,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
 	if (prog)
 		bpf_prog_add(prog, vi->max_queue_pairs - 1);
 
-	/* Make sure NAPI is not using any XDP TX queues for RX. */
+	 
 	if (netif_running(dev)) {
 		for (i = 0; i < vi->max_queue_pairs; i++) {
 			napi_disable(&vi->rq[i].napi);
@@ -3958,7 +3813,7 @@ static void virtnet_config_changed_work(struct work_struct *work)
 		virtnet_ack_link_announce(vi);
 	}
 
-	/* Ignore unknown (future) status bits */
+	 
 	v &= VIRTIO_NET_S_LINK_UP;
 
 	if (vi->status == v)
@@ -3992,9 +3847,7 @@ static void virtnet_free_queues(struct virtnet_info *vi)
 		__netif_napi_del(&vi->sq[i].napi);
 	}
 
-	/* We called __netif_napi_del(),
-	 * we need to respect an RCU grace period before freeing vi->rq
-	 */
+	 
 	synchronize_net();
 
 	kfree(vi->rq);
@@ -4076,10 +3929,7 @@ static void virtnet_del_vqs(struct virtnet_info *vi)
 	virtnet_free_queues(vi);
 }
 
-/* How large should a single buffer be so a queue full of these can fit at
- * least one full packet?
- * Logic below assumes the mergeable buffer header is used.
- */
+ 
 static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqueue *vq)
 {
 	const unsigned int hdr_len = vi->hdr_len;
@@ -4101,14 +3951,11 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
 	const char **names;
 	bool *ctx;
 
-	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
-	 * possible N-1 RX/TX queue pairs used in multiqueue mode, followed by
-	 * possible control vq.
-	 */
+	 
 	total_vqs = vi->max_queue_pairs * 2 +
 		    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_VQ);
 
-	/* Allocate space for find_vqs parameters */
+	 
 	vqs = kcalloc(total_vqs, sizeof(*vqs), GFP_KERNEL);
 	if (!vqs)
 		goto err_vq;
@@ -4126,13 +3973,13 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
 		ctx = NULL;
 	}
 
-	/* Parameters for control virtqueue, if any */
+	 
 	if (vi->has_cvq) {
 		callbacks[total_vqs - 1] = NULL;
 		names[total_vqs - 1] = "control";
 	}
 
-	/* Allocate/initialize parameters for send/receive virtqueues */
+	 
 	for (i = 0; i < vi->max_queue_pairs; i++) {
 		callbacks[rxq2vq(i)] = skb_recv_done;
 		callbacks[txq2vq(i)] = skb_xmit_done;
@@ -4161,7 +4008,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
 		vi->sq[i].vq = vqs[txq2vq(i)];
 	}
 
-	/* run here: ret == 0. */
+	 
 
 
 err_find:
@@ -4225,7 +4072,7 @@ static int init_vqs(struct virtnet_info *vi)
 {
 	int ret;
 
-	/* Allocate send & receive queues */
+	 
 	ret = virtnet_alloc_queues(vi);
 	if (ret)
 		goto err;
@@ -4366,10 +4213,7 @@ static void virtnet_set_big_packets(struct virtnet_info *vi, const int mtu)
 {
 	bool guest_gso = virtnet_check_guest_gso(vi);
 
-	/* If device can receive ANY guest GSO packets, regardless of mtu,
-	 * allocate packets of maximum size, otherwise limit it to only
-	 * mtu size worth only.
-	 */
+	 
 	if (mtu > ETH_DATA_LEN || guest_gso) {
 		vi->big_packets = true;
 		vi->big_packets_num_skbfrags = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
@@ -4384,24 +4228,24 @@ static int virtnet_probe(struct virtio_device *vdev)
 	u16 max_queue_pairs;
 	int mtu = 0;
 
-	/* Find if host supports multiqueue/rss virtio_net device */
+	 
 	max_queue_pairs = 1;
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MQ) || virtio_has_feature(vdev, VIRTIO_NET_F_RSS))
 		max_queue_pairs =
 		     virtio_cread16(vdev, offsetof(struct virtio_net_config, max_virtqueue_pairs));
 
-	/* We need at least 2 queue's */
+	 
 	if (max_queue_pairs < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
 	    max_queue_pairs > VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX ||
 	    !virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
 		max_queue_pairs = 1;
 
-	/* Allocate ourselves a network device with room for our info */
+	 
 	dev = alloc_etherdev_mq(sizeof(struct virtnet_info), max_queue_pairs);
 	if (!dev)
 		return -ENOMEM;
 
-	/* Set up network device as normal. */
+	 
 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE |
 			   IFF_TX_SKB_NO_LINEAR;
 	dev->netdev_ops = &virtnet_netdev;
@@ -4410,9 +4254,9 @@ static int virtnet_probe(struct virtio_device *vdev)
 	dev->ethtool_ops = &virtnet_ethtool_ops;
 	SET_NETDEV_DEV(dev, &vdev->dev);
 
-	/* Do we support "hardware" checksums? */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CSUM)) {
-		/* This opens up the world of extra features. */
+		 
 		dev->hw_features |= NETIF_F_HW_CSUM | NETIF_F_SG;
 		if (csum)
 			dev->features |= NETIF_F_HW_CSUM | NETIF_F_SG;
@@ -4421,7 +4265,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 			dev->hw_features |= NETIF_F_TSO
 				| NETIF_F_TSO_ECN | NETIF_F_TSO6;
 		}
-		/* Individual feature bits: what can host handle? */
+		 
 		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_TSO4))
 			dev->hw_features |= NETIF_F_TSO;
 		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_TSO6))
@@ -4435,7 +4279,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 
 		if (gso)
 			dev->features |= dev->hw_features & NETIF_F_ALL_TSO;
-		/* (!csum && gso) case will be fixed by register_netdev() */
+		 
 	}
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
 		dev->features |= NETIF_F_RXCSUM;
@@ -4448,11 +4292,11 @@ static int virtnet_probe(struct virtio_device *vdev)
 	dev->vlan_features = dev->features;
 	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
 
-	/* MTU range: 68 - 65535 */
+	 
 	dev->min_mtu = MIN_MTU;
 	dev->max_mtu = MAX_MTU;
 
-	/* Configuration may specify what MAC to use.  Otherwise random. */
+	 
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MAC)) {
 		u8 addr[ETH_ALEN];
 
@@ -4466,7 +4310,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 			 dev->dev_addr);
 	}
 
-	/* Set up our device-specific information */
+	 
 	vi = netdev_priv(dev);
 	vi->dev = dev;
 	vi->vdev = vdev;
@@ -4530,9 +4374,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 				     offsetof(struct virtio_net_config,
 					      mtu));
 		if (mtu < dev->min_mtu) {
-			/* Should never trigger: MTU was previously validated
-			 * in virtnet_validate.
-			 */
+			 
 			dev_err(&vdev->dev,
 				"device MTU appears to have changed it is now %d < %d",
 				mtu, dev->min_mtu);
@@ -4549,14 +4391,14 @@ static int virtnet_probe(struct virtio_device *vdev)
 	if (vi->any_header_sg)
 		dev->needed_headroom = vi->hdr_len;
 
-	/* Enable multiqueue by default */
+	 
 	if (num_online_cpus() >= max_queue_pairs)
 		vi->curr_queue_pairs = max_queue_pairs;
 	else
 		vi->curr_queue_pairs = num_online_cpus();
 	vi->max_queue_pairs = max_queue_pairs;
 
-	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+	 
 	err = init_vqs(vi);
 	if (err)
 		goto free;
@@ -4581,7 +4423,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 	if (vi->has_rss || vi->has_rss_hash_report)
 		virtnet_init_default_rss(vi);
 
-	/* serialize netdev register + virtio_device_ready() with ndo_open() */
+	 
 	rtnl_lock();
 
 	err = register_netdevice(dev);
@@ -4595,10 +4437,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 
 	_virtnet_set_queues(vi, vi->curr_queue_pairs);
 
-	/* a random MAC address has been assigned, notify the device.
-	 * We don't fail probe if VIRTIO_NET_F_CTRL_MAC_ADDR is not there
-	 * because many devices work fine without getting MAC explicitly
-	 */
+	 
 	if (!virtio_has_feature(vdev, VIRTIO_NET_F_MAC) &&
 	    virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_MAC_ADDR)) {
 		struct scatterlist sg;
@@ -4621,8 +4460,7 @@ static int virtnet_probe(struct virtio_device *vdev)
 		goto free_unregister_netdev;
 	}
 
-	/* Assume link up if device can't report link status,
-	   otherwise get link status from config. */
+	 
 	netif_carrier_off(dev);
 	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_STATUS)) {
 		schedule_work(&vi->config_work);
@@ -4660,7 +4498,7 @@ static void remove_vq_common(struct virtnet_info *vi)
 {
 	virtio_reset_device(vi->vdev);
 
-	/* Free unused buffers in both send and recv, if any. */
+	 
 	free_unused_bufs(vi);
 
 	free_receive_bufs(vi);
@@ -4676,7 +4514,7 @@ static void virtnet_remove(struct virtio_device *vdev)
 
 	virtnet_cpu_notif_remove(vi);
 
-	/* Make sure no work handler is accessing the device. */
+	 
 	flush_work(&vi->config_work);
 
 	unregister_netdev(vi->dev);

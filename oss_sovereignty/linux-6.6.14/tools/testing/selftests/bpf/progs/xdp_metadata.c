@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <vmlinux.h>
 #include "xdp_metadata.h"
@@ -32,7 +32,7 @@ int rx(struct xdp_md *ctx)
 	u64 timestamp = -1;
 	int ret;
 
-	/* Reserve enough for all custom metadata. */
+	 
 
 	ret = bpf_xdp_adjust_meta(ctx, -(int)sizeof(struct xdp_meta));
 	if (ret != 0)
@@ -46,12 +46,9 @@ int rx(struct xdp_md *ctx)
 
 	meta = data_meta;
 
-	/* Export metadata. */
+	 
 
-	/* We expect veth bpf_xdp_metadata_rx_timestamp to return 0 HW
-	 * timestamp, so put some non-zero value into AF_XDP frame for
-	 * the userspace.
-	 */
+	 
 	bpf_xdp_metadata_rx_timestamp(ctx, &timestamp);
 	if (timestamp == 0)
 		meta->rx_timestamp = 1;

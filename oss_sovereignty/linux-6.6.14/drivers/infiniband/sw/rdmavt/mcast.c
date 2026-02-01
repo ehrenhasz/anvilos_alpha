@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sched.h>
@@ -11,25 +9,14 @@
 
 #include "mcast.h"
 
-/**
- * rvt_driver_mcast_init - init resources for multicast
- * @rdi: rvt dev struct
- *
- * This is per device that registers with rdmavt
- */
+ 
 void rvt_driver_mcast_init(struct rvt_dev_info *rdi)
 {
-	/*
-	 * Anything that needs setup for multicast on a per driver or per rdi
-	 * basis should be done in here.
-	 */
+	 
 	spin_lock_init(&rdi->n_mcast_grps_lock);
 }
 
-/**
- * rvt_mcast_qp_alloc - alloc a struct to link a QP to mcast GID struct
- * @qp: the QP to link
- */
+ 
 static struct rvt_mcast_qp *rvt_mcast_qp_alloc(struct rvt_qp *qp)
 {
 	struct rvt_mcast_qp *mqp;
@@ -49,19 +36,13 @@ static void rvt_mcast_qp_free(struct rvt_mcast_qp *mqp)
 {
 	struct rvt_qp *qp = mqp->qp;
 
-	/* Notify hfi1_destroy_qp() if it is waiting. */
+	 
 	rvt_put_qp(qp);
 
 	kfree(mqp);
 }
 
-/**
- * rvt_mcast_alloc - allocate the multicast GID structure
- * @mgid: the multicast GID
- * @lid: the muilticast LID (host order)
- *
- * A list of QPs will be attached to this structure.
- */
+ 
 static struct rvt_mcast *rvt_mcast_alloc(union ib_gid *mgid, u16 lid)
 {
 	struct rvt_mcast *mcast;
@@ -91,18 +72,7 @@ static void rvt_mcast_free(struct rvt_mcast *mcast)
 	kfree(mcast);
 }
 
-/**
- * rvt_mcast_find - search the global table for the given multicast GID/LID
- * NOTE: It is valid to have 1 MLID with multiple MGIDs.  It is not valid
- * to have 1 MGID with multiple MLIDs.
- * @ibp: the IB port structure
- * @mgid: the multicast GID to search for
- * @lid: the multicast LID portion of the multicast address (host order)
- *
- * The caller is responsible for decrementing the reference count if found.
- *
- * Return: NULL if not found.
- */
+ 
 struct rvt_mcast *rvt_mcast_find(struct rvt_ibport *ibp, union ib_gid *mgid,
 				 u16 lid)
 {
@@ -125,7 +95,7 @@ struct rvt_mcast *rvt_mcast_find(struct rvt_ibport *ibp, union ib_gid *mgid,
 		} else if (ret > 0) {
 			n = n->rb_right;
 		} else {
-			/* MGID/MLID must match */
+			 
 			if (mcast->mcast_addr.lid == lid) {
 				atomic_inc(&mcast->refcount);
 				found = mcast;
@@ -138,16 +108,7 @@ struct rvt_mcast *rvt_mcast_find(struct rvt_ibport *ibp, union ib_gid *mgid,
 }
 EXPORT_SYMBOL(rvt_mcast_find);
 
-/*
- * rvt_mcast_add - insert mcast GID into table and attach QP struct
- * @mcast: the mcast GID table
- * @mqp: the QP to attach
- *
- * Return: zero if both were added.  Return EEXIST if the GID was already in
- * the table but the QP was added.  Return ESRCH if the QP was already
- * attached and neither structure was added. Return EINVAL if the MGID was
- * found, but the MLID did NOT match.
- */
+ 
 static int rvt_mcast_add(struct rvt_dev_info *rdi, struct rvt_ibport *ibp,
 			 struct rvt_mcast *mcast, struct rvt_mcast_qp *mqp)
 {
@@ -181,7 +142,7 @@ static int rvt_mcast_add(struct rvt_dev_info *rdi, struct rvt_ibport *ibp,
 			goto bail;
 		}
 
-		/* Search the QP list to see if this is already there. */
+		 
 		list_for_each_entry_rcu(p, &tmcast->qp_list, list) {
 			if (p->qp == mqp->qp) {
 				ret = ESRCH;
@@ -227,14 +188,7 @@ bail:
 	return ret;
 }
 
-/**
- * rvt_attach_mcast - attach a qp to a multicast group
- * @ibqp: Infiniband qp
- * @gid: multicast guid
- * @lid: multicast lid
- *
- * Return: 0 on success
- */
+ 
 int rvt_attach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 {
 	struct rvt_qp *qp = ibqp_to_rvtqp(ibqp);
@@ -247,10 +201,7 @@ int rvt_attach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 	if (ibqp->qp_num <= 1 || qp->state == IB_QPS_RESET)
 		return -EINVAL;
 
-	/*
-	 * Allocate data structures since its better to do this outside of
-	 * spin locks and it will most likely be needed.
-	 */
+	 
 	mcast = rvt_mcast_alloc(gid, lid);
 	if (!mcast)
 		return -ENOMEM;
@@ -261,18 +212,18 @@ int rvt_attach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 
 	switch (rvt_mcast_add(rdi, ibp, mcast, mqp)) {
 	case ESRCH:
-		/* Neither was used: OK to attach the same QP twice. */
+		 
 		ret = 0;
 		goto bail_mqp;
-	case EEXIST: /* The mcast wasn't used */
+	case EEXIST:  
 		ret = 0;
 		goto bail_mcast;
 	case ENOMEM:
-		/* Exceeded the maximum number of mcast groups. */
+		 
 		ret = -ENOMEM;
 		goto bail_mqp;
 	case EINVAL:
-		/* Invalid MGID/MLID pair */
+		 
 		ret = -EINVAL;
 		goto bail_mqp;
 	default:
@@ -290,14 +241,7 @@ bail_mcast:
 	return ret;
 }
 
-/**
- * rvt_detach_mcast - remove a qp from a multicast group
- * @ibqp: Infiniband qp
- * @gid: multicast guid
- * @lid: multicast lid
- *
- * Return: 0 on success
- */
+ 
 int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 {
 	struct rvt_qp *qp = ibqp_to_rvtqp(ibqp);
@@ -314,7 +258,7 @@ int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 
 	spin_lock_irq(&ibp->lock);
 
-	/* Find the GID in the mcast table. */
+	 
 	n = ibp->mcast_tree.rb_node;
 	while (1) {
 		if (!n) {
@@ -330,7 +274,7 @@ int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 		} else if (ret > 0) {
 			n = n->rb_right;
 		} else {
-			/* MGID/MLID must match */
+			 
 			if (mcast->mcast_addr.lid != lid) {
 				spin_unlock_irq(&ibp->lock);
 				return -EINVAL;
@@ -339,19 +283,16 @@ int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 		}
 	}
 
-	/* Search the QP list. */
+	 
 	list_for_each_entry_safe(p, tmp, &mcast->qp_list, list) {
 		if (p->qp != qp)
 			continue;
-		/*
-		 * We found it, so remove it, but don't poison the forward
-		 * link until we are sure there are no list walkers.
-		 */
+		 
 		list_del_rcu(&p->list);
 		mcast->n_attached--;
 		delp = p;
 
-		/* If this was the last attached QP, remove the GID too. */
+		 
 		if (list_empty(&mcast->qp_list)) {
 			rb_erase(&mcast->rb_node, &ibp->mcast_tree);
 			last = 1;
@@ -360,14 +301,11 @@ int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 	}
 
 	spin_unlock_irq(&ibp->lock);
-	/* QP not attached */
+	 
 	if (!delp)
 		return -EINVAL;
 
-	/*
-	 * Wait for any list walkers to finish before freeing the
-	 * list element.
-	 */
+	 
 	wait_event(mcast->wait, atomic_read(&mcast->refcount) <= 1);
 	rvt_mcast_qp_free(delp);
 
@@ -383,12 +321,7 @@ int rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid)
 	return 0;
 }
 
-/**
- * rvt_mcast_tree_empty - determine if any qps are attached to any mcast group
- * @rdi: rvt dev struct
- *
- * Return: in use count
- */
+ 
 int rvt_mcast_tree_empty(struct rvt_dev_info *rdi)
 {
 	int i;

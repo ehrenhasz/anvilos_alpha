@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "mxms.h"
 
 #include <core/option.h>
@@ -49,7 +27,7 @@ mxm_shadow_rom(struct nvkm_mxm *mxm, u8 version)
 	struct nvkm_i2c_bus *bus = NULL;
 	u8 i2cidx, mxms[6], addr, size;
 
-	i2cidx = mxm_ddc_map(bios, 1 /* LVDS_DDC */) & 0x0f;
+	i2cidx = mxm_ddc_map(bios, 1  ) & 0x0f;
 	if (i2cidx < 0x0f)
 		bus = nvkm_i2c_bus_find(i2c, i2cidx);
 	if (!bus)
@@ -98,11 +76,7 @@ mxm_shadow_dsm(struct nvkm_mxm *mxm, u8 version)
 	if (!handle)
 		return false;
 
-	/*
-	 * spec says this can be zero to mean "highest revision", but
-	 * of course there's at least one bios out there which fails
-	 * unless you pass in exactly the version it supports..
-	 */
+	 
 	rev = (version & 0xf0) << 4 | (version & 0x0f);
 	obj = acpi_evaluate_dsm(handle, &muid, rev, 0x00000010, &argv4);
 	if (!obj) {
@@ -131,7 +105,7 @@ static u8
 wmi_wmmx_mxmi(struct nvkm_mxm *mxm, u8 version)
 {
 	struct nvkm_subdev *subdev = &mxm->subdev;
-	u32 mxmi_args[] = { 0x494D584D /* MXMI */, version, 0 };
+	u32 mxmi_args[] = { 0x494D584D  , version, 0 };
 	struct acpi_buffer args = { sizeof(mxmi_args), mxmi_args };
 	struct acpi_buffer retn = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *obj;
@@ -161,7 +135,7 @@ static bool
 mxm_shadow_wmi(struct nvkm_mxm *mxm, u8 version)
 {
 	struct nvkm_subdev *subdev = &mxm->subdev;
-	u32 mxms_args[] = { 0x534D584D /* MXMS */, version, 0 };
+	u32 mxms_args[] = { 0x534D584D  , version, 0 };
 	struct acpi_buffer args = { sizeof(mxms_args), mxms_args };
 	struct acpi_buffer retn = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *obj;
@@ -258,11 +232,7 @@ nvkm_mxm_new_(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,
 	if (mxm_shadow(mxm, ver)) {
 		nvkm_warn(&mxm->subdev, "failed to locate valid SIS\n");
 #if 0
-		/* we should, perhaps, fall back to some kind of limited
-		 * mode here if the x86 vbios hasn't already done the
-		 * work for us (so we prevent loading with completely
-		 * whacked vbios tables).
-		 */
+		 
 		return -EINVAL;
 #else
 		return 0;

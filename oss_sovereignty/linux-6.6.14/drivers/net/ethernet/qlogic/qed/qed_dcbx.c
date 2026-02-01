@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -32,9 +29,7 @@
 
 #define QED_DCBX_INVALID_PRIORITY       0xFF
 
-/* Get Traffic Class from priority traffic class table, 4 bits represent
- * the traffic class corresponding to the priority.
- */
+ 
 #define QED_DCBX_PRIO2TC(prio_tc_tbl, prio) \
 	((u32)(prio_tc_tbl >> ((7 - prio) * 4)) & 0x7)
 
@@ -56,7 +51,7 @@ static bool qed_dcbx_ieee_app_ethtype(u32 app_info_bitmap)
 {
 	u8 mfw_val = QED_MFW_GET_FIELD(app_info_bitmap, DCBX_APP_SF_IEEE);
 
-	/* Old MFW */
+	 
 	if (mfw_val == DCBX_APP_SF_IEEE_RESERVED)
 		return qed_dcbx_app_ethtype(app_info_bitmap);
 
@@ -73,7 +68,7 @@ static bool qed_dcbx_ieee_app_port(u32 app_info_bitmap, u8 type)
 {
 	u8 mfw_val = QED_MFW_GET_FIELD(app_info_bitmap, DCBX_APP_SF_IEEE);
 
-	/* Old MFW */
+	 
 	if (mfw_val == DCBX_APP_SF_IEEE_RESERVED)
 		return qed_dcbx_app_port(app_info_bitmap);
 
@@ -169,7 +164,7 @@ qed_dcbx_set_params(struct qed_dcbx_results *p_data,
 		    enum dcbx_protocol_type type,
 		    enum qed_pci_personality personality)
 {
-	/* PF update ramrod data */
+	 
 	p_data->arr[type].enable = enable;
 	p_data->arr[type].priority = prio;
 	p_data->arr[type].tc = tc;
@@ -181,11 +176,11 @@ qed_dcbx_set_params(struct qed_dcbx_results *p_data,
 	if (test_bit(QED_MF_DONT_ADD_VLAN0_TAG, &p_hwfn->cdev->mf_bits))
 		p_data->arr[type].dont_add_vlan0 = true;
 
-	/* QM reconf data */
+	 
 	if (app_tlv && p_hwfn->hw_info.personality == personality)
 		qed_hw_info_set_offload_tc(&p_hwfn->hw_info, tc);
 
-	/* Configure dcbx vlan priority in doorbell block for roce EDPM */
+	 
 	if (test_bit(QED_MF_UFP_SPECIFIC, &p_hwfn->cdev->mf_bits) &&
 	    type == DCBX_PROTOCOL_ROCE) {
 		qed_wr(p_hwfn, p_ptt, DORQ_REG_TAG1_OVRD_MODE, 1);
@@ -193,7 +188,7 @@ qed_dcbx_set_params(struct qed_dcbx_results *p_data,
 	}
 }
 
-/* Update app protocol data and hw_info fields with the TLV info */
+ 
 static void
 qed_dcbx_update_app_info(struct qed_dcbx_results *p_data,
 			 struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
@@ -243,9 +238,7 @@ qed_dcbx_get_app_protocol_type(struct qed_hwfn *p_hwfn,
 	return true;
 }
 
-/* Parse app TLV's to update TC information in hw_info structure for
- * reconfiguring QM. Get protocol specific data for PF update ramrod command.
- */
+ 
 static int
 qed_dcbx_process_tlv(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		     struct qed_dcbx_results *p_data,
@@ -263,7 +256,7 @@ qed_dcbx_process_tlv(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 
 	ieee = (dcbx_version == DCBX_CONFIG_VERSION_IEEE);
 	eth_tlv = false;
-	/* Parse APP TLV */
+	 
 	for (i = 0; i < count; i++) {
 		protocol_id = QED_MFW_GET_FIELD(p_tbl[i].entry,
 						DCBX_APP_PROTOCOL_ID);
@@ -278,12 +271,7 @@ qed_dcbx_process_tlv(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		tc = QED_DCBX_PRIO2TC(pri_tc_tbl, priority);
 		if (qed_dcbx_get_app_protocol_type(p_hwfn, p_tbl[i].entry,
 						   protocol_id, &type, ieee)) {
-			/* ETH always have the enable bit reset, as it gets
-			 * vlan information per packet. For other protocols,
-			 * should be set according to the dcbx_enabled
-			 * indication, but we only got here if there was an
-			 * app tlv for the protocol, so dcbx must be enabled.
-			 */
+			 
 			if (type == DCBX_PROTOCOL_ETH) {
 				enable = false;
 				eth_tlv = true;
@@ -296,16 +284,11 @@ qed_dcbx_process_tlv(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		}
 	}
 
-	/* If Eth TLV is not detected, use UFP TC as default TC */
+	 
 	if (test_bit(QED_MF_UFP_SPECIFIC, &p_hwfn->cdev->mf_bits) && !eth_tlv)
 		p_data->arr[DCBX_PROTOCOL_ETH].tc = p_hwfn->ufp_info.tc;
 
-	/* Update ramrod protocol data and hw_info fields
-	 * with default info when corresponding APP TLV's are not detected.
-	 * The enabled field has a different logic for ethernet as only for
-	 * ethernet dcb should disabled by default, as the information arrives
-	 * from the OS (unless an explicit app tlv was present).
-	 */
+	 
 	tc = p_data->arr[DCBX_PROTOCOL_ETH].tc;
 	priority = p_data->arr[DCBX_PROTOCOL_ETH].priority;
 	for (type = 0; type < DCBX_MAX_PROTOCOL_TYPE; type++) {
@@ -320,9 +303,7 @@ qed_dcbx_process_tlv(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 	return 0;
 }
 
-/* Parse app TLV's to update TC information in hw_info structure for
- * reconfiguring QM. Get protocol specific data for PF update ramrod command.
- */
+ 
 static int
 qed_dcbx_process_mib_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
 {
@@ -377,9 +358,7 @@ qed_dcbx_copy_mib(struct qed_hwfn *p_hwfn,
 	int read_count = 0;
 	int rc = 0;
 
-	/* The data is considered to be valid only if both sequence numbers are
-	 * the same.
-	 */
+	 
 	do {
 		if (type == QED_DCBX_REMOTE_LLDP_MIB) {
 			qed_memcpy_from(p_hwfn, p_ptt, p_data->lldp_remote,
@@ -477,7 +456,7 @@ qed_dcbx_get_app_data(struct qed_hwfn *p_hwfn,
 						    DCBX_APP_SF_IEEE);
 			switch (sf_ieee) {
 			case DCBX_APP_SF_IEEE_RESERVED:
-				/* Old MFW */
+				 
 				val = QED_MFW_GET_FIELD(p_tbl[i].entry,
 							DCBX_APP_SF);
 				entry->sf_ieee = val ?
@@ -571,9 +550,7 @@ qed_dcbx_get_ets_data(struct qed_hwfn *p_hwfn,
 		p_params->max_ets_tc);
 	}
 
-	/* 8 bit tsa and bw data corresponding to each of the 8 TC's are
-	 * encoded in a type u32 array of size 2.
-	 */
+	 
 	cpu_to_be32_array(bw_map, p_ets->tc_bw_tbl, 2);
 	cpu_to_be32_array(tsa_map, p_ets->tc_tsa_tbl, 2);
 	pri_map = p_ets->pri_tc_tbl[0];
@@ -638,9 +615,7 @@ qed_dcbx_get_operational_params(struct qed_hwfn *p_hwfn,
 
 	flags = p_hwfn->p_dcbx_info->operational.flags;
 
-	/* If DCBx version is non zero, then negotiation
-	 * was successfuly performed
-	 */
+	 
 	p_operational = &params->operational;
 	enabled = !!(QED_MFW_GET_FIELD(flags, DCBX_CONFIG_VERSION) !=
 		     DCBX_CONFIG_VERSION_DISABLED);
@@ -857,10 +832,7 @@ static void qed_dcbx_aen(struct qed_hwfn *hwfn, u32 mib_type)
 		op->dcbx_aen(cookie, &hwfn->p_dcbx_info->get, mib_type);
 }
 
-/* Read updated MIB.
- * Reconfigure QM and invoke PF update ramrod command if operational MIB
- * change is detected.
- */
+ 
 int
 qed_dcbx_mib_update_event(struct qed_hwfn *p_hwfn,
 			  struct qed_ptt *p_ptt, enum qed_mib_read_type type)
@@ -874,17 +846,13 @@ qed_dcbx_mib_update_event(struct qed_hwfn *p_hwfn,
 	if (type == QED_DCBX_OPERATIONAL_MIB) {
 		rc = qed_dcbx_process_mib_info(p_hwfn, p_ptt);
 		if (!rc) {
-			/* reconfigure tcs of QM queues according
-			 * to negotiation results
-			 */
+			 
 			qed_qm_reconf(p_hwfn, p_ptt);
 
-			/* update storm FW with negotiation results */
+			 
 			qed_sp_pf_update(p_hwfn);
 
-			/* for roce PFs, we may want to enable/disable DPM
-			 * when DCBx change occurs
-			 */
+			 
 			if (p_hwfn->hw_info.personality ==
 			    QED_PCI_ETH_ROCE)
 				qed_roce_dpm_dcbx(p_hwfn, p_ptt);
@@ -897,9 +865,7 @@ qed_dcbx_mib_update_event(struct qed_hwfn *p_hwfn,
 		struct qed_dcbx_results *p_data;
 		u16 val;
 
-		/* Configure in NIG which protocols support EDPM and should
-		 * honor PFC.
-		 */
+		 
 		p_data = &p_hwfn->p_dcbx_info->results;
 		val = (0x1 << p_data->arr[DCBX_PROTOCOL_ROCE].tc) |
 		      (0x1 << p_data->arr[DCBX_PROTOCOL_ROCE_V2].tc);
@@ -938,7 +904,7 @@ static void qed_dcbx_update_protocol_data(struct protocol_dcb_data *p_data,
 	p_data->dcb_dont_add_vlan0 = p_src->arr[type].dont_add_vlan0;
 }
 
-/* Set pf update ramrod command params */
+ 
 void qed_dcbx_set_pf_update_params(struct qed_dcbx_results *p_src,
 				   struct pf_update_ramrod_data *p_dest)
 {
@@ -1080,9 +1046,7 @@ qed_dcbx_set_ets_data(struct qed_hwfn *p_hwfn,
 		((u8 *)bw_map)[i] = p_params->ets_tc_bw_tbl[i];
 		((u8 *)tsa_map)[i] = p_params->ets_tc_tsa_tbl[i];
 
-		/* Copy the priority value to the corresponding 4 bits in the
-		 * traffic class table.
-		 */
+		 
 		val = (((u32)p_params->ets_pri_tc_tbl[i]) << ((7 - i) * 4));
 		p_ets->pri_tc_tbl[0] |= val;
 	}
@@ -1212,7 +1176,7 @@ int qed_dcbx_config_params(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		return 0;
 	}
 
-	/* clear set-parmas cache */
+	 
 	memset(&p_hwfn->p_dcbx_info->set, 0, sizeof(p_hwfn->p_dcbx_info->set));
 
 	memset(&local_admin, 0, sizeof(local_admin));
@@ -1775,7 +1739,7 @@ static int qed_dcbnl_setapp(struct qed_dev *cdev,
 		entry = &dcbx_set.config.params.app_entry[i];
 		if ((entry->ethtype == ethtype) && (entry->proto_id == idval))
 			break;
-		/* First empty slot */
+		 
 		if (!entry->proto_id) {
 			dcbx_set.config.params.num_app_entries++;
 			break;
@@ -2344,7 +2308,7 @@ static int qed_dcbnl_ieee_setapp(struct qed_dev *cdev, struct dcb_app *app)
 		if ((entry->sf_ieee == sf_ieee) &&
 		    (entry->proto_id == app->protocol))
 			break;
-		/* First empty slot */
+		 
 		if (!entry->proto_id) {
 			dcbx_set.config.params.num_app_entries++;
 			break;

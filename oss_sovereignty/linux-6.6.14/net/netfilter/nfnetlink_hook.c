@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2021 Red Hat GmbH
- *
- * Author: Florian Westphal <fw@strlen.de>
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/module.h>
@@ -363,7 +359,7 @@ static int nfnl_hook_dump_start(struct netlink_callback *cb)
 	}
 
 	rcu_read_lock();
-	/* Not dereferenced; for consistency check only */
+	 
 	head = nfnl_hook_entries_head(family, hooknum, net, name);
 	rcu_read_unlock();
 

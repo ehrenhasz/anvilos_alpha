@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019-2020, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include <net/xdp_sock_drv.h>
 #include "pool.h"
@@ -109,14 +109,12 @@ static int mlx5e_xsk_enable_locked(struct mlx5e_priv *priv,
 	}
 
 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-		/* XSK objects will be created on open. */
+		 
 		goto validate_closed;
 	}
 
 	if (!params->xdp_prog) {
-		/* XSK objects will be created when an XDP program is set,
-		 * and the channels are reopened.
-		 */
+		 
 		goto validate_closed;
 	}
 
@@ -129,9 +127,7 @@ static int mlx5e_xsk_enable_locked(struct mlx5e_priv *priv,
 	mlx5e_activate_xsk(c);
 	mlx5e_trigger_napi_icosq(c);
 
-	/* Don't wait for WQEs, because the newer xdpsock sample doesn't provide
-	 * any Fill Ring entries at the setup stage.
-	 */
+	 
 
 	mlx5e_rx_res_xsk_update(priv->rx_res, &priv->channels, ix, true);
 
@@ -149,9 +145,7 @@ err_unmap_pool:
 	return err;
 
 validate_closed:
-	/* Check the configuration in advance, rather than fail at a later stage
-	 * (in mlx5e_xdp_set or on open) and end up with no channels.
-	 */
+	 
 	if (!mlx5e_validate_xsk_param(params, &xsk, priv->mdev)) {
 		err = -EINVAL;
 		goto err_remove_pool;
@@ -172,7 +166,7 @@ static int mlx5e_xsk_disable_locked(struct mlx5e_priv *priv, u16 ix)
 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
 		goto remove_pool;
 
-	/* XSK RQ and SQ are only created if XDP program is set. */
+	 
 	if (!priv->channels.params.xdp_prog)
 		goto remove_pool;
 

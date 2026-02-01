@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2018, 2021, The Linux Foundation. All rights reserved.
- *
- * RMNET Data ingress/egress handler
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/netdev_features.h>
@@ -17,7 +14,7 @@
 #define RMNET_IP_VERSION_4 0x40
 #define RMNET_IP_VERSION_6 0x60
 
-/* Helper Functions */
+ 
 
 static void rmnet_set_skb_proto(struct sk_buff *skb)
 {
@@ -34,7 +31,7 @@ static void rmnet_set_skb_proto(struct sk_buff *skb)
 	}
 }
 
-/* Generic handler */
+ 
 
 static void
 rmnet_deliver_skb(struct sk_buff *skb)
@@ -50,7 +47,7 @@ rmnet_deliver_skb(struct sk_buff *skb)
 	gro_cells_receive(&priv->gro_cells, skb);
 }
 
-/* MAP handler */
+ 
 
 static void
 __rmnet_map_ingress_handler(struct sk_buff *skb,
@@ -62,7 +59,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
 	u8 mux_id;
 
 	if (map_header->flags & MAP_CMD_FLAG) {
-		/* Packet contains a MAP command (not data) */
+		 
 		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
 			return rmnet_map_command(skb, port);
 
@@ -89,7 +86,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
 		skb_pull(skb, sizeof(*map_header));
 		rmnet_set_skb_proto(skb);
 	} else {
-		/* Subtract MAP header */
+		 
 		skb_pull(skb, sizeof(*map_header));
 		rmnet_set_skb_proto(skb);
 		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4 &&
@@ -191,12 +188,9 @@ rmnet_bridge_handler(struct sk_buff *skb, struct net_device *bridge_dev)
 	}
 }
 
-/* Ingress / Egress Entry Points */
+ 
 
-/* Processes packet as per ingress data format for receiving device. Logical
- * endpoint is determined from packet inspection. Packet is then sent to the
- * egress device listed in the logical endpoint configuration.
- */
+ 
 rx_handler_result_t rmnet_rx_handler(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -235,10 +229,7 @@ done:
 	return RX_HANDLER_CONSUMED;
 }
 
-/* Modifies packet as per logical endpoint configuration and egress data format
- * for egress device configured in logical endpoint. Packet is then transmitted
- * on the egress device.
- */
+ 
 void rmnet_egress_handler(struct sk_buff *skb)
 {
 	struct net_device *orig_dev;

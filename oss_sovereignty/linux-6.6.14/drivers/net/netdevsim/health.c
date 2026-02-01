@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -44,9 +44,7 @@ nsim_dev_dummy_reporter_recover(struct devlink_health_reporter *reporter,
 	struct nsim_dev_dummy_reporter_ctx *ctx = priv_ctx;
 
 	if (health->fail_recover) {
-		/* For testing purposes, user set debugfs fail_recover
-		 * value to true. Fail right away.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "User setup the recover to fail for testing purposes");
 		return -EINVAL;
 	}

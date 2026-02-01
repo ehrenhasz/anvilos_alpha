@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,7 +17,7 @@ static void idxd_cmd_exec(struct idxd_device *idxd, int cmd_code, u32 operand,
 static void idxd_device_wqs_clear_state(struct idxd_device *idxd);
 static void idxd_wq_disable_cleanup(struct idxd_wq *wq);
 
-/* Interrupt control bits */
+ 
 void idxd_unmask_error_interrupts(struct idxd_device *idxd)
 {
 	union genctrl_reg genctrl;
@@ -104,7 +104,7 @@ static int alloc_descs(struct idxd_wq *wq, int num)
 	return 0;
 }
 
-/* WQ control bits */
+ 
 int idxd_wq_alloc_resources(struct idxd_wq *wq)
 {
 	struct idxd_device *idxd = wq->idxd;
@@ -422,7 +422,7 @@ void idxd_wq_quiesce(struct idxd_wq *wq)
 	mutex_unlock(&wq->wq_lock);
 }
 
-/* Device control bits */
+ 
 static inline bool idxd_is_enabled(struct idxd_device *idxd)
 {
 	union gensts_reg gensts;
@@ -443,11 +443,7 @@ static inline bool idxd_device_is_halted(struct idxd_device *idxd)
 	return (gensts.state == IDXD_DEVICE_STATE_HALT);
 }
 
-/*
- * This is function is only used for reset during probe and will
- * poll for completion. Once the device is setup with interrupts,
- * all commands will be done via interrupt completion.
- */
+ 
 int idxd_device_init_reset(struct idxd_device *idxd)
 {
 	struct device *dev = &idxd->pdev->dev;
@@ -504,10 +500,7 @@ static void idxd_cmd_exec(struct idxd_device *idxd, int cmd_code, u32 operand,
 	idxd->cmd_done = &done;
 	iowrite32(cmd.bits, idxd->reg_base + IDXD_CMD_OFFSET);
 
-	/*
-	 * After command submitted, release lock and go to sleep until
-	 * the command completes via interrupt.
-	 */
+	 
 	spin_unlock_irqrestore(&idxd->cmd_lock, flags);
 	wait_for_completion(&done);
 	stat = ioread32(idxd->reg_base + IDXD_CMDSTS_OFFSET);
@@ -517,7 +510,7 @@ static void idxd_cmd_exec(struct idxd_device *idxd, int cmd_code, u32 operand,
 	idxd->cmd_status = stat & GENMASK(7, 0);
 
 	__clear_bit(IDXD_FLAG_CMD_RUNNING, &idxd->flags);
-	/* Wake up other pending commands */
+	 
 	wake_up(&idxd->cmd_waitq);
 	spin_unlock(&idxd->cmd_lock);
 }
@@ -534,7 +527,7 @@ int idxd_device_enable(struct idxd_device *idxd)
 
 	idxd_cmd_exec(idxd, IDXD_CMD_ENABLE_DEVICE, 0, &status);
 
-	/* If the command is successful or if the device was enabled */
+	 
 	if (status != IDXD_CMDSTS_SUCCESS &&
 	    status != IDXD_CMDSTS_ERR_DEV_ENABLED) {
 		dev_dbg(dev, "%s: err_code: %#x\n", __func__, status);
@@ -557,7 +550,7 @@ int idxd_device_disable(struct idxd_device *idxd)
 
 	idxd_cmd_exec(idxd, IDXD_CMD_DISABLE_DEVICE, 0, &status);
 
-	/* If the command is successful or if the device was disabled */
+	 
 	if (status != IDXD_CMDSTS_SUCCESS &&
 	    !(status & IDXD_CMDSTS_ERR_DIS_DEV_EN)) {
 		dev_dbg(dev, "%s: err_code: %#x\n", __func__, status);
@@ -658,7 +651,7 @@ int idxd_device_release_int_handle(struct idxd_device *idxd, int handle,
 	return 0;
 }
 
-/* Device configuration bits */
+ 
 static void idxd_engines_clear_state(struct idxd_device *idxd)
 {
 	struct idxd_engine *engine;
@@ -683,10 +676,7 @@ static void idxd_groups_clear_state(struct idxd_device *idxd)
 		group->num_engines = 0;
 		group->num_wqs = 0;
 		group->use_rdbuf_limit = false;
-		/*
-		 * The default value is the same as the value of
-		 * total read buffers in GRPCAP.
-		 */
+		 
 		group->rdbufs_allowed = idxd->max_rdbufs;
 		group->rdbufs_reserved = 0;
 		if (idxd->hw.version <= DEVICE_VERSION_2 && !tc_override) {
@@ -717,12 +707,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
 
 void idxd_device_clear_state(struct idxd_device *idxd)
 {
-	/* IDXD is always disabled. Other states are cleared only when IDXD is configurable. */
+	 
 	if (test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags)) {
-		/*
-		 * Clearing wq state is protected by wq lock.
-		 * So no need to be protected by device lock.
-		 */
+		 
 		idxd_device_wqs_clear_state(idxd);
 
 		spin_lock(&idxd->dev_lock);
@@ -760,10 +747,7 @@ static int idxd_device_evl_setup(struct idxd_device *idxd)
 		goto err_bmap;
 	}
 
-	/*
-	 * Address needs to be page aligned. However, dma_alloc_coherent() provides
-	 * at minimal page size aligned address. No manual alignment required.
-	 */
+	 
 	addr = dma_alloc_coherent(dev, size, &dma_addr, GFP_KERNEL);
 	if (!addr) {
 		rc = -ENOMEM;
@@ -838,7 +822,7 @@ static void idxd_group_config_write(struct idxd_group *group)
 
 	dev_dbg(dev, "Writing group %d cfg registers\n", group->id);
 
-	/* setup GRPWQCFG */
+	 
 	for (i = 0; i < GRPWQCFG_STRIDES; i++) {
 		grpcfg_offset = GRPWQCFG_OFFSET(idxd, group->id, i);
 		iowrite64(group->grpcfg.wqs[i], idxd->reg_base + grpcfg_offset);
@@ -847,13 +831,13 @@ static void idxd_group_config_write(struct idxd_group *group)
 			ioread64(idxd->reg_base + grpcfg_offset));
 	}
 
-	/* setup GRPENGCFG */
+	 
 	grpcfg_offset = GRPENGCFG_OFFSET(idxd, group->id);
 	iowrite64(group->grpcfg.engines, idxd->reg_base + grpcfg_offset);
 	dev_dbg(dev, "GRPCFG engs[%d: %#x]: %#llx\n", group->id,
 		grpcfg_offset, ioread64(idxd->reg_base + grpcfg_offset));
 
-	/* setup GRPFLAGS */
+	 
 	grpcfg_offset = GRPFLGCFG_OFFSET(idxd, group->id);
 	iowrite64(group->grpcfg.flags.bits, idxd->reg_base + grpcfg_offset);
 	dev_dbg(dev, "GRPFLAGS flags[%d: %#x]: %#llx\n",
@@ -868,7 +852,7 @@ static int idxd_groups_config_write(struct idxd_device *idxd)
 	int i;
 	struct device *dev = &idxd->pdev->dev;
 
-	/* Setup bandwidth rdbuf limit */
+	 
 	if (idxd->hw.gen_cap.config_en && idxd->rdbuf_limit) {
 		reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
 		reg.rdbuf_limit = idxd->rdbuf_limit;
@@ -906,10 +890,7 @@ static int idxd_wq_config_write(struct idxd_wq *wq)
 	if (!wq->group)
 		return 0;
 
-	/*
-	 * Instead of memset the entire shadow copy of WQCFG, copy from the hardware after
-	 * wq reset. This will copy back the sticky values that are present on some devices.
-	 */
+	 
 	for (i = 0; i < WQCFG_STRIDES(idxd); i++) {
 		wq_offset = WQCFG_OFFSET(idxd, wq->id, i);
 		wq->wqcfg->bits[i] |= ioread32(idxd->reg_base + wq_offset);
@@ -918,27 +899,17 @@ static int idxd_wq_config_write(struct idxd_wq *wq)
 	if (wq->size == 0 && wq->type != IDXD_WQT_NONE)
 		wq->size = WQ_DEFAULT_QUEUE_DEPTH;
 
-	/* byte 0-3 */
+	 
 	wq->wqcfg->wq_size = wq->size;
 
-	/* bytes 4-7 */
+	 
 	wq->wqcfg->wq_thresh = wq->threshold;
 
-	/* byte 8-11 */
+	 
 	if (wq_dedicated(wq))
 		wq->wqcfg->mode = 1;
 
-	/*
-	 * The WQ priv bit is set depending on the WQ type. priv = 1 if the
-	 * WQ type is kernel to indicate privileged access. This setting only
-	 * matters for dedicated WQ. According to the DSA spec:
-	 * If the WQ is in dedicated mode, WQ PASID Enable is 1, and the
-	 * Privileged Mode Enable field of the PCI Express PASID capability
-	 * is 0, this field must be 0.
-	 *
-	 * In the case of a dedicated kernel WQ that is not able to support
-	 * the PASID cap, then the configuration will be rejected.
-	 */
+	 
 	if (wq_dedicated(wq) && wq->wqcfg->pasid_en &&
 	    !idxd_device_pasid_priv_enabled(idxd) &&
 	    wq->type == IDXD_WQT_KERNEL) {
@@ -959,11 +930,11 @@ static int idxd_wq_config_write(struct idxd_wq *wq)
 	if (idxd->hw.wq_cap.wq_prs_support)
 		wq->wqcfg->wq_prs_disable = test_bit(WQ_FLAG_PRS_DISABLE, &wq->flags);
 
-	/* bytes 12-15 */
+	 
 	wq->wqcfg->max_xfer_shift = ilog2(wq->max_xfer_bytes);
 	idxd_wqcfg_set_max_batch_shift(idxd->data->type, wq->wqcfg, ilog2(wq->max_batch_size));
 
-	/* bytes 32-63 */
+	 
 	if (idxd->hw.wq_cap.op_config && wq->opcap_bmap) {
 		memset(wq->wqcfg->op_config, 0, IDXD_MAX_OPCAP_BITS / 8);
 		for_each_set_bit(n, wq->opcap_bmap, IDXD_MAX_OPCAP_BITS) {
@@ -1005,7 +976,7 @@ static void idxd_group_flags_setup(struct idxd_device *idxd)
 {
 	int i;
 
-	/* TC-A 0 and TC-B 1 should be defaults */
+	 
 	for (i = 0; i < idxd->max_groups; i++) {
 		struct idxd_group *group = idxd->groups[i];
 
@@ -1130,7 +1101,7 @@ static int idxd_wq_load_config(struct idxd_wq *wq)
 	wq->size = wq->wqcfg->wq_size;
 	wq->threshold = wq->wqcfg->wq_thresh;
 
-	/* The driver does not support shared WQ mode in read-only config yet */
+	 
 	if (wq->wqcfg->mode == 0 || wq->wqcfg->pasid_en)
 		return -EOPNOTSUPP;
 
@@ -1155,10 +1126,7 @@ static void idxd_group_load_config(struct idxd_group *group)
 	struct device *dev = &idxd->pdev->dev;
 	int i, j, grpcfg_offset;
 
-	/*
-	 * Load WQS bit fields
-	 * Iterate through all 256 bits 64 bits at a time
-	 */
+	 
 	for (i = 0; i < GRPWQCFG_STRIDES; i++) {
 		struct idxd_wq *wq;
 
@@ -1170,15 +1138,15 @@ static void idxd_group_load_config(struct idxd_group *group)
 		if (i * 64 >= idxd->max_wqs)
 			break;
 
-		/* Iterate through all 64 bits and check for wq set */
+		 
 		for (j = 0; j < 64; j++) {
 			int id = i * 64 + j;
 
-			/* No need to check beyond max wqs */
+			 
 			if (id >= idxd->max_wqs)
 				break;
 
-			/* Set group assignment for wq if wq bit is set */
+			 
 			if (group->grpcfg.wqs[i] & BIT(j)) {
 				wq = idxd->wqs[id];
 				wq->group = group;
@@ -1191,7 +1159,7 @@ static void idxd_group_load_config(struct idxd_group *group)
 	dev_dbg(dev, "GRPCFG engs[%d: %#x]: %#llx\n", group->id,
 		grpcfg_offset, group->grpcfg.engines);
 
-	/* Iterate through all 64 bits to check engines set */
+	 
 	for (i = 0; i < 64; i++) {
 		if (i >= idxd->max_engines)
 			break;
@@ -1257,12 +1225,7 @@ static void idxd_flush_pending_descs(struct idxd_irq_entry *ie)
 
 		list_del(&desc->list);
 		ctype = desc->completion->status ? IDXD_COMPLETE_NORMAL : IDXD_COMPLETE_ABORT;
-		/*
-		 * wq is being disabled. Any remaining descriptors are
-		 * likely to be stuck and can be dropped. callback could
-		 * point to code that is no longer accessible, for example
-		 * if dmatest module has been unloaded.
-		 */
+		 
 		tx = &desc->txd;
 		tx->callback = NULL;
 		tx->callback_result = NULL;
@@ -1382,21 +1345,14 @@ int drv_enable_wq(struct idxd_wq *wq)
 		goto err;
 	}
 
-	/* Shared WQ checks */
+	 
 	if (wq_shared(wq)) {
 		if (!wq_shared_supported(wq)) {
 			idxd->cmd_status = IDXD_SCMD_WQ_NO_SVM;
 			dev_dbg(dev, "PASID not enabled and shared wq.\n");
 			goto err;
 		}
-		/*
-		 * Shared wq with the threshold set to 0 means the user
-		 * did not set the threshold or transitioned from a
-		 * dedicated wq but did not set threshold. A value
-		 * of 0 would effectively disable the shared wq. The
-		 * driver does not allow a value of 0 to be set for
-		 * threshold via sysfs.
-		 */
+		 
 		if (wq->threshold == 0) {
 			idxd->cmd_status = IDXD_SCMD_WQ_NO_THRESH;
 			dev_dbg(dev, "Shared wq and threshold 0.\n");
@@ -1404,14 +1360,7 @@ int drv_enable_wq(struct idxd_wq *wq)
 		}
 	}
 
-	/*
-	 * In the event that the WQ is configurable for pasid, the driver
-	 * should setup the pasid, pasid_en bit. This is true for both kernel
-	 * and user shared workqueues. There is no need to setup priv bit in
-	 * that in-kernel DMA will also do user privileged requests.
-	 * A dedicated wq that is not 'kernel' type will configure pasid and
-	 * pasid_en later on so there is no need to setup.
-	 */
+	 
 	if (test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags)) {
 		if (wq_pasid_enabled(wq)) {
 			if (is_idxd_wq_kernel(wq) || wq_shared(wq)) {
@@ -1509,17 +1458,13 @@ int idxd_device_drv_probe(struct idxd_dev *idxd_dev)
 	struct idxd_device *idxd = idxd_dev_to_idxd(idxd_dev);
 	int rc = 0;
 
-	/*
-	 * Device should be in disabled state for the idxd_drv to load. If it's in
-	 * enabled state, then the device was altered outside of driver's control.
-	 * If the state is in halted state, then we don't want to proceed.
-	 */
+	 
 	if (idxd->state != IDXD_DEV_DISABLED) {
 		idxd->cmd_status = IDXD_SCMD_DEV_ENABLED;
 		return -ENXIO;
 	}
 
-	/* Device configuration */
+	 
 	spin_lock(&idxd->dev_lock);
 	if (test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
 		rc = idxd_device_config(idxd);
@@ -1527,12 +1472,7 @@ int idxd_device_drv_probe(struct idxd_dev *idxd_dev)
 	if (rc < 0)
 		return -ENXIO;
 
-	/*
-	 * System PASID is preserved across device disable/enable cycle, but
-	 * genconfig register content gets cleared during device reset. We
-	 * need to re-enable user interrupts for kernel work queue completion
-	 * IRQ to function.
-	 */
+	 
 	if (idxd->pasid != IOMMU_PASID_INVALID)
 		idxd_set_user_intr(idxd, 1);
 
@@ -1542,14 +1482,14 @@ int idxd_device_drv_probe(struct idxd_dev *idxd_dev)
 		return rc;
 	}
 
-	/* Start device */
+	 
 	rc = idxd_device_enable(idxd);
 	if (rc < 0) {
 		idxd_device_evl_free(idxd);
 		return rc;
 	}
 
-	/* Setup DMA device without channels */
+	 
 	rc = idxd_register_dma_device(idxd);
 	if (rc < 0) {
 		idxd_device_disable(idxd);

@@ -1,19 +1,5 @@
-/*
- * Copyright © 2018 Alexey Dobriyan <adobriyan@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-// Test that /proc/$KERNEL_THREAD/fd/ is empty.
+ 
+
 
 #undef NDEBUG
 #include <sys/syscall.h>
@@ -31,12 +17,7 @@
 
 #define PF_KHTREAD 0x00200000
 
-/*
- * Test for kernel threadness atomically with openat().
- *
- * Return /proc/$PID/fd descriptor if process is kernel thread.
- * Return -1 if a process is userspace process.
- */
+ 
 static int kernel_thread_fd(unsigned int pid)
 {
 	unsigned int flags = 0;
@@ -49,10 +30,7 @@ static int kernel_thread_fd(unsigned int pid)
 	if (dir_fd == -1)
 		return -1;
 
-	/*
-	 * Believe it or not, struct task_struct::flags is directly exposed
-	 * to userspace!
-	 */
+	 
 	fd = openat(dir_fd, "stat", O_RDONLY);
 	if (fd == -1) {
 		close(dir_fd);
@@ -68,7 +46,7 @@ static int kernel_thread_fd(unsigned int pid)
 		assert(buf[rv - 1] == '\n');
 		buf[rv - 1] = '\0';
 
-		/* Search backwards: ->comm can contain whitespace and ')'. */
+		 
 		for (i = 0; i < 43; i++) {
 			p = strrchr(buf, ' ');
 			assert(p);
@@ -157,17 +135,12 @@ int main(void)
 	unsigned int pid;
 	int fd;
 
-	/*
-	 * In theory this will loop indefinitely if kernel threads are exiled
-	 * from /proc.
-	 *
-	 * Start with kthreadd.
-	 */
+	 
 	pid = 2;
 	while ((fd = kernel_thread_fd(pid)) == -1 && pid < 1024) {
 		pid++;
 	}
-	/* EACCES if run as non-root. */
+	 
 	if (pid >= 1024)
 		return 1;
 

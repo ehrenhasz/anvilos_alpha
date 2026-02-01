@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -35,9 +14,7 @@
 
 #define PM4_COUNT_ZERO (((1 << 15) - 1) << 16)
 
-/* Initialize a kernel queue, including allocations of GART memory
- * needed for the queue.
- */
+ 
 static bool kq_initialize(struct kernel_queue *kq, struct kfd_node *dev,
 		enum kfd_queue_type type, unsigned int queue_size)
 {
@@ -91,7 +68,7 @@ static bool kq_initialize(struct kernel_queue *kq, struct kfd_node *dev,
 	kq->pq_kernel_addr = kq->pq->cpu_ptr;
 	kq->pq_gpu_addr = kq->pq->gpu_addr;
 
-	/* For CIK family asics, kq->eop_mem is not needed */
+	 
 	if (dev->adev->asic_type > CHIP_MULLINS) {
 		retval = kfd_gtt_sa_allocate(dev, PAGE_SIZE, &kq->eop_mem);
 		if (retval != 0)
@@ -152,7 +129,7 @@ static bool kq_initialize(struct kernel_queue *kq, struct kfd_node *dev,
 					kq->queue->mqd_mem_obj,
 					&kq->queue->gart_mqd_addr,
 					&kq->queue->properties);
-	/* assign HIQ to HQD */
+	 
 	if (type == KFD_QUEUE_TYPE_HIQ) {
 		pr_debug("Assigning hiq to hqd\n");
 		kq->queue->pipe = KFD_CIK_HIQ_PIPE;
@@ -161,7 +138,7 @@ static bool kq_initialize(struct kernel_queue *kq, struct kfd_node *dev,
 				kq->queue->pipe, kq->queue->queue,
 				&kq->queue->properties, NULL);
 	} else {
-		/* allocate fence for DIQ */
+		 
 
 		retval = kfd_gtt_sa_allocate(dev, sizeof(uint32_t),
 						&kq->fence_mem_obj);
@@ -195,7 +172,7 @@ err_get_kernel_doorbell:
 
 }
 
-/* Uninitialize a kernel queue and free all its memory usages. */
+ 
 static void kq_uninitialize(struct kernel_queue *kq, bool hanging)
 {
 	if (kq->queue->properties.type == KFD_QUEUE_TYPE_HIQ && !hanging)
@@ -214,9 +191,7 @@ static void kq_uninitialize(struct kernel_queue *kq, bool hanging)
 	kfd_gtt_sa_free(kq->dev, kq->rptr_mem);
 	kfd_gtt_sa_free(kq->dev, kq->wptr_mem);
 
-	/* For CIK family asics, kq->eop_mem is Null, kfd_gtt_sa_free()
-	 * is able to handle NULL properly.
-	 */
+	 
 	kfd_gtt_sa_free(kq->dev, kq->eop_mem);
 
 	kfd_gtt_sa_free(kq->dev, kq->pq);
@@ -234,11 +209,7 @@ int kq_acquire_packet_buffer(struct kernel_queue *kq,
 	uint64_t wptr64;
 	unsigned int *queue_address;
 
-	/* When rptr == wptr, the buffer is empty.
-	 * When rptr == wptr + 1, the buffer is full.
-	 * It is always rptr that advances to the position of wptr, rather than
-	 * the opposite. So we can only use up to queue_size_dwords - 1 dwords.
-	 */
+	 
 	rptr = *kq->rptr_kernel;
 	wptr = kq->pending_wptr;
 	wptr64 = kq->pending_wptr64;
@@ -253,21 +224,16 @@ int kq_acquire_packet_buffer(struct kernel_queue *kq,
 							queue_size_dwords;
 
 	if (packet_size_in_dwords > available_size) {
-		/*
-		 * make sure calling functions know
-		 * acquire_packet_buffer() failed
-		 */
+		 
 		goto err_no_space;
 	}
 
 	if (wptr + packet_size_in_dwords >= queue_size_dwords) {
-		/* make sure after rolling back to position 0, there is
-		 * still enough space.
-		 */
+		 
 		if (packet_size_in_dwords >= rptr)
 			goto err_no_space;
 
-		/* fill nops, roll back and start at position 0 */
+		 
 		while (wptr > 0) {
 			queue_address[wptr] = kq->nop_packet;
 			wptr = (wptr + 1) % queue_size_dwords;
@@ -344,7 +310,7 @@ void kernel_queue_uninit(struct kernel_queue *kq, bool hanging)
 	kfree(kq);
 }
 
-/* FIXME: Can this test be removed? */
+ 
 static __attribute__((unused)) void test_kq(struct kfd_node *dev)
 {
 	struct kernel_queue *kq;

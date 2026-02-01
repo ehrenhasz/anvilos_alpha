@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas USB DMA Controller Driver
- *
- * Copyright (C) 2015 Renesas Electronics Corporation
- *
- * based on rcar-dmac.c
- * Copyright (C) 2014 Renesas Electronics Inc.
- * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -26,28 +18,13 @@
 #include "../dmaengine.h"
 #include "../virt-dma.h"
 
-/*
- * struct usb_dmac_sg - Descriptor for a hardware transfer
- * @mem_addr: memory address
- * @size: transfer size in bytes
- */
+ 
 struct usb_dmac_sg {
 	dma_addr_t mem_addr;
 	u32 size;
 };
 
-/*
- * struct usb_dmac_desc - USB DMA Transfer Descriptor
- * @vd: base virtual channel DMA transaction descriptor
- * @direction: direction of the DMA transfer
- * @sg_allocated_len: length of allocated sg
- * @sg_len: length of sg
- * @sg_index: index of sg
- * @residue: residue after the DMAC completed a transfer
- * @node: node for desc_got and desc_freed
- * @done_cookie: cookie after the DMAC completed a transfer
- * @sg: information for the transfer
- */
+ 
 struct usb_dmac_desc {
 	struct virt_dma_desc vd;
 	enum dma_transfer_direction direction;
@@ -62,17 +39,7 @@ struct usb_dmac_desc {
 
 #define to_usb_dmac_desc(vd)	container_of(vd, struct usb_dmac_desc, vd)
 
-/*
- * struct usb_dmac_chan - USB DMA Controller Channel
- * @vc: base virtual DMA channel object
- * @iomem: channel I/O memory base
- * @index: index of this channel in the controller
- * @irq: irq number of this channel
- * @desc: the current descriptor
- * @descs_allocated: number of descriptors allocated
- * @desc_got: got descriptors
- * @desc_freed: freed descriptors after the DMAC completed a transfer
- */
+ 
 struct usb_dmac_chan {
 	struct virt_dma_chan vc;
 	void __iomem *iomem;
@@ -86,14 +53,7 @@ struct usb_dmac_chan {
 
 #define to_usb_dmac_chan(c) container_of(c, struct usb_dmac_chan, vc.chan)
 
-/*
- * struct usb_dmac - USB DMA Controller
- * @engine: base DMA engine object
- * @dev: the hardware device
- * @iomem: remapped I/O memory base
- * @n_channels: number of available channels
- * @channels: array of DMAC channels
- */
+ 
 struct usb_dmac {
 	struct dma_device engine;
 	struct device *dev;
@@ -105,9 +65,7 @@ struct usb_dmac {
 
 #define to_usb_dmac(d)		container_of(d, struct usb_dmac, engine)
 
-/* -----------------------------------------------------------------------------
- * Registers
- */
+ 
 
 #define USB_DMAC_CHAN_OFFSET(i)		(0x20 + 0x20 * (i))
 
@@ -134,19 +92,17 @@ struct usb_dmac {
 #define USB_DMACHCR_DE			(1 << 0)
 #define USB_DMATEND			0x0018
 
-/* Hardcode the xfer_shift to 5 (32bytes) */
+ 
 #define USB_DMAC_XFER_SHIFT	5
 #define USB_DMAC_XFER_SIZE	(1 << USB_DMAC_XFER_SHIFT)
 #define USB_DMAC_CHCR_TS	USB_DMACHCR_TS_32B
 #define USB_DMAC_SLAVE_BUSWIDTH	DMA_SLAVE_BUSWIDTH_32_BYTES
 
-/* for descriptors */
+ 
 #define USB_DMAC_INITIAL_NR_DESC	16
 #define USB_DMAC_INITIAL_NR_SG		8
 
-/* -----------------------------------------------------------------------------
- * Device access
- */
+ 
 
 static void usb_dmac_write(struct usb_dmac *dmac, u32 reg, u32 data)
 {
@@ -168,9 +124,7 @@ static void usb_dmac_chan_write(struct usb_dmac_chan *chan, u32 reg, u32 data)
 	writel(data, chan->iomem + reg);
 }
 
-/* -----------------------------------------------------------------------------
- * Initialization and configuration
- */
+ 
 
 static bool usb_dmac_chan_is_busy(struct usb_dmac_chan *chan)
 {
@@ -181,15 +135,12 @@ static bool usb_dmac_chan_is_busy(struct usb_dmac_chan *chan)
 
 static u32 usb_dmac_calc_tend(u32 size)
 {
-	/*
-	 * Please refer to the Figure "Example of Final Transaction Valid
-	 * Data Transfer Enable (EDTEN) Setting" in the data sheet.
-	 */
+	 
 	return 0xffffffff << (32 - (size % USB_DMAC_XFER_SIZE ?	:
 						USB_DMAC_XFER_SIZE));
 }
 
-/* This function is already held by vc.lock */
+ 
 static void usb_dmac_chan_start_sg(struct usb_dmac_chan *chan,
 				   unsigned int index)
 {
@@ -218,7 +169,7 @@ static void usb_dmac_chan_start_sg(struct usb_dmac_chan *chan,
 			USB_DMACHCR_NULLE | USB_DMACHCR_IE | USB_DMACHCR_DE);
 }
 
-/* This function is already held by vc.lock */
+ 
 static void usb_dmac_chan_start_desc(struct usb_dmac_chan *chan)
 {
 	struct virt_dma_desc *vd;
@@ -229,11 +180,7 @@ static void usb_dmac_chan_start_desc(struct usb_dmac_chan *chan)
 		return;
 	}
 
-	/*
-	 * Remove this request from vc->desc_issued. Otherwise, this driver
-	 * will get the previous value from vchan_next_desc() after a transfer
-	 * was completed.
-	 */
+	 
 	list_del(&vd->node);
 
 	chan->desc = to_usb_dmac_desc(vd);
@@ -245,7 +192,7 @@ static int usb_dmac_init(struct usb_dmac *dmac)
 {
 	u16 dmaor;
 
-	/* Clear all channels and enable the DMAC globally. */
+	 
 	usb_dmac_write(dmac, USB_DMAOR, USB_DMAOR_DME);
 
 	dmaor = usb_dmac_read(dmac, USB_DMAOR);
@@ -257,9 +204,7 @@ static int usb_dmac_init(struct usb_dmac *dmac)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Descriptors allocation and free
- */
+ 
 static int usb_dmac_desc_alloc(struct usb_dmac_chan *chan, unsigned int sg_len,
 			       gfp_t gfp)
 {
@@ -301,7 +246,7 @@ static struct usb_dmac_desc *usb_dmac_desc_get(struct usb_dmac_chan *chan,
 	struct usb_dmac_desc *desc = NULL;
 	unsigned long flags;
 
-	/* Get a freed descritpor */
+	 
 	spin_lock_irqsave(&chan->vc.lock, flags);
 	list_for_each_entry(desc, &chan->desc_freed, node) {
 		if (sg_len <= desc->sg_allocated_len) {
@@ -312,9 +257,9 @@ static struct usb_dmac_desc *usb_dmac_desc_get(struct usb_dmac_chan *chan,
 	}
 	spin_unlock_irqrestore(&chan->vc.lock, flags);
 
-	/* Allocate a new descriptor */
+	 
 	if (!usb_dmac_desc_alloc(chan, sg_len, gfp)) {
-		/* If allocated the desc, it was added to tail of the list */
+		 
 		spin_lock_irqsave(&chan->vc.lock, flags);
 		desc = list_last_entry(&chan->desc_freed, struct usb_dmac_desc,
 				       node);
@@ -336,9 +281,7 @@ static void usb_dmac_desc_put(struct usb_dmac_chan *chan,
 	spin_unlock_irqrestore(&chan->vc.lock, flags);
 }
 
-/* -----------------------------------------------------------------------------
- * Stop and reset
- */
+ 
 
 static void usb_dmac_soft_reset(struct usb_dmac_chan *uchan)
 {
@@ -346,7 +289,7 @@ static void usb_dmac_soft_reset(struct usb_dmac_chan *uchan)
 	struct usb_dmac *dmac = to_usb_dmac(chan->device);
 	int i;
 
-	/* Don't issue soft reset if any one of channels is busy */
+	 
 	for (i = 0; i < dmac->n_channels; ++i) {
 		if (usb_dmac_chan_is_busy(uchan))
 			return;
@@ -374,9 +317,7 @@ static void usb_dmac_stop(struct usb_dmac *dmac)
 	usb_dmac_write(dmac, USB_DMAOR, 0);
 }
 
-/* -----------------------------------------------------------------------------
- * DMA engine operations
- */
+ 
 
 static int usb_dmac_alloc_chan_resources(struct dma_chan *chan)
 {
@@ -401,7 +342,7 @@ static void usb_dmac_free_chan_resources(struct dma_chan *chan)
 	struct usb_dmac_chan *uchan = to_usb_dmac_chan(chan);
 	unsigned long flags;
 
-	/* Protect against ISR */
+	 
 	spin_lock_irqsave(&uchan->vc.lock, flags);
 	usb_dmac_chan_halt(uchan);
 	spin_unlock_irqrestore(&uchan->vc.lock, flags);
@@ -472,10 +413,7 @@ static unsigned int usb_dmac_get_current_residue(struct usb_dmac_chan *chan,
 	u32 mem_addr = sg->mem_addr & 0xffffffff;
 	unsigned int residue = sg->size;
 
-	/*
-	 * We cannot use USB_DMATCR to calculate residue because USB_DMATCR
-	 * has unsuited value to calculate.
-	 */
+	 
 	if (desc->direction == DMA_DEV_TO_MEM)
 		residue -= usb_dmac_chan_read(chan, USB_DMADAR) - mem_addr;
 	else
@@ -515,11 +453,11 @@ static u32 usb_dmac_chan_get_residue(struct usb_dmac_chan *chan,
 		desc = to_usb_dmac_desc(vd);
 	}
 
-	/* Compute the size of all usb_dmac_sg still to be transferred */
+	 
 	for (i = desc->sg_index + 1; i < desc->sg_len; i++)
 		residue += desc->sg[i].size;
 
-	/* Add the residue for the current sg */
+	 
 	residue += usb_dmac_get_current_residue(chan, desc, desc->sg_index);
 
 	return residue;
@@ -535,7 +473,7 @@ static enum dma_status usb_dmac_tx_status(struct dma_chan *chan,
 	unsigned long flags;
 
 	status = dma_cookie_status(chan, cookie, txstate);
-	/* a client driver will get residue after DMA_COMPLETE */
+	 
 	if (!txstate)
 		return status;
 
@@ -570,9 +508,7 @@ static void usb_dmac_virt_desc_free(struct virt_dma_desc *vd)
 	usb_dmac_desc_put(chan, desc);
 }
 
-/* -----------------------------------------------------------------------------
- * IRQ handling
- */
+ 
 
 static void usb_dmac_isr_transfer_end(struct usb_dmac_chan *chan)
 {
@@ -590,7 +526,7 @@ static void usb_dmac_isr_transfer_end(struct usb_dmac_chan *chan)
 		desc->vd.tx_result.residue = desc->residue;
 		vchan_cookie_complete(&desc->vd);
 
-		/* Restart the next transfer if this driver has a next desc */
+		 
 		usb_dmac_chan_start_desc(chan);
 	}
 }
@@ -613,7 +549,7 @@ static irqreturn_t usb_dmac_isr_channel(int irq, void *dev)
 		ret |= IRQ_HANDLED;
 	}
 	if (chcr & USB_DMACHCR_NULL) {
-		/* An interruption of TE will happen after we set FTE */
+		 
 		mask |= USB_DMACHCR_NULL;
 		chcr |= USB_DMACHCR_FTE;
 		ret |= IRQ_HANDLED;
@@ -629,16 +565,14 @@ static irqreturn_t usb_dmac_isr_channel(int irq, void *dev)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * OF xlate and channel filter
- */
+ 
 
 static bool usb_dmac_chan_filter(struct dma_chan *chan, void *arg)
 {
 	struct usb_dmac_chan *uchan = to_usb_dmac_chan(chan);
 	struct of_phandle_args *dma_spec = arg;
 
-	/* USB-DMAC should be used with fixed usb controller's FIFO */
+	 
 	if (uchan->index != dma_spec->args[0])
 		return false;
 
@@ -654,7 +588,7 @@ static struct dma_chan *usb_dmac_of_xlate(struct of_phandle_args *dma_spec,
 	if (dma_spec->args_count != 1)
 		return NULL;
 
-	/* Only slave DMA channels can be allocated via DT */
+	 
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
@@ -666,9 +600,7 @@ static struct dma_chan *usb_dmac_of_xlate(struct of_phandle_args *dma_spec,
 	return chan;
 }
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 #ifdef CONFIG_PM
 static int usb_dmac_runtime_suspend(struct device *dev)
@@ -691,7 +623,7 @@ static int usb_dmac_runtime_resume(struct device *dev)
 
 	return usb_dmac_init(dmac);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops usb_dmac_pm = {
 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
@@ -700,9 +632,7 @@ static const struct dev_pm_ops usb_dmac_pm = {
 			   NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe and remove
- */
+ 
 
 static int usb_dmac_chan_probe(struct usb_dmac *dmac,
 			       struct usb_dmac_chan *uchan,
@@ -716,7 +646,7 @@ static int usb_dmac_chan_probe(struct usb_dmac *dmac,
 	uchan->index = index;
 	uchan->iomem = dmac->iomem + USB_DMAC_CHAN_OFFSET(index);
 
-	/* Request the channel interrupt. */
+	 
 	sprintf(pdev_irqname, "ch%u", index);
 	uchan->irq = platform_get_irq_byname(pdev, pdev_irqname);
 	if (uchan->irq < 0)
@@ -787,12 +717,12 @@ static int usb_dmac_probe(struct platform_device *pdev)
 	if (!dmac->channels)
 		return -ENOMEM;
 
-	/* Request resources. */
+	 
 	dmac->iomem = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(dmac->iomem))
 		return PTR_ERR(dmac->iomem);
 
-	/* Enable runtime PM and initialize the device. */
+	 
 	pm_runtime_enable(&pdev->dev);
 	ret = pm_runtime_get_sync(&pdev->dev);
 	if (ret < 0) {
@@ -807,7 +737,7 @@ static int usb_dmac_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/* Initialize the channels. */
+	 
 	INIT_LIST_HEAD(&dmac->engine.channels);
 
 	for (i = 0; i < dmac->n_channels; ++i) {
@@ -816,17 +746,13 @@ static int usb_dmac_probe(struct platform_device *pdev)
 			goto error;
 	}
 
-	/* Register the DMAC as a DMA provider for DT. */
+	 
 	ret = of_dma_controller_register(pdev->dev.of_node, usb_dmac_of_xlate,
 					 NULL);
 	if (ret < 0)
 		goto error;
 
-	/*
-	 * Register the DMA engine device.
-	 *
-	 * Default transfer size of 32 bytes requires 32-byte alignment.
-	 */
+	 
 	engine = &dmac->engine;
 	dma_cap_set(DMA_SLAVE, engine->cap_mask);
 
@@ -890,7 +816,7 @@ static void usb_dmac_shutdown(struct platform_device *pdev)
 
 static const struct of_device_id usb_dmac_of_ids[] = {
 	{ .compatible = "renesas,usb-dmac", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, usb_dmac_of_ids);
 

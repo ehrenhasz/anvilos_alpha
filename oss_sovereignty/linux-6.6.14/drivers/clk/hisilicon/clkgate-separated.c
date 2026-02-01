@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon clock separated gate driver
- *
- * Copyright (c) 2012-2013 Hisilicon Limited.
- * Copyright (c) 2012-2013 Linaro Limited.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- *	   Xin Li <li.xin@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -16,15 +8,15 @@
 
 #include "clk.h"
 
-/* clock separated gate register offset */
+ 
 #define CLKGATE_SEPERATED_ENABLE		0x0
 #define CLKGATE_SEPERATED_DISABLE		0x4
 #define CLKGATE_SEPERATED_STATUS		0x8
 
 struct clkgate_separated {
 	struct clk_hw	hw;
-	void __iomem	*enable;	/* enable register */
-	u8		bit_idx;	/* bits in enable/disable register */
+	void __iomem	*enable;	 
+	u8		bit_idx;	 
 	u8		flags;
 	spinlock_t	*lock;
 };

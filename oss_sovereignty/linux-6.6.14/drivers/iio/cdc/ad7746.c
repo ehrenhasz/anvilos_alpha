@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -21,7 +17,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* AD7746 Register Definition */
+ 
 
 #define AD7746_REG_STATUS		0
 #define AD7746_REG_CAP_DATA_HIGH	1
@@ -36,19 +32,19 @@
 #define AD7746_REG_CAP_GAINH		15
 #define AD7746_REG_VOLT_GAINH		17
 
-/* Status Register Bit Designations (AD7746_REG_STATUS) */
+ 
 #define AD7746_STATUS_EXCERR		BIT(3)
 #define AD7746_STATUS_RDY		BIT(2)
 #define AD7746_STATUS_RDYVT		BIT(1)
 #define AD7746_STATUS_RDYCAP		BIT(0)
 
-/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
+ 
 #define AD7746_CAPSETUP_CAPEN		BIT(7)
-#define AD7746_CAPSETUP_CIN2		BIT(6) /* AD7746 only */
+#define AD7746_CAPSETUP_CIN2		BIT(6)  
 #define AD7746_CAPSETUP_CAPDIFF		BIT(5)
 #define AD7746_CAPSETUP_CACHOP		BIT(0)
 
-/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
+ 
 #define AD7746_VTSETUP_VTEN		BIT(7)
 #define AD7746_VTSETUP_VTMD_MASK	GENMASK(6, 5)
 #define AD7746_VTSETUP_VTMD_INT_TEMP	0
@@ -59,7 +55,7 @@
 #define AD7746_VTSETUP_VTSHORT		BIT(1)
 #define AD7746_VTSETUP_VTCHOP		BIT(0)
 
-/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
+ 
 #define AD7746_EXCSETUP_CLKCTRL		BIT(7)
 #define AD7746_EXCSETUP_EXCON		BIT(6)
 #define AD7746_EXCSETUP_EXCB		BIT(5)
@@ -68,7 +64,7 @@
 #define AD7746_EXCSETUP_NEXCA		BIT(2)
 #define AD7746_EXCSETUP_EXCLVL_MASK	GENMASK(1, 0)
 
-/* Config Register Bit Designations (AD7746_REG_CFG) */
+ 
 #define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
 #define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
 #define AD7746_CONF_MODE_MASK		GENMASK(2, 0)
@@ -79,17 +75,14 @@
 #define AD7746_CONF_MODE_OFFS_CAL	5
 #define AD7746_CONF_MODE_GAIN_CAL	6
 
-/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
+ 
 #define AD7746_CAPDAC_DACEN		BIT(7)
 #define AD7746_CAPDAC_DACP_MASK		GENMASK(6, 0)
 
 struct ad7746_chip_info {
 	struct i2c_client *client;
-	struct mutex lock; /* protect sensor state */
-	/*
-	 * Capacitive channel digital filter setup;
-	 * conversion time/update rate setup per channel
-	 */
+	struct mutex lock;  
+	 
 	u8	config;
 	u8	cap_setup;
 	u8	vt_setup;
@@ -112,7 +105,7 @@ struct ad7746_chan_info {
 	u8 addr;
 	union {
 		u8 vtmd;
-		struct { /* CAP SETUP fields */
+		struct {  
 			unsigned int cin2 : 1;
 			unsigned int capdiff : 1;
 		};
@@ -240,7 +233,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
 	}
 };
 
-/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
+ 
 static const unsigned char ad7746_vt_filter_rate_table[][2] = {
 	{ 50, 20 + 1 }, { 31, 32 + 1 }, { 16, 62 + 1 }, { 8, 122 + 1 },
 };
@@ -504,14 +497,10 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
 		return 0;
 	case IIO_CHAN_INFO_OFFSET:
 	case IIO_CHAN_INFO_ZEROPOINT:
-		if (val < 0 || val > 43008000) /* 21pF */
+		if (val < 0 || val > 43008000)  
 			return -EINVAL;
 
-		/*
-		 * CAPDAC Scale = 21pF_typ / 127
-		 * CIN Scale = 8.192pF / 2^24
-		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
-		 */
+		 
 
 		val /= 338646;
 		mutex_lock(&chip->lock);
@@ -598,17 +587,14 @@ static int ad7746_read_channel(struct iio_dev *indio_dev,
 		return ret;
 
 	msleep(delay);
-	/* Now read the actual register */
+	 
 	ret = i2c_smbus_read_i2c_block_data(chip->client,
 					    ad7746_chan_info[chan->address].addr,
 					    sizeof(data), data);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Offset applied internally becaue the _offset userspace interface is
-	 * needed for the CAP DACs which apply a controllable offset.
-	 */
+	 
 	*val = get_unaligned_be24(data) - 0x800000;
 
 	return 0;
@@ -649,7 +635,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
 		mutex_unlock(&chip->lock);
 		if (ret < 0)
 			return ret;
-		/* 1 + gain_val / 2^16 */
+		 
 		*val = 1;
 		*val2 = (15625 * ret) / 1024;
 
@@ -673,12 +659,12 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_CAPACITANCE:
-			/* 8.192pf / 2^24 */
+			 
 			*val =  0;
 			*val2 = 488;
 			return IIO_VAL_INT_PLUS_NANO;
 		case IIO_VOLTAGE:
-			/* 1170mV / 2^23 */
+			 
 			*val = 1170;
 			if (chan->channel == 1)
 				*val *= 6;

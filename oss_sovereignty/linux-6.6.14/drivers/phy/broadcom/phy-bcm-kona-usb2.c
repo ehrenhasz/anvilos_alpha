@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * phy-bcm-kona-usb2.c - Broadcom Kona USB2 Phy Driver
- *
- * Copyright (C) 2013 Linaro Limited
- * Matt Porter <mporter@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -37,7 +32,7 @@ static void bcm_kona_usb_phy_power(struct bcm_kona_usb *phy, int on)
 
 	val = readl(phy->regs + OTGCTL);
 	if (on) {
-		/* Configure and power PHY */
+		 
 		val &= ~(OTGCTL_OTGSTAT2 | OTGCTL_OTGSTAT1 |
 			 OTGCTL_UTMI_LINE_STATE1 | OTGCTL_UTMI_LINE_STATE0);
 		val |= OTGCTL_PRST_N_SW | OTGCTL_HRESET_N;
@@ -52,13 +47,13 @@ static int bcm_kona_usb_phy_init(struct phy *gphy)
 	struct bcm_kona_usb *phy = phy_get_drvdata(gphy);
 	u32 val;
 
-	/* Soft reset PHY */
+	 
 	val = readl(phy->regs + P1CTL);
 	val &= ~P1CTL_NON_DRIVING;
 	val |= P1CTL_SOFT_RESET;
 	writel(val, phy->regs + P1CTL);
 	writel(val & ~P1CTL_SOFT_RESET, phy->regs + P1CTL);
-	/* Reset needs to be asserted for 2ms */
+	 
 	mdelay(2);
 	writel(val | P1CTL_SOFT_RESET, phy->regs + P1CTL);
 
@@ -111,7 +106,7 @@ static int bcm_kona_usb2_probe(struct platform_device *pdev)
 	if (IS_ERR(gphy))
 		return PTR_ERR(gphy);
 
-	/* The Kona PHY supports an 8-bit wide UTMI interface */
+	 
 	phy_set_bus_width(gphy, 8);
 
 	phy_set_drvdata(gphy, phy);
@@ -124,7 +119,7 @@ static int bcm_kona_usb2_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm_kona_usb2_dt_ids[] = {
 	{ .compatible = "brcm,kona-usb2-phy" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, bcm_kona_usb2_dt_ids);

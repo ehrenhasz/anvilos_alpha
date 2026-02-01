@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
@@ -14,14 +14,10 @@ struct socket_testcase {
 	int	type;
 	int	protocol;
 
-	/* 0    = valid file descriptor
-	 * -foo = error foo
-	 */
+	 
 	int	expect;
 
-	/* If non-zero, accept EAFNOSUPPORT to handle the case
-	 * of the protocol not being configured into the kernel.
-	 */
+	 
 	int	nosupport_ok;
 };
 

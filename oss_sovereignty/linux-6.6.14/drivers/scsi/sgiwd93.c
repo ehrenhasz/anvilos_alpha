@@ -1,15 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
- * Copyright (C) 1999 Andrew R. Baker (andrewb@uab.edu)
- * Copyright (C) 2001 Florian Lohoff (flo@rfc822.org)
- * Copyright (C) 2003, 07 Ralf Baechle (ralf@linux-mips.org)
- * 
- * (In all truth, Jed Schimmel wrote all this code.)
- */
+ 
 
 #undef DEBUG
 
@@ -46,10 +35,10 @@ struct ip22_hostdata {
 
 struct hpc_chunk {
 	struct hpc_dma_desc desc;
-	u32 _padding;	/* align to quadword boundary */
+	u32 _padding;	 
 };
 
-/* space for hpc dma descriptors */
+ 
 #define HPC_DMA_SIZE   PAGE_SIZE
 
 #define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
@@ -81,10 +70,7 @@ void fill_hpc_entries(struct ip22_hostdata *hd, struct scsi_cmnd *cmd, int din)
 	hcp = hd->cpu;
 
 	while (len) {
-		/*
-		 * even cntinfo could be up to 16383, without
-		 * magic only 8192 works correctly
-		 */
+		 
 		count = len > 8192 ? 8192 : len;
 		hcp->desc.pbuf = physaddr;
 		hcp->desc.cntinfo = count;
@@ -93,11 +79,7 @@ void fill_hpc_entries(struct ip22_hostdata *hd, struct scsi_cmnd *cmd, int din)
 		physaddr += count;
 	}
 
-	/*
-	 * To make sure, if we trip an HPC bug, that we transfer every single
-	 * byte, we tag on an extra zero length dma descriptor at the end of
-	 * the chain.
-	 */
+	 
 	hcp->desc.pbuf = 0;
 	hcp->desc.cntinfo = HPCDMA_EOX;
 	dma_sync_single_for_device(hd->dev, hd->dma,
@@ -116,12 +98,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int datainp)
 
 	hdata->wh.dma_dir = datainp;
 
-	/*
-	 * wd33c93 shouldn't pass us bogus dma_setups, but it does:-(  The
-	 * other wd33c93 drivers deal with it the same way (which isn't that
-	 * obvious).  IMHO a better fix would be, not to do these dma setups
-	 * in the first place.
-	 */
+	 
 	if (scsi_pointer->ptr == NULL || scsi_pointer->this_residual == 0)
 		return 1;
 
@@ -129,7 +106,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int datainp)
 
 	pr_debug(" HPCGO\n");
 
-	/* Start up the HPC. */
+	 
 	hregs->ndptr = hdata->dma;
 	if (datainp)
 		hregs->ctrl = HPC3_SCTRL_ACTIVE;
@@ -156,7 +133,7 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 
 	pr_debug("dma_stop: status<%d> ", status);
 
-	/* First stop the HPC and flush it's FIFO. */
+	 
 	if (hdata->wh.dma_dir) {
 		hregs->ctrl |= HPC3_SCTRL_FLUSH;
 		while (hregs->ctrl & HPC3_SCTRL_ACTIVE)
@@ -199,11 +176,7 @@ static inline void init_hpc_chain(struct ip22_hostdata *hdata)
 	hcp->desc.pnext = hdata->dma;
 }
 
-/*
- * Kludge alert - the SCSI code calls the abort and reset method with int
- * arguments not with pointers.  So this is going to blow up beautyfully
- * on 64-bit systems with memory outside the compat address spaces.
- */
+ 
 static const struct scsi_host_template sgiwd93_template = {
 	.module			= THIS_MODULE,
 	.proc_name		= "SGIWD93",

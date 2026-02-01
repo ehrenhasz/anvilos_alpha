@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx ZynqMP AES Driver.
- * Copyright (c) 2020 Xilinx Inc.
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/engine.h>
@@ -379,7 +376,7 @@ static int zynqmp_aes_aead_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	int err;
 
-	/* ZynqMP AES driver supports only one instance */
+	 
 	if (!aes_drv_ctx.dev)
 		aes_drv_ctx.dev = dev;
 	else
@@ -431,7 +428,7 @@ static int zynqmp_aes_aead_remove(struct platform_device *pdev)
 
 static const struct of_device_id zynqmp_aes_dt_ids[] = {
 	{ .compatible = "xlnx,zynqmp-aes" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, zynqmp_aes_dt_ids);
 

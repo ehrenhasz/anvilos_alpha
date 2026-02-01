@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* PTP 1588 clock using the Renesas Ethernet AVB
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- * Copyright (C) 2015 Renesas Solutions Corp.
- * Copyright (C) 2015-2016 Cogent Embedded, Inc. <source@cogentembedded.com>
- */
+
+ 
 
 #include "ravb.h"
 
@@ -21,7 +16,7 @@ static int ravb_ptp_tcr_request(struct ravb_private *priv, u32 request)
 	return ravb_wait(ndev, GCCR, GCCR_TCR, GCCR_TCR_NOREQ);
 }
 
-/* Caller must hold the lock */
+ 
 static int ravb_ptp_time_read(struct ravb_private *priv, struct timespec64 *ts)
 {
 	struct net_device *ndev = priv->ndev;
@@ -38,7 +33,7 @@ static int ravb_ptp_time_read(struct ravb_private *priv, struct timespec64 *ts)
 	return 0;
 }
 
-/* Caller must hold the lock */
+ 
 static int ravb_ptp_time_write(struct ravb_private *priv,
 				const struct timespec64 *ts)
 {
@@ -61,15 +56,11 @@ static int ravb_ptp_time_write(struct ravb_private *priv,
 	return 0;
 }
 
-/* Caller must hold the lock */
+ 
 static int ravb_ptp_update_compare(struct ravb_private *priv, u32 ns)
 {
 	struct net_device *ndev = priv->ndev;
-	/* When the comparison value (GPTC.PTCV) is in range of
-	 * [x-1 to x+1] (x is the configured increment value in
-	 * GTI.TIV), it may happen that a comparison match is
-	 * not detected when the timer wraps around.
-	 */
+	 
 	u32 gti_ns_plus_1 = (priv->ptp.current_addend >> 20) + 1;
 	u32 gccr;
 
@@ -87,7 +78,7 @@ static int ravb_ptp_update_compare(struct ravb_private *priv, u32 ns)
 	return 0;
 }
 
-/* PTP clock operations */
+ 
 static int ravb_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct ravb_private *priv = container_of(ptp, struct ravb_private,
@@ -176,7 +167,7 @@ static int ravb_ptp_extts(struct ptp_clock_info *ptp,
 	struct net_device *ndev = priv->ndev;
 	unsigned long flags;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (req->flags & ~(PTP_ENABLE_FEATURE |
 			   PTP_RISING_EDGE |
 			   PTP_FALLING_EDGE |
@@ -213,7 +204,7 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
 	unsigned long flags;
 	int error = 0;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (req->flags)
 		return -EOPNOTSUPP;
 
@@ -246,7 +237,7 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
 		perout->period = (u32)period_ns;
 		error = ravb_ptp_update_compare(priv, (u32)start_ns);
 		if (!error) {
-			/* Unmask interrupt */
+			 
 			if (!info->irq_en_dis)
 				ravb_modify(ndev, GIC, GIC_PTME, GIC_PTME);
 			else
@@ -258,7 +249,7 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
 		perout = &priv->ptp.perout[req->index];
 		perout->period = 0;
 
-		/* Mask interrupt */
+		 
 		if (!info->irq_en_dis)
 			ravb_modify(ndev, GIC, GIC_PTME, 0);
 		else
@@ -295,7 +286,7 @@ static const struct ptp_clock_info ravb_ptp_info = {
 	.enable		= ravb_ptp_enable,
 };
 
-/* Caller must hold the lock */
+ 
 void ravb_ptp_interrupt(struct net_device *ndev)
 {
 	struct ravb_private *priv = netdev_priv(ndev);

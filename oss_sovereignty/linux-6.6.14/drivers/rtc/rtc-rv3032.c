@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC driver for the Micro Crystal RV3032
- *
- * Copyright (C) 2020 Micro Crystal SA
- *
- * Alexandre Belloni <alexandre.belloni@bootlin.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -794,7 +787,7 @@ static int rv3032_hwmon_read_temp(struct device *dev, long *mC)
 	temp = sign_extend32(buf[1], 7) << 4;
 	temp |= FIELD_GET(RV3032_TLSB_TEMP, buf[0]);
 
-	/* No blocking or shadowing on RV3032_TLSB and RV3032_TMSB */
+	 
 	do {
 		prev = temp;
 

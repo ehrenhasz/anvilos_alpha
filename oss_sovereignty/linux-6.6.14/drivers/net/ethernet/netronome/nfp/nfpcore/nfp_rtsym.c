@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_rtsym.c
- * Interface for accessing run-time symbol table
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Espen Skoglund <espen.skoglund@netronome.com>
- *          Francois H. Theron <francois.theron@netronome.com>
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -21,7 +14,7 @@
 #include "nfp_nffw.h"
 #include "nfp6000/nfp6000.h"
 
-/* These need to match the linker */
+ 
 #define SYM_TGT_LMEM		0
 #define SYM_TGT_EMU_CACHE	0x17
 
@@ -110,7 +103,7 @@ __nfp_rtsym_table_read(struct nfp_cpp *cpp, const struct nfp_mip *mip)
 	if (!symtab_size || !strtab_size || symtab_size % sizeof(*rtsymtab))
 		return NULL;
 
-	/* Align to 64 bits */
+	 
 	symtab_size = round_up(symtab_size, 8);
 	strtab_size = round_up(strtab_size, 8);
 
@@ -153,12 +146,7 @@ exit_free_rtsym_raw:
 	return NULL;
 }
 
-/**
- * nfp_rtsym_count() - Get the number of RTSYM descriptors
- * @rtbl:	NFP RTsym table
- *
- * Return: Number of RTSYM descriptors
- */
+ 
 int nfp_rtsym_count(struct nfp_rtsym_table *rtbl)
 {
 	if (!rtbl)
@@ -166,13 +154,7 @@ int nfp_rtsym_count(struct nfp_rtsym_table *rtbl)
 	return rtbl->num;
 }
 
-/**
- * nfp_rtsym_get() - Get the Nth RTSYM descriptor
- * @rtbl:	NFP RTsym table
- * @idx:	Index (0-based) of the RTSYM descriptor
- *
- * Return: const pointer to a struct nfp_rtsym descriptor, or NULL
- */
+ 
 const struct nfp_rtsym *nfp_rtsym_get(struct nfp_rtsym_table *rtbl, int idx)
 {
 	if (!rtbl)
@@ -183,13 +165,7 @@ const struct nfp_rtsym *nfp_rtsym_get(struct nfp_rtsym_table *rtbl, int idx)
 	return &rtbl->symtab[idx];
 }
 
-/**
- * nfp_rtsym_lookup() - Return the RTSYM descriptor for a symbol name
- * @rtbl:	NFP RTsym table
- * @name:	Symbol name
- *
- * Return: const pointer to a struct nfp_rtsym descriptor, or NULL
- */
+ 
 const struct nfp_rtsym *
 nfp_rtsym_lookup(struct nfp_rtsym_table *rtbl, const char *name)
 {
@@ -428,18 +404,7 @@ int nfp_rtsym_writeq(struct nfp_cpp *cpp, const struct nfp_rtsym *sym, u64 off,
 	return __nfp_rtsym_writeq(cpp, sym, NFP_CPP_ACTION_RW, 0, off, value);
 }
 
-/**
- * nfp_rtsym_read_le() - Read a simple unsigned scalar value from symbol
- * @rtbl:	NFP RTsym table
- * @name:	Symbol name
- * @error:	Poniter to error code (optional)
- *
- * Lookup a symbol, map, read it and return it's value. Value of the symbol
- * will be interpreted as a simple little-endian unsigned value. Symbol can
- * be 4 or 8 bytes in size.
- *
- * Return: value read, on error sets the error and returns ~0ULL.
- */
+ 
 u64 nfp_rtsym_read_le(struct nfp_rtsym_table *rtbl, const char *name,
 		      int *error)
 {
@@ -479,18 +444,7 @@ exit:
 	return val;
 }
 
-/**
- * nfp_rtsym_write_le() - Write an unsigned scalar value to a symbol
- * @rtbl:	NFP RTsym table
- * @name:	Symbol name
- * @value:	Value to write
- *
- * Lookup a symbol and write a value to it. Symbol can be 4 or 8 bytes in size.
- * If 4 bytes then the lower 32-bits of 'value' are used. Value will be
- * written as simple little-endian unsigned value.
- *
- * Return: 0 on success or error code.
- */
+ 
 int nfp_rtsym_write_le(struct nfp_rtsym_table *rtbl, const char *name,
 		       u64 value)
 {

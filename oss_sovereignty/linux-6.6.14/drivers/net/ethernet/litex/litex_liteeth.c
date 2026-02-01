@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LiteX Liteeth Ethernet
- *
- * Copyright 2017 Joel Stanley <joel@jms.id.au>
- *
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/interrupt.h>
@@ -43,12 +38,12 @@ struct liteeth {
 	struct device *dev;
 	u32 slot_size;
 
-	/* Tx */
+	 
 	u32 tx_slot;
 	u32 num_tx_slots;
 	void __iomem *tx_base;
 
-	/* Rx */
+	 
 	u32 rx_slot;
 	u32 num_rx_slots;
 	void __iomem *rx_base;
@@ -116,7 +111,7 @@ static int liteeth_open(struct net_device *netdev)
 	struct liteeth *priv = netdev_priv(netdev);
 	int err;
 
-	/* Clear pending events */
+	 
 	litex_write8(priv->base + LITEETH_WRITER_EV_PENDING, 1);
 	litex_write8(priv->base + LITEETH_READER_EV_PENDING, 1);
 
@@ -126,7 +121,7 @@ static int liteeth_open(struct net_device *netdev)
 		return err;
 	}
 
-	/* Enable IRQs */
+	 
 	litex_write8(priv->base + LITEETH_WRITER_EV_ENABLE, 1);
 	litex_write8(priv->base + LITEETH_READER_EV_ENABLE, 1);
 
@@ -166,7 +161,7 @@ static netdev_tx_t liteeth_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Reject oversize packets */
+	 
 	if (unlikely(skb->len > priv->slot_size)) {
 		if (net_ratelimit())
 			netdev_err(netdev, "tx packet too big\n");
@@ -268,11 +263,11 @@ static int liteeth_probe(struct platform_device *pdev)
 
 	liteeth_setup_slots(priv);
 
-	/* Rx slots */
+	 
 	priv->rx_base = buf_base;
 	priv->rx_slot = 0;
 
-	/* Tx slots come after Rx slots */
+	 
 	priv->tx_base = buf_base + priv->num_rx_slots * priv->slot_size;
 	priv->tx_slot = 0;
 

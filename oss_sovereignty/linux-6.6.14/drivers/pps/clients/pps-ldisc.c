@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pps-ldisc.c -- PPS line discipline
- *
- * Copyright (C) 2008	Rodolfo Giometti <giometti@linux.it>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,14 +17,11 @@ static void pps_tty_dcd_change(struct tty_struct *tty, bool active)
 	pps_get_ts(&ts);
 
 	pps = pps_lookup_dev(tty);
-	/*
-	 * This should never fail, but the ldisc locking is very
-	 * convoluted, so don't crash just in case.
-	 */
+	 
 	if (WARN_ON_ONCE(pps == NULL))
 		return;
 
-	/* Now do the PPS event report */
+	 
 	pps_event(pps, &ts, active ? PPS_CAPTUREASSERT :
 			PPS_CAPTURECLEAR, NULL);
 
@@ -62,7 +55,7 @@ static int pps_tty_open(struct tty_struct *tty)
 	}
 	pps->lookup_cookie = tty;
 
-	/* Now open the base class N_TTY ldisc */
+	 
 	ret = alias_n_tty_open(tty);
 	if (ret < 0) {
 		pr_err("cannot open tty ldisc \"%s\"\n", info.path);
@@ -95,22 +88,20 @@ static void pps_tty_close(struct tty_struct *tty)
 
 static struct tty_ldisc_ops pps_ldisc_ops;
 
-/*
- * Module stuff
- */
+ 
 
 static int __init pps_tty_init(void)
 {
 	int err;
 
-	/* Inherit the N_TTY's ops */
+	 
 	n_tty_inherit_ops(&pps_ldisc_ops);
 
-	/* Save N_TTY's open()/close() methods */
+	 
 	alias_n_tty_open = pps_ldisc_ops.open;
 	alias_n_tty_close = pps_ldisc_ops.close;
 
-	/* Init PPS_TTY data */
+	 
 	pps_ldisc_ops.owner = THIS_MODULE;
 	pps_ldisc_ops.num = N_PPS;
 	pps_ldisc_ops.name = "pps_tty";

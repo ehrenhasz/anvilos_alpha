@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 
 void serial_test_fexit_stress(void)

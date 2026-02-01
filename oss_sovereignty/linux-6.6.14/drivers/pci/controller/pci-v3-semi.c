@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for V3 Semiconductor PCI Local Bus to PCI Bridge
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on the code from arch/arm/mach-integrator/pci_v3.c
- * Copyright (C) 1999 ARM Limited
- * Copyright (C) 2000-2001 Deep Blue Solutions Ltd
- *
- * Contributors to the old driver include:
- * Russell King <linux@armlinux.org.uk>
- * David A. Rusling <david.rusling@linaro.org> (uHAL, ARM Firmware suite)
- * Rob Herring <robh@kernel.org>
- * Liviu Dudau <Liviu.Dudau@arm.com>
- * Grant Likely <grant.likely@secretlab.ca>
- * Arnd Bergmann <arnd@arndb.de>
- * Bjorn Helgaas <bhelgaas@google.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -86,13 +70,13 @@
 #define V3_MAIL_RD_STAT			0x000000DA
 #define V3_QBA_MAP			0x000000DC
 
-/* PCI STATUS bits */
+ 
 #define V3_PCI_STAT_PAR_ERR		BIT(15)
 #define V3_PCI_STAT_SYS_ERR		BIT(14)
 #define V3_PCI_STAT_M_ABORT_ERR		BIT(13)
 #define V3_PCI_STAT_T_ABORT_ERR		BIT(12)
 
-/* LB ISTAT bits */
+ 
 #define V3_LB_ISTAT_MAILBOX		BIT(7)
 #define V3_LB_ISTAT_PCI_RD		BIT(6)
 #define V3_LB_ISTAT_PCI_WR		BIT(5)
@@ -102,7 +86,7 @@
 #define V3_LB_ISTAT_DMA1		BIT(1)
 #define V3_LB_ISTAT_DMA0		BIT(0)
 
-/* PCI COMMAND bits */
+ 
 #define V3_COMMAND_M_FBB_EN		BIT(9)
 #define V3_COMMAND_M_SERR_EN		BIT(8)
 #define V3_COMMAND_M_PAR_EN		BIT(6)
@@ -110,12 +94,12 @@
 #define V3_COMMAND_M_MEM_EN		BIT(1)
 #define V3_COMMAND_M_IO_EN		BIT(0)
 
-/* SYSTEM bits */
+ 
 #define V3_SYSTEM_M_RST_OUT		BIT(15)
 #define V3_SYSTEM_M_LOCK		BIT(14)
 #define V3_SYSTEM_UNLOCK		0xa05f
 
-/* PCI CFG bits */
+ 
 #define V3_PCI_CFG_M_I2O_EN		BIT(15)
 #define V3_PCI_CFG_M_IO_REG_DIS		BIT(14)
 #define V3_PCI_CFG_M_IO_DIS		BIT(13)
@@ -123,22 +107,19 @@
 #define V3_PCI_CFG_M_RETRY_EN		BIT(10)
 #define V3_PCI_CFG_M_AD_LOW1		BIT(9)
 #define V3_PCI_CFG_M_AD_LOW0		BIT(8)
-/*
- * This is the value applied to C/BE[3:1], with bit 0 always held 0
- * during DMA access.
- */
+ 
 #define V3_PCI_CFG_M_RTYPE_SHIFT	5
 #define V3_PCI_CFG_M_WTYPE_SHIFT	1
 #define V3_PCI_CFG_TYPE_DEFAULT		0x3
 
-/* PCI BASE bits (PCI -> Local Bus) */
+ 
 #define V3_PCI_BASE_M_ADR_BASE		0xFFF00000U
 #define V3_PCI_BASE_M_ADR_BASEL		0x000FFF00U
 #define V3_PCI_BASE_M_PREFETCH		BIT(3)
 #define V3_PCI_BASE_M_TYPE		(3 << 1)
 #define V3_PCI_BASE_M_IO		BIT(0)
 
-/* PCI MAP bits (PCI -> Local bus) */
+ 
 #define V3_PCI_MAP_M_MAP_ADR		0xFFF00000U
 #define V3_PCI_MAP_M_RD_POST_INH	BIT(15)
 #define V3_PCI_MAP_M_ROM_SIZE		(3 << 10)
@@ -147,7 +128,7 @@
 #define V3_PCI_MAP_M_REG_EN		BIT(1)
 #define V3_PCI_MAP_M_ENABLE		BIT(0)
 
-/* LB_BASE0,1 bits (Local bus -> PCI) */
+ 
 #define V3_LB_BASE_ADR_BASE		0xfff00000U
 #define V3_LB_BASE_SWAP			(3 << 8)
 #define V3_LB_BASE_ADR_SIZE		(15 << 4)
@@ -169,7 +150,7 @@
 
 #define v3_addr_to_lb_base(a)	((a) & V3_LB_BASE_ADR_BASE)
 
-/* LB_MAP0,1 bits (Local bus -> PCI) */
+ 
 #define V3_LB_MAP_MAP_ADR		0xfff0U
 #define V3_LB_MAP_TYPE			(7 << 1)
 #define V3_LB_MAP_AD_LOW_EN		BIT(0)
@@ -182,19 +163,19 @@
 
 #define v3_addr_to_lb_map(a)	(((a) >> 16) & V3_LB_MAP_MAP_ADR)
 
-/* LB_BASE2 bits (Local bus -> PCI IO) */
+ 
 #define V3_LB_BASE2_ADR_BASE		0xff00U
 #define V3_LB_BASE2_SWAP_AUTO		(3 << 6)
 #define V3_LB_BASE2_ENABLE		BIT(0)
 
 #define v3_addr_to_lb_base2(a)	(((a) >> 16) & V3_LB_BASE2_ADR_BASE)
 
-/* LB_MAP2 bits (Local bus -> PCI IO) */
+ 
 #define V3_LB_MAP2_MAP_ADR		0xff00U
 
 #define v3_addr_to_lb_map2(a)	(((a) >> 16) & V3_LB_MAP2_MAP_ADR)
 
-/* FIFO priority bits */
+ 
 #define V3_FIFO_PRIO_LOCAL		BIT(12)
 #define V3_FIFO_PRIO_LB_RD1_FLUSH_EOB	BIT(10)
 #define V3_FIFO_PRIO_LB_RD1_FLUSH_AP1	BIT(11)
@@ -210,7 +191,7 @@
 #define V3_FIFO_PRIO_PCI_RD0_FLUSH_AP1	BIT(1)
 #define V3_FIFO_PRIO_PCI_RD0_FLUSH_ANY	(BIT(0)|BIT(1))
 
-/* Local bus configuration bits */
+ 
 #define V3_LB_CFG_LB_TO_64_CYCLES	0x0000
 #define V3_LB_CFG_LB_TO_256_CYCLES	BIT(13)
 #define V3_LB_CFG_LB_TO_512_CYCLES	BIT(14)
@@ -226,7 +207,7 @@
 #define V3_LB_CFG_LB_PARK_EN		BIT(4)
 #define V3_LB_CFG_LB_FBB_DIS		BIT(2)
 
-/* ARM Integrator-specific extended control registers */
+ 
 #define INTEGRATOR_SC_PCI_OFFSET	0x18
 #define INTEGRATOR_SC_PCI_ENABLE	BIT(0)
 #define INTEGRATOR_SC_PCI_INTCLR	BIT(1)
@@ -245,68 +226,7 @@ struct v3_pci {
 	struct regmap *map;
 };
 
-/*
- * The V3 PCI interface chip in Integrator provides several windows from
- * local bus memory into the PCI memory areas. Unfortunately, there
- * are not really enough windows for our usage, therefore we reuse
- * one of the windows for access to PCI configuration space. On the
- * Integrator/AP, the memory map is as follows:
- *
- * Local Bus Memory         Usage
- *
- * 40000000 - 4FFFFFFF      PCI memory.  256M non-prefetchable
- * 50000000 - 5FFFFFFF      PCI memory.  256M prefetchable
- * 60000000 - 60FFFFFF      PCI IO.  16M
- * 61000000 - 61FFFFFF      PCI Configuration. 16M
- *
- * There are three V3 windows, each described by a pair of V3 registers.
- * These are LB_BASE0/LB_MAP0, LB_BASE1/LB_MAP1 and LB_BASE2/LB_MAP2.
- * Base0 and Base1 can be used for any type of PCI memory access.   Base2
- * can be used either for PCI I/O or for I20 accesses.  By default, uHAL
- * uses this only for PCI IO space.
- *
- * Normally these spaces are mapped using the following base registers:
- *
- * Usage Local Bus Memory         Base/Map registers used
- *
- * Mem   40000000 - 4FFFFFFF      LB_BASE0/LB_MAP0
- * Mem   50000000 - 5FFFFFFF      LB_BASE1/LB_MAP1
- * IO    60000000 - 60FFFFFF      LB_BASE2/LB_MAP2
- * Cfg   61000000 - 61FFFFFF
- *
- * This means that I20 and PCI configuration space accesses will fail.
- * When PCI configuration accesses are needed (via the uHAL PCI
- * configuration space primitives) we must remap the spaces as follows:
- *
- * Usage Local Bus Memory         Base/Map registers used
- *
- * Mem   40000000 - 4FFFFFFF      LB_BASE0/LB_MAP0
- * Mem   50000000 - 5FFFFFFF      LB_BASE0/LB_MAP0
- * IO    60000000 - 60FFFFFF      LB_BASE2/LB_MAP2
- * Cfg   61000000 - 61FFFFFF      LB_BASE1/LB_MAP1
- *
- * To make this work, the code depends on overlapping windows working.
- * The V3 chip translates an address by checking its range within
- * each of the BASE/MAP pairs in turn (in ascending register number
- * order).  It will use the first matching pair.   So, for example,
- * if the same address is mapped by both LB_BASE0/LB_MAP0 and
- * LB_BASE1/LB_MAP1, the V3 will use the translation from
- * LB_BASE0/LB_MAP0.
- *
- * To allow PCI Configuration space access, the code enlarges the
- * window mapped by LB_BASE0/LB_MAP0 from 256M to 512M.  This occludes
- * the windows currently mapped by LB_BASE1/LB_MAP1 so that it can
- * be remapped for use by configuration cycles.
- *
- * At the end of the PCI Configuration space accesses,
- * LB_BASE1/LB_MAP1 is reset to map PCI Memory.  Finally the window
- * mapped by LB_BASE0/LB_MAP0 is reduced in size from 512M to 256M to
- * reveal the now restored LB_BASE1/LB_MAP1 window.
- *
- * NOTE: We do not set up I2O mapping.  I suspect that this is only
- * for an intelligent (target) device.  Using I2O disables most of
- * the mappings into PCI memory.
- */
+ 
 static void __iomem *v3_map_bus(struct pci_bus *bus,
 				unsigned int devfn, int offset)
 {
@@ -317,59 +237,28 @@ static void __iomem *v3_map_bus(struct pci_bus *bus,
 	if (busnr == 0) {
 		int slot = PCI_SLOT(devfn);
 
-		/*
-		 * local bus segment so need a type 0 config cycle
-		 *
-		 * build the PCI configuration "address" with one-hot in
-		 * A31-A11
-		 *
-		 * mapaddress:
-		 *  3:1 = config cycle (101)
-		 *  0   = PCI A1 & A0 are 0 (0)
-		 */
+		 
 		address = PCI_FUNC(devfn) << 8;
 		mapaddress = V3_LB_MAP_TYPE_CONFIG;
 
 		if (slot > 12)
-			/*
-			 * high order bits are handled by the MAP register
-			 */
+			 
 			mapaddress |= BIT(slot - 5);
 		else
-			/*
-			 * low order bits handled directly in the address
-			 */
+			 
 			address |= BIT(slot + 11);
 	} else {
-		/*
-		 * not the local bus segment so need a type 1 config cycle
-		 *
-		 * address:
-		 *  23:16 = bus number
-		 *  15:11 = slot number (7:3 of devfn)
-		 *  10:8  = func number (2:0 of devfn)
-		 *
-		 * mapaddress:
-		 *  3:1 = config cycle (101)
-		 *  0   = PCI A1 & A0 from host bus (1)
-		 */
+		 
 		mapaddress = V3_LB_MAP_TYPE_CONFIG | V3_LB_MAP_AD_LOW_EN;
 		address = (busnr << 16) | (devfn << 8);
 	}
 
-	/*
-	 * Set up base0 to see all 512Mbytes of memory space (not
-	 * prefetchable), this frees up base1 for re-use by
-	 * configuration memory
-	 */
+	 
 	writel(v3_addr_to_lb_base(v3->non_pre_mem) |
 	       V3_LB_BASE_ADR_SIZE_512MB | V3_LB_BASE_ENABLE,
 	       v3->base + V3_LB_BASE0);
 
-	/*
-	 * Set up base1/map1 to point into configuration space.
-	 * The config mem is always 16MB.
-	 */
+	 
 	writel(v3_addr_to_lb_base(v3->config_mem) |
 	       V3_LB_BASE_ADR_SIZE_16MB | V3_LB_BASE_ENABLE,
 	       v3->base + V3_LB_BASE1);
@@ -380,20 +269,16 @@ static void __iomem *v3_map_bus(struct pci_bus *bus,
 
 static void v3_unmap_bus(struct v3_pci *v3)
 {
-	/*
-	 * Reassign base1 for use by prefetchable PCI memory
-	 */
+	 
 	writel(v3_addr_to_lb_base(v3->pre_mem) |
 	       V3_LB_BASE_ADR_SIZE_256MB | V3_LB_BASE_PREFETCH |
 	       V3_LB_BASE_ENABLE,
 	       v3->base + V3_LB_BASE1);
 	writew(v3_addr_to_lb_map(v3->pre_bus_addr) |
-	       V3_LB_MAP_TYPE_MEM, /* was V3_LB_MAP_TYPE_MEM_MULTIPLE */
+	       V3_LB_MAP_TYPE_MEM,  
 	       v3->base + V3_LB_MAP1);
 
-	/*
-	 * And shrink base0 back to a 256M window (NOTE: MAP0 already correct)
-	 */
+	 
 	writel(v3_addr_to_lb_base(v3->non_pre_mem) |
 	       V3_LB_BASE_ADR_SIZE_256MB | V3_LB_BASE_ENABLE,
 	       v3->base + V3_LB_BASE0);
@@ -467,7 +352,7 @@ static irqreturn_t v3_irq(int irq, void *data)
 		dev_info(dev, "DMA channel 1 interrupt\n");
 	if (status & V3_LB_ISTAT_DMA0)
 		dev_info(dev, "DMA channel 0 interrupt\n");
-	/* Clear all possible interrupts on the local bus */
+	 
 	writeb(0, v3->base + V3_LB_ISTAT);
 	if (v3->map)
 		regmap_write(v3->map, INTEGRATOR_SC_PCI_OFFSET,
@@ -489,19 +374,19 @@ static int v3_integrator_init(struct v3_pci *v3)
 	}
 
 	regmap_read(v3->map, INTEGRATOR_SC_PCI_OFFSET, &val);
-	/* Take the PCI bridge out of reset, clear IRQs */
+	 
 	regmap_write(v3->map, INTEGRATOR_SC_PCI_OFFSET,
 		     INTEGRATOR_SC_PCI_ENABLE |
 		     INTEGRATOR_SC_PCI_INTCLR);
 
 	if (!(val & INTEGRATOR_SC_PCI_ENABLE)) {
-		/* If we were in reset we need to sleep a bit */
+		 
 		msleep(230);
 
-		/* Set the physical base for the controller itself */
+		 
 		writel(0x6200, v3->base + V3_LB_IO_BASE);
 
-		/* Wait for the mailbox to settle after reset */
+		 
 		do {
 			writeb(0xaa, v3->base + V3_MAIL_DATA);
 			writeb(0x55, v3->base + V3_MAIL_DATA + 4);
@@ -526,7 +411,7 @@ static int v3_pci_setup_resource(struct v3_pci *v3,
 	case IORESOURCE_IO:
 		io = win->res;
 
-		/* Setup window 2 - PCI I/O */
+		 
 		writel(v3_addr_to_lb_base2(pci_pio_to_address(io->start)) |
 		       V3_LB_BASE2_ENABLE,
 		       v3->base + V3_LB_BASE2);
@@ -551,14 +436,14 @@ static int v3_pci_setup_resource(struct v3_pci *v3,
 					"prefetchable memory is not adjacent to non-prefetchable memory\n");
 				return -EINVAL;
 			}
-			/* Setup window 1 - PCI prefetchable memory */
+			 
 			writel(v3_addr_to_lb_base(v3->pre_mem) |
 			       V3_LB_BASE_ADR_SIZE_256MB |
 			       V3_LB_BASE_PREFETCH |
 			       V3_LB_BASE_ENABLE,
 			       v3->base + V3_LB_BASE1);
 			writew(v3_addr_to_lb_map(v3->pre_bus_addr) |
-			       V3_LB_MAP_TYPE_MEM, /* Was V3_LB_MAP_TYPE_MEM_MULTIPLE */
+			       V3_LB_MAP_TYPE_MEM,  
 			       v3->base + V3_LB_MAP1);
 		} else {
 			mem->name = "V3 PCI NON-PRE-MEM";
@@ -571,7 +456,7 @@ static int v3_pci_setup_resource(struct v3_pci *v3,
 					"non-prefetchable memory range is not 256MB\n");
 				return -EINVAL;
 			}
-			/* Setup window 0 - PCI non-prefetchable memory */
+			 
 			writel(v3_addr_to_lb_base(v3->non_pre_mem) |
 			       V3_LB_BASE_ADR_SIZE_256MB |
 			       V3_LB_BASE_ENABLE,
@@ -723,7 +608,7 @@ static int v3_pci_probe(struct platform_device *pdev)
 	host->sysdata = v3;
 	v3->dev = dev;
 
-	/* Get and enable host clock */
+	 
 	clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(clk)) {
 		dev_err(dev, "clock not found\n");
@@ -738,16 +623,12 @@ static int v3_pci_probe(struct platform_device *pdev)
 	v3->base = devm_platform_get_and_ioremap_resource(pdev, 0, &regs);
 	if (IS_ERR(v3->base))
 		return PTR_ERR(v3->base);
-	/*
-	 * The hardware has a register with the physical base address
-	 * of the V3 controller itself, verify that this is the same
-	 * as the physical memory we've remapped it from.
-	 */
+	 
 	if (readl(v3->base + V3_LB_IO_BASE) != (regs->start >> 16))
 		dev_err(dev, "V3_LB_IO_BASE = %08x but device is @%pR\n",
 			readl(v3->base + V3_LB_IO_BASE), regs);
 
-	/* Configuration space is 16MB directly mapped */
+	 
 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (resource_size(regs) != SZ_16M) {
 		dev_err(dev, "config mem is not 16MB!\n");
@@ -758,7 +639,7 @@ static int v3_pci_probe(struct platform_device *pdev)
 	if (IS_ERR(v3->config_base))
 		return PTR_ERR(v3->config_base);
 
-	/* Get and request error IRQ resource */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -772,41 +653,39 @@ static int v3_pci_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Unlock V3 registers, but only if they were previously locked.
-	 */
+	 
 	if (readw(v3->base + V3_SYSTEM) & V3_SYSTEM_M_LOCK)
 		writew(V3_SYSTEM_UNLOCK, v3->base + V3_SYSTEM);
 
-	/* Disable all slave access while we set up the windows */
+	 
 	val = readw(v3->base + V3_PCI_CMD);
 	val &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	writew(val, v3->base + V3_PCI_CMD);
 
-	/* Put the PCI bus into reset */
+	 
 	val = readw(v3->base + V3_SYSTEM);
 	val &= ~V3_SYSTEM_M_RST_OUT;
 	writew(val, v3->base + V3_SYSTEM);
 
-	/* Retry until we're ready */
+	 
 	val = readw(v3->base + V3_PCI_CFG);
 	val |= V3_PCI_CFG_M_RETRY_EN;
 	writew(val, v3->base + V3_PCI_CFG);
 
-	/* Set up the local bus protocol */
+	 
 	val = readw(v3->base + V3_LB_CFG);
-	val |= V3_LB_CFG_LB_BE_IMODE; /* Byte enable input */
-	val |= V3_LB_CFG_LB_BE_OMODE; /* Byte enable output */
-	val &= ~V3_LB_CFG_LB_ENDIAN; /* Little endian */
-	val &= ~V3_LB_CFG_LB_PPC_RDY; /* TODO: when using on PPC403Gx, set to 1 */
+	val |= V3_LB_CFG_LB_BE_IMODE;  
+	val |= V3_LB_CFG_LB_BE_OMODE;  
+	val &= ~V3_LB_CFG_LB_ENDIAN;  
+	val &= ~V3_LB_CFG_LB_PPC_RDY;  
 	writew(val, v3->base + V3_LB_CFG);
 
-	/* Enable the PCI bus master */
+	 
 	val = readw(v3->base + V3_PCI_CMD);
 	val |= PCI_COMMAND_MASTER;
 	writew(val, v3->base + V3_PCI_CMD);
 
-	/* Get the I/O and memory ranges from DT */
+	 
 	resource_list_for_each_entry(win, &host->windows) {
 		ret = v3_pci_setup_resource(v3, host, win);
 		if (ret) {
@@ -818,26 +697,16 @@ static int v3_pci_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Disable PCI to host IO cycles, enable I/O buffers @3.3V,
-	 * set AD_LOW0 to 1 if one of the LB_MAP registers choose
-	 * to use this (should be unused).
-	 */
+	 
 	writel(0x00000000, v3->base + V3_PCI_IO_BASE);
 	val = V3_PCI_CFG_M_IO_REG_DIS | V3_PCI_CFG_M_IO_DIS |
 		V3_PCI_CFG_M_EN3V | V3_PCI_CFG_M_AD_LOW0;
-	/*
-	 * DMA read and write from PCI bus commands types
-	 */
+	 
 	val |=  V3_PCI_CFG_TYPE_DEFAULT << V3_PCI_CFG_M_RTYPE_SHIFT;
 	val |=  V3_PCI_CFG_TYPE_DEFAULT << V3_PCI_CFG_M_WTYPE_SHIFT;
 	writew(val, v3->base + V3_PCI_CFG);
 
-	/*
-	 * Set the V3 FIFO such that writes have higher priority than
-	 * reads, and local bus write causes local bus read fifo flush
-	 * on aperture 1. Same for PCI.
-	 */
+	 
 	writew(V3_FIFO_PRIO_LB_RD1_FLUSH_AP1 |
 	       V3_FIFO_PRIO_LB_RD0_FLUSH_AP1 |
 	       V3_FIFO_PRIO_PCI_RD1_FLUSH_AP1 |
@@ -845,10 +714,7 @@ static int v3_pci_probe(struct platform_device *pdev)
 	       v3->base + V3_FIFO_PRIORITY);
 
 
-	/*
-	 * Clear any error interrupts, and enable parity and write error
-	 * interrupts
-	 */
+	 
 	writeb(0, v3->base + V3_LB_ISTAT);
 	val = readw(v3->base + V3_LB_CFG);
 	val |= V3_LB_CFG_LB_LB_INT;
@@ -856,32 +722,30 @@ static int v3_pci_probe(struct platform_device *pdev)
 	writeb(V3_LB_ISTAT_PCI_WR | V3_LB_ISTAT_PCI_PERR,
 	       v3->base + V3_LB_IMASK);
 
-	/* Special Integrator initialization */
+	 
 	if (of_device_is_compatible(np, "arm,integrator-ap-pci")) {
 		ret = v3_integrator_init(v3);
 		if (ret)
 			return ret;
 	}
 
-	/* Post-init: enable PCI memory and invalidate (master already on) */
+	 
 	val = readw(v3->base + V3_PCI_CMD);
 	val |= PCI_COMMAND_MEMORY | PCI_COMMAND_INVALIDATE;
 	writew(val, v3->base + V3_PCI_CMD);
 
-	/* Clear pending interrupts */
+	 
 	writeb(0, v3->base + V3_LB_ISTAT);
-	/* Read or write errors and parity errors cause interrupts */
+	 
 	writeb(V3_LB_ISTAT_PCI_RD | V3_LB_ISTAT_PCI_WR | V3_LB_ISTAT_PCI_PERR,
 	       v3->base + V3_LB_IMASK);
 
-	/* Take the PCI bus out of reset so devices can initialize */
+	 
 	val = readw(v3->base + V3_SYSTEM);
 	val |= V3_SYSTEM_M_RST_OUT;
 	writew(val, v3->base + V3_SYSTEM);
 
-	/*
-	 * Re-lock the system register.
-	 */
+	 
 	val = readw(v3->base + V3_SYSTEM);
 	val |= V3_SYSTEM_M_LOCK;
 	writew(val, v3->base + V3_SYSTEM);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) 2002 Ralf Baechle DO1GRB (ralf@gnu.org)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -41,7 +37,7 @@ void nr_init_timers(struct sock *sk)
 	timer_setup(&nr->t4timer, nr_t4timer_expiry, 0);
 	timer_setup(&nr->idletimer, nr_idletimer_expiry, 0);
 
-	/* initialized by sock_init_data */
+	 
 	sk->sk_timer.function = nr_heartbeat_expiry;
 }
 
@@ -117,8 +113,7 @@ static void nr_heartbeat_expiry(struct timer_list *t)
 	bh_lock_sock(sk);
 	switch (nr->state) {
 	case NR_STATE_0:
-		/* Magic here: If we listen() and a new link dies before it
-		   is accepted() it isn't 'dead' so doesn't get removed. */
+		 
 		if (sock_flag(sk, SOCK_DESTROY) ||
 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
 			sock_hold(sk);
@@ -129,9 +124,7 @@ static void nr_heartbeat_expiry(struct timer_list *t)
 		break;
 
 	case NR_STATE_3:
-		/*
-		 * Check for the state of the receive buffer.
-		 */
+		 
 		if (atomic_read(&sk->sk_rmem_alloc) < (sk->sk_rcvbuf / 2) &&
 		    (nr->condition & NR_COND_OWN_RX_BUSY)) {
 			nr->condition &= ~NR_COND_OWN_RX_BUSY;

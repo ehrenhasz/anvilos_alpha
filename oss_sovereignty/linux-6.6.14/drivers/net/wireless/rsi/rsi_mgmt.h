@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __RSI_MGMT_H__
 #define __RSI_MGMT_H__
@@ -38,7 +24,7 @@
 #define RSI_PAIRWISE_KEY                1
 #define RSI_GROUP_KEY                   2
 
-/* EPPROM_READ_ADDRESS */
+ 
 #define WLAN_MAC_EEPROM_ADDR            40
 #define WLAN_MAC_MAGIC_WORD_LEN         0x01
 #define WLAN_HOST_MODE_LEN              0x04
@@ -46,7 +32,7 @@
 #define MAGIC_WORD                      0x5A
 #define WLAN_EEPROM_RFTYPE_ADDR		424
 
-/*WOWLAN RESUME WAKEUP TYPES*/
+ 
 #define RSI_UNICAST_MAGIC_PKT		BIT(0)
 #define RSI_BROADCAST_MAGICPKT		BIT(1)
 #define RSI_EAPOL_PKT			BIT(2)
@@ -57,7 +43,7 @@
 #define WOW_MAX_FILTERS_PER_LIST 16
 #define WOW_PATTERN_SIZE 256
 
-/* Receive Frame Types */
+ 
 #define RSI_RX_DESC_MSG_TYPE_OFFSET	2
 #define TA_CONFIRM_TYPE                 0x01
 #define RX_DOT11_MGMT                   0x02
@@ -173,12 +159,12 @@
 #define RSI_SUPP_FILTERS	(FIF_ALLMULTI | FIF_PROBE_REQ |\
 				 FIF_BCN_PRBRESP_PROMISC)
 
-#define ANTENNA_SEL_INT			0x02 /* RF_OUT_2 / Integerated */
-#define ANTENNA_SEL_UFL			0x03 /* RF_OUT_1 / U.FL */
+#define ANTENNA_SEL_INT			0x02  
+#define ANTENNA_SEL_UFL			0x03  
 #define ANTENNA_MASK_VALUE		0x00ff
 #define ANTENNA_SEL_TYPE		1
 
-/* Rx filter word definitions */
+ 
 #define PROMISCOUS_MODE			BIT(0)
 #define ALLOW_DATA_ASSOC_PEER		BIT(1)
 #define ALLOW_MGMT_ASSOC_PEER		BIT(2)
@@ -261,7 +247,7 @@ enum sta_notify_events {
 	STA_RX_DELBA
 };
 
-/* Send Frames Types */
+ 
 enum cmd_frame_type {
 	TX_DOT11_MGMT,
 	RESET_MAC_REQ,
@@ -331,7 +317,7 @@ struct rsi_cmd_desc_dword1 {
 };
 
 struct rsi_cmd_desc_dword2 {
-	__le32 pkt_info; /* Packet specific data */
+	__le32 pkt_info;  
 };
 
 struct rsi_cmd_desc_dword3 {
@@ -370,7 +356,7 @@ struct rsi_peer_notify {
 	__le32 sta_flags;
 } __packed;
 
-/* Aggregation params flags */
+ 
 #define RSI_AGGR_PARAMS_TID_MASK	0xf
 #define RSI_AGGR_PARAMS_START		BIT(4)
 #define RSI_AGGR_PARAMS_RX_AGGR		BIT(5)
@@ -456,7 +442,7 @@ struct rsi_dynamic_s {
 	} frame_body;
 } __packed;
 
-/* Key descriptor flags */
+ 
 #define RSI_KEY_TYPE_BROADCAST	BIT(1)
 #define RSI_WEP_KEY		BIT(2)
 #define RSI_WEP_KEY_104		BIT(3)
@@ -531,13 +517,13 @@ struct rsi_radio_caps {
 	__le16 preamble_type;
 } __packed;
 
-/* ULP GPIO flags */
+ 
 #define RSI_GPIO_MOTION_SENSOR_ULP_WAKEUP	BIT(0)
 #define RSI_GPIO_SLEEP_IND_FROM_DEVICE		BIT(1)
 #define RSI_GPIO_2_ULP				BIT(2)
 #define RSI_GPIO_PUSH_BUTTON_ULP_WAKEUP		BIT(3)
 
-/* SOC GPIO flags */
+ 
 #define RSI_GPIO_0_PSPI_CSN_0			BIT(0)
 #define RSI_GPIO_1_PSPI_CSN_1			BIT(1)
 #define RSI_GPIO_2_HOST_WAKEUP_INTR		BIT(2)
@@ -584,10 +570,7 @@ struct rsi_config_vals {
 	__le16 reserved1[6];
 	u8 lp_ps_handshake;
 	u8 ulp_ps_handshake;
-	u8 sleep_config_params; /* 0 for no handshake,
-				 * 1 for GPIO based handshake,
-				 * 2 packet handshake
-				 */
+	u8 sleep_config_params;  
 	u8 unused_ulp_gpio;
 	__le32 unused_soc_gpio_bitmap;
 	u8 ext_pa_or_bt_coex_en;
@@ -601,7 +584,7 @@ struct rsi_config_vals {
 	u8 reserved2[16];
 } __packed;
 
-/* Packet info flags */
+ 
 #define RSI_EEPROM_HDR_SIZE_OFFSET		8
 #define RSI_EEPROM_HDR_SIZE_MASK		0x300
 #define RSI_EEPROM_LEN_OFFSET			20

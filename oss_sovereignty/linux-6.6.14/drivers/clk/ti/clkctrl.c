@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP clkctrl clock support
- *
- * Copyright (C) 2017 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -34,7 +28,7 @@
 #define CLKCTRL_IDLEST_INTERFACE_IDLE	0x2
 #define CLKCTRL_IDLEST_DISABLED		0x3
 
-/* These timeouts are in us */
+ 
 #define OMAP4_MAX_MODULE_READY_TIME	2000
 #define OMAP4_MAX_MODULE_DISABLE_TIME	5000
 
@@ -87,18 +81,7 @@ static bool _omap4_is_ready(u32 val)
 
 static bool _omap4_is_timeout(union omap4_timeout *time, u32 timeout)
 {
-	/*
-	 * There are two special cases where ktime_to_ns() can't be
-	 * used to track the timeouts. First one is during early boot
-	 * when the timers haven't been initialized yet. The second
-	 * one is during suspend-resume cycle while timekeeping is
-	 * being suspended / resumed. Clocksource for the system
-	 * can be from a timer that requires pm_runtime access, which
-	 * will eventually bring us here with timekeeping_suspended,
-	 * during both suspend entry and resume paths. This happens
-	 * at least on am43xx platform. Account for flakeyness
-	 * with udelay() by multiplying the timeout value by 2.
-	 */
+	 
 	if (unlikely(_early_timeout || timekeeping_suspended)) {
 		if (time->cycles++ < timeout) {
 			udelay(1 * 2);
@@ -158,7 +141,7 @@ static int _omap4_clkctrl_clk_enable(struct clk_hw *hw)
 	if (test_bit(NO_IDLEST, &clk->flags))
 		return 0;
 
-	/* Wait until module is enabled */
+	 
 	while (!_omap4_is_ready(ti_clk_ll_ops->clk_readl(&clk->enable_reg))) {
 		if (_omap4_is_timeout(&timeout, OMAP4_MAX_MODULE_READY_TIME)) {
 			pr_err("%s: failed to enable\n", clk_hw_get_name(hw));
@@ -187,7 +170,7 @@ static void _omap4_clkctrl_clk_disable(struct clk_hw *hw)
 	if (test_bit(NO_IDLEST, &clk->flags))
 		goto exit;
 
-	/* Wait until module is disabled */
+	 
 	while (!_omap4_is_idle(ti_clk_ll_ops->clk_readl(&clk->enable_reg))) {
 		if (_omap4_is_timeout(&timeout,
 				      OMAP4_MAX_MODULE_DISABLE_TIME)) {
@@ -247,7 +230,7 @@ static struct clk_hw *_ti_omap4_clkctrl_xlate(struct of_phandle_args *clkspec,
 	return entry->clk;
 }
 
-/* Get clkctrl clock base name based on clkctrl_name or dts node */
+ 
 static const char * __init clkctrl_get_clock_name(struct device_node *np,
 						  const char *clkctrl_name,
 						  int offset, int index,
@@ -255,7 +238,7 @@ static const char * __init clkctrl_get_clock_name(struct device_node *np,
 {
 	char *clock_name;
 
-	/* l4per-clkctrl:1234:0 style naming based on clkctrl_name */
+	 
 	if (clkctrl_name && !legacy_naming) {
 		clock_name = kasprintf(GFP_KERNEL, "%s-clkctrl:%04x:%d",
 				       clkctrl_name, offset, index);
@@ -267,17 +250,17 @@ static const char * __init clkctrl_get_clock_name(struct device_node *np,
 		return clock_name;
 	}
 
-	/* l4per:1234:0 old style naming based on clkctrl_name */
+	 
 	if (clkctrl_name)
 		return kasprintf(GFP_KERNEL, "%s_cm:clk:%04x:%d",
 				 clkctrl_name, offset, index);
 
-	/* l4per_cm:1234:0 old style naming based on parent node name */
+	 
 	if (legacy_naming)
 		return kasprintf(GFP_KERNEL, "%pOFn:clk:%04x:%d",
 				 np->parent, offset, index);
 
-	/* l4per-clkctrl:1234:0 style naming based on node name */
+	 
 	return kasprintf(GFP_KERNEL, "%pOFn:%04x:%d", np, offset, index);
 }
 
@@ -464,10 +447,7 @@ static void __init _clkctrl_add_provider(void *data,
 	of_clk_add_hw_provider(np, _ti_omap4_clkctrl_xlate, data);
 }
 
-/*
- * Get clock name based on "clock-output-names" property or the
- * compatible property for clkctrl.
- */
+ 
 static const char * __init clkctrl_get_name(struct device_node *np)
 {
 	struct property *prop;
@@ -493,7 +473,7 @@ static const char * __init clkctrl_get_name(struct device_node *np)
 	of_property_for_each_string(np, "compatible", prop, compat) {
 		if (!strncmp("ti,clkctrl-", compat, prefix_len)) {
 			end = compat + prefix_len;
-			/* Two letter minimum name length for l3, l4 etc */
+			 
 			if (strnlen(end, 16) < 2)
 				continue;
 			name = kstrdup_and_replace(end, '-', '_', GFP_KERNEL);
@@ -597,10 +577,7 @@ static void __init _ti_omap4_clkctrl_setup(struct device_node *node)
 		goto clkdm_found;
 	}
 
-	/*
-	 * The code below can be removed when all clkctrl nodes use domain
-	 * specific compatible property and standard clock node naming
-	 */
+	 
 	if (legacy_naming) {
 		provider->clkdm_name = kasprintf(GFP_KERNEL, "%pOFnxxx", node->parent);
 		if (!provider->clkdm_name) {
@@ -608,10 +585,7 @@ static void __init _ti_omap4_clkctrl_setup(struct device_node *node)
 			return;
 		}
 
-		/*
-		 * Create default clkdm name, replace _cm from end of parent
-		 * node name with _clkdm
-		 */
+		 
 		provider->clkdm_name[strlen(provider->clkdm_name) - 2] = 0;
 	} else {
 		provider->clkdm_name = kasprintf(GFP_KERNEL, "%pOFn", node);
@@ -620,16 +594,13 @@ static void __init _ti_omap4_clkctrl_setup(struct device_node *node)
 			return;
 		}
 
-		/*
-		 * Create default clkdm name, replace _clkctrl from end of
-		 * node name with _clkdm
-		 */
+		 
 		provider->clkdm_name[strlen(provider->clkdm_name) - 7] = 0;
 	}
 
 	strcat(provider->clkdm_name, "clkdm");
 
-	/* Replace any dash from the clkdm name with underscore */
+	 
 	c = provider->clkdm_name;
 
 	while (*c) {
@@ -640,7 +611,7 @@ static void __init _ti_omap4_clkctrl_setup(struct device_node *node)
 clkdm_found:
 	INIT_LIST_HEAD(&provider->clocks);
 
-	/* Generate clocks */
+	 
 	reg_data = data->regs;
 
 	while (reg_data->parent) {
@@ -719,14 +690,7 @@ cleanup:
 CLK_OF_DECLARE(ti_omap4_clkctrl_clock, "ti,clkctrl",
 	       _ti_omap4_clkctrl_setup);
 
-/**
- * ti_clk_is_in_standby - Check if clkctrl clock is in standby or not
- * @clk: clock to check standby status for
- *
- * Finds whether the provided clock is in standby mode or not. Returns
- * true if the provided clock is a clkctrl type clock and it is in standby,
- * false otherwise.
- */
+ 
 bool ti_clk_is_in_standby(struct clk *clk)
 {
 	struct clk_hw *hw;

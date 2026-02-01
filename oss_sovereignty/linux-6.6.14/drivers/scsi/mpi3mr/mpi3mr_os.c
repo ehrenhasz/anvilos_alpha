@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+ 
 
 #include "mpi3mr.h"
 
-/* global driver scop variables */
+ 
 LIST_HEAD(mrioc_list);
 DEFINE_SPINLOCK(mrioc_list_lock);
 static int mrioc_ids;
@@ -21,7 +15,7 @@ MODULE_DESCRIPTION(MPI3MR_DRIVER_DESC);
 MODULE_LICENSE(MPI3MR_DRIVER_LICENSE);
 MODULE_VERSION(MPI3MR_DRIVER_VERSION);
 
-/* Module parameters*/
+ 
 int prot_mask = -1;
 module_param(prot_mask, int, 0);
 MODULE_PARM_DESC(prot_mask, "Host protection capabilities mask, def=0x07");
@@ -40,7 +34,7 @@ MODULE_PARM_DESC(max_sgl_entries,
 	"The actual value will be determined by the driver\n"
 	"(Minimum=256, Maximum=2048, default=256)");
 
-/* Forward declarations*/
+ 
 static void mpi3mr_send_event_ack(struct mpi3mr_ioc *mrioc, u8 event,
 	struct mpi3mr_drv_cmd *cmdparam, u32 event_ctx);
 
@@ -48,15 +42,7 @@ static void mpi3mr_send_event_ack(struct mpi3mr_ioc *mrioc, u8 event,
 
 #define MPI3_EVENT_WAIT_FOR_DEVICES_TO_REFRESH	(0xFFFE)
 
-/**
- * mpi3mr_host_tag_for_scmd - Get host tag for a scmd
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- *
- * Calculate the host tag based on block tag for a given scmd.
- *
- * Return: Valid host tag or MPI3MR_HOSTTAG_INVALID.
- */
+ 
 static u16 mpi3mr_host_tag_for_scmd(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd)
 {
@@ -75,7 +61,7 @@ static u16 mpi3mr_host_tag_for_scmd(struct mpi3mr_ioc *mrioc,
 		return MPI3MR_HOSTTAG_INVALID;
 
 	priv = scsi_cmd_priv(scmd);
-	/*host_tag 0 is invalid hence incrementing by 1*/
+	 
 	priv->host_tag = host_tag + 1;
 	priv->scmd = scmd;
 	priv->in_lld_scope = 1;
@@ -86,17 +72,7 @@ static u16 mpi3mr_host_tag_for_scmd(struct mpi3mr_ioc *mrioc,
 	return priv->host_tag;
 }
 
-/**
- * mpi3mr_scmd_from_host_tag - Get SCSI command from host tag
- * @mrioc: Adapter instance reference
- * @host_tag: Host tag
- * @qidx: Operational queue index
- *
- * Identify the block tag from the host tag and queue index and
- * retrieve associated scsi command using scsi_host_find_tag().
- *
- * Return: SCSI command reference or NULL.
- */
+ 
 static struct scsi_cmnd *mpi3mr_scmd_from_host_tag(
 	struct mpi3mr_ioc *mrioc, u16 host_tag, u16 qidx)
 {
@@ -119,16 +95,7 @@ out:
 	return scmd;
 }
 
-/**
- * mpi3mr_clear_scmd_priv - Cleanup SCSI command private date
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- *
- * Invalidate the SCSI command private data to mark the command
- * is not in LLD scope anymore.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_clear_scmd_priv(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd)
 {
@@ -157,48 +124,25 @@ static void mpi3mr_dev_rmhs_send_tm(struct mpi3mr_ioc *mrioc, u16 handle,
 	struct mpi3mr_drv_cmd *cmdparam, u8 iou_rc);
 static void mpi3mr_fwevt_worker(struct work_struct *work);
 
-/**
- * mpi3mr_fwevt_free - firmware event memory dealloctor
- * @r: k reference pointer of the firmware event
- *
- * Free firmware event memory when no reference.
- */
+ 
 static void mpi3mr_fwevt_free(struct kref *r)
 {
 	kfree(container_of(r, struct mpi3mr_fwevt, ref_count));
 }
 
-/**
- * mpi3mr_fwevt_get - k reference incrementor
- * @fwevt: Firmware event reference
- *
- * Increment firmware event reference count.
- */
+ 
 static void mpi3mr_fwevt_get(struct mpi3mr_fwevt *fwevt)
 {
 	kref_get(&fwevt->ref_count);
 }
 
-/**
- * mpi3mr_fwevt_put - k reference decrementor
- * @fwevt: Firmware event reference
- *
- * decrement firmware event reference count.
- */
+ 
 static void mpi3mr_fwevt_put(struct mpi3mr_fwevt *fwevt)
 {
 	kref_put(&fwevt->ref_count, mpi3mr_fwevt_free);
 }
 
-/**
- * mpi3mr_alloc_fwevt - Allocate firmware event
- * @len: length of firmware event data to allocate
- *
- * Allocate firmware event with required length and initialize
- * the reference counter.
- *
- * Return: firmware event reference.
- */
+ 
 static struct mpi3mr_fwevt *mpi3mr_alloc_fwevt(int len)
 {
 	struct mpi3mr_fwevt *fwevt;
@@ -211,15 +155,7 @@ static struct mpi3mr_fwevt *mpi3mr_alloc_fwevt(int len)
 	return fwevt;
 }
 
-/**
- * mpi3mr_fwevt_add_to_list - Add firmware event to the list
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Add the given firmware event to the firmware event list.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_fwevt_add_to_list(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -229,26 +165,18 @@ static void mpi3mr_fwevt_add_to_list(struct mpi3mr_ioc *mrioc,
 		return;
 
 	spin_lock_irqsave(&mrioc->fwevt_lock, flags);
-	/* get fwevt reference count while adding it to fwevt_list */
+	 
 	mpi3mr_fwevt_get(fwevt);
 	INIT_LIST_HEAD(&fwevt->list);
 	list_add_tail(&fwevt->list, &mrioc->fwevt_list);
 	INIT_WORK(&fwevt->work, mpi3mr_fwevt_worker);
-	/* get fwevt reference count while enqueueing it to worker queue */
+	 
 	mpi3mr_fwevt_get(fwevt);
 	queue_work(mrioc->fwevt_worker_thread, &fwevt->work);
 	spin_unlock_irqrestore(&mrioc->fwevt_lock, flags);
 }
 
-/**
- * mpi3mr_fwevt_del_from_list - Delete firmware event from list
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Delete the given firmware event from the firmware event list.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_fwevt_del_from_list(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -257,23 +185,13 @@ static void mpi3mr_fwevt_del_from_list(struct mpi3mr_ioc *mrioc,
 	spin_lock_irqsave(&mrioc->fwevt_lock, flags);
 	if (!list_empty(&fwevt->list)) {
 		list_del_init(&fwevt->list);
-		/*
-		 * Put fwevt reference count after
-		 * removing it from fwevt_list
-		 */
+		 
 		mpi3mr_fwevt_put(fwevt);
 	}
 	spin_unlock_irqrestore(&mrioc->fwevt_lock, flags);
 }
 
-/**
- * mpi3mr_dequeue_fwevt - Dequeue firmware event from the list
- * @mrioc: Adapter instance reference
- *
- * Dequeue a firmware event from the firmware event list.
- *
- * Return: firmware event.
- */
+ 
 static struct mpi3mr_fwevt *mpi3mr_dequeue_fwevt(
 	struct mpi3mr_ioc *mrioc)
 {
@@ -285,10 +203,7 @@ static struct mpi3mr_fwevt *mpi3mr_dequeue_fwevt(
 		fwevt = list_first_entry(&mrioc->fwevt_list,
 		    struct mpi3mr_fwevt, list);
 		list_del_init(&fwevt->list);
-		/*
-		 * Put fwevt reference count after
-		 * removing it from fwevt_list
-		 */
+		 
 		mpi3mr_fwevt_put(fwevt);
 	}
 	spin_unlock_irqrestore(&mrioc->fwevt_lock, flags);
@@ -296,44 +211,19 @@ static struct mpi3mr_fwevt *mpi3mr_dequeue_fwevt(
 	return fwevt;
 }
 
-/**
- * mpi3mr_cancel_work - cancel firmware event
- * @fwevt: fwevt object which needs to be canceled
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_cancel_work(struct mpi3mr_fwevt *fwevt)
 {
-	/*
-	 * Wait on the fwevt to complete. If this returns 1, then
-	 * the event was never executed.
-	 *
-	 * If it did execute, we wait for it to finish, and the put will
-	 * happen from mpi3mr_process_fwevt()
-	 */
+	 
 	if (cancel_work_sync(&fwevt->work)) {
-		/*
-		 * Put fwevt reference count after
-		 * dequeuing it from worker queue
-		 */
+		 
 		mpi3mr_fwevt_put(fwevt);
-		/*
-		 * Put fwevt reference count to neutralize
-		 * kref_init increment
-		 */
+		 
 		mpi3mr_fwevt_put(fwevt);
 	}
 }
 
-/**
- * mpi3mr_cleanup_fwevt_list - Cleanup firmware event list
- * @mrioc: Adapter instance reference
- *
- * Flush all pending firmware events from the firmware event
- * list.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_cleanup_fwevt_list(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3mr_fwevt *fwevt = NULL;
@@ -347,14 +237,7 @@ void mpi3mr_cleanup_fwevt_list(struct mpi3mr_ioc *mrioc)
 
 	if (mrioc->current_event) {
 		fwevt = mrioc->current_event;
-		/*
-		 * Don't call cancel_work_sync() API for the
-		 * fwevt work if the controller reset is
-		 * get called as part of processing the
-		 * same fwevt work (or) when worker thread is
-		 * waiting for device add/remove APIs to complete.
-		 * Otherwise we will see deadlock.
-		 */
+		 
 		if (current_work() == &fwevt->work || fwevt->pending_at_sml) {
 			fwevt->discard = 1;
 			return;
@@ -364,28 +247,14 @@ void mpi3mr_cleanup_fwevt_list(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_queue_qd_reduction_event - Queue TG QD reduction event
- * @mrioc: Adapter instance reference
- * @tg: Throttle group information pointer
- *
- * Accessor to queue on synthetically generated driver event to
- * the event worker thread, the driver event will be used to
- * reduce the QD of all VDs in the TG from the worker thread.
- *
- * Return: None.
- */
+ 
 static void mpi3mr_queue_qd_reduction_event(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_throttle_group_info *tg)
 {
 	struct mpi3mr_fwevt *fwevt;
 	u16 sz = sizeof(struct mpi3mr_throttle_group_info *);
 
-	/*
-	 * If the QD reduction event is already queued due to throttle and if
-	 * the QD is not restored through device info change event
-	 * then dont queue further reduction events
-	 */
+	 
 	if (tg->fw_qd != tg->modified_qd)
 		return;
 
@@ -408,15 +277,7 @@ static void mpi3mr_queue_qd_reduction_event(struct mpi3mr_ioc *mrioc,
 	mpi3mr_fwevt_add_to_list(mrioc, fwevt);
 }
 
-/**
- * mpi3mr_invalidate_devhandles -Invalidate device handles
- * @mrioc: Adapter instance reference
- *
- * Invalidate the device handles in the target device structures
- * . Called post reset prior to reinitializing the controller.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_invalidate_devhandles(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3mr_tgt_dev *tgtdev;
@@ -437,15 +298,7 @@ void mpi3mr_invalidate_devhandles(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_print_scmd - print individual SCSI command
- * @rq: Block request
- * @data: Adapter instance reference
- *
- * Print the SCSI command details if it is in LLD scope.
- *
- * Return: true always.
- */
+ 
 static bool mpi3mr_print_scmd(struct request *rq, void *data)
 {
 	struct mpi3mr_ioc *mrioc = (struct mpi3mr_ioc *)data;
@@ -466,16 +319,7 @@ out:
 	return(true);
 }
 
-/**
- * mpi3mr_flush_scmd - Flush individual SCSI command
- * @rq: Block request
- * @data: Adapter instance reference
- *
- * Return the SCSI command to the upper layers if it is in LLD
- * scope.
- *
- * Return: true always.
- */
+ 
 
 static bool mpi3mr_flush_scmd(struct request *rq, void *data)
 {
@@ -503,18 +347,7 @@ out:
 	return(true);
 }
 
-/**
- * mpi3mr_count_dev_pending - Count commands pending for a lun
- * @rq: Block request
- * @data: SCSI device reference
- *
- * This is an iterator function called for each SCSI command in
- * a host and if the command is pending in the LLD for the
- * specific device(lun) then device specific pending I/O counter
- * is updated in the device structure.
- *
- * Return: true always.
- */
+ 
 
 static bool mpi3mr_count_dev_pending(struct request *rq, void *data)
 {
@@ -535,18 +368,7 @@ out:
 	return true;
 }
 
-/**
- * mpi3mr_count_tgt_pending - Count commands pending for target
- * @rq: Block request
- * @data: SCSI target reference
- *
- * This is an iterator function called for each SCSI command in
- * a host and if the command is pending in the LLD for the
- * specific target then target specific pending I/O counter is
- * updated in the target structure.
- *
- * Return: true always.
- */
+ 
 
 static bool mpi3mr_count_tgt_pending(struct request *rq, void *data)
 {
@@ -567,16 +389,7 @@ out:
 	return true;
 }
 
-/**
- * mpi3mr_flush_host_io -  Flush host I/Os
- * @mrioc: Adapter instance reference
- *
- * Flush all of the pending I/Os by calling
- * blk_mq_tagset_busy_iter() for each possible tag. This is
- * executed post controller reset
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_flush_host_io(struct mpi3mr_ioc *mrioc)
 {
 	struct Scsi_Host *shost = mrioc->shost;
@@ -589,17 +402,7 @@ void mpi3mr_flush_host_io(struct mpi3mr_ioc *mrioc)
 	    mrioc->flush_io_count);
 }
 
-/**
- * mpi3mr_flush_cmds_for_unrecovered_controller - Flush all pending cmds
- * @mrioc: Adapter instance reference
- *
- * This function waits for currently running IO poll threads to
- * exit and then flushes all host I/Os and any internal pending
- * cmds. This is executed after controller is marked as
- * unrecoverable.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_flush_cmds_for_unrecovered_controller(struct mpi3mr_ioc *mrioc)
 {
 	struct Scsi_Host *shost = mrioc->shost;
@@ -622,14 +425,7 @@ void mpi3mr_flush_cmds_for_unrecovered_controller(struct mpi3mr_ioc *mrioc)
 	mpi3mr_flush_drv_cmds(mrioc);
 }
 
-/**
- * mpi3mr_alloc_tgtdev - target device allocator
- *
- * Allocate target device instance and initialize the reference
- * count
- *
- * Return: target device instance.
- */
+ 
 static struct mpi3mr_tgt_dev *mpi3mr_alloc_tgtdev(void)
 {
 	struct mpi3mr_tgt_dev *tgtdev;
@@ -641,15 +437,7 @@ static struct mpi3mr_tgt_dev *mpi3mr_alloc_tgtdev(void)
 	return tgtdev;
 }
 
-/**
- * mpi3mr_tgtdev_add_to_list -Add tgtdevice to the list
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device
- *
- * Add the target device to the target device list
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_tgtdev_add_to_list(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev)
 {
@@ -663,17 +451,7 @@ static void mpi3mr_tgtdev_add_to_list(struct mpi3mr_ioc *mrioc,
 	spin_unlock_irqrestore(&mrioc->tgtdev_lock, flags);
 }
 
-/**
- * mpi3mr_tgtdev_del_from_list -Delete tgtdevice from the list
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device
- * @must_delete: Must delete the target device from the list irrespective
- * of the device state.
- *
- * Remove the target device from the target device list
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_tgtdev_del_from_list(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev, bool must_delete)
 {
@@ -690,16 +468,7 @@ static void mpi3mr_tgtdev_del_from_list(struct mpi3mr_ioc *mrioc,
 	spin_unlock_irqrestore(&mrioc->tgtdev_lock, flags);
 }
 
-/**
- * __mpi3mr_get_tgtdev_by_handle -Get tgtdev from device handle
- * @mrioc: Adapter instance reference
- * @handle: Device handle
- *
- * Accessor to retrieve target device from the device handle.
- * Non Lock version
- *
- * Return: Target device reference.
- */
+ 
 static struct mpi3mr_tgt_dev  *__mpi3mr_get_tgtdev_by_handle(
 	struct mpi3mr_ioc *mrioc, u16 handle)
 {
@@ -716,16 +485,7 @@ found_tgtdev:
 	return tgtdev;
 }
 
-/**
- * mpi3mr_get_tgtdev_by_handle -Get tgtdev from device handle
- * @mrioc: Adapter instance reference
- * @handle: Device handle
- *
- * Accessor to retrieve target device from the device handle.
- * Lock version
- *
- * Return: Target device reference.
- */
+ 
 struct mpi3mr_tgt_dev *mpi3mr_get_tgtdev_by_handle(
 	struct mpi3mr_ioc *mrioc, u16 handle)
 {
@@ -738,16 +498,7 @@ struct mpi3mr_tgt_dev *mpi3mr_get_tgtdev_by_handle(
 	return tgtdev;
 }
 
-/**
- * __mpi3mr_get_tgtdev_by_perst_id -Get tgtdev from persist ID
- * @mrioc: Adapter instance reference
- * @persist_id: Persistent ID
- *
- * Accessor to retrieve target device from the Persistent ID.
- * Non Lock version
- *
- * Return: Target device reference.
- */
+ 
 static struct mpi3mr_tgt_dev  *__mpi3mr_get_tgtdev_by_perst_id(
 	struct mpi3mr_ioc *mrioc, u16 persist_id)
 {
@@ -764,16 +515,7 @@ found_tgtdev:
 	return tgtdev;
 }
 
-/**
- * mpi3mr_get_tgtdev_by_perst_id -Get tgtdev from persistent ID
- * @mrioc: Adapter instance reference
- * @persist_id: Persistent ID
- *
- * Accessor to retrieve target device from the Persistent ID.
- * Lock version
- *
- * Return: Target device reference.
- */
+ 
 static struct mpi3mr_tgt_dev *mpi3mr_get_tgtdev_by_perst_id(
 	struct mpi3mr_ioc *mrioc, u16 persist_id)
 {
@@ -786,16 +528,7 @@ static struct mpi3mr_tgt_dev *mpi3mr_get_tgtdev_by_perst_id(
 	return tgtdev;
 }
 
-/**
- * __mpi3mr_get_tgtdev_from_tgtpriv -Get tgtdev from tgt private
- * @mrioc: Adapter instance reference
- * @tgt_priv: Target private data
- *
- * Accessor to return target device from the target private
- * data. Non Lock version
- *
- * Return: Target device reference.
- */
+ 
 static struct mpi3mr_tgt_dev  *__mpi3mr_get_tgtdev_from_tgtpriv(
 	struct mpi3mr_ioc *mrioc, struct mpi3mr_stgt_priv_data *tgt_priv)
 {
@@ -808,17 +541,7 @@ static struct mpi3mr_tgt_dev  *__mpi3mr_get_tgtdev_from_tgtpriv(
 	return tgtdev;
 }
 
-/**
- * mpi3mr_set_io_divert_for_all_vd_in_tg -set divert for TG VDs
- * @mrioc: Adapter instance reference
- * @tg: Throttle group information pointer
- * @divert_value: 1 or 0
- *
- * Accessor to set io_divert flag for each device associated
- * with the given throttle group with the given value.
- *
- * Return: None.
- */
+ 
 static void mpi3mr_set_io_divert_for_all_vd_in_tg(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_throttle_group_info *tg, u8 divert_value)
 {
@@ -837,15 +560,7 @@ static void mpi3mr_set_io_divert_for_all_vd_in_tg(struct mpi3mr_ioc *mrioc,
 	spin_unlock_irqrestore(&mrioc->tgtdev_lock, flags);
 }
 
-/**
- * mpi3mr_print_device_event_notice - print notice related to post processing of
- *					device event after controller reset.
- *
- * @mrioc: Adapter instance reference
- * @device_add: true for device add event and false for device removal event
- *
- * Return: None.
- */
+ 
 void mpi3mr_print_device_event_notice(struct mpi3mr_ioc *mrioc,
 	bool device_add)
 {
@@ -855,17 +570,7 @@ void mpi3mr_print_device_event_notice(struct mpi3mr_ioc *mrioc,
 	ioc_notice(mrioc, "are matched with attached devices for correctness\n");
 }
 
-/**
- * mpi3mr_remove_tgtdev_from_host - Remove dev from upper layers
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device structure
- *
- * Checks whether the device is exposed to upper layers and if it
- * is then remove the device from upper layers by calling
- * scsi_remove_target().
- *
- * Return: 0 on success, non zero on failure.
- */
+ 
 void mpi3mr_remove_tgtdev_from_host(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev)
 {
@@ -902,17 +607,7 @@ void mpi3mr_remove_tgtdev_from_host(struct mpi3mr_ioc *mrioc,
 	    __func__, tgtdev->dev_handle, (unsigned long long)tgtdev->wwid);
 }
 
-/**
- * mpi3mr_report_tgtdev_to_host - Expose device to upper layers
- * @mrioc: Adapter instance reference
- * @perst_id: Persistent ID of the device
- *
- * Checks whether the device can be exposed to upper layers and
- * if it is not then expose the device to upper layers by
- * calling scsi_scan_target().
- *
- * Return: 0 on success, non zero on failure.
- */
+ 
 static int mpi3mr_report_tgtdev_to_host(struct mpi3mr_ioc *mrioc,
 	u16 perst_id)
 {
@@ -957,15 +652,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_change_queue_depth- Change QD callback handler
- * @sdev: SCSI device reference
- * @q_depth: Queue depth
- *
- * Validate and limit QD and call scsi_change_queue_depth.
- *
- * Return: return value of scsi_change_queue_depth
- */
+ 
 static int mpi3mr_change_queue_depth(struct scsi_device *sdev,
 	int q_depth)
 {
@@ -985,17 +672,7 @@ static int mpi3mr_change_queue_depth(struct scsi_device *sdev,
 	return retval;
 }
 
-/**
- * mpi3mr_update_sdev - Update SCSI device information
- * @sdev: SCSI device reference
- * @data: target device reference
- *
- * This is an iterator function called for each SCSI device in a
- * target to update the target specific information into each
- * SCSI device.
- *
- * Return: Nothing.
- */
+ 
 static void
 mpi3mr_update_sdev(struct scsi_device *sdev, void *data)
 {
@@ -1008,7 +685,7 @@ mpi3mr_update_sdev(struct scsi_device *sdev, void *data)
 	mpi3mr_change_queue_depth(sdev, tgtdev->q_depth);
 	switch (tgtdev->dev_type) {
 	case MPI3_DEVICE_DEVFORM_PCIE:
-		/*The block layer hw sector size = 512*/
+		 
 		if ((tgtdev->dev_spec.pcie_inf.dev_info &
 		    MPI3_DEVICE0_PCIE_DEVICE_INFO_TYPE_MASK) ==
 		    MPI3_DEVICE0_PCIE_DEVICE_INFO_TYPE_NVME_DEVICE) {
@@ -1027,16 +704,7 @@ mpi3mr_update_sdev(struct scsi_device *sdev, void *data)
 	}
 }
 
-/**
- * mpi3mr_rfresh_tgtdevs - Refresh target device exposure
- * @mrioc: Adapter instance reference
- *
- * This is executed post controller reset to identify any
- * missing devices during reset and remove from the upper layers
- * or expose any newly detected device to the upper layers.
- *
- * Return: Nothing.
- */
+ 
 
 void mpi3mr_rfresh_tgtdevs(struct mpi3mr_ioc *mrioc)
 {
@@ -1086,18 +754,7 @@ void mpi3mr_rfresh_tgtdevs(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_update_tgtdev - DevStatusChange evt bottomhalf
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device internal structure
- * @dev_pg0: New device page0
- * @is_added: Flag to indicate the device is just added
- *
- * Update the information from the device page0 into the driver
- * cached target device structure.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_update_tgtdev(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev, struct mpi3_device_page0 *dev_pg0,
 	bool is_added)
@@ -1211,7 +868,7 @@ static void mpi3mr_update_tgtdev(struct mpi3mr_ioc *mrioc,
 		tgtdev->dev_spec.pcie_inf.capb =
 		    le32_to_cpu(pcieinf->capabilities);
 		tgtdev->dev_spec.pcie_inf.mdts = MPI3MR_DEFAULT_MDTS;
-		/* 2^12 = 4096 */
+		 
 		tgtdev->dev_spec.pcie_inf.pgsz = 12;
 		if (dev_pg0->access_status == MPI3_DEVICE0_ASTATUS_NO_ERRORS) {
 			tgtdev->dev_spec.pcie_inf.mdts =
@@ -1282,17 +939,7 @@ static void mpi3mr_update_tgtdev(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_devstatuschg_evt_bh - DevStatusChange evt bottomhalf
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event information.
- *
- * Process Device status Change event and based on device's new
- * information, either expose the device to the upper layers, or
- * remove the device from upper layers.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_devstatuschg_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -1345,18 +992,7 @@ out:
 		mpi3mr_tgtdev_put(tgtdev);
 }
 
-/**
- * mpi3mr_devinfochg_evt_bh - DeviceInfoChange evt bottomhalf
- * @mrioc: Adapter instance reference
- * @dev_pg0: New device page0
- *
- * Process Device Info Change event and based on device's new
- * information, either expose the device to the upper layers, or
- * remove the device from upper layers or update the details of
- * the device.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_devinfochg_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3_device_page0 *dev_pg0)
 {
@@ -1384,14 +1020,7 @@ out:
 		mpi3mr_tgtdev_put(tgtdev);
 }
 
-/**
- * mpi3mr_free_enclosure_list - release enclosures
- * @mrioc: Adapter instance reference
- *
- * Free memory allocated during encloure add.
- *
- * Return nothing.
- */
+ 
 void mpi3mr_free_enclosure_list(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3mr_enclosure_node *enclosure_dev, *enclosure_dev_next;
@@ -1403,16 +1032,7 @@ void mpi3mr_free_enclosure_list(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_enclosure_find_by_handle - enclosure search by handle
- * @mrioc: Adapter instance reference
- * @handle: Firmware device handle of the enclosure
- *
- * This searches for enclosure device based on handle, then returns the
- * enclosure object.
- *
- * Return: Enclosure object reference or NULL
- */
+ 
 struct mpi3mr_enclosure_node *mpi3mr_enclosure_find_by_handle(
 	struct mpi3mr_ioc *mrioc, u16 handle)
 {
@@ -1428,14 +1048,7 @@ out:
 	return r;
 }
 
-/**
- * mpi3mr_encldev_add_chg_evt_debug - debug for enclosure event
- * @mrioc: Adapter instance reference
- * @encl_pg0: Enclosure page 0.
- * @is_added: Added event or not
- *
- * Return nothing.
- */
+ 
 static void mpi3mr_encldev_add_chg_evt_debug(struct mpi3mr_ioc *mrioc,
 	struct mpi3_enclosure_page0 *encl_pg0, u8 is_added)
 {
@@ -1461,18 +1074,7 @@ static void mpi3mr_encldev_add_chg_evt_debug(struct mpi3mr_ioc *mrioc,
 	      MPI3_ENCLS0_FLAGS_ENCL_DEV_PRESENT_MASK) >> 4));
 }
 
-/**
- * mpi3mr_encldev_add_chg_evt_bh - Enclosure evt bottomhalf
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Prints information about the Enclosure device status or
- * Enclosure add events if logging is enabled and add or remove
- * the enclosure from the controller's internal list of
- * enclosures.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_encldev_add_chg_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -1513,15 +1115,7 @@ static void mpi3mr_encldev_add_chg_evt_bh(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_sastopochg_evt_debug - SASTopoChange details
- * @mrioc: Adapter instance reference
- * @event_data: SAS topology change list event data
- *
- * Prints information about the SAS topology change event.
- *
- * Return: Nothing.
- */
+ 
 static void
 mpi3mr_sastopochg_evt_debug(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_data_sas_topology_change_list *event_data)
@@ -1593,17 +1187,7 @@ mpi3mr_sastopochg_evt_debug(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_sastopochg_evt_bh - SASTopologyChange evt bottomhalf
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Prints information about the SAS topology change event and
- * for "not responding" event code, removes the device from the
- * upper layers.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_sastopochg_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -1690,15 +1274,7 @@ static void mpi3mr_sastopochg_evt_bh(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_pcietopochg_evt_debug - PCIeTopoChange details
- * @mrioc: Adapter instance reference
- * @event_data: PCIe topology change list event data
- *
- * Prints information about the PCIe topology change event.
- *
- * Return: Nothing.
- */
+ 
 static void
 mpi3mr_pcietopochg_evt_debug(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_data_pcie_topology_change_list *event_data)
@@ -1772,17 +1348,7 @@ mpi3mr_pcietopochg_evt_debug(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_pcietopochg_evt_bh - PCIeTopologyChange evt bottomhalf
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Prints information about the PCIe topology change event and
- * for "not responding" event code, removes the device from the
- * upper layers.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_pcietopochg_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -1823,16 +1389,7 @@ static void mpi3mr_pcietopochg_evt_bh(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_logdata_evt_bh -  Log data event bottomhalf
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Extracts the event data and calls application interfacing
- * function to process the event further.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_logdata_evt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -1840,16 +1397,7 @@ static void mpi3mr_logdata_evt_bh(struct mpi3mr_ioc *mrioc,
 	    fwevt->event_data_size);
 }
 
-/**
- * mpi3mr_update_sdev_qd - Update SCSI device queue depath
- * @sdev: SCSI device reference
- * @data: Queue depth reference
- *
- * This is an iterator function called for each SCSI device in a
- * target to update the QD of each SCSI device.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_update_sdev_qd(struct scsi_device *sdev, void *data)
 {
 	u16 *q_depth = (u16 *)data;
@@ -1858,16 +1406,7 @@ static void mpi3mr_update_sdev_qd(struct scsi_device *sdev, void *data)
 	sdev->max_queue_depth = sdev->queue_depth;
 }
 
-/**
- * mpi3mr_set_qd_for_all_vd_in_tg -set QD for TG VDs
- * @mrioc: Adapter instance reference
- * @tg: Throttle group information pointer
- *
- * Accessor to reduce QD for each device associated with the
- * given throttle group.
- *
- * Return: None.
- */
+ 
 static void mpi3mr_set_qd_for_all_vd_in_tg(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_throttle_group_info *tg)
 {
@@ -1894,16 +1433,7 @@ static void mpi3mr_set_qd_for_all_vd_in_tg(struct mpi3mr_ioc *mrioc,
 	spin_unlock_irqrestore(&mrioc->tgtdev_lock, flags);
 }
 
-/**
- * mpi3mr_fwevt_bh - Firmware event bottomhalf handler
- * @mrioc: Adapter instance reference
- * @fwevt: Firmware event reference
- *
- * Identifies the firmware event and calls corresponding bottomg
- * half handler and sends event acknowledgment if required.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_fwevt_bh(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_fwevt *fwevt)
 {
@@ -2023,43 +1553,22 @@ evt_ack:
 		mpi3mr_process_event_ack(mrioc, fwevt->event_id,
 		    fwevt->evt_ctx);
 out:
-	/* Put fwevt reference count to neutralize kref_init increment */
+	 
 	mpi3mr_fwevt_put(fwevt);
 	mrioc->current_event = NULL;
 }
 
-/**
- * mpi3mr_fwevt_worker - Firmware event worker
- * @work: Work struct containing firmware event
- *
- * Extracts the firmware event and calls mpi3mr_fwevt_bh.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_fwevt_worker(struct work_struct *work)
 {
 	struct mpi3mr_fwevt *fwevt = container_of(work, struct mpi3mr_fwevt,
 	    work);
 	mpi3mr_fwevt_bh(fwevt->mrioc, fwevt);
-	/*
-	 * Put fwevt reference count after
-	 * dequeuing it from worker queue
-	 */
+	 
 	mpi3mr_fwevt_put(fwevt);
 }
 
-/**
- * mpi3mr_create_tgtdev - Create and add a target device
- * @mrioc: Adapter instance reference
- * @dev_pg0: Device Page 0 data
- *
- * If the device specified by the device page 0 data is not
- * present in the driver's internal list, allocate the memory
- * for the device, populate the data and add to the list, else
- * update the device data.  The key is persistent ID.
- *
- * Return: 0 on success, -ENOMEM on memory allocation failure
- */
+ 
 static int mpi3mr_create_tgtdev(struct mpi3mr_ioc *mrioc,
 	struct mpi3_device_page0 *dev_pg0)
 {
@@ -2092,15 +1601,7 @@ static int mpi3mr_create_tgtdev(struct mpi3mr_ioc *mrioc,
 	return retval;
 }
 
-/**
- * mpi3mr_flush_delayed_cmd_lists - Flush pending commands
- * @mrioc: Adapter instance reference
- *
- * Flush pending commands in the delayed lists due to a
- * controller reset or driver removal as a cleanup.
- *
- * Return: Nothing
- */
+ 
 void mpi3mr_flush_delayed_cmd_lists(struct mpi3mr_ioc *mrioc)
 {
 	struct delayed_dev_rmhs_node *_rmhs_node;
@@ -2122,17 +1623,7 @@ void mpi3mr_flush_delayed_cmd_lists(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_dev_rmhs_complete_iou - Device removal IOUC completion
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * Issues a target reset TM to the firmware from the device
- * removal TM pend list or retry the removal handshake sequence
- * based on the IOU control request IOC status.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_dev_rmhs_complete_iou(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -2191,17 +1682,7 @@ clear_drv_cmd:
 	clear_bit(cmd_idx, mrioc->devrem_bitmap);
 }
 
-/**
- * mpi3mr_dev_rmhs_complete_tm - Device removal TM completion
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * Issues a target reset TM to the firmware from the device
- * removal TM pend list or issue IO unit control request as
- * part of device removal or hidden acknowledgment handshake.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_dev_rmhs_complete_tm(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -2253,19 +1734,7 @@ clear_drv_cmd:
 	clear_bit(cmd_idx, mrioc->devrem_bitmap);
 }
 
-/**
- * mpi3mr_dev_rmhs_send_tm - Issue TM for device removal
- * @mrioc: Adapter instance reference
- * @handle: Device handle
- * @cmdparam: Internal command tracker
- * @iou_rc: IO unit reason code
- *
- * Issues a target reset TM to the firmware or add it to a pend
- * list as part of device removal or hidden acknowledgment
- * handshake.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_dev_rmhs_send_tm(struct mpi3mr_ioc *mrioc, u16 handle,
 	struct mpi3mr_drv_cmd *cmdparam, u8 iou_rc)
 {
@@ -2351,17 +1820,7 @@ out_failed:
 	clear_bit(cmd_idx, mrioc->devrem_bitmap);
 }
 
-/**
- * mpi3mr_complete_evt_ack - event ack request completion
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * This is the completion handler for non blocking event
- * acknowledgment sent to the firmware and this will issue any
- * pending event acknowledgment request.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_complete_evt_ack(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -2394,20 +1853,7 @@ clear_drv_cmd:
 	clear_bit(cmd_idx, mrioc->evtack_cmds_bitmap);
 }
 
-/**
- * mpi3mr_send_event_ack - Issue event acknwoledgment request
- * @mrioc: Adapter instance reference
- * @event: MPI3 event id
- * @cmdparam: Internal command tracker
- * @event_ctx: event context
- *
- * Issues event acknowledgment request to the firmware if there
- * is a free command to send the event ack else it to a pend
- * list so that it will be processed on a completion of a prior
- * event acknowledgment .
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_send_event_ack(struct mpi3mr_ioc *mrioc, u8 event,
 	struct mpi3mr_drv_cmd *cmdparam, u32 event_ctx)
 {
@@ -2490,18 +1936,7 @@ out_failed:
 	clear_bit(cmd_idx, mrioc->evtack_cmds_bitmap);
 }
 
-/**
- * mpi3mr_pcietopochg_evt_th - PCIETopologyChange evt tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Checks for the reason code and based on that either block I/O
- * to device, or unblock I/O to the device, or start the device
- * removal handshake with reason as remove with the firmware for
- * PCIe devices.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_pcietopochg_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2556,18 +1991,7 @@ static void mpi3mr_pcietopochg_evt_th(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_sastopochg_evt_th - SASTopologyChange evt tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Checks for the reason code and based on that either block I/O
- * to device, or unblock I/O to the device, or start the device
- * removal handshake with reason as remove with the firmware for
- * SAS/SATA devices.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_sastopochg_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2623,18 +2047,7 @@ static void mpi3mr_sastopochg_evt_th(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_devstatuschg_evt_th - DeviceStatusChange evt tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Checks for the reason code and based on that either block I/O
- * to device, or unblock I/O to the device, or start the device
- * removal handshake with reason as remove/hide acknowledgment
- * with the firmware.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_devstatuschg_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2698,15 +2111,7 @@ out:
 		mpi3mr_tgtdev_put(tgtdev);
 }
 
-/**
- * mpi3mr_preparereset_evt_th - Prepare for reset event tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Blocks and unblocks host level I/O based on the reason code
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_preparereset_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2732,15 +2137,7 @@ static void mpi3mr_preparereset_evt_th(struct mpi3mr_ioc *mrioc,
 		    le32_to_cpu(event_reply->event_context));
 }
 
-/**
- * mpi3mr_energypackchg_evt_th - Energy pack change evt tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Identifies the new shutdown timeout value and update.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_energypackchg_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2761,15 +2158,7 @@ static void mpi3mr_energypackchg_evt_th(struct mpi3mr_ioc *mrioc,
 	mrioc->facts.shutdown_timeout = shutdown_timeout;
 }
 
-/**
- * mpi3mr_cablemgmt_evt_th - Cable management event tophalf
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Displays Cable manegemt event details.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_cablemgmt_evt_th(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2797,15 +2186,7 @@ static void mpi3mr_cablemgmt_evt_th(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_add_event_wait_for_device_refresh - Add Wait for Device Refresh Event
- * @mrioc: Adapter instance reference
- *
- * Add driver specific event to make sure that the driver won't process the
- * events until all the devices are refreshed during soft reset.
- *
- * Return: Nothing
- */
+ 
 void mpi3mr_add_event_wait_for_device_refresh(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3mr_fwevt *fwevt = NULL;
@@ -2826,17 +2207,7 @@ void mpi3mr_add_event_wait_for_device_refresh(struct mpi3mr_ioc *mrioc)
 	mpi3mr_fwevt_add_to_list(mrioc, fwevt);
 }
 
-/**
- * mpi3mr_os_handle_events - Firmware event handler
- * @mrioc: Adapter instance reference
- * @event_reply: event data
- *
- * Identify whteher the event has to handled and acknowledged
- * and either process the event in the tophalf and/or schedule a
- * bottom half through mpi3mr_fwevt_worker.
- *
- * Return: Nothing
- */
+ 
 void mpi3mr_os_handle_events(struct mpi3mr_ioc *mrioc,
 	struct mpi3_event_notification_reply *event_reply)
 {
@@ -2937,18 +2308,7 @@ void mpi3mr_os_handle_events(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_setup_eedp - Setup EEDP information in MPI3 SCSI IO
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- * @scsiio_req: MPI3 SCSI IO request
- *
- * Identifies the protection information flags from the SCSI
- * command and set appropriate flags in the MPI3 SCSI IO
- * request.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_setup_eedp(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd, struct mpi3_scsi_io_request *scsiio_req)
 {
@@ -3038,30 +2398,18 @@ static void mpi3mr_setup_eedp(struct mpi3mr_ioc *mrioc,
 	scsiio_req->sgl[0].eedp.flags = MPI3_SGE_FLAGS_ELEMENT_TYPE_EXTENDED;
 }
 
-/**
- * mpi3mr_build_sense_buffer - Map sense information
- * @desc: Sense type
- * @buf: Sense buffer to populate
- * @key: Sense key
- * @asc: Additional sense code
- * @ascq: Additional sense code qualifier
- *
- * Maps the given sense information into either descriptor or
- * fixed format sense data.
- *
- * Return: Nothing
- */
+ 
 static inline void mpi3mr_build_sense_buffer(int desc, u8 *buf, u8 key,
 	u8 asc, u8 ascq)
 {
 	if (desc) {
-		buf[0] = 0x72;	/* descriptor, current */
+		buf[0] = 0x72;	 
 		buf[1] = key;
 		buf[2] = asc;
 		buf[3] = ascq;
 		buf[7] = 0;
 	} else {
-		buf[0] = 0x70;	/* fixed, current */
+		buf[0] = 0x70;	 
 		buf[2] = key;
 		buf[7] = 0xa;
 		buf[12] = asc;
@@ -3069,16 +2417,7 @@ static inline void mpi3mr_build_sense_buffer(int desc, u8 *buf, u8 key,
 	}
 }
 
-/**
- * mpi3mr_map_eedp_error - Map EEDP errors from IOC status
- * @scmd: SCSI command reference
- * @ioc_status: status of MPI3 request
- *
- * Maps the EEDP error status of the SCSI IO request to sense
- * data.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_map_eedp_error(struct scsi_cmnd *scmd,
 	u16 ioc_status)
 {
@@ -3104,20 +2443,7 @@ static void mpi3mr_map_eedp_error(struct scsi_cmnd *scmd,
 	scmd->result = (DID_ABORT << 16) | SAM_STAT_CHECK_CONDITION;
 }
 
-/**
- * mpi3mr_process_op_reply_desc - reply descriptor handler
- * @mrioc: Adapter instance reference
- * @reply_desc: Operational reply descriptor
- * @reply_dma: place holder for reply DMA address
- * @qidx: Operational queue index
- *
- * Process the operational reply descriptor and identifies the
- * descriptor type. Based on the descriptor map the MPI3 request
- * status to a SCSI command status and calls scsi_done call
- * back.
- *
- * Return: Nothing
- */
+ 
 void mpi3mr_process_op_reply_desc(struct mpi3mr_ioc *mrioc,
 	struct mpi3_default_reply_descriptor *reply_desc, u64 *reply_dma, u16 qidx)
 {
@@ -3363,14 +2689,7 @@ out:
 		    le64_to_cpu(scsi_reply->sense_data_buffer_address));
 }
 
-/**
- * mpi3mr_get_chain_idx - get free chain buffer index
- * @mrioc: Adapter instance reference
- *
- * Try to get a free chain buffer index from the free pool.
- *
- * Return: -1 on failure or the free chain buffer index
- */
+ 
 static int mpi3mr_get_chain_idx(struct mpi3mr_ioc *mrioc)
 {
 	u8 retry_count = 5;
@@ -3391,18 +2710,7 @@ static int mpi3mr_get_chain_idx(struct mpi3mr_ioc *mrioc)
 	return cmd_idx;
 }
 
-/**
- * mpi3mr_prepare_sg_scmd - build scatter gather list
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- * @scsiio_req: MPI3 SCSI IO request
- *
- * This function maps SCSI command's data and protection SGEs to
- * MPI request SGEs. If required additional 4K chain buffer is
- * used to send the SGEs.
- *
- * Return: 0 on success, -ENOMEM on dma_map_sg failure
- */
+ 
 static int mpi3mr_prepare_sg_scmd(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd, struct mpi3_scsi_io_request *scsiio_req)
 {
@@ -3445,7 +2753,7 @@ static int mpi3mr_prepare_sg_scmd(struct mpi3mr_ioc *mrioc,
 		    scsi_prot_sglist(scmd),
 		    scsi_prot_sg_count(scmd),
 		    scmd->sc_data_direction);
-		priv->meta_sg_valid = 1; /* To unmap meta sg DMA */
+		priv->meta_sg_valid = 1;  
 	} else {
 		sg_scmd = scsi_sglist(scmd);
 		sges_left = scsi_dma_map(scmd);
@@ -3471,13 +2779,13 @@ static int mpi3mr_prepare_sg_scmd(struct mpi3mr_ioc *mrioc,
 	    MPI3_SGE_FLAGS_ELEMENT_TYPE_EXTENDED && !meta_sg) {
 		sg_local += sizeof(struct mpi3_sge_common);
 		sges_in_segment--;
-		/* Reserve 1st segment (scsiio_req->sgl[0]) for eedp */
+		 
 	}
 
 	if (scsiio_req->msg_flags ==
 	    MPI3_SCSIIO_MSGFLAGS_METASGL_VALID && !meta_sg) {
 		sges_in_segment--;
-		/* Reserve last segment (scsiio_req->sgl[3]) for meta sg */
+		 
 	}
 
 	if (meta_sg)
@@ -3486,7 +2794,7 @@ static int mpi3mr_prepare_sg_scmd(struct mpi3mr_ioc *mrioc,
 	if (sges_left <= sges_in_segment)
 		goto fill_in_last_segment;
 
-	/* fill in main message segment when there is a chain following */
+	 
 	while (sges_in_segment > 1) {
 		mpi3mr_add_sg_single(sg_local, simple_sgl_flags,
 		    sg_dma_len(sg_scmd), sg_dma_address(sg_scmd));
@@ -3532,18 +2840,7 @@ fill_in_last_segment:
 	return 0;
 }
 
-/**
- * mpi3mr_build_sg_scmd - build scatter gather list for SCSI IO
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- * @scsiio_req: MPI3 SCSI IO request
- *
- * This function calls mpi3mr_prepare_sg_scmd for constructing
- * both data SGEs and protection information SGEs in the MPI
- * format from the SCSI Command as appropriate .
- *
- * Return: return value of mpi3mr_prepare_sg_scmd.
- */
+ 
 static int mpi3mr_build_sg_scmd(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd, struct mpi3_scsi_io_request *scsiio_req)
 {
@@ -3554,7 +2851,7 @@ static int mpi3mr_build_sg_scmd(struct mpi3mr_ioc *mrioc,
 		return ret;
 
 	if (scsiio_req->msg_flags == MPI3_SCSIIO_MSGFLAGS_METASGL_VALID) {
-		/* There is a valid meta sg */
+		 
 		scsiio_req->flags |=
 		    cpu_to_le32(MPI3_SCSIIO_FLAGS_DMAOPERATION_HOST_PI);
 		ret = mpi3mr_prepare_sg_scmd(mrioc, scmd, scsiio_req);
@@ -3563,15 +2860,7 @@ static int mpi3mr_build_sg_scmd(struct mpi3mr_ioc *mrioc,
 	return ret;
 }
 
-/**
- * mpi3mr_tm_response_name -  get TM response as a string
- * @resp_code: TM response code
- *
- * Convert known task management response code as a readable
- * string.
- *
- * Return: response code string.
- */
+ 
 static const char *mpi3mr_tm_response_name(u8 resp_code)
 {
 	char *desc;
@@ -3623,25 +2912,7 @@ inline void mpi3mr_poll_pend_io_completions(struct mpi3mr_ioc *mrioc)
 		    mrioc->intr_info[i].op_reply_q);
 }
 
-/**
- * mpi3mr_issue_tm - Issue Task Management request
- * @mrioc: Adapter instance reference
- * @tm_type: Task Management type
- * @handle: Device handle
- * @lun: lun ID
- * @htag: Host tag of the TM request
- * @timeout: TM timeout value
- * @drv_cmd: Internal command tracker
- * @resp_code: Response code place holder
- * @scmd: SCSI command
- *
- * Issues a Task Management Request to the controller for a
- * specified target, lun and command and wait for its completion
- * and check TM response. Recover the TM if it timed out by
- * issuing controller reset.
- *
- * Return: 0 on success, non-zero on errors
- */
+ 
 int mpi3mr_issue_tm(struct mpi3mr_ioc *mrioc, u8 tm_type,
 	u16 handle, uint lun, u16 htag, ulong timeout,
 	struct mpi3mr_drv_cmd *drv_cmd,
@@ -3817,17 +3088,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_bios_param - BIOS param callback
- * @sdev: SCSI device reference
- * @bdev: Block device reference
- * @capacity: Capacity in logical sectors
- * @params: Parameter array
- *
- * Just the parameters with heads/secots/cylinders.
- *
- * Return: 0 always
- */
+ 
 static int mpi3mr_bios_param(struct scsi_device *sdev,
 	struct block_device *bdev, sector_t capacity, int params[])
 {
@@ -3857,14 +3118,7 @@ static int mpi3mr_bios_param(struct scsi_device *sdev,
 	return 0;
 }
 
-/**
- * mpi3mr_map_queues - Map queues callback handler
- * @shost: SCSI host reference
- *
- * Maps default and poll queues.
- *
- * Return: return zero.
- */
+ 
 static void mpi3mr_map_queues(struct Scsi_Host *shost)
 {
 	struct mpi3mr_ioc *mrioc = shost_priv(shost);
@@ -3888,10 +3142,7 @@ static void mpi3mr_map_queues(struct Scsi_Host *shost)
 			continue;
 		}
 
-		/*
-		 * The poll queue(s) doesn't have an IRQ (and hence IRQ
-		 * affinity), so use the regular blk-mq cpu mapping
-		 */
+		 
 		map->queue_offset = qoff;
 		if (i != HCTX_TYPE_POLL)
 			blk_mq_pci_map_queues(map, mrioc->pdev, offset);
@@ -3903,14 +3154,7 @@ static void mpi3mr_map_queues(struct Scsi_Host *shost)
 	}
 }
 
-/**
- * mpi3mr_get_fw_pending_ios - Calculate pending I/O count
- * @mrioc: Adapter instance reference
- *
- * Calculate the pending I/Os for the controller and return.
- *
- * Return: Number of pending I/Os
- */
+ 
 static inline int mpi3mr_get_fw_pending_ios(struct mpi3mr_ioc *mrioc)
 {
 	u16 i;
@@ -3921,15 +3165,7 @@ static inline int mpi3mr_get_fw_pending_ios(struct mpi3mr_ioc *mrioc)
 	return pend_ios;
 }
 
-/**
- * mpi3mr_print_pending_host_io - print pending I/Os
- * @mrioc: Adapter instance reference
- *
- * Print number of pending I/Os and each I/O details prior to
- * reset for debug purpose.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_print_pending_host_io(struct mpi3mr_ioc *mrioc)
 {
 	struct Scsi_Host *shost = mrioc->shost;
@@ -3940,15 +3176,7 @@ static void mpi3mr_print_pending_host_io(struct mpi3mr_ioc *mrioc)
 	    mpi3mr_print_scmd, (void *)mrioc);
 }
 
-/**
- * mpi3mr_wait_for_host_io - block for I/Os to complete
- * @mrioc: Adapter instance reference
- * @timeout: time out in seconds
- * Waits for pending I/Os for the given adapter to complete or
- * to hit the timeout.
- *
- * Return: Nothing
- */
+ 
 void mpi3mr_wait_for_host_io(struct mpi3mr_ioc *mrioc, u32 timeout)
 {
 	enum mpi3mr_iocstate iocstate;
@@ -3977,20 +3205,7 @@ void mpi3mr_wait_for_host_io(struct mpi3mr_ioc *mrioc, u32 timeout)
 	    mpi3mr_get_fw_pending_ios(mrioc));
 }
 
-/**
- * mpi3mr_setup_divert_ws - Setup Divert IO flag for write same
- * @mrioc: Adapter instance reference
- * @scmd: SCSI command reference
- * @scsiio_req: MPI3 SCSI IO request
- * @scsiio_flags: Pointer to MPI3 SCSI IO Flags
- * @wslen: write same max length
- *
- * Gets values of unmap, ndob and number of blocks from write
- * same scsi io and based on these values it sets divert IO flag
- * and reason for diverting IO to firmware.
- *
- * Return: Nothing
- */
+ 
 static inline void mpi3mr_setup_divert_ws(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd, struct mpi3_scsi_io_request *scsiio_req,
 	u32 *scsiio_flags, u16 wslen)
@@ -4019,17 +3234,7 @@ static inline void mpi3mr_setup_divert_ws(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_eh_host_reset - Host reset error handling callback
- * @scmd: SCSI command reference
- *
- * Issue controller reset if the scmd is for a Physical Device,
- * if the scmd is for RAID volume, then wait for
- * MPI3MR_RAID_ERRREC_RESET_TIMEOUT and checke whether any
- * pending I/Os prior to issuing reset to the controller.
- *
- * Return: SUCCESS of successful reset else FAILED
- */
+ 
 static int mpi3mr_eh_host_reset(struct scsi_cmnd *scmd)
 {
 	struct mpi3mr_ioc *mrioc = shost_priv(scmd->device->host);
@@ -4068,16 +3273,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_eh_target_reset - Target reset error handling callback
- * @scmd: SCSI command reference
- *
- * Issue Target reset Task Management and verify the scmd is
- * terminated successfully and return status accordingly.
- *
- * Return: SUCCESS of successful termination of the scmd else
- *         FAILED
- */
+ 
 static int mpi3mr_eh_target_reset(struct scsi_cmnd *scmd)
 {
 	struct mpi3mr_ioc *mrioc = shost_priv(scmd->device->host);
@@ -4140,16 +3336,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_eh_dev_reset- Device reset error handling callback
- * @scmd: SCSI command reference
- *
- * Issue lun reset Task Management and verify the scmd is
- * terminated successfully and return status accordingly.
- *
- * Return: SUCCESS of successful termination of the scmd else
- *         FAILED
- */
+ 
 static int mpi3mr_eh_dev_reset(struct scsi_cmnd *scmd)
 {
 	struct mpi3mr_ioc *mrioc = shost_priv(scmd->device->host);
@@ -4210,14 +3397,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_scan_start - Scan start callback handler
- * @shost: SCSI host reference
- *
- * Issue port enable request asynchronously.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_scan_start(struct Scsi_Host *shost)
 {
 	struct mpi3mr_ioc *mrioc = shost_priv(shost);
@@ -4231,17 +3411,7 @@ static void mpi3mr_scan_start(struct Scsi_Host *shost)
 	}
 }
 
-/**
- * mpi3mr_scan_finished - Scan finished callback handler
- * @shost: SCSI host reference
- * @time: Jiffies from the scan start
- *
- * Checks whether the port enable is completed or timedout or
- * failed and set the scan status accordingly after taking any
- * recovery if required.
- *
- * Return: 1 on scan finished or timed out, 0 for in progress
- */
+ 
 static int mpi3mr_scan_finished(struct Scsi_Host *shost,
 	unsigned long time)
 {
@@ -4287,14 +3457,7 @@ static int mpi3mr_scan_finished(struct Scsi_Host *shost,
 	return 1;
 }
 
-/**
- * mpi3mr_slave_destroy - Slave destroy callback handler
- * @sdev: SCSI device reference
- *
- * Cleanup and free per device(lun) private data.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_slave_destroy(struct scsi_device *sdev)
 {
 	struct Scsi_Host *shost;
@@ -4334,14 +3497,7 @@ static void mpi3mr_slave_destroy(struct scsi_device *sdev)
 	sdev->hostdata = NULL;
 }
 
-/**
- * mpi3mr_target_destroy - Target destroy callback handler
- * @starget: SCSI target reference
- *
- * Cleanup and free per target private data.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_target_destroy(struct scsi_target *starget)
 {
 	struct Scsi_Host *shost;
@@ -4374,15 +3530,7 @@ static void mpi3mr_target_destroy(struct scsi_target *starget)
 	starget->hostdata = NULL;
 }
 
-/**
- * mpi3mr_slave_configure - Slave configure callback handler
- * @sdev: SCSI device reference
- *
- * Configure queue depth, max hardware sectors and virt boundary
- * as required
- *
- * Return: 0 always.
- */
+ 
 static int mpi3mr_slave_configure(struct scsi_device *sdev)
 {
 	struct scsi_target *starget;
@@ -4416,7 +3564,7 @@ static int mpi3mr_slave_configure(struct scsi_device *sdev)
 
 	switch (tgt_dev->dev_type) {
 	case MPI3_DEVICE_DEVFORM_PCIE:
-		/*The block layer hw sector size = 512*/
+		 
 		if ((tgt_dev->dev_spec.pcie_inf.dev_info &
 		    MPI3_DEVICE0_PCIE_DEVICE_INFO_TYPE_MASK) ==
 		    MPI3_DEVICE0_PCIE_DEVICE_INFO_TYPE_NVME_DEVICE) {
@@ -4439,14 +3587,7 @@ static int mpi3mr_slave_configure(struct scsi_device *sdev)
 	return retval;
 }
 
-/**
- * mpi3mr_slave_alloc -Slave alloc callback handler
- * @sdev: SCSI device reference
- *
- * Allocate per device(lun) private data and initialize it.
- *
- * Return: 0 on success -ENOMEM on memory allocation failure.
- */
+ 
 static int mpi3mr_slave_alloc(struct scsi_device *sdev)
 {
 	struct Scsi_Host *shost;
@@ -4499,14 +3640,7 @@ static int mpi3mr_slave_alloc(struct scsi_device *sdev)
 	return retval;
 }
 
-/**
- * mpi3mr_target_alloc - Target alloc callback handler
- * @starget: SCSI target reference
- *
- * Allocate per target private data and initialize it.
- *
- * Return: 0 on success -ENOMEM on memory allocation failure.
- */
+ 
 static int mpi3mr_target_alloc(struct scsi_target *starget)
 {
 	struct Scsi_Host *shost = dev_to_shost(&starget->dev);
@@ -4573,18 +3707,7 @@ static int mpi3mr_target_alloc(struct scsi_target *starget)
 	return retval;
 }
 
-/**
- * mpi3mr_check_return_unmap - Whether an unmap is allowed
- * @mrioc: Adapter instance reference
- * @scmd: SCSI Command reference
- *
- * The controller hardware cannot handle certain unmap commands
- * for NVMe drives, this routine checks those and return true
- * and completes the SCSI command with proper status and sense
- * data.
- *
- * Return: TRUE for not  allowed unmap, FALSE otherwise.
- */
+ 
 static bool mpi3mr_check_return_unmap(struct mpi3mr_ioc *mrioc,
 	struct scsi_cmnd *scmd)
 {
@@ -4677,14 +3800,7 @@ static bool mpi3mr_check_return_unmap(struct mpi3mr_ioc *mrioc,
 	return false;
 }
 
-/**
- * mpi3mr_allow_scmd_to_fw - Command is allowed during shutdown
- * @scmd: SCSI Command reference
- *
- * Checks whether a cdb is allowed during shutdown or not.
- *
- * Return: TRUE for allowed commands, FALSE otherwise.
- */
+ 
 
 inline bool mpi3mr_allow_scmd_to_fw(struct scsi_cmnd *scmd)
 {
@@ -4697,18 +3813,7 @@ inline bool mpi3mr_allow_scmd_to_fw(struct scsi_cmnd *scmd)
 	}
 }
 
-/**
- * mpi3mr_qcmd - I/O request despatcher
- * @shost: SCSI Host reference
- * @scmd: SCSI Command reference
- *
- * Issues the SCSI Command as an MPI3 request.
- *
- * Return: 0 on successful queueing of the request or if the
- *         request is completed with failure.
- *         SCSI_MLQUEUE_DEVICE_BUSY when the device is busy.
- *         SCSI_MLQUEUE_HOST_BUSY when the host queue is full.
- */
+ 
 static int mpi3mr_qcmd(struct Scsi_Host *shost,
 	struct scsi_cmnd *scmd)
 {
@@ -4752,7 +3857,7 @@ static int mpi3mr_qcmd(struct Scsi_Host *shost,
 	stgt_priv_data = sdev_priv_data->tgt_priv_data;
 	dev_handle = stgt_priv_data->dev_handle;
 
-	/* Avoid error handling escalation when device is removed or blocked */
+	 
 
 	if (scmd->device->host->shost_state == SHOST_RECOVERY &&
 		scmd->cmnd[0] == TEST_UNIT_READY &&
@@ -4919,8 +4024,7 @@ static const struct scsi_host_template mpi3mr_driver_template = {
 	.can_queue			= 1,
 	.this_id			= -1,
 	.sg_tablesize			= MPI3MR_DEFAULT_SGL_ENTRIES,
-	/* max xfer supported is 1M (2K in 512 byte sized sectors)
-	 */
+	 
 	.max_sectors			= (MPI3MR_DEFAULT_MAX_IO_SIZE / 512),
 	.cmd_per_lun			= MPI3MR_MAX_CMDS_LUN,
 	.max_segment_size		= 0xffffffff,
@@ -4930,16 +4034,7 @@ static const struct scsi_host_template mpi3mr_driver_template = {
 	.sdev_groups			= mpi3mr_dev_groups,
 };
 
-/**
- * mpi3mr_init_drv_cmd - Initialize internal command tracker
- * @cmdptr: Internal command tracker
- * @host_tag: Host tag used for the specific command
- *
- * Initialize the internal command tracker structure with
- * specified host tag.
- *
- * Return: Nothing.
- */
+ 
 static inline void mpi3mr_init_drv_cmd(struct mpi3mr_drv_cmd *cmdptr,
 	u16 host_tag)
 {
@@ -4950,15 +4045,7 @@ static inline void mpi3mr_init_drv_cmd(struct mpi3mr_drv_cmd *cmdptr,
 	cmdptr->host_tag = host_tag;
 }
 
-/**
- * osintfc_mrioc_security_status -Check controller secure status
- * @pdev: PCI device instance
- *
- * Read the Device Serial Number capability from PCI config
- * space and decide whether the controller is secure or not.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int
 osintfc_mrioc_security_status(struct pci_dev *pdev)
 {
@@ -5019,20 +4106,7 @@ osintfc_mrioc_security_status(struct pci_dev *pdev)
 	return retval;
 }
 
-/**
- * mpi3mr_probe - PCI probe callback
- * @pdev: PCI device instance
- * @id: PCI device ID details
- *
- * controller initialization routine. Checks the security status
- * of the controller and if it is invalid or tampered return the
- * probe without initializing the controller. Otherwise,
- * allocate per adapter instance through shost_priv and
- * initialize controller specific data structures, initializae
- * the controller hardware, add shost to the SCSI subsystem.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 
 static int
 mpi3mr_probe(struct pci_dev *pdev, const struct pci_device_id *id)
@@ -5043,7 +4117,7 @@ mpi3mr_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	if (osintfc_mrioc_security_status(pdev)) {
 		warn_non_secure_ctlr = 1;
-		return 1; /* For Invalid and Tampered device */
+		return 1;  
 	}
 
 	shost = scsi_host_alloc(&mpi3mr_driver_template,
@@ -5114,7 +4188,7 @@ mpi3mr_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		mrioc->max_sgl_entries *= MPI3MR_DEFAULT_SGL_ENTRIES;
 	}
 
-	/* init shost parameters */
+	 
 	shost->max_cmd_len = MPI3MR_MAX_CDB_LENGTH;
 	shost->max_lun = -1;
 	shost->unique_id = mrioc->id;
@@ -5209,16 +4283,7 @@ shost_failed:
 	return retval;
 }
 
-/**
- * mpi3mr_remove - PCI remove callback
- * @pdev: PCI device instance
- *
- * Cleanup the IOC by issuing MUR and shutdown notification.
- * Free up all memory and resources associated with the
- * controllerand target devices, unregister the shost.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_remove(struct pci_dev *pdev)
 {
 	struct Scsi_Host *shost = pci_get_drvdata(pdev);
@@ -5296,15 +4361,7 @@ static void mpi3mr_remove(struct pci_dev *pdev)
 	scsi_host_put(shost);
 }
 
-/**
- * mpi3mr_shutdown - PCI shutdown callback
- * @pdev: PCI device instance
- *
- * Free up all memory and resources associated with the
- * controller
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_shutdown(struct pci_dev *pdev)
 {
 	struct Scsi_Host *shost = pci_get_drvdata(pdev);
@@ -5333,15 +4390,7 @@ static void mpi3mr_shutdown(struct pci_dev *pdev)
 	mpi3mr_cleanup_resources(mrioc);
 }
 
-/**
- * mpi3mr_suspend - PCI power management suspend callback
- * @dev: Device struct
- *
- * Change the power state to the given value and cleanup the IOC
- * by issuing MUR and shutdown notification
- *
- * Return: 0 always.
- */
+ 
 static int __maybe_unused
 mpi3mr_suspend(struct device *dev)
 {
@@ -5368,15 +4417,7 @@ mpi3mr_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * mpi3mr_resume - PCI power management resume callback
- * @dev: Device struct
- *
- * Restore the power state to D0 and reinitialize the controller
- * and resume I/O operations to the target devices
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 static int __maybe_unused
 mpi3mr_resume(struct device *dev)
 {

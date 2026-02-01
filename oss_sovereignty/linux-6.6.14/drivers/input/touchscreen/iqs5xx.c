@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS550/572/525 Trackpad/Touchscreen Controller
- *
- * Copyright (C) 2018 Jeff LaBundy <jeff@labundy.com>
- *
- * These devices require firmware exported from a PC-based configuration tool
- * made available by the vendor. Firmware files may be pushed to the device's
- * nonvolatile memory by writing the filename to the 'fw_file' sysfs control.
- *
- * Link to PC-based configuration tool and datasheet: https://www.azoteq.com/
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -150,11 +140,7 @@ static int iqs5xx_read_burst(struct i2c_client *client,
 		},
 	};
 
-	/*
-	 * The first addressing attempt outside of a communication window fails
-	 * and must be retried, after which the device clock stretches until it
-	 * is available.
-	 */
+	 
 	for (i = 0; i < IQS5XX_NUM_RETRIES; i++) {
 		ret = i2c_transfer(client->adapter, msg, ARRAY_SIZE(msg));
 		if (ret == ARRAY_SIZE(msg))
@@ -199,11 +185,7 @@ static int iqs5xx_write_burst(struct i2c_client *client,
 	put_unaligned_be16(reg, mbuf);
 	memcpy(mbuf + sizeof(reg), val, len);
 
-	/*
-	 * The first addressing attempt outside of a communication window fails
-	 * and must be retried, after which the device clock stretches until it
-	 * is available.
-	 */
+	 
 	for (i = 0; i < IQS5XX_NUM_RETRIES; i++) {
 		ret = i2c_master_send(client, mbuf, mlen);
 		if (ret == mlen)
@@ -279,11 +261,7 @@ static int iqs5xx_bl_cmd(struct i2c_client *client, u8 bl_cmd, u16 bl_addr)
 		break;
 	case IQS5XX_BL_CMD_CRC:
 		msg.len = sizeof(u8);
-		/*
-		 * This delay saves the bus controller the trouble of having to
-		 * tolerate a relatively long clock-stretching period while the
-		 * CRC is calculated.
-		 */
+		 
 		msleep(50);
 		break;
 	case IQS5XX_BL_CMD_EXEC:
@@ -329,11 +307,7 @@ static int iqs5xx_bl_open(struct i2c_client *client)
 {
 	int error, i, j;
 
-	/*
-	 * The device opens a bootloader polling window for 2 ms following the
-	 * release of reset. If the host cannot establish communication during
-	 * this time frame, it must cycle reset again.
-	 */
+	 
 	for (i = 0; i < IQS5XX_BL_ATTEMPTS; i++) {
 		iqs5xx_reset(client);
 		usleep_range(350, 400);
@@ -447,11 +421,7 @@ static int iqs5xx_set_state(struct i2c_client *client, u8 state)
 
 	mutex_lock(&iqs5xx->lock);
 
-	/*
-	 * Addressing the device outside of a communication window prompts it
-	 * to assert the RDY output, so disable the interrupt line to prevent
-	 * the handler from servicing a false interrupt.
-	 */
+	 
 	disable_irq(client->irq);
 
 	error1 = iqs5xx_write_byte(client, IQS5XX_SYS_CTRL1, state);
@@ -518,10 +488,7 @@ static int iqs5xx_axis_init(struct i2c_client *client)
 
 	touchscreen_parse_properties(input, true, prop);
 
-	/*
-	 * The device reserves 0xFFFF for coordinates that correspond to slots
-	 * which are not in a state of touch.
-	 */
+	 
 	if (prop->max_x >= U16_MAX || prop->max_y >= U16_MAX) {
 		dev_err(&client->dev, "Invalid touchscreen size: %u*%u\n",
 			prop->max_x, prop->max_y);
@@ -561,13 +528,7 @@ static int iqs5xx_dev_init(struct i2c_client *client)
 	if (error)
 		return iqs5xx_bl_open(client);
 
-	/*
-	 * A000 and B000 devices use 8-bit and 16-bit addressing, respectively.
-	 * Querying an A000 device's version information with 16-bit addressing
-	 * gives the appearance that the data is shifted by one byte; a nonzero
-	 * leading array element suggests this could be the case (in which case
-	 * the missing zero is prepended).
-	 */
+	 
 	buf[0] = 0;
 	dev_id_info = (struct iqs5xx_dev_id_info *)&buf[buf[1] ? 0 : 1];
 
@@ -582,11 +543,7 @@ static int iqs5xx_dev_init(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/*
-	 * With the product number recognized yet shifted by one byte, open the
-	 * bootloader and wait for user space to convert the A000 device into a
-	 * B000 device via new firmware.
-	 */
+	 
 	if (buf[1]) {
 		dev_err(&client->dev, "Opening bootloader for A000 device\n");
 		return iqs5xx_bl_open(client);
@@ -622,12 +579,7 @@ static int iqs5xx_dev_init(struct i2c_client *client)
 
 	iqs5xx->dev_id_info = *dev_id_info;
 
-	/*
-	 * The following delay allows ATI to complete before the open and close
-	 * callbacks are free to elicit I2C communication. Any attempts to read
-	 * from or write to the device during this time may face extended clock
-	 * stretching and prompt the I2C controller to report an error.
-	 */
+	 
 	msleep(250);
 
 	return 0;
@@ -641,11 +593,7 @@ static irqreturn_t iqs5xx_irq(int irq, void *data)
 	struct input_dev *input = iqs5xx->input;
 	int error, i;
 
-	/*
-	 * This check is purely a precaution, as the device does not assert the
-	 * RDY output during bootloader mode. If the device operates outside of
-	 * bootloader mode, the input device is guaranteed to be allocated.
-	 */
+	 
 	if (!iqs5xx->dev_id_info.bl_status)
 		return IRQ_NONE;
 
@@ -689,11 +637,7 @@ static irqreturn_t iqs5xx_irq(int irq, void *data)
 	if (error)
 		return IRQ_NONE;
 
-	/*
-	 * Once the communication window is closed, a small delay is added to
-	 * ensure the device's RDY output has been deasserted by the time the
-	 * interrupt handler returns.
-	 */
+	 
 	usleep_range(50, 100);
 
 	return IRQ_HANDLED;
@@ -712,15 +656,7 @@ static int iqs5xx_fw_file_parse(struct i2c_client *client,
 	u8 rec_hdr[IQS5XX_REC_HDR_LEN];
 	u8 rec_data[IQS5XX_REC_LEN_MAX];
 
-	/*
-	 * Firmware exported from the vendor's configuration tool deviates from
-	 * standard ihex as follows: (1) the checksum for records corresponding
-	 * to user-exported settings is not recalculated, and (2) an address of
-	 * 0xFFFF is used for the EOF record.
-	 *
-	 * Because the ihex2fw tool tolerates neither (1) nor (2), the slightly
-	 * nonstandard ihex firmware is parsed directly by the driver.
-	 */
+	 
 	error = request_firmware(&fw, fw_file, &client->dev);
 	if (error) {
 		dev_err(&client->dev, "Failed to request firmware %s: %d\n",
@@ -845,11 +781,7 @@ static int iqs5xx_fw_file_write(struct i2c_client *client, const char *fw_file)
 
 	mutex_lock(&iqs5xx->lock);
 
-	/*
-	 * Disable the interrupt line in case the first attempt(s) to enter the
-	 * bootloader don't happen quickly enough, in which case the device may
-	 * assert the RDY output until the next attempt.
-	 */
+	 
 	disable_irq(client->irq);
 
 	iqs5xx->dev_id_info.bl_status = 0;
@@ -918,10 +850,7 @@ static ssize_t fw_file_store(struct device *dev,
 	if (error)
 		return error;
 
-	/*
-	 * If the input device was not allocated already, it is guaranteed to
-	 * be allocated by this point and can finally be registered.
-	 */
+	 
 	if (input_reg) {
 		error = input_register_device(iqs5xx->input);
 		if (error) {

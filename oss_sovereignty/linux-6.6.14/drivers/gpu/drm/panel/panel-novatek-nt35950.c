@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Novatek NT35950 DriverIC panels driver
- *
- * Copyright (c) 2021 AngeloGioacchino Del Regno
- *                    <angelogioacchino.delregno@somainline.org>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -18,31 +13,31 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-#define MCS_CMD_MAUCCTR			0xf0 /* Manufacturer command enable */
-#define MCS_PARAM_SCALER_FUNCTION	0x58 /* Scale-up function */
+#define MCS_CMD_MAUCCTR			0xf0  
+#define MCS_PARAM_SCALER_FUNCTION	0x58  
 #define MCS_PARAM_SCALEUP_MODE		0xc9
  #define MCS_SCALEUP_SIMPLE		0x0
  #define MCS_SCALEUP_BILINEAR		BIT(0)
  #define MCS_SCALEUP_DUPLICATE		(BIT(0) | BIT(4))
 
-/* VESA Display Stream Compression param */
+ 
 #define MCS_PARAM_VESA_DSC_ON		0x03
 
-/* Data Compression mode */
+ 
 #define MCS_PARAM_DATA_COMPRESSION	0x90
  #define MCS_DATA_COMPRESSION_NONE	0x00
  #define MCS_DATA_COMPRESSION_FBC	0x02
  #define MCS_DATA_COMPRESSION_DSC	0x03
 
-/* Display Output control */
+ 
 #define MCS_PARAM_DISP_OUTPUT_CTRL	0xb4
  #define MCS_DISP_OUT_SRAM_EN		BIT(0)
  #define MCS_DISP_OUT_VIDEO_MODE	BIT(4)
 
-/* VESA Display Stream Compression setting */
+ 
 #define MCS_PARAM_VESA_DSC_SETTING	0xc0
 
-/* SubPixel Rendering (SPR) */
+ 
 #define MCS_PARAM_SPR_EN		0xe3
 #define MCS_PARAM_SPR_MODE		0xef
  #define MCS_SPR_MODE_YYG_RAINBOW_RGB	0x01
@@ -99,13 +94,7 @@ static void nt35950_reset(struct nt35950 *nt)
 	usleep_range(12000, 13000);
 }
 
-/*
- * nt35950_set_cmd2_page - Select manufacturer control (CMD2) page
- * @nt:   Main driver structure
- * @page: Page number (0-7)
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_set_cmd2_page(struct nt35950 *nt, u8 page)
 {
 	const u8 mauc_cmd2_page[] = { MCS_CMD_MAUCCTR, 0x55, 0xaa, 0x52,
@@ -121,13 +110,7 @@ static int nt35950_set_cmd2_page(struct nt35950 *nt, u8 page)
 	return 0;
 }
 
-/*
- * nt35950_set_data_compression - Set data compression mode
- * @nt:        Main driver structure
- * @comp_mode: Compression mode
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_set_data_compression(struct nt35950 *nt, u8 comp_mode)
 {
 	u8 cmd_data_compression[] = { MCS_PARAM_DATA_COMPRESSION, comp_mode };
@@ -136,7 +119,7 @@ static int nt35950_set_data_compression(struct nt35950 *nt, u8 comp_mode)
 	u8 last_page = nt->last_page;
 	int ret;
 
-	/* Set CMD2 Page 0 if we're not there yet */
+	 
 	if (last_page != 0) {
 		ret = nt35950_set_cmd2_page(nt, 0);
 		if (ret < 0)
@@ -153,28 +136,22 @@ static int nt35950_set_data_compression(struct nt35950 *nt, u8 comp_mode)
 	if (ret < 0)
 		return ret;
 
-	/* Set the vesa dsc setting on Page 4 */
+	 
 	ret = nt35950_set_cmd2_page(nt, 4);
 	if (ret < 0)
 		return ret;
 
-	/* Display Stream Compression setting, always 0x03 */
+	 
 	ret = mipi_dsi_dcs_write_buffer(nt->dsi[0], cmd_vesa_dsc_setting,
 					ARRAY_SIZE(cmd_vesa_dsc_setting));
 	if (ret < 0)
 		return ret;
 
-	/* Get back to the previously set page */
+	 
 	return nt35950_set_cmd2_page(nt, last_page);
 }
 
-/*
- * nt35950_set_scaler - Enable/disable resolution upscaling
- * @nt:        Main driver structure
- * @scale_up:  Scale up function control
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_set_scaler(struct nt35950 *nt, u8 scale_up)
 {
 	u8 cmd_scaler[] = { MCS_PARAM_SCALER_FUNCTION, scale_up };
@@ -183,13 +160,7 @@ static int nt35950_set_scaler(struct nt35950 *nt, u8 scale_up)
 					 ARRAY_SIZE(cmd_scaler));
 }
 
-/*
- * nt35950_set_scale_mode - Resolution upscaling mode
- * @nt:   Main driver structure
- * @mode: Scaler mode (MCS_DATA_COMPRESSION_*)
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_set_scale_mode(struct nt35950 *nt, u8 mode)
 {
 	u8 cmd_scaler[] = { MCS_PARAM_SCALEUP_MODE, mode };
@@ -198,20 +169,7 @@ static int nt35950_set_scale_mode(struct nt35950 *nt, u8 mode)
 					 ARRAY_SIZE(cmd_scaler));
 }
 
-/*
- * nt35950_inject_black_image - Display a completely black image
- * @nt:   Main driver structure
- *
- * After IC setup, the attached panel may show random data
- * due to driveric behavior changes (resolution, compression,
- * scaling, etc). This function, called after parameters setup,
- * makes the driver ic to output a completely black image to
- * the display.
- * It makes sense to push a black image before sending the sleep-out
- * and display-on commands.
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_inject_black_image(struct nt35950 *nt)
 {
 	const u8 cmd0_black_img[] = { 0x6f, 0x01 };
@@ -219,12 +177,12 @@ static int nt35950_inject_black_image(struct nt35950 *nt)
 	u8 cmd_test[] = { 0xff, 0xaa, 0x55, 0xa5, 0x80 };
 	int ret;
 
-	/* Enable test command */
+	 
 	ret = mipi_dsi_dcs_write_buffer(nt->dsi[0], cmd_test, ARRAY_SIZE(cmd_test));
 	if (ret < 0)
 		return ret;
 
-	/* Send a black image */
+	 
 	ret = mipi_dsi_dcs_write_buffer(nt->dsi[0], cmd0_black_img,
 					ARRAY_SIZE(cmd0_black_img));
 	if (ret < 0)
@@ -234,17 +192,12 @@ static int nt35950_inject_black_image(struct nt35950 *nt)
 	if (ret < 0)
 		return ret;
 
-	/* Disable test command */
+	 
 	cmd_test[ARRAY_SIZE(cmd_test) - 1] = 0x00;
 	return mipi_dsi_dcs_write_buffer(nt->dsi[0], cmd_test, ARRAY_SIZE(cmd_test));
 }
 
-/*
- * nt35950_set_dispout - Set Display Output register parameters
- * @nt:    Main driver structure
- *
- * Return: Number of transferred bytes or negative number on error
- */
+ 
 static int nt35950_set_dispout(struct nt35950 *nt)
 {
 	u8 cmd_dispout[] = { MCS_PARAM_DISP_OUTPUT_CTRL, 0x00 };
@@ -265,7 +218,7 @@ static int nt35950_get_current_mode(struct nt35950 *nt)
 	struct drm_crtc_state *crtc_state;
 	int i;
 
-	/* Return the default (first) mode if no info available yet */
+	 
 	if (!connector->state || !connector->state->crtc)
 		return 0;
 
@@ -324,26 +277,26 @@ static int nt35950_on(struct nt35950 *nt)
 		return ret;
 	}
 
-	/* CMD2 Page 1 */
+	 
 	ret = nt35950_set_cmd2_page(nt, 1);
 	if (ret < 0)
 		return ret;
 
-	/* Unknown command */
+	 
 	mipi_dsi_dcs_write_seq(dsi, 0xd4, 0x88, 0x88);
 
-	/* CMD2 Page 7 */
+	 
 	ret = nt35950_set_cmd2_page(nt, 7);
 	if (ret < 0)
 		return ret;
 
-	/* Enable SubPixel Rendering */
+	 
 	mipi_dsi_dcs_write_seq(dsi, MCS_PARAM_SPR_EN, 0x01);
 
-	/* SPR Mode: YYG Rainbow-RGB */
+	 
 	mipi_dsi_dcs_write_seq(dsi, MCS_PARAM_SPR_MODE, MCS_SPR_MODE_YYG_RAINBOW_RGB);
 
-	/* CMD3 */
+	 
 	ret = nt35950_inject_black_image(nt);
 	if (ret < 0)
 		return ret;
@@ -411,7 +364,7 @@ static int nt35950_sharp_init_vregs(struct nt35950 *nt, struct device *dev)
 					     5200000, 5900000);
 	if (!ret)
 		return -EINVAL;
-	/* AVEE is negative: -5.90V to -5.20V */
+	 
 	ret = regulator_is_supported_voltage(nt->vregs[2].consumer,
 					     5200000, 5900000);
 	if (!ret)
@@ -555,7 +508,7 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
 				     "Failed to get reset gpio\n");
 	}
 
-	/* If the panel is connected on two DSIs then DSI0 left, DSI1 right */
+	 
 	if (nt->desc->is_dual_dsi) {
 		info = &nt->desc->dsi_info;
 		dsi_r = of_graph_get_remote_node(dsi->dev.of_node, 1, -1);
@@ -606,7 +559,7 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
 
 		ret = mipi_dsi_attach(nt->dsi[i]);
 		if (ret < 0) {
-			/* If we fail to attach to either host, we're done */
+			 
 			if (num_dsis == 2)
 				mipi_dsi_device_unregister(nt->dsi[1]);
 
@@ -615,7 +568,7 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
 		}
 	}
 
-	/* Make sure to set RESX LOW before starting the power-on sequence */
+	 
 	gpiod_set_value_cansleep(nt->reset_gpio, 0);
 	return 0;
 }
@@ -643,7 +596,7 @@ static void nt35950_remove(struct mipi_dsi_device *dsi)
 
 static const struct nt35950_panel_mode sharp_ls055d1sx04_modes[] = {
 	{
-		/* 1920x1080 60Hz no compression */
+		 
 		.mode = {
 			.clock = 214537,
 			.hdisplay = 1080,
@@ -663,7 +616,7 @@ static const struct nt35950_panel_mode sharp_ls055d1sx04_modes[] = {
 		.scaler_on = 1,
 		.scaler_mode = MCS_SCALEUP_DUPLICATE,
 	},
-	/* TODO: Add 2160x3840 60Hz when DSC is supported */
+	 
 };
 
 static const struct nt35950_panel_desc sharp_ls055d1sx04 = {

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Trace point definitions for the RDMA Connect Manager.
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2020 Oracle and/or its affiliates.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ib_cma
@@ -18,9 +12,7 @@
 #include <rdma/ib_cm.h>
 #include <trace/misc/rdma.h>
 
-/*
- * enum ib_cm_state, from include/rdma/ib_cm.h
- */
+ 
 #define IB_CM_STATE_LIST					\
 	ib_cm_state(IDLE)					\
 	ib_cm_state(LISTEN)					\
@@ -54,9 +46,7 @@ IB_CM_STATE_LIST
 #define show_ib_cm_state(x) \
 		__print_symbolic(x, IB_CM_STATE_LIST)
 
-/*
- * enum ib_cm_lap_state, from include/rdma/ib_cm.h
- */
+ 
 #define IB_CM_LAP_STATE_LIST					\
 	ib_cm_lap_state(LAP_UNINIT)				\
 	ib_cm_lap_state(LAP_IDLE)				\
@@ -80,9 +70,7 @@ IB_CM_LAP_STATE_LIST
 #define show_ib_cm_lap_state(x) \
 		__print_symbolic(x, IB_CM_LAP_STATE_LIST)
 
-/*
- * enum ib_cm_rej_reason, from include/rdma/ib_cm.h
- */
+ 
 #define IB_CM_REJ_REASON_LIST					\
 	ib_cm_rej_reason(REJ_NO_QP)				\
 	ib_cm_rej_reason(REJ_NO_EEC)				\
@@ -142,7 +130,7 @@ DECLARE_EVENT_CLASS(icm_id_class,
 	TP_ARGS(cm_id),
 
 	TP_STRUCT__entry(
-		__field(const void *, cm_id)	/* for eBPF scripts */
+		__field(const void *, cm_id)	 
 		__field(unsigned int, local_id)
 		__field(unsigned int, remote_id)
 		__field(unsigned long, state)
@@ -405,7 +393,7 @@ TRACE_EVENT(icm_mad_send_err,
 	)
 );
 
-#endif /* _TRACE_IB_CMA_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/infiniband/core

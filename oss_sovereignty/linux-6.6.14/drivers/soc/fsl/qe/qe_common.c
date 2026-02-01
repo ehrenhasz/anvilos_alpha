@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common CPM code
- *
- * Author: Scott Wood <scottwood@freescale.com>
- *
- * Copyright 2007-2008,2010 Freescale Semiconductor, Inc.
- *
- * Some parts derived from commproc.c/cpm2_common.c, which is:
- * Copyright (c) 1997 Dan error_act (dmalek@jlc.net)
- * Copyright (c) 1999-2001 Dan Malek <dan@embeddedalley.com>
- * Copyright (c) 2000 MontaVista Software, Inc (source@mvista.com)
- * 2006 (c) MontaVista Software, Inc.
- * Vitaly Bordug <vbordug@ru.mvista.com>
- */
+
+ 
 #include <linux/genalloc.h>
 #include <linux/init.h>
 #include <linux/list.h>
@@ -37,7 +24,7 @@ struct muram_block {
 
 static LIST_HEAD(muram_block_list);
 
-/* max address size we deal with */
+ 
 #define OF_MAX_ADDR_CELLS	4
 #define GENPOOL_OFFSET		(4096 * 8)
 
@@ -55,7 +42,7 @@ int cpm_muram_init(void)
 
 	np = of_find_compatible_node(NULL, NULL, "fsl,cpm-muram-data");
 	if (!np) {
-		/* try legacy bindings */
+		 
 		np = of_find_node_by_name(NULL, "data-only");
 		if (!np) {
 			pr_err("Cannot find CPM muram data node");
@@ -102,15 +89,7 @@ out_muram:
 	return ret;
 }
 
-/*
- * cpm_muram_alloc_common - cpm_muram_alloc common code
- * @size: number of bytes to allocate
- * @algo: algorithm for alloc.
- * @data: data for genalloc's algorithm.
- *
- * This function returns a non-negative offset into the muram area, or
- * a negative errno on failure.
- */
+ 
 static s32 cpm_muram_alloc_common(unsigned long size,
 				  genpool_algo_t algo, void *data)
 {
@@ -134,16 +113,7 @@ static s32 cpm_muram_alloc_common(unsigned long size,
 	return start;
 }
 
-/*
- * cpm_muram_alloc - allocate the requested size worth of multi-user ram
- * @size: number of bytes to allocate
- * @align: requested alignment, in bytes
- *
- * This function returns a non-negative offset into the muram area, or
- * a negative errno on failure.
- * Use cpm_dpram_addr() to get the virtual address of the area.
- * Use cpm_muram_free() to free the allocation.
- */
+ 
 s32 cpm_muram_alloc(unsigned long size, unsigned long align)
 {
 	s32 start;
@@ -159,10 +129,7 @@ s32 cpm_muram_alloc(unsigned long size, unsigned long align)
 }
 EXPORT_SYMBOL(cpm_muram_alloc);
 
-/**
- * cpm_muram_free - free a chunk of multi-user ram
- * @offset: The beginning of the chunk as returned by cpm_muram_alloc().
- */
+ 
 void cpm_muram_free(s32 offset)
 {
 	unsigned long flags;
@@ -187,15 +154,7 @@ void cpm_muram_free(s32 offset)
 }
 EXPORT_SYMBOL(cpm_muram_free);
 
-/*
- * cpm_muram_alloc_fixed - reserve a specific region of multi-user ram
- * @offset: offset of allocation start address
- * @size: number of bytes to allocate
- * This function returns @offset if the area was available, a negative
- * errno otherwise.
- * Use cpm_dpram_addr() to get the virtual address of the area.
- * Use cpm_muram_free() to free the allocation.
- */
+ 
 s32 cpm_muram_alloc_fixed(unsigned long offset, unsigned long size)
 {
 	s32 start;
@@ -211,10 +170,7 @@ s32 cpm_muram_alloc_fixed(unsigned long offset, unsigned long size)
 }
 EXPORT_SYMBOL(cpm_muram_alloc_fixed);
 
-/**
- * cpm_muram_addr - turn a muram offset into a virtual address
- * @offset: muram offset to convert
- */
+ 
 void __iomem *cpm_muram_addr(unsigned long offset)
 {
 	return muram_vbase + offset;
@@ -227,20 +183,14 @@ unsigned long cpm_muram_offset(const void __iomem *addr)
 }
 EXPORT_SYMBOL(cpm_muram_offset);
 
-/**
- * cpm_muram_dma - turn a muram virtual address into a DMA address
- * @addr: virtual address from cpm_muram_addr() to convert
- */
+ 
 dma_addr_t cpm_muram_dma(void __iomem *addr)
 {
 	return muram_pbase + (addr - muram_vbase);
 }
 EXPORT_SYMBOL(cpm_muram_dma);
 
-/*
- * As cpm_muram_free, but takes the virtual address rather than the
- * muram offset.
- */
+ 
 void cpm_muram_free_addr(const void __iomem *addr)
 {
 	if (!addr)

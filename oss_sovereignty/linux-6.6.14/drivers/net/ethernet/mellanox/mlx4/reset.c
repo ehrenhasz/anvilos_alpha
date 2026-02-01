@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2007 Cisco Systems, Inc.  All rights reserved.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -61,14 +30,9 @@ int mlx4_reset(struct mlx4_dev *dev)
 #define MLX4_SEM_TIMEOUT_JIFFIES	(10 * HZ)
 #define MLX4_RESET_TIMEOUT_JIFFIES	(2 * HZ)
 
-	/*
-	 * Reset the chip.  This is somewhat ugly because we have to
-	 * save off the PCI header before reset and then restore it
-	 * after the chip reboots.  We skip config space offsets 22
-	 * and 23 since those have a special meaning.
-	 */
+	 
 
-	/* Do we need to save off the full 4K PCI Express header?? */
+	 
 	hca_header = kmalloc(256, GFP_KERNEL);
 	if (!hca_header) {
 		err = -ENOMEM;
@@ -98,7 +62,7 @@ int mlx4_reset(struct mlx4_dev *dev)
 		goto out;
 	}
 
-	/* grab HW semaphore to lock out flash updates */
+	 
 	end = jiffies + MLX4_SEM_TIMEOUT_JIFFIES;
 	do {
 		sem = readl(reset + MLX4_SEM_OFFSET);
@@ -115,11 +79,11 @@ int mlx4_reset(struct mlx4_dev *dev)
 		goto out;
 	}
 
-	/* actually hit reset */
+	 
 	writel(MLX4_RESET_VALUE, reset + MLX4_RESET_OFFSET);
 	iounmap(reset);
 
-	/* Docs say to wait one second before accessing device */
+	 
 	msleep(1000);
 
 	end = jiffies + MLX4_RESET_TIMEOUT_JIFFIES;
@@ -137,7 +101,7 @@ int mlx4_reset(struct mlx4_dev *dev)
 		goto out;
 	}
 
-	/* Now restore the PCI headers */
+	 
 	if (pcie_cap) {
 		devctl = hca_header[(pcie_cap + PCI_EXP_DEVCTL) / 4];
 		if (pcie_capability_write_word(dev->persist->pdev,

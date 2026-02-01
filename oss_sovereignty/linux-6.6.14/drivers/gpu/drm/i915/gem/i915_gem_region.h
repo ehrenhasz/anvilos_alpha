@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_GEM_REGION_H__
 #define __I915_GEM_REGION_H__
@@ -16,31 +14,14 @@ struct i915_gem_apply_to_region;
 
 #define I915_BO_INVALID_OFFSET ((resource_size_t)-1)
 
-/**
- * struct i915_gem_apply_to_region_ops - ops to use when iterating over all
- * region objects.
- */
+ 
 struct i915_gem_apply_to_region_ops {
-	/**
-	 * @process_obj: Process the current object
-	 *
-	 * Note that if this function is part of a ww transaction, and
-	 * if returns -EDEADLK for one of the objects, it may be
-	 * rerun for that same object in the same pass.
-	 */
+	 
 	int (*process_obj)(struct i915_gem_apply_to_region *apply,
 			   struct drm_i915_gem_object *obj);
 };
 
-/**
- * struct i915_gem_apply_to_region - Argument to the struct
- * i915_gem_apply_to_region_ops functions.
- * @ops: The ops for the operation.
- * @ww: Locking context used for the transaction.
- * @interruptible: Whether to perform object locking interruptible.
- *
- * This structure is intended to be embedded in a private struct if needed
- */
+ 
 struct i915_gem_apply_to_region {
 	const struct i915_gem_apply_to_region_ops *ops;
 	struct i915_gem_ww_ctx *ww;

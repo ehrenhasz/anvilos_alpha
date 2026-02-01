@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * max9877.h  --  amp driver for max9877
- *
- * Copyright (C) 2009 Samsung Electronics Co.Ltd
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+ 
+ 
 
 #ifndef _MAX9877_H
 #define _MAX9877_H
@@ -15,12 +10,12 @@
 #define MAX9877_HPR_VOLUME		0x03
 #define MAX9877_OUTPUT_MODE		0x04
 
-/* MAX9877_INPUT_MODE */
+ 
 #define MAX9877_INB			(1 << 4)
 #define MAX9877_INA			(1 << 5)
 #define MAX9877_ZCD			(1 << 6)
 
-/* MAX9877_OUTPUT_MODE */
+ 
 #define MAX9877_OUTMODE_MASK		(15 << 0)
 #define MAX9877_OSC_MASK		(3 << 4)
 #define MAX9877_OSC_OFFSET		4

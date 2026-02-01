@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AMD ALSA SoC Pink Sardine SoundWire DMA Driver
- *
- * Copyright 2023 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -39,11 +35,7 @@ static struct sdw_dma_ring_buf_reg sdw0_dma_ring_buf_reg[ACP63_SDW0_DMA_MAX_STRE
 	 ACP_AUDIO2_RX_LINEARPOSITIONCNTR_LOW, ACP_AUDIO2_RX_LINEARPOSITIONCNTR_HIGH}
 };
 
-/*
- * SDW1 instance supports one TX stream and one RX stream.
- * For TX/RX streams DMA registers programming for SDW1 instance, it uses ACP_P1_AUDIO1 register
- * set as per hardware register documentation
- */
+ 
 static struct sdw_dma_ring_buf_reg sdw1_dma_ring_buf_reg[ACP63_SDW1_DMA_MAX_STREAMS] =  {
 	{ACP_P1_AUDIO1_TX_DMA_SIZE, ACP_P1_AUDIO1_TX_FIFOADDR, ACP_P1_AUDIO1_TX_FIFOSIZE,
 	 ACP_P1_AUDIO1_TX_RINGBUFSIZE, ACP_P1_AUDIO1_TX_RINGBUFADDR,
@@ -64,12 +56,7 @@ static u32 sdw0_dma_enable_reg[ACP63_SDW0_DMA_MAX_STREAMS] = {
 	ACP_SW0_AUDIO2_RX_EN,
 };
 
-/*
- * SDW1 instance supports one TX stream and one RX stream.
- * For TX/RX streams DMA enable register programming for SDW1 instance,
- * it uses ACP_SW1_AUDIO1_TX_EN and ACP_SW1_AUDIO1_RX_EN registers
- * as per hardware register documentation.
- */
+ 
 static u32 sdw1_dma_enable_reg[ACP63_SDW1_DMA_MAX_STREAMS] = {
 	ACP_SW1_AUDIO1_TX_EN,
 	ACP_SW1_AUDIO1_RX_EN,
@@ -149,11 +136,11 @@ static void acp63_config_dma(struct acp_sdw_dma_stream *stream, void __iomem *ac
 	sdw_dma_pte_offset = SDW_PTE_OFFSET(stream->instance);
 	val = sdw_dma_pte_offset + (stream_id * ACP_SDW_PTE_OFFSET);
 
-	/* Group Enable */
+	 
 	writel(ACP_SDW_SRAM_PTE_OFFSET | BIT(31), acp_base + ACPAXI2AXI_ATU_BASE_ADDR_GRP_2);
 	writel(PAGE_SIZE_4K_ENABLE, acp_base + ACPAXI2AXI_ATU_PAGE_SIZE_GRP_2);
 	for (page_idx = 0; page_idx < stream->num_pages; page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 

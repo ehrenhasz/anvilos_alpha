@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VIRTIO_ANCHOR_H
 #define _LINUX_VIRTIO_ANCHOR_H
 
@@ -16,4 +16,4 @@ static inline void virtio_set_mem_acc_cb(bool (*func)(struct virtio_device *))
 #define virtio_set_mem_acc_cb(func) do { } while (0)
 #endif
 
-#endif /* _LINUX_VIRTIO_ANCHOR_H */
+#endif  

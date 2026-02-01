@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <test_progs.h>
 static int libbpf_debug_print(enum libbpf_print_level level,
 			      const char *format, va_list args)
@@ -100,53 +100,43 @@ void test_verif_scale_pyperf_subprogs()
 
 void test_verif_scale_pyperf50()
 {
-	/* full unroll by llvm */
+	 
 	scale_test("pyperf50.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf100()
 {
-	/* full unroll by llvm */
+	 
 	scale_test("pyperf100.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf180()
 {
-	/* full unroll by llvm */
+	 
 	scale_test("pyperf180.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf600()
 {
-	/* partial unroll. llvm will unroll loop ~150 times.
-	 * C loop count -> 600.
-	 * Asm loop count -> 4.
-	 * 16k insns in loop body.
-	 * Total of 5 such loops. Total program size ~82k insns.
-	 */
+	 
 	scale_test("pyperf600.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf600_bpf_loop(void)
 {
-	/* use the bpf_loop helper*/
+	 
 	scale_test("pyperf600_bpf_loop.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf600_nounroll()
 {
-	/* no unroll at all.
-	 * C loop count -> 600.
-	 * ASM loop count -> 600.
-	 * ~110 insns in loop body.
-	 * Total of 5 such loops. Total program size ~1500 insns.
-	 */
+	 
 	scale_test("pyperf600_nounroll.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_pyperf600_iter()
 {
-	/* open-coded BPF iterator version */
+	 
 	scale_test("pyperf600_iter.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
@@ -162,7 +152,7 @@ void test_verif_scale_loop2()
 
 void test_verif_scale_loop3_fail()
 {
-	scale_test("loop3.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, true /* fails */);
+	scale_test("loop3.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, true  );
 }
 
 void test_verif_scale_loop4()
@@ -182,34 +172,31 @@ void test_verif_scale_loop6()
 
 void test_verif_scale_strobemeta()
 {
-	/* partial unroll. 19k insn in a loop.
-	 * Total program size 20.8k insn.
-	 * ~350k processed_insns
-	 */
+	 
 	scale_test("strobemeta.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_strobemeta_bpf_loop(void)
 {
-	/* use the bpf_loop helper*/
+	 
 	scale_test("strobemeta_bpf_loop.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_strobemeta_nounroll1()
 {
-	/* no unroll, tiny loops */
+	 
 	scale_test("strobemeta_nounroll1.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_strobemeta_nounroll2()
 {
-	/* no unroll, tiny loops */
+	 
 	scale_test("strobemeta_nounroll2.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 
 void test_verif_scale_strobemeta_subprogs()
 {
-	/* non-inlined subprogs */
+	 
 	scale_test("strobemeta_subprogs.bpf.o", BPF_PROG_TYPE_RAW_TRACEPOINT, false);
 }
 

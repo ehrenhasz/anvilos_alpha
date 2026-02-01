@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Maxim MAX9286 GMSL Deserializer Driver
- *
- * Copyright (C) 2017-2019 Jacopo Mondi
- * Copyright (C) 2017-2019 Kieran Bingham
- * Copyright (C) 2017-2019 Laurent Pinchart
- * Copyright (C) 2017-2019 Niklas Söderlund
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2015 Cogent Embedded, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -30,12 +21,12 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-subdev.h>
 
-/* Register 0x00 */
+ 
 #define MAX9286_MSTLINKSEL_AUTO		(7 << 5)
 #define MAX9286_MSTLINKSEL(n)		((n) << 5)
 #define MAX9286_EN_VS_GEN		BIT(4)
 #define MAX9286_LINKEN(n)		(1 << (n))
-/* Register 0x01 */
+ 
 #define MAX9286_FSYNCMODE_ECU		(3 << 6)
 #define MAX9286_FSYNCMODE_EXT		(2 << 6)
 #define MAX9286_FSYNCMODE_INT_OUT	(1 << 6)
@@ -48,10 +39,10 @@
 #define MAX9286_REG_FSYNC_PERIOD_L	0x06
 #define MAX9286_REG_FSYNC_PERIOD_M	0x07
 #define MAX9286_REG_FSYNC_PERIOD_H	0x08
-/* Register 0x0a */
+ 
 #define MAX9286_FWDCCEN(n)		(1 << ((n) + 4))
 #define MAX9286_REVCCEN(n)		(1 << (n))
-/* Register 0x0c */
+ 
 #define MAX9286_HVEN			BIT(7)
 #define MAX9286_EDC_6BIT_HAMMING	(2 << 5)
 #define MAX9286_EDC_6BIT_CRC		(1 << 5)
@@ -62,9 +53,9 @@
 #define MAX9286_HVSRC_D0		(2 << 0)
 #define MAX9286_HVSRC_D14		(1 << 0)
 #define MAX9286_HVSRC_D18		(0 << 0)
-/* Register 0x0f */
+ 
 #define MAX9286_0X0F_RESERVED		BIT(3)
-/* Register 0x12 */
+ 
 #define MAX9286_CSILANECNT(n)		(((n) - 1) << 6)
 #define MAX9286_CSIDBL			BIT(5)
 #define MAX9286_DBL			BIT(4)
@@ -80,7 +71,7 @@
 #define MAX9286_DATATYPE_RGB555		(2 << 0)
 #define MAX9286_DATATYPE_RGB565		(1 << 0)
 #define MAX9286_DATATYPE_RGB888		(0 << 0)
-/* Register 0x15 */
+ 
 #define MAX9286_CSI_IMAGE_TYP		BIT(7)
 #define MAX9286_VC(n)			((n) << 5)
 #define MAX9286_VCTYPE			BIT(4)
@@ -88,19 +79,19 @@
 #define MAX9286_SWP_ENDIAN		BIT(2)
 #define MAX9286_EN_CCBSYB_CLK_STR	BIT(1)
 #define MAX9286_EN_GPI_CCBSYB		BIT(0)
-/* Register 0x1b */
+ 
 #define MAX9286_SWITCHIN(n)		(1 << ((n) + 4))
 #define MAX9286_ENEQ(n)			(1 << (n))
-/* Register 0x1c */
+ 
 #define MAX9286_HIGHIMM(n)		BIT((n) + 4)
 #define MAX9286_I2CSEL			BIT(2)
 #define MAX9286_HIBW			BIT(1)
 #define MAX9286_BWS			BIT(0)
-/* Register 0x27 */
+ 
 #define MAX9286_LOCKED			BIT(7)
-/* Register 0x31 */
+ 
 #define MAX9286_FSYNC_LOCKED		BIT(6)
-/* Register 0x34 */
+ 
 #define MAX9286_I2CLOCACK		BIT(7)
 #define MAX9286_I2CSLVSH_1046NS_469NS	(3 << 5)
 #define MAX9286_I2CSLVSH_938NS_352NS	(2 << 5)
@@ -118,27 +109,24 @@
 #define MAX9286_I2CSLVTO_1024US		(2 << 0)
 #define MAX9286_I2CSLVTO_256US		(1 << 0)
 #define MAX9286_I2CSLVTO_64US		(0 << 0)
-/* Register 0x3b */
+ 
 #define MAX9286_REV_TRF(n)		((n) << 4)
-#define MAX9286_REV_AMP(n)		((((n) - 30) / 10) << 1) /* in mV */
+#define MAX9286_REV_AMP(n)		((((n) - 30) / 10) << 1)  
 #define MAX9286_REV_AMP_X		BIT(0)
 #define MAX9286_REV_AMP_HIGH		170
-/* Register 0x3f */
+ 
 #define MAX9286_EN_REV_CFG		BIT(6)
 #define MAX9286_REV_FLEN(n)		((n) - 20)
-/* Register 0x49 */
+ 
 #define MAX9286_VIDEO_DETECT_MASK	0x0f
-/* Register 0x69 */
+ 
 #define MAX9286_LFLTBMONMASKED		BIT(7)
 #define MAX9286_LOCKMONMASKED		BIT(6)
 #define MAX9286_AUTOCOMBACKEN		BIT(5)
 #define MAX9286_AUTOMASKEN		BIT(4)
 #define MAX9286_MASKLINK(n)		((n) << 0)
 
-/*
- * The sink and source pads are created to match the OF graph port numbers so
- * that their indexes can be used interchangeably.
- */
+ 
 #define MAX9286_NUM_GMSL		4
 #define MAX9286_N_SINKS			4
 #define MAX9286_N_PADS			5
@@ -185,7 +173,7 @@ struct max9286_priv {
 	unsigned int mux_channel;
 	bool mux_open;
 
-	/* The initial reverse control channel amplitude. */
+	 
 	u32 init_rev_chan_mv;
 	u32 rev_chan_mv;
 	u8 i2c_mstbt;
@@ -201,7 +189,7 @@ struct max9286_priv {
 	struct v4l2_mbus_framefmt fmt[MAX9286_N_SINKS];
 	struct v4l2_fract interval;
 
-	/* Protects controls and fmt structures */
+	 
 	struct mutex mutex;
 
 	unsigned int nsources;
@@ -278,9 +266,7 @@ static const struct max9286_i2c_speed max9286_i2c_speeds[] = {
 	{ .rate = 837000, .mstbt = MAX9286_I2CMSTBT_837KBPS },
 };
 
-/* -----------------------------------------------------------------------------
- * I2C IO
- */
+ 
 
 static int max9286_read(struct max9286_priv *priv, u8 reg)
 {
@@ -308,24 +294,19 @@ static int max9286_write(struct max9286_priv *priv, u8 reg, u8 val)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * I2C Multiplexer
- */
+ 
 
 static void max9286_i2c_mux_configure(struct max9286_priv *priv, u8 conf)
 {
 	max9286_write(priv, 0x0a, conf);
 
-	/*
-	 * We must sleep after any change to the forward or reverse channel
-	 * configuration.
-	 */
+	 
 	usleep_range(3000, 5000);
 }
 
 static void max9286_i2c_mux_open(struct max9286_priv *priv)
 {
-	/* Open all channels on the MAX9286 */
+	 
 	max9286_i2c_mux_configure(priv, 0xff);
 
 	priv->mux_open = true;
@@ -333,11 +314,7 @@ static void max9286_i2c_mux_open(struct max9286_priv *priv)
 
 static void max9286_i2c_mux_close(struct max9286_priv *priv)
 {
-	/*
-	 * Ensure that both the forward and reverse channel are disabled on the
-	 * mux, and that the channel ID is invalidated to ensure we reconfigure
-	 * on the next max9286_i2c_mux_select() call.
-	 */
+	 
 	max9286_i2c_mux_configure(priv, 0x00);
 
 	priv->mux_open = false;
@@ -348,7 +325,7 @@ static int max9286_i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
 {
 	struct max9286_priv *priv = i2c_mux_priv(muxc);
 
-	/* Channel select is disabled when configured in the opened state. */
+	 
 	if (priv->mux_open)
 		return 0;
 
@@ -417,21 +394,14 @@ static void max9286_reverse_channel_setup(struct max9286_priv *priv,
 
 	priv->rev_chan_mv = chan_amplitude;
 
-	/* Reverse channel transmission time: default to 1. */
+	 
 	chan_config = MAX9286_REV_TRF(1);
 
-	/*
-	 * Reverse channel setup.
-	 *
-	 * - Enable custom reverse channel configuration (through register 0x3f)
-	 *   and set the first pulse length to 35 clock cycles.
-	 * - Adjust reverse channel amplitude: values > 130 are programmed
-	 *   using the additional +100mV REV_AMP_X boost flag
-	 */
+	 
 	max9286_write(priv, 0x3f, MAX9286_EN_REV_CFG | MAX9286_REV_FLEN(35));
 
 	if (chan_amplitude > 100) {
-		/* It is not possible to express values (100 < x < 130) */
+		 
 		chan_amplitude = max(30U, chan_amplitude - 100);
 		chan_config |= MAX9286_REV_AMP_X;
 	}
@@ -439,24 +409,13 @@ static void max9286_reverse_channel_setup(struct max9286_priv *priv,
 	usleep_range(2000, 2500);
 }
 
-/*
- * max9286_check_video_links() - Make sure video links are detected and locked
- *
- * Performs safety checks on video link status. Make sure they are detected
- * and all enabled links are locked.
- *
- * Returns 0 for success, -EIO for errors.
- */
+ 
 static int max9286_check_video_links(struct max9286_priv *priv)
 {
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Make sure valid video links are detected.
-	 * The delay is not characterized in de-serializer manual, wait up
-	 * to 5 ms.
-	 */
+	 
 	for (i = 0; i < 10; i++) {
 		ret = max9286_read(priv, 0x49);
 		if (ret < 0)
@@ -474,7 +433,7 @@ static int max9286_check_video_links(struct max9286_priv *priv)
 		return -EIO;
 	}
 
-	/* Make sure all enabled links are locked (4ms max). */
+	 
 	for (i = 0; i < 10; i++) {
 		ret = max9286_read(priv, 0x27);
 		if (ret < 0)
@@ -494,13 +453,7 @@ static int max9286_check_video_links(struct max9286_priv *priv)
 	return 0;
 }
 
-/*
- * max9286_check_config_link() - Detect and wait for configuration links
- *
- * Determine if the configuration channel is up and settled for a link.
- *
- * Returns 0 for success, -EIO for errors.
- */
+ 
 static int max9286_check_config_link(struct max9286_priv *priv,
 				     unsigned int source_mask)
 {
@@ -508,11 +461,7 @@ static int max9286_check_config_link(struct max9286_priv *priv,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Make sure requested configuration links are detected.
-	 * The delay is not characterized in the chip manual: wait up
-	 * to 5 milliseconds.
-	 */
+	 
 	for (i = 0; i < 10; i++) {
 		ret = max9286_read(priv, 0x49);
 		if (ret < 0)
@@ -555,23 +504,16 @@ static void max9286_set_video_format(struct max9286_priv *priv,
 	if (WARN_ON(!info))
 		return;
 
-	/*
-	 * Video format setup: disable CSI output, set VC according to Link
-	 * number, enable I2C clock stretching when CCBSY is low, enable CCBSY
-	 * in external GPI-to-GPO mode.
-	 */
+	 
 	max9286_write(priv, 0x15, MAX9286_VCTYPE | MAX9286_EN_CCBSYB_CLK_STR |
 		      MAX9286_EN_GPI_CCBSYB);
 
-	/* Enable CSI-2 Lane D0-D3 only, DBL mode. */
+	 
 	max9286_write(priv, 0x12, MAX9286_CSIDBL | MAX9286_DBL |
 		      MAX9286_CSILANECNT(priv->csi2_data_lanes) |
 		      info->datatype);
 
-	/*
-	 * Enable HS/VS encoding, use HS as line valid source, use D14/15 for
-	 * HS/VS, invert VS.
-	 */
+	 
 	max9286_write(priv, 0x0c, MAX9286_HVEN | MAX9286_DESEL |
 		      MAX9286_INVVS | MAX9286_HVSRC_D14);
 }
@@ -581,21 +523,13 @@ static void max9286_set_fsync_period(struct max9286_priv *priv)
 	u32 fsync;
 
 	if (!priv->interval.numerator || !priv->interval.denominator) {
-		/*
-		 * Special case, a null interval enables automatic FRAMESYNC
-		 * mode. FRAMESYNC is taken from the slowest link.
-		 */
+		 
 		max9286_write(priv, 0x01, MAX9286_FSYNCMODE_INT_HIZ |
 			      MAX9286_FSYNCMETH_AUTO);
 		return;
 	}
 
-	/*
-	 * Manual FRAMESYNC
-	 *
-	 * The FRAMESYNC generator is configured with a period expressed as a
-	 * number of PCLK periods.
-	 */
+	 
 	fsync = div_u64((u64)priv->pixelrate * priv->interval.numerator,
 			priv->interval.denominator);
 
@@ -610,9 +544,7 @@ static void max9286_set_fsync_period(struct max9286_priv *priv)
 	max9286_write(priv, 0x08, (fsync >> 16) & 0xff);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdev
- */
+ 
 
 static int max9286_set_pixelrate(struct max9286_priv *priv)
 {
@@ -623,7 +555,7 @@ static int max9286_set_pixelrate(struct max9286_priv *priv)
 		struct v4l2_ctrl *ctrl;
 		u64 source_rate = 0;
 
-		/* Pixel rate is mandatory to be reported by sources. */
+		 
 		ctrl = v4l2_ctrl_find(source->sd->ctrl_handler,
 				      V4L2_CID_PIXEL_RATE);
 		if (!ctrl) {
@@ -631,7 +563,7 @@ static int max9286_set_pixelrate(struct max9286_priv *priv)
 			break;
 		}
 
-		/* All source must report the same pixel rate. */
+		 
 		source_rate = v4l2_ctrl_g_ctrl_int64(ctrl);
 		if (!pixelrate) {
 			pixelrate = source_rate;
@@ -650,10 +582,7 @@ static int max9286_set_pixelrate(struct max9286_priv *priv)
 
 	priv->pixelrate = pixelrate;
 
-	/*
-	 * The CSI-2 transmitter pixel rate is the single source rate multiplied
-	 * by the number of available sources.
-	 */
+	 
 	return v4l2_ctrl_s_ctrl_int64(priv->pixelrate_ctrl,
 				      pixelrate * priv->nsources);
 }
@@ -695,24 +624,11 @@ static int max9286_notify_bound(struct v4l2_async_notifier *notifier,
 	dev_dbg(&priv->client->dev, "Bound %s pad: %u on index %u\n",
 		subdev->name, src_pad, index);
 
-	/*
-	 * As we register a subdev notifiers we won't get a .complete() callback
-	 * here, so we have to use bound_sources to identify when all remote
-	 * serializers have probed.
-	 */
+	 
 	if (priv->bound_sources != priv->source_mask)
 		return 0;
 
-	/*
-	 * All enabled sources have probed and enabled their reverse control
-	 * channels:
-	 *
-	 * - Increase the reverse channel amplitude to compensate for the
-	 *   remote ends high threshold
-	 * - Verify all configuration links are properly detected
-	 * - Disable auto-ack as communication on the control channel are now
-	 *   stable.
-	 */
+	 
 	max9286_reverse_channel_setup(priv, MAX9286_REV_AMP_HIGH);
 	max9286_check_config_link(priv, priv->source_mask);
 	max9286_configure_i2c(priv, false);
@@ -796,23 +712,16 @@ static int max9286_s_stream(struct v4l2_subdev *sd, int enable)
 	if (enable) {
 		const struct v4l2_mbus_framefmt *format;
 
-		/*
-		 * Get the format from the first used sink pad, as all sink
-		 * formats must be identical.
-		 */
+		 
 		format = &priv->fmt[__ffs(priv->bound_sources)];
 
 		max9286_set_video_format(priv, format);
 		max9286_set_fsync_period(priv);
 
-		/*
-		 * The frame sync between cameras is transmitted across the
-		 * reverse channel as GPIO. We must open all channels while
-		 * streaming to allow this synchronisation signal to be shared.
-		 */
+		 
 		max9286_i2c_mux_open(priv);
 
-		/* Start all cameras. */
+		 
 		for_each_source(priv, source) {
 			ret = v4l2_subdev_call(source->sd, video, s_stream, 1);
 			if (ret)
@@ -823,14 +732,7 @@ static int max9286_s_stream(struct v4l2_subdev *sd, int enable)
 		if (ret)
 			return ret;
 
-		/*
-		 * Wait until frame synchronization is locked.
-		 *
-		 * Manual says frame sync locking should take ~6 VTS.
-		 * From practical experience at least 8 are required. Give
-		 * 12 complete frames time (~400ms at 30 fps) to achieve frame
-		 * locking before returning error.
-		 */
+		 
 		for (i = 0; i < 40; i++) {
 			if (max9286_read(priv, 0x31) & MAX9286_FSYNC_LOCKED) {
 				sync = true;
@@ -842,14 +744,10 @@ static int max9286_s_stream(struct v4l2_subdev *sd, int enable)
 		if (!sync) {
 			dev_err(&priv->client->dev,
 				"Failed to get frame synchronization\n");
-			return -EXDEV; /* Invalid cross-device link */
+			return -EXDEV;  
 		}
 
-		/*
-		 * Configure the CSI-2 output to line interleaved mode (W x (N
-		 * x H), as opposed to the (N x W) x H mode that outputs the
-		 * images stitched side-by-side) and enable it.
-		 */
+		 
 		max9286_write(priv, 0x15, MAX9286_CSI_IMAGE_TYP | MAX9286_VCTYPE |
 			      MAX9286_CSIOUTEN | MAX9286_EN_CCBSYB_CLK_STR |
 			      MAX9286_EN_GPI_CCBSYB);
@@ -858,7 +756,7 @@ static int max9286_s_stream(struct v4l2_subdev *sd, int enable)
 			      MAX9286_EN_CCBSYB_CLK_STR |
 			      MAX9286_EN_GPI_CCBSYB);
 
-		/* Stop all cameras. */
+		 
 		for_each_source(priv, source)
 			v4l2_subdev_call(source->sd, video, s_stream, 0);
 
@@ -932,7 +830,7 @@ static int max9286_set_fmt(struct v4l2_subdev *sd,
 	if (format->pad == MAX9286_SRC_PAD)
 		return -EINVAL;
 
-	/* Validate the format. */
+	 
 	for (i = 0; i < ARRAY_SIZE(max9286_formats); ++i) {
 		if (max9286_formats[i].code == format->format.code)
 			break;
@@ -961,12 +859,7 @@ static int max9286_get_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *cfg_fmt;
 	unsigned int pad = format->pad;
 
-	/*
-	 * Multiplexed Stream Support: Support link validation by returning the
-	 * format of the first bound link. All links must have the same format,
-	 * as we do not support mixing and matching of cameras connected to the
-	 * max9286.
-	 */
+	 
 	if (pad == MAX9286_SRC_PAD)
 		pad = __ffs(priv->bound_sources);
 
@@ -1055,14 +948,14 @@ static int max9286_v4l2_register(struct max9286_priv *priv)
 	int ret;
 	int i;
 
-	/* Register v4l2 async notifiers for connected Camera subdevices */
+	 
 	ret = max9286_v4l2_notifier_register(priv);
 	if (ret) {
 		dev_err(dev, "Unable to register V4L2 async notifiers\n");
 		return ret;
 	}
 
-	/* Configure V4L2 for the MAX9286 itself */
+	 
 
 	for (i = 0; i < MAX9286_N_SINKS; i++)
 		max9286_init_format(&priv->fmt[i]);
@@ -1115,52 +1008,36 @@ static void max9286_v4l2_unregister(struct max9286_priv *priv)
 	max9286_v4l2_notifier_unregister(priv);
 }
 
-/* -----------------------------------------------------------------------------
- * Probe/Remove
- */
+ 
 
 static int max9286_setup(struct max9286_priv *priv)
 {
-	/*
-	 * Link ordering values for all enabled links combinations. Orders must
-	 * be assigned sequentially from 0 to the number of enabled links
-	 * without leaving any hole for disabled links. We thus assign orders to
-	 * enabled links first, and use the remaining order values for disabled
-	 * links are all links must have a different order value;
-	 */
+	 
 	static const u8 link_order[] = {
-		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0), /* xxxx */
-		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0), /* xxx0 */
-		(3 << 6) | (2 << 4) | (0 << 2) | (1 << 0), /* xx0x */
-		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0), /* xx10 */
-		(3 << 6) | (0 << 4) | (2 << 2) | (1 << 0), /* x0xx */
-		(3 << 6) | (1 << 4) | (2 << 2) | (0 << 0), /* x1x0 */
-		(3 << 6) | (1 << 4) | (0 << 2) | (2 << 0), /* x10x */
-		(3 << 6) | (1 << 4) | (1 << 2) | (0 << 0), /* x210 */
-		(0 << 6) | (3 << 4) | (2 << 2) | (1 << 0), /* 0xxx */
-		(1 << 6) | (3 << 4) | (2 << 2) | (0 << 0), /* 1xx0 */
-		(1 << 6) | (3 << 4) | (0 << 2) | (2 << 0), /* 1x0x */
-		(2 << 6) | (3 << 4) | (1 << 2) | (0 << 0), /* 2x10 */
-		(1 << 6) | (0 << 4) | (3 << 2) | (2 << 0), /* 10xx */
-		(2 << 6) | (1 << 4) | (3 << 2) | (0 << 0), /* 21x0 */
-		(2 << 6) | (1 << 4) | (0 << 2) | (3 << 0), /* 210x */
-		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0), /* 3210 */
+		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0),  
+		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0),  
+		(3 << 6) | (2 << 4) | (0 << 2) | (1 << 0),  
+		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0),  
+		(3 << 6) | (0 << 4) | (2 << 2) | (1 << 0),  
+		(3 << 6) | (1 << 4) | (2 << 2) | (0 << 0),  
+		(3 << 6) | (1 << 4) | (0 << 2) | (2 << 0),  
+		(3 << 6) | (1 << 4) | (1 << 2) | (0 << 0),  
+		(0 << 6) | (3 << 4) | (2 << 2) | (1 << 0),  
+		(1 << 6) | (3 << 4) | (2 << 2) | (0 << 0),  
+		(1 << 6) | (3 << 4) | (0 << 2) | (2 << 0),  
+		(2 << 6) | (3 << 4) | (1 << 2) | (0 << 0),  
+		(1 << 6) | (0 << 4) | (3 << 2) | (2 << 0),  
+		(2 << 6) | (1 << 4) | (3 << 2) | (0 << 0),  
+		(2 << 6) | (1 << 4) | (0 << 2) | (3 << 0),  
+		(3 << 6) | (2 << 4) | (1 << 2) | (0 << 0),  
 	};
 	int cfg;
 
-	/*
-	 * Set the I2C bus speed.
-	 *
-	 * Enable I2C Local Acknowledge during the probe sequences of the camera
-	 * only. This should be disabled after the mux is initialised.
-	 */
+	 
 	max9286_configure_i2c(priv, true);
 	max9286_reverse_channel_setup(priv, priv->init_rev_chan_mv);
 
-	/*
-	 * Enable GMSL links, mask unused ones and autodetect link
-	 * used as CSI clock source.
-	 */
+	 
 	max9286_write(priv, 0x00, MAX9286_MSTLINKSEL_AUTO | priv->route_mask);
 	max9286_write(priv, 0x0b, link_order[priv->route_mask]);
 	max9286_write(priv, 0x69, (0xf & ~priv->route_mask));
@@ -1187,22 +1064,11 @@ static int max9286_setup(struct max9286_priv *priv)
 		max9286_write(priv, 0x1c, cfg);
 	}
 
-	/*
-	 * The overlap window seems to provide additional validation by tracking
-	 * the delay between vsync and frame sync, generating an error if the
-	 * delay is bigger than the programmed window, though it's not yet clear
-	 * what value should be set.
-	 *
-	 * As it's an optional value and can be disabled, we do so by setting
-	 * a 0 overlap value.
-	 */
+	 
 	max9286_write(priv, 0x63, 0);
 	max9286_write(priv, 0x64, 0);
 
-	/*
-	 * Wait for 2ms to allow the link to resynchronize after the
-	 * configuration change.
-	 */
+	 
 	usleep_range(2000, 5000);
 
 	return 0;
@@ -1241,7 +1107,7 @@ static int max9286_register_gpio(struct max9286_priv *priv)
 	struct gpio_chip *gpio = &priv->gpio;
 	int ret;
 
-	/* Configure the GPIO */
+	 
 	gpio->label = dev_name(dev);
 	gpio->parent = dev;
 	gpio->owner = THIS_MODULE;
@@ -1263,21 +1129,15 @@ static int max9286_parse_gpios(struct max9286_priv *priv)
 	struct device *dev = &priv->client->dev;
 	int ret;
 
-	/*
-	 * Parse the "gpio-poc" vendor property. If the property is not
-	 * specified the camera power is controlled by a regulator.
-	 */
+	 
 	ret = of_property_read_u32_array(dev->of_node, "maxim,gpio-poc",
 					 priv->gpio_poc, 2);
 	if (ret == -EINVAL) {
-		/*
-		 * If gpio lines are not used for the camera power, register
-		 * a gpio controller for consumers.
-		 */
+		 
 		return max9286_register_gpio(priv);
 	}
 
-	/* If the property is specified make sure it is well formed. */
+	 
 	if (ret || priv->gpio_poc[0] > 1 ||
 	    (priv->gpio_poc[1] != GPIO_ACTIVE_HIGH &&
 	     priv->gpio_poc[1] != GPIO_ACTIVE_LOW)) {
@@ -1295,7 +1155,7 @@ static int max9286_poc_power_on(struct max9286_priv *priv)
 	unsigned int enabled = 0;
 	int ret;
 
-	/* Enable the global regulator if available. */
+	 
 	if (priv->regulator)
 		return regulator_enable(priv->regulator);
 
@@ -1303,7 +1163,7 @@ static int max9286_poc_power_on(struct max9286_priv *priv)
 		return max9286_gpio_set(priv, priv->gpio_poc[0],
 					!priv->gpio_poc[1]);
 
-	/* Otherwise use the per-port regulators. */
+	 
 	for_each_source(priv, source) {
 		ret = regulator_enable(source->regulator);
 		if (ret < 0)
@@ -1377,10 +1237,7 @@ static int max9286_init(struct max9286_priv *priv)
 		goto err_poc_disable;
 	}
 
-	/*
-	 * Register all V4L2 interactions for the MAX9286 and notifiers for
-	 * any subdevices connected.
-	 */
+	 
 	ret = max9286_v4l2_register(priv);
 	if (ret) {
 		dev_err(&client->dev, "Failed to register with V4L2\n");
@@ -1393,7 +1250,7 @@ static int max9286_init(struct max9286_priv *priv)
 		goto err_v4l2_register;
 	}
 
-	/* Leave the mux channels disabled until they are selected. */
+	 
 	max9286_i2c_mux_close(priv);
 
 	return 0;
@@ -1426,7 +1283,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 	u32 i2c_clk_freq = 105000;
 	unsigned int i;
 
-	/* Balance the of_node_put() performed by of_find_node_by_name(). */
+	 
 	of_node_get(dev->of_node);
 	i2c_mux = of_find_node_by_name(dev->of_node, "i2c-mux");
 	if (!i2c_mux) {
@@ -1434,7 +1291,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 		return -EINVAL;
 	}
 
-	/* Identify which i2c-mux channels are enabled */
+	 
 	for_each_child_of_node(i2c_mux, node) {
 		u32 id = 0;
 
@@ -1451,7 +1308,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 	}
 	of_node_put(i2c_mux);
 
-	/* Parse the endpoints */
+	 
 	for_each_endpoint_of_node(dev->of_node, node) {
 		struct max9286_source *source;
 		struct of_endpoint ep;
@@ -1466,7 +1323,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 			continue;
 		}
 
-		/* For the source endpoint just parse the bus configuration. */
+		 
 		if (ep.port == MAX9286_SRC_PAD) {
 			struct v4l2_fwnode_endpoint vep = {
 				.bus_type = V4L2_MBUS_CSI2_DPHY
@@ -1486,7 +1343,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 			continue;
 		}
 
-		/* Skip if the corresponding GMSL link is unavailable. */
+		 
 		if (!(i2c_mux_mask & BIT(ep.port)))
 			continue;
 
@@ -1516,10 +1373,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 	of_property_read_u32(dev->of_node, "maxim,bus-width", &priv->bus_width);
 	switch (priv->bus_width) {
 	case 0:
-		/*
-		 * The property isn't specified in the device tree, the driver
-		 * will keep the default value selected by the BWS pin.
-		 */
+		 
 	case 24:
 	case 27:
 	case 32:
@@ -1547,13 +1401,7 @@ static int max9286_parse_dt(struct max9286_priv *priv)
 		return -EINVAL;
 	}
 
-	/*
-	 * Parse the initial value of the reverse channel amplitude from
-	 * the firmware interface and convert it to millivolts.
-	 *
-	 * Default it to 170mV for backward compatibility with DTBs that do not
-	 * provide the property.
-	 */
+	 
 	if (of_property_read_u32(dev->of_node,
 				 "maxim,reverse-channel-microvolt",
 				 &reverse_channel_microvolt))
@@ -1572,7 +1420,7 @@ static int max9286_get_poc_supplies(struct max9286_priv *priv)
 	struct max9286_source *source;
 	int ret;
 
-	/* Start by getting the global regulator. */
+	 
 	priv->regulator = devm_regulator_get_optional(dev, "poc");
 	if (!IS_ERR(priv->regulator))
 		return 0;
@@ -1581,7 +1429,7 @@ static int max9286_get_poc_supplies(struct max9286_priv *priv)
 		return dev_err_probe(dev, PTR_ERR(priv->regulator),
 				     "Unable to get PoC regulator\n");
 
-	/* If there's no global regulator, get per-port regulators. */
+	 
 	dev_dbg(dev,
 		"No global PoC regulator, looking for per-port regulators\n");
 	priv->regulator = NULL;
@@ -1617,7 +1465,7 @@ static int max9286_probe(struct i2c_client *client)
 
 	priv->client = client;
 
-	/* GPIO values default to high */
+	 
 	priv->gpio_state = BIT(0) | BIT(1);
 
 	ret = max9286_parse_dt(priv);
@@ -1634,22 +1482,14 @@ static int max9286_probe(struct i2c_client *client)
 	gpiod_set_consumer_name(priv->gpiod_pwdn, "max9286-pwdn");
 	gpiod_set_value_cansleep(priv->gpiod_pwdn, 1);
 
-	/* Wait at least 4ms before the I2C lines latch to the address */
+	 
 	if (priv->gpiod_pwdn)
 		usleep_range(4000, 5000);
 
-	/*
-	 * The MAX9286 starts by default with all ports enabled, we disable all
-	 * ports early to ensure that all channels are disabled if we error out
-	 * and keep the bus consistent.
-	 */
+	 
 	max9286_i2c_mux_close(priv);
 
-	/*
-	 * The MAX9286 initialises with auto-acknowledge enabled by default.
-	 * This can be invasive to other transactions on the same bus, so
-	 * disable it early. It will be enabled only as and when needed.
-	 */
+	 
 	max9286_configure_i2c(priv, false);
 
 	ret = max9286_parse_gpios(priv);

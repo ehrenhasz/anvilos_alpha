@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NET		Generic infrastructure for INET6 connection oriented protocols.
- *
- * Authors:	Many people, see the TCPv6 sources
- *
- * 		From code originally in TCPv6
- */
+ 
+ 
 #ifndef _INET6_CONNECTION_SOCK_H
 #define _INET6_CONNECTION_SOCK_H
 
@@ -26,4 +20,4 @@ void inet6_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);
 int inet6_csk_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl);
 
 struct dst_entry *inet6_csk_update_pmtu(struct sock *sk, u32 mtu);
-#endif /* _INET6_CONNECTION_SOCK_H */
+#endif  

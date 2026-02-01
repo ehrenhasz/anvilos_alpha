@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/netdevice.h>
 #include <linux/inetdevice.h>
@@ -41,22 +34,19 @@
 
 static bool is_wildcard(void *mask, int len);
 static bool is_exactmatch(void *mask, int len);
-/* Return the dst fid of the func for flow forwarding
- * For PFs: src_fid is the fid of the PF
- * For VF-reps: src_fid the fid of the VF
- */
+ 
 static u16 bnxt_flow_get_dst_fid(struct bnxt *pf_bp, struct net_device *dev)
 {
 	struct bnxt *bp;
 
-	/* check if dev belongs to the same switch */
+	 
 	if (!netdev_port_same_parent_id(pf_bp->dev, dev)) {
 		netdev_info(pf_bp->dev, "dev(ifindex=%d) not on same switch\n",
 			    dev->ifindex);
 		return BNXT_FID_INVALID;
 	}
 
-	/* Is dev a VF-rep? */
+	 
 	if (bnxt_dev_is_vf_rep(dev))
 		return bnxt_vf_rep_get_fid(dev);
 
@@ -116,25 +106,7 @@ static int bnxt_tc_parse_tunnel_set(struct bnxt *bp,
 	return 0;
 }
 
-/* Key & Mask from the stack comes unaligned in multiple iterations of 4 bytes
- * each(u32).
- * This routine consolidates such multiple unaligned values into one
- * field each for Key & Mask (for src and dst macs separately)
- * For example,
- *			Mask/Key	Offset	Iteration
- *			==========	======	=========
- *	dst mac		0xffffffff	0	1
- *	dst mac		0x0000ffff	4	2
- *
- *	src mac		0xffff0000	4	1
- *	src mac		0xffffffff	8	2
- *
- * The above combination coming from the stack will be consolidated as
- *			Mask/Key
- *			==============
- *	src mac:	0xffffffffffff
- *	dst mac:	0xffffffffffff
- */
+ 
 static void bnxt_set_l2_key_mask(u32 part_key, u32 part_mask,
 				 u8 *actual_key, u8 *actual_mask)
 {
@@ -161,7 +133,7 @@ bnxt_fill_l2_rewrite_fields(struct bnxt_tc_actions *actions,
 	if (!is_wildcard(&eth_addr_mask[0], ETH_ALEN)) {
 		if (!is_exactmatch(&eth_addr_mask[0], ETH_ALEN))
 			return -EINVAL;
-		/* FW expects dmac to be in u16 array format */
+		 
 		p = eth_addr;
 		for (j = 0; j < 3; j++)
 			actions->l2_rewrite_dmac[j] = cpu_to_be16(*(p + j));
@@ -170,7 +142,7 @@ bnxt_fill_l2_rewrite_fields(struct bnxt_tc_actions *actions,
 	if (!is_wildcard(&eth_addr_mask[ETH_ALEN / 2], ETH_ALEN)) {
 		if (!is_exactmatch(&eth_addr_mask[ETH_ALEN / 2], ETH_ALEN))
 			return -EINVAL;
-		/* FW expects smac to be in u16 array format */
+		 
 		p = &eth_addr[ETH_ALEN / 2];
 		for (j = 0; j < 3; j++)
 			actions->l2_rewrite_smac[j] = cpu_to_be16(*(p + j));
@@ -233,12 +205,10 @@ bnxt_tc_parse_pedit(struct bnxt *bp, struct bnxt_tc_actions *actions,
 		actions->nat.l3_is_ipv4 = false;
 		if (offset >= offsetof(struct ipv6hdr, saddr) &&
 		    offset < offset_of_ip6_daddr) {
-			/* 16 byte IPv6 address comes in 4 iterations of
-			 * 4byte chunks each
-			 */
+			 
 			actions->nat.src_xlate = true;
 			idx = (offset - offset_of_ip6_saddr) / 4;
-			/* First 4bytes will be copied to idx 0 and so on */
+			 
 			actions->nat.l3.ipv6.saddr.s6_addr32[idx] = htonl(val);
 		} else if (offset >= offset_of_ip6_daddr &&
 			   offset < offset_of_ip6_daddr + 16) {
@@ -254,9 +224,7 @@ bnxt_tc_parse_pedit(struct bnxt *bp, struct bnxt_tc_actions *actions,
 		break;
 	case FLOW_ACT_MANGLE_HDR_TYPE_TCP:
 	case FLOW_ACT_MANGLE_HDR_TYPE_UDP:
-		/* HW does not support L4 rewrite alone without L3
-		 * rewrite
-		 */
+		 
 		if (!(actions->flags & BNXT_TC_ACTION_FLAG_NAT_XLATE)) {
 			netdev_err(bp->dev,
 				   "Need to specify L3 rewrite as well\n");
@@ -283,15 +251,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
 				 struct flow_action *flow_action,
 				 struct netlink_ext_ack *extack)
 {
-	/* Used to store the L2 rewrite mask for dmac (6 bytes) followed by
-	 * smac (6 bytes) if rewrite of both is specified, otherwise either
-	 * dmac or smac
-	 */
+	 
 	u16 eth_addr_mask[ETH_ALEN] = { 0 };
-	/* Used to store the L2 rewrite key for dmac (6 bytes) followed by
-	 * smac (6 bytes) if rewrite of both is specified, otherwise either
-	 * dmac or smac
-	 */
+	 
 	u16 eth_addr[ETH_ALEN] = { 0 };
 	struct flow_action_entry *act;
 	int i, rc;
@@ -308,7 +270,7 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
 		switch (act->id) {
 		case FLOW_ACTION_DROP:
 			actions->flags |= BNXT_TC_ACTION_FLAG_DROP;
-			return 0; /* don't bother with other actions */
+			return 0;  
 		case FLOW_ACTION_REDIRECT:
 			rc = bnxt_tc_parse_redir(bp, actions, act);
 			if (rc)
@@ -329,7 +291,7 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
 		case FLOW_ACTION_TUNNEL_DECAP:
 			actions->flags |= BNXT_TC_ACTION_FLAG_TUNNEL_DECAP;
 			break;
-		/* Packet edit: L2 rewrite, NAT, NAPT */
+		 
 		case FLOW_ACTION_MANGLE:
 			rc = bnxt_tc_parse_pedit(bp, actions, act, i,
 						 (u8 *)eth_addr,
@@ -351,10 +313,10 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
 
 	if (actions->flags & BNXT_TC_ACTION_FLAG_FWD) {
 		if (actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP) {
-			/* dst_fid is PF's fid */
+			 
 			actions->dst_fid = bp->pf.fw_fid;
 		} else {
-			/* find the FID from dst_dev */
+			 
 			actions->dst_fid =
 				bnxt_flow_get_dst_fid(bp, actions->dst_dev);
 			if (actions->dst_fid == BNXT_FID_INVALID)
@@ -372,7 +334,7 @@ static int bnxt_tc_parse_flow(struct bnxt *bp,
 	struct flow_rule *rule = flow_cls_offload_flow_rule(tc_flow_cmd);
 	struct flow_dissector *dissector = rule->match.dissector;
 
-	/* KEY_CONTROL and KEY_BASIC are needed for forming a meaningful key */
+	 
 	if ((dissector->used_keys & BIT_ULL(FLOW_DISSECTOR_KEY_CONTROL)) == 0 ||
 	    (dissector->used_keys & BIT_ULL(FLOW_DISSECTOR_KEY_BASIC)) == 0) {
 		netdev_info(bp->dev, "cannot form TC key: used_keys = 0x%llx\n",
@@ -558,9 +520,7 @@ static bool is_exactmatch(void *mask, int len)
 static bool is_vlan_tci_allowed(__be16  vlan_tci_mask,
 				__be16  vlan_tci)
 {
-	/* VLAN priority must be either exactly zero or fully wildcarded and
-	 * VLAN id must be exact match.
-	 */
+	 
 	if (is_vid_exactmatch(vlan_tci_mask) &&
 	    ((is_vlan_pcp_exactmatch(vlan_tci_mask) &&
 	      is_vlan_pcp_zero(vlan_tci)) ||
@@ -619,20 +579,20 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 			if (actions->nat.src_xlate) {
 				action_flags |=
 					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_SRC;
-				/* L3 source rewrite */
+				 
 				req->nat_ip_address[0] =
 					actions->nat.l3.ipv4.saddr.s_addr;
-				/* L4 source port */
+				 
 				if (actions->nat.l4.ports.sport)
 					req->nat_port =
 						actions->nat.l4.ports.sport;
 			} else {
 				action_flags |=
 					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_DEST;
-				/* L3 destination rewrite */
+				 
 				req->nat_ip_address[0] =
 					actions->nat.l3.ipv4.daddr.s_addr;
-				/* L4 destination port */
+				 
 				if (actions->nat.l4.ports.dport)
 					req->nat_port =
 						actions->nat.l4.ports.dport;
@@ -645,22 +605,22 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 			if (actions->nat.src_xlate) {
 				action_flags |=
 					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_SRC;
-				/* L3 source rewrite */
+				 
 				memcpy(req->nat_ip_address,
 				       actions->nat.l3.ipv6.saddr.s6_addr32,
 				       sizeof(req->nat_ip_address));
-				/* L4 source port */
+				 
 				if (actions->nat.l4.ports.sport)
 					req->nat_port =
 						actions->nat.l4.ports.sport;
 			} else {
 				action_flags |=
 					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_DEST;
-				/* L3 destination rewrite */
+				 
 				memcpy(req->nat_ip_address,
 				       actions->nat.l3.ipv6.daddr.s6_addr32,
 				       sizeof(req->nat_ip_address));
-				/* L4 destination port */
+				 
 				if (actions->nat.l4.ports.dport)
 					req->nat_port =
 						actions->nat.l4.ports.dport;
@@ -689,14 +649,11 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 
 	if (flow->l2_key.num_vlans > 0) {
 		flow_flags |= CFA_FLOW_ALLOC_REQ_FLAGS_NUM_VLAN_ONE;
-		/* FW expects the inner_vlan_tci value to be set
-		 * in outer_vlan_tci when num_vlans is 1 (which is
-		 * always the case in TC.)
-		 */
+		 
 		req->outer_vlan_tci = flow->l2_key.inner_vlan_tci;
 	}
 
-	/* If all IP and L4 fields are wildcarded then this is an L2 flow */
+	 
 	if (is_wildcard(l3_mask, sizeof(*l3_mask)) &&
 	    is_wildcard(&flow->l4_mask, sizeof(flow->l4_mask))) {
 		flow_flags |= CFA_FLOW_ALLOC_REQ_FLAGS_FLOWTYPE_L2;
@@ -730,7 +687,7 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 		req->l4_dst_port = flow->l4_key.ports.dport;
 		req->l4_dst_port_mask = flow->l4_mask.ports.dport;
 	} else if (flow->flags & BNXT_TC_FLOW_FLAGS_ICMP) {
-		/* l4 ports serve as type/code when ip_proto is ICMP */
+		 
 		req->l4_src_port = htons(flow->l4_key.icmp.type);
 		req->l4_src_port_mask = htons(flow->l4_mask.icmp.type);
 		req->l4_dst_port = htons(flow->l4_key.icmp.code);
@@ -756,7 +713,7 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 		if (actions->flags & BNXT_TC_ACTION_FLAG_POP_VLAN) {
 			action_flags |=
 			    CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_L2_HEADER_REWRITE;
-			/* Rewrite config with tpid = 0 implies vlan pop */
+			 
 			req->l2_rewrite_vlan_tpid = 0;
 			memcpy(&req->l2_rewrite_dmac, &req->dmac, ETH_ALEN);
 			memcpy(&req->l2_rewrite_smac, &req->smac, ETH_ALEN);
@@ -767,15 +724,7 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	resp = hwrm_req_hold(bp, req);
 	rc = hwrm_req_send_silent(bp, req);
 	if (!rc) {
-		/* CFA_FLOW_ALLOC response interpretation:
-		 *		    fw with	     fw with
-		 *		    16-bit	     64-bit
-		 *		    flow handle      flow handle
-		 *		    ===========	     ===========
-		 * flow_handle      flow handle      flow context id
-		 * ext_flow_handle  INVALID	     flow handle
-		 * flow_id	    INVALID	     flow counter id
-		 */
+		 
 		flow_node->flow_handle = resp->flow_handle;
 		if (bp->fw_cap & BNXT_FW_CAP_OVS_64BIT_HANDLE) {
 			flow_node->ext_flow_handle = resp->ext_flow_handle;
@@ -810,7 +759,7 @@ static int hwrm_cfa_decap_filter_alloc(struct bnxt *bp,
 
 	if (flow->flags & BNXT_TC_FLOW_FLAGS_TUNL_ID) {
 		enables |= CFA_DECAP_FILTER_ALLOC_REQ_ENABLES_TUNNEL_ID;
-		/* tunnel_id is wrongly defined in hsi defn. as __le32 */
+		 
 		req->tunnel_id = tunnel_id_to_key32(tun_key->tun_id);
 	}
 
@@ -841,9 +790,7 @@ static int hwrm_cfa_decap_filter_alloc(struct bnxt *bp,
 		req->dst_port = tun_key->tp_dst;
 	}
 
-	/* Eventhough the decap_handle returned by hwrm_cfa_decap_filter_alloc
-	 * is defined as __le32, l2_ctxt_ref_id is defined in HSI as __le16.
-	 */
+	 
 	req->l2_ctxt_ref_id = (__force __le16)ref_decap_handle;
 	req->enables = cpu_to_le32(enables);
 
@@ -949,7 +896,7 @@ static int bnxt_tc_put_l2_node(struct bnxt *bp,
 	struct bnxt_tc_info *tc_info = bp->tc_info;
 	int rc;
 
-	/* remove flow_node from the L2 shared flow list */
+	 
 	list_del(&flow_node->l2_list_node);
 	if (--l2_node->refcount == 0) {
 		rc =  rhashtable_remove_fast(&tc_info->l2_table, &l2_node->node,
@@ -994,9 +941,7 @@ bnxt_tc_get_l2_node(struct bnxt *bp, struct rhashtable *l2_table,
 	return l2_node;
 }
 
-/* Get the ref_flow_handle for a flow by checking if there are any other
- * flows that share the same L2 key as this flow.
- */
+ 
 static int
 bnxt_tc_get_ref_flow_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 			    struct bnxt_tc_flow_node *flow_node,
@@ -1012,9 +957,7 @@ bnxt_tc_get_ref_flow_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	if (!l2_node)
 		return -1;
 
-	/* If any other flow is using this l2_node, use it's flow_handle
-	 * as the ref_flow_handle
-	 */
+	 
 	if (l2_node->refcount > 0) {
 		ref_flow_node = list_first_entry(&l2_node->common_l2_flows,
 						 struct bnxt_tc_flow_node,
@@ -1024,23 +967,17 @@ bnxt_tc_get_ref_flow_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 		*ref_flow_handle = cpu_to_le16(0xffff);
 	}
 
-	/* Insert the l2_node into the flow_node so that subsequent flows
-	 * with a matching l2 key can use the flow_handle of this flow
-	 * as their ref_flow_handle
-	 */
+	 
 	flow_node->l2_node = l2_node;
 	list_add(&flow_node->l2_list_node, &l2_node->common_l2_flows);
 	l2_node->refcount++;
 	return 0;
 }
 
-/* After the flow parsing is done, this routine is used for checking
- * if there are any aspects of the flow that prevent it from being
- * offloaded.
- */
+ 
 static bool bnxt_tc_can_offload(struct bnxt *bp, struct bnxt_tc_flow *flow)
 {
-	/* If L4 ports are specified then ip_proto must be TCP or UDP */
+	 
 	if ((flow->flags & BNXT_TC_FLOW_FLAGS_PORTS) &&
 	    (flow->l4_key.ip_proto != IPPROTO_TCP &&
 	     flow->l4_key.ip_proto != IPPROTO_UDP)) {
@@ -1049,7 +986,7 @@ static bool bnxt_tc_can_offload(struct bnxt *bp, struct bnxt_tc_flow *flow)
 		return false;
 	}
 
-	/* Currently source/dest MAC cannot be partial wildcard  */
+	 
 	if (bits_set(&flow->l2_key.smac, sizeof(flow->l2_key.smac)) &&
 	    !is_exactmatch(flow->l2_mask.smac, sizeof(flow->l2_mask.smac))) {
 		netdev_info(bp->dev, "Wildcard match unsupported for Source MAC\n");
@@ -1061,7 +998,7 @@ static bool bnxt_tc_can_offload(struct bnxt *bp, struct bnxt_tc_flow *flow)
 		return false;
 	}
 
-	/* Currently VLAN fields cannot be partial wildcard */
+	 
 	if (bits_set(&flow->l2_key.inner_vlan_tci,
 		     sizeof(flow->l2_key.inner_vlan_tci)) &&
 	    !is_vlan_tci_allowed(flow->l2_mask.inner_vlan_tci,
@@ -1077,7 +1014,7 @@ static bool bnxt_tc_can_offload(struct bnxt *bp, struct bnxt_tc_flow *flow)
 		return false;
 	}
 
-	/* Currently Ethertype must be set */
+	 
 	if (!is_exactmatch(&flow->l2_mask.ether_type,
 			   sizeof(flow->l2_mask.ether_type))) {
 		netdev_info(bp->dev, "Wildcard match unsupported for Ethertype\n");
@@ -1087,9 +1024,7 @@ static bool bnxt_tc_can_offload(struct bnxt *bp, struct bnxt_tc_flow *flow)
 	return true;
 }
 
-/* Returns the final refcount of the node on success
- * or a -ve error code on failure
- */
+ 
 static int bnxt_tc_put_tunnel_node(struct bnxt *bp,
 				   struct rhashtable *tunnel_table,
 				   struct rhashtable_params *ht_params,
@@ -1111,9 +1046,7 @@ static int bnxt_tc_put_tunnel_node(struct bnxt *bp,
 	}
 }
 
-/* Get (or add) either encap or decap tunnel node from/to the supplied
- * hash table.
- */
+ 
 static struct bnxt_tc_tunnel_node *
 bnxt_tc_get_tunnel_node(struct bnxt *bp, struct rhashtable *tunnel_table,
 			struct rhashtable_params *ht_params,
@@ -1162,9 +1095,7 @@ static int bnxt_tc_get_ref_decap_handle(struct bnxt *bp,
 	if (!decap_l2_node)
 		return -1;
 
-	/* If any other flow is using this decap_l2_node, use it's decap_handle
-	 * as the ref_decap_handle
-	 */
+	 
 	if (decap_l2_node->refcount > 0) {
 		ref_flow_node =
 			list_first_entry(&decap_l2_node->common_l2_flows,
@@ -1175,10 +1106,7 @@ static int bnxt_tc_get_ref_decap_handle(struct bnxt *bp,
 		*ref_decap_handle = INVALID_TUNNEL_HANDLE;
 	}
 
-	/* Insert the l2_node into the flow_node so that subsequent flows
-	 * with a matching decap l2 key can use the decap_filter_handle of
-	 * this flow as their ref_decap_handle
-	 */
+	 
 	flow_node->decap_l2_node = decap_l2_node;
 	list_add(&flow_node->decap_l2_list_node,
 		 &decap_l2_node->common_l2_flows);
@@ -1193,7 +1121,7 @@ static void bnxt_tc_put_decap_l2_node(struct bnxt *bp,
 	struct bnxt_tc_info *tc_info = bp->tc_info;
 	int rc;
 
-	/* remove flow_node from the decap L2 sharing flow list */
+	 
 	list_del(&flow_node->decap_l2_list_node);
 	if (--decap_l2_node->refcount == 0) {
 		rc =  rhashtable_remove_fast(&tc_info->decap_l2_table,
@@ -1244,9 +1172,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
 		return -EOPNOTSUPP;
 	}
 
-	/* The route must either point to the real_dst_dev or a dst_dev that
-	 * uses the real_dst_dev.
-	 */
+	 
 	dst_dev = rt->dst.dev;
 	if (is_vlan_dev(dst_dev)) {
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
@@ -1310,11 +1236,7 @@ static int bnxt_tc_get_decap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	__le32 ref_decap_handle;
 	int rc;
 
-	/* Check if there's another flow using the same tunnel decap.
-	 * If not, add this tunnel to the table and resolve the other
-	 * tunnel header fileds. Ignore src_port in the tunnel_key,
-	 * since it is not required for decap filters.
-	 */
+	 
 	decap_key->tp_src = 0;
 	decap_node = bnxt_tc_get_tunnel_node(bp, &tc_info->decap_table,
 					     &tc_info->decap_ht_params,
@@ -1327,10 +1249,7 @@ static int bnxt_tc_get_decap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	if (decap_node->tunnel_handle != INVALID_TUNNEL_HANDLE)
 		goto done;
 
-	/* Resolve the L2 fields for tunnel decap
-	 * Resolve the route for remote vtep (saddr) of the decap key
-	 * Find it's next-hop mac addrs
-	 */
+	 
 	tun_key.u.ipv4.dst = flow->tun_key.u.ipv4.src;
 	tun_key.tp_dst = flow->tun_key.tp_dst;
 	rc = bnxt_tc_resolve_tunnel_hdrs(bp, &tun_key, &l2_info);
@@ -1338,7 +1257,7 @@ static int bnxt_tc_get_decap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 		goto put_decap;
 
 	decap_l2_info = &decap_node->l2_info;
-	/* decap smac is wildcarded */
+	 
 	ether_addr_copy(decap_l2_info->dmac, l2_info.smac);
 	if (l2_info.num_vlans) {
 		decap_l2_info->num_vlans = l2_info.num_vlans;
@@ -1347,17 +1266,13 @@ static int bnxt_tc_get_decap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	}
 	flow->flags |= BNXT_TC_FLOW_FLAGS_TUNL_ETH_ADDRS;
 
-	/* For getting a decap_filter_handle we first need to check if
-	 * there are any other decap flows that share the same tunnel L2
-	 * key and if so, pass that flow's decap_filter_handle as the
-	 * ref_decap_handle for this flow.
-	 */
+	 
 	rc = bnxt_tc_get_ref_decap_handle(bp, flow, decap_l2_info, flow_node,
 					  &ref_decap_handle);
 	if (rc)
 		goto put_decap;
 
-	/* Issue the hwrm cmd to allocate a decap filter handle */
+	 
 	rc = hwrm_cfa_decap_filter_alloc(bp, flow, decap_l2_info,
 					 ref_decap_handle,
 					 &decap_node->tunnel_handle);
@@ -1390,11 +1305,7 @@ static void bnxt_tc_put_encap_handle(struct bnxt *bp,
 		hwrm_cfa_encap_record_free(bp, encap_handle);
 }
 
-/* Lookup the tunnel encap table and check if there's an encap_handle
- * alloc'd already.
- * If not, query L2 info via a route lookup and issue an encap_record_alloc
- * cmd to FW.
- */
+ 
 static int bnxt_tc_get_encap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 				    struct bnxt_tc_flow_node *flow_node,
 				    __le32 *encap_handle)
@@ -1404,10 +1315,7 @@ static int bnxt_tc_get_encap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	struct bnxt_tc_tunnel_node *encap_node;
 	int rc;
 
-	/* Check if there's another flow using the same tunnel encap.
-	 * If not, add this tunnel to the table and resolve the other
-	 * tunnel header fileds
-	 */
+	 
 	encap_node = bnxt_tc_get_tunnel_node(bp, &tc_info->encap_table,
 					     &tc_info->encap_ht_params,
 					     encap_key);
@@ -1423,7 +1331,7 @@ static int bnxt_tc_get_encap_handle(struct bnxt *bp, struct bnxt_tc_flow *flow,
 	if (rc)
 		goto put_encap;
 
-	/* Allocate a new tunnel encap record */
+	 
 	rc = hwrm_cfa_encap_record_alloc(bp, encap_key, &encap_node->l2_info,
 					 &encap_node->tunnel_handle);
 	if (rc)
@@ -1469,15 +1377,15 @@ static int __bnxt_tc_del_flow(struct bnxt *bp,
 	struct bnxt_tc_info *tc_info = bp->tc_info;
 	int rc;
 
-	/* send HWRM cmd to free the flow-id */
+	 
 	bnxt_hwrm_cfa_flow_free(bp, flow_node);
 
 	mutex_lock(&tc_info->lock);
 
-	/* release references to any tunnel encap/decap nodes */
+	 
 	bnxt_tc_put_tunnel_handle(bp, &flow_node->flow, flow_node);
 
-	/* release reference to l2 node */
+	 
 	bnxt_tc_put_l2_node(bp, flow_node);
 
 	mutex_unlock(&tc_info->lock);
@@ -1507,19 +1415,7 @@ static void bnxt_tc_set_src_fid(struct bnxt *bp, struct bnxt_tc_flow *flow,
 		flow->src_fid = src_fid;
 }
 
-/* Add a new flow or replace an existing flow.
- * Notes on locking:
- * There are essentially two critical sections here.
- * 1. while adding a new flow
- *    a) lookup l2-key
- *    b) issue HWRM cmd and get flow_handle
- *    c) link l2-key with flow
- * 2. while deleting a flow
- *    a) unlinking l2-key from flow
- * A lock is needed to protect these two critical sections.
- *
- * The hash-tables are already protected by the rhashtable API.
- */
+ 
 static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
 			    struct flow_cls_offload *tc_flow_cmd)
 {
@@ -1530,7 +1426,7 @@ static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
 	__le16 ref_flow_handle;
 	int rc;
 
-	/* allocate memory for the new flow and it's node */
+	 
 	new_node = kzalloc(sizeof(*new_node), GFP_KERNEL);
 	if (!new_node) {
 		rc = -ENOMEM;
@@ -1552,27 +1448,25 @@ static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
 		return rc;
 	}
 
-	/* If a flow exists with the same cookie, delete it */
+	 
 	old_node = rhashtable_lookup_fast(&tc_info->flow_table,
 					  &tc_flow_cmd->cookie,
 					  tc_info->flow_ht_params);
 	if (old_node)
 		__bnxt_tc_del_flow(bp, old_node);
 
-	/* Check if the L2 part of the flow has been offloaded already.
-	 * If so, bump up it's refcnt and get it's reference handle.
-	 */
+	 
 	mutex_lock(&tc_info->lock);
 	rc = bnxt_tc_get_ref_flow_handle(bp, flow, new_node, &ref_flow_handle);
 	if (rc)
 		goto unlock;
 
-	/* If the flow involves tunnel encap/decap, get tunnel_handle */
+	 
 	rc = bnxt_tc_get_tunnel_handle(bp, flow, new_node, &tunnel_handle);
 	if (rc)
 		goto put_l2;
 
-	/* send HWRM cmd to alloc the flow */
+	 
 	rc = bnxt_hwrm_cfa_flow_alloc(bp, flow, ref_flow_handle,
 				      tunnel_handle, new_node);
 	if (rc)
@@ -1580,7 +1474,7 @@ static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
 
 	flow->lastused = jiffies;
 	spin_lock_init(&flow->stats_lock);
-	/* add new flow to flow-table */
+	 
 	rc = rhashtable_insert_fast(&tc_info->flow_table, &new_node->node,
 				    tc_info->flow_ht_params);
 	if (rc)
@@ -1660,11 +1554,7 @@ static void bnxt_fill_cfa_stats_req(struct bnxt *bp,
 	if (bp->fw_cap & BNXT_FW_CAP_OVS_64BIT_HANDLE) {
 		*flow_id = flow_node->flow_id;
 
-		/* If flow_id is used to fetch flow stats then:
-		 * 1. lower 12 bits of flow_handle must be set to all 1s.
-		 * 2. 15th bit of flow_handle must specify the flow
-		 *    direction (TX/RX).
-		 */
+		 
 		if (flow_node->flow.l2_key.dir == BNXT_DIR_RX)
 			handle = CFA_FLOW_INFO_REQ_FLOW_HANDLE_DIR_RX |
 				 CFA_FLOW_INFO_REQ_FLOW_HANDLE_MAX_MASK;
@@ -1726,10 +1616,7 @@ exit:
 	return rc;
 }
 
-/* Add val to accum while handling a possible wraparound
- * of val. Eventhough val is of type u64, its actual width
- * is denoted by mask and will wrap-around beyond that width.
- */
+ 
 static void accumulate_val(u64 *accum, u64 val, u64 mask)
 {
 #define low_bits(x, mask)		((x) & (mask))
@@ -1741,9 +1628,7 @@ static void accumulate_val(u64 *accum, u64 val, u64 mask)
 		*accum += (mask + 1);
 }
 
-/* The HW counters' width is much less than 64bits.
- * Handle possible wrap-around while updating the stat counters
- */
+ 
 static void bnxt_flow_stats_accum(struct bnxt_tc_info *tc_info,
 				  struct bnxt_tc_flow_stats *acc_stats,
 				  struct bnxt_tc_flow_stats *hw_stats)
@@ -1804,7 +1689,7 @@ bnxt_tc_flow_stats_batch_prep(struct bnxt *bp,
 			}
 		}
 
-		/* No more flows */
+		 
 		if (!flow_node)
 			goto done;
 
@@ -2003,7 +1888,7 @@ static const struct rhashtable_params bnxt_tc_tunnel_ht_params = {
 	.automatic_shrinking = true
 };
 
-/* convert counter width in bits to a mask */
+ 
 #define mask(width)		((u64)~0 >> (64 - (width)))
 
 int bnxt_init_tc(struct bnxt *bp)
@@ -2019,7 +1904,7 @@ int bnxt_init_tc(struct bnxt *bp)
 		return -ENOMEM;
 	mutex_init(&tc_info->lock);
 
-	/* Counter widths are programmed by FW */
+	 
 	tc_info->bytes_mask = mask(36);
 	tc_info->packets_mask = mask(28);
 
@@ -2056,7 +1941,7 @@ int bnxt_init_tc(struct bnxt *bp)
 	bp->dev->features |= NETIF_F_HW_TC;
 	bp->tc_info = tc_info;
 
-	/* init indirect block notifications */
+	 
 	INIT_LIST_HEAD(&bp->tc_indr_block_list);
 
 	rc = flow_indr_dev_register(bnxt_tc_setup_indr_cb, bp);

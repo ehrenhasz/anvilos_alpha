@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <perf/threadmap.h>
 #include <stdlib.h>
 #include <linux/refcount.h>
@@ -21,9 +21,7 @@ struct perf_thread_map *perf_thread_map__realloc(struct perf_thread_map *map, in
 	int start = map ? map->nr : 0;
 
 	map = realloc(map, size);
-	/*
-	 * We only realloc to add more items, let's reset new items.
-	 */
+	 
 	if (map)
 		perf_thread_map__reset(map, start, nr);
 

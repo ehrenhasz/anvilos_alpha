@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <sound/sof/ext_manifest4.h>
@@ -14,7 +14,7 @@
 #include "sof-priv.h"
 #include "ops.h"
 
-/* The module ID includes the id of the library it is part of at offset 12 */
+ 
 #define SOF_IPC4_MOD_LIB_ID_SHIFT	12
 
 static ssize_t sof_ipc4_fw_parse_ext_man(struct snd_sof_dev *sdev,
@@ -44,10 +44,7 @@ static ssize_t sof_ipc4_fw_parse_ext_man(struct snd_sof_dev *sdev,
 
 	ext_man_hdr = (struct sof_ext_manifest4_hdr *)fw->data;
 
-	/*
-	 * At the start of the firmware image we must have an extended manifest.
-	 * Verify that the magic number is correct.
-	 */
+	 
 	if (ext_man_hdr->id != SOF_EXT_MAN4_MAGIC_NUMBER) {
 		dev_err(sdev->dev,
 			"Unexpected extended manifest magic number: %#x\n",
@@ -151,7 +148,7 @@ static size_t sof_ipc4_fw_parse_basefw_ext_man(struct snd_sof_dev *sdev)
 	if (payload_offset > 0) {
 		fw_lib->sof_fw.payload_offset = payload_offset;
 
-		/* basefw ID is 0 */
+		 
 		fw_lib->id = 0;
 		ret = xa_insert(&ipc4_data->fw_lib_xa, 0, fw_lib, GFP_KERNEL);
 		if (ret)
@@ -213,14 +210,11 @@ static int sof_ipc4_load_library_by_uuid(struct snd_sof_dev *sdev,
 	fw_lib->sof_fw.payload_offset = payload_offset;
 	fw_lib->id = lib_id;
 
-	/* Fix up the module ID numbers within the library */
+	 
 	for (i = 0; i < fw_lib->num_modules; i++)
 		fw_lib->modules[i].man4_module_entry.id |= (lib_id << SOF_IPC4_MOD_LIB_ID_SHIFT);
 
-	/*
-	 * Make sure that the DSP is booted and stays up while attempting the
-	 * loading the library for the first time
-	 */
+	 
 	ret = pm_runtime_resume_and_get(sdev->dev);
 	if (ret < 0 && ret != -EACCES) {
 		dev_err_ratelimited(sdev->dev, "%s: pm_runtime resume failed: %d\n",
@@ -249,7 +243,7 @@ static int sof_ipc4_load_library_by_uuid(struct snd_sof_dev *sdev,
 
 release:
 	release_firmware(fw_lib->sof_fw.fw);
-	/* Allocated within sof_ipc4_fw_parse_ext_man() */
+	 
 	devm_kfree(sdev->dev, fw_lib->modules);
 free_filename:
 	kfree(fw_filename);
@@ -277,10 +271,7 @@ struct sof_ipc4_fw_module *sof_ipc4_find_module_by_uuid(struct snd_sof_dev *sdev
 		}
 	}
 
-	/*
-	 * Do not attempt to load external library in case the maximum number of
-	 * firmware libraries have been already loaded
-	 */
+	 
 	if ((lib_id + 1) == ipc4_data->max_libs_count) {
 		dev_err(sdev->dev,
 			"%s: Maximum allowed number of libraries reached (%u)\n",
@@ -288,12 +279,12 @@ struct sof_ipc4_fw_module *sof_ipc4_find_module_by_uuid(struct snd_sof_dev *sdev
 		return NULL;
 	}
 
-	/* The module cannot be found, try to load it as a library */
+	 
 	ret = sof_ipc4_load_library_by_uuid(sdev, lib_id + 1, uuid);
 	if (ret)
 		return NULL;
 
-	/* Look for the module in the newly loaded library, it should be available now */
+	 
 	xa_for_each_start(&ipc4_data->fw_lib_xa, lib_id, fw_lib, lib_id) {
 		for (i = 0; i < fw_lib->num_modules; i++) {
 			if (guid_equal(uuid, &fw_lib->modules[i].man4_module_entry.uuid))
@@ -316,7 +307,7 @@ static int sof_ipc4_validate_firmware(struct snd_sof_dev *sdev)
 	fw_header = (struct sof_man4_fw_binary_header *)
 				(fw->data + ext_man_hdr->len + fw_hdr_offset);
 
-	/* TODO: Add firmware verification code here */
+	 
 
 	dev_dbg(sdev->dev, "Validated firmware version: %u.%u.%u.%u\n",
 		fw_header->major_version, fw_header->minor_version,
@@ -335,7 +326,7 @@ int sof_ipc4_query_fw_configuration(struct snd_sof_dev *sdev)
 	size_t offset = 0;
 	int ret;
 
-	/* Get the firmware configuration */
+	 
 	msg.primary = SOF_IPC4_MSG_TARGET(SOF_IPC4_MODULE_MSG);
 	msg.primary |= SOF_IPC4_MSG_DIR(SOF_IPC4_MSG_REQUEST);
 	msg.primary |= SOF_IPC4_MOD_ID(SOF_IPC4_MOD_INIT_BASEFW_MOD_ID);
@@ -423,12 +414,7 @@ int sof_ipc4_reload_fw_libraries(struct snd_sof_dev *sdev)
 	return ret;
 }
 
-/**
- * sof_ipc4_update_cpc_from_manifest - Update the cpc in base config from manifest
- * @sdev: SOF device
- * @fw_module: pointer struct sof_ipc4_fw_module to parse
- * @basecfg: Pointer to the base_config to update
- */
+ 
 void sof_ipc4_update_cpc_from_manifest(struct snd_sof_dev *sdev,
 				       struct sof_ipc4_fw_module *fw_module,
 				       struct sof_ipc4_base_module_cfg *basecfg)
@@ -444,14 +430,7 @@ void sof_ipc4_update_cpc_from_manifest(struct snd_sof_dev *sdev,
 		goto no_cpc;
 	}
 
-	/*
-	 * Find the best matching (highest) CPC value based on the module's
-	 * IBS/OBS configuration inferred from the audio format selection.
-	 *
-	 * The CPC value in each module config entry has been measured and
-	 * recorded as a IBS/OBS/CPC triplet and stored in the firmware file's
-	 * manifest
-	 */
+	 
 	fw_mod_cfg = fw_module->fw_mod_cfg;
 	for (i = 0; i < fw_module->man4_module_entry.cfg_count; i++) {
 		if (basecfg->obs == fw_mod_cfg[i].obs &&
@@ -465,14 +444,11 @@ void sof_ipc4_update_cpc_from_manifest(struct snd_sof_dev *sdev,
 
 	basecfg->cpc = cpc_pick;
 
-	/* We have a matching configuration for CPC */
+	 
 	if (basecfg->cpc)
 		return;
 
-	/*
-	 * No matching IBS/OBS found, the firmware manifest is missing
-	 * information in the module's module configuration table.
-	 */
+	 
 	if (!max_cpc)
 		msg = "No CPC value available in the firmware file's manifest";
 	else if (!cpc_pick)

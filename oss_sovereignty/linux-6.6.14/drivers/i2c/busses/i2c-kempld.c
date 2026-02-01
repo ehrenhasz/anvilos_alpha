@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C bus driver for Kontron COM modules
- *
- * Copyright (c) 2010-2013 Kontron Europe GmbH
- * Author: Michael Brunner <michael.brunner@kontron.com>
- *
- * The driver is based on the i2c-ocores driver by Peter Korsgaard.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -38,8 +31,8 @@
 #define I2C_CMD_READ_NACK	0x29
 #define I2C_CMD_IACK		0x01
 
-#define KEMPLD_I2C_FREQ_MAX	2700	/* 2.7 mHz */
-#define KEMPLD_I2C_FREQ_STD	100	/* 100 kHz */
+#define KEMPLD_I2C_FREQ_MAX	2700	 
+#define KEMPLD_I2C_FREQ_STD	100	 
 
 enum {
 	STATE_DONE = 0,
@@ -76,9 +69,7 @@ static bool i2c_gpio_mux;
 module_param(i2c_gpio_mux, bool, 0);
 MODULE_PARM_DESC(i2c_gpio_mux, "Enable I2C port on GPIO out (default=false)");
 
-/*
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 static int kempld_i2c_process(struct kempld_i2c_data *i2c)
 {
 	struct kempld_device_data *pld = i2c->pld;
@@ -86,19 +77,19 @@ static int kempld_i2c_process(struct kempld_i2c_data *i2c)
 	struct i2c_msg *msg = i2c->msg;
 	u8 addr;
 
-	/* Ready? */
+	 
 	if (stat & I2C_STAT_TIP)
 		return -EBUSY;
 
 	if (i2c->state == STATE_DONE || i2c->state == STATE_ERROR) {
-		/* Stop has been sent */
+		 
 		kempld_write8(pld, KEMPLD_I2C_CMD, I2C_CMD_IACK);
 		if (i2c->state == STATE_ERROR)
 			return -EIO;
 		return 0;
 	}
 
-	/* Error? */
+	 
 	if (stat & I2C_STAT_ARBLOST) {
 		i2c->state = STATE_ERROR;
 		kempld_write8(pld, KEMPLD_I2C_CMD, I2C_CMD_STOP);
@@ -113,10 +104,10 @@ static int kempld_i2c_process(struct kempld_i2c_data *i2c)
 	}
 
 	if (i2c->state == STATE_ADDR) {
-		/* 10 bit address? */
+		 
 		if (i2c->msg->flags & I2C_M_TEN) {
 			addr = 0xf0 | ((i2c->msg->addr >> 7) & 0x6);
-			/* Set read bit if necessary */
+			 
 			addr |= (i2c->msg->flags & I2C_M_RD) ? 1 : 0;
 			i2c->state = STATE_ADDR10;
 		} else {
@@ -130,7 +121,7 @@ static int kempld_i2c_process(struct kempld_i2c_data *i2c)
 		return 0;
 	}
 
-	/* Second part of 10 bit addressing */
+	 
 	if (i2c->state == STATE_ADDR10) {
 		kempld_write8(pld, KEMPLD_I2C_DATA, i2c->msg->addr & 0xff);
 		kempld_write8(pld, KEMPLD_I2C_CMD, I2C_CMD_WRITE);
@@ -196,7 +187,7 @@ static int kempld_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	i2c->nmsgs = num;
 	i2c->state = STATE_INIT;
 
-	/* Handle the transfer */
+	 
 	while (time_before(jiffies, timeout)) {
 		kempld_get_mutex(pld);
 		ret = kempld_i2c_process(i2c);
@@ -216,9 +207,7 @@ static int kempld_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	return -ETIMEDOUT;
 }
 
-/*
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 static void kempld_i2c_device_init(struct kempld_i2c_data *i2c)
 {
 	struct kempld_device_data *pld = i2c->pld;
@@ -228,7 +217,7 @@ static void kempld_i2c_device_init(struct kempld_i2c_data *i2c)
 	u8 stat;
 	u8 cfg;
 
-	/* Make sure the device is disabled */
+	 
 	ctrl = kempld_read8(pld, KEMPLD_I2C_CTRL);
 	ctrl &= ~(I2C_CTRL_EN | I2C_CTRL_IEN);
 	kempld_write8(pld, KEMPLD_I2C_CTRL, ctrl);
@@ -244,7 +233,7 @@ static void kempld_i2c_device_init(struct kempld_i2c_data *i2c)
 	if (prescale < 0)
 		prescale = 0;
 
-	/* Round to the best matching value */
+	 
 	prescale_corr = prescale / 1000;
 	if (prescale % 1000 >= 500)
 		prescale_corr++;
@@ -252,7 +241,7 @@ static void kempld_i2c_device_init(struct kempld_i2c_data *i2c)
 	kempld_write8(pld, KEMPLD_I2C_PRELOW, prescale_corr & 0xff);
 	kempld_write8(pld, KEMPLD_I2C_PREHIGH, prescale_corr >> 8);
 
-	/* Activate I2C bus output on GPIO pins */
+	 
 	cfg = kempld_read8(pld, KEMPLD_CFG);
 	if (i2c_gpio_mux)
 		cfg |= KEMPLD_CFG_GPIO_I2C_MUX;
@@ -260,7 +249,7 @@ static void kempld_i2c_device_init(struct kempld_i2c_data *i2c)
 		cfg &= ~KEMPLD_CFG_GPIO_I2C_MUX;
 	kempld_write8(pld, KEMPLD_CFG, cfg);
 
-	/* Enable the device */
+	 
 	kempld_write8(pld, KEMPLD_I2C_CMD, I2C_CMD_IACK);
 	ctrl |= I2C_CTRL_EN;
 	kempld_write8(pld, KEMPLD_I2C_CTRL, ctrl);
@@ -316,7 +305,7 @@ static int kempld_i2c_probe(struct platform_device *pdev)
 	kempld_i2c_device_init(i2c);
 	kempld_release_mutex(pld);
 
-	/* Add I2C adapter to I2C tree */
+	 
 	if (i2c_bus >= -1)
 		i2c->adap.nr = i2c_bus;
 	ret = i2c_add_numbered_adapter(&i2c->adap);
@@ -336,10 +325,7 @@ static void kempld_i2c_remove(struct platform_device *pdev)
 	u8 ctrl;
 
 	kempld_get_mutex(pld);
-	/*
-	 * Disable I2C logic if it was not activated before the
-	 * driver loaded
-	 */
+	 
 	if (!i2c->was_active) {
 		ctrl = kempld_read8(pld, KEMPLD_I2C_CTRL);
 		ctrl &= ~I2C_CTRL_EN;

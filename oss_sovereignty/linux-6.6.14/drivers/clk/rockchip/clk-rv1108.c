@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *         Andy Yan <andy.yan@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -20,7 +16,7 @@ enum rv1108_plls {
 };
 
 static struct rockchip_pll_rate_table rv1108_pll_rates[] = {
-	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+	 
 	RK3036_PLL_RATE(1608000000, 1, 67, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1584000000, 1, 66, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1560000000, 1, 65, 1, 1, 1, 0),
@@ -63,7 +59,7 @@ static struct rockchip_pll_rate_table rv1108_pll_rates[] = {
 	RK3036_PLL_RATE( 312000000, 1, 52, 2, 2, 1, 0),
 	RK3036_PLL_RATE( 216000000, 1, 72, 4, 2, 1, 0),
 	RK3036_PLL_RATE(  96000000, 1, 64, 4, 4, 1, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 #define RV1108_DIV_CORE_MASK		0xf
@@ -193,11 +189,9 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 			RV1108_MISC_CON, 13, 1, MFLAGS),
 	MUX(0, "usb480m", mux_usb480m_pre_p, CLK_SET_RATE_PARENT,
 			RV1108_MISC_CON, 15, 1, MFLAGS),
-	/*
-	 * Clock-Architecture Diagram 2
-	 */
+	 
 
-	/* PD_CORE */
+	 
 	GATE(0, "dpll_core", "dpll", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(0), 1, GFLAGS),
 	GATE(0, "apll_core", "apll", CLK_IGNORE_UNUSED,
@@ -215,7 +209,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "pclk_dbg", "pclken_dbg", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(11), 1, GFLAGS),
 
-	/* PD_RKVENC */
+	 
 	COMPOSITE(0, "aclk_rkvenc_pre", mux_pll_src_4plls_p, 0,
 			RV1108_CLKSEL_CON(37), 6, 2, MFLAGS, 0, 5, DFLAGS,
 			RV1108_CLKGATE_CON(8), 8, GFLAGS),
@@ -233,7 +227,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "hclk_rkvenc_niu", "hclk_rkvenc_pre", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(19), 10, GFLAGS),
 
-	/* PD_RKVDEC */
+	 
 	COMPOSITE(SCLK_HEVC_CORE, "sclk_hevc_core", mux_pll_src_4plls_p, 0,
 			RV1108_CLKSEL_CON(36), 6, 2, MFLAGS, 0, 5, DFLAGS,
 			RV1108_CLKGATE_CON(8), 2, GFLAGS),
@@ -264,7 +258,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "aclk_vpu_niu", "aclk_vpu_pre", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(19), 6, GFLAGS),
 
-	/* PD_PMU_wrapper */
+	 
 	COMPOSITE_NOMUX(0, "pmu_24m_ena", "gpll", CLK_IGNORE_UNUSED,
 			RV1108_CLKSEL_CON(38), 0, 5, DFLAGS,
 			RV1108_CLKGATE_CON(8), 12, GFLAGS),
@@ -291,9 +285,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "pvtm_pmu", "xin24m", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(8), 13, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
+	 
 	COMPOSITE(SCLK_WIFI, "sclk_wifi", mux_wifi_src_p, 0,
 			RV1108_CLKSEL_CON(28), 15, 1, MFLAGS, 8, 6, DFLAGS,
 			RV1108_CLKGATE_CON(9), 8, GFLAGS),
@@ -342,7 +334,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "pclk_cif1to4", "pclk_vip", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(7), 8, GFLAGS),
 
-	/* PD_DSP_wrapper */
+	 
 	COMPOSITE(SCLK_DSP, "sclk_dsp", mux_dsp_src_p, 0,
 			RV1108_CLKSEL_CON(42), 8, 2, MFLAGS, 0, 5, DFLAGS,
 			RV1108_CLKGATE_CON(9), 0, GFLAGS),
@@ -399,9 +391,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "aclk_dsp_edp_perf", "sclk_dsp_edp", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(11), 8, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 4
-	 */
+	 
 	COMPOSITE(0, "aclk_vio0_pre", mux_pll_src_4plls_p, CLK_IGNORE_UNUSED,
 			RV1108_CLKSEL_CON(28), 6, 2, MFLAGS, 0, 5, DFLAGS,
 			RV1108_CLKGATE_CON(6), 0, GFLAGS),
@@ -491,9 +481,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "pclk_mipi_csiphy", "pclk_top_pre", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(14), 12, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 5
-	 */
+	 
 
 	FACTOR(0, "xin12m", "xin24m", 0, 1, 2),
 
@@ -531,7 +519,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(SCLK_I2S2, "sclk_i2s2", "i2s2_pre", CLK_SET_RATE_PARENT,
 			RV1108_CLKGATE_CON(2), 10, GFLAGS),
 
-	/* PD_BUS */
+	 
 	GATE(0, "aclk_bus_src_gpll", "gpll", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(1), 0, GFLAGS),
 	GATE(0, "aclk_bus_src_apll", "apll", CLK_IGNORE_UNUSED,
@@ -662,7 +650,7 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "aclk_intmem", "aclk_bus_pre", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(12), 1, GFLAGS),
 
-	/* PD_DDR */
+	 
 	GATE(0, "apll_ddr", "apll", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(0), 8, GFLAGS),
 	GATE(0, "dpll_ddr", "dpll", CLK_IGNORE_UNUSED,
@@ -688,11 +676,9 @@ static struct rockchip_clk_branch rv1108_clk_branches[] __initdata = {
 	GATE(0, "pclk_ddrphy", "pclk_ddr_pre", CLK_IGNORE_UNUSED,
 			RV1108_CLKGATE_CON(14), 4, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 6
-	 */
+	 
 
-	/* PD_PERI */
+	 
 	COMPOSITE_NOMUX(0, "pclk_periph_pre", "gpll", 0,
 			RV1108_CLKSEL_CON(23), 10, 5, DFLAGS,
 			RV1108_CLKGATE_CON(4), 5, GFLAGS),

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005 - 2016 Broadcom
- * All rights reserved.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/list.h>
@@ -38,10 +28,10 @@ static void _be_roce_dev_add(struct be_adapter *adapter)
 	}
 
 	if (pdev->device == OC_DEVICE_ID5) {
-		/* only msix is supported on these devices */
+		 
 		if (!msix_enabled(adapter))
 			return;
-		/* DPP region address and length */
+		 
 		dev_info.dpp_unmapped_addr = pci_resource_start(pdev, 2);
 		dev_info.dpp_unmapped_len = pci_resource_len(pdev, 2);
 	} else {
@@ -57,16 +47,11 @@ static void _be_roce_dev_add(struct be_adapter *adapter)
 	memcpy(dev_info.mac_addr, adapter->netdev->dev_addr, ETH_ALEN);
 	dev_info.dev_family = adapter->sli_family;
 	if (msix_enabled(adapter)) {
-		/* provide all the vectors, so that EQ creation response
-		 * can decide which one to use.
-		 */
+		 
 		num_vec = adapter->num_msix_vec + adapter->num_msix_roce_vec;
 		dev_info.intr_mode = BE_INTERRUPT_MODE_MSIX;
 		dev_info.msix.num_vectors = min(num_vec, MAX_MSIX_VECTORS);
-		/* provide start index of the vector,
-		 * so in case of linear usage,
-		 * it can use the base as starting point.
-		 */
+		 
 		dev_info.msix.start_vector = adapter->num_evt_qs;
 		for (i = 0; i < dev_info.msix.num_vectors; i++) {
 			dev_info.msix.vector_list[i] =
@@ -86,10 +71,7 @@ void be_roce_dev_add(struct be_adapter *adapter)
 		mutex_lock(&be_adapter_list_lock);
 		list_add_tail(&adapter->entry, &be_adapter_list);
 
-		/* invoke add() routine of roce driver only if
-		 * valid driver registered with add method and add() is not yet
-		 * invoked on a given adapter.
-		 */
+		 
 		_be_roce_dev_add(adapter);
 		mutex_unlock(&be_adapter_list_lock);
 	}

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Combo-PHY driver
- *
- * Copyright (C) 2019-2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -50,17 +46,14 @@ enum {
 	PHY_MAX_NUM
 };
 
-/*
- * Clock Register bit fields to enable clocks
- * for ComboPhy according to the mode.
- */
+ 
 enum intel_phy_mode {
 	PHY_PCIE_MODE = 0,
 	PHY_XPCS_MODE,
 	PHY_SATA_MODE,
 };
 
-/* ComboPhy mode Register values */
+ 
 enum intel_combo_mode {
 	PCIE0_PCIE1_MODE = 0,
 	PCIE_DL_MODE,
@@ -108,7 +101,7 @@ static int intel_cbphy_iphy_enable(struct intel_cbphy_iphy *iphy, bool set)
 	u32 mask = BIT(cbphy->phy_mode * 2 + iphy->id);
 	u32 val;
 
-	/* Register: 0 is enable, 1 is disable */
+	 
 	val = set ? 0 : mask;
 
 	return regmap_update_bits(cbphy->hsiocfg, REG_CLK_DISABLE(cbphy->bid),
@@ -121,7 +114,7 @@ static int intel_cbphy_pcie_refclk_cfg(struct intel_cbphy_iphy *iphy, bool set)
 	u32 mask = BIT(cbphy->id * 2 + iphy->id);
 	u32 val;
 
-	/* Register: 0 is enable, 1 is disable */
+	 
 	val = set ? 0 : mask;
 
 	return regmap_update_bits(cbphy->syscfg, PAD_DIS_CFG, mask, val);
@@ -171,7 +164,7 @@ static int intel_cbphy_pcie_en_pad_refclk(struct intel_cbphy_iphy *iphy)
 	combo_phy_w32_off_mask(cbphy->app_base, PCIE_PHY_GEN_CTRL,
 			       PCIE_PHY_CLK_PAD, FIELD_PREP(PCIE_PHY_CLK_PAD, 0));
 
-	/* Delay for stable clock PLL */
+	 
 	usleep_range(50, 100);
 
 	return 0;
@@ -245,7 +238,7 @@ static void intel_cbphy_rst_deassert(struct intel_combo_phy *cbphy)
 {
 	reset_control_deassert(cbphy->core_rst);
 	reset_control_deassert(cbphy->phy_rst);
-	/* Delay to ensure reset process is done */
+	 
 	usleep_range(10, 20);
 }
 
@@ -288,7 +281,7 @@ static int intel_cbphy_iphy_power_on(struct intel_cbphy_iphy *iphy)
 		goto clk_err;
 	}
 
-	/* Delay to ensure reset process is done */
+	 
 	udelay(1);
 
 	return 0;
@@ -385,10 +378,10 @@ static int intel_cbphy_calibrate(struct phy *phy)
 
 	id = PHY_ID(iphy);
 
-	/* trigger auto RX adaptation */
+	 
 	combo_phy_w32_off_mask(cr_base, CR_ADDR(PCS_XF_ATE_OVRD_IN_2, id),
 			       ADAPT_REQ_MSK, FIELD_PREP(ADAPT_REQ_MSK, 3));
-	/* Wait RX adaptation to finish */
+	 
 	ret = readl_poll_timeout(cr_base + CR_ADDR(PCS_XF_RX_ADAPT_ACK, id),
 				 val, val & RX_ADAPT_ACK_BIT, 10, 5000);
 	if (ret)
@@ -396,7 +389,7 @@ static int intel_cbphy_calibrate(struct phy *phy)
 	else
 		dev_dbg(cbphy->dev, "RX Adaptation success!\n");
 
-	/* Stop RX adaptation */
+	 
 	combo_phy_w32_off_mask(cr_base, CR_ADDR(PCS_XF_ATE_OVRD_IN_2, id),
 			       ADAPT_REQ_MSK, FIELD_PREP(ADAPT_REQ_MSK, 0));
 
@@ -445,11 +438,7 @@ static int intel_cbphy_fwnode_parse(struct intel_combo_phy *cbphy)
 	if (IS_ERR(cbphy->cr_base))
 		return PTR_ERR(cbphy->cr_base);
 
-	/*
-	 * syscfg and hsiocfg variables stores the handle of the registers set
-	 * in which ComboPhy subsystem specific registers are subset. Using
-	 * Register map framework to access the registers set.
-	 */
+	 
 	ret = fwnode_property_get_reference_args(fwnode, "intel,syscfg", NULL,
 						 1, 0, &ref);
 	if (ret < 0)
@@ -544,7 +533,7 @@ static int intel_cbphy_create(struct intel_combo_phy *cbphy)
 		iphy->parent = cbphy;
 		iphy->id = i;
 
-		/* In dual lane mode skip phy creation for the second phy */
+		 
 		if (cbphy->aggr_mode == PHY_DL_MODE && iphy->id == PHY_1)
 			continue;
 

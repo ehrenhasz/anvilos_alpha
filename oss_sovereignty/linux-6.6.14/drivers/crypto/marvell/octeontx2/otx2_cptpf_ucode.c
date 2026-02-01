@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/firmware.h>
@@ -170,7 +170,7 @@ static int cptx_set_ucode_base(struct otx2_cpt_eng_grp_info *eng_grp,
 	dma_addr_t dma_addr;
 	int i, bit, ret;
 
-	/* Set PF number for microcode fetches */
+	 
 	ret = otx2_cpt_write_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 				    CPT_AF_PF_FUNC,
 				    cptpf->pf_id << RVU_PFVF_PF_SHIFT, blkaddr);
@@ -184,10 +184,7 @@ static int cptx_set_ucode_base(struct otx2_cpt_eng_grp_info *eng_grp,
 
 		dma_addr = engs->ucode->dma;
 
-		/*
-		 * Set UCODE_BASE only for the cores which are not used,
-		 * other cores should have already valid UCODE_BASE set
-		 */
+		 
 		for_each_set_bit(bit, engs->bmap, eng_grp->g->engs_num)
 			if (!eng_grp->g->eng_ref_cnt[bit]) {
 				ret = __write_ucode_base(cptpf, bit, dma_addr,
@@ -221,7 +218,7 @@ static int cptx_detach_and_disable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
 	int busy, ret;
 	u64 reg = 0;
 
-	/* Detach the cores from group */
+	 
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		ret = otx2_cpt_read_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 					   CPT_AF_EXEX_CTL2(i), &reg, blkaddr);
@@ -241,7 +238,7 @@ static int cptx_detach_and_disable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
 		}
 	}
 
-	/* Wait for cores to become idle */
+	 
 	do {
 		busy = 0;
 		usleep_range(10000, 20000);
@@ -263,7 +260,7 @@ static int cptx_detach_and_disable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
 		}
 	} while (busy);
 
-	/* Disable the cores only if they are not used anymore */
+	 
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		if (!eng_grp->g->eng_ref_cnt[i]) {
 			ret = otx2_cpt_write_af_reg(&cptpf->afpf_mbox,
@@ -307,7 +304,7 @@ static int cptx_attach_and_enable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
 	u64 reg = 0;
 	int i, ret;
 
-	/* Attach the cores to the group */
+	 
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		ret = otx2_cpt_read_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 					   CPT_AF_EXEX_CTL2(i), &reg, blkaddr);
@@ -327,7 +324,7 @@ static int cptx_attach_and_enable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
 		}
 	}
 
-	/* Enable the cores */
+	 
 	for_each_set_bit(i, bmap.bits, bmap.size) {
 		ret = otx2_cpt_add_write_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 						CPT_AF_EXEX_CTL(i), 0x1,
@@ -463,7 +460,7 @@ static int cpt_ucode_load_fw(struct pci_dev *pdev, struct fw_info_t *fw_info)
 
 		snprintf(filename, sizeof(filename), "mrvl/cpt%02d/%s.out",
 			 pdev->revision, eng_type);
-		/* Request firmware for each engine type */
+		 
 		ret = load_fw(&pdev->dev, fw_info, filename);
 		if (ret)
 			goto release_fw;
@@ -650,14 +647,14 @@ static int reserve_engines(struct device *dev,
 {
 	int i, ret = 0;
 
-	/* Validate if a number of requested engines are available */
+	 
 	for (i = 0; i < ucodes_cnt; i++) {
 		ret = check_engines_availability(dev, grp, &req_engs[i]);
 		if (ret)
 			return ret;
 	}
 
-	/* Reserve requested engines for this engine group */
+	 
 	for (i = 0; i < ucodes_cnt; i++) {
 		ret = do_reserve_engines(dev, grp, &req_engs[i]);
 		if (ret)
@@ -688,7 +685,7 @@ static int copy_ucode_to_dma_mem(struct device *dev,
 {
 	u32 i;
 
-	/*  Allocate DMAable space */
+	 
 	ucode->va = dma_alloc_coherent(dev, OTX2_CPT_UCODE_SZ, &ucode->dma,
 				       GFP_KERNEL);
 	if (!ucode->va)
@@ -697,10 +694,10 @@ static int copy_ucode_to_dma_mem(struct device *dev,
 	memcpy(ucode->va, ucode_data + sizeof(struct otx2_cpt_ucode_hdr),
 	       ucode->size);
 
-	/* Byte swap 64-bit */
+	 
 	for (i = 0; i < (ucode->size / 8); i++)
 		cpu_to_be64s(&((u64 *)ucode->va)[i]);
-	/*  Ucode needs 16-bit swap */
+	 
 	for (i = 0; i < (ucode->size / 2); i++)
 		cpu_to_be16s(&((u16 *)ucode->va)[i]);
 	return 0;
@@ -711,12 +708,12 @@ static int enable_eng_grp(struct otx2_cpt_eng_grp_info *eng_grp,
 {
 	int ret;
 
-	/* Point microcode to each core of the group */
+	 
 	ret = cpt_set_ucode_base(eng_grp, obj);
 	if (ret)
 		return ret;
 
-	/* Attach the cores to the group and enable them */
+	 
 	ret = cpt_attach_and_enable_cores(eng_grp, obj);
 
 	return ret;
@@ -728,12 +725,12 @@ static int disable_eng_grp(struct device *dev,
 {
 	int i, ret;
 
-	/* Disable all engines used by this group */
+	 
 	ret = cpt_detach_and_disable_cores(eng_grp, obj);
 	if (ret)
 		return ret;
 
-	/* Unload ucode used by this engine group */
+	 
 	ucode_unload(dev, &eng_grp->ucode[0]);
 	ucode_unload(dev, &eng_grp->ucode[1]);
 
@@ -744,7 +741,7 @@ static int disable_eng_grp(struct device *dev,
 		eng_grp->engs[i].ucode = &eng_grp->ucode[0];
 	}
 
-	/* Clear UCODE_BASE register for each engine used by this group */
+	 
 	ret = cpt_set_ucode_base(eng_grp, obj);
 
 	return ret;
@@ -753,12 +750,12 @@ static int disable_eng_grp(struct device *dev,
 static void setup_eng_grp_mirroring(struct otx2_cpt_eng_grp_info *dst_grp,
 				    struct otx2_cpt_eng_grp_info *src_grp)
 {
-	/* Setup fields for engine group which is mirrored */
+	 
 	src_grp->mirror.is_ena = false;
 	src_grp->mirror.idx = 0;
 	src_grp->mirror.ref_count++;
 
-	/* Setup fields for mirroring engine group */
+	 
 	dst_grp->mirror.is_ena = true;
 	dst_grp->mirror.idx = src_grp->idx;
 	dst_grp->mirror.ref_count = 0;
@@ -791,20 +788,7 @@ static void update_requested_engs(struct otx2_cpt_eng_grp_info *mirror_eng_grp,
 		if (!mirrored_engs)
 			continue;
 
-		/*
-		 * If mirrored group has this type of engines attached then
-		 * there are 3 scenarios possible:
-		 * 1) mirrored_engs.count == engs[i].count then all engines
-		 * from mirrored engine group will be shared with this engine
-		 * group
-		 * 2) mirrored_engs.count > engs[i].count then only a subset of
-		 * engines from mirrored engine group will be shared with this
-		 * engine group
-		 * 3) mirrored_engs.count < engs[i].count then all engines
-		 * from mirrored engine group will be shared with this group
-		 * and additional engines will be reserved for exclusively use
-		 * by this engine group
-		 */
+		 
 		engs[i].count -= mirrored_engs->count;
 	}
 }
@@ -934,15 +918,15 @@ static int delete_engine_group(struct device *dev,
 	if (eng_grp->mirror.ref_count)
 		return -EINVAL;
 
-	/* Removing engine group mirroring if enabled */
+	 
 	remove_eng_grp_mirroring(eng_grp);
 
-	/* Disable engine group */
+	 
 	ret = disable_eng_grp(dev, eng_grp, eng_grp->g->obj);
 	if (ret)
 		return ret;
 
-	/* Release all engines held by this engine group */
+	 
 	ret = release_engines(dev, eng_grp);
 	if (ret)
 		return ret;
@@ -981,13 +965,13 @@ static int create_engine_group(struct device *dev,
 	struct otx2_cpt_uc_info_t *uc_info;
 	int i, ret = 0;
 
-	/* Find engine group which is not used */
+	 
 	eng_grp = find_unused_eng_grp(eng_grps);
 	if (!eng_grp) {
 		dev_err(dev, "Error all engine groups are being used\n");
 		return -ENOSPC;
 	}
-	/* Load ucode */
+	 
 	for (i = 0; i < ucodes_cnt; i++) {
 		uc_info = (struct otx2_cpt_uc_info_t *) ucode_data[i];
 		eng_grp->ucode[i] = uc_info->ucode;
@@ -997,40 +981,33 @@ static int create_engine_group(struct device *dev,
 			goto unload_ucode;
 	}
 
-	/* Check if this group mirrors another existing engine group */
+	 
 	mirrored_eng_grp = find_mirrored_eng_grp(eng_grp);
 	if (mirrored_eng_grp) {
-		/* Setup mirroring */
+		 
 		setup_eng_grp_mirroring(eng_grp, mirrored_eng_grp);
 
-		/*
-		 * Update count of requested engines because some
-		 * of them might be shared with mirrored group
-		 */
+		 
 		update_requested_engs(mirrored_eng_grp, engs, ucodes_cnt);
 	}
 	ret = reserve_engines(dev, eng_grp, engs, ucodes_cnt);
 	if (ret)
 		goto unload_ucode;
 
-	/* Update ucode pointers used by engines */
+	 
 	update_ucode_ptrs(eng_grp);
 
-	/* Update engine masks used by this group */
+	 
 	ret = eng_grp_update_masks(dev, eng_grp);
 	if (ret)
 		goto release_engs;
 
-	/* Enable engine group */
+	 
 	ret = enable_eng_grp(eng_grp, eng_grps->obj);
 	if (ret)
 		goto release_engs;
 
-	/*
-	 * If this engine group mirrors another engine group
-	 * then we need to unload ucode as we will use ucode
-	 * from mirrored engine group
-	 */
+	 
 	if (eng_grp->mirror.is_ena)
 		ucode_unload(dev, &eng_grp->ucode[0]);
 
@@ -1066,12 +1043,12 @@ static void delete_engine_grps(struct pci_dev *pdev,
 {
 	int i;
 
-	/* First delete all mirroring engine groups */
+	 
 	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++)
 		if (eng_grps->grp[i].mirror.is_ena)
 			delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
 
-	/* Delete remaining engine groups */
+	 
 	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++)
 		delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
 }
@@ -1148,10 +1125,7 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
 	int ret = 0;
 
 	mutex_lock(&eng_grps->lock);
-	/*
-	 * We don't create engine groups if it was already
-	 * made (when user enabled VFs for the first time)
-	 */
+	 
 	if (eng_grps->is_grps_created)
 		goto unlock;
 
@@ -1159,10 +1133,7 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
 	if (ret)
 		goto unlock;
 
-	/*
-	 * Create engine group with SE engines for kernel
-	 * crypto functionality (symmetric crypto)
-	 */
+	 
 	uc_info[0] = get_ucode(&fw_info, OTX2_CPT_SE_TYPES);
 	if (uc_info[0] == NULL) {
 		dev_err(&pdev->dev, "Unable to find firmware for SE\n");
@@ -1177,10 +1148,7 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
 	if (ret)
 		goto release_fw;
 
-	/*
-	 * Create engine group with SE+IE engines for IPSec.
-	 * All SE engines will be shared with engine group 0.
-	 */
+	 
 	uc_info[0] = get_ucode(&fw_info, OTX2_CPT_SE_TYPES);
 	uc_info[1] = get_ucode(&fw_info, OTX2_CPT_IE_TYPES);
 
@@ -1199,10 +1167,7 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
 	if (ret)
 		goto delete_eng_grp;
 
-	/*
-	 * Create engine group with AE engines for asymmetric
-	 * crypto functionality.
-	 */
+	 
 	uc_info[0] = get_ucode(&fw_info, OTX2_CPT_AE_TYPES);
 	if (uc_info[0] == NULL) {
 		dev_err(&pdev->dev, "Unable to find firmware for AE");
@@ -1224,34 +1189,18 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
 	if (is_dev_otx2(pdev))
 		goto unlock;
 
-	/*
-	 * Ensure RNM_ENTROPY_STATUS[NORMAL_CNT] = 0x40 before writing
-	 * CPT_AF_CTL[RNM_REQ_EN] = 1 as a workaround for HW errata.
-	 */
+	 
 	rnm_to_cpt_errata_fixup(&pdev->dev);
 
-	/*
-	 * Configure engine group mask to allow context prefetching
-	 * for the groups and enable random number request, to enable
-	 * CPT to request random numbers from RNM.
-	 */
+	 
 	otx2_cpt_write_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_CTL,
 			      OTX2_CPT_ALL_ENG_GRPS_MASK << 3 | BIT_ULL(16),
 			      BLKADDR_CPT0);
-	/*
-	 * Set interval to periodically flush dirty data for the next
-	 * CTX cache entry. Set the interval count to maximum supported
-	 * value.
-	 */
+	 
 	otx2_cpt_write_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_CTX_FLUSH_TIMER,
 			      CTX_FLUSH_TIMER_CNT, BLKADDR_CPT0);
 
-	/*
-	 * Set CPT_AF_DIAG[FLT_DIS], as a workaround for HW errata, when
-	 * CPT_AF_DIAG[FLT_DIS] = 0 and a CPT engine access to LLC/DRAM
-	 * encounters a fault/poison, a rare case may result in
-	 * unpredictable data being delivered to a CPT engine.
-	 */
+	 
 	otx2_cpt_read_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_DIAG, &reg_val,
 			     BLKADDR_CPT0);
 	otx2_cpt_write_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_DIAG,
@@ -1276,7 +1225,7 @@ static int cptx_disable_all_cores(struct otx2_cptpf_dev *cptpf, int total_cores,
 	int i, busy;
 	u64 reg;
 
-	/* Disengage the cores from groups */
+	 
 	for (i = 0; i < total_cores; i++) {
 		ret = otx2_cpt_add_write_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 						CPT_AF_EXEX_CTL2(i), 0x0,
@@ -1290,7 +1239,7 @@ static int cptx_disable_all_cores(struct otx2_cptpf_dev *cptpf, int total_cores,
 	if (ret)
 		return ret;
 
-	/* Wait for cores to become idle */
+	 
 	do {
 		busy = 0;
 		usleep_range(10000, 20000);
@@ -1312,7 +1261,7 @@ static int cptx_disable_all_cores(struct otx2_cptpf_dev *cptpf, int total_cores,
 		}
 	} while (busy);
 
-	/* Disable the cores */
+	 
 	for (i = 0; i < total_cores; i++) {
 		ret = otx2_cpt_add_write_af_reg(&cptpf->afpf_mbox, cptpf->pdev,
 						CPT_AF_EXEX_CTL(i), 0x0,
@@ -1347,7 +1296,7 @@ void otx2_cpt_cleanup_eng_grps(struct pci_dev *pdev,
 
 	mutex_lock(&eng_grps->lock);
 	delete_engine_grps(pdev, eng_grps);
-	/* Release memory */
+	 
 	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
 		grp = &eng_grps->grp[i];
 		for (j = 0; j < OTX2_CPT_MAX_ETYPES_PER_GRP; j++) {
@@ -1472,9 +1421,7 @@ release_fw:
 	return ret;
 }
 
-/*
- * Get CPT HW capabilities using LOAD_FVC operation.
- */
+ 
 int otx2_cpt_discover_eng_capabilities(struct otx2_cptpf_dev *cptpf)
 {
 	struct otx2_cptlfs_info *lfs = &cptpf->lfs;
@@ -1488,18 +1435,12 @@ int otx2_cpt_discover_eng_capabilities(struct otx2_cptpf_dev *cptpf)
 	int ret, etype;
 	void *rptr;
 
-	/*
-	 * We don't get capabilities if it was already done
-	 * (when user enabled VFs for the first time)
-	 */
+	 
 	if (cptpf->is_eng_caps_discovered)
 		return 0;
 
 	pdev = cptpf->pdev;
-	/*
-	 * Create engine groups for each type to submit LOAD_FVC op and
-	 * get engine's capabilities.
-	 */
+	 
 	ret = create_eng_caps_discovery_grps(pdev, &cptpf->eng_grps);
 	if (ret)
 		goto delete_grps;
@@ -1528,14 +1469,14 @@ int otx2_cpt_discover_eng_capabilities(struct otx2_cptpf_dev *cptpf)
 	}
 	rptr = (u8 *)result + compl_rlen;
 
-	/* Fill in the command */
+	 
 	opcode.s.major = LOADFVC_MAJOR_OP;
 	opcode.s.minor = LOADFVC_MINOR_OP;
 
 	iq_cmd.cmd.u = 0;
 	iq_cmd.cmd.s.opcode = cpu_to_be16(opcode.flags);
 
-	/* 64-bit swap for microcode data reads, not needed for addresses */
+	 
 	cpu_to_be64s(&iq_cmd.cmd.u);
 	iq_cmd.dptr = 0;
 	iq_cmd.rptr = rptr_baddr + compl_rlen;
@@ -1656,7 +1597,7 @@ int otx2_cpt_dl_custom_egrp_create(struct otx2_cptpf_dev *cptpf,
 		}
 	}
 
-	/* Validate input parameters */
+	 
 	if (!(grp_idx && ucode_idx))
 		goto err_print;
 
@@ -1674,7 +1615,7 @@ int otx2_cpt_dl_custom_egrp_create(struct otx2_cptpf_dev *cptpf,
 			err_msg = "Only combination of SE+IE engines is allowed";
 			goto err_print;
 		}
-		/* Keep SE engines at zero index */
+		 
 		if (engs[1].type == OTX2_CPT_SE_TYPES)
 			swap(engs[0], engs[1]);
 	}

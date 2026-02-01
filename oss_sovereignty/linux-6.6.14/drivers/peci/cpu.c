@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2021 Intel Corporation
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/module.h>
@@ -9,15 +9,7 @@
 
 #include "internal.h"
 
-/**
- * peci_temp_read() - read the maximum die temperature from PECI target device
- * @device: PECI device to which request is going to be sent
- * @temp_raw: where to store the read temperature
- *
- * It uses GetTemp PECI command.
- *
- * Return: 0 if succeeded, other values in case errors.
- */
+ 
 int peci_temp_read(struct peci_device *device, s16 *temp_raw)
 {
 	struct peci_request *req;
@@ -34,17 +26,7 @@ int peci_temp_read(struct peci_device *device, s16 *temp_raw)
 }
 EXPORT_SYMBOL_NS_GPL(peci_temp_read, PECI_CPU);
 
-/**
- * peci_pcs_read() - read PCS register
- * @device: PECI device to which request is going to be sent
- * @index: PCS index
- * @param: PCS parameter
- * @data: where to store the read data
- *
- * It uses RdPkgConfig PECI command.
- *
- * Return: 0 if succeeded, other values in case errors.
- */
+ 
 int peci_pcs_read(struct peci_device *device, u8 index, u16 param, u32 *data)
 {
 	struct peci_request *req;
@@ -66,19 +48,7 @@ out_req_free:
 }
 EXPORT_SYMBOL_NS_GPL(peci_pcs_read, PECI_CPU);
 
-/**
- * peci_pci_local_read() - read 32-bit memory location using raw address
- * @device: PECI device to which request is going to be sent
- * @bus: bus
- * @dev: device
- * @func: function
- * @reg: register
- * @data: where to store the read data
- *
- * It uses RdPCIConfigLocal PECI command.
- *
- * Return: 0 if succeeded, other values in case errors.
- */
+ 
 int peci_pci_local_read(struct peci_device *device, u8 bus, u8 dev, u8 func,
 			u16 reg, u32 *data)
 {
@@ -101,20 +71,7 @@ out_req_free:
 }
 EXPORT_SYMBOL_NS_GPL(peci_pci_local_read, PECI_CPU);
 
-/**
- * peci_ep_pci_local_read() - read 32-bit memory location using raw address
- * @device: PECI device to which request is going to be sent
- * @seg: PCI segment
- * @bus: bus
- * @dev: device
- * @func: function
- * @reg: register
- * @data: where to store the read data
- *
- * Like &peci_pci_local_read, but it uses RdEndpointConfig PECI command.
- *
- * Return: 0 if succeeded, other values in case errors.
- */
+ 
 int peci_ep_pci_local_read(struct peci_device *device, u8 seg,
 			   u8 bus, u8 dev, u8 func, u16 reg, u32 *data)
 {
@@ -137,21 +94,7 @@ out_req_free:
 }
 EXPORT_SYMBOL_NS_GPL(peci_ep_pci_local_read, PECI_CPU);
 
-/**
- * peci_mmio_read() - read 32-bit memory location using 64-bit bar offset address
- * @device: PECI device to which request is going to be sent
- * @bar: PCI bar
- * @seg: PCI segment
- * @bus: bus
- * @dev: device
- * @func: function
- * @address: 64-bit MMIO address
- * @data: where to store the read data
- *
- * It uses RdEndpointConfig PECI command.
- *
- * Return: 0 if succeeded, other values in case errors.
- */
+ 
 int peci_mmio_read(struct peci_device *device, u8 bar, u8 seg,
 		   u8 bus, u8 dev, u8 func, u64 address, u32 *data)
 {
@@ -293,37 +236,37 @@ peci_cpu_probe(struct peci_device *device, const struct peci_device_id *id)
 }
 
 static const struct peci_device_id peci_cpu_device_ids[] = {
-	{ /* Haswell Xeon */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_HASWELL_X,
 		.data	= "hsx",
 	},
-	{ /* Broadwell Xeon */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_BROADWELL_X,
 		.data	= "bdx",
 	},
-	{ /* Broadwell Xeon D */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_BROADWELL_D,
 		.data	= "bdxd",
 	},
-	{ /* Skylake Xeon */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_SKYLAKE_X,
 		.data	= "skx",
 	},
-	{ /* Icelake Xeon */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_ICELAKE_X,
 		.data	= "icx",
 	},
-	{ /* Icelake Xeon D */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_ICELAKE_D,
 		.data	= "icxd",
 	},
-	{ /* Sapphire Rapids Xeon */
+	{  
 		.family	= 6,
 		.model	= INTEL_FAM6_SAPPHIRERAPIDS_X,
 		.data	= "spr",

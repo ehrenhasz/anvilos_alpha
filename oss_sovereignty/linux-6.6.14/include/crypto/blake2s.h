@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef _CRYPTO_BLAKE2S_H
 #define _CRYPTO_BLAKE2S_H
@@ -23,7 +21,7 @@ enum blake2s_lengths {
 };
 
 struct blake2s_state {
-	/* 'h', 't', and 'f' are used in assembly code, so keep them as-is. */
+	 
 	u32 h[8];
 	u32 t[2];
 	u32 f[2];
@@ -101,4 +99,4 @@ static inline void blake2s(u8 *out, const u8 *in, const u8 *key,
 	blake2s_final(&state, out);
 }
 
-#endif /* _CRYPTO_BLAKE2S_H */
+#endif  

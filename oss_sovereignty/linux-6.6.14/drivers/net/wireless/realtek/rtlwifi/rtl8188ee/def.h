@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92C_DEF_H__
 #define __RTL92C_DEF_H__
@@ -15,12 +15,7 @@
 
 #define CHIP_BONDING_IDENTIFIER(_value)	(((_value)>>22)&0x3)
 
-/* [15:12] IC version(CUT): A-cut=0, B-cut=1, C-cut=2, D-cut=3
- * [7] Manufacturer: TSMC=0, UMC=1
- * [6:4] RF type: 1T1R=0, 1T2R=1, 2T2R=2
- * [3] Chip type: TEST=0, NORMAL=1
- * [2:0] IC type: 81xxC=0, 8723=1, 92D=2
- */
+ 
 #define CHIP_8723			BIT(0)
 #define CHIP_92D			BIT(1)
 #define NORMAL_CHIP			BIT(3)
@@ -33,7 +28,7 @@
 #define D_CUT_VERSION			((BIT(12)|BIT(13)))
 #define E_CUT_VERSION			BIT(14)
 
-/* MASK */
+ 
 #define IC_TYPE_MASK			(BIT(0)|BIT(1)|BIT(2))
 #define CHIP_TYPE_MASK			BIT(3)
 #define RF_TYPE_MASK			(BIT(4)|BIT(5)|BIT(6))
@@ -41,7 +36,7 @@
 #define ROM_VERSION_MASK		(BIT(11)|BIT(10)|BIT(9)|BIT(8))
 #define CUT_VERSION_MASK		(BIT(15)|BIT(14)|BIT(13)|BIT(12))
 
-/* Get element */
+ 
 #define GET_CVID_IC_TYPE(version)	((version) & IC_TYPE_MASK)
 #define GET_CVID_CHIP_TYPE(version)	((version) & CHIP_TYPE_MASK)
 #define GET_CVID_RF_TYPE(version)	((version) & RF_TYPE_MASK)

@@ -1,22 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/fs/ufs/swab.h
- *
- * Copyright (C) 1997, 1998 Francois-Rene Rideau <fare@tunes.org>
- * Copyright (C) 1998 Jakub Jelinek <jj@ultra.linux.cz>
- * Copyright (C) 2001 Christoph Hellwig <hch@infradead.org>
- */
+ 
+ 
 
 #ifndef _UFS_SWAB_H
 #define _UFS_SWAB_H
 
-/*
- * Notes:
- *    HERE WE ASSUME EITHER BIG OR LITTLE ENDIAN UFSes
- *    in case there are ufs implementations that have strange bytesexes,
- *    you'll need to modify code here as well as in ufs_super.c and ufs_fs.h
- *    to support them.
- */
+ 
 
 enum {
 	BYTESEX_LE,
@@ -113,4 +101,4 @@ fs16_sub(struct super_block *sbp, __fs16 *n, int d)
 		be16_add_cpu((__be16 *)n, -d);
 }
 
-#endif /* _UFS_SWAB_H */
+#endif  

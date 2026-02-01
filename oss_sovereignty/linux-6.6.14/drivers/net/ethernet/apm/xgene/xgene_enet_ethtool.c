@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include "xgene_enet_main.h"
@@ -228,10 +224,10 @@ static void xgene_get_extd_stats(struct xgene_enet_pdata *pdata)
 	}
 
 	if (pdata->phy_mode == PHY_INTERFACE_MODE_XGMII) {
-		/* Errata 10GE_10 - SW should intepret RALN as 0 */
+		 
 		pdata->extd_stats[RALN_IDX] = 0;
 	} else {
-		/* Errata ENET_15 - Fixes RFCS, RFLR, TFCS counter */
+		 
 		pdata->extd_stats[RFCS_IDX] -= pdata->extd_stats[RALN_IDX];
 		pdata->extd_stats[RFLR_IDX] -= pdata->extd_stats[RUND_IDX];
 		pdata->extd_stats[TFCS_IDX] -= pdata->extd_stats[TFRG_IDX];
@@ -241,9 +237,9 @@ static void xgene_get_extd_stats(struct xgene_enet_pdata *pdata)
 	pdata->extd_stats[RX_OVERRUN_IDX] += rx_drop;
 	pdata->extd_stats[TX_UNDERRUN_IDX] += tx_drop;
 
-	/* Errata 10GE_8 -  Update Frame recovered from Errata 10GE_8/ENET_11 */
+	 
 	pdata->extd_stats[FALSE_RFLR_IDX] = pdata->false_rflr;
-	/* Errata ENET_15 - Jabber Frame recov'ed from Errata 10GE_10/ENET_15 */
+	 
 	pdata->extd_stats[FALSE_RJBR_IDX] = pdata->vlan_rjbr;
 }
 

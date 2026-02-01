@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung s3c24xx/s3c64xx SoC CAMIF driver
- *
- * Copyright (C) 2012 Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
- * Copyright (C) 2012 Tomasz Figa <tomasz.figa@gmail.com>
-*/
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/delay.h>
@@ -21,7 +16,7 @@ void camif_hw_reset(struct camif_dev *camif)
 	cfg |= CISRCFMT_ITU601_8BIT;
 	camif_write(camif, S3C_CAMIF_REG_CISRCFMT, cfg);
 
-	/* S/W reset */
+	 
 	cfg = camif_read(camif, S3C_CAMIF_REG_CIGCTRL);
 	cfg |= CIGCTRL_SWRST;
 	if (camif->variant->ip_revision == S3C6410_CAMIF_IP_REV)
@@ -42,10 +37,7 @@ void camif_hw_clear_pending_irq(struct camif_vp *vp)
 	camif_write(vp->camif, S3C_CAMIF_REG_CIGCTRL, cfg);
 }
 
-/*
- * Sets video test pattern (off, color bar, horizontal or vertical gradient).
- * External sensor pixel clock must be active for the test pattern to work.
- */
+ 
 void camif_hw_set_test_pattern(struct camif_dev *camif, unsigned int pattern)
 {
 	u32 cfg = camif_read(camif, S3C_CAMIF_REG_CIGCTRL);
@@ -77,10 +69,10 @@ void camif_hw_set_effect(struct camif_dev *camif, unsigned int effect,
 		return;
 
 	cfg = camif_read(camif, S3C_CAMIF_REG_CIIMGEFF(camif->vp->offset));
-	/* Set effect */
+	 
 	cfg &= ~CIIMGEFF_FIN_MASK;
 	cfg |= colorfx[i].value;
-	/* Set both paths */
+	 
 	if (camif->variant->ip_revision >= S3C6400_CAMIF_IP_REV) {
 		if (effect == V4L2_COLORFX_NONE)
 			cfg &= ~CIIMGEFF_IE_ENABLE_MASK;
@@ -99,7 +91,7 @@ static const u32 src_pixfmt_map[8][2] = {
 	{ MEDIA_BUS_FMT_VYUY8_2X8, CISRCFMT_ORDER422_CRYCBY },
 };
 
-/* Set camera input pixel format and resolution */
+ 
 void camif_hw_set_source_format(struct camif_dev *camif)
 {
 	struct v4l2_mbus_framefmt *mf = &camif->mbus_fmt;
@@ -124,7 +116,7 @@ void camif_hw_set_source_format(struct camif_dev *camif)
 	camif_write(camif, S3C_CAMIF_REG_CISRCFMT, cfg);
 }
 
-/* Set the camera host input window offsets (cropping) */
+ 
 void camif_hw_set_camera_crop(struct camif_dev *camif)
 {
 	struct v4l2_mbus_framefmt *mf = &camif->mbus_fmt;
@@ -132,7 +124,7 @@ void camif_hw_set_camera_crop(struct camif_dev *camif)
 	u32 hoff2, voff2;
 	u32 cfg;
 
-	/* Note: s3c244x requirement: left = f_width - rect.width / 2 */
+	 
 	cfg = camif_read(camif, S3C_CAMIF_REG_CIWDOFST);
 	cfg &= ~(CIWDOFST_OFST_MASK | CIWDOFST_WINOFSEN);
 	cfg |= (crop->left << 16) | crop->top;
@@ -158,12 +150,12 @@ void camif_hw_clear_fifo_overflow(struct camif_vp *vp)
 		cfg |= (CIWDOFST_CLROVCOFIY | CIWDOFST_CLROVCOFICB |
 			CIWDOFST_CLROVCOFICR);
 	else
-		cfg |= (/* CIWDOFST_CLROVPRFIY | */ CIWDOFST_CLROVPRFICB |
+		cfg |= (  CIWDOFST_CLROVPRFICB |
 			CIWDOFST_CLROVPRFICR);
 	camif_write(camif, S3C_CAMIF_REG_CIWDOFST, cfg);
 }
 
-/* Set video bus signals polarity */
+ 
 void camif_hw_set_camera_bus(struct camif_dev *camif)
 {
 	unsigned int flags = camif->pdata.sensor.flags;
@@ -178,13 +170,9 @@ void camif_hw_set_camera_bus(struct camif_dev *camif)
 
 	if (flags & V4L2_MBUS_VSYNC_ACTIVE_LOW)
 		cfg |= CIGCTRL_INVPOLVSYNC;
-	/*
-	 * HREF is normally high during frame active data
-	 * transmission and low during horizontal synchronization
-	 * period. Thus HREF active high means HSYNC active low.
-	 */
+	 
 	if (flags & V4L2_MBUS_HSYNC_ACTIVE_HIGH)
-		cfg |= CIGCTRL_INVPOLHREF; /* HREF active low */
+		cfg |= CIGCTRL_INVPOLHREF;  
 
 	if (camif->variant->ip_revision == S3C6410_CAMIF_IP_REV) {
 		if (flags & V4L2_MBUS_FIELD_EVEN_LOW)
@@ -264,7 +252,7 @@ void camif_hw_set_output_dma(struct camif_vp *vp)
 
 	if (camif->variant->ip_revision == S3C6410_CAMIF_IP_REV) {
 		struct camif_dma_offset *offset = &frame->dma_offset;
-		/* Set the input dma offsets. */
+		 
 		cfg = S3C_CISS_OFFS_INITIAL(offset->initial);
 		cfg |= S3C_CISS_OFFS_LINE(offset->line);
 		camif_write(camif, S3C_CAMIF_REG_CISSY(vp->id), cfg);
@@ -272,7 +260,7 @@ void camif_hw_set_output_dma(struct camif_vp *vp)
 		camif_write(camif, S3C_CAMIF_REG_CISSCR(vp->id), cfg);
 	}
 
-	/* Configure DMA burst values */
+	 
 	camif_get_dma_burst(frame->rect.width, fmt->ybpp, &ymburst, &yrburst);
 
 	cfg = camif_read(camif, S3C_CAMIF_REG_CICTRL(vp->id, vp->offset));
@@ -306,7 +294,7 @@ void camif_hw_set_target_format(struct camif_vp *vp)
 	cfg &= ~CITRGFMT_TARGETSIZE_MASK;
 
 	if (camif->variant->ip_revision == S3C244X_CAMIF_IP_REV) {
-		/* We currently support only YCbCr 4:2:2 at the camera input */
+		 
 		cfg |= CITRGFMT_IN422;
 		cfg &= ~CITRGFMT_OUT422;
 		if (vp->out_fmt->color == IMG_FMT_YCBCR422P)
@@ -329,14 +317,14 @@ void camif_hw_set_target_format(struct camif_vp *vp)
 		}
 	}
 
-	/* Rotation is only supported by s3c64xx */
+	 
 	if (vp->rotation == 90 || vp->rotation == 270)
 		cfg |= (frame->f_height << 16) | frame->f_width;
 	else
 		cfg |= (frame->f_width << 16) | frame->f_height;
 	camif_write(camif, S3C_CAMIF_REG_CITRGFMT(vp->id, vp->offset), cfg);
 
-	/* Target area, output pixel width * height */
+	 
 	cfg = camif_read(camif, S3C_CAMIF_REG_CITAREA(vp->id, vp->offset));
 	cfg &= ~CITAREA_MASK;
 	cfg |= (frame->f_width * frame->f_height);

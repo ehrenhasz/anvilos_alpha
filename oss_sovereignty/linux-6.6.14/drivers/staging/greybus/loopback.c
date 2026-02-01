@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Loopback bridge driver for the Greybus loopback module.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,7 +37,7 @@ struct gb_loopback_device {
 	u32 count;
 	size_t size_max;
 
-	/* We need to take a lock in atomic context */
+	 
 	spinlock_t lock;
 	wait_queue_head_t wq;
 };
@@ -68,7 +63,7 @@ struct gb_loopback {
 	wait_queue_head_t wq_completion;
 	atomic_t outstanding_operations;
 
-	/* Per connection stats */
+	 
 	ktime_t ts;
 	struct gb_loopback_stats latency;
 	struct gb_loopback_stats throughput;
@@ -103,7 +98,7 @@ static struct class loopback_class = {
 };
 static DEFINE_IDA(loopback_ida);
 
-/* Min/max values in jiffies */
+ 
 #define GB_LOOPBACK_TIMEOUT_MIN				1
 #define GB_LOOPBACK_TIMEOUT_MAX				10000
 
@@ -112,12 +107,12 @@ static DEFINE_IDA(loopback_ida);
 static unsigned int kfifo_depth = GB_LOOPBACK_FIFO_DEFAULT;
 module_param(kfifo_depth, uint, 0444);
 
-/* Maximum size of any one send data buffer we support */
+ 
 #define MAX_PACKET_SIZE (PAGE_SIZE * 2)
 
 #define GB_LOOPBACK_US_WAIT_MAX				1000000
 
-/* interface sysfs attributes */
+ 
 #define gb_loopback_ro_attr(field)				\
 static ssize_t field##_show(struct device *dev,			\
 			    struct device_attribute *attr,		\
@@ -134,7 +129,7 @@ static ssize_t name##_##field##_show(struct device *dev,	\
 			    char *buf)					\
 {									\
 	struct gb_loopback *gb = dev_get_drvdata(dev);			\
-	/* Report 0 for min and max if no transfer succeeded */		\
+	 		\
 	if (!gb->requests_completed)					\
 		return sprintf(buf, "0\n");				\
 	return sprintf(buf, "%" #type "\n", gb->name.field);		\
@@ -153,7 +148,7 @@ static ssize_t name##_avg_show(struct device *dev,		\
 	gb = dev_get_drvdata(dev);			\
 	stats = &gb->name;					\
 	count = stats->count ? stats->count : 1;			\
-	avg = stats->sum + count / 2000000; /* round closest */		\
+	avg = stats->sum + count / 2000000;  		\
 	rem = do_div(avg, count);					\
 	rem *= 1000000;							\
 	do_div(rem, count);						\
@@ -266,50 +261,43 @@ static void gb_loopback_check_attr(struct gb_loopback *gb)
 	}
 }
 
-/* Time to send and receive one message */
+ 
 gb_loopback_stats_attrs(latency);
-/* Number of requests sent per second on this cport */
+ 
 gb_loopback_stats_attrs(requests_per_second);
-/* Quantity of data sent and received on this cport */
+ 
 gb_loopback_stats_attrs(throughput);
-/* Latency across the UniPro link from APBridge's perspective */
+ 
 gb_loopback_stats_attrs(apbridge_unipro_latency);
-/* Firmware induced overhead in the GPBridge */
+ 
 gb_loopback_stats_attrs(gbphy_firmware_latency);
 
-/* Number of errors encountered during loop */
+ 
 gb_loopback_ro_attr(error);
-/* Number of requests successfully completed async */
+ 
 gb_loopback_ro_attr(requests_completed);
-/* Number of requests timed out async */
+ 
 gb_loopback_ro_attr(requests_timedout);
-/* Timeout minimum in useconds */
+ 
 gb_loopback_ro_attr(timeout_min);
-/* Timeout minimum in useconds */
+ 
 gb_loopback_ro_attr(timeout_max);
 
-/*
- * Type of loopback message to send based on protocol type definitions
- * 0 => Don't send message
- * 2 => Send ping message continuously (message without payload)
- * 3 => Send transfer message continuously (message with payload,
- *					   payload returned in response)
- * 4 => Send a sink message (message with payload, no payload in response)
- */
+ 
 gb_dev_loopback_rw_attr(type, d);
-/* Size of transfer message payload: 0-4096 bytes */
+ 
 gb_dev_loopback_rw_attr(size, u);
-/* Time to wait between two messages: 0-1000 ms */
+ 
 gb_dev_loopback_rw_attr(us_wait, d);
-/* Maximum iterations for a given operation: 1-(2^32-1), 0 implies infinite */
+ 
 gb_dev_loopback_rw_attr(iteration_max, u);
-/* The current index of the for (i = 0; i < iteration_max; i++) loop */
+ 
 gb_dev_loopback_ro_attr(iteration_count, false);
-/* A flag to indicate synchronous or asynchronous operations */
+ 
 gb_dev_loopback_rw_attr(async, u);
-/* Timeout of an individual asynchronous request */
+ 
 gb_dev_loopback_rw_attr(timeout, u);
-/* Maximum number of in-flight operations before back-off */
+ 
 gb_dev_loopback_rw_attr(outstanding_operations_max, u);
 
 static struct attribute *loopback_attrs[] = {
@@ -404,7 +392,7 @@ static int gb_loopback_operation_sync(struct gb_loopback *gb, int type,
 
 	te = ktime_get();
 
-	/* Calculate the total time the message took */
+	 
 	gb->elapsed_nsecs = gb_loopback_calc_latency(ts, te);
 
 out_put_operation:
@@ -452,11 +440,11 @@ static void gb_loopback_async_operation_callback(struct gb_operation *operation)
 	dev_dbg(&gb->connection->bundle->dev, "complete operation %d\n",
 		operation->id);
 
-	/* Wake up waiters */
+	 
 	atomic_dec(&op_async->gb->outstanding_operations);
 	wake_up(&gb->wq_completion);
 
-	/* Release resources */
+	 
 	gb_operation_put(operation);
 	kfree(op_async);
 }
@@ -657,7 +645,7 @@ static int gb_loopback_request_handler(struct gb_operation *operation)
 	struct device *dev = &connection->bundle->dev;
 	size_t len;
 
-	/* By convention, the AP initiates the version operation */
+	 
 	switch (operation->type) {
 	case GB_LOOPBACK_TYPE_PING:
 	case GB_LOOPBACK_TYPE_SINK:
@@ -667,7 +655,7 @@ static int gb_loopback_request_handler(struct gb_operation *operation)
 			dev_err(dev, "transfer request too small (%zu < %zu)\n",
 				operation->request->payload_size,
 				sizeof(*request));
-			return -EINVAL;	/* -EMSGSIZE */
+			return -EINVAL;	 
 		}
 		request = operation->request->payload;
 		len = le32_to_cpu(request->len);
@@ -700,7 +688,7 @@ static void gb_loopback_reset_stats(struct gb_loopback *gb)
 		.min = U32_MAX,
 	};
 
-	/* Reset per-connection stats */
+	 
 	memcpy(&gb->latency, &reset,
 	       sizeof(struct gb_loopback_stats));
 	memcpy(&gb->throughput, &reset,
@@ -712,7 +700,7 @@ static void gb_loopback_reset_stats(struct gb_loopback *gb)
 	memcpy(&gb->gbphy_firmware_latency, &reset,
 	       sizeof(struct gb_loopback_stats));
 
-	/* Should be initialized at least once per transaction set */
+	 
 	gb->apbridge_latency_ts = 0;
 	gb->gbphy_latency_ts = 0;
 	gb->ts = ktime_set(0, 0);
@@ -778,16 +766,16 @@ static void gb_loopback_calculate_latency_stats(struct gb_loopback *gb)
 {
 	u32 lat;
 
-	/* Express latency in terms of microseconds */
+	 
 	lat = gb_loopback_nsec_to_usec_latency(gb->elapsed_nsecs);
 
-	/* Log latency stastic */
+	 
 	gb_loopback_update_stats(&gb->latency, lat);
 
-	/* Raw latency log on a per thread basis */
+	 
 	kfifo_in(&gb->kfifo_lat, (unsigned char *)&lat, sizeof(lat));
 
-	/* Log the firmware supplied latency values */
+	 
 	gb_loopback_update_stats(&gb->apbridge_unipro_latency,
 				 gb->apbridge_latency_ts);
 	gb_loopback_update_stats(&gb->gbphy_firmware_latency,
@@ -858,21 +846,21 @@ static int gb_loopback_fn(void *data)
 		if (kthread_should_stop())
 			break;
 
-		/* Limit the maximum number of in-flight async operations */
+		 
 		gb_loopback_async_wait_to_send(gb);
 		if (kthread_should_stop())
 			break;
 
 		mutex_lock(&gb->mutex);
 
-		/* Optionally terminate */
+		 
 		if (gb->send_count == gb->iteration_max) {
 			mutex_unlock(&gb->mutex);
 
-			/* Wait for synchronous and asynchronous completion */
+			 
 			gb_loopback_async_wait_all(gb);
 
-			/* Mark complete unless user-space has poked us */
+			 
 			mutex_lock(&gb->mutex);
 			if (gb->iteration_count == gb->iteration_max) {
 				gb->type = 0;
@@ -893,7 +881,7 @@ static int gb_loopback_fn(void *data)
 		if (ktime_to_ns(gb->ts) == 0)
 			gb->ts = ktime_get();
 
-		/* Else operations to perform */
+		 
 		if (gb->async) {
 			if (type == GB_LOOPBACK_TYPE_PING)
 				error = gb_loopback_async_ping(gb);
@@ -907,7 +895,7 @@ static int gb_loopback_fn(void *data)
 				gb->iteration_count++;
 			}
 		} else {
-			/* We are effectively single threaded here */
+			 
 			if (type == GB_LOOPBACK_TYPE_PING)
 				error = gb_loopback_sync_ping(gb);
 			else if (type == GB_LOOPBACK_TYPE_TRANSFER)
@@ -1007,12 +995,12 @@ static int gb_loopback_probe(struct gb_bundle *bundle,
 	atomic_set(&gb->outstanding_operations, 0);
 	gb_loopback_reset_stats(gb);
 
-	/* Reported values to user-space for min/max timeouts */
+	 
 	gb->timeout_min = jiffies_to_usecs(GB_LOOPBACK_TIMEOUT_MIN);
 	gb->timeout_max = jiffies_to_usecs(GB_LOOPBACK_TIMEOUT_MAX);
 
 	if (!gb_dev.count) {
-		/* Calculate maximum payload */
+		 
 		gb_dev.size_max = gb_operation_get_payload_size_max(connection);
 		if (gb_dev.size_max <=
 			sizeof(struct gb_loopback_transfer_request)) {
@@ -1022,7 +1010,7 @@ static int gb_loopback_probe(struct gb_bundle *bundle,
 		gb_dev.size_max -= sizeof(struct gb_loopback_transfer_request);
 	}
 
-	/* Create per-connection sysfs and debugfs data-points */
+	 
 	snprintf(name, sizeof(name), "raw_latency_%s",
 		 dev_name(&connection->bundle->dev));
 	gb->file = debugfs_create_file(name, S_IFREG | 0444, gb_dev.root, gb,
@@ -1048,13 +1036,13 @@ static int gb_loopback_probe(struct gb_bundle *bundle,
 	}
 	gb->dev = dev;
 
-	/* Allocate kfifo */
+	 
 	if (kfifo_alloc(&gb->kfifo_lat, kfifo_depth * sizeof(u32),
 			GFP_KERNEL)) {
 		retval = -ENOMEM;
 		goto out_conn;
 	}
-	/* Fork worker thread */
+	 
 	mutex_init(&gb->mutex);
 	gb->task = kthread_run(gb_loopback_fn, gb, "gb_loopback");
 	if (IS_ERR(gb->task)) {
@@ -1109,11 +1097,7 @@ static void gb_loopback_disconnect(struct gb_bundle *bundle)
 	gb_connection_latency_tag_disable(gb->connection);
 	debugfs_remove(gb->file);
 
-	/*
-	 * FIXME: gb_loopback_async_wait_all() is redundant now, as connection
-	 * is disabled at the beginning and so we can't have any more
-	 * incoming/outgoing requests.
-	 */
+	 
 	gb_loopback_async_wait_all(gb);
 
 	spin_lock_irqsave(&gb_dev.lock, flags);

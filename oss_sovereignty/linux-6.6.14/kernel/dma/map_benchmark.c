@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 HiSilicon Limited.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -49,12 +47,7 @@ static int map_benchmark_thread(void *data)
 		ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
 		ktime_t map_delta, unmap_delta;
 
-		/*
-		 * for a non-coherent device, if we don't stain them in the
-		 * cache, this will give an underestimate of the real-world
-		 * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
-		 * 66 means evertything goes well! 66 is lucky.
-		 */
+		 
 		if (map->dir != DMA_FROM_DEVICE)
 			memset(buf, 0x66, size);
 
@@ -69,7 +62,7 @@ static int map_benchmark_thread(void *data)
 		map_etime = ktime_get();
 		map_delta = ktime_sub(map_etime, map_stime);
 
-		/* Pretend DMA is transmitting */
+		 
 		ndelay(map->bparam.dma_trans_ns);
 
 		unmap_stime = ktime_get();
@@ -77,7 +70,7 @@ static int map_benchmark_thread(void *data)
 		unmap_etime = ktime_get();
 		unmap_delta = ktime_sub(unmap_etime, unmap_stime);
 
-		/* calculate sum and sum of squares */
+		 
 
 		map_100ns = div64_ul(map_delta,  100);
 		unmap_100ns = div64_ul(unmap_delta, 100);
@@ -125,7 +118,7 @@ static int do_map_benchmark(struct map_benchmark_data *map)
 			kthread_bind_mask(tsk[i], cpu_mask);
 	}
 
-	/* clear the old value in the previous benchmark */
+	 
 	atomic64_set(&map->sum_map_100ns, 0);
 	atomic64_set(&map->sum_unmap_100ns, 0);
 	atomic64_set(&map->sum_sq_map, 0);
@@ -139,7 +132,7 @@ static int do_map_benchmark(struct map_benchmark_data *map)
 
 	msleep_interruptible(map->bparam.seconds * 1000);
 
-	/* wait for the completion of benchmark threads */
+	 
 	for (i = 0; i < threads; i++) {
 		ret = kthread_stop(tsk[i]);
 		if (ret)
@@ -154,11 +147,11 @@ static int do_map_benchmark(struct map_benchmark_data *map)
 		u64 sum_sq_map = atomic64_read(&map->sum_sq_map);
 		u64 sum_sq_unmap = atomic64_read(&map->sum_sq_unmap);
 
-		/* average latency */
+		 
 		map->bparam.avg_map_100ns = div64_u64(sum_map, loops);
 		map->bparam.avg_unmap_100ns = div64_u64(sum_unmap, loops);
 
-		/* standard deviation of latency */
+		 
 		map_variance = div64_u64(sum_sq_map, loops) -
 				map->bparam.avg_map_100ns *
 				map->bparam.avg_map_100ns;
@@ -245,12 +238,7 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
 
 		ret = do_map_benchmark(map);
 
-		/*
-		 * restore the original dma_mask as many devices' dma_mask are
-		 * set by architectures, acpi, busses. When we bind them back
-		 * to their original drivers, those drivers shouldn't see
-		 * dma_mask changed by benchmark
-		 */
+		 
 		dma_set_mask(map->dev, old_dma_mask);
 		break;
 	default:
@@ -292,10 +280,7 @@ static int __map_benchmark_probe(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * we only permit a device bound with this driver, 2nd probe
-	 * will fail
-	 */
+	 
 	entry = debugfs_create_file("dma_map_benchmark", 0600, NULL, map,
 			&map_benchmark_fops);
 	if (IS_ERR(entry))

@@ -1,17 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple RTKit IPC library
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include "rtkit-internal.h"
 
 enum {
-	APPLE_RTKIT_PWR_STATE_OFF = 0x00, /* power off, cannot be restarted */
-	APPLE_RTKIT_PWR_STATE_SLEEP = 0x01, /* sleeping, can be restarted */
-	APPLE_RTKIT_PWR_STATE_IDLE = 0x201, /* sleeping, retain state */
-	APPLE_RTKIT_PWR_STATE_QUIESCED = 0x10, /* running but no communication */
-	APPLE_RTKIT_PWR_STATE_ON = 0x20, /* normal operating state */
+	APPLE_RTKIT_PWR_STATE_OFF = 0x00,  
+	APPLE_RTKIT_PWR_STATE_SLEEP = 0x01,  
+	APPLE_RTKIT_PWR_STATE_IDLE = 0x201,  
+	APPLE_RTKIT_PWR_STATE_QUIESCED = 0x10,  
+	APPLE_RTKIT_PWR_STATE_ON = 0x20,  
 };
 
 enum {
@@ -177,11 +174,11 @@ static void apple_rtkit_management_rx_epmap(struct apple_rtkit *rtk, u64 msg)
 
 	for_each_set_bit(ep, rtk->endpoints, APPLE_RTKIT_APP_ENDPOINT_START) {
 		switch (ep) {
-		/* the management endpoint is started by default */
+		 
 		case APPLE_RTKIT_EP_MGMT:
 			break;
 
-		/* without starting these RTKit refuses to boot */
+		 
 		case APPLE_RTKIT_EP_SYSLOG:
 		case APPLE_RTKIT_EP_CRASHLOG:
 		case APPLE_RTKIT_EP_DEBUG:
@@ -355,11 +352,7 @@ static void apple_rtkit_crashlog_rx(struct apple_rtkit *rtk, u64 msg)
 
 	dev_err(rtk->dev, "RTKit: co-processor has crashed\n");
 
-	/*
-	 * create a shadow copy here to make sure the co-processor isn't able
-	 * to change the log while we're dumping it. this also ensures
-	 * the buffer is in normal memory and not iomem for e.g. the SMC
-	 */
+	 
 	bfr = kzalloc(rtk->crashlog_buffer.size, GFP_KERNEL);
 	if (bfr) {
 		apple_rtkit_memcpy(rtk, bfr, &rtk->crashlog_buffer, 0,
@@ -385,7 +378,7 @@ static void apple_rtkit_ioreport_rx(struct apple_rtkit *rtk, u64 msg)
 		apple_rtkit_common_rx_get_buffer(rtk, &rtk->ioreport_buffer,
 						 APPLE_RTKIT_EP_IOREPORT, msg);
 		break;
-	/* unknown, must be ACKed or the co-processor will hang */
+	 
 	case 0x8:
 	case 0xc:
 		apple_rtkit_send_message(rtk, APPLE_RTKIT_EP_IOREPORT, msg,
@@ -557,11 +550,7 @@ static void apple_rtkit_rx(struct mbox_client *cl, void *mssg)
 	struct apple_rtkit_rx_work *work;
 	u8 ep = msg->msg1;
 
-	/*
-	 * The message was read from a MMIO FIFO and we have to make
-	 * sure all reads from buffers sent with that message happen
-	 * afterwards.
-	 */
+	 
 	dma_rmb();
 
 	if (!test_bit(ep, rtk->endpoints))
@@ -624,11 +613,7 @@ int apple_rtkit_send_message(struct apple_rtkit *rtk, u8 ep, u64 message,
 	msg->mbox_msg.msg1 = ep;
 	msg->completion = completion;
 
-	/*
-	 * The message will be sent with a MMIO write. We need the barrier
-	 * here to ensure any previous writes to buffers are visible to the
-	 * device before that MMIO write happens.
-	 */
+	 
 	dma_wmb();
 
 	ret = mbox_send_message(rtk->mbox_chan, &msg->mbox_msg);
@@ -781,7 +766,7 @@ static int apple_rtkit_wait_for_completion(struct completion *c)
 
 int apple_rtkit_reinit(struct apple_rtkit *rtk)
 {
-	/* make sure we don't handle any messages while reinitializing */
+	 
 	mbox_free_channel(rtk->mbox_chan);
 	flush_workqueue(rtk->wq);
 
@@ -881,7 +866,7 @@ int apple_rtkit_shutdown(struct apple_rtkit *rtk)
 {
 	int ret;
 
-	/* if OFF is used here the co-processor will not wake up again */
+	 
 	ret = apple_rtkit_set_ap_power_state(rtk,
 					     APPLE_RTKIT_PWR_STATE_QUIESCED);
 	if (ret)
@@ -899,7 +884,7 @@ int apple_rtkit_idle(struct apple_rtkit *rtk)
 {
 	int ret;
 
-	/* if OFF is used here the co-processor will not wake up again */
+	 
 	ret = apple_rtkit_set_ap_power_state(rtk,
 					     APPLE_RTKIT_PWR_STATE_IDLE);
 	if (ret)
@@ -948,10 +933,7 @@ int apple_rtkit_wake(struct apple_rtkit *rtk)
 
 	reinit_completion(&rtk->iop_pwr_ack_completion);
 
-	/*
-	 * Use open-coded apple_rtkit_set_iop_power_state since apple_rtkit_boot
-	 * will wait for the completion anyway.
-	 */
+	 
 	msg = FIELD_PREP(APPLE_RTKIT_MGMT_PWR_STATE, APPLE_RTKIT_PWR_STATE_ON);
 	apple_rtkit_management_send(rtk, APPLE_RTKIT_MGMT_SET_IOP_PWR_STATE,
 				    msg);

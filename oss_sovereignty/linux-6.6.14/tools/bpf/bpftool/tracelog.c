@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (c) 2015-2017 Daniel Borkmann */
-/* Copyright (c) 2018 Netronome Systems, Inc. */
+
+ 
+ 
 
 #include <errno.h>
 #include <limits.h>
@@ -77,7 +77,7 @@ static bool get_tracefs_pipe(char *mnt)
 	if (!fp)
 		return false;
 
-	/* Allow room for NULL terminating byte and pipe file name */
+	 
 	snprintf(format, sizeof(format), "%%*s %%%zds %%99s %%*s %%*d %%*d\\n",
 		 PATH_MAX - strlen(pipe_name) - 1);
 	while (fscanf(fp, format, mnt, type) == 2)
@@ -87,7 +87,7 @@ static bool get_tracefs_pipe(char *mnt)
 		}
 	fclose(fp);
 
-	/* The string from fscanf() might be truncated, check mnt is valid */
+	 
 	if (found && validate_tracefs_mnt(mnt, TRACEFS_MAGIC))
 		goto exit_found;
 
@@ -95,11 +95,7 @@ static bool get_tracefs_pipe(char *mnt)
 		return false;
 
 	p_info("could not find tracefs, attempting to mount it now");
-	/* Most of the time, tracefs is automatically mounted by debugfs at
-	 * /sys/kernel/debug/tracing when we try to access it. If we could not
-	 * find it, it is likely that debugfs is not mounted. Let's give one
-	 * attempt at mounting just tracefs at /sys/kernel/tracing.
-	 */
+	 
 	strcpy(mnt, known_mnts[1]);
 	if (mount_tracefs(mnt))
 		return false;

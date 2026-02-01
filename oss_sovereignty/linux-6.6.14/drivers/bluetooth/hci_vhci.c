@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth virtual HCI driver
- *
- *  Copyright (C) 2000-2001  Qualcomm Incorporated
- *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2004-2006  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <asm/unaligned.h>
@@ -284,7 +277,7 @@ static int vhci_setup(struct hci_dev *hdev)
 
 static void vhci_coredump(struct hci_dev *hdev)
 {
-	/* No need to do anything */
+	 
 }
 
 static void vhci_coredump_hdr(struct hci_dev *hdev, struct sk_buff *skb)
@@ -345,7 +338,7 @@ static ssize_t force_devcd_write(struct file *file, const char __user *user_buf,
 
 	hci_devcd_register(hdev, vhci_coredump, vhci_coredump_hdr, NULL);
 
-	/* Force the devcoredump timeout */
+	 
 	if (dump_data.timeout)
 		force_devcd_timeout(hdev, dump_data.timeout);
 
@@ -366,7 +359,7 @@ static ssize_t force_devcd_write(struct file *file, const char __user *user_buf,
 		hci_devcd_abort(hdev);
 		break;
 	case HCI_DEVCOREDUMP_TIMEOUT:
-		/* Do nothing */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -389,13 +382,13 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
 	if (data->hdev)
 		return -EBADFD;
 
-	/* bits 0-1 are dev_type (Primary or AMP) */
+	 
 	dev_type = opcode & 0x03;
 
 	if (dev_type != HCI_PRIMARY && dev_type != HCI_AMP)
 		return -EINVAL;
 
-	/* bits 2-5 are reserved (must be zero) */
+	 
 	if (opcode & 0x3c)
 		return -EINVAL;
 
@@ -425,11 +418,11 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
 	hdev->setup = vhci_setup;
 	set_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks);
 
-	/* bit 6 is for external configuration */
+	 
 	if (opcode & 0x40)
 		set_bit(HCI_QUIRK_EXTERNAL_CONFIG, &hdev->quirks);
 
-	/* bit 7 is for raw device */
+	 
 	if (opcode & 0x80)
 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
 

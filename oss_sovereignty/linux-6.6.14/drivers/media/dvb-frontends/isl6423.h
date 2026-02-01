@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Intersil ISL6423 SEC and LNB Power supply controller
-
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-*/
+ 
+ 
 
 #ifndef __ISL_6423_H
 #define __ISL_6423_H
@@ -46,6 +41,6 @@ static inline struct dvb_frontend *isl6423_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_ISL6423 */
+#endif  
 
-#endif /* __ISL_6423_H */
+#endif  

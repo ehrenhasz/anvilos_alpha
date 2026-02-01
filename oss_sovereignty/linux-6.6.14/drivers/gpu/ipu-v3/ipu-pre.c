@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Lucas Stach, Pengutronix
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <linux/clk.h>
@@ -141,10 +139,10 @@ int ipu_pre_get(struct ipu_pre *pre)
 	if (pre->in_use)
 		return -EBUSY;
 
-	/* first get the engine out of reset and remove clock gating */
+	 
 	writel(0, pre->regs + IPU_PRE_CTRL);
 
-	/* init defaults that should be applied to all streams */
+	 
 	val = IPU_PRE_CTRL_HANDSHAKE_ABORT_SKIP_EN |
 	      IPU_PRE_CTRL_HANDSHAKE_EN |
 	      IPU_PRE_CTRL_TPR_REST_SEL |
@@ -170,7 +168,7 @@ void ipu_pre_configure(struct ipu_pre *pre, unsigned int width,
 	u32 active_bpp = info->cpp[0] >> 1;
 	u32 val;
 
-	/* calculate safe window for ctrl register updates */
+	 
 	if (modifier == DRM_FORMAT_MOD_LINEAR)
 		pre->safe_window_end = height - 2;
 	else
@@ -211,7 +209,7 @@ void ipu_pre_configure(struct ipu_pre *pre, unsigned int width,
 	val = readl(pre->regs + IPU_PRE_TPR_CTRL);
 	val &= ~IPU_PRE_TPR_CTRL_TILE_FORMAT_MASK;
 	if (modifier != DRM_FORMAT_MOD_LINEAR) {
-		/* only support single buffer formats for now */
+		 
 		val |= IPU_PRE_TPR_CTRL_TILE_FORMAT_SINGLE_BUF;
 		if (modifier == DRM_FORMAT_MOD_VIVANTE_SUPER_TILED)
 			val |= IPU_PRE_TPR_CTRL_TILE_FORMAT_SUPER_TILED;
@@ -289,11 +287,7 @@ static int ipu_pre_probe(struct platform_device *pdev)
 	if (!pre->iram)
 		return -EPROBE_DEFER;
 
-	/*
-	 * Allocate IRAM buffer with maximum size. This could be made dynamic,
-	 * but as there is no other user of this IRAM region and we can fit all
-	 * max sized buffers into it, there is no need yet.
-	 */
+	 
 	pre->buffer_virt = gen_pool_dma_alloc(pre->iram, IPU_PRE_MAX_WIDTH *
 					      IPU_PRE_NUM_SCANLINES * 4,
 					      &pre->buffer_paddr);
@@ -331,7 +325,7 @@ static int ipu_pre_remove(struct platform_device *pdev)
 
 static const struct of_device_id ipu_pre_dt_ids[] = {
 	{ .compatible = "fsl,imx6qp-pre", },
-	{ /* sentinel */ },
+	{   },
 };
 
 struct platform_driver ipu_pre_drv = {

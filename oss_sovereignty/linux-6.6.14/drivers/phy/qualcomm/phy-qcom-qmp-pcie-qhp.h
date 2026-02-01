@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_PCIE_QHP_H_
 #define QCOM_PHY_QMP_PCIE_QHP_H_
 
-/* PCIE GEN3 COM registers */
+ 
 #define PCIE_GEN3_QHP_COM_SSC_EN_CENTER			0x14
 #define PCIE_GEN3_QHP_COM_SSC_PER1			0x20
 #define PCIE_GEN3_QHP_COM_SSC_PER2			0x24
@@ -53,7 +51,7 @@
 #define PCIE_GEN3_QHP_COM_VREGCLK_DIV1			0x228
 #define PCIE_GEN3_QHP_COM_VREGCLK_DIV2			0x22c
 
-/* PCIE GEN3 QHP Lane registers */
+ 
 #define PCIE_GEN3_QHP_L0_DRVR_CTRL0			0xc
 #define PCIE_GEN3_QHP_L0_DRVR_CTRL1			0x10
 #define PCIE_GEN3_QHP_L0_DRVR_CTRL2			0x14
@@ -111,7 +109,7 @@
 #define PCIE_GEN3_QHP_L0_DLL_HIGHDATARATE		0x2c4
 #define PCIE_GEN3_QHP_L0_RX_RESETCODE_OFFSET		0x2cc
 
-/* PCIE GEN3 PCS registers */
+ 
 #define PCIE_GEN3_QHP_PHY_TXMGN_MAIN_V0_M3P5DB		0x2c
 #define PCIE_GEN3_QHP_PHY_TXMGN_POST_V0_M3P5DB		0x40
 #define PCIE_GEN3_QHP_PHY_TXMGN_MAIN_V0_M6DB		0x54

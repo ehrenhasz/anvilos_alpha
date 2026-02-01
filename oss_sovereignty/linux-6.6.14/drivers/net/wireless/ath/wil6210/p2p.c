@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "wil6210.h"
 #include "wmi.h"
@@ -85,7 +82,7 @@ int wil_p2p_search(struct wil6210_vif *vif,
 		goto out_stop;
 	}
 
-	/* Set application IE to probe request and probe response */
+	 
 	rc = wmi_set_ie(vif, WMI_FRAME_PROBE_REQ,
 			request->ie_len, request->ie);
 	if (rc) {
@@ -93,9 +90,7 @@ int wil_p2p_search(struct wil6210_vif *vif,
 		goto out_stop;
 	}
 
-	/* supplicant doesn't provide Probe Response IEs. As a workaround -
-	 * re-use Probe Request IEs
-	 */
+	 
 	rc = wmi_set_ie(vif, WMI_FRAME_PROBE_RESP,
 			request->ie_len, request->ie);
 	if (rc) {
@@ -181,7 +176,7 @@ u8 wil_p2p_stop_discovery(struct wil6210_vif *vif)
 
 	if (p2p->discovery_started) {
 		if (p2p->pending_listen_wdev) {
-			/* discovery not really started, only pending */
+			 
 			p2p->pending_listen_wdev = NULL;
 		} else {
 			del_timer_sync(&p2p->discovery_timer);
@@ -305,7 +300,7 @@ void wil_p2p_delayed_listen_work(struct work_struct *work)
 
 	mutex_lock(&wil->vif_mutex);
 	if (vif->scan_request) {
-		/* another scan started, wait again... */
+		 
 		mutex_unlock(&wil->vif_mutex);
 		goto out;
 	}
@@ -350,24 +345,24 @@ void wil_p2p_stop_radio_operations(struct wil6210_priv *wil)
 		goto out;
 
 	if (!p2p->discovery_started) {
-		/* Regular scan on the p2p device */
+		 
 		if (vif->scan_request &&
 		    vif->scan_request->wdev == wil->p2p_wdev)
 			wil_abort_scan(vif, true);
 		goto out;
 	}
 
-	/* Search or listen on p2p device */
+	 
 	mutex_unlock(&wil->vif_mutex);
 	wil_p2p_stop_discovery(vif);
 	mutex_lock(&wil->vif_mutex);
 
 	if (vif->scan_request) {
-		/* search */
+		 
 		cfg80211_scan_done(vif->scan_request, &info);
 		vif->scan_request = NULL;
 	} else {
-		/* listen */
+		 
 		cfg80211_remain_on_channel_expired(wil->radio_wdev,
 						   p2p->cookie,
 						   &p2p->listen_chan,

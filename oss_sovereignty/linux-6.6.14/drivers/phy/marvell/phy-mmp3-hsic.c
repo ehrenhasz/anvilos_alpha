@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2020 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include "dump-insn.h"
 
-/* Fallback code */
+ 
 
 __weak
 const char *dump_insn(struct perf_insn *x __maybe_unused,

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Collabora
- *
- * Author: Benjamin Gaignard <benjamin.gaignard@collabora.com>
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_VPU981_REGS_H_
 #define _ROCKCHIP_VPU981_REGS_H_
@@ -474,4 +470,4 @@
 #define AV1_PP_OUT_LU			(AV1_SWREG(326))
 #define AV1_PP_OUT_CH			(AV1_SWREG(328))
 
-#endif /* _ROCKCHIP_VPU981_REGS_H_ */
+#endif  

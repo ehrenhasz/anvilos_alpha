@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2017 Mellanox Technologies Ltd. All rights reserved.
- */
+
+ 
 
 #include "rxe.h"
 #include "rxe_hw_counters.h"

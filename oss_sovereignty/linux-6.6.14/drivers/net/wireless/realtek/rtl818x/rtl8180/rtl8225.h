@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef RTL8180_RTL8225_H
 #define RTL8180_RTL8225_H
 
@@ -21,4 +21,4 @@ static inline void rtl8225_write_phy_cck(struct ieee80211_hw *dev,
 	rtl8180_write_phy(dev, addr, data | 0x10000);
 }
 
-#endif /* RTL8180_RTL8225_H */
+#endif  

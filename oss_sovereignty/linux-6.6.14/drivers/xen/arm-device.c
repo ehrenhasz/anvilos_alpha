@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Linaro Limited, Shannon Zhao
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/acpi.h>
@@ -71,11 +69,7 @@ static int xen_map_device_mmio(const struct resource *resources,
 		}
 
 		for (j = 0; j < nr; j++) {
-			/*
-			 * The regions are always mapped 1:1 to DOM0 and this is
-			 * fine because the memory map for DOM0 is the same as
-			 * the host (except for the RAM).
-			 */
+			 
 			gpfns[j] = XEN_PFN_DOWN(r->start) + j;
 			idxs[j] = XEN_PFN_DOWN(r->start) + j;
 		}

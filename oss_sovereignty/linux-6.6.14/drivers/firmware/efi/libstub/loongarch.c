@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author: Yun Liu <liuyun@loongson.cn>
- *         Huacai Chen <chenhuacai@loongson.cn>
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <asm/efi.h>
 #include <asm/addrspace.h>
@@ -26,11 +22,7 @@ static efi_status_t exit_boot_func(struct efi_boot_memmap *map, void *priv)
 {
 	struct exit_boot_struct *p = priv;
 
-	/*
-	 * Update the memory map with virtual addresses. The function will also
-	 * populate @runtime_map with copies of just the EFI_MEMORY_RUNTIME
-	 * entries so that we can pass it straight to SetVirtualAddressMap()
-	 */
+	 
 	efi_get_virtmap(map->map, map->map_size, map->desc_size,
 			p->runtime_map, &p->runtime_entry_count);
 
@@ -64,12 +56,12 @@ efi_status_t efi_boot_kernel(void *handle, efi_loaded_image_t *image,
 	if (status != EFI_SUCCESS)
 		return status;
 
-	/* Install the new virtual address map */
+	 
 	efi_rt_call(set_virtual_address_map,
 		    priv.runtime_entry_count * desc_size, desc_size,
 		    desc_ver, priv.runtime_map);
 
-	/* Config Direct Mapping */
+	 
 	csr_write64(CSR_DMW0_INIT, LOONGARCH_CSR_DMWIN0);
 	csr_write64(CSR_DMW1_INIT, LOONGARCH_CSR_DMWIN1);
 

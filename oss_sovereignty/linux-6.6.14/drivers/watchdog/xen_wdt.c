@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Xen Watchdog Driver
- *
- *	(c) Copyright 2010 Novell, Inc.
- */
+
+ 
 
 #define DRV_NAME	"xen_wdt"
 
@@ -26,7 +22,7 @@ static struct platform_device *platform_device;
 static struct sched_watchdog wdt;
 static time64_t wdt_expires;
 
-#define WATCHDOG_TIMEOUT 60 /* in seconds */
+#define WATCHDOG_TIMEOUT 60  
 static unsigned int timeout;
 module_param(timeout, uint, S_IRUGO);
 MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds "

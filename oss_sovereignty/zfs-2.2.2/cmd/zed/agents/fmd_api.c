@@ -1,38 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
- *
- * Copyright (c) 2016, Intel Corporation.
- */
+ 
+ 
 
-/*
- * This file implements the minimal FMD module API required to support the
- * fault logic modules in ZED. This support includes module registration,
- * memory allocation, module property accessors, basic case management,
- * one-shot timers and SERD engines.
- *
- * In the ZED runtime, the modules are called from a single thread so no
- * locking is required in this emulated FMD environment.
- */
+ 
 
 #include <sys/types.h>
 #include <sys/fm/protocol.h>
@@ -48,52 +17,44 @@
 #include "../zed_log.h"
 
 typedef struct fmd_modstat {
-	fmd_stat_t	ms_accepted;	/* total events accepted by module */
-	fmd_stat_t	ms_caseopen;	/* cases currently open */
-	fmd_stat_t	ms_casesolved;	/* total cases solved by module */
-	fmd_stat_t	ms_caseclosed;	/* total cases closed by module */
+	fmd_stat_t	ms_accepted;	 
+	fmd_stat_t	ms_caseopen;	 
+	fmd_stat_t	ms_casesolved;	 
+	fmd_stat_t	ms_caseclosed;	 
 } fmd_modstat_t;
 
 typedef struct fmd_module {
-	const char	*mod_name;	/* basename of module (ro) */
-	const fmd_hdl_info_t *mod_info;	/* module info registered with handle */
-	void		*mod_spec;	/* fmd_hdl_get/setspecific data value */
-	fmd_stat_t	*mod_ustat;	/* module specific custom stats */
-	uint_t		mod_ustat_cnt;	/* count of ustat stats */
-	fmd_modstat_t	mod_stats;	/* fmd built-in per-module statistics */
-	fmd_serd_hash_t	mod_serds;	/* hash of serd engs owned by module */
-	char		*mod_vers;	/* a copy of module version string */
+	const char	*mod_name;	 
+	const fmd_hdl_info_t *mod_info;	 
+	void		*mod_spec;	 
+	fmd_stat_t	*mod_ustat;	 
+	uint_t		mod_ustat_cnt;	 
+	fmd_modstat_t	mod_stats;	 
+	fmd_serd_hash_t	mod_serds;	 
+	char		*mod_vers;	 
 } fmd_module_t;
 
-/*
- * ZED has two FMD hardwired module instances
- */
+ 
 fmd_module_t	zfs_retire_module;
 fmd_module_t	zfs_diagnosis_module;
 
-/*
- * Enable a reasonable set of defaults for libumem debugging on DEBUG builds.
- */
+ 
 
 #ifdef DEBUG
 const char *
 _umem_debug_init(void)
 {
-	return ("default,verbose"); /* $UMEM_DEBUG setting */
+	return ("default,verbose");  
 }
 
 const char *
 _umem_logging_init(void)
 {
-	return ("fail,contents"); /* $UMEM_LOGGING setting */
+	return ("fail,contents");  
 }
 #endif
 
-/*
- * Register a module with fmd and finish module initialization.
- * Returns an integer indicating whether it succeeded (zero) or
- * failed (non-zero).
- */
+ 
 int
 fmd_hdl_register(fmd_hdl_t *hdl, int version, const fmd_hdl_info_t *mip)
 {
@@ -101,10 +62,10 @@ fmd_hdl_register(fmd_hdl_t *hdl, int version, const fmd_hdl_info_t *mip)
 	fmd_module_t *mp = (fmd_module_t *)hdl;
 
 	mp->mod_info = mip;
-	mp->mod_name = mip->fmdi_desc + 4;	/* drop 'ZFS ' prefix */
+	mp->mod_name = mip->fmdi_desc + 4;	 
 	mp->mod_spec = NULL;
 
-	/* bare minimum module stats */
+	 
 	(void) strcpy(mp->mod_stats.ms_accepted.fmds_name, "fmd.accepted");
 	(void) strcpy(mp->mod_stats.ms_caseopen.fmds_name, "fmd.caseopen");
 	(void) strcpy(mp->mod_stats.ms_casesolved.fmds_name, "fmd.casesolved");
@@ -124,7 +85,7 @@ fmd_hdl_unregister(fmd_hdl_t *hdl)
 	fmd_modstat_t *msp = &mp->mod_stats;
 	const fmd_hdl_ops_t *ops = mp->mod_info->fmdi_ops;
 
-	/* dump generic module stats */
+	 
 	fmd_hdl_debug(hdl, "%s: %llu", msp->ms_accepted.fmds_name,
 	    msp->ms_accepted.fmds_value.ui64);
 	if (ops->fmdo_close != NULL) {
@@ -136,7 +97,7 @@ fmd_hdl_unregister(fmd_hdl_t *hdl)
 		    msp->ms_caseclosed.fmds_value.ui64);
 	}
 
-	/* dump module specific stats */
+	 
 	if (mp->mod_ustat != NULL) {
 		int i;
 
@@ -152,11 +113,7 @@ fmd_hdl_unregister(fmd_hdl_t *hdl)
 	fmd_hdl_debug(hdl, "unregister module");
 }
 
-/*
- * fmd_hdl_setspecific() is used to associate a data pointer with
- * the specified handle for the duration of the module's lifetime.
- * This pointer can be retrieved using fmd_hdl_getspecific().
- */
+ 
 void
 fmd_hdl_setspecific(fmd_hdl_t *hdl, void *spec)
 {
@@ -165,10 +122,7 @@ fmd_hdl_setspecific(fmd_hdl_t *hdl, void *spec)
 	mp->mod_spec = spec;
 }
 
-/*
- * Return the module-specific data pointer previously associated
- * with the handle using fmd_hdl_setspecific().
- */
+ 
 void *
 fmd_hdl_getspecific(fmd_hdl_t *hdl)
 {
@@ -198,9 +152,7 @@ fmd_hdl_free(fmd_hdl_t *hdl, void *data, size_t size)
 	umem_free(data, size);
 }
 
-/*
- * Record a module debug message using the specified format.
- */
+ 
 void
 fmd_hdl_debug(fmd_hdl_t *hdl, const char *format, ...)
 {
@@ -212,27 +164,23 @@ fmd_hdl_debug(fmd_hdl_t *hdl, const char *format, ...)
 	(void) vsnprintf(message, sizeof (message), format, vargs);
 	va_end(vargs);
 
-	/* prefix message with module name */
+	 
 	zed_log_msg(LOG_INFO, "%s: %s", mp->mod_name, message);
 }
 
-/* Property Retrieval */
+ 
 
 int32_t
 fmd_prop_get_int32(fmd_hdl_t *hdl, const char *name)
 {
 	(void) hdl;
 
-	/*
-	 * These can be looked up in mp->modinfo->fmdi_props
-	 * For now we just hard code for phase 2. In the
-	 * future, there can be a ZED based override.
-	 */
+	 
 	if (strcmp(name, "spare_on_remove") == 0)
 		return (1);
 
 	if (strcmp(name, "io_N") == 0 || strcmp(name, "checksum_N") == 0)
-		return (10);	/* N = 10 events */
+		return (10);	 
 
 	return (0);
 }
@@ -242,21 +190,17 @@ fmd_prop_get_int64(fmd_hdl_t *hdl, const char *name)
 {
 	(void) hdl;
 
-	/*
-	 * These can be looked up in mp->modinfo->fmdi_props
-	 * For now we just hard code for phase 2. In the
-	 * future, there can be a ZED based override.
-	 */
+	 
 	if (strcmp(name, "remove_timeout") == 0)
-		return (15ULL * 1000ULL * 1000ULL * 1000ULL);	/* 15 sec */
+		return (15ULL * 1000ULL * 1000ULL * 1000ULL);	 
 
 	if (strcmp(name, "io_T") == 0 || strcmp(name, "checksum_T") == 0)
-		return (1000ULL * 1000ULL * 1000ULL * 600ULL);	/* 10 min */
+		return (1000ULL * 1000ULL * 1000ULL * 600ULL);	 
 
 	return (0);
 }
 
-/* FMD Statistics */
+ 
 
 fmd_stat_t *
 fmd_stat_create(fmd_hdl_t *hdl, uint_t flags, uint_t nstats, fmd_stat_t *statv)
@@ -271,7 +215,7 @@ fmd_stat_create(fmd_hdl_t *hdl, uint_t flags, uint_t nstats, fmd_stat_t *statv)
 	return (statv);
 }
 
-/* Case Management */
+ 
 
 fmd_case_t *
 fmd_case_open(fmd_hdl_t *hdl, void *data)
@@ -303,9 +247,7 @@ fmd_case_solve(fmd_hdl_t *hdl, fmd_case_t *cp)
 {
 	fmd_module_t *mp = (fmd_module_t *)hdl;
 
-	/*
-	 * For ZED, the event was already sent from fmd_case_add_suspect()
-	 */
+	 
 
 	if (cp->ci_state >= FMD_CASE_SOLVED)
 		fmd_hdl_debug(hdl, "case is already solved or closed");
@@ -392,9 +334,7 @@ fmd_fault_mkcode(nvlist_t *fault)
 	const char *class;
 	const char *code = "-";
 
-	/*
-	 * Note: message codes come from: openzfs/usr/src/cmd/fm/dicts/ZFS.po
-	 */
+	 
 	if (nvlist_lookup_string(fault, FM_CLASS, &class) == 0) {
 		if (strcmp(class, "fault.fs.zfs.vdev.io") == 0)
 			code = "ZFS-8000-FD";
@@ -423,9 +363,7 @@ fmd_case_add_suspect(fmd_hdl_t *hdl, fmd_case_t *cp, nvlist_t *fault)
 	int64_t tod[2];
 	int err = 0;
 
-	/*
-	 * payload derived from fmd_protocol_list()
-	 */
+	 
 
 	(void) gettimeofday(&cp->ci_tv, NULL);
 	tod[0] = cp->ci_tv.tv_sec;
@@ -501,7 +439,7 @@ fmd_buf_write(fmd_hdl_t *hdl, fmd_case_t *cp,
 	memcpy(cp->ci_bufptr, buf, size);
 }
 
-/* SERD Engines */
+ 
 
 void
 fmd_serd_create(fmd_hdl_t *hdl, const char *name, uint_t n, hrtime_t t)
@@ -568,7 +506,7 @@ fmd_serd_record(fmd_hdl_t *hdl, const char *name, fmd_event_t *ep)
 	return (err);
 }
 
-/* FMD Timers */
+ 
 
 static void
 _timer_notify(union sigval sv)
@@ -581,20 +519,16 @@ _timer_notify(union sigval sv)
 
 	fmd_hdl_debug(hdl, "timer fired (%p)", ftp->ft_tid);
 
-	/* disarm the timer */
+	 
 	memset(&its, 0, sizeof (struct itimerspec));
 	timer_settime(ftp->ft_tid, 0, &its, NULL);
 
-	/* Note that the fmdo_timeout can remove this timer */
+	 
 	if (ops->fmdo_timeout != NULL)
 		ops->fmdo_timeout(hdl, ftp, ftp->ft_arg);
 }
 
-/*
- * Install a new timer which will fire at least delta nanoseconds after the
- * current time. After the timeout has expired, the module's fmdo_timeout
- * entry point is called.
- */
+ 
 fmd_timer_t *
 fmd_timer_install(fmd_hdl_t *hdl, void *arg, fmd_event_t *ep, hrtime_t delta)
 {
@@ -637,7 +571,7 @@ fmd_timer_remove(fmd_hdl_t *hdl, fmd_timer_t *ftp)
 	fmd_hdl_free(hdl, ftp, sizeof (fmd_timer_t));
 }
 
-/* Name-Value Pair Lists */
+ 
 
 nvlist_t *
 fmd_nvl_create_fault(fmd_hdl_t *hdl, const char *class, uint8_t certainty,
@@ -667,9 +601,7 @@ fmd_nvl_create_fault(fmd_hdl_t *hdl, const char *class, uint8_t certainty,
 	return (nvl);
 }
 
-/*
- * sourced from fmd_string.c
- */
+ 
 static int
 fmd_strmatch(const char *s, const char *p)
 {
@@ -679,7 +611,7 @@ fmd_strmatch(const char *s, const char *p)
 		return (0);
 
 	if (s == NULL)
-		s = ""; /* treat NULL string as the empty string */
+		s = "";  
 
 	do {
 		if ((c = *p++) == '\0')
@@ -687,7 +619,7 @@ fmd_strmatch(const char *s, const char *p)
 
 		if (c == '*') {
 			while (*p == '*')
-				p++; /* consecutive *'s can be collapsed */
+				p++;  
 
 			if (*p == '\0')
 				return (1);
@@ -728,9 +660,7 @@ fmd_nvl_alloc(fmd_hdl_t *hdl, int flags)
 }
 
 
-/*
- * ZED Agent specific APIs
- */
+ 
 
 fmd_hdl_t *
 fmd_module_hdl(const char *name)
@@ -751,11 +681,7 @@ fmd_module_initialized(fmd_hdl_t *hdl)
 	return (mp->mod_info != NULL);
 }
 
-/*
- * fmd_module_recv is called for each event that is received by
- * the fault manager that has a class that matches one of the
- * module's subscriptions.
- */
+ 
 void
 fmd_module_recv(fmd_hdl_t *hdl, nvlist_t *nvl, const char *class)
 {
@@ -765,9 +691,7 @@ fmd_module_recv(fmd_hdl_t *hdl, nvlist_t *nvl, const char *class)
 	int64_t *tv;
 	uint_t n;
 
-	/*
-	 * Will need to normalized this if we persistently store the case data
-	 */
+	 
 	if (nvlist_lookup_int64_array(nvl, FM_EREPORT_TIME, &tv, &n) == 0)
 		faux_event.ev_hrt = tv[0] * NANOSEC + tv[1];
 	else
@@ -777,5 +701,5 @@ fmd_module_recv(fmd_hdl_t *hdl, nvlist_t *nvl, const char *class)
 
 	mp->mod_stats.ms_accepted.fmds_value.ui64++;
 
-	/* TBD - should we initiate fm_module_gc() periodically? */
+	 
 }

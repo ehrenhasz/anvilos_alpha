@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Match running platform with pre-defined OPP values for CPUFreq
- *
- * Author: Ajit Pal Singh <ajitpal.singh@st.com>
- *         Lee Jones <lee.jones@linaro.org>
- *
- * Copyright (C) 2015 STMicroelectronics (R&D) Limited
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/io.h>
@@ -25,12 +18,7 @@
 #define MAJOR_ID_INDEX		1
 #define MINOR_ID_INDEX		2
 
-/*
- * Only match on "suitable for ALL versions" entries
- *
- * This will be used with the BIT() macro.  It sets the
- * top bit of a 32bit value and is equal to 0x80000000.
- */
+ 
 #define DEFAULT_VERSION		31
 
 enum {
@@ -39,13 +27,7 @@ enum {
 	DVFS_MAX_REGFIELDS,
 };
 
-/**
- * struct sti_cpufreq_ddata - ST CPUFreq Driver Data
- *
- * @cpu:		CPU's OF node
- * @syscfg_eng:		Engineering Syscon register map
- * @syscfg:		Syscon register map
- */
+ 
 static struct sti_cpufreq_ddata {
 	struct device *cpu;
 	struct regmap *syscfg_eng;
@@ -184,7 +166,7 @@ static int sti_cpufreq_set_opp_info(void)
 					       PCODE);
 	if (pcode < 0) {
 		dev_warn(dev, "Failed to obtain process code\n");
-		/* Use default pcode */
+		 
 		pcode = 0;
 	}
 
@@ -193,7 +175,7 @@ static int sti_cpufreq_set_opp_info(void)
 						   SUBSTRATE);
 	if (substrate) {
 		dev_warn(dev, "Failed to obtain substrate code\n");
-		/* Use default substrate */
+		 
 		substrate = DEFAULT_VERSION;
 	}
 
@@ -201,14 +183,14 @@ use_defaults:
 	major = sti_cpufreq_fetch_major();
 	if (major < 0) {
 		dev_err(dev, "Failed to obtain major version\n");
-		/* Use default major number */
+		 
 		major = DEFAULT_VERSION;
 	}
 
 	minor = sti_cpufreq_fetch_minor();
 	if (minor < 0) {
 		dev_err(dev, "Failed to obtain minor version\n");
-		/* Use default minor number */
+		 
 		minor = DEFAULT_VERSION;
 	}
 

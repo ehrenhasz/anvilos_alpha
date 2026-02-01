@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * X1830 SoC CGU driver
- * Copyright (c) 2019 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -14,7 +11,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_CPPCR		0x0c
 #define CGU_REG_APLL		0x10
@@ -43,12 +40,12 @@
 #define CGU_REG_VPLL		0xe0
 #define CGU_REG_MACPHYC		0xe8
 
-/* bits within the OPCR register */
+ 
 #define OPCR_GATE_USBPHYCLK	BIT(23)
 #define OPCR_SPENDN0		BIT(7)
 #define OPCR_SPENDN1		BIT(6)
 
-/* bits within the USBPCR register */
+ 
 #define USBPCR_SIDDQ		BIT(21)
 #define USBPCR_OTG_DISABLE	BIT(20)
 
@@ -102,12 +99,12 @@ static const s8 pll_od_encoding[64] = {
 
 static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[X1830_CLK_EXCLK] = { "ext", CGU_CLK_EXT },
 	[X1830_CLK_RTCLK] = { "rtc", CGU_CLK_EXT },
 
-	/* PLLs */
+	 
 
 	[X1830_CLK_APLL] = {
 		"apll", CGU_CLK_PLL,
@@ -201,7 +198,7 @@ static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 		},
 	},
 
-	/* Custom (SoC-specific) OTG PHY */
+	 
 
 	[X1830_CLK_OTGPHY] = {
 		"otg_phy", CGU_CLK_CUSTOM,
@@ -209,7 +206,7 @@ static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 		.custom = { &x1830_otg_phy_ops },
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[X1830_CLK_SCLKA] = {
 		"sclk_a", CGU_CLK_MUX,
@@ -233,10 +230,7 @@ static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 
 	[X1830_CLK_L2CACHE] = {
 		"l2cache", CGU_CLK_DIV,
-		/*
-		 * The L2 cache clock is critical if caches are enabled and
-		 * disabling it or any parent clocks will hang the system.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { X1830_CLK_CPUMUX, -1, -1, -1 },
 		.div = { CGU_REG_CPCCR, 4, 1, 4, 22, -1, -1 },
@@ -270,10 +264,7 @@ static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 
 	[X1830_CLK_DDR] = {
 		"ddr", CGU_CLK_MUX | CGU_CLK_DIV | CGU_CLK_GATE,
-		/*
-		 * Disabling DDR clock or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { -1, X1830_CLK_SCLKA, X1830_CLK_MPLL, -1 },
 		.mux = { CGU_REG_DDRCDR, 30, 2 },
@@ -353,7 +344,7 @@ static const struct ingenic_cgu_clk_info x1830_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 29 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[X1830_CLK_EMC] = {
 		"emc", CGU_CLK_GATE,
@@ -465,8 +456,5 @@ static void __init x1830_cgu_init(struct device_node *np)
 
 	ingenic_cgu_register_syscore_ops(cgu);
 }
-/*
- * CGU has some children devices, this is useful for probing children devices
- * in the case where the device node is compatible with "simple-mfd".
- */
+ 
 CLK_OF_DECLARE_DRIVER(x1830_cgu, "ingenic,x1830-cgu", x1830_cgu_init);

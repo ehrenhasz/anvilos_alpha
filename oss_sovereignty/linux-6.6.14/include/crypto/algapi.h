@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cryptographic API for algorithms (i.e., low-level API).
- *
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+ 
+ 
 #ifndef _CRYPTO_ALGAPI_H
 #define _CRYPTO_ALGAPI_H
 
@@ -14,11 +10,7 @@
 #include <linux/types.h>
 #include <linux/workqueue.h>
 
-/*
- * Maximum values for blocksize and alignmask, used to allocate
- * static buffers that are big enough for any combination of
- * algs and architectures. Ciphers have a lower maximum size.
- */
+ 
 #define MAX_ALGAPI_BLOCKSIZE		160
 #define MAX_ALGAPI_ALIGNMASK		127
 #define MAX_CIPHER_BLOCKSIZE		16
@@ -32,15 +24,7 @@
 
 #define CRYPTO_DMA_PADDING ((CRYPTO_DMA_ALIGN - 1) & ~(CRYPTO_MINALIGN - 1))
 
-/*
- * Autoloaded crypto modules should only use a prefixed name to avoid allowing
- * arbitrary modules to be loaded. Loading from userspace may still need the
- * unprefixed names, so retains those aliases as well.
- * This uses __MODULE_INFO directly instead of MODULE_ALIAS because pre-4.3
- * gcc (e.g. avr32 toolchain) uses __LINE__ for uniqueness, and this macro
- * expands twice on the same line. Instead, use a separate base name for the
- * alias.
- */
+ 
 #define MODULE_ALIAS_CRYPTO(name)	\
 		__MODULE_INFO(alias, alias_userspace, name);	\
 		__MODULE_INFO(alias, alias_crypto, "crypto-" name)
@@ -77,9 +61,9 @@ struct crypto_instance {
 	struct crypto_template *tmpl;
 
 	union {
-		/* Node in list of instances after registration. */
+		 
 		struct hlist_node list;
-		/* List of attached spawns before registration. */
+		 
 		struct crypto_spawn *spawns;
 	};
 
@@ -102,9 +86,9 @@ struct crypto_spawn {
 	struct list_head list;
 	struct crypto_alg *alg;
 	union {
-		/* Back pointer to instance after registration.*/
+		 
 		struct crypto_instance *inst;
-		/* Spawn list pointer prior to registration. */
+		 
 		struct crypto_spawn *next;
 	};
 	const struct crypto_type *frontend;
@@ -135,9 +119,7 @@ struct crypto_attr_type {
 	u32 mask;
 };
 
-/*
- * Algorithm registration interface.
- */
+ 
 int crypto_register_alg(struct crypto_alg *alg);
 void crypto_unregister_alg(struct crypto_alg *alg);
 int crypto_register_algs(struct crypto_alg *algs, int count);
@@ -238,21 +220,12 @@ static inline u32 crypto_requires_off(struct crypto_attr_type *algt, u32 off)
 	return (algt->type ^ off) & algt->mask & off;
 }
 
-/*
- * When an algorithm uses another algorithm (e.g., if it's an instance of a
- * template), these are the flags that should always be set on the "outer"
- * algorithm if any "inner" algorithm has them set.
- */
+ 
 #define CRYPTO_ALG_INHERITED_FLAGS	\
 	(CRYPTO_ALG_ASYNC | CRYPTO_ALG_NEED_FALLBACK |	\
 	 CRYPTO_ALG_ALLOCATES_MEMORY)
 
-/*
- * Given the type and mask that specify the flags restrictions on a template
- * instance being created, return the mask that should be passed to
- * crypto_grab_*() (along with type=0) to honor any request the user made to
- * have any of the CRYPTO_ALG_INHERITED_FLAGS clear.
- */
+ 
 static inline u32 crypto_algt_inherited_mask(struct crypto_attr_type *algt)
 {
 	return crypto_requires_off(algt, CRYPTO_ALG_INHERITED_FLAGS);
@@ -261,7 +234,7 @@ static inline u32 crypto_algt_inherited_mask(struct crypto_attr_type *algt)
 int crypto_register_notifier(struct notifier_block *nb);
 int crypto_unregister_notifier(struct notifier_block *nb);
 
-/* Crypto notification events. */
+ 
 enum {
 	CRYPTO_MSG_ALG_REQUEST,
 	CRYPTO_MSG_ALG_REGISTER,
@@ -279,4 +252,4 @@ static inline u32 crypto_tfm_alg_type(struct crypto_tfm *tfm)
 	return tfm->__crt_alg->cra_flags & CRYPTO_ALG_TYPE_MASK;
 }
 
-#endif	/* _CRYPTO_ALGAPI_H */
+#endif	 

@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+ 
+ 
 
 #ifndef __MT76x2_MCU_H
 #define __MT76x2_MCU_H
 
 #include "../mt76x02_mcu.h"
 
-/* Register definitions */
+ 
 #define MT_MCU_CPU_CTL			0x0704
 #define MT_MCU_CLOCK_CTL		0x0708
 #define MT_MCU_PCIE_REMAP_BASE1		0x0740

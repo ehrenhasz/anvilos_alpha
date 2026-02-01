@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC subsystem, proc interface
- *
- * Copyright (C) 2005-06 Tower Technologies
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- *
- * based on arch/arm/common/rtctime.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtc.h>

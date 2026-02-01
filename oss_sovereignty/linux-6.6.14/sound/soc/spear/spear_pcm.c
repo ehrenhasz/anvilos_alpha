@@ -1,15 +1,4 @@
-/*
- * ALSA PCM interface for ST SPEAr Processors
- *
- * sound/soc/spear/spear_pcm.c
- *
- * Copyright (C) 2012 ST Microelectronics
- * Rajeev Kumar<rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/dmaengine.h>
@@ -24,12 +13,12 @@ static const struct snd_pcm_hardware spear_pcm_hardware = {
 	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME),
-	.buffer_bytes_max = 16 * 1024, /* max buffer size */
-	.period_bytes_min = 2 * 1024, /* 1 msec data minimum period size */
-	.period_bytes_max = 2 * 1024, /* maximum period size */
-	.periods_min = 1, /* min # periods */
-	.periods_max = 8, /* max # of periods */
-	.fifo_size = 0, /* fifo size in bytes */
+	.buffer_bytes_max = 16 * 1024,  
+	.period_bytes_min = 2 * 1024,  
+	.period_bytes_max = 2 * 1024,  
+	.periods_min = 1,  
+	.periods_max = 8,  
+	.fifo_size = 0,  
 };
 
 static const struct snd_dmaengine_pcm_config spear_dmaengine_pcm_config = {

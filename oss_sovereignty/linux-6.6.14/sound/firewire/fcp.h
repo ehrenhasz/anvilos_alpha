@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SOUND_FIREWIRE_FCP_H_INCLUDED
 #define SOUND_FIREWIRE_FCP_H_INCLUDED
 
@@ -6,10 +6,7 @@
 
 struct fw_unit;
 
-/*
- * AV/C Digital Interface Command Set General Specification 4.2
- * (Sep 2004, 1394TA)
- */
+ 
 enum avc_general_plug_dir {
 	AVC_GENERAL_PLUG_DIR_IN		= 0,
 	AVC_GENERAL_PLUG_DIR_OUT	= 1,

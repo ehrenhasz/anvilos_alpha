@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: BSD-2-Clause
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
- *
- * This source code is subject to the terms of the BSD 2 Clause License and
- * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
- * was not distributed with this source code in the LICENSE file, you can
- * obtain it at www.aomedia.org/license/software. If the Alliance for Open
- * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+
+ 
 
 #include "hantro.h"
 #include "rockchip_av1_entropymode.h"
@@ -872,7 +863,7 @@ static const u16 default_palette_uv_mode_cdf[PALETTE_UV_MODE_CONTEXTS][CDF_SIZE(
 };
 
 static const u16 default_palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
-	// Palette sizes 2 & 8
+	
 	{
 		AOM_CDF2(28710),
 		AOM_CDF8(21689, 23883, 25163, 26352, 27506, 28827, 30195)
@@ -893,7 +884,7 @@ static const u16 default_palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF2(31603),
 		AOM_CDF8(31028, 31270, 31504, 31705, 31927, 32153, 32392)
 	},
-	// Palette sizes 3 & 7
+	
 	{
 		AOM_CDF3(27877, 30490),
 		AOM_CDF7(23105, 25199, 26464, 27684, 28931, 30318)
@@ -914,7 +905,7 @@ static const u16 default_palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF3(31915, 32385),
 		AOM_CDF7(31198, 31451, 31670, 31882, 32123, 32391)
 	},
-	// Palette sizes 4 & 6
+	
 	{
 		AOM_CDF4(25572, 28046, 30045),
 		AOM_CDF6(23132, 25407, 26970, 28435, 30073)
@@ -935,7 +926,7 @@ static const u16 default_palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF4(31400, 31825, 32250),
 		AOM_CDF6(31270, 31550, 31808, 32059, 32353)
 	},
-	// Palette size 5
+	
 	{
 		AOM_CDF5(24779, 26955, 28576, 30282),
 		AOM_CDF5(8669, 20364, 24073, 28093)
@@ -951,7 +942,7 @@ static const u16 default_palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 };
 
 static const u16 default_palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
-	// Palette sizes 2 & 8
+	
 	{
 		AOM_CDF2(29089),
 		AOM_CDF8(21442, 23288, 24758, 26246, 27649, 28980, 30563)
@@ -972,7 +963,7 @@ static const u16 default_palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF2(31610),
 		AOM_CDF8(31190, 31329, 31516, 31679, 31825, 32026, 32322)
 	},
-	// Palette sizes 3 & 7
+	
 	{
 		AOM_CDF3(25257, 29145),
 		AOM_CDF7(21239, 23168, 25044, 26962, 28705, 30506)
@@ -993,7 +984,7 @@ static const u16 default_palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF3(30608, 31639),
 		AOM_CDF7(30988, 31204, 31479, 31734, 31983, 32325)
 	},
-	// Palette sizes 4 & 6
+	
 	{
 		AOM_CDF4(24210, 27175, 29903),
 		AOM_CDF6(22217, 24567, 26637, 28683, 30548)
@@ -1014,7 +1005,7 @@ static const u16 default_palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8] = {
 		AOM_CDF4(30459, 31136, 31926),
 		AOM_CDF6(30674, 30953, 31396, 31735, 32207)
 	},
-	// Palette size 5
+	
 	{
 		AOM_CDF5(22980, 25479, 27781, 29986),
 		AOM_CDF5(8413, 21408, 24859, 28874)
@@ -4142,12 +4133,12 @@ static const u16 av1_default_coeff_base_eob_multi_cdfs[TOKEN_CDF_Q_CTXS][TX_SIZE
 
 static const u16 default_joint_cdf[] = { ICDF(4096), ICDF(11264), ICDF(19328)};
 static const u16 default_clsss_cdf[][10] = {
-	// Vertical component
+	
 	{
 		ICDF(28672), ICDF(30976), ICDF(31858), ICDF(32320), ICDF(32551),
 		ICDF(32656), ICDF(32740), ICDF(32757), ICDF(32762), ICDF(32767)
 	},
-	// Horizontal component
+	
 	{
 		ICDF(28672), ICDF(30976), ICDF(31858), ICDF(32320), ICDF(32551),
 		ICDF(32656), ICDF(32740), ICDF(32757), ICDF(32762), ICDF(32767)
@@ -4155,12 +4146,12 @@ static const u16 default_clsss_cdf[][10] = {
 };
 
 static const u16 default_clsss0_fp_cdf[][2][3] = {
-	// Vertical component
+	
 	{
 		{ ICDF(16384), ICDF(24576), ICDF(26624)},
 		{ ICDF(12288), ICDF(21248), ICDF(24128)}
 	},
-	// Horizontal component
+	
 	{
 		{ ICDF(16384), ICDF(24576), ICDF(26624)},
 		{ ICDF(12288), ICDF(21248), ICDF(24128)}
@@ -4168,11 +4159,11 @@ static const u16 default_clsss0_fp_cdf[][2][3] = {
 };
 
 static const u16 default_fp_cdf[][3] = {
-	// Vertical component
+	
 	{
 		ICDF(8192), ICDF(17408), ICDF(21248)
 	},
-	// Horizontal component
+	
 	{
 		ICDF(8192), ICDF(17408), ICDF(21248)
 	}
@@ -4309,7 +4300,7 @@ void rockchip_av1_set_default_cdfs(struct av1cdfs *cdfs,
 	memcpy(cdfs->interp_filter_cdf, default_switchable_interp_cdf,
 	       sizeof(cdfs->interp_filter_cdf));
 
-	// Regular MV cdfs
+	
 	memcpy(cdfs->mv_cdf.joint_cdf, default_joint_cdf,
 	       sizeof(cdfs->mv_cdf.joint_cdf));
 	memcpy(cdfs->mv_cdf.sign_cdf, default_sign_cdf,
@@ -4329,7 +4320,7 @@ void rockchip_av1_set_default_cdfs(struct av1cdfs *cdfs,
 	memcpy(cdfs->mv_cdf.bits_cdf, default_bits_cdf,
 	       sizeof(cdfs->mv_cdf.bits_cdf));
 
-	// Intrabc cdfs
+	
 	memcpy(cdfs_ndvc->joint_cdf, default_joint_cdf,
 	       sizeof(cdfs_ndvc->joint_cdf));
 	memcpy(cdfs_ndvc->sign_cdf, default_sign_cdf,

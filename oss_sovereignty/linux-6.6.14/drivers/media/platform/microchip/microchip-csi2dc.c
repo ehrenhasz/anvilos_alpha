@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip CSI2 Demux Controller (CSI2DC) driver
- *
- * Copyright (C) 2018 Microchip Technology, Inc.
- *
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mod_devicetable.h>
@@ -19,98 +12,94 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-subdev.h>
 
-/* Global configuration register */
+ 
 #define CSI2DC_GCFG			0x0
 
-/* MIPI sensor pixel clock is free running */
+ 
 #define CSI2DC_GCFG_MIPIFRN		BIT(0)
-/* GPIO parallel interface selection */
+ 
 #define CSI2DC_GCFG_GPIOSEL		BIT(1)
-/* Output waveform inter-line minimum delay */
+ 
 #define CSI2DC_GCFG_HLC(v)		((v) << 4)
 #define CSI2DC_GCFG_HLC_MASK		GENMASK(7, 4)
-/* SAMA7G5 requires a HLC delay of 15 */
+ 
 #define SAMA7G5_HLC			(15)
 
-/* Global control register */
+ 
 #define CSI2DC_GCTLR			0x04
 #define CSI2DC_GCTLR_SWRST		BIT(0)
 
-/* Global status register */
+ 
 #define CSI2DC_GS			0x08
 
-/* SSP interrupt status register */
+ 
 #define CSI2DC_SSPIS			0x28
-/* Pipe update register */
+ 
 #define CSI2DC_PU			0xc0
-/* Video pipe attributes update */
+ 
 #define CSI2DC_PU_VP			BIT(0)
 
-/* Pipe update status register */
+ 
 #define CSI2DC_PUS			0xc4
 
-/* Video pipeline Interrupt Status Register */
+ 
 #define CSI2DC_VPISR			0xf4
 
-/* Video pipeline enable register */
+ 
 #define CSI2DC_VPE			0xf8
 #define CSI2DC_VPE_ENABLE		BIT(0)
 
-/* Video pipeline configuration register */
+ 
 #define CSI2DC_VPCFG			0xfc
-/* Data type */
+ 
 #define CSI2DC_VPCFG_DT(v)		((v) << 0)
 #define CSI2DC_VPCFG_DT_MASK		GENMASK(5, 0)
-/* Virtual channel identifier */
+ 
 #define CSI2DC_VPCFG_VC(v)		((v) << 6)
 #define CSI2DC_VPCFG_VC_MASK		GENMASK(7, 6)
-/* Decompression enable */
+ 
 #define CSI2DC_VPCFG_DE			BIT(8)
-/* Decoder mode */
+ 
 #define CSI2DC_VPCFG_DM(v)		((v) << 9)
 #define CSI2DC_VPCFG_DM_DECODER8TO12	0
-/* Decoder predictor 2 selection */
+ 
 #define CSI2DC_VPCFG_DP2		BIT(12)
-/* Recommended memory storage */
+ 
 #define CSI2DC_VPCFG_RMS		BIT(13)
-/* Post adjustment */
+ 
 #define CSI2DC_VPCFG_PA			BIT(14)
 
-/* Video pipeline column register */
+ 
 #define CSI2DC_VPCOL			0x100
-/* Column number */
+ 
 #define CSI2DC_VPCOL_COL(v)		((v) << 0)
 #define CSI2DC_VPCOL_COL_MASK		GENMASK(15, 0)
 
-/* Video pipeline row register */
+ 
 #define CSI2DC_VPROW			0x104
-/* Row number */
+ 
 #define CSI2DC_VPROW_ROW(v)		((v) << 0)
 #define CSI2DC_VPROW_ROW_MASK		GENMASK(15, 0)
 
-/* Version register */
+ 
 #define CSI2DC_VERSION			0x1fc
 
-/* register read/write helpers */
+ 
 #define csi2dc_readl(st, reg)		readl_relaxed((st)->base + (reg))
 #define csi2dc_writel(st, reg, val)	writel_relaxed((val), \
 					(st)->base + (reg))
 
-/* supported RAW data types */
+ 
 #define CSI2DC_DT_RAW6			0x28
 #define CSI2DC_DT_RAW7			0x29
 #define CSI2DC_DT_RAW8			0x2a
 #define CSI2DC_DT_RAW10			0x2b
 #define CSI2DC_DT_RAW12			0x2c
 #define CSI2DC_DT_RAW14			0x2d
-/* YUV data types */
+ 
 #define CSI2DC_DT_YUV422_8B		0x1e
 
-/*
- * struct csi2dc_format - CSI2DC format type struct
- * @mbus_code:		Media bus code for the format
- * @dt:			Data type constant for this format
- */
+ 
 struct csi2dc_format {
 	u32				mbus_code;
 	u32				dt;
@@ -153,33 +142,7 @@ enum mipi_csi_pads {
 	CSI2DC_PADS_NUM			= 2,
 };
 
-/*
- * struct csi2dc_device - CSI2DC device driver data/config struct
- * @base:		Register map base address
- * @csi2dc_sd:		v4l2 subdevice for the csi2dc device
- *			This is the subdevice that the csi2dc device itself
- *			registers in v4l2 subsystem
- * @dev:		struct device for this csi2dc device
- * @pclk:		Peripheral clock reference
- *			Input clock that clocks the hardware block internal
- *			logic
- * @scck:		Sensor Controller clock reference
- *			Input clock that is used to generate the pixel clock
- * @format:		Current saved format used in g/s fmt
- * @cur_fmt:		Current state format
- * @try_fmt:		Try format that is being tried
- * @pads:		Media entity pads for the csi2dc subdevice
- * @clk_gated:		Whether the clock is gated or free running
- * @video_pipe:		Whether video pipeline is configured
- * @parallel_mode:	The underlying subdevice is connected on a parallel bus
- * @vc:			Current set virtual channel
- * @notifier:		Async notifier that is used to bound the underlying
- *			subdevice to the csi2dc subdevice
- * @input_sd:		Reference to the underlying subdevice bound to the
- *			csi2dc subdevice
- * @remote_pad:		Pad number of the underlying subdevice that is linked
- *			to the csi2dc subdevice sink pad.
- */
+ 
 struct csi2dc_device {
 	void __iomem			*base;
 	struct v4l2_subdev		csi2dc_sd;
@@ -253,10 +216,7 @@ static int csi2dc_set_fmt(struct v4l2_subdev *csi2dc_sd,
 	struct v4l2_mbus_framefmt *v4l2_try_fmt;
 	unsigned int i;
 
-	/*
-	 * Setting the source pad is disabled.
-	 * The same format is being propagated from the sink to source.
-	 */
+	 
 	if (req_fmt->pad == CSI2DC_PAD_SOURCE)
 		return -EINVAL;
 
@@ -267,7 +227,7 @@ static int csi2dc_set_fmt(struct v4l2_subdev *csi2dc_sd,
 		fmt++;
 	}
 
-	/* in case we could not find the desired format, default to something */
+	 
 	if (!try_fmt) {
 		try_fmt = &csi2dc_formats[0];
 
@@ -284,20 +244,20 @@ static int csi2dc_set_fmt(struct v4l2_subdev *csi2dc_sd,
 		v4l2_try_fmt = v4l2_subdev_get_try_format(csi2dc_sd, sd_state,
 							  req_fmt->pad);
 		*v4l2_try_fmt = req_fmt->format;
-		/* Trying on the sink pad makes the source pad change too */
+		 
 		v4l2_try_fmt = v4l2_subdev_get_try_format(csi2dc_sd,
 							  sd_state,
 							  CSI2DC_PAD_SOURCE);
 		*v4l2_try_fmt = req_fmt->format;
 
-		/* if we are just trying, we are done */
+		 
 		return 0;
 	}
 
-	/* save the format for later requests */
+	 
 	csi2dc->format = req_fmt->format;
 
-	/* update config */
+	 
 	csi2dc->cur_fmt = try_fmt;
 
 	dev_dbg(csi2dc->dev, "new format set: 0x%x @%dx%d\n",
@@ -325,10 +285,10 @@ static int csi2dc_power(struct csi2dc_device *csi2dc, int on)
 			return ret;
 		}
 
-		/* if powering up, deassert reset line */
+		 
 		csi2dc_writel(csi2dc, CSI2DC_GCTLR, CSI2DC_GCTLR_SWRST);
 	} else {
-		/* if powering down, assert reset line */
+		 
 		csi2dc_writel(csi2dc, CSI2DC_GCTLR, 0);
 
 		clk_disable_unprepare(csi2dc->scck);
@@ -378,14 +338,14 @@ static void csi2dc_vp_update(struct csi2dc_device *csi2dc)
 	}
 
 	if (csi2dc->parallel_mode) {
-		/* In parallel mode, GPIO parallel interface must be selected */
+		 
 		gcfg = csi2dc_readl(csi2dc, CSI2DC_GCFG);
 		gcfg |= CSI2DC_GCFG_GPIOSEL;
 		csi2dc_writel(csi2dc, CSI2DC_GCFG, gcfg);
 		return;
 	}
 
-	/* serial video pipeline */
+	 
 
 	csi2dc_writel(csi2dc, CSI2DC_GCFG,
 		      (SAMA7G5_HLC & CSI2DC_GCFG_HLC_MASK) |
@@ -428,7 +388,7 @@ static int csi2dc_s_stream(struct v4l2_subdev *csi2dc_sd, int enable)
 		csi2dc_readl(csi2dc, CSI2DC_VPROW),
 		csi2dc_readl(csi2dc, CSI2DC_VPISR));
 
-	/* stop streaming scenario */
+	 
 	ret = v4l2_subdev_call(csi2dc->input_sd, video, s_stream, false);
 
 	pm_runtime_put_sync(csi2dc->dev);
@@ -622,7 +582,7 @@ static int csi2dc_of_parse(struct csi2dc_device *csi2dc,
 			output_endpoint.base.id);
 	}
 
-	/* prepare async notifier for subdevice completion */
+	 
 	return csi2dc_prepare_notifier(csi2dc, input_fwnode);
 
 csi2dc_of_parse_err:
@@ -708,7 +668,7 @@ static int csi2dc_probe(struct platform_device *pdev)
 
 	csi2dc_default_format(csi2dc);
 
-	/* turn power on to validate capabilities */
+	 
 	ret = csi2dc_power(csi2dc, true);
 	if (ret < 0)
 		goto csi2dc_probe_cleanup_notifier;
@@ -717,11 +677,7 @@ static int csi2dc_probe(struct platform_device *pdev)
 	pm_runtime_enable(dev);
 	ver = csi2dc_readl(csi2dc, CSI2DC_VERSION);
 
-	/*
-	 * we must register the subdev after PM runtime has been requested,
-	 * otherwise we might bound immediately and request pm_runtime_resume
-	 * before runtime_enable.
-	 */
+	 
 	ret = v4l2_async_register_subdev(&csi2dc->csi2dc_sd);
 	if (ret) {
 		dev_err(csi2dc->dev, "failed to register the subdevice\n");

@@ -1,24 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*  Description: */
-/*  This file is for 92CE/92CU dynamic mechanism only */
+
+ 
+ 
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <rtl8723b_hal.h>
 
-/*  Global var */
+ 
 
 static void dm_CheckStatistics(struct adapter *Adapter)
 {
 }
-/*  */
-/*  functions */
-/*  */
+ 
+ 
+ 
 static void Init_ODM_ComInfo_8723b(struct adapter *Adapter)
 {
 
@@ -27,9 +23,9 @@ static void Init_ODM_ComInfo_8723b(struct adapter *Adapter)
 	struct dm_priv *pdmpriv = &pHalData->dmpriv;
 	u8 cut_ver, fab_ver;
 
-	/*  */
-	/*  Init Value */
-	/*  */
+	 
+	 
+	 
 	memset(pDM_Odm, 0, sizeof(*pDM_Odm));
 
 	pDM_Odm->Adapter = Adapter;
@@ -46,7 +42,7 @@ static void Init_ODM_ComInfo_8723b(struct adapter *Adapter)
 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_CUT_VER, cut_ver);
 
 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_PATCH_ID, pHalData->CustomerID);
-	/* 	ODM_CMNINFO_BINHCT_TEST only for MP Team */
+	 
 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_BWIFI_TEST, Adapter->registrypriv.wifi_spec);
 
 	pdmpriv->InitODMFlag = ODM_RF_CALIBRATION|ODM_RF_TX_PWR_TRACK;
@@ -80,11 +76,11 @@ static void Update_ODM_ComInfo_8723b(struct adapter *Adapter)
 		| ODM_RF_CALIBRATION
 		;
 
-	/*  */
-	/*  Pointer reference */
-	/*  */
-	/* ODM_CMNINFO_MAC_PHY_MODE pHalData->MacPhyMode92D */
-	/* 	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_MAC_PHY_MODE,&(pDM_Odm->u8_temp)); */
+	 
+	 
+	 
+	 
+	 
 
 	ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
 
@@ -145,14 +141,14 @@ void rtl8723b_HalDmWatchDog(struct adapter *Adapter)
 		(hw_init_completed == true) &&
 		((!fw_current_in_ps_mode) && bFwPSAwake)
 	) {
-		/*  */
-		/*  Calculate Tx/Rx statistics. */
-		/*  */
+		 
+		 
+		 
 		dm_CheckStatistics(Adapter);
 		rtw_hal_check_rxfifo_full(Adapter);
 	}
 
-	/* ODM */
+	 
 	if (hw_init_completed == true) {
 		u8 bLinked = false;
 		u8 bsta_state = false;
@@ -167,7 +163,7 @@ void rtl8723b_HalDmWatchDog(struct adapter *Adapter)
 		ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_LINK, bLinked);
 		ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_STATION_STATE, bsta_state);
 
-		/* ODM_CmnInfoUpdate(&pHalData->odmpriv , ODM_CMNINFO_RSSI_MIN, pdmpriv->MinUndecoratedPWDBForDM); */
+		 
 
 		bBtDisabled = hal_btcoex_IsBtDisabled(Adapter);
 
@@ -190,11 +186,11 @@ void rtl8723b_hal_dm_in_lps(struct adapter *padapter)
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info *psta = NULL;
 
-	/* update IGI */
+	 
 	ODM_Write_DIG(pDM_Odm, pDM_Odm->RSSI_Min);
 
 
-	/* set rssi to fw */
+	 
 	psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 	if (psta && (psta->rssi_stat.UndecoratedSmoothedPWDB > 0)) {
 		PWDB_rssi = (psta->mac_id | (psta->rssi_stat.UndecoratedSmoothedPWDB<<16));
@@ -231,10 +227,10 @@ void rtl8723b_HalDmWatchDog_in_LPS(struct adapter *Adapter)
 		goto skip_lps_dm;
 
 
-	/* ODM_DMWatchdog(&pHalData->odmpriv); */
-	/* Do DIG by RSSI In LPS-32K */
+	 
+	 
 
-      /* 1 Find MIN-RSSI */
+       
 	psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 	if (!psta)
 		goto skip_lps_dm;
@@ -248,7 +244,7 @@ void rtl8723b_HalDmWatchDog_in_LPS(struct adapter *Adapter)
 
 	pDM_Odm->RSSI_Min = pdmpriv->MinUndecoratedPWDBForDM;
 
-	/* if (pDM_DigTable->CurIGValue != pDM_Odm->RSSI_Min) */
+	 
 	if (
 		(pDM_DigTable->CurIGValue > pDM_Odm->RSSI_Min + 5) ||
 		(pDM_DigTable->CurIGValue < pDM_Odm->RSSI_Min - 5)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ONIE tlv NVMEM cells provider
- *
- * Copyright (C) 2022 Open Compute Group ONIE
- * Author: Miquel Raynal <miquel.raynal@bootlin.com>
- * Based on the nvmem driver written by: Vadym Kochan <vadym.kochan@plvision.eu>
- * Inspired by the first layout written by: Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/etherdevice.h>
@@ -167,9 +160,7 @@ static bool onie_tlv_crc_is_valid(struct device *dev, size_t table_len, u8 *tabl
 		return false;
 	}
 
-	/* The table contains a JAMCRC, which is XOR'ed compared to the original
-	 * CRC32 implementation as known in the Ethernet world.
-	 */
+	 
 	memcpy(&crc_be, table + table_len - ONIE_TLV_CRC_SZ, ONIE_TLV_CRC_SZ);
 	read_crc = be32_to_cpu(crc_be);
 	calc_crc = crc32(~0, table, table_len - ONIE_TLV_CRC_SZ) ^ 0xFFFFFFFF;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2015,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "wil6210.h"
 #include <linux/devcoredump.h>
@@ -17,7 +14,7 @@ static int wil_fw_get_crash_dump_bounds(struct wil6210_priv *wil,
 	if (!out_dump_size)
 		return -EINVAL;
 
-	/* calculate the total size of the unpacked crash dump */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(fw_mapping) == 0);
 	map = &fw_mapping[0];
 	host_min = map->host;
@@ -72,7 +69,7 @@ int wil_fw_copy_crash_dump(struct wil6210_priv *wil, void *dest, u32 size)
 		return -EBUSY;
 	}
 
-	/* copy to crash dump area */
+	 
 	for (i = 0; i < ARRAY_SIZE(fw_mapping); i++) {
 		map = &fw_mapping[i];
 
@@ -114,9 +111,7 @@ void wil_fw_core_dump(struct wil6210_priv *wil)
 		vfree(fw_dump_data);
 		return;
 	}
-	/* fw_dump_data will be free in device coredump release function
-	 * after 5 min
-	 */
+	 
 	dev_coredumpv(wil_to_dev(wil), fw_dump_data, fw_dump_size, GFP_KERNEL);
 	wil_info(wil, "fw core dumped, size %d bytes\n", fw_dump_size);
 }

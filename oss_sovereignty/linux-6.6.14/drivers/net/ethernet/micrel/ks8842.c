@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ks8842.c timberdale KS8842 ethernet driver
- * Copyright (c) 2009 Intel Corporation
- */
 
-/* Supports:
- * The Micrel KS8842 behind the timberdale FPGA
- * The genuine Micrel KS8841/42 device with ISA 16/32bit bus interface
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +19,7 @@
 
 #define DRV_NAME "ks8842"
 
-/* Timberdale specific Registers */
+ 
 #define REG_TIMB_RST		0x1c
 #define REG_TIMB_FIFO		0x20
 #define REG_TIMB_ISR		0x24
@@ -33,29 +27,29 @@
 #define REG_TIMB_IAR		0x2C
 #define REQ_TIMB_DMA_RESUME	0x30
 
-/* KS8842 registers */
+ 
 
 #define REG_SELECT_BANK 0x0e
 
-/* bank 0 registers */
+ 
 #define REG_QRFCR	0x04
 
-/* bank 2 registers */
+ 
 #define REG_MARL	0x00
 #define REG_MARM	0x02
 #define REG_MARH	0x04
 
-/* bank 3 registers */
+ 
 #define REG_GRR		0x06
 
-/* bank 16 registers */
+ 
 #define REG_TXCR	0x00
 #define REG_TXSR	0x02
 #define REG_RXCR	0x04
 #define REG_TXMIR	0x08
 #define REG_RXMIR	0x0A
 
-/* bank 17 registers */
+ 
 #define REG_TXQCR	0x00
 #define REG_RXQCR	0x02
 #define REG_TXFDPR	0x04
@@ -63,7 +57,7 @@
 #define REG_QMU_DATA_LO 0x08
 #define REG_QMU_DATA_HI 0x0A
 
-/* bank 18 registers */
+ 
 #define REG_IER		0x00
 #define IRQ_LINK_CHANGE	0x8000
 #define IRQ_TX		0x4000
@@ -74,12 +68,7 @@
 #define IRQ_RX_ERROR	0x0080
 #define ENABLED_IRQS	(IRQ_LINK_CHANGE | IRQ_TX | IRQ_RX | IRQ_RX_STOPPED | \
 		IRQ_TX_STOPPED | IRQ_RX_OVERRUN | IRQ_RX_ERROR)
-/* When running via timberdale in DMA mode, the RX interrupt should be
-   enabled in the KS8842, but not in the FPGA IP, since the IP handles
-   RX DMA internally.
-   TX interrupts are not needed it is handled by the FPGA the driver is
-   notified via DMA callbacks.
-*/
+ 
 #define ENABLED_IRQS_DMA_IP	(IRQ_LINK_CHANGE | IRQ_RX_STOPPED | \
 	IRQ_TX_STOPPED | IRQ_RX_OVERRUN | IRQ_RX_ERROR)
 #define ENABLED_IRQS_DMA	(ENABLED_IRQS_DMA_IP | IRQ_RX)
@@ -95,35 +84,35 @@
 #define RXSR_CRC_ERROR	0x01
 #define RXSR_ERROR	(RXSR_TOO_LONG | RXSR_RUNT | RXSR_CRC_ERROR)
 
-/* bank 32 registers */
+ 
 #define REG_SW_ID_AND_ENABLE	0x00
 #define REG_SGCR1		0x02
 #define REG_SGCR2		0x04
 #define REG_SGCR3		0x06
 
-/* bank 39 registers */
+ 
 #define REG_MACAR1		0x00
 #define REG_MACAR2		0x02
 #define REG_MACAR3		0x04
 
-/* bank 45 registers */
+ 
 #define REG_P1MBCR		0x00
 #define REG_P1MBSR		0x02
 
-/* bank 46 registers */
+ 
 #define REG_P2MBCR		0x00
 #define REG_P2MBSR		0x02
 
-/* bank 48 registers */
+ 
 #define REG_P1CR2		0x02
 
-/* bank 49 registers */
+ 
 #define REG_P1CR4		0x02
 #define REG_P1SR		0x04
 
-/* flags passed by platform_device for configuration */
-#define	MICREL_KS884X		0x01	/* 0=Timeberdale(FPGA), 1=Micrel */
-#define	KS884X_16BIT		0x02	/*  1=16bit, 0=32bit */
+ 
+#define	MICREL_KS884X		0x01	 
+#define	KS884X_16BIT		0x02	 
 
 #define DMA_BUFFER_SIZE		2048
 
@@ -150,9 +139,9 @@ struct ks8842_rx_dma_ctl {
 struct ks8842_adapter {
 	void __iomem	*hw_addr;
 	int		irq;
-	unsigned long	conf_flags;	/* copy of platform_device config */
+	unsigned long	conf_flags;	 
 	struct tasklet_struct	tasklet;
-	spinlock_t	lock; /* spinlock to be interrupt safe */
+	spinlock_t	lock;  
 	struct work_struct timeout_work;
 	struct net_device *netdev;
 	struct device *dev;
@@ -242,13 +231,7 @@ static void ks8842_reset(struct ks8842_adapter *adapter)
 		msleep(10);
 		iowrite16(0, adapter->hw_addr + REG_GRR);
 	} else {
-		/* The KS8842 goes haywire when doing softare reset
-		* a work around in the timberdale IP is implemented to
-		* do a hardware reset instead
-		ks8842_write16(adapter, 3, 1, REG_GRR);
-		msleep(10);
-		iowrite16(0, adapter->hw_addr + REG_GRR);
-		*/
+		 
 		iowrite32(0x1, adapter->hw_addr + REG_TIMB_RST);
 		msleep(20);
 	}
@@ -257,7 +240,7 @@ static void ks8842_reset(struct ks8842_adapter *adapter)
 static void ks8842_update_link_status(struct net_device *netdev,
 	struct ks8842_adapter *adapter)
 {
-	/* check the status of the link */
+	 
 	if (ks8842_read16(adapter, 45, REG_P1MBSR) & 0x4) {
 		netif_carrier_on(netdev);
 		netif_wake_queue(netdev);
@@ -289,53 +272,49 @@ static void ks8842_disable_rx(struct ks8842_adapter *adapter)
 
 static void ks8842_reset_hw(struct ks8842_adapter *adapter)
 {
-	/* reset the HW */
+	 
 	ks8842_reset(adapter);
 
-	/* Enable QMU Transmit flow control / transmit padding / Transmit CRC */
+	 
 	ks8842_write16(adapter, 16, 0x000E, REG_TXCR);
 
-	/* enable the receiver, uni + multi + broadcast + flow ctrl
-		+ crc strip */
+	 
 	ks8842_write16(adapter, 16, 0x8 | 0x20 | 0x40 | 0x80 | 0x400,
 		REG_RXCR);
 
-	/* TX frame pointer autoincrement */
+	 
 	ks8842_write16(adapter, 17, 0x4000, REG_TXFDPR);
 
-	/* RX frame pointer autoincrement */
+	 
 	ks8842_write16(adapter, 17, 0x4000, REG_RXFDPR);
 
-	/* RX 2 kb high watermark */
+	 
 	ks8842_write16(adapter, 0, 0x1000, REG_QRFCR);
 
-	/* aggressive back off in half duplex */
+	 
 	ks8842_enable_bits(adapter, 32, 1 << 8, REG_SGCR1);
 
-	/* enable no excessive collison drop */
+	 
 	ks8842_enable_bits(adapter, 32, 1 << 3, REG_SGCR2);
 
-	/* Enable port 1 force flow control / back pressure / transmit / recv */
+	 
 	ks8842_write16(adapter, 48, 0x1E07, REG_P1CR2);
 
-	/* restart port auto-negotiation */
+	 
 	ks8842_enable_bits(adapter, 49, 1 << 13, REG_P1CR4);
 
-	/* Enable the transmitter */
+	 
 	ks8842_enable_tx(adapter);
 
-	/* Enable the receiver */
+	 
 	ks8842_enable_rx(adapter);
 
-	/* clear all interrupts */
+	 
 	ks8842_write16(adapter, 18, 0xffff, REG_ISR);
 
-	/* enable interrupts */
+	 
 	if (KS8842_USE_DMA(adapter)) {
-		/* When running in DMA Mode the RX interrupt is not enabled in
-		   timberdale because RX data is received by DMA callbacks
-		   it must still be enabled in the KS8842 because it indicates
-		   to timberdale when there is RX data for it's DMA FIFOs */
+		 
 		iowrite16(ENABLED_IRQS_DMA_IP, adapter->hw_addr + REG_TIMB_IER);
 		ks8842_write16(adapter, 18, ENABLED_IRQS_DMA, REG_IER);
 	} else {
@@ -344,7 +323,7 @@ static void ks8842_reset_hw(struct ks8842_adapter *adapter)
 				adapter->hw_addr + REG_TIMB_IER);
 		ks8842_write16(adapter, 18, ENABLED_IRQS, REG_IER);
 	}
-	/* enable the switch */
+	 
 	ks8842_write16(adapter, 32, 0x1, REG_SW_ID_AND_ENABLE);
 }
 
@@ -359,10 +338,7 @@ static void ks8842_init_mac_addr(struct ks8842_adapter *adapter)
 	eth_hw_addr_set(adapter->netdev, addr);
 
 	if (adapter->conf_flags & MICREL_KS884X) {
-		/*
-		the sequence of saving mac addr between MAC and Switch is
-		different.
-		*/
+		 
 
 		mac = ks8842_read16(adapter, 2, REG_MARL);
 		ks8842_write16(adapter, 39, mac, REG_MACAR3);
@@ -372,7 +348,7 @@ static void ks8842_init_mac_addr(struct ks8842_adapter *adapter)
 		ks8842_write16(adapter, 39, mac, REG_MACAR1);
 	} else {
 
-		/* make sure the switch port uses the same MAC as the QMU */
+		 
 		mac = ks8842_read16(adapter, 2, REG_MARL);
 		ks8842_write16(adapter, 39, mac, REG_MACAR1);
 		mac = ks8842_read16(adapter, 2, REG_MARM);
@@ -396,10 +372,7 @@ static void ks8842_write_mac_addr(struct ks8842_adapter *adapter, const u8 *mac)
 	}
 
 	if (adapter->conf_flags & MICREL_KS884X) {
-		/*
-		the sequence of saving mac addr between MAC and Switch is
-		different.
-		*/
+		 
 
 		u16 mac;
 
@@ -426,16 +399,16 @@ static int ks8842_tx_frame_dma(struct sk_buff *skb, struct net_device *netdev)
 
 	if (ctl->adesc) {
 		netdev_dbg(netdev, "%s: TX ongoing\n", __func__);
-		/* transfer ongoing */
+		 
 		return NETDEV_TX_BUSY;
 	}
 
 	sg_dma_len(&ctl->sg) = skb->len + sizeof(u32);
 
-	/* copy data to the TX buffer */
-	/* the control word, enable IRQ, port 1 and the length */
+	 
+	 
 	*buf++ = 0x00;
-	*buf++ = 0x01; /* Port 1 */
+	*buf++ = 0x01;  
 	*buf++ = skb->len & 0xff;
 	*buf++ = (skb->len >> 8) & 0xff;
 	skb_copy_from_linear_data(skb, buf, skb->len);
@@ -444,7 +417,7 @@ static int ks8842_tx_frame_dma(struct sk_buff *skb, struct net_device *netdev)
 		sg_dma_address(&ctl->sg), 0, sg_dma_len(&ctl->sg),
 		DMA_TO_DEVICE);
 
-	/* make sure the length is a multiple of 4 */
+	 
 	if (sg_dma_len(&ctl->sg) % 4)
 		sg_dma_len(&ctl->sg) += 4 - sg_dma_len(&ctl->sg) % 4;
 
@@ -473,7 +446,7 @@ static int ks8842_tx_frame(struct sk_buff *skb, struct net_device *netdev)
 		__func__, skb->len, skb->head, skb->data,
 		skb_tail_pointer(skb), skb_end_pointer(skb));
 
-	/* check FIFO buffer space, we need space for CRC and command bits */
+	 
 	if (ks8842_tx_fifo_space(adapter) < len + 8)
 		return NETDEV_TX_BUSY;
 
@@ -483,7 +456,7 @@ static int ks8842_tx_frame(struct sk_buff *skb, struct net_device *netdev)
 		ks8842_write16(adapter, 17, (u16)len, REG_QMU_DATA_HI);
 		netdev->stats.tx_bytes += len;
 
-		/* copy buffer */
+		 
 		while (len > 0) {
 			iowrite16(*ptr16++, adapter->hw_addr + REG_QMU_DATA_LO);
 			iowrite16(*ptr16++, adapter->hw_addr + REG_QMU_DATA_HI);
@@ -493,13 +466,13 @@ static int ks8842_tx_frame(struct sk_buff *skb, struct net_device *netdev)
 
 		u32 *ptr = (u32 *)skb->data;
 		u32 ctrl;
-		/* the control word, enable IRQ, port 1 and the length */
+		 
 		ctrl = 0x8000 | 0x100 | (len << 16);
 		ks8842_write32(adapter, 17, ctrl, REG_QMU_DATA_LO);
 
 		netdev->stats.tx_bytes += len;
 
-		/* copy buffer */
+		 
 		while (len > 0) {
 			iowrite32(*ptr, adapter->hw_addr + REG_QMU_DATA_LO);
 			len -= sizeof(u32);
@@ -507,7 +480,7 @@ static int ks8842_tx_frame(struct sk_buff *skb, struct net_device *netdev)
 		}
 	}
 
-	/* enqueue packet */
+	 
 	ks8842_write16(adapter, 17, 1, REG_TXQCR);
 
 	dev_kfree_skb(skb);
@@ -600,10 +573,10 @@ static void ks8842_rx_frame_dma_tasklet(struct tasklet_struct *t)
 
 	ctl->adesc = NULL;
 
-	/* kick next transfer going */
+	 
 	__ks8842_start_new_rx_dma(netdev);
 
-	/* now handle the data we got */
+	 
 	dma_unmap_single(adapter->dev, addr, DMA_BUFFER_SIZE, DMA_FROM_DEVICE);
 
 	status = *((u32 *)skb->data);
@@ -611,13 +584,13 @@ static void ks8842_rx_frame_dma_tasklet(struct tasklet_struct *t)
 	netdev_dbg(netdev, "%s - rx_data: status: %x\n",
 		__func__, status & 0xffff);
 
-	/* check the status */
+	 
 	if ((status & RXSR_VALID) && !(status & RXSR_ERROR)) {
 		int len = (status >> 16) & 0x7ff;
 
 		ks8842_update_rx_counters(netdev, status, len);
 
-		/* reserve 4 bytes which is the status word */
+		 
 		skb_reserve(skb, 4);
 		skb_put(skb, len);
 
@@ -648,7 +621,7 @@ static void ks8842_rx_frame(struct net_device *netdev,
 			   __func__, status);
 	}
 
-	/* check the status */
+	 
 	if ((status & RXSR_VALID) && !(status & RXSR_ERROR)) {
 		struct sk_buff *skb = netdev_alloc_skb_ip_align(netdev, len + 3);
 
@@ -683,13 +656,13 @@ static void ks8842_rx_frame(struct net_device *netdev,
 	} else
 		ks8842_update_rx_err_counters(netdev, status);
 
-	/* set high watermark to 3K */
+	 
 	ks8842_clear_bits(adapter, 0, 1 << 12, REG_QRFCR);
 
-	/* release the frame */
+	 
 	ks8842_write16(adapter, 17, 0x01, REG_RXQCR);
 
-	/* set high watermark to 2K */
+	 
 	ks8842_enable_bits(adapter, 0, 1 << 12, REG_QRFCR);
 }
 
@@ -730,7 +703,7 @@ static void ks8842_tasklet(struct tasklet_struct *t)
 	unsigned long flags;
 	u16 entry_bank;
 
-	/* read current bank to be able to set it back */
+	 
 	spin_lock_irqsave(&adapter->lock, flags);
 	entry_bank = ioread16(adapter->hw_addr + REG_SELECT_BANK);
 	spin_unlock_irqrestore(&adapter->lock, flags);
@@ -738,17 +711,15 @@ static void ks8842_tasklet(struct tasklet_struct *t)
 	isr = ks8842_read16(adapter, 18, REG_ISR);
 	netdev_dbg(netdev, "%s - ISR: 0x%x\n", __func__, isr);
 
-	/* when running in DMA mode, do not ack RX interrupts, it is handled
-	   internally by timberdale, otherwise it's DMA FIFO:s would stop
-	*/
+	 
 	if (KS8842_USE_DMA(adapter))
 		isr &= ~IRQ_RX;
 
-	/* Ack */
+	 
 	ks8842_write16(adapter, 18, isr, REG_ISR);
 
 	if (!(adapter->conf_flags & MICREL_KS884X))
-		/* Ack in the timberdale IP as well */
+		 
 		iowrite32(0x1, adapter->hw_addr + REG_TIMB_IAR);
 
 	if (!netif_running(netdev))
@@ -757,11 +728,11 @@ static void ks8842_tasklet(struct tasklet_struct *t)
 	if (isr & IRQ_LINK_CHANGE)
 		ks8842_update_link_status(netdev, adapter);
 
-	/* should not get IRQ_RX when running DMA mode */
+	 
 	if (isr & (IRQ_RX | IRQ_RX_ERROR) && !KS8842_USE_DMA(adapter))
 		ks8842_handle_rx(netdev, adapter);
 
-	/* should only happen when in PIO mode */
+	 
 	if (isr & IRQ_TX)
 		ks8842_handle_tx(netdev, adapter);
 
@@ -778,7 +749,7 @@ static void ks8842_tasklet(struct tasklet_struct *t)
 		ks8842_enable_rx(adapter);
 	}
 
-	/* re-enable interrupts, put back the bank selection register */
+	 
 	spin_lock_irqsave(&adapter->lock, flags);
 	if (KS8842_USE_DMA(adapter))
 		ks8842_write16(adapter, 18, ENABLED_IRQS_DMA, REG_IER);
@@ -786,8 +757,7 @@ static void ks8842_tasklet(struct tasklet_struct *t)
 		ks8842_write16(adapter, 18, ENABLED_IRQS, REG_IER);
 	iowrite16(entry_bank, adapter->hw_addr + REG_SELECT_BANK);
 
-	/* Make sure timberdale continues DMA operations, they are stopped while
-	   we are handling the ks8842 because we might change bank */
+	 
 	if (KS8842_USE_DMA(adapter))
 		ks8842_resume_dma(adapter);
 
@@ -807,13 +777,13 @@ static irqreturn_t ks8842_irq(int irq, void *devid)
 
 	if (isr) {
 		if (KS8842_USE_DMA(adapter))
-			/* disable all but RX IRQ, since the FPGA relies on it*/
+			 
 			ks8842_write16(adapter, 18, IRQ_RX, REG_IER);
 		else
-			/* disable IRQ */
+			 
 			ks8842_write16(adapter, 18, 0x00, REG_IER);
 
-		/* schedule tasklet */
+		 
 		tasklet_schedule(&adapter->tasklet);
 
 		ret = IRQ_HANDLED;
@@ -821,9 +791,7 @@ static irqreturn_t ks8842_irq(int irq, void *devid)
 
 	iowrite16(entry_bank, adapter->hw_addr + REG_SELECT_BANK);
 
-	/* After an interrupt, tell timberdale to continue DMA operations.
-	   DMA is disabled while we are handling the ks8842 because we might
-	   change bank */
+	 
 	ks8842_resume_dma(adapter);
 
 	return ret;
@@ -835,7 +803,7 @@ static void ks8842_dma_rx_cb(void *data)
 	struct ks8842_adapter	*adapter = netdev_priv(netdev);
 
 	netdev_dbg(netdev, "RX DMA finished\n");
-	/* schedule tasklet */
+	 
 	if (adapter->dma_rx.adesc)
 		tasklet_schedule(&adapter->dma_rx.tasklet);
 }
@@ -933,7 +901,7 @@ static int ks8842_alloc_dma_bufs(struct net_device *netdev)
 		goto err;
 	}
 
-	/* allocate DMA buffer */
+	 
 	tx_ctl->buf = kmalloc(DMA_BUFFER_SIZE, GFP_KERNEL);
 	if (!tx_ctl->buf) {
 		err = -ENOMEM;
@@ -963,7 +931,7 @@ err:
 	return err;
 }
 
-/* Netdevice operations */
+ 
 
 static int ks8842_open(struct net_device *netdev)
 {
@@ -976,7 +944,7 @@ static int ks8842_open(struct net_device *netdev)
 		err = ks8842_alloc_dma_bufs(netdev);
 
 		if (!err) {
-			/* start RX dma */
+			 
 			err = __ks8842_start_new_rx_dma(netdev);
 			if (err)
 				ks8842_dealloc_dma_bufs(adapter);
@@ -991,7 +959,7 @@ static int ks8842_open(struct net_device *netdev)
 		}
 	}
 
-	/* reset the HW */
+	 
 	ks8842_reset_hw(adapter);
 
 	ks8842_write_mac_addr(adapter, netdev->dev_addr);
@@ -1019,10 +987,10 @@ static int ks8842_close(struct net_device *netdev)
 	if (KS8842_USE_DMA(adapter))
 		ks8842_dealloc_dma_bufs(adapter);
 
-	/* free the irq */
+	 
 	free_irq(adapter->irq, netdev);
 
-	/* disable the switch */
+	 
 	ks8842_write16(adapter, 32, 0x0, REG_SW_ID_AND_ENABLE);
 
 	return 0;
@@ -1039,7 +1007,7 @@ static netdev_tx_t ks8842_xmit_frame(struct sk_buff *skb,
 	if (KS8842_USE_DMA(adapter)) {
 		unsigned long flags;
 		ret = ks8842_tx_frame_dma(skb, netdev);
-		/* for now only allow one transfer at the time */
+		 
 		spin_lock_irqsave(&adapter->lock, flags);
 		if (adapter->dma_tx.adesc)
 			netif_stop_queue(netdev);
@@ -1086,7 +1054,7 @@ static void ks8842_tx_timeout_work(struct work_struct *work)
 	if (KS8842_USE_DMA(adapter))
 		ks8842_stop_dma(adapter);
 
-	/* disable interrupts */
+	 
 	ks8842_write16(adapter, 18, 0, REG_IER);
 	ks8842_write16(adapter, 18, 0xFFFF, REG_ISR);
 
@@ -1167,7 +1135,7 @@ static int ks8842_probe(struct platform_device *pdev)
 
 	adapter->dev = (pdev->dev.parent) ? pdev->dev.parent : &pdev->dev;
 
-	/* DMA is only supported when accessed via timberdale */
+	 
 	if (!(adapter->conf_flags & MICREL_KS884X) && pdata &&
 		(pdata->tx_dma_channel != -1) &&
 		(pdata->rx_dma_channel != -1)) {
@@ -1184,7 +1152,7 @@ static int ks8842_probe(struct platform_device *pdev)
 	netdev->netdev_ops = &ks8842_netdev_ops;
 	netdev->ethtool_ops = &ks8842_ethtool_ops;
 
-	/* Check if a mac address was given */
+	 
 	i = netdev->addr_len;
 	if (pdata) {
 		for (i = 0; i < netdev->addr_len; i++)
@@ -1192,7 +1160,7 @@ static int ks8842_probe(struct platform_device *pdev)
 				break;
 
 		if (i < netdev->addr_len)
-			/* an address was passed, use it */
+			 
 			eth_hw_addr_set(netdev, pdata->macaddr);
 	}
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is the 1999 rewrite of IP Firewalling, aiming for kernel 2.3.x.
- *
- * Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
- * Copyright (C) 2000-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,7 +25,7 @@ static const struct xt_table packet_filter = {
 
 static struct nf_hook_ops *filter_ops __read_mostly;
 
-/* Default to forward because I got too much mail already. */
+ 
 static bool forward __read_mostly = true;
 module_param(forward, bool, 0000);
 
@@ -42,7 +37,7 @@ static int iptable_filter_table_init(struct net *net)
 	repl = ipt_alloc_initial_table(&packet_filter);
 	if (repl == NULL)
 		return -ENOMEM;
-	/* Entry 1 is the FORWARD hook */
+	 
 	((struct ipt_standard *)repl->entries)[1].target.verdict =
 		forward ? -NF_ACCEPT - 1 : -NF_DROP - 1;
 

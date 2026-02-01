@@ -1,20 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ir-sony-decoder.c - handle Sony IR Pulse/Space protocol
- *
- * Copyright (C) 2010 by David Härdeman <david@hardeman.nu>
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-#define SONY_UNIT		600 /* us */
+#define SONY_UNIT		600  
 #define SONY_HEADER_PULSE	(4 * SONY_UNIT)
 #define	SONY_HEADER_SPACE	(1 * SONY_UNIT)
 #define SONY_BIT_0_PULSE	(1 * SONY_UNIT)
 #define SONY_BIT_1_PULSE	(2 * SONY_UNIT)
 #define SONY_BIT_SPACE		(1 * SONY_UNIT)
-#define SONY_TRAILER_SPACE	(10 * SONY_UNIT) /* minimum */
+#define SONY_TRAILER_SPACE	(10 * SONY_UNIT)  
 
 enum sony_state {
 	STATE_INACTIVE,
@@ -24,13 +21,7 @@ enum sony_state {
 	STATE_FINISHED,
 };
 
-/**
- * ir_sony_decode() - Decode one Sony pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:         the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_sony_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct sony_dec *data = &dev->raw->sony;
@@ -172,18 +163,7 @@ static const struct ir_raw_timings_pl ir_sony_timings = {
 	.msb_first     = 0,
 };
 
-/**
- * ir_sony_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:	protocol to encode
- * @scancode:	scancode to encode
- * @events:	array of raw ir events to write into
- * @max:	maximum size of @events
- *
- * Returns:	The number of events written.
- *		-ENOBUFS if there isn't enough space in the array to fit the
- *		encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_sony_encode(enum rc_proto protocol, u32 scancode,
 			  struct ir_raw_event *events, unsigned int max)
 {

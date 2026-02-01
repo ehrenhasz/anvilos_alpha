@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -23,7 +23,7 @@
 #include "q6core.h"
 #include "q6afe.h"
 
-/* AFE CMDs */
+ 
 #define AFE_PORT_CMD_DEVICE_START	0x000100E5
 #define AFE_PORT_CMD_DEVICE_STOP	0x000100E6
 #define AFE_PORT_CMD_SET_PARAM_V2	0x000100EF
@@ -47,7 +47,7 @@
 #define AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST   0x000100f5
 #define AFE_CMD_REMOTE_LPASS_CORE_HW_DEVOTE_REQUEST	0x000100f6
 
-/* I2S config specific */
+ 
 #define AFE_API_VERSION_I2S_CONFIG	0x1
 #define AFE_PORT_I2S_SD0		0x1
 #define AFE_PORT_I2S_SD1		0x2
@@ -72,45 +72,45 @@
 #define AFE_LINEAR_PCM_DATA				0x0
 
 
-/* Port IDs */
+ 
 #define AFE_API_VERSION_HDMI_CONFIG	0x1
 #define AFE_PORT_ID_MULTICHAN_HDMI_RX	0x100E
 #define AFE_PORT_ID_HDMI_OVER_DP_RX	0x6020
 
 #define AFE_API_VERSION_SLIMBUS_CONFIG 0x1
-/* Clock set API version */
+ 
 #define AFE_API_VERSION_CLOCK_SET 1
 #define Q6AFE_LPASS_CLK_CONFIG_API_VERSION	0x1
 #define AFE_MODULE_CLOCK_SET		0x0001028F
 #define AFE_PARAM_ID_CLOCK_SET		0x00010290
 
-/* SLIMbus Rx port on channel 0. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_0_RX      0x4000
-/* SLIMbus Tx port on channel 0. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_0_TX      0x4001
-/* SLIMbus Rx port on channel 1. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_1_RX      0x4002
-/* SLIMbus Tx port on channel 1. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_1_TX      0x4003
-/* SLIMbus Rx port on channel 2. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_2_RX      0x4004
-/* SLIMbus Tx port on channel 2. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_2_TX      0x4005
-/* SLIMbus Rx port on channel 3. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_3_RX      0x4006
-/* SLIMbus Tx port on channel 3. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_3_TX      0x4007
-/* SLIMbus Rx port on channel 4. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_4_RX      0x4008
-/* SLIMbus Tx port on channel 4. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_4_TX      0x4009
-/* SLIMbus Rx port on channel 5. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_5_RX      0x400a
-/* SLIMbus Tx port on channel 5. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_5_TX      0x400b
-/* SLIMbus Rx port on channel 6. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_6_RX      0x400c
-/* SLIMbus Tx port on channel 6. */
+ 
 #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_6_TX      0x400d
 #define AFE_PORT_ID_PRIMARY_MI2S_RX         0x1000
 #define AFE_PORT_ID_PRIMARY_MI2S_TX         0x1001
@@ -123,14 +123,14 @@
 #define AFE_PORT_ID_QUINARY_MI2S_RX	    0x1016
 #define AFE_PORT_ID_QUINARY_MI2S_TX	    0x1017
 
-/* Start of the range of port IDs for TDM devices. */
+ 
 #define AFE_PORT_ID_TDM_PORT_RANGE_START	0x9000
 
-/* End of the range of port IDs for TDM devices. */
+ 
 #define AFE_PORT_ID_TDM_PORT_RANGE_END \
 	(AFE_PORT_ID_TDM_PORT_RANGE_START+0x50-1)
 
-/* Size of the range of port IDs for TDM ports. */
+ 
 #define AFE_PORT_ID_TDM_PORT_RANGE_SIZE \
 	(AFE_PORT_ID_TDM_PORT_RANGE_END - \
 	AFE_PORT_ID_TDM_PORT_RANGE_START+1)
@@ -305,49 +305,49 @@
 #define AFE_PORT_ID_QUINARY_TDM_TX_7 \
 	(AFE_PORT_ID_QUINARY_TDM_TX + 0x0E)
 
-/* AFE WSA Codec DMA Rx port 0 */
+ 
 #define AFE_PORT_ID_WSA_CODEC_DMA_RX_0	0xB000
-/* AFE WSA Codec DMA Tx port 0 */
+ 
 #define AFE_PORT_ID_WSA_CODEC_DMA_TX_0	0xB001
-/* AFE WSA Codec DMA Rx port 1 */
+ 
 #define AFE_PORT_ID_WSA_CODEC_DMA_RX_1	0xB002
-/* AFE WSA Codec DMA Tx port 1 */
+ 
 #define AFE_PORT_ID_WSA_CODEC_DMA_TX_1	0xB003
-/* AFE WSA Codec DMA Tx port 2 */
+ 
 #define AFE_PORT_ID_WSA_CODEC_DMA_TX_2	0xB005
-/* AFE VA Codec DMA Tx port 0 */
+ 
 #define AFE_PORT_ID_VA_CODEC_DMA_TX_0	0xB021
-/* AFE VA Codec DMA Tx port 1 */
+ 
 #define AFE_PORT_ID_VA_CODEC_DMA_TX_1	0xB023
-/* AFE VA Codec DMA Tx port 2 */
+ 
 #define AFE_PORT_ID_VA_CODEC_DMA_TX_2	0xB025
-/* AFE Rx Codec DMA Rx port 0 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_0	0xB030
-/* AFE Tx Codec DMA Tx port 0 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_0	0xB031
-/* AFE Rx Codec DMA Rx port 1 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_1	0xB032
-/* AFE Tx Codec DMA Tx port 1 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_1	0xB033
-/* AFE Rx Codec DMA Rx port 2 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_2	0xB034
-/* AFE Tx Codec DMA Tx port 2 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_2	0xB035
-/* AFE Rx Codec DMA Rx port 3 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_3	0xB036
-/* AFE Tx Codec DMA Tx port 3 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_3	0xB037
-/* AFE Rx Codec DMA Rx port 4 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_4	0xB038
-/* AFE Tx Codec DMA Tx port 4 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_4	0xB039
-/* AFE Rx Codec DMA Rx port 5 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_5	0xB03A
-/* AFE Tx Codec DMA Tx port 5 */
+ 
 #define AFE_PORT_ID_TX_CODEC_DMA_TX_5	0xB03B
-/* AFE Rx Codec DMA Rx port 6 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_6	0xB03C
-/* AFE Rx Codec DMA Rx port 7 */
+ 
 #define AFE_PORT_ID_RX_CODEC_DMA_RX_7	0xB03E
 
 #define Q6AFE_LPASS_MODE_CLK1_VALID 1
@@ -382,7 +382,7 @@ struct afe_port_cmd_device_start {
 struct afe_port_cmd_device_stop {
 	u16 port_id;
 	u16 reserved;
-/* Reserved for 32-bit alignment. This field must be set to 0.*/
+ 
 } __packed;
 
 struct afe_port_param_data_v2 {
@@ -418,45 +418,20 @@ struct afe_param_id_hdmi_multi_chan_audio_cfg {
 
 struct afe_param_id_slimbus_cfg {
 	u32                  sb_cfg_minor_version;
-/* Minor version used for tracking the version of the SLIMBUS
- * configuration interface.
- * Supported values: #AFE_API_VERSION_SLIMBUS_CONFIG
- */
+ 
 
 	u16                  slimbus_dev_id;
-/* SLIMbus hardware device ID, which is required to handle
- * multiple SLIMbus hardware blocks.
- * Supported values: - #AFE_SLIMBUS_DEVICE_1 - #AFE_SLIMBUS_DEVICE_2
- */
+ 
 	u16                  bit_width;
-/* Bit width of the sample.
- * Supported values: 16, 24
- */
+ 
 	u16                  data_format;
-/* Data format supported by the SLIMbus hardware. The default is
- * 0 (#AFE_SB_DATA_FORMAT_NOT_INDICATED), which indicates the
- * hardware does not perform any format conversions before the data
- * transfer.
- */
+ 
 	u16                  num_channels;
-/* Number of channels.
- * Supported values: 1 to #AFE_PORT_MAX_AUDIO_CHAN_CNT
- */
+ 
 	u8  shared_ch_mapping[AFE_PORT_MAX_AUDIO_CHAN_CNT];
-/* Mapping of shared channel IDs (128 to 255) to which the
- * master port is to be connected.
- * Shared_channel_mapping[i] represents the shared channel assigned
- * for audio channel i in multichannel audio data.
- */
+ 
 	u32              sample_rate;
-/* Sampling rate of the port.
- * Supported values:
- * - #AFE_PORT_SAMPLE_RATE_8K
- * - #AFE_PORT_SAMPLE_RATE_16K
- * - #AFE_PORT_SAMPLE_RATE_48K
- * - #AFE_PORT_SAMPLE_RATE_96K
- * - #AFE_PORT_SAMPLE_RATE_192K
- */
+ 
 } __packed;
 
 struct afe_clk_cfg {
@@ -570,11 +545,7 @@ struct afe_port_map {
 	int is_dig_pcm;
 };
 
-/*
- * Mapping between Virtual Port IDs to DSP AFE Port ID
- * On B Family SoCs DSP Port IDs are consistent across multiple SoCs
- * on A Family SoCs DSP port IDs are same as virtual Port IDs.
- */
+ 
 
 static struct afe_port_map port_maps[AFE_PORT_MAX] = {
 	[HDMI_RX] = { AFE_PORT_ID_MULTICHAN_HDMI_RX, HDMI_RX, 1, 1},
@@ -917,13 +888,7 @@ static int q6afe_callback(struct apr_device *adev, struct apr_resp_pkt *data)
 	return 0;
 }
 
-/**
- * q6afe_get_port_id() - Get port id from a given port index
- *
- * @index: port index
- *
- * Return: Will be an negative on error or valid port_id on success
- */
+ 
 int q6afe_get_port_id(int index)
 {
 	if (index < 0 || index >= AFE_PORT_MAX)
@@ -1177,13 +1142,7 @@ int q6afe_port_set_sysclk(struct q6afe_port *port, int clk_id,
 }
 EXPORT_SYMBOL_GPL(q6afe_port_set_sysclk);
 
-/**
- * q6afe_port_stop() - Stop a afe port
- *
- * @port: Instance of port to stop
- *
- * Return: Will be an negative on packet size on success.
- */
+ 
 int q6afe_port_stop(struct q6afe_port *port)
 {
 	struct afe_port_cmd_device_stop *stop;
@@ -1228,13 +1187,7 @@ int q6afe_port_stop(struct q6afe_port *port)
 }
 EXPORT_SYMBOL_GPL(q6afe_port_stop);
 
-/**
- * q6afe_slim_port_prepare() - Prepare slim afe port.
- *
- * @port: Instance of afe port
- * @cfg: SLIM configuration for the afe port
- *
- */
+ 
 void q6afe_slim_port_prepare(struct q6afe_port *port,
 			     struct q6afe_slim_cfg *cfg)
 {
@@ -1253,13 +1206,7 @@ void q6afe_slim_port_prepare(struct q6afe_port *port,
 }
 EXPORT_SYMBOL_GPL(q6afe_slim_port_prepare);
 
-/**
- * q6afe_tdm_port_prepare() - Prepare tdm afe port.
- *
- * @port: Instance of afe port
- * @cfg: TDM configuration for the afe port
- *
- */
+ 
 void q6afe_tdm_port_prepare(struct q6afe_port *port,
 			     struct q6afe_tdm_cfg *cfg)
 {
@@ -1289,13 +1236,7 @@ void q6afe_tdm_port_prepare(struct q6afe_port *port,
 }
 EXPORT_SYMBOL_GPL(q6afe_tdm_port_prepare);
 
-/**
- * q6afe_hdmi_port_prepare() - Prepare hdmi afe port.
- *
- * @port: Instance of afe port
- * @cfg: HDMI configuration for the afe port
- *
- */
+ 
 void q6afe_hdmi_port_prepare(struct q6afe_port *port,
 			     struct q6afe_hdmi_cfg *cfg)
 {
@@ -1310,13 +1251,7 @@ void q6afe_hdmi_port_prepare(struct q6afe_port *port,
 }
 EXPORT_SYMBOL_GPL(q6afe_hdmi_port_prepare);
 
-/**
- * q6afe_i2s_port_prepare() - Prepare i2s afe port.
- *
- * @port: Instance of afe port
- * @cfg: I2S configuration for the afe port
- * Return: Will be an negative on error and zero on success.
- */
+ 
 int q6afe_i2s_port_prepare(struct q6afe_port *port, struct q6afe_i2s_cfg *cfg)
 {
 	union afe_port_config *pcfg = &port->port_cfg;
@@ -1333,7 +1268,7 @@ int q6afe_i2s_port_prepare(struct q6afe_port *port, struct q6afe_i2s_cfg *cfg)
 		pcfg->i2s_cfg.ws_src = AFE_PORT_CONFIG_I2S_WS_SRC_INTERNAL;
 		break;
 	case SND_SOC_DAIFMT_BC_FC:
-		/* CPU is slave */
+		 
 		pcfg->i2s_cfg.ws_src = AFE_PORT_CONFIG_I2S_WS_SRC_EXTERNAL;
 		break;
 	default:
@@ -1453,13 +1388,7 @@ int q6afe_i2s_port_prepare(struct q6afe_port *port, struct q6afe_i2s_cfg *cfg)
 }
 EXPORT_SYMBOL_GPL(q6afe_i2s_port_prepare);
 
-/**
- * q6afe_cdc_dma_port_prepare() - Prepare dma afe port.
- *
- * @port: Instance of afe port
- * @cfg: DMA configuration for the afe port
- *
- */
+ 
 void q6afe_cdc_dma_port_prepare(struct q6afe_port *port,
 				struct q6afe_cdc_dma_cfg *cfg)
 {
@@ -1475,13 +1404,7 @@ void q6afe_cdc_dma_port_prepare(struct q6afe_port *port,
 		dma_cfg->active_channels_mask = (1 << cfg->num_channels) - 1;
 }
 EXPORT_SYMBOL_GPL(q6afe_cdc_dma_port_prepare);
-/**
- * q6afe_port_start() - Start a afe port
- *
- * @port: Instance of port to start
- *
- * Return: Will be an negative on packet size on success.
- */
+ 
 int q6afe_port_start(struct q6afe_port *port)
 {
 	struct afe_port_cmd_device_start *start;
@@ -1541,15 +1464,7 @@ int q6afe_port_start(struct q6afe_port *port)
 }
 EXPORT_SYMBOL_GPL(q6afe_port_start);
 
-/**
- * q6afe_port_get_from_id() - Get port instance from a port id
- *
- * @dev: Pointer to afe child device.
- * @id: port id
- *
- * Return: Will be an error pointer on error or a valid afe port
- * on success.
- */
+ 
 struct q6afe_port *q6afe_port_get_from_id(struct device *dev, int id)
 {
 	int port_id;
@@ -1563,7 +1478,7 @@ struct q6afe_port *q6afe_port_get_from_id(struct device *dev, int id)
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* if port is multiple times bind/unbind before callback finishes */
+	 
 	port = q6afe_find_port(afe, id);
 	if (port) {
 		dev_err(dev, "AFE Port already open\n");
@@ -1638,11 +1553,7 @@ struct q6afe_port *q6afe_port_get_from_id(struct device *dev, int id)
 }
 EXPORT_SYMBOL_GPL(q6afe_port_get_from_id);
 
-/**
- * q6afe_port_put() - Release port reference
- *
- * @port: Instance of port to put
- */
+ 
 void q6afe_port_put(struct q6afe_port *port)
 {
 	kref_put(&port->refcount, q6afe_port_free);

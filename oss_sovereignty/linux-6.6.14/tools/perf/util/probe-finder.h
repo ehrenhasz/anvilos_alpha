@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PROBE_FINDER_H
 #define _PROBE_FINDER_H
 
@@ -17,7 +17,7 @@
 
 static inline int is_c_varname(const char *name)
 {
-	/* TODO */
+	 
 	return isalpha(name[0]) || name[0] == '_';
 }
 
@@ -25,9 +25,9 @@ static inline int is_c_varname(const char *name)
 
 #include "dwarf-aux.h"
 
-/* TODO: export debuginfo data structure even if no dwarf support */
+ 
 
-/* debug information structure */
+ 
 struct debuginfo {
 	Dwarf		*dbg;
 	Dwfl_Module	*mod;
@@ -36,91 +36,91 @@ struct debuginfo {
 	const unsigned char	*build_id;
 };
 
-/* This also tries to open distro debuginfo */
+ 
 struct debuginfo *debuginfo__new(const char *path);
 void debuginfo__delete(struct debuginfo *dbg);
 
-/* Find probe_trace_events specified by perf_probe_event from debuginfo */
+ 
 int debuginfo__find_trace_events(struct debuginfo *dbg,
 				 struct perf_probe_event *pev,
 				 struct probe_trace_event **tevs);
 
-/* Find a perf_probe_point from debuginfo */
+ 
 int debuginfo__find_probe_point(struct debuginfo *dbg, u64 addr,
 				struct perf_probe_point *ppt);
 
 int debuginfo__get_text_offset(struct debuginfo *dbg, Dwarf_Addr *offs,
 			       bool adjust_offset);
 
-/* Find a line range */
+ 
 int debuginfo__find_line_range(struct debuginfo *dbg, struct line_range *lr);
 
-/* Find available variables */
+ 
 int debuginfo__find_available_vars_at(struct debuginfo *dbg,
 				      struct perf_probe_event *pev,
 				      struct variable_list **vls);
 
-/* Find a src file from a DWARF tag path */
+ 
 int find_source_path(const char *raw_path, const char *sbuild_id,
 		     const char *comp_dir, char **new_path);
 
 struct probe_finder {
-	struct perf_probe_event	*pev;		/* Target probe event */
+	struct perf_probe_event	*pev;		 
 	struct debuginfo	*dbg;
 
-	/* Callback when a probe point is found */
+	 
 	int (*callback)(Dwarf_Die *sc_die, struct probe_finder *pf);
 
-	/* For function searching */
-	int			lno;		/* Line number */
-	Dwarf_Addr		addr;		/* Address */
-	const char		*fname;		/* Real file name */
-	Dwarf_Die		cu_die;		/* Current CU */
+	 
+	int			lno;		 
+	Dwarf_Addr		addr;		 
+	const char		*fname;		 
+	Dwarf_Die		cu_die;		 
 	Dwarf_Die		sp_die;
-	struct intlist		*lcache;	/* Line cache for lazy match */
+	struct intlist		*lcache;	 
 
-	/* For variable searching */
+	 
 #if _ELFUTILS_PREREQ(0, 142)
-	/* Call Frame Information from .eh_frame */
+	 
 	Dwarf_CFI		*cfi_eh;
-	/* Call Frame Information from .debug_frame */
+	 
 	Dwarf_CFI		*cfi_dbg;
 #endif
-	Dwarf_Op		*fb_ops;	/* Frame base attribute */
-	unsigned int		machine;	/* Target machine arch */
-	struct perf_probe_arg	*pvar;		/* Current target variable */
-	struct probe_trace_arg	*tvar;		/* Current result variable */
-	bool			skip_empty_arg;	/* Skip non-exist args */
+	Dwarf_Op		*fb_ops;	 
+	unsigned int		machine;	 
+	struct perf_probe_arg	*pvar;		 
+	struct probe_trace_arg	*tvar;		 
+	bool			skip_empty_arg;	 
 };
 
 struct trace_event_finder {
 	struct probe_finder	pf;
-	Dwfl_Module		*mod;		/* For solving symbols */
-	struct probe_trace_event *tevs;		/* Found trace events */
-	int			ntevs;		/* Number of trace events */
-	int			max_tevs;	/* Max number of trace events */
+	Dwfl_Module		*mod;		 
+	struct probe_trace_event *tevs;		 
+	int			ntevs;		 
+	int			max_tevs;	 
 };
 
 struct available_var_finder {
 	struct probe_finder	pf;
-	Dwfl_Module		*mod;		/* For solving symbols */
-	struct variable_list	*vls;		/* Found variable lists */
-	int			nvls;		/* Number of variable lists */
-	int			max_vls;	/* Max no. of variable lists */
-	bool			child;		/* Search child scopes */
+	Dwfl_Module		*mod;		 
+	struct variable_list	*vls;		 
+	int			nvls;		 
+	int			max_vls;	 
+	bool			child;		 
 };
 
 struct line_finder {
-	struct line_range	*lr;		/* Target line range */
+	struct line_range	*lr;		 
 
-	const char		*fname;		/* File name */
-	int			lno_s;		/* Start line number */
-	int			lno_e;		/* End line number */
-	Dwarf_Die		cu_die;		/* Current CU */
+	const char		*fname;		 
+	int			lno_s;		 
+	int			lno_e;		 
+	Dwarf_Die		cu_die;		 
 	Dwarf_Die		sp_die;
 	int			found;
 };
 
-#endif /* HAVE_DWARF_SUPPORT */
+#endif  
 
-#endif /*_PROBE_FINDER_H */
+#endif  

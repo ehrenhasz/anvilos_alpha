@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <linux/membarrier.h>
 #include <syscall.h>
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
 	test_membarrier_query();
 
-	/* Multi-threaded */
+	 
 	test_mt_membarrier();
 
 	return ksft_exit_pass();

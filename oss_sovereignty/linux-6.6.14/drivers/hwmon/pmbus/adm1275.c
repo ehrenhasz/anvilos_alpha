@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Analog Devices ADM1275 Hot-Swap Controller
- * and Digital Power Monitor
- *
- * Copyright (c) 2011 Ericsson AB.
- * Copyright (c) 2018 Guenter Roeck
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -113,67 +107,67 @@ struct coefficients {
 };
 
 static const struct coefficients adm1075_coefficients[] = {
-	[0] = { 27169, 0, -1 },		/* voltage */
-	[1] = { 806, 20475, -1 },	/* current, irange25 */
-	[2] = { 404, 20475, -1 },	/* current, irange50 */
-	[3] = { 8549, 0, -1 },		/* power, irange25 */
-	[4] = { 4279, 0, -1 },		/* power, irange50 */
+	[0] = { 27169, 0, -1 },		 
+	[1] = { 806, 20475, -1 },	 
+	[2] = { 404, 20475, -1 },	 
+	[3] = { 8549, 0, -1 },		 
+	[4] = { 4279, 0, -1 },		 
 };
 
 static const struct coefficients adm1272_coefficients[] = {
-	[0] = { 6770, 0, -2 },		/* voltage, vrange 60V */
-	[1] = { 4062, 0, -2 },		/* voltage, vrange 100V */
-	[2] = { 1326, 20480, -1 },	/* current, vsense range 15mV */
-	[3] = { 663, 20480, -1 },	/* current, vsense range 30mV */
-	[4] = { 3512, 0, -2 },		/* power, vrange 60V, irange 15mV */
-	[5] = { 21071, 0, -3 },		/* power, vrange 100V, irange 15mV */
-	[6] = { 17561, 0, -3 },		/* power, vrange 60V, irange 30mV */
-	[7] = { 10535, 0, -3 },		/* power, vrange 100V, irange 30mV */
-	[8] = { 42, 31871, -1 },	/* temperature */
+	[0] = { 6770, 0, -2 },		 
+	[1] = { 4062, 0, -2 },		 
+	[2] = { 1326, 20480, -1 },	 
+	[3] = { 663, 20480, -1 },	 
+	[4] = { 3512, 0, -2 },		 
+	[5] = { 21071, 0, -3 },		 
+	[6] = { 17561, 0, -3 },		 
+	[7] = { 10535, 0, -3 },		 
+	[8] = { 42, 31871, -1 },	 
 
 };
 
 static const struct coefficients adm1275_coefficients[] = {
-	[0] = { 19199, 0, -2 },		/* voltage, vrange set */
-	[1] = { 6720, 0, -1 },		/* voltage, vrange not set */
-	[2] = { 807, 20475, -1 },	/* current */
+	[0] = { 19199, 0, -2 },		 
+	[1] = { 6720, 0, -1 },		 
+	[2] = { 807, 20475, -1 },	 
 };
 
 static const struct coefficients adm1276_coefficients[] = {
-	[0] = { 19199, 0, -2 },		/* voltage, vrange set */
-	[1] = { 6720, 0, -1 },		/* voltage, vrange not set */
-	[2] = { 807, 20475, -1 },	/* current */
-	[3] = { 6043, 0, -2 },		/* power, vrange set */
-	[4] = { 2115, 0, -1 },		/* power, vrange not set */
+	[0] = { 19199, 0, -2 },		 
+	[1] = { 6720, 0, -1 },		 
+	[2] = { 807, 20475, -1 },	 
+	[3] = { 6043, 0, -2 },		 
+	[4] = { 2115, 0, -1 },		 
 };
 
 static const struct coefficients adm1278_coefficients[] = {
-	[0] = { 19599, 0, -2 },		/* voltage */
-	[1] = { 800, 20475, -1 },	/* current */
-	[2] = { 6123, 0, -2 },		/* power */
-	[3] = { 42, 31880, -1 },	/* temperature */
+	[0] = { 19599, 0, -2 },		 
+	[1] = { 800, 20475, -1 },	 
+	[2] = { 6123, 0, -2 },		 
+	[3] = { 42, 31880, -1 },	 
 };
 
 static const struct coefficients adm1293_coefficients[] = {
-	[0] = { 3333, -1, 0 },		/* voltage, vrange 1.2V */
-	[1] = { 5552, -5, -1 },		/* voltage, vrange 7.4V */
-	[2] = { 19604, -50, -2 },	/* voltage, vrange 21V */
-	[3] = { 8000, -100, -2 },	/* current, irange25 */
-	[4] = { 4000, -100, -2 },	/* current, irange50 */
-	[5] = { 20000, -1000, -3 },	/* current, irange100 */
-	[6] = { 10000, -1000, -3 },	/* current, irange200 */
-	[7] = { 10417, 0, -1 },		/* power, 1.2V, irange25 */
-	[8] = { 5208, 0, -1 },		/* power, 1.2V, irange50 */
-	[9] = { 26042, 0, -2 },		/* power, 1.2V, irange100 */
-	[10] = { 13021, 0, -2 },	/* power, 1.2V, irange200 */
-	[11] = { 17351, 0, -2 },	/* power, 7.4V, irange25 */
-	[12] = { 8676, 0, -2 },		/* power, 7.4V, irange50 */
-	[13] = { 4338, 0, -2 },		/* power, 7.4V, irange100 */
-	[14] = { 21689, 0, -3 },	/* power, 7.4V, irange200 */
-	[15] = { 6126, 0, -2 },		/* power, 21V, irange25 */
-	[16] = { 30631, 0, -3 },	/* power, 21V, irange50 */
-	[17] = { 15316, 0, -3 },	/* power, 21V, irange100 */
-	[18] = { 7658, 0, -3 },		/* power, 21V, irange200 */
+	[0] = { 3333, -1, 0 },		 
+	[1] = { 5552, -5, -1 },		 
+	[2] = { 19604, -50, -2 },	 
+	[3] = { 8000, -100, -2 },	 
+	[4] = { 4000, -100, -2 },	 
+	[5] = { 20000, -1000, -3 },	 
+	[6] = { 10000, -1000, -3 },	 
+	[7] = { 10417, 0, -1 },		 
+	[8] = { 5208, 0, -1 },		 
+	[9] = { 26042, 0, -2 },		 
+	[10] = { 13021, 0, -2 },	 
+	[11] = { 17351, 0, -2 },	 
+	[12] = { 8676, 0, -2 },		 
+	[13] = { 4338, 0, -2 },		 
+	[14] = { 21689, 0, -3 },	 
+	[15] = { 6126, 0, -2 },		 
+	[16] = { 30631, 0, -3 },	 
+	[17] = { 15316, 0, -3 },	 
+	[18] = { 7658, 0, -3 },		 
 };
 
 static int adm1275_read_samples(const struct adm1275_data *data,
@@ -182,11 +176,7 @@ static int adm1275_read_samples(const struct adm1275_data *data,
 	int shift, ret;
 	u16 mask;
 
-	/*
-	 * The PMON configuration register is a 16-bit register only on chips
-	 * supporting power average sampling. On other chips it is an 8-bit
-	 * register.
-	 */
+	 
 	if (data->have_power_sampling) {
 		ret = i2c_smbus_read_word_data(client, ADM1275_PMON_CONFIG);
 		mask = is_power ? ADM1278_PWR_AVG_MASK : ADM1278_VI_AVG_MASK;
@@ -218,10 +208,7 @@ static int adm1275_write_pmon_config(const struct adm1275_data *data,
 		ret = i2c_smbus_write_byte_data(client, ADM1275_PMON_CONFIG,
 						word);
 
-	/*
-	 * We still want to re-enable conversions if writing into
-	 * ADM1275_PMON_CONFIG failed.
-	 */
+	 
 	ret2 = i2c_smbus_write_byte_data(client, ADM1275_PMON_CONTROL,
 					 ADM1275_CONVERT_EN);
 	if (!ret)
@@ -488,7 +475,7 @@ static const struct i2c_device_id adm1275_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, adm1275_id);
 
-/* Enable VOUT & TEMP1 if not enabled (disabled by default) */
+ 
 static int adm1275_enable_vout_temp(struct adm1275_data *data,
 				    struct i2c_client *client, int config)
 {
@@ -574,7 +561,7 @@ static int adm1275_probe(struct i2c_client *client)
 
 	if (of_property_read_u32(client->dev.of_node,
 				 "shunt-resistor-micro-ohms", &shunt))
-		shunt = 1000; /* 1 mOhm if not set via DT */
+		shunt = 1000;  
 
 	if (shunt == 0)
 		return -EINVAL;
@@ -636,7 +623,7 @@ static int adm1275_probe(struct i2c_client *client)
 		coefficients = adm1272_coefficients;
 		vindex = (config & ADM1275_VRANGE) ? 1 : 0;
 		cindex = (config & ADM1272_IRANGE) ? 3 : 2;
-		/* pindex depends on the combination of the above */
+		 
 		switch (config & (ADM1275_VRANGE | ADM1272_IRANGE)) {
 		case 0:
 		default:
@@ -737,16 +724,16 @@ static int adm1275_probe(struct i2c_client *client)
 
 		voindex = 0;
 		switch (config & ADM1293_VIN_SEL_MASK) {
-		case ADM1293_VIN_SEL_012:	/* 1.2V */
+		case ADM1293_VIN_SEL_012:	 
 			vindex = 0;
 			break;
-		case ADM1293_VIN_SEL_074:	/* 7.4V */
+		case ADM1293_VIN_SEL_074:	 
 			vindex = 1;
 			break;
-		case ADM1293_VIN_SEL_210:	/* 21V */
+		case ADM1293_VIN_SEL_210:	 
 			vindex = 2;
 			break;
-		default:			/* disabled */
+		default:			 
 			break;
 		}
 
@@ -829,7 +816,7 @@ static int adm1275_probe(struct i2c_client *client)
 		info->R[PSC_VOLTAGE_OUT] = coefficients[voindex].R;
 	}
 	if (cindex >= 0) {
-		/* Scale current with sense resistor value */
+		 
 		info->m[PSC_CURRENT_OUT] =
 			coefficients[cindex].m * shunt / 1000;
 		info->b[PSC_CURRENT_OUT] = coefficients[cindex].b;

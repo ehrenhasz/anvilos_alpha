@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/******************************************************************************
- * platform-pci-unplug.c
- *
- * Xen platform PCI device driver
- * Copyright (c) 2010, Citrix
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +16,7 @@
 #define XEN_PLATFORM_ERR_PROTOCOL -2
 #define XEN_PLATFORM_ERR_BLACKLIST -3
 
-/* store the value of xen_emul_unplug after the unplug is done */
+ 
 static int xen_platform_pci_unplug;
 static int xen_emul_unplug;
 
@@ -63,12 +58,11 @@ bool xen_has_pv_devices(void)
 	if (!xen_domain())
 		return false;
 
-	/* PV and PVH domains always have them. */
+	 
 	if (xen_pv_domain() || xen_pvh_domain())
 		return true;
 
-	/* And user has xen_platform_pci=0 set in guest config as
-	 * driver did not modify the value. */
+	 
 	if (xen_platform_pci_unplug == 0)
 		return false;
 
@@ -78,20 +72,18 @@ bool xen_has_pv_devices(void)
 	if (xen_platform_pci_unplug & XEN_UNPLUG_ALL)
 		return true;
 
-	/* This is an odd one - we are going to run legacy
-	 * and PV drivers at the same time. */
+	 
 	if (xen_platform_pci_unplug & XEN_UNPLUG_UNNECESSARY)
 		return true;
 
-	/* And the caller has to follow with xen_pv_{disk,nic}_devices
-	 * to be certain which driver can load. */
+	 
 	return false;
 }
 EXPORT_SYMBOL_GPL(xen_has_pv_devices);
 
 static bool __xen_has_pv_device(int state)
 {
-	/* HVM domains might or might not */
+	 
 	if (xen_hvm_domain() && (xen_platform_pci_unplug & state))
 		return true;
 
@@ -111,17 +103,13 @@ bool xen_has_pv_disk_devices(void)
 }
 EXPORT_SYMBOL_GPL(xen_has_pv_disk_devices);
 
-/*
- * This one is odd - it determines whether you want to run PV _and_
- * legacy (IDE) drivers together. This combination is only possible
- * under HVM.
- */
+ 
 bool xen_has_pv_and_legacy_disk_devices(void)
 {
 	if (!xen_domain())
 		return false;
 
-	/* N.B. This is only ever used in HVM mode */
+	 
 	if (xen_pv_domain())
 		return false;
 
@@ -136,25 +124,20 @@ void xen_unplug_emulated_devices(void)
 {
 	int r;
 
-	/* PVH guests don't have emulated devices. */
+	 
 	if (xen_pvh_domain())
 		return;
 
-	/* user explicitly requested no unplug */
+	 
 	if (xen_emul_unplug & XEN_UNPLUG_NEVER)
 		return;
-	/* check the version of the xen platform PCI device */
+	 
 	r = check_platform_magic();
-	/* If the version matches enable the Xen platform PCI driver.
-	 * Also enable the Xen platform PCI driver if the host does
-	 * not support the unplug protocol (XEN_PLATFORM_ERR_MAGIC)
-	 * but the user told us that unplugging is unnecessary. */
+	 
 	if (r && !(r == XEN_PLATFORM_ERR_MAGIC &&
 			(xen_emul_unplug & XEN_UNPLUG_UNNECESSARY)))
 		return;
-	/* Set the default value of xen_emul_unplug depending on whether or
-	 * not the Xen PV frontends and the Xen platform PCI driver have
-	 * been compiled for this kernel (modules or built-in are both OK). */
+	 
 	if (!xen_emul_unplug) {
 		if (xen_must_unplug_nics()) {
 			pr_info("Netfront and the Xen platform PCI driver have "
@@ -170,7 +153,7 @@ void xen_unplug_emulated_devices(void)
 			xen_emul_unplug |= XEN_UNPLUG_ALL_IDE_DISKS;
 		}
 	}
-	/* Now unplug the emulated devices */
+	 
 	if (!(xen_emul_unplug & XEN_UNPLUG_UNNECESSARY))
 		outw(xen_emul_unplug, XEN_IOPORT_UNPLUG);
 	xen_platform_pci_unplug = xen_emul_unplug;

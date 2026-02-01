@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "../bpf_testmod/bpf_testmod_kfunc.h"
 
 extern const int bpf_prog_active __ksym;

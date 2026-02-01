@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_ATOMIC_PLANE_H__
 #define __INTEL_ATOMIC_PLANE_H__
@@ -67,4 +65,4 @@ void intel_plane_set_invisible(struct intel_crtc_state *crtc_state,
 			       struct intel_plane_state *plane_state);
 void intel_plane_helper_add(struct intel_plane *plane);
 
-#endif /* __INTEL_ATOMIC_PLANE_H__ */
+#endif  

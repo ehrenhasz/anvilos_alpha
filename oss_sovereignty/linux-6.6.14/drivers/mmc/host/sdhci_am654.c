@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sdhci_am654.c - SDHCI driver for TI's AM654 SOCs
- *
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
 #include <linux/of.h>
@@ -18,7 +13,7 @@
 #include "sdhci-cqhci.h"
 #include "sdhci-pltfm.h"
 
-/* CTL_CFG Registers */
+ 
 #define CTL_CFG_2		0x14
 #define CTL_CFG_3		0x18
 
@@ -26,7 +21,7 @@
 #define SLOTTYPE_EMBEDDED	BIT(30)
 #define TUNINGFORSDR50_MASK	BIT(13)
 
-/* PHY Registers */
+ 
 #define PHY_CTRL1	0x100
 #define PHY_CTRL2	0x104
 #define PHY_CTRL3	0x108
@@ -87,7 +82,7 @@
 #define CLOCK_TOO_SLOW_HZ	50000000
 #define SDHCI_AM654_AUTOSUSPEND_DELAY	-1
 
-/* Command Queue Host Controller Interface Base address */
+ 
 #define SDHCI_AM654_CQE_BASE_ADDR 0x200
 
 static struct regmap_config sdhci_am654_regmap_config = {
@@ -172,7 +167,7 @@ static void sdhci_am654_setup_dll(struct sdhci_host *host, unsigned int clock)
 	u32 mask, val;
 	int ret;
 
-	/* Disable delay chain mode */
+	 
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL5,
 			   SELDLYTXCLK_MASK | SELDLYRXCLK_MASK, 0);
 
@@ -191,7 +186,7 @@ static void sdhci_am654_setup_dll(struct sdhci_host *host, unsigned int clock)
 			sel100 = 0;
 		}
 
-		/* Configure PHY DLL frequency */
+		 
 		mask = SEL50_MASK | SEL100_MASK;
 		val = (sel50 << SEL50_SHIFT) | (sel100 << SEL100_SHIFT);
 		regmap_update_bits(sdhci_am654->base, PHY_CTRL5, mask, val);
@@ -208,22 +203,19 @@ static void sdhci_am654_setup_dll(struct sdhci_host *host, unsigned int clock)
 		regmap_update_bits(sdhci_am654->base, PHY_CTRL5, FREQSEL_MASK,
 				   freqsel << FREQSEL_SHIFT);
 	}
-	/* Configure DLL TRIM */
+	 
 	mask = DLL_TRIM_ICP_MASK;
 	val = sdhci_am654->trm_icp << DLL_TRIM_ICP_SHIFT;
 
-	/* Configure DLL driver strength */
+	 
 	mask |= DR_TY_MASK;
 	val |= sdhci_am654->drv_strength << DR_TY_SHIFT;
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL1, mask, val);
 
-	/* Enable DLL */
+	 
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL1, ENDLL_MASK,
 			   0x1 << ENDLL_SHIFT);
-	/*
-	 * Poll for DLL ready. Use a one second timeout.
-	 * Works in all experiments done so far
-	 */
+	 
 	ret = regmap_read_poll_timeout(sdhci_am654->base, PHY_STAT1, val,
 				       val & DLLRDY_MASK, 1000, 1000000);
 	if (ret) {
@@ -235,7 +227,7 @@ static void sdhci_am654_setup_dll(struct sdhci_host *host, unsigned int clock)
 static void sdhci_am654_write_itapdly(struct sdhci_am654_data *sdhci_am654,
 				      u32 itapdly)
 {
-	/* Set ITAPCHGWIN before writing to ITAPDLY */
+	 
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL4, ITAPCHGWIN_MASK,
 			   1 << ITAPCHGWIN_SHIFT);
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL4, ITAPDLYSEL_MASK,
@@ -271,7 +263,7 @@ static void sdhci_am654_set_clock(struct sdhci_host *host, unsigned int clock)
 
 	sdhci_set_clock(host, clock);
 
-	/* Setup DLL Output TAP delay */
+	 
 	if (sdhci_am654->legacy_otapdly)
 		otap_del_sel = sdhci_am654->otap_del_sel[0];
 	else
@@ -283,7 +275,7 @@ static void sdhci_am654_set_clock(struct sdhci_host *host, unsigned int clock)
 	val = (otap_del_ena << OTAPDLYENA_SHIFT) |
 	      (otap_del_sel << OTAPDLYSEL_SHIFT);
 
-	/* Write to STRBSEL for HS400 speed mode */
+	 
 	if (timing == MMC_TIMING_MMC_HS400) {
 		if (sdhci_am654->flags & STRBSEL_4_BIT)
 			mask |= STRBSEL_4BIT_MASK;
@@ -313,7 +305,7 @@ static void sdhci_j721e_4bit_set_clock(struct sdhci_host *host,
 	u32 otap_del_sel;
 	u32 mask, val;
 
-	/* Setup DLL Output TAP delay */
+	 
 	if (sdhci_am654->legacy_otapdly)
 		otap_del_sel = sdhci_am654->otap_del_sel[0];
 	else
@@ -337,7 +329,7 @@ static u8 sdhci_am654_write_power_on(struct sdhci_host *host, u8 val, int reg)
 	return readb(host->ioaddr + reg);
 }
 
-#define MAX_POWER_ON_TIMEOUT	1500000 /* us */
+#define MAX_POWER_ON_TIMEOUT	1500000  
 static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
 {
 	unsigned char timing = host->mmc->ios.timing;
@@ -346,10 +338,7 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
 
 	if (reg == SDHCI_HOST_CONTROL) {
 		switch (timing) {
-		/*
-		 * According to the data manual, HISPD bit
-		 * should not be set in these speed modes.
-		 */
+		 
 		case MMC_TIMING_SD_HS:
 		case MMC_TIMING_MMC_HS:
 			val &= ~SDHCI_CTRL_HISPD;
@@ -358,11 +347,7 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
 
 	writeb(val, host->ioaddr + reg);
 	if (reg == SDHCI_POWER_CONTROL && (val & SDHCI_POWER_ON)) {
-		/*
-		 * Power on will not happen until the card detect debounce
-		 * timer expires. Wait at least 1.5 seconds for the power on
-		 * bit to be set
-		 */
+		 
 		ret = read_poll_timeout(sdhci_am654_write_power_on, pwr,
 					pwr & SDHCI_POWER_ON, 0,
 					MAX_POWER_ON_TIMEOUT, false, host, val,
@@ -394,10 +379,7 @@ static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
 
 	if (err)
 		return err;
-	/*
-	 * Tuning data remains in the buffer after tuning.
-	 * Do a command and data reset to get rid of it
-	 */
+	 
 	sdhci_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
 
 	return 0;
@@ -425,7 +407,7 @@ static int sdhci_am654_platform_execute_tuning(struct sdhci_host *host,
 	int cur_val, prev_val = 1, fail_len = 0, pass_window = 0, pass_len;
 	u32 itap;
 
-	/* Enable ITAPDLY */
+	 
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL4, ITAPDLYENA_MASK,
 			   1 << ITAPDLYENA_SHIFT);
 
@@ -441,12 +423,7 @@ static int sdhci_am654_platform_execute_tuning(struct sdhci_host *host,
 
 		prev_val = cur_val;
 	}
-	/*
-	 * Having determined the length of the failing window and start of
-	 * the passing window calculate the length of the passing window and
-	 * set the final value halfway through it considering the range as a
-	 * circular buffer
-	 */
+	 
 	pass_len = ITAP_MAX - fail_len;
 	itap = (pass_window + (pass_len >> 1)) % ITAP_MAX;
 	sdhci_am654_write_itapdly(sdhci_am654, itap);
@@ -537,7 +514,7 @@ static const struct soc_device_attribute sdhci_am654_devices[] = {
 	  .revision = "SR1.0",
 	  .data = &sdhci_am654_sr1_drvdata
 	},
-	{/* sentinel */}
+	{ }
 };
 
 static void sdhci_am654_dumpregs(struct mmc_host *mmc)
@@ -580,10 +557,7 @@ static int sdhci_am654_get_otap_delay(struct sdhci_host *host,
 	ret = device_property_read_u32(dev, td[MMC_TIMING_LEGACY].otap_binding,
 				 &sdhci_am654->otap_del_sel[MMC_TIMING_LEGACY]);
 	if (ret) {
-		/*
-		 * ti,otap-del-sel-legacy is mandatory, look for old binding
-		 * if not found.
-		 */
+		 
 		ret = device_property_read_u32(dev, "ti,otap-del-sel",
 					       &sdhci_am654->otap_del_sel[0]);
 		if (ret) {
@@ -605,10 +579,7 @@ static int sdhci_am654_get_otap_delay(struct sdhci_host *host,
 		if (ret) {
 			dev_dbg(dev, "Couldn't find %s\n",
 				td[i].otap_binding);
-			/*
-			 * Remove the corresponding capability
-			 * if an otap-del-sel value is not found
-			 */
+			 
 			if (i <= MMC_TIMING_MMC_DDR52)
 				host->mmc->caps &= ~td[i].capability;
 			else
@@ -632,14 +603,14 @@ static int sdhci_am654_init(struct sdhci_host *host)
 	u32 val;
 	int ret;
 
-	/* Reset OTAP to default value */
+	 
 	mask = OTAPDLYENA_MASK | OTAPDLYSEL_MASK;
 	regmap_update_bits(sdhci_am654->base, PHY_CTRL4, mask, 0x0);
 
 	if (sdhci_am654->flags & DLL_CALIB) {
 		regmap_read(sdhci_am654->base, PHY_STAT1, &val);
 		if (~val & CALDONE_MASK) {
-			/* Calibrate IO lines */
+			 
 			regmap_update_bits(sdhci_am654->base, PHY_CTRL1,
 					   PDB_MASK, PDB_MASK);
 			ret = regmap_read_poll_timeout(sdhci_am654->base,
@@ -651,19 +622,19 @@ static int sdhci_am654_init(struct sdhci_host *host)
 		}
 	}
 
-	/* Enable pins by setting IO mux to 0 */
+	 
 	if (sdhci_am654->flags & IOMUX_PRESENT)
 		regmap_update_bits(sdhci_am654->base, PHY_CTRL1,
 				   IOMUX_ENABLE_MASK, 0);
 
-	/* Set slot type based on SD or eMMC */
+	 
 	if (host->mmc->caps & MMC_CAP_NONREMOVABLE)
 		ctl_cfg_2 = SLOTTYPE_EMBEDDED;
 
 	regmap_update_bits(sdhci_am654->base, CTL_CFG_2, SLOTTYPE_MASK,
 			   ctl_cfg_2);
 
-	/* Enable tuning for SDR50 */
+	 
 	regmap_update_bits(sdhci_am654->base, CTL_CFG_3, TUNINGFORSDR50_MASK,
 			   TUNINGFORSDR50_MASK);
 
@@ -767,7 +738,7 @@ static const struct of_device_id sdhci_am654_of_match[] = {
 		.compatible = "ti,am62-sdhci",
 		.data = &sdhci_j721e_4bit_drvdata,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sdhci_am654_of_match);
 
@@ -787,7 +758,7 @@ static int sdhci_am654_probe(struct platform_device *pdev)
 	match = of_match_node(sdhci_am654_of_match, pdev->dev.of_node);
 	drvdata = match->data;
 
-	/* Update drvdata based on SoC revision */
+	 
 	soc = soc_device_match(sdhci_am654_devices);
 	if (soc && soc->data)
 		drvdata = soc->data;
@@ -848,7 +819,7 @@ static int sdhci_am654_probe(struct platform_device *pdev)
 	if (ret)
 		goto clk_disable;
 
-	/* Setting up autosuspend */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SDHCI_AM654_AUTOSUSPEND_DELAY);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_mark_last_busy(dev);
@@ -896,7 +867,7 @@ static int sdhci_am654_restore(struct sdhci_host *host)
 	if (sdhci_am654->flags & DLL_CALIB) {
 		regmap_read(sdhci_am654->base, PHY_STAT1, &val);
 		if (~val & CALDONE_MASK) {
-			/* Calibrate IO lines */
+			 
 			regmap_update_bits(sdhci_am654->base, PHY_CTRL1,
 					   PDB_MASK, PDB_MASK);
 			ret = regmap_read_poll_timeout(sdhci_am654->base,
@@ -908,12 +879,12 @@ static int sdhci_am654_restore(struct sdhci_host *host)
 		}
 	}
 
-	/* Enable pins by setting IO mux to 0 */
+	 
 	if (sdhci_am654->flags & IOMUX_PRESENT)
 		regmap_update_bits(sdhci_am654->base, PHY_CTRL1,
 				   IOMUX_ENABLE_MASK, 0);
 
-	/* Set slot type based on SD or eMMC */
+	 
 	if (host->mmc->caps & MMC_CAP_NONREMOVABLE)
 		ctl_cfg_2 = SLOTTYPE_EMBEDDED;
 
@@ -922,7 +893,7 @@ static int sdhci_am654_restore(struct sdhci_host *host)
 
 	regmap_read(sdhci_am654->base, CTL_CFG_3, &val);
 	if (~val & TUNINGFORSDR50_MASK)
-		/* Enable tuning for SDR50 */
+		 
 		regmap_update_bits(sdhci_am654->base, CTL_CFG_3, TUNINGFORSDR50_MASK,
 				   TUNINGFORSDR50_MASK);
 
@@ -946,7 +917,7 @@ static int sdhci_am654_runtime_suspend(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* disable the clock */
+	 
 	clk_disable_unprepare(pltfm_host->clk);
 	return 0;
 }
@@ -957,7 +928,7 @@ static int sdhci_am654_runtime_resume(struct device *dev)
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	int ret;
 
-	/* Enable the clock */
+	 
 	ret = clk_prepare_enable(pltfm_host->clk);
 	if (ret)
 		return ret;

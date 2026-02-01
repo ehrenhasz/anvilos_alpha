@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bits.h>
 #include <linux/i2c.h>
@@ -31,7 +31,7 @@
 #define RT5759A_WDTEN_MASK	BIT(1)
 
 #define RT5759_MANUFACTURER_ID	0x82
-/* vsel range 0x00 ~ 0x5A */
+ 
 #define RT5759_NUM_VOLTS	91
 #define RT5759_MIN_UV		600000
 #define RT5759_STEP_UV		10000
@@ -119,12 +119,12 @@ static int rt5759_set_ocp(struct regulator_dev *rdev, int lim_uA, int severity,
 	unsigned int ocp_regval;
 	int i;
 
-	/* Only support over current protection parameter */
+	 
 	if (severity != REGULATOR_SEVERITY_PROT)
 		return 0;
 
 	if (enable) {
-		/* Default ocp level is 10.8A */
+		 
 		if (lim_uA == 0)
 			lim_uA = 10800000;
 
@@ -152,12 +152,12 @@ static int rt5759_set_otp(struct regulator_dev *rdev, int lim, int severity,
 	unsigned int otp_regval;
 	int i;
 
-	/* Only support over temperature protection parameter */
+	 
 	if (severity != REGULATOR_SEVERITY_PROT)
 		return 0;
 
 	if (enable) {
-		/* Default otp level is 150'c */
+		 
 		if (lim == 0)
 			lim = 150;
 
@@ -236,10 +236,7 @@ static int rt5759_regulator_register(struct rt5759_priv *priv)
 	reg_desc->enable_time = RT5759_MINSS_TIMEUS;
 	reg_desc->of_map_mode = rt5759_of_map_mode;
 
-	/*
-	 * RT5759 step uV = 10000
-	 * RT5759A step uV = 12500
-	 */
+	 
 	if (priv->chip_type == CHIP_TYPE_RT5759A)
 		reg_desc->uV_step = RT5759A_STEP_UV;
 
@@ -263,9 +260,7 @@ static int rt5759_init_device_property(struct rt5759_priv *priv)
 {
 	unsigned int val = 0;
 
-	/*
-	 * Only RT5759A support external watchdog input
-	 */
+	 
 	if (priv->chip_type != CHIP_TYPE_RT5759A)
 		return 0;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Richtek RT9455WSC battery charger.
- *
- * Copyright (C) 2015 Intel Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -22,9 +18,9 @@
 
 #define RT9455_IRQ_NAME				"interrupt"
 
-#define RT9455_PWR_RDY_DELAY			1 /* 1 second */
-#define RT9455_MAX_CHARGING_TIME		21600 /* 6 hrs */
-#define RT9455_BATT_PRESENCE_DELAY		60 /* 60 seconds */
+#define RT9455_PWR_RDY_DELAY			1  
+#define RT9455_MAX_CHARGING_TIME		21600  
+#define RT9455_BATT_PRESENCE_DELAY		60  
 
 #define RT9455_CHARGE_MODE			0x00
 #define RT9455_BOOST_MODE			0x01
@@ -41,52 +37,52 @@
 #define RT9455_PWR_FAULT			0x00
 #define RT9455_PWR_GOOD				0x01
 
-#define RT9455_REG_CTRL1			0x00 /* CTRL1 reg address */
-#define RT9455_REG_CTRL2			0x01 /* CTRL2 reg address */
-#define RT9455_REG_CTRL3			0x02 /* CTRL3 reg address */
-#define RT9455_REG_DEV_ID			0x03 /* DEV_ID reg address */
-#define RT9455_REG_CTRL4			0x04 /* CTRL4 reg address */
-#define RT9455_REG_CTRL5			0x05 /* CTRL5 reg address */
-#define RT9455_REG_CTRL6			0x06 /* CTRL6 reg address */
-#define RT9455_REG_CTRL7			0x07 /* CTRL7 reg address */
-#define RT9455_REG_IRQ1				0x08 /* IRQ1 reg address */
-#define RT9455_REG_IRQ2				0x09 /* IRQ2 reg address */
-#define RT9455_REG_IRQ3				0x0A /* IRQ3 reg address */
-#define RT9455_REG_MASK1			0x0B /* MASK1 reg address */
-#define RT9455_REG_MASK2			0x0C /* MASK2 reg address */
-#define RT9455_REG_MASK3			0x0D /* MASK3 reg address */
+#define RT9455_REG_CTRL1			0x00  
+#define RT9455_REG_CTRL2			0x01  
+#define RT9455_REG_CTRL3			0x02  
+#define RT9455_REG_DEV_ID			0x03  
+#define RT9455_REG_CTRL4			0x04  
+#define RT9455_REG_CTRL5			0x05  
+#define RT9455_REG_CTRL6			0x06  
+#define RT9455_REG_CTRL7			0x07  
+#define RT9455_REG_IRQ1				0x08  
+#define RT9455_REG_IRQ2				0x09  
+#define RT9455_REG_IRQ3				0x0A  
+#define RT9455_REG_MASK1			0x0B  
+#define RT9455_REG_MASK2			0x0C  
+#define RT9455_REG_MASK3			0x0D  
 
 enum rt9455_fields {
-	F_STAT, F_BOOST, F_PWR_RDY, F_OTG_PIN_POLARITY, /* CTRL1 reg fields */
+	F_STAT, F_BOOST, F_PWR_RDY, F_OTG_PIN_POLARITY,  
 
 	F_IAICR, F_TE_SHDN_EN, F_HIGHER_OCP, F_TE, F_IAICR_INT, F_HIZ,
-	F_OPA_MODE, /* CTRL2 reg fields */
+	F_OPA_MODE,  
 
-	F_VOREG, F_OTG_PL, F_OTG_EN, /* CTRL3 reg fields */
+	F_VOREG, F_OTG_PL, F_OTG_EN,  
 
-	F_VENDOR_ID, F_CHIP_REV, /* DEV_ID reg fields */
+	F_VENDOR_ID, F_CHIP_REV,  
 
-	F_RST, /* CTRL4 reg fields */
+	F_RST,  
 
-	F_TMR_EN, F_MIVR, F_IPREC, F_IEOC_PERCENTAGE, /* CTRL5 reg fields*/
+	F_TMR_EN, F_MIVR, F_IPREC, F_IEOC_PERCENTAGE,  
 
-	F_IAICR_SEL, F_ICHRG, F_VPREC, /* CTRL6 reg fields */
+	F_IAICR_SEL, F_ICHRG, F_VPREC,  
 
-	F_BATD_EN, F_CHG_EN, F_VMREG, /* CTRL7 reg fields */
+	F_BATD_EN, F_CHG_EN, F_VMREG,  
 
-	F_TSDI, F_VINOVPI, F_BATAB, /* IRQ1 reg fields */
+	F_TSDI, F_VINOVPI, F_BATAB,  
 
 	F_CHRVPI, F_CHBATOVI, F_CHTERMI, F_CHRCHGI, F_CH32MI, F_CHTREGI,
-	F_CHMIVRI, /* IRQ2 reg fields */
+	F_CHMIVRI,  
 
-	F_BSTBUSOVI, F_BSTOLI, F_BSTLOWVI, F_BST32SI, /* IRQ3 reg fields */
+	F_BSTBUSOVI, F_BSTOLI, F_BSTLOWVI, F_BST32SI,  
 
-	F_TSDM, F_VINOVPIM, F_BATABM, /* MASK1 reg fields */
+	F_TSDM, F_VINOVPIM, F_BATABM,  
 
 	F_CHRVPIM, F_CHBATOVIM, F_CHTERMIM, F_CHRCHGIM, F_CH32MIM, F_CHTREGIM,
-	F_CHMIVRIM, /* MASK2 reg fields */
+	F_CHMIVRIM,  
 
-	F_BSTVINOVIM, F_BSTOLIM, F_BSTLOWVIM, F_BST32SIM, /* MASK3 reg fields */
+	F_BSTVINOVIM, F_BSTOLIM, F_BSTLOWVIM, F_BST32SIM,  
 
 	F_MAX_FIELDS
 };
@@ -165,22 +161,14 @@ static const struct reg_field rt9455_reg_fields[] = {
 #define GET_MASK(fid)	(BIT(rt9455_reg_fields[fid].msb + 1) - \
 			 BIT(rt9455_reg_fields[fid].lsb))
 
-/*
- * Each array initialised below shows the possible real-world values for a
- * group of bits belonging to RT9455 registers. The arrays are sorted in
- * ascending order. The index of each real-world value represents the value
- * that is encoded in the group of bits belonging to RT9455 registers.
- */
-/* REG06[6:4] (ICHRG) in uAh */
+ 
+ 
 static const int rt9455_ichrg_values[] = {
 	 500000,  650000,  800000,  950000, 1100000, 1250000, 1400000, 1550000
 };
 
-/*
- * When the charger is in charge mode, REG02[7:2] represent battery regulation
- * voltage.
- */
-/* REG02[7:2] (VOREG) in uV */
+ 
+ 
 static const int rt9455_voreg_values[] = {
 	3500000, 3520000, 3540000, 3560000, 3580000, 3600000, 3620000, 3640000,
 	3660000, 3680000, 3700000, 3720000, 3740000, 3760000, 3780000, 3800000,
@@ -192,11 +180,8 @@ static const int rt9455_voreg_values[] = {
 	4450000, 4450000, 4450000, 4450000, 4450000, 4450000, 4450000, 4450000
 };
 
-/*
- * When the charger is in boost mode, REG02[7:2] represent boost output
- * voltage.
- */
-/* REG02[7:2] (Boost output voltage) in uV */
+ 
+ 
 static const int rt9455_boost_voltage_values[] = {
 	4425000, 4450000, 4475000, 4500000, 4525000, 4550000, 4575000, 4600000,
 	4625000, 4650000, 4675000, 4700000, 4725000, 4750000, 4775000, 4800000,
@@ -208,23 +193,23 @@ static const int rt9455_boost_voltage_values[] = {
 	5600000, 5600000, 5600000, 5600000, 5600000, 5600000, 5600000, 5600000,
 };
 
-/* REG07[3:0] (VMREG) in uV */
+ 
 static const int rt9455_vmreg_values[] = {
 	4200000, 4220000, 4240000, 4260000, 4280000, 4300000, 4320000, 4340000,
 	4360000, 4380000, 4400000, 4430000, 4450000, 4450000, 4450000, 4450000
 };
 
-/* REG05[5:4] (IEOC_PERCENTAGE) */
+ 
 static const int rt9455_ieoc_percentage_values[] = {
 	10, 30, 20, 30
 };
 
-/* REG05[1:0] (MIVR) in uV */
+ 
 static const int rt9455_mivr_values[] = {
 	4000000, 4250000, 4500000, 5000000
 };
 
-/* REG05[1:0] (IAICR) in uA */
+ 
 static const int rt9455_iaicr_values[] = {
 	100000, 500000, 1000000, 2000000
 };
@@ -245,21 +230,12 @@ struct rt9455_info {
 	u32				boost_voltage;
 };
 
-/*
- * Iterate through each element of the 'tbl' array until an element whose value
- * is greater than v is found. Return the index of the respective element,
- * or the index of the last element in the array, if no such element is found.
- */
+ 
 static unsigned int rt9455_find_idx(const int tbl[], int tbl_size, int v)
 {
 	int i;
 
-	/*
-	 * No need to iterate until the last index in the table because
-	 * if no element greater than v is found in the table,
-	 * or if only the last element is greater than v,
-	 * function returns the index of the last element.
-	 */
+	 
 	for (i = 0; i < tbl_size - 1; i++)
 		if (v <= tbl[i])
 			return i;
@@ -305,10 +281,7 @@ static int rt9455_register_reset(struct rt9455_info *info)
 		return ret;
 	}
 
-	/*
-	 * To make sure that reset operation has finished, loop until RST bit
-	 * is set to 0.
-	 */
+	 
 	do {
 		ret = regmap_field_read(info->regmap_fields[F_RST], &v);
 		if (ret) {
@@ -328,7 +301,7 @@ static int rt9455_register_reset(struct rt9455_info *info)
 	return 0;
 }
 
-/* Charger power supply property routines */
+ 
 static enum power_supply_property rt9455_charger_properties[] = {
 	POWER_SUPPLY_PROP_STATUS,
 	POWER_SUPPLY_PROP_HEALTH,
@@ -361,10 +334,7 @@ static int rt9455_charger_get_status(struct rt9455_info *info,
 		return ret;
 	}
 
-	/*
-	 * If PWR_RDY bit is unset, the battery is discharging. Otherwise,
-	 * STAT bits value must be checked.
-	 */
+	 
 	if (!pwr_rdy) {
 		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
 		return 0;
@@ -378,14 +348,7 @@ static int rt9455_charger_get_status(struct rt9455_info *info,
 
 	switch (v) {
 	case 0:
-		/*
-		 * If PWR_RDY bit is set, but STAT bits value is 0, the charger
-		 * may be in one of the following cases:
-		 * 1. CHG_EN bit is 0.
-		 * 2. CHG_EN bit is 1 but the battery is not connected.
-		 * In any of these cases, POWER_SUPPLY_STATUS_NOT_CHARGING is
-		 * returned.
-		 */
+		 
 		val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
 		return 0;
 	case 1:
@@ -492,10 +455,7 @@ static int rt9455_charger_get_battery_presence(struct rt9455_info *info,
 		return ret;
 	}
 
-	/*
-	 * Since BATAB is 1 when battery is NOT present and 0 otherwise,
-	 * !BATAB is returned.
-	 */
+	 
 	val->intval = !v;
 
 	return 0;
@@ -659,48 +619,35 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/* Set TE bit in order to enable end of charge detection */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_TE], 1);
 	if (ret) {
 		dev_err(dev, "Failed to set TE bit\n");
 		return ret;
 	}
 
-	/* Set TE_SHDN_EN bit in order to enable end of charge detection */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_TE_SHDN_EN], 1);
 	if (ret) {
 		dev_err(dev, "Failed to set TE_SHDN_EN bit\n");
 		return ret;
 	}
 
-	/*
-	 * Set BATD_EN bit in order to enable battery detection
-	 * when charging is done
-	 */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_BATD_EN], 1);
 	if (ret) {
 		dev_err(dev, "Failed to set BATD_EN bit\n");
 		return ret;
 	}
 
-	/*
-	 * Disable Safety Timer. In charge mode, this timer terminates charging
-	 * if no read or write via I2C is done within 32 minutes. This timer
-	 * avoids overcharging the baterry when the OS is not loaded and the
-	 * charger is connected to a power source.
-	 * In boost mode, this timer triggers BST32SI interrupt if no read or
-	 * write via I2C is done within 32 seconds.
-	 * When the OS is loaded and the charger driver is inserted, it is used
-	 * delayed_work, named max_charging_time_work, to avoid overcharging
-	 * the battery.
-	 */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_TMR_EN], 0x00);
 	if (ret) {
 		dev_err(dev, "Failed to disable Safety Timer\n");
 		return ret;
 	}
 
-	/* Set ICHRG to value retrieved from device-specific data */
+	 
 	ret = rt9455_set_field_val(info, F_ICHRG,
 				   rt9455_ichrg_values,
 				   ARRAY_SIZE(rt9455_ichrg_values), ichrg);
@@ -709,7 +656,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/* Set IEOC Percentage to value retrieved from device-specific data */
+	 
 	ret = rt9455_set_field_val(info, F_IEOC_PERCENTAGE,
 				   rt9455_ieoc_percentage_values,
 				   ARRAY_SIZE(rt9455_ieoc_percentage_values),
@@ -719,7 +666,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/* Set VOREG to value retrieved from device-specific data */
+	 
 	ret = rt9455_set_field_val(info, F_VOREG,
 				   rt9455_voreg_values,
 				   ARRAY_SIZE(rt9455_voreg_values),
@@ -729,7 +676,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/* Set VMREG value to maximum (4.45V). */
+	 
 	idx = ARRAY_SIZE(rt9455_vmreg_values) - 1;
 	ret = rt9455_set_field_val(info, F_VMREG,
 				   rt9455_vmreg_values,
@@ -740,10 +687,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/*
-	 * Set MIVR to value retrieved from device-specific data.
-	 * If no value is specified, default value for MIVR is 4.5V.
-	 */
+	 
 	if (mivr == -1)
 		mivr = 4500000;
 
@@ -755,10 +699,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/*
-	 * Set IAICR to value retrieved from device-specific data.
-	 * If no value is specified, default value for IAICR is 500 mA.
-	 */
+	 
 	if (iaicr == -1)
 		iaicr = 500000;
 
@@ -770,21 +711,14 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 		return ret;
 	}
 
-	/*
-	 * Set IAICR_INT bit so that IAICR value is determined by IAICR bits
-	 * and not by OTG pin.
-	 */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_IAICR_INT], 0x01);
 	if (ret) {
 		dev_err(dev, "Failed to set IAICR_INT bit\n");
 		return ret;
 	}
 
-	/*
-	 * Disable CHMIVRI interrupt. Because the driver sets MIVR value,
-	 * CHMIVRI is triggered, but there is no action to be taken by the
-	 * driver when CHMIVRI is triggered.
-	 */
+	 
 	ret = regmap_field_write(info->regmap_fields[F_CHMIVRIM], 0x01);
 	if (ret) {
 		dev_err(dev, "Failed to mask CHMIVRI interrupt\n");
@@ -795,14 +729,7 @@ static int rt9455_hw_init(struct rt9455_info *info, u32 ichrg,
 }
 
 #if IS_ENABLED(CONFIG_USB_PHY)
-/*
- * Before setting the charger into boost mode, boost output voltage is
- * set. This is needed because boost output voltage may differ from battery
- * regulation voltage. F_VOREG bits represent either battery regulation voltage
- * or boost output voltage, depending on the mode the charger is. Both battery
- * regulation voltage and boost output voltage are read from DT/ACPI during
- * probe.
- */
+ 
 static int rt9455_set_boost_voltage_before_boost_mode(struct rt9455_info *info)
 {
 	struct device *dev = &info->client->dev;
@@ -821,14 +748,7 @@ static int rt9455_set_boost_voltage_before_boost_mode(struct rt9455_info *info)
 }
 #endif
 
-/*
- * Before setting the charger into charge mode, battery regulation voltage is
- * set. This is needed because boost output voltage may differ from battery
- * regulation voltage. F_VOREG bits represent either battery regulation voltage
- * or boost output voltage, depending on the mode the charger is. Both battery
- * regulation voltage and boost output voltage are read from DT/ACPI during
- * probe.
- */
+ 
 static int rt9455_set_voreg_before_charge_mode(struct rt9455_info *info)
 {
 	struct device *dev = &info->client->dev;
@@ -916,17 +836,9 @@ static int rt9455_irq_handler_check_irq1_register(struct rt9455_info *info,
 			}
 		}
 
-		/*
-		 * When the battery is absent, max_charging_time_work is
-		 * cancelled, since no charging is done.
-		 */
+		 
 		cancel_delayed_work_sync(&info->max_charging_time_work);
-		/*
-		 * Since no interrupt is triggered when the battery is
-		 * reconnected, max_charging_time_work is not rescheduled.
-		 * Therefore, batt_presence_work is scheduled to check whether
-		 * the battery is still absent or not.
-		 */
+		 
 		queue_delayed_work(system_power_efficient_wq,
 				   &info->batt_presence_work,
 				   RT9455_BATT_PRESENCE_DELAY * HZ);
@@ -963,17 +875,7 @@ static int rt9455_irq_handler_check_irq2_register(struct rt9455_info *info,
 
 	if (irq2 & GET_MASK(F_CHRVPI)) {
 		dev_dbg(dev, "Charger fault occurred\n");
-		/*
-		 * CHRVPI bit is set in 2 cases:
-		 * 1. when the power source is connected to the charger.
-		 * 2. when the power source is disconnected from the charger.
-		 * To identify the case, PWR_RDY bit is checked. Because
-		 * PWR_RDY bit is set / cleared after CHRVPI interrupt is
-		 * triggered, it is used delayed_work to later read PWR_RDY bit.
-		 * Also, do not set to true alert_userspace, because there is no
-		 * need to notify userspace when CHRVPI interrupt has occurred.
-		 * Userspace will be notified after PWR_RDY bit is read.
-		 */
+		 
 		queue_delayed_work(system_power_efficient_wq,
 				   &info->pwr_rdy_work,
 				   RT9455_PWR_RDY_DELAY * HZ);
@@ -992,10 +894,7 @@ static int rt9455_irq_handler_check_irq2_register(struct rt9455_info *info,
 					dev_err(dev, "Failed to mask CHTERMI interrupt\n");
 					return ret;
 				}
-				/*
-				 * Update MASK2 value, since CHTERMIM bit is
-				 * set.
-				 */
+				 
 				mask2 = mask2 | GET_MASK(F_CHTERMIM);
 			}
 			cancel_delayed_work_sync(&info->max_charging_time_work);
@@ -1017,16 +916,11 @@ static int rt9455_irq_handler_check_irq2_register(struct rt9455_info *info,
 				dev_err(dev, "Failed to unmask CHTERMI interrupt\n");
 				return ret;
 			}
-			/* Update MASK2 value, since CHTERMIM bit is cleared. */
+			 
 			mask2 = mask2 & ~GET_MASK(F_CHTERMIM);
 		}
 		if (!is_battery_absent) {
-			/*
-			 * No need to check whether the charger is connected to
-			 * power source when CHRCHGI is received, since CHRCHGI
-			 * is not triggered if the charger is not connected to
-			 * the power source.
-			 */
+			 
 			queue_delayed_work(system_power_efficient_wq,
 					   &info->max_charging_time_work,
 					   RT9455_MAX_CHARGING_TIME * HZ);
@@ -1135,17 +1029,7 @@ static irqreturn_t rt9455_irq_handler_thread(int irq, void *data)
 	}
 	dev_dbg(dev, "Charger status is %d\n", status);
 
-	/*
-	 * Each function that processes an IRQ register receives as output
-	 * parameter alert_userspace pointer. alert_userspace is set to true
-	 * in such a function only if an interrupt has occurred in the
-	 * respective interrupt register. This way, it is avoided the following
-	 * case: interrupt occurs only in IRQ1 register,
-	 * rt9455_irq_handler_check_irq1_register() function sets to true
-	 * alert_userspace, but rt9455_irq_handler_check_irq2_register()
-	 * and rt9455_irq_handler_check_irq3_register() functions set to false
-	 * alert_userspace and power_supply_changed() is never called.
-	 */
+	 
 	ret = rt9455_irq_handler_check_irq1_register(info, &is_battery_absent,
 						     &alert_userspace);
 	if (ret) {
@@ -1167,11 +1051,7 @@ static irqreturn_t rt9455_irq_handler_thread(int irq, void *data)
 	}
 
 	if (alert_userspace) {
-		/*
-		 * Sometimes, an interrupt occurs while rt9455_probe() function
-		 * is executing and power_supply_register() is not yet called.
-		 * Do not call power_supply_changed() in this case.
-		 */
+		 
 		if (info->charger)
 			power_supply_changed(info->charger);
 	}
@@ -1190,10 +1070,7 @@ static int rt9455_discover_charger(struct rt9455_info *info, u32 *ichrg,
 		dev_err(dev, "No support for either device tree or ACPI\n");
 		return -EINVAL;
 	}
-	/*
-	 * ICHRG, IEOC_PERCENTAGE, VOREG and boost output voltage are mandatory
-	 * parameters.
-	 */
+	 
 	ret = device_property_read_u32(dev, "richtek,output-charge-current",
 				       ichrg);
 	if (ret) {
@@ -1223,10 +1100,7 @@ static int rt9455_discover_charger(struct rt9455_info *info, u32 *ichrg,
 		return ret;
 	}
 
-	/*
-	 * MIVR and IAICR are optional parameters. Do not return error if one of
-	 * them is not present in ACPI table or device tree specification.
-	 */
+	 
 	device_property_read_u32(dev, "richtek,min-input-voltage-regulation",
 				 mivr);
 	device_property_read_u32(dev, "richtek,avg-input-current-regulation",
@@ -1248,12 +1122,7 @@ static int rt9455_usb_event_none(struct rt9455_info *info,
 			dev_err(dev, "Failed to set VOREG before entering charge mode\n");
 			return ret;
 		}
-		/*
-		 * If the charger is in boost mode, and it has received
-		 * USB_EVENT_NONE, this means the consumer device powered by the
-		 * charger is not connected anymore.
-		 * In this case, the charger goes into charge mode.
-		 */
+		 
 		dev_dbg(dev, "USB_EVENT_NONE received, therefore the charger goes into charge mode\n");
 		ret = regmap_field_write(info->regmap_fields[F_OPA_MODE],
 					 RT9455_CHARGE_MODE);
@@ -1288,12 +1157,7 @@ static int rt9455_usb_event_vbus(struct rt9455_info *info,
 			dev_err(dev, "Failed to set VOREG before entering charge mode\n");
 			return ret;
 		}
-		/*
-		 * If the charger is in boost mode, and it has received
-		 * USB_EVENT_VBUS, this means the consumer device powered by the
-		 * charger is not connected anymore.
-		 * In this case, the charger goes into charge mode.
-		 */
+		 
 		dev_dbg(dev, "USB_EVENT_VBUS received, therefore the charger goes into charge mode\n");
 		ret = regmap_field_write(info->regmap_fields[F_OPA_MODE],
 					 RT9455_CHARGE_MODE);
@@ -1328,12 +1192,7 @@ static int rt9455_usb_event_id(struct rt9455_info *info,
 			dev_err(dev, "Failed to set boost output voltage before entering boost mode\n");
 			return ret;
 		}
-		/*
-		 * If the charger is in charge mode, and it has received
-		 * USB_EVENT_ID, this means a consumer device is connected and
-		 * it should be powered by the charger.
-		 * In this case, the charger goes into boost mode.
-		 */
+		 
 		dev_dbg(dev, "USB_EVENT_ID received, therefore the charger goes into boost mode\n");
 		ret = regmap_field_write(info->regmap_fields[F_OPA_MODE],
 					 RT9455_BOOST_MODE);
@@ -1368,12 +1227,7 @@ static int rt9455_usb_event_charger(struct rt9455_info *info,
 			dev_err(dev, "Failed to set VOREG before entering charge mode\n");
 			return ret;
 		}
-		/*
-		 * If the charger is in boost mode, and it has received
-		 * USB_EVENT_CHARGER, this means the consumer device powered by
-		 * the charger is not connected anymore.
-		 * In this case, the charger goes into charge mode.
-		 */
+		 
 		dev_dbg(dev, "USB_EVENT_CHARGER received, therefore the charger goes into charge mode\n");
 		ret = regmap_field_write(info->regmap_fields[F_OPA_MODE],
 					 RT9455_CHARGE_MODE);
@@ -1404,10 +1258,7 @@ static int rt9455_usb_event(struct notifier_block *nb,
 	unsigned int opa_mode, iaicr;
 	int ret;
 
-	/*
-	 * Determine whether the charger is in charge mode
-	 * or in boost mode.
-	 */
+	 
 	ret = regmap_field_read(info->regmap_fields[F_OPA_MODE],
 				&opa_mode);
 	if (ret) {
@@ -1470,10 +1321,7 @@ static void rt9455_pwr_rdy_work_callback(struct work_struct *work)
 				   RT9455_MAX_CHARGING_TIME * HZ);
 		break;
 	}
-	/*
-	 * Notify userspace that the charger has been either connected to or
-	 * disconnected from the power source.
-	 */
+	 
 	power_supply_changed(info->charger);
 }
 
@@ -1505,10 +1353,7 @@ static void rt9455_batt_presence_work_callback(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * If the battery is still absent, batt_presence_work is rescheduled.
-	 * Otherwise, max_charging_time is scheduled.
-	 */
+	 
 	if (irq1 & GET_MASK(F_BATAB)) {
 		queue_delayed_work(system_power_efficient_wq,
 				   &info->batt_presence_work,
@@ -1530,10 +1375,7 @@ static void rt9455_batt_presence_work_callback(struct work_struct *work)
 			if (ret)
 				dev_err(dev, "Failed to unmask BATAB interrupt\n");
 		}
-		/*
-		 * Notify userspace that the battery is now connected to the
-		 * charger.
-		 */
+		 
 		power_supply_changed(info->charger);
 	}
 }
@@ -1586,13 +1428,9 @@ static int rt9455_probe(struct i2c_client *client)
 	struct device *dev = &client->dev;
 	struct rt9455_info *info;
 	struct power_supply_config rt9455_charger_config = {};
-	/*
-	 * Mandatory device-specific data values. Also, VOREG and boost output
-	 * voltage are mandatory values, but they are stored in rt9455_info
-	 * structure.
-	 */
+	 
 	u32 ichrg, ieoc_percentage;
-	/* Optional device-specific data values. */
+	 
 	u32 mivr = -1, iaicr = -1;
 	int i, ret;
 
@@ -1641,10 +1479,7 @@ static int rt9455_probe(struct i2c_client *client)
 		ret = usb_register_notifier(info->usb_phy, &info->nb);
 		if (ret) {
 			dev_err(dev, "Failed to register USB notifier\n");
-			/*
-			 * If usb_register_notifier() fails, set notifier_call
-			 * to NULL, to avoid calling usb_unregister_notifier().
-			 */
+			 
 			info->nb.notifier_call = NULL;
 		}
 	}

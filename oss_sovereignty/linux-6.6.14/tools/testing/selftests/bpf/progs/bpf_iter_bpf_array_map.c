@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -43,12 +43,7 @@ int dump_bpf_array_map(struct bpf_iter__bpf_map_elem *ctx)
 	key_sum += *key;
 	val_sum += *val;
 
-	/* workaround - It's necessary to do this convoluted (val, key)
-	 * write into hashmap1, instead of simply doing
-	 *   bpf_map_update_elem(&hashmap1, val, key, BPF_ANY);
-	 * because key has MEM_RDONLY flag and bpf_map_update elem expects
-	 * types without this flag
-	 */
+	 
 	bpf_map_update_elem(&hashmap1, val, val, BPF_ANY);
 	hmap_val = bpf_map_lookup_elem(&hashmap1, val);
 	if (hmap_val)

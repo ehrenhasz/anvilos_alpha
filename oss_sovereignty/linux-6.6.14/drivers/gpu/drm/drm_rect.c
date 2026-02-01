@@ -1,25 +1,4 @@
-/*
- * Copyright (C) 2011-2013 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/export.h>
@@ -29,18 +8,7 @@
 #include <drm/drm_print.h>
 #include <drm/drm_rect.h>
 
-/**
- * drm_rect_intersect - intersect two rectangles
- * @r1: first rectangle
- * @r2: second rectangle
- *
- * Calculate the intersection of rectangles @r1 and @r2.
- * @r1 will be overwritten with the intersection.
- *
- * RETURNS:
- * %true if rectangle @r1 is still visible after the operation,
- * %false otherwise.
- */
+ 
 bool drm_rect_intersect(struct drm_rect *r1, const struct drm_rect *r2)
 {
 	r1->x1 = max(r1->x1, r2->x1);
@@ -59,36 +27,19 @@ static u32 clip_scaled(int src, int dst, int *clip)
 	if (dst == 0)
 		return 0;
 
-	/* Only clip what we have. Keeps the result bounded. */
+	 
 	*clip = min(*clip, dst);
 
 	tmp = mul_u32_u32(src, dst - *clip);
 
-	/*
-	 * Round toward 1.0 when clipping so that we don't accidentally
-	 * change upscaling to downscaling or vice versa.
-	 */
+	 
 	if (src < (dst << 16))
 		return DIV_ROUND_UP_ULL(tmp, dst);
 	else
 		return DIV_ROUND_DOWN_ULL(tmp, dst);
 }
 
-/**
- * drm_rect_clip_scaled - perform a scaled clip operation
- * @src: source window rectangle
- * @dst: destination window rectangle
- * @clip: clip rectangle
- *
- * Clip rectangle @dst by rectangle @clip. Clip rectangle @src by
- * the corresponding amounts, retaining the vertical and horizontal scaling
- * factors from @src to @dst.
- *
- * RETURNS:
- *
- * %true if rectangle @dst is still visible after being clipped,
- * %false otherwise.
- */
+ 
 bool drm_rect_clip_scaled(struct drm_rect *src, struct drm_rect *dst,
 			  const struct drm_rect *clip)
 {
@@ -149,23 +100,7 @@ static int drm_calc_scale(int src, int dst)
 	return scale;
 }
 
-/**
- * drm_rect_calc_hscale - calculate the horizontal scaling factor
- * @src: source window rectangle
- * @dst: destination window rectangle
- * @min_hscale: minimum allowed horizontal scaling factor
- * @max_hscale: maximum allowed horizontal scaling factor
- *
- * Calculate the horizontal scaling factor as
- * (@src width) / (@dst width).
- *
- * If the scale is below 1 << 16, round down. If the scale is above
- * 1 << 16, round up. This will calculate the scale with the most
- * pessimistic limit calculation.
- *
- * RETURNS:
- * The horizontal scaling factor, or errno of out of limits.
- */
+ 
 int drm_rect_calc_hscale(const struct drm_rect *src,
 			 const struct drm_rect *dst,
 			 int min_hscale, int max_hscale)
@@ -184,23 +119,7 @@ int drm_rect_calc_hscale(const struct drm_rect *src,
 }
 EXPORT_SYMBOL(drm_rect_calc_hscale);
 
-/**
- * drm_rect_calc_vscale - calculate the vertical scaling factor
- * @src: source window rectangle
- * @dst: destination window rectangle
- * @min_vscale: minimum allowed vertical scaling factor
- * @max_vscale: maximum allowed vertical scaling factor
- *
- * Calculate the vertical scaling factor as
- * (@src height) / (@dst height).
- *
- * If the scale is below 1 << 16, round down. If the scale is above
- * 1 << 16, round up. This will calculate the scale with the most
- * pessimistic limit calculation.
- *
- * RETURNS:
- * The vertical scaling factor, or errno of out of limits.
- */
+ 
 int drm_rect_calc_vscale(const struct drm_rect *src,
 			 const struct drm_rect *dst,
 			 int min_vscale, int max_vscale)
@@ -219,12 +138,7 @@ int drm_rect_calc_vscale(const struct drm_rect *src,
 }
 EXPORT_SYMBOL(drm_rect_calc_vscale);
 
-/**
- * drm_rect_debug_print - print the rectangle information
- * @prefix: prefix string
- * @r: rectangle to print
- * @fixed_point: rectangle is in 16.16 fixed point format
- */
+ 
 void drm_rect_debug_print(const char *prefix, const struct drm_rect *r, bool fixed_point)
 {
 	if (fixed_point)
@@ -234,22 +148,7 @@ void drm_rect_debug_print(const char *prefix, const struct drm_rect *r, bool fix
 }
 EXPORT_SYMBOL(drm_rect_debug_print);
 
-/**
- * drm_rect_rotate - Rotate the rectangle
- * @r: rectangle to be rotated
- * @width: Width of the coordinate space
- * @height: Height of the coordinate space
- * @rotation: Transformation to be applied
- *
- * Apply @rotation to the coordinates of rectangle @r.
- *
- * @width and @height combined with @rotation define
- * the location of the new origin.
- *
- * @width correcsponds to the horizontal and @height
- * to the vertical axis of the untransformed coordinate
- * space.
- */
+ 
 void drm_rect_rotate(struct drm_rect *r,
 		     int width, int height,
 		     unsigned int rotation)
@@ -300,30 +199,7 @@ void drm_rect_rotate(struct drm_rect *r,
 }
 EXPORT_SYMBOL(drm_rect_rotate);
 
-/**
- * drm_rect_rotate_inv - Inverse rotate the rectangle
- * @r: rectangle to be rotated
- * @width: Width of the coordinate space
- * @height: Height of the coordinate space
- * @rotation: Transformation whose inverse is to be applied
- *
- * Apply the inverse of @rotation to the coordinates
- * of rectangle @r.
- *
- * @width and @height combined with @rotation define
- * the location of the new origin.
- *
- * @width correcsponds to the horizontal and @height
- * to the vertical axis of the original untransformed
- * coordinate space, so that you never have to flip
- * them when doing a rotatation and its inverse.
- * That is, if you do ::
- *
- *     drm_rect_rotate(&r, width, height, rotation);
- *     drm_rect_rotate_inv(&r, width, height, rotation);
- *
- * you will always get back the original rectangle.
- */
+ 
 void drm_rect_rotate_inv(struct drm_rect *r,
 			 int width, int height,
 			 unsigned int rotation)

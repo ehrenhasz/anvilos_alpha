@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe AER software error injection support.
- *
- * Debugging PCIe AER code is quite difficult because it is hard to
- * trigger various real hardware errors. Software based error
- * injection can fake almost all kinds of errors with the help of a
- * user space helper tool aer-inject, which can be gotten from:
- *   https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
- *
- * Copyright 2009 Intel Corporation.
- *     Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #define dev_fmt(fmt) "aer_inject: " fmt
 
@@ -27,7 +16,7 @@
 
 #include "portdrv.h"
 
-/* Override the existing corrected and uncorrected error masks */
+ 
 static bool aer_mask_override;
 module_param(aer_mask_override, bool, 0);
 
@@ -71,7 +60,7 @@ static LIST_HEAD(einjected);
 
 static LIST_HEAD(pci_bus_ops_list);
 
-/* Protect einjected and pci_bus_ops_list */
+ 
 static DEFINE_SPINLOCK(inject_lock);
 
 static void aer_error_init(struct aer_error *err, u32 domain,
@@ -85,7 +74,7 @@ static void aer_error_init(struct aer_error *err, u32 domain,
 	err->pos_cap_err = pos_cap_err;
 }
 
-/* inject_lock must be held before calling */
+ 
 static struct aer_error *__find_aer_error(u32 domain, unsigned int bus,
 					  unsigned int devfn)
 {
@@ -100,7 +89,7 @@ static struct aer_error *__find_aer_error(u32 domain, unsigned int bus,
 	return NULL;
 }
 
-/* inject_lock must be held before calling */
+ 
 static struct aer_error *__find_aer_error_by_dev(struct pci_dev *dev)
 {
 	int domain = pci_domain_nr(dev->bus);
@@ -109,7 +98,7 @@ static struct aer_error *__find_aer_error_by_dev(struct pci_dev *dev)
 	return __find_aer_error(domain, dev->bus->number, dev->devfn);
 }
 
-/* inject_lock must be held before calling */
+ 
 static struct pci_ops *__find_pci_bus_ops(struct pci_bus *bus)
 {
 	struct pci_bus_ops *bus_ops;
@@ -333,7 +322,7 @@ static int aer_inject(struct aer_error_inj *einj)
 	if (!dev)
 		return -ENODEV;
 	rpdev = pcie_find_root_port(dev);
-	/* If Root Port not found, try to find an RCEC */
+	 
 	if (!rpdev)
 		rpdev = dev->rcec;
 	if (!rpdev) {

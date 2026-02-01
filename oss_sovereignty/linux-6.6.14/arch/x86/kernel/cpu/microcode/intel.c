@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Intel CPU Microcode Update Driver for Linux
- *
- * Copyright (C) 2000-2006 Tigran Aivazian <aivazian.tigran@gmail.com>
- *		 2006 Shaohua Li <shaohua.li@intel.com>
- *
- * Intel CPU microcode early update for Linux
- *
- * Copyright (C) 2012 Fenghua Yu <fenghua.yu@intel.com>
- *		      H Peter Anvin" <hpa@zytor.com>
- */
+
+ 
 #define pr_fmt(fmt) "microcode: " fmt
 #include <linux/earlycpio.h>
 #include <linux/firmware.h>
@@ -32,13 +22,13 @@
 
 static const char ucode_path[] = "kernel/x86/microcode/GenuineIntel.bin";
 
-/* Current microcode patch used in early patching on the APs. */
+ 
 static struct microcode_intel *intel_ucode_patch;
 
-/* last level cache size per core */
+ 
 static int llc_size_per_core;
 
-/* microcode format is extended from prescott processors */
+ 
 struct extended_signature {
 	unsigned int	sig;
 	unsigned int	pf;
@@ -84,7 +74,7 @@ int intel_cpu_collect_info(struct ucode_cpu_info *uci)
 	model  = x86_model(eax);
 
 	if (model >= 5 || family > 6) {
-		/* get processor flags from MSR 0x17 */
+		 
 		native_rdmsr(MSR_IA32_PLATFORM_ID, val[0], val[1]);
 		csig.pf = 1 << ((val[1] >> 18) & 7);
 	}
@@ -97,9 +87,7 @@ int intel_cpu_collect_info(struct ucode_cpu_info *uci)
 }
 EXPORT_SYMBOL_GPL(intel_cpu_collect_info);
 
-/*
- * Returns 1 if update has been found, 0 otherwise.
- */
+ 
 int intel_find_matching_signature(void *mc, unsigned int csig, int cpf)
 {
 	struct microcode_header_intel *mc_hdr = mc;
@@ -110,7 +98,7 @@ int intel_find_matching_signature(void *mc, unsigned int csig, int cpf)
 	if (intel_cpu_signatures_match(csig, cpf, mc_hdr->sig, mc_hdr->pf))
 		return 1;
 
-	/* Look for ext. headers: */
+	 
 	if (get_totalsize(mc_hdr) <= intel_microcode_get_datasize(mc_hdr) + MC_HEADER_SIZE)
 		return 0;
 
@@ -126,20 +114,7 @@ int intel_find_matching_signature(void *mc, unsigned int csig, int cpf)
 }
 EXPORT_SYMBOL_GPL(intel_find_matching_signature);
 
-/**
- * intel_microcode_sanity_check() - Sanity check microcode file.
- * @mc: Pointer to the microcode file contents.
- * @print_err: Display failure reason if true, silent if false.
- * @hdr_type: Type of file, i.e. normal microcode file or In Field Scan file.
- *            Validate if the microcode header type matches with the type
- *            specified here.
- *
- * Validate certain header fields and verify if computed checksum matches
- * with the one specified in the header.
- *
- * Return: 0 if the file passes all the checks, -EINVAL if any of the checks
- * fail.
- */
+ 
 int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type)
 {
 	unsigned long total_size, data_size, ext_table_size;
@@ -185,10 +160,7 @@ int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type)
 
 		ext_sigcount = ext_header->count;
 
-		/*
-		 * Check extended table checksum: the sum of all dwords that
-		 * comprise a valid table must be 0.
-		 */
+		 
 		ext_tablep = (u32 *)ext_header;
 
 		i = ext_table_size / sizeof(u32);
@@ -202,11 +174,7 @@ int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type)
 		}
 	}
 
-	/*
-	 * Calculate the checksum of update data and header. The checksum of
-	 * valid update data and header including the extended signature table
-	 * must be 0.
-	 */
+	 
 	orig_sum = 0;
 	i = (MC_HEADER_SIZE + data_size) / sizeof(u32);
 	while (i--)
@@ -221,9 +189,7 @@ int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type)
 	if (!ext_table_size)
 		return 0;
 
-	/*
-	 * Check extended signature checksum: 0 => valid.
-	 */
+	 
 	for (i = 0; i < ext_sigcount; i++) {
 		ext_sig = (void *)ext_header + EXT_HEADER_SIZE +
 			  EXT_SIGNATURE_SIZE * i;
@@ -240,9 +206,7 @@ int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type)
 }
 EXPORT_SYMBOL_GPL(intel_microcode_sanity_check);
 
-/*
- * Returns 1 if update has been found, 0 otherwise.
- */
+ 
 static int has_newer_microcode(void *mc, unsigned int csig, int cpf, int new_rev)
 {
 	struct microcode_header_intel *mc_hdr = mc;
@@ -301,10 +265,7 @@ static void save_microcode_patch(struct ucode_cpu_info *uci, void *data, unsigne
 		}
 	}
 
-	/*
-	 * There weren't any previous patches found in the list cache; save the
-	 * newly found.
-	 */
+	 
 	if (!prev_found) {
 		p = memdup_patch(data, size);
 		if (!p)
@@ -319,21 +280,14 @@ static void save_microcode_patch(struct ucode_cpu_info *uci, void *data, unsigne
 	if (!intel_find_matching_signature(p->data, uci->cpu_sig.sig, uci->cpu_sig.pf))
 		return;
 
-	/*
-	 * Save for early loading. On 32-bit, that needs to be a physical
-	 * address as the APs are running from physical addresses, before
-	 * paging has been enabled.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_X86_32))
 		intel_ucode_patch = (struct microcode_intel *)__pa_nodebug(p->data);
 	else
 		intel_ucode_patch = p->data;
 }
 
-/*
- * Get microcode matching with BSP's model. Only CPUs with the same model as
- * BSP can stay in the platform.
- */
+ 
 static struct microcode_intel *
 scan_microcode(void *data, size_t size, struct ucode_cpu_info *uci, bool save)
 {
@@ -384,7 +338,7 @@ scan_microcode(void *data, size_t size, struct ucode_cpu_info *uci, bool save)
 				goto next;
 		}
 
-		/* We have a newer patch, save it. */
+		 
 		patch = data;
 
 next:
@@ -436,9 +390,7 @@ static int delay_ucode_info;
 static int current_mc_date;
 static int early_old_rev;
 
-/*
- * Print early updated ucode info after printk works. This is delayed info dump.
- */
+ 
 void show_ucode_info_early(void)
 {
 	struct ucode_cpu_info uci;
@@ -450,10 +402,7 @@ void show_ucode_info_early(void)
 	}
 }
 
-/*
- * At this point, we can not call printk() yet. Delay printing microcode info in
- * show_ucode_info_early() until printk() works.
- */
+ 
 static void print_ucode(int old_rev, int new_rev, int date)
 {
 	int *delay_ucode_info_p;
@@ -485,11 +434,7 @@ static int apply_microcode_early(struct ucode_cpu_info *uci, bool early)
 	if (!mc)
 		return 0;
 
-	/*
-	 * Save us the MSR write below - which is a particular expensive
-	 * operation - when the other hyperthread has updated the microcode
-	 * already.
-	 */
+	 
 	rev = intel_get_microcode_revision();
 	if (rev >= mc->hdr.rev) {
 		uci->cpu_sig.rev = rev;
@@ -498,13 +443,10 @@ static int apply_microcode_early(struct ucode_cpu_info *uci, bool early)
 
 	old_rev = rev;
 
-	/*
-	 * Writeback and invalidate caches before updating microcode to avoid
-	 * internal issues depending on what the microcode is updating.
-	 */
+	 
 	native_wbinvd();
 
-	/* write microcode via MSR 0x79 */
+	 
 	native_wrmsrl(MSR_IA32_UCODE_WRITE, (unsigned long)mc->bits);
 
 	rev = intel_get_microcode_revision();
@@ -526,12 +468,7 @@ int __init save_microcode_in_initrd_intel(void)
 	struct ucode_cpu_info uci;
 	struct cpio_data cp;
 
-	/*
-	 * initrd is going away, clear patch ptr. We will scan the microcode one
-	 * last time before jettisoning and save a patch, if found. Then we will
-	 * update that pointer too, with a stable patch address to use when
-	 * resuming the cores.
-	 */
+	 
 	intel_ucode_patch = NULL;
 
 	if (!load_builtin_intel_microcode(&cp))
@@ -546,9 +483,7 @@ int __init save_microcode_in_initrd_intel(void)
 	return 0;
 }
 
-/*
- * @res_patch, output: a pointer to the patch we found.
- */
+ 
 static struct microcode_intel *__load_ucode_intel(struct ucode_cpu_info *uci)
 {
 	static const char *path;
@@ -563,7 +498,7 @@ static struct microcode_intel *__load_ucode_intel(struct ucode_cpu_info *uci)
 		use_pa	  = false;
 	}
 
-	/* try built-in microcode first */
+	 
 	if (!load_builtin_intel_microcode(&cp))
 		cp = find_microcode_in_initrd(path, use_pa);
 
@@ -660,7 +595,7 @@ static int collect_cpu_info(int cpu_num, struct cpu_signature *csig)
 	csig->sig = cpuid_eax(0x00000001);
 
 	if ((c->x86_model >= 5) || (c->x86 > 6)) {
-		/* get processor flags from MSR 0x17 */
+		 
 		rdmsr(MSR_IA32_PLATFORM_ID, val[0], val[1]);
 		csig->pf = 1 << ((val[1] >> 18) & 7);
 	}
@@ -680,11 +615,11 @@ static enum ucode_state apply_microcode_intel(int cpu)
 	static int prev_rev;
 	u32 rev;
 
-	/* We should bind the task to the CPU */
+	 
 	if (WARN_ON(raw_smp_processor_id() != cpu))
 		return UCODE_ERROR;
 
-	/* Look for a newer patch in our cache: */
+	 
 	mc = find_patch(uci);
 	if (!mc) {
 		mc = uci->mc;
@@ -692,24 +627,17 @@ static enum ucode_state apply_microcode_intel(int cpu)
 			return UCODE_NFOUND;
 	}
 
-	/*
-	 * Save us the MSR write below - which is a particular expensive
-	 * operation - when the other hyperthread has updated the microcode
-	 * already.
-	 */
+	 
 	rev = intel_get_microcode_revision();
 	if (rev >= mc->hdr.rev) {
 		ret = UCODE_OK;
 		goto out;
 	}
 
-	/*
-	 * Writeback and invalidate caches before updating microcode to avoid
-	 * internal issues depending on what the microcode is updating.
-	 */
+	 
 	native_wbinvd();
 
-	/* write microcode via MSR 0x79 */
+	 
 	wrmsrl(MSR_IA32_UCODE_WRITE, (unsigned long)mc->bits);
 
 	rev = intel_get_microcode_revision();
@@ -735,7 +663,7 @@ out:
 	uci->cpu_sig.rev = rev;
 	c->microcode	 = rev;
 
-	/* Update boot_cpu_data's revision too, if we're on the BSP: */
+	 
 	if (bsp)
 		boot_cpu_data.microcode = rev;
 
@@ -772,7 +700,7 @@ static enum ucode_state generic_load_microcode(int cpu, struct iov_iter *iter)
 			break;
 		}
 
-		/* For performance reasons, reuse mc area when possible */
+		 
 		if (!mc || mc_size > curr_mc_size) {
 			vfree(mc);
 			mc = vmalloc(mc_size);
@@ -795,7 +723,7 @@ static enum ucode_state generic_load_microcode(int cpu, struct iov_iter *iter)
 			new_rev = mc_header.rev;
 			new_mc  = mc;
 			new_mc_size = mc_size;
-			mc = NULL;	/* trigger new vmalloc */
+			mc = NULL;	 
 			ret = UCODE_NEW;
 		}
 	}
@@ -813,7 +741,7 @@ static enum ucode_state generic_load_microcode(int cpu, struct iov_iter *iter)
 	vfree(uci->mc);
 	uci->mc = (struct microcode_intel *)new_mc;
 
-	/* Save for CPU hotplug */
+	 
 	save_microcode_patch(uci, new_mc, new_mc_size);
 
 	pr_debug("CPU%d found a matching microcode update with version 0x%x (current=0x%x)\n",
@@ -826,12 +754,7 @@ static bool is_blacklisted(unsigned int cpu)
 {
 	struct cpuinfo_x86 *c = &cpu_data(cpu);
 
-	/*
-	 * Late loading on model 79 with microcode revision less than 0x0b000021
-	 * and LLC size per core bigger than 2.5MB may result in a system hang.
-	 * This behavior is documented in item BDF90, #334165 (Intel Xeon
-	 * Processor E7-8800/4800 v4 Product Family).
-	 */
+	 
 	if (c->x86 == 6 &&
 	    c->x86_model == INTEL_FAM6_BROADWELL_X &&
 	    c->x86_stepping == 0x01 &&

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2011 Broadcom Corporation
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #if !defined(__TRACE_BRCMSMAC_TX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __TRACE_BRCMSMAC_TX_H
@@ -97,7 +83,7 @@ TRACE_EVENT(brcms_ampdu_session,
 		  __entry->max_ampdu_frames, __entry->ampdu_len,
 		  __entry->ampdu_frames, __entry->dma_len)
 );
-#endif /* __TRACE_BRCMSMAC_TX_H */
+#endif  
 
 #ifdef CONFIG_BRCM_TRACING
 
@@ -107,4 +93,4 @@ TRACE_EVENT(brcms_ampdu_session,
 #define TRACE_INCLUDE_FILE brcms_trace_brcmsmac_tx
 #include <trace/define_trace.h>
 
-#endif /* CONFIG_BRCM_TRACING */
+#endif  

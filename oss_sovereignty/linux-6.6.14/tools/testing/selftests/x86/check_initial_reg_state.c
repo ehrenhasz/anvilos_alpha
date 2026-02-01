@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * check_initial_reg_state.c - check that execve sets the correct state
- * Copyright (c) 2014-2016 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 

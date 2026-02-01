@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This contains encryption functions for per-file encryption.
- *
- * Copyright (C) 2015, Google, Inc.
- * Copyright (C) 2015, Motorola Mobility
- *
- * Written by Michael Halcrow, 2014.
- *
- * Filename encryption additions
- *	Uday Savagaonkar, 2014
- * Encryption policy handling additions
- *	Ildar Muslukhov, 2014
- * Add fscrypt_pullback_bio_page()
- *	Jaegeuk Kim, 2015.
- *
- * This has not yet undergone a rigorous security audit.
- *
- * The usage of AES-XTS should conform to recommendations in NIST
- * Special Publication 800-38E and IEEE P1619/D16.
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/mempool.h>
@@ -52,13 +33,7 @@ struct page *fscrypt_alloc_bounce_page(gfp_t gfp_flags)
 	return mempool_alloc(fscrypt_bounce_page_pool, gfp_flags);
 }
 
-/**
- * fscrypt_free_bounce_page() - free a ciphertext bounce page
- * @bounce_page: the bounce page to free, or NULL
- *
- * Free a bounce page that was allocated by fscrypt_encrypt_pagecache_blocks(),
- * or by fscrypt_alloc_bounce_page() directly.
- */
+ 
 void fscrypt_free_bounce_page(struct page *bounce_page)
 {
 	if (!bounce_page)
@@ -69,14 +44,7 @@ void fscrypt_free_bounce_page(struct page *bounce_page)
 }
 EXPORT_SYMBOL(fscrypt_free_bounce_page);
 
-/*
- * Generate the IV for the given logical block number within the given file.
- * For filenames encryption, lblk_num == 0.
- *
- * Keep this in sync with fscrypt_limit_io_blocks().  fscrypt_limit_io_blocks()
- * needs to know about any IV generation methods where the low bits of IV don't
- * simply contain the lblk_num (e.g., IV_INO_LBLK_32).
- */
+ 
 void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
 			 const struct fscrypt_info *ci)
 {
@@ -97,7 +65,7 @@ void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
 	iv->lblk_num = cpu_to_le64(lblk_num);
 }
 
-/* Encrypt or decrypt a single filesystem block of file contents */
+ 
 int fscrypt_crypt_block(const struct inode *inode, fscrypt_direction_t rw,
 			u64 lblk_num, struct page *src_page,
 			struct page *dest_page, unsigned int len,
@@ -144,31 +112,7 @@ int fscrypt_crypt_block(const struct inode *inode, fscrypt_direction_t rw,
 	return 0;
 }
 
-/**
- * fscrypt_encrypt_pagecache_blocks() - Encrypt filesystem blocks from a
- *					pagecache page
- * @page:      The locked pagecache page containing the block(s) to encrypt
- * @len:       Total size of the block(s) to encrypt.  Must be a nonzero
- *		multiple of the filesystem's block size.
- * @offs:      Byte offset within @page of the first block to encrypt.  Must be
- *		a multiple of the filesystem's block size.
- * @gfp_flags: Memory allocation flags.  See details below.
- *
- * A new bounce page is allocated, and the specified block(s) are encrypted into
- * it.  In the bounce page, the ciphertext block(s) will be located at the same
- * offsets at which the plaintext block(s) were located in the source page; any
- * other parts of the bounce page will be left uninitialized.  However, normally
- * blocksize == PAGE_SIZE and the whole page is encrypted at once.
- *
- * This is for use by the filesystem's ->writepages() method.
- *
- * The bounce page allocation is mempool-backed, so it will always succeed when
- * @gfp_flags includes __GFP_DIRECT_RECLAIM, e.g. when it's GFP_NOFS.  However,
- * only the first page of each bio can be allocated this way.  To prevent
- * deadlocks, for any additional pages a mask like GFP_NOWAIT must be used.
- *
- * Return: the new encrypted bounce page on success; an ERR_PTR() on failure
- */
+ 
 struct page *fscrypt_encrypt_pagecache_blocks(struct page *page,
 					      unsigned int len,
 					      unsigned int offs,
@@ -209,23 +153,7 @@ struct page *fscrypt_encrypt_pagecache_blocks(struct page *page,
 }
 EXPORT_SYMBOL(fscrypt_encrypt_pagecache_blocks);
 
-/**
- * fscrypt_encrypt_block_inplace() - Encrypt a filesystem block in-place
- * @inode:     The inode to which this block belongs
- * @page:      The page containing the block to encrypt
- * @len:       Size of block to encrypt.  This must be a multiple of
- *		FSCRYPT_CONTENTS_ALIGNMENT.
- * @offs:      Byte offset within @page at which the block to encrypt begins
- * @lblk_num:  Filesystem logical block number of the block, i.e. the 0-based
- *		number of the block within the file
- * @gfp_flags: Memory allocation flags
- *
- * Encrypt a possibly-compressed filesystem block that is located in an
- * arbitrary page, not necessarily in the original pagecache page.  The @inode
- * and @lblk_num must be specified, as they can't be determined from @page.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 int fscrypt_encrypt_block_inplace(const struct inode *inode, struct page *page,
 				  unsigned int len, unsigned int offs,
 				  u64 lblk_num, gfp_t gfp_flags)
@@ -235,22 +163,7 @@ int fscrypt_encrypt_block_inplace(const struct inode *inode, struct page *page,
 }
 EXPORT_SYMBOL(fscrypt_encrypt_block_inplace);
 
-/**
- * fscrypt_decrypt_pagecache_blocks() - Decrypt filesystem blocks in a
- *					pagecache folio
- * @folio:     The locked pagecache folio containing the block(s) to decrypt
- * @len:       Total size of the block(s) to decrypt.  Must be a nonzero
- *		multiple of the filesystem's block size.
- * @offs:      Byte offset within @folio of the first block to decrypt.  Must be
- *		a multiple of the filesystem's block size.
- *
- * The specified block(s) are decrypted in-place within the pagecache folio,
- * which must still be locked and not uptodate.
- *
- * This is for use by the filesystem's ->readahead() method.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 int fscrypt_decrypt_pagecache_blocks(struct folio *folio, size_t len,
 				     size_t offs)
 {
@@ -281,22 +194,7 @@ int fscrypt_decrypt_pagecache_blocks(struct folio *folio, size_t len,
 }
 EXPORT_SYMBOL(fscrypt_decrypt_pagecache_blocks);
 
-/**
- * fscrypt_decrypt_block_inplace() - Decrypt a filesystem block in-place
- * @inode:     The inode to which this block belongs
- * @page:      The page containing the block to decrypt
- * @len:       Size of block to decrypt.  This must be a multiple of
- *		FSCRYPT_CONTENTS_ALIGNMENT.
- * @offs:      Byte offset within @page at which the block to decrypt begins
- * @lblk_num:  Filesystem logical block number of the block, i.e. the 0-based
- *		number of the block within the file
- *
- * Decrypt a possibly-compressed filesystem block that is located in an
- * arbitrary page, not necessarily in the original pagecache page.  The @inode
- * and @lblk_num must be specified, as they can't be determined from @page.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 int fscrypt_decrypt_block_inplace(const struct inode *inode, struct page *page,
 				  unsigned int len, unsigned int offs,
 				  u64 lblk_num)
@@ -306,25 +204,17 @@ int fscrypt_decrypt_block_inplace(const struct inode *inode, struct page *page,
 }
 EXPORT_SYMBOL(fscrypt_decrypt_block_inplace);
 
-/**
- * fscrypt_initialize() - allocate major buffers for fs encryption.
- * @sb: the filesystem superblock
- *
- * We only call this when we start accessing encrypted files, since it
- * results in memory getting allocated that wouldn't otherwise be used.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 int fscrypt_initialize(struct super_block *sb)
 {
 	int err = 0;
 	mempool_t *pool;
 
-	/* pairs with smp_store_release() below */
+	 
 	if (likely(smp_load_acquire(&fscrypt_bounce_page_pool)))
 		return 0;
 
-	/* No need to allocate a bounce page pool if this FS won't use it. */
+	 
 	if (sb->s_cop->flags & FS_CFLG_OWN_PAGES)
 		return 0;
 
@@ -336,7 +226,7 @@ int fscrypt_initialize(struct super_block *sb)
 	pool = mempool_create_page_pool(num_prealloc_crypto_pages, 0);
 	if (!pool)
 		goto out_unlock;
-	/* pairs with smp_load_acquire() above */
+	 
 	smp_store_release(&fscrypt_bounce_page_pool, pool);
 	err = 0;
 out_unlock:
@@ -368,23 +258,12 @@ void fscrypt_msg(const struct inode *inode, const char *level,
 	va_end(args);
 }
 
-/**
- * fscrypt_init() - Set up for fs encryption.
- *
- * Return: 0 on success; -errno on failure
- */
+ 
 static int __init fscrypt_init(void)
 {
 	int err = -ENOMEM;
 
-	/*
-	 * Use an unbound workqueue to allow bios to be decrypted in parallel
-	 * even when they happen to complete on the same CPU.  This sacrifices
-	 * locality, but it's worthwhile since decryption is CPU-intensive.
-	 *
-	 * Also use a high-priority workqueue to prioritize decryption work,
-	 * which blocks reads from completing, over regular application tasks.
-	 */
+	 
 	fscrypt_read_workqueue = alloc_workqueue("fscrypt_read_queue",
 						 WQ_UNBOUND | WQ_HIGHPRI,
 						 num_online_cpus());

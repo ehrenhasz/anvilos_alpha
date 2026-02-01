@@ -1,7 +1,7 @@
 {
 	"valid 1,2,4,8-byte reads from bpf_sk_lookup",
 	.insns = {
-		/* 1-byte read from family field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, family)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -10,16 +10,16 @@
 			    offsetof(struct bpf_sk_lookup, family) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, family) + 3),
-		/* 2-byte read from family field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, family)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, family) + 2),
-		/* 4-byte read from family field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, family)),
 
-		/* 1-byte read from protocol field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, protocol)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -28,16 +28,16 @@
 			    offsetof(struct bpf_sk_lookup, protocol) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, protocol) + 3),
-		/* 2-byte read from protocol field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, protocol)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, protocol) + 2),
-		/* 4-byte read from protocol field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, protocol)),
 
-		/* 1-byte read from remote_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip4)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -46,16 +46,16 @@
 			    offsetof(struct bpf_sk_lookup, remote_ip4) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip4) + 3),
-		/* 2-byte read from remote_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip4)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip4) + 2),
-		/* 4-byte read from remote_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip4)),
 
-		/* 1-byte read from remote_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -88,7 +88,7 @@
 			    offsetof(struct bpf_sk_lookup, remote_ip6) + 14),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6) + 15),
-		/* 2-byte read from remote_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
@@ -105,7 +105,7 @@
 			    offsetof(struct bpf_sk_lookup, remote_ip6) + 12),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6) + 14),
-		/* 4-byte read from remote_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6)),
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
@@ -115,7 +115,7 @@
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_ip6) + 12),
 
-		/* 1-byte read from remote_port field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_port)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -124,16 +124,16 @@
 			    offsetof(struct bpf_sk_lookup, remote_port) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_port) + 3),
-		/* 2-byte read from remote_port field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_port)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_port) + 2),
-		/* 4-byte read from remote_port field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, remote_port)),
 
-		/* 1-byte read from local_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip4)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -142,16 +142,16 @@
 			    offsetof(struct bpf_sk_lookup, local_ip4) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip4) + 3),
-		/* 2-byte read from local_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip4)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip4) + 2),
-		/* 4-byte read from local_ip4 field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip4)),
 
-		/* 1-byte read from local_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -184,7 +184,7 @@
 			    offsetof(struct bpf_sk_lookup, local_ip6) + 14),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6) + 15),
-		/* 2-byte read from local_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
@@ -201,7 +201,7 @@
 			    offsetof(struct bpf_sk_lookup, local_ip6) + 12),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6) + 14),
-		/* 4-byte read from local_ip6 field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6)),
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
@@ -211,7 +211,7 @@
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_ip6) + 12),
 
-		/* 1-byte read from local_port field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_port)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -220,16 +220,16 @@
 			    offsetof(struct bpf_sk_lookup, local_port) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_port) + 3),
-		/* 2-byte read from local_port field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_port)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_port) + 2),
-		/* 4-byte read from local_port field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, local_port)),
 
-		/* 1-byte read from ingress_ifindex field */
+		 
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex)),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
@@ -238,16 +238,16 @@
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex) + 2),
 		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex) + 3),
-		/* 2-byte read from ingress_ifindex field */
+		 
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex)),
 		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex) + 2),
-		/* 4-byte read from ingress_ifindex field */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, ingress_ifindex)),
 
-		/* 8-byte read from sk field */
+		 
 		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
 			    offsetof(struct bpf_sk_lookup, sk)),
 
@@ -259,7 +259,7 @@
 	.expected_attach_type = BPF_SK_LOOKUP,
 	.runs = -1,
 },
-/* invalid 8-byte reads from a 4-byte fields in bpf_sk_lookup */
+ 
 {
 	"invalid 8-byte read from bpf_sk_lookup family field",
 	.insns = {
@@ -383,7 +383,7 @@
 	.expected_attach_type = BPF_SK_LOOKUP,
 	.flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
 },
-/* invalid 1,2,4-byte reads from 8-byte fields in bpf_sk_lookup */
+ 
 {
 	"invalid 4-byte read from bpf_sk_lookup sk field",
 	.insns = {
@@ -423,7 +423,7 @@
 	.prog_type = BPF_PROG_TYPE_SK_LOOKUP,
 	.expected_attach_type = BPF_SK_LOOKUP,
 },
-/* out of bounds and unaligned reads from bpf_sk_lookup */
+ 
 {
 	"invalid 4-byte read past end of bpf_sk_lookup",
 	.insns = {
@@ -463,7 +463,7 @@
 	.expected_attach_type = BPF_SK_LOOKUP,
 	.flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
 },
-/* in-bound and out-of-bound writes to bpf_sk_lookup */
+ 
 {
 	"invalid 8-byte write to bpf_sk_lookup",
 	.insns = {

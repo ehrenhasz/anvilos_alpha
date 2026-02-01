@@ -1,45 +1,11 @@
-/*
- * socket.c - CC31xx/CC32xx Host Driver Implementation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright 
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
+ 
     
 
 
 
-/*****************************************************************************/
-/* Include files                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 #include "simplelink.h"
 #include "protocol.h"
 #include "driver.h"
@@ -55,47 +21,45 @@ void   _sl_HandleAsync_Select(void *pVoidBuf);
 #endif
 _u16   _sl_TruncatePayloadByProtocol(const _i16 pSd, const _u16 length);  
 
-/*******************************************************************************/
-/* Functions                                                                   */
-/*******************************************************************************/
+ 
+ 
+ 
 
 
-    /*  Note: parsing of family and port in the generic way for all IPV4, IPV6 and EUI48 */
-    /*  is possible as _i32 as these parameters are in the same offset and size for these */
-    /*  three families. */
+     
+     
+     
 #define SL_SOCKET_PAYLOAD_BASE (1350)
 
 const _u8 _SlPayloadByProtocolLUT[16] = 
 {
-    (1472 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_UDP_IPV4 */
-    (1460 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_TCP_IPV4 */
-    (1452 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_UDP_IPV6 */
-    (1440 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_TCP_IPV6 */
-    (1386 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_TCP_IPV4_SECURE */
-    (1386 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_UDP_IPV4_SECURE */
-    (1396 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_UDP_IPV6_SECURE */
-    (1396 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_TCP_IPV6_SECURE */
-    (1476 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_RAW_TRANCEIVER */
-    (1514 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_RAW_PACKET */
-    (1480 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_RAW_IP4 */
-    (1480 - SL_SOCKET_PAYLOAD_BASE), /* SL_SOCKET_PAYLOAD_TYPE_RAW_IP6 */
-    (1440 - SL_SOCKET_PAYLOAD_BASE), /* Default */
-    (1440 - SL_SOCKET_PAYLOAD_BASE), /* Default */
-    (1440 - SL_SOCKET_PAYLOAD_BASE), /* Default */
-    (1440 - SL_SOCKET_PAYLOAD_BASE)  /* Default */
+    (1472 - SL_SOCKET_PAYLOAD_BASE),  
+    (1460 - SL_SOCKET_PAYLOAD_BASE),  
+    (1452 - SL_SOCKET_PAYLOAD_BASE),  
+    (1440 - SL_SOCKET_PAYLOAD_BASE),  
+    (1386 - SL_SOCKET_PAYLOAD_BASE),  
+    (1386 - SL_SOCKET_PAYLOAD_BASE),  
+    (1396 - SL_SOCKET_PAYLOAD_BASE),  
+    (1396 - SL_SOCKET_PAYLOAD_BASE),  
+    (1476 - SL_SOCKET_PAYLOAD_BASE),  
+    (1514 - SL_SOCKET_PAYLOAD_BASE),  
+    (1480 - SL_SOCKET_PAYLOAD_BASE),  
+    (1480 - SL_SOCKET_PAYLOAD_BASE),  
+    (1440 - SL_SOCKET_PAYLOAD_BASE),  
+    (1440 - SL_SOCKET_PAYLOAD_BASE),  
+    (1440 - SL_SOCKET_PAYLOAD_BASE),  
+    (1440 - SL_SOCKET_PAYLOAD_BASE)   
 };
 
 
 
-/* ******************************************************************************/
-/*  _sl_BuildAddress */
-/* ******************************************************************************/
+ 
+ 
+ 
 void _sl_BuildAddress(const SlSockAddr_t *addr, _SocketAddrCommand_u    *pCmd)
 {
 
-    /* Note: parsing of family and port in the generic way for all IPV4, IPV6 and EUI48
-           is possible as long as these parameters are in the same offset and size for these
-           three families. */
+     
     pCmd->IpV4.FamilyAndFlags = (addr->sa_family << 4) & 0xF0;
     pCmd->IpV4.port = ((SlSockAddrIn_t *)addr)->sin_port;
 
@@ -116,9 +80,7 @@ void _sl_BuildAddress(const SlSockAddr_t *addr, _SocketAddrCommand_u    *pCmd)
 }
 
 
-/*****************************************************************************
- _sl_TruncatePayloadByProtocol 
-*****************************************************************************/
+ 
 _u16 _sl_TruncatePayloadByProtocol(const _i16 sd, const _u16 length)
 {
    unsigned int maxLength;
@@ -138,16 +100,16 @@ _u16 _sl_TruncatePayloadByProtocol(const _i16 sd, const _u16 length)
    }
 }
 
-/*******************************************************************************/
-/*  _sl_ParseAddress */
-/*******************************************************************************/
+ 
+ 
+ 
 
 #ifndef SL_TINY_EXT
 void _sl_ParseAddress(_SocketAddrResponse_u    *pRsp, SlSockAddr_t *addr, SlSocklen_t *addrlen)
 {
-    /*  Note: parsing of family and port in the generic way for all IPV4, IPV6 and EUI48 */
-    /*  is possible as long as these parameters are in the same offset and size for these */
-    /*  three families. */
+     
+     
+     
     addr->sa_family                 = pRsp->IpV4.family;
     ((SlSockAddrIn_t *)addr)->sin_port = pRsp->IpV4.port;
 
@@ -171,9 +133,9 @@ void _sl_ParseAddress(_SocketAddrResponse_u    *pRsp, SlSockAddr_t *addr, SlSock
 
 #endif
 
-/*******************************************************************************/
-/* sl_Socket */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _u32                Dummy;
@@ -213,9 +175,9 @@ _i16 sl_Socket(_i16 Domain, _i16 Type, _i16 Protocol)
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Close  */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_CloseCommand_t	    Cmd;
@@ -244,9 +206,9 @@ _i16 sl_Close(_i16 sd)
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Bind */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_SocketAddrCommand_u    Cmd;
@@ -296,13 +258,13 @@ _i16 sl_Bind(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Sendto */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _SocketAddrCommand_u    Cmd;
-    /*  no response for 'sendto' commands*/
+     
 }_SlSendtoMsg_u;
 
 #if _SL_INCLUDE_FUNC(sl_SendTo)
@@ -373,9 +335,9 @@ _i16 sl_SendTo(_i16 sd, const void *pBuf, _i16 Len, _i16 flags, const SlSockAddr
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Recvfrom */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _sendRecvCommand_t	    Cmd;
@@ -405,7 +367,7 @@ _i16 sl_RecvFrom(_i16 sd, void *buf, _i16 Len, _i16 flags, SlSockAddr_t *from, S
 
     Msg.Cmd.sd = (_u8)sd;
     Msg.Cmd.StatusOrLen = Len;
-    /*  no size truncation in recv path */
+     
     CmdExt.RxPayloadLen = Msg.Cmd.StatusOrLen;
 
 
@@ -468,9 +430,9 @@ _i16 sl_RecvFrom(_i16 sd, void *buf, _i16 Len, _i16 flags, SlSockAddr_t *from, S
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Connect */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_SocketAddrCommand_u    Cmd;
@@ -492,7 +454,7 @@ _i16 sl_Connect(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
         case SL_AF_INET :
             CmdCtrl.Opcode = SL_OPCODE_SOCKET_CONNECT;
             CmdCtrl.TxDescLen = sizeof(_SocketAddrIPv4Command_t);
-            /* Do nothing - cmd already initialized to this type */
+             
             break;
         case  SL_AF_INET6_EUI_48:
             CmdCtrl.Opcode = SL_OPCODE_SOCKET_CONNECT_V6;
@@ -522,7 +484,7 @@ _i16 sl_Connect(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
         return SL_POOL_IS_EMPTY;
     }
 
-    /* send the command */
+     
     VERIFY_RET_OK(_SlDrvCmdOp((_SlCmdCtrl_t *)&CmdCtrl, &Msg, NULL));
     VERIFY_PROTOCOL(Msg.Rsp.sd == sd)
 
@@ -530,7 +492,7 @@ _i16 sl_Connect(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
 
     if(SL_RET_CODE_OK == RetVal)
     {
-		/* wait for async and get Data Read parameters */
+		 
         _SlDrvSyncObjWaitForever(&g_pCB->ObjPool[ObjIdx].SyncObj);
         
         VERIFY_PROTOCOL(AsyncRsp.sd == sd);
@@ -547,9 +509,9 @@ _i16 sl_Connect(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
 #endif
 
 
-/*******************************************************************************/
-/*   _sl_HandleAsync_Connect */
-/*******************************************************************************/
+ 
+ 
+ 
 void _sl_HandleAsync_Connect(void *pVoidBuf)
 {
     _SocketResponse_t          *pMsgArgs   = (_SocketResponse_t *)_SL_RESP_ARGS_START(pVoidBuf);
@@ -569,13 +531,13 @@ void _sl_HandleAsync_Connect(void *pVoidBuf)
     return;
 }
 
-/*******************************************************************************/
-/*  sl_Send */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_sendRecvCommand_t    Cmd;
-    /*  no response for 'sendto' commands*/
+     
 }_SlSendMsg_u;
 
 const _SlCmdCtrl_t _SlSendCmdCtrl =
@@ -599,12 +561,12 @@ _i16 sl_Send(_i16 sd, const void *pBuf, _i16 Len, _i16 flags)
     CmdExt.TxPayloadLen = Len;
     CmdExt.pTxPayload = (_u8 *)pBuf;
     
-    /* Only for RAW transceiver type socket, relay the flags parameter in the 2 bytes (4 byte aligned) before the actual payload */
+     
     if ((sd & SL_SOCKET_PAYLOAD_TYPE_MASK) == SL_SOCKET_PAYLOAD_TYPE_RAW_TRANCEIVER)
     {
 		tempVal = flags;
         CmdExt.pRxPayload = (_u8 *)&tempVal;
-		CmdExt.RxPayloadLen = -4; /* mark as Rx data to send */
+		CmdExt.RxPayloadLen = -4;  
 		runSingleChunk = TRUE;
     }
     else
@@ -639,9 +601,9 @@ _i16 sl_Send(_i16 sd, const void *pBuf, _i16 Len, _i16 flags)
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Listen */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_ListenCommand_t    Cmd;
@@ -672,9 +634,9 @@ _i16 sl_Listen(_i16 sd, _i16 backlog)
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Accept */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_AcceptCommand_t    Cmd;
@@ -712,7 +674,7 @@ _i16 sl_Accept(_i16 sd, SlSockAddr_t *addr, SlSocklen_t *addrlen)
         return SL_POOL_IS_EMPTY;
     }
     
-	/* send the command */
+	 
     VERIFY_RET_OK(_SlDrvCmdOp((_SlCmdCtrl_t *)&_SlAcceptCmdCtrl, &Msg, NULL));
     VERIFY_PROTOCOL(Msg.Rsp.sd == sd);
 
@@ -720,7 +682,7 @@ _i16 sl_Accept(_i16 sd, SlSockAddr_t *addr, SlSocklen_t *addrlen)
 
     if(SL_OS_RET_CODE_OK == RetVal)
     {
-        /* wait for async and get Data Read parameters */
+         
         _SlDrvSyncObjWaitForever(&g_pCB->ObjPool[ObjIdx].SyncObj);
         
         VERIFY_PROTOCOL(AsyncRsp.IpV4.sd == sd);
@@ -728,7 +690,7 @@ _i16 sl_Accept(_i16 sd, SlSockAddr_t *addr, SlSocklen_t *addrlen)
         RetVal = AsyncRsp.IpV4.statusOrLen;
         if( (NULL != addr) && (NULL != addrlen) )  
         {
-#if 0 /*  Kept for backup */
+#if 0  
             _sl_ParseAddress(&AsyncRsp, addr, addrlen);
 #else
     	   addr->sa_family = AsyncRsp.IpV4.family;
@@ -750,7 +712,7 @@ _i16 sl_Accept(_i16 sd, SlSockAddr_t *addr, SlSocklen_t *addrlen)
                 if( *addrlen == sizeof( SlSockAddrIn6_t ) )
               {
                 ((SlSockAddrIn6_t *)addr)->sin6_port                   = AsyncRsp.IpV6EUI48.port    ;
-                /*  will be called from here and from _sl_BuildAddress*/
+                 
                 sl_Memcpy(((SlSockAddrIn6_t *)addr)->sin6_addr._S6_un._S6_u8, AsyncRsp.IpV6EUI48.address, 6);
               }
               else
@@ -782,14 +744,14 @@ _i16 sl_Accept(_i16 sd, SlSockAddr_t *addr, SlSocklen_t *addrlen)
 #endif
 
 
-/*******************************************************************************/
-/*  sl_Htonl */
-/*******************************************************************************/
+ 
+ 
+ 
 _u32 sl_Htonl( _u32 val )
 {
   _u32 i = 1; 
   _i8 *p = (_i8 *)&i;  
-  if (p[0] == 1) /* little endian */
+  if (p[0] == 1)  
   {
     p[0] = ((_i8* )&val)[3];
     p[1] = ((_i8* )&val)[2];
@@ -797,34 +759,34 @@ _u32 sl_Htonl( _u32 val )
     p[3] = ((_i8* )&val)[0];
     return i;
   }
-  else /* big endian */
+  else  
   {
     return val; 
   }
 }
 
-/*******************************************************************************/
-/*  sl_Htonl */
-/*******************************************************************************/
+ 
+ 
+ 
 _u16 sl_Htons( _u16 val )
 {
   _i16 i = 1; 
   _i8 *p = (_i8 *)&i;  
-  if (p[0] == 1) /* little endian */
+  if (p[0] == 1)  
   {
     p[0] = ((_i8* )&val)[1];
     p[1] = ((_i8* )&val)[0];
     return i;
   }
-  else /* big endian */
+  else  
   {
     return val; 
   }
 }
 
-/*******************************************************************************/
-/*   _sl_HandleAsync_Accept */
-/*******************************************************************************/
+ 
+ 
+ 
 #ifndef SL_TINY_EXT
 void _sl_HandleAsync_Accept(void *pVoidBuf)
 {
@@ -842,9 +804,9 @@ void _sl_HandleAsync_Accept(void *pVoidBuf)
     return;
 }
 
-/*******************************************************************************/
-/*   _sl_HandleAsync_Select */
-/*******************************************************************************/
+ 
+ 
+ 
 void _sl_HandleAsync_Select(void *pVoidBuf)
 {
     _SelectAsyncResponse_t     *pMsgArgs   = (_SelectAsyncResponse_t *)_SL_RESP_ARGS_START(pVoidBuf);
@@ -863,9 +825,9 @@ void _sl_HandleAsync_Select(void *pVoidBuf)
 
 #endif
 
-/*******************************************************************************/
-/*  sl_Recv */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_sendRecvCommand_t  Cmd;
@@ -896,7 +858,7 @@ _i16 sl_Recv(_i16 sd, void *pBuf, _i16 Len, _i16 flags)
     Msg.Cmd.sd = (_u8)sd;
     Msg.Cmd.StatusOrLen = Len;
 
-    /*  no size truncation in recv path */
+     
     CmdExt.RxPayloadLen = Msg.Cmd.StatusOrLen;
 
     Msg.Cmd.FamilyAndFlags = flags & 0x0F;
@@ -907,15 +869,15 @@ _i16 sl_Recv(_i16 sd, void *pBuf, _i16 Len, _i16 flags)
 	return status;
     }
      
-    /*  if the Device side sends less than expected it is not the Driver's role */
-    /*  the returned value could be smaller than the requested size */
+     
+     
     return (_i16)Msg.Rsp.statusOrLen;
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_SetSockOpt */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_setSockOptCommand_t    Cmd;
@@ -951,9 +913,9 @@ _i16 sl_SetSockOpt(_i16 sd, _i16 level, _i16 optname, const void *optval, SlSock
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_GetSockOpt */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_getSockOptCommand_t    Cmd;
@@ -1004,9 +966,9 @@ _i16 sl_GetSockOpt(_i16 sd, _i16 level, _i16 optname, void *optval, SlSocklen_t 
 }
 #endif
 
-/*******************************************************************************/
-/*  sl_Select */
-/* ******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
 	_SelectCommand_t   Cmd;
@@ -1063,7 +1025,7 @@ _i16 sl_Select(_i16 nfds, SlFdSet_t *readsds, SlFdSet_t *writesds, SlFdSet_t *ex
 		{
 			Msg.Cmd.tv_sec = (_u16)timeout->tv_sec;
 		}
-		timeout->tv_usec = timeout->tv_usec >> 10;  /*  convert to milliseconds */
+		timeout->tv_usec = timeout->tv_usec >> 10;   
 		if( 0xffff <= timeout->tv_usec )	
 		{
 			Msg.Cmd.tv_usec = 0xffff;
@@ -1074,7 +1036,7 @@ _i16 sl_Select(_i16 nfds, SlFdSet_t *readsds, SlFdSet_t *writesds, SlFdSet_t *ex
 		}
 	}
 
-	/* Use Obj to issue the command, if not available try later */
+	 
     ObjIdx = _SlDrvProtectAsyncRespSetting((_u8*)&AsyncRsp, SELECT_ID, SL_MAX_SOCKETS);
 
     if (MAX_CONCURRENT_ACTIONS == ObjIdx)
@@ -1083,7 +1045,7 @@ _i16 sl_Select(_i16 nfds, SlFdSet_t *readsds, SlFdSet_t *writesds, SlFdSet_t *ex
     }
 
     
-	/* send the command */
+	 
     VERIFY_RET_OK(_SlDrvCmdOp((_SlCmdCtrl_t *)&_SlSelectCmdCtrl, &Msg, NULL));
 
     if(SL_OS_RET_CODE_OK == (_i16)Msg.Rsp.status)
@@ -1109,24 +1071,24 @@ _i16 sl_Select(_i16 nfds, SlFdSet_t *readsds, SlFdSet_t *writesds, SlFdSet_t *ex
     return (_i16)Msg.Rsp.status;
 }
 
-/*  Select helper functions */
-/*******************************************************************************/
-/*  SL_FD_SET */
-/* ******************************************************************************/
+ 
+ 
+ 
+ 
 void SL_FD_SET(_i16 fd, SlFdSet_t *fdset)
 {
    fdset->fd_array[0] |=  (1<< (fd & BSD_SOCKET_ID_MASK));
 }
-/*******************************************************************************/
-/*  SL_FD_CLR */
-/*******************************************************************************/
+ 
+ 
+ 
 void SL_FD_CLR(_i16 fd, SlFdSet_t *fdset)
 {
   fdset->fd_array[0] &=  ~(1<< (fd & BSD_SOCKET_ID_MASK));
 }
-/*******************************************************************************/
-/*  SL_FD_ISSET */
-/*******************************************************************************/
+ 
+ 
+ 
 _i16  SL_FD_ISSET(_i16 fd, SlFdSet_t *fdset)
 {
   if( fdset->fd_array[0] & (1<< (fd & BSD_SOCKET_ID_MASK)) )
@@ -1135,9 +1097,9 @@ _i16  SL_FD_ISSET(_i16 fd, SlFdSet_t *fdset)
   }
   return 0;
 }
-/*******************************************************************************/
-/*  SL_FD_ZERO */
-/*******************************************************************************/  
+ 
+ 
+   
 void SL_FD_ZERO(SlFdSet_t *fdset)
 {
   fdset->fd_array[0] = 0;

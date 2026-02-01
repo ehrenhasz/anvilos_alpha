@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2015-18 Intel Corporation.
 
-/*
- * Machine Driver for SKL+ platforms with DSP and iDisp, HDA Codecs
- */
+
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -42,10 +40,10 @@ static const struct snd_soc_dapm_route skl_hda_map[] = {
 	{ "Codec Input Pin2", NULL, "Digital In" },
 	{ "Codec Input Pin3", NULL, "Alt Analog In" },
 
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 
-	/* CODEC BE connections */
+	 
 	{ "Analog Codec Playback", NULL, "Analog CPU Playback" },
 	{ "Analog CPU Playback", NULL, "codec0_out" },
 	{ "Digital Codec Playback", NULL, "Digital CPU Playback" },
@@ -109,7 +107,7 @@ static char hda_soc_components[30];
 #define HDAC_DAI_COUNT		2
 #define DMIC_DAI_COUNT		2
 
-/* there are two routes per iDisp output */
+ 
 #define IDISP_ROUTE_COUNT	(IDISP_DAI_COUNT * 2)
 #define IDISP_CODEC_MASK	0x4
 
@@ -132,23 +130,18 @@ static int skl_hda_fill_card_info(struct snd_soc_acpi_mach_params *mach_params)
 		return -EINVAL;
 
 	if (codec_mask == IDISP_CODEC_MASK) {
-		/* topology with iDisp as the only HDA codec */
+		 
 		num_links = IDISP_DAI_COUNT + DMIC_DAI_COUNT;
 		num_route = IDISP_ROUTE_COUNT;
 
-		/*
-		 * rearrange the dai link array and make the
-		 * dmic dai links follow idsp dai links for only
-		 * num_links of dai links need to be registered
-		 * to ASoC.
-		 */
+		 
 		for (i = 0; i < DMIC_DAI_COUNT; i++) {
 			skl_hda_be_dai_links[IDISP_DAI_COUNT + i] =
 				skl_hda_be_dai_links[IDISP_DAI_COUNT +
 					HDAC_DAI_COUNT + i];
 		}
 	} else {
-		/* topology with external and iDisp HDA codecs */
+		 
 		num_links = ARRAY_SIZE(skl_hda_be_dai_links);
 		num_route = ARRAY_SIZE(skl_hda_map);
 		card->dapm_widgets = skl_hda_widgets;
@@ -184,10 +177,7 @@ static void skl_set_hda_codec_autosuspend_delay(struct snd_soc_card *card)
 		dai = asoc_rtd_to_codec(rtd, 0);
 		hda_pvt = snd_soc_component_get_drvdata(dai->component);
 		if (hda_pvt) {
-			/*
-			 * all codecs are on the same bus, so it's sufficient
-			 * to look up only the first one
-			 */
+			 
 			snd_hda_set_power_save(hda_pvt->codec->bus,
 					       HDA_CODEC_AUTOSUSPEND_DELAY_MS);
 			break;
@@ -222,7 +212,7 @@ static int skl_hda_audio_probe(struct platform_device *pdev)
 	}
 
 	ctx->pcm_count = hda_soc_card.num_links;
-	ctx->dai_index = 1; /* hdmi codec dai name starts from index 1 */
+	ctx->dai_index = 1;  
 	ctx->platform_name = mach->mach_params.platform;
 	ctx->common_hdmi_codec_drv = mach->mach_params.common_hdmi_codec_drv;
 
@@ -251,7 +241,7 @@ static struct platform_driver skl_hda_audio = {
 
 module_platform_driver(skl_hda_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("SKL/KBL/BXT/APL HDA Generic Machine driver");
 MODULE_AUTHOR("Rakesh Ughreja <rakesh.a.ughreja@intel.com>");
 MODULE_LICENSE("GPL v2");

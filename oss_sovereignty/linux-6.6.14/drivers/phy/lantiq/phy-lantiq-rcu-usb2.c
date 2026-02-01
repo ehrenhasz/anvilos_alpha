@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Lantiq XWAY SoC RCU module based USB 1.1/2.0 PHY driver
- *
- * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- * Copyright (C) 2017 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -18,9 +13,9 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* Transmitter HS Pre-Emphasis Enable */
+ 
 #define RCU_CFG1_TX_PEE		BIT(0)
-/* Disconnect Threshold */
+ 
 #define RCU_CFG1_DIS_THR_MASK	0x00038000
 #define RCU_CFG1_DIS_THR_SHIFT	15
 
@@ -100,11 +95,11 @@ static int ltq_rcu_usb2_phy_init(struct phy *phy)
 			RCU_CFG1_DIS_THR_MASK, 7 << RCU_CFG1_DIS_THR_SHIFT);
 	}
 
-	/* Configure core to host mode */
+	 
 	regmap_update_bits(priv->regmap, priv->phy_reg_offset,
 			   BIT(priv->reg_bits->hostmode), 0);
 
-	/* Select DMA endianness (Host-endian: big-endian) */
+	 
 	regmap_update_bits(priv->regmap, priv->phy_reg_offset,
 		BIT(priv->reg_bits->slave_endianness), 0);
 	regmap_update_bits(priv->regmap, priv->phy_reg_offset,
@@ -128,10 +123,7 @@ static int ltq_rcu_usb2_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/*
-	 * at least the xrx200 usb2 phy requires some extra time to be
-	 * operational after enabling the clock
-	 */
+	 
 	usleep_range(100, 200);
 
 	return ret;
@@ -220,7 +212,7 @@ static int ltq_rcu_usb2_phy_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Reset USB core through reset controller */
+	 
 	reset_control_deassert(priv->ctrl_reset);
 
 	reset_control_assert(priv->phy_reset);

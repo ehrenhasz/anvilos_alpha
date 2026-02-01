@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 Google, Inc
- * Author: Alexandru M Stan <amstan@chromium.org>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/clk.h>
@@ -37,10 +34,7 @@ static unsigned long rockchip_mmc_recalc(struct clk_hw *hw,
 
 #define PSECS_PER_SEC 1000000000000LL
 
-/*
- * Each fine delay is between 44ps-77ps. Assume each fine delay is 60ps to
- * simplify calculations. So 45degs could be anywhere between 33deg and 57.8deg.
- */
+ 
 #define ROCKCHIP_MMC_DELAY_ELEMENT_PSEC 60
 
 static int rockchip_mmc_get_phase(struct clk_hw *hw)
@@ -51,7 +45,7 @@ static int rockchip_mmc_get_phase(struct clk_hw *hw)
 	u16 degrees;
 	u32 delay_num = 0;
 
-	/* Constant signal, no measurable phase shift */
+	 
 	if (!rate)
 		return 0;
 
@@ -60,7 +54,7 @@ static int rockchip_mmc_get_phase(struct clk_hw *hw)
 	degrees = (raw_value & ROCKCHIP_MMC_DEGREE_MASK) * 90;
 
 	if (raw_value & ROCKCHIP_MMC_DELAY_SEL) {
-		/* degrees/delaynum * 1000000 */
+		 
 		unsigned long factor = (ROCKCHIP_MMC_DELAY_ELEMENT_PSEC / 10) *
 					36 * (rate / 10000);
 
@@ -81,18 +75,7 @@ static int rockchip_mmc_set_phase(struct clk_hw *hw, int degrees)
 	u32 raw_value;
 	u32 delay;
 
-	/*
-	 * The below calculation is based on the output clock from
-	 * MMC host to the card, which expects the phase clock inherits
-	 * the clock rate from its parent, namely the output clock
-	 * provider of MMC host. However, things may go wrong if
-	 * (1) It is orphan.
-	 * (2) It is assigned to the wrong parent.
-	 *
-	 * This check help debug the case (1), which seems to be the
-	 * most likely problem we often face and which makes it difficult
-	 * for people to debug unstable mmc tuning results.
-	 */
+	 
 	if (!rate) {
 		pr_err("%s: invalid clk rate\n", __func__);
 		return -EINVAL;
@@ -101,30 +84,10 @@ static int rockchip_mmc_set_phase(struct clk_hw *hw, int degrees)
 	nineties = degrees / 90;
 	remainder = (degrees % 90);
 
-	/*
-	 * Due to the inexact nature of the "fine" delay, we might
-	 * actually go non-monotonic.  We don't go _too_ monotonic
-	 * though, so we should be OK.  Here are options of how we may
-	 * work:
-	 *
-	 * Ideally we end up with:
-	 *   1.0, 2.0, ..., 69.0, 70.0, ...,  89.0, 90.0
-	 *
-	 * On one extreme (if delay is actually 44ps):
-	 *   .73, 1.5, ..., 50.6, 51.3, ...,  65.3, 90.0
-	 * The other (if delay is actually 77ps):
-	 *   1.3, 2.6, ..., 88.6. 89.8, ..., 114.0, 90
-	 *
-	 * It's possible we might make a delay that is up to 25
-	 * degrees off from what we think we're making.  That's OK
-	 * though because we should be REALLY far from any bad range.
-	 */
+	 
 
-	/*
-	 * Convert to delay; do a little extra work to make sure we
-	 * don't overflow 32-bit / 64-bit numbers.
-	 */
-	delay = 10000000; /* PSECS_PER_SEC / 10000 / 10 */
+	 
+	delay = 10000000;  
 	delay *= remainder;
 	delay = DIV_ROUND_CLOSEST(delay,
 			(rate / 1000) * 36 *
@@ -161,20 +124,7 @@ static int rockchip_mmc_clk_rate_notify(struct notifier_block *nb,
 	struct rockchip_mmc_clock *mmc_clock = to_rockchip_mmc_clock(nb);
 	struct clk_notifier_data *ndata = data;
 
-	/*
-	 * rockchip_mmc_clk is mostly used by mmc controllers to sample
-	 * the intput data, which expects the fixed phase after the tuning
-	 * process. However if the clock rate is changed, the phase is stale
-	 * and may break the data sampling. So here we try to restore the phase
-	 * for that case, except that
-	 * (1) cached_phase is invaild since we inevitably cached it when the
-	 * clock provider be reparented from orphan to its real parent in the
-	 * first place. Otherwise we may mess up the initialization of MMC cards
-	 * since we only set the default sample phase and drive phase later on.
-	 * (2) the new coming rate is higher than the older one since mmc driver
-	 * set the max-frequency to match the boards' ability but we can't go
-	 * over the heads of that, otherwise the tests smoke out the issue.
-	 */
+	 
 	if (ndata->old_rate <= ndata->new_rate)
 		return NOTIFY_DONE;
 

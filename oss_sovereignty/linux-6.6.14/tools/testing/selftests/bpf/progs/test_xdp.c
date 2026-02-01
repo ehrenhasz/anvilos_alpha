@@ -1,9 +1,4 @@
-/* Copyright (c) 2016,2017 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <stddef.h>
 #include <string.h>
 #include <linux/bpf.h>
@@ -104,7 +99,7 @@ static __always_inline int handle_ipv4(struct xdp_md *xdp)
 	payload_len = bpf_ntohs(iph->tot_len);
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v4-in-v4 */
+	 
 	if (!tnl || tnl->family != AF_INET)
 		return XDP_PASS;
 
@@ -174,7 +169,7 @@ static __always_inline int handle_ipv6(struct xdp_md *xdp)
 	payload_len = ip6h->payload_len;
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v6-in-v6 */
+	 
 	if (!tnl || tnl->family != AF_INET6)
 		return XDP_PASS;
 

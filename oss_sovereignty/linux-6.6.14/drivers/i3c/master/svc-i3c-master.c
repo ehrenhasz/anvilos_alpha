@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Silvaco dual-role I3C master driver
- *
- * Copyright (C) 2020 Silvaco
- * Author: Miquel RAYNAL <miquel.raynal@bootlin.com>
- * Based on a work from: Conor Culhane <conor.culhane@silvaco.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -21,7 +15,7 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
-/* Master Mode Registers */
+ 
 #define SVC_I3C_MCONFIG      0x000
 #define   SVC_I3C_MCONFIG_MASTER_EN BIT(0)
 #define   SVC_I3C_MCONFIG_DISTO(x) FIELD_PREP(BIT(3), (x))
@@ -125,7 +119,7 @@
 #define SVC_I3C_MAX_DEVS 32
 #define SVC_I3C_PM_TIMEOUT_MS 1000
 
-/* This parameter depends on the implementation and may be tuned */
+ 
 #define SVC_I3C_FIFO_SIZE 16
 
 struct svc_i3c_cmd {
@@ -152,32 +146,7 @@ struct svc_i3c_regs_save {
 	u32 mdynaddr;
 };
 
-/**
- * struct svc_i3c_master - Silvaco I3C Master structure
- * @base: I3C master controller
- * @dev: Corresponding device
- * @regs: Memory mapping
- * @saved_regs: Volatile values for PM operations
- * @free_slots: Bit array of available slots
- * @addrs: Array containing the dynamic addresses of each attached device
- * @descs: Array of descriptors, one per attached device
- * @hj_work: Hot-join work
- * @ibi_work: IBI work
- * @irq: Main interrupt
- * @pclk: System clock
- * @fclk: Fast clock (bus)
- * @sclk: Slow clock (other events)
- * @xferqueue: Transfer queue structure
- * @xferqueue.list: List member
- * @xferqueue.cur: Current ongoing transfer
- * @xferqueue.lock: Queue lock
- * @ibi: IBI structure
- * @ibi.num_slots: Number of slots available in @ibi.slots
- * @ibi.slots: Available IBI slots
- * @ibi.tbq_slot: To be queued IBI slot
- * @ibi.lock: IBI lock
- * @lock: Transfer lock, protect between IBI work thread and callbacks from master
- */
+ 
 struct svc_i3c_master {
 	struct i3c_master_controller base;
 	struct device *dev;
@@ -195,25 +164,20 @@ struct svc_i3c_master {
 	struct {
 		struct list_head list;
 		struct svc_i3c_xfer *cur;
-		/* Prevent races between transfers */
+		 
 		spinlock_t lock;
 	} xferqueue;
 	struct {
 		unsigned int num_slots;
 		struct i3c_dev_desc **slots;
 		struct i3c_ibi_slot *tbq_slot;
-		/* Prevent races within IBI handlers */
+		 
 		spinlock_t lock;
 	} ibi;
 	struct mutex lock;
 };
 
-/**
- * struct svc_i3c_i2c_dev_data - Device specific data
- * @index: Index in the master tables corresponding to this device
- * @ibi: IBI slot index in the master structure
- * @ibi_pool: IBI pool associated to this device
- */
+ 
 struct svc_i3c_i2c_dev_data {
 	u8 index;
 	int ibi;
@@ -229,7 +193,7 @@ static bool svc_i3c_master_error(struct svc_i3c_master *master)
 		merrwarn = readl(master->regs + SVC_I3C_MERRWARN);
 		writel(merrwarn, master->regs + SVC_I3C_MERRWARN);
 
-		/* Ignore timeout error */
+		 
 		if (merrwarn & SVC_I3C_MERRWARN_TIMEOUT) {
 			dev_dbg(master->dev, "Warning condition: MSTATUS 0x%08x, MERRWARN 0x%08x\n",
 				mstatus, merrwarn);
@@ -260,14 +224,14 @@ static void svc_i3c_master_disable_interrupts(struct svc_i3c_master *master)
 
 static void svc_i3c_master_clear_merrwarn(struct svc_i3c_master *master)
 {
-	/* Clear pending warnings */
+	 
 	writel(readl(master->regs + SVC_I3C_MERRWARN),
 	       master->regs + SVC_I3C_MERRWARN);
 }
 
 static void svc_i3c_master_flush_fifo(struct svc_i3c_master *master)
 {
-	/* Flush FIFOs */
+	 
 	writel(SVC_I3C_MDATACTRL_FLUSHTB | SVC_I3C_MDATACTRL_FLUSHRB,
 	       master->regs + SVC_I3C_MDATACTRL);
 }
@@ -276,7 +240,7 @@ static void svc_i3c_master_reset_fifo_trigger(struct svc_i3c_master *master)
 {
 	u32 reg;
 
-	/* Set RX and TX tigger levels, flush FIFOs */
+	 
 	reg = SVC_I3C_MDATACTRL_FLUSHTB |
 	      SVC_I3C_MDATACTRL_FLUSHRB |
 	      SVC_I3C_MDATACTRL_UNLOCK_TRIG |
@@ -326,12 +290,7 @@ static void svc_i3c_master_emit_stop(struct svc_i3c_master *master)
 {
 	writel(SVC_I3C_MCTRL_REQUEST_STOP, master->regs + SVC_I3C_MCTRL);
 
-	/*
-	 * This delay is necessary after the emission of a stop, otherwise eg.
-	 * repeating IBIs do not get detected. There is a note in the manual
-	 * about it, stating that the stop condition might not be settled
-	 * correctly if a start condition follows too rapidly.
-	 */
+	 
 	udelay(1);
 }
 
@@ -404,12 +363,12 @@ static void svc_i3c_master_ibi_work(struct work_struct *work)
 	int ret;
 
 	mutex_lock(&master->lock);
-	/* Acknowledge the incoming interrupt with the AUTOIBI mechanism */
+	 
 	writel(SVC_I3C_MCTRL_REQUEST_AUTO_IBI |
 	       SVC_I3C_MCTRL_IBIRESP_AUTO,
 	       master->regs + SVC_I3C_MCTRL);
 
-	/* Wait for IBIWON, should take approximately 100us */
+	 
 	ret = readl_relaxed_poll_timeout(master->regs + SVC_I3C_MSTATUS, val,
 					 SVC_I3C_MSTATUS_IBIWON(val), 0, 1000);
 	if (ret) {
@@ -418,14 +377,14 @@ static void svc_i3c_master_ibi_work(struct work_struct *work)
 		goto reenable_ibis;
 	}
 
-	/* Clear the interrupt status */
+	 
 	writel(SVC_I3C_MINT_IBIWON, master->regs + SVC_I3C_MSTATUS);
 
 	status = readl(master->regs + SVC_I3C_MSTATUS);
 	ibitype = SVC_I3C_MSTATUS_IBITYPE(status);
 	ibiaddr = SVC_I3C_MSTATUS_IBIADDR(status);
 
-	/* Handle the critical responses to IBI's */
+	 
 	switch (ibitype) {
 	case SVC_I3C_MSTATUS_IBITYPE_IBI:
 		dev = svc_i3c_master_dev_from_addr(master, ibiaddr);
@@ -444,11 +403,7 @@ static void svc_i3c_master_ibi_work(struct work_struct *work)
 		break;
 	}
 
-	/*
-	 * If an error happened, we probably got interrupted and the exchange
-	 * timedout. In this case we just drop everything, emit a stop and wait
-	 * for the slave to interrupt again.
-	 */
+	 
 	if (svc_i3c_master_error(master)) {
 		if (master->ibi.tbq_slot) {
 			data = i3c_dev_get_master_data(dev);
@@ -462,7 +417,7 @@ static void svc_i3c_master_ibi_work(struct work_struct *work)
 		goto reenable_ibis;
 	}
 
-	/* Handle the non critical tasks */
+	 
 	switch (ibitype) {
 	case SVC_I3C_MSTATUS_IBITYPE_IBI:
 		if (dev) {
@@ -492,12 +447,12 @@ static irqreturn_t svc_i3c_master_irq_handler(int irq, void *dev_id)
 	if (!SVC_I3C_MSTATUS_SLVSTART(active))
 		return IRQ_NONE;
 
-	/* Clear the interrupt status */
+	 
 	writel(SVC_I3C_MINT_SLVSTART, master->regs + SVC_I3C_MSTATUS);
 
 	svc_i3c_master_disable_interrupts(master);
 
-	/* Handle the interrupt in a non atomic context */
+	 
 	queue_work(master->base.wq, &master->ibi_work);
 
 	return IRQ_HANDLED;
@@ -521,7 +476,7 @@ static int svc_i3c_master_bus_init(struct i3c_master_controller *m)
 		return ret;
 	}
 
-	/* Timings derivation */
+	 
 	fclk_rate = clk_get_rate(master->fclk);
 	if (!fclk_rate) {
 		ret = -EINVAL;
@@ -530,18 +485,11 @@ static int svc_i3c_master_bus_init(struct i3c_master_controller *m)
 
 	fclk_period_ns = DIV_ROUND_UP(1000000000, fclk_rate);
 
-	/*
-	 * Using I3C Push-Pull mode, target is 12.5MHz/80ns period.
-	 * Simplest configuration is using a 50% duty-cycle of 40ns.
-	 */
+	 
 	ppbaud = DIV_ROUND_UP(40, fclk_period_ns) - 1;
 	pplow = 0;
 
-	/*
-	 * Using I3C Open-Drain mode, target is 4.17MHz/240ns with a
-	 * duty-cycle tuned so that high levels are filetered out by
-	 * the 50ns filter (target being 40ns).
-	 */
+	 
 	odhpp = 1;
 	high_period_ns = (ppbaud + 1) * fclk_period_ns;
 	odbaud = DIV_ROUND_UP(240 - high_period_ns, high_period_ns) - 1;
@@ -554,18 +502,12 @@ static int svc_i3c_master_bus_init(struct i3c_master_controller *m)
 		break;
 	case I3C_BUS_MODE_MIXED_FAST:
 	case I3C_BUS_MODE_MIXED_LIMITED:
-		/*
-		 * Using I2C Fm+ mode, target is 1MHz/1000ns, the difference
-		 * between the high and low period does not really matter.
-		 */
+		 
 		i2cbaud = DIV_ROUND_UP(1000, od_low_period_ns) - 2;
 		odstop = 1;
 		break;
 	case I3C_BUS_MODE_MIXED_SLOW:
-		/*
-		 * Using I2C Fm mode, target is 0.4MHz/2500ns, with the same
-		 * constraints as the FM+ mode.
-		 */
+		 
 		i2cbaud = DIV_ROUND_UP(2500, od_low_period_ns) - 2;
 		odstop = 1;
 		break;
@@ -585,7 +527,7 @@ static int svc_i3c_master_bus_init(struct i3c_master_controller *m)
 	      SVC_I3C_MCONFIG_I2CBAUD(i2cbaud);
 	writel(reg, master->regs + SVC_I3C_MCONFIG);
 
-	/* Master core's registration */
+	 
 	ret = i3c_master_get_free_addr(m, 0);
 	if (ret < 0)
 		goto rpm_out;
@@ -619,7 +561,7 @@ static void svc_i3c_master_bus_cleanup(struct i3c_master_controller *m)
 
 	svc_i3c_master_disable_interrupts(master);
 
-	/* Disable master */
+	 
 	writel(0, master->regs + SVC_I3C_MCONFIG);
 
 	pm_runtime_mark_last_busy(master->dev);
@@ -764,17 +706,14 @@ static int svc_i3c_master_do_daa_locked(struct svc_i3c_master *master,
 	int ret, i;
 
 	while (true) {
-		/* Enter/proceed with DAA */
+		 
 		writel(SVC_I3C_MCTRL_REQUEST_PROC_DAA |
 		       SVC_I3C_MCTRL_TYPE_I3C |
 		       SVC_I3C_MCTRL_IBIRESP_NACK |
 		       SVC_I3C_MCTRL_DIR(SVC_I3C_MCTRL_DIR_WRITE),
 		       master->regs + SVC_I3C_MCTRL);
 
-		/*
-		 * Either one slave will send its ID, or the assignment process
-		 * is done.
-		 */
+		 
 		ret = readl_poll_timeout_atomic(master->regs + SVC_I3C_MSTATUS,
 						reg,
 						SVC_I3C_MSTATUS_RXPEND(reg) |
@@ -786,11 +725,7 @@ static int svc_i3c_master_do_daa_locked(struct svc_i3c_master *master,
 		if (SVC_I3C_MSTATUS_RXPEND(reg)) {
 			u8 data[6];
 
-			/*
-			 * We only care about the 48-bit provisional ID yet to
-			 * be sure a device does not nack an address twice.
-			 * Otherwise, we would just need to flush the RX FIFO.
-			 */
+			 
 			ret = svc_i3c_master_readb(master, data, 6);
 			if (ret)
 				return ret;
@@ -798,31 +733,21 @@ static int svc_i3c_master_do_daa_locked(struct svc_i3c_master *master,
 			for (i = 0; i < 6; i++)
 				prov_id[dev_nb] |= (u64)(data[i]) << (8 * (5 - i));
 
-			/* We do not care about the BCR and DCR yet */
+			 
 			ret = svc_i3c_master_readb(master, data, 2);
 			if (ret)
 				return ret;
 		} else if (SVC_I3C_MSTATUS_MCTRLDONE(reg)) {
 			if (SVC_I3C_MSTATUS_STATE_IDLE(reg) &&
 			    SVC_I3C_MSTATUS_COMPLETE(reg)) {
-				/*
-				 * All devices received and acked they dynamic
-				 * address, this is the natural end of the DAA
-				 * procedure.
-				 */
+				 
 				break;
 			} else if (SVC_I3C_MSTATUS_NACKED(reg)) {
-				/* No I3C devices attached */
+				 
 				if (dev_nb == 0)
 					break;
 
-				/*
-				 * A slave device nacked the address, this is
-				 * allowed only once, DAA will be stopped and
-				 * then resumed. The same device is supposed to
-				 * answer again immediately and shall ack the
-				 * address this time.
-				 */
+				 
 				if (prov_id[dev_nb] == nacking_prov_id)
 					return -EIO;
 
@@ -836,7 +761,7 @@ static int svc_i3c_master_do_daa_locked(struct svc_i3c_master *master,
 			}
 		}
 
-		/* Wait for the slave to be ready to receive its address */
+		 
 		ret = readl_poll_timeout_atomic(master->regs + SVC_I3C_MSTATUS,
 						reg,
 						SVC_I3C_MSTATUS_MCTRLDONE(reg) &&
@@ -846,7 +771,7 @@ static int svc_i3c_master_do_daa_locked(struct svc_i3c_master *master,
 		if (ret)
 			return ret;
 
-		/* Give the slave device a suitable dynamic address */
+		 
 		ret = i3c_master_get_free_addr(&master->base, last_addr + 1);
 		if (ret < 0)
 			return ret;
@@ -872,7 +797,7 @@ static int svc_i3c_update_ibirules(struct svc_i3c_master *master)
 		nobyte_addr_ko = 0;
 	bool list_mbyte = false, list_nobyte = false;
 
-	/* Create the IBIRULES register for both cases */
+	 
 	i3c_bus_for_each_i3cdev(&master->base.bus, dev) {
 		if (I3C_BCR_DEVICE_ROLE(dev->info.bcr) == I3C_BCR_I3C_MASTER)
 			continue;
@@ -881,7 +806,7 @@ static int svc_i3c_update_ibirules(struct svc_i3c_master *master)
 			reg_mbyte |= SVC_I3C_IBIRULES_ADDR(mbyte_addr_ok,
 							   dev->info.dyn_addr);
 
-			/* IBI rules cannot be applied to devices with MSb=1 */
+			 
 			if (dev->info.dyn_addr & BIT(7))
 				mbyte_addr_ko++;
 			else
@@ -890,7 +815,7 @@ static int svc_i3c_update_ibirules(struct svc_i3c_master *master)
 			reg_nobyte |= SVC_I3C_IBIRULES_ADDR(nobyte_addr_ok,
 							    dev->info.dyn_addr);
 
-			/* IBI rules cannot be applied to devices with MSb=1 */
+			 
 			if (dev->info.dyn_addr & BIT(7))
 				nobyte_addr_ko++;
 			else
@@ -898,18 +823,18 @@ static int svc_i3c_update_ibirules(struct svc_i3c_master *master)
 		}
 	}
 
-	/* Device list cannot be handled by hardware */
+	 
 	if (!mbyte_addr_ko && mbyte_addr_ok <= SVC_I3C_IBIRULES_ADDRS)
 		list_mbyte = true;
 
 	if (!nobyte_addr_ko && nobyte_addr_ok <= SVC_I3C_IBIRULES_ADDRS)
 		list_nobyte = true;
 
-	/* No list can be properly handled, return an error */
+	 
 	if (!list_mbyte && !list_nobyte)
 		return -ERANGE;
 
-	/* Pick the first list that can be handled by hardware, randomly */
+	 
 	if (list_mbyte)
 		writel(reg_mbyte, master->regs + SVC_I3C_IBIRULES);
 	else
@@ -941,14 +866,14 @@ static int svc_i3c_master_do_daa(struct i3c_master_controller *m)
 		goto rpm_out;
 	}
 
-	/* Register all devices who participated to the core */
+	 
 	for (i = 0; i < dev_nb; i++) {
 		ret = i3c_master_add_i3c_dev_locked(m, addrs[i]);
 		if (ret)
 			goto rpm_out;
 	}
 
-	/* Configure IBI auto-rules */
+	 
 	ret = svc_i3c_update_ibirules(master);
 	if (ret)
 		dev_err(master->dev, "Cannot handle such a list of devices");
@@ -1008,10 +933,7 @@ static int svc_i3c_master_write(struct svc_i3c_master *master,
 		if (ret)
 			return ret;
 
-		/*
-		 * The last byte to be sent over the bus must either have the
-		 * "end" bit set or be written in MWDATABE.
-		 */
+		 
 		if (likely(offset < (len - 1)))
 			writel(out[offset++], master->regs + SVC_I3C_MWDATAB);
 		else
@@ -1029,7 +951,7 @@ static int svc_i3c_master_xfer(struct svc_i3c_master *master,
 	u32 reg;
 	int ret;
 
-	/* clean SVC_I3C_MINT_IBIWON w1c bits */
+	 
 	writel(SVC_I3C_MINT_IBIWON, master->regs + SVC_I3C_MSTATUS);
 
 	writel(SVC_I3C_MCTRL_REQUEST_START_ADDR |
@@ -1050,18 +972,7 @@ static int svc_i3c_master_xfer(struct svc_i3c_master *master,
 		goto emit_stop;
 	}
 
-	/*
-	 * According to I3C spec ver 1.1.1, 5.1.2.2.3 Consequence of Controller Starting a Frame
-	 * with I3C Target Address.
-	 *
-	 * The I3C Controller normally should start a Frame, the Address may be arbitrated, and so
-	 * the Controller shall monitor to see whether an In-Band Interrupt request, a Controller
-	 * Role Request (i.e., Secondary Controller requests to become the Active Controller), or
-	 * a Hot-Join Request has been made.
-	 *
-	 * If missed IBIWON check, the wrong data will be return. When IBIWON happen, return failure
-	 * and yield the above events handler.
-	 */
+	 
 	if (SVC_I3C_MSTATUS_IBIWON(reg)) {
 		ret = -ENXIO;
 		goto emit_stop;
@@ -1087,7 +998,7 @@ static int svc_i3c_master_xfer(struct svc_i3c_master *master,
 	if (!continued) {
 		svc_i3c_master_emit_stop(master);
 
-		/* Wait idle if stop is sent. */
+		 
 		readl_poll_timeout(master->regs + SVC_I3C_MSTATUS, reg,
 				   SVC_I3C_MSTATUS_STATE_IDLE(reg), 0, 1000);
 	}
@@ -1209,7 +1120,7 @@ static bool
 svc_i3c_master_supports_ccc_cmd(struct i3c_master_controller *master,
 				const struct i3c_ccc_cmd *cmd)
 {
-	/* No software support for CCC commands targeting more than one slave */
+	 
 	return (cmd->ndests == 1);
 }
 
@@ -1274,7 +1185,7 @@ static int svc_i3c_master_send_direct_ccc_cmd(struct svc_i3c_master *master,
 
 	xfer->type = SVC_I3C_MCTRL_TYPE_I3C;
 
-	/* Broadcasted message */
+	 
 	cmd = &xfer->cmds[0];
 	cmd->addr = I3C_BROADCAST_ADDR;
 	cmd->rnw = 0;
@@ -1284,7 +1195,7 @@ static int svc_i3c_master_send_direct_ccc_cmd(struct svc_i3c_master *master,
 	cmd->read_len = 0;
 	cmd->continued = true;
 
-	/* Directed message */
+	 
 	cmd = &xfer->cmds[1];
 	cmd->addr = ccc->dests[0].addr;
 	cmd->rnw = ccc->rnw;
@@ -1622,7 +1533,7 @@ static int svc_i3c_master_probe(struct platform_device *pdev)
 
 	svc_i3c_master_reset(master);
 
-	/* Register the master */
+	 
 	ret = i3c_master_register(&master->base, &pdev->dev,
 				  &svc_i3c_master_ops, false);
 	if (ret)
@@ -1704,7 +1615,7 @@ static const struct dev_pm_ops svc_i3c_pm_ops = {
 
 static const struct of_device_id svc_i3c_master_of_match_tbl[] = {
 	{ .compatible = "silvaco,i3c-master" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, svc_i3c_master_of_match_tbl);
 

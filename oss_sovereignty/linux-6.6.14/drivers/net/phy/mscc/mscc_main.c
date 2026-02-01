@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Author: Nagaraju Lakkaraju
- * License: Dual MIT/GPL
- * Copyright (c) 2016 Microsemi Corporation
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/jiffies.h>
@@ -258,13 +252,13 @@ static int vsc85xx_downshift_get(struct phy_device *phydev, u8 *count)
 static int vsc85xx_downshift_set(struct phy_device *phydev, u8 count)
 {
 	if (count == DOWNSHIFT_DEV_DEFAULT_COUNT) {
-		/* Default downshift count 3 (i.e. Bit3:2 = 0b01) */
+		 
 		count = ((1 << DOWNSHIFT_CNTL_POS) | DOWNSHIFT_EN);
 	} else if (count > DOWNSHIFT_COUNT_MAX || count == 1) {
 		phydev_err(phydev, "Downshift count should be 2,3,4 or 5\n");
 		return -ERANGE;
 	} else if (count) {
-		/* Downshift count is either 2,3,4 or 5 */
+		 
 		count = (((count - 2) << DOWNSHIFT_CNTL_POS) | DOWNSHIFT_EN);
 	}
 
@@ -288,7 +282,7 @@ static int vsc85xx_wol_set(struct phy_device *phydev,
 		return phy_restore_page(phydev, rc, rc);
 
 	if (wol->wolopts & WAKE_MAGIC) {
-		/* Store the device address for the magic packet */
+		 
 		for (i = 0; i < ARRAY_SIZE(pwd); i++)
 			pwd[i] = mac_addr[5 - (i * 2 + 1)] << 8 |
 				 mac_addr[5 - i * 2];
@@ -326,21 +320,21 @@ static int vsc85xx_wol_set(struct phy_device *phydev,
 		return rc;
 
 	if (wol->wolopts & WAKE_MAGIC) {
-		/* Enable the WOL interrupt */
+		 
 		reg_val = phy_read(phydev, MII_VSC85XX_INT_MASK);
 		reg_val |= MII_VSC85XX_INT_MASK_WOL;
 		rc = phy_write(phydev, MII_VSC85XX_INT_MASK, reg_val);
 		if (rc)
 			return rc;
 	} else {
-		/* Disable the WOL interrupt */
+		 
 		reg_val = phy_read(phydev, MII_VSC85XX_INT_MASK);
 		reg_val &= (~MII_VSC85XX_INT_MASK_WOL);
 		rc = phy_write(phydev, MII_VSC85XX_INT_MASK, reg_val);
 		if (rc)
 			return rc;
 	}
-	/* Clear WOL iterrupt status */
+	 
 	reg_val = phy_read(phydev, MII_VSC85XX_INT_STATUS);
 
 	return 0;
@@ -439,7 +433,7 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
 {
 	return default_mode;
 }
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 static int vsc85xx_dt_led_modes_get(struct phy_device *phydev,
 				    u32 *default_mode)
@@ -515,13 +509,7 @@ out_unlock:
 	return rc;
 }
 
-/* Set the RGMII RX and TX clock skews individually, according to the PHY
- * interface type, to:
- *  * 0.2 ns (their default, and lowest, hardware value) if delays should
- *    not be enabled
- *  * 2.0 ns (which causes the data to be sampled at exactly half way between
- *    clock transitions at 1000 Mbps) if delays should be enabled
- */
+ 
 static int vsc85xx_update_rgmii_cntl(struct phy_device *phydev, u32 rgmii_cntl,
 				     u16 rgmii_rx_delay_mask,
 				     u16 rgmii_tx_delay_mask)
@@ -536,12 +524,7 @@ static int vsc85xx_update_rgmii_cntl(struct phy_device *phydev, u32 rgmii_cntl,
 	s32 tx_delay;
 	int rc = 0;
 
-	/* For traffic to pass, the VSC8502 family needs the RX_CLK disable bit
-	 * to be unset for all PHY modes, so do that as part of the paged
-	 * register modification.
-	 * For some family members (like VSC8530/31/40/41) this bit is reserved
-	 * and read-only, and the RX clock is enabled by default.
-	 */
+	 
 	if (rgmii_cntl == VSC8502_RGMII_CNTL)
 		mask |= VSC8502_RGMII_RX_CLK_DISABLE;
 
@@ -610,7 +593,7 @@ static int vsc85xx_set_tunable(struct phy_device *phydev,
 	}
 }
 
-/* mdiobus lock should be locked when using this function */
+ 
 static void vsc85xx_tr_write(struct phy_device *phydev, u16 addr, u32 val)
 {
 	__phy_write(phydev, MSCC_PHY_TR_MSB, val >> 16);
@@ -703,7 +686,7 @@ out_unlock:
 	return oldpage;
 }
 
-/* phydev->bus->mdio_lock should be locked when using this function */
+ 
 int phy_base_write(struct phy_device *phydev, u32 regnum, u16 val)
 {
 	if (unlikely(!mutex_is_locked(&phydev->mdio.bus->mdio_lock))) {
@@ -714,7 +697,7 @@ int phy_base_write(struct phy_device *phydev, u32 regnum, u16 val)
 	return __phy_package_write(phydev, regnum, val);
 }
 
-/* phydev->bus->mdio_lock should be locked when using this function */
+ 
 int phy_base_read(struct phy_device *phydev, u32 regnum)
 {
 	if (unlikely(!mutex_is_locked(&phydev->mdio.bus->mdio_lock))) {
@@ -733,30 +716,25 @@ u32 vsc85xx_csr_read(struct phy_device *phydev,
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_CSR_CNTL);
 
-	/* CSR registers are grouped under different Target IDs.
-	 * 6-bit Target_ID is split between MSCC_EXT_PAGE_CSR_CNTL_20 and
-	 * MSCC_EXT_PAGE_CSR_CNTL_19 registers.
-	 * Target_ID[5:2] maps to bits[3:0] of MSCC_EXT_PAGE_CSR_CNTL_20
-	 * and Target_ID[1:0] maps to bits[13:12] of MSCC_EXT_PAGE_CSR_CNTL_19.
-	 */
+	 
 
-	/* Setup the Target ID */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_20,
 		       MSCC_PHY_CSR_CNTL_20_TARGET(target >> 2));
 
 	if ((target >> 2 == 0x1) || (target >> 2 == 0x3))
-		/* non-MACsec access */
+		 
 		target &= 0x3;
 	else
 		target = 0;
 
-	/* Trigger CSR Action - Read into the CSR's */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_19,
 		       MSCC_PHY_CSR_CNTL_19_CMD | MSCC_PHY_CSR_CNTL_19_READ |
 		       MSCC_PHY_CSR_CNTL_19_REG_ADDR(reg) |
 		       MSCC_PHY_CSR_CNTL_19_TARGET(target));
 
-	/* Wait for register access*/
+	 
 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
 	do {
 		usleep_range(500, 1000);
@@ -767,10 +745,10 @@ u32 vsc85xx_csr_read(struct phy_device *phydev,
 	if (!(val & MSCC_PHY_CSR_CNTL_19_CMD))
 		return 0xffffffff;
 
-	/* Read the Least Significant Word (LSW) (17) */
+	 
 	val_l = phy_base_read(phydev, MSCC_EXT_PAGE_CSR_CNTL_17);
 
-	/* Read the Most Significant Word (MSW) (18) */
+	 
 	val_h = phy_base_read(phydev, MSCC_EXT_PAGE_CSR_CNTL_18);
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
@@ -786,36 +764,31 @@ int vsc85xx_csr_write(struct phy_device *phydev,
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_CSR_CNTL);
 
-	/* CSR registers are grouped under different Target IDs.
-	 * 6-bit Target_ID is split between MSCC_EXT_PAGE_CSR_CNTL_20 and
-	 * MSCC_EXT_PAGE_CSR_CNTL_19 registers.
-	 * Target_ID[5:2] maps to bits[3:0] of MSCC_EXT_PAGE_CSR_CNTL_20
-	 * and Target_ID[1:0] maps to bits[13:12] of MSCC_EXT_PAGE_CSR_CNTL_19.
-	 */
+	 
 
-	/* Setup the Target ID */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_20,
 		       MSCC_PHY_CSR_CNTL_20_TARGET(target >> 2));
 
-	/* Write the Least Significant Word (LSW) (17) */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_17, (u16)val);
 
-	/* Write the Most Significant Word (MSW) (18) */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_18, (u16)(val >> 16));
 
 	if ((target >> 2 == 0x1) || (target >> 2 == 0x3))
-		/* non-MACsec access */
+		 
 		target &= 0x3;
 	else
 		target = 0;
 
-	/* Trigger CSR Action - Write into the CSR's */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_19,
 		       MSCC_PHY_CSR_CNTL_19_CMD |
 		       MSCC_PHY_CSR_CNTL_19_REG_ADDR(reg) |
 		       MSCC_PHY_CSR_CNTL_19_TARGET(target));
 
-	/* Wait for register access */
+	 
 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
 	do {
 		usleep_range(500, 1000);
@@ -832,7 +805,7 @@ int vsc85xx_csr_write(struct phy_device *phydev,
 	return 0;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static void vsc8584_csr_write(struct phy_device *phydev, u16 addr, u32 val)
 {
 	phy_base_write(phydev, MSCC_PHY_TR_MSB, val >> 16);
@@ -840,7 +813,7 @@ static void vsc8584_csr_write(struct phy_device *phydev, u16 addr, u32 val)
 	phy_base_write(phydev, MSCC_PHY_TR_CNTL, TR_WRITE | TR_ADDR(addr));
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 int vsc8584_cmd(struct phy_device *phydev, u16 val)
 {
 	unsigned long deadline;
@@ -869,7 +842,7 @@ int vsc8584_cmd(struct phy_device *phydev, u16 val)
 	return 0;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8584_micro_deassert_reset(struct phy_device *phydev,
 					bool patch_en)
 {
@@ -886,15 +859,13 @@ static int vsc8584_micro_deassert_reset(struct phy_device *phydev,
 		enable |= MICRO_PATCH_EN;
 		release |= MICRO_PATCH_EN;
 
-		/* Clear all patches */
+		 
 		phy_base_write(phydev, MSCC_INT_MEM_CNTL, READ_RAM);
 	}
 
-	/* Enable 8051 Micro clock; CLEAR/SET patch present; disable PRAM clock
-	 * override and addr. auto-incr; operate at 125 MHz
-	 */
+	 
 	phy_base_write(phydev, MSCC_DW8051_CNTL_STATUS, enable);
-	/* Release 8051 Micro SW reset */
+	 
 	phy_base_write(phydev, MSCC_DW8051_CNTL_STATUS, release);
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
@@ -902,7 +873,7 @@ static int vsc8584_micro_deassert_reset(struct phy_device *phydev,
 	return 0;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8584_micro_assert_reset(struct phy_device *phydev)
 {
 	int ret;
@@ -945,7 +916,7 @@ static int vsc8584_micro_assert_reset(struct phy_device *phydev)
 	return 0;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8584_get_fw_crc(struct phy_device *phydev, u16 start, u16 size,
 			      u16 *crc)
 {
@@ -956,7 +927,7 @@ static int vsc8584_get_fw_crc(struct phy_device *phydev, u16 start, u16 size,
 	phy_base_write(phydev, MSCC_PHY_VERIPHY_CNTL_2, start);
 	phy_base_write(phydev, MSCC_PHY_VERIPHY_CNTL_3, size);
 
-	/* Start Micro command */
+	 
 	ret = vsc8584_cmd(phydev, PROC_CMD_CRC16);
 	if (ret)
 		goto out;
@@ -971,7 +942,7 @@ out:
 	return ret;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8584_patch_fw(struct phy_device *phydev,
 			    const struct firmware *fw)
 {
@@ -987,9 +958,7 @@ static int vsc8584_patch_fw(struct phy_device *phydev,
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
 		       MSCC_PHY_PAGE_EXTENDED_GPIO);
 
-	/* Hold 8051 Micro in SW Reset, Enable auto incr address and patch clock
-	 * Disable the 8051 Micro clock
-	 */
+	 
 	phy_base_write(phydev, MSCC_DW8051_CNTL_STATUS, RUN_FROM_INT_ROM |
 		       AUTOINC_ADDR | PATCH_RAM_CLK | MICRO_CLK_EN |
 		       MICRO_CLK_DIVIDE(2));
@@ -1001,7 +970,7 @@ static int vsc8584_patch_fw(struct phy_device *phydev,
 		phy_base_write(phydev, MSCC_INT_MEM_CNTL, READ_PRAM |
 			       INT_MEM_WRITE_EN | fw->data[i]);
 
-	/* Clear internal memory access */
+	 
 	phy_base_write(phydev, MSCC_INT_MEM_CNTL, READ_RAM);
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
@@ -1009,7 +978,7 @@ static int vsc8584_patch_fw(struct phy_device *phydev,
 	return 0;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static bool vsc8574_is_serdes_init(struct phy_device *phydev)
 {
 	u16 reg;
@@ -1050,7 +1019,7 @@ out:
 	return ret;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8574_config_pre_init(struct phy_device *phydev)
 {
 	static const struct reg_val pre_init1[] = {
@@ -1126,18 +1095,14 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* all writes below are broadcasted to all PHYs in the same package */
+	 
 	reg = phy_base_read(phydev, MSCC_PHY_EXT_CNTL_STATUS);
 	reg |= SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
 
 	phy_base_write(phydev, MII_VSC85XX_INT_MASK, 0);
 
-	/* The below register writes are tweaking analog and electrical
-	 * configuration that were determined through characterization by PHY
-	 * engineers. These don't mean anything more than "these are the best
-	 * values".
-	 */
+	 
 	phy_base_write(phydev, MSCC_PHY_EXT_PHY_CNTL_2, 0x0040);
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_TEST);
@@ -1173,7 +1138,7 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* end of write broadcasting */
+	 
 	reg = phy_base_read(phydev, MSCC_PHY_EXT_CNTL_STATUS);
 	reg &= ~SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
@@ -1185,7 +1150,7 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
 		return ret;
 	}
 
-	/* Add one byte to size for the one added by the patch_fw function */
+	 
 	ret = vsc8584_get_fw_crc(phydev,
 				 MSCC_VSC8574_REVB_INT8051_FW_START_ADDR,
 				 fw->size + 1, &crc);
@@ -1225,9 +1190,7 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
 
 		vsc8584_micro_deassert_reset(phydev, false);
 
-		/* Add one byte to size for the one added by the patch_fw
-		 * function
-		 */
+		 
 		ret = vsc8584_get_fw_crc(phydev,
 					 MSCC_VSC8574_REVB_INT8051_FW_START_ADDR,
 					 fw->size + 1, &crc);
@@ -1253,7 +1216,7 @@ out:
 	return ret;
 }
 
-/* Access LCPLL Cfg_2 */
+ 
 static void vsc8584_pll5g_cfg2_wr(struct phy_device *phydev,
 				  bool disable_fsm)
 {
@@ -1265,13 +1228,13 @@ static void vsc8584_pll5g_cfg2_wr(struct phy_device *phydev,
 	vsc85xx_csr_write(phydev, MACRO_CTRL, PHY_S6G_PLL5G_CFG2, rd_dat);
 }
 
-/* trigger a read to the spcified MCB */
+ 
 static int vsc8584_mcb_rd_trig(struct phy_device *phydev,
 			       u32 mcb_reg_addr, u8 mcb_slave_num)
 {
 	u32 rd_dat = 0;
 
-	/* read MCB */
+	 
 	vsc85xx_csr_write(phydev, MACRO_CTRL, mcb_reg_addr,
 			  (0x40000000 | (1L << mcb_slave_num)));
 
@@ -1281,14 +1244,14 @@ static int vsc8584_mcb_rd_trig(struct phy_device *phydev,
 				 phydev, MACRO_CTRL, mcb_reg_addr);
 }
 
-/* trigger a write to the spcified MCB */
+ 
 static int vsc8584_mcb_wr_trig(struct phy_device *phydev,
 			       u32 mcb_reg_addr,
 			       u8 mcb_slave_num)
 {
 	u32 rd_dat = 0;
 
-	/* write back MCB */
+	 
 	vsc85xx_csr_write(phydev, MACRO_CTRL, mcb_reg_addr,
 			  (0x80000000 | (1L << mcb_slave_num)));
 
@@ -1298,7 +1261,7 @@ static int vsc8584_mcb_wr_trig(struct phy_device *phydev,
 				 phydev, MACRO_CTRL, mcb_reg_addr);
 }
 
-/* Sequence to Reset LCPLL for the VIPER and ELISE PHY */
+ 
 static int vsc8584_pll5g_reset(struct phy_device *phydev)
 {
 	bool dis_fsm;
@@ -1309,27 +1272,27 @@ static int vsc8584_pll5g_reset(struct phy_device *phydev)
 		goto done;
 	dis_fsm = 1;
 
-	/* Reset LCPLL */
+	 
 	vsc8584_pll5g_cfg2_wr(phydev, dis_fsm);
 
-	/* write back LCPLL MCB */
+	 
 	ret = vsc8584_mcb_wr_trig(phydev, 0x11, 0);
 	if (ret < 0)
 		goto done;
 
-	/* 10 mSec sleep while LCPLL is hold in reset */
+	 
 	usleep_range(10000, 20000);
 
-	/* read LCPLL MCB into CSRs */
+	 
 	ret = vsc8584_mcb_rd_trig(phydev, 0x11, 0);
 	if (ret < 0)
 		goto done;
 	dis_fsm = 0;
 
-	/* Release the Reset of LCPLL */
+	 
 	vsc8584_pll5g_cfg2_wr(phydev, dis_fsm);
 
-	/* write back LCPLL MCB */
+	 
 	ret = vsc8584_mcb_wr_trig(phydev, 0x11, 0);
 	if (ret < 0)
 		goto done;
@@ -1339,7 +1302,7 @@ done:
 	return ret;
 }
 
-/* bus->mdio_lock should be locked when using this function */
+ 
 static int vsc8584_config_pre_init(struct phy_device *phydev)
 {
 	static const struct reg_val pre_init1[] = {
@@ -1385,7 +1348,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* all writes below are broadcasted to all PHYs in the same package */
+	 
 	reg = phy_base_read(phydev, MSCC_PHY_EXT_CNTL_STATUS);
 	reg |= SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
@@ -1396,11 +1359,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 	reg |= PARALLEL_DET_IGNORE_ADVERTISED;
 	phy_base_write(phydev, MSCC_PHY_BYPASS_CONTROL, reg);
 
-	/* The below register writes are tweaking analog and electrical
-	 * configuration that were determined through characterization by PHY
-	 * engineers. These don't mean anything more than "these are the best
-	 * values".
-	 */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_EXTENDED_3);
 
 	phy_base_write(phydev, MSCC_PHY_SERDES_TX_CRC_ERR_CNT, 0x2000);
@@ -1444,7 +1403,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* end of write broadcasting */
+	 
 	reg = phy_base_read(phydev, MSCC_PHY_EXT_CNTL_STATUS);
 	reg &= ~SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
@@ -1456,7 +1415,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 		return ret;
 	}
 
-	/* Add one byte to size for the one added by the patch_fw function */
+	 
 	ret = vsc8584_get_fw_crc(phydev,
 				 MSCC_VSC8584_REVB_INT8051_FW_START_ADDR,
 				 fw->size + 1, &crc);
@@ -1472,7 +1431,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 
 	vsc8584_micro_deassert_reset(phydev, false);
 
-	/* Add one byte to size for the one added by the patch_fw function */
+	 
 	ret = vsc8584_get_fw_crc(phydev,
 				 MSCC_VSC8584_REVB_INT8051_FW_START_ADDR,
 				 fw->size + 1, &crc);
@@ -1487,20 +1446,20 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
 	if (ret)
 		goto out;
 
-	/* Write patch vector 0, to skip IB cal polling  */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_EXTENDED_GPIO);
-	reg = MSCC_ROM_TRAP_SERDES_6G_CFG; /* ROM address to trap, for patch vector 0 */
+	reg = MSCC_ROM_TRAP_SERDES_6G_CFG;  
 	ret = phy_base_write(phydev, MSCC_TRAP_ROM_ADDR(1), reg);
 	if (ret)
 		goto out;
 
-	reg = MSCC_RAM_TRAP_SERDES_6G_CFG; /* RAM address to jump to, when patch vector 0 enabled */
+	reg = MSCC_RAM_TRAP_SERDES_6G_CFG;  
 	ret = phy_base_write(phydev, MSCC_PATCH_RAM_ADDR(1), reg);
 	if (ret)
 		goto out;
 
 	reg = phy_base_read(phydev, MSCC_INT_MEM_CNTL);
-	reg |= PATCH_VEC_ZERO_EN; /* bit 8, enable patch vector 0 */
+	reg |= PATCH_VEC_ZERO_EN;  
 	ret = phy_base_write(phydev, MSCC_INT_MEM_CNTL, reg);
 	if (ret)
 		goto out;
@@ -1531,10 +1490,7 @@ static void vsc8584_get_base_addr(struct phy_device *phydev)
 	__phy_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 	phy_unlock_mdio_bus(phydev);
 
-	/* In the package, there are two pairs of PHYs (PHY0 + PHY2 and
-	 * PHY1 + PHY3). The first PHY of each pair (PHY0 and PHY1) is
-	 * the base PHY for timestamping operations.
-	 */
+	 
 	vsc8531->ts_base_addr = phydev->mdio.addr;
 	vsc8531->ts_base_phy = addr;
 
@@ -1557,13 +1513,9 @@ static void vsc8584_get_base_addr(struct phy_device *phydev)
 
 static void vsc85xx_coma_mode_release(struct phy_device *phydev)
 {
-	/* The coma mode (pin or reg) provides an optional feature that
-	 * may be used to control when the PHYs become active.
-	 * Alternatively the COMA_MODE pin may be connected low
-	 * so that the PHYs are fully active once out of reset.
-	 */
+	 
 
-	/* Enable output (mode=0) and write zero to it */
+	 
 	vsc85xx_phy_write_page(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO);
 	__phy_modify(phydev, MSCC_PHY_GPIO_CONTROL_2,
 		     MSCC_PHY_COMA_MODE | MSCC_PHY_COMA_OUTPUT, 0);
@@ -1614,7 +1566,7 @@ static int vsc8584_config_host_serdes(struct phy_device *phydev)
 
 	usleep_range(10000, 20000);
 
-	/* Disable SerDes for 100Base-FX */
+	 
 	ret = vsc8584_cmd(phydev, PROC_CMD_FIBER_MEDIA_CONF |
 			  PROC_CMD_FIBER_PORT(vsc8531->addr) |
 			  PROC_CMD_FIBER_DISABLE |
@@ -1623,7 +1575,7 @@ static int vsc8584_config_host_serdes(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Disable SerDes for 1000Base-X */
+	 
 	ret = vsc8584_cmd(phydev, PROC_CMD_FIBER_MEDIA_CONF |
 			  PROC_CMD_FIBER_PORT(vsc8531->addr) |
 			  PROC_CMD_FIBER_DISABLE |
@@ -1683,7 +1635,7 @@ static int vsc8574_config_host_serdes(struct phy_device *phydev)
 		usleep_range(10000, 20000);
 	}
 
-	/* Disable SerDes for 100Base-FX */
+	 
 	ret = vsc8584_cmd(phydev, PROC_CMD_FIBER_MEDIA_CONF |
 			  PROC_CMD_FIBER_PORT(vsc8531->addr) |
 			  PROC_CMD_FIBER_DISABLE |
@@ -1692,7 +1644,7 @@ static int vsc8574_config_host_serdes(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Disable SerDes for 1000Base-X */
+	 
 	return vsc8584_cmd(phydev, PROC_CMD_FIBER_MEDIA_CONF |
 			   PROC_CMD_FIBER_PORT(vsc8531->addr) |
 			   PROC_CMD_FIBER_DISABLE |
@@ -1710,24 +1662,9 @@ static int vsc8584_config_init(struct phy_device *phydev)
 
 	phy_lock_mdio_bus(phydev);
 
-	/* Some parts of the init sequence are identical for every PHY in the
-	 * package. Some parts are modifying the GPIO register bank which is a
-	 * set of registers that are affecting all PHYs, a few resetting the
-	 * microprocessor common to all PHYs. The CRC check responsible of the
-	 * checking the firmware within the 8051 microprocessor can only be
-	 * accessed via the PHY whose internal address in the package is 0.
-	 * All PHYs' interrupts mask register has to be zeroed before enabling
-	 * any PHY's interrupt in this register.
-	 * For all these reasons, we need to do the init sequence once and only
-	 * once whatever is the first PHY in the package that is initialized and
-	 * do the correct init sequence for all PHYs that are package-critical
-	 * in this pre-init function.
-	 */
+	 
 	if (phy_package_init_once(phydev)) {
-		/* The following switch statement assumes that the lowest
-		 * nibble of the phy_id_mask is always 0. This works because
-		 * the lowest nibble of the PHY_ID's below are also 0.
-		 */
+		 
 		WARN_ON(phydev->drv->phy_id_mask & 0xf);
 
 		switch (phydev->phy_id & phydev->drv->phy_id_mask) {
@@ -1813,9 +1750,7 @@ static irqreturn_t vsc8584_handle_interrupt(struct phy_device *phydev)
 	if (irq_status < 0)
 		return IRQ_NONE;
 
-	/* Timestamping IRQ does not set a bit in the global INT_STATUS, so
-	 * irq_status would be 0.
-	 */
+	 
 	ret = vsc8584_handle_ts_interrupt(phydev);
 	if (!(irq_status & MII_VSC85XX_INT_MASK_MASK))
 		return ret;
@@ -1895,13 +1830,13 @@ static int __phy_write_mcb_s6g(struct phy_device *phydev, u32 reg, u8 mcb,
 	return 0;
 }
 
-/* Trigger a read to the specified MCB */
+ 
 int phy_update_mcb_s6g(struct phy_device *phydev, u32 reg, u8 mcb)
 {
 	return __phy_write_mcb_s6g(phydev, reg, mcb, PHY_MCB_S6G_READ);
 }
 
-/* Trigger a write to the specified MCB */
+ 
 int phy_commit_mcb_s6g(struct phy_device *phydev, u32 reg, u8 mcb)
 {
 	return __phy_write_mcb_s6g(phydev, reg, mcb, PHY_MCB_S6G_WRITE);
@@ -1943,19 +1878,13 @@ static int vsc8514_config_host_serdes(struct phy_device *phydev)
 		return ret;
 	}
 
-	/* Apply 6G SerDes FOJI Algorithm
-	 *  Initial condition requirement:
-	 *  1. hold 8051 in reset
-	 *  2. disable patch vector 0, in order to allow IB cal poll during FoJi
-	 *  3. deassert 8051 reset after change patch vector status
-	 *  4. proceed with FoJi (vsc85xx_sd6g_config_v2)
-	 */
+	 
 	vsc8584_micro_assert_reset(phydev);
 	val = phy_base_read(phydev, MSCC_INT_MEM_CNTL);
-	/* clear bit 8, to disable patch vector 0 */
+	 
 	val &= ~PATCH_VEC_ZERO_EN;
 	ret = phy_base_write(phydev, MSCC_INT_MEM_CNTL, val);
-	/* Enable 8051 clock, don't set patch present, disable PRAM clock override */
+	 
 	vsc8584_micro_deassert_reset(phydev, false);
 
 	return vsc85xx_sd6g_config_v2(phydev);
@@ -1963,10 +1892,7 @@ static int vsc8514_config_host_serdes(struct phy_device *phydev)
 
 static int vsc8514_config_pre_init(struct phy_device *phydev)
 {
-	/* These are the settings to override the silicon default
-	 * values to handle hardware performance of PHY. They
-	 * are set at Power-On state and remain until PHY Reset.
-	 */
+	 
 	static const struct reg_val pre_init1[] = {
 		{0x0f90, 0x00688980},
 		{0x0786, 0x00000003},
@@ -2002,7 +1928,7 @@ static int vsc8514_config_pre_init(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* all writes below are broadcasted to all PHYs in the same package */
+	 
 	reg = phy_base_read(phydev, MSCC_PHY_EXT_CNTL_STATUS);
 	reg |= SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
@@ -2030,40 +1956,33 @@ static int vsc8514_config_pre_init(struct phy_device *phydev)
 	reg &= ~SMI_BROADCAST_WR_EN;
 	phy_base_write(phydev, MSCC_PHY_EXT_CNTL_STATUS, reg);
 
-	/* Add pre-patching commands to:
-	 * 1. enable 8051 clock, operate 8051 clock at 125 MHz
-	 * instead of HW default 62.5MHz
-	 * 2. write patch vector 0, to skip IB cal polling executed
-	 * as part of the 0x80E0 ROM command
-	 */
+	 
 	vsc8584_micro_deassert_reset(phydev, false);
 
 	vsc8584_micro_assert_reset(phydev);
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
 		       MSCC_PHY_PAGE_EXTENDED_GPIO);
-	/* ROM address to trap, for patch vector 0 */
+	 
 	reg = MSCC_ROM_TRAP_SERDES_6G_CFG;
 	ret = phy_base_write(phydev, MSCC_TRAP_ROM_ADDR(1), reg);
 	if (ret)
 		goto err;
-	/* RAM address to jump to, when patch vector 0 enabled */
+	 
 	reg = MSCC_RAM_TRAP_SERDES_6G_CFG;
 	ret = phy_base_write(phydev, MSCC_PATCH_RAM_ADDR(1), reg);
 	if (ret)
 		goto err;
 	reg = phy_base_read(phydev, MSCC_INT_MEM_CNTL);
-	reg |= PATCH_VEC_ZERO_EN; /* bit 8, enable patch vector 0 */
+	reg |= PATCH_VEC_ZERO_EN;  
 	ret = phy_base_write(phydev, MSCC_INT_MEM_CNTL, reg);
 	if (ret)
 		goto err;
 
-	/* Enable 8051 clock, don't set patch present
-	 * yet, disable PRAM clock override
-	 */
+	 
 	vsc8584_micro_deassert_reset(phydev, false);
 	return ret;
  err:
-	/* restore 8051 and bail w error */
+	 
 	vsc8584_micro_deassert_reset(phydev, false);
 	return ret;
 }
@@ -2077,17 +1996,7 @@ static int vsc8514_config_init(struct phy_device *phydev)
 
 	phy_lock_mdio_bus(phydev);
 
-	/* Some parts of the init sequence are identical for every PHY in the
-	 * package. Some parts are modifying the GPIO register bank which is a
-	 * set of registers that are affecting all PHYs, a few resetting the
-	 * microprocessor common to all PHYs.
-	 * All PHYs' interrupts mask register has to be zeroed before enabling
-	 * any PHY's interrupt in this register.
-	 * For all these reasons, we need to do the init sequence once and only
-	 * once whatever is the first PHY in the package that is initialized and
-	 * do the correct init sequence for all PHYs that are package-critical
-	 * in this pre-init function.
-	 */
+	 
 	if (phy_package_init_once(phydev)) {
 		ret = vsc8514_config_pre_init(phydev);
 		if (ret)
@@ -2335,13 +2244,13 @@ static int vsc85xx_probe(struct phy_device *phydev)
 	return vsc85xx_dt_led_modes_get(phydev, default_mode);
 }
 
-/* Microsemi VSC85xx PHYs */
+ 
 static struct phy_driver vsc85xx_driver[] = {
 {
 	.phy_id		= PHY_ID_VSC8501,
 	.name		= "Microsemi GE VSC8501 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init	= &vsc85xx_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2365,7 +2274,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8502,
 	.name		= "Microsemi GE VSC8502 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init	= &vsc85xx_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2389,7 +2298,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8504,
 	.name		= "Microsemi GE VSC8504 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2437,7 +2346,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8530,
 	.name		= "Microsemi FE VSC8530",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init	= &vsc85xx_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2461,7 +2370,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8531,
 	.name		= "Microsemi VSC8531",
 	.phy_id_mask    = 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc85xx_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2485,7 +2394,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8540,
 	.name		= "Microsemi FE VSC8540 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init	= &vsc85xx_config_init,
 	.config_aneg	= &vsc85xx_config_aneg,
@@ -2509,7 +2418,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8541,
 	.name		= "Microsemi VSC8541 SyncE",
 	.phy_id_mask    = 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc85xx_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2533,7 +2442,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8552,
 	.name		= "Microsemi GE VSC8552 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2557,7 +2466,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC856X,
 	.name		= "Microsemi GE VSC856X SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2579,7 +2488,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8572,
 	.name		= "Microsemi GE VSC8572 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2604,7 +2513,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8574,
 	.name		= "Microsemi GE VSC8574 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2629,7 +2538,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8575,
 	.name		= "Microsemi GE VSC8575 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2652,7 +2561,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8582,
 	.name		= "Microsemi GE VSC8582 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,
@@ -2675,7 +2584,7 @@ static struct phy_driver vsc85xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8584,
 	.name		= "Microsemi GE VSC8584 SyncE",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.soft_reset	= &genphy_soft_reset,
 	.config_init    = &vsc8584_config_init,
 	.config_aneg    = &vsc85xx_config_aneg,

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm0010.c  --  WM0010 DSP Driver
- *
- * Copyright 2012 Wolfson Microelectronics PLC.
- *
- * Authors: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *          Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- *          Scott Ling <sl@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -28,7 +20,7 @@
 
 #define DEVICE_ID_WM0010	10
 
-/* We only support v1 of the .dfw INFO record */
+ 
 #define INFO_VERSION		1
 
 enum dfw_cmd {
@@ -69,13 +61,13 @@ static struct pll_clock_map {
 	int max_sysclk;
 	int max_pll_spi_speed;
 	u32 pll_clkctrl1;
-} pll_clock_map[] = {			   /* Dividers */
-	{ 22000000, 26000000, 0x00201f11 }, /* 2,32,2  */
-	{ 18000000, 26000000, 0x00203f21 }, /* 2,64,4  */
-	{ 14000000, 26000000, 0x00202620 }, /* 1,39,4  */
-	{ 10000000, 22000000, 0x00203120 }, /* 1,50,4  */
-	{  6500000, 22000000, 0x00204520 }, /* 1,70,4  */
-	{  5500000, 22000000, 0x00103f10 }, /* 1,64,2  */
+} pll_clock_map[] = {			    
+	{ 22000000, 26000000, 0x00201f11 },  
+	{ 18000000, 26000000, 0x00203f21 },  
+	{ 14000000, 26000000, 0x00202620 },  
+	{ 10000000, 22000000, 0x00203120 },  
+	{  6500000, 22000000, 0x00204520 },  
+	{  5500000, 22000000, 0x00103f10 },  
 };
 
 enum wm0010_state {
@@ -153,30 +145,30 @@ static const char *wm0010_state_to_str(enum wm0010_state state)
 	return state_to_str[state];
 }
 
-/* Called with wm0010->lock held */
+ 
 static void wm0010_halt(struct snd_soc_component *component)
 {
 	struct wm0010_priv *wm0010 = snd_soc_component_get_drvdata(component);
 	unsigned long flags;
 	enum wm0010_state state;
 
-	/* Fetch the wm0010 state */
+	 
 	spin_lock_irqsave(&wm0010->irq_lock, flags);
 	state = wm0010->state;
 	spin_unlock_irqrestore(&wm0010->irq_lock, flags);
 
 	switch (state) {
 	case WM0010_POWER_OFF:
-		/* If there's nothing to do, bail out */
+		 
 		return;
 	case WM0010_OUT_OF_RESET:
 	case WM0010_BOOTROM:
 	case WM0010_STAGE2:
 	case WM0010_FIRMWARE:
-		/* Remember to put chip back into reset */
+		 
 		gpio_set_value_cansleep(wm0010->gpio_reset,
 					wm0010->gpio_reset_value);
-		/* Disable the regulators */
+		 
 		regulator_disable(wm0010->dbvdd);
 		regulator_bulk_disable(ARRAY_SIZE(wm0010->core_supplies),
 				       wm0010->core_supplies);
@@ -196,7 +188,7 @@ struct wm0010_boot_xfer {
 	struct spi_transfer t;
 };
 
-/* Called with wm0010->lock held */
+ 
 static void wm0010_mark_boot_failure(struct wm0010_priv *wm0010)
 {
 	enum wm0010_state state;
@@ -371,7 +363,7 @@ static int wm0010_firmware_load(const char *name, struct snd_soc_component *comp
 	if (WARN_ON(!list_empty(&xfer_list)))
 		return -EINVAL;
 
-	/* First record should be INFO */
+	 
 	if (rec->command != DFW_CMD_INFO) {
 		dev_err(component->dev, "First record not INFO\r\n");
 		ret = -EINVAL;
@@ -389,14 +381,14 @@ static int wm0010_firmware_load(const char *name, struct snd_soc_component *comp
 	dev_dbg(component->dev, "Version v%02d INFO record found\r\n",
 		inforec->info_version);
 
-	/* Check it's a DSP file */
+	 
 	if (dsp != DEVICE_ID_WM0010) {
 		dev_err(component->dev, "Not a WM0010 firmware file.\r\n");
 		ret = -EINVAL;
 		goto abort;
 	}
 
-	/* Skip the info record as we don't need to send it */
+	 
 	offset += ((rec->length) + 8);
 	rec = (void *)&rec->data[rec->length];
 
@@ -447,7 +439,7 @@ static int wm0010_firmware_load(const char *name, struct snd_soc_component *comp
 					xfer->t.speed_hz = wm0010->board_max_spi_speed;
 		}
 
-		/* Store max usable spi frequency for later use */
+		 
 		wm0010->max_spi_freq = xfer->t.speed_hz;
 
 		spi_message_add_tail(&xfer->t, &xfer->m);
@@ -513,7 +505,7 @@ static int wm0010_stage2_load(struct snd_soc_component *component)
 
 	dev_dbg(component->dev, "Downloading %zu byte stage 2 loader\n", fw->size);
 
-	/* Copy to local buffer first as vmalloc causes problems for dma */
+	 
 	img = kmemdup(&fw->data[0], fw->size, GFP_KERNEL | GFP_DMA);
 	if (!img) {
 		ret = -ENOMEM;
@@ -544,7 +536,7 @@ static int wm0010_stage2_load(struct snd_soc_component *component)
 		goto abort;
 	}
 
-	/* Look for errors from the boot ROM */
+	 
 	for (i = 0; i < fw->size; i++) {
 		if (out[i] != 0x55) {
 			dev_err(component->dev, "Boot ROM error: %x in %d\n",
@@ -609,7 +601,7 @@ static int wm0010_boot(struct snd_soc_component *component)
 		goto err_core;
 	}
 
-	/* Release reset */
+	 
 	gpio_set_value_cansleep(wm0010->gpio_reset, !wm0010->gpio_reset_value);
 	spin_lock_irqsave(&wm0010->irq_lock, flags);
 	wm0010->state = WM0010_OUT_OF_RESET;
@@ -635,15 +627,15 @@ static int wm0010_boot(struct snd_soc_component *component)
 	wm0010->state = WM0010_STAGE2;
 	spin_unlock_irqrestore(&wm0010->irq_lock, flags);
 
-	/* Only initialise PLL if max_spi_freq initialised */
+	 
 	if (wm0010->max_spi_freq) {
 
-		/* Initialise a PLL record */
+		 
 		memset(&pll_rec, 0, sizeof(pll_rec));
 		pll_rec.command = DFW_CMD_PLL;
 		pll_rec.length = (sizeof(pll_rec) - 8);
 
-		/* On wm0010 only the CLKCTRL1 value is used */
+		 
 		pll_rec.clkctrl1 = wm0010->pll_clkctrl1;
 
 		ret = -ENOMEM;
@@ -656,7 +648,7 @@ static int wm0010_boot(struct snd_soc_component *component)
 		if (!img_swap)
 			goto abort_out;
 
-		/* We need to re-order for 0010 */
+		 
 		byte_swap_64((u64 *)&pll_rec, img_swap, len);
 
 		spi_message_init(&m);
@@ -674,7 +666,7 @@ static int wm0010_boot(struct snd_soc_component *component)
 			goto abort_swap;
 		}
 
-		/* Use a second send of the message to get the return status */
+		 
 		ret = spi_sync(spi, &m);
 		if (ret) {
 			dev_err(component->dev, "Second PLL write failed: %d\n", ret);
@@ -683,7 +675,7 @@ static int wm0010_boot(struct snd_soc_component *component)
 
 		p = (u32 *)out;
 
-		/* Look for PLL active code from the DSP */
+		 
 		for (i = 0; i < len / 4; i++) {
 			if (*p == 0x0e00ed0f) {
 				dev_dbg(component->dev, "PLL packet received\n");
@@ -716,7 +708,7 @@ abort_swap:
 abort_out:
 	kfree(out);
 abort:
-	/* Put the chip back into reset */
+	 
 	wm0010_halt(component);
 	mutex_unlock(&wm0010->lock);
 	return ret;

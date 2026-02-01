@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2022 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -14,7 +12,7 @@
 
 #define BRCM_U_BOOT_MAX_PARTS		2
 
-#define BRCM_U_BOOT_MAGIC		0x75456e76	/* uEnv */
+#define BRCM_U_BOOT_MAGIC		0x75456e76	 
 
 struct brcm_u_boot_header {
 	__le32 magic;

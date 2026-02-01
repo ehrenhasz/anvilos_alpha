@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Server address list management
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/ctype.h>
@@ -13,18 +9,14 @@
 #include "internal.h"
 #include "afs_fs.h"
 
-/*
- * Release an address list.
- */
+ 
 void afs_put_addrlist(struct afs_addr_list *alist)
 {
 	if (alist && refcount_dec_and_test(&alist->usage))
 		kfree_rcu(alist, rcu);
 }
 
-/*
- * Allocate an address list.
- */
+ 
 struct afs_addr_list *afs_alloc_addrlist(unsigned int nr,
 					 unsigned short service,
 					 unsigned short port)
@@ -57,9 +49,7 @@ struct afs_addr_list *afs_alloc_addrlist(unsigned int nr,
 	return alist;
 }
 
-/*
- * Parse a text string consisting of delimited addresses.
- */
+ 
 struct afs_vlserver_list *afs_parse_text_addrs(struct afs_net *net,
 					       const char *text, size_t len,
 					       char delim,
@@ -83,7 +73,7 @@ struct afs_vlserver_list *afs_parse_text_addrs(struct afs_net *net,
 	if (delim == ':' && (memchr(text, ',', len) || !memchr(text, '.', len)))
 		delim = ',';
 
-	/* Count the addresses */
+	 
 	p = text;
 	do {
 		if (!*p) {
@@ -130,7 +120,7 @@ struct afs_vlserver_list *afs_parse_text_addrs(struct afs_net *net,
 	if (!alist)
 		goto error;
 
-	/* Extract the addresses */
+	 
 	p = text;
 	do {
 		const char *q, *stop;
@@ -172,7 +162,7 @@ struct afs_vlserver_list *afs_parse_text_addrs(struct afs_net *net,
 
 		if (p < end) {
 			if (*p == '+') {
-				/* Port number specification "+1234" */
+				 
 				xport = 0;
 				p++;
 				if (p >= end || !isdigit(*p)) {
@@ -222,12 +212,7 @@ error_vl:
 	return ERR_PTR(ret);
 }
 
-/*
- * Compare old and new address lists to see if there's been any change.
- * - How to do this in better than O(Nlog(N)) time?
- *   - We don't really want to sort the address list, but would rather take the
- *     list as we got it so as not to undo record rotation by the DNS server.
- */
+ 
 #if 0
 static int afs_cmp_addr_list(const struct afs_addr_list *a1,
 			     const struct afs_addr_list *a2)
@@ -235,9 +220,7 @@ static int afs_cmp_addr_list(const struct afs_addr_list *a1,
 }
 #endif
 
-/*
- * Perform a DNS query for VL servers and build a up an address list.
- */
+ 
 struct afs_vlserver_list *afs_dns_query(struct afs_cell *cell, time64_t *_expiry)
 {
 	struct afs_vlserver_list *vllist;
@@ -268,9 +251,7 @@ struct afs_vlserver_list *afs_dns_query(struct afs_cell *cell, time64_t *_expiry
 	return vllist;
 }
 
-/*
- * Merge an IPv4 entry into a fileserver address list.
- */
+ 
 void afs_merge_fs_addr4(struct afs_addr_list *alist, __be32 xdr, u16 port)
 {
 	struct sockaddr_rxrpc *srx;
@@ -309,9 +290,7 @@ void afs_merge_fs_addr4(struct afs_addr_list *alist, __be32 xdr, u16 port)
 	alist->nr_addrs++;
 }
 
-/*
- * Merge an IPv6 entry into a fileserver address list.
- */
+ 
 void afs_merge_fs_addr6(struct afs_addr_list *alist, __be32 *xdr, u16 port)
 {
 	struct sockaddr_rxrpc *srx;
@@ -348,9 +327,7 @@ void afs_merge_fs_addr6(struct afs_addr_list *alist, __be32 *xdr, u16 port)
 	alist->nr_addrs++;
 }
 
-/*
- * Get an address to try.
- */
+ 
 bool afs_iterate_addresses(struct afs_addr_cursor *ac)
 {
 	unsigned long set, failed;
@@ -383,9 +360,7 @@ selected:
 	return true;
 }
 
-/*
- * Release an address list cursor.
- */
+ 
 int afs_end_cursor(struct afs_addr_cursor *ac)
 {
 	struct afs_addr_list *alist;

@@ -1,24 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* SCTP kernel reference Implementation
- * Copyright (c) 1999-2001 Motorola, Inc.
- * Copyright (c) 2001-2003 International Business Machines, Corp.
- *
- * This file is part of the SCTP kernel reference Implementation
- *
- * SCTP Checksum functions
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Dinakaran Joseph
- *    Jon Grimm <jgrimm@us.ibm.com>
- *    Sridhar Samudrala <sri@us.ibm.com>
- *
- * Rewritten to use libcrc32c by:
- *    Vlad Yasevich <vladislav.yasevich@hp.com>
- */
+ 
+ 
 
 #ifndef __sctp_checksum_h__
 #define __sctp_checksum_h__
@@ -30,9 +11,7 @@
 
 static inline __wsum sctp_csum_update(const void *buff, int len, __wsum sum)
 {
-	/* This uses the crypto implementation of crc32c, which is either
-	 * implemented w/ hardware support or resolves to __crc32c_le().
-	 */
+	 
 	return (__force __wsum)crc32c((__force __u32)sum, buff, len);
 }
 
@@ -63,4 +42,4 @@ static inline __le32 sctp_compute_cksum(const struct sk_buff *skb,
 	return cpu_to_le32((__force __u32)new);
 }
 
-#endif /* __sctp_checksum_h__ */
+#endif  

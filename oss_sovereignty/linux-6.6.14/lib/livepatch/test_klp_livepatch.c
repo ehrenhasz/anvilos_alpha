@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,7 +24,7 @@ static struct klp_func funcs[] = {
 
 static struct klp_object objs[] = {
 	{
-		/* name being NULL means vmlinux */
+		 
 		.funcs = funcs,
 	}, { }
 };

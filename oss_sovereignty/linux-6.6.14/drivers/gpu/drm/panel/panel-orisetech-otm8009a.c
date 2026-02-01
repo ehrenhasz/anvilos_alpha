@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2017
- *
- * Authors: Philippe Cornu <philippe.cornu@st.com>
- *          Yannick Fertre <yannick.fertre@st.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -21,44 +16,44 @@
 #define OTM8009A_BACKLIGHT_DEFAULT	240
 #define OTM8009A_BACKLIGHT_MAX		255
 
-/* Manufacturer Command Set */
-#define MCS_ADRSFT	0x0000	/* Address Shift Function */
-#define MCS_PANSET	0xB3A6	/* Panel Type Setting */
-#define MCS_SD_CTRL	0xC0A2	/* Source Driver Timing Setting */
-#define MCS_P_DRV_M	0xC0B4	/* Panel Driving Mode */
-#define MCS_OSC_ADJ	0xC181	/* Oscillator Adjustment for Idle/Normal mode */
-#define MCS_RGB_VID_SET	0xC1A1	/* RGB Video Mode Setting */
-#define MCS_SD_PCH_CTRL	0xC480	/* Source Driver Precharge Control */
-#define MCS_NO_DOC1	0xC48A	/* Command not documented */
-#define MCS_PWR_CTRL1	0xC580	/* Power Control Setting 1 */
-#define MCS_PWR_CTRL2	0xC590	/* Power Control Setting 2 for Normal Mode */
-#define MCS_PWR_CTRL4	0xC5B0	/* Power Control Setting 4 for DC Voltage */
-#define MCS_PANCTRLSET1	0xCB80	/* Panel Control Setting 1 */
-#define MCS_PANCTRLSET2	0xCB90	/* Panel Control Setting 2 */
-#define MCS_PANCTRLSET3	0xCBA0	/* Panel Control Setting 3 */
-#define MCS_PANCTRLSET4	0xCBB0	/* Panel Control Setting 4 */
-#define MCS_PANCTRLSET5	0xCBC0	/* Panel Control Setting 5 */
-#define MCS_PANCTRLSET6	0xCBD0	/* Panel Control Setting 6 */
-#define MCS_PANCTRLSET7	0xCBE0	/* Panel Control Setting 7 */
-#define MCS_PANCTRLSET8	0xCBF0	/* Panel Control Setting 8 */
-#define MCS_PANU2D1	0xCC80	/* Panel U2D Setting 1 */
-#define MCS_PANU2D2	0xCC90	/* Panel U2D Setting 2 */
-#define MCS_PANU2D3	0xCCA0	/* Panel U2D Setting 3 */
-#define MCS_PAND2U1	0xCCB0	/* Panel D2U Setting 1 */
-#define MCS_PAND2U2	0xCCC0	/* Panel D2U Setting 2 */
-#define MCS_PAND2U3	0xCCD0	/* Panel D2U Setting 3 */
-#define MCS_GOAVST	0xCE80	/* GOA VST Setting */
-#define MCS_GOACLKA1	0xCEA0	/* GOA CLKA1 Setting */
-#define MCS_GOACLKA3	0xCEB0	/* GOA CLKA3 Setting */
-#define MCS_GOAECLK	0xCFC0	/* GOA ECLK Setting */
-#define MCS_NO_DOC2	0xCFD0	/* Command not documented */
-#define MCS_GVDDSET	0xD800	/* GVDD/NGVDD */
-#define MCS_VCOMDC	0xD900	/* VCOM Voltage Setting */
-#define MCS_GMCT2_2P	0xE100	/* Gamma Correction 2.2+ Setting */
-#define MCS_GMCT2_2N	0xE200	/* Gamma Correction 2.2- Setting */
-#define MCS_NO_DOC3	0xF5B6	/* Command not documented */
-#define MCS_CMD2_ENA1	0xFF00	/* Enable Access Command2 "CMD2" */
-#define MCS_CMD2_ENA2	0xFF80	/* Enable Access Orise Command2 */
+ 
+#define MCS_ADRSFT	0x0000	 
+#define MCS_PANSET	0xB3A6	 
+#define MCS_SD_CTRL	0xC0A2	 
+#define MCS_P_DRV_M	0xC0B4	 
+#define MCS_OSC_ADJ	0xC181	 
+#define MCS_RGB_VID_SET	0xC1A1	 
+#define MCS_SD_PCH_CTRL	0xC480	 
+#define MCS_NO_DOC1	0xC48A	 
+#define MCS_PWR_CTRL1	0xC580	 
+#define MCS_PWR_CTRL2	0xC590	 
+#define MCS_PWR_CTRL4	0xC5B0	 
+#define MCS_PANCTRLSET1	0xCB80	 
+#define MCS_PANCTRLSET2	0xCB90	 
+#define MCS_PANCTRLSET3	0xCBA0	 
+#define MCS_PANCTRLSET4	0xCBB0	 
+#define MCS_PANCTRLSET5	0xCBC0	 
+#define MCS_PANCTRLSET6	0xCBD0	 
+#define MCS_PANCTRLSET7	0xCBE0	 
+#define MCS_PANCTRLSET8	0xCBF0	 
+#define MCS_PANU2D1	0xCC80	 
+#define MCS_PANU2D2	0xCC90	 
+#define MCS_PANU2D3	0xCCA0	 
+#define MCS_PAND2U1	0xCCB0	 
+#define MCS_PAND2U2	0xCCC0	 
+#define MCS_PAND2U3	0xCCD0	 
+#define MCS_GOAVST	0xCE80	 
+#define MCS_GOACLKA1	0xCEA0	 
+#define MCS_GOACLKA3	0xCEB0	 
+#define MCS_GOAECLK	0xCFC0	 
+#define MCS_NO_DOC2	0xCFD0	 
+#define MCS_GVDDSET	0xD800	 
+#define MCS_VCOMDC	0xD900	 
+#define MCS_GMCT2_2P	0xE100	 
+#define MCS_GMCT2_2N	0xE200	 
+#define MCS_NO_DOC3	0xF5B6	 
+#define MCS_CMD2_ENA1	0xFF00	 
+#define MCS_CMD2_ENA2	0xFF80	 
 
 #define OTM8009A_HDISPLAY	480
 #define OTM8009A_VDISPLAY	800
@@ -74,7 +69,7 @@ struct otm8009a {
 };
 
 static const struct drm_display_mode modes[] = {
-	{ /* 50 Hz, preferred */
+	{  
 		.clock = 29700,
 		.hdisplay = 480,
 		.hsync_start = 480 + 98,
@@ -88,7 +83,7 @@ static const struct drm_display_mode modes[] = {
 		.width_mm = 52,
 		.height_mm = 86,
 	},
-	{ /* 60 Hz */
+	{  
 		.clock = 33000,
 		.hdisplay = 480,
 		.hsync_start = 480 + 70,
@@ -135,10 +130,10 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	int ret;
 
-	/* Enter CMD2 */
+	 
 	dcs_write_cmd_at(ctx, MCS_CMD2_ENA1, 0x80, 0x09, 0x01);
 
-	/* Enter Orise Command2 */
+	 
 	dcs_write_cmd_at(ctx, MCS_CMD2_ENA2, 0x80, 0x09);
 
 	dcs_write_cmd_at(ctx, MCS_SD_PCH_CTRL, 0x30);
@@ -151,7 +146,7 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 	dcs_write_cmd_at(ctx, MCS_PWR_CTRL2 + 1, 0x34);
 	dcs_write_cmd_at(ctx, MCS_P_DRV_M, 0x50);
 	dcs_write_cmd_at(ctx, MCS_VCOMDC, 0x4E);
-	dcs_write_cmd_at(ctx, MCS_OSC_ADJ, 0x66); /* 65Hz */
+	dcs_write_cmd_at(ctx, MCS_OSC_ADJ, 0x66);  
 	dcs_write_cmd_at(ctx, MCS_PWR_CTRL2 + 2, 0x01);
 	dcs_write_cmd_at(ctx, MCS_PWR_CTRL2 + 5, 0x34);
 	dcs_write_cmd_at(ctx, MCS_PWR_CTRL2 + 4, 0x33);
@@ -210,7 +205,7 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 			 0x0B, 0x0A, 0x04, 0x07, 0x0B, 0x08, 0x0F, 0x10, 0x0A,
 			 0x01);
 
-	/* Exit CMD2 */
+	 
 	dcs_write_cmd_at(ctx, MCS_CMD2_ENA1, 0xFF, 0xFF, 0xFF);
 
 	ret = mipi_dsi_dcs_nop(dsi);
@@ -221,10 +216,10 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 	if (ret)
 		return ret;
 
-	/* Wait for sleep out exit */
+	 
 	mdelay(120);
 
-	/* Default portrait 480x800 rgb24 */
+	 
 	dcs_write_seq(ctx, MIPI_DCS_SET_ADDRESS_MODE, 0x00);
 
 	ret = mipi_dsi_dcs_set_column_address(dsi, 0, OTM8009A_HDISPLAY - 1);
@@ -235,13 +230,13 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 	if (ret)
 		return ret;
 
-	/* See otm8009a driver documentation for pixel format descriptions */
+	 
 	ret = mipi_dsi_dcs_set_pixel_format(dsi, MIPI_DCS_PIXEL_FMT_24BIT |
 					    MIPI_DCS_PIXEL_FMT_24BIT << 4);
 	if (ret)
 		return ret;
 
-	/* Disable CABC feature */
+	 
 	dcs_write_seq(ctx, MIPI_DCS_WRITE_POWER_SAVE, 0x00);
 
 	ret = mipi_dsi_dcs_set_display_on(dsi);
@@ -252,10 +247,10 @@ static int otm8009a_init_sequence(struct otm8009a *ctx)
 	if (ret)
 		return ret;
 
-	/* Send Command GRAM memory write (no parameters) */
+	 
 	dcs_write_seq(ctx, MIPI_DCS_WRITE_MEMORY_START);
 
-	/* Wait a short while to let the panel be ready before the 1st frame */
+	 
 	mdelay(10);
 
 	return 0;
@@ -268,7 +263,7 @@ static int otm8009a_disable(struct drm_panel *panel)
 	int ret;
 
 	if (!ctx->enabled)
-		return 0; /* This is not an issue so we return 0 here */
+		return 0;  
 
 	backlight_disable(ctx->bl_dev);
 
@@ -370,7 +365,7 @@ static int otm8009a_get_modes(struct drm_panel *panel,
 
 		mode->type = DRM_MODE_TYPE_DRIVER;
 
-		/* Setting first mode as preferred */
+		 
 		if (!i)
 			mode->type |=  DRM_MODE_TYPE_PREFERRED;
 
@@ -392,9 +387,7 @@ static const struct drm_panel_funcs otm8009a_drm_funcs = {
 	.get_modes = otm8009a_get_modes,
 };
 
-/*
- * DSI-BASED BACKLIGHT
- */
+ 
 
 static int otm8009a_backlight_update_status(struct backlight_device *bd)
 {
@@ -407,23 +400,20 @@ static int otm8009a_backlight_update_status(struct backlight_device *bd)
 	}
 
 	if (bd->props.power <= FB_BLANK_NORMAL) {
-		/* Power on the backlight with the requested brightness
-		 * Note We can not use mipi_dsi_dcs_set_display_brightness()
-		 * as otm8009a driver support only 8-bit brightness (1 param).
-		 */
+		 
 		data[0] = MIPI_DCS_SET_DISPLAY_BRIGHTNESS;
 		data[1] = bd->props.brightness;
 		otm8009a_dcs_write_buf(ctx, data, ARRAY_SIZE(data));
 
-		/* set Brightness Control & Backlight on */
+		 
 		data[1] = 0x24;
 
 	} else {
-		/* Power off the backlight: set Brightness Control & Bl off */
+		 
 		data[1] = 0;
 	}
 
-	/* Update Brightness Control & Backlight */
+	 
 	data[0] = MIPI_DCS_WRITE_CONTROL_DISPLAY;
 	otm8009a_dcs_write_buf(ctx, data, ARRAY_SIZE(data));
 

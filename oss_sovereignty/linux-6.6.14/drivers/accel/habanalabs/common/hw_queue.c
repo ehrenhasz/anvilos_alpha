@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
 #include <linux/slab.h>
 
-/*
- * hl_queue_add_ptr - add to pi or ci and checks if it wraps around
- *
- * @ptr: the current pi/ci value
- * @val: the amount to add
- *
- * Add val to ptr. It can go until twice the queue length.
- */
+ 
 inline u32 hl_hw_queue_add_ptr(u32 ptr, u16 val)
 {
 	ptr += val;
@@ -49,37 +39,18 @@ void hl_hw_queue_update_ci(struct hl_cs *cs)
 
 	q = &hdev->kernel_queues[0];
 
-	/* There are no internal queues if H/W queues are being used */
+	 
 	if (!hdev->asic_prop.max_queues || q->queue_type == QUEUE_TYPE_HW)
 		return;
 
-	/* We must increment CI for every queue that will never get a
-	 * completion, there are 2 scenarios this can happen:
-	 * 1. All queues of a non completion CS will never get a completion.
-	 * 2. Internal queues never gets completion.
-	 */
+	 
 	for (i = 0 ; i < hdev->asic_prop.max_queues ; i++, q++) {
 		if (!cs_needs_completion(cs) || q->queue_type == QUEUE_TYPE_INT)
 			atomic_add(cs->jobs_in_queue_cnt[i], &q->ci);
 	}
 }
 
-/*
- * hl_hw_queue_submit_bd() - Submit a buffer descriptor to an external or a
- *                                H/W queue.
- * @hdev: pointer to habanalabs device structure
- * @q: pointer to habanalabs queue structure
- * @ctl: BD's control word
- * @len: BD's length
- * @ptr: BD's pointer
- *
- * This function assumes there is enough space on the queue to submit a new
- * BD to it. It initializes the next BD and calls the device specific
- * function to set the pi (and doorbell)
- *
- * This function must be called when the scheduler mutex is taken
- *
- */
+ 
 void hl_hw_queue_submit_bd(struct hl_device *hdev, struct hl_hw_queue *q,
 		u32 ctl, u32 len, u64 ptr)
 {
@@ -95,24 +66,7 @@ void hl_hw_queue_submit_bd(struct hl_device *hdev, struct hl_hw_queue *q,
 	hdev->asic_funcs->ring_doorbell(hdev, q->hw_queue_id, q->pi);
 }
 
-/*
- * ext_queue_sanity_checks - perform some sanity checks on external queue
- *
- * @hdev              : pointer to hl_device structure
- * @q                 :	pointer to hl_hw_queue structure
- * @num_of_entries    : how many entries to check for space
- * @reserve_cq_entry  :	whether to reserve an entry in the cq
- *
- * H/W queues spinlock should be taken before calling this function
- *
- * Perform the following:
- * - Make sure we have enough space in the h/w queue
- * - Make sure we have enough space in the completion queue
- * - Reserve space in the completion queue (needs to be reversed if there
- *   is a failure down the road before the actual submission of work). Only
- *   do this action if reserve_cq_entry is true
- *
- */
+ 
 static int ext_queue_sanity_checks(struct hl_device *hdev,
 				struct hl_hw_queue *q, int num_of_entries,
 				bool reserve_cq_entry)
@@ -121,7 +75,7 @@ static int ext_queue_sanity_checks(struct hl_device *hdev,
 			&hdev->completion_queue[q->cq_id].free_slots_cnt;
 	int free_slots_cnt;
 
-	/* Check we have enough space in the queue */
+	 
 	free_slots_cnt = queue_free_slots(q, HL_QUEUE_LENGTH);
 
 	if (free_slots_cnt < num_of_entries) {
@@ -131,13 +85,7 @@ static int ext_queue_sanity_checks(struct hl_device *hdev,
 	}
 
 	if (reserve_cq_entry) {
-		/*
-		 * Check we have enough space in the completion queue
-		 * Add -1 to counter (decrement) unless counter was already 0
-		 * In that case, CQ is full so we can't submit a new CB because
-		 * we won't get ack on its completion
-		 * atomic_add_unless will return 0 if counter was already 0
-		 */
+		 
 		if (atomic_add_negative(num_of_entries * -1, free_slots)) {
 			dev_dbg(hdev->dev, "No space for %d on CQ %d\n",
 				num_of_entries, q->hw_queue_id);
@@ -149,19 +97,7 @@ static int ext_queue_sanity_checks(struct hl_device *hdev,
 	return 0;
 }
 
-/*
- * int_queue_sanity_checks - perform some sanity checks on internal queue
- *
- * @hdev              : pointer to hl_device structure
- * @q                 :	pointer to hl_hw_queue structure
- * @num_of_entries    : how many entries to check for space
- *
- * H/W queues spinlock should be taken before calling this function
- *
- * Perform the following:
- * - Make sure we have enough space in the h/w queue
- *
- */
+ 
 static int int_queue_sanity_checks(struct hl_device *hdev,
 					struct hl_hw_queue *q,
 					int num_of_entries)
@@ -175,7 +111,7 @@ static int int_queue_sanity_checks(struct hl_device *hdev,
 		return -ENOMEM;
 	}
 
-	/* Check we have enough space in the queue */
+	 
 	free_slots_cnt = queue_free_slots(q, q->int_queue_len);
 
 	if (free_slots_cnt < num_of_entries) {
@@ -187,22 +123,13 @@ static int int_queue_sanity_checks(struct hl_device *hdev,
 	return 0;
 }
 
-/*
- * hw_queue_sanity_checks() - Make sure we have enough space in the h/w queue
- * @hdev: Pointer to hl_device structure.
- * @q: Pointer to hl_hw_queue structure.
- * @num_of_entries: How many entries to check for space.
- *
- * Notice: We do not reserve queue entries so this function mustn't be called
- *         more than once per CS for the same queue
- *
- */
+ 
 static int hw_queue_sanity_checks(struct hl_device *hdev, struct hl_hw_queue *q,
 					int num_of_entries)
 {
 	int free_slots_cnt;
 
-	/* Check we have enough space in the queue */
+	 
 	free_slots_cnt = queue_free_slots(q, HL_QUEUE_LENGTH);
 
 	if (free_slots_cnt < num_of_entries) {
@@ -214,17 +141,7 @@ static int hw_queue_sanity_checks(struct hl_device *hdev, struct hl_hw_queue *q,
 	return 0;
 }
 
-/*
- * hl_hw_queue_send_cb_no_cmpl - send a single CB (not a JOB) without completion
- *
- * @hdev: pointer to hl_device structure
- * @hw_queue_id: Queue's type
- * @cb_size: size of CB
- * @cb_ptr: pointer to CB location
- *
- * This function sends a single CB, that must NOT generate a completion entry.
- * Sending CPU messages can be done instead via 'hl_hw_queue_submit_bd()'
- */
+ 
 int hl_hw_queue_send_cb_no_cmpl(struct hl_device *hdev, u32 hw_queue_id,
 				u32 cb_size, u64 cb_ptr)
 {
@@ -238,11 +155,7 @@ int hl_hw_queue_send_cb_no_cmpl(struct hl_device *hdev, u32 hw_queue_id,
 		goto out;
 	}
 
-	/*
-	 * hl_hw_queue_send_cb_no_cmpl() is called for queues of a H/W queue
-	 * type only on init phase, when the queues are empty and being tested,
-	 * so there is no need for sanity checks.
-	 */
+	 
 	if (q->queue_type != QUEUE_TYPE_HW) {
 		rc = ext_queue_sanity_checks(hdev, q, 1, false);
 		if (rc)
@@ -257,14 +170,7 @@ out:
 	return rc;
 }
 
-/*
- * ext_queue_schedule_job - submit a JOB to an external queue
- *
- * @job: pointer to the job that needs to be submitted to the queue
- *
- * This function must be called when the scheduler mutex is taken
- *
- */
+ 
 static void ext_queue_schedule_job(struct hl_cs_job *job)
 {
 	struct hl_device *hdev = job->cs->ctx->hdev;
@@ -277,17 +183,14 @@ static void ext_queue_schedule_job(struct hl_cs_job *job)
 	u32 len;
 	u64 ptr;
 
-	/*
-	 * Update the JOB ID inside the BD CTL so the device would know what
-	 * to write in the completion queue
-	 */
+	 
 	ctl = ((q->pi << BD_CTL_SHADOW_INDEX_SHIFT) & BD_CTL_SHADOW_INDEX_MASK);
 
 	cb = job->patched_cb;
 	len = job->job_cb_size;
 	ptr = cb->bus_address;
 
-	/* Skip completion flow in case this is a non completion CS */
+	 
 	if (!cs_needs_completion(job->cs))
 		goto submit_bd;
 
@@ -297,13 +200,7 @@ static void ext_queue_schedule_job(struct hl_cs_job *job)
 			FIELD_PREP(CQ_ENTRY_SHADOW_INDEX_VALID_MASK, 1) |
 			FIELD_PREP(CQ_ENTRY_READY_MASK, 1));
 
-	/*
-	 * No need to protect pi_offset because scheduling to the
-	 * H/W queues is done under the scheduler mutex
-	 *
-	 * No need to check if CQ is full because it was already
-	 * checked in ext_queue_sanity_checks
-	 */
+	 
 	cq = &hdev->completion_queue[q->cq_id];
 	cq_addr = cq->bus_address + cq->pi * sizeof(struct hl_cq_entry);
 
@@ -322,14 +219,7 @@ submit_bd:
 	hl_hw_queue_submit_bd(hdev, q, ctl, len, ptr);
 }
 
-/*
- * int_queue_schedule_job - submit a JOB to an internal queue
- *
- * @job: pointer to the job that needs to be submitted to the queue
- *
- * This function must be called when the scheduler mutex is taken
- *
- */
+ 
 static void int_queue_schedule_job(struct hl_cs_job *job)
 {
 	struct hl_device *hdev = job->cs->ctx->hdev;
@@ -341,9 +231,7 @@ static void int_queue_schedule_job(struct hl_cs_job *job)
 	bd.len = cpu_to_le32(job->job_cb_size);
 
 	if (job->is_kernel_allocated_cb)
-		/* bus_address is actually a mmu mapped address
-		 * allocated from an internal pool
-		 */
+		 
 		bd.ptr = cpu_to_le64(job->user_cb->bus_address);
 	else
 		bd.ptr = cpu_to_le64((u64) (uintptr_t) job->user_cb);
@@ -358,14 +246,7 @@ static void int_queue_schedule_job(struct hl_cs_job *job)
 	hdev->asic_funcs->ring_doorbell(hdev, q->hw_queue_id, q->pi);
 }
 
-/*
- * hw_queue_schedule_job - submit a JOB to a H/W queue
- *
- * @job: pointer to the job that needs to be submitted to the queue
- *
- * This function must be called when the scheduler mutex is taken
- *
- */
+ 
 static void hw_queue_schedule_job(struct hl_cs_job *job)
 {
 	struct hl_device *hdev = job->cs->ctx->hdev;
@@ -373,24 +254,14 @@ static void hw_queue_schedule_job(struct hl_cs_job *job)
 	u64 ptr;
 	u32 offset, ctl, len;
 
-	/*
-	 * Upon PQE completion, COMP_DATA is used as the write data to the
-	 * completion queue (QMAN HBW message), and COMP_OFFSET is used as the
-	 * write address offset in the SM block (QMAN LBW message).
-	 * The write address offset is calculated as "COMP_OFFSET << 2".
-	 */
+	 
 	offset = job->cs->sequence & (hdev->asic_prop.max_pending_cs - 1);
 	ctl = ((offset << BD_CTL_COMP_OFFSET_SHIFT) & BD_CTL_COMP_OFFSET_MASK) |
 		((q->pi << BD_CTL_COMP_DATA_SHIFT) & BD_CTL_COMP_DATA_MASK);
 
 	len = job->job_cb_size;
 
-	/*
-	 * A patched CB is created only if a user CB was allocated by driver and
-	 * MMU is disabled. If MMU is enabled, the user CB should be used
-	 * instead. If the user CB wasn't allocated by driver, assume that it
-	 * holds an address.
-	 */
+	 
 	if (job->patched_cb)
 		ptr = job->patched_cb->bus_address;
 	else if (job->is_kernel_allocated_cb)
@@ -421,9 +292,7 @@ static int init_signal_cs(struct hl_device *hdev,
 		cs_cmpl->hw_sob->sob_id, cs_cmpl->sob_val, q_idx,
 		cs_cmpl->cs_seq);
 
-	/* we set an EB since we must make sure all oeprations are done
-	 * when sending the signal
-	 */
+	 
 	hdev->asic_funcs->gen_signal_cb(hdev, job->patched_cb,
 				cs_cmpl->hw_sob->sob_id, 0, true);
 
@@ -445,15 +314,7 @@ void hl_hw_queue_encaps_sig_set_sob_info(struct hl_device *hdev,
 
 	cs_cmpl->hw_sob = handle->hw_sob;
 
-	/* Note that encaps_sig_wait_offset was validated earlier in the flow
-	 * for offset value which exceeds the max reserved signal count.
-	 * always decrement 1 of the offset since when the user
-	 * set offset 1 for example he mean to wait only for the first
-	 * signal only, which will be pre_sob_val, and if he set offset 2
-	 * then the value required is (pre_sob_val + 1) and so on...
-	 * if user set wait offset to 0, then treat it as legacy wait cs,
-	 * wait for the next signal.
-	 */
+	 
 	if (job->encaps_sig_wait_offset)
 		offset = job->encaps_sig_wait_offset - 1;
 
@@ -476,10 +337,7 @@ static int init_wait_cs(struct hl_device *hdev, struct hl_cs *cs,
 					base_fence);
 
 	if (cs->encaps_signals) {
-		/* use the encaps signal handle stored earlier in the flow
-		 * and set the SOB information from the encaps
-		 * signals handle
-		 */
+		 
 		hl_hw_queue_encaps_sig_set_sob_info(hdev, cs, job, cs_cmpl);
 
 		dev_dbg(hdev->dev, "Wait for encaps signals handle, qidx(%u), CS sequence(%llu), sob val: 0x%x, offset: %u\n",
@@ -488,23 +346,12 @@ static int init_wait_cs(struct hl_device *hdev, struct hl_cs *cs,
 				cs_cmpl->sob_val,
 				job->encaps_sig_wait_offset);
 	} else {
-		/* Copy the SOB id and value of the signal CS */
+		 
 		cs_cmpl->hw_sob = signal_cs_cmpl->hw_sob;
 		cs_cmpl->sob_val = signal_cs_cmpl->sob_val;
 	}
 
-	/* check again if the signal cs already completed.
-	 * if yes then don't send any wait cs since the hw_sob
-	 * could be in reset already. if signal is not completed
-	 * then get refcount to hw_sob to prevent resetting the sob
-	 * while wait cs is not submitted.
-	 * note that this check is protected by two locks,
-	 * hw queue lock and completion object lock,
-	 * and the same completion object lock also protects
-	 * the hw_sob reset handler function.
-	 * The hw_queue lock prevent out of sync of hw_sob
-	 * refcount value, changed by signal/wait flows.
-	 */
+	 
 	spin_lock(&signal_cs_cmpl->lock);
 
 	if (completion_done(&cs->signal_fence->completion)) {
@@ -538,12 +385,7 @@ static int init_wait_cs(struct hl_device *hdev, struct hl_cs *cs,
 	return 0;
 }
 
-/*
- * init_signal_wait_cs - initialize a signal/wait CS
- * @cs: pointer to the signal/wait CS
- *
- * H/W queues spinlock should be taken before calling this function
- */
+ 
 static int init_signal_wait_cs(struct hl_cs *cs)
 {
 	struct hl_ctx *ctx = cs->ctx;
@@ -553,7 +395,7 @@ static int init_signal_wait_cs(struct hl_cs *cs)
 			container_of(cs->fence, struct hl_cs_compl, base_fence);
 	int rc = 0;
 
-	/* There is only one job in a signal/wait CS */
+	 
 	job = list_first_entry(&cs->job_list, struct hl_cs_job,
 				cs_node);
 
@@ -580,22 +422,13 @@ static int encaps_sig_first_staged_cs_handler
 	spin_lock(&mgr->lock);
 	encaps_sig_hdl = idr_find(&mgr->handles, cs->encaps_sig_hdl_id);
 	if (encaps_sig_hdl) {
-		/*
-		 * Set handler CS sequence,
-		 * the CS which contains the encapsulated signals.
-		 */
+		 
 		encaps_sig_hdl->cs_seq = cs->sequence;
-		/* store the handle and set encaps signal indication,
-		 * to be used later in cs_do_release to put the last
-		 * reference to encaps signals handlers.
-		 */
+		 
 		cs_cmpl->encaps_signals = true;
 		cs_cmpl->encaps_sig_hdl = encaps_sig_hdl;
 
-		/* set hw_sob pointer in completion object
-		 * since it's used in cs_do_release flow to put
-		 * refcount to sob
-		 */
+		 
 		cs_cmpl->hw_sob = encaps_sig_hdl->hw_sob;
 		cs_cmpl->sob_val = encaps_sig_hdl->pre_sob_val +
 						encaps_sig_hdl->count;
@@ -618,10 +451,7 @@ static int encaps_sig_first_staged_cs_handler
 	return rc;
 }
 
-/*
- * hl_hw_queue_schedule_cs - schedule a command submission
- * @cs: pointer to the CS
- */
+ 
 int hl_hw_queue_schedule_cs(struct hl_cs *cs)
 {
 	enum hl_device_status status;
@@ -715,7 +545,7 @@ int hl_hw_queue_schedule_cs(struct hl_cs *cs)
 
 	spin_lock(&hdev->cs_mirror_lock);
 
-	/* Verify staged CS exists and add to the staged list */
+	 
 	if (cs->staged_cs && !cs->staged_first) {
 		struct hl_cs *staged_cs;
 
@@ -738,7 +568,7 @@ int hl_hw_queue_schedule_cs(struct hl_cs *cs)
 
 		list_add_tail(&cs->staged_cs_node, &staged_cs->staged_cs_node);
 
-		/* update stream map of the first CS */
+		 
 		if (hdev->supports_wait_for_multi_cs)
 			staged_cs->fence->stream_master_qid_map |=
 					cs->fence->stream_master_qid_map;
@@ -746,7 +576,7 @@ int hl_hw_queue_schedule_cs(struct hl_cs *cs)
 
 	list_add_tail(&cs->mirror_node, &hdev->cs_mirror_list);
 
-	/* Queue TDR if the CS is the first entry and if timeout is wanted */
+	 
 	first_entry = list_first_entry(&hdev->cs_mirror_list,
 					struct hl_cs, mirror_node) == cs;
 	if ((hdev->timeout_jiffies != MAX_SCHEDULE_TIMEOUT) &&
@@ -797,12 +627,7 @@ out:
 	return rc;
 }
 
-/*
- * hl_hw_queue_inc_ci_kernel - increment ci for kernel's queue
- *
- * @hdev: pointer to hl_device structure
- * @hw_queue_id: which queue to increment its ci
- */
+ 
 void hl_hw_queue_inc_ci_kernel(struct hl_device *hdev, u32 hw_queue_id)
 {
 	struct hl_hw_queue *q = &hdev->kernel_queues[hw_queue_id];
@@ -835,7 +660,7 @@ static int ext_and_cpu_queue_init(struct hl_device *hdev, struct hl_hw_queue *q,
 		goto free_queue;
 	}
 
-	/* Make sure read/write pointers are initialized to start of queue */
+	 
 	atomic_set(&q->ci, 0);
 	q->pi = 0;
 
@@ -892,7 +717,7 @@ static int hw_queue_init(struct hl_device *hdev, struct hl_hw_queue *q)
 
 	q->kernel_address = p;
 
-	/* Make sure read/write pointers are initialized to start of queue */
+	 
 	atomic_set(&q->ci, 0);
 	q->pi = 0;
 
@@ -908,20 +733,16 @@ static void sync_stream_queue_init(struct hl_device *hdev, u32 q_idx)
 
 	sync_stream_prop = &hdev->kernel_queues[q_idx].sync_stream_prop;
 
-	/* We use 'collective_mon_idx' as a running index in order to reserve
-	 * monitors for collective master/slave queues.
-	 * collective master queue gets 2 reserved monitors
-	 * collective slave queue gets 1 reserved monitor
-	 */
+	 
 	if (hdev->kernel_queues[q_idx].collective_mode ==
 			HL_COLLECTIVE_MASTER) {
 		reserved_mon_idx = hdev->collective_mon_idx;
 
-		/* reserve the first monitor for collective master queue */
+		 
 		sync_stream_prop->collective_mstr_mon_id[0] =
 			prop->collective_first_mon + reserved_mon_idx;
 
-		/* reserve the second monitor for collective master queue */
+		 
 		sync_stream_prop->collective_mstr_mon_id[1] =
 			prop->collective_first_mon + reserved_mon_idx + 1;
 
@@ -930,7 +751,7 @@ static void sync_stream_queue_init(struct hl_device *hdev, u32 q_idx)
 			HL_COLLECTIVE_SLAVE) {
 		reserved_mon_idx = hdev->collective_mon_idx++;
 
-		/* reserve a monitor for collective slave queue */
+		 
 		sync_stream_prop->collective_slave_mon_id =
 			prop->collective_first_mon + reserved_mon_idx;
 	}
@@ -963,25 +784,13 @@ static void sync_stream_queue_reset(struct hl_device *hdev, u32 q_idx)
 	struct hl_sync_stream_properties *prop =
 			&hdev->kernel_queues[q_idx].sync_stream_prop;
 
-	/*
-	 * In case we got here due to a stuck CS, the refcnt might be bigger
-	 * than 1 and therefore we reset it.
-	 */
+	 
 	kref_init(&prop->hw_sob[prop->curr_sob_offset].kref);
 	prop->curr_sob_offset = 0;
 	prop->next_sob_val = 1;
 }
 
-/*
- * queue_init - main initialization function for H/W queue object
- *
- * @hdev: pointer to hl_device device structure
- * @q: pointer to hl_hw_queue queue structure
- * @hw_queue_id: The id of the H/W queue
- *
- * Allocate dma-able memory for the queue and initialize fields
- * Returns 0 on success
- */
+ 
 static int queue_init(struct hl_device *hdev, struct hl_hw_queue *q,
 			u32 hw_queue_id)
 {
@@ -1022,36 +831,13 @@ static int queue_init(struct hl_device *hdev, struct hl_hw_queue *q,
 	return 0;
 }
 
-/*
- * hw_queue_fini - destroy queue
- *
- * @hdev: pointer to hl_device device structure
- * @q: pointer to hl_hw_queue queue structure
- *
- * Free the queue memory
- */
+ 
 static void queue_fini(struct hl_device *hdev, struct hl_hw_queue *q)
 {
 	if (!q->valid)
 		return;
 
-	/*
-	 * If we arrived here, there are no jobs waiting on this queue
-	 * so we can safely remove it.
-	 * This is because this function can only called when:
-	 * 1. Either a context is deleted, which only can occur if all its
-	 *    jobs were finished
-	 * 2. A context wasn't able to be created due to failure or timeout,
-	 *    which means there are no jobs on the queue yet
-	 *
-	 * The only exception are the queues of the kernel context, but
-	 * if they are being destroyed, it means that the entire module is
-	 * being removed. If the module is removed, it means there is no open
-	 * user context. It also means that if a job was submitted by
-	 * the kernel driver (e.g. context creation), the job itself was
-	 * released by the kernel driver when a timeout occurred on its
-	 * Completion. Thus, we don't need to release it again.
-	 */
+	 
 
 	if (q->queue_type == QUEUE_TYPE_INT)
 		return;
@@ -1079,7 +865,7 @@ int hl_hw_queues_create(struct hl_device *hdev)
 		return -ENOMEM;
 	}
 
-	/* Initialize the H/W queues */
+	 
 	for (i = 0, q_ready_cnt = 0, q = hdev->kernel_queues;
 			i < asic->max_queues ; i++, q_ready_cnt++, q++) {
 

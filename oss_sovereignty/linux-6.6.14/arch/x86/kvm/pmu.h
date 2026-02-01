@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_PMU_H
 #define __KVM_X86_PMU_H
 
@@ -11,7 +11,7 @@
 #define MSR_IA32_MISC_ENABLE_PMU_RO_MASK (MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL |	\
 					  MSR_IA32_MISC_ENABLE_BTS_UNAVAIL)
 
-/* retrieve the 4 bits for EN and PMI out of IA32_FIXED_CTR_CTRL */
+ 
 #define fixed_ctrl_field(ctrl_reg, idx) (((ctrl_reg) >> ((idx)*4)) & 0xf)
 
 #define VMWARE_BACKDOOR_PMC_HOST_TSC		0x10000
@@ -43,15 +43,7 @@ void kvm_pmu_ops_update(const struct kvm_pmu_ops *pmu_ops);
 
 static inline bool kvm_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
 {
-	/*
-	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
-	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
-	 * greater than zero.  However, KVM only exposes and emulates the MSR
-	 * to/for the guest if the guest PMU supports at least "Architectural
-	 * Performance Monitoring Version 2".
-	 *
-	 * AMD's version of PERF_GLOBAL_CTRL conveniently shows up with v2.
-	 */
+	 
 	return pmu->version > 1;
 }
 
@@ -70,7 +62,7 @@ static inline u64 pmc_read_counter(struct kvm_pmc *pmc)
 	if (pmc->perf_event && !pmc->is_paused)
 		counter += perf_event_read_value(pmc->perf_event,
 						 &enabled, &running);
-	/* FIXME: Scaling needed? */
+	 
 	return counter & pmc_bitmask(pmc);
 }
 
@@ -96,10 +88,7 @@ static inline bool kvm_valid_perf_global_ctrl(struct kvm_pmu *pmu,
 	return !(pmu->global_ctrl_mask & data);
 }
 
-/* returns general purpose PMC with the specified MSR. Note that it can be
- * used for both PERFCTRn and EVNTSELn; that is why it accepts base as a
- * parameter to tell them apart.
- */
+ 
 static inline struct kvm_pmc *get_gp_pmc(struct kvm_pmu *pmu, u32 msr,
 					 u32 base)
 {
@@ -113,7 +102,7 @@ static inline struct kvm_pmc *get_gp_pmc(struct kvm_pmu *pmu, u32 msr,
 	return NULL;
 }
 
-/* returns fixed PMC with the specified MSR */
+ 
 static inline struct kvm_pmc *get_fixed_pmc(struct kvm_pmu *pmu, u32 msr)
 {
 	int base = MSR_CORE_PERF_FIXED_CTR0;
@@ -165,24 +154,14 @@ static inline void kvm_init_pmu_capability(const struct kvm_pmu_ops *pmu_ops)
 	bool is_intel = boot_cpu_data.x86_vendor == X86_VENDOR_INTEL;
 	int min_nr_gp_ctrs = pmu_ops->MIN_NR_GP_COUNTERS;
 
-	/*
-	 * Hybrid PMUs don't play nice with virtualization without careful
-	 * configuration by userspace, and KVM's APIs for reporting supported
-	 * vPMU features do not account for hybrid PMUs.  Disable vPMU support
-	 * for hybrid PMUs until KVM gains a way to let userspace opt-in.
-	 */
+	 
 	if (cpu_feature_enabled(X86_FEATURE_HYBRID_CPU))
 		enable_pmu = false;
 
 	if (enable_pmu) {
 		perf_get_x86_pmu_capability(&kvm_pmu_cap);
 
-		/*
-		 * WARN if perf did NOT disable hardware PMU if the number of
-		 * architecturally required GP counters aren't present, i.e. if
-		 * there are a non-zero number of counters, but fewer than what
-		 * is architecturally required.
-		 */
+		 
 		if (!kvm_pmu_cap.num_counters_gp ||
 		    WARN_ON_ONCE(kvm_pmu_cap.num_counters_gp < min_nr_gp_ctrs))
 			enable_pmu = false;
@@ -220,11 +199,7 @@ static inline void reprogram_counters(struct kvm_pmu *pmu, u64 diff)
 	kvm_make_request(KVM_REQ_PMU, pmu_to_vcpu(pmu));
 }
 
-/*
- * Check if a PMC is enabled by comparing it against global_ctrl bits.
- *
- * If the vPMU doesn't have global_ctrl MSR, all vPMCs are enabled.
- */
+ 
 static inline bool pmc_is_globally_enabled(struct kvm_pmc *pmc)
 {
 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
@@ -254,4 +229,4 @@ bool is_vmware_backdoor_pmc(u32 pmc_idx);
 
 extern struct kvm_pmu_ops intel_pmu_ops;
 extern struct kvm_pmu_ops amd_pmu_ops;
-#endif /* __KVM_X86_PMU_H */
+#endif  

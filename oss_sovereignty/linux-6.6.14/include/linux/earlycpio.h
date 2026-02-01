@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_EARLYCPIO_H
 #define _LINUX_EARLYCPIO_H
 
@@ -15,4 +15,4 @@ struct cpio_data {
 struct cpio_data find_cpio_data(const char *path, void *data, size_t len,
 				long *offset);
 
-#endif /* _LINUX_EARLYCPIO_H */
+#endif  

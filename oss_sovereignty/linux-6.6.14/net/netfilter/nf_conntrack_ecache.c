@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Event cache for netfilter. */
 
-/*
- * (C) 2005 Harald Welte <laforge@gnumonks.org>
- * (C) 2005 Patrick McHardy <kaber@trash.net>
- * (C) 2005-2006 Netfilter Core Team <coreteam@netfilter.org>
- * (C) 2005 USAGI/WIDE Project <http://www.linux-ipv6.org>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -66,9 +61,7 @@ next:
 	hlist_nulls_for_each_entry_safe(h, n, &cnet->ecache.dying_list, hnnode) {
 		struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(h);
 
-		/* The worker owns all entries, ct remains valid until nf_ct_put
-		 * in the loop below.
-		 */
+		 
 		if (nf_conntrack_event(IPCT_DESTROY, ct)) {
 			ret = STATE_CONGESTED;
 			break;
@@ -183,14 +176,12 @@ int nf_conntrack_eventmask_report(unsigned int events, struct nf_conn *ct,
 	item.portid = e->portid ? e->portid : portid;
 	item.report = report;
 
-	/* This is a resent of a destroy event? If so, skip missed */
+	 
 	missed = e->portid ? 0 : e->missed;
 
 	ret = __nf_conntrack_eventmask_report(e, events, missed, &item);
 	if (unlikely(ret < 0 && (events & (1 << IPCT_DESTROY)))) {
-		/* This is a destroy event that has been triggered by a process,
-		 * we store the PORTID to include it in the retransmission.
-		 */
+		 
 		if (e->portid == 0 && portid != 0)
 			e->portid = portid;
 	}
@@ -199,8 +190,7 @@ int nf_conntrack_eventmask_report(unsigned int events, struct nf_conn *ct,
 }
 EXPORT_SYMBOL_GPL(nf_conntrack_eventmask_report);
 
-/* deliver cached events and clear cache entry - must be called with locally
- * disabled softirqs */
+ 
 void nf_ct_deliver_cached_events(struct nf_conn *ct)
 {
 	struct nf_conntrack_ecache *e;
@@ -220,10 +210,7 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
 	item.portid = 0;
 	item.report = 0;
 
-	/* We make a copy of the missed event cache without taking
-	 * the lock, thus we may send missed events twice. However,
-	 * this does not harm and it happens very rarely.
-	 */
+	 
 	__nf_conntrack_eventmask_report(e, events, e->missed, &item);
 }
 EXPORT_SYMBOL_GPL(nf_ct_deliver_cached_events);
@@ -277,7 +264,7 @@ void nf_conntrack_unregister_notifier(struct net *net)
 	mutex_lock(&nf_ct_ecache_mutex);
 	RCU_INIT_POINTER(net->ct.nf_conntrack_event_cb, NULL);
 	mutex_unlock(&nf_ct_ecache_mutex);
-	/* synchronize_rcu() is called after netns pre_exit */
+	 
 }
 EXPORT_SYMBOL_GPL(nf_conntrack_unregister_notifier);
 
@@ -304,16 +291,16 @@ bool nf_ct_ecache_ext_add(struct nf_conn *ct, u16 ctmask, u16 expmask, gfp_t gfp
 
 	switch (net->ct.sysctl_events) {
 	case 0:
-		 /* assignment via template / ruleset? ignore sysctl. */
+		  
 		if (ctmask || expmask)
 			break;
 		return true;
-	case 2: /* autodetect: no event listener, don't allocate extension. */
+	case 2:  
 		if (!READ_ONCE(nf_ctnetlink_has_listener))
 			return true;
 		fallthrough;
 	case 1:
-		/* always allocate an extension. */
+		 
 		if (!ctmask && !expmask) {
 			ctmask = ~0;
 			expmask = ~0;
@@ -347,7 +334,7 @@ void nf_conntrack_ecache_pernet_init(struct net *net)
 	INIT_HLIST_NULLS_HEAD(&cnet->ecache.dying_list, DYING_NULLS_VAL);
 	spin_lock_init(&cnet->ecache.dying_lock);
 
-	BUILD_BUG_ON(__IPCT_MAX >= 16);	/* e->ctmask is u16 */
+	BUILD_BUG_ON(__IPCT_MAX >= 16);	 
 }
 
 void nf_conntrack_ecache_pernet_fini(struct net *net)

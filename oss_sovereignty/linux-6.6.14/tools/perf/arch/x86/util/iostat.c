@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * perf iostat
- *
- * Copyright (C) 2020, Intel Corporation
- *
- * Authors: Alexander Antonov <alexander.antonov@linux.intel.com>
- */
+
+ 
 
 #include <api/fs/fs.h>
 #include <linux/kernel.h>
@@ -36,11 +30,7 @@
 #define SYSFS_UNCORE_PMU_PATH	"%s/"UNCORE_IIO_PMU_PATH
 #define PLATFORM_MAPPING_PATH	UNCORE_IIO_PMU_PATH"/die%d"
 
-/*
- * Each metric requiries one IIO event which increments at every 4B transfer
- * in corresponding direction. The formulas to compute metrics are generic:
- *     #EventCount * 4B / (1024 * 1024)
- */
+ 
 static const char * const iostat_metrics[] = {
 	"Inbound Read(MB)",
 	"Inbound Write(MB)",
@@ -227,12 +217,7 @@ static int iio_root_port_parse_str(u32 *domain, u8 *bus, char *str)
 {
 	int ret;
 	regex_t regex;
-	/*
-	 * Expected format domain:bus:
-	 * Valid domain range [0:ffff]
-	 * Valid bus range [0:ff]
-	 * Example: 0000:af, 0:3d, 01:7
-	 */
+	 
 	regcomp(&regex, "^([a-f0-9A-F]{1,}):([a-f0-9A-F]{1,2})", REG_EXTENDED);
 	ret = regexec(&regex, str, 0, NULL, 0);
 	if (ret || sscanf(str, "%08x:%02hhx", domain, bus) != 2)

@@ -1,12 +1,4 @@
-/*
- * Broadcom specific AMBA
- * GPIO driver
- *
- * Copyright 2011, Broadcom Corporation
- * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -57,9 +49,9 @@ static int bcma_gpio_request(struct gpio_chip *chip, unsigned gpio)
 	struct bcma_drv_cc *cc = gpiochip_get_data(chip);
 
 	bcma_chipco_gpio_control(cc, 1 << gpio, 0);
-	/* clear pulldown */
+	 
 	bcma_chipco_gpio_pulldown(cc, 1 << gpio, 0);
-	/* Set pullup */
+	 
 	bcma_chipco_gpio_pullup(cc, 1 << gpio, 1 << gpio);
 
 	return 0;
@@ -69,7 +61,7 @@ static void bcma_gpio_free(struct gpio_chip *chip, unsigned gpio)
 {
 	struct bcma_drv_cc *cc = gpiochip_get_data(chip);
 
-	/* clear pullup */
+	 
 	bcma_chipco_gpio_pullup(cc, 1 << gpio, 0);
 }
 
@@ -144,7 +136,7 @@ static int bcma_gpio_irq_init(struct bcma_drv_cc *cc)
 	bcma_cc_set32(cc, BCMA_CC_IRQMASK, BCMA_CC_IRQ_GPIO);
 
 	gpio_irq_chip_set_chip(girq, &bcma_gpio_irq_chip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -202,13 +194,7 @@ int bcma_gpio_init(struct bcma_drv_cc *cc)
 		chip->ngpio	= 16;
 	}
 
-	/*
-	 * Register SoC GPIO devices with absolute GPIO pin base.
-	 * On MIPS, we don't have Device Tree and we can't use relative (per chip)
-	 * GPIO numbers.
-	 * On some ARM devices, user space may want to access some system GPIO
-	 * pins directly, which is easier to do with a predictable GPIO base.
-	 */
+	 
 	if (IS_BUILTIN(CONFIG_BCM47XX) ||
 	    cc->core->bus->hosttype == BCMA_HOSTTYPE_SOC)
 		chip->base		= bus->num * BCMA_GPIO_MAX_PINS;

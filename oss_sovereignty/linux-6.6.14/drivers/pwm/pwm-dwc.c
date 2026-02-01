@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DesignWare PWM Controller driver
- *
- * Copyright (C) 2018-2020 Intel Corporation
- *
- * Author: Felipe Balbi (Intel)
- * Author: Jarkko Nikula <jarkko.nikula@linux.intel.com>
- * Author: Raymond Tan <raymond.tan@intel.com>
- *
- * Limitations:
- * - The hardware cannot generate a 0 % or 100 % duty cycle. Both high and low
- *   periods are one or more input clock periods long.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/export.h>
@@ -36,7 +24,7 @@
 #define DWC_TIMERS_TOTAL	8
 #define DWC_CLK_PERIOD_NS	10
 
-/* Timer Control Register */
+ 
 #define DWC_TIM_CTRL_EN		BIT(0)
 #define DWC_TIM_CTRL_MODE	BIT(1)
 #define DWC_TIM_CTRL_MODE_FREE	(0 << 1)
@@ -90,11 +78,7 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
 	u32 high;
 	u32 low;
 
-	/*
-	 * Calculate width of low and high period in terms of input clock
-	 * periods and check are the result within HW limits between 1 and
-	 * 2^32 periods.
-	 */
+	 
 	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, DWC_CLK_PERIOD_NS);
 	if (tmp < 1 || tmp > (1ULL << 32))
 		return -ERANGE;
@@ -106,36 +90,18 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
 		return -ERANGE;
 	high = tmp - 1;
 
-	/*
-	 * Specification says timer usage flow is to disable timer, then
-	 * program it followed by enable. It also says Load Count is loaded
-	 * into timer after it is enabled - either after a disable or
-	 * a reset. Based on measurements it happens also without disable
-	 * whenever Load Count is updated. But follow the specification.
-	 */
+	 
 	__dwc_pwm_set_enable(dwc, pwm->hwpwm, false);
 
-	/*
-	 * Write Load Count and Load Count 2 registers. Former defines the
-	 * width of low period and latter the width of high period in terms
-	 * multiple of input clock periods:
-	 * Width = ((Count + 1) * input clock period).
-	 */
+	 
 	dwc_pwm_writel(dwc, low, DWC_TIM_LD_CNT(pwm->hwpwm));
 	dwc_pwm_writel(dwc, high, DWC_TIM_LD_CNT2(pwm->hwpwm));
 
-	/*
-	 * Set user-defined mode, timer reloads from Load Count registers
-	 * when it counts down to 0.
-	 * Set PWM mode, it makes output to toggle and width of low and high
-	 * periods are set by Load Count registers.
-	 */
+	 
 	ctrl = DWC_TIM_CTRL_MODE_USER | DWC_TIM_CTRL_PWM;
 	dwc_pwm_writel(dwc, ctrl, DWC_TIM_CTRL(pwm->hwpwm));
 
-	/*
-	 * Enable timer. Output starts from low period.
-	 */
+	 
 	__dwc_pwm_set_enable(dwc, pwm->hwpwm, state->enabled);
 
 	return 0;
@@ -300,8 +266,8 @@ static int dwc_pwm_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
 
 static const struct pci_device_id dwc_pwm_id_table[] = {
-	{ PCI_VDEVICE(INTEL, 0x4bb7) }, /* Elkhart Lake */
-	{  }	/* Terminating Entry */
+	{ PCI_VDEVICE(INTEL, 0x4bb7) },  
+	{  }	 
 };
 MODULE_DEVICE_TABLE(pci, dwc_pwm_id_table);
 

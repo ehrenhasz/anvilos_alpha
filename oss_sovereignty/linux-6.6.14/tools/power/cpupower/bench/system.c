@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  cpufreq-bench CPUFreq microbenchmark
- *
- *  Copyright (C) 2008 Christian Kornacker <ckornacker@suse.de>
- */
+
+ 
 
 #include <stdio.h>
 #include <time.h>
@@ -18,11 +15,7 @@
 #include "config.h"
 #include "system.h"
 
-/**
- * returns time since epoch in µs
- *
- * @retval time
- **/
+ 
 
 long long int get_time()
 {
@@ -33,15 +26,7 @@ long long int get_time()
 	return (long long int)(now.tv_sec * 1000000LL + now.tv_usec);
 }
 
-/**
- * sets the cpufreq governor
- *
- * @param governor cpufreq governor name
- * @param cpu cpu for which the governor should be set
- *
- * @retval 0 on success
- * @retval -1 when failed
- **/
+ 
 
 int set_cpufreq_governor(char *governor, unsigned int cpu)
 {
@@ -63,14 +48,7 @@ int set_cpufreq_governor(char *governor, unsigned int cpu)
 	return 0;
 }
 
-/**
- * sets cpu affinity for the process
- *
- * @param cpu cpu# to which the affinity should be set
- *
- * @retval 0 on success
- * @retval -1 when setting the affinity failed
- **/
+ 
 
 int set_cpu_affinity(unsigned int cpu)
 {
@@ -90,14 +68,7 @@ int set_cpu_affinity(unsigned int cpu)
 	return 0;
 }
 
-/**
- * sets the process priority parameter
- *
- * @param priority priority value
- *
- * @retval 0 on success
- * @retval -1 when setting the priority failed
- **/
+ 
 
 int set_process_priority(int priority)
 {
@@ -116,12 +87,7 @@ int set_process_priority(int priority)
 	return 0;
 }
 
-/**
- * notifies the user that the benchmark may run some time
- *
- * @param config benchmark config values
- *
- **/
+ 
 
 void prepare_user(const struct config *config)
 {
@@ -142,12 +108,7 @@ void prepare_user(const struct config *config)
 		       (int)((sleep_time + load_time) / 60000000));
 }
 
-/**
- * sets up the cpu affinity and scheduler priority
- *
- * @param config benchmark config values
- *
- **/
+ 
 
 void prepare_system(const struct config *config)
 {

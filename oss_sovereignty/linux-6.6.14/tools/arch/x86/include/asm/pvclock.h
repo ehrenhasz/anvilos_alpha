@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PVCLOCK_H
 #define _ASM_X86_PVCLOCK_H
 
 #include <asm/barrier.h>
 #include <asm/pvclock-abi.h>
 
-/* some helper functions for xen and kvm pv clock sources */
+ 
 u64 pvclock_clocksource_read(struct pvclock_vcpu_time_info *src);
 u8 pvclock_read_flags(struct pvclock_vcpu_time_info *src);
 void pvclock_set_flags(u8 flags);
@@ -18,7 +18,7 @@ static __always_inline
 unsigned pvclock_read_begin(const struct pvclock_vcpu_time_info *src)
 {
 	unsigned version = src->version & ~1;
-	/* Make sure that the version is read before the data. */
+	 
 	rmb();
 	return version;
 }
@@ -27,15 +27,12 @@ static __always_inline
 bool pvclock_read_retry(const struct pvclock_vcpu_time_info *src,
 			unsigned version)
 {
-	/* Make sure that the version is re-read after the data. */
+	 
 	rmb();
 	return version != src->version;
 }
 
-/*
- * Scale a 64-bit delta by scaling and multiplying by a 32-bit fraction,
- * yielding a 64-bit result.
- */
+ 
 static inline u64 pvclock_scale_delta(u64 delta, u32 mul_frac, int shift)
 {
 	u64 product;
@@ -100,4 +97,4 @@ static inline struct pvclock_vsyscall_time_info *pvclock_get_pvti_cpu0_va(void)
 }
 #endif
 
-#endif /* _ASM_X86_PVCLOCK_H */
+#endif  

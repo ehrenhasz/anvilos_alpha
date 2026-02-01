@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Test the statx() system call.
- *
- * Note that the output of this program is intended to look like the output of
- * /bin/stat where possible.
- *
- * Copyright (C) 2015 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define _GNU_SOURCE
 #define _ATFILE_SOURCE
@@ -152,15 +145,15 @@ static void dump_statx(struct statx *stx)
 		int loop, byte;
 
 		static char attr_representation[64 + 1] =
-			/* STATX_ATTR_ flags: */
-			"????????"	/* 63-56 */
-			"????????"	/* 55-48 */
-			"????????"	/* 47-40 */
-			"????????"	/* 39-32 */
-			"????????"	/* 31-24	0x00000000-ff000000 */
-			"????????"	/* 23-16	0x00000000-00ff0000 */
-			"???me???"	/* 15- 8	0x00000000-0000ff00 */
-			"?dai?c??"	/*  7- 0	0x00000000-000000ff */
+			 
+			"????????"	 
+			"????????"	 
+			"????????"	 
+			"????????"	 
+			"????????"	 
+			"????????"	 
+			"???me???"	 
+			"?dai?c??"	 
 			;
 
 		printf("Attributes: %016llx (",
@@ -172,11 +165,11 @@ static void dump_statx(struct statx *stx)
 				int bit = byte + loop;
 
 				if (!(mbits & 0x80))
-					putchar('.');	/* Not supported */
+					putchar('.');	 
 				else if (bits & 0x80)
 					putchar(attr_representation[63 - bit]);
 				else
-					putchar('-');	/* Not set */
+					putchar('-');	 
 				bits <<= 1;
 				mbits <<= 1;
 			}

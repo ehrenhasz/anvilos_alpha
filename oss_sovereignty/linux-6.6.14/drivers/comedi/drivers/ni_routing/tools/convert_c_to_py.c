@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -22,17 +22,7 @@ typedef int8_t  s8;
 
 #define RVij(rv, src, dest)	((rv)->register_values[(dest)][(src)])
 
-/*
- * write out
- * {
- *   "family" : "<family-name>",
- *   "register_values": {
- *      <destination0>:[src0, src1, ...],
- *      <destination0>:[src0, src1, ...],
- *      ...
- *   }
- * }
- */
+ 
 void family_write(const struct family_route_values *rv, FILE *fp)
 {
 	fprintf(fp,
@@ -49,7 +39,7 @@ void family_write(const struct family_route_values *rv, FILE *fp)
 			;
 
 		if (src >= (NI_NAMES_BASE + NI_NUM_NAMES))
-			continue; /* no data here */
+			continue;  
 
 		fprintf(fp, "    %u : {\n", dest);
 		for (src = NI_NAMES_BASE; src < (NI_NAMES_BASE + NI_NUM_NAMES);
@@ -85,17 +75,7 @@ bool is_valid_ni_sig(unsigned int sig)
 	return (sig >= NI_NAMES_BASE) && (sig < (NI_NAMES_BASE + NI_NUM_NAMES));
 }
 
-/*
- * write out
- * {
- *   "family" : "<family-name>",
- *   "register_values": {
- *      <destination0>:[src0, src1, ...],
- *      <destination0>:[src0, src1, ...],
- *      ...
- *   }
- * }
- */
+ 
 void device_write(const struct ni_device_routes *dR, FILE *fp)
 {
 	fprintf(fp,
@@ -140,19 +120,19 @@ int main(void)
 {
 	FILE *fp = fopen("ni_values.py", "w");
 
-	/* write route register values */
+	 
 	fprintf(fp, "ni_route_values = {\n");
 	for (int i = 0; ni_all_route_values[i]; ++i)
 		family_write(ni_all_route_values[i], fp);
 	fprintf(fp, "}\n\n");
 
-	/* write valid device routes */
+	 
 	fprintf(fp, "ni_device_routes = {\n");
 	for (int i = 0; ni_device_routes_list[i]; ++i)
 		device_write(ni_device_routes_list[i], fp);
 	fprintf(fp, "}\n");
 
-	/* finish; close file */
+	 
 	fclose(fp);
 	return 0;
 }

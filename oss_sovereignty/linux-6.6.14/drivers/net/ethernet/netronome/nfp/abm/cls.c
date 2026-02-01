@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <net/pkt_cls.h>
@@ -100,10 +100,7 @@ nfp_abm_u32_check_knode(struct nfp_abm *abm, struct tc_cls_u32_knode *knode,
 	return true;
 }
 
-/* This filter list -> map conversion is O(n * m), we expect single digit or
- * low double digit number of prios and likewise for the filters.  Also u32
- * doesn't report stats, so it's really only setup time cost.
- */
+ 
 static unsigned int
 nfp_abm_find_band_for_prio(struct nfp_abm_link *alink, unsigned int prio)
 {
@@ -128,7 +125,7 @@ static int nfp_abm_update_band_map(struct nfp_abm_link *alink)
 	field_mask = (1 << bits_per_prio) - 1;
 	prios_per_word = sizeof(u32) * BITS_PER_BYTE / bits_per_prio;
 
-	/* FW mask applies from top bits */
+	 
 	base_shift = 8 - order_base_2(abm->num_prios);
 
 	for (i = 0; i < abm->num_prios; i++) {
@@ -145,7 +142,7 @@ static int nfp_abm_update_band_map(struct nfp_abm_link *alink)
 		*word |= band << offset;
 	}
 
-	/* Qdisc offload status may change if has_prio changed */
+	 
 	nfp_abm_qdisc_offload_update(alink);
 
 	return nfp_abm_ctrl_prio_map_update(alink, alink->prio_map);
@@ -181,11 +178,11 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
 
 	tos_off = proto == htons(ETH_P_IP) ? 16 : 20;
 
-	/* Extract the DSCP Class Selector bits */
+	 
 	val = be32_to_cpu(knode->sel->keys[0].val) >> tos_off & 0xff;
 	mask = be32_to_cpu(knode->sel->keys[0].mask) >> tos_off & 0xff;
 
-	/* Check if there is no conflicting mapping and find match by handle */
+	 
 	list_for_each_entry(iter, &alink->dscp_map, list) {
 		u32 cmask;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* exynos_drm_gem.c
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Author: Inki Dae <inki.dae@samsung.com>
- */
+
+ 
 
 
 #include <linux/dma-buf.h>
@@ -32,23 +28,16 @@ static int exynos_drm_alloc_buf(struct exynos_drm_gem *exynos_gem, bool kvmap)
 		return 0;
 	}
 
-	/*
-	 * if EXYNOS_BO_CONTIG, fully physically contiguous memory
-	 * region will be allocated else physically contiguous
-	 * as possible.
-	 */
+	 
 	if (!(exynos_gem->flags & EXYNOS_BO_NONCONTIG))
 		attr |= DMA_ATTR_FORCE_CONTIGUOUS;
 
-	/*
-	 * if EXYNOS_BO_WC or EXYNOS_BO_NONCACHABLE, writecombine mapping
-	 * else cachable mapping.
-	 */
+	 
 	if (exynos_gem->flags & EXYNOS_BO_WC ||
 			!(exynos_gem->flags & EXYNOS_BO_CACHABLE))
 		attr |= DMA_ATTR_WRITE_COMBINE;
 
-	/* FBDev emulation requires kernel mapping */
+	 
 	if (!kvmap)
 		attr |= DMA_ATTR_NO_KERNEL_MAPPING;
 
@@ -92,17 +81,14 @@ static int exynos_drm_gem_handle_create(struct drm_gem_object *obj,
 {
 	int ret;
 
-	/*
-	 * allocate a id of idr table where the obj is registered
-	 * and handle has the id what user can see.
-	 */
+	 
 	ret = drm_gem_handle_create(file_priv, obj, handle);
 	if (ret)
 		return ret;
 
 	DRM_DEV_DEBUG_KMS(to_dma_dev(obj->dev), "gem handle = 0x%x\n", *handle);
 
-	/* drop reference from allocate - handle holds it now. */
+	 
 	drm_gem_object_put(obj);
 
 	return 0;
@@ -115,18 +101,13 @@ void exynos_drm_gem_destroy(struct exynos_drm_gem *exynos_gem)
 	DRM_DEV_DEBUG_KMS(to_dma_dev(obj->dev), "handle count = %d\n",
 			  obj->handle_count);
 
-	/*
-	 * do not release memory region from exporter.
-	 *
-	 * the region will be released by exporter
-	 * once dmabuf's refcount becomes 0.
-	 */
+	 
 	if (obj->import_attach)
 		drm_prime_gem_destroy(obj, exynos_gem->sgt);
 	else
 		exynos_drm_free_buf(exynos_gem);
 
-	/* release file pointer to gem object. */
+	 
 	drm_gem_object_release(obj);
 
 	kfree(exynos_gem);
@@ -205,15 +186,12 @@ struct exynos_drm_gem *exynos_drm_gem_create(struct drm_device *dev,
 		return exynos_gem;
 
 	if (!is_drm_iommu_supported(dev) && (flags & EXYNOS_BO_NONCONTIG)) {
-		/*
-		 * when no IOMMU is available, all allocated buffers are
-		 * contiguous anyway, so drop EXYNOS_BO_NONCONTIG flag
-		 */
+		 
 		flags &= ~EXYNOS_BO_NONCONTIG;
 		DRM_WARN("Non-contiguous allocation is not supported without IOMMU, falling back to contiguous buffer\n");
 	}
 
-	/* set memory type and cache attribute from user side. */
+	 
 	exynos_gem->flags = flags;
 
 	ret = exynos_drm_alloc_buf(exynos_gem, kvmap);
@@ -279,7 +257,7 @@ static int exynos_drm_gem_mmap_buffer(struct exynos_drm_gem *exynos_gem,
 
 	vm_size = vma->vm_end - vma->vm_start;
 
-	/* check if user-requested size is valid. */
+	 
 	if (vm_size > exynos_gem->size)
 		return -EINVAL;
 
@@ -330,11 +308,7 @@ int exynos_drm_gem_dumb_create(struct drm_file *file_priv,
 	unsigned int flags;
 	int ret;
 
-	/*
-	 * allocate memory to be used for framebuffer.
-	 * - this callback would be called by user application
-	 *	with DRM_IOCTL_MODE_CREATE_DUMB command.
-	 */
+	 
 
 	args->pitch = args->width * ((args->bpp + 7) / 8);
 	args->size = args->pitch * args->height;
@@ -373,7 +347,7 @@ static int exynos_drm_gem_mmap(struct drm_gem_object *obj, struct vm_area_struct
 	DRM_DEV_DEBUG_KMS(to_dma_dev(obj->dev), "flags = 0x%x\n",
 			  exynos_gem->flags);
 
-	/* non-cachable as default. */
+	 
 	if (exynos_gem->flags & EXYNOS_BO_CACHABLE)
 		vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
 	else if (exynos_gem->flags & EXYNOS_BO_WC)
@@ -395,7 +369,7 @@ err_close_vm:
 	return ret;
 }
 
-/* low-level interface prime helpers */
+ 
 struct drm_gem_object *exynos_drm_gem_prime_import(struct drm_device *dev,
 					    struct dma_buf *dma_buf)
 {
@@ -432,7 +406,7 @@ exynos_drm_gem_prime_import_sg_table(struct drm_device *dev,
 {
 	struct exynos_drm_gem *exynos_gem;
 
-	/* check if the entries in the sg_table are contiguous */
+	 
 	if (drm_prime_get_contiguous_size(sgt) < attach->dmabuf->size) {
 		DRM_ERROR("buffer chunks must be mapped contiguously");
 		return ERR_PTR(-EINVAL);
@@ -442,11 +416,7 @@ exynos_drm_gem_prime_import_sg_table(struct drm_device *dev,
 	if (IS_ERR(exynos_gem))
 		return ERR_CAST(exynos_gem);
 
-	/*
-	 * Buffer has been mapped as contiguous into DMA address space,
-	 * but if there is IOMMU, it can be either CONTIG or NONCONTIG.
-	 * We assume a simplified logic below:
-	 */
+	 
 	if (is_drm_iommu_supported(dev))
 		exynos_gem->flags |= EXYNOS_BO_NONCONTIG;
 	else

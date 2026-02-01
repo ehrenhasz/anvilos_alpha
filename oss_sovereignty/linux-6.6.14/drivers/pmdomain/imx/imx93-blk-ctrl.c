@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2022 NXP, Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -149,10 +147,10 @@ static int imx93_blk_ctrl_power_on(struct generic_pm_domain *genpd)
 		goto disable_clk;
 	}
 
-	/* ungate clk */
+	 
 	regmap_clear_bits(bc->regmap, BLK_CLK_EN, data->clk_mask);
 
-	/* release reset */
+	 
 	regmap_set_bits(bc->regmap, BLK_SFT_RSTN, data->rst_mask);
 
 	dev_dbg(bc->dev, "pd_on: name: %s\n", genpd->name);
@@ -271,16 +269,7 @@ static int imx93_blk_ctrl_probe(struct platform_device *pdev)
 			goto cleanup_pds;
 		}
 
-		/*
-		 * We use runtime PM to trigger power on/off of the upstream GPC
-		 * domain, as a strict hierarchical parent/child power domain
-		 * setup doesn't allow us to meet the sequencing requirements.
-		 * This means we have nested locking of genpd locks, without the
-		 * nesting being visible at the genpd level, so we need a
-		 * separate lock class to make lockdep aware of the fact that
-		 * this are separate domain locks that can be nested without a
-		 * self-deadlock.
-		 */
+		 
 		lockdep_set_class(&domain->genpd.mlock,
 				  &blk_ctrl_genpd_lock_class);
 
@@ -431,7 +420,7 @@ static const struct of_device_id imx93_blk_ctrl_of_match[] = {
 		.compatible = "fsl,imx93-media-blk-ctrl",
 		.data = &imx93_media_blk_ctl_dev_data
 	}, {
-		/* Sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imx93_blk_ctrl_of_match);

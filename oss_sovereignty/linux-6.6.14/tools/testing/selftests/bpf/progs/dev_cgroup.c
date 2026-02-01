@@ -1,9 +1,4 @@
-/* Copyright (c) 2017 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 
 #include <linux/bpf.h>
 #include <linux/version.h>
@@ -41,15 +36,13 @@ int bpf_prog1(struct bpf_cgroup_dev_ctx *ctx)
 	bpf_trace_printk(fmt, sizeof(fmt), ctx->major, ctx->minor);
 #endif
 
-	/* Allow access to /dev/zero and /dev/random.
-	 * Forbid everything else.
-	 */
+	 
 	if (ctx->major != 1 || type != BPF_DEVCG_DEV_CHAR)
 		return 0;
 
 	switch (ctx->minor) {
-	case 5: /* 1:5 /dev/zero */
-	case 9: /* 1:9 /dev/urandom */
+	case 5:  
+	case 9:  
 		return 1;
 	}
 

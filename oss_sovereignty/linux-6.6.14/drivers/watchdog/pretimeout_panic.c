@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2016 Mentor Graphics
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -9,12 +7,7 @@
 
 #include "watchdog_pretimeout.h"
 
-/**
- * pretimeout_panic - Panic on watchdog pretimeout event
- * @wdd - watchdog_device
- *
- * Panic, watchdog has not been fed till pretimeout event.
- */
+ 
 static void pretimeout_panic(struct watchdog_device *wdd)
 {
 	panic("watchdog pretimeout event\n");

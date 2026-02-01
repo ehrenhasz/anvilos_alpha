@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/firmware.h>
 
@@ -95,25 +93,25 @@ static int mt76x2u_mcu_load_rom_patch(struct mt76x02_dev *dev)
 	hdr = (struct mt76x02_patch_header *)fw->data;
 	dev_info(dev->mt76.dev, "ROM patch build: %.15s\n", hdr->build_time);
 
-	/* enable USB_DMA_CFG */
+	 
 	val = MT_USB_DMA_CFG_RX_BULK_EN |
 	      MT_USB_DMA_CFG_TX_BULK_EN |
 	      FIELD_PREP(MT_USB_DMA_CFG_RX_BULK_AGG_TOUT, 0x20);
 	mt76_wr(dev, MT_VEND_ADDR(CFG, MT_USB_U3DMA_CFG), val);
 
-	/* vendor reset */
+	 
 	mt76x02u_mcu_fw_reset(dev);
 	usleep_range(5000, 10000);
 
-	/* enable FCE to send in-band cmd */
+	 
 	mt76_wr(dev, MT_FCE_PSE_CTRL, 0x1);
-	/* FCE tx_fs_base_ptr */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_BASE_PTR, 0x400230);
-	/* FCE tx_fs_max_cnt */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_MAX_COUNT, 0x1);
-	/* FCE pdma enable */
+	 
 	mt76_wr(dev, MT_FCE_PDMA_GLOBAL_CONF, 0x44);
-	/* FCE skip_fs_en */
+	 
 	mt76_wr(dev, MT_FCE_SKIP_FS, 0x3);
 
 	err = mt76x02u_mcu_fw_send_data(dev, fw->data + sizeof(*hdr),
@@ -174,27 +172,27 @@ static int mt76x2u_mcu_load_firmware(struct mt76x02_dev *dev)
 	dev_info(dev->mt76.dev, "Build: %x\n", val);
 	dev_info(dev->mt76.dev, "Build Time: %.16s\n", hdr->build_time);
 
-	/* vendor reset */
+	 
 	mt76x02u_mcu_fw_reset(dev);
 	usleep_range(5000, 10000);
 
-	/* enable USB_DMA_CFG */
+	 
 	val = MT_USB_DMA_CFG_RX_BULK_EN |
 	      MT_USB_DMA_CFG_TX_BULK_EN |
 	      FIELD_PREP(MT_USB_DMA_CFG_RX_BULK_AGG_TOUT, 0x20);
 	mt76_wr(dev, MT_VEND_ADDR(CFG, MT_USB_U3DMA_CFG), val);
-	/* enable FCE to send in-band cmd */
+	 
 	mt76_wr(dev, MT_FCE_PSE_CTRL, 0x1);
-	/* FCE tx_fs_base_ptr */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_BASE_PTR, 0x400230);
-	/* FCE tx_fs_max_cnt */
+	 
 	mt76_wr(dev, MT_TX_CPU_FROM_FCE_MAX_COUNT, 0x1);
-	/* FCE pdma enable */
+	 
 	mt76_wr(dev, MT_FCE_PDMA_GLOBAL_CONF, 0x44);
-	/* FCE skip_fs_en */
+	 
 	mt76_wr(dev, MT_FCE_SKIP_FS, 0x3);
 
-	/* load ILM */
+	 
 	err = mt76x02u_mcu_fw_send_data(dev, fw->data + sizeof(*hdr),
 					ilm_len, MCU_FW_URB_MAX_PAYLOAD,
 					MT76U_MCU_ILM_OFFSET);
@@ -203,7 +201,7 @@ static int mt76x2u_mcu_load_firmware(struct mt76x02_dev *dev)
 		goto out;
 	}
 
-	/* load DLM */
+	 
 	if (mt76xx_rev(dev) >= MT76XX_REV_E3)
 		dlm_offset += 0x800;
 	err = mt76x02u_mcu_fw_send_data(dev, fw->data + sizeof(*hdr) + ilm_len,
@@ -222,7 +220,7 @@ static int mt76x2u_mcu_load_firmware(struct mt76x02_dev *dev)
 	}
 
 	mt76_set(dev, MT_MCU_COM_REG0, BIT(1));
-	/* enable FCE to send in-band cmd */
+	 
 	mt76_wr(dev, MT_FCE_PSE_CTRL, 0x1);
 	mt76x02_set_ethtool_fwver(dev, hdr);
 	dev_dbg(dev->mt76.dev, "firmware running\n");

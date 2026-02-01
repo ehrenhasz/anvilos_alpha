@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017, Maxim Integrated
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -145,7 +145,7 @@ static int max98373_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 			   MAX98373_PCM_MODE_CFG_PCM_BCLKEDGE,
 			   invert);
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format = MAX98373_PCM_FORMAT_I2S;
@@ -171,7 +171,7 @@ static int max98373_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	return 0;
 }
 
-/* BCLKs per LRCLK */
+ 
 static const int bclk_sel_table[] = {
 	32, 48, 64, 96, 128, 192, 256, 384, 512, 320,
 };
@@ -179,7 +179,7 @@ static const int bclk_sel_table[] = {
 static int max98373_get_bclk_sel(int bclk)
 {
 	int i;
-	/* match BCLKs per LRCLK */
+	 
 	for (i = 0; i < ARRAY_SIZE(bclk_sel_table); i++) {
 		if (bclk_sel_table[i] == bclk)
 			return i + 2;
@@ -191,12 +191,12 @@ static int max98373_set_clock(struct snd_soc_component *component,
 			      struct snd_pcm_hw_params *params)
 {
 	struct max98373_priv *max98373 = snd_soc_component_get_drvdata(component);
-	/* BCLK/LRCLK ratio calculation */
+	 
 	int blr_clk_ratio = params_channels(params) * max98373->ch_size;
 	int value;
 
 	if (!max98373->tdm_mode) {
-		/* BCLK configuration */
+		 
 		value = max98373_get_bclk_sel(blr_clk_ratio);
 		if (!value) {
 			dev_err(component->dev, "format unsupported %d\n",
@@ -221,7 +221,7 @@ static int max98373_dai_hw_params(struct snd_pcm_substream *substream,
 	unsigned int sampling_rate = 0;
 	unsigned int chan_sz = 0;
 
-	/* pcm mode configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98373_PCM_MODE_CFG_CHANSZ_16;
@@ -247,7 +247,7 @@ static int max98373_dai_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "format supported %d",
 		params_format(params));
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98373_PCM_SR_SET1_SR_8000;
@@ -288,7 +288,7 @@ static int max98373_dai_hw_params(struct snd_pcm_substream *substream,
 		goto err;
 	}
 
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98373->regmap,
 			   MAX98373_R2027_PCM_SR_SETUP_1,
 			   MAX98373_PCM_SR_SET1_SR_MASK,
@@ -298,7 +298,7 @@ static int max98373_dai_hw_params(struct snd_pcm_substream *substream,
 			   MAX98373_PCM_SR_SET2_SR_MASK,
 			   sampling_rate << MAX98373_PCM_SR_SET2_SR_SHIFT);
 
-	/* set sampling rate of IV */
+	 
 	if (max98373->interleave_mode &&
 	    sampling_rate > MAX98373_PCM_SR_SET1_SR_16000)
 		regmap_update_bits(max98373->regmap,
@@ -332,7 +332,7 @@ static int max98373_dai_tdm_slot(struct snd_soc_dai *dai,
 	else
 		max98373->tdm_mode = true;
 
-	/* BCLK configuration */
+	 
 	bsel = max98373_get_bclk_sel(slots * slot_width);
 	if (bsel == 0) {
 		dev_err(component->dev, "BCLK %d not supported\n",
@@ -345,7 +345,7 @@ static int max98373_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98373_PCM_CLK_SETUP_BSEL_MASK,
 			   bsel);
 
-	/* Channel size configuration */
+	 
 	switch (slot_width) {
 	case 16:
 		chan_sz = MAX98373_PCM_MODE_CFG_CHANSZ_16;
@@ -366,7 +366,7 @@ static int max98373_dai_tdm_slot(struct snd_soc_dai *dai,
 			   MAX98373_R2024_PCM_DATA_FMT_CFG,
 			   MAX98373_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* Rx slot configuration */
+	 
 	slot_found = 0;
 	mask = rx_mask;
 	for (x = 0 ; x < 16 ; x++, mask >>= 1) {
@@ -385,7 +385,7 @@ static int max98373_dai_tdm_slot(struct snd_soc_dai *dai,
 		}
 	}
 
-	/* Tx slot Hi-Z configuration */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2020_PCM_TX_HIZ_EN_1,
 		     ~tx_mask & 0xFF);
@@ -480,7 +480,7 @@ static int max98373_suspend(struct device *dev)
 	struct max98373_priv *max98373 = dev_get_drvdata(dev);
 	int i;
 
-	/* cache feedback register values before suspend */
+	 
 	for (i = 0; i < max98373->cache_num; i++)
 		regmap_read(max98373->regmap, max98373->cache[i].reg, &max98373->cache[i].val);
 
@@ -530,13 +530,13 @@ static int max98373_i2c_probe(struct i2c_client *i2c)
 	}
 	i2c_set_clientdata(i2c, max98373);
 
-	/* update interleave mode info */
+	 
 	if (device_property_read_bool(&i2c->dev, "maxim,interleave_mode"))
 		max98373->interleave_mode = true;
 	else
 		max98373->interleave_mode = false;
 
-	/* regmap initialization */
+	 
 	max98373->regmap = devm_regmap_init_i2c(i2c, &max98373_regmap);
 	if (IS_ERR(max98373->regmap)) {
 		ret = PTR_ERR(max98373->regmap);
@@ -557,10 +557,10 @@ static int max98373_i2c_probe(struct i2c_client *i2c)
 	for (i = 0; i < max98373->cache_num; i++)
 		max98373->cache[i].reg = max98373_i2c_cache_reg[i];
 
-	/* voltage/current slot & gpio configuration */
+	 
 	max98373_slot_config(&i2c->dev, max98373);
 
-	/* Power on device */
+	 
 	if (gpio_is_valid(max98373->reset_gpio)) {
 		ret = devm_gpio_request(&i2c->dev, max98373->reset_gpio,
 					"MAX98373_RESET");
@@ -575,7 +575,7 @@ static int max98373_i2c_probe(struct i2c_client *i2c)
 		msleep(20);
 	}
 
-	/* Check Revision ID */
+	 
 	ret = regmap_read(max98373->regmap,
 			  MAX98373_R21FF_REV_ID, &reg);
 	if (ret < 0) {
@@ -585,7 +585,7 @@ static int max98373_i2c_probe(struct i2c_client *i2c)
 	}
 	dev_info(&i2c->dev, "MAX98373 revisionID: 0x%02X\n", reg);
 
-	/* codec registration */
+	 
 	ret = devm_snd_soc_register_component(&i2c->dev, &soc_codec_dev_max98373,
 					      max98373_dai, ARRAY_SIZE(max98373_dai));
 	if (ret < 0)

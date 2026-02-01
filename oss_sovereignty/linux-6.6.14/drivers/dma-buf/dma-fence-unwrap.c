@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dma-fence-util: misc functions for dma_fence objects
- *
- * Copyright (C) 2022 Advanced Micro Devices, Inc.
- * Authors:
- *	Christian König <christian.koenig@amd.com>
- */
+
+ 
 
 #include <linux/dma-fence.h>
 #include <linux/dma-fence-array.h>
@@ -13,7 +7,7 @@
 #include <linux/dma-fence-unwrap.h>
 #include <linux/slab.h>
 
-/* Internal helper to start new array iteration, don't use directly */
+ 
 static struct dma_fence *
 __dma_fence_unwrap_array(struct dma_fence_unwrap *cursor)
 {
@@ -22,14 +16,7 @@ __dma_fence_unwrap_array(struct dma_fence_unwrap *cursor)
 	return dma_fence_array_first(cursor->array);
 }
 
-/**
- * dma_fence_unwrap_first - return the first fence from fence containers
- * @head: the entrypoint into the containers
- * @cursor: current position inside the containers
- *
- * Unwraps potential dma_fence_chain/dma_fence_array containers and return the
- * first fence.
- */
+ 
 struct dma_fence *dma_fence_unwrap_first(struct dma_fence *head,
 					 struct dma_fence_unwrap *cursor)
 {
@@ -38,13 +25,7 @@ struct dma_fence *dma_fence_unwrap_first(struct dma_fence *head,
 }
 EXPORT_SYMBOL_GPL(dma_fence_unwrap_first);
 
-/**
- * dma_fence_unwrap_next - return the next fence from a fence containers
- * @cursor: current position inside the containers
- *
- * Continue unwrapping the dma_fence_chain/dma_fence_array containers and return
- * the next fence from them.
- */
+ 
 struct dma_fence *dma_fence_unwrap_next(struct dma_fence_unwrap *cursor)
 {
 	struct dma_fence *tmp;
@@ -59,7 +40,7 @@ struct dma_fence *dma_fence_unwrap_next(struct dma_fence_unwrap *cursor)
 }
 EXPORT_SYMBOL_GPL(dma_fence_unwrap_next);
 
-/* Implementation for the dma_fence_merge() marco, don't use directly */
+ 
 struct dma_fence *__dma_fence_unwrap_merge(unsigned int num_fences,
 					   struct dma_fence **fences,
 					   struct dma_fence_unwrap *iter)
@@ -85,10 +66,7 @@ struct dma_fence *__dma_fence_unwrap_merge(unsigned int num_fences,
 		}
 	}
 
-	/*
-	 * If we couldn't find a pending fence just return a private signaled
-	 * fence with the timestamp of the last signaled one.
-	 */
+	 
 	if (count == 0)
 		return dma_fence_allocate_private_stub(timestamp);
 
@@ -96,12 +74,7 @@ struct dma_fence *__dma_fence_unwrap_merge(unsigned int num_fences,
 	if (!array)
 		return NULL;
 
-	/*
-	 * This trashes the input fence array and uses it as position for the
-	 * following merge loop. This works because the dma_fence_merge()
-	 * wrapper macro is creating this temporary array on the stack together
-	 * with the iterators.
-	 */
+	 
 	for (i = 0; i < num_fences; ++i)
 		fences[i] = dma_fence_unwrap_first(fences[i], &iter[i]);
 
@@ -121,13 +94,7 @@ restart:
 			if (!next)
 				continue;
 
-			/*
-			 * We can't guarantee that inpute fences are ordered by
-			 * context, but it is still quite likely when this
-			 * function is used multiple times. So attempt to order
-			 * the fences by context as we pass over them and merge
-			 * fences with the same context.
-			 */
+			 
 			if (!tmp || tmp->context > next->context) {
 				tmp = next;
 				sel = i;

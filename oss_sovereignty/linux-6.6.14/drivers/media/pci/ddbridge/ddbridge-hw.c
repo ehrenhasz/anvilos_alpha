@@ -1,16 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-hw.c: Digital Devices bridge hardware maps
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+
+ 
 
 #include "ddbridge.h"
 #include "ddbridge-hw.h"
 
-/******************************************************************************/
+ 
 
 static const struct ddb_regset octopus_input = {
 	.base = 0x200,
@@ -60,7 +54,7 @@ static const struct ddb_regset octopus_i2c_buf = {
 	.size = 0x200,
 };
 
-/****************************************************************************/
+ 
 
 static const struct ddb_regmap octopus_map = {
 	.irq_base_i2c = 0,
@@ -76,7 +70,7 @@ static const struct ddb_regmap octopus_map = {
 	.output = &octopus_output,
 };
 
-/****************************************************************************/
+ 
 
 static const struct ddb_info ddb_none = {
 	.type     = DDB_NONE,
@@ -228,7 +222,7 @@ static const struct ddb_info ddb_dvbct = {
 	.i2c_mask = 0x07,
 };
 
-/****************************************************************************/
+ 
 
 static const struct ddb_info ddb_ct2_8 = {
 	.type     = DDB_OCTOPUS_MAX_CT,
@@ -290,7 +284,7 @@ static const struct ddb_info ddb_c2t2i_8 = {
 	.tempmon_irq = 24,
 };
 
-/****************************************************************************/
+ 
 
 static const struct ddb_info ddb_s2_48 = {
 	.type     = DDB_OCTOPUS_MAX,
@@ -313,9 +307,9 @@ static const struct ddb_info ddb_s2x_48 = {
 	.mci_type = 0,
 };
 
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 #define DDB_DEVID(_device, _subdevice, _info) { \
 	.vendor = DDVID, \
@@ -325,7 +319,7 @@ static const struct ddb_info ddb_s2x_48 = {
 	.info = &_info }
 
 static const struct ddb_device_id ddb_device_ids[] = {
-	/* PCIe devices */
+	 
 	DDB_DEVID(0x0002, 0x0001, ddb_octopus),
 	DDB_DEVID(0x0003, 0x0001, ddb_octopus),
 	DDB_DEVID(0x0005, 0x0004, ddb_octopusv3),
@@ -357,7 +351,7 @@ static const struct ddb_device_id ddb_device_ids[] = {
 	DDB_DEVID(0x0013, 0x0044, ddb_ci_s2_pro_a),
 };
 
-/****************************************************************************/
+ 
 
 const struct ddb_info *get_ddb_info(u16 vendor, u16 device,
 				    u16 subvendor, u16 subdevice)

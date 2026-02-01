@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __VDSO_TIME32_H
 #define __VDSO_TIME32_H
 
@@ -14,4 +14,4 @@ struct old_timeval32 {
 	s32		tv_usec;
 };
 
-#endif /* __VDSO_TIME32_H */
+#endif  

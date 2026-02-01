@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ss-core.c - hardware cryptographic offloader for
- * Allwinner A80/A83T SoC
- *
- * Copyright (C) 2015-2019 Corentin Labbe <clabbe.montjoie@gmail.com>
- *
- * Core file which registers crypto algorithms supported by the SecuritySystem
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/rng.h>
@@ -55,10 +46,7 @@ static const struct ss_variant ss_a83t_variant = {
 	}
 };
 
-/*
- * sun8i_ss_get_engine_number() get the next channel slot
- * This is a simple round-robin way of getting the next channel
- */
+ 
 int sun8i_ss_get_engine_number(struct sun8i_ss_dev *ss)
 {
 	return atomic_inc_return(&ss->flow) % MAXFLOW;
@@ -76,7 +64,7 @@ int sun8i_ss_run_task(struct sun8i_ss_dev *ss, struct sun8i_cipher_req_ctx *rctx
 	ss->flows[flow].stat_req++;
 #endif
 
-	/* choose between stream0/stream1 */
+	 
 	if (flow)
 		v |= SS_FLOW1;
 	else
@@ -543,9 +531,7 @@ static void sun8i_ss_free_flows(struct sun8i_ss_dev *ss, int i)
 	}
 }
 
-/*
- * Allocate the flow list structure
- */
+ 
 static int allocate_flows(struct sun8i_ss_dev *ss)
 {
 	int i, j, err;
@@ -574,7 +560,7 @@ static int allocate_flows(struct sun8i_ss_dev *ss)
 			}
 		}
 
-		/* the padding could be up to two block. */
+		 
 		ss->flows[i].pad = devm_kmalloc(ss->dev, MAX_PAD_SIZE,
 						GFP_KERNEL);
 		if (!ss->flows[i].pad) {
@@ -609,10 +595,7 @@ error_engine:
 	return err;
 }
 
-/*
- * Power management strategy: The device is suspended unless a TFM exists for
- * one of the algorithms proposed by this driver.
- */
+ 
 static int sun8i_ss_pm_suspend(struct device *dev)
 {
 	struct sun8i_ss_dev *ss = dev_get_drvdata(dev);
@@ -644,7 +627,7 @@ static int sun8i_ss_pm_resume(struct device *dev)
 		dev_err(ss->dev, "Cannot deassert reset control\n");
 		goto error;
 	}
-	/* enable interrupts for all flows */
+	 
 	writel(BIT(0) | BIT(1), ss->base + SS_INT_CTL_REG);
 
 	return 0;
@@ -886,7 +869,7 @@ static int sun8i_ss_probe(struct platform_device *pdev)
 		struct dentry *dbgfs_dir __maybe_unused;
 		struct dentry *dbgfs_stats __maybe_unused;
 
-		/* Ignore error of debugfs */
+		 
 		dbgfs_dir = debugfs_create_dir("sun8i-ss", NULL);
 		dbgfs_stats = debugfs_create_file("stats", 0444,
 						   dbgfs_dir, ss,

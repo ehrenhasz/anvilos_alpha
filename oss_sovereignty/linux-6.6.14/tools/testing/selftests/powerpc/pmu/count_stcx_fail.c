@@ -1,7 +1,4 @@
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- * Licensed under GPLv2.
- */
+ 
 
 #define _GNU_SOURCE
 
@@ -35,7 +32,7 @@ static int do_count_loop(struct event *events, u64 instructions,
 
 	prctl(PR_TASK_PERF_EVENTS_ENABLE);
 
-	/* Run for 1M instructions */
+	 
 	thirty_two_instruction_loop_with_ll_sc(instructions >> 5, &dummy);
 
 	prctl(PR_TASK_PERF_EVENTS_DISABLE);
@@ -67,7 +64,7 @@ static int do_count_loop(struct event *events, u64 instructions,
 	if (difference < 0)
 		difference = -difference;
 
-	/* Tolerate a difference below 0.0001 % */
+	 
 	difference *= 10000 * 100;
 	if (difference / events[0].result.value)
 		return -1;
@@ -75,7 +72,7 @@ static int do_count_loop(struct event *events, u64 instructions,
 	return 0;
 }
 
-/* Count how many instructions it takes to do a null loop */
+ 
 static u64 determine_overhead(struct event *events)
 {
 	u64 current, overhead;
@@ -104,7 +101,7 @@ static int test_body(void)
 	struct event events[3];
 	u64 overhead;
 
-	// The STCX_FAIL event we use works on Power8 or later
+	
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 
 	setup_event(&events[0], PERF_COUNT_HW_INSTRUCTIONS, PERF_TYPE_HARDWARE, "instructions");
@@ -129,22 +126,22 @@ static int test_body(void)
 	overhead = determine_overhead(events);
 	printf("Overhead of null loop: %llu instructions\n", overhead);
 
-	/* Run for 1Mi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 1000000, overhead, true));
 
-	/* Run for 10Mi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 10000000, overhead, true));
 
-	/* Run for 100Mi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 100000000, overhead, true));
 
-	/* Run for 1Bi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 1000000000, overhead, true));
 
-	/* Run for 16Bi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 16000000000, overhead, true));
 
-	/* Run for 64Bi instructions */
+	 
 	FAIL_IF(do_count_loop(events, 64000000000, overhead, true));
 
 	event_close(&events[0]);

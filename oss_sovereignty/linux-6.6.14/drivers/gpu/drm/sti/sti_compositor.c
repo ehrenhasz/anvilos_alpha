@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/io.h>
@@ -26,9 +21,7 @@
 #include "sti_vid.h"
 #include "sti_vtg.h"
 
-/*
- * stiH407 compositor properties
- */
+ 
 static const struct sti_compositor_data stih407_compositor_data = {
 	.nb_subdev = 8,
 	.subdev_desc = {
@@ -72,7 +65,7 @@ static int sti_compositor_bind(struct device *dev,
 
 	dev_priv->compo = compo;
 
-	/* Register mixer subdev and video subdev first */
+	 
 	for (i = 0; i < array_size; i++) {
 		switch (desc[i].type) {
 		case STI_VID_SUBDEV:
@@ -88,7 +81,7 @@ static int sti_compositor_bind(struct device *dev,
 			break;
 		case STI_GPD_SUBDEV:
 		case STI_CURSOR_SUBDEV:
-			/* Nothing to do, wait for the second round */
+			 
 			break;
 		default:
 			DRM_ERROR("Unknown subdev component type\n");
@@ -96,7 +89,7 @@ static int sti_compositor_bind(struct device *dev,
 		}
 	}
 
-	/* Register the other subdevs, create crtc and planes */
+	 
 	for (i = 0; i < array_size; i++) {
 		enum drm_plane_type plane_type = DRM_PLANE_TYPE_OVERLAY;
 
@@ -107,7 +100,7 @@ static int sti_compositor_bind(struct device *dev,
 		case STI_MIXER_MAIN_SUBDEV:
 		case STI_MIXER_AUX_SUBDEV:
 		case STI_VID_SUBDEV:
-			/* Nothing to do, already done at the first round */
+			 
 			break;
 		case STI_CURSOR_SUBDEV:
 			cursor = sti_cursor_create(drm_dev, compo->dev,
@@ -135,7 +128,7 @@ static int sti_compositor_bind(struct device *dev,
 			return 1;
 		}
 
-		/* The first planes are reserved for primary planes*/
+		 
 		if (crtc_id < mixer_id && primary) {
 			sti_crtc_init(drm_dev, compo->mixer[crtc_id],
 				      primary, cursor);
@@ -153,7 +146,7 @@ static int sti_compositor_bind(struct device *dev,
 static void sti_compositor_unbind(struct device *dev, struct device *master,
 	void *data)
 {
-	/* do nothing */
+	 
 }
 
 static const struct component_ops sti_compositor_ops = {
@@ -166,7 +159,7 @@ static const struct of_device_id compositor_of_match[] = {
 		.compatible = "st,stih407-compositor",
 		.data = &stih407_compositor_data,
 	}, {
-		/* end node */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, compositor_of_match);
@@ -189,13 +182,13 @@ static int sti_compositor_probe(struct platform_device *pdev)
 	for (i = 0; i < STI_MAX_MIXER; i++)
 		compo->vtg_vblank_nb[i].notifier_call = sti_crtc_vblank_cb;
 
-	/* populate data structure depending on compatibility */
+	 
 	BUG_ON(!of_match_node(compositor_of_match, np)->data);
 
 	memcpy(&compo->data, of_match_node(compositor_of_match, np)->data,
 	       sizeof(struct sti_compositor_data));
 
-	/* Get Memory ressources */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		DRM_ERROR("Get memory resource failed\n");
@@ -207,7 +200,7 @@ static int sti_compositor_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* Get clock resources */
+	 
 	compo->clk_compo_main = devm_clk_get(dev, "compo_main");
 	if (IS_ERR(compo->clk_compo_main)) {
 		DRM_ERROR("Cannot get compo_main clock\n");
@@ -232,14 +225,14 @@ static int sti_compositor_probe(struct platform_device *pdev)
 		return PTR_ERR(compo->clk_pix_aux);
 	}
 
-	/* Get reset resources */
+	 
 	compo->rst_main = devm_reset_control_get_shared(dev, "compo-main");
-	/* Take compo main out of reset */
+	 
 	if (!IS_ERR(compo->rst_main))
 		reset_control_deassert(compo->rst_main);
 
 	compo->rst_aux = devm_reset_control_get_shared(dev, "compo-aux");
-	/* Take compo aux out of reset */
+	 
 	if (!IS_ERR(compo->rst_aux))
 		reset_control_deassert(compo->rst_aux);
 

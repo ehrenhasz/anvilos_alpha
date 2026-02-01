@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5721, AD5721R, AD5761, AD5761R, Voltage Output Digital to Analog Converter
- *
- * Copyright 2016 Qtechnology A/S
- * 2016 Ricardo Ribalda <ribalda@kernel.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -26,12 +21,7 @@
 #define AD5761_CTRL_USE_INTVREF		BIT(5)
 #define AD5761_CTRL_ETS			BIT(6)
 
-/**
- * struct ad5761_chip_info - chip specific information
- * @int_vref:	Value of the internal reference voltage in mV - 0 if external
- *		reference voltage is used
- * @channel:	channel specification
-*/
+ 
 
 struct ad5761_chip_info {
 	unsigned long int_vref;
@@ -50,16 +40,7 @@ enum ad5761_supported_device_ids {
 	ID_AD5761R,
 };
 
-/**
- * struct ad5761_state - driver instance specific data
- * @spi:		spi_device
- * @vref_reg:		reference voltage regulator
- * @use_intref:		true when the internal voltage reference is used
- * @vref:		actual voltage reference in mVolts
- * @range:		output range mode used
- * @lock:		lock to protect the data buffer during SPI ops
- * @data:		cache aligned spi buffer
- */
+ 
 struct ad5761_state {
 	struct spi_device		*spi;
 	struct regulator		*vref_reg;
@@ -69,10 +50,7 @@ struct ad5761_state {
 	int vref;
 	enum ad5761_voltage_range range;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		__be32 d32;
 		u8 d8[4];
@@ -294,7 +272,7 @@ static int ad5761_get_vref(struct ad5761_state *st,
 
 	st->vref_reg = devm_regulator_get_optional(&st->spi->dev, "vref");
 	if (PTR_ERR(st->vref_reg) == -ENODEV) {
-		/* Use Internal regulator */
+		 
 		if (!chip_info->int_vref) {
 			dev_err(&st->spi->dev,
 				"Voltage reference not found\n");

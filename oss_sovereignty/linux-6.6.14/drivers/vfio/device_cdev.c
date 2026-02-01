@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023 Intel Corporation.
- */
+
+ 
 #include <linux/vfio.h>
 #include <linux/iommufd.h>
 
@@ -16,10 +14,7 @@ void vfio_init_device_cdev(struct vfio_device *device)
 	device->cdev.owner = THIS_MODULE;
 }
 
-/*
- * device access via the fd opened by this function is blocked until
- * .open_device() is called successfully during BIND_IOMMUFD.
- */
+ 
 int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep)
 {
 	struct vfio_device *device = container_of(inode->i_cdev,
@@ -27,7 +22,7 @@ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep)
 	struct vfio_device_file *df;
 	int ret;
 
-	/* Paired with the put in vfio_device_fops_release() */
+	 
 	if (!vfio_device_try_get_registration(device))
 		return -ENODEV;
 
@@ -71,7 +66,7 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
 	if (bind.argsz < minsz || bind.flags || bind.iommufd < 0)
 		return -EINVAL;
 
-	/* BIND_IOMMUFD only allowed for cdev fds */
+	 
 	if (df->group)
 		return -EINVAL;
 
@@ -80,7 +75,7 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
 		return ret;
 
 	mutex_lock(&device->dev_set->lock);
-	/* one device cannot be bound twice */
+	 
 	if (df->access_granted) {
 		ret = -EINVAL;
 		goto out_unlock;
@@ -93,12 +88,7 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
 		goto out_unlock;
 	}
 
-	/*
-	 * Before the device open, get the KVM pointer currently
-	 * associated with the device file (if there is) and obtain
-	 * a reference.  This reference is held until device closed.
-	 * Save the pointer in the device for use by drivers.
-	 */
+	 
 	vfio_df_get_kvm_safe(df);
 
 	ret = vfio_df_open(df);
@@ -111,10 +101,7 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
 		goto out_close_device;
 
 	device->cdev_opened = true;
-	/*
-	 * Paired with smp_load_acquire() in vfio_device_fops::ioctl/
-	 * read/write/mmap
-	 */
+	 
 	smp_store_release(&df->access_granted, true);
 	mutex_unlock(&device->dev_set->lock);
 	return 0;
@@ -135,11 +122,7 @@ void vfio_df_unbind_iommufd(struct vfio_device_file *df)
 {
 	struct vfio_device *device = df->device;
 
-	/*
-	 * In the time of close, there is no contention with another one
-	 * changing this flag.  So read df->access_granted without lock
-	 * and no smp_load_acquire() is ok.
-	 */
+	 
 	if (!df->access_granted)
 		return;
 

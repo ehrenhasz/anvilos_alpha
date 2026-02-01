@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 SUSE
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -10,7 +10,7 @@
 #include <linux/livepatch.h>
 
 #define CONSOLE_LOGLEVEL_STATE 1
-/* Version 2 supports migration. */
+ 
 #define CONSOLE_LOGLEVEL_STATE_VERSION 2
 
 static const char *const module_state[] = {
@@ -115,28 +115,28 @@ static void free_loglevel_state(void)
 	kfree(loglevel_state->data);
 }
 
-/* Executed on object patching (ie, patch enablement) */
+ 
 static int pre_patch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 	return allocate_loglevel_state();
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void post_patch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 	fix_console_loglevel();
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void pre_unpatch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
 	restore_console_loglevel();
 }
 
-/* Executed on object unpatching (ie, patch disablement) */
+ 
 static void post_unpatch_callback(struct klp_object *obj)
 {
 	callback_info(__func__, obj);
@@ -149,7 +149,7 @@ static struct klp_func no_funcs[] = {
 
 static struct klp_object objs[] = {
 	{
-		.name = NULL,	/* vmlinux */
+		.name = NULL,	 
 		.funcs = no_funcs,
 		.callbacks = {
 			.pre_patch = pre_patch_callback,

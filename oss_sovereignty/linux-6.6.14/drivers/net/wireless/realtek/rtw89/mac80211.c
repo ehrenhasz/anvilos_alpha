@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "cam.h"
 #include "chan.h"
@@ -79,7 +78,7 @@ static int rtw89_ops_config(struct ieee80211_hw *hw, u32 changed)
 {
 	struct rtw89_dev *rtwdev = hw->priv;
 
-	/* let previous ips work finish to ensure we don't leave ips twice */
+	 
 	cancel_work_sync(&rtwdev->ips_work);
 
 	mutex_lock(&rtwdev->mutex);
@@ -316,7 +315,7 @@ static void ____rtw89_conf_tx_edca(struct rtw89_dev *rtwdev,
 	u8 ecw_max, ecw_min;
 	u8 aifs;
 
-	/* 2^ecw - 1 = cw; ecw = log2(cw + 1) */
+	 
 	ecw_max = ilog2(params->cw_max + 1);
 	ecw_min = ilog2(params->cw_min + 1);
 	aifs = rtw89_aifsn_to_aifs(rtwdev, rtwvif, params->aifs);
@@ -418,9 +417,7 @@ static void rtw89_ops_bss_info_changed(struct ieee80211_hw *hw,
 
 			rtw89_queue_chanctx_work(rtwdev);
 		} else {
-			/* Abort ongoing scan if cancel_scan isn't issued
-			 * when disconnected by peer
-			 */
+			 
 			if (rtwdev->scanning)
 				rtw89_hw_scan_abort(rtwdev, vif);
 		}
@@ -545,7 +542,7 @@ static int __rtw89_ops_sta_state(struct ieee80211_hw *hw,
 	if (old_state == IEEE80211_STA_AUTH &&
 	    new_state == IEEE80211_STA_ASSOC) {
 		if (vif->type == NL80211_IFTYPE_STATION && !sta->tdls)
-			return 0; /* defer to bss_info_changed to have vif info */
+			return 0;  
 		return rtw89_core_sta_assoc(rtwdev, vif, sta);
 	}
 

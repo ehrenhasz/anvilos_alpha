@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
-// Special thanks to:
-//    Marcin Barlik <marcin.barlik@intel.com>
-//    Piotr Papierkowski <piotr.papierkowski@intel.com>
-//
-// for sharing LPT-LP and WTP-LP AudioDSP architecture expertise and
-// helping backtrack its historical background
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/dma-mapping.h>
@@ -93,7 +93,7 @@ static int __maybe_unused catpt_resume(struct device *dev)
 		return ret;
 	}
 
-	/* reconfigure SSP devices after Dx transition */
+	 
 	for (i = 0; i < CATPT_SSP_COUNT; i++) {
 		if (cdev->devfmt[i].iface == UINT_MAX)
 			continue;
@@ -127,7 +127,7 @@ static const struct dev_pm_ops catpt_dev_pm = {
 	SET_RUNTIME_PM_OPS(catpt_runtime_suspend, catpt_runtime_resume, NULL)
 };
 
-/* machine board owned by CATPT is removed with this hook */
+ 
 static void board_pdev_unregister(void *data)
 {
 	platform_device_unregister(data);
@@ -190,7 +190,7 @@ static int catpt_probe_components(struct catpt_dev *cdev)
 		goto err_reg_board;
 	}
 
-	/* reflect actual ADSP state in pm_runtime */
+	 
 	pm_runtime_set_active(cdev->dev);
 
 	pm_runtime_set_autosuspend_delay(cdev->dev, 2000);
@@ -219,10 +219,7 @@ static void catpt_dev_init(struct catpt_dev *cdev, struct device *dev,
 	spin_lock_init(&cdev->list_lock);
 	mutex_init(&cdev->clk_mutex);
 
-	/*
-	 * Mark both device formats as uninitialized. Once corresponding
-	 * cpu_dai's pcm is created, proper values are assigned.
-	 */
+	 
 	cdev->devfmt[CATPT_SSP_IFACE_0].iface = UINT_MAX;
 	cdev->devfmt[CATPT_SSP_IFACE_1].iface = UINT_MAX;
 
@@ -260,18 +257,18 @@ static int catpt_acpi_probe(struct platform_device *pdev)
 	spec = (const struct catpt_spec *)id->driver_data;
 	catpt_dev_init(cdev, dev, spec);
 
-	/* map DSP bar address */
+	 
 	cdev->lpe_ba = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(cdev->lpe_ba))
 		return PTR_ERR(cdev->lpe_ba);
 	cdev->lpe_base = res->start;
 
-	/* map PCI bar address */
+	 
 	cdev->pci_ba = devm_platform_ioremap_resource(pdev, 1);
 	if (IS_ERR(cdev->pci_ba))
 		return PTR_ERR(cdev->pci_ba);
 
-	/* alloc buffer for storing DRAM context during dx transitions */
+	 
 	cdev->dxbuf_vaddr = dmam_alloc_coherent(dev, catpt_dram_size(cdev),
 						&cdev->dxbuf_paddr, GFP_KERNEL);
 	if (!cdev->dxbuf_vaddr)

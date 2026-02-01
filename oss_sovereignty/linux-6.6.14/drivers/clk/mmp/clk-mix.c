@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mmp mix(div and mux) clock operation source file
- *
- * Copyright (C) 2014 Marvell
- * Chao Xie <chao.xie@marvell.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -13,11 +8,7 @@
 
 #include "clk.h"
 
-/*
- * The mix clock is a clock combined mux and div type clock.
- * Because the div field and mux field need to be set at same
- * time, we can not divide it into 2 types of clock
- */
+ 
 
 #define to_clk_mix(hw)	container_of(hw, struct mmp_clk_mix, hw)
 

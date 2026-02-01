@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/fs.h>
 #include "en.h"
@@ -585,7 +555,7 @@ static int validate_tcpudp4(struct ethtool_rx_flow_spec *fs)
 		ntuples++;
 	if (l4_mask->pdst)
 		ntuples++;
-	/* Flow is TCP/UDP */
+	 
 	return ++ntuples;
 }
 
@@ -603,7 +573,7 @@ static int validate_ip4(struct ethtool_rx_flow_spec *fs)
 		ntuples++;
 	if (l3_mask->proto)
 		ntuples++;
-	/* Flow is IPv4 */
+	 
 	return ++ntuples;
 }
 
@@ -621,7 +591,7 @@ static int validate_ip6(struct ethtool_rx_flow_spec *fs)
 		ntuples++;
 	if (l3_mask->l4_proto)
 		ntuples++;
-	/* Flow is IPv6 */
+	 
 	return ++ntuples;
 }
 
@@ -643,7 +613,7 @@ static int validate_tcpudp6(struct ethtool_rx_flow_spec *fs)
 		ntuples++;
 	if (l4_mask->pdst)
 		ntuples++;
-	/* Flow is TCP/UDP */
+	 
 	return ++ntuples;
 }
 
@@ -909,10 +879,7 @@ static int mlx5e_set_rss_hash_opt(struct mlx5e_priv *priv,
 	if (tt < 0)
 		return tt;
 
-	/*  RSS does not support anything other than hashing to queues
-	 *  on src IP, dest IP, TCP/UDP src port and TCP/UDP dest
-	 *  port.
-	 */
+	 
 	if (flow_type != TCP_V4_FLOW &&
 	    flow_type != TCP_V6_FLOW &&
 	    flow_type != UDP_V4_FLOW &&

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ceph string constants
- */
+
+ 
 #include <linux/module.h>
 #include <linux/ceph/types.h>
 

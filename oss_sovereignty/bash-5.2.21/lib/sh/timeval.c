@@ -1,22 +1,6 @@
-/* timeval.c - functions to perform operations on struct timevals */
+ 
 
-/* Copyright (C) 1999 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -44,7 +28,7 @@ difftimeval (d, t1, t2)
     {
       d->tv_usec += 1000000;
       d->tv_sec -= 1;
-      if (d->tv_sec < 0)		/* ??? -- BSD/OS does this */
+      if (d->tv_sec < 0)		 
 	{
 	  d->tv_sec = 0;
 	  d->tv_usec = 0;
@@ -93,11 +77,10 @@ divtimeval (d, m)
   return d;
 }
   
-/* Do "cpu = ((user + sys) * 10000) / real;" with timevals.
-   Barely-tested code from Deven T. Corzine <deven@ties.org>. */
+ 
 int
 timeval_to_cpu (rt, ut, st)
-     struct timeval *rt, *ut, *st;	/* real, user, sys */
+     struct timeval *rt, *ut, *st;	 
 {
   struct timeval t1, t2;
   register int i;
@@ -130,9 +113,7 @@ timeval_to_cpu (rt, ut, st)
   return ((t2.tv_sec == 0) ? 0 : t1.tv_sec / t2.tv_sec);
 }  
 
-/* Convert a pointer to a struct timeval to seconds and thousandths of a
-   second, returning the values in *SP and *SFP, respectively.  This does
-   rounding on the fractional part, not just truncation to three places. */
+ 
 void
 timeval_to_secs (tvp, sp, sfp)
      struct timeval *tvp;
@@ -143,13 +124,13 @@ timeval_to_secs (tvp, sp, sfp)
 
   *sp = tvp->tv_sec;
 
-  *sfp = tvp->tv_usec % 1000000;	/* pretty much a no-op */
+  *sfp = tvp->tv_usec % 1000000;	 
   rest = *sfp % 1000;
   *sfp = (*sfp * 1000) / 1000000;
   if (rest >= 500)
     *sfp += 1;
 
-  /* Sanity check */
+   
   if (*sfp >= 1000)
     {
       *sp += 1;
@@ -157,8 +138,7 @@ timeval_to_secs (tvp, sp, sfp)
     }
 }
   
-/* Print the contents of a struct timeval * in a standard way to stdio
-   stream FP.  */
+ 
 void
 print_timeval (fp, tvp)
      FILE *fp;
@@ -176,4 +156,4 @@ print_timeval (fp, tvp)
   fprintf (fp, "%ldm%d%c%03ds",  minutes, seconds, locale_decpoint (), seconds_fraction);
 }
 
-#endif /* HAVE_TIMEVAL */
+#endif  

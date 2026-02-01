@@ -1,81 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/ematch.c		Extended Match API
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *
- * ==========================================================================
- *
- * An extended match (ematch) is a small classification tool not worth
- * writing a full classifier for. Ematches can be interconnected to form
- * a logic expression and get attached to classifiers to extend their
- * functionatlity.
- *
- * The userspace part transforms the logic expressions into an array
- * consisting of multiple sequences of interconnected ematches separated
- * by markers. Precedence is implemented by a special ematch kind
- * referencing a sequence beyond the marker of the current sequence
- * causing the current position in the sequence to be pushed onto a stack
- * to allow the current position to be overwritten by the position referenced
- * in the special ematch. Matching continues in the new sequence until a
- * marker is reached causing the position to be restored from the stack.
- *
- * Example:
- *          A AND (B1 OR B2) AND C AND D
- *
- *              ------->-PUSH-------
- *    -->--    /         -->--      \   -->--
- *   /     \  /         /     \      \ /     \
- * +-------+-------+-------+-------+-------+--------+
- * | A AND | B AND | C AND | D END | B1 OR | B2 END |
- * +-------+-------+-------+-------+-------+--------+
- *                    \                      /
- *                     --------<-POP---------
- *
- * where B is a virtual ematch referencing to sequence starting with B1.
- *
- * ==========================================================================
- *
- * How to write an ematch in 60 seconds
- * ------------------------------------
- *
- *   1) Provide a matcher function:
- *      static int my_match(struct sk_buff *skb, struct tcf_ematch *m,
- *                          struct tcf_pkt_info *info)
- *      {
- *      	struct mydata *d = (struct mydata *) m->data;
- *
- *      	if (...matching goes here...)
- *      		return 1;
- *      	else
- *      		return 0;
- *      }
- *
- *   2) Fill out a struct tcf_ematch_ops:
- *      static struct tcf_ematch_ops my_ops = {
- *      	.kind = unique id,
- *      	.datalen = sizeof(struct mydata),
- *      	.match = my_match,
- *      	.owner = THIS_MODULE,
- *      };
- *
- *   3) Register/Unregister your ematch:
- *      static int __init init_my_ematch(void)
- *      {
- *      	return tcf_em_register(&my_ops);
- *      }
- *
- *      static void __exit exit_my_ematch(void)
- *      {
- *      	tcf_em_unregister(&my_ops);
- *      }
- *
- *      module_init(init_my_ematch);
- *      module_exit(exit_my_ematch);
- *
- *   4) By now you should have two more seconds left, barely enough to
- *      open up a beer to watch the compilation going.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -107,18 +31,7 @@ static struct tcf_ematch_ops *tcf_em_lookup(u16 kind)
 	return NULL;
 }
 
-/**
- * tcf_em_register - register an extended match
- *
- * @ops: ematch operations lookup table
- *
- * This function must be called by ematches to announce their presence.
- * The given @ops must have kind set to a unique identifier and the
- * callback match() must be implemented. All other callbacks are optional
- * and a fallback implementation is used instead.
- *
- * Returns -EEXISTS if an ematch of the same kind has already registered.
- */
+ 
 int tcf_em_register(struct tcf_ematch_ops *ops)
 {
 	int err = -EEXIST;
@@ -140,17 +53,7 @@ errout:
 }
 EXPORT_SYMBOL(tcf_em_register);
 
-/**
- * tcf_em_unregister - unregister and extended match
- *
- * @ops: ematch operations lookup table
- *
- * This function must be called by ematches to announce their disappearance
- * for examples when the module gets unloaded. The @ops parameter must be
- * the same as the one used for registration.
- *
- * Returns -ENOENT if no matching ematch was found.
- */
+ 
 void tcf_em_unregister(struct tcf_ematch_ops *ops)
 {
 	write_lock(&ematch_mod_lock);
@@ -180,9 +83,7 @@ static int tcf_em_validate(struct tcf_proto *tp,
 		goto errout;
 
 	if (em_hdr->kind == TCF_EM_CONTAINER) {
-		/* Special ematch called "container", carries an index
-		 * referencing an external ematch sequence.
-		 */
+		 
 		u32 ref;
 
 		if (data_len < sizeof(ref))
@@ -192,23 +93,14 @@ static int tcf_em_validate(struct tcf_proto *tp,
 		if (ref >= tree_hdr->nmatches)
 			goto errout;
 
-		/* We do not allow backward jumps to avoid loops and jumps
-		 * to our own position are of course illegal.
-		 */
+		 
 		if (ref <= idx)
 			goto errout;
 
 
 		em->data = ref;
 	} else {
-		/* Note: This lookup will increase the module refcnt
-		 * of the ematch module referenced. In case of a failure,
-		 * a destroy function is called by the underlying layer
-		 * which automatically releases the reference again, therefore
-		 * the module MUST not be given back under any circumstances
-		 * here. Be aware, the destroy function assumes that the
-		 * module is held if the ops field is non zero.
-		 */
+		 
 		em->ops = tcf_em_lookup(em_hdr->kind);
 
 		if (em->ops == NULL) {
@@ -219,10 +111,7 @@ static int tcf_em_validate(struct tcf_proto *tp,
 			rtnl_lock();
 			em->ops = tcf_em_lookup(em_hdr->kind);
 			if (em->ops) {
-				/* We dropped the RTNL mutex in order to
-				 * perform the module load. Tell the caller
-				 * to replay the request.
-				 */
+				 
 				module_put(em->ops->owner);
 				em->ops = NULL;
 				err = -EAGAIN;
@@ -231,9 +120,7 @@ static int tcf_em_validate(struct tcf_proto *tp,
 			goto errout;
 		}
 
-		/* ematch module provides expected length of data, so we
-		 * can do a basic sanity check.
-		 */
+		 
 		if (em->ops->datalen && data_len < em->ops->datalen)
 			goto errout;
 
@@ -245,15 +132,7 @@ static int tcf_em_validate(struct tcf_proto *tp,
 			if (err < 0)
 				goto errout;
 		} else if (data_len > 0) {
-			/* ematch module doesn't provide an own change
-			 * procedure and expects us to allocate and copy
-			 * the ematch data.
-			 *
-			 * TCF_EM_SIMPLE may be specified stating that the
-			 * data only consists of a u32 integer and the module
-			 * does not expected a memory reference but rather
-			 * the value carried.
-			 */
+			 
 			if (em_hdr->flags & TCF_EM_SIMPLE) {
 				if (em->ops->datalen > 0)
 					goto errout;
@@ -286,22 +165,7 @@ static const struct nla_policy em_policy[TCA_EMATCH_TREE_MAX + 1] = {
 	[TCA_EMATCH_TREE_LIST]	= { .type = NLA_NESTED },
 };
 
-/**
- * tcf_em_tree_validate - validate ematch config TLV and build ematch tree
- *
- * @tp: classifier kind handle
- * @nla: ematch tree configuration TLV
- * @tree: destination ematch tree variable to store the resulting
- *        ematch tree.
- *
- * This function validates the given configuration TLV @nla and builds an
- * ematch tree in @tree. The resulting tree must later be copied into
- * the private classifier data using tcf_em_tree_change(). You MUST NOT
- * provide the ematch tree variable of the private classifier data directly,
- * the changes would not be locked properly.
- *
- * Returns a negative error code if the configuration TLV contains errors.
- */
+ 
 int tcf_em_tree_validate(struct tcf_proto *tp, struct nlattr *nla,
 			 struct tcf_ematch_tree *tree)
 {
@@ -338,15 +202,7 @@ int tcf_em_tree_validate(struct tcf_proto *tp, struct nlattr *nla,
 	if (tree->matches == NULL)
 		goto errout;
 
-	/* We do not use nla_parse_nested here because the maximum
-	 * number of attributes is unknown. This saves us the allocation
-	 * for a tb buffer which would serve no purpose at all.
-	 *
-	 * The array of rt attributes is parsed in the order as they are
-	 * provided, their type must be incremental from 1 to n. Even
-	 * if it does not serve any real purpose, a failure of sticking
-	 * to this policy will result in parsing failure.
-	 */
+	 
 	for (idx = 0; nla_ok(rt_match, list_len); idx++) {
 		err = -EINVAL;
 
@@ -368,11 +224,7 @@ int tcf_em_tree_validate(struct tcf_proto *tp, struct nlattr *nla,
 		rt_match = nla_next(rt_match, &list_len);
 	}
 
-	/* Check if the number of matches provided by userspace actually
-	 * complies with the array of matches. The number was used for
-	 * the validation of references and a mismatch could lead to
-	 * undefined references during the matching process.
-	 */
+	 
 	if (idx != tree_hdr->nmatches) {
 		err = -EINVAL;
 		goto errout_abort;
@@ -388,15 +240,7 @@ errout_abort:
 }
 EXPORT_SYMBOL(tcf_em_tree_validate);
 
-/**
- * tcf_em_tree_destroy - destroy an ematch tree
- *
- * @tree: ematch tree to be deleted
- *
- * This functions destroys an ematch tree previously created by
- * tcf_em_tree_validate()/tcf_em_tree_change(). You must ensure that
- * the ematch tree is not in use before calling this function.
- */
+ 
 void tcf_em_tree_destroy(struct tcf_ematch_tree *tree)
 {
 	int i;
@@ -422,18 +266,7 @@ void tcf_em_tree_destroy(struct tcf_ematch_tree *tree)
 }
 EXPORT_SYMBOL(tcf_em_tree_destroy);
 
-/**
- * tcf_em_tree_dump - dump ematch tree into a rtnl message
- *
- * @skb: skb holding the rtnl message
- * @tree: ematch tree to be dumped
- * @tlv: TLV type to be used to encapsulate the tree
- *
- * This function dumps a ematch tree into a rtnl message. It is valid to
- * call this function while the ematch tree is in use.
- *
- * Returns -1 if the skb tailroom is insufficient.
- */
+ 
 int tcf_em_tree_dump(struct sk_buff *skb, struct tcf_ematch_tree *tree, int tlv)
 {
 	int i;
@@ -496,7 +329,7 @@ static inline int tcf_em_match(struct sk_buff *skb, struct tcf_ematch *em,
 	return tcf_em_is_inverted(em) ? !r : r;
 }
 
-/* Do not use this function directly, use tcf_em_tree_match instead */
+ 
 int __tcf_em_tree_match(struct sk_buff *skb, struct tcf_ematch_tree *tree,
 			struct tcf_pkt_info *info)
 {

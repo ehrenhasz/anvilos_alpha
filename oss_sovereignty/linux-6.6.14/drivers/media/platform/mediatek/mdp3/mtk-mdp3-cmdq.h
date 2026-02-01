@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTK_MDP3_CMDQ_H__
 #define __MTK_MDP3_CMDQ_H__
@@ -40,4 +37,4 @@ struct mdp_dev;
 
 int mdp_cmdq_send(struct mdp_dev *mdp, struct mdp_cmdq_param *param);
 
-#endif  /* __MTK_MDP3_CMDQ_H__ */
+#endif   

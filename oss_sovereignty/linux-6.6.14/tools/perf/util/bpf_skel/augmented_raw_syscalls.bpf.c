@@ -1,28 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Augment the raw_syscalls tracepoints with the contents of the pointer arguments.
- *
- * This exactly matches what is marshalled into the raw_syscall:sys_enter
- * payload expected by the 'perf trace' beautifiers.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <linux/limits.h>
 
-/**
- * is_power_of_2() - check if a value is a power of two
- * @n: the value to check
- *
- * Determine whether some value is a power of two, where zero is *not*
- * considered a power of two.  Return: true if @n is a power of 2, otherwise
- * false.
- */
+ 
 #define is_power_of_2(n) (n != 0 && ((n & (n - 1)) == 0))
 
 #define MAX_CPUS  4096
 
-// FIXME: These should come from system headers
+
 #ifndef bool
 typedef char bool;
 #endif
@@ -35,7 +23,7 @@ struct timespec64 {
 	long int	tv_nsec;
 };
 
-/* bpf-output associated map */
+ 
 struct __augmented_syscalls__ {
 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
 	__type(key, int);
@@ -43,11 +31,7 @@ struct __augmented_syscalls__ {
 	__uint(max_entries, MAX_CPUS);
 } __augmented_syscalls__ SEC(".maps");
 
-/*
- * What to augment at entry?
- *
- * Pointer arg payloads (filenames, etc) passed from userspace to the kernel
- */
+ 
 struct syscalls_sys_enter {
 	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
 	__type(key, __u32);
@@ -55,11 +39,7 @@ struct syscalls_sys_enter {
 	__uint(max_entries, 512);
 } syscalls_sys_enter SEC(".maps");
 
-/*
- * What to augment at exit?
- *
- * Pointer arg payloads returned from the kernel (struct stat, etc) to userspace.
- */
+ 
 struct syscalls_sys_exit {
 	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
 	__type(key, __u32);
@@ -92,29 +72,22 @@ struct pids_filtered {
 	__uint(max_entries, 64);
 } pids_filtered SEC(".maps");
 
-/*
- * Desired design of maximum size and alignment (see RFC2553)
- */
-#define SS_MAXSIZE   128     /* Implementation specific max size */
+ 
+#define SS_MAXSIZE   128      
 
 typedef unsigned short sa_family_t;
 
-/*
- * FIXME: Should come from system headers
- *
- * The definition uses anonymous union and struct in order to control the
- * default alignment.
- */
+ 
 struct sockaddr_storage {
 	union {
 		struct {
-			sa_family_t    ss_family; /* address family */
-			/* Following field(s) are implementation specific */
+			sa_family_t    ss_family;  
+			 
 			char __data[SS_MAXSIZE - sizeof(unsigned short)];
-				/* space to achieve desired size, */
-				/* _SS_MAXSIZE value minus size of ss_family */
+				 
+				 
 		};
-		void *__align; /* implementation specific desired alignment */
+		void *__align;  
 	};
 };
 
@@ -129,7 +102,7 @@ struct augmented_args_payload {
 	};
 };
 
-// We need more tmp space than the BPF stack can give us
+
 struct augmented_args_tmp {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__type(key, int);
@@ -145,7 +118,7 @@ static inline struct augmented_args_payload *augmented_args_payload(void)
 
 static inline int augmented__output(void *ctx, struct augmented_args_payload *args, int len)
 {
-	/* If perf_event_output fails, return non-zero so that it gets recorded unaugmented */
+	 
 	return bpf_perf_event_output(ctx, &__augmented_syscalls__, BPF_F_CURRENT_CPU, args, len);
 }
 
@@ -156,20 +129,14 @@ unsigned int augmented_arg__read_str(struct augmented_arg *augmented_arg, const 
 	int string_len = bpf_probe_read_user_str(&augmented_arg->value, arg_len, arg);
 
 	augmented_arg->size = augmented_arg->err = 0;
-	/*
-	 * probe_read_str may return < 0, e.g. -EFAULT
-	 * So we leave that in the augmented_arg->size that userspace will
-	 */
+	 
 	if (string_len > 0) {
 		augmented_len -= sizeof(augmented_arg->value) - string_len;
 		_Static_assert(is_power_of_2(sizeof(augmented_arg->value)), "sizeof(augmented_arg->value) needs to be a power of two");
 		augmented_len &= sizeof(augmented_arg->value) - 1;
 		augmented_arg->size = string_len;
 	} else {
-		/*
-		 * So that username notice the error while still being able
-		 * to skip this augmented arg record
-		 */
+		 
 		augmented_arg->err = string_len;
 		augmented_len = offsetof(struct augmented_arg, value);
 	}
@@ -183,12 +150,7 @@ int syscall_unaugmented(struct syscall_enter_args *args)
 	return 1;
 }
 
-/*
- * These will be tail_called from SEC("raw_syscalls:sys_enter"), so will find in
- * augmented_args_tmp what was read by that raw_syscalls:sys_enter and go
- * on from there, reading the first syscall arg as a string, i.e. open's
- * filename.
- */
+ 
 SEC("tp/syscalls/sys_enter_connect")
 int sys_enter_connect(struct syscall_enter_args *args)
 {
@@ -198,7 +160,7 @@ int sys_enter_connect(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args);
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	_Static_assert(is_power_of_2(sizeof(augmented_args->saddr)), "sizeof(augmented_args->saddr) needs to be a power of two");
 	socklen &= sizeof(augmented_args->saddr) - 1;
@@ -217,7 +179,7 @@ int sys_enter_sendto(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args);
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	socklen &= sizeof(augmented_args->saddr) - 1;
 
@@ -234,7 +196,7 @@ int sys_enter_open(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args);
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	len += augmented_arg__read_str(&augmented_args->arg, filename_arg, sizeof(augmented_args->arg.value));
 
@@ -249,7 +211,7 @@ int sys_enter_openat(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args);
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	len += augmented_arg__read_str(&augmented_args->arg, filename_arg, sizeof(augmented_args->arg.value));
 
@@ -265,7 +227,7 @@ int sys_enter_rename(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args), oldpath_len;
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	oldpath_len = augmented_arg__read_str(&augmented_args->arg, oldpath_arg, sizeof(augmented_args->arg.value));
 	len += oldpath_len + augmented_arg__read_str((void *)(&augmented_args->arg) + oldpath_len, newpath_arg, sizeof(augmented_args->arg.value));
@@ -282,7 +244,7 @@ int sys_enter_renameat(struct syscall_enter_args *args)
 	unsigned int len = sizeof(augmented_args->args), oldpath_len;
 
         if (augmented_args == NULL)
-                return 1; /* Failure: don't filter */
+                return 1;  
 
 	oldpath_len = augmented_arg__read_str(&augmented_args->arg, oldpath_arg, sizeof(augmented_args->arg.value));
 	len += oldpath_len + augmented_arg__read_str((void *)(&augmented_args->arg) + oldpath_len, newpath_arg, sizeof(augmented_args->arg.value));
@@ -290,14 +252,12 @@ int sys_enter_renameat(struct syscall_enter_args *args)
 	return augmented__output(args, augmented_args, len);
 }
 
-#define PERF_ATTR_SIZE_VER0     64      /* sizeof first published struct */
+#define PERF_ATTR_SIZE_VER0     64       
 
-// we need just the start, get the size to then copy it
+ 
 struct perf_event_attr_size {
         __u32                   type;
-        /*
-         * Size of the attr structure, for fwd/bwd compat.
-         */
+         
         __u32                   size;
 };
 
@@ -324,13 +284,13 @@ int sys_enter_perf_event_open(struct syscall_enter_args *args)
 	if (size > sizeof(augmented_args->__data))
                 goto failure;
 
-	// Now that we read attr->size and tested it against the size limits, read it completely
+	 
 	if (bpf_probe_read_user(&augmented_args->__data, size, attr) < 0)
 		goto failure;
 
 	return augmented__output(args, augmented_args, len + size);
 failure:
-	return 1; /* Failure: don't filter */
+	return 1;  
 }
 
 SEC("tp/syscalls/sys_enter_clock_nanosleep")
@@ -351,7 +311,7 @@ int sys_enter_clock_nanosleep(struct syscall_enter_args *args)
 
 	return augmented__output(args, augmented_args, len + size);
 failure:
-	return 1; /* Failure: don't filter */
+	return 1;  
 }
 
 static pid_t getpid(void)
@@ -368,15 +328,7 @@ SEC("tp/raw_syscalls/sys_enter")
 int sys_enter(struct syscall_enter_args *args)
 {
 	struct augmented_args_payload *augmented_args;
-	/*
-	 * We start len, the amount of data that will be in the perf ring
-	 * buffer, if this is not filtered out by one of pid_filter__has(),
-	 * syscall->enabled, etc, with the non-augmented raw syscall payload,
-	 * i.e. sizeof(augmented_args->args).
-	 *
-	 * We'll add to this as we add augmented syscalls right after that
-	 * initial, non-augmented raw_syscalls:sys_enter payload.
-	 */
+	 
 
 	if (pid_filter__has(&pids_filtered, getpid()))
 		return 0;
@@ -387,14 +339,10 @@ int sys_enter(struct syscall_enter_args *args)
 
 	bpf_probe_read_kernel(&augmented_args->args, sizeof(augmented_args->args), args);
 
-	/*
-	 * Jump to syscall specific augmenter, even if the default one,
-	 * "!raw_syscalls:unaugmented" that will just return 1 to return the
-	 * unaugmented tracepoint payload.
-	 */
+	 
 	bpf_tail_call(args, &syscalls_sys_enter, augmented_args->args.syscall_nr);
 
-	// If not found on the PROG_ARRAY syscalls map, then we're filtering it:
+	
 	return 0;
 }
 
@@ -407,15 +355,9 @@ int sys_exit(struct syscall_exit_args *args)
 		return 0;
 
 	bpf_probe_read_kernel(&exit_args, sizeof(exit_args), args);
-	/*
-	 * Jump to syscall specific return augmenter, even if the default one,
-	 * "!raw_syscalls:unaugmented" that will just return 1 to return the
-	 * unaugmented tracepoint payload.
-	 */
+	 
 	bpf_tail_call(args, &syscalls_sys_exit, exit_args.syscall_nr);
-	/*
-	 * If not found on the PROG_ARRAY syscalls map, then we're filtering it:
-	 */
+	 
 	return 0;
 }
 

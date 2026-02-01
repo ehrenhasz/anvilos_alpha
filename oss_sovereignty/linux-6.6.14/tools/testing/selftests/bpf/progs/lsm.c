@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include "vmlinux.h"
 #include <errno.h>
@@ -154,7 +152,7 @@ int BPF_PROG(test_void_hook, struct linux_binprm *bprm)
 
 	return 0;
 }
-SEC("lsm/task_free") /* lsm/ is ok, lsm.s/ fails */
+SEC("lsm/task_free")  
 int BPF_PROG(test_task_free, struct task_struct *task)
 {
 	return 0;

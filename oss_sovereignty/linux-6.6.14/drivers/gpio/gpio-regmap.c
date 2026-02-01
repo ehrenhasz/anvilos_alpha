@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * regmap based generic GPIO driver
- *
- * Copyright 2020 Michael Walle <michael@walle.cc>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -64,7 +60,7 @@ static int gpio_regmap_get(struct gpio_chip *chip, unsigned int offset)
 	unsigned int base, val, reg, mask;
 	int ret;
 
-	/* we might not have an output register if we are input only */
+	 
 	if (gpio->reg_dat_base)
 		base = gpio_regmap_addr(gpio->reg_dat_base);
 	else
@@ -195,12 +191,7 @@ void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
 }
 EXPORT_SYMBOL_GPL(gpio_regmap_get_drvdata);
 
-/**
- * gpio_regmap_register() - Register a generic regmap GPIO controller
- * @config: configuration for gpio_regmap
- *
- * Return: A pointer to the registered gpio_regmap or ERR_PTR error value.
- */
+ 
 struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config)
 {
 	struct gpio_regmap *gpio;
@@ -213,16 +204,16 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
 	if (!config->ngpio)
 		return ERR_PTR(-EINVAL);
 
-	/* we need at least one */
+	 
 	if (!config->reg_dat_base && !config->reg_set_base)
 		return ERR_PTR(-EINVAL);
 
-	/* if we have a direction register we need both input and output */
+	 
 	if ((config->reg_dir_out_base || config->reg_dir_in_base) &&
 	    (!config->reg_dat_base || !config->reg_set_base))
 		return ERR_PTR(-EINVAL);
 
-	/* we don't support having both registers simultaneously for now */
+	 
 	if (config->reg_dir_out_base && config->reg_dir_in_base)
 		return ERR_PTR(-EINVAL);
 
@@ -242,11 +233,11 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
 	gpio->reg_dir_in_base = config->reg_dir_in_base;
 	gpio->reg_dir_out_base = config->reg_dir_out_base;
 
-	/* if not set, assume there is only one register */
+	 
 	if (!gpio->ngpio_per_reg)
 		gpio->ngpio_per_reg = config->ngpio;
 
-	/* if not set, assume they are consecutive */
+	 
 	if (!gpio->reg_stride)
 		gpio->reg_stride = 1;
 
@@ -294,10 +285,7 @@ err_free_gpio:
 }
 EXPORT_SYMBOL_GPL(gpio_regmap_register);
 
-/**
- * gpio_regmap_unregister() - Unregister a generic regmap GPIO controller
- * @gpio: gpio_regmap device to unregister
- */
+ 
 void gpio_regmap_unregister(struct gpio_regmap *gpio)
 {
 	gpiochip_remove(&gpio->gpio_chip);
@@ -310,17 +298,7 @@ static void devm_gpio_regmap_unregister(void *res)
 	gpio_regmap_unregister(res);
 }
 
-/**
- * devm_gpio_regmap_register() - resource managed gpio_regmap_register()
- * @dev: device that is registering this GPIO device
- * @config: configuration for gpio_regmap
- *
- * Managed gpio_regmap_register(). For generic regmap GPIO device registered by
- * this function, gpio_regmap_unregister() is automatically called on driver
- * detach. See gpio_regmap_register() for more information.
- *
- * Return: A pointer to the registered gpio_regmap or ERR_PTR error value.
- */
+ 
 struct gpio_regmap *devm_gpio_regmap_register(struct device *dev,
 					      const struct gpio_regmap_config *config)
 {

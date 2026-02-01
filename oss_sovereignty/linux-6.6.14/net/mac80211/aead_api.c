@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2003-2004, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2014-2015, Qualcomm Atheros, Inc.
- *
- * Rewrite: Copyright (C) 2013 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/**************************************************************************
- * Copyright (c) 2007-2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+ 
+ 
 
 #ifndef _PSB_DRV_H_
 #define _PSB_DRV_H_
@@ -32,14 +28,14 @@
 #define DRIVER_MINOR 0
 #define DRIVER_PATCHLEVEL 0
 
-/* Append new drm mode definition here, align with libdrm definition */
+ 
 #define DRM_MODE_SCALE_NO_SCALE   	2
 
 #define IS_PSB(drm) ((to_pci_dev((drm)->dev)->device & 0xfffe) == 0x8108)
 #define IS_MRST(drm) ((to_pci_dev((drm)->dev)->device & 0xfff0) == 0x4100)
 #define IS_CDV(drm) ((to_pci_dev((drm)->dev)->device & 0xfff0) == 0x0be0)
 
-/* Hardware offsets */
+ 
 #define PSB_VDC_OFFSET		 0x00000000
 #define PSB_VDC_SIZE		 0x000080000
 #define MRST_MMIO_SIZE		 0x0000C0000
@@ -47,13 +43,13 @@
 #define PSB_SGX_OFFSET		 0x00040000
 #define MRST_SGX_OFFSET		 0x00080000
 
-/* PCI resource identifiers */
+ 
 #define PSB_MMIO_RESOURCE	 0
 #define PSB_AUX_RESOURCE	 0
 #define PSB_GATT_RESOURCE	 2
 #define PSB_GTT_RESOURCE	 3
 
-/* PCI configuration */
+ 
 #define PSB_GMCH_CTRL		 0x52
 #define PSB_BSM			 0x5C
 #define _PSB_GMCH_ENABLED	 0x4
@@ -62,29 +58,29 @@
 #define PSB_SGX_2D_SLAVE_PORT	 0x4000
 #define PSB_LPC_GBA		 0x44
 
-/* TODO: To get rid of */
+ 
 #define PSB_TT_PRIV0_LIMIT	 (256*1024*1024)
 #define PSB_TT_PRIV0_PLIMIT	 (PSB_TT_PRIV0_LIMIT >> PAGE_SHIFT)
 
-/* SGX side MMU definitions (these can probably go) */
+ 
 
-/* Flags for external memory type field */
-#define PSB_MMU_CACHED_MEMORY	  0x0001	/* Bind to MMU only */
-#define PSB_MMU_RO_MEMORY	  0x0002	/* MMU RO memory */
-#define PSB_MMU_WO_MEMORY	  0x0004	/* MMU WO memory */
+ 
+#define PSB_MMU_CACHED_MEMORY	  0x0001	 
+#define PSB_MMU_RO_MEMORY	  0x0002	 
+#define PSB_MMU_WO_MEMORY	  0x0004	 
 
-/* PTE's and PDE's */
+ 
 #define PSB_PDE_MASK		  0x003FFFFF
 #define PSB_PDE_SHIFT		  22
 #define PSB_PTE_SHIFT		  12
 
-/* Cache control */
-#define PSB_PTE_VALID		  0x0001	/* PTE / PDE valid */
-#define PSB_PTE_WO		  0x0002	/* Write only */
-#define PSB_PTE_RO		  0x0004	/* Read only */
-#define PSB_PTE_CACHED		  0x0008	/* CPU cache coherent */
+ 
+#define PSB_PTE_VALID		  0x0001	 
+#define PSB_PTE_WO		  0x0002	 
+#define PSB_PTE_RO		  0x0004	 
+#define PSB_PTE_CACHED		  0x0008	 
 
-/* VDC registers and bits */
+ 
 #define PSB_MSVDX_CLOCKGATING	  0x2064
 #define PSB_TOPAZ_CLOCKGATING	  0x2068
 #define PSB_HWSTAM		  0x2098
@@ -187,7 +183,7 @@
 #define PSB_PCIx_MSI_ADDR_LOC		0x94
 #define PSB_PCIx_MSI_DATA_LOC		0x98
 
-/* Medfield crystal settings */
+ 
 #define KSEL_CRYSTAL_19 1
 #define KSEL_BYPASS_19 5
 #define KSEL_BYPASS_25 6
@@ -224,7 +220,7 @@ struct intel_gmbus {
 	u32 reg0;
 };
 
-/* Register offset maps */
+ 
 struct psb_offset {
 	u32	fp0;
 	u32	fp1;
@@ -251,14 +247,9 @@ struct psb_offset {
 	u32	palette;
 };
 
-/*
- *	Register save state. This is used to hold the context when the
- *	device is powered off. In the case of Oaktrail this can (but does not
- *	yet) include screen blank. Operations occuring during the save
- *	update the register cache instead.
- */
+ 
 
-/* Common status for pipes */
+ 
 struct psb_pipe {
 	u32	fp0;
 	u32	fp1;
@@ -338,7 +329,7 @@ struct psb_state {
 	uint32_t saveOVC_OGAMC4;
 	uint32_t saveOVC_OGAMC5;
 
-	/* DPST register save */
+	 
 	uint32_t saveHISTOGRAM_INT_CONTROL_REG;
 	uint32_t saveHISTOGRAM_LOGIC_CONTROL_REG;
 	uint32_t savePWM_CONTROL_LOGIC;
@@ -384,8 +375,8 @@ struct intel_scu_ipc_dev;
 struct drm_psb_private {
 	struct drm_device dev;
 
-	struct pci_dev *aux_pdev; /* Currently only used by mrst */
-	struct pci_dev *lpc_pdev; /* Currently only used by mrst */
+	struct pci_dev *aux_pdev;  
+	struct pci_dev *lpc_pdev;  
 	const struct psb_ops *ops;
 	const struct psb_offset *regmap;
 
@@ -394,83 +385,82 @@ struct drm_psb_private {
 
 	struct psb_gtt gtt;
 
-	/* GTT Memory manager */
+	 
 	struct psb_gtt_mm *gtt_mm;
 	struct page *scratch_page;
 	u32 __iomem *gtt_map;
 	uint32_t stolen_base;
 	u8 __iomem *vram_addr;
 	unsigned long vram_stolen_size;
-	u16 gmch_ctrl;		/* Saved GTT setup */
+	u16 gmch_ctrl;		 
 	u32 pge_ctl;
 
 	struct mutex gtt_mutex;
-	struct resource *gtt_mem;	/* Our PCI resource */
+	struct resource *gtt_mem;	 
 
 	struct mutex mmap_mutex;
 
 	struct psb_mmu_driver *mmu;
 	struct psb_mmu_pd *pf_pd;
 
-	/* Register base */
+	 
 	uint8_t __iomem *sgx_reg;
 	uint8_t __iomem *vdc_reg;
-	uint8_t __iomem *aux_reg; /* Auxillary vdc pipe regs */
+	uint8_t __iomem *aux_reg;  
 	uint16_t lpc_gpio_base;
 	uint32_t gatt_free_offset;
 
-	/* Fencing / irq */
+	 
 	uint32_t vdc_irq_mask;
 	uint32_t pipestat[PSB_NUM_PIPE];
 
 	spinlock_t irqmask_lock;
 	bool irq_enabled;
 
-	/* Power */
+	 
 	bool pm_initialized;
 
-	/* Modesetting */
+	 
 	struct psb_intel_mode_device mode_dev;
-	bool modeset;	/* true if we have done the mode_device setup */
+	bool modeset;	 
 
 	struct drm_crtc *plane_to_crtc_mapping[PSB_NUM_PIPE];
 	struct drm_crtc *pipe_to_crtc_mapping[PSB_NUM_PIPE];
 	uint32_t num_pipe;
 
-	/* OSPM info (Power management base) (TODO: can go ?) */
+	 
 	uint32_t ospm_base;
 
-	/* Sizes info */
+	 
 	u32 fuse_reg_value;
 	u32 video_device_fuse;
 
-	/* PCI revision ID for B0:D2:F0 */
+	 
 	uint8_t platform_rev_id;
 
-	/* gmbus */
+	 
 	struct intel_gmbus *gmbus;
 	uint8_t __iomem *gmbus_reg;
 
-	/* Used by SDVO */
+	 
 	int crt_ddc_pin;
-	/* FIXME: The mappings should be parsed from bios but for now we can
-		  pretend there are no mappings available */
+	 
 	struct sdvo_device_mapping sdvo_mappings[2];
 	u32 hotplug_supported_mask;
 	struct drm_property *broadcast_rgb_property;
 	struct drm_property *force_audio_property;
 
-	/* LVDS info */
-	int backlight_duty_cycle;	/* restore backlight to this value */
+	 
+	int backlight_duty_cycle;	 
 	bool panel_wants_dither;
 	struct drm_display_mode *panel_fixed_mode;
 	struct drm_display_mode *lfp_lvds_vbt_mode;
 	struct drm_display_mode *sdvo_lvds_vbt_mode;
 
-	struct bdb_lvds_backlight *lvds_bl; /* LVDS backlight info from VBT */
-	struct gma_i2c_chan *lvds_i2c_bus; /* FIXME: Remove this? */
+	struct bdb_lvds_backlight *lvds_bl;  
+	struct gma_i2c_chan *lvds_i2c_bus;  
 
-	/* Feature bits from the VBIOS */
+	 
 	unsigned int int_tv_support:1;
 	unsigned int lvds_dither:1;
 	unsigned int lvds_vbt:1;
@@ -485,34 +475,31 @@ struct drm_psb_private {
 	unsigned int core_freq;
 	uint32_t iLVDS_enable;
 
-	/* MID specific */
+	 
 	bool use_msi;
 	bool has_gct;
 	struct oaktrail_gct_data gct_data;
 
-	/* Oaktrail HDMI state */
+	 
 	struct oaktrail_hdmi_dev *hdmi_priv;
 
-	/* Register state */
+	 
 	struct psb_save_area regs;
 
-	/* Hotplug handling */
+	 
 	struct work_struct hotplug_work;
 
-	/* LID-Switch */
+	 
 	spinlock_t lid_lock;
 	struct timer_list lid_timer;
 	struct psb_intel_opregion opregion;
 	u32 lid_last_state;
 
-	/* Watchdog */
+	 
 	uint32_t apm_reg;
 	uint16_t apm_base;
 
-	/*
-	 * Used for modifying backlight from
-	 * xrandr -- consider removing and using HAL instead
-	 */
+	 
 	struct intel_scu_ipc_dev *scu;
 	struct backlight_device *backlight_device;
 	struct drm_property *backlight_property;
@@ -531,7 +518,7 @@ struct drm_psb_private {
 	u32 pipeconf[3];
 	u32 dspcntr[3];
 
-	bool dplla_96mhz;	/* DPLL data from the VBT */
+	bool dplla_96mhz;	 
 
 	struct {
 		int rate;
@@ -552,32 +539,32 @@ static inline struct drm_psb_private *to_drm_psb_private(struct drm_device *dev)
 	return container_of(dev, struct drm_psb_private, dev);
 }
 
-/* Operations for each board type */
+ 
 struct psb_ops {
 	const char *name;
-	int pipes;		/* Number of output pipes */
-	int crtcs;		/* Number of CRTCs */
-	int sgx_offset;		/* Base offset of SGX device */
-	int hdmi_mask;		/* Mask of HDMI CRTCs */
-	int lvds_mask;		/* Mask of LVDS CRTCs */
-	int sdvo_mask;		/* Mask of SDVO CRTCs */
-	int cursor_needs_phys;  /* If cursor base reg need physical address */
+	int pipes;		 
+	int crtcs;		 
+	int sgx_offset;		 
+	int hdmi_mask;		 
+	int lvds_mask;		 
+	int sdvo_mask;		 
+	int cursor_needs_phys;   
 
-	/* Sub functions */
+	 
 	struct drm_crtc_helper_funcs const *crtc_helper;
 	const struct gma_clock_funcs *clock_funcs;
 
-	/* Setup hooks */
+	 
 	int (*chip_setup)(struct drm_device *dev);
 	void (*chip_teardown)(struct drm_device *dev);
-	/* Optional helper caller after modeset */
+	 
 	void (*errata)(struct drm_device *dev);
 
-	/* Display management hooks */
+	 
 	int (*output_init)(struct drm_device *dev);
 	int (*hotplug)(struct drm_device *dev);
 	void (*hotplug_enable)(struct drm_device *dev, bool on);
-	/* Power management hooks */
+	 
 	void (*init_pm)(struct drm_device *dev);
 	int (*save_regs)(struct drm_device *dev);
 	int (*restore_regs)(struct drm_device *dev);
@@ -590,29 +577,29 @@ struct psb_ops {
 
 	void (*lvds_bl_power)(struct drm_device *dev, bool on);
 
-	/* Backlight */
+	 
 	int (*backlight_init)(struct drm_device *dev);
 	void (*backlight_set)(struct drm_device *dev, int level);
 	int (*backlight_get)(struct drm_device *dev);
 	const char *backlight_name;
 
-	int i2c_bus;		/* I2C bus identifier for Moorestown */
+	int i2c_bus;		 
 };
 
-/* psb_lid.c */
+ 
 extern void psb_lid_timer_init(struct drm_psb_private *dev_priv);
 extern void psb_lid_timer_takedown(struct drm_psb_private *dev_priv);
 
-/* modesetting */
+ 
 extern void psb_modeset_init(struct drm_device *dev);
 extern void psb_modeset_cleanup(struct drm_device *dev);
 
-/* framebuffer */
+ 
 struct drm_framebuffer *psb_framebuffer_create(struct drm_device *dev,
 					       const struct drm_mode_fb_cmd2 *mode_cmd,
 					       struct drm_gem_object *obj);
 
-/* fbdev */
+ 
 #if defined(CONFIG_DRM_FBDEV_EMULATION)
 void psb_fbdev_setup(struct drm_psb_private *dev_priv);
 #else
@@ -620,42 +607,42 @@ static inline void psb_fbdev_setup(struct drm_psb_private *dev_priv)
 { }
 #endif
 
-/* backlight.c */
+ 
 int gma_backlight_init(struct drm_device *dev);
 void gma_backlight_exit(struct drm_device *dev);
 void gma_backlight_disable(struct drm_device *dev);
 void gma_backlight_enable(struct drm_device *dev);
 void gma_backlight_set(struct drm_device *dev, int v);
 
-/* oaktrail_crtc.c */
+ 
 extern const struct drm_crtc_helper_funcs oaktrail_helper_funcs;
 
-/* oaktrail_lvds.c */
+ 
 extern void oaktrail_lvds_init(struct drm_device *dev,
 		    struct psb_intel_mode_device *mode_dev);
 
-/* psb_intel_display.c */
+ 
 extern const struct drm_crtc_helper_funcs psb_intel_helper_funcs;
 
-/* psb_intel_lvds.c */
+ 
 extern const struct drm_connector_helper_funcs
 					psb_intel_lvds_connector_helper_funcs;
 extern const struct drm_connector_funcs psb_intel_lvds_connector_funcs;
 
-/* gem.c */
+ 
 extern int psb_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 			struct drm_mode_create_dumb *args);
 
-/* psb_device.c */
+ 
 extern const struct psb_ops psb_chip_ops;
 
-/* oaktrail_device.c */
+ 
 extern const struct psb_ops oaktrail_chip_ops;
 
-/* cdv_device.c */
+ 
 extern const struct psb_ops cdv_chip_ops;
 
-/* Utilities */
+ 
 static inline uint32_t REGISTER_READ(struct drm_device *dev, uint32_t reg)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -671,7 +658,7 @@ static inline uint32_t REGISTER_READ_AUX(struct drm_device *dev, uint32_t reg)
 #define REG_READ(reg)	       REGISTER_READ(dev, (reg))
 #define REG_READ_AUX(reg)      REGISTER_READ_AUX(dev, (reg))
 
-/* Useful for post reads */
+ 
 static inline uint32_t REGISTER_READ_WITH_AUX(struct drm_device *dev,
 					      uint32_t reg, int aux)
 {

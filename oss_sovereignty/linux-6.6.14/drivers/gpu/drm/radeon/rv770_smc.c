@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -298,7 +276,7 @@ int rv770_copy_bytes_to_smc(struct radeon_device *rdev,
 
 	spin_lock_irqsave(&rdev->smc_idx_lock, flags);
 	while (byte_count >= 4) {
-		/* SMC address space is BE */
+		 
 		data = (src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3];
 
 		ret = rv770_set_smc_sram_address(rdev, addr, limit);
@@ -312,7 +290,7 @@ int rv770_copy_bytes_to_smc(struct radeon_device *rdev,
 		addr += 4;
 	}
 
-	/* RMW for final bytes */
+	 
 	if (byte_count > 0) {
 		data = 0;
 
@@ -325,7 +303,7 @@ int rv770_copy_bytes_to_smc(struct radeon_device *rdev,
 		extra_shift = 8 * (4 - byte_count);
 
 		while (byte_count > 0) {
-			/* SMC address space is BE */
+			 
 			data = (data << 8) + *src++;
 			byte_count--;
 		}
@@ -368,7 +346,7 @@ static int rv770_program_interrupt_vectors(struct radeon_device *rdev,
 	}
 
 	for (i = 0; i < byte_count; i += 4) {
-		/* SMC address space is BE */
+		 
 		tmp = (src[i] << 24) | (src[i + 1] << 16) | (src[i + 2] << 8) | src[i + 3];
 
 		WREG32(SMC_ISR_FFD8_FFDB + i, tmp);
@@ -572,14 +550,14 @@ int rv770_load_smc_ucode(struct radeon_device *rdev,
 		BUG();
 	}
 
-	/* load the ucode */
+	 
 	ucode_data = (const u8 *)rdev->smc_fw->data;
 	ret = rv770_copy_bytes_to_smc(rdev, ucode_start_address,
 				      ucode_data, ucode_size, limit);
 	if (ret)
 		return ret;
 
-	/* set up the int vectors */
+	 
 	ret = rv770_program_interrupt_vectors(rdev, int_vect_start_address,
 					      int_vect, int_vect_size);
 	if (ret)

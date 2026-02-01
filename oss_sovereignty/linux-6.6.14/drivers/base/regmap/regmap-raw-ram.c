@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - Memory region with raw access
-//
-// This is intended for testing only
-//
-// Copyright (c) 2023, Arm Ltd
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/err.h>

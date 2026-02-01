@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef _LINUX_REF_TRACKER_H
 #define _LINUX_REF_TRACKER_H
 #include <linux/refcount.h>
@@ -15,8 +15,8 @@ struct ref_tracker_dir {
 	refcount_t		untracked;
 	refcount_t		no_tracker;
 	bool			dead;
-	struct list_head	list; /* List of active trackers */
-	struct list_head	quarantine; /* List of dead trackers */
+	struct list_head	list;  
+	struct list_head	quarantine;  
 	char			name[32];
 #endif
 };
@@ -54,7 +54,7 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
 int ref_tracker_free(struct ref_tracker_dir *dir,
 		     struct ref_tracker **trackerp);
 
-#else /* CONFIG_REF_TRACKER */
+#else  
 
 static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
 					unsigned int quarantine_count,
@@ -97,4 +97,4 @@ static inline int ref_tracker_free(struct ref_tracker_dir *dir,
 
 #endif
 
-#endif /* _LINUX_REF_TRACKER_H */
+#endif  

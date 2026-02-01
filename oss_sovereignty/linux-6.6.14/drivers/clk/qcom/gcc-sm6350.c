@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -2550,7 +2547,7 @@ static int gcc_sm6350_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Disable the GPLL0 active input to NPU and GPU via MISC registers */
+	 
 	regmap_update_bits(regmap, 0x4cf00, 0x3, 0x3);
 	regmap_update_bits(regmap, 0x45f00, 0x3, 0x3);
 

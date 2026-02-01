@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright IBM Corp. 2023
- * Author(s): Thomas Richter <tmricht@linux.ibm.com>
- */
+
+ 
 
 #include <string.h>
 

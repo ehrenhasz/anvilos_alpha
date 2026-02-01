@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -290,7 +288,7 @@ static int mt76x0e_resume(struct pci_dev *pdev)
 
 	return mt76x0e_init_hardware(dev, true);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct pci_device_id mt76x0e_device_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_MEDIATEK, 0x7610) },
@@ -312,7 +310,7 @@ static struct pci_driver mt76x0e_driver = {
 #ifdef CONFIG_PM
 	.suspend	= mt76x0e_suspend,
 	.resume		= mt76x0e_resume,
-#endif /* CONFIG_PM */
+#endif  
 };
 
 module_pci_driver(mt76x0e_driver);

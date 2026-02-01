@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/venc.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * VENC settings from TI's DSS driver
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "VENC"
 
@@ -31,7 +24,7 @@
 #include "dss.h"
 #include "dss_features.h"
 
-/* Venc registers */
+ 
 #define VENC_REV_ID				0x00
 #define VENC_STATUS				0x04
 #define VENC_F_CONTROL				0x08
@@ -119,13 +112,13 @@ struct venc_config {
 	u32 gen_ctrl;
 };
 
-/* from TRM */
+ 
 static const struct venc_config venc_config_pal_trm = {
 	.f_control				= 0,
 	.vidout_ctrl				= 1,
 	.sync_ctrl				= 0x40,
-	.llen					= 0x35F, /* 863 */
-	.flens					= 0x270, /* 624 */
+	.llen					= 0x35F,  
+	.flens					= 0x270,  
 	.hfltr_ctrl				= 0,
 	.cc_carr_wss_carr			= 0x2F7225ED,
 	.c_phase				= 0,
@@ -164,7 +157,7 @@ static const struct venc_config venc_config_pal_trm = {
 	.gen_ctrl				= 0x00FF0000,
 };
 
-/* from TRM */
+ 
 static const struct venc_config venc_config_ntsc_trm = {
 	.f_control				= 0,
 	.vidout_ctrl				= 1,
@@ -335,8 +328,8 @@ static void venc_reset(void)
 	}
 
 #ifdef CONFIG_FB_OMAP2_DSS_SLEEP_AFTER_VENC_RESET
-	/* the magical sleep that makes things work */
-	/* XXX more info? What bug this circumvents? */
+	 
+	 
 	msleep(20);
 #endif
 }
@@ -396,7 +389,7 @@ static int venc_power_on(struct omap_dss_device *dssdev)
 
 	if (venc.type == OMAP_DSS_VENC_TYPE_COMPOSITE)
 		l |= 1 << 1;
-	else /* S-Video */
+	else  
 		l |= (1 << 0) | (1 << 2);
 
 	if (venc.invert_polarity == false)
@@ -488,7 +481,7 @@ static void venc_set_timings(struct omap_dss_device *dssdev,
 
 	mutex_lock(&venc.venc_lock);
 
-	/* Reset WSS data when the TV standard changes. */
+	 
 	if (memcmp(&venc.timings, timings, sizeof(*timings)))
 		venc.wss_data = 0;
 
@@ -525,7 +518,7 @@ static void venc_get_timings(struct omap_dss_device *dssdev,
 
 static u32 venc_get_wss(struct omap_dss_device *dssdev)
 {
-	/* Invert due to VENC_L21_WC_CTL:INV=1 */
+	 
 	return (venc.wss_data >> 8) ^ 0xfffff;
 }
 
@@ -540,7 +533,7 @@ static int venc_set_wss(struct omap_dss_device *dssdev, u32 wss)
 
 	config = venc_timings_to_config(&venc.timings);
 
-	/* Invert due to VENC_L21_WC_CTL:INV=1 */
+	 
 	venc.wss_data = (wss ^ 0xfffff) << 8;
 
 	r = venc_runtime_get();
@@ -799,7 +792,7 @@ err:
 	return 0;
 }
 
-/* VENC HW IP initialisation */
+ 
 static int venc_bind(struct device *dev, struct device *master, void *data)
 {
 	struct platform_device *pdev = to_platform_device(dev);

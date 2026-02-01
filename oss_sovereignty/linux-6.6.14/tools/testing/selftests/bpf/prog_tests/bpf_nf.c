@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <linux/netfilter/nf_conntrack_common.h>
@@ -67,7 +67,7 @@ static void test_bpf_nf_ct(int mode)
 	if (!ASSERT_OK_PTR(skel, "test_bpf_nf__open_and_load"))
 		return;
 
-	/* Enable connection tracking */
+	 
 	snprintf(cmd, sizeof(cmd), iptables, "-A");
 	if (!ASSERT_OK(system(cmd), cmd))
 		goto end;
@@ -113,7 +113,7 @@ static void test_bpf_nf_ct(int mode)
 	ASSERT_EQ(skel->data->test_alloc_entry, 0, "Test for alloc new entry");
 	ASSERT_EQ(skel->data->test_insert_entry, 0, "Test for insert new entry");
 	ASSERT_EQ(skel->data->test_succ_lookup, 0, "Test for successful lookup");
-	/* allow some tolerance for test_delta_timeout value to avoid races. */
+	 
 	ASSERT_GT(skel->bss->test_delta_timeout, 8, "Test for min ct timeout update");
 	ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
 	ASSERT_EQ(skel->bss->test_insert_lookup_mark, 77, "Test for insert and lookup mark value");

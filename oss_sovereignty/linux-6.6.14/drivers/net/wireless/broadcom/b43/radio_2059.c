@@ -1,18 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  IEEE 802.11n 2059 radio device data tables
-
-  Copyright (c) 2011 Rafał Miłecki <zajec5@gmail.com>
-
-
-*/
+ 
 
 #include "b43.h"
 #include "radio_2059.h"
 
-/* Extracted from MMIO dump of 6.30.223.141 */
+ 
 static u16 r2059_phy_rev1_init[][2] = {
 	{ 0x051, 0x70 }, { 0x05a, 0x03 }, { 0x079, 0x01 }, { 0x082, 0x70 },
 	{ 0x083, 0x00 }, { 0x084, 0x70 }, { 0x09a, 0x7f }, { 0x0b6, 0x10 },
@@ -52,9 +44,7 @@ static u16 r2059_phy_rev1_init[][2] = {
 	.phy_regs.bw5	= r4,	\
 	.phy_regs.bw6	= r5
 
-/* Extracted from MMIO dump of 6.30.223.141
- * TODO: Values for channels 12 & 13 are outdated (from some old 5.x driver)!
- */
+ 
 static const struct b43_phy_ht_channeltab_e_radio2059 b43_phy_ht_channeltab_radio2059[] = {
 	{
 		.freq			= 2412,

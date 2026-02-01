@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Platform Management Framework Driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- */
+
+ 
 
 #include <linux/string_choices.h>
 #include <linux/workqueue.h>
@@ -39,7 +32,7 @@ static void amd_pmf_cnqf_dump_defaults(struct apmf_dyn_slider_output *data, int 
 	pr_debug("size: %u\n", data->size);
 	pr_debug("flags: 0x%x\n", data->flags);
 
-	/* Time constants */
+	 
 	pr_debug("t_perf_to_turbo: %u ms\n", data->t_perf_to_turbo);
 	pr_debug("t_balanced_to_perf: %u ms\n", data->t_balanced_to_perf);
 	pr_debug("t_quiet_to_balanced: %u ms\n", data->t_quiet_to_balanced);
@@ -162,11 +155,7 @@ int amd_pmf_trans_cnqf(struct amd_pmf_dev *dev, int socket_power, ktime_t time_l
 	if (is_pprof_balanced(dev)) {
 		amd_pmf_set_cnqf(dev, src, config_store.current_mode, NULL);
 	} else {
-		/*
-		 * Return from here if the platform_profile is not balanced
-		 * so that preference is given to user mode selection, rather
-		 * than enforcing CnQF to run all the time (if enabled)
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -186,7 +175,7 @@ int amd_pmf_trans_cnqf(struct amd_pmf_dev *dev, int socket_power, ktime_t time_l
 		if (tp->timer >= tp->time_constant && tp->count) {
 			avg_power = tp->total_power / tp->count;
 
-			/* Reset the indices */
+			 
 			tp->timer = 0;
 			tp->total_power = 0;
 			tp->count = 0;
@@ -216,7 +205,7 @@ int amd_pmf_trans_cnqf(struct amd_pmf_dev *dev, int socket_power, ktime_t time_l
 #endif
 
 	for (j = 0; j < CNQF_TRANSITION_MAX; j++) {
-		/* apply the highest priority */
+		 
 		if (config_store.trans_param[src][j].priority) {
 			if (config_store.current_mode !=
 			    config_store.trans_param[src][j].target_mode) {
@@ -272,7 +261,7 @@ static void amd_pmf_update_mode_set(int idx, struct apmf_dyn_slider_output *out)
 {
 	struct cnqf_mode_settings *ms;
 
-	/* Quiet Mode */
+	 
 	ms = &config_store.mode_set[idx][CNQF_MODE_QUIET];
 	ms->power_floor = out->ps[APMF_CNQF_QUIET].pfloor;
 	ms->power_control.fppt = out->ps[APMF_CNQF_QUIET].fppt;
@@ -286,7 +275,7 @@ static void amd_pmf_update_mode_set(int idx, struct apmf_dyn_slider_output *out)
 		out->ps[APMF_CNQF_QUIET].stt_skintemp[STT_TEMP_HS2];
 	ms->fan_control.fan_id = out->ps[APMF_CNQF_QUIET].fan_id;
 
-	/* Balance Mode */
+	 
 	ms = &config_store.mode_set[idx][CNQF_MODE_BALANCE];
 	ms->power_floor = out->ps[APMF_CNQF_BALANCE].pfloor;
 	ms->power_control.fppt = out->ps[APMF_CNQF_BALANCE].fppt;
@@ -300,7 +289,7 @@ static void amd_pmf_update_mode_set(int idx, struct apmf_dyn_slider_output *out)
 		out->ps[APMF_CNQF_BALANCE].stt_skintemp[STT_TEMP_HS2];
 	ms->fan_control.fan_id = out->ps[APMF_CNQF_BALANCE].fan_id;
 
-	/* Performance Mode */
+	 
 	ms = &config_store.mode_set[idx][CNQF_MODE_PERFORMANCE];
 	ms->power_floor = out->ps[APMF_CNQF_PERFORMANCE].pfloor;
 	ms->power_control.fppt = out->ps[APMF_CNQF_PERFORMANCE].fppt;
@@ -314,7 +303,7 @@ static void amd_pmf_update_mode_set(int idx, struct apmf_dyn_slider_output *out)
 		out->ps[APMF_CNQF_PERFORMANCE].stt_skintemp[STT_TEMP_HS2];
 	ms->fan_control.fan_id = out->ps[APMF_CNQF_PERFORMANCE].fan_id;
 
-	/* Turbo Mode */
+	 
 	ms = &config_store.mode_set[idx][CNQF_MODE_TURBO];
 	ms->power_floor = out->ps[APMF_CNQF_TURBO].pfloor;
 	ms->power_control.fppt = out->ps[APMF_CNQF_TURBO].fppt;
@@ -372,7 +361,7 @@ static int amd_pmf_load_defaults_cnqf(struct amd_pmf_dev *dev)
 		}
 	}
 
-	/* set to initial default values */
+	 
 	config_store.current_mode = CNQF_MODE_BALANCE;
 
 	return 0;
@@ -443,10 +432,7 @@ int amd_pmf_init_cnqf(struct amd_pmf_dev *dev)
 {
 	int ret, src;
 
-	/*
-	 * Note the caller of this function has already checked that both
-	 * APMF_FUNC_DYN_SLIDER_AC and APMF_FUNC_DYN_SLIDER_DC are supported.
-	 */
+	 
 
 	ret = amd_pmf_load_defaults_cnqf(dev);
 	if (ret < 0)
@@ -457,7 +443,7 @@ int amd_pmf_init_cnqf(struct amd_pmf_dev *dev)
 	dev->cnqf_supported = true;
 	dev->cnqf_enabled = amd_pmf_check_flags(dev);
 
-	/* update the thermal for CnQF */
+	 
 	if (dev->cnqf_enabled && is_pprof_balanced(dev)) {
 		src = amd_pmf_cnqf_get_power_source(dev);
 		amd_pmf_set_cnqf(dev, src, config_store.current_mode, NULL);

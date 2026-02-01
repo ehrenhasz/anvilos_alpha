@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Advanced Micro Devices, Inc. All rights reserved.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*.
- * PCI interface for Rembrandt ACP device
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -81,7 +79,7 @@ static void acp_pci_rmb_remove(struct pci_dev *pci)
 	sof_pci_remove(pci);
 }
 
-/* PCI IDs */
+ 
 static const struct pci_device_id rmb_pci_ids[] = {
 		{ PCI_DEVICE(PCI_VENDOR_ID_AMD, ACP_PCI_DEV_ID),
 		.driver_data = (unsigned long)&rembrandt_desc},
@@ -89,7 +87,7 @@ static const struct pci_device_id rmb_pci_ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, rmb_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_amd_rmb_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = rmb_pci_ids,

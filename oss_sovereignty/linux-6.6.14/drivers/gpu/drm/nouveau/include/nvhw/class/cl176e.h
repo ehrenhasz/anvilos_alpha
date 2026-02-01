@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef _cl176e_h_
 #define _cl176e_h_
 

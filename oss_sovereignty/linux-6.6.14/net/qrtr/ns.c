@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020, Linaro Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/qrtr.h>
@@ -77,7 +73,7 @@ static struct qrtr_node *node_get(unsigned int node_id)
 	if (node)
 		return node;
 
-	/* If node didn't exist, allocate and insert it to the tree */
+	 
 	node = kzalloc(sizeof(*node), GFP_KERNEL);
 	if (!node)
 		return NULL;
@@ -203,7 +199,7 @@ static int announce_servers(struct sockaddr_qrtr *sq)
 	if (!node)
 		return 0;
 
-	/* Announce the list of servers registered in this node */
+	 
 	xa_for_each(&node->servers, index, srv) {
 		ret = service_announce_new(sq, srv);
 		if (ret < 0) {
@@ -239,7 +235,7 @@ static struct qrtr_server *server_add(unsigned int service,
 	if (!node)
 		goto err;
 
-	/* Delete the old server on the same port */
+	 
 	old = xa_store(&node->servers, port, srv, GFP_KERNEL);
 	if (old) {
 		if (xa_is_err(old)) {
@@ -273,11 +269,11 @@ static int server_del(struct qrtr_node *node, unsigned int port, bool bcast)
 
 	xa_erase(&node->servers, port);
 
-	/* Broadcast the removal of local servers */
+	 
 	if (srv->node == qrtr_ns.local_node && bcast)
 		service_announce_del(&qrtr_ns.bcast_sq, srv);
 
-	/* Announce the service's disappearance to observers */
+	 
 	list_for_each(li, &qrtr_ns.lookups) {
 		lookup = container_of(li, struct qrtr_lookup, li);
 		if (lookup->service && lookup->service != srv->service)
@@ -316,7 +312,7 @@ static int say_hello(struct sockaddr_qrtr *dest)
 	return ret;
 }
 
-/* Announce the list of servers registered on the local node */
+ 
 static int ctrl_cmd_hello(struct sockaddr_qrtr *sq)
 {
 	int ret;
@@ -347,11 +343,11 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
 	if (!node)
 		return 0;
 
-	/* Advertise removal of this client to all servers of remote node */
+	 
 	xa_for_each(&node->servers, index, srv)
 		server_del(node, srv->port, true);
 
-	/* Advertise the removal of this client to all local servers */
+	 
 	local_node = node_get(qrtr_ns.local_node);
 	if (!local_node)
 		return 0;
@@ -396,15 +392,15 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
 	iv.iov_base = &pkt;
 	iv.iov_len = sizeof(pkt);
 
-	/* Don't accept spoofed messages */
+	 
 	if (from->sq_node != node_id)
 		return -EINVAL;
 
-	/* Local DEL_CLIENT messages comes from the port being closed */
+	 
 	if (from->sq_node == qrtr_ns.local_node && from->sq_port != port)
 		return -EINVAL;
 
-	/* Remove any lookups by this client */
+	 
 	list_for_each_safe(li, tmp, &qrtr_ns.lookups) {
 		lookup = container_of(li, struct qrtr_lookup, li);
 		if (lookup->sq.sq_node != node_id)
@@ -416,15 +412,12 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
 		kfree(lookup);
 	}
 
-	/* Remove the server belonging to this port but don't broadcast
-	 * DEL_SERVER. Neighbours would've already removed the server belonging
-	 * to this port due to the DEL_CLIENT broadcast from qrtr_port_remove().
-	 */
+	 
 	node = node_get(node_id);
 	if (node)
 		server_del(node, port, false);
 
-	/* Advertise the removal of this client to all local servers */
+	 
 	local_node = node_get(qrtr_ns.local_node);
 	if (!local_node)
 		return 0;
@@ -460,7 +453,7 @@ static int ctrl_cmd_new_server(struct sockaddr_qrtr *from,
 	struct list_head *li;
 	int ret = 0;
 
-	/* Ignore specified node and port for local servers */
+	 
 	if (from->sq_node == qrtr_ns.local_node) {
 		node_id = from->sq_node;
 		port = from->sq_port;
@@ -478,7 +471,7 @@ static int ctrl_cmd_new_server(struct sockaddr_qrtr *from,
 		}
 	}
 
-	/* Notify any potential lookups about the new server */
+	 
 	list_for_each(li, &qrtr_ns.lookups) {
 		lookup = container_of(li, struct qrtr_lookup, li);
 		if (lookup->service && lookup->service != service)
@@ -498,13 +491,13 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
 {
 	struct qrtr_node *node;
 
-	/* Ignore specified node and port for local servers*/
+	 
 	if (from->sq_node == qrtr_ns.local_node) {
 		node_id = from->sq_node;
 		port = from->sq_port;
 	}
 
-	/* Local servers may only unregister themselves */
+	 
 	if (from->sq_node == qrtr_ns.local_node && from->sq_port != port)
 		return -EINVAL;
 
@@ -527,7 +520,7 @@ static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
 	unsigned long node_idx;
 	unsigned long srv_idx;
 
-	/* Accept only local observers */
+	 
 	if (from->sq_node != qrtr_ns.local_node)
 		return -EINVAL;
 
@@ -553,7 +546,7 @@ static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
 		}
 	}
 
-	/* Empty notification, to indicate end of listing */
+	 
 	lookup_notify(from, NULL, true);
 
 	return 0;

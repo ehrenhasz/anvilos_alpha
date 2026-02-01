@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2005 Ivan Kokshaysky
- * Copyright (C) SAN People
- *
- * Memory Controllers (MC, EBI, SMC, SDRAMC, BFC) - System peripherals
- * registers.
- * Based on AT91RM9200 datasheet revision E.
- */
+ 
+ 
 
 #ifndef _LINUX_MFD_SYSCON_ATMEL_MC_H_
 #define _LINUX_MFD_SYSCON_ATMEL_MC_H_
 
-/* Memory Controller */
+ 
 #define AT91_MC_RCR			0x00
 #define AT91_MC_RCB			BIT(0)
 
@@ -34,7 +27,7 @@
 #define AT91_MC_MPR			0x0c
 #define AT91_MPR_MSTP(n)		GENMASK(2 + ((x) * 4), ((x) * 4))
 
-/* External Bus Interface (EBI) registers */
+ 
 #define AT91_MC_EBI_CSA			0x60
 #define AT91_MC_EBI_CS(n)		BIT(x)
 #define AT91_MC_EBI_NUM_CS		8
@@ -42,7 +35,7 @@
 #define AT91_MC_EBI_CFGR		0x64
 #define AT91_MC_EBI_DBPUC		BIT(0)
 
-/* Static Memory Controller (SMC) registers */
+ 
 #define AT91_MC_SMC_CSR(n)		(0x70 + ((n) * 4))
 #define AT91_MC_SMC_NWS			GENMASK(6, 0)
 #define AT91_MC_SMC_NWS_(x)		((x) << 0)
@@ -64,7 +57,7 @@
 #define AT91_MC_SMC_RWHOLD_(x)		((x) << 28)
 #define AT91_MC_SMC_RWHOLDSETUP_MAX	7
 
-/* SDRAM Controller registers */
+ 
 #define AT91_MC_SDRAMC_MR		0x90
 #define AT91_MC_SDRAMC_MODE		GENMASK(3, 0)
 #define AT91_MC_SDRAMC_MODE_NORMAL	(0 << 0)
@@ -111,7 +104,7 @@
 #define AT91_MC_SDRAMC_ISR		0xb0
 #define AT91_MC_SDRAMC_RES		BIT(0)
 
-/* Burst Flash Controller register */
+ 
 #define AT91_MC_BFC_MR			0xc0
 #define AT91_MC_BFC_BFCOM		GENMASK(1, 0)
 #define AT91_MC_BFC_BFCOM_DISABLED	(0 << 0)
@@ -137,4 +130,4 @@
 #define AT91_MC_BFC_MUXEN		BIT(18)
 #define AT91_MC_BFC_RDYEN		BIT(19)
 
-#endif /* _LINUX_MFD_SYSCON_ATMEL_MC_H_ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SCLP early driver
- *
- * Copyright IBM Corp. 2013
- */
+
+ 
 
 #define KMSG_COMPONENT "sclp_early"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -96,7 +92,7 @@ static void __init sclp_early_facilities_detect(void)
 		break;
 	}
 
-	/* Save IPL information */
+	 
 	sclp_ipl_info.is_valid = 1;
 	if (sccb->fac91 & 0x2)
 		sclp_ipl_info.has_dump = 1;
@@ -112,11 +108,7 @@ static void __init sclp_early_facilities_detect(void)
 	sclp.has_dirq = !!(sccb->cpudirq & 0x80);
 }
 
-/*
- * This function will be called after sclp_early_facilities_detect(), which gets
- * called from early.c code. The sclp_early_facilities_detect() function retrieves
- * and saves the IPL information.
- */
+ 
 void __init sclp_early_get_ipl_info(struct sclp_ipl_info *info)
 {
 	*info = sclp_ipl_info;
@@ -175,10 +167,7 @@ void __init sclp_early_detect(void)
 
 	sclp_early_facilities_detect();
 
-	/*
-	 * Turn off SCLP event notifications.  Also save remote masks in the
-	 * sccb.  These are sufficient to detect sclp console capabilities.
-	 */
+	 
 	sclp_early_set_event_mask(sccb, 0, 0);
 	sclp_early_console_detect(sccb);
 }

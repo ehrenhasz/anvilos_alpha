@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/slab.h>
@@ -162,7 +141,7 @@ void amdgpu_ucode_print_rlc_hdr(const struct common_firmware_header *hdr)
 
 		switch (version_minor) {
 		case 0:
-			/* rlc_hdr v2_0 */
+			 
 			DRM_DEBUG("ucode_feature_version: %u\n",
 				  le32_to_cpu(rlc_hdr->ucode_feature_version));
 			DRM_DEBUG("jt_offset: %u\n", le32_to_cpu(rlc_hdr->jt_offset));
@@ -199,7 +178,7 @@ void amdgpu_ucode_print_rlc_hdr(const struct common_firmware_header *hdr)
 				  le32_to_cpu(rlc_hdr->reg_list_separate_array_offset_bytes));
 			break;
 		case 1:
-			/* rlc_hdr v2_1 */
+			 
 			DRM_DEBUG("reg_list_format_direct_reg_list_length: %u\n",
 				  le32_to_cpu(rlc_hdr_v2_1->reg_list_format_direct_reg_list_length));
 			DRM_DEBUG("save_restore_list_cntl_ucode_ver: %u\n",
@@ -228,7 +207,7 @@ void amdgpu_ucode_print_rlc_hdr(const struct common_firmware_header *hdr)
 				  le32_to_cpu(rlc_hdr_v2_1->save_restore_list_srm_offset_bytes));
 			break;
 		case 2:
-			/* rlc_hdr v2_2 */
+			 
 			DRM_DEBUG("rlc_iram_ucode_size_bytes: %u\n",
 				  le32_to_cpu(rlc_hdr_v2_2->rlc_iram_ucode_size_bytes));
 			DRM_DEBUG("rlc_iram_ucode_offset_bytes: %u\n",
@@ -239,7 +218,7 @@ void amdgpu_ucode_print_rlc_hdr(const struct common_firmware_header *hdr)
 				  le32_to_cpu(rlc_hdr_v2_2->rlc_dram_ucode_offset_bytes));
 			break;
 		case 3:
-			/* rlc_hdr v2_3 */
+			 
 			DRM_DEBUG("rlcp_ucode_version: %u\n",
 				  le32_to_cpu(rlc_hdr_v2_3->rlcp_ucode_version));
 			DRM_DEBUG("rlcp_ucode_feature_version: %u\n",
@@ -258,7 +237,7 @@ void amdgpu_ucode_print_rlc_hdr(const struct common_firmware_header *hdr)
 				  le32_to_cpu(rlc_hdr_v2_3->rlcv_ucode_offset_bytes));
 			break;
 		case 4:
-			/* rlc_hdr v2_4 */
+			 
 			DRM_DEBUG("global_tap_delays_ucode_size_bytes :%u\n",
 				  le32_to_cpu(rlc_hdr_v2_4->global_tap_delays_ucode_size_bytes));
 			DRM_DEBUG("global_tap_delays_ucode_offset_bytes: %u\n",
@@ -1022,13 +1001,10 @@ int amdgpu_ucode_init_bo(struct amdgpu_device *adev)
 	int i;
 	struct amdgpu_firmware_info *ucode = NULL;
 
- /* for baremetal, the ucode is allocated in gtt, so don't need to fill the bo when reset/suspend */
+  
 	if (!amdgpu_sriov_vf(adev) && (amdgpu_in_reset(adev) || adev->in_suspend))
 		return 0;
-	/*
-	 * if SMU loaded firmware, it needn't add SMC, UVD, and VCE
-	 * ucode info here
-	 */
+	 
 	if (adev->firmware.load_type != AMDGPU_FW_LOAD_PSP) {
 		if (amdgpu_sriov_vf(adev))
 			adev->firmware.max_ucodes = AMDGPU_UCODE_ID_MAXIMUM - 3;
@@ -1308,17 +1284,7 @@ void amdgpu_ucode_ip_version_decode(struct amdgpu_device *adev, int block_type, 
 	snprintf(ucode_prefix, len, "%s_%d_%d_%d", ip_name, maj, min, rev);
 }
 
-/*
- * amdgpu_ucode_request - Fetch and validate amdgpu microcode
- *
- * @adev: amdgpu device
- * @fw: pointer to load firmware to
- * @fw_name: firmware to load
- *
- * This is a helper that will use request_firmware and amdgpu_ucode_validate
- * to load and run basic validation on firmware. If the load fails, remap
- * the error code to -ENODEV, so that early_init functions will fail to load.
- */
+ 
 int amdgpu_ucode_request(struct amdgpu_device *adev, const struct firmware **fw,
 			 const char *fw_name)
 {
@@ -1333,11 +1299,7 @@ int amdgpu_ucode_request(struct amdgpu_device *adev, const struct firmware **fw,
 	return err;
 }
 
-/*
- * amdgpu_ucode_release - Release firmware microcode
- *
- * @fw: pointer to firmware to release
- */
+ 
 void amdgpu_ucode_release(const struct firmware **fw)
 {
 	release_firmware(*fw);

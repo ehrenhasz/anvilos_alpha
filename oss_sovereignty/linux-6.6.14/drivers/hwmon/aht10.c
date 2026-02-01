@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * aht10.c - Linux hwmon driver for AHT10/AHT20 Temperature and Humidity sensors
- * Copyright (C) 2020 Johannes Cornelis Draaijer
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/hwmon.h>
@@ -17,29 +14,21 @@
 #define AHT20_MEAS_SIZE		7
 #define AHT20_CRC8_POLY		0x31
 
-/*
- * Poll intervals (in milliseconds)
- */
+ 
 #define AHT10_DEFAULT_MIN_POLL_INTERVAL	2000
 #define AHT10_MIN_POLL_INTERVAL		2000
 
-/*
- * I2C command delays (in microseconds)
- */
+ 
 #define AHT10_MEAS_DELAY	80000
 #define AHT10_CMD_DELAY		350000
 #define AHT10_DELAY_EXTRA	100000
 
-/*
- * Command bytes
- */
+ 
 #define AHT10_CMD_INIT	0b11100001
 #define AHT10_CMD_MEAS	0b10101100
 #define AHT10_CMD_RST	0b10111010
 
-/*
- * Flags in the answer byte/command
- */
+ 
 #define AHT10_CAL_ENABLED	BIT(3)
 #define AHT10_BUSY		BIT(7)
 #define AHT10_MODE_NOR		(BIT(5) | BIT(6))
@@ -57,34 +46,11 @@ static const struct i2c_device_id aht10_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, aht10_id);
 
-/**
- *   struct aht10_data - All the data required to operate an AHT10/AHT20 chip
- *   @client: the i2c client associated with the AHT10/AHT20
- *   @lock: a mutex that is used to prevent parallel access to the
- *          i2c client
- *   @min_poll_interval: the minimum poll interval
- *                   While the poll rate limit is not 100% necessary,
- *                   the datasheet recommends that a measurement
- *                   is not performed too often to prevent
- *                   the chip from warming up due to the heat it generates.
- *                   If it's unwanted, it can be ignored setting it to
- *                   it to 0. Default value is 2000 ms
- *   @previous_poll_time: the previous time that the AHT10/AHT20
- *                        was polled
- *   @temperature: the latest temperature value received from
- *                 the AHT10/AHT20
- *   @humidity: the latest humidity value received from the
- *              AHT10/AHT20
- *   @crc8: crc8 support flag
- *   @meas_size: measurements data size
- */
+ 
 
 struct aht10_data {
 	struct i2c_client *client;
-	/*
-	 * Prevent simultaneous access to the i2c
-	 * client and previous_poll_time
-	 */
+	 
 	struct mutex lock;
 	ktime_t min_poll_interval;
 	ktime_t previous_poll_time;
@@ -94,11 +60,7 @@ struct aht10_data {
 	unsigned int meas_size;
 };
 
-/**
- * aht10_init() - Initialize an AHT10/AHT20 chip
- * @data: the data associated with this AHT10/AHT20 chip
- * Return: 0 if successful, 1 if not
- */
+ 
 static int aht10_init(struct aht10_data *data)
 {
 	const u8 cmd_init[] = {AHT10_CMD_INIT, AHT10_CAL_ENABLED | AHT10_MODE_CYC,
@@ -124,12 +86,7 @@ static int aht10_init(struct aht10_data *data)
 	return 0;
 }
 
-/**
- * aht10_polltime_expired() - check if the minimum poll interval has
- *                                  expired
- * @data: the data containing the time to compare
- * Return: 1 if the minimum poll interval has expired, 0 if not
- */
+ 
 static int aht10_polltime_expired(struct aht10_data *data)
 {
 	ktime_t current_time = ktime_get_boottime();
@@ -140,26 +97,14 @@ static int aht10_polltime_expired(struct aht10_data *data)
 
 DECLARE_CRC8_TABLE(crc8_table);
 
-/**
- * crc8_check() - check crc of the sensor's measurements
- * @raw_data: data frame received from sensor(including crc as the last byte)
- * @count: size of the data frame
- * Return: 0 if successful, 1 if not
- */
+ 
 static int crc8_check(u8 *raw_data, int count)
 {
-	/*
-	 * crc calculated on the whole frame(including crc byte) should yield
-	 * zero in case of correctly received bytes
-	 */
+	 
 	return crc8(crc8_table, raw_data, count, CRC8_INIT_VALUE);
 }
 
-/**
- * aht10_read_values() - read and parse the raw data from the AHT10/AHT20
- * @data: the struct aht10_data to use for the lock
- * Return: 0 if successful, 1 if not
- */
+ 
 static int aht10_read_values(struct aht10_data *data)
 {
 	const u8 cmd_meas[] = {AHT10_CMD_MEAS, 0x33, 0x00};
@@ -214,11 +159,7 @@ static int aht10_read_values(struct aht10_data *data)
 	return 0;
 }
 
-/**
- * aht10_interval_write() - store the given minimum poll interval.
- * Return: 0 on success, -EINVAL if a value lower than the
- *         AHT10_MIN_POLL_INTERVAL is given
- */
+ 
 static ssize_t aht10_interval_write(struct aht10_data *data,
 				    long val)
 {
@@ -226,10 +167,7 @@ static ssize_t aht10_interval_write(struct aht10_data *data,
 	return 0;
 }
 
-/**
- * aht10_interval_read() - read the minimum poll interval
- *                            in milliseconds
- */
+ 
 static ssize_t aht10_interval_read(struct aht10_data *data,
 				   long *val)
 {
@@ -237,9 +175,7 @@ static ssize_t aht10_interval_read(struct aht10_data *data,
 	return 0;
 }
 
-/**
- * aht10_temperature1_read() - read the temperature in millidegrees
- */
+ 
 static int aht10_temperature1_read(struct aht10_data *data, long *val)
 {
 	int res;
@@ -252,9 +188,7 @@ static int aht10_temperature1_read(struct aht10_data *data, long *val)
 	return 0;
 }
 
-/**
- * aht10_humidity1_read() - read the relative humidity in millipercent
- */
+ 
 static int aht10_humidity1_read(struct aht10_data *data, long *val)
 {
 	int res;

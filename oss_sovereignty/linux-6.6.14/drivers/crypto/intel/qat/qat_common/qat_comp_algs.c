@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include <linux/crypto.h>
 #include <crypto/acompress.h>
 #include <crypto/internal/acompress.h>
@@ -334,11 +334,7 @@ static int qat_comp_alg_compress_decompress(struct acomp_req *areq, enum directi
 
 	qat_req->dst.is_null = false;
 
-	/* Handle acomp requests that require the allocation of a destination
-	 * buffer. The size of the destination buffer is double the source
-	 * buffer (rounded up to the size of a page) to fit the decompressed
-	 * output or an expansion on the data for compression.
-	 */
+	 
 	if (!areq->dst) {
 		qat_req->dst.is_null = true;
 

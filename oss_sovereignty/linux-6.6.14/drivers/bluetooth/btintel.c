@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth support for Intel devices
- *
- *  Copyright (C) 2015  Intel Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -33,7 +28,7 @@ enum {
 	DSM_SET_RESET_METHOD = 3,
 };
 
-/* structure to store the PPAG data read from ACPI table */
+ 
 struct btintel_ppag {
 	u32	domain;
 	u32     mode;
@@ -81,11 +76,7 @@ int btintel_check_bdaddr(struct hci_dev *hdev)
 
 	bda = (struct hci_rp_read_bd_addr *)skb->data;
 
-	/* For some Intel based controllers, the default Bluetooth device
-	 * address 00:03:19:9E:8B:00 can be found. These controllers are
-	 * fully operational, but have the danger of duplicate addresses
-	 * and that in turn can cause problems with Bluetooth operation.
-	 */
+	 
 	if (!bacmp(&bda->bdaddr, BDADDR_INTEL)) {
 		bt_dev_err(hdev, "Found Intel default device address (%pMR)",
 			   &bda->bdaddr);
@@ -120,11 +111,7 @@ int btintel_exit_mfg(struct hci_dev *hdev, bool reset, bool patched)
 	u8 param[] = { 0x00, 0x00 };
 	struct sk_buff *skb;
 
-	/* The 2nd command parameter specifies the manufacturing exit method:
-	 * 0x00: Just disable the manufacturing mode (0x00).
-	 * 0x01: Disable manufacturing mode and reset with patches deactivated.
-	 * 0x02: Disable manufacturing mode and reset with patches activated.
-	 */
+	 
 	if (reset)
 		param[1] |= patched ? 0x02 : 0x01;
 
@@ -232,11 +219,7 @@ static int btintel_set_diag_combined(struct hci_dev *hdev, bool enable)
 {
 	int ret;
 
-	/* Legacy ROM device needs to be in the manufacturer mode to apply
-	 * diagnostic setting
-	 *
-	 * This flag is set after reading the Intel version.
-	 */
+	 
 	if (btintel_test_flag(hdev, INTEL_ROM_LEGACY))
 		ret = btintel_set_diag_mfg(hdev, enable);
 	else
@@ -282,30 +265,23 @@ int btintel_version_info(struct hci_dev *hdev, struct intel_version *ver)
 {
 	const char *variant;
 
-	/* The hardware platform number has a fixed value of 0x37 and
-	 * for now only accept this single value.
-	 */
+	 
 	if (ver->hw_platform != 0x37) {
 		bt_dev_err(hdev, "Unsupported Intel hardware platform (%u)",
 			   ver->hw_platform);
 		return -EINVAL;
 	}
 
-	/* Check for supported iBT hardware variants of this firmware
-	 * loading method.
-	 *
-	 * This check has been put in place to ensure correct forward
-	 * compatibility options when newer hardware variants come along.
-	 */
+	 
 	switch (ver->hw_variant) {
-	case 0x07:	/* WP - Legacy ROM */
-	case 0x08:	/* StP - Legacy ROM */
-	case 0x0b:      /* SfP */
-	case 0x0c:      /* WsP */
-	case 0x11:      /* JfP */
-	case 0x12:      /* ThP */
-	case 0x13:      /* HrP */
-	case 0x14:      /* CcP */
+	case 0x07:	 
+	case 0x08:	 
+	case 0x0b:       
+	case 0x0c:       
+	case 0x11:       
+	case 0x12:       
+	case 0x13:       
+	case 0x14:       
 		break;
 	default:
 		bt_dev_err(hdev, "Unsupported Intel hardware variant (%u)",
@@ -385,9 +361,7 @@ int btintel_load_ddc_config(struct hci_dev *hdev, const char *ddc_name)
 
 	fw_ptr = fw->data;
 
-	/* DDC file contains one or more DDC structure which has
-	 * Length (1 byte), DDC ID (2 bytes), and DDC value (Length - 2).
-	 */
+	 
 	while (fw->size > fw_ptr - fw->data) {
 		u8 cmd_plen = fw_ptr[0] + sizeof(u8);
 
@@ -460,27 +434,20 @@ static int btintel_version_info_tlv(struct hci_dev *hdev,
 {
 	const char *variant;
 
-	/* The hardware platform number has a fixed value of 0x37 and
-	 * for now only accept this single value.
-	 */
+	 
 	if (INTEL_HW_PLATFORM(version->cnvi_bt) != 0x37) {
 		bt_dev_err(hdev, "Unsupported Intel hardware platform (0x%2x)",
 			   INTEL_HW_PLATFORM(version->cnvi_bt));
 		return -EINVAL;
 	}
 
-	/* Check for supported iBT hardware variants of this firmware
-	 * loading method.
-	 *
-	 * This check has been put in place to ensure correct forward
-	 * compatibility options when newer hardware variants come along.
-	 */
+	 
 	switch (INTEL_HW_VARIANT(version->cnvi_bt)) {
-	case 0x17:	/* TyP */
-	case 0x18:	/* Slr */
-	case 0x19:	/* Slr-F */
-	case 0x1b:      /* Mgr */
-	case 0x1c:	/* Gale Peak (GaP) */
+	case 0x17:	 
+	case 0x18:	 
+	case 0x19:	 
+	case 0x1b:       
+	case 0x1c:	 
 		break;
 	default:
 		bt_dev_err(hdev, "Unsupported Intel hardware variant (0x%x)",
@@ -491,17 +458,14 @@ static int btintel_version_info_tlv(struct hci_dev *hdev,
 	switch (version->img_type) {
 	case 0x01:
 		variant = "Bootloader";
-		/* It is required that every single firmware fragment is acknowledged
-		 * with a command complete event. If the boot parameters indicate
-		 * that this bootloader does not send them, then abort the setup.
-		 */
+		 
 		if (version->limited_cce != 0x00) {
 			bt_dev_err(hdev, "Unsupported Intel firmware loading method (0x%x)",
 				   version->limited_cce);
 			return -EINVAL;
 		}
 
-		/* Secure boot engine type should be either 1 (ECDSA) or 0 (RSA) */
+		 
 		if (version->sbe_type > 0x01) {
 			bt_dev_err(hdev, "Unsupported Intel secure boot engine type (0x%x)",
 				   version->sbe_type);
@@ -543,24 +507,20 @@ static int btintel_parse_version_tlv(struct hci_dev *hdev,
 				     struct intel_version_tlv *version,
 				     struct sk_buff *skb)
 {
-	/* Consume Command Complete Status field */
+	 
 	skb_pull(skb, 1);
 
-	/* Event parameters contatin multiple TLVs. Read each of them
-	 * and only keep the required data. Also, it use existing legacy
-	 * version field like hw_platform, hw_variant, and fw_variant
-	 * to keep the existing setup flow
-	 */
+	 
 	while (skb->len) {
 		struct intel_tlv *tlv;
 
-		/* Make sure skb has a minimum length of the header */
+		 
 		if (skb->len < sizeof(*tlv))
 			return -EINVAL;
 
 		tlv = (struct intel_tlv *)skb->data;
 
-		/* Make sure skb has a enough data */
+		 
 		if (skb->len < tlv->len + sizeof(*tlv))
 			return -EINVAL;
 
@@ -584,10 +544,7 @@ static int btintel_parse_version_tlv(struct hci_dev *hdev,
 			version->img_type = tlv->val[0];
 			break;
 		case INTEL_TLV_TIME_STAMP:
-			/* If image type is Operational firmware (0x03), then
-			 * running FW Calendar Week and Year information can
-			 * be extracted from Timestamp information
-			 */
+			 
 			version->min_fw_build_cw = tlv->val[0];
 			version->min_fw_build_yy = tlv->val[1];
 			version->timestamp = get_unaligned_le16(tlv->val);
@@ -596,10 +553,7 @@ static int btintel_parse_version_tlv(struct hci_dev *hdev,
 			version->build_type = tlv->val[0];
 			break;
 		case INTEL_TLV_BUILD_NUM:
-			/* If image type is Operational firmware (0x03), then
-			 * running FW build number can be extracted from the
-			 * Build information
-			 */
+			 
 			version->min_fw_build_nn = tlv->val[0];
 			version->build_num = get_unaligned_le32(tlv->val);
 			break;
@@ -631,10 +585,10 @@ static int btintel_parse_version_tlv(struct hci_dev *hdev,
 							sizeof(bdaddr_t));
 			break;
 		default:
-			/* Ignore rest of information */
+			 
 			break;
 		}
-		/* consume the current tlv and move to next*/
+		 
 		skb_pull(skb, tlv->len + sizeof(*tlv));
 	}
 
@@ -670,7 +624,7 @@ static int btintel_read_version_tlv(struct hci_dev *hdev,
 	return 0;
 }
 
-/* ------- REGMAP IBT SUPPORT ------- */
+ 
 
 #define IBT_REG_MODE_8BIT  0x00
 #define IBT_REG_MODE_16BIT 0x01
@@ -721,7 +675,7 @@ static int regmap_ibt_read(void *context, const void *addr, size_t reg_size,
 		return -EINVAL;
 	}
 
-	/* regmap provides a little-endian formatted addr */
+	 
 	cp.addr = *(__le32 *)addr;
 	cp.len = val_size;
 
@@ -791,7 +745,7 @@ static int regmap_ibt_gather_write(void *context,
 	if (!cp)
 		return -ENOMEM;
 
-	/* regmap provides a little-endian formatted addr/value */
+	 
 	cp->addr = *(__le32 *)addr;
 	cp->mode = mode;
 	cp->len = val_size;
@@ -815,9 +769,7 @@ done:
 
 static int regmap_ibt_write(void *context, const void *data, size_t count)
 {
-	/* data contains register+value, since we only support 32bit addr,
-	 * minimum data size is 4 bytes.
-	 */
+	 
 	if (WARN_ONCE(count < 4, "Invalid register access"))
 		return -EINVAL;
 
@@ -838,7 +790,7 @@ static const struct regmap_bus regmap_ibt = {
 	.val_format_endian_default = REGMAP_ENDIAN_LITTLE,
 };
 
-/* Config is the same for all register regions */
+ 
 static const struct regmap_config regmap_ibt_cfg = {
 	.name      = "btintel_regmap",
 	.reg_bits  = 32,
@@ -941,27 +893,21 @@ static int btintel_sfi_rsa_header_secure_send(struct hci_dev *hdev,
 {
 	int err;
 
-	/* Start the firmware download transaction with the Init fragment
-	 * represented by the 128 bytes of CSS header.
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x00, 128, fw->data);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware header (%d)", err);
 		goto done;
 	}
 
-	/* Send the 256 bytes of public key information from the firmware
-	 * as the PKey fragment.
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x03, 256, fw->data + 128);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware pkey (%d)", err);
 		goto done;
 	}
 
-	/* Send the 256 bytes of signature information from the firmware
-	 * as the Sign fragment.
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x02, 256, fw->data + 388);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware signature (%d)", err);
@@ -977,27 +923,21 @@ static int btintel_sfi_ecdsa_header_secure_send(struct hci_dev *hdev,
 {
 	int err;
 
-	/* Start the firmware download transaction with the Init fragment
-	 * represented by the 128 bytes of CSS header.
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x00, 128, fw->data + 644);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware header (%d)", err);
 		return err;
 	}
 
-	/* Send the 96 bytes of public key information from the firmware
-	 * as the PKey fragment.
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x03, 96, fw->data + 644 + 128);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware pkey (%d)", err);
 		return err;
 	}
 
-	/* Send the 96 bytes of signature information from the firmware
-	 * as the Sign fragment
-	 */
+	 
 	err = btintel_secure_send(hdev, 0x02, 96, fw->data + 644 + 224);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send firmware signature (%d)",
@@ -1024,14 +964,7 @@ static int btintel_download_firmware_payload(struct hci_dev *hdev,
 
 		frag_len += sizeof(*cmd) + cmd->plen;
 
-		/* The parameter length of the secure send command requires
-		 * a 4 byte alignment. It happens so that the firmware file
-		 * contains proper Intel_NOP commands to align the fragments
-		 * as needed.
-		 *
-		 * Send set of commands with 4 byte alignment from the
-		 * firmware data buffer as a single Data fragement.
-		 */
+		 
 		if (!(frag_len % 4)) {
 			err = btintel_secure_send(hdev, 0x01, frag_len, fw_ptr);
 			if (err < 0) {
@@ -1062,11 +995,7 @@ static bool btintel_firmware_version(struct hci_dev *hdev,
 	while (fw_ptr - fw->data < fw->size) {
 		struct hci_command_hdr *cmd = (void *)(fw_ptr);
 
-		/* Each SKU has a different reset parameter to use in the
-		 * HCI_Intel_Reset command and it is embedded in the firmware
-		 * data. So, instead of using static value per SKU, check
-		 * the firmware data and save it for later use.
-		 */
+		 
 		if (le16_to_cpu(cmd->opcode) == CMD_WRITE_BOOT_PARAMS) {
 			struct cmd_write_boot_params *params;
 
@@ -1098,36 +1027,25 @@ int btintel_download_firmware(struct hci_dev *hdev,
 {
 	int err;
 
-	/* SfP and WsP don't seem to update the firmware version on file
-	 * so version checking is currently not possible.
-	 */
+	 
 	switch (ver->hw_variant) {
-	case 0x0b:	/* SfP */
-	case 0x0c:	/* WsP */
-		/* Skip version checking */
+	case 0x0b:	 
+	case 0x0c:	 
+		 
 		break;
 	default:
 
-		/* Skip download if firmware has the same version */
+		 
 		if (btintel_firmware_version(hdev, ver->fw_build_num,
 					     ver->fw_build_ww, ver->fw_build_yy,
 					     fw, boot_param)) {
 			bt_dev_info(hdev, "Firmware already loaded");
-			/* Return -EALREADY to indicate that the firmware has
-			 * already been loaded.
-			 */
+			 
 			return -EALREADY;
 		}
 	}
 
-	/* The firmware variant determines if the device is in bootloader
-	 * mode or is running operational firmware. The value 0x06 identifies
-	 * the bootloader and the value 0x23 identifies the operational
-	 * firmware.
-	 *
-	 * If the firmware version has changed that means it needs to be reset
-	 * to bootloader when operational so the new firmware can be loaded.
-	 */
+	 
 	if (ver->fw_variant == 0x23)
 		return -EINVAL;
 
@@ -1147,41 +1065,21 @@ static int btintel_download_fw_tlv(struct hci_dev *hdev,
 	int err;
 	u32 css_header_ver;
 
-	/* Skip download if firmware has the same version */
+	 
 	if (btintel_firmware_version(hdev, ver->min_fw_build_nn,
 				     ver->min_fw_build_cw,
 				     ver->min_fw_build_yy,
 				     fw, boot_param)) {
 		bt_dev_info(hdev, "Firmware already loaded");
-		/* Return -EALREADY to indicate that firmware has
-		 * already been loaded.
-		 */
+		 
 		return -EALREADY;
 	}
 
-	/* The firmware variant determines if the device is in bootloader
-	 * mode or is running operational firmware. The value 0x01 identifies
-	 * the bootloader and the value 0x03 identifies the operational
-	 * firmware.
-	 *
-	 * If the firmware version has changed that means it needs to be reset
-	 * to bootloader when operational so the new firmware can be loaded.
-	 */
+	 
 	if (ver->img_type == 0x03)
 		return -EINVAL;
 
-	/* iBT hardware variants 0x0b, 0x0c, 0x11, 0x12, 0x13, 0x14 support
-	 * only RSA secure boot engine. Hence, the corresponding sfi file will
-	 * have RSA header of 644 bytes followed by Command Buffer.
-	 *
-	 * iBT hardware variants 0x17, 0x18 onwards support both RSA and ECDSA
-	 * secure boot engine. As a result, the corresponding sfi file will
-	 * have RSA header of 644, ECDSA header of 320 bytes followed by
-	 * Command Buffer.
-	 *
-	 * CSS Header byte positions 0x08 to 0x0B represent the CSS Header
-	 * version: RSA(0x00010000) , ECDSA (0x00020000)
-	 */
+	 
 	css_header_ver = get_unaligned_le32(fw->data + CSS_HEADER_OFFSET);
 	if (css_header_ver != 0x00010000) {
 		bt_dev_err(hdev, "Invalid CSS Header version");
@@ -1203,11 +1101,11 @@ static int btintel_download_fw_tlv(struct hci_dev *hdev,
 		if (err)
 			return err;
 	} else if (hw_variant >= 0x17) {
-		/* Check if CSS header for ECDSA follows the RSA header */
+		 
 		if (fw->data[ECDSA_OFFSET] != 0x06)
 			return -EINVAL;
 
-		/* Check if the CSS Header version is ECDSA(0x00020000) */
+		 
 		css_header_ver = get_unaligned_le32(fw->data + ECDSA_OFFSET + CSS_HEADER_OFFSET);
 		if (css_header_ver != 0x00020000) {
 			bt_dev_err(hdev, "Invalid CSS Header version");
@@ -1242,21 +1140,7 @@ static void btintel_reset_to_bootloader(struct hci_dev *hdev)
 	struct intel_reset params;
 	struct sk_buff *skb;
 
-	/* Send Intel Reset command. This will result in
-	 * re-enumeration of BT controller.
-	 *
-	 * Intel Reset parameter description:
-	 * reset_type :   0x00 (Soft reset),
-	 *		  0x01 (Hard reset)
-	 * patch_enable : 0x00 (Do not enable),
-	 *		  0x01 (Enable)
-	 * ddc_reload :   0x00 (Do not reload),
-	 *		  0x01 (Reload)
-	 * boot_option:   0x00 (Current image),
-	 *                0x01 (Specified boot address)
-	 * boot_param:    Boot address
-	 *
-	 */
+	 
 	params.reset_type = 0x01;
 	params.patch_enable = 0x01;
 	params.ddc_reload = 0x01;
@@ -1273,11 +1157,7 @@ static void btintel_reset_to_bootloader(struct hci_dev *hdev)
 	bt_dev_info(hdev, "Intel reset sent to retry FW download");
 	kfree_skb(skb);
 
-	/* Current Intel BT controllers(ThP/JfP) hold the USB reset
-	 * lines for 2ms when it receives Intel Reset in bootloader mode.
-	 * Whereas, the upcoming Intel BT controllers will hold USB reset
-	 * for 150ms. To keep the delay generic, 150ms is chosen here.
-	 */
+	 
 	msleep(150);
 }
 
@@ -1287,9 +1167,7 @@ static int btintel_read_debug_features(struct hci_dev *hdev,
 	struct sk_buff *skb;
 	u8 page_no = 1;
 
-	/* Intel controller supports two pages, each page is of 128-bit
-	 * feature bit mask. And each bit defines specific feature support
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfca6, sizeof(page_no), &page_no,
 			     HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
@@ -1306,8 +1184,7 @@ static int btintel_read_debug_features(struct hci_dev *hdev,
 
 	memcpy(features->page1, skb->data + 3, sizeof(features->page1));
 
-	/* Read the supported features page2 if required in future.
-	 */
+	 
 	kfree_skb(skb);
 	return 0;
 }
@@ -1361,7 +1238,7 @@ static acpi_status btintel_ppag_callback(acpi_handle handle, u32 lvl, void *data
 
 	elements = p->package.elements;
 
-	/* PPAG table is located at element[1] */
+	 
 	p = &elements[1];
 
 	ppag->domain = (u32)p->package.elements[0].integer.value;
@@ -1438,7 +1315,7 @@ static int btintel_reset_debug_features(struct hci_dev *hdev,
 		return 0;
 	}
 
-	/* Should stop the trace before writing ddc event mask. */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfca1, 1, &trace_enable, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
 		bt_dev_err(hdev, "Stop tracing of link statistics events failed (%ld)",
@@ -1468,14 +1345,12 @@ int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
 
 	bt_dev_dbg(hdev, "enable %d", enable);
 
-	/* Read the Intel supported features and if new exception formats
-	 * supported, need to load the additional DDC config to enable.
-	 */
+	 
 	err = btintel_read_debug_features(hdev, &features);
 	if (err)
 		return err;
 
-	/* Set or reset the debug features. */
+	 
 	if (enable)
 		err = btintel_set_debug_features(hdev, &features);
 	else
@@ -1562,9 +1437,7 @@ static const struct firmware *btintel_legacy_rom_get_fw(struct hci_dev *hdev,
 		bt_dev_err(hdev, "failed to open Intel firmware file: %s (%d)",
 			   fwname, ret);
 
-		/* If the correct firmware patch file is not found, use the
-		 * default firmware patch file instead
-		 */
+		 
 		snprintf(fwname, sizeof(fwname), "intel/ibt-hw-%x.%x.bseq",
 			 ver->hw_platform, ver->hw_variant);
 		if (request_firmware(&fw, fwname, &hdev->dev) < 0) {
@@ -1590,13 +1463,7 @@ static int btintel_legacy_rom_patching(struct hci_dev *hdev,
 	const u8 *evt_param = NULL;
 	int remain = fw->size - (*fw_ptr - fw->data);
 
-	/* The first byte indicates the types of the patch command or event.
-	 * 0x01 means HCI command and 0x02 is HCI event. If the first bytes
-	 * in the current firmware buffer doesn't start with 0x01 or
-	 * the size of remain buffer is smaller than HCI command header,
-	 * the firmware file is corrupted and it should stop the patching
-	 * process.
-	 */
+	 
 	if (remain > HCI_COMMAND_HDR_SIZE && *fw_ptr[0] != 0x01) {
 		bt_dev_err(hdev, "Intel fw corrupted: invalid cmd read");
 		return -EINVAL;
@@ -1608,20 +1475,13 @@ static int btintel_legacy_rom_patching(struct hci_dev *hdev,
 	*fw_ptr += sizeof(*cmd);
 	remain -= sizeof(*cmd);
 
-	/* Ensure that the remain firmware data is long enough than the length
-	 * of command parameter. If not, the firmware file is corrupted.
-	 */
+	 
 	if (remain < cmd->plen) {
 		bt_dev_err(hdev, "Intel fw corrupted: invalid cmd len");
 		return -EFAULT;
 	}
 
-	/* If there is a command that loads a patch in the firmware
-	 * file, then enable the patch upon success, otherwise just
-	 * disable the manufacturer mode, for example patch activation
-	 * is not required when the default firmware patch file is used
-	 * because there are no patch data to load.
-	 */
+	 
 	if (*disable_patch && le16_to_cpu(cmd->opcode) == 0xfc8e)
 		*disable_patch = 0;
 
@@ -1629,13 +1489,7 @@ static int btintel_legacy_rom_patching(struct hci_dev *hdev,
 	*fw_ptr += cmd->plen;
 	remain -= cmd->plen;
 
-	/* This reads the expected events when the above command is sent to the
-	 * device. Some vendor commands expects more than one events, for
-	 * example command status event followed by vendor specific event.
-	 * For this case, it only keeps the last expected event. so the command
-	 * can be sent with __hci_cmd_sync_ev() which returns the sk_buff of
-	 * last expected event.
-	 */
+	 
 	while (remain > HCI_EVENT_HDR_SIZE && *fw_ptr[0] == 0x02) {
 		(*fw_ptr)++;
 		remain--;
@@ -1654,10 +1508,7 @@ static int btintel_legacy_rom_patching(struct hci_dev *hdev,
 		remain -= evt->plen;
 	}
 
-	/* Every HCI commands in the firmware file has its correspond event.
-	 * If event is not found or remain is smaller than zero, the firmware
-	 * file is corrupted.
-	 */
+	 
 	if (!evt || !evt_param || remain < 0) {
 		bt_dev_err(hdev, "Intel fw corrupted: invalid evt read");
 		return -EFAULT;
@@ -1671,10 +1522,7 @@ static int btintel_legacy_rom_patching(struct hci_dev *hdev,
 		return PTR_ERR(skb);
 	}
 
-	/* It ensures that the returned event matches the event data read from
-	 * the firmware file. At fist, it checks the length and then
-	 * the contents of the event.
-	 */
+	 
 	if (skb->len != evt->plen) {
 		bt_dev_err(hdev, "mismatch event length (opcode 0x%4.4x)",
 			   le16_to_cpu(cmd->opcode));
@@ -1703,10 +1551,7 @@ static int btintel_legacy_rom_setup(struct hci_dev *hdev,
 
 	BT_DBG("%s", hdev->name);
 
-	/* fw_patch_num indicates the version of patch the device currently
-	 * have. If there is no patch data in the device, it is always 0x00.
-	 * So, if it is other than 0x00, no need to patch the device again.
-	 */
+	 
 	if (ver->fw_patch_num) {
 		bt_dev_info(hdev,
 			    "Intel device is already patched. patch num: %02x",
@@ -1714,21 +1559,13 @@ static int btintel_legacy_rom_setup(struct hci_dev *hdev,
 		goto complete;
 	}
 
-	/* Opens the firmware patch file based on the firmware version read
-	 * from the controller. If it fails to open the matching firmware
-	 * patch file, it tries to open the default firmware patch file.
-	 * If no patch file is found, allow the device to operate without
-	 * a patch.
-	 */
+	 
 	fw = btintel_legacy_rom_get_fw(hdev, ver);
 	if (!fw)
 		goto complete;
 	fw_ptr = fw->data;
 
-	/* Enable the manufacturer mode of the controller.
-	 * Only while this mode is enabled, the driver can download the
-	 * firmware patch data and configuration parameters.
-	 */
+	 
 	err = btintel_enter_mfg(hdev);
 	if (err) {
 		release_firmware(fw);
@@ -1737,26 +1574,7 @@ static int btintel_legacy_rom_setup(struct hci_dev *hdev,
 
 	disable_patch = 1;
 
-	/* The firmware data file consists of list of Intel specific HCI
-	 * commands and its expected events. The first byte indicates the
-	 * type of the message, either HCI command or HCI event.
-	 *
-	 * It reads the command and its expected event from the firmware file,
-	 * and send to the controller. Once __hci_cmd_sync_ev() returns,
-	 * the returned event is compared with the event read from the firmware
-	 * file and it will continue until all the messages are downloaded to
-	 * the controller.
-	 *
-	 * Once the firmware patching is completed successfully,
-	 * the manufacturer mode is disabled with reset and activating the
-	 * downloaded patch.
-	 *
-	 * If the firmware patching fails, the manufacturer mode is
-	 * disabled with reset and deactivating the patch.
-	 *
-	 * If the default patch file is used, no reset is done when disabling
-	 * the manufacturer.
-	 */
+	 
 	while (fw->size > fw_ptr - fw->data) {
 		int ret;
 
@@ -1771,16 +1589,12 @@ static int btintel_legacy_rom_setup(struct hci_dev *hdev,
 	if (disable_patch)
 		goto exit_mfg_disable;
 
-	/* Patching completed successfully and disable the manufacturer mode
-	 * with reset and activate the downloaded firmware patches.
-	 */
+	 
 	err = btintel_exit_mfg(hdev, true, true);
 	if (err)
 		return err;
 
-	/* Need build number for downloaded fw patches in
-	 * every power-on boot
-	 */
+	 
 	err = btintel_read_version(hdev, &new_ver);
 	if (err)
 		return err;
@@ -1791,7 +1605,7 @@ static int btintel_legacy_rom_setup(struct hci_dev *hdev,
 	goto complete;
 
 exit_mfg_disable:
-	/* Disable the manufacturer mode without reset */
+	 
 	err = btintel_exit_mfg(hdev, false, false);
 	if (err)
 		return err;
@@ -1803,9 +1617,7 @@ exit_mfg_disable:
 exit_mfg_deactivate:
 	release_firmware(fw);
 
-	/* Patching failed. Disable the manufacturer mode with reset and
-	 * deactivate the downloaded firmware patches.
-	 */
+	 
 	err = btintel_exit_mfg(hdev, true, false);
 	if (err)
 		return err;
@@ -1813,9 +1625,7 @@ exit_mfg_deactivate:
 	bt_dev_info(hdev, "Intel firmware patch completed and deactivated");
 
 complete:
-	/* Set the event mask for Intel specific vendor events. This enables
-	 * a few extra events that are useful during general operation.
-	 */
+	 
 	btintel_set_event_mask_mfg(hdev, false);
 
 	btintel_check_bdaddr(hdev);
@@ -1906,13 +1716,7 @@ static int btintel_boot(struct hci_dev *hdev, u32 boot_addr)
 		return err;
 	}
 
-	/* The bootloader will not indicate when the device is ready. This
-	 * is done by the operational firmware sending bootup notification.
-	 *
-	 * Booting into operational firmware should not take longer than
-	 * 1 second. However if that happens, then just fail the setup
-	 * since something went wrong.
-	 */
+	 
 	err = btintel_boot_wait(hdev, calltime, 1000);
 	if (err == -ETIMEDOUT)
 		btintel_reset_to_bootloader(hdev);
@@ -1926,17 +1730,17 @@ static int btintel_get_fw_name(struct intel_version *ver,
 					     const char *suffix)
 {
 	switch (ver->hw_variant) {
-	case 0x0b:	/* SfP */
-	case 0x0c:	/* WsP */
+	case 0x0b:	 
+	case 0x0c:	 
 		snprintf(fw_name, len, "intel/ibt-%u-%u.%s",
 			 ver->hw_variant,
 			 le16_to_cpu(params->dev_revid),
 			 suffix);
 		break;
-	case 0x11:	/* JfP */
-	case 0x12:	/* ThP */
-	case 0x13:	/* HrP */
-	case 0x14:	/* CcP */
+	case 0x11:	 
+	case 0x12:	 
+	case 0x13:	 
+	case 0x14:	 
 		snprintf(fw_name, len, "intel/ibt-%u-%u-%u.%s",
 			 ver->hw_variant,
 			 ver->hw_revision,
@@ -1963,87 +1767,46 @@ static int btintel_download_fw(struct hci_dev *hdev,
 	if (!ver || !params)
 		return -EINVAL;
 
-	/* The firmware variant determines if the device is in bootloader
-	 * mode or is running operational firmware. The value 0x06 identifies
-	 * the bootloader and the value 0x23 identifies the operational
-	 * firmware.
-	 *
-	 * When the operational firmware is already present, then only
-	 * the check for valid Bluetooth device address is needed. This
-	 * determines if the device will be added as configured or
-	 * unconfigured controller.
-	 *
-	 * It is not possible to use the Secure Boot Parameters in this
-	 * case since that command is only available in bootloader mode.
-	 */
+	 
 	if (ver->fw_variant == 0x23) {
 		btintel_clear_flag(hdev, INTEL_BOOTLOADER);
 		btintel_check_bdaddr(hdev);
 
-		/* SfP and WsP don't seem to update the firmware version on file
-		 * so version checking is currently possible.
-		 */
+		 
 		switch (ver->hw_variant) {
-		case 0x0b:	/* SfP */
-		case 0x0c:	/* WsP */
+		case 0x0b:	 
+		case 0x0c:	 
 			return 0;
 		}
 
-		/* Proceed to download to check if the version matches */
+		 
 		goto download;
 	}
 
-	/* Read the secure boot parameters to identify the operating
-	 * details of the bootloader.
-	 */
+	 
 	err = btintel_read_boot_params(hdev, params);
 	if (err)
 		return err;
 
-	/* It is required that every single firmware fragment is acknowledged
-	 * with a command complete event. If the boot parameters indicate
-	 * that this bootloader does not send them, then abort the setup.
-	 */
+	 
 	if (params->limited_cce != 0x00) {
 		bt_dev_err(hdev, "Unsupported Intel firmware loading method (%u)",
 			   params->limited_cce);
 		return -EINVAL;
 	}
 
-	/* If the OTP has no valid Bluetooth device address, then there will
-	 * also be no valid address for the operational firmware.
-	 */
+	 
 	if (!bacmp(&params->otp_bdaddr, BDADDR_ANY)) {
 		bt_dev_info(hdev, "No device address configured");
 		set_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks);
 	}
 
 download:
-	/* With this Intel bootloader only the hardware variant and device
-	 * revision information are used to select the right firmware for SfP
-	 * and WsP.
-	 *
-	 * The firmware filename is ibt-<hw_variant>-<dev_revid>.sfi.
-	 *
-	 * Currently the supported hardware variants are:
-	 *   11 (0x0b) for iBT3.0 (LnP/SfP)
-	 *   12 (0x0c) for iBT3.5 (WsP)
-	 *
-	 * For ThP/JfP and for future SKU's, the FW name varies based on HW
-	 * variant, HW revision and FW revision, as these are dependent on CNVi
-	 * and RF Combination.
-	 *
-	 *   17 (0x11) for iBT3.5 (JfP)
-	 *   18 (0x12) for iBT3.5 (ThP)
-	 *
-	 * The firmware file name for these will be
-	 * ibt-<hw_variant>-<hw_revision>-<fw_revision>.sfi.
-	 *
-	 */
+	 
 	err = btintel_get_fw_name(ver, params, fwname, sizeof(fwname), "sfi");
 	if (err < 0) {
 		if (!btintel_test_flag(hdev, INTEL_BOOTLOADER)) {
-			/* Firmware has already been loaded */
+			 
 			btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
 			return 0;
 		}
@@ -2055,7 +1818,7 @@ download:
 	err = firmware_request_nowarn(&fw, fwname, &hdev->dev);
 	if (err < 0) {
 		if (!btintel_test_flag(hdev, INTEL_BOOTLOADER)) {
-			/* Firmware has already been loaded */
+			 
 			btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
 			return 0;
 		}
@@ -2078,34 +1841,22 @@ download:
 
 	btintel_set_flag(hdev, INTEL_DOWNLOADING);
 
-	/* Start firmware downloading and get boot parameter */
+	 
 	err = btintel_download_firmware(hdev, ver, fw, boot_param);
 	if (err < 0) {
 		if (err == -EALREADY) {
-			/* Firmware has already been loaded */
+			 
 			btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
 			err = 0;
 			goto done;
 		}
 
-		/* When FW download fails, send Intel Reset to retry
-		 * FW download.
-		 */
+		 
 		btintel_reset_to_bootloader(hdev);
 		goto done;
 	}
 
-	/* Before switching the device into operational mode and with that
-	 * booting the loaded firmware, wait for the bootloader notification
-	 * that all fragments have been successfully received.
-	 *
-	 * When the event processing receives the notification, then the
-	 * INTEL_DOWNLOADING flag will be cleared.
-	 *
-	 * The firmware loading should not take longer than 5 seconds
-	 * and thus just timeout if that happens and fail the setup
-	 * of this device.
-	 */
+	 
 	err = btintel_download_wait(hdev, calltime, 5000);
 	if (err == -ETIMEDOUT)
 		btintel_reset_to_bootloader(hdev);
@@ -2126,10 +1877,7 @@ static int btintel_bootloader_setup(struct hci_dev *hdev,
 
 	BT_DBG("%s", hdev->name);
 
-	/* Set the default boot parameter to 0x0 and it is updated to
-	 * SKU specific boot parameter after reading Intel_Write_Boot_Params
-	 * command while downloading the firmware.
-	 */
+	 
 	boot_param = 0x00000000;
 
 	btintel_set_flag(hdev, INTEL_BOOTLOADER);
@@ -2138,7 +1886,7 @@ static int btintel_bootloader_setup(struct hci_dev *hdev,
 	if (err)
 		return err;
 
-	/* controller is already having an operational firmware */
+	 
 	if (ver->fw_variant == 0x23)
 		goto finish;
 
@@ -2154,18 +1902,13 @@ static int btintel_bootloader_setup(struct hci_dev *hdev,
 	if (err < 0) {
 		bt_dev_err(hdev, "Unsupported Intel firmware naming");
 	} else {
-		/* Once the device is running in operational mode, it needs to
-		 * apply the device configuration (DDC) parameters.
-		 *
-		 * The device can work without DDC parameters, so even if it
-		 * fails to load the file, no need to fail the setup.
-		 */
+		 
 		btintel_load_ddc_config(hdev, ddcname);
 	}
 
 	hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
 
-	/* Read the Intel version information after loading the FW  */
+	 
 	err = btintel_read_version(hdev, &new_ver);
 	if (err)
 		return err;
@@ -2173,13 +1916,7 @@ static int btintel_bootloader_setup(struct hci_dev *hdev,
 	btintel_version_info(hdev, &new_ver);
 
 finish:
-	/* Set the event mask for Intel specific vendor events. This enables
-	 * a few extra events that are useful during general operation. It
-	 * does not enable any debugging related events.
-	 *
-	 * The device will function correctly without these events enabled
-	 * and thus no need to fail the setup.
-	 */
+	 
 	btintel_set_event_mask(hdev, false);
 
 	return 0;
@@ -2189,9 +1926,7 @@ static void btintel_get_fw_name_tlv(const struct intel_version_tlv *ver,
 				    char *fw_name, size_t len,
 				    const char *suffix)
 {
-	/* The firmware file name for new generation controllers will be
-	 * ibt-<cnvi_top type+cnvi_top step>-<cnvr_top type+cnvr_top step>
-	 */
+	 
 	snprintf(fw_name, len, "intel/ibt-%04x-%04x.%s",
 		 INTEL_CNVX_TOP_PACK_SWAB(INTEL_CNVX_TOP_TYPE(ver->cnvi_top),
 					  INTEL_CNVX_TOP_STEP(ver->cnvi_top)),
@@ -2212,28 +1947,12 @@ static int btintel_prepare_fw_download_tlv(struct hci_dev *hdev,
 	if (!ver || !boot_param)
 		return -EINVAL;
 
-	/* The firmware variant determines if the device is in bootloader
-	 * mode or is running operational firmware. The value 0x03 identifies
-	 * the bootloader and the value 0x23 identifies the operational
-	 * firmware.
-	 *
-	 * When the operational firmware is already present, then only
-	 * the check for valid Bluetooth device address is needed. This
-	 * determines if the device will be added as configured or
-	 * unconfigured controller.
-	 *
-	 * It is not possible to use the Secure Boot Parameters in this
-	 * case since that command is only available in bootloader mode.
-	 */
+	 
 	if (ver->img_type == 0x03) {
 		btintel_clear_flag(hdev, INTEL_BOOTLOADER);
 		btintel_check_bdaddr(hdev);
 	} else {
-		/*
-		 * Check for valid bd address in boot loader mode. Device
-		 * will be marked as unconfigured if empty bd address is
-		 * found.
-		 */
+		 
 		if (!bacmp(&ver->otp_bd_addr, BDADDR_ANY)) {
 			bt_dev_info(hdev, "No device address configured");
 			set_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks);
@@ -2244,7 +1963,7 @@ static int btintel_prepare_fw_download_tlv(struct hci_dev *hdev,
 	err = firmware_request_nowarn(&fw, fwname, &hdev->dev);
 	if (err < 0) {
 		if (!btintel_test_flag(hdev, INTEL_BOOTLOADER)) {
-			/* Firmware has already been loaded */
+			 
 			btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
 			return 0;
 		}
@@ -2268,36 +1987,24 @@ static int btintel_prepare_fw_download_tlv(struct hci_dev *hdev,
 
 	btintel_set_flag(hdev, INTEL_DOWNLOADING);
 
-	/* Start firmware downloading and get boot parameter */
+	 
 	err = btintel_download_fw_tlv(hdev, ver, fw, boot_param,
 					       INTEL_HW_VARIANT(ver->cnvi_bt),
 					       ver->sbe_type);
 	if (err < 0) {
 		if (err == -EALREADY) {
-			/* Firmware has already been loaded */
+			 
 			btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
 			err = 0;
 			goto done;
 		}
 
-		/* When FW download fails, send Intel Reset to retry
-		 * FW download.
-		 */
+		 
 		btintel_reset_to_bootloader(hdev);
 		goto done;
 	}
 
-	/* Before switching the device into operational mode and with that
-	 * booting the loaded firmware, wait for the bootloader notification
-	 * that all fragments have been successfully received.
-	 *
-	 * When the event processing receives the notification, then the
-	 * BTUSB_DOWNLOADING flag will be cleared.
-	 *
-	 * The firmware loading should not take longer than 5 seconds
-	 * and thus just timeout if that happens and fail the setup
-	 * of this device.
-	 */
+	 
 	err = btintel_download_wait(hdev, calltime, 5000);
 	if (err == -ETIMEDOUT)
 		btintel_reset_to_bootloader(hdev);
@@ -2330,7 +2037,7 @@ static int btintel_get_codec_config_data(struct hci_dev *hdev,
 		goto error;
 	}
 
-	/* supports only CVSD and mSBC offload codecs */
+	 
 	switch (codec->id) {
 	case 0x02:
 		**ven_data = 0x00;
@@ -2343,10 +2050,7 @@ static int btintel_get_codec_config_data(struct hci_dev *hdev,
 		bt_dev_err(hdev, "Invalid codec id(%u)", codec->id);
 		goto error;
 	}
-	/* codec and its capabilities are pre-defined to ids
-	 * preset id = 0x00 represents CVSD codec with sampling rate 8K
-	 * preset id = 0x01 represents mSBC codec with sampling rate 16K
-	 */
+	 
 	*ven_len = sizeof(__u8);
 	return err;
 
@@ -2358,7 +2062,7 @@ error:
 
 static int btintel_get_data_path_id(struct hci_dev *hdev, __u8 *data_path_id)
 {
-	/* Intel uses 1 as data path id for all the usecases */
+	 
 	*data_path_id = 1;
 	return 0;
 }
@@ -2404,11 +2108,11 @@ static void btintel_set_ppag(struct hci_dev *hdev, struct intel_version_tlv *ver
 	struct hci_ppag_enable_cmd ppag_cmd;
 	acpi_handle handle;
 
-	/* PPAG is not supported if CRF is HrP2, Jfp2, JfP1 */
+	 
 	switch (ver->cnvr_top & 0xFFF) {
-	case 0x504:     /* Hrp2 */
-	case 0x202:     /* Jfp2 */
-	case 0x201:     /* Jfp1 */
+	case 0x504:      
+	case 0x202:      
+	case 0x201:      
 		bt_dev_dbg(hdev, "PPAG not supported for Intel CNVr (0x%3x)",
 			   ver->cnvr_top & 0xFFF);
 		return;
@@ -2440,12 +2144,7 @@ static void btintel_set_ppag(struct hci_dev *hdev, struct intel_version_tlv *ver
 		return;
 	}
 
-	/* PPAG mode
-	 * BIT 0 : 0 Disabled in EU
-	 *         1 Enabled in EU
-	 * BIT 1 : 0 Disabled in China
-	 *         1 Enabled in China
-	 */
+	 
 	if ((ppag.mode & 0x01) != BIT(0) && (ppag.mode & 0x02) != BIT(1)) {
 		bt_dev_dbg(hdev, "PPAG-BT: EU, China mode are disabled in CB/BIOS");
 		return;
@@ -2527,11 +2226,11 @@ static void btintel_set_dsm_reset_method(struct hci_dev *hdev,
 	}
 
 	switch (ver_tlv->cnvi_top & 0xfff) {
-	case 0x910: /* GalePeak2 */
+	case 0x910:  
 		reset_payload[2] = RESET_TYPE_VSEC;
 		break;
 	default:
-		/* WDISABLE2 is the default reset method */
+		 
 		reset_payload[2] = RESET_TYPE_WDISABLE2;
 
 		if (!acpi_check_dsm(handle, &btintel_guid_dsm, 0,
@@ -2540,7 +2239,7 @@ static void btintel_set_dsm_reset_method(struct hci_dev *hdev,
 			return;
 		}
 		argv4.integer.type = ACPI_TYPE_INTEGER;
-		/* delay required to toggle BT power */
+		 
 		argv4.integer.value = 160;
 		obj = acpi_evaluate_dsm(handle, &btintel_guid_dsm, 0,
 					DSM_SET_WDISABLE2_DELAY, &argv4);
@@ -2582,10 +2281,7 @@ static int btintel_bootloader_setup_tlv(struct hci_dev *hdev,
 
 	bt_dev_dbg(hdev, "");
 
-	/* Set the default boot parameter to 0x0 and it is updated to
-	 * SKU specific boot parameter after reading Intel_Write_Boot_Params
-	 * command while downloading the firmware.
-	 */
+	 
 	boot_param = 0x00000000;
 
 	btintel_set_flag(hdev, INTEL_BOOTLOADER);
@@ -2594,7 +2290,7 @@ static int btintel_bootloader_setup_tlv(struct hci_dev *hdev,
 	if (err)
 		return err;
 
-	/* check if controller is already having an operational firmware */
+	 
 	if (ver->img_type == 0x03)
 		goto finish;
 
@@ -2605,23 +2301,18 @@ static int btintel_bootloader_setup_tlv(struct hci_dev *hdev,
 	btintel_clear_flag(hdev, INTEL_BOOTLOADER);
 
 	btintel_get_fw_name_tlv(ver, ddcname, sizeof(ddcname), "ddc");
-	/* Once the device is running in operational mode, it needs to
-	 * apply the device configuration (DDC) parameters.
-	 *
-	 * The device can work without DDC parameters, so even if it
-	 * fails to load the file, no need to fail the setup.
-	 */
+	 
 	btintel_load_ddc_config(hdev, ddcname);
 
-	/* Read supported use cases and set callbacks to fetch datapath id */
+	 
 	btintel_configure_offload(hdev);
 
 	hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
 
-	/* Set PPAG feature */
+	 
 	btintel_set_ppag(hdev, ver);
 
-	/* Read the Intel version information after loading the FW  */
+	 
 	err = btintel_read_version_tlv(hdev, &new_ver);
 	if (err)
 		return err;
@@ -2629,13 +2320,7 @@ static int btintel_bootloader_setup_tlv(struct hci_dev *hdev,
 	btintel_version_info_tlv(hdev, &new_ver);
 
 finish:
-	/* Set the event mask for Intel specific vendor events. This enables
-	 * a few extra events that are useful during general operation. It
-	 * does not enable any debugging related events.
-	 *
-	 * The device will function correctly without these events enabled
-	 * and thus no need to fail the setup.
-	 */
+	 
 	btintel_set_event_mask(hdev, false);
 
 	return 0;
@@ -2644,14 +2329,12 @@ finish:
 static void btintel_set_msft_opcode(struct hci_dev *hdev, u8 hw_variant)
 {
 	switch (hw_variant) {
-	/* Legacy bootloader devices that supports MSFT Extension */
-	case 0x11:	/* JfP */
-	case 0x12:	/* ThP */
-	case 0x13:	/* HrP */
-	case 0x14:	/* CcP */
-	/* All Intel new genration controllers support the Microsoft vendor
-	 * extension are using 0xFC1E for VsMsftOpCode.
-	 */
+	 
+	case 0x11:	 
+	case 0x12:	 
+	case 0x13:	 
+	case 0x14:	 
+	 
 	case 0x17:
 	case 0x18:
 	case 0x19:
@@ -2660,7 +2343,7 @@ static void btintel_set_msft_opcode(struct hci_dev *hdev, u8 hw_variant)
 		hci_set_msft_opcode(hdev, 0xFC1E);
 		break;
 	default:
-		/* Not supported */
+		 
 		break;
 	}
 }
@@ -2675,20 +2358,7 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
-	/* The some controllers have a bug with the first HCI command sent to it
-	 * returning number of completed commands as zero. This would stall the
-	 * command processing in the Bluetooth core.
-	 *
-	 * As a workaround, send HCI Reset command first which will reset the
-	 * number of completed commands and allow normal command processing
-	 * from now on.
-	 *
-	 * Regarding the INTEL_BROKEN_SHUTDOWN_LED flag, these devices maybe
-	 * in the SW_RFKILL ON state as a workaround of fixing LED issue during
-	 * the shutdown() procedure, and once the device is in SW_RFKILL ON
-	 * state, the only way to exit out of it is sending the HCI_Reset
-	 * command.
-	 */
+	 
 	if (btintel_test_flag(hdev, INTEL_BROKEN_INITIAL_NCMD) ||
 	    btintel_test_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED)) {
 		skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL,
@@ -2702,12 +2372,7 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 		kfree_skb(skb);
 	}
 
-	/* Starting from TyP device, the command parameter and response are
-	 * changed even though the OCF for HCI_Intel_Read_Version command
-	 * remains same. The legacy devices can handle even if the
-	 * command has a parameter and returns a correct version information.
-	 * So, it uses new format to support both legacy and new format.
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc05, 1, param, HCI_CMD_TIMEOUT);
 	if (IS_ERR(skb)) {
 		bt_dev_err(hdev, "Reading Intel version command failed (%ld)",
@@ -2715,7 +2380,7 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 		return PTR_ERR(skb);
 	}
 
-	/* Check the status */
+	 
 	if (skb->data[0]) {
 		bt_dev_err(hdev, "Intel Read Version command failed (%02x)",
 			   skb->data[0]);
@@ -2723,45 +2388,31 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 		goto exit_error;
 	}
 
-	/* Apply the common HCI quirks for Intel device */
+	 
 	set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
 	set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
 
-	/* Set up the quality report callback for Intel devices */
+	 
 	hdev->set_quality_report = btintel_set_quality_report;
 
-	/* For Legacy device, check the HW platform value and size */
+	 
 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
 		bt_dev_dbg(hdev, "Read the legacy Intel version information");
 
 		memcpy(&ver, skb->data, sizeof(ver));
 
-		/* Display version information */
+		 
 		btintel_version_info(hdev, &ver);
 
-		/* Check for supported iBT hardware variants of this firmware
-		 * loading method.
-		 *
-		 * This check has been put in place to ensure correct forward
-		 * compatibility options when newer hardware variants come
-		 * along.
-		 */
+		 
 		switch (ver.hw_variant) {
-		case 0x07:	/* WP */
-		case 0x08:	/* StP */
-			/* Legacy ROM product */
+		case 0x07:	 
+		case 0x08:	 
+			 
 			btintel_set_flag(hdev, INTEL_ROM_LEGACY);
 
-			/* Apply the device specific HCI quirks
-			 *
-			 * WBS for SdP - For the Legacy ROM products, only SdP
-			 * supports the WBS. But the version information is not
-			 * enough to use here because the StP2 and SdP have same
-			 * hw_variant and fw_variant. So, this flag is set by
-			 * the transport driver (btusb) based on the HW info
-			 * (idProduct)
-			 */
+			 
 			if (!btintel_test_flag(hdev,
 					       INTEL_ROM_LEGACY_NO_WBS_SUPPORT))
 				set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
@@ -2772,25 +2423,22 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 
 			err = btintel_legacy_rom_setup(hdev, &ver);
 			break;
-		case 0x0b:      /* SfP */
-		case 0x11:      /* JfP */
-		case 0x12:      /* ThP */
-		case 0x13:      /* HrP */
-		case 0x14:      /* CcP */
+		case 0x0b:       
+		case 0x11:       
+		case 0x12:       
+		case 0x13:       
+		case 0x14:       
 			set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
 			fallthrough;
-		case 0x0c:	/* WsP */
-			/* Apply the device specific HCI quirks
-			 *
-			 * All Legacy bootloader devices support WBS
-			 */
+		case 0x0c:	 
+			 
 			set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
 				&hdev->quirks);
 
-			/* These variants don't seem to support LE Coded PHY */
+			 
 			set_bit(HCI_QUIRK_BROKEN_LE_CODED, &hdev->quirks);
 
-			/* Setup MSFT Extension support */
+			 
 			btintel_set_msft_opcode(hdev, ver.hw_variant);
 
 			err = btintel_bootloader_setup(hdev, &ver);
@@ -2805,11 +2453,9 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 		goto exit_error;
 	}
 
-	/* memset ver_tlv to start with clean state as few fields are exclusive
-	 * to bootloader mode and are not populated in operational mode
-	 */
+	 
 	memset(&ver_tlv, 0, sizeof(ver_tlv));
-	/* For TLV type device, parse the tlv data */
+	 
 	err = btintel_parse_version_tlv(hdev, &ver_tlv, skb);
 	if (err) {
 		bt_dev_err(hdev, "Failed to parse TLV version information");
@@ -2823,51 +2469,27 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 		goto exit_error;
 	}
 
-	/* Check for supported iBT hardware variants of this firmware
-	 * loading method.
-	 *
-	 * This check has been put in place to ensure correct forward
-	 * compatibility options when newer hardware variants come
-	 * along.
-	 */
+	 
 	switch (INTEL_HW_VARIANT(ver_tlv.cnvi_bt)) {
-	case 0x11:      /* JfP */
-	case 0x12:      /* ThP */
-	case 0x13:      /* HrP */
-	case 0x14:      /* CcP */
-		/* Some legacy bootloader devices starting from JfP,
-		 * the operational firmware supports both old and TLV based
-		 * HCI_Intel_Read_Version command based on the command
-		 * parameter.
-		 *
-		 * For upgrading firmware case, the TLV based version cannot
-		 * be used because the firmware filename for legacy bootloader
-		 * is based on the old format.
-		 *
-		 * Also, it is not easy to convert TLV based version from the
-		 * legacy version format.
-		 *
-		 * So, as a workaround for those devices, use the legacy
-		 * HCI_Intel_Read_Version to get the version information and
-		 * run the legacy bootloader setup.
-		 */
+	case 0x11:       
+	case 0x12:       
+	case 0x13:       
+	case 0x14:       
+		 
 		err = btintel_read_version(hdev, &ver);
 		if (err)
 			break;
 
-		/* Apply the device specific HCI quirks
-		 *
-		 * All Legacy bootloader devices support WBS
-		 */
+		 
 		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 
-		/* These variants don't seem to support LE Coded PHY */
+		 
 		set_bit(HCI_QUIRK_BROKEN_LE_CODED, &hdev->quirks);
 
-		/* Set Valid LE States quirk */
+		 
 		set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
 
-		/* Setup MSFT Extension support */
+		 
 		btintel_set_msft_opcode(hdev, ver.hw_variant);
 
 		err = btintel_bootloader_setup(hdev, &ver);
@@ -2878,19 +2500,16 @@ static int btintel_setup_combined(struct hci_dev *hdev)
 	case 0x19:
 	case 0x1b:
 	case 0x1c:
-		/* Display version information of TLV type */
+		 
 		btintel_version_info_tlv(hdev, &ver_tlv);
 
-		/* Apply the device specific HCI quirks for TLV based devices
-		 *
-		 * All TLV based devices support WBS
-		 */
+		 
 		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 
-		/* Apply LE States quirk from solar onwards */
+		 
 		set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
 
-		/* Setup MSFT Extension support */
+		 
 		btintel_set_msft_opcode(hdev,
 					INTEL_HW_VARIANT(ver_tlv.cnvi_bt));
 		btintel_set_dsm_reset_method(hdev, &ver_tlv);
@@ -2916,10 +2535,7 @@ static int btintel_shutdown_combined(struct hci_dev *hdev)
 	struct sk_buff *skb;
 	int ret;
 
-	/* Send HCI Reset to the controller to stop any BT activity which
-	 * were triggered. This will help to save power and maintain the
-	 * sync b/w Host and controller
-	 */
+	 
 	skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
 		bt_dev_err(hdev, "HCI reset during shutdown failed");
@@ -2928,11 +2544,7 @@ static int btintel_shutdown_combined(struct hci_dev *hdev)
 	kfree_skb(skb);
 
 
-	/* Some platforms have an issue with BT LED when the interface is
-	 * down or BT radio is turned off, which takes 5 seconds to BT LED
-	 * goes off. As a workaround, sends HCI_Intel_SW_RFKILL to put the
-	 * device in the RFKILL ON state which turns off the BT LED immediately.
-	 */
+	 
 	if (btintel_test_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED)) {
 		skb = __hci_cmd_sync(hdev, 0xfc3f, 0, NULL, HCI_INIT_TIMEOUT);
 		if (IS_ERR(skb)) {
@@ -2965,7 +2577,7 @@ static int btintel_diagnostics(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct intel_tlv *tlv = (void *)&skb->data[5];
 
-	/* The first event is always an event type TLV */
+	 
 	if (tlv->type != INTEL_TLV_TYPE_ID)
 		goto recv_frame;
 
@@ -2974,7 +2586,7 @@ static int btintel_diagnostics(struct hci_dev *hdev, struct sk_buff *skb)
 	case INTEL_TLV_FATAL_EXCEPTION:
 	case INTEL_TLV_DEBUG_EXCEPTION:
 	case INTEL_TLV_TEST_EXCEPTION:
-		/* Generate devcoredump from exception */
+		 
 		if (!hci_devcd_init(hdev, skb->len)) {
 			hci_devcd_append(hdev, skb);
 			hci_devcd_complete(hdev);
@@ -3004,26 +2616,17 @@ int btintel_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
 		if (btintel_test_flag(hdev, INTEL_BOOTLOADER)) {
 			switch (skb->data[2]) {
 			case 0x02:
-				/* When switching to the operational firmware
-				 * the device sends a vendor specific event
-				 * indicating that the bootup completed.
-				 */
+				 
 				btintel_bootup(hdev, ptr, len);
 				break;
 			case 0x06:
-				/* When the firmware loading completes the
-				 * device sends out a vendor specific event
-				 * indicating the result of the firmware
-				 * loading.
-				 */
+				 
 				btintel_secure_send_result(hdev, ptr, len);
 				break;
 			}
 		}
 
-		/* Handle all diagnostics events separately. May still call
-		 * hci_recv_frame.
-		 */
+		 
 		if (len >= sizeof(diagnostics_hdr) &&
 		    memcmp(&skb->data[2], diagnostics_hdr,
 			   sizeof(diagnostics_hdr)) == 0) {

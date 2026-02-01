@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "type.h"
 #include "i40iw_hw.h"
@@ -29,7 +29,7 @@ static u32 i40iw_regs[IRDMA_MAX_REGS] = {
 	I40E_PFHMC_PDINV,
 	I40E_GLHMC_VFPDINV(0),
 	I40E_GLPE_CRITERR,
-	0xffffffff      /* PFINT_RATEN not used in FPK */
+	0xffffffff       
 };
 
 static u32 i40iw_stat_offsets[] = {
@@ -96,13 +96,7 @@ static u64 i40iw_shifts[IRDMA_MAX_SHIFTS] = {
 	I40E_COMMIT_FPM_CQCNT_S,
 };
 
-/**
- * i40iw_config_ceq- Configure CEQ interrupt
- * @dev: pointer to the device structure
- * @ceq_id: Completion Event Queue ID
- * @idx: vector index
- * @enable: Enable CEQ interrupt when true
- */
+ 
 static void i40iw_config_ceq(struct irdma_sc_dev *dev, u32 ceq_id, u32 idx,
 			     bool enable)
 {
@@ -124,11 +118,7 @@ static void i40iw_config_ceq(struct irdma_sc_dev *dev, u32 ceq_id, u32 idx,
 	wr32(dev->hw, i40iw_regs[IRDMA_GLINT_CEQCTL] + 4 * ceq_id, reg_val);
 }
 
-/**
- * i40iw_ena_irq - Enable interrupt
- * @dev: pointer to the device structure
- * @idx: vector index
- */
+ 
 static void i40iw_ena_irq(struct irdma_sc_dev *dev, u32 idx)
 {
 	u32 val;
@@ -139,11 +129,7 @@ static void i40iw_ena_irq(struct irdma_sc_dev *dev, u32 idx)
 	wr32(dev->hw, i40iw_regs[IRDMA_GLINT_DYN_CTL] + 4 * (idx - 1), val);
 }
 
-/**
- * i40iw_disable_irq - Disable interrupt
- * @dev: pointer to the device structure
- * @idx: vector index
- */
+ 
 static void i40iw_disable_irq(struct irdma_sc_dev *dev, u32 idx)
 {
 	wr32(dev->hw, i40iw_regs[IRDMA_GLINT_DYN_CTL] + 4 * (idx - 1), 0);
@@ -237,7 +223,7 @@ void i40iw_init_hw(struct irdma_sc_dev *dev)
 	dev->irq_ops = &i40iw_irq_ops;
 	dev->hw_stats_map = i40iw_hw_stat_map;
 
-	/* Setup the hardware limits, hmc may limit further */
+	 
 	dev->hw_attrs.uk_attrs.max_hw_wq_frags = I40IW_MAX_WQ_FRAGMENT_COUNT;
 	dev->hw_attrs.uk_attrs.max_hw_read_sges = I40IW_MAX_SGE_RD;
 	dev->hw_attrs.max_hw_device_pages = I40IW_MAX_PUSH_PAGE_COUNT;

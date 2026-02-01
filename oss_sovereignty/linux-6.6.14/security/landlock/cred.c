@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Landlock LSM - Credential hooks
- *
- * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2018-2020 ANSSI
- */
+
+ 
 
 #include <linux/cred.h>
 #include <linux/lsm_hooks.h>

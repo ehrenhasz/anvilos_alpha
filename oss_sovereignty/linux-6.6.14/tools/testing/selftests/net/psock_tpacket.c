@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Red Hat, Inc.
- * Author: Daniel Borkmann <dborkman@redhat.com>
- *         Chetan Loke <loke.chetan@gmail.com> (TPACKET_V3 usage example)
- *
- * A basic test of packet socket's TPACKET_V1/TPACKET_V2/TPACKET_V3 behavior.
- *
- * Control:
- *   Test the setup of the TPACKET socket with different patterns that are
- *   known to fail (TODO) resp. succeed (OK).
- *
- * Datapath:
- *   Open a pair of packet sockets and send resp. receive an a priori known
- *   packet pattern accross the sockets and check if it was received resp.
- *   sent correctly. Fanout in combination with RX_RING is currently not
- *   tested here.
- *
- *   The test currently runs for
- *   - TPACKET_V1: RX_RING, TX_RING
- *   - TPACKET_V2: RX_RING, TX_RING
- *   - TPACKET_V3: RX_RING
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -144,9 +123,7 @@ static void create_payload(void *pay, size_t *len)
 	struct ethhdr *eth = pay;
 	struct iphdr *ip = pay + sizeof(*eth);
 
-	/* Lets create some broken crap, that still passes
-	 * our BPF filter.
-	 */
+	 
 
 	*len = DATA_LEN + 42;
 
@@ -380,10 +357,7 @@ static void walk_tx(int sock, struct ring *ring)
 	};
 	int nframes;
 
-	/* TPACKET_V{1,2} sets up the ring->rd* related variables based
-	 * on frames (e.g., rd_num is tp_frame_nr) whereas V3 sets these
-	 * up based on blocks (e.g, rd_num is  tp_block_nr)
-	 */
+	 
 	if (ring->version <= TPACKET_V2)
 		nframes = ring->rd_num;
 	else

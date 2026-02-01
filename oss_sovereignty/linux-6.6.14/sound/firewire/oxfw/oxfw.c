@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include "oxfw.h"
 
 #define OXFORD_FIRMWARE_ID_ADDRESS	(CSR_REGISTER_BASE + 0x50000)
-/* 0x970?vvvv or 0x971?vvvv, where vvvv = firmware version */
+ 
 
 #define OXFORD_HARDWARE_ID_ADDRESS	(CSR_REGISTER_BASE + 0x90020)
 #define OXFORD_HARDWARE_ID_OXFW970	0x39443841
@@ -71,13 +67,13 @@ static int name_card(struct snd_oxfw *oxfw, const struct ieee1394_device_id *ent
 	u32 firmware;
 	int err;
 
-	/* get vendor name from root directory */
+	 
 	err = fw_csr_string(fw_dev->config_rom + 5, CSR_VENDOR,
 			    vendor, sizeof(vendor));
 	if (err < 0)
 		goto end;
 
-	/* get model name from unit directory */
+	 
 	err = fw_csr_string(oxfw->unit->directory, CSR_MODEL,
 			    model, sizeof(model));
 	if (err < 0)
@@ -92,7 +88,7 @@ static int name_card(struct snd_oxfw *oxfw, const struct ieee1394_device_id *ent
 	if (firmware >> 20 == 0x970)
 		oxfw->quirks |= SND_OXFW_QUIRK_JUMBO_PAYLOAD;
 
-	/* to apply card definitions */
+	 
 	if (entry->vendor_id == VENDOR_GRIFFIN || entry->vendor_id == VENDOR_LACIE) {
 		info = (const struct compat_info *)entry->driver_data;
 		d = info->driver_name;
@@ -135,25 +131,19 @@ static int detect_quirks(struct snd_oxfw *oxfw, const struct ieee1394_device_id 
 	int key, val;
 	int vendor, model;
 
-	/*
-	 * Add ALSA control elements for two models to keep compatibility to
-	 * old firewire-speaker module.
-	 */
+	 
 	if (entry->vendor_id == VENDOR_GRIFFIN)
 		return snd_oxfw_add_spkr(oxfw, false);
 	if (entry->vendor_id == VENDOR_LACIE)
 		return snd_oxfw_add_spkr(oxfw, true);
 
-	/*
-	 * Stanton models supports asynchronous transactions for unique MIDI
-	 * messages.
-	 */
+	 
 	if (entry->vendor_id == OUI_STANTON) {
 		oxfw->quirks |= SND_OXFW_QUIRK_SCS_TRANSACTION;
 		if (entry->model_id == MODEL_SCS1M)
 			oxfw->quirks |= SND_OXFW_QUIRK_BLOCKING_TRANSMISSION;
 
-		// No physical MIDI ports.
+		
 		oxfw->midi_input_ports = 0;
 		oxfw->midi_output_ports = 0;
 
@@ -165,17 +155,14 @@ static int detect_quirks(struct snd_oxfw *oxfw, const struct ieee1394_device_id 
 				SND_OXFW_QUIRK_IGNORE_NO_INFO_PACKET;
 	}
 
-	/*
-	 * TASCAM FireOne has physical control and requires a pair of additional
-	 * MIDI ports.
-	 */
+	 
 	if (entry->vendor_id == VENDOR_TASCAM) {
 		oxfw->midi_input_ports++;
 		oxfw->midi_output_ports++;
 		return 0;
 	}
 
-	/* Seek from Root Directory of Config ROM. */
+	 
 	vendor = model = 0;
 	fw_csr_iterator_init(&it, fw_dev->config_rom + 5);
 	while (fw_csr_iterator_next(&it, &key, &val)) {
@@ -186,17 +173,17 @@ static int detect_quirks(struct snd_oxfw *oxfw, const struct ieee1394_device_id 
 	}
 
 	if (vendor == VENDOR_LOUD) {
-		// Mackie Onyx Satellite with base station has a quirk to report a wrong
-		// value in 'dbs' field of CIP header against its format information.
+		
+		
 		oxfw->quirks |= SND_OXFW_QUIRK_WRONG_DBS;
 
-		// OXFW971-based models may transfer events by blocking method.
+		
 		if (!(oxfw->quirks & SND_OXFW_QUIRK_JUMBO_PAYLOAD))
 			oxfw->quirks |= SND_OXFW_QUIRK_BLOCKING_TRANSMISSION;
 
 		if (model == MODEL_ONYX_1640I) {
-			//Unless receiving packets without NOINFO packet, the device transfers
-			//mostly half of events in packets than expected.
+			
+			
 			oxfw->quirks |= SND_OXFW_QUIRK_IGNORE_NO_INFO_PACKET |
 					SND_OXFW_QUIRK_VOLUNTARY_RECOVERY;
 		}
@@ -290,7 +277,7 @@ static void oxfw_remove(struct fw_unit *unit)
 {
 	struct snd_oxfw *oxfw = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(oxfw->card);
 }
 
@@ -320,36 +307,36 @@ static const struct compat_info lacie_speakers = {
 }
 
 static const struct ieee1394_device_id oxfw_id_table[] = {
-	//
-	// OXFW970 devices:
-	// Initial firmware has a quirk to postpone isoc packet transmission during finishing async
-	// transaction. As a result, several isochronous cycles are skipped to transfer the packets
-	// and the audio data frames which should have been transferred during the cycles are put
-	// into packet at the first isoc cycle after the postpone. Furthermore, the value of SYT
-	// field in CIP header is not reliable as synchronization timing,
-	//
+	
+	
+	
+	
+	
+	
+	
+	
 	OXFW_DEV_ENTRY(VENDOR_GRIFFIN, 0x00f970, &griffin_firewave),
 	OXFW_DEV_ENTRY(VENDOR_LACIE, 0x00f970, &lacie_speakers),
-	// Behringer,F-Control Audio 202. The value of SYT field is not reliable at all.
+	
 	OXFW_DEV_ENTRY(VENDOR_BEHRINGER, 0x00fc22, NULL),
-	// Loud Technologies, Tapco Link.FireWire 4x6. The value of SYT field is always 0xffff.
+	
 	OXFW_DEV_ENTRY(VENDOR_LOUD, 0x000460, NULL),
-	// Loud Technologies, Mackie Onyx Satellite. Although revised version of firmware is
-	// installed to avoid the postpone, the value of SYT field is always 0xffff.
+	
+	
 	OXFW_DEV_ENTRY(VENDOR_LOUD, MODEL_SATELLITE, NULL),
-	// Miglia HarmonyAudio. Not yet identified.
+	
 
-	//
-	// OXFW971 devices:
-	// The value of SYT field in CIP header is enough reliable. Both of blocking and non-blocking
-	// transmission methods are available.
-	//
-	// Any Mackie(Loud) models (name string/model id):
-	//  Onyx-i series (former models):	0x081216
-	//  Onyx 1640i:				0x001640
-	//  d.2 pro/d.4 pro (built-in card):	Unknown
-	//  U.420:				Unknown
-	//  U.420d:				Unknown
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	{
 		.match_flags	= IEEE1394_MATCH_VENDOR_ID |
 				  IEEE1394_MATCH_SPECIFIER_ID |
@@ -359,13 +346,13 @@ static const struct ieee1394_device_id oxfw_id_table[] = {
 		.specifier_id	= SPECIFIER_1394TA,
 		.version	= VERSION_AVC,
 	},
-	// TASCAM, FireOne.
+	
 	OXFW_DEV_ENTRY(VENDOR_TASCAM, 0x800007, NULL),
-	// Stanton, Stanton Controllers & Systems 1 Mixer (SCS.1m).
+	
 	OXFW_DEV_ENTRY(OUI_STANTON, MODEL_SCS1M, NULL),
-	// Stanton, Stanton Controllers & Systems 1 Deck (SCS.1d).
+	
 	OXFW_DEV_ENTRY(OUI_STANTON, 0x002000, NULL),
-	// APOGEE, duet FireWire.
+	
 	OXFW_DEV_ENTRY(OUI_APOGEE, MODEL_DUET_FW, NULL),
 	{ }
 };

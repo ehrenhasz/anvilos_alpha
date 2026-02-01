@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Atmel Flexcom
- *
- * Copyright (C) 2015 Atmel Corporation
- *
- * Author: Cyrille Pitchen <cyrille.pitchen@atmel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -18,12 +12,12 @@
 #include <linux/clk.h>
 #include <dt-bindings/mfd/atmel-flexcom.h>
 
-/* I/O register offsets */
-#define FLEX_MR		0x0	/* Mode Register */
-#define FLEX_VERSION	0xfc	/* Version Register */
+ 
+#define FLEX_MR		0x0	 
+#define FLEX_VERSION	0xfc	 
 
-/* Mode Register bit fields */
-#define FLEX_MR_OPMODE_OFFSET	(0)  /* Operating Mode */
+ 
+#define FLEX_MR_OPMODE_OFFSET	(0)   
 #define FLEX_MR_OPMODE_MASK	(0x3 << FLEX_MR_OPMODE_OFFSET)
 #define FLEX_MR_OPMODE(opmode)	(((opmode) << FLEX_MR_OPMODE_OFFSET) &	\
 				 FLEX_MR_OPMODE_MASK)
@@ -66,12 +60,7 @@ static int atmel_flexcom_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * Set the Operating Mode in the Mode Register: only the selected device
-	 * is clocked. Hence, registers of the other serial devices remain
-	 * inaccessible and are read as zero. Also the external I/O lines of the
-	 * Flexcom are muxed to reach the selected device.
-	 */
+	 
 	writel(FLEX_MR_OPMODE(ddata->opmode), ddata->base + FLEX_MR);
 
 	clk_disable_unprepare(ddata->clk);
@@ -81,7 +70,7 @@ static int atmel_flexcom_probe(struct platform_device *pdev)
 
 static const struct of_device_id atmel_flexcom_of_match[] = {
 	{ .compatible = "atmel,sama5d2-flexcom" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_flexcom_of_match);
 

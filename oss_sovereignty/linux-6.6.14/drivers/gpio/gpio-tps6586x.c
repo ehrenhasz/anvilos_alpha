@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI TPS6586x GPIO driver
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * Based on tps6586x.c
- * Copyright (c) 2010 CompuLab Ltd.
- * Mike Rapoport <mike@compulab.co.il>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gpio/driver.h>
@@ -18,7 +9,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/* GPIO control registers */
+ 
 #define TPS6586X_GPIOSET1	0x5d
 #define TPS6586X_GPIOSET2	0x5e
 
@@ -93,7 +84,7 @@ static int tps6586x_gpio_probe(struct platform_device *pdev)
 	tps6586x_gpio->gpio_chip.ngpio = 4;
 	tps6586x_gpio->gpio_chip.can_sleep = true;
 
-	/* FIXME: add handling of GPIOs as dedicated inputs */
+	 
 	tps6586x_gpio->gpio_chip.direction_output = tps6586x_gpio_output;
 	tps6586x_gpio->gpio_chip.set	= tps6586x_gpio_set;
 	tps6586x_gpio->gpio_chip.get	= tps6586x_gpio_get;

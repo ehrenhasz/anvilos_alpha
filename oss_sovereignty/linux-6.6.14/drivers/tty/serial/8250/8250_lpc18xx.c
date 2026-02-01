@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial port driver for NXP LPC18xx/43xx UART
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * Based on 8250_mtk.c:
- * Copyright (c) 2014 MundoReader S.L.
- * Matthias Brugger <matthias.bgg@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -17,7 +9,7 @@
 
 #include "8250.h"
 
-/* Additional LPC18xx/43xx 8250 registers and bits */
+ 
 #define LPC18XX_UART_RS485CTRL		(0x04c / sizeof(u32))
 #define  LPC18XX_UART_RS485CTRL_NMMEN	BIT(0)
 #define  LPC18XX_UART_RS485CTRL_DCTRL	BIT(4)
@@ -56,7 +48,7 @@ static int lpc18xx_rs485_config(struct uart_port *port, struct ktermios *termios
 		if (rs485_dly_reg > LPC18XX_UART_RS485DLY_MAX)
 			rs485_dly_reg = LPC18XX_UART_RS485DLY_MAX;
 
-		/* Calculate the resulting delay in ms */
+		 
 		rs485->delay_rts_after_send = (rs485_dly_reg * MSEC_PER_SEC)
 						/ baud_clk;
 	}
@@ -69,11 +61,7 @@ static int lpc18xx_rs485_config(struct uart_port *port, struct ktermios *termios
 
 static void lpc18xx_uart_serial_out(struct uart_port *p, int offset, int value)
 {
-	/*
-	 * For DMA mode one must ensure that the UART_FCR_DMA_SELECT
-	 * bit is set when FIFO is enabled. Even if DMA is not used
-	 * setting this bit doesn't seem to affect anything.
-	 */
+	 
 	if (offset == UART_FCR && (value & UART_FCR_ENABLE_FIFO))
 		value |= UART_FCR_DMA_SELECT;
 
@@ -84,7 +72,7 @@ static void lpc18xx_uart_serial_out(struct uart_port *p, int offset, int value)
 static const struct serial_rs485 lpc18xx_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
 	.delay_rts_after_send = 1,
-	/* Delay RTS before send is not supported */
+	 
 };
 
 static int lpc18xx_serial_probe(struct platform_device *pdev)

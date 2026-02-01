@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * authencesn.c - AEAD wrapper for IPsec with extended sequence numbers,
- *                 derived from authenc.c
- *
- * Copyright (C) 2010 secunet Security Networks AG
- * Copyright (C) 2010 Steffen Klassert <steffen.klassert@secunet.com>
- * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/hash.h>
@@ -98,7 +91,7 @@ static int crypto_authenc_esn_genicv_tail(struct aead_request *req,
 	struct scatterlist *dst = req->dst;
 	u32 tmp[2];
 
-	/* Move high-order bits of sequence number back. */
+	 
 	scatterwalk_map_and_copy(tmp, dst, 4, 4, 0);
 	scatterwalk_map_and_copy(tmp + 1, dst, assoclen + cryptlen, 4, 0);
 	scatterwalk_map_and_copy(tmp, dst, 0, 8, 1);
@@ -134,7 +127,7 @@ static int crypto_authenc_esn_genicv(struct aead_request *req,
 	if (!authsize)
 		return 0;
 
-	/* Move high-order bits of sequence number to the end. */
+	 
 	scatterwalk_map_and_copy(tmp, dst, 0, 8, 0);
 	scatterwalk_map_and_copy(tmp, dst, 4, 4, 1);
 	scatterwalk_map_and_copy(tmp + 1, dst, assoclen + cryptlen, 4, 1);
@@ -235,7 +228,7 @@ static int crypto_authenc_esn_decrypt_tail(struct aead_request *req,
 	if (!authsize)
 		goto decrypt;
 
-	/* Move high-order bits of sequence number back. */
+	 
 	scatterwalk_map_and_copy(tmp, dst, 4, 4, 0);
 	scatterwalk_map_and_copy(tmp + 1, dst, assoclen + cryptlen, 4, 0);
 	scatterwalk_map_and_copy(tmp, dst, 0, 8, 1);
@@ -295,7 +288,7 @@ static int crypto_authenc_esn_decrypt(struct aead_request *req)
 	if (!authsize)
 		goto tail;
 
-	/* Move high-order bits of sequence number to the end. */
+	 
 	scatterwalk_map_and_copy(tmp, dst, 0, 8, 0);
 	scatterwalk_map_and_copy(tmp, dst, 4, 4, 1);
 	scatterwalk_map_and_copy(tmp + 1, dst, assoclen + cryptlen, 4, 1);

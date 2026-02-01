@@ -1,4 +1,4 @@
-/* $OpenBSD: umac128.c,v 1.2 2018/02/08 04:12:32 dtucker Exp $ */
+ 
 
 #define UMAC_OUTPUT_LEN	16
 #define umac_new	umac128_new

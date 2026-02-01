@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/namei.h>
@@ -48,7 +45,7 @@ struct dentry *ovl_lookup_temp(struct ovl_fs *ofs, struct dentry *workdir)
 	char name[20];
 	static atomic_t temp_id = ATOMIC_INIT(0);
 
-	/* counter is allowed to wrap, since temp dentries are ephemeral */
+	 
 	snprintf(name, sizeof(name), "#%x", atomic_inc_return(&temp_id));
 
 	temp = ovl_lookup_upper(ofs, name, workdir, strlen(name));
@@ -61,7 +58,7 @@ struct dentry *ovl_lookup_temp(struct ovl_fs *ofs, struct dentry *workdir)
 	return temp;
 }
 
-/* caller holds i_mutex on workdir */
+ 
 static struct dentry *ovl_whiteout(struct ovl_fs *ofs)
 {
 	int err;
@@ -105,7 +102,7 @@ out:
 	return whiteout;
 }
 
-/* Caller must hold i_mutex on both workdir and dir */
+ 
 int ovl_cleanup_and_whiteout(struct ovl_fs *ofs, struct inode *dir,
 			     struct dentry *dentry)
 {
@@ -150,11 +147,7 @@ int ovl_mkdir_real(struct ovl_fs *ofs, struct inode *dir,
 	if (likely(!d_unhashed(dentry)))
 		return 0;
 
-	/*
-	 * vfs_mkdir() may succeed and leave the dentry passed
-	 * to it unhashed and negative. If that happens, try to
-	 * lookup a new hashed and positive dentry.
-	 */
+	 
 	d = ovl_lookup_upper(ofs, dentry->d_name.name, dentry->d_parent,
 			     dentry->d_name.len);
 	if (IS_ERR(d)) {
@@ -189,7 +182,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct inode *dir,
 			break;
 
 		case S_IFDIR:
-			/* mkdir is special... */
+			 
 			err =  ovl_mkdir_real(ofs, dir, &newdentry, attr->mode);
 			break;
 
@@ -210,10 +203,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct inode *dir,
 		}
 	}
 	if (!err && WARN_ON(!newdentry->d_inode)) {
-		/*
-		 * Not quite sure if non-instantiated dentry is legal or not.
-		 * VFS doesn't seem to care so check and warn here.
-		 */
+		 
 		err = -EIO;
 	}
 out:
@@ -246,19 +236,11 @@ static int ovl_set_opaque_xerr(struct dentry *dentry, struct dentry *upper,
 
 static int ovl_set_opaque(struct dentry *dentry, struct dentry *upperdentry)
 {
-	/*
-	 * Fail with -EIO when trying to create opaque dir and upper doesn't
-	 * support xattrs. ovl_rename() calls ovl_set_opaque_xerr(-EXDEV) to
-	 * return a specific error for noxattr case.
-	 */
+	 
 	return ovl_set_opaque_xerr(dentry, upperdentry, -EIO);
 }
 
-/*
- * Common operations required to be done after creation of file on upper.
- * If @hardlink is false, then @inode is a pre-allocated inode, we may or
- * may not use to instantiate the new dentry.
- */
+ 
 static int ovl_instantiate(struct dentry *dentry, struct inode *inode,
 			   struct dentry *newdentry, bool hardlink)
 {
@@ -272,18 +254,7 @@ static int ovl_instantiate(struct dentry *dentry, struct inode *inode,
 	ovl_dentry_init_reval(dentry, newdentry, NULL);
 
 	if (!hardlink) {
-		/*
-		 * ovl_obtain_alias() can be called after ovl_create_real()
-		 * and before we get here, so we may get an inode from cache
-		 * with the same real upperdentry that is not the inode we
-		 * pre-allocated.  In this case we will use the cached inode
-		 * to instantiate the new dentry.
-		 *
-		 * XXX: if we ever use ovl_obtain_alias() to decode directory
-		 * file handles, need to use ovl_get_inode_locked() and
-		 * d_instantiate_new() here to prevent from creating two
-		 * hashed directory inode aliases.
-		 */
+		 
 		inode = ovl_get_inode(dentry->d_sb, &oip);
 		if (IS_ERR(inode))
 			return PTR_ERR(inode);
@@ -301,7 +272,7 @@ static int ovl_instantiate(struct dentry *dentry, struct inode *inode,
 				    dentry);
 	}
 
-	/* Force lookup of new upper hardlink to find its lower */
+	 
 	if (hardlink)
 		d_drop(dentry);
 
@@ -341,7 +312,7 @@ static int ovl_create_upper(struct dentry *dentry, struct inode *inode,
 
 	if (ovl_type_merge(dentry->d_parent) && d_is_dir(newdentry) &&
 	    !ovl_allow_offline_changes(ofs)) {
-		/* Setting opaque here is just an optimization, allow to fail */
+		 
 		ovl_set_opaque(dentry, newdentry);
 	}
 
@@ -419,7 +390,7 @@ static struct dentry *ovl_clear_empty(struct dentry *dentry,
 	ovl_cleanup(ofs, wdir, upper);
 	unlock_rename(workdir, upperdir);
 
-	/* dentry's upper doesn't match now, get rid of it */
+	 
 	d_drop(dentry);
 
 	return opaquedir;
@@ -485,9 +456,7 @@ static int ovl_create_over_whiteout(struct dentry *dentry, struct inode *inode,
 	if (IS_ERR(newdentry))
 		goto out_dput;
 
-	/*
-	 * mode could have been mutilated due to umask (e.g. sgid directory)
-	 */
+	 
 	if (!hardlink &&
 	    !S_ISLNK(cattr->mode) &&
 	    newdentry->d_inode->i_mode != cattr->mode) {
@@ -565,10 +534,7 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
 
 	old_cred = ovl_override_creds(dentry->d_sb);
 
-	/*
-	 * When linking a file with copy up origin into a new parent, mark the
-	 * new parent dir "impure".
-	 */
+	 
 	if (origin) {
 		err = ovl_set_impure(parent, ovl_dentry_upper(parent));
 		if (err)
@@ -580,19 +546,7 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
 		override_cred = prepare_creds();
 		if (!override_cred)
 			goto out_revert_creds;
-		/*
-		 * In the creation cases(create, mkdir, mknod, symlink),
-		 * ovl should transfer current's fs{u,g}id to underlying
-		 * fs. Because underlying fs want to initialize its new
-		 * inode owner using current's fs{u,g}id. And in this
-		 * case, the @inode is a new inode that is initialized
-		 * in inode_init_owner() to current's fs{u,g}id. So use
-		 * the inode's i_{u,g}id to override the cred's fs{u,g}id.
-		 *
-		 * But in the other hardlink case, ovl_link() does not
-		 * create a new inode, so just use the ovl mounter's
-		 * fs{u,g}id.
-		 */
+		 
 		override_cred->fsuid = inode->i_uid;
 		override_cred->fsgid = inode->i_gid;
 		err = security_dentry_create_files_as(dentry,
@@ -630,7 +584,7 @@ static int ovl_create_object(struct dentry *dentry, int mode, dev_t rdev,
 	if (err)
 		goto out;
 
-	/* Preallocate inode to be used by ovl_get_inode() */
+	 
 	err = -ENOMEM;
 	inode = ovl_new_inode(dentry->d_sb, mode, rdev);
 	if (!inode)
@@ -644,7 +598,7 @@ static int ovl_create_object(struct dentry *dentry, int mode, dev_t rdev,
 	attr.mode = inode->i_mode;
 
 	err = ovl_create_or_link(dentry, inode, &attr, false);
-	/* Did we end up using the preallocated inode? */
+	 
 	if (inode != d_inode(dentry))
 		iput(inode);
 
@@ -669,7 +623,7 @@ static int ovl_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 static int ovl_mknod(struct mnt_idmap *idmap, struct inode *dir,
 		     struct dentry *dentry, umode_t mode, dev_t rdev)
 {
-	/* Don't allow creation of "whiteout" on overlay */
+	 
 	if (S_ISCHR(mode) && rdev == WHITEOUT_DEV)
 		return -EPERM;
 
@@ -832,12 +786,7 @@ static int ovl_remove_upper(struct dentry *dentry, bool is_dir,
 		err = ovl_do_unlink(ofs, dir, upper);
 	ovl_dir_modified(dentry->d_parent, ovl_type_origin(dentry));
 
-	/*
-	 * Keeping this dentry hashed would mean having to release
-	 * upperpath/lowerpath, which could only be done if we are the
-	 * sole user of this dentry.  Too tricky...  Just unhash for
-	 * now.
-	 */
+	 
 	if (!err)
 		d_drop(dentry);
 out_dput_upper:
@@ -860,7 +809,7 @@ static void ovl_drop_nlink(struct dentry *dentry)
 	struct inode *inode = d_inode(dentry);
 	struct dentry *alias;
 
-	/* Try to find another, hashed alias */
+	 
 	spin_lock(&inode->i_lock);
 	hlist_for_each_entry(alias, &inode->i_dentry, d_u.d_alias) {
 		if (alias != dentry && !d_unhashed(alias))
@@ -868,11 +817,7 @@ static void ovl_drop_nlink(struct dentry *dentry)
 	}
 	spin_unlock(&inode->i_lock);
 
-	/*
-	 * Changes to underlying layers may cause i_nlink to lose sync with
-	 * reality.  In this case prevent the link count from going to zero
-	 * prematurely.
-	 */
+	 
 	if (inode->i_nlink > !!alias)
 		drop_nlink(inode);
 }
@@ -884,7 +829,7 @@ static int ovl_do_remove(struct dentry *dentry, bool is_dir)
 	bool lower_positive = ovl_lower_positive(dentry);
 	LIST_HEAD(list);
 
-	/* No need to clean pure upper removed by vfs_rmdir() */
+	 
 	if (is_dir && (lower_positive || !ovl_pure_upper(dentry))) {
 		err = ovl_check_empty_dir(dentry, &list);
 		if (err)
@@ -917,12 +862,7 @@ static int ovl_do_remove(struct dentry *dentry, bool is_dir)
 	}
 	ovl_nlink_end(dentry);
 
-	/*
-	 * Copy ctime
-	 *
-	 * Note: we fail to update ctime if there was no copy-up, only a
-	 * whiteout
-	 */
+	 
 	if (ovl_dentry_upper(dentry))
 		ovl_copyattr(d_inode(dentry));
 
@@ -987,7 +927,7 @@ static char *ovl_get_redirect(struct dentry *dentry, bool abs_redirect)
 			thislen = d->d_name.len;
 		}
 
-		/* If path is too long, fall back to userspace move */
+		 
 		if (thislen + (name[0] != '/') > buflen) {
 			ret = ERR_PTR(-EXDEV);
 			spin_unlock(&d->d_lock);
@@ -1002,7 +942,7 @@ static char *ovl_get_redirect(struct dentry *dentry, bool abs_redirect)
 		dput(d);
 		d = tmp;
 
-		/* Absolute redirect: finished */
+		 
 		if (buf[buflen] == '/')
 			break;
 		buflen--;
@@ -1026,19 +966,7 @@ static bool ovl_need_absolute_redirect(struct dentry *dentry, bool samedir)
 	if (d_is_dir(dentry))
 		return false;
 
-	/*
-	 * For non-dir hardlinked files, we need absolute redirects
-	 * in general as two upper hardlinks could be in different
-	 * dirs. We could put a relative redirect now and convert
-	 * it to absolute redirect later. But when nlink > 1 and
-	 * indexing is on, that means relative redirect needs to be
-	 * converted to absolute during copy up of another lower
-	 * hardllink as well.
-	 *
-	 * So without optimizing too much, just check if lower is
-	 * a hard link or not. If lower is hard link, put absolute
-	 * redirect.
-	 */
+	 
 	lowerdentry = ovl_dentry_lower(dentry);
 	return (d_inode(lowerdentry)->i_nlink > 1);
 }
@@ -1068,7 +996,7 @@ static int ovl_set_redirect(struct dentry *dentry, bool samedir)
 		kfree(redirect);
 		pr_warn_ratelimited("failed to set redirect (%i)\n",
 				    err);
-		/* Fall back to userspace copy-up */
+		 
 		err = -EXDEV;
 	}
 	return err;
@@ -1103,7 +1031,7 @@ static int ovl_rename(struct mnt_idmap *idmap, struct inode *olddir,
 
 	flags &= ~RENAME_NOREPLACE;
 
-	/* Don't copy up directory trees */
+	 
 	err = -EXDEV;
 	if (!ovl_can_move(old))
 		goto out;
@@ -1119,10 +1047,10 @@ static int ovl_rename(struct mnt_idmap *idmap, struct inode *olddir,
 	if (overwrite) {
 		if (ovl_lower_positive(old)) {
 			if (!ovl_dentry_is_whiteout(new)) {
-				/* Whiteout source */
+				 
 				flags |= RENAME_WHITEOUT;
 			} else {
-				/* Switch whiteouts */
+				 
 				flags |= RENAME_EXCHANGE;
 			}
 		} else if (is_dir && ovl_dentry_is_whiteout(new)) {
@@ -1169,12 +1097,7 @@ static int ovl_rename(struct mnt_idmap *idmap, struct inode *olddir,
 	new_upperdir = ovl_dentry_upper(new->d_parent);
 
 	if (!samedir) {
-		/*
-		 * When moving a merge dir or non-dir with copy up origin into
-		 * a new parent, we are marking the new parent dir "impure".
-		 * When ovl_iterate() iterates an "impure" upper dir, it will
-		 * lookup the origin inodes of the entries to fill d_ino.
-		 */
+		 
 		if (ovl_type_origin(old)) {
 			err = ovl_set_impure(new->d_parent, new_upperdir);
 			if (err)
@@ -1271,7 +1194,7 @@ static int ovl_rename(struct mnt_idmap *idmap, struct inode *olddir,
 	ovl_dir_modified(new->d_parent, ovl_type_origin(old) ||
 			 (d_inode(new) && ovl_type_origin(new)));
 
-	/* copy ctime: */
+	 
 	ovl_copyattr(d_inode(old));
 	if (d_inode(new) && ovl_dentry_upper(new))
 		ovl_copyattr(d_inode(new));

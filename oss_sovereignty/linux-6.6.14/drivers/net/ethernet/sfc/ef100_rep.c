@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- * Copyright 2020-2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include <linux/rhashtable.h>
 #include "ef100_rep.h"
@@ -66,10 +58,7 @@ static netdev_tx_t efx_ef100_rep_xmit(struct sk_buff *skb,
 	struct efx_nic *efx = efv->parent;
 	netdev_tx_t rc;
 
-	/* __ef100_hard_start_xmit() will always return success even in the
-	 * case of TX drops, where it will increment efx's tx_dropped.  The
-	 * efv stats really only count attempted TX, not success/failure.
-	 */
+	 
 	atomic64_inc(&efv->stats.tx_packets);
 	atomic64_add(skb->len, &efv->stats.tx_bytes);
 	netif_tx_lock(efx->net_dev);
@@ -86,7 +75,7 @@ static int efx_ef100_rep_get_port_parent_id(struct net_device *dev,
 	struct ef100_nic_data *nic_data;
 
 	nic_data = efx->nic_data;
-	/* nic_data->port_id is a u8[] */
+	 
 	ppid->id_len = sizeof(nic_data->port_id);
 	memcpy(ppid->id, nic_data->port_id, sizeof(nic_data->port_id));
 	return 0;
@@ -247,12 +236,12 @@ static int efx_ef100_configure_rep(struct efx_rep *efv)
 	int rc;
 
 	efv->rx_pring_size = EFX_REP_DEFAULT_PSEUDO_RING_SIZE;
-	/* Look up actual mport ID */
+	 
 	rc = efx_mae_lookup_mport(efx, efv->idx, &efv->mport);
 	if (rc)
 		return rc;
 	pci_dbg(efx->pci_dev, "VF %u has mport ID %#x\n", efv->idx, efv->mport);
-	/* mport label should fit in 16 bits */
+	 
 	WARN_ON(efv->mport >> 16);
 
 	return efx_tc_configure_default_rule_rep(efv);
@@ -400,7 +389,7 @@ static int efx_ef100_rep_poll(struct napi_struct *napi, int weight)
 	int spent = 0;
 
 	INIT_LIST_HEAD(&head);
-	/* Grab up to 'weight' pending SKBs */
+	 
 	spin_lock_bh(&efv->rx_lock);
 	read_index = efv->write_index;
 	while (spent < weight && !list_empty(&efv->rx_list)) {
@@ -410,17 +399,13 @@ static int efx_ef100_rep_poll(struct napi_struct *napi, int weight)
 		spent++;
 	}
 	spin_unlock_bh(&efv->rx_lock);
-	/* Receive them */
+	 
 	netif_receive_skb_list(&head);
 	if (spent < weight)
 		if (napi_complete_done(napi, spent)) {
 			spin_lock_bh(&efv->rx_lock);
 			efv->read_index = read_index;
-			/* If write_index advanced while we were doing the
-			 * RX, then storing our read_index won't re-prime the
-			 * fake-interrupt.  In that case, we need to schedule
-			 * NAPI again to consume the additional packet(s).
-			 */
+			 
 			need_resched = efv->write_index != read_index;
 			spin_unlock_bh(&efv->rx_lock);
 			if (need_resched)
@@ -435,9 +420,7 @@ void efx_ef100_rep_rx_packet(struct efx_rep *efv, struct efx_rx_buffer *rx_buf)
 	struct sk_buff *skb;
 	bool primed;
 
-	/* Don't allow too many queued SKBs to build up, as they consume
-	 * GFP_ATOMIC memory.  If we overrun, just start dropping.
-	 */
+	 
 	if (efv->write_index - READ_ONCE(efv->read_index) > efv->rx_pring_size) {
 		atomic64_inc(&efv->stats.rx_dropped);
 		if (net_ratelimit())
@@ -459,9 +442,9 @@ void efx_ef100_rep_rx_packet(struct efx_rep *efv, struct efx_rx_buffer *rx_buf)
 	memcpy(skb->data, eh, rx_buf->len);
 	__skb_put(skb, rx_buf->len);
 
-	skb_record_rx_queue(skb, 0); /* rep is single-queue */
+	skb_record_rx_queue(skb, 0);  
 
-	/* Move past the ethernet header */
+	 
 	skb->protocol = eth_type_trans(skb, efv->net_dev);
 
 	skb_checksum_none_assert(skb);
@@ -469,13 +452,13 @@ void efx_ef100_rep_rx_packet(struct efx_rep *efv, struct efx_rx_buffer *rx_buf)
 	atomic64_inc(&efv->stats.rx_packets);
 	atomic64_add(rx_buf->len, &efv->stats.rx_bytes);
 
-	/* Add it to the rx list */
+	 
 	spin_lock_bh(&efv->rx_lock);
 	primed = efv->read_index == efv->write_index;
 	list_add_tail(&skb->list, &efv->rx_list);
 	efv->write_index++;
 	spin_unlock_bh(&efv->rx_lock);
-	/* Trigger rx work */
+	 
 	if (primed)
 		napi_schedule(&efv->napi);
 }
@@ -484,10 +467,7 @@ struct efx_rep *efx_ef100_find_rep_by_mport(struct efx_nic *efx, u16 mport)
 {
 	struct efx_rep *efv, *out = NULL;
 
-	/* spinlock guards against list mutation while we're walking it;
-	 * but caller must also hold rcu_read_lock() to ensure the netdev
-	 * isn't freed after we drop the spinlock.
-	 */
+	 
 	spin_lock_bh(&efx->vf_reps_lock);
 	list_for_each_entry(efv, &efx->vf_reps, list)
 		if (efv->mport == mport) {

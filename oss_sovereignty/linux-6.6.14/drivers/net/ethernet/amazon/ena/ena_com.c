@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include "ena_com.h"
 
-/*****************************************************************************/
-/*****************************************************************************/
+ 
+ 
 
-/* Timeout in micro-sec */
+ 
 #define ADMIN_CMD_TIMEOUT_US (3000000)
 
 #define ENA_ASYNC_QUEUE_DEPTH 16
@@ -41,14 +39,14 @@
 
 #define ENA_MAX_ADMIN_POLL_US 5000
 
-/*****************************************************************************/
-/*****************************************************************************/
-/*****************************************************************************/
+ 
+ 
+ 
 
 enum ena_cmd_status {
 	ENA_CMD_SUBMITTED,
 	ENA_CMD_COMPLETED,
-	/* Abort - canceled by the driver */
+	 
 	ENA_CMD_ABORTED,
 };
 
@@ -57,7 +55,7 @@ struct ena_comp_ctx {
 	struct ena_admin_acq_entry *user_cqe;
 	u32 comp_size;
 	enum ena_cmd_status status;
-	/* status from the device */
+	 
 	u8 comp_status;
 	u8 cmd_opcode;
 	bool occupied;
@@ -223,7 +221,7 @@ static struct ena_comp_ctx *__ena_com_submit_admin_cmd(struct ena_com_admin_queu
 
 	tail_masked = admin_queue->sq.tail & queue_size_mask;
 
-	/* In case of queue FULL */
+	 
 	cnt = (u16)atomic_read(&admin_queue->outstanding_cmds);
 	if (cnt >= admin_queue->q_depth) {
 		netdev_dbg(admin_queue->ena_dev->net_device,
@@ -355,7 +353,7 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
 	}
 
 	if (io_sq->mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
-		/* Allocate bounce buffers */
+		 
 		io_sq->bounce_buf_ctrl.buffer_size =
 			ena_dev->llq_info.desc_list_entry_size;
 		io_sq->bounce_buf_ctrl.buffers_num =
@@ -383,7 +381,7 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
 		memcpy(&io_sq->llq_info, &ena_dev->llq_info,
 		       sizeof(io_sq->llq_info));
 
-		/* Initiate the first bounce buffer */
+		 
 		io_sq->llq_buf_ctrl.curr_bounce_buf =
 			ena_com_get_next_bounce_buffer(&io_sq->bounce_buf_ctrl);
 		memset(io_sq->llq_buf_ctrl.curr_bounce_buf,
@@ -414,7 +412,7 @@ static int ena_com_init_io_cq(struct ena_com_dev *ena_dev,
 
 	memset(&io_cq->cdesc_addr, 0x0, sizeof(io_cq->cdesc_addr));
 
-	/* Use the basic completion descriptor for Rx */
+	 
 	io_cq->cdesc_entry_size_in_bytes =
 		(io_cq->direction == ENA_COM_IO_QUEUE_DIRECTION_TX) ?
 		sizeof(struct ena_eth_io_tx_cdesc) :
@@ -485,12 +483,10 @@ static void ena_com_handle_admin_completion(struct ena_com_admin_queue *admin_qu
 
 	cqe = &admin_queue->cq.entries[head_masked];
 
-	/* Go over all the completions */
+	 
 	while ((READ_ONCE(cqe->acq_common_descriptor.flags) &
 		ENA_ADMIN_ACQ_COMMON_DESC_PHASE_MASK) == phase) {
-		/* Do not read the rest of the completion entry before the
-		 * phase bit was validated
-		 */
+		 
 		dma_rmb();
 		ena_com_handle_single_admin_completion(admin_queue, cqe);
 
@@ -565,7 +561,7 @@ static int ena_com_wait_and_process_admin_cq_polling(struct ena_comp_ctx *comp_c
 		if (time_is_before_jiffies(timeout)) {
 			netdev_err(admin_queue->ena_dev->net_device,
 				   "Wait for completion (polling) timeout\n");
-			/* ENA didn't have any completion */
+			 
 			spin_lock_irqsave(&admin_queue->q_lock, flags);
 			admin_queue->stats.no_completion++;
 			admin_queue->running_state = false;
@@ -598,12 +594,7 @@ err:
 	return ret;
 }
 
-/*
- * Set the LLQ configurations of the firmware
- *
- * The driver provides only the enabled feature values to the device,
- * which in turn, checks if they are supported.
- */
+ 
 static int ena_com_set_llq(struct ena_com_dev *ena_dev)
 {
 	struct ena_com_admin_queue *admin_queue;
@@ -715,9 +706,7 @@ static int ena_com_config_llq_info(struct ena_com_dev *ena_dev,
 			   llq_info->desc_list_entry_size);
 	}
 	if (unlikely(llq_info->desc_list_entry_size & 0x7)) {
-		/* The desc list entry size should be whole multiply of 8
-		 * This requirement comes from __iowrite64_copy()
-		 */
+		 
 		netdev_err(ena_dev->net_device, "Illegal entry size %d\n",
 			   llq_info->desc_list_entry_size);
 		return -EINVAL;
@@ -753,7 +742,7 @@ static int ena_com_config_llq_info(struct ena_com_dev *ena_dev,
 			   llq_default_cfg->llq_num_decs_before_header,
 			   supported_feat, llq_info->descs_num_before_header);
 	}
-	/* Check for accelerated queue supported */
+	 
 	llq_accel_mode_get = llq_features->accel_mode.u.get;
 
 	llq_info->disable_meta_caching =
@@ -783,11 +772,7 @@ static int ena_com_wait_and_process_admin_cq_interrupts(struct ena_comp_ctx *com
 				    usecs_to_jiffies(
 					    admin_queue->completion_timeout));
 
-	/* In case the command wasn't completed find out the root cause.
-	 * There might be 2 kinds of errors
-	 * 1) No completion (timeout reached)
-	 * 2) There is completion but the device didn't get any msi-x interrupt.
-	 */
+	 
 	if (unlikely(comp_ctx->status == ENA_CMD_SUBMITTED)) {
 		spin_lock_irqsave(&admin_queue->q_lock, flags);
 		ena_com_handle_admin_completion(admin_queue);
@@ -799,7 +784,7 @@ static int ena_com_wait_and_process_admin_cq_interrupts(struct ena_comp_ctx *com
 				   "The ena device sent a completion but the driver didn't receive a MSI-X interrupt (cmd %d), autopolling mode is %s\n",
 				   comp_ctx->cmd_opcode,
 				   admin_queue->auto_polling ? "ON" : "OFF");
-			/* Check if fallback to polling is enabled */
+			 
 			if (admin_queue->auto_polling)
 				admin_queue->polling = true;
 		} else {
@@ -807,10 +792,7 @@ static int ena_com_wait_and_process_admin_cq_interrupts(struct ena_comp_ctx *com
 				   "The ena device didn't send a completion for the admin cmd %d status %d\n",
 				   comp_ctx->cmd_opcode, comp_ctx->status);
 		}
-		/* Check if shifted to polling mode.
-		 * This will happen if there is a completion without an interrupt
-		 * and autopolling mode is enabled. Continuing normal execution in such case
-		 */
+		 
 		if (!admin_queue->polling) {
 			admin_queue->running_state = false;
 			ret = -ETIME;
@@ -824,10 +806,7 @@ err:
 	return ret;
 }
 
-/* This method read the hardware device register through posting writes
- * and waiting for response
- * On timeout the function will return ENA_MMIO_READ_TIMEOUT
- */
+ 
 static u32 ena_com_reg_bar_read32(struct ena_com_dev *ena_dev, u16 offset)
 {
 	struct ena_com_mmio_read *mmio_read = &ena_dev->mmio_read;
@@ -842,7 +821,7 @@ static u32 ena_com_reg_bar_read32(struct ena_com_dev *ena_dev, u16 offset)
 	if (timeout == 0)
 		timeout = ENA_REG_READ_TIMEOUT;
 
-	/* If readless is disabled, perform regular read */
+	 
 	if (!mmio_read->readless_supported)
 		return readl(ena_dev->reg_bar + offset);
 
@@ -886,13 +865,7 @@ err:
 	return ret;
 }
 
-/* There are two types to wait for completion.
- * Polling mode - wait until the completion is available.
- * Async mode - wait on wait queue until the completion is ready
- * (or the timeout expired).
- * It is expected that the IRQ called ena_com_handle_admin_completion
- * to mark the completions.
- */
+ 
 static int ena_com_wait_and_process_admin_cq(struct ena_comp_ctx *comp_ctx,
 					     struct ena_com_admin_queue *admin_queue)
 {
@@ -978,7 +951,7 @@ static int wait_for_reset_state(struct ena_com_dev *ena_dev, u32 timeout,
 	u32 val, exp = 0;
 	unsigned long timeout_stamp;
 
-	/* Convert timeout from resolution of 100ms to us resolution. */
+	 
 	timeout_stamp = jiffies + usecs_to_jiffies(100 * 1000 * timeout);
 
 	while (1) {
@@ -1006,7 +979,7 @@ static bool ena_com_check_supported_feature_id(struct ena_com_dev *ena_dev,
 {
 	u32 feature_mask = 1 << feature_id;
 
-	/* Device attributes is always supported */
+	 
 	if ((feature_id != ENA_ADMIN_DEVICE_ATTRIBUTES) &&
 	    !(ena_dev->supported_features & feature_mask))
 		return false;
@@ -1094,9 +1067,7 @@ static void ena_com_hash_key_fill_default_key(struct ena_com_dev *ena_dev)
 		(ena_dev->rss).hash_key;
 
 	netdev_rss_key_fill(&hash_key->key, sizeof(hash_key->key));
-	/* The key buffer is stored in the device in an array of
-	 * uint32 elements.
-	 */
+	 
 	hash_key->key_parts = ENA_ADMIN_RSS_KEY_PARTS;
 }
 
@@ -1332,13 +1303,13 @@ static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
 		intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
 	}
 
-	/* update Rx */
+	 
 	ena_dev->intr_moder_rx_interval =
 		ena_dev->intr_moder_rx_interval *
 		prev_intr_delay_resolution /
 		intr_delay_resolution;
 
-	/* update Tx */
+	 
 	ena_dev->intr_moder_tx_interval =
 		ena_dev->intr_moder_tx_interval *
 		prev_intr_delay_resolution /
@@ -1347,9 +1318,9 @@ static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
 	ena_dev->intr_delay_resolution = intr_delay_resolution;
 }
 
-/*****************************************************************************/
-/*******************************      API       ******************************/
-/*****************************************************************************/
+ 
+ 
+ 
 
 int ena_com_execute_admin_command(struct ena_com_admin_queue *admin_queue,
 				  struct ena_admin_aq_entry *cmd,
@@ -1546,9 +1517,7 @@ void ena_com_admin_aenq_enable(struct ena_com_dev *ena_dev)
 
 	WARN(ena_dev->aenq.head != depth, "Invalid AENQ state\n");
 
-	/* Init head_db to mark that all entries in the queue
-	 * are initially available
-	 */
+	 
 	writel(depth, ena_dev->reg_bar + ENA_REGS_AENQ_HEAD_DB_OFF);
 }
 
@@ -1626,9 +1595,7 @@ int ena_com_validate_version(struct ena_com_dev *ena_dev)
 	u32 ctrl_ver;
 	u32 ctrl_ver_masked;
 
-	/* Make sure the ENA version and the controller version are at least
-	 * as the driver expects
-	 */
+	 
 	ver = ena_com_reg_bar_read32(ena_dev, ENA_REGS_VERSION_OFF);
 	ctrl_ver = ena_com_reg_bar_read32(ena_dev,
 					  ENA_REGS_CONTROLLER_VERSION_OFF);
@@ -1659,7 +1626,7 @@ int ena_com_validate_version(struct ena_com_dev *ena_dev)
 		(ctrl_ver & ENA_REGS_CONTROLLER_VERSION_MINOR_VERSION_MASK) |
 		(ctrl_ver & ENA_REGS_CONTROLLER_VERSION_SUBMINOR_VERSION_MASK);
 
-	/* Validate the ctrl version without the implementation ID */
+	 
 	if (ctrl_ver_masked < MIN_ENA_CTRL_VER) {
 		netdev_err(ena_dev->net_device,
 			   "ENA ctrl version is lower than the minimal ctrl version the driver supports\n");
@@ -1890,7 +1857,7 @@ int ena_com_create_io_queue(struct ena_com_dev *ena_dev,
 	memset(io_sq, 0x0, sizeof(*io_sq));
 	memset(io_cq, 0x0, sizeof(*io_cq));
 
-	/* Init CQ */
+	 
 	io_cq->q_depth = ctx->queue_size;
 	io_cq->direction = ctx->direction;
 	io_cq->qid = ctx->qid;
@@ -1904,7 +1871,7 @@ int ena_com_create_io_queue(struct ena_com_dev *ena_dev,
 	io_sq->mem_queue_type = ctx->mem_queue_type;
 
 	if (ctx->direction == ENA_COM_IO_QUEUE_DIRECTION_TX)
-		/* header length is limited to 8 bits */
+		 
 		io_sq->tx_max_header_size =
 			min_t(u32, ena_dev->tx_max_header_size, SZ_256);
 
@@ -2019,9 +1986,7 @@ int ena_com_get_dev_attr_feat(struct ena_com_dev *ena_dev,
 	memcpy(&get_feat_ctx->offload, &get_resp.u.offload,
 	       sizeof(get_resp.u.offload));
 
-	/* Driver hints isn't mandatory admin command. So in case the
-	 * command isn't supported set driver hints to 0
-	 */
+	 
 	rc = ena_com_get_feature(ena_dev, &get_resp, ENA_ADMIN_HW_HINTS, 0);
 
 	if (!rc)
@@ -2050,9 +2015,7 @@ void ena_com_admin_q_comp_intr_handler(struct ena_com_dev *ena_dev)
 	ena_com_handle_admin_completion(&ena_dev->admin_queue);
 }
 
-/* ena_handle_specific_aenq_event:
- * return the handler that is relevant to the specific event group
- */
+ 
 static ena_aenq_handler ena_com_get_specific_aenq_cb(struct ena_com_dev *ena_dev,
 						     u16 group)
 {
@@ -2064,10 +2027,7 @@ static ena_aenq_handler ena_com_get_specific_aenq_cb(struct ena_com_dev *ena_dev
 	return aenq_handlers->unimplemented_handler;
 }
 
-/* ena_aenq_intr_handler:
- * handles the aenq incoming events.
- * pop events from the queue and apply the specific handler
- */
+ 
 void ena_com_aenq_intr_handler(struct ena_com_dev *ena_dev, void *data)
 {
 	struct ena_admin_aenq_entry *aenq_e;
@@ -2080,15 +2040,13 @@ void ena_com_aenq_intr_handler(struct ena_com_dev *ena_dev, void *data)
 
 	masked_head = aenq->head & (aenq->q_depth - 1);
 	phase = aenq->phase;
-	aenq_e = &aenq->entries[masked_head]; /* Get first entry */
+	aenq_e = &aenq->entries[masked_head];  
 	aenq_common = &aenq_e->aenq_common_desc;
 
-	/* Go over all the events */
+	 
 	while ((READ_ONCE(aenq_common->flags) &
 		ENA_ADMIN_AENQ_COMMON_DESC_PHASE_MASK) == phase) {
-		/* Make sure the phase bit (ownership) is as expected before
-		 * reading the rest of the descriptor.
-		 */
+		 
 		dma_rmb();
 
 		timestamp = (u64)aenq_common->timestamp_low |
@@ -2098,12 +2056,12 @@ void ena_com_aenq_intr_handler(struct ena_com_dev *ena_dev, void *data)
 			   "AENQ! Group[%x] Syndrome[%x] timestamp: [%llus]\n",
 			   aenq_common->group, aenq_common->syndrome, timestamp);
 
-		/* Handle specific event*/
+		 
 		handler_cb = ena_com_get_specific_aenq_cb(ena_dev,
 							  aenq_common->group);
-		handler_cb(data, aenq_e); /* call the actual event handler*/
+		handler_cb(data, aenq_e);  
 
-		/* Get next event entry */
+		 
 		masked_head++;
 		processed++;
 
@@ -2118,11 +2076,11 @@ void ena_com_aenq_intr_handler(struct ena_com_dev *ena_dev, void *data)
 	aenq->head += processed;
 	aenq->phase = phase;
 
-	/* Don't update aenq doorbell if there weren't any processed events */
+	 
 	if (!processed)
 		return;
 
-	/* write the aenq doorbell after all AENQ descriptors were read */
+	 
 	mb();
 	writel_relaxed((u32)aenq->head,
 		       ena_dev->reg_bar + ENA_REGS_AENQ_HEAD_DB_OFF);
@@ -2156,13 +2114,13 @@ int ena_com_dev_reset(struct ena_com_dev *ena_dev,
 		return -EINVAL;
 	}
 
-	/* start reset */
+	 
 	reset_val = ENA_REGS_DEV_CTL_DEV_RESET_MASK;
 	reset_val |= (reset_reason << ENA_REGS_DEV_CTL_RESET_REASON_SHIFT) &
 		     ENA_REGS_DEV_CTL_RESET_REASON_MASK;
 	writel(reset_val, ena_dev->reg_bar + ENA_REGS_DEV_CTL_OFF);
 
-	/* Write again the MMIO read request address */
+	 
 	ena_com_mmio_reg_read_request_write_dev_addr(ena_dev);
 
 	rc = wait_for_reset_state(ena_dev, timeout,
@@ -2173,7 +2131,7 @@ int ena_com_dev_reset(struct ena_com_dev *ena_dev,
 		return rc;
 	}
 
-	/* reset done */
+	 
 	writel(0, ena_dev->reg_bar + ENA_REGS_DEV_CTL_OFF);
 	rc = wait_for_reset_state(ena_dev, timeout, 0);
 	if (rc != 0) {
@@ -2185,7 +2143,7 @@ int ena_com_dev_reset(struct ena_com_dev *ena_dev,
 	timeout = (cap & ENA_REGS_CAPS_ADMIN_CMD_TO_MASK) >>
 		ENA_REGS_CAPS_ADMIN_CMD_TO_SHIFT;
 	if (timeout)
-		/* the resolution of timeout reg is 100ms */
+		 
 		ena_dev->admin_queue.completion_timeout = timeout * 100000;
 	else
 		ena_dev->admin_queue.completion_timeout = ADMIN_CMD_TIMEOUT_US;
@@ -2327,7 +2285,7 @@ int ena_com_set_hash_function(struct ena_com_dev *ena_dev)
 		return -EOPNOTSUPP;
 	}
 
-	/* Validate hash function is supported */
+	 
 	ret = ena_com_get_feature(ena_dev, &get_resp,
 				  ENA_ADMIN_RSS_HASH_FUNCTION, 0);
 	if (unlikely(ret))
@@ -2386,7 +2344,7 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
 
 	hash_key = rss->hash_key;
 
-	/* Make sure size is a mult of DWs */
+	 
 	if (unlikely(key_len & 0x3))
 		return -EINVAL;
 
@@ -2419,7 +2377,7 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
 	rss->hash_func = func;
 	rc = ena_com_set_hash_function(ena_dev);
 
-	/* Restore the old function */
+	 
 	if (unlikely(rc))
 		rss->hash_func = old_func;
 
@@ -2443,7 +2401,7 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
 	if (unlikely(rc))
 		return rc;
 
-	/* ffs() returns 1 in case the lsb is set */
+	 
 	rss->hash_func = ffs(get_resp.u.flow_hash_func.selected_func);
 	if (rss->hash_func)
 		rss->hash_func--;
@@ -2541,7 +2499,7 @@ int ena_com_set_default_hash_ctrl(struct ena_com_dev *ena_dev)
 	u16 available_fields = 0;
 	int rc, i;
 
-	/* Get the supported hash input */
+	 
 	rc = ena_com_get_hash_ctrl(ena_dev, 0, NULL);
 	if (unlikely(rc))
 		return rc;
@@ -2588,7 +2546,7 @@ int ena_com_set_default_hash_ctrl(struct ena_com_dev *ena_dev)
 
 	rc = ena_com_set_hash_ctrl(ena_dev);
 
-	/* In case of failure, restore the old hash ctrl */
+	 
 	if (unlikely(rc))
 		ena_com_get_hash_ctrl(ena_dev, 0, NULL);
 
@@ -2610,12 +2568,12 @@ int ena_com_fill_hash_ctrl(struct ena_com_dev *ena_dev,
 		return -EINVAL;
 	}
 
-	/* Get the ctrl table */
+	 
 	rc = ena_com_get_hash_ctrl(ena_dev, proto, NULL);
 	if (unlikely(rc))
 		return rc;
 
-	/* Make sure all the fields are supported */
+	 
 	supported_fields = hash_ctrl->supported_fields[proto].fields;
 	if ((hash_fields & supported_fields) != hash_fields) {
 		netdev_err(ena_dev->net_device,
@@ -2627,7 +2585,7 @@ int ena_com_fill_hash_ctrl(struct ena_com_dev *ena_dev,
 
 	rc = ena_com_set_hash_ctrl(ena_dev);
 
-	/* In case of failure, restore the old hash ctrl */
+	 
 	if (unlikely(rc))
 		ena_com_get_hash_ctrl(ena_dev, 0, NULL);
 
@@ -2741,10 +2699,7 @@ int ena_com_rss_init(struct ena_com_dev *ena_dev, u16 indr_tbl_log_size)
 	if (unlikely(rc))
 		goto err_indr_tbl;
 
-	/* The following function might return unsupported in case the
-	 * device doesn't support setting the key / hash function. We can safely
-	 * ignore this error and have indirection table support only.
-	 */
+	 
 	rc = ena_com_hash_key_allocate(ena_dev);
 	if (likely(!rc))
 		ena_com_hash_key_fill_default_key(ena_dev);
@@ -2842,9 +2797,7 @@ int ena_com_set_host_attributes(struct ena_com_dev *ena_dev)
 
 	int ret;
 
-	/* Host attribute config is called before ena_com_get_dev_attr_feat
-	 * so ena_com can't check if the feature is supported.
-	 */
+	 
 
 	memset(&cmd, 0x0, sizeof(cmd));
 	admin_queue = &ena_dev->admin_queue;
@@ -2883,7 +2836,7 @@ int ena_com_set_host_attributes(struct ena_com_dev *ena_dev)
 	return ret;
 }
 
-/* Interrupt moderation */
+ 
 bool ena_com_interrupt_moderation_supported(struct ena_com_dev *ena_dev)
 {
 	return ena_com_check_supported_feature_id(ena_dev,
@@ -2945,16 +2898,16 @@ int ena_com_init_interrupt_moderation(struct ena_com_dev *ena_dev)
 				   rc);
 		}
 
-		/* no moderation supported, disable adaptive support */
+		 
 		ena_com_disable_adaptive_moderation(ena_dev);
 		return rc;
 	}
 
-	/* if moderation is supported by device we set adaptive moderation */
+	 
 	delay_resolution = get_resp.u.intr_moderation.intr_delay_resolution;
 	ena_com_update_intr_delay_resolution(ena_dev, delay_resolution);
 
-	/* Disable adaptive moderation by default - can be enabled later */
+	 
 	ena_com_disable_adaptive_moderation(ena_dev);
 
 	return 0;

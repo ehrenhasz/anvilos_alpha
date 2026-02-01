@@ -1,13 +1,4 @@
-/*
- * Cavium ThunderX memory controller kernel module
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright Cavium, Inc. (C) 2015-2017. All rights reserved.
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -291,15 +282,7 @@ DEBUGFS_STRUCT(_name, 0600,						    \
 
 #define LMC_DEBUGFS_ENT(_field)	DEBUGFS_FIELD_ATTR(lmc, _field)
 
-/*
- * To get an ECC error injected, the following steps are needed:
- * - Setup the ECC injection by writing the appropriate parameters:
- *	echo <bit mask value> > /sys/kernel/debug/<device number>/ecc_mask0
- *	echo <bit mask value> > /sys/kernel/debug/<device number>/ecc_mask2
- *	echo 0x802 > /sys/kernel/debug/<device number>/ecc_parity_test
- * - Do the actual injection:
- *	echo 1 > /sys/kernel/debug/<device number>/inject_ecc
- */
+ 
 static ssize_t thunderx_lmc_inject_int_write(struct file *file,
 					     const char __user *data,
 					     size_t count, loff_t *ppos)
@@ -311,7 +294,7 @@ static ssize_t thunderx_lmc_inject_int_write(struct file *file,
 	res = kstrtoull_from_user(data, count, 0, &val);
 
 	if (!res) {
-		/* Trigger the interrupt */
+		 
 		writeq(val, lmc->regs + LMC_INT_W1S);
 		res = count;
 	}
@@ -360,41 +343,26 @@ static int inject_ecc_fn(void *arg)
 		memset((void *)addr, TEST_PATTERN, cline_size);
 		barrier();
 
-		/*
-		 * Flush L1 cachelines to the PoC (L2).
-		 * This will cause cacheline eviction to the L2.
-		 */
+		 
 		asm volatile("dc civac, %0\n"
 			     "dsb sy\n"
 			     : : "r"(addr + i * cline_size));
 	}
 
 	for (i = 0; i < lines; i++) {
-		/*
-		 * Flush L2 cachelines to the DRAM.
-		 * This will cause cacheline eviction to the DRAM
-		 * and ECC corruption according to the masks set.
-		 */
+		 
 		__asm__ volatile("sys #0,c11,C1,#2, %0\n"
 				 : : "r"(phys + i * cline_size));
 	}
 
 	for (i = 0; i < lines; i++) {
-		/*
-		 * Invalidate L2 cachelines.
-		 * The subsequent load will cause cacheline fetch
-		 * from the DRAM and an error interrupt
-		 */
+		 
 		__asm__ volatile("sys #0,c11,C1,#1, %0"
 				 : : "r"(phys + i * cline_size));
 	}
 
 	for (i = 0; i < lines; i++) {
-		/*
-		 * Invalidate L1 cachelines.
-		 * The subsequent load will cause cacheline fetch
-		 * from the L2 and/or DRAM
-		 */
+		 
 		asm volatile("dc ivac, %0\n"
 			     "dsb sy\n"
 			     : : "r"(addr + i * cline_size));
@@ -431,10 +399,7 @@ static ssize_t thunderx_lmc_inject_ecc_write(struct file *file,
 		stop_machine(inject_ecc_fn, lmc, NULL);
 
 		for (offs = 0; offs < PAGE_SIZE; offs += cline_size) {
-			/*
-			 * Do a load from the previously rigged location
-			 * This should generate an error interrupt.
-			 */
+			 
 			memcpy(tmp, addr + offs, cline_size);
 			asm volatile("dsb ld\n");
 		}
@@ -564,7 +529,7 @@ static irqreturn_t thunderx_lmc_err_isr(int irq, void *dev_id)
 
 	atomic_set(&lmc->ecc_int, 1);
 
-	/* Clear the interrupt */
+	 
 	writeq(ctx->reg_int, lmc->regs + LMC_INT);
 
 	return IRQ_WAKE_THREAD;
@@ -820,7 +785,7 @@ static struct pci_driver thunderx_lmc_driver = {
 	.id_table = thunderx_lmc_pci_tbl,
 };
 
-/*---------------------- OCX driver ---------------------------------*/
+ 
 
 #define PCI_DEVICE_ID_THUNDER_OCX 0xa013
 
@@ -1071,7 +1036,7 @@ struct thunderx_ocx {
 #define OCX_MESSAGE_SIZE	SZ_1K
 #define OCX_OTHER_SIZE		(50 * ARRAY_SIZE(ocx_com_link_errors))
 
-/* This handler is threaded */
+ 
 static irqreturn_t thunderx_ocx_com_isr(int irq, void *irq_id)
 {
 	struct msix_entry *msix = irq_id;
@@ -1498,7 +1463,7 @@ static struct pci_driver thunderx_ocx_driver = {
 	.id_table = thunderx_ocx_pci_tbl,
 };
 
-/*---------------------- L2C driver ---------------------------------*/
+ 
 
 #define PCI_DEVICE_ID_THUNDER_L2C_TAD 0xa02e
 #define PCI_DEVICE_ID_THUNDER_L2C_CBC 0xa02f
@@ -1994,7 +1959,7 @@ static int thunderx_l2c_probe(struct pci_dev *pdev,
 		reg_en_mask = L2C_MCI_INT_ENA_ALL;
 		break;
 	default:
-		//Should never ever get here
+		
 		dev_err(&pdev->dev, "Unsupported PCI device: %04x\n",
 			pdev->device);
 		return -EINVAL;

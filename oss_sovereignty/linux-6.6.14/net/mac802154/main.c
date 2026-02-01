@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2012 Siemens AG
- *
- * Written by:
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,9 +23,7 @@ static void ieee802154_tasklet_handler(struct tasklet_struct *t)
 	while ((skb = skb_dequeue(&local->skb_queue))) {
 		switch (skb->pkt_type) {
 		case IEEE802154_RX_MSG:
-			/* Clear skb->pkt_type in order to not confuse kernel
-			 * netstack.
-			 */
+			 
 			skb->pkt_type = 0;
 			ieee802154_rx(local, skb);
 			break;
@@ -54,23 +47,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
 		    !ops->start || !ops->stop || !ops->set_channel))
 		return NULL;
 
-	/* Ensure 32-byte alignment of our private data and hw private data.
-	 * We use the wpan_phy priv data for both our ieee802154_local and for
-	 * the driver's private data
-	 *
-	 * in memory it'll be like this:
-	 *
-	 * +-------------------------+
-	 * | struct wpan_phy         |
-	 * +-------------------------+
-	 * | struct ieee802154_local |
-	 * +-------------------------+
-	 * | driver's private data   |
-	 * +-------------------------+
-	 *
-	 * Due to ieee802154 layer isn't aware of driver and MAC structures,
-	 * so lets align them here.
-	 */
+	 
 
 	priv_size = ALIGN(sizeof(*local), NETDEV_ALIGN) + priv_data_len;
 
@@ -103,7 +80,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
 	INIT_DELAYED_WORK(&local->beacon_work, mac802154_beacon_worker);
 	INIT_WORK(&local->rx_mac_cmd_work, mac802154_rx_mac_cmd_worker);
 
-	/* init supported flags with 802.15.4 default ranges */
+	 
 	phy->supported.max_minbe = 8;
 	phy->supported.min_maxbe = 3;
 	phy->supported.max_maxbe = 8;
@@ -112,7 +89,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
 	phy->supported.max_csma_backoffs = 5;
 	phy->supported.lbt = NL802154_SUPPORTED_BOOL_FALSE;
 
-	/* always supported */
+	 
 	phy->supported.iftypes = BIT(NL802154_IFTYPE_NODE) | BIT(NL802154_IFTYPE_COORD);
 
 	return &local->hw;
@@ -127,26 +104,26 @@ void ieee802154_configure_durations(struct wpan_phy *phy,
 	switch (page) {
 	case 0:
 		if (BIT(channel) & 0x1)
-			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
+			 
 			duration = 50 * NSEC_PER_USEC;
 		else if (BIT(channel) & 0x7FE)
-			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
+			 
 			duration = 25 * NSEC_PER_USEC;
 		else if (BIT(channel) & 0x7FFF800)
-			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+			 
 			duration = 16 * NSEC_PER_USEC;
 		break;
 	case 2:
 		if (BIT(channel) & 0x1)
-			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
+			 
 			duration = 40 * NSEC_PER_USEC;
 		else if (BIT(channel) & 0x7FE)
-			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+			 
 			duration = 16 * NSEC_PER_USEC;
 		break;
 	case 3:
 		if (BIT(channel) & 0x3FFF)
-			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
+			 
 			duration = 6 * NSEC_PER_USEC;
 		break;
 	default:
@@ -178,9 +155,7 @@ EXPORT_SYMBOL(ieee802154_free_hw);
 
 static void ieee802154_setup_wpan_phy_pib(struct wpan_phy *wpan_phy)
 {
-	/* TODO warn on empty symbol_duration
-	 * Should be done when all drivers sets this value.
-	 */
+	 
 
 	wpan_phy->lifs_period =
 		(IEEE802154_LIFS_PERIOD * wpan_phy->symbol_duration) / 1000;

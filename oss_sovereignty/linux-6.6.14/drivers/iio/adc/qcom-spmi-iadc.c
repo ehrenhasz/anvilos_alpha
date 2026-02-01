@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -17,7 +15,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* IADC register and bit definition */
+ 
 #define IADC_REVISION2				0x1
 #define IADC_REVISION2_SUPPORTED_IADC		1
 
@@ -58,7 +56,7 @@
 #define IADC_PERH_RESET_CTL3			0xda
 #define IADC_FOLLOW_WARM_RB			BIT(2)
 
-#define IADC_DATA				0x60	/* 16 bits */
+#define IADC_DATA				0x60	 
 
 #define IADC_SEC_ACCESS				0xd0
 #define IADC_SEC_ACCESS_DATA			0xa5
@@ -68,40 +66,29 @@
 
 #define IADC_REF_GAIN_MICRO_VOLTS		17857
 
-#define IADC_INT_RSENSE_DEVIATION		15625	/* nano Ohms per bit */
+#define IADC_INT_RSENSE_DEVIATION		15625	 
 
-#define IADC_INT_RSENSE_IDEAL_VALUE		10000	/* micro Ohms */
-#define IADC_INT_RSENSE_DEFAULT_VALUE		7800	/* micro Ohms */
-#define IADC_INT_RSENSE_DEFAULT_GF		9000	/* micro Ohms */
-#define IADC_INT_RSENSE_DEFAULT_SMIC		9700	/* micro Ohms */
+#define IADC_INT_RSENSE_IDEAL_VALUE		10000	 
+#define IADC_INT_RSENSE_DEFAULT_VALUE		7800	 
+#define IADC_INT_RSENSE_DEFAULT_GF		9000	 
+#define IADC_INT_RSENSE_DEFAULT_SMIC		9700	 
 
 #define IADC_CONV_TIME_MIN_US			2000
 #define IADC_CONV_TIME_MAX_US			2100
 
-#define IADC_DEF_PRESCALING			0 /* 1:1 */
-#define IADC_DEF_DECIMATION			0 /* 512 */
-#define IADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-#define IADC_DEF_AVG_SAMPLES			0 /* 1 sample */
+#define IADC_DEF_PRESCALING			0  
+#define IADC_DEF_DECIMATION			0  
+#define IADC_DEF_HW_SETTLE_TIME			0  
+#define IADC_DEF_AVG_SAMPLES			0  
 
-/* IADC channel list */
+ 
 #define IADC_INT_RSENSE				0
 #define IADC_EXT_RSENSE				1
 #define IADC_GAIN_17P857MV			3
 #define IADC_EXT_OFFSET_CSP_CSN			5
 #define IADC_INT_OFFSET_CSP2_CSN2		6
 
-/**
- * struct iadc_chip - IADC Current ADC device structure.
- * @regmap: regmap for register read/write.
- * @dev: This device pointer.
- * @base: base offset for the ADC peripheral.
- * @rsense: Values of the internal and external sense resister in micro Ohms.
- * @poll_eoc: Poll for end of conversion instead of waiting for IRQ.
- * @offset: Raw offset values for the internal and external channels.
- * @gain: Raw gain of the channels.
- * @lock: ADC lock for access to the peripheral.
- * @complete: ADC notification after end of conversion interrupt is received.
- */
+ 
 struct iadc_chip {
 	struct regmap	*regmap;
 	struct device	*dev;
@@ -198,24 +185,24 @@ static int iadc_configure(struct iadc_chip *iadc, int channel)
 	u8 decim, mode;
 	int ret;
 
-	/* Mode selection */
+	 
 	mode = (IADC_OP_MODE_NORMAL << IADC_OP_MODE_SHIFT) | IADC_TRIM_EN;
 	ret = iadc_write(iadc, IADC_MODE_CTL, mode);
 	if (ret < 0)
 		return ret;
 
-	/* Channel selection */
+	 
 	ret = iadc_write(iadc, IADC_CH_SEL_CTL, channel);
 	if (ret < 0)
 		return ret;
 
-	/* Digital parameter setup */
+	 
 	decim = IADC_DEF_DECIMATION << IADC_DIG_DEC_RATIO_SEL_SHIFT;
 	ret = iadc_write(iadc, IADC_DIG_PARAM, decim);
 	if (ret < 0)
 		return ret;
 
-	/* HW settle time delay */
+	 
 	ret = iadc_write(iadc, IADC_HW_SETTLE_DELAY, IADC_DEF_HW_SETTLE_TIME);
 	if (ret < 0)
 		return ret;
@@ -239,7 +226,7 @@ static int iadc_configure(struct iadc_chip *iadc, int channel)
 	if (ret < 0)
 		return ret;
 
-	/* Request conversion */
+	 
 	return iadc_write(iadc, IADC_CONV_REQ, IADC_CONV_REQ_SET);
 }
 
@@ -292,7 +279,7 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
 		if (!ret)
 			ret = -ETIMEDOUT;
 		else
-			/* double check conversion status */
+			 
 			ret = iadc_poll_wait_eoc(iadc, IADC_CONV_TIME_MIN_US);
 	}
 
@@ -445,18 +432,15 @@ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Deviation value stored is an offset from 10 mili Ohms, bit 7 is
-	 * the sign, the remaining bits have an LSB of 15625 nano Ohms.
-	 */
+	 
 	sign = (deviation & IADC_NOMINAL_RSENSE_SIGN_MASK) ? -1 : 1;
 
 	deviation &= ~IADC_NOMINAL_RSENSE_SIGN_MASK;
 
-	/* Scale it to nono Ohms */
+	 
 	int_sense = IADC_INT_RSENSE_IDEAL_VALUE * 1000;
 	int_sense += sign * deviation * IADC_INT_RSENSE_DEVIATION;
-	int_sense /= 1000; /* micro Ohms */
+	int_sense /= 1000;  
 
 	iadc->rsense[IADC_INT_RSENSE] = int_sense;
 	return 0;

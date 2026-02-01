@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
- *
- * Interface to power domain regulators on DB8500
- */
+ 
+ 
 
 #ifndef __REGULATOR_H__
 #define __REGULATOR_H__
 
-/* Number of DB8500 regulators and regulator enumeration */
+ 
 enum db8500_regulator_id {
 	DB8500_REGULATOR_VAPE,
 	DB8500_REGULATOR_VARM,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: jitao.shi <jitao.shi@mediatek.com>
- */
+
+ 
 
 #include "phy-mtk-io.h"
 #include "phy-mtk-mipi-dsi.h"
@@ -185,14 +182,7 @@ static int mtk_mipi_tx_pll_prepare(struct clk_hw *hw)
 			    FIELD_PREP(RG_DSI_MPPLL_TXDIV0, txdiv0) |
 			    FIELD_PREP(RG_DSI_MPPLL_TXDIV1, txdiv1));
 
-	/*
-	 * PLL PCW config
-	 * PCW bit 24~30 = integer part of pcw
-	 * PCW bit 0~23 = fractional part of pcw
-	 * pcw = data_Rate*4*txdiv/(Ref_clk*2);
-	 * Post DIV =4, so need data_Rate*4
-	 * Ref_clk is 26MHz
-	 */
+	 
 	pcw = div_u64(((u64)mipi_tx->data_rate * 2 * txdiv) << 24, 26000000);
 	writel(pcw, base + MIPITX_DSI_PLL_CON2);
 

@@ -1,14 +1,4 @@
-/*
- * videobuf2-dma-contig.c - DMA contig memory allocator for videobuf2
- *
- * Copyright (C) 2010 Samsung Electronics
- *
- * Author: Pawel Osciak <pawel@osciak.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/module.h>
@@ -34,21 +24,21 @@ struct vb2_dc_buf {
 	struct sg_table			*dma_sgt;
 	struct frame_vector		*vec;
 
-	/* MMAP related */
+	 
 	struct vb2_vmarea_handler	handler;
 	refcount_t			refcount;
 	struct sg_table			*sgt_base;
 
-	/* DMABUF related */
+	 
 	struct dma_buf_attachment	*db_attach;
 
 	struct vb2_buffer		*vb;
 	bool				non_coherent_mem;
 };
 
-/*********************************************/
-/*        scatterlist table functions        */
-/*********************************************/
+ 
+ 
+ 
 
 static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
 {
@@ -66,9 +56,9 @@ static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
 	return size;
 }
 
-/*********************************************/
-/*         callbacks for all buffers         */
-/*********************************************/
+ 
+ 
+ 
 
 static void *vb2_dc_cookie(struct vb2_buffer *vb, void *buf_priv)
 {
@@ -77,20 +67,7 @@ static void *vb2_dc_cookie(struct vb2_buffer *vb, void *buf_priv)
 	return &buf->dma_addr;
 }
 
-/*
- * This function may fail if:
- *
- * - dma_buf_vmap() fails
- *   E.g. due to lack of virtual mapping address space, or due to
- *   dmabuf->ops misconfiguration.
- *
- * - dma_vmap_noncontiguous() fails
- *   For instance, when requested buffer size is larger than totalram_pages().
- *   Relevant for buffers that use non-coherent memory.
- *
- * - Queue DMA attrs have DMA_ATTR_NO_KERNEL_MAPPING set
- *   Relevant for buffers that use coherent memory.
- */
+ 
 static void *vb2_dc_vaddr(struct vb2_buffer *vb, void *buf_priv)
 {
 	struct vb2_dc_buf *buf = buf_priv;
@@ -125,18 +102,18 @@ static void vb2_dc_prepare(void *buf_priv)
 	struct vb2_dc_buf *buf = buf_priv;
 	struct sg_table *sgt = buf->dma_sgt;
 
-	/* This takes care of DMABUF and user-enforced cache sync hint */
+	 
 	if (buf->vb->skip_cache_sync_on_prepare)
 		return;
 
 	if (!buf->non_coherent_mem)
 		return;
 
-	/* Non-coherent MMAP only */
+	 
 	if (buf->vaddr)
 		flush_kernel_vmap_range(buf->vaddr, buf->size);
 
-	/* For both USERPTR and non-coherent MMAP */
+	 
 	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
 }
 
@@ -145,24 +122,24 @@ static void vb2_dc_finish(void *buf_priv)
 	struct vb2_dc_buf *buf = buf_priv;
 	struct sg_table *sgt = buf->dma_sgt;
 
-	/* This takes care of DMABUF and user-enforced cache sync hint */
+	 
 	if (buf->vb->skip_cache_sync_on_finish)
 		return;
 
 	if (!buf->non_coherent_mem)
 		return;
 
-	/* Non-coherent MMAP only */
+	 
 	if (buf->vaddr)
 		invalidate_kernel_vmap_range(buf->vaddr, buf->size);
 
-	/* For both USERPTR and non-coherent MMAP */
+	 
 	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
 }
 
-/*********************************************/
-/*        callbacks for MMAP buffers         */
-/*********************************************/
+ 
+ 
+ 
 
 static void vb2_dc_put(void *buf_priv)
 {
@@ -221,10 +198,7 @@ static int vb2_dc_alloc_non_coherent(struct vb2_dc_buf *buf)
 
 	buf->dma_addr = sg_dma_address(buf->dma_sgt->sgl);
 
-	/*
-	 * For non-coherent buffers the kernel mapping is created on demand
-	 * in vb2_dc_vaddr().
-	 */
+	 
 	return 0;
 }
 
@@ -248,7 +222,7 @@ static void *vb2_dc_alloc(struct vb2_buffer *vb,
 	buf->non_coherent_mem = vb->vb2_queue->non_coherent_mem;
 
 	buf->size = size;
-	/* Prevent the device from being released while the buffer is used */
+	 
 	buf->dev = get_device(dev);
 
 	if (buf->non_coherent_mem)
@@ -305,9 +279,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
 	return 0;
 }
 
-/*********************************************/
-/*         DMABUF ops for exporters          */
-/*********************************************/
+ 
+ 
+ 
 
 struct vb2_dc_attachment {
 	struct sg_table sgt;
@@ -329,9 +303,7 @@ static int vb2_dc_dmabuf_ops_attach(struct dma_buf *dbuf,
 		return -ENOMEM;
 
 	sgt = &attach->sgt;
-	/* Copy the buf->base_sgt scatter list to the attachment, as we can't
-	 * map the same scatter list to multiple attachments at the same time.
-	 */
+	 
 	ret = sg_alloc_table(sgt, buf->sgt_base->orig_nents, GFP_KERNEL);
 	if (ret) {
 		kfree(attach);
@@ -363,14 +335,9 @@ static void vb2_dc_dmabuf_ops_detach(struct dma_buf *dbuf,
 
 	sgt = &attach->sgt;
 
-	/* release the scatterlist cache */
+	 
 	if (attach->dma_dir != DMA_NONE)
-		/*
-		 * Cache sync can be skipped here, as the vb2_dc memory is
-		 * allocated from device coherent memory, which means the
-		 * memory locations do not require any explicit cache
-		 * maintenance prior or after being used by the device.
-		 */
+		 
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
 				  DMA_ATTR_SKIP_CPU_SYNC);
 	sg_free_table(sgt);
@@ -385,21 +352,18 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
 	struct sg_table *sgt;
 
 	sgt = &attach->sgt;
-	/* return previously mapped sg table */
+	 
 	if (attach->dma_dir == dma_dir)
 		return sgt;
 
-	/* release any previous cache */
+	 
 	if (attach->dma_dir != DMA_NONE) {
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
 				  DMA_ATTR_SKIP_CPU_SYNC);
 		attach->dma_dir = DMA_NONE;
 	}
 
-	/*
-	 * mapping to the client with new direction, no cache sync
-	 * required see comment in vb2_dc_dmabuf_ops_detach()
-	 */
+	 
 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
 			    DMA_ATTR_SKIP_CPU_SYNC)) {
 		pr_err("failed to map scatterlist\n");
@@ -414,12 +378,12 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
 static void vb2_dc_dmabuf_ops_unmap(struct dma_buf_attachment *db_attach,
 	struct sg_table *sgt, enum dma_data_direction dma_dir)
 {
-	/* nothing to be done here */
+	 
 }
 
 static void vb2_dc_dmabuf_ops_release(struct dma_buf *dbuf)
 {
-	/* drop reference obtained in vb2_dc_get_dmabuf */
+	 
 	vb2_dc_put(dbuf->priv);
 }
 
@@ -518,15 +482,15 @@ static struct dma_buf *vb2_dc_get_dmabuf(struct vb2_buffer *vb,
 	if (IS_ERR(dbuf))
 		return NULL;
 
-	/* dmabuf keeps reference to vb2 buffer */
+	 
 	refcount_inc(&buf->refcount);
 
 	return dbuf;
 }
 
-/*********************************************/
-/*       callbacks for USERPTR buffers       */
-/*********************************************/
+ 
+ 
+ 
 
 static void vb2_dc_put_userptr(void *buf_priv)
 {
@@ -536,14 +500,11 @@ static void vb2_dc_put_userptr(void *buf_priv)
 	struct page **pages;
 
 	if (sgt) {
-		/*
-		 * No need to sync to CPU, it's already synced to the CPU
-		 * since the finish() memop will have been called before this.
-		 */
+		 
 		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
 				  DMA_ATTR_SKIP_CPU_SYNC);
 		pages = frame_vector_pages(buf->vec);
-		/* sgt should exist only if vector contains pages... */
+		 
 		BUG_ON(IS_ERR(pages));
 		if (buf->dma_dir == DMA_FROM_DEVICE ||
 		    buf->dma_dir == DMA_BIDIRECTIONAL)
@@ -571,7 +532,7 @@ static void *vb2_dc_get_userptr(struct vb2_buffer *vb, struct device *dev,
 	unsigned long contig_size;
 	unsigned long dma_align = dma_get_cache_alignment();
 
-	/* Only cache aligned DMA transfers are reliable */
+	 
 	if (!IS_ALIGNED(vaddr | size, dma_align)) {
 		pr_debug("user data must be aligned to %lu bytes\n", dma_align);
 		return ERR_PTR(-EINVAL);
@@ -606,10 +567,7 @@ static void *vb2_dc_get_userptr(struct vb2_buffer *vb, struct device *dev,
 	if (ret < 0) {
 		unsigned long *nums = frame_vector_pfns(vec);
 
-		/*
-		 * Failed to convert to pages... Check the memory is physically
-		 * contiguous and use direct mapping
-		 */
+		 
 		for (i = 1; i < n_pages; i++)
 			if (nums[i-1] + 1 != nums[i])
 				goto fail_pfnvec;
@@ -636,10 +594,7 @@ static void *vb2_dc_get_userptr(struct vb2_buffer *vb, struct device *dev,
 		goto fail_sgt;
 	}
 
-	/*
-	 * No need to sync to the device, this will happen later when the
-	 * prepare() memop is called.
-	 */
+	 
 	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
 			    DMA_ATTR_SKIP_CPU_SYNC)) {
 		pr_err("failed to map scatterlist\n");
@@ -682,9 +637,9 @@ fail_buf:
 	return ERR_PTR(ret);
 }
 
-/*********************************************/
-/*       callbacks for DMABUF buffers        */
-/*********************************************/
+ 
+ 
+ 
 
 static int vb2_dc_map_dmabuf(void *mem_priv)
 {
@@ -702,14 +657,14 @@ static int vb2_dc_map_dmabuf(void *mem_priv)
 		return 0;
 	}
 
-	/* get the associated scatterlist for this buffer */
+	 
 	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
 	if (IS_ERR(sgt)) {
 		pr_err("Error getting dmabuf scatterlist\n");
 		return -EINVAL;
 	}
 
-	/* checking if dmabuf is big enough to store contiguous chunk */
+	 
 	contig_size = vb2_dc_get_contiguous_size(sgt);
 	if (contig_size < buf->size) {
 		pr_err("contiguous chunk is too small %lu/%lu\n",
@@ -756,11 +711,11 @@ static void vb2_dc_detach_dmabuf(void *mem_priv)
 {
 	struct vb2_dc_buf *buf = mem_priv;
 
-	/* if vb2 works correctly you should never detach mapped buffer */
+	 
 	if (WARN_ON(buf->dma_addr))
 		vb2_dc_unmap_dmabuf(buf);
 
-	/* detach this attachment */
+	 
 	dma_buf_detach(buf->db_attach->dmabuf, buf->db_attach);
 	kfree(buf);
 }
@@ -784,7 +739,7 @@ static void *vb2_dc_attach_dmabuf(struct vb2_buffer *vb, struct device *dev,
 	buf->dev = dev;
 	buf->vb = vb;
 
-	/* create attachment for the dmabuf with the user device */
+	 
 	dba = dma_buf_attach(dbuf, buf->dev);
 	if (IS_ERR(dba)) {
 		pr_err("failed to attach dmabuf\n");
@@ -799,9 +754,9 @@ static void *vb2_dc_attach_dmabuf(struct vb2_buffer *vb, struct device *dev,
 	return buf;
 }
 
-/*********************************************/
-/*       DMA CONTIG exported functions       */
-/*********************************************/
+ 
+ 
+ 
 
 const struct vb2_mem_ops vb2_dma_contig_memops = {
 	.alloc		= vb2_dc_alloc,
@@ -822,30 +777,7 @@ const struct vb2_mem_ops vb2_dma_contig_memops = {
 };
 EXPORT_SYMBOL_GPL(vb2_dma_contig_memops);
 
-/**
- * vb2_dma_contig_set_max_seg_size() - configure DMA max segment size
- * @dev:	device for configuring DMA parameters
- * @size:	size of DMA max segment size to set
- *
- * To allow mapping the scatter-list into a single chunk in the DMA
- * address space, the device is required to have the DMA max segment
- * size parameter set to a value larger than the buffer size. Otherwise,
- * the DMA-mapping subsystem will split the mapping into max segment
- * size chunks. This function sets the DMA max segment size
- * parameter to let DMA-mapping map a buffer as a single chunk in DMA
- * address space.
- * This code assumes that the DMA-mapping subsystem will merge all
- * scatterlist segments if this is really possible (for example when
- * an IOMMU is available and enabled).
- * Ideally, this parameter should be set by the generic bus code, but it
- * is left with the default 64KiB value due to historical litmiations in
- * other subsystems (like limited USB host drivers) and there no good
- * place to set it to the proper value.
- * This function should be called from the drivers, which are known to
- * operate on platforms with IOMMU and provide access to shared buffers
- * (either USERPTR or DMABUF). This should be done before initializing
- * videobuf2 queue.
- */
+ 
 int vb2_dma_contig_set_max_seg_size(struct device *dev, unsigned int size)
 {
 	if (!dev->dma_parms) {

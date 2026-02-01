@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic MMIO clocksource support
- */
+
+ 
 #include <linux/clocksource.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -37,15 +35,7 @@ u64 clocksource_mmio_readw_down(struct clocksource *c)
 	return ~(u64)readw_relaxed(to_mmio_clksrc(c)->reg) & c->mask;
 }
 
-/**
- * clocksource_mmio_init - Initialize a simple mmio based clocksource
- * @base:	Virtual address of the clock readout register
- * @name:	Name of the clocksource
- * @hz:		Frequency of the clocksource in Hz
- * @rating:	Rating of the clocksource
- * @bits:	Number of valid bits
- * @read:	One of clocksource_mmio_read*() above
- */
+ 
 int __init clocksource_mmio_init(void __iomem *base, const char *name,
 	unsigned long hz, int rating, unsigned bits,
 	u64 (*read)(struct clocksource *))

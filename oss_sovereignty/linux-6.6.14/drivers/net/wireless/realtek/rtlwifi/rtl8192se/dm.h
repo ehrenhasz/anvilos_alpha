@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef	__RTL_92S_DM_H__
 #define __RTL_92S_DM_H__
@@ -46,8 +46,8 @@ enum dm_ratr_sta {
 #define	TX_HIGH_PWR_LEVEL_LEVEL1	1
 #define	TX_HIGH_PWR_LEVEL_LEVEL2	2
 
-#define	HAL_DM_DIG_DISABLE		BIT(0)	/* Disable Dig */
-#define	HAL_DM_HIPWR_DISABLE		BIT(1)	/* Disable High Power */
+#define	HAL_DM_DIG_DISABLE		BIT(0)	 
+#define	HAL_DM_HIPWR_DISABLE		BIT(1)	 
 
 #define	TX_HIGHPWR_LEVEL_NORMAL		0
 #define	TX_HIGHPWR_LEVEL_NORMAL1	1

@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -59,18 +36,11 @@ int clk_mgr_helper_get_active_display_cnt(
 	for (i = 0; i < context->stream_count; i++) {
 		const struct dc_stream_state *stream = context->streams[i];
 
-		/* Don't count SubVP phantom pipes as part of active
-		 * display count
-		 */
+		 
 		if (stream->mall_stream_config.type == SUBVP_PHANTOM)
 			continue;
 
-		/*
-		 * Only notify active stream or virtual stream.
-		 * Need to notify virtual stream to work around
-		 * headless case. HPD does not fire when system is in
-		 * S0i2.
-		 */
+		 
 		if (!stream->dpms_off || stream->signal == SIGNAL_TYPE_VIRTUAL)
 			display_count++;
 	}
@@ -88,9 +58,7 @@ int clk_mgr_helper_get_active_plane_cnt(
 	for (i = 0; i < context->stream_count; i++) {
 		const struct dc_stream_status stream_status = context->stream_status[i];
 
-		/*
-		 * Sum up plane_count for all streams ( active and virtual ).
-		 */
+		 
 		total_plane_count += stream_status.plane_count;
 	}
 
@@ -354,9 +322,9 @@ struct clk_mgr *dc_clk_mgr_create(struct dc_context *ctx, struct pp_smu_funcs *p
 	}
 	break;
 
-#endif /* CONFIG_DRM_AMD_DC_FP - Family RV */
+#endif  
 	default:
-		ASSERT(0); /* Unknown Asic */
+		ASSERT(0);  
 		break;
 	}
 
@@ -408,7 +376,7 @@ void dc_destroy_clk_mgr(struct clk_mgr *clk_mgr_base)
 	default:
 		break;
 	}
-#endif /* CONFIG_DRM_AMD_DC_FP */
+#endif  
 
 	kfree(clk_mgr);
 }

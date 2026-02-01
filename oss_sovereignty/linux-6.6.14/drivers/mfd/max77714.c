@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX77714 Core Driver
- *
- * Copyright (C) 2022 Luca Ceresoli
- * Author: Luca Ceresoli <luca.ceresoli@bootlin.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -68,15 +63,11 @@ static const struct regmap_irq_chip max77714_irq_chip = {
 	.num_irqs		= ARRAY_SIZE(max77714_top_irqs),
 };
 
-/*
- * MAX77714 initially uses the internal, low precision oscillator. Enable
- * the external oscillator by setting the XOSC_RETRY bit. If the external
- * oscillator is not OK (probably not installed) this has no effect.
- */
+ 
 static int max77714_setup_xosc(struct device *dev, struct regmap *regmap)
 {
-	/* Internal Crystal Load Capacitance, indexed by value of 32KLOAD bits */
-	static const unsigned int load_cap[4] = {0, 10, 12, 22}; /* pF */
+	 
+	static const unsigned int load_cap[4] = {0, 10, 12, 22};  
 	unsigned int load_cap_idx;
 	unsigned int status;
 	int err;

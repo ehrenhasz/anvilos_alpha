@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	linux/mm/mlock.c
- *
- *  (C) Copyright 1995 Linus Torvalds
- *  (C) Copyright 2002 Christoph Hellwig
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/mman.h>
@@ -47,31 +42,18 @@ bool can_do_mlock(void)
 }
 EXPORT_SYMBOL(can_do_mlock);
 
-/*
- * Mlocked folios are marked with the PG_mlocked flag for efficient testing
- * in vmscan and, possibly, the fault path; and to support semi-accurate
- * statistics.
- *
- * An mlocked folio [folio_test_mlocked(folio)] is unevictable.  As such, it
- * will be ostensibly placed on the LRU "unevictable" list (actually no such
- * list exists), rather than the [in]active lists. PG_unevictable is set to
- * indicate the unevictable state.
- */
+ 
 
 static struct lruvec *__mlock_folio(struct folio *folio, struct lruvec *lruvec)
 {
-	/* There is nothing more we can do while it's off LRU */
+	 
 	if (!folio_test_clear_lru(folio))
 		return lruvec;
 
 	lruvec = folio_lruvec_relock_irq(folio, lruvec);
 
 	if (unlikely(folio_evictable(folio))) {
-		/*
-		 * This is a little surprising, but quite possible: PG_mlocked
-		 * must have got cleared already by another CPU.  Could this
-		 * folio be unevictable?  I'm not sure, but move it now if so.
-		 */
+		 
 		if (folio_test_unevictable(folio)) {
 			lruvec_del_folio(lruvec, folio);
 			folio_clear_unevictable(folio);
@@ -106,7 +88,7 @@ static struct lruvec *__mlock_new_folio(struct folio *folio, struct lruvec *lruv
 
 	lruvec = folio_lruvec_relock_irq(folio, lruvec);
 
-	/* As above, this is a little surprising, but possible */
+	 
 	if (unlikely(folio_evictable(folio)))
 		goto out;
 
@@ -131,13 +113,13 @@ static struct lruvec *__munlock_folio(struct folio *folio, struct lruvec *lruvec
 	lruvec = folio_lruvec_relock_irq(folio, lruvec);
 
 	if (folio_test_unevictable(folio)) {
-		/* Then mlock_count is maintained, but might undercount */
+		 
 		if (folio->mlock_count)
 			folio->mlock_count--;
 		if (folio->mlock_count)
 			goto out;
 	}
-	/* else assume that was the last mlock: reclaim will fix it if not */
+	 
 
 munlock:
 	if (folio_test_clear_mlocked(folio)) {
@@ -148,7 +130,7 @@ munlock:
 			__count_vm_events(UNEVICTABLE_PGSTRANDED, nr_pages);
 	}
 
-	/* folio_evictable() has to be checked *after* clearing Mlocked */
+	 
 	if (isolated && folio_test_unevictable(folio) && folio_evictable(folio)) {
 		lruvec_del_folio(lruvec, folio);
 		folio_clear_unevictable(folio);
@@ -161,9 +143,7 @@ out:
 	return lruvec;
 }
 
-/*
- * Flags held in the low bits of a struct folio pointer on the mlock_fbatch.
- */
+ 
 #define LRU_FOLIO 0x1
 #define NEW_FOLIO 0x2
 static inline struct folio *mlock_lru(struct folio *folio)
@@ -176,13 +156,7 @@ static inline struct folio *mlock_new(struct folio *folio)
 	return (struct folio *)((unsigned long)folio + NEW_FOLIO);
 }
 
-/*
- * mlock_folio_batch() is derived from folio_batch_move_lru(): perhaps that can
- * make use of such folio pointer flags in future, but for now just keep it for
- * mlock.  We could use three separate folio batches instead, but one feels
- * better (munlocking a full folio batch does not need to drain mlocking folio
- * batches first).
- */
+ 
 static void mlock_folio_batch(struct folio_batch *fbatch)
 {
 	struct lruvec *lruvec = NULL;
@@ -236,10 +210,7 @@ bool need_mlock_drain(int cpu)
 	return folio_batch_count(&per_cpu(mlock_fbatch.fbatch, cpu));
 }
 
-/**
- * mlock_folio - mlock a folio already on (or temporarily off) LRU
- * @folio: folio to be mlocked.
- */
+ 
 void mlock_folio(struct folio *folio)
 {
 	struct folio_batch *fbatch;
@@ -261,10 +232,7 @@ void mlock_folio(struct folio *folio)
 	local_unlock(&mlock_fbatch.lock);
 }
 
-/**
- * mlock_new_folio - mlock a newly allocated folio not yet on LRU
- * @folio: folio to be mlocked, either normal or a THP head.
- */
+ 
 void mlock_new_folio(struct folio *folio)
 {
 	struct folio_batch *fbatch;
@@ -284,20 +252,14 @@ void mlock_new_folio(struct folio *folio)
 	local_unlock(&mlock_fbatch.lock);
 }
 
-/**
- * munlock_folio - munlock a folio
- * @folio: folio to be munlocked, either normal or a THP head.
- */
+ 
 void munlock_folio(struct folio *folio)
 {
 	struct folio_batch *fbatch;
 
 	local_lock(&mlock_fbatch.lock);
 	fbatch = this_cpu_ptr(&mlock_fbatch.fbatch);
-	/*
-	 * folio_test_clear_mlocked(folio) must be left to __munlock_folio(),
-	 * which will check whether the folio is multiply mlocked.
-	 */
+	 
 	folio_get(folio);
 	if (!folio_batch_add(fbatch, folio) ||
 	    folio_test_large(folio) || lru_cache_disabled())
@@ -355,17 +317,7 @@ out:
 	return 0;
 }
 
-/*
- * mlock_vma_pages_range() - mlock any pages already in the range,
- *                           or munlock all pages in the range.
- * @vma - vma containing range to be mlock()ed or munlock()ed
- * @start - start address in @vma of the range
- * @end - end of range in @vma
- * @newflags - the new set of flags for @vma.
- *
- * Called for mlock(), mlock2() and mlockall(), to set @vma VM_LOCKED;
- * called for munlock() and munlockall(), to clear VM_LOCKED from @vma.
- */
+ 
 static void mlock_vma_pages_range(struct vm_area_struct *vma,
 	unsigned long start, unsigned long end, vm_flags_t newflags)
 {
@@ -374,17 +326,7 @@ static void mlock_vma_pages_range(struct vm_area_struct *vma,
 		.walk_lock = PGWALK_WRLOCK_VERIFY,
 	};
 
-	/*
-	 * There is a slight chance that concurrent page migration,
-	 * or page reclaim finding a page of this now-VM_LOCKED vma,
-	 * will call mlock_vma_folio() and raise page's mlock_count:
-	 * double counting, leaving the page unevictable indefinitely.
-	 * Communicate this danger to mlock_vma_folio() with VM_IO,
-	 * which is a VM_SPECIAL flag not allowed on VM_LOCKED vmas.
-	 * mmap_lock is held in write mode here, so this weird
-	 * combination should not be visible to other mmap_lock users;
-	 * but WRITE_ONCE so rmap walkers must see VM_IO if VM_LOCKED.
-	 */
+	 
 	if (newflags & VM_LOCKED)
 		newflags |= VM_IO;
 	vma_start_write(vma);
@@ -400,15 +342,7 @@ static void mlock_vma_pages_range(struct vm_area_struct *vma,
 	}
 }
 
-/*
- * mlock_fixup  - handle mlock[all]/munlock[all] requests.
- *
- * Filters out "special" vmas -- VM_LOCKED never gets set for these, and
- * munlock is a no-op.  However, for some special vmas, we go ahead and
- * populate the ptes.
- *
- * For vmas that pass the filters, merge/split as appropriate.
- */
+ 
 static int mlock_fixup(struct vma_iterator *vmi, struct vm_area_struct *vma,
 	       struct vm_area_struct **prev, unsigned long start,
 	       unsigned long end, vm_flags_t newflags)
@@ -422,7 +356,7 @@ static int mlock_fixup(struct vma_iterator *vmi, struct vm_area_struct *vma,
 	if (newflags == oldflags || (oldflags & VM_SPECIAL) ||
 	    is_vm_hugetlb_page(vma) || vma == get_gate_vma(current->mm) ||
 	    vma_is_dax(vma) || vma_is_secretmem(vma))
-		/* don't set VM_LOCKED or VM_LOCKONFAULT and don't count */
+		 
 		goto out;
 
 	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
@@ -447,9 +381,7 @@ static int mlock_fixup(struct vma_iterator *vmi, struct vm_area_struct *vma,
 	}
 
 success:
-	/*
-	 * Keep track of amount of locked VM.
-	 */
+	 
 	nr_pages = (end - start) >> PAGE_SHIFT;
 	if (!(newflags & VM_LOCKED))
 		nr_pages = -nr_pages;
@@ -457,13 +389,9 @@ success:
 		nr_pages = 0;
 	mm->locked_vm += nr_pages;
 
-	/*
-	 * vm_flags is protected by the mmap_lock held in write mode.
-	 * It's okay if try_to_unmap_one unmaps a page just after we
-	 * set VM_LOCKED, populate_vma_page_range will bring it back.
-	 */
+	 
 	if ((newflags & VM_LOCKED) && (oldflags & VM_LOCKED)) {
-		/* No work to do, and mlocking twice would be wrong */
+		 
 		vma_start_write(vma);
 		vm_flags_reset(vma, newflags);
 	} else {
@@ -507,7 +435,7 @@ static int apply_vma_lock_flags(unsigned long start, size_t len,
 
 		newflags = vma->vm_flags & ~VM_LOCKED_MASK;
 		newflags |= flags;
-		/* Here we know that  vma->vm_start <= nstart < vma->vm_end. */
+		 
 		tmp = vma->vm_end;
 		if (tmp > end)
 			tmp = end;
@@ -524,13 +452,7 @@ static int apply_vma_lock_flags(unsigned long start, size_t len,
 	return 0;
 }
 
-/*
- * Go through vma areas and sum size of mlocked
- * vma pages, as return value.
- * Note deferred memory locking case(mlock2(,,MLOCK_ONFAULT)
- * is also counted.
- * Return value: previously mlocked page counts
- */
+ 
 static unsigned long count_mm_mlocked_page_nr(struct mm_struct *mm,
 		unsigned long start, size_t len)
 {
@@ -539,7 +461,7 @@ static unsigned long count_mm_mlocked_page_nr(struct mm_struct *mm,
 	unsigned long end;
 	VMA_ITERATOR(vmi, mm, start);
 
-	/* Don't overflow past ULONG_MAX */
+	 
 	if (unlikely(ULONG_MAX - len < start))
 		end = ULONG_MAX;
 	else
@@ -560,9 +482,7 @@ static unsigned long count_mm_mlocked_page_nr(struct mm_struct *mm,
 	return count >> PAGE_SHIFT;
 }
 
-/*
- * convert get_user_pages() return value to posix mlock() error
- */
+ 
 static int __mlock_posix_error_return(long retval)
 {
 	if (retval == -EFAULT)
@@ -595,17 +515,12 @@ static __must_check int do_mlock(unsigned long start, size_t len, vm_flags_t fla
 
 	locked += current->mm->locked_vm;
 	if ((locked > lock_limit) && (!capable(CAP_IPC_LOCK))) {
-		/*
-		 * It is possible that the regions requested intersect with
-		 * previously mlocked areas, that part area in "mm->locked_vm"
-		 * should not be counted to new mlock increment count. So check
-		 * and adjust locked count if necessary.
-		 */
+		 
 		locked -= count_mm_mlocked_page_nr(current->mm,
 				start, len);
 	}
 
-	/* check against resource limits */
+	 
 	if ((locked <= lock_limit) || capable(CAP_IPC_LOCK))
 		error = apply_vma_lock_flags(start, len, flags);
 
@@ -654,16 +569,7 @@ SYSCALL_DEFINE2(munlock, unsigned long, start, size_t, len)
 	return ret;
 }
 
-/*
- * Take the MCL_* flags passed into mlockall (or 0 if called from munlockall)
- * and translate into the appropriate modifications to mm->def_flags and/or the
- * flags for all current VMAs.
- *
- * There are a couple of subtleties with this.  If mlockall() is called multiple
- * times with different flags, the values do not necessarily stack.  If mlockall
- * is called once including the MCL_FUTURE flag and then a second time without
- * it, VM_LOCKED and VM_LOCKONFAULT will be cleared from mm->def_flags.
- */
+ 
 static int apply_mlockall_flags(int flags)
 {
 	VMA_ITERATOR(vmi, current->mm, 0);
@@ -693,7 +599,7 @@ static int apply_mlockall_flags(int flags)
 		newflags = vma->vm_flags & ~VM_LOCKED_MASK;
 		newflags |= to_add;
 
-		/* Ignore errors */
+		 
 		mlock_fixup(&vmi, vma, &prev, vma->vm_start, vma->vm_end,
 			    newflags);
 		cond_resched();
@@ -742,10 +648,7 @@ SYSCALL_DEFINE0(munlockall)
 	return ret;
 }
 
-/*
- * Objects with different lifetime than processes (SHM_LOCK and SHM_HUGETLB
- * shm segments) get accounted against the user_struct instead.
- */
+ 
 static DEFINE_SPINLOCK(shmlock_user_lock);
 
 int user_shm_lock(size_t size, struct ucounts *ucounts)

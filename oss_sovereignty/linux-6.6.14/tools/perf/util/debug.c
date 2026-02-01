@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* For general debugging purposes */
+
+ 
 
 #include <inttypes.h>
 #include <string.h>
@@ -127,10 +127,7 @@ int eprintf_time(int level, int var, u64 t, const char *fmt, ...)
 	return ret;
 }
 
-/*
- * Overloading libtraceevent standard info print
- * function, display with -v in perf.
- */
+ 
 void pr_stat(const char *fmt, ...)
 {
 	va_list args;
@@ -232,7 +229,7 @@ int perf_debug_option(const char *str)
 	if (ret)
 		return ret;
 
-	/* Allow only verbose value in range (0, 10), otherwise set 0. */
+	 
 	verbose = (verbose < 0) || (verbose > 10) ? 0 : verbose;
 
 #if LIBTRACEEVENT_VERSION >= MAKE_LIBTRACEEVENT_VERSION(1, 3, 0)
@@ -250,13 +247,13 @@ int perf_quiet_option(void)
 {
 	struct sublevel_option *opt = &debug_opts[0];
 
-	/* disable all debug messages */
+	 
 	while (opt->name) {
 		*opt->value_ptr = -1;
 		opt++;
 	}
 
-	/* For debug variables that are used as bool types, set to 0. */
+	 
 	redirect_to_stderr = 0;
 	debug_peo_args = 0;
 
@@ -284,7 +281,7 @@ void perf_debug_setup(void)
 	libapi_set_print(pr_warning_wrapper, pr_warning_wrapper, pr_debug_wrapper);
 }
 
-/* Obtain a backtrace and print it to stdout. */
+ 
 #ifdef HAVE_BACKTRACE_SUPPORT
 void dump_stack(void)
 {

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -115,11 +101,7 @@ static void htc_process_conn_rsp(struct htc_target *target,
 	if (svc_rspmsg->status == HTC_SERVICE_SUCCESS) {
 		epid = svc_rspmsg->endpoint_id;
 
-		/* Check that the received epid for the endpoint to attach
-		 * a new service is valid. ENDPOINT0 can't be used here as it
-		 * is already reserved for HTC_CTRL_RSVD_SVC service and thus
-		 * should not be modified.
-		 */
+		 
 		if (epid <= ENDPOINT0 || epid >= ENDPOINT_MAX)
 			return;
 
@@ -225,7 +207,7 @@ err:
 	return -EINVAL;
 }
 
-/* HTC APIs */
+ 
 
 int htc_init(struct htc_target *target)
 {
@@ -248,7 +230,7 @@ int htc_connect_service(struct htc_target *target,
 	int ret;
 	unsigned long time_left;
 
-	/* Find an available endpoint */
+	 
 	endpoint = get_next_avail_ep(target->endpoint);
 	if (!endpoint) {
 		dev_err(target->dev, "Endpoint is not available for service %d\n",
@@ -279,7 +261,7 @@ int htc_connect_service(struct htc_target *target,
 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
 
-	/* To prevent infoleak */
+	 
 	conn_msg->svc_meta_len = 0;
 	conn_msg->pad = 0;
 
@@ -393,13 +375,7 @@ static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
 	dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
 }
 
-/*
- * HTC Messages are handled directly here and the obtained SKB
- * is freed.
- *
- * Service messages (Data, WMI) are passed to the corresponding
- * endpoint RX handlers, which have to free the SKB.
- */
+ 
 void ath9k_htc_rx_msg(struct htc_target *htc_handle,
 		      struct sk_buff *skb, u32 len, u8 pipe_id)
 {
@@ -411,13 +387,7 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
 	if (!htc_handle || !skb)
 		return;
 
-	/* A valid message requires len >= 8.
-	 *
-	 *   sizeof(struct htc_frame_hdr) == 8
-	 *   sizeof(struct htc_ready_msg) == 8
-	 *   sizeof(struct htc_panic_bad_vaddr) == 16
-	 *   sizeof(struct htc_panic_bad_epid) == 8
-	 */
+	 
 	if (unlikely(len < sizeof(struct htc_frame_hdr)))
 		goto invalid;
 	htc_hdr = (struct htc_frame_hdr *) skb->data;
@@ -440,22 +410,22 @@ invalid:
 
 	if (epid == ENDPOINT0) {
 
-		/* Handle trailer */
+		 
 		if (htc_hdr->flags & HTC_FLAGS_RECV_TRAILER) {
 			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000) {
-				/* Move past the Watchdog pattern */
+				 
 				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
 				len -= 4;
 			}
 		}
 
-		/* Get the message ID */
+		 
 		if (unlikely(len < sizeof(struct htc_frame_hdr) + sizeof(__be16)))
 			goto invalid;
 		msg_id = (__be16 *) ((void *) htc_hdr +
 				     sizeof(struct htc_frame_hdr));
 
-		/* Now process HTC messages */
+		 
 		switch (be16_to_cpu(*msg_id)) {
 		case HTC_MSG_READY_ID:
 			if (unlikely(len < sizeof(struct htc_ready_msg)))
@@ -507,7 +477,7 @@ struct htc_target *ath9k_htc_hw_alloc(void *hif_handle,
 	target->hif_dev = hif_handle;
 	target->dev = dev;
 
-	/* Assign control endpoint pipe IDs */
+	 
 	endpoint = &target->endpoint[ENDPOINT0];
 	endpoint->ul_pipeid = hif->control_ul_pipe;
 	endpoint->dl_pipeid = hif->control_dl_pipe;

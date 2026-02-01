@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/dma-buf/sync_file.c
- *
- * Copyright (C) 2012 Google, Inc.
- */
+
+ 
 
 #include <linux/dma-fence-unwrap.h>
 #include <linux/export.h>
@@ -53,15 +49,7 @@ static void fence_check_cb_func(struct dma_fence *f, struct dma_fence_cb *cb)
 	wake_up_all(&sync_file->wq);
 }
 
-/**
- * sync_file_create() - creates a sync file
- * @fence:	fence to add to the sync_fence
- *
- * Creates a sync_file containg @fence. This function acquires and additional
- * reference of @fence for the newly-created &sync_file, if it succeeds. The
- * sync_file can be released with fput(sync_file->file). Returns the
- * sync_file or NULL in case of error.
- */
+ 
 struct sync_file *sync_file_create(struct dma_fence *fence)
 {
 	struct sync_file *sync_file;
@@ -93,13 +81,7 @@ err:
 	return NULL;
 }
 
-/**
- * sync_file_get_fence - get the fence related to the sync_file fd
- * @fd:		sync_file fd to get the fence from
- *
- * Ensures @fd references a valid sync_file and returns a fence that
- * represents all fence in the sync_file. On error NULL is returned.
- */
+ 
 struct dma_fence *sync_file_get_fence(int fd)
 {
 	struct sync_file *sync_file;
@@ -116,19 +98,7 @@ struct dma_fence *sync_file_get_fence(int fd)
 }
 EXPORT_SYMBOL(sync_file_get_fence);
 
-/**
- * sync_file_get_name - get the name of the sync_file
- * @sync_file:		sync_file to get the fence from
- * @buf:		destination buffer to copy sync_file name into
- * @len:		available size of destination buffer.
- *
- * Each sync_file may have a name assigned either by the user (when merging
- * sync_files together) or created from the fence it contains. In the latter
- * case construction of the name is deferred until use, and so requires
- * sync_file_get_name().
- *
- * Returns: a string representing the name.
- */
+ 
 char *sync_file_get_name(struct sync_file *sync_file, char *buf, int len)
 {
 	if (sync_file->user_name[0]) {
@@ -146,16 +116,7 @@ char *sync_file_get_name(struct sync_file *sync_file, char *buf, int len)
 	return buf;
 }
 
-/**
- * sync_file_merge() - merge two sync_files
- * @name:	name of new fence
- * @a:		sync_file a
- * @b:		sync_file b
- *
- * Creates a new sync_file which contains copies of all the fences in both
- * @a and @b.  @a and @b remain valid, independent sync_file. Returns the
- * new merged sync_file or NULL in case of error.
- */
+ 
 static struct sync_file *sync_file_merge(const char *name, struct sync_file *a,
 					 struct sync_file *b)
 {
@@ -297,12 +258,7 @@ static long sync_file_ioctl_fence_info(struct sync_file *sync_file,
 	dma_fence_unwrap_for_each(fence, &iter, sync_file->fence)
 		++num_fences;
 
-	/*
-	 * Passing num_fences = 0 means that userspace doesn't want to
-	 * retrieve any sync_fence_info. If num_fences = 0 we skip filling
-	 * sync_fence_info and return the actual number of fences on
-	 * info->num_fences.
-	 */
+	 
 	if (!info.num_fences) {
 		info.status = dma_fence_get_status(sync_file->fence);
 		goto no_fences;

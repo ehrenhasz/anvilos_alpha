@@ -1,30 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HMS Profinet Client Driver
- *
- * Copyright (C) 2018 Arcx Inc
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 
-/* move to <linux/fieldbus_dev.h> when taking this out of staging */
+ 
 #include "../fieldbus_dev.h"
 
-/* move to <linux/anybuss-client.h> when taking this out of staging */
+ 
 #include "anybuss-client.h"
 
 #define PROFI_DPRAM_SIZE	512
 
-/*
- * ---------------------------------------------------------------
- * Anybus Profinet mailbox messages - definitions
- * ---------------------------------------------------------------
- * note that we're depending on the layout of these structures being
- * exactly as advertised.
- */
+ 
 
 struct msg_mac_addr {
 	u8 addr[6];
@@ -33,7 +23,7 @@ struct msg_mac_addr {
 struct profi_priv {
 	struct fieldbus_dev fbdev;
 	struct anybuss_client *client;
-	struct mutex enable_lock; /* serializes card enable */
+	struct mutex enable_lock;  
 	bool power_on;
 };
 
@@ -85,7 +75,7 @@ static int __profi_enable(struct profi_priv *priv)
 {
 	int ret;
 	struct anybuss_client *client = priv->client;
-	/* Initialization Sequence, Generic Anybus Mode */
+	 
 	const struct anybuss_memcfg mem_cfg = {
 		.input_io = 220,
 		.input_dpram = PROFI_DPRAM_SIZE,
@@ -96,10 +86,7 @@ static int __profi_enable(struct profi_priv *priv)
 		.offl_mode = FIELDBUS_DEV_OFFL_MODE_CLEAR,
 	};
 
-	/*
-	 * switch anybus off then on, this ensures we can do a complete
-	 * configuration cycle in case anybus was already on.
-	 */
+	 
 	anybuss_set_power(client, false);
 	ret = anybuss_set_power(client, true);
 	if (ret)

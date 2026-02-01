@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <linux/unistd.h>
 #include <linux/bpf.h>
 
@@ -31,7 +30,7 @@ int main(int argc, char **argv)
 
 	while ((opt = getopt(argc, argv, "F:U:i:")) != -1) {
 		switch (opt) {
-		/* General args */
+		 
 		case 'U':
 			pinned_file = optarg;
 			break;
@@ -56,7 +55,7 @@ int main(int argc, char **argv)
 		goto out;
 	}
 
-	/* bpf_tunnel_key.remote_ipv4 expects host byte orders */
+	 
 	ret = bpf_map_update_elem(array_fd, &array_key, &ifindex, 0);
 	if (ret) {
 		perror("bpf_map_update_elem");

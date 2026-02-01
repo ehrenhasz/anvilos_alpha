@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2009, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #ifndef _SYS_DDT_H
 #define	_SYS_DDT_H
@@ -38,17 +16,13 @@ extern "C" {
 
 struct abd;
 
-/*
- * On-disk DDT formats, in the desired search order (newest version first).
- */
+ 
 enum ddt_type {
 	DDT_TYPE_ZAP = 0,
 	DDT_TYPES
 };
 
-/*
- * DDT classes, in the desired search order (highest replication level first).
- */
+ 
 enum ddt_class {
 	DDT_CLASS_DITTO = 0,
 	DDT_CLASS_DUPLICATE,
@@ -61,18 +35,10 @@ enum ddt_class {
 #define	DDT_COMPRESS_BYTEORDER_MASK	0x80
 #define	DDT_COMPRESS_FUNCTION_MASK	0x7f
 
-/*
- * On-disk ddt entry:  key (name) and physical storage (value).
- */
+ 
 typedef struct ddt_key {
-	zio_cksum_t	ddk_cksum;	/* 256-bit block checksum */
-	/*
-	 * Encoded with logical & physical size, encryption, and compression,
-	 * as follows:
-	 *   +-------+-------+-------+-------+-------+-------+-------+-------+
-	 *   |   0   |   0   |   0   |X| comp|     PSIZE     |     LSIZE     |
-	 *   +-------+-------+-------+-------+-------+-------+-------+-------+
-	 */
+	zio_cksum_t	ddk_cksum;	 
+	 
 	uint64_t	ddk_prop;
 } ddt_key_t;
 
@@ -103,10 +69,7 @@ typedef struct ddt_phys {
 	uint64_t	ddp_phys_birth;
 } ddt_phys_t;
 
-/*
- * Note, we no longer generate new DDT_PHYS_DITTO-type blocks.  However,
- * we maintain the ability to free existing dedup-ditto blocks.
- */
+ 
 enum ddt_phys_type {
 	DDT_PHYS_DITTO = 0,
 	DDT_PHYS_SINGLE = 1,
@@ -115,9 +78,7 @@ enum ddt_phys_type {
 	DDT_PHYS_TYPES
 };
 
-/*
- * In-core ddt entry
- */
+ 
 struct ddt_entry {
 	ddt_key_t	dde_key;
 	ddt_phys_t	dde_phys[DDT_PHYS_TYPES];
@@ -131,9 +92,7 @@ struct ddt_entry {
 	avl_node_t	dde_node;
 };
 
-/*
- * In-core ddt
- */
+ 
 struct ddt {
 	kmutex_t	ddt_lock;
 	avl_tree_t	ddt_tree;
@@ -149,9 +108,7 @@ struct ddt {
 	avl_node_t	ddt_node;
 };
 
-/*
- * In-core and on-disk bookmark for DDT walks
- */
+ 
 typedef struct ddt_bookmark {
 	uint64_t	ddb_class;
 	uint64_t	ddb_type;
@@ -159,9 +116,7 @@ typedef struct ddt_bookmark {
 	uint64_t	ddb_cursor;
 } ddt_bookmark_t;
 
-/*
- * Ops vector to access a specific DDT object type.
- */
+ 
 typedef struct ddt_ops {
 	char ddt_op_name[32];
 	int (*ddt_op_create)(objset_t *os, uint64_t *object, dmu_tx_t *tx,
@@ -256,4 +211,4 @@ extern const ddt_ops_t ddt_zap_ops;
 }
 #endif
 
-#endif	/* _SYS_DDT_H */
+#endif	 

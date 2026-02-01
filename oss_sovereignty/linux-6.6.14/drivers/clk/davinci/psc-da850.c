@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PSC clock descriptions for TI DA850/OMAP-L138/AM18XX
- *
- * Copyright (C) 2018 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/reset-controller.h>
@@ -20,7 +16,7 @@ LPSC_CLKDEV1(emifa_clkdev,	NULL,		"ti-aemif");
 LPSC_CLKDEV1(spi0_clkdev,	NULL,		"spi_davinci.0");
 LPSC_CLKDEV1(mmcsd0_clkdev,	NULL,		"da830-mmc.0");
 LPSC_CLKDEV1(uart0_clkdev,	NULL,		"serial8250.0");
-/* REVISIT: used dev_id instead of con_id */
+ 
 LPSC_CLKDEV1(arm_clkdev,	"arm",		NULL);
 LPSC_CLKDEV1(dsp_clkdev,	NULL,		"davinci-rproc.0");
 
@@ -44,7 +40,7 @@ LPSC_CLKDEV3(usb0_clkdev,	"fck",	"da830-usb-phy-clks",
 				NULL,	"musb-da8xx",
 				NULL,	"cppi41-dmaengine");
 LPSC_CLKDEV1(usb1_clkdev,	NULL,	"ohci-da8xx");
-/* REVISIT: gpio-davinci.c should be modified to drop con_id */
+ 
 LPSC_CLKDEV1(gpio_clkdev,	"gpio",	NULL);
 LPSC_CLKDEV2(emac_clkdev,	NULL,	"davinci_emac.1",
 				"fck",	"davinci_mdio.0");

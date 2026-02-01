@@ -1,14 +1,4 @@
-/*
- * Marvell Berlin PWM driver
- *
- * Copyright (C) 2015 Marvell Technology Group Ltd.
- *
- * Author: Antoine Tenart <antoine.tenart@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -22,17 +12,7 @@
 #define BERLIN_PWM_EN			0x0
 #define  BERLIN_PWM_ENABLE		BIT(0)
 #define BERLIN_PWM_CONTROL		0x4
-/*
- * The prescaler claims to support 8 different moduli, configured using the
- * low three bits of PWM_CONTROL. (Sequentially, they are 1, 4, 8, 16, 64,
- * 256, 1024, and 4096.)  However, the moduli from 4 to 1024 appear to be
- * implemented by internally shifting TCNT left without adding additional
- * bits. So, the max TCNT that actually works for a modulus of 4 is 0x3fff;
- * for 8, 0x1fff; and so on. This means that those moduli are entirely
- * useless, as we could just do the shift ourselves. The 4096 modulus is
- * implemented with a real prescaler, so we do use that, but we treat it
- * as a flag instead of pretending the modulus is actually configurable.
- */
+ 
 #define  BERLIN_PWM_PRESCALE_4096	0x7
 #define  BERLIN_PWM_INVERT_POLARITY	BIT(3)
 #define BERLIN_PWM_DUTY			0x8
@@ -102,7 +82,7 @@ static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (cycles > BERLIN_PWM_MAX_TCNT) {
 		prescale_4096 = true;
-		cycles >>= 12; // Prescaled by 4096
+		cycles >>= 12; 
 
 		if (cycles > BERLIN_PWM_MAX_TCNT)
 			return -ERANGE;

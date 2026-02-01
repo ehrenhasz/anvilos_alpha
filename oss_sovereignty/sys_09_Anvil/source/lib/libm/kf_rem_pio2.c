@@ -1,34 +1,15 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * These math functions are taken from newlib-nano-2, the newlib/libm/math
- * directory, available from https://github.com/32bitmicro/newlib-nano-2.
- *
- * Appropriate copyright headers are reproduced below.
- */
+ 
 
-/* kf_rem_pio2.c -- float version of k_rem_pio2.c
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
+ 
 
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
- * is preserved.
- * ====================================================
- */
+ 
 
 #include "fdlibm.h"
 
-/* In the float version, the input parameter x contains 8 bit
-   integers, not 24 bit integers.  113 bit precision is not supported.  */
+ 
 
 #ifdef __STDC__
-static const int init_jk[] = {4,7,9}; /* initial value for jk */
+static const int init_jk[] = {4,7,9};  
 #else
 static int init_jk[] = {4,7,9}; 
 #endif
@@ -38,17 +19,17 @@ static const float PIo2[] = {
 #else
 static float PIo2[] = {
 #endif
-  1.5703125000e+00f, /* 0x3fc90000 */
-  4.5776367188e-04f, /* 0x39f00000 */
-  2.5987625122e-05f, /* 0x37da0000 */
-  7.5437128544e-08f, /* 0x33a20000 */
-  6.0026650317e-11f, /* 0x2e840000 */
-  7.3896444519e-13f, /* 0x2b500000 */
-  5.3845816694e-15f, /* 0x27c20000 */
-  5.6378512969e-18f, /* 0x22d00000 */
-  8.3009228831e-20f, /* 0x1fc40000 */
-  3.2756352257e-22f, /* 0x1bc60000 */
-  6.3331015649e-25f, /* 0x17440000 */
+  1.5703125000e+00f,  
+  4.5776367188e-04f,  
+  2.5987625122e-05f,  
+  7.5437128544e-08f,  
+  6.0026650317e-11f,  
+  7.3896444519e-13f,  
+  5.3845816694e-15f,  
+  5.6378512969e-18f,  
+  8.3009228831e-20f,  
+  3.2756352257e-22f,  
+  6.3331015649e-25f,  
 };
 
 #ifdef __STDC__
@@ -58,8 +39,8 @@ static float
 #endif
 zero   = 0.0f,
 one    = 1.0f,
-two8   =  2.5600000000e+02f, /* 0x43800000 */
-twon8  =  3.9062500000e-03f; /* 0x3b800000 */
+two8   =  2.5600000000e+02f,  
+twon8  =  3.9062500000e-03f;  
 
 #ifdef __STDC__
 	int __kernel_rem_pio2f(float *x, float *y, int e0, int nx, int prec, const __uint8_t *ipio2) 
@@ -71,20 +52,20 @@ twon8  =  3.9062500000e-03f; /* 0x3b800000 */
 	__int32_t jz,jx,jv,jp,jk,carry,n,iq[20],i,j,k,m,q0,ih;
 	float z,fw,f[20],fq[20],q[20];
 
-    /* initialize jk*/
+     
 	jk = init_jk[prec];
 	jp = jk;
 
-    /* determine jx,jv,q0, note that 3>q0 */
+     
 	jx =  nx-1;
 	jv = (e0-3)/8; if(jv<0) jv=0;
 	q0 =  e0-8*(jv+1);
 
-    /* set up f[0] to f[jx+jk] where f[jx+jk] = ipio2[jv+jk] */
+     
 	j = jv-jx; m = jx+jk;
 	for(i=0;i<=m;i++,j++) f[i] = (j<0)? zero : (float) ipio2[j];
 
-    /* compute q[0],q[1],...q[jk] */
+     
 	for (i=0;i<=jk;i++) {
 	    for(j=0,fw=0.0;j<=jx;j++) fw += x[j]*f[jx+i-j];
 	    q[i] = fw;
@@ -92,20 +73,20 @@ twon8  =  3.9062500000e-03f; /* 0x3b800000 */
 
 	jz = jk;
 recompute:
-    /* distill q[] into iq[] reversingly */
+     
 	for(i=0,j=jz,z=q[jz];j>0;i++,j--) {
 	    fw    =  (float)((__int32_t)(twon8* z));
 	    iq[i] =  (__int32_t)(z-two8*fw);
 	    z     =  q[j-1]+fw;
 	}
 
-    /* compute n */
-	z  = scalbnf(z,(int)q0);	/* actual value of z */
-	z -= (float)8.0*floorf(z*(float)0.125);	/* trim off integer >= 8 */
+     
+	z  = scalbnf(z,(int)q0);	 
+	z -= (float)8.0*floorf(z*(float)0.125);	 
 	n  = (__int32_t) z;
 	z -= (float)n;
 	ih = 0;
-	if(q0>0) {	/* need iq[jz-1] to determine n */
+	if(q0>0) {	 
 	    i  = (iq[jz-1]>>(8-q0)); n += i;
 	    iq[jz-1] -= i<<(8-q0);
 	    ih = iq[jz-1]>>(7-q0);
@@ -113,9 +94,9 @@ recompute:
 	else if(q0==0) ih = iq[jz-1]>>8;
 	else if(z>=(float)0.5) ih=2;
 
-	if(ih>0) {	/* q > 0.5 */
+	if(ih>0) {	 
 	    n += 1; carry = 0;
-	    for(i=0;i<jz ;i++) {	/* compute 1-q */
+	    for(i=0;i<jz ;i++) {	 
 		j = iq[i];
 		if(carry==0) {
 		    if(j!=0) {
@@ -123,7 +104,7 @@ recompute:
 		    }
 		} else  iq[i] = 0xff - j;
 	    }
-	    if(q0>0) {		/* rare case: chance is 1 in 12 */
+	    if(q0>0) {		 
 	        switch(q0) {
 	        case 1:
 	    	   iq[jz-1] &= 0x7f; break;
@@ -137,14 +118,14 @@ recompute:
 	    }
 	}
 
-    /* check if recomputation is needed */
+     
 	if(z==zero) {
 	    j = 0;
 	    for (i=jz-1;i>=jk;i--) j |= iq[i];
-	    if(j==0) { /* need recomputation */
-		for(k=1;iq[jk-k]==0;k++);   /* k = no. of terms needed */
+	    if(j==0) {  
+		for(k=1;iq[jk-k]==0;k++);    
 
-		for(i=jz+1;i<=jz+k;i++) {   /* add q[jz+1] to q[jz+k] */
+		for(i=jz+1;i<=jz+k;i++) {    
 		    f[jx+i] = (float) ipio2[jv+i];
 		    for(j=0,fw=0.0;j<=jx;j++) fw += x[j]*f[jx+i-j];
 		    q[i] = fw;
@@ -154,11 +135,11 @@ recompute:
 	    }
 	}
 
-    /* chop off zero terms */
+     
 	if(z==(float)0.0) {
 	    jz -= 1; q0 -= 8;
 	    while(iq[jz]==0) { jz--; q0-=8;}
-	} else { /* break z into 8-bit if necessary */
+	} else {  
 	    z = scalbnf(z,-(int)q0);
 	    if(z>=two8) { 
 		fw = (float)((__int32_t)(twon8*z));
@@ -168,19 +149,19 @@ recompute:
 	    } else iq[jz] = (__int32_t) z ;
 	}
 
-    /* convert integer "bit" chunk to floating-point value */
+     
 	fw = scalbnf(one,(int)q0);
 	for(i=jz;i>=0;i--) {
 	    q[i] = fw*(float)iq[i]; fw*=twon8;
 	}
 
-    /* compute PIo2[0,...,jp]*q[jz,...,0] */
+     
 	for(i=jz;i>=0;i--) {
 	    for(fw=0.0,k=0;k<=jp&&k<=jz-i;k++) fw += PIo2[k]*q[i+k];
 	    fq[jz-i] = fw;
 	}
 
-    /* compress fq[] into y[] */
+     
 	switch(prec) {
 	    case 0:
 		fw = 0.0;
@@ -196,7 +177,7 @@ recompute:
 		for (i=1;i<=jz;i++) fw += fq[i];
 		y[1] = (ih==0)? fw: -fw; 
 		break;
-	    case 3:	/* painful */
+	    case 3:	 
 		for (i=jz;i>0;i--) {
 		    fw      = fq[i-1]+fq[i]; 
 		    fq[i]  += fq[i-1]-fw;

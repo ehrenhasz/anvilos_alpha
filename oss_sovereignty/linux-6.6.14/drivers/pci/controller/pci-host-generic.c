@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple, generic PCI host controller driver targeting firmware-initialised
- * systems and virtual machines (e.g. the PCI emulation provided by kvmtool).
- *
- * Copyright (C) 2014 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -27,12 +20,7 @@ static bool pci_dw_valid_device(struct pci_bus *bus, unsigned int devfn)
 {
 	struct pci_config_window *cfg = bus->sysdata;
 
-	/*
-	 * The Synopsys DesignWare PCIe controller in ECAM mode will not filter
-	 * type 0 config TLPs sent to devices 1 and up on its downstream port,
-	 * resulting in devices appearing multiple times on bus 0 unless we
-	 * filter out those accesses here.
-	 */
+	 
 	if (bus->number == cfg->busr.start && PCI_SLOT(devfn) > 0)
 		return false;
 

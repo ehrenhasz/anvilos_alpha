@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Marvell 10G 88x3310 PHY driver
- *
- * Based upon the ID registers, this PHY appears to be a mixture of IPs
- * from two different companies.
- *
- * There appears to be several different data paths through the PHY which
- * are automatically managed by the PHY.  The following has been determined
- * via observation and experimentation for a setup using single-lane Serdes:
- *
- *       SGMII PHYXS -- BASE-T PCS -- 10G PMA -- AN -- Copper (for <= 1G)
- *  10GBASE-KR PHYXS -- BASE-T PCS -- 10G PMA -- AN -- Copper (for 10G)
- *  10GBASE-KR PHYXS -- BASE-R PCS -- Fiber
- *
- * With XAUI, observation shows:
- *
- *        XAUI PHYXS -- <appropriate PCS as above>
- *
- * and no switching of the host interface mode occurs.
- *
- * If both the fiber and copper ports are connected, the first to gain
- * link takes priority and the other port is completely locked out.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/ctype.h>
 #include <linux/delay.h>
@@ -88,27 +66,24 @@ enum {
 	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
 	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
 
-	/* Temperature read register (88E2110 only) */
+	 
 	MV_PCS_TEMP		= 0x8042,
 
-	/* Number of ports on the device */
+	 
 	MV_PCS_PORT_INFO	= 0xd00d,
 	MV_PCS_PORT_INFO_NPORTS_MASK	= 0x0380,
 	MV_PCS_PORT_INFO_NPORTS_SHIFT	= 7,
 
-	/* SerDes reinitialization 88E21X0 */
+	 
 	MV_AN_21X0_SERDES_CTRL2	= 0x800f,
 	MV_AN_21X0_SERDES_CTRL2_AUTO_INIT_DIS	= BIT(13),
 	MV_AN_21X0_SERDES_CTRL2_RUN_INIT	= BIT(15),
 
-	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
-	 * registers appear to set themselves to the 0x800X when AN is
-	 * restarted, but status registers appear readable from either.
-	 */
-	MV_AN_CTRL1000		= 0x8000, /* 1000base-T control register */
-	MV_AN_STAT1000		= 0x8001, /* 1000base-T status register */
+	 
+	MV_AN_CTRL1000		= 0x8000,  
+	MV_AN_STAT1000		= 0x8001,  
 
-	/* Vendor2 MMD registers */
+	 
 	MV_V2_PORT_CTRL		= 0xf001,
 	MV_V2_PORT_CTRL_PWRDOWN					= BIT(11),
 	MV_V2_33X0_PORT_CTRL_SWRST				= BIT(15),
@@ -128,17 +103,17 @@ enum {
 	MV_V2_MAGIC_PKT_WORD0		= 0xf06b,
 	MV_V2_MAGIC_PKT_WORD1		= 0xf06c,
 	MV_V2_MAGIC_PKT_WORD2		= 0xf06d,
-	/* Wake on LAN registers */
+	 
 	MV_V2_WOL_CTRL			= 0xf06e,
 	MV_V2_WOL_CTRL_CLEAR_STS	= BIT(15),
 	MV_V2_WOL_CTRL_MAGIC_PKT_EN	= BIT(0),
-	/* Temperature control/read registers (88X3310 only) */
+	 
 	MV_V2_TEMP_CTRL		= 0xf08a,
 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
 	MV_V2_TEMP_CTRL_SAMPLE	= 0x0000,
 	MV_V2_TEMP_CTRL_DISABLE	= 0xc000,
 	MV_V2_TEMP		= 0xf08c,
-	MV_V2_TEMP_UNKNOWN	= 0x9600, /* unknown function */
+	MV_V2_TEMP_UNKNOWN	= 0x9600,  
 };
 
 struct mv3310_chip {
@@ -328,11 +303,7 @@ static int mv3310_power_up(struct phy_device *phydev)
 	ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL,
 				 MV_V2_PORT_CTRL_PWRDOWN);
 
-	/* Sometimes, the power down bit doesn't clear immediately, and
-	 * a read of this register causes the bit not to clear. Delay
-	 * 100us to allow the PHY to come out of power down mode before
-	 * the next access.
-	 */
+	 
 	udelay(100);
 
 	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310 ||
@@ -371,7 +342,7 @@ static int mv3310_get_downshift(struct phy_device *phydev, u8 *ds)
 		return val;
 
 	if (val & MV_PCS_DSC1_ENABLE)
-		/* assume that all fields are the same */
+		 
 		*ds = 1 + FIELD_GET(MV_PCS_DSC1_10GBT, (u16)val);
 	else
 		*ds = DOWNSHIFT_DEV_DISABLE;
@@ -392,13 +363,7 @@ static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
 		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
 					  MV_PCS_DSC1_ENABLE);
 
-	/* DOWNSHIFT_DEV_DEFAULT_COUNT is confusing. It looks like it should
-	 * set the default settings for the PHY. However, it is used for
-	 * "ethtool --set-phy-tunable ethN downshift on". The intention is
-	 * to enable downshift at a default number of retries. The default
-	 * settings for 88x3310 are for two retries with downshift disabled.
-	 * So let's use two retries with downshift enabled.
-	 */
+	 
 	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
 		ds = 2;
 
@@ -545,7 +510,7 @@ static int mv3310_probe(struct phy_device *phydev)
 	if (chip->has_downshift)
 		priv->has_downshift = chip->has_downshift(phydev);
 
-	/* Powering down the port when not in use saves about 600mW */
+	 
 	ret = mv3310_power_down(phydev);
 	if (ret)
 		return ret;
@@ -580,19 +545,13 @@ static int mv3310_resume(struct phy_device *phydev)
 	return mv3310_hwmon_config(phydev, true);
 }
 
-/* Some PHYs in the Alaska family such as the 88X3310 and the 88E2010
- * don't set bit 14 in PMA Extended Abilities (1.11), although they do
- * support 2.5GBASET and 5GBASET. For these models, we can still read their
- * 2.5G/5G extended abilities register (1.21). We detect these models based on
- * the PMA device identifier, with a mask matching models known to have this
- * issue
- */
+ 
 static bool mv3310_has_pma_ngbaset_quirk(struct phy_device *phydev)
 {
 	if (!(phydev->c45_ids.devices_in_package & MDIO_DEVS_PMAPMD))
 		return false;
 
-	/* Only some revisions of the 88X3310 family PMA seem to be impacted */
+	 
 	return (phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD] &
 		MV_PHY_ALASKA_NBT_QUIRK_MASK) == MV_PHY_ALASKA_NBT_QUIRK_REV;
 }
@@ -774,20 +733,18 @@ static int mv3310_config_init(struct phy_device *phydev)
 	const struct mv3310_chip *chip = to_mv3310_chip(phydev);
 	int err, mactype;
 
-	/* Check that the PHY interface type is compatible */
+	 
 	if (!test_bit(phydev->interface, priv->supported_interfaces))
 		return -ENODEV;
 
 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
 
-	/* Power up so reset works */
+	 
 	err = mv3310_power_up(phydev);
 	if (err)
 		return err;
 
-	/* If host provided host supported interface modes, try to select the
-	 * best one
-	 */
+	 
 	if (!phy_interface_empty(phydev->host_interfaces)) {
 		mactype = chip->select_mactype(phydev->host_interfaces);
 		if (mactype >= 0) {
@@ -809,12 +766,12 @@ static int mv3310_config_init(struct phy_device *phydev)
 		return err;
 	}
 
-	/* Enable EDPD mode - saving 600mW */
+	 
 	err = mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
 	if (err)
 		return err;
 
-	/* Allow downshift */
+	 
 	err = mv3310_set_downshift(phydev, DOWNSHIFT_DEV_DEFAULT_COUNT);
 	if (err && err != -EOPNOTSUPP)
 		return err;
@@ -894,9 +851,7 @@ static int mv3310_config_aneg(struct phy_device *phydev)
 	if (ret > 0)
 		changed = true;
 
-	/* Clause 45 has no standardized support for 1000BaseT, therefore
-	 * use vendor registers for this mode.
-	 */
+	 
 	reg = linkmode_adv_to_mii_ctrl1000_t(phydev->advertising);
 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MV_AN_CTRL1000,
 			     ADVERTISE_1000FULL | ADVERTISE_1000HALF, reg);
@@ -929,24 +884,14 @@ static void mv3310_update_interface(struct phy_device *phydev)
 	if (!phydev->link)
 		return;
 
-	/* In all of the "* with Rate Matching" modes the PHY interface is fixed
-	 * at 10Gb. The PHY adapts the rate to actual wire speed with help of
-	 * internal 16KB buffer.
-	 *
-	 * In USXGMII mode the PHY interface mode is also fixed.
-	 */
+	 
 	if (priv->rate_match ||
 	    priv->const_interface == PHY_INTERFACE_MODE_USXGMII) {
 		phydev->interface = priv->const_interface;
 		return;
 	}
 
-	/* The PHY automatically switches its serdes interface (and active PHYXS
-	 * instance) between Cisco SGMII, 2500BaseX, 5GBase-R and 10GBase-R /
-	 * xaui / rxaui modes according to the speed.
-	 * Florian suggests setting phydev->interface to communicate this to the
-	 * MAC. Only do this if we are already in one of the above modes.
-	 */
+	 
 	switch (phydev->speed) {
 	case SPEED_10000:
 		phydev->interface = priv->const_interface;
@@ -967,7 +912,7 @@ static void mv3310_update_interface(struct phy_device *phydev)
 	}
 }
 
-/* 10GBASE-ER,LR,LRM,SR do not support autonegotiation. */
+ 
 static int mv3310_read_status_10gbaser(struct phy_device *phydev)
 {
 	phydev->link = 1;
@@ -994,13 +939,13 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
 	if (cssr1 < 0)
 		return cssr1;
 
-	/* If the link settings are not resolved, mark the link down */
+	 
 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
 		phydev->link = 0;
 		return 0;
 	}
 
-	/* Read the copper link settings */
+	 
 	speed = cssr1 & MV_PCS_CSSR1_SPD1_MASK;
 	if (speed == MV_PCS_CSSR1_SPD1_SPD2)
 		speed |= cssr1 & MV_PCS_CSSR1_SPD2_MASK;
@@ -1042,14 +987,14 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
 		if (val < 0)
 			return val;
 
-		/* Read the link partner's 1G advertisement */
+		 
 		val = phy_read_mmd(phydev, MDIO_MMD_AN, MV_AN_STAT1000);
 		if (val < 0)
 			return val;
 
 		mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising, val);
 
-		/* Update the pause status */
+		 
 		phy_resolve_aneg_pause(phydev);
 	}
 
@@ -1115,7 +1060,7 @@ static bool mv3310_has_downshift(struct phy_device *phydev)
 {
 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
 
-	/* Fails to downshift with firmware older than v0.3.5.0 */
+	 
 	return priv->firmware_ver >= MV_VERSION(0,3,5,0);
 }
 
@@ -1286,14 +1231,14 @@ static int mv3110_set_wol(struct phy_device *phydev,
 	int ret;
 
 	if (wol->wolopts & WAKE_MAGIC) {
-		/* Enable the WOL interrupt */
+		 
 		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
 				       MV_V2_PORT_INTR_MASK,
 				       MV_V2_PORT_INTR_STS_WOL_EN);
 		if (ret < 0)
 			return ret;
 
-		/* Store the device address for the magic packet */
+		 
 		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
 				    MV_V2_MAGIC_PKT_WORD2,
 				    ((phydev->attached_dev->dev_addr[5] << 8) |
@@ -1315,7 +1260,7 @@ static int mv3110_set_wol(struct phy_device *phydev,
 		if (ret < 0)
 			return ret;
 
-		/* Clear WOL status and enable magic packet matching */
+		 
 		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
 				       MV_V2_WOL_CTRL,
 				       MV_V2_WOL_CTRL_MAGIC_PKT_EN |
@@ -1323,7 +1268,7 @@ static int mv3110_set_wol(struct phy_device *phydev,
 		if (ret < 0)
 			return ret;
 	} else {
-		/* Disable magic packet matching & reset WOL status bit */
+		 
 		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
 				     MV_V2_WOL_CTRL,
 				     MV_V2_WOL_CTRL_MAGIC_PKT_EN,
@@ -1332,7 +1277,7 @@ static int mv3110_set_wol(struct phy_device *phydev,
 			return ret;
 	}
 
-	/* Reset the clear WOL status bit as it does not self-clear */
+	 
 	return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
 				  MV_V2_WOL_CTRL,
 				  MV_V2_WOL_CTRL_CLEAR_STS);

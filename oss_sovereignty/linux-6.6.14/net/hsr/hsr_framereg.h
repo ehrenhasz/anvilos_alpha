@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * include file for HSR and PRP.
- */
+ 
+ 
 
 #ifndef __HSR_FRAMEREG_H
 #define __HSR_FRAMEREG_H
@@ -69,16 +63,16 @@ void prp_update_san_info(struct hsr_node *node, bool is_sup);
 
 struct hsr_node {
 	struct list_head	mac_list;
-	/* Protect R/W access to seq_out */
+	 
 	spinlock_t		seq_out_lock;
 	unsigned char		macaddress_A[ETH_ALEN];
 	unsigned char		macaddress_B[ETH_ALEN];
-	/* Local slave through which AddrB frames are received from this node */
+	 
 	enum hsr_port_type	addr_B_port;
 	unsigned long		time_in[HSR_PT_PORTS];
 	bool			time_in_stale[HSR_PT_PORTS];
 	unsigned long		time_out[HSR_PT_PORTS];
-	/* if the node is a SAN */
+	 
 	bool			san_a;
 	bool			san_b;
 	u16			seq_out[HSR_PT_PORTS];
@@ -86,4 +80,4 @@ struct hsr_node {
 	struct rcu_head		rcu_head;
 };
 
-#endif /* __HSR_FRAMEREG_H */
+#endif  

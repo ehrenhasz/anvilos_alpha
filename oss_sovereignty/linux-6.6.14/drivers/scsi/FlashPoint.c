@@ -1,19 +1,4 @@
-/*
-
-  FlashPoint.c -- FlashPoint SCCB Manager for Linux
-
-  This file contains the FlashPoint SCCB Manager from BusLogic's FlashPoint
-  Driver Developer's Kit, with minor modifications by Leonard N. Zubkoff for
-  Linux compatibility.  It was provided by BusLogic in the form of 16 separate
-  source files, which would have unnecessarily cluttered the scsi directory, so
-  the individual files have been combined into this single file.
-
-  Copyright 1995-1996 by Mylex Corporation.  All Rights Reserved
-
-  This file is available under both the GNU General Public License
-  and a BSD-style copyright; see LICENSE.FlashPoint for details.
-
-*/
+ 
 
 
 #ifdef CONFIG_SCSI_FLASHPOINT
@@ -66,11 +51,9 @@ struct sccb_mgr_info {
 
 #define HARPOON_FAMILY        0x02
 
-/* SCCB struct used for both SCCB and UCB manager compiles! 
- * The UCB Manager treats the SCCB as it's 'native hardware structure' 
- */
+ 
 
-/*#pragma pack(1)*/
+ 
 struct sccb {
 	unsigned char OperationCode;
 	unsigned char ControlByte;
@@ -89,22 +72,22 @@ struct sccb {
 	u32 Reserved2;
 	u32 SensePointer;
 
-	CALL_BK_FN SccbCallback;	/* VOID (*SccbCallback)(); */
-	u32 SccbIOPort;			/* Identifies board base port */
+	CALL_BK_FN SccbCallback;	 
+	u32 SccbIOPort;			 
 	unsigned char SccbStatus;
 	unsigned char SCCBRes2;
 	u16 SccbOSFlags;
 
-	u32 Sccb_XferCnt;	/* actual transfer count */
+	u32 Sccb_XferCnt;	 
 	u32 Sccb_ATC;
-	u32 SccbVirtDataPtr;	/* virtual addr for OS/2 */
+	u32 SccbVirtDataPtr;	 
 	u32 Sccb_res1;
 	u16 Sccb_MGRFlags;
 	u16 Sccb_sgseg;
-	unsigned char Sccb_scsimsg;	/* identify msg for selection */
+	unsigned char Sccb_scsimsg;	 
 	unsigned char Sccb_tag;
 	unsigned char Sccb_scsistat;
-	unsigned char Sccb_idmsg;	/* image of last msg in */
+	unsigned char Sccb_idmsg;	 
 	struct sccb *Sccb_forwardlink;
 	struct sccb *Sccb_backlink;
 	u32 Sccb_savedATC;
@@ -121,19 +104,19 @@ struct sccb {
 #define RESIDUAL_SG_COMMAND       0x04
 #define RESET_COMMAND             0x81
 
-#define F_USE_CMD_Q              0x20	/*Inidcates TAGGED command. */
-#define TAG_TYPE_MASK            0xC0	/*Type of tag msg to send. */
-#define SCCB_DATA_XFER_OUT       0x10	/* Write */
-#define SCCB_DATA_XFER_IN        0x08	/* Read */
+#define F_USE_CMD_Q              0x20	 
+#define TAG_TYPE_MASK            0xC0	 
+#define SCCB_DATA_XFER_OUT       0x10	 
+#define SCCB_DATA_XFER_IN        0x08	 
 
-#define NO_AUTO_REQUEST_SENSE    0x01	/* No Request Sense Buffer */
+#define NO_AUTO_REQUEST_SENSE    0x01	 
 
 #define BUS_FREE_ST     0
 #define SELECT_ST       1
-#define SELECT_BDR_ST   2	/* Select w\ Bus Device Reset */
-#define SELECT_SN_ST    3	/* Select w\ Sync Nego */
-#define SELECT_WN_ST    4	/* Select w\ Wide Data Nego */
-#define SELECT_Q_ST     5	/* Select w\ Tagged Q'ing */
+#define SELECT_BDR_ST   2	 
+#define SELECT_SN_ST    3	 
+#define SELECT_WN_ST    4	 
+#define SELECT_Q_ST     5	 
 #define COMMAND_ST      6
 #define DATA_OUT_ST     7
 #define DATA_IN_ST      8
@@ -150,15 +133,15 @@ struct sccb {
 #define F_STATUSLOADED                 0x01
 #define F_DEV_SELECTED                 0x04
 
-#define SCCB_COMPLETE               0x00	/* SCCB completed without error */
+#define SCCB_COMPLETE               0x00	 
 #define SCCB_DATA_UNDER_RUN         0x0C
-#define SCCB_SELECTION_TIMEOUT      0x11	/* Set SCSI selection timed out */
+#define SCCB_SELECTION_TIMEOUT      0x11	 
 #define SCCB_DATA_OVER_RUN          0x12
-#define SCCB_PHASE_SEQUENCE_FAIL    0x14	/* Target bus phase sequence failure */
+#define SCCB_PHASE_SEQUENCE_FAIL    0x14	 
 
-#define SCCB_GROSS_FW_ERR           0x27	/* Major problem! */
-#define SCCB_BM_ERR                 0x30	/* BusMaster error. */
-#define SCCB_PARITY_ERR             0x34	/* SCSI parity error */
+#define SCCB_GROSS_FW_ERR           0x27	 
+#define SCCB_BM_ERR                 0x30	 
+#define SCCB_PARITY_ERR             0x34	 
 
 #define SCCB_IN_PROCESS            0x00
 #define SCCB_SUCCESS               0x01
@@ -167,17 +150,17 @@ struct sccb {
 
 #define  ORION_FW_REV      3110
 
-#define QUEUE_DEPTH     254+1	/*1 for Normal disconnect 32 for Q'ing. */
+#define QUEUE_DEPTH     254+1	 
 
-#define	MAX_MB_CARDS	4	/* Max. no of cards suppoerted on Mother Board */
+#define	MAX_MB_CARDS	4	 
 
 #define MAX_SCSI_TAR    16
 #define MAX_LUN         32
 #define LUN_MASK			0x1f
 
-#define SG_BUF_CNT      16	/*Number of prefetched elements. */
+#define SG_BUF_CNT      16	 
 
-#define SG_ELEMENT_SIZE 8	/*Eight byte per element. */
+#define SG_ELEMENT_SIZE 8	 
 
 #define RD_HARPOON(ioport)          inb((u32)ioport)
 #define RDW_HARPOON(ioport)         inw((u32)ioport)
@@ -211,33 +194,27 @@ struct sccb_mgr_tar_info {
 
 	struct sccb *TarSelQ_Head;
 	struct sccb *TarSelQ_Tail;
-	unsigned char TarLUN_CA;	/*Contingent Allgiance */
+	unsigned char TarLUN_CA;	 
 	unsigned char TarTagQ_Cnt;
 	unsigned char TarSelQ_Cnt;
 	unsigned char TarStatus;
 	unsigned char TarEEValue;
 	unsigned char TarSyncCtrl;
-	unsigned char TarReserved[2];	/* for alignment */
+	unsigned char TarReserved[2];	 
 	unsigned char LunDiscQ_Idx[MAX_LUN];
 	unsigned char TarLUNBusy[MAX_LUN];
 };
 
 struct nvram_info {
-	unsigned char niModel;		/* Model No. of card */
-	unsigned char niCardNo;		/* Card no. */
-	u32 niBaseAddr;			/* Port Address of card */
-	unsigned char niSysConf;	/* Adapter Configuration byte -
-					   Byte 16 of eeprom map */
-	unsigned char niScsiConf;	/* SCSI Configuration byte -
-					   Byte 17 of eeprom map */
-	unsigned char niScamConf;	/* SCAM Configuration byte -
-					   Byte 20 of eeprom map */
-	unsigned char niAdapId;		/* Host Adapter ID -
-					   Byte 24 of eerpom map */
-	unsigned char niSyncTbl[MAX_SCSI_TAR / 2];	/* Sync/Wide byte
-							   of targets */
-	unsigned char niScamTbl[MAX_SCSI_TAR][4];	/* Compressed Scam name
-							   string of Targets */
+	unsigned char niModel;		 
+	unsigned char niCardNo;		 
+	u32 niBaseAddr;			 
+	unsigned char niSysConf;	 
+	unsigned char niScsiConf;	 
+	unsigned char niScamConf;	 
+	unsigned char niAdapId;		 
+	unsigned char niSyncTbl[MAX_SCSI_TAR / 2];	 
+	unsigned char niScamTbl[MAX_SCSI_TAR][4];	 
 };
 
 #define	MODEL_LT		1
@@ -273,9 +250,9 @@ struct sccb_card {
 #define F_UPDATE_EEPROM		0x80
 
 #define  ID_STRING_LENGTH  32
-#define  TYPE_CODE0        0x63	/*Level2 Mstr (bits 7-6),  */
+#define  TYPE_CODE0        0x63	 
 
-#define  SLV_TYPE_CODE0    0xA3	/*Priority Bit set (bits 7-6),  */
+#define  SLV_TYPE_CODE0    0xA3	 
 
 #define  ASSIGN_ID   0x00
 #define  SET_P_FLAG  0x01
@@ -315,7 +292,7 @@ typedef struct SCCBscam_info {
 #define  TWELVE_BYTE_CMD         0x0C
 
 #define  ASYNC                   0x00
-#define  MAX_OFFSET              0x0F	/* Maxbyteoffset for Sync Xfers */
+#define  MAX_OFFSET              0x0F	 
 
 #define  EEPROM_WD_CNT     256
 
@@ -361,22 +338,21 @@ typedef struct SCCBscam_info {
 #define  WIDE_NEGO_BIT     BIT(7)
 #define  DISC_ENABLE_BIT   BIT(6)
 
-#define  hp_vendor_id_0       0x00	/* LSB */
+#define  hp_vendor_id_0       0x00	 
 #define  ORION_VEND_0   0x4B
 
-#define  hp_vendor_id_1       0x01	/* MSB */
+#define  hp_vendor_id_1       0x01	 
 #define  ORION_VEND_1   0x10
 
-#define  hp_device_id_0       0x02	/* LSB */
+#define  hp_device_id_0       0x02	 
 #define  ORION_DEV_0    0x30
 
-#define  hp_device_id_1       0x03	/* MSB */
+#define  hp_device_id_1       0x03	 
 #define  ORION_DEV_1    0x81
 
-	/* Sub Vendor ID and Sub Device ID only available in
-	   Harpoon Version 2 and higher */
+	 
 
-#define  hp_sub_device_id_0   0x06	/* LSB */
+#define  hp_sub_device_id_0   0x06	 
 
 #define  hp_semaphore         0x0C
 #define SCCB_MGR_ACTIVE    BIT(0)
@@ -386,34 +362,34 @@ typedef struct SCCBscam_info {
 
 #define  hp_sys_ctrl          0x0F
 
-#define  STOP_CLK          BIT(0)	/*Turn off BusMaster Clock */
-#define  DRVR_RST          BIT(1)	/*Firmware Reset to 80C15 chip */
-#define  HALT_MACH         BIT(3)	/*Halt State Machine      */
-#define  HARD_ABORT        BIT(4)	/*Hard Abort              */
+#define  STOP_CLK          BIT(0)	 
+#define  DRVR_RST          BIT(1)	 
+#define  HALT_MACH         BIT(3)	 
+#define  HARD_ABORT        BIT(4)	 
 
 #define  hp_host_blk_cnt      0x13
 
-#define  XFER_BLK64        0x06	/*     1 1 0 64 byte per block */
+#define  XFER_BLK64        0x06	 
 
-#define  BM_THRESHOLD      0x40	/* PCI mode can only xfer 16 bytes */
+#define  BM_THRESHOLD      0x40	 
 
 #define  hp_int_mask          0x17
 
-#define  INT_CMD_COMPL     BIT(0)	/* DMA command complete   */
-#define  INT_EXT_STATUS    BIT(1)	/* Extended Status Set    */
+#define  INT_CMD_COMPL     BIT(0)	 
+#define  INT_EXT_STATUS    BIT(1)	 
 
 #define  hp_xfer_cnt_lo       0x18
 #define  hp_xfer_cnt_hi       0x1A
 #define  hp_xfer_cmd          0x1B
 
-#define  XFER_HOST_DMA     0x00	/*     0 0 0 Transfer Host -> DMA */
-#define  XFER_DMA_HOST     0x01	/*     0 0 1 Transfer DMA  -> Host */
+#define  XFER_HOST_DMA     0x00	 
+#define  XFER_DMA_HOST     0x01	 
 
-#define  XFER_HOST_AUTO    0x00	/*     0 0 Auto Transfer Size   */
+#define  XFER_HOST_AUTO    0x00	 
 
-#define  XFER_DMA_8BIT     0x20	/*     0 1 8 BIT  Transfer Size */
+#define  XFER_DMA_8BIT     0x20	 
 
-#define  DISABLE_INT       BIT(7)	/*Do not interrupt at end of cmd. */
+#define  DISABLE_INT       BIT(7)	 
 
 #define  HOST_WRT_CMD      ((DISABLE_INT + XFER_HOST_DMA + XFER_HOST_AUTO + XFER_DMA_8BIT))
 #define  HOST_RD_CMD       ((DISABLE_INT + XFER_DMA_HOST + XFER_HOST_AUTO + XFER_DMA_8BIT))
@@ -424,7 +400,7 @@ typedef struct SCCBscam_info {
 #define  hp_ee_ctrl           0x22
 
 #define  EXT_ARB_ACK       BIT(7)
-#define  SCSI_TERM_ENA_H   BIT(6)	/* SCSI high byte terminator */
+#define  SCSI_TERM_ENA_H   BIT(6)	 
 #define  SEE_MS            BIT(5)
 #define  SEE_CS            BIT(3)
 #define  SEE_CLK           BIT(2)
@@ -440,10 +416,10 @@ typedef struct SCCBscam_info {
 
 #define  hp_bm_ctrl           0x26
 
-#define  SCSI_TERM_ENA_L   BIT(0)	/*Enable/Disable external terminators */
-#define  FLUSH_XFER_CNTR   BIT(1)	/*Flush transfer counter */
-#define  FORCE1_XFER       BIT(5)	/*Always xfer one byte in byte mode */
-#define  FAST_SINGLE       BIT(6)	/*?? */
+#define  SCSI_TERM_ENA_L   BIT(0)	 
+#define  FLUSH_XFER_CNTR   BIT(1)	 
+#define  FORCE1_XFER       BIT(5)	 
+#define  FAST_SINGLE       BIT(6)	 
 
 #define  BMCTRL_DEFAULT    (FORCE1_XFER|FAST_SINGLE|SCSI_TERM_ENA_L)
 
@@ -452,12 +428,12 @@ typedef struct SCCBscam_info {
 
 #define  SCATTER_EN        BIT(0)
 #define  SGRAM_ARAM        BIT(1)
-#define  G_INT_DISABLE     BIT(3)	/* Enable/Disable all Interrupts */
-#define  NARROW_SCSI_CARD  BIT(4)	/* NARROW/WIDE SCSI config pin */
+#define  G_INT_DISABLE     BIT(3)	 
+#define  NARROW_SCSI_CARD  BIT(4)	 
 
 #define  hp_pci_stat_cfg      0x2D
 
-#define  REC_MASTER_ABORT  BIT(5)	/*received Master abort */
+#define  REC_MASTER_ABORT  BIT(5)	 
 
 #define  hp_rev_num           0x33
 
@@ -466,21 +442,21 @@ typedef struct SCCBscam_info {
 
 #define  hp_ext_status        0x36
 
-#define  BM_FORCE_OFF      BIT(0)	/*Bus Master is forced to get off */
-#define  PCI_TGT_ABORT     BIT(0)	/*PCI bus master transaction aborted */
-#define  PCI_DEV_TMOUT     BIT(1)	/*PCI Device Time out */
-#define  CMD_ABORTED       BIT(4)	/*Command aborted */
-#define  BM_PARITY_ERR     BIT(5)	/*parity error on data received   */
-#define  PIO_OVERRUN       BIT(6)	/*Slave data overrun */
-#define  BM_CMD_BUSY       BIT(7)	/*Bus master transfer command busy */
+#define  BM_FORCE_OFF      BIT(0)	 
+#define  PCI_TGT_ABORT     BIT(0)	 
+#define  PCI_DEV_TMOUT     BIT(1)	 
+#define  CMD_ABORTED       BIT(4)	 
+#define  BM_PARITY_ERR     BIT(5)	 
+#define  PIO_OVERRUN       BIT(6)	 
+#define  BM_CMD_BUSY       BIT(7)	 
 #define  BAD_EXT_STATUS    (BM_FORCE_OFF | PCI_DEV_TMOUT | CMD_ABORTED | \
                                   BM_PARITY_ERR | PIO_OVERRUN)
 
 #define  hp_int_status        0x37
 
-#define  EXT_STATUS_ON     BIT(1)	/*Extended status is valid */
-#define  SCSI_INTERRUPT    BIT(2)	/*Global indication of a SCSI int. */
-#define  INT_ASSERTED      BIT(5)	/* */
+#define  EXT_STATUS_ON     BIT(1)	 
+#define  SCSI_INTERRUPT    BIT(2)	 
+#define  INT_ASSERTED      BIT(5)	 
 
 #define  hp_fifo_cnt          0x38
 
@@ -610,12 +586,12 @@ typedef struct SCCBscam_info {
 
 #define  hp_seltimeout        0x6C
 
-#define  TO_4ms            0x67	/* 3.9959ms */
+#define  TO_4ms            0x67	 
 
-#define  TO_5ms            0x03	/* 4.9152ms */
-#define  TO_10ms           0x07	/* 11.xxxms */
-#define  TO_250ms          0x99	/* 250.68ms */
-#define  TO_290ms          0xB1	/* 289.99ms */
+#define  TO_5ms            0x03	 
+#define  TO_10ms           0x07	 
+#define  TO_250ms          0x99	 
+#define  TO_290ms          0xB1	 
 
 #define  hp_clkctrl_0         0x6D
 
@@ -652,13 +628,13 @@ typedef struct SCCBscam_info {
 #define  AR3      (BIT(9) + BIT(8))
 #define  SDATA    BIT(10)
 
-#define  CRD_OP   BIT(11)	/* Cmp Reg. w/ Data */
+#define  CRD_OP   BIT(11)	 
 
-#define  CRR_OP   BIT(12)	/* Cmp Reg. w. Reg. */
+#define  CRR_OP   BIT(12)	 
 
-#define  CPE_OP   (BIT(14)+BIT(11))	/* Cmp SCSI phs & Branch EQ */
+#define  CPE_OP   (BIT(14)+BIT(11))	 
 
-#define  CPN_OP   (BIT(14)+BIT(12))	/* Cmp SCSI phs & Branch NOT EQ */
+#define  CPN_OP   (BIT(14)+BIT(12))	 
 
 #define  ADATA_OUT   0x00
 #define  ADATA_IN    BIT(8)
@@ -667,19 +643,19 @@ typedef struct SCCBscam_info {
 #define  AMSG_OUT    (BIT(10)+BIT(9))
 #define  AMSG_IN     (BIT(10)+BIT(9)+BIT(8))
 
-#define  BRH_OP   BIT(13)	/* Branch */
+#define  BRH_OP   BIT(13)	 
 
 #define  ALWAYS   0x00
 #define  EQUAL    BIT(8)
 #define  NOT_EQ   BIT(9)
 
-#define  TCB_OP   (BIT(13)+BIT(11))	/* Test condition & branch */
+#define  TCB_OP   (BIT(13)+BIT(11))	 
 
 #define  FIFO_0      BIT(10)
 
-#define  MPM_OP   BIT(15)	/* Match phase and move data */
+#define  MPM_OP   BIT(15)	 
 
-#define  MRR_OP   BIT(14)	/* Move DReg. to Reg. */
+#define  MRR_OP   BIT(14)	 
 
 #define  S_IDREG  (BIT(2)+BIT(1)+BIT(0))
 
@@ -701,17 +677,17 @@ typedef struct SCCBscam_info {
 #define  SSI_INO_CC	(IUNKWN >> 8)
 #define  SSI_IRFAIL	(IUNKWN >> 8)
 
-#define  NP    0x10		/*Next Phase */
-#define  NTCMD 0x02		/*Non- Tagged Command start */
-#define  CMDPZ 0x04		/*Command phase */
-#define  DINT  0x12		/*Data Out/In interrupt */
-#define  DI    0x13		/*Data Out */
-#define  DC    0x19		/*Disconnect Message */
-#define  ST    0x1D		/*Status Phase */
-#define  UNKNWN 0x24		/*Unknown bus action */
-#define  CC    0x25		/*Command Completion failure */
-#define  TICK  0x26		/*New target reselected us. */
-#define  SELCHK 0x28		/*Select & Check SCSI ID latch reg */
+#define  NP    0x10		 
+#define  NTCMD 0x02		 
+#define  CMDPZ 0x04		 
+#define  DINT  0x12		 
+#define  DI    0x13		 
+#define  DC    0x19		 
+#define  ST    0x1D		 
+#define  UNKNWN 0x24		 
+#define  CC    0x25		 
+#define  TICK  0x26		 
+#define  SELCHK 0x28		 
 
 #define  ID_MSG_STRT    hp_aramBase + 0x00
 #define  NON_TAG_ID_MSG hp_aramBase + 0x06
@@ -725,10 +701,7 @@ typedef struct SCCBscam_info {
 #define  SELCHK_STRT     SELCHK/2
 
 #define GET_XFER_CNT(port, xfercnt) {RD_HARP32(port,hp_xfercnt_0,xfercnt); xfercnt &= 0xFFFFFF;}
-/* #define GET_XFER_CNT(port, xfercnt) (xfercnt = RD_HARPOON(port+hp_xfercnt_2), \
-                                 xfercnt <<= 16,\
-                                 xfercnt |= RDW_HARPOON((unsigned short)(port+hp_xfercnt_0)))
- */
+ 
 #define HP_SETUP_ADDR_CNT(port,addr,count) (WRW_HARPOON((port+hp_host_addr_lo), (unsigned short)(addr & 0x0000FFFFL)),\
          addr >>= 16,\
          WRW_HARPOON((port+hp_host_addr_hmi), (unsigned short)(addr & 0x0000FFFFL)),\
@@ -899,13 +872,7 @@ static unsigned short FPT_default_intena = 0;
 static void (*FPT_s_PhaseTbl[8]) (u32, unsigned char) = {
 0};
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_ProbeHostAdapter
- *
- * Description: Setup and/or Search for cards and return info to caller.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 {
@@ -932,10 +899,7 @@ static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 
 	if (RD_HARPOON(ioport + hp_rev_num) != 0x0f) {
 
-/* For new Harpoon then check for sub_device ID LSB
-   the bits(0-3) must be all ZERO for compatible with
-   current version of SCCBMgr, else skip this Harpoon
-	device. */
+ 
 
 		if (RD_HARPOON(ioport + hp_sub_device_id_0) & 0x0f)
 			return (int)FAILURE;
@@ -951,7 +915,7 @@ static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 		if (FPT_ChkIfChipInitialized(ioport) == 0) {
 			pCurrNvRam = NULL;
 			WR_HARPOON(ioport + hp_semaphore, 0x00);
-			FPT_XbowInit(ioport, 0);	/*Must Init the SCSI before attempting */
+			FPT_XbowInit(ioport, 0);	 
 			FPT_DiagEEPROM(ioport);
 		} else {
 			if (FPT_mbCards < MAX_MB_CARDS) {
@@ -1005,16 +969,16 @@ static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 			temp5 >>= 1;
 			temp6 >>= 1;
 			switch (temp & 0x3) {
-			case AUTO_RATE_20:	/* Synchronous, 20 mega-transfers/second */
+			case AUTO_RATE_20:	 
 				temp6 |= 0x8000;
 				fallthrough;
-			case AUTO_RATE_10:	/* Synchronous, 10 mega-transfers/second */
+			case AUTO_RATE_10:	 
 				temp5 |= 0x8000;
 				fallthrough;
-			case AUTO_RATE_05:	/* Synchronous, 5 mega-transfers/second */
+			case AUTO_RATE_05:	 
 				temp2 |= 0x8000;
 				fallthrough;
-			case AUTO_RATE_00:	/* Asynchronous */
+			case AUTO_RATE_00:	 
 				break;
 			}
 
@@ -1151,8 +1115,7 @@ static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 		    RD_HARPOON(ioport + hp_aramBase + BIOS_DATA_OFFSET + i);
 	}
 
-	/* return with -1 if no sort, else return with
-	   logical card number sorted by BIOS (zero-based) */
+	 
 
 	pCardInfo->si_relative_cardnum =
 	    (unsigned
@@ -1174,13 +1137,7 @@ static int FlashPoint_ProbeHostAdapter(struct sccb_mgr_info *pCardInfo)
 	return 0;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_HardwareResetHostAdapter
- *
- * Description: Setup adapter for normal operation (hard reset).
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void *FlashPoint_HardwareResetHostAdapter(struct sccb_mgr_info
 							 *pCardInfo)
@@ -1279,8 +1236,7 @@ static void *FlashPoint_HardwareResetHostAdapter(struct sccb_mgr_info
 			CurrCard->globalFlags |= F_GREEN_PC;
 	}
 
-	/* Set global flag to indicate Re-Negotiation to be done on all
-	   ckeck condition */
+	 
 	if (pCurrNvRam) {
 		if (pCurrNvRam->niScsiConf & 0x04)
 			CurrCard->globalFlags |= F_DO_RENEGO;
@@ -1337,9 +1293,7 @@ static void *FlashPoint_HardwareResetHostAdapter(struct sccb_mgr_info
 				    (unsigned char)(temp & ~EE_SYNC_MASK);
 			}
 
-/*         if ((pCardInfo->si_per_targ_wide_nego & sync_bit_map) ||
-            (id*2+i >= 8)){
-*/
+ 
 			if (pCardInfo->si_per_targ_wide_nego & sync_bit_map) {
 
 				FPT_sccbMgrTbl[thisCard][id * 2 +
@@ -1348,7 +1302,7 @@ static void *FlashPoint_HardwareResetHostAdapter(struct sccb_mgr_info
 
 			}
 
-			else {	/* NARROW SCSI */
+			else {	 
 				FPT_sccbMgrTbl[thisCard][id * 2 +
 							 i].TarStatus |=
 				    WIDE_NEGOCIATED;
@@ -1458,15 +1412,7 @@ static unsigned char FPT_ChkIfChipInitialized(u32 ioPort)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_StartCCB
- *
- * Description: Start a command pointed to by p_Sccb. When the
- *              command is completed it will be returned via the
- *              callback function.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FlashPoint_StartCCB(void *curr_card, struct sccb *p_Sccb)
 {
 	u32 ioport;
@@ -1572,15 +1518,7 @@ static void FlashPoint_StartCCB(void *curr_card, struct sccb *p_Sccb)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_AbortCCB
- *
- * Description: Abort the command pointed to by p_Sccb.  When the
- *              command is completed it will be returned via the
- *              callback function.
- *
- *---------------------------------------------------------------------*/
+ 
 static int FlashPoint_AbortCCB(void *pCurrCard, struct sccb *p_Sccb)
 {
 	u32 ioport;
@@ -1677,14 +1615,7 @@ static int FlashPoint_AbortCCB(void *pCurrCard, struct sccb *p_Sccb)
 	return -1;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_InterruptPending
- *
- * Description: Do a quick check to determine if there is a pending
- *              interrupt for this card and disable the IRQ Pin if so.
- *
- *---------------------------------------------------------------------*/
+ 
 static unsigned char FlashPoint_InterruptPending(void *pCurrCard)
 {
 	u32 ioport;
@@ -1700,15 +1631,7 @@ static unsigned char FlashPoint_InterruptPending(void *pCurrCard)
 		return 0;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FlashPoint_HandleInterrupt
- *
- * Description: This is our entry point when an interrupt is generated
- *              by the card and the upper level driver passes it on to
- *              us.
- *
- *---------------------------------------------------------------------*/
+ 
 static int FlashPoint_HandleInterrupt(void *pcard)
 {
 	struct sccb *currSCCB;
@@ -1754,11 +1677,7 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 		else if (hp_int & ICMD_COMP) {
 
 			if (!(hp_int & BUS_FREE)) {
-				/* Wait for the BusFree before starting a new command.  We
-				   must also check for being reselected since the BusFree
-				   may not show up if another device reselects us in 1.5us or
-				   less.  SRR Wednesday, 3/8/1995.
-				 */
+				 
 				while (!
 				       (RDW_HARPOON((ioport + hp_intstat)) &
 					(BUS_FREE | RSEL))) ;
@@ -1768,9 +1687,7 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 
 				FPT_phaseChkFifo(ioport, thisCard);
 
-/*         WRW_HARPOON((ioport+hp_intstat),
-            (BUS_FREE | ICMD_COMP | ITAR_DISC | XFER_CNT_0));
-         */
+ 
 
 			WRW_HARPOON((ioport + hp_intstat), CLR_ALL_INT_1);
 
@@ -1795,11 +1712,7 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 			currSCCB->Sccb_scsistat = DISCONNECT_ST;
 			FPT_queueDisconnect(currSCCB, thisCard);
 
-			/* Wait for the BusFree before starting a new command.  We
-			   must also check for being reselected since the BusFree
-			   may not show up if another device reselects us in 1.5us or
-			   less.  SRR Wednesday, 3/8/1995.
-			 */
+			 
 			while (!
 			       (RDW_HARPOON((ioport + hp_intstat)) &
 				(BUS_FREE | RSEL))
@@ -1808,11 +1721,7 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 				    (SCSI_BSY | SCSI_REQ | SCSI_CD | SCSI_MSG |
 				     SCSI_IOBIT))) ;
 
-			/*
-			   The additional loop exit condition above detects a timing problem
-			   with the revision D/E harpoon chips.  The caller should reset the
-			   host adapter to recover when 0xFE is returned.
-			 */
+			 
 			if (!
 			    (RDW_HARPOON((ioport + hp_intstat)) &
 			     (BUS_FREE | RSEL))) {
@@ -1871,12 +1780,7 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 			     0x3f) < (unsigned char)SELCHK) {
 				FPT_phaseDecode(ioport, thisCard);
 			} else {
-				/* Harpoon problem some SCSI target device respond to selection
-				   with short BUSY pulse (<400ns) this will make the Harpoon is not able
-				   to latch the correct Target ID into reg. x53.
-				   The work around require to correct this reg. But when write to this
-				   reg. (0x53) also increment the FIFO write addr reg (0x6f), thus we
-				   need to read this reg first then restore it later. After update to 0x53 */
+				 
 
 				i = (unsigned
 				     char)(RD_HARPOON(ioport + hp_fifowrite));
@@ -1940,23 +1844,14 @@ static int FlashPoint_HandleInterrupt(void *pcard)
 
 		}
 
-	}			/*end while */
+	}			 
 
 	MENABLE_INT(ioport);
 
 	return 0;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Sccb_bad_isr
- *
- * Description: Some type of interrupt has occurred which is slightly
- *              out of the ordinary.  We will now decode it fully, in
- *              this routine.  This is broken up in an attempt to save
- *              processing time.
- *
- *---------------------------------------------------------------------*/
+ 
 static unsigned char FPT_SccbMgr_bad_isr(u32 p_port, unsigned char p_card,
 					 struct sccb_card *pCurrCard,
 					 unsigned short p_int)
@@ -2099,13 +1994,7 @@ static unsigned char FPT_SccbMgr_bad_isr(u32 p_port, unsigned char p_card,
 	return 0x00;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: SccbMgrTableInit
- *
- * Description: Initialize all Sccb manager data structures.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_SccbMgrTableInitAll(void)
 {
@@ -2122,13 +2011,7 @@ static void FPT_SccbMgrTableInitAll(void)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: SccbMgrTableInit
- *
- * Description: Initialize all Sccb manager data structures.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_SccbMgrTableInitCard(struct sccb_card *pCurrCard,
 				     unsigned char p_card)
@@ -2154,13 +2037,7 @@ static void FPT_SccbMgrTableInitCard(struct sccb_card *pCurrCard,
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: SccbMgrTableInit
- *
- * Description: Initialize all Sccb manager data structures.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_SccbMgrTableInitTarget(unsigned char p_card,
 				       unsigned char target)
@@ -2195,14 +2072,7 @@ static void FPT_SccbMgrTableInitTarget(unsigned char p_card,
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: sfetm
- *
- * Description: Read in a message byte from the SCSI bus, and check
- *              for a parity error.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_sfm(u32 port, struct sccb *pCurrSCCB)
 {
@@ -2221,7 +2091,7 @@ static unsigned char FPT_sfm(u32 port, struct sccb *pCurrSCCB)
 	WR_HARPOON(port + hp_scsisig, SCSI_ACK + S_MSGI_PH);
 
 	if (TimeOutLoop > 20000)
-		message = 0x00;	/* force message byte = 0 if Time Out on Req */
+		message = 0x00;	 
 
 	if ((RDW_HARPOON((port + hp_intstat)) & PARITY) &&
 	    (RD_HARPOON(port + hp_addstat) & SCSI_PAR_ERR)) {
@@ -2264,13 +2134,7 @@ static unsigned char FPT_sfm(u32 port, struct sccb *pCurrSCCB)
 	return message;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_ssel
- *
- * Description: Load up automation and select target device.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_ssel(u32 port, unsigned char p_card)
 {
@@ -2319,13 +2183,13 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 				}
 
 			}
-			/*End non-tagged */
+			 
 			else {
 				currTar_Info->TarLUNBusy[lun] = 1;
 			}
 
 		}
-		/*!Use cmd Q Tagged */
+		 
 		else {
 			if (currTar_Info->TarLUN_CA == 1) {
 				FPT_queueSelectFail(CurrCard, p_card);
@@ -2335,10 +2199,10 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 
 			currTar_Info->TarLUNBusy[lun] = 1;
 
-		}		/*else use cmd Q tagged */
+		}		 
 
 	}
-	/*if glob tagged started */
+	 
 	else {
 		currTar_Info->TarLUNBusy[lun] = 1;
 	}
@@ -2374,7 +2238,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 	auto_loaded = 0;
 
 	WR_HARPOON(port + hp_select_id, target);
-	WR_HARPOON(port + hp_gp_reg_3, target);	/* Use by new automation logic */
+	WR_HARPOON(port + hp_gp_reg_3, target);	 
 
 	if (currSCCB->OperationCode == RESET_COMMAND) {
 		WRW_HARPOON((port + ID_MSG_STRT), (MPM_OP + AMSG_OUT +
@@ -2447,8 +2311,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 			    == TAG_Q_REJECT) {
 				currSCCB->ControlByte &= ~F_USE_CMD_Q;
 
-				/* Fix up the start instruction with a jump to
-				   Non-Tag-CMD handling */
+				 
 				WRW_HARPOON((port + ID_MSG_STRT),
 					    BRH_OP + ALWAYS + NTCMD);
 
@@ -2459,8 +2322,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 				WR_HARPOON(port + hp_autostart_3,
 					   (SELECT + SELCHK_STRT));
 
-				/* Setup our STATE so we know what happened when
-				   the wheels fall off. */
+				 
 				currSCCB->Sccb_scsistat = SELECT_ST;
 
 				currTar_Info->TarLUNBusy[lun] = 1;
@@ -2538,7 +2400,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 			WRW_HARPOON(cdb_reg, (BRH_OP + ALWAYS + NP));
 
 	}
-	/* auto_loaded */
+	 
 	WRW_HARPOON((port + hp_fiforead), (unsigned short)0x00);
 	WR_HARPOON(port + hp_xferstat, 0x00);
 
@@ -2551,8 +2413,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 			   (SEL_TAR | ENA_ATN | ENA_RESEL | ENA_SCAM_SEL));
 	} else {
 
-/*      auto_loaded =  (RD_HARPOON(port+hp_autostart_3) & (unsigned char)0x1F);
-      auto_loaded |= AUTO_IMMED; */
+ 
 		auto_loaded = AUTO_IMMED;
 
 		DISABLE_AUTO(port);
@@ -2563,13 +2424,7 @@ static void FPT_ssel(u32 port, unsigned char p_card)
 	SGRAM_ACCESS(port);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sres
- *
- * Description: Hookup the correct CCB and handle the incoming messages.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_sres(u32 port, unsigned char p_card,
 		     struct sccb_card *pCurrCard)
@@ -2665,7 +2520,7 @@ static void FPT_sres(u32 port, unsigned char p_card,
 							if (!
 							    (currTar_Info->
 							     TarLUN_CA)) {
-								ACCEPT_MSG(port);	/*Release the ACK for ID msg. */
+								ACCEPT_MSG(port);	 
 
 								message =
 								    FPT_sfm
@@ -2697,20 +2552,20 @@ static void FPT_sres(u32 port, unsigned char p_card,
 								}
 
 							}
-							/*C.A. exists! */
+							 
 						}
-						/*End Q cnt != 0 */
+						 
 					}
-					/*End Tag cmds supported! */
+					 
 				}
-				/*End valid ID message.  */
+				 
 				else {
 
 					ACCEPT_MSG_ATN(port);
 				}
 
 			}
-			/* End good id message. */
+			 
 			else {
 
 				message = 0;
@@ -2795,9 +2650,7 @@ static void FPT_sres(u32 port, unsigned char p_card,
 
 	if (pCurrCard->currentSCCB != NULL) {
 		if (pCurrCard->currentSCCB->Sccb_scsistat == ABORT_ST) {
-			/* During Abort Tag command, the target could have got re-selected
-			   and completed the command. Check the select Q and remove the CCB
-			   if it is in the Select Q */
+			 
 			FPT_queueFindSccb(pCurrCard->currentSCCB, p_card);
 		}
 	}
@@ -2846,14 +2699,7 @@ static void FPT_SendMsg(u32 port, unsigned char message)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sdecm
- *
- * Description: Determine the proper response to the message from the
- *              target device.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_sdecm(unsigned char message, u32 port, unsigned char p_card)
 {
 	struct sccb *currSCCB;
@@ -3007,7 +2853,7 @@ static void FPT_sdecm(unsigned char message, u32 port, unsigned char p_card)
 
 	else if (message == IGNORE_WIDE_RESIDUE) {
 
-		ACCEPT_MSG(port);	/* ACK the RESIDUE MSG */
+		ACCEPT_MSG(port);	 
 
 		message = FPT_sfm(port, currSCCB);
 
@@ -3028,13 +2874,7 @@ static void FPT_sdecm(unsigned char message, u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_shandem
- *
- * Description: Decide what to do with the extended message.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_shandem(u32 port, unsigned char p_card, struct sccb *pCurrSCCB)
 {
 	unsigned char length, message;
@@ -3093,14 +2933,7 @@ static void FPT_shandem(u32 port, unsigned char p_card, struct sccb *pCurrSCCB)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sisyncn
- *
- * Description: Read in a message byte from the SCSI bus, and check
- *              for a parity error.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_sisyncn(u32 port, unsigned char p_card,
 				 unsigned char syncFlag)
@@ -3175,14 +3008,7 @@ static unsigned char FPT_sisyncn(u32 port, unsigned char p_card,
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_stsyncn
- *
- * Description: The has sent us a Sync Nego message so handle it as
- *              necessary.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_stsyncn(u32 port, unsigned char p_card)
 {
 	unsigned char sync_msg, offset, sync_reg, our_sync_msg;
@@ -3212,21 +3038,21 @@ static void FPT_stsyncn(u32 port, unsigned char p_card)
 
 	if ((currTar_Info->TarEEValue & EE_SYNC_MASK) == EE_SYNC_20MB)
 
-		our_sync_msg = 12;	/* Setup our Message to 20mb/s */
+		our_sync_msg = 12;	 
 
 	else if ((currTar_Info->TarEEValue & EE_SYNC_MASK) == EE_SYNC_10MB)
 
-		our_sync_msg = 25;	/* Setup our Message to 10mb/s */
+		our_sync_msg = 25;	 
 
 	else if ((currTar_Info->TarEEValue & EE_SYNC_MASK) == EE_SYNC_5MB)
 
-		our_sync_msg = 50;	/* Setup our Message to 5mb/s */
+		our_sync_msg = 50;	 
 	else
 
-		our_sync_msg = 0;	/* Message = Async */
+		our_sync_msg = 0;	 
 
 	if (sync_msg < our_sync_msg) {
-		sync_msg = our_sync_msg;	/*if faster, then set to max. */
+		sync_msg = our_sync_msg;	 
 	}
 
 	if (offset == ASYNC)
@@ -3239,35 +3065,35 @@ static void FPT_stsyncn(u32 port, unsigned char p_card)
 
 	if (sync_msg > 12)
 
-		sync_reg = 0x20;	/* Use 10MB/s */
+		sync_reg = 0x20;	 
 
 	if (sync_msg > 25)
 
-		sync_reg = 0x40;	/* Use 6.6MB/s */
+		sync_reg = 0x40;	 
 
 	if (sync_msg > 38)
 
-		sync_reg = 0x60;	/* Use 5MB/s */
+		sync_reg = 0x60;	 
 
 	if (sync_msg > 50)
 
-		sync_reg = 0x80;	/* Use 4MB/s */
+		sync_reg = 0x80;	 
 
 	if (sync_msg > 62)
 
-		sync_reg = 0xA0;	/* Use 3.33MB/s */
+		sync_reg = 0xA0;	 
 
 	if (sync_msg > 75)
 
-		sync_reg = 0xC0;	/* Use 2.85MB/s */
+		sync_reg = 0xC0;	 
 
 	if (sync_msg > 87)
 
-		sync_reg = 0xE0;	/* Use 2.5MB/s */
+		sync_reg = 0xE0;	 
 
 	if (sync_msg > 100) {
 
-		sync_reg = 0x00;	/* Use ASYNC */
+		sync_reg = 0x00;	 
 		offset = 0x00;
 	}
 
@@ -3305,13 +3131,7 @@ static void FPT_stsyncn(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sisyncr
- *
- * Description: Answer the targets sync message.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_sisyncr(u32 port, unsigned char sync_pulse,
 			unsigned char offset)
 {
@@ -3336,14 +3156,7 @@ static void FPT_sisyncr(u32 port, unsigned char sync_pulse,
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_siwidn
- *
- * Description: Read in a message byte from the SCSI bus, and check
- *              for a parity error.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_siwidn(u32 port, unsigned char p_card)
 {
@@ -3392,14 +3205,7 @@ static unsigned char FPT_siwidn(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_stwidn
- *
- * Description: The has sent us a Wide Nego message so handle it as
- *              necessary.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_stwidn(u32 port, unsigned char p_card)
 {
 	unsigned char width;
@@ -3464,13 +3270,7 @@ static void FPT_stwidn(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_siwidr
- *
- * Description: Answer the targets Wide nego message.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_siwidr(u32 port, unsigned char width)
 {
 	ARAM_ACCESS(port);
@@ -3493,14 +3293,7 @@ static void FPT_siwidr(u32 port, unsigned char width)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sssyncv
- *
- * Description: Write the desired value to the Sync Register for the
- *              ID specified.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_sssyncv(u32 p_port, unsigned char p_id,
 			unsigned char p_sync_value,
 			struct sccb_mgr_tar_info *currTar_Info)
@@ -3512,52 +3305,52 @@ static void FPT_sssyncv(u32 p_port, unsigned char p_id,
 	switch (index) {
 
 	case 0:
-		index = 12;	/* hp_synctarg_0 */
+		index = 12;	 
 		break;
 	case 1:
-		index = 13;	/* hp_synctarg_1 */
+		index = 13;	 
 		break;
 	case 2:
-		index = 14;	/* hp_synctarg_2 */
+		index = 14;	 
 		break;
 	case 3:
-		index = 15;	/* hp_synctarg_3 */
+		index = 15;	 
 		break;
 	case 4:
-		index = 8;	/* hp_synctarg_4 */
+		index = 8;	 
 		break;
 	case 5:
-		index = 9;	/* hp_synctarg_5 */
+		index = 9;	 
 		break;
 	case 6:
-		index = 10;	/* hp_synctarg_6 */
+		index = 10;	 
 		break;
 	case 7:
-		index = 11;	/* hp_synctarg_7 */
+		index = 11;	 
 		break;
 	case 8:
-		index = 4;	/* hp_synctarg_8 */
+		index = 4;	 
 		break;
 	case 9:
-		index = 5;	/* hp_synctarg_9 */
+		index = 5;	 
 		break;
 	case 10:
-		index = 6;	/* hp_synctarg_10 */
+		index = 6;	 
 		break;
 	case 11:
-		index = 7;	/* hp_synctarg_11 */
+		index = 7;	 
 		break;
 	case 12:
-		index = 0;	/* hp_synctarg_12 */
+		index = 0;	 
 		break;
 	case 13:
-		index = 1;	/* hp_synctarg_13 */
+		index = 1;	 
 		break;
 	case 14:
-		index = 2;	/* hp_synctarg_14 */
+		index = 2;	 
 		break;
 	case 15:
-		index = 3;	/* hp_synctarg_15 */
+		index = 3;	 
 
 	}
 
@@ -3566,13 +3359,7 @@ static void FPT_sssyncv(u32 p_port, unsigned char p_id,
 	currTar_Info->TarSyncCtrl = p_sync_value;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sresb
- *
- * Description: Reset the desired card's SCSI bus.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_sresb(u32 port, unsigned char p_card)
 {
 	unsigned char scsiID, i;
@@ -3637,13 +3424,7 @@ static void FPT_sresb(u32 port, unsigned char p_card)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_ssenss
- *
- * Description: Setup for the Auto Sense command.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_ssenss(struct sccb_card *pCurrCard)
 {
 	unsigned char i;
@@ -3660,7 +3441,7 @@ static void FPT_ssenss(struct sccb_card *pCurrCard)
 
 	currSCCB->CdbLength = SIX_BYTE_CMD;
 	currSCCB->Cdb[0] = REQUEST_SENSE;
-	currSCCB->Cdb[1] = currSCCB->Cdb[1] & (unsigned char)0xE0;	/*Keep LUN. */
+	currSCCB->Cdb[1] = currSCCB->Cdb[1] & (unsigned char)0xE0;	 
 	currSCCB->Cdb[2] = 0x00;
 	currSCCB->Cdb[3] = 0x00;
 	currSCCB->Cdb[4] = currSCCB->RequestSenseLength;
@@ -3681,14 +3462,7 @@ static void FPT_ssenss(struct sccb_card *pCurrCard)
 	currSCCB->Sccb_MGRFlags &= F_STATUSLOADED;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sxfrp
- *
- * Description: Transfer data into the bit bucket until the device
- *              decides to switch phase.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_sxfrp(u32 p_port, unsigned char p_card)
 {
@@ -3703,8 +3477,7 @@ static void FPT_sxfrp(u32 p_port, unsigned char p_card)
 
 	}
 
-	/* If the Automation handled the end of the transfer then do not
-	   match the phase or we will get out of sync with the ISR.       */
+	 
 
 	if (RDW_HARPOON((p_port + hp_intstat)) &
 	    (BUS_FREE | XFER_CNT_0 | AUTO_INT))
@@ -3736,7 +3509,7 @@ static void FPT_sxfrp(u32 p_port, unsigned char p_card)
 				WR_HARPOON(p_port + hp_fifodata_0, 0xFA);
 			}
 		}
-	}			/* End of While loop for padding data I/O phase */
+	}			 
 
 	while (!(RDW_HARPOON((p_port + hp_intstat)) & (BUS_FREE | RESET))) {
 		if (RD_HARPOON(p_port + hp_scsisig) & SCSI_REQ)
@@ -3763,14 +3536,7 @@ static void FPT_sxfrp(u32 p_port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_schkdd
- *
- * Description: Make sure data has been flushed from both FIFOs and abort
- *              the operations if necessary.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_schkdd(u32 port, unsigned char p_card)
 {
@@ -3865,13 +3631,7 @@ static void FPT_schkdd(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sinits
- *
- * Description: Setup SCCB manager fields in this SCCB.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_sinits(struct sccb *p_sccb, unsigned char p_card)
 {
@@ -3905,15 +3665,9 @@ static void FPT_sinits(struct sccb *p_sccb, unsigned char p_card)
 			currTar_Info->TarStatus |= TAG_Q_TRYING;
 	}
 
-/*      For !single SCSI device in system  & device allow Disconnect
-	or command is tag_q type then send Cmd with Disconnect Enable
-	else send Cmd with Disconnect Disable */
+ 
 
-/*
-   if (((!(FPT_BL_Card[p_card].globalFlags & F_SINGLE_DEVICE)) &&
-      (currTar_Info->TarStatus & TAR_ALLOW_DISC)) ||
-      (currTar_Info->TarStatus & TAG_Q_TRYING)) {
-*/
+ 
 	if ((currTar_Info->TarStatus & TAR_ALLOW_DISC) ||
 	    (currTar_Info->TarStatus & TAG_Q_TRYING)) {
 		p_sccb->Sccb_idmsg = IDENTIFY(true, p_sccb->Lun);
@@ -3928,24 +3682,14 @@ static void FPT_sinits(struct sccb *p_sccb, unsigned char p_card)
 	p_sccb->Sccb_sgseg = 0x00;
 	p_sccb->Sccb_ATC = 0x00;
 	p_sccb->Sccb_savedATC = 0x00;
-/*
-   p_sccb->SccbVirtDataPtr    = 0x00;
-   p_sccb->Sccb_forwardlink   = NULL;
-   p_sccb->Sccb_backlink      = NULL;
- */
+ 
 	p_sccb->Sccb_scsistat = BUS_FREE_ST;
 	p_sccb->SccbStatus = SCCB_IN_PROCESS;
 	p_sccb->Sccb_scsimsg = NOP;
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Phase Decode
- *
- * Description: Determine the phase and call the appropriate function.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseDecode(u32 p_port, unsigned char p_card)
 {
@@ -3959,16 +3703,10 @@ static void FPT_phaseDecode(u32 p_port, unsigned char p_card)
 
 	phase = FPT_s_PhaseTbl[phase_ref];
 
-	(*phase) (p_port, p_card);	/* Call the correct phase func */
+	(*phase) (p_port, p_card);	 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Data Out Phase
- *
- * Description: Start up both the BusMaster and Xbow.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseDataOut(u32 port, unsigned char p_card)
 {
@@ -3977,7 +3715,7 @@ static void FPT_phaseDataOut(u32 port, unsigned char p_card)
 
 	currSCCB = FPT_BL_Card[p_card].currentSCCB;
 	if (currSCCB == NULL) {
-		return;		/* Exit if No SCCB record */
+		return;		 
 	}
 
 	currSCCB->Sccb_scsistat = DATA_OUT_ST;
@@ -4003,13 +3741,7 @@ static void FPT_phaseDataOut(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Data In Phase
- *
- * Description: Startup the BusMaster and the XBOW.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseDataIn(u32 port, unsigned char p_card)
 {
@@ -4019,7 +3751,7 @@ static void FPT_phaseDataIn(u32 port, unsigned char p_card)
 	currSCCB = FPT_BL_Card[p_card].currentSCCB;
 
 	if (currSCCB == NULL) {
-		return;		/* Exit if No SCCB record */
+		return;		 
 	}
 
 	currSCCB->Sccb_scsistat = DATA_IN_ST;
@@ -4047,13 +3779,7 @@ static void FPT_phaseDataIn(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Command Phase
- *
- * Description: Load the CDB into the automation and start it up.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseCommand(u32 p_port, unsigned char p_card)
 {
@@ -4098,34 +3824,18 @@ static void FPT_phaseCommand(u32 p_port, unsigned char p_card)
 	SGRAM_ACCESS(p_port);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Status phase
- *
- * Description: Bring in the status and command complete message bytes
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseStatus(u32 port, unsigned char p_card)
 {
-	/* Start-up the automation to finish off this command and let the
-	   isr handle the interrupt for command complete when it comes in.
-	   We could wait here for the interrupt to be generated?
-	 */
+	 
 
 	WR_HARPOON(port + hp_scsisig, 0x00);
 
 	WR_HARPOON(port + hp_autostart_0, (AUTO_IMMED + END_DATA_START));
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Phase Message Out
- *
- * Description: Send out our message (if we have one) and handle whatever
- *              else is involed.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseMsgOut(u32 port, unsigned char p_card)
 {
@@ -4258,13 +3968,7 @@ static void FPT_phaseMsgOut(u32 port, unsigned char p_card)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Message In phase
- *
- * Description: Bring in the message and determine what to do with it.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseMsgIn(u32 port, unsigned char p_card)
 {
@@ -4303,15 +4007,7 @@ static void FPT_phaseMsgIn(u32 port, unsigned char p_card)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Illegal phase
- *
- * Description: Target switched to some illegal phase, so all we can do
- *              is report an error back to the host (if that is possible)
- *              and send an ABORT message to the misbehaving target.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseIllegal(u32 port, unsigned char p_card)
 {
@@ -4330,14 +4026,7 @@ static void FPT_phaseIllegal(u32 port, unsigned char p_card)
 	ACCEPT_MSG_ATN(port);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Phase Check FIFO
- *
- * Description: Make sure data has been flushed from both FIFOs and abort
- *              the operations if necessary.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_phaseChkFifo(u32 port, unsigned char p_card)
 {
@@ -4375,7 +4064,7 @@ static void FPT_phaseChkFifo(u32 port, unsigned char p_card)
 		}
 	}
 
-	/*End Data In specific code. */
+	 
 	GET_XFER_CNT(port, xfercnt);
 
 	WR_HARPOON(port + hp_xfercnt_0, 0x00);
@@ -4402,14 +4091,7 @@ static void FPT_phaseChkFifo(u32 port, unsigned char p_card)
 	WRW_HARPOON((port + hp_intstat), XFER_CNT_0);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Phase Bus Free
- *
- * Description: We just went bus free so figure out if it was
- *              because of command complete or from a disconnect.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_phaseBusFree(u32 port, unsigned char p_card)
 {
 	struct sccb *currSCCB;
@@ -4455,9 +4137,7 @@ static void FPT_phaseBusFree(u32 port, unsigned char p_card)
 		}
 
 		else if (currSCCB->Sccb_scsistat == SELECT_Q_ST) {
-			/* Make sure this is not a phony BUS_FREE.  If we were
-			   reselected or if BUSY is NOT on then this is a
-			   valid BUS FREE.  SRR Wednesday, 5/10/1995.     */
+			 
 
 			if ((!(RD_HARPOON(port + hp_scsisig) & SCSI_BSY)) ||
 			    (RDW_HARPOON((port + hp_intstat)) & RSEL)) {
@@ -4496,16 +4176,10 @@ static void FPT_phaseBusFree(u32 port, unsigned char p_card)
 
 		FPT_BL_Card[p_card].globalFlags |= F_NEW_SCCB_CMD;
 
-	}			/*end if !=null */
+	}			 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Auto Load Default Map
- *
- * Description: Load the Automation RAM with the default map values.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_autoLoadDefaultMap(u32 p_port)
 {
 	u32 map_addr;
@@ -4513,104 +4187,97 @@ static void FPT_autoLoadDefaultMap(u32 p_port)
 	ARAM_ACCESS(p_port);
 	map_addr = p_port + hp_aramBase;
 
-	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0xC0));	/*ID MESSAGE */
+	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0xC0));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0x20));	/*SIMPLE TAG QUEUEING MSG */
+	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0x20));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, RAT_OP);	/*RESET ATTENTION */
+	WRW_HARPOON(map_addr, RAT_OP);	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0x00));	/*TAG ID MSG */
+	WRW_HARPOON(map_addr, (MPM_OP + AMSG_OUT + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 0 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 1 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 2 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 3 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 4 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 5 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 6 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 7 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 8 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 9 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 10 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	/*CDB BYTE 11 */
+	WRW_HARPOON(map_addr, (MPM_OP + ACOMMAND + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPE_OP + ADATA_OUT + DINT));	/*JUMP IF DATA OUT */
+	WRW_HARPOON(map_addr, (CPE_OP + ADATA_OUT + DINT));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (TCB_OP + FIFO_0 + DI));	/*JUMP IF NO DATA IN FIFO */
-	map_addr += 2;		/*This means AYNC DATA IN */
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_IDO_STRT));	/*STOP AND INTERRUPT */
+	WRW_HARPOON(map_addr, (TCB_OP + FIFO_0 + DI));	 
+	map_addr += 2;		 
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_IDO_STRT));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPE_OP + ADATA_IN + DINT));	/*JUMP IF NOT DATA IN PHZ */
+	WRW_HARPOON(map_addr, (CPE_OP + ADATA_IN + DINT));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + ST));	/*IF NOT MSG IN CHECK 4 DATA IN */
+	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + ST));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x02));	/*SAVE DATA PTR MSG? */
+	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x02));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + DC));	/*GO CHECK FOR DISCONNECT MSG */
+	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + DC));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_AR1));	/*SAVE DATA PTRS MSG */
+	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_AR1));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + ST));	/*IF NOT MSG IN CHECK DATA IN */
+	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + ST));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x04));	/*DISCONNECT MSG? */
+	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x04));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + UNKNWN));	/*UKNKNOWN MSG */
+	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + UNKNWN));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_BUCKET));	/*XFER DISCONNECT MSG */
+	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_BUCKET));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_ITAR_DISC));	/*STOP AND INTERRUPT */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_ITAR_DISC));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPN_OP + ASTATUS + UNKNWN));	/*JUMP IF NOT STATUS PHZ. */
+	WRW_HARPOON(map_addr, (CPN_OP + ASTATUS + UNKNWN));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_AR0));	/*GET STATUS BYTE */
+	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_AR0));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + CC));	/*ERROR IF NOT MSG IN PHZ */
+	WRW_HARPOON(map_addr, (CPN_OP + AMSG_IN + CC));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x00));	/*CHECK FOR CMD COMPLETE MSG. */
+	WRW_HARPOON(map_addr, (CRD_OP + SDATA + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + CC));	/*ERROR IF NOT CMD COMPLETE MSG. */
+	WRW_HARPOON(map_addr, (BRH_OP + NOT_EQ + CC));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_BUCKET));	/*GET CMD COMPLETE MSG */
+	WRW_HARPOON(map_addr, (MRR_OP + SDATA + D_BUCKET));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_ICMD_COMP));	/*END OF COMMAND */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_ICMD_COMP));	 
 	map_addr += 2;
 
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_IUNKWN));	/*RECEIVED UNKNOWN MSG BYTE */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_IUNKWN));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_INO_CC));	/*NO COMMAND COMPLETE AFTER STATUS */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_INO_CC));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_ITICKLE));	/*BIOS Tickled the Mgr */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_ITICKLE));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_IRFAIL));	/*EXPECTED ID/TAG MESSAGES AND */
-	map_addr += 2;		/* DIDN'T GET ONE */
-	WRW_HARPOON(map_addr, (CRR_OP + AR3 + S_IDREG));	/* comp SCSI SEL ID & AR3 */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_IRFAIL));	 
+	map_addr += 2;		 
+	WRW_HARPOON(map_addr, (CRR_OP + AR3 + S_IDREG));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (BRH_OP + EQUAL + 0x00));	/*SEL ID OK then Conti. */
+	WRW_HARPOON(map_addr, (BRH_OP + EQUAL + 0x00));	 
 	map_addr += 2;
-	WRW_HARPOON(map_addr, (SSI_OP + SSI_INO_CC));	/*NO COMMAND COMPLETE AFTER STATUS */
+	WRW_HARPOON(map_addr, (SSI_OP + SSI_INO_CC));	 
 
 	SGRAM_ACCESS(p_port);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Auto Command Complete
- *
- * Description: Post command back to host and find another command
- *              to execute.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_autoCmdCmplt(u32 p_port, unsigned char p_card)
 {
@@ -4867,23 +4534,7 @@ static void FPT_autoCmdCmplt(u32 p_port, unsigned char p_card)
 #define SHORT_WAIT   0x0000000F
 #define LONG_WAIT    0x0000FFFFL
 
-/*---------------------------------------------------------------------
- *
- * Function: Data Transfer Processor
- *
- * Description: This routine performs two tasks.
- *              (1) Start data transfer by calling HOST_DATA_XFER_START
- *              function.  Once data transfer is started, (2) Depends
- *              on the type of data transfer mode Scatter/Gather mode
- *              or NON Scatter/Gather mode.  In NON Scatter/Gather mode,
- *              this routine checks Sccb_MGRFlag (F_HOST_XFER_ACT bit) for
- *              data transfer done.  In Scatter/Gather mode, this routine
- *              checks bus master command complete and dual rank busy
- *              bit to keep chaining SC transfer command.  Similarly,
- *              in Scatter/Gather mode, it checks Sccb_MGRFlag
- *              (F_HOST_XFER_ACT bit) for data transfer done.
- *              
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_dataXferProcessor(u32 port, struct sccb_card *pCurrCard)
 {
@@ -4911,13 +4562,7 @@ static void FPT_dataXferProcessor(u32 port, struct sccb_card *pCurrCard)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: BusMaster Scatter Gather Data Transfer Start
- *
- * Description:
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_busMstrSGDataXferStart(u32 p_port, struct sccb *pcurrSCCB)
 {
 	u32 count, addr, tmpSGCnt;
@@ -4969,7 +4614,7 @@ static void FPT_busMstrSGDataXferStart(u32 p_port, struct sccb *pcurrSCCB)
 		sg_index++;
 		sg_count++;
 
-	}			/*End While */
+	}			 
 
 	pcurrSCCB->Sccb_XferCnt = tmpSGCnt;
 
@@ -5004,13 +4649,7 @@ static void FPT_busMstrSGDataXferStart(u32 p_port, struct sccb *pcurrSCCB)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: BusMaster Data Transfer Start
- *
- * Description: 
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_busMstrDataXferStart(u32 p_port, struct sccb *pcurrSCCB)
 {
 	u32 addr, count;
@@ -5052,18 +4691,7 @@ static void FPT_busMstrDataXferStart(u32 p_port, struct sccb *pcurrSCCB)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: BusMaster Timeout Handler
- *
- * Description: This function is called after a bus master command busy time
- *               out is detected.  This routines issue halt state machine
- *               with a software time out for command busy.  If command busy
- *               is still asserted at the end of the time out, it issues
- *               hard abort with another software time out.  It hard abort
- *               command busy is also time out, it'll just give up.
- *
- *---------------------------------------------------------------------*/
+ 
 static unsigned char FPT_busMstrTimeOut(u32 p_port)
 {
 	unsigned long timeout;
@@ -5085,7 +4713,7 @@ static unsigned char FPT_busMstrTimeOut(u32 p_port)
 		}
 	}
 
-	RD_HARPOON(p_port + hp_int_status);	/*Clear command complete */
+	RD_HARPOON(p_port + hp_int_status);	 
 
 	if (RD_HARPOON(p_port + hp_ext_status) & BM_CMD_BUSY) {
 		return 1;
@@ -5096,13 +4724,7 @@ static unsigned char FPT_busMstrTimeOut(u32 p_port)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Host Data Transfer Abort
- *
- * Description: Abort any in progress transfer.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_hostDataXferAbort(u32 port, unsigned char p_card,
 				  struct sccb *pCurrSCCB)
 {
@@ -5364,14 +4986,7 @@ static void FPT_hostDataXferAbort(u32 port, unsigned char p_card,
 	WR_HARPOON(port + hp_int_mask, (INT_CMD_COMPL | SCSI_INTERRUPT));
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Host Data Transfer Restart
- *
- * Description: Reset the available count due to a restore data
- *              pointers message.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_hostDataXferRestart(struct sccb *currSCCB)
 {
 	unsigned long data_count;
@@ -5382,8 +4997,8 @@ static void FPT_hostDataXferRestart(struct sccb *currSCCB)
 
 		currSCCB->Sccb_XferCnt = 0;
 
-		sg_index = 0xffff;	/*Index by long words into sg list. */
-		data_count = 0;		/*Running count of SG xfer counts. */
+		sg_index = 0xffff;	 
+		data_count = 0;		 
 
 
 		while (data_count < currSCCB->Sccb_ATC) {
@@ -5414,13 +5029,7 @@ static void FPT_hostDataXferRestart(struct sccb *currSCCB)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scini
- *
- * Description: Setup all data structures necessary for SCAM selection.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scini(unsigned char p_card, unsigned char p_our_id,
 		      unsigned char p_power_up)
@@ -5446,18 +5055,14 @@ static void FPT_scini(unsigned char p_card, unsigned char p_our_id,
 		i = (unsigned
 		     char)(FPT_utilEERead(p_port, (SYSTEM_CONFIG / 2)));
 	}
-	if (!(i & 0x02))	/* check if reset bus in AutoSCSI parameter set */
+	if (!(i & 0x02))	 
 		return;
 
 	FPT_inisci(p_card, p_port, p_our_id);
 
-	/* Force to wait 1 sec after SCSI bus reset. Some SCAM device FW
-	   too slow to return to SCAM selection */
+	 
 
-	/* if (p_power_up)
-	   FPT_Wait1Second(p_port);
-	   else
-	   FPT_Wait(p_port, TO_250ms); */
+	 
 
 	FPT_Wait1Second(p_port);
 
@@ -5609,28 +5214,10 @@ static void FPT_scini(unsigned char p_card, unsigned char p_our_id,
 		}
 	}
 
-/*
-   for (i=0,k=0; i < MAX_SCSI_TAR; i++)
-      {
-      if ((FPT_scamInfo[i].state == ID_ASSIGNED) ||
-         (FPT_scamInfo[i].state == LEGACY))
-         k++;
-      }
-
-   if (k==2)
-      currCard->globalFlags |= F_SINGLE_DEVICE;
-   else
-      currCard->globalFlags &= ~F_SINGLE_DEVICE;
-*/
+ 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scarb
- *
- * Description: Gain control of the bus and wait SCAM select time (250ms)
- *
- *---------------------------------------------------------------------*/
+ 
 
 static int FPT_scarb(u32 p_port, unsigned char p_sel_type)
 {
@@ -5686,13 +5273,7 @@ static int FPT_scarb(u32 p_port, unsigned char p_sel_type)
 	return 1;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scbusf
- *
- * Description: Release the SCSI bus and disable SCAM selection.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scbusf(u32 p_port)
 {
@@ -5718,13 +5299,7 @@ static void FPT_scbusf(u32 p_port)
 		   (RD_HARPOON(p_port + hp_page_ctrl) & ~G_INT_DISABLE));
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scasid
- *
- * Description: Assign an ID to all the SCAM devices.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scasid(unsigned char p_card, u32 p_port)
 {
@@ -5764,7 +5339,7 @@ static void FPT_scasid(unsigned char p_card, u32 p_port)
 			if (i == CLR_PRIORITY) {
 				FPT_scxferc(p_port, MISC_CODE);
 				FPT_scxferc(p_port, CLR_P_FLAG);
-				i = 0;	/*Not the last ID yet. */
+				i = 0;	 
 			}
 
 			else if (i != NO_ID_AVAIL) {
@@ -5777,11 +5352,11 @@ static void FPT_scasid(unsigned char p_card, u32 p_port)
 
 				for (k = 1; k < 0x08; k <<= 1)
 					if (!(k & i))
-						scam_id += 0x08;	/*Count number of zeros in DB0-3. */
+						scam_id += 0x08;	 
 
 				FPT_scxferc(p_port, scam_id);
 
-				i = 0;	/*Not the last ID yet. */
+				i = 0;	 
 			}
 		}
 
@@ -5789,19 +5364,13 @@ static void FPT_scasid(unsigned char p_card, u32 p_port)
 			i = 1;
 		}
 
-	}			/*End while */
+	}			 
 
 	FPT_scxferc(p_port, SYNC_PTRN);
 	FPT_scxferc(p_port, CFG_CMPLT);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scsel
- *
- * Description: Select all the SCAM devices.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scsel(u32 p_port)
 {
@@ -5829,19 +5398,13 @@ static void FPT_scsel(u32 p_port)
 		   (SCSI_SEL | SCSI_BSY | SCSI_IOBIT | SCSI_CD));
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scxferc
- *
- * Description: Handshake the p_data (DB4-0) across the bus.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_scxferc(u32 p_port, unsigned char p_data)
 {
 	unsigned char curr_data, ret_data;
 
-	curr_data = p_data | BIT(7) | BIT(5);	/*Start with DB7 & DB5 asserted. */
+	curr_data = p_data | BIT(7) | BIT(5);	 
 
 	WR_HARPOON(p_port + hp_scsidata_0, curr_data);
 
@@ -5849,7 +5412,7 @@ static unsigned char FPT_scxferc(u32 p_port, unsigned char p_data)
 
 	WR_HARPOON(p_port + hp_scsidata_0, curr_data);
 
-	FPT_scwirod(p_port, BIT(7));	/*Wait for DB7 to be released. */
+	FPT_scwirod(p_port, BIT(7));	 
 	while (!(RD_HARPOON(p_port + hp_scsidata_0) & BIT(5))) ;
 
 	ret_data = (RD_HARPOON(p_port + hp_scsidata_0) & (unsigned char)0x1F);
@@ -5862,9 +5425,9 @@ static unsigned char FPT_scxferc(u32 p_port, unsigned char p_data)
 
 	WR_HARPOON(p_port + hp_scsidata_0, curr_data);
 
-	FPT_scwirod(p_port, BIT(5));	/*Wait for DB5 to be released. */
+	FPT_scwirod(p_port, BIT(5));	 
 
-	curr_data &= ~(BIT(4) | BIT(3) | BIT(2) | BIT(1) | BIT(0));	/*Release data bits */
+	curr_data &= ~(BIT(4) | BIT(3) | BIT(2) | BIT(1) | BIT(0));	 
 	curr_data |= BIT(7);
 
 	WR_HARPOON(p_port + hp_scsidata_0, curr_data);
@@ -5873,19 +5436,12 @@ static unsigned char FPT_scxferc(u32 p_port, unsigned char p_data)
 
 	WR_HARPOON(p_port + hp_scsidata_0, curr_data);
 
-	FPT_scwirod(p_port, BIT(6));	/*Wait for DB6 to be released. */
+	FPT_scwirod(p_port, BIT(6));	 
 
 	return ret_data;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scsendi
- *
- * Description: Transfer our Identification string to determine if we
- *              will be the dominant master.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_scsendi(u32 p_port, unsigned char p_id_string[])
 {
@@ -5912,31 +5468,25 @@ static unsigned char FPT_scsendi(u32 p_port, unsigned char p_id_string[])
 			}
 
 			if ((ret_data & 0x1C) == 0x10)
-				return 0x00;	/*End of isolation stage, we won! */
+				return 0x00;	 
 
 			if (ret_data & 0x1C)
 				return 0xFF;
 
 			if ((defer) && (!(ret_data & 0x1F)))
-				return 0x01;	/*End of isolation stage, we lost. */
+				return 0x01;	 
 
-		}		/*bit loop */
+		}		 
 
-	}			/*byte loop */
+	}			 
 
 	if (defer)
-		return 0x01;	/*We lost */
+		return 0x01;	 
 	else
-		return 0;	/*We WON! Yeeessss! */
+		return 0;	 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_sciso
- *
- * Description: Transfer the Identification string.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_sciso(u32 p_port, unsigned char p_id_string[])
 {
@@ -5962,39 +5512,23 @@ static unsigned char FPT_sciso(u32 p_port, unsigned char p_id_string[])
 			}
 
 			if ((ret_data & 0x1F) == 0) {
-/*
-				if(bit_cnt != 0 || bit_cnt != 8)
-				{
-					byte_cnt = 0;
-					bit_cnt = 0;
-					FPT_scxferc(p_port, SYNC_PTRN);
-					FPT_scxferc(p_port, ASSIGN_ID);
-					continue;
-				}
-*/
+ 
 				if (byte_cnt)
 					return 0x00;
 				else
 					return 0xFF;
 			}
 
-		}		/*bit loop */
+		}		 
 
 		p_id_string[byte_cnt] = the_data;
 
-	}			/*byte loop */
+	}			 
 
 	return 0;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scwirod
- *
- * Description: Sample the SCSI data bus making sure the signal has been
- *              deasserted for the correct number of consecutive samples.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scwirod(u32 p_port, unsigned char p_data_bit)
 {
@@ -6014,14 +5548,7 @@ static void FPT_scwirod(u32 p_port, unsigned char p_data_bit)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scwiros
- *
- * Description: Sample the SCSI Signal lines making sure the signal has been
- *              deasserted for the correct number of consecutive samples.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scwiros(u32 p_port, unsigned char p_data_bit)
 {
@@ -6041,13 +5568,7 @@ static void FPT_scwiros(u32 p_port, unsigned char p_data_bit)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scvalq
- *
- * Description: Make sure we received a valid data byte.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_scvalq(unsigned char p_quintet)
 {
@@ -6065,15 +5586,7 @@ static unsigned char FPT_scvalq(unsigned char p_quintet)
 		return 1;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scsell
- *
- * Description: Select the specified device ID using a selection timeout
- *              less than 4ms.  If somebody responds then it is a legacy
- *              drive and this ID must be marked as such.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_scsell(u32 p_port, unsigned char targ_id)
 {
@@ -6126,7 +5639,7 @@ static unsigned char FPT_scsell(u32 p_port, unsigned char targ_id)
 			   (RD_HARPOON(p_port + hp_page_ctrl) &
 			    ~G_INT_DISABLE));
 
-		return 0;	/*No legacy device */
+		return 0;	 
 	}
 
 	else {
@@ -6145,17 +5658,11 @@ static unsigned char FPT_scsell(u32 p_port, unsigned char targ_id)
 			   (RD_HARPOON(p_port + hp_page_ctrl) &
 			    ~G_INT_DISABLE));
 
-		return 1;	/*Found one of them oldies! */
+		return 1;	 
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scwtsel
- *
- * Description: Wait to be selected by another SCAM initiator.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scwtsel(u32 p_port)
 {
@@ -6163,13 +5670,7 @@ static void FPT_scwtsel(u32 p_port)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_inisci
- *
- * Description: Setup the data Structure with the info from the EEPROM.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_inisci(unsigned char p_card, u32 p_port, unsigned char p_our_id)
 {
@@ -6196,9 +5697,9 @@ static void FPT_inisci(unsigned char p_card, u32 p_port, unsigned char p_our_id)
 				    (unsigned char)0x00;
 
 			if (FPT_scamInfo[i].id_string[0] == 0x00)
-				FPT_scamInfo[i].state = ID_UNUSED;	/*Default to unused ID. */
+				FPT_scamInfo[i].state = ID_UNUSED;	 
 			else
-				FPT_scamInfo[i].state = ID_UNASSIGNED;	/*Default to unassigned ID. */
+				FPT_scamInfo[i].state = ID_UNASSIGNED;	 
 
 		}
 	} else {
@@ -6220,10 +5721,10 @@ static void FPT_inisci(unsigned char p_card, u32 p_port, unsigned char p_our_id)
 			if ((FPT_scamInfo[i].id_string[0] == 0x00) ||
 			    (FPT_scamInfo[i].id_string[0] == 0xFF))
 
-				FPT_scamInfo[i].state = ID_UNUSED;	/*Default to unused ID. */
+				FPT_scamInfo[i].state = ID_UNUSED;	 
 
 			else
-				FPT_scamInfo[i].state = ID_UNASSIGNED;	/*Default to unassigned ID. */
+				FPT_scamInfo[i].state = ID_UNASSIGNED;	 
 
 		}
 	}
@@ -6232,14 +5733,7 @@ static void FPT_inisci(unsigned char p_card, u32 p_port, unsigned char p_our_id)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scmachid
- *
- * Description: Match the Device ID string with our values stored in
- *              the EEPROM.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_scmachid(unsigned char p_card,
 				  unsigned char p_id_string[])
@@ -6349,13 +5843,7 @@ static unsigned char FPT_scmachid(unsigned char p_card,
 	return NO_ID_AVAIL;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_scsavdi
- *
- * Description: Save off the device SCAM ID strings.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_scsavdi(unsigned char p_card, u32 p_port)
 {
@@ -6368,7 +5856,7 @@ static void FPT_scsavdi(unsigned char p_card, u32 p_port)
 		sum_data += FPT_utilEERead(p_port, i);
 	}
 
-	FPT_utilEEWriteOnOff(p_port, 1);	/* Enable write access to the EEPROM */
+	FPT_utilEEWriteOnOff(p_port, 1);	 
 
 	if (RD_HARPOON(p_port + hp_page_ctrl) & NARROW_SCSI_CARD)
 		max_id = 0x08;
@@ -6391,16 +5879,10 @@ static void FPT_scsavdi(unsigned char p_card, u32 p_port)
 	}
 
 	FPT_utilEEWrite(p_port, sum_data, EEPROM_CHECK_SUM / 2);
-	FPT_utilEEWriteOnOff(p_port, 0);	/* Turn off write access */
+	FPT_utilEEWriteOnOff(p_port, 0);	 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_XbowInit
- *
- * Description: Setup the Xbow for normal operation.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_XbowInit(u32 port, unsigned char ScamFlg)
 {
@@ -6419,7 +5901,7 @@ static void FPT_XbowInit(u32 port, unsigned char ScamFlg)
 
 	WR_HARPOON(port + hp_clkctrl_0, CLKCTRL_DEFAULT);
 
-	WR_HARPOON(port + hp_scsisig, 0x00);	/*  Clear any signals we might */
+	WR_HARPOON(port + hp_scsisig, 0x00);	 
 	WR_HARPOON(port + hp_scsictrl_0, ENA_SCAM_SEL);
 
 	WRW_HARPOON((port + hp_intstat), CLR_ALL_INT);
@@ -6434,8 +5916,7 @@ static void FPT_XbowInit(u32 port, unsigned char ScamFlg)
 
 	WR_HARPOON(port + hp_seltimeout, TO_290ms);
 
-	/* Turn on SCSI_MODE8 for narrow cards to fix the
-	   strapping issue with the DUAL CHANNEL card */
+	 
 	if (RD_HARPOON(port + hp_page_ctrl) & NARROW_SCSI_CARD)
 		WR_HARPOON(port + hp_addstat, SCSI_MODE8);
 
@@ -6443,13 +5924,7 @@ static void FPT_XbowInit(u32 port, unsigned char ScamFlg)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_BusMasterInit
- *
- * Description: Initialize the BusMaster for normal operations.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_BusMasterInit(u32 p_port)
 {
@@ -6463,20 +5938,13 @@ static void FPT_BusMasterInit(u32 p_port)
 
 	WR_HARPOON(p_port + hp_ee_ctrl, (SCSI_TERM_ENA_H));
 
-	RD_HARPOON(p_port + hp_int_status);	/*Clear interrupts. */
+	RD_HARPOON(p_port + hp_int_status);	 
 	WR_HARPOON(p_port + hp_int_mask, (INT_CMD_COMPL | SCSI_INTERRUPT));
 	WR_HARPOON(p_port + hp_page_ctrl, (RD_HARPOON(p_port + hp_page_ctrl) &
 					   ~SCATTER_EN));
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_DiagEEPROM
- *
- * Description: Verfiy checksum and 'Key' and initialize the EEPROM if
- *              necessary.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_DiagEEPROM(u32 p_port)
 {
@@ -6499,7 +5967,7 @@ static void FPT_DiagEEPROM(u32 p_port)
 
 		if (temp == FPT_utilEERead(p_port, EEPROM_CHECK_SUM / 2)) {
 
-			return;	/*EEPROM is Okay so return now! */
+			return;	 
 		}
 	}
 
@@ -6553,9 +6021,9 @@ static void FPT_DiagEEPROM(u32 p_port)
 	FPT_utilEEWrite(p_port, 0x4242, SYNC_RATE_TBLef / 2);
 	temp += 0x4242;
 
-	FPT_utilEEWrite(p_port, 0x6C46, 64 / 2);	/*PRODUCT ID */
+	FPT_utilEEWrite(p_port, 0x6C46, 64 / 2);	 
 	temp += 0x6C46;
-	FPT_utilEEWrite(p_port, 0x7361, 66 / 2);	/* FlashPoint LT   */
+	FPT_utilEEWrite(p_port, 0x7361, 66 / 2);	 
 	temp += 0x7361;
 	FPT_utilEEWrite(p_port, 0x5068, 68 / 2);
 	temp += 0x5068;
@@ -6574,8 +6042,8 @@ static void FPT_DiagEEPROM(u32 p_port)
 	FPT_utilEEWrite(p_port, (0x0700 + TYPE_CODE0), index);
 	temp += (0x0700 + TYPE_CODE0);
 	index++;
-	FPT_utilEEWrite(p_port, 0x5542, index);	/*Vendor ID code */
-	temp += 0x5542;		/* BUSLOGIC      */
+	FPT_utilEEWrite(p_port, 0x5542, index);	 
+	temp += 0x5542;		 
 	index++;
 	FPT_utilEEWrite(p_port, 0x4C53, index);
 	temp += 0x4C53;
@@ -6586,16 +6054,16 @@ static void FPT_DiagEEPROM(u32 p_port)
 	FPT_utilEEWrite(p_port, 0x4349, index);
 	temp += 0x4349;
 	index++;
-	FPT_utilEEWrite(p_port, 0x5442, index);	/*Vendor unique code */
-	temp += 0x5442;		/* BT- 930           */
+	FPT_utilEEWrite(p_port, 0x5442, index);	 
+	temp += 0x5442;		 
 	index++;
 	FPT_utilEEWrite(p_port, 0x202D, index);
 	temp += 0x202D;
 	index++;
 	FPT_utilEEWrite(p_port, 0x3339, index);
 	temp += 0x3339;
-	index++;		/*Serial #          */
-	FPT_utilEEWrite(p_port, 0x2030, index);	/* 01234567         */
+	index++;		 
+	FPT_utilEEWrite(p_port, 0x2030, index);	 
 	temp += 0x2030;
 	index++;
 	FPT_utilEEWrite(p_port, 0x5453, index);
@@ -6625,13 +6093,7 @@ static void FPT_DiagEEPROM(u32 p_port)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Search Select
- *
- * Description: Try to find a new command to execute.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_queueSearchSelect(struct sccb_card *pCurrCard,
 				  unsigned char p_card)
@@ -6777,13 +6239,7 @@ static void FPT_queueSearchSelect(struct sccb_card *pCurrCard,
 	} while (scan_ptr != pCurrCard->scanIndex);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Select Fail
- *
- * Description: Add the current SCCB to the head of the Queue.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_queueSelectFail(struct sccb_card *pCurrCard,
 				unsigned char p_card)
@@ -6818,13 +6274,7 @@ static void FPT_queueSelectFail(struct sccb_card *pCurrCard,
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Command Complete
- *
- * Description: Call the callback function with the current SCCB.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_queueCmdComplete(struct sccb_card *pCurrCard,
 				 struct sccb *p_sccb, unsigned char p_card)
@@ -6917,13 +6367,7 @@ static void FPT_queueCmdComplete(struct sccb_card *pCurrCard,
 	pCurrCard->currentSCCB = NULL;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Disconnect
- *
- * Description: Add SCCB to our disconnect array.
- *
- *---------------------------------------------------------------------*/
+ 
 static void FPT_queueDisconnect(struct sccb *p_sccb, unsigned char p_card)
 {
 	struct sccb_mgr_tar_info *currTar_Info;
@@ -6950,13 +6394,7 @@ static void FPT_queueDisconnect(struct sccb *p_sccb, unsigned char p_card)
 	FPT_BL_Card[p_card].currentSCCB = NULL;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Flush SCCB
- *
- * Description: Flush all SCCB's back to the host driver for this target.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_queueFlushSccb(unsigned char p_card, unsigned char error_code)
 {
@@ -6991,13 +6429,7 @@ static void FPT_queueFlushSccb(unsigned char p_card, unsigned char error_code)
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Flush Target SCCB
- *
- * Description: Flush all SCCB's back to the host driver for this target.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_queueFlushTargSccb(unsigned char p_card, unsigned char thisTarg,
 				   unsigned char error_code)
@@ -7050,14 +6482,7 @@ static void FPT_queueAddSccb(struct sccb *p_SCCB, unsigned char p_card)
 	currTar_Info->TarSelQ_Cnt++;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Queue Find SCCB
- *
- * Description: Search the target select Queue for this SCCB, and
- *              remove it if found.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned char FPT_queueFindSccb(struct sccb *p_SCCB,
 				       unsigned char p_card)
@@ -7109,18 +6534,7 @@ static unsigned char FPT_queueFindSccb(struct sccb *p_SCCB,
 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Utility Update Residual Count
- *
- * Description: Update the XferCnt to the remaining byte count.
- *              If we transferred all the data then just write zero.
- *              If Non-SG transfer then report Total Cnt - Actual Transfer
- *              Cnt.  For SG transfers add the count fields of all
- *              remaining SG elements, as well as any partial remaining
- *              element.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_utilUpdateResidual(struct sccb *p_SCCB)
 {
@@ -7163,13 +6577,7 @@ static void FPT_utilUpdateResidual(struct sccb *p_SCCB)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Wait 1 Second
- *
- * Description: Wait for 1 second.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_Wait1Second(u32 p_port)
 {
@@ -7187,13 +6595,7 @@ static void FPT_Wait1Second(u32 p_port)
 	}
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: FPT_Wait
- *
- * Description: Wait the desired delay.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_Wait(u32 p_port, unsigned char p_delay)
 {
@@ -7232,14 +6634,7 @@ static void FPT_Wait(u32 p_port, unsigned char p_delay)
 	WR_HARPOON(p_port + hp_seltimeout, old_timer);
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Enable/Disable Write to EEPROM
- *
- * Description: The EEPROM must first be enabled for writes
- *              A total of 9 clocks are needed.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_utilEEWriteOnOff(u32 p_port, unsigned char p_mode)
 {
@@ -7257,18 +6652,11 @@ static void FPT_utilEEWriteOnOff(u32 p_port, unsigned char p_mode)
 
 		FPT_utilEESendCmdAddr(p_port, EWDS, EWDS_ADDR);
 
-	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	/*Turn off CS */
-	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	/*Turn off Master Select */
+	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	 
+	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Write EEPROM
- *
- * Description: Write a word to the EEPROM at the specified
- *              address.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_utilEEWrite(u32 p_port, unsigned short ee_data,
 			    unsigned short ee_addr)
@@ -7295,7 +6683,7 @@ static void FPT_utilEEWrite(u32 p_port, unsigned short ee_data,
 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
-		ee_value |= SEE_CLK;	/* Clock  data! */
+		ee_value |= SEE_CLK;	 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		ee_value &= ~SEE_CLK;
@@ -7307,19 +6695,12 @@ static void FPT_utilEEWrite(u32 p_port, unsigned short ee_data,
 
 	FPT_Wait(p_port, TO_10ms);
 
-	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS | SEE_CS));	/* Set CS to EEPROM */
-	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	/* Turn off CS */
-	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	/* Turn off Master Select */
+	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS | SEE_CS));	 
+	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	 
+	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	 
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Read EEPROM
- *
- * Description: Read a word from the EEPROM at the desired
- *              address.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned short FPT_utilEERead(u32 p_port,
 				     unsigned short ee_addr)
@@ -7342,14 +6723,7 @@ static unsigned short FPT_utilEERead(u32 p_port,
 	return ee_data1;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Read EEPROM Original 
- *
- * Description: Read a word from the EEPROM at the desired
- *              address.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static unsigned short FPT_utilEEReadOrg(u32 p_port, unsigned short ee_addr)
 {
@@ -7369,7 +6743,7 @@ static unsigned short FPT_utilEEReadOrg(u32 p_port, unsigned short ee_addr)
 
 	for (i = 1; i <= 16; i++) {
 
-		ee_value |= SEE_CLK;	/* Clock  data! */
+		ee_value |= SEE_CLK;	 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		ee_value &= ~SEE_CLK;
@@ -7383,20 +6757,13 @@ static unsigned short FPT_utilEEReadOrg(u32 p_port, unsigned short ee_addr)
 	}
 
 	ee_value &= ~(SEE_MS + SEE_CS);
-	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	/*Turn off CS */
-	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	/*Turn off Master Select */
+	WR_HARPOON(p_port + hp_ee_ctrl, (ee_value | SEE_MS));	 
+	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);	 
 
 	return ee_data;
 }
 
-/*---------------------------------------------------------------------
- *
- * Function: Send EE command and Address to the EEPROM
- *
- * Description: Transfers the correct command and sends the address
- *              to the eeprom.
- *
- *---------------------------------------------------------------------*/
+ 
 
 static void FPT_utilEESendCmdAddr(u32 p_port, unsigned char ee_cmd,
 				  unsigned short ee_addr)
@@ -7413,7 +6780,7 @@ static void FPT_utilEESendCmdAddr(u32 p_port, unsigned char ee_cmd,
 	ee_value = SEE_MS;
 	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 
-	ee_value |= SEE_CS;	/* Set CS to EEPROM */
+	ee_value |= SEE_CS;	 
 	WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 
 	for (i = 0x04; i != 0; i >>= 1) {
@@ -7425,7 +6792,7 @@ static void FPT_utilEESendCmdAddr(u32 p_port, unsigned char ee_cmd,
 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
-		ee_value |= SEE_CLK;	/* Clock  data! */
+		ee_value |= SEE_CLK;	 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		ee_value &= ~SEE_CLK;
@@ -7448,7 +6815,7 @@ static void FPT_utilEESendCmdAddr(u32 p_port, unsigned char ee_cmd,
 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
-		ee_value |= SEE_CLK;	/* Clock  data! */
+		ee_value |= SEE_CLK;	 
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		WR_HARPOON(p_port + hp_ee_ctrl, ee_value);
 		ee_value &= ~SEE_CLK;
@@ -7487,9 +6854,7 @@ static unsigned char FPT_CalcLrc(unsigned char buffer[])
 	return lrc;
 }
 
-/*
-  The following inline definitions avoid type conflicts.
-*/
+ 
 
 static inline unsigned char
 FlashPoint__ProbeHostAdapter(struct fpoint_info *FlashPointInfo)
@@ -7543,11 +6908,9 @@ FlashPoint__HandleInterrupt(void *CardHandle)
 #define FlashPoint_InterruptPending	    FlashPoint__InterruptPending
 #define FlashPoint_HandleInterrupt	    FlashPoint__HandleInterrupt
 
-#else				/* !CONFIG_SCSI_FLASHPOINT */
+#else				 
 
-/*
-  Define prototypes for the FlashPoint SCCB Manager Functions.
-*/
+ 
 
 extern unsigned char FlashPoint_ProbeHostAdapter(struct fpoint_info *);
 extern void *FlashPoint_HardwareResetHostAdapter(struct fpoint_info *);
@@ -7557,4 +6920,4 @@ extern bool FlashPoint_InterruptPending(void *);
 extern int FlashPoint_HandleInterrupt(void *);
 extern void FlashPoint_ReleaseHostAdapter(void *);
 
-#endif				/* CONFIG_SCSI_FLASHPOINT */
+#endif				 

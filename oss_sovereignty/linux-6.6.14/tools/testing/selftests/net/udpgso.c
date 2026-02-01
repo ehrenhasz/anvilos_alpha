@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -62,11 +62,11 @@ static unsigned short	cfg_port = 9000;
 static char buf[ETH_MAX_MTU];
 
 struct testcase {
-	int tlen;		/* send() buffer size, may exceed mss */
-	bool tfail;		/* send() call is expected to fail */
-	int gso_len;		/* mss after applying gso */
-	int r_num_mss;		/* recv(): number of calls of full mss */
-	int r_len_last;		/* recv(): size of last non-mss dgram, if any */
+	int tlen;		 
+	bool tfail;		 
+	int gso_len;		 
+	int r_num_mss;		 
+	int r_len_last;		 
 };
 
 const struct in6_addr addr6 = IN6ADDR_LOOPBACK_INIT;
@@ -74,55 +74,55 @@ const struct in_addr addr4 = { .s_addr = __constant_htonl(INADDR_LOOPBACK + 2) }
 
 struct testcase testcases_v4[] = {
 	{
-		/* no GSO: send a single byte */
+		 
 		.tlen = 1,
 		.r_len_last = 1,
 	},
 	{
-		/* no GSO: send a single MSS */
+		 
 		.tlen = CONST_MSS_V4,
 		.r_num_mss = 1,
 	},
 	{
-		/* no GSO: send a single MSS + 1B: fail */
+		 
 		.tlen = CONST_MSS_V4 + 1,
 		.tfail = true,
 	},
 	{
-		/* send a single MSS: will fall back to no GSO */
+		 
 		.tlen = CONST_MSS_V4,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = 1,
 	},
 	{
-		/* send a single MSS + 1B */
+		 
 		.tlen = CONST_MSS_V4 + 1,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = 1,
 		.r_len_last = 1,
 	},
 	{
-		/* send exactly 2 MSS */
+		 
 		.tlen = CONST_MSS_V4 * 2,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = 2,
 	},
 	{
-		/* send 2 MSS + 1B */
+		 
 		.tlen = (CONST_MSS_V4 * 2) + 1,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = 2,
 		.r_len_last = 1,
 	},
 	{
-		/* send MAX segs */
+		 
 		.tlen = (ETH_MAX_MTU / CONST_MSS_V4) * CONST_MSS_V4,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = (ETH_MAX_MTU / CONST_MSS_V4),
 	},
 
 	{
-		/* send MAX bytes */
+		 
 		.tlen = ETH_MAX_MTU - CONST_HDRLEN_V4,
 		.gso_len = CONST_MSS_V4,
 		.r_num_mss = CONST_MAX_SEGS_V4,
@@ -130,44 +130,44 @@ struct testcase testcases_v4[] = {
 			      (CONST_MAX_SEGS_V4 * CONST_MSS_V4),
 	},
 	{
-		/* send MAX + 1: fail */
+		 
 		.tlen = ETH_MAX_MTU - CONST_HDRLEN_V4 + 1,
 		.gso_len = CONST_MSS_V4,
 		.tfail = true,
 	},
 	{
-		/* send a single 1B MSS: will fall back to no GSO */
+		 
 		.tlen = 1,
 		.gso_len = 1,
 		.r_num_mss = 1,
 	},
 	{
-		/* send 2 1B segments */
+		 
 		.tlen = 2,
 		.gso_len = 1,
 		.r_num_mss = 2,
 	},
 	{
-		/* send 2B + 2B + 1B segments */
+		 
 		.tlen = 5,
 		.gso_len = 2,
 		.r_num_mss = 2,
 		.r_len_last = 1,
 	},
 	{
-		/* send max number of min sized segments */
+		 
 		.tlen = UDP_MAX_SEGMENTS,
 		.gso_len = 1,
 		.r_num_mss = UDP_MAX_SEGMENTS,
 	},
 	{
-		/* send max number + 1 of min sized segments: fail */
+		 
 		.tlen = UDP_MAX_SEGMENTS + 1,
 		.gso_len = 1,
 		.tfail = true,
 	},
 	{
-		/* EOL */
+		 
 	}
 };
 
@@ -177,55 +177,55 @@ struct testcase testcases_v4[] = {
 
 struct testcase testcases_v6[] = {
 	{
-		/* no GSO: send a single byte */
+		 
 		.tlen = 1,
 		.r_len_last = 1,
 	},
 	{
-		/* no GSO: send a single MSS */
+		 
 		.tlen = CONST_MSS_V6,
 		.r_num_mss = 1,
 	},
 	{
-		/* no GSO: send a single MSS + 1B: fail */
+		 
 		.tlen = CONST_MSS_V6 + 1,
 		.tfail = true,
 	},
 	{
-		/* send a single MSS: will fall back to no GSO */
+		 
 		.tlen = CONST_MSS_V6,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = 1,
 	},
 	{
-		/* send a single MSS + 1B */
+		 
 		.tlen = CONST_MSS_V6 + 1,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = 1,
 		.r_len_last = 1,
 	},
 	{
-		/* send exactly 2 MSS */
+		 
 		.tlen = CONST_MSS_V6 * 2,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = 2,
 	},
 	{
-		/* send 2 MSS + 1B */
+		 
 		.tlen = (CONST_MSS_V6 * 2) + 1,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = 2,
 		.r_len_last = 1,
 	},
 	{
-		/* send MAX segs */
+		 
 		.tlen = (IP6_MAX_MTU / CONST_MSS_V6) * CONST_MSS_V6,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = (IP6_MAX_MTU / CONST_MSS_V6),
 	},
 
 	{
-		/* send MAX bytes */
+		 
 		.tlen = IP6_MAX_MTU - CONST_HDRLEN_V6,
 		.gso_len = CONST_MSS_V6,
 		.r_num_mss = CONST_MAX_SEGS_V6,
@@ -233,44 +233,44 @@ struct testcase testcases_v6[] = {
 			      (CONST_MAX_SEGS_V6 * CONST_MSS_V6),
 	},
 	{
-		/* send MAX + 1: fail */
+		 
 		.tlen = IP6_MAX_MTU - CONST_HDRLEN_V6 + 1,
 		.gso_len = CONST_MSS_V6,
 		.tfail = true,
 	},
 	{
-		/* send a single 1B MSS: will fall back to no GSO */
+		 
 		.tlen = 1,
 		.gso_len = 1,
 		.r_num_mss = 1,
 	},
 	{
-		/* send 2 1B segments */
+		 
 		.tlen = 2,
 		.gso_len = 1,
 		.r_num_mss = 2,
 	},
 	{
-		/* send 2B + 2B + 1B segments */
+		 
 		.tlen = 5,
 		.gso_len = 2,
 		.r_num_mss = 2,
 		.r_len_last = 1,
 	},
 	{
-		/* send max number of min sized segments */
+		 
 		.tlen = UDP_MAX_SEGMENTS,
 		.gso_len = 1,
 		.r_num_mss = UDP_MAX_SEGMENTS,
 	},
 	{
-		/* send max number + 1 of min sized segments: fail */
+		 
 		.tlen = UDP_MAX_SEGMENTS + 1,
 		.gso_len = 1,
 		.tfail = true,
 	},
 	{
-		/* EOL */
+		 
 	}
 };
 
@@ -354,7 +354,7 @@ static unsigned int get_path_mtu(int fd, bool is_ipv4)
 	return mtu;
 }
 
-/* very wordy version of system("ip route add dev lo mtu 1500 127.0.0.3/32") */
+ 
 static void set_route_mtu(int mtu, bool is_ipv4)
 {
 	struct sockaddr_nl nladdr = { .nl_family = AF_NETLINK };
@@ -402,16 +402,16 @@ static void set_route_mtu(int mtu, bool is_ipv4)
 	rta = (void *)(data + off);
 	rta->rta_type = RTA_OIF;
 	rta->rta_len = RTA_LENGTH(sizeof(int));
-	*((int *)(RTA_DATA(rta))) = 1; //if_nametoindex("lo");
+	*((int *)(RTA_DATA(rta))) = 1; 
 	off += NLMSG_ALIGN(rta->rta_len);
 
-	/* MTU is a subtype in a metrics type */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = RTA_METRICS;
 	rta->rta_len = RTA_LENGTH(0) + RTA_LENGTH(sizeof(int));
 	off += NLMSG_ALIGN(rta->rta_len);
 
-	/* now fill MTU subtype. Note that it fits within above rta_len */
+	 
 	rta = (void *)(((char *) rta) + RTA_LENGTH(0));
 	rta->rta_type = RTAX_MTU;
 	rta->rta_len = RTA_LENGTH(sizeof(int));
@@ -476,7 +476,7 @@ static bool send_one(int fd, int len, int gso_len,
 		*((uint16_t *) CMSG_DATA(cm)) = gso_len;
 	}
 
-	/* If MSG_MORE, send 1 byte followed by remainder */
+	 
 	if (cfg_do_msgmore && len > 1) {
 		iov.iov_len = 1;
 		if (!__send_one(fd, &msg, MSG_MORE))
@@ -533,14 +533,14 @@ static void run_one(struct testcase *test, int fdt, int fdr,
 		mss = addr->sa_family == AF_INET ? CONST_MSS_V4 : CONST_MSS_V6;
 
 
-	/* Recv all full MSS datagrams */
+	 
 	for (i = 0; i < test->r_num_mss; i++) {
 		ret = recv_one(fdr, 0);
 		if (ret != mss)
 			error(1, 0, "recv.%d: %d != %d", i, ret, mss);
 	}
 
-	/* Recv the non-full last datagram, if tlen was not a multiple of mss */
+	 
 	if (test->r_len_last) {
 		ret = recv_one(fdr, 0);
 		if (ret != test->r_len_last)
@@ -548,7 +548,7 @@ static void run_one(struct testcase *test, int fdt, int fdr,
 			      i, ret, test->r_len_last);
 	}
 
-	/* Verify received all data */
+	 
 	ret = recv_one(fdr, MSG_DONTWAIT);
 	if (ret)
 		error(1, 0, "recv: unexpected datagram");
@@ -561,7 +561,7 @@ static void run_all(int fdt, int fdr, struct sockaddr *addr, socklen_t alen)
 	tests = addr->sa_family == AF_INET ? testcases_v4 : testcases_v6;
 
 	for (test = tests; test->tlen; test++) {
-		/* if a specific test is given, then skip all others */
+		 
 		if (cfg_specific_test_id == -1 ||
 		    cfg_specific_test_id == test - tests)
 			run_one(test, fdt, fdr, addr, alen);
@@ -580,7 +580,7 @@ static void run_test(struct sockaddr *addr, socklen_t alen)
 	if (bind(fdr, addr, alen))
 		error(1, errno, "bind");
 
-	/* Have tests fail quickly instead of hang */
+	 
 	if (setsockopt(fdr, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)))
 		error(1, errno, "setsockopt rcv timeout");
 
@@ -588,7 +588,7 @@ static void run_test(struct sockaddr *addr, socklen_t alen)
 	if (fdt == -1)
 		error(1, errno, "socket t");
 
-	/* Do not fragment these datagrams: only succeed if GSO works */
+	 
 	set_pmtu_discover(fdt, addr->sa_family == AF_INET);
 
 	if (cfg_do_connectionless) {
@@ -607,7 +607,7 @@ static void run_test(struct sockaddr *addr, socklen_t alen)
 		if (val != CONST_MTU_TEST)
 			error(1, 0, "bad path mtu %u\n", val);
 
-		run_all(fdt, fdr, addr, 0 /* use connected addr */);
+		run_all(fdt, fdr, addr, 0  );
 	}
 
 	if (close(fdt))

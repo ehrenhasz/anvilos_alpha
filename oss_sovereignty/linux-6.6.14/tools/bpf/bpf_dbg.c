@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Minimal BPF debugger
- *
- * Minimal BPF debugger that mimics the kernel's engine (w/o extensions)
- * and allows for single stepping through selected packets from a pcap
- * with a provided user filter in order to facilitate verification of a
- * BPF program. Besides others, this is useful to verify BPF programs
- * before attaching to a live system, and can be used in socket filters,
- * cls_bpf, xt_bpf, team driver and e.g. PTP code; in particular when a
- * single more complex BPF program is being used. Reasons for a more
- * complex BPF program are likely primarily to optimize execution time
- * for making a verdict when multiple simple BPF programs are combined
- * into one in order to prevent parsing same headers multiple times.
- *
- * More on how to debug BPF opcodes see Documentation/networking/filter.rst
- * which is the main document on BPF. Mini howto for getting started:
- *
- *  1) `./bpf_dbg` to enter the shell (shell cmds denoted with '>'):
- *  2) > load bpf 6,40 0 0 12,21 0 3 20... (output from `bpf_asm` or
- *     `tcpdump -iem1 -ddd port 22 | tr '\n' ','` to load as filter)
- *  3) > load pcap foo.pcap
- *  4) > run <n>/disassemble/dump/quit (self-explanatory)
- *  5) > breakpoint 2 (sets bp at loaded BPF insns 2, do `run` then;
- *       multiple bps can be set, of course, a call to `breakpoint`
- *       w/o args shows currently loaded bps, `breakpoint reset` for
- *       resetting all breakpoints)
- *  6) > select 3 (`run` etc will start from the 3rd packet in the pcap)
- *  7) > step [-<n>, +<n>] (performs single stepping through the BPF)
- *
- * Copyright 2013 Daniel Borkmann <borkmann@redhat.com>
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -1142,7 +1112,7 @@ static int cmd_select(char *num)
 	bpf_reset();
 
 	for (i = 0; i < which && (have_next = pcap_next_pkt()); i++)
-		/* noop */;
+		 ;
 	if (!have_next || pcap_curr_pkt() == NULL) {
 		rl_printf("no packet #%u available!\n", which);
 		pcap_reset_pkt();

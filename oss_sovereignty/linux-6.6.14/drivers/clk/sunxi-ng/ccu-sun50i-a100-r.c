@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Yangtao Li <frank@allwinnertech.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -116,10 +114,10 @@ static SUNXI_CCU_GATE_DATA(r_apb2_i2c1_clk, "r-apb2-i2c1", clk_parent_r_apb2,
 static const char * const r_apb1_ir_rx_parents[] = { "osc32k", "dcxo24M" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(r_apb1_ir_rx_clk, "r-apb1-ir-rx",
 				  r_apb1_ir_rx_parents, 0x1c0,
-				  0, 5,		/* M */
-				  8, 2,		/* P */
-				  24, 1,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 5,		 
+				  8, 2,		 
+				  24, 1,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_GATE_DATA(r_apb1_bus_ir_rx_clk, "r-apb1-bus-ir-rx",

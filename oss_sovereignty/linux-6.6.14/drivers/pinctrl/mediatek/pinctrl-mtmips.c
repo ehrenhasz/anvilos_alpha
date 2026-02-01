@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -123,7 +121,7 @@ static int mtmips_pmx_group_enable(struct pinctrl_dev *pctrldev,
 	int i;
 	int shift;
 
-	/* dont allow double use */
+	 
 	if (p->groups[group].enabled) {
 		dev_err(p->dev, "%s is already enabled\n",
 			p->groups[group].name);
@@ -141,11 +139,11 @@ static int mtmips_pmx_group_enable(struct pinctrl_dev *pctrldev,
 	mode = rt_sysc_r32(reg);
 	mode &= ~(p->groups[group].mask << shift);
 
-	/* mark the pins as gpio */
+	 
 	for (i = 0; i < p->groups[group].func[0].pin_count; i++)
 		p->gpio[p->groups[group].func[0].pins[i]] = 1;
 
-	/* function 0 is gpio and needs special handling */
+	 
 	if (func == 0) {
 		mode |= p->groups[group].gpio << shift;
 	} else {
@@ -196,13 +194,13 @@ static int mtmips_pinctrl_index(struct mtmips_priv *p)
 	struct mtmips_pmx_group *mux = p->groups;
 	int i, j, c = 0;
 
-	/* count the mux functions */
+	 
 	while (mux->name) {
 		p->group_count++;
 		mux++;
 	}
 
-	/* allocate the group names array needed by the gpio function */
+	 
 	p->group_names = devm_kcalloc(p->dev, p->group_count,
 				      sizeof(char *), GFP_KERNEL);
 	if (!p->group_names)
@@ -213,10 +211,10 @@ static int mtmips_pinctrl_index(struct mtmips_priv *p)
 		p->func_count += p->groups[i].func_count;
 	}
 
-	/* we have a dummy function[0] for gpio */
+	 
 	p->func_count++;
 
-	/* allocate our function and group mapping index buffers */
+	 
 	p->func = devm_kcalloc(p->dev, p->func_count,
 			       sizeof(*p->func), GFP_KERNEL);
 	gpio_func.groups = devm_kcalloc(p->dev, p->group_count, sizeof(int),
@@ -224,7 +222,7 @@ static int mtmips_pinctrl_index(struct mtmips_priv *p)
 	if (!p->func || !gpio_func.groups)
 		return -ENOMEM;
 
-	/* add a backpointer to the function so it knows its group */
+	 
 	gpio_func.group_count = p->group_count;
 	for (i = 0; i < gpio_func.group_count; i++)
 		gpio_func.groups[i] = i;
@@ -232,7 +230,7 @@ static int mtmips_pinctrl_index(struct mtmips_priv *p)
 	p->func[c] = &gpio_func;
 	c++;
 
-	/* add remaining functions */
+	 
 	for (i = 0; i < p->group_count; i++) {
 		for (j = 0; j < p->groups[i].func_count; j++) {
 			p->func[c] = &p->groups[i].func[j];
@@ -252,10 +250,7 @@ static int mtmips_pinctrl_pins(struct mtmips_priv *p)
 {
 	int i, j;
 
-	/*
-	 * loop over the functions and initialize the pins array.
-	 * also work out the highest pin used.
-	 */
+	 
 	for (i = 0; i < p->func_count; i++) {
 		int pin;
 
@@ -276,9 +271,9 @@ static int mtmips_pinctrl_pins(struct mtmips_priv *p)
 			p->max_pins = pin;
 	}
 
-	/* the buffer that tells us which pins are gpio */
+	 
 	p->gpio = devm_kcalloc(p->dev, p->max_pins, sizeof(u8), GFP_KERNEL);
-	/* the pads needed to tell pinctrl about our pins */
+	 
 	p->pads = devm_kcalloc(p->dev, p->max_pins,
 			       sizeof(struct pinctrl_pin_desc), GFP_KERNEL);
 	if (!p->pads || !p->gpio)
@@ -293,12 +288,12 @@ static int mtmips_pinctrl_pins(struct mtmips_priv *p)
 			p->gpio[p->func[i]->pins[j]] = 0;
 	}
 
-	/* pin 0 is always a gpio */
+	 
 	p->gpio[0] = 1;
 
-	/* set the pads */
+	 
 	for (i = 0; i < p->max_pins; i++) {
-		/* strlen("ioXY") + 1 = 5 */
+		 
 		char *name = devm_kzalloc(p->dev, 5, GFP_KERNEL);
 
 		if (!name)
@@ -323,7 +318,7 @@ int mtmips_pinctrl_init(struct platform_device *pdev,
 	if (!data)
 		return -ENOTSUPP;
 
-	/* setup the private data */
+	 
 	p = devm_kzalloc(&pdev->dev, sizeof(struct mtmips_priv), GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
@@ -333,7 +328,7 @@ int mtmips_pinctrl_init(struct platform_device *pdev,
 	p->groups = data;
 	platform_set_drvdata(pdev, p);
 
-	/* init the device */
+	 
 	err = mtmips_pinctrl_index(p);
 	if (err) {
 		dev_err(&pdev->dev, "failed to load index\n");

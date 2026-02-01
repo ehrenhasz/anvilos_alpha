@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2001-2003 Sistina Software (UK) Limited.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 #include <linux/device-mapper.h>
@@ -32,25 +28,22 @@ struct stripe_c {
 	uint32_t stripes;
 	int stripes_shift;
 
-	/* The size of this target / num. stripes */
+	 
 	sector_t stripe_width;
 
 	uint32_t chunk_size;
 	int chunk_size_shift;
 
-	/* Needed for handling events */
+	 
 	struct dm_target *ti;
 
-	/* Work struct used for triggering events*/
+	 
 	struct work_struct trigger_event;
 
 	struct stripe stripe[];
 };
 
-/*
- * An event is triggered whenever a drive
- * drops out of a stripe volume.
- */
+ 
 static void trigger_event(struct work_struct *work)
 {
 	struct stripe_c *sc = container_of(work, struct stripe_c,
@@ -58,9 +51,7 @@ static void trigger_event(struct work_struct *work)
 	dm_table_event(sc->ti->table);
 }
 
-/*
- * Parse a single <dev> <sector> pair
- */
+ 
 static int get_stripe(struct dm_target *ti, struct stripe_c *sc,
 		      unsigned int stripe, char **argv)
 {
@@ -81,10 +72,7 @@ static int get_stripe(struct dm_target *ti, struct stripe_c *sc,
 	return 0;
 }
 
-/*
- * Construct a striped mapping.
- * <number of stripes> <chunk size> [<dev_path> <offset>]+
- */
+ 
 static int stripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct stripe_c *sc;
@@ -121,9 +109,7 @@ static int stripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		return -EINVAL;
 	}
 
-	/*
-	 * Do we have enough arguments for that many stripes ?
-	 */
+	 
 	if (argc != (2 + 2 * stripes)) {
 		ti->error = "Not enough destinations specified";
 		return -EINVAL;
@@ -137,7 +123,7 @@ static int stripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	INIT_WORK(&sc->trigger_event, trigger_event);
 
-	/* Set pointer to dm target; used in trigger_event */
+	 
 	sc->ti = ti;
 	sc->stripes = stripes;
 	sc->stripe_width = width;
@@ -164,9 +150,7 @@ static int stripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	else
 		sc->chunk_size_shift = __ffs(chunk_size);
 
-	/*
-	 * Get the stripe destinations.
-	 */
+	 
 	for (i = 0; i < stripes; i++) {
 		argv += 2;
 
@@ -235,7 +219,7 @@ static void stripe_map_range_sector(struct stripe_c *sc, sector_t sector,
 	if (stripe == target_stripe)
 		return;
 
-	/* round down */
+	 
 	sector = *result;
 	if (sc->chunk_size_shift < 0)
 		*result -= sector_div(sector, sc->chunk_size);
@@ -243,7 +227,7 @@ static void stripe_map_range_sector(struct stripe_c *sc, sector_t sector,
 		*result = sector & ~(sector_t)(sc->chunk_size - 1);
 
 	if (target_stripe < stripe)
-		*result += sc->chunk_size;		/* next chunk */
+		*result += sc->chunk_size;		 
 }
 
 static int stripe_map_range(struct stripe_c *sc, struct bio *bio,
@@ -263,7 +247,7 @@ static int stripe_map_range(struct stripe_c *sc, struct bio *bio,
 		return DM_MAPIO_REMAPPED;
 	}
 
-	/* The range doesn't map to the target stripe */
+	 
 	bio_endio(bio);
 	return DM_MAPIO_SUBMITTED;
 }
@@ -344,18 +328,7 @@ static size_t stripe_dax_recovery_write(struct dm_target *ti, pgoff_t pgoff,
 #define stripe_dax_recovery_write NULL
 #endif
 
-/*
- * Stripe status:
- *
- * INFO
- * #stripes [stripe_name <stripe_name>] [group word count]
- * [error count 'A|D' <error count 'A|D'>]
- *
- * TABLE
- * #stripes [stripe chunk size]
- * [stripe_name physical_start <stripe_name physical_start>]
- *
- */
+ 
 
 static void stripe_status(struct dm_target *ti, status_type_t type,
 			  unsigned int status_flags, char *result, unsigned int maxlen)
@@ -408,7 +381,7 @@ static int stripe_end_io(struct dm_target *ti, struct bio *bio,
 	struct stripe_c *sc = ti->private;
 
 	if (!*error)
-		return DM_ENDIO_DONE; /* I/O complete */
+		return DM_ENDIO_DONE;  
 
 	if (bio->bi_opf & REQ_RAHEAD)
 		return DM_ENDIO_DONE;
@@ -419,12 +392,7 @@ static int stripe_end_io(struct dm_target *ti, struct bio *bio,
 	memset(major_minor, 0, sizeof(major_minor));
 	sprintf(major_minor, "%d:%d", MAJOR(bio_dev(bio)), MINOR(bio_dev(bio)));
 
-	/*
-	 * Test to see which stripe drive triggered the event
-	 * and increment error count for all stripes on that device.
-	 * If the error count for a given device exceeds the threshold
-	 * value we will no longer trigger any further events.
-	 */
+	 
 	for (i = 0; i < sc->stripes; i++)
 		if (!strcmp(sc->stripe[i].dev->name, major_minor)) {
 			atomic_inc(&(sc->stripe[i].error_count));

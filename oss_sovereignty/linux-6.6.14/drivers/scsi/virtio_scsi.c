@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtio SCSI HBA driver
- *
- * Copyright IBM Corp. 2010
- * Copyright Red Hat, Inc. 2011
- *
- * Authors:
- *  Stefan Hajnoczi   <stefanha@linux.vnet.ibm.com>
- *  Paolo Bonzini   <pbonzini@redhat.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,7 +28,7 @@
 #define VIRTIO_SCSI_EVENT_LEN 8
 #define VIRTIO_SCSI_VQ_BASE 2
 
-/* Command queue element */
+ 
 struct virtio_scsi_cmd {
 	struct scsi_cmnd *sc;
 	struct completion *comp;
@@ -62,24 +53,24 @@ struct virtio_scsi_event_node {
 };
 
 struct virtio_scsi_vq {
-	/* Protects vq */
+	 
 	spinlock_t vq_lock;
 
 	struct virtqueue *vq;
 };
 
-/* Driver instance state */
+ 
 struct virtio_scsi {
 	struct virtio_device *vdev;
 
-	/* Get some buffers ready for event vq */
+	 
 	struct virtio_scsi_event_node event_list[VIRTIO_SCSI_EVENT_LEN];
 
 	u32 num_queues;
 
 	struct hlist_node node;
 
-	/* Protected by event_vq lock */
+	 
 	bool stop_events;
 
 	struct virtio_scsi_vq ctrl_vq;
@@ -101,11 +92,7 @@ static void virtscsi_compute_resid(struct scsi_cmnd *sc, u32 resid)
 		scsi_set_resid(sc, min(resid, scsi_bufflen(sc)));
 }
 
-/*
- * virtscsi_complete_cmd - finish a scsi_cmd and invoke scsi_done
- *
- * Called with vq_lock held.
- */
+ 
 static void virtscsi_complete_cmd(struct virtio_scsi *vscsi, void *buf)
 {
 	struct virtio_scsi_cmd *cmd = buf;
@@ -264,7 +251,7 @@ static void virtscsi_cancel_event_work(struct virtio_scsi *vscsi)
 {
 	int i;
 
-	/* Stop scheduling work before calling cancel_work_sync.  */
+	 
 	spin_lock_irq(&vscsi->event_vq.vq_lock);
 	vscsi->stop_events = true;
 	spin_unlock_irq(&vscsi->event_vq.vq_lock);
@@ -322,8 +309,7 @@ static void virtscsi_handle_param_change(struct virtio_scsi *vscsi,
 		return;
 	}
 
-	/* Handle "Parameters changed", "Mode parameters changed", and
-	   "Capacity data has changed".  */
+	 
 	if (asc == 0x2a && (ascq == 0x00 || ascq == 0x01 || ascq == 0x09))
 		scsi_rescan_device(sdev);
 
@@ -355,15 +341,10 @@ static int virtscsi_rescan_hotunplug(struct virtio_scsi *vscsi)
 					  SD_TIMEOUT, SD_MAX_RETRIES, NULL);
 
 		if (result == 0 && inq_result[0] >> 5) {
-			/* PQ indicates the LUN is not attached */
+			 
 			scsi_remove_device(sdev);
 		} else if (result > 0 && host_byte(result) == DID_BAD_TARGET) {
-			/*
-			 * If all LUNs of a virtio-scsi device are unplugged
-			 * it will respond with BAD TARGET on any INQUIRY
-			 * command.
-			 * Remove the device in this case as well.
-			 */
+			 
 			scsi_remove_device(sdev);
 		}
 	}
@@ -440,25 +421,25 @@ static int __virtscsi_add_cmd(struct virtqueue *vq,
 			in = &sc->sdb.table;
 	}
 
-	/* Request header.  */
+	 
 	sg_init_one(&req, &cmd->req, req_size);
 	sgs[out_num++] = &req;
 
-	/* Data-out buffer.  */
+	 
 	if (out) {
-		/* Place WRITE protection SGLs before Data OUT payload */
+		 
 		if (scsi_prot_sg_count(sc))
 			sgs[out_num++] = scsi_prot_sglist(sc);
 		sgs[out_num++] = out->sgl;
 	}
 
-	/* Response header.  */
+	 
 	sg_init_one(&resp, &cmd->resp, resp_size);
 	sgs[out_num + in_num++] = &resp;
 
-	/* Data-in buffer */
+	 
 	if (in) {
-		/* Place READ protection SGLs before Data IN payload */
+		 
 		if (scsi_prot_sg_count(sc))
 			sgs[out_num + in_num++] = scsi_prot_sglist(sc);
 		sgs[out_num + in_num++] = in->sgl;
@@ -480,14 +461,7 @@ static void virtscsi_kick_vq(struct virtio_scsi_vq *vq)
 		virtqueue_notify(vq->vq);
 }
 
-/**
- * virtscsi_add_cmd - add a virtio_scsi_cmd to a virtqueue, optionally kick it
- * @vq		: the struct virtqueue we're talking about
- * @cmd		: command structure
- * @req_size	: size of the request buffer
- * @resp_size	: size of the response buffer
- * @kick	: whether to kick the virtqueue immediately
- */
+ 
 static int virtscsi_add_cmd(struct virtio_scsi_vq *vq,
 			     struct virtio_scsi_cmd *cmd,
 			     size_t req_size, size_t resp_size,
@@ -571,7 +545,7 @@ static int virtscsi_queuecommand(struct Scsi_Host *shost,
 
 	BUG_ON(scsi_sg_count(sc) > shost->sg_tablesize);
 
-	/* TODO: check feature bit and fail if unsupported?  */
+	 
 	BUG_ON(sc->sc_data_direction == DMA_BIDIRECTIONAL);
 
 	dev_dbg(&sc->device->sdev_gendev,
@@ -622,15 +596,7 @@ static int virtscsi_tmf(struct virtio_scsi *vscsi, struct virtio_scsi_cmd *cmd)
 	    cmd->resp.tmf.response == VIRTIO_SCSI_S_FUNCTION_SUCCEEDED)
 		ret = SUCCESS;
 
-	/*
-	 * The spec guarantees that all requests related to the TMF have
-	 * been completed, but the callback might not have run yet if
-	 * we're using independent interrupts (e.g. MSI).  Poll the
-	 * virtqueues once.
-	 *
-	 * In the abort case, scsi_done() will do nothing, because the
-	 * command timed out and hence SCMD_STATE_COMPLETE has been set.
-	 */
+	 
 	virtscsi_poll_requests(vscsi);
 
 out:
@@ -663,31 +629,14 @@ static int virtscsi_device_reset(struct scsi_cmnd *sc)
 
 static int virtscsi_device_alloc(struct scsi_device *sdevice)
 {
-	/*
-	 * Passed through SCSI targets (e.g. with qemu's 'scsi-block')
-	 * may have transfer limits which come from the host SCSI
-	 * controller or something on the host side other than the
-	 * target itself.
-	 *
-	 * To make this work properly, the hypervisor can adjust the
-	 * target's VPD information to advertise these limits.  But
-	 * for that to work, the guest has to look at the VPD pages,
-	 * which we won't do by default if it is an SPC-2 device, even
-	 * if it does actually support it.
-	 *
-	 * So, set the blist to always try to read the VPD pages.
-	 */
+	 
 	sdevice->sdev_bflags = BLIST_TRY_VPD_PAGES;
 
 	return 0;
 }
 
 
-/**
- * virtscsi_change_queue_depth() - Change a virtscsi target's queue depth
- * @sdev:	Virtscsi target whose queue depth to change
- * @qdepth:	New queue depth
- */
+ 
 static int virtscsi_change_queue_depth(struct scsi_device *sdev, int qdepth)
 {
 	struct Scsi_Host *shost = sdev->host;
@@ -734,11 +683,7 @@ static void virtscsi_commit_rqs(struct Scsi_Host *shost, u16 hwq)
 	virtscsi_kick_vq(&vscsi->req_vqs[hwq]);
 }
 
-/*
- * The host guarantees to respond to each command, although I/O
- * latencies might be higher than on bare metal.  Reset the timer
- * unconditionally to give the host a chance to perform EH.
- */
+ 
 static enum scsi_timeout_action virtscsi_eh_timed_out(struct scsi_cmnd *scmnd)
 {
 	return SCSI_EH_RESET_TIMER;
@@ -785,7 +730,7 @@ static void virtscsi_init_vq(struct virtio_scsi_vq *virtscsi_vq,
 
 static void virtscsi_remove_vqs(struct virtio_device *vdev)
 {
-	/* Stop all the virtqueues. */
+	 
 	virtio_reset_device(vdev);
 	vdev->config->del_vqs(vdev);
 }
@@ -821,7 +766,7 @@ static int virtscsi_init(struct virtio_device *vdev,
 		names[i] = "request";
 	}
 
-	/* Discover virtqueues and write information to configuration.  */
+	 
 	err = virtio_find_vqs(vdev, num_vqs, vqs, callbacks, names, &desc);
 	if (err)
 		goto out;
@@ -861,7 +806,7 @@ static int virtscsi_probe(struct virtio_device *vdev)
 		return -EINVAL;
 	}
 
-	/* We need to know how many queues before we allocate. */
+	 
 	num_queues = virtscsi_config_get(vdev, num_queues) ? : 1;
 	num_queues = min_t(unsigned int, nr_cpu_ids, num_queues);
 
@@ -889,9 +834,7 @@ static int virtscsi_probe(struct virtio_device *vdev)
 	shost->cmd_per_lun = min_t(u32, cmd_per_lun, shost->can_queue);
 	shost->max_sectors = virtscsi_config_get(vdev, max_sectors) ?: 0xFFFF;
 
-	/* LUNs > 256 are reported with format 1, so they go in the range
-	 * 16640-32767.
-	 */
+	 
 	shost->max_lun = virtscsi_config_get(vdev, max_lun) + 1 + 0x4000;
 	shost->max_id = num_targets;
 	shost->max_channel = 0;

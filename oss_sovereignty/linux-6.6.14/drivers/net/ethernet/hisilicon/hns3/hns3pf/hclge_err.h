@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*  Copyright (c) 2016-2017 Hisilicon Limited. */
+ 
+ 
 
 #ifndef __HCLGE_ERR_H
 #define __HCLGE_ERR_H
@@ -139,7 +139,7 @@ enum hclge_mod_name_list {
 	MODULE_TXDMA		= 13,
 	MODULE_MASTER		= 14,
 	MODULE_HIMAC		= 15,
-	/* add new MODULE NAME for NIC here in order */
+	 
 	MODULE_ROCEE_TOP	= 40,
 	MODULE_ROCEE_TIMER	= 41,
 	MODULE_ROCEE_MDB	= 42,
@@ -150,7 +150,7 @@ enum hclge_mod_name_list {
 	MODULE_ROCEE_GEN_AC	= 47,
 	MODULE_ROCEE_QMM	= 48,
 	MODULE_ROCEE_LSAN	= 49,
-	/* add new MODULE NAME for RoCEE here in order */
+	 
 };
 
 enum hclge_err_type_list {
@@ -169,11 +169,11 @@ enum hclge_err_type_list {
 	GLB_ERROR		= 12,
 	LINK_ERROR		= 13,
 	PTP_ERROR		= 14,
-	/* add new ERROR TYPE for NIC here in order */
+	 
 	ROCEE_NORMAL_ERR	= 40,
 	ROCEE_OVF_ERR		= 41,
 	ROCEE_BUS_ERR		= 42,
-	/* add new ERROR TYPE for ROCEE here in order */
+	 
 };
 
 struct hclge_hw_blk {

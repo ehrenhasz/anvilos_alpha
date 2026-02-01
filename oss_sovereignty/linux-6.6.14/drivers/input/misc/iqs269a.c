@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS269A Capacitive Touch Controller
- *
- * Copyright (C) 2020 Jeff LaBundy <jeff@labundy.com>
- *
- * This driver registers up to 3 input devices: one representing capacitive or
- * inductive keys as well as Hall-effect switches, and one for each of the two
- * axial sliders presented by the device.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -962,10 +954,7 @@ static int iqs269_parse_prop(struct iqs269_private *iqs269)
 		}
 	}
 
-	/*
-	 * Volunteer all active channels to participate in ATI when REDO-ATI is
-	 * manually triggered.
-	 */
+	 
 	sys_reg->redo_ati = sys_reg->active;
 
 	general = be16_to_cpu(sys_reg->general);
@@ -973,11 +962,7 @@ static int iqs269_parse_prop(struct iqs269_private *iqs269)
 	if (device_property_present(&client->dev, "azoteq,clk-div"))
 		general |= IQS269_SYS_SETTINGS_CLK_DIV;
 
-	/*
-	 * Configure the device to automatically switch between normal and low-
-	 * power modes as a function of sensing activity. Ultra-low-power mode,
-	 * if enabled, is reserved for suspend.
-	 */
+	 
 	general &= ~IQS269_SYS_SETTINGS_ULP_AUTO;
 	general &= ~IQS269_SYS_SETTINGS_DIS_AUTO;
 	general &= ~IQS269_SYS_SETTINGS_PWR_MODE_MASK;
@@ -1010,11 +995,7 @@ static int iqs269_parse_prop(struct iqs269_private *iqs269)
 
 	general |= IQS269_SYS_SETTINGS_EVENT_MODE;
 
-	/*
-	 * As per the datasheet, enable streaming during normal-power mode if
-	 * either slider is in use. In that case, the device returns to event
-	 * mode during low-power mode.
-	 */
+	 
 	if (sys_reg->slider_select[0] || sys_reg->slider_select[1])
 		general |= IQS269_SYS_SETTINGS_EVENT_MODE_LP;
 
@@ -1043,10 +1024,7 @@ static int iqs269_dev_init(struct iqs269_private *iqs269)
 	if (error)
 		goto err_mutex;
 
-	/*
-	 * The following delay gives the device time to deassert its RDY output
-	 * so as to prevent an interrupt from being serviced prematurely.
-	 */
+	 
 	usleep_range(2000, 2100);
 
 	iqs269->ati_current = true;
@@ -1080,10 +1058,7 @@ static int iqs269_input_init(struct iqs269_private *iqs269)
 		for (j = 0; j < IQS269_NUM_CH; j++) {
 			keycode = iqs269->keycode[i * IQS269_NUM_CH + j];
 
-			/*
-			 * Hall-effect sensing repurposes a pair of dedicated
-			 * channels, only one of which reports events.
-			 */
+			 
 			switch (j) {
 			case IQS269_CHx_HALL_ACTIVE:
 				if (iqs269->hall_enable &&
@@ -1148,11 +1123,7 @@ static int iqs269_report(struct iqs269_private *iqs269)
 		return error;
 	}
 
-	/*
-	 * The device resets itself if its own watchdog bites, which can happen
-	 * in the event of an I2C communication error. In this case, the device
-	 * asserts a SHOW_RESET interrupt and all registers must be restored.
-	 */
+	 
 	if (be16_to_cpu(flags.system) & IQS269_SYS_FLAGS_SHOW_RESET) {
 		dev_err(&client->dev, "Unexpected device reset\n");
 
@@ -1179,10 +1150,7 @@ static int iqs269_report(struct iqs269_private *iqs269)
 		if (!iqs269->sys_reg.slider_select[i])
 			continue;
 
-		/*
-		 * Report BTN_TOUCH if any channel that participates in the
-		 * slider is in a state of touch.
-		 */
+		 
 		if (flags.states[IQS269_ST_OFFS_TOUCH] &
 		    iqs269->sys_reg.slider_select[i]) {
 			input_report_key(iqs269->slider[i], BTN_TOUCH, 1);
@@ -1229,10 +1197,7 @@ static int iqs269_report(struct iqs269_private *iqs269)
 
 	input_sync(iqs269->keypad);
 
-	/*
-	 * The following completion signals that ATI has finished, any initial
-	 * switch states have been reported and the keypad can be registered.
-	 */
+	 
 	complete_all(&iqs269->ati_done);
 
 	return 0;
@@ -1245,11 +1210,7 @@ static irqreturn_t iqs269_irq(int irq, void *context)
 	if (iqs269_report(iqs269))
 		return IRQ_NONE;
 
-	/*
-	 * The device does not deassert its interrupt (RDY) pin until shortly
-	 * after receiving an I2C stop condition; the following delay ensures
-	 * the interrupt handler does not return before this time.
-	 */
+	 
 	iqs269_irq_wait();
 
 	return IRQ_HANDLED;
@@ -1269,11 +1230,7 @@ static ssize_t counts_show(struct device *dev,
 	if (!completion_done(&iqs269->ati_done))
 		return -EBUSY;
 
-	/*
-	 * Unsolicited I2C communication prompts the device to assert its RDY
-	 * pin, so disable the interrupt line until the operation is finished
-	 * and RDY has been deasserted.
-	 */
+	 
 	disable_irq(client->irq);
 
 	error = regmap_raw_read(iqs269->regmap,
@@ -1661,10 +1618,7 @@ static int iqs269_probe(struct i2c_client *client)
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * The keypad may include one or more switches and is not registered
-	 * until ATI is complete and the initial switch states are read.
-	 */
+	 
 	error = input_register_device(iqs269->keypad);
 	if (error) {
 		dev_err(&client->dev, "Failed to register keypad: %d\n", error);

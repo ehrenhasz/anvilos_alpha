@@ -1,50 +1,36 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtio PCI driver - legacy device support
- *
- * This module allows virtio devices to be used over a virtual PCI device.
- * This can be used with QEMU based VMMs like KVM or Xen.
- *
- * Copyright IBM Corp. 2007
- * Copyright Red Hat, Inc. 2014
- *
- * Authors:
- *  Anthony Liguori  <aliguori@us.ibm.com>
- *  Rusty Russell <rusty@rustcorp.com.au>
- *  Michael S. Tsirkin <mst@redhat.com>
- */
+
+ 
 
 #include "linux/virtio_pci_legacy.h"
 #include "virtio_pci_common.h"
 
-/* virtio config->get_features() implementation */
+ 
 static u64 vp_get_features(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 
-	/* When someone needs more than 32 feature bits, we'll need to
-	 * steal a bit to indicate that the rest are somewhere else. */
+	 
 	return vp_legacy_get_features(&vp_dev->ldev);
 }
 
-/* virtio config->finalize_features() implementation */
+ 
 static int vp_finalize_features(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 
-	/* Give virtio_ring a chance to accept features. */
+	 
 	vring_transport_features(vdev);
 
-	/* Make sure we don't have any features > 32 bits! */
+	 
 	BUG_ON((u32)vdev->features != vdev->features);
 
-	/* We only support 32 feature bits. */
+	 
 	vp_legacy_set_features(&vp_dev->ldev, vdev->features);
 
 	return 0;
 }
 
-/* virtio config->get() implementation */
+ 
 static void vp_get(struct virtio_device *vdev, unsigned int offset,
 		   void *buf, unsigned int len)
 {
@@ -59,8 +45,7 @@ static void vp_get(struct virtio_device *vdev, unsigned int offset,
 		ptr[i] = ioread8(ioaddr + i);
 }
 
-/* the config->set() implementation.  it's symmetric to the config->get()
- * implementation */
+ 
 static void vp_set(struct virtio_device *vdev, unsigned int offset,
 		   const void *buf, unsigned int len)
 {
@@ -75,7 +60,7 @@ static void vp_set(struct virtio_device *vdev, unsigned int offset,
 		iowrite8(ptr[i], ioaddr + i);
 }
 
-/* config->{get,set}_status() implementations */
+ 
 static u8 vp_get_status(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
@@ -85,7 +70,7 @@ static u8 vp_get_status(struct virtio_device *vdev)
 static void vp_set_status(struct virtio_device *vdev, u8 status)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-	/* We should never be setting status to 0. */
+	 
 	BUG_ON(status == 0);
 	vp_legacy_set_status(&vp_dev->ldev, status);
 }
@@ -93,12 +78,11 @@ static void vp_set_status(struct virtio_device *vdev, u8 status)
 static void vp_reset(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-	/* 0 status means a reset. */
+	 
 	vp_legacy_set_status(&vp_dev->ldev, 0);
-	/* Flush out the status write, and flush in device writes,
-	 * including MSi-X interrupts, if any. */
+	 
 	vp_legacy_get_status(&vp_dev->ldev);
-	/* Flush pending VQ/configuration callbacks. */
+	 
 	vp_synchronize_vectors(vdev);
 }
 
@@ -120,14 +104,14 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
 	int err;
 	u64 q_pfn;
 
-	/* Check if queue is either not available or already active. */
+	 
 	num = vp_legacy_get_queue_size(&vp_dev->ldev, index);
 	if (!num || vp_legacy_get_queue_enable(&vp_dev->ldev, index))
 		return ERR_PTR(-ENOENT);
 
 	info->msix_vector = msix_vec;
 
-	/* create the vring */
+	 
 	vq = vring_create_virtqueue(index, num,
 				    VIRTIO_PCI_VRING_ALIGN, &vp_dev->vdev,
 				    true, false, ctx,
@@ -146,7 +130,7 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
 		goto out_del_vq;
 	}
 
-	/* activate the queue */
+	 
 	vp_legacy_set_queue_address(&vp_dev->ldev, index, q_pfn);
 
 	vq->priv = (void __force *)vp_dev->ldev.ioaddr + VIRTIO_PCI_QUEUE_NOTIFY;
@@ -176,11 +160,11 @@ static void del_vq(struct virtio_pci_vq_info *info)
 	if (vp_dev->msix_enabled) {
 		vp_legacy_queue_vector(&vp_dev->ldev, vq->index,
 				VIRTIO_MSI_NO_VECTOR);
-		/* Flush the write out to device */
+		 
 		ioread8(vp_dev->ldev.ioaddr + VIRTIO_PCI_ISR);
 	}
 
-	/* Select and deactivate the queue */
+	 
 	vp_legacy_set_queue_address(&vp_dev->ldev, vq->index, 0);
 
 	vring_del_virtqueue(vq);
@@ -202,7 +186,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
 	.get_vq_affinity = vp_get_vq_affinity,
 };
 
-/* the PCI probing function */
+ 
 int virtio_pci_legacy_probe(struct virtio_pci_device *vp_dev)
 {
 	struct virtio_pci_legacy_device *ldev = &vp_dev->ldev;

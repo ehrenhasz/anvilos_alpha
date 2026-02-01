@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP cryptographic functions
- * Copyright (c) 2017 - 2019, Intel Corporation.
- *
- * Note: This code is based on mptcp_ctrl.c, mptcp_ipv4.c, and
- *       mptcp_ipv6 from multipath-tcp.org, authored by:
- *
- *       Sébastien Barré <sebastien.barre@uclouvain.be>
- *       Christoph Paasch <christoph.paasch@uclouvain.be>
- *       Jaakko Korkeaniemi <jaakko.korkeaniemi@aalto.fi>
- *       Gregory Detal <gregory.detal@uclouvain.be>
- *       Fabien Duchêne <fabien.duchene@uclouvain.be>
- *       Andreas Seelinger <Andreas.Seelinger@rwth-aachen.de>
- *       Lavkesh Lahngir <lavkesh51@gmail.com>
- *       Andreas Ripke <ripke@neclab.eu>
- *       Vlad Dogaru <vlad.dogaru@intel.com>
- *       Octavian Purdila <octavian.purdila@intel.com>
- *       John Ronan <jronan@tssg.org>
- *       Catalin Nicutar <catalin.nicutar@gmail.com>
- *       Brandon Heller <brandonh@stanford.edu>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <crypto/sha2.h>
@@ -54,7 +35,7 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac)
 	put_unaligned_be64(key1, key1be);
 	put_unaligned_be64(key2, key2be);
 
-	/* Generate key xored with ipad */
+	 
 	memset(input, 0x36, SHA256_BLOCK_SIZE);
 	for (i = 0; i < 8; i++)
 		input[i] ^= key1be[i];
@@ -63,12 +44,10 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac)
 
 	memcpy(&input[SHA256_BLOCK_SIZE], msg, len);
 
-	/* emit sha256(K1 || msg) on the second input block, so we can
-	 * reuse 'input' for the last hashing
-	 */
+	 
 	sha256(input, SHA256_BLOCK_SIZE + len, &input[SHA256_BLOCK_SIZE]);
 
-	/* Prepare second part of hmac */
+	 
 	memset(input, 0x5C, SHA256_BLOCK_SIZE);
 	for (i = 0; i < 8; i++)
 		input[i] ^= key1be[i];

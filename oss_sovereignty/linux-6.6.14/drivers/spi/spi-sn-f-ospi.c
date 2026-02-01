@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Socionext SPI flash controller F_OSPI driver
- * Copyright (C) 2021 Socionext Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -15,7 +12,7 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi-mem.h>
 
-/* Registers */
+ 
 #define OSPI_PROT_CTL_INDIR			0x00
 #define   OSPI_PROT_MODE_DATA_MASK		GENMASK(31, 30)
 #define   OSPI_PROT_MODE_ALT_MASK		GENMASK(29, 28)
@@ -74,15 +71,15 @@
 #define   OSPI_DAT_SIZE_MAX			(OSPI_DAT_SIZE_MASK + 1)
 
 #define OSPI_TRANS_CTL				0xC0
-#define   OSPI_TRANS_CTL_STOP_REQ		BIT(1)	/* RW1AC */
-#define   OSPI_TRANS_CTL_START_REQ		BIT(0)	/* RW1AC */
+#define   OSPI_TRANS_CTL_STOP_REQ		BIT(1)	 
+#define   OSPI_TRANS_CTL_START_REQ		BIT(0)	 
 
 #define OSPI_ACC_MODE				0xC4
 #define   OSPI_ACC_MODE_BOOT_DISABLE		BIT(0)
 
 #define OSPI_SWRST				0xD0
-#define   OSPI_SWRST_INDIR_WRITE_FIFO		BIT(9)	/* RW1AC */
-#define   OSPI_SWRST_INDIR_READ_FIFO		BIT(8)	/* RW1AC */
+#define   OSPI_SWRST_INDIR_WRITE_FIFO		BIT(9)	 
+#define   OSPI_SWRST_INDIR_READ_FIFO		BIT(8)	 
 
 #define OSPI_STAT				0xE0
 #define   OSPI_STAT_IS_AXI_WRITING		BIT(10)
@@ -102,7 +99,7 @@
 #define OSPI_IRQ_STAT_EN			0xF4
 #define OSPI_IRQ_SIG_EN				0xF8
 
-/* Parameters */
+ 
 #define OSPI_NUM_CS				4
 #define OSPI_DUMMY_CYCLE_MAX			255
 #define OSPI_WAIT_MAX_MSEC			100
@@ -156,12 +153,12 @@ static int f_ospi_prepare_config(struct f_ospi *ospi)
 {
 	u32 val, stat0, stat1;
 
-	/* G4: Disable internal clock */
+	 
 	val = readl(ospi->base + OSPI_CLK_CTL);
 	val &= ~(OSPI_CLK_CTL_BOOT_INT_CLK_EN | OSPI_CLK_CTL_INT_CLK_EN);
 	writel(val, ospi->base + OSPI_CLK_CTL);
 
-	/* G5: Wait for stop */
+	 
 	stat0 = OSPI_STAT_IS_AXI_WRITING | OSPI_STAT_IS_AXI_READING;
 	stat1 = OSPI_STAT_IS_SPI_IDLE | OSPI_STAT_IS_SPI_INT_CLK_STOP;
 
@@ -174,12 +171,12 @@ static int f_ospi_unprepare_config(struct f_ospi *ospi)
 {
 	u32 val;
 
-	/* G11: Enable internal clock */
+	 
 	val = readl(ospi->base + OSPI_CLK_CTL);
 	val |= OSPI_CLK_CTL_BOOT_INT_CLK_EN | OSPI_CLK_CTL_INT_CLK_EN;
 	writel(val, ospi->base + OSPI_CLK_CTL);
 
-	/* G12: Wait for clock to start */
+	 
 	return readl_poll_timeout(ospi->base + OSPI_STAT,
 				  val, !(val & OSPI_STAT_IS_SPI_INT_CLK_STOP),
 				  0, OSPI_WAIT_MAX_MSEC);
@@ -212,11 +209,7 @@ static void f_ospi_config_clk(struct f_ospi *ospi, u32 device_hz)
 		}
 	}
 
-	/*
-	 * G7: Set clock mode
-	 * clock phase is fixed at 180 degrees and configure edge direction
-	 * instead.
-	 */
+	 
 	val = readl(ospi->base + OSPI_CLK_CTL);
 
 	val &= ~(OSPI_CLK_CTL_PHA | OSPI_CLK_CTL_DIV);
@@ -228,7 +221,7 @@ static void f_ospi_config_clk(struct f_ospi *ospi, u32 device_hz)
 
 static void f_ospi_config_dll(struct f_ospi *ospi)
 {
-	/* G8: Configure DLL, nothing */
+	 
 }
 
 static u8 f_ospi_get_mode(struct f_ospi *ospi, int width, int data_size)
@@ -266,7 +259,7 @@ static void f_ospi_config_indir_protocol(struct f_ospi *ospi,
 	u32 prot = 0, val;
 	int unit;
 
-	/* Set one chip select */
+	 
 	writel(BIT(spi_get_chipselect(spi, 0)), ospi->base + OSPI_SSEL);
 
 	mode = f_ospi_get_mode(ospi, op->cmd.buswidth, 1);
@@ -290,7 +283,7 @@ static void f_ospi_config_indir_protocol(struct f_ospi *ospi,
 	if (spi->mode & SPI_CPHA)
 		prot |= OSPI_PROT_SAMP_EDGE;
 
-	/* Examine nbytes % 4 */
+	 
 	switch (op->data.nbytes & 0x3) {
 	case 0:
 		unit = OSPI_PROT_DATA_UNIT_4B;
@@ -326,7 +319,7 @@ static void f_ospi_config_indir_protocol(struct f_ospi *ospi,
 	}
 
 	prot |= FIELD_PREP(OSPI_PROT_ADDR_SIZE_MASK, op->addr.nbytes);
-	prot |= FIELD_PREP(OSPI_PROT_CODE_SIZE_MASK, 1);	/* 1byte */
+	prot |= FIELD_PREP(OSPI_PROT_CODE_SIZE_MASK, 1);	 
 
 	writel(prot, ospi->base + OSPI_PROT_CTL_INDIR);
 	writel(val, ospi->base + OSPI_DAT_SIZE_INDIR);
@@ -379,13 +372,13 @@ static int f_ospi_indir_prepare_op(struct f_ospi *ospi, struct spi_mem *mem,
 
 static void f_ospi_indir_start_xfer(struct f_ospi *ospi)
 {
-	/* Write only 1, auto cleared */
+	 
 	writel(OSPI_TRANS_CTL_START_REQ, ospi->base + OSPI_TRANS_CTL);
 }
 
 static void f_ospi_indir_stop_xfer(struct f_ospi *ospi)
 {
-	/* Write only 1, auto cleared */
+	 
 	writel(OSPI_TRANS_CTL_STOP_REQ, ospi->base + OSPI_TRANS_CTL);
 }
 
@@ -407,14 +400,14 @@ static int f_ospi_indir_read(struct f_ospi *ospi, struct spi_mem *mem,
 
 	mutex_lock(&ospi->mlock);
 
-	/* E1-2: Prepare transfer operation */
+	 
 	ret = f_ospi_indir_prepare_op(ospi, mem, op);
 	if (ret)
 		goto out;
 
 	f_ospi_indir_start_xfer(ospi);
 
-	/* E3-4: Wait for ready and read data */
+	 
 	for (i = 0; i < op->data.nbytes; i++) {
 		ret = readl_poll_timeout(ospi->base + OSPI_IRQ, val,
 					 val & OSPI_IRQ_READ_BUF_READY,
@@ -425,22 +418,22 @@ static int f_ospi_indir_read(struct f_ospi *ospi, struct spi_mem *mem,
 		buf[i] = readl(ospi->base + OSPI_DAT) & 0xFF;
 	}
 
-	/* E5-6: Stop transfer if data size is nothing */
+	 
 	if (!(readl(ospi->base + OSPI_DAT_SIZE_INDIR) & OSPI_DAT_SIZE_EN))
 		f_ospi_indir_stop_xfer(ospi);
 
-	/* E7-8: Wait for completion and clear */
+	 
 	ret = f_ospi_indir_wait_xfer_complete(ospi);
 	if (ret)
 		goto out;
 
 	writel(OSPI_IRQ_CS_TRANS_COMP, ospi->base + OSPI_IRQ);
 
-	/* E9: Do nothing if data size is valid */
+	 
 	if (readl(ospi->base + OSPI_DAT_SIZE_INDIR) & OSPI_DAT_SIZE_EN)
 		goto out;
 
-	/* E10-11: Reset and check read fifo */
+	 
 	writel(OSPI_SWRST_INDIR_READ_FIFO, ospi->base + OSPI_SWRST);
 
 	ret = readl_poll_timeout(ospi->base + OSPI_SWRST, val,
@@ -461,7 +454,7 @@ static int f_ospi_indir_write(struct f_ospi *ospi, struct spi_mem *mem,
 
 	mutex_lock(&ospi->mlock);
 
-	/* F1-3: Prepare transfer operation */
+	 
 	ret = f_ospi_indir_prepare_op(ospi, mem, op);
 	if (ret)
 		goto out;
@@ -471,7 +464,7 @@ static int f_ospi_indir_write(struct f_ospi *ospi, struct spi_mem *mem,
 	if (!(readl(ospi->base + OSPI_PROT_CTL_INDIR) & OSPI_PROT_DATA_EN))
 		goto nodata;
 
-	/* F4-5: Wait for buffer ready and write data */
+	 
 	for (i = 0; i < op->data.nbytes; i++) {
 		ret = readl_poll_timeout(ospi->base + OSPI_IRQ, val,
 					 val & OSPI_IRQ_WRITE_BUF_READY,
@@ -482,12 +475,12 @@ static int f_ospi_indir_write(struct f_ospi *ospi, struct spi_mem *mem,
 		writel(buf[i], ospi->base + OSPI_DAT);
 	}
 
-	/* F6-7: Stop transfer if data size is nothing */
+	 
 	if (!(readl(ospi->base + OSPI_DAT_SIZE_INDIR) & OSPI_DAT_SIZE_EN))
 		f_ospi_indir_stop_xfer(ospi);
 
 nodata:
-	/* F8-9: Wait for completion and clear */
+	 
 	ret = f_ospi_indir_wait_xfer_complete(ospi);
 	if (ret)
 		goto out;
@@ -585,12 +578,12 @@ static int f_ospi_init(struct f_ospi *ospi)
 	if (ret)
 		return ret;
 
-	/* Disable boot signal */
+	 
 	writel(OSPI_ACC_MODE_BOOT_DISABLE, ospi->base + OSPI_ACC_MODE);
 
 	f_ospi_config_dll(ospi);
 
-	/* Disable IRQ */
+	 
 	f_ospi_clear_irq(ospi);
 	f_ospi_disable_irq_status(ospi, OSPI_IRQ_ALL);
 	f_ospi_disable_irq_output(ospi, OSPI_IRQ_ALL);

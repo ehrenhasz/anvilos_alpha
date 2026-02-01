@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/crc-ccitt.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -21,7 +21,7 @@
 #define ILI251X_DATA_SIZE1	31
 #define ILI251X_DATA_SIZE2	20
 
-/* Touchscreen commands */
+ 
 #define REG_TOUCHDATA		0x10
 #define REG_PANEL_INFO		0x20
 #define REG_FIRMWARE_VERSION	0x40
@@ -146,7 +146,7 @@ static int ili211x_read_touch_data(struct i2c_client *client, u8 *data)
 		return error;
 	}
 
-	/* This chip uses custom checksum at the end of data */
+	 
 	for (i = 0; i < ILI211X_DATA_SIZE - 1; i++)
 		sum = (sum + data[i]) & 0xff;
 
@@ -168,7 +168,7 @@ static bool ili211x_touchdata_to_coords(const u8 *touchdata,
 	u32 data;
 
 	data = get_unaligned_be32(touchdata + 1 + (finger * 4) + 0);
-	if (data == 0xffffffff)	/* Finger up */
+	if (data == 0xffffffff)	 
 		return false;
 
 	*x = ((touchdata[1 + (finger * 4) + 0] & 0xf0) << 4) |
@@ -201,7 +201,7 @@ static bool ili212x_touchdata_to_coords(const u8 *touchdata,
 	u16 val;
 
 	val = get_unaligned_be16(touchdata + 3 + (finger * 5) + 0);
-	if (!(val & BIT(15)))	/* Touch indication */
+	if (!(val & BIT(15)))	 
 		return false;
 
 	*x = val & 0x3fff;
@@ -276,7 +276,7 @@ static bool ili251x_touchdata_to_coords(const u8 *touchdata,
 	u16 val;
 
 	val = get_unaligned_be16(touchdata + 1 + (finger * 5) + 0);
-	if (!(val & BIT(15)))	/* Touch indication */
+	if (!(val & BIT(15)))	 
 		return false;
 
 	*x = val & 0x3fff;
@@ -368,23 +368,18 @@ static int ili251x_firmware_update_resolution(struct device *dev)
 	u8 rs[10];
 	int error;
 
-	/* The firmware update blob might have changed the resolution. */
+	 
 	error = priv->chip->read_reg(client, REG_PANEL_INFO, &rs, sizeof(rs));
 	if (!error) {
 		resx = le16_to_cpup((__le16 *)rs);
 		resy = le16_to_cpup((__le16 *)(rs + 2));
 
-		/* The value reported by the firmware is invalid. */
+		 
 		if (!resx || resx == 0xffff || !resy || resy == 0xffff)
 			error = -EINVAL;
 	}
 
-	/*
-	 * In case of error, the firmware might be stuck in bootloader mode,
-	 * e.g. after a failed firmware update. Set maximum resolution, but
-	 * do not fail to probe, so the user can re-trigger the firmware
-	 * update and recover the touch controller.
-	 */
+	 
 	if (error) {
 		dev_warn(dev, "Invalid resolution reported by controller.\n");
 		resx = 16384;
@@ -406,7 +401,7 @@ static ssize_t ili251x_firmware_update_firmware_version(struct device *dev)
 	int error;
 	u8 fw[8];
 
-	/* Get firmware version */
+	 
 	error = priv->chip->read_reg(client, REG_FIRMWARE_VERSION,
 				     &fw, sizeof(fw));
 	if (!error)
@@ -422,7 +417,7 @@ static ssize_t ili251x_firmware_update_kernel_version(struct device *dev)
 	int error;
 	u8 kv[5];
 
-	/* Get kernel version */
+	 
 	error = priv->chip->read_reg(client, REG_KERNEL_VERSION,
 				     &kv, sizeof(kv));
 	if (!error)
@@ -438,7 +433,7 @@ static ssize_t ili251x_firmware_update_protocol_version(struct device *dev)
 	int error;
 	u8 pv[2];
 
-	/* Get protocol version */
+	 
 	error = priv->chip->read_reg(client, REG_PROTOCOL_VERSION,
 				     &pv, sizeof(pv));
 	if (!error)
@@ -454,7 +449,7 @@ static ssize_t ili251x_firmware_update_ic_mode(struct device *dev)
 	int error;
 	u8 md[2];
 
-	/* Get chip boot mode */
+	 
 	error = priv->chip->read_reg(client, REG_GET_MODE, &md, sizeof(md));
 	if (!error)
 		memcpy(priv->ic_mode, md, sizeof(md));
@@ -471,10 +466,10 @@ static int ili251x_firmware_update_cached_state(struct device *dev)
 	if (!priv->chip->has_firmware_proto)
 		return 0;
 
-	/* Wait for firmware to boot and stabilize itself. */
+	 
 	msleep(200);
 
-	/* Firmware does report valid information. */
+	 
 	error = ili251x_firmware_update_resolution(dev);
 	if (error)
 		return error;
@@ -545,11 +540,11 @@ static ssize_t ili251x_mode_show(struct device *dev,
 	u8 *md = priv->ic_mode;
 	char *mode = "AP";
 
-	if (md[0] == REG_GET_MODE_AP)		/* Application Mode */
+	if (md[0] == REG_GET_MODE_AP)		 
 		mode = "AP";
-	else if (md[0] == REG_GET_MODE_BL)	/* BootLoader Mode */
+	else if (md[0] == REG_GET_MODE_BL)	 
 		mode = "BL";
-	else					/* Unknown Mode */
+	else					 
 		mode = "??";
 
 	return sysfs_emit(buf, "%02x.%02x:%s\n", md[0], md[1], mode);
@@ -591,12 +586,7 @@ static int ili251x_firmware_to_buffer(const struct firmware *fw,
 	u8 *fw_buf;
 	int error;
 
-	/*
-	 * The firmware ihex blob can never be bigger than 64 kiB, so make this
-	 * simple -- allocate a 64 kiB buffer, iterate over the ihex blob records
-	 * once, copy them all into this buffer at the right locations, and then
-	 * do all operations on this linear buffer.
-	 */
+	 
 	fw_buf = kzalloc(SZ_64K, GFP_KERNEL);
 	if (!fw_buf)
 		return -ENOMEM;
@@ -606,13 +596,13 @@ static int ili251x_firmware_to_buffer(const struct firmware *fw,
 		fw_addr = be32_to_cpu(rec->addr);
 		fw_len = be16_to_cpu(rec->len);
 
-		/* The last 32 Byte firmware block can be 0xffe0 */
+		 
 		if (fw_addr + fw_len > SZ_64K || fw_addr > SZ_64K - 32) {
 			error = -EFBIG;
 			goto err_big;
 		}
 
-		/* Find the last address before DF start address, that is AC end */
+		 
 		if (fw_addr == 0xf000)
 			*ac_end = fw_last_addr;
 		fw_last_addr = fw_addr + fw_len;
@@ -621,7 +611,7 @@ static int ili251x_firmware_to_buffer(const struct firmware *fw,
 		rec = ihex_next_binrec(rec);
 	}
 
-	/* DF end address is the last address in the firmware blob */
+	 
 	*df_end = fw_addr + fw_len;
 	*buf = fw_buf;
 	return 0;
@@ -631,7 +621,7 @@ err_big:
 	return error;
 }
 
-/* Switch mode between Application and BootLoader */
+ 
 static int ili251x_switch_ic_mode(struct i2c_client *client, u8 cmd_mode)
 {
 	struct ili210x *priv = i2c_get_clientdata(client);
@@ -642,30 +632,30 @@ static int ili251x_switch_ic_mode(struct i2c_client *client, u8 cmd_mode)
 	error = priv->chip->read_reg(client, REG_GET_MODE, md, sizeof(md));
 	if (error)
 		return error;
-	/* Mode already set */
+	 
 	if ((cmd_mode == REG_SET_MODE_AP && md[0] == REG_GET_MODE_AP) ||
 	    (cmd_mode == REG_SET_MODE_BL && md[0] == REG_GET_MODE_BL))
 		return 0;
 
-	/* Unlock writes */
+	 
 	error = i2c_master_send(client, cmd_wren, sizeof(cmd_wren));
 	if (error != sizeof(cmd_wren))
 		return -EINVAL;
 
 	mdelay(20);
 
-	/* Select mode (BootLoader or Application) */
+	 
 	error = i2c_master_send(client, &cmd_mode, 1);
 	if (error != 1)
 		return -EINVAL;
 
-	mdelay(200);	/* Reboot into bootloader takes a lot of time ... */
+	mdelay(200);	 
 
-	/* Read back mode */
+	 
 	error = priv->chip->read_reg(client, REG_GET_MODE, md, sizeof(md));
 	if (error)
 		return error;
-	/* Check if mode is correct now. */
+	 
 	if ((cmd_mode == REG_SET_MODE_AP && md[0] == REG_GET_MODE_AP) ||
 	    (cmd_mode == REG_SET_MODE_BL && md[0] == REG_GET_MODE_BL))
 		return 0;
@@ -680,7 +670,7 @@ static int ili251x_firmware_busy(struct i2c_client *client)
 	u8 data;
 
 	do {
-		/* The read_reg already contains suitable delay */
+		 
 		error = priv->chip->read_reg(client, REG_IC_BUSY, &data, 1);
 		if (error)
 			return error;
@@ -702,14 +692,11 @@ static int ili251x_firmware_write_to_ic(struct device *dev, u8 *fwbuf,
 	u16 fw_addr;
 	int error;
 
-	/*
-	 * The DF (dataflash) needs 2 bytes offset for unknown reasons,
-	 * the AC (application) has 2 bytes CRC16-CCITT at the end.
-	 */
+	 
 	u16 crc = crc_ccitt(0, fwbuf + start + (dataflash ? 2 : 0),
 			    end - start - 2);
 
-	/* Unlock write to either AC (application) or DF (dataflash) area */
+	 
 	u8 cmd_wr[10] = {
 		REG_WRITE_ENABLE, 0x5a, 0xa5, dataflash,
 		(end >> 16) & 0xff, (end >> 8) & 0xff, end & 0xff,
@@ -748,7 +735,7 @@ static int ili251x_firmware_write_to_ic(struct device *dev, u8 *fwbuf,
 	if (error)
 		return error;
 
-	/* Check CRC readback */
+	 
 	if ((crcrb[0] != (crc & 0xff)) || crcrb[1] != ((crc >> 8) & 0xff))
 		return -EINVAL;
 
@@ -769,7 +756,7 @@ static int ili251x_firmware_reset(struct i2c_client *client)
 
 static void ili210x_hardware_reset(struct gpio_desc *reset_gpio)
 {
-	/* Reset the controller */
+	 
 	gpiod_set_value_cansleep(reset_gpio, 1);
 	usleep_range(12000, 15000);
 	gpiod_set_value_cansleep(reset_gpio, 0);
@@ -801,13 +788,7 @@ static ssize_t ili210x_firmware_update_store(struct device *dev,
 	if (error)
 		return error;
 
-	/*
-	 * Disable touchscreen IRQ, so that we would not get spurious touch
-	 * interrupt during firmware update, and so that the IRQ handler won't
-	 * trigger and interfere with the firmware update. There is no bit in
-	 * the touch controller to disable the IRQs during update, so we have
-	 * to do it this way here.
-	 */
+	 
 	disable_irq(client->irq);
 
 	dev_dbg(dev, "Firmware update started, firmware=%s\n", fwname);
@@ -818,7 +799,7 @@ static ssize_t ili210x_firmware_update_store(struct device *dev,
 	if (error)
 		goto exit;
 
-	/* This may not succeed on first try, so re-try a few times. */
+	 
 	for (i = 0; i < 5; i++) {
 		error = ili251x_switch_ic_mode(client, REG_SET_MODE_BL);
 		if (!error)
@@ -830,7 +811,7 @@ static ssize_t ili210x_firmware_update_store(struct device *dev,
 
 	dev_dbg(dev, "IC is now in BootLoader mode\n");
 
-	msleep(200);	/* The bootloader seems to need some time too. */
+	msleep(200);	 
 
 	error = ili251x_firmware_write_to_ic(dev, fwbuf, 0xf000, df_end, 1);
 	if (error) {
@@ -848,7 +829,7 @@ static ssize_t ili210x_firmware_update_store(struct device *dev,
 
 	dev_dbg(dev, "Application firmware written\n");
 
-	/* This may not succeed on first try, so re-try a few times. */
+	 
 	for (i = 0; i < 5; i++) {
 		error = ili251x_switch_ic_mode(client, REG_SET_MODE_AP);
 		if (!error)
@@ -893,11 +874,11 @@ static umode_t ili210x_attributes_visible(struct kobject *kobj,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ili210x *priv = i2c_get_clientdata(client);
 
-	/* Calibrate is present on all ILI2xxx which have calibrate register */
+	 
 	if (attr == &dev_attr_calibrate.attr)
 		return priv->chip->has_calibrate_reg ? attr->mode : 0;
 
-	/* Firmware/Kernel/Protocol/BootMode is implememted only for ILI251x */
+	 
 	if (!priv->chip->has_firmware_proto)
 		return 0;
 
@@ -920,7 +901,7 @@ static void ili210x_stop(void *data)
 {
 	struct ili210x *priv = data;
 
-	/* Tell ISR to quit even if there is a contact. */
+	 
 	priv->stop = true;
 }
 
@@ -977,11 +958,11 @@ static int ili210x_i2c_probe(struct i2c_client *client)
 	priv->chip = chip;
 	i2c_set_clientdata(client, priv);
 
-	/* Setup input device */
+	 
 	input->name = "ILI210x Touchscreen";
 	input->id.bustype = BUS_I2C;
 
-	/* Multi touch */
+	 
 	max_xy = (chip->resolution ?: SZ_64K) - 1;
 	input_set_abs_params(input, ABS_MT_POSITION_X, 0, max_xy, 0, 0);
 	input_set_abs_params(input, ABS_MT_POSITION_Y, 0, max_xy, 0, 0);

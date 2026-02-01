@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/file.h>
 #include <linux/mount.h>
 #include <linux/namei.h>
@@ -52,11 +52,7 @@ int vfs_utimes(const struct path *path, struct timespec64 *times)
 			newattrs.ia_mtime = times[1];
 			newattrs.ia_valid |= ATTR_MTIME_SET;
 		}
-		/*
-		 * Tell setattr_prepare(), that this is an explicit time
-		 * update, even if neither ATTR_ATIME_SET nor ATTR_MTIME_SET
-		 * were used.
-		 */
+		 
 		newattrs.ia_valid |= ATTR_TIMES_SET;
 	} else {
 		newattrs.ia_valid |= ATTR_TOUCH;
@@ -122,21 +118,7 @@ static int do_utimes_fd(int fd, struct timespec64 *times, int flags)
 	return error;
 }
 
-/*
- * do_utimes - change times on filename or file descriptor
- * @dfd: open file descriptor, -1 or AT_FDCWD
- * @filename: path name or NULL
- * @times: new times or NULL
- * @flags: zero or more flags (only AT_SYMLINK_NOFOLLOW for the moment)
- *
- * If filename is NULL and dfd refers to an open file, then operate on
- * the file.  Otherwise look up filename, possibly using dfd as a
- * starting point.
- *
- * If times==NULL, set access and modification to current time,
- * must be owner or have write permission.
- * Else, update from *times, must be owner or super user.
- */
+ 
 long do_utimes(int dfd, const char __user *filename, struct timespec64 *times,
 	       int flags)
 {
@@ -155,7 +137,7 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 			get_timespec64(&tstimes[1], &utimes[1])))
 			return -EFAULT;
 
-		/* Nothing to do, we must not even check the path.  */
+		 
 		if (tstimes[0].tv_nsec == UTIME_OMIT &&
 		    tstimes[1].tv_nsec == UTIME_OMIT)
 			return 0;
@@ -165,12 +147,7 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 }
 
 #ifdef __ARCH_WANT_SYS_UTIME
-/*
- * futimesat(), utimes() and utime() are older versions of utimensat()
- * that are provided for compatibility with traditional C libraries.
- * On modern architectures, we always use libc wrappers around
- * utimensat() instead.
- */
+ 
 static long do_futimesat(int dfd, const char __user *filename,
 			 struct __kernel_old_timeval __user *utimes)
 {
@@ -181,11 +158,7 @@ static long do_futimesat(int dfd, const char __user *filename,
 		if (copy_from_user(&times, utimes, sizeof(times)))
 			return -EFAULT;
 
-		/* This test is needed to catch all invalid values.  If we
-		   would test only in do_utimes we would miss those invalid
-		   values truncated by the multiplication with 1000.  Note
-		   that we also catch UTIME_{NOW,OMIT} here which are only
-		   valid for utimensat.  */
+		 
 		if (times[0].tv_usec >= 1000000 || times[0].tv_usec < 0 ||
 		    times[1].tv_usec >= 1000000 || times[1].tv_usec < 0)
 			return -EINVAL;
@@ -228,10 +201,7 @@ SYSCALL_DEFINE2(utime, char __user *, filename, struct utimbuf __user *, times)
 #endif
 
 #ifdef CONFIG_COMPAT_32BIT_TIME
-/*
- * Not all architectures have sys_utime, so implement this in terms
- * of sys_utimes.
- */
+ 
 #ifdef __ARCH_WANT_SYS_UTIME32
 SYSCALL_DEFINE2(utime32, const char __user *, filename,
 		struct old_utimbuf32 __user *, t)

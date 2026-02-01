@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Least-Connection Scheduling module
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *
- * Changes:
- *     Wensong Zhang            :     added the ip_vs_lc_update_svc
- *     Wensong Zhang            :     added any dest with weight=0 is quiesced
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -17,9 +9,7 @@
 
 #include <net/ip_vs.h>
 
-/*
- *	Least Connection scheduling
- */
+ 
 static struct ip_vs_dest *
 ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
@@ -29,14 +19,7 @@ ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 
 	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
 
-	/*
-	 * Simply select the server with the least number of
-	 *        (activeconns<<5) + inactconns
-	 * Except whose weight is equal to zero.
-	 * If the weight is equal to zero, it means that the server is
-	 * quiesced, the existing connections to the server still get
-	 * served, but no new connection is assigned to the server.
-	 */
+	 
 
 	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
 		if ((dest->flags & IP_VS_DEST_F_OVERLOAD) ||

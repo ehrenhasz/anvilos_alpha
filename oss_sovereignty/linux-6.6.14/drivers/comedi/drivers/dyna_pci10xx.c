@@ -1,27 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/dyna_pci10xx.c
- * Copyright (C) 2011 Prashant Shah, pshah.mumbai@gmail.com
- */
 
-/*
- * Driver: dyna_pci10xx
- * Description: Dynalog India PCI DAQ Cards, http://www.dynalogindia.com/
- * Devices: [Dynalog] PCI-1050 (dyna_pci1050)
- * Author: Prashant Shah <pshah.mumbai@gmail.com>
- * Status: Stable
- *
- * Developed at Automation Labs, Chemical Dept., IIT Bombay, India.
- * Prof. Kannan Moudgalya <kannan@iitb.ac.in>
- * http://www.iitb.ac.in
- *
- * Notes :
- * - Dynalog India Pvt. Ltd. does not have a registered PCI Vendor ID and
- *   they are using the PLX Technlogies Vendor ID since that is the PCI Chip
- *   used in the card.
- * - Dynalog India Pvt. Ltd. has provided the internal register specification
- *   for their cards in their manuals.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -69,14 +49,14 @@ static int dyna_pci10xx_insn_read_ai(struct comedi_device *dev,
 	int ret = 0;
 	unsigned int chan, range;
 
-	/* get the channel number and range */
+	 
 	chan = CR_CHAN(insn->chanspec);
 	range = range_codes_pci1050_ai[CR_RANGE((insn->chanspec))];
 
 	mutex_lock(&devpriv->mutex);
-	/* convert n samples */
+	 
 	for (n = 0; n < insn->n; n++) {
-		/* trigger conversion */
+		 
 		smp_mb();
 		outw_p(0x0000 + range + chan, dev->iobase + 2);
 		usleep_range(10, 20);
@@ -85,19 +65,19 @@ static int dyna_pci10xx_insn_read_ai(struct comedi_device *dev,
 		if (ret)
 			break;
 
-		/* read data */
+		 
 		d = inw_p(dev->iobase);
-		/* mask the first 4 bits - EOC bits */
+		 
 		d &= 0x0FFF;
 		data[n] = d;
 	}
 	mutex_unlock(&devpriv->mutex);
 
-	/* return the number of samples read/written */
+	 
 	return ret ? ret : n;
 }
 
-/* analog output callback */
+ 
 static int dyna_pci10xx_insn_write_ao(struct comedi_device *dev,
 				      struct comedi_subdevice *s,
 				      struct comedi_insn *insn,
@@ -109,7 +89,7 @@ static int dyna_pci10xx_insn_write_ao(struct comedi_device *dev,
 	mutex_lock(&devpriv->mutex);
 	for (n = 0; n < insn->n; n++) {
 		smp_mb();
-		/* trigger conversion and write data */
+		 
 		outw_p(data[n], dev->iobase);
 		usleep_range(10, 20);
 	}
@@ -117,7 +97,7 @@ static int dyna_pci10xx_insn_write_ao(struct comedi_device *dev,
 	return n;
 }
 
-/* digital input bit interface */
+ 
 static int dyna_pci10xx_di_insn_bits(struct comedi_device *dev,
 				     struct comedi_subdevice *s,
 				     struct comedi_insn *insn,
@@ -131,7 +111,7 @@ static int dyna_pci10xx_di_insn_bits(struct comedi_device *dev,
 	d = inw_p(devpriv->BADR3);
 	usleep_range(10, 100);
 
-	/* on return the data[0] contains output and data[1] contains input */
+	 
 	data[1] = d;
 	data[0] = s->state;
 	mutex_unlock(&devpriv->mutex);
@@ -182,7 +162,7 @@ static int dyna_pci10xx_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* analog input */
+	 
 	s = &dev->subdevices[0];
 	s->type = COMEDI_SUBD_AI;
 	s->subdev_flags = SDF_READABLE | SDF_GROUND | SDF_DIFF;
@@ -191,7 +171,7 @@ static int dyna_pci10xx_auto_attach(struct comedi_device *dev,
 	s->range_table = &range_pci1050_ai;
 	s->insn_read = dyna_pci10xx_insn_read_ai;
 
-	/* analog output */
+	 
 	s = &dev->subdevices[1];
 	s->type = COMEDI_SUBD_AO;
 	s->subdev_flags = SDF_WRITABLE;
@@ -200,7 +180,7 @@ static int dyna_pci10xx_auto_attach(struct comedi_device *dev,
 	s->range_table = &range_unipolar10;
 	s->insn_write = dyna_pci10xx_insn_write_ao;
 
-	/* digital input */
+	 
 	s = &dev->subdevices[2];
 	s->type = COMEDI_SUBD_DI;
 	s->subdev_flags = SDF_READABLE;
@@ -209,7 +189,7 @@ static int dyna_pci10xx_auto_attach(struct comedi_device *dev,
 	s->range_table = &range_digital;
 	s->insn_bits = dyna_pci10xx_di_insn_bits;
 
-	/* digital output */
+	 
 	s = &dev->subdevices[3];
 	s->type = COMEDI_SUBD_DO;
 	s->subdev_flags = SDF_WRITABLE;

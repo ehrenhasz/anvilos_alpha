@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/data.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 #include <linux/buffer_head.h>
@@ -90,22 +85,22 @@ static enum count_type __read_io_type(struct page *page)
 	return F2FS_RD_DATA;
 }
 
-/* postprocessing steps for read bios */
+ 
 enum bio_post_read_step {
 #ifdef CONFIG_FS_ENCRYPTION
 	STEP_DECRYPT	= BIT(0),
 #else
-	STEP_DECRYPT	= 0,	/* compile out the decryption-related code */
+	STEP_DECRYPT	= 0,	 
 #endif
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 	STEP_DECOMPRESS	= BIT(1),
 #else
-	STEP_DECOMPRESS	= 0,	/* compile out the decompression-related code */
+	STEP_DECOMPRESS	= 0,	 
 #endif
 #ifdef CONFIG_FS_VERITY
 	STEP_VERITY	= BIT(2),
 #else
-	STEP_VERITY	= 0,	/* compile out the verity-related code */
+	STEP_VERITY	= 0,	 
 #endif
 };
 
@@ -114,29 +109,12 @@ struct bio_post_read_ctx {
 	struct f2fs_sb_info *sbi;
 	struct work_struct work;
 	unsigned int enabled_steps;
-	/*
-	 * decompression_attempted keeps track of whether
-	 * f2fs_end_read_compressed_page() has been called on the pages in the
-	 * bio that belong to a compressed cluster yet.
-	 */
+	 
 	bool decompression_attempted;
 	block_t fs_blkaddr;
 };
 
-/*
- * Update and unlock a bio's pages, and free the bio.
- *
- * This marks pages up-to-date only if there was no error in the bio (I/O error,
- * decryption error, or verity error), as indicated by bio->bi_status.
- *
- * "Compressed pages" (pagecache pages backed by a compressed cluster on-disk)
- * aren't marked up-to-date here, as decompression is done on a per-compression-
- * cluster basis rather than a per-bio basis.  Instead, we only must do two
- * things for each compressed page here: call f2fs_end_read_compressed_page()
- * with failed=true if an error occurred before it would have normally gotten
- * called (i.e., I/O error or decryption error, but *not* verity error), and
- * release the bio's reference to the decompress_io_ctx of the page's cluster.
- */
+ 
 static void f2fs_finish_read_bio(struct bio *bio, bool in_task)
 {
 	struct bio_vec *bv;
@@ -174,20 +152,11 @@ static void f2fs_verify_bio(struct work_struct *work)
 	struct bio *bio = ctx->bio;
 	bool may_have_compressed_pages = (ctx->enabled_steps & STEP_DECOMPRESS);
 
-	/*
-	 * fsverity_verify_bio() may call readahead() again, and while verity
-	 * will be disabled for this, decryption and/or decompression may still
-	 * be needed, resulting in another bio_post_read_ctx being allocated.
-	 * So to prevent deadlocks we need to release the current ctx to the
-	 * mempool first.  This assumes that verity is the last post-read step.
-	 */
+	 
 	mempool_free(ctx, bio_post_read_ctx_pool);
 	bio->bi_private = NULL;
 
-	/*
-	 * Verify the bio's pages with fs-verity.  Exclude compressed pages,
-	 * as those were handled separately by f2fs_end_read_compressed_page().
-	 */
+	 
 	if (may_have_compressed_pages) {
 		struct bio_vec *bv;
 		struct bvec_iter_all iter_all;
@@ -208,15 +177,7 @@ static void f2fs_verify_bio(struct work_struct *work)
 	f2fs_finish_read_bio(bio, true);
 }
 
-/*
- * If the bio's data needs to be verified with fs-verity, then enqueue the
- * verity work for the bio.  Otherwise finish the bio now.
- *
- * Note that to avoid deadlocks, the verity work can't be done on the
- * decryption/decompression workqueue.  This is because verifying the data pages
- * can involve reading verity metadata pages from the file, and these verity
- * metadata pages may be encrypted and/or compressed.
- */
+ 
 static void f2fs_verify_and_finish_bio(struct bio *bio, bool in_task)
 {
 	struct bio_post_read_ctx *ctx = bio->bi_private;
@@ -229,15 +190,7 @@ static void f2fs_verify_and_finish_bio(struct bio *bio, bool in_task)
 	}
 }
 
-/*
- * Handle STEP_DECOMPRESS by decompressing any compressed clusters whose last
- * remaining page was read by @ctx->bio.
- *
- * Note that a bio may span clusters (even a mix of compressed and uncompressed
- * clusters) or be for just part of a cluster.  STEP_DECOMPRESS just indicates
- * that the bio includes at least one compressed page.  The actual decompression
- * is done on a per-cluster basis, not a per-bio basis.
- */
+ 
 static void f2fs_handle_step_decompress(struct bio_post_read_ctx *ctx,
 		bool in_task)
 {
@@ -260,11 +213,7 @@ static void f2fs_handle_step_decompress(struct bio_post_read_ctx *ctx,
 
 	ctx->decompression_attempted = true;
 
-	/*
-	 * Optimization: if all the bio's pages are compressed, then scheduling
-	 * the per-bio verity work is unnecessary, as verity will be fully
-	 * handled at the compression cluster level.
-	 */
+	 
 	if (all_compressed)
 		ctx->enabled_steps &= ~STEP_VERITY;
 }
@@ -307,10 +256,7 @@ static void f2fs_read_end_io(struct bio *bio)
 		unsigned int enabled_steps = ctx->enabled_steps &
 					(STEP_DECRYPT | STEP_DECOMPRESS);
 
-		/*
-		 * If we have only decompression step between decompression and
-		 * decrypt, we don't need post processing for this.
-		 */
+		 
 		if (enabled_steps == STEP_DECOMPRESS &&
 				!f2fs_low_mem_mode(sbi)) {
 			f2fs_handle_step_decompress(ctx, intask);
@@ -447,12 +393,7 @@ static blk_opf_t f2fs_io_flags(struct f2fs_io_info *fio)
 	fua_flag = io_flag & temp_mask;
 	meta_flag = (io_flag >> NR_TEMP_TYPE) & temp_mask;
 
-	/*
-	 * data/node io flag bits per temp:
-	 *      REQ_META     |      REQ_FUA      |
-	 *    5 |    4 |   3 |    2 |    1 |   0 |
-	 * Cold | Warm | Hot | Cold | Warm | Hot |
-	 */
+	 
 	if (BIT(fio->temp) & meta_flag)
 		op_flags |= REQ_META;
 	if (BIT(fio->temp) & fua_flag)
@@ -492,10 +433,7 @@ static void f2fs_set_bio_crypt_ctx(struct bio *bio, const struct inode *inode,
 				  const struct f2fs_io_info *fio,
 				  gfp_t gfp_mask)
 {
-	/*
-	 * The f2fs garbage collector sets ->encrypted_page when it wants to
-	 * read/write raw data without encryption.
-	 */
+	 
 	if (!fio || !fio->encrypted_page)
 		fscrypt_set_bio_crypt_ctx(bio, inode, first_idx, gfp_mask);
 }
@@ -504,10 +442,7 @@ static bool f2fs_crypt_mergeable_bio(struct bio *bio, const struct inode *inode,
 				     pgoff_t next_idx,
 				     const struct f2fs_io_info *fio)
 {
-	/*
-	 * The f2fs garbage collector sets ->encrypted_page when it wants to
-	 * read/write raw data without encryption.
-	 */
+	 
 	if (fio && fio->encrypted_page)
 		return !bio_has_crypt_ctx(bio);
 
@@ -532,7 +467,7 @@ static void f2fs_align_write_bio(struct f2fs_sb_info *sbi, struct bio *bio)
 	if (start == 0)
 		return;
 
-	/* fill dummy pages */
+	 
 	for (; start < F2FS_IO_SIZE(sbi); start++) {
 		struct page *page =
 			mempool_alloc(sbi->write_io_dummy,
@@ -560,10 +495,7 @@ static void f2fs_submit_write_bio(struct f2fs_sb_info *sbi, struct bio *bio,
 
 		if (F2FS_IO_ALIGNED(sbi)) {
 			f2fs_align_write_bio(sbi, bio);
-			/*
-			 * In the NODE case, we lose next block address chain.
-			 * So, we need to do checkpoint in f2fs_sync_file.
-			 */
+			 
 			if (type == NODE)
 				set_sbi_flag(sbi, SBI_NEED_CP);
 		}
@@ -672,7 +604,7 @@ static void __f2fs_submit_merged_write(struct f2fs_sb_info *sbi,
 	if (!io->bio)
 		goto unlock_out;
 
-	/* change META to META_FLUSH in the checkpoint procedure */
+	 
 	if (type >= META_FLUSH) {
 		io->fio.type = META_FLUSH;
 		io->bio->bi_opf |= REQ_META | REQ_PRIO | REQ_SYNC;
@@ -703,7 +635,7 @@ static void __submit_merged_write_cond(struct f2fs_sb_info *sbi,
 		if (ret)
 			__f2fs_submit_merged_write(sbi, type, temp);
 
-		/* TODO: use HOT temp only for meta pages now. */
+		 
 		if (type >= META)
 			break;
 	}
@@ -728,10 +660,7 @@ void f2fs_flush_merged_writes(struct f2fs_sb_info *sbi)
 	f2fs_submit_merged_write(sbi, META);
 }
 
-/*
- * Fill the locked page with data located in the block address.
- * A caller needs to unlock the page on failure.
- */
+ 
 int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 {
 	struct bio *bio;
@@ -747,7 +676,7 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 
 	trace_f2fs_submit_page_bio(page, fio);
 
-	/* Allocate a new bio */
+	 
 	bio = __bio_alloc(fio, 1);
 
 	f2fs_set_bio_crypt_ctx(bio, fio->page->mapping->host,
@@ -802,7 +731,7 @@ static bool io_is_mergeable(struct f2fs_sb_info *sbi, struct bio *bio,
 		unsigned int io_size = F2FS_IO_SIZE(sbi);
 		unsigned int left_vecs = bio->bi_max_vecs - bio->bi_vcnt;
 
-		/* IOs in bio is aligned and left space of vectors is not enough */
+		 
 		if (!(filled_blocks % io_size) && left_vecs < io_size)
 			return false;
 	}
@@ -867,7 +796,7 @@ static int add_ipu_page(struct f2fs_io_info *fio, struct bio **bio,
 				break;
 			}
 
-			/* page can't be merged into bio; submit the bio */
+			 
 			del_bio_entry(be);
 			f2fs_submit_write_bio(sbi, *bio, DATA);
 			break;
@@ -1043,7 +972,7 @@ next:
 	else
 		bio_page = fio->page;
 
-	/* set submitted = true as a return value */
+	 
 	fio->submitted = 1;
 
 	inc_page_count(sbi, WB_DATA_TYPE(bio_page));
@@ -1128,15 +1057,10 @@ static struct bio *f2fs_grab_read_bio(struct inode *inode, block_t blkaddr,
 	if (f2fs_need_verity(inode, first_idx))
 		post_read_steps |= STEP_VERITY;
 
-	/*
-	 * STEP_DECOMPRESS is handled specially, since a compressed file might
-	 * contain both compressed and uncompressed clusters.  We'll allocate a
-	 * bio_post_read_ctx if the file is compressed, but the caller is
-	 * responsible for enabling STEP_DECOMPRESS if it's actually needed.
-	 */
+	 
 
 	if (post_read_steps || f2fs_compressed_file(inode)) {
-		/* Due to the mempool, this never fails. */
+		 
 		ctx = mempool_alloc(bio_post_read_ctx_pool, GFP_NOFS);
 		ctx->bio = bio;
 		ctx->sbi = sbi;
@@ -1150,7 +1074,7 @@ static struct bio *f2fs_grab_read_bio(struct inode *inode, block_t blkaddr,
 	return bio;
 }
 
-/* This can handle encryption stuffs */
+ 
 static int f2fs_submit_page_read(struct inode *inode, struct page *page,
 				 block_t blkaddr, blk_opf_t op_flags,
 				 bool for_write)
@@ -1163,7 +1087,7 @@ static int f2fs_submit_page_read(struct inode *inode, struct page *page,
 	if (IS_ERR(bio))
 		return PTR_ERR(bio);
 
-	/* wait for GCed page writeback via META_MAPPING */
+	 
 	f2fs_wait_on_block_writeback(inode, blkaddr);
 
 	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
@@ -1188,17 +1112,12 @@ static void __set_data_blkaddr(struct dnode_of_data *dn)
 	if (IS_INODE(dn->node_page) && f2fs_has_extra_attr(dn->inode))
 		base = get_extra_isize(dn->inode);
 
-	/* Get physical address of data block */
+	 
 	addr_array = blkaddr_in_node(rn);
 	addr_array[base + dn->ofs_in_node] = cpu_to_le32(dn->data_blkaddr);
 }
 
-/*
- * Lock ordering for the change of data block address:
- * ->data_page
- *  ->node_page
- *    update block addresses in the node page
- */
+ 
 void f2fs_set_data_blkaddr(struct dnode_of_data *dn)
 {
 	f2fs_wait_on_page_writeback(dn->node_page, NODE, true, true);
@@ -1214,7 +1133,7 @@ void f2fs_update_data_blkaddr(struct dnode_of_data *dn, block_t blkaddr)
 	f2fs_update_read_extent_cache(dn);
 }
 
-/* dn->ofs_in_node will be returned with up-to-date last block pointer */
+ 
 int f2fs_reserve_new_blocks(struct dnode_of_data *dn, blkcnt_t count)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
@@ -1248,7 +1167,7 @@ int f2fs_reserve_new_blocks(struct dnode_of_data *dn, blkcnt_t count)
 	return 0;
 }
 
-/* Should keep dn->ofs_in_node unchanged */
+ 
 int f2fs_reserve_new_block(struct dnode_of_data *dn)
 {
 	unsigned int ofs_in_node = dn->ofs_in_node;
@@ -1330,13 +1249,7 @@ got_it:
 		return page;
 	}
 
-	/*
-	 * A new dentry page is allocated but not able to be written, since its
-	 * new inode page couldn't be allocated due to -ENOSPC.
-	 * In such the case, its blkaddr can be remained as NEW_ADDR.
-	 * see, f2fs_add_link -> f2fs_get_new_data_page ->
-	 * f2fs_init_inode_metadata.
-	 */
+	 
 	if (dn.data_blkaddr == NEW_ADDR) {
 		zero_user_segment(page, 0, PAGE_SIZE);
 		if (!PageUptodate(page))
@@ -1382,11 +1295,7 @@ struct page *f2fs_find_data_page(struct inode *inode, pgoff_t index,
 	return page;
 }
 
-/*
- * If it tries to access a hole, return an error.
- * Because, the callers, functions in dir.c and GC, should be able to know
- * whether this page exists or not.
- */
+ 
 struct page *f2fs_get_lock_data_page(struct inode *inode, pgoff_t index,
 							bool for_write)
 {
@@ -1397,7 +1306,7 @@ struct page *f2fs_get_lock_data_page(struct inode *inode, pgoff_t index,
 	if (IS_ERR(page))
 		return page;
 
-	/* wait for read completion */
+	 
 	lock_page(page);
 	if (unlikely(page->mapping != mapping || !PageUptodate(page))) {
 		f2fs_put_page(page, 1);
@@ -1406,15 +1315,7 @@ struct page *f2fs_get_lock_data_page(struct inode *inode, pgoff_t index,
 	return page;
 }
 
-/*
- * Caller ensures that this data page is never allocated.
- * A new zero-filled data page is allocated in the page cache.
- *
- * Also, caller should grab and release a rwsem by calling f2fs_lock_op() and
- * f2fs_unlock_op().
- * Note that, ipage is set only by make_empty_dir, and if any error occur,
- * ipage should be released by this function.
- */
+ 
 struct page *f2fs_get_new_data_page(struct inode *inode,
 		struct page *ipage, pgoff_t index, bool new_i_size)
 {
@@ -1425,10 +1326,7 @@ struct page *f2fs_get_new_data_page(struct inode *inode,
 
 	page = f2fs_grab_cache_page(mapping, index, true);
 	if (!page) {
-		/*
-		 * before exiting, we should make sure ipage will be released
-		 * if any error occur.
-		 */
+		 
 		f2fs_put_page(ipage, 1);
 		return ERR_PTR(-ENOMEM);
 	}
@@ -1452,7 +1350,7 @@ struct page *f2fs_get_new_data_page(struct inode *inode,
 	} else {
 		f2fs_put_page(page, 1);
 
-		/* if ipage exists, blkaddr should be NEW_ADDR */
+		 
 		f2fs_bug_on(F2FS_I_SB(inode), ipage);
 		page = f2fs_get_lock_data_page(inode, index, true);
 		if (IS_ERR(page))
@@ -1537,11 +1435,7 @@ static int f2fs_map_no_dnode(struct inode *inode,
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 
-	/*
-	 * There is one exceptional case that read_node_page() may return
-	 * -ENOENT due to filesystem has been shutdown or cp_error, return
-	 * -EIO in that case.
-	 */
+	 
 	if (map->m_may_create &&
 	    (is_sbi_flag_set(sbi, SBI_IS_SHUTDOWN) || f2fs_cp_error(sbi)))
 		return -EIO;
@@ -1570,7 +1464,7 @@ static bool f2fs_map_blocks_cached(struct inode *inode,
 	if (map->m_next_extent)
 		*map->m_next_extent = pgoff + map->m_len;
 
-	/* for hardware encryption, but to avoid potential issue in future */
+	 
 	if (flag == F2FS_GET_BLOCK_DIO)
 		f2fs_wait_on_block_writeback_range(inode,
 					map->m_pblk, map->m_len);
@@ -1588,11 +1482,7 @@ static bool f2fs_map_blocks_cached(struct inode *inode,
 	return true;
 }
 
-/*
- * f2fs_map_blocks() tries to find or build mapping relationship which
- * maps continuous logical blocks to physical blocks, and return such
- * info via f2fs_map_blocks structure.
- */
+ 
 int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map, int flag)
 {
 	unsigned int maxblocks = map->m_len;
@@ -1621,7 +1511,7 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map, int flag)
 	map->m_len = 0;
 	map->m_flags = 0;
 
-	/* it only supports block size == page size */
+	 
 	pgofs =	(pgoff_t)map->m_lblk;
 	end = pgofs + maxblocks;
 
@@ -1629,7 +1519,7 @@ next_dnode:
 	if (map->m_may_create)
 		f2fs_map_lock(sbi, flag);
 
-	/* When reading holes, we need its node page */
+	 
 	set_new_dnode(&dn, inode, NULL, NULL, 0);
 	err = f2fs_get_dnode_of_data(&dn, pgofs, mode);
 	if (err) {
@@ -1655,7 +1545,7 @@ next_block:
 		goto sync_out;
 	}
 
-	/* use out-place-update for direct IO under LFS mode */
+	 
 	if (map->m_may_create &&
 	    (is_hole || (f2fs_lfs_mode(sbi) && flag == F2FS_GET_BLOCK_DIO))) {
 		if (unlikely(f2fs_cp_error(sbi))) {
@@ -1713,7 +1603,7 @@ next_block:
 			}
 			break;
 		default:
-			/* for defragment case */
+			 
 			if (map->m_next_pgofs)
 				*map->m_next_pgofs = pgofs + 1;
 			goto sync_out;
@@ -1727,7 +1617,7 @@ next_block:
 		bidx = f2fs_target_device_index(sbi, blkaddr);
 
 	if (map->m_len == 0) {
-		/* reserved delalloc block should be mapped for fiemap. */
+		 
 		if (blkaddr == NEW_ADDR)
 			map->m_flags |= F2FS_MAP_DELALLOC;
 		map->m_flags |= F2FS_MAP_MAPPED;
@@ -1753,7 +1643,7 @@ skip:
 	dn.ofs_in_node++;
 	pgofs++;
 
-	/* preallocate blocks in batch for one dnode page */
+	 
 	if (flag == F2FS_GET_BLOCK_PRE_AIO &&
 			(pgofs == end || dn.ofs_in_node == end_offset)) {
 
@@ -1796,10 +1686,7 @@ skip:
 sync_out:
 
 	if (flag == F2FS_GET_BLOCK_DIO && map->m_flags & F2FS_MAP_MAPPED) {
-		/*
-		 * for hardware encryption, but to avoid potential issue
-		 * in future
-		 */
+		 
 		f2fs_wait_on_block_writeback_range(inode,
 						map->m_pblk, map->m_len);
 
@@ -1956,14 +1843,14 @@ static loff_t max_inode_blocks(struct inode *inode)
 	loff_t result = ADDRS_PER_INODE(inode);
 	loff_t leaf_count = ADDRS_PER_BLOCK(inode);
 
-	/* two direct node blocks */
+	 
 	result += (leaf_count * 2);
 
-	/* two indirect node blocks */
+	 
 	leaf_count *= NIDS_PER_BLOCK;
 	result += (leaf_count * 2);
 
-	/* one double indirect node block */
+	 
 	leaf_count *= NIDS_PER_BLOCK;
 	result += leaf_count;
 
@@ -2038,7 +1925,7 @@ next:
 	if (ret)
 		goto out;
 
-	/* HOLE */
+	 
 	if (!compr_cluster && !(map.m_flags & F2FS_MAP_FLAGS)) {
 		start_blk = next_pgofs;
 
@@ -2050,7 +1937,7 @@ next:
 	}
 
 	compr_appended = false;
-	/* In a case of compressed cluster, append this to the last extent */
+	 
 	if (compr_cluster && ((map.m_flags & F2FS_MAP_DELALLOC) ||
 			!(map.m_flags & F2FS_MAP_FLAGS))) {
 		compr_appended = true;
@@ -2148,21 +2035,16 @@ static int f2fs_read_single_page(struct inode *inode, struct page *page,
 	if (last_block > last_block_in_file)
 		last_block = last_block_in_file;
 
-	/* just zeroing out page which is beyond EOF */
+	 
 	if (block_in_file >= last_block)
 		goto zero_out;
-	/*
-	 * Map blocks using the previous result first.
-	 */
+	 
 	if ((map->m_flags & F2FS_MAP_MAPPED) &&
 			block_in_file > map->m_lblk &&
 			block_in_file < (map->m_lblk + map->m_len))
 		goto got_it;
 
-	/*
-	 * Then do more f2fs_map_blocks() calls until we are
-	 * done with this page.
-	 */
+	 
 	map->m_lblk = block_in_file;
 	map->m_len = last_block - block_in_file;
 
@@ -2195,10 +2077,7 @@ zero_out:
 		goto out;
 	}
 
-	/*
-	 * This page will go to BIO.  Do we need to send this
-	 * BIO off first?
-	 */
+	 
 	if (bio && (!page_is_mergeable(F2FS_I_SB(inode), bio,
 				       *last_block_in_bio, block_nr) ||
 		    !f2fs_crypt_mergeable_bio(bio, inode, page->index, NULL))) {
@@ -2217,10 +2096,7 @@ submit_and_realloc:
 		}
 	}
 
-	/*
-	 * If the page is under writeback, we need to wait for
-	 * its completion to see the correct decrypted data.
-	 */
+	 
 	f2fs_wait_on_block_writeback(inode, block_nr);
 
 	if (bio_add_page(bio, page, blocksize, 0) < blocksize)
@@ -2258,7 +2134,7 @@ int f2fs_read_multi_pages(struct compress_ctx *cc, struct bio **bio_ret,
 	last_block_in_file = bytes_to_blks(inode,
 			f2fs_readpage_limit(inode) + blocksize - 1);
 
-	/* get rid of pages beyond EOF */
+	 
 	for (i = 0; i < cc->cluster_size; i++) {
 		struct page *page = cc->rpages[i];
 
@@ -2278,7 +2154,7 @@ int f2fs_read_multi_pages(struct compress_ctx *cc, struct bio **bio_ret,
 		cc->nr_rpages--;
 	}
 
-	/* we are done since all pages are beyond EOF */
+	 
 	if (f2fs_cluster_is_empty(cc))
 		goto out;
 
@@ -2320,7 +2196,7 @@ skip_reading_dnode:
 			break;
 	}
 
-	/* nothing to decompress */
+	 
 	if (cc->nr_cpages == 0) {
 		ret = 0;
 		goto out_put_dnode;
@@ -2405,10 +2281,7 @@ out:
 }
 #endif
 
-/*
- * This function was originally taken from fs/mpage.c, and customized for f2fs.
- * Major change was from block_size == page_size in f2fs by default.
- */
+ 
 static int f2fs_mpage_readpages(struct inode *inode,
 		struct readahead_control *rac, struct page *page)
 {
@@ -2449,7 +2322,7 @@ static int f2fs_mpage_readpages(struct inode *inode,
 
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 		if (f2fs_compressed_file(inode)) {
-			/* there are remained compressed pages, submit them */
+			 
 			if (!f2fs_cluster_can_merge_page(&cc, page->index)) {
 				ret = f2fs_read_multi_pages(&cc, &bio,
 							max_nr_pages,
@@ -2504,7 +2377,7 @@ next_page:
 
 #ifdef CONFIG_F2FS_FS_COMPRESSION
 		if (f2fs_compressed_file(inode)) {
-			/* last page */
+			 
 			if (nr_pages == 1 && !f2fs_cluster_is_empty(&cc)) {
 				ret = f2fs_read_multi_pages(&cc, &bio,
 							max_nr_pages,
@@ -2533,7 +2406,7 @@ static int f2fs_read_data_folio(struct file *file, struct folio *folio)
 		return -EOPNOTSUPP;
 	}
 
-	/* If the file has inline data, try to read it directly */
+	 
 	if (f2fs_has_inline_data(inode))
 		ret = f2fs_read_inline_data(inode, page);
 	if (ret == -EAGAIN)
@@ -2550,7 +2423,7 @@ static void f2fs_readahead(struct readahead_control *rac)
 	if (!f2fs_is_compress_backend_ready(inode))
 		return;
 
-	/* If the file has inline data, skip readahead */
+	 
 	if (f2fs_has_inline_data(inode))
 		return;
 
@@ -2575,7 +2448,7 @@ retry_encrypt:
 	fio->encrypted_page = fscrypt_encrypt_pagecache_blocks(page,
 					PAGE_SIZE, 0, gfp_flags);
 	if (IS_ERR(fio->encrypted_page)) {
-		/* flush pending IOs and wait for a while in the ENOMEM case */
+		 
 		if (PTR_ERR(fio->encrypted_page) == -ENOMEM) {
 			f2fs_flush_merged_writes(fio->sbi);
 			memalloc_retry_wait(GFP_NOFS);
@@ -2613,14 +2486,12 @@ static inline bool check_inplace_update_policy(struct inode *inode,
 	    utilization(sbi) > SM_I(sbi)->min_ipu_util)
 		return true;
 
-	/*
-	 * IPU for rewrite async pages
-	 */
+	 
 	if (IS_F2FS_IPU_ASYNC(sbi) && fio && fio->op == REQ_OP_WRITE &&
 	    !(fio->op_flags & REQ_SYNC) && !IS_ENCRYPTED(inode))
 		return true;
 
-	/* this is only set during fdatasync */
+	 
 	if (IS_F2FS_IPU_FSYNC(sbi) && is_inode_flag_set(inode, FI_NEED_IPU))
 		return true;
 
@@ -2633,14 +2504,14 @@ static inline bool check_inplace_update_policy(struct inode *inode,
 
 bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
 {
-	/* swap file is migrating in aligned write mode */
+	 
 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
 		return false;
 
 	if (f2fs_is_pinned_file(inode))
 		return true;
 
-	/* if this is cold file, we should overwrite to avoid fragmentation */
+	 
 	if (file_is_cold(inode) && !is_inode_flag_set(inode, FI_OPU_WRITE))
 		return true;
 
@@ -2651,7 +2522,7 @@ bool f2fs_should_update_outplace(struct inode *inode, struct f2fs_io_info *fio)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 
-	/* The below cases were checked when setting it. */
+	 
 	if (f2fs_is_pinned_file(inode))
 		return false;
 	if (fio && is_sbi_flag_set(sbi, SBI_NEED_FSCK))
@@ -2665,7 +2536,7 @@ bool f2fs_should_update_outplace(struct inode *inode, struct f2fs_io_info *fio)
 	if (f2fs_is_atomic_file(inode))
 		return true;
 
-	/* swap file is migrating in aligned write mode */
+	 
 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
 		return true;
 
@@ -2703,7 +2574,7 @@ int f2fs_do_write_data_page(struct f2fs_io_info *fio)
 	bool ipu_force = false;
 	int err = 0;
 
-	/* Use COW inode to make dnode_of_data for atomic write */
+	 
 	if (f2fs_is_atomic_file(inode))
 		set_new_dnode(&dn, F2FS_I(inode)->cow_inode, NULL, NULL, 0);
 	else
@@ -2724,7 +2595,7 @@ int f2fs_do_write_data_page(struct f2fs_io_info *fio)
 		goto got_it;
 	}
 
-	/* Deadlock due to between page->lock and f2fs_lock_op */
+	 
 	if (fio->need_lock == LOCK_REQ && !f2fs_trylock_op(fio->sbi))
 		return -EAGAIN;
 
@@ -2734,7 +2605,7 @@ int f2fs_do_write_data_page(struct f2fs_io_info *fio)
 
 	fio->old_blkaddr = dn.data_blkaddr;
 
-	/* This page is already truncated */
+	 
 	if (fio->old_blkaddr == NULL_ADDR) {
 		ClearPageUptodate(page);
 		clear_page_private_gcing(page);
@@ -2749,14 +2620,11 @@ got_it:
 		goto out_writepage;
 	}
 
-	/* wait for GCed page writeback via META_MAPPING */
+	 
 	if (fio->post_read)
 		f2fs_wait_on_block_writeback(inode, fio->old_blkaddr);
 
-	/*
-	 * If current allocation needs SSR,
-	 * it had better in-place writes for updated data.
-	 */
+	 
 	if (ipu_force ||
 		(__is_valid_data_blkaddr(fio->old_blkaddr) &&
 					need_inplace_update(fio))) {
@@ -2804,7 +2672,7 @@ got_it:
 	if (fio->compr_blocks && fio->old_blkaddr == COMPRESS_ADDR)
 		f2fs_i_compr_blocks_update(inode, fio->compr_blocks - 1, false);
 
-	/* LFS mode write path */
+	 
 	f2fs_outplace_write_data(&dn, fio);
 	trace_f2fs_do_write_data_page(page, OPU);
 	set_inode_flag(inode, FI_APPEND_WRITE);
@@ -2857,18 +2725,15 @@ int f2fs_write_single_data_page(struct page *page, int *submitted,
 
 	trace_f2fs_writepage(page, DATA);
 
-	/* we should bypass data pages to proceed the kworker jobs */
+	 
 	if (unlikely(f2fs_cp_error(sbi))) {
 		mapping_set_error(page->mapping, -EIO);
-		/*
-		 * don't drop any dirty dentry pages for keeping lastest
-		 * directory structure.
-		 */
+		 
 		if (S_ISDIR(inode->i_mode) &&
 				!is_sbi_flag_set(sbi, SBI_IS_CLOSE))
 			goto redirty_out;
 
-		/* keep data pages in remount-ro mode */
+		 
 		if (F2FS_OPTION(sbi).errors == MOUNT_ERRORS_READONLY)
 			goto redirty_out;
 		goto out;
@@ -2882,10 +2747,7 @@ int f2fs_write_single_data_page(struct page *page, int *submitted,
 			compr_blocks)
 		goto write;
 
-	/*
-	 * If the offset is out-of-range of file size,
-	 * this page does not have to be written to disk.
-	 */
+	 
 	offset = i_size & (PAGE_SIZE - 1);
 	if ((page->index >= end_index + 1) || !offset)
 		goto out;
@@ -2895,13 +2757,9 @@ write:
 	if (f2fs_is_drop_cache(inode))
 		goto out;
 
-	/* Dentry/quota blocks are controlled by checkpoint */
+	 
 	if (S_ISDIR(inode->i_mode) || quota_inode) {
-		/*
-		 * We need to wait for node_write to avoid block allocation during
-		 * checkpoint. This can only happen to quota writes which can cause
-		 * the below discard race condition.
-		 */
+		 
 		if (quota_inode)
 			f2fs_down_read(&sbi->node_write);
 
@@ -2981,12 +2839,7 @@ out:
 
 redirty_out:
 	redirty_page_for_writepage(wbc, page);
-	/*
-	 * pageout() in MM translates EAGAIN, so calls handle_write_error()
-	 * -> mapping_set_error() -> set_bit(AS_EIO, ...).
-	 * file_write_and_wait_range() will see EIO error, which is critical
-	 * to return value of fsync() followed by atomic_write failure to user.
-	 */
+	 
 	if (!err || wbc->for_reclaim)
 		return AOP_WRITEPAGE_ACTIVATE;
 	unlock_page(page);
@@ -3015,11 +2868,7 @@ out:
 						wbc, FS_DATA_IO, 0, true);
 }
 
-/*
- * This function was copied from write_cache_pages from mm/page-writeback.c.
- * The major change is making write step of cold data page separately from
- * warm/hot data page.
- */
+ 
 static int f2fs_write_cache_pages(struct address_space *mapping,
 					struct writeback_control *wbc,
 					enum iostat_type io_type)
@@ -3053,7 +2902,7 @@ static int f2fs_write_cache_pages(struct address_space *mapping,
 	int nr_pages;
 	unsigned int max_pages = F2FS_ONSTACK_PAGES;
 	pgoff_t index;
-	pgoff_t end;		/* Inclusive */
+	pgoff_t end;		 
 	pgoff_t done_index;
 	int range_whole = 0;
 	xa_mark_t tag;
@@ -3079,7 +2928,7 @@ static int f2fs_write_cache_pages(struct address_space *mapping,
 		clear_inode_flag(mapping->host, FI_HOT_DATA);
 
 	if (wbc->range_cyclic) {
-		index = mapping->writeback_index; /* prev offset */
+		index = mapping->writeback_index;  
 		end = -1;
 	} else {
 		index = wbc->range_start >> PAGE_SHIFT;
@@ -3181,7 +3030,7 @@ readd:
 				}
 			}
 #endif
-			/* give a priority to WB_SYNC threads */
+			 
 			if (atomic_read(&sbi->wb_sync_req[DATA]) &&
 					wbc->sync_mode == WB_SYNC_NONE) {
 				done = 1;
@@ -3201,7 +3050,7 @@ continue_unlock:
 			}
 
 			if (!folio_test_dirty(folio)) {
-				/* someone wrote it for us */
+				 
 				goto continue_unlock;
 			}
 
@@ -3233,10 +3082,7 @@ result:
 			wbc->nr_to_write -= submitted;
 
 			if (unlikely(ret)) {
-				/*
-				 * keep nr_to_write, since vfs uses this to
-				 * get # of written pages.
-				 */
+				 
 				if (ret == AOP_WRITEPAGE_ACTIVATE) {
 					ret = 0;
 					goto next;
@@ -3267,7 +3113,7 @@ next:
 		cond_resched();
 	}
 #ifdef CONFIG_F2FS_FS_COMPRESSION
-	/* flush remained pages in compress cluster */
+	 
 	if (f2fs_compressed_file(inode) && !f2fs_cluster_is_empty(&cc)) {
 		ret = f2fs_write_multi_pages(&cc, &submitted, wbc, io_type);
 		nwritten += submitted;
@@ -3293,7 +3139,7 @@ next:
 	if (nwritten)
 		f2fs_submit_merged_write_cond(F2FS_M_SB(mapping), mapping->host,
 								NULL, 0, DATA);
-	/* submit cached bio of IPU write */
+	 
 	if (bio)
 		f2fs_submit_merged_ipu_write(sbi, &bio, NULL);
 
@@ -3308,7 +3154,7 @@ next:
 static inline bool __should_serialize_io(struct inode *inode,
 					struct writeback_control *wbc)
 {
-	/* to avoid deadlock in path of data flush */
+	 
 	if (F2FS_I(inode)->wb_task)
 		return false;
 
@@ -3336,15 +3182,15 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
 	int ret;
 	bool locked = false;
 
-	/* deal with chardevs and other special file */
+	 
 	if (!mapping->a_ops->writepage)
 		return 0;
 
-	/* skip writing if there is no dirty page in this inode */
+	 
 	if (!get_dirty_pages(inode) && wbc->sync_mode == WB_SYNC_NONE)
 		return 0;
 
-	/* during POR, we don't need to trigger writepage at all. */
+	 
 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
 		goto skip_write;
 
@@ -3354,17 +3200,17 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
 			f2fs_available_free_memory(sbi, DIRTY_DENTS))
 		goto skip_write;
 
-	/* skip writing in file defragment preparing stage */
+	 
 	if (is_inode_flag_set(inode, FI_SKIP_WRITES))
 		goto skip_write;
 
 	trace_f2fs_writepages(mapping->host, wbc, DATA);
 
-	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
+	 
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		atomic_inc(&sbi->wb_sync_req[DATA]);
 	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
-		/* to avoid potential deadlock */
+		 
 		if (current->plug)
 			blk_finish_plug(current->plug);
 		goto skip_write;
@@ -3384,10 +3230,7 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
 
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		atomic_dec(&sbi->wb_sync_req[DATA]);
-	/*
-	 * if some pages were truncated, we cannot guarantee its mapping->host
-	 * to detect pending bios.
-	 */
+	 
 
 	f2fs_remove_dirty_inode(inode);
 	return ret;
@@ -3415,7 +3258,7 @@ void f2fs_write_failed(struct inode *inode, loff_t to)
 	if (IS_NOQUOTA(inode))
 		return;
 
-	/* In the fs-verity case, f2fs_end_enable_verity() does the truncate */
+	 
 	if (to > i_size && !f2fs_verity_in_progress(inode)) {
 		f2fs_down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
 		filemap_invalidate_lock(inode->i_mapping);
@@ -3440,14 +3283,11 @@ static int prepare_write_begin(struct f2fs_sb_info *sbi,
 	int flag = F2FS_GET_BLOCK_PRE_AIO;
 	int err = 0;
 
-	/*
-	 * If a whole page is being written and we already preallocated all the
-	 * blocks, then there is no need to get a block address now.
-	 */
+	 
 	if (len == PAGE_SIZE && is_inode_flag_set(inode, FI_PREALLOCATED_ALL))
 		return 0;
 
-	/* f2fs_lock_op avoids race between write CP and convert_inline_page */
+	 
 	if (f2fs_has_inline_data(inode)) {
 		if (pos + len > MAX_INLINE_DATA(inode))
 			flag = F2FS_GET_BLOCK_DEFAULT;
@@ -3459,7 +3299,7 @@ static int prepare_write_begin(struct f2fs_sb_info *sbi,
 	}
 
 restart:
-	/* check inline_data */
+	 
 	ipage = f2fs_get_node_page(sbi, inode->i_ino);
 	if (IS_ERR(ipage)) {
 		err = PTR_ERR(ipage);
@@ -3488,7 +3328,7 @@ restart:
 			goto out;
 		}
 
-		/* hole case */
+		 
 		err = f2fs_get_dnode_of_data(&dn, index, LOOKUP_NODE);
 		if (!err && dn.data_blkaddr != NULL_ADDR)
 			goto out;
@@ -3500,7 +3340,7 @@ restart:
 	}
 out:
 	if (!err) {
-		/* convert_inline_page can make node_changed */
+		 
 		*blk_addr = dn.data_blkaddr;
 		*node_changed = dn.node_changed;
 	}
@@ -3526,7 +3366,7 @@ static int __find_data_block(struct inode *inode, pgoff_t index,
 
 	if (!f2fs_lookup_read_extent_cache_block(inode, index,
 						 &dn.data_blkaddr)) {
-		/* hole case */
+		 
 		err = f2fs_get_dnode_of_data(&dn, index, LOOKUP_NODE);
 		if (err) {
 			dn.data_blkaddr = NULL_ADDR;
@@ -3578,11 +3418,11 @@ static int prepare_atomic_write_begin(struct f2fs_sb_info *sbi,
 	int err = 0;
 	block_t ori_blk_addr = NULL_ADDR;
 
-	/* If pos is beyond the end of file, reserve a new block in COW inode */
+	 
 	if ((pos & PAGE_MASK) >= i_size_read(inode))
 		goto reserve_block;
 
-	/* Look for the block in COW inode first */
+	 
 	err = __find_data_block(cow_inode, index, blk_addr);
 	if (err) {
 		return err;
@@ -3594,13 +3434,13 @@ static int prepare_atomic_write_begin(struct f2fs_sb_info *sbi,
 	if (is_inode_flag_set(inode, FI_ATOMIC_REPLACE))
 		goto reserve_block;
 
-	/* Look for the block in the original inode */
+	 
 	err = __find_data_block(inode, index, &ori_blk_addr);
 	if (err)
 		return err;
 
 reserve_block:
-	/* Finally, we should reserve a new block in COW inode for the update */
+	 
 	err = __reserve_data_block(cow_inode, index, blk_addr, node_changed);
 	if (err)
 		return err;
@@ -3630,11 +3470,7 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
 		goto fail;
 	}
 
-	/*
-	 * We should check this at this moment to avoid deadlock on inode page
-	 * and #0 page. The locking rule for inline_data conversion should be:
-	 * lock_page(page #0) -> lock_page(inode_page)
-	 */
+	 
 	if (index != 0) {
 		err = f2fs_convert_inline_inode(inode);
 		if (err)
@@ -3662,10 +3498,7 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
 #endif
 
 repeat:
-	/*
-	 * Do not use grab_cache_page_write_begin() to avoid deadlock due to
-	 * wait_for_stable_page. Will wait that below with our IO control.
-	 */
+	 
 	page = f2fs_pagecache_get_page(mapping, index,
 				FGP_LOCK | FGP_WRITE | FGP_CREAT, GFP_NOFS);
 	if (!page) {
@@ -3673,7 +3506,7 @@ repeat:
 		goto fail;
 	}
 
-	/* TODO: cluster can be compressed due to race with .writepage */
+	 
 
 	*pagep = page;
 
@@ -3692,7 +3525,7 @@ repeat:
 		f2fs_balance_fs(sbi, true);
 		lock_page(page);
 		if (page->mapping != mapping) {
-			/* The page got truncated from under us */
+			 
 			f2fs_put_page(page, 1);
 			goto repeat;
 		}
@@ -3752,11 +3585,7 @@ static int f2fs_write_end(struct file *file,
 
 	trace_f2fs_write_end(inode, pos, len, copied);
 
-	/*
-	 * This should be come from len == PAGE_SIZE, and we expect copied
-	 * should be PAGE_SIZE. Otherwise, we treat it with zero copied and
-	 * let generic_perform_write() try to copy data again through copied=0.
-	 */
+	 
 	if (!PageUptodate(page)) {
 		if (unlikely(copied != len))
 			copied = 0;
@@ -3765,7 +3594,7 @@ static int f2fs_write_end(struct file *file,
 	}
 
 #ifdef CONFIG_F2FS_FS_COMPRESSION
-	/* overwrite compressed file */
+	 
 	if (f2fs_compressed_file(inode) && fsdata) {
 		f2fs_compress_write_end(inode, fsdata, page->index, copied);
 		f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
@@ -3819,7 +3648,7 @@ void f2fs_invalidate_folio(struct folio *folio, size_t offset, size_t length)
 
 bool f2fs_release_folio(struct folio *folio, gfp_t wait)
 {
-	/* If this is dirty folio, keep private data */
+	 
 	if (folio_test_dirty(folio))
 		return false;
 
@@ -3883,11 +3712,11 @@ static sector_t f2fs_bmap(struct address_space *mapping, sector_t block)
 	if (f2fs_has_inline_data(inode))
 		goto out;
 
-	/* make sure allocating whole blocks */
+	 
 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY))
 		filemap_write_and_wait(mapping);
 
-	/* Block number less than F2FS MAX BLOCKS */
+	 
 	if (unlikely(block >= max_file_blocks(inode)))
 		goto out;
 
@@ -3990,10 +3819,7 @@ static int check_swap_activate(struct swap_info_struct *sis,
 	unsigned int not_aligned = 0;
 	int ret = 0;
 
-	/*
-	 * Map all the blocks into the extent list.  This code doesn't try
-	 * to be very smart.
-	 */
+	 
 	cur_lblock = 0;
 	last_lblock = bytes_to_blks(inode, i_size_read(inode));
 
@@ -4014,7 +3840,7 @@ retry:
 		if (ret)
 			goto out;
 
-		/* hole */
+		 
 		if (!(map.m_flags & F2FS_MAP_FLAGS)) {
 			f2fs_err(sbi, "Swapfile has holes");
 			ret = -EINVAL;
@@ -4033,7 +3859,7 @@ retry:
 				nr_pblocks -= blks_per_sec;
 
 			if (!nr_pblocks) {
-				/* this extent is last one */
+				 
 				nr_pblocks = map.m_len;
 				f2fs_warn(sbi, "Swapfile: last extent is not aligned to section");
 				goto next;
@@ -4049,16 +3875,14 @@ next:
 		if (cur_lblock + nr_pblocks >= sis->max)
 			nr_pblocks = sis->max - cur_lblock;
 
-		if (cur_lblock) {	/* exclude the header page */
+		if (cur_lblock) {	 
 			if (pblock < lowest_pblock)
 				lowest_pblock = pblock;
 			if (pblock + nr_pblocks - 1 > highest_pblock)
 				highest_pblock = pblock + nr_pblocks - 1;
 		}
 
-		/*
-		 * We found a PAGE_SIZE-length, PAGE_SIZE-aligned run of blocks
-		 */
+		 
 		ret = add_swap_extent(sis, cur_lblock, nr_pblocks, pblock);
 		if (ret < 0)
 			goto out;
@@ -4068,7 +3892,7 @@ next:
 	ret = nr_extents;
 	*span = 1 + highest_pblock - lowest_pblock;
 	if (cur_lblock == 0)
-		cur_lblock = 1;	/* force Empty message */
+		cur_lblock = 1;	 
 	sis->max = cur_lblock;
 	sis->pages = cur_lblock - 1;
 	sis->highest_bit = cur_lblock - 1;
@@ -4240,17 +4064,10 @@ static int f2fs_iomap_begin(struct inode *inode, loff_t offset, loff_t length,
 
 	iomap->offset = blks_to_bytes(inode, map.m_lblk);
 
-	/*
-	 * When inline encryption is enabled, sometimes I/O to an encrypted file
-	 * has to be broken up to guarantee DUN contiguity.  Handle this by
-	 * limiting the length of the mapping returned.
-	 */
+	 
 	map.m_len = fscrypt_limit_io_blocks(inode, map.m_lblk, map.m_len);
 
-	/*
-	 * We should never see delalloc or compressed extents here based on
-	 * prior flushing and checks.
-	 */
+	 
 	if (WARN_ON_ONCE(map.m_pblk == NEW_ADDR))
 		return -EINVAL;
 	if (WARN_ON_ONCE(map.m_pblk == COMPRESS_ADDR))

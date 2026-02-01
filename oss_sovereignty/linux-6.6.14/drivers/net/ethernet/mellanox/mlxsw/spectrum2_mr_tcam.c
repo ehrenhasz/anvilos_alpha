@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -56,7 +56,7 @@ static int mlxsw_sp2_mr_tcam_ipv4_init(struct mlxsw_sp2_mr_tcam *mr_tcam)
 	struct mlxsw_afk_element_usage elusage;
 	int err;
 
-	/* Initialize IPv4 ACL group. */
+	 
 	mlxsw_afk_element_usage_fill(&elusage,
 				     mlxsw_sp2_mr_tcam_usage_ipv4,
 				     ARRAY_SIZE(mlxsw_sp2_mr_tcam_usage_ipv4));
@@ -69,7 +69,7 @@ static int mlxsw_sp2_mr_tcam_ipv4_init(struct mlxsw_sp2_mr_tcam *mr_tcam)
 	if (IS_ERR(mr_tcam->ruleset4))
 		return PTR_ERR(mr_tcam->ruleset4);
 
-	/* MC Router groups should be bound before routes are inserted. */
+	 
 	err = mlxsw_sp2_mr_tcam_bind_group(mr_tcam->mlxsw_sp,
 					   MLXSW_REG_PEMRBT_PROTO_IPV4,
 					   mr_tcam->ruleset4);
@@ -106,7 +106,7 @@ static int mlxsw_sp2_mr_tcam_ipv6_init(struct mlxsw_sp2_mr_tcam *mr_tcam)
 	struct mlxsw_afk_element_usage elusage;
 	int err;
 
-	/* Initialize IPv6 ACL group */
+	 
 	mlxsw_afk_element_usage_fill(&elusage,
 				     mlxsw_sp2_mr_tcam_usage_ipv6,
 				     ARRAY_SIZE(mlxsw_sp2_mr_tcam_usage_ipv6));
@@ -119,7 +119,7 @@ static int mlxsw_sp2_mr_tcam_ipv6_init(struct mlxsw_sp2_mr_tcam *mr_tcam)
 	if (IS_ERR(mr_tcam->ruleset6))
 		return PTR_ERR(mr_tcam->ruleset6);
 
-	/* MC Router groups should be bound before routes are inserted. */
+	 
 	err = mlxsw_sp2_mr_tcam_bind_group(mr_tcam->mlxsw_sp,
 					   MLXSW_REG_PEMRBT_PROTO_IPV6,
 					   mr_tcam->ruleset6);

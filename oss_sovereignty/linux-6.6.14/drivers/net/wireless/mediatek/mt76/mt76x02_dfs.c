@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x02.h"
 
@@ -26,7 +24,7 @@
 }
 
 static const struct mt76x02_radar_specs etsi_radar_specs[] = {
-	/* 20MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 15, 106, 150, 10, 4900, 100096, 10, 0,
 		   0x7fffffff, 0x155cc0, 0x19cc),
 	RADAR_SPEC(0, 40, 4, 59, 96, 380, 150, 4900, 100096, 40, 0,
@@ -35,7 +33,7 @@ static const struct mt76x02_radar_specs etsi_radar_specs[] = {
 		   0x7fffffff, 0x155cc0, 0x19dd),
 	RADAR_SPEC(8, 8, 2, 9, 106, 150, 32, 4900, 296704, 32, 0,
 		   0x7fffffff, 0x2191c0, 0x15cc),
-	/* 40MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 15, 106, 150, 10, 4900, 100096, 10, 0,
 		   0x7fffffff, 0x155cc0, 0x19cc),
 	RADAR_SPEC(0, 40, 4, 59, 96, 380, 150, 4900, 100096, 40, 0,
@@ -44,7 +42,7 @@ static const struct mt76x02_radar_specs etsi_radar_specs[] = {
 		   0x7fffffff, 0x155cc0, 0x19dd),
 	RADAR_SPEC(8, 8, 2, 9, 106, 150, 32, 4900, 296704, 32, 0,
 		   0x7fffffff, 0x2191c0, 0x15cc),
-	/* 80MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 15, 106, 150, 10, 4900, 100096, 10, 0,
 		   0x7fffffff, 0x155cc0, 0x19cc),
 	RADAR_SPEC(0, 40, 4, 59, 96, 380, 150, 4900, 100096, 40, 0,
@@ -56,7 +54,7 @@ static const struct mt76x02_radar_specs etsi_radar_specs[] = {
 };
 
 static const struct mt76x02_radar_specs fcc_radar_specs[] = {
-	/* 20MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 12, 106, 150, 5, 2900, 80100, 5, 0,
 		   0x7fffffff, 0xfe808, 0x13dc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -65,7 +63,7 @@ static const struct mt76x02_radar_specs fcc_radar_specs[] = {
 		   0x7fffffff, 0xfe808, 0x12cc),
 	RADAR_SPEC(2, 60, 15, 63, 640, 2080, 32, 19600, 40200, 32, 0,
 		   0x3938700, 0x57bcf00, 0x1289),
-	/* 40MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 12, 106, 150, 5, 2900, 80100, 5, 0,
 		   0x7fffffff, 0xfe808, 0x13dc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -74,7 +72,7 @@ static const struct mt76x02_radar_specs fcc_radar_specs[] = {
 		   0x7fffffff, 0xfe808, 0x12cc),
 	RADAR_SPEC(2, 60, 15, 63, 640, 2080, 32, 19600, 40200, 32, 0,
 		   0x3938700, 0x57bcf00, 0x1289),
-	/* 80MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 14, 106, 150, 15, 2900, 80100, 15, 0,
 		   0x7fffffff, 0xfe808, 0x16cc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -86,7 +84,7 @@ static const struct mt76x02_radar_specs fcc_radar_specs[] = {
 };
 
 static const struct mt76x02_radar_specs jp_w56_radar_specs[] = {
-	/* 20MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 7, 106, 150, 5, 2900, 80100, 5, 0,
 		   0x7fffffff, 0x14c080, 0x13dc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -95,7 +93,7 @@ static const struct mt76x02_radar_specs jp_w56_radar_specs[] = {
 		   0x7fffffff, 0x14c080, 0x12cc),
 	RADAR_SPEC(2, 60, 15, 48, 940, 2080, 32, 19600, 40200, 32, 0,
 		   0x3938700, 0X57bcf00, 0x1289),
-	/* 40MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 7, 106, 150, 5, 2900, 80100, 5, 0,
 		   0x7fffffff, 0x14c080, 0x13dc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -104,7 +102,7 @@ static const struct mt76x02_radar_specs jp_w56_radar_specs[] = {
 		   0x7fffffff, 0x14c080, 0x12cc),
 	RADAR_SPEC(2, 60, 15, 48, 940, 2080, 32, 19600, 40200, 32, 0,
 		   0x3938700, 0X57bcf00, 0x1289),
-	/* 80MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 9, 106, 150, 15, 2900, 80100, 15, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	RADAR_SPEC(0, 8, 2, 7, 106, 140, 5, 27600, 27900, 5, 0,
@@ -116,21 +114,21 @@ static const struct mt76x02_radar_specs jp_w56_radar_specs[] = {
 };
 
 static const struct mt76x02_radar_specs jp_w53_radar_specs[] = {
-	/* 20MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 9, 106, 150, 20, 28400, 77000, 20, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	{ 0 },
 	RADAR_SPEC(0, 40, 4, 44, 96, 200, 150, 28400, 77000, 60, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	{ 0 },
-	/* 40MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 9, 106, 150, 20, 28400, 77000, 20, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	{ 0 },
 	RADAR_SPEC(0, 40, 4, 44, 96, 200, 150, 28400, 77000, 60, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	{ 0 },
-	/* 80MHz */
+	 
 	RADAR_SPEC(0, 8, 2, 9, 106, 150, 20, 28400, 77000, 20, 0,
 		   0x7fffffff, 0x14c080, 0x16cc),
 	{ 0 },
@@ -208,10 +206,10 @@ static void mt76x02_dfs_detector_reset(struct mt76x02_dev *dev)
 	struct mt76x02_dfs_sequence *seq, *tmp_seq;
 	int i;
 
-	/* reset hw detector */
+	 
 	mt76_wr(dev, MT_BBP(DFS, 1), 0xf);
 
-	/* reset sw detector */
+	 
 	for (i = 0; i < ARRAY_SIZE(dfs_pd->event_rb); i++) {
 		dfs_pd->event_rb[i].h_rb = 0;
 		dfs_pd->event_rb[i].t_rb = 0;
@@ -233,7 +231,7 @@ static bool mt76x02_dfs_check_chirp(struct mt76x02_dev *dev)
 	delta_ts = current_ts - dfs_pd->chirp_pulse_ts;
 	dfs_pd->chirp_pulse_ts = current_ts;
 
-	/* 12 sec */
+	 
 	if (delta_ts <= (12 * (1 << 20))) {
 		if (++dfs_pd->chirp_pulse_cnt > 8)
 			ret = true;
@@ -249,18 +247,18 @@ static void mt76x02_dfs_get_hw_pulse(struct mt76x02_dev *dev,
 {
 	u32 data;
 
-	/* select channel */
+	 
 	data = (MT_DFS_CH_EN << 16) | pulse->engine;
 	mt76_wr(dev, MT_BBP(DFS, 0), data);
 
-	/* reported period */
+	 
 	pulse->period = mt76_rr(dev, MT_BBP(DFS, 19));
 
-	/* reported width */
+	 
 	pulse->w1 = mt76_rr(dev, MT_BBP(DFS, 20));
 	pulse->w2 = mt76_rr(dev, MT_BBP(DFS, 23));
 
-	/* reported burst number */
+	 
 	pulse->burst = mt76_rr(dev, MT_BBP(DFS, 22));
 }
 
@@ -282,7 +280,7 @@ static bool mt76x02_dfs_check_hw_pulse(struct mt76x02_dev *dev,
 			break;
 		}
 
-		/* check short pulse*/
+		 
 		if (pulse->w1 < 120)
 			ret = (pulse->period >= 2900 &&
 			       (pulse->period <= 4700 ||
@@ -290,7 +288,7 @@ static bool mt76x02_dfs_check_hw_pulse(struct mt76x02_dev *dev,
 			       (pulse->period <= 6800 ||
 				pulse->period >= 10200) &&
 			       pulse->period <= 61600);
-		else if (pulse->w1 < 130) /* 120 - 130 */
+		else if (pulse->w1 < 130)  
 			ret = (pulse->period >= 2900 &&
 			       pulse->period <= 61600);
 		else
@@ -309,7 +307,7 @@ static bool mt76x02_dfs_check_hw_pulse(struct mt76x02_dev *dev,
 	case NL80211_DFS_JP:
 		if (dev->mphy.chandef.chan->center_freq >= 5250 &&
 		    dev->mphy.chandef.chan->center_freq <= 5350) {
-			/* JPW53 */
+			 
 			if (pulse->w1 <= 130)
 				ret = (pulse->period >= 28360 &&
 				       (pulse->period <= 28700 ||
@@ -326,7 +324,7 @@ static bool mt76x02_dfs_check_hw_pulse(struct mt76x02_dev *dev,
 			break;
 		}
 
-		/* check short pulse*/
+		 
 		if (pulse->w1 < 120)
 			ret = (pulse->period >= 2900 &&
 			       (pulse->period <= 4700 ||
@@ -338,7 +336,7 @@ static bool mt76x02_dfs_check_hw_pulse(struct mt76x02_dev *dev,
 			       (pulse->period <= 28700 ||
 				pulse->period >= 79900) &&
 			       pulse->period <= 80100);
-		else if (pulse->w1 < 130) /* 120 - 130 */
+		else if (pulse->w1 < 130)  
 			ret = (pulse->period >= 2900 &&
 			       (pulse->period <= 10100 ||
 				pulse->period >= 27560) &&
@@ -364,15 +362,7 @@ static bool mt76x02_dfs_fetch_event(struct mt76x02_dev *dev,
 {
 	u32 data;
 
-	/* 1st: DFS_R37[31]: 0 (engine 0) - 1 (engine 2)
-	 * 2nd: DFS_R37[21:0]: pulse time
-	 * 3rd: DFS_R37[11:0]: pulse width
-	 * 3rd: DFS_R37[25:16]: phase
-	 * 4th: DFS_R37[12:0]: current pwr
-	 * 4th: DFS_R37[21:16]: pwr stable counter
-	 *
-	 * 1st: DFS_R37[31:0] set to 0xffffffff means no event detected
-	 */
+	 
 	data = mt76_rr(dev, MT_BBP(DFS, 37));
 	if (!MT_DFS_CHECK_EVENT(data))
 		return false;
@@ -411,7 +401,7 @@ static void mt76x02_dfs_queue_event(struct mt76x02_dev *dev,
 	struct mt76x02_dfs_pattern_detector *dfs_pd = &dev->dfs_pd;
 	struct mt76x02_dfs_event_rb *event_buff;
 
-	/* add radar event to ring buffer */
+	 
 	event_buff = event->engine == 2 ? &dfs_pd->event_rb[1]
 					: &dfs_pd->event_rb[0];
 	event_buff->data[event_buff->t_rb] = *event;
@@ -565,7 +555,7 @@ static void mt76x02_dfs_add_events(struct mt76x02_dev *dev)
 	struct mt76x02_dfs_event event;
 	int i, seq_len;
 
-	/* disable debug mode */
+	 
 	mt76x02_dfs_set_capture_mode_ctrl(dev, false);
 	for (i = 0; i < MT_DFS_EVENT_LOOP; i++) {
 		if (!mt76x02_dfs_fetch_event(dev, &event))
@@ -599,7 +589,7 @@ static void mt76x02_dfs_check_event_window(struct mt76x02_dev *dev)
 		while (event_buff->h_rb != event_buff->t_rb) {
 			event = &event_buff->data[event_buff->h_rb];
 
-			/* sorted list */
+			 
 			if (time_is_after_jiffies(event->fetch_ts +
 						  MT_DFS_EVENT_WINDOW))
 				break;
@@ -629,7 +619,7 @@ static void mt76x02_dfs_tasklet(struct tasklet_struct *t)
 		mt76x02_dfs_add_events(dev);
 		radar_detected = mt76x02_dfs_check_detection(dev);
 		if (radar_detected) {
-			/* sw detector rx radar pattern */
+			 
 			ieee80211_radar_detected(dev->mt76.hw);
 			mt76x02_dfs_detector_reset(dev);
 
@@ -656,7 +646,7 @@ static void mt76x02_dfs_tasklet(struct tasklet_struct *t)
 			continue;
 		}
 
-		/* hw detector rx radar pattern */
+		 
 		dfs_pd->stats[i].hw_pattern++;
 		ieee80211_radar_detected(dev->mt76.hw);
 		mt76x02_dfs_detector_reset(dev);
@@ -664,7 +654,7 @@ static void mt76x02_dfs_tasklet(struct tasklet_struct *t)
 		return;
 	}
 
-	/* reset hw detector */
+	 
 	mt76_wr(dev, MT_BBP(DFS, 1), 0xf);
 
 out:
@@ -745,49 +735,49 @@ static void mt76x02_dfs_set_bbp_params(struct mt76x02_dev *dev)
 	mt76_wr(dev, MT_BBP(DFS, 3), data);
 
 	for (i = 0; i < MT_DFS_NUM_ENGINES; i++) {
-		/* configure engine */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 0), i);
 
-		/* detection mode + avg_len */
+		 
 		data = ((radar_specs[i].avg_len & 0x1ff) << 16) |
 		       (radar_specs[i].mode & 0xf);
 		mt76_wr(dev, MT_BBP(DFS, 4), data);
 
-		/* dfs energy */
+		 
 		data = ((radar_specs[i].e_high & 0x0fff) << 16) |
 		       (radar_specs[i].e_low & 0x0fff);
 		mt76_wr(dev, MT_BBP(DFS, 5), data);
 
-		/* dfs period */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 7), radar_specs[i].t_low);
 		mt76_wr(dev, MT_BBP(DFS, 9), radar_specs[i].t_high);
 
-		/* dfs burst */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 11), radar_specs[i].b_low);
 		mt76_wr(dev, MT_BBP(DFS, 13), radar_specs[i].b_high);
 
-		/* dfs width */
+		 
 		data = ((radar_specs[i].w_high & 0x0fff) << 16) |
 		       (radar_specs[i].w_low & 0x0fff);
 		mt76_wr(dev, MT_BBP(DFS, 14), data);
 
-		/* dfs margins */
+		 
 		data = (radar_specs[i].w_margin << 16) |
 		       radar_specs[i].t_margin;
 		mt76_wr(dev, MT_BBP(DFS, 15), data);
 
-		/* dfs event expiration */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 17), radar_specs[i].event_expiration);
 
-		/* dfs pwr adj */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 30), radar_specs[i].pwr_jmp);
 	}
 
-	/* reset status */
+	 
 	mt76_wr(dev, MT_BBP(DFS, 1), 0xf);
 	mt76_wr(dev, MT_BBP(DFS, 36), 0x3);
 
-	/* enable detection*/
+	 
 	mt76_wr(dev, MT_BBP(DFS, 0), MT_DFS_CH_EN << 16);
 	mt76_wr(dev, MT_BBP(IBI, 11), 0x0c350001);
 }
@@ -813,9 +803,9 @@ void mt76x02_phy_dfs_adjust_agc(struct mt76x02_dev *dev)
 	if (is_mt76x2(dev)) {
 		mt76_wr(dev, MT_BBP(DFS, 32), 0x00040071);
 	} else {
-		/* disable hw detector */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 0), 0);
-		/* enable hw detector */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 0), MT_DFS_CH_EN << 16);
 	}
 }
@@ -826,16 +816,16 @@ void mt76x02_dfs_init_params(struct mt76x02_dev *dev)
 	if (mt76_phy_dfs_state(&dev->mphy) > MT_DFS_STATE_DISABLED) {
 		mt76x02_dfs_init_sw_detector(dev);
 		mt76x02_dfs_set_bbp_params(dev);
-		/* enable debug mode */
+		 
 		mt76x02_dfs_set_capture_mode_ctrl(dev, true);
 
 		mt76x02_irq_enable(dev, MT_INT_GPTIMER);
 		mt76_rmw_field(dev, MT_INT_TIMER_EN,
 			       MT_INT_TIMER_EN_GP_TIMER_EN, 1);
 	} else {
-		/* disable hw detector */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 0), 0);
-		/* clear detector status */
+		 
 		mt76_wr(dev, MT_BBP(DFS, 1), 0xf);
 		if (mt76_chip(&dev->mt76) == 0x7610 ||
 		    mt76_chip(&dev->mt76) == 0x7630)

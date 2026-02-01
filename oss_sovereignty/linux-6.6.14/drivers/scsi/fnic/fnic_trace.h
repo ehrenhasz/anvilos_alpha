@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2012 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef __FNIC_TRACE_H__
 #define __FNIC_TRACE_H__
@@ -8,14 +8,11 @@
 #define FC_TRC_SIZE_BYTES 256
 #define FC_TRC_HEADER_SIZE sizeof(struct fc_trace_hdr)
 
-/*
- * Fisrt bit of FNIC_FC_RECV and FNIC_FC_SEND is used to represent the type
- * of frame 1 => Eth frame, 0=> FC frame
- */
+ 
 
-#define FNIC_FC_RECV 0x52 /* Character R */
-#define FNIC_FC_SEND 0x54 /* Character T */
-#define FNIC_FC_LE 0x4C /* Character L */
+#define FNIC_FC_RECV 0x52  
+#define FNIC_FC_SEND 0x54  
+#define FNIC_FC_LE 0x4C  
 
 extern ssize_t simple_read_from_buffer(void __user *to,
 					  size_t count,
@@ -100,7 +97,7 @@ void fnic_debugfs_terminate(void);
 void fnic_trace_debugfs_init(void);
 void fnic_trace_debugfs_terminate(void);
 
-/* Fnic FC CTLR Trace releated function */
+ 
 int fnic_fc_trace_init(void);
 void fnic_fc_trace_free(void);
 int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,

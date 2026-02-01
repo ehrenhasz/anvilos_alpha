@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET        An implementation of the TCP/IP protocol suite for the LINUX
- *             operating system.  INET is implemented using the  BSD Socket
- *             interface as the means of communication with the user level.
- *
- *             Support for INET6 connection oriented protocols.
- *
- * Authors:    See the TCPv6 sources
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/in6.h>
@@ -63,7 +55,7 @@ void inet6_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr)
 	sin6->sin6_family = AF_INET6;
 	sin6->sin6_addr = sk->sk_v6_daddr;
 	sin6->sin6_port	= inet_sk(sk)->inet_dport;
-	/* We do not store received flowlabel for TCP */
+	 
 	sin6->sin6_flowinfo = 0;
 	sin6->sin6_scope_id = ipv6_iface_scope_id(&sin6->sin6_addr,
 						  sk->sk_bound_dev_if);
@@ -129,7 +121,7 @@ int inet6_csk_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl_unused
 	rcu_read_lock();
 	skb_dst_set_noref(skb, dst);
 
-	/* Restore final destination back after routing done */
+	 
 	fl6.daddr = sk->sk_v6_daddr;
 
 	res = ip6_xmit(sk, skb, &fl6, sk->sk_mark, rcu_dereference(np->opt),

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt286.c  --  RT286 ALSA SoC audio codec driver
- *
- * Copyright 2013 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -229,13 +224,13 @@ static int rt286_jack_detect(struct rt286_priv *rt286, bool *hp, bool *mic)
 		regmap_read(rt286->regmap, RT286_GET_HP_SENSE, &buf);
 		*hp = buf & 0x80000000;
 		if (*hp) {
-			/* power on HV,VERF */
+			 
 			regmap_update_bits(rt286->regmap,
 				RT286_DC_GAIN, 0x200, 0x200);
 
 			snd_soc_dapm_force_enable_pin(dapm, "HV");
 			snd_soc_dapm_force_enable_pin(dapm, "VREF");
-			/* power LDO1 */
+			 
 			snd_soc_dapm_force_enable_pin(dapm, "LDO1");
 			snd_soc_dapm_sync(dapm);
 
@@ -320,15 +315,15 @@ static int rt286_mic_detect(struct snd_soc_component *component,
 	rt286->jack = jack;
 
 	if (jack) {
-		/* enable IRQ */
+		 
 		if (rt286->jack->status & SND_JACK_HEADPHONE)
 			snd_soc_dapm_force_enable_pin(dapm, "LDO1");
 		regmap_update_bits(rt286->regmap, RT286_IRQ_CTRL, 0x2, 0x2);
-		/* Send an initial empty report */
+		 
 		snd_soc_jack_report(rt286->jack, rt286->jack->status,
 			SND_JACK_MICROPHONE | SND_JACK_HEADPHONE);
 	} else {
-		/* disable IRQ */
+		 
 		regmap_update_bits(rt286->regmap, RT286_IRQ_CTRL, 0x2, 0x0);
 		snd_soc_dapm_disable_pin(dapm, "LDO1");
 	}
@@ -365,7 +360,7 @@ static const struct snd_kcontrol_new rt286_snd_controls[] = {
 			    RT286_SPOR_GAIN, RT286_MUTE_SFT, 1, 1),
 };
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt286_front_mix[] = {
 	SOC_DAPM_SINGLE("DAC Switch",  RT286_F_DAC_SWITCH,
 			RT286_MUTE_SFT, 1, 1),
@@ -373,7 +368,7 @@ static const struct snd_kcontrol_new rt286_front_mix[] = {
 			RT286_MUTE_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt286_rec_mix[] = {
 	SOC_DAPM_SINGLE("Mic1 Switch", RT286_REC_MIC_SWITCH,
 			RT286_MUTE_SFT, 1, 1),
@@ -397,7 +392,7 @@ static const struct snd_kcontrol_new hpor_enable_control =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT286_HPOR_GAIN,
 			RT286_MUTE_SFT, 1, 1);
 
-/* ADC0 source */
+ 
 static const char * const rt286_adc_src[] = {
 	"Mic", "RECMIX", "Dmic"
 };
@@ -423,14 +418,14 @@ static const struct snd_kcontrol_new rt286_adc1_mux =
 static const char * const rt286_dac_src[] = {
 	"Front", "Surround"
 };
-/* HP-OUT source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt286_hpo_enum, RT286_HPO_MUX,
 				0, rt286_dac_src);
 
 static const struct snd_kcontrol_new rt286_hpo_mux =
 SOC_DAPM_ENUM("HPO source", rt286_hpo_enum);
 
-/* SPK-OUT source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt286_spo_enum, RT286_SPK_MUX,
 				0, rt286_dac_src);
 
@@ -538,14 +533,14 @@ static const struct snd_soc_dapm_widget rt286_dapm_widgets[] = {
 		0, 0, rt286_mic1_event, SND_SOC_DAPM_PRE_PMU |
 		SND_SOC_DAPM_POST_PMD),
 
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC1 Pin"),
 	SND_SOC_DAPM_INPUT("DMIC2 Pin"),
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("LINE1"),
 	SND_SOC_DAPM_INPUT("Beep"),
 
-	/* DMIC */
+	 
 	SND_SOC_DAPM_PGA_E("DMIC1", RT286_SET_POWER(RT286_DMIC1), 0, 1,
 		NULL, 0, rt286_set_dmic1_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -554,45 +549,45 @@ static const struct snd_soc_dapm_widget rt286_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DMIC Receiver", SND_SOC_NOPM,
 		0, 0, NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIX", SND_SOC_NOPM, 0, 0,
 		rt286_rec_mix, ARRAY_SIZE(rt286_rec_mix)),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC 0", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC 1", NULL, SND_SOC_NOPM, 0, 0),
 
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("ADC 0 Mux", RT286_SET_POWER(RT286_ADC_IN1), 0, 1,
 		&rt286_adc0_mux),
 	SND_SOC_DAPM_MUX("ADC 1 Mux", RT286_SET_POWER(RT286_ADC_IN2), 0, 1,
 		&rt286_adc1_mux),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "AIF2 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "AIF2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DACs */
+	 
+	 
 	SND_SOC_DAPM_DAC("DAC 0", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_DAC("DAC 1", NULL, SND_SOC_NOPM, 0, 0),
 
-	/* Output Mux */
+	 
 	SND_SOC_DAPM_MUX("SPK Mux", SND_SOC_NOPM, 0, 0, &rt286_spo_mux),
 	SND_SOC_DAPM_MUX("HPO Mux", SND_SOC_NOPM, 0, 0, &rt286_hpo_mux),
 
 	SND_SOC_DAPM_SUPPLY("HP Power", RT286_SET_PIN_HPO,
 		RT286_SET_PIN_SFT, 0, NULL, 0),
 
-	/* Output Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Front", RT286_SET_POWER(RT286_DAC_OUT1), 0, 1,
 			rt286_front_mix, ARRAY_SIZE(rt286_front_mix)),
 	SND_SOC_DAPM_PGA("Surround", RT286_SET_POWER(RT286_DAC_OUT2), 0, 1,
 			NULL, 0),
 
-	/* Output Pga */
+	 
 	SND_SOC_DAPM_SWITCH_E("SPO", SND_SOC_NOPM, 0, 0,
 		&spo_enable_control, rt286_spk_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -601,7 +596,7 @@ static const struct snd_soc_dapm_widget rt286_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("HPO R", SND_SOC_NOPM, 0, 0,
 		&hpor_enable_control),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("SPOL"),
 	SND_SOC_DAPM_OUTPUT("SPOR"),
 	SND_SOC_DAPM_OUTPUT("HPO Pin"),
@@ -686,7 +681,7 @@ static int rt286_hw_params(struct snd_pcm_substream *substream,
 	int d_len_code;
 
 	switch (params_rate(params)) {
-	/* bit 14 0:48K 1:44.1K */
+	 
 	case 44100:
 		val |= 0x4000;
 		break;
@@ -717,7 +712,7 @@ static int rt286_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -726,7 +721,7 @@ static int rt286_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 16:
 		d_len_code = 0;
 		val |= (0x1 << 4);
@@ -797,7 +792,7 @@ static int rt286_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	default:
 		return -EINVAL;
 	}
-	/* bit 15 Stream Type 0:PCM 1:Non-PCM */
+	 
 	snd_soc_component_update_bits(component, RT286_DAC_FORMAT, 0x8000, 0);
 	snd_soc_component_update_bits(component, RT286_ADC_FORMAT, 0x8000, 0);
 
@@ -925,7 +920,7 @@ static irqreturn_t rt286_irq(int irq, void *data)
 
 	rt286_jack_detect(rt286, &hp, &mic);
 
-	/* Clear IRQ */
+	 
 	regmap_update_bits(rt286->regmap, RT286_IRQ_CTRL, 0x1, 0x1);
 
 	if (hp)
@@ -1170,7 +1165,7 @@ static int rt286_i2c_probe(struct i2c_client *i2c)
 	rt286->i2c = i2c;
 	i2c_set_clientdata(i2c, rt286);
 
-	/* restore codec default */
+	 
 	for (i = 0; i < INDEX_CACHE_SIZE; i++)
 		regmap_write(rt286->regmap, rt286->index_cache[i].reg,
 				rt286->index_cache[i].def);
@@ -1212,11 +1207,11 @@ static int rt286_i2c_probe(struct i2c_client *i2c)
 	mdelay(10);
 
 	regmap_write(rt286->regmap, RT286_MISC_CTRL1, 0x0000);
-	/* Power down LDO, VREF */
+	 
 	regmap_update_bits(rt286->regmap, RT286_POWER_CTRL2, 0xc, 0x0);
 	regmap_update_bits(rt286->regmap, RT286_POWER_CTRL1, 0x1001, 0x1001);
 
-	/* Set depop parameter */
+	 
 	regmap_update_bits(rt286->regmap, RT286_DEPOP_CTRL2, 0x403a, 0x401a);
 	regmap_update_bits(rt286->regmap, RT286_DEPOP_CTRL3, 0xf777, 0x4737);
 	regmap_update_bits(rt286->regmap, RT286_DEPOP_CTRL4, 0x00ff, 0x003f);

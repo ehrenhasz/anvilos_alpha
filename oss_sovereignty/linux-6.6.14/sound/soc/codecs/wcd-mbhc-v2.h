@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __WCD_MBHC_V2_H__
 #define __WCD_MBHC_V2_H__
@@ -33,7 +33,7 @@ enum wcd_mbhc_field_function {
 	WCD_MBHC_BTN_RESULT,
 	WCD_MBHC_BTN_ISRC_CTL,
 	WCD_MBHC_ELECT_RESULT,
-	WCD_MBHC_MICB_CTRL,    /* Pull-up and micb control */
+	WCD_MBHC_MICB_CTRL,     
 	WCD_MBHC_HPH_CNP_WG_TIME,
 	WCD_MBHC_HPHR_PA_EN,
 	WCD_MBHC_HPHL_PA_EN,
@@ -119,7 +119,7 @@ enum {
 
 enum wcd_notify_event {
 	WCD_EVENT_INVALID,
-	/* events for micbias ON and OFF */
+	 
 	WCD_EVENT_PRE_MICBIAS_2_OFF,
 	WCD_EVENT_POST_MICBIAS_2_OFF,
 	WCD_EVENT_PRE_MICBIAS_2_ON,
@@ -128,7 +128,7 @@ enum wcd_notify_event {
 	WCD_EVENT_POST_DAPM_MICBIAS_2_OFF,
 	WCD_EVENT_PRE_DAPM_MICBIAS_2_ON,
 	WCD_EVENT_POST_DAPM_MICBIAS_2_ON,
-	/* events for PA ON and OFF */
+	 
 	WCD_EVENT_PRE_HPHL_PA_ON,
 	WCD_EVENT_POST_HPHL_PA_OFF,
 	WCD_EVENT_PRE_HPHR_PA_ON,
@@ -151,10 +151,7 @@ enum wcd_mbhc_hph_type {
 	WCD_MBHC_HPH_STEREO,
 };
 
-/*
- * These enum definitions are directly mapped to the register
- * definitions
- */
+ 
 
 enum mbhc_hs_pullup_iref {
 	I_DEFAULT = -1,
@@ -201,8 +198,8 @@ struct wcd_mbhc_config {
 	int mbhc_micbias;
 	int anc_micbias;
 	bool moisture_duty_cycle_en;
-	bool hphl_swh; /*track HPHL switch NC / NO */
-	bool gnd_swh; /*track GND switch NC / NO */
+	bool hphl_swh;  
+	bool gnd_swh;  
 	u32 hs_thr;
 	u32 hph_thr;
 	u32 micb_mv;
@@ -337,4 +334,4 @@ static inline void wcd_mbhc_deinit(struct wcd_mbhc *mbhc)
 }
 #endif
 
-#endif /* __WCD_MBHC_V2_H__ */
+#endif  

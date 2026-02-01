@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include "messages.h"
 #include "ctree.h"
@@ -135,10 +133,7 @@ static void print_extent_item(const struct extent_buffer *eb, int slot, int type
 			break;
 		case BTRFS_SHARED_BLOCK_REF_KEY:
 			pr_cont("shared block backref parent %llu\n", offset);
-			/*
-			 * offset is supposed to be a tree block which
-			 * must be aligned to nodesize.
-			 */
+			 
 			if (!IS_ALIGNED(offset, eb->fs_info->sectorsize))
 				pr_info(
 			"\t\t\t(parent %llu not aligned to sectorsize %u)\n",
@@ -152,10 +147,7 @@ static void print_extent_item(const struct extent_buffer *eb, int slot, int type
 			sref = (struct btrfs_shared_data_ref *)(iref + 1);
 			pr_cont("shared data backref parent %llu count %u\n",
 			       offset, btrfs_shared_data_ref_count(eb, sref));
-			/*
-			 * Offset is supposed to be a tree block which must be
-			 * aligned to sectorsize.
-			 */
+			 
 			if (!IS_ALIGNED(offset, eb->fs_info->sectorsize))
 				pr_info(
 			"\t\t\t(parent %llu not aligned to sectorsize %u)\n",
@@ -189,10 +181,7 @@ static void print_uuid_item(const struct extent_buffer *l, unsigned long offset,
 	}
 }
 
-/*
- * Helper to output refs and locking status of extent buffer.  Useful to debug
- * race condition related problems.
- */
+ 
 static void print_eb_refs_lock(const struct extent_buffer *eb)
 {
 #ifdef CONFIG_BTRFS_DEBUG

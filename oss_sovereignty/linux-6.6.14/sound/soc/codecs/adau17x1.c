@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Common code for ADAU1X61 and ADAU1X81 codecs
- *
- * Copyright 2011-2014 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -78,13 +73,12 @@ static int adau17x1_pll_event(struct snd_soc_dapm_widget *w,
 		adau->pll_regs[5] = 1;
 	} else {
 		adau->pll_regs[5] = 0;
-		/* Bypass the PLL when disabled, otherwise registers will become
-		 * inaccessible. */
+		 
 		regmap_update_bits(adau->regmap, ADAU17X1_CLOCK_CONTROL,
 			ADAU17X1_CLOCK_CONTROL_CORECLK_SRC_PLL, 0);
 	}
 
-	/* The PLL register is 6 bytes long and can only be written at once. */
+	 
 	regmap_raw_write(adau->regmap, ADAU17X1_PLL_CONTROL,
 			adau->pll_regs, ARRAY_SIZE(adau->pll_regs));
 
@@ -104,13 +98,7 @@ static int adau17x1_adc_fixup(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct adau *adau = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * If we are capturing, toggle the ADOSR bit in Converter Control 0 to
-	 * avoid losing SNR (workaround from ADI). This must be done after
-	 * the ADC(s) have been enabled. According to the data sheet, it is
-	 * normally illegal to set this bit when the sampling rate is 96 kHz,
-	 * but according to ADI it is acceptable for this workaround.
-	 */
+	 
 	regmap_update_bits(adau->regmap, ADAU17X1_CONVERTER0,
 		ADAU17X1_CONVERTER0_ADOSR, ADAU17X1_CONVERTER0_ADOSR);
 	regmap_update_bits(adau->regmap, ADAU17X1_CONVERTER0,
@@ -176,12 +164,7 @@ static const struct snd_soc_dapm_route adau17x1_dapm_pll_route = {
 	"SYSCLK", NULL, "PLL",
 };
 
-/*
- * The MUX register for the Capture and Playback MUXs selects either DSP as
- * source/destination or one of the TDM slots. The TDM slot is selected via
- * snd_soc_dai_set_tdm_slot(), so we only expose whether to go to the DSP or
- * directly to the DAI interface with this control.
- */
+ 
 static int adau17x1_dsp_mux_enum_put(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -333,7 +316,7 @@ static bool adau17x1_has_dsp(struct adau *adau)
 	}
 }
 
-/* Chip has a DSP but we're pretending it doesn't. */
+ 
 static bool adau17x1_has_disused_dsp(struct adau *adau)
 {
 	switch (adau->type) {
@@ -369,7 +352,7 @@ static int adau17x1_set_dai_pll(struct snd_soc_dai *dai, int pll_id,
 	if (ret < 0)
 		return ret;
 
-	/* The PLL register is 6 bytes long and can only be written at once. */
+	 
 	ret = regmap_raw_write(adau->regmap, ADAU17X1_PLL_CONTROL,
 			adau->pll_regs, ARRAY_SIZE(adau->pll_regs));
 	if (ret)
@@ -492,31 +475,31 @@ static int adau17x1_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	switch (freq / params_rate(params)) {
-	case 1024: /* fs */
+	case 1024:  
 		div = 0;
 		dsp_div = 1;
 		break;
-	case 6144: /* fs / 6 */
+	case 6144:  
 		div = 1;
 		dsp_div = 6;
 		break;
-	case 4096: /* fs / 4 */
+	case 4096:  
 		div = 2;
 		dsp_div = 5;
 		break;
-	case 3072: /* fs / 3 */
+	case 3072:  
 		div = 3;
 		dsp_div = 4;
 		break;
-	case 2048: /* fs / 2 */
+	case 2048:  
 		div = 4;
 		dsp_div = 3;
 		break;
-	case 1536: /* fs / 1.5 */
+	case 1536:  
 		div = 5;
 		dsp_div = 2;
 		break;
-	case 512: /* fs / 0.5 */
+	case 512:  
 		div = 6;
 		dsp_div = 0;
 		break;
@@ -624,7 +607,7 @@ static int adau17x1_set_dai_fmt(struct snd_soc_dai *dai,
 	if (lrclk_pol)
 		ctrl0 |= ADAU17X1_SERIAL_PORT0_LRCLK_POL;
 
-	/* Set the mask to update all relevant bits in ADAU17X1_SERIAL_PORT0 */
+	 
 	ctrl0_mask = ADAU17X1_SERIAL_PORT0_MASTER |
 		     ADAU17X1_SERIAL_PORT0_LRCLK_POL |
 		     ADAU17X1_SERIAL_PORT0_BCLK_POL |
@@ -647,7 +630,7 @@ static int adau17x1_set_dai_tdm_slot(struct snd_soc_dai *dai,
 	unsigned int ser_ctrl0, ser_ctrl1;
 	unsigned int conv_ctrl0, conv_ctrl1;
 
-	/* I2S mode */
+	 
 	if (slots == 0) {
 		slots = 2;
 		rx_mask = 3;
@@ -805,7 +788,7 @@ EXPORT_SYMBOL_GPL(adau17x1_set_micbias_voltage);
 
 bool adau17x1_precious_register(struct device *dev, unsigned int reg)
 {
-	/* SigmaDSP parameter memory */
+	 
 	if (reg < 0x400)
 		return true;
 
@@ -815,7 +798,7 @@ EXPORT_SYMBOL_GPL(adau17x1_precious_register);
 
 bool adau17x1_readable_register(struct device *dev, unsigned int reg)
 {
-	/* SigmaDSP parameter memory */
+	 
 	if (reg < 0x400)
 		return true;
 
@@ -854,12 +837,12 @@ EXPORT_SYMBOL_GPL(adau17x1_readable_register);
 
 bool adau17x1_volatile_register(struct device *dev, unsigned int reg)
 {
-	/* SigmaDSP parameter and program memory */
+	 
 	if (reg < 0x4000)
 		return true;
 
 	switch (reg) {
-	/* The PLL register is 6 bytes long */
+	 
 	case ADAU17X1_PLL_CONTROL:
 	case ADAU17X1_PLL_CONTROL + 1:
 	case ADAU17X1_PLL_CONTROL + 2:
@@ -883,12 +866,7 @@ static int adau17x1_setup_firmware(struct snd_soc_component *component,
 	struct adau *adau = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 
-	/* Check if sample rate is the same as before. If it is there is no
-	 * point in performing the below steps as the call to
-	 * sigmadsp_setup(...) will return directly when it finds the sample
-	 * rate to be the same as before. By checking this we can prevent an
-	 * audiable popping noise which occours when toggling DSP_RUN.
-	 */
+	 
 	if (adau->sigmadsp->current_samplerate == rate)
 		return 0;
 
@@ -1004,9 +982,7 @@ static int adau17x1_safeload(struct sigmadsp *sigmadsp, unsigned int addr,
 	unsigned int nbr_words;
 	int ret;
 
-	/* write data to safeload addresses. Check if len is not a multiple of
-	 * 4 bytes, if so we need to zero pad.
-	 */
+	 
 	nbr_words = len / ADAU17X1_WORD_SIZE;
 	if ((len - nbr_words * ADAU17X1_WORD_SIZE) == 0) {
 		ret = regmap_raw_write(sigmadsp->control_data,
@@ -1023,7 +999,7 @@ static int adau17x1_safeload(struct sigmadsp *sigmadsp, unsigned int addr,
 	if (ret < 0)
 		return ret;
 
-	/* Write target address, target address is offset by 1 */
+	 
 	addr_offset = addr - 1;
 	put_unaligned_be32(addr_offset, buf);
 	ret = regmap_raw_write(sigmadsp->control_data,
@@ -1031,7 +1007,7 @@ static int adau17x1_safeload(struct sigmadsp *sigmadsp, unsigned int addr,
 	if (ret < 0)
 		return ret;
 
-	/* write nbr of words to trigger address */
+	 
 	put_unaligned_be32(nbr_words, buf);
 	ret = regmap_raw_write(sigmadsp->control_data,
 		ADAU17X1_SAFELOAD_TRIGGER, buf, ADAU17X1_WORD_SIZE);
@@ -1059,7 +1035,7 @@ int adau17x1_probe(struct device *dev, struct regmap *regmap,
 	if (!adau)
 		return -ENOMEM;
 
-	/* Clock is optional (for the driver) */
+	 
 	adau->mclk = devm_clk_get_optional(dev, "mclk");
 	if (IS_ERR(adau->mclk))
 		return PTR_ERR(adau->mclk);
@@ -1067,11 +1043,7 @@ int adau17x1_probe(struct device *dev, struct regmap *regmap,
 	if (adau->mclk) {
 		adau->clk_src = ADAU17X1_CLK_SRC_PLL_AUTO;
 
-		/*
-		 * Any valid PLL output rate will work at this point, use one
-		 * that is likely to be chosen later as well. The register will
-		 * be written when the PLL is powered up for the first time.
-		 */
+		 
 		ret = adau_calc_pll_cfg(clk_get_rate(adau->mclk), 48000 * 1024,
 				adau->pll_regs);
 		if (ret < 0)

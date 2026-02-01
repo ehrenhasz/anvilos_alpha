@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021 NXP
- *
- * Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/errno.h>

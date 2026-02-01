@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lm49453.c  -  LM49453 ALSA Soc Audio driver
- *
- * Copyright (c) 2012 Texas Instruments, Inc
- *
- * Initially based on sound/soc/codecs/wm8350.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -182,12 +176,12 @@ static const struct reg_default lm49453_reg_defs[] = {
 	{ 255, 0x00 },
 };
 
-/* codec private data */
+ 
 struct lm49453_priv {
 	struct regmap *regmap;
 };
 
-/* capture path controls */
+ 
 
 static const char *lm49453_mic2mode_text[] = {"Single Ended", "Differential"};
 
@@ -204,7 +198,7 @@ static SOC_ENUM_SINGLE_DECL(lm49453_dmic34_cfg_enum,
 			    LM49453_P0_DIGITAL_MIC2_CONFIG_REG, 7,
 			    lm49453_dmic_cfg_text);
 
-/* MUX Controls */
+ 
 static const char *lm49453_adcl_mux_text[] = { "MIC1", "Aux_L" };
 
 static const char *lm49453_adcr_mux_text[] = { "MIC2", "Aux_R" };
@@ -487,14 +481,14 @@ SOC_DAPM_SINGLE("Port1_2 Switch", LM49453_P0_PORT2_TX2_REG, 6, 1, 0),
 SOC_DAPM_SINGLE("Port2_2 Switch", LM49453_P0_PORT2_TX2_REG, 7, 1, 0),
 };
 
-/* TLV Declarations */
+ 
 static const DECLARE_TLV_DB_SCALE(adc_dac_tlv, -7650, 150, 1);
 static const DECLARE_TLV_DB_SCALE(mic_tlv, 0, 200, 1);
 static const DECLARE_TLV_DB_SCALE(port_tlv, -1800, 600, 0);
 static const DECLARE_TLV_DB_SCALE(stn_tlv, -7200, 150, 0);
 
 static const struct snd_kcontrol_new lm49453_sidetone_mixer_controls[] = {
-/* Sidetone supports mono only */
+ 
 SOC_DAPM_SINGLE_TLV("Sidetone ADCL Volume", LM49453_P0_STN_VOL_ADCL_REG,
 		     0, 0x3F, 0, stn_tlv),
 SOC_DAPM_SINGLE_TLV("Sidetone ADCR Volume", LM49453_P0_STN_VOL_ADCR_REG,
@@ -510,7 +504,7 @@ SOC_DAPM_SINGLE_TLV("Sidetone DMIC2R Volume", LM49453_P0_STN_VOL_DMIC2R_REG,
 };
 
 static const struct snd_kcontrol_new lm49453_snd_controls[] = {
-	/* mic1 and mic2 supports mono only */
+	 
 	SOC_SINGLE_TLV("Mic1 Volume", LM49453_P0_MICL_REG, 0, 15, 0, mic_tlv),
 	SOC_SINGLE_TLV("Mic2 Volume", LM49453_P0_MICR_REG, 0, 15, 0, mic_tlv),
 
@@ -528,7 +522,7 @@ static const struct snd_kcontrol_new lm49453_snd_controls[] = {
 	SOC_DAPM_ENUM("DMIC12 SRC", lm49453_dmic12_cfg_enum),
 	SOC_DAPM_ENUM("DMIC34 SRC", lm49453_dmic34_cfg_enum),
 
-	/* Capture path filter enable */
+	 
 	SOC_SINGLE("DMIC1 HPFilter Switch", LM49453_P0_ADC_FX_ENABLES_REG,
 					    0, 1, 0),
 	SOC_SINGLE("DMIC2 HPFilter Switch", LM49453_P0_ADC_FX_ENABLES_REG,
@@ -581,10 +575,10 @@ static const struct snd_kcontrol_new lm49453_snd_controls[] = {
 
 };
 
-/* DAPM widgets */
+ 
 static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 
-	/* All end points HP,EP, LS, Lineout and Haptic */
+	 
 	SND_SOC_DAPM_OUTPUT("HPOUTL"),
 	SND_SOC_DAPM_OUTPUT("HPOUTR"),
 	SND_SOC_DAPM_OUTPUT("EPOUT"),
@@ -616,7 +610,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("AMIC1Bias", LM49453_P0_MICL_REG, 6, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("AMIC2Bias", LM49453_P0_MICR_REG, 6, 0, NULL, 0),
 
-	/* playback path driver enables */
+	 
 	SND_SOC_DAPM_OUT_DRV("Headset Switch",
 			LM49453_P0_PMC_SETUP_REG, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("Earpiece Switch",
@@ -630,7 +624,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 	SND_SOC_DAPM_OUT_DRV("Haptic Right Switch",
 			LM49453_P0_DIS_PKVL_FB_REG, 3, 1, NULL, 0),
 
-	/* DAC */
+	 
 	SND_SOC_DAPM_DAC("HPL DAC", "Headset", SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_DAC("HPR DAC", "Headset", SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_DAC("LSL DAC", "Speaker", SND_SOC_NOPM, 0, 0),
@@ -648,7 +642,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 
 	SND_SOC_DAPM_PGA("Sidetone", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC("DMIC1 Left", "Capture", SND_SOC_NOPM, 1, 0),
 	SND_SOC_DAPM_ADC("DMIC1 Right", "Capture", SND_SOC_NOPM, 1, 0),
 	SND_SOC_DAPM_ADC("DMIC2 Left", "Capture", SND_SOC_NOPM, 1, 0),
@@ -668,7 +662,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("Mic2 Input",
 			SND_SOC_NOPM, 0, 0, &lm49453_adcr_mux_control),
 
-	/* AIF */
+	 
 	SND_SOC_DAPM_AIF_IN("PORT1_SDI", NULL, 0,
 			    LM49453_P0_PULL_CONFIG1_REG, 2, 0),
 	SND_SOC_DAPM_AIF_IN("PORT2_SDI", NULL, 0,
@@ -679,7 +673,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("PORT2_SDO", NULL, 0,
 			      LM49453_P0_PULL_CONFIG1_REG, 7, 0),
 
-	/* Port1 TX controls */
+	 
 	SND_SOC_DAPM_OUT_DRV("P1_1_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("P1_2_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("P1_3_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -689,16 +683,16 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 	SND_SOC_DAPM_OUT_DRV("P1_7_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("P1_8_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Port2 TX controls */
+	 
 	SND_SOC_DAPM_OUT_DRV("P2_1_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("P2_2_TX", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Sidetone Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Sidetone Mixer", SND_SOC_NOPM, 0, 0,
 			    lm49453_sidetone_mixer_controls,
 			    ARRAY_SIZE(lm49453_sidetone_mixer_controls)),
 
-	/* DAC MIXERS */
+	 
 	SND_SOC_DAPM_MIXER("HPL Mixer", SND_SOC_NOPM, 0, 0,
 			    lm49453_headset_left_mixer,
 			    ARRAY_SIZE(lm49453_headset_left_mixer)),
@@ -724,7 +718,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 			    lm49453_haptic_right_mixer,
 			    ARRAY_SIZE(lm49453_haptic_right_mixer)),
 
-	/* Capture Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Port1_1 Mixer", SND_SOC_NOPM, 0, 0,
 			    lm49453_port1_tx1_mixer,
 			    ARRAY_SIZE(lm49453_port1_tx1_mixer)),
@@ -759,7 +753,7 @@ static const struct snd_soc_dapm_widget lm49453_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route lm49453_audio_map[] = {
-	/* Port SDI mapping */
+	 
 	{ "PORT1_1_RX", "Port1 Playback Switch", "PORT1_SDI" },
 	{ "PORT1_2_RX", "Port1 Playback Switch", "PORT1_SDI" },
 	{ "PORT1_3_RX", "Port1 Playback Switch", "PORT1_SDI" },
@@ -772,7 +766,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "PORT2_1_RX", "Port2 Playback Switch", "PORT2_SDI" },
 	{ "PORT2_2_RX", "Port2 Playback Switch", "PORT2_SDI" },
 
-	/* HP mapping */
+	 
 	{ "HPL Mixer", "Port1_1 Switch", "PORT1_1_RX" },
 	{ "HPL Mixer", "Port1_2 Switch", "PORT1_2_RX" },
 	{ "HPL Mixer", "Port1_3 Switch", "PORT1_3_RX" },
@@ -804,7 +798,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "HPR Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "HPR Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "HPR Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "HPR Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -821,10 +815,10 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "HPOUTL", "Headset Switch", "HPL DAC"},
 	{ "HPOUTR", "Headset Switch", "HPR DAC"},
 
-	/* EP map */
+	 
 	{ "EPOUT", "Earpiece Switch", "HPL DAC" },
 
-	/* Speaker map */
+	 
 	{ "LSL Mixer", "Port1_1 Switch", "PORT1_1_RX" },
 	{ "LSL Mixer", "Port1_2 Switch", "PORT1_2_RX" },
 	{ "LSL Mixer", "Port1_3 Switch", "PORT1_3_RX" },
@@ -834,7 +828,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LSL Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "LSL Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "LSL Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "LSL Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -857,7 +851,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LSR Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "LSR Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "LSR Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "LSR Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -874,7 +868,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LSOUTL", "Speaker Left Switch", "LSL DAC"},
 	{ "LSOUTR", "Speaker Left Switch", "LSR DAC"},
 
-	/* Haptic map */
+	 
 	{ "HAL Mixer", "Port1_1 Switch", "PORT1_1_RX" },
 	{ "HAL Mixer", "Port1_2 Switch", "PORT1_2_RX" },
 	{ "HAL Mixer", "Port1_3 Switch", "PORT1_3_RX" },
@@ -884,7 +878,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "HAL Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "HAL Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "HAL Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "HAL Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -907,7 +901,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "HAR Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "HAR Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "HAR Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "HAR Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -924,7 +918,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "HAOUTL", "Haptic Left Switch", "HAL DAC" },
 	{ "HAOUTR", "Haptic Right Switch", "HAR DAC" },
 
-	/* Lineout map */
+	 
 	{ "LOL Mixer", "Port1_1 Switch", "PORT1_1_RX" },
 	{ "LOL Mixer", "Port1_2 Switch", "PORT1_2_RX" },
 	{ "LOL Mixer", "Port1_3 Switch", "PORT1_3_RX" },
@@ -934,7 +928,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LOL Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "LOL Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "LOL Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "LOL Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -957,7 +951,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LOR Mixer", "Port1_7 Switch", "PORT1_7_RX" },
 	{ "LOR Mixer", "Port1_8 Switch", "PORT1_8_RX" },
 
-	/* Port 2 */
+	 
 	{ "LOR Mixer", "Port2_1 Switch", "PORT2_1_RX" },
 	{ "LOR Mixer", "Port2_2 Switch", "PORT2_2_RX" },
 
@@ -974,8 +968,8 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "LOOUTL", NULL, "LOL DAC" },
 	{ "LOOUTR", NULL, "LOR DAC" },
 
-	/* TX map */
-	/* Port1 mappings */
+	 
+	 
 	{ "Port1_1 Mixer", "ADCL Switch", "ADC Left" },
 	{ "Port1_1 Mixer", "ADCR Switch", "ADC Right" },
 	{ "Port1_1 Mixer", "DMIC1L Switch", "DMIC1 Left" },
@@ -1076,14 +1070,14 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "AUXL Input", NULL, "AUXL" },
 	{ "AUXR Input", NULL, "AUXR" },
 
-	/* AUX connections */
+	 
 	{ "ADCL Mux", "Aux_L", "AUXL Input" },
 	{ "ADCL Mux", "MIC1", "Mic1 Input" },
 
 	{ "ADCR Mux", "Aux_R", "AUXR Input" },
 	{ "ADCR Mux", "MIC2", "Mic2 Input" },
 
-	/* ADC connection */
+	 
 	{ "ADC Left", NULL, "ADCL Mux"},
 	{ "ADC Right", NULL, "ADCR Mux"},
 
@@ -1092,7 +1086,7 @@ static const struct snd_soc_dapm_route lm49453_audio_map[] = {
 	{ "DMIC2 Left", NULL, "DMIC2DAT"},
 	{ "DMIC2 Right", NULL, "DMIC2DAT"},
 
-	/* Sidetone map */
+	 
 	{ "Sidetone Mixer", NULL, "ADC Left" },
 	{ "Sidetone Mixer", NULL, "ADC Right" },
 	{ "Sidetone Mixer", NULL, "DMIC1 Left" },
@@ -1110,7 +1104,7 @@ static int lm49453_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	u16 clk_div = 0;
 
-	/* Setting DAC clock dividers based on substream sample rate. */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 	case 16000:
@@ -1201,7 +1195,7 @@ static int lm49453_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 	case 12288000:
 	case 26000000:
 	case 19200000:
-		/* pll clk slection */
+		 
 		pll_clk = 0;
 		break;
 	case 48000:
@@ -1278,7 +1272,7 @@ static int lm49453_set_bias_level(struct snd_soc_component *component,
 	return 0;
 }
 
-/* Formates supported by LM49453 driver. */
+ 
 #define LM49453_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
@@ -1322,7 +1316,7 @@ static const struct snd_soc_dai_ops lm49453_lineout_dai_ops = {
 	.no_capture_mute = 1,
 };
 
-/* LM49453 dai structure. */
+ 
 static struct snd_soc_dai_driver lm49453_dai[] = {
 	{
 		.name = "LM49453 Headset",

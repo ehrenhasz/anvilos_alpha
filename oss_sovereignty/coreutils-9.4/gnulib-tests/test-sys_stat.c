@@ -1,37 +1,21 @@
-/* Test of <sys/stat.h> substitute.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
+ 
 
 #include <config.h>
 
 #include <sys/stat.h>
 
-/* Check the existence of some macros.  */
+ 
 int a[] =
   {
     S_IFMT,
-#ifdef S_IFBLK /* missing on MSVC */
+#ifdef S_IFBLK  
     S_IFBLK,
 #endif
     S_IFCHR, S_IFDIR, S_IFIFO, S_IFREG,
-#ifdef S_IFLNK /* missing on native Windows and DJGPP */
+#ifdef S_IFLNK  
     S_IFLNK,
 #endif
-#ifdef S_IFSOCK /* missing on native Windows and DJGPP */
+#ifdef S_IFSOCK  
     S_IFSOCK,
 #endif
     S_IRWXU, S_IRUSR, S_IWUSR, S_IXUSR,
@@ -57,7 +41,7 @@ int a[] =
     S_ISWHT (S_IFREG)
   };
 
-/* Sanity checks.  */
+ 
 
 static_assert (S_IRWXU == (S_IRUSR | S_IWUSR | S_IXUSR));
 static_assert (S_IRWXG == (S_IRGRP | S_IWGRP | S_IXGRP));
@@ -301,7 +285,7 @@ static_assert (!S_ISWHT (S_IFLNK));
 static_assert (!S_ISWHT (S_IFSOCK));
 #endif
 
-/* POSIX 2008 requires traditional encoding of permission constants.  */
+ 
 static_assert (S_IRWXU == 00700);
 static_assert (S_IRUSR == 00400);
 static_assert (S_IWUSR == 00200);
@@ -324,7 +308,7 @@ static_assert (S_ISVTX == 01000);
 invalid UTIME macros
 #endif
 
-/* Check the existence of some types.  */
+ 
 nlink_t t1;
 off_t t2;
 mode_t t3;

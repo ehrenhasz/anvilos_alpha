@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/mdio.h>
@@ -104,7 +104,7 @@ static void enetc_reset_mac_addr_filter(struct enetc_mac_filter *filter)
 static void enetc_add_mac_addr_em_filter(struct enetc_mac_filter *filter,
 					 const unsigned char *addr)
 {
-	/* add exact match addr */
+	 
 	ether_addr_copy(filter->mac_addr, addr);
 	filter->mac_addr_cnt++;
 }
@@ -114,7 +114,7 @@ static void enetc_add_mac_addr_ht_filter(struct enetc_mac_filter *filter,
 {
 	int idx = enetc_mac_addr_hash_idx(addr);
 
-	/* add hash table entry */
+	 
 	__set_bit(idx, filter->mac_hash_table);
 	filter->mac_addr_cnt++;
 }
@@ -126,7 +126,7 @@ static void enetc_clear_mac_ht_flt(struct enetc_si *si, int si_idx, int type)
 	if (type == UC) {
 		enetc_port_wr(&si->hw, ENETC_PSIUMHFR0(si_idx, err), 0);
 		enetc_port_wr(&si->hw, ENETC_PSIUMHFR1(si_idx), 0);
-	} else { /* MC */
+	} else {  
 		enetc_port_wr(&si->hw, ENETC_PSIMMHFR0(si_idx, err), 0);
 		enetc_port_wr(&si->hw, ENETC_PSIMMHFR1(si_idx), 0);
 	}
@@ -142,7 +142,7 @@ static void enetc_set_mac_ht_flt(struct enetc_si *si, int si_idx, int type,
 			      lower_32_bits(hash));
 		enetc_port_wr(&si->hw, ENETC_PSIUMHFR1(si_idx),
 			      upper_32_bits(hash));
-	} else { /* MC */
+	} else {  
 		enetc_port_wr(&si->hw, ENETC_PSIMMHFR0(si_idx, err),
 			      lower_32_bits(hash));
 		enetc_port_wr(&si->hw, ENETC_PSIMMHFR1(si_idx),
@@ -170,7 +170,7 @@ static void enetc_sync_mac_filters(struct enetc_pf *pf)
 			continue;
 		}
 
-		/* exact match filter */
+		 
 		if (em) {
 			int err;
 
@@ -181,12 +181,12 @@ static void enetc_sync_mac_filters(struct enetc_pf *pf)
 			if (!err)
 				continue;
 
-			/* fallback to HT filtering */
+			 
 			dev_warn(&si->pdev->dev, "fallback to HT filt (%d)\n",
 				 err);
 		}
 
-		/* hash table filter, clear EM filter for UC entries */
+		 
 		if (i == UC)
 			enetc_clear_mac_flt_entry(si, pos);
 
@@ -206,19 +206,19 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
 	bool em;
 
 	if (ndev->flags & IFF_PROMISC) {
-		/* enable promisc mode for SI0 (PF) */
+		 
 		psipmr = ENETC_PSIPMR_SET_UP(0) | ENETC_PSIPMR_SET_MP(0);
 		uprom = true;
 		mprom = true;
 	} else if (ndev->flags & IFF_ALLMULTI) {
-		/* enable multi cast promisc mode for SI0 (PF) */
+		 
 		psipmr = ENETC_PSIPMR_SET_MP(0);
 		mprom = true;
 	}
 
-	/* first 2 filter entries belong to PF */
+	 
 	if (!uprom) {
-		/* Update unicast filters */
+		 
 		filter = &pf->mac_filter[UC];
 		enetc_reset_mac_addr_filter(filter);
 
@@ -234,7 +234,7 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
 	}
 
 	if (!mprom) {
-		/* Update multicast filters */
+		 
 		filter = &pf->mac_filter[MC];
 		enetc_reset_mac_addr_filter(filter);
 
@@ -247,7 +247,7 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
 	}
 
 	if (!uprom || !mprom)
-		/* update PF entries */
+		 
 		enetc_sync_mac_filters(pf);
 
 	psipmr |= enetc_port_rd(hw, ENETC_PSIPMR) &
@@ -324,12 +324,12 @@ static void enetc_set_loopback(struct net_device *ndev, bool en)
 
 	reg = enetc_port_mac_rd(si, ENETC_PM0_IF_MODE);
 	if (reg & ENETC_PM0_IFM_RG) {
-		/* RGMII mode */
+		 
 		reg = (reg & ~ENETC_PM0_IFM_RLP) |
 		      (en ? ENETC_PM0_IFM_RLP : 0);
 		enetc_port_mac_wr(si, ENETC_PM0_IF_MODE, reg);
 	} else {
-		/* assume SGMII mode */
+		 
 		reg = enetc_port_mac_rd(si, ENETC_PM0_CMD_CFG);
 		reg = (reg & ~ENETC_PM0_CMD_XGLP) |
 		      (en ? ENETC_PM0_CMD_XGLP : 0);
@@ -370,7 +370,7 @@ static int enetc_pf_set_vf_vlan(struct net_device *ndev, int vf, u16 vlan,
 		return -EINVAL;
 
 	if (proto != htons(ETH_P_8021Q))
-		/* only C-tags supported for now */
+		 
 		return -EPROTONOSUPPORT;
 
 	enetc_set_isol_vlan(&priv->si->hw, vf + 1, vlan, qos);
@@ -401,18 +401,18 @@ static int enetc_setup_mac_address(struct device_node *np, struct enetc_pf *pf,
 	u8 mac_addr[ETH_ALEN] = { 0 };
 	int err;
 
-	/* (1) try to get the MAC address from the device tree */
+	 
 	if (np) {
 		err = of_get_mac_address(np, mac_addr);
 		if (err == -EPROBE_DEFER)
 			return err;
 	}
 
-	/* (2) bootloader supplied MAC address */
+	 
 	if (is_zero_ether_addr(mac_addr))
 		enetc_pf_get_primary_mac_addr(hw, si, mac_addr);
 
-	/* (3) choose a random one */
+	 
 	if (is_zero_ether_addr(mac_addr)) {
 		eth_random_addr(mac_addr);
 		dev_info(dev, "no MAC address specified for SI%d, using %pM\n",
@@ -429,7 +429,7 @@ static int enetc_setup_mac_addresses(struct device_node *np,
 {
 	int err, i;
 
-	/* The PF might take its MAC from the device tree */
+	 
 	err = enetc_setup_mac_address(np, pf, 0);
 	if (err)
 		return err;
@@ -450,7 +450,7 @@ static void enetc_port_assign_rfs_entries(struct enetc_si *si)
 	int num_entries, vf_entries, i;
 	u32 val;
 
-	/* split RFS entries between functions */
+	 
 	val = enetc_port_rd(hw, ENETC_PRFSCAPR);
 	num_entries = ENETC_PRFSCAPR_GET_NUM_RFS(val);
 	vf_entries = num_entries / (pf->total_vfs + 1);
@@ -460,7 +460,7 @@ static void enetc_port_assign_rfs_entries(struct enetc_si *si)
 	enetc_port_wr(hw, ENETC_PSIRFSCFGR(0),
 		      num_entries - vf_entries * pf->total_vfs);
 
-	/* enable RFS on port */
+	 
 	enetc_port_wr(hw, ENETC_PRFSMR, ENETC_PRFSMR_RFSE);
 }
 
@@ -487,7 +487,7 @@ static void enetc_port_si_configure(struct enetc_si *si)
 		num_rings = 0;
 	}
 
-	/* Add default one-time settings for SI0 (PF) */
+	 
 	val |= ENETC_PSICFGR0_SIVC(ENETC_VLAN_TYPE_C | ENETC_VLAN_TYPE_S);
 
 	enetc_port_wr(hw, ENETC_PSICFGR0(0), val);
@@ -495,7 +495,7 @@ static void enetc_port_si_configure(struct enetc_si *si)
 	if (num_rings)
 		num_rings -= ENETC_PF_NUM_RINGS;
 
-	/* Configure the SIs for each available VF */
+	 
 	val = ENETC_PSICFGR0_SIVC(ENETC_VLAN_TYPE_C | ENETC_VLAN_TYPE_S);
 	val |= ENETC_PSICFGR0_VTE | ENETC_PSICFGR0_SIVIE;
 
@@ -508,10 +508,10 @@ static void enetc_port_si_configure(struct enetc_si *si)
 	for (i = 0; i < pf->total_vfs; i++)
 		enetc_port_wr(hw, ENETC_PSICFGR0(i + 1), val);
 
-	/* Port level VLAN settings */
+	 
 	val = ENETC_PVCLCTR_OVTPIDL(ENETC_VLAN_TYPE_C | ENETC_VLAN_TYPE_S);
 	enetc_port_wr(hw, ENETC_PVCLCTR, val);
-	/* use outer tag for VLAN filtering */
+	 
 	enetc_port_wr(hw, ENETC_PSIVLANFMR, ENETC_PSIVLANFMR_VS);
 }
 
@@ -549,10 +549,7 @@ static void enetc_configure_port_mac(struct enetc_si *si)
 	enetc_port_mac_wr(si, ENETC_PM0_CMD_CFG, ENETC_PM0_CMD_PHY_TX_EN |
 			  ENETC_PM0_CMD_TXP | ENETC_PM0_PROMISC);
 
-	/* On LS1028A, the MAC RX FIFO defaults to 2, which is too high
-	 * and may lead to RX lock-up under traffic. Set it to 1 instead,
-	 * as recommended by the hardware team.
-	 */
+	 
 	enetc_port_mac_wr(si, ENETC_PM0_RX_FIFO, ENETC_PM0_RX_FIFO_VAL);
 }
 
@@ -592,24 +589,24 @@ static void enetc_configure_port(struct enetc_pf *pf)
 
 	enetc_port_si_configure(pf->si);
 
-	/* set up hash key */
+	 
 	get_random_bytes(hash_key, ENETC_RSSHASH_KEY_SIZE);
 	enetc_set_rss_key(hw, hash_key);
 
-	/* split up RFS entries */
+	 
 	enetc_port_assign_rfs_entries(pf->si);
 
-	/* enforce VLAN promisc mode for all SIs */
+	 
 	pf->vlan_promisc_simap = ENETC_VLAN_PROMISC_MAP_ALL;
 	enetc_set_vlan_promisc(hw, pf->vlan_promisc_simap);
 
 	enetc_port_wr(hw, ENETC_PSIPMR, 0);
 
-	/* enable port */
+	 
 	enetc_port_wr(hw, ENETC_PMR, ENETC_PMR_EN);
 }
 
-/* Messaging */
+ 
 static u16 enetc_msg_pf_set_vf_primary_mac_addr(struct enetc_pf *pf,
 						int vf_id)
 {
@@ -817,7 +814,7 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
 		ndev->hw_features |= NETIF_F_HW_TC;
 	}
 
-	/* pick up primary MAC address from SI */
+	 
 	enetc_load_primary_mac_addr(&si->hw, ndev);
 }
 
@@ -1023,7 +1020,7 @@ static void enetc_pl_mac_link_up(struct phylink_config *config,
 	    phy_interface_mode_is_rgmii(interface))
 		enetc_force_rgmii_mac(si, speed, duplex);
 
-	/* Flow control */
+	 
 	for (idx = 0; idx < priv->num_rx_rings; idx++) {
 		rbmr = enetc_rxbdr_rd(hw, idx, ENETC_RBMR);
 
@@ -1036,23 +1033,13 @@ static void enetc_pl_mac_link_up(struct phylink_config *config,
 	}
 
 	if (tx_pause) {
-		/* When the port first enters congestion, send a PAUSE request
-		 * with the maximum number of quanta. When the port exits
-		 * congestion, it will automatically send a PAUSE frame with
-		 * zero quanta.
-		 */
+		 
 		init_quanta = 0xffff;
 
-		/* Also, set up the refresh timer to send follow-up PAUSE
-		 * frames at half the quanta value, in case the congestion
-		 * condition persists.
-		 */
+		 
 		refresh_quanta = 0xffff / 2;
 
-		/* Start emitting PAUSE frames when 3 large frames (or more
-		 * smaller frames) have accumulated in the FIFO waiting to be
-		 * DMAed to the RX ring.
-		 */
+		 
 		pause_on_thresh = 3 * ENETC_MAC_MAXFRM_SIZE;
 		pause_off_thresh = 1 * ENETC_MAC_MAXFRM_SIZE;
 	}
@@ -1139,9 +1126,7 @@ static void enetc_phylink_destroy(struct enetc_ndev_priv *priv)
 	phylink_destroy(priv->phylink);
 }
 
-/* Initialize the entire shared memory for the flow steering entries
- * of this port (PF + VFs)
- */
+ 
 static int enetc_init_port_rfs_memory(struct enetc_si *si)
 {
 	struct enetc_cmd_rfse rfse = {0};
@@ -1395,9 +1380,7 @@ static void enetc_fixup_clear_rss_rfs(struct pci_dev *pdev)
 	struct device_node *node = pdev->dev.of_node;
 	struct enetc_si *si;
 
-	/* Only apply quirk for disabled functions. For the ones
-	 * that are enabled, enetc_pf_probe() will apply it.
-	 */
+	 
 	if (node && of_device_is_available(node))
 		return;
 
@@ -1410,7 +1393,7 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_FREESCALE, ENETC_DEV_ID_PF,
 
 static const struct pci_device_id enetc_pf_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, ENETC_DEV_ID_PF) },
-	{ 0, } /* End of table. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, enetc_pf_id_table);
 

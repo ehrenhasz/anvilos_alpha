@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic driver for NXP NCI NFC chips
- *
- * Copyright (C) 2014  NXP Semiconductors  All rights reserved.
- *
- * Author: Clément Perrochaud <clement.perrochaud@nxp.com>
- *
- * Derived from PN544 device driver:
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/firmware.h>
@@ -17,7 +8,7 @@
 
 #include "nxp-nci.h"
 
-/* Crypto operations can take up to 30 seconds */
+ 
 #define NXP_NCI_FW_ANSWER_TIMEOUT	msecs_to_jiffies(30000)
 
 #define NXP_NCI_FW_CMD_RESET		0xF0
@@ -70,7 +61,7 @@ void nxp_nci_fw_work_complete(struct nxp_nci_info *info, int result)
 	nfc_fw_download_done(info->ndev->nfc_dev, fw_info->name, (u32) -result);
 }
 
-/* crc_ccitt cannot be used since it is computed MSB first and not LSB first */
+ 
 static u16 nxp_nci_fw_crc(u8 const *buffer, size_t len)
 {
 	u16 crc = 0xffff;

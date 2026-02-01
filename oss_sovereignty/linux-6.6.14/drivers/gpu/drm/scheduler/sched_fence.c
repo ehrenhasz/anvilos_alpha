@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/kthread.h>
 #include <linux/module.h>
@@ -51,11 +30,7 @@ static void __exit drm_sched_fence_slab_fini(void)
 static void drm_sched_fence_set_parent(struct drm_sched_fence *s_fence,
 				       struct dma_fence *fence)
 {
-	/*
-	 * smp_store_release() to ensure another thread racing us
-	 * in drm_sched_fence_set_deadline_finished() sees the
-	 * fence's parent set before test_bit()
-	 */
+	 
 	smp_store_release(&s_fence->parent, dma_fence_get(fence));
 	if (test_bit(DRM_SCHED_FENCE_FLAG_HAS_DEADLINE_BIT,
 		     &s_fence->finished.flags))
@@ -65,12 +40,7 @@ static void drm_sched_fence_set_parent(struct drm_sched_fence *s_fence,
 void drm_sched_fence_scheduled(struct drm_sched_fence *fence,
 			       struct dma_fence *parent)
 {
-	/* Set the parent before signaling the scheduled fence, such that,
-	 * any waiter expecting the parent to be filled after the job has
-	 * been scheduled (which is the case for drivers delegating waits
-	 * to some firmware) doesn't have to busy wait for parent to show
-	 * up.
-	 */
+	 
 	if (!IS_ERR_OR_NULL(parent))
 		drm_sched_fence_set_parent(fence, parent);
 
@@ -104,29 +74,15 @@ static void drm_sched_fence_free_rcu(struct rcu_head *rcu)
 		kmem_cache_free(sched_fence_slab, fence);
 }
 
-/**
- * drm_sched_fence_free - free up an uninitialized fence
- *
- * @fence: fence to free
- *
- * Free up the fence memory. Should only be used if drm_sched_fence_init()
- * has not been called yet.
- */
+ 
 void drm_sched_fence_free(struct drm_sched_fence *fence)
 {
-	/* This function should not be called if the fence has been initialized. */
+	 
 	if (!WARN_ON_ONCE(fence->sched))
 		kmem_cache_free(sched_fence_slab, fence);
 }
 
-/**
- * drm_sched_fence_release_scheduled - callback that fence can be freed
- *
- * @f: fence
- *
- * This function is called when the reference count becomes zero.
- * It just RCU schedules freeing up the fence.
- */
+ 
 static void drm_sched_fence_release_scheduled(struct dma_fence *f)
 {
 	struct drm_sched_fence *fence = to_drm_sched_fence(f);
@@ -135,13 +91,7 @@ static void drm_sched_fence_release_scheduled(struct dma_fence *f)
 	call_rcu(&fence->finished.rcu, drm_sched_fence_free_rcu);
 }
 
-/**
- * drm_sched_fence_release_finished - drop extra reference
- *
- * @f: fence
- *
- * Drop the extra reference from the scheduled fence to the base fence.
- */
+ 
 static void drm_sched_fence_release_finished(struct dma_fence *f)
 {
 	struct drm_sched_fence *fence = to_drm_sched_fence(f);
@@ -158,7 +108,7 @@ static void drm_sched_fence_set_deadline_finished(struct dma_fence *f,
 
 	spin_lock_irqsave(&fence->lock, flags);
 
-	/* If we already have an earlier deadline, keep it: */
+	 
 	if (test_bit(DRM_SCHED_FENCE_FLAG_HAS_DEADLINE_BIT, &f->flags) &&
 	    ktime_before(fence->deadline, deadline)) {
 		spin_unlock_irqrestore(&fence->lock, flags);
@@ -170,11 +120,7 @@ static void drm_sched_fence_set_deadline_finished(struct dma_fence *f,
 
 	spin_unlock_irqrestore(&fence->lock, flags);
 
-	/*
-	 * smp_load_aquire() to ensure that if we are racing another
-	 * thread calling drm_sched_fence_set_parent(), that we see
-	 * the parent set before it calls test_bit(HAS_DEADLINE_BIT)
-	 */
+	 
 	parent = smp_load_acquire(&fence->parent);
 	if (parent)
 		dma_fence_set_deadline(parent, deadline);

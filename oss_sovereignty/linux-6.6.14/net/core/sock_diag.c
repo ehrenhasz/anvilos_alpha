@@ -1,4 +1,4 @@
-/* License: GPL */
+ 
 
 #include <linux/filter.h>
 #include <linux/mutex.h>
@@ -32,7 +32,7 @@ u64 __sock_gen_cookie(struct sock *sk)
 
 		atomic64_cmpxchg(&sk->sk_cookie, res, new);
 
-		/* Another thread might have changed sk_cookie before us. */
+		 
 		res = atomic64_read(&sk->sk_cookie);
 	}
 	return res;
@@ -118,8 +118,8 @@ struct broadcast_sk {
 static size_t sock_diag_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct inet_diag_msg)
-	       + nla_total_size(sizeof(u8)) /* INET_DIAG_PROTOCOL */
-	       + nla_total_size_64bit(sizeof(struct tcp_info))); /* INET_DIAG_INFO */
+	       + nla_total_size(sizeof(u8))  
+	       + nla_total_size_64bit(sizeof(struct tcp_info)));  
 }
 
 static void sock_diag_broadcast_destroy_work(struct work_struct *work)
@@ -156,7 +156,7 @@ out:
 
 void sock_diag_broadcast_destroy(struct sock *sk)
 {
-	/* Note, this function is often called from an interrupt context. */
+	 
 	struct broadcast_sk *bsk =
 		kmalloc(sizeof(struct broadcast_sk), GFP_ATOMIC);
 	if (!bsk)

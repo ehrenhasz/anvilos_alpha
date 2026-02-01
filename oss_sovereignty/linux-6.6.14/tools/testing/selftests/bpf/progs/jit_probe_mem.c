@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -22,7 +22,7 @@ int test_jit_probe_mem(struct __sk_buff *ctx)
 	if (p)
 		goto release_out;
 
-	/* Direct map value access of kptr, should be PTR_UNTRUSTED */
+	 
 	p = v;
 	if (!p)
 		return 1;
@@ -31,16 +31,16 @@ int test_jit_probe_mem(struct __sk_buff *ctx)
 		"r9 = %[p];"
 		"%[sum] = 0;"
 
-		/* r8 = p->a */
+		 
 		"r8 = *(u32 *)(r9 + 0);"
 		"%[sum] += r8;"
 
-		/* r8 = p->b */
+		 
 		"r8 = *(u32 *)(r9 + 4);"
 		"%[sum] += r8;"
 
 		"r9 += 8;"
-		/* r9 = p->a */
+		 
 		"r9 = *(u32 *)(r9 - 8);"
 		"%[sum] += r9;"
 

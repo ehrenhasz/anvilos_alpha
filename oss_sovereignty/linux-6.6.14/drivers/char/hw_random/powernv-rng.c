@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Michael Ellerman, Guo Chao, IBM Corp.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -18,7 +16,7 @@ static int powernv_rng_read(struct hwrng *rng, void *data, size_t max, bool wait
 	unsigned long *buf;
 	int i, len;
 
-	/* We rely on rng_buffer_size() being >= sizeof(unsigned long) */
+	 
 	len = max / sizeof(unsigned long);
 
 	buf = (unsigned long *)data;
@@ -40,7 +38,7 @@ static int powernv_rng_probe(struct platform_device *pdev)
 
 	rc = devm_hwrng_register(&pdev->dev, &powernv_hwrng);
 	if (rc) {
-		/* We only register one device, ignore any others */
+		 
 		if (rc == -EEXIST)
 			rc = -ENODEV;
 

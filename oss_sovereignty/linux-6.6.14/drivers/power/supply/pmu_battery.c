@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery class driver for Apple PMU
- *
- *	Copyright © 2006  David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -23,9 +19,7 @@ static struct pmu_battery_dev {
 
 #define to_pmu_battery_dev(x) power_supply_get_drvdata(x)
 
-/*********************************************************************
- *		Power
- *********************************************************************/
+ 
 
 static int pmu_get_ac_prop(struct power_supply *psy,
 			   enum power_supply_property psp,
@@ -57,9 +51,7 @@ static const struct power_supply_desc pmu_ac_desc = {
 
 static struct power_supply *pmu_ac;
 
-/*********************************************************************
- *		Battery properties
- *********************************************************************/
+ 
 
 static char *pmu_batt_types[] = {
 	"Smart", "Comet", "Hooper", "Unknown"
@@ -102,16 +94,16 @@ static int pmu_bat_get_property(struct power_supply *psy,
 		val->strval = pmu_bat_get_model_name(pbi);
 		break;
 	case POWER_SUPPLY_PROP_ENERGY_AVG:
-		val->intval = pbi->charge     * 1000; /* mWh -> µWh */
+		val->intval = pbi->charge     * 1000;  
 		break;
 	case POWER_SUPPLY_PROP_ENERGY_FULL:
-		val->intval = pbi->max_charge * 1000; /* mWh -> µWh */
+		val->intval = pbi->max_charge * 1000;  
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_AVG:
-		val->intval = pbi->amperage   * 1000; /* mA -> µA */
+		val->intval = pbi->amperage   * 1000;  
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
-		val->intval = pbi->voltage    * 1000; /* mV -> µV */
+		val->intval = pbi->voltage    * 1000;  
 		break;
 	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG:
 		val->intval = pbi->time_remaining;
@@ -134,9 +126,7 @@ static enum power_supply_property pmu_bat_props[] = {
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG,
 };
 
-/*********************************************************************
- *		Initialisation
- *********************************************************************/
+ 
 
 static struct platform_device *bat_pdev;
 

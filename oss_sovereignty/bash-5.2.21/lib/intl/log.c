@@ -1,24 +1,8 @@
-/* log.c - Log file output. */
+ 
 
-/* Copyright (C) 2003, 2005-2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Written by Bruno Haible <bruno@clisp.org>.  */
+ 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -28,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Print an ASCII string with quotes and escape sequences where needed.  */
+ 
 static void
 print_escaped (stream, str)
      FILE *stream;
@@ -52,7 +36,7 @@ print_escaped (stream, str)
   putc ('"', stream);
 }
 
-/* Add to the log file an entry denoting a failed translation.  */
+ 
 void
 _nl_log_untranslated (logfilename, domainname, msgid1, msgid2, plural)
      const char *logfilename;
@@ -65,10 +49,10 @@ _nl_log_untranslated (logfilename, domainname, msgid1, msgid2, plural)
   static FILE *last_logfile = NULL;
   FILE *logfile;
 
-  /* Can we reuse the last opened logfile?  */
+   
   if (last_logfilename == NULL || strcmp (logfilename, last_logfilename) != 0)
     {
-      /* Close the last used logfile.  */
+       
       if (last_logfilename != NULL)
 	{
 	  if (last_logfile != NULL)
@@ -79,7 +63,7 @@ _nl_log_untranslated (logfilename, domainname, msgid1, msgid2, plural)
 	  free (last_logfilename);
 	  last_logfilename = NULL;
 	}
-      /* Open the logfile.  */
+       
       last_logfilename = (char *) malloc (strlen (logfilename) + 1);
       if (last_logfilename == NULL)
 	return;

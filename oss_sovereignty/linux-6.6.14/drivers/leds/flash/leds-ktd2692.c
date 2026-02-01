@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED driver : leds-ktd2692.c
- *
- * Copyright (C) 2015 Samsung Electronics
- * Ingi Kim <ingi2.kim@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -16,20 +11,20 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
-/* Value related the movie mode */
+ 
 #define KTD2692_MOVIE_MODE_CURRENT_LEVELS	16
 #define KTD2692_MM_TO_FL_RATIO(x)		((x) / 3)
 #define KTD2692_MM_MIN_CURR_THRESHOLD_SCALE	8
 
-/* Value related the flash mode */
+ 
 #define KTD2692_FLASH_MODE_TIMEOUT_LEVELS	8
 #define KTD2692_FLASH_MODE_TIMEOUT_DISABLE	0
 #define KTD2692_FLASH_MODE_CURR_PERCENT(x)	(((x) * 16) / 100)
 
-/* Macro for getting offset of flash timeout */
+ 
 #define GET_TIMEOUT_OFFSET(timeout, step)	((timeout) / (step))
 
-/* Base register address */
+ 
 #define KTD2692_REG_LVP_BASE			0x00
 #define KTD2692_REG_FLASH_TIMEOUT_BASE		0x20
 #define KTD2692_REG_MM_MIN_CURR_THRESHOLD_BASE	0x40
@@ -37,7 +32,7 @@
 #define KTD2692_REG_FLASH_CURRENT_BASE		0x80
 #define KTD2692_REG_MODE_BASE			0xA0
 
-/* Set bit coding time for expresswire interface */
+ 
 #define KTD2692_TIME_RESET_US			700
 #define KTD2692_TIME_DATA_START_TIME_US		10
 #define KTD2692_TIME_HIGH_END_OF_DATA_US	350
@@ -45,7 +40,7 @@
 #define KTD2692_TIME_SHORT_BITSET_US		4
 #define KTD2692_TIME_LONG_BITSET_US		12
 
-/* KTD2692 default length of name */
+ 
 #define KTD2692_NAME_LENGTH			20
 
 enum ktd2692_bitset {
@@ -53,29 +48,29 @@ enum ktd2692_bitset {
 	KTD2692_HIGH,
 };
 
-/* Movie / Flash Mode Control */
+ 
 enum ktd2692_led_mode {
-	KTD2692_MODE_DISABLE = 0,	/* default */
+	KTD2692_MODE_DISABLE = 0,	 
 	KTD2692_MODE_MOVIE,
 	KTD2692_MODE_FLASH,
 };
 
 struct ktd2692_led_config_data {
-	/* maximum LED current in movie mode */
+	 
 	u32 movie_max_microamp;
-	/* maximum LED current in flash mode */
+	 
 	u32 flash_max_microamp;
-	/* maximum flash timeout */
+	 
 	u32 flash_max_timeout;
-	/* max LED brightness level */
+	 
 	enum led_brightness max_brightness;
 };
 
 struct ktd2692_context {
-	/* Related LED Flash class device */
+	 
 	struct led_classdev_flash fled_cdev;
 
-	/* secures access to the device */
+	 
 	struct mutex lock;
 	struct regulator *regulator;
 
@@ -114,22 +109,7 @@ static void ktd2692_expresswire_end(struct ktd2692_context *led)
 
 static void ktd2692_expresswire_set_bit(struct ktd2692_context *led, bool bit)
 {
-	/*
-	 * The Low Bit(0) and High Bit(1) is based on a time detection
-	 * algorithm between time low and time high
-	 * Time_(L_LB) : Low time of the Low Bit(0)
-	 * Time_(H_LB) : High time of the LOW Bit(0)
-	 * Time_(L_HB) : Low time of the High Bit(1)
-	 * Time_(H_HB) : High time of the High Bit(1)
-	 *
-	 * It can be simplified to:
-	 * Low Bit(0) : 2 * Time_(H_LB) < Time_(L_LB)
-	 * High Bit(1) : 2 * Time_(L_HB) < Time_(H_HB)
-	 * HIGH  ___           ____    _..     _________    ___
-	 *          |_________|    |_..  |____|         |__|
-	 * LOW        <L_LB>  <H_LB>     <L_HB>  <H_HB>
-	 *          [  Low Bit (0) ]     [  High Bit(1) ]
-	 */
+	 
 	if (bit) {
 		gpiod_direction_output(led->ctrl_gpio, KTD2692_LOW);
 		udelay(KTD2692_TIME_SHORT_BITSET_US);
@@ -399,7 +379,7 @@ static int ktd2692_remove(struct platform_device *pdev)
 
 static const struct of_device_id ktd2692_match[] = {
 	{ .compatible = "kinetic,ktd2692", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ktd2692_match);
 

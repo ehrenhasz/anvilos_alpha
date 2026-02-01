@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common code for the NVMe target.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/random.h>
@@ -26,22 +23,7 @@ static DEFINE_IDA(cntlid_ida);
 struct workqueue_struct *nvmet_wq;
 EXPORT_SYMBOL_GPL(nvmet_wq);
 
-/*
- * This read/write semaphore is used to synchronize access to configuration
- * information on a target system that will result in discovery log page
- * information change for at least one host.
- * The full list of resources to protected by this semaphore is:
- *
- *  - subsystems list
- *  - per-subsystem allowed hosts list
- *  - allow_any_host subsystem attribute
- *  - nvmet_genctr
- *  - the nvmet_transports array
- *
- * When updating any of those lists/structures write lock should be obtained,
- * while when reading (popolating discovery log page or checking host-subsystem
- * link) read lock is obtained to allow concurrent reads.
- */
+ 
 DECLARE_RWSEM(nvmet_config_sem);
 
 u32 nvmet_ana_group_enabled[NVMET_MAX_ANAGRPS + 1];
@@ -339,10 +321,7 @@ int nvmet_enable_port(struct nvmet_port *port)
 	if (!try_module_get(ops->owner))
 		return -EINVAL;
 
-	/*
-	 * If the user requested PI support and the transport isn't pi capable,
-	 * don't enable the port.
-	 */
+	 
 	if (port->pi_enable && !(ops->flags & NVMF_METADATA_SUPPORTED)) {
 		pr_err("T10-PI is not supported by transport type %d\n",
 		       port->disc_addr.trtype);
@@ -354,7 +333,7 @@ int nvmet_enable_port(struct nvmet_port *port)
 	if (ret)
 		goto out_put;
 
-	/* If the transport didn't set inline_data_size, then disable it. */
+	 
 	if (port->inline_data_size < 0)
 		port->inline_data_size = 0;
 
@@ -478,12 +457,7 @@ static int nvmet_p2pmem_ns_enable(struct nvmet_ns *ns)
 		if (ret < 0)
 			return -EINVAL;
 	} else {
-		/*
-		 * Right now we just check that there is p2pmem available so
-		 * we can report an error to the user right away if there
-		 * is not. We'll find the actual device to use once we
-		 * setup the controller when the port's device is available.
-		 */
+		 
 
 		p2p_dev = pci_p2pmem_find(nvmet_ns_dev(ns));
 		if (!p2p_dev) {
@@ -498,9 +472,7 @@ static int nvmet_p2pmem_ns_enable(struct nvmet_ns *ns)
 	return 0;
 }
 
-/*
- * Note: ctrl->subsys->lock should be held when calling this function
- */
+ 
 static void nvmet_p2pmem_ns_add_p2p(struct nvmet_ctrl *ctrl,
 				    struct nvmet_ns *ns)
 {
@@ -634,14 +606,7 @@ void nvmet_ns_disable(struct nvmet_ns *ns)
 
 	mutex_unlock(&subsys->lock);
 
-	/*
-	 * Now that we removed the namespaces from the lookup list, we
-	 * can kill the per_cpu ref and wait for any remaining references
-	 * to be dropped, as well as a RCU grace period for anyone only
-	 * using the namepace under rcu_read_lock().  Note that we can't
-	 * use call_rcu here as we need to ensure the namespaces have
-	 * been fully destroyed before unloading the module.
-	 */
+	 
 	percpu_ref_kill(&ns->ref);
 	synchronize_rcu();
 	wait_for_completion(&ns->disable_done);
@@ -731,7 +696,7 @@ static void nvmet_set_error(struct nvmet_req *req, u16 status)
 	new_error_slot->nsid = req->cmd->common.nsid;
 	spin_unlock_irqrestore(&ctrl->error_lock, flags);
 
-	/* set the more bit for this request */
+	 
 	req->cqe->status |= cpu_to_le16(1 << 14);
 }
 
@@ -791,10 +756,7 @@ void nvmet_sq_destroy(struct nvmet_sq *sq)
 {
 	struct nvmet_ctrl *ctrl = sq->ctrl;
 
-	/*
-	 * If this is the admin queue, complete all AERs so that our
-	 * queue doesn't have outstanding requests on it.
-	 */
+	 
 	if (ctrl && ctrl->sqs && ctrl->sqs[0] == sq)
 		nvmet_async_events_failall(ctrl);
 	percpu_ref_kill_and_confirm(&sq->ref, nvmet_confirm_sq);
@@ -804,16 +766,11 @@ void nvmet_sq_destroy(struct nvmet_sq *sq)
 	nvmet_auth_sq_free(sq);
 
 	if (ctrl) {
-		/*
-		 * The teardown flow may take some time, and the host may not
-		 * send us keep-alive during this period, hence reset the
-		 * traffic based keep-alive timer so we don't trigger a
-		 * controller teardown as a result of a keep-alive expiration.
-		 */
+		 
 		ctrl->reset_tbkas = true;
 		sq->ctrl->sqs[sq->qid] = NULL;
 		nvmet_ctrl_put(ctrl);
-		sq->ctrl = NULL; /* allows reusing the queue later */
+		sq->ctrl = NULL;  
 	}
 }
 EXPORT_SYMBOL_GPL(nvmet_sq_destroy);
@@ -939,18 +896,14 @@ bool nvmet_req_init(struct nvmet_req *req, struct nvmet_cq *cq,
 	req->error_loc = NVMET_NO_ERROR_LOC;
 	req->error_slba = 0;
 
-	/* no support for fused commands yet */
+	 
 	if (unlikely(flags & (NVME_CMD_FUSE_FIRST | NVME_CMD_FUSE_SECOND))) {
 		req->error_loc = offsetof(struct nvme_common_command, flags);
 		status = NVME_SC_INVALID_FIELD | NVME_SC_DNR;
 		goto fail;
 	}
 
-	/*
-	 * For fabrics, PSDT field shall describe metadata pointer (MPTR) that
-	 * contains an address of a single contiguous physical buffer that is
-	 * byte aligned.
-	 */
+	 
 	if (unlikely((flags & NVME_CMD_SGL_ALL) != NVME_CMD_SGL_METABUF)) {
 		req->error_loc = offsetof(struct nvme_common_command, flags);
 		status = NVME_SC_INVALID_FIELD | NVME_SC_DNR;
@@ -958,7 +911,7 @@ bool nvmet_req_init(struct nvmet_req *req, struct nvmet_cq *cq,
 	}
 
 	if (unlikely(!req->sq->ctrl))
-		/* will return an error for any non-connect command: */
+		 
 		status = nvmet_parse_connect_cmd(req);
 	else if (likely(req->sq->qid != 0))
 		status = nvmet_parse_io_cmd(req);
@@ -1151,12 +1104,7 @@ static void nvmet_start_ctrl(struct nvmet_ctrl *ctrl)
 {
 	lockdep_assert_held(&ctrl->lock);
 
-	/*
-	 * Only I/O controllers should verify iosqes,iocqes.
-	 * Strictly speaking, the spec says a discovery controller
-	 * should verify iosqes,iocqes are zeroed, however that
-	 * would break backwards compatibility, so don't enforce it.
-	 */
+	 
 	if (!nvmet_is_disc_subsys(ctrl->subsys) &&
 	    (nvmet_cc_iosqes(ctrl->cc) != NVME_NVM_IOSQES ||
 	     nvmet_cc_iocqes(ctrl->cc) != NVME_NVM_IOCQES)) {
@@ -1173,12 +1121,7 @@ static void nvmet_start_ctrl(struct nvmet_ctrl *ctrl)
 
 	ctrl->csts = NVME_CSTS_RDY;
 
-	/*
-	 * Controllers that are not yet enabled should not really enforce the
-	 * keep alive timeout, but we still want to track a timeout and cleanup
-	 * in case a host died before it enabled the controller.  Hence, simply
-	 * reset the keep alive timer when the controller is enabled.
-	 */
+	 
 	if (ctrl->kato)
 		mod_delayed_work(nvmet_wq, &ctrl->ka_work, ctrl->kato * HZ);
 }
@@ -1187,7 +1130,7 @@ static void nvmet_clear_ctrl(struct nvmet_ctrl *ctrl)
 {
 	lockdep_assert_held(&ctrl->lock);
 
-	/* XXX: tear down queues? */
+	 
 	ctrl->csts &= ~NVME_CSTS_RDY;
 	ctrl->cc = 0;
 }
@@ -1215,13 +1158,13 @@ void nvmet_update_cc(struct nvmet_ctrl *ctrl, u32 new)
 
 static void nvmet_init_cap(struct nvmet_ctrl *ctrl)
 {
-	/* command sets supported: NVMe command set: */
+	 
 	ctrl->cap = (1ULL << 37);
-	/* Controller supports one or more I/O Command Sets */
+	 
 	ctrl->cap |= (1ULL << 43);
-	/* CC.EN timeout in 500msec units: */
+	 
 	ctrl->cap |= (15ULL << 24);
-	/* maximum queue entries supported: */
+	 
 	if (ctrl->ops->get_max_queue_size)
 		ctrl->cap |= ctrl->ops->get_max_queue_size(ctrl) - 1;
 	else
@@ -1256,12 +1199,12 @@ struct nvmet_ctrl *nvmet_ctrl_find_get(const char *subsysnqn,
 			if (!kref_get_unless_zero(&ctrl->ref))
 				continue;
 
-			/* ctrl found */
+			 
 			goto found;
 		}
 	}
 
-	ctrl = NULL; /* ctrl not found */
+	ctrl = NULL;  
 	pr_warn("could not find controller %d for subsys %s / host %s\n",
 		cntlid, subsysnqn, hostnqn);
 	req->cqe->result.u32 = IPO_IATTR_CONNECT_DATA(cntlid);
@@ -1303,7 +1246,7 @@ bool nvmet_host_allowed(struct nvmet_subsys *subsys, const char *hostnqn)
 	if (subsys->allow_any_host)
 		return true;
 
-	if (nvmet_is_disc_subsys(subsys)) /* allow all access to disc subsys */
+	if (nvmet_is_disc_subsys(subsys))  
 		return true;
 
 	list_for_each_entry(p, &subsys->hosts, entry) {
@@ -1314,9 +1257,7 @@ bool nvmet_host_allowed(struct nvmet_subsys *subsys, const char *hostnqn)
 	return false;
 }
 
-/*
- * Note: ctrl->subsys->lock should be held when calling this function
- */
+ 
 static void nvmet_setup_p2p_ns_map(struct nvmet_ctrl *ctrl,
 		struct nvmet_req *req)
 {
@@ -1332,9 +1273,7 @@ static void nvmet_setup_p2p_ns_map(struct nvmet_ctrl *ctrl,
 		nvmet_p2pmem_ns_add_p2p(ctrl, ns);
 }
 
-/*
- * Note: ctrl->subsys->lock should be held when calling this function
- */
+ 
 static void nvmet_release_p2p_ns_map(struct nvmet_ctrl *ctrl)
 {
 	struct radix_tree_iter iter;
@@ -1395,7 +1334,7 @@ u16 nvmet_alloc_ctrl(const char *subsysnqn, const char *hostnqn,
 	ctrl->ops = req->ops;
 
 #ifdef CONFIG_NVME_TARGET_PASSTHRU
-	/* By default, set loop targets to clear IDS by default */
+	 
 	if (ctrl->port->disc_addr.trtype == NVMF_TRTYPE_LOOP)
 		subsys->clear_ids = 1;
 #endif
@@ -1437,14 +1376,11 @@ u16 nvmet_alloc_ctrl(const char *subsysnqn, const char *hostnqn,
 	}
 	ctrl->cntlid = ret;
 
-	/*
-	 * Discovery controllers may use some arbitrary high value
-	 * in order to cleanup stale discovery sessions
-	 */
+	 
 	if (nvmet_is_disc_subsys(ctrl->subsys) && !kato)
 		kato = NVMET_DISC_KATO_MS;
 
-	/* keep-alive timeout in seconds */
+	 
 	ctrl->kato = DIV_ROUND_UP(kato, 1000);
 
 	ctrl->err_counter = 0;
@@ -1555,7 +1491,7 @@ struct nvmet_subsys *nvmet_subsys_alloc(const char *subsysnqn,
 		return ERR_PTR(-ENOMEM);
 
 	subsys->ver = NVMET_DEFAULT_VS;
-	/* generate a random serial number as our controllers are ephemeral: */
+	 
 	get_random_bytes(&serial, sizeof(serial));
 	bin2hex(subsys->serial, &serial, sizeof(serial));
 

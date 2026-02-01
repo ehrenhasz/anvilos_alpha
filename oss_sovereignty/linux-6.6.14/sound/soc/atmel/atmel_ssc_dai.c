@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * atmel_ssc_dai.c  --  ALSA SoC ATMEL SSC Audio Layer Platform driver
- *
- * Copyright (C) 2005 SAN People
- * Copyright (C) 2008 Atmel
- *
- * Author: Sedji Gaouaou <sedji.gaouaou@atmel.com>
- *         ATMEL CORP.
- *
- * Based on at91-ssc.c by
- * Frank Mandarino <fmandarino@endrelia.com>
- * Based on pxa2xx Platform drivers by
- * Liam Girdwood <lrg@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -35,9 +22,7 @@
 
 #define NUM_SSC_DEVICES		3
 
-/*
- * SSC PDC registers required by the PCM DMA engine.
- */
+ 
 static struct atmel_pdc_regs pdc_tx_reg = {
 	.xpr		= ATMEL_PDC_TPR,
 	.xcr		= ATMEL_PDC_TCR,
@@ -52,9 +37,7 @@ static struct atmel_pdc_regs pdc_rx_reg = {
 	.xncr		= ATMEL_PDC_RNCR,
 };
 
-/*
- * SSC & PDC status bits for transmit and receive.
- */
+ 
 static struct atmel_ssc_mask ssc_tx_mask = {
 	.ssc_enable	= SSC_BIT(CR_TXEN),
 	.ssc_disable	= SSC_BIT(CR_TXDIS),
@@ -76,9 +59,7 @@ static struct atmel_ssc_mask ssc_rx_mask = {
 };
 
 
-/*
- * DMA parameters.
- */
+ 
 static struct atmel_pcm_dma_params ssc_dma_params[NUM_SSC_DEVICES][2] = {
 	{{
 	.name		= "SSC0 PCM out",
@@ -132,10 +113,7 @@ static struct atmel_ssc_info ssc_info[NUM_SSC_DEVICES] = {
 };
 
 
-/*
- * SSC interrupt handler.  Passes PDC interrupts to the DMA
- * interrupt handler in the PCM driver.
- */
+ 
 static irqreturn_t atmel_ssc_interrupt(int irq, void *dev_id)
 {
 	struct atmel_ssc_info *ssc_p = dev_id;
@@ -147,12 +125,7 @@ static irqreturn_t atmel_ssc_interrupt(int irq, void *dev_id)
 	ssc_sr = (unsigned long)ssc_readl(ssc_p->ssc->regs, SR)
 			& (unsigned long)ssc_readl(ssc_p->ssc->regs, IMR);
 
-	/*
-	 * Loop through the substreams attached to this SSC.  If
-	 * a DMA-related interrupt occurred on that substream, call
-	 * the DMA interrupt handler function, if one has been
-	 * registered in the dma_params structure by the PCM driver.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(ssc_p->dma_params); i++) {
 		dma_params = ssc_p->dma_params[i];
 
@@ -171,23 +144,7 @@ static irqreturn_t atmel_ssc_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * When the bit clock is input, limit the maximum rate according to the
- * Serial Clock Ratio Considerations section from the SSC documentation:
- *
- *   The Transmitter and the Receiver can be programmed to operate
- *   with the clock signals provided on either the TK or RK pins.
- *   This allows the SSC to support many slave-mode data transfers.
- *   In this case, the maximum clock speed allowed on the RK pin is:
- *   - Peripheral clock divided by 2 if Receiver Frame Synchro is input
- *   - Peripheral clock divided by 3 if Receiver Frame Synchro is output
- *   In addition, the maximum clock speed allowed on the TK pin is:
- *   - Peripheral clock divided by 6 if Transmit Frame Synchro is input
- *   - Peripheral clock divided by 2 if Transmit Frame Synchro is output
- *
- * When the bit clock is output, limit the rate according to the
- * SSC divider restrictions.
- */
+ 
 static int atmel_ssc_hw_rule_rate(struct snd_pcm_hw_params *params,
 				  struct snd_pcm_hw_rule *rule)
 {
@@ -213,21 +170,14 @@ static int atmel_ssc_hw_rule_rate(struct snd_pcm_hw_params *params,
 	case SND_SOC_DAIFMT_BC_FP:
 		if ((ssc_p->dir_mask & SSC_DIR_MASK_CAPTURE)
 		    && ssc->clk_from_rk_pin)
-			/* Receiver Frame Synchro (i.e. capture)
-			 * is output (format is _CFS) and the RK pin
-			 * is used for input (format is _CBM_).
-			 */
+			 
 			mck_div = 3;
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
 		if ((ssc_p->dir_mask & SSC_DIR_MASK_PLAYBACK)
 		    && !ssc->clk_from_rk_pin)
-			/* Transmit Frame Synchro (i.e. playback)
-			 * is input (format is _CFM) and the TK pin
-			 * is used for input (format _CBM_ but not
-			 * using the RK pin).
-			 */
+			 
 			mck_div = 6;
 		break;
 	}
@@ -260,12 +210,8 @@ static int atmel_ssc_hw_rule_rate(struct snd_pcm_hw_params *params,
 	return ret;
 }
 
-/*-------------------------------------------------------------------------*\
- * DAI functions
-\*-------------------------------------------------------------------------*/
-/*
- * Startup.  Only that one substream allowed in each direction.
- */
+ 
+ 
 static int atmel_ssc_startup(struct snd_pcm_substream *substream,
 			     struct snd_soc_dai *dai)
 {
@@ -278,7 +224,7 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
 	pr_debug("atmel_ssc_startup: SSC_SR=0x%x\n",
 		ssc_readl(ssc_p->ssc->regs, SR));
 
-	/* Enable PMC peripheral clock for this SSC */
+	 
 	pr_debug("atmel_ssc_dai: Starting clock\n");
 	ret = clk_enable(ssc_p->ssc->clk);
 	if (ret)
@@ -286,7 +232,7 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
 
 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
 
-	/* Reset the SSC unless initialized to keep it in a clean state */
+	 
 	if (!ssc_p->initialized)
 		ssc_writel(ssc_p->ssc->regs, CR, SSC_BIT(CR_SWRST));
 
@@ -325,10 +271,7 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * Shutdown.  Clear DMA parameters and shutdown the SSC if there
- * are no other substreams open.
- */
+ 
 static void atmel_ssc_shutdown(struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai)
 {
@@ -359,22 +302,20 @@ static void atmel_ssc_shutdown(struct snd_pcm_substream *substream,
 			ssc_p->initialized = 0;
 		}
 
-		/* Reset the SSC */
+		 
 		ssc_writel(ssc_p->ssc->regs, CR, SSC_BIT(CR_SWRST));
-		/* Clear the SSC dividers */
+		 
 		ssc_p->cmr_div = ssc_p->tcmr_period = ssc_p->rcmr_period = 0;
 		ssc_p->forced_divider = 0;
 	}
 
-	/* Shutdown the SSC clock. */
+	 
 	pr_debug("atmel_ssc_dai: Stopping clock\n");
 	clk_disable(ssc_p->ssc->clk);
 }
 
 
-/*
- * Record the DAI format for use in hw_params().
- */
+ 
 static int atmel_ssc_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 		unsigned int fmt)
 {
@@ -385,9 +326,7 @@ static int atmel_ssc_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-/*
- * Record SSC clock dividers for use in hw_params().
- */
+ 
 static int atmel_ssc_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
 	int div_id, int div)
 {
@@ -396,11 +335,7 @@ static int atmel_ssc_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
 
 	switch (div_id) {
 	case ATMEL_SSC_CMR_DIV:
-		/*
-		 * The same master clock divider is used for both
-		 * transmit and receive, so if a value has already
-		 * been set, it must match this value.
-		 */
+		 
 		if (ssc_p->dir_mask !=
 			(SSC_DIR_MASK_PLAYBACK | SSC_DIR_MASK_CAPTURE))
 			ssc_p->cmr_div = div;
@@ -429,7 +364,7 @@ static int atmel_ssc_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-/* Is the cpu-dai master of the frame clock? */
+ 
 static int atmel_ssc_cfs(struct atmel_ssc_info *ssc_p)
 {
 	switch (ssc_p->daifmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
@@ -440,7 +375,7 @@ static int atmel_ssc_cfs(struct atmel_ssc_info *ssc_p)
 	return 0;
 }
 
-/* Is the cpu-dai master of the bit clock? */
+ 
 static int atmel_ssc_cbs(struct atmel_ssc_info *ssc_p)
 {
 	switch (ssc_p->daifmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
@@ -451,9 +386,7 @@ static int atmel_ssc_cbs(struct atmel_ssc_info *ssc_p)
 	return 0;
 }
 
-/*
- * Configure the SSC.
- */
+ 
 static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
 	struct snd_soc_dai *dai)
@@ -471,20 +404,13 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 	u32 tcmr_period;
 	u32 rcmr_period;
 
-	/*
-	 * Currently, there is only one set of dma params for
-	 * each direction.  If more are added, this code will
-	 * have to be changed to select the proper set.
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		dir = 0;
 	else
 		dir = 1;
 
-	/*
-	 * If the cpu dai should provide BCLK, but noone has provided the
-	 * divider needed for that to work, fall back to something sensible.
-	 */
+	 
 	cmr_div = ssc_p->cmr_div;
 	if (!(ssc_p->forced_divider & BIT(ATMEL_SSC_CMR_DIV)) &&
 	    atmel_ssc_cbs(ssc_p)) {
@@ -499,10 +425,7 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 		cmr_div = DIV_ROUND_CLOSEST(ssc_p->mck_rate, 2 * bclk_rate);
 	}
 
-	/*
-	 * If the cpu dai should provide LRCLK, but noone has provided the
-	 * dividers needed for that to work, fall back to something sensible.
-	 */
+	 
 	tcmr_period = ssc_p->tcmr_period;
 	rcmr_period = ssc_p->rcmr_period;
 	if (atmel_ssc_cfs(ssc_p)) {
@@ -525,9 +448,7 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 
 	channels = params_channels(params);
 
-	/*
-	 * Determine sample size in bits and the PDC increment.
-	 */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S8:
 		bits = 8;
@@ -550,9 +471,7 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/*
-	 * Compute SSC register settings.
-	 */
+	 
 
 	fslen_ext = (bits - 1) / 16;
 	fslen = (bits - 1) % 16;
@@ -578,13 +497,7 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 		break;
 
 	case SND_SOC_DAIFMT_DSP_A:
-		/*
-		 * DSP/PCM Mode A format
-		 *
-		 * Data is transferred on first BCLK after LRC pulse rising
-		 * edge.If stereo, the right channel data is contiguous with
-		 * the left channel data.
-		 */
+		 
 		fs_osync = SSC_FSOS_POSITIVE;
 		fs_edge = SSC_START_RISING_RF;
 		fslen = fslen_ext = 0;
@@ -610,13 +523,7 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 	tcmr |=	  SSC_BF(TCMR_START, fs_edge);
 
 	if (atmel_ssc_cbs(ssc_p)) {
-		/*
-		 * SSC provides BCLK
-		 *
-		 * The SSC transmit and receive clocks are generated from the
-		 * MCK divider, and the BCLK signal is output
-		 * on the SSC TK line.
-		 */
+		 
 		rcmr |=	  SSC_BF(RCMR_CKS, SSC_CKS_DIV)
 			| SSC_BF(RCMR_CKO, SSC_CKO_NONE);
 
@@ -693,14 +600,14 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
 		ssc_p->initialized = 1;
 	}
 
-	/* set SSC clock mode register */
+	 
 	ssc_writel(ssc_p->ssc->regs, CMR, cmr_div);
 
-	/* set receive clock mode and format */
+	 
 	ssc_writel(ssc_p->ssc->regs, RCMR, rcmr);
 	ssc_writel(ssc_p->ssc->regs, RFMR, rfmr);
 
-	/* set transmit clock mode and format */
+	 
 	ssc_writel(ssc_p->ssc->regs, TCMR, tcmr);
 	ssc_writel(ssc_p->ssc->regs, TFMR, tfmr);
 
@@ -772,11 +679,11 @@ static int atmel_ssc_suspend(struct snd_soc_component *component)
 
 	ssc_p = &ssc_info[pdev->id];
 
-	/* Save the status register before disabling transmit and receive */
+	 
 	ssc_p->ssc_state.ssc_sr = ssc_readl(ssc_p->ssc->regs, SR);
 	ssc_writel(ssc_p->ssc->regs, CR, SSC_BIT(CR_TXDIS) | SSC_BIT(CR_RXDIS));
 
-	/* Save the current interrupt mask, then disable unmasked interrupts */
+	 
 	ssc_p->ssc_state.ssc_imr = ssc_readl(ssc_p->ssc->regs, IMR);
 	ssc_writel(ssc_p->ssc->regs, IDR, ssc_p->ssc_state.ssc_imr);
 
@@ -800,17 +707,17 @@ static int atmel_ssc_resume(struct snd_soc_component *component)
 
 	ssc_p = &ssc_info[pdev->id];
 
-	/* restore SSC register settings */
+	 
 	ssc_writel(ssc_p->ssc->regs, TFMR, ssc_p->ssc_state.ssc_tfmr);
 	ssc_writel(ssc_p->ssc->regs, TCMR, ssc_p->ssc_state.ssc_tcmr);
 	ssc_writel(ssc_p->ssc->regs, RFMR, ssc_p->ssc_state.ssc_rfmr);
 	ssc_writel(ssc_p->ssc->regs, RCMR, ssc_p->ssc_state.ssc_rcmr);
 	ssc_writel(ssc_p->ssc->regs, CMR, ssc_p->ssc_state.ssc_cmr);
 
-	/* re-enable interrupts */
+	 
 	ssc_writel(ssc_p->ssc->regs, IER, ssc_p->ssc_state.ssc_imr);
 
-	/* Re-enable receive and transmit as appropriate */
+	 
 	cr = 0;
 	cr |=
 	    (ssc_p->ssc_state.ssc_sr & SSC_BIT(SR_RXEN)) ? SSC_BIT(CR_RXEN) : 0;
@@ -884,15 +791,12 @@ static int asoc_ssc_init(struct device *dev)
 	return 0;
 }
 
-/**
- * atmel_ssc_set_audio - Allocate the specified SSC for audio use.
- * @ssc_id: SSD ID in [0, NUM_SSC_DEVICES[
- */
+ 
 int atmel_ssc_set_audio(int ssc_id)
 {
 	struct ssc_device *ssc;
 
-	/* If we can grab the SSC briefly to parent the DAI device off it */
+	 
 	ssc = ssc_request(ssc_id);
 	if (IS_ERR(ssc)) {
 		pr_err("Unable to parent ASoC SSC DAI on SSC: %ld\n",
@@ -914,7 +818,7 @@ void atmel_ssc_put_audio(int ssc_id)
 }
 EXPORT_SYMBOL_GPL(atmel_ssc_put_audio);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sedji Gaouaou, sedji.gaouaou@atmel.com, www.atmel.com");
 MODULE_DESCRIPTION("ATMEL SSC ASoC Interface");
 MODULE_LICENSE("GPL");

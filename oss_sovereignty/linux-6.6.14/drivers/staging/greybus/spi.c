@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SPI bridge PHY driver.
- *
- * Copyright 2014-2016 Google Inc.
- * Copyright 2014-2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/greybus.h>

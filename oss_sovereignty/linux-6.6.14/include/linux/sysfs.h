@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * sysfs.h - definitions for the device driver filesystem
- *
- * Copyright (c) 2001,2002 Patrick Mochel
- * Copyright (c) 2004 Silicon Graphics, Inc.
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007 Tejun Heo <teheo@suse.de>
- *
- * Please see Documentation/filesystems/sysfs.rst for more information.
- */
+ 
+ 
 
 #ifndef _SYSFS_H_
 #define _SYSFS_H_
@@ -37,16 +28,7 @@ struct attribute {
 #endif
 };
 
-/**
- *	sysfs_attr_init - initialize a dynamically allocated sysfs attribute
- *	@attr: struct attribute to initialize
- *
- *	Initialize a dynamically allocated struct attribute so we can
- *	make lockdep happy.  This is a new requirement for attributes
- *	and initially this is only needed when lockdep is enabled.
- *	Lockdep gives a nice error when your attribute is added to
- *	sysfs if you don't have this.
- */
+ 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 #define sysfs_attr_init(attr)				\
 do {							\
@@ -58,29 +40,7 @@ do {							\
 #define sysfs_attr_init(attr) do {} while (0)
 #endif
 
-/**
- * struct attribute_group - data structure used to declare an attribute group.
- * @name:	Optional: Attribute group name
- *		If specified, the attribute group will be created in
- *		a new subdirectory with this name.
- * @is_visible:	Optional: Function to return permissions associated with an
- *		attribute of the group. Will be called repeatedly for each
- *		non-binary attribute in the group. Only read/write
- *		permissions as well as SYSFS_PREALLOC are accepted. Must
- *		return 0 if an attribute is not visible. The returned value
- *		will replace static permissions defined in struct attribute.
- * @is_bin_visible:
- *		Optional: Function to return permissions associated with a
- *		binary attribute of the group. Will be called repeatedly
- *		for each binary attribute in the group. Only read/write
- *		permissions as well as SYSFS_PREALLOC are accepted. Must
- *		return 0 if a binary attribute is not visible. The returned
- *		value will replace static permissions defined in
- *		struct bin_attribute.
- * @attrs:	Pointer to NULL terminated list of attributes.
- * @bin_attrs:	Pointer to NULL terminated list of binary attributes.
- *		Either attrs or bin_attrs or both must be provided.
- */
+ 
 struct attribute_group {
 	const char		*name;
 	umode_t			(*is_visible)(struct kobject *,
@@ -91,10 +51,7 @@ struct attribute_group {
 	struct bin_attribute	**bin_attrs;
 };
 
-/*
- * Use these macros to make defining attributes easier.
- * See include/linux/device.h for examples..
- */
+ 
 
 #define SYSFS_PREALLOC 010000
 
@@ -185,19 +142,10 @@ struct bin_attribute {
 		    struct vm_area_struct *vma);
 };
 
-/**
- *	sysfs_bin_attr_init - initialize a dynamically allocated bin_attribute
- *	@attr: struct bin_attribute to initialize
- *
- *	Initialize a dynamically allocated struct bin_attribute so we
- *	can make lockdep happy.  This is a new requirement for
- *	attributes and initially this is only needed when lockdep is
- *	enabled.  Lockdep gives a nice error when your attribute is
- *	added to sysfs if you don't have this.
- */
+ 
 #define sysfs_bin_attr_init(bin_attr) sysfs_attr_init(&(bin_attr)->attr)
 
-/* macros to create static binary attributes easier */
+ 
 #define __BIN_ATTR(_name, _mode, _read, _write, _size) {		\
 	.attr = { .name = __stringify(_name), .mode = _mode },		\
 	.read	= _read,						\
@@ -358,7 +306,7 @@ int sysfs_emit(char *buf, const char *fmt, ...);
 __printf(3, 4)
 int sysfs_emit_at(char *buf, int at, const char *fmt, ...);
 
-#else /* CONFIG_SYSFS */
+#else  
 
 static inline int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
 {
@@ -615,7 +563,7 @@ static inline int sysfs_emit_at(char *buf, int at, const char *fmt, ...)
 {
 	return 0;
 }
-#endif /* CONFIG_SYSFS */
+#endif  
 
 static inline int __must_check sysfs_create_file(struct kobject *kobj,
 						 const struct attribute *attr)
@@ -657,4 +605,4 @@ static inline void sysfs_put(struct kernfs_node *kn)
 	kernfs_put(kn);
 }
 
-#endif /* _SYSFS_H_ */
+#endif  

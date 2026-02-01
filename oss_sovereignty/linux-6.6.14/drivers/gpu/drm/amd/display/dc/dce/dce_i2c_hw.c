@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/delay.h>
 
@@ -58,12 +35,10 @@ static void execute_transaction(
 		     DC_I2C_GO, 0,
 		     DC_I2C_TRANSACTION_COUNT, dce_i2c_hw->transaction_count - 1);
 
-	/* start I2C transfer */
+	 
 	REG_UPDATE(DC_I2C_CONTROL, DC_I2C_GO, 1);
 
-	/* all transactions were executed and HW buffer became empty
-	 * (even though it actually happens when status becomes DONE)
-	 */
+	 
 	dce_i2c_hw->transaction_count = 0;
 	dce_i2c_hw->buffer_used_bytes = 0;
 }
@@ -86,10 +61,7 @@ static enum i2c_channel_operation_result get_channel_status(
 	else if (value & dce_i2c_hw->masks->DC_I2C_SW_DONE)
 		return I2C_CHANNEL_OPERATION_SUCCEEDED;
 
-	/*
-	 * this is the case when HW used for communication, I2C_SW_STATUS
-	 * could be zero
-	 */
+	 
 	return I2C_CHANNEL_OPERATION_SUCCEEDED;
 }
 
@@ -113,11 +85,7 @@ static void process_channel_reply(
 		 DC_I2C_INDEX_WRITE, 1);
 
 	while (length) {
-		/* after reading the status,
-		 * if the I2C operation executed successfully
-		 * (i.e. DC_I2C_STATUS_DONE = 1) then the I2C controller
-		 * should read data bytes from I2C circular data buffer
-		 */
+		 
 
 		uint32_t i2c_data;
 
@@ -212,17 +180,11 @@ static bool process_transaction(
 				 DC_I2C_STOP0, last_transaction ? 1 : 0);
 		break;
 	default:
-		/* TODO Warning ? */
+		 
 		break;
 	}
 
-	/* Write the I2C address and I2C data
-	 * into the hardware circular buffer, one byte per entry.
-	 * As an example, the 7-bit I2C slave address for CRT monitor
-	 * for reading DDC/EDID information is 0b1010001.
-	 * For an I2C send operation, the LSB must be programmed to 0;
-	 * for I2C receive operation, the LSB must be programmed to 1.
-	 */
+	 
 	if (dce_i2c_hw->transaction_count == 0) {
 		value = REG_SET_4(DC_I2C_DATA, 0,
 				  DC_I2C_DATA_RW, false,
@@ -308,19 +270,19 @@ static bool setup_engine(
 		     }
 	     }
 
-	/* we have checked I2c not used by DMCU, set SW use I2C REQ to 1 to indicate SW using it*/
+	 
 	REG_UPDATE(DC_I2C_ARBITRATION, DC_I2C_SW_USE_I2C_REG_REQ, 1);
 
-	/* we have checked I2c not used by DMCU, set SW use I2C REQ to 1 to indicate SW using it*/
+	 
 	REG_UPDATE(DC_I2C_ARBITRATION, DC_I2C_SW_USE_I2C_REG_REQ, 1);
 
-	/*set SW requested I2c speed to default, if API calls in it will be override later*/
+	 
 	set_speed(dce_i2c_hw, dce_i2c_hw->ctx->dc->caps.i2c_speed_in_khz);
 
 	if (dce_i2c_hw->setup_limit != 0)
 		i2c_setup_limit = dce_i2c_hw->setup_limit;
 
-	/* Program pin select */
+	 
 	REG_UPDATE_6(DC_I2C_CONTROL,
 		     DC_I2C_GO, 0,
 		     DC_I2C_SOFT_RESET, 0,
@@ -329,9 +291,9 @@ static bool setup_engine(
 		     DC_I2C_TRANSACTION_COUNT, 0,
 		     DC_I2C_DDC_SELECT, dce_i2c_hw->engine_id);
 
-	/* Program time limit */
+	 
 	if (dce_i2c_hw->send_reset_length == 0) {
-		/*pre-dcn*/
+		 
 		REG_UPDATE_N(SETUP, 2,
 			     FN(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_TIME_LIMIT), i2c_setup_limit,
 			     FN(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_ENABLE), 1);
@@ -342,11 +304,7 @@ static bool setup_engine(
 			     FN(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_SEND_RESET_LENGTH), reset_length,
 			     FN(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_ENABLE), 1);
 	}
-	/* Program HW priority
-	 * set to High - interrupt software I2C at any time
-	 * Enable restart of SW I2C that was interrupted by HW
-	 * disable queuing of software while I2C is in use by HW
-	 */
+	 
 	REG_UPDATE(DC_I2C_ARBITRATION,
 			DC_I2C_NO_QUEUED_SW_GO, 0);
 
@@ -359,12 +317,12 @@ static void release_engine(
 	bool safe_to_reset;
 
 
-	/* Reset HW engine */
+	 
 	{
 		uint32_t i2c_sw_status = 0;
 
 		REG_GET(DC_I2C_SW_STATUS, DC_I2C_SW_STATUS, &i2c_sw_status);
-		/* if used by SW, safe to reset */
+		 
 		safe_to_reset = (i2c_sw_status == 1);
 	}
 
@@ -374,13 +332,13 @@ static void release_engine(
 			     DC_I2C_SW_STATUS_RESET, 1);
 	else
 		REG_UPDATE(DC_I2C_CONTROL, DC_I2C_SW_STATUS_RESET, 1);
-	/* HW I2c engine - clock gating feature */
+	 
 	if (!dce_i2c_hw->engine_keep_power_up_count)
 		REG_UPDATE_N(SETUP, 1, FN(SETUP, DC_I2C_DDC1_ENABLE), 0);
 
-	/*for HW HDCP Ri polling failure w/a test*/
+	 
 	set_speed(dce_i2c_hw, dce_i2c_hw->ctx->dc->caps.i2c_speed_in_khz_hdcp);
-	/* Release I2C after reset, so HW or DMCU could use it */
+	 
 	REG_UPDATE_2(DC_I2C_ARBITRATION, DC_I2C_SW_DONE_USING_I2C_REG, 1,
 		DC_I2C_SW_USE_I2C_REG_REQ, 0);
 
@@ -421,7 +379,7 @@ struct dce_i2c_hw *acquire_i2c_hw_engine(
 		if (result == GPIO_RESULT_OK)
 			break;
 
-		/* i2c_engine is busy by VBios, lets wait and retry */
+		 
 
 		udelay(10);
 
@@ -522,10 +480,7 @@ static bool dce_i2c_hw_engine_submit_payload(struct dce_i2c_hw *dce_i2c_hw,
 
 	bool result = false;
 
-	/* We need following:
-	 * transaction length will not exceed
-	 * the number of free bytes in HW buffer (minus one for address)
-	 */
+	 
 
 	if (payload->length >=
 			get_hw_buffer_available_size(dce_i2c_hw)) {
@@ -546,7 +501,7 @@ static bool dce_i2c_hw_engine_submit_payload(struct dce_i2c_hw *dce_i2c_hw,
 	request.length = payload->length;
 	request.data = payload->data;
 
-	/* obtain timeout value before submitting request */
+	 
 
 	transaction_timeout = get_transaction_timeout_hw(
 		dce_i2c_hw, payload->length + 1, speed);
@@ -558,14 +513,14 @@ static bool dce_i2c_hw_engine_submit_payload(struct dce_i2c_hw *dce_i2c_hw,
 		(request.status == I2C_CHANNEL_OPERATION_ENGINE_BUSY))
 		return false;
 
-	/* wait until transaction proceed */
+	 
 
 	operation_result = dce_i2c_hw_engine_wait_on_operation_result(
 		dce_i2c_hw,
 		transaction_timeout,
 		I2C_CHANNEL_OPERATION_ENGINE_BUSY);
 
-	/* update transaction status */
+	 
 
 	if (operation_result == I2C_CHANNEL_OPERATION_SUCCEEDED)
 		result = true;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight code for ATI Radeon based graphic cards
- *
- * Copyright (c) 2000 Ani Joshi <ajoshi@kernel.crashing.org>
- * Copyright (c) 2003 Benjamin Herrenschmidt <benh@kernel.crashing.org>
- * Copyright (c) 2006 Michael Hanselmann <linux-kernel@hansmi.ch>
- */
+
+ 
 
 #include "radeonfb.h"
 #include <linux/backlight.h>
@@ -27,8 +21,8 @@ static int radeon_bl_get_level_brightness(struct radeon_bl_privdata *pdata,
 {
 	int rlevel;
 
-	/* Get and convert the value */
-	/* No locking of bl_curve since we read a single value */
+	 
+	 
 	rlevel = pdata->rinfo->info->bl_curve[level] *
 		 FB_BACKLIGHT_MAX / MAX_RADEON_LEVEL;
 
@@ -53,10 +47,7 @@ static int radeon_bl_update_status(struct backlight_device *bd)
 	if (rinfo->mon1_type != MT_LCD)
 		return 0;
 
-	/* We turn off the LCD completely instead of just dimming the
-	 * backlight. This provides some greater power saving and the display
-	 * is useless without backlight anyway.
-	 */
+	 
 	level = backlight_get_brightness(bd);
 
 	del_timer_sync(&rinfo->lvds_timer);
@@ -89,9 +80,7 @@ static int radeon_bl_update_status(struct backlight_device *bd)
 		rinfo->init_state.lvds_gen_cntl |= rinfo->pending_lvds_gen_cntl
 			& LVDS_STATE_MASK;
 	} else {
-		/* Asic bug, when turning off LVDS_ON, we have to make sure
-		   RADEON_PIXCLK_LVDS_ALWAYS_ON bit is off
-		*/
+		 
 		tmpPixclksCntl = INPLL(PIXCLKS_CNTL);
 		if (rinfo->is_mobility || rinfo->is_IGP)
 			OUTPLLP(PIXCLKS_CNTL, 0, ~PIXCLK_LVDS_ALWAYS_ONb);
@@ -157,9 +146,7 @@ void radeonfb_bl_init(struct radeonfb_info *rinfo)
 
 	pdata->rinfo = rinfo;
 
-	/* Pardon me for that hack... maybe some day we can figure out in what
-	 * direction backlight should work on a given panel?
-	 */
+	 
 	pdata->negative =
 		(rinfo->family != CHIP_FAMILY_RV200 &&
 		 rinfo->family != CHIP_FAMILY_RV250 &&

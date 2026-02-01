@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-xilinx.c - Xilinx DWC3 controller specific glue driver
- *
- * Authors: Manish Narani <manish.narani@xilinx.com>
- *          Anurag Kumar Vulisha <anurag.kumar.vulisha@xilinx.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,15 +19,15 @@
 
 #include <linux/phy/phy.h>
 
-/* USB phy reset mask register */
+ 
 #define XLNX_USB_PHY_RST_EN			0x001C
 #define XLNX_PHY_RST_MASK			0x1
 
-/* Xilinx USB 3.0 IP Register */
+ 
 #define XLNX_USB_TRAFFIC_ROUTE_CONFIG		0x005C
 #define XLNX_USB_TRAFFIC_ROUTE_FPD		0x1
 
-/* Versal USB Reset ID */
+ 
 #define VERSAL_USB_RESET_ID			0xC104036
 
 #define XLNX_USB_FPD_PIPE_CLK			0x7c
@@ -54,11 +49,7 @@ static void dwc3_xlnx_mask_phy_rst(struct dwc3_xlnx *priv_data, bool mask)
 {
 	u32 reg;
 
-	/*
-	 * Enable or disable ULPI PHY reset from USB Controller.
-	 * This does not actually reset the phy, but just controls
-	 * whether USB controller can or cannot reset ULPI PHY.
-	 */
+	 
 	reg = readl(priv_data->regs + XLNX_USB_PHY_RST_EN);
 
 	if (mask)
@@ -76,7 +67,7 @@ static int dwc3_xlnx_init_versal(struct dwc3_xlnx *priv_data)
 
 	dwc3_xlnx_mask_phy_rst(priv_data, false);
 
-	/* Assert and De-assert reset */
+	 
 	ret = zynqmp_pm_reset_assert(VERSAL_USB_RESET_ID,
 				     PM_RESET_ACTION_ASSERT);
 	if (ret < 0) {
@@ -112,15 +103,7 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 		goto err;
 	}
 
-	/*
-	 * The following core resets are not required unless a USB3 PHY
-	 * is used, and the subsequent register settings are not required
-	 * unless a core reset is performed (they should be set properly
-	 * by the first-stage boot loader, but may be reverted by a core
-	 * reset). They may also break the configuration if USB3 is actually
-	 * in use but the usb3-phy entry is missing from the device tree.
-	 * Therefore, skip these operations in this case.
-	 */
+	 
 	if (!priv_data->usb3_phy)
 		goto skip_usb3_phy;
 
@@ -178,10 +161,10 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 		goto err;
 	}
 
-	/* Set PIPE Power Present signal in FPD Power Present Register*/
+	 
 	writel(FPD_POWER_PRSNT_OPTION, priv_data->regs + XLNX_USB_FPD_POWER_PRSNT);
 
-	/* Set the PIPE Clock Select bit in FPD PIPE Clock register */
+	 
 	writel(PIPE_CLK_SELECT, priv_data->regs + XLNX_USB_FPD_PIPE_CLK);
 
 	ret = reset_control_deassert(crst);
@@ -203,7 +186,7 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 	}
 
 skip_usb3_phy:
-	/* ulpi reset via gpio-modepin or gpio-framework driver */
+	 
 	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio)) {
 		return dev_err_probe(dev, PTR_ERR(reset_gpio),
@@ -211,18 +194,14 @@ skip_usb3_phy:
 	}
 
 	if (reset_gpio) {
-		/* Toggle ulpi to reset the phy. */
+		 
 		gpiod_set_value_cansleep(reset_gpio, 1);
 		usleep_range(5000, 10000);
 		gpiod_set_value_cansleep(reset_gpio, 0);
 		usleep_range(5000, 10000);
 	}
 
-	/*
-	 * This routes the USB DMA traffic to go through FPD path instead
-	 * of reaching DDR directly. This traffic routing is needed to
-	 * make SMMU and CCI work with USB DMA.
-	 */
+	 
 	if (of_dma_is_coherent(dev->of_node) || device_iommu_mapped(dev)) {
 		reg = readl(priv_data->regs + XLNX_USB_TRAFFIC_ROUTE_CONFIG);
 		reg |= XLNX_USB_TRAFFIC_ROUTE_FPD;
@@ -242,7 +221,7 @@ static const struct of_device_id dwc3_xlnx_of_match[] = {
 		.compatible = "xlnx,versal-dwc3",
 		.data = &dwc3_xlnx_init_versal,
 	},
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dwc3_xlnx_of_match);
 
@@ -350,7 +329,7 @@ static int __maybe_unused dwc3_xlnx_suspend(struct device *dev)
 
 	phy_exit(priv_data->usb3_phy);
 
-	/* Disable the clocks */
+	 
 	clk_bulk_disable(priv_data->num_clocks, priv_data->clks);
 
 	return 0;

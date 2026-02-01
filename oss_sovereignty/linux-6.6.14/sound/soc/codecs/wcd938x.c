@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -34,12 +34,12 @@
 #define WCD938X_RATES_MASK (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			    SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			    SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000)
-/* Fractional Rates */
+ 
 #define WCD938X_FRAC_RATES_MASK (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				 SNDRV_PCM_RATE_176400)
 #define WCD938X_FORMATS_S16_S24_LE (SNDRV_PCM_FMTBIT_S16_LE | \
 				    SNDRV_PCM_FMTBIT_S24_LE)
-/* Convert from vout ctl to micbias voltage in mV */
+ 
 #define  WCD_VOUT_CTL_TO_MICB(v)	(1000 + v * 50)
 #define SWR_CLK_RATE_0P6MHZ		(600000)
 #define SWR_CLK_RATE_1P2MHZ		(1200000)
@@ -59,17 +59,17 @@
 #define ADC_MODE_VAL_ULP1		0x09
 #define ADC_MODE_VAL_ULP2		0x0B
 
-/* Z value defined in milliohm */
+ 
 #define WCD938X_ZDET_VAL_32             (32000)
 #define WCD938X_ZDET_VAL_400            (400000)
 #define WCD938X_ZDET_VAL_1200           (1200000)
 #define WCD938X_ZDET_VAL_100K           (100000000)
-/* Z floating defined in ohms */
+ 
 #define WCD938X_ZDET_FLOATING_IMPEDANCE	(0x0FFFFFFE)
 #define WCD938X_ZDET_NUM_MEASUREMENTS   (900)
 #define WCD938X_MBHC_GET_C1(c)          ((c & 0xC000) >> 14)
 #define WCD938X_MBHC_GET_X1(x)          (x & 0x3FFF)
-/* Z value compared in milliOhm */
+ 
 #define WCD938X_MBHC_IS_SECOND_RAMP_REQUIRED(z) ((z > 400000) || (z < 32000))
 #define WCD938X_MBHC_ZDET_CONST         (86 * 16384)
 #define WCD938X_MBHC_MOISTURE_RREF      R_24_KOHM
@@ -102,7 +102,7 @@ enum {
 };
 
 enum {
-	/* INTR_CTRL_INT_MASK_0 */
+	 
 	WCD938X_IRQ_MBHC_BUTTON_PRESS_DET = 0,
 	WCD938X_IRQ_MBHC_BUTTON_RELEASE_DET,
 	WCD938X_IRQ_MBHC_ELECT_INS_REM_DET,
@@ -112,7 +112,7 @@ enum {
 	WCD938X_IRQ_HPHR_CNP_INT,
 	WCD938X_IRQ_HPHL_OCP_INT,
 
-	/* INTR_CTRL_INT_MASK_1 */
+	 
 	WCD938X_IRQ_HPHL_CNP_INT,
 	WCD938X_IRQ_EAR_CNP_INT,
 	WCD938X_IRQ_EAR_SCD_INT,
@@ -122,7 +122,7 @@ enum {
 	WCD938X_IRQ_HPHR_PDM_WD_INT,
 	WCD938X_IRQ_AUX_PDM_WD_INT,
 
-	/* INTR_CTRL_INT_MASK_2 */
+	 
 	WCD938X_IRQ_LDORT_SCD_INT,
 	WCD938X_IRQ_MBHC_MOISTURE_INT,
 	WCD938X_IRQ_HPHL_SURGE_DET_INT,
@@ -176,7 +176,7 @@ struct wcd938x_priv {
 	struct device_node *rxnode, *txnode;
 	struct regmap *regmap;
 	struct mutex micb_lock;
-	/* mbhc module */
+	 
 	struct wcd_mbhc *wcd_mbhc;
 	struct wcd_mbhc_config mbhc_cfg;
 	struct wcd_mbhc_intr intr_ids;
@@ -370,17 +370,17 @@ static int wcd938x_io_init(struct wcd938x_priv *wcd938x)
 
 	regmap_update_bits(rm, WCD938X_SLEEP_CTL, 0x0E, 0x0E);
 	regmap_update_bits(rm, WCD938X_SLEEP_CTL, 0x80, 0x80);
-	/* 1 msec delay as per HW requirement */
+	 
 	usleep_range(1000, 1010);
 	regmap_update_bits(rm, WCD938X_SLEEP_CTL, 0x40, 0x40);
-	/* 1 msec delay as per HW requirement */
+	 
 	usleep_range(1000, 1010);
 	regmap_update_bits(rm, WCD938X_LDORXTX_CONFIG, 0x10, 0x00);
 	regmap_update_bits(rm, WCD938X_BIAS_VBG_FINE_ADJ,
 								0xF0, 0x80);
 	regmap_update_bits(rm, WCD938X_ANA_BIAS, 0x80, 0x80);
 	regmap_update_bits(rm, WCD938X_ANA_BIAS, 0x40, 0x40);
-	/* 10 msec delay as per HW requirement */
+	 
 	usleep_range(10000, 10010);
 
 	regmap_update_bits(rm, WCD938X_ANA_BIAS, 0x40, 0x00);
@@ -406,7 +406,7 @@ static int wcd938x_io_init(struct wcd938x_priv *wcd938x)
 	regmap_update_bits(rm, WCD938X_DIGITAL_TX_REQ_FB_CTL_3, 0xFF, 0x00);
 	regmap_update_bits(rm, WCD938X_DIGITAL_TX_REQ_FB_CTL_4, 0xFF, 0x00);
 
-	/* Set Noise Filter Resistor value */
+	 
 	regmap_update_bits(rm, WCD938X_MICB1_TEST_CTL_1, 0xE0, 0xE0);
 	regmap_update_bits(rm, WCD938X_MICB2_TEST_CTL_1, 0xE0, 0xE0);
 	regmap_update_bits(rm, WCD938X_MICB3_TEST_CTL_1, 0xE0, 0xE0);
@@ -511,7 +511,7 @@ static int wcd938x_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 			snd_soc_component_write_field(component,
 				WCD938X_DIGITAL_CDC_COMP_CTL_0,
 				WCD938X_HPHL_COMP_EN_MASK, 1);
-			/* 5msec compander delay as per HW requirement */
+			 
 			if (!wcd938x->comp2_enable || (snd_soc_component_read(component,
 							 WCD938X_DIGITAL_CDC_COMP_CTL_0) & 0x01))
 				usleep_range(5000, 5010);
@@ -565,7 +565,7 @@ static int wcd938x_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 			snd_soc_component_write_field(component,
 				WCD938X_DIGITAL_CDC_COMP_CTL_0,
 				WCD938X_HPHR_COMP_EN_MASK, 1);
-			/* 5msec compander delay as per HW requirement */
+			 
 			if (!wcd938x->comp1_enable ||
 				(snd_soc_component_read(component,
 					WCD938X_DIGITAL_CDC_COMP_CTL_0) & 0x02))
@@ -629,7 +629,7 @@ static int wcd938x_codec_ear_dac_event(struct snd_soc_dapm_widget *w,
 					WCD938X_DIGITAL_CDC_COMP_CTL_0,
 					WCD938X_HPHL_COMP_EN_MASK, 1);
 		}
-		/* 5 msec delay as per HW requirement */
+		 
 		usleep_range(5000, 5010);
 		if (wcd938x->flyback_cur_det_disable == 0)
 			snd_soc_component_write_field(component, WCD938X_FLYBACK_EN,
@@ -733,7 +733,7 @@ static int wcd938x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 		snd_soc_component_write_field(component, WCD938X_ANA_HPH,
 					      WCD938X_HPHR_REF_EN_MASK, 1);
 		wcd_clsh_set_hph_mode(wcd938x->clsh_info, hph_mode);
-		/* 100 usec delay as per HW requirement */
+		 
 		usleep_range(100, 110);
 		set_bit(HPH_PA_DELAY, &wcd938x->status_mask);
 		snd_soc_component_write_field(component,
@@ -741,11 +741,7 @@ static int wcd938x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 					      WCD938X_PDM_WD_EN_MASK, 0x3);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (test_bit(HPH_PA_DELAY, &wcd938x->status_mask)) {
 			if (!wcd938x->comp2_enable)
 				usleep_range(20000, 20100);
@@ -770,11 +766,7 @@ static int wcd938x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
 		disable_irq_nosync(wcd938x->hphr_pdm_wd_int);
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (!wcd938x->comp2_enable)
 			usleep_range(20000, 20100);
 		else
@@ -786,11 +778,7 @@ static int wcd938x_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 		set_bit(HPH_PA_DELAY, &wcd938x->status_mask);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (test_bit(HPH_PA_DELAY, &wcd938x->status_mask)) {
 			if (!wcd938x->comp2_enable)
 				usleep_range(20000, 20100);
@@ -839,7 +827,7 @@ static int wcd938x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 		snd_soc_component_write_field(component, WCD938X_ANA_HPH,
 					      WCD938X_HPHL_REF_EN_MASK, 1);
 		wcd_clsh_set_hph_mode(wcd938x->clsh_info, hph_mode);
-		/* 100 usec delay as per HW requirement */
+		 
 		usleep_range(100, 110);
 		set_bit(HPH_PA_DELAY, &wcd938x->status_mask);
 		snd_soc_component_write_field(component,
@@ -847,11 +835,7 @@ static int wcd938x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 					WCD938X_PDM_WD_EN_MASK, 0x3);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (test_bit(HPH_PA_DELAY, &wcd938x->status_mask)) {
 			if (!wcd938x->comp1_enable)
 				usleep_range(20000, 20100);
@@ -876,11 +860,7 @@ static int wcd938x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
 		disable_irq_nosync(wcd938x->hphl_pdm_wd_int);
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (!wcd938x->comp1_enable)
 			usleep_range(20000, 20100);
 		else
@@ -891,11 +871,7 @@ static int wcd938x_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 		set_bit(HPH_PA_DELAY, &wcd938x->status_mask);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/*
-		 * 7ms sleep is required if compander is enabled as per
-		 * HW requirement. If compander is disabled, then
-		 * 20ms delay is required.
-		 */
+		 
 		if (test_bit(HPH_PA_DELAY, &wcd938x->status_mask)) {
 			if (!wcd938x->comp1_enable)
 				usleep_range(21000, 21100);
@@ -933,7 +909,7 @@ static int wcd938x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 					      WCD938X_AUX_PDM_WD_EN_MASK, 1);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* 1 msec delay as per HW requirement */
+		 
 		usleep_range(1000, 1010);
 		if (hph_mode == CLS_AB || hph_mode == CLS_AB_HIFI ||
 			hph_mode == CLS_AB_LP || hph_mode == CLS_AB_LOHIFI)
@@ -946,7 +922,7 @@ static int wcd938x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 		disable_irq_nosync(wcd938x->aux_pdm_wd_int);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 1 msec delay as per HW requirement */
+		 
 		usleep_range(1000, 1010);
 		snd_soc_component_write_field(component, WCD938X_DIGITAL_PDM_WD_CTL2,
 					      WCD938X_AUX_PDM_WD_EN_MASK, 0);
@@ -973,10 +949,7 @@ static int wcd938x_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/*
-		 * Enable watchdog interrupt for HPHL or AUX
-		 * depending on mux value
-		 */
+		 
 		wcd938x->ear_rx_path = snd_soc_component_read(component,
 							      WCD938X_DIGITAL_CDC_EAR_PATH_CTL);
 		if (wcd938x->ear_rx_path & EAR_RX_PATH_AUX)
@@ -993,7 +966,7 @@ static int wcd938x_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* 6 msec delay as per HW requirement */
+		 
 		usleep_range(6000, 6010);
 		if (hph_mode == CLS_AB || hph_mode == CLS_AB_HIFI ||
 			hph_mode == CLS_AB_LP || hph_mode == CLS_AB_LOHIFI)
@@ -1015,7 +988,7 @@ static int wcd938x_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 		if (!wcd938x->comp1_enable)
 			snd_soc_component_write_field(component, WCD938X_ANA_EAR_COMPANDER_CTL,
 						      WCD938X_GAIN_OVRD_REG_MASK, 0);
-		/* 7 msec delay as per HW requirement */
+		 
 		usleep_range(7000, 7010);
 		if (wcd938x->ear_rx_path & EAR_RX_PATH_AUX)
 			snd_soc_component_write_field(component, WCD938X_DIGITAL_PDM_WD_CTL2,
@@ -1086,15 +1059,15 @@ static int wcd938x_codec_enable_dmic(struct snd_soc_dapm_widget *w,
 				WCD938X_DIGITAL_CDC_AMIC_CTL,
 				dmic_sel_mask,
 				WCD938X_AMIC1_IN_SEL_DMIC);
-		/* 250us sleep as per HW requirement */
+		 
 		usleep_range(250, 260);
-		/* Setting DMIC clock rate to 2.4MHz */
+		 
 		snd_soc_component_write_field(component, dmic_clk_reg,
 					      dmic_clk_mask,
 					      WCD938X_DMIC4_RATE_2P4MHZ);
 		snd_soc_component_write_field(component, dmic_clk_en_reg,
 					      WCD938X_DMIC_CLK_EN_MASK, 1);
-		/* enable clock scaling */
+		 
 		snd_soc_component_write_field(component, WCD938X_DIGITAL_CDC_DMIC_CTL,
 					      WCD938X_DMIC_CLK_SCALING_EN_MASK, 0x3);
 		break;
@@ -1144,7 +1117,7 @@ static int wcd938x_tx_swr_ctrl(struct snd_soc_dapm_widget *w,
 			}
 			rate = wcd938x_get_clk_rate(i);
 			wcd938x_set_swr_clk_rate(component, rate, bank);
-			/* Copy clk settings to active bank */
+			 
 			wcd938x_set_swr_clk_rate(component, rate, !bank);
 		}
 		break;
@@ -1466,7 +1439,7 @@ static int wcd938x_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 		wcd938x_micbias_control(component, micb_num, MICB_ENABLE, true);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* 1 msec delay as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
@@ -1490,7 +1463,7 @@ static int wcd938x_codec_enable_micbias_pullup(struct snd_soc_dapm_widget *w,
 					MICB_PULLUP_ENABLE, true);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* 1 msec delay as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
@@ -1939,7 +1912,7 @@ static int wcd938x_set_swr_port(struct snd_kcontrol *kcontrol,
 
 }
 
-/* MBHC related */
+ 
 static void wcd938x_mbhc_clk_setup(struct snd_soc_component *component,
 				   bool enable)
 {
@@ -1992,7 +1965,7 @@ static bool wcd938x_mbhc_micb_en_status(struct snd_soc_component *component, int
 static void wcd938x_mbhc_hph_l_pull_up_control(struct snd_soc_component *component,
 							int pull_up_cur)
 {
-	/* Default pull up current to 2uA */
+	 
 	if (pull_up_cur > HS_PULLUP_I_OFF || pull_up_cur < HS_PULLUP_I_3P0_UA)
 		pull_up_cur = HS_PULLUP_I_2P0_UA;
 
@@ -2025,7 +1998,7 @@ static void wcd938x_mbhc_micb_ramp_control(struct snd_soc_component *component,
 
 static int wcd938x_get_micb_vout_ctl_val(u32 micb_mv)
 {
-	/* min micbias voltage is 1V and maximum is 2.85V */
+	 
 	if (micb_mv < 1000 || micb_mv > 2850)
 		return -EINVAL;
 
@@ -2055,14 +2028,7 @@ static int wcd938x_mbhc_micb_adjust_voltage(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 	mutex_lock(&wcd938x->micb_lock);
-	/*
-	 * If requested micbias voltage is same as current micbias
-	 * voltage, then just return. Otherwise, adjust voltage as
-	 * per requested value. If micbias is already enabled, then
-	 * to avoid slow micbias ramp-up or down enable pull-up
-	 * momentarily, change the micbias value and then re-enable
-	 * micbias.
-	 */
+	 
 	micb_en = snd_soc_component_read_field(component, micb_reg,
 						WCD938X_MICB_EN_MASK);
 	cur_vout_ctl = snd_soc_component_read_field(component, micb_reg,
@@ -2092,10 +2058,7 @@ static int wcd938x_mbhc_micb_adjust_voltage(struct snd_soc_component *component,
 		snd_soc_component_write_field(component, micb_reg,
 					      WCD938X_MICB_EN_MASK,
 					      WCD938X_MICB_ENABLE);
-		/*
-		 * Add 2ms delay as per HW requirement after enabling
-		 * micbias
-		 */
+		 
 		usleep_range(2000, 2100);
 	}
 exit:
@@ -2111,11 +2074,7 @@ static int wcd938x_mbhc_micb_ctrl_threshold_mic(struct snd_soc_component *compon
 
 	if (micb_num != MIC_BIAS_2)
 		return -EINVAL;
-	/*
-	 * If device tree micbias level is already above the minimum
-	 * voltage needed to detect threshold microphone, then do
-	 * not change the micbias, just return.
-	 */
+	 
 	if (wcd938x->micb2_mv >= WCD_MBHC_THR_HS_MICB_MV)
 		return 0;
 
@@ -2150,7 +2109,7 @@ static void wcd938x_mbhc_get_result_params(struct snd_soc_component *component,
 	regmap_update_bits(wcd938x->regmap, WCD938X_ANA_MBHC_ZDET, 0x20, 0x00);
 	x1 = WCD938X_MBHC_GET_X1(val);
 	c1 = WCD938X_MBHC_GET_C1(val);
-	/* If ramp is not complete, give additional 5ms */
+	 
 	if ((c1 < 2) && x1)
 		usleep_range(5000, 5050);
 
@@ -2206,7 +2165,7 @@ static void wcd938x_mbhc_zdet_ramp(struct snd_soc_component *component,
 
 	if (!zl)
 		goto z_right;
-	/* Start impedance measurement for HPH_L */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_ANA_MBHC_ZDET, 0x80, 0x80);
 	dev_dbg(component->dev, "%s: ramp for HPH_L, noff = %d\n",
@@ -2220,7 +2179,7 @@ static void wcd938x_mbhc_zdet_ramp(struct snd_soc_component *component,
 z_right:
 	if (!zr)
 		return;
-	/* Start impedance measurement for HPH_R */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_ANA_MBHC_ZDET, 0x40, 0x40);
 	dev_dbg(component->dev, "%s: ramp for HPH_R, noff = %d\n",
@@ -2261,10 +2220,10 @@ static void wcd938x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 	int zMono, z_diff1, z_diff2;
 	bool is_fsm_disable = false;
 	struct wcd938x_mbhc_zdet_param zdet_param[] = {
-		{4, 0, 4, 0x08, 0x14, 0x18}, /* < 32ohm */
-		{2, 0, 3, 0x18, 0x7C, 0x90}, /* 32ohm < Z < 400ohm */
-		{1, 4, 5, 0x18, 0x7C, 0x90}, /* 400ohm < Z < 1200ohm */
-		{1, 6, 7, 0x18, 0x7C, 0x90}, /* >1200ohm */
+		{4, 0, 4, 0x08, 0x14, 0x18},  
+		{2, 0, 3, 0x18, 0x7C, 0x90},  
+		{1, 4, 5, 0x18, 0x7C, 0x90},  
+		{1, 6, 7, 0x18, 0x7C, 0x90},  
 	};
 	struct wcd938x_mbhc_zdet_param *zdet_param_ptr = NULL;
 	s16 d1_a[][4] = {
@@ -2287,24 +2246,22 @@ static void wcd938x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 				   WCD938X_ANA_MBHC_ELECT, 0x80, 0x00);
 	}
 
-	/* For NO-jack, disable L_DET_EN before Z-det measurements */
+	 
 	if (wcd938x->mbhc_cfg.hphl_swh)
 		regmap_update_bits(wcd938x->regmap,
 				   WCD938X_ANA_MBHC_MECH, 0x80, 0x00);
 
-	/* Turn off 100k pull down on HPHL */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_ANA_MBHC_MECH, 0x01, 0x00);
 
-	/* Disable surge protection before impedance detection.
-	 * This is done to give correct value for high impedance.
-	 */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_HPH_SURGE_HPHLR_SURGE_EN, 0xC0, 0x00);
-	/* 1ms delay needed after disable surge protection */
+	 
 	usleep_range(1000, 1010);
 
-	/* First get impedance on Left */
+	 
 	d1 = d1_a[1];
 	zdet_param_ptr = &zdet_param[1];
 	wcd938x_mbhc_zdet_ramp(component, zdet_param_ptr, &z1L, NULL, d1);
@@ -2312,7 +2269,7 @@ static void wcd938x_wcd_mbhc_calc_impedance(struct snd_soc_component *component,
 	if (!WCD938X_MBHC_IS_SECOND_RAMP_REQUIRED(z1L))
 		goto left_ch_impedance;
 
-	/* Second ramp for left ch */
+	 
 	if (z1L < WCD938X_ZDET_VAL_32) {
 		zdet_param_ptr = &zdet_param[0];
 		d1 = d1_a[0];
@@ -2339,14 +2296,14 @@ left_ch_impedance:
 	dev_dbg(component->dev, "%s: impedance on HPH_L = %d(ohms)\n",
 		__func__, *zl);
 
-	/* Start of right impedance ramp and calculation */
+	 
 	wcd938x_mbhc_zdet_ramp(component, zdet_param_ptr, NULL, &z1R, d1);
 	if (WCD938X_MBHC_IS_SECOND_RAMP_REQUIRED(z1R)) {
 		if (((z1R > WCD938X_ZDET_VAL_1200) &&
 			(zdet_param_ptr->noff == 0x6)) ||
 			((*zl) != WCD938X_ZDET_FLOATING_IMPEDANCE))
 			goto right_ch_impedance;
-		/* Second ramp for right ch */
+		 
 		if (z1R < WCD938X_ZDET_VAL_32) {
 			zdet_param_ptr = &zdet_param[0];
 			d1 = d1_a[0];
@@ -2371,7 +2328,7 @@ right_ch_impedance:
 	dev_dbg(component->dev, "%s: impedance on HPH_R = %d(ohms)\n",
 		__func__, *zr);
 
-	/* Mono/stereo detection */
+	 
 	if ((*zl == WCD938X_ZDET_FLOATING_IMPEDANCE) &&
 		(*zr == WCD938X_ZDET_FLOATING_IMPEDANCE)) {
 		dev_dbg(component->dev,
@@ -2403,7 +2360,7 @@ right_ch_impedance:
 				      WCD938X_HPHPA_GND_OVR_MASK, 0);
 	z1Ls /= 1000;
 	wcd938x_wcd_mbhc_qfuse_cal(component, &z1Ls, 0);
-	/* Parallel of left Z and 9 ohm pull down resistor */
+	 
 	zMono = ((*zl) * 9) / ((*zl) + 9);
 	z_diff1 = (z1Ls > zMono) ? (z1Ls - zMono) : (zMono - z1Ls);
 	z_diff2 = ((*zl) > z1Ls) ? ((*zl) - z1Ls) : (z1Ls - (*zl));
@@ -2417,18 +2374,18 @@ right_ch_impedance:
 		wcd_mbhc_set_hph_type(wcd938x->wcd_mbhc, WCD_MBHC_HPH_MONO);
 	}
 
-	/* Enable surge protection again after impedance detection */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_HPH_SURGE_HPHLR_SURGE_EN, 0xC0, 0xC0);
 zdet_complete:
 	snd_soc_component_write(component, WCD938X_ANA_MBHC_BTN5, reg0);
 	snd_soc_component_write(component, WCD938X_ANA_MBHC_BTN6, reg1);
 	snd_soc_component_write(component, WCD938X_ANA_MBHC_BTN7, reg2);
-	/* Turn on 100k pull down on HPHL */
+	 
 	regmap_update_bits(wcd938x->regmap,
 			   WCD938X_ANA_MBHC_MECH, 0x01, 0x01);
 
-	/* For NO-jack, re-enable L_DET_EN after Z-det measurements */
+	 
 	if (wcd938x->mbhc_cfg.hphl_swh)
 		regmap_update_bits(wcd938x->regmap,
 				   WCD938X_ANA_MBHC_MECH, 0x80, 0x80);
@@ -2475,7 +2432,7 @@ static void wcd938x_mbhc_moisture_config(struct snd_soc_component *component)
 		return;
 	}
 
-	/* Do not enable moisture detection if jack type is NC */
+	 
 	if (!wcd938x->mbhc_cfg.hphl_swh) {
 		dev_dbg(component->dev, "%s: disable moisture detection for NC\n",
 			__func__);
@@ -2511,7 +2468,7 @@ static bool wcd938x_mbhc_get_moisture_status(struct snd_soc_component *component
 		goto done;
 	}
 
-	/* Do not enable moisture detection if jack type is NC */
+	 
 	if (!wcd938x->mbhc_cfg.hphl_swh) {
 		dev_dbg(component->dev, "%s: disable moisture detection for NC\n",
 			__func__);
@@ -2520,15 +2477,12 @@ static bool wcd938x_mbhc_get_moisture_status(struct snd_soc_component *component
 		goto done;
 	}
 
-	/*
-	 * If moisture_en is already enabled, then skip to plug type
-	 * detection.
-	 */
+	 
 	if (snd_soc_component_read_field(component, WCD938X_MBHC_NEW_CTL_2, WCD938X_M_RTH_CTL_MASK))
 		goto done;
 
 	wcd938x_mbhc_moisture_detect_en(component, true);
-	/* Read moisture comparator status */
+	 
 	ret = ((snd_soc_component_read(component, WCD938X_MBHC_NEW_FSM_STATUS)
 				& 0x20) ? 0 : 1);
 
@@ -2644,7 +2598,7 @@ static void wcd938x_mbhc_deinit(struct snd_soc_component *component)
 	wcd_mbhc_deinit(wcd938x->wcd_mbhc);
 }
 
-/* END MBHC */
+ 
 
 static const struct snd_kcontrol_new wcd938x_snd_controls[] = {
 	SOC_SINGLE_EXT("HPHL_COMP Switch", WCD938X_COMP_L, 0, 1, 0,
@@ -2706,7 +2660,7 @@ static const struct snd_kcontrol_new wcd938x_snd_controls[] = {
 
 static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 
-	/*input widgets*/
+	 
 	SND_SOC_DAPM_INPUT("AMIC1"),
 	SND_SOC_DAPM_INPUT("AMIC2"),
 	SND_SOC_DAPM_INPUT("AMIC3"),
@@ -2720,7 +2674,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("Analog Mic4", NULL),
 	SND_SOC_DAPM_MIC("Analog Mic5", NULL),
 
-	/*tx widgets*/
+	 
 	SND_SOC_DAPM_ADC_E("ADC1", NULL, SND_SOC_NOPM, 0, 0,
 			   wcd938x_codec_enable_adc,
 			   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
@@ -2777,7 +2731,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("HDR12 MUX", SND_SOC_NOPM, 0, 0, &tx_hdr12_mux),
 	SND_SOC_DAPM_MUX("HDR34 MUX", SND_SOC_NOPM, 0, 0, &tx_hdr34_mux),
 
-	/*tx mixers*/
+	 
 	SND_SOC_DAPM_MIXER_E("ADC1_MIXER", SND_SOC_NOPM, 0, 0, adc1_switch,
 			     ARRAY_SIZE(adc1_switch), wcd938x_tx_swr_ctrl,
 			     SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
@@ -2814,7 +2768,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER_E("DMIC8_MIXER", SND_SOC_NOPM, 0, 0, dmic8_switch,
 			     ARRAY_SIZE(dmic8_switch), wcd938x_tx_swr_ctrl,
 			     SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-	/* micbias widgets*/
+	 
 	SND_SOC_DAPM_SUPPLY("MIC BIAS1", SND_SOC_NOPM, MIC_BIAS_1, 0,
 			    wcd938x_codec_enable_micbias,
 			    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
@@ -2832,7 +2786,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 			    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 			    SND_SOC_DAPM_POST_PMD),
 
-	/* micbias pull up widgets*/
+	 
 	SND_SOC_DAPM_SUPPLY("VA MIC BIAS1", SND_SOC_NOPM, MIC_BIAS_1, 0,
 				wcd938x_codec_enable_micbias_pullup,
 				SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
@@ -2850,7 +2804,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 				SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 				SND_SOC_DAPM_POST_PMD),
 
-	/*output widgets tx*/
+	 
 	SND_SOC_DAPM_OUTPUT("ADC1_OUTPUT"),
 	SND_SOC_DAPM_OUTPUT("ADC2_OUTPUT"),
 	SND_SOC_DAPM_OUTPUT("ADC3_OUTPUT"),
@@ -2868,7 +2822,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("IN2_HPHR"),
 	SND_SOC_DAPM_INPUT("IN3_AUX"),
 
-	/*rx widgets*/
+	 
 	SND_SOC_DAPM_PGA_E("EAR PGA", WCD938X_ANA_EAR, 7, 0, NULL, 0,
 			   wcd938x_codec_enable_ear_pa,
 			   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
@@ -2917,7 +2871,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER_E("RX2", SND_SOC_NOPM, 0, 0, NULL, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER_E("RX3", SND_SOC_NOPM, 0, 0, NULL, 0, NULL, 0),
 
-	/* rx mixer widgets*/
+	 
 	SND_SOC_DAPM_MIXER("EAR_RDAC", SND_SOC_NOPM, 0, 0,
 			   ear_rdac_switch, ARRAY_SIZE(ear_rdac_switch)),
 	SND_SOC_DAPM_MIXER("AUX_RDAC", SND_SOC_NOPM, 0, 0,
@@ -2927,7 +2881,7 @@ static const struct snd_soc_dapm_widget wcd938x_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("HPHR_RDAC", SND_SOC_NOPM, 0, 0,
 			   hphr_rdac_switch, ARRAY_SIZE(hphr_rdac_switch)),
 
-	/*output widgets rx*/
+	 
 	SND_SOC_DAPM_OUTPUT("EAR"),
 	SND_SOC_DAPM_OUTPUT("AUX"),
 	SND_SOC_DAPM_OUTPUT("HPHL"),
@@ -3030,7 +2984,7 @@ static int wcd938x_set_micbias_data(struct wcd938x_priv *wcd938x)
 {
 	int vout_ctl_1, vout_ctl_2, vout_ctl_3, vout_ctl_4;
 
-	/* set micbias voltage */
+	 
 	vout_ctl_1 = wcd938x_get_micb_vout_ctl_val(wcd938x->micb1_mv);
 	vout_ctl_2 = wcd938x_get_micb_vout_ctl_val(wcd938x->micb2_mv);
 	vout_ctl_3 = wcd938x_get_micb_vout_ctl_val(wcd938x->micb3_mv);
@@ -3120,7 +3074,7 @@ static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 	}
 
 	wcd938x_io_init(wcd938x);
-	/* Set all interrupts as edge triggered */
+	 
 	for (i = 0; i < wcd938x_regmap_irq_chip.num_regs; i++) {
 		regmap_write(wcd938x->regmap,
 			     (WCD938X_DIGITAL_INTR_LEVEL_0 + i), 0);
@@ -3135,7 +3089,7 @@ static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 	wcd938x->aux_pdm_wd_int = regmap_irq_get_virq(wcd938x->irq_chip,
 						       WCD938X_IRQ_AUX_PDM_WD_INT);
 
-	/* Request for watchdog interrupt */
+	 
 	ret = request_threaded_irq(wcd938x->hphr_pdm_wd_int, NULL, wcd938x_wd_handle_irq,
 				   IRQF_ONESHOT | IRQF_TRIGGER_RISING,
 				   "HPHR PDM WD INT", wcd938x);
@@ -3160,7 +3114,7 @@ static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 		goto err_free_hphl_pdm_wd_int;
 	}
 
-	/* Disable watchdog interrupt for HPH and AUX */
+	 
 	disable_irq_nosync(wcd938x->hphr_pdm_wd_int);
 	disable_irq_nosync(wcd938x->hphl_pdm_wd_int);
 	disable_irq_nosync(wcd938x->aux_pdm_wd_int);
@@ -3349,10 +3303,10 @@ static int wcd938x_populate_dt_data(struct wcd938x_priv *wcd938x, struct device 
 static int wcd938x_reset(struct wcd938x_priv *wcd938x)
 {
 	gpio_direction_output(wcd938x->reset_gpio, 0);
-	/* 20us sleep required after pulling the reset gpio to LOW */
+	 
 	usleep_range(20, 30);
 	gpio_set_value(wcd938x->reset_gpio, 1);
-	/* 20us sleep required after pulling the reset gpio to HIGH */
+	 
 	usleep_range(20, 30);
 
 	return 0;
@@ -3453,8 +3407,7 @@ static int wcd938x_bind(struct device *dev)
 	wcd938x->sdw_priv[AIF1_CAP]->wcd938x = wcd938x;
 	wcd938x->tx_sdw_dev = dev_to_sdw_dev(wcd938x->txdev);
 
-	/* As TX is main CSR reg interface, which should not be suspended first.
-	 * expicilty add the dependency link */
+	 
 	if (!device_link_add(wcd938x->rxdev, wcd938x->txdev, DL_FLAG_STATELESS |
 			    DL_FLAG_PM_RUNTIME)) {
 		dev_err(dev, "could not devlink tx and rx\n");

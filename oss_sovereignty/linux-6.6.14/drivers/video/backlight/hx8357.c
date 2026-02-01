@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Himax HX-8357 LCD Controller
- *
- * Copyright 2012 Free Electrons
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/lcd.h>
@@ -286,10 +282,7 @@ static int hx8357_enter_standby(struct lcd_device *lcdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The controller needs 120ms when entering in sleep mode before we can
-	 * send the command to go off sleep mode
-	 */
+	 
 	msleep(120);
 
 	return 0;
@@ -303,10 +296,7 @@ static int hx8357_exit_standby(struct lcd_device *lcdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The controller needs 120ms when exiting from sleep mode before we
-	 * can send the command to enter in sleep mode
-	 */
+	 
 	msleep(120);
 
 	ret = hx8357_spi_write_byte(lcdev, HX8357_SET_DISPLAY_ON);
@@ -320,14 +310,14 @@ static void hx8357_lcd_reset(struct lcd_device *lcdev)
 {
 	struct hx8357_data *lcd = lcd_get_data(lcdev);
 
-	/* Reset the screen */
+	 
 	gpio_set_value(lcd->reset, 1);
 	usleep_range(10000, 12000);
 	gpio_set_value(lcd->reset, 0);
 	usleep_range(10000, 12000);
 	gpio_set_value(lcd->reset, 1);
 
-	/* The controller needs 120ms to recover from reset */
+	 
 	msleep(120);
 }
 
@@ -336,10 +326,7 @@ static int hx8357_lcd_init(struct lcd_device *lcdev)
 	struct hx8357_data *lcd = lcd_get_data(lcdev);
 	int ret;
 
-	/*
-	 * Set the interface selection pins to SPI mode, with three
-	 * wires
-	 */
+	 
 	if (lcd->use_im_pins) {
 		gpio_set_value_cansleep(lcd->im_pins[0], 1);
 		gpio_set_value_cansleep(lcd->im_pins[1], 0);
@@ -425,9 +412,7 @@ static int hx8357_lcd_init(struct lcd_device *lcdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The controller needs 120ms to fully recover from exiting sleep mode
-	 */
+	 
 	msleep(120);
 
 	ret = hx8357_spi_write_byte(lcdev, HX8357_SET_DISPLAY_ON);
@@ -487,9 +472,7 @@ static int hx8369_lcd_init(struct lcd_device *lcdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The controller needs 120ms to fully recover from exiting sleep mode
-	 */
+	 
 	msleep(120);
 
 	ret = hx8357_spi_write_array(lcdev, hx8369_seq_gamma_curve_related,

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// clk-s2mps11.c - Clock driver for S2MPS11.
-//
-// Copyright (C) 2013,2014 Samsung Electornics
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -78,7 +78,7 @@ static const struct clk_ops s2mps11_clk_ops = {
 	.recalc_rate	= s2mps11_clk_recalc_rate,
 };
 
-/* This s2mps11_clks_init tructure is common to s2mps11, s2mps13 and s2mps14 */
+ 
 static struct clk_init_data s2mps11_clks_init[S2MPS11_CLKS_NUM] = {
 	[S2MPS11_CLK_AP] = {
 		.name = "s2mps11_ap",
@@ -155,14 +155,14 @@ static int s2mps11_clk_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Store clocks of_node in first element of s2mps11_clks array */
+	 
 	s2mps11_clks->clk_np = s2mps11_clk_parse_dt(pdev, s2mps11_clks_init);
 	if (IS_ERR(s2mps11_clks->clk_np))
 		return PTR_ERR(s2mps11_clks->clk_np);
 
 	for (i = 0; i < S2MPS11_CLKS_NUM; i++) {
 		if (i == S2MPS11_CLK_CP && hwid == S2MPS14X)
-			continue; /* Skip clocks not present in some devices */
+			continue;  
 		s2mps11_clks[i].iodev = iodev;
 		s2mps11_clks[i].hw.init = &s2mps11_clks_init[i];
 		s2mps11_clks[i].mask = 1 << i;
@@ -208,11 +208,11 @@ static void s2mps11_clk_remove(struct platform_device *pdev)
 	int i;
 
 	of_clk_del_provider(s2mps11_clks[0].clk_np);
-	/* Drop the reference obtained in s2mps11_clk_parse_dt */
+	 
 	of_node_put(s2mps11_clks[0].clk_np);
 
 	for (i = 0; i < S2MPS11_CLKS_NUM; i++) {
-		/* Skip clocks not present on S2MPS14 */
+		 
 		if (!s2mps11_clks[i].lookup)
 			continue;
 		clkdev_drop(s2mps11_clks[i].lookup);
@@ -229,15 +229,7 @@ static const struct platform_device_id s2mps11_clk_id[] = {
 MODULE_DEVICE_TABLE(platform, s2mps11_clk_id);
 
 #ifdef CONFIG_OF
-/*
- * Device is instantiated through parent MFD device and device matching is done
- * through platform_device_id.
- *
- * However if device's DT node contains proper clock compatible and driver is
- * built as a module, then the *module* matching will be done trough DT aliases.
- * This requires of_device_id table.  In the same time this will not change the
- * actual *device* matching so do not add .of_match_table.
- */
+ 
 static const struct of_device_id s2mps11_dt_match[] __used = {
 	{
 		.compatible = "samsung,s2mps11-clk",
@@ -252,7 +244,7 @@ static const struct of_device_id s2mps11_dt_match[] __used = {
 		.compatible = "samsung,s5m8767-clk",
 		.data = (void *)S5M8767X,
 	}, {
-		/* Sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, s2mps11_dt_match);

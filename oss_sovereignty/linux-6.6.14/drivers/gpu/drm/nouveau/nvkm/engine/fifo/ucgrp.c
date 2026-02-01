@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #define nvkm_ucgrp(p) container_of((p), struct nvkm_ucgrp, object)
 #include "priv.h"
 #include "cgrp.h"
@@ -50,7 +30,7 @@ nvkm_ucgrp_sclass(struct nvkm_object *object, int index, struct nvkm_oclass *ocl
 	const struct nvkm_fifo_func_chan *chan = &fifo->func->chan;
 	int c = 0;
 
-	/* *_CHANNEL_GPFIFO_* */
+	 
 	if (chan->user.oclass) {
 		if (c++ == index) {
 			oclass->base = chan->user;
@@ -94,7 +74,7 @@ nvkm_ucgrp_new(struct nvkm_fifo *fifo, const struct nvkm_oclass *oclass, void *a
 	if (args->v0.namelen != argc)
 		return -EINVAL;
 
-	/* Lookup objects referenced in args. */
+	 
 	runl = nvkm_runl_get(fifo, args->v0.runlist, 0);
 	if (!runl)
 		return -EINVAL;
@@ -103,7 +83,7 @@ nvkm_ucgrp_new(struct nvkm_fifo *fifo, const struct nvkm_oclass *oclass, void *a
 	if (IS_ERR(vmm))
 		return PTR_ERR(vmm);
 
-	/* Allocate channel group. */
+	 
 	if (!(ucgrp = kzalloc(sizeof(*ucgrp), GFP_KERNEL))) {
 		ret = -ENOMEM;
 		goto done;
@@ -116,7 +96,7 @@ nvkm_ucgrp_new(struct nvkm_fifo *fifo, const struct nvkm_oclass *oclass, void *a
 	if (ret)
 		goto done;
 
-	/* Return channel group info to caller. */
+	 
 	args->v0.cgid = ucgrp->cgrp->id;
 
 done:

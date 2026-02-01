@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Netlink interface for IEEE 802.15.4 stack
- *
- * Copyright 2007, 2008 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Maxim Osipov <maxim.osipov@siemens.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -18,7 +9,7 @@
 #include <net/cfg802154.h>
 #include <net/af_ieee802154.h>
 #include <net/ieee802154_netdev.h>
-#include <net/rtnetlink.h> /* for rtnl_{un,}lock */
+#include <net/rtnetlink.h>  
 #include <linux/nl802154.h>
 
 #include "ieee802154.h"
@@ -70,9 +61,7 @@ out:
 
 int ieee802154_list_phy(struct sk_buff *skb, struct genl_info *info)
 {
-	/* Request for interface name, index, type, IEEE address,
-	 * PAN Id, short address
-	 */
+	 
 	struct sk_buff *msg;
 	struct wpan_phy *phy;
 	const char *name;
@@ -85,7 +74,7 @@ int ieee802154_list_phy(struct sk_buff *skb, struct genl_info *info)
 
 	name = nla_data(info->attrs[IEEE802154_ATTR_PHY_NAME]);
 	if (name[nla_len(info->attrs[IEEE802154_ATTR_PHY_NAME]) - 1] != '\0')
-		return -EINVAL; /* phy name should be null-terminated */
+		return -EINVAL;  
 
 	phy = wpan_phy_find(name);
 	if (!phy)
@@ -176,13 +165,13 @@ int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info)
 
 	name = nla_data(info->attrs[IEEE802154_ATTR_PHY_NAME]);
 	if (name[nla_len(info->attrs[IEEE802154_ATTR_PHY_NAME]) - 1] != '\0')
-		return -EINVAL; /* phy name should be null-terminated */
+		return -EINVAL;  
 
 	if (info->attrs[IEEE802154_ATTR_DEV_NAME]) {
 		devname = nla_data(info->attrs[IEEE802154_ATTR_DEV_NAME]);
 		if (devname[nla_len(info->attrs[IEEE802154_ATTR_DEV_NAME]) - 1]
 				!= '\0')
-			return -EINVAL; /* phy name should be null-terminated */
+			return -EINVAL;  
 		name_assign_type = NET_NAME_USER;
 	} else  {
 		devname = "wpan%d";
@@ -230,9 +219,7 @@ int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info)
 		nla_memcpy(&addr.sa_data, info->attrs[IEEE802154_ATTR_HW_ADDR],
 			   IEEE802154_ADDR_LEN);
 
-		/* strangely enough, some callbacks (inetdev_event) from
-		 * dev_set_mac_address require RTNL_LOCK
-		 */
+		 
 		rtnl_lock();
 		rc = dev_set_mac_address(dev, &addr, NULL);
 		rtnl_unlock();
@@ -252,7 +239,7 @@ int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info)
 	return ieee802154_nl_reply(msg, info);
 
 dev_unregister:
-	rtnl_lock(); /* del_iface must be called with RTNL lock */
+	rtnl_lock();  
 	rdev_del_virtual_intf_deprecated(wpan_phy_to_rdev(phy), dev);
 	dev_put(dev);
 	rtnl_unlock();
@@ -278,7 +265,7 @@ int ieee802154_del_iface(struct sk_buff *skb, struct genl_info *info)
 
 	name = nla_data(info->attrs[IEEE802154_ATTR_DEV_NAME]);
 	if (name[nla_len(info->attrs[IEEE802154_ATTR_DEV_NAME]) - 1] != '\0')
-		return -EINVAL; /* name should be null-terminated */
+		return -EINVAL;  
 
 	rc = -ENODEV;
 	dev = dev_get_by_name(genl_info_net(info), name);
@@ -292,7 +279,7 @@ int ieee802154_del_iface(struct sk_buff *skb, struct genl_info *info)
 	get_device(&phy->dev);
 
 	rc = -EINVAL;
-	/* phy name is optional, but should be checked if it's given */
+	 
 	if (info->attrs[IEEE802154_ATTR_PHY_NAME]) {
 		struct wpan_phy *phy2;
 
@@ -300,7 +287,7 @@ int ieee802154_del_iface(struct sk_buff *skb, struct genl_info *info)
 			nla_data(info->attrs[IEEE802154_ATTR_PHY_NAME]);
 		if (pname[nla_len(info->attrs[IEEE802154_ATTR_PHY_NAME]) - 1]
 				!= '\0')
-			/* name should be null-terminated */
+			 
 			goto out_dev;
 
 		phy2 = wpan_phy_find(pname);
@@ -322,7 +309,7 @@ int ieee802154_del_iface(struct sk_buff *skb, struct genl_info *info)
 	rtnl_lock();
 	rdev_del_virtual_intf_deprecated(wpan_phy_to_rdev(phy), dev);
 
-	/* We don't have device anymore */
+	 
 	dev_put(dev);
 	dev = NULL;
 

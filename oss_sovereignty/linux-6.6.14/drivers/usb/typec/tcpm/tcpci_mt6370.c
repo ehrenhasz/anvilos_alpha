@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/interrupt.h>
@@ -149,7 +145,7 @@ static int mt6370_tcpc_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* Assign TCPCI feature and ops */
+	 
 	priv->tcpci_data.auto_discharge_disconnect = 1;
 	priv->tcpci_data.init = mt6370_tcpc_init;
 	priv->tcpci_data.set_vconn = mt6370_tcpc_set_vconn;

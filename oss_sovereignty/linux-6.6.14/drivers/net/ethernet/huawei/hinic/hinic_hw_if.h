@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_HW_IF_H
 #define HINIC_HW_IF_H
@@ -38,7 +35,7 @@
 #define HINIC_FA0_PF_IDX_SHIFT                                  10
 #define HINIC_FA0_PCI_INTF_IDX_SHIFT                            14
 #define HINIC_FA0_VF_IN_PF_SHIFT				16
-/* reserved members - off 16 */
+ 
 #define HINIC_FA0_FUNC_TYPE_SHIFT                               24
 
 #define HINIC_FA0_FUNC_IDX_MASK                                 0x3FF
@@ -51,12 +48,12 @@
 	(((val) >> HINIC_FA0_##member##_SHIFT) & HINIC_FA0_##member##_MASK)
 
 #define HINIC_FA1_AEQS_PER_FUNC_SHIFT                           8
-/* reserved members - off 10 */
+ 
 #define HINIC_FA1_CEQS_PER_FUNC_SHIFT                           12
-/* reserved members - off 15 */
+ 
 #define HINIC_FA1_IRQS_PER_FUNC_SHIFT                           20
 #define HINIC_FA1_DMA_ATTR_PER_FUNC_SHIFT                       24
-/* reserved members - off 27 */
+ 
 #define HINIC_FA1_MGMT_INIT_STATUS_SHIFT			30
 #define HINIC_FA1_PF_INIT_STATUS_SHIFT				31
 
@@ -160,11 +157,11 @@
 #define HINIC_PCIE_AT_DISABLE           0
 #define HINIC_PCIE_PH_DISABLE           0
 
-#define HINIC_EQ_MSIX_PENDING_LIMIT_DEFAULT     0       /* Disabled */
-#define HINIC_EQ_MSIX_COALESC_TIMER_DEFAULT     0xFF    /* max */
-#define HINIC_EQ_MSIX_LLI_TIMER_DEFAULT         0       /* Disabled */
-#define HINIC_EQ_MSIX_LLI_CREDIT_LIMIT_DEFAULT  0       /* Disabled */
-#define HINIC_EQ_MSIX_RESEND_TIMER_DEFAULT      7       /* max */
+#define HINIC_EQ_MSIX_PENDING_LIMIT_DEFAULT     0        
+#define HINIC_EQ_MSIX_COALESC_TIMER_DEFAULT     0xFF     
+#define HINIC_EQ_MSIX_LLI_TIMER_DEFAULT         0        
+#define HINIC_EQ_MSIX_LLI_CREDIT_LIMIT_DEFAULT  0        
+#define HINIC_EQ_MSIX_RESEND_TIMER_DEFAULT      7        
 
 #define HINIC_PCI_MSIX_ENTRY_SIZE               16
 #define HINIC_PCI_MSIX_ENTRY_VECTOR_CTRL        12
@@ -187,10 +184,10 @@ enum hinic_func_type {
 };
 
 enum hinic_mod_type {
-	HINIC_MOD_COMM  = 0,    /* HW communication module */
-	HINIC_MOD_L2NIC = 1,    /* L2NIC module */
-	HINIC_MOD_CFGM  = 7,    /* Configuration module */
-	HINIC_MOD_HILINK = 14,  /* Hilink module */
+	HINIC_MOD_COMM  = 0,     
+	HINIC_MOD_L2NIC = 1,     
+	HINIC_MOD_CFGM  = 7,     
+	HINIC_MOD_HILINK = 14,   
 	HINIC_MOD_MAX   = 15
 };
 

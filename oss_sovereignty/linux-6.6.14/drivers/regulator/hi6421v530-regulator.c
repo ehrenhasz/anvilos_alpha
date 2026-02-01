@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Device driver for regulators in Hi6421V530 IC
-//
-// Copyright (c) <2017> HiSilicon Technologies Co., Ltd.
-//              http://www.hisilicon.com
-// Copyright (c) <2017> Linaro Ltd.
-//              https://www.linaro.org
-//
-// Author: Wang Xiaoyin <hw.wangxiaoyin@hisilicon.com>
-//         Guodong Xu <guodong.xu@linaro.org>
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/mfd/hi6421-pmic.h>
 #include <linux/module.h>
@@ -17,19 +17,14 @@
 #include <linux/regmap.h>
 #include <linux/regulator/driver.h>
 
-/*
- * struct hi6421v530_regulator_info - hi6421v530 regulator information
- * @desc: regulator description
- * @mode_mask: ECO mode bitmask of LDOs; for BUCKs, this masks sleep
- * @eco_microamp: eco mode load upper limit (in uA), valid for LDOs only
- */
+ 
 struct hi6421v530_regulator_info {
 	struct regulator_desc rdesc;
 	u8 mode_mask;
 	u32 eco_microamp;
 };
 
-/* HI6421v530 regulators */
+ 
 enum hi6421v530_regulator_id {
 	HI6421V530_LDO3,
 	HI6421V530_LDO9,
@@ -59,17 +54,7 @@ static const struct regulator_ops hi6421v530_ldo_ops;
 
 #define HI6421V530_LDO_ENABLE_TIME (350)
 
-/*
- * _id - LDO id name string
- * v_table - voltage table
- * vreg - voltage select register
- * vmask - voltage select mask
- * ereg - enable register
- * emask - enable mask
- * odelay - off/on delay time in uS
- * ecomask - eco mode mask
- * ecoamp - eco mode load uppler limit in uA
- */
+ 
 #define HI6421V530_LDO(_ID, v_table, vreg, vmask, ereg, emask,		\
 		   odelay, ecomask, ecoamp) {				\
 	.rdesc = {							\
@@ -93,7 +78,7 @@ static const struct regulator_ops hi6421v530_ldo_ops;
 	.eco_microamp	= ecoamp,					\
 }
 
-/* HI6421V530 regulator information */
+ 
 
 static struct hi6421v530_regulator_info hi6421v530_regulator_info[] = {
 	HI6421V530_LDO(LDO3, ldo_3_voltages, 0x061, 0xf, 0x060, 0x2,

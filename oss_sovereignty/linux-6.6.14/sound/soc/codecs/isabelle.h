@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * isabelle.h - Low power high fidelity audio codec driver header file
- *
- * Copyright (c) 2012 Texas Instruments, Inc
- */
+ 
+ 
 
 #ifndef _ISABELLE_H
 #define _ISABELLE_H
 
 #include <linux/bitops.h>
 
-/* ISABELLE REGISTERS */
+ 
 
 #define ISABELLE_PWR_CFG_REG		0x01
 #define ISABELLE_PWR_EN_REG		0x02
@@ -108,10 +104,10 @@
 #define ISABELLE_HF_NG_CFG1_REG		0x62
 #define ISABELLE_HF_NG_CFG2_REG		0x63
 
-/* ISABELLE_PWR_EN_REG (0x02h) */
+ 
 #define ISABELLE_CHIP_EN		BIT(0)
 
-/* ISABELLE DAI FORMATS */
+ 
 #define ISABELLE_AIF_FMT_MASK		0x70
 #define ISABELLE_I2S_MODE		0x0
 #define ISABELLE_LEFT_J_MODE		0x1

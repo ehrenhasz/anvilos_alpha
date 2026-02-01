@@ -1,38 +1,4 @@
-/*
- * drivers/video/cirrusfb.c - driver for Cirrus Logic chipsets
- *
- * Copyright 1999-2001 Jeff Garzik <jgarzik@pobox.com>
- *
- * Contributors (thanks, all!)
- *
- *	David Eger:
- *	Overhaul for Linux 2.6
- *
- *      Jeff Rugen:
- *      Major contributions;  Motorola PowerStack (PPC and PCI) support,
- *      GD54xx, 1280x1024 mode support, change MCLK based on VCLK.
- *
- *	Geert Uytterhoeven:
- *	Excellent code review.
- *
- *	Lars Hecking:
- *	Amiga updates and testing.
- *
- * Original cirrusfb author:  Frank Neumann
- *
- * Based on retz3fb.c and cirrusfb.c:
- *      Copyright (C) 1997 Jes Sorensen
- *      Copyright (C) 1996 Frank Neumann
- *
- ***************************************************************
- *
- * Format this code with GNU indent '-kr -i8 -pcs' options.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- */
+ 
 
 #include <linux/aperture.h>
 #include <linux/module.h>
@@ -57,16 +23,12 @@
 #include <video/vga.h>
 #include <video/cirrus.h>
 
-/*****************************************************************
- *
- * debugging and utility macros
- *
- */
+ 
 
-/* disable runtime assertions? */
-/* #define CIRRUSFB_NDEBUG */
+ 
+ 
 
-/* debugging assertions */
+ 
 #ifndef CIRRUSFB_NDEBUG
 #define assert(expr) \
 	if (!(expr)) { \
@@ -79,58 +41,46 @@
 
 #define MB_ (1024 * 1024)
 
-/*****************************************************************
- *
- * chipset information
- *
- */
+ 
 
-/* board types */
+ 
 enum cirrus_board {
 	BT_NONE = 0,
-	BT_SD64,	/* GD5434 */
-	BT_PICCOLO,	/* GD5426 */
-	BT_PICASSO,	/* GD5426 or GD5428 */
-	BT_SPECTRUM,	/* GD5426 or GD5428 */
-	BT_PICASSO4,	/* GD5446 */
-	BT_ALPINE,	/* GD543x/4x */
+	BT_SD64,	 
+	BT_PICCOLO,	 
+	BT_PICASSO,	 
+	BT_SPECTRUM,	 
+	BT_PICASSO4,	 
+	BT_ALPINE,	 
 	BT_GD5480,
-	BT_LAGUNA,	/* GD5462/64 */
-	BT_LAGUNAB,	/* GD5465 */
+	BT_LAGUNA,	 
+	BT_LAGUNAB,	 
 };
 
-/*
- * per-board-type information, used for enumerating and abstracting
- * chip-specific information
- * NOTE: MUST be in the same order as enum cirrus_board in order to
- * use direct indexing on this array
- * NOTE: '__initdata' cannot be used as some of this info
- * is required at runtime.  Maybe separate into an init-only and
- * a run-time table?
- */
+ 
 static const struct cirrusfb_board_info_rec {
-	char *name;		/* ASCII name of chipset */
-	long maxclock[5];		/* maximum video clock */
-	/* for  1/4bpp, 8bpp 15/16bpp, 24bpp, 32bpp - numbers from xorg code */
-	bool init_sr07 : 1; /* init SR07 during init_vgachip() */
-	bool init_sr1f : 1; /* write SR1F during init_vgachip() */
-	/* construct bit 19 of screen start address */
+	char *name;		 
+	long maxclock[5];		 
+	 
+	bool init_sr07 : 1;  
+	bool init_sr1f : 1;  
+	 
 	bool scrn_start_bit19 : 1;
 
-	/* initial SR07 value, then for each mode */
+	 
 	unsigned char sr07;
 	unsigned char sr07_1bpp;
 	unsigned char sr07_1bpp_mux;
 	unsigned char sr07_8bpp;
 	unsigned char sr07_8bpp_mux;
 
-	unsigned char sr1f;	/* SR1F VGA initial register value */
+	unsigned char sr1f;	 
 } cirrusfb_board_info[] = {
 	[BT_SD64] = {
 		.name			= "CL SD64",
 		.maxclock		= {
-			/* guess */
-			/* the SD64/P4 have a higher max. videoclock */
+			 
+			 
 			135100, 135100, 85500, 85500, 0
 		},
 		.init_sr07		= true,
@@ -146,7 +96,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_PICCOLO] = {
 		.name			= "CL Piccolo",
 		.maxclock		= {
-			/* guess */
+			 
 			90000, 90000, 90000, 90000, 90000
 		},
 		.init_sr07		= true,
@@ -160,7 +110,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_PICASSO] = {
 		.name			= "CL Picasso",
 		.maxclock		= {
-			/* guess */
+			 
 			90000, 90000, 90000, 90000, 90000
 		},
 		.init_sr07		= true,
@@ -174,7 +124,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_SPECTRUM] = {
 		.name			= "CL Spectrum",
 		.maxclock		= {
-			/* guess */
+			 
 			90000, 90000, 90000, 90000, 90000
 		},
 		.init_sr07		= true,
@@ -203,7 +153,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_ALPINE] = {
 		.name			= "CL Alpine",
 		.maxclock		= {
-			/* for the GD5430.  GD5446 can do more... */
+			 
 			85500, 85500, 50000, 28500, 0
 		},
 		.init_sr07		= true,
@@ -232,7 +182,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_LAGUNA] = {
 		.name			= "CL Laguna",
 		.maxclock		= {
-			/* taken from X11 code */
+			 
 			170000, 170000, 170000, 170000, 135100,
 		},
 		.init_sr07		= false,
@@ -242,7 +192,7 @@ static const struct cirrusfb_board_info_rec {
 	[BT_LAGUNAB] = {
 		.name			= "CL Laguna AGP",
 		.maxclock		= {
-			/* taken from X11 code */
+			 
 			170000, 250000, 170000, 170000, 135100,
 		},
 		.init_sr07		= false,
@@ -259,29 +209,29 @@ static struct pci_device_id cirrusfb_pci_table[] = {
 	CHIP(PCI_DEVICE_ID_CIRRUS_5436, BT_ALPINE),
 	CHIP(PCI_DEVICE_ID_CIRRUS_5434_8, BT_SD64),
 	CHIP(PCI_DEVICE_ID_CIRRUS_5434_4, BT_SD64),
-	CHIP(PCI_DEVICE_ID_CIRRUS_5430, BT_ALPINE), /* GD-5440 is same id */
+	CHIP(PCI_DEVICE_ID_CIRRUS_5430, BT_ALPINE),  
 	CHIP(PCI_DEVICE_ID_CIRRUS_7543, BT_ALPINE),
 	CHIP(PCI_DEVICE_ID_CIRRUS_7548, BT_ALPINE),
-	CHIP(PCI_DEVICE_ID_CIRRUS_5480, BT_GD5480), /* MacPicasso likely */
-	CHIP(PCI_DEVICE_ID_CIRRUS_5446, BT_PICASSO4), /* Picasso 4 is 5446 */
-	CHIP(PCI_DEVICE_ID_CIRRUS_5462, BT_LAGUNA), /* CL Laguna */
-	CHIP(PCI_DEVICE_ID_CIRRUS_5464, BT_LAGUNA), /* CL Laguna 3D */
-	CHIP(PCI_DEVICE_ID_CIRRUS_5465, BT_LAGUNAB), /* CL Laguna 3DA*/
+	CHIP(PCI_DEVICE_ID_CIRRUS_5480, BT_GD5480),  
+	CHIP(PCI_DEVICE_ID_CIRRUS_5446, BT_PICASSO4),  
+	CHIP(PCI_DEVICE_ID_CIRRUS_5462, BT_LAGUNA),  
+	CHIP(PCI_DEVICE_ID_CIRRUS_5464, BT_LAGUNA),  
+	CHIP(PCI_DEVICE_ID_CIRRUS_5465, BT_LAGUNAB),  
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, cirrusfb_pci_table);
 #undef CHIP
-#endif /* CONFIG_PCI */
+#endif  
 
 #ifdef CONFIG_ZORRO
 struct zorrocl {
-	enum cirrus_board type;	/* Board type */
-	u32 regoffset;		/* Offset of registers in first Zorro device */
-	u32 ramsize;		/* Size of video RAM in first Zorro device */
-				/* If zero, use autoprobe on RAM device */
-	u32 ramoffset;		/* Offset of video RAM in first Zorro device */
-	zorro_id ramid;		/* Zorro ID of RAM device */
-	zorro_id ramid2;	/* Zorro ID of optional second RAM device */
+	enum cirrus_board type;	 
+	u32 regoffset;		 
+	u32 ramsize;		 
+				 
+	u32 ramoffset;		 
+	zorro_id ramid;		 
+	zorro_id ramid2;	 
 };
 
 static const struct zorrocl zcl_sd64 = {
@@ -308,7 +258,7 @@ static const struct zorrocl zcl_picasso4_z3 = {
 	.type		= BT_PICASSO4,
 	.regoffset	= 0x00600000,
 	.ramsize	= 4 * MB_,
-	.ramoffset	= 0x01000000,	/* 0x02000000 for 64 MiB boards */
+	.ramoffset	= 0x01000000,	 
 };
 
 static const struct zorrocl zcl_picasso4_z2 = {
@@ -342,21 +292,21 @@ static const struct zorro_device_id cirrusfb_zorro_table[] = {
 	{ 0 }
 };
 MODULE_DEVICE_TABLE(zorro, cirrusfb_zorro_table);
-#endif /* CONFIG_ZORRO */
+#endif  
 
 #ifdef CIRRUSFB_DEBUG
 enum cirrusfb_dbg_reg_class {
 	CRT,
 	SEQ
 };
-#endif		/* CIRRUSFB_DEBUG */
+#endif		 
 
-/* info about board */
+ 
 struct cirrusfb_info {
 	u8 __iomem *regbase;
 	u8 __iomem *laguna_mmio;
 	enum cirrus_board btype;
-	unsigned char SFR;	/* Shadow of special function register */
+	unsigned char SFR;	 
 
 	int multiplexing;
 	int doubleVCLK;
@@ -369,14 +319,14 @@ struct cirrusfb_info {
 static bool noaccel;
 static char *mode_option = "640x480@60";
 
-/****************************************************************************/
-/**** BEGIN PROTOTYPES ******************************************************/
+ 
+ 
 
-/*--- Interface used by the world ------------------------------------------*/
+ 
 static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 				struct fb_info *info);
 
-/*--- Internal routines ----------------------------------------------------*/
+ 
 static void init_vgachip(struct fb_info *info);
 static void switch_monitor(struct cirrusfb_info *cinfo, int on);
 static void WGen(const struct cirrusfb_info *cinfo,
@@ -412,11 +362,11 @@ static void cirrusfb_dbg_reg_dump(struct fb_info *info, caddr_t regbase);
 static void cirrusfb_dbg_print_regs(struct fb_info *info,
 				    caddr_t regbase,
 				    enum cirrusfb_dbg_reg_class reg_class, ...);
-#endif /* CIRRUSFB_DEBUG */
+#endif  
 
-/*** END   PROTOTYPES ********************************************************/
-/*****************************************************************************/
-/*** BEGIN Interface Used by the World ***************************************/
+ 
+ 
+ 
 
 static inline int is_laguna(const struct cirrusfb_info *cinfo)
 {
@@ -425,7 +375,7 @@ static inline int is_laguna(const struct cirrusfb_info *cinfo)
 
 static int opencount;
 
-/*--- Open /dev/fbx ---------------------------------------------------------*/
+ 
 static int cirrusfb_open(struct fb_info *info, int user)
 {
 	if (opencount++ == 0)
@@ -433,7 +383,7 @@ static int cirrusfb_open(struct fb_info *info, int user)
 	return 0;
 }
 
-/*--- Close /dev/fbx --------------------------------------------------------*/
+ 
 static int cirrusfb_release(struct fb_info *info, int user)
 {
 	if (--opencount == 0)
@@ -441,23 +391,21 @@ static int cirrusfb_release(struct fb_info *info, int user)
 	return 0;
 }
 
-/**** END   Interface used by the World *************************************/
-/****************************************************************************/
-/**** BEGIN Hardware specific Routines **************************************/
+ 
+ 
+ 
 
-/* Check if the MCLK is not a better clock source */
+ 
 static int cirrusfb_check_mclk(struct fb_info *info, long freq)
 {
 	struct cirrusfb_info *cinfo = info->par;
 	long mclk = vga_rseq(cinfo->regbase, CL_SEQR1F) & 0x3f;
 
-	/* Read MCLK value */
+	 
 	mclk = (14318 * mclk) >> 3;
 	dev_dbg(info->device, "Read MCLK of %ld kHz\n", mclk);
 
-	/* Determine if we should use MCLK instead of VCLK, and if so, what we
-	 * should divide it by to get VCLK
-	 */
+	 
 
 	if (abs(freq - mclk) < 250) {
 		dev_dbg(info->device, "Using VCLK = MCLK\n");
@@ -478,14 +426,13 @@ static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
 	struct cirrusfb_info *cinfo = info->par;
 	unsigned maxclockidx = var->bits_per_pixel >> 3;
 
-	/* convert from ps to kHz */
+	 
 	freq = PICOS2KHZ(var->pixclock ? : 1);
 
 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
 	cinfo->multiplexing = 0;
 
-	/* If the frequency is greater than we can support, we might be able
-	 * to use multiplexing for the video mode */
+	 
 	if (freq > maxclock) {
 		var->pixclock = KHZ2PICOS(maxclock);
 
@@ -494,10 +441,7 @@ static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
 	}
 	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
 
-	/*
-	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
-	 * pixel clock
-	 */
+	 
 	if (var->bits_per_pixel == 8) {
 		switch (cinfo->btype) {
 		case BT_ALPINE:
@@ -516,8 +460,7 @@ static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
 		}
 	}
 
-	/* If we have a 1MB 5434, we need to put ourselves in a mode where
-	 * the VCLK is double the pixel clock. */
+	 
 	cinfo->doubleVCLK = 0;
 	if (cinfo->btype == BT_SD64 && info->fix.smem_len <= MB_ &&
 	    var->bits_per_pixel == 16) {
@@ -531,7 +474,7 @@ static int cirrusfb_check_var(struct fb_var_screeninfo *var,
 			      struct fb_info *info)
 {
 	int yres;
-	/* memory size in pixels */
+	 
 	unsigned int pixels;
 	struct cirrusfb_info *cinfo = info->par;
 
@@ -577,7 +520,7 @@ static int cirrusfb_check_var(struct fb_var_screeninfo *var,
 	pixels = info->screen_size * 8 / var->bits_per_pixel;
 	if (var->xres_virtual < var->xres)
 		var->xres_virtual = var->xres;
-	/* use highest possible virtual resolution */
+	 
 	if (var->yres_virtual == -1) {
 		var->yres_virtual = pixels / var->xres_virtual;
 
@@ -596,7 +539,7 @@ static int cirrusfb_check_var(struct fb_var_screeninfo *var,
 		return -EINVAL;
 	}
 
-	/* truncate xoffset and yoffset to maximum if too high */
+	 
 	if (var->xoffset > var->xres_virtual - var->xres)
 		var->xoffset = var->xres_virtual - var->xres - 1;
 	if (var->yoffset > var->yres_virtual - var->yres)
@@ -651,11 +594,7 @@ static void cirrusfb_set_mclk_as_source(const struct fb_info *info, int div)
 	vga_wseq(cinfo->regbase, CL_SEQR1F, old1f);
 }
 
-/*************************************************************************
-	cirrusfb_set_par_foo()
-
-	actually writes the values for a new video mode into the hardware,
-**************************************************************************/
+ 
 static int cirrusfb_set_par_foo(struct fb_info *info)
 {
 	struct cirrusfb_info *cinfo = info->par;
@@ -745,10 +684,10 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	hsyncstart += 1;
 	hsyncend += 1;
 
-	/* unlock register VGA_CRTC_H_TOTAL..CRT7 */
-	vga_wcrt(regbase, VGA_CRTC_V_SYNC_END, 0x20);	/* previously: 0x00) */
+	 
+	vga_wcrt(regbase, VGA_CRTC_V_SYNC_END, 0x20);	 
 
-	/* if debugging is enabled, all parameters get output before writing */
+	 
 	dev_dbg(info->device, "CRT0: %d\n", htotal);
 	vga_wcrt(regbase, VGA_CRTC_H_TOTAL, htotal);
 
@@ -758,7 +697,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	dev_dbg(info->device, "CRT2: %d\n", var->xres / 8);
 	vga_wcrt(regbase, VGA_CRTC_H_BLANK_START, var->xres / 8);
 
-	/*  + 128: Compatible read */
+	 
 	dev_dbg(info->device, "CRT3: 128+%d\n", (htotal + 5) % 32);
 	vga_wcrt(regbase, VGA_CRTC_H_BLANK_END,
 		 128 + ((htotal + 5) % 32));
@@ -775,7 +714,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	dev_dbg(info->device, "CRT6: %d\n", vtotal & 0xff);
 	vga_wcrt(regbase, VGA_CRTC_V_TOTAL, vtotal & 0xff);
 
-	tmp = 16;		/* LineCompare bit #9 */
+	tmp = 16;		 
 	if (vtotal & 256)
 		tmp |= 1;
 	if (vdispend & 256)
@@ -793,7 +732,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	dev_dbg(info->device, "CRT7: %d\n", tmp);
 	vga_wcrt(regbase, VGA_CRTC_OVERFLOW, tmp);
 
-	tmp = 0x40;		/* LineCompare bit #8 */
+	tmp = 0x40;		 
 	if ((vdispend + 1) & 512)
 		tmp |= 0x20;
 	if (var->vmode & FB_VMODE_DOUBLE)
@@ -848,16 +787,14 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	dev_dbg(info->device, "VCLK freq: %ld kHz  nom: %d  den: %d  div: %d\n",
 		freq, nom, den, div);
 
-	/* set VCLK0 */
-	/* hardware RefClock: 14.31818 MHz */
-	/* formula: VClk = (OSC * N) / (D * (1+P)) */
-	/* Example: VClk = (14.31818 * 91) / (23 * (1+1)) = 28.325 MHz */
+	 
+	 
+	 
+	 
 
 	if (cinfo->btype == BT_ALPINE || cinfo->btype == BT_PICASSO4 ||
 	    cinfo->btype == BT_SD64) {
-		/* if freq is close to mclk or mclk/2 select mclk
-		 * as clock source
-		 */
+		 
 		int divMCLK = cirrusfb_check_mclk(info, freq);
 		if (divMCLK)
 			nom = 0;
@@ -886,13 +823,13 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		tmp = den << 1;
 		if (div != 0)
 			tmp |= 1;
-		/* 6 bit denom; ONLY 5434!!! (bugged me 10 days) */
+		 
 		if ((cinfo->btype == BT_SD64) ||
 		    (cinfo->btype == BT_ALPINE) ||
 		    (cinfo->btype == BT_GD5480))
 			tmp |= 0x80;
 
-		/* Laguna chipset has reversed clock registers */
+		 
 		if (is_laguna(cinfo)) {
 			vga_wseq(regbase, CL_SEQRE, tmp);
 			vga_wseq(regbase, CL_SEQR1E, nom);
@@ -903,22 +840,21 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	}
 
 	if (yres >= 1024)
-		/* 1280x1024 */
+		 
 		vga_wcrt(regbase, VGA_CRTC_MODE, 0xc7);
 	else
-		/* mode control: VGA_CRTC_START_HI enable, ROTATE(?), 16bit
-		 * address wrap, no compat. */
+		 
 		vga_wcrt(regbase, VGA_CRTC_MODE, 0xc3);
 
-	/* don't know if it would hurt to also program this if no interlaced */
-	/* mode is used, but I feel better this way.. :-) */
+	 
+	 
 	if (var->vmode & FB_VMODE_INTERLACED)
 		vga_wcrt(regbase, VGA_CRTC_REGS, htotal / 2);
 	else
-		vga_wcrt(regbase, VGA_CRTC_REGS, 0x00);	/* interlace control */
+		vga_wcrt(regbase, VGA_CRTC_REGS, 0x00);	 
 
-	/* adjust horizontal/vertical sync type (low/high), use VCLK3 */
-	/* enable display memory & CRTC I/O address for color mode */
+	 
+	 
 	tmp = 0x03 | 0xc;
 	if (var->sync & FB_SYNC_HOR_HIGH_ACT)
 		tmp |= 0x40;
@@ -926,23 +862,19 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		tmp |= 0x80;
 	WGen(cinfo, VGA_MIS_W, tmp);
 
-	/* text cursor on and start line */
+	 
 	vga_wcrt(regbase, VGA_CRTC_CURSOR_START, 0);
-	/* text cursor end line */
+	 
 	vga_wcrt(regbase, VGA_CRTC_CURSOR_END, 31);
 
-	/******************************************************
-	 *
-	 * 1 bpp
-	 *
-	 */
+	 
 
-	/* programming for different color depths */
+	 
 	if (var->bits_per_pixel == 1) {
 		dev_dbg(info->device, "preparing for 1 bit deep display\n");
-		vga_wgfx(regbase, VGA_GFX_MODE, 0);	/* mode register */
+		vga_wgfx(regbase, VGA_GFX_MODE, 0);	 
 
-		/* SR07 */
+		 
 		switch (cinfo->btype) {
 		case BT_SD64:
 		case BT_PICCOLO:
@@ -967,17 +899,17 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 			break;
 		}
 
-		/* Extended Sequencer Mode */
+		 
 		switch (cinfo->btype) {
 
 		case BT_PICCOLO:
 		case BT_SPECTRUM:
-			/* evtl d0 bei 1 bit? avoid FIFO underruns..? */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_PICASSO:
-			/* ## vorher d0 avoid FIFO underruns..? */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xd0);
 			break;
 
@@ -987,7 +919,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		case BT_GD5480:
 		case BT_LAGUNA:
 		case BT_LAGUNAB:
-			/* do nothing */
+			 
 			break;
 
 		default:
@@ -995,25 +927,21 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 			break;
 		}
 
-		/* pixel mask: pass-through for first plane */
+		 
 		WGen(cinfo, VGA_PEL_MSK, 0x01);
 		if (cinfo->multiplexing)
-			/* hidden dac reg: 1280x1024 */
+			 
 			WHDR(cinfo, 0x4a);
 		else
-			/* hidden dac: nothing */
+			 
 			WHDR(cinfo, 0);
-		/* memory mode: odd/even, ext. memory */
+		 
 		vga_wseq(regbase, VGA_SEQ_MEMORY_MODE, 0x06);
-		/* plane mask: only write to first plane */
+		 
 		vga_wseq(regbase, VGA_SEQ_PLANE_WRITE, 0x01);
 	}
 
-	/******************************************************
-	 *
-	 * 8 bpp
-	 *
-	 */
+	 
 
 	else if (var->bits_per_pixel == 8) {
 		dev_dbg(info->device, "preparing for 8 bit deep display\n");
@@ -1046,13 +974,13 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		case BT_PICCOLO:
 		case BT_PICASSO:
 		case BT_SPECTRUM:
-			/* Fast Page-Mode writes */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_PICASSO4:
 #ifdef CONFIG_ZORRO
-			/* ### INCOMPLETE!! */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb8);
 #endif
 		case BT_ALPINE:
@@ -1060,7 +988,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		case BT_GD5480:
 		case BT_LAGUNA:
 		case BT_LAGUNAB:
-			/* do nothing */
+			 
 			break;
 
 		default:
@@ -1068,21 +996,17 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 			break;
 		}
 
-		/* mode register: 256 color mode */
+		 
 		vga_wgfx(regbase, VGA_GFX_MODE, 64);
 		if (cinfo->multiplexing)
-			/* hidden dac reg: 1280x1024 */
+			 
 			WHDR(cinfo, 0x4a);
 		else
-			/* hidden dac: nothing */
+			 
 			WHDR(cinfo, 0);
 	}
 
-	/******************************************************
-	 *
-	 * 16 bpp
-	 *
-	 */
+	 
 
 	else if (var->bits_per_pixel == 16) {
 		dev_dbg(info->device, "preparing for 16 bit deep display\n");
@@ -1090,27 +1014,27 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		case BT_PICCOLO:
 		case BT_SPECTRUM:
 			vga_wseq(regbase, CL_SEQR7, 0x87);
-			/* Fast Page-Mode writes */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_PICASSO:
 			vga_wseq(regbase, CL_SEQR7, 0x27);
-			/* Fast Page-Mode writes */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_SD64:
 		case BT_PICASSO4:
 		case BT_ALPINE:
-			/* Extended Sequencer Mode: 256c col. mode */
+			 
 			vga_wseq(regbase, CL_SEQR7,
 					cinfo->doubleVCLK ? 0xa3 : 0xa7);
 			break;
 
 		case BT_GD5480:
 			vga_wseq(regbase, CL_SEQR7, 0x17);
-			/* We already set SRF and SR1F */
+			 
 			break;
 
 		case BT_LAGUNA:
@@ -1127,21 +1051,17 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 			break;
 		}
 
-		/* mode register: 256 color mode */
+		 
 		vga_wgfx(regbase, VGA_GFX_MODE, 64);
 #ifdef CONFIG_PCI
 		WHDR(cinfo, cinfo->doubleVCLK ? 0xe1 : 0xc1);
 #elif defined(CONFIG_ZORRO)
-		/* FIXME: CONFIG_PCI and CONFIG_ZORRO may be defined both */
-		WHDR(cinfo, 0xa0);	/* hidden dac reg: nothing special */
+		 
+		WHDR(cinfo, 0xa0);	 
 #endif
 	}
 
-	/******************************************************
-	 *
-	 * 24 bpp
-	 *
-	 */
+	 
 
 	else if (var->bits_per_pixel == 24) {
 		dev_dbg(info->device, "preparing for 24 bit deep display\n");
@@ -1149,26 +1069,26 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		case BT_PICCOLO:
 		case BT_SPECTRUM:
 			vga_wseq(regbase, CL_SEQR7, 0x85);
-			/* Fast Page-Mode writes */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_PICASSO:
 			vga_wseq(regbase, CL_SEQR7, 0x25);
-			/* Fast Page-Mode writes */
+			 
 			vga_wseq(regbase, CL_SEQRF, 0xb0);
 			break;
 
 		case BT_SD64:
 		case BT_PICASSO4:
 		case BT_ALPINE:
-			/* Extended Sequencer Mode: 256c col. mode */
+			 
 			vga_wseq(regbase, CL_SEQR7, 0xa5);
 			break;
 
 		case BT_GD5480:
 			vga_wseq(regbase, CL_SEQR7, 0x15);
-			/* We already set SRF and SR1F */
+			 
 			break;
 
 		case BT_LAGUNA:
@@ -1185,17 +1105,13 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 			break;
 		}
 
-		/* mode register: 256 color mode */
+		 
 		vga_wgfx(regbase, VGA_GFX_MODE, 64);
-		/* hidden dac reg: 8-8-8 mode (24 or 32) */
+		 
 		WHDR(cinfo, 0xc5);
 	}
 
-	/******************************************************
-	 *
-	 * unknown/unsupported bpp
-	 *
-	 */
+	 
 
 	else
 		dev_err(info->device,
@@ -1206,12 +1122,12 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	vga_wcrt(regbase, VGA_CRTC_OFFSET, pitch & 0xff);
 	tmp = 0x22;
 	if (pitch & 0x100)
-		tmp |= 0x10;	/* offset overflow bit */
+		tmp |= 0x10;	 
 
-	/* screen start addr #16-18, fastpagemode cycles */
+	 
 	vga_wcrt(regbase, CL_CRT1B, tmp);
 
-	/* screen start address bit 19 */
+	 
 	if (cirrusfb_board_info[cinfo->btype].scrn_start_bit19)
 		vga_wcrt(regbase, CL_CRT1D, (pitch >> 9) & 1);
 
@@ -1234,27 +1150,24 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 		dev_dbg(info->device, "CRT1e: %d\n", tmp);
 	}
 
-	/* pixel panning */
+	 
 	vga_wattr(regbase, CL_AR33, 0);
 
-	/* [ EGS: SetOffset(); ] */
-	/* From SetOffset(): Turn on VideoEnable bit in Attribute controller */
+	 
+	 
 	AttrOn(cinfo);
 
 	if (is_laguna(cinfo)) {
-		/* no tiles */
+		 
 		fb_writew(control | 0x1000, cinfo->laguna_mmio + 0x402);
 		fb_writew(format, cinfo->laguna_mmio + 0xc0);
 		fb_writew(threshold, cinfo->laguna_mmio + 0xea);
 	}
-	/* finally, turn on everything - turn off "FullBandwidth" bit */
-	/* also, set "DotClock%2" bit where requested */
+	 
+	 
 	tmp = 0x01;
 
-/*** FB_VMODE_CLOCK_HALVE in linux/fb.h not defined anymore ?
-    if (var->vmode & FB_VMODE_CLOCK_HALVE)
-	tmp |= 0x08;
-*/
+ 
 
 	vga_wseq(regbase, VGA_SEQ_CLOCK_MODE, tmp);
 	dev_dbg(info->device, "CL_SEQR1: %d\n", tmp);
@@ -1266,8 +1179,7 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 	return 0;
 }
 
-/* for some reason incomprehensible to me, cirrusfb requires that you write
- * the registers twice for the settings to take..grr. -dte */
+ 
 static int cirrusfb_set_par(struct fb_info *info)
 {
 	cirrusfb_set_par_foo(info);
@@ -1306,11 +1218,7 @@ static int cirrusfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 
 }
 
-/*************************************************************************
-	cirrusfb_pan_display()
-
-	performs display panning - provided hardware permits this
-**************************************************************************/
+ 
 static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 				struct fb_info *info)
 {
@@ -1319,8 +1227,8 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 	unsigned char tmp, xpix;
 	struct cirrusfb_info *cinfo = info->par;
 
-	/* no range checks for xoffset and yoffset,   */
-	/* as fb_pan_display has already done this */
+	 
+	 
 	if (var->vmode & FB_VMODE_YWRAP)
 		return -EINVAL;
 
@@ -1329,7 +1237,7 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 	base = var->yoffset * info->fix.line_length + xoffset;
 
 	if (info->var.bits_per_pixel == 1) {
-		/* base is already correct */
+		 
 		xpix = (unsigned char) (var->xoffset % 8);
 	} else {
 		base /= 4;
@@ -1339,13 +1247,13 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 	if (!is_laguna(cinfo))
 		cirrusfb_WaitBLT(cinfo->regbase);
 
-	/* lower 8 + 8 bits of screen start address */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_START_LO, base & 0xff);
 	vga_wcrt(cinfo->regbase, VGA_CRTC_START_HI, (base >> 8) & 0xff);
 
-	/* 0xf2 is %11110010, exclude tmp bits */
+	 
 	tmp = vga_rcrt(cinfo->regbase, CL_CRT1B) & 0xf2;
-	/* construct bits 16, 17 and 18 of screen start address */
+	 
 	if (base & 0x10000)
 		tmp |= 0x01;
 	if (base & 0x20000)
@@ -1355,7 +1263,7 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 
 	vga_wcrt(cinfo->regbase, CL_CRT1B, tmp);
 
-	/* construct bit 19 of screen start address */
+	 
 	if (cirrusfb_board_info[cinfo->btype].scrn_start_bit19) {
 		tmp = vga_rcrt(cinfo->regbase, CL_CRT1D);
 		if (is_laguna(cinfo))
@@ -1365,10 +1273,7 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 		vga_wcrt(cinfo->regbase, CL_CRT1D, tmp);
 	}
 
-	/* write pixel panning value to AR33; this does not quite work in 8bpp
-	 *
-	 * ### Piccolo..? Will this work?
-	 */
+	 
 	if (info->var.bits_per_pixel == 1)
 		vga_wattr(cinfo->regbase, CL_AR33, xpix);
 
@@ -1377,17 +1282,7 @@ static int cirrusfb_pan_display(struct fb_var_screeninfo *var,
 
 static int cirrusfb_blank(int blank_mode, struct fb_info *info)
 {
-	/*
-	 * Blank the screen if blank_mode != 0, else unblank. If blank == NULL
-	 * then the caller blanks by setting the CLUT (Color Look Up Table)
-	 * to all black. Return 0 if blanking succeeded, != 0 if un-/blanking
-	 * failed due to e.g. a video mode which doesn't support it.
-	 * Implements VESA suspend and powerdown modes on hardware that
-	 * supports disabling hsync/vsync:
-	 *   blank_mode == 2: suspend vsync
-	 *   blank_mode == 3: suspend hsync
-	 *   blank_mode == 4: powerdown
-	 */
+	 
 	unsigned char val;
 	struct cirrusfb_info *cinfo = info->par;
 	int current_mode = cinfo->blank_mode;
@@ -1400,13 +1295,13 @@ static int cirrusfb_blank(int blank_mode, struct fb_info *info)
 		return 0;
 	}
 
-	/* Undo current */
+	 
 	if (current_mode == FB_BLANK_NORMAL ||
 	    current_mode == FB_BLANK_UNBLANK)
-		/* clear "FullBandwidth" bit */
+		 
 		val = 0;
 	else
-		/* set "FullBandwidth" bit */
+		 
 		val = 0x20;
 
 	val |= vga_rseq(cinfo->regbase, VGA_SEQ_CLOCK_MODE) & 0xdf;
@@ -1436,13 +1331,13 @@ static int cirrusfb_blank(int blank_mode, struct fb_info *info)
 	cinfo->blank_mode = blank_mode;
 	dev_dbg(info->device, "EXIT, returning 0\n");
 
-	/* Let fbcon do a soft blank for us */
+	 
 	return (blank_mode == FB_BLANK_NORMAL) ? 1 : 0;
 }
 
-/**** END   Hardware specific Routines **************************************/
-/****************************************************************************/
-/**** BEGIN Internal Routines ***********************************************/
+ 
+ 
+ 
 
 static void init_vgachip(struct fb_info *info)
 {
@@ -1453,7 +1348,7 @@ static void init_vgachip(struct fb_info *info)
 
 	bi = &cirrusfb_board_info[cinfo->btype];
 
-	/* reset board globally */
+	 
 	switch (cinfo->btype) {
 	case BT_PICCOLO:
 		WSFR(cinfo, 0x01);
@@ -1473,24 +1368,24 @@ static void init_vgachip(struct fb_info *info)
 		udelay(500);
 		break;
 	case BT_PICASSO4:
-		/* disable flickerfixer */
+		 
 		vga_wcrt(cinfo->regbase, CL_CRT51, 0x00);
 		mdelay(100);
-		/* mode */
+		 
 		vga_wgfx(cinfo->regbase, CL_GR31, 0x00);
 		fallthrough;
 	case BT_GD5480:
-		/* from Klaus' NetBSD driver: */
+		 
 		vga_wgfx(cinfo->regbase, CL_GR2F, 0x00);
 		fallthrough;
 	case BT_ALPINE:
-		/* put blitter into 542x compat */
+		 
 		vga_wgfx(cinfo->regbase, CL_GR33, 0x00);
 		break;
 
 	case BT_LAGUNA:
 	case BT_LAGUNAB:
-		/* Nothing to do to reset the board. */
+		 
 		break;
 
 	default:
@@ -1498,30 +1393,30 @@ static void init_vgachip(struct fb_info *info)
 		break;
 	}
 
-	/* make sure RAM size set by this point */
+	 
 	assert(info->screen_size > 0);
 
-	/* the P4 is not fully initialized here; I rely on it having been */
-	/* inited under AmigaOS already, which seems to work just fine    */
-	/* (Klaus advised to do it this way)			      */
+	 
+	 
+	 
 
 	if (cinfo->btype != BT_PICASSO4) {
-		WGen(cinfo, CL_VSSM, 0x10);	/* EGS: 0x16 */
+		WGen(cinfo, CL_VSSM, 0x10);	 
 		WGen(cinfo, CL_POS102, 0x01);
-		WGen(cinfo, CL_VSSM, 0x08);	/* EGS: 0x0e */
+		WGen(cinfo, CL_VSSM, 0x08);	 
 
 		if (cinfo->btype != BT_SD64)
 			WGen(cinfo, CL_VSSM2, 0x01);
 
-		/* reset sequencer logic */
+		 
 		vga_wseq(cinfo->regbase, VGA_SEQ_RESET, 0x03);
 
-		/* FullBandwidth (video off) and 8/9 dot clock */
+		 
 		vga_wseq(cinfo->regbase, VGA_SEQ_CLOCK_MODE, 0x21);
 
-		/* "magic cookie" - doesn't make any sense to me.. */
-/*      vga_wgfx(cinfo->regbase, CL_GRA, 0xce);   */
-		/* unlock all extension registers */
+		 
+ 
+		 
 		vga_wseq(cinfo->regbase, CL_SEQR6, 0x12);
 
 		switch (cinfo->btype) {
@@ -1543,91 +1438,89 @@ static void init_vgachip(struct fb_info *info)
 			break;
 		}
 	}
-	/* plane mask: nothing */
+	 
 	vga_wseq(cinfo->regbase, VGA_SEQ_PLANE_WRITE, 0xff);
-	/* character map select: doesn't even matter in gx mode */
+	 
 	vga_wseq(cinfo->regbase, VGA_SEQ_CHARACTER_MAP, 0x00);
-	/* memory mode: chain4, ext. memory */
+	 
 	vga_wseq(cinfo->regbase, VGA_SEQ_MEMORY_MODE, 0x0a);
 
-	/* controller-internal base address of video memory */
+	 
 	if (bi->init_sr07)
 		vga_wseq(cinfo->regbase, CL_SEQR7, bi->sr07);
 
-	/*  vga_wseq(cinfo->regbase, CL_SEQR8, 0x00); */
-	/* EEPROM control: shouldn't be necessary to write to this at all.. */
+	 
+	 
 
-	/* graphics cursor X position (incomplete; position gives rem. 3 bits */
+	 
 	vga_wseq(cinfo->regbase, CL_SEQR10, 0x00);
-	/* graphics cursor Y position (..."... ) */
+	 
 	vga_wseq(cinfo->regbase, CL_SEQR11, 0x00);
-	/* graphics cursor attributes */
+	 
 	vga_wseq(cinfo->regbase, CL_SEQR12, 0x00);
-	/* graphics cursor pattern address */
+	 
 	vga_wseq(cinfo->regbase, CL_SEQR13, 0x00);
 
-	/* writing these on a P4 might give problems..  */
+	 
 	if (cinfo->btype != BT_PICASSO4) {
-		/* configuration readback and ext. color */
+		 
 		vga_wseq(cinfo->regbase, CL_SEQR17, 0x00);
-		/* signature generator */
+		 
 		vga_wseq(cinfo->regbase, CL_SEQR18, 0x02);
 	}
 
-	/* Screen A preset row scan: none */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_PRESET_ROW, 0x00);
-	/* Text cursor start: disable text cursor */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_CURSOR_START, 0x20);
-	/* Text cursor end: - */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_CURSOR_END, 0x00);
-	/* text cursor location high: 0 */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_CURSOR_HI, 0x00);
-	/* text cursor location low: 0 */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_CURSOR_LO, 0x00);
 
-	/* Underline Row scanline: - */
+	 
 	vga_wcrt(cinfo->regbase, VGA_CRTC_UNDERLINE, 0x00);
-	/* ### add 0x40 for text modes with > 30 MHz pixclock */
-	/* ext. display controls: ext.adr. wrap */
+	 
+	 
 	vga_wcrt(cinfo->regbase, CL_CRT1B, 0x02);
 
-	/* Set/Reset registers: - */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_SR_VALUE, 0x00);
-	/* Set/Reset enable: - */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_SR_ENABLE, 0x00);
-	/* Color Compare: - */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_COMPARE_VALUE, 0x00);
-	/* Data Rotate: - */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_DATA_ROTATE, 0x00);
-	/* Read Map Select: - */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_PLANE_READ, 0x00);
-	/* Mode: conf. for 16/4/2 color mode, no odd/even, read/write mode 0 */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_MODE, 0x00);
-	/* Miscellaneous: memory map base address, graphics mode */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_MISC, 0x01);
-	/* Color Don't care: involve all planes */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_COMPARE_MASK, 0x0f);
-	/* Bit Mask: no mask at all */
+	 
 	vga_wgfx(cinfo->regbase, VGA_GFX_BIT_MASK, 0xff);
 
 	if (cinfo->btype == BT_ALPINE || cinfo->btype == BT_SD64 ||
 	    is_laguna(cinfo))
-		/* (5434 can't have bit 3 set for bitblt) */
+		 
 		vga_wgfx(cinfo->regbase, CL_GRB, 0x20);
 	else
-	/* Graphics controller mode extensions: finer granularity,
-	 * 8byte data latches
-	 */
+	 
 		vga_wgfx(cinfo->regbase, CL_GRB, 0x28);
 
-	vga_wgfx(cinfo->regbase, CL_GRC, 0xff);	/* Color Key compare: - */
-	vga_wgfx(cinfo->regbase, CL_GRD, 0x00);	/* Color Key compare mask: - */
-	vga_wgfx(cinfo->regbase, CL_GRE, 0x00);	/* Miscellaneous control: - */
-	/* Background color byte 1: - */
-	/*  vga_wgfx (cinfo->regbase, CL_GR10, 0x00); */
-	/*  vga_wgfx (cinfo->regbase, CL_GR11, 0x00); */
+	vga_wgfx(cinfo->regbase, CL_GRC, 0xff);	 
+	vga_wgfx(cinfo->regbase, CL_GRD, 0x00);	 
+	vga_wgfx(cinfo->regbase, CL_GRE, 0x00);	 
+	 
+	 
+	 
 
-	/* Attribute Controller palette registers: "identity mapping" */
+	 
 	vga_wattr(cinfo->regbase, VGA_ATC_PALETTE0, 0x00);
 	vga_wattr(cinfo->regbase, VGA_ATC_PALETTE1, 0x01);
 	vga_wattr(cinfo->regbase, VGA_ATC_PALETTE2, 0x02);
@@ -1645,38 +1538,38 @@ static void init_vgachip(struct fb_info *info)
 	vga_wattr(cinfo->regbase, VGA_ATC_PALETTEE, 0x0e);
 	vga_wattr(cinfo->regbase, VGA_ATC_PALETTEF, 0x0f);
 
-	/* Attribute Controller mode: graphics mode */
+	 
 	vga_wattr(cinfo->regbase, VGA_ATC_MODE, 0x01);
-	/* Overscan color reg.: reg. 0 */
+	 
 	vga_wattr(cinfo->regbase, VGA_ATC_OVERSCAN, 0x00);
-	/* Color Plane enable: Enable all 4 planes */
+	 
 	vga_wattr(cinfo->regbase, VGA_ATC_PLANE_ENABLE, 0x0f);
-	/* Color Select: - */
+	 
 	vga_wattr(cinfo->regbase, VGA_ATC_COLOR_PAGE, 0x00);
 
-	WGen(cinfo, VGA_PEL_MSK, 0xff);	/* Pixel mask: no mask */
+	WGen(cinfo, VGA_PEL_MSK, 0xff);	 
 
-	/* BLT Start/status: Blitter reset */
+	 
 	vga_wgfx(cinfo->regbase, CL_GR31, 0x04);
-	/* - " -	   : "end-of-reset" */
+	 
 	vga_wgfx(cinfo->regbase, CL_GR31, 0x00);
 
-	/* misc... */
-	WHDR(cinfo, 0);	/* Hidden DAC register: - */
+	 
+	WHDR(cinfo, 0);	 
 	return;
 }
 
 static void switch_monitor(struct cirrusfb_info *cinfo, int on)
 {
-#ifdef CONFIG_ZORRO /* only works on Zorro boards */
-	static int IsOn = 0;	/* XXX not ok for multiple boards */
+#ifdef CONFIG_ZORRO  
+	static int IsOn = 0;	 
 
 	if (cinfo->btype == BT_PICASSO4)
-		return;		/* nothing to switch */
+		return;		 
 	if (cinfo->btype == BT_ALPINE)
-		return;		/* nothing to switch */
+		return;		 
 	if (cinfo->btype == BT_GD5480)
-		return;		/* nothing to switch */
+		return;		 
 	if (cinfo->btype == BT_PICASSO) {
 		if ((on && !IsOn) || (!on && IsOn))
 			WSFR(cinfo, 0xff);
@@ -1693,7 +1586,7 @@ static void switch_monitor(struct cirrusfb_info *cinfo, int on)
 		case BT_SPECTRUM:
 			WSFR(cinfo, 0x6f);
 			break;
-		default: /* do nothing */ break;
+		default:   break;
 		}
 	} else {
 		switch (cinfo->btype) {
@@ -1706,16 +1599,16 @@ static void switch_monitor(struct cirrusfb_info *cinfo, int on)
 		case BT_SPECTRUM:
 			WSFR(cinfo, 0x4f);
 			break;
-		default: /* do nothing */
+		default:  
 			break;
 		}
 	}
-#endif /* CONFIG_ZORRO */
+#endif  
 }
 
-/******************************************/
-/* Linux 2.6-style  accelerated functions */
-/******************************************/
+ 
+ 
+ 
 
 static int cirrusfb_sync(struct fb_info *info)
 {
@@ -1816,7 +1709,7 @@ static void cirrusfb_imageblit(struct fb_info *info,
 
 	if (info->state != FBINFO_STATE_RUNNING)
 		return;
-	/* Alpine/SD64 does not work at 24bpp ??? */
+	 
 	if (info->flags & FBINFO_HWACCEL_DISABLED || image->depth != 1)
 		cfb_imageblit(info, image);
 	else if ((cinfo->btype == BT_ALPINE || cinfo->btype == BT_SD64) &&
@@ -1835,7 +1728,7 @@ static void cirrusfb_imageblit(struct fb_info *info,
 			bg = ((u32 *)(info->pseudo_palette))[image->bg_color];
 		}
 		if (info->var.bits_per_pixel == 24) {
-			/* clear background first */
+			 
 			cirrusfb_RectFill(cinfo->regbase,
 					  info->var.bits_per_pixel,
 					  (image->dx * m) / 8, image->dy,
@@ -1857,10 +1750,7 @@ static void cirrusfb_imageblit(struct fb_info *info,
 #ifdef CONFIG_PCI
 static int release_io_ports;
 
-/* Pulled the logic from XFree86 Cirrus driver to get the memory size,
- * based on the DRAM bandwidth bit and DRAM bank switching bit.  This
- * works with 1MB, 2MB and 4MB configurations (which the Motorola boards
- * seem to have. */
+ 
 static unsigned int cirrusfb_get_memsize(struct fb_info *info,
 					 u8 __iomem *regbase)
 {
@@ -1880,9 +1770,7 @@ static unsigned int cirrusfb_get_memsize(struct fb_info *info,
 		case 0x10:
 			mem = 1024 * 1024;
 			break;
-		/* 64-bit DRAM data bus width; assume 2MB.
-		 * Also indicates 2MB memory on the 5430.
-		 */
+		 
 		case 0x18:
 			mem = 2048 * 1024;
 			break;
@@ -1890,14 +1778,12 @@ static unsigned int cirrusfb_get_memsize(struct fb_info *info,
 			dev_warn(info->device, "Unknown memory size!\n");
 			mem = 1024 * 1024;
 		}
-		/* If DRAM bank switching is enabled, there must be
-		 * twice as much memory installed. (4MB on the 5434)
-		 */
+		 
 		if (cinfo->btype != BT_ALPINE && (SRF & 0x80) != 0)
 			mem *= 2;
 	}
 
-	/* TODO: Handling of GD5446/5480 (see XF86 sources ...) */
+	 
 	return mem;
 }
 
@@ -1911,7 +1797,7 @@ static void get_pci_addrs(const struct pci_dev *pdev,
 	*display = 0;
 	*registers = 0;
 
-	/* This is a best-guess for now */
+	 
 
 	if (pci_resource_flags(pdev, 0) & IORESOURCE_IO) {
 		*display = pci_resource_start(pdev, 1);
@@ -1932,14 +1818,14 @@ static void cirrusfb_pci_unmap(struct fb_info *info)
 	if (cinfo->laguna_mmio == NULL)
 		iounmap(cinfo->laguna_mmio);
 	iounmap(info->screen_base);
-#if 0 /* if system didn't claim this region, we would... */
+#if 0  
 	release_mem_region(0xA0000, 65535);
 #endif
 	if (release_io_ports)
 		release_region(0x3C0, 32);
 	pci_release_regions(pdev);
 }
-#endif /* CONFIG_PCI */
+#endif  
 
 #ifdef CONFIG_ZORRO
 static void cirrusfb_zorro_unmap(struct fb_info *info)
@@ -1954,9 +1840,9 @@ static void cirrusfb_zorro_unmap(struct fb_info *info)
 
 	zorro_release_device(zdev);
 }
-#endif /* CONFIG_ZORRO */
+#endif  
 
-/* function table of the above functions */
+ 
 static const struct fb_ops cirrusfb_ops = {
 	.owner		= THIS_MODULE,
 	.fb_open	= cirrusfb_open,
@@ -1998,12 +1884,12 @@ static int cirrusfb_set_fbinfo(struct fb_info *info)
 			info->screen_base += 2 * MB_;
 	}
 
-	/* Fill fix common fields */
+	 
 	strscpy(info->fix.id, cirrusfb_board_info[cinfo->btype].name,
 		sizeof(info->fix.id));
 
-	/* monochrome: only 1 memory plane */
-	/* 8 bit and above: Use whole memory area */
+	 
+	 
 	info->fix.smem_len   = info->screen_size;
 	if (var->bits_per_pixel == 1)
 		info->fix.smem_len /= 4;
@@ -2012,7 +1898,7 @@ static int cirrusfb_set_fbinfo(struct fb_info *info)
 	info->fix.ypanstep   = 1;
 	info->fix.ywrapstep  = 0;
 
-	/* FIXME: map region at 0xB8000 if available, fill in here */
+	 
 	info->fix.mmio_len   = 0;
 
 	fb_alloc_cmap(&info->cmap, 256, 0);
@@ -2025,10 +1911,10 @@ static int cirrusfb_register(struct fb_info *info)
 	struct cirrusfb_info *cinfo = info->par;
 	int err;
 
-	/* sanity checks */
+	 
 	assert(cinfo->btype != BT_NONE);
 
-	/* set all the vital stuff */
+	 
 	cirrusfb_set_fbinfo(info);
 
 	dev_dbg(info->device, "(RAM start set to: 0x%p)\n", info->screen_base);
@@ -2044,7 +1930,7 @@ static int cirrusfb_register(struct fb_info *info)
 
 	err = cirrusfb_check_var(&info->var, info);
 	if (err < 0) {
-		/* should never happen */
+		 
 		dev_dbg(info->device,
 			"choking on default var... umm, no good.\n");
 		goto err_dealloc_cmap;
@@ -2113,7 +1999,7 @@ static int cirrusfb_pci_register(struct pci_dev *pdev,
 	dev_dbg(info->device,
 		"Attempt to get PCI info for Cirrus Graphics Card\n");
 	get_pci_addrs(pdev, &board_addr, &info->fix.mmio_start);
-	/* FIXME: this forces VGA.  alternatives? */
+	 
 	cinfo->regbase = NULL;
 	cinfo->laguna_mmio = ioremap(info->fix.mmio_start, 0x1000);
 
@@ -2129,7 +2015,7 @@ static int cirrusfb_pci_register(struct pci_dev *pdev,
 			board_addr);
 		goto err_release_fb;
 	}
-#if 0 /* if the system didn't claim this region, we would... */
+#if 0  
 	if (!request_mem_region(0xA0000, 65535, "cirrusfb")) {
 		dev_err(info->device, "cannot reserve region 0x%lx, abort\n",
 			0xA0000L);
@@ -2189,7 +2075,7 @@ static struct pci_driver cirrusfb_pci_driver = {
 	.probe		= cirrusfb_pci_register,
 	.remove		= cirrusfb_pci_unregister,
 };
-#endif /* CONFIG_PCI */
+#endif  
 
 #ifdef CONFIG_ZORRO
 static int cirrusfb_zorro_register(struct zorro_dev *z,
@@ -2213,7 +2099,7 @@ static int cirrusfb_zorro_register(struct zorro_dev *z,
 	if (ramsize) {
 		rambase = zorro_resource_start(z) + zcl->ramoffset;
 		if (zorro_resource_len(z) == 64 * MB_) {
-			/* Quirk for 64 MiB Picasso IV */
+			 
 			rambase += zcl->ramoffset;
 		}
 	} else {
@@ -2276,7 +2162,7 @@ static int cirrusfb_zorro_register(struct zorro_dev *z,
 		 "Cirrus Logic chipset on Zorro bus, RAM (%lu MiB) at 0x%lx\n",
 		 ramsize / MB_, rambase);
 
-	/* MCLK select etc. */
+	 
 	if (cirrusfb_board_info[btype].init_sr1f)
 		vga_wseq(cinfo->regbase, CL_SEQR1F,
 			 cirrusfb_board_info[btype].sr1f);
@@ -2319,7 +2205,7 @@ static struct zorro_driver cirrusfb_zorro_driver = {
 	.probe		= cirrusfb_zorro_register,
 	.remove		= cirrusfb_zorro_unregister,
 };
-#endif /* CONFIG_ZORRO */
+#endif  
 
 #ifndef MODULE
 static int __init cirrusfb_setup(char *options)
@@ -2344,9 +2230,7 @@ static int __init cirrusfb_setup(char *options)
 }
 #endif
 
-    /*
-     *  Modularization
-     */
+     
 
 MODULE_AUTHOR("Copyright 1999,2000 Jeff Garzik <jgarzik@pobox.com>");
 MODULE_DESCRIPTION("Accelerated FBDev driver for Cirrus Logic chips");
@@ -2399,23 +2283,22 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
 module_exit(cirrusfb_exit);
 #endif
 
-/**********************************************************************/
-/* about the following functions - I have used the same names for the */
-/* functions as Markus Wild did in his Retina driver for NetBSD as    */
-/* they just made sense for this purpose. Apart from that, I wrote    */
-/* these functions myself.					    */
-/**********************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
 
-/*** WGen() - write into one of the external/general registers ***/
+ 
 static void WGen(const struct cirrusfb_info *cinfo,
 		  int regnum, unsigned char val)
 {
 	unsigned long regofs = 0;
 
 	if (cinfo->btype == BT_PICASSO) {
-		/* Picasso II specific hack */
-/*	      if (regnum == VGA_PEL_IR || regnum == VGA_PEL_D ||
-		  regnum == CL_VSSM2) */
+		 
+ 
 		if (regnum == VGA_PEL_IR || regnum == VGA_PEL_D)
 			regofs = 0xfff;
 	}
@@ -2423,15 +2306,14 @@ static void WGen(const struct cirrusfb_info *cinfo,
 	vga_w(cinfo->regbase, regofs + regnum, val);
 }
 
-/*** RGen() - read out one of the external/general registers ***/
+ 
 static unsigned char RGen(const struct cirrusfb_info *cinfo, int regnum)
 {
 	unsigned long regofs = 0;
 
 	if (cinfo->btype == BT_PICASSO) {
-		/* Picasso II specific hack */
-/*	      if (regnum == VGA_PEL_IR || regnum == VGA_PEL_D ||
-		  regnum == CL_VSSM2) */
+		 
+ 
 		if (regnum == VGA_PEL_IR || regnum == VGA_PEL_D)
 			regofs = 0xfff;
 	}
@@ -2439,45 +2321,41 @@ static unsigned char RGen(const struct cirrusfb_info *cinfo, int regnum)
 	return vga_r(cinfo->regbase, regofs + regnum);
 }
 
-/*** AttrOn() - turn on VideoEnable for Attribute controller ***/
+ 
 static void AttrOn(const struct cirrusfb_info *cinfo)
 {
 	assert(cinfo != NULL);
 
 	if (vga_rcrt(cinfo->regbase, CL_CRT24) & 0x80) {
-		/* if we're just in "write value" mode, write back the */
-		/* same value as before to not modify anything */
+		 
+		 
 		vga_w(cinfo->regbase, VGA_ATT_IW,
 		      vga_r(cinfo->regbase, VGA_ATT_R));
 	}
-	/* turn on video bit */
-/*      vga_w(cinfo->regbase, VGA_ATT_IW, 0x20); */
+	 
+ 
 	vga_w(cinfo->regbase, VGA_ATT_IW, 0x33);
 
-	/* dummy write on Reg0 to be on "write index" mode next time */
+	 
 	vga_w(cinfo->regbase, VGA_ATT_IW, 0x00);
 }
 
-/*** WHDR() - write into the Hidden DAC register ***/
-/* as the HDR is the only extension register that requires special treatment
- * (the other extension registers are accessible just like the "ordinary"
- * registers of their functional group) here is a specialized routine for
- * accessing the HDR
- */
+ 
+ 
 static void WHDR(const struct cirrusfb_info *cinfo, unsigned char val)
 {
 	if (is_laguna(cinfo))
 		return;
 	if (cinfo->btype == BT_PICASSO) {
-		/* Klaus' hint for correct access to HDR on some boards */
-		/* first write 0 to pixel mask (3c6) */
+		 
+		 
 		WGen(cinfo, VGA_PEL_MSK, 0x00);
 		udelay(200);
-		/* next read dummy from pixel address (3c8) */
+		 
 		RGen(cinfo, VGA_PEL_IW);
 		udelay(200);
 	}
-	/* now do the usual stuff to access the HDR */
+	 
 
 	RGen(cinfo, VGA_PEL_MSK);
 	udelay(200);
@@ -2492,18 +2370,18 @@ static void WHDR(const struct cirrusfb_info *cinfo, unsigned char val)
 	udelay(200);
 
 	if (cinfo->btype == BT_PICASSO) {
-		/* now first reset HDR access counter */
+		 
 		RGen(cinfo, VGA_PEL_IW);
 		udelay(200);
 
-		/* and at the end, restore the mask value */
-		/* ## is this mask always 0xff? */
+		 
+		 
 		WGen(cinfo, VGA_PEL_MSK, 0xff);
 		udelay(200);
 	}
 }
 
-/*** WSFR() - write to the "special function register" (SFR) ***/
+ 
 static void WSFR(struct cirrusfb_info *cinfo, unsigned char val)
 {
 #ifdef CONFIG_ZORRO
@@ -2513,31 +2391,31 @@ static void WSFR(struct cirrusfb_info *cinfo, unsigned char val)
 #endif
 }
 
-/* The Picasso has a second register for switching the monitor bit */
+ 
 static void WSFR2(struct cirrusfb_info *cinfo, unsigned char val)
 {
 #ifdef CONFIG_ZORRO
-	/* writing an arbitrary value to this one causes the monitor switcher */
-	/* to flip to Amiga display */
+	 
+	 
 	assert(cinfo->regbase != NULL);
 	cinfo->SFR = val;
 	z_writeb(val, cinfo->regbase + 0x9000);
 #endif
 }
 
-/*** WClut - set CLUT entry (range: 0..63) ***/
+ 
 static void WClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned char red,
 	    unsigned char green, unsigned char blue)
 {
 	unsigned int data = VGA_PEL_D;
 
-	/* address write mode register is not translated.. */
+	 
 	vga_w(cinfo->regbase, VGA_PEL_IW, regnum);
 
 	if (cinfo->btype == BT_PICASSO || cinfo->btype == BT_PICASSO4 ||
 	    cinfo->btype == BT_ALPINE || cinfo->btype == BT_GD5480 ||
 	    cinfo->btype == BT_SD64 || is_laguna(cinfo)) {
-		/* but DAC data register IS, at least for Picasso II */
+		 
 		if (cinfo->btype == BT_PICASSO)
 			data += 0xfff;
 		vga_w(cinfo->regbase, data, red);
@@ -2551,7 +2429,7 @@ static void WClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned ch
 }
 
 #if 0
-/*** RClut - read CLUT entry (range 0..63) ***/
+ 
 static void RClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned char *red,
 	    unsigned char *green, unsigned char *blue)
 {
@@ -2574,24 +2452,16 @@ static void RClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned ch
 }
 #endif
 
-/*******************************************************************
-	cirrusfb_WaitBLT()
+ 
 
-	Wait for the BitBLT engine to complete a possible earlier job
-*********************************************************************/
-
-/* FIXME: use interrupts instead */
+ 
 static void cirrusfb_WaitBLT(u8 __iomem *regbase)
 {
 	while (vga_rgfx(regbase, CL_GR31) & 0x08)
 		cpu_relax();
 }
 
-/*******************************************************************
-	cirrusfb_BitBLT()
-
-	perform accelerated "scrolling"
-********************************************************************/
+ 
 
 static void cirrusfb_set_blitter(u8 __iomem *regbase,
 			    u_short nwidth, u_short nheight,
@@ -2599,59 +2469,55 @@ static void cirrusfb_set_blitter(u8 __iomem *regbase,
 			    u_short bltmode, u_short line_length)
 
 {
-	/* pitch: set to line_length */
-	/* dest pitch low */
+	 
+	 
 	vga_wgfx(regbase, CL_GR24, line_length & 0xff);
-	/* dest pitch hi */
+	 
 	vga_wgfx(regbase, CL_GR25, line_length >> 8);
-	/* source pitch low */
+	 
 	vga_wgfx(regbase, CL_GR26, line_length & 0xff);
-	/* source pitch hi */
+	 
 	vga_wgfx(regbase, CL_GR27, line_length >> 8);
 
-	/* BLT width: actual number of pixels - 1 */
-	/* BLT width low */
+	 
+	 
 	vga_wgfx(regbase, CL_GR20, nwidth & 0xff);
-	/* BLT width hi */
+	 
 	vga_wgfx(regbase, CL_GR21, nwidth >> 8);
 
-	/* BLT height: actual number of lines -1 */
-	/* BLT height low */
+	 
+	 
 	vga_wgfx(regbase, CL_GR22, nheight & 0xff);
-	/* BLT width hi */
+	 
 	vga_wgfx(regbase, CL_GR23, nheight >> 8);
 
-	/* BLT destination */
-	/* BLT dest low */
+	 
+	 
 	vga_wgfx(regbase, CL_GR28, (u_char) (ndest & 0xff));
-	/* BLT dest mid */
+	 
 	vga_wgfx(regbase, CL_GR29, (u_char) (ndest >> 8));
-	/* BLT dest hi */
+	 
 	vga_wgfx(regbase, CL_GR2A, (u_char) (ndest >> 16));
 
-	/* BLT source */
-	/* BLT src low */
+	 
+	 
 	vga_wgfx(regbase, CL_GR2C, (u_char) (nsrc & 0xff));
-	/* BLT src mid */
+	 
 	vga_wgfx(regbase, CL_GR2D, (u_char) (nsrc >> 8));
-	/* BLT src hi */
+	 
 	vga_wgfx(regbase, CL_GR2E, (u_char) (nsrc >> 16));
 
-	/* BLT mode */
-	vga_wgfx(regbase, CL_GR30, bltmode);	/* BLT mode */
+	 
+	vga_wgfx(regbase, CL_GR30, bltmode);	 
 
-	/* BLT ROP: SrcCopy */
-	vga_wgfx(regbase, CL_GR32, 0x0d);	/* BLT ROP */
+	 
+	vga_wgfx(regbase, CL_GR32, 0x0d);	 
 
-	/* and finally: GO! */
-	vga_wgfx(regbase, CL_GR31, 0x02);	/* BLT Start/status */
+	 
+	vga_wgfx(regbase, CL_GR31, 0x02);	 
 }
 
-/*******************************************************************
-	cirrusfb_BitBLT()
-
-	perform accelerated "scrolling"
-********************************************************************/
+ 
 
 static void cirrusfb_BitBLT(u8 __iomem *regbase, int bits_per_pixel,
 			    u_short curx, u_short cury,
@@ -2665,22 +2531,20 @@ static void cirrusfb_BitBLT(u8 __iomem *regbase, int bits_per_pixel,
 	u_char bltmode;
 
 	bltmode = 0x00;
-	/* if source adr < dest addr, do the Blt backwards */
+	 
 	if (cury <= desty) {
 		if (cury == desty) {
-			/* if src and dest are on the same line, check x */
+			 
 			if (curx < destx)
 				bltmode |= 0x01;
 		} else
 			bltmode |= 0x01;
 	}
-	/* standard case: forward blitting */
+	 
 	nsrc = (cury * line_length) + curx;
 	ndest = (desty * line_length) + destx;
 	if (bltmode) {
-		/* this means start addresses are at the end,
-		 * counting backwards
-		 */
+		 
 		nsrc += nheight * line_length + nwidth;
 		ndest += nheight * line_length + nwidth;
 	}
@@ -2691,11 +2555,7 @@ static void cirrusfb_BitBLT(u8 __iomem *regbase, int bits_per_pixel,
 			    nsrc, ndest, bltmode, line_length);
 }
 
-/*******************************************************************
-	cirrusfb_RectFill()
-
-	perform accelerated rectangle fill
-********************************************************************/
+ 
 
 static void cirrusfb_RectFill(u8 __iomem *regbase, int bits_per_pixel,
 		     u_short x, u_short y, u_short width, u_short height,
@@ -2707,8 +2567,8 @@ static void cirrusfb_RectFill(u8 __iomem *regbase, int bits_per_pixel,
 
 	cirrusfb_WaitBLT(regbase);
 
-	/* This is a ColorExpand Blt, using the */
-	/* same color for foreground and background */
+	 
+	 
 	vga_wgfx(regbase, VGA_GFX_SR_VALUE, bg_color);
 	vga_wgfx(regbase, VGA_GFX_SR_ENABLE, fg_color);
 
@@ -2732,10 +2592,7 @@ static void cirrusfb_RectFill(u8 __iomem *regbase, int bits_per_pixel,
 			    0, ndest, op | blitmode, line_length);
 }
 
-/**************************************************************************
- * bestclock() - determine closest possible clock lower(?) than the
- * desired pixel clock
- **************************************************************************/
+ 
 static void bestclock(long freq, int *nom, int *den, int *div)
 {
 	int n, d;
@@ -2792,25 +2649,11 @@ static void bestclock(long freq, int *nom, int *den, int *div)
 	}
 }
 
-/* -------------------------------------------------------------------------
- *
- * debugging functions
- *
- * -------------------------------------------------------------------------
- */
+ 
 
 #ifdef CIRRUSFB_DEBUG
 
-/*
- * cirrusfb_dbg_print_regs
- * @regbase: If using newmmio, the newmmio base address, otherwise %NULL
- * @reg_class: type of registers to read: %CRT, or %SEQ
- *
- * DESCRIPTION:
- * Dumps the given list of VGA CRTC registers.  If @base is %NULL,
- * old-style I/O ports are queried for information, otherwise MMIO is
- * used at the given @base address to query the information.
- */
+ 
 
 static void cirrusfb_dbg_print_regs(struct fb_info *info,
 				    caddr_t regbase,
@@ -2835,7 +2678,7 @@ static void cirrusfb_dbg_print_regs(struct fb_info *info,
 			val = vga_rseq(regbase, (unsigned char) reg);
 			break;
 		default:
-			/* should never occur */
+			 
 			assert(false);
 			break;
 		}
@@ -2848,15 +2691,7 @@ static void cirrusfb_dbg_print_regs(struct fb_info *info,
 	va_end(list);
 }
 
-/*
- * cirrusfb_dbg_reg_dump
- * @base: If using newmmio, the newmmio base address, otherwise %NULL
- *
- * DESCRIPTION:
- * Dumps a list of interesting VGA and CIRRUSFB registers.  If @base is %NULL,
- * old-style I/O ports are queried for information, otherwise MMIO is
- * used at the given @base address to query the information.
- */
+ 
 
 static void cirrusfb_dbg_reg_dump(struct fb_info *info, caddr_t regbase)
 {
@@ -2948,5 +2783,5 @@ static void cirrusfb_dbg_reg_dump(struct fb_info *info, caddr_t regbase)
 	dev_dbg(info->device, "\n");
 }
 
-#endif				/* CIRRUSFB_DEBUG */
+#endif				 
 

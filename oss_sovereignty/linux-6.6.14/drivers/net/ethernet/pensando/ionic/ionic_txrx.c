@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
@@ -58,7 +58,7 @@ bool ionic_rxq_poke_doorbell(struct ionic_queue *q)
 {
 	unsigned long now, then, dif;
 
-	/* no lock, called from rx napi or txrx napi, nothing else can fill */
+	 
 
 	if (q->tail_idx == q->head_idx)
 		return false;
@@ -154,11 +154,11 @@ static bool ionic_rx_buf_recycle(struct ionic_queue *q,
 {
 	u32 size;
 
-	/* don't re-use pages allocated in low-mem condition */
+	 
 	if (page_is_pfmemalloc(buf_info->page))
 		return false;
 
-	/* don't re-use buffers from non-local numa nodes */
+	 
 	if (page_to_nid(buf_info->page) != numa_mem_id())
 		return false;
 
@@ -384,7 +384,7 @@ bool ionic_rx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
 	if (!color_match(comp->pkt_type_color, cq->done_color))
 		return false;
 
-	/* check for empty queue */
+	 
 	if (q->tail_idx == q->head_idx)
 		return false;
 
@@ -394,7 +394,7 @@ bool ionic_rx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
 	desc_info = &q->info[q->tail_idx];
 	q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
 
-	/* clean the related q entry, only one per qc completion */
+	 
 	ionic_rx_clean(q, desc_info, cq_info, desc_info->cb_arg);
 
 	desc_info->cb = NULL;
@@ -443,7 +443,7 @@ void ionic_rx_fill(struct ionic_queue *q)
 		desc = desc_info->desc;
 		buf_info = &desc_info->bufs[0];
 
-		if (!buf_info->page) { /* alloc a new buffer? */
+		if (!buf_info->page) {  
 			if (unlikely(ionic_rx_page_alloc(q, buf_info))) {
 				desc->addr = 0;
 				desc->len = 0;
@@ -451,7 +451,7 @@ void ionic_rx_fill(struct ionic_queue *q)
 			}
 		}
 
-		/* fill main descriptor - buf[0] */
+		 
 		desc->addr = cpu_to_le64(buf_info->dma_addr + buf_info->page_offset);
 		frag_len = min_t(u16, len, min_t(u32, IONIC_MAX_BUF_LEN,
 						 IONIC_PAGE_SIZE - buf_info->page_offset));
@@ -460,11 +460,11 @@ void ionic_rx_fill(struct ionic_queue *q)
 		buf_info++;
 		nfrags++;
 
-		/* fill sg descriptors - buf[1..n] */
+		 
 		sg_desc = desc_info->sg_desc;
 		for (j = 0; remain_len > 0 && j < q->max_sg_elems; j++) {
 			sg_elem = &sg_desc->elems[j];
-			if (!buf_info->page) { /* alloc a new sg buffer? */
+			if (!buf_info->page) {  
 				if (unlikely(ionic_rx_page_alloc(q, buf_info))) {
 					sg_elem->addr = 0;
 					sg_elem->len = 0;
@@ -482,7 +482,7 @@ void ionic_rx_fill(struct ionic_queue *q)
 			nfrags++;
 		}
 
-		/* clear end sg element as a sentinel */
+		 
 		if (j < q->max_sg_elems) {
 			sg_elem = &sg_desc->elems[j];
 			memset(sg_elem, 0, sizeof(*sg_elem));
@@ -755,7 +755,7 @@ static int ionic_tx_map_skb(struct ionic_queue *q, struct sk_buff *skb,
 	return 0;
 
 dma_fail:
-	/* unwind the frag mappings and the head mapping */
+	 
 	while (frag_idx > 0) {
 		frag_idx--;
 		buf_info--;
@@ -853,9 +853,7 @@ bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
 	if (!color_match(comp->color, cq->done_color))
 		return false;
 
-	/* clean the related q entries, there could be
-	 * several q entries completed for each cq completion
-	 */
+	 
 	do {
 		desc_info = &q->info[q->tail_idx];
 		desc_info->bytes = 0;
@@ -894,7 +892,7 @@ void ionic_tx_empty(struct ionic_queue *q)
 	int bytes = 0;
 	int pkts = 0;
 
-	/* walk the not completed tx entries, if any */
+	 
 	while (q->head_idx != q->tail_idx) {
 		desc_info = &q->info[q->tail_idx];
 		desc_info->bytes = 0;
@@ -1037,17 +1035,14 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
 	vlan_tci = skb_vlan_tag_get(skb);
 	encap = skb->encapsulation;
 
-	/* Preload inner-most TCP csum field with IP pseudo hdr
-	 * calculated with IP length set to zero.  HW will later
-	 * add in length to each TCP segment resulting from the TSO.
-	 */
+	 
 
 	if (encap)
 		err = ionic_tx_tcp_inner_pseudo_csum(skb);
 	else
 		err = ionic_tx_tcp_pseudo_csum(skb);
 	if (err) {
-		/* clean up mapping from ionic_tx_map_skb */
+		 
 		ionic_tx_desc_unmap_bufs(q, desc_info);
 		return err;
 	}
@@ -1071,24 +1066,24 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
 		desc_addr = 0;
 		desc_len = 0;
 		desc_nsge = 0;
-		/* use fragments until we have enough to post a single descriptor */
+		 
 		while (seg_rem > 0) {
-			/* if the fragment is exhausted then move to the next one */
+			 
 			if (frag_rem == 0) {
-				/* grab the next fragment */
+				 
 				frag_addr = buf_info->dma_addr;
 				frag_rem = buf_info->len;
 				buf_info++;
 			}
 			chunk_len = min(frag_rem, seg_rem);
 			if (!desc) {
-				/* fill main descriptor */
+				 
 				desc = desc_info->txq_desc;
 				elem = desc_info->txq_sg_desc->elems;
 				desc_addr = frag_addr;
 				desc_len = chunk_len;
 			} else {
-				/* fill sg descriptor */
+				 
 				elem->addr = cpu_to_le64(frag_addr);
 				elem->len = cpu_to_le16(chunk_len);
 				elem++;
@@ -1101,13 +1096,13 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
 		}
 		seg_rem = min(tso_rem, mss);
 		done = (tso_rem == 0);
-		/* post descriptor */
+		 
 		ionic_tx_tso_post(q, desc_info, skb,
 				  desc_addr, desc_nsge, desc_len,
 				  hdrlen, mss, outer_csum, vlan_tci, has_vlan,
 				  start, done);
 		start = false;
-		/* Buffer information is stored with the first tso descriptor */
+		 
 		desc_info = &q->info[q->head_idx];
 		desc_info->nbufs = 0;
 	}
@@ -1220,13 +1215,13 @@ static int ionic_tx(struct ionic_queue *q, struct sk_buff *skb)
 	if (unlikely(ionic_tx_map_skb(q, skb, desc_info)))
 		return -EIO;
 
-	/* set up the initial descriptor */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL)
 		ionic_tx_calc_csum(q, skb, desc_info);
 	else
 		ionic_tx_calc_no_csum(q, skb, desc_info);
 
-	/* add frags */
+	 
 	ionic_tx_skb_frags(q, skb, desc_info);
 
 	skb_tx_timestamp(skb);
@@ -1246,17 +1241,17 @@ static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *skb)
 	int ndescs;
 	int err;
 
-	/* Each desc is mss long max, so a descriptor for each gso_seg */
+	 
 	if (skb_is_gso(skb))
 		ndescs = skb_shinfo(skb)->gso_segs;
 	else
 		ndescs = 1;
 
-	/* If non-TSO, just need 1 desc and nr_frags sg elems */
+	 
 	if (skb_shinfo(skb)->nr_frags <= q->max_sg_elems)
 		return ndescs;
 
-	/* Too many frags, so linearize */
+	 
 	err = skb_linearize(skb);
 	if (err)
 		return err;
@@ -1274,7 +1269,7 @@ static int ionic_maybe_stop_tx(struct ionic_queue *q, int ndescs)
 		netif_stop_subqueue(q->lif->netdev, q->index);
 		stopped = 1;
 
-		/* Might race with ionic_tx_clean, check again */
+		 
 		smp_rmb();
 		if (ionic_q_has_space(q, ndescs)) {
 			netif_wake_subqueue(q->lif->netdev, q->index);
@@ -1292,10 +1287,7 @@ static netdev_tx_t ionic_start_hwstamp_xmit(struct sk_buff *skb,
 	struct ionic_queue *q = &lif->hwstamp_txq->q;
 	int err, ndescs;
 
-	/* Does not stop/start txq, because we post to a separate tx queue
-	 * for timestamping, and if a packet can't be posted immediately to
-	 * the timestamping queue, it is dropped.
-	 */
+	 
 
 	ndescs = ionic_tx_descs_needed(q, skb);
 	if (unlikely(ndescs < 0))
@@ -1357,10 +1349,7 @@ netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	if (err)
 		goto err_out_drop;
 
-	/* Stop the queue if there aren't descriptors for the next packet.
-	 * Since our SG lists per descriptor take care of most of the possible
-	 * fragmentation, we don't need to have many descriptors available.
-	 */
+	 
 	ionic_maybe_stop_tx(q, 4);
 
 	return NETDEV_TX_OK;

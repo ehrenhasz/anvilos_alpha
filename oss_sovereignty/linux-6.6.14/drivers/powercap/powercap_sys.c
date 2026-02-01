@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power capping class
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -15,7 +12,7 @@
 #define to_powercap_control_type(n) \
 			container_of(n, struct powercap_control_type, dev)
 
-/* Power zone show function */
+ 
 #define define_power_zone_show(_attr)		\
 static ssize_t _attr##_show(struct device *dev, \
 					struct device_attribute *dev_attr,\
@@ -33,7 +30,7 @@ static ssize_t _attr##_show(struct device *dev, \
 	return len; \
 }
 
-/* The only meaningful input is 0 (reset), others are silently ignored */
+ 
 #define define_power_zone_store(_attr)		\
 static ssize_t _attr##_store(struct device *dev,\
 				struct device_attribute *dev_attr, \
@@ -56,7 +53,7 @@ static ssize_t _attr##_store(struct device *dev,\
 	return -EINVAL; \
 }
 
-/* Power zone constraint show function */
+ 
 #define define_power_zone_constraint_show(_attr) \
 static ssize_t show_constraint_##_attr(struct device *dev, \
 				struct device_attribute *dev_attr,\
@@ -81,7 +78,7 @@ static ssize_t show_constraint_##_attr(struct device *dev, \
 	return len; \
 }
 
-/* Power zone constraint store function */
+ 
 #define define_power_zone_constraint_store(_attr) \
 static ssize_t store_constraint_##_attr(struct device *dev,\
 				struct device_attribute *dev_attr, \
@@ -109,20 +106,20 @@ static ssize_t store_constraint_##_attr(struct device *dev,\
 	return -ENODATA; \
 }
 
-/* Power zone information callbacks */
+ 
 define_power_zone_show(power_uw);
 define_power_zone_show(max_power_range_uw);
 define_power_zone_show(energy_uj);
 define_power_zone_store(energy_uj);
 define_power_zone_show(max_energy_range_uj);
 
-/* Power zone attributes */
+ 
 static DEVICE_ATTR_RO(max_power_range_uw);
 static DEVICE_ATTR_RO(power_uw);
 static DEVICE_ATTR_RO(max_energy_range_uj);
 static DEVICE_ATTR_RW(energy_uj);
 
-/* Power zone constraint attributes callbacks */
+ 
 define_power_zone_constraint_show(power_limit_uw);
 define_power_zone_constraint_store(power_limit_uw);
 define_power_zone_constraint_show(time_window_us);
@@ -132,7 +129,7 @@ define_power_zone_constraint_show(min_power_uw);
 define_power_zone_constraint_show(max_time_window_us);
 define_power_zone_constraint_show(min_time_window_us);
 
-/* For one time seeding of constraint device attributes */
+ 
 struct powercap_constraint_attr {
 	struct device_attribute power_limit_attr;
 	struct device_attribute time_window_attr;
@@ -146,12 +143,12 @@ struct powercap_constraint_attr {
 static struct powercap_constraint_attr
 				constraint_attrs[MAX_CONSTRAINTS_PER_ZONE];
 
-/* A list of powercap control_types */
+ 
 static LIST_HEAD(powercap_cntrl_list);
-/* Mutex to protect list of powercap control_types */
+ 
 static DEFINE_MUTEX(powercap_cntrl_list_lock);
 
-#define POWERCAP_CONSTRAINT_NAME_LEN	30 /* Some limit to avoid overflow */
+#define POWERCAP_CONSTRAINT_NAME_LEN	30  
 static ssize_t show_constraint_name(struct device *dev,
 				struct device_attribute *dev_attr,
 				char *buf)
@@ -355,7 +352,7 @@ static ssize_t name_show(struct device *dev,
 
 static DEVICE_ATTR_RO(name);
 
-/* Create zone and attributes in sysfs */
+ 
 static void create_power_zone_common_attributes(
 					struct powercap_zone *power_zone)
 {
@@ -390,11 +387,11 @@ static void powercap_release(struct device *dev)
 	if (dev->parent) {
 		struct powercap_zone *power_zone = to_powercap_zone(dev);
 
-		/* Store flag as the release() may free memory */
+		 
 		allocated = power_zone->allocated;
-		/* Remove id from parent idr struct */
+		 
 		idr_remove(power_zone->parent_idr, power_zone->id);
-		/* Destroy idrs allocated for this zone */
+		 
 		idr_destroy(&power_zone->idr);
 		kfree(power_zone->name);
 		kfree(power_zone->zone_dev_attrs);
@@ -407,7 +404,7 @@ static void powercap_release(struct device *dev)
 		struct powercap_control_type *control_type =
 						to_powercap_control_type(dev);
 
-		/* Store flag as the release() may free memory */
+		 
 		allocated = control_type->allocated;
 		idr_destroy(&control_type->idr);
 		mutex_destroy(&control_type->lock);
@@ -424,7 +421,7 @@ static ssize_t enabled_show(struct device *dev,
 {
 	bool mode = true;
 
-	/* Default is enabled */
+	 
 	if (dev->parent) {
 		struct powercap_zone *power_zone = to_powercap_zone(dev);
 		if (power_zone->ops->get_enable)
@@ -519,7 +516,7 @@ struct powercap_zone *powercap_register_zone(
 	power_zone->dev.class = &powercap_class;
 
 	mutex_lock(&control_type->lock);
-	/* Using idr to get the unique id */
+	 
 	result = idr_alloc(power_zone->parent_idr, NULL, 0, 0, GFP_KERNEL);
 	if (result < 0)
 		goto err_idr_alloc;

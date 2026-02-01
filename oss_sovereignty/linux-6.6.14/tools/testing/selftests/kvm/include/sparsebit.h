@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/sparsebit.h
- *
- * Copyright (C) 2018, Google LLC.
- *
- * Header file that describes API to the sparsebit library.
- * This library provides a memory efficient means of storing
- * the settings of bits indexed via a uint64_t.  Memory usage
- * is reasonable, significantly less than (2^64 / 8) bytes, as
- * long as bits that are mostly set or mostly cleared are close
- * to each other.  This library is efficient in memory usage
- * even in the case where most bits are set.
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_SPARSEBIT_H
 #define SELFTEST_KVM_SPARSEBIT_H
@@ -70,4 +58,4 @@ void sparsebit_validate_internal(struct sparsebit *sbit);
 }
 #endif
 
-#endif /* SELFTEST_KVM_SPARSEBIT_H */
+#endif  

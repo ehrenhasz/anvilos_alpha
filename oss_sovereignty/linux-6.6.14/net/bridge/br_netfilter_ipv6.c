@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Handle firewalling
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- *	Bart De Schuymer		<bdschuym@pandora.be>
- *
- *	Lennert dedicates this file to Kerstin Wurdinger.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -74,9 +65,7 @@ int br_validate_ipv6(struct net *net, struct sk_buff *skb)
 	}
 
 	memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-	/* No IP options in IPv6 header; however it should be
-	 * checked if some next headers need special treatment
-	 */
+	 
 	return 0;
 
 inhdr_error:
@@ -93,11 +82,7 @@ br_nf_ipv6_daddr_was_changed(const struct sk_buff *skb,
 		      sizeof(ipv6_hdr(skb)->daddr)) != 0;
 }
 
-/* PF_BRIDGE/PRE_ROUTING: Undo the changes made for ip6tables
- * PREROUTING and continue the bridge PRE_ROUTING hook. See comment
- * for br_nf_pre_routing_finish(), same logic is used here but
- * equivalent IPv6 function ip6_route_input() called indirectly.
- */
+ 
 static int br_nf_pre_routing_finish_ipv6(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
@@ -157,9 +142,7 @@ static int br_nf_pre_routing_finish_ipv6(struct net *net, struct sock *sk, struc
 	return 0;
 }
 
-/* Replicate the checks that IPv6 does on packet reception and pass the packet
- * to ip6tables.
- */
+ 
 unsigned int br_nf_pre_routing_ipv6(void *priv,
 				    struct sk_buff *skb,
 				    const struct nf_hook_state *state)

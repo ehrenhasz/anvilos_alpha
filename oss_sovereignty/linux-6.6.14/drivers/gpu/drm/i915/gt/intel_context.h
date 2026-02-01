@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_CONTEXT_H__
 #define __INTEL_CONTEXT_H__
@@ -65,13 +63,7 @@ static inline struct intel_context *
 intel_context_to_parent(struct intel_context *ce)
 {
 	if (intel_context_is_child(ce)) {
-		/*
-		 * The parent holds ref count to the child so it is always safe
-		 * for the parent to access the child, but the child has a
-		 * pointer to the parent without a ref. To ensure this is safe
-		 * the child should only access the parent pointer while the
-		 * parent is pinned.
-		 */
+		 
 		GEM_BUG_ON(!intel_context_is_pinned(ce->parallel.parent));
 
 		return ce->parallel.parent;
@@ -95,29 +87,14 @@ void intel_context_bind_parent_child(struct intel_context *parent,
 	list_for_each_entry_safe(ce, cn, &(parent)->parallel.child_list,\
 				 parallel.child_link)
 
-/**
- * intel_context_lock_pinned - Stablises the 'pinned' status of the HW context
- * @ce: the context
- *
- * Acquire a lock on the pinned status of the HW context, such that the context
- * can neither be bound to the GPU or unbound whilst the lock is held, i.e.
- * intel_context_is_pinned() remains stable.
- */
+ 
 static inline int intel_context_lock_pinned(struct intel_context *ce)
 	__acquires(ce->pin_mutex)
 {
 	return mutex_lock_interruptible(&ce->pin_mutex);
 }
 
-/**
- * intel_context_is_pinned - Reports the 'pinned' status
- * @ce: the context
- *
- * While in use by the GPU, the context, along with its ring and page
- * tables is pinned into memory and the GTT.
- *
- * Returns: true if the context is currently pinned for use by the GPU.
- */
+ 
 static inline bool
 intel_context_is_pinned(struct intel_context *ce)
 {
@@ -131,12 +108,7 @@ static inline void intel_context_cancel_request(struct intel_context *ce,
 	return ce->ops->cancel_request(ce, rq);
 }
 
-/**
- * intel_context_unlock_pinned - Releases the earlier locking of 'pinned' status
- * @ce: the context
- *
- * Releases the lock earlier acquired by intel_context_unlock_pinned().
- */
+ 
 static inline void intel_context_unlock_pinned(struct intel_context *ce)
 	__releases(ce->pin_mutex)
 {
@@ -187,12 +159,7 @@ static inline void intel_context_unpin(struct intel_context *ce)
 	if (!ce->ops->sched_disable) {
 		__intel_context_do_unpin(ce, 1);
 	} else {
-		/*
-		 * Move ownership of this pin to the scheduling disable which is
-		 * an async operation. When that operation completes the above
-		 * intel_context_sched_disable_unpin is called potentially
-		 * unpinning the context.
-		 */
+		 
 		while (!atomic_add_unless(&ce->pin_count, -1, 1)) {
 			if (atomic_cmpxchg(&ce->pin_count, 1, 2) == 1) {
 				ce->ops->sched_disable(ce);
@@ -380,8 +347,8 @@ u64 intel_context_get_avg_runtime_ns(struct intel_context *ce);
 
 static inline u64 intel_context_clock(void)
 {
-	/* As we mix CS cycles with CPU clocks, use the raw monotonic clock. */
+	 
 	return ktime_get_raw_fast_ns();
 }
 
-#endif /* __INTEL_CONTEXT_H__ */
+#endif  

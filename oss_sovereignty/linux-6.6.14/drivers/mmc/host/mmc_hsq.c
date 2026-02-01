@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * MMC software queue support based on command queue interfaces
- *
- * Copyright (C) 2019 Linaro, Inc.
- * Author: Baolin Wang <baolin.wang@linaro.org>
- */
+
+ 
 
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
@@ -30,13 +24,13 @@ static void mmc_hsq_pump_requests(struct mmc_hsq *hsq)
 
 	spin_lock_irqsave(&hsq->lock, flags);
 
-	/* Make sure we are not already running a request now */
+	 
 	if (hsq->mrq || hsq->recovery_halt) {
 		spin_unlock_irqrestore(&hsq->lock, flags);
 		return;
 	}
 
-	/* Make sure there are remain requests need to pump */
+	 
 	if (!hsq->qcnt || !hsq->enabled) {
 		spin_unlock_irqrestore(&hsq->lock, flags);
 		return;
@@ -53,15 +47,7 @@ static void mmc_hsq_pump_requests(struct mmc_hsq *hsq)
 	else
 		mmc->ops->request(mmc, hsq->mrq);
 
-	/*
-	 * If returning BUSY from request_atomic(), which means the card
-	 * may be busy now, and we should change to non-atomic context to
-	 * try again for this unusual case, to avoid time-consuming operations
-	 * in the atomic context.
-	 *
-	 * Note: we just give a warning for other error cases, since the host
-	 * driver will handle them.
-	 */
+	 
 	if (ret == -EBUSY)
 		schedule_work(&hsq->retry_work);
 	else
@@ -72,10 +58,7 @@ static void mmc_hsq_update_next_tag(struct mmc_hsq *hsq, int remains)
 {
 	int tag;
 
-	/*
-	 * If there are no remain requests in software queue, then set a invalid
-	 * tag.
-	 */
+	 
 	if (!remains) {
 		hsq->next_tag = HSQ_INVALID_TAG;
 		hsq->tail_tag = HSQ_INVALID_TAG;
@@ -97,7 +80,7 @@ static void mmc_hsq_post_request(struct mmc_hsq *hsq)
 	remains = hsq->qcnt;
 	hsq->mrq = NULL;
 
-	/* Update the next available tag to be queued. */
+	 
 	mmc_hsq_update_next_tag(hsq, remains);
 
 	if (hsq->waiting_for_idle && !remains) {
@@ -105,7 +88,7 @@ static void mmc_hsq_post_request(struct mmc_hsq *hsq)
 		wake_up(&hsq->wait_queue);
 	}
 
-	/* Do not pump new request in recovery mode. */
+	 
 	if (hsq->recovery_halt) {
 		spin_unlock_irqrestore(&hsq->lock, flags);
 		return;
@@ -113,22 +96,12 @@ static void mmc_hsq_post_request(struct mmc_hsq *hsq)
 
 	spin_unlock_irqrestore(&hsq->lock, flags);
 
-	 /*
-	  * Try to pump new request to host controller as fast as possible,
-	  * after completing previous request.
-	  */
+	  
 	if (remains > 0)
 		mmc_hsq_pump_requests(hsq);
 }
 
-/**
- * mmc_hsq_finalize_request - finalize one request if the request is done
- * @mmc: the host controller
- * @mrq: the request need to be finalized
- *
- * Return true if we finalized the corresponding request in software queue,
- * otherwise return false.
- */
+ 
 bool mmc_hsq_finalize_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct mmc_hsq *hsq = mmc->cqe_private;
@@ -141,9 +114,7 @@ bool mmc_hsq_finalize_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		return false;
 	}
 
-	/*
-	 * Clear current completed slot request to make a room for new request.
-	 */
+	 
 	hsq->slot[hsq->next_tag].mrq = NULL;
 
 	spin_unlock_irqrestore(&hsq->lock, flags);
@@ -180,10 +151,7 @@ static void mmc_hsq_recovery_finish(struct mmc_host *mmc)
 
 	spin_unlock_irq(&hsq->lock);
 
-	/*
-	 * Try to pump new request if there are request pending in software
-	 * queue after finishing recovery.
-	 */
+	 
 	if (remains > 0)
 		mmc_hsq_pump_requests(hsq);
 }
@@ -200,7 +168,7 @@ static int mmc_hsq_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		return -ESHUTDOWN;
 	}
 
-	/* Do not queue any new requests in recovery mode. */
+	 
 	if (hsq->recovery_halt) {
 		spin_unlock_irq(&hsq->lock);
 		return -EBUSY;
@@ -208,10 +176,7 @@ static int mmc_hsq_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	hsq->slot[tag].mrq = mrq;
 
-	/*
-	 * Set the next tag as current request tag if no available
-	 * next tag.
-	 */
+	 
 	if (hsq->next_tag == HSQ_INVALID_TAG) {
 		hsq->next_tag = tag;
 		hsq->tail_tag = tag;

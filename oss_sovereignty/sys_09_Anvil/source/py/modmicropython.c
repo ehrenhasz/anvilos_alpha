@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 
@@ -34,8 +10,8 @@
 
 #if MICROPY_PY_MICROPYTHON
 
-// Various builtins specific to MicroPython runtime,
-// living in micropython module
+
+
 
 #if MICROPY_ENABLE_COMPILER
 static mp_obj_t mp_micropython_opt_level(size_t n_args, const mp_obj_t *args) {
@@ -83,7 +59,7 @@ mp_obj_t mp_micropython_mem_info(size_t n_args, const mp_obj_t *args) {
     #if MICROPY_ENABLE_GC
     gc_dump_info(&mp_plat_print);
     if (n_args == 1) {
-        // arg given means dump gc allocation table
+        
         gc_dump_alloc_table(&mp_plat_print);
     }
     #else
@@ -100,14 +76,14 @@ static mp_obj_t mp_micropython_qstr_info(size_t n_args, const mp_obj_t *args) {
     mp_printf(&mp_plat_print, "qstr pool: n_pool=%u, n_qstr=%u, n_str_data_bytes=%u, n_total_bytes=%u\n",
         n_pool, n_qstr, n_str_data_bytes, n_total_bytes);
     if (n_args == 1) {
-        // arg given means dump qstr data
+        
         qstr_dump_data();
     }
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_micropython_qstr_info_obj, 0, 1, mp_micropython_qstr_info);
 
-#endif // MICROPY_PY_MICROPYTHON_MEM_INFO
+#endif 
 
 #if MICROPY_PY_MICROPYTHON_STACK_USE
 static mp_obj_t mp_micropython_stack_use(void) {
@@ -214,4 +190,4 @@ const mp_obj_module_t mp_module_micropython = {
 
 MP_REGISTER_MODULE(MP_QSTR_micropython, mp_module_micropython);
 
-#endif // MICROPY_PY_MICROPYTHON
+#endif 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * amdtp-tascam.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
+
+ 
 
 #include <sound/pcm.h>
 #include "tascam.h"
@@ -25,7 +21,7 @@ int amdtp_tscm_set_parameters(struct amdtp_stream *s, unsigned int rate)
 
 	data_channels = p->pcm_channels;
 
-	/* Packets in in-stream have extra 2 data channels. */
+	 
 	if (s->direction == AMDTP_IN_STREAM)
 		data_channels += 2;
 
@@ -81,7 +77,7 @@ static void read_pcm_s32(struct amdtp_stream *s, struct snd_pcm_substream *pcm,
 				frames_to_bytes(runtime, pcm_buffer_pointer);
 	remaining_frames = runtime->buffer_size - pcm_buffer_pointer;
 
-	/* The first data channel is for event counter. */
+	 
 	buffer += 1;
 
 	for (i = 0; i < frames; ++i) {
@@ -115,10 +111,7 @@ int amdtp_tscm_add_pcm_hw_constraints(struct amdtp_stream *s,
 {
 	int err;
 
-	/*
-	 * Our implementation allows this protocol to deliver 24 bit sample in
-	 * 32bit data channel.
-	 */
+	 
 	err = snd_pcm_hw_constraint_msbits(runtime, 0, 32, 24);
 	if (err < 0)
 		return err;
@@ -241,11 +234,11 @@ int amdtp_tscm_init(struct amdtp_stream *s, struct fw_unit *unit,
 		return 0;
 
 	if (dir == AMDTP_OUT_STREAM) {
-		// Use fixed value for FDF field.
+		
 		s->ctx_data.rx.fdf = 0x00;
 	}
 
-	/* This protocol uses fixed number of data channels for PCM samples. */
+	 
 	p = s->protocol;
 	p->pcm_channels = pcm_channels;
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) Icenowy Zheng <icenowy@aosc.io>
- *
- * Based on sun4i_layer.h, which is:
- *   Copyright (C) 2015 Free Electrons
- *   Copyright (C) 2015 NextThing Co
- *
- *   Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -121,7 +113,7 @@ static int sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 	insize = SUN8I_MIXER_SIZE(src_w, src_h);
 	outsize = SUN8I_MIXER_SIZE(dst_w, dst_h);
 
-	/* Set height and width */
+	 
 	DRM_DEBUG_DRIVER("Layer source offset X: %d Y: %d\n",
 			 state->src.x1 >> 16, state->src.y1 >> 16);
 	DRM_DEBUG_DRIVER("Layer source size W: %d H: %d\n", src_w, src_h);
@@ -148,7 +140,7 @@ static int sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
 		sun8i_ui_scaler_enable(mixer, channel, false);
 	}
 
-	/* Set base coordinates */
+	 
 	DRM_DEBUG_DRIVER("Layer destination coordinates X: %d Y: %d\n",
 			 state->dst.x1, state->dst.y1);
 	DRM_DEBUG_DRIVER("Layer destination size W: %d H: %d\n", dst_w, dst_h);
@@ -199,20 +191,20 @@ static int sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
 
 	ch_base = sun8i_channel_base(mixer, channel);
 
-	/* Get the physical address of the buffer in memory */
+	 
 	gem = drm_fb_dma_get_gem_obj(fb, 0);
 
 	DRM_DEBUG_DRIVER("Using GEM @ %pad\n", &gem->dma_addr);
 
-	/* Compute the start of the displayed memory */
+	 
 	bpp = fb->format->cpp[0];
 	dma_addr = gem->dma_addr + fb->offsets[0];
 
-	/* Fixup framebuffer address for src coordinates */
+	 
 	dma_addr += (state->src.x1 >> 16) * bpp;
 	dma_addr += (state->src.y1 >> 16) * fb->pitches[0];
 
-	/* Set the line width */
+	 
 	DRM_DEBUG_DRIVER("Layer line width: %d bytes\n", fb->pitches[0]);
 	regmap_write(mixer->engine.regs,
 		     SUN8I_MIXER_CHAN_UI_LAYER_PITCH(ch_base, overlay),
@@ -362,7 +354,7 @@ struct sun8i_ui_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
 	if (index == 0)
 		type = DRM_PLANE_TYPE_PRIMARY;
 
-	/* possible crtcs are set later */
+	 
 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
 				       &sun8i_ui_layer_funcs,
 				       sun8i_ui_layer_formats,

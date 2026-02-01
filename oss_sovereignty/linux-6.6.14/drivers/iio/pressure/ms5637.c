@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ms5637.c - Support for Measurement-Specialties MS5637, MS5805
- *            MS5837 and MS8607 pressure & temperature sensor
- *
- * Copyright (c) 2015 Measurement-Specialties
- *
- * (7-bit I2C slave address 0x76)
- *
- * Datasheet:
- *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
- * Datasheet:
- *  http://www.meas-spec.com/downloads/MS5805-02BA01.pdf
- * Datasheet:
- *  http://www.meas-spec.com/downloads/MS5837-30BA.pdf
- * Datasheet:
- *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -68,11 +52,11 @@ static int ms5637_read_raw(struct iio_dev *indio_dev,
 			return ret;
 
 		switch (channel->type) {
-		case IIO_TEMP:	/* in milli °C */
+		case IIO_TEMP:	 
 			*val = temperature;
 
 			return IIO_VAL_INT;
-		case IIO_PRESSURE:	/* in kPa */
+		case IIO_PRESSURE:	 
 			*val = pressure / 1000;
 			*val2 = (pressure % 1000) * 1000;
 

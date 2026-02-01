@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux RFKILL support for RTL8187
- *
- * Copyright (c) 2009 Herton Ronaldo Krzesinski <herton@mandriva.com.br>
- *
- * Based on the RFKILL handling in the r8187 driver, which is:
- * Copyright (c) Realtek Semiconductor Corp. All rights reserved.
- *
- * Thanks to Realtek for their support!
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/usb.h>

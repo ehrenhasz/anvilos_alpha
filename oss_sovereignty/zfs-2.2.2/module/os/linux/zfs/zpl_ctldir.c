@@ -1,31 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2011 Lawrence Livermore National Security, LLC.
- * Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- * LLNL-CODE-403049.
- * Rewritten for Linux by:
- *   Rohan Puri <rohan.puri15@gmail.com>
- *   Brian Behlendorf <behlendorf1@llnl.gov>
- */
+ 
+ 
 
 #include <sys/zfs_znode.h>
 #include <sys/zfs_vfsops.h>
@@ -36,9 +10,7 @@
 #include <sys/dsl_dataset.h>
 #include <sys/zap.h>
 
-/*
- * Common open routine.  Disallow any write access.
- */
+ 
 static int
 zpl_common_open(struct inode *ip, struct file *filp)
 {
@@ -48,9 +20,7 @@ zpl_common_open(struct inode *ip, struct file *filp)
 	return (generic_file_open(ip, filp));
 }
 
-/*
- * Get root directory contents.
- */
+ 
 static int
 zpl_root_iterate(struct file *filp, zpl_dir_context_t *ctx)
 {
@@ -97,11 +67,9 @@ zpl_root_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 	return (error);
 }
-#endif /* !HAVE_VFS_ITERATE && !HAVE_VFS_ITERATE_SHARED */
+#endif  
 
-/*
- * Get root directory attributes.
- */
+ 
 static int
 #ifdef HAVE_IDMAP_IOPS_GETATTR
 zpl_root_getattr_impl(struct mnt_idmap *user_ns,
@@ -160,9 +128,7 @@ zpl_root_lookup(struct inode *dip, struct dentry *dentry, unsigned int flags)
 	return (d_splice_alias(ip, dentry));
 }
 
-/*
- * The '.zfs' control directory file and inode operations.
- */
+ 
 const struct file_operations zpl_fops_root = {
 	.open		= zpl_common_open,
 	.llseek		= generic_file_llseek,
@@ -190,22 +156,11 @@ zpl_snapdir_automount(struct path *path)
 	if (error)
 		return (ERR_PTR(error));
 
-	/*
-	 * Rather than returning the new vfsmount for the snapshot we must
-	 * return NULL to indicate a mount collision.  This is done because
-	 * the user space mount calls do_add_mount() which adds the vfsmount
-	 * to the name space.  If we returned the new mount here it would be
-	 * added again to the vfsmount list resulting in list corruption.
-	 */
+	 
 	return (NULL);
 }
 
-/*
- * Negative dentries must always be revalidated so newly created snapshots
- * can be detected and automounted.  Normal dentries should be kept because
- * as of the 3.18 kernel revaliding the mountpoint dentry will result in
- * the snapshot being immediately unmounted.
- */
+ 
 static int
 #ifdef HAVE_D_REVALIDATE_NAMEIDATA
 zpl_snapdir_revalidate(struct dentry *dentry, struct nameidata *i)
@@ -217,14 +172,7 @@ zpl_snapdir_revalidate(struct dentry *dentry, unsigned int flags)
 }
 
 static dentry_operations_t zpl_dops_snapdirs = {
-/*
- * Auto mounting of snapshots is only supported for 2.6.37 and
- * newer kernels.  Prior to this kernel the ops->follow_link()
- * callback was used as a hack to trigger the mount.  The
- * resulting vfsmount was then explicitly grafted in to the
- * name space.  While it might be possible to add compatibility
- * code to accomplish this it would require considerable care.
- */
+ 
 	.d_automount	= zpl_snapdir_automount,
 	.d_revalidate	= zpl_snapdir_revalidate,
 };
@@ -274,7 +222,7 @@ zpl_snapdir_iterate(struct file *filp, zpl_dir_context_t *ctx)
 	if (!zpl_dir_emit_dots(filp, ctx))
 		goto out;
 
-	/* Start the position at 0 if it already emitted . and .. */
+	 
 	pos = (ctx->pos == 2 ? 0 : ctx->pos);
 	while (error == 0) {
 		dsl_pool_config_enter(dmu_objset_pool(zfsvfs->z_os), FTAG);
@@ -313,7 +261,7 @@ zpl_snapdir_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 	return (error);
 }
-#endif /* !HAVE_VFS_ITERATE && !HAVE_VFS_ITERATE_SHARED */
+#endif  
 
 static int
 #ifdef HAVE_IOPS_RENAME_USERNS
@@ -332,7 +280,7 @@ zpl_snapdir_rename2(struct inode *sdip, struct dentry *sdentry,
 	cred_t *cr = CRED();
 	int error;
 
-	/* We probably don't want to support renameat2(2) in ctldir */
+	 
 	if (flags)
 		return (-EINVAL);
 
@@ -408,9 +356,7 @@ zpl_snapdir_mkdir(struct inode *dip, struct dentry *dentry, umode_t mode)
 	return (error);
 }
 
-/*
- * Get snapshot directory attributes.
- */
+ 
 static int
 #ifdef HAVE_IDMAP_IOPS_GETATTR
 zpl_snapdir_getattr_impl(struct mnt_idmap *user_ns,
@@ -469,11 +415,7 @@ zpl_snapdir_getattr_impl(const struct path *path, struct kstat *stat,
 }
 ZPL_GETATTR_WRAPPER(zpl_snapdir_getattr);
 
-/*
- * The '.zfs/snapshot' directory file operations.  These mainly control
- * generating the list of available snapshots when doing an 'ls' in the
- * directory.  See zpl_snapdir_readdir().
- */
+ 
 const struct file_operations zpl_fops_snapdir = {
 	.open		= zpl_common_open,
 	.llseek		= generic_file_llseek,
@@ -488,11 +430,7 @@ const struct file_operations zpl_fops_snapdir = {
 
 };
 
-/*
- * The '.zfs/snapshot' directory inode operations.  These mainly control
- * creating an inode for a snapshot directory and initializing the needed
- * infrastructure to automount the snapshot.  See zpl_snapdir_lookup().
- */
+ 
 const struct inode_operations zpl_ops_snapdir = {
 	.lookup		= zpl_snapdir_lookup,
 	.getattr	= zpl_snapdir_getattr,
@@ -582,7 +520,7 @@ zpl_shares_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 	return (error);
 }
-#endif /* !HAVE_VFS_ITERATE && !HAVE_VFS_ITERATE_SHARED */
+#endif  
 
 static int
 #ifdef HAVE_USERNS_IOPS_GETATTR
@@ -647,9 +585,7 @@ zpl_shares_getattr_impl(const struct path *path, struct kstat *stat,
 }
 ZPL_GETATTR_WRAPPER(zpl_shares_getattr);
 
-/*
- * The '.zfs/shares' directory file operations.
- */
+ 
 const struct file_operations zpl_fops_shares = {
 	.open		= zpl_common_open,
 	.llseek		= generic_file_llseek,
@@ -664,9 +600,7 @@ const struct file_operations zpl_fops_shares = {
 
 };
 
-/*
- * The '.zfs/shares' directory inode operations.
- */
+ 
 const struct inode_operations zpl_ops_shares = {
 	.lookup		= zpl_shares_lookup,
 	.getattr	= zpl_shares_getattr,

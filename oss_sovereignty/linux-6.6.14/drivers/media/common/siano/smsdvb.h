@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/***********************************************************************
- *
- ***********************************************************************/
+ 
+ 
 
 struct smsdvb_debugfs;
 struct smsdvb_client_t;
@@ -45,7 +43,7 @@ struct smsdvb_client_t {
 	int			feed_users;
 	bool			has_tuned;
 
-	/* stats debugfs data */
+	 
 	struct dentry		*debugfs;
 
 	struct smsdvb_debugfs	*debug_data;
@@ -55,11 +53,7 @@ struct smsdvb_client_t {
 	sms_prt_isdb_stats_ex_t	prt_isdb_stats_ex;
 };
 
-/*
- * This struct is a mix of struct sms_rx_stats_ex and
- * struct sms_srvm_signal_status.
- * It was obtained by comparing the way it was filled by the original code
- */
+ 
 struct RECEPTION_STATISTICS_PER_SLICES_S {
 	u32 result;
 	u32 snr;
@@ -73,24 +67,24 @@ struct RECEPTION_STATISTICS_PER_SLICES_S {
 	u32 cell_id;
 	u32 reason;
 	u32 request_id;
-	u32 modem_state;		/* from SMSHOSTLIB_DVB_MODEM_STATE_ET */
+	u32 modem_state;		 
 
-	u32 ber;		/* Post Viterbi BER [1E-5] */
-	s32 RSSI;		/* dBm */
-	s32 carrier_offset;	/* Carrier Offset in bin/1024 */
+	u32 ber;		 
+	s32 RSSI;		 
+	s32 carrier_offset;	 
 
-	u32 is_rf_locked;		/* 0 - not locked, 1 - locked */
-	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
+	u32 is_rf_locked;		 
+	u32 is_demod_locked;	 
 
-	u32 ber_bit_count;	/* Total number of SYNC bits. */
-	u32 ber_error_count;	/* Number of erroneous SYNC bits. */
+	u32 ber_bit_count;	 
+	u32 ber_error_count;	 
 
-	s32 MRC_SNR;		/* dB */
-	s32 mrc_in_band_pwr;	/* In band power in dBM */
-	s32 MRC_RSSI;		/* dBm */
+	s32 MRC_SNR;		 
+	s32 mrc_in_band_pwr;	 
+	s32 MRC_RSSI;		 
 };
 
-/* From smsdvb-debugfs.c */
+ 
 #ifdef CONFIG_SMS_SIANO_DEBUGFS
 
 int smsdvb_debugfs_create(struct smsdvb_client_t *client);

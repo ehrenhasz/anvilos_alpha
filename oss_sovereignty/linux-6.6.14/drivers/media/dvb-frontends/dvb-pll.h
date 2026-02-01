@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * descriptions + helper functions for simple dvb plls.
- */
+ 
+ 
 
 #ifndef __DVB_PLL_H__
 #define __DVB_PLL_H__
@@ -37,16 +35,7 @@ struct dvb_pll_config {
 };
 
 #if IS_REACHABLE(CONFIG_DVB_PLL)
-/**
- * dvb_pll_attach - Attach a dvb-pll to the supplied frontend structure.
- *
- * @fe: Frontend to attach to.
- * @pll_addr: i2c address of the PLL (if used).
- * @i2c: i2c adapter to use (set to NULL if not used).
- * @pll_desc_id: dvb_pll_desc to use.
- *
- * return: Frontend pointer on success, NULL on failure
- */
+ 
 extern struct dvb_frontend *dvb_pll_attach(struct dvb_frontend *fe,
 					   int pll_addr,
 					   struct i2c_adapter *i2c,

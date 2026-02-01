@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8173-rt5650-rt5514.c  --  MT8173 machine driver with RT5650/5514 codecs
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Koro Chen <koro.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/gpio.h>
@@ -59,13 +54,13 @@ static int mt8173_rt5650_rt5514_hw_params(struct snd_pcm_substream *substream,
 	int i, ret;
 
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
-		/* pll from mclk 12.288M */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, 0, 0, MCLK_FOR_CODECS,
 					  params_rate(params) * 512);
 		if (ret)
 			return ret;
 
-		/* sysclk from pll */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, 1,
 					     params_rate(params) * 512,
 					     SND_SOC_CLOCK_IN);
@@ -92,7 +87,7 @@ static int mt8173_rt5650_rt5514_init(struct snd_soc_pcm_runtime *runtime)
 				RT5645_AD_STEREO_FILTER,
 				RT5645_CLK_SEL_I2S1_ASRC);
 
-	/* enable jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "Headset Jack",
 					 SND_JACK_HEADPHONE | SND_JACK_MICROPHONE |
 					 SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -133,9 +128,9 @@ SND_SOC_DAILINK_DEFS(codec,
 			   COMP_CODEC(NULL, "rt5514-aif1")),
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* Digital audio interface glue - connects codec <---> CPU */
+ 
 static struct snd_soc_dai_link mt8173_rt5650_rt5514_dais[] = {
-	/* Front End DAI links */
+	 
 	[DAI_LINK_PLAYBACK] = {
 		.name = "rt5650_rt5514 Playback",
 		.stream_name = "rt5650_rt5514 Playback",
@@ -152,7 +147,7 @@ static struct snd_soc_dai_link mt8173_rt5650_rt5514_dais[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(capture),
 	},
-	/* Back End DAI links */
+	 
 	[DAI_LINK_CODEC_I2S] = {
 		.name = "Codec",
 		.no_pcm = 1,
@@ -253,7 +248,7 @@ static struct platform_driver mt8173_rt5650_rt5514_driver = {
 
 module_platform_driver(mt8173_rt5650_rt5514_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8173 RT5650 and RT5514 SoC machine driver");
 MODULE_AUTHOR("Koro Chen <koro.chen@mediatek.com>");
 MODULE_LICENSE("GPL v2");

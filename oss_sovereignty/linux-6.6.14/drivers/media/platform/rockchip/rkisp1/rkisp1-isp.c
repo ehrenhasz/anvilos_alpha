@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - ISP Subdevice
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/pm_runtime.h>
@@ -22,40 +15,11 @@
 
 #define RKISP1_ISP_DEV_NAME	RKISP1_DRIVER_NAME "_isp"
 
-/*
- * NOTE: MIPI controller and input MUX are also configured in this file.
- * This is because ISP Subdev describes not only ISP submodule (input size,
- * format, output size, format), but also a virtual route device.
- */
+ 
 
-/*
- * There are many variables named with format/frame in below code,
- * please see here for their meaning.
- * Cropping in the sink pad defines the image region from the sensor.
- * Cropping in the source pad defines the region for the Image Stabilizer (IS)
- *
- * Cropping regions of ISP
- *
- * +---------------------------------------------------------+
- * | Sensor image                                            |
- * | +---------------------------------------------------+   |
- * | | CIF_ISP_ACQ (for black level)                     |   |
- * | | sink pad format                                   |   |
- * | | +--------------------------------------------+    |   |
- * | | |    CIF_ISP_OUT                             |    |   |
- * | | |    sink pad crop                           |    |   |
- * | | |    +---------------------------------+     |    |   |
- * | | |    |   CIF_ISP_IS                    |     |    |   |
- * | | |    |   source pad crop and format    |     |    |   |
- * | | |    +---------------------------------+     |    |   |
- * | | +--------------------------------------------+    |   |
- * | +---------------------------------------------------+   |
- * +---------------------------------------------------------+
- */
+ 
 
-/* ----------------------------------------------------------------------------
- * Helpers
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 rkisp1_isp_get_pad_fmt(struct rkisp1_isp *isp,
@@ -87,15 +51,9 @@ rkisp1_isp_get_pad_crop(struct rkisp1_isp *isp,
 		return v4l2_subdev_get_try_crop(&isp->sd, &state, pad);
 }
 
-/* ----------------------------------------------------------------------------
- * Camera Interface registers configurations
- */
+ 
 
-/*
- * Image Stabilization.
- * This should only be called when configuring CIF
- * or at the frame end interrupt
- */
+ 
 static void rkisp1_config_ism(struct rkisp1_isp *isp)
 {
 	const struct v4l2_rect *src_crop =
@@ -114,16 +72,14 @@ static void rkisp1_config_ism(struct rkisp1_isp *isp)
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_IS_H_SIZE, src_crop->width);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_IS_V_SIZE, src_crop->height);
 
-	/* IS(Image Stabilization) is always on, working as output crop */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_IS_CTRL, 1);
 	val = rkisp1_read(rkisp1, RKISP1_CIF_ISP_CTRL);
 	val |= RKISP1_CIF_ISP_CTRL_ISP_CFG_UPD;
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_CTRL, val);
 }
 
-/*
- * configure ISP blocks with input format, size......
- */
+ 
 static int rkisp1_config_isp(struct rkisp1_isp *isp,
 			     enum v4l2_mbus_type mbus_type, u32 mbus_flags)
 {
@@ -171,7 +127,7 @@ static int rkisp1_config_isp(struct rkisp1_isp *isp,
 		irq_mask |= RKISP1_CIF_ISP_DATA_LOSS;
 	}
 
-	/* Set up input acquisition properties */
+	 
 	if (mbus_type == V4L2_MBUS_BT656 || mbus_type == V4L2_MBUS_PARALLEL) {
 		if (mbus_flags & V4L2_MBUS_PCLK_SAMPLE_RISING)
 			acq_prop |= RKISP1_CIF_ISP_ACQ_PROP_POS_EDGE;
@@ -208,14 +164,14 @@ static int rkisp1_config_isp(struct rkisp1_isp *isp,
 		     RKISP1_CIF_ISP_ACQ_PROP_FIELD_SEL_ALL);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ACQ_NR_FRAMES, 0);
 
-	/* Acquisition Size */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ACQ_H_OFFS, 0);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ACQ_V_OFFS, 0);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ACQ_H_SIZE,
 		     acq_mult * sink_frm->width);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ACQ_V_SIZE, sink_frm->height);
 
-	/* ISP Out Area */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_OUT_H_OFFS, sink_crop->left);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_OUT_V_OFFS, sink_crop->top);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_OUT_H_SIZE, sink_crop->width);
@@ -241,7 +197,7 @@ static int rkisp1_config_isp(struct rkisp1_isp *isp,
 	return 0;
 }
 
-/* Configure MUX */
+ 
 static void rkisp1_config_path(struct rkisp1_isp *isp,
 			       enum v4l2_mbus_type mbus_type)
 {
@@ -256,7 +212,7 @@ static void rkisp1_config_path(struct rkisp1_isp *isp,
 	rkisp1_write(rkisp1, RKISP1_CIF_VI_DPCL, dpcl);
 }
 
-/* Hardware configure Entry */
+ 
 static int rkisp1_config_cif(struct rkisp1_isp *isp,
 			     enum v4l2_mbus_type mbus_type, u32 mbus_flags)
 {
@@ -277,18 +233,15 @@ static void rkisp1_isp_stop(struct rkisp1_isp *isp)
 	struct rkisp1_device *rkisp1 = isp->rkisp1;
 	u32 val;
 
-	/*
-	 * ISP(mi) stop in mi frame end -> Stop ISP(mipi) ->
-	 * Stop ISP(isp) ->wait for ISP isp off
-	 */
-	/* stop and clear MI and ISP interrupts */
+	 
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_IMSC, 0);
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ICR, ~0);
 
 	rkisp1_write(rkisp1, RKISP1_CIF_MI_IMSC, 0);
 	rkisp1_write(rkisp1, RKISP1_CIF_MI_ICR, ~0);
 
-	/* stop ISP */
+	 
 	val = rkisp1_read(rkisp1, RKISP1_CIF_ISP_CTRL);
 	val &= ~(RKISP1_CIF_ISP_CTRL_ISP_INFORM_ENABLE |
 		 RKISP1_CIF_ISP_CTRL_ISP_ENABLE);
@@ -318,7 +271,7 @@ static void rkisp1_config_clk(struct rkisp1_isp *isp)
 
 	rkisp1_write(rkisp1, RKISP1_CIF_VI_ICCL, val);
 
-	/* ensure sp and mp can run at the same time in V12 */
+	 
 	if (rkisp1->info->isp_ver == RKISP1_V12) {
 		val = RKISP1_CIF_CLK_CTRL_MI_Y12 | RKISP1_CIF_CLK_CTRL_MI_SP |
 		      RKISP1_CIF_CLK_CTRL_MI_RAW0 | RKISP1_CIF_CLK_CTRL_MI_RAW1 |
@@ -335,7 +288,7 @@ static void rkisp1_isp_start(struct rkisp1_isp *isp)
 
 	rkisp1_config_clk(isp);
 
-	/* Activate ISP */
+	 
 	val = rkisp1_read(rkisp1, RKISP1_CIF_ISP_CTRL);
 	val |= RKISP1_CIF_ISP_CTRL_ISP_CFG_UPD |
 	       RKISP1_CIF_ISP_CTRL_ISP_ENABLE |
@@ -346,9 +299,7 @@ static void rkisp1_isp_start(struct rkisp1_isp *isp)
 		rkisp1_params_post_configure(&rkisp1->params);
 }
 
-/* ----------------------------------------------------------------------------
- * Subdev pad operations
- */
+ 
 
 static inline struct rkisp1_isp *to_rkisp1_isp(struct v4l2_subdev *sd)
 {
@@ -435,7 +386,7 @@ static int rkisp1_isp_init_config(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *sink_fmt, *src_fmt;
 	struct v4l2_rect *sink_crop, *src_crop;
 
-	/* Video. */
+	 
 	sink_fmt = v4l2_subdev_get_try_format(sd, sd_state,
 					      RKISP1_ISP_PAD_SINK_VIDEO);
 	sink_fmt->width = RKISP1_DEFAULT_WIDTH;
@@ -467,7 +418,7 @@ static int rkisp1_isp_init_config(struct v4l2_subdev *sd,
 					    RKISP1_ISP_PAD_SOURCE_VIDEO);
 	*src_crop = *sink_crop;
 
-	/* Parameters and statistics. */
+	 
 	sink_fmt = v4l2_subdev_get_try_format(sd, sd_state,
 					      RKISP1_ISP_PAD_SINK_PARAMS);
 	src_fmt = v4l2_subdev_get_try_format(sd, sd_state,
@@ -500,11 +451,7 @@ static void rkisp1_isp_set_src_fmt(struct rkisp1_isp *isp,
 	src_crop = rkisp1_isp_get_pad_crop(isp, sd_state,
 					   RKISP1_ISP_PAD_SOURCE_VIDEO, which);
 
-	/*
-	 * Media bus code. The ISP can operate in pass-through mode (Bayer in,
-	 * Bayer out or YUV in, YUV out) or process Bayer data to YUV, but
-	 * can't convert from YUV to Bayer.
-	 */
+	 
 	sink_info = rkisp1_mbus_info_get_by_code(sink_fmt->code);
 
 	src_fmt->code = format->code;
@@ -520,17 +467,11 @@ static void rkisp1_isp_set_src_fmt(struct rkisp1_isp *isp,
 		src_info = sink_info;
 	}
 
-	/*
-	 * The source width and height must be identical to the source crop
-	 * size.
-	 */
+	 
 	src_fmt->width  = src_crop->width;
 	src_fmt->height = src_crop->height;
 
-	/*
-	 * Copy the color space for the sink pad. When converting from Bayer to
-	 * YUV, default to a limited quantization range.
-	 */
+	 
 	src_fmt->colorspace = sink_fmt->colorspace;
 	src_fmt->xfer_func = sink_fmt->xfer_func;
 	src_fmt->ycbcr_enc = sink_fmt->ycbcr_enc;
@@ -541,22 +482,7 @@ static void rkisp1_isp_set_src_fmt(struct rkisp1_isp *isp,
 	else
 		src_fmt->quantization = sink_fmt->quantization;
 
-	/*
-	 * Allow setting the source color space fields when the SET_CSC flag is
-	 * set and the source format is YUV. If the sink format is YUV, don't
-	 * set the color primaries, transfer function or YCbCr encoding as the
-	 * ISP is bypassed in that case and passes YUV data through without
-	 * modifications.
-	 *
-	 * The color primaries and transfer function are configured through the
-	 * cross-talk matrix and tone curve respectively. Settings for those
-	 * hardware blocks are conveyed through the ISP parameters buffer, as
-	 * they need to combine color space information with other image tuning
-	 * characteristics and can't thus be computed by the kernel based on the
-	 * color space. The source pad colorspace and xfer_func fields are thus
-	 * ignored by the driver, but can be set by userspace to propagate
-	 * accurate color space information down the pipeline.
-	 */
+	 
 	set_csc = format->flags & V4L2_MBUS_FRAMEFMT_SET_CSC;
 
 	if (set_csc && src_info->pixel_enc == V4L2_PIXEL_ENC_YUV) {
@@ -575,14 +501,11 @@ static void rkisp1_isp_set_src_fmt(struct rkisp1_isp *isp,
 
 	*format = *src_fmt;
 
-	/*
-	 * Restore the SET_CSC flag if it was set to indicate support for the
-	 * CSC setting API.
-	 */
+	 
 	if (set_csc)
 		format->flags |= V4L2_MBUS_FRAMEFMT_SET_CSC;
 
-	/* Store the source format info when setting the active format. */
+	 
 	if (which == V4L2_SUBDEV_FORMAT_ACTIVE)
 		isp->src_fmt = src_info;
 }
@@ -610,7 +533,7 @@ static void rkisp1_isp_set_src_crop(struct rkisp1_isp *isp,
 
 	*r = *src_crop;
 
-	/* Propagate to out format */
+	 
 	src_fmt = rkisp1_isp_get_pad_fmt(isp, sd_state,
 					 RKISP1_ISP_PAD_SOURCE_VIDEO, which);
 	rkisp1_isp_set_src_fmt(isp, sd_state, src_fmt, which);
@@ -638,7 +561,7 @@ static void rkisp1_isp_set_sink_crop(struct rkisp1_isp *isp,
 
 	*r = *sink_crop;
 
-	/* Propagate to out crop */
+	 
 	src_crop = rkisp1_isp_get_pad_crop(isp, sd_state,
 					   RKISP1_ISP_PAD_SOURCE_VIDEO, which);
 	rkisp1_isp_set_src_crop(isp, sd_state, src_crop, which);
@@ -673,13 +596,7 @@ static void rkisp1_isp_set_sink_fmt(struct rkisp1_isp *isp,
 				   RKISP1_ISP_MIN_HEIGHT,
 				   RKISP1_ISP_MAX_HEIGHT);
 
-	/*
-	 * Adjust the color space fields. Accept any color primaries and
-	 * transfer function for both YUV and Bayer. For YUV any YCbCr encoding
-	 * and quantization range is also accepted. For Bayer formats, the YCbCr
-	 * encoding isn't applicable, and the quantization range can only be
-	 * full.
-	 */
+	 
 	is_yuv = mbus_info->pixel_enc == V4L2_PIXEL_ENC_YUV;
 
 	sink_fmt->colorspace = format->colorspace ? :
@@ -694,18 +611,14 @@ static void rkisp1_isp_set_sink_fmt(struct rkisp1_isp *isp,
 			V4L2_MAP_QUANTIZATION_DEFAULT(false, sink_fmt->colorspace,
 						      sink_fmt->ycbcr_enc);
 	} else {
-		/*
-		 * The YCbCr encoding isn't applicable for non-YUV formats, but
-		 * V4L2 has no "no encoding" value. Hardcode it to Rec. 601, it
-		 * should be ignored by userspace.
-		 */
+		 
 		sink_fmt->ycbcr_enc = V4L2_YCBCR_ENC_601;
 		sink_fmt->quantization = V4L2_QUANTIZATION_FULL_RANGE;
 	}
 
 	*format = *sink_fmt;
 
-	/* Propagate to in crop */
+	 
 	sink_crop = rkisp1_isp_get_pad_crop(isp, sd_state,
 					    RKISP1_ISP_PAD_SINK_VIDEO,
 					    which);
@@ -829,9 +742,7 @@ static const struct v4l2_subdev_pad_ops rkisp1_isp_pad_ops = {
 	.link_validate = v4l2_subdev_link_validate_default,
 };
 
-/* ----------------------------------------------------------------------------
- * Stream operations
- */
+ 
 
 static int rkisp1_isp_s_stream(struct v4l2_subdev *sd, int enable)
 {
@@ -859,7 +770,7 @@ static int rkisp1_isp_s_stream(struct v4l2_subdev *sd, int enable)
 
 	rkisp1->source = media_entity_to_v4l2_subdev(source_pad->entity);
 	if (!rkisp1->source) {
-		/* This should really not happen, so is not worth a message. */
+		 
 		return -EPIPE;
 	}
 
@@ -905,7 +816,7 @@ static int rkisp1_isp_subs_evt(struct v4l2_subdev *sd, struct v4l2_fh *fh,
 	if (sub->type != V4L2_EVENT_FRAME_SYNC)
 		return -EINVAL;
 
-	/* V4L2_EVENT_FRAME_SYNC doesn't require an id, so zero should be set */
+	 
 	if (sub->id != 0)
 		return -EINVAL;
 
@@ -993,9 +904,7 @@ void rkisp1_isp_unregister(struct rkisp1_device *rkisp1)
 	mutex_destroy(&isp->ops_lock);
 }
 
-/* ----------------------------------------------------------------------------
- * Interrupt handlers
- */
+ 
 
 static void rkisp1_isp_queue_event_sof(struct rkisp1_isp *isp)
 {
@@ -1019,7 +928,7 @@ irqreturn_t rkisp1_isp_isr(int irq, void *ctx)
 
 	rkisp1_write(rkisp1, RKISP1_CIF_ISP_ICR, status);
 
-	/* Vertical sync signal, starting generating new frame */
+	 
 	if (status & RKISP1_CIF_ISP_V_START) {
 		rkisp1->isp.frame_sequence++;
 		rkisp1_isp_queue_event_sof(&rkisp1->isp);
@@ -1029,7 +938,7 @@ irqreturn_t rkisp1_isp_isr(int irq, void *ctx)
 		}
 	}
 	if (status & RKISP1_CIF_ISP_PIC_SIZE_ERROR) {
-		/* Clear pic_size_error */
+		 
 		isp_err = rkisp1_read(rkisp1, RKISP1_CIF_ISP_ERR);
 		if (isp_err & RKISP1_CIF_ISP_ERR_INFORM_SIZE)
 			rkisp1->debug.inform_size_error++;
@@ -1039,22 +948,18 @@ irqreturn_t rkisp1_isp_isr(int irq, void *ctx)
 			rkisp1->debug.outform_size_error++;
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_ERR_CLR, isp_err);
 	} else if (status & RKISP1_CIF_ISP_DATA_LOSS) {
-		/* keep track of data_loss in debugfs */
+		 
 		rkisp1->debug.data_loss++;
 	}
 
 	if (status & RKISP1_CIF_ISP_FRAME) {
 		u32 isp_ris;
 
-		/* New frame from the sensor received */
+		 
 		isp_ris = rkisp1_read(rkisp1, RKISP1_CIF_ISP_RIS);
 		if (isp_ris & RKISP1_STATS_MEAS_MASK)
 			rkisp1_stats_isr(&rkisp1->stats, isp_ris);
-		/*
-		 * Then update changed configs. Some of them involve
-		 * lot of register writes. Do those only one per frame.
-		 * Do the updates in the order of the processing flow.
-		 */
+		 
 		rkisp1_params_isr(rkisp1);
 	}
 

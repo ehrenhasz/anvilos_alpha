@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO driver for TPS68470 PMIC
- *
- * Copyright (C) 2017 Intel Corporation
- *
- * Authors:
- *	Antti Laakso <antti.laakso@intel.com>
- *	Tianshu Qiu <tian.shu.qiu@intel.com>
- *	Jian Xu Zheng <jian.xu.zheng@intel.com>
- *	Yuning Pu <yuning.pu@intel.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/mfd/tps68470.h>
@@ -54,7 +44,7 @@ static int tps68470_gpio_get_direction(struct gpio_chip *gc,
 	struct regmap *regmap = tps68470_gpio->tps68470_regmap;
 	int val, ret;
 
-	/* rest are always outputs */
+	 
 	if (offset >= TPS68470_N_REGULAR_GPIO)
 		return GPIO_LINE_DIRECTION_OUT;
 
@@ -91,10 +81,10 @@ static int tps68470_gpio_output(struct gpio_chip *gc, unsigned int offset,
 	struct tps68470_gpio_data *tps68470_gpio = gpiochip_get_data(gc);
 	struct regmap *regmap = tps68470_gpio->tps68470_regmap;
 
-	/* Set the initial value */
+	 
 	tps68470_gpio_set(gc, offset, value);
 
-	/* rest are always outputs */
+	 
 	if (offset >= TPS68470_N_REGULAR_GPIO)
 		return 0;
 
@@ -108,7 +98,7 @@ static int tps68470_gpio_input(struct gpio_chip *gc, unsigned int offset)
 	struct tps68470_gpio_data *tps68470_gpio = gpiochip_get_data(gc);
 	struct regmap *regmap = tps68470_gpio->tps68470_regmap;
 
-	/* rest are always outputs */
+	 
 	if (offset >= TPS68470_N_REGULAR_GPIO)
 		return -EINVAL;
 

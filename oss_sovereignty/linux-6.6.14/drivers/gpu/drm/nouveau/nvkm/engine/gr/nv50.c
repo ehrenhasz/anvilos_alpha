@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 
 #include <core/client.h>
@@ -35,9 +13,7 @@ nv50_gr_units(struct nvkm_gr *gr)
 	return nvkm_rd32(gr->engine.subdev.device, 0x1540);
 }
 
-/*******************************************************************************
- * Graphics object classes
- ******************************************************************************/
+ 
 
 static int
 nv50_gr_object_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -61,9 +37,7 @@ nv50_gr_object = {
 	.bind = nv50_gr_object_bind,
 };
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static int
 nv50_gr_chan_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -100,9 +74,7 @@ nv50_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 static const struct nvkm_bitfield nv50_mp_exec_errors[] = {
 	{ 0x01, "STACK_UNDERFLOW" },
@@ -130,7 +102,7 @@ static const struct nvkm_bitfield nv50_mpc_traps[] = {
 };
 
 static const struct nvkm_bitfield nv50_tex_traps[] = {
-	{ 0x00000001, "" }, /* any bit set? */
+	{ 0x00000001, "" },  
 	{ 0x00000002, "FAULT" },
 	{ 0x00000004, "STORAGE_TYPE_MISMATCH" },
 	{ 0x00000008, "LINEAR_MISMATCH" },
@@ -160,7 +132,7 @@ static const struct nvkm_bitfield nv50_gr_trap_ccache[] = {
 	{}
 };
 
-/* There must be a *lot* of these. Will take some time to gather them up. */
+ 
 const struct nvkm_enum nv50_data_error_names[] = {
 	{ 0x00000003, "INVALID_OPERATION", NULL },
 	{ 0x00000004, "INVALID_VALUE", NULL },
@@ -250,15 +222,15 @@ nv50_gr_prop_trap(struct nv50_gr *gr, u32 ustatus_addr, u32 ustatus, u32 tp)
 	u32 e24 = nvkm_rd32(device, ustatus_addr + 0x1c);
 	char msg[128];
 
-	/* CUDA memory: l[], g[] or stack. */
+	 
 	if (ustatus & 0x00000080) {
 		if (e18 & 0x80000000) {
-			/* g[] read fault? */
+			 
 			nvkm_error(subdev, "TRAP_PROP - TP %d - CUDA_FAULT - Global read fault at address %02x%08x\n",
 					 tp, e14, e10 | ((e18 >> 24) & 0x1f));
 			e18 &= ~0x1f000000;
 		} else if (e18 & 0xc) {
-			/* g[] write fault? */
+			 
 			nvkm_error(subdev, "TRAP_PROP - TP %d - CUDA_FAULT - Global write fault at address %02x%08x\n",
 				 tp, e14, e10 | ((e18 >> 7) & 0x1f));
 			e18 &= ~0x00000f80;
@@ -344,7 +316,7 @@ nv50_gr_tp_trap(struct nv50_gr *gr, int type, u32 ustatus_old,
 			continue;
 		tps++;
 		switch (type) {
-		case 6: /* texture error... unknown for now */
+		case 6:  
 			if (display) {
 				nvkm_error(subdev, "magic set %d:\n", i);
 				for (r = ustatus_addr + 4; r <= ustatus_addr + 0x10; r += 4)
@@ -360,7 +332,7 @@ nv50_gr_tp_trap(struct nv50_gr *gr, int type, u32 ustatus_old,
 				}
 			}
 			break;
-		case 7: /* MP error */
+		case 7:  
 			if (ustatus & 0x04030000) {
 				nv50_gr_mp_trap(gr, i, display);
 				ustatus &= ~0x04030000;
@@ -373,7 +345,7 @@ nv50_gr_tp_trap(struct nv50_gr *gr, int type, u32 ustatus_old,
 				ustatus = 0;
 			}
 			break;
-		case 8: /* PROP error */
+		case 8:  
 			if (display)
 				nv50_gr_prop_trap(
 						gr, ustatus_addr, ustatus, i);
@@ -406,9 +378,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		return 1;
 	}
 
-	/* DISPATCH: Relays commands to other units and handles NOTIFY,
-	 * COND, QUERY. If you get a trap from it, the command is still stuck
-	 * in DISPATCH and you need to do something about it. */
+	 
 	if (status & 0x001) {
 		ustatus = nvkm_rd32(device, 0x400804) & 0x7fffffff;
 		if (!ustatus && display) {
@@ -417,7 +387,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 
 		nvkm_wr32(device, 0x400500, 0x00000000);
 
-		/* Known to be triggered by screwed up NOTIFY and COND... */
+		 
 		if (ustatus & 0x00000001) {
 			u32 addr = nvkm_rd32(device, 0x400808);
 			u32 subc = (addr & 0x00070000) >> 16;
@@ -481,7 +451,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 			return 0;
 	}
 
-	/* M2MF: Memory to memory copy engine. */
+	 
 	if (status & 0x002) {
 		u32 ustatus = nvkm_rd32(device, 0x406800) & 0x7fffffff;
 		if (display) {
@@ -496,7 +466,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 				   nvkm_rd32(device, 0x406810));
 		}
 
-		/* No sane way found yet -- just reset the bugger. */
+		 
 		nvkm_wr32(device, 0x400040, 2);
 		nvkm_wr32(device, 0x400040, 0);
 		nvkm_wr32(device, 0x406800, 0xc0000000);
@@ -504,7 +474,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x002;
 	}
 
-	/* VFETCH: Fetches data from vertex buffers. */
+	 
 	if (status & 0x004) {
 		u32 ustatus = nvkm_rd32(device, 0x400c04) & 0x7fffffff;
 		if (display) {
@@ -524,7 +494,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x004;
 	}
 
-	/* STRMOUT: DirectX streamout / OpenGL transform feedback. */
+	 
 	if (status & 0x008) {
 		ustatus = nvkm_rd32(device, 0x401800) & 0x7fffffff;
 		if (display) {
@@ -539,7 +509,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 				   nvkm_rd32(device, 0x401810));
 		}
 
-		/* No sane way found yet -- just reset the bugger. */
+		 
 		nvkm_wr32(device, 0x400040, 0x80);
 		nvkm_wr32(device, 0x400040, 0);
 		nvkm_wr32(device, 0x401800, 0xc0000000);
@@ -547,7 +517,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x008;
 	}
 
-	/* CCACHE: Handles code and c[] caches and fills them. */
+	 
 	if (status & 0x010) {
 		ustatus = nvkm_rd32(device, 0x405018) & 0x7fffffff;
 		if (display) {
@@ -571,18 +541,16 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x010;
 	}
 
-	/* Unknown, not seen yet... 0x402000 is the only trap status reg
-	 * remaining, so try to handle it anyway. Perhaps related to that
-	 * unknown DMA slot on tesla? */
+	 
 	if (status & 0x20) {
 		ustatus = nvkm_rd32(device, 0x402000) & 0x7fffffff;
 		if (display)
 			nvkm_error(subdev, "TRAP_UNKC04 %08x\n", ustatus);
 		nvkm_wr32(device, 0x402000, 0xc0000000);
-		/* no status modifiction on purpose */
+		 
 	}
 
-	/* TEXTURE: CUDA texturing units */
+	 
 	if (status & 0x040) {
 		nv50_gr_tp_trap(gr, 6, 0x408900, 0x408600, display,
 				    "TRAP_TEXTURE");
@@ -590,7 +558,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x040;
 	}
 
-	/* MP: CUDA execution engines. */
+	 
 	if (status & 0x080) {
 		nv50_gr_tp_trap(gr, 7, 0x408314, 0x40831c, display,
 				    "TRAP_MP");
@@ -598,8 +566,7 @@ nv50_gr_trap_handler(struct nv50_gr *gr, u32 display,
 		status &= ~0x080;
 	}
 
-	/* PROP:  Handles TP-initiated uncached memory accesses:
-	 * l[], g[], stack, 2d surfaces, render targets. */
+	 
 	if (status & 0x100) {
 		nv50_gr_tp_trap(gr, 8, 0x408e08, 0x408708, display,
 				    "TRAP_PROP");
@@ -682,10 +649,10 @@ nv50_gr_init(struct nvkm_gr *base)
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 	int ret, units, i;
 
-	/* NV_PGRAPH_DEBUG_3_HW_CTX_SWITCH_ENABLED */
+	 
 	nvkm_wr32(device, 0x40008c, 0x00000004);
 
-	/* reset/enable traps and interrupts */
+	 
 	nvkm_wr32(device, 0x400804, 0xc0000000);
 	nvkm_wr32(device, 0x406800, 0xc0000000);
 	nvkm_wr32(device, 0x400c04, 0xc0000000);
@@ -715,7 +682,7 @@ nv50_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, 0x40013c, 0xffffffff);
 	nvkm_wr32(device, 0x400500, 0x00010001);
 
-	/* upload context program, initialise ctxctl defaults */
+	 
 	ret = nv50_grctx_init(device, &gr->size);
 	if (ret)
 		return ret;
@@ -727,7 +694,7 @@ nv50_gr_init(struct nvkm_gr *base)
 	nvkm_wr32(device, 0x40032c, 0x00000000);
 	nvkm_wr32(device, 0x400330, 0x00000000);
 
-	/* some unknown zcull magic */
+	 
 	switch (device->chipset & 0xf0) {
 	case 0x50:
 	case 0x80:
@@ -748,7 +715,7 @@ nv50_gr_init(struct nvkm_gr *base)
 		break;
 	}
 
-	/* zero out zcull regions */
+	 
 	for (i = 0; i < 8; i++) {
 		nvkm_wr32(device, 0x402c20 + (i * 0x10), 0x00000000);
 		nvkm_wr32(device, 0x402c24 + (i * 0x10), 0x00000000);

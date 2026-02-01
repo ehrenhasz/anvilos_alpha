@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob@ti.com>
- */
+
+ 
 
 #include <linux/fb.h>
 
@@ -22,9 +19,7 @@ MODULE_PARM_DESC(ywrap, "Enable ywrap scrolling (omap44xx and later, default 'y'
 static bool ywrap_enabled = true;
 module_param_named(ywrap, ywrap_enabled, bool, 0644);
 
-/*
- * fbdev funcs, to implement legacy fbdev interface on top of drm driver
- */
+ 
 
 #define to_omap_fbdev(x) container_of(x, struct omap_fbdev, base)
 
@@ -32,7 +27,7 @@ struct omap_fbdev {
 	struct drm_fb_helper base;
 	bool ywrap_enabled;
 
-	/* for deferred dmm roll when getting called in atomic ctx */
+	 
 	struct work_struct work;
 };
 
@@ -46,7 +41,7 @@ static void pan_worker(struct work_struct *work)
 	struct drm_gem_object *bo = drm_gem_fb_get_obj(helper->fb, 0);
 	int npages;
 
-	/* DMM roll shifts in 4K pages: */
+	 
 	npages = fbi->fix.line_length >> PAGE_SHIFT;
 	omap_gem_roll(bo, fbi->var.yoffset * npages);
 }
@@ -150,11 +145,11 @@ static int omap_fbdev_create(struct drm_fb_helper *helper,
 
 	fbdev->ywrap_enabled = priv->has_dmm && ywrap_enabled;
 	if (fbdev->ywrap_enabled) {
-		/* need to align pitch to page size if using DMM scrolling */
+		 
 		mode_cmd.pitches[0] = PAGE_ALIGN(mode_cmd.pitches[0]);
 	}
 
-	/* allocate backing bo */
+	 
 	gsize = (union omap_gem_size){
 		.bytes = PAGE_ALIGN(mode_cmd.pitches[0] * mode_cmd.height),
 	};
@@ -169,22 +164,13 @@ static int omap_fbdev_create(struct drm_fb_helper *helper,
 	fb = omap_framebuffer_init(dev, &mode_cmd, &bo);
 	if (IS_ERR(fb)) {
 		dev_err(dev->dev, "failed to allocate fb\n");
-		/* note: if fb creation failed, we can't rely on fb destroy
-		 * to unref the bo:
-		 */
+		 
 		drm_gem_object_put(bo);
 		ret = PTR_ERR(fb);
 		goto fail;
 	}
 
-	/* note: this keeps the bo pinned.. which is perhaps not ideal,
-	 * but is needed as long as we use fb_mmap() to mmap to userspace
-	 * (since this happens using fix.smem_start).  Possibly we could
-	 * implement our own mmap using GEM mmap support to avoid this
-	 * (non-tiled buffer doesn't need to be pinned for fbcon to write
-	 * to it).  Then we just need to be sure that we are able to re-
-	 * pin it in case of an opps.
-	 */
+	 
 	ret = omap_gem_pin(bo, &dma_addr);
 	if (ret) {
 		dev_err(dev->dev, "could not pin framebuffer\n");
@@ -213,9 +199,7 @@ static int omap_fbdev_create(struct drm_fb_helper *helper,
 	fbi->fix.smem_start = dma_addr;
 	fbi->fix.smem_len = bo->size;
 
-	/* if we have DMM, then we can use it for scrolling by just
-	 * shuffling pages around in DMM rather than doing sw blit.
-	 */
+	 
 	if (fbdev->ywrap_enabled) {
 		DRM_INFO("Enabling DMM ywrap scrolling\n");
 		fbi->flags |= FBINFO_HWACCEL_YWRAP | FBINFO_READS_FAST;
@@ -245,15 +229,13 @@ static const struct drm_fb_helper_funcs omap_fb_helper_funcs = {
 static struct drm_fb_helper *get_fb(struct fb_info *fbi)
 {
 	if (!fbi || strcmp(fbi->fix.id, MODULE_NAME)) {
-		/* these are not the fb's you're looking for */
+		 
 		return NULL;
 	}
 	return fbi->par;
 }
 
-/*
- * struct drm_client
- */
+ 
 
 static void omap_fbdev_client_unregister(struct drm_client_dev *client)
 {

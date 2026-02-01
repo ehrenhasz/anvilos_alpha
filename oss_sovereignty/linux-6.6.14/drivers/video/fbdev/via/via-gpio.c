@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for viafb GPIO ports.
- *
- * Copyright 2009 Jonathan Corbet <corbet@lwn.net>
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/gpio/driver.h>
@@ -13,13 +9,10 @@
 #include <linux/export.h>
 #include "via-gpio.h"
 
-/*
- * The ports we know about.  Note that the port-25 gpios are not
- * mentioned in the datasheet.
- */
+ 
 
 struct viafb_gpio {
-	char *vg_name;	/* Data sheet name */
+	char *vg_name;	 
 	u16 vg_io_port;
 	u8  vg_port_index;
 	int  vg_mask_shift;
@@ -27,7 +20,7 @@ struct viafb_gpio {
 
 static struct viafb_gpio viafb_all_gpios[] = {
 	{
-		.vg_name = "VGPIO0",  /* Guess - not in datasheet */
+		.vg_name = "VGPIO0",   
 		.vg_io_port = VIASR,
 		.vg_port_index = 0x25,
 		.vg_mask_shift = 1
@@ -39,25 +32,25 @@ static struct viafb_gpio viafb_all_gpios[] = {
 		.vg_mask_shift = 0
 	},
 	{
-		.vg_name = "VGPIO2",  /* aka DISPCLKI0 */
+		.vg_name = "VGPIO2",   
 		.vg_io_port = VIASR,
 		.vg_port_index = 0x2c,
 		.vg_mask_shift = 1
 	},
 	{
-		.vg_name = "VGPIO3",  /* aka DISPCLKO0 */
+		.vg_name = "VGPIO3",   
 		.vg_io_port = VIASR,
 		.vg_port_index = 0x2c,
 		.vg_mask_shift = 0
 	},
 	{
-		.vg_name = "VGPIO4",  /* DISPCLKI1 */
+		.vg_name = "VGPIO4",   
 		.vg_io_port = VIASR,
 		.vg_port_index = 0x3d,
 		.vg_mask_shift = 1
 	},
 	{
-		.vg_name = "VGPIO5",  /* DISPCLKO1 */
+		.vg_name = "VGPIO5",   
 		.vg_io_port = VIASR,
 		.vg_port_index = 0x3d,
 		.vg_mask_shift = 0
@@ -66,10 +59,7 @@ static struct viafb_gpio viafb_all_gpios[] = {
 
 #define VIAFB_NUM_GPIOS ARRAY_SIZE(viafb_all_gpios)
 
-/*
- * This structure controls the active GPIOs, which may be a subset
- * of those which are known.
- */
+ 
 
 struct viafb_gpio_cfg {
 	struct gpio_chip gpio_chip;
@@ -78,9 +68,7 @@ struct viafb_gpio_cfg {
 	const char *gpio_names[VIAFB_NUM_GPIOS];
 };
 
-/*
- * GPIO access functions
- */
+ 
 static void via_gpio_set(struct gpio_chip *chip, unsigned int nr,
 			 int value)
 {
@@ -92,7 +80,7 @@ static void via_gpio_set(struct gpio_chip *chip, unsigned int nr,
 	spin_lock_irqsave(&cfg->vdev->reg_lock, flags);
 	gpio = cfg->active_gpios[nr];
 	reg = via_read_reg(VIASR, gpio->vg_port_index);
-	reg |= 0x40 << gpio->vg_mask_shift;  /* output enable */
+	reg |= 0x40 << gpio->vg_mask_shift;   
 	if (value)
 		reg |= 0x10 << gpio->vg_mask_shift;
 	else
@@ -108,10 +96,7 @@ static int via_gpio_dir_out(struct gpio_chip *chip, unsigned int nr,
 	return 0;
 }
 
-/*
- * Set the input direction.  I'm not sure this is right; we should
- * be able to do input without disabling output.
- */
+ 
 static int via_gpio_dir_input(struct gpio_chip *chip, unsigned int nr)
 {
 	struct viafb_gpio_cfg *cfg = gpiochip_get_data(chip);
@@ -155,9 +140,7 @@ static struct viafb_gpio_cfg viafb_gpio_config = {
 	}
 };
 
-/*
- * Manage the software enable bit.
- */
+ 
 static void viafb_gpio_enable(struct viafb_gpio *gpio)
 {
 	via_write_reg_mask(VIASR, gpio->vg_port_index, 0x02, 0x02);
@@ -188,7 +171,7 @@ static struct viafb_pm_hooks viafb_gpio_pm_hooks = {
 	.suspend = viafb_gpio_suspend,
 	.resume = viafb_gpio_resume
 };
-#endif /* CONFIG_PM */
+#endif  
 
 static struct gpiod_lookup_table viafb_gpio_table = {
 	.dev_id = "viafb-camera",
@@ -199,9 +182,7 @@ static struct gpiod_lookup_table viafb_gpio_table = {
 	},
 };
 
-/*
- * Platform device stuff.
- */
+ 
 static int viafb_gpio_probe(struct platform_device *platdev)
 {
 	struct viafb_dev *vdev = platdev->dev.platform_data;
@@ -210,10 +191,7 @@ static int viafb_gpio_probe(struct platform_device *platdev)
 	struct viafb_gpio *gpio;
 	unsigned long flags;
 
-	/*
-	 * Set up entries for all GPIOs which have been configured to
-	 * operate as such (as opposed to as i2c ports).
-	 */
+	 
 	for (i = 0; i < VIAFB_NUM_PORTS; i++) {
 		if (port_cfg[i].mode != VIA_MODE_GPIO)
 			continue;
@@ -233,18 +211,13 @@ static int viafb_gpio_probe(struct platform_device *platdev)
 		printk(KERN_INFO "viafb: no GPIOs configured\n");
 		return 0;
 	}
-	/*
-	 * Enable the ports.  They come in pairs, with a single
-	 * enable bit for both.
-	 */
+	 
 	spin_lock_irqsave(&viafb_gpio_config.vdev->reg_lock, flags);
 	for (i = 0; i < ngpio; i += 2)
 		viafb_gpio_enable(viafb_gpio_config.active_gpios[i]);
 	spin_unlock_irqrestore(&viafb_gpio_config.vdev->reg_lock, flags);
-	/*
-	 * Get registered.
-	 */
-	viafb_gpio_config.gpio_chip.base = -1;  /* Dynamic */
+	 
+	viafb_gpio_config.gpio_chip.base = -1;   
 	viafb_gpio_config.gpio_chip.label = "via-gpio";
 	ret = gpiochip_add_data(&viafb_gpio_config.gpio_chip,
 				&viafb_gpio_config);
@@ -271,15 +244,11 @@ static void viafb_gpio_remove(struct platform_device *platdev)
 	viafb_pm_unregister(&viafb_gpio_pm_hooks);
 #endif
 
-	/*
-	 * Get unregistered.
-	 */
+	 
 	if (viafb_gpio_config.gpio_chip.ngpio > 0) {
 		gpiochip_remove(&viafb_gpio_config.gpio_chip);
 	}
-	/*
-	 * Disable the ports.
-	 */
+	 
 	spin_lock_irqsave(&viafb_gpio_config.vdev->reg_lock, flags);
 	for (i = 0; i < viafb_gpio_config.gpio_chip.ngpio; i += 2)
 		viafb_gpio_disable(viafb_gpio_config.active_gpios[i]);

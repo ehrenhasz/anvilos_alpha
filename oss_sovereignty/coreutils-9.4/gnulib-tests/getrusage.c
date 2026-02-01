@@ -1,31 +1,14 @@
-/* getrusage replacement for systems which lack it.
-
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible, 2012.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <sys/resource.h>
 
 #include <errno.h>
 #include <string.h>
 
-/* Get uint64_t.  */
+ 
 #include <stdint.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
@@ -44,13 +27,13 @@ getrusage (int who, struct rusage *usage_p)
 {
   if (who == RUSAGE_SELF || who == RUSAGE_CHILDREN)
     {
-      /* Clear all unsupported members of 'struct rusage'.  */
+       
       memset (usage_p, '\0', sizeof (struct rusage));
 
 #if defined _WIN32 && ! defined __CYGWIN__
       if (who == RUSAGE_SELF)
         {
-          /* Fill in the ru_utime and ru_stime members.  */
+           
           FILETIME creation_time;
           FILETIME exit_time;
           FILETIME kernel_time;
@@ -60,7 +43,7 @@ getrusage (int who, struct rusage *usage_p)
                                &creation_time, &exit_time,
                                &kernel_time, &user_time))
             {
-              /* Convert to microseconds, rounding.  */
+               
               uint64_t kernel_usec =
                 ((((uint64_t) kernel_time.dwHighDateTime << 32)
                   | (uint64_t) kernel_time.dwLowDateTime)
@@ -77,13 +60,13 @@ getrusage (int who, struct rusage *usage_p)
             }
         }
 #else
-      /* Fill in the ru_utime and ru_stime members.  */
+       
       {
         struct tms time;
 
         if (times (&time) != (clock_t) -1)
           {
-            /* Number of clock ticks per second.  */
+             
             unsigned int clocks_per_second = sysconf (_SC_CLK_TCK);
 
             if (clocks_per_second > 0)

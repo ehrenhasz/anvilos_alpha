@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys AXS10X SDP I2S PLL clock driver
- *
- * Copyright (C) 2016 Synopsys
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -15,7 +11,7 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 
-/* PLL registers addresses */
+ 
 #define PLL_IDIV_REG	0x0
 #define PLL_FBDIV_REG	0x4
 #define PLL_ODIV0_REG	0x8
@@ -30,7 +26,7 @@ struct i2s_pll_cfg {
 };
 
 static const struct i2s_pll_cfg i2s_pll_cfg_27m[] = {
-	/* 27 Mhz */
+	 
 	{ 1024000, 0x104, 0x451, 0x10E38, 0x2000 },
 	{ 1411200, 0x104, 0x596, 0x10D35, 0x2000 },
 	{ 1536000, 0x208, 0xA28, 0x10B2C, 0x2000 },
@@ -43,7 +39,7 @@ static const struct i2s_pll_cfg i2s_pll_cfg_27m[] = {
 };
 
 static const struct i2s_pll_cfg i2s_pll_cfg_28m[] = {
-	/* 28.224 Mhz */
+	 
 	{ 1024000, 0x82, 0x105, 0x107DF, 0x2000 },
 	{ 1411200, 0x28A, 0x1, 0x10001, 0x2000 },
 	{ 1536000, 0xA28, 0x187, 0x10042, 0x2000 },

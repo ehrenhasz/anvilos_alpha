@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_pci.c - SST (LPE) driver init file for pci enumeration.
- *
- *  Copyright (C) 2008-14	Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/fs.h>
@@ -30,11 +19,11 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	if (ret)
 		return ret;
 
-	/* map registers */
-	/* DDR base */
+	 
+	 
 	if (ctx->dev_id == PCI_DEVICE_ID_INTEL_SST_TNG) {
 		ctx->ddr_base = pci_resource_start(pci, 0);
-		/* check that the relocated IMR base matches with FW Binary */
+		 
 		ddr_base = relocate_imr_addr_mrfld(ctx->ddr_base);
 		if (!ctx->pdata->lib_info) {
 			dev_err(ctx->dev, "lib_info pointer NULL\n");
@@ -59,7 +48,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	} else {
 		ctx->ddr = NULL;
 	}
-	/* SHIM */
+	 
 	ctx->shim_phy_add = pci_resource_start(pci, 1);
 	ctx->shim = pcim_iomap(pci, 1, pci_resource_len(pci, 1));
 	if (!ctx->shim) {
@@ -68,7 +57,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	}
 	dev_dbg(ctx->dev, "SST Shim Ptr %p\n", ctx->shim);
 
-	/* Shared SRAM */
+	 
 	ctx->mailbox_add = pci_resource_start(pci, 2);
 	ctx->mailbox = pcim_iomap(pci, 2, pci_resource_len(pci, 2));
 	if (!ctx->mailbox) {
@@ -77,7 +66,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	}
 	dev_dbg(ctx->dev, "SRAM Ptr %p\n", ctx->mailbox);
 
-	/* IRAM */
+	 
 	ctx->iram_end = pci_resource_end(pci, 3);
 	ctx->iram_base = pci_resource_start(pci, 3);
 	ctx->iram = pcim_iomap(pci, 3, pci_resource_len(pci, 3));
@@ -87,7 +76,7 @@ static int sst_platform_get_resources(struct intel_sst_drv *ctx)
 	}
 	dev_dbg(ctx->dev, "IRAM Ptr %p\n", ctx->iram);
 
-	/* DRAM */
+	 
 	ctx->dram_end = pci_resource_end(pci, 4);
 	ctx->dram_base = pci_resource_start(pci, 4);
 	ctx->dram = pcim_iomap(pci, 4, pci_resource_len(pci, 4));
@@ -101,13 +90,7 @@ do_release_regions:
 	return ret;
 }
 
-/*
- * intel_sst_probe - PCI probe function
- *
- * @pci:	PCI device structure
- * @pci_id: PCI device ID structure
- *
- */
+ 
 static int intel_sst_probe(struct pci_dev *pci,
 			const struct pci_device_id *pci_id)
 {
@@ -130,7 +113,7 @@ static int intel_sst_probe(struct pci_dev *pci,
 	if (ret < 0)
 		return ret;
 
-	/* Init the device */
+	 
 	ret = pcim_enable_device(pci);
 	if (ret) {
 		dev_err(sst_drv_ctx->dev,
@@ -153,14 +136,7 @@ do_free_drv_ctx:
 	return ret;
 }
 
-/**
- * intel_sst_remove - PCI remove function
- *
- * @pci:	PCI device structure
- *
- * This function is called by OS when a device is unloaded
- * This frees the interrupt etc
- */
+ 
 static void intel_sst_remove(struct pci_dev *pci)
 {
 	struct intel_sst_drv *sst_drv_ctx = pci_get_drvdata(pci);
@@ -171,7 +147,7 @@ static void intel_sst_remove(struct pci_dev *pci)
 	pci_set_drvdata(pci, NULL);
 }
 
-/* PCI Routines */
+ 
 static const struct pci_device_id intel_sst_ids[] = {
 	{ PCI_DEVICE_DATA(INTEL, SST_TNG, 0) },
 	{ 0, }

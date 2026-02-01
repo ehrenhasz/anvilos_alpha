@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bsg endpoint that supports UPIUs
- *
- * Copyright (C) 2018 Western Digital Corporation
- */
+
+ 
 
 #include <linux/bsg-lib.h>
 #include <linux/dma-mapping.h>
@@ -195,19 +191,14 @@ out:
 	kfree(buff);
 	bsg_reply->result = ret;
 	job->reply_len = !rpmb ? sizeof(struct ufs_bsg_reply) : sizeof(struct ufs_rpmb_reply);
-	/* complete the job here only if no error */
+	 
 	if (ret == 0)
 		bsg_job_done(job, ret, bsg_reply->reply_payload_rcv_len);
 
 	return ret;
 }
 
-/**
- * ufs_bsg_remove - detach and remove the added ufs-bsg node
- * @hba: per adapter object
- *
- * Should be called when unloading the driver.
- */
+ 
 void ufs_bsg_remove(struct ufs_hba *hba)
 {
 	struct device *bsg_dev = &hba->bsg_dev;
@@ -226,14 +217,7 @@ static inline void ufs_bsg_node_release(struct device *dev)
 	put_device(dev->parent);
 }
 
-/**
- * ufs_bsg_probe - Add ufs bsg device node
- * @hba: per adapter object
- *
- * Called during initial loading of the driver, and before scsi_scan_host.
- *
- * Returns: 0 (success).
- */
+ 
 int ufs_bsg_probe(struct ufs_hba *hba)
 {
 	struct device *bsg_dev = &hba->bsg_dev;

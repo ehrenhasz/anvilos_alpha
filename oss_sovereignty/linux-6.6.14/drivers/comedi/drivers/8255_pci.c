@@ -1,56 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * COMEDI driver for generic PCI based 8255 digital i/o boards
- * Copyright (C) 2012 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on the tested adl_pci7296 driver written by:
- *	Jon Grierson <jd@renko.co.uk>
- * and the experimental cb_pcidio driver written by:
- *	Yoshiya Matsuzaka
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: 8255_pci
- * Description: Generic PCI based 8255 Digital I/O boards
- * Devices: [ADLink] PCI-7224 (adl_pci-7224), PCI-7248 (adl_pci-7248),
- *   PCI-7296 (adl_pci-7296),
- *   [Measurement Computing] PCI-DIO24 (cb_pci-dio24),
- *   PCI-DIO24H (cb_pci-dio24h), PCI-DIO48H (cb_pci-dio48h),
- *   PCI-DIO96H (cb_pci-dio96h),
- *   [National Instruments] PCI-DIO-96 (ni_pci-dio-96),
- *   PCI-DIO-96B (ni_pci-dio-96b), PXI-6508 (ni_pxi-6508),
- *   PCI-6503 (ni_pci-6503), PCI-6503B (ni_pci-6503b),
- *   PCI-6503X (ni_pci-6503x), PXI-6503 (ni_pxi-6503)
- * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
- * Updated: Wed, 12 Sep 2012 11:52:01 -0700
- * Status: untested
- *
- * These boards have one or more 8255 digital I/O chips, each of which
- * is supported as a separate 24-channel DIO subdevice.
- *
- * Boards with 24 DIO channels (1 DIO subdevice):
- *
- *   PCI-7224, PCI-DIO24, PCI-DIO24H, PCI-6503, PCI-6503B, PCI-6503X,
- *   PXI-6503
- *
- * Boards with 48 DIO channels (2 DIO subdevices):
- *
- *   PCI-7248, PCI-DIO48H
- *
- * Boards with 96 DIO channels (4 DIO subdevices):
- *
- *   PCI-7296, PCI-DIO96H, PCI-DIO-96, PCI-DIO-96B, PXI-6508
- *
- * Some of these boards also have an 8254 programmable timer/counter
- * chip.  This chip is not currently supported by this driver.
- *
- * Interrupt support for these boards is also not currently supported.
- *
- * Configuration Options: not applicable, uses PCI auto config.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
@@ -166,25 +117,25 @@ static const struct pci_8255_boardinfo pci_8255_boards[] = {
 	},
 };
 
-/* ripped from mite.h and mite_setup2() to avoid mite dependency */
-#define MITE_IODWBSR	0xc0	/* IO Device Window Base Size Register */
-#define WENAB		BIT(7)	/* window enable */
+ 
+#define MITE_IODWBSR	0xc0	 
+#define WENAB		BIT(7)	 
 
 static int pci_8255_mite_init(struct pci_dev *pcidev)
 {
 	void __iomem *mite_base;
 	u32 main_phys_addr;
 
-	/* ioremap the MITE registers (BAR 0) temporarily */
+	 
 	mite_base = pci_ioremap_bar(pcidev, 0);
 	if (!mite_base)
 		return -ENOMEM;
 
-	/* set data window to main registers (BAR 1) */
+	 
 	main_phys_addr = pci_resource_start(pcidev, 1);
 	writel(main_phys_addr | WENAB, mite_base + MITE_IODWBSR);
 
-	/* finished with MITE registers */
+	 
 	iounmap(mite_base);
 	return 0;
 }
@@ -223,11 +174,7 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 		dev->iobase = pci_resource_start(pcidev, board->dio_badr);
 	}
 
-	/*
-	 * One, two, or four subdevices are setup by this driver depending
-	 * on the number of channels provided by the board. Each subdevice
-	 * has 24 channels supported by the 8255 module.
-	 */
+	 
 	ret = comedi_alloc_subdevices(dev, board->n_8255);
 	if (ret)
 		return ret;

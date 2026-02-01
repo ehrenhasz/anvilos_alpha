@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -86,7 +86,7 @@ static long __insert_in_tree_and_list(struct bpf_list_head *head,
 
 	bpf_spin_lock(lock);
 	if (bpf_rbtree_add(root, &n->r, less)) {
-		/* Failure to insert - unexpected */
+		 
 		bpf_spin_unlock(lock);
 		bpf_obj_drop(m);
 		return -2;
@@ -95,7 +95,7 @@ static long __insert_in_tree_and_list(struct bpf_list_head *head,
 
 	bpf_spin_lock(lock);
 	if (bpf_list_push_front(head, &m->l)) {
-		/* Failure to insert - unexpected */
+		 
 		bpf_spin_unlock(lock);
 		return -3;
 	}
@@ -129,7 +129,7 @@ static long __stash_map_insert_tree(int idx, int val, struct bpf_rb_root *root,
 
 	bpf_spin_lock(lock);
 	if (bpf_rbtree_add(root, &m->r, less)) {
-		/* Failure to insert - unexpected */
+		 
 		bpf_spin_unlock(lock);
 		return -4;
 	}
@@ -249,12 +249,7 @@ long insert_and_remove_tree_##rem_tree##_list_##rem_list(void *ctx)	\
 	return tree_data + list_data;					\
 }
 
-/* After successful insert of struct node_data into both collections:
- *   - it should have refcount = 2
- *   - removing / not removing the node_data from a collection after
- *     reading should have no effect on ability to read / remove from
- *     the other collection
- */
+ 
 INSERT_READ_BOTH(true, true, "insert_read_both: remove from tree + list");
 INSERT_READ_BOTH(false, false, "insert_read_both: remove from neither");
 INSERT_READ_BOTH(true, false, "insert_read_both: remove from tree");
@@ -288,12 +283,7 @@ long insert_and_remove_lf_tree_##rem_tree##_list_##rem_list(void *ctx)	\
 	return tree_data + list_data;					\
 }
 
-/* Similar to insert_read_both, but list data is read and possibly removed
- * first
- *
- * Results should be no different than reading and possibly removing rbtree
- * node first
- */
+ 
 INSERT_READ_BOTH(true, true, "insert_read_both_list_first: remove from tree + list");
 INSERT_READ_BOTH(false, false, "insert_read_both_list_first: remove from neither");
 INSERT_READ_BOTH(true, false, "insert_read_both_list_first: remove from tree");
@@ -324,11 +314,7 @@ long insert_double_##read_fn##_and_del_##read_root(void *ctx)		\
 	return err + list_data;						\
 }
 
-/* Insert into both tree and list, then try reading-and-removing from either twice
- *
- * The second read-and-remove should fail on read step since the node has
- * already been removed
- */
+ 
 INSERT_DOUBLE_READ_AND_DEL(__read_from_tree, root, "insert_double_del: 2x read-and-del from tree");
 INSERT_DOUBLE_READ_AND_DEL(__read_from_list, head, "insert_double_del: 2x read-and-del from list");
 
@@ -359,11 +345,7 @@ long insert_rbtree_and_stash__del_tree_##rem_tree(void *ctx)		\
 	return tree_data + map_data;					\
 }
 
-/* Stash a refcounted node in map_val, insert same node into tree, then try
- * reading data from tree then unstashed map_val, possibly removing from tree
- *
- * Removing from tree should have no effect on map_val kptr validity
- */
+ 
 INSERT_STASH_READ(true, "insert_stash_read: remove from tree");
 INSERT_STASH_READ(false, "insert_stash_read: don't remove from tree");
 
@@ -488,7 +470,7 @@ long rbtree_wrong_owner_remove_fail_a2(void *ctx)
 		return 2;
 	bpf_spin_lock(&lock);
 
-	/* make m non-owning ref */
+	 
 	bpf_list_push_back(&head, &m->l);
 	res = bpf_rbtree_remove(&root, &m->r);
 
@@ -547,7 +529,7 @@ int BPF_PROG(rbtree_sleepable_rcu_no_explicit_rcu_lock,
 	if (!n)
 		return 0;
 
-	/* No explicit bpf_rcu_read_lock */
+	 
 	bpf_spin_lock(&lock);
 	bpf_rbtree_add(&root, &n->r, less);
 	rb = bpf_rbtree_first(&root);
@@ -562,7 +544,7 @@ int BPF_PROG(rbtree_sleepable_rcu_no_explicit_rcu_lock,
 
 err_out:
 	bpf_spin_unlock(&lock);
-	/* No explicit bpf_rcu_read_unlock */
+	 
 	if (m)
 		bpf_obj_drop(m);
 	return 0;

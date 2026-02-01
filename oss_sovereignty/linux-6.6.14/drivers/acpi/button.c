@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  button.c - ACPI Button Driver
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: button: " fmt
 
@@ -66,10 +61,10 @@ static const struct acpi_device_id button_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, button_device_ids);
 
-/* Please keep this list sorted alphabetically by vendor and model */
+ 
 static const struct dmi_system_id dmi_lid_quirks[] = {
 	{
-		/* GP-electronic T701, _LID method points to a floating GPIO */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "T701"),
@@ -78,7 +73,7 @@ static const struct dmi_system_id dmi_lid_quirks[] = {
 		.driver_data = (void *)(long)ACPI_BUTTON_LID_INIT_DISABLED,
 	},
 	{
-		/* Nextbook Ares 8A tablet, _LID device always reports lid closed */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "CherryTrail"),
@@ -87,10 +82,7 @@ static const struct dmi_system_id dmi_lid_quirks[] = {
 		.driver_data = (void *)(long)ACPI_BUTTON_LID_INIT_DISABLED,
 	},
 	{
-		/*
-		 * Lenovo Yoga 9 14ITL5, initial notification of the LID device
-		 * never happens.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "82BG"),
@@ -98,10 +90,7 @@ static const struct dmi_system_id dmi_lid_quirks[] = {
 		.driver_data = (void *)(long)ACPI_BUTTON_LID_INIT_OPEN,
 	},
 	{
-		/*
-		 * Medion Akoya E2215T, notification of the LID device only
-		 * happens on close, not on open and _LID always returns closed.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDION"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "E2215T"),
@@ -109,10 +98,7 @@ static const struct dmi_system_id dmi_lid_quirks[] = {
 		.driver_data = (void *)(long)ACPI_BUTTON_LID_INIT_OPEN,
 	},
 	{
-		/*
-		 * Medion Akoya E2228T, notification of the LID device only
-		 * happens on close, not on open and _LID always returns closed.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDION"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "E2228T"),
@@ -120,10 +106,7 @@ static const struct dmi_system_id dmi_lid_quirks[] = {
 		.driver_data = (void *)(long)ACPI_BUTTON_LID_INIT_OPEN,
 	},
 	{
-		/*
-		 * Razer Blade Stealth 13 late 2019, notification of the LID device
-		 * only happens on close, not on open and _LID always returns closed.
-		 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Razer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Razer Blade Stealth 13 Late 2019"),
@@ -159,7 +142,7 @@ static struct acpi_driver acpi_button_driver = {
 struct acpi_button {
 	unsigned int type;
 	struct input_dev *input;
-	char phys[32];			/* for input device */
+	char phys[32];			 
 	unsigned long pushed;
 	int last_state;
 	ktime_t last_time;
@@ -174,7 +157,7 @@ static unsigned long lid_report_interval __read_mostly = 500;
 module_param(lid_report_interval, ulong, 0644);
 MODULE_PARM_DESC(lid_report_interval, "Interval (ms) between lid key events");
 
-/* FS Interface (/proc) */
+ 
 static struct proc_dir_entry *acpi_button_dir;
 static struct proc_dir_entry *acpi_lid_dir;
 
@@ -196,13 +179,7 @@ static int acpi_lid_notify_state(struct acpi_device *device, int state)
 	ktime_t next_report;
 	bool do_update;
 
-	/*
-	 * In lid_init_state=ignore mode, if user opens/closes lid
-	 * frequently with "open" missing, and "last_time" is also updated
-	 * frequently, "close" cannot be delivered to the userspace.
-	 * So "last_time" is only updated after a timeout or an actual
-	 * switch.
-	 */
+	 
 	if (lid_init_state != ACPI_BUTTON_LID_INIT_IGNORE ||
 	    button->last_state != !!state)
 		do_update = true;
@@ -213,45 +190,13 @@ static int acpi_lid_notify_state(struct acpi_device *device, int state)
 				ms_to_ktime(lid_report_interval));
 	if (button->last_state == !!state &&
 	    ktime_after(ktime_get(), next_report)) {
-		/* Complain the buggy firmware */
+		 
 		pr_warn_once("The lid device is not compliant to SW_LID.\n");
 
-		/*
-		 * Send the unreliable complement switch event:
-		 *
-		 * On most platforms, the lid device is reliable. However
-		 * there are exceptions:
-		 * 1. Platforms returning initial lid state as "close" by
-		 *    default after booting/resuming:
-		 *     https://bugzilla.kernel.org/show_bug.cgi?id=89211
-		 *     https://bugzilla.kernel.org/show_bug.cgi?id=106151
-		 * 2. Platforms never reporting "open" events:
-		 *     https://bugzilla.kernel.org/show_bug.cgi?id=106941
-		 * On these buggy platforms, the usage model of the ACPI
-		 * lid device actually is:
-		 * 1. The initial returning value of _LID may not be
-		 *    reliable.
-		 * 2. The open event may not be reliable.
-		 * 3. The close event is reliable.
-		 *
-		 * But SW_LID is typed as input switch event, the input
-		 * layer checks if the event is redundant. Hence if the
-		 * state is not switched, the userspace cannot see this
-		 * platform triggered reliable event. By inserting a
-		 * complement switch event, it then is guaranteed that the
-		 * platform triggered reliable one can always be seen by
-		 * the userspace.
-		 */
+		 
 		if (lid_init_state == ACPI_BUTTON_LID_INIT_IGNORE) {
 			do_update = true;
-			/*
-			 * Do generate complement switch event for "close"
-			 * as "close" is reliable and wrong "open" won't
-			 * trigger unexpected behaviors.
-			 * Do not generate complement switch event for
-			 * "open" as "open" is not reliable and wrong
-			 * "close" will trigger unexpected behaviors.
-			 */
+			 
 			if (!state) {
 				input_report_switch(button->input,
 						    SW_LID, state);
@@ -259,7 +204,7 @@ static int acpi_lid_notify_state(struct acpi_device *device, int state)
 			}
 		}
 	}
-	/* Send the platform triggered reliable event */
+	 
 	if (do_update) {
 		acpi_handle_debug(device->handle, "ACPI LID %s\n",
 				  state ? "open" : "closed");
@@ -290,7 +235,7 @@ static int acpi_button_add_fs(struct acpi_device *device)
 	struct proc_dir_entry *entry = NULL;
 	int ret = 0;
 
-	/* procfs I/F for ACPI lid device only */
+	 
 	if (button->type != ACPI_BUTTON_TYPE_LID)
 		return 0;
 
@@ -299,26 +244,26 @@ static int acpi_button_add_fs(struct acpi_device *device)
 		return -EEXIST;
 	}
 
-	/* create /proc/acpi/button */
+	 
 	acpi_button_dir = proc_mkdir(ACPI_BUTTON_CLASS, acpi_root_dir);
 	if (!acpi_button_dir)
 		return -ENODEV;
 
-	/* create /proc/acpi/button/lid */
+	 
 	acpi_lid_dir = proc_mkdir(ACPI_BUTTON_SUBCLASS_LID, acpi_button_dir);
 	if (!acpi_lid_dir) {
 		ret = -ENODEV;
 		goto remove_button_dir;
 	}
 
-	/* create /proc/acpi/button/lid/LID/ */
+	 
 	acpi_device_dir(device) = proc_mkdir(acpi_device_bid(device), acpi_lid_dir);
 	if (!acpi_device_dir(device)) {
 		ret = -ENODEV;
 		goto remove_lid_dir;
 	}
 
-	/* create /proc/acpi/button/lid/LID/state */
+	 
 	entry = proc_create_single_data(ACPI_BUTTON_FILE_STATE, S_IRUGO,
 			acpi_device_dir(device), acpi_button_state_seq_show,
 			device);
@@ -363,7 +308,7 @@ static int acpi_button_remove_fs(struct acpi_device *device)
 	return 0;
 }
 
-/* Driver Interface */
+ 
 int acpi_lid_open(void)
 {
 	if (!lid_device)
@@ -618,10 +563,7 @@ static int acpi_button_add(struct acpi_device *device)
 	}
 
 	if (button->type == ACPI_BUTTON_TYPE_LID) {
-		/*
-		 * This assumes there's only one lid device, or if there are
-		 * more we only care about the last one...
-		 */
+		 
 		lid_device = device;
 	}
 
@@ -689,7 +631,7 @@ static int param_get_lid_init_state(char *buf, const struct kernel_param *kp)
 		else
 			c += sprintf(buf + c, "%s ", lid_init_state_str[i]);
 
-	buf[c - 1] = '\n'; /* Replace the final space with a newline */
+	buf[c - 1] = '\n';  
 
 	return c;
 }
@@ -711,13 +653,7 @@ static int acpi_button_register_driver(struct acpi_driver *driver)
 			lid_init_state = ACPI_BUTTON_LID_INIT_METHOD;
 	}
 
-	/*
-	 * Modules such as nouveau.ko and i915.ko have a link time dependency
-	 * on acpi_lid_open(), and would therefore not be loadable on ACPI
-	 * capable kernels booted in non-ACPI mode if the return value of
-	 * acpi_bus_register_driver() is returned from here with ACPI disabled
-	 * when this driver is built as a module.
-	 */
+	 
 	if (acpi_disabled)
 		return 0;
 

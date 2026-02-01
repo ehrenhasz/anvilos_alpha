@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Linux host-side vring helpers; for when the kernel needs to access
- * someone else's vring.
- *
- * Copyright IBM Corporation, 2013.
- * Parts taken from drivers/vhost/vhost.c Copyright 2009 Red Hat, Inc.
- *
- * Written by: Rusty Russell <rusty@rustcorp.com.au>
- */
+ 
+ 
 #ifndef _LINUX_VRINGH_H
 #define _LINUX_VRINGH_H
 #include <uapi/linux/virtio_ring.h>
@@ -21,108 +13,76 @@
 #endif
 #include <asm/barrier.h>
 
-/* virtio_ring with information needed for host access. */
+ 
 struct vringh {
-	/* Everything is little endian */
+	 
 	bool little_endian;
 
-	/* Guest publishes used event idx (note: we always do). */
+	 
 	bool event_indices;
 
-	/* Can we get away with weak barriers? */
+	 
 	bool weak_barriers;
 
-	/* Use user's VA */
+	 
 	bool use_va;
 
-	/* Last available index we saw (ie. where we're up to). */
+	 
 	u16 last_avail_idx;
 
-	/* Last index we used. */
+	 
 	u16 last_used_idx;
 
-	/* How many descriptors we've completed since last need_notify(). */
+	 
 	u32 completed;
 
-	/* The vring (note: it may contain user pointers!) */
+	 
 	struct vring vring;
 
-	/* IOTLB for this vring */
+	 
 	struct vhost_iotlb *iotlb;
 
-	/* spinlock to synchronize IOTLB accesses */
+	 
 	spinlock_t *iotlb_lock;
 
-	/* The function to call to notify the guest about added buffers */
+	 
 	void (*notify)(struct vringh *);
 };
 
 struct virtio_device;
 typedef void vrh_callback_t(struct virtio_device *, struct vringh *);
 
-/**
- * struct vringh_config_ops - ops for creating a host vring from a virtio driver
- * @find_vrhs: find the host vrings and instantiate them
- *	vdev: the virtio_device
- *	nhvrs: the number of host vrings to find
- *	hvrs: on success, includes new host vrings
- *	callbacks: array of driver callbacks, for each host vring
- *		include a NULL entry for vqs that do not need a callback
- *	Returns 0 on success or error status
- * @del_vrhs: free the host vrings found by find_vrhs().
- */
+ 
 struct vringh_config_ops {
 	int (*find_vrhs)(struct virtio_device *vdev, unsigned nhvrs,
 			 struct vringh *vrhs[], vrh_callback_t *callbacks[]);
 	void (*del_vrhs)(struct virtio_device *vdev);
 };
 
-/* The memory the vring can access, and what offset to apply. */
+ 
 struct vringh_range {
 	u64 start, end_incl;
 	u64 offset;
 };
 
-/**
- * struct vringh_iov - iovec mangler.
- * @iov: array of iovecs to operate on
- * @consumed: number of bytes consumed within iov[i]
- * @i: index of current iovec
- * @used: number of iovecs present in @iov
- * @max_num: maximum number of iovecs.
- *           corresponds to allocated memory of @iov
- *
- * Mangles iovec in place, and restores it.
- * Remaining data is iov + i, of used - i elements.
- */
+ 
 struct vringh_iov {
 	struct iovec *iov;
-	size_t consumed; /* Within iov[i] */
+	size_t consumed;  
 	unsigned i, used, max_num;
 };
 
-/**
- * struct vringh_kiov - kvec mangler.
- * @iov: array of iovecs to operate on
- * @consumed: number of bytes consumed within iov[i]
- * @i: index of current iovec
- * @used: number of iovecs present in @iov
- * @max_num: maximum number of iovecs.
- *           corresponds to allocated memory of @iov
- *
- * Mangles kvec in place, and restores it.
- * Remaining data is iov + i, of used - i elements.
- */
+ 
 struct vringh_kiov {
 	struct kvec *iov;
-	size_t consumed; /* Within iov[i] */
+	size_t consumed;  
 	unsigned i, used, max_num;
 };
 
-/* Flag on max_num to indicate we're kmalloced. */
+ 
 #define VRINGH_IOV_ALLOCATED 0x8000000
 
-/* Helpers for userspace vrings. */
+ 
 int vringh_init_user(struct vringh *vrh, u64 features,
 		     unsigned int num, bool weak_barriers,
 		     vring_desc_t __user *desc,
@@ -154,7 +114,7 @@ static inline void vringh_iov_cleanup(struct vringh_iov *iov)
 	iov->iov = NULL;
 }
 
-/* Convert a descriptor into iovecs. */
+ 
 int vringh_getdesc_user(struct vringh *vrh,
 			struct vringh_iov *riov,
 			struct vringh_iov *wiov,
@@ -162,29 +122,29 @@ int vringh_getdesc_user(struct vringh *vrh,
 					 u64 addr, struct vringh_range *r),
 			u16 *head);
 
-/* Copy bytes from readable vsg, consuming it (and incrementing wiov->i). */
+ 
 ssize_t vringh_iov_pull_user(struct vringh_iov *riov, void *dst, size_t len);
 
-/* Copy bytes into writable vsg, consuming it (and incrementing wiov->i). */
+ 
 ssize_t vringh_iov_push_user(struct vringh_iov *wiov,
 			     const void *src, size_t len);
 
-/* Mark a descriptor as used. */
+ 
 int vringh_complete_user(struct vringh *vrh, u16 head, u32 len);
 int vringh_complete_multi_user(struct vringh *vrh,
 			       const struct vring_used_elem used[],
 			       unsigned num_used);
 
-/* Pretend we've never seen descriptor (for easy error handling). */
+ 
 void vringh_abandon_user(struct vringh *vrh, unsigned int num);
 
-/* Do we need to fire the eventfd to notify the other side? */
+ 
 int vringh_need_notify_user(struct vringh *vrh);
 
 bool vringh_notify_enable_user(struct vringh *vrh);
 void vringh_notify_disable_user(struct vringh *vrh);
 
-/* Helpers for kernelspace vrings. */
+ 
 int vringh_init_kern(struct vringh *vrh, u64 features,
 		     unsigned int num, bool weak_barriers,
 		     struct vring_desc *desc,
@@ -246,7 +206,7 @@ void vringh_notify_disable_kern(struct vringh *vrh);
 
 int vringh_need_notify_kern(struct vringh *vrh);
 
-/* Notify the guest about buffers added to the used ring */
+ 
 static inline void vringh_notify(struct vringh *vrh)
 {
 	if (vrh->notify)
@@ -328,6 +288,6 @@ void vringh_notify_disable_iotlb(struct vringh *vrh);
 
 int vringh_need_notify_iotlb(struct vringh *vrh);
 
-#endif /* CONFIG_VHOST_IOTLB */
+#endif  
 
-#endif /* _LINUX_VRINGH_H */
+#endif  

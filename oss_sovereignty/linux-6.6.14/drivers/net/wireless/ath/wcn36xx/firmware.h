@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _FIRMWARE_H_
 #define _FIRMWARE_H_
 
-/* Capability bitmap exchange definitions and macros starts */
+ 
 
 enum wcn36xx_firmware_feat_caps {
 	MCC = 0,
@@ -80,5 +80,5 @@ void wcn36xx_firmware_clear_feat_caps(u32 *bitmap,
 
 const char *wcn36xx_firmware_get_cap_name(enum wcn36xx_firmware_feat_caps x);
 
-#endif /* _FIRMWARE_H_ */
+#endif  
 

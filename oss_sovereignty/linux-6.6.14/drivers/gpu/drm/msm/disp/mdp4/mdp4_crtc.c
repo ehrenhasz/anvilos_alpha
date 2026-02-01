@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_flip_work.h>
@@ -21,7 +18,7 @@ struct mdp4_crtc {
 	enum mdp4_dma dma;
 	bool enabled;
 
-	/* which mixer/encoder we route output to: */
+	 
 	int mixer;
 
 	struct {
@@ -30,28 +27,26 @@ struct mdp4_crtc {
 		uint32_t width, height;
 		uint32_t x, y;
 
-		/* next cursor to scan-out: */
+		 
 		uint32_t next_iova;
 		struct drm_gem_object *next_bo;
 
-		/* current cursor being scanned out: */
+		 
 		struct drm_gem_object *scanout_bo;
 	} cursor;
 
 
-	/* if there is a pending flip, these will be non-null: */
+	 
 	struct drm_pending_vblank_event *event;
 
-	/* Bits have been flushed at the last commit,
-	 * used to decide if a vsync has happened since last commit.
-	 */
+	 
 	u32 flushed_mask;
 
 #define PENDING_CURSOR 0x1
 #define PENDING_FLIP   0x2
 	atomic_t pending;
 
-	/* for unref'ing cursor bo's after scanout completes: */
+	 
 	struct drm_flip_work unref_cursor_work;
 
 	struct mdp_irq vblank;
@@ -94,7 +89,7 @@ static void crtc_flush(struct drm_crtc *crtc)
 	mdp4_write(mdp4_kms, REG_MDP4_OVERLAY_FLUSH, flush);
 }
 
-/* if file!=NULL, this is preclose potential cancel-flip path */
+ 
 static void complete_flip(struct drm_crtc *crtc, struct drm_file *file)
 {
 	struct mdp4_crtc *mdp4_crtc = to_mdp4_crtc(crtc);
@@ -133,7 +128,7 @@ static void mdp4_crtc_destroy(struct drm_crtc *crtc)
 	kfree(mdp4_crtc);
 }
 
-/* statically (for now) map planes to mixer stage (z-order): */
+ 
 static const int idxs[] = {
 		[VG1]  = 1,
 		[VG2]  = 2,
@@ -145,11 +140,7 @@ static const int idxs[] = {
 
 };
 
-/* setup mixer config, for which we need to consider all crtc's and
- * the planes attached to them
- *
- * TODO may possibly need some extra locking here
- */
+ 
 static void setup_mixer(struct mdp4_kms *mdp4_kms)
 {
 	struct drm_mode_config *config = &mdp4_kms->dev->mode_config;
@@ -242,7 +233,7 @@ static void mdp4_crtc_mode_set_nofb(struct drm_crtc *crtc)
 			MDP4_DMA_SRC_SIZE_WIDTH(mode->hdisplay) |
 			MDP4_DMA_SRC_SIZE_HEIGHT(mode->vdisplay));
 
-	/* take data from pipe: */
+	 
 	mdp4_write(mdp4_kms, REG_MDP4_DMA_SRC_BASE(dma), 0);
 	mdp4_write(mdp4_kms, REG_MDP4_DMA_SRC_STRIDE(dma), 0);
 	mdp4_write(mdp4_kms, REG_MDP4_DMA_DST_SIZE(dma),
@@ -276,7 +267,7 @@ static void mdp4_crtc_atomic_disable(struct drm_crtc *crtc,
 	if (WARN_ON(!mdp4_crtc->enabled))
 		return;
 
-	/* Disable/save vblank irq handling before power is disabled */
+	 
 	drm_crtc_vblank_off(crtc);
 
 	mdp_irq_unregister(&mdp4_kms->base, &mdp4_crtc->err);
@@ -306,7 +297,7 @@ static void mdp4_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	mdp4_enable(mdp4_kms);
 
-	/* Restore vblank irq handling after power is enabled */
+	 
 	drm_crtc_vblank_on(crtc);
 
 	mdp_irq_register(&mdp4_kms->base, &mdp4_crtc->err);
@@ -321,7 +312,7 @@ static int mdp4_crtc_atomic_check(struct drm_crtc *crtc,
 {
 	struct mdp4_crtc *mdp4_crtc = to_mdp4_crtc(crtc);
 	DBG("%s: check", mdp4_crtc->name);
-	// TODO anything else to check?
+	
 	return 0;
 }
 
@@ -356,11 +347,7 @@ static void mdp4_crtc_atomic_flush(struct drm_crtc *crtc,
 #define CURSOR_WIDTH 64
 #define CURSOR_HEIGHT 64
 
-/* called from IRQ to update cursor related registers (if needed).  The
- * cursor registers, other than x/y position, appear not to be double
- * buffered, and changing them other than from vblank seems to trigger
- * underflow.
- */
+ 
 static void update_cursor(struct drm_crtc *crtc)
 {
 	struct mdp4_crtc *mdp4_crtc = to_mdp4_crtc(crtc);
@@ -376,11 +363,11 @@ static void update_cursor(struct drm_crtc *crtc)
 		uint64_t iova = mdp4_crtc->cursor.next_iova;
 
 		if (next_bo) {
-			/* take a obj ref + iova ref when we start scanning out: */
+			 
 			drm_gem_object_get(next_bo);
 			msm_gem_get_and_pin_iova(next_bo, kms->aspace, &iova);
 
-			/* enable cursor: */
+			 
 			mdp4_write(mdp4_kms, REG_MDP4_DMA_CURSOR_SIZE(dma),
 					MDP4_DMA_CURSOR_SIZE_WIDTH(mdp4_crtc->cursor.width) |
 					MDP4_DMA_CURSOR_SIZE_HEIGHT(mdp4_crtc->cursor.height));
@@ -389,12 +376,12 @@ static void update_cursor(struct drm_crtc *crtc)
 					MDP4_DMA_CURSOR_BLEND_CONFIG_FORMAT(CURSOR_ARGB) |
 					MDP4_DMA_CURSOR_BLEND_CONFIG_CURSOR_EN);
 		} else {
-			/* disable cursor: */
+			 
 			mdp4_write(mdp4_kms, REG_MDP4_DMA_CURSOR_BASE(dma),
 					mdp4_kms->blank_cursor_iova);
 		}
 
-		/* and drop the iova ref + obj rev when done scanning out: */
+		 
 		if (prev_bo)
 			drm_flip_work_queue(&mdp4_crtc->unref_cursor_work, prev_bo);
 
@@ -453,7 +440,7 @@ static int mdp4_crtc_cursor_set(struct drm_crtc *crtc,
 	spin_unlock_irqrestore(&mdp4_crtc->cursor.lock, flags);
 
 	if (old_bo) {
-		/* drop our previous reference: */
+		 
 		drm_flip_work_queue(&mdp4_crtc->unref_cursor_work, old_bo);
 	}
 
@@ -562,7 +549,7 @@ uint32_t mdp4_crtc_vblank(struct drm_crtc *crtc)
 	return mdp4_crtc->vblank.irqmask;
 }
 
-/* set dma config, ie. the format the encoder wants. */
+ 
 void mdp4_crtc_set_config(struct drm_crtc *crtc, uint32_t config)
 {
 	struct mdp4_crtc *mdp4_crtc = to_mdp4_crtc(crtc);
@@ -571,7 +558,7 @@ void mdp4_crtc_set_config(struct drm_crtc *crtc, uint32_t config)
 	mdp4_write(mdp4_kms, REG_MDP4_DMA_CONFIG(mdp4_crtc->dma), config);
 }
 
-/* set interface for routing crtc->encoder: */
+ 
 void mdp4_crtc_set_intf(struct drm_crtc *crtc, enum mdp4_intf intf, int mixer)
 {
 	struct mdp4_crtc *mdp4_crtc = to_mdp4_crtc(crtc);
@@ -614,10 +601,7 @@ void mdp4_crtc_set_intf(struct drm_crtc *crtc, enum mdp4_intf intf, int mixer)
 
 void mdp4_crtc_wait_for_commit_done(struct drm_crtc *crtc)
 {
-	/* wait_for_flush_done is the only case for now.
-	 * Later we will have command mode CRTC to wait for
-	 * other event.
-	 */
+	 
 	mdp4_crtc_wait_for_flush_done(crtc);
 }
 
@@ -625,7 +609,7 @@ static const char *dma_names[] = {
 		"DMA_P", "DMA_S", "DMA_E",
 };
 
-/* initialize crtc */
+ 
 struct drm_crtc *mdp4_crtc_init(struct drm_device *dev,
 		struct drm_plane *plane, int id, int ovlp_id,
 		enum mdp4_dma dma_id)

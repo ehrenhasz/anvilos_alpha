@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/char/watchdog/pnx4008_wdt.c
- *
- * Watchdog driver for PNX4008 board
- *
- * Authors: Dmitry Chigirev <source@mvista.com>,
- *	    Vitaly Wool <vitalywool@gmail.com>
- * Based on sa1100 driver,
- * Copyright (C) 2000 Oleg Drokin <green@crimea.edu>
- *
- * 2005-2006 (c) MontaVista Software, Inc.
- *
- * (C) 2012 Wolfram Sang, Pengutronix
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,12 +18,12 @@
 #include <linux/delay.h>
 #include <linux/reboot.h>
 
-/* WatchDog Timer - Chapter 23 Page 207 */
+ 
 
 #define DEFAULT_HEARTBEAT 19
 #define MAX_HEARTBEAT     60
 
-/* Watchdog timer register set definition */
+ 
 #define WDTIM_INT(p)     ((p) + 0x0)
 #define WDTIM_CTRL(p)    ((p) + 0x4)
 #define WDTIM_COUNTER(p) ((p) + 0x8)
@@ -46,15 +33,15 @@
 #define WDTIM_PULSE(p)   ((p) + 0x18)
 #define WDTIM_RES(p)     ((p) + 0x1C)
 
-/* WDTIM_INT bit definitions */
+ 
 #define MATCH_INT      1
 
-/* WDTIM_CTRL bit definitions */
+ 
 #define COUNT_ENAB     1
 #define RESET_COUNT    (1 << 1)
 #define DEBUG_EN       (1 << 2)
 
-/* WDTIM_MCTRL bit definitions */
+ 
 #define MR0_INT        1
 #undef  RESET_COUNT0
 #define RESET_COUNT0   (1 << 2)
@@ -64,14 +51,14 @@
 #define RESFRC1        (1 << 5)
 #define RESFRC2        (1 << 6)
 
-/* WDTIM_EMR bit definitions */
+ 
 #define EXT_MATCH0      1
-#define MATCH_OUTPUT_HIGH (2 << 4)	/*a MATCH_CTRL setting */
+#define MATCH_OUTPUT_HIGH (2 << 4)	 
 
-/* WDTIM_RES bit definitions */
-#define WDOG_RESET      1	/* read only */
+ 
+#define WDOG_RESET      1	 
 
-#define WDOG_COUNTER_RATE 13000000	/*the counter clock is 13 MHz fixed */
+#define WDOG_COUNTER_RATE 13000000	 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 static unsigned int heartbeat;
@@ -84,21 +71,21 @@ static int pnx4008_wdt_start(struct watchdog_device *wdd)
 {
 	spin_lock(&io_lock);
 
-	/* stop counter, initiate counter reset */
+	 
 	writel(RESET_COUNT, WDTIM_CTRL(wdt_base));
-	/*wait for reset to complete. 100% guarantee event */
+	 
 	while (readl(WDTIM_COUNTER(wdt_base)))
 		cpu_relax();
-	/* internal and external reset, stop after that */
+	 
 	writel(M_RES2 | STOP_COUNT0 | RESET_COUNT0, WDTIM_MCTRL(wdt_base));
-	/* configure match output */
+	 
 	writel(MATCH_OUTPUT_HIGH, WDTIM_EMR(wdt_base));
-	/* clear interrupt, just in case */
+	 
 	writel(MATCH_INT, WDTIM_INT(wdt_base));
-	/* the longest pulse period 65541/(13*10^6) seconds ~ 5 ms. */
+	 
 	writel(0xFFFF, WDTIM_PULSE(wdt_base));
 	writel(wdd->timeout * WDOG_COUNTER_RATE, WDTIM_MATCH0(wdt_base));
-	/*enable counter, stop when debugger active */
+	 
 	writel(COUNT_ENAB | DEBUG_EN, WDTIM_CTRL(wdt_base));
 
 	spin_unlock(&io_lock);
@@ -109,7 +96,7 @@ static int pnx4008_wdt_stop(struct watchdog_device *wdd)
 {
 	spin_lock(&io_lock);
 
-	writel(0, WDTIM_CTRL(wdt_base));	/*stop counter */
+	writel(0, WDTIM_CTRL(wdt_base));	 
 
 	spin_unlock(&io_lock);
 	return 0;
@@ -127,12 +114,7 @@ static int pnx4008_restart_handler(struct watchdog_device *wdd,
 {
 	const char *boot_cmd = cmd;
 
-	/*
-	 * Verify if a "cmd" passed from the userspace program rebooting
-	 * the system; if available, handle it.
-	 * - For details, see the 'reboot' syscall in kernel/reboot.c
-	 * - If the received "cmd" is not supported, use the default mode.
-	 */
+	 
 	if (boot_cmd) {
 		if (boot_cmd[0] == 'h')
 			mode = REBOOT_HARD;
@@ -141,17 +123,17 @@ static int pnx4008_restart_handler(struct watchdog_device *wdd,
 	}
 
 	if (mode == REBOOT_SOFT) {
-		/* Force match output active */
+		 
 		writel(EXT_MATCH0, WDTIM_EMR(wdt_base));
-		/* Internal reset on match output (RESOUT_N not asserted) */
+		 
 		writel(M_RES1, WDTIM_MCTRL(wdt_base));
 	} else {
-		/* Instant assert of RESETOUT_N with pulse length 1mS */
+		 
 		writel(13000, WDTIM_PULSE(wdt_base));
 		writel(M_RES2 | RESFRC1 | RESFRC2, WDTIM_MCTRL(wdt_base));
 	}
 
-	/* Wait for watchdog to reset system */
+	 
 	mdelay(1000);
 
 	return NOTIFY_DONE;

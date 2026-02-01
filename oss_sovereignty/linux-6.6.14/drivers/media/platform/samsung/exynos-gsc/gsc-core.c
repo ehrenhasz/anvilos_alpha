@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 - 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung EXYNOS5 SoC series G-Scaler driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -432,8 +427,7 @@ int gsc_try_fmt_mplane(struct gsc_ctx *ctx, struct v4l2_format *f)
 	pr_debug("mod_x: %d, mod_y: %d, max_w: %d, max_h = %d",
 			mod_x, mod_y, max_w, max_h);
 
-	/* To check if image size is modified to adjust parameter against
-	   hardware abilities */
+	 
 	tmp_w = pix_mp->width;
 	tmp_h = pix_mp->height;
 
@@ -452,11 +446,11 @@ int gsc_try_fmt_mplane(struct gsc_ctx *ctx, struct v4l2_format *f)
 		struct v4l2_plane_pix_format *plane_fmt = &pix_mp->plane_fmt[i];
 		u32 bpl = plane_fmt->bytesperline;
 
-		if (fmt->num_comp == 1 && /* Packed */
+		if (fmt->num_comp == 1 &&  
 		    (bpl == 0 || (bpl * 8 / fmt->depth[i]) < pix_mp->width))
 			bpl = pix_mp->width * fmt->depth[i] / 8;
 
-		if (fmt->num_comp > 1 && /* Planar */
+		if (fmt->num_comp > 1 &&  
 		    (bpl == 0 || bpl < pix_mp->width))
 			bpl = pix_mp->width;
 
@@ -585,8 +579,8 @@ int gsc_try_selection(struct gsc_ctx *ctx, struct v4l2_selection *s)
 					&s->r.width, &s->r.height);
 
 
-	/* adjust left/top if cropping rectangle is out of bounds */
-	/* Need to add code to algin left value with 2's multiple */
+	 
+	 
 	if (s->r.left + tmp_w > max_w)
 		s->r.left = max_w - tmp_w;
 	if (s->r.top + tmp_h > max_h)
@@ -794,7 +788,7 @@ void gsc_ctrls_delete(struct gsc_ctx *ctx)
 	}
 }
 
-/* The color format (num_comp, num_planes) must be already configured. */
+ 
 int gsc_prepare_addr(struct gsc_ctx *ctx, struct vb2_buffer *vb,
 			struct gsc_frame *frame, struct gsc_addr *addr)
 {
@@ -818,17 +812,17 @@ int gsc_prepare_addr(struct gsc_ctx *ctx, struct vb2_buffer *vb,
 			addr->cr = 0;
 			break;
 		case 2:
-			/* decompose Y into Y/Cb */
+			 
 			addr->cb = (dma_addr_t)(addr->y + pix_size);
 			addr->cr = 0;
 			break;
 		case 3:
-			/* decompose Y into Y/Cb/Cr */
+			 
 			addr->cb = (dma_addr_t)(addr->y + pix_size);
 			if (GSC_YUV420 == frame->fmt->color)
 				addr->cr = (dma_addr_t)(addr->cb
 						+ (pix_size >> 2));
-			else /* 422 */
+			else  
 				addr->cr = (dma_addr_t)(addr->cb
 						+ (pix_size >> 1));
 			break;
@@ -889,7 +883,7 @@ static irqreturn_t gsc_irq_handler(int irq, void *priv)
 		spin_unlock(&gsc->slock);
 		gsc_m2m_job_finish(ctx, VB2_BUF_STATE_DONE);
 
-		/* wake_up job_abort, stop_streaming */
+		 
 		if (ctx->state & GSC_CTX_STOP_REQ) {
 			ctx->state &= ~GSC_CTX_STOP_REQ;
 			wake_up(&gsc->irq_queue);
@@ -975,12 +969,12 @@ static struct gsc_pix_min gsc_v_100_min = {
 
 static struct gsc_pix_align gsc_v_100_align = {
 	.org_h			= 16,
-	.org_w			= 16, /* yuv420 : 16, others : 8 */
-	.offset_h		= 2,  /* yuv420/422 : 2, others : 1 */
-	.real_w			= 16, /* yuv420/422 : 4~16, others : 2~8 */
-	.real_h			= 16, /* yuv420 : 4~16, others : 1 */
-	.target_w		= 2,  /* yuv420/422 : 2, others : 1 */
-	.target_h		= 2,  /* yuv420 : 2, others : 1 */
+	.org_w			= 16,  
+	.offset_h		= 2,   
+	.real_w			= 16,  
+	.real_h			= 16,  
+	.target_w		= 2,   
+	.target_h		= 2,   
 };
 
 static struct gsc_variant gsc_v_100_variant = {
@@ -1250,7 +1244,7 @@ static void gsc_m2m_resume(struct gsc_dev *gsc)
 	unsigned long flags;
 
 	spin_lock_irqsave(&gsc->slock, flags);
-	/* Clear for full H/W setup in first run after resume */
+	 
 	ctx = gsc->m2m.ctx;
 	gsc->m2m.ctx = NULL;
 	spin_unlock_irqrestore(&gsc->slock, flags);

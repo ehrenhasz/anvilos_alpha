@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOMMU API for Rockchip
- *
- * Module Authors:	Simon Xue <xxm@rock-chips.com>
- *			Daniel Kurtz <djkurtz@chromium.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/compiler.h>
@@ -26,16 +21,16 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 
-/** MMU register offsets */
-#define RK_MMU_DTE_ADDR		0x00	/* Directory table address */
+ 
+#define RK_MMU_DTE_ADDR		0x00	 
 #define RK_MMU_STATUS		0x04
 #define RK_MMU_COMMAND		0x08
-#define RK_MMU_PAGE_FAULT_ADDR	0x0C	/* IOVA of last page fault */
-#define RK_MMU_ZAP_ONE_LINE	0x10	/* Shootdown one IOTLB entry */
-#define RK_MMU_INT_RAWSTAT	0x14	/* IRQ status ignoring mask */
-#define RK_MMU_INT_CLEAR	0x18	/* Acknowledge and re-arm irq */
-#define RK_MMU_INT_MASK		0x1C	/* IRQ enable */
-#define RK_MMU_INT_STATUS	0x20	/* IRQ status after masking */
+#define RK_MMU_PAGE_FAULT_ADDR	0x0C	 
+#define RK_MMU_ZAP_ONE_LINE	0x10	 
+#define RK_MMU_INT_RAWSTAT	0x14	 
+#define RK_MMU_INT_CLEAR	0x18	 
+#define RK_MMU_INT_MASK		0x1C	 
+#define RK_MMU_INT_STATUS	0x20	 
 #define RK_MMU_AUTO_GATING	0x24
 
 #define DTE_ADDR_DUMMY		0xCAFEBABE
@@ -44,7 +39,7 @@
 #define RK_MMU_FORCE_RESET_TIMEOUT_US	100000
 #define RK_MMU_POLL_TIMEOUT_US		1000
 
-/* RK_MMU_STATUS fields */
+ 
 #define RK_MMU_STATUS_PAGING_ENABLED       BIT(0)
 #define RK_MMU_STATUS_PAGE_FAULT_ACTIVE    BIT(1)
 #define RK_MMU_STATUS_STALL_ACTIVE         BIT(2)
@@ -53,18 +48,18 @@
 #define RK_MMU_STATUS_PAGE_FAULT_IS_WRITE  BIT(5)
 #define RK_MMU_STATUS_STALL_NOT_ACTIVE     BIT(31)
 
-/* RK_MMU_COMMAND command values */
-#define RK_MMU_CMD_ENABLE_PAGING    0  /* Enable memory translation */
-#define RK_MMU_CMD_DISABLE_PAGING   1  /* Disable memory translation */
-#define RK_MMU_CMD_ENABLE_STALL     2  /* Stall paging to allow other cmds */
-#define RK_MMU_CMD_DISABLE_STALL    3  /* Stop stall re-enables paging */
-#define RK_MMU_CMD_ZAP_CACHE        4  /* Shoot down entire IOTLB */
-#define RK_MMU_CMD_PAGE_FAULT_DONE  5  /* Clear page fault */
-#define RK_MMU_CMD_FORCE_RESET      6  /* Reset all registers */
+ 
+#define RK_MMU_CMD_ENABLE_PAGING    0   
+#define RK_MMU_CMD_DISABLE_PAGING   1   
+#define RK_MMU_CMD_ENABLE_STALL     2   
+#define RK_MMU_CMD_DISABLE_STALL    3   
+#define RK_MMU_CMD_ZAP_CACHE        4   
+#define RK_MMU_CMD_PAGE_FAULT_DONE  5   
+#define RK_MMU_CMD_FORCE_RESET      6   
 
-/* RK_MMU_INT_* register fields */
-#define RK_MMU_IRQ_PAGE_FAULT    0x01  /* page fault */
-#define RK_MMU_IRQ_BUS_ERROR     0x02  /* bus read error */
+ 
+#define RK_MMU_IRQ_PAGE_FAULT    0x01   
+#define RK_MMU_IRQ_BUS_ERROR     0x02   
 #define RK_MMU_IRQ_MASK          (RK_MMU_IRQ_PAGE_FAULT | RK_MMU_IRQ_BUS_ERROR)
 
 #define NUM_DT_ENTRIES 1024
@@ -73,23 +68,20 @@
 #define SPAGE_ORDER 12
 #define SPAGE_SIZE (1 << SPAGE_ORDER)
 
- /*
-  * Support mapping any size that fits in one page table:
-  *   4 KiB to 4 MiB
-  */
+  
 #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
 
 struct rk_iommu_domain {
 	struct list_head iommus;
-	u32 *dt; /* page directory table */
+	u32 *dt;  
 	dma_addr_t dt_dma;
-	spinlock_t iommus_lock; /* lock for iommus list */
-	spinlock_t dt_lock; /* lock for modifying page directory table */
+	spinlock_t iommus_lock;  
+	spinlock_t dt_lock;  
 
 	struct iommu_domain domain;
 };
 
-/* list of clocks required by IOMMU */
+ 
 static const char * const rk_iommu_clocks[] = {
 	"aclk", "iface",
 };
@@ -111,13 +103,13 @@ struct rk_iommu {
 	int num_clocks;
 	bool reset_disabled;
 	struct iommu_device iommu;
-	struct list_head node; /* entry in rk_iommu_domain.iommus */
-	struct iommu_domain *domain; /* domain to which iommu is attached */
+	struct list_head node;  
+	struct iommu_domain *domain;  
 	struct iommu_group *group;
 };
 
 struct rk_iommudata {
-	struct device_link *link; /* runtime PM link from IOMMU to master */
+	struct device_link *link;  
 	struct rk_iommu *iommu;
 };
 
@@ -128,7 +120,7 @@ static struct iommu_domain rk_identity_domain;
 static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
 				  unsigned int count)
 {
-	size_t size = count * sizeof(u32); /* count of u32 entry */
+	size_t size = count * sizeof(u32);  
 
 	dma_sync_single_for_device(dma_dev, dma, size, DMA_TO_DEVICE);
 }
@@ -138,47 +130,9 @@ static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
 	return container_of(dom, struct rk_iommu_domain, domain);
 }
 
-/*
- * The Rockchip rk3288 iommu uses a 2-level page table.
- * The first level is the "Directory Table" (DT).
- * The DT consists of 1024 4-byte Directory Table Entries (DTEs), each pointing
- * to a "Page Table".
- * The second level is the 1024 Page Tables (PT).
- * Each PT consists of 1024 4-byte Page Table Entries (PTEs), each pointing to
- * a 4 KB page of physical memory.
- *
- * The DT and each PT fits in a single 4 KB page (4-bytes * 1024 entries).
- * Each iommu device has a MMU_DTE_ADDR register that contains the physical
- * address of the start of the DT page.
- *
- * The structure of the page table is as follows:
- *
- *                   DT
- * MMU_DTE_ADDR -> +-----+
- *                 |     |
- *                 +-----+     PT
- *                 | DTE | -> +-----+
- *                 +-----+    |     |     Memory
- *                 |     |    +-----+     Page
- *                 |     |    | PTE | -> +-----+
- *                 +-----+    +-----+    |     |
- *                            |     |    |     |
- *                            |     |    |     |
- *                            +-----+    |     |
- *                                       |     |
- *                                       |     |
- *                                       +-----+
- */
+ 
 
-/*
- * Each DTE has a PT address and a valid bit:
- * +---------------------+-----------+-+
- * | PT address          | Reserved  |V|
- * +---------------------+-----------+-+
- *  31:12 - PT address (PTs always starts on a 4 KB boundary)
- *  11: 1 - Reserved
- *      0 - 1 if PT @ PT address is valid
- */
+ 
 #define RK_DTE_PT_ADDRESS_MASK    0xfffff000
 #define RK_DTE_PT_VALID           BIT(0)
 
@@ -187,19 +141,12 @@ static inline phys_addr_t rk_dte_pt_address(u32 dte)
 	return (phys_addr_t)dte & RK_DTE_PT_ADDRESS_MASK;
 }
 
-/*
- * In v2:
- * 31:12 - PT address bit 31:0
- * 11: 8 - PT address bit 35:32
- *  7: 4 - PT address bit 39:36
- *  3: 1 - Reserved
- *     0 - 1 if PT @ PT address is valid
- */
+ 
 #define RK_DTE_PT_ADDRESS_MASK_V2 GENMASK_ULL(31, 4)
 #define DTE_HI_MASK1	GENMASK(11, 8)
 #define DTE_HI_MASK2	GENMASK(7, 4)
-#define DTE_HI_SHIFT1	24 /* shift bit 8 to bit 32 */
-#define DTE_HI_SHIFT2	32 /* shift bit 4 to bit 36 */
+#define DTE_HI_SHIFT1	24  
+#define DTE_HI_SHIFT2	32  
 #define PAGE_DESC_HI_MASK1	GENMASK_ULL(35, 32)
 #define PAGE_DESC_HI_MASK2	GENMASK_ULL(39, 36)
 
@@ -233,26 +180,7 @@ static inline u32 rk_mk_dte_v2(dma_addr_t pt_dma)
 	return (pt_dma & RK_DTE_PT_ADDRESS_MASK_V2) | RK_DTE_PT_VALID;
 }
 
-/*
- * Each PTE has a Page address, some flags and a valid bit:
- * +---------------------+---+-------+-+
- * | Page address        |Rsv| Flags |V|
- * +---------------------+---+-------+-+
- *  31:12 - Page address (Pages always start on a 4 KB boundary)
- *  11: 9 - Reserved
- *   8: 1 - Flags
- *      8 - Read allocate - allocate cache space on read misses
- *      7 - Read cache - enable cache & prefetch of data
- *      6 - Write buffer - enable delaying writes on their way to memory
- *      5 - Write allocate - allocate cache space on write misses
- *      4 - Write cache - different writes can be merged together
- *      3 - Override cache attributes
- *          if 1, bits 4-8 control cache attributes
- *          if 0, the system bus defaults are used
- *      2 - Writable
- *      1 - Readable
- *      0 - 1 if Page @ Page address is valid
- */
+ 
 #define RK_PTE_PAGE_ADDRESS_MASK  0xfffff000
 #define RK_PTE_PAGE_FLAGS_MASK    0x000001fe
 #define RK_PTE_PAGE_WRITABLE      BIT(2)
@@ -264,7 +192,7 @@ static inline bool rk_pte_is_page_valid(u32 pte)
 	return pte & RK_PTE_PAGE_VALID;
 }
 
-/* TODO: set cache flags per prot IOMMU_CACHE */
+ 
 static u32 rk_mk_pte(phys_addr_t page, int prot)
 {
 	u32 flags = 0;
@@ -274,16 +202,7 @@ static u32 rk_mk_pte(phys_addr_t page, int prot)
 	return page | flags | RK_PTE_PAGE_VALID;
 }
 
-/*
- * In v2:
- * 31:12 - Page address bit 31:0
- * 11: 8 - Page address bit 35:32
- *  7: 4 - Page address bit 39:36
- *     3 - Security
- *     2 - Writable
- *     1 - Readable
- *     0 - 1 if Page @ Page address is valid
- */
+ 
 
 static u32 rk_mk_pte_v2(phys_addr_t page, int prot)
 {
@@ -300,16 +219,7 @@ static u32 rk_mk_pte_invalid(u32 pte)
 	return pte & ~RK_PTE_PAGE_VALID;
 }
 
-/*
- * rk3288 iova (IOMMU Virtual Address) format
- *  31       22.21       12.11          0
- * +-----------+-----------+-------------+
- * | DTE index | PTE index | Page offset |
- * +-----------+-----------+-------------+
- *  31:22 - DTE index   - index of DTE in DT
- *  21:12 - PTE index   - index of PTE in PT @ DTE.pt_address
- *  11: 0 - Page offset - offset into page @ PTE.page_address
- */
+ 
 #define RK_IOVA_DTE_MASK    0xffc00000
 #define RK_IOVA_DTE_SHIFT   22
 #define RK_IOVA_PTE_MASK    0x003ff000
@@ -359,10 +269,7 @@ static void rk_iommu_zap_lines(struct rk_iommu *iommu, dma_addr_t iova_start,
 {
 	int i;
 	dma_addr_t iova_end = iova_start + size;
-	/*
-	 * TODO(djkurtz): Figure out when it is more efficient to shootdown the
-	 * entire iotlb rather than iterate over individual iovas.
-	 */
+	 
 	for (i = 0; i < iommu->num_mmu; i++) {
 		dma_addr_t iova;
 
@@ -414,7 +321,7 @@ static int rk_iommu_enable_stall(struct rk_iommu *iommu)
 	if (rk_iommu_is_stall_active(iommu))
 		return 0;
 
-	/* Stall can only be enabled if paging is enabled */
+	 
 	if (!rk_iommu_is_paging_enabled(iommu))
 		return 0;
 
@@ -503,10 +410,7 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
 	if (iommu->reset_disabled)
 		return 0;
 
-	/*
-	 * Check if register DTE_ADDR is working by writing DTE_ADDR_DUMMY
-	 * and verifying that upper 5 (v1) or 7 (v2) nybbles are read back.
-	 */
+	 
 	for (i = 0; i < iommu->num_mmu; i++) {
 		dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
@@ -614,11 +518,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
 
 			log_iova(iommu, i, iova);
 
-			/*
-			 * Report page fault to any installed handlers.
-			 * Ignore the return code, though, since we always zap cache
-			 * and clear the page fault anyway.
-			 */
+			 
 			if (iommu->domain != &rk_identity_domain)
 				report_iommu_fault(iommu->domain, iommu->dev, iova,
 						   flags);
@@ -680,7 +580,7 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
 	struct list_head *pos;
 	unsigned long flags;
 
-	/* shootdown these iova from all iommus using this domain */
+	 
 	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
 	list_for_each(pos, &rk_domain->iommus) {
 		struct rk_iommu *iommu;
@@ -688,7 +588,7 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
 
 		iommu = list_entry(pos, struct rk_iommu, node);
 
-		/* Only zap TLBs of IOMMUs that are powered on. */
+		 
 		ret = pm_runtime_get_if_in_use(iommu->dev);
 		if (WARN_ON_ONCE(ret < 0))
 			continue;
@@ -794,17 +694,12 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
 
 	rk_table_flush(rk_domain, pte_dma, pte_total);
 
-	/*
-	 * Zap the first and last iova to evict from iotlb any previously
-	 * mapped cachelines holding stale values for its dte and pte.
-	 * We only zap the first and last iova, since only they could have
-	 * dte or pte shared with an existing mapping.
-	 */
+	 
 	rk_iommu_zap_iova_first_last(rk_domain, iova, size);
 
 	return 0;
 unwind:
-	/* Unmap the range of iovas that we just mapped */
+	 
 	rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma,
 			    pte_count * SPAGE_SIZE);
 
@@ -828,13 +723,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
 
 	spin_lock_irqsave(&rk_domain->dt_lock, flags);
 
-	/*
-	 * pgsize_bitmap specifies iova sizes that fit in one page table
-	 * (1024 4-KiB pages = 4 MiB).
-	 * So, size will always be 4096 <= size <= 4194304.
-	 * Since iommu_map() guarantees that both iova and size will be
-	 * aligned, we will always only be mapping from a single dte here.
-	 */
+	 
 	page_table = rk_dte_get_page_table(rk_domain, iova);
 	if (IS_ERR(page_table)) {
 		spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
@@ -867,15 +756,9 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
 
 	spin_lock_irqsave(&rk_domain->dt_lock, flags);
 
-	/*
-	 * pgsize_bitmap specifies iova sizes that fit in one page table
-	 * (1024 4-KiB pages = 4 MiB).
-	 * So, size will always be 4096 <= size <= 4194304.
-	 * Since iommu_unmap() guarantees that both iova and size will be
-	 * aligned, we will always only be unmapping from a single dte here.
-	 */
+	 
 	dte = rk_domain->dt[rk_iova_dte_index(iova)];
-	/* Just return 0 if iova is unmapped */
+	 
 	if (!rk_dte_is_pt_valid(dte)) {
 		spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
 		return 0;
@@ -888,7 +771,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
 
 	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
 
-	/* Shootdown iotlb entries for iova range that was just unmapped */
+	 
 	rk_iommu_zap_iova(rk_domain, iova, unmap_size);
 
 	return unmap_size;
@@ -901,12 +784,12 @@ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
 	return data ? data->iommu : NULL;
 }
 
-/* Must be called with iommu powered on and attached */
+ 
 static void rk_iommu_disable(struct rk_iommu *iommu)
 {
 	int i;
 
-	/* Ignore error while disabling, just keep going */
+	 
 	WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
 	rk_iommu_enable_stall(iommu);
 	rk_iommu_disable_paging(iommu);
@@ -918,7 +801,7 @@ static void rk_iommu_disable(struct rk_iommu *iommu)
 	clk_bulk_disable(iommu->num_clocks, iommu->clocks);
 }
 
-/* Must be called with iommu powered on and attached */
+ 
 static int rk_iommu_enable(struct rk_iommu *iommu)
 {
 	struct iommu_domain *domain = iommu->domain;
@@ -961,7 +844,7 @@ static int rk_iommu_identity_attach(struct iommu_domain *identity_domain,
 	unsigned long flags;
 	int ret;
 
-	/* Allow 'virtual devices' (eg drm) to detach from domain */
+	 
 	iommu = rk_iommu_from_dev(dev);
 	if (!iommu)
 		return -ENODEV;
@@ -1018,17 +901,14 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * Allow 'virtual devices' (e.g., drm) to attach to domain.
-	 * Such a device does not belong to an iommu group.
-	 */
+	 
 	iommu = rk_iommu_from_dev(dev);
 	if (!iommu)
 		return 0;
 
 	dev_dbg(dev, "Attaching to iommu domain\n");
 
-	/* iommu already attached */
+	 
 	if (iommu->domain == domain)
 		return 0;
 
@@ -1072,11 +952,7 @@ static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
 	if (!rk_domain)
 		return NULL;
 
-	/*
-	 * rk32xx iommus use a 2 level pagetable.
-	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
-	 * Allocate one 4 KiB page for each table.
-	 */
+	 
 	rk_domain->dt = (u32 *)get_zeroed_page(GFP_KERNEL | rk_ops->gfp_flags);
 	if (!rk_domain->dt)
 		goto err_free_domain;
@@ -1225,10 +1101,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
 	if (!rk_ops)
 		rk_ops = ops;
 
-	/*
-	 * That should not happen unless different versions of the
-	 * hardware block are embedded the same SoC
-	 */
+	 
 	if (WARN_ON(rk_ops != ops))
 		return -EINVAL;
 
@@ -1265,11 +1138,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
 	for (i = 0; i < iommu->num_clocks; ++i)
 		iommu->clocks[i].id = rk_iommu_clocks[i];
 
-	/*
-	 * iommu clocks should be present for all new devices and devicetrees
-	 * but there are older devicetrees without clocks out in the wild.
-	 * So clocks as optional for the time being.
-	 */
+	 
 	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
 	if (err == -ENOENT)
 		iommu->num_clocks = 0;
@@ -1294,11 +1163,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
 	if (err)
 		goto err_remove_sysfs;
 
-	/*
-	 * Use the first registered IOMMU device for domain to use with DMA
-	 * API, since a domain might not physically correspond to a single
-	 * IOMMU device..
-	 */
+	 
 	if (!dma_dev)
 		dma_dev = &pdev->dev;
 
@@ -1396,7 +1261,7 @@ static const struct of_device_id rk_iommu_dt_ids[] = {
 	{	.compatible = "rockchip,rk3568-iommu",
 		.data = &iommu_data_ops_v2,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rk_iommu_driver = {

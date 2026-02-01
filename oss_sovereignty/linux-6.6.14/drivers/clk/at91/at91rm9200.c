@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -208,10 +208,5 @@ static void __init at91rm9200_pmc_setup(struct device_node *np)
 err_free:
 	kfree(at91rm9200_pmc);
 }
-/*
- * While the TCB can be used as the clocksource, the system timer is most likely
- * to be used instead. However, the pinctrl driver doesn't support probe
- * deferring properly. Once this is fixed, this can be switched to a platform
- * driver.
- */
+ 
 CLK_OF_DECLARE(at91rm9200_pmc, "atmel,at91rm9200-pmc", at91rm9200_pmc_setup);

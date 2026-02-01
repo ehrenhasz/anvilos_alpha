@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HP WMI hotkeys
- *
- * Copyright (C) 2008 Red Hat <mjg@redhat.com>
- * Copyright (C) 2010, 2011 Anssi Hannula <anssi.hannula@iki.fi>
- *
- * Portions based on wistron_btns.c:
- * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
- * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
- * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,17 +28,9 @@ MODULE_ALIAS("wmi:5FB7F034-2C63-45e9-BE91-3D44E2C707E4");
 #define HPWMI_EVENT_GUID "95F24279-4D7B-4334-9387-ACCDC67EF61C"
 #define HPWMI_BIOS_GUID "5FB7F034-2C63-45e9-BE91-3D44E2C707E4"
 #define HP_OMEN_EC_THERMAL_PROFILE_OFFSET 0x95
-#define zero_if_sup(tmp) (zero_insize_support?0:sizeof(tmp)) // use when zero insize is required
+#define zero_if_sup(tmp) (zero_insize_support?0:sizeof(tmp)) 
 
-/* DMI board names of devices that should use the omen specific path for
- * thermal profiles.
- * This was obtained by taking a look in the windows omen command center
- * app and parsing a json file that they use to figure out what capabilities
- * the device should have.
- * A device is considered an omen if the DisplayName in that list contains
- * "OMEN", and it can use the thermal profile stuff if the "Feature" array
- * contains "PerformanceControl".
- */
+ 
 static const char * const omen_thermal_profile_boards[] = {
 	"84DA", "84DB", "84DC", "8574", "8575", "860A", "87B5", "8572", "8573",
 	"8600", "8601", "8602", "8605", "8606", "8607", "8746", "8747", "8749",
@@ -58,15 +40,12 @@ static const char * const omen_thermal_profile_boards[] = {
 	"8917", "8918", "8949", "894A", "89EB"
 };
 
-/* DMI Board names of Omen laptops that are specifically set to be thermal
- * profile version 0 by the Omen Command Center app, regardless of what
- * the get system design information WMI call returns
- */
+ 
 static const char *const omen_thermal_profile_force_v0_boards[] = {
 	"8607", "8746", "8747", "8749", "874A", "8748"
 };
 
-/* DMI Board names of Victus laptops */
+ 
 static const char * const victus_thermal_profile_boards[] = {
 	"8A25"
 };
@@ -100,11 +79,7 @@ enum hp_wmi_event_ids {
 	HPWMI_SMART_EXPERIENCE_APP	= 0x21,
 };
 
-/*
- * struct bios_args buffer is dynamically allocated.  New WMI command types
- * were introduced that exceeds 128-byte data size.  Changes to handle
- * the data size allocation scheme were kept in hp_wmi_perform_qurey function.
- */
+ 
 struct bios_args {
 	u32 signature;
 	u32 command;
@@ -210,7 +185,7 @@ struct bios_rfkill2_device_state {
 	u8 unknown[4];
 };
 
-/* 7 devices fit into the 128 byte buffer */
+ 
 #define HPWMI_MAX_RFKILL2_DEVICES	7
 
 struct bios_rfkill2_state {
@@ -230,11 +205,11 @@ static const struct key_entry hp_wmi_keymap[] = {
 	{ KE_KEY, 0x213b,  { KEY_INFO } },
 	{ KE_KEY, 0x2169,  { KEY_ROTATE_DISPLAY } },
 	{ KE_KEY, 0x216a,  { KEY_SETUP } },
-	{ KE_IGNORE, 0x21a4,  }, /* Win Lock On */
-	{ KE_IGNORE, 0x121a4, }, /* Win Lock Off */
-	{ KE_KEY, 0x21a5,  { KEY_PROG2 } }, /* HP Omen Key */
+	{ KE_IGNORE, 0x21a4,  },  
+	{ KE_IGNORE, 0x121a4, },  
+	{ KE_KEY, 0x21a5,  { KEY_PROG2 } },  
 	{ KE_KEY, 0x21a7,  { KEY_FN_ESC } },
-	{ KE_KEY, 0x21a8,  { KEY_PROG2 } }, /* HP Envy x360 programmable key */
+	{ KE_KEY, 0x21a8,  { KEY_PROG2 } },  
 	{ KE_KEY, 0x21a9,  { KEY_TOUCHPAD_OFF } },
 	{ KE_KEY, 0x121a9, { KEY_TOUCHPAD_ON } },
 	{ KE_KEY, 0x231b,  { KEY_HELP } },
@@ -261,20 +236,16 @@ struct rfkill2_device {
 static int rfkill2_count;
 static struct rfkill2_device rfkill2[HPWMI_MAX_RFKILL2_DEVICES];
 
-/*
- * Chassis Types values were obtained from SMBIOS reference
- * specification version 3.00. A complete list of system enclosures
- * and chassis types is available on Table 17.
- */
+ 
 static const char * const tablet_chassis_types[] = {
-	"30", /* Tablet*/
-	"31", /* Convertible */
-	"32"  /* Detachable */
+	"30",  
+	"31",  
+	"32"   
 };
 
 #define DEVICE_MODE_TABLET	0x06
 
-/* map output size to the corresponding WMI method id */
+ 
 static inline int encode_outsize_for_pvsz(int outsize)
 {
 	if (outsize > 4096)
@@ -290,26 +261,7 @@ static inline int encode_outsize_for_pvsz(int outsize)
 	return 1;
 }
 
-/*
- * hp_wmi_perform_query
- *
- * query:	The commandtype (enum hp_wmi_commandtype)
- * write:	The command (enum hp_wmi_command)
- * buffer:	Buffer used as input and/or output
- * insize:	Size of input buffer
- * outsize:	Size of output buffer
- *
- * returns zero on success
- *         an HP WMI query specific error code (which is positive)
- *         -EINVAL if the query was not successful at all
- *         -EINVAL if the output buffer size exceeds buffersize
- *
- * Note: The buffersize must at least be the maximum of the input and output
- *       size. E.g. Battery info query is defined to have 1 byte input
- *       and 128 byte output. The caller would do:
- *       buffer = kzalloc(128, GFP_KERNEL);
- *       ret = hp_wmi_perform_query(HPWMI_BATTERY_QUERY, HPWMI_READ, buffer, 1, 128)
- */
+ 
 static int hp_wmi_perform_query(int query, enum hp_wmi_command command,
 				void *buffer, int insize, int outsize)
 {
@@ -366,7 +318,7 @@ static int hp_wmi_perform_query(int query, enum hp_wmi_command command,
 		goto out_free;
 	}
 
-	/* Ignore output data of zero size */
+	 
 	if (!outsize)
 		goto out_free;
 
@@ -588,7 +540,7 @@ static bool hp_wmi_get_sw_state(enum hp_wmi_radio r)
 
 	int wireless = hp_wmi_read_int(HPWMI_WIRELESS_QUERY);
 
-	/* TBD: Pass error */
+	 
 	WARN_ONCE(wireless < 0, "error executing HPWMI_WIRELESS_QUERY");
 
 	return !(wireless & mask);
@@ -600,7 +552,7 @@ static bool hp_wmi_get_hw_state(enum hp_wmi_radio r)
 
 	int wireless = hp_wmi_read_int(HPWMI_WIRELESS_QUERY);
 
-	/* TBD: Pass error */
+	 
 	WARN_ONCE(wireless < 0, "error executing HPWMI_WIRELESS_QUERY");
 
 	return !(wireless & mask);
@@ -705,7 +657,7 @@ static ssize_t tablet_show(struct device *dev, struct device_attribute *attr,
 static ssize_t postcode_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
-	/* Get the POST error code of previous boot failure. */
+	 
 	int value = hp_wmi_read_int(HPWMI_POSTCODEERROR_QUERY);
 
 	if (value < 0)
@@ -745,7 +697,7 @@ static ssize_t postcode_store(struct device *dev, struct device_attribute *attr,
 	if (clear == false)
 		return -EINVAL;
 
-	/* Clear the POST error code. It is kept until cleared. */
+	 
 	ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, HPWMI_WRITE, &tmp,
 				       sizeof(tmp), 0);
 	if (ret)
@@ -824,10 +776,7 @@ static void hp_wmi_notify(u32 value, void *context)
 		return;
 	}
 
-	/*
-	 * Depending on ACPI version the concatenation of id and event data
-	 * inside _WED function will result in a 8 or 16 byte buffer.
-	 */
+	 
 	location = (u32 *)obj->buffer.pointer;
 	if (obj->buffer.length == 8) {
 		event_id = *location;
@@ -866,7 +815,7 @@ static void hp_wmi_notify(u32 value, void *context)
 			pr_info("Unknown key code - 0x%x\n", key_code);
 		break;
 	case HPWMI_OMEN_KEY:
-		if (event_data) /* Only should be true for HP Omen */
+		if (event_data)  
 			key_code = event_data;
 		else
 			key_code = hp_wmi_read_int(HPWMI_HOTKEY_QUERY);
@@ -954,14 +903,14 @@ static int __init hp_wmi_input_setup(void)
 
 	__set_bit(EV_SW, hp_wmi_input_dev->evbit);
 
-	/* Dock */
+	 
 	val = hp_wmi_get_dock_state();
 	if (!(val < 0)) {
 		__set_bit(SW_DOCK, hp_wmi_input_dev->swbit);
 		input_report_switch(hp_wmi_input_dev, SW_DOCK, val);
 	}
 
-	/* Tablet mode */
+	 
 	val = hp_wmi_get_tablet_mode();
 	if (!(val < 0)) {
 		__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
@@ -972,7 +921,7 @@ static int __init hp_wmi_input_setup(void)
 	if (err)
 		goto err_free_dev;
 
-	/* Set initial hardware state */
+	 
 	input_sync(hp_wmi_input_dev);
 
 	if (!hp_wmi_bios_2009_later() && hp_wmi_bios_2008_later())
@@ -1383,10 +1332,7 @@ static int thermal_profile_setup(void)
 		if (tp < 0)
 			return tp;
 
-		/*
-		 * call thermal profile write command to ensure that the
-		 * firmware correctly sets the OEM variables
-		 */
+		 
 
 		err = omen_thermal_profile_set(tp);
 		if (err < 0)
@@ -1401,10 +1347,7 @@ static int thermal_profile_setup(void)
 		if (tp < 0)
 			return tp;
 
-		/*
-		 * call thermal profile write command to ensure that the
-		 * firmware correctly sets the OEM variables
-		 */
+		 
 		err = omen_thermal_profile_set(tp);
 		if (err < 0)
 			return err;
@@ -1419,10 +1362,7 @@ static int thermal_profile_setup(void)
 		if (tp < 0)
 			return tp;
 
-		/*
-		 * call thermal profile write command to ensure that the
-		 * firmware correctly sets the OEM variables for the DPTF
-		 */
+		 
 		err = thermal_profile_set(tp);
 		if (err)
 			return err;
@@ -1451,18 +1391,13 @@ static int hp_wmi_hwmon_init(void);
 static int __init hp_wmi_bios_setup(struct platform_device *device)
 {
 	int err;
-	/* clear detected rfkill devices */
+	 
 	wifi_rfkill = NULL;
 	bluetooth_rfkill = NULL;
 	wwan_rfkill = NULL;
 	rfkill2_count = 0;
 
-	/*
-	 * In pre-2009 BIOS, command 1Bh return 0x4 to indicate that
-	 * BIOS no longer controls the power for the wireless
-	 * devices. All features supported by this command will no
-	 * longer be supported.
-	 */
+	 
 	if (!hp_wmi_bios_2009_later()) {
 		if (hp_wmi_rfkill_setup(device))
 			hp_wmi_rfkill2_setup(device);
@@ -1508,12 +1443,7 @@ static int __exit hp_wmi_bios_remove(struct platform_device *device)
 
 static int hp_wmi_resume_handler(struct device *device)
 {
-	/*
-	 * Hardware state may have changed while suspended, so trigger
-	 * input events for the current state. As this is a switch,
-	 * the input layer will only actually pass it on if the state
-	 * changed.
-	 */
+	 
 	if (hp_wmi_input_dev) {
 		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
 			input_report_switch(hp_wmi_input_dev, SW_DOCK,
@@ -1548,12 +1478,7 @@ static const struct dev_pm_ops hp_wmi_pm_ops = {
 	.restore  = hp_wmi_resume_handler,
 };
 
-/*
- * hp_wmi_bios_remove() lives in .exit.text. For drivers registered via
- * module_platform_driver_probe() this is ok because they cannot get unbound at
- * runtime. So mark the driver struct with __refdata to prevent modpost
- * triggering a section mismatch warning.
- */
+ 
 static struct platform_driver hp_wmi_driver __refdata = {
 	.driver = {
 		.name = "hp-wmi",
@@ -1597,17 +1522,15 @@ static int hp_wmi_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 	case hwmon_pwm:
 		switch (hp_wmi_fan_speed_max_get()) {
 		case 0:
-			/* 0 is automatic fan, which is 2 for hwmon */
+			 
 			*val = 2;
 			return 0;
 		case 1:
-			/* 1 is max fan, which is 0
-			 * (no fan speed control) for hwmon
-			 */
+			 
 			*val = 0;
 			return 0;
 		default:
-			/* shouldn't happen */
+			 
 			return -ENODATA;
 		}
 	default:
@@ -1622,13 +1545,13 @@ static int hp_wmi_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
 	case hwmon_pwm:
 		switch (val) {
 		case 0:
-			/* 0 is no fan speed control (max), which is 1 for us */
+			 
 			return hp_wmi_fan_speed_max_set(1);
 		case 2:
-			/* 2 is automatic speed control, which is 0 for us */
+			 
 			return hp_wmi_fan_speed_max_set(0);
 		default:
-			/* we don't support manual fan speed control */
+			 
 			return -EINVAL;
 		}
 	default:

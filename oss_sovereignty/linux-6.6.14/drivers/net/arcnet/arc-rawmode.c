@@ -1,28 +1,4 @@
-/*
- * Linux ARCnet driver - "raw mode" packet encapsulation (no soft headers)
- *
- * Written 1994-1999 by Avery Pennarun.
- * Derived from skeleton.c by Donald Becker.
- *
- * Special thanks to Contemporary Controls, Inc. (www.ccontrols.com)
- *  for sponsoring the further development of this driver.
- *
- * **********************
- *
- * The original copyright of skeleton.c was as follows:
- *
- * skeleton.c Written 1993 by Donald Becker.
- * Copyright 1993 United States Government as represented by the
- * Director, National Security Agency.  This software may only be used
- * and distributed according to the terms of the GNU General Public License as
- * modified by SRC, incorporated herein by reference.
- *
- * **********************
- *
- * For more details, see drivers/net/arcnet.c
- *
- * **********************
- */
+ 
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
@@ -35,7 +11,7 @@
 #include <linux/skbuff.h>
 #include "arcdevice.h"
 
-/* packet receiver */
+ 
 static void rx(struct net_device *dev, int bufnum,
 	       struct archdr *pkthdr, int length)
 {
@@ -64,7 +40,7 @@ static void rx(struct net_device *dev, int bufnum,
 	skb_reset_mac_header(skb);
 	skb_pull(skb, ARC_HDR_SIZE);
 
-	/* up to sizeof(pkt->soft) has already been copied from the card */
+	 
 	memcpy(pkt, pkthdr, sizeof(struct archdr));
 	if (length > sizeof(pkt->soft))
 		lp->hw.copy_from_card(dev, bufnum, ofs + sizeof(pkt->soft),
@@ -78,36 +54,27 @@ static void rx(struct net_device *dev, int bufnum,
 	netif_rx(skb);
 }
 
-/* Create the ARCnet hard/soft headers for raw mode.
- * There aren't any soft headers in raw mode - not even the protocol id.
- */
+ 
 static int build_header(struct sk_buff *skb, struct net_device *dev,
 			unsigned short type, uint8_t daddr)
 {
 	int hdr_size = ARC_HDR_SIZE;
 	struct archdr *pkt = skb_push(skb, hdr_size);
 
-	/* Set the source hardware address.
-	 *
-	 * This is pretty pointless for most purposes, but it can help in
-	 * debugging.  ARCnet does not allow us to change the source address
-	 * in the actual packet sent.
-	 */
+	 
 	pkt->hard.source = *dev->dev_addr;
 
-	/* see linux/net/ethernet/eth.c to see where I got the following */
+	 
 
 	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP)) {
-		/* FIXME: fill in the last byte of the dest ipaddr here
-		 * to better comply with RFC1051 in "noarp" mode.
-		 */
+		 
 		pkt->hard.dest = 0;
 		return hdr_size;
 	}
-	/* otherwise, just fill it in and go! */
+	 
 	pkt->hard.dest = daddr;
 
-	return hdr_size;	/* success */
+	return hdr_size;	 
 }
 
 static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
@@ -120,11 +87,11 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 	arc_printk(D_DURING, dev, "prepare_tx: txbufs=%d/%d/%d\n",
 		   lp->next_tx, lp->cur_tx, bufnum);
 
-	/* hard header is not included in packet length */
+	 
 	length -= ARC_HDR_SIZE;
 
 	if (length > XMTU) {
-		/* should never happen! other people already check for this. */
+		 
 		arc_printk(D_NORMAL, dev, "Bug!  prepare_tx with size %d (> %d)\n",
 			   length, XMTU);
 		length = XMTU;
@@ -147,7 +114,7 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 
 	lp->lastload_dest = hard->dest;
 
-	return 1;		/* done */
+	return 1;		 
 }
 
 static struct ArcProto rawmode_proto = {
@@ -170,7 +137,7 @@ static int __init arcnet_raw_init(void)
 		if (arc_proto_map[count] == arc_proto_default)
 			arc_proto_map[count] = &rawmode_proto;
 
-	/* for raw mode, we only set the bcast proto if there's no better one */
+	 
 	if (arc_bcast_proto == arc_proto_default)
 		arc_bcast_proto = &rawmode_proto;
 

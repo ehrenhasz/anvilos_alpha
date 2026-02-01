@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implementation of the host-to-chip MIBs of the hardware API.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- * Copyright (C) 2010, ST-Ericsson SA
- */
+
+ 
 
 #include <linux/etherdevice.h>
 
@@ -64,7 +58,7 @@ int wfx_hif_get_counters_table(struct wfx_dev *wdev, int vif_id,
 			       struct wfx_hif_mib_extended_count_table *arg)
 {
 	if (wfx_api_older_than(wdev, 1, 3)) {
-		/* extended_count_table is wider than count_table */
+		 
 		memset(arg, 0xFF, sizeof(*arg));
 		return wfx_hif_read_mib(wdev, vif_id, HIF_MIB_ID_COUNTERS_TABLE,
 				    arg, sizeof(struct wfx_hif_mib_count_table));
@@ -234,7 +228,7 @@ int wfx_hif_set_arp_ipv4_filter(struct wfx_vif *wvif, int idx, __be32 *addr)
 	};
 
 	if (addr) {
-		/* Caution: type of addr is __be32 */
+		 
 		memcpy(arg.ipv4_address, addr, sizeof(arg.ipv4_address));
 		arg.arp_enable = HIF_ARP_NS_FILTERING_ENABLE;
 	}

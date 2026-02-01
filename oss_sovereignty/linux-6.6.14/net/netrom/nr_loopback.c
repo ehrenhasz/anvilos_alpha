@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright Tomi Manninen OH2BNS (oh2bns@sral.fi)
- */
+
+ 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/socket.h>

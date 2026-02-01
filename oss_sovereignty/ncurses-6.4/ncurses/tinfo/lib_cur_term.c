@@ -1,45 +1,11 @@
-/****************************************************************************
-,* Copyright 2020-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey <dickey@clark.net> 1997                        *
- ****************************************************************************/
-/*
- * Module that "owns" the 'cur_term' variable:
- *
- *	TERMINAL *set_curterm(TERMINAL *)
- *	int del_curterm(TERMINAL *)
- */
+ 
+ 
 
 #include <curses.priv.h>
-#include <termcap.h>		/* ospeed */
-#include <tic.h>		/* VALID_STRING */
+#include <termcap.h>		 
+#include <tic.h>		 
 
 MODULE_ID("$Id: lib_cur_term.c,v 1.49 2022/05/28 17:56:55 tom Exp $")
 
@@ -168,7 +134,7 @@ NCURSES_SP_NAME(del_curterm) (NCURSES_SP_DCLx TERMINAL *termp)
 	    TCB->drv->td_release(TCB);
 #endif
 #if NO_LEAKS
-	/* discard memory used in tgetent's cache for this terminal */
+	 
 	_nc_tgetent_leak(termp);
 #endif
 	if (--_nc_globals.terminal_count == 0) {

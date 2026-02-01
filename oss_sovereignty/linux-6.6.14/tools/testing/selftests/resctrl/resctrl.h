@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef RESCTRL_H
 #define RESCTRL_H
 #include <stdio.h>
@@ -45,16 +45,7 @@
 		exit(EXIT_FAILURE);		\
 	} while (0)
 
-/*
- * resctrl_val_param:	resctrl test parameters
- * @resctrl_val:	Resctrl feature (Eg: mbm, mba.. etc)
- * @ctrlgrp:		Name of the control monitor group (con_mon grp)
- * @mongrp:		Name of the monitor group (mon grp)
- * @cpu_no:		CPU number to which the benchmark would be binded
- * @filename:		Name of file to which the o/p should be written
- * @bw_report:		Bandwidth report type (reads vs writes)
- * @setup:		Call back function to setup test environment
- */
+ 
 struct resctrl_val_param {
 	char		*resctrl_val;
 	char		ctrlgrp[64];
@@ -118,4 +109,4 @@ int show_cache_info(unsigned long sum_llc_val, int no_of_bits,
 		    unsigned long max_diff_percent, unsigned long num_of_runs,
 		    bool platform, bool cmt);
 
-#endif /* RESCTRL_H */
+#endif  

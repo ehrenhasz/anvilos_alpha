@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Handle extern requests for shutdown, reboot and sysrq
- */
+
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
@@ -30,14 +28,11 @@ enum shutdown_state {
 	SHUTDOWN_INVALID = -1,
 	SHUTDOWN_POWEROFF = 0,
 	SHUTDOWN_SUSPEND = 2,
-	/* Code 3 is SHUTDOWN_CRASH, which we don't use because the domain can only
-	   report a crash, not be instructed to crash!
-	   HALT is the same as POWEROFF, as far as we're concerned.  The tools use
-	   the distinction when we return the reason code to them.  */
+	 
 	 SHUTDOWN_HALT = 4,
 };
 
-/* Ignore multiple shutdown requests. */
+ 
 static enum shutdown_state shutting_down = SHUTDOWN_INVALID;
 
 struct suspend_info {
@@ -135,7 +130,7 @@ static void do_suspend(void)
 
 	err = stop_machine(xen_suspend, &si, cpumask_of(0));
 
-	/* Resume console as early as possible. */
+	 
 	if (!si.cancelled)
 		xen_console_resume();
 
@@ -163,7 +158,7 @@ out_thaw:
 out:
 	shutting_down = SHUTDOWN_INVALID;
 }
-#endif	/* CONFIG_HIBERNATE_CALLBACKS */
+#endif	 
 
 struct shutdown_handler {
 #define SHUTDOWN_CMD_SIZE 11
@@ -196,7 +191,7 @@ static void do_poweroff(void)
 		orderly_poweroff(false);
 		break;
 	default:
-		/* Don't do it when we are halting/rebooting. */
+		 
 		pr_info("Ignoring Xen toolstack shutdown.\n");
 		break;
 	}
@@ -204,7 +199,7 @@ static void do_poweroff(void)
 
 static void do_reboot(void)
 {
-	shutting_down = SHUTDOWN_POWEROFF; /* ? */
+	shutting_down = SHUTDOWN_POWEROFF;  
 	orderly_reboot();
 }
 
@@ -234,7 +229,7 @@ static void shutdown_handler(struct xenbus_watch *watch,
 		return;
 
 	str = (char *)xenbus_read(xbt, "control", "shutdown", NULL);
-	/* Ignore read errors and empty reads. */
+	 
 	if (XENBUS_IS_ERR_READ(str)) {
 		xenbus_transaction_end(xbt, 1);
 		return;
@@ -245,7 +240,7 @@ static void shutdown_handler(struct xenbus_watch *watch,
 			break;
 	}
 
-	/* Only acknowledge commands which we are prepared to handle. */
+	 
 	if (idx < ARRAY_SIZE(shutdown_handlers))
 		xenbus_write(xbt, "control", "shutdown", "");
 
@@ -279,13 +274,7 @@ static void sysrq_handler(struct xenbus_watch *watch, const char *path,
 		return;
 	err = xenbus_scanf(xbt, "control", "sysrq", "%c", &sysrq_key);
 	if (err < 0) {
-		/*
-		 * The Xenstore watch fires directly after registering it and
-		 * after a suspend/resume cycle. So ENOENT is no error but
-		 * might happen in those cases. ERANGE is observed when we get
-		 * an empty value (''), this happens when we acknowledge the
-		 * request by writing '\0' below.
-		 */
+		 
 		if (err != -ENOENT && err != -ERANGE)
 			pr_err("Error %d reading sysrq code in control/sysrq\n",
 			       err);

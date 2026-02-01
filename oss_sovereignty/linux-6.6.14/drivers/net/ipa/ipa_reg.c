@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019-2023 Linaro Ltd.
- */
+
+ 
 
 #include <linux/io.h>
 
 #include "ipa.h"
 #include "ipa_reg.h"
 
-/* Is this register ID valid for the current IPA version? */
+ 
 static bool ipa_reg_id_valid(struct ipa *ipa, enum ipa_reg_id reg_id)
 {
 	enum ipa_version version = ipa->version;
@@ -91,7 +89,7 @@ static bool ipa_reg_id_valid(struct ipa *ipa, enum ipa_reg_id reg_id)
 	case IPA_IRQ_CLR:
 	case IPA_IRQ_UC:
 	case IRQ_SUSPEND_INFO:
-		return true;	/* These should be defined for all versions */
+		return true;	 
 
 	default:
 		return false;
@@ -143,7 +141,7 @@ int ipa_reg_init(struct ipa *ipa)
 	if (WARN_ON(regs->reg_count > IPA_REG_ID_COUNT))
 		return -EINVAL;
 
-	/* Setup IPA register memory  */
+	 
 	res = platform_get_resource_byname(ipa->pdev, IORESOURCE_MEM,
 					   "ipa-reg");
 	if (!res) {

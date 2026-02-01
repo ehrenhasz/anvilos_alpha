@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm SMEM NAND flash partition parser
- *
- * Copyright (C) 2020, Linaro Ltd.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/module.h>
@@ -24,13 +20,7 @@
 #define SMEM_FLASH_PTABLE_HDR_LEN	(4 * sizeof(u32))
 #define SMEM_FLASH_PTABLE_NAME_SIZE	16
 
-/**
- * struct smem_flash_pentry - SMEM Flash partition entry
- * @name: Name of the partition
- * @offset: Offset in blocks
- * @length: Length of the partition in blocks
- * @attr: Flags for this partition
- */
+ 
 struct smem_flash_pentry {
 	char name[SMEM_FLASH_PTABLE_NAME_SIZE];
 	__le32 offset;
@@ -38,14 +28,7 @@ struct smem_flash_pentry {
 	u8 attr;
 } __packed __aligned(4);
 
-/**
- * struct smem_flash_ptable - SMEM Flash partition table
- * @magic1: Partition table Magic 1
- * @magic2: Partition table Magic 2
- * @version: Partition table version
- * @numparts: Number of partitions in this ptable
- * @pentry: Flash partition entries belonging to this ptable
- */
+ 
 struct smem_flash_ptable {
 	__le32 magic1;
 	__le32 magic2;
@@ -80,21 +63,21 @@ static int parse_qcomsmem_part(struct mtd_info *mtd,
 		return PTR_ERR(ptable);
 	}
 
-	/* Verify ptable magic */
+	 
 	if (le32_to_cpu(ptable->magic1) != SMEM_FLASH_PART_MAGIC1 ||
 	    le32_to_cpu(ptable->magic2) != SMEM_FLASH_PART_MAGIC2) {
 		pr_err("Partition table magic verification failed\n");
 		return -EINVAL;
 	}
 
-	/* Ensure that # of partitions is less than the max we have allocated */
+	 
 	tmpparts = le32_to_cpu(ptable->numparts);
 	if (tmpparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
 		pr_err("Partition numbers exceed the max limit\n");
 		return -EINVAL;
 	}
 
-	/* Find out length of partition data based on table version */
+	 
 	if (le32_to_cpu(ptable->version) <= SMEM_FLASH_PTABLE_V3) {
 		len = SMEM_FLASH_PTABLE_HDR_LEN + SMEM_FLASH_PTABLE_MAX_PARTS_V3 *
 			sizeof(struct smem_flash_pentry);
@@ -106,11 +89,7 @@ static int parse_qcomsmem_part(struct mtd_info *mtd,
 		return -EINVAL;
 	}
 
-	/*
-	 * Now that the partition table header has been parsed, verified
-	 * and the length of the partition table calculated, read the
-	 * complete partition table
-	 */
+	 
 	ptable = qcom_smem_get(SMEM_APPS, SMEM_AARM_PARTITION_TABLE, &len);
 	if (IS_ERR(ptable)) {
 		pr_err("Error reading partition table\n");
@@ -138,7 +117,7 @@ static int parse_qcomsmem_part(struct mtd_info *mtd,
 			goto out_free_parts;
 		}
 
-		/* Convert name to lower case */
+		 
 		for (c = name; *c != '\0'; c++)
 			*c = tolower(*c);
 

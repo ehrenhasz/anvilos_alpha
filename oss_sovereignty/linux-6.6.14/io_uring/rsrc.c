@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -29,12 +29,12 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
 				  struct io_mapped_ubuf **pimu,
 				  struct page **last_hpage);
 
-/* only define max */
+ 
 #define IORING_MAX_FIXED_FILES	(1U << 20)
 #define IORING_MAX_REG_BUFFERS	(1U << 14)
 
 static const struct io_mapped_ubuf dummy_ubuf = {
-	/* set invalid range, so io_import_fixed() fails meeting it */
+	 
 	.ubuf = -1UL,
 	.ubuf_end = 0,
 };
@@ -46,7 +46,7 @@ int __io_account_mem(struct user_struct *user, unsigned long nr_pages)
 	if (!nr_pages)
 		return 0;
 
-	/* Don't allow more pages than we can safely lock */
+	 
 	page_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
 
 	cur_pages = atomic_long_read(&user->locked_vm);
@@ -113,17 +113,13 @@ static int io_buffer_validate(struct iovec *iov)
 {
 	unsigned long tmp, acct_len = iov->iov_len + (PAGE_SIZE - 1);
 
-	/*
-	 * Don't impose further limits on the size and buffer
-	 * constraints here, we'll -EINVAL later when IO is
-	 * submitted if they are wrong.
-	 */
+	 
 	if (!iov->iov_base)
 		return iov->iov_len ? -EFAULT : 0;
 	if (!iov->iov_len)
 		return -EFAULT;
 
-	/* arbitrary limit, but we need something */
+	 
 	if (iov->iov_len > SZ_1G)
 		return -EFAULT;
 
@@ -182,7 +178,7 @@ void io_rsrc_node_ref_zero(struct io_rsrc_node *node)
 	while (!list_empty(&ctx->rsrc_ref_list)) {
 		node = list_first_entry(&ctx->rsrc_ref_list,
 					    struct io_rsrc_node, node);
-		/* recycle ref nodes in order */
+		 
 		if (node->refs)
 			break;
 		list_del(&node->node);
@@ -222,7 +218,7 @@ __cold static int io_rsrc_ref_quiesce(struct io_rsrc_data *data,
 	DEFINE_WAIT(we);
 	int ret;
 
-	/* As We may drop ->uring_lock, other task may have started quiesce */
+	 
 	if (data->quiesce)
 		return -ENXIO;
 
@@ -401,14 +397,7 @@ static int __io_sqe_files_update(struct io_ring_ctx *ctx,
 				err = -EBADF;
 				break;
 			}
-			/*
-			 * Don't allow io_uring instances to be registered. If
-			 * UNIX isn't enabled, then this causes a reference
-			 * cycle and this instance can never get freed. If UNIX
-			 * is enabled we'll handle it just fine, but there's
-			 * still no point in allowing a ring fd as it doesn't
-			 * support regular read/write anyway.
-			 */
+			 
 			if (io_is_uring_fops(file)) {
 				fput(file);
 				err = -EBADF;
@@ -535,7 +524,7 @@ __cold int io_register_rsrc(struct io_ring_ctx *ctx, void __user *arg,
 {
 	struct io_uring_rsrc_register rr;
 
-	/* keep it extendible */
+	 
 	if (size != sizeof(rr))
 		return -EINVAL;
 
@@ -675,7 +664,7 @@ void __io_sqe_files_unregister(struct io_ring_ctx *ctx)
 	for (i = 0; i < ctx->nr_user_files; i++) {
 		struct file *file = io_file_from_index(&ctx->file_table, i);
 
-		/* skip scm accounted files, they'll be freed by ->ring_sock */
+		 
 		if (!file || io_file_need_scm(file))
 			continue;
 		io_file_bitmap_clear(&ctx->file_table, i);
@@ -706,10 +695,7 @@ int io_sqe_files_unregister(struct io_ring_ctx *ctx)
 	if (!ctx->file_data)
 		return -ENXIO;
 
-	/*
-	 * Quiesce may unlock ->uring_lock, and while it's not held
-	 * prevent new requests using the table.
-	 */
+	 
 	ctx->nr_user_files = 0;
 	ret = io_rsrc_ref_quiesce(ctx->file_data, ctx);
 	ctx->nr_user_files = nr;
@@ -718,13 +704,7 @@ int io_sqe_files_unregister(struct io_ring_ctx *ctx)
 	return ret;
 }
 
-/*
- * Ensure the UNIX gc is aware of our file set, so we are certain that
- * the io_uring can be safely unregistered on process exit, even if we have
- * loops in the file referencing. We account only files that can hold other
- * files because otherwise they can't form a loop and so are not interesting
- * for GC.
- */
+ 
 int __io_scm_file_account(struct io_ring_ctx *ctx, struct file *file)
 {
 #if defined(CONFIG_UNIX)
@@ -736,11 +716,7 @@ int __io_scm_file_account(struct io_ring_ctx *ctx, struct file *file)
 	if (likely(!io_file_need_scm(file)))
 		return 0;
 
-	/*
-	 * See if we can merge this file into an existing skb SCM_RIGHTS
-	 * file set. If there's no room, fall back to allocating a new skb
-	 * and filling it in.
-	 */
+	 
 	spin_lock_irq(&head->lock);
 	skb = skb_peek(head);
 	if (skb && UNIXCB(skb).fp->count < SCM_MAX_FD)
@@ -789,10 +765,7 @@ static __cold void io_rsrc_file_scm_put(struct io_ring_ctx *ctx, struct file *fi
 
 	__skb_queue_head_init(&list);
 
-	/*
-	 * Find the skb that holds this file in its SCM_RIGHTS. When found,
-	 * remove this entry and rearrange the file array.
-	 */
+	 
 	skb = skb_dequeue(head);
 	while (skb) {
 		struct scm_fp_list *fp;
@@ -883,7 +856,7 @@ int io_sqe_files_register(struct io_ring_ctx *ctx, void __user *arg,
 			ret = -EFAULT;
 			goto fail;
 		}
-		/* allow sparse sets */
+		 
 		if (!fds || fd == -1) {
 			ret = -EINVAL;
 			if (unlikely(*io_get_tag_slot(ctx->file_data, i)))
@@ -896,13 +869,7 @@ int io_sqe_files_register(struct io_ring_ctx *ctx, void __user *arg,
 		if (unlikely(!file))
 			goto fail;
 
-		/*
-		 * Don't allow io_uring instances to be registered. If UNIX
-		 * isn't enabled, then this causes a reference cycle and this
-		 * instance can never get freed. If UNIX is enabled we'll
-		 * handle it just fine, but there's still no point in allowing
-		 * a ring fd as it doesn't support regular read/write anyway.
-		 */
+		 
 		if (io_is_uring_fops(file)) {
 			fput(file);
 			goto fail;
@@ -917,7 +884,7 @@ int io_sqe_files_register(struct io_ring_ctx *ctx, void __user *arg,
 		io_file_bitmap_set(&ctx->file_table, i);
 	}
 
-	/* default it to the whole table */
+	 
 	io_file_table_set_alloc_range(ctx, 0, ctx->nr_user_files);
 	return 0;
 fail:
@@ -952,10 +919,7 @@ int io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
 	if (!ctx->buf_data)
 		return -ENXIO;
 
-	/*
-	 * Quiesce may unlock ->uring_lock, and while it's not held
-	 * prevent new requests using the table.
-	 */
+	 
 	ctx->nr_user_bufs = 0;
 	ret = io_rsrc_ref_quiesce(ctx->buf_data, ctx);
 	ctx->nr_user_bufs = nr;
@@ -964,21 +928,13 @@ int io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
 	return ret;
 }
 
-/*
- * Not super efficient, but this is just a registration time. And we do cache
- * the last compound head, so generally we'll only do a full search if we don't
- * match that one.
- *
- * We check if the given compound head page has already been accounted, to
- * avoid double accounting it. This allows us to account the full size of the
- * page, not just the constituent pages of a huge page.
- */
+ 
 static bool headpage_already_acct(struct io_ring_ctx *ctx, struct page **pages,
 				  int nr_pages, struct page *hpage)
 {
 	int i, j;
 
-	/* check current page array */
+	 
 	for (i = 0; i < nr_pages; i++) {
 		if (!PageCompound(pages[i]))
 			continue;
@@ -986,7 +942,7 @@ static bool headpage_already_acct(struct io_ring_ctx *ctx, struct page **pages,
 			return true;
 	}
 
-	/* check previously registered pages */
+	 
 	for (i = 0; i < ctx->nr_user_bufs; i++) {
 		struct io_mapped_ubuf *imu = ctx->user_bufs[i];
 
@@ -1058,7 +1014,7 @@ struct page **io_pin_pages(unsigned long ubuf, unsigned long len, int *npages)
 
 	mmap_read_unlock(current->mm);
 	if (ret) {
-		/* if we did partial map, release any pages we did get */
+		 
 		if (pret > 0)
 			unpin_user_pages(pages, pret);
 		goto done;
@@ -1096,14 +1052,11 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
 		goto done;
 	}
 
-	/* If it's a huge page, try to coalesce them into a single bvec entry */
+	 
 	if (nr_pages > 1) {
 		folio = page_folio(pages[0]);
 		for (i = 1; i < nr_pages; i++) {
-			/*
-			 * Pages must be consecutive and on the same folio for
-			 * this to work
-			 */
+			 
 			if (page_folio(pages[i]) != folio ||
 			    pages[i] != pages[i - 1] + 1) {
 				folio = NULL;
@@ -1111,12 +1064,7 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
 			}
 		}
 		if (folio) {
-			/*
-			 * The pages are bound to the folio, it doesn't
-			 * actually unpin them but drops all but one reference,
-			 * which is usually put down by io_buffer_unmap().
-			 * Note, needs a better helper.
-			 */
+			 
 			unpin_user_pages(&pages[1], nr_pages - 1);
 			nr_pages = 1;
 		}
@@ -1134,7 +1082,7 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
 
 	off = (unsigned long) iov->iov_base & ~PAGE_MASK;
 	size = iov->iov_len;
-	/* store original address for later verification */
+	 
 	imu->ubuf = (unsigned long) iov->iov_base;
 	imu->ubuf_end = imu->ubuf + iov->iov_len;
 	imu->nr_bvecs = nr_pages;
@@ -1231,42 +1179,20 @@ int io_import_fixed(int ddir, struct iov_iter *iter,
 		return -EFAULT;
 	if (unlikely(check_add_overflow(buf_addr, (u64)len, &buf_end)))
 		return -EFAULT;
-	/* not inside the mapped region */
+	 
 	if (unlikely(buf_addr < imu->ubuf || buf_end > imu->ubuf_end))
 		return -EFAULT;
 
-	/*
-	 * Might not be a start of buffer, set size appropriately
-	 * and advance us to the beginning.
-	 */
+	 
 	offset = buf_addr - imu->ubuf;
 	iov_iter_bvec(iter, ddir, imu->bvec, imu->nr_bvecs, offset + len);
 
 	if (offset) {
-		/*
-		 * Don't use iov_iter_advance() here, as it's really slow for
-		 * using the latter parts of a big fixed buffer - it iterates
-		 * over each segment manually. We can cheat a bit here, because
-		 * we know that:
-		 *
-		 * 1) it's a BVEC iter, we set it up
-		 * 2) all bvecs are PAGE_SIZE in size, except potentially the
-		 *    first and last bvec
-		 *
-		 * So just find our index, and adjust the iterator afterwards.
-		 * If the offset is within the first bvec (or the whole first
-		 * bvec, just use iov_iter_advance(). This makes it easier
-		 * since we can just skip the first segment, which may not
-		 * be PAGE_SIZE aligned.
-		 */
+		 
 		const struct bio_vec *bvec = imu->bvec;
 
 		if (offset < bvec->bv_len) {
-			/*
-			 * Note, huge pages buffers consists of one large
-			 * bvec entry and should always go this way. The other
-			 * branch doesn't expect non PAGE_SIZE'd chunks.
-			 */
+			 
 			iter->bvec = bvec;
 			iter->nr_segs = bvec->bv_len;
 			iter->count -= offset;
@@ -1274,7 +1200,7 @@ int io_import_fixed(int ddir, struct iov_iter *iter,
 		} else {
 			unsigned long seg_skip;
 
-			/* skip first vec */
+			 
 			offset -= bvec->bv_len;
 			seg_skip = 1 + (offset >> PAGE_SHIFT);
 

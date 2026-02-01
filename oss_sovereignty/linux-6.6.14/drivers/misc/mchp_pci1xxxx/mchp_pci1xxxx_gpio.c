@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2022 Microchip Technology Inc.
-// pci1xxxx gpio driver
+
+
+
 
 #include <linux/module.h>
 #include <linux/spinlock.h>

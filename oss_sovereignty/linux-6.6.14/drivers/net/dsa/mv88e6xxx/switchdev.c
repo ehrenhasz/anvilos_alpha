@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * switchdev.c
- *
- *	Authors:
- *	Hans J. Schultz		<netdev@kapio-technology.com>
- *
- */
+
+ 
 
 #include <net/switchdev.h>
 #include "chip.h"

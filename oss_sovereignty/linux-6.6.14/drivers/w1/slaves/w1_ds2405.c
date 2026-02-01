@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	w1_ds2405.c
- *
- * Copyright (c) 2017 Maciej S. Szmigiero <mail@maciej.szmigiero.name>
- * Based on w1_therm.c copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -33,10 +28,7 @@ static int w1_ds2405_select(struct w1_slave *sl, bool only_active)
 	if (w1_reset_bus(dev) != 0)
 		return 0;
 
-	/*
-	 * We cannot use a normal Match ROM command
-	 * since doing so would toggle PIO state
-	 */
+	 
 	w1_write_8(dev, only_active ? W1_ALARM_SEARCH : W1_SEARCH);
 
 	for (bit_ctr = 0; bit_ctr < 64; bit_ctr++) {
@@ -46,11 +38,11 @@ static int w1_ds2405_select(struct w1_slave *sl, bool only_active)
 		ret = w1_triplet(dev, bit2send);
 
 		if ((ret & (BIT(0) | BIT(1))) ==
-		    (BIT(0) | BIT(1))) /* no devices found */
+		    (BIT(0) | BIT(1)))  
 			return 0;
 
 		if (!!(ret & BIT(2)) != bit2send)
-			/* wrong direction taken - no such device */
+			 
 			return 0;
 	}
 
@@ -60,7 +52,7 @@ static int w1_ds2405_select(struct w1_slave *sl, bool only_active)
 static int w1_ds2405_read_pio(struct w1_slave *sl)
 {
 	if (w1_ds2405_select(sl, true))
-		return 0; /* "active" means PIO is low */
+		return 0;  
 
 	if (w1_ds2405_select(sl, false))
 		return 1;
@@ -174,10 +166,7 @@ static ssize_t output_store(struct device *device,
 		goto out_unlock;
 	}
 
-	/*
-	 * can't use w1_reset_select_slave() here since it uses Skip ROM if
-	 * there is only one device on bus
-	 */
+	 
 	do {
 		u64 dev_addr = le64_to_cpu(*(u64 *)&sl->reg_num);
 		u8 cmd[9];

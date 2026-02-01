@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7915_MAC_H
 #define __MT7915_MAC_H
@@ -8,7 +8,7 @@
 
 #define MT_TX_FREE_VER			GENMASK(18, 16)
 #define MT_TX_FREE_MSDU_CNT_V0		GENMASK(6, 0)
-/* 0: success, others: dropped */
+ 
 #define MT_TX_FREE_COUNT		GENMASK(12, 0)
 #define MT_TX_FREE_COUNT_V3		GENMASK(27, 24)
 #define MT_TX_FREE_STAT			GENMASK(14, 13)
@@ -39,13 +39,13 @@
 #define MT_TXS7_F1_MPDU_RETRY_BYTES	GENMASK(23, 0)
 
 struct mt7915_dfs_pulse {
-	u32 max_width;		/* us */
-	int max_pwr;		/* dbm */
-	int min_pwr;		/* dbm */
-	u32 min_stgr_pri;	/* us */
-	u32 max_stgr_pri;	/* us */
-	u32 min_cr_pri;		/* us */
-	u32 max_cr_pri;		/* us */
+	u32 max_width;		 
+	int max_pwr;		 
+	int min_pwr;		 
+	u32 min_stgr_pri;	 
+	u32 max_stgr_pri;	 
+	u32 min_cr_pri;		 
+	u32 max_cr_pri;		 
 };
 
 struct mt7915_dfs_pattern {

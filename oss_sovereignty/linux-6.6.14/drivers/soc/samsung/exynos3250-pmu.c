@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2011-2015 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com/
-//
-// Exynos3250 - CPU PMU (Power Management Unit) support
+
+
+
+
+
+
 
 #include <linux/soc/samsung/exynos-regs-pmu.h>
 #include <linux/soc/samsung/exynos-pmu.h>
@@ -11,7 +11,7 @@
 #include "exynos-pmu.h"
 
 static const struct exynos_pmu_conf exynos3250_pmu_config[] = {
-	/* { .offset = offset, .val = { AFTR, W-AFTR, SLEEP } */
+	 
 	{ EXYNOS3_ARM_CORE0_SYS_PWR_REG,		{ 0x0, 0x0, 0x2} },
 	{ EXYNOS3_DIS_IRQ_ARM_CORE0_LOCAL_SYS_PWR_REG,	{ 0x0, 0x0, 0x0} },
 	{ EXYNOS3_DIS_IRQ_ARM_CORE0_CENTRAL_SYS_PWR_REG, { 0x0, 0x0, 0x0} },
@@ -116,7 +116,7 @@ static void exynos3250_powerdown_conf_extra(enum sys_powerdown mode)
 	unsigned int i;
 	unsigned int tmp;
 
-	/* Enable only SC_FEEDBACK */
+	 
 	for (i = 0; i < ARRAY_SIZE(exynos3250_list_feed); i++) {
 		tmp = pmu_raw_readl(exynos3250_list_feed[i]);
 		tmp &= ~(EXYNOS3_OPTION_USE_SC_COUNTER);
@@ -138,27 +138,20 @@ static void exynos3250_pmu_init(void)
 {
 	unsigned int value;
 
-	/*
-	 * To prevent from issuing new bus request form L2 memory system
-	 * If core status is power down, should be set '1' to L2 power down
-	 */
+	 
 	value = pmu_raw_readl(EXYNOS3_ARM_COMMON_OPTION);
 	value |= EXYNOS3_OPTION_SKIP_DEACTIVATE_ACEACP_IN_PWDN;
 	pmu_raw_writel(value, EXYNOS3_ARM_COMMON_OPTION);
 
-	/* Enable USE_STANDBY_WFI for all CORE */
+	 
 	pmu_raw_writel(S5P_USE_STANDBY_WFI_ALL, S5P_CENTRAL_SEQ_OPTION);
 
-	/*
-	 * Set PSHOLD port for output high
-	 */
+	 
 	value = pmu_raw_readl(S5P_PS_HOLD_CONTROL);
 	value |= S5P_PS_HOLD_OUTPUT_HIGH;
 	pmu_raw_writel(value, S5P_PS_HOLD_CONTROL);
 
-	/*
-	 * Enable signal for PSHOLD port
-	 */
+	 
 	value = pmu_raw_readl(S5P_PS_HOLD_CONTROL);
 	value |= S5P_PS_HOLD_EN;
 	pmu_raw_writel(value, S5P_PS_HOLD_CONTROL);

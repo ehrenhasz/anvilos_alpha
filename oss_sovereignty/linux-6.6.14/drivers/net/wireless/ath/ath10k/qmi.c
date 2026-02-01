@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2018 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -290,12 +288,7 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
 		if (ret < 0)
 			goto out;
 
-		/* end = 1 triggers a CRC check on the BDF.  If this fails, we
-		 * get a QMI_ERR_MALFORMED_MSG_V01 error, but the FW is still
-		 * willing to use the BDF.  For some platforms, all the valid
-		 * released BDFs fail this CRC check, so attempt to detect this
-		 * scenario and treat it as non-fatal.
-		 */
+		 
 		if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
 		    !(req->end == 1 &&
 		      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
@@ -686,7 +679,7 @@ static int ath10k_qmi_host_cap_send_sync(struct ath10k_qmi *qmi)
 	if (ret < 0)
 		goto out;
 
-	/* older FW didn't support this request, which is not fatal */
+	 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
 	    resp.resp.error != QMI_ERR_NOT_SUPPORTED_V01) {
 		ath10k_err(ar, "host capability request rejected: %d\n", resp.resp.error);
@@ -826,11 +819,7 @@ static void ath10k_qmi_event_server_arrive(struct ath10k_qmi *qmi)
 	if (ret)
 		return;
 
-	/*
-	 * HACK: sleep for a while between receiving the msa info response
-	 * and the XPU update to prevent SDM845 from crashing due to a security
-	 * violation, when running MPSS.AT.4.0.c2-01184-SDM845_GEN_PACK-1.
-	 */
+	 
 	msleep(20);
 
 	ret = ath10k_qmi_setup_msa_permissions(qmi);
@@ -1006,12 +995,7 @@ static void ath10k_qmi_del_server(struct qmi_handle *qmi_hdl,
 
 	qmi->fw_ready = false;
 
-	/*
-	 * The del_server event is to be processed only if coming from
-	 * the qmi server. The qmi infrastructure sends del_server, when
-	 * any client releases the qmi handle. In this case do not process
-	 * this del_server event.
-	 */
+	 
 	if (qmi->state == ATH10K_QMI_STATE_INIT_DONE)
 		ath10k_qmi_driver_event_post(qmi, ATH10K_QMI_EVENT_SERVER_EXIT,
 					     NULL);

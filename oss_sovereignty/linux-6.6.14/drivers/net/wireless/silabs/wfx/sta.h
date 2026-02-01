@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Implementation of mac80211 API.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+ 
+ 
 #ifndef WFX_STA_H
 #define WFX_STA_H
 
@@ -18,7 +13,7 @@ struct wfx_sta_priv {
 	int vif_id;
 };
 
-/* mac80211 interface */
+ 
 int wfx_start(struct ieee80211_hw *hw);
 void wfx_stop(struct ieee80211_hw *hw);
 int wfx_config(struct ieee80211_hw *hw, u32 changed);
@@ -57,14 +52,14 @@ void wfx_unassign_vif_chanctx(struct ieee80211_hw *hw, struct ieee80211_vif *vif
 			      struct ieee80211_bss_conf *link_conf,
 			      struct ieee80211_chanctx_conf *conf);
 
-/* Hardware API Callbacks */
+ 
 void wfx_cooling_timeout_work(struct work_struct *work);
 void wfx_suspend_hot_dev(struct wfx_dev *wdev, enum sta_notify_cmd cmd);
 void wfx_suspend_resume_mc(struct wfx_vif *wvif, enum sta_notify_cmd cmd);
 void wfx_event_report_rssi(struct wfx_vif *wvif, u8 raw_rcpi_rssi);
 int wfx_update_pm(struct wfx_vif *wvif);
 
-/* Other Helpers */
+ 
 void wfx_reset(struct wfx_vif *wvif);
 u32 wfx_rate_mask_to_hw(struct wfx_dev *wdev, u32 rates);
 

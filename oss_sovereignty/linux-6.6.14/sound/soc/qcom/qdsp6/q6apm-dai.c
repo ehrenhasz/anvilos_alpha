@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021, Linaro Limited
+
+
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -64,13 +64,13 @@ struct q6apm_dai_rtd {
 	phys_addr_t phys;
 	unsigned int pcm_size;
 	unsigned int pcm_count;
-	unsigned int pos;       /* Buffer position */
+	unsigned int pos;        
 	unsigned int periods;
 	unsigned int bytes_sent;
 	unsigned int bytes_received;
 	unsigned int copied_total;
 	uint16_t bits_per_sample;
-	uint16_t source; /* Encoding source bit mask */
+	uint16_t source;  
 	uint16_t session_id;
 	bool next_track;
 	enum stream_state state;
@@ -245,14 +245,14 @@ static int q6apm_dai_prepare(struct snd_soc_component *component,
 	cfg.fmt = SND_AUDIOCODEC_PCM;
 
 	if (prtd->state) {
-		/* clear the previous setup if any  */
+		 
 		q6apm_graph_stop(prtd->graph);
 		q6apm_unmap_memory_regions(prtd->graph, substream->stream);
 	}
 
 	prtd->pcm_count = snd_pcm_lib_period_bytes(substream);
 	prtd->pos = 0;
-	/* rate and channels are sent to audio driver */
+	 
 	ret = q6apm_graph_media_format_shmem(prtd->graph, &cfg);
 	if (ret < 0) {
 		dev_err(dev, "%s: q6apm_open_write failed\n", __func__);
@@ -285,13 +285,13 @@ static int q6apm_dai_prepare(struct snd_soc_component *component,
 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
 		int i;
-		/* Queue the buffers for Capture ONLY after graph is started */
+		 
 		for (i = 0; i < runtime->periods; i++)
 			q6apm_read(prtd->graph);
 
 	}
 
-	/* Now that graph as been prepared and started update the internal state accordingly */
+	 
 	prtd->state = Q6APM_STREAM_RUNNING;
 
 	return 0;
@@ -308,12 +308,12 @@ static int q6apm_dai_trigger(struct snd_soc_component *component,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		 /* start writing buffers for playback only as we already queued capture buffers */
+		  
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			ret = q6apm_write_async(prtd->graph, prtd->pcm_count, 0, 0, 0);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
-		/* TODO support be handled via SoftPause Module */
+		 
 		prtd->state = Q6APM_STREAM_STOPPED;
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
@@ -364,7 +364,7 @@ static int q6apm_dai_open(struct snd_soc_component *component,
 	else if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		runtime->hw = q6apm_dai_hardware_capture;
 
-	/* Ensure that buffer size is a multiple of period size */
+	 
 	ret = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0) {
 		dev_err(dev, "snd_pcm_hw_constraint_integer failed\n");
@@ -412,7 +412,7 @@ static int q6apm_dai_close(struct snd_soc_component *component,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct q6apm_dai_rtd *prtd = runtime->private_data;
 
-	if (prtd->state) { /* only stop graph that is started */
+	if (prtd->state) {  
 		q6apm_graph_stop(prtd->graph);
 		q6apm_unmap_memory_regions(prtd->graph, substream->stream);
 	}
@@ -766,10 +766,7 @@ static int q6apm_compr_copy(struct snd_soc_component *component,
 
 	bytes_received = prtd->bytes_received;
 
-	/**
-	 * Make sure that next track data pointer is aligned at 32 bit boundary
-	 * This is a Mandatory requirement from DSP data buffers alignment
-	 */
+	 
 	if (prtd->next_track)
 		bytes_received = ALIGN(prtd->bytes_received, prtd->pcm_count);
 
@@ -799,7 +796,7 @@ static int q6apm_compr_copy(struct snd_soc_component *component,
 
 	prtd->bytes_received = bytes_received + count;
 
-	/* Kick off the data to dsp if its starving!! */
+	 
 	if (prtd->state == Q6APM_STREAM_RUNNING && (bytes_in_flight == 0)) {
 		bytes_to_write = prtd->pcm_count;
 		avail = prtd->bytes_received - prtd->bytes_sent;

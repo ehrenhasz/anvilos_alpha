@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2003-2015 Broadcom Corporation
- * All Rights Reserved
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -11,7 +8,7 @@
 #include <linux/spi/spi.h>
 #include <linux/interrupt.h>
 
-/* SPI Configuration Register */
+ 
 #define XLP_SPI_CONFIG			0x00
 #define XLP_SPI_CPHA			BIT(0)
 #define XLP_SPI_CPOL			BIT(1)
@@ -22,10 +19,10 @@
 #define XLP_SPI_CS_LSBFE		BIT(10)
 #define XLP_SPI_RXCAP_EN		BIT(11)
 
-/* SPI Frequency Divider Register */
+ 
 #define XLP_SPI_FDIV			0x04
 
-/* SPI Command Register */
+ 
 #define XLP_SPI_CMD			0x08
 #define XLP_SPI_CMD_IDLE_MASK		0x0
 #define XLP_SPI_CMD_TX_MASK		0x1
@@ -34,7 +31,7 @@
 #define XLP_SPI_CMD_CONT		BIT(4)
 #define XLP_SPI_XFR_BITCNT_SHIFT	16
 
-/* SPI Status Register */
+ 
 #define XLP_SPI_STATUS			0x0c
 #define XLP_SPI_XFR_PENDING		BIT(0)
 #define XLP_SPI_XFR_DONE		BIT(1)
@@ -44,7 +41,7 @@
 #define XLP_SPI_RX_OF			BIT(5)
 #define XLP_SPI_STAT_MASK		0x3f
 
-/* SPI Interrupt Enable Register */
+ 
 #define XLP_SPI_INTR_EN			0x10
 #define XLP_SPI_INTR_DONE		BIT(0)
 #define XLP_SPI_INTR_TXTH		BIT(1)
@@ -52,22 +49,22 @@
 #define XLP_SPI_INTR_TXUF		BIT(3)
 #define XLP_SPI_INTR_RXOF		BIT(4)
 
-/* SPI FIFO Threshold Register */
+ 
 #define XLP_SPI_FIFO_THRESH		0x14
 
-/* SPI FIFO Word Count Register */
+ 
 #define XLP_SPI_FIFO_WCNT		0x18
 #define XLP_SPI_RXFIFO_WCNT_MASK	0xf
 #define XLP_SPI_TXFIFO_WCNT_MASK	0xf0
 #define XLP_SPI_TXFIFO_WCNT_SHIFT	4
 
-/* SPI Transmit Data FIFO Register */
+ 
 #define XLP_SPI_TXDATA_FIFO		0x1c
 
-/* SPI Receive Data FIFO Register */
+ 
 #define XLP_SPI_RXDATA_FIFO		0x20
 
-/* SPI System Control Register */
+ 
 #define XLP_SPI_SYSCTRL			0x100
 #define XLP_SPI_SYS_RESET		BIT(0)
 #define XLP_SPI_SYS_CLKDIS		BIT(1)
@@ -80,25 +77,22 @@
 #define XLP_SPI_DEFAULT_FREQ		133333333
 #define XLP_SPI_FDIV_MIN		4
 #define XLP_SPI_FDIV_MAX		65535
-/*
- * SPI can transfer only 28 bytes properly at a time. So split the
- * transfer into 28 bytes size.
- */
+ 
 #define XLP_SPI_XFER_SIZE		28
 
 struct xlp_spi_priv {
-	struct device		dev;		/* device structure */
-	void __iomem		*base;		/* spi registers base address */
-	const u8		*tx_buf;	/* tx data buffer */
-	u8			*rx_buf;	/* rx data buffer */
-	int			tx_len;		/* tx xfer length */
-	int			rx_len;		/* rx xfer length */
-	int			txerrors;	/* TXFIFO underflow count */
-	int			rxerrors;	/* RXFIFO overflow count */
-	int			cs;		/* slave device chip select */
-	u32			spi_clk;	/* spi clock frequency */
-	bool			cmd_cont;	/* cs active */
-	struct completion	done;		/* completion notification */
+	struct device		dev;		 
+	void __iomem		*base;		 
+	const u8		*tx_buf;	 
+	u8			*rx_buf;	 
+	int			tx_len;		 
+	int			rx_len;		 
+	int			txerrors;	 
+	int			rxerrors;	 
+	int			cs;		 
+	u32			spi_clk;	 
+	bool			cmd_cont;	 
+	struct completion	done;		 
 };
 
 static inline u32 xlp_spi_reg_read(struct xlp_spi_priv *priv,
@@ -119,9 +113,7 @@ static inline void xlp_spi_sysctl_write(struct xlp_spi_priv *priv,
 	writel(val, priv->base + regoff);
 }
 
-/*
- * Setup global SPI_SYSCTRL register for all SPI channels.
- */
+ 
 static void xlp_spi_sysctl_setup(struct xlp_spi_priv *xspi)
 {
 	int cs;
@@ -140,9 +132,7 @@ static int xlp_spi_setup(struct spi_device *spi)
 
 	xspi = spi_master_get_devdata(spi->master);
 	cs = spi_get_chipselect(spi, 0);
-	/*
-	 * The value of fdiv must be between 4 and 65535.
-	 */
+	 
 	fdiv = DIV_ROUND_UP(xspi->spi_clk, spi->max_speed_hz);
 	if (fdiv > XLP_SPI_FDIV_MAX)
 		fdiv = XLP_SPI_FDIV_MAX;
@@ -243,7 +233,7 @@ static irqreturn_t xlp_spi_interrupt(int irq, void *dev_id)
 			xspi->rxerrors++;
 	}
 
-	/* write status back to clear interrupts */
+	 
 	xlp_spi_reg_write(xspi, xspi->cs, XLP_SPI_STATUS, stat);
 	if (stat & XLP_SPI_XFR_DONE)
 		complete(&xspi->done);
@@ -279,17 +269,13 @@ static int xlp_spi_xfer_block(struct  xlp_spi_priv *xs,
 	xs->rx_len = (xs->rx_buf == NULL) ? 0 : xfer_len;
 	xs->txerrors = xs->rxerrors = 0;
 
-	/* fill TXDATA_FIFO, then send the CMD */
+	 
 	if (xs->tx_len)
 		xlp_spi_fill_txfifo(xs);
 
 	xlp_spi_send_cmd(xs, xfer_len, cmd_cont);
 
-	/*
-	 * We are getting some spurious tx interrupts, so avoid enabling
-	 * tx interrupts when only rx is in process.
-	 * Enable all the interrupts in tx case.
-	 */
+	 
 	if (xs->tx_len)
 		intr_mask |= XLP_SPI_INTR_TXTH | XLP_SPI_INTR_TXUF |
 				XLP_SPI_INTR_RXTH | XLP_SPI_INTR_RXOF;
@@ -301,7 +287,7 @@ static int xlp_spi_xfer_block(struct  xlp_spi_priv *xs,
 
 	timeout = wait_for_completion_timeout(&xs->done,
 				msecs_to_jiffies(1000));
-	/* Disable interrupts */
+	 
 	xlp_spi_reg_write(xs, xs->cs, XLP_SPI_INTR_EN, 0x0);
 	if (!timeout) {
 		dev_err(&xs->dev, "xfer timedout!\n");
@@ -415,7 +401,7 @@ static int xlp_spi_probe(struct platform_device *pdev)
 	spi_master_set_devdata(master, xspi);
 	xlp_spi_sysctl_setup(xspi);
 
-	/* register spi controller */
+	 
 	err = devm_spi_register_master(&pdev->dev, master);
 	if (err) {
 		dev_err(&pdev->dev, "spi register master failed!\n");

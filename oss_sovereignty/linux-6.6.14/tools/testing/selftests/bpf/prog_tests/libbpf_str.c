@@ -1,23 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <ctype.h>
 #include <test_progs.h>
 #include <bpf/btf.h>
 
-/*
- * Utility function uppercasing an entire string.
- */
+ 
 static void uppercase(char *s)
 {
 	for (; *s != '\0'; s++)
 		*s = toupper(*s);
 }
 
-/*
- * Test case to check that all bpf_attach_type variants are covered by
- * libbpf_bpf_attach_type_str.
- */
+ 
 static void test_libbpf_bpf_attach_type_str(void)
 {
 	struct btf *btf;
@@ -29,7 +24,7 @@ static void test_libbpf_bpf_attach_type_str(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_attach_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_attach_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_attach_type_id"))
 		goto cleanup;
@@ -59,10 +54,7 @@ cleanup:
 	btf__free(btf);
 }
 
-/*
- * Test case to check that all bpf_link_type variants are covered by
- * libbpf_bpf_link_type_str.
- */
+ 
 static void test_libbpf_bpf_link_type_str(void)
 {
 	struct btf *btf;
@@ -74,7 +66,7 @@ static void test_libbpf_bpf_link_type_str(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_link_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_link_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_link_type_id"))
 		goto cleanup;
@@ -104,10 +96,7 @@ cleanup:
 	btf__free(btf);
 }
 
-/*
- * Test case to check that all bpf_map_type variants are covered by
- * libbpf_bpf_map_type_str.
- */
+ 
 static void test_libbpf_bpf_map_type_str(void)
 {
 	struct btf *btf;
@@ -119,7 +108,7 @@ static void test_libbpf_bpf_map_type_str(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_map_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_map_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_map_type_id"))
 		goto cleanup;
@@ -139,11 +128,7 @@ static void test_libbpf_bpf_map_type_str(void)
 		snprintf(buf, sizeof(buf), "BPF_MAP_TYPE_%s", map_type_str);
 		uppercase(buf);
 
-		/* Special case for map_type_name BPF_MAP_TYPE_CGROUP_STORAGE_DEPRECATED
-		 * where it and BPF_MAP_TYPE_CGROUP_STORAGE have the same enum value
-		 * (map_type). For this enum value, libbpf_bpf_map_type_str() picks
-		 * BPF_MAP_TYPE_CGROUP_STORAGE.
-		 */
+		 
 		if (strcmp(map_type_name, "BPF_MAP_TYPE_CGROUP_STORAGE_DEPRECATED") == 0)
 			continue;
 
@@ -154,10 +139,7 @@ cleanup:
 	btf__free(btf);
 }
 
-/*
- * Test case to check that all bpf_prog_type variants are covered by
- * libbpf_bpf_prog_type_str.
- */
+ 
 static void test_libbpf_bpf_prog_type_str(void)
 {
 	struct btf *btf;
@@ -169,7 +151,7 @@ static void test_libbpf_bpf_prog_type_str(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_prog_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_prog_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_prog_type_id"))
 		goto cleanup;
@@ -196,9 +178,7 @@ cleanup:
 	btf__free(btf);
 }
 
-/*
- * Run all libbpf str conversion tests.
- */
+ 
 void test_libbpf_str(void)
 {
 	if (test__start_subtest("bpf_attach_type_str"))

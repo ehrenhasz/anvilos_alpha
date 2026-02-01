@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SATA SerDes(PHY) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Authors: Girish K S <ks.giri@samsung.com>
- *         Yuvaraj Kumar C D <yuvaraj.cd@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -116,7 +110,7 @@ static int exynos_sata_phy_init(struct phy *phy)
 	val &= ~PHCTRLM_REF_RATE;
 	writel(val, sata_phy->regs + EXYNOS5_SATA_PHSATA_CTRLM);
 
-	/* High speed enable for Gen3 */
+	 
 	val = readl(sata_phy->regs + EXYNOS5_SATA_PHSATA_CTRLM);
 	val |= PHCTRLM_HIGH_SPEED;
 	writel(val, sata_phy->regs + EXYNOS5_SATA_PHSATA_CTRLM);
@@ -133,7 +127,7 @@ static int exynos_sata_phy_init(struct phy *phy)
 	if (ret < 0)
 		return ret;
 
-	/* release cmu reset */
+	 
 	val = readl(sata_phy->regs + EXYNOS5_SATA_RESET);
 	val &= ~RESET_CMN_RST_N;
 	writel(val, sata_phy->regs + EXYNOS5_SATA_RESET);

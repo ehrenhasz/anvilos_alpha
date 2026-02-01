@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "arm64-frame-pointer-unwind-support.h"
 #include "callchain.h"
 #include "event.h"
-#include "perf_regs.h" // SMPL_REG_MASK
+#include "perf_regs.h" 
 #include "unwind.h"
 
 #define perf_event_arm_regs perf_event_arm64_regs
@@ -37,11 +37,7 @@ u64 get_leaf_frame_caller_aarch64(struct perf_sample *sample, struct thread *thr
 	if (!get_leaf_frame_caller_enabled(sample))
 		return 0;
 
-	/*
-	 * If PC and SP are not recorded, get the value of PC from the stack
-	 * and set its mask. SP is not used when doing the unwinding but it
-	 * still needs to be set to prevent failures.
-	 */
+	 
 
 	if (!(sample->user_regs.mask & SMPL_REG_MASK(PERF_REG_ARM64_PC))) {
 		sample->user_regs.cache_mask |= SMPL_REG_MASK(PERF_REG_ARM64_PC);

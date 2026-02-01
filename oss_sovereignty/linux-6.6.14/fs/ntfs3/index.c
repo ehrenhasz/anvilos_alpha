@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * Copyright (C) 2019-2021 Paragon Software GmbH, All rights reserved.
- *
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/buffer_head.h>
@@ -23,14 +19,7 @@ static const struct INDEX_NAMES {
 	{ SQ_NAME, ARRAY_SIZE(SQ_NAME) },   { SR_NAME, ARRAY_SIZE(SR_NAME) },
 };
 
-/*
- * cmp_fnames - Compare two names in index.
- *
- * if l1 != 0
- *   Both names are little endian on-disk ATTR_FILE_NAME structs.
- * else
- *   key1 - cpu_str, key2 - ATTR_FILE_NAME
- */
+ 
 static int cmp_fnames(const void *key1, size_t l1, const void *key2, size_t l2,
 		      const void *data)
 {
@@ -51,10 +40,7 @@ static int cmp_fnames(const void *key1, size_t l1, const void *key2, size_t l2,
 	if (!l1) {
 		const struct le_str *s2 = (struct le_str *)&f2->name_len;
 
-		/*
-		 * If names are equal (case insensitive)
-		 * try to compare it case sensitive.
-		 */
+		 
 		return ntfs_cmp_names_cpu(key1, s2, sbi->upcase, both_case);
 	}
 
@@ -63,9 +49,7 @@ static int cmp_fnames(const void *key1, size_t l1, const void *key2, size_t l2,
 			      sbi->upcase, both_case);
 }
 
-/*
- * cmp_uint - $SII of $Secure and $Q of Quota
- */
+ 
 static int cmp_uint(const void *key1, size_t l1, const void *key2, size_t l2,
 		    const void *data)
 {
@@ -82,9 +66,7 @@ static int cmp_uint(const void *key1, size_t l1, const void *key2, size_t l2,
 	return 0;
 }
 
-/*
- * cmp_sdh - $SDH of $Secure
- */
+ 
 static int cmp_sdh(const void *key1, size_t l1, const void *key2, size_t l2,
 		   const void *data)
 {
@@ -98,13 +80,13 @@ static int cmp_sdh(const void *key1, size_t l1, const void *key2, size_t l2,
 	t1 = le32_to_cpu(k1->hash);
 	t2 = le32_to_cpu(k2->hash);
 
-	/* First value is a hash value itself. */
+	 
 	if (t1 < t2)
 		return -1;
 	if (t1 > t2)
 		return 1;
 
-	/* Second value is security Id. */
+	 
 	if (data) {
 		t1 = le32_to_cpu(k1->sec_id);
 		t2 = le32_to_cpu(k2->sec_id);
@@ -117,9 +99,7 @@ static int cmp_sdh(const void *key1, size_t l1, const void *key2, size_t l2,
 	return 0;
 }
 
-/*
- * cmp_uints - $O of ObjId and "$R" for Reparse.
- */
+ 
 static int cmp_uints(const void *key1, size_t l1, const void *key2, size_t l2,
 		     const void *data)
 {
@@ -128,14 +108,10 @@ static int cmp_uints(const void *key1, size_t l1, const void *key2, size_t l2,
 	size_t count;
 
 	if ((size_t)data == 1) {
-		/*
-		 * ni_delete_all -> ntfs_remove_reparse ->
-		 * delete all with this reference.
-		 * k1, k2 - pointers to REPARSE_KEY
-		 */
+		 
 
-		k1 += 1; // Skip REPARSE_KEY.ReparseTag
-		k2 += 1; // Skip REPARSE_KEY.ReparseTag
+		k1 += 1; 
+		k2 += 1; 
 		if (l2 <= sizeof(int))
 			return -1;
 		l2 -= sizeof(int);
@@ -237,7 +213,7 @@ static int bmp_buf_get(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	data_size = le64_to_cpu(b->nres.data_size);
 	if (WARN_ON(off >= data_size)) {
-		/* Looks like filesystem error. */
+		 
 		return -EINVAL;
 	}
 
@@ -310,9 +286,7 @@ out:
 	put_bh(bh);
 }
 
-/*
- * indx_mark_used - Mark the bit @bit as used.
- */
+ 
 static int indx_mark_used(struct ntfs_index *indx, struct ntfs_inode *ni,
 			  size_t bit)
 {
@@ -330,9 +304,7 @@ static int indx_mark_used(struct ntfs_index *indx, struct ntfs_inode *ni,
 	return 0;
 }
 
-/*
- * indx_mark_free - Mark the bit @bit as free.
- */
+ 
 static int indx_mark_free(struct ntfs_index *indx, struct ntfs_inode *ni,
 			  size_t bit)
 {
@@ -350,13 +322,7 @@ static int indx_mark_free(struct ntfs_index *indx, struct ntfs_inode *ni,
 	return 0;
 }
 
-/*
- * scan_nres_bitmap
- *
- * If ntfs_readdir calls this function (indx_used_bit -> scan_nres_bitmap),
- * inode is shared locked and no ni_lock.
- * Use rw_semaphore for read/write access to bitmap_run.
- */
+ 
 static int scan_nres_bitmap(struct ntfs_inode *ni, struct ATTRIB *bitmap,
 			    struct ntfs_index *indx, size_t from,
 			    bool (*fn)(const ulong *buf, u32 bit, u32 bits,
@@ -466,11 +432,7 @@ static bool scan_for_free(const ulong *buf, u32 bit, u32 bits, size_t *ret)
 	return true;
 }
 
-/*
- * indx_find_free - Look for free bit.
- *
- * Return: -1 if no free bits.
- */
+ 
 static int indx_find_free(struct ntfs_index *indx, struct ntfs_inode *ni,
 			  size_t *bit, struct ATTRIB **bitmap)
 {
@@ -514,11 +476,7 @@ static bool scan_for_used(const ulong *buf, u32 bit, u32 bits, size_t *ret)
 	return true;
 }
 
-/*
- * indx_used_bit - Look for used bit.
- *
- * Return: MINUS_ONE_T if no used bits.
- */
+ 
 int indx_used_bit(struct ntfs_index *indx, struct ntfs_inode *ni, size_t *bit)
 {
 	struct ATTRIB *b;
@@ -550,12 +508,7 @@ int indx_used_bit(struct ntfs_index *indx, struct ntfs_inode *ni, size_t *bit)
 	return 0;
 }
 
-/*
- * hdr_find_split
- *
- * Find a point at which the index allocation buffer would like to be split.
- * NOTE: This function should never return 'END' entry NULL returns on error.
- */
+ 
 static const struct NTFS_DE *hdr_find_split(const struct INDEX_HDR *hdr)
 {
 	size_t o;
@@ -572,7 +525,7 @@ static const struct NTFS_DE *hdr_find_split(const struct INDEX_HDR *hdr)
 
 		e = Add2Ptr(hdr, o);
 
-		/* We must not return END entry. */
+		 
 		if (de_is_last(e))
 			return p;
 
@@ -582,11 +535,7 @@ static const struct NTFS_DE *hdr_find_split(const struct INDEX_HDR *hdr)
 	return e;
 }
 
-/*
- * hdr_insert_head - Insert some entries at the beginning of the buffer.
- *
- * It is used to insert entries into a newly-created buffer.
- */
+ 
 static const struct NTFS_DE *hdr_insert_head(struct INDEX_HDR *hdr,
 					     const void *ins, u32 ins_bytes)
 {
@@ -597,7 +546,7 @@ static const struct NTFS_DE *hdr_insert_head(struct INDEX_HDR *hdr,
 	if (!e)
 		return NULL;
 
-	/* Now we just make room for the inserted entries and jam it in. */
+	 
 	to_move = used - le32_to_cpu(hdr->de_off);
 	memmove(Add2Ptr(e, ins_bytes), e, to_move);
 	memcpy(e, ins, ins_bytes);
@@ -606,11 +555,7 @@ static const struct NTFS_DE *hdr_insert_head(struct INDEX_HDR *hdr,
 	return e;
 }
 
-/*
- * index_hdr_check
- *
- * return true if INDEX_HDR is valid
- */
+ 
 static bool index_hdr_check(const struct INDEX_HDR *hdr, u32 bytes)
 {
 	u32 end = le32_to_cpu(hdr->used);
@@ -619,18 +564,14 @@ static bool index_hdr_check(const struct INDEX_HDR *hdr, u32 bytes)
 
 	if (!IS_ALIGNED(off, 8) || tot > bytes || end > tot ||
 	    off + sizeof(struct NTFS_DE) > end) {
-		/* incorrect index buffer. */
+		 
 		return false;
 	}
 
 	return true;
 }
 
-/*
- * index_buf_check
- *
- * return true if INDEX_BUFFER seems is valid
- */
+ 
 static bool index_buf_check(const struct INDEX_BUFFER *ib, u32 bytes,
 			    const CLST *vbn)
 {
@@ -641,11 +582,11 @@ static bool index_buf_check(const struct INDEX_BUFFER *ib, u32 bytes,
 	if (bytes <= offsetof(struct INDEX_BUFFER, ihdr) ||
 	    rhdr->sign != NTFS_INDX_SIGNATURE ||
 	    fo < sizeof(struct INDEX_BUFFER)
-	    /* Check index buffer vbn. */
+	     
 	    || (vbn && *vbn != le64_to_cpu(ib->vbn)) || (fo % sizeof(short)) ||
 	    fo + fn * sizeof(short) >= bytes ||
 	    fn != ((bytes >> SECTOR_SHIFT) + 1)) {
-		/* incorrect index buffer. */
+		 
 		return false;
 	}
 
@@ -704,16 +645,7 @@ static bool fnd_is_empty(struct ntfs_fnd *fnd)
 	return !fnd->de[fnd->level - 1];
 }
 
-/*
- * hdr_find_e - Locate an entry the index buffer.
- *
- * If no matching entry is found, it returns the first entry which is greater
- * than the desired entry If the search key is greater than all the entries the
- * buffer, it returns the 'end' entry. This function does a binary search of the
- * current index buffer, for the first entry that is <= to the search value.
- *
- * Return: NULL if error.
- */
+ 
 static struct NTFS_DE *hdr_find_e(const struct ntfs_index *indx,
 				  const struct INDEX_HDR *hdr, const void *key,
 				  size_t key_len, const void *ctx, int *diff)
@@ -794,11 +726,7 @@ binary_search:
 	goto binary_search;
 }
 
-/*
- * hdr_insert_de - Insert an index entry into the buffer.
- *
- * 'before' should be a pointer previously returned from hdr_find_e.
- */
+ 
 static struct NTFS_DE *hdr_insert_de(const struct ntfs_index *indx,
 				     struct INDEX_HDR *hdr,
 				     const struct NTFS_DE *de,
@@ -810,20 +738,20 @@ static struct NTFS_DE *hdr_insert_de(const struct ntfs_index *indx,
 	u32 total = le32_to_cpu(hdr->total);
 	u16 de_size = le16_to_cpu(de->size);
 
-	/* First, check to see if there's enough room. */
+	 
 	if (used + de_size > total)
 		return NULL;
 
-	/* We know there's enough space, so we know we'll succeed. */
+	 
 	if (before) {
-		/* Check that before is inside Index. */
+		 
 		if (off >= used || off < le32_to_cpu(hdr->de_off) ||
 		    off + le16_to_cpu(before->size) > total) {
 			return NULL;
 		}
 		goto ok;
 	}
-	/* No insert point is applied. Get it manually. */
+	 
 	before = hdr_find_e(indx, hdr, de + 1, le16_to_cpu(de->key_size), ctx,
 			    &diff);
 	if (!before)
@@ -831,7 +759,7 @@ static struct NTFS_DE *hdr_insert_de(const struct ntfs_index *indx,
 	off = PtrOffset(hdr, before);
 
 ok:
-	/* Now we just make room for the entry and jam it in. */
+	 
 	memmove(Add2Ptr(before, de_size), before, used - off);
 
 	hdr->used = cpu_to_le32(used + de_size);
@@ -840,9 +768,7 @@ ok:
 	return before;
 }
 
-/*
- * hdr_delete_de - Remove an entry from the index buffer.
- */
+ 
 static inline struct NTFS_DE *hdr_delete_de(struct INDEX_HDR *hdr,
 					    struct NTFS_DE *re)
 {
@@ -851,7 +777,7 @@ static inline struct NTFS_DE *hdr_delete_de(struct INDEX_HDR *hdr,
 	u32 off = PtrOffset(hdr, re);
 	int bytes = used - (off + esize);
 
-	/* check INDEX_HDR valid before using INDEX_HDR */
+	 
 	if (!check_index_header(hdr, le32_to_cpu(hdr->total)))
 		return NULL;
 
@@ -884,7 +810,7 @@ int indx_init(struct ntfs_index *indx, struct ntfs_sb_info *sbi,
 		goto out;
 	}
 
-	/* Check root fields. */
+	 
 	if (!root->index_block_clst)
 		goto out;
 
@@ -894,13 +820,13 @@ int indx_init(struct ntfs_index *indx, struct ntfs_sb_info *sbi,
 	t32 = le32_to_cpu(root->index_block_size);
 	indx->index_bits = blksize_bits(t32);
 
-	/* Check index record size. */
+	 
 	if (t32 < sbi->cluster_size) {
-		/* Index record is smaller than a cluster, use 512 blocks. */
+		 
 		if (t32 != root->index_block_clst * SECTOR_SIZE)
 			goto out;
 
-		/* Check alignment to a cluster. */
+		 
 		if ((sbi->cluster_size >> SECTOR_SHIFT) &
 		    (root->index_block_clst - 1)) {
 			goto out;
@@ -908,7 +834,7 @@ int indx_init(struct ntfs_index *indx, struct ntfs_sb_info *sbi,
 
 		indx->vbn2vbo_bits = SECTOR_SHIFT;
 	} else {
-		/* Index record must be a multiple of cluster size. */
+		 
 		if (t32 != root->index_block_clst << sbi->cluster_bits)
 			goto out;
 
@@ -960,10 +886,10 @@ static struct indx_node *indx_new(struct ntfs_index *indx,
 		return ERR_PTR(err);
 	}
 
-	/* Create header. */
+	 
 	index->rhdr.sign = NTFS_INDX_SIGNATURE;
-	index->rhdr.fix_off = cpu_to_le16(sizeof(struct INDEX_BUFFER)); // 0x28
-	fn = (bytes >> SECTOR_SHIFT) + 1; // 9
+	index->rhdr.fix_off = cpu_to_le16(sizeof(struct INDEX_BUFFER));  
+	fn = (bytes >> SECTOR_SHIFT) + 1;  
 	index->rhdr.fix_num = cpu_to_le16(fn);
 	index->vbn = cpu_to_le64(vbn);
 	hdr = &index->ihdr;
@@ -1009,7 +935,7 @@ struct INDEX_ROOT *indx_get_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	root = resident_data_ex(a, sizeof(struct INDEX_ROOT));
 
-	/* length check */
+	 
 	if (root &&
 	    offsetof(struct INDEX_ROOT, ihdr) + le32_to_cpu(root->ihdr.used) >
 		    le32_to_cpu(a->res.data_size)) {
@@ -1027,13 +953,7 @@ static int indx_write(struct ntfs_index *indx, struct ntfs_inode *ni,
 	return ntfs_write_bh(ni->mi.sbi, &ib->rhdr, &node->nb, sync);
 }
 
-/*
- * indx_read
- *
- * If ntfs_readdir calls this function
- * inode is shared locked and no ni_lock.
- * Use rw_semaphore for read/write access to alloc_run.
- */
+ 
 int indx_read(struct ntfs_index *indx, struct ntfs_inode *ni, CLST vbn,
 	      struct indx_node **node)
 {
@@ -1105,7 +1025,7 @@ ok:
 		err = 0;
 	}
 
-	/* check for index header length */
+	 
 	if (offsetof(struct INDEX_BUFFER, ihdr) + le32_to_cpu(ib->ihdr.used) >
 	    bytes) {
 		err = -EINVAL;
@@ -1133,9 +1053,7 @@ out:
 	return err;
 }
 
-/*
- * indx_find - Scan NTFS directory for given entry.
- */
+ 
 int indx_find(struct ntfs_index *indx, struct ntfs_inode *ni,
 	      const struct INDEX_ROOT *root, const void *key, size_t key_len,
 	      const void *ctx, int *diff, struct NTFS_DE **entry,
@@ -1149,11 +1067,11 @@ int indx_find(struct ntfs_index *indx, struct ntfs_inode *ni,
 		root = indx_get_root(&ni->dir, ni, NULL, NULL);
 
 	if (!root) {
-		/* Should not happen. */
+		 
 		return -EINVAL;
 	}
 
-	/* Check cache. */
+	 
 	e = fnd->level ? fnd->de[fnd->level - 1] : fnd->root_de;
 	if (e && !de_is_last(e) &&
 	    !(*indx->cmp)(key, key_len, e + 1, le16_to_cpu(e->key_size), ctx)) {
@@ -1162,10 +1080,10 @@ int indx_find(struct ntfs_index *indx, struct ntfs_inode *ni,
 		return 0;
 	}
 
-	/* Soft finder reset. */
+	 
 	fnd_clear(fnd);
 
-	/* Lookup entry that is <= to the search value. */
+	 
 	e = hdr_find_e(indx, &root->ihdr, key, key_len, ctx, diff);
 	if (!e)
 		return -EINVAL;
@@ -1177,14 +1095,14 @@ int indx_find(struct ntfs_index *indx, struct ntfs_inode *ni,
 		if (*diff >= 0 || !de_has_vcn_ex(e))
 			break;
 
-		/* Read next level. */
+		 
 		err = indx_read(indx, ni, de_get_vbn(e), &node);
 		if (err) {
-			/* io error? */
+			 
 			return err;
 		}
 
-		/* Lookup entry that is <= to the search value. */
+		 
 		e = hdr_find_e(indx, &node->index->ihdr, key, key_len, ctx,
 			       diff);
 		if (!e) {
@@ -1210,7 +1128,7 @@ int indx_find_sort(struct ntfs_index *indx, struct ntfs_inode *ni,
 	int level = fnd->level;
 
 	if (!*entry) {
-		/* Start find. */
+		 
 		e = hdr_first_de(&root->ihdr);
 		if (!e)
 			return 0;
@@ -1240,7 +1158,7 @@ int indx_find_sort(struct ntfs_index *indx, struct ntfs_inode *ni,
 		fnd->de[level - 1] = e;
 	}
 
-	/* Just to avoid tree cycle. */
+	 
 next_iter:
 	if (iter++ >= 1000)
 		return -EINVAL;
@@ -1255,12 +1173,12 @@ next_iter:
 			return -EINVAL;
 		}
 
-		/* Read next level. */
+		 
 		err = indx_read(indx, ni, de_get_vbn(e), &n);
 		if (err)
 			return err;
 
-		/* Try next level. */
+		 
 		e = hdr_first_de(&n->index->ihdr);
 		if (!e) {
 			kfree(n);
@@ -1280,7 +1198,7 @@ pop_level:
 		if (!de_is_last(e))
 			goto next_iter;
 
-		/* Pop one level. */
+		 
 		if (n) {
 			fnd_pop(fnd);
 			kfree(n);
@@ -1322,35 +1240,35 @@ int indx_find_raw(struct ntfs_index *indx, struct ntfs_inode *ni,
 	CLST next_vbn;
 	u32 record_size = ni->mi.sbi->record_size;
 
-	/* Use non sorted algorithm. */
+	 
 	if (!*entry) {
-		/* This is the first call. */
+		 
 		e = hdr_first_de(&root->ihdr);
 		if (!e)
 			return 0;
 		fnd_clear(fnd);
 		fnd->root_de = e;
 
-		/* The first call with setup of initial element. */
+		 
 		if (*off >= record_size) {
 			next_vbn = (((*off - record_size) >> indx->index_bits))
 				   << indx->idx2vbn_bits;
-			/* Jump inside cycle 'for'. */
+			 
 			goto next;
 		}
 
-		/* Start enumeration from root. */
+		 
 		*off = 0;
 	} else if (!fnd->root_de)
 		return -EINVAL;
 
 	for (;;) {
-		/* Check if current entry can be used. */
+		 
 		if (e && le16_to_cpu(e->size) > sizeof(struct NTFS_DE))
 			goto ok;
 
 		if (!fnd->level) {
-			/* Continue to enumerate root. */
+			 
 			if (!de_is_last(fnd->root_de)) {
 				e = hdr_next_de(&root->ihdr, fnd->root_de);
 				if (!e)
@@ -1359,10 +1277,10 @@ int indx_find_raw(struct ntfs_index *indx, struct ntfs_inode *ni,
 				continue;
 			}
 
-			/* Start to enumerate indexes from 0. */
+			 
 			next_vbn = 0;
 		} else {
-			/* Continue to enumerate indexes. */
+			 
 			e2 = fnd->de[fnd->level - 1];
 
 			n = fnd->nodes[fnd->level - 1];
@@ -1375,31 +1293,31 @@ int indx_find_raw(struct ntfs_index *indx, struct ntfs_inode *ni,
 				continue;
 			}
 
-			/* Continue with next index. */
+			 
 			next_vbn = le64_to_cpu(n->index->vbn) +
 				   root->index_block_clst;
 		}
 
 next:
-		/* Release current index. */
+		 
 		if (n) {
 			fnd_pop(fnd);
 			put_indx_node(n);
 			n = NULL;
 		}
 
-		/* Skip all free indexes. */
+		 
 		bit = next_vbn >> indx->idx2vbn_bits;
 		err = indx_used_bit(indx, ni, &bit);
 		if (err == -ENOENT || bit == MINUS_ONE_T) {
-			/* No used indexes. */
+			 
 			*entry = NULL;
 			return 0;
 		}
 
 		next_used_vbn = bit << indx->idx2vbn_bits;
 
-		/* Read buffer into memory. */
+		 
 		err = indx_read(indx, ni, next_used_vbn, &n);
 		if (err)
 			return err;
@@ -1411,12 +1329,12 @@ next:
 	}
 
 ok:
-	/* Return offset to restore enumerator if necessary. */
+	 
 	if (!n) {
-		/* 'e' points in root, */
+		 
 		*off = PtrOffset(&root->ihdr, e);
 	} else {
-		/* 'e' points in index, */
+		 
 		*off = (le64_to_cpu(n->index->vbn) << indx->vbn2vbo_bits) +
 		       record_size + PtrOffset(&n->index->ihdr, e);
 	}
@@ -1425,9 +1343,7 @@ ok:
 	return 0;
 }
 
-/*
- * indx_create_allocate - Create "Allocation + Bitmap" attributes.
- */
+ 
 static int indx_create_allocate(struct ntfs_index *indx, struct ntfs_inode *ni,
 				CLST *vbn)
 {
@@ -1482,9 +1398,7 @@ out:
 	return err;
 }
 
-/*
- * indx_add_allocate - Add clusters to index.
- */
+ 
 static int indx_add_allocate(struct ntfs_index *indx, struct ntfs_inode *ni,
 			     CLST *vbn)
 {
@@ -1516,7 +1430,7 @@ static int indx_add_allocate(struct ntfs_index *indx, struct ntfs_inode *ni,
 	data_size = (u64)(bit + 1) << indx->index_bits;
 
 	if (bmp) {
-		/* Increase bitmap. */
+		 
 		err = attr_set_size(ni, ATTR_BITMAP, in->name, in->name_len,
 				    &indx->bitmap_run, bitmap_size(bit + 1),
 				    NULL, true, NULL);
@@ -1533,7 +1447,7 @@ static int indx_add_allocate(struct ntfs_index *indx, struct ntfs_inode *ni,
 		goto out1;
 	}
 
-	/* Increase allocation. */
+	 
 	err = attr_set_size(ni, ATTR_ALLOC, in->name, in->name_len,
 			    &indx->alloc_run, data_size, &data_size, true,
 			    NULL);
@@ -1551,7 +1465,7 @@ static int indx_add_allocate(struct ntfs_index *indx, struct ntfs_inode *ni,
 	return 0;
 
 out2:
-	/* Ops. No space? */
+	 
 	attr_set_size(ni, ATTR_BITMAP, in->name, in->name_len,
 		      &indx->bitmap_run, bmp_size, &bmp_size_v, false, NULL);
 
@@ -1559,12 +1473,7 @@ out1:
 	return err;
 }
 
-/*
- * indx_insert_into_root - Attempt to insert an entry into the index root.
- *
- * @undo - True if we undoing previous remove.
- * If necessary, it will twiddle the index b-tree.
- */
+ 
 static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 				 const struct NTFS_DE *new_de,
 				 struct NTFS_DE *root_de, const void *ctx,
@@ -1585,16 +1494,12 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	int ds_root;
 	struct INDEX_ROOT *root, *a_root;
 
-	/* Get the record this root placed in. */
+	 
 	root = indx_get_root(indx, ni, &attr, &mi);
 	if (!root)
 		return -EINVAL;
 
-	/*
-	 * Try easy case:
-	 * hdr_insert_de will succeed if there's
-	 * room the root for the new entry.
-	 */
+	 
 	hdr = &root->ihdr;
 	sbi = ni->mi.sbi;
 	new_de_size = le16_to_cpu(new_de->size);
@@ -1605,7 +1510,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	ds_root = new_de_size + hdr_used - hdr_total;
 
-	/* If 'undo' is set then reduce requirements. */
+	 
 	if ((undo || asize + ds_root < sbi->max_bytes_per_attr) &&
 	    mi_resize_attr(mi, attr, ds_root)) {
 		hdr->total = cpu_to_le32(hdr_total + ds_root);
@@ -1617,19 +1522,16 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 		return 0;
 	}
 
-	/* Make a copy of root attribute to restore if error. */
+	 
 	a_root = kmemdup(attr, asize, GFP_NOFS);
 	if (!a_root)
 		return -ENOMEM;
 
-	/*
-	 * Copy all the non-end entries from
-	 * the index root to the new buffer.
-	 */
+	 
 	to_move = 0;
 	e0 = hdr_first_de(hdr);
 
-	/* Calculate the size to copy. */
+	 
 	for (e = e0;; e = hdr_next_de(hdr, e)) {
 		if (!e) {
 			err = -EINVAL;
@@ -1662,7 +1564,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	ds_root = new_root_size - root_size;
 
 	if (ds_root > 0 && asize + ds_root > sbi->max_bytes_per_attr) {
-		/* Make root external. */
+		 
 		err = -EOPNOTSUPP;
 		goto out_free_re;
 	}
@@ -1670,7 +1572,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	if (ds_root)
 		mi_resize_attr(mi, attr, ds_root);
 
-	/* Fill first entry (vcn will be set later). */
+	 
 	e = (struct NTFS_DE *)(root + 1);
 	memset(e, 0, sizeof(struct NTFS_DE));
 	e->size = cpu_to_le16(sizeof(struct NTFS_DE) + sizeof(u64));
@@ -1683,26 +1585,26 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	fnd->root_de = hdr_first_de(hdr);
 	mi->dirty = true;
 
-	/* Create alloc and bitmap attributes (if not). */
+	 
 	err = run_is_empty(&indx->alloc_run) ?
 		      indx_create_allocate(indx, ni, &new_vbn) :
 		      indx_add_allocate(indx, ni, &new_vbn);
 
-	/* Layout of record may be changed, so rescan root. */
+	 
 	root = indx_get_root(indx, ni, &attr, &mi);
 	if (!root) {
-		/* Bug? */
+		 
 		ntfs_set_state(sbi, NTFS_DIRTY_ERROR);
 		err = -EINVAL;
 		goto out_free_re;
 	}
 
 	if (err) {
-		/* Restore root. */
+		 
 		if (mi_resize_attr(mi, attr, -ds_root)) {
 			memcpy(attr, a_root, asize);
 		} else {
-			/* Bug? */
+			 
 			ntfs_set_state(sbi, NTFS_DIRTY_ERROR);
 		}
 		goto out_free_re;
@@ -1712,7 +1614,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	*(__le64 *)(e + 1) = cpu_to_le64(new_vbn);
 	mi->dirty = true;
 
-	/* Now we can create/format the new buffer and copy the entries into. */
+	 
 	n = indx_new(indx, ni, new_vbn, sub_vbn);
 	if (IS_ERR(n)) {
 		err = PTR_ERR(n);
@@ -1723,20 +1625,15 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	hdr_used = le32_to_cpu(hdr->used);
 	hdr_total = le32_to_cpu(hdr->total);
 
-	/* Copy root entries into new buffer. */
+	 
 	hdr_insert_head(hdr, re, to_move);
 
-	/* Update bitmap attribute. */
+	 
 	indx_mark_used(indx, ni, new_vbn >> indx->idx2vbn_bits);
 
-	/* Check if we can insert new entry new index buffer. */
+	 
 	if (hdr_used + new_de_size > hdr_total) {
-		/*
-		 * This occurs if MFT record is the same or bigger than index
-		 * buffer. Move all root new index and have no space to add
-		 * new entry classic case when MFT record is 1K and index
-		 * buffer 4K the problem should not occurs.
-		 */
+		 
 		kfree(re);
 		indx_write(indx, ni, n, 0);
 
@@ -1746,10 +1643,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 		goto out_free_root;
 	}
 
-	/*
-	 * Now root is a parent for new index buffer.
-	 * Insert NewEntry a new buffer.
-	 */
+	 
 	e = hdr_insert_de(indx, hdr, new_de, NULL, ctx);
 	if (!e) {
 		err = -EINVAL;
@@ -1757,7 +1651,7 @@ static int indx_insert_into_root(struct ntfs_index *indx, struct ntfs_inode *ni,
 	}
 	fnd_push(fnd, n, e);
 
-	/* Just write updates index into disk. */
+	 
 	indx_write(indx, ni, n, 0);
 
 	n = NULL;
@@ -1771,12 +1665,7 @@ out_free_root:
 	return err;
 }
 
-/*
- * indx_insert_into_buffer
- *
- * Attempt to insert an entry into an Index Allocation Buffer.
- * If necessary, it will split the buffer.
- */
+ 
 static int
 indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
 			struct INDEX_ROOT *root, const struct NTFS_DE *new_de,
@@ -1795,27 +1684,17 @@ indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
 	u16 sp_size;
 	void *hdr1_saved = NULL;
 
-	/* Try the most easy case. */
+	 
 	e = fnd->level - 1 == level ? fnd->de[level] : NULL;
 	e = hdr_insert_de(indx, hdr1, new_de, e, ctx);
 	fnd->de[level] = e;
 	if (e) {
-		/* Just write updated index into disk. */
+		 
 		indx_write(indx, ni, n1, 0);
 		return 0;
 	}
 
-	/*
-	 * No space to insert into buffer. Split it.
-	 * To split we:
-	 *  - Save split point ('cause index buffers will be changed)
-	 * - Allocate NewBuffer and copy all entries <= sp into new buffer
-	 * - Remove all entries (sp including) from TargetBuffer
-	 * - Insert NewEntry into left or right buffer (depending on sp <=>
-	 *     NewEntry)
-	 * - Insert sp into parent buffer (or root)
-	 * - Make sp a parent for new buffer
-	 */
+	 
 	sp = hdr_find_split(hdr1);
 	if (!sp)
 		return -EINVAL;
@@ -1842,12 +1721,12 @@ indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
 		sub_vbn = &t_vbn;
 	}
 
-	/* Allocate on disk a new index allocation buffer. */
+	 
 	err = indx_add_allocate(indx, ni, &new_vbn);
 	if (err)
 		goto out;
 
-	/* Allocate and format memory a new index buffer. */
+	 
 	n2 = indx_new(indx, ni, new_vbn, sub_vbn);
 	if (IS_ERR(n2)) {
 		err = PTR_ERR(n2);
@@ -1856,23 +1735,20 @@ indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	hdr2 = &n2->index->ihdr;
 
-	/* Make sp a parent for new buffer. */
+	 
 	de_set_vbn(up_e, new_vbn);
 
-	/* Copy all the entries <= sp into the new buffer. */
+	 
 	de_t = hdr_first_de(hdr1);
 	to_copy = PtrOffset(de_t, sp);
 	hdr_insert_head(hdr2, de_t, to_copy);
 
-	/* Remove all entries (sp including) from hdr1. */
+	 
 	used = used1 - to_copy - sp_size;
 	memmove(de_t, Add2Ptr(sp, sp_size), used - le32_to_cpu(hdr1->de_off));
 	hdr1->used = cpu_to_le32(used);
 
-	/*
-	 * Insert new entry into left or right buffer
-	 * (depending on sp <=> new_de).
-	 */
+	 
 	hdr_insert_de(indx,
 		      (*indx->cmp)(new_de + 1, le16_to_cpu(new_de->key_size),
 				   up_e + 1, le16_to_cpu(up_e->key_size),
@@ -1888,26 +1764,18 @@ indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	put_indx_node(n2);
 
-	/*
-	 * We've finished splitting everybody, so we are ready to
-	 * insert the promoted entry into the parent.
-	 */
+	 
 	if (!level) {
-		/* Insert in root. */
+		 
 		err = indx_insert_into_root(indx, ni, up_e, NULL, ctx, fnd, 0);
 	} else {
-		/*
-		 * The target buffer's parent is another index buffer.
-		 * TODO: Remove recursion.
-		 */
+		 
 		err = indx_insert_into_buffer(indx, ni, root, up_e, ctx,
 					      level - 1, fnd);
 	}
 
 	if (err) {
-		/*
-		 * Undo critical operations.
-		 */
+		 
 		indx_mark_free(indx, ni, new_vbn >> indx->idx2vbn_bits);
 		memcpy(hdr1, hdr1_saved, used1);
 		indx_write(indx, ni, n1, 0);
@@ -1920,11 +1788,7 @@ out:
 	return err;
 }
 
-/*
- * indx_insert_entry - Insert new entry into index.
- *
- * @undo - True if we undoing previous remove.
- */
+ 
 int indx_insert_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		      const struct NTFS_DE *new_de, const void *ctx,
 		      struct ntfs_fnd *fnd, bool undo)
@@ -1951,10 +1815,7 @@ int indx_insert_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 	}
 
 	if (fnd_is_empty(fnd)) {
-		/*
-		 * Find the spot the tree where we want to
-		 * insert the new entry.
-		 */
+		 
 		err = indx_find(indx, ni, root, new_de + 1,
 				le16_to_cpu(new_de->key_size), ctx, &diff, &e,
 				fnd);
@@ -1968,16 +1829,11 @@ int indx_insert_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 	}
 
 	if (!fnd->level) {
-		/*
-		 * The root is also a leaf, so we'll insert the
-		 * new entry into it.
-		 */
+		 
 		err = indx_insert_into_root(indx, ni, new_de, fnd->root_de, ctx,
 					    fnd, undo);
 	} else {
-		/*
-		 * Found a leaf buffer, so we'll insert the new entry into it.
-		 */
+		 
 		err = indx_insert_into_buffer(indx, ni, root, new_de, ctx,
 					      fnd->level - 1, fnd);
 	}
@@ -1988,9 +1844,7 @@ out1:
 	return err;
 }
 
-/*
- * indx_find_buffer - Locate a buffer from the tree.
- */
+ 
 static struct indx_node *indx_find_buffer(struct ntfs_index *indx,
 					  struct ntfs_inode *ni,
 					  const struct INDEX_ROOT *root,
@@ -2001,7 +1855,7 @@ static struct indx_node *indx_find_buffer(struct ntfs_index *indx,
 	struct indx_node *r;
 	const struct INDEX_HDR *hdr = n ? &n->index->ihdr : &root->ihdr;
 
-	/* Step 1: Scan one level. */
+	 
 	for (e = hdr_first_de(hdr);; e = hdr_next_de(hdr, e)) {
 		if (!e)
 			return ERR_PTR(-EINVAL);
@@ -2013,7 +1867,7 @@ static struct indx_node *indx_find_buffer(struct ntfs_index *indx,
 			break;
 	}
 
-	/* Step2: Do recursion. */
+	 
 	e = Add2Ptr(hdr, le32_to_cpu(hdr->de_off));
 	for (;;) {
 		if (de_has_vcn_ex(e)) {
@@ -2035,9 +1889,7 @@ static struct indx_node *indx_find_buffer(struct ntfs_index *indx,
 	return NULL;
 }
 
-/*
- * indx_shrink - Deallocate unused tail indexes.
- */
+ 
 static int indx_shrink(struct ntfs_index *indx, struct ntfs_inode *ni,
 		       size_t bit)
 {
@@ -2116,7 +1968,7 @@ static int indx_free_children(struct ntfs_index *indx, struct ntfs_inode *ni,
 		return err;
 
 	hdr = &n->index->ihdr;
-	/* First, recurse into the children, if any. */
+	 
 	if (hdr_has_subnode(hdr)) {
 		for (e = hdr_first_de(hdr); e; e = hdr_next_de(hdr, e)) {
 			indx_free_children(indx, ni, e, false);
@@ -2128,30 +1980,18 @@ static int indx_free_children(struct ntfs_index *indx, struct ntfs_inode *ni,
 	put_indx_node(n);
 
 	i = vbn >> indx->idx2vbn_bits;
-	/*
-	 * We've gotten rid of the children; add this buffer to the free list.
-	 */
+	 
 	indx_mark_free(indx, ni, i);
 
 	if (!trim)
 		return 0;
 
-	/*
-	 * If there are no used indexes after current free index
-	 * then we can truncate allocation and bitmap.
-	 * Use bitmap to estimate the case.
-	 */
+	 
 	indx_shrink(indx, ni, i + 1);
 	return 0;
 }
 
-/*
- * indx_get_entry_to_replace
- *
- * Find a replacement entry for a deleted entry.
- * Always returns a node entry:
- * NTFS_IE_HAS_SUBNODES is set the flags and the size includes the sub_vcn.
- */
+ 
 static int indx_get_entry_to_replace(struct ntfs_index *indx,
 				     struct ntfs_inode *ni,
 				     const struct NTFS_DE *de_next,
@@ -2167,7 +2007,7 @@ static int indx_get_entry_to_replace(struct ntfs_index *indx,
 
 	*de_to_replace = NULL;
 
-	/* Find first leaf entry down from de_next. */
+	 
 	vbn = de_get_vbn(de_next);
 	for (;;) {
 		n = NULL;
@@ -2179,17 +2019,14 @@ static int indx_get_entry_to_replace(struct ntfs_index *indx,
 		fnd_push(fnd, n, e);
 
 		if (!de_is_last(e)) {
-			/*
-			 * This buffer is non-empty, so its first entry
-			 * could be used as the replacement entry.
-			 */
+			 
 			level = fnd->level - 1;
 		}
 
 		if (!de_has_vcn(e))
 			break;
 
-		/* This buffer is a node. Continue to go down. */
+		 
 		vbn = de_get_vbn(e);
 	}
 
@@ -2198,7 +2035,7 @@ static int indx_get_entry_to_replace(struct ntfs_index *indx,
 
 	n = fnd->nodes[level];
 	te = hdr_first_de(&n->index->ihdr);
-	/* Copy the candidate entry into the replacement entry buffer. */
+	 
 	re = kmalloc(le16_to_cpu(te->size) + sizeof(u64), GFP_NOFS);
 	if (!re) {
 		err = -ENOMEM;
@@ -2209,25 +2046,15 @@ static int indx_get_entry_to_replace(struct ntfs_index *indx,
 	memcpy(re, te, le16_to_cpu(te->size));
 
 	if (!de_has_vcn(re)) {
-		/*
-		 * The replacement entry we found doesn't have a sub_vcn.
-		 * increase its size to hold one.
-		 */
+		 
 		le16_add_cpu(&re->size, sizeof(u64));
 		re->flags |= NTFS_IE_HAS_SUBNODES;
 	} else {
-		/*
-		 * The replacement entry we found was a node entry, which
-		 * means that all its child buffers are empty. Return them
-		 * to the free pool.
-		 */
+		 
 		indx_free_children(indx, ni, te, true);
 	}
 
-	/*
-	 * Expunge the replacement entry from its former location,
-	 * and then write that buffer.
-	 */
+	 
 	ib = n->index;
 	e = hdr_delete_de(&ib->ihdr, te);
 
@@ -2235,7 +2062,7 @@ static int indx_get_entry_to_replace(struct ntfs_index *indx,
 	indx_write(indx, ni, n, 0);
 
 	if (ib_is_leaf(ib) && ib_is_empty(ib)) {
-		/* An empty leaf. */
+		 
 		return 0;
 	}
 
@@ -2244,9 +2071,7 @@ out:
 	return err;
 }
 
-/*
- * indx_delete_entry - Delete an entry from the index.
- */
+ 
 int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		      const void *key, u32 key_len, const void *ctx)
 {
@@ -2283,7 +2108,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		goto out;
 	}
 
-	/* Locate the entry to remove. */
+	 
 	err = indx_find(indx, ni, root, key, key_len, ctx, &diff, &e, fnd);
 	if (err)
 		goto out;
@@ -2309,32 +2134,26 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 	e_size = le16_to_cpu(e->size);
 
 	if (!de_has_vcn_ex(e)) {
-		/* The entry to delete is a leaf, so we can just rip it out. */
+		 
 		hdr_delete_de(hdr, e);
 
 		if (!level) {
 			hdr->total = hdr->used;
 
-			/* Shrink resident root attribute. */
+			 
 			mi_resize_attr(mi, attr, 0 - e_size);
 			goto out;
 		}
 
 		indx_write(indx, ni, n, 0);
 
-		/*
-		 * Check to see if removing that entry made
-		 * the leaf empty.
-		 */
+		 
 		if (ib_is_leaf(ib) && ib_is_empty(ib)) {
 			fnd_pop(fnd);
 			fnd_push(fnd2, n, e);
 		}
 	} else {
-		/*
-		 * The entry we wish to delete is a node buffer, so we
-		 * have to find a replacement for it.
-		 */
+		 
 		next = de_get_next(e);
 
 		err = indx_get_entry_to_replace(indx, ni, next, &re, fnd2);
@@ -2356,13 +2175,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			if (err)
 				goto out;
 		} else {
-			/*
-			 * There is no replacement for the current entry.
-			 * This means that the subtree rooted at its node
-			 * is empty, and can be deleted, which turn means
-			 * that the node can just inherit the deleted
-			 * entry sub_vcn.
-			 */
+			 
 			indx_free_children(indx, ni, next, true);
 
 			de_set_vbn_le(next, de_get_vbn_le(e));
@@ -2372,17 +2185,17 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			} else {
 				hdr->total = hdr->used;
 
-				/* Shrink resident root attribute. */
+				 
 				mi_resize_attr(mi, attr, 0 - e_size);
 			}
 		}
 	}
 
-	/* Delete a branch of tree. */
+	 
 	if (!fnd2 || !fnd2->level)
 		goto out;
 
-	/* Reinit root 'cause it can be changed. */
+	 
 	root = indx_get_root(indx, ni, &attr, &mi);
 	if (!root) {
 		err = -EINVAL;
@@ -2396,7 +2209,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 
 	hdr = level ? &fnd->nodes[level - 1]->index->ihdr : &root->ihdr;
 
-	/* Scan current level. */
+	 
 	for (e = hdr_first_de(hdr);; e = hdr_next_de(hdr, e)) {
 		if (!e) {
 			err = -EINVAL;
@@ -2413,7 +2226,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 	}
 
 	if (!e) {
-		/* Do slow search from root. */
+		 
 		struct indx_node *in;
 
 		fnd_clear(fnd);
@@ -2428,7 +2241,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			fnd_push(fnd, in, NULL);
 	}
 
-	/* Merge fnd2 -> fnd. */
+	 
 	for (level = 0; level < fnd2->level; level++) {
 		fnd_push(fnd, fnd2->nodes[level], fnd2->de[level]);
 		fnd2->nodes[level] = NULL;
@@ -2473,22 +2286,13 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		}
 
 		if (sub_vbn != de_get_vbn_le(e)) {
-			/*
-			 * Didn't find the parent entry, although this buffer
-			 * is the parent trail. Something is corrupt.
-			 */
+			 
 			err = -EINVAL;
 			goto out;
 		}
 
 		if (de_is_last(e)) {
-			/*
-			 * Since we can't remove the end entry, we'll remove
-			 * its predecessor instead. This means we have to
-			 * transfer the predecessor's sub_vcn to the end entry.
-			 * Note: This index block is not empty, so the
-			 * predecessor must exist.
-			 */
+			 
 			if (!prev) {
 				err = -EINVAL;
 				goto out;
@@ -2504,11 +2308,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			e = prev;
 		}
 
-		/*
-		 * Copy the current entry into a temporary buffer (stripping
-		 * off its down-pointer, if any) and delete it from the current
-		 * buffer or root, as appropriate.
-		 */
+		 
 		e_size = le16_to_cpu(e->size);
 		me = kmemdup(e, e_size, GFP_NOFS);
 		if (!me) {
@@ -2527,14 +2327,14 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			level = 0;
 			hdr->total = hdr->used;
 
-			/* Shrink resident root attribute. */
+			 
 			mi_resize_attr(mi, attr, 0 - e_size);
 		} else {
 			indx_write(indx, ni, n2d, 0);
 			level = level2;
 		}
 
-		/* Mark unused buffers as free. */
+		 
 		trim_bit = -1;
 		for (; level < fnd->level; level++) {
 			ib = fnd->nodes[level]->index;
@@ -2549,12 +2349,9 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		}
 
 		fnd_clear(fnd);
-		/*fnd->root_de = NULL;*/
+		 
 
-		/*
-		 * Re-insert the entry into the tree.
-		 * Find the spot the tree where we want to insert the new entry.
-		 */
+		 
 		err = indx_insert_entry(indx, ni, me, ctx, fnd, 0);
 		kfree(me);
 		if (err)
@@ -2563,11 +2360,7 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 		if (trim_bit != -1)
 			indx_shrink(indx, ni, trim_bit);
 	} else {
-		/*
-		 * This tree needs to be collapsed down to an empty root.
-		 * Recreate the index root as an empty leaf and free all
-		 * the bits the index allocation bitmap.
-		 */
+		 
 		fnd_clear(fnd);
 		fnd_clear(fnd2);
 
@@ -2604,13 +2397,13 @@ int indx_delete_entry(struct ntfs_index *indx, struct ntfs_inode *ni,
 			goto out;
 		}
 
-		/* Fill first entry. */
+		 
 		e = (struct NTFS_DE *)(root + 1);
 		e->ref.low = 0;
 		e->ref.high = 0;
 		e->ref.seq = 0;
 		e->size = cpu_to_le16(sizeof(struct NTFS_DE));
-		e->flags = NTFS_IE_LAST; // 0x02
+		e->flags = NTFS_IE_LAST; 
 		e->key_size = 0;
 		e->res = 0;
 
@@ -2629,10 +2422,7 @@ out2:
 	return err;
 }
 
-/*
- * Update duplicated information in directory entry
- * 'dup' - info from MFT record
- */
+ 
 int indx_update_dup(struct ntfs_inode *ni, struct ntfs_sb_info *sbi,
 		    const struct ATTR_FILE_NAME *fname,
 		    const struct NTFS_DUP_INFO *dup, int sync)
@@ -2655,7 +2445,7 @@ int indx_update_dup(struct ntfs_inode *ni, struct ntfs_sb_info *sbi,
 		goto out;
 	}
 
-	/* Find entry in directory. */
+	 
 	err = indx_find(indx, ni, root, fname, fname_full_size(fname), sbi,
 			&diff, &e, fnd);
 	if (err)
@@ -2674,19 +2464,17 @@ int indx_update_dup(struct ntfs_inode *ni, struct ntfs_sb_info *sbi,
 	e_fname = (struct ATTR_FILE_NAME *)(e + 1);
 
 	if (!memcmp(&e_fname->dup, dup, sizeof(*dup))) {
-		/*
-		 * Nothing to update in index! Try to avoid this call.
-		 */
+		 
 		goto out;
 	}
 
 	memcpy(&e_fname->dup, dup, sizeof(*dup));
 
 	if (fnd->level) {
-		/* Directory entry in index. */
+		 
 		err = indx_write(indx, ni, fnd->nodes[fnd->level - 1], sync);
 	} else {
-		/* Directory entry in directory MFT record. */
+		 
 		mi->dirty = true;
 		if (sync)
 			err = mi_write(mi, 1);

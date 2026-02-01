@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -32,7 +30,7 @@ struct mtk_devapc_vio_dbgs {
 };
 
 struct mtk_devapc_regs_ofs {
-	/* reg offset */
+	 
 	u32 vio_mask_offset;
 	u32 vio_sta_offset;
 	u32 vio_dbg0_offset;
@@ -44,7 +42,7 @@ struct mtk_devapc_regs_ofs {
 };
 
 struct mtk_devapc_data {
-	/* numbers of violation index */
+	 
 	u32 vio_idx_num;
 	const struct mtk_devapc_regs_ofs *regs_ofs;
 };
@@ -99,16 +97,7 @@ static void mask_module_irq(struct mtk_devapc_context *ctx, bool mask)
 
 #define PHY_DEVAPC_TIMEOUT	0x10000
 
-/*
- * devapc_sync_vio_dbg - do "shift" mechansim" to get full violation information.
- *                       shift mechanism is depends on devapc hardware design.
- *                       Mediatek devapc set multiple slaves as a group.
- *                       When violation is triggered, violation info is kept
- *                       inside devapc hardware.
- *                       Driver should do shift mechansim to sync full violation
- *                       info to VIO_DBGs registers.
- *
- */
+ 
 static int devapc_sync_vio_dbg(struct mtk_devapc_context *ctx)
 {
 	void __iomem *pd_vio_shift_sta_reg;
@@ -125,17 +114,17 @@ static int devapc_sync_vio_dbg(struct mtk_devapc_context *ctx)
 	pd_vio_shift_con_reg = ctx->infra_base +
 			       ctx->data->regs_ofs->vio_shift_con_offset;
 
-	/* Find the minimum shift group which has violation */
+	 
 	val = readl(pd_vio_shift_sta_reg);
 	if (!val)
 		return false;
 
 	min_shift_group = __ffs(val);
 
-	/* Assign the group to sync */
+	 
 	writel(0x1 << min_shift_group, pd_vio_shift_sel_reg);
 
-	/* Start syncing */
+	 
 	writel(0x1, pd_vio_shift_con_reg);
 
 	ret = readl_poll_timeout(pd_vio_shift_con_reg, val, val == 0x3, 0,
@@ -145,19 +134,16 @@ static int devapc_sync_vio_dbg(struct mtk_devapc_context *ctx)
 		return false;
 	}
 
-	/* Stop syncing */
+	 
 	writel(0x0, pd_vio_shift_con_reg);
 
-	/* Write clear */
+	 
 	writel(0x1 << min_shift_group, pd_vio_shift_sta_reg);
 
 	return true;
 }
 
-/*
- * devapc_extract_vio_dbg - extract full violation information after doing
- *                          shift mechanism.
- */
+ 
 static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
 {
 	struct mtk_devapc_vio_dbgs vio_dbgs;
@@ -170,7 +156,7 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
 	vio_dbgs.vio_dbg0 = readl(vio_dbg0_reg);
 	vio_dbgs.vio_dbg1 = readl(vio_dbg1_reg);
 
-	/* Print violation information */
+	 
 	if (vio_dbgs.dbg0_bits.vio_w)
 		dev_info(ctx->dev, "Write Violation\n");
 	else if (vio_dbgs.dbg0_bits.vio_r)
@@ -181,11 +167,7 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
 		 vio_dbgs.vio_dbg1);
 }
 
-/*
- * devapc_violation_irq - the devapc Interrupt Service Routine (ISR) will dump
- *                        violation information including which master violates
- *                        access slave.
- */
+ 
 static irqreturn_t devapc_violation_irq(int irq_number, void *data)
 {
 	struct mtk_devapc_context *ctx = data;
@@ -198,9 +180,7 @@ static irqreturn_t devapc_violation_irq(int irq_number, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * start_devapc - unmask slave's irq to start receiving devapc violation.
- */
+ 
 static void start_devapc(struct mtk_devapc_context *ctx)
 {
 	writel(BIT(31), ctx->infra_base + ctx->data->regs_ofs->apc_con_offset);
@@ -208,9 +188,7 @@ static void start_devapc(struct mtk_devapc_context *ctx)
 	mask_module_irq(ctx, false);
 }
 
-/*
- * stop_devapc - mask slave's irq to stop service.
- */
+ 
 static void stop_devapc(struct mtk_devapc_context *ctx)
 {
 	mask_module_irq(ctx, true);

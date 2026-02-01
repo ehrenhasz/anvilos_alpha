@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_SUN5I_H_
 #define _DT_BINDINGS_CLK_SUN5I_H_
@@ -94,4 +90,4 @@
 #define CLK_MBUS		99
 #define CLK_IEP			100
 
-#endif /* _DT_BINDINGS_CLK_SUN5I_H_ */
+#endif  

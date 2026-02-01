@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI I2S Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <sound/pcm_params.h>
@@ -34,9 +34,9 @@ enum aud_ext_modem {
 };
 
 enum aud_pcm_sync_type {
-	/* bck sync length = 1 */
+	 
 	AUD_PCM_ONE_BCK_CYCLE_SYNC = 0,
-	/* bck sync length = PCM_INTF_CON1[9:13] */
+	 
 	AUD_PCM_EXTENDED_BCK_CYCLE_SYNC = 1
 };
 
@@ -46,9 +46,9 @@ enum aud_bt_mode {
 };
 
 enum aud_pcm_afifo_src {
-	/* slave mode & external modem uses different crystal */
+	 
 	AUD_PCM_AFIFO_ASRC = 0,
-	/* slave mode & external modem uses the same crystal */
+	 
 	AUD_PCM_AFIFO_AFIFO = 1
 };
 
@@ -96,7 +96,7 @@ enum aud_pcm_en {
 	AUD_PCM_EN_ENABLE = 1
 };
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_pcm_1_playback_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN7,
 				    I_ADDA_UL_CH1, 1, 0),
@@ -137,7 +137,7 @@ static int mtk_pcm_en_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* pcm in/out lpbk */
+ 
 static const char * const pcm_lpbk_mux_map[] = {
 	"Normal", "Lpbk",
 };
@@ -167,7 +167,7 @@ static const struct snd_kcontrol_new pcm_out_lpbk_mux_control =
 	SOC_DAPM_ENUM("PCM Out Lpbk Select", pcm_out_lpbk_mux_map_enum);
 
 static const struct snd_soc_dapm_widget mtk_dai_pcm_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("PCM_1_PB_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_pcm_1_playback_ch1_mix,
 			   ARRAY_SIZE(mtk_pcm_1_playback_ch1_mix)),
@@ -180,11 +180,11 @@ static const struct snd_soc_dapm_widget mtk_dai_pcm_widgets[] = {
 			    mtk_pcm_en_event,
 			    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* pcm in lpbk */
+	 
 	SND_SOC_DAPM_MUX("PCM_In_Lpbk_Mux",
 			 SND_SOC_NOPM, 0, 0, &pcm_in_lpbk_mux_control),
 
-	/* pcm out lpbk */
+	 
 	SND_SOC_DAPM_MUX("PCM_Out_Lpbk_Mux",
 			 SND_SOC_NOPM, 0, 0, &pcm_out_lpbk_mux_control),
 };
@@ -202,16 +202,16 @@ static const struct snd_soc_dapm_route mtk_dai_pcm_routes[] = {
 	{"PCM_1_PB_CH1", "DL4_CH1 Switch", "DL4"},
 	{"PCM_1_PB_CH2", "DL4_CH2 Switch", "DL4"},
 
-	/* pcm out lpbk */
+	 
 	{"PCM_Out_Lpbk_Mux", "Lpbk", "PCM 1 Playback"},
 	{"I2S0", NULL, "PCM_Out_Lpbk_Mux"},
 
-	/* pcm in lpbk */
+	 
 	{"PCM_In_Lpbk_Mux", "Lpbk", "PCM 1 Capture"},
 	{"I2S3", NULL, "PCM_In_Lpbk_Mux"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_pcm_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
@@ -250,25 +250,25 @@ static int mtk_dai_pcm_hw_params(struct snd_pcm_substream *substream,
 		pcm_con |= AUD_PCM_CLOCK_MASTER_MODE << PCM_SLAVE_SFT;
 		pcm_con |= 0 << PCM_SYNC_LENGTH_SFT;
 
-		/* sampling rate */
+		 
 		pcm_con |= rate_reg << PCM_MODE_SFT;
 
-		/* format */
+		 
 		pcm_con |= pcm_priv->fmt << PCM_FMT_SFT;
 
-		/* 24bit data width */
+		 
 		if (data_width > 16)
 			pcm_con |= AUD_PCM_24BIT_PCM_24_BITS << PCM_24BIT_SFT;
 		else
 			pcm_con |= AUD_PCM_24BIT_PCM_16_BITS << PCM_24BIT_SFT;
 
-		/* wlen width*/
+		 
 		if (wlen_width > 16)
 			pcm_con |= AUD_PCM_WLEN_PCM_64_BCK_CYCLES << PCM_WLEN_SFT;
 		else
 			pcm_con |= AUD_PCM_WLEN_PCM_32_BCK_CYCLES << PCM_WLEN_SFT;
 
-		/* clock invert */
+		 
 		pcm_con |= pcm_priv->lck_invert << PCM_SYNC_OUT_INV_SFT;
 		pcm_con |= pcm_priv->bck_invert << PCM_BCLK_OUT_INV_SFT;
 
@@ -288,7 +288,7 @@ static int mtk_dai_pcm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct mt8186_afe_private *afe_priv = afe->platform_priv;
 	struct mtk_afe_pcm_priv *pcm_priv = afe_priv->dai_priv[dai->id];
 
-	/* DAI mode*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		pcm_priv->fmt = AUD_PCM_FMT_I2S;
@@ -306,7 +306,7 @@ static int mtk_dai_pcm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		pcm_priv->fmt = AUD_PCM_FMT_I2S;
 	}
 
-	/* DAI clock inversion*/
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		pcm_priv->bck_invert = AUD_BCLK_OUT_INV_NO_INVERSE;
@@ -338,7 +338,7 @@ static const struct snd_soc_dai_ops mtk_dai_pcm_ops = {
 	.set_fmt = mtk_dai_pcm_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_PCM_RATES (SNDRV_PCM_RATE_8000 |\
 		       SNDRV_PCM_RATE_16000 |\
 		       SNDRV_PCM_RATE_32000 |\

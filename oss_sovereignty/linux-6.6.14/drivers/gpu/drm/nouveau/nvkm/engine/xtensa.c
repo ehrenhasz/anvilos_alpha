@@ -1,24 +1,4 @@
-/*
- * Copyright 2013 Ilia Mirkin
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include <engine/xtensa.h>
 
 #include <core/gpuobj.h>
@@ -82,8 +62,8 @@ nvkm_xtensa_fini(struct nvkm_engine *engine, bool suspend)
 	struct nvkm_device *device = xtensa->engine.subdev.device;
 	const u32 base = xtensa->addr;
 
-	nvkm_wr32(device, base + 0xd84, 0); /* INTR_EN */
-	nvkm_wr32(device, base + 0xd94, 0); /* FIFO_CTRL */
+	nvkm_wr32(device, base + 0xd84, 0);  
+	nvkm_wr32(device, base + 0xd94, 0);  
 
 	if (!suspend)
 		nvkm_memory_unref(&xtensa->gpu_fw);
@@ -137,24 +117,24 @@ nvkm_xtensa_init(struct nvkm_engine *engine)
 	addr = nvkm_memory_addr(xtensa->gpu_fw);
 	size = nvkm_memory_size(xtensa->gpu_fw);
 
-	nvkm_wr32(device, base + 0xd10, 0x1fffffff); /* ?? */
-	nvkm_wr32(device, base + 0xd08, 0x0fffffff); /* ?? */
+	nvkm_wr32(device, base + 0xd10, 0x1fffffff);  
+	nvkm_wr32(device, base + 0xd08, 0x0fffffff);  
 
-	nvkm_wr32(device, base + 0xd28, xtensa->func->unkd28); /* ?? */
-	nvkm_wr32(device, base + 0xc20, 0x3f); /* INTR */
-	nvkm_wr32(device, base + 0xd84, 0x3f); /* INTR_EN */
+	nvkm_wr32(device, base + 0xd28, xtensa->func->unkd28);  
+	nvkm_wr32(device, base + 0xc20, 0x3f);  
+	nvkm_wr32(device, base + 0xd84, 0x3f);  
 
-	nvkm_wr32(device, base + 0xcc0, addr >> 8); /* XT_REGION_BASE */
-	nvkm_wr32(device, base + 0xcc4, 0x1c); /* XT_REGION_SETUP */
-	nvkm_wr32(device, base + 0xcc8, size >> 8); /* XT_REGION_LIMIT */
+	nvkm_wr32(device, base + 0xcc0, addr >> 8);  
+	nvkm_wr32(device, base + 0xcc4, 0x1c);  
+	nvkm_wr32(device, base + 0xcc8, size >> 8);  
 
 	tmp = nvkm_rd32(device, 0x0);
-	nvkm_wr32(device, base + 0xde0, tmp); /* SCRATCH_H2X */
+	nvkm_wr32(device, base + 0xde0, tmp);  
 
-	nvkm_wr32(device, base + 0xce8, 0xf); /* XT_REGION_SETUP */
+	nvkm_wr32(device, base + 0xce8, 0xf);  
 
-	nvkm_wr32(device, base + 0xc20, 0x3f); /* INTR */
-	nvkm_wr32(device, base + 0xd84, 0x3f); /* INTR_EN */
+	nvkm_wr32(device, base + 0xc20, 0x3f);  
+	nvkm_wr32(device, base + 0xd84, 0x3f);  
 	return 0;
 }
 

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc */
-/* Copyright (C) 2021 Corigine, Inc */
+
+ 
+ 
 
 #include <linux/bpf_trace.h>
 #include <linux/netdevice.h>
@@ -36,7 +36,7 @@ nfp_nfd3_xsk_tx_xdp(const struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
 	txbuf->real_len = pkt_len;
 	txbuf->is_xsk_tx = true;
 
-	/* Build TX descriptor */
+	 
 	txd = &tx_ring->txds[wr_idx];
 	txd->offset_eop = NFD3_DESC_TX_EOP;
 	txd->dma_len = cpu_to_le16(pkt_len);
@@ -143,27 +143,19 @@ nfp_nfd3_xsk_rx(struct nfp_net_rx_ring *rx_ring, int budget,
 
 		xrxbuf = &rx_ring->xsk_rxbufs[idx];
 
-		/* If starved of buffers "drop" it and scream. */
+		 
 		if (rx_ring->rd_p >= rx_ring->wr_p) {
 			nn_dp_warn(dp, "Starved of RX buffers\n");
 			nfp_net_xsk_rx_drop(r_vec, xrxbuf);
 			break;
 		}
 
-		/* Memory barrier to ensure that we won't do other reads
-		 * before the DD bit.
-		 */
+		 
 		dma_rmb();
 
 		memset(&meta, 0, sizeof(meta));
 
-		/* Only supporting AF_XDP with dynamic metadata so buffer layout
-		 * is always:
-		 *
-		 *  ---------------------------------------------------------
-		 * |  off | metadata  |             packet           | XXXX  |
-		 *  ---------------------------------------------------------
-		 */
+		 
 		meta_len = rxd->rxd.meta_len_dd & PCIE_DESC_RX_META_LEN_MASK;
 		data_len = le16_to_cpu(rxd->rxd.data_len);
 		pkt_len = data_len - meta_len;
@@ -175,7 +167,7 @@ nfp_nfd3_xsk_rx(struct nfp_net_rx_ring *rx_ring, int budget,
 			continue;
 		}
 
-		/* Stats update. */
+		 
 		u64_stats_update_begin(&r_vec->rx_sync);
 		r_vec->rx_pkts++;
 		r_vec->rx_bytes += pkt_len;
@@ -283,7 +275,7 @@ static bool nfp_nfd3_xsk_complete(struct nfp_net_tx_ring *tx_ring)
 	if (tx_ring->wr_p == tx_ring->rd_p)
 		return true;
 
-	/* Work out how many descriptors have been transmitted. */
+	 
 	qcp_rd_p = nfp_qcp_rd_ptr_read(tx_ring->qcp_q);
 
 	if (qcp_rd_p == tx_ring->qcp_rd_p)
@@ -362,7 +354,7 @@ static void nfp_nfd3_xsk_tx(struct nfp_net_tx_ring *tx_ring)
 			tx_ring->txbufs[wr_idx].real_len = desc[i].len;
 			tx_ring->txbufs[wr_idx].is_xsk_tx = false;
 
-			/* Build TX descriptor. */
+			 
 			txd = &tx_ring->txds[wr_idx];
 			nfp_desc_set_dma_addr_40b(txd,
 						  xsk_buff_raw_get_dma(xsk_pool, desc[i].addr));
@@ -379,7 +371,7 @@ static void nfp_nfd3_xsk_tx(struct nfp_net_tx_ring *tx_ring)
 		return;
 
 	xsk_tx_release(xsk_pool);
-	/* Ensure all records are visible before incrementing write counter. */
+	 
 	wmb();
 	nfp_qcp_wr_ptr_add(tx_ring->qcp_q, pkts);
 }

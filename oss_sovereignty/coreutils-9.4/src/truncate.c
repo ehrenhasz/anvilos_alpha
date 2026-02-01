@@ -1,26 +1,6 @@
-/* truncate -- truncate or extend the length of files.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Pádraig Brady
-
-   This is backwards compatible with the FreeBSD utility, but is more
-   flexible wrt the size specifications and the use of long options,
-   to better fit the "GNU" environment.  */
-
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#include <config.h>              
 #include <stdckdint.h>
 #include <stdio.h>
 #include <getopt.h>
@@ -31,18 +11,18 @@
 #include "stat-size.h"
 #include "xdectoint.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "truncate"
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-/* (-c) If true, don't create if not already there */
+ 
 static bool no_create;
 
-/* (-o) If true, --size refers to blocks not bytes */
+ 
 static bool block_mode;
 
-/* (-r) Reference file to use size from */
+ 
 static char const *ref_file;
 
 static struct option const longopts[] =

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file contains definitions for mwifiex USB interface driver.
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_USB_H
 #define _MWIFIEX_USB_H
@@ -76,10 +72,10 @@ struct usb_tx_data_port {
 	atomic_t tx_data_urb_pending;
 	int tx_data_ix;
 	struct urb_context tx_data_list[MWIFIEX_TX_DATA_URB];
-	/* usb tx aggregation*/
+	 
 	struct usb_tx_aggr tx_aggr;
 	struct sk_buff *skb_aggr[MWIFIEX_TX_DATA_URB];
-	/* lock for protect tx aggregation data path*/
+	 
 	spinlock_t tx_aggr_lock;
 };
 
@@ -125,4 +121,4 @@ struct fw_data {
 	u8 data[];
 } __packed;
 
-#endif /*_MWIFIEX_USB_H */
+#endif  

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/in.h>
@@ -42,19 +11,17 @@
 #include "rds.h"
 #include "tcp.h"
 
-/* only for info exporting */
+ 
 static DEFINE_SPINLOCK(rds_tcp_tc_list_lock);
 static LIST_HEAD(rds_tcp_tc_list);
 
-/* rds_tcp_tc_count counts only IPv4 connections.
- * rds6_tcp_tc_count counts both IPv4 and IPv6 connections.
- */
+ 
 static unsigned int rds_tcp_tc_count;
 #if IS_ENABLED(CONFIG_IPV6)
 static unsigned int rds6_tcp_tc_count;
 #endif
 
-/* Track rds_tcp_connection structs so they can be cleaned up */
+ 
 static DEFINE_SPINLOCK(rds_tcp_conn_lock);
 static LIST_HEAD(rds_tcp_conn_list);
 static atomic_t rds_tcp_unloading = ATOMIC_INIT(0);
@@ -71,7 +38,7 @@ static struct ctl_table rds_tcp_sysctl_table[] = {
 #define	RDS_TCP_SNDBUF	0
 	{
 		.procname       = "rds_tcp_sndbuf",
-		/* data is per-net pointer */
+		 
 		.maxlen         = sizeof(int),
 		.mode           = 0644,
 		.proc_handler   = rds_tcp_skbuf_handler,
@@ -80,7 +47,7 @@ static struct ctl_table rds_tcp_sysctl_table[] = {
 #define	RDS_TCP_RCVBUF	1
 	{
 		.procname       = "rds_tcp_rcvbuf",
-		/* data is per-net pointer */
+		 
 		.maxlen         = sizeof(int),
 		.mode           = 0644,
 		.proc_handler   = rds_tcp_skbuf_handler,
@@ -91,7 +58,7 @@ static struct ctl_table rds_tcp_sysctl_table[] = {
 
 u32 rds_tcp_write_seq(struct rds_tcp_connection *tc)
 {
-	/* seq# of the last byte of data in tcp send buffer */
+	 
 	return tcp_sk(tc->t_sock->sk)->write_seq;
 }
 
@@ -106,7 +73,7 @@ void rds_tcp_restore_callbacks(struct socket *sock,
 	rdsdebug("restoring sock %p callbacks from tc %p\n", sock, tc);
 	write_lock_bh(&sock->sk->sk_callback_lock);
 
-	/* done under the callback_lock to serialize with write_space */
+	 
 	spin_lock(&rds_tcp_tc_list_lock);
 	list_del_init(&tc->t_list_item);
 #if IS_ENABLED(CONFIG_IPV6)
@@ -126,15 +93,7 @@ void rds_tcp_restore_callbacks(struct socket *sock,
 	write_unlock_bh(&sock->sk->sk_callback_lock);
 }
 
-/*
- * rds_tcp_reset_callbacks() switches the to the new sock and
- * returns the existing tc->t_sock.
- *
- * The only functions that set tc->t_sock are rds_tcp_set_callbacks
- * and rds_tcp_reset_callbacks.  Send and receive trust that
- * it is set.  The absence of RDS_CONN_UP bit protects those paths
- * from being called while it isn't set.
- */
+ 
 void rds_tcp_reset_callbacks(struct socket *sock,
 			     struct rds_conn_path *cp)
 {
@@ -144,29 +103,10 @@ void rds_tcp_reset_callbacks(struct socket *sock,
 	if (!osock)
 		goto newsock;
 
-	/* Need to resolve a duelling SYN between peers.
-	 * We have an outstanding SYN to this peer, which may
-	 * potentially have transitioned to the RDS_CONN_UP state,
-	 * so we must quiesce any send threads before resetting
-	 * cp_transport_data. We quiesce these threads by setting
-	 * cp_state to something other than RDS_CONN_UP, and then
-	 * waiting for any existing threads in rds_send_xmit to
-	 * complete release_in_xmit(). (Subsequent threads entering
-	 * rds_send_xmit() will bail on !rds_conn_up().
-	 *
-	 * However an incoming syn-ack at this point would end up
-	 * marking the conn as RDS_CONN_UP, and would again permit
-	 * rds_send_xmi() threads through, so ideally we would
-	 * synchronize on RDS_CONN_UP after lock_sock(), but cannot
-	 * do that: waiting on !RDS_IN_XMIT after lock_sock() may
-	 * end up deadlocking with tcp_sendmsg(), and the RDS_IN_XMIT
-	 * would not get set. As a result, we set c_state to
-	 * RDS_CONN_RESETTTING, to ensure that rds_tcp_state_change
-	 * cannot mark rds_conn_path_up() in the window before lock_sock()
-	 */
+	 
 	atomic_set(&cp->cp_state, RDS_CONN_RESETTING);
 	wait_event(cp->cp_waitq, !test_bit(RDS_IN_XMIT, &cp->cp_flags));
-	/* reset receive side state for rds_tcp_data_recv() for osock  */
+	 
 	cancel_delayed_work_sync(&cp->cp_send_w);
 	cancel_delayed_work_sync(&cp->cp_recv_w);
 	lock_sock(osock->sk);
@@ -186,10 +126,7 @@ newsock:
 	release_sock(sock->sk);
 }
 
-/* Add tc to rds_tcp_tc_list and set tc->t_sock. See comments
- * above rds_tcp_reset_callbacks for notes about synchronization
- * with data path
- */
+ 
 void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp)
 {
 	struct rds_tcp_connection *tc = cp->cp_transport_data;
@@ -197,7 +134,7 @@ void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp)
 	rdsdebug("setting sock %p callbacks to tc %p\n", sock, tc);
 	write_lock_bh(&sock->sk->sk_callback_lock);
 
-	/* done under the callback_lock to serialize with write_space */
+	 
 	spin_lock(&rds_tcp_tc_list_lock);
 	list_add_tail(&tc->t_list_item, &rds_tcp_tc_list);
 #if IS_ENABLED(CONFIG_IPV6)
@@ -207,7 +144,7 @@ void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp)
 		rds_tcp_tc_count++;
 	spin_unlock(&rds_tcp_tc_list_lock);
 
-	/* accepted sockets need our listen data ready undone */
+	 
 	if (sock->sk->sk_data_ready == rds_tcp_listen_data_ready)
 		sock->sk->sk_data_ready = sock->sk->sk_user_data;
 
@@ -225,9 +162,7 @@ void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp)
 	write_unlock_bh(&sock->sk->sk_callback_lock);
 }
 
-/* Handle RDS_INFO_TCP_SOCKETS socket option.  It only returns IPv4
- * connections for backward compatibility.
- */
+ 
 static void rds_tcp_tc_info(struct socket *rds_sock, unsigned int len,
 			    struct rds_info_iterator *iter,
 			    struct rds_info_lengths *lens)
@@ -270,10 +205,7 @@ out:
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/* Handle RDS6_INFO_TCP_SOCKETS socket option. It returns both IPv4 and
- * IPv6 connections. IPv4 connection address is returned in an IPv4 mapped
- * address.
- */
+ 
 static void rds6_tcp_tc_info(struct socket *sock, unsigned int len,
 			     struct rds_info_iterator *iter,
 			     struct rds_info_lengths *lens)
@@ -327,13 +259,11 @@ int rds_tcp_laddr_check(struct net *net, const struct in6_addr *addr,
 		return -EADDRNOTAVAIL;
 	}
 
-	/* If the scope_id is specified, check only those addresses
-	 * hosted on the specified interface.
-	 */
+	 
 	if (scope_id != 0) {
 		rcu_read_lock();
 		dev = dev_get_by_index_rcu(net, scope_id);
-		/* scope_id is not valid... */
+		 
 		if (!dev) {
 			rcu_read_unlock();
 			return -EADDRNOTAVAIL;
@@ -429,7 +359,7 @@ static void rds_tcp_destroy_conns(void)
 	struct rds_tcp_connection *tc, *_tc;
 	LIST_HEAD(tmp_list);
 
-	/* avoid calling conn_destroy with irqs off */
+	 
 	spin_lock_irq(&rds_tcp_conn_lock);
 	list_for_each_entry_safe(tc, _tc, &rds_tcp_conn_list, t_tcp_node) {
 		if (!list_has_conn(&tmp_list, tc->t_cpath->cp_conn))
@@ -445,7 +375,7 @@ static void rds_tcp_exit(void);
 
 static u8 rds_tcp_get_tos_map(u8 tos)
 {
-	/* all user tos mapped to default 0 for TCP transport */
+	 
 	return 0;
 }
 
@@ -474,7 +404,7 @@ struct rds_transport rds_tcp_transport = {
 
 static unsigned int rds_tcp_netid;
 
-/* per-network namespace private data for this module */
+ 
 struct rds_tcp_net {
 	struct socket *rds_tcp_listen_sock;
 	struct work_struct rds_tcp_accept_w;
@@ -484,9 +414,7 @@ struct rds_tcp_net {
 	int rcvbuf_size;
 };
 
-/* All module specific customizations to the RDS-TCP socket should be done in
- * rds_tcp_tune() and applied after socket creation.
- */
+ 
 bool rds_tcp_tune(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -495,15 +423,13 @@ bool rds_tcp_tune(struct socket *sock)
 
 	tcp_sock_set_nodelay(sock->sk);
 	lock_sock(sk);
-	/* TCP timer functions might access net namespace even after
-	 * a process which created this net namespace terminated.
-	 */
+	 
 	if (!sk->sk_net_refcnt) {
 		if (!maybe_get_net(net)) {
 			release_sock(sk);
 			return false;
 		}
-		/* Update ns_tracker to current stack trace and refcounted tracker */
+		 
 		__netns_tracker_free(net, &sk->ns_tracker, false);
 
 		sk->sk_net_refcnt = 1;
@@ -549,9 +475,7 @@ static __net_init int rds_tcp_init_net(struct net *net)
 
 	memset(rtn, 0, sizeof(*rtn));
 
-	/* {snd, rcv}buf_size default to 0, which implies we let the
-	 * stack pick the value, and permit auto-tuning of buffer size.
-	 */
+	 
 	if (net == &init_net) {
 		tbl = rds_tcp_sysctl_table;
 	} else {
@@ -582,7 +506,7 @@ static __net_init int rds_tcp_init_net(struct net *net)
 		pr_warn("could not set up IPv6 listen sock\n");
 
 #if IS_ENABLED(CONFIG_IPV6)
-		/* Try IPv4 as some systems disable IPv6 */
+		 
 		rtn->rds_tcp_listen_sock = rds_tcp_listen_init(net, false);
 		if (!rtn->rds_tcp_listen_sock) {
 #endif
@@ -661,11 +585,7 @@ void *rds_tcp_listen_sock_def_readable(struct net *net)
 	return lsock->sk->sk_user_data;
 }
 
-/* when sysctl is used to modify some kernel socket parameters,this
- * function  resets the RDS connections in that netns  so that we can
- * restart with new parameters.  The assumption is that such reset
- * events are few and far-between.
- */
+ 
 static void rds_tcp_sysctl_reset(struct net *net)
 {
 	struct rds_tcp_connection *tc, *_tc;
@@ -677,7 +597,7 @@ static void rds_tcp_sysctl_reset(struct net *net)
 		if (net != c_net || !tc->t_sock)
 			continue;
 
-		/* reconnect with new parameters */
+		 
 		rds_conn_path_drop(tc->t_cpath, false);
 	}
 	spin_unlock_irq(&rds_tcp_conn_lock);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Samsung Exynos SoCs
- *
- * Copyright (C) 2013-2020 Samsung Electronics Co., Ltd.
- *		https://www.samsung.com
- *
- * Author: Jingoo Han <jg1.han@samsung.com>
- *	   Jaehoon Chung <jh80.chung@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,7 +17,7 @@
 
 #define to_exynos_pcie(x)	dev_get_drvdata((x)->dev)
 
-/* PCIe ELBI registers */
+ 
 #define PCIE_IRQ_PULSE			0x000
 #define IRQ_INTA_ASSERT			BIT(0)
 #define IRQ_INTB_ASSERT			BIT(2)
@@ -159,7 +151,7 @@ static int exynos_pcie_start_link(struct dw_pcie *pci)
 	val &= ~PCIE_BUS_EN;
 	exynos_pcie_writel(ep->elbi_base, val, PCIE_SW_WAKE);
 
-	/* assert LTSSM enable */
+	 
 	exynos_pcie_writel(ep->elbi_base, PCIE_ELBI_LTSSM_ENABLE,
 			  PCIE_APP_LTSSM_ENABLE);
 	return 0;
@@ -327,7 +319,7 @@ static int exynos_pcie_probe(struct platform_device *pdev)
 	if (IS_ERR(ep->phy))
 		return PTR_ERR(ep->phy);
 
-	/* External Local Bus interface (ELBI) registers */
+	 
 	ep->elbi_base = devm_platform_ioremap_resource_byname(pdev, "elbi");
 	if (IS_ERR(ep->elbi_base))
 		return PTR_ERR(ep->elbi_base);
@@ -412,7 +404,7 @@ static int exynos_pcie_resume_noirq(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* exynos_pcie_host_init controls ep->phy */
+	 
 	exynos_pcie_host_init(pp);
 	dw_pcie_setup_rc(pp);
 	exynos_pcie_start_link(pci);

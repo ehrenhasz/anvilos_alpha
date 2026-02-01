@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Capture IC Preprocess Subdev for Freescale i.MX5/6 SOC
- *
- * This subdevice handles capture of video frames from the CSI or VDIC,
- * which are routed directly to the Image Converter preprocess tasks,
- * for resizing, colorspace conversion, and rotation.
- *
- * Copyright (c) 2012-2017 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -23,29 +15,27 @@
 #include "imx-media.h"
 #include "imx-ic.h"
 
-/*
- * Min/Max supported width and heights.
- */
+ 
 #define MIN_W        32
 #define MIN_H        32
 #define MAX_W      4096
 #define MAX_H      4096
-#define W_ALIGN    4 /* multiple of 16 pixels */
-#define H_ALIGN    1 /* multiple of 2 lines */
-#define S_ALIGN    1 /* multiple of 2 */
+#define W_ALIGN    4  
+#define H_ALIGN    1  
+#define S_ALIGN    1  
 
 struct prp_priv {
 	struct imx_ic_priv *ic_priv;
 	struct media_pad pad[PRP_NUM_PADS];
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
 	struct v4l2_subdev *src_sd;
 	struct v4l2_subdev *sink_sd_prpenc;
 	struct v4l2_subdev *sink_sd_prpvf;
 
-	/* the CSI id at link validate */
+	 
 	int csi_id;
 
 	struct v4l2_mbus_framefmt format_mbus;
@@ -66,7 +56,7 @@ static int prp_start(struct prp_priv *priv)
 	struct imx_ic_priv *ic_priv = priv->ic_priv;
 	bool src_is_vdic;
 
-	/* set IC to receive from CSI or VDI depending on source */
+	 
 	src_is_vdic = !!(priv->src_sd->grp_id & IMX_MEDIA_GRP_ID_IPU_VDIC);
 
 	ipu_set_ic_src_mux(ic_priv->ipu, priv->csi_id, src_is_vdic);
@@ -90,9 +80,7 @@ __prp_get_fmt(struct prp_priv *priv, struct v4l2_subdev_state *sd_state,
 		return &priv->format_mbus;
 }
 
-/*
- * V4L2 subdev operations.
- */
+ 
 
 static int prp_enum_mbus_code(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state,
@@ -195,7 +183,7 @@ static int prp_set_fmt(struct v4l2_subdev *sd,
 		break;
 	case PRP_SRC_PAD_PRPENC:
 	case PRP_SRC_PAD_PRPVF:
-		/* Output pads mirror input pad */
+		 
 		sdformat->format = *infmt;
 		break;
 	}
@@ -245,7 +233,7 @@ static int prp_link_setup(struct media_entity *entity,
 		goto out;
 	}
 
-	/* this is a source pad */
+	 
 	if (flags & MEDIA_LNK_FL_ENABLED) {
 		switch (local->index) {
 		case PRP_SRC_PAD_PRPENC:
@@ -311,16 +299,13 @@ static int prp_link_validate(struct v4l2_subdev *sd,
 	mutex_lock(&priv->lock);
 
 	if (priv->src_sd->grp_id & IMX_MEDIA_GRP_ID_IPU_VDIC) {
-		/*
-		 * the ->PRPENC link cannot be enabled if the source
-		 * is the VDIC
-		 */
+		 
 		if (priv->sink_sd_prpenc) {
 			ret = -EINVAL;
 			goto out;
 		}
 	} else {
-		/* the source is a CSI */
+		 
 		if (!csi) {
 			ret = -EINVAL;
 			goto out;
@@ -360,10 +345,7 @@ static int prp_s_stream(struct v4l2_subdev *sd, int enable)
 		goto out;
 	}
 
-	/*
-	 * enable/disable streaming only if stream_count is
-	 * going from 0 to 1 / 1 to 0.
-	 */
+	 
 	if (priv->stream_count != !enable)
 		goto update_count;
 
@@ -377,7 +359,7 @@ static int prp_s_stream(struct v4l2_subdev *sd, int enable)
 	if (ret)
 		goto out;
 
-	/* start/stop upstream */
+	 
 	ret = v4l2_subdev_call(priv->src_sd, video, s_stream, enable);
 	ret = (ret && ret != -ENOIOCTLCMD) ? ret : 0;
 	if (ret) {
@@ -420,7 +402,7 @@ static int prp_s_frame_interval(struct v4l2_subdev *sd,
 
 	mutex_lock(&priv->lock);
 
-	/* No limits on valid frame intervals */
+	 
 	if (fi->interval.numerator == 0 || fi->interval.denominator == 0)
 		fi->interval = priv->frame_interval;
 	else
@@ -436,11 +418,11 @@ static int prp_registered(struct v4l2_subdev *sd)
 	struct prp_priv *priv = sd_to_priv(sd);
 	u32 code;
 
-	/* init default frame interval */
+	 
 	priv->frame_interval.numerator = 1;
 	priv->frame_interval.denominator = 30;
 
-	/* set a default mbus format  */
+	 
 	imx_media_enum_ipu_formats(&code, 0, PIXFMT_SEL_YUV);
 
 	return imx_media_init_mbus_fmt(&priv->format_mbus,

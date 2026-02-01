@@ -1,24 +1,8 @@
-/* strvis.c - make unsafe graphical characters in a string visible. */
+ 
 
-/* Copyright (C) 2022 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-   
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* This is a stripped-down version suitable for the shell's use. */
+ 
 #include <config.h>
 
 #include <unistd.h>
@@ -114,8 +98,7 @@ sh_charvis (s, sindp, slen, ret, rindp)
   return si;    
 }
 
-/* Return a new string with `unsafe' non-graphical characters in S rendered
-   in a visible way. */
+ 
 char *
 sh_strvis (string)
      const char *string;

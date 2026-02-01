@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STM32 ALSA SoC Digital Audio Interface (SAI) driver.
- *
- * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
- * Author(s): Olivier Moysan <olivier.moysan@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #include <linux/bitfield.h>
 
-/******************** SAI Register Map **************************************/
+ 
 
-/* Global configuration register */
+ 
 #define STM_SAI_GCR		0x00
 
-/* Sub-block A&B registers offsets, relative to A&B sub-block addresses */
-#define STM_SAI_CR1_REGX	0x00	/* A offset: 0x04. B offset: 0x24 */
+ 
+#define STM_SAI_CR1_REGX	0x00	 
 #define STM_SAI_CR2_REGX	0x04
 #define STM_SAI_FRCR_REGX	0x08
 #define STM_SAI_SLOTR_REGX	0x0C
@@ -23,17 +18,17 @@
 #define STM_SAI_CLRFR_REGX	0x18
 #define STM_SAI_DR_REGX		0x1C
 
-/* Sub-block A registers, relative to sub-block A address */
+ 
 #define STM_SAI_PDMCR_REGX	0x40
 #define STM_SAI_PDMLY_REGX	0x44
 
-/* Hardware configuration registers */
+ 
 #define STM_SAI_HWCFGR		0x3F0
 #define STM_SAI_VERR		0x3F4
 #define STM_SAI_IDR		0x3F8
 #define STM_SAI_SIDR		0x3FC
 
-/******************** Bit definition for SAI_GCR register *******************/
+ 
 #define SAI_GCR_SYNCIN_SHIFT	0
 #define SAI_GCR_SYNCIN_WDTH	2
 #define SAI_GCR_SYNCIN_MASK	GENMASK(1, SAI_GCR_SYNCIN_SHIFT)
@@ -43,7 +38,7 @@
 #define SAI_GCR_SYNCOUT_SHIFT	4
 #define SAI_GCR_SYNCOUT_MASK	GENMASK(5, SAI_GCR_SYNCOUT_SHIFT)
 
-/******************* Bit definition for SAI_XCR1 register *******************/
+ 
 #define SAI_XCR1_RX_TX_SHIFT	0
 #define SAI_XCR1_RX_TX		BIT(SAI_XCR1_RX_TX_SHIFT)
 #define SAI_XCR1_SLAVE_SHIFT	1
@@ -90,7 +85,7 @@
 #define SAI_XCR1_MCKEN_SHIFT	27
 #define SAI_XCR1_MCKEN		BIT(SAI_XCR1_MCKEN_SHIFT)
 
-/******************* Bit definition for SAI_XCR2 register *******************/
+ 
 #define SAI_XCR2_FTH_SHIFT	0
 #define SAI_XCR2_FTH_MASK	GENMASK(2, SAI_XCR2_FTH_SHIFT)
 #define SAI_XCR2_FTH_SET(x)	((x) << SAI_XCR2_FTH_SHIFT)
@@ -115,7 +110,7 @@
 #define SAI_XCR2_COMP_MASK	GENMASK(15, SAI_XCR2_COMP_SHIFT)
 #define SAI_XCR2_COMP_SET(x)	((x) << SAI_XCR2_COMP_SHIFT)
 
-/****************** Bit definition for SAI_XFRCR register *******************/
+ 
 #define SAI_XFRCR_FRL_SHIFT	0
 #define SAI_XFRCR_FRL_MASK	GENMASK(7, SAI_XFRCR_FRL_SHIFT)
 #define SAI_XFRCR_FRL_SET(x)	((x) << SAI_XFRCR_FRL_SHIFT)
@@ -131,7 +126,7 @@
 #define SAI_XFRCR_FSOFF_SHIFT	18
 #define SAI_XFRCR_FSOFF		BIT(SAI_XFRCR_FSOFF_SHIFT)
 
-/****************** Bit definition for SAI_XSLOTR register ******************/
+ 
 #define SAI_XSLOTR_FBOFF_SHIFT	0
 #define SAI_XSLOTR_FBOFF_MASK	GENMASK(4, SAI_XSLOTR_FBOFF_SHIFT)
 #define SAI_XSLOTR_FBOFF_SET(x)	((x) << SAI_XSLOTR_FBOFF_SHIFT)
@@ -149,7 +144,7 @@
 #define SAI_XSLOTR_SLOTEN_MASK	GENMASK(31, SAI_XSLOTR_SLOTEN_SHIFT)
 #define SAI_XSLOTR_SLOTEN_SET(x) ((x) << SAI_XSLOTR_SLOTEN_SHIFT)
 
-/******************* Bit definition for SAI_XIMR register *******************/
+ 
 #define SAI_XIMR_OVRUDRIE	BIT(0)
 #define SAI_XIMR_MUTEDETIE	BIT(1)
 #define SAI_XIMR_WCKCFGIE	BIT(2)
@@ -161,7 +156,7 @@
 #define SAI_XIMR_SHIFT	0
 #define SAI_XIMR_MASK		GENMASK(6, SAI_XIMR_SHIFT)
 
-/******************** Bit definition for SAI_XSR register *******************/
+ 
 #define SAI_XSR_OVRUDR		BIT(0)
 #define SAI_XSR_MUTEDET		BIT(1)
 #define SAI_XSR_WCKCFG		BIT(2)
@@ -173,7 +168,7 @@
 #define SAI_XSR_SHIFT	0
 #define SAI_XSR_MASK		GENMASK(6, SAI_XSR_SHIFT)
 
-/****************** Bit definition for SAI_XCLRFR register ******************/
+ 
 #define SAI_XCLRFR_COVRUDR	BIT(0)
 #define SAI_XCLRFR_CMUTEDET	BIT(1)
 #define SAI_XCLRFR_CWCKCFG	BIT(2)
@@ -185,7 +180,7 @@
 #define SAI_XCLRFR_SHIFT	0
 #define SAI_XCLRFR_MASK		GENMASK(6, SAI_XCLRFR_SHIFT)
 
-/****************** Bit definition for SAI_PDMCR register ******************/
+ 
 #define SAI_PDMCR_PDMEN		BIT(0)
 
 #define SAI_PDMCR_MICNBR_SHIFT	4
@@ -197,7 +192,7 @@
 #define SAI_PDMCR_CKEN3		BIT(10)
 #define SAI_PDMCR_CKEN4		BIT(11)
 
-/****************** Bit definition for (SAI_PDMDLY register ****************/
+ 
 #define SAI_PDMDLY_1L_SHIFT	0
 #define SAI_PDMDLY_1L_MASK	GENMASK(2, SAI_PDMDLY_1L_SHIFT)
 #define SAI_PDMDLY_1L_WIDTH	3
@@ -230,28 +225,28 @@
 #define SAI_PDMDLY_4R_MASK	GENMASK(30, SAI_PDMDLY_4R_SHIFT)
 #define SAI_PDMDLY_4R_WIDTH	3
 
-/* Registers below apply to SAI version 2.1 and more */
+ 
 
-/* Bit definition for SAI_HWCFGR register */
+ 
 #define SAI_HWCFGR_FIFO_SIZE	GENMASK(7, 0)
 #define SAI_HWCFGR_SPDIF_PDM	GENMASK(11, 8)
 #define SAI_HWCFGR_REGOUT	GENMASK(19, 12)
 
-/* Bit definition for SAI_VERR register */
+ 
 #define SAI_VERR_MIN_MASK	GENMASK(3, 0)
 #define SAI_VERR_MAJ_MASK	GENMASK(7, 4)
 
-/* Bit definition for SAI_IDR register */
+ 
 #define SAI_IDR_ID_MASK		GENMASK(31, 0)
 
-/* Bit definition for SAI_SIDR register */
+ 
 #define SAI_SIDR_ID_MASK	GENMASK(31, 0)
 
 #define SAI_IPIDR_NUMBER	0x00130031
 
-/* SAI version numbers are 1.x for F4. Major version number set to 1 for F4 */
+ 
 #define STM_SAI_STM32F4		BIT(4)
-/* Dummy version number for H7 socs and next */
+ 
 #define STM_SAI_STM32H7		0x0
 
 #define STM_SAI_IS_F4(ip)	((ip)->conf.version == STM_SAI_STM32F4)
@@ -264,30 +259,14 @@ enum stm32_sai_syncout {
 	STM_SAI_SYNC_OUT_B,
 };
 
-/**
- * struct stm32_sai_conf - SAI configuration
- * @version: SAI version
- * @fifo_size: SAI fifo size as words number
- * @has_spdif_pdm: SAI S/PDIF and PDM features support flag
- */
+ 
 struct stm32_sai_conf {
 	u32 version;
 	u32 fifo_size;
 	bool has_spdif_pdm;
 };
 
-/**
- * struct stm32_sai_data - private data of SAI instance driver
- * @pdev: device data pointer
- * @base: common register bank virtual base address
- * @pclk: SAI bus clock
- * @clk_x8k: SAI parent clock for sampling frequencies multiple of 8kHz
- * @clk_x11k: SAI parent clock for sampling frequencies multiple of 11kHz
- * @conf: SAI hardware capabitilites
- * @irq: SAI interrupt line
- * @set_sync: pointer to synchro mode configuration callback
- * @gcr: SAI Global Configuration Register
- */
+ 
 struct stm32_sai_data {
 	struct platform_device *pdev;
 	void __iomem *base;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef _NFT_SET_PIPAPO_AVX2_H
 
 #if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
@@ -7,6 +7,6 @@
 
 bool nft_pipapo_avx2_estimate(const struct nft_set_desc *desc, u32 features,
 			      struct nft_set_estimate *est);
-#endif /* defined(CONFIG_X86_64) && !defined(CONFIG_UML) */
+#endif  
 
-#endif /* _NFT_SET_PIPAPO_AVX2_H */
+#endif  

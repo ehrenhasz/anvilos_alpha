@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vsock test utilities
- *
- * Copyright (C) 2017 Red Hat, Inc.
- *
- * Author: Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 
 #include <errno.h>
 #include <stdio.h>
@@ -20,7 +14,7 @@
 #include "control.h"
 #include "util.h"
 
-/* Install signal handlers */
+ 
 void init_signals(void)
 {
 	struct sigaction act = {
@@ -31,7 +25,7 @@ void init_signals(void)
 	signal(SIGPIPE, SIG_IGN);
 }
 
-/* Parse a CID in string representation */
+ 
 unsigned int parse_cid(const char *str)
 {
 	char *endptr = NULL;
@@ -46,7 +40,7 @@ unsigned int parse_cid(const char *str)
 	return n;
 }
 
-/* Wait for the remote to close the connection */
+ 
 void vsock_wait_remote_close(int fd)
 {
 	struct epoll_event ev;
@@ -83,7 +77,7 @@ void vsock_wait_remote_close(int fd)
 	close(epollfd);
 }
 
-/* Connect to <cid, port> and return the file descriptor. */
+ 
 static int vsock_connect(unsigned int cid, unsigned int port, int type)
 {
 	union {
@@ -130,9 +124,7 @@ int vsock_seqpacket_connect(unsigned int cid, unsigned int port)
 	return vsock_connect(cid, port, SOCK_SEQPACKET);
 }
 
-/* Listen on <cid, port> and return the first incoming connection.  The remote
- * address is stored to clientaddrp.  clientaddrp may be NULL.
- */
+ 
 static int vsock_accept(unsigned int cid, unsigned int port,
 			struct sockaddr_vm *clientaddrp, int type)
 {
@@ -211,13 +203,7 @@ int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
 	return vsock_accept(cid, port, clientaddrp, SOCK_SEQPACKET);
 }
 
-/* Transmit one byte and check the return value.
- *
- * expected_ret:
- *  <0 Negative errno (for testing errors)
- *   0 End-of-file
- *   1 Success
- */
+ 
 void send_byte(int fd, int expected_ret, int flags)
 {
 	const uint8_t byte = 'A';
@@ -260,13 +246,7 @@ void send_byte(int fd, int expected_ret, int flags)
 	}
 }
 
-/* Receive one byte and check the return value.
- *
- * expected_ret:
- *  <0 Negative errno (for testing errors)
- *   0 End-of-file
- *   1 Success
- */
+ 
 void recv_byte(int fd, int expected_ret, int flags)
 {
 	uint8_t byte;
@@ -313,7 +293,7 @@ void recv_byte(int fd, int expected_ret, int flags)
 	}
 }
 
-/* Run test cases.  The program terminates if a failure occurs. */
+ 
 void run_tests(const struct test_case *test_cases,
 	       const struct test_opts *opts)
 {
@@ -326,13 +306,7 @@ void run_tests(const struct test_case *test_cases,
 		printf("%d - %s...", i, test_cases[i].name);
 		fflush(stdout);
 
-		/* Full barrier before executing the next test.  This
-		 * ensures that client and server are executing the
-		 * same test case.  In particular, it means whoever is
-		 * faster will not see the peer still executing the
-		 * last test.  This is important because port numbers
-		 * can be used by multiple test cases.
-		 */
+		 
 		if (test_cases[i].skip)
 			control_writeln("SKIP");
 		else

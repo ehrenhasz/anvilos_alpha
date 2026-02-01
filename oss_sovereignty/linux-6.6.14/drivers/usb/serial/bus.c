@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Serial Converter Bus specific functions
- *
- * Copyright (C) 2002 Greg Kroah-Hartman (greg@kroah.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -19,10 +15,7 @@ static int usb_serial_device_match(struct device *dev,
 	const struct usb_serial_port *port = to_usb_serial_port(dev);
 	struct usb_serial_driver *driver = to_usb_serial_driver(drv);
 
-	/*
-	 * drivers are already assigned to ports in serial_probe so it's
-	 * a simple check here.
-	 */
+	 
 	if (driver == port->serial->type)
 		return 1;
 
@@ -37,7 +30,7 @@ static int usb_serial_device_probe(struct device *dev)
 	int retval = 0;
 	int minor;
 
-	/* make sure suspend/resume doesn't race against port_probe */
+	 
 	retval = usb_autopm_get_interface(port->serial->interface);
 	if (retval)
 		return retval;
@@ -81,12 +74,7 @@ static void usb_serial_device_remove(struct device *dev)
 	int minor;
 	int autopm_err;
 
-	/*
-	 * Make sure suspend/resume doesn't race against port_remove.
-	 *
-	 * Note that no further runtime PM callbacks will be made if
-	 * autopm_get fails.
-	 */
+	 
 	autopm_err = usb_autopm_get_interface(port->serial->interface);
 
 	minor = port->minor;

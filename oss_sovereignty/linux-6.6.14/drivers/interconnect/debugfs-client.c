@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/interconnect.h>
 #include <linux/platform_device.h>
 
 #include "internal.h"
 
-/*
- * This can be dangerous, therefore don't provide any real compile time
- * configuration option for this feature.
- * People who want to use this will need to modify the source code directly.
- */
+ 
 #undef INTERCONNECT_ALLOW_WRITE_DEBUGFS
 
 #if defined(INTERCONNECT_ALLOW_WRITE_DEBUGFS) && defined(CONFIG_DEBUG_FS)
@@ -60,11 +54,7 @@ static int icc_get_set(void *data, u64 val)
 	src = rcu_dereference(src_node);
 	dst = rcu_dereference(dst_node);
 
-	/*
-	 * If we've already looked up a path, then use the existing one instead
-	 * of calling icc_get() again. This allows for updating previous BW
-	 * votes when "get" is written to multiple times for multiple paths.
-	 */
+	 
 	cur_path = get_path(src, dst);
 	if (cur_path) {
 		rcu_read_unlock();

@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2014-2015 Freescale
-// Copyright 2018 NXP
 
-/*
- * Driver for NXP Layerscape Queue Direct Memory Access Controller
- *
- * Author:
- *  Wen He <wen.he_1@nxp.com>
- *  Jiaheng Fan <jiaheng.fan@nxp.com>
- *
- */
+
+
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -21,7 +14,7 @@
 #include "virt-dma.h"
 #include "fsldma.h"
 
-/* Register related definition */
+ 
 #define FSL_QDMA_DMR			0x0
 #define FSL_QDMA_DSR			0x4
 #define FSL_QDMA_DEIER			0xe00
@@ -54,7 +47,7 @@
 #define FSL_QDMA_CQEDR			0xa14
 #define FSL_QDMA_SQCCMR			0xa20
 
-/* Registers for bit and genmask */
+ 
 #define FSL_QDMA_CQIDR_SQT		BIT(15)
 #define QDMA_CCDF_FORMAT		BIT(29)
 #define QDMA_CCDF_SER			BIT(30)
@@ -92,7 +85,7 @@
 #define FSL_QDMA_DMR_DQD		BIT(30)
 #define FSL_QDMA_DSR_DB		BIT(31)
 
-/* Size related definition */
+ 
 #define FSL_QDMA_QUEUE_MAX		8
 #define FSL_QDMA_COMMAND_BUFFER_SIZE	64
 #define FSL_QDMA_DESCRIPTOR_BUFFER_SIZE 32
@@ -100,7 +93,7 @@
 #define FSL_QDMA_CIRCULAR_DESC_SIZE_MAX	16384
 #define FSL_QDMA_QUEUE_NUM_MAX		8
 
-/* Field definition for CMD */
+ 
 #define FSL_QDMA_CMD_RWTTYPE		0x4
 #define FSL_QDMA_CMD_LWC                0x2
 #define FSL_QDMA_CMD_RWTTYPE_OFFSET	28
@@ -110,7 +103,7 @@
 #define FSL_QDMA_CMD_DSEN_OFFSET	19
 #define FSL_QDMA_CMD_LWC_OFFSET		16
 
-/* Field definition for Descriptor status */
+ 
 #define QDMA_CCDF_STATUS_RTE		BIT(5)
 #define QDMA_CCDF_STATUS_WTE		BIT(4)
 #define QDMA_CCDF_STATUS_CDE		BIT(2)
@@ -122,11 +115,11 @@
 					QDMA_CCDF_STATUS_SDE | \
 					QDMA_CCDF_STATUS_DDE)
 
-/* Field definition for Descriptor offset */
+ 
 #define QDMA_CCDF_OFFSET		20
 #define QDMA_SDDF_CMD(x)		(((u64)(x)) << 32)
 
-/* Field definition for safe loop count*/
+ 
 #define FSL_QDMA_HALT_COUNT		1500
 #define FSL_QDMA_MAX_SIZE		16385
 #define	FSL_QDMA_COMP_TIMEOUT		1000
@@ -135,21 +128,7 @@
 #define FSL_QDMA_BLOCK_BASE_OFFSET(fsl_qdma_engine, x)			\
 	(((fsl_qdma_engine)->block_offset) * (x))
 
-/**
- * struct fsl_qdma_format - This is the struct holding describing compound
- *			    descriptor format with qDMA.
- * @status:		    Command status and enqueue status notification.
- * @cfg:		    Frame offset and frame format.
- * @addr_lo:		    Holding the compound descriptor of the lower
- *			    32-bits address in memory 40-bit address.
- * @addr_hi:		    Same as above member, but point high 8-bits in
- *			    memory 40-bit address.
- * @__reserved1:	    Reserved field.
- * @cfg8b_w1:		    Compound descriptor command queue origin produced
- *			    by qDMA and dynamic debug field.
- * @data:		    Pointer to the memory 40-bit address, describes DMA
- *			    source information and DMA destination information.
- */
+ 
 struct fsl_qdma_format {
 	__le32 status;
 	__le32 cfg;
@@ -164,7 +143,7 @@ struct fsl_qdma_format {
 	};
 } __packed;
 
-/* qDMA status notification pre information */
+ 
 struct fsl_pre_status {
 	u64 addr;
 	u8 queue;
@@ -367,22 +346,22 @@ static void fsl_qdma_comp_fill_memcpy(struct fsl_qdma_comp *fsl_comp,
 
 	memset(fsl_comp->virt_addr, 0, FSL_QDMA_COMMAND_BUFFER_SIZE);
 	memset(fsl_comp->desc_virt_addr, 0, FSL_QDMA_DESCRIPTOR_BUFFER_SIZE);
-	/* Head Command Descriptor(Frame Descriptor) */
+	 
 	qdma_desc_addr_set64(ccdf, fsl_comp->bus_addr + 16);
 	qdma_ccdf_set_format(ccdf, qdma_ccdf_get_offset(ccdf));
 	qdma_ccdf_set_ser(ccdf, qdma_ccdf_get_status(ccdf));
-	/* Status notification is enqueued to status queue. */
-	/* Compound Command Descriptor(Frame List Table) */
+	 
+	 
 	qdma_desc_addr_set64(csgf_desc, fsl_comp->desc_bus_addr);
-	/* It must be 32 as Compound S/G Descriptor */
+	 
 	qdma_csgf_set_len(csgf_desc, 32);
 	qdma_desc_addr_set64(csgf_src, src);
 	qdma_csgf_set_len(csgf_src, len);
 	qdma_desc_addr_set64(csgf_dest, dst);
 	qdma_csgf_set_len(csgf_dest, len);
-	/* This entry is the last entry. */
+	 
 	qdma_csgf_set_f(csgf_dest, len);
-	/* Descriptor Buffer */
+	 
 	cmd = cpu_to_le32(FSL_QDMA_CMD_RWTTYPE <<
 			  FSL_QDMA_CMD_RWTTYPE_OFFSET);
 	sdf->data = QDMA_SDDF_CMD(cmd);
@@ -393,9 +372,7 @@ static void fsl_qdma_comp_fill_memcpy(struct fsl_qdma_comp *fsl_comp,
 	ddf->data = QDMA_SDDF_CMD(cmd);
 }
 
-/*
- * Pre-request full command descriptor for enqueue.
- */
+ 
 static int fsl_qdma_pre_request_enqueue_desc(struct fsl_qdma_queue *queue)
 {
 	int i;
@@ -448,9 +425,7 @@ err_alloc:
 	return -ENOMEM;
 }
 
-/*
- * Request a command descriptor for enqueue.
- */
+ 
 static struct fsl_qdma_comp
 *fsl_qdma_request_enqueue_desc(struct fsl_qdma_chan *fsl_chan)
 {
@@ -527,9 +502,7 @@ static struct fsl_qdma_queue
 			queue_temp->id = i;
 			queue_temp->virt_head = queue_temp->cq;
 			queue_temp->virt_tail = queue_temp->cq;
-			/*
-			 * List for queue command buffer
-			 */
+			 
 			INIT_LIST_HEAD(&queue_temp->comp_used);
 			spin_lock_init(&queue_temp->queue_lock);
 		}
@@ -560,9 +533,7 @@ static struct fsl_qdma_queue
 	if (!status_head)
 		return NULL;
 
-	/*
-	 * Buffer for queue command
-	 */
+	 
 	status_head->cq = dma_alloc_coherent(&pdev->dev,
 					     sizeof(struct fsl_qdma_format) *
 					     status_size,
@@ -586,7 +557,7 @@ static int fsl_qdma_halt(struct fsl_qdma_engine *fsl_qdma)
 	int i, j, count = FSL_QDMA_HALT_COUNT;
 	void __iomem *block, *ctrl = fsl_qdma->ctrl_base;
 
-	/* Disable the command queue and wait for idle state. */
+	 
 	reg = qdma_readl(fsl_qdma, ctrl + FSL_QDMA_DMR);
 	reg |= FSL_QDMA_DMR_DQD;
 	qdma_writel(fsl_qdma, reg, ctrl + FSL_QDMA_DMR);
@@ -609,13 +580,10 @@ static int fsl_qdma_halt(struct fsl_qdma_engine *fsl_qdma)
 		block = fsl_qdma->block_base +
 			FSL_QDMA_BLOCK_BASE_OFFSET(fsl_qdma, j);
 
-		/* Disable status queue. */
+		 
 		qdma_writel(fsl_qdma, 0, block + FSL_QDMA_BSQMR);
 
-		/*
-		 * clear the command queue interrupt detect register for
-		 * all queues.
-		 */
+		 
 		qdma_writel(fsl_qdma, FSL_QDMA_BCQIDR_CLEAR,
 			    block + FSL_QDMA_BCQIDR(0));
 	}
@@ -701,23 +669,19 @@ fsl_qdma_queue_transfer_complete(struct fsl_qdma_engine *fsl_qdma,
 		qdma_writel(fsl_qdma, reg, block + FSL_QDMA_BSQMR);
 		spin_unlock(&temp_queue->queue_lock);
 
-		/* The completion_status is evaluated here
-		 * (outside of spin lock)
-		 */
+		 
 		if (completion_status) {
-			/* A completion error occurred! */
+			 
 			if (completion_status & QDMA_CCDF_STATUS_WTE) {
-				/* Write transaction error */
+				 
 				fsl_comp->vdesc.tx_result.result =
 					DMA_TRANS_WRITE_FAILED;
 			} else if (completion_status & QDMA_CCDF_STATUS_RTE) {
-				/* Read transaction error */
+				 
 				fsl_comp->vdesc.tx_result.result =
 					DMA_TRANS_READ_FAILED;
 			} else {
-				/* Command/source/destination
-				 * description error
-				 */
+				 
 				fsl_comp->vdesc.tx_result.result =
 					DMA_TRANS_ABORTED;
 				dev_err(fsl_qdma->dma_dev.dev,
@@ -791,7 +755,7 @@ static irqreturn_t fsl_qdma_queue_handler(int irq, void *dev_id)
 		dev_err(fsl_qdma->dma_dev.dev, "QDMA: status err!\n");
 	}
 
-	/* Clear all detected events and interrupts. */
+	 
 	qdma_writel(fsl_qdma, FSL_QDMA_BCQIDR_CLEAR,
 		    block + FSL_QDMA_BCQIDR(0));
 
@@ -874,7 +838,7 @@ static int fsl_qdma_reg_init(struct fsl_qdma_engine *fsl_qdma)
 	void __iomem *block, *ctrl = fsl_qdma->ctrl_base;
 	struct fsl_qdma_queue *fsl_queue = fsl_qdma->queue;
 
-	/* Try to halt the qDMA engine first. */
+	 
 	ret = fsl_qdma_halt(fsl_qdma);
 	if (ret) {
 		dev_err(fsl_qdma->dma_dev.dev, "DMA halt failed!");
@@ -882,10 +846,7 @@ static int fsl_qdma_reg_init(struct fsl_qdma_engine *fsl_qdma)
 	}
 
 	for (i = 0; i < fsl_qdma->block_number; i++) {
-		/*
-		 * Clear the command queue interrupt detect register for
-		 * all queues.
-		 */
+		 
 
 		block = fsl_qdma->block_base +
 			FSL_QDMA_BLOCK_BASE_OFFSET(fsl_qdma, i);
@@ -898,47 +859,32 @@ static int fsl_qdma_reg_init(struct fsl_qdma_engine *fsl_qdma)
 			FSL_QDMA_BLOCK_BASE_OFFSET(fsl_qdma, j);
 		for (i = 0; i < fsl_qdma->n_queues; i++) {
 			temp = fsl_queue + i + (j * fsl_qdma->n_queues);
-			/*
-			 * Initialize Command Queue registers to
-			 * point to the first
-			 * command descriptor in memory.
-			 * Dequeue Pointer Address Registers
-			 * Enqueue Pointer Address Registers
-			 */
+			 
 
 			qdma_writel(fsl_qdma, temp->bus_addr,
 				    block + FSL_QDMA_BCQDPA_SADDR(i));
 			qdma_writel(fsl_qdma, temp->bus_addr,
 				    block + FSL_QDMA_BCQEPA_SADDR(i));
 
-			/* Initialize the queue mode. */
+			 
 			reg = FSL_QDMA_BCQMR_EN;
 			reg |= FSL_QDMA_BCQMR_CD_THLD(ilog2(temp->n_cq) - 4);
 			reg |= FSL_QDMA_BCQMR_CQ_SIZE(ilog2(temp->n_cq) - 6);
 			qdma_writel(fsl_qdma, reg, block + FSL_QDMA_BCQMR(i));
 		}
 
-		/*
-		 * Workaround for erratum: ERR010812.
-		 * We must enable XOFF to avoid the enqueue rejection occurs.
-		 * Setting SQCCMR ENTER_WM to 0x20.
-		 */
+		 
 
 		qdma_writel(fsl_qdma, FSL_QDMA_SQCCMR_ENTER_WM,
 			    block + FSL_QDMA_SQCCMR);
 
-		/*
-		 * Initialize status queue registers to point to the first
-		 * command descriptor in memory.
-		 * Dequeue Pointer Address Registers
-		 * Enqueue Pointer Address Registers
-		 */
+		 
 
 		qdma_writel(fsl_qdma, fsl_qdma->status[j]->bus_addr,
 			    block + FSL_QDMA_SQEPAR);
 		qdma_writel(fsl_qdma, fsl_qdma->status[j]->bus_addr,
 			    block + FSL_QDMA_SQDPAR);
-		/* Initialize status queue interrupt. */
+		 
 		qdma_writel(fsl_qdma, FSL_QDMA_BCQIER_CQTIE,
 			    block + FSL_QDMA_BCQIER(0));
 		qdma_writel(fsl_qdma, FSL_QDMA_BSQICR_ICEN |
@@ -948,7 +894,7 @@ static int fsl_qdma_reg_init(struct fsl_qdma_engine *fsl_qdma)
 				   FSL_QDMA_CQIER_TEIE,
 				   block + FSL_QDMA_CQIER);
 
-		/* Initialize the status queue mode. */
+		 
 		reg = FSL_QDMA_BSQMR_EN;
 		reg |= FSL_QDMA_BSQMR_CQ_SIZE(ilog2
 			(fsl_qdma->status[j]->n_cq) - 6);
@@ -957,7 +903,7 @@ static int fsl_qdma_reg_init(struct fsl_qdma_engine *fsl_qdma)
 		reg = qdma_readl(fsl_qdma, block + FSL_QDMA_BSQMR);
 	}
 
-	/* Initialize controller interrupt register. */
+	 
 	qdma_writel(fsl_qdma, FSL_QDMA_DEDR_CLEAR, status + FSL_QDMA_DEDR);
 	qdma_writel(fsl_qdma, FSL_QDMA_DEIER_CLEAR, status + FSL_QDMA_DEIER);
 
@@ -1075,9 +1021,7 @@ static int fsl_qdma_alloc_chan_resources(struct dma_chan *chan)
 
 	INIT_LIST_HEAD(&fsl_queue->comp_free);
 
-	/*
-	 * The dma pool for queue command buffer
-	 */
+	 
 	fsl_queue->comp_pool =
 	dma_pool_create("comp_pool",
 			chan->device->dev,
@@ -1086,9 +1030,7 @@ static int fsl_qdma_alloc_chan_resources(struct dma_chan *chan)
 	if (!fsl_queue->comp_pool)
 		return -ENOMEM;
 
-	/*
-	 * The dma pool for Descriptor(SD/DD) buffer
-	 */
+	 
 	fsl_queue->desc_pool =
 	dma_pool_create("desc_pool",
 			chan->device->dev,
@@ -1288,7 +1230,7 @@ static int fsl_qdma_remove(struct platform_device *pdev)
 
 static const struct of_device_id fsl_qdma_dt_ids[] = {
 	{ .compatible = "fsl,ls1021a-qdma", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_qdma_dt_ids);
 

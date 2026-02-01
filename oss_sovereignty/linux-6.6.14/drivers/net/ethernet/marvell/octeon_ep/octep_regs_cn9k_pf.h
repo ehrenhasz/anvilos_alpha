@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+ 
+ 
 
 #ifndef _OCTEP_REGS_CN9K_PF_H_
 #define _OCTEP_REGS_CN9K_PF_H_
 
-/* ############################ RST ######################### */
+ 
 #define    CN93_RST_BOOT               0x000087E006001600ULL
 #define    CN93_RST_CORE_DOMAIN_W1S    0x000087E006001820ULL
 #define    CN93_RST_CORE_DOMAIN_W1C    0x000087E006001828ULL
@@ -22,23 +18,23 @@
 #define     CN93_CONFIG_PCIE_SLOTCAP             0x84
 #define     CN93_CONFIG_PCIE_SLOTCTL             0x88
 
-#define     CN93_PCIE_SRIOV_FDL                  0x188      /* 0x98 */
+#define     CN93_PCIE_SRIOV_FDL                  0x188       
 #define     CN93_PCIE_SRIOV_FDL_BIT_POS          0x10
 #define     CN93_PCIE_SRIOV_FDL_MASK             0xFF
 
 #define     CN93_CONFIG_PCIE_FLTMSK              0x720
 
-/* ################# Offsets of RING, EPF, MAC ######################### */
+ 
 #define    CN93_RING_OFFSET                      (0x1ULL << 17)
 #define    CN93_EPF_OFFSET                       (0x1ULL << 25)
 #define    CN93_MAC_OFFSET                       (0x1ULL << 4)
 #define    CN93_BIT_ARRAY_OFFSET                 (0x1ULL << 4)
 #define    CN93_EPVF_RING_OFFSET                 (0x1ULL << 4)
 
-/* ################# Scratch Registers ######################### */
+ 
 #define    CN93_SDP_EPF_SCRATCH                  0x205E0
 
-/* ################# Window Registers ######################### */
+ 
 #define    CN93_SDP_WIN_WR_ADDR64                0x20000
 #define    CN93_SDP_WIN_RD_ADDR64                0x20010
 #define    CN93_SDP_WIN_WR_DATA64                0x20020
@@ -47,18 +43,18 @@
 
 #define    CN93_SDP_MAC_NUMBER                   0x2C100
 
-/* ################# Global Previliged registers ######################### */
+ 
 #define    CN93_SDP_EPF_RINFO                    0x205F0
 
 #define    CN93_SDP_EPF_RINFO_SRN(val)           ((val) & 0xFF)
 #define    CN93_SDP_EPF_RINFO_RPVF(val)          (((val) >> 32) & 0xF)
 #define    CN93_SDP_EPF_RINFO_NVFS(val)          (((val) >> 48) & 0xFF)
 
-/* SDP Function select */
+ 
 #define    CN93_SDP_FUNC_SEL_EPF_BIT_POS         8
 #define    CN93_SDP_FUNC_SEL_FUNC_BIT_POS        0
 
-/* ##### RING IN (Into device from PCI: Tx Ring) REGISTERS #### */
+ 
 #define    CN93_SDP_R_IN_CONTROL_START           0x10000
 #define    CN93_SDP_R_IN_ENABLE_START            0x10010
 #define    CN93_SDP_R_IN_INSTR_BADDR_START       0x10020
@@ -96,13 +92,11 @@
 #define    CN93_SDP_R_IN_BYTE_CNT(ring)		\
 	(CN93_SDP_R_IN_BYTE_CNT_START + ((ring) * CN93_RING_OFFSET))
 
-/* Rings per Virtual Function */
+ 
 #define    CN93_R_IN_CTL_RPVF_MASK	(0xF)
 #define    CN93_R_IN_CTL_RPVF_POS	(48)
 
-/* Number of instructions to be read in one MAC read request.
- * setting to Max value(4)
- */
+ 
 #define    CN93_R_IN_CTL_IDLE                    (0x1ULL << 28)
 #define    CN93_R_IN_CTL_RDSIZE                  (0x3ULL << 25)
 #define    CN93_R_IN_CTL_IS_64B                  (0x1ULL << 24)
@@ -115,7 +109,7 @@
 
 #define    CN93_R_IN_CTL_MASK  (CN93_R_IN_CTL_RDSIZE | CN93_R_IN_CTL_IS_64B)
 
-/* ##### RING OUT (out from device to PCI host: Rx Ring) REGISTERS #### */
+ 
 #define    CN93_SDP_R_OUT_CNTS_START              0x10100
 #define    CN93_SDP_R_OUT_INT_LEVELS_START        0x10110
 #define    CN93_SDP_R_OUT_SLIST_BADDR_START       0x10120
@@ -153,7 +147,7 @@
 #define    CN93_SDP_R_OUT_BYTE_CNT(ring)          \
 	(CN93_SDP_R_OUT_BYTE_CNT_START + ((ring) * CN93_RING_OFFSET))
 
-/*------------------ R_OUT Masks ----------------*/
+ 
 #define    CN93_R_OUT_INT_LEVELS_BMODE            BIT_ULL(63)
 #define    CN93_R_OUT_INT_LEVELS_TIMET            (32)
 
@@ -169,7 +163,7 @@
 #define    CN93_R_OUT_CTL_ROR_P                   BIT_ULL(24)
 #define    CN93_R_OUT_CTL_IMODE                   BIT_ULL(23)
 
-/* ############### Interrupt Moderation Registers ############### */
+ 
 #define CN93_SDP_R_IN_INT_MDRT_CTL0_START         0x10280
 #define CN93_SDP_R_IN_INT_MDRT_CTL1_START         0x102A0
 #define CN93_SDP_R_IN_INT_MDRT_DBG_START          0x102C0
@@ -196,14 +190,9 @@
 #define    CN93_SDP_R_OUT_INT_MDRT_DBG(ring)		\
 	(CN93_SDP_R_OUT_INT_MDRT_DBG_START + ((ring) * CN93_RING_OFFSET))
 
-/* ##################### Mail Box Registers ########################## */
-/* INT register for VF. when a MBOX write from PF happed to a VF,
- * corresponding bit will be set in this register as well as in
- * PF_VF_INT register.
- *
- * This is a RO register, the int can be cleared by writing 1 to PF_VF_INT
- */
-/* Basically first 3 are from PF to VF. The last one is data from VF to PF */
+ 
+ 
+ 
 #define    CN93_SDP_R_MBOX_PF_VF_DATA_START       0x10210
 #define    CN93_SDP_R_MBOX_PF_VF_INT_START        0x10220
 #define    CN93_SDP_R_MBOX_VF_PF_DATA_START       0x10230
@@ -217,7 +206,7 @@
 #define    CN93_SDP_R_MBOX_VF_PF_DATA(ring)		\
 	(CN93_SDP_R_MBOX_VF_PF_DATA_START + ((ring) * CN93_RING_OFFSET))
 
-/* ##################### Interrupt Registers ########################## */
+ 
 #define	   CN93_SDP_R_ERR_TYPE_START	          0x10400
 
 #define    CN93_SDP_R_ERR_TYPE(ring)		\
@@ -335,7 +324,7 @@
 #define	   CN93_SDP_EPF_PP_VF_RINT_ENA_W1S(index)	\
 		(CN93_SDP_EPF_PP_VF_RINT_ENA_W1S_START + ((index) + CN93_BIT_ARRAY_OFFSET))
 
-/*------------------ Interrupt Masks ----------------*/
+ 
 #define	   CN93_INTR_R_SEND_ISM       BIT_ULL(63)
 #define	   CN93_INTR_R_OUT_INT        BIT_ULL(62)
 #define    CN93_INTR_R_IN_INT         BIT_ULL(61)
@@ -343,7 +332,7 @@
 #define    CN93_INTR_R_RESEND         BIT_ULL(59)
 #define    CN93_INTR_R_CLR_TIM        BIT_ULL(58)
 
-/* ####################### Ring Mapping Registers ################################## */
+ 
 #define    CN93_SDP_EPVF_RING_START          0x26000
 #define    CN93_SDP_IN_RING_TB_MAP_START     0x28000
 #define    CN93_SDP_IN_RATE_LIMIT_START      0x2A000
@@ -362,12 +351,12 @@
 #define    CN93_SDP_MAC_PF_RING_CTL_SRN(val)   (((val) >> 8) & 0xFF)
 #define    CN93_SDP_MAC_PF_RING_CTL_RPPF(val)  (((val) >> 16) & 0x3F)
 
-/* Number of non-queue interrupts in CN93xx */
+ 
 #define    CN93_NUM_NON_IOQ_INTR    16
 
-/* bit 0 for control mbox interrupt */
+ 
 #define CN93_SDP_EPF_OEI_RINT_DATA_BIT_MBOX	BIT_ULL(0)
-/* bit 1 for firmware heartbeat interrupt */
+ 
 #define CN93_SDP_EPF_OEI_RINT_DATA_BIT_HBEAT	BIT_ULL(1)
 
-#endif /* _OCTEP_REGS_CN9K_PF_H_ */
+#endif  

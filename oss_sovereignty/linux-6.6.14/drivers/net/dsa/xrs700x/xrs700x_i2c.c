@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 NovaTech LLC
- * George McCollister <george.mccollister@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/i2c.h>
@@ -97,7 +94,7 @@ static int xrs700x_i2c_probe(struct i2c_client *i2c)
 
 	ret = xrs700x_switch_register(priv);
 
-	/* Main DSA driver may not be started yet. */
+	 
 	if (ret)
 		return ret;
 

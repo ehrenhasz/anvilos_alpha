@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util/debug.h"
 #include "util/evlist.h"
 #include "util/machine.h"
@@ -51,7 +51,7 @@ int lock_contention_prepare(struct lock_contention *con)
 	if (con->filters->nr_types)
 		ntypes = con->filters->nr_types;
 
-	/* resolve lock name filters to addr */
+	 
 	if (con->filters->nr_syms) {
 		struct symbol *sym;
 		struct map *kmap;
@@ -145,7 +145,7 @@ int lock_contention_prepare(struct lock_contention *con)
 			bpf_map_update_elem(fd, &con->filters->addrs[i], &val, BPF_ANY);
 	}
 
-	/* these don't work well if in the rodata section */
+	 
 	skel->bss->stack_skip = con->stack_skip;
 	skel->bss->aggr_mode = con->aggr_mode;
 	skel->bss->needs_callstack = con->save_callstack;
@@ -186,14 +186,14 @@ static const char *lock_contention_get_name(struct lock_contention *con,
 		int pid = key->pid;
 		int task_fd = bpf_map__fd(skel->maps.task_data);
 
-		/* do not update idle comm which contains CPU number */
+		 
 		if (pid) {
-			struct thread *t = __machine__findnew_thread(machine, /*pid=*/-1, pid);
+			struct thread *t = __machine__findnew_thread(machine,  -1, pid);
 
 			if (t == NULL)
 				return name;
 			if (!bpf_map_lookup_elem(task_fd, &pid, &task) &&
-			    thread__set_comm(t, task.comm, /*timestamp=*/0))
+			    thread__set_comm(t, task.comm,  0))
 				name = task.comm;
 		}
 		return name;
@@ -202,18 +202,18 @@ static const char *lock_contention_get_name(struct lock_contention *con,
 	if (con->aggr_mode == LOCK_AGGR_ADDR) {
 		int lock_fd = bpf_map__fd(skel->maps.lock_syms);
 
-		/* per-process locks set upper bits of the flags */
+		 
 		if (flags & LCD_F_MMAP_LOCK)
 			return "mmap_lock";
 		if (flags & LCD_F_SIGHAND_LOCK)
 			return "siglock";
 
-		/* global locks with symbols */
+		 
 		sym = machine__find_kernel_symbol(machine, key->lock_addr, &kmap);
 		if (sym)
 			return sym->name;
 
-		/* try semi-global locks collected separately */
+		 
 		if (!bpf_map_lookup_elem(lock_fd, &key->lock_addr, &flags)) {
 			if (flags == LOCK_CLASS_RQLOCK)
 				return "rq_lock";
@@ -222,7 +222,7 @@ static const char *lock_contention_get_name(struct lock_contention *con,
 		return "";
 	}
 
-	/* LOCK_AGGR_CALLER: skip lock internal functions */
+	 
 	while (machine__is_lock_function(machine, stack_trace[idx]) &&
 	       idx < con->max_stack - 1)
 		idx++;
@@ -270,9 +270,9 @@ int lock_contention_read(struct lock_contention *con)
 
 	if (con->aggr_mode == LOCK_AGGR_TASK) {
 		struct thread *idle = __machine__findnew_thread(machine,
-								/*pid=*/0,
-								/*tid=*/0);
-		thread__set_comm(idle, "swapper", /*timestamp=*/0);
+								 0,
+								 0);
+		thread__set_comm(idle, "swapper",  0);
 	}
 
 	if (con->aggr_mode == LOCK_AGGR_ADDR) {
@@ -284,7 +284,7 @@ int lock_contention_read(struct lock_contention *con)
 		bpf_prog_test_run_opts(prog_fd, &opts);
 	}
 
-	/* make sure it loads the kernel map */
+	 
 	map__load(maps__first(machine->kmaps)->map);
 
 	prev_key = NULL;
@@ -292,7 +292,7 @@ int lock_contention_read(struct lock_contention *con)
 		s64 ls_key;
 		const char *name;
 
-		/* to handle errors in the loop body */
+		 
 		err = -1;
 
 		bpf_map_lookup_elem(fd, &key, &data);
@@ -355,7 +355,7 @@ int lock_contention_read(struct lock_contention *con)
 next:
 		prev_key = &key;
 
-		/* we're fine now, reset the error */
+		 
 		err = 0;
 	}
 

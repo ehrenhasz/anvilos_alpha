@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sony imx412 Camera Sensor Driver
- *
- * Copyright (C) 2021 Intel Corporation
- */
+
+ 
 #include <asm/unaligned.h>
 
 #include <linux/clk.h>
@@ -17,78 +13,58 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-subdev.h>
 
-/* Streaming Mode */
+ 
 #define IMX412_REG_MODE_SELECT	0x0100
 #define IMX412_MODE_STANDBY	0x00
 #define IMX412_MODE_STREAMING	0x01
 
-/* Lines per frame */
+ 
 #define IMX412_REG_LPFR		0x0340
 
-/* Chip ID */
+ 
 #define IMX412_REG_ID		0x0016
 #define IMX412_ID		0x577
 
-/* Exposure control */
+ 
 #define IMX412_REG_EXPOSURE_CIT	0x0202
 #define IMX412_EXPOSURE_MIN	8
 #define IMX412_EXPOSURE_OFFSET	22
 #define IMX412_EXPOSURE_STEP	1
 #define IMX412_EXPOSURE_DEFAULT	0x0648
 
-/* Analog gain control */
+ 
 #define IMX412_REG_AGAIN	0x0204
 #define IMX412_AGAIN_MIN	0
 #define IMX412_AGAIN_MAX	978
 #define IMX412_AGAIN_STEP	1
 #define IMX412_AGAIN_DEFAULT	0
 
-/* Group hold register */
+ 
 #define IMX412_REG_HOLD		0x0104
 
-/* Input clock rate */
+ 
 #define IMX412_INCLK_RATE	24000000
 
-/* CSI2 HW configuration */
+ 
 #define IMX412_LINK_FREQ	600000000
 #define IMX412_NUM_DATA_LANES	4
 
 #define IMX412_REG_MIN		0x00
 #define IMX412_REG_MAX		0xffff
 
-/**
- * struct imx412_reg - imx412 sensor register
- * @address: Register address
- * @val: Register value
- */
+ 
 struct imx412_reg {
 	u16 address;
 	u8 val;
 };
 
-/**
- * struct imx412_reg_list - imx412 sensor register list
- * @num_of_regs: Number of registers in the list
- * @regs: Pointer to register list
- */
+ 
 struct imx412_reg_list {
 	u32 num_of_regs;
 	const struct imx412_reg *regs;
 };
 
-/**
- * struct imx412_mode - imx412 sensor mode structure
- * @width: Frame width
- * @height: Frame height
- * @code: Format code
- * @hblank: Horizontal blanking in lines
- * @vblank: Vertical blanking in lines
- * @vblank_min: Minimum vertical blanking in lines
- * @vblank_max: Maximum vertical blanking in lines
- * @pclk: Sensor pixel clock
- * @link_freq_idx: Link frequency index
- * @reg_list: Register list for sensor mode
- */
+ 
 struct imx412_mode {
 	u32 width;
 	u32 height;
@@ -103,32 +79,12 @@ struct imx412_mode {
 };
 
 static const char * const imx412_supply_names[] = {
-	"dovdd",	/* Digital I/O power */
-	"avdd",		/* Analog power */
-	"dvdd",		/* Digital core power */
+	"dovdd",	 
+	"avdd",		 
+	"dvdd",		 
 };
 
-/**
- * struct imx412 - imx412 sensor device structure
- * @dev: Pointer to generic device
- * @client: Pointer to i2c client
- * @sd: V4L2 sub-device
- * @pad: Media pad. Only one pad supported
- * @reset_gpio: Sensor reset gpio
- * @inclk: Sensor input clock
- * @supplies: Regulator supplies
- * @ctrl_handler: V4L2 control handler
- * @link_freq_ctrl: Pointer to link frequency control
- * @pclk_ctrl: Pointer to pixel clock control
- * @hblank_ctrl: Pointer to horizontal blanking control
- * @vblank_ctrl: Pointer to vertical blanking control
- * @exp_ctrl: Pointer to exposure control
- * @again_ctrl: Pointer to analog gain control
- * @vblank: Vertical blanking in lines
- * @cur_mode: Pointer to current selected sensor mode
- * @mutex: Mutex for serializing sensor controls
- * @streaming: Flag indicating streaming state
- */
+ 
 struct imx412 {
 	struct device *dev;
 	struct i2c_client *client;
@@ -156,7 +112,7 @@ static const s64 link_freq[] = {
 	IMX412_LINK_FREQ,
 };
 
-/* Sensor mode registers */
+ 
 static const struct imx412_reg mode_4056x3040_regs[] = {
 	{0x0136, 0x18},
 	{0x0137, 0x00},
@@ -391,7 +347,7 @@ static const struct imx412_reg mode_4056x3040_regs[] = {
 	{0xbcf1, 0x00},
 };
 
-/* Supported sensor mode configurations */
+ 
 static const struct imx412_mode supported_mode = {
 	.width = 4056,
 	.height = 3040,
@@ -408,26 +364,13 @@ static const struct imx412_mode supported_mode = {
 	},
 };
 
-/**
- * to_imx412() - imx412 V4L2 sub-device to imx412 device.
- * @subdev: pointer to imx412 V4L2 sub-device
- *
- * Return: pointer to imx412 device
- */
+ 
 static inline struct imx412 *to_imx412(struct v4l2_subdev *subdev)
 {
 	return container_of(subdev, struct imx412, sd);
 }
 
-/**
- * imx412_read_reg() - Read registers.
- * @imx412: pointer to imx412 device
- * @reg: register address
- * @len: length of bytes to read. Max supported bytes is 4
- * @val: pointer to register value to be filled.
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_read_reg(struct imx412 *imx412, u16 reg, u32 len, u32 *val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx412->sd);
@@ -441,13 +384,13 @@ static int imx412_read_reg(struct imx412 *imx412, u16 reg, u32 len, u32 *val)
 
 	put_unaligned_be16(reg, addr_buf);
 
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = ARRAY_SIZE(addr_buf);
 	msgs[0].buf = addr_buf;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -462,15 +405,7 @@ static int imx412_read_reg(struct imx412 *imx412, u16 reg, u32 len, u32 *val)
 	return 0;
 }
 
-/**
- * imx412_write_reg() - Write register
- * @imx412: pointer to imx412 device
- * @reg: register address
- * @len: length of bytes. Max supported bytes is 4
- * @val: register value
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_write_reg(struct imx412 *imx412, u16 reg, u32 len, u32 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx412->sd);
@@ -487,14 +422,7 @@ static int imx412_write_reg(struct imx412 *imx412, u16 reg, u32 len, u32 val)
 	return 0;
 }
 
-/**
- * imx412_write_regs() - Write a list of registers
- * @imx412: pointer to imx412 device
- * @regs: list of registers to be written
- * @len: length of registers array
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_write_regs(struct imx412 *imx412,
 			     const struct imx412_reg *regs, u32 len)
 {
@@ -510,13 +438,7 @@ static int imx412_write_regs(struct imx412 *imx412,
 	return 0;
 }
 
-/**
- * imx412_update_controls() - Update control ranges based on streaming mode
- * @imx412: pointer to imx412 device
- * @mode: pointer to imx412_mode sensor mode
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_update_controls(struct imx412 *imx412,
 				  const struct imx412_mode *mode)
 {
@@ -534,14 +456,7 @@ static int imx412_update_controls(struct imx412 *imx412,
 					mode->vblank_max, 1, mode->vblank);
 }
 
-/**
- * imx412_update_exp_gain() - Set updated exposure and gain
- * @imx412: pointer to imx412 device
- * @exposure: updated exposure value
- * @gain: updated analog gain value
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_update_exp_gain(struct imx412 *imx412, u32 exposure, u32 gain)
 {
 	u32 lpfr, shutter;
@@ -573,18 +488,7 @@ error_release_group_hold:
 	return ret;
 }
 
-/**
- * imx412_set_ctrl() - Set subdevice control
- * @ctrl: pointer to v4l2_ctrl structure
- *
- * Supported controls:
- * - V4L2_CID_VBLANK
- * - cluster controls:
- *   - V4L2_CID_ANALOGUE_GAIN
- *   - V4L2_CID_EXPOSURE
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_set_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct imx412 *imx412 =
@@ -609,7 +513,7 @@ static int imx412_set_ctrl(struct v4l2_ctrl *ctrl)
 					       1, IMX412_EXPOSURE_DEFAULT);
 		break;
 	case V4L2_CID_EXPOSURE:
-		/* Set controls only if sensor is in power on state */
+		 
 		if (!pm_runtime_get_if_in_use(imx412->dev))
 			return 0;
 
@@ -632,19 +536,12 @@ static int imx412_set_ctrl(struct v4l2_ctrl *ctrl)
 	return ret;
 }
 
-/* V4l2 subdevice control ops*/
+ 
 static const struct v4l2_ctrl_ops imx412_ctrl_ops = {
 	.s_ctrl = imx412_set_ctrl,
 };
 
-/**
- * imx412_enum_mbus_code() - Enumerate V4L2 sub-device mbus codes
- * @sd: pointer to imx412 V4L2 sub-device structure
- * @sd_state: V4L2 sub-device configuration
- * @code: V4L2 sub-device code enumeration need to be filled
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_mbus_code_enum *code)
@@ -657,14 +554,7 @@ static int imx412_enum_mbus_code(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/**
- * imx412_enum_frame_size() - Enumerate V4L2 sub-device frame sizes
- * @sd: pointer to imx412 V4L2 sub-device structure
- * @sd_state: V4L2 sub-device configuration
- * @fsize: V4L2 sub-device size enumeration need to be filled
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_enum_frame_size(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_frame_size_enum *fsize)
@@ -683,13 +573,7 @@ static int imx412_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/**
- * imx412_fill_pad_format() - Fill subdevice pad format
- *                            from selected sensor mode
- * @imx412: pointer to imx412 device
- * @mode: pointer to imx412_mode sensor mode
- * @fmt: V4L2 sub-device format need to be filled
- */
+ 
 static void imx412_fill_pad_format(struct imx412 *imx412,
 				   const struct imx412_mode *mode,
 				   struct v4l2_subdev_format *fmt)
@@ -704,14 +588,7 @@ static void imx412_fill_pad_format(struct imx412 *imx412,
 	fmt->format.xfer_func = V4L2_XFER_FUNC_NONE;
 }
 
-/**
- * imx412_get_pad_format() - Get subdevice pad format
- * @sd: pointer to imx412 V4L2 sub-device structure
- * @sd_state: V4L2 sub-device configuration
- * @fmt: V4L2 sub-device format need to be set
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_get_pad_format(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
@@ -734,14 +611,7 @@ static int imx412_get_pad_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/**
- * imx412_set_pad_format() - Set subdevice pad format
- * @sd: pointer to imx412 V4L2 sub-device structure
- * @sd_state: V4L2 sub-device configuration
- * @fmt: V4L2 sub-device format need to be set
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_set_pad_format(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
@@ -771,13 +641,7 @@ static int imx412_set_pad_format(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/**
- * imx412_init_pad_cfg() - Initialize sub-device pad configuration
- * @sd: pointer to imx412 V4L2 sub-device structure
- * @sd_state: V4L2 sub-device configuration
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_init_pad_cfg(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state)
 {
@@ -790,18 +654,13 @@ static int imx412_init_pad_cfg(struct v4l2_subdev *sd,
 	return imx412_set_pad_format(sd, sd_state, &fmt);
 }
 
-/**
- * imx412_start_streaming() - Start sensor stream
- * @imx412: pointer to imx412 device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_start_streaming(struct imx412 *imx412)
 {
 	const struct imx412_reg_list *reg_list;
 	int ret;
 
-	/* Write sensor mode registers */
+	 
 	reg_list = &imx412->cur_mode->reg_list;
 	ret = imx412_write_regs(imx412, reg_list->regs,
 				reg_list->num_of_regs);
@@ -810,17 +669,17 @@ static int imx412_start_streaming(struct imx412 *imx412)
 		return ret;
 	}
 
-	/* Setup handler will write actual exposure and gain */
+	 
 	ret =  __v4l2_ctrl_handler_setup(imx412->sd.ctrl_handler);
 	if (ret) {
 		dev_err(imx412->dev, "fail to setup handler");
 		return ret;
 	}
 
-	/* Delay is required before streaming*/
+	 
 	usleep_range(7400, 8000);
 
-	/* Start streaming */
+	 
 	ret = imx412_write_reg(imx412, IMX412_REG_MODE_SELECT,
 			       1, IMX412_MODE_STREAMING);
 	if (ret) {
@@ -831,25 +690,14 @@ static int imx412_start_streaming(struct imx412 *imx412)
 	return 0;
 }
 
-/**
- * imx412_stop_streaming() - Stop sensor stream
- * @imx412: pointer to imx412 device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_stop_streaming(struct imx412 *imx412)
 {
 	return imx412_write_reg(imx412, IMX412_REG_MODE_SELECT,
 				1, IMX412_MODE_STANDBY);
 }
 
-/**
- * imx412_set_stream() - Enable sensor streaming
- * @sd: pointer to imx412 subdevice
- * @enable: set to enable sensor streaming
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct imx412 *imx412 = to_imx412(sd);
@@ -889,12 +737,7 @@ error_unlock:
 	return ret;
 }
 
-/**
- * imx412_detect() - Detect imx412 sensor
- * @imx412: pointer to imx412 device
- *
- * Return: 0 if successful, -EIO if sensor id does not match
- */
+ 
 static int imx412_detect(struct imx412 *imx412)
 {
 	int ret;
@@ -913,12 +756,7 @@ static int imx412_detect(struct imx412 *imx412)
 	return 0;
 }
 
-/**
- * imx412_parse_hw_config() - Parse HW configuration and check if supported
- * @imx412: pointer to imx412 device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_parse_hw_config(struct imx412 *imx412)
 {
 	struct fwnode_handle *fwnode = dev_fwnode(imx412->dev);
@@ -933,7 +771,7 @@ static int imx412_parse_hw_config(struct imx412 *imx412)
 	if (!fwnode)
 		return -ENXIO;
 
-	/* Request optional reset pin */
+	 
 	imx412->reset_gpio = devm_gpiod_get_optional(imx412->dev, "reset",
 						     GPIOD_OUT_LOW);
 	if (IS_ERR(imx412->reset_gpio)) {
@@ -942,7 +780,7 @@ static int imx412_parse_hw_config(struct imx412 *imx412)
 		return PTR_ERR(imx412->reset_gpio);
 	}
 
-	/* Get sensor input clock */
+	 
 	imx412->inclk = devm_clk_get(imx412->dev, NULL);
 	if (IS_ERR(imx412->inclk)) {
 		dev_err(imx412->dev, "could not get inclk");
@@ -955,7 +793,7 @@ static int imx412_parse_hw_config(struct imx412 *imx412)
 		return -EINVAL;
 	}
 
-	/* Get optional DT defined regulators */
+	 
 	for (i = 0; i < ARRAY_SIZE(imx412_supply_names); i++)
 		imx412->supplies[i].supply = imx412_supply_names[i];
 
@@ -1000,7 +838,7 @@ done_endpoint_free:
 	return ret;
 }
 
-/* V4l2 subdevice ops */
+ 
 static const struct v4l2_subdev_video_ops imx412_video_ops = {
 	.s_stream = imx412_set_stream,
 };
@@ -1018,12 +856,7 @@ static const struct v4l2_subdev_ops imx412_subdev_ops = {
 	.pad = &imx412_pad_ops,
 };
 
-/**
- * imx412_power_on() - Sensor power on sequence
- * @dev: pointer to i2c device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_power_on(struct device *dev)
 {
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
@@ -1057,12 +890,7 @@ error_reset:
 	return ret;
 }
 
-/**
- * imx412_power_off() - Sensor power off sequence
- * @dev: pointer to i2c device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_power_off(struct device *dev)
 {
 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
@@ -1078,12 +906,7 @@ static int imx412_power_off(struct device *dev)
 	return 0;
 }
 
-/**
- * imx412_init_controls() - Initialize sensor subdevice controls
- * @imx412: pointer to imx412 device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_init_controls(struct imx412 *imx412)
 {
 	struct v4l2_ctrl_handler *ctrl_hdlr = &imx412->ctrl_handler;
@@ -1095,10 +918,10 @@ static int imx412_init_controls(struct imx412 *imx412)
 	if (ret)
 		return ret;
 
-	/* Serialize controls with sensor device */
+	 
 	ctrl_hdlr->lock = &imx412->mutex;
 
-	/* Initialize exposure and gain */
+	 
 	lpfr = mode->vblank + mode->height;
 	imx412->exp_ctrl = v4l2_ctrl_new_std(ctrl_hdlr,
 					     &imx412_ctrl_ops,
@@ -1125,7 +948,7 @@ static int imx412_init_controls(struct imx412 *imx412)
 						mode->vblank_max,
 						1, mode->vblank);
 
-	/* Read only controls */
+	 
 	imx412->pclk_ctrl = v4l2_ctrl_new_std(ctrl_hdlr,
 					      &imx412_ctrl_ops,
 					      V4L2_CID_PIXEL_RATE,
@@ -1163,12 +986,7 @@ static int imx412_init_controls(struct imx412 *imx412)
 	return 0;
 }
 
-/**
- * imx412_probe() - I2C client device binding
- * @client: pointer to i2c client device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static int imx412_probe(struct i2c_client *client)
 {
 	struct imx412 *imx412;
@@ -1184,7 +1002,7 @@ static int imx412_probe(struct i2c_client *client)
 	if (!name)
 		return -ENODEV;
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&imx412->sd, client, &imx412_subdev_ops);
 
 	ret = imx412_parse_hw_config(imx412);
@@ -1201,14 +1019,14 @@ static int imx412_probe(struct i2c_client *client)
 		goto error_mutex_destroy;
 	}
 
-	/* Check module identity */
+	 
 	ret = imx412_detect(imx412);
 	if (ret) {
 		dev_err(imx412->dev, "failed to find sensor: %d", ret);
 		goto error_power_off;
 	}
 
-	/* Set default mode to max resolution */
+	 
 	imx412->cur_mode = &supported_mode;
 	imx412->vblank = imx412->cur_mode->vblank;
 
@@ -1218,13 +1036,13 @@ static int imx412_probe(struct i2c_client *client)
 		goto error_power_off;
 	}
 
-	/* Initialize subdev */
+	 
 	imx412->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	imx412->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
 	v4l2_i2c_subdev_set_name(&imx412->sd, client, name, NULL);
 
-	/* Initialize source pad */
+	 
 	imx412->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&imx412->sd.entity, 1, &imx412->pad);
 	if (ret) {
@@ -1257,12 +1075,7 @@ error_mutex_destroy:
 	return ret;
 }
 
-/**
- * imx412_remove() - I2C client device unbinding
- * @client: pointer to I2C client device
- *
- * Return: 0 if successful, error code otherwise.
- */
+ 
 static void imx412_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);

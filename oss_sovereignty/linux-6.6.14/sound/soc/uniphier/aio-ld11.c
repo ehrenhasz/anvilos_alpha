@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO ALSA driver for LD11/LD20.
-//
-// Copyright (c) 2016-2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/module.h>
 
 #include "aio.h"
 
 static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
-	/* for HDMI PCM In, Pin:AI1Dx */
+	 
 	{
 		.name = AUD_NAME_PCMIN1,
 		.gname = AUD_GNAME_HDMI,
@@ -23,7 +23,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for SIF In, Pin:AI2Dx */
+	 
 	{
 		.name = AUD_NAME_PCMIN2,
 		.swm = {
@@ -36,7 +36,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for Line In, Pin:AI3Dx */
+	 
 	{
 		.name = AUD_NAME_PCMIN3,
 		.gname = AUD_GNAME_LINE,
@@ -50,7 +50,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for S/PDIF In, Pin:AI1IEC */
+	 
 	{
 		.name = AUD_NAME_IECIN1,
 		.gname = AUD_GNAME_IEC,
@@ -64,7 +64,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for Speaker, Pin:AO1Dx */
+	 
 	{
 		.name = AUD_NAME_HPCMOUT1,
 		.swm = {
@@ -77,7 +77,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for HDMI PCM, Pin:AO2Dx */
+	 
 	{
 		.name = AUD_NAME_PCMOUT1,
 		.gname = AUD_GNAME_HDMI,
@@ -91,7 +91,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for Line Out, Pin:LO2_x */
+	 
 	{
 		.name = AUD_NAME_PCMOUT2,
 		.gname = AUD_GNAME_LINE,
@@ -105,7 +105,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for Headphone, Pin:HP1_x */
+	 
 	{
 		.name = AUD_NAME_PCMOUT3,
 		.swm = {
@@ -118,7 +118,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for HW Sampling Rate Converter */
+	 
 	{
 		.name = AUD_NAME_EPCMOUT2,
 		.swm = {
@@ -133,7 +133,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for HW Sampling Rate Converter 2 */
+	 
 	{
 		.name = AUD_NAME_EPCMOUT3,
 		.swm = {
@@ -148,7 +148,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for S/PDIF Out, Pin:AO1IEC */
+	 
 	{
 		.name = AUD_NAME_HIECOUT1,
 		.gname = AUD_GNAME_IEC,
@@ -162,7 +162,7 @@ static const struct uniphier_aio_spec uniphier_aio_ld11[] = {
 		},
 	},
 
-	/* for S/PDIF Out, Pin:AO1IEC, Compress */
+	 
 	{
 		.name = AUD_NAME_HIECCOMPOUT1,
 		.gname = AUD_GNAME_IEC,

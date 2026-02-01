@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sync File validation framework
- *
- * Copyright (C) 2012 Google, Inc.
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -16,40 +12,11 @@
 #define CREATE_TRACE_POINTS
 #include "sync_trace.h"
 
-/*
- * SW SYNC validation framework
- *
- * A sync object driver that uses a 32bit counter to coordinate
- * synchronization.  Useful when there is no hardware primitive backing
- * the synchronization.
- *
- * To start the framework just open:
- *
- * <debugfs>/sync/sw_sync
- *
- * That will create a sync timeline, all fences created under this timeline
- * file descriptor will belong to the this timeline.
- *
- * The 'sw_sync' file can be opened many times as to create different
- * timelines.
- *
- * Fences can be created with SW_SYNC_IOC_CREATE_FENCE ioctl with struct
- * sw_sync_create_fence_data as parameter.
- *
- * To increment the timeline counter, SW_SYNC_IOC_INC ioctl should be used
- * with the increment as u32. This will update the last signaled value
- * from the timeline and signal any fence that has a seqno smaller or equal
- * to it.
- *
- * struct sw_sync_create_fence_data
- * @value:	the seqno to initialise the fence with
- * @name:	the name of the new sync point
- * @fence:	return the fd of the new sync_file with the created fence
- */
+ 
 struct sw_sync_create_fence_data {
 	__u32	value;
 	char	name[32];
-	__s32	fence; /* fd of new fence */
+	__s32	fence;  
 };
 
 #define SW_SYNC_IOC_MAGIC	'W'
@@ -68,13 +35,7 @@ static inline struct sync_pt *dma_fence_to_sync_pt(struct dma_fence *fence)
 	return container_of(fence, struct sync_pt, base);
 }
 
-/**
- * sync_timeline_create() - creates a sync object
- * @name:	sync_timeline name
- *
- * Creates a new sync_timeline. Returns the sync_timeline object or NULL in
- * case of error.
- */
+ 
 static struct sync_timeline *sync_timeline_create(const char *name)
 {
 	struct sync_timeline *obj;
@@ -181,14 +142,7 @@ static const struct dma_fence_ops timeline_fence_ops = {
 	.timeline_value_str = timeline_fence_timeline_value_str,
 };
 
-/**
- * sync_timeline_signal() - signal a status change on a sync_timeline
- * @obj:	sync_timeline to signal
- * @inc:	num to increment on timeline->value
- *
- * A sync implementation should call this any time one of it's fences
- * has signaled or has an error condition.
- */
+ 
 static void sync_timeline_signal(struct sync_timeline *obj, unsigned int inc)
 {
 	LIST_HEAD(signalled);
@@ -220,16 +174,7 @@ static void sync_timeline_signal(struct sync_timeline *obj, unsigned int inc)
 	}
 }
 
-/**
- * sync_pt_create() - creates a sync pt
- * @obj:	parent sync_timeline
- * @value:	value of the fence
- *
- * Creates a new sync_pt (fence) as a child of @parent.  @size bytes will be
- * allocated allowing for implementation specific data to be kept after
- * the generic sync_timeline struct. Returns the sync_pt object or
- * NULL in case of error.
- */
+ 
 static struct sync_pt *sync_pt_create(struct sync_timeline *obj,
 				      unsigned int value)
 {
@@ -283,13 +228,9 @@ unlock:
 	return pt;
 }
 
-/*
- * *WARNING*
- *
- * improper use of this can result in deadlocking kernel drivers from userspace.
- */
+ 
 
-/* opening sw_sync create a new sync obj */
+ 
 static int sw_sync_debugfs_open(struct inode *inode, struct file *file)
 {
 	struct sync_timeline *obj;

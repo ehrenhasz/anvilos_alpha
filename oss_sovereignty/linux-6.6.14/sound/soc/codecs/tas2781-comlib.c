@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// tas2781-lib.c -- TAS2781 Common functions for HDA and ASoC Audio drivers
-//
-// Copyright 2023 Texas Instruments, Inc.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
+
+
+
+
+
+
+
 
 #include <linux/crc8.h>
 #include <linux/firmware.h>
@@ -57,11 +57,7 @@ static int tasdevice_change_chn_book(struct tasdevice_priv *tas_priv,
 
 		if (client->addr != tasdev->dev_addr) {
 			client->addr = tasdev->dev_addr;
-			/* All tas2781s share the same regmap, clear the page
-			 * inside regmap once switching to another tas2781.
-			 * Register 0 at any pages and any books inside tas2781
-			 * is the same one for page-switching.
-			 */
+			 
 			ret = regmap_write(map, TASDEVICE_PAGE_SELECT, 0);
 			if (ret < 0) {
 				dev_err(tas_priv->dev, "%s, E=%d\n",
@@ -271,9 +267,7 @@ int tascodec_init(struct tasdevice_priv *tas_priv, void *codec,
 {
 	int ret = 0;
 
-	/* Codec Lock Hold to ensure that codec_probe and firmware parsing and
-	 * loading do not simultaneously execute.
-	 */
+	 
 	mutex_lock(&tas_priv->codec_lock);
 
 	scnprintf(tas_priv->rca_binaryname, 64, "%sRCA%d.bin",
@@ -287,7 +281,7 @@ int tascodec_init(struct tasdevice_priv *tas_priv, void *codec,
 		dev_err(tas_priv->dev, "request_firmware_nowait err:0x%08x\n",
 			ret);
 
-	/* Codec Lock Release*/
+	 
 	mutex_unlock(&tas_priv->codec_lock);
 	return ret;
 }
@@ -444,7 +438,7 @@ int tasdevice_amp_putvol(struct tasdevice_priv *tas_priv,
 		dev_err(tas_priv->dev, "set AMP vol error in dev %d\n", i);
 	}
 
-	/* All the devices set error, return 0 */
+	 
 	return (err_cnt == tas_priv->ndev) ? 0 : 1;
 }
 EXPORT_SYMBOL_GPL(tasdevice_amp_putvol);
@@ -458,7 +452,7 @@ int tasdevice_amp_getvol(struct tasdevice_priv *tas_priv,
 	int ret = 0;
 	int val;
 
-	/* Read the primary device */
+	 
 	ret = tasdevice_dev_read(tas_priv, 0, mc->reg, &val);
 	if (ret) {
 		dev_err(tas_priv->dev, "%s, get AMP vol error\n", __func__);
@@ -498,7 +492,7 @@ int tasdevice_digital_putvol(struct tasdevice_priv *tas_priv,
 			"set digital vol err in dev %d\n", i);
 	}
 
-	/* All the devices set error, return 0 */
+	 
 	return (err_cnt == tas_priv->ndev) ? 0 : 1;
 
 }
@@ -511,7 +505,7 @@ int tasdevice_digital_getvol(struct tasdevice_priv *tas_priv,
 	int max = mc->max;
 	int ret, val;
 
-	/* Read the primary device as the whole */
+	 
 	ret = tasdevice_dev_read(tas_priv, 0, mc->reg, &val);
 	if (ret) {
 		dev_err(tas_priv->dev, "%s, get digital vol error\n",

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_GEM_STOLEN_H__
 #define __I915_GEM_STOLEN_H__
@@ -49,4 +47,4 @@ bool i915_gem_stolen_node_allocated(const struct drm_mm_node *node);
 u64 i915_gem_stolen_node_offset(const struct drm_mm_node *node);
 u64 i915_gem_stolen_node_size(const struct drm_mm_node *node);
 
-#endif /* __I915_GEM_STOLEN_H__ */
+#endif  

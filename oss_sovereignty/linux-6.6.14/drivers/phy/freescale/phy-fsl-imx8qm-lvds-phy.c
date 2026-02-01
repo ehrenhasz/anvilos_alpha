@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2017-2020,2022 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -32,10 +30,10 @@
 #define  RFB		BIT(1)
 #define  PD		BIT(0)
 
-/* Power On Reset(POR) value */
+ 
 #define  CTRL_RESET_VAL	(M(0x0) | CCM(0x4) | CA(0x4) | TST(0x25))
 
-/* PHY initialization value and mask */
+ 
 #define  CTRL_INIT_MASK	(M_MASK | CCM_MASK | CA_MASK | TST_MASK | NB | RFB)
 #define  CTRL_INIT_VAL	(M(0x0) | CCM(0x5) | CA(0x4) | TST(0x25) | RFB)
 
@@ -58,7 +56,7 @@ struct mixel_lvds_phy {
 
 struct mixel_lvds_phy_priv {
 	struct regmap *regmap;
-	struct mutex lock;	/* protect remap access and cfg of our own */
+	struct mutex lock;	 
 	struct clk *phy_ref_clk;
 	struct mixel_lvds_phy *phys[PHY_NUM];
 };
@@ -85,7 +83,7 @@ static int mixel_lvds_phy_power_on(struct phy *phy)
 	u32 locked;
 	int ret;
 
-	/* The master PHY would power on the slave PHY. */
+	 
 	if (cfg->is_slave)
 		return 0;
 
@@ -116,10 +114,7 @@ static int mixel_lvds_phy_power_on(struct phy *phy)
 	}
 	regmap_update_bits(priv->regmap, PHY_CTRL, M_MASK | NB, val);
 
-	/*
-	 * Enable two channels synchronously,
-	 * if the companion PHY is a slave PHY.
-	 */
+	 
 	if (companion->cfg.is_slave)
 		val = CH_EN(0) | CH_EN(1);
 	else
@@ -145,7 +140,7 @@ static int mixel_lvds_phy_power_off(struct phy *phy)
 	struct mixel_lvds_phy *companion = priv->phys[lvds_phy->id ^ 1];
 	struct phy_configure_opts_lvds *cfg = &lvds_phy->cfg;
 
-	/* The master PHY would power off the slave PHY. */
+	 
 	if (cfg->is_slave)
 		return 0;
 
@@ -178,7 +173,7 @@ static int mixel_lvds_phy_configure(struct phy *phy,
 	return ret;
 }
 
-/* Assume the master PHY's configuration set is cached first. */
+ 
 static int mixel_lvds_phy_check_slave(struct phy *slave_phy)
 {
 	struct device *dev = &slave_phy->dev;
@@ -251,7 +246,7 @@ static int mixel_lvds_phy_validate(struct phy *phy, enum phy_mode mode,
 	}
 
 	mutex_lock(&priv->lock);
-	/* cache configuration set of our own for check */
+	 
 	memcpy(&lvds_phy->cfg, cfg, sizeof(*cfg));
 
 	if (cfg->is_slave) {
@@ -400,7 +395,7 @@ static int __maybe_unused mixel_lvds_phy_runtime_suspend(struct device *dev)
 {
 	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
 
-	/* power down */
+	 
 	mutex_lock(&priv->lock);
 	regmap_write(priv->regmap, PHY_CTRL + REG_SET, PD);
 	mutex_unlock(&priv->lock);
@@ -412,7 +407,7 @@ static int __maybe_unused mixel_lvds_phy_runtime_resume(struct device *dev)
 {
 	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
 
-	/* power up + control initialization */
+	 
 	mutex_lock(&priv->lock);
 	regmap_update_bits(priv->regmap, PHY_CTRL,
 			   CTRL_INIT_MASK | PD, CTRL_INIT_VAL);
@@ -428,7 +423,7 @@ static const struct dev_pm_ops mixel_lvds_phy_pm_ops = {
 
 static const struct of_device_id mixel_lvds_phy_of_match[] = {
 	{ .compatible = "fsl,imx8qm-lvds-phy" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mixel_lvds_phy_of_match);
 

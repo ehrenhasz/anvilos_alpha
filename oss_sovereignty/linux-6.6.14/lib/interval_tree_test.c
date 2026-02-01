@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/interval_tree.h>
@@ -50,11 +50,7 @@ static void init(void)
 		nodes[i].last = b;
 	}
 
-	/*
-	 * Limit the search scope to what the user defined.
-	 * Otherwise we are merely measuring empty walks,
-	 * which is pointless.
-	 */
+	 
 	for (i = 0; i < nsearches; i++)
 		queries[i] = (prandom_u32_state(&rnd) >> 4) % max_endpoint;
 }
@@ -123,7 +119,7 @@ static int interval_tree_test_init(void)
 	kfree(queries);
 	kfree(nodes);
 
-	return -EAGAIN; /* Fail will directly unload the module */
+	return -EAGAIN;  
 }
 
 static void interval_tree_test_exit(void)

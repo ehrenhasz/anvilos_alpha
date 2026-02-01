@@ -1,33 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2013 Martin Matuska. All rights reserved.
- * Copyright (c) 2014 Joyent, Inc. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- * Copyright (c) 2018, loli10K <ezomori.nozomu@gmail.com>. All rights reserved.
- * Copyright (c) 2023 Hewlett Packard Enterprise Development LP.
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_objset.h>
@@ -54,82 +26,10 @@
 #include "zfs_namecheck.h"
 #include "zfs_prop.h"
 
-/*
- * This controls if we verify the ZVOL quota or not.
- * Currently, quotas are not implemented for ZVOLs.
- * The quota size is the size of the ZVOL.
- * The size of the volume already implies the ZVOL size quota.
- * The quota mechanism can introduce a significant performance drop.
- */
+ 
 static int zvol_enforce_quotas = B_TRUE;
 
-/*
- * Filesystem and Snapshot Limits
- * ------------------------------
- *
- * These limits are used to restrict the number of filesystems and/or snapshots
- * that can be created at a given level in the tree or below. A typical
- * use-case is with a delegated dataset where the administrator wants to ensure
- * that a user within the zone is not creating too many additional filesystems
- * or snapshots, even though they're not exceeding their space quota.
- *
- * The filesystem and snapshot counts are stored as extensible properties. This
- * capability is controlled by a feature flag and must be enabled to be used.
- * Once enabled, the feature is not active until the first limit is set. At
- * that point, future operations to create/destroy filesystems or snapshots
- * will validate and update the counts.
- *
- * Because the count properties will not exist before the feature is active,
- * the counts are updated when a limit is first set on an uninitialized
- * dsl_dir node in the tree (The filesystem/snapshot count on a node includes
- * all of the nested filesystems/snapshots. Thus, a new leaf node has a
- * filesystem count of 0 and a snapshot count of 0. Non-existent filesystem and
- * snapshot count properties on a node indicate uninitialized counts on that
- * node.) When first setting a limit on an uninitialized node, the code starts
- * at the filesystem with the new limit and descends into all sub-filesystems
- * to add the count properties.
- *
- * In practice this is lightweight since a limit is typically set when the
- * filesystem is created and thus has no children. Once valid, changing the
- * limit value won't require a re-traversal since the counts are already valid.
- * When recursively fixing the counts, if a node with a limit is encountered
- * during the descent, the counts are known to be valid and there is no need to
- * descend into that filesystem's children. The counts on filesystems above the
- * one with the new limit will still be uninitialized, unless a limit is
- * eventually set on one of those filesystems. The counts are always recursively
- * updated when a limit is set on a dataset, unless there is already a limit.
- * When a new limit value is set on a filesystem with an existing limit, it is
- * possible for the new limit to be less than the current count at that level
- * since a user who can change the limit is also allowed to exceed the limit.
- *
- * Once the feature is active, then whenever a filesystem or snapshot is
- * created, the code recurses up the tree, validating the new count against the
- * limit at each initialized level. In practice, most levels will not have a
- * limit set. If there is a limit at any initialized level up the tree, the
- * check must pass or the creation will fail. Likewise, when a filesystem or
- * snapshot is destroyed, the counts are recursively adjusted all the way up
- * the initialized nodes in the tree. Renaming a filesystem into different point
- * in the tree will first validate, then update the counts on each branch up to
- * the common ancestor. A receive will also validate the counts and then update
- * them.
- *
- * An exception to the above behavior is that the limit is not enforced if the
- * user has permission to modify the limit. This is primarily so that
- * recursive snapshots in the global zone always work. We want to prevent a
- * denial-of-service in which a lower level delegated dataset could max out its
- * limit and thus block recursive snapshots from being taken in the global zone.
- * Because of this, it is possible for the snapshot count to be over the limit
- * and snapshots taken in the global zone could cause a lower level dataset to
- * hit or exceed its limit. The administrator taking the global zone recursive
- * snapshot should be aware of this side-effect and behave accordingly.
- * For consistency, the filesystem limit is also not enforced if the user can
- * modify the limit.
- *
- * The filesystem and snapshot limits are validated by dsl_fs_ss_limit_check()
- * and updated by dsl_fs_ss_count_adjust(). A new limit value is setup in
- * dsl_dir_activate_fs_ss_limit() and the counts are adjusted, if necessary, by
- * dsl_dir_init_fs_ss_count().
- */
+ 
 
 static uint64_t dsl_dir_space_towrite(dsl_dir_t *dd);
 
@@ -206,7 +106,7 @@ dsl_dir_hold_obj(dsl_pool_t *dp, uint64_t ddobj,
 			    ddobj, DD_FIELD_CRYPTO_KEY_OBJ,
 			    sizeof (uint64_t), 1, &dd->dd_crypto_obj);
 			if (err == 0) {
-				/* check for on-disk format errata */
+				 
 				if (dsl_dir_incompatible_encryption_version(
 				    dd)) {
 					dp->dp_spa->spa_errata =
@@ -252,11 +152,7 @@ dsl_dir_hold_obj(dsl_pool_t *dp, uint64_t ddobj,
 			dmu_buf_t *origin_bonus;
 			dsl_dataset_phys_t *origin_phys;
 
-			/*
-			 * We can't open the origin dataset, because
-			 * that would require opening this dsl_dir.
-			 * Just look at its phys directly instead.
-			 */
+			 
 			err = dmu_bonus_hold(dp->dp_meta_objset,
 			    dsl_dir_phys(dd)->dd_origin_obj, FTAG,
 			    &origin_bonus);
@@ -307,15 +203,7 @@ dsl_dir_hold_obj(dsl_pool_t *dp, uint64_t ddobj,
 		}
 	}
 
-	/*
-	 * The dsl_dir_t has both open-to-close and instantiate-to-evict
-	 * holds on the spa.  We need the open-to-close holds because
-	 * otherwise the spa_refcnt wouldn't change when we open a
-	 * dir which the spa also has open, so we could incorrectly
-	 * think it was OK to unload/export/destroy the pool.  We need
-	 * the instantiate-to-evict hold because the dsl_dir_t has a
-	 * pointer to the dd_pool, which has a pointer to the spa_t.
-	 */
+	 
 	spa_open_ref(dp->dp_spa, tag);
 	ASSERT3P(dd->dd_pool, ==, dp);
 	ASSERT3U(dd->dd_object, ==, ddobj);
@@ -345,13 +233,7 @@ dsl_dir_rele(dsl_dir_t *dd, const void *tag)
 	dmu_buf_rele(dd->dd_dbuf, tag);
 }
 
-/*
- * Remove a reference to the given dsl dir that is being asynchronously
- * released.  Async releases occur from a taskq performing eviction of
- * dsl datasets and dirs.  This process is identical to a normal release
- * with the exception of using the async API for releasing the reference on
- * the spa.
- */
+ 
 void
 dsl_dir_async_rele(dsl_dir_t *dd, const void *tag)
 {
@@ -360,7 +242,7 @@ dsl_dir_async_rele(dsl_dir_t *dd, const void *tag)
 	dmu_buf_rele(dd->dd_dbuf, tag);
 }
 
-/* buf must be at least ZFS_MAX_DATASET_NAME_LEN bytes */
+ 
 void
 dsl_dir_name(dsl_dir_t *dd, char *buf)
 {
@@ -372,10 +254,7 @@ dsl_dir_name(dsl_dir_t *dd, char *buf)
 		buf[0] = '\0';
 	}
 	if (!MUTEX_HELD(&dd->dd_lock)) {
-		/*
-		 * recursive mutex so that we can use
-		 * dprintf_dd() with dd_lock held
-		 */
+		 
 		mutex_enter(&dd->dd_lock);
 		VERIFY3U(strlcat(buf, dd->dd_myname, ZFS_MAX_DATASET_NAME_LEN),
 		    <, ZFS_MAX_DATASET_NAME_LEN);
@@ -386,19 +265,19 @@ dsl_dir_name(dsl_dir_t *dd, char *buf)
 	}
 }
 
-/* Calculate name length, avoiding all the strcat calls of dsl_dir_name */
+ 
 int
 dsl_dir_namelen(dsl_dir_t *dd)
 {
 	int result = 0;
 
 	if (dd->dd_parent) {
-		/* parent's name + 1 for the "/" */
+		 
 		result = dsl_dir_namelen(dd->dd_parent) + 1;
 	}
 
 	if (!MUTEX_HELD(&dd->dd_lock)) {
-		/* see dsl_dir_name */
+		 
 		mutex_enter(&dd->dd_lock);
 		result += strlen(dd->dd_myname);
 		mutex_exit(&dd->dd_lock);
@@ -416,18 +295,14 @@ getcomponent(const char *path, char *component, const char **nextp)
 
 	if ((path == NULL) || (path[0] == '\0'))
 		return (SET_ERROR(ENOENT));
-	/* This would be a good place to reserve some namespace... */
+	 
 	p = strpbrk(path, "/@");
 	if (p && (p[1] == '/' || p[1] == '@')) {
-		/* two separators in a row */
+		 
 		return (SET_ERROR(EINVAL));
 	}
 	if (p == NULL || p == path) {
-		/*
-		 * if the first thing is an @ or /, it had better be an
-		 * @ and it had better not have any more ats or slashes,
-		 * and it had better have something after the @.
-		 */
+		 
 		if (p != NULL &&
 		    (p[0] != '@' || strpbrk(path+1, "/@") || p[1] == '\0'))
 			return (SET_ERROR(EINVAL));
@@ -441,10 +316,7 @@ getcomponent(const char *path, char *component, const char **nextp)
 		(void) strlcpy(component, path, p - path + 1);
 		p++;
 	} else if (p[0] == '@') {
-		/*
-		 * if the next separator is an @, there better not be
-		 * any more slashes.
-		 */
+		 
 		if (strchr(path, '/'))
 			return (SET_ERROR(EINVAL));
 		if (p - path >= ZFS_MAX_DATASET_NAME_LEN)
@@ -457,13 +329,7 @@ getcomponent(const char *path, char *component, const char **nextp)
 	return (0);
 }
 
-/*
- * Return the dsl_dir_t, and possibly the last component which couldn't
- * be found in *tail.  The name must be in the specified dsl_pool_t.  This
- * thread must hold the dp_config_rwlock for the pool.  Returns NULL if the
- * path is bogus, or if tail==NULL and we couldn't parse the whole name.
- * (*tail)[0] == '@' means that the last component is a snapshot.
- */
+ 
 int
 dsl_dir_hold(dsl_pool_t *dp, const char *name, const void *tag,
     dsl_dir_t **ddp, const char **tailp)
@@ -479,7 +345,7 @@ dsl_dir_hold(dsl_pool_t *dp, const char *name, const void *tag,
 	if (err != 0)
 		goto error;
 
-	/* Make sure the name is in the specified pool. */
+	 
 	spaname = spa_name(dp->dp_spa);
 	if (strcmp(buf, spaname) != 0) {
 		err = SET_ERROR(EXDEV);
@@ -526,13 +392,10 @@ dsl_dir_hold(dsl_pool_t *dp, const char *name, const void *tag,
 		goto error;
 	}
 
-	/*
-	 * It's an error if there's more than one component left, or
-	 * tailp==NULL and there's any component left.
-	 */
+	 
 	if (next != NULL &&
 	    (tailp == NULL || (nextnext && nextnext[0] != '\0'))) {
-		/* bad path name */
+		 
 		dsl_dir_rele(dd, tag);
 		dprintf("next=%p (%s) tail=%p\n", next, next?next:"", tailp);
 		err = SET_ERROR(ENOENT);
@@ -546,21 +409,7 @@ error:
 	return (err);
 }
 
-/*
- * If the counts are already initialized for this filesystem and its
- * descendants then do nothing, otherwise initialize the counts.
- *
- * The counts on this filesystem, and those below, may be uninitialized due to
- * either the use of a pre-existing pool which did not support the
- * filesystem/snapshot limit feature, or one in which the feature had not yet
- * been enabled.
- *
- * Recursively descend the filesystem tree and update the filesystem/snapshot
- * counts on each filesystem below, then update the cumulative count on the
- * current filesystem. If the filesystem already has a count set on it,
- * then we know that its counts, and the counts on the filesystems below it,
- * are already correct, so we don't have to update this filesystem.
- */
+ 
 static void
 dsl_dir_init_fs_ss_count(dsl_dir_t *dd, dmu_tx_t *tx)
 {
@@ -578,17 +427,14 @@ dsl_dir_init_fs_ss_count(dsl_dir_t *dd, dmu_tx_t *tx)
 
 	dsl_dir_zapify(dd, tx);
 
-	/*
-	 * If the filesystem count has already been initialized then we
-	 * don't need to recurse down any further.
-	 */
+	 
 	if (zap_contains(os, dd->dd_object, DD_FIELD_FILESYSTEM_COUNT) == 0)
 		return;
 
 	zc = kmem_alloc(sizeof (zap_cursor_t), KM_SLEEP);
 	za = kmem_alloc(sizeof (zap_attribute_t), KM_SLEEP);
 
-	/* Iterate my child dirs */
+	 
 	for (zap_cursor_init(zc, os, dsl_dir_phys(dd)->dd_child_dir_zapobj);
 	    zap_cursor_retrieve(zc, za) == 0; zap_cursor_advance(zc)) {
 		dsl_dir_t *chld_dd;
@@ -597,15 +443,13 @@ dsl_dir_init_fs_ss_count(dsl_dir_t *dd, dmu_tx_t *tx)
 		VERIFY0(dsl_dir_hold_obj(dp, za->za_first_integer, NULL, FTAG,
 		    &chld_dd));
 
-		/*
-		 * Ignore hidden ($FREE, $MOS & $ORIGIN) objsets.
-		 */
+		 
 		if (chld_dd->dd_myname[0] == '$') {
 			dsl_dir_rele(chld_dd, FTAG);
 			continue;
 		}
 
-		my_fs_cnt++;	/* count this child */
+		my_fs_cnt++;	 
 
 		dsl_dir_init_fs_ss_count(chld_dd, tx);
 
@@ -619,14 +463,14 @@ dsl_dir_init_fs_ss_count(dsl_dir_t *dd, dmu_tx_t *tx)
 		dsl_dir_rele(chld_dd, FTAG);
 	}
 	zap_cursor_fini(zc);
-	/* Count my snapshots (we counted children's snapshots above) */
+	 
 	VERIFY0(dsl_dataset_hold_obj(dd->dd_pool,
 	    dsl_dir_phys(dd)->dd_head_dataset_obj, FTAG, &ds));
 
 	for (zap_cursor_init(zc, os, dsl_dataset_phys(ds)->ds_snapnames_zapobj);
 	    zap_cursor_retrieve(zc, za) == 0;
 	    zap_cursor_advance(zc)) {
-		/* Don't count temporary snapshots */
+		 
 		if (za->za_name[0] != '%')
 			my_ss_cnt++;
 	}
@@ -637,7 +481,7 @@ dsl_dir_init_fs_ss_count(dsl_dir_t *dd, dmu_tx_t *tx)
 	kmem_free(zc, sizeof (zap_cursor_t));
 	kmem_free(za, sizeof (zap_attribute_t));
 
-	/* we're in a sync task, update counts */
+	 
 	dmu_buf_will_dirty(dd->dd_dbuf, tx);
 	VERIFY0(zap_add(os, dd->dd_object, DD_FIELD_FILESYSTEM_COUNT,
 	    sizeof (my_fs_cnt), 1, &my_fs_cnt, tx));
@@ -689,34 +533,17 @@ dsl_dir_actv_fs_ss_limit_sync(void *arg, dmu_tx_t *tx)
 	spa = dsl_dataset_get_spa(ds);
 
 	if (!spa_feature_is_active(spa, SPA_FEATURE_FS_SS_LIMIT)) {
-		/*
-		 * Since the feature was not active and we're now setting a
-		 * limit, increment the feature-active counter so that the
-		 * feature becomes active for the first time.
-		 *
-		 * We are already in a sync task so we can update the MOS.
-		 */
+		 
 		spa_feature_incr(spa, SPA_FEATURE_FS_SS_LIMIT, tx);
 	}
 
-	/*
-	 * Since we are now setting a non-UINT64_MAX limit on the filesystem,
-	 * we need to ensure the counts are correct. Descend down the tree from
-	 * this point and update all of the counts to be accurate.
-	 */
+	 
 	dsl_dir_init_fs_ss_count(ds->ds_dir, tx);
 
 	dsl_dataset_rele(ds, FTAG);
 }
 
-/*
- * Make sure the feature is enabled and activate it if necessary.
- * Since we're setting a limit, ensure the on-disk counts are valid.
- * This is only called by the ioctl path when setting a limit value.
- *
- * We do not need to validate the new limit, since users who can change the
- * limit are also allowed to exceed the limit.
- */
+ 
 int
 dsl_dir_activate_fs_ss_limit(const char *ddname)
 {
@@ -732,20 +559,7 @@ dsl_dir_activate_fs_ss_limit(const char *ddname)
 	return (error);
 }
 
-/*
- * Used to determine if the filesystem_limit or snapshot_limit should be
- * enforced. We allow the limit to be exceeded if the user has permission to
- * write the property value. We pass in the creds that we got in the open
- * context since we will always be the GZ root in syncing context. We also have
- * to handle the case where we are allowed to change the limit on the current
- * dataset, but there may be another limit in the tree above.
- *
- * We can never modify these two properties within a non-global zone. In
- * addition, the other checks are modeled on zfs_secpolicy_write_perms. We
- * can't use that function since we are already holding the dp_config_rwlock.
- * In addition, we already have the dd and dealing with snapshots is simplified
- * in this code.
- */
+ 
 
 typedef enum {
 	ENFORCE_ALWAYS,
@@ -770,12 +584,7 @@ dsl_enforce_ds_ss_limits(dsl_dir_t *dd, zfs_prop_t prop,
 	if (crgetzoneid(cr) != GLOBAL_ZONEID)
 		return (ENFORCE_ALWAYS);
 
-	/*
-	 * We are checking the saved credentials of the user process, which is
-	 * not the current process.  Note that we can't use secpolicy_zfs(),
-	 * because it only works if the cred is that of the current process (on
-	 * Linux).
-	 */
+	 
 	if (secpolicy_zfs_proc(cr, proc) == 0)
 		return (ENFORCE_NEVER);
 #else
@@ -792,7 +601,7 @@ dsl_enforce_ds_ss_limits(dsl_dir_t *dd, zfs_prop_t prop,
 
 	zonedstr = zfs_prop_to_name(ZFS_PROP_ZONED);
 	if (dsl_prop_get_ds(ds, zonedstr, 8, 1, &zoned, NULL) || zoned) {
-		/* Only root can access zoned fs's from the GZ */
+		 
 		enforce = ENFORCE_ALWAYS;
 	} else {
 		if (dsl_deleg_access_impl(ds, zfs_prop_to_name(prop), cr) == 0)
@@ -803,14 +612,7 @@ dsl_enforce_ds_ss_limits(dsl_dir_t *dd, zfs_prop_t prop,
 	return (enforce);
 }
 
-/*
- * Check if adding additional child filesystem(s) would exceed any filesystem
- * limits or adding additional snapshot(s) would exceed any snapshot limits.
- * The prop argument indicates which limit to check.
- *
- * Note that all filesystem limits up to the root (or the highest
- * initialized) filesystem or the given ancestor must be satisfied.
- */
+ 
 int
 dsl_fs_ss_limit_check(dsl_dir_t *dd, uint64_t delta, zfs_prop_t prop,
     dsl_dir_t *ancestor, cred_t *cr, proc_t *proc)
@@ -826,10 +628,7 @@ dsl_fs_ss_limit_check(dsl_dir_t *dd, uint64_t delta, zfs_prop_t prop,
 	    prop == ZFS_PROP_SNAPSHOT_LIMIT);
 
 	if (prop == ZFS_PROP_SNAPSHOT_LIMIT) {
-		/*
-		 * We don't enforce the limit for temporary snapshots. This is
-		 * indicated by a NULL cred_t argument.
-		 */
+		 
 		if (cr == NULL)
 			return (0);
 
@@ -837,38 +636,20 @@ dsl_fs_ss_limit_check(dsl_dir_t *dd, uint64_t delta, zfs_prop_t prop,
 	} else {
 		count_prop = DD_FIELD_FILESYSTEM_COUNT;
 	}
-	/*
-	 * If we're allowed to change the limit, don't enforce the limit
-	 * e.g. this can happen if a snapshot is taken by an administrative
-	 * user in the global zone (i.e. a recursive snapshot by root).
-	 * However, we must handle the case of delegated permissions where we
-	 * are allowed to change the limit on the current dataset, but there
-	 * is another limit in the tree above.
-	 */
+	 
 	enforce = dsl_enforce_ds_ss_limits(dd, prop, cr, proc);
 	if (enforce == ENFORCE_NEVER)
 		return (0);
 
-	/*
-	 * e.g. if renaming a dataset with no snapshots, count adjustment
-	 * is 0.
-	 */
+	 
 	if (delta == 0)
 		return (0);
 
-	/*
-	 * If an ancestor has been provided, stop checking the limit once we
-	 * hit that dir. We need this during rename so that we don't overcount
-	 * the check once we recurse up to the common ancestor.
-	 */
+	 
 	if (ancestor == dd)
 		return (0);
 
-	/*
-	 * If we hit an uninitialized node while recursing up the tree, we can
-	 * stop since we know there is no limit here (or above). The counts are
-	 * not valid on this node and we know we won't touch this node's counts.
-	 */
+	 
 	if (!dsl_dir_is_zapified(dd))
 		return (0);
 	err = zap_lookup(os, dd->dd_object,
@@ -883,7 +664,7 @@ dsl_fs_ss_limit_check(dsl_dir_t *dd, uint64_t delta, zfs_prop_t prop,
 	if (err != 0)
 		return (err);
 
-	/* Is there a limit which we've hit? */
+	 
 	if (enforce == ENFORCE_ALWAYS && (count + delta) > limit)
 		return (SET_ERROR(EDQUOT));
 
@@ -894,12 +675,7 @@ dsl_fs_ss_limit_check(dsl_dir_t *dd, uint64_t delta, zfs_prop_t prop,
 	return (err);
 }
 
-/*
- * Adjust the filesystem or snapshot count for the specified dsl_dir_t and all
- * parents. When a new filesystem/snapshot is created, increment the count on
- * all parents, and when a filesystem/snapshot is destroyed, decrement the
- * count.
- */
+ 
 void
 dsl_fs_ss_count_adjust(dsl_dir_t *dd, int64_t delta, const char *prop,
     dmu_tx_t *tx)
@@ -913,40 +689,30 @@ dsl_fs_ss_count_adjust(dsl_dir_t *dd, int64_t delta, const char *prop,
 	ASSERT(strcmp(prop, DD_FIELD_FILESYSTEM_COUNT) == 0 ||
 	    strcmp(prop, DD_FIELD_SNAPSHOT_COUNT) == 0);
 
-	/*
-	 * We don't do accounting for hidden ($FREE, $MOS & $ORIGIN) objsets.
-	 */
+	 
 	if (dd->dd_myname[0] == '$' && strcmp(prop,
 	    DD_FIELD_FILESYSTEM_COUNT) == 0) {
 		return;
 	}
 
-	/*
-	 * e.g. if renaming a dataset with no snapshots, count adjustment is 0
-	 */
+	 
 	if (delta == 0)
 		return;
 
-	/*
-	 * If we hit an uninitialized node while recursing up the tree, we can
-	 * stop since we know the counts are not valid on this node and we
-	 * know we shouldn't touch this node's counts. An uninitialized count
-	 * on the node indicates that either the feature has not yet been
-	 * activated or there are no limits on this part of the tree.
-	 */
+	 
 	if (!dsl_dir_is_zapified(dd) || (err = zap_lookup(os, dd->dd_object,
 	    prop, sizeof (count), 1, &count)) == ENOENT)
 		return;
 	VERIFY0(err);
 
 	count += delta;
-	/* Use a signed verify to make sure we're not neg. */
+	 
 	VERIFY3S(count, >=, 0);
 
 	VERIFY0(zap_update(os, dd->dd_object, prop, sizeof (count), 1, &count,
 	    tx));
 
-	/* Roll up this additional count into our ancestors */
+	 
 	if (dd->dd_parent != NULL)
 		dsl_fs_ss_count_adjust(dd->dd_parent, delta, prop, tx);
 }
@@ -966,7 +732,7 @@ dsl_dir_create_sync(dsl_pool_t *dp, dsl_dir_t *pds, const char *name,
 		VERIFY0(zap_add(mos, dsl_dir_phys(pds)->dd_child_dir_zapobj,
 		    name, sizeof (uint64_t), 1, &ddobj, tx));
 	} else {
-		/* it's the root dir */
+		 
 		VERIFY0(zap_add(mos, DMU_POOL_DIRECTORY_OBJECT,
 		    DMU_POOL_ROOT_DATASET, sizeof (uint64_t), 1, &ddobj, tx));
 	}
@@ -978,7 +744,7 @@ dsl_dir_create_sync(dsl_pool_t *dp, dsl_dir_t *pds, const char *name,
 	if (pds) {
 		ddphys->dd_parent_obj = pds->dd_object;
 
-		/* update the filesystem counts */
+		 
 		dsl_fs_ss_count_adjust(pds, 1, DD_FIELD_FILESYSTEM_COUNT, tx);
 	}
 	ddphys->dd_props_zapobj = zap_create(mos,
@@ -1029,7 +795,7 @@ dsl_dir_get_reservation(dsl_dir_t *dd)
 uint64_t
 dsl_dir_get_compressratio(dsl_dir_t *dd)
 {
-	/* a fixed point number, 100x the ratio */
+	 
 	return (dsl_dir_phys(dd)->dd_compressed_bytes == 0 ? 100 :
 	    (dsl_dir_phys(dd)->dd_uncompressed_bytes * 100 /
 	    dsl_dir_phys(dd)->dd_compressed_bytes));
@@ -1150,7 +916,7 @@ dsl_dir_dirty(dsl_dir_t *dd, dmu_tx_t *tx)
 	ASSERT(dsl_dir_phys(dd));
 
 	if (txg_list_add(&dp->dp_dirty_dirs, dd, tx->tx_txg)) {
-		/* up the hold count until we can be written out */
+		 
 		dmu_buf_add_ref(dd->dd_dbuf, dd);
 	}
 }
@@ -1176,7 +942,7 @@ dsl_dir_sync(dsl_dir_t *dd, dmu_tx_t *tx)
 	dd->dd_space_towrite[tx->tx_txg & TXG_MASK] = 0;
 	mutex_exit(&dd->dd_lock);
 
-	/* release the hold from dsl_dir_dirty */
+	 
 	dmu_buf_rele(dd->dd_dbuf, dd);
 }
 
@@ -1193,21 +959,14 @@ dsl_dir_space_towrite(dsl_dir_t *dd)
 	return (space);
 }
 
-/*
- * How much space would dd have available if ancestor had delta applied
- * to it?  If ondiskonly is set, we're only interested in what's
- * on-disk, not estimated pending changes.
- */
+ 
 uint64_t
 dsl_dir_space_available(dsl_dir_t *dd,
     dsl_dir_t *ancestor, int64_t delta, int ondiskonly)
 {
 	uint64_t parentspace, myspace, quota, used;
 
-	/*
-	 * If there are no restrictions otherwise, assume we have
-	 * unlimited space available.
-	 */
+	 
 	quota = UINT64_MAX;
 	parentspace = UINT64_MAX;
 
@@ -1230,10 +989,7 @@ dsl_dir_space_available(dsl_dir_t *dd,
 	}
 
 	if (dsl_dir_phys(dd)->dd_reserved > used && parentspace != UINT64_MAX) {
-		/*
-		 * We have some space reserved, in addition to what our
-		 * parent gave us.
-		 */
+		 
 		parentspace += dsl_dir_phys(dd)->dd_reserved - used;
 	}
 
@@ -1246,13 +1002,10 @@ dsl_dir_space_available(dsl_dir_t *dd,
 	}
 
 	if (used > quota) {
-		/* over quota */
+		 
 		myspace = 0;
 	} else {
-		/*
-		 * the lesser of the space provided by our parent and
-		 * the space left in our quota
-		 */
+		 
 		myspace = MIN(parentspace, quota - used);
 	}
 
@@ -1289,20 +1042,13 @@ top_of_function:
 
 	mutex_enter(&dd->dd_lock);
 
-	/*
-	 * Check against the dsl_dir's quota.  We don't add in the delta
-	 * when checking for over-quota because they get one free hit.
-	 */
+	 
 	uint64_t est_inflight = dsl_dir_space_towrite(dd);
 	for (int i = 0; i < TXG_SIZE; i++)
 		est_inflight += dd->dd_tempreserved[i];
 	uint64_t used_on_disk = dsl_dir_phys(dd)->dd_used_bytes;
 
-	/*
-	 * On the first iteration, fetch the dataset's used-on-disk and
-	 * refreservation values. Also, if checkrefquota is set, test if
-	 * allocating this space would exceed the dataset's refquota.
-	 */
+	 
 	if (first && tx->tx_objset) {
 		int error;
 		dsl_dataset_t *ds = tx->tx_objset->os_dsl_dataset;
@@ -1316,10 +1062,7 @@ top_of_function:
 		}
 	}
 
-	/*
-	 * If this transaction will result in a net free of space,
-	 * we want to let it through.
-	 */
+	 
 	if (ignorequota || netfree || dsl_dir_phys(dd)->dd_quota == 0 ||
 	    (tx->tx_objset && dmu_objset_type(tx->tx_objset) == DMU_OST_ZVOL &&
 	    zvol_enforce_quotas == B_FALSE))
@@ -1327,16 +1070,7 @@ top_of_function:
 	else
 		quota = dsl_dir_phys(dd)->dd_quota;
 
-	/*
-	 * Adjust the quota against the actual pool size at the root
-	 * minus any outstanding deferred frees.
-	 * To ensure that it's possible to remove files from a full
-	 * pool without inducing transient overcommits, we throttle
-	 * netfree transactions against a quota that is slightly larger,
-	 * but still within the pool's allocation slop.  In cases where
-	 * we're very close to full, this will allow a steady trickle of
-	 * removes to get through.
-	 */
+	 
 	if (dd->dd_parent == NULL) {
 		uint64_t avail = dsl_pool_unreserved_space(dd->dd_pool,
 		    (netfree) ?
@@ -1348,12 +1082,7 @@ top_of_function:
 		}
 	}
 
-	/*
-	 * If they are requesting more space, and our current estimate
-	 * is over quota, they get to try again unless the actual
-	 * on-disk is over quota and there are no pending changes
-	 * or deferred frees (which may free up space for us).
-	 */
+	 
 	ext_quota = quota >> 5;
 	if (quota == UINT64_MAX)
 		ext_quota = 0;
@@ -1363,7 +1092,7 @@ top_of_function:
 		    dsl_pool_deferred_space(dd->dd_pool)) {
 			retval = SET_ERROR(ERESTART);
 		}
-		/* Quota exceeded */
+		 
 		mutex_exit(&dd->dd_lock);
 		DMU_TX_STAT_BUMP(dmu_tx_quota);
 		return (retval);
@@ -1378,7 +1107,7 @@ top_of_function:
 		return (SET_ERROR(ERESTART));
 	}
 
-	/* We need to up our estimated delta before dropping dd_lock */
+	 
 	dd->dd_tempreserved[txg & TXG_MASK] += asize;
 
 	uint64_t parent_rsrv = parent_delta(dd, used_on_disk + est_inflight,
@@ -1390,13 +1119,9 @@ top_of_function:
 	tr->tr_size = asize;
 	list_insert_tail(tr_list, tr);
 
-	/* see if it's OK with our parent */
+	 
 	if (dd->dd_parent != NULL && parent_rsrv != 0) {
-		/*
-		 * Recurse on our parent without recursion. This has been
-		 * observed to be potentially large stack usage even within
-		 * the test suite. Largest seen stack was 7632 bytes on linux.
-		 */
+		 
 
 		dd = dd->dd_parent;
 		asize = parent_rsrv;
@@ -1408,12 +1133,7 @@ top_of_function:
 	return (0);
 }
 
-/*
- * Reserve space in this dsl_dir, to be used in this tx's txg.
- * After the space has been dirtied (and dsl_dir_willuse_space()
- * has been called), the reservation should be canceled, using
- * dsl_dir_tempreserve_clear().
- */
+ 
 int
 dsl_dir_tempreserve_space(dsl_dir_t *dd, uint64_t lsize, uint64_t asize,
     boolean_t netfree, void **tr_cookiep, dmu_tx_t *tx)
@@ -1440,15 +1160,7 @@ dsl_dir_tempreserve_space(dsl_dir_t *dd, uint64_t lsize, uint64_t asize,
 		list_insert_tail(tr_list, tr);
 	} else {
 		if (err == EAGAIN) {
-			/*
-			 * If arc_memory_throttle() detected that pageout
-			 * is running and we are low on memory, we delay new
-			 * non-pageout transactions to give pageout an
-			 * advantage.
-			 *
-			 * It is unfortunate to be delaying while the caller's
-			 * locks are held.
-			 */
+			 
 			txg_delay(dd->dd_pool, tx->tx_txg,
 			    MSEC2NSEC(10), MSEC2NSEC(10));
 			err = SET_ERROR(ERESTART);
@@ -1468,10 +1180,7 @@ dsl_dir_tempreserve_space(dsl_dir_t *dd, uint64_t lsize, uint64_t asize,
 	return (err);
 }
 
-/*
- * Clear a temporary reservation that we previously made with
- * dsl_dir_tempreserve_space().
- */
+ 
 void
 dsl_dir_tempreserve_clear(void *tr_cookie, dmu_tx_t *tx)
 {
@@ -1500,16 +1209,7 @@ dsl_dir_tempreserve_clear(void *tr_cookie, dmu_tx_t *tx)
 	kmem_free(tr_list, sizeof (list_t));
 }
 
-/*
- * This should be called from open context when we think we're going to write
- * or free space, for example when dirtying data. Be conservative; it's okay
- * to write less space or free more, but we don't want to write more or free
- * less than the amount specified.
- *
- * NOTE: The behavior of this function is identical to the Illumos / FreeBSD
- * version however it has been adjusted to use an iterative rather than
- * recursive algorithm to minimize stack usage.
- */
+ 
 void
 dsl_dir_willuse_space(dsl_dir_t *dd, int64_t space, dmu_tx_t *tx)
 {
@@ -1526,7 +1226,7 @@ dsl_dir_willuse_space(dsl_dir_t *dd, int64_t space, dmu_tx_t *tx)
 		parent_space = parent_delta(dd, est_used, space);
 		mutex_exit(&dd->dd_lock);
 
-		/* Make sure that we clean up dd_space_to* */
+		 
 		dsl_dir_dirty(dd, tx);
 
 		dd = dd->dd_parent;
@@ -1534,7 +1234,7 @@ dsl_dir_willuse_space(dsl_dir_t *dd, int64_t space, dmu_tx_t *tx)
 	} while (space && dd);
 }
 
-/* call from syncing context when we actually write/free space for this dd */
+ 
 void
 dsl_dir_diduse_space(dsl_dir_t *dd, dd_used_t type,
     int64_t used, int64_t compressed, int64_t uncompressed, dmu_tx_t *tx)
@@ -1546,13 +1246,7 @@ dsl_dir_diduse_space(dsl_dir_t *dd, dd_used_t type,
 
 	dmu_buf_will_dirty(dd->dd_dbuf, tx);
 
-	/*
-	 * dsl_dataset_set_refreservation_sync_impl() calls this with
-	 * dd_lock held, so that it can atomically update
-	 * ds->ds_reserved and the dsl_dir accounting, so that
-	 * dsl_dataset_check_quota() can see dataset and dir accounting
-	 * consistently.
-	 */
+	 
 	boolean_t needlock = !MUTEX_HELD(&dd->dd_lock);
 	if (needlock)
 		mutex_enter(&dd->dd_lock);
@@ -1695,12 +1389,7 @@ dsl_dir_set_quota_check(void *arg, dmu_tx_t *tx)
 	}
 
 	mutex_enter(&ds->ds_dir->dd_lock);
-	/*
-	 * If we are doing the preliminary check in open context, and
-	 * there are pending changes, then don't fail it, since the
-	 * pending changes could under-estimate the amount of space to be
-	 * freed up.
-	 */
+	 
 	towrite = dsl_dir_space_towrite(ds->ds_dir);
 	if ((dmu_tx_is_syncing(tx) || towrite == 0) &&
 	    (newval < dsl_dir_phys(ds->ds_dir)->dd_reserved ||
@@ -1771,10 +1460,7 @@ dsl_dir_set_reservation_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	dd = ds->ds_dir;
 
-	/*
-	 * If we are doing the preliminary check in open context, the
-	 * space estimates may be inaccurate.
-	 */
+	 
 	if (!dmu_tx_is_syncing(tx)) {
 		dsl_dataset_rele(ds, FTAG);
 		return (0);
@@ -1828,7 +1514,7 @@ dsl_dir_set_reservation_sync_impl(dsl_dir_t *dd, uint64_t value, dmu_tx_t *tx)
 	dsl_dir_phys(dd)->dd_reserved = value;
 
 	if (dd->dd_parent != NULL) {
-		/* Roll up this additional usage into our ancestors */
+		 
 		dsl_dir_diduse_space(dd->dd_parent, DD_USED_CHILD_RSRV,
 		    delta, 0, 0, tx);
 	}
@@ -1892,10 +1578,7 @@ closest_common_ancestor(dsl_dir_t *ds1, dsl_dir_t *ds2)
 	return (NULL);
 }
 
-/*
- * If delta is applied to dd, how much of that delta would be applied to
- * ancestor?  Syncing context only.
- */
+ 
 static int64_t
 would_change(dsl_dir_t *dd, int64_t delta, dsl_dir_t *ancestor)
 {
@@ -1953,12 +1636,12 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 	const char *mynewname;
 	int error;
 
-	/* target dir should exist */
+	 
 	error = dsl_dir_hold(dp, ddra->ddra_oldname, FTAG, &dd, NULL);
 	if (error != 0)
 		return (error);
 
-	/* new parent should exist */
+	 
 	error = dsl_dir_hold(dp, ddra->ddra_newname, FTAG,
 	    &newparent, &mynewname);
 	if (error != 0) {
@@ -1966,21 +1649,21 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	}
 
-	/* can't rename to different pool */
+	 
 	if (dd->dd_pool != newparent->dd_pool) {
 		dsl_dir_rele(newparent, FTAG);
 		dsl_dir_rele(dd, FTAG);
 		return (SET_ERROR(EXDEV));
 	}
 
-	/* new name should not already exist */
+	 
 	if (mynewname == NULL) {
 		dsl_dir_rele(newparent, FTAG);
 		dsl_dir_rele(dd, FTAG);
 		return (SET_ERROR(EEXIST));
 	}
 
-	/* can't rename below anything but filesystems (eg. no ZVOLs) */
+	 
 	error = dsl_dataset_hold_obj(newparent->dd_pool,
 	    dsl_dir_phys(newparent)->dd_head_dataset_obj, FTAG, &parentds);
 	if (error != 0) {
@@ -2012,7 +1695,7 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 	dvra.nest_delta = get_dataset_depth(ddra->ddra_newname)
 	    - get_dataset_depth(ddra->ddra_oldname);
 
-	/* if the name length is growing, validate child name lengths */
+	 
 	if (dvra.char_delta > 0 || dvra.nest_delta > 0) {
 		error = dmu_objset_find_dp(dp, dd->dd_object, dsl_valid_rename,
 		    &dvra, DS_FIND_CHILDREN | DS_FIND_SNAPSHOTS);
@@ -2026,20 +1709,13 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 	if (dmu_tx_is_syncing(tx)) {
 		if (spa_feature_is_active(dp->dp_spa,
 		    SPA_FEATURE_FS_SS_LIMIT)) {
-			/*
-			 * Although this is the check function and we don't
-			 * normally make on-disk changes in check functions,
-			 * we need to do that here.
-			 *
-			 * Ensure this portion of the tree's counts have been
-			 * initialized in case the new parent has limits set.
-			 */
+			 
 			dsl_dir_init_fs_ss_count(dd, tx);
 		}
 	}
 
 	if (newparent != dd->dd_parent) {
-		/* is there enough space? */
+		 
 		uint64_t myspace =
 		    MAX(dsl_dir_phys(dd)->dd_used_bytes,
 		    dsl_dir_phys(dd)->dd_reserved);
@@ -2059,10 +1735,7 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 				return (err);
 			}
 
-			/*
-			 * have to add 1 for the filesystem itself that we're
-			 * moving
-			 */
+			 
 			fs_cnt++;
 
 			err = zap_lookup(os, dd->dd_object,
@@ -2075,7 +1748,7 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 			}
 		}
 
-		/* check for encryption errors */
+		 
 		error = dsl_dir_rename_crypt_check(dd, newparent);
 		if (error != 0) {
 			dsl_dir_rele(newparent, FTAG);
@@ -2083,7 +1756,7 @@ dsl_dir_rename_check(void *arg, dmu_tx_t *tx)
 			return (SET_ERROR(EACCES));
 		}
 
-		/* no rename into our descendant */
+		 
 		if (closest_common_ancestor(dd, newparent) == dd) {
 			dsl_dir_rele(newparent, FTAG);
 			dsl_dir_rele(dd, FTAG);
@@ -2120,7 +1793,7 @@ dsl_dir_rename_sync(void *arg, dmu_tx_t *tx)
 
 	ASSERT3P(mynewname, !=, NULL);
 
-	/* Log this before we change the name. */
+	 
 	spa_history_log_internal_dd(dd, "rename", tx,
 	    "-> %s", ddra->ddra_newname);
 
@@ -2129,16 +1802,13 @@ dsl_dir_rename_sync(void *arg, dmu_tx_t *tx)
 		uint64_t fs_cnt = 0;
 		uint64_t ss_cnt = 0;
 
-		/*
-		 * We already made sure the dd counts were initialized in the
-		 * check function.
-		 */
+		 
 		if (spa_feature_is_active(dp->dp_spa,
 		    SPA_FEATURE_FS_SS_LIMIT)) {
 			VERIFY0(zap_lookup(os, dd->dd_object,
 			    DD_FIELD_FILESYSTEM_COUNT, sizeof (fs_cnt), 1,
 			    &fs_cnt));
-			/* add 1 for the filesystem itself that we're moving */
+			 
 			fs_cnt++;
 
 			VERIFY0(zap_lookup(os, dd->dd_object,
@@ -2179,7 +1849,7 @@ dsl_dir_rename_sync(void *arg, dmu_tx_t *tx)
 
 	dmu_buf_will_dirty(dd->dd_dbuf, tx);
 
-	/* remove from old parent zapobj */
+	 
 	VERIFY0(zap_remove(mos,
 	    dsl_dir_phys(dd->dd_parent)->dd_child_dir_zapobj,
 	    dd->dd_myname, tx));
@@ -2191,11 +1861,11 @@ dsl_dir_rename_sync(void *arg, dmu_tx_t *tx)
 	VERIFY0(dsl_dir_hold_obj(dp,
 	    newparent->dd_object, NULL, dd, &dd->dd_parent));
 
-	/* add to new parent zapobj */
+	 
 	VERIFY0(zap_add(mos, dsl_dir_phys(newparent)->dd_child_dir_zapobj,
 	    dd->dd_myname, 8, 1, &dd->dd_object, tx));
 
-	/* TODO: A rename callback to avoid these layering violations. */
+	 
 	zfsvfs_update_fromname(ddra->ddra_oldname, ddra->ddra_newname);
 	zvol_rename_minors(dp->dp_spa, ddra->ddra_oldname,
 	    ddra->ddra_newname, B_TRUE);
@@ -2330,37 +2000,14 @@ dsl_dir_remove_livelist(dsl_dir_t *dd, dmu_tx_t *tx, boolean_t total)
 	if (!dsl_deadlist_is_open(&dd->dd_livelist))
 		return;
 
-	/*
-	 * If the livelist being removed is set to be condensed, stop the
-	 * condense zthr and indicate the cancellation in the spa_to_condense
-	 * struct in case the condense no-wait synctask has already started
-	 */
+	 
 	zthr_t *ll_condense_thread = spa->spa_livelist_condense_zthr;
 	if (ll_condense_thread != NULL &&
 	    (to_condense.ds != NULL) && (to_condense.ds->ds_dir == dd)) {
-		/*
-		 * We use zthr_wait_cycle_done instead of zthr_cancel
-		 * because we don't want to destroy the zthr, just have
-		 * it skip its current task.
-		 */
+		 
 		spa->spa_to_condense.cancelled = B_TRUE;
 		zthr_wait_cycle_done(ll_condense_thread);
-		/*
-		 * If we've returned from zthr_wait_cycle_done without
-		 * clearing the to_condense data structure it's either
-		 * because the no-wait synctask has started (which is
-		 * indicated by 'syncing' field of to_condense) and we
-		 * can expect it to clear to_condense on its own.
-		 * Otherwise, we returned before the zthr ran. The
-		 * checkfunc will now fail as cancelled == B_TRUE so we
-		 * can safely NULL out ds, allowing a different dir's
-		 * livelist to be condensed.
-		 *
-		 * We can be sure that the to_condense struct will not
-		 * be repopulated at this stage because both this
-		 * function and dsl_livelist_try_condense execute in
-		 * syncing context.
-		 */
+		 
 		if ((spa->spa_to_condense.ds != NULL) &&
 		    !spa->spa_to_condense.syncing) {
 			dmu_buf_rele(spa->spa_to_condense.ds->ds_dbuf,
@@ -2430,10 +2077,7 @@ dsl_dir_activity_in_progress(dsl_dir_t *dd, dsl_dataset_t *ds,
 			*in_progress = (count != 0);
 		break;
 #else
-		/*
-		 * The delete queue is ZPL specific, and libzpool doesn't have
-		 * it. It doesn't make sense to wait for it.
-		 */
+		 
 		(void) ds;
 		*in_progress = B_FALSE;
 		break;
@@ -2488,6 +2132,6 @@ EXPORT_SYMBOL(dsl_dir_set_quota);
 EXPORT_SYMBOL(dsl_dir_set_reservation);
 #endif
 
-/* CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , zvol_enforce_quotas, INT, ZMOD_RW,
 	"Enable strict ZVOL quota enforcment");

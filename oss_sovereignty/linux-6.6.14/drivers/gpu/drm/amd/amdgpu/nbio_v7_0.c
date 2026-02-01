@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "nbio_v7_0.h"
@@ -150,7 +129,7 @@ static void nbio_v7_0_update_medium_grain_clock_gating(struct amdgpu_device *ade
 {
 	uint32_t def, data;
 
-	/* NBIF_MGCG_CTRL_LCLK */
+	 
 	def = data = RREG32_PCIE(smnNBIF_MGCG_CTRL_LCLK);
 
 	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_BIF_MGCG))
@@ -161,7 +140,7 @@ static void nbio_v7_0_update_medium_grain_clock_gating(struct amdgpu_device *ade
 	if (def != data)
 		WREG32_PCIE(smnNBIF_MGCG_CTRL_LCLK, data);
 
-	/* SYSHUB_MGCG_CTRL_SOCCLK */
+	 
 	def = data = nbio_7_0_read_syshub_ind_mmr(adev, ixSYSHUB_MMREG_IND_SYSHUB_MGCG_CTRL_SOCCLK);
 
 	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_BIF_MGCG))
@@ -172,7 +151,7 @@ static void nbio_v7_0_update_medium_grain_clock_gating(struct amdgpu_device *ade
 	if (def != data)
 		nbio_7_0_write_syshub_ind_mmr(adev, ixSYSHUB_MMREG_IND_SYSHUB_MGCG_CTRL_SOCCLK, data);
 
-	/* SYSHUB_MGCG_CTRL_SHUBCLK */
+	 
 	def = data = nbio_7_0_read_syshub_ind_mmr(adev, ixSYSHUB_MMREG_IND_SYSHUB_MGCG_CTRL_SHUBCLK);
 
 	if (enable && (adev->cg_flags & AMD_CG_SUPPORT_BIF_MGCG))
@@ -209,12 +188,12 @@ static void nbio_v7_0_get_clockgating_state(struct amdgpu_device *adev,
 {
 	int data;
 
-	/* AMD_CG_SUPPORT_BIF_MGCG */
+	 
 	data = RREG32_PCIE(smnCPM_CONTROL);
 	if (data & CPM_CONTROL__LCLK_DYN_GATE_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_MGCG;
 
-	/* AMD_CG_SUPPORT_BIF_LS */
+	 
 	data = RREG32_PCIE(smnPCIE_CNTL2);
 	if (data & PCIE_CNTL2__SLV_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_LS;
@@ -224,14 +203,12 @@ static void nbio_v7_0_ih_control(struct amdgpu_device *adev)
 {
 	u32 interrupt_cntl;
 
-	/* setup interrupt control */
+	 
 	WREG32_SOC15(NBIO, 0, mmINTERRUPT_CNTL2, adev->dummy_page_addr >> 8);
 	interrupt_cntl = RREG32_SOC15(NBIO, 0, mmINTERRUPT_CNTL);
-	/* INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=0 - dummy read disabled with msi, enabled without msi
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=1 - dummy read controlled by IH_DUMMY_RD_EN
-	 */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, INTERRUPT_CNTL, IH_DUMMY_RD_OVERRIDE, 0);
-	/* INTERRUPT_CNTL__IH_REQ_NONSNOOP_EN_MASK=1 if ring is in non-cacheable memory, e.g., vram */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, INTERRUPT_CNTL, IH_REQ_NONSNOOP_EN, 0);
 	WREG32_SOC15(NBIO, 0, mmINTERRUPT_CNTL, interrupt_cntl);
 }

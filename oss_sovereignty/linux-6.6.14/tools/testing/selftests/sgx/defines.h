@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2016-20 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEFINES_H
 #define DEFINES_H
@@ -76,4 +74,4 @@ struct encl_op_init_tcs_page {
 	uint64_t entry;
 };
 
-#endif /* DEFINES_H */
+#endif  

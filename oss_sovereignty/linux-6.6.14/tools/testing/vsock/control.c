@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Control socket for client/server test execution
- *
- * Copyright (C) 2017 Red Hat, Inc.
- *
- * Author: Stefan Hajnoczi <stefanha@redhat.com>
- */
 
-/* The client and server may need to coordinate to avoid race conditions like
- * the client attempting to connect to a socket that the server is not
- * listening on yet.  The control socket offers a communications channel for
- * such coordination tasks.
- *
- * If the client calls control_expectln("LISTENING"), then it will block until
- * the server calls control_writeln("LISTENING").  This provides a simple
- * mechanism for coordinating between the client and the server.
- */
+ 
+
+ 
 
 #include <errno.h>
 #include <netdb.h>
@@ -30,7 +17,7 @@
 
 static int control_fd = -1;
 
-/* Open the control socket, either in server or client mode */
+ 
 void control_init(const char *control_host,
 		  const char *control_port,
 		  bool server)
@@ -103,14 +90,14 @@ next:
 	freeaddrinfo(result);
 }
 
-/* Free resources */
+ 
 void control_cleanup(void)
 {
 	close(control_fd);
 	control_fd = -1;
 }
 
-/* Write a line to the control socket */
+ 
 void control_writeln(const char *str)
 {
 	ssize_t len = strlen(str);
@@ -169,12 +156,7 @@ unsigned long control_readulong(void)
 	return value;
 }
 
-/* Return the next line from the control socket (without the trailing newline).
- *
- * The program terminates if a timeout occurs.
- *
- * The caller must free() the returned string.
- */
+ 
 char *control_readln(void)
 {
 	char *buf = NULL;
@@ -227,7 +209,7 @@ char *control_readln(void)
 	return buf;
 }
 
-/* Wait until a given line is received or a timeout occurs */
+ 
 void control_expectln(const char *str)
 {
 	char *line;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/relay.h>
 #include "mt7996.h"
@@ -11,7 +9,7 @@
 
 #define FW_BIN_LOG_MAGIC	0x44d9c99a
 
-/** global debugfs **/
+ 
 
 struct hw_queue_map {
 	const char *name;
@@ -25,9 +23,7 @@ mt7996_implicit_txbf_set(void *data, u64 val)
 {
 	struct mt7996_dev *dev = data;
 
-	/* The existing connected stations shall reconnect to apply
-	 * new implicit txbf configuration.
-	 */
+	 
 	dev->ibf = !!val;
 
 	return mt7996_mcu_set_txbf(dev, BF_HW_EN_UPDATE);
@@ -46,7 +42,7 @@ mt7996_implicit_txbf_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(fops_implicit_txbf, mt7996_implicit_txbf_get,
 			 mt7996_implicit_txbf_set, "%lld\n");
 
-/* test knob of system error recovery */
+ 
 static ssize_t
 mt7996_sys_recovery_set(struct file *file, const char __user *user_buf,
 			size_t count, loff_t *ppos)
@@ -73,18 +69,7 @@ mt7996_sys_recovery_set(struct file *file, const char __user *user_buf,
 		return -EINVAL;
 
 	switch (val) {
-	/*
-	 * 0: grab firmware current SER state.
-	 * 1: trigger & enable system error L1 recovery.
-	 * 2: trigger & enable system error L2 recovery.
-	 * 3: trigger & enable system error L3 rx abort.
-	 * 4: trigger & enable system error L3 tx abort
-	 * 5: trigger & enable system error L3 tx disable.
-	 * 6: trigger & enable system error L3 bf recovery.
-	 * 7: trigger & enable system error L4 mdp recovery.
-	 * 8: trigger & enable system error full recovery.
-	 * 9: trigger firmware crash.
-	 */
+	 
 	case UNI_CMD_SER_QUERY:
 		ret = mt7996_mcu_set_ser(dev, UNI_CMD_SER_QUERY, 0, band);
 		break;
@@ -102,14 +87,14 @@ mt7996_sys_recovery_set(struct file *file, const char __user *user_buf,
 		ret = mt7996_mcu_set_ser(dev, UNI_CMD_SER_TRIGGER, val, band);
 		break;
 
-	/* enable full chip reset */
+	 
 	case UNI_CMD_SER_SET_RECOVER_FULL:
 		mt76_set(dev, MT_WFDMA0_MCU_HOST_INT_ENA, MT_MCU_CMD_WDT_MASK);
 		dev->recovery.state |= MT_MCU_CMD_WDT_MASK;
 		mt7996_reset(dev);
 		break;
 
-	/* WARNING: trigger firmware crash */
+	 
 	case UNI_CMD_SER_SET_SYSTEM_ASSERT:
 		ret = mt7996_mcu_trigger_assert(dev);
 		if (ret)
@@ -137,7 +122,7 @@ mt7996_sys_recovery_get(struct file *file, char __user *user_buf,
 	if (!buff)
 		return -ENOMEM;
 
-	/* HELP */
+	 
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "Please echo the correct value ...\n");
 	desc += scnprintf(buff + desc, bufsz - desc,
@@ -161,7 +146,7 @@ mt7996_sys_recovery_get(struct file *file, char __user *user_buf,
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "9: trigger firmware crash\n");
 
-	/* SER statistics */
+	 
 	desc += scnprintf(buff + desc, bufsz - desc,
 			  "\nlet's dump firmware SER statistics...\n");
 	desc += scnprintf(buff + desc, bufsz - desc,
@@ -448,7 +433,7 @@ mt7996_ampdu_stat_read_phy(struct mt7996_phy *phy, struct seq_file *file)
 	int bound[15], range[8], i;
 	u8 band_idx = phy->mt76->band_idx;
 
-	/* Tx ampdu stat */
+	 
 	for (i = 0; i < ARRAY_SIZE(range); i++)
 		range[i] = mt76_rr(dev, MT_MIB_ARNG(band_idx, i));
 
@@ -479,14 +464,14 @@ mt7996_txbf_stat_read_phy(struct mt7996_phy *phy, struct seq_file *s)
 		"BW20", "BW40", "BW80", "BW160"
 	};
 
-	/* Tx Beamformer monitor */
+	 
 	seq_puts(s, "\nTx Beamformer applied PPDU counts: ");
 
 	seq_printf(s, "iBF: %d, eBF: %d\n",
 		   mib->tx_bf_ibf_ppdu_cnt,
 		   mib->tx_bf_ebf_ppdu_cnt);
 
-	/* Tx Beamformer Rx feedback monitor */
+	 
 	seq_puts(s, "Tx Beamformer Rx feedback statistics: ");
 
 	seq_printf(s, "All: %d, HE: %d, VHT: %d, HT: %d, ",
@@ -500,13 +485,13 @@ mt7996_txbf_stat_read_phy(struct mt7996_phy *phy, struct seq_file *s)
 		   mib->tx_bf_rx_fb_nc_cnt,
 		   mib->tx_bf_rx_fb_nr_cnt);
 
-	/* Tx Beamformee Rx NDPA & Tx feedback report */
+	 
 	seq_printf(s, "Tx Beamformee successful feedback frames: %d\n",
 		   mib->tx_bf_fb_cpl_cnt);
 	seq_printf(s, "Tx Beamformee feedback triggered counts: %d\n",
 		   mib->tx_bf_fb_trig_cnt);
 
-	/* Tx SU & MU counters */
+	 
 	seq_printf(s, "Tx multi-user Beamforming counts: %d\n",
 		   mib->tx_mu_bf_cnt);
 	seq_printf(s, "Tx multi-user MPDU counts: %d\n", mib->tx_mu_mpdu_cnt);
@@ -541,7 +526,7 @@ mt7996_tx_stats_show(struct seq_file *file, void *data)
 
 	mt7996_txbf_stat_read_phy(phy, file);
 
-	/* Tx amsdu info */
+	 
 	seq_puts(file, "Tx MSDU statistics:\n");
 	for (i = 0; i < ARRAY_SIZE(mib->tx_amsdu); i++) {
 		seq_printf(file, "AMSDU pack count of %d MSDU in TXD: %8d ",
@@ -657,7 +642,7 @@ mt7996_hw_queues_show(struct seq_file *file, void *data)
 	};
 	u32 val, head, tail;
 
-	/* ple queue */
+	 
 	val = mt76_rr(dev, MT_PLE_FREEPG_CNT);
 	head = mt76_get_field(dev, MT_PLE_FREEPG_HEAD_TAIL, GENMASK(11, 0));
 	tail = mt76_get_field(dev, MT_PLE_FREEPG_HEAD_TAIL, GENMASK(27, 16));
@@ -676,10 +661,10 @@ mt7996_hw_queues_show(struct seq_file *file, void *data)
 	mt7996_hw_queue_read(file, ARRAY_SIZE(ple_queue_map),
 			     &ple_queue_map[0]);
 
-	/* iterate per-sta ple queue */
+	 
 	ieee80211_iterate_stations_atomic(phy->mt76->hw,
 					  mt7996_sta_hw_queue_read, file);
-	/* pse queue */
+	 
 	seq_puts(file, "PSE non-empty queue info:\n");
 	mt7996_hw_queue_read(file, ARRAY_SIZE(pse_queue_map),
 			     &pse_queue_map[0]);
@@ -748,9 +733,7 @@ mt7996_twt_stats(struct seq_file *s, void *data)
 	return 0;
 }
 
-/* The index of RF registers use the generic regidx, combined with two parts:
- * WF selection [31:24] and offset [23:0].
- */
+ 
 static int
 mt7996_rf_regval_get(void *data, u64 *val)
 {
@@ -797,7 +780,7 @@ int mt7996_init_debugfs(struct mt7996_phy *phy)
 	debugfs_create_file("fw_debug_wm", 0600, dir, dev, &fops_fw_debug_wm);
 	debugfs_create_file("fw_debug_wa", 0600, dir, dev, &fops_fw_debug_wa);
 	debugfs_create_file("fw_debug_bin", 0600, dir, dev, &fops_fw_debug_bin);
-	/* TODO: wm fw cpu utilization */
+	 
 	debugfs_create_file("fw_util_wa", 0400, dir, dev,
 			    &mt7996_fw_util_wa_fops);
 	debugfs_create_file("implicit_txbf", 0600, dir, dev,
@@ -883,7 +866,7 @@ bool mt7996_debugfs_rx_log(struct mt7996_dev *dev, const void *data, int len)
 }
 
 #ifdef CONFIG_MAC80211_DEBUGFS
-/** per-station debugfs **/
+ 
 
 static ssize_t mt7996_sta_fixed_rate_set(struct file *file,
 					 const char __user *user_buf,
@@ -910,16 +893,7 @@ static ssize_t mt7996_sta_fixed_rate_set(struct file *file,
 	else
 		buf[count] = '\0';
 
-	/* mode - cck: 0, ofdm: 1, ht: 2, gf: 3, vht: 4, he_su: 8, he_er: 9 EHT: 15
-	 * bw - bw20: 0, bw40: 1, bw80: 2, bw160: 3, BW320: 4
-	 * nss - vht: 1~4, he: 1~4, eht: 1~4, others: ignore
-	 * mcs - cck: 0~4, ofdm: 0~7, ht: 0~32, vht: 0~9, he_su: 0~11, he_er: 0~2, eht: 0~13
-	 * gi - (ht/vht) lgi: 0, sgi: 1; (he) 0.8us: 0, 1.6us: 1, 3.2us: 2
-	 * preamble - short: 1, long: 0
-	 * ldpc - off: 0, on: 1
-	 * stbc - off: 0, on: 1
-	 * ltf - 1xltf: 0, 2xltf: 1, 4xltf: 2
-	 */
+	 
 	if (sscanf(buf, "%hhu %hhu %hhu %hhu %hu %hhu %hhu %hhu %hhu %hu",
 		   &phy.mode, &phy.bw, &phy.mcs, &phy.nss, &gi,
 		   &phy.preamble, &phy.stbc, &phy.ldpc, &phy.spe, &ltf) != 10) {

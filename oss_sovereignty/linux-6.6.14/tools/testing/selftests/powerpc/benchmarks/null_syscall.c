@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test null syscall performance
- *
- * Copyright (C) 2009-2015 Anton Blanchard, IBM
- */
+
+ 
 
 #define NR_LOOPS 10000000
 
@@ -36,10 +32,7 @@ static void sigalrm_handler(int unused)
 	soak_done = 1;
 }
 
-/*
- * Use a timer instead of busy looping on clock_gettime() so we don't
- * pollute profiles with glibc and VDSO hits.
- */
+ 
 static void cpu_soak_usecs(unsigned long usecs)
 {
 	struct itimerval val;
@@ -58,10 +51,7 @@ static void cpu_soak_usecs(unsigned long usecs)
 	signal(SIGALRM, SIG_DFL);
 }
 
-/*
- * This only works with recent kernels where cpufreq modifies
- * /proc/cpuinfo dynamically.
- */
+ 
 static void get_proc_frequency(void)
 {
 	FILE *f;
@@ -71,7 +61,7 @@ static void get_proc_frequency(void)
 	double d;
 	char *override;
 
-	/* Try to get out of low power/low frequency mode */
+	 
 	cpu_soak_usecs(0.25 * 1000000);
 
 	f = fopen("/proc/cpuinfo", "r");
@@ -96,7 +86,7 @@ static void get_proc_frequency(void)
 			if (p != NULL) {
 				d = strtod(p + 1, &end);
 				if (end != p + 1) {
-					/* Find fastest clock frequency */
+					 
 					if ((d * 1000000ULL) > clock_frequency)
 						clock_frequency = d * 1000000ULL;
 				}

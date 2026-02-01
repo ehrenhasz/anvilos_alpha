@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the NXP SAA7164 PCIe bridge
- *
- *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
- */
+
+ 
 
 #include "saa7164.h"
 
-/* Take the encoder configuration from the port struct and
- * flush it to the hardware.
- */
+ 
 static void saa7164_vbi_configure(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
@@ -20,7 +14,7 @@ static void saa7164_vbi_configure(struct saa7164_port *port)
 	port->vbi_params.is_50hz =
 		(port->enc_port->encodernorm.id & V4L2_STD_625_50) != 0;
 
-	/* Set up the DIF (enable it) for analog mode by default */
+	 
 	saa7164_api_initialize_dif(port);
 	dprintk(DBGLVL_VBI, "%s() ends\n", __func__);
 }
@@ -32,7 +26,7 @@ static int saa7164_vbi_buffers_dealloc(struct saa7164_port *port)
 	struct saa7164_buffer *buf;
 	struct saa7164_user_buffer *ubuf;
 
-	/* Remove any allocated buffers */
+	 
 	mutex_lock(&port->dmaqueue_lock);
 
 	dprintk(DBGLVL_VBI, "%s(port=%d) dmaqueue\n", __func__, port->nr);
@@ -62,7 +56,7 @@ static int saa7164_vbi_buffers_dealloc(struct saa7164_port *port)
 	return 0;
 }
 
-/* Dynamic buffer switch at vbi start time */
+ 
 static int saa7164_vbi_buffers_alloc(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
@@ -74,8 +68,8 @@ static int saa7164_vbi_buffers_alloc(struct saa7164_port *port)
 
 	dprintk(DBGLVL_VBI, "%s()\n", __func__);
 
-	/* TODO: NTSC SPECIFIC */
-	/* Init and establish defaults */
+	 
+	 
 	params->samplesperline = 1440;
 	params->numberoflines = 12;
 	params->numberoflines = 18;
@@ -89,7 +83,7 @@ static int saa7164_vbi_buffers_alloc(struct saa7164_port *port)
 	params->pagetablelistphys = NULL;
 	params->numpagetableentries = port->hwcfg.buffercount;
 
-	/* Allocate the PCI resources, buffers (hard) */
+	 
 	for (i = 0; i < port->hwcfg.buffercount; i++) {
 		buf = saa7164_buffer_alloc(port,
 			params->numberoflines *
@@ -109,9 +103,7 @@ static int saa7164_vbi_buffers_alloc(struct saa7164_port *port)
 		}
 	}
 
-	/* Allocate some kernel buffers for copying
-	 * to userpsace.
-	 */
+	 
 	len = params->numberoflines * params->pitch;
 
 	if (vbi_buffers < 16)
@@ -143,7 +135,7 @@ static int saa7164_vbi_initialize(struct saa7164_port *port)
 	return 0;
 }
 
-/* -- V4L2 --------------------------------------------------------- */
+ 
 static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 {
 	struct saa7164_vbi_fh *fh = file->private_data;
@@ -261,12 +253,7 @@ static int saa7164_vbi_pause_port(struct saa7164_port *port)
 	return ret;
 }
 
-/* Firmware is very windows centric, meaning you have to transition
- * the part through AVStream / KS Windows stages, forwards or backwards.
- * States are: stopped, acquired (h/w), paused, started.
- * We have to leave here will all of the soft buffers on the free list,
- * else the cfg_post() func won't have soft buffers to correctly configure.
- */
+ 
 static int saa7164_vbi_stop_streaming(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
@@ -284,10 +271,10 @@ static int saa7164_vbi_stop_streaming(struct saa7164_port *port)
 	dprintk(DBGLVL_VBI, "%s(port=%d) Hardware stopped\n", __func__,
 		port->nr);
 
-	/* Reset the state of any allocated buffer resources */
+	 
 	mutex_lock(&port->dmaqueue_lock);
 
-	/* Reset the hard and soft buffer state */
+	 
 	list_for_each_safe(c, n, &port->dmaqueue.list) {
 		buf = list_entry(c, struct saa7164_buffer, list);
 		buf->flags = SAA7164_BUFFER_FREE;
@@ -302,7 +289,7 @@ static int saa7164_vbi_stop_streaming(struct saa7164_port *port)
 
 	mutex_unlock(&port->dmaqueue_lock);
 
-	/* Free any allocated resources */
+	 
 	saa7164_vbi_buffers_dealloc(port);
 
 	dprintk(DBGLVL_VBI, "%s(port=%d) Released\n", __func__, port->nr);
@@ -319,29 +306,26 @@ static int saa7164_vbi_start_streaming(struct saa7164_port *port)
 
 	port->done_first_interrupt = 0;
 
-	/* allocate all of the PCIe DMA buffer resources on the fly,
-	 * allowing switching between TS and PS payloads without
-	 * requiring a complete driver reload.
-	 */
+	 
 	saa7164_vbi_buffers_alloc(port);
 
-	/* Configure the encoder with any cache values */
+	 
 #if 0
 	saa7164_api_set_encoder(port);
 	saa7164_api_get_encoder(port);
 #endif
 
-	/* Place the empty buffers on the hardware */
+	 
 	saa7164_buffer_cfg_port(port);
 
-	/* Negotiate format */
+	 
 	if (saa7164_api_set_vbi_format(port) != SAA_OK) {
 		printk(KERN_ERR "%s() No supported VBI format\n", __func__);
 		ret = -EIO;
 		goto out;
 	}
 
-	/* Acquire the hardware */
+	 
 	result = saa7164_api_transition_port(port, SAA_DMASTATE_ACQUIRE);
 	if ((result != SAA_OK) && (result != SAA_ERR_ALREADY_STOPPED)) {
 		printk(KERN_ERR "%s() acquire transition failed, res = 0x%x\n",
@@ -352,13 +336,13 @@ static int saa7164_vbi_start_streaming(struct saa7164_port *port)
 	} else
 		dprintk(DBGLVL_VBI, "%s()   Acquired\n", __func__);
 
-	/* Pause the hardware */
+	 
 	result = saa7164_api_transition_port(port, SAA_DMASTATE_PAUSE);
 	if ((result != SAA_OK) && (result != SAA_ERR_ALREADY_STOPPED)) {
 		printk(KERN_ERR "%s() pause transition failed, res = 0x%x\n",
 				__func__, result);
 
-		/* Stop the hardware, regardless */
+		 
 		result = saa7164_vbi_stop_port(port);
 		if (result != SAA_OK) {
 			printk(KERN_ERR "%s() pause/forced stop transition failed, res = 0x%x\n",
@@ -370,13 +354,13 @@ static int saa7164_vbi_start_streaming(struct saa7164_port *port)
 	} else
 		dprintk(DBGLVL_VBI, "%s()   Paused\n", __func__);
 
-	/* Start the hardware */
+	 
 	result = saa7164_api_transition_port(port, SAA_DMASTATE_RUN);
 	if ((result != SAA_OK) && (result != SAA_ERR_ALREADY_STOPPED)) {
 		printk(KERN_ERR "%s() run transition failed, result = 0x%x\n",
 				__func__, result);
 
-		/* Stop the hardware, regardless */
+		 
 		result = saa7164_vbi_acquire_port(port);
 		result = saa7164_vbi_stop_port(port);
 		if (result != SAA_OK) {
@@ -395,7 +379,7 @@ out:
 static int saa7164_vbi_fmt(struct file *file, void *priv,
 			   struct v4l2_format *f)
 {
-	/* ntsc */
+	 
 	f->fmt.vbi.samples_per_line = 1440;
 	f->fmt.vbi.sampling_rate = 27000000;
 	f->fmt.vbi.sample_format = V4L2_PIX_FMT_GREY;
@@ -423,7 +407,7 @@ static int fops_open(struct file *file)
 
 	dprintk(DBGLVL_VBI, "%s()\n", __func__);
 
-	/* allocate + initialize per filehandle data */
+	 
 	fh = kzalloc(sizeof(*fh), GFP_KERNEL);
 	if (NULL == fh)
 		return -ENOMEM;
@@ -444,10 +428,10 @@ static int fops_release(struct file *file)
 
 	dprintk(DBGLVL_VBI, "%s()\n", __func__);
 
-	/* Shut device down on last close */
+	 
 	if (atomic_cmpxchg(&fh->v4l_reading, 1, 0) == 1) {
 		if (atomic_dec_return(&port->v4l_reader_count) == 0) {
-			/* stop vbi capture then cancel buffers */
+			 
 			saa7164_vbi_stop_streaming(port);
 		}
 	}
@@ -525,7 +509,7 @@ static ssize_t fops_read(struct file *file, char __user *buffer,
 		}
 	}
 
-	/* blocking wait for buffer */
+	 
 	if ((file->f_flags & O_NONBLOCK) == 0) {
 		if (wait_event_interruptible(port->wait_read,
 			saa7164_vbi_next_buf(port))) {
@@ -534,12 +518,12 @@ static ssize_t fops_read(struct file *file, char __user *buffer,
 		}
 	}
 
-	/* Pull the first buffer from the used list */
+	 
 	ubuf = saa7164_vbi_next_buf(port);
 
 	while ((count > 0) && ubuf) {
 
-		/* set remaining bytes to copy */
+		 
 		rem = ubuf->actual_size - ubuf->pos;
 		cnt = rem > count ? count : rem;
 
@@ -568,16 +552,16 @@ static ssize_t fops_read(struct file *file, char __user *buffer,
 
 		if (ubuf->pos == ubuf->actual_size) {
 
-			/* finished with current buffer, take next buffer */
+			 
 
-			/* Requeue the buffer on the free list */
+			 
 			ubuf->pos = 0;
 
 			mutex_lock(&port->dmaqueue_lock);
 			list_move_tail(&ubuf->list, &port->list_buf_free.list);
 			mutex_unlock(&port->dmaqueue_lock);
 
-			/* Dequeue next */
+			 
 			if ((file->f_flags & O_NONBLOCK) == 0) {
 				if (wait_event_interruptible(port->wait_read,
 					saa7164_vbi_next_buf(port))) {
@@ -622,7 +606,7 @@ static __poll_t fops_poll(struct file *file, poll_table *wait)
 		}
 	}
 
-	/* blocking wait for buffer */
+	 
 	if ((file->f_flags & O_NONBLOCK) == 0) {
 		if (wait_event_interruptible(port->wait_read,
 			saa7164_vbi_next_buf(port))) {
@@ -630,7 +614,7 @@ static __poll_t fops_poll(struct file *file, poll_table *wait)
 		}
 	}
 
-	/* Pull the first buffer from the used list */
+	 
 	if (!list_empty(&port->list_buf_used.list))
 		mask |= EPOLLIN | EPOLLRDNORM;
 
@@ -704,7 +688,7 @@ int saa7164_vbi_register(struct saa7164_port *port)
 
 	BUG_ON(port->type != SAA7164_MPEG_VBI);
 
-	/* Sanity check that the PCI configuration space is active */
+	 
 	if (port->hwcfg.BARLocation == 0) {
 		printk(KERN_ERR "%s() failed (errno = %d), NO PCI configuration\n",
 			__func__, result);
@@ -712,9 +696,9 @@ int saa7164_vbi_register(struct saa7164_port *port)
 		goto failed;
 	}
 
-	/* Establish VBI defaults here */
+	 
 
-	/* Allocate and register the video device node */
+	 
 	port->v4l_device = saa7164_vbi_alloc(port,
 		dev->pci, &saa7164_vbi_template, "vbi");
 
@@ -732,16 +716,14 @@ int saa7164_vbi_register(struct saa7164_port *port)
 	if (result < 0) {
 		printk(KERN_INFO "%s: can't register vbi device\n",
 			dev->name);
-		/* TODO: We're going to leak here if we don't dealloc
-		 The buffers above. The unreg function can't deal wit it.
-		*/
+		 
 		goto failed;
 	}
 
 	printk(KERN_INFO "%s: registered device vbi%d [vbi]\n",
 		dev->name, port->v4l_device->num);
 
-	/* Configure the hardware defaults */
+	 
 
 	result = 0;
 failed:

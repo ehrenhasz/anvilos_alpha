@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * keymap imported from cxusb.c
- *
- * Copyright (C) 2016 Sean Young
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table rc_map_d680_dmb_table[] = {
-	{ 0x0038, KEY_SWITCHVIDEOMODE },	/* TV/AV */
+	{ 0x0038, KEY_SWITCHVIDEOMODE },	 
 	{ 0x080c, KEY_ZOOM },
 	{ 0x0800, KEY_NUMERIC_0 },
 	{ 0x0001, KEY_NUMERIC_1 },
@@ -38,11 +34,11 @@ static struct rc_map_table rc_map_d680_dmb_table[] = {
 	{ 0x000b, KEY_STOP },
 	{ 0x0827, KEY_FASTFORWARD },
 	{ 0x0026, KEY_REWIND },
-	{ 0x081e, KEY_UNKNOWN },    /* Time Shift */
-	{ 0x000e, KEY_UNKNOWN },    /* Snapshot */
-	{ 0x082d, KEY_UNKNOWN },    /* Mouse Cursor */
-	{ 0x000f, KEY_UNKNOWN },    /* Minimize/Maximize */
-	{ 0x0814, KEY_SHUFFLE },    /* Shuffle */
+	{ 0x081e, KEY_UNKNOWN },     
+	{ 0x000e, KEY_UNKNOWN },     
+	{ 0x082d, KEY_UNKNOWN },     
+	{ 0x000f, KEY_UNKNOWN },     
+	{ 0x0814, KEY_SHUFFLE },     
 	{ 0x0025, KEY_POWER },
 };
 
@@ -50,7 +46,7 @@ static struct rc_map_list d680_dmb_map = {
 	.map = {
 		.scan     = rc_map_d680_dmb_table,
 		.size     = ARRAY_SIZE(rc_map_d680_dmb_table),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_D680_DMB,
 	}
 };

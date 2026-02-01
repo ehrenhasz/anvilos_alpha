@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_b0.c: Definition of Atlantic hardware specific functions. */
+ 
+
+ 
 
 #include "../aq_hw.h"
 #include "../aq_hw_utils.h"
@@ -136,14 +132,14 @@ int hw_atl_b0_set_fc(struct aq_hw_s *self, u32 fc, u32 tc)
 
 static int hw_atl_b0_tc_ptp_set(struct aq_hw_s *self)
 {
-	/* Init TC2 for PTP_TX */
+	 
 	hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, HW_ATL_B0_PTP_TXBUF_SIZE,
 					       AQ_HW_PTP_TC);
 
-	/* Init TC2 for PTP_RX */
+	 
 	hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, HW_ATL_B0_PTP_RXBUF_SIZE,
 					       AQ_HW_PTP_TC);
-	/* No flow control for PTP */
+	 
 	hw_atl_rpb_rx_xoff_en_per_tc_set(self, 0U, AQ_HW_PTP_TC);
 
 	return aq_hw_err_from_flags(self);
@@ -162,11 +158,11 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
 		rx_buff_size -= HW_ATL_B0_PTP_RXBUF_SIZE;
 	}
 
-	/* TPS Descriptor rate init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_rate_curr_time_res_set(self, 0x0U);
 	hw_atl_tps_tx_pkt_shed_desc_rate_lim_set(self, 0xA);
 
-	/* TPS VM init */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_vm_arb_mode_set(self, 0U);
 
 	tx_buff_size /= cfg->tcs;
@@ -174,7 +170,7 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
 	for (tc = 0; tc < cfg->tcs; tc++) {
 		u32 threshold = 0U;
 
-		/* Tx buf size TC0 */
+		 
 		hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, tx_buff_size, tc);
 
 		threshold = (tx_buff_size * (1024 / 32U) * 66U) / 100U;
@@ -183,7 +179,7 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
 		threshold = (tx_buff_size * (1024 / 32U) * 50U) / 100U;
 		hw_atl_tpb_tx_buff_lo_threshold_per_tc_set(self, threshold, tc);
 
-		/* QoS Rx buf size per TC */
+		 
 		hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, rx_buff_size, tc);
 
 		threshold = (rx_buff_size * (1024U / 32U) * 66U) / 100U;
@@ -198,7 +194,7 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
 	if (cfg->is_ptp)
 		hw_atl_b0_tc_ptp_set(self);
 
-	/* QoS 802.1p priority -> TC mapping */
+	 
 	for (prio = 0; prio < 8; ++prio)
 		hw_atl_rpf_rpb_user_priority_tc_map_set(self, prio,
 							cfg->prio_tc_map[prio]);
@@ -276,21 +272,21 @@ int hw_atl_b0_hw_offload_set(struct aq_hw_s *self,
 	u64 rxcsum = !!(aq_nic_cfg->features & NETIF_F_RXCSUM);
 	unsigned int i;
 
-	/* TX checksums offloads*/
+	 
 	hw_atl_tpo_ipv4header_crc_offload_en_set(self, 1);
 	hw_atl_tpo_tcp_udp_crc_offload_en_set(self, 1);
 
-	/* RX checksums offloads*/
+	 
 	hw_atl_rpo_ipv4header_crc_offload_en_set(self, rxcsum);
 	hw_atl_rpo_tcp_udp_crc_offload_en_set(self, rxcsum);
 
-	/* LSO offloads*/
+	 
 	hw_atl_tdm_large_send_offload_en_set(self, 0xFFFFFFFFU);
 
-	/* Outer VLAN tag offload */
+	 
 	hw_atl_rpo_outer_vlan_tag_mode_set(self, 1U);
 
-	/* LRO offloads */
+	 
 	{
 		unsigned int val = (8U < HW_ATL_B0_LRO_RXD_MAX) ? 0x3U :
 			((4U < HW_ATL_B0_LRO_RXD_MAX) ? 0x2U :
@@ -301,11 +297,7 @@ int hw_atl_b0_hw_offload_set(struct aq_hw_s *self,
 
 		hw_atl_rpo_lro_time_base_divider_set(self, 0x61AU);
 		hw_atl_rpo_lro_inactive_interval_set(self, 0);
-		/* the LRO timebase divider is 5 uS (0x61a),
-		 * which is multiplied by 50(0x32)
-		 * to get a maximum coalescing interval of 250 uS,
-		 * which is the default value
-		 */
+		 
 		hw_atl_rpo_lro_max_coalescing_interval_set(self, 50);
 
 		hw_atl_rpo_lro_qsessions_lim_set(self, 1U);
@@ -332,7 +324,7 @@ int hw_atl_b0_hw_offload_set(struct aq_hw_s *self,
 static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 {
 	static const u32 max_weight = BIT(HW_ATL_TPS_DATA_TCTWEIGHT_WIDTH) - 1;
-	/* Scale factor is based on the number of bits in fractional portion */
+	 
 	static const u32 scale = BIT(HW_ATL_TPS_DESC_RATE_Y_WIDTH);
 	static const u32 frac_msk = HW_ATL_TPS_DESC_RATE_Y_MSK >>
 				    HW_ATL_TPS_DESC_RATE_Y_SHIFT;
@@ -345,7 +337,7 @@ static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 	u32 sum_weight = 0;
 	int tc;
 
-	/* By default max_credit is based upon MTU (in unit of 64b) */
+	 
 	fixed_max_credit = nic_cfg->aq_hw_caps->mtu / 64;
 
 	if (link_speed) {
@@ -354,7 +346,7 @@ static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		num_min_rated_tcs = hweight8(min_rate_msk);
 	}
 
-	/* First, calculate weights where min_rate is specified */
+	 
 	if (num_min_rated_tcs) {
 		for (tc = 0; tc != nic_cfg->tcs; tc++) {
 			if (!nic_cfg->tc_min_rate[tc]) {
@@ -371,18 +363,11 @@ static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		}
 	}
 
-	/* WSP, if min_rate is set for at least one TC.
-	 * RR otherwise.
-	 *
-	 * NB! MAC FW sets arb mode itself if PTP is enabled. We shouldn't
-	 * overwrite it here in that case.
-	 */
+	 
 	if (!nic_cfg->is_ptp)
 		hw_atl_tps_tx_pkt_shed_data_arb_mode_set(self, min_rate_msk ? 1U : 0U);
 
-	/* Data TC Arbiter takes precedence over Descriptor TC Arbiter,
-	 * leave Descriptor TC Arbiter as RR.
-	 */
+	 
 	hw_atl_tps_tx_pkt_shed_desc_tc_arb_mode_set(self, 0U);
 
 	hw_atl_tps_tx_desc_rate_mode_set(self, nic_cfg->is_qos ? 1U : 0U);
@@ -418,7 +403,7 @@ static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 		hw_atl_tps_tx_desc_rate_en_set(self, desc, en);
 
 		if (en) {
-			/* Nominal rate is always 10G */
+			 
 			const u32 rate = 10000U * scale /
 					 nic_cfg->tc_max_rate[tc];
 			const u32 rate_int = rate >>
@@ -428,9 +413,7 @@ static int hw_atl_b0_hw_init_tx_tc_rate_limit(struct aq_hw_s *self)
 			hw_atl_tps_tx_desc_rate_x_set(self, desc, rate_int);
 			hw_atl_tps_tx_desc_rate_y_set(self, desc, rate_frac);
 		} else {
-			/* A value of 1 indicates the queue is not
-			 * rate controlled.
-			 */
+			 
 			hw_atl_tps_tx_desc_rate_x_set(self, desc, 1U);
 			hw_atl_tps_tx_desc_rate_y_set(self, desc, 0U);
 		}
@@ -450,17 +433,17 @@ static int hw_atl_b0_hw_init_tx_path(struct aq_hw_s *self)
 {
 	struct aq_nic_cfg_s *nic_cfg = self->aq_nic_cfg;
 
-	/* Tx TC/Queue number config */
+	 
 	hw_atl_tpb_tps_tx_tc_mode_set(self, nic_cfg->tc_mode);
 
 	hw_atl_thm_lso_tcp_flag_of_first_pkt_set(self, 0x0FF6U);
 	hw_atl_thm_lso_tcp_flag_of_middle_pkt_set(self, 0x0FF6U);
 	hw_atl_thm_lso_tcp_flag_of_last_pkt_set(self, 0x0F7FU);
 
-	/* Tx interrupts */
+	 
 	hw_atl_tdm_tx_desc_wr_wb_irq_en_set(self, 1U);
 
-	/* misc */
+	 
 	aq_hw_write_reg(self, 0x00007040U, ATL_HW_IS_CHIP_FEATURE(self, TPO2) ?
 			0x00010000U : 0x00000000U);
 	hw_atl_tdm_tx_dca_en_set(self, 0U);
@@ -489,16 +472,16 @@ static int hw_atl_b0_hw_init_rx_path(struct aq_hw_s *self)
 	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
 	int i;
 
-	/* Rx TC/RSS number config */
+	 
 	hw_atl_rpb_rpf_rx_traf_class_mode_set(self, cfg->tc_mode);
 
-	/* Rx flow control */
+	 
 	hw_atl_rpb_rx_flow_ctl_mode_set(self, 1U);
 
-	/* RSS Ring selection */
+	 
 	hw_atl_b0_hw_init_rx_rss_ctrl1(self);
 
-	/* Multicast filters */
+	 
 	for (i = HW_ATL_B0_MAC_MAX; i--;) {
 		hw_atl_rpfl2_uc_flr_en_set(self, (i == 0U) ? 1U : 0U, i);
 		hw_atl_rpfl2unicast_flr_act_set(self, 1U, i);
@@ -507,20 +490,20 @@ static int hw_atl_b0_hw_init_rx_path(struct aq_hw_s *self)
 	hw_atl_reg_rx_flr_mcst_flr_msk_set(self, 0x00000000U);
 	hw_atl_reg_rx_flr_mcst_flr_set(self, 0x00010FFFU, 0U);
 
-	/* Vlan filters */
+	 
 	hw_atl_rpf_vlan_outer_etht_set(self, 0x88A8U);
 	hw_atl_rpf_vlan_inner_etht_set(self, 0x8100U);
 
 	hw_atl_rpf_vlan_prom_mode_en_set(self, 1);
 
-	// Always accept untagged packets
+	
 	hw_atl_rpf_vlan_accept_untagged_packets_set(self, 1U);
 	hw_atl_rpf_vlan_untagged_act_set(self, 1U);
 
-	/* Rx Interrupts */
+	 
 	hw_atl_rdm_rx_desc_wr_wb_irq_en_set(self, 1U);
 
-	/* misc */
+	 
 	aq_hw_write_reg(self, 0x00005040U, ATL_HW_IS_CHIP_FEATURE(self, RPF2) ?
 			0x000F0000U : 0x00000000U);
 
@@ -583,18 +566,15 @@ static int hw_atl_b0_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 	hw_atl_b0_hw_rss_set(self, &aq_nic_cfg->aq_rss);
 	hw_atl_b0_hw_rss_hash_set(self, &aq_nic_cfg->aq_rss);
 
-	/* Force limit MRRS on RDM/TDM to 2K */
+	 
 	val = aq_hw_read_reg(self, HW_ATL_PCI_REG_CONTROL6_ADR);
 	aq_hw_write_reg(self, HW_ATL_PCI_REG_CONTROL6_ADR,
 			(val & ~0x707) | 0x404);
 
-	/* TX DMA total request limit. B0 hardware is not capable to
-	 * handle more than (8K-MRRS) incoming DMA data.
-	 * Value 24 in 256byte units
-	 */
+	 
 	aq_hw_write_reg(self, HW_ATL_TX_DMA_TOTAL_REQ_LIMIT_ADR, 24);
 
-	/* Reset link status and read out initial hardware counters */
+	 
 	self->aq_link_status.mbps = 0;
 	self->aq_fw_ops->update_stats(self);
 
@@ -602,7 +582,7 @@ static int hw_atl_b0_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 	if (err < 0)
 		goto err_exit;
 
-	/* Interrupts */
+	 
 	hw_atl_reg_irq_glb_ctl_set(self,
 				   aq_hw_atl_igcr_table_[aq_nic_cfg->irq_type]
 						 [(aq_nic_cfg->vecs > 1U) ?
@@ -610,14 +590,14 @@ static int hw_atl_b0_hw_init(struct aq_hw_s *self, const u8 *mac_addr)
 
 	hw_atl_itr_irq_auto_masklsw_set(self, aq_nic_cfg->aq_hw_caps->irq_mask);
 
-	/* Interrupts */
+	 
 	hw_atl_reg_gen_irq_map_set(self,
 				   ((HW_ATL_B0_ERR_INT << 0x18) |
 				    (1U << 0x1F)) |
 				   ((HW_ATL_B0_ERR_INT << 0x10) |
 				    (1U << 0x17)), 0U);
 
-	/* Enable link interrupt */
+	 
 	if (aq_nic_cfg->link_irq_vec)
 		hw_atl_reg_gen_irq_map_set(self, BIT(7) |
 					   aq_nic_cfg->link_irq_vec, 3U);
@@ -711,17 +691,17 @@ int hw_atl_b0_hw_ring_tx_xmit(struct aq_hw_s *self, struct aq_ring_s *ring,
 						((u32)buff_pa_len << 4));
 			txd->ctl |= HW_ATL_B0_TXD_CTL_DESC_TYPE_TXD;
 
-			/* PAY_LEN */
+			 
 			txd->ctl2 |= HW_ATL_B0_TXD_CTL2_LEN & (pkt_len << 14);
 
 			if (is_gso || is_vlan) {
-				/* enable tx context */
+				 
 				txd->ctl2 |= HW_ATL_B0_TXD_CTL2_CTX_EN;
 			}
 			if (is_gso)
 				txd->ctl |= HW_ATL_B0_TXD_CTL_CMD_LSO;
 
-			/* Tx checksum offloads */
+			 
 			if (buff->is_ip_cso)
 				txd->ctl |= HW_ATL_B0_TXD_CTL_CMD_IPCSO;
 
@@ -774,9 +754,9 @@ int hw_atl_b0_hw_ring_rx_init(struct aq_hw_s *self, struct aq_ring_s *aq_ring,
 	hw_atl_rpo_rx_desc_vlan_stripping_set(self, !!vlan_rx_stripping,
 					      aq_ring->idx);
 
-	/* Rx ring set mode */
+	 
 
-	/* Mapping interrupt vector */
+	 
 	hw_atl_itr_irq_map_rx_set(self, aq_ring_param->vec_idx, aq_ring->idx);
 	hw_atl_itr_irq_map_en_rx_set(self, true, aq_ring->idx);
 
@@ -804,10 +784,10 @@ int hw_atl_b0_hw_ring_tx_init(struct aq_hw_s *self, struct aq_ring_s *aq_ring,
 
 	hw_atl_b0_hw_tx_ring_tail_update(self, aq_ring);
 
-	/* Set Tx threshold */
+	 
 	hw_atl_tdm_tx_desc_wr_wb_threshold_set(self, 0U, aq_ring->idx);
 
-	/* Mapping interrupt vector */
+	 
 	hw_atl_itr_irq_map_tx_set(self, aq_ring_param->vec_idx, aq_ring->idx);
 	hw_atl_itr_irq_map_en_tx_set(self, true, aq_ring->idx);
 
@@ -851,7 +831,7 @@ static int hw_atl_b0_hw_ring_hwts_rx_fill(struct aq_hw_s *self,
 		rxd->buf_addr = ring->dx_ring_pa + ring->size * ring->dx_size;
 		rxd->hdr_addr = 0U;
 	}
-	/* Make sure descriptors are updated before bump tail*/
+	 
 	wmb();
 
 	hw_atl_reg_rx_dma_desc_tail_ptr_set(self, ring->sw_tail, ring->idx);
@@ -867,7 +847,7 @@ static int hw_atl_b0_hw_ring_hwts_rx_receive(struct aq_hw_s *self,
 			(struct hw_atl_rxd_hwts_wb_s *)
 			(ring->dx_ring + (ring->hw_head * HW_ATL_B0_RXD_SIZE));
 
-		/* RxD is not done */
+		 
 		if (!(hwts_wb->sec_lw0 & 0x1U))
 			break;
 
@@ -890,7 +870,7 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
 		goto err_exit;
 	}
 
-	/* Validate that the new hw_head_ is reasonable. */
+	 
 	if (hw_head_ >= ring->size) {
 		err = -ENXIO;
 		goto err_exit;
@@ -915,7 +895,7 @@ int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s *self, struct aq_ring_s *ring)
 		unsigned int pkt_type = 0U;
 		u8 rx_stat = 0U;
 
-		if (!(rxd_wb->status & 0x1U)) { /* RxD is not done */
+		if (!(rxd_wb->status & 0x1U)) {  
 			break;
 		}
 
@@ -944,7 +924,7 @@ int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s *self, struct aq_ring_s *ring)
 						   !!(rx_stat & BIT(3));
 		}
 		buff->is_cso_err = !!(rx_stat & 0x6);
-		/* Checksum offload workaround for small packets */
+		 
 		if (unlikely(rxd_wb->pkt_len <= 60)) {
 			buff->is_ip_cso = 0U;
 			buff->is_cso_err = 0U;
@@ -958,11 +938,11 @@ int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s *self, struct aq_ring_s *ring)
 		}
 
 		if ((rx_stat & BIT(0)) || rxd_wb->type & 0x1000U) {
-			/* MAC error or DMA error */
+			 
 			buff->is_error = 1U;
 		}
 		if (self->aq_nic_cfg->is_rss) {
-			/* last 4 byte */
+			 
 			u16 rss_type = rxd_wb->type & 0xFU;
 
 			if (rss_type && rss_type < 0x8U) {
@@ -987,11 +967,11 @@ int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s *self, struct aq_ring_s *ring)
 				ring->frame_max : rxd_wb->pkt_len;
 
 			if (buff->is_lro) {
-				/* LRO */
+				 
 				buff->next = rxd_wb->next_desc_ptr;
 				++ring->stats.rx.lro_packets;
 			} else {
-				/* jumbo */
+				 
 				buff->next =
 					aq_ring_next_dx(ring,
 							ring->hw_head);
@@ -1122,7 +1102,7 @@ static int hw_atl_b0_hw_interrupt_moderation_set(struct aq_hw_s *self)
 		hw_atl_rdm_rdm_intr_moder_en_set(self, 1U);
 
 		if (self->aq_nic_cfg->itr == AQ_CFG_INTERRUPT_MODERATION_ON) {
-			/* HW timers are in 2us units */
+			 
 			int tx_max_timer = self->aq_nic_cfg->tx_itr / 2;
 			int tx_min_timer = tx_max_timer / 2;
 
@@ -1140,28 +1120,28 @@ static int hw_atl_b0_hw_interrupt_moderation_set(struct aq_hw_s *self)
 			itr_rx |= rx_max_timer << 0x10U;
 		} else {
 			static unsigned int hw_atl_b0_timers_table_tx_[][2] = {
-				{0xfU, 0xffU}, /* 10Gbit */
-				{0xfU, 0x1ffU}, /* 5Gbit */
-				{0xfU, 0x1ffU}, /* 5Gbit 5GS */
-				{0xfU, 0x1ffU}, /* 2.5Gbit */
-				{0xfU, 0x1ffU}, /* 1Gbit */
-				{0xfU, 0x1ffU}, /* 100Mbit */
+				{0xfU, 0xffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
+				{0xfU, 0x1ffU},  
 			};
 
 			static unsigned int hw_atl_b0_timers_table_rx_[][2] = {
-				{0x6U, 0x38U},/* 10Gbit */
-				{0xCU, 0x70U},/* 5Gbit */
-				{0xCU, 0x70U},/* 5Gbit 5GS */
-				{0x18U, 0xE0U},/* 2.5Gbit */
-				{0x30U, 0x80U},/* 1Gbit */
-				{0x4U, 0x50U},/* 100Mbit */
+				{0x6U, 0x38U}, 
+				{0xCU, 0x70U}, 
+				{0xCU, 0x70U}, 
+				{0x18U, 0xE0U}, 
+				{0x30U, 0x80U}, 
+				{0x4U, 0x50U}, 
 			};
 
 			unsigned int speed_index =
 					hw_atl_utils_mbps_2_speed_index(
 						self->aq_link_status.mbps);
 
-			/* Update user visible ITR settings */
+			 
 			self->aq_nic_cfg->tx_itr = hw_atl_b0_timers_table_tx_
 							[speed_index][1] * 2;
 			self->aq_nic_cfg->rx_itr = hw_atl_b0_timers_table_rx_
@@ -1203,9 +1183,7 @@ static int hw_atl_b0_hw_stop(struct aq_hw_s *self)
 
 	hw_atl_b0_hw_irq_disable(self, HW_ATL_B0_INT_MASK);
 
-	/* Invalidate Descriptor Cache to prevent writing to the cached
-	 * descriptors and to the data pointer of those descriptors
-	 */
+	 
 	hw_atl_rdm_rx_dma_desc_cache_init_tgl(self);
 
 	err = aq_hw_err_from_flags(self);
@@ -1253,7 +1231,7 @@ static void hw_atl_b0_get_ptp_ts(struct aq_hw_s *self, u64 *stamp)
 
 static void hw_atl_b0_adj_params_get(u64 freq, s64 adj, u32 *ns, u32 *fns)
 {
-	/* For accuracy, the digit is extended */
+	 
 	s64 base_ns = ((adj + NSEC_PER_SEC) * NSEC_PER_SEC);
 	u64 nsi_frac = 0;
 	u64 nsi;
@@ -1282,7 +1260,7 @@ hw_atl_b0_mac_adj_param_calc(struct hw_fw_request_ptp_adj_freq *ptp_adj_freq,
 					AQ_FRAC_PER_NS * ptp_adj_freq->ns_mac);
 	s64 fault_in_sec_phy = AQ_FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_phy;
 	s64 fault_in_sec_mac = AQ_FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_mac;
-	/* MAC MCP counter freq is macfreq / 4 */
+	 
 	s64 diff_in_mcp_overflow = (fault_in_sec_mac - fault_in_sec_phy) *
 				   4 * AQ_FRAC_PER_NS;
 
@@ -1351,7 +1329,7 @@ static int hw_atl_b0_gpio_pulse(struct aq_hw_s *self, u32 index,
 	fwreq.msg_id = HW_AQ_FW_REQUEST_PTP_GPIO_CTRL;
 	fwreq.ptp_gpio_ctrl.index = index;
 	fwreq.ptp_gpio_ctrl.period = period;
-	/* Apply time offset */
+	 
 	fwreq.ptp_gpio_ctrl.start = start;
 
 	size = sizeof(fwreq.msg_id) + sizeof(fwreq.ptp_gpio_ctrl);
@@ -1361,7 +1339,7 @@ static int hw_atl_b0_gpio_pulse(struct aq_hw_s *self, u32 index,
 static int hw_atl_b0_extts_gpio_enable(struct aq_hw_s *self, u32 index,
 				       u32 enable)
 {
-	/* Enable/disable Sync1588 GPIO Timestamping */
+	 
 	aq_phy_write_reg(self, MDIO_MMD_PCS, 0xc611, enable ? 0x71 : 0);
 
 	return 0;
@@ -1377,13 +1355,13 @@ static int hw_atl_b0_get_sync_ts(struct aq_hw_s *self, u64 *ts)
 	if (!ts)
 		return -1;
 
-	/* PTP external GPIO clock seconds count 15:0 */
+	 
 	sec_l = aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc914);
-	/* PTP external GPIO clock seconds count 31:16 */
+	 
 	sec_h = aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc915);
-	/* PTP external GPIO clock nanoseconds count 15:0 */
+	 
 	nsec_l = aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc916);
-	/* PTP external GPIO clock nanoseconds count 31:16 */
+	 
 	nsec_h = aq_phy_read_reg(self, MDIO_MMD_PCS, 0xc917);
 
 	*ts = (nsec_h << 16) + nsec_l + ((sec_h << 16) + sec_l) * NSEC_PER_SEC;
@@ -1403,14 +1381,7 @@ static u16 hw_atl_b0_rx_extract_ts(struct aq_hw_s *self, u8 *p,
 	if (len <= offset || !timestamp)
 		return 0;
 
-	/* The TIMESTAMP in the end of package has following format:
-	 * (big-endian)
-	 *   struct {
-	 *     uint64_t sec;
-	 *     uint32_t ns;
-	 *     uint16_t stream_id;
-	 *   };
-	 */
+	 
 	ptr = p + (len - offset);
 	memcpy(&sec, ptr, sizeof(sec));
 	ptr += sizeof(sec);
@@ -1543,16 +1514,7 @@ static int hw_atl_b0_hw_fl2_clear(struct aq_hw_s *self,
 	return aq_hw_err_from_flags(self);
 }
 
-/*
- * @brief Set VLAN filter table
- * @details Configure VLAN filter table to accept (and assign the queue) traffic
- *  for the particular vlan ids.
- * Note: use this function under vlan promisc mode not to lost the traffic
- *
- * @param aq_hw_s
- * @param aq_rx_filter_vlan VLAN filter configuration
- * @return 0 - OK, <0 - error
- */
+ 
 static int hw_atl_b0_hw_vlan_set(struct aq_hw_s *self,
 				 struct aq_rx_filter_vlan *aq_vlans)
 {
@@ -1581,7 +1543,7 @@ static int hw_atl_b0_hw_vlan_set(struct aq_hw_s *self,
 
 static int hw_atl_b0_hw_vlan_ctrl(struct aq_hw_s *self, bool enable)
 {
-	/* set promisc in case of disabing the vland filter */
+	 
 	hw_atl_rpf_vlan_prom_mode_en_set(self, !enable);
 
 	return aq_hw_err_from_flags(self);
@@ -1630,10 +1592,10 @@ static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
 	ts_disabled = (hw_atl_ts_power_down_get(self) == 1U);
 
 	if (ts_disabled) {
-		// Set AFE Temperature Sensor to on (off by default)
+		
 		hw_atl_ts_power_down_set(self, 0U);
 
-		// Reset internal capacitors, biasing, and counters
+		
 		hw_atl_ts_reset_set(self, 1);
 		hw_atl_ts_reset_set(self, 0);
 	}
@@ -1647,7 +1609,7 @@ static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
 	*temp = ts * ts * 16 / 100000 + 60 * ts - 83410;
 
 	if (ts_disabled) {
-		// Set AFE Temperature Sensor back to off
+		
 		hw_atl_ts_power_down_set(self, 1U);
 	}
 

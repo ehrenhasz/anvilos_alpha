@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_TRANSFORM_H__
 #define __DAL_TRANSFORM_H__
@@ -42,7 +19,7 @@ struct transform {
 	struct pwl_params regamma_params;
 };
 
-/* Colorimetry */
+ 
 enum colorimetry {
 	COLORIMETRY_NO_DATA = 0,
 	COLORIMETRY_ITU601 = 1,
@@ -66,7 +43,7 @@ enum active_format_info {
 	ACTIVE_FORMAT_VALID = 1
 };
 
-/* Active format aspect ratio */
+ 
 enum active_format_aspect_ratio {
 	ACTIVE_FORMAT_ASPECT_RATIO_SAME_AS_PICTURE = 8,
 	ACTIVE_FORMAT_ASPECT_RATIO_4_3 = 9,
@@ -88,7 +65,7 @@ enum picture_scaling {
 	PICTURE_SCALING_BOTH = 3
 };
 
-/* RGB quantization range */
+ 
 enum rgb_quantization_range {
 	RGB_QUANTIZATION_DEFAULT_RANGE = 0,
 	RGB_QUANTIZATION_LIMITED_RANGE = 1,
@@ -96,7 +73,7 @@ enum rgb_quantization_range {
 	RGB_QUANTIZATION_RESERVED = 3
 };
 
-/* YYC quantization range */
+ 
 enum yyc_quantization_range {
 	YYC_QUANTIZATION_LIMITED_RANGE = 0,
 	YYC_QUANTIZATION_FULL_RANGE = 1,
@@ -106,23 +83,21 @@ enum yyc_quantization_range {
 
 enum graphics_gamut_adjust_type {
 	GRAPHICS_GAMUT_ADJUST_TYPE_BYPASS = 0,
-	GRAPHICS_GAMUT_ADJUST_TYPE_HW, /* without adjustments */
-	GRAPHICS_GAMUT_ADJUST_TYPE_SW /* use adjustments */
+	GRAPHICS_GAMUT_ADJUST_TYPE_HW,  
+	GRAPHICS_GAMUT_ADJUST_TYPE_SW  
 };
 
 enum lb_memory_config {
-	/* Enable all 3 pieces of memory */
+	 
 	LB_MEMORY_CONFIG_0 = 0,
 
-	/* Enable only the first piece of memory */
+	 
 	LB_MEMORY_CONFIG_1 = 1,
 
-	/* Enable only the second piece of memory */
+	 
 	LB_MEMORY_CONFIG_2 = 2,
 
-	/* Only applicable in 4:2:0 mode, enable all 3 pieces of memory and the
-	 * last piece of chroma memory used for the luma storage
-	 */
+	 
 	LB_MEMORY_CONFIG_3 = 3
 };
 
@@ -273,29 +248,21 @@ const uint16_t *get_filter_7tap_64p(struct fixed31_32 ratio);
 const uint16_t *get_filter_8tap_64p(struct fixed31_32 ratio);
 
 
-/* Defines the pixel processing capability of the DSCL */
+ 
 enum dscl_data_processing_format {
-	DSCL_DATA_PRCESSING_FIXED_FORMAT,	/* The DSCL processes pixel data in fixed format */
-	DSCL_DATA_PRCESSING_FLOAT_FORMAT,	/* The DSCL processes pixel data in float format */
+	DSCL_DATA_PRCESSING_FIXED_FORMAT,	 
+	DSCL_DATA_PRCESSING_FLOAT_FORMAT,	 
 };
 
-/*
- * The DPP capabilities structure contains enumerations to specify the
- * HW processing features and an associated function pointers to
- * provide the function interface that can be overloaded for implementations
- * based on different capabilities
- */
+ 
 struct dpp_caps {
-	/* DSCL processing pixel data in fixed or float format */
+	 
 	enum dscl_data_processing_format dscl_data_proc_format;
 
-	/* max LB partitions */
+	 
 	unsigned int max_lb_partitions;
 
-	/* Calculates the number of partitions in the line buffer.
-	 * The implementation of this function is overloaded for
-	 * different versions of DSCL LB.
-	 */
+	 
 	void (*dscl_calc_lb_num_partitions)(
 			const struct scaler_data *scl_data,
 			enum lb_memory_config lb_config,

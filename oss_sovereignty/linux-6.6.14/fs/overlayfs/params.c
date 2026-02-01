@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -192,7 +192,7 @@ static ssize_t ovl_parse_param_split_lowerdirs(char *str)
 
 	for (s = d = str;; s++, d++) {
 		if (*s == '\\') {
-			/* keep esc chars in split lowerdir */
+			 
 			*d++ = *s++;
 		} else if (*s == ':') {
 			bool next_colon = (*(s + 1) == ':');
@@ -202,7 +202,7 @@ static ssize_t ovl_parse_param_split_lowerdirs(char *str)
 				pr_err("only single ':' or double '::' sequences of unescaped colons in lowerdir mount option allowed.\n");
 				return -EINVAL;
 			}
-			/* count layers, not colons */
+			 
 			if (!next_colon)
 				nr_layers++;
 
@@ -212,7 +212,7 @@ static ssize_t ovl_parse_param_split_lowerdirs(char *str)
 
 		*d = *s;
 		if (!*s) {
-			/* trailing colons */
+			 
 			if (nr_colons) {
 				pr_err("unescaped trailing colons in lowerdir mount option.\n");
 				return -EINVAL;
@@ -302,11 +302,7 @@ static int ovl_parse_param_upperdir(const char *name, struct fs_context *fc,
 	if (err)
 		return err;
 
-	/*
-	 * Check whether upper path is read-only here to report failures
-	 * early. Don't forget to recheck when the superblock is created
-	 * as the mount attributes could change.
-	 */
+	 
 	if (__mnt_is_readonly(path.mnt)) {
 		path_put(&path);
 		return -EINVAL;
@@ -343,14 +339,7 @@ static void ovl_parse_param_drop_lowerdir(struct ovl_fs_context *ctx)
 	ctx->nr_data = 0;
 }
 
-/*
- * Parse lowerdir= mount option:
- *
- * (1) lowerdir=/lower1:/lower2:/lower3::/data1::/data2
- *     Set "/lower1", "/lower2", and "/lower3" as lower layers and
- *     "/data1" and "/data2" as data lower layers. Any existing lower
- *     layers are replaced.
- */
+ 
 static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 {
 	int err;
@@ -360,12 +349,9 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 	ssize_t nr_lower = 0, nr = 0, nr_data = 0;
 	bool append = false, data_layer = false;
 
-	/*
-	 * Ensure we're backwards compatible with mount(2)
-	 * by allowing relative paths.
-	 */
+	 
 
-	/* drop all existing lower layers */
+	 
 	if (!*name) {
 		ovl_parse_param_drop_lowerdir(ctx);
 		return 0;
@@ -394,26 +380,7 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 	if (!append)
 		ovl_parse_param_drop_lowerdir(ctx);
 
-	/*
-	 * (1) append
-	 *
-	 * We want nr <= nr_lower <= capacity We know nr > 0 and nr <=
-	 * capacity. If nr == 0 this wouldn't be append. If nr +
-	 * nr_lower is <= capacity then nr <= nr_lower <= capacity
-	 * already holds. If nr + nr_lower exceeds capacity, we realloc.
-	 *
-	 * (2) replace
-	 *
-	 * Ensure we're backwards compatible with mount(2) which allows
-	 * "lowerdir=/a:/b:/c,lowerdir=/d:/e:/f" causing the last
-	 * specified lowerdir mount option to win.
-	 *
-	 * We want nr <= nr_lower <= capacity We know either (i) nr == 0
-	 * or (ii) nr > 0. We also know nr_lower > 0. The capacity
-	 * could've been changed multiple times already so we only know
-	 * nr <= capacity. If nr + nr_lower > capacity we realloc,
-	 * otherwise nr <= nr_lower <= capacity holds already.
-	 */
+	 
 	nr_lower += ctx->nr;
 	if (nr_lower > ctx->capacity) {
 		err = -ENOMEM;
@@ -426,30 +393,7 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 		ctx->capacity = nr_lower;
 	}
 
-	/*
-	 *   (3) By (1) and (2) we know nr <= nr_lower <= capacity.
-	 *   (4) If ctx->nr == 0 => replace
-	 *       We have verified above that the lowerdir mount option
-	 *       isn't an append, i.e., the lowerdir mount option
-	 *       doesn't start with ":" or "::".
-	 * (4.1) The lowerdir mount options only contains regular lower
-	 *       layers ":".
-	 *       => Nothing to verify.
-	 * (4.2) The lowerdir mount options contains regular ":" and
-	 *       data "::" layers.
-	 *       => We need to verify that data lower layers "::" aren't
-	 *          followed by regular ":" lower layers
-	 *   (5) If ctx->nr > 0 => append
-	 *       We know that there's at least one regular layer
-	 *       otherwise we would've failed when parsing the previous
-	 *       lowerdir mount option.
-	 * (5.1) The lowerdir mount option is a regular layer ":" append
-	 *       => We need to verify that no data layers have been
-	 *          specified before.
-	 * (5.2) The lowerdir mount option is a data layer "::" append
-	 *       We know that there's at least one regular layer or
-	 *       other data layers. => There's nothing to verify.
-	 */
+	 
 	dup_iter = dup;
 	for (nr = ctx->nr; nr < nr_lower; nr++) {
 		l = &ctx->lower[nr];
@@ -467,17 +411,14 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 		if (data_layer)
 			nr_data++;
 
-		/* Calling strchr() again would overrun. */
+		 
 		if ((nr + 1) == nr_lower)
 			break;
 
 		err = -EINVAL;
 		dup_iter = strchr(dup_iter, '\0') + 1;
 		if (*dup_iter) {
-			/*
-			 * This is a regular layer so we require that
-			 * there are no data layers.
-			 */
+			 
 			if ((ctx->nr_data + nr_data) > 0) {
 				pr_err("regular lower layers cannot follow data lower layers");
 				goto out_put;
@@ -487,7 +428,7 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 			continue;
 		}
 
-		/* This is a data lower layer. */
+		 
 		data_layer = true;
 		dup_iter++;
 	}
@@ -497,18 +438,14 @@ static int ovl_parse_param_lowerdir(const char *name, struct fs_context *fc)
 	return 0;
 
 out_put:
-	/*
-	 * We know nr >= ctx->nr < nr_lower. If we failed somewhere
-	 * we want to undo until nr == ctx->nr. This is correct for
-	 * both ctx->nr == 0 and ctx->nr > 0.
-	 */
+	 
 	for (; nr >= ctx->nr; nr--) {
 		l = &ctx->lower[nr];
 		kfree(l->name);
 		l->name = NULL;
 		path_put(&l->path);
 
-		/* don't overflow */
+		 
 		if (nr == 0)
 			break;
 	}
@@ -516,7 +453,7 @@ out_put:
 out_err:
 	kfree(dup);
 
-	/* Intentionally don't realloc to a smaller size. */
+	 
 	return err;
 }
 
@@ -530,21 +467,11 @@ static int ovl_parse_param(struct fs_context *fc, struct fs_parameter *param)
 	int opt;
 
 	if (fc->purpose == FS_CONTEXT_FOR_RECONFIGURE) {
-		/*
-		 * On remount overlayfs has always ignored all mount
-		 * options no matter if malformed or not so for
-		 * backwards compatibility we do the same here.
-		 */
+		 
 		if (fc->oldapi)
 			return 0;
 
-		/*
-		 * Give us the freedom to allow changing mount options
-		 * with the new mount api in the future. So instead of
-		 * silently ignoring everything we report a proper
-		 * error. This is only visible for users of the new
-		 * mount api.
-		 */
+		 
 		return invalfc(fc, "No changes allowed in reconfigure");
 	}
 
@@ -629,12 +556,7 @@ static void ovl_free(struct fs_context *fc)
 	struct ovl_fs *ofs = fc->s_fs_info;
 	struct ovl_fs_context *ctx = fc->fs_private;
 
-	/*
-	 * ofs is stored in the fs_context when it is initialized.
-	 * ofs is transferred to the superblock on a successful mount,
-	 * but if an error occurs before the transfer we have to free
-	 * it here.
-	 */
+	 
 	if (ofs)
 		ovl_free_fs(ofs);
 
@@ -672,13 +594,7 @@ static const struct fs_context_operations ovl_context_ops = {
 	.free        = ovl_free,
 };
 
-/*
- * This is called during fsopen() and will record the user namespace of
- * the caller in fc->user_ns since we've raised FS_USERNS_MOUNT. We'll
- * need it when we actually create the superblock to verify that the
- * process creating the superblock is in the same user namespace as
- * process that called fsopen().
- */
+ 
 int ovl_init_fs_context(struct fs_context *fc)
 {
 	struct ovl_fs_context *ctx;
@@ -688,10 +604,7 @@ int ovl_init_fs_context(struct fs_context *fc)
 	if (!ctx)
 		return -ENOMEM;
 
-	/*
-	 * By default we allocate for three lower layers. It's likely
-	 * that it'll cover most users.
-	 */
+	 
 	ctx->lower = kmalloc_array(3, sizeof(*ctx->lower), GFP_KERNEL_ACCOUNT);
 	if (!ctx->lower)
 		goto out_err;
@@ -736,7 +649,7 @@ void ovl_free_fs(struct ovl_fs *ofs)
 	if (ofs->upperdir_locked)
 		ovl_inuse_unlock(ovl_upper_mnt(ofs)->mnt_root);
 
-	/* Reuse ofs->config.lowerdirs as a vfsmount array before freeing it */
+	 
 	mounts = (struct vfsmount **) ofs->config.lowerdirs;
 	for (i = 0; i < ofs->numlayer; i++) {
 		iput(ofs->layers[i].trap);
@@ -767,7 +680,7 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 		return -EINVAL;
 	}
 
-	/* Workdir/index are useless in non-upper mount */
+	 
 	if (!config->upperdir) {
 		if (config->workdir) {
 			pr_info("option \"workdir=%s\" is useless in a non-upper mount, ignore\n",
@@ -792,26 +705,23 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 		config->uuid = OVL_UUID_NULL;
 	}
 
-	/* Resolve verity -> metacopy dependency */
+	 
 	if (config->verity_mode && !config->metacopy) {
-		/* Don't allow explicit specified conflicting combinations */
+		 
 		if (set.metacopy) {
 			pr_err("conflicting options: metacopy=off,verity=%s\n",
 			       ovl_verity_mode(config));
 			return -EINVAL;
 		}
-		/* Otherwise automatically enable metacopy. */
+		 
 		config->metacopy = true;
 	}
 
-	/*
-	 * This is to make the logic below simpler.  It doesn't make any other
-	 * difference, since redirect_dir=on is only used for upper.
-	 */
+	 
 	if (!config->upperdir && config->redirect_mode == OVL_REDIRECT_FOLLOW)
 		config->redirect_mode = OVL_REDIRECT_ON;
 
-	/* Resolve verity -> metacopy -> redirect_dir dependency */
+	 
 	if (config->metacopy && config->redirect_mode != OVL_REDIRECT_ON) {
 		if (set.metacopy && set.redirect) {
 			pr_err("conflicting options: metacopy=on,redirect_dir=%s\n",
@@ -824,20 +734,17 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 			return -EINVAL;
 		}
 		if (set.redirect) {
-			/*
-			 * There was an explicit redirect_dir=... that resulted
-			 * in this conflict.
-			 */
+			 
 			pr_info("disabling metacopy due to redirect_dir=%s\n",
 				ovl_redirect_mode(config));
 			config->metacopy = false;
 		} else {
-			/* Automatically enable redirect otherwise. */
+			 
 			config->redirect_mode = OVL_REDIRECT_ON;
 		}
 	}
 
-	/* Resolve nfs_export -> index dependency */
+	 
 	if (config->nfs_export && !config->index) {
 		if (!config->upperdir &&
 		    config->redirect_mode != OVL_REDIRECT_NOFOLLOW) {
@@ -847,51 +754,39 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 			pr_err("conflicting options: nfs_export=on,index=off\n");
 			return -EINVAL;
 		} else if (set.index) {
-			/*
-			 * There was an explicit index=off that resulted
-			 * in this conflict.
-			 */
+			 
 			pr_info("disabling nfs_export due to index=off\n");
 			config->nfs_export = false;
 		} else {
-			/* Automatically enable index otherwise. */
+			 
 			config->index = true;
 		}
 	}
 
-	/* Resolve nfs_export -> !metacopy && !verity dependency */
+	 
 	if (config->nfs_export && config->metacopy) {
 		if (set.nfs_export && set.metacopy) {
 			pr_err("conflicting options: nfs_export=on,metacopy=on\n");
 			return -EINVAL;
 		}
 		if (set.metacopy) {
-			/*
-			 * There was an explicit metacopy=on that resulted
-			 * in this conflict.
-			 */
+			 
 			pr_info("disabling nfs_export due to metacopy=on\n");
 			config->nfs_export = false;
 		} else if (config->verity_mode) {
-			/*
-			 * There was an explicit verity=.. that resulted
-			 * in this conflict.
-			 */
+			 
 			pr_info("disabling nfs_export due to verity=%s\n",
 				ovl_verity_mode(config));
 			config->nfs_export = false;
 		} else {
-			/*
-			 * There was an explicit nfs_export=on that resulted
-			 * in this conflict.
-			 */
+			 
 			pr_info("disabling metacopy due to nfs_export=on\n");
 			config->metacopy = false;
 		}
 	}
 
 
-	/* Resolve userxattr -> !redirect && !metacopy && !verity dependency */
+	 
 	if (config->userxattr) {
 		if (set.redirect &&
 		    config->redirect_mode != OVL_REDIRECT_NOFOLLOW) {
@@ -908,12 +803,7 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 			       ovl_verity_mode(config));
 			return -EINVAL;
 		}
-		/*
-		 * Silently disable default setting of redirect and metacopy.
-		 * This shall be the default in the future as well: these
-		 * options must be explicitly enabled if used together with
-		 * userxattr.
-		 */
+		 
 		config->redirect_mode = OVL_REDIRECT_NOFOLLOW;
 		config->metacopy = false;
 	}
@@ -921,28 +811,14 @@ int ovl_fs_params_verify(const struct ovl_fs_context *ctx,
 	return 0;
 }
 
-/**
- * ovl_show_options
- * @m: the seq_file handle
- * @dentry: The dentry to query
- *
- * Prints the mount options for a given superblock.
- * Returns zero; does not fail.
- */
+ 
 int ovl_show_options(struct seq_file *m, struct dentry *dentry)
 {
 	struct super_block *sb = dentry->d_sb;
 	struct ovl_fs *ofs = OVL_FS(sb);
 	size_t nr, nr_merged_lower = ofs->numlayer - ofs->numdatalayer;
 
-	/*
-	 * lowerdirs[] starts from offset 1, then
-	 * >= 0 regular lower layers prefixed with : and
-	 * >= 0 data-only lower layers prefixed with ::
-	 *
-	 * we need to escase comma and space like seq_show_option() does and
-	 * we also need to escape the colon separator from lowerdir paths.
-	 */
+	 
 	seq_puts(m, ",lowerdir=");
 	for (nr = 1; nr < ofs->numlayer; nr++) {
 		if (nr > 1)

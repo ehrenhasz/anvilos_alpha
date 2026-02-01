@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright(c) 2016 - 2018 Intel Corporation.
- */
+ 
+ 
 
 #ifndef IB_HDRS_H
 #define IB_HDRS_H
@@ -12,7 +10,7 @@
 
 #define IB_SEQ_NAK	(3 << 29)
 
-/* AETH NAK opcode values */
+ 
 #define IB_RNR_NAK                      0x20
 #define IB_NAK_PSN_ERROR                0x60
 #define IB_NAK_INVALID_REQUEST          0x61
@@ -46,16 +44,16 @@
 #define IB_MSN_MASK		0xFFFFFF
 
 struct ib_reth {
-	__be64 vaddr;        /* potentially unaligned */
+	__be64 vaddr;         
 	__be32 rkey;
 	__be32 length;
 } __packed;
 
 struct ib_atomic_eth {
-	__be64 vaddr;        /* potentially unaligned */
+	__be64 vaddr;         
 	__be32 rkey;
-	__be64 swap_data;    /* potentially unaligned */
-	__be64 compare_data; /* potentially unaligned */
+	__be64 swap_data;     
+	__be64 compare_data;  
 } __packed;
 
 #include <rdma/tid_rdma_defs.h>
@@ -71,13 +69,13 @@ union ib_ehdrs {
 	} rc;
 	struct {
 		__be32 aeth;
-		__be64 atomic_ack_eth; /* potentially unaligned */
+		__be64 atomic_ack_eth;  
 	} __packed at;
 	__be32 imm_data;
 	__be32 aeth;
 	__be32 ieth;
 	struct ib_atomic_eth atomic_eth;
-	/* TID RDMA headers */
+	 
 	union {
 		struct tid_rdma_read_req r_req;
 		struct tid_rdma_read_resp r_rsp;
@@ -105,7 +103,7 @@ struct ib_header {
 	} u;
 } __packed;
 
-/* accessors for unaligned __be64 items */
+ 
 
 static inline u64 ib_u64_get(__be64 *p)
 {
@@ -157,9 +155,7 @@ static inline void put_ib_ateth_compare(u64 val, struct ib_atomic_eth *ateth)
 	ib_u64_put(val, &ateth->compare_data);
 }
 
-/*
- * 9B/IB Packet Format
- */
+ 
 #define IB_LNH_MASK		3
 #define IB_SC_MASK		0xf
 #define IB_SC_SHIFT		12
@@ -216,9 +212,7 @@ static inline u32 ib_get_sqpn(struct ib_other_headers *ohdr)
 	return ((be32_to_cpu(ohdr->u.ud.deth[1])) & IB_QPN_MASK);
 }
 
-/*
- * BTH
- */
+ 
 #define IB_BTH_OPCODE_MASK	0xff
 #define IB_BTH_OPCODE_SHIFT	24
 #define IB_BTH_PAD_MASK	3
@@ -304,4 +298,4 @@ static inline bool ib_bth_is_migration(struct ib_other_headers *ohdr)
 {
 	return ohdr->bth[0] & cpu_to_be32(IB_BTH_MIG_REQ);
 }
-#endif                          /* IB_HDRS_H */
+#endif                           

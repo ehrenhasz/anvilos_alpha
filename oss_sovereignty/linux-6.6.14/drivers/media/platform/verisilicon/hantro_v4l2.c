@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Collabora, Ltd.
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- *	Alpha Lin <Alpha.Lin@rock-chips.com>
- *	Jeffy Chen <jeffy.chen@rock-chips.com>
- *
- * Copyright 2018 Google LLC.
- *	Tomasz Figa <tfiga@chromium.org>
- *
- * Based on s5p-mfc driver by Samsung Electronics Co., Ltd.
- * Copyright (C) 2010-2011 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -92,16 +79,13 @@ hantro_check_depth_match(const struct hantro_fmt *fmt, int bit_depth)
 	if (!fmt->match_depth && !fmt->postprocessed)
 		return true;
 
-	/* 0 means default depth, which is 8 */
+	 
 	if (!bit_depth)
 		bit_depth = HANTRO_DEFAULT_BIT_DEPTH;
 
 	fmt_depth = hantro_get_format_depth(fmt->fourcc);
 
-	/*
-	 * Allow only downconversion for postproc formats for now.
-	 * It may be possible to relax that on some HW.
-	 */
+	 
 	if (!fmt->match_depth)
 		return fmt_depth <= bit_depth;
 
@@ -176,7 +160,7 @@ static int vidioc_enum_framesizes(struct file *file, void *priv,
 		return -EINVAL;
 	}
 
-	/* For non-coded formats check if postprocessing scaling is possible */
+	 
 	if (fmt->codec_mode == HANTRO_MODE_NONE) {
 		if (hantro_needs_postproc(ctx, fmt))
 			return hanto_postproc_enum_framesizes(ctx, fsize);
@@ -203,16 +187,7 @@ static int vidioc_enum_fmt(struct file *file, void *priv,
 	unsigned int num_fmts, i, j = 0;
 	bool skip_mode_none;
 
-	/*
-	 * When dealing with an encoder:
-	 *  - on the capture side we want to filter out all MODE_NONE formats.
-	 *  - on the output side we want to filter out all formats that are
-	 *    not MODE_NONE.
-	 * When dealing with a decoder:
-	 *  - on the capture side we want to filter out all formats that are
-	 *    not MODE_NONE.
-	 *  - on the output side we want to filter out all MODE_NONE formats.
-	 */
+	 
 	skip_mode_none = capture == ctx->is_encoder;
 
 	formats = hantro_get_formats(ctx, &num_fmts, HANTRO_AUTO_POSTPROC);
@@ -231,11 +206,7 @@ static int vidioc_enum_fmt(struct file *file, void *priv,
 		++j;
 	}
 
-	/*
-	 * Enumerate post-processed formats. As per the specification,
-	 * we enumerated these formats after natively decoded formats
-	 * as a hint for applications on what's the preferred fomat.
-	 */
+	 
 	if (!capture)
 		return -EINVAL;
 	formats = hantro_get_postproc_formats(ctx, &num_fmts);
@@ -321,10 +292,7 @@ static int hantro_try_fmt(const struct hantro_ctx *ctx,
 	} else if (ctx->is_encoder) {
 		vpu_fmt = hantro_find_format(ctx, ctx->dst_fmt.pixelformat);
 	} else {
-		/*
-		 * Width/height on the CAPTURE end of a decoder are ignored and
-		 * replaced by the OUTPUT ones.
-		 */
+		 
 		pix_mp->width = ctx->src_fmt.width;
 		pix_mp->height = ctx->src_fmt.height;
 		vpu_fmt = fmt;
@@ -336,7 +304,7 @@ static int hantro_try_fmt(const struct hantro_ctx *ctx,
 				       &vpu_fmt->frmsize);
 
 	if (!coded) {
-		/* Fill remaining fields */
+		 
 		v4l2_fill_pixfmt_mp(pix_mp, fmt->fourcc, pix_mp->width,
 				    pix_mp->height);
 		if (ctx->vpu_src_fmt->fourcc == V4L2_PIX_FMT_H264_SLICE &&
@@ -360,11 +328,7 @@ static int hantro_try_fmt(const struct hantro_ctx *ctx,
 				hantro_av1_mv_size(pix_mp->width,
 						   pix_mp->height);
 	} else if (!pix_mp->plane_fmt[0].sizeimage) {
-		/*
-		 * For coded formats the application can specify
-		 * sizeimage. If the application passes a zero sizeimage,
-		 * let's default to the maximum frame size.
-		 */
+		 
 		pix_mp->plane_fmt[0].sizeimage = fmt->header_size +
 			pix_mp->width * pix_mp->height * fmt->max_depth;
 	}
@@ -516,28 +480,17 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
 	if (!ctx->is_encoder) {
 		struct vb2_queue *peer_vq;
 
-		/*
-		 * In order to support dynamic resolution change,
-		 * the decoder admits a resolution change, as long
-		 * as the pixelformat remains. Can't be done if streaming.
-		 */
+		 
 		if (vb2_is_streaming(vq) || (vb2_is_busy(vq) &&
 		    pix_mp->pixelformat != ctx->src_fmt.pixelformat))
 			return -EBUSY;
-		/*
-		 * Since format change on the OUTPUT queue will reset
-		 * the CAPTURE queue, we can't allow doing so
-		 * when the CAPTURE queue has buffers allocated.
-		 */
+		 
 		peer_vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 					  V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 		if (vb2_is_busy(peer_vq))
 			return -EBUSY;
 	} else {
-		/*
-		 * The encoder doesn't admit a format change if
-		 * there are OUTPUT buffers allocated.
-		 */
+		 
 		if (vb2_is_busy(vq))
 			return -EBUSY;
 	}
@@ -545,21 +498,13 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
 	ctx->vpu_src_fmt = hantro_find_format(ctx, pix_mp->pixelformat);
 	ctx->src_fmt = *pix_mp;
 
-	/*
-	 * Current raw format might have become invalid with newly
-	 * selected codec, so reset it to default just to be safe and
-	 * keep internal driver state sane. User is mandated to set
-	 * the raw format again after we return, so we don't need
-	 * anything smarter.
-	 * Note that hantro_reset_raw_fmt() also propagates size
-	 * changes to the raw format.
-	 */
+	 
 	if (!ctx->is_encoder)
 		hantro_reset_raw_fmt(ctx,
 				     hantro_get_format_depth(pix_mp->pixelformat),
 				     need_postproc);
 
-	/* Colorimetry information are always propagated. */
+	 
 	ctx->dst_fmt.colorspace = pix_mp->colorspace;
 	ctx->dst_fmt.ycbcr_enc = pix_mp->ycbcr_enc;
 	ctx->dst_fmt.xfer_func = pix_mp->xfer_func;
@@ -580,7 +525,7 @@ static int hantro_set_fmt_cap(struct hantro_ctx *ctx,
 	struct vb2_queue *vq;
 	int ret;
 
-	/* Change not allowed if queue is busy. */
+	 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 			     V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (vb2_is_busy(vq))
@@ -589,11 +534,7 @@ static int hantro_set_fmt_cap(struct hantro_ctx *ctx,
 	if (ctx->is_encoder) {
 		struct vb2_queue *peer_vq;
 
-		/*
-		 * Since format change on the CAPTURE queue will reset
-		 * the OUTPUT queue, we can't allow doing so
-		 * when the OUTPUT queue has buffers allocated.
-		 */
+		 
 		peer_vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 					  V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 		if (vb2_is_busy(peer_vq) &&
@@ -610,19 +551,11 @@ static int hantro_set_fmt_cap(struct hantro_ctx *ctx,
 	ctx->vpu_dst_fmt = hantro_find_format(ctx, pix_mp->pixelformat);
 	ctx->dst_fmt = *pix_mp;
 
-	/*
-	 * Current raw format might have become invalid with newly
-	 * selected codec, so reset it to default just to be safe and
-	 * keep internal driver state sane. User is mandated to set
-	 * the raw format again after we return, so we don't need
-	 * anything smarter.
-	 * Note that hantro_reset_raw_fmt() also propagates size
-	 * changes to the raw format.
-	 */
+	 
 	if (ctx->is_encoder)
 		hantro_reset_raw_fmt(ctx, HANTRO_DEFAULT_BIT_DEPTH, HANTRO_AUTO_POSTPROC);
 
-	/* Colorimetry information are always propagated. */
+	 
 	ctx->src_fmt.colorspace = pix_mp->colorspace;
 	ctx->src_fmt.ycbcr_enc = pix_mp->ycbcr_enc;
 	ctx->src_fmt.xfer_func = pix_mp->xfer_func;
@@ -654,7 +587,7 @@ static int vidioc_g_selection(struct file *file, void *priv,
 {
 	struct hantro_ctx *ctx = fh_to_ctx(priv);
 
-	/* Crop only supported on source. */
+	 
 	if (!ctx->is_encoder ||
 	    sel->type != V4L2_BUF_TYPE_VIDEO_OUTPUT)
 		return -EINVAL;
@@ -687,12 +620,12 @@ static int vidioc_s_selection(struct file *file, void *priv,
 	struct v4l2_rect *rect = &sel->r;
 	struct vb2_queue *vq;
 
-	/* Crop only supported on source. */
+	 
 	if (!ctx->is_encoder ||
 	    sel->type != V4L2_BUF_TYPE_VIDEO_OUTPUT)
 		return -EINVAL;
 
-	/* Change not allowed if the queue is streaming. */
+	 
 	vq = v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx);
 	if (vb2_is_streaming(vq))
 		return -EBUSY;
@@ -700,20 +633,17 @@ static int vidioc_s_selection(struct file *file, void *priv,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/*
-	 * We do not support offsets, and we can crop only inside
-	 * right-most or bottom-most macroblocks.
-	 */
+	 
 	if (rect->left != 0 || rect->top != 0 ||
 	    round_up(rect->width, MB_DIM) != ctx->src_fmt.width ||
 	    round_up(rect->height, MB_DIM) != ctx->src_fmt.height) {
-		/* Default to full frame for incorrect settings. */
+		 
 		rect->left = 0;
 		rect->top = 0;
 		rect->width = ctx->src_fmt.width;
 		rect->height = ctx->src_fmt.height;
 	} else {
-		/* We support widths aligned to 4 pixels and arbitrary heights. */
+		 
 		rect->width = round_up(rect->width, 4);
 	}
 
@@ -861,11 +791,7 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
 	ret = hantro_buf_plane_check(vb, pix_fmt);
 	if (ret)
 		return ret;
-	/*
-	 * Buffer's bytesused must be written by driver for CAPTURE buffers.
-	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
-	 * it to buffer length).
-	 */
+	 
 	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
 		if (ctx->is_encoder)
 			vb2_set_plane_payload(vb, 0, 0);
@@ -977,11 +903,7 @@ static void hantro_stop_streaming(struct vb2_queue *q)
 			ctx->codec_ops->exit(ctx);
 	}
 
-	/*
-	 * The mem2mem framework calls v4l2_m2m_cancel_job before
-	 * .stop_streaming, so there isn't any job running and
-	 * it is safe to return all the buffers.
-	 */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(q->type))
 		hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
 	else

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <linux/err.h>
@@ -82,10 +80,10 @@ static void qce_setup_config(struct qce_device *qce)
 {
 	u32 config;
 
-	/* get big endianness */
+	 
 	config = qce_config_reg(qce, 0);
 
-	/* clear status */
+	 
 	qce_write(qce, REG_STATUS, 0);
 	qce_write(qce, REG_CONFIG, config);
 }
@@ -158,7 +156,7 @@ static int qce_setup_regs_ahash(struct crypto_async_request *async_req)
 	u32 auth_cfg = 0, config;
 	unsigned int iv_words;
 
-	/* if not the last, the size has to be on the block boundary */
+	 
 	if (!rctx->last_blk && req->nbytes % blocksize)
 		return -EINVAL;
 
@@ -219,7 +217,7 @@ go_proc:
 	qce_write(qce, REG_ENCR_SEG_CFG, 0);
 	qce_write(qce, REG_SEG_SIZE, req->nbytes);
 
-	/* get little endianness */
+	 
 	config = qce_config_reg(qce, 1);
 	qce_write(qce, REG_CONFIG, config);
 
@@ -305,9 +303,7 @@ static void qce_xtskey(struct qce_device *qce, const u8 *enckey,
 			       enckeylen / 2);
 	qce_write_array(qce, REG_ENCR_XTS_KEY0, xtskey, xtsklen);
 
-	/* Set data unit size to cryptlen. Anything else causes
-	 * crypto engine to return back incorrect results.
-	 */
+	 
 	qce_write(qce, REG_ENCR_XTS_DU_SIZE, cryptlen);
 }
 
@@ -382,7 +378,7 @@ static int qce_setup_regs_skcipher(struct crypto_async_request *async_req)
 
 	qce_write(qce, REG_SEG_SIZE, rctx->cryptlen);
 
-	/* get little endianness */
+	 
 	config = qce_config_reg(qce, 1);
 	qce_write(qce, REG_CONFIG, config);
 
@@ -441,11 +437,11 @@ static int qce_setup_regs_aead(struct crypto_async_request *async_req)
 
 	qce_setup_config(qce);
 
-	/* Write encryption key */
+	 
 	enckey_words = qce_be32_to_cpu_array(enckey, ctx->enc_key, enc_keylen);
 	qce_write_array(qce, REG_ENCR_KEY0, enckey, enckey_words);
 
-	/* Write encryption iv */
+	 
 	enciv_words = qce_be32_to_cpu_array(enciv, rctx->iv, enc_ivsize);
 	qce_write_array(qce, REG_CNTR0_IV0, enciv, enciv_words);
 
@@ -459,20 +455,20 @@ static int qce_setup_regs_aead(struct crypto_async_request *async_req)
 		qce_write(qce, REG_CNTR_MASK2, ~0);
 	}
 
-	/* Clear authentication IV and KEY registers of previous values */
+	 
 	qce_clear_array(qce, REG_AUTH_IV0, 16);
 	qce_clear_array(qce, REG_AUTH_KEY0, 16);
 
-	/* Clear byte count */
+	 
 	qce_clear_array(qce, REG_AUTH_BYTECNT0, 4);
 
-	/* Write authentication key */
+	 
 	authkey_words = qce_be32_to_cpu_array(authkey, ctx->auth_key, auth_keylen);
 	qce_write_array(qce, REG_AUTH_KEY0, (u32 *)authkey, authkey_words);
 
-	/* Write initial authentication IV only for HMAC algorithms */
+	 
 	if (IS_SHA_HMAC(rctx->flags)) {
-		/* Write default authentication iv */
+		 
 		if (IS_SHA1_HMAC(rctx->flags)) {
 			auth_ivsize = SHA1_DIGEST_SIZE;
 			memcpy(authiv, std_iv_sha1, auth_ivsize);
@@ -483,18 +479,18 @@ static int qce_setup_regs_aead(struct crypto_async_request *async_req)
 		authiv_words = auth_ivsize / sizeof(u32);
 		qce_write_array(qce, REG_AUTH_IV0, (u32 *)authiv, authiv_words);
 	} else if (IS_CCM(rctx->flags)) {
-		/* Write nonce for CCM algorithms */
+		 
 		authnonce_words = qce_be32_to_cpu_array(authnonce, rctx->ccm_nonce, QCE_MAX_NONCE);
 		qce_write_array(qce, REG_AUTH_INFO_NONCE0, authnonce, authnonce_words);
 	}
 
-	/* Set up ENCR_SEG_CFG */
+	 
 	encr_cfg = qce_encr_cfg(flags, enc_keylen);
 	if (IS_ENCRYPT(flags))
 		encr_cfg |= BIT(ENCODE_SHIFT);
 	qce_write(qce, REG_ENCR_SEG_CFG, encr_cfg);
 
-	/* Set up AUTH_SEG_CFG */
+	 
 	auth_cfg = qce_auth_cfg(rctx->flags, auth_keylen, ctx->authsize);
 	auth_cfg |= BIT(AUTH_LAST_SHIFT);
 	auth_cfg |= BIT(AUTH_FIRST_SHIFT);
@@ -513,28 +509,28 @@ static int qce_setup_regs_aead(struct crypto_async_request *async_req)
 
 	totallen = rctx->cryptlen + rctx->assoclen;
 
-	/* Set the encryption size and start offset */
+	 
 	if (IS_CCM(rctx->flags) && IS_DECRYPT(rctx->flags))
 		qce_write(qce, REG_ENCR_SEG_SIZE, rctx->cryptlen + ctx->authsize);
 	else
 		qce_write(qce, REG_ENCR_SEG_SIZE, rctx->cryptlen);
 	qce_write(qce, REG_ENCR_SEG_START, rctx->assoclen & 0xffff);
 
-	/* Set the authentication size and start offset */
+	 
 	qce_write(qce, REG_AUTH_SEG_SIZE, totallen);
 	qce_write(qce, REG_AUTH_SEG_START, 0);
 
-	/* Write total length */
+	 
 	if (IS_CCM(rctx->flags) && IS_DECRYPT(rctx->flags))
 		qce_write(qce, REG_SEG_SIZE, totallen + ctx->authsize);
 	else
 		qce_write(qce, REG_SEG_SIZE, totallen);
 
-	/* get little endianness */
+	 
 	config = qce_config_reg(qce, 1);
 	qce_write(qce, REG_CONFIG, config);
 
-	/* Start the process */
+	 
 	qce_crypto_go(qce, !IS_CCM(flags));
 
 	return 0;
@@ -570,12 +566,7 @@ int qce_check_status(struct qce_device *qce, u32 *status)
 
 	*status = qce_read(qce, REG_STATUS);
 
-	/*
-	 * Don't use result dump status. The operation may not be complete.
-	 * Instead, use the status we just read from device. In case, we need to
-	 * use result_status from result dump the result_status needs to be byte
-	 * swapped, since we set the device to little endian.
-	 */
+	 
 	if (*status & STATUS_ERRORS || !(*status & BIT(OPERATION_DONE_SHIFT)))
 		ret = -ENXIO;
 	else if (*status & BIT(MAC_FAILED_SHIFT))

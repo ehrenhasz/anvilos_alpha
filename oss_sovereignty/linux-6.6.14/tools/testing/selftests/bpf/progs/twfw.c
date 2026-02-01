@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <linux/types.h>
 #include <bpf/bpf_helpers.h>
 #include <linux/bpf.h>
 #include <stdint.h>
 
 #define TWFW_MAX_TIERS (64)
-/*
- * load is successful
- * #define TWFW_MAX_TIERS (64u)$
- */
+ 
 
 struct twfw_tier_value {
 	unsigned long mask[1];
@@ -49,7 +46,7 @@ int twfw_verifier(struct __sk_buff* skb)
 		return 1;
 
 	if (rule && rule->seqnum < TWFW_MAX_TIERS) {
-		/* rule->seqnum / 64 should always be 0 */
+		 
 		unsigned long mask = tier->mask[rule->seqnum / 64];
 		if (mask)
 			return 0;

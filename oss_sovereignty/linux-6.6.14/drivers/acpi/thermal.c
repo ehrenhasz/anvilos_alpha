@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_thermal.c - ACPI Thermal Zone Driver ($Revision: 41 $)
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *
- *  This driver fully implements the ACPI thermal policy as described in the
- *  ACPI 2.0 Specification.
- *
- *  TBD: 1. Implement passive cooling hysteresis.
- *       2. Enhance passive cooling (CPU) states/limit interface to support
- *          concepts of 'multiple limiters', upper/lower limits, etc.
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: thermal: " fmt
 
@@ -55,13 +43,7 @@
 				 ACPI_TRIPS_PASSIVE | ACPI_TRIPS_ACTIVE | \
 				 ACPI_TRIPS_DEVICES)
 
-/*
- * This exception is thrown out in two cases:
- * 1.An invalid trip point becomes invalid or a valid trip point becomes invalid
- *   when re-evaluating the AML code.
- * 2.TODO: Devices listed in _PSL, _ALx, _TZD may change.
- *   We need to re-bind the cooling devices of a thermal zone when this occurs.
- */
+ 
 #define ACPI_THERMAL_TRIPS_EXCEPTION(flags, tz, str) \
 do { \
 	if (flags != ACPI_TRIPS_INIT) \
@@ -128,15 +110,13 @@ struct acpi_thermal {
 	struct thermal_trip *trip_table;
 	struct acpi_handle_list devices;
 	struct thermal_zone_device *thermal_zone;
-	int kelvin_offset;	/* in millidegrees */
+	int kelvin_offset;	 
 	struct work_struct thermal_check_work;
 	struct mutex thermal_check_lock;
 	refcount_t thermal_check_count;
 };
 
-/* --------------------------------------------------------------------------
-                             Thermal Zone Management
-   -------------------------------------------------------------------------- */
+ 
 
 static int acpi_thermal_get_temperature(struct acpi_thermal *tz)
 {
@@ -196,16 +176,11 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 	bool valid = false;
 	int i;
 
-	/* Critical Shutdown */
+	 
 	if (flag & ACPI_TRIPS_CRITICAL) {
 		status = acpi_evaluate_integer(tz->device->handle, "_CRT", NULL, &tmp);
 		tz->trips.critical.temperature = tmp;
-		/*
-		 * Treat freezing temperatures as invalid as well; some
-		 * BIOSes return really low values and cause reboots at startup.
-		 * Below zero (Celsius) values clearly aren't right for sure..
-		 * ... so lets discard those as invalid.
-		 */
+		 
 		if (ACPI_FAILURE(status)) {
 			tz->trips.critical.valid = false;
 			acpi_handle_debug(tz->device->handle,
@@ -225,9 +200,7 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 			} else if (crt > 0) {
 				unsigned long crt_k = celsius_to_deci_kelvin(crt);
 
-				/*
-				 * Allow override critical threshold
-				 */
+				 
 				if (crt_k > tz->trips.critical.temperature)
 					pr_info("Critical threshold %d C\n", crt);
 
@@ -236,7 +209,7 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 		}
 	}
 
-	/* Critical Sleep (optional) */
+	 
 	if (flag & ACPI_TRIPS_HOT) {
 		status = acpi_evaluate_integer(tz->device->handle, "_HOT", NULL, &tmp);
 		if (ACPI_FAILURE(status)) {
@@ -252,7 +225,7 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 		}
 	}
 
-	/* Passive (optional) */
+	 
 	if (((flag & ACPI_TRIPS_PASSIVE) && tz->trips.passive.trip.valid) ||
 	    flag == ACPI_TRIPS_INIT) {
 		valid = tz->trips.passive.trip.valid;
@@ -319,13 +292,13 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 			ACPI_THERMAL_TRIPS_EXCEPTION(flag, tz, "state");
 	}
 
-	/* Active (optional) */
+	 
 	for (i = 0; i < ACPI_THERMAL_MAX_ACTIVE; i++) {
 		char name[5] = { '_', 'A', 'C', ('0' + i), '\0' };
 		valid = tz->trips.active[i].trip.valid;
 
 		if (act == -1)
-			break; /* disable all active trip points */
+			break;  
 
 		if (flag == ACPI_TRIPS_INIT || ((flag & ACPI_TRIPS_ACTIVE) &&
 		    tz->trips.active[i].trip.valid)) {
@@ -343,10 +316,7 @@ static void __acpi_thermal_trips_update(struct acpi_thermal *tz, int flag)
 					tz->trips.active[0].trip.temperature =
 							celsius_to_deci_kelvin(act);
 				else
-					/*
-					 * Don't allow override higher than
-					 * the next higher trip point
-					 */
+					 
 					tz->trips.active[i-1].trip.temperature =
 						min_t(unsigned long,
 						      tz->trips.active[i-2].trip.temperature,
@@ -437,13 +407,7 @@ static void acpi_thermal_trips_update(struct acpi_thermal *tz, u32 event)
 {
 	struct acpi_device *adev = tz->device;
 
-	/*
-	 * Use thermal_zone_device_exec() to carry out the trip points
-	 * update, so as to protect thermal_get_trend() from getting stale
-	 * trip point temperatures and to prevent thermal_zone_device_update()
-	 * invoked from acpi_thermal_check_fn() from producing inconsistent
-	 * results.
-	 */
+	 
 	thermal_zone_device_exec(tz->thermal_zone,
 				 acpi_thermal_adjust_thermal_zone, event);
 	acpi_queue_thermal_check(tz);
@@ -472,7 +436,7 @@ static int acpi_thermal_get_trip_points(struct acpi_thermal *tz)
 	return 0;
 }
 
-/* sys I/F for generic thermal sysfs support */
+ 
 
 static int thermal_get_temp(struct thermal_zone_device *thermal, int *temp)
 {
@@ -785,9 +749,7 @@ static void acpi_thermal_unregister_thermal_zone(struct acpi_thermal *tz)
 }
 
 
-/* --------------------------------------------------------------------------
-                                 Driver Interface
-   -------------------------------------------------------------------------- */
+ 
 
 static void acpi_thermal_notify(acpi_handle handle, u32 event, void *data)
 {
@@ -812,18 +774,7 @@ static void acpi_thermal_notify(acpi_handle handle, u32 event, void *data)
 	}
 }
 
-/*
- * On some platforms, the AML code has dependency about
- * the evaluating order of _TMP and _CRT/_HOT/_PSV/_ACx.
- * 1. On HP Pavilion G4-1016tx, _TMP must be invoked after
- *    /_CRT/_HOT/_PSV/_ACx, or else system will be power off.
- * 2. On HP Compaq 6715b/6715s, the return value of _PSV is 0
- *    if _TMP has never been evaluated.
- *
- * As this dependency is totally transparent to OS, evaluate
- * all of them once, in the order of _CRT/_HOT/_PSV/_ACx,
- * _TMP, before they are actually used.
- */
+ 
 static void acpi_thermal_aml_dependency_fix(struct acpi_thermal *tz)
 {
 	acpi_handle handle = tz->device->handle;
@@ -853,21 +804,21 @@ static int acpi_thermal_get_info(struct acpi_thermal *tz)
 
 	acpi_thermal_aml_dependency_fix(tz);
 
-	/* Get trip points [_CRT, _PSV, etc.] (required) */
+	 
 	result = acpi_thermal_get_trip_points(tz);
 	if (result)
 		return result;
 
-	/* Get temperature [_TMP] (required) */
+	 
 	result = acpi_thermal_get_temperature(tz);
 	if (result)
 		return result;
 
-	/* Set the cooling mode [_SCP] to active cooling (default) */
+	 
 	acpi_execute_simple_method(tz->device->handle, "_SCP",
 				   ACPI_THERMAL_MODE_ACTIVE);
 
-	/* Get default polling frequency [_TZP] (optional) */
+	 
 	if (tzp)
 		tz->polling_frequency = tzp;
 	else
@@ -876,16 +827,7 @@ static int acpi_thermal_get_info(struct acpi_thermal *tz)
 	return 0;
 }
 
-/*
- * The exact offset between Kelvin and degree Celsius is 273.15. However ACPI
- * handles temperature values with a single decimal place. As a consequence,
- * some implementations use an offset of 273.1 and others use an offset of
- * 273.2. Try to find out which one is being used, to present the most
- * accurate and visually appealing number.
- *
- * The heuristic below should work for all ACPI thermal zones which have a
- * critical trip point with a value being a multiple of 0.5 degree Celsius.
- */
+ 
 static void acpi_thermal_guess_offset(struct acpi_thermal *tz)
 {
 	if (tz->trips.critical.valid &&
@@ -900,14 +842,7 @@ static void acpi_thermal_check_fn(struct work_struct *work)
 	struct acpi_thermal *tz = container_of(work, struct acpi_thermal,
 					       thermal_check_work);
 
-	/*
-	 * In general, it is not sufficient to check the pending bit, because
-	 * subsequent instances of this function may be queued after one of them
-	 * has started running (e.g. if _TMP sleeps).  Avoid bailing out if just
-	 * one of them is running, though, because it may have done the actual
-	 * check some time ago, so allow at least one of them to block on the
-	 * mutex while another one is running the update.
-	 */
+	 
 	if (!refcount_dec_not_one(&tz->thermal_check_count))
 		return;
 
@@ -992,7 +927,7 @@ static void acpi_thermal_remove(struct acpi_device *device)
 #ifdef CONFIG_PM_SLEEP
 static int acpi_thermal_suspend(struct device *dev)
 {
-	/* Make sure the previously queued thermal check work has been done */
+	 
 	flush_workqueue(acpi_thermal_pm_queue);
 	return 0;
 }
@@ -1064,7 +999,7 @@ static int thermal_tzp(const struct dmi_system_id *d) {
 	if (tzp == 0) {
 		pr_notice("%s detected: enabling thermal zone polling\n",
 			  d->ident);
-		tzp = 300;	/* 300 dS = 30 Seconds */
+		tzp = 300;	 
 	}
 	return 0;
 }
@@ -1078,10 +1013,7 @@ static int thermal_psv(const struct dmi_system_id *d) {
 }
 
 static const struct dmi_system_id thermal_dmi_table[] __initconst = {
-	/*
-	 * Award BIOS on this AOpen makes thermal control almost worthless.
-	 * http://bugzilla.kernel.org/show_bug.cgi?id=8842
-	 */
+	 
 	{
 	 .callback = thermal_act,
 	 .ident = "AOpen i915GMm-HFS",

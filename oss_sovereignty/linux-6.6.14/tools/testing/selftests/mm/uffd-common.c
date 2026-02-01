@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Userfaultfd tests util functions
- *
- * Copyright (C) 2015-2023  Red Hat, Inc.
- */
+
+ 
 
 #include "uffd-common.h"
 
@@ -128,14 +124,14 @@ static int shmem_allocate_area(void **alloc_area, bool is_src)
 	char *p = NULL, *p_alias = NULL;
 	int mem_fd = uffd_mem_fd_create(bytes * 2, false);
 
-	/* TODO: clean this up.  Use a static addr is ugly */
+	 
 	p = BASE_PMD_ADDR;
 	if (!is_src)
-		/* src map + alias + interleaved hpages */
+		 
 		p += 2 * (bytes + hpage_size);
 	p_alias = p;
 	p_alias += bytes;
-	p_alias += hpage_size;  /* Prevent src/dst VMA merge */
+	p_alias += hpage_size;   
 
 	*alloc_area = mmap(p, bytes, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   mem_fd, offset);
@@ -244,7 +240,7 @@ int userfaultfd_open(uint64_t *features)
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = *features;
 	if (ioctl(uffd, UFFDIO_API, &uffdio_api))
-		/* Probably lack of CAP_PTRACE? */
+		 
 		return -1;
 	if (uffdio_api.api != UFFD_API)
 		err("UFFDIO_API error: %" PRIu64, (uint64_t)uffdio_api.api);
@@ -323,34 +319,11 @@ int uffd_test_ctx_init(uint64_t features, const char **errmsg)
 		*area_mutex(area_src, nr) =
 			(pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 		count_verify[nr] = *area_count(area_src, nr) = 1;
-		/*
-		 * In the transition between 255 to 256, powerpc will
-		 * read out of order in my_bcmp and see both bytes as
-		 * zero, so leave a placeholder below always non-zero
-		 * after the count, to avoid my_bcmp to trigger false
-		 * positives.
-		 */
+		 
 		*(area_count(area_src, nr) + 1) = 1;
 	}
 
-	/*
-	 * After initialization of area_src, we must explicitly release pages
-	 * for area_dst to make sure it's fully empty.  Otherwise we could have
-	 * some area_dst pages be errornously initialized with zero pages,
-	 * hence we could hit memory corruption later in the test.
-	 *
-	 * One example is when THP is globally enabled, above allocate_area()
-	 * calls could have the two areas merged into a single VMA (as they
-	 * will have the same VMA flags so they're mergeable).  When we
-	 * initialize the area_src above, it's possible that some part of
-	 * area_dst could have been faulted in via one huge THP that will be
-	 * shared between area_src and area_dst.  It could cause some of the
-	 * area_dst won't be trapped by missing userfaults.
-	 *
-	 * This release_pages() will guarantee even if that happened, we'll
-	 * proactively split the thp and drop any accidentally initialized
-	 * pages within area_dst.
-	 */
+	 
 	uffd_test_ops->release_pages(area_dst);
 
 	pipefd = malloc(sizeof(int) * nr_cpus * 2);
@@ -367,10 +340,10 @@ void wp_range(int ufd, __u64 start, __u64 len, bool wp)
 {
 	struct uffdio_writeprotect prms;
 
-	/* Write protection page faults */
+	 
 	prms.range.start = start;
 	prms.range.len = len;
-	/* Undo write-protect, do wakeup after that */
+	 
 	prms.mode = wp ? UFFDIO_WRITEPROTECT_MODE_WP : 0;
 
 	if (ioctl(ufd, UFFDIO_WRITEPROTECT, &prms))
@@ -392,11 +365,7 @@ static void continue_range(int ufd, __u64 start, __u64 len, bool wp)
 		err("UFFDIO_CONTINUE failed for address 0x%" PRIx64,
 		    (uint64_t)start);
 
-	/*
-	 * Error handling within the kernel for continue is subtly different
-	 * from copy or zeropage, so it may be a source of bugs. Trigger an
-	 * error (-EEXIST) on purpose, to verify doing so doesn't cause a BUG.
-	 */
+	 
 	req.mapped = 0;
 	ret = ioctl(ufd, UFFDIO_CONTINUE, &req);
 	if (ret >= 0 || req.mapped != -EEXIST)
@@ -429,24 +398,14 @@ void uffd_handle_page_fault(struct uffd_msg *msg, struct uffd_args *args)
 		err("unexpected msg event %u", msg->event);
 
 	if (msg->arg.pagefault.flags & UFFD_PAGEFAULT_FLAG_WP) {
-		/* Write protect page faults */
+		 
 		wp_range(uffd, msg->arg.pagefault.address, page_size, false);
 		args->wp_faults++;
 	} else if (msg->arg.pagefault.flags & UFFD_PAGEFAULT_FLAG_MINOR) {
 		uint8_t *area;
 		int b;
 
-		/*
-		 * Minor page faults
-		 *
-		 * To prove we can modify the original range for testing
-		 * purposes, we're going to bit flip this range before
-		 * continuing.
-		 *
-		 * Note that this requires all minor page fault tests operate on
-		 * area_dst (non-UFFD-registered) and area_dst_alias
-		 * (UFFD-registered).
-		 */
+		 
 
 		area = (uint8_t *)(area_dst +
 				   ((char *)msg->arg.pagefault.address -
@@ -457,27 +416,7 @@ void uffd_handle_page_fault(struct uffd_msg *msg, struct uffd_args *args)
 			       args->apply_wp);
 		args->minor_faults++;
 	} else {
-		/*
-		 * Missing page faults.
-		 *
-		 * Here we force a write check for each of the missing mode
-		 * faults.  It's guaranteed because the only threads that
-		 * will trigger uffd faults are the locking threads, and
-		 * their first instruction to touch the missing page will
-		 * always be pthread_mutex_lock().
-		 *
-		 * Note that here we relied on an NPTL glibc impl detail to
-		 * always read the lock type at the entry of the lock op
-		 * (pthread_mutex_t.__data.__type, offset 0x10) before
-		 * doing any locking operations to guarantee that.  It's
-		 * actually not good to rely on this impl detail because
-		 * logically a pthread-compatible lib can implement the
-		 * locks without types and we can fail when linking with
-		 * them.  However since we used to find bugs with this
-		 * strict check we still keep it around.  Hopefully this
-		 * could be a good hint when it fails again.  If one day
-		 * it'll break on some other impl of glibc we'll revisit.
-		 */
+		 
 		if (msg->arg.pagefault.flags & UFFD_PAGEFAULT_FLAG_WRITE)
 			err("unexpected write fault");
 
@@ -545,7 +484,7 @@ void *uffd_poll_thread(void *arg)
 				err("remove failure");
 			break;
 		case UFFD_EVENT_REMAP:
-			area_remap = area_dst;  /* save for later unmap */
+			area_remap = area_dst;   
 			area_dst = (char *)(unsigned long)msg.arg.remap.to;
 			break;
 		}
@@ -561,7 +500,7 @@ static void retry_copy_page(int ufd, struct uffdio_copy *uffdio_copy,
 				     uffdio_copy->len,
 				     offset);
 	if (ioctl(ufd, UFFDIO_COPY, uffdio_copy)) {
-		/* real retval in ufdio_copy.copy */
+		 
 		if (uffdio_copy->copy != -EEXIST)
 			err("UFFDIO_COPY retry error: %"PRId64,
 			    (int64_t)uffdio_copy->copy);
@@ -598,7 +537,7 @@ int __copy_page(int ufd, unsigned long offset, bool retry, bool wp)
 		uffdio_copy.mode = 0;
 	uffdio_copy.copy = 0;
 	if (ioctl(ufd, UFFDIO_COPY, &uffdio_copy)) {
-		/* real retval in ufdio_copy.copy */
+		 
 		if (uffdio_copy.copy != -EEXIST)
 			err("UFFDIO_COPY error: %"PRId64,
 			    (int64_t)uffdio_copy.copy);
@@ -655,14 +594,11 @@ int uffd_open(unsigned int flags)
 int uffd_get_features(uint64_t *features)
 {
 	struct uffdio_api uffdio_api = { .api = UFFD_API, .features = 0 };
-	/*
-	 * This should by default work in most kernels; the feature list
-	 * will be the same no matter what we pass in here.
-	 */
+	 
 	int fd = uffd_open(UFFD_USER_MODE_ONLY);
 
 	if (fd < 0)
-		/* Maybe the kernel is older than user-only mode? */
+		 
 		fd = uffd_open(0);
 
 	if (fd < 0)

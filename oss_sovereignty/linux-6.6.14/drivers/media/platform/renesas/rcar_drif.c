@@ -1,42 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * R-Car Gen3 Digital Radio Interface (DRIF) driver
- *
- * Copyright (C) 2017 Renesas Electronics Corporation
- */
 
-/*
- * The R-Car DRIF is a receive only MSIOF like controller with an
- * external master device driving the SCK. It receives data into a FIFO,
- * then this driver uses the SYS-DMAC engine to move the data from
- * the device to memory.
- *
- * Each DRIF channel DRIFx (as per datasheet) contains two internal
- * channels DRIFx0 & DRIFx1 within itself with each having its own resources
- * like module clk, register set, irq and dma. These internal channels share
- * common CLK & SYNC from master. The two data pins D0 & D1 shall be
- * considered to represent the two internal channels. This internal split
- * is not visible to the master device.
- *
- * Depending on the master device, a DRIF channel can use
- *  (1) both internal channels (D0 & D1) to receive data in parallel (or)
- *  (2) one internal channel (D0 or D1) to receive data
- *
- * The primary design goal of this controller is to act as a Digital Radio
- * Interface that receives digital samples from a tuner device. Hence the
- * driver exposes the device as a V4L2 SDR device. In order to qualify as
- * a V4L2 SDR device, it should possess a tuner interface as mandated by the
- * framework. This driver expects a tuner driver (sub-device) to bind
- * asynchronously with this device and the combined drivers shall expose
- * a V4L2 compliant SDR device. The DRIF driver is independent of the
- * tuner vendor.
- *
- * The DRIF h/w can support I2S mode and Frame start synchronization pulse mode.
- * This driver is tested for I2S mode only because of the availability of
- * suitable master devices. Hence, not all configurable options of DRIF h/w
- * like lsb/msb first, syncdl, dtdl etc. are exposed via DT and I2S defaults
- * are used. These can be exposed later if needed after testing.
- */
+ 
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -58,7 +23,7 @@
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-vmalloc.h>
 
-/* DRIF register offsets */
+ 
 #define RCAR_DRIF_SITMDR1			0x00
 #define RCAR_DRIF_SITMDR2			0x04
 #define RCAR_DRIF_SITMDR3			0x08
@@ -71,14 +36,14 @@
 #define RCAR_DRIF_SIIER				0x44
 #define RCAR_DRIF_SIRFDR			0x60
 
-#define RCAR_DRIF_RFOVF			BIT(3)	/* Receive FIFO overflow */
-#define RCAR_DRIF_RFUDF			BIT(4)	/* Receive FIFO underflow */
-#define RCAR_DRIF_RFSERR		BIT(5)	/* Receive frame sync error */
-#define RCAR_DRIF_REOF			BIT(7)	/* Frame reception end */
-#define RCAR_DRIF_RDREQ			BIT(12) /* Receive data xfer req */
-#define RCAR_DRIF_RFFUL			BIT(13)	/* Receive FIFO full */
+#define RCAR_DRIF_RFOVF			BIT(3)	 
+#define RCAR_DRIF_RFUDF			BIT(4)	 
+#define RCAR_DRIF_RFSERR		BIT(5)	 
+#define RCAR_DRIF_REOF			BIT(7)	 
+#define RCAR_DRIF_RDREQ			BIT(12)  
+#define RCAR_DRIF_RFFUL			BIT(13)	 
 
-/* SIRMDR1 */
+ 
 #define RCAR_DRIF_SIRMDR1_SYNCMD_FRAME		(0 << 28)
 #define RCAR_DRIF_SIRMDR1_SYNCMD_LR		(3 << 28)
 
@@ -105,14 +70,14 @@
 #define RCAR_DRIF_MDR_BITLEN(n)			(((n) - 1) << 24)
 #define RCAR_DRIF_MDR_WDCNT(n)			(((n) - 1) << 16)
 
-/* Hidden Transmit register that controls CLK & SYNC */
+ 
 #define RCAR_DRIF_SITMDR1_PCON			BIT(30)
 
 #define RCAR_DRIF_SICTR_RX_RISING_EDGE		BIT(26)
 #define RCAR_DRIF_SICTR_RX_EN			BIT(8)
 #define RCAR_DRIF_SICTR_RESET			BIT(0)
 
-/* Constants */
+ 
 #define RCAR_DRIF_NUM_HWBUFS			32
 #define RCAR_DRIF_MAX_DEVS			4
 #define RCAR_DRIF_DEFAULT_NUM_HWBUFS		16
@@ -120,9 +85,9 @@
 #define RCAR_DRIF_MAX_CHANNEL			2
 #define RCAR_SDR_BUFFER_SIZE			SZ_64K
 
-/* Internal buffer status flags */
-#define RCAR_DRIF_BUF_DONE			BIT(0)	/* DMA completed */
-#define RCAR_DRIF_BUF_OVERFLOW			BIT(1)	/* Overflow detected */
+ 
+#define RCAR_DRIF_BUF_DONE			BIT(0)	 
+#define RCAR_DRIF_BUF_OVERFLOW			BIT(1)	 
 
 #define to_rcar_drif_buf_pair(sdr, ch_num, idx)			\
 	(&((sdr)->ch[!(ch_num)]->buf[(idx)]))
@@ -130,14 +95,14 @@
 #define for_each_rcar_drif_channel(ch, ch_mask)			\
 	for_each_set_bit(ch, ch_mask, RCAR_DRIF_MAX_CHANNEL)
 
-/* Debug */
+ 
 #define rdrif_dbg(sdr, fmt, arg...)				\
 	dev_dbg(sdr->v4l2_dev.dev, fmt, ## arg)
 
 #define rdrif_err(sdr, fmt, arg...)				\
 	dev_err(sdr->v4l2_dev.dev, fmt, ## arg)
 
-/* Stream formats */
+ 
 struct rcar_drif_format {
 	u32	pixelformat;
 	u32	buffersize;
@@ -146,7 +111,7 @@ struct rcar_drif_format {
 	u32	num_ch;
 };
 
-/* Format descriptions for capture */
+ 
 static const struct rcar_drif_format formats[] = {
 	{
 		.pixelformat	= V4L2_SDR_FMT_PCU16BE,
@@ -171,73 +136,73 @@ static const struct rcar_drif_format formats[] = {
 	},
 };
 
-/* Buffer for a received frame from one or both internal channels */
+ 
 struct rcar_drif_frame_buf {
-	/* Common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
 };
 
-/* OF graph endpoint's V4L2 async data */
+ 
 struct rcar_drif_graph_ep {
-	struct v4l2_subdev *subdev;	/* Async matched subdev */
+	struct v4l2_subdev *subdev;	 
 };
 
-/* DMA buffer */
+ 
 struct rcar_drif_hwbuf {
-	void *addr;			/* CPU-side address */
-	unsigned int status;		/* Buffer status flags */
+	void *addr;			 
+	unsigned int status;		 
 };
 
-/* Internal channel */
+ 
 struct rcar_drif {
-	struct rcar_drif_sdr *sdr;	/* Group device */
-	struct platform_device *pdev;	/* Channel's pdev */
-	void __iomem *base;		/* Base register address */
-	resource_size_t start;		/* I/O resource offset */
-	struct dma_chan *dmach;		/* Reserved DMA channel */
-	struct clk *clk;		/* Module clock */
-	struct rcar_drif_hwbuf buf[RCAR_DRIF_NUM_HWBUFS]; /* H/W bufs */
-	dma_addr_t dma_handle;		/* Handle for all bufs */
-	unsigned int num;		/* Channel number */
-	bool acting_sdr;		/* Channel acting as SDR device */
+	struct rcar_drif_sdr *sdr;	 
+	struct platform_device *pdev;	 
+	void __iomem *base;		 
+	resource_size_t start;		 
+	struct dma_chan *dmach;		 
+	struct clk *clk;		 
+	struct rcar_drif_hwbuf buf[RCAR_DRIF_NUM_HWBUFS];  
+	dma_addr_t dma_handle;		 
+	unsigned int num;		 
+	bool acting_sdr;		 
 };
 
-/* DRIF V4L2 SDR */
+ 
 struct rcar_drif_sdr {
-	struct device *dev;		/* Platform device */
-	struct video_device *vdev;	/* V4L2 SDR device */
-	struct v4l2_device v4l2_dev;	/* V4L2 device */
+	struct device *dev;		 
+	struct video_device *vdev;	 
+	struct v4l2_device v4l2_dev;	 
 
-	/* Videobuf2 queue and queued buffers list */
+	 
 	struct vb2_queue vb_queue;
 	struct list_head queued_bufs;
-	spinlock_t queued_bufs_lock;	/* Protects queued_bufs */
-	spinlock_t dma_lock;		/* To serialize DMA cb of channels */
+	spinlock_t queued_bufs_lock;	 
+	spinlock_t dma_lock;		 
 
-	struct mutex v4l2_mutex;	/* To serialize ioctls */
-	struct mutex vb_queue_mutex;	/* To serialize streaming ioctls */
-	struct v4l2_ctrl_handler ctrl_hdl;	/* SDR control handler */
-	struct v4l2_async_notifier notifier;	/* For subdev (tuner) */
-	struct rcar_drif_graph_ep ep;	/* Endpoint V4L2 async data */
+	struct mutex v4l2_mutex;	 
+	struct mutex vb_queue_mutex;	 
+	struct v4l2_ctrl_handler ctrl_hdl;	 
+	struct v4l2_async_notifier notifier;	 
+	struct rcar_drif_graph_ep ep;	 
 
-	/* Current V4L2 SDR format ptr */
+	 
 	const struct rcar_drif_format *fmt;
 
-	/* Device tree SYNC properties */
+	 
 	u32 mdr1;
 
-	/* Internals */
-	struct rcar_drif *ch[RCAR_DRIF_MAX_CHANNEL]; /* DRIFx0,1 */
-	unsigned long hw_ch_mask;	/* Enabled channels per DT */
-	unsigned long cur_ch_mask;	/* Used channels for an SDR FMT */
-	u32 num_hw_ch;			/* Num of DT enabled channels */
-	u32 num_cur_ch;			/* Num of used channels */
-	u32 hwbuf_size;			/* Each DMA buffer size */
-	u32 produced;			/* Buffers produced by sdr dev */
+	 
+	struct rcar_drif *ch[RCAR_DRIF_MAX_CHANNEL];  
+	unsigned long hw_ch_mask;	 
+	unsigned long cur_ch_mask;	 
+	u32 num_hw_ch;			 
+	u32 num_cur_ch;			 
+	u32 hwbuf_size;			 
+	u32 produced;			 
 };
 
-/* Register access functions */
+ 
 static void rcar_drif_write(struct rcar_drif *ch, u32 offset, u32 data)
 {
 	writel(data, ch->base + offset);
@@ -248,7 +213,7 @@ static u32 rcar_drif_read(struct rcar_drif *ch, u32 offset)
 	return readl(ch->base + offset);
 }
 
-/* Release DMA channels */
+ 
 static void rcar_drif_release_dmachannels(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
@@ -260,7 +225,7 @@ static void rcar_drif_release_dmachannels(struct rcar_drif_sdr *sdr)
 		}
 }
 
-/* Allocate DMA channels */
+ 
 static int rcar_drif_alloc_dmachannels(struct rcar_drif_sdr *sdr)
 {
 	struct dma_slave_config dma_cfg;
@@ -281,7 +246,7 @@ static int rcar_drif_alloc_dmachannels(struct rcar_drif_sdr *sdr)
 			goto dmach_error;
 		}
 
-		/* Configure slave */
+		 
 		memset(&dma_cfg, 0, sizeof(dma_cfg));
 		dma_cfg.src_addr = (phys_addr_t)(ch->start + RCAR_DRIF_SIRFDR);
 		dma_cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
@@ -298,7 +263,7 @@ dmach_error:
 	return ret;
 }
 
-/* Release queued vb2 buffers */
+ 
 static void rcar_drif_release_queued_bufs(struct rcar_drif_sdr *sdr,
 					  enum vb2_buffer_state state)
 {
@@ -313,18 +278,18 @@ static void rcar_drif_release_queued_bufs(struct rcar_drif_sdr *sdr,
 	spin_unlock_irqrestore(&sdr->queued_bufs_lock, flags);
 }
 
-/* Set MDR defaults */
+ 
 static inline void rcar_drif_set_mdr1(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
 
-	/* Set defaults for enabled internal channels */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
-		/* Refer MSIOF section in manual for this register setting */
+		 
 		rcar_drif_write(sdr->ch[i], RCAR_DRIF_SITMDR1,
 				RCAR_DRIF_SITMDR1_PCON);
 
-		/* Setup MDR1 value */
+		 
 		rcar_drif_write(sdr->ch[i], RCAR_DRIF_SIRMDR1, sdr->mdr1);
 
 		rdrif_dbg(sdr, "ch%u: mdr1 = 0x%08x",
@@ -332,7 +297,7 @@ static inline void rcar_drif_set_mdr1(struct rcar_drif_sdr *sdr)
 	}
 }
 
-/* Set DRIF receive format */
+ 
 static int rcar_drif_set_format(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
@@ -340,18 +305,18 @@ static int rcar_drif_set_format(struct rcar_drif_sdr *sdr)
 	rdrif_dbg(sdr, "setfmt: bitlen %u wdcnt %u num_ch %u\n",
 		  sdr->fmt->bitlen, sdr->fmt->wdcnt, sdr->fmt->num_ch);
 
-	/* Sanity check */
+	 
 	if (sdr->fmt->num_ch > sdr->num_cur_ch) {
 		rdrif_err(sdr, "fmt num_ch %u cur_ch %u mismatch\n",
 			  sdr->fmt->num_ch, sdr->num_cur_ch);
 		return -EINVAL;
 	}
 
-	/* Setup group, bitlen & wdcnt */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		u32 mdr;
 
-		/* Two groups */
+		 
 		mdr = RCAR_DRIF_MDR_GRPCNT(2) |
 			RCAR_DRIF_MDR_BITLEN(sdr->fmt->bitlen) |
 			RCAR_DRIF_MDR_WDCNT(sdr->fmt->wdcnt);
@@ -368,7 +333,7 @@ static int rcar_drif_set_format(struct rcar_drif_sdr *sdr)
 	return 0;
 }
 
-/* Release DMA buffers */
+ 
 static void rcar_drif_release_buf(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
@@ -376,7 +341,7 @@ static void rcar_drif_release_buf(struct rcar_drif_sdr *sdr)
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		struct rcar_drif *ch = sdr->ch[i];
 
-		/* First entry contains the dma buf ptr */
+		 
 		if (ch->buf[0].addr) {
 			dma_free_coherent(&ch->pdev->dev,
 				sdr->hwbuf_size * RCAR_DRIF_NUM_HWBUFS,
@@ -386,7 +351,7 @@ static void rcar_drif_release_buf(struct rcar_drif_sdr *sdr)
 	}
 }
 
-/* Request DMA buffers */
+ 
 static int rcar_drif_request_buf(struct rcar_drif_sdr *sdr)
 {
 	int ret = -ENOMEM;
@@ -396,7 +361,7 @@ static int rcar_drif_request_buf(struct rcar_drif_sdr *sdr)
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		struct rcar_drif *ch = sdr->ch[i];
 
-		/* Allocate DMA buffers */
+		 
 		addr = dma_alloc_coherent(&ch->pdev->dev,
 				sdr->hwbuf_size * RCAR_DRIF_NUM_HWBUFS,
 				&ch->dma_handle, GFP_KERNEL);
@@ -407,7 +372,7 @@ static int rcar_drif_request_buf(struct rcar_drif_sdr *sdr)
 			goto error;
 		}
 
-		/* Split the chunk and populate bufctxt */
+		 
 		for (j = 0; j < RCAR_DRIF_NUM_HWBUFS; j++) {
 			ch->buf[j].addr = addr + (j * sdr->hwbuf_size);
 			ch->buf[j].status = 0;
@@ -418,14 +383,14 @@ error:
 	return ret;
 }
 
-/* Setup vb_queue minimum buffer requirements */
+ 
 static int rcar_drif_queue_setup(struct vb2_queue *vq,
 			unsigned int *num_buffers, unsigned int *num_planes,
 			unsigned int sizes[], struct device *alloc_devs[])
 {
 	struct rcar_drif_sdr *sdr = vb2_get_drv_priv(vq);
 
-	/* Need at least 16 buffers */
+	 
 	if (vq->num_buffers + *num_buffers < 16)
 		*num_buffers = 16 - vq->num_buffers;
 
@@ -436,7 +401,7 @@ static int rcar_drif_queue_setup(struct vb2_queue *vq,
 	return 0;
 }
 
-/* Enqueue buffer */
+ 
 static void rcar_drif_buf_queue(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -451,7 +416,7 @@ static void rcar_drif_buf_queue(struct vb2_buffer *vb)
 	spin_unlock_irqrestore(&sdr->queued_bufs_lock, flags);
 }
 
-/* Get a frame buf from list */
+ 
 static struct rcar_drif_frame_buf *
 rcar_drif_get_fbuf(struct rcar_drif_sdr *sdr)
 {
@@ -462,10 +427,7 @@ rcar_drif_get_fbuf(struct rcar_drif_sdr *sdr)
 	fbuf = list_first_entry_or_null(&sdr->queued_bufs, struct
 					rcar_drif_frame_buf, list);
 	if (!fbuf) {
-		/*
-		 * App is late in enqueing buffers. Samples lost & there will
-		 * be a gap in sequence number when app recovers
-		 */
+		 
 		rdrif_dbg(sdr, "\napp late: prod %u\n", sdr->produced);
 		spin_unlock_irqrestore(&sdr->queued_bufs_lock, flags);
 		return NULL;
@@ -476,7 +438,7 @@ rcar_drif_get_fbuf(struct rcar_drif_sdr *sdr)
 	return fbuf;
 }
 
-/* Helpers to set/clear buf pair status */
+ 
 static inline bool rcar_drif_bufs_done(struct rcar_drif_hwbuf **buf)
 {
 	return (buf[0]->status & buf[1]->status & RCAR_DRIF_BUF_DONE);
@@ -496,25 +458,25 @@ static inline void rcar_drif_bufs_clear(struct rcar_drif_hwbuf **buf,
 		buf[i]->status &= ~bit;
 }
 
-/* Channel DMA complete */
+ 
 static void rcar_drif_channel_complete(struct rcar_drif *ch, u32 idx)
 {
 	u32 str;
 
 	ch->buf[idx].status |= RCAR_DRIF_BUF_DONE;
 
-	/* Check for DRIF errors */
+	 
 	str = rcar_drif_read(ch, RCAR_DRIF_SISTR);
 	if (unlikely(str & RCAR_DRIF_RFOVF)) {
-		/* Writing the same clears it */
+		 
 		rcar_drif_write(ch, RCAR_DRIF_SISTR, str);
 
-		/* Overflow: some samples are lost */
+		 
 		ch->buf[idx].status |= RCAR_DRIF_BUF_OVERFLOW;
 	}
 }
 
-/* DMA callback for each stage */
+ 
 static void rcar_drif_dma_complete(void *dma_async_param)
 {
 	struct rcar_drif *ch = dma_async_param;
@@ -527,7 +489,7 @@ static void rcar_drif_dma_complete(void *dma_async_param)
 
 	spin_lock(&sdr->dma_lock);
 
-	/* DMA can be terminated while the callback was waiting on lock */
+	 
 	if (!vb2_is_streaming(&sdr->vb_queue)) {
 		spin_unlock(&sdr->dma_lock);
 		return;
@@ -542,36 +504,36 @@ static void rcar_drif_dma_complete(void *dma_async_param)
 		buf[1] = ch->num ? &ch->buf[idx] :
 				to_rcar_drif_buf_pair(sdr, ch->num, idx);
 
-		/* Check if both DMA buffers are done */
+		 
 		if (!rcar_drif_bufs_done(buf)) {
 			spin_unlock(&sdr->dma_lock);
 			return;
 		}
 
-		/* Clear buf done status */
+		 
 		rcar_drif_bufs_clear(buf, RCAR_DRIF_BUF_DONE);
 
 		if (rcar_drif_bufs_overflow(buf)) {
 			overflow = true;
-			/* Clear the flag in status */
+			 
 			rcar_drif_bufs_clear(buf, RCAR_DRIF_BUF_OVERFLOW);
 		}
 	} else {
 		buf[0] = &ch->buf[idx];
 		if (buf[0]->status & RCAR_DRIF_BUF_OVERFLOW) {
 			overflow = true;
-			/* Clear the flag in status */
+			 
 			buf[0]->status &= ~RCAR_DRIF_BUF_OVERFLOW;
 		}
 	}
 
-	/* Buffer produced for consumption */
+	 
 	produced = sdr->produced++;
 	spin_unlock(&sdr->dma_lock);
 
 	rdrif_dbg(sdr, "ch%u: prod %u\n", ch->num, produced);
 
-	/* Get fbuf */
+	 
 	fbuf = rcar_drif_get_fbuf(sdr);
 	if (!fbuf)
 		return;
@@ -585,7 +547,7 @@ static void rcar_drif_dma_complete(void *dma_async_param)
 	fbuf->vb.vb2_buf.timestamp = ktime_get_ns();
 	vb2_set_plane_payload(&fbuf->vb.vb2_buf, 0, sdr->fmt->buffersize);
 
-	/* Set error state on overflow */
+	 
 	vb2_buffer_done(&fbuf->vb.vb2_buf,
 			overflow ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
 }
@@ -598,7 +560,7 @@ static int rcar_drif_qbuf(struct rcar_drif *ch)
 	dma_cookie_t cookie;
 	int ret = -EIO;
 
-	/* Setup cyclic DMA with given buffers */
+	 
 	rxd = dmaengine_prep_dma_cyclic(ch->dmach, addr,
 					sdr->hwbuf_size * RCAR_DRIF_NUM_HWBUFS,
 					sdr->hwbuf_size, DMA_DEV_TO_MEM,
@@ -608,7 +570,7 @@ static int rcar_drif_qbuf(struct rcar_drif *ch)
 		return ret;
 	}
 
-	/* Submit descriptor */
+	 
 	rxd->callback = rcar_drif_dma_complete;
 	rxd->callback_param = ch;
 	cookie = dmaengine_submit(rxd);
@@ -621,19 +583,16 @@ static int rcar_drif_qbuf(struct rcar_drif *ch)
 	return 0;
 }
 
-/* Enable reception */
+ 
 static int rcar_drif_enable_rx(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
 	u32 ctr;
 	int ret = -EINVAL;
 
-	/*
-	 * When both internal channels are enabled, they can be synchronized
-	 * only by the master
-	 */
+	 
 
-	/* Enable receive */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		ctr = rcar_drif_read(sdr->ch[i], RCAR_DRIF_SICTR);
 		ctr |= (RCAR_DRIF_SICTR_RX_RISING_EDGE |
@@ -641,7 +600,7 @@ static int rcar_drif_enable_rx(struct rcar_drif_sdr *sdr)
 		rcar_drif_write(sdr->ch[i], RCAR_DRIF_SICTR, ctr);
 	}
 
-	/* Check receive enabled */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		ret = readl_poll_timeout(sdr->ch[i]->base + RCAR_DRIF_SICTR,
 				ctr, ctr & RCAR_DRIF_SICTR_RX_EN, 7, 100000);
@@ -654,21 +613,21 @@ static int rcar_drif_enable_rx(struct rcar_drif_sdr *sdr)
 	return ret;
 }
 
-/* Disable reception */
+ 
 static void rcar_drif_disable_rx(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
 	u32 ctr;
 	int ret;
 
-	/* Disable receive */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		ctr = rcar_drif_read(sdr->ch[i], RCAR_DRIF_SICTR);
 		ctr &= ~RCAR_DRIF_SICTR_RX_EN;
 		rcar_drif_write(sdr->ch[i], RCAR_DRIF_SICTR, ctr);
 	}
 
-	/* Check receive disabled */
+	 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask) {
 		ret = readl_poll_timeout(sdr->ch[i]->base + RCAR_DRIF_SICTR,
 				ctr, !(ctr & RCAR_DRIF_SICTR_RX_EN), 7, 100000);
@@ -679,36 +638,36 @@ static void rcar_drif_disable_rx(struct rcar_drif_sdr *sdr)
 	}
 }
 
-/* Stop channel */
+ 
 static void rcar_drif_stop_channel(struct rcar_drif *ch)
 {
-	/* Disable DMA receive interrupt */
+	 
 	rcar_drif_write(ch, RCAR_DRIF_SIIER, 0x00000000);
 
-	/* Terminate all DMA transfers */
+	 
 	dmaengine_terminate_sync(ch->dmach);
 }
 
-/* Stop receive operation */
+ 
 static void rcar_drif_stop(struct rcar_drif_sdr *sdr)
 {
 	unsigned int i;
 
-	/* Disable Rx */
+	 
 	rcar_drif_disable_rx(sdr);
 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask)
 		rcar_drif_stop_channel(sdr->ch[i]);
 }
 
-/* Start channel */
+ 
 static int rcar_drif_start_channel(struct rcar_drif *ch)
 {
 	struct rcar_drif_sdr *sdr = ch->sdr;
 	u32 ctr, str;
 	int ret;
 
-	/* Reset receive */
+	 
 	rcar_drif_write(ch, RCAR_DRIF_SICTR, RCAR_DRIF_SICTR_RESET);
 	ret = readl_poll_timeout(ch->base + RCAR_DRIF_SICTR, ctr,
 				 !(ctr & RCAR_DRIF_SICTR_RESET), 7, 100000);
@@ -718,23 +677,23 @@ static int rcar_drif_start_channel(struct rcar_drif *ch)
 		return ret;
 	}
 
-	/* Queue buffers for DMA */
+	 
 	ret = rcar_drif_qbuf(ch);
 	if (ret)
 		return ret;
 
-	/* Clear status register flags */
+	 
 	str = RCAR_DRIF_RFFUL | RCAR_DRIF_REOF | RCAR_DRIF_RFSERR |
 		RCAR_DRIF_RFUDF | RCAR_DRIF_RFOVF;
 	rcar_drif_write(ch, RCAR_DRIF_SISTR, str);
 
-	/* Enable DMA receive interrupt */
+	 
 	rcar_drif_write(ch, RCAR_DRIF_SIIER, 0x00009000);
 
 	return ret;
 }
 
-/* Start receive operation */
+ 
 static int rcar_drif_start(struct rcar_drif_sdr *sdr)
 {
 	unsigned long enabled = 0;
@@ -764,7 +723,7 @@ start_error:
 	return ret;
 }
 
-/* Start streaming */
+ 
 static int rcar_drif_start_streaming(struct vb2_queue *vq, unsigned int count)
 {
 	struct rcar_drif_sdr *sdr = vb2_get_drv_priv(vq);
@@ -781,10 +740,10 @@ static int rcar_drif_start_streaming(struct vb2_queue *vq, unsigned int count)
 		enabled |= BIT(i);
 	}
 
-	/* Set default MDRx settings */
+	 
 	rcar_drif_set_mdr1(sdr);
 
-	/* Set new format */
+	 
 	ret = rcar_drif_set_format(sdr);
 	if (ret)
 		goto error;
@@ -797,17 +756,17 @@ static int rcar_drif_start_streaming(struct vb2_queue *vq, unsigned int count)
 	rdrif_dbg(sdr, "num hwbufs %u, hwbuf_size %u\n",
 		RCAR_DRIF_NUM_HWBUFS, sdr->hwbuf_size);
 
-	/* Alloc DMA channel */
+	 
 	ret = rcar_drif_alloc_dmachannels(sdr);
 	if (ret)
 		goto error;
 
-	/* Request buffers */
+	 
 	ret = rcar_drif_request_buf(sdr);
 	if (ret)
 		goto error;
 
-	/* Start Rx */
+	 
 	ret = rcar_drif_start(sdr);
 	if (ret)
 		goto error;
@@ -828,7 +787,7 @@ error:
 	return ret;
 }
 
-/* Stop streaming */
+ 
 static void rcar_drif_stop_streaming(struct vb2_queue *vq)
 {
 	struct rcar_drif_sdr *sdr = vb2_get_drv_priv(vq);
@@ -836,16 +795,16 @@ static void rcar_drif_stop_streaming(struct vb2_queue *vq)
 
 	mutex_lock(&sdr->v4l2_mutex);
 
-	/* Stop hardware streaming */
+	 
 	rcar_drif_stop(sdr);
 
-	/* Return all queued buffers to vb2 */
+	 
 	rcar_drif_release_queued_bufs(sdr, VB2_BUF_STATE_ERROR);
 
-	/* Release buf */
+	 
 	rcar_drif_release_buf(sdr);
 
-	/* Release DMA channel resources */
+	 
 	rcar_drif_release_dmachannels(sdr);
 
 	for_each_rcar_drif_channel(i, &sdr->cur_ch_mask)
@@ -854,7 +813,7 @@ static void rcar_drif_stop_streaming(struct vb2_queue *vq)
 	mutex_unlock(&sdr->v4l2_mutex);
 }
 
-/* Vb2 ops */
+ 
 static const struct vb2_ops rcar_drif_vb2_ops = {
 	.queue_setup            = rcar_drif_queue_setup,
 	.buf_queue              = rcar_drif_buf_queue,
@@ -882,7 +841,7 @@ static int rcar_drif_set_default_format(struct rcar_drif_sdr *sdr)
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(formats); i++) {
-		/* Matching fmt based on required channels is set as default */
+		 
 		if (sdr->num_hw_ch == formats[i].num_ch) {
 			sdr->fmt = &formats[i];
 			sdr->cur_ch_mask = sdr->hw_ch_mask;
@@ -933,17 +892,14 @@ static int rcar_drif_s_fmt_sdr_cap(struct file *file, void *priv,
 	}
 
 	if (i == ARRAY_SIZE(formats))
-		i = 0;		/* Set the 1st format as default on no match */
+		i = 0;		 
 
 	sdr->fmt = &formats[i];
 	f->fmt.sdr.pixelformat = sdr->fmt->pixelformat;
 	f->fmt.sdr.buffersize = formats[i].buffersize;
 	memset(f->fmt.sdr.reserved, 0, sizeof(f->fmt.sdr.reserved));
 
-	/*
-	 * If a format demands one channel only out of two
-	 * enabled channels, pick the 0th channel.
-	 */
+	 
 	if (formats[i].num_ch < sdr->num_hw_ch) {
 		sdr->cur_ch_mask = BIT(0);
 		sdr->num_cur_ch = formats[i].num_ch;
@@ -977,7 +933,7 @@ static int rcar_drif_try_fmt_sdr_cap(struct file *file, void *priv,
 	return 0;
 }
 
-/* Tuner subdev ioctls */
+ 
 static int rcar_drif_enum_freq_bands(struct file *file, void *priv,
 				     struct v4l2_frequency_band *band)
 {
@@ -1060,7 +1016,7 @@ static int rcar_drif_sdr_register(struct rcar_drif_sdr *sdr)
 {
 	int ret;
 
-	/* Init video_device structure */
+	 
 	sdr->vdev = video_device_alloc();
 	if (!sdr->vdev)
 		return -ENOMEM;
@@ -1078,7 +1034,7 @@ static int rcar_drif_sdr_register(struct rcar_drif_sdr *sdr)
 		V4L2_CAP_STREAMING | V4L2_CAP_READWRITE;
 	video_set_drvdata(sdr->vdev, sdr);
 
-	/* Register V4L2 SDR device */
+	 
 	ret = video_register_device(sdr->vdev, VFL_TYPE_SDR, -1);
 	if (ret) {
 		video_device_release(sdr->vdev);
@@ -1095,7 +1051,7 @@ static void rcar_drif_sdr_unregister(struct rcar_drif_sdr *sdr)
 	sdr->vdev = NULL;
 }
 
-/* Sub-device bound callback */
+ 
 static int rcar_drif_notify_bound(struct v4l2_async_notifier *notifier,
 				   struct v4l2_subdev *subdev,
 				   struct v4l2_async_connection *asd)
@@ -1110,7 +1066,7 @@ static int rcar_drif_notify_bound(struct v4l2_async_notifier *notifier,
 	return 0;
 }
 
-/* Sub-device unbind callback */
+ 
 static void rcar_drif_notify_unbind(struct v4l2_async_notifier *notifier,
 				   struct v4l2_subdev *subdev,
 				   struct v4l2_async_connection *asd)
@@ -1123,7 +1079,7 @@ static void rcar_drif_notify_unbind(struct v4l2_async_notifier *notifier,
 		return;
 	}
 
-	/* Free ctrl handler if initialized */
+	 
 	v4l2_ctrl_handler_free(&sdr->ctrl_hdl);
 	sdr->v4l2_dev.ctrl_handler = NULL;
 	sdr->ep.subdev = NULL;
@@ -1132,19 +1088,14 @@ static void rcar_drif_notify_unbind(struct v4l2_async_notifier *notifier,
 	rdrif_dbg(sdr, "unbind asd %s\n", subdev->name);
 }
 
-/* Sub-device registered notification callback */
+ 
 static int rcar_drif_notify_complete(struct v4l2_async_notifier *notifier)
 {
 	struct rcar_drif_sdr *sdr =
 		container_of(notifier, struct rcar_drif_sdr, notifier);
 	int ret;
 
-	/*
-	 * The subdev tested at this point uses 4 controls. Using 10 as a worst
-	 * case scenario hint. When less controls are needed there will be some
-	 * unused memory and when more controls are needed the framework uses
-	 * hash to manage controls within this number.
-	 */
+	 
 	ret = v4l2_ctrl_handler_init(&sdr->ctrl_hdl, 10);
 	if (ret)
 		return -ENOMEM;
@@ -1181,27 +1132,27 @@ static const struct v4l2_async_notifier_operations rcar_drif_notify_ops = {
 	.complete = rcar_drif_notify_complete,
 };
 
-/* Read endpoint properties */
+ 
 static void rcar_drif_get_ep_properties(struct rcar_drif_sdr *sdr,
 					struct fwnode_handle *fwnode)
 {
 	u32 val;
 
-	/* Set the I2S defaults for SIRMDR1*/
+	 
 	sdr->mdr1 = RCAR_DRIF_SIRMDR1_SYNCMD_LR | RCAR_DRIF_SIRMDR1_MSB_FIRST |
 		RCAR_DRIF_SIRMDR1_DTDL_1 | RCAR_DRIF_SIRMDR1_SYNCDL_0;
 
-	/* Parse sync polarity from endpoint */
+	 
 	if (!fwnode_property_read_u32(fwnode, "sync-active", &val))
 		sdr->mdr1 |= val ? RCAR_DRIF_SIRMDR1_SYNCAC_POL_HIGH :
 			RCAR_DRIF_SIRMDR1_SYNCAC_POL_LOW;
 	else
-		sdr->mdr1 |= RCAR_DRIF_SIRMDR1_SYNCAC_POL_HIGH; /* default */
+		sdr->mdr1 |= RCAR_DRIF_SIRMDR1_SYNCAC_POL_HIGH;  
 
 	dev_dbg(sdr->dev, "mdr1 0x%08x\n", sdr->mdr1);
 }
 
-/* Parse sub-devs (tuner) to find a matching device */
+ 
 static int rcar_drif_parse_subdevs(struct rcar_drif_sdr *sdr)
 {
 	struct v4l2_async_notifier *notifier = &sdr->notifier;
@@ -1215,7 +1166,7 @@ static int rcar_drif_parse_subdevs(struct rcar_drif_sdr *sdr)
 	if (!ep)
 		return 0;
 
-	/* Get the endpoint properties */
+	 
 	rcar_drif_get_ep_properties(sdr, ep);
 
 	fwnode = fwnode_graph_get_remote_port_parent(ep);
@@ -1234,13 +1185,13 @@ static int rcar_drif_parse_subdevs(struct rcar_drif_sdr *sdr)
 	return 0;
 }
 
-/* Check if the given device is the primary bond */
+ 
 static bool rcar_drif_primary_bond(struct platform_device *pdev)
 {
 	return of_property_read_bool(pdev->dev.of_node, "renesas,primary-bond");
 }
 
-/* Check if both devices of the bond are enabled */
+ 
 static struct device_node *rcar_drif_bond_enabled(struct platform_device *p)
 {
 	struct device_node *np;
@@ -1252,7 +1203,7 @@ static struct device_node *rcar_drif_bond_enabled(struct platform_device *p)
 	return NULL;
 }
 
-/* Check if the bonded device is probed */
+ 
 static int rcar_drif_bond_available(struct rcar_drif_sdr *sdr,
 				    struct device_node *np)
 {
@@ -1269,14 +1220,14 @@ static int rcar_drif_bond_available(struct rcar_drif_sdr *sdr,
 	device_lock(&pdev->dev);
 	ch = platform_get_drvdata(pdev);
 	if (ch) {
-		/* Update sdr data in the bonded device */
+		 
 		ch->sdr = sdr;
 
-		/* Update sdr with bonded device data */
+		 
 		sdr->ch[ch->num] = ch;
 		sdr->hw_ch_mask |= BIT(ch->num);
 	} else {
-		/* Defer */
+		 
 		dev_info(sdr->dev, "defer probe\n");
 		ret = -EPROBE_DEFER;
 	}
@@ -1287,19 +1238,19 @@ static int rcar_drif_bond_available(struct rcar_drif_sdr *sdr,
 	return ret;
 }
 
-/* V4L2 SDR device probe */
+ 
 static int rcar_drif_sdr_probe(struct rcar_drif_sdr *sdr)
 {
 	int ret;
 
-	/* Validate any supported format for enabled channels */
+	 
 	ret = rcar_drif_set_default_format(sdr);
 	if (ret) {
 		dev_err(sdr->dev, "failed to set default format\n");
 		return ret;
 	}
 
-	/* Set defaults */
+	 
 	sdr->hwbuf_size = RCAR_DRIF_DEFAULT_HWBUF_SIZE;
 
 	mutex_init(&sdr->v4l2_mutex);
@@ -1308,7 +1259,7 @@ static int rcar_drif_sdr_probe(struct rcar_drif_sdr *sdr)
 	spin_lock_init(&sdr->dma_lock);
 	INIT_LIST_HEAD(&sdr->queued_bufs);
 
-	/* Init videobuf2 queue structure */
+	 
 	sdr->vb_queue.type = V4L2_BUF_TYPE_SDR_CAPTURE;
 	sdr->vb_queue.io_modes = VB2_READ | VB2_MMAP | VB2_DMABUF;
 	sdr->vb_queue.drv_priv = sdr;
@@ -1317,31 +1268,28 @@ static int rcar_drif_sdr_probe(struct rcar_drif_sdr *sdr)
 	sdr->vb_queue.mem_ops = &vb2_vmalloc_memops;
 	sdr->vb_queue.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 
-	/* Init videobuf2 queue */
+	 
 	ret = vb2_queue_init(&sdr->vb_queue);
 	if (ret) {
 		dev_err(sdr->dev, "failed: vb2_queue_init ret %d\n", ret);
 		return ret;
 	}
 
-	/* Register the v4l2_device */
+	 
 	ret = v4l2_device_register(sdr->dev, &sdr->v4l2_dev);
 	if (ret) {
 		dev_err(sdr->dev, "failed: v4l2_device_register ret %d\n", ret);
 		return ret;
 	}
 
-	/*
-	 * Parse subdevs after v4l2_device_register because if the subdev
-	 * is already probed, bound and complete will be called immediately
-	 */
+	 
 	ret = rcar_drif_parse_subdevs(sdr);
 	if (ret)
 		goto error;
 
 	sdr->notifier.ops = &rcar_drif_notify_ops;
 
-	/* Register notifier */
+	 
 	ret = v4l2_async_nf_register(&sdr->notifier);
 	if (ret < 0) {
 		dev_err(sdr->dev, "failed: notifier register ret %d\n", ret);
@@ -1358,7 +1306,7 @@ error:
 	return ret;
 }
 
-/* V4L2 SDR device remove */
+ 
 static void rcar_drif_sdr_remove(struct rcar_drif_sdr *sdr)
 {
 	v4l2_async_nf_unregister(&sdr->notifier);
@@ -1366,7 +1314,7 @@ static void rcar_drif_sdr_remove(struct rcar_drif_sdr *sdr)
 	v4l2_device_unregister(&sdr->v4l2_dev);
 }
 
-/* DRIF channel probe */
+ 
 static int rcar_drif_probe(struct platform_device *pdev)
 {
 	struct rcar_drif_sdr *sdr;
@@ -1375,14 +1323,14 @@ static int rcar_drif_probe(struct platform_device *pdev)
 	struct resource	*res;
 	int ret;
 
-	/* Reserve memory for enabled channel */
+	 
 	ch = devm_kzalloc(&pdev->dev, sizeof(*ch), GFP_KERNEL);
 	if (!ch)
 		return -ENOMEM;
 
 	ch->pdev = pdev;
 
-	/* Module clock */
+	 
 	ch->clk = devm_clk_get(&pdev->dev, "fck");
 	if (IS_ERR(ch->clk)) {
 		ret = PTR_ERR(ch->clk);
@@ -1390,7 +1338,7 @@ static int rcar_drif_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Register map */
+	 
 	ch->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(ch->base))
 		return PTR_ERR(ch->base);
@@ -1398,18 +1346,18 @@ static int rcar_drif_probe(struct platform_device *pdev)
 	ch->start = res->start;
 	platform_set_drvdata(pdev, ch);
 
-	/* Check if both channels of the bond are enabled */
+	 
 	np = rcar_drif_bond_enabled(pdev);
 	if (np) {
-		/* Check if current channel acting as primary-bond */
+		 
 		if (!rcar_drif_primary_bond(pdev)) {
-			ch->num = 1;	/* Primary bond is channel 0 always */
+			ch->num = 1;	 
 			of_node_put(np);
 			return 0;
 		}
 	}
 
-	/* Reserve memory for SDR structure */
+	 
 	sdr = devm_kzalloc(&pdev->dev, sizeof(*sdr), GFP_KERNEL);
 	if (!sdr) {
 		of_node_put(np);
@@ -1418,11 +1366,11 @@ static int rcar_drif_probe(struct platform_device *pdev)
 	ch->sdr = sdr;
 	sdr->dev = &pdev->dev;
 
-	/* Establish links between SDR and channel(s) */
+	 
 	sdr->ch[ch->num] = ch;
 	sdr->hw_ch_mask = BIT(ch->num);
 	if (np) {
-		/* Check if bonded device is ready */
+		 
 		ret = rcar_drif_bond_available(sdr, np);
 		of_node_put(np);
 		if (ret)
@@ -1433,21 +1381,21 @@ static int rcar_drif_probe(struct platform_device *pdev)
 	return rcar_drif_sdr_probe(sdr);
 }
 
-/* DRIF channel remove */
+ 
 static void rcar_drif_remove(struct platform_device *pdev)
 {
 	struct rcar_drif *ch = platform_get_drvdata(pdev);
 	struct rcar_drif_sdr *sdr = ch->sdr;
 
-	/* Channel 0 will be the SDR instance */
+	 
 	if (ch->num)
 		return;
 
-	/* SDR instance */
+	 
 	rcar_drif_sdr_remove(sdr);
 }
 
-/* FIXME: Implement suspend/resume support */
+ 
 static int __maybe_unused rcar_drif_suspend(struct device *dev)
 {
 	return 0;

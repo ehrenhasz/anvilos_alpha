@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Diolan DLN-2 USB adapter
- *
- * Copyright (c) 2014 Intel Corporation
- *
- * Derived from:
- *  i2c-diolan-u2c.c
- *  Copyright (c) 2010-2011 Ericsson AB
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -38,13 +30,13 @@ struct dln2_response {
 #define CMD_GET_DEVICE_SN		DLN2_GENERIC_CMD(0x31)
 
 #define DLN2_HW_ID			0x200
-#define DLN2_USB_TIMEOUT		200	/* in ms */
+#define DLN2_USB_TIMEOUT		200	 
 #define DLN2_MAX_RX_SLOTS		16
 #define DLN2_MAX_URBS			16
 #define DLN2_RX_BUF_SIZE		512
 
 enum dln2_handle {
-	DLN2_HANDLE_EVENT = 0,		/* don't change, hardware defined */
+	DLN2_HANDLE_EVENT = 0,		 
 	DLN2_HANDLE_CTRL,
 	DLN2_HANDLE_GPIO,
 	DLN2_HANDLE_I2C,
@@ -53,40 +45,30 @@ enum dln2_handle {
 	DLN2_HANDLES
 };
 
-/*
- * Receive context used between the receive demultiplexer and the transfer
- * routine. While sending a request the transfer routine will look for a free
- * receive context and use it to wait for a response and to receive the URB and
- * thus the response data.
- */
+ 
 struct dln2_rx_context {
-	/* completion used to wait for a response */
+	 
 	struct completion done;
 
-	/* if non-NULL the URB contains the response */
+	 
 	struct urb *urb;
 
-	/* if true then this context is used to wait for a response */
+	 
 	bool in_use;
 };
 
-/*
- * Receive contexts for a particular DLN2 module (i2c, gpio, etc.). We use the
- * handle header field to identify the module in dln2_dev.mod_rx_slots and then
- * the echo header field to index the slots field and find the receive context
- * for a particular request.
- */
+ 
 struct dln2_mod_rx_slots {
-	/* RX slots bitmap */
+	 
 	DECLARE_BITMAP(bmap, DLN2_MAX_RX_SLOTS);
 
-	/* used to wait for a free RX slot */
+	 
 	wait_queue_head_t wq;
 
-	/* used to wait for an RX operation to complete */
+	 
 	struct dln2_rx_context slots[DLN2_MAX_RX_SLOTS];
 
-	/* avoid races between alloc/free_rx_slot and dln2_rx_transfer */
+	 
 	spinlock_t lock;
 };
 
@@ -180,11 +162,7 @@ void dln2_unregister_event_cb(struct platform_device *pdev, u16 id)
 }
 EXPORT_SYMBOL(dln2_unregister_event_cb);
 
-/*
- * Returns true if a valid transfer slot is found. In this case the URB must not
- * be resubmitted immediately in dln2_rx as we need the data when dln2_transfer
- * is woke up. It will be resubmitted there.
- */
+ 
 static bool dln2_transfer_complete(struct dln2_dev *dln2, struct urb *urb,
 				   u16 handle, u16 rx_slot)
 {
@@ -243,13 +221,13 @@ static void dln2_rx(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -EPIPE:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(dev, "urb shutting down with status %d\n", urb->status);
 		return;
 	default:
@@ -288,7 +266,7 @@ static void dln2_rx(struct urb *urb)
 		dln2_run_event_callbacks(dln2, id, echo, data, len);
 		spin_unlock_irqrestore(&dln2->event_cb_lock, flags);
 	} else {
-		/* URB will be re-submitted in _dln2_transfer (free_rx_slot) */
+		 
 		if (dln2_transfer_complete(dln2, urb, handle, echo))
 			return;
 	}
@@ -378,10 +356,7 @@ static int alloc_rx_slot(struct dln2_dev *dln2, u16 handle)
 	int ret;
 	int slot;
 
-	/*
-	 * No need to timeout here, the wait is bounded by the timeout in
-	 * _dln2_transfer.
-	 */
+	 
 	ret = wait_event_interruptible(dln2->mod_rx_slots[handle].wq,
 				       find_free_slot(dln2, handle, &slot));
 	if (ret < 0)
@@ -474,7 +449,7 @@ static int _dln2_transfer(struct dln2_dev *dln2, u16 handle, u16 cmd,
 		goto out_free_rx_slot;
 	}
 
-	/* if we got here we know that the response header has been checked */
+	 
 	rsp = rxc->urb->transfer_buffer;
 	size = le16_to_cpu(rsp->hdr.size);
 
@@ -659,7 +634,7 @@ static struct mfd_cell_acpi_match dln2_acpi_match_gpio = {
 	.adr = DLN2_ACPI_MATCH_GPIO,
 };
 
-/* Only one I2C port seems to be supported on current hardware */
+ 
 static struct dln2_platform_data dln2_pdata_i2c = {
 	.handle = DLN2_HANDLE_I2C,
 	.port = 0,
@@ -669,7 +644,7 @@ static struct mfd_cell_acpi_match dln2_acpi_match_i2c = {
 	.adr = DLN2_ACPI_MATCH_I2C,
 };
 
-/* Only one SPI port supported */
+ 
 static struct dln2_platform_data dln2_pdata_spi = {
 	.handle = DLN2_HANDLE_SPI,
 	.port = 0,
@@ -679,7 +654,7 @@ static struct mfd_cell_acpi_match dln2_acpi_match_spi = {
 	.adr = DLN2_ACPI_MATCH_SPI,
 };
 
-/* Only one ADC port supported */
+ 
 static struct dln2_platform_data dln2_pdata_adc = {
 	.handle = DLN2_HANDLE_ADC,
 	.port = 0,
@@ -720,19 +695,19 @@ static void dln2_stop(struct dln2_dev *dln2)
 {
 	int i, j;
 
-	/* don't allow starting new transfers */
+	 
 	spin_lock(&dln2->disconnect_lock);
 	dln2->disconnect = true;
 	spin_unlock(&dln2->disconnect_lock);
 
-	/* cancel in progress transfers */
+	 
 	for (i = 0; i < DLN2_HANDLES; i++) {
 		struct dln2_mod_rx_slots *rxs = &dln2->mod_rx_slots[i];
 		unsigned long flags;
 
 		spin_lock_irqsave(&rxs->lock, flags);
 
-		/* cancel all response waiters */
+		 
 		for (j = 0; j < DLN2_MAX_RX_SLOTS; j++) {
 			struct dln2_rx_context *rxc = &rxs->slots[j];
 
@@ -743,7 +718,7 @@ static void dln2_stop(struct dln2_dev *dln2)
 		spin_unlock_irqrestore(&rxs->lock, flags);
 	}
 
-	/* wait for transfers to end */
+	 
 	wait_event(dln2->disconnect_wq, !dln2->active_transfers);
 
 	dln2_stop_rx_urbs(dln2);

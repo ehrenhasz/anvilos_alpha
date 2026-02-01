@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SM8350 interconnect IDs
- *
- * Copyright (c) 2021, Linaro Limited
- */
+ 
+ 
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SM8350_H
 #define __DRIVERS_INTERCONNECT_QCOM_SM8350_H

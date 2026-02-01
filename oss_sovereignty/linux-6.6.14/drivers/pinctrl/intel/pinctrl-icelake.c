@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Ice Lake PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2018, 2022 Intel Corporation
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -41,9 +35,9 @@
 #define ICL_N_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, ICL_N)
 
-/* Ice Lake-LP */
+ 
 static const struct pinctrl_pin_desc icllp_pins[] = {
-	/* GPP_G */
+	 
 	PINCTRL_PIN(0, "SD3_CMD"),
 	PINCTRL_PIN(1, "SD3_D0"),
 	PINCTRL_PIN(2, "SD3_D1"),
@@ -52,7 +46,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(5, "SD3_CDB"),
 	PINCTRL_PIN(6, "SD3_CLK"),
 	PINCTRL_PIN(7, "SD3_WP"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(8, "CORE_VID_0"),
 	PINCTRL_PIN(9, "CORE_VID_1"),
 	PINCTRL_PIN(10, "VRALERTB"),
@@ -79,7 +73,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(31, "SML1ALERTB"),
 	PINCTRL_PIN(32, "GSPI0_CLK_LOOPBK"),
 	PINCTRL_PIN(33, "GSPI1_CLK_LOOPBK"),
-	/* GPP_A */
+	 
 	PINCTRL_PIN(34, "ESPI_IO_0"),
 	PINCTRL_PIN(35, "ESPI_IO_1"),
 	PINCTRL_PIN(36, "ESPI_IO_2"),
@@ -105,7 +99,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(56, "I2S5_RXD"),
 	PINCTRL_PIN(57, "I2S1_SCLK"),
 	PINCTRL_PIN(58, "ESPI_CLK_LOOPBK"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(59, "SD_1P8_SEL"),
 	PINCTRL_PIN(60, "SD_PWR_EN_B"),
 	PINCTRL_PIN(61, "GPPC_H_2"),
@@ -130,7 +124,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(80, "IMGCLKOUT_2"),
 	PINCTRL_PIN(81, "IMGCLKOUT_3"),
 	PINCTRL_PIN(82, "IMGCLKOUT_4"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(83, "ISH_GP_0"),
 	PINCTRL_PIN(84, "ISH_GP_1"),
 	PINCTRL_PIN(85, "ISH_GP_2"),
@@ -152,7 +146,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(101, "ISH_GP_5"),
 	PINCTRL_PIN(102, "I2S_MCLK"),
 	PINCTRL_PIN(103, "GSPI2_CLK_LOOPBK"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(104, "CNV_BRI_DT"),
 	PINCTRL_PIN(105, "CNV_BRI_RSP"),
 	PINCTRL_PIN(106, "CNV_RGI_DT"),
@@ -173,7 +167,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(121, "EMMC_CLK"),
 	PINCTRL_PIN(122, "EMMC_RESETB"),
 	PINCTRL_PIN(123, "A4WP_PRESENT"),
-	/* vGPIO */
+	 
 	PINCTRL_PIN(124, "CNV_BTEN"),
 	PINCTRL_PIN(125, "CNV_WCEN"),
 	PINCTRL_PIN(126, "CNV_BT_HOST_WAKEB"),
@@ -203,7 +197,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(150, "vI2S2_TXD"),
 	PINCTRL_PIN(151, "vI2S2_RXD"),
 	PINCTRL_PIN(152, "vSD3_CD_B"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(153, "SMBCLK"),
 	PINCTRL_PIN(154, "SMBDATA"),
 	PINCTRL_PIN(155, "SMBALERTB"),
@@ -228,14 +222,14 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(174, "UART2_TXD"),
 	PINCTRL_PIN(175, "UART2_RTSB"),
 	PINCTRL_PIN(176, "UART2_CTSB"),
-	/* HVCMOS */
+	 
 	PINCTRL_PIN(177, "L_BKLTEN"),
 	PINCTRL_PIN(178, "L_BKLTCTL"),
 	PINCTRL_PIN(179, "L_VDDEN"),
 	PINCTRL_PIN(180, "SYS_PWROK"),
 	PINCTRL_PIN(181, "SYS_RESETB"),
 	PINCTRL_PIN(182, "MLK_RSTB"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(183, "SATAXPCIE_0"),
 	PINCTRL_PIN(184, "SPI1_IO_2"),
 	PINCTRL_PIN(185, "SPI1_IO_3"),
@@ -260,7 +254,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(204, "DDP2_CTRLDATA"),
 	PINCTRL_PIN(205, "DDPA_CTRLCLK"),
 	PINCTRL_PIN(206, "DDPA_CTRLDATA"),
-	/* JTAG */
+	 
 	PINCTRL_PIN(207, "JTAG_TDO"),
 	PINCTRL_PIN(208, "JTAGX"),
 	PINCTRL_PIN(209, "PRDYB"),
@@ -270,7 +264,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(213, "JTAG_TMS"),
 	PINCTRL_PIN(214, "JTAG_TCK"),
 	PINCTRL_PIN(215, "ITP_PMODE"),
-	/* GPP_R */
+	 
 	PINCTRL_PIN(216, "HDA_BCLK"),
 	PINCTRL_PIN(217, "HDA_SYNC"),
 	PINCTRL_PIN(218, "HDA_SDO"),
@@ -279,7 +273,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(221, "HDA_SDI_1"),
 	PINCTRL_PIN(222, "I2S1_TXD"),
 	PINCTRL_PIN(223, "I2S1_RXD"),
-	/* GPP_S */
+	 
 	PINCTRL_PIN(224, "SNDW1_CLK"),
 	PINCTRL_PIN(225, "SNDW1_DATA"),
 	PINCTRL_PIN(226, "SNDW2_CLK"),
@@ -288,7 +282,7 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 	PINCTRL_PIN(229, "SNDW3_DATA"),
 	PINCTRL_PIN(230, "SNDW4_CLK"),
 	PINCTRL_PIN(231, "SNDW4_DATA"),
-	/* SPI */
+	 
 	PINCTRL_PIN(232, "SPI0_IO_2"),
 	PINCTRL_PIN(233, "SPI0_IO_3"),
 	PINCTRL_PIN(234, "SPI0_MOSI_IO_0"),
@@ -301,29 +295,29 @@ static const struct pinctrl_pin_desc icllp_pins[] = {
 };
 
 static const struct intel_padgroup icllp_community0_gpps[] = {
-	ICL_GPP(0, 0, 7, 0),				/* GPP_G */
-	ICL_GPP(1, 8, 33, 32),				/* GPP_B */
-	ICL_GPP(2, 34, 58, 64),				/* GPP_A */
+	ICL_GPP(0, 0, 7, 0),				 
+	ICL_GPP(1, 8, 33, 32),				 
+	ICL_GPP(2, 34, 58, 64),				 
 };
 
 static const struct intel_padgroup icllp_community1_gpps[] = {
-	ICL_GPP(0, 59, 82, 96),				/* GPP_H */
-	ICL_GPP(1, 83, 103, 128),			/* GPP_D */
-	ICL_GPP(2, 104, 123, 160),			/* GPP_F */
-	ICL_GPP(3, 124, 152, 192),			/* vGPIO */
+	ICL_GPP(0, 59, 82, 96),				 
+	ICL_GPP(1, 83, 103, 128),			 
+	ICL_GPP(2, 104, 123, 160),			 
+	ICL_GPP(3, 124, 152, 192),			 
 };
 
 static const struct intel_padgroup icllp_community4_gpps[] = {
-	ICL_GPP(0, 153, 176, 224),			/* GPP_C */
-	ICL_GPP(1, 177, 182, INTEL_GPIO_BASE_NOMAP),	/* HVCMOS */
-	ICL_GPP(2, 183, 206, 256),			/* GPP_E */
-	ICL_GPP(3, 207, 215, INTEL_GPIO_BASE_NOMAP),	/* JTAG */
+	ICL_GPP(0, 153, 176, 224),			 
+	ICL_GPP(1, 177, 182, INTEL_GPIO_BASE_NOMAP),	 
+	ICL_GPP(2, 183, 206, 256),			 
+	ICL_GPP(3, 207, 215, INTEL_GPIO_BASE_NOMAP),	 
 };
 
 static const struct intel_padgroup icllp_community5_gpps[] = {
-	ICL_GPP(0, 216, 223, 288),			/* GPP_R */
-	ICL_GPP(1, 224, 231, 320),			/* GPP_S */
-	ICL_GPP(2, 232, 240, INTEL_GPIO_BASE_NOMAP),	/* SPI */
+	ICL_GPP(0, 216, 223, 288),			 
+	ICL_GPP(1, 224, 231, 320),			 
+	ICL_GPP(2, 232, 240, INTEL_GPIO_BASE_NOMAP),	 
 };
 
 static const struct intel_community icllp_communities[] = {
@@ -401,9 +395,9 @@ static const struct intel_pinctrl_soc_data icllp_soc_data = {
 	.ncommunities = ARRAY_SIZE(icllp_communities),
 };
 
-/* Ice Lake-N */
+ 
 static const struct pinctrl_pin_desc icln_pins[] = {
-	/* SPI */
+	 
 	PINCTRL_PIN(0, "SPI0_IO_2"),
 	PINCTRL_PIN(1, "SPI0_IO_3"),
 	PINCTRL_PIN(2, "SPI0_MOSI_IO_0"),
@@ -413,7 +407,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(6, "SPI0_FLASH_1_CSB"),
 	PINCTRL_PIN(7, "SPI0_CLK"),
 	PINCTRL_PIN(8, "SPI0_CLK_LOOPBK"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(9, "CORE_VID_0"),
 	PINCTRL_PIN(10, "CORE_VID_1"),
 	PINCTRL_PIN(11, "VRALERTB"),
@@ -440,7 +434,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(32, "GSPI1_CS1B"),
 	PINCTRL_PIN(33, "GSPI0_CLK_LOOPBK"),
 	PINCTRL_PIN(34, "GSPI1_CLK_LOOPBK"),
-	/* GPP_A */
+	 
 	PINCTRL_PIN(35, "ESPI_IO_0"),
 	PINCTRL_PIN(36, "ESPI_IO_1"),
 	PINCTRL_PIN(37, "ESPI_IO_2"),
@@ -462,7 +456,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(53, "USB2_OCB_0"),
 	PINCTRL_PIN(54, "PCHHOTB"),
 	PINCTRL_PIN(55, "ESPI_CLK_LOOPBK"),
-	/* GPP_S */
+	 
 	PINCTRL_PIN(56, "SNDW1_CLK"),
 	PINCTRL_PIN(57, "SNDW1_DATA"),
 	PINCTRL_PIN(58, "SNDW2_CLK"),
@@ -471,7 +465,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(61, "SNDW3_DATA_DMIC_DATA_1"),
 	PINCTRL_PIN(62, "SNDW4_CLK_DMIC_CLK_0"),
 	PINCTRL_PIN(63, "SNDW4_DATA_DMIC_DATA_0"),
-	/* GPP_R */
+	 
 	PINCTRL_PIN(64, "HDA_BCLK"),
 	PINCTRL_PIN(65, "HDA_SYNC"),
 	PINCTRL_PIN(66, "HDA_SDO"),
@@ -480,7 +474,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(69, "HDA_SDI_1_I2S1_RXD"),
 	PINCTRL_PIN(70, "I2S1_SFRM"),
 	PINCTRL_PIN(71, "I2S1_TXD"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(72, "GPPC_H_0"),
 	PINCTRL_PIN(73, "CNV_RF_RESET_B"),
 	PINCTRL_PIN(74, "MODEM_CLKREQ"),
@@ -505,7 +499,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(93, "GPPC_H_21"),
 	PINCTRL_PIN(94, "GPPC_H_22"),
 	PINCTRL_PIN(95, "GPPC_H_23"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(96, "SPI1_CSB_BK_0_SBK_0"),
 	PINCTRL_PIN(97, "SPI1_CLK_BK_1_SBK_1"),
 	PINCTRL_PIN(98, "SPI1_MISO_IO_1_BK_2_SBK_2"),
@@ -532,7 +526,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(119, "I2C5_SCL_ISH_I2C2_SCL"),
 	PINCTRL_PIN(120, "GSPI2_CLK_LOOPBK"),
 	PINCTRL_PIN(121, "SPI1_CLK_LOOPBK"),
-	/* vGPIO */
+	 
 	PINCTRL_PIN(122, "CNV_BTEN"),
 	PINCTRL_PIN(123, "CNV_WCEN"),
 	PINCTRL_PIN(124, "CNV_BT_HOST_WAKEB"),
@@ -562,7 +556,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(148, "vI2S2_TXD"),
 	PINCTRL_PIN(149, "vI2S2_RXD"),
 	PINCTRL_PIN(150, "vSD3_CD_B"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(151, "GPPC_C_0"),
 	PINCTRL_PIN(152, "GPPC_C_1"),
 	PINCTRL_PIN(153, "GPPC_C_2"),
@@ -587,14 +581,14 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(172, "UART2_TXD_CNV_MFUART0_TXD"),
 	PINCTRL_PIN(173, "UART2_RTSB_CNV_MFUART0_RTS_B"),
 	PINCTRL_PIN(174, "UART2_CTSB_CNV_MFUART0_CTS_B"),
-	/* HVCMOS */
+	 
 	PINCTRL_PIN(175, "L_BKLTEN"),
 	PINCTRL_PIN(176, "L_BKLTCTL"),
 	PINCTRL_PIN(177, "L_VDDEN"),
 	PINCTRL_PIN(178, "SYS_PWROK"),
 	PINCTRL_PIN(179, "SYS_RESETB"),
 	PINCTRL_PIN(180, "MLK_RSTB"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(181, "ISH_GP_0_IMGCLKOUT_0"),
 	PINCTRL_PIN(182, "ISH_GP_1"),
 	PINCTRL_PIN(183, "IMGCLKOUT_1"),
@@ -619,7 +613,7 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 	PINCTRL_PIN(202, "CNV_BRI_RSP"),
 	PINCTRL_PIN(203, "CNV_RGI_DT"),
 	PINCTRL_PIN(204, "CNV_RGI_RSP"),
-	/* GPP_G */
+	 
 	PINCTRL_PIN(205, "SD3_CMD"),
 	PINCTRL_PIN(206, "SD3_D0"),
 	PINCTRL_PIN(207, "SD3_D1"),
@@ -631,27 +625,27 @@ static const struct pinctrl_pin_desc icln_pins[] = {
 };
 
 static const struct intel_padgroup icln_community0_gpps[] = {
-	ICL_GPP(0, 0, 8, INTEL_GPIO_BASE_NOMAP),	/* SPI */
-	ICL_GPP(1, 9, 34, 32),				/* GPP_B */
-	ICL_GPP(2, 35, 55, 64),				/* GPP_A */
-	ICL_GPP(3, 56, 63, 96),				/* GPP_S */
-	ICL_GPP(4, 64, 71, 128),			/* GPP_R */
+	ICL_GPP(0, 0, 8, INTEL_GPIO_BASE_NOMAP),	 
+	ICL_GPP(1, 9, 34, 32),				 
+	ICL_GPP(2, 35, 55, 64),				 
+	ICL_GPP(3, 56, 63, 96),				 
+	ICL_GPP(4, 64, 71, 128),			 
 };
 
 static const struct intel_padgroup icln_community1_gpps[] = {
-	ICL_GPP(0, 72, 95, 160),			/* GPP_H */
-	ICL_GPP(1, 96, 121, 192),			/* GPP_D */
-	ICL_GPP(2, 122, 150, 224),			/* vGPIO */
-	ICL_GPP(3, 151, 174, 256),			/* GPP_C */
+	ICL_GPP(0, 72, 95, 160),			 
+	ICL_GPP(1, 96, 121, 192),			 
+	ICL_GPP(2, 122, 150, 224),			 
+	ICL_GPP(3, 151, 174, 256),			 
 };
 
 static const struct intel_padgroup icln_community4_gpps[] = {
-	ICL_GPP(0, 175, 180, INTEL_GPIO_BASE_NOMAP),	/* HVCMOS */
-	ICL_GPP(1, 181, 204, 288),			/* GPP_E */
+	ICL_GPP(0, 175, 180, INTEL_GPIO_BASE_NOMAP),	 
+	ICL_GPP(1, 181, 204, 288),			 
 };
 
 static const struct intel_padgroup icln_community5_gpps[] = {
-	ICL_GPP(0, 205, 212, INTEL_GPIO_BASE_ZERO),	/* GPP_G */
+	ICL_GPP(0, 205, 212, INTEL_GPIO_BASE_ZERO),	 
 };
 
 static const struct intel_community icln_communities[] = {

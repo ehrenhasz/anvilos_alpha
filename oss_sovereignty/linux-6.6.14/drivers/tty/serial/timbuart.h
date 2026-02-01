@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * timbuart.c timberdale FPGA GPIO driver
- * Copyright (c) 2009 Intel Corporation
- */
+ 
+ 
 
-/* Supports:
- * Timberdale FPGA UART
- */
+ 
 
 #ifndef _TIMBUART_H
 #define _TIMBUART_H
@@ -42,5 +37,5 @@
 #define TIMBUART_MAJOR 204
 #define TIMBUART_MINOR 192
 
-#endif /* _TIMBUART_H */
+#endif  
 

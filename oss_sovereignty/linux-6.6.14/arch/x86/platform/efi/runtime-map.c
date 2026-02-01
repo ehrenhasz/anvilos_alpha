@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 Red Hat, Inc., Dave Young <dyoung@redhat.com>
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -15,7 +13,7 @@
 
 struct efi_runtime_map_entry {
 	efi_memory_desc_t md;
-	struct kobject kobj;   /* kobject for each entry */
+	struct kobject kobj;    
 };
 
 static struct efi_runtime_map_entry **map_entries;
@@ -68,9 +66,7 @@ static struct map_attribute map_virt_addr_attr = __ATTR_RO_MODE(virt_addr, 0400)
 static struct map_attribute map_num_pages_attr = __ATTR_RO_MODE(num_pages, 0400);
 static struct map_attribute map_attribute_attr = __ATTR_RO_MODE(attribute, 0400);
 
-/*
- * These are default attributes that are added for every memmap entry.
- */
+ 
 static struct attribute *def_attrs[] = {
 	&map_type_attr.attr,
 	&map_phys_addr_attr.attr,

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+ 
+ 
 
 #ifndef _SPRD_DRM_H_
 #define _SPRD_DRM_H_
@@ -16,4 +14,4 @@ struct sprd_drm {
 extern struct platform_driver sprd_dpu_driver;
 extern struct platform_driver sprd_dsi_driver;
 
-#endif /* _SPRD_DRM_H_ */
+#endif  

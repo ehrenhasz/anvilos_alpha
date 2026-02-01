@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/ethtool.h>
@@ -24,7 +20,7 @@ struct otx2_stat {
 	unsigned int index;
 };
 
-/* HW device stats */
+ 
 #define OTX2_DEV_STAT(stat) { \
 	.name = #stat, \
 	.index = offsetof(struct otx2_dev_stats, stat) / sizeof(u64), \
@@ -45,7 +41,7 @@ static const struct otx2_stat otx2_dev_stats[] = {
 	OTX2_DEV_STAT(tx_mcast_frames),
 };
 
-/* Driver level stats */
+ 
 #define OTX2_DRV_STAT(stat) { \
 	.name = #stat, \
 	.index = offsetof(struct otx2_drv_stats, stat) / sizeof(atomic_t), \
@@ -194,7 +190,7 @@ end:
 	return rc;
 }
 
-/* Get device and per queue statistics */
+ 
 static void otx2_get_ethtool_stats(struct net_device *netdev,
 				   struct ethtool_stats *stats, u64 *data)
 {
@@ -230,9 +226,7 @@ static void otx2_get_ethtool_stats(struct net_device *netdev,
 	rsp = otx2_get_fwdata(pfvf);
 	if (!IS_ERR(rsp) && rsp->fwdata.phy.misc.has_fec_stats &&
 	    !otx2_get_phy_fec_stats(pfvf)) {
-		/* Fetch fwdata again because it's been recently populated with
-		 * latest PHY FEC stats.
-		 */
+		 
 		rsp = otx2_get_fwdata(pfvf);
 		if (!IS_ERR(rsp)) {
 			struct fec_stats_s *p = &rsp->fwdata.phy.fec_stats;
@@ -269,7 +263,7 @@ static int otx2_get_sset_count(struct net_device *netdev, int sset)
 	       mac_stats + OTX2_FEC_STATS_CNT + 1;
 }
 
-/* Get no of queues device supports and current queue count */
+ 
 static void otx2_get_channels(struct net_device *dev,
 			      struct ethtool_channels *channel)
 {
@@ -282,7 +276,7 @@ static void otx2_get_channels(struct net_device *dev,
 	channel->tx_count = pfvf->hw.tx_queues;
 }
 
-/* Set no of Tx, Rx queues to be used */
+ 
 static int otx2_set_channels(struct net_device *dev,
 			     struct ethtool_channels *channel)
 {
@@ -406,9 +400,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
 		return -EINVAL;
 
-	/* Hardware supports max size of 32k for a receive buffer
-	 * and 1536 is typical ethernet frame size.
-	 */
+	 
 	if (rx_buf_len && (rx_buf_len < 1536 || rx_buf_len > 32768)) {
 		netdev_err(netdev,
 			   "Receive buffer range is 1536 - 32768");
@@ -421,19 +413,14 @@ static int otx2_set_ringparam(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* Permitted lengths are 16 64 256 1K 4K 16K 64K 256K 1M  */
+	 
 	rx_count = ring->rx_pending;
-	/* On some silicon variants a skid or reserved CQEs are
-	 * needed to avoid CQ overflow.
-	 */
+	 
 	if (rx_count < pfvf->hw.rq_skid)
 		rx_count =  pfvf->hw.rq_skid;
 	rx_count = Q_COUNT(Q_SIZE(rx_count, 3));
 
-	/* Due pipelining impact minimum 2000 unused SQ CQE's
-	 * need to be maintained to avoid CQ overflow, hence the
-	 * minimum 4K size.
-	 */
+	 
 	tx_count = clamp_t(u32, ring->tx_pending,
 			   Q_COUNT(Q_SIZE_4K), Q_COUNT(Q_SIZE_MAX));
 	tx_count = Q_COUNT(Q_SIZE(tx_count, 3));
@@ -445,7 +432,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
 	if (if_up)
 		netdev->netdev_ops->ndo_stop(netdev);
 
-	/* Assigned to the nearest possible exponent. */
+	 
 	qs->sqe_cnt = tx_count;
 	qs->rqe_cnt = rx_count;
 
@@ -501,7 +488,7 @@ static int otx2_set_coalesce(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* Check and update coalesce status */
+	 
 	if ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
 			OTX2_FLAG_ADPTV_INT_COAL_ENABLED) {
 		priv_coalesce_status = 1;
@@ -513,17 +500,13 @@ static int otx2_set_coalesce(struct net_device *netdev,
 			pfvf->flags |= OTX2_FLAG_ADPTV_INT_COAL_ENABLED;
 	}
 
-	/* 'cq_time_wait' is 8bit and is in multiple of 100ns,
-	 * so clamp the user given value to the range of 1 to 25usec.
-	 */
+	 
 	ec->rx_coalesce_usecs = clamp_t(u32, ec->rx_coalesce_usecs,
 					1, CQ_TIMER_THRESH_MAX);
 	ec->tx_coalesce_usecs = clamp_t(u32, ec->tx_coalesce_usecs,
 					1, CQ_TIMER_THRESH_MAX);
 
-	/* Rx and Tx are mapped to same CQ, check which one
-	 * is changed, if both then choose the min.
-	 */
+	 
 	if (hw->cq_time_wait == ec->rx_coalesce_usecs)
 		hw->cq_time_wait = ec->tx_coalesce_usecs;
 	else if (hw->cq_time_wait == ec->tx_coalesce_usecs)
@@ -532,17 +515,13 @@ static int otx2_set_coalesce(struct net_device *netdev,
 		hw->cq_time_wait = min_t(u8, ec->rx_coalesce_usecs,
 					 ec->tx_coalesce_usecs);
 
-	/* Max ecount_wait supported is 16bit,
-	 * so clamp the user given value to the range of 1 to 64k.
-	 */
+	 
 	ec->rx_max_coalesced_frames = clamp_t(u32, ec->rx_max_coalesced_frames,
 					      1, NAPI_POLL_WEIGHT);
 	ec->tx_max_coalesced_frames = clamp_t(u32, ec->tx_max_coalesced_frames,
 					      1, NAPI_POLL_WEIGHT);
 
-	/* Rx and Tx are mapped to same CQ, check which one
-	 * is changed, if both then choose the min.
-	 */
+	 
 	if (hw->cq_ecount_wait == ec->rx_max_coalesced_frames)
 		hw->cq_ecount_wait = ec->tx_max_coalesced_frames;
 	else if (hw->cq_ecount_wait == ec->tx_max_coalesced_frames)
@@ -551,10 +530,7 @@ static int otx2_set_coalesce(struct net_device *netdev,
 		hw->cq_ecount_wait = min_t(u16, ec->rx_max_coalesced_frames,
 					   ec->tx_max_coalesced_frames);
 
-	/* Reset 'cq_time_wait' and 'cq_ecount_wait' to
-	 * default values if coalesce status changed from
-	 * 'on' to 'off'.
-	 */
+	 
 	if (priv_coalesce_status &&
 	    ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) !=
 	     OTX2_FLAG_ADPTV_INT_COAL_ENABLED)) {
@@ -579,7 +555,7 @@ static int otx2_get_rss_hash_opts(struct otx2_nic *pfvf,
 	    (NIX_FLOW_KEY_TYPE_IPV4 | NIX_FLOW_KEY_TYPE_IPV6)))
 		return 0;
 
-	/* Mimimum is IPv4 and IPv6, SIP/DIP */
+	 
 	nfc->data = RXH_IP_SRC | RXH_IP_DST;
 	if (rss->flowkey_cfg & NIX_FLOW_KEY_TYPE_VLAN)
 		nfc->data |= RXH_VLAN;
@@ -633,7 +609,7 @@ static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
 		return -EIO;
 	}
 
-	/* Mimimum is IPv4 and IPv6, SIP/DIP */
+	 
 	if (!(nfc->data & RXH_IP_SRC) || !(nfc->data & RXH_IP_DST))
 		return -EINVAL;
 
@@ -645,9 +621,7 @@ static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
 	switch (nfc->flow_type) {
 	case TCP_V4_FLOW:
 	case TCP_V6_FLOW:
-		/* Different config for v4 and v6 is not supported.
-		 * Both of them have to be either 4-tuple or 2-tuple.
-		 */
+		 
 		switch (nfc->data & rxh_l4) {
 		case 0:
 			rss_cfg &= ~NIX_FLOW_KEY_TYPE_TCP;
@@ -695,9 +669,7 @@ static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
 				   NIX_FLOW_KEY_TYPE_IPV4_PROTO;
 			break;
 		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-			/* If VLAN hashing is also requested for ESP then do not
-			 * allow because of hardware 40 bytes flow key limit.
-			 */
+			 
 			if (rss_cfg & NIX_FLOW_KEY_TYPE_VLAN) {
 				netdev_err(pfvf->netdev,
 					   "RSS hash of ESP or AH with VLAN is not supported\n");
@@ -705,10 +677,7 @@ static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
 			}
 
 			rss_cfg |= NIX_FLOW_KEY_TYPE_ESP | NIX_FLOW_KEY_TYPE_AH;
-			/* Disable IPv4 proto hashing since IPv6 SA+DA(32 bytes)
-			 * and ESP SPI+sequence(8 bytes) uses hardware maximum
-			 * limit of 40 byte flow key.
-			 */
+			 
 			rss_cfg &= ~NIX_FLOW_KEY_TYPE_IPV4_PROTO;
 			break;
 		default:
@@ -835,7 +804,7 @@ static int otx2_rss_ctx_create(struct otx2_nic *pfvf,
 	return 0;
 }
 
-/* RSS context configuration */
+ 
 static int otx2_set_rxfh_context(struct net_device *dev, const u32 *indir,
 				 const u8 *hkey, const u8 hfunc,
 				 u32 *rss_context, bool delete)
@@ -920,7 +889,7 @@ static int otx2_get_rxfh_context(struct net_device *dev, u32 *indir,
 	return 0;
 }
 
-/* Get RSS configuration */
+ 
 static int otx2_get_rxfh(struct net_device *dev, u32 *indir,
 			 u8 *hkey, u8 *hfunc)
 {
@@ -928,7 +897,7 @@ static int otx2_get_rxfh(struct net_device *dev, u32 *indir,
 				     DEFAULT_RSS_CONTEXT_GROUP);
 }
 
-/* Configure RSS table and hash key */
+ 
 static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
 			 const u8 *hkey, const u8 hfunc)
 {
@@ -956,7 +925,7 @@ static u32 otx2_get_link(struct net_device *netdev)
 {
 	struct otx2_nic *pfvf = netdev_priv(netdev);
 
-	/* LBK link is internal and always UP */
+	 
 	if (is_otx2_lbkvf(pfvf->pdev))
 		return 1;
 	return pfvf->linfo.link_up;
@@ -1050,7 +1019,7 @@ static int otx2_set_fecparam(struct net_device *netdev,
 	int err = 0, fec = 0;
 
 	switch (fecparam->fec) {
-	/* Firmware does not support AUTO mode consider it as FEC_OFF */
+	 
 	case ETHTOOL_FEC_OFF:
 	case ETHTOOL_FEC_AUTO:
 		fec = OTX2_FEC_OFF;
@@ -1118,7 +1087,7 @@ static void otx2_get_fec_info(u64 index, int req_mode,
 		break;
 	}
 
-	/* Add fec modes to existing modes */
+	 
 	if (req_mode == OTX2_MODE_ADVERTISED)
 		linkmode_or(link_ksettings->link_modes.advertising,
 			    link_ksettings->link_modes.advertising,
@@ -1143,9 +1112,9 @@ static void otx2_get_link_mode_info(u64 link_mode_bmap,
 		ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
 		ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
 	};
-	/* CGX link modes to Ethtool link mode mapping */
+	 
 	const int cgx_link_mode[27] = {
-		0, /* SGMII  Mode */
+		0,  
 		ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
 		ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
 		ETHTOOL_LINK_MODE_10000baseSR_Full_BIT,
@@ -1176,7 +1145,7 @@ static void otx2_get_link_mode_info(u64 link_mode_bmap,
 	u8 bit;
 
 	for_each_set_bit(bit, (unsigned long *)&link_mode_bmap, 27) {
-		/* SGMII mode is set */
+		 
 		if (bit == 0)
 			linkmode_set_bit_array(otx2_sgmii_features,
 					       ARRAY_SIZE(otx2_sgmii_features),
@@ -1228,9 +1197,7 @@ static void otx2_get_advertised_mode(const struct ethtool_link_ksettings *cmd,
 {
 	u32 bit_pos;
 
-	/* Firmware does not support requesting multiple advertised modes
-	 * return first set bit
-	 */
+	 
 	bit_pos = find_first_bit(cmd->link_modes.advertising,
 				 __ETHTOOL_LINK_MODE_MASK_NBITS);
 	if (bit_pos != __ETHTOOL_LINK_MODE_MASK_NBITS)
@@ -1258,7 +1225,7 @@ static int otx2_set_link_ksettings(struct net_device *netdev,
 
 	otx2_get_link_ksettings(netdev, &cur_ks);
 
-	/* Check requested modes against supported modes by hardware */
+	 
 	if (!linkmode_subset(cmd->link_modes.advertising,
 			     cur_ks.link_modes.supported))
 		return -EINVAL;
@@ -1271,9 +1238,7 @@ static int otx2_set_link_ksettings(struct net_device *netdev,
 	}
 
 	req->args.speed = cmd->base.speed;
-	/* firmware expects 1 for half duplex and 0 for full duplex
-	 * hence inverting
-	 */
+	 
 	req->args.duplex = cmd->base.duplex ^ 0x1;
 	req->args.an = cmd->base.autoneg;
 	otx2_get_advertised_mode(cmd, &req->args.mode);
@@ -1292,16 +1257,14 @@ static void otx2_get_fec_stats(struct net_device *netdev,
 
 	otx2_update_lmac_fec_stats(pfvf);
 
-	/* Report MAC FEC stats */
+	 
 	fec_stats->corrected_blocks.total     = pfvf->hw.cgx_fec_corr_blks;
 	fec_stats->uncorrectable_blocks.total = pfvf->hw.cgx_fec_uncorr_blks;
 
 	rsp = otx2_get_fwdata(pfvf);
 	if (!IS_ERR(rsp) && rsp->fwdata.phy.misc.has_fec_stats &&
 	    !otx2_get_phy_fec_stats(pfvf)) {
-		/* Fetch fwdata again because it's been recently populated with
-		 * latest PHY FEC stats.
-		 */
+		 
 		rsp = otx2_get_fwdata(pfvf);
 		if (!IS_ERR(rsp)) {
 			struct fec_stats_s *p = &rsp->fwdata.phy.fec_stats;
@@ -1359,7 +1322,7 @@ void otx2_set_ethtool_ops(struct net_device *netdev)
 	netdev->ethtool_ops = &otx2_ethtool_ops;
 }
 
-/* VF's ethtool APIs */
+ 
 static void otx2vf_get_drvinfo(struct net_device *netdev,
 			       struct ethtool_drvinfo *info)
 {

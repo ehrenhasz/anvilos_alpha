@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/kthread.h>
@@ -527,7 +519,7 @@ static int reset_xd(struct rtsx_chip *chip)
 	if (retval != STATUS_SUCCESS)
 		return STATUS_FAIL;
 
-	/* Read ID to check if the timing setting is right */
+	 
 	for (i = 0; i < 4; i++) {
 		rtsx_init_cmd(chip);
 
@@ -569,7 +561,7 @@ static int reset_xd(struct rtsx_chip *chip)
 
 		xd_card->device_code = id_buf[1];
 
-		/* Check if the xD card is supported */
+		 
 		switch (xd_card->device_code) {
 		case XD_4M_X8_512_1:
 		case XD_4M_X8_512_2:
@@ -639,7 +631,7 @@ static int reset_xd(struct rtsx_chip *chip)
 			continue;
 		}
 
-		/* Confirm timing setting */
+		 
 		for (j = 0; j < 10; j++) {
 			retval = xd_read_id(chip, READ_ID, id_buf, 4);
 			if (retval != STATUS_SUCCESS)
@@ -670,7 +662,7 @@ static int reset_xd(struct rtsx_chip *chip)
 	if (id_buf[2] != XD_ID_CODE)
 		return STATUS_FAIL;
 
-	/* Search CIS block */
+	 
 	for (i = 0; i < 24; i++) {
 		u32 page_addr;
 
@@ -705,7 +697,7 @@ static int reset_xd(struct rtsx_chip *chip)
 				break;
 		}
 
-		/* Check CIS data */
+		 
 		if (redunt[BLOCK_STATUS] == XD_GBLK &&
 		    (redunt[PARITY] & XD_BA1_ALL0)) {
 			u8 buf[10];

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2023 Linaro Ltd. */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/io.h>
@@ -9,7 +9,7 @@
 #include "reg.h"
 #include "gsi_reg.h"
 
-/* Is this register ID valid for the current GSI version? */
+ 
 static bool gsi_reg_id_valid(struct gsi *gsi, enum gsi_reg_id reg_id)
 {
 	switch (reg_id) {
@@ -117,14 +117,14 @@ static const struct regs *gsi_regs(struct gsi *gsi)
 	}
 }
 
-/* Sets gsi->virt and I/O maps the "gsi" memory range for registers */
+ 
 int gsi_reg_init(struct gsi *gsi, struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct resource *res;
 	resource_size_t size;
 
-	/* Get GSI memory range and map it */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "gsi");
 	if (!res) {
 		dev_err(dev, "DT error getting \"gsi\" memory property\n");
@@ -152,7 +152,7 @@ int gsi_reg_init(struct gsi *gsi, struct platform_device *pdev)
 	return 0;
 }
 
-/* Inverse of gsi_reg_init() */
+ 
 void gsi_reg_exit(struct gsi *gsi)
 {
 	iounmap(gsi->virt);

@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_mvc.h - Definitions for Tegra210 MVC driver
- *
- * Copyright (c) 2021 NVIDIA CORPORATION.  All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA210_MVC_H__
 #define __TEGRA210_MVC_H__
 
-/*
- * MVC_RX registers are with respect to XBAR.
- * The data comes from XBAR to MVC.
- */
+ 
 #define TEGRA210_MVC_RX_STATUS			0x0c
 #define TEGRA210_MVC_RX_INT_STATUS		0x10
 #define TEGRA210_MVC_RX_INT_MASK		0x14
@@ -20,10 +12,7 @@
 #define TEGRA210_MVC_RX_INT_CLEAR		0x1c
 #define TEGRA210_MVC_RX_CIF_CTRL		0x20
 
-/*
- * MVC_TX registers are with respect to XBAR.
- * The data goes out of MVC.
- */
+ 
 #define TEGRA210_MVC_TX_STATUS			0x4c
 #define TEGRA210_MVC_TX_INT_STATUS		0x50
 #define TEGRA210_MVC_TX_INT_MASK		0x54
@@ -31,7 +20,7 @@
 #define TEGRA210_MVC_TX_INT_CLEAR		0x5c
 #define TEGRA210_MVC_TX_CIF_CTRL		0x60
 
-/* Register offsets from TEGRA210_MVC*_BASE */
+ 
 #define TEGRA210_MVC_ENABLE			0x80
 #define TEGRA210_MVC_SOFT_RESET			0x84
 #define TEGRA210_MVC_CG				0x88
@@ -51,7 +40,7 @@
 #define TEGRA210_MVC_PEAK_VALUE			0x10c
 #define TEGRA210_MVC_CONFIG_ERR_TYPE		0x12c
 
-/* Fields in TEGRA210_MVC_ENABLE */
+ 
 #define TEGRA210_MVC_EN_SHIFT			0
 #define TEGRA210_MVC_EN				(1 << TEGRA210_MVC_EN_SHIFT)
 
@@ -76,7 +65,7 @@
 #define TEGRA210_MVC_INIT_VOL_DEFAULT_POLY	0x01000000
 #define TEGRA210_MVC_INIT_VOL_DEFAULT_LINEAR	0x00000000
 
-/* Fields in TEGRA210_MVC ram ctrl */
+ 
 #define TEGRA210_MVC_CFG_RAM_CTRL_RW_SHIFT		14
 #define TEGRA210_MVC_CFG_RAM_CTRL_RW_WRITE		(1 << TEGRA210_MVC_CFG_RAM_CTRL_RW_SHIFT)
 

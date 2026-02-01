@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-//
-// AMD SPI controller driver
-//
-// Copyright (c) 2020, Advanced Micro Devices, Inc.
-//
-// Author: Sanjay R Mehta <sanju.mehta@amd.com>
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/init.h>
@@ -48,11 +48,7 @@
 #define AMD_SPI_MAX_HZ		100000000
 #define AMD_SPI_MIN_HZ		800000
 
-/**
- * enum amd_spi_versions - SPI controller versions
- * @AMD_SPI_V1:		AMDI0061 hardware version
- * @AMD_SPI_V2:		AMDI0062 hardware version
- */
+ 
 enum amd_spi_versions {
 	AMD_SPI_V1 = 1,
 	AMD_SPI_V2,
@@ -71,24 +67,14 @@ enum amd_spi_speed {
 	F_3_17MHz = 0x3F
 };
 
-/**
- * struct amd_spi_freq - Matches device speed with values to write in regs
- * @speed_hz: Device frequency
- * @enable_val: Value to be written to "enable register"
- * @spd7_val: Some frequencies requires to have a value written at SPISPEED register
- */
+ 
 struct amd_spi_freq {
 	u32 speed_hz;
 	u32 enable_val;
 	u32 spd7_val;
 };
 
-/**
- * struct amd_spi - SPI driver instance
- * @io_remap_addr:	Start address of the SPI controller registers
- * @version:		SPI controller hardware version
- * @speed_hz:		Device frequency
- */
+ 
 struct amd_spi {
 	void __iomem *io_remap_addr;
 	enum amd_spi_versions version;
@@ -201,12 +187,12 @@ static int amd_spi_execute_opcode(struct amd_spi *amd_spi)
 
 	switch (amd_spi->version) {
 	case AMD_SPI_V1:
-		/* Set ExecuteOpCode bit in the CTRL0 register */
+		 
 		amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, AMD_SPI_EXEC_CMD,
 				       AMD_SPI_EXEC_CMD);
 		return 0;
 	case AMD_SPI_V2:
-		/* Trigger the command execution */
+		 
 		amd_spi_setclear_reg8(amd_spi, AMD_SPI_CMD_TRIGGER_REG,
 				      AMD_SPI_TRIGGER_CMD, AMD_SPI_TRIGGER_CMD);
 		return 0;
@@ -298,14 +284,14 @@ static inline int amd_spi_fifo_xfer(struct amd_spi *amd_spi,
 			}
 			tx_len += xfer->len;
 
-			/* Write data into the FIFO. */
+			 
 			for (i = 0; i < xfer->len; i++)
 				amd_spi_writereg8(amd_spi, fifo_pos + i, buf[i]);
 
 			fifo_pos += xfer->len;
 		}
 
-		/* Store no. of bytes to be received from FIFO */
+		 
 		if (xfer->rx_buf)
 			rx_len += xfer->len;
 	}
@@ -319,7 +305,7 @@ static inline int amd_spi_fifo_xfer(struct amd_spi *amd_spi,
 	amd_spi_set_tx_count(amd_spi, tx_len);
 	amd_spi_set_rx_count(amd_spi, rx_len);
 
-	/* Execute command */
+	 
 	message->status = amd_spi_execute_opcode(amd_spi);
 	if (message->status)
 		goto fin_msg;
@@ -332,14 +318,14 @@ static inline int amd_spi_fifo_xfer(struct amd_spi *amd_spi,
 		list_for_each_entry(xfer, &message->transfers, transfer_list)
 			if (xfer->rx_buf) {
 				buf = (u8 *)xfer->rx_buf;
-				/* Read data from FIFO to receive buffer */
+				 
 				for (i = 0; i < xfer->len; i++)
 					buf[i] = amd_spi_readreg8(amd_spi, fifo_pos + i);
 				fifo_pos += xfer->len;
 			}
 	}
 
-	/* Update statistics */
+	 
 	message->actual_length = tx_len + rx_len + 1;
 
 fin_msg:
@@ -366,10 +352,7 @@ static int amd_spi_host_transfer(struct spi_controller *host,
 
 	amd_spi_select_chip(amd_spi, spi_get_chipselect(spi, 0));
 
-	/*
-	 * Extract spi_transfers from the spi message and
-	 * program the controller.
-	 */
+	 
 	return amd_spi_fifo_xfer(amd_spi, host, msg);
 }
 
@@ -385,7 +368,7 @@ static int amd_spi_probe(struct platform_device *pdev)
 	struct amd_spi *amd_spi;
 	int err;
 
-	/* Allocate storage for host and driver private data */
+	 
 	host = devm_spi_alloc_host(dev, sizeof(struct amd_spi));
 	if (!host)
 		return dev_err_probe(dev, -ENOMEM, "Error allocating SPI host\n");
@@ -400,7 +383,7 @@ static int amd_spi_probe(struct platform_device *pdev)
 
 	amd_spi->version = (uintptr_t) device_get_match_data(dev);
 
-	/* Initialize the spi_controller fields */
+	 
 	host->bus_num = 0;
 	host->num_chipselect = 4;
 	host->mode_bits = 0;
@@ -412,7 +395,7 @@ static int amd_spi_probe(struct platform_device *pdev)
 	host->max_transfer_size = amd_spi_max_transfer_size;
 	host->max_message_size = amd_spi_max_transfer_size;
 
-	/* Register the controller with SPI framework */
+	 
 	err = devm_spi_register_controller(dev, host);
 	if (err)
 		return dev_err_probe(dev, err, "error registering SPI controller\n");

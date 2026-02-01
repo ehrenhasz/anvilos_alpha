@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw_stream.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 
 #include "oxfw.h"
 #include <linux/delay.h>
@@ -11,11 +7,7 @@
 #define AVC_GENERIC_FRAME_MAXIMUM_BYTES	512
 #define READY_TIMEOUT_MS	600
 
-/*
- * According to datasheet of Oxford Semiconductor:
- *  OXFW970: 32.0/44.1/48.0/96.0 Khz, 8 audio channels I/O
- *  OXFW971: 32.0/44.1/48.0/88.2/96.0/192.0 kHz, 16 audio channels I/O, MIDI I/O
- */
+ 
 static const unsigned int oxfw_rate_table[] = {
 	[0] = 32000,
 	[1] = 44100,
@@ -25,10 +17,7 @@ static const unsigned int oxfw_rate_table[] = {
 	[5] = 192000,
 };
 
-/*
- * See Table 5.7 – Sampling frequency for Multi-bit Audio
- * in AV/C Stream Format Information Specification 1.1 (Apr 2005, 1394TA)
- */
+ 
 static const unsigned int avc_stream_rate_table[] = {
 	[0] = 0x02,
 	[1] = 0x03,
@@ -71,7 +60,7 @@ static int set_stream_format(struct snd_oxfw *oxfw, struct amdtp_stream *s,
 		dir = AVC_GENERAL_PLUG_DIR_IN;
 	}
 
-	/* Seek stream format for requirements. */
+	 
 	for (i = 0; i < SND_OXFW_STREAM_FORMAT_ENTRIES; i++) {
 		err = snd_oxfw_stream_parse_format(formats[i], &formation);
 		if (err < 0)
@@ -83,18 +72,18 @@ static int set_stream_format(struct snd_oxfw *oxfw, struct amdtp_stream *s,
 	if (i == SND_OXFW_STREAM_FORMAT_ENTRIES)
 		return -EINVAL;
 
-	/* If assumed, just change rate. */
+	 
 	if (oxfw->assumed)
 		return set_rate(oxfw, rate);
 
-	/* Calculate format length. */
+	 
 	len = 5 + formats[i][4] * 2;
 
 	err = avc_stream_set_format(oxfw->unit, dir, 0, formats[i], len);
 	if (err < 0)
 		return err;
 
-	/* Some requests just after changing format causes freezing. */
+	 
 	msleep(100);
 
 	return 0;
@@ -161,10 +150,10 @@ static int init_stream(struct snd_oxfw *oxfw, struct amdtp_stream *stream)
 	else
 		flags |= CIP_BLOCKING;
 
-	// OXFW 970/971 has no function to generate playback timing according to the sequence
-	// of value in syt field, thus the packet should include NO_INFO value in the field.
-	// However, some models just ignore data blocks in packet with NO_INFO for audio data
-	// processing.
+	
+	
+	
+	
 	if (!(oxfw->quirks & SND_OXFW_QUIRK_IGNORE_NO_INFO_PACKET))
 		flags |= CIP_UNAWARE_SYT;
 
@@ -236,7 +225,7 @@ static int keep_resources(struct snd_oxfw *oxfw, struct amdtp_stream *stream)
 	if (i == SND_OXFW_STREAM_FORMAT_ENTRIES)
 		return -EINVAL;
 
-	// The stream should have one pcm channels at least.
+	
 	if (formation.pcm == 0)
 		return -EINVAL;
 
@@ -258,8 +247,8 @@ int snd_oxfw_stream_reserve_duplex(struct snd_oxfw *oxfw,
 	enum avc_general_plug_dir dir;
 	int err;
 
-	// Considering JACK/FFADO streaming:
-	// TODO: This can be removed hwdep functionality becomes popular.
+	
+	
 	err = check_connection_used_by_others(oxfw, &oxfw->rx_stream);
 	if (err < 0)
 		return err;
@@ -364,22 +353,22 @@ int snd_oxfw_stream_start_duplex(struct snd_oxfw *oxfw)
 			}
 
 			if (oxfw->quirks & SND_OXFW_QUIRK_JUMBO_PAYLOAD) {
-				// Just after changing sampling transfer frequency, many cycles are
-				// skipped for packet transmission.
+				
+				
 				tx_init_skip_cycles = 400;
 			} else if (oxfw->quirks & SND_OXFW_QUIRK_VOLUNTARY_RECOVERY) {
-				// It takes a bit time for target device to adjust event frequency
-				// according to nominal event frequency in isochronous packets from
-				// ALSA oxfw driver.
+				
+				
+				
 				tx_init_skip_cycles = 4000;
 			} else {
 				replay_seq = true;
 			}
 		}
 
-		// NOTE: The device ignores presentation time expressed by the value of syt field
-		// of CIP header in received packets. The sequence of the number of data blocks per
-		// packet is important for media clock recovery.
+		
+		
+		
 		err = amdtp_domain_start(&oxfw->domain, tx_init_skip_cycles, replay_seq, false);
 		if (err < 0)
 			goto error;
@@ -455,8 +444,8 @@ int snd_oxfw_stream_init_duplex(struct snd_oxfw *oxfw)
 	return err;
 }
 
-// This function should be called before starting the stream or after stopping
-// the streams.
+
+
 void snd_oxfw_stream_destroy_duplex(struct snd_oxfw *oxfw)
 {
 	amdtp_domain_destroy(&oxfw->domain);
@@ -509,12 +498,7 @@ end:
 	return err;
 }
 
-/*
- * See Table 6.16 - AM824 Stream Format
- *     Figure 6.19 - format_information field for AM824 Compound
- * in AV/C Stream Format Information Specification 1.1 (Apr 2005, 1394TA)
- * Also 'Clause 12 AM824 sequence adaption layers' in IEC 61883-6:2005
- */
+ 
 int snd_oxfw_stream_parse_format(u8 *format,
 				 struct snd_oxfw_stream_formation *formation)
 {
@@ -522,15 +506,11 @@ int snd_oxfw_stream_parse_format(u8 *format,
 
 	memset(formation, 0, sizeof(struct snd_oxfw_stream_formation));
 
-	/*
-	 * this module can support a hierarchy combination that:
-	 *  Root:	Audio and Music (0x90)
-	 *  Level 1:	AM824 Compound  (0x40)
-	 */
+	 
 	if ((format[0] != 0x90) || (format[1] != 0x40))
 		return -ENXIO;
 
-	/* check the sampling rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(avc_stream_rate_table); i++) {
 		if (format[2] == avc_stream_rate_table[i])
 			break;
@@ -545,42 +525,42 @@ int snd_oxfw_stream_parse_format(u8 *format,
 		type = format[6 + e * 2];
 
 		switch (type) {
-		/* IEC 60958 Conformant, currently handled as MBLA */
+		 
 		case 0x00:
-		/* Multi Bit Linear Audio (Raw) */
+		 
 		case 0x06:
 			formation->pcm += channels;
 			break;
-		/* MIDI Conformant */
+		 
 		case 0x0d:
 			formation->midi = channels;
 			break;
-		/* IEC 61937-3 to 7 */
+		 
 		case 0x01:
 		case 0x02:
 		case 0x03:
 		case 0x04:
 		case 0x05:
-		/* Multi Bit Linear Audio */
-		case 0x07:	/* DVD-Audio */
-		case 0x0c:	/* High Precision */
-		/* One Bit Audio */
-		case 0x08:	/* (Plain) Raw */
-		case 0x09:	/* (Plain) SACD */
-		case 0x0a:	/* (Encoded) Raw */
-		case 0x0b:	/* (Encoded) SACD */
-		/* SMPTE Time-Code conformant */
+		 
+		case 0x07:	 
+		case 0x0c:	 
+		 
+		case 0x08:	 
+		case 0x09:	 
+		case 0x0a:	 
+		case 0x0b:	 
+		 
 		case 0x0e:
-		/* Sample Count */
+		 
 		case 0x0f:
-		/* Anciliary Data */
+		 
 		case 0x10:
-		/* Synchronization Stream (Stereo Raw audio) */
+		 
 		case 0x40:
-		/* Don't care */
+		 
 		case 0xff:
 		default:
-			return -ENXIO;	/* not supported */
+			return -ENXIO;	 
 		}
 	}
 
@@ -600,7 +580,7 @@ assume_stream_formats(struct snd_oxfw *oxfw, enum avc_general_plug_dir dir,
 	unsigned int i, eid;
 	int err;
 
-	/* get format at current sampling rate */
+	 
 	err = avc_stream_get_format_single(oxfw->unit, dir, pid, buf, len);
 	if (err < 0) {
 		dev_err(&oxfw->unit->device,
@@ -610,7 +590,7 @@ assume_stream_formats(struct snd_oxfw *oxfw, enum avc_general_plug_dir dir,
 		goto end;
 	}
 
-	/* parse and set stream format */
+	 
 	eid = 0;
 	err = snd_oxfw_stream_parse_format(buf, &formation);
 	if (err < 0)
@@ -623,7 +603,7 @@ assume_stream_formats(struct snd_oxfw *oxfw, enum avc_general_plug_dir dir,
 		goto end;
 	}
 
-	/* apply the format for each available sampling rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(oxfw_rate_table); i++) {
 		if (formation.rate == oxfw_rate_table[i])
 			continue;
@@ -668,11 +648,11 @@ static int fill_stream_formats(struct snd_oxfw *oxfw,
 	else
 		formats = oxfw->rx_stream_formats;
 
-	/* get first entry */
+	 
 	len = AVC_GENERIC_FRAME_MAXIMUM_BYTES;
 	err = avc_stream_get_format_list(oxfw->unit, dir, 0, buf, &len, 0);
 	if (err == -ENXIO) {
-		/* LIST subfunction is not implemented */
+		 
 		len = AVC_GENERIC_FRAME_MAXIMUM_BYTES;
 		err = assume_stream_formats(oxfw, dir, pid, buf, &len,
 					    formats);
@@ -685,15 +665,15 @@ static int fill_stream_formats(struct snd_oxfw *oxfw,
 		goto end;
 	}
 
-	/* LIST subfunction is implemented */
+	 
 	while (eid < SND_OXFW_STREAM_FORMAT_ENTRIES) {
-		/* The format is too short. */
+		 
 		if (len < 3) {
 			err = -EIO;
 			break;
 		}
 
-		/* parse and set stream format */
+		 
 		err = snd_oxfw_stream_parse_format(buf, &dummy);
 		if (err < 0)
 			break;
@@ -705,11 +685,11 @@ static int fill_stream_formats(struct snd_oxfw *oxfw,
 			break;
 		}
 
-		/* get next entry */
+		 
 		len = AVC_GENERIC_FRAME_MAXIMUM_BYTES;
 		err = avc_stream_get_format_list(oxfw->unit, dir, 0,
 						 buf, &len, ++eid);
-		/* No entries remained. */
+		 
 		if (err == -EINVAL) {
 			err = 0;
 			break;
@@ -735,7 +715,7 @@ int snd_oxfw_stream_discover(struct snd_oxfw *oxfw)
 	unsigned int i;
 	int err;
 
-	/* the number of plugs for isoc in/out, ext in/out  */
+	 
 	err = avc_general_get_plug_info(oxfw->unit, 0x1f, 0x07, 0x00, plugs);
 	if (err < 0) {
 		dev_err(&oxfw->unit->device,
@@ -747,14 +727,14 @@ int snd_oxfw_stream_discover(struct snd_oxfw *oxfw)
 		goto end;
 	}
 
-	/* use oPCR[0] if exists */
+	 
 	if (plugs[1] > 0) {
 		err = fill_stream_formats(oxfw, AVC_GENERAL_PLUG_DIR_OUT, 0);
 		if (err < 0) {
 			if (err != -ENXIO)
 				return err;
 
-			// The oPCR is not available for isoc communication.
+			
 			err = 0;
 		} else {
 			for (i = 0; i < SND_OXFW_STREAM_FORMAT_ENTRIES; i++) {
@@ -766,7 +746,7 @@ int snd_oxfw_stream_discover(struct snd_oxfw *oxfw)
 				if (err < 0)
 					continue;
 
-				/* Add one MIDI port. */
+				 
 				if (formation.midi > 0)
 					oxfw->midi_input_ports = 1;
 			}
@@ -775,14 +755,14 @@ int snd_oxfw_stream_discover(struct snd_oxfw *oxfw)
 		}
 	}
 
-	/* use iPCR[0] if exists */
+	 
 	if (plugs[0] > 0) {
 		err = fill_stream_formats(oxfw, AVC_GENERAL_PLUG_DIR_IN, 0);
 		if (err < 0) {
 			if (err != -ENXIO)
 				return err;
 
-			// The iPCR is not available for isoc communication.
+			
 			err = 0;
 		} else {
 			for (i = 0; i < SND_OXFW_STREAM_FORMAT_ENTRIES; i++) {
@@ -794,7 +774,7 @@ int snd_oxfw_stream_discover(struct snd_oxfw *oxfw)
 				if (err < 0)
 					continue;
 
-				/* Add one MIDI port. */
+				 
 				if (formation.midi > 0)
 					oxfw->midi_output_ports = 1;
 			}
@@ -818,13 +798,13 @@ int snd_oxfw_stream_lock_try(struct snd_oxfw *oxfw)
 
 	spin_lock_irq(&oxfw->lock);
 
-	/* user land lock this */
+	 
 	if (oxfw->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (oxfw->dev_lock_count++ == 0)
 		snd_oxfw_stream_lock_changed(oxfw);
 	err = 0;

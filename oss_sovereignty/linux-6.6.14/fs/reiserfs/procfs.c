@@ -1,12 +1,10 @@
-/* -*- linux-c -*- */
+ 
 
-/* fs/reiserfs/procfs.c */
+ 
 
-/*
- * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README
- */
+ 
 
-/* proc info support a la one created by Sizif@Botik.RU for PGC */
+ 
 
 #include <linux/module.h>
 #include <linux/time.h>
@@ -17,12 +15,7 @@
 #include <linux/proc_fs.h>
 #include <linux/blkdev.h>
 
-/*
- * LOCKING:
- *
- * These guys are evicted from procfs as the very first step in ->kill_sb().
- *
- */
+ 
 
 static int show_version(struct seq_file *m, void *unused)
 {
@@ -311,7 +304,7 @@ static int show_journal(struct seq_file *m, void *unused)
 	struct reiserfs_super_block *rs = r->s_rs;
 	struct journal_params *jp = &rs->s_v1.s_journal;
 
-	seq_printf(m,		/* on-disk fields */
+	seq_printf(m,		 
 		   "jp_journal_1st_block: \t%i\n"
 		   "jp_journal_dev: \t%pg[%x]\n"
 		   "jp_journal_size: \t%i\n"
@@ -320,7 +313,7 @@ static int show_journal(struct seq_file *m, void *unused)
 		   "jp_journal_max_batch: \t%i\n"
 		   "jp_journal_max_commit_age: \t%i\n"
 		   "jp_journal_max_trans_age: \t%i\n"
-		   /* incore fields */
+		    
 		   "j_1st_reserved_block: \t%i\n"
 		   "j_state: \t%li\n"
 		   "j_trans_id: \t%u\n"
@@ -338,7 +331,7 @@ static int show_journal(struct seq_file *m, void *unused)
 		   "j_next_full_flush: \t%i\n"
 		   "j_next_async_flush: \t%i\n"
 		   "j_cnode_used: \t%i\n" "j_cnode_free: \t%i\n" "\n"
-		   /* reiserfs_proc_info_data_t.journal fields */
+		    
 		   "in_journal: \t%12lu\n"
 		   "in_journal_bitmap: \t%12lu\n"
 		   "in_journal_reusable: \t%12lu\n"
@@ -410,7 +403,7 @@ int reiserfs_proc_info_init(struct super_block *sb)
 	char b[BDEVNAME_SIZE];
 	char *s;
 
-	/* Some block devices use /'s */
+	 
 	strscpy(b, sb->s_id, BDEVNAME_SIZE);
 	s = strchr(b, '/');
 	if (s)
@@ -440,7 +433,7 @@ int reiserfs_proc_info_done(struct super_block *sb)
 		char b[BDEVNAME_SIZE];
 		char *s;
 
-		/* Some block devices use /'s */
+		 
 		strscpy(b, sb->s_id, BDEVNAME_SIZE);
 		s = strchr(b, '/');
 		if (s)
@@ -473,18 +466,4 @@ int reiserfs_proc_info_global_done(void)
 	}
 	return 0;
 }
-/*
- * Revision 1.1.8.2  2001/07/15 17:08:42  god
- *  . use get_super() in procfs.c
- *  . remove remove_save_link() from reiserfs_do_truncate()
- *
- * I accept terms and conditions stated in the Legal Agreement
- * (available at http://www.namesys.com/legalese.html)
- *
- * Revision 1.1.8.1  2001/07/11 16:48:50  god
- * proc info support
- *
- * I accept terms and conditions stated in the Legal Agreement
- * (available at http://www.namesys.com/legalese.html)
- *
- */
+ 

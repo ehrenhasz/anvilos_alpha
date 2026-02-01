@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fs/f2fs/acl.h
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- *
- * Portions of this code from linux/fs/ext2/acl.h
- *
- * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
- */
+ 
+ 
 #ifndef __F2FS_ACL_H__
 #define __F2FS_ACL_H__
 
@@ -48,4 +39,4 @@ static inline int f2fs_init_acl(struct inode *inode, struct inode *dir,
 	return 0;
 }
 #endif
-#endif /* __F2FS_ACL_H__ */
+#endif  

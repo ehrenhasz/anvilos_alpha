@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 BayLibre, SAS
- * Author: Fabien Parent <fparent@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6357_CORE_H__
 #define __MFD_MT6357_CORE_H__
@@ -116,4 +113,4 @@ enum mt6357_irq_numbers {
 	.top_offset = MT6357_##sp##_TOP,	\
 }
 
-#endif /* __MFD_MT6357_CORE_H__ */
+#endif  

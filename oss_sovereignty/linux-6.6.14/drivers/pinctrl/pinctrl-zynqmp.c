@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ZynqMP pin controller
- *
- * Copyright (C) 2020, 2021 Xilinx, Inc.
- *
- * Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
- * Rajan Vaja <rajan.vaja@xilinx.com>
- */
+
+ 
 
 #include <dt-bindings/pinctrl/pinctrl-zynqmp.h>
 
@@ -43,34 +36,14 @@
 #define DRIVE_STRENGTH_8MA	8
 #define DRIVE_STRENGTH_12MA	12
 
-/**
- * struct zynqmp_pmux_function - a pinmux function
- * @name:	Name of the pin mux function
- * @groups:	List of pin groups for this function
- * @ngroups:	Number of entries in @groups
- * @node:	Firmware node matching with the function
- *
- * This structure holds information about pin control function
- * and function group names supporting that function.
- */
+ 
 struct zynqmp_pmux_function {
 	char name[MAX_FUNC_NAME_LEN];
 	const char * const *groups;
 	unsigned int ngroups;
 };
 
-/**
- * struct zynqmp_pinctrl - driver data
- * @pctrl:	Pin control device
- * @groups:	Pin groups
- * @ngroups:	Number of @groups
- * @funcs:	Pin mux functions
- * @nfuncs:	Number of @funcs
- *
- * This struct is stored as driver data and used to retrieve
- * information regarding pin control functions, groups and
- * group pins.
- */
+ 
 struct zynqmp_pinctrl {
 	struct pinctrl_dev *pctrl;
 	const struct zynqmp_pctrl_group *groups;
@@ -79,12 +52,7 @@ struct zynqmp_pinctrl {
 	unsigned int nfuncs;
 };
 
-/**
- * struct zynqmp_pctrl_group - Pin control group info
- * @name:	Group name
- * @pins:	Group pin numbers
- * @npins:	Number of pins in the group
- */
+ 
 struct zynqmp_pctrl_group {
 	const char *name;
 	unsigned int pins[MAX_GROUP_PIN];
@@ -158,17 +126,7 @@ static const char *zynqmp_pmux_get_function_name(struct pinctrl_dev *pctldev,
 	return pctrl->funcs[selector].name;
 }
 
-/**
- * zynqmp_pmux_get_function_groups() - Get groups for the function
- * @pctldev:	Pincontrol device pointer.
- * @selector:	Function ID
- * @groups:	Group names.
- * @num_groups:	Number of function groups.
- *
- * Get function's group count and group names.
- *
- * Return: 0
- */
+ 
 static int zynqmp_pmux_get_function_groups(struct pinctrl_dev *pctldev,
 					   unsigned int selector,
 					   const char * const **groups,
@@ -182,17 +140,7 @@ static int zynqmp_pmux_get_function_groups(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/**
- * zynqmp_pinmux_set_mux() - Set requested function for the group
- * @pctldev:	Pincontrol device pointer.
- * @function:	Function ID.
- * @group:	Group ID.
- *
- * Loop through all pins of the group and call firmware API
- * to set requested function for all pins in the group.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinmux_set_mux(struct pinctrl_dev *pctldev,
 				 unsigned int function,
 				 unsigned int group)
@@ -239,17 +187,7 @@ static const struct pinmux_ops zynqmp_pinmux_ops = {
 	.free = zynqmp_pinmux_release_pin,
 };
 
-/**
- * zynqmp_pinconf_cfg_get() - get config value for the pin
- * @pctldev:	Pin control device pointer.
- * @pin:	Pin number.
- * @config:	Value of config param.
- *
- * Get value of the requested configuration parameter for the
- * given pin.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinconf_cfg_get(struct pinctrl_dev *pctldev,
 				  unsigned int pin,
 				  unsigned long *config)
@@ -311,7 +249,7 @@ static int zynqmp_pinconf_cfg_get(struct pinctrl_dev *pctldev,
 			arg = DRIVE_STRENGTH_12MA;
 			break;
 		default:
-			/* Invalid drive strength */
+			 
 			dev_warn(pctldev->dev,
 				 "Invalid drive strength for pin %d\n",
 				 pin);
@@ -332,18 +270,7 @@ static int zynqmp_pinconf_cfg_get(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/**
- * zynqmp_pinconf_cfg_set() - Set requested config for the pin
- * @pctldev:		Pincontrol device pointer.
- * @pin:		Pin number.
- * @configs:		Configuration to set.
- * @num_configs:	Number of configurations.
- *
- * Loop through all configurations and call firmware API
- * to set requested configurations for the pin.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinconf_cfg_set(struct pinctrl_dev *pctldev,
 				  unsigned int pin, unsigned long *configs,
 				  unsigned int num_configs)
@@ -394,7 +321,7 @@ static int zynqmp_pinconf_cfg_set(struct pinctrl_dev *pctldev,
 				value = PM_PINCTRL_DRIVE_STRENGTH_12MA;
 				break;
 			default:
-				/* Invalid drive strength */
+				 
 				dev_warn(pctldev->dev,
 					 "Invalid drive strength for pin %d\n",
 					 pin);
@@ -420,11 +347,7 @@ static int zynqmp_pinconf_cfg_set(struct pinctrl_dev *pctldev,
 			ret = zynqmp_pm_pinctrl_set_config(pin, param, arg);
 			break;
 		case PIN_CONFIG_MODE_LOW_POWER:
-			/*
-			 * These cases are mentioned in dts but configurable
-			 * registers are unknown. So falling through to ignore
-			 * boot time warnings as of now.
-			 */
+			 
 			ret = 0;
 			break;
 		case PIN_CONFIG_OUTPUT_ENABLE:
@@ -451,17 +374,7 @@ static int zynqmp_pinconf_cfg_set(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/**
- * zynqmp_pinconf_group_set() - Set requested config for the group
- * @pctldev:		Pincontrol device pointer.
- * @selector:		Group ID.
- * @configs:		Configuration to set.
- * @num_configs:	Number of configurations.
- *
- * Call function to set configs for each pin in the group.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinconf_group_set(struct pinctrl_dev *pctldev,
 				    unsigned int selector,
 				    unsigned long *configs,
@@ -533,27 +446,7 @@ static int zynqmp_pinctrl_get_func_num_groups(u32 fid, unsigned int *ngroups)
 	return 0;
 }
 
-/**
- * zynqmp_pinctrl_prepare_func_groups() - prepare function and groups data
- * @dev:	Device pointer.
- * @fid:	Function ID.
- * @func:	Function data.
- * @groups:	Groups data.
- *
- * Query firmware to get group IDs for each function. Firmware returns
- * group IDs. Based on the group index for the function, group names in
- * the function are stored. For example, the first group in "eth0" function
- * is named as "eth0_0" and the second group as "eth0_1" and so on.
- *
- * Based on the group ID received from the firmware, function stores name of
- * the group for that group ID. For example, if "eth0" first group ID
- * is x, groups[x] name will be stored as "eth0_0".
- *
- * Once done for each function, each function would have its group names
- * and each group would also have their names.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinctrl_prepare_func_groups(struct device *dev, u32 fid,
 					      struct zynqmp_pmux_function *func,
 					      struct zynqmp_pctrl_group *groups)
@@ -607,11 +500,7 @@ static void zynqmp_pinctrl_get_function_name(u32 fid, char *name)
 	qdata.qid = PM_QID_PINCTRL_GET_FUNCTION_NAME;
 	qdata.arg1 = fid;
 
-	/*
-	 * Name of the function is maximum 16 bytes and cannot
-	 * accommodate the return value in SMC buffers, hence ignoring
-	 * the return value for this specific qid.
-	 */
+	 
 	zynqmp_pm_query_data(qdata, payload);
 	memcpy(name, payload, PINCTRL_GET_FUNC_NAME_RESP_LEN);
 }
@@ -658,21 +547,7 @@ static void zynqmp_pinctrl_group_add_pin(struct zynqmp_pctrl_group *group,
 	group->pins[group->npins++] = pin;
 }
 
-/**
- * zynqmp_pinctrl_create_pin_groups() - assign pins to respective groups
- * @dev:	Device pointer.
- * @groups:	Groups data.
- * @pin:	Pin number.
- *
- * Query firmware to get groups available for the given pin.
- * Based on the firmware response(group IDs for the pin), add
- * pin number to the respective group's pin array.
- *
- * Once all pins are queries, each group would have its number
- * of pins and pin numbers data.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinctrl_create_pin_groups(struct device *dev,
 					    struct zynqmp_pctrl_group *groups,
 					    unsigned int pin)
@@ -700,16 +575,7 @@ static int zynqmp_pinctrl_create_pin_groups(struct device *dev,
 	return 0;
 }
 
-/**
- * zynqmp_pinctrl_prepare_group_pins() - prepare each group's pin data
- * @dev:	Device pointer.
- * @groups:	Groups data.
- * @ngroups:	Number of groups.
- *
- * Prepare pin number and number of pins data for each pins.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinctrl_prepare_group_pins(struct device *dev,
 					     struct zynqmp_pctrl_group *groups,
 					     unsigned int ngroups)
@@ -726,23 +592,7 @@ static int zynqmp_pinctrl_prepare_group_pins(struct device *dev,
 	return 0;
 }
 
-/**
- * zynqmp_pinctrl_prepare_function_info() - prepare function info
- * @dev:	Device pointer.
- * @pctrl:	Pin control driver data.
- *
- * Query firmware for functions, groups and pin information and
- * prepare pin control driver data.
- *
- * Query number of functions and number of function groups (number
- * of groups in the given function) to allocate required memory buffers
- * for functions and groups. Once buffers are allocated to store
- * functions and groups data, query and store required information
- * (number of groups and group names for each function, number of
- * pins and pin numbers for each group).
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinctrl_prepare_function_info(struct device *dev,
 						struct zynqmp_pinctrl *pctrl)
 {
@@ -806,17 +656,7 @@ static int zynqmp_pinctrl_get_num_pins(unsigned int *npins)
 	return 0;
 }
 
-/**
- * zynqmp_pinctrl_prepare_pin_desc() - prepare pin description info
- * @dev:		Device pointer.
- * @zynqmp_pins:	Pin information.
- * @npins:		Number of pins.
- *
- * Query number of pins information from firmware and prepare pin
- * description containing pin number and pin name.
- *
- * Return: 0 on success else error code.
- */
+ 
 static int zynqmp_pinctrl_prepare_pin_desc(struct device *dev,
 					   const struct pinctrl_pin_desc
 					   **zynqmp_pins,

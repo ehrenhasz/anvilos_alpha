@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2008 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,19 +31,19 @@
 #define DMCFS_26M	(0)
 #define DMCFS_260M	(3)
 
-#define ACCR_XPDIS		(1 << 31)	/* Core PLL Output Disable */
-#define ACCR_SPDIS		(1 << 30)	/* System PLL Output Disable */
-#define ACCR_D0CS		(1 << 26)	/* D0 Mode Clock Select */
-#define ACCR_PCCE		(1 << 11)	/* Power Mode Change Clock Enable */
-#define ACCR_DDR_D0CS		(1 << 7)	/* DDR SDRAM clock frequency in D0CS (PXA31x only) */
+#define ACCR_XPDIS		(1 << 31)	 
+#define ACCR_SPDIS		(1 << 30)	 
+#define ACCR_D0CS		(1 << 26)	 
+#define ACCR_PCCE		(1 << 11)	 
+#define ACCR_DDR_D0CS		(1 << 7)	 
 
-#define ACCR_SMCFS_MASK		(0x7 << 23)	/* Static Memory Controller Frequency Select */
-#define ACCR_SFLFS_MASK		(0x3 << 18)	/* Frequency Select for Internal Memory Controller */
-#define ACCR_XSPCLK_MASK	(0x3 << 16)	/* Core Frequency during Frequency Change */
-#define ACCR_HSS_MASK		(0x3 << 14)	/* System Bus-Clock Frequency Select */
-#define ACCR_DMCFS_MASK		(0x3 << 12)	/* Dynamic Memory Controller Clock Frequency Select */
-#define ACCR_XN_MASK		(0x7 << 8)	/* Core PLL Turbo-Mode-to-Run-Mode Ratio */
-#define ACCR_XL_MASK		(0x1f)		/* Core PLL Run-Mode-to-Oscillator Ratio */
+#define ACCR_SMCFS_MASK		(0x7 << 23)	 
+#define ACCR_SFLFS_MASK		(0x3 << 18)	 
+#define ACCR_XSPCLK_MASK	(0x3 << 16)	 
+#define ACCR_HSS_MASK		(0x3 << 14)	 
+#define ACCR_DMCFS_MASK		(0x3 << 12)	 
+#define ACCR_XN_MASK		(0x7 << 8)	 
+#define ACCR_XL_MASK		(0x1f)		 
 
 #define ACCR_SMCFS(x)		(((x) & 0x7) << 23)
 #define ACCR_SFLFS(x)		(((x) & 0x3) << 18)
@@ -65,8 +63,8 @@ struct pxa3xx_freq_info {
 	unsigned int sflfs : 2;
 	unsigned int df_clkdiv : 3;
 
-	int	vcc_core;	/* in mV */
-	int	vcc_sram;	/* in mV */
+	int	vcc_core;	 
+	int	vcc_sram;	 
 };
 
 #define OP(cpufreq, _xl, _xn, _hss, _dmc, _smc, _sfl, _dfi, vcore, vsram) \
@@ -84,20 +82,20 @@ struct pxa3xx_freq_info {
 }
 
 static struct pxa3xx_freq_info pxa300_freqs[] = {
-	/*  CPU XL XN  HSS DMEM SMEM SRAM DFI VCC_CORE VCC_SRAM */
-	OP(104,  8, 1, 104, 260,  78, 104, 3, 1000, 1100), /* 104MHz */
-	OP(208, 16, 1, 104, 260, 104, 156, 2, 1000, 1100), /* 208MHz */
-	OP(416, 16, 2, 156, 260, 104, 208, 2, 1100, 1200), /* 416MHz */
-	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400), /* 624MHz */
+	 
+	OP(104,  8, 1, 104, 260,  78, 104, 3, 1000, 1100),  
+	OP(208, 16, 1, 104, 260, 104, 156, 2, 1000, 1100),  
+	OP(416, 16, 2, 156, 260, 104, 208, 2, 1100, 1200),  
+	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400),  
 };
 
 static struct pxa3xx_freq_info pxa320_freqs[] = {
-	/*  CPU XL XN  HSS DMEM SMEM SRAM DFI VCC_CORE VCC_SRAM */
-	OP(104,  8, 1, 104, 260,  78, 104, 3, 1000, 1100), /* 104MHz */
-	OP(208, 16, 1, 104, 260, 104, 156, 2, 1000, 1100), /* 208MHz */
-	OP(416, 16, 2, 156, 260, 104, 208, 2, 1100, 1200), /* 416MHz */
-	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400), /* 624MHz */
-	OP(806, 31, 2, 208, 260, 208, 312, 3, 1400, 1400), /* 806MHz */
+	 
+	OP(104,  8, 1, 104, 260,  78, 104, 3, 1000, 1100),  
+	OP(208, 16, 1, 104, 260, 104, 156, 2, 1000, 1100),  
+	OP(416, 16, 2, 156, 260, 104, 208, 2, 1100, 1200),  
+	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400),  
+	OP(806, 31, 2, 208, 260, 208, 312, 3, 1400, 1400),  
 };
 
 static unsigned int pxa3xx_freqs_num;
@@ -137,9 +135,9 @@ static void __update_core_freq(struct pxa3xx_freq_info *info)
 	mask	= ACCR_XN_MASK | ACCR_XL_MASK;
 	disable = mask | ACCR_XSPCLK_MASK;
 	enable  = ACCR_XN(info->core_xn) | ACCR_XL(info->core_xl);
-	/* No clock until core PLL is re-locked */
+	 
 	enable |= ACCR_XSPCLK(XSPCLK_NONE);
-	xclkcfg = (info->core_xn == 2) ? 0x3 : 0x2;	/* turbo bit */
+	xclkcfg = (info->core_xn == 2) ? 0x3 : 0x2;	 
 
 	pxa3xx_clk_update_accr(disable, enable, xclkcfg, mask);
 }
@@ -184,11 +182,11 @@ static int pxa3xx_cpufreq_init(struct cpufreq_policy *policy)
 {
 	int ret = -EINVAL;
 
-	/* set default policy and cpuinfo */
+	 
 	policy->min = policy->cpuinfo.min_freq = 104000;
 	policy->max = policy->cpuinfo.max_freq =
 		(cpu_is_pxa320()) ? 806000 : 624000;
-	policy->cpuinfo.transition_latency = 1000; /* FIXME: 1 ms, assumed */
+	policy->cpuinfo.transition_latency = 1000;  
 
 	if (cpu_is_pxa300() || cpu_is_pxa310())
 		ret = setup_freqs_table(policy, pxa300_freqs,

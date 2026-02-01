@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/ipc/msgutil.c
- * Copyright (C) 1999, 2004 Manfred Spraul
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/init.h>
@@ -20,11 +17,7 @@
 
 DEFINE_SPINLOCK(mq_lock);
 
-/*
- * The next 2 defines are here bc this is the only file
- * compiled when either CONFIG_SYSVIPC and CONFIG_POSIX_MQUEUE
- * and not CONFIG_IPC_NS.
- */
+ 
 struct ipc_namespace init_ipc_ns = {
 	.ns.count = REFCOUNT_INIT(1),
 	.user_ns = &init_user_ns,
@@ -36,7 +29,7 @@ struct ipc_namespace init_ipc_ns = {
 
 struct msg_msgseg {
 	struct msg_msgseg *next;
-	/* the next part of the message follows immediately */
+	 
 };
 
 #define DATALEN_MSG	((size_t)PAGE_SIZE-sizeof(struct msg_msg))

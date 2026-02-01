@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A devfreq driver for NVIDIA Tegra SoCs
- *
- * Copyright (c) 2014 NVIDIA CORPORATION. All rights reserved.
- * Copyright (C) 2014 Google, Inc
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpufreq.h>
@@ -57,45 +52,32 @@
 #define ACTMON_BELOW_WMARK_WINDOW				3
 #define ACTMON_BOOST_FREQ_STEP					16000
 
-/*
- * ACTMON_AVERAGE_WINDOW_LOG2: default value for @DEV_CTRL_K_VAL, which
- * translates to 2 ^ (K_VAL + 1). ex: 2 ^ (6 + 1) = 128
- */
+ 
 #define ACTMON_AVERAGE_WINDOW_LOG2			6
-#define ACTMON_SAMPLING_PERIOD				12 /* ms */
-#define ACTMON_DEFAULT_AVG_BAND				6  /* 1/10 of % */
+#define ACTMON_SAMPLING_PERIOD				12  
+#define ACTMON_DEFAULT_AVG_BAND				6   
 
 #define KHZ							1000
 
 #define KHZ_MAX						(ULONG_MAX / KHZ)
 
-/* Assume that the bus is saturated if the utilization is 25% */
+ 
 #define BUS_SATURATION_RATIO					25
 
-/**
- * struct tegra_devfreq_device_config - configuration specific to an ACTMON
- * device
- *
- * Coefficients and thresholds are percentages unless otherwise noted
- */
+ 
 struct tegra_devfreq_device_config {
 	u32		offset;
 	u32		irq_mask;
 
-	/* Factors applied to boost_freq every consecutive watermark breach */
+	 
 	unsigned int	boost_up_coeff;
 	unsigned int	boost_down_coeff;
 
-	/* Define the watermark bounds when applied to the current avg */
+	 
 	unsigned int	boost_up_threshold;
 	unsigned int	boost_down_threshold;
 
-	/*
-	 * Threshold of activity (cycles translated to kHz) below which the
-	 * CPU frequency isn't to be taken into account. This is to avoid
-	 * increasing the EMC frequency when the CPU is very busy but not
-	 * accessing the bus often.
-	 */
+	 
 	u32		avg_dependency_threshold;
 };
 
@@ -106,7 +88,7 @@ enum tegra_actmon_device {
 
 static const struct tegra_devfreq_device_config tegra124_device_configs[] = {
 	{
-		/* MCALL: All memory accesses (including from the CPUs) */
+		 
 		.offset = 0x1c0,
 		.irq_mask = 1 << 26,
 		.boost_up_coeff = 200,
@@ -115,20 +97,20 @@ static const struct tegra_devfreq_device_config tegra124_device_configs[] = {
 		.boost_down_threshold = 40,
 	},
 	{
-		/* MCCPU: memory accesses from the CPUs */
+		 
 		.offset = 0x200,
 		.irq_mask = 1 << 25,
 		.boost_up_coeff = 800,
 		.boost_down_coeff = 40,
 		.boost_up_threshold = 27,
 		.boost_down_threshold = 10,
-		.avg_dependency_threshold = 16000, /* 16MHz in kHz units */
+		.avg_dependency_threshold = 16000,  
 	},
 };
 
 static const struct tegra_devfreq_device_config tegra30_device_configs[] = {
 	{
-		/* MCALL: All memory accesses (including from the CPUs) */
+		 
 		.offset = 0x1c0,
 		.irq_mask = 1 << 26,
 		.boost_up_coeff = 200,
@@ -137,42 +119,35 @@ static const struct tegra_devfreq_device_config tegra30_device_configs[] = {
 		.boost_down_threshold = 10,
 	},
 	{
-		/* MCCPU: memory accesses from the CPUs */
+		 
 		.offset = 0x200,
 		.irq_mask = 1 << 25,
 		.boost_up_coeff = 800,
 		.boost_down_coeff = 40,
 		.boost_up_threshold = 27,
 		.boost_down_threshold = 10,
-		.avg_dependency_threshold = 16000, /* 16MHz in kHz units */
+		.avg_dependency_threshold = 16000,  
 	},
 };
 
-/**
- * struct tegra_devfreq_device - state specific to an ACTMON device
- *
- * Frequencies are in kHz.
- */
+ 
 struct tegra_devfreq_device {
 	const struct tegra_devfreq_device_config *config;
 	void __iomem *regs;
 
-	/* Average event count sampled in the last interrupt */
+	 
 	u32 avg_count;
 
-	/*
-	 * Extra frequency to increase the target by due to consecutive
-	 * watermark breaches.
-	 */
+	 
 	unsigned long boost_freq;
 
-	/* Optimal frequency calculated from the stats for this device */
+	 
 	unsigned long target_freq;
 };
 
 struct tegra_devfreq_soc_data {
 	const struct tegra_devfreq_device_config *configs;
-	/* Weight value for count measurements */
+	 
 	unsigned int count_weight;
 };
 
@@ -241,10 +216,7 @@ static unsigned long do_percent(unsigned long long val, unsigned int pct)
 	val = val * pct;
 	do_div(val, 100);
 
-	/*
-	 * High freq + high boosting percent + large polling interval are
-	 * resulting in integer overflow when watermarks are calculated.
-	 */
+	 
 	return min_t(u64, val, U32_MAX);
 }
 
@@ -286,9 +258,7 @@ static void actmon_isr_device(struct tegra_devfreq *tegra,
 	dev_ctrl = device_readl(dev, ACTMON_DEV_CTRL);
 
 	if (intr_status & ACTMON_DEV_INTR_CONSECUTIVE_UPPER) {
-		/*
-		 * new_boost = min(old_boost * up_coef + step, max_freq)
-		 */
+		 
 		dev->boost_freq = do_percent(dev->boost_freq,
 					     dev->config->boost_up_coeff);
 		dev->boost_freq += ACTMON_BOOST_FREQ_STEP;
@@ -300,10 +270,7 @@ static void actmon_isr_device(struct tegra_devfreq *tegra,
 			dev->boost_freq = tegra->max_freq;
 		}
 	} else if (intr_status & ACTMON_DEV_INTR_CONSECUTIVE_LOWER) {
-		/*
-		 * new_boost = old_boost * down_coef
-		 * or 0 if (old_boost * down_coef < step / 2)
-		 */
+		 
 		dev->boost_freq = do_percent(dev->boost_freq,
 					     dev->config->boost_down_coeff);
 
@@ -439,7 +406,7 @@ tegra_actmon_cpufreq_contribution(struct tegra_devfreq *tegra,
 
 	dev_freq = actmon_device_target_freq(tegra, actmon_dev);
 
-	/* check whether CPU's freq is taken into account at all */
+	 
 	if (dev_freq < actmon_dev->config->avg_dependency_threshold)
 		return 0;
 
@@ -463,31 +430,18 @@ static int tegra_actmon_cpu_notify_cb(struct notifier_block *nb,
 
 	tegra = container_of(nb, struct tegra_devfreq, cpu_rate_change_nb);
 
-	/*
-	 * Quickly check whether CPU frequency should be taken into account
-	 * at all, without blocking CPUFreq's core.
-	 */
+	 
 	if (mutex_trylock(&tegra->devfreq->lock)) {
 		old = tegra_actmon_cpufreq_contribution(tegra, freqs->old);
 		new = tegra_actmon_cpufreq_contribution(tegra, freqs->new);
 		mutex_unlock(&tegra->devfreq->lock);
 
-		/*
-		 * If CPU's frequency shouldn't be taken into account at
-		 * the moment, then there is no need to update the devfreq's
-		 * state because ISR will re-check CPU's frequency on the
-		 * next interrupt.
-		 */
+		 
 		if (old == new)
 			return NOTIFY_OK;
 	}
 
-	/*
-	 * CPUFreq driver should support CPUFREQ_ASYNC_NOTIFICATION in order
-	 * to allow asynchronous notifications. This means we can't block
-	 * here for too long, otherwise CPUFreq's core will complain with a
-	 * warning splat.
-	 */
+	 
 	delay = msecs_to_jiffies(ACTMON_SAMPLING_PERIOD);
 	schedule_delayed_work(&tegra->cpufreq_update_work, delay);
 
@@ -499,7 +453,7 @@ static void tegra_actmon_configure_device(struct tegra_devfreq *tegra,
 {
 	u32 val = 0;
 
-	/* reset boosting on governor's restart */
+	 
 	dev->boost_freq = 0;
 
 	dev->target_freq = tegra->cur_freq;
@@ -551,11 +505,7 @@ static int tegra_actmon_resume(struct tegra_devfreq *tegra)
 	actmon_writel(tegra, tegra->devfreq->profile->polling_ms - 1,
 		      ACTMON_GLB_PERIOD_CTRL);
 
-	/*
-	 * CLK notifications are needed in order to reconfigure the upper
-	 * consecutive watermark in accordance to the actual clock rate
-	 * to avoid unnecessary upper interrupts.
-	 */
+	 
 	err = clk_notifier_register(tegra->emc_clock,
 				    &tegra->clk_rate_change_nb);
 	if (err) {
@@ -569,13 +519,7 @@ static int tegra_actmon_resume(struct tegra_devfreq *tegra)
 	for (i = 0; i < ARRAY_SIZE(tegra->devices); i++)
 		tegra_actmon_configure_device(tegra, &tegra->devices[i]);
 
-	/*
-	 * We are estimating CPU's memory bandwidth requirement based on
-	 * amount of memory accesses and system's load, judging by CPU's
-	 * frequency. We also don't want to receive events about CPU's
-	 * frequency transaction when governor is stopped, hence notifier
-	 * is registered dynamically.
-	 */
+	 
 	err = cpufreq_register_notifier(&tegra->cpu_rate_change_nb,
 					CPUFREQ_TRANSITION_NOTIFIER);
 	if (err) {
@@ -661,21 +605,21 @@ static int tegra_devfreq_get_dev_status(struct device *dev,
 
 	cur_freq = READ_ONCE(tegra->cur_freq);
 
-	/* To be used by the tegra governor */
+	 
 	stat->private_data = tegra;
 
-	/* The below are to be used by the other governors */
+	 
 	stat->current_frequency = cur_freq * KHZ;
 
 	actmon_dev = &tegra->devices[MCALL];
 
-	/* Number of cycles spent on memory access */
+	 
 	stat->busy_time = device_readl(actmon_dev, ACTMON_DEV_AVG_COUNT);
 
-	/* The bus can be considered to be saturated way before 100% */
+	 
 	stat->busy_time *= 100 / BUS_SATURATION_RATIO;
 
-	/* Number of cycles in a sampling period */
+	 
 	stat->total_time = tegra->devfreq->profile->polling_ms * cur_freq;
 
 	stat->busy_time = min(stat->busy_time, stat->total_time);
@@ -716,11 +660,7 @@ static int tegra_governor_get_target(struct devfreq *devfreq,
 		target_freq = max(target_freq, dev->target_freq);
 	}
 
-	/*
-	 * tegra-devfreq driver operates with KHz units, while OPP table
-	 * entries use Hz units. Hence we need to convert the units for the
-	 * devfreq core.
-	 */
+	 
 	*freq = target_freq * KHZ;
 
 	return 0;
@@ -733,10 +673,7 @@ static int tegra_governor_event_handler(struct devfreq *devfreq,
 	unsigned int *new_delay = data;
 	int ret = 0;
 
-	/*
-	 * Couple devfreq-device with the governor early because it is
-	 * needed at the moment of governor's start (used by ISR).
-	 */
+	 
 	tegra->devfreq = devfreq;
 
 	switch (event) {
@@ -751,10 +688,7 @@ static int tegra_governor_event_handler(struct devfreq *devfreq,
 		break;
 
 	case DEVFREQ_GOV_UPDATE_INTERVAL:
-		/*
-		 * ACTMON hardware supports up to 256 milliseconds for the
-		 * sampling period.
-		 */
+		 
 		if (*new_delay > 256) {
 			ret = -EINVAL;
 			break;
@@ -826,7 +760,7 @@ static int tegra_devfreq_config_clks_nop(struct device *dev,
 					 struct dev_pm_opp *opp, void *data,
 					 bool scaling_down)
 {
-	/* We want to skip clk configuration via dev_pm_opp_set_opp() */
+	 
 	return 0;
 }
 
@@ -949,10 +883,7 @@ static int tegra_devfreq_probe(struct platform_device *pdev)
 static const struct tegra_devfreq_soc_data tegra124_soc = {
 	.configs = tegra124_device_configs,
 
-	/*
-	 * Activity counter is incremented every 256 memory transactions,
-	 * and each transaction takes 4 EMC clocks.
-	 */
+	 
 	.count_weight = 4 * 256,
 };
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mantix MLAF057WE51 5.7" MIPI-DSI panel driver
- *
- * Copyright (C) Purism SPC 2020
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -21,7 +17,7 @@
 
 #define DRV_NAME "panel-mantix-mlaf057we51"
 
-/* Manufacturer specific Commands send via DSI */
+ 
 #define MANTIX_CMD_OTP_STOP_RELOAD_MIPI 0x41
 #define MANTIX_CMD_INT_CANCEL           0x4C
 #define MANTIX_CMD_SPI_FINISH           0x90
@@ -50,9 +46,7 @@ static int mantix_init_sequence(struct mantix *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	struct device *dev = ctx->dev;
 
-	/*
-	 * Init sequence was supplied by the panel vendor.
-	 */
+	 
 	mipi_dsi_generic_write_seq(dsi, MANTIX_CMD_OTP_STOP_RELOAD_MIPI, 0x5A);
 
 	mipi_dsi_generic_write_seq(dsi, MANTIX_CMD_INT_CANCEL, 0x03);
@@ -133,10 +127,10 @@ static int mantix_unprepare(struct drm_panel *panel)
 
 	regulator_disable(ctx->avee);
 	regulator_disable(ctx->avdd);
-	/* T11 */
+	 
 	usleep_range(5000, 6000);
 	regulator_disable(ctx->vddi);
-	/* T14 */
+	 
 	msleep(50);
 
 	return 0;
@@ -147,7 +141,7 @@ static int mantix_prepare(struct drm_panel *panel)
 	struct mantix *ctx = panel_to_mantix(panel);
 	int ret;
 
-	/* Focaltech FT8006P, section 7.3.1 and 7.3.4 */
+	 
 	dev_dbg(ctx->dev, "Resetting the panel\n");
 	ret = regulator_enable(ctx->vddi);
 	if (ret < 0) {
@@ -155,7 +149,7 @@ static int mantix_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* T1 + T2 */
+	 
 	usleep_range(8000, 10000);
 
 	ret = regulator_enable(ctx->avdd);
@@ -164,7 +158,7 @@ static int mantix_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* T2d */
+	 
 	usleep_range(3500, 4000);
 	ret = regulator_enable(ctx->avee);
 	if (ret < 0) {
@@ -172,12 +166,12 @@ static int mantix_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	/* T3 + T4 + time for voltage to become stable: */
+	 
 	usleep_range(6000, 7000);
 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
 	gpiod_set_value_cansleep(ctx->tp_rstn_gpio, 0);
 
-	/* T6 */
+	 
 	msleep(50);
 
 	return 0;
@@ -341,7 +335,7 @@ static void mantix_remove(struct mipi_dsi_device *dsi)
 static const struct of_device_id mantix_of_match[] = {
 	{ .compatible = "mantix,mlaf057we51-x", .data = &default_mode_mantix },
 	{ .compatible = "ys,ys57pss36bh5gq", .data = &default_mode_ys },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mantix_of_match);
 

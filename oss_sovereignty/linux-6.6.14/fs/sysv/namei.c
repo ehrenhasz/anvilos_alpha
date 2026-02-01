@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/sysv/namei.c
- *
- *  minix/namei.c
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  coh/namei.c
- *  Copyright (C) 1993  Pascal Haible, Bruno Haible
- *
- *  sysv/namei.c
- *  Copyright (C) 1993  Bruno Haible
- *  Copyright (C) 1997, 1998  Krzysztof G. Baranowski
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include "sysv.h"
@@ -184,10 +172,7 @@ static int sysv_rmdir(struct inode * dir, struct dentry * dentry)
 	return err;
 }
 
-/*
- * Anybody can rename anything with this: the permission checks are left to the
- * higher-level routines.
- */
+ 
 static int sysv_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		       struct dentry *old_dentry, struct inode *new_dir,
 		       struct dentry *new_dentry, unsigned int flags)
@@ -263,9 +248,7 @@ out:
 	return err;
 }
 
-/*
- * directories can handle most operations...
- */
+ 
 const struct inode_operations sysv_dir_inode_operations = {
 	.create		= sysv_create,
 	.lookup		= sysv_lookup,

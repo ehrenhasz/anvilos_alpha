@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * originally written by: Kirk Reiser <kirk@braille.uwo.ca>
- * this version considerably modified by David Borowski, david575@rogers.com
- *
- * Copyright (C) 1998-99  Kirk Reiser.
- * Copyright (C) 2003 David Borowski.
- *
- * this code is specifically written as a driver for the speakup screenreview
- * package and is not a general device driver.
- */
+
+ 
 
 #include "spk_priv.h"
 #include "speakup.h"
-#include "speakup_acnt.h" /* local header file for Accent values */
+#include "speakup_acnt.h"  
 
 #define DRV_VERSION "2.11"
 #define PROCSPEECH '\r'
@@ -40,9 +31,7 @@ static struct var_t vars[NB_ID] = {
 	V_LAST_VAR
 };
 
-/*
- * These attributes will appear in /sys/accessibility/speakup/acntsa.
- */
+ 
 static struct kobj_attribute caps_start_attribute =
 	__ATTR(caps_start, 0644, spk_var_show, spk_var_store);
 static struct kobj_attribute caps_stop_attribute =
@@ -67,10 +56,7 @@ static struct kobj_attribute jiffy_delta_attribute =
 static struct kobj_attribute trigger_time_attribute =
 	__ATTR(trigger_time, 0644, spk_var_show, spk_var_store);
 
-/*
- * Create a group of attributes so that we can create and destroy them all
- * at once.
- */
+ 
 static struct attribute *synth_attrs[] = {
 	&caps_start_attribute.attr,
 	&caps_stop_attribute.attr,
@@ -83,7 +69,7 @@ static struct attribute *synth_attrs[] = {
 	&full_time_attribute.attr,
 	&jiffy_delta_attribute.attr,
 	&trigger_time_attribute.attr,
-	NULL,	/* need to NULL terminate the list of attributes */
+	NULL,	 
 };
 
 static struct spk_synth synth_acntsa = {

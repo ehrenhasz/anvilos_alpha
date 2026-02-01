@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/compat.h>
@@ -52,7 +50,7 @@ static bool exfat_allow_set_time(struct exfat_sb_info *sbi, struct inode *inode)
 			return true;
 	}
 
-	/* use a default check */
+	 
 	return false;
 }
 
@@ -67,22 +65,16 @@ static int exfat_sanitize_mode(const struct exfat_sb_info *sbi,
 		sbi->options.fs_fmask : sbi->options.fs_dmask;
 	perm = *mode_ptr & ~(S_IFMT | mask);
 
-	/* Of the r and x bits, all (subject to umask) must be present.*/
+	 
 	if ((perm & 0555) != (i_mode & 0555))
 		return -EPERM;
 
 	if (exfat_mode_can_hold_ro(inode)) {
-		/*
-		 * Of the w bits, either all (subject to umask) or none must
-		 * be present.
-		 */
+		 
 		if ((perm & 0222) && ((perm & 0222) != (0222 & ~mask)))
 			return -EPERM;
 	} else {
-		/*
-		 * If exfat_mode_can_hold_ro(inode) is false, can't change
-		 * w bits.
-		 */
+		 
 		if ((perm & 0222) != (0222 & ~mask))
 			return -EPERM;
 	}
@@ -92,7 +84,7 @@ static int exfat_sanitize_mode(const struct exfat_sb_info *sbi,
 	return 0;
 }
 
-/* resize the file length */
+ 
 int __exfat_truncate(struct inode *inode)
 {
 	unsigned int num_clusters_new, num_clusters_phys;
@@ -102,7 +94,7 @@ int __exfat_truncate(struct inode *inode)
 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
 	struct exfat_inode_info *ei = EXFAT_I(inode);
 
-	/* check if the given file ID is opened */
+	 
 	if (ei->type != TYPE_FILE && ei->type != TYPE_DIR)
 		return -EPERM;
 
@@ -114,17 +106,11 @@ int __exfat_truncate(struct inode *inode)
 	exfat_chain_set(&clu, ei->start_clu, num_clusters_phys, ei->flags);
 
 	if (i_size_read(inode) > 0) {
-		/*
-		 * Truncate FAT chain num_clusters after the first cluster
-		 * num_clusters = min(new, phys);
-		 */
+		 
 		unsigned int num_clusters =
 			min(num_clusters_new, num_clusters_phys);
 
-		/*
-		 * Follow FAT chain
-		 * (defensive coding - works fine even with corrupted FAT table
-		 */
+		 
 		if (clu.flags == ALLOC_NO_FAT_CHAIN) {
 			clu.dir += num_clusters;
 			clu.size -= num_clusters;
@@ -146,41 +132,31 @@ int __exfat_truncate(struct inode *inode)
 	if (ei->type == TYPE_FILE)
 		ei->attr |= ATTR_ARCHIVE;
 
-	/*
-	 * update the directory entry
-	 *
-	 * If the directory entry is updated by mark_inode_dirty(), the
-	 * directory entry will be written after a writeback cycle of
-	 * updating the bitmap/FAT, which may result in clusters being
-	 * freed but referenced by the directory entry in the event of a
-	 * sudden power failure.
-	 * __exfat_write_inode() is called for directory entry, bitmap
-	 * and FAT to be written in a same writeback.
-	 */
+	 
 	if (__exfat_write_inode(inode, inode_needs_sync(inode)))
 		return -EIO;
 
-	/* cut off from the FAT chain */
+	 
 	if (ei->flags == ALLOC_FAT_CHAIN && last_clu != EXFAT_FREE_CLUSTER &&
 			last_clu != EXFAT_EOF_CLUSTER) {
 		if (exfat_ent_set(sb, last_clu, EXFAT_EOF_CLUSTER))
 			return -EIO;
 	}
 
-	/* invalidate cache and free the clusters */
-	/* clear exfat cache */
+	 
+	 
 	exfat_cache_inval_inode(inode);
 
-	/* hint information */
+	 
 	ei->hint_bmap.off = EXFAT_EOF_CLUSTER;
 	ei->hint_bmap.clu = EXFAT_EOF_CLUSTER;
 
-	/* hint_stat will be used if this is directory. */
+	 
 	ei->hint_stat.eidx = 0;
 	ei->hint_stat.clu = ei->start_clu;
 	ei->hint_femp.eidx = EXFAT_HINT_NONE;
 
-	/* free the clusters */
+	 
 	if (exfat_free_cluster(inode, &clu))
 		return -EIO;
 
@@ -198,9 +174,7 @@ void exfat_truncate(struct inode *inode)
 
 	mutex_lock(&sbi->s_lock);
 	if (ei->start_clu == 0) {
-		/*
-		 * Empty start_clu != ~0 (not allocated)
-		 */
+		 
 		exfat_fs_error(sb, "tried to truncate zeroed cluster.");
 		goto write_size;
 	}
@@ -257,7 +231,7 @@ int exfat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		attr->ia_valid &= ~ATTR_SIZE;
 	}
 
-	/* Check for setting the inode time. */
+	 
 	ia_valid = attr->ia_valid;
 	if ((ia_valid & (ATTR_MTIME_SET | ATTR_ATIME_SET | ATTR_TIMES_SET)) &&
 	    exfat_allow_set_time(sbi, inode)) {
@@ -280,10 +254,7 @@ int exfat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		goto out;
 	}
 
-	/*
-	 * We don't return -EPERM here. Yes, strange, but this is too
-	 * old behavior.
-	 */
+	 
 	if (attr->ia_valid & ATTR_MODE) {
 		if (exfat_sanitize_mode(sbi, inode, &attr->ia_mode) < 0)
 			attr->ia_valid &= ~ATTR_MODE;
@@ -303,10 +274,7 @@ int exfat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		down_write(&EXFAT_I(inode)->truncate_lock);
 		truncate_setsize(inode, attr->ia_size);
 
-		/*
-		 * __exfat_write_inode() is called from exfat_truncate(), inode
-		 * is already written by it, so mark_inode_dirty() is unneeded.
-		 */
+		 
 		exfat_truncate(inode);
 		up_write(&EXFAT_I(inode)->truncate_lock);
 	} else

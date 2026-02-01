@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel IXP4xx PCI host controller
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on the IXP4xx arch/arm/mach-ixp4xx/common-pci.c driver
- * Copyright (C) 2002 Intel Corporation
- * Copyright (C) 2003 Greg Ungerer <gerg@linux-m68k.org>
- * Copyright (C) 2003-2004 MontaVista Software, Inc.
- * Copyright (C) 2005 Deepak Saxena <dsaxena@plexity.net>
- * Copyright (C) 2005 Alessandro Zummo <a.zummo@towertech.it>
- *
- * TODO:
- * - Test IO-space access
- * - DMA support
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -27,7 +12,7 @@
 #include <linux/bits.h>
 #include "../pci.h"
 
-/* Register offsets */
+ 
 #define IXP4XX_PCI_NP_AD		0x00
 #define IXP4XX_PCI_NP_CBE		0x04
 #define IXP4XX_PCI_NP_WDATA		0x08
@@ -51,7 +36,7 @@
 #define IXP4XX_PCI_ATPDMA1_PCIADDR	0x50
 #define IXP4XX_PCI_ATPDMA1_LENADDR	0x54
 
-/* CSR bit definitions */
+ 
 #define IXP4XX_PCI_CSR_HOST		BIT(0)
 #define IXP4XX_PCI_CSR_ARBEN		BIT(1)
 #define IXP4XX_PCI_CSR_ADS		BIT(2)
@@ -62,7 +47,7 @@
 #define IXP4XX_PCI_CSR_IC		BIT(15)
 #define IXP4XX_PCI_CSR_PRST		BIT(16)
 
-/* ISR (Interrupt status) Register bit definitions */
+ 
 #define IXP4XX_PCI_ISR_PSE		BIT(0)
 #define IXP4XX_PCI_ISR_PFE		BIT(1)
 #define IXP4XX_PCI_ISR_PPE		BIT(2)
@@ -72,7 +57,7 @@
 #define IXP4XX_PCI_ISR_ADB		BIT(6)
 #define IXP4XX_PCI_ISR_PDB		BIT(7)
 
-/* INTEN (Interrupt Enable) Register bit definitions */
+ 
 #define IXP4XX_PCI_INTEN_PSE		BIT(0)
 #define IXP4XX_PCI_INTEN_PFE		BIT(1)
 #define IXP4XX_PCI_INTEN_PPE		BIT(2)
@@ -82,10 +67,10 @@
 #define IXP4XX_PCI_INTEN_ADB		BIT(6)
 #define IXP4XX_PCI_INTEN_PDB		BIT(7)
 
-/* Shift value for byte enable on NP cmd/byte enable register */
+ 
 #define IXP4XX_PCI_NP_CBE_BESL		4
 
-/* PCI commands supported by NP access unit */
+ 
 #define NP_CMD_IOREAD			0x2
 #define NP_CMD_IOWRITE			0x3
 #define NP_CMD_CONFIGREAD		0xa
@@ -93,11 +78,11 @@
 #define NP_CMD_MEMREAD			0x6
 #define	NP_CMD_MEMWRITE			0x7
 
-/* Constants for CRP access into local config space */
+ 
 #define CRP_AD_CBE_BESL         20
 #define CRP_AD_CBE_WRITE	0x00010000
 
-/* Special PCI configuration space registers for this controller */
+ 
 #define IXP4XX_PCI_RTOTTO		0x40
 
 struct ixp4xx_pci {
@@ -107,20 +92,7 @@ struct ixp4xx_pci {
 	bool host_mode;
 };
 
-/*
- * The IXP4xx has a peculiar address bus that will change the
- * byte order on SoC peripherals depending on whether the device
- * operates in big-endian or little-endian mode. That means that
- * readl() and writel() that always use little-endian access
- * will not work for SoC peripherals such as the PCI controller
- * when used in big-endian mode. The accesses to the individual
- * PCI devices on the other hand, are always little-endian and
- * can use readl() and writel().
- *
- * For local AHB bus access we need to use __raw_[readl|writel]()
- * to make sure that we access the SoC devices in the CPU native
- * endianness.
- */
+ 
 static inline u32 ixp4xx_readl(struct ixp4xx_pci *p, u32 reg)
 {
 	return __raw_readl(p->base + reg);
@@ -136,7 +108,7 @@ static int ixp4xx_pci_check_master_abort(struct ixp4xx_pci *p)
 	u32 isr = ixp4xx_readl(p, IXP4XX_PCI_ISR);
 
 	if (isr & IXP4XX_PCI_ISR_PFE) {
-		/* Make sure the master abort bit is reset */
+		 
 		ixp4xx_writel(p, IXP4XX_PCI_ISR, IXP4XX_PCI_ISR_PFE);
 		dev_dbg(p->dev, "master abort detected\n");
 		return -EINVAL;
@@ -152,11 +124,7 @@ static int ixp4xx_pci_read_indirect(struct ixp4xx_pci *p, u32 addr, u32 cmd, u32
 	if (p->errata_hammer) {
 		int i;
 
-		/*
-		 * PCI workaround - only works if NP PCI space reads have
-		 * no side effects. Hammer the register and read twice 8
-		 * times. last one will be good.
-		 */
+		 
 		for (i = 0; i < 8; i++) {
 			ixp4xx_writel(p, IXP4XX_PCI_NP_CBE, cmd);
 			*data = ixp4xx_readl(p, IXP4XX_PCI_NP_RDATA);
@@ -174,10 +142,10 @@ static int ixp4xx_pci_write_indirect(struct ixp4xx_pci *p, u32 addr, u32 cmd, u3
 {
 	ixp4xx_writel(p, IXP4XX_PCI_NP_AD, addr);
 
-	/* Set up the write */
+	 
 	ixp4xx_writel(p, IXP4XX_PCI_NP_CBE, cmd);
 
-	/* Execute the write by writing to NP_WDATA */
+	 
 	ixp4xx_writel(p, IXP4XX_PCI_NP_WDATA, data);
 
 	return ixp4xx_pci_check_master_abort(p);
@@ -185,24 +153,20 @@ static int ixp4xx_pci_write_indirect(struct ixp4xx_pci *p, u32 addr, u32 cmd, u3
 
 static u32 ixp4xx_config_addr(u8 bus_num, u16 devfn, int where)
 {
-	/* Root bus is always 0 in this hardware */
+	 
 	if (bus_num == 0) {
-		/* type 0 */
+		 
 		return (PCI_CONF1_ADDRESS(0, 0, PCI_FUNC(devfn), where) &
 			~PCI_CONF1_ENABLE) | BIT(32-PCI_SLOT(devfn));
 	} else {
-		/* type 1 */
+		 
 		return (PCI_CONF1_ADDRESS(bus_num, PCI_SLOT(devfn),
 					  PCI_FUNC(devfn), where) &
 			~PCI_CONF1_ENABLE) | 1;
 	}
 }
 
-/*
- * CRP functions are "Controller Configuration Port" accesses
- * initiated from within this driver itself to read/write PCI
- * control information in the config space.
- */
+ 
 static u32 ixp4xx_crp_byte_lane_enable_bits(u32 n, int size)
 {
 	if (size == 1)
@@ -243,7 +207,7 @@ static int ixp4xx_crp_read_config(struct ixp4xx_pci *p, int where, int size,
 		dev_dbg(p->dev, "%s read long %08x\n", __func__, val);
 		break;
 	default:
-		/* Should not happen */
+		 
 		dev_err(p->dev, "%s illegal size\n", __func__);
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	}
@@ -275,10 +239,7 @@ static int ixp4xx_crp_write_config(struct ixp4xx_pci *p, int where, int size,
 	return PCIBIOS_SUCCESSFUL;
 }
 
-/*
- * Then follows the functions that read and write from the common PCI
- * configuration space.
- */
+ 
 static u32 ixp4xx_byte_lane_enable_bits(u32 n, int size)
 {
 	if (size == 1)
@@ -328,7 +289,7 @@ static int ixp4xx_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 		dev_dbg(p->dev, "%s read long %08x\n", __func__, val);
 		break;
 	default:
-		/* Should not happen */
+		 
 		dev_err(p->dev, "%s illegal size\n", __func__);
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	}
@@ -406,7 +367,7 @@ static int ixp4xx_pci_parse_map_ranges(struct ixp4xx_pci *p)
 		}
 
 		pcimembase = ixp4xx_pci_addr_to_64mconf(addr);
-		/* Commit configuration */
+		 
 		ixp4xx_writel(p, IXP4XX_PCI_PCIMEMBASE, pcimembase);
 	} else {
 		dev_err(dev, "no AHB memory mapping defined\n");
@@ -423,11 +384,7 @@ static int ixp4xx_pci_parse_map_ranges(struct ixp4xx_pci *p)
 		}
 
 		res->name = "IXP4xx PCI IO MEM";
-		/*
-		 * Setup I/O space location for PCI->AHB access, the
-		 * upper 24 bits of the address goes into the lower
-		 * 24 bits of this register.
-		 */
+		 
 		ixp4xx_writel(p, IXP4XX_PCI_AHBIOBASE, (addr >> 8));
 	} else {
 		dev_info(dev, "no IO space AHB memory mapping defined\n");
@@ -456,12 +413,9 @@ static int ixp4xx_pci_parse_map_dma_ranges(struct ixp4xx_pci *p)
 		}
 
 		dev_dbg(dev, "DMA MEM BASE: %pa\n", &addr);
-		/*
-		 * 4 PCI-to-AHB windows of 16 MB each, write the 8 high bits
-		 * into each byte of the PCI_AHBMEMBASE register.
-		 */
+		 
 		ahbmembase = ixp4xx_pci_addr_to_64mconf(addr);
-		/* Commit AHB membase */
+		 
 		ixp4xx_writel(p, IXP4XX_PCI_AHBMEMBASE, ahbmembase);
 	} else {
 		dev_err(dev, "no DMA memory range defined\n");
@@ -470,7 +424,7 @@ static int ixp4xx_pci_parse_map_dma_ranges(struct ixp4xx_pci *p)
 	return 0;
 }
 
-/* Only used to get context for abort handling */
+ 
 static struct ixp4xx_pci *ixp4xx_pci_abort_singleton;
 
 static int ixp4xx_pci_abort_handler(unsigned long addr, unsigned int fsr,
@@ -491,17 +445,14 @@ static int ixp4xx_pci_abort_handler(unsigned long addr, unsigned int fsr,
 		"PCI: abort_handler addr = %#lx, isr = %#x, status = %#x\n",
 		addr, isr, status);
 
-	/* Make sure the Master Abort bit is reset */
+	 
 	ixp4xx_writel(p, IXP4XX_PCI_ISR, IXP4XX_PCI_ISR_PFE);
 	status |= PCI_STATUS_REC_MASTER_ABORT;
 	ret = ixp4xx_crp_write_config(p, PCI_STATUS, 2, status);
 	if (ret)
 		dev_err(p->dev, "unable to clear abort status bit\n");
 
-	/*
-	 * If it was an imprecise abort, then we need to correct the
-	 * return address to be _after_ the instruction.
-	 */
+	 
 	if (fsr & (1 << 10)) {
 		dev_err(p->dev, "imprecise abort\n");
 		regs->ARM_pc += 4;
@@ -537,10 +488,7 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 	p->dev = dev;
 	dev_set_drvdata(dev, p);
 
-	/*
-	 * Set up quirk for erratic behaviour in the 42x variant
-	 * when accessing config space.
-	 */
+	 
 	if (of_device_is_compatible(np, "intel,ixp42x-pci")) {
 		p->errata_hammer = true;
 		dev_info(dev, "activate hammering errata\n");
@@ -555,7 +503,7 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 	dev_info(dev, "controller is in %s mode\n",
 		 p->host_mode ? "host" : "option");
 
-	/* Hook in our fault handler for PCI errors */
+	 
 	ixp4xx_pci_abort_singleton = p;
 	hook_fault_code(16+6, ixp4xx_pci_abort_handler, SIGBUS, 0,
 			"imprecise external abort");
@@ -568,14 +516,14 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* This is only configured in host mode */
+	 
 	if (p->host_mode) {
 		addr = __pa(PAGE_OFFSET);
-		/* This is a noop (0x00) but explains what is going on */
+		 
 		addr |= PCI_BASE_ADDRESS_SPACE_MEMORY;
 
 		for (i = 0; i < 4; i++) {
-			/* Write this directly into the config space */
+			 
 			ret = ixp4xx_crp_write_config(p, basereg[i], 4, addr);
 			if (ret)
 				dev_err(dev, "failed to set up PCI_BASE_ADDRESS_%d\n", i);
@@ -584,22 +532,14 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 			addr += SZ_16M;
 		}
 
-		/*
-		 * Enable CSR window at 64 MiB to allow PCI masters to continue
-		 * prefetching past the 64 MiB boundary, if all AHB to PCI
-		 * windows are consecutive.
-		 */
+		 
 		ret = ixp4xx_crp_write_config(p, PCI_BASE_ADDRESS_4, 4, addr);
 		if (ret)
 			dev_err(dev, "failed to set up PCI_BASE_ADDRESS_4\n");
 		else
 			dev_info(dev, "set PCI_BASE_ADDR_4 to %pa\n", &addr);
 
-		/*
-		 * Put the IO memory window at the very end of physical memory
-		 * at 0xfffffc00. This is when the system is trying to access IO
-		 * memory over AHB.
-		 */
+		 
 		addr = 0xfffffc00;
 		addr |= PCI_BASE_ADDRESS_SPACE_IO;
 		ret = ixp4xx_crp_write_config(p, PCI_BASE_ADDRESS_5, 4, addr);
@@ -608,10 +548,7 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 		else
 			dev_info(dev, "set PCI_BASE_ADDR_5 to %pa\n", &addr);
 
-		/*
-		 * Retry timeout to 0x80
-		 * Transfer ready timeout to 0xff
-		 */
+		 
 		ret = ixp4xx_crp_write_config(p, IXP4XX_PCI_RTOTTO, 4,
 					      0x000080ff);
 		if (ret)
@@ -620,16 +557,11 @@ static int __init ixp4xx_pci_probe(struct platform_device *pdev)
 			dev_info(dev, "set TRDY limit to 0x80ff\n");
 	}
 
-	/* Clear interrupts */
+	 
 	val = IXP4XX_PCI_ISR_PSE | IXP4XX_PCI_ISR_PFE | IXP4XX_PCI_ISR_PPE | IXP4XX_PCI_ISR_AHBE;
 	ixp4xx_writel(p, IXP4XX_PCI_ISR, val);
 
-	/*
-	 * Set Initialize Complete in PCI Control Register: allow IXP4XX to
-	 * generate PCI configuration cycles. Specify that the AHB bus is
-	 * operating in big-endian mode. Set up byte lane swapping between
-	 * little-endian PCI and the big-endian AHB bus.
-	 */
+	 
 	val = IXP4XX_PCI_CSR_IC | IXP4XX_PCI_CSR_ABE;
 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		val |= (IXP4XX_PCI_CSR_PDS | IXP4XX_PCI_CSR_ADS);
@@ -656,12 +588,7 @@ static const struct of_device_id ixp4xx_pci_of_match[] = {
 	{},
 };
 
-/*
- * This driver needs to be a builtin module with suppressed bind
- * attributes since the probe() is initializing a hard exception
- * handler and this can only be done from __init-tagged code
- * sections. This module cannot be removed and inserted at all.
- */
+ 
 static struct platform_driver ixp4xx_pci_driver = {
 	.driver = {
 		.name = "ixp4xx-pci",

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor policy definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+ 
+ 
 
 #ifndef __AA_POLICY_H
 #define __AA_POLICY_H
@@ -58,27 +51,17 @@ extern const char *const aa_profile_mode_names[];
 
 #define on_list_rcu(X) (!list_empty(X) && (X)->prev != LIST_POISON2)
 
-/*
- * FIXME: currently need a clean way to replace and remove profiles as a
- * set.  It should be done at the namespace level.
- * Either, with a set of profiles loaded at the namespace level or via
- * a mark and remove marked interface.
- */
+ 
 enum profile_mode {
-	APPARMOR_ENFORCE,	/* enforce access rules */
-	APPARMOR_COMPLAIN,	/* allow and log access violations */
-	APPARMOR_KILL,		/* kill task on access violation */
-	APPARMOR_UNCONFINED,	/* profile set to unconfined */
-	APPARMOR_USER,		/* modified complain mode to userspace */
+	APPARMOR_ENFORCE,	 
+	APPARMOR_COMPLAIN,	 
+	APPARMOR_KILL,		 
+	APPARMOR_UNCONFINED,	 
+	APPARMOR_USER,		 
 };
 
 
-/* struct aa_policydb - match engine for a policy
- * dfa: dfa pattern match
- * perms: table of permissions
- * strs: table of strings, index by x
- * start: set of start states for the different classes of data
- */
+ 
 struct aa_policydb {
 	struct aa_dfa *dfa;
 	struct {
@@ -110,12 +93,7 @@ static inline struct aa_perms *aa_lookup_perms(struct aa_policydb *policy,
 }
 
 
-/* struct aa_data - generic data structure
- * key: name for retrieving this data
- * size: size of data in bytes
- * data: binary data
- * head: reserved for rhashtable
- */
+ 
 struct aa_data {
 	char *key;
 	u32 size;
@@ -123,22 +101,13 @@ struct aa_data {
 	struct rhash_head head;
 };
 
-/* struct aa_ruleset - data covering mediation rules
- * @list: list the rule is on
- * @size: the memory consumed by this ruleset
- * @policy: general match rules governing policy
- * @file: The set of rules governing basic file access and domain transitions
- * @caps: capabilities for the profile
- * @rlimits: rlimits for the profile
- * @secmark_count: number of secmark entries
- * @secmark: secmark label match info
- */
+ 
 struct aa_ruleset {
 	struct list_head list;
 
 	int size;
 
-	/* TODO: merge policy and file */
+	 
 	struct aa_policydb policy;
 	struct aa_policydb file;
 	struct aa_caps caps;
@@ -149,14 +118,7 @@ struct aa_ruleset {
 	struct aa_secmark *secmark;
 };
 
-/* struct aa_attachment - data and rules for a profiles attachment
- * @list:
- * @xmatch_str: human readable attachment string
- * @xmatch: optional extended matching for unconfined executables names
- * @xmatch_len: xmatch prefix len, used to determine xmatch priority
- * @xattr_count: number of xattrs in table
- * @xattrs: table of xattrs
- */
+ 
 struct aa_attachment {
 	const char *xmatch_str;
 	struct aa_policydb xmatch;
@@ -165,36 +127,7 @@ struct aa_attachment {
 	char **xattrs;
 };
 
-/* struct aa_profile - basic confinement data
- * @base - base components of the profile (name, refcount, lists, lock ...)
- * @label - label this profile is an extension of
- * @parent: parent of profile
- * @ns: namespace the profile is in
- * @rename: optional profile name that this profile renamed
- *
- * @audit: the auditing mode of the profile
- * @mode: the enforcement mode of the profile
- * @path_flags: flags controlling path generation behavior
- * @disconnected: what to prepend if attach_disconnected is specified
- * @attach: attachment rules for the profile
- * @rules: rules to be enforced
- *
- * @dents: dentries for the profiles file entries in apparmorfs
- * @dirname: name of the profile dir in apparmorfs
- * @data: hashtable for free-form policy aa_data
- *
- * The AppArmor profile contains the basic confinement data.  Each profile
- * has a name, and exists in a namespace.  The @name and @exec_match are
- * used to determine profile attachment against unconfined tasks.  All other
- * attachments are determined by profile X transition rules.
- *
- * Profiles have a hierarchy where hats and children profiles keep
- * a reference to their parent.
- *
- * Profile names can not begin with a : and can not contain the \0
- * character.  If a profile name begins with / it will be considered when
- * determining profile attachment on "unconfined" tasks.
- */
+ 
 struct aa_profile {
 	struct aa_policy base;
 	struct aa_profile __rcu *parent;
@@ -259,14 +192,7 @@ void __aa_profile_list_release(struct list_head *head);
 
 #define profile_unconfined(X) ((X)->mode == APPARMOR_UNCONFINED)
 
-/**
- * aa_get_newest_profile - simple wrapper fn to wrap the label version
- * @p: profile (NOT NULL)
- *
- * Returns refcount to newest version of the profile (maybe @p)
- *
- * Requires: @p must be held with a valid refcount
- */
+ 
 static inline struct aa_profile *aa_get_newest_profile(struct aa_profile *p)
 {
 	return labels_profile(aa_get_newest_label(&p->label));
@@ -297,18 +223,12 @@ static inline aa_state_t ANY_RULE_MEDIATES(struct list_head *head,
 {
 	struct aa_ruleset *rule;
 
-	/* TODO: change to list walk */
+	 
 	rule = list_first_entry(head, typeof(*rule), list);
 	return RULE_MEDIATES(rule, class);
 }
 
-/**
- * aa_get_profile - increment refcount on profile @p
- * @p: profile  (MAYBE NULL)
- *
- * Returns: pointer to @p if @p is NULL will return NULL
- * Requires: @p must be held with valid refcount when called
- */
+ 
 static inline struct aa_profile *aa_get_profile(struct aa_profile *p)
 {
 	if (p)
@@ -317,13 +237,7 @@ static inline struct aa_profile *aa_get_profile(struct aa_profile *p)
 	return p;
 }
 
-/**
- * aa_get_profile_not0 - increment refcount on profile @p found via lookup
- * @p: profile  (MAYBE NULL)
- *
- * Returns: pointer to @p if @p is NULL will return NULL
- * Requires: @p must be held with valid refcount when called
- */
+ 
 static inline struct aa_profile *aa_get_profile_not0(struct aa_profile *p)
 {
 	if (p && kref_get_unless_zero(&p->label.count))
@@ -332,13 +246,7 @@ static inline struct aa_profile *aa_get_profile_not0(struct aa_profile *p)
 	return NULL;
 }
 
-/**
- * aa_get_profile_rcu - increment a refcount profile that can be replaced
- * @p: pointer to profile that can be replaced (NOT NULL)
- *
- * Returns: pointer to a refcounted profile.
- *     else NULL if no profile
- */
+ 
 static inline struct aa_profile *aa_get_profile_rcu(struct aa_profile __rcu **p)
 {
 	struct aa_profile *c;
@@ -352,10 +260,7 @@ static inline struct aa_profile *aa_get_profile_rcu(struct aa_profile __rcu **p)
 	return c;
 }
 
-/**
- * aa_put_profile - decrement refcount on profile @p
- * @p: profile  (MAYBE NULL)
- */
+ 
 static inline void aa_put_profile(struct aa_profile *p)
 {
 	if (p)
@@ -380,4 +285,4 @@ int aa_may_manage_policy(const struct cred *subj_cred,
 bool aa_current_policy_view_capable(struct aa_ns *ns);
 bool aa_current_policy_admin_capable(struct aa_ns *ns);
 
-#endif /* __AA_POLICY_H */
+#endif  

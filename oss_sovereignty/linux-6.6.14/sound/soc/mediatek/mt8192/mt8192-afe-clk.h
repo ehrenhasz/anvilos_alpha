@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8192-afe-clk.h  --  Mediatek 8192 afe clock ctrl definition
- *
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Shane Chien <shane.chien@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT8192_AFE_CLOCK_CTRL_H_
 #define _MT8192_AFE_CLOCK_CTRL_H_
@@ -40,7 +35,7 @@
 #define MODULE_SW_CG_1_STA 0x0094
 #define MODULE_SW_CG_2_STA 0x00ac
 
-/* CLK_AUDDIV_0 */
+ 
 #define APLL12_DIV0_PDN_SFT                0
 #define APLL12_DIV0_PDN_MASK               0x1
 #define APLL12_DIV0_PDN_MASK_SFT           (0x1 << 0)
@@ -105,7 +100,7 @@
 #define APLL_I2S9_MCK_SEL_MASK             0x1
 #define APLL_I2S9_MCK_SEL_MASK_SFT         (0x1 << 25)
 
-/* CLK_AUDDIV_2 */
+ 
 #define APLL12_CK_DIV0_SFT                 0
 #define APLL12_CK_DIV0_MASK                0xff
 #define APLL12_CK_DIV0_MASK_SFT            (0xff << 0)
@@ -119,7 +114,7 @@
 #define APLL12_CK_DIV3_MASK                0xff
 #define APLL12_CK_DIV3_MASK_SFT            (0xff << 24)
 
-/* CLK_AUDDIV_3 */
+ 
 #define APLL12_CK_DIV4_SFT                 0
 #define APLL12_CK_DIV4_MASK                0xff
 #define APLL12_CK_DIV4_MASK_SFT            (0xff << 0)
@@ -133,7 +128,7 @@
 #define APLL12_CK_DIV6_MASK                0xff
 #define APLL12_CK_DIV6_MASK_SFT            (0xff << 24)
 
-/* CLK_AUDDIV_4 */
+ 
 #define APLL12_CK_DIV7_SFT                 0
 #define APLL12_CK_DIV7_MASK                0xff
 #define APLL12_CK_DIV7_MASK_SFT            (0xff << 0)
@@ -144,17 +139,17 @@
 #define APLL12_CK_DIV9_MASK                0xff
 #define APLL12_CK_DIV9_MASK_SFT            (0xff << 0)
 
-/* AUD_TOP_CFG */
+ 
 #define AUD_TOP_CFG_SFT                    0
 #define AUD_TOP_CFG_MASK                   0xffffffff
 #define AUD_TOP_CFG_MASK_SFT               (0xffffffff << 0)
 
-/* AUD_TOP_MON */
+ 
 #define AUD_TOP_MON_SFT                    0
 #define AUD_TOP_MON_MASK                   0xffffffff
 #define AUD_TOP_MON_MASK_SFT               (0xffffffff << 0)
 
-/* CLK_AUDDIV_3 */
+ 
 #define APLL12_CK_DIV5_MSB_SFT             0
 #define APLL12_CK_DIV5_MSB_MASK            0xf
 #define APLL12_CK_DIV5_MSB_MASK_SFT        (0xf << 0)
@@ -162,7 +157,7 @@
 #define RESERVED0_MASK                     0xfffffff
 #define RESERVED0_MASK_SFT                 (0xfffffff << 4)
 
-/* APLL */
+ 
 #define APLL1_W_NAME "APLL1"
 #define APLL2_W_NAME "APLL2"
 enum {
@@ -183,7 +178,7 @@ enum {
 	CLK_MUX_AUDIO,
 	CLK_MUX_AUDIOINTBUS,
 	CLK_TOP_MAINPLL_D4_D4,
-	/* apll related mux */
+	 
 	CLK_TOP_MUX_AUD_1,
 	CLK_TOP_APLL1_CK,
 	CLK_TOP_MUX_AUD_2,
@@ -234,7 +229,7 @@ int mt8192_get_apll_rate(struct mtk_base_afe *afe, int apll);
 int mt8192_get_apll_by_rate(struct mtk_base_afe *afe, int rate);
 int mt8192_get_apll_by_name(struct mtk_base_afe *afe, const char *name);
 
-/* these will be replaced by using CCF */
+ 
 int mt8192_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate);
 void mt8192_mck_disable(struct mtk_base_afe *afe, int mck_id);
 

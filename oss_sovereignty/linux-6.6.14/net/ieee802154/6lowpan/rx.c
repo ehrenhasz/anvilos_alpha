@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/if_arp.h>
 
@@ -31,7 +31,7 @@ static int lowpan_rx_handlers_result(struct sk_buff *skb, lowpan_rx_result res)
 {
 	switch (res) {
 	case RX_CONTINUE:
-		/* nobody cared about this packet */
+		 
 		net_warn_ratelimited("%s: received unknown dispatch\n",
 				     __func__);
 
@@ -74,9 +74,7 @@ static lowpan_rx_result lowpan_rx_h_frag(struct sk_buff *skb)
 	if (ret == 1)
 		return RX_QUEUED;
 
-	/* Packet is freed by lowpan_frag_rcv on error or put into the frag
-	 * bucket.
-	 */
+	 
 	return RX_DROP;
 }
 
@@ -97,9 +95,7 @@ static lowpan_rx_result lowpan_rx_h_iphc(struct sk_buff *skb)
 	if (!lowpan_is_iphc(*skb_network_header(skb)))
 		return RX_CONTINUE;
 
-	/* Setting datagram_offset to zero indicates non frag handling
-	 * while doing lowpan_header_decompress.
-	 */
+	 
 	lowpan_802154_cb(skb)->d_size = 0;
 
 	ret = lowpan_iphc_decompress(skb);
@@ -114,7 +110,7 @@ lowpan_rx_result lowpan_rx_h_ipv6(struct sk_buff *skb)
 	if (!lowpan_is_ipv6(*skb_network_header(skb)))
 		return RX_CONTINUE;
 
-	/* Pull off the 1-byte of 6lowpan header. */
+	 
 	skb_pull(skb, 1);
 	return RX_QUEUED;
 }
@@ -210,7 +206,7 @@ static int lowpan_invoke_rx_handlers(struct sk_buff *skb)
 			goto rxh_next;	\
 	} while (0)
 
-	/* likely at first */
+	 
 	CALL_RXH(lowpan_rx_h_iphc);
 	CALL_RXH(lowpan_rx_h_frag);
 	CALL_RXH(lowpan_rx_h_ipv6);
@@ -230,11 +226,7 @@ static inline bool lowpan_is_nalp(u8 dispatch)
 	return (dispatch & LOWPAN_DISPATCH_FIRST) == LOWPAN_DISPATCH_NALP;
 }
 
-/* Lookup for reserved dispatch values at:
- * https://www.iana.org/assignments/_6lowpan-parameters/_6lowpan-parameters.xhtml#_6lowpan-parameters-1
- *
- * Last Updated: 2015-01-22
- */
+ 
 static inline bool lowpan_is_reserved(u8 dispatch)
 {
 	return ((dispatch >= 0x44 && dispatch <= 0x4F) ||
@@ -243,21 +235,17 @@ static inline bool lowpan_is_reserved(u8 dispatch)
 		dispatch >= 0xe8);
 }
 
-/* lowpan_rx_h_check checks on generic 6LoWPAN requirements
- * in MAC and 6LoWPAN header.
- *
- * Don't manipulate the skb here, it could be shared buffer.
- */
+ 
 static inline bool lowpan_rx_h_check(struct sk_buff *skb)
 {
 	__le16 fc = ieee802154_get_fc_from_skb(skb);
 
-	/* check on ieee802154 conform 6LoWPAN header */
+	 
 	if (!ieee802154_is_data(fc) ||
 	    !ieee802154_skb_is_intra_pan_addressing(fc, skb))
 		return false;
 
-	/* check if we can dereference the dispatch */
+	 
 	if (unlikely(!skb->len))
 		return false;
 
@@ -282,16 +270,13 @@ static int lowpan_rcv(struct sk_buff *skb, struct net_device *wdev,
 	if (!ldev || !netif_running(ldev))
 		goto drop;
 
-	/* Replacing skb->dev and followed rx handlers will manipulate skb. */
+	 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb)
 		goto out;
 	skb->dev = ldev;
 
-	/* When receive frag1 it's likely that we manipulate the buffer.
-	 * When recevie iphc we manipulate the data buffer. So we need
-	 * to unshare the buffer.
-	 */
+	 
 	if (lowpan_is_frag1(*skb_network_header(skb)) ||
 	    lowpan_is_iphc(*skb_network_header(skb))) {
 		skb = skb_unshare(skb, GFP_ATOMIC);

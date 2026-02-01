@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -224,7 +222,7 @@ static int gpu_cc_sc7180_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* 360MHz Configuration */
+	 
 	gpu_cc_pll_config.l = 0x12;
 	gpu_cc_pll_config.alpha = 0xc000;
 	gpu_cc_pll_config.config_ctl_val = 0x20485699;
@@ -235,7 +233,7 @@ static int gpu_cc_sc7180_probe(struct platform_device *pdev)
 
 	clk_fabia_pll_configure(&gpu_cc_pll1, regmap, &gpu_cc_pll_config);
 
-	/* Recommended WAKEUP/SLEEP settings for the gpu_cc_cx_gmu_clk */
+	 
 	mask = CX_GMU_CBCR_WAKE_MASK << CX_GMU_CBCR_WAKE_SHIFT;
 	mask |= CX_GMU_CBCR_SLEEP_MASK << CX_GMU_CBCR_SLEEP_SHIFT;
 	value = 0xF << CX_GMU_CBCR_WAKE_SHIFT | 0xF << CX_GMU_CBCR_SLEEP_SHIFT;

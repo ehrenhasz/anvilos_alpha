@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SafeSetID Linux Security Module
- *
- * Author: Micah Morton <mortonm@chromium.org>
- *
- * Copyright (C) 2018 The Chromium OS Authors.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2, as
- * published by the Free Software Foundation.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "SafeSetID: " fmt
 
@@ -22,12 +11,7 @@
 static DEFINE_MUTEX(uid_policy_update_lock);
 static DEFINE_MUTEX(gid_policy_update_lock);
 
-/*
- * In the case the input buffer contains one or more invalid IDs, the kid_t
- * variables pointed to by @parent and @child will get updated but this
- * function will return an error.
- * Contents of @buf may be modified.
- */
+ 
 static int parse_policy_line(struct file *file, char *buf,
 	struct setid_rule *rule)
 {
@@ -35,7 +19,7 @@ static int parse_policy_line(struct file *file, char *buf,
 	int ret;
 	u32 parsed_parent, parsed_child;
 
-	/* Format of |buf| string should be <UID>:<UID> or <GID>:<GID> */
+	 
 	child_str = strchr(buf, ':');
 	if (child_str == NULL)
 		return -EINVAL;
@@ -61,7 +45,7 @@ static int parse_policy_line(struct file *file, char *buf,
 		if (!gid_valid(rule->src_id.gid) || !gid_valid(rule->dst_id.gid))
 			return -EINVAL;
 	} else {
-		/* Error, rule->type is an invalid type */
+		 
 		return -EINVAL;
 	}
 	return 0;
@@ -91,7 +75,7 @@ static void insert_rule(struct setid_ruleset *pol, struct setid_rule *rule)
 		hash_add(pol->rules, &rule->next, __kuid_val(rule->src_id.uid));
 	else if (pol->type == GID)
 		hash_add(pol->rules, &rule->next, __kgid_val(rule->src_id.gid));
-	else /* Error, pol->type is neither UID or GID */
+	else  
 		return;
 }
 
@@ -111,13 +95,13 @@ static int verify_ruleset(struct setid_ruleset *pol)
 				pr_warn("insecure policy detected: gid %d is constrained but transitively unconstrained through gid %d\n",
 					__kgid_val(rule->src_id.gid),
 					__kgid_val(rule->dst_id.gid));
-			} else { /* pol->type is an invalid type */
+			} else {  
 				res = -EINVAL;
 				return res;
 			}
 			res = -EINVAL;
 
-			/* fix it up */
+			 
 			nrule = kmalloc(sizeof(struct setid_rule), GFP_KERNEL);
 			if (!nrule)
 				return -ENOMEM;
@@ -125,7 +109,7 @@ static int verify_ruleset(struct setid_ruleset *pol)
 				nrule->src_id.uid = rule->dst_id.uid;
 				nrule->dst_id.uid = rule->dst_id.uid;
 				nrule->type = UID;
-			} else { /* pol->type must be GID if we've made it to here */
+			} else {  
 				nrule->src_id.gid = rule->dst_id.gid;
 				nrule->dst_id.gid = rule->dst_id.gid;
 				nrule->type = GID;
@@ -161,7 +145,7 @@ static ssize_t handle_policy_update(struct file *file,
 		goto out_free_buf;
 	}
 
-	/* policy lines, including the last one, end with \n */
+	 
 	while (*p != '\0') {
 		struct setid_rule *rule;
 
@@ -199,15 +183,11 @@ out_free_rule:
 	}
 
 	err = verify_ruleset(pol);
-	/* bogus policy falls through after fixing it up */
+	 
 	if (err && err != -EINVAL)
 		goto out_free_buf;
 
-	/*
-	 * Everything looks good, apply the policy and release the old one.
-	 * What we really want here is an xchg() wrapper for RCU, but since that
-	 * doesn't currently exist, just use a spinlock for now.
-	 */
+	 
 	if (policy_type == UID) {
 		mutex_lock(&uid_policy_update_lock);
 		pol = rcu_replace_pointer(safesetid_setuid_rules, pol,
@@ -219,7 +199,7 @@ out_free_rule:
 					  lockdep_is_held(&gid_policy_update_lock));
 		mutex_unlock(&gid_policy_update_lock);
 	} else {
-		/* Error, policy type is neither UID or GID */
+		 
 		pr_warn("error: bad policy type");
 	}
 	err = len;

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2022 NXP.
+
+
+
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -37,7 +37,7 @@ struct bbnsm_pwrkey {
 	struct regmap *regmap;
 	int irq;
 	int keycode;
-	int keystate;  /* 1:pressed */
+	int keystate;   
 	struct timer_list check_timer;
 	struct input_dev *input;
 };
@@ -52,7 +52,7 @@ static void bbnsm_pwrkey_check_for_events(struct timer_list *t)
 
 	state = state & BBNSM_BTN_PRESSED ? 1 : 0;
 
-	/* only report new event if status changed */
+	 
 	if (state ^ bbnsm->keystate) {
 		bbnsm->keystate = state;
 		input_event(input, EV_KEY, bbnsm->keycode, state);
@@ -60,7 +60,7 @@ static void bbnsm_pwrkey_check_for_events(struct timer_list *t)
 		pm_relax(bbnsm->input->dev.parent);
 	}
 
-	/* repeat check if pressed long */
+	 
 	if (state)
 		mod_timer(&bbnsm->check_timer,
 			  jiffies + msecs_to_jiffies(REPEAT_INTERVAL));
@@ -81,7 +81,7 @@ static irqreturn_t bbnsm_pwrkey_interrupt(int irq, void *dev_id)
 	mod_timer(&bbnsm->check_timer,
 		   jiffies + msecs_to_jiffies(DEBOUNCE_TIME));
 
-	/* clear PWR OFF */
+	 
 	regmap_write(bbnsm->regmap, BBNSM_EVENTS, BBNSM_BTN_OFF);
 
 	return IRQ_HANDLED;
@@ -121,10 +121,10 @@ static int bbnsm_pwrkey_probe(struct platform_device *pdev)
 	if (bbnsm->irq < 0)
 		return -EINVAL;
 
-	/* config the BBNSM power related register */
+	 
 	regmap_update_bits(bbnsm->regmap, BBNSM_CTRL, BBNSM_DP_EN, BBNSM_DP_EN);
 
-	/* clear the unexpected interrupt before driver ready */
+	 
 	regmap_write_bits(bbnsm->regmap, BBNSM_EVENTS, BBNSM_PWRKEY_EVENTS,
 			  BBNSM_PWRKEY_EVENTS);
 
@@ -142,7 +142,7 @@ static int bbnsm_pwrkey_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, bbnsm->keycode);
 
-	/* input customer action to cancel release timer */
+	 
 	error = devm_add_action(&pdev->dev, bbnsm_pwrkey_act, bbnsm);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register remove action\n");
@@ -175,7 +175,7 @@ static int bbnsm_pwrkey_probe(struct platform_device *pdev)
 
 static const struct of_device_id bbnsm_pwrkey_ids[] = {
 	{ .compatible = "nxp,imx93-bbnsm-pwrkey" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bbnsm_pwrkey_ids);
 

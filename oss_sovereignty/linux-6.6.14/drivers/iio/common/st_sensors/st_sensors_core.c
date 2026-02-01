@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics sensors core library driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -226,7 +220,7 @@ int st_sensors_power_enable(struct iio_dev *indio_dev)
 	struct device *parent = indio_dev->dev.parent;
 	int err;
 
-	/* Regulators not mandatory, but if requested we should enable them. */
+	 
 	err = devm_regulator_bulk_get_enable(parent,
 					     ARRAY_SIZE(regulator_names),
 					     regulator_names);
@@ -243,7 +237,7 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
 {
 	struct st_sensor_data *sdata = iio_priv(indio_dev);
 
-	/* Sensor does not support interrupts */
+	 
 	if (!sdata->sensor_settings->drdy_irq.int1.addr &&
 	    !sdata->sensor_settings->drdy_irq.int2.addr) {
 		if (pdata->drdy_int_pin)
@@ -309,17 +303,7 @@ static struct st_sensors_platform_data *st_sensors_dev_probe(struct device *dev,
 	return pdata;
 }
 
-/**
- * st_sensors_dev_name_probe() - device probe for ST sensor name
- * @dev: driver model representation of the device.
- * @name: device name buffer reference.
- * @len: device name buffer length.
- *
- * In effect this function matches an ID to an internal kernel
- * name for a certain sensor device, so that the rest of the autodetection can
- * rely on that name from this point on. I2C/SPI devices will be renamed
- * to match the internal kernel convention.
- */
+ 
 void st_sensors_dev_name_probe(struct device *dev, char *name, int len)
 {
 	const void *match;
@@ -328,7 +312,7 @@ void st_sensors_dev_name_probe(struct device *dev, char *name, int len)
 	if (!match)
 		return;
 
-	/* The name from the match takes precedence if present */
+	 
 	strscpy(name, match, len);
 }
 EXPORT_SYMBOL_NS(st_sensors_dev_name_probe, IIO_ST_SENSORS);
@@ -342,7 +326,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
 
 	mutex_init(&sdata->odr_lock);
 
-	/* If OF/DT pdata exists, it will take precedence of anything else */
+	 
 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
 	if (IS_ERR(of_pdata))
 		return PTR_ERR(of_pdata);
@@ -359,7 +343,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
 	if (err < 0)
 		return err;
 
-	/* Disable DRDY, this might be still be enabled after reboot. */
+	 
 	err = st_sensors_set_dataready_irq(indio_dev, false);
 	if (err < 0)
 		return err;
@@ -376,7 +360,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
 	if (err < 0)
 		return err;
 
-	/* set BDU */
+	 
 	if (sdata->sensor_settings->bdu.addr) {
 		err = st_sensors_write_data_with_mask(indio_dev,
 					sdata->sensor_settings->bdu.addr,
@@ -385,7 +369,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
 			return err;
 	}
 
-	/* set DAS */
+	 
 	if (sdata->sensor_settings->das.addr) {
 		err = st_sensors_write_data_with_mask(indio_dev,
 					sdata->sensor_settings->das.addr,
@@ -428,18 +412,13 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
 
 	if (!sdata->sensor_settings->drdy_irq.int1.addr &&
 	    !sdata->sensor_settings->drdy_irq.int2.addr) {
-		/*
-		 * there are some devices (e.g. LIS3MDL) where drdy line is
-		 * routed to a given pin and it is not possible to select a
-		 * different one. Take into account irq status register
-		 * to understand if irq trigger can be properly supported
-		 */
+		 
 		if (sdata->sensor_settings->drdy_irq.stat_drdy.addr)
 			sdata->hw_irq_trigger = enable;
 		return 0;
 	}
 
-	/* Enable/Disable the interrupt generator 1. */
+	 
 	if (sdata->sensor_settings->drdy_irq.ig1.en_addr > 0) {
 		err = st_sensors_write_data_with_mask(indio_dev,
 				sdata->sensor_settings->drdy_irq.ig1.en_addr,
@@ -457,10 +436,10 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
 		drdy_mask = sdata->sensor_settings->drdy_irq.int2.mask;
 	}
 
-	/* Flag to the poll function that the hardware trigger is in use */
+	 
 	sdata->hw_irq_trigger = enable;
 
-	/* Enable/Disable the interrupt generator for data ready. */
+	 
 	err = st_sensors_write_data_with_mask(indio_dev, drdy_addr,
 					      drdy_mask, (int)enable);
 
@@ -557,16 +536,7 @@ out:
 }
 EXPORT_SYMBOL_NS(st_sensors_read_info_raw, IIO_ST_SENSORS);
 
-/*
- * st_sensors_get_settings_index() - get index of the sensor settings for a
- *				     specific device from list of settings
- * @name: device name buffer reference.
- * @list: sensor settings list.
- * @list_length: length of sensor settings list.
- *
- * Return: non negative number on success (valid index),
- *	   negative error code otherwise.
- */
+ 
 int st_sensors_get_settings_index(const char *name,
 				  const struct st_sensor_settings *list,
 				  const int list_length)
@@ -584,13 +554,7 @@ int st_sensors_get_settings_index(const char *name,
 }
 EXPORT_SYMBOL_NS(st_sensors_get_settings_index, IIO_ST_SENSORS);
 
-/*
- * st_sensors_verify_id() - verify sensor ID (WhoAmI) is matching with the
- *			    expected value
- * @indio_dev: IIO device reference.
- *
- * Return: 0 on success (valid sensor ID), else a negative error code.
- */
+ 
 int st_sensors_verify_id(struct iio_dev *indio_dev)
 {
 	struct st_sensor_data *sdata = iio_priv(indio_dev);

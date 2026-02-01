@@ -1,13 +1,4 @@
-/*
- * ALSA SoC SPDIF Out Audio Layer for spear processors
- *
- * Copyright (C) 2012 ST Microelectronics
- * Vipin Kumar <vipin.kumar@st.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -119,11 +110,8 @@ static int spdif_out_hw_params(struct snd_pcm_substream *substream,
 	case 16000:
 	case 32000:
 	case 64000:
-		/*
-		 * The clock is multiplied by 10 to bring it to feasible range
-		 * of frequencies for sscg
-		 */
-		core_freq = 64000 * 128 * 10;	/* 81.92 MHz */
+		 
+		core_freq = 64000 * 128 * 10;	 
 		break;
 	case 5512:
 	case 11025:
@@ -131,13 +119,13 @@ static int spdif_out_hw_params(struct snd_pcm_substream *substream,
 	case 44100:
 	case 88200:
 	case 176400:
-		core_freq = 176400 * 128;	/* 22.5792 MHz */
+		core_freq = 176400 * 128;	 
 		break;
 	case 48000:
 	case 96000:
 	case 192000:
 	default:
-		core_freq = 192000 * 128;	/* 24.576 MHz */
+		core_freq = 192000 * 128;	 
 		break;
 	}
 

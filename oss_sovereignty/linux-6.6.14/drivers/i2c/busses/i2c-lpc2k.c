@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 NXP Semiconductors
- *
- * Code portions referenced from the i2x-pxa and i2c-pnx drivers
- *
- * Make SMBus byte and word transactions work on LPC178x/7x
- * Copyright (c) 2012
- * Alexander Potashev, Emcraft Systems, aspotashev@emcraft.com
- * Anton Protopopov, Emcraft Systems, antonp@emcraft.com
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/errno.h>
@@ -24,7 +13,7 @@
 #include <linux/sched.h>
 #include <linux/time.h>
 
-/* LPC24xx register offsets and bits */
+ 
 #define LPC24XX_I2CONSET	0x00
 #define LPC24XX_I2STAT		0x04
 #define LPC24XX_I2DAT		0x08
@@ -43,15 +32,12 @@
 #define LPC24XX_CLEAR_ALL	(LPC24XX_AA | LPC24XX_SI | LPC24XX_STO | \
 				 LPC24XX_STA | LPC24XX_I2EN)
 
-/* I2C SCL clock has different duty cycle depending on mode */
+ 
 #define I2C_STD_MODE_DUTY		46
 #define I2C_FAST_MODE_DUTY		36
 #define I2C_FAST_MODE_PLUS_DUTY		38
 
-/*
- * 26 possible I2C status codes, but codes applicable only
- * to master are listed here and used in this driver
- */
+ 
 enum {
 	M_BUS_ERROR		= 0x00,
 	M_START			= 0x08,
@@ -82,7 +68,7 @@ struct lpc2k_i2c {
 
 static void i2c_lpc2k_reset(struct lpc2k_i2c *i2c)
 {
-	/* Will force clear all statuses */
+	 
 	writel(LPC24XX_CLEAR_ALL, i2c->base + LPC24XX_I2CONCLR);
 	writel(0, i2c->base + LPC24XX_I2ADDR);
 	writel(LPC24XX_I2EN, i2c->base + LPC24XX_I2CONSET);
@@ -92,16 +78,13 @@ static int i2c_lpc2k_clear_arb(struct lpc2k_i2c *i2c)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
 
-	/*
-	 * If the transfer needs to abort for some reason, we'll try to
-	 * force a stop condition to clear any pending bus conditions
-	 */
+	 
 	writel(LPC24XX_STO, i2c->base + LPC24XX_I2CONSET);
 
-	/* Wait for status change */
+	 
 	while (readl(i2c->base + LPC24XX_I2STAT) != M_I2C_IDLE) {
 		if (time_after(jiffies, timeout)) {
-			/* Bus was not idle, try to reset adapter */
+			 
 			i2c_lpc2k_reset(i2c);
 			return -EBUSY;
 		}
@@ -117,16 +100,13 @@ static void i2c_lpc2k_pump_msg(struct lpc2k_i2c *i2c)
 	unsigned char data;
 	u32 status;
 
-	/*
-	 * I2C in the LPC2xxx series is basically a state machine.
-	 * Just run through the steps based on the current status.
-	 */
+	 
 	status = readl(i2c->base + LPC24XX_I2STAT);
 
 	switch (status) {
 	case M_START:
 	case M_REPSTART:
-		/* Start bit was just sent out, send out addr and dir */
+		 
 		data = i2c_8bit_addr_from_msg(i2c->msg);
 
 		writel(data, i2c->base + LPC24XX_I2DAT);
@@ -135,15 +115,12 @@ static void i2c_lpc2k_pump_msg(struct lpc2k_i2c *i2c)
 
 	case MX_ADDR_W_ACK:
 	case MX_DATA_W_ACK:
-		/*
-		 * Address or data was sent out with an ACK. If there is more
-		 * data to send, send it now
-		 */
+		 
 		if (i2c->msg_idx < i2c->msg->len) {
 			writel(i2c->msg->buf[i2c->msg_idx],
 			       i2c->base + LPC24XX_I2DAT);
 		} else if (i2c->is_last) {
-			/* Last message, send stop */
+			 
 			writel(LPC24XX_STO_AA, i2c->base + LPC24XX_I2CONSET);
 			writel(LPC24XX_SI, i2c->base + LPC24XX_I2CONCLR);
 			i2c->msg_status = 0;
@@ -157,12 +134,12 @@ static void i2c_lpc2k_pump_msg(struct lpc2k_i2c *i2c)
 		break;
 
 	case MR_ADDR_R_ACK:
-		/* Receive first byte from slave */
+		 
 		if (i2c->msg->len == 1) {
-			/* Last byte, return NACK */
+			 
 			writel(LPC24XX_AA, i2c->base + LPC24XX_I2CONCLR);
 		} else {
-			/* Not last byte, return ACK */
+			 
 			writel(LPC24XX_AA, i2c->base + LPC24XX_I2CONSET);
 		}
 
@@ -170,40 +147,33 @@ static void i2c_lpc2k_pump_msg(struct lpc2k_i2c *i2c)
 		break;
 
 	case MR_DATA_R_NACK:
-		/*
-		 * The I2C shows NACK status on reads, so we need to accept
-		 * the NACK as an ACK here. This should be ok, as the real
-		 * BACK would of been caught on the address write.
-		 */
+		 
 	case MR_DATA_R_ACK:
-		/* Data was received */
+		 
 		if (i2c->msg_idx < i2c->msg->len) {
 			i2c->msg->buf[i2c->msg_idx] =
 					readl(i2c->base + LPC24XX_I2DAT);
 		}
 
-		/* If transfer is done, send STOP */
+		 
 		if (i2c->msg_idx >= i2c->msg->len - 1 && i2c->is_last) {
 			writel(LPC24XX_STO_AA, i2c->base + LPC24XX_I2CONSET);
 			writel(LPC24XX_SI, i2c->base + LPC24XX_I2CONCLR);
 			i2c->msg_status = 0;
 		}
 
-		/* Message is done */
+		 
 		if (i2c->msg_idx >= i2c->msg->len - 1) {
 			i2c->msg_status = 0;
 			disable_irq_nosync(i2c->irq);
 		}
 
-		/*
-		 * One pre-last data input, send NACK to tell the slave that
-		 * this is going to be the last data byte to be transferred.
-		 */
+		 
 		if (i2c->msg_idx >= i2c->msg->len - 2) {
-			/* One byte left to receive - NACK */
+			 
 			writel(LPC24XX_AA, i2c->base + LPC24XX_I2CONCLR);
 		} else {
-			/* More than one byte left to receive - ACK */
+			 
 			writel(LPC24XX_AA, i2c->base + LPC24XX_I2CONSET);
 		}
 
@@ -214,62 +184,55 @@ static void i2c_lpc2k_pump_msg(struct lpc2k_i2c *i2c)
 	case MX_ADDR_W_NACK:
 	case MX_DATA_W_NACK:
 	case MR_ADDR_R_NACK:
-		/* NACK processing is done */
+		 
 		writel(LPC24XX_STO_AA, i2c->base + LPC24XX_I2CONSET);
 		i2c->msg_status = -ENXIO;
 		disable_irq_nosync(i2c->irq);
 		break;
 
 	case M_DATA_ARB_LOST:
-		/* Arbitration lost */
+		 
 		i2c->msg_status = -EAGAIN;
 
-		/* Release the I2C bus */
+		 
 		writel(LPC24XX_STA | LPC24XX_STO, i2c->base + LPC24XX_I2CONCLR);
 		disable_irq_nosync(i2c->irq);
 		break;
 
 	default:
-		/* Unexpected statuses */
+		 
 		i2c->msg_status = -EIO;
 		disable_irq_nosync(i2c->irq);
 		break;
 	}
 
-	/* Exit on failure or all bytes transferred */
+	 
 	if (i2c->msg_status != -EBUSY)
 		wake_up(&i2c->wait);
 
-	/*
-	 * If `msg_status` is zero, then `lpc2k_process_msg()`
-	 * is responsible for clearing the SI flag.
-	 */
+	 
 	if (i2c->msg_status != 0)
 		writel(LPC24XX_SI, i2c->base + LPC24XX_I2CONCLR);
 }
 
 static int lpc2k_process_msg(struct lpc2k_i2c *i2c, int msgidx)
 {
-	/* A new transfer is kicked off by initiating a start condition */
+	 
 	if (!msgidx) {
 		writel(LPC24XX_STA, i2c->base + LPC24XX_I2CONSET);
 	} else {
-		/*
-		 * A multi-message I2C transfer continues where the
-		 * previous I2C transfer left off and uses the
-		 * current condition of the I2C adapter.
-		 */
+		 
 		if (unlikely(i2c->msg->flags & I2C_M_NOSTART)) {
 			WARN_ON(i2c->msg->len == 0);
 
 			if (!(i2c->msg->flags & I2C_M_RD)) {
-				/* Start transmit of data */
+				 
 				writel(i2c->msg->buf[0],
 				       i2c->base + LPC24XX_I2DAT);
 				i2c->msg_idx++;
 			}
 		} else {
-			/* Start or repeated start */
+			 
 			writel(LPC24XX_STA, i2c->base + LPC24XX_I2CONSET);
 		}
 
@@ -278,7 +241,7 @@ static int lpc2k_process_msg(struct lpc2k_i2c *i2c, int msgidx)
 
 	enable_irq(i2c->irq);
 
-	/* Wait for transfer completion */
+	 
 	if (wait_event_timeout(i2c->wait, i2c->msg_status != -EBUSY,
 			       msecs_to_jiffies(1000)) == 0) {
 		disable_irq_nosync(i2c->irq);
@@ -296,16 +259,16 @@ static int i2c_lpc2k_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	int ret, i;
 	u32 stat;
 
-	/* Check for bus idle condition */
+	 
 	stat = readl(i2c->base + LPC24XX_I2STAT);
 	if (stat != M_I2C_IDLE) {
-		/* Something is holding the bus, try to clear it */
+		 
 		return i2c_lpc2k_clear_arb(i2c);
 	}
 
-	/* Process a single message at a time */
+	 
 	for (i = 0; i < msg_num; i++) {
-		/* Save message pointer and current message data index */
+		 
 		i2c->msg = &msgs[i];
 		i2c->msg_idx = 0;
 		i2c->msg_status = -EBUSY;
@@ -333,7 +296,7 @@ static irqreturn_t i2c_lpc2k_handler(int irq, void *dev_id)
 
 static u32 i2c_lpc2k_functionality(struct i2c_adapter *adap)
 {
-	/* Only emulated SMBus for now */
+	 
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
 }
 
@@ -379,7 +342,7 @@ static int i2c_lpc2k_probe(struct platform_device *pdev)
 
 	disable_irq_nosync(i2c->irq);
 
-	/* Place controller is a known state */
+	 
 	i2c_lpc2k_reset(i2c);
 
 	ret = of_property_read_u32(pdev->dev.of_node, "clock-frequency",
@@ -393,7 +356,7 @@ static int i2c_lpc2k_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Setup I2C dividers to generate clock with proper duty cycle */
+	 
 	clkrate = clkrate / bus_clk_rate;
 	if (bus_clk_rate <= I2C_MAX_STANDARD_MODE_FREQ)
 		scl_high = (clkrate * I2C_STD_MODE_DUTY) / 100;

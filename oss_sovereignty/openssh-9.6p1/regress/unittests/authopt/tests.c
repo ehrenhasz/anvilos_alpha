@@ -1,10 +1,6 @@
-/* 	$OpenBSD: tests.c,v 1.3 2021/12/14 21:25:27 deraadt Exp $ */
+ 
 
-/*
- * Regress test for keys options functions.
- *
- * Placed in the public domain
- */
+ 
 
 #include "includes.h"
 
@@ -93,7 +89,7 @@ compare_opts(const struct sshauthopt *opts,
 
 	ASSERT_PTR_NE(opts, NULL);
 	ASSERT_PTR_NE(expected, NULL);
-	ASSERT_PTR_NE(expected, opts); /* bozo :) */
+	ASSERT_PTR_NE(expected, opts);  
 
 #define FLAG_EQ(x) ASSERT_INT_EQ(opts->x, expected->x)
 	FLAG_EQ(permit_port_forwarding_flag);
@@ -154,7 +150,7 @@ test_authkeys_parse(void)
 		sshauthopt_free(opts); \
 	} while (0)
 
-	/* Basic tests */
+	 
 	TEST_START("sshauthopt_parse empty");
 	expected = default_authkey_opts();
 	opts = sshauthopt_parse("", &errstr);
@@ -173,14 +169,14 @@ test_authkeys_parse(void)
 	CHECK_SUCCESS_AND_CLEANUP();
 	TEST_DONE();
 
-	/* Invalid syntax */
+	 
 	FAIL_TEST("trailing comma", "restrict,");
 	FAIL_TEST("bare comma", ",");
 	FAIL_TEST("unknown option", "BLAH");
 	FAIL_TEST("unknown option with trailing comma", "BLAH,");
 	FAIL_TEST("unknown option with trailing whitespace", "BLAH ");
 
-	/* force_tun_device */
+	 
 	TEST_START("sshauthopt_parse tunnel explicit");
 	expected = default_authkey_opts();
 	expected->force_tun_device = 1;
@@ -197,7 +193,7 @@ test_authkeys_parse(void)
 
 	FAIL_TEST("tunnel", "tunnel=\"blah\"");
 
-	/* Flag options */
+	 
 #define FLAG_TEST(keyword, var, val) \
 	do { \
 		TEST_START("sshauthopt_parse " keyword); \
@@ -211,14 +207,14 @@ test_authkeys_parse(void)
 		CHECK_SUCCESS_AND_CLEANUP(); \
 		TEST_DONE(); \
 	} while (0)
-	/* Positive flags */
+	 
 	FLAG_TEST("cert-authority", cert_authority, 1);
 	FLAG_TEST("port-forwarding", permit_port_forwarding_flag, 1);
 	FLAG_TEST("agent-forwarding", permit_agent_forwarding_flag, 1);
 	FLAG_TEST("x11-forwarding", permit_x11_forwarding_flag, 1);
 	FLAG_TEST("pty", permit_pty_flag, 1);
 	FLAG_TEST("user-rc", permit_user_rc, 1);
-	/* Negative flags */
+	 
 	FLAG_TEST("no-port-forwarding", permit_port_forwarding_flag, 0);
 	FLAG_TEST("no-agent-forwarding", permit_agent_forwarding_flag, 0);
 	FLAG_TEST("no-x11-forwarding", permit_x11_forwarding_flag, 0);
@@ -227,7 +223,7 @@ test_authkeys_parse(void)
 #undef FLAG_TEST
 	FAIL_TEST("no-cert-authority", "no-cert-authority");
 
-	/* String options */
+	 
 #define STRING_TEST(keyword, var, val) \
 	do { \
 		TEST_START("sshauthopt_parse " keyword); \
@@ -252,7 +248,7 @@ test_authkeys_parse(void)
 	FAIL_TEST("unquoted principals", "principals=estragon");
 	FAIL_TEST("unquoted from", "from=127.0.0.1");
 
-	/* String array option tests */
+	 
 #define ARRAY_TEST(label, keywords, var, nvar, val) \
 	do { \
 		TEST_START("sshauthopt_parse " label); \
@@ -380,10 +376,7 @@ test_merge(void)
 	struct sshauthopt *key_opts, *cert_opts, *merge_opts, *expected;
 	const char *errstr;
 
-	/*
-	 * Prepare for a test by making some key and cert options and
-	 * attempting to merge them.
-	 */
+	 
 #define PREPARE(label, keyname, keywords) \
 	do { \
 		expected = NULL; \
@@ -399,7 +392,7 @@ test_merge(void)
 		    cert_opts, &errstr); \
 	} while (0)
 
-	/* Cleanup stuff allocated by PREPARE() */
+	 
 #define CLEANUP() \
 	do { \
 		sshauthopt_free(expected); \
@@ -409,7 +402,7 @@ test_merge(void)
 		sshkey_free(cert); \
 	} while (0)
 
-	/* Check the results of PREPARE() against expectation; calls CLEANUP */
+	 
 #define CHECK_SUCCESS_AND_CLEANUP() \
 	do { \
 		if (errstr != NULL) \
@@ -418,7 +411,7 @@ test_merge(void)
 		CLEANUP(); \
 	} while (0)
 
-	/* Check a single case of merging of flag options */
+	 
 #define FLAG_CASE(keybase, label, keyname, keywords, mostly_off, var, val) \
 	do { \
 		PREPARE(keybase " " label, keyname, keywords); \
@@ -430,11 +423,7 @@ test_merge(void)
 		TEST_DONE(); \
 	} while (0)
 
-	/*
-	 * Fairly exhaustive exercise of a flag option. Tests
-	 * option both set and clear in certificate, set and clear in
-	 * authorized_keys and set and cleared via restrict keyword.
-	 */
+	 
 #define FLAG_TEST(keybase, keyword, var) \
 	do { \
 		FLAG_CASE(keybase, "keys:default,yes cert:default,no", \
@@ -569,7 +558,7 @@ tests(void)
 	LogLevel ll = test_is_verbose() ?
 	    SYSLOG_LEVEL_DEBUG3 : SYSLOG_LEVEL_QUIET;
 
-	/* test_cert_parse() are a bit spammy to error() by default... */
+	 
 	log_init(__progname, ll, SYSLOG_FACILITY_USER, 1);
 
 	test_authkeys_parse();

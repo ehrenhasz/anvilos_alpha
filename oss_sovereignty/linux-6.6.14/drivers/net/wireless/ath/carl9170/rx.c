@@ -1,41 +1,4 @@
-/*
- * Atheros CARL9170 driver
- *
- * 802.11 & command trap routines
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2009, 2010, Christian Lamparter <chunkeey@googlemail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -98,18 +61,11 @@ static int carl9170_check_sequence(struct ar9170 *ar, unsigned int seq)
 	if (ar->cmd_seq < -1)
 		return 0;
 
-	/*
-	 * Initialize Counter
-	 */
+	 
 	if (ar->cmd_seq < 0)
 		ar->cmd_seq = seq;
 
-	/*
-	 * The sequence is strictly monotonic increasing and it never skips!
-	 *
-	 * Therefore we can safely assume that whenever we received an
-	 * unexpected sequence we have lost some valuable data.
-	 */
+	 
 	if (seq != ar->cmd_seq) {
 		int count;
 
@@ -128,11 +84,7 @@ static int carl9170_check_sequence(struct ar9170 *ar, unsigned int seq)
 
 static void carl9170_cmd_callback(struct ar9170 *ar, u32 len, void *buffer)
 {
-	/*
-	 * Some commands may have a variable response length
-	 * and we cannot predict the correct length in advance.
-	 * So we only check if we provided enough space for the data.
-	 */
+	 
 	if (unlikely(ar->readlen != (len - 4))) {
 		dev_warn(&ar->udev->dev, "received invalid command response:"
 			 "got %d, instead of %d\n", len - 4, ar->readlen);
@@ -140,10 +92,7 @@ static void carl9170_cmd_callback(struct ar9170 *ar, u32 len, void *buffer)
 			ar->cmd_buf, (ar->cmd.hdr.len + 4) & 0x3f);
 		print_hex_dump_bytes("carl9170 rsp:", DUMP_PREFIX_OFFSET,
 			buffer, len);
-		/*
-		 * Do not complete. The command times out,
-		 * and we get a stack trace from there.
-		 */
+		 
 		carl9170_restart(ar, CARL9170_RR_INVALID_RSP);
 	}
 
@@ -183,10 +132,10 @@ void carl9170_handle_command_response(struct ar9170 *ar, void *buf, u32 len)
 		return;
 	}
 
-	/* hardware event handlers */
+	 
 	switch (cmd->hdr.cmd) {
 	case CARL9170_RSP_PRETBTT:
-		/* pre-TBTT event */
+		 
 		rcu_read_lock();
 		vif = carl9170_get_main_vif(ar);
 
@@ -215,32 +164,25 @@ void carl9170_handle_command_response(struct ar9170 *ar, void *buf, u32 len)
 
 
 	case CARL9170_RSP_TXCOMP:
-		/* TX status notification */
+		 
 		carl9170_tx_process_status(ar, cmd);
 		break;
 
 	case CARL9170_RSP_BEACON_CONFIG:
-		/*
-		 * (IBSS) beacon send notification
-		 * bytes: 04 c2 XX YY B4 B3 B2 B1
-		 *
-		 * XX always 80
-		 * YY always 00
-		 * B1-B4 "should" be the number of send out beacons.
-		 */
+		 
 		break;
 
 	case CARL9170_RSP_ATIM:
-		/* End of Atim Window */
+		 
 		break;
 
 	case CARL9170_RSP_WATCHDOG:
-		/* Watchdog Interrupt */
+		 
 		carl9170_restart(ar, CARL9170_RR_WATCHDOG);
 		break;
 
 	case CARL9170_RSP_TEXT:
-		/* firmware debug */
+		 
 		carl9170_dbg_message(ar, (char *)buf + 4, len - 4);
 		break;
 
@@ -271,7 +213,7 @@ void carl9170_handle_command_response(struct ar9170 *ar, void *buf, u32 len)
 				input_sync(ar->wps.pbc);
 			}
 		}
-#endif /* CONFIG_CARL9170_WPC */
+#endif  
 		break;
 
 	case CARL9170_RSP_BOOT:
@@ -338,9 +280,9 @@ static int carl9170_rx_mac_status(struct ar9170 *ar,
 		   AR9170_RX_ERROR_DECRYPT |
 		   AR9170_RX_ERROR_PLCP);
 
-	/* drop any other error frames */
+	 
 	if (unlikely(error)) {
-		/* TODO: update netdevice's RX dropped/errors statistics */
+		 
 
 		if (net_ratelimit())
 			wiphy_dbg(ar->hw->wiphy, "received frame with "
@@ -450,12 +392,12 @@ static void carl9170_rx_phy_status(struct ar9170 *ar,
 		if (phy->rssi[i] != 0x80)
 			status->antenna |= BIT(i);
 
-	/* post-process RSSI */
+	 
 	for (i = 0; i < 7; i++)
 		if (phy->rssi[i] & 0x80)
 			phy->rssi[i] = ((~phy->rssi[i] & 0x7f) + 1) & 0x7f;
 
-	/* TODO: we could do something with phy_errors */
+	 
 	status->signal = ar->noise[0] + phy->rssi_combined;
 }
 
@@ -506,15 +448,7 @@ static u8 *carl9170_find_ie(u8 *data, unsigned int len, u8 ie)
 	return NULL;
 }
 
-/*
- * NOTE:
- *
- * The firmware is in charge of waking up the device just before
- * the AP is expected to transmit the next beacon.
- *
- * This leaves the driver with the important task of deciding when
- * to set the PHY back to bed again.
- */
+ 
 static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 {
 	struct ieee80211_hdr *hdr = data;
@@ -527,12 +461,12 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 	if (likely(!(ar->hw->conf.flags & IEEE80211_CONF_PS)))
 		return;
 
-	/* min. beacon length + FCS_LEN */
+	 
 	if (len <= 40 + FCS_LEN)
 		return;
 
-	/* check if this really is a beacon */
-	/* and only beacons from the associated BSSID, please */
+	 
+	 
 	if (!ath_is_mybeacon(common, hdr) || !common->curaid)
 		return;
 
@@ -552,20 +486,20 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 		ar->ps.dtim_counter = (tim_ie->dtim_count - 1) %
 			ar->hw->conf.ps_dtim_period;
 
-	/* Check whenever the PHY can be turned off again. */
+	 
 
-	/* 1. What about buffered unicast traffic for our AID? */
+	 
 	cam = ieee80211_check_tim(tim_ie, tim_len, ar->common.curaid);
 
-	/* 2. Maybe the AP wants to send multicast/broadcast data? */
+	 
 	cam |= !!(tim_ie->bitmap_ctrl & 0x01);
 
 	if (!cam) {
-		/* back to low-power land. */
+		 
 		ar->ps.off_override &= ~PS_OFF_BCN;
 		carl9170_ps_check(ar);
 	} else {
-		/* force CAM */
+		 
 		ar->ps.off_override |= PS_OFF_BCN;
 	}
 }
@@ -623,24 +557,14 @@ static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms,
 	__le16 fc;
 
 	if ((ms & AR9170_RX_STATUS_MPDU) == AR9170_RX_STATUS_MPDU_SINGLE) {
-		/*
-		 * This frame is not part of an aMPDU.
-		 * Therefore it is not subjected to any
-		 * of the following content restrictions.
-		 */
+		 
 		return true;
 	}
 
 	rx_status->flag |= RX_FLAG_AMPDU_DETAILS | RX_FLAG_AMPDU_LAST_KNOWN;
 	rx_status->ampdu_reference = ar->ampdu_ref;
 
-	/*
-	 * "802.11n - 7.4a.3 A-MPDU contents" describes in which contexts
-	 * certain frame types can be part of an aMPDU.
-	 *
-	 * In order to keep the processing cost down, I opted for a
-	 * stateless filter solely based on the frame control field.
-	 */
+	 
 
 	fc = ((struct ieee80211_hdr *)buf)->frame_control;
 	if (ieee80211_is_data_qos(fc) && ieee80211_is_data_present(fc))
@@ -661,16 +585,7 @@ static int carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len,
 {
 	struct sk_buff *skb;
 
-	/* (driver) frame trap handler
-	 *
-	 * Because power-saving mode handing has to be implemented by
-	 * the driver/firmware. We have to check each incoming beacon
-	 * from the associated AP, if there's new data for us (either
-	 * broadcast/multicast or unicast) we have to react quickly.
-	 *
-	 * So, if you have you want to add additional frame trap
-	 * handlers, this would be the perfect place!
-	 */
+	 
 
 	carl9170_ps_beacon(ar, buf, len);
 
@@ -685,15 +600,7 @@ static int carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len,
 	return 0;
 }
 
-/*
- * If the frame alignment is right (or the kernel has
- * CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS), and there
- * is only a single MPDU in the USB frame, then we could
- * submit to mac80211 the SKB directly. However, since
- * there may be multiple packets in one SKB in stream
- * mode, and we need to observe the proper ordering,
- * this is non-trivial.
- */
+ 
 static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 {
 	struct ar9170_rx_head *head;
@@ -718,18 +625,11 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 	switch (mac_status & AR9170_RX_STATUS_MPDU) {
 	case AR9170_RX_STATUS_MPDU_FIRST:
 		ar->ampdu_ref++;
-		/* Aggregated MPDUs start with an PLCP header */
+		 
 		if (likely(mpdu_len >= sizeof(struct ar9170_rx_head))) {
 			head = (void *) buf;
 
-			/*
-			 * The PLCP header needs to be cached for the
-			 * following MIDDLE + LAST A-MPDU packets.
-			 *
-			 * So, if you are wondering why all frames seem
-			 * to share a common RX status information,
-			 * then you have the answer right here...
-			 */
+			 
 			memcpy(&ar->rx_plcp, (void *) buf,
 			       sizeof(struct ar9170_rx_head));
 
@@ -750,11 +650,7 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 	case AR9170_RX_STATUS_MPDU_LAST:
 		status.flag |= RX_FLAG_AMPDU_IS_LAST;
 
-		/*
-		 * The last frame of an A-MPDU has an extra tail
-		 * which does contain the phy status of the whole
-		 * aggregate.
-		 */
+		 
 		if (likely(mpdu_len >= sizeof(struct ar9170_rx_phystatus))) {
 			mpdu_len -= sizeof(struct ar9170_rx_phystatus);
 			phy = (void *)(buf + mpdu_len);
@@ -769,7 +665,7 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 		fallthrough;
 
 	case AR9170_RX_STATUS_MPDU_MIDDLE:
-		/*  These are just data + mac status */
+		 
 		if (unlikely(!ar->rx_has_plcp)) {
 			if (!net_ratelimit())
 				return;
@@ -784,7 +680,7 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 		break;
 
 	case AR9170_RX_STATUS_MPDU_SINGLE:
-		/* single mpdu has both: plcp (head) and phy status (tail) */
+		 
 		head = (void *) buf;
 
 		mpdu_len -= sizeof(struct ar9170_rx_head);
@@ -799,7 +695,7 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
 		break;
 	}
 
-	/* FC + DU + RA + FCS */
+	 
 	if (unlikely(mpdu_len < (2 + 2 + ETH_ALEN + FCS_LEN)))
 		goto drop;
 
@@ -855,7 +751,7 @@ static void __carl9170_rx(struct ar9170 *ar, u8 *buf, unsigned int len)
 {
 	unsigned int i = 0;
 
-	/* weird thing, but this is the same in the original driver */
+	 
 	while (len > 2 && i < 12 && buf[0] == 0xff && buf[1] == 0xff) {
 		i += 2;
 		len -= 2;
@@ -865,7 +761,7 @@ static void __carl9170_rx(struct ar9170 *ar, u8 *buf, unsigned int len)
 	if (unlikely(len < 4))
 		return;
 
-	/* found the 6 * 0xffff marker? */
+	 
 	if (i == 12)
 		carl9170_rx_untie_cmds(ar, buf, len);
 	else
@@ -886,17 +782,14 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 		clen = le16_to_cpu(rx_stream->length);
 		wlen = ALIGN(clen, 4);
 
-		/* check if this is stream has a valid tag.*/
+		 
 		if (rx_stream->tag != cpu_to_le16(AR9170_RX_STREAM_TAG)) {
-			/*
-			 * TODO: handle the highly unlikely event that the
-			 * corrupted stream has the TAG at the right position.
-			 */
+			 
 
-			/* check if the frame can be repaired. */
+			 
 			if (!ar->rx_failover_missing) {
 
-				/* this is not "short read". */
+				 
 				if (net_ratelimit()) {
 					wiphy_err(ar->hw->wiphy,
 						"missing tag!\n");
@@ -921,13 +814,7 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 			ar->rx_failover_missing -= tlen;
 
 			if (ar->rx_failover_missing <= 0) {
-				/*
-				 * nested carl9170_rx_stream call!
-				 *
-				 * termination is guaranteed, even when the
-				 * combined frame also have an element with
-				 * a bad tag.
-				 */
+				 
 
 				ar->rx_failover_missing = 0;
 				carl9170_rx_stream(ar, ar->rx_failover->data,
@@ -940,10 +827,10 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 			return;
 		}
 
-		/* check if stream is clipped */
+		 
 		if (wlen > tlen - 4) {
 			if (ar->rx_failover_missing) {
-				/* TODO: handle double stream corruption. */
+				 
 				if (net_ratelimit()) {
 					wiphy_err(ar->hw->wiphy, "double rx "
 						"stream corruption!\n");
@@ -953,11 +840,7 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 				}
 			}
 
-			/*
-			 * save incomplete data set.
-			 * the firmware will resend the missing bits when
-			 * the rx - descriptor comes round again.
-			 */
+			 
 
 			skb_put_data(ar->rx_failover, tbuf, tlen);
 			ar->rx_failover_missing = clen - tlen;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Low-level device IO routines for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *
- * Based on:
- * ST-Ericsson UMAC CW1200 driver, which is
- * Copyright (c) 2010, ST-Ericsson
- * Author: Ajitpal Singh <ajitpal.singh@lockless.no>
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -17,7 +7,7 @@
 #include "hwio.h"
 #include "hwbus.h"
 
- /* Sdio addr is 4*spi_addr */
+  
 #define SPI_REG_ADDR_TO_SDIO(spi_reg_addr) ((spi_reg_addr) << 2)
 #define SDIO_ADDR17BIT(buf_id, mpf, rfu, reg_id_ofs) \
 				((((buf_id)    & 0x1F) << 7) \
@@ -33,13 +23,13 @@ static int __cw1200_reg_read(struct cw1200_common *priv, u16 addr,
 	u16 addr_sdio;
 	u32 sdio_reg_addr_17bit;
 
-	/* Check if buffer is aligned to 4 byte boundary */
+	 
 	if (WARN_ON(((unsigned long)buf & 3) && (buf_len > 4))) {
 		pr_err("buffer is not aligned.\n");
 		return -EINVAL;
 	}
 
-	/* Convert to SDIO Register Address */
+	 
 	addr_sdio = SPI_REG_ADDR_TO_SDIO(addr);
 	sdio_reg_addr_17bit = SDIO_ADDR17BIT(buf_id, 0, 0, addr_sdio);
 
@@ -54,7 +44,7 @@ static int __cw1200_reg_write(struct cw1200_common *priv, u16 addr,
 	u16 addr_sdio;
 	u32 sdio_reg_addr_17bit;
 
-	/* Convert to SDIO Register Address */
+	 
 	addr_sdio = SPI_REG_ADDR_TO_SDIO(addr);
 	sdio_reg_addr_17bit = SDIO_ADDR17BIT(buf_id, 0, 0, addr_sdio);
 
@@ -180,21 +170,21 @@ int cw1200_indirect_read(struct cw1200_common *priv, u32 addr, void *buf,
 	}
 
 	priv->hwbus_ops->lock(priv->hwbus_priv);
-	/* Write address */
+	 
 	ret = __cw1200_reg_write_32(priv, ST90TDS_SRAM_BASE_ADDR_REG_ID, addr);
 	if (ret < 0) {
 		pr_err("Can't write address register.\n");
 		goto out;
 	}
 
-	/* Read CONFIG Register Value - We will read 32 bits */
+	 
 	ret = __cw1200_reg_read_32(priv, ST90TDS_CONFIG_REG_ID, &val32);
 	if (ret < 0) {
 		pr_err("Can't read config register.\n");
 		goto out;
 	}
 
-	/* Set PREFETCH bit */
+	 
 	ret = __cw1200_reg_write_32(priv, ST90TDS_CONFIG_REG_ID,
 					val32 | prefetch);
 	if (ret < 0) {
@@ -202,7 +192,7 @@ int cw1200_indirect_read(struct cw1200_common *priv, u32 addr, void *buf,
 		goto out;
 	}
 
-	/* Check for PRE-FETCH bit to be cleared */
+	 
 	for (i = 0; i < 20; i++) {
 		ret = __cw1200_reg_read_32(priv, ST90TDS_CONFIG_REG_ID, &val32);
 		if (ret < 0) {
@@ -220,7 +210,7 @@ int cw1200_indirect_read(struct cw1200_common *priv, u32 addr, void *buf,
 		goto out;
 	}
 
-	/* Read data port */
+	 
 	ret = __cw1200_reg_read(priv, port_addr, buf, buf_len, 0);
 	if (ret < 0) {
 		pr_err("Can't read data port.\n");
@@ -244,14 +234,14 @@ int cw1200_apb_write(struct cw1200_common *priv, u32 addr, const void *buf,
 
 	priv->hwbus_ops->lock(priv->hwbus_priv);
 
-	/* Write address */
+	 
 	ret = __cw1200_reg_write_32(priv, ST90TDS_SRAM_BASE_ADDR_REG_ID, addr);
 	if (ret < 0) {
 		pr_err("Can't write address register.\n");
 		goto out;
 	}
 
-	/* Write data port */
+	 
 	ret = __cw1200_reg_write(priv, ST90TDS_SRAM_DPORT_REG_ID,
 					buf, buf_len, 0);
 	if (ret < 0) {

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
 
-/*******************************************************************************
- * Communicates with the dongle by using dcmd codes.
- * For certain dcmd codes, the dongle interprets string data from the host.
- ******************************************************************************/
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -23,35 +18,31 @@
 #include "bcdc.h"
 
 struct brcmf_proto_bcdc_dcmd {
-	__le32 cmd;	/* dongle command value */
-	__le32 len;	/* lower 16: output buflen;
-			 * upper 16: input buflen (excludes header) */
-	__le32 flags;	/* flag defns given below */
-	__le32 status;	/* status code returned from the device */
+	__le32 cmd;	 
+	__le32 len;	 
+	__le32 flags;	 
+	__le32 status;	 
 };
 
-/* BCDC flag definitions */
-#define BCDC_DCMD_ERROR		0x01		/* 1=cmd failed */
-#define BCDC_DCMD_SET		0x02		/* 0=get, 1=set cmd */
-#define BCDC_DCMD_IF_MASK	0xF000		/* I/F index */
+ 
+#define BCDC_DCMD_ERROR		0x01		 
+#define BCDC_DCMD_SET		0x02		 
+#define BCDC_DCMD_IF_MASK	0xF000		 
 #define BCDC_DCMD_IF_SHIFT	12
-#define BCDC_DCMD_ID_MASK	0xFFFF0000	/* id an cmd pairing */
-#define BCDC_DCMD_ID_SHIFT	16		/* ID Mask shift bits */
+#define BCDC_DCMD_ID_MASK	0xFFFF0000	 
+#define BCDC_DCMD_ID_SHIFT	16		 
 #define BCDC_DCMD_ID(flags)	\
 	(((flags) & BCDC_DCMD_ID_MASK) >> BCDC_DCMD_ID_SHIFT)
 
-/*
- * BCDC header - Broadcom specific extension of CDC.
- * Used on data packets to convey priority across USB.
- */
+ 
 #define	BCDC_HEADER_LEN		4
-#define BCDC_PROTO_VER		2	/* Protocol version */
-#define BCDC_FLAG_VER_MASK	0xf0	/* Protocol version mask */
-#define BCDC_FLAG_VER_SHIFT	4	/* Protocol version shift */
-#define BCDC_FLAG_SUM_GOOD	0x04	/* Good RX checksums */
-#define BCDC_FLAG_SUM_NEEDED	0x08	/* Dongle needs to do TX checksums */
+#define BCDC_PROTO_VER		2	 
+#define BCDC_FLAG_VER_MASK	0xf0	 
+#define BCDC_FLAG_VER_SHIFT	4	 
+#define BCDC_FLAG_SUM_GOOD	0x04	 
+#define BCDC_FLAG_SUM_NEEDED	0x08	 
 #define BCDC_PRIORITY_MASK	0x7
-#define BCDC_FLAG2_IF_MASK	0x0f	/* packet rx interface in APSTA */
+#define BCDC_FLAG2_IF_MASK	0x0f	 
 #define BCDC_FLAG2_IF_SHIFT	0
 
 #define BCDC_GET_IF_IDX(hdr) \
@@ -60,14 +51,7 @@ struct brcmf_proto_bcdc_dcmd {
 	((hdr)->flags2 = (((hdr)->flags2 & ~BCDC_FLAG2_IF_MASK) | \
 	((idx) << BCDC_FLAG2_IF_SHIFT)))
 
-/**
- * struct brcmf_proto_bcdc_header - BCDC header format
- *
- * @flags: flags contain protocol and checksum info.
- * @priority: 802.1d priority and USB flow control info (bit 4:7).
- * @flags2: additional flags containing dongle interface index.
- * @data_offset: start of packet data. header is following by firmware signals.
- */
+ 
 struct brcmf_proto_bcdc_header {
 	u8 flags;
 	u8 priority;
@@ -75,18 +59,11 @@ struct brcmf_proto_bcdc_header {
 	u8 data_offset;
 };
 
-/*
- * maximum length of firmware signal data between
- * the BCDC header and packet data in the tx path.
- */
+ 
 #define BRCMF_PROT_FW_SIGNAL_MAX_TXBYTES	12
 
-#define RETRIES 2 /* # of retries to retrieve matching dcmd response */
-#define BUS_HEADER_LEN	(16+64)		/* Must be atleast SDPCM_RESERVE
-					 * (amount of header tha might be added)
-					 * plus any space that might be needed
-					 * for bus alignment padding.
-					 */
+#define RETRIES 2  
+#define BUS_HEADER_LEN	(16+64)		 
 #define ROUND_UP_MARGIN 2048
 
 struct brcmf_bcdc {
@@ -133,7 +110,7 @@ brcmf_proto_bcdc_msg(struct brcmf_pub *drvr, int ifidx, uint cmd, void *buf,
 	if (len > BRCMF_TX_IOCTL_MAX_MSG_SIZE)
 		len = BRCMF_TX_IOCTL_MAX_MSG_SIZE;
 
-	/* Send request */
+	 
 	return brcmf_bus_txctl(drvr->bus_if, (unsigned char *)&bcdc->msg, len);
 }
 
@@ -175,7 +152,7 @@ brcmf_proto_bcdc_query_dcmd(struct brcmf_pub *drvr, int ifidx, uint cmd,
 	}
 
 retry:
-	/* wait for interrupt and get first fragment */
+	 
 	ret = brcmf_proto_bcdc_cmplt(drvr, bcdc->reqid, len);
 	if (ret < 0)
 		goto done;
@@ -193,10 +170,10 @@ retry:
 		goto done;
 	}
 
-	/* Check info buffer */
+	 
 	info = (void *)&bcdc->buf[0];
 
-	/* Copy info buffer */
+	 
 	if (buf) {
 		if (ret < (int)len)
 			len = ret;
@@ -205,7 +182,7 @@ retry:
 
 	ret = 0;
 
-	/* Check the ERROR flag */
+	 
 	if (flags & BCDC_DCMD_ERROR)
 		*fwerr = le32_to_cpu(msg->status);
 done:
@@ -245,7 +222,7 @@ brcmf_proto_bcdc_set_dcmd(struct brcmf_pub *drvr, int ifidx, uint cmd,
 
 	ret = 0;
 
-	/* Check the ERROR flag */
+	 
 	if (flags & BCDC_DCMD_ERROR)
 		*fwerr = le32_to_cpu(msg->status);
 
@@ -261,7 +238,7 @@ brcmf_proto_bcdc_hdrpush(struct brcmf_pub *drvr, int ifidx, u8 offset,
 
 	brcmf_dbg(BCDC, "Enter\n");
 
-	/* Push BDC header used to convey priority for buses that don't */
+	 
 	skb_push(pktbuf, BCDC_HEADER_LEN);
 
 	h = (struct brcmf_proto_bcdc_header *)(pktbuf->data);
@@ -286,7 +263,7 @@ brcmf_proto_bcdc_hdrpull(struct brcmf_pub *drvr, bool do_fws,
 
 	brcmf_dbg(BCDC, "Enter\n");
 
-	/* Pop BCDC header used to convey priority for buses that don't */
+	 
 	if (pktbuf->len <= BCDC_HEADER_LEN) {
 		brcmf_dbg(INFO, "rx data too short (%d <= %d)\n",
 			  pktbuf->len, BCDC_HEADER_LEN);
@@ -368,7 +345,7 @@ brcmf_proto_bcdc_txcomplete(struct device *dev, struct sk_buff *txp,
 	struct brcmf_bcdc *bcdc = bus_if->drvr->proto->pd;
 	struct brcmf_if *ifp;
 
-	/* await txstatus signal for firmware if active */
+	 
 	if (brcmf_fws_fc_active(bcdc->fws)) {
 		brcmf_fws_bustxcomplete(bcdc->fws, txp, success);
 	} else {
@@ -448,7 +425,7 @@ int brcmf_proto_bcdc_attach(struct brcmf_pub *drvr)
 	if (!bcdc)
 		goto fail;
 
-	/* ensure that the msg buf directly follows the cdc msg struct */
+	 
 	if ((unsigned long)(&bcdc->msg + 1) != (unsigned long)bcdc->buf) {
 		bphy_err(drvr, "struct brcmf_proto_bcdc is not correctly defined\n");
 		goto fail;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -14,10 +12,7 @@
 #include "ebb.h"
 
 
-/*
- * Tests an EBB vs a cpu event - in that order. The EBB should force the cpu
- * event off the PMU.
- */
+ 
 
 static int setup_cpu_event(struct event *event, int cpu)
 {
@@ -51,31 +46,31 @@ int ebb_vs_cpu_event(void)
 
 	pid = fork();
 	if (pid == 0) {
-		/* NB order of pipes looks reversed */
+		 
 		exit(ebb_child(write_pipe, read_pipe));
 	}
 
-	/* Signal the child to install its EBB event and wait */
+	 
 	FAIL_IF(sync_with_child(read_pipe, write_pipe));
 
-	/* Now try to install our CPU event */
+	 
 	rc = setup_cpu_event(&event, cpu);
 	if (rc) {
 		kill_child_and_wait(pid);
 		return rc;
 	}
 
-	/* Signal the child to run */
+	 
 	FAIL_IF(sync_with_child(read_pipe, write_pipe));
 
-	/* .. and wait for it to complete */
+	 
 	FAIL_IF(wait_for_child(pid));
 	FAIL_IF(event_disable(&event));
 	FAIL_IF(event_read(&event));
 
 	event_report(&event);
 
-	/* The cpu event may have run, but we don't expect 100% */
+	 
 	FAIL_IF(event.result.enabled >= event.result.running);
 
 	return 0;

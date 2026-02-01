@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- *
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -16,12 +13,7 @@ bool intel_vrr_is_capable(struct intel_connector *connector)
 	struct drm_i915_private *i915 = to_i915(connector->base.dev);
 	struct intel_dp *intel_dp;
 
-	/*
-	 * DP Sink is capable of VRR video timings if
-	 * Ignore MSA bit is set in DPCD.
-	 * EDID monitor range also should be atleast 10 for reasonable
-	 * Adaptive Sync or Variable Refresh Rate end user experience.
-	 */
+	 
 	switch (connector->base.connector_type) {
 	case DRM_MODE_CONNECTOR_eDP:
 		if (!connector->panel.vbt.vrr)
@@ -57,22 +49,7 @@ intel_vrr_check_modeset(struct intel_atomic_state *state)
 	}
 }
 
-/*
- * Without VRR registers get latched at:
- *  vblank_start
- *
- * With VRR the earliest registers can get latched is:
- *  intel_vrr_vmin_vblank_start(), which if we want to maintain
- *  the correct min vtotal is >=vblank_start+1
- *
- * The latest point registers can get latched is the vmax decision boundary:
- *  intel_vrr_vmax_vblank_start()
- *
- * Between those two points the vblank exit starts (and hence registers get
- * latched) ASAP after a push is sent.
- *
- * framestart_delay is programmable 1-4.
- */
+ 
 static int intel_vrr_vblank_exit_length(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
@@ -81,13 +58,13 @@ static int intel_vrr_vblank_exit_length(const struct intel_crtc_state *crtc_stat
 	if (DISPLAY_VER(i915) >= 13)
 		return crtc_state->vrr.guardband;
 	else
-		/* The hw imposes the extra scanline before frame start */
+		 
 		return crtc_state->vrr.pipeline_full + crtc_state->framestart_delay + 1;
 }
 
 int intel_vrr_vmin_vblank_start(const struct intel_crtc_state *crtc_state)
 {
-	/* Min vblank actually determined by flipline that is always >=vmin+1 */
+	 
 	return crtc_state->vrr.vmin + 1 - intel_vrr_vblank_exit_length(crtc_state);
 }
 
@@ -125,20 +102,13 @@ intel_vrr_compute_config(struct intel_crtc_state *crtc_state,
 	if (vmin >= vmax)
 		return;
 
-	/*
-	 * flipline determines the min vblank length the hardware will
-	 * generate, and flipline>=vmin+1, hence we reduce vmin by one
-	 * to make sure we can get the actual min vblank length.
-	 */
+	 
 	crtc_state->vrr.vmin = vmin - 1;
 	crtc_state->vrr.vmax = vmax;
 
 	crtc_state->vrr.flipline = crtc_state->vrr.vmin + 1;
 
-	/*
-	 * For XE_LPD+, we use guardband and pipeline override
-	 * is deprecated.
-	 */
+	 
 	if (DISPLAY_VER(i915) >= 13) {
 		crtc_state->vrr.guardband =
 			crtc_state->vrr.vmin + 1 - adjusted_mode->crtc_vblank_start;
@@ -172,10 +142,7 @@ void intel_vrr_set_transcoder_timings(const struct intel_crtc_state *crtc_state)
 	struct drm_i915_private *dev_priv = to_i915(crtc_state->uapi.crtc->dev);
 	enum transcoder cpu_transcoder = crtc_state->cpu_transcoder;
 
-	/*
-	 * TRANS_SET_CONTEXT_LATENCY with VRR enabled
-	 * requires this chicken bit on ADL/DG2.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) == 13)
 		intel_de_rmw(dev_priv, CHICKEN_TRANS(cpu_transcoder),
 			     0, PIPE_VBLANK_WITH_DELAY);

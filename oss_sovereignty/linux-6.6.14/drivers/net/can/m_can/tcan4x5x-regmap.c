@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// tcan4x5x - Texas Instruments TCAN4x5x Family CAN controller driver
-//
-// Copyright (c) 2020 Pengutronix,
-//                    Marc Kleine-Budde <kernel@pengutronix.de>
-// Copyright (c) 2018-2019 Texas Instruments Incorporated
-//                    http://www.ti.com/
+
+
+
+
+
+
+
+
 
 #include "tcan4x5x.h"
 
@@ -91,13 +91,13 @@ static int tcan4x5x_regmap_read(void *context,
 }
 
 static const struct regmap_range tcan4x5x_reg_table_wr_range[] = {
-	/* Device ID and SPI Registers */
+	 
 	regmap_reg_range(0x000c, 0x0010),
-	/* Device configuration registers and Interrupt Flags*/
+	 
 	regmap_reg_range(0x0800, 0x080c),
 	regmap_reg_range(0x0820, 0x0820),
 	regmap_reg_range(0x0830, 0x0830),
-	/* M_CAN */
+	 
 	regmap_reg_range(0x100c, 0x102c),
 	regmap_reg_range(0x1048, 0x1048),
 	regmap_reg_range(0x1050, 0x105c),
@@ -111,15 +111,15 @@ static const struct regmap_range tcan4x5x_reg_table_wr_range[] = {
 	regmap_reg_range(0x10e0, 0x10e4),
 	regmap_reg_range(0x10f0, 0x10f0),
 	regmap_reg_range(0x10f8, 0x10f8),
-	/* MRAM */
+	 
 	regmap_reg_range(0x8000, 0x87fc),
 };
 
 static const struct regmap_range tcan4x5x_reg_table_rd_range[] = {
-	regmap_reg_range(0x0000, 0x0010),	/* Device ID and SPI Registers */
-	regmap_reg_range(0x0800, 0x0830),	/* Device configuration registers and Interrupt Flags*/
-	regmap_reg_range(0x1000, 0x10fc),	/* M_CAN */
-	regmap_reg_range(0x8000, 0x87fc),	/* MRAM */
+	regmap_reg_range(0x0000, 0x0010),	 
+	regmap_reg_range(0x0800, 0x0830),	 
+	regmap_reg_range(0x1000, 0x10fc),	 
+	regmap_reg_range(0x8000, 0x87fc),	 
 };
 
 static const struct regmap_access_table tcan4x5x_reg_table_wr = {

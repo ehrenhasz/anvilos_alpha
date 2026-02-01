@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -44,10 +41,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address *addr)
 	return res;
 }
 
-/*
- *	This is called when an interface is brought up. These are
- *	reasonable defaults.
- */
+ 
 void ax25_dev_device_up(struct net_device *dev)
 {
 	ax25_dev *ax25_dev;
@@ -108,9 +102,7 @@ void ax25_dev_device_down(struct net_device *dev)
 	ax25_ds_del_timer(ax25_dev);
 #endif
 
-	/*
-	 *	Remove any packet forwarding that points to this device.
-	 */
+	 
 	for (s = ax25_dev_list; s != NULL; s = s->next)
 		if (s->forward == dev)
 			s->forward = NULL;
@@ -195,9 +187,7 @@ struct net_device *ax25_fwd_dev(struct net_device *dev)
 	return ax25_dev->forward;
 }
 
-/*
- *	Free all memory associated with device structures.
- */
+ 
 void __exit ax25_dev_free(void)
 {
 	ax25_dev *s, *ax25_dev;

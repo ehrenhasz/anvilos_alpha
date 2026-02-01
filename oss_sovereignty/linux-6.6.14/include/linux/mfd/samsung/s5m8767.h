@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_S5M8767_H
 #define __LINUX_MFD_S5M8767_H
 
-/* S5M8767 registers */
+ 
 enum s5m8767_reg {
 	S5M8767_REG_ID,
 	S5M8767_REG_INT1,
@@ -132,7 +129,7 @@ enum s5m8767_reg {
 	S5M8767_REG_LDO28CTRL,
 };
 
-/* S5M8767 regulator ids */
+ 
 enum s5m8767_regulators {
 	S5M8767_LDO1,
 	S5M8767_LDO2,
@@ -177,20 +174,14 @@ enum s5m8767_regulators {
 	S5M8767_REG_MAX,
 };
 
-/* LDO_EN/BUCK_EN field in registers */
+ 
 #define S5M8767_ENCTRL_SHIFT		6
 #define S5M8767_ENCTRL_MASK		(0x3 << S5M8767_ENCTRL_SHIFT)
 
-/*
- * LDO_EN/BUCK_EN register value for controlling this Buck or LDO
- * by GPIO (PWREN, BUCKEN).
- */
+ 
 #define S5M8767_ENCTRL_USE_GPIO		0x1
 
-/*
- * Values for BUCK_RAMP field in DVS_RAMP register, matching raw values
- * in mV/us.
- */
+ 
 enum s5m8767_dvs_buck_ramp_values {
 	S5M8767_DVS_BUCK_RAMP_5		= 0x4,
 	S5M8767_DVS_BUCK_RAMP_10	= 0x9,
@@ -202,4 +193,4 @@ enum s5m8767_dvs_buck_ramp_values {
 #define S5M8767_DVS_BUCK_RAMP_SHIFT	4
 #define S5M8767_DVS_BUCK_RAMP_MASK	(0xf << S5M8767_DVS_BUCK_RAMP_SHIFT)
 
-#endif /* __LINUX_MFD_S5M8767_H */
+#endif  

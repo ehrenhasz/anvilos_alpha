@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs iostat support
- *
- * Copyright 2021 Google LLC
- * Author: Daeho Jeong <daehojeong@google.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -42,7 +37,7 @@ int __maybe_unused iostat_info_seq_show(struct seq_file *seq, void *offset)
 	seq_printf(seq, "\t\t\t%-16s %-16s %-16s\n",
 				"io_bytes", "count", "avg_bytes");
 
-	/* print app write IOs */
+	 
 	seq_puts(seq, "[WRITE]\n");
 	IOSTAT_INFO_SHOW("app buffered data", APP_BUFFERED_IO);
 	IOSTAT_INFO_SHOW("app direct data", APP_DIRECT_IO);
@@ -50,7 +45,7 @@ int __maybe_unused iostat_info_seq_show(struct seq_file *seq, void *offset)
 	IOSTAT_INFO_SHOW("app buffered cdata", APP_BUFFERED_CDATA_IO);
 	IOSTAT_INFO_SHOW("app mapped cdata", APP_MAPPED_CDATA_IO);
 
-	/* print fs write IOs */
+	 
 	IOSTAT_INFO_SHOW("fs data", FS_DATA_IO);
 	IOSTAT_INFO_SHOW("fs cdata", FS_CDATA_IO);
 	IOSTAT_INFO_SHOW("fs node", FS_NODE_IO);
@@ -61,7 +56,7 @@ int __maybe_unused iostat_info_seq_show(struct seq_file *seq, void *offset)
 	IOSTAT_INFO_SHOW("fs cp node", FS_CP_NODE_IO);
 	IOSTAT_INFO_SHOW("fs cp meta", FS_CP_META_IO);
 
-	/* print app read IOs */
+	 
 	seq_puts(seq, "[READ]\n");
 	IOSTAT_INFO_SHOW("app buffered data", APP_BUFFERED_READ_IO);
 	IOSTAT_INFO_SHOW("app direct data", APP_DIRECT_READ_IO);
@@ -69,14 +64,14 @@ int __maybe_unused iostat_info_seq_show(struct seq_file *seq, void *offset)
 	IOSTAT_INFO_SHOW("app buffered cdata", APP_BUFFERED_CDATA_READ_IO);
 	IOSTAT_INFO_SHOW("app mapped cdata", APP_MAPPED_CDATA_READ_IO);
 
-	/* print fs read IOs */
+	 
 	IOSTAT_INFO_SHOW("fs data", FS_DATA_READ_IO);
 	IOSTAT_INFO_SHOW("fs gc data", FS_GDATA_READ_IO);
 	IOSTAT_INFO_SHOW("fs cdata", FS_CDATA_READ_IO);
 	IOSTAT_INFO_SHOW("fs node", FS_NODE_READ_IO);
 	IOSTAT_INFO_SHOW("fs meta", FS_META_READ_IO);
 
-	/* print other IOs */
+	 
 	seq_puts(seq, "[OTHER]\n");
 	IOSTAT_INFO_SHOW("fs discard", FS_DISCARD_IO);
 	IOSTAT_INFO_SHOW("fs flush", FS_FLUSH_IO);
@@ -119,7 +114,7 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
 	if (time_is_after_jiffies(sbi->iostat_next_period))
 		return;
 
-	/* Need double check under the lock */
+	 
 	spin_lock_irqsave(&sbi->iostat_lock, flags);
 	if (time_is_after_jiffies(sbi->iostat_next_period)) {
 		spin_unlock_irqrestore(&sbi->iostat_lock, flags);
@@ -259,7 +254,7 @@ void iostat_alloc_and_bind_ctx(struct f2fs_sb_info *sbi,
 		struct bio *bio, struct bio_post_read_ctx *ctx)
 {
 	struct bio_iostat_ctx *iostat_ctx;
-	/* Due to the mempool, this never fails. */
+	 
 	iostat_ctx = mempool_alloc(bio_iostat_ctx_pool, GFP_NOFS);
 	iostat_ctx->sbi = sbi;
 	iostat_ctx->submit_ts = 0;
@@ -296,7 +291,7 @@ void f2fs_destroy_iostat_processing(void)
 
 int f2fs_init_iostat(struct f2fs_sb_info *sbi)
 {
-	/* init iostat info */
+	 
 	spin_lock_init(&sbi->iostat_lock);
 	spin_lock_init(&sbi->iostat_lat_lock);
 	sbi->iostat_enable = false;

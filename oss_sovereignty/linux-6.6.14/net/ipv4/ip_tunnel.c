@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -63,23 +61,13 @@ static bool ip_tunnel_key_match(const struct ip_tunnel_parm *p,
 		if (flags & TUNNEL_KEY)
 			return key == p->i_key;
 		else
-			/* key expected, none present */
+			 
 			return false;
 	} else
 		return !(flags & TUNNEL_KEY);
 }
 
-/* Fallback tunnel: no source, no destination, no key, no options
-
-   Tunnel hash table:
-   We require exact key match i.e. if a key is present in packet
-   it will match only tunnel with the same key; if it is not present,
-   it will match only keyless tunnel.
-
-   All keysless packets, if not matched configured keyless tunnels
-   will match fallback tunnel.
-   Given src, dst and key, find appropriate for input tunnel.
-*/
+ 
 struct ip_tunnel *ip_tunnel_lookup(struct ip_tunnel_net *itn,
 				   int link, __be16 flags,
 				   __be32 remote, __be32 local,
@@ -287,7 +275,7 @@ static int ip_tunnel_bind_dev(struct net_device *dev)
 
 	iph = &tunnel->parms.iph;
 
-	/* Guess output device to choose reasonable mtu and needed_headroom */
+	 
 	if (iph->daddr) {
 		struct flowi4 fl4;
 		struct rtable *rt;
@@ -658,8 +646,8 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	struct ip_tunnel_info *tun_info = NULL;
 	const struct iphdr *inner_iph;
-	unsigned int max_headroom;	/* The extra header space needed */
-	struct rtable *rt = NULL;		/* Route to the other host */
+	unsigned int max_headroom;	 
+	struct rtable *rt = NULL;		 
 	__be16 payload_protocol;
 	bool use_cache = false;
 	struct flowi4 fl4;
@@ -677,7 +665,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
 
 	dst = tnl_params->daddr;
 	if (dst == 0) {
-		/* NBMA tunnel */
+		 
 
 		if (!skb_dst(skb)) {
 			DEV_STATS_INC(dev, tx_fifo_errors);
@@ -1089,9 +1077,7 @@ int ip_tunnel_init_net(struct net *net, unsigned int ip_tnl_net_id,
 
 	rtnl_lock();
 	itn->fb_tunnel_dev = __ip_tunnel_create(net, ops, &parms);
-	/* FB netdevice is special: we have one, and only one per netns.
-	 * Allowing to move it to another netns is clearly unsafe.
-	 */
+	 
 	if (!IS_ERR(itn->fb_tunnel_dev)) {
 		itn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
 		itn->fb_tunnel_dev->mtu = ip_tunnel_bind_dev(itn->fb_tunnel_dev);
@@ -1121,9 +1107,7 @@ static void ip_tunnel_destroy(struct net *net, struct ip_tunnel_net *itn,
 		struct hlist_head *thead = &itn->tunnels[h];
 
 		hlist_for_each_entry_safe(t, n, thead, hash_node)
-			/* If dev is in the same netns, it has already
-			 * been added to the list by the previous loop.
-			 */
+			 
 			if (!net_eq(dev_net(t->dev), net))
 				unregister_netdevice_queue(t->dev, head);
 	}
@@ -1290,7 +1274,7 @@ void ip_tunnel_uninit(struct net_device *dev)
 }
 EXPORT_SYMBOL_GPL(ip_tunnel_uninit);
 
-/* Do least required initialization, rest of init is done in tunnel_init call */
+ 
 void ip_tunnel_setup(struct net_device *dev, unsigned int net_id)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);

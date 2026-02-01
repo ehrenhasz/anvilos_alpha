@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2012, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -46,7 +43,7 @@ static const u32 gryo_3d_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_DATA_ANGL_VELOCITY,
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec gyro_3d_channels[] = {
 	{
 		.type = IIO_ANGL_VEL,
@@ -82,18 +79,18 @@ static const struct iio_chan_spec gyro_3d_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 						int channel, int size)
 {
 	channels[channel].scan_type.sign = 's';
-	/* Real storage bits will change based on the report desc. */
+	 
 	channels[channel].scan_type.realbits = size * 8;
-	/* Maximum size of a sample to capture is u32 */
+	 
 	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 }
 
-/* Channel read_raw handler */
+ 
 static int gyro_3d_read_raw(struct iio_dev *indio_dev,
 			      struct iio_chan_spec const *chan,
 			      int *val, int *val2,
@@ -154,7 +151,7 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
 	return ret_type;
 }
 
-/* Channel write_raw handler */
+ 
 static int gyro_3d_write_raw(struct iio_dev *indio_dev,
 			       struct iio_chan_spec const *chan,
 			       int val,
@@ -185,7 +182,7 @@ static const struct iio_info gyro_3d_info = {
 	.write_raw = &gyro_3d_write_raw,
 };
 
-/* Callback handler to send event after all samples are received and captured */
+ 
 static int gyro_3d_proc_event(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				void *priv)
@@ -207,7 +204,7 @@ static int gyro_3d_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int gyro_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				size_t raw_len, char *raw_data,
@@ -240,7 +237,7 @@ static int gyro_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 	return ret;
 }
 
-/* Parse report which is specific to an usage id*/
+ 
 static int gyro_3d_parse_report(struct platform_device *pdev,
 				struct hid_sensor_hub_device *hsdev,
 				struct iio_chan_spec *channels,
@@ -276,7 +273,7 @@ static int gyro_3d_parse_report(struct platform_device *pdev,
 	return ret;
 }
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_gyro_3d_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -358,7 +355,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_gyro_3d_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
@@ -374,10 +371,10 @@ static int hid_gyro_3d_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_gyro_3d_ids[] = {
 	{
-		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-200076",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_gyro_3d_ids);
 

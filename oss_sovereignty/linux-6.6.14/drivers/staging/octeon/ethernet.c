@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2007 Cavium Networks
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
@@ -86,20 +82,13 @@ int rx_napi_weight = 32;
 module_param(rx_napi_weight, int, 0444);
 MODULE_PARM_DESC(rx_napi_weight, "The NAPI WEIGHT parameter.");
 
-/* Mask indicating which receive groups are in use. */
+ 
 int pow_receive_groups;
 
-/*
- * cvm_oct_poll_queue_stopping - flag to indicate polling should stop.
- *
- * Set to one right before cvm_oct_poll_queue is destroyed.
- */
+ 
 atomic_t cvm_oct_poll_queue_stopping = ATOMIC_INIT(0);
 
-/*
- * Array of every ethernet device owned by this driver indexed by
- * the ipd input port number.
- */
+ 
 struct net_device *cvm_oct_device[TOTAL_NUMBER_OF_PORTS];
 
 u64 cvm_oct_tx_poll_interval;
@@ -109,13 +98,7 @@ static DECLARE_DELAYED_WORK(cvm_oct_rx_refill_work, cvm_oct_rx_refill_worker);
 
 static void cvm_oct_rx_refill_worker(struct work_struct *work)
 {
-	/*
-	 * FPA 0 may have been drained, try to refill it if we need
-	 * more than num_packet_buffers / 2, otherwise normal receive
-	 * processing will refill it.  If it were drained, no packets
-	 * could be received so cvm_oct_napi_poll would never be
-	 * invoked to do the refill.
-	 */
+	 
 	cvm_oct_rx_refill_pool(num_packet_buffers / 2);
 
 	if (!atomic_read(&cvm_oct_poll_queue_stopping))
@@ -140,7 +123,7 @@ static void cvm_oct_periodic_worker(struct work_struct *work)
 
 static void cvm_oct_configure_common_hw(void)
 {
-	/* Setup the FPA */
+	 
 	cvmx_fpa_enable();
 	cvm_oct_mem_fill_fpa(CVMX_FPA_PACKET_POOL, CVMX_FPA_PACKET_POOL_SIZE,
 			     num_packet_buffers);
@@ -164,13 +147,7 @@ static void cvm_oct_configure_common_hw(void)
 	cvmx_helper_setup_red(num_packet_buffers / 4, num_packet_buffers / 8);
 }
 
-/**
- * cvm_oct_free_work- Free a work queue entry
- *
- * @work_queue_entry: Work queue entry to free
- *
- * Returns Zero on success, Negative on failure.
- */
+ 
 int cvm_oct_free_work(void *work_queue_entry)
 {
 	struct cvmx_wqe *work = work_queue_entry;
@@ -193,12 +170,7 @@ int cvm_oct_free_work(void *work_queue_entry)
 }
 EXPORT_SYMBOL(cvm_oct_free_work);
 
-/**
- * cvm_oct_common_get_stats - get the low level ethernet statistics
- * @dev:    Device to get the statistics from
- *
- * Returns Pointer to the statistics
- */
+ 
 static struct net_device_stats *cvm_oct_common_get_stats(struct net_device *dev)
 {
 	cvmx_pip_port_status_t rx_status;
@@ -207,7 +179,7 @@ static struct net_device_stats *cvm_oct_common_get_stats(struct net_device *dev)
 
 	if (priv->port < CVMX_PIP_NUM_INPUT_PORTS) {
 		if (octeon_is_simulation()) {
-			/* The simulator doesn't support statistics */
+			 
 			memset(&rx_status, 0, sizeof(rx_status));
 			memset(&tx_status, 0, sizeof(tx_status));
 		} else {
@@ -228,13 +200,7 @@ static struct net_device_stats *cvm_oct_common_get_stats(struct net_device *dev)
 	return &dev->stats;
 }
 
-/**
- * cvm_oct_common_change_mtu - change the link MTU
- * @dev:     Device to change
- * @new_mtu: The new MTU
- *
- * Returns Zero on success
- */
+ 
 static int cvm_oct_common_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -252,19 +218,16 @@ static int cvm_oct_common_change_mtu(struct net_device *dev, int new_mtu)
 	    (cvmx_helper_interface_get_mode(interface) !=
 		CVMX_HELPER_INTERFACE_MODE_SPI)) {
 		int index = INDEX(priv->port);
-		/* Add ethernet header and FCS, and VLAN if configured. */
+		 
 		int max_packet = new_mtu + mtu_overhead;
 
 		if (OCTEON_IS_MODEL(OCTEON_CN3XXX) ||
 		    OCTEON_IS_MODEL(OCTEON_CN58XX)) {
-			/* Signal errors on packets larger than the MTU */
+			 
 			cvmx_write_csr(CVMX_GMXX_RXX_FRM_MAX(index, interface),
 				       max_packet);
 		} else {
-			/*
-			 * Set the hardware to truncate packets larger
-			 * than the MTU and smaller the 64 bytes.
-			 */
+			 
 			union cvmx_pip_frm_len_chkx frm_len_chk;
 
 			frm_len_chk.u64 = 0;
@@ -273,21 +236,14 @@ static int cvm_oct_common_change_mtu(struct net_device *dev, int new_mtu)
 			cvmx_write_csr(CVMX_PIP_FRM_LEN_CHKX(interface),
 				       frm_len_chk.u64);
 		}
-		/*
-		 * Set the hardware to truncate packets larger than
-		 * the MTU. The jabber register must be set to a
-		 * multiple of 8 bytes, so round up.
-		 */
+		 
 		cvmx_write_csr(CVMX_GMXX_RXX_JABBER(index, interface),
 			       (max_packet + 7) & ~7u);
 	}
 	return 0;
 }
 
-/**
- * cvm_oct_common_set_multicast_list - set the multicast list
- * @dev:    Device to work on
- */
+ 
 static void cvm_oct_common_set_multicast_list(struct net_device *dev)
 {
 	union cvmx_gmxx_prtx_cfg gmx_cfg;
@@ -301,24 +257,21 @@ static void cvm_oct_common_set_multicast_list(struct net_device *dev)
 		int index = INDEX(priv->port);
 
 		control.u64 = 0;
-		control.s.bcst = 1;	/* Allow broadcast MAC addresses */
+		control.s.bcst = 1;	 
 
 		if (!netdev_mc_empty(dev) || (dev->flags & IFF_ALLMULTI) ||
 		    (dev->flags & IFF_PROMISC))
-			/* Force accept multicast packets */
+			 
 			control.s.mcst = 2;
 		else
-			/* Force reject multicast packets */
+			 
 			control.s.mcst = 1;
 
 		if (dev->flags & IFF_PROMISC)
-			/*
-			 * Reject matches if promisc. Since CAM is
-			 * shut off, should accept everything.
-			 */
+			 
 			control.s.cam_mode = 0;
 		else
-			/* Filter packets based on the CAM */
+			 
 			control.s.cam_mode = 1;
 
 		gmx_cfg.u64 =
@@ -382,13 +335,7 @@ static int cvm_oct_set_mac_filter(struct net_device *dev)
 	return 0;
 }
 
-/**
- * cvm_oct_common_set_mac_address - set the hardware MAC address for a device
- * @dev:    The device in question.
- * @addr:   Socket address.
- *
- * Returns Zero on success
- */
+ 
 static int cvm_oct_common_set_mac_address(struct net_device *dev, void *addr)
 {
 	int r = eth_mac_addr(dev, addr);
@@ -398,12 +345,7 @@ static int cvm_oct_common_set_mac_address(struct net_device *dev, void *addr)
 	return cvm_oct_set_mac_filter(dev);
 }
 
-/**
- * cvm_oct_common_init - per network device initialization
- * @dev:    Device to initialize
- *
- * Returns Zero on success
- */
+ 
 int cvm_oct_common_init(struct net_device *dev)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -413,10 +355,7 @@ int cvm_oct_common_init(struct net_device *dev)
 	if (ret)
 		eth_hw_addr_random(dev);
 
-	/*
-	 * Force the interface to use the POW send if always_use_pow
-	 * was specified or it is in the pow send list.
-	 */
+	 
 	if ((pow_send_group != -1) &&
 	    (always_use_pow || strstr(pow_send_list, dev->name)))
 		priv->queue = -1;
@@ -424,17 +363,14 @@ int cvm_oct_common_init(struct net_device *dev)
 	if (priv->queue != -1)
 		dev->features |= NETIF_F_SG | NETIF_F_IP_CSUM;
 
-	/* We do our own locking, Linux doesn't need to */
+	 
 	dev->features |= NETIF_F_LLTX;
 	dev->ethtool_ops = &cvm_oct_ethtool_ops;
 
 	cvm_oct_set_mac_filter(dev);
 	dev_set_mtu(dev, dev->mtu);
 
-	/*
-	 * Zero out stats for port so we won't mistakenly show
-	 * counters from the bootloader.
-	 */
+	 
 	memset(dev->netdev_ops->ndo_get_stats(dev), 0,
 	       sizeof(struct net_device_stats));
 
@@ -645,9 +581,7 @@ static void cvm_set_rgmii_delay(struct octeon_ethernet *priv, int iface,
 	bool rx_delay;
 	bool tx_delay;
 
-	/* By default, both RX/TX delay is enabled in
-	 * __cvmx_helper_rgmii_enable().
-	 */
+	 
 	rx_delay = true;
 	tx_delay = true;
 
@@ -701,7 +635,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 		pow_receive_groups = BIT(pow_receive_group);
 	}
 
-	/* Change the input group for all ports before input is enabled */
+	 
 	num_interfaces = cvmx_helper_get_number_of_interfaces();
 	for (interface = 0; interface < num_interfaces; interface++) {
 		int num_ports = cvmx_helper_ports_on_interface(interface);
@@ -718,10 +652,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 			if (receive_group_order) {
 				int tag_mask;
 
-				/* We support only 16 groups at the moment, so
-				 * always disable the two additional "hidden"
-				 * tag_mask bits on CN68XX.
-				 */
+				 
 				if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 					pip_prt_tagx.u64 |= 0x3ull << 44;
 
@@ -754,13 +685,10 @@ static int cvm_oct_probe(struct platform_device *pdev)
 
 	memset(cvm_oct_device, 0, sizeof(cvm_oct_device));
 
-	/*
-	 * Initialize the FAU used for counting packet buffers that
-	 * need to be freed.
-	 */
+	 
 	cvmx_fau_atomic_write32(FAU_NUM_PACKET_BUFFERS_TO_FREE, 0);
 
-	/* Initialize the FAU used for counting tx SKBs that need to be freed */
+	 
 	cvmx_fau_atomic_write32(FAU_TOTAL_TX_TO_CLEAN, 0);
 
 	if ((pow_send_group != -1)) {
@@ -768,7 +696,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 
 		dev = alloc_etherdev(sizeof(struct octeon_ethernet));
 		if (dev) {
-			/* Initialize the device private structure. */
+			 
 			struct octeon_ethernet *priv = netdev_priv(dev);
 
 			SET_NETDEV_DEV(dev, &pdev->dev);
@@ -817,7 +745,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 				continue;
 			}
 
-			/* Initialize the device private structure. */
+			 
 			SET_NETDEV_DEV(dev, &pdev->dev);
 			priv = netdev_priv(dev);
 			priv->netdev = dev;
@@ -840,7 +768,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 			dev->max_mtu = OCTEON_MAX_MTU - mtu_overhead;
 
 			switch (priv->imode) {
-			/* These types don't support ports to IPD/PKO */
+			 
 			case CVMX_HELPER_INTERFACE_MODE_DISABLED:
 			case CVMX_HELPER_INTERFACE_MODE_PCIE:
 			case CVMX_HELPER_INTERFACE_MODE_PICMG:
@@ -914,9 +842,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 	cvm_oct_tx_initialize();
 	cvm_oct_rx_initialize();
 
-	/*
-	 * 150 uS: about 10 1500-byte packets at 1GE.
-	 */
+	 
 	cvm_oct_tx_poll_interval = 150 * (octeon_get_clock_rate() / 1000000);
 
 	schedule_delayed_work(&cvm_oct_rx_refill_work, HZ);
@@ -938,7 +864,7 @@ static void cvm_oct_remove(struct platform_device *pdev)
 
 	cvmx_pko_disable();
 
-	/* Free the ethernet devices */
+	 
 	for (port = 0; port < TOTAL_NUMBER_OF_PORTS; port++) {
 		if (cvm_oct_device[port]) {
 			struct net_device *dev = cvm_oct_device[port];
@@ -957,7 +883,7 @@ static void cvm_oct_remove(struct platform_device *pdev)
 
 	cvmx_ipd_free_ptr();
 
-	/* Free the HW pools */
+	 
 	cvm_oct_mem_empty_fpa(CVMX_FPA_PACKET_POOL, CVMX_FPA_PACKET_POOL_SIZE,
 			      num_packet_buffers);
 	cvm_oct_mem_empty_fpa(CVMX_FPA_WQE_POOL, CVMX_FPA_WQE_POOL_SIZE,

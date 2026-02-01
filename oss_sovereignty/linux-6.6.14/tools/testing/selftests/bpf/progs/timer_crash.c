@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -24,7 +24,7 @@ struct {
 } hmap SEC(".maps");
 
 int pid = 0;
-int crash_map = 0; /* 0 for amap, 1 for hmap */
+int crash_map = 0;  
 
 SEC("fentry/do_nanosleep")
 int sys_enter(void *ctx)
@@ -38,10 +38,7 @@ int sys_enter(void *ctx)
 	*(void **)&value = (void *)0xdeadcaf3;
 
 	bpf_map_update_elem(map, &(int){0}, &value, 0);
-	/* For array map, doing bpf_map_update_elem will do a
-	 * check_and_free_timer_in_array, which will trigger the crash if timer
-	 * pointer was overwritten, for hmap we need to use bpf_timer_cancel.
-	 */
+	 
 	if (crash_map == 1) {
 		e = bpf_map_lookup_elem(map, &(int){0});
 		if (!e)

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2006 Mellanox Technologies. All rights reserved
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_cm.h>
 #include <net/dst.h>
@@ -152,10 +122,7 @@ static struct sk_buff *ipoib_cm_alloc_rx_skb(struct net_device *dev,
 	if (unlikely(!skb))
 		return NULL;
 
-	/*
-	 * IPoIB adds a IPOIB_ENCAP_LEN byte header, this will align the
-	 * IP header to a multiple of 16.
-	 */
+	 
 	skb_reserve(skb, IPOIB_CM_RX_RESERVE);
 
 	mapping[0] = ib_dma_map_single(priv->ca, skb->data, IPOIB_CM_HEAD_SIZE,
@@ -212,16 +179,12 @@ static void ipoib_cm_start_rx_drain(struct ipoib_dev_priv *priv)
 {
 	struct ipoib_cm_rx *p;
 
-	/* We only reserved 1 extra slot in CQ for drain WRs, so
-	 * make sure we have at most 1 outstanding WR. */
+	 
 	if (list_empty(&priv->cm.rx_flush_list) ||
 	    !list_empty(&priv->cm.rx_drain_list))
 		return;
 
-	/*
-	 * QPs on flush list are error state.  This way, a "flush
-	 * error" WC will be immediately generated for each WR we post.
-	 */
+	 
 	p = list_entry(priv->cm.rx_flush_list.next, typeof(*p), list);
 	ipoib_cm_rx_drain_wr.wr_id = IPOIB_CM_RX_DRAIN_WRID;
 	if (ib_post_send(p->qp, &ipoib_cm_rx_drain_wr, NULL))
@@ -252,11 +215,11 @@ static struct ib_qp *ipoib_cm_create_rx_qp(struct net_device *dev,
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	struct ib_qp_init_attr attr = {
 		.event_handler = ipoib_cm_rx_event_handler,
-		.send_cq = priv->recv_cq, /* For drain WR */
+		.send_cq = priv->recv_cq,  
 		.recv_cq = priv->recv_cq,
 		.srq = priv->cm.srq,
-		.cap.max_send_wr = 1, /* For drain WR */
-		.cap.max_send_sge = 1, /* FIXME: 0 Seems not to work */
+		.cap.max_send_wr = 1,  
+		.cap.max_send_sge = 1,  
 		.sq_sig_type = IB_SIGNAL_ALL_WR,
 		.qp_type = IB_QPT_RC,
 		.qp_context = p,
@@ -302,14 +265,7 @@ static int ipoib_cm_modify_rx_qp(struct net_device *dev,
 		return ret;
 	}
 
-	/*
-	 * Current Mellanox HCA firmware won't generate completions
-	 * with error for drain WRs unless the QP has been moved to
-	 * RTS first. This work-around leaves a window where a QP has
-	 * moved to error asynchronously, but this will eventually get
-	 * fixed in firmware, so let's not error out if modify QP
-	 * fails.
-	 */
+	 
 	qp_attr.qp_state = IB_QPS_RTS;
 	ret = ib_cm_init_qp_attr(cm_id, &qp_attr, &qp_attr_mask);
 	if (ret) {
@@ -479,8 +435,7 @@ static int ipoib_cm_req_handler(struct ib_cm_id *cm_id,
 	spin_lock_irq(&priv->lock);
 	queue_delayed_work(priv->wq,
 			   &priv->cm.stale_task, IPOIB_CM_RX_DELAY);
-	/* Add this entry to passive ids list head, but do not re-add it
-	 * if IB_EVENT_QP_LAST_WQE_REACHED has moved it to flush list. */
+	 
 	p->jiffies = jiffies;
 	if (p->state == IPOIB_CM_RX_LIVE)
 		list_move(&p->list, &priv->cm.passive_ids);
@@ -523,14 +478,14 @@ static int ipoib_cm_rx_handler(struct ib_cm_id *cm_id,
 		return 0;
 	}
 }
-/* Adjust length of skb with fragments to match received data */
+ 
 static void skb_put_frags(struct sk_buff *skb, unsigned int hdr_space,
 			  unsigned int length, struct sk_buff *toskb)
 {
 	int i, num_frags;
 	unsigned int size;
 
-	/* put header into skb */
+	 
 	size = min(length, hdr_space);
 	skb->tail += size;
 	skb->len += size;
@@ -541,7 +496,7 @@ static void skb_put_frags(struct sk_buff *skb, unsigned int hdr_space,
 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
 		if (length == 0) {
-			/* don't need this page */
+			 
 			skb_fill_page_desc(toskb, i, skb_frag_page(frag),
 					   0, PAGE_SIZE);
 			--skb_shinfo(skb)->nr_frags;
@@ -615,8 +570,7 @@ void ipoib_cm_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 		if (p && time_after_eq(jiffies, p->jiffies + IPOIB_CM_RX_UPDATE_TIME)) {
 			spin_lock_irqsave(&priv->lock, flags);
 			p->jiffies = jiffies;
-			/* Move this entry to list head, but do not re-add it
-			 * if it has been moved out of list. */
+			 
 			if (p->state == IPOIB_CM_RX_LIVE)
 				list_move(&p->list, &priv->cm.passive_ids);
 			spin_unlock_irqrestore(&priv->lock, flags);
@@ -647,10 +601,7 @@ void ipoib_cm_handle_rx_wc(struct net_device *dev, struct ib_wc *wc)
 	newskb = ipoib_cm_alloc_rx_skb(dev, rx_ring, wr_id, frags,
 				       mapping, GFP_ATOMIC);
 	if (unlikely(!newskb)) {
-		/*
-		 * If we can't allocate a new RX buffer, dump
-		 * this packet and reuse the old buffer.
-		 */
+		 
 		ipoib_dbg(priv, "failed to allocate receive buffer %d\n", wr_id);
 		++dev->stats.rx_dropped;
 		goto repost;
@@ -672,7 +623,7 @@ copied:
 	dev->stats.rx_bytes += skb->len;
 
 	skb->dev = dev;
-	/* XXX get correct PACKET_ type here */
+	 
 	skb->pkt_type = PACKET_HOST;
 	netif_receive_skb(skb);
 
@@ -728,7 +679,7 @@ void ipoib_cm_send(struct net_device *dev, struct sk_buff *skb, struct ipoib_cm_
 			dev_kfree_skb_any(skb);
 			return;
 		}
-		/* Does skb_linearize return ok without reducing nr_frags? */
+		 
 		if (skb_shinfo(skb)->nr_frags > usable_sge) {
 			ipoib_warn(priv, "too many frags after skb linearize\n");
 			++dev->stats.tx_dropped;
@@ -740,13 +691,7 @@ void ipoib_cm_send(struct net_device *dev, struct sk_buff *skb, struct ipoib_cm_
 	ipoib_dbg_data(priv, "sending packet: head 0x%x length %d connection 0x%x\n",
 		       tx->tx_head, skb->len, tx->qp->qp_num);
 
-	/*
-	 * We put the skb into the tx_ring _before_ we call post_send()
-	 * because it's entirely possible that the completion handler will
-	 * run before we execute anything after the post_send().  That
-	 * means we have to make sure everything is properly recorded and
-	 * our state is consistent before we call post_send().
-	 */
+	 
 	tx_req = &tx->tx_ring[tx->tx_head & (ipoib_sendq_size - 1)];
 	tx_req->skb = skb;
 
@@ -812,7 +757,7 @@ void ipoib_cm_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	ipoib_dma_unmap_tx(priv, tx_req);
 
-	/* FIXME: is this right? Shouldn't we only increment on success? */
+	 
 	++dev->stats.tx_packets;
 	dev->stats.tx_bytes += tx_req->skb->len;
 
@@ -833,9 +778,7 @@ void ipoib_cm_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 	    wc->status != IB_WC_WR_FLUSH_ERR) {
 		struct ipoib_neigh *neigh;
 
-		/* IB_WC[_RNR]_RETRY_EXC_ERR error is part of the life cycle,
-		 * so don't make waves.
-		 */
+		 
 		if (wc->status == IB_WC_RNR_RETRY_EXC_ERR ||
 		    wc->status == IB_WC_RETRY_EXC_ERR)
 			ipoib_dbg(priv,
@@ -949,7 +892,7 @@ void ipoib_cm_dev_stop(struct net_device *dev)
 		spin_lock_irq(&priv->lock);
 	}
 
-	/* Wait for all RX to be drained */
+	 
 	begin = jiffies;
 
 	while (!list_empty(&priv->cm.rx_error_list) ||
@@ -958,9 +901,7 @@ void ipoib_cm_dev_stop(struct net_device *dev)
 		if (time_after(jiffies, begin + 5 * HZ)) {
 			ipoib_warn(priv, "RX drain timing out\n");
 
-			/*
-			 * assume the HW is wedged and just free up everything.
-			 */
+			 
 			list_splice_init(&priv->cm.rx_flush_list,
 					 &priv->cm.rx_reap_list);
 			list_splice_init(&priv->cm.rx_error_list,
@@ -1008,7 +949,7 @@ static int ipoib_cm_rep_handler(struct ib_cm_id *cm_id,
 		return ret;
 	}
 
-	qp_attr.rq_psn = 0 /* FIXME */;
+	qp_attr.rq_psn = 0  ;
 	ret = ib_modify_qp(p->qp, &qp_attr, qp_attr_mask);
 	if (ret) {
 		ipoib_warn(priv, "failed to modify QP to RTR: %d\n", ret);
@@ -1100,17 +1041,14 @@ static int ipoib_cm_send_req(struct net_device *dev,
 	req.private_data_len		= sizeof(data);
 	req.flow_control		= 0;
 
-	req.starting_psn		= 0; /* FIXME */
+	req.starting_psn		= 0;  
 
-	/*
-	 * Pick some arbitrary defaults here; we could make these
-	 * module parameters if anyone cared about setting them.
-	 */
+	 
 	req.responder_resources		= 4;
 	req.remote_cm_response_timeout	= 20;
 	req.local_cm_response_timeout	= 20;
-	req.retry_count			= 0; /* RFC draft warns against retries */
-	req.rnr_retry_count		= 0; /* RFC draft warns against retries */
+	req.retry_count			= 0;  
+	req.rnr_retry_count		= 0;  
 	req.max_cm_retries		= 15;
 	req.srq				= ipoib_cm_has_srq(dev);
 	return ib_send_cm_req(id, &req);
@@ -1209,7 +1147,7 @@ static void ipoib_cm_tx_destroy(struct ipoib_cm_tx *p)
 		ib_destroy_cm_id(p->id);
 
 	if (p->tx_ring) {
-		/* Wait for all sends to complete */
+		 
 		begin = jiffies;
 		while ((int) p->tx_tail - (int) p->tx_head < 0) {
 			if (time_after(jiffies, begin + 5 * HZ)) {
@@ -1357,10 +1295,7 @@ static void ipoib_cm_tx_start(struct work_struct *work)
 		neigh = p->neigh;
 
 		qpn = IPOIB_QPN(neigh->daddr);
-		/*
-		 * As long as the search is with these 2 locks,
-		 * path existence indicates its validity.
-		 */
+		 
 		path = __path_find(dev, neigh->daddr + QPN_AND_OPTIONS_OFFSET);
 		if (!path) {
 			pr_info("%s ignore not valid path %pI6\n",
@@ -1483,8 +1418,7 @@ static void ipoib_cm_stale_task(struct work_struct *work)
 
 	spin_lock_irq(&priv->lock);
 	while (!list_empty(&priv->cm.passive_ids)) {
-		/* List is sorted by LRU, start from tail,
-		 * stop when we see a recently used entry */
+		 
 		p = list_entry(priv->cm.passive_ids.prev, typeof(*p), list);
 		if (time_before_eq(jiffies, p->jiffies + IPOIB_CM_RX_TIMEOUT))
 			break;
@@ -1532,10 +1466,7 @@ static ssize_t mode_store(struct device *d, struct device_attribute *attr,
 
 	ret = ipoib_set_mode(dev, buf);
 
-	/* The assumption is that the function ipoib_set_mode returned
-	 * with the rtnl held by it, if not the value -EBUSY returned,
-	 * then no need to rtnl_unlock
-	 */
+	 
 	if (ret != -EBUSY)
 		rtnl_unlock();
 

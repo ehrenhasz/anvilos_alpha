@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTC Driver for X-Powers AC100
- *
- * Copyright (c) 2016 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/clk-provider.h>
@@ -21,10 +15,10 @@
 #include <linux/rtc.h>
 #include <linux/types.h>
 
-/* Control register */
+ 
 #define AC100_RTC_CTRL_24HOUR	BIT(0)
 
-/* Clock output register bits */
+ 
 #define AC100_CLKOUT_PRE_DIV_SHIFT	5
 #define AC100_CLKOUT_PRE_DIV_WIDTH	3
 #define AC100_CLKOUT_MUX_SHIFT		4
@@ -33,7 +27,7 @@
 #define AC100_CLKOUT_DIV_WIDTH		3
 #define AC100_CLKOUT_EN			BIT(0)
 
-/* RTC */
+ 
 #define AC100_RTC_SEC_MASK	GENMASK(6, 0)
 #define AC100_RTC_MIN_MASK	GENMASK(6, 0)
 #define AC100_RTC_HOU_MASK	GENMASK(5, 0)
@@ -44,7 +38,7 @@
 #define AC100_RTC_YEA_LEAP	BIT(15)
 #define AC100_RTC_UPD_TRIGGER	BIT(15)
 
-/* Alarm (wall clock) */
+ 
 #define AC100_ALM_INT_ENABLE	BIT(0)
 
 #define AC100_ALM_SEC_MASK	GENMASK(6, 0)
@@ -57,14 +51,7 @@
 #define AC100_ALM_ENABLE_FLAG	BIT(15)
 #define AC100_ALM_UPD_TRIGGER	BIT(15)
 
-/*
- * The year parameter passed to the driver is usually an offset relative to
- * the year 1900. This macro is used to convert this offset to another one
- * relative to the minimum year allowed by the hardware.
- *
- * The year range is 1970 - 2069. This range is selected to match Allwinner's
- * driver.
- */
+ 
 #define AC100_YEAR_MIN				1970
 #define AC100_YEAR_MAX				2069
 #define AC100_YEAR_OFF				(AC100_YEAR_MIN - 1900)
@@ -99,9 +86,7 @@ struct ac100_rtc_dev {
 	struct clk_hw_onecell_data *clk_data;
 };
 
-/**
- * Clock controls for 3 clock output pins
- */
+ 
 
 static const struct clk_div_table ac100_clkout_prediv[] = {
 	{ .val = 0, .div = 1 },
@@ -115,7 +100,7 @@ static const struct clk_div_table ac100_clkout_prediv[] = {
 	{ },
 };
 
-/* Abuse the fact that one parent is 32768 Hz, and the other is 4 MHz */
+ 
 static unsigned long ac100_clkout_recalc_rate(struct clk_hw *hw,
 					      unsigned long prate)
 {
@@ -124,7 +109,7 @@ static unsigned long ac100_clkout_recalc_rate(struct clk_hw *hw,
 
 	regmap_read(clk->regmap, clk->offset, &reg);
 
-	/* Handle pre-divider first */
+	 
 	if (prate != AC100_RTC_32K_RATE) {
 		div = (reg >> AC100_CLKOUT_PRE_DIV_SHIFT) &
 			((1 << AC100_CLKOUT_PRE_DIV_WIDTH) - 1);
@@ -177,23 +162,7 @@ static int ac100_clkout_determine_rate(struct clk_hw *hw,
 		struct clk_hw *parent = clk_hw_get_parent_by_index(hw, i);
 		unsigned long tmp, prate;
 
-		/*
-		 * The clock has two parents, one is a fixed clock which is
-		 * internally registered by the ac100 driver. The other parent
-		 * is a clock from the codec side of the chip, which we
-		 * properly declare and reference in the devicetree and is
-		 * not implemented in any driver right now.
-		 * If the clock core looks for the parent of that second
-		 * missing clock, it can't find one that is registered and
-		 * returns NULL.
-		 * So we end up in a situation where clk_hw_get_num_parents
-		 * returns the amount of clocks we can be parented to, but
-		 * clk_hw_get_parent_by_index will not return the orphan
-		 * clocks.
-		 * Thus we need to check if the parent exists before
-		 * we get the parent rate, so we could use the RTC
-		 * without waiting for the codec to be supported.
-		 */
+		 
 		if (!parent)
 			continue;
 
@@ -378,9 +347,7 @@ static void ac100_rtc_unregister_clks(struct ac100_rtc_dev *chip)
 	clk_unregister_fixed_rate(chip->rtc_32k_clk->clk);
 }
 
-/**
- * RTC related bits
- */
+ 
 static int ac100_rtc_get_time(struct device *dev, struct rtc_time *rtc_tm)
 {
 	struct ac100_rtc_dev *chip = dev_get_drvdata(dev);
@@ -411,7 +378,7 @@ static int ac100_rtc_set_time(struct device *dev, struct rtc_time *rtc_tm)
 	int year;
 	u16 reg[8];
 
-	/* our RTC has a limited year range... */
+	 
 	year = rtc_tm->tm_year - AC100_YEAR_OFF;
 	if (year < 0 || year > (AC100_YEAR_MAX - 1900)) {
 		dev_err(dev, "rtc only supports year in range %d - %d\n",
@@ -419,7 +386,7 @@ static int ac100_rtc_set_time(struct device *dev, struct rtc_time *rtc_tm)
 		return -EINVAL;
 	}
 
-	/* convert to BCD */
+	 
 	reg[0] = bin2bcd(rtc_tm->tm_sec)     & AC100_RTC_SEC_MASK;
 	reg[1] = bin2bcd(rtc_tm->tm_min)     & AC100_RTC_MIN_MASK;
 	reg[2] = bin2bcd(rtc_tm->tm_hour)    & AC100_RTC_HOU_MASK;
@@ -427,10 +394,10 @@ static int ac100_rtc_set_time(struct device *dev, struct rtc_time *rtc_tm)
 	reg[4] = bin2bcd(rtc_tm->tm_mday)    & AC100_RTC_DAY_MASK;
 	reg[5] = bin2bcd(rtc_tm->tm_mon + 1) & AC100_RTC_MON_MASK;
 	reg[6] = bin2bcd(year)		     & AC100_RTC_YEA_MASK;
-	/* trigger write */
+	 
 	reg[7] = AC100_RTC_UPD_TRIGGER;
 
-	/* Is it a leap year? */
+	 
 	if (is_leap_year(year + AC100_YEAR_OFF + 1900))
 		reg[6] |= AC100_RTC_YEA_LEAP;
 
@@ -488,7 +455,7 @@ static int ac100_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	int year;
 	int ret;
 
-	/* our alarm has a limited year range... */
+	 
 	year = alrm_tm->tm_year - AC100_YEAR_OFF;
 	if (year < 0 || year > (AC100_YEAR_MAX - 1900)) {
 		dev_err(dev, "alarm only supports year in range %d - %d\n",
@@ -496,14 +463,14 @@ static int ac100_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		return -EINVAL;
 	}
 
-	/* convert to BCD */
+	 
 	reg[0] = (bin2bcd(alrm_tm->tm_sec)  & AC100_ALM_SEC_MASK) |
 			AC100_ALM_ENABLE_FLAG;
 	reg[1] = (bin2bcd(alrm_tm->tm_min)  & AC100_ALM_MIN_MASK) |
 			AC100_ALM_ENABLE_FLAG;
 	reg[2] = (bin2bcd(alrm_tm->tm_hour) & AC100_ALM_HOU_MASK) |
 			AC100_ALM_ENABLE_FLAG;
-	/* Do not enable weekday alarm */
+	 
 	reg[3] = bin2bcd(alrm_tm->tm_wday) & AC100_ALM_WEE_MASK;
 	reg[4] = (bin2bcd(alrm_tm->tm_mday) & AC100_ALM_DAY_MASK) |
 			AC100_ALM_ENABLE_FLAG;
@@ -511,7 +478,7 @@ static int ac100_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 			AC100_ALM_ENABLE_FLAG;
 	reg[6] = (bin2bcd(year) & AC100_ALM_YEA_MASK) |
 			AC100_ALM_ENABLE_FLAG;
-	/* trigger write */
+	 
 	reg[7] = AC100_ALM_UPD_TRIGGER;
 
 	ret = regmap_bulk_write(regmap, AC100_ALM_SEC, reg, 8);
@@ -530,21 +497,21 @@ static irqreturn_t ac100_rtc_irq(int irq, void *data)
 
 	rtc_lock(chip->rtc);
 
-	/* read status */
+	 
 	ret = regmap_read(regmap, AC100_ALM_INT_STA, &val);
 	if (ret)
 		goto out;
 
 	if (val & AC100_ALM_INT_ENABLE) {
-		/* signal rtc framework */
+		 
 		rtc_update_irq(chip->rtc, 1, RTC_AF | RTC_IRQF);
 
-		/* clear status */
+		 
 		ret = regmap_write(regmap, AC100_ALM_INT_STA, val);
 		if (ret)
 			goto out;
 
-		/* disable interrupt */
+		 
 		ret = ac100_rtc_alarm_irq_enable(chip->dev, 0);
 		if (ret)
 			goto out;
@@ -596,14 +563,14 @@ static int ac100_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* always use 24 hour mode */
+	 
 	regmap_write_bits(chip->regmap, AC100_RTC_CTRL, AC100_RTC_CTRL_24HOUR,
 			  AC100_RTC_CTRL_24HOUR);
 
-	/* disable counter alarm interrupt */
+	 
 	regmap_write(chip->regmap, AC100_ALM_INT_ENA, 0);
 
-	/* clear counter alarm pending interrupts */
+	 
 	regmap_write(chip->regmap, AC100_ALM_INT_STA, AC100_ALM_INT_ENABLE);
 
 	ret = ac100_rtc_register_clks(chip);

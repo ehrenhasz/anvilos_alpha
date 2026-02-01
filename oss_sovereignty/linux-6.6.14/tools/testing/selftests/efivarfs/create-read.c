@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 	path = argv[1];
 
-	/* create a test variable */
+	 
 	fd = open(path, O_RDWR | O_CREAT, 0600);
 	if (fd < 0) {
 		perror("open(O_WRONLY)");

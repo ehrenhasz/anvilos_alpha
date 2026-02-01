@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD driver for TWL6040 audio device
- *
- * Authors:	Misael Lopez Cruz <misael.lopez@ti.com>
- *		Jorge Eduardo Candelaria <jorge.candelaria@ti.com>
- *		Peter Ujfalusi <peter.ujfalusi@ti.com>
- *
- * Copyright:	(C) 2011 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -28,53 +20,49 @@
 #define TWL6040_NUM_SUPPLIES	(2)
 
 static const struct reg_default twl6040_defaults[] = {
-	{ 0x01, 0x4B }, /* REG_ASICID	(ro) */
-	{ 0x02, 0x00 }, /* REG_ASICREV	(ro) */
-	{ 0x03, 0x00 }, /* REG_INTID	*/
-	{ 0x04, 0x00 }, /* REG_INTMR	*/
-	{ 0x05, 0x00 }, /* REG_NCPCTRL	*/
-	{ 0x06, 0x00 }, /* REG_LDOCTL	*/
-	{ 0x07, 0x60 }, /* REG_HPPLLCTL	*/
-	{ 0x08, 0x00 }, /* REG_LPPLLCTL	*/
-	{ 0x09, 0x4A }, /* REG_LPPLLDIV	*/
-	{ 0x0A, 0x00 }, /* REG_AMICBCTL	*/
-	{ 0x0B, 0x00 }, /* REG_DMICBCTL	*/
-	{ 0x0C, 0x00 }, /* REG_MICLCTL	*/
-	{ 0x0D, 0x00 }, /* REG_MICRCTL	*/
-	{ 0x0E, 0x00 }, /* REG_MICGAIN	*/
-	{ 0x0F, 0x1B }, /* REG_LINEGAIN	*/
-	{ 0x10, 0x00 }, /* REG_HSLCTL	*/
-	{ 0x11, 0x00 }, /* REG_HSRCTL	*/
-	{ 0x12, 0x00 }, /* REG_HSGAIN	*/
-	{ 0x13, 0x00 }, /* REG_EARCTL	*/
-	{ 0x14, 0x00 }, /* REG_HFLCTL	*/
-	{ 0x15, 0x00 }, /* REG_HFLGAIN	*/
-	{ 0x16, 0x00 }, /* REG_HFRCTL	*/
-	{ 0x17, 0x00 }, /* REG_HFRGAIN	*/
-	{ 0x18, 0x00 }, /* REG_VIBCTLL	*/
-	{ 0x19, 0x00 }, /* REG_VIBDATL	*/
-	{ 0x1A, 0x00 }, /* REG_VIBCTLR	*/
-	{ 0x1B, 0x00 }, /* REG_VIBDATR	*/
-	{ 0x1C, 0x00 }, /* REG_HKCTL1	*/
-	{ 0x1D, 0x00 }, /* REG_HKCTL2	*/
-	{ 0x1E, 0x00 }, /* REG_GPOCTL	*/
-	{ 0x1F, 0x00 }, /* REG_ALB	*/
-	{ 0x20, 0x00 }, /* REG_DLB	*/
-	/* 0x28, REG_TRIM1 */
-	/* 0x29, REG_TRIM2 */
-	/* 0x2A, REG_TRIM3 */
-	/* 0x2B, REG_HSOTRIM */
-	/* 0x2C, REG_HFOTRIM */
-	{ 0x2D, 0x08 }, /* REG_ACCCTL	*/
-	{ 0x2E, 0x00 }, /* REG_STATUS	(ro) */
+	{ 0x01, 0x4B },  
+	{ 0x02, 0x00 },  
+	{ 0x03, 0x00 },  
+	{ 0x04, 0x00 },  
+	{ 0x05, 0x00 },  
+	{ 0x06, 0x00 },  
+	{ 0x07, 0x60 },  
+	{ 0x08, 0x00 },  
+	{ 0x09, 0x4A },  
+	{ 0x0A, 0x00 },  
+	{ 0x0B, 0x00 },  
+	{ 0x0C, 0x00 },  
+	{ 0x0D, 0x00 },  
+	{ 0x0E, 0x00 },  
+	{ 0x0F, 0x1B },  
+	{ 0x10, 0x00 },  
+	{ 0x11, 0x00 },  
+	{ 0x12, 0x00 },  
+	{ 0x13, 0x00 },  
+	{ 0x14, 0x00 },  
+	{ 0x15, 0x00 },  
+	{ 0x16, 0x00 },  
+	{ 0x17, 0x00 },  
+	{ 0x18, 0x00 },  
+	{ 0x19, 0x00 },  
+	{ 0x1A, 0x00 },  
+	{ 0x1B, 0x00 },  
+	{ 0x1C, 0x00 },  
+	{ 0x1D, 0x00 },  
+	{ 0x1E, 0x00 },  
+	{ 0x1F, 0x00 },  
+	{ 0x20, 0x00 },  
+	 
+	 
+	 
+	 
+	 
+	{ 0x2D, 0x08 },  
+	{ 0x2E, 0x00 },  
 };
 
 static struct reg_sequence twl6040_patch[] = {
-	/*
-	 * Select I2C bus access to dual access registers
-	 * Interrupt register is cleared on read
-	 * Select fast mode for i2c (400KHz)
-	 */
+	 
 	{ TWL6040_REG_ACCCTL,
 		TWL6040_I2CSEL | TWL6040_INTCLRMODE | TWL6040_I2CMODE(1) },
 };
@@ -128,41 +116,41 @@ int twl6040_clear_bits(struct twl6040 *twl6040, unsigned int reg, u8 mask)
 }
 EXPORT_SYMBOL(twl6040_clear_bits);
 
-/* twl6040 codec manual power-up sequence */
+ 
 static int twl6040_power_up_manual(struct twl6040 *twl6040)
 {
 	u8 ldoctl, ncpctl, lppllctl;
 	int ret;
 
-	/* enable high-side LDO, reference system and internal oscillator */
+	 
 	ldoctl = TWL6040_HSLDOENA | TWL6040_REFENA | TWL6040_OSCENA;
 	ret = twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 	if (ret)
 		return ret;
 	usleep_range(10000, 10500);
 
-	/* enable negative charge pump */
+	 
 	ncpctl = TWL6040_NCPENA;
 	ret = twl6040_reg_write(twl6040, TWL6040_REG_NCPCTL, ncpctl);
 	if (ret)
 		goto ncp_err;
 	usleep_range(1000, 1500);
 
-	/* enable low-side LDO */
+	 
 	ldoctl |= TWL6040_LSLDOENA;
 	ret = twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 	if (ret)
 		goto lsldo_err;
 	usleep_range(1000, 1500);
 
-	/* enable low-power PLL */
+	 
 	lppllctl = TWL6040_LPLLENA;
 	ret = twl6040_reg_write(twl6040, TWL6040_REG_LPPLLCTL, lppllctl);
 	if (ret)
 		goto lppll_err;
 	usleep_range(5000, 5500);
 
-	/* disable internal oscillator */
+	 
 	ldoctl &= ~TWL6040_OSCENA;
 	ret = twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 	if (ret)
@@ -187,7 +175,7 @@ ncp_err:
 	return ret;
 }
 
-/* twl6040 manual power-down sequence */
+ 
 static void twl6040_power_down_manual(struct twl6040 *twl6040)
 {
 	u8 ncpctl, ldoctl, lppllctl;
@@ -196,24 +184,24 @@ static void twl6040_power_down_manual(struct twl6040 *twl6040)
 	ldoctl = twl6040_reg_read(twl6040, TWL6040_REG_LDOCTL);
 	lppllctl = twl6040_reg_read(twl6040, TWL6040_REG_LPPLLCTL);
 
-	/* enable internal oscillator */
+	 
 	ldoctl |= TWL6040_OSCENA;
 	twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 	usleep_range(1000, 1500);
 
-	/* disable low-power PLL */
+	 
 	lppllctl &= ~TWL6040_LPLLENA;
 	twl6040_reg_write(twl6040, TWL6040_REG_LPPLLCTL, lppllctl);
 
-	/* disable low-side LDO */
+	 
 	ldoctl &= ~TWL6040_LSLDOENA;
 	twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 
-	/* disable negative charge pump */
+	 
 	ncpctl &= ~TWL6040_NCPENA;
 	twl6040_reg_write(twl6040, TWL6040_REG_NCPCTL, ncpctl);
 
-	/* disable high-side LDO, reference system and internal oscillator */
+	 
 	ldoctl &= ~(TWL6040_HSLDOENA | TWL6040_REFENA | TWL6040_OSCENA);
 	twl6040_reg_write(twl6040, TWL6040_REG_LDOCTL, ldoctl);
 }
@@ -274,7 +262,7 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 	mutex_lock(&twl6040->mutex);
 
 	if (on) {
-		/* already powered-up */
+		 
 		if (twl6040->power_count++)
 			goto out;
 
@@ -284,11 +272,11 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 			goto out;
 		}
 
-		/* Allow writes to the chip */
+		 
 		regcache_cache_only(twl6040->regmap, false);
 
 		if (twl6040->audpwron) {
-			/* use automatic power-up sequence */
+			 
 			ret = twl6040_power_up_automatic(twl6040);
 			if (ret) {
 				clk_disable_unprepare(twl6040->clk32k);
@@ -296,7 +284,7 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 				goto out;
 			}
 		} else {
-			/* use manual power-up sequence */
+			 
 			ret = twl6040_power_up_manual(twl6040);
 			if (ret) {
 				clk_disable_unprepare(twl6040->clk32k);
@@ -305,13 +293,10 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 			}
 		}
 
-		/*
-		 * Register access can produce errors after power-up unless we
-		 * wait at least 8ms based on measurements on duovero.
-		 */
+		 
 		usleep_range(10000, 12000);
 
-		/* Sync with the HW */
+		 
 		ret = regcache_sync(twl6040->regmap);
 		if (ret) {
 			dev_err(twl6040->dev, "Failed to sync with the HW: %i\n",
@@ -319,11 +304,11 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 			goto out;
 		}
 
-		/* Default PLL configuration after power up */
+		 
 		twl6040->pll = TWL6040_SYSCLK_SEL_LPPLL;
 		twl6040->sysclk_rate = 19200000;
 	} else {
-		/* already powered-down */
+		 
 		if (!twl6040->power_count) {
 			dev_err(twl6040->dev,
 				"device is already powered-off\n");
@@ -335,17 +320,17 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 			goto out;
 
 		if (twl6040->audpwron) {
-			/* use AUDPWRON line */
+			 
 			gpiod_set_value_cansleep(twl6040->audpwron, 0);
 
-			/* power-down sequence latency */
+			 
 			usleep_range(500, 700);
 		} else {
-			/* use manual power-down sequence */
+			 
 			twl6040_power_down_manual(twl6040);
 		}
 
-		/* Set regmap to cache only and mark it as dirty */
+		 
 		regcache_cache_only(twl6040->regmap, true);
 		regcache_mark_dirty(twl6040->regmap);
 
@@ -376,7 +361,7 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 	hppllctl = twl6040_reg_read(twl6040, TWL6040_REG_HPPLLCTL);
 	lppllctl = twl6040_reg_read(twl6040, TWL6040_REG_LPPLLCTL);
 
-	/* Force full reconfiguration when switching between PLL */
+	 
 	if (pll_id != twl6040->pll) {
 		twl6040->sysclk_rate = 0;
 		twl6040->mclk_rate = 0;
@@ -384,8 +369,8 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 
 	switch (pll_id) {
 	case TWL6040_SYSCLK_SEL_LPPLL:
-		/* low-power PLL divider */
-		/* Change the sysclk configuration only if it has been canged */
+		 
+		 
 		if (twl6040->sysclk_rate != freq_out) {
 			switch (freq_out) {
 			case 17640000:
@@ -405,7 +390,7 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 					  lppllctl);
 		}
 
-		/* The PLL in use has not been change, we can exit */
+		 
 		if (twl6040->pll == pll_id)
 			break;
 
@@ -432,7 +417,7 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 		clk_disable_unprepare(twl6040->mclk);
 		break;
 	case TWL6040_SYSCLK_SEL_HPPLL:
-		/* high-performance PLL can provide only 19.2 MHz */
+		 
 		if (freq_out != 19200000) {
 			dev_err(twl6040->dev,
 				"freq_out %d not supported\n", freq_out);
@@ -445,22 +430,22 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 
 			switch (freq_in) {
 			case 12000000:
-				/* PLL enabled, active mode */
+				 
 				hppllctl |= TWL6040_MCLK_12000KHZ |
 					    TWL6040_HPLLENA;
 				break;
 			case 19200000:
-				/* PLL enabled, bypass mode */
+				 
 				hppllctl |= TWL6040_MCLK_19200KHZ |
 					    TWL6040_HPLLBP | TWL6040_HPLLENA;
 				break;
 			case 26000000:
-				/* PLL enabled, active mode */
+				 
 				hppllctl |= TWL6040_MCLK_26000KHZ |
 					    TWL6040_HPLLENA;
 				break;
 			case 38400000:
-				/* PLL enabled, bypass mode */
+				 
 				hppllctl |= TWL6040_MCLK_38400KHZ |
 					    TWL6040_HPLLBP | TWL6040_HPLLENA;
 				break;
@@ -471,13 +456,10 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 				goto pll_out;
 			}
 
-			/* When switching to HPPLL, enable the mclk first */
+			 
 			if (pll_id != twl6040->pll)
 				clk_prepare_enable(twl6040->mclk);
-			/*
-			 * enable clock slicer to ensure input waveform is
-			 * square
-			 */
+			 
 			hppllctl |= TWL6040_HPLLSQRENA;
 
 			twl6040_reg_write(twl6040, TWL6040_REG_HPPLLCTL,
@@ -523,7 +505,7 @@ unsigned int twl6040_get_sysclk(struct twl6040 *twl6040)
 }
 EXPORT_SYMBOL(twl6040_get_sysclk);
 
-/* Get the combined status of the vibra control register */
+ 
 int twl6040_get_vibralr_status(struct twl6040 *twl6040)
 {
 	unsigned int reg;
@@ -560,7 +542,7 @@ static struct resource twl6040_codec_rsrc[] = {
 
 static bool twl6040_readable_reg(struct device *dev, unsigned int reg)
 {
-	/* Register 0 is not readable */
+	 
 	if (!reg)
 		return false;
 	return true;
@@ -600,7 +582,7 @@ static const struct regmap_config twl6040_regmap_config = {
 	.reg_defaults = twl6040_defaults,
 	.num_reg_defaults = ARRAY_SIZE(twl6040_defaults),
 
-	.max_register = TWL6040_REG_STATUS, /* 0x2e */
+	.max_register = TWL6040_REG_STATUS,  
 
 	.readable_reg = twl6040_readable_reg,
 	.volatile_reg = twl6040_volatile_reg,
@@ -642,7 +624,7 @@ static int twl6040_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* In order to operate correctly we need valid interrupt config */
+	 
 	if (!client->irq) {
 		dev_err(&client->dev, "Invalid IRQ configuration\n");
 		return -EINVAL;
@@ -707,7 +689,7 @@ static int twl6040_probe(struct i2c_client *client)
 		goto gpio_err;
 	}
 
-	/* ERRATA: Automatic power-up is not possible in ES1.0 */
+	 
 	if (twl6040_get_revid(twl6040) > TWL6040_REV_ES1_0) {
 		twl6040->audpwron = devm_gpiod_get_optional(&client->dev,
 							    "ti,audpwron",
@@ -718,7 +700,7 @@ static int twl6040_probe(struct i2c_client *client)
 
 		gpiod_set_consumer_name(twl6040->audpwron, "audpwron");
 
-		/* Clear any pending interrupt */
+		 
 		twl6040_reg_read(twl6040, TWL6040_REG_INTID);
 	}
 
@@ -748,10 +730,7 @@ static int twl6040_probe(struct i2c_client *client)
 		goto readyirq_err;
 	}
 
-	/*
-	 * The main functionality of twl6040 to provide audio on OMAP4+ systems.
-	 * We can add the ASoC codec child whenever this driver has been loaded.
-	 */
+	 
 	irq = regmap_irq_get_virq(twl6040->irq_data, TWL6040_IRQ_PLUG);
 	cell = &twl6040->cells[children];
 	cell->name = "twl6040-codec";
@@ -761,7 +740,7 @@ static int twl6040_probe(struct i2c_client *client)
 	cell->num_resources = ARRAY_SIZE(twl6040_codec_rsrc);
 	children++;
 
-	/* Vibra input driver support */
+	 
 	if (twl6040_has_vibra(node)) {
 		irq = regmap_irq_get_virq(twl6040->irq_data, TWL6040_IRQ_VIB);
 
@@ -774,17 +753,17 @@ static int twl6040_probe(struct i2c_client *client)
 		children++;
 	}
 
-	/* GPO support */
+	 
 	cell = &twl6040->cells[children];
 	cell->name = "twl6040-gpo";
 	children++;
 
-	/* PDM clock support  */
+	 
 	cell = &twl6040->cells[children];
 	cell->name = "twl6040-pdmclk";
 	children++;
 
-	/* The chip is powered down so mark regmap to cache only and dirty */
+	 
 	regcache_cache_only(twl6040->regmap, true);
 	regcache_mark_dirty(twl6040->regmap);
 

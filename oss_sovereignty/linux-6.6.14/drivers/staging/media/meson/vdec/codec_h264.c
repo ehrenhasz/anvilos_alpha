@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 #include <media/videobuf2-dma-contig.h>
@@ -15,13 +12,10 @@
 #define SIZE_WORKSPACE	0x1ee000
 #define SIZE_SEI	(8 * SZ_1K)
 
-/*
- * Offset added by the firmware which must be substracted
- * from the workspace phyaddr
- */
+ 
 #define WORKSPACE_BUF_OFFSET	0x1000000
 
-/* ISR status */
+ 
 #define CMD_MASK		GENMASK(7, 0)
 #define CMD_SRC_CHANGE		1
 #define CMD_FRAMES_READY	2
@@ -31,14 +25,14 @@
 
 #define SEI_DATA_READY	BIT(15)
 
-/* Picture type */
+ 
 #define PIC_TOP_BOT	5
 #define PIC_BOT_TOP	6
 
-/* Size of Motion Vector per macroblock */
+ 
 #define MB_MV_SIZE	96
 
-/* Frame status data */
+ 
 #define PIC_STRUCT_BIT	5
 #define PIC_STRUCT_MASK	GENMASK(2, 0)
 #define BUF_IDX_MASK	GENMASK(4, 0)
@@ -46,7 +40,7 @@
 #define OFFSET_BIT	16
 #define OFFSET_MASK	GENMASK(15, 0)
 
-/* Bitstream parsed data */
+ 
 #define MB_TOTAL_BIT	8
 #define MB_TOTAL_MASK	GENMASK(15, 0)
 #define MB_WIDTH_MASK	GENMASK(7, 0)
@@ -57,11 +51,7 @@
 #define AR_PRESENT_FLAG	BIT(0)
 #define AR_EXTEND	0xff
 
-/*
- * Buffer to send to the ESPARSER to signal End Of Stream for H.264.
- * This is a 16x16 encoded picture that will trigger drain firmware-side.
- * There is no known alternative.
- */
+ 
 static const u8 eos_sequence[SZ_4K] = {
 	0x00, 0x00, 0x00, 0x01, 0x06, 0x05, 0xff, 0xe4, 0xdc, 0x45, 0xe9, 0xbd,
 	0xe6, 0xd9, 0x48, 0xb7,	0x96, 0x2c, 0xd8, 0x20, 0xd9, 0x23, 0xee, 0xef,
@@ -123,20 +113,20 @@ static const u8 *codec_h264_eos_sequence(u32 *len)
 }
 
 struct codec_h264 {
-	/* H.264 decoder requires an extended firmware */
+	 
 	void      *ext_fw_vaddr;
 	dma_addr_t ext_fw_paddr;
 
-	/* Buffer for the H.264 Workspace */
+	 
 	void      *workspace_vaddr;
 	dma_addr_t workspace_paddr;
 
-	/* Buffer for the H.264 references MV */
+	 
 	void      *ref_vaddr;
 	dma_addr_t ref_paddr;
 	u32	   ref_size;
 
-	/* Buffer for parsed SEI data */
+	 
 	void      *sei_vaddr;
 	dma_addr_t sei_paddr;
 
@@ -153,10 +143,7 @@ static int codec_h264_can_recycle(struct amvdec_core *core)
 
 static void codec_h264_recycle(struct amvdec_core *core, u32 buf_idx)
 {
-	/*
-	 * Tell the firmware it can recycle this buffer.
-	 * AV_SCRATCH_8 serves the same purpose.
-	 */
+	 
 	if (!amvdec_read_dos(core, AV_SCRATCH_7))
 		amvdec_write_dos(core, AV_SCRATCH_7, buf_idx + 1);
 	else
@@ -169,14 +156,14 @@ static int codec_h264_start(struct amvdec_session *sess)
 	struct amvdec_core *core = sess->core;
 	struct codec_h264 *h264 = sess->priv;
 
-	/* Allocate some memory for the H.264 decoder's state */
+	 
 	h264->workspace_vaddr =
 		dma_alloc_coherent(core->dev, SIZE_WORKSPACE,
 				   &h264->workspace_paddr, GFP_KERNEL);
 	if (!h264->workspace_vaddr)
 		return -ENOMEM;
 
-	/* Allocate some memory for the H.264 SEI dump */
+	 
 	h264->sei_vaddr = dma_alloc_coherent(core->dev, SIZE_SEI,
 					     &h264->sei_paddr, GFP_KERNEL);
 	if (!h264->sei_vaddr)
@@ -190,7 +177,7 @@ static int codec_h264_start(struct amvdec_session *sess)
 	amvdec_write_dos(core, AV_SCRATCH_I, h264->sei_paddr -
 					     workspace_offset);
 
-	/* Enable "error correction" */
+	 
 	amvdec_write_dos(core, AV_SCRATCH_F,
 			 (amvdec_read_dos(core, AV_SCRATCH_F) & 0xffffffc3) |
 			 BIT(4) | BIT(7));
@@ -295,7 +282,7 @@ static void codec_h264_resume(struct amvdec_session *sess)
 	dev_dbg(core->dev, "max_refs = %u; actual_dpb_size = %u\n",
 		h264->max_refs, sess->num_dst_bufs);
 
-	/* Align to a multiple of 4 macroblocks */
+	 
 	mb_width = ALIGN(h264->mb_width, 4);
 	mb_height = ALIGN(h264->mb_height, 4);
 	mb_total = mb_width * mb_height;
@@ -308,9 +295,9 @@ static void codec_h264_resume(struct amvdec_session *sess)
 		return;
 	}
 
-	/* Address to store the references' MVs */
+	 
 	amvdec_write_dos(core, AV_SCRATCH_1, h264->ref_paddr);
-	/* End of ref MV */
+	 
 	amvdec_write_dos(core, AV_SCRATCH_4, h264->ref_paddr + h264->ref_size);
 
 	amvdec_write_dos(core, AV_SCRATCH_0, (h264->max_refs << 24) |
@@ -318,9 +305,7 @@ static void codec_h264_resume(struct amvdec_session *sess)
 					     ((h264->max_refs - 1) << 8));
 }
 
-/*
- * Configure the H.264 decoder when the parser detected a parameter set change
- */
+ 
 static void codec_h264_src_change(struct amvdec_session *sess)
 {
 	struct amvdec_core *core = sess->core;
@@ -333,11 +318,11 @@ static void codec_h264_src_change(struct amvdec_session *sess)
 
 	parsed_info = amvdec_read_dos(core, AV_SCRATCH_1);
 
-	/* Total number of 16x16 macroblocks */
+	 
 	mb_total = (parsed_info >> MB_TOTAL_BIT) & MB_TOTAL_MASK;
-	/* Number of macroblocks per line */
+	 
 	h264->mb_width = parsed_info & MB_WIDTH_MASK;
-	/* Number of macroblock lines */
+	 
 	h264->mb_height = mb_total / h264->mb_width;
 
 	h264->max_refs = ((parsed_info >> MAX_REF_BIT) & MAX_REF_MASK) + 1;
@@ -356,10 +341,7 @@ static void codec_h264_src_change(struct amvdec_session *sess)
 	amvdec_src_change(sess, frame_width, frame_height, h264->max_refs + 5);
 }
 
-/*
- * The bitstream offset is split in half in 2 different registers.
- * Fetch its MSB here, which location depends on the frame number.
- */
+ 
 static u32 get_offset_msb(struct amvdec_core *core, int frame_num)
 {
 	int take_msb = frame_num % 2;
@@ -395,11 +377,7 @@ static void codec_h264_frames_ready(struct amvdec_session *sess, u32 status)
 		u32 offset = (frame_status >> OFFSET_BIT) & OFFSET_MASK;
 		u32 field = V4L2_FIELD_NONE;
 
-		/*
-		 * A buffer decode error means it was decoded,
-		 * but part of the picture will have artifacts.
-		 * Typical reason is a temporarily corrupted bitstream
-		 */
+		 
 		if (frame_status & ERROR_FLAG)
 			dev_dbg(core->dev, "Buffer %d decode error\n",
 				buffer_index);
@@ -442,7 +420,7 @@ static irqreturn_t codec_h264_threaded_isr(struct amvdec_session *sess)
 		size = (amvdec_read_dos(core, AV_SCRATCH_1) + 1) * 16;
 		dev_err(core->dev, "Unsupported video height: %u\n", size);
 		goto abort;
-	case 0: /* Unused but not worth printing for */
+	case 0:  
 	case 9:
 		break;
 	default:
@@ -453,7 +431,7 @@ static irqreturn_t codec_h264_threaded_isr(struct amvdec_session *sess)
 	if (cmd && cmd != CMD_SRC_CHANGE)
 		amvdec_write_dos(core, AV_SCRATCH_0, 0);
 
-	/* Decoder has some SEI data for us ; ignore */
+	 
 	if (amvdec_read_dos(core, AV_SCRATCH_J) & SEI_DATA_READY)
 		amvdec_write_dos(core, AV_SCRATCH_J, 0);
 

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <asm/page.h>
 #include <linux/mlx4/cq.h>
@@ -89,7 +58,7 @@ int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv,
 	}
 	ring->buf_size = ALIGN(size * ring->sp_stride, MLX4_EN_PAGE_SIZE);
 
-	/* Allocate HW buffers on provided NUMA node */
+	 
 	set_dev_node(&mdev->dev->persist->pdev->dev, node);
 	err = mlx4_alloc_hwq_res(mdev->dev, &ring->sp_wqres, ring->buf_size);
 	set_dev_node(&mdev->dev->persist->pdev->dev, mdev->dev->numa_node);
@@ -244,17 +213,17 @@ static void mlx4_en_stamp_wqe(struct mlx4_en_priv *priv,
 	__be32 *ptr = (__be32 *)tx_desc;
 	int i;
 
-	/* Optimize the common case when there are no wraparounds */
+	 
 	if (likely((void *)tx_desc +
 		   (tx_info->nr_txbb << LOG_TXBB_SIZE) <= end)) {
-		/* Stamp the freed descriptor */
+		 
 		for (i = 0; i < tx_info->nr_txbb << LOG_TXBB_SIZE;
 		     i += STAMP_STRIDE) {
 			*ptr = stamp;
 			ptr += STAMP_DWORDS;
 		}
 	} else {
-		/* Stamp the freed descriptor */
+		 
 		for (i = 0; i < tx_info->nr_txbb << LOG_TXBB_SIZE;
 		     i += STAMP_STRIDE) {
 			*ptr = stamp;
@@ -285,9 +254,7 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
 	int nr_maps = tx_info->nr_maps;
 	int i;
 
-	/* We do not touch skb here, so prefetch skb->users location
-	 * to speedup consume_skb()
-	 */
+	 
 	prefetchw(&skb->users);
 
 	if (unlikely(timestamp)) {
@@ -308,7 +275,7 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
 				       tx_info->map0_dma,
 				       tx_info->map0_byte_count,
 				       DMA_TO_DEVICE);
-		/* Optimize the common case when there are no wraparounds */
+		 
 		if (likely((void *)tx_desc +
 			   (tx_info->nr_txbb << LOG_TXBB_SIZE) <= end)) {
 			for (i = 1; i < nr_maps; i++) {
@@ -324,7 +291,7 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
 
 			for (i = 1; i < nr_maps; i++) {
 				data++;
-				/* Check for wraparound before unmapping */
+				 
 				if ((void *) data >= end)
 					data = ring->buf;
 				dma_unmap_page(priv->ddev,
@@ -369,7 +336,7 @@ int mlx4_en_free_tx_buf(struct net_device *dev, struct mlx4_en_tx_ring *ring)
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	int cnt = 0;
 
-	/* Skip last polled descriptor */
+	 
 	ring->cons += ring->last_nr_txbb;
 	en_dbg(DRV, priv, "Freeing Tx buf - cons:0x%x prod:0x%x\n",
 		 ring->cons, ring->prod);
@@ -383,7 +350,7 @@ int mlx4_en_free_tx_buf(struct net_device *dev, struct mlx4_en_tx_ring *ring)
 	while (ring->cons != ring->prod) {
 		ring->last_nr_txbb = ring->free_tx_desc(priv, ring,
 						ring->cons & ring->size_mask,
-						0, 0 /* Non-NAPI caller */);
+						0, 0  );
 		ring->cons += ring->last_nr_txbb;
 		cnt++;
 	}
@@ -460,15 +427,12 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
 	ring_index = ring_cons & size_mask;
 	stamp_index = ring_index;
 
-	/* Process all completed CQEs */
+	 
 	while (XNOR(cqe->owner_sr_opcode & MLX4_CQE_OWNER_MASK,
 			cons_index & size) && (done < budget)) {
 		u16 new_index;
 
-		/*
-		 * make sure we read the CQE after we read the
-		 * ownership bit
-		 */
+		 
 		dma_rmb();
 
 		if (unlikely((cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) ==
@@ -477,7 +441,7 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
 				mlx4_en_handle_err_cqe(priv, (struct mlx4_err_cqe *)cqe, index,
 						       ring);
 
-		/* Skip over last polled CQE */
+		 
 		new_index = be16_to_cpu(cqe->wqe_index) & size_mask;
 
 		do {
@@ -489,7 +453,7 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
 			if (unlikely(ring->tx_info[ring_index].ts_requested))
 				timestamp = mlx4_en_get_cqe_ts(cqe);
 
-			/* free next descriptor */
+			 
 			last_nr_txbb = INDIRECT_CALL_2(ring->free_tx_desc,
 						       mlx4_en_free_tx_desc,
 						       mlx4_en_recycle_tx_desc,
@@ -510,15 +474,12 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
 		cqe = mlx4_en_get_cqe(buf, index, priv->cqe_size) + factor;
 	}
 
-	/*
-	 * To prevent CQ overflow we first update CQ consumer and only then
-	 * the ring consumer.
-	 */
+	 
 	mcq->cons_index = cons_index;
 	mlx4_cq_set_ci(mcq);
 	wmb();
 
-	/* we want to dirty this cache line once */
+	 
 	WRITE_ONCE(ring->last_nr_txbb, last_nr_txbb);
 	WRITE_ONCE(ring->cons, ring_cons + txbbs_skipped);
 
@@ -527,8 +488,7 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
 
 	netdev_tx_completed_queue(ring->tx_queue, packets, bytes);
 
-	/* Wakeup Tx queue if this stopped, and ring is not full.
-	 */
+	 
 	if (netif_tx_queue_stopped(ring->tx_queue) &&
 	    !mlx4_en_is_tx_ring_full(ring)) {
 		netif_tx_wake_queue(ring->tx_queue);
@@ -549,7 +509,7 @@ void mlx4_en_tx_irq(struct mlx4_cq *mcq)
 		mlx4_en_arm_cq(priv, cq);
 }
 
-/* TX CQ polling - called by NAPI */
+ 
 int mlx4_en_poll_tx_cq(struct napi_struct *napi, int budget)
 {
 	struct mlx4_en_cq *cq = container_of(napi, struct mlx4_en_cq, napi);
@@ -591,17 +551,11 @@ static struct mlx4_en_tx_desc *mlx4_en_bounce_to_desc(struct mlx4_en_priv *priv,
 			*((u32 *) (ring->bounce_buf + i));
 	}
 
-	/* Return real descriptor location */
+	 
 	return ring->buf + (index << LOG_TXBB_SIZE);
 }
 
-/* Decide if skb can be inlined in tx descriptor to avoid dma mapping
- *
- * It seems strange we do not simply use skb_copy_bits().
- * This would allow to inline all skbs iff skb->len <= inline_thold
- *
- * Note that caller already checked skb was not a gso packet
- */
+ 
 static bool is_inline(int inline_thold, const struct sk_buff *skb,
 		      const struct skb_shared_info *shinfo,
 		      void **pfrag)
@@ -651,10 +605,7 @@ static int get_real_size(const struct sk_buff *skb,
 		if (skb->encapsulation) {
 			*lso_header_size = skb_inner_tcp_all_headers(skb);
 		} else {
-			/* Detects large IPV6 TCP packets and prepares for removal of
-			 * HBH header that has been pushed by ip6_xmit(),
-			 * mainly so that tcpdump can dissect them.
-			 */
+			 
 			if (ipv6_has_hopopt_jumbo(skb))
 				*hopbyhop = sizeof(struct hop_jumbo_hdr);
 			*lso_header_size = skb_tcp_all_headers(skb);
@@ -662,8 +613,7 @@ static int get_real_size(const struct sk_buff *skb,
 		real_size = CTRL_SIZE + shinfo->nr_frags * DS_SIZE +
 			ALIGN(*lso_header_size - *hopbyhop + 4, DS_SIZE);
 		if (unlikely(*lso_header_size != skb_headlen(skb))) {
-			/* We add a segment for the skb linear buffer only if
-			 * it contains data */
+			 
 			if (*lso_header_size < skb_headlen(skb))
 				real_size += DS_SIZE;
 			else {
@@ -757,11 +707,7 @@ static void mlx4_bf_copy(void __iomem *dst, const void *src,
 void mlx4_en_xmit_doorbell(struct mlx4_en_tx_ring *ring)
 {
 	wmb();
-	/* Since there is no iowrite*_native() that writes the
-	 * value as is, without byteswapping - using the one
-	 * the doesn't do byteswapping in the relevant arch
-	 * endianness.
-	 */
+	 
 #if defined(__LITTLE_ENDIAN)
 	iowrite32(
 #else
@@ -781,9 +727,7 @@ static void mlx4_en_tx_write_desc(struct mlx4_en_tx_ring *ring,
 
 	if (bf_ok) {
 		op_own |= htonl((bf_index & 0xffff) << 8);
-		/* Ensure new descriptor hits memory
-		 * before setting ownership of this descriptor to HW
-		 */
+		 
 		dma_wmb();
 		tx_desc->ctrl.owner_opcode = op_own;
 
@@ -796,9 +740,7 @@ static void mlx4_en_tx_write_desc(struct mlx4_en_tx_ring *ring,
 
 		ring->bf.offset ^= ring->bf.buf_size;
 	} else {
-		/* Ensure new descriptor hits memory
-		 * before setting ownership of this descriptor to HW
-		 */
+		 
 		dma_wmb();
 		tx_desc->ctrl.owner_opcode = op_own;
 		if (send_doorbell)
@@ -821,7 +763,7 @@ static bool mlx4_en_build_dma_wqe(struct mlx4_en_priv *priv,
 	u32 byte_count = 0;
 	int i_frag;
 
-	/* Map fragments if any */
+	 
 	for (i_frag = shinfo->nr_frags - 1; i_frag >= 0; i_frag--) {
 		const skb_frag_t *frag = &shinfo->frags[i_frag];
 		byte_count = skb_frag_size(frag);
@@ -838,7 +780,7 @@ static bool mlx4_en_build_dma_wqe(struct mlx4_en_priv *priv,
 		--data;
 	}
 
-	/* Map linear part if needed */
+	 
 	if (tx_info->linear) {
 		byte_count = skb_headlen(skb) - lso_header_size;
 
@@ -853,7 +795,7 @@ static bool mlx4_en_build_dma_wqe(struct mlx4_en_priv *priv,
 		dma_wmb();
 		data->byte_count = cpu_to_be32(byte_count);
 	}
-	/* tx completion can avoid cache line miss for common cases */
+	 
 	tx_info->map0_dma = dma;
 	tx_info->map0_byte_count = byte_count;
 
@@ -910,7 +852,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (unlikely(!real_size))
 		goto tx_drop_count;
 
-	/* Align descriptor to TXBB size */
+	 
 	desc_size = ALIGN(real_size, TXBB_SIZE);
 	nr_txbb = desc_size >> LOG_TXBB_SIZE;
 
@@ -931,12 +873,11 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	netdev_txq_bql_enqueue_prefetchw(ring->tx_queue);
 
-	/* Packet is good - grab an index and transmit it */
+	 
 	index = ring->prod & ring->size_mask;
 	bf_index = ring->prod;
 
-	/* See if we have enough space for whole descriptor TXBB for setting
-	 * SW ownership on next descriptor; if not, use a bounce buffer. */
+	 
 	if (likely(index + nr_txbb <= ring->size))
 		tx_desc = ring->buf + (index << LOG_TXBB_SIZE);
 	else {
@@ -950,7 +891,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 		bf_ok = false;
 	}
 
-	/* Save skb in tx_info ring */
+	 
 	tx_info = &ring->tx_info[index];
 	tx_info->skb = skb;
 	tx_info->nr_txbb = nr_txbb;
@@ -965,7 +906,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 		data_offset = offsetof(struct mlx4_en_tx_desc, lso) + lso_align;
 	}
 
-	/* valid only for none inline segments */
+	 
 	tx_info->data_offset = data_offset;
 
 	tx_info->inl = inline_ok;
@@ -981,10 +922,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 					   tx_info))
 			goto tx_drop_count;
 
-	/*
-	 * For timestamping add flag to skb_shinfo and
-	 * set flag for further reference
-	 */
+	 
 	tx_info->ts_requested = 0;
 	if (unlikely(ring->hwtstamp_tx_type == HWTSTAMP_TX_ON &&
 		     shinfo->tx_flags & SKBTX_HW_TSTAMP)) {
@@ -992,8 +930,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 		tx_info->ts_requested = 1;
 	}
 
-	/* Prepare ctrl segement apart opcode+ownership, which depends on
-	 * whether LSO is used */
+	 
 	tx_desc->ctrl.srcrb_flags = priv->ctrl_flags;
 	if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
 		if (!skb->encapsulation)
@@ -1007,46 +944,40 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (priv->flags & MLX4_EN_FLAG_ENABLE_HW_LOOPBACK) {
 		struct ethhdr *ethh;
 
-		/* Copy dst mac address to wqe. This allows loopback in eSwitch,
-		 * so that VFs and PF can communicate with each other
-		 */
+		 
 		ethh = (struct ethhdr *)skb->data;
 		tx_desc->ctrl.srcrb_flags16[0] = get_unaligned((__be16 *)ethh->h_dest);
 		tx_desc->ctrl.imm = get_unaligned((__be32 *)(ethh->h_dest + 2));
 	}
 
-	/* Handle LSO (TSO) packets */
+	 
 	if (lso_header_size) {
 		int i;
 
-		/* Mark opcode as LSO */
+		 
 		op_own = cpu_to_be32(MLX4_OPCODE_LSO | (1 << 6)) |
 			((ring->prod & ring->size) ?
 				cpu_to_be32(MLX4_EN_BIT_DESC_OWN) : 0);
 
 		lso_header_size -= hopbyhop;
-		/* Fill in the LSO prefix */
+		 
 		tx_desc->lso.mss_hdr_size = cpu_to_be32(
 			shinfo->gso_size << 16 | lso_header_size);
 
 
 		if (unlikely(hopbyhop)) {
-			/* remove the HBH header.
-			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
-			 */
+			 
 			memcpy(tx_desc->lso.header, skb->data, ETH_HLEN + sizeof(*h6));
 			h6 = (struct ipv6hdr *)((char *)tx_desc->lso.header + ETH_HLEN);
 			h6->nexthdr = IPPROTO_TCP;
-			/* Copy the TCP header after the IPv6 one */
+			 
 			memcpy(h6 + 1,
 			       skb->data + ETH_HLEN + sizeof(*h6) +
 					sizeof(struct hop_jumbo_hdr),
 			       tcp_hdrlen(skb));
-			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+			 
 		} else {
-			/* Copy headers;
-			 * note that we already verified that it is linear
-			 */
+			 
 			memcpy(tx_desc->lso.header, skb->data, lso_header_size);
 		}
 		ring->tso_packets++;
@@ -1055,7 +986,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 		tx_info->nr_bytes = skb->len + (i - 1) * lso_header_size;
 		ring->packets += i;
 	} else {
-		/* Normal (Non LSO) packet */
+		 
 		op_own = cpu_to_be32(MLX4_OPCODE_SEND) |
 			((ring->prod & ring->size) ?
 			 cpu_to_be32(MLX4_EN_BIT_DESC_OWN) : 0);
@@ -1087,13 +1018,13 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	WRITE_ONCE(ring->prod, ring->prod + nr_txbb);
 
-	/* If we used a bounce buffer then copy descriptor back into place */
+	 
 	if (unlikely(bounce))
 		tx_desc = mlx4_en_bounce_to_desc(priv, ring, index, desc_size);
 
 	skb_tx_timestamp(skb);
 
-	/* Check available TXBBs And 2K spare for prefetch */
+	 
 	stop_queue = mlx4_en_is_tx_ring_full(ring);
 	if (unlikely(stop_queue)) {
 		netif_tx_stop_queue(ring->tx_queue);
@@ -1117,12 +1048,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
 			      op_own, bf_ok, send_doorbell);
 
 	if (unlikely(stop_queue)) {
-		/* If queue was emptied after the if (stop_queue) , and before
-		 * the netif_tx_stop_queue() - need to wake the queue,
-		 * or else it will remain stopped forever.
-		 * Need a memory barrier to make sure ring->cons was not
-		 * updated before queue was stopped.
-		 */
+		 
 		smp_rmb();
 
 		if (unlikely(!mlx4_en_is_tx_ring_full(ring))) {
@@ -1208,7 +1134,7 @@ netdev_tx_t mlx4_en_xmit_frame(struct mlx4_en_rx_ring *rx_ring,
 	dma_wmb();
 	data->byte_count = cpu_to_be32(length);
 
-	/* tx completion can avoid cache line miss for common cases */
+	 
 
 	op_own = cpu_to_be32(MLX4_OPCODE_SEND) |
 		((ring->prod & ring->size) ?
@@ -1218,9 +1144,7 @@ netdev_tx_t mlx4_en_xmit_frame(struct mlx4_en_rx_ring *rx_ring,
 
 	WRITE_ONCE(ring->prod, ring->prod + MLX4_EN_XDP_TX_NRTXBB);
 
-	/* Ensure new descriptor hits memory
-	 * before setting ownership of this descriptor to HW
-	 */
+	 
 	dma_wmb();
 	tx_desc->ctrl.owner_opcode = op_own;
 	ring->xmit_more++;

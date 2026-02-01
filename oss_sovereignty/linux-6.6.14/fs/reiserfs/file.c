@@ -1,6 +1,4 @@
-/*
- * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README
- */
+ 
 
 #include <linux/time.h>
 #include "reiserfs.h"
@@ -14,21 +12,7 @@
 #include <linux/buffer_head.h>
 #include <linux/quotaops.h>
 
-/*
- * We pack the tails of files on file close, not at the time they are written.
- * This implies an unnecessary copy of the tail and an unnecessary indirect item
- * insertion/balancing, for files that are written in one write.
- * It avoids unnecessary tail packings (balances) for files that are written in
- * multiple writes and are small enough to have tails.
- *
- * file_release is called by the VFS layer when the file is closed.  If
- * this is the last open file descriptor, and the file
- * small enough to have a tail, and the tail is currently in an
- * unformatted node, the tail is converted back into a direct item.
- *
- * We use reiserfs_truncate_file to pack the tail, since it already has
- * all the conditions coded.
- */
+ 
 static int reiserfs_file_release(struct inode *inode, struct file *filp)
 {
 
@@ -42,7 +26,7 @@ static int reiserfs_file_release(struct inode *inode, struct file *filp)
 				       &REISERFS_I(inode)->tailpack))
 		return 0;
 
-	/* fast out for when nothing needs to be done */
+	 
 	if ((!(REISERFS_I(inode)->i_flags & i_pack_on_close_mask) ||
 	     !tail_has_to_be_packed(inode)) &&
 	    REISERFS_I(inode)->i_prealloc_count <= 0) {
@@ -51,32 +35,15 @@ static int reiserfs_file_release(struct inode *inode, struct file *filp)
 	}
 
 	reiserfs_write_lock(inode->i_sb);
-	/*
-	 * freeing preallocation only involves relogging blocks that
-	 * are already in the current transaction.  preallocation gets
-	 * freed at the end of each transaction, so it is impossible for
-	 * us to log any additional blocks (including quota blocks)
-	 */
+	 
 	err = journal_begin(&th, inode->i_sb, 1);
 	if (err) {
-		/*
-		 * uh oh, we can't allow the inode to go away while there
-		 * is still preallocation blocks pending.  Try to join the
-		 * aborted transaction
-		 */
+		 
 		jbegin_failure = err;
 		err = journal_join_abort(&th, inode->i_sb);
 
 		if (err) {
-			/*
-			 * hmpf, our choices here aren't good.  We can pin
-			 * the inode which will disallow unmount from ever
-			 * happening, we can do nothing, which will corrupt
-			 * random memory on unmount, or we can forcibly
-			 * remove the file from the preallocation list, which
-			 * will leak blocks on disk.  Lets pin the inode
-			 * and let the admin know what is going on.
-			 */
+			 
 			igrab(inode);
 			reiserfs_warning(inode->i_sb, "clm-9001",
 					 "pinning inode %lu because the "
@@ -92,7 +59,7 @@ static int reiserfs_file_release(struct inode *inode, struct file *filp)
 #endif
 	err = journal_end(&th);
 
-	/* copy back the error code from journal_begin */
+	 
 	if (!err)
 		err = jbegin_failure;
 
@@ -100,12 +67,7 @@ static int reiserfs_file_release(struct inode *inode, struct file *filp)
 	    (REISERFS_I(inode)->i_flags & i_pack_on_close_mask) &&
 	    tail_has_to_be_packed(inode)) {
 
-		/*
-		 * if regular file is released by last holder and it has been
-		 * appended (we append by unformatted node only) or its direct
-		 * item(s) had to be converted, then it may have to be
-		 * indirect2direct converted
-		 */
+		 
 		err = reiserfs_truncate_file(inode, 0);
 	}
 out:
@@ -118,7 +80,7 @@ static int reiserfs_file_open(struct inode *inode, struct file *file)
 {
 	int err = dquot_file_open(inode, file);
 
-	/* somebody might be tailpacking on final close; wait for it */
+	 
         if (!atomic_inc_not_zero(&REISERFS_I(inode)->openers)) {
 		mutex_lock(&REISERFS_I(inode)->tailpack);
 		atomic_inc(&REISERFS_I(inode)->openers);
@@ -134,12 +96,9 @@ void reiserfs_vfs_truncate_file(struct inode *inode)
 	mutex_unlock(&REISERFS_I(inode)->tailpack);
 }
 
-/* Sync a reiserfs file. */
+ 
 
-/*
- * FIXME: sync_mapping_buffers() never has anything to sync.  Can
- * be removed...
- */
+ 
 
 static int reiserfs_sync_file(struct file *filp, loff_t start, loff_t end,
 			      int datasync)
@@ -166,7 +125,7 @@ static int reiserfs_sync_file(struct file *filp, loff_t start, loff_t end,
 	return (err < 0) ? -EIO : 0;
 }
 
-/* taken fs/buffer.c:__block_commit_write */
+ 
 int reiserfs_commit_page(struct inode *inode, struct page *page,
 			 unsigned from, unsigned to)
 {
@@ -209,10 +168,7 @@ int reiserfs_commit_page(struct inode *inode, struct page *page,
 				journal_mark_dirty(&th, bh);
 			} else if (!buffer_dirty(bh)) {
 				mark_buffer_dirty(bh);
-				/*
-				 * do data=ordered on any page past the end
-				 * of file and any buffer marked BH_New.
-				 */
+				 
 				if (reiserfs_data_ordered(inode->i_sb) &&
 				    (new || page->index >= i_size_index)) {
 					reiserfs_add_ordered_list(inode, bh);
@@ -225,12 +181,7 @@ int reiserfs_commit_page(struct inode *inode, struct page *page,
 drop_write_lock:
 		reiserfs_write_unlock(s);
 	}
-	/*
-	 * If this is a partial write which happened to make all buffers
-	 * uptodate then we can optimize away a bogus read_folio() for
-	 * the next read(). Here we 'discover' whether the page went
-	 * uptodate as a result of this (potentially partial) write.
-	 */
+	 
 	if (!partial)
 		SetPageUptodate(page);
 	return ret;

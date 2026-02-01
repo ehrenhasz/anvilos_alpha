@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HCI based Driver for NXP PN544 NFC Chip
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -16,7 +12,7 @@
 
 #include "pn544.h"
 
-/* Timing restrictions (ms) */
+ 
 #define PN544_HCI_RESETVEN_TIME		30
 
 enum pn544_state {
@@ -27,22 +23,22 @@ enum pn544_state {
 
 #define FULL_VERSION_LEN 11
 
-/* Proprietary commands */
+ 
 #define PN544_WRITE		0x3f
 #define PN544_TEST_SWP		0x21
 
-/* Proprietary gates, events, commands and registers */
+ 
 
-/* NFC_HCI_RF_READER_A_GATE additional registers and commands */
+ 
 #define PN544_RF_READER_A_AUTO_ACTIVATION			0x10
 #define PN544_RF_READER_A_CMD_CONTINUE_ACTIVATION		0x12
 #define PN544_MIFARE_CMD					0x21
 
-/* Commands that apply to all RF readers */
+ 
 #define PN544_RF_READER_CMD_PRESENCE_CHECK	0x30
 #define PN544_RF_READER_CMD_ACTIVATE_NEXT	0x32
 
-/* NFC_HCI_ID_MGMT_GATE additional registers */
+ 
 #define PN544_ID_MGMT_FULL_VERSION_SW		0x10
 
 #define PN544_RF_READER_ISO15693_GATE		0x12
@@ -103,7 +99,7 @@ static const struct nfc_hci_gate pn544_gates[] = {
 	{PN544_RF_READER_NFCIP1_TARGET_GATE, NFC_HCI_INVALID_PIPE}
 };
 
-/* Largest headroom needed for outgoing custom commands */
+ 
 #define PN544_CMDS_HEADROOM	2
 
 struct pn544_hci_info {
@@ -336,9 +332,9 @@ static int pn544_hci_start_poll(struct nfc_hci_dev *hdev,
 	int r;
 	u8 duration[2];
 	u8 activated;
-	u8 i_mode = 0x3f; /* Enable all supported modes */
+	u8 i_mode = 0x3f;  
 	u8 t_mode = 0x0f;
-	u8 t_merge = 0x01; /* Enable merge by default */
+	u8 t_merge = 0x01;  
 
 	pr_info(DRIVER_DESC ": %s protocols 0x%x 0x%x\n",
 		__func__, im_protocols, tm_protocols);
@@ -363,13 +359,13 @@ static int pn544_hci_start_poll(struct nfc_hci_dev *hdev,
 
 	if (im_protocols & (NFC_PROTO_ISO14443_MASK | NFC_PROTO_MIFARE_MASK |
 			 NFC_PROTO_JEWEL_MASK))
-		phases |= 1;		/* Type A */
+		phases |= 1;		 
 	if (im_protocols & NFC_PROTO_FELICA_MASK) {
-		phases |= (1 << 2);	/* Type F 212 */
-		phases |= (1 << 3);	/* Type F 424 */
+		phases |= (1 << 2);	 
+		phases |= (1 << 3);	 
 	}
 
-	phases |= (1 << 5);		/* NFC active */
+	phases |= (1 << 5);		 
 
 	r = nfc_hci_set_param(hdev, PN544_POLLING_LOOP_MGMT_GATE,
 			      PN544_PL_RDPHASES, &phases, 1);
@@ -535,7 +531,7 @@ static int pn544_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 			return -EPROTO;
 		}
 
-		/* Type F NFC-DEP IDm has prefix 0x01FE */
+		 
 		if ((uid_skb->data[0] == 0x01) && (uid_skb->data[1] == 0xfe)) {
 			kfree_skb(uid_skb);
 			r = nfc_hci_send_cmd(hdev,
@@ -555,11 +551,8 @@ static int pn544_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 			kfree_skb(uid_skb);
 		}
 	} else if (target->supported_protocols & NFC_PROTO_ISO14443_MASK) {
-		/*
-		 * TODO: maybe other ISO 14443 require some kind of continue
-		 * activation, but for now we've seen only this one below.
-		 */
-		if (target->sens_res == 0x4403)	/* Type 4 Mifare DESFire */
+		 
+		if (target->sens_res == 0x4403)	 
 			r = nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
 			      PN544_RF_READER_A_CMD_CONTINUE_ACTIVATION,
 			      NULL, 0, NULL);
@@ -594,11 +587,7 @@ static void pn544_hci_data_exchange_cb(void *context, struct sk_buff *skb,
 #define MIFARE_UID_LEN		4
 #define MIFARE_KEY_LEN		6
 #define MIFARE_CMD_LEN		12
-/*
- * Returns:
- * <= 0: driver handled the data exchange
- *    1: driver doesn't especially handle, please do standard processing
- */
+ 
 static int pn544_hci_im_transceive(struct nfc_hci_dev *hdev,
 				   struct nfc_target *target,
 				   struct sk_buff *skb, data_exchange_cb_t cb,
@@ -612,10 +601,7 @@ static int pn544_hci_im_transceive(struct nfc_hci_dev *hdev,
 	switch (target->hci_reader_gate) {
 	case NFC_HCI_RF_READER_A_GATE:
 		if (target->supported_protocols & NFC_PROTO_MIFARE_MASK) {
-			/*
-			 * It seems that pn544 is inverting key and UID for
-			 * MIFARE authentication commands.
-			 */
+			 
 			if (skb->len == MIFARE_CMD_LEN &&
 			    (skb->data[0] == MIFARE_CMD_AUTH_KEY_A ||
 			     skb->data[0] == MIFARE_CMD_AUTH_KEY_B)) {
@@ -667,7 +653,7 @@ static int pn544_hci_tm_send(struct nfc_hci_dev *hdev, struct sk_buff *skb)
 {
 	int r;
 
-	/* Set default false for multiple information chaining */
+	 
 	*(u8 *)skb_push(skb, 1) = 0;
 
 	r = nfc_hci_send_event(hdev, PN544_RF_READER_NFCIP1_TARGET_GATE,
@@ -707,11 +693,7 @@ static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
 	return 0;
 }
 
-/*
- * Returns:
- * <= 0: driver handled the event, skb consumed
- *    1: driver does not handle the event, please do standard processing
- */
+ 
 static int pn544_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe, u8 event,
 				    struct sk_buff *skb)
 {
@@ -781,7 +763,7 @@ static int pn544_hci_fw_download(struct nfc_hci_dev *hdev,
 static int pn544_hci_discover_se(struct nfc_hci_dev *hdev)
 {
 	u32 se_idx = 0;
-	u8 ese_mode = 0x01; /* Default mode */
+	u8 ese_mode = 0x01;  
 	struct sk_buff *res_skb;
 	int r;
 
@@ -926,10 +908,7 @@ int pn544_hci_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
 
 	memcpy(init_data.gates, pn544_gates, sizeof(pn544_gates));
 
-	/*
-	 * TODO: Session id must include the driver name + some bus addr
-	 * persistent info to discriminate 2 identical chips
-	 */
+	 
 	strcpy(init_data.session_id, "ID544HCI");
 
 	protocols = NFC_PROTO_JEWEL_MASK |

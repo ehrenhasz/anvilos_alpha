@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef INCLUDE_XEN_OPS_H
 #define INCLUDE_XEN_OPS_H
 
@@ -70,10 +70,7 @@ int xen_xlate_remap_gfn_array(struct vm_area_struct *vma,
 int xen_xlate_unmap_gfn_range(struct vm_area_struct *vma,
 			      int nr, struct page **pages);
 #else
-/*
- * These two functions are called from arch/x86/xen/mmu.c and so stubs
- * are needed for a configuration not specifying CONFIG_XEN_AUTO_XLATE.
- */
+ 
 static inline int xen_xlate_remap_gfn_array(struct vm_area_struct *vma,
 					    unsigned long addr,
 					    xen_pfn_t *gfn, int nr,
@@ -94,23 +91,7 @@ static inline int xen_xlate_unmap_gfn_range(struct vm_area_struct *vma,
 int xen_remap_vma_range(struct vm_area_struct *vma, unsigned long addr,
 			unsigned long len);
 
-/*
- * xen_remap_domain_gfn_array() - map an array of foreign frames by gfn
- * @vma:     VMA to map the pages into
- * @addr:    Address at which to map the pages
- * @gfn:     Array of GFNs to map
- * @nr:      Number entries in the GFN array
- * @err_ptr: Returns per-GFN error status.
- * @prot:    page protection mask
- * @domid:   Domain owning the pages
- * @pages:   Array of pages if this domain has an auto-translated physmap
- *
- * @gfn and @err_ptr may point to the same buffer, the GFNs will be
- * overwritten by the error codes after they are mapped.
- *
- * Returns the number of successfully mapped frames, or a -ve error
- * code.
- */
+ 
 static inline int xen_remap_domain_gfn_array(struct vm_area_struct *vma,
 					     unsigned long addr,
 					     xen_pfn_t *gfn, int nr,
@@ -122,31 +103,13 @@ static inline int xen_remap_domain_gfn_array(struct vm_area_struct *vma,
 		return xen_xlate_remap_gfn_array(vma, addr, gfn, nr, err_ptr,
 						 prot, domid, pages);
 
-	/* We BUG_ON because it's a programmer error to pass a NULL err_ptr,
-	 * and the consequences later is quite hard to detect what the actual
-	 * cause of "wrong memory was mapped in".
-	 */
+	 
 	BUG_ON(err_ptr == NULL);
 	return xen_remap_pfn(vma, addr, gfn, nr, err_ptr, prot, domid,
 			     false);
 }
 
-/*
- * xen_remap_domain_mfn_array() - map an array of foreign frames by mfn
- * @vma:     VMA to map the pages into
- * @addr:    Address at which to map the pages
- * @mfn:     Array of MFNs to map
- * @nr:      Number entries in the MFN array
- * @err_ptr: Returns per-MFN error status.
- * @prot:    page protection mask
- * @domid:   Domain owning the pages
- *
- * @mfn and @err_ptr may point to the same buffer, the MFNs will be
- * overwritten by the error codes after they are mapped.
- *
- * Returns the number of successfully mapped frames, or a -ve error
- * code.
- */
+ 
 static inline int xen_remap_domain_mfn_array(struct vm_area_struct *vma,
 					     unsigned long addr, xen_pfn_t *mfn,
 					     int nr, int *err_ptr,
@@ -159,18 +122,7 @@ static inline int xen_remap_domain_mfn_array(struct vm_area_struct *vma,
 			     true);
 }
 
-/* xen_remap_domain_gfn_range() - map a range of foreign frames
- * @vma:     VMA to map the pages into
- * @addr:    Address at which to map the pages
- * @gfn:     First GFN to map.
- * @nr:      Number frames to map
- * @prot:    page protection mask
- * @domid:   Domain owning the pages
- * @pages:   Array of pages if this domain has an auto-translated physmap
- *
- * Returns the number of successfully mapped frames, or a -ve error
- * code.
- */
+ 
 static inline int xen_remap_domain_gfn_range(struct vm_area_struct *vma,
 					     unsigned long addr,
 					     xen_pfn_t gfn, int nr,
@@ -213,7 +165,7 @@ static inline void xen_preemptible_hcall_end(void)
 static inline void xen_preemptible_hcall_begin(void) { }
 static inline void xen_preemptible_hcall_end(void) { }
 
-#endif /* CONFIG_XEN_PV && !CONFIG_PREEMPTION */
+#endif  
 
 #ifdef CONFIG_XEN_GRANT_DMA_OPS
 bool xen_virtio_restricted_mem_acc(struct virtio_device *dev);
@@ -224,6 +176,6 @@ static inline bool xen_virtio_restricted_mem_acc(struct virtio_device *dev)
 {
 	return false;
 }
-#endif /* CONFIG_XEN_GRANT_DMA_OPS */
+#endif  
 
-#endif /* INCLUDE_XEN_OPS_H */
+#endif  

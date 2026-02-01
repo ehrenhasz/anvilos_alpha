@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * emc1403.c - SMSC Thermal Driver
- *
- * Copyright (C) 2008 Intel Corp
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -158,9 +150,7 @@ fail:
 	return retval;
 }
 
-/*
- *	Sensors. We pass the actual i2c register to the methods.
- */
+ 
 
 static SENSOR_DEVICE_ATTR_RW(temp1_min, temp, 0x06);
 static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, 0x05);
@@ -283,13 +273,7 @@ static const struct attribute_group emc1404_group = {
 	.attrs = emc1404_attrs,
 };
 
-/*
- * EMC14x2 uses a different register and different bits to report alarm and
- * fault status. For simplicity, provide a separate attribute group for this
- * chip series.
- * Since we can not re-use the same attribute names, create a separate attribute
- * array.
- */
+ 
 static struct sensor_device_attribute_2 emc1402_alarms[] = {
 	SENSOR_ATTR_2_RO(temp1_min_alarm, bit, 0x02, 0x20),
 	SENSOR_ATTR_2_RO(temp1_max_alarm, bit, 0x02, 0x40),
@@ -320,7 +304,7 @@ static int emc1403_detect(struct i2c_client *client,
 			struct i2c_board_info *info)
 {
 	int id;
-	/* Check if thermal chip is SMSC and EMC1403 or EMC1423 */
+	 
 
 	id = i2c_smbus_read_byte_data(client, THERMAL_SMSC_ID_REG);
 	if (id != 0x5d)
@@ -360,19 +344,19 @@ static int emc1403_detect(struct i2c_client *client,
 static bool emc1403_regmap_is_volatile(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case 0x00:	/* internal diode high byte */
-	case 0x01:	/* external diode 1 high byte */
-	case 0x02:	/* status */
-	case 0x10:	/* external diode 1 low byte */
-	case 0x1b:	/* external diode fault */
-	case 0x23:	/* external diode 2 high byte */
-	case 0x24:	/* external diode 2 low byte */
-	case 0x29:	/* internal diode low byte */
-	case 0x2a:	/* externl diode 3 high byte */
-	case 0x2b:	/* external diode 3 low byte */
-	case 0x35:	/* high limit status */
-	case 0x36:	/* low limit status */
-	case 0x37:	/* therm limit status */
+	case 0x00:	 
+	case 0x01:	 
+	case 0x02:	 
+	case 0x10:	 
+	case 0x1b:	 
+	case 0x23:	 
+	case 0x24:	 
+	case 0x29:	 
+	case 0x2a:	 
+	case 0x2b:	 
+	case 0x35:	 
+	case 0x36:	 
+	case 0x37:	 
 		return true;
 	default:
 		return false;
@@ -433,7 +417,7 @@ static const unsigned short emc1403_address_list[] = {
 	0x18, 0x1c, 0x29, 0x4c, 0x4d, 0x5c, I2C_CLIENT_END
 };
 
-/* Last digit of chip name indicates number of channels */
+ 
 static const struct i2c_device_id emc1403_idtable[] = {
 	{ "emc1402", emc1402 },
 	{ "emc1403", emc1403 },

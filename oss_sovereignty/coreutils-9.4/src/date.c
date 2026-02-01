@@ -1,20 +1,4 @@
-/* date - print or set the system date and time
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -32,7 +16,7 @@
 #include "stat-time.h"
 #include "fprintftime.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "date"
 
 #define AUTHORS proper_name ("David MacKenzie")
@@ -41,25 +25,24 @@ static bool show_date (char const *, struct timespec, timezone_t);
 
 enum Time_spec
 {
-  /* Display only the date.  */
+   
   TIME_SPEC_DATE,
-  /* Display date, hours, minutes, and seconds.  */
+   
   TIME_SPEC_SECONDS,
-  /* Similar, but display nanoseconds. */
+   
   TIME_SPEC_NS,
 
-  /* Put these last, since they aren't valid for --rfc-3339.  */
+   
 
-  /* Display date and hour.  */
+   
   TIME_SPEC_HOURS,
-  /* Display date, hours, and minutes.  */
+   
   TIME_SPEC_MINUTES
 };
 
 static char const *const time_spec_string[] =
 {
-  /* Put "hours" and "minutes" first, since they aren't valid for
-     --rfc-3339.  */
+   
   "hours", "minutes",
   "date", "seconds", "ns", nullptr
 };
@@ -70,11 +53,10 @@ static enum Time_spec const time_spec[] =
 };
 ARGMATCH_VERIFY (time_spec_string, time_spec);
 
-/* A format suitable for Internet RFCs 5322, 2822, and 822.  */
+ 
 static char const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEBUG_DATE_PARSING_OPTION = CHAR_MAX + 1,
@@ -105,13 +87,13 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* flags for parse_datetime2 */
+ 
 static unsigned int parse_datetime_flags;
 
 #if LOCALTIME_CACHE
 # define TZSET tzset ()
 #else
-# define TZSET /* empty */
+# define TZSET  
 #endif
 
 #ifdef _DATE_FMT

@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max77693.c - mfd core driver for the MAX 77693
-//
-// Copyright (C) 2012 Samsung Electronics
-// SangYoung Son <hello.son@samsung.com>
-//
-// This program is not provided / owned by Maxim Integrated Products.
-//
-// This driver is based on max8997.c
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -24,7 +24,7 @@
 #include <linux/regulator/machine.h>
 #include <linux/regmap.h>
 
-#define I2C_ADDR_PMIC	(0xCC >> 1)	/* Charger, Flash LED */
+#define I2C_ADDR_PMIC	(0xCC >> 1)	 
 #define I2C_ADDR_MUIC	(0x4A >> 1)
 #define I2C_ADDR_HAPTIC	(0x90 >> 1)
 
@@ -203,11 +203,7 @@ static int max77693_i2c_probe(struct i2c_client *i2c)
 		goto err_regmap;
 	}
 
-	/*
-	 * Initialize register map for MUIC device because use regmap-muic
-	 * instance of MUIC device when irq of max77693 is initialized
-	 * before call max77693-muic probe() function.
-	 */
+	 
 	max77693->regmap_muic = devm_regmap_init_i2c(max77693->i2c_muic,
 					 &max77693_regmap_muic_config);
 	if (IS_ERR(max77693->regmap_muic)) {
@@ -253,7 +249,7 @@ static int max77693_i2c_probe(struct i2c_client *i2c)
 		goto err_irq_muic;
 	}
 
-	/* Unmask interrupts from all blocks in interrupt source register */
+	 
 	ret = regmap_update_bits(max77693->regmap,
 				MAX77693_PMIC_REG_INTSRC_MASK,
 				SRC_IRQ_ALL, (unsigned int)~SRC_IRQ_ALL);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/if_vlan.h>
@@ -25,7 +23,7 @@
 
 static DEFINE_PER_CPU(struct nft_inner_tun_ctx, nft_pcpu_tun_ctx);
 
-/* Same layout as nft_expr but it embeds the private expression data area. */
+ 
 struct __nft_expr {
 	const struct nft_expr_ops	*ops;
 	union {

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #ifndef MICROPY_INCLUDED_MODNETWORK_H
 #define MICROPY_INCLUDED_MODNETWORK_H
 
@@ -38,10 +14,10 @@
 #define MOD_NETWORK_STA_IF (0)
 #define MOD_NETWORK_AP_IF (1)
 
-// Socket level option.
+
 #define MOD_NETWORK_SOL_SOCKET      (0x0FFF)
 
-// Common option flags per-socket.
+
 #define MOD_NETWORK_SO_REUSEADDR    (0x0004)
 #define MOD_NETWORK_SO_BROADCAST    (0x0020)
 #define MOD_NETWORK_SO_KEEPALIVE    (0x0008)
@@ -56,16 +32,16 @@
 extern char mod_network_country_code[2];
 
 #ifndef MICROPY_PY_NETWORK_HOSTNAME_MAX_LEN
-// Doesn't include the null terminator.
+
 #define MICROPY_PY_NETWORK_HOSTNAME_MAX_LEN (32)
 #endif
 
-// This is a null-terminated string.
+
 extern char mod_network_hostname_data[MICROPY_PY_NETWORK_HOSTNAME_MAX_LEN + 1];
 
-// To support backwards-compatible (esp32, esp8266, cyw43)
-// `if.config(hostname=...)` to forward directly to the implementation of
-// `network.hostname(...)`.
+
+
+
 mp_obj_t mod_network_hostname(size_t n_args, const mp_obj_t *args);
 
 #if MICROPY_PY_LWIP
@@ -86,11 +62,11 @@ extern int mp_mod_network_prefer_dns_use_ip_version;
 struct _mod_network_socket_obj_t;
 
 typedef struct _mod_network_nic_protocol_t {
-    // API for non-socket operations
+    
     int (*gethostbyname)(mp_obj_t nic, const char *name, mp_uint_t len, uint8_t *ip_out);
     void (*deinit)(void);
 
-    // API for socket operations; return -1 on error
+    
     int (*socket)(struct _mod_network_socket_obj_t *socket, int *_errno);
     void (*close)(struct _mod_network_socket_obj_t *socket);
     int (*bind)(struct _mod_network_socket_obj_t *socket, byte *ip, mp_uint_t port, int *_errno);
@@ -119,12 +95,12 @@ typedef struct _mod_network_socket_obj_t {
     mp_obj_t callback;
     int32_t state   : 8;
     #if MICROPY_PY_SOCKET_EXTENDED_STATE
-    // Extended socket state for NICs/ports that need it.
+    
     void *_private;
     #endif
 } mod_network_socket_obj_t;
 
-#endif // MICROPY_PY_LWIP / MICROPY_PORT_NETWORK_INTERFACES
+#endif 
 
 #ifdef MICROPY_PORT_NETWORK_INTERFACES
 void mod_network_init(void);
@@ -133,4 +109,4 @@ void mod_network_register_nic(mp_obj_t nic);
 mp_obj_t mod_network_find_nic(const uint8_t *ip);
 #endif
 
-#endif // MICROPY_INCLUDED_MODNETWORK_H
+#endif 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

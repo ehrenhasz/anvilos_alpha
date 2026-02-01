@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA Manager Driver for Intel Stratix10 SoC
- *
- *  Copyright (C) 2018 Intel Corporation
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/fpga/fpga-mgr.h>
 #include <linux/firmware/intel/stratix10-svc-client.h>
@@ -12,24 +8,17 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
-/*
- * FPGA programming requires a higher level of privilege (EL3), per the SoC
- * design.
- */
+ 
 #define NUM_SVC_BUFS	4
 #define SVC_BUF_SIZE	SZ_512K
 
-/* Indicates buffer is in use if set */
+ 
 #define SVC_BUF_LOCK	0
 
 #define S10_BUFFER_TIMEOUT (msecs_to_jiffies(SVC_RECONFIG_BUFFER_TIMEOUT_MS))
 #define S10_RECONFIG_TIMEOUT (msecs_to_jiffies(SVC_RECONFIG_REQUEST_TIMEOUT_MS))
 
-/*
- * struct s10_svc_buf
- * buf:  virtual address of buf provided by service layer
- * lock: locked if buffer is in use
- */
+ 
 struct s10_svc_buf {
 	char *buf;
 	unsigned long lock;
@@ -65,10 +54,7 @@ static int s10_svc_send_msg(struct s10_priv *priv,
 	return ret;
 }
 
-/*
- * Free buffers allocated from the service layer's pool that are not in use.
- * Return true when all buffers are freed.
- */
+ 
 static bool s10_free_buffers(struct fpga_manager *mgr)
 {
 	struct s10_priv *priv = mgr->priv;
@@ -93,9 +79,7 @@ static bool s10_free_buffers(struct fpga_manager *mgr)
 	return num_free == NUM_SVC_BUFS;
 }
 
-/*
- * Returns count of how many buffers are not in use.
- */
+ 
 static uint s10_free_buffer_count(struct fpga_manager *mgr)
 {
 	struct s10_priv *priv = mgr->priv;
@@ -109,14 +93,7 @@ static uint s10_free_buffer_count(struct fpga_manager *mgr)
 	return num_free;
 }
 
-/*
- * s10_unlock_bufs
- * Given the returned buffer address, match that address to our buffer struct
- * and unlock that buffer.  This marks it as available to be refilled and sent
- * (or freed).
- * priv: private data
- * kaddr: kernel address of buffer that was returned from service layer
- */
+ 
 static void s10_unlock_bufs(struct s10_priv *priv, void *kaddr)
 {
 	uint i;
@@ -134,12 +111,7 @@ static void s10_unlock_bufs(struct s10_priv *priv, void *kaddr)
 	WARN(1, "Unknown buffer returned from service layer %p\n", kaddr);
 }
 
-/*
- * s10_receive_callback - callback for service layer to use to provide client
- * (this driver) messages received through the mailbox.
- * client: service layer client struct
- * data: message from service layer
- */
+ 
 static void s10_receive_callback(struct stratix10_svc_client *client,
 				 struct stratix10_svc_cb_data *data)
 {
@@ -151,10 +123,7 @@ static void s10_receive_callback(struct stratix10_svc_client *client,
 
 	status = data->status;
 
-	/*
-	 * Here we set status bits as we receive them.  Elsewhere, we always use
-	 * test_and_clear_bit() to check status in priv->status
-	 */
+	 
 	for (i = 0; i <= SVC_STATUS_ERROR; i++)
 		if (status & (1 << i))
 			set_bit(i, &priv->status);
@@ -168,10 +137,7 @@ static void s10_receive_callback(struct stratix10_svc_client *client,
 	complete(&priv->status_return_completion);
 }
 
-/*
- * s10_ops_write_init - prepare for FPGA reconfiguration by requesting
- * partial reconfig and allocating buffers from the service layer.
- */
+ 
 static int s10_ops_write_init(struct fpga_manager *mgr,
 			      struct fpga_image_info *info,
 			      const char *buf, size_t count)
@@ -211,7 +177,7 @@ static int s10_ops_write_init(struct fpga_manager *mgr,
 		goto init_done;
 	}
 
-	/* Allocate buffers from the service layer's pool. */
+	 
 	for (i = 0; i < NUM_SVC_BUFS; i++) {
 		kbuf = stratix10_svc_allocate_memory(priv->chan, SVC_BUF_SIZE);
 		if (IS_ERR(kbuf)) {
@@ -229,14 +195,7 @@ init_done:
 	return ret;
 }
 
-/*
- * s10_send_buf - send a buffer to the service layer queue
- * mgr: fpga manager struct
- * buf: fpga image buffer
- * count: size of buf in bytes
- * Returns # of bytes transferred or -ENOBUFS if the all the buffers are in use
- * or if the service queue is full. Never returns 0.
- */
+ 
 static int s10_send_buf(struct fpga_manager *mgr, const char *buf, size_t count)
 {
 	struct s10_priv *priv = mgr->priv;
@@ -246,7 +205,7 @@ static int s10_send_buf(struct fpga_manager *mgr, const char *buf, size_t count)
 	int ret;
 	uint i;
 
-	/* get/lock a buffer that that's not being used */
+	 
 	for (i = 0; i < NUM_SVC_BUFS; i++)
 		if (!test_and_set_bit_lock(SVC_BUF_LOCK,
 					   &priv->svc_bufs[i].lock))
@@ -271,10 +230,7 @@ static int s10_send_buf(struct fpga_manager *mgr, const char *buf, size_t count)
 	return xfer_sz;
 }
 
-/*
- * Send an FPGA image to privileged layers to write to the FPGA.  When done
- * sending, free all service layer buffers we allocated in write_init.
- */
+ 
 static int s10_ops_write(struct fpga_manager *mgr, const char *buf,
 			 size_t count)
 {
@@ -284,10 +240,7 @@ static int s10_ops_write(struct fpga_manager *mgr, const char *buf,
 	int sent = 0;
 	int ret = 0;
 
-	/*
-	 * Loop waiting for buffers to be returned.  When a buffer is returned,
-	 * reuse it to send more data or free if if all data has been sent.
-	 */
+	 
 	while (count > 0 || s10_free_buffer_count(mgr) != NUM_SVC_BUFS) {
 		reinit_completion(&priv->status_return_completion);
 
@@ -309,11 +262,8 @@ static int s10_ops_write(struct fpga_manager *mgr, const char *buf,
 				break;
 		}
 
-		/*
-		 * If callback hasn't already happened, wait for buffers to be
-		 * returned from service layer
-		 */
-		wait_status = 1; /* not timed out */
+		 
+		wait_status = 1;  
 		if (!priv->status)
 			wait_status = wait_for_completion_timeout(
 				&priv->status_return_completion,
@@ -370,7 +320,7 @@ static int s10_ops_write_complete(struct fpga_manager *mgr,
 			ret = -ETIMEDOUT;
 			break;
 		}
-		/* Not error or timeout, so ret is # of jiffies until timeout */
+		 
 		timeout = ret;
 		ret = 0;
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef __NFP_FLOWER_H__
 #define __NFP_FLOWER_H__ 1
@@ -39,7 +39,7 @@ struct nfp_app;
 #define NFP_FL_MASK_REUSE_TIME_NS	40000
 #define NFP_FL_MASK_ID_LOCATION		1
 
-/* Extra features bitmap. */
+ 
 #define NFP_FL_FEATS_GENEVE		BIT(0)
 #define NFP_FL_NBI_MTU_SETTING		BIT(1)
 #define NFP_FL_FEATS_GENEVE_OPT		BIT(2)
@@ -85,16 +85,7 @@ struct nfp_fl_stats_id {
 	u8 repeated_em_count;
 };
 
-/**
- * struct nfp_fl_tunnel_offloads - priv data for tunnel offloads
- * @offloaded_macs:	Hashtable of the offloaded MAC addresses
- * @ipv4_off_list:	List of IPv4 addresses to offload
- * @ipv6_off_list:	List of IPv6 addresses to offload
- * @ipv4_off_lock:	Lock for the IPv4 address list
- * @ipv6_off_lock:	Lock for the IPv6 address list
- * @mac_off_ids:	IDA to manage id assignment for offloaded MACs
- * @neigh_nb:		Notifier to monitor neighbour state
- */
+ 
 struct nfp_fl_tunnel_offloads {
 	struct rhashtable offloaded_macs;
 	struct list_head ipv4_off_list;
@@ -105,48 +96,27 @@ struct nfp_fl_tunnel_offloads {
 	struct notifier_block neigh_nb;
 };
 
-/**
- * struct nfp_tun_neigh_lag - lag info
- * @lag_version:	lag version
- * @lag_instance:	lag instance
- */
+ 
 struct nfp_tun_neigh_lag {
 	u8 lag_version[3];
 	u8 lag_instance;
 };
 
-/**
- * struct nfp_tun_neigh - basic neighbour data
- * @dst_addr:	Destination MAC address
- * @src_addr:	Source MAC address
- * @port_id:	NFP port to output packet on - associated with source IPv4
- */
+ 
 struct nfp_tun_neigh {
 	u8 dst_addr[ETH_ALEN];
 	u8 src_addr[ETH_ALEN];
 	__be32 port_id;
 };
 
-/**
- * struct nfp_tun_neigh_ext - extended neighbour data
- * @vlan_tpid:	VLAN_TPID match field
- * @vlan_tci:	VLAN_TCI match field
- * @host_ctx:	Host context ID to be saved here
- */
+ 
 struct nfp_tun_neigh_ext {
 	__be16 vlan_tpid;
 	__be16 vlan_tci;
 	__be32 host_ctx;
 };
 
-/**
- * struct nfp_tun_neigh_v4 - neighbour/route entry on the NFP for IPv4
- * @dst_ipv4:	Destination IPv4 address
- * @src_ipv4:	Source IPv4 address
- * @common:	Neighbour/route common info
- * @ext:	Neighbour/route extended info
- * @lag:	lag port info
- */
+ 
 struct nfp_tun_neigh_v4 {
 	__be32 dst_ipv4;
 	__be32 src_ipv4;
@@ -155,14 +125,7 @@ struct nfp_tun_neigh_v4 {
 	struct nfp_tun_neigh_lag lag;
 };
 
-/**
- * struct nfp_tun_neigh_v6 - neighbour/route entry on the NFP for IPv6
- * @dst_ipv6:	Destination IPv6 address
- * @src_ipv6:	Source IPv6 address
- * @common:	Neighbour/route common info
- * @ext:	Neighbour/route extended info
- * @lag:	lag port info
- */
+ 
 struct nfp_tun_neigh_v6 {
 	struct in6_addr dst_ipv6;
 	struct in6_addr src_ipv6;
@@ -171,15 +134,7 @@ struct nfp_tun_neigh_v6 {
 	struct nfp_tun_neigh_lag lag;
 };
 
-/**
- * struct nfp_neigh_entry
- * @neigh_cookie:	Cookie for hashtable lookup
- * @ht_node:		rhash_head entry for hashtable
- * @list_head:		Needed as member of linked_nn_entries list
- * @payload:		The neighbour info payload
- * @flow:		Linked flow rule
- * @is_ipv6:		Flag to indicate if payload is ipv6 or ipv4
- */
+ 
 struct nfp_neigh_entry {
 	unsigned long neigh_cookie;
 	struct rhash_head ht_node;
@@ -189,26 +144,14 @@ struct nfp_neigh_entry {
 	bool is_ipv6;
 };
 
-/**
- * struct nfp_predt_entry
- * @list_head:		List head to attach to predt_list
- * @flow_pay:		Direct link to flow_payload
- * @nn_list:		List of linked nfp_neigh_entries
- */
+ 
 struct nfp_predt_entry {
 	struct list_head list_head;
 	struct nfp_fl_payload *flow_pay;
 	struct list_head nn_list;
 };
 
-/**
- * struct nfp_mtu_conf - manage MTU setting
- * @portnum:		NFP port number of repr with requested MTU change
- * @requested_val:	MTU value requested for repr
- * @ack:		Received ack that MTU has been correctly set
- * @wait_q:		Wait queue for MTU acknowledgements
- * @lock:		Lock for setting/reading MTU variables
- */
+ 
 struct nfp_mtu_conf {
 	u32 portnum;
 	unsigned int requested_val;
@@ -217,19 +160,7 @@ struct nfp_mtu_conf {
 	spinlock_t lock;
 };
 
-/**
- * struct nfp_fl_lag - Flower APP priv data for link aggregation
- * @work:		Work queue for writing configs to the HW
- * @lock:		Lock to protect lag_group_list
- * @group_list:		List of all master/slave groups offloaded
- * @ida_handle:		IDA to handle group ids
- * @pkt_num:		Incremented for each config packet sent
- * @batch_ver:		Incremented for each batch of config packets
- * @global_inst:	Instance allocator for groups
- * @rst_cfg:		Marker to reset HW LAG config
- * @retrans_skbs:	Cmsgs that could not be processed by HW and require
- *			retransmission
- */
+ 
 struct nfp_fl_lag {
 	struct delayed_work work;
 	struct mutex lock;
@@ -242,63 +173,13 @@ struct nfp_fl_lag {
 	struct sk_buff_head retrans_skbs;
 };
 
-/**
- * struct nfp_fl_internal_ports - Flower APP priv data for additional ports
- * @port_ids:	Assignment of ids to any additional ports
- * @lock:	Lock for extra ports list
- */
+ 
 struct nfp_fl_internal_ports {
 	struct idr port_ids;
 	spinlock_t lock;
 };
 
-/**
- * struct nfp_flower_priv - Flower APP per-vNIC priv data
- * @app:		Back pointer to app
- * @nn:			Pointer to vNIC
- * @mask_id_seed:	Seed used for mask hash table
- * @flower_version:	HW version of flower
- * @flower_ext_feats:	Bitmap of extra features the HW supports
- * @flower_en_feats:	Bitmap of features enabled by HW
- * @stats_ids:		List of free stats ids
- * @mask_ids:		List of free mask ids
- * @mask_table:		Hash table used to store masks
- * @stats_ring_size:	Maximum number of allowed stats ids
- * @flow_table:		Hash table used to store flower rules
- * @stats:		Stored stats updates for flower rules
- * @stats_lock:		Lock for flower rule stats updates
- * @stats_ctx_table:	Hash table to map stats contexts to its flow rule
- * @cmsg_work:		Workqueue for control messages processing
- * @cmsg_skbs_high:	List of higher priority skbs for control message
- *			processing
- * @cmsg_skbs_low:	List of lower priority skbs for control message
- *			processing
- * @tun:		Tunnel offload data
- * @reify_replies:	atomically stores the number of replies received
- *			from firmware for repr reify
- * @reify_wait_queue:	wait queue for repr reify response counting
- * @mtu_conf:		Configuration of repr MTU value
- * @nfp_lag:		Link aggregation data block
- * @indr_block_cb_priv:	List of priv data passed to indirect block cbs
- * @non_repr_priv:	List of offloaded non-repr ports and their priv data
- * @active_mem_unit:	Current active memory unit for flower rules
- * @total_mem_units:	Total number of available memory units for flower rules
- * @internal_ports:	Internal port ids used in offloaded rules
- * @qos_stats_work:	Workqueue for qos stats processing
- * @qos_rate_limiters:	Current active qos rate limiters
- * @qos_stats_lock:	Lock on qos stats updates
- * @meter_stats_lock:   Lock on meter stats updates
- * @meter_table:	Hash table used to store the meter table
- * @pre_tun_rule_cnt:	Number of pre-tunnel rules offloaded
- * @merge_table:	Hash table to store merged flows
- * @ct_zone_table:	Hash table used to store the different zones
- * @ct_zone_wc:		Special zone entry for wildcarded zone matches
- * @ct_map_table:	Hash table used to referennce ct flows
- * @predt_list:		List to keep track of decap pretun flows
- * @neigh_table:	Table to keep track of neighbor entries
- * @predt_lock:		Lock to serialise predt/neigh table updates
- * @nfp_fl_lock:	Lock to protect the flow offload operation
- */
+ 
 struct nfp_flower_priv {
 	struct nfp_app *app;
 	struct nfp_net *nn;
@@ -312,7 +193,7 @@ struct nfp_flower_priv {
 	u32 stats_ring_size;
 	struct rhashtable flow_table;
 	struct nfp_fl_stats *stats;
-	spinlock_t stats_lock; /* lock stats */
+	spinlock_t stats_lock;  
 	struct rhashtable stats_ctx_table;
 	struct work_struct cmsg_work;
 	struct sk_buff_head cmsg_skbs_high;
@@ -329,8 +210,8 @@ struct nfp_flower_priv {
 	struct nfp_fl_internal_ports internal_ports;
 	struct delayed_work qos_stats_work;
 	unsigned int qos_rate_limiters;
-	spinlock_t qos_stats_lock; /* Protect the qos stats */
-	struct mutex meter_stats_lock; /* Protect the meter stats */
+	spinlock_t qos_stats_lock;  
+	struct mutex meter_stats_lock;  
 	struct rhashtable meter_table;
 	int pre_tun_rule_cnt;
 	struct rhashtable merge_table;
@@ -339,17 +220,11 @@ struct nfp_flower_priv {
 	struct rhashtable ct_map_table;
 	struct list_head predt_list;
 	struct rhashtable neigh_table;
-	spinlock_t predt_lock; /* Lock to serialise predt/neigh table updates */
-	struct mutex nfp_fl_lock; /* Protect the flow operation */
+	spinlock_t predt_lock;  
+	struct mutex nfp_fl_lock;  
 };
 
-/**
- * struct nfp_fl_qos - Flower APP priv data for quality of service
- * @netdev_port_id:	NFP port number of repr with qos info
- * @curr_stats:		Currently stored stats updates for qos info
- * @prev_stats:		Previously stored updates for qos info
- * @last_update:	Stored time when last stats were updated
- */
+ 
 struct nfp_fl_qos {
 	u32 netdev_port_id;
 	struct nfp_stat_pair curr_stats;
@@ -357,17 +232,7 @@ struct nfp_fl_qos {
 	u64 last_update;
 };
 
-/**
- * struct nfp_flower_repr_priv - Flower APP per-repr priv data
- * @nfp_repr:		Back pointer to nfp_repr
- * @lag_port_flags:	Extended port flags to record lag state of repr
- * @mac_offloaded:	Flag indicating a MAC address is offloaded for repr
- * @offloaded_mac_addr:	MAC address that has been offloaded for repr
- * @block_shared:	Flag indicating if offload applies to shared blocks
- * @mac_list:		List entry of reprs that share the same offloaded MAC
- * @qos_table:		Stored info on filters implementing qos
- * @on_bridge:		Indicates if the repr is attached to a bridge
- */
+ 
 struct nfp_flower_repr_priv {
 	struct nfp_repr *nfp_repr;
 	unsigned long lag_port_flags;
@@ -379,14 +244,7 @@ struct nfp_flower_repr_priv {
 	bool on_bridge;
 };
 
-/**
- * struct nfp_flower_non_repr_priv - Priv data for non-repr offloaded ports
- * @list:		List entry of offloaded reprs
- * @netdev:		Pointer to non-repr net_device
- * @ref_count:		Number of references held for this priv data
- * @mac_offloaded:	Flag indicating a MAC address is offloaded for device
- * @offloaded_mac_addr:	MAC address that has been offloaded for dev
- */
+ 
 struct nfp_flower_non_repr_priv {
 	struct list_head list;
 	struct net_device *netdev;
@@ -418,12 +276,7 @@ struct nfp_fl_stats {
 	u64 used;
 };
 
-/**
- * struct nfp_ipv6_addr_entry - cached IPv6 addresses
- * @ipv6_addr:	IP address
- * @ref_count:	number of rules currently using this IP
- * @list:	list pointer
- */
+ 
 struct nfp_ipv6_addr_entry {
 	struct in6_addr ipv6_addr;
 	int ref_count;
@@ -456,16 +309,7 @@ struct nfp_fl_payload {
 };
 
 struct nfp_fl_payload_link {
-	/* A link contains a pointer to a merge flow and an associated sub_flow.
-	 * Each merge flow will feature in 2 links to its underlying sub_flows.
-	 * A sub_flow will have at least 1 link to a merge flow or more if it
-	 * has been used to create multiple merge flows.
-	 *
-	 * For a merge flow, 'linked_flows' in its nfp_fl_payload struct lists
-	 * all links to sub_flows (sub_flow.flow) via merge.list.
-	 * For a sub_flow, 'linked_flows' gives all links to merge flows it has
-	 * formed (merge_flow.flow) via sub_flow.list.
-	 */
+	 
 	struct {
 		struct list_head list;
 		struct nfp_fl_payload *flow;
@@ -529,10 +373,7 @@ nfp_flower_internal_port_can_offload(struct nfp_app *app,
 	return false;
 }
 
-/* The address of the merged flow acts as its cookie.
- * Cookies supplied to us by TC flower are also addresses to allocated
- * memory and thus this scheme should not generate any collisions.
- */
+ 
 static inline bool nfp_flower_is_merge_flow(struct nfp_fl_payload *flow_pay)
 {
 	return flow_pay->tc_flower_cookie == (unsigned long)flow_pay;

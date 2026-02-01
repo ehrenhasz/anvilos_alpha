@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Slava Grigorev <slava.grigorev@amd.com>
- */
+ 
 
 #include <linux/gcd.h>
 #include <linux/component.h>
@@ -249,17 +227,17 @@ int radeon_audio_init(struct radeon_device *rdev)
 
 	rdev->audio.enabled = true;
 
-	if (ASIC_IS_DCE83(rdev))		/* KB: 2 streams, 3 endpoints */
+	if (ASIC_IS_DCE83(rdev))		 
 		rdev->audio.num_pins = 3;
-	else if (ASIC_IS_DCE81(rdev))	/* KV: 4 streams, 7 endpoints */
+	else if (ASIC_IS_DCE81(rdev))	 
 		rdev->audio.num_pins = 7;
-	else if (ASIC_IS_DCE8(rdev))	/* BN/HW: 6 streams, 7 endpoints */
+	else if (ASIC_IS_DCE8(rdev))	 
 		rdev->audio.num_pins = 7;
-	else if (ASIC_IS_DCE64(rdev))	/* OL: 2 streams, 2 endpoints */
+	else if (ASIC_IS_DCE64(rdev))	 
 		rdev->audio.num_pins = 2;
-	else if (ASIC_IS_DCE61(rdev))	/* TN: 4 streams, 6 endpoints */
+	else if (ASIC_IS_DCE61(rdev))	 
 		rdev->audio.num_pins = 6;
-	else if (ASIC_IS_DCE6(rdev))	/* SI: 6 streams, 6 endpoints */
+	else if (ASIC_IS_DCE6(rdev))	 
 		rdev->audio.num_pins = 6;
 	else
 		rdev->audio.num_pins = 1;
@@ -277,7 +255,7 @@ int radeon_audio_init(struct radeon_device *rdev)
 
 	radeon_audio_interface_init(rdev);
 
-	/* disable audio.  it will be set up later */
+	 
 	for (i = 0; i < rdev->audio.num_pins; i++)
 		radeon_audio_enable(rdev, &rdev->audio.pin[i], 0);
 
@@ -486,34 +464,29 @@ static int radeon_audio_set_avi_packet(struct drm_encoder *encoder,
 	return 0;
 }
 
-/*
- * calculate CTS and N values if they are not found in the table
- */
+ 
 static void radeon_audio_calc_cts(unsigned int clock, int *CTS, int *N, int freq)
 {
 	int n, cts;
 	unsigned long div, mul;
 
-	/* Safe, but overly large values */
+	 
 	n = 128 * freq;
 	cts = clock * 1000;
 
-	/* Smallest valid fraction */
+	 
 	div = gcd(n, cts);
 
 	n /= div;
 	cts /= div;
 
-	/*
-	 * The optimal N is 128*freq/1000. Calculate the closest larger
-	 * value that doesn't truncate any bits.
-	 */
+	 
 	mul = ((128*freq/1000) + (n-1))/n;
 
 	n *= mul;
 	cts *= mul;
 
-	/* Check that we are in spec (not always possible) */
+	 
 	if (n < (128*freq/1500))
 		pr_warn("Calculated ACR N value is too small. You may experience audio problems.\n");
 	if (n > (128*freq/300))
@@ -532,26 +505,26 @@ static const struct radeon_hdmi_acr* radeon_audio_acr(unsigned int clock)
 	u8 i;
 
 	static const struct radeon_hdmi_acr hdmi_predefined_acr[] = {
-		/*       32kHz    44.1kHz   48kHz    */
-		/* Clock      N     CTS      N     CTS      N     CTS */
-		{  25175,  4096,  25175, 28224, 125875,  6144,  25175 }, /*  25,20/1.001 MHz */
-		{  25200,  4096,  25200,  6272,  28000,  6144,  25200 }, /*  25.20       MHz */
-		{  27000,  4096,  27000,  6272,  30000,  6144,  27000 }, /*  27.00       MHz */
-		{  27027,  4096,  27027,  6272,  30030,  6144,  27027 }, /*  27.00*1.001 MHz */
-		{  54000,  4096,  54000,  6272,  60000,  6144,  54000 }, /*  54.00       MHz */
-		{  54054,  4096,  54054,  6272,  60060,  6144,  54054 }, /*  54.00*1.001 MHz */
-		{  74176,  4096,  74176,  5733,  75335,  6144,  74176 }, /*  74.25/1.001 MHz */
-		{  74250,  4096,  74250,  6272,  82500,  6144,  74250 }, /*  74.25       MHz */
-		{ 148352,  4096, 148352,  5733, 150670,  6144, 148352 }, /* 148.50/1.001 MHz */
-		{ 148500,  4096, 148500,  6272, 165000,  6144, 148500 }, /* 148.50       MHz */
+		 
+		 
+		{  25175,  4096,  25175, 28224, 125875,  6144,  25175 },  
+		{  25200,  4096,  25200,  6272,  28000,  6144,  25200 },  
+		{  27000,  4096,  27000,  6272,  30000,  6144,  27000 },  
+		{  27027,  4096,  27027,  6272,  30030,  6144,  27027 },  
+		{  54000,  4096,  54000,  6272,  60000,  6144,  54000 },  
+		{  54054,  4096,  54054,  6272,  60060,  6144,  54054 },  
+		{  74176,  4096,  74176,  5733,  75335,  6144,  74176 },  
+		{  74250,  4096,  74250,  6272,  82500,  6144,  74250 },  
+		{ 148352,  4096, 148352,  5733, 150670,  6144, 148352 },  
+		{ 148500,  4096, 148500,  6272, 165000,  6144, 148500 },  
 	};
 
-	/* Precalculated values for common clocks */
+	 
 	for (i = 0; i < ARRAY_SIZE(hdmi_predefined_acr); i++)
 		if (hdmi_predefined_acr[i].clock == clock)
 			return &hdmi_predefined_acr[i];
 
-	/* And odd clocks get manually calculated */
+	 
 	radeon_audio_calc_cts(clock, &res.cts_32khz, &res.n_32khz, 32000);
 	radeon_audio_calc_cts(clock, &res.cts_44_1khz, &res.n_44_1khz, 44100);
 	radeon_audio_calc_cts(clock, &res.cts_48khz, &res.n_48khz, 48000);
@@ -559,9 +532,7 @@ static const struct radeon_hdmi_acr* radeon_audio_acr(unsigned int clock)
 	return &res;
 }
 
-/*
- * update the N and CTS parameters for a given pixel clock rate
- */
+ 
 static void radeon_audio_update_acr(struct drm_encoder *encoder, unsigned int clock)
 {
 	const struct radeon_hdmi_acr *acr = radeon_audio_acr(clock);
@@ -629,9 +600,7 @@ static void radeon_audio_set_mute(struct drm_encoder *encoder, bool mute)
 		radeon_encoder->audio->set_mute(encoder, dig->afmt->offset, mute);
 }
 
-/*
- * update the info frames with the data from the current display mode
- */
+ 
 static void radeon_audio_hdmi_mode_set(struct drm_encoder *encoder,
 				       struct drm_display_mode *mode)
 {
@@ -727,9 +696,7 @@ unsigned int radeon_audio_decode_dfs_div(unsigned int div)
 		return 0;
 }
 
-/*
- * Audio component support
- */
+ 
 static void radeon_audio_component_notify(struct radeon_device *rdev, int port)
 {
 	struct drm_audio_component *acomp;

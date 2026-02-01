@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __CFG802154_RDEV_OPS
 #define __CFG802154_RDEV_OPS
 
@@ -266,7 +266,7 @@ static inline int rdev_stop_beacons(struct cfg802154_registered_device *rdev,
 }
 
 #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-/* TODO this is already a nl802154, so move into ieee802154 */
+ 
 static inline void
 rdev_get_llsec_table(struct cfg802154_registered_device *rdev,
 		     struct wpan_dev *wpan_dev,
@@ -372,6 +372,6 @@ rdev_del_devkey(struct cfg802154_registered_device *rdev,
 	return rdev->ops->del_devkey(&rdev->wpan_phy, wpan_dev, extended_addr,
 				     devkey);
 }
-#endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
+#endif  
 
-#endif /* __CFG802154_RDEV_OPS */
+#endif  

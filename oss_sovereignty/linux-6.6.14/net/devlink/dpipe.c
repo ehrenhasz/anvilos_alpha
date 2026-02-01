@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -765,14 +762,7 @@ int devlink_nl_cmd_dpipe_table_counters_set(struct sk_buff *skb,
 						counters_enable);
 }
 
-/**
- * devl_dpipe_headers_register - register dpipe headers
- *
- * @devlink: devlink
- * @dpipe_headers: dpipe header array
- *
- * Register the headers supported by hardware.
- */
+ 
 void devl_dpipe_headers_register(struct devlink *devlink,
 				 struct devlink_dpipe_headers *dpipe_headers)
 {
@@ -782,13 +772,7 @@ void devl_dpipe_headers_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_dpipe_headers_register);
 
-/**
- * devl_dpipe_headers_unregister - unregister dpipe headers
- *
- * @devlink: devlink
- *
- * Unregister the headers supported by hardware.
- */
+ 
 void devl_dpipe_headers_unregister(struct devlink *devlink)
 {
 	lockdep_assert_held(&devlink->lock);
@@ -797,20 +781,7 @@ void devl_dpipe_headers_unregister(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devl_dpipe_headers_unregister);
 
-/**
- *	devlink_dpipe_table_counter_enabled - check if counter allocation
- *					      required
- *	@devlink: devlink
- *	@table_name: tables name
- *
- *	Used by driver to check if counter allocation is required.
- *	After counter allocation is turned on the table entries
- *	are updated to include counter statistics.
- *
- *	After that point on the driver must respect the counter
- *	state so that each entry added to the table is added
- *	with a counter.
- */
+ 
 bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
 					 const char *table_name)
 {
@@ -828,15 +799,7 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_dpipe_table_counter_enabled);
 
-/**
- * devl_dpipe_table_register - register dpipe table
- *
- * @devlink: devlink
- * @table_name: table name
- * @table_ops: table ops
- * @priv: priv
- * @counter_control_extern: external control for counters
- */
+ 
 int devl_dpipe_table_register(struct devlink *devlink,
 			      const char *table_name,
 			      struct devlink_dpipe_table_ops *table_ops,
@@ -868,12 +831,7 @@ int devl_dpipe_table_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_dpipe_table_register);
 
-/**
- * devl_dpipe_table_unregister - unregister dpipe table
- *
- * @devlink: devlink
- * @table_name: table name
- */
+ 
 void devl_dpipe_table_unregister(struct devlink *devlink,
 				 const char *table_name)
 {
@@ -890,14 +848,7 @@ void devl_dpipe_table_unregister(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_dpipe_table_unregister);
 
-/**
- * devl_dpipe_table_resource_set - set the resource id
- *
- * @devlink: devlink
- * @table_name: table name
- * @resource_id: resource id
- * @resource_units: number of resource's units consumed per table's entry
- */
+ 
 int devl_dpipe_table_resource_set(struct devlink *devlink,
 				  const char *table_name, u64 resource_id,
 				  u64 resource_units)

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2021 Joe Sandom <joe.g.sandom@gmail.com>
- *
- * Datasheet: https://ams.com/tsl25911#tab/documents
- *
- * Device driver for the TAOS TSL2591. This is a very-high sensitivity
- * light-to-digital converter that transforms light intensity into a digital
- * signal.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/debugfs.h>
@@ -27,14 +19,14 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* ADC integration time, field value to time in ms */
+ 
 #define TSL2591_FVAL_TO_MSEC(x) (((x) + 1) * 100)
-/* ADC integration time, field value to time in seconds */
+ 
 #define TSL2591_FVAL_TO_SEC(x) ((x) + 1)
-/* ADC integration time, time in seconds to field value */
+ 
 #define TSL2591_SEC_TO_FVAL(x) ((x) - 1)
 
-/* TSL2591 register set */
+ 
 #define TSL2591_ENABLE      0x00
 #define TSL2591_CONTROL     0x01
 #define TSL2591_AILTL       0x04
@@ -54,14 +46,14 @@
 #define TSL2591_C1_DATAL    0x16
 #define TSL2591_C1_DATAH    0x17
 
-/* TSL2591 command register definitions */
+ 
 #define TSL2591_CMD_NOP             0xA0
 #define TSL2591_CMD_SF_INTSET       0xE4
 #define TSL2591_CMD_SF_CALS_I       0xE5
 #define TSL2591_CMD_SF_CALS_NPI     0xE7
 #define TSL2591_CMD_SF_CNP_ALSI     0xEA
 
-/* TSL2591 enable register definitions */
+ 
 #define TSL2591_PWR_ON              0x01
 #define TSL2591_PWR_OFF             0x00
 #define TSL2591_ENABLE_ALS          0x02
@@ -69,7 +61,7 @@
 #define TSL2591_ENABLE_SLEEP_INT    0x40
 #define TSL2591_ENABLE_NP_INT       0x80
 
-/* TSL2591 control register definitions */
+ 
 #define TSL2591_CTRL_ALS_INTEGRATION_100MS  0x00
 #define TSL2591_CTRL_ALS_INTEGRATION_200MS  0x01
 #define TSL2591_CTRL_ALS_INTEGRATION_300MS  0x02
@@ -82,7 +74,7 @@
 #define TSL2591_CTRL_ALS_MAX_GAIN           0x30
 #define TSL2591_CTRL_SYS_RESET              0x80
 
-/* TSL2591 persist register definitions */
+ 
 #define TSL2591_PRST_ALS_INT_CYCLE_0        0x00
 #define TSL2591_PRST_ALS_INT_CYCLE_ANY      0x01
 #define TSL2591_PRST_ALS_INT_CYCLE_2        0x02
@@ -101,50 +93,46 @@
 #define TSL2591_PRST_ALS_INT_CYCLE_60       0x0F
 #define TSL2591_PRST_ALS_INT_CYCLE_MAX      (BIT(4) - 1)
 
-/* TSL2591 PID register mask */
+ 
 #define TSL2591_PACKAGE_ID_MASK  GENMASK(5, 4)
 
-/* TSL2591 ID register mask */
+ 
 #define TSL2591_DEVICE_ID_MASK   GENMASK(7, 0)
 
-/* TSL2591 status register masks */
+ 
 #define TSL2591_STS_ALS_VALID_MASK   BIT(0)
 #define TSL2591_STS_ALS_INT_MASK     BIT(4)
 #define TSL2591_STS_NPERS_INT_MASK   BIT(5)
 #define TSL2591_STS_VAL_HIGH_MASK    BIT(0)
 
-/* TSL2591 constant values */
+ 
 #define TSL2591_PACKAGE_ID_VAL  0x00
 #define TSL2591_DEVICE_ID_VAL   0x50
 
-/* Power off suspend delay time MS */
+ 
 #define TSL2591_POWER_OFF_DELAY_MS   2000
 
-/* TSL2591 default values */
+ 
 #define TSL2591_DEFAULT_ALS_INT_TIME          TSL2591_CTRL_ALS_INTEGRATION_300MS
 #define TSL2591_DEFAULT_ALS_GAIN              TSL2591_CTRL_ALS_MED_GAIN
 #define TSL2591_DEFAULT_ALS_PERSIST           TSL2591_PRST_ALS_INT_CYCLE_ANY
 #define TSL2591_DEFAULT_ALS_LOWER_THRESH      100
 #define TSL2591_DEFAULT_ALS_UPPER_THRESH      1500
 
-/* TSL2591 number of data registers */
+ 
 #define TSL2591_NUM_DATA_REGISTERS     4
 
-/* TSL2591 number of valid status reads on ADC complete */
+ 
 #define TSL2591_ALS_STS_VALID_COUNT    10
 
-/* TSL2591 delay period between polls when checking for ALS valid flag */
+ 
 #define TSL2591_DELAY_PERIOD_US        10000
 
-/* TSL2591 maximum values */
+ 
 #define TSL2591_MAX_ALS_INT_TIME_MS    600
 #define TSL2591_ALS_MAX_VALUE	       (BIT(16) - 1)
 
-/*
- * LUX calculations;
- * AGAIN values from Adafruit's TSL2591 Arduino library
- * https://github.com/adafruit/Adafruit_TSL2591_Library
- */
+ 
 #define TSL2591_CTRL_ALS_LOW_GAIN_MULTIPLIER   1
 #define TSL2591_CTRL_ALS_MED_GAIN_MULTIPLIER   25
 #define TSL2591_CTRL_ALS_HIGH_GAIN_MULTIPLIER  428
@@ -162,19 +150,12 @@ struct tsl2591_als_settings {
 struct tsl2591_chip {
 	struct tsl2591_als_settings als_settings;
 	struct i2c_client *client;
-	/*
-	 * Keep als_settings in sync with hardware state
-	 * and ensure multiple readers are serialized.
-	 */
+	 
 	struct mutex als_mutex;
 	bool events_enabled;
 };
 
-/*
- * Period table is ALS persist cycle x integration time setting
- * Integration times: 100ms, 200ms, 300ms, 400ms, 500ms, 600ms
- * ALS cycles: 1, 2, 3, 5, 10, 20, 25, 30, 35, 40, 45, 50, 55, 60
- */
+ 
 static const char * const tsl2591_als_period_list[] = {
 	"0.1 0.2 0.3 0.5 1.0 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0",
 	"0.2 0.4 0.6 1.0 2.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0",
@@ -396,13 +377,10 @@ static int tsl2591_wait_adc_complete(struct tsl2591_chip *chip)
 	if (!delay)
 		return -EINVAL;
 
-	/*
-	 * Sleep for ALS integration time to allow enough time or an ADC read
-	 * cycle to complete. Check status after delay for ALS valid.
-	 */
+	 
 	msleep(delay);
 
-	/* Check for status ALS valid flag for up to 100ms */
+	 
 	ret = readx_poll_timeout(tsl2591_check_als_valid, client,
 				 val, val == TSL2591_STS_VAL_HIGH_MASK,
 				 TSL2591_DELAY_PERIOD_US,
@@ -413,21 +391,7 @@ static int tsl2591_wait_adc_complete(struct tsl2591_chip *chip)
 	return ret;
 }
 
-/*
- * tsl2591_read_channel_data - Reads raw channel data and calculates lux
- *
- * Formula for lux calculation;
- * Derived from Adafruit's TSL2591 library
- * Link: https://github.com/adafruit/Adafruit_TSL2591_Library
- * Counts Per Lux (CPL) = (ATIME_ms * AGAIN) / LUX DF
- * lux = ((C0DATA - C1DATA) * (1 - (C1DATA / C0DATA))) / CPL
- *
- * Scale values to get more representative value of lux i.e.
- * lux = ((C0DATA - C1DATA) * (1000 - ((C1DATA * 1000) / C0DATA))) / CPL
- *
- * Channel 0 = IR + Visible
- * Channel 1 = IR only
- */
+ 
 static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
 				     struct iio_chan_spec const *chan,
 				     int *val, int *val2)
@@ -474,21 +438,21 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
 		}
 
 		int_time_fval = TSL2591_FVAL_TO_MSEC(settings->als_int_time);
-		/* Calculate counts per lux value */
+		 
 		counts_per_lux = (int_time_fval * gain_multi) / TSL2591_LUX_COEFFICIENT;
 
 		dev_dbg(&client->dev, "Counts Per Lux: %d\n", counts_per_lux);
 
-		/* Calculate lux value */
+		 
 		lux = ((als_ch0 - als_ch1) *
 		       (1000 - ((als_ch1 * 1000) / als_ch0))) / counts_per_lux;
 
 		dev_dbg(&client->dev, "Raw lux calculation: %d\n", lux);
 
-		/* Divide by 1000 to get real lux value before scaling */
+		 
 		*val = lux / 1000;
 
-		/* Get the decimal part of lux reading */
+		 
 		*val2 = (lux - (*val * 1000)) * 1000;
 
 		break;
@@ -526,11 +490,7 @@ static int tsl2591_set_als_lower_threshold(struct tsl2591_chip *chip,
 
 	chip->als_settings.als_lower_thresh = als_lower_threshold;
 
-	/*
-	 * Lower threshold should not be greater or equal to upper.
-	 * If this is the case, then assert upper threshold to new lower
-	 * threshold + 1 to avoid ordering issues when setting thresholds.
-	 */
+	 
 	if (als_lower_threshold >= als_settings.als_upper_thresh) {
 		als_upper_threshold = als_lower_threshold + 1;
 		tsl2591_set_als_upper_threshold(chip, als_upper_threshold);
@@ -573,11 +533,7 @@ static int tsl2591_set_als_upper_threshold(struct tsl2591_chip *chip,
 
 	chip->als_settings.als_upper_thresh = als_upper_threshold;
 
-	/*
-	 * Upper threshold should not be less than lower. If this
-	 * is the case, then assert lower threshold to new upper
-	 * threshold - 1 to avoid ordering issues when setting thresholds.
-	 */
+	 
 	if (als_upper_threshold < als_settings.als_lower_thresh) {
 		als_lower_threshold = als_upper_threshold - 1;
 		tsl2591_set_als_lower_threshold(chip, als_lower_threshold);
@@ -1067,7 +1023,7 @@ static irqreturn_t tsl2591_event_handler(int irq, void *private)
 					    IIO_EV_DIR_EITHER),
 					    iio_get_time_ns(dev_info));
 
-	/* Clear ALS irq */
+	 
 	i2c_smbus_write_byte(client, TSL2591_CMD_SF_CALS_NPI);
 
 	return IRQ_HANDLED;
@@ -1174,14 +1130,7 @@ static int tsl2591_probe(struct i2c_client *client)
 					 TSL2591_POWER_OFF_DELAY_MS);
 	pm_runtime_use_autosuspend(&client->dev);
 
-	/*
-	 * Add chip off to automatically managed path and disable runtime
-	 * power management. This ensures that the chip power management
-	 * is handled correctly on driver remove. tsl2591_chip_off() must be
-	 * added to the managed path after pm runtime is enabled and before
-	 * any error exit paths are met to ensure we're not left in a state
-	 * of pm runtime not being disabled properly.
-	 */
+	 
 	ret = devm_add_action_or_reset(&client->dev, tsl2591_chip_off,
 				       indio_dev);
 	if (ret < 0)

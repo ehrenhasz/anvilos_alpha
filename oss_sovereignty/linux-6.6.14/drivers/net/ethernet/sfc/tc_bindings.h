@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+ 
+ 
 
 #ifndef EFX_TC_BINDINGS_H
 #define EFX_TC_BINDINGS_H
@@ -30,7 +23,7 @@ int efx_tc_indr_setup_cb(struct net_device *net_dev, struct Qdisc *sch,
 int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,
 			struct net_device *net_dev);
 
-#else /* CONFIG_SFC_SRIOV */
+#else  
 
 static inline int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,
 				      struct net_device *net_dev)
@@ -38,6 +31,6 @@ static inline int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,
 	return NOTIFY_DONE;
 }
 
-#endif /* CONFIG_SFC_SRIOV */
+#endif  
 
-#endif /* EFX_TC_BINDINGS_H */
+#endif  

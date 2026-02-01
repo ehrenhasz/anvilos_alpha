@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Gateworks System Controller Hardware Monitor module
- *
- * Copyright (C) 2020 Gateworks Corporation
- */
+
+ 
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/mfd/gsc.h>
@@ -179,27 +175,27 @@ gsc_hwmon_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
 	case mode_temperature:
 		if (tmp > 0x8000)
 			tmp -= 0xffff;
-		tmp *= 100; /* convert to millidegrees celsius */
+		tmp *= 100;  
 		break;
 	case mode_voltage_raw:
 		tmp = clamp_val(tmp, 0, BIT(GSC_HWMON_RESOLUTION));
-		/* scale based on ref voltage and ADC resolution */
+		 
 		tmp *= GSC_HWMON_VREF;
 		tmp >>= GSC_HWMON_RESOLUTION;
-		/* scale based on optional voltage divider */
+		 
 		if (ch->vdiv[0] && ch->vdiv[1]) {
 			tmp *= (ch->vdiv[0] + ch->vdiv[1]);
 			tmp /= ch->vdiv[1];
 		}
-		/* adjust by uV offset */
+		 
 		tmp += ch->mvoffset;
 		break;
 	case mode_fan:
-		tmp *= 30; /* convert to revolutions per minute */
+		tmp *= 30;  
 		break;
 	case mode_voltage_24bit:
 	case mode_voltage_16bit:
-		/* no adjustment needed */
+		 
 		break;
 	}
 
@@ -263,7 +259,7 @@ gsc_hwmon_get_devtree_pdata(struct device *dev)
 		return ERR_PTR(-ENOMEM);
 	pdata->nchannels = nchannels;
 
-	/* fan controller base address */
+	 
 	of_node_get(dev->parent->of_node);
 	fan = of_find_compatible_node(dev->parent->of_node, NULL, "gw,gsc-fan");
 	if (fan && of_property_read_u32(fan, "reg", &pdata->fan_base)) {
@@ -275,7 +271,7 @@ gsc_hwmon_get_devtree_pdata(struct device *dev)
 	of_node_put(fan);
 
 	ch = pdata->channels;
-	/* allocate structures for channels and count instances of each type */
+	 
 	device_for_each_child_node(dev, child) {
 		if (fwnode_property_read_string(child, "label", &ch->name)) {
 			dev_err(dev, "channel without label\n");
@@ -381,7 +377,7 @@ static int gsc_hwmon_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* setup config structures */
+	 
 	hwmon->chip.ops = &gsc_hwmon_ops;
 	hwmon->chip.info = hwmon->info;
 	hwmon->info[0] = &hwmon->temp_info;

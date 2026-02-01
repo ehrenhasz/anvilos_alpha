@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../rtl8192ce/reg.h"
@@ -1449,12 +1449,12 @@ void rtl92c_phy_iq_calibrate(struct ieee80211_hw *hw, bool b_recovery)
 		rtlphy->reg_e94 = rtlphy->reg_eb4 = 0x100;
 		rtlphy->reg_e9c = rtlphy->reg_ebc = 0x0;
 	}
-	if (reg_e94 != 0) /*&&(reg_ea4 != 0) */
+	if (reg_e94 != 0)  
 		_rtl92c_phy_path_a_fill_iqk_matrix(hw, b_patha_ok, result,
 						   final_candidate,
 						   (reg_ea4 == 0));
 	if (IS_92C_SERIAL(rtlhal->version)) {
-		if (reg_eb4 != 0) /*&&(reg_ec4 != 0) */
+		if (reg_eb4 != 0)  
 			_rtl92c_phy_path_b_fill_iqk_matrix(hw, b_pathb_ok,
 							   result,
 							   final_candidate,

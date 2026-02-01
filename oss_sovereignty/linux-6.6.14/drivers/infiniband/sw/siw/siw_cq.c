@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -21,7 +21,7 @@ static int map_wc_opcode[SIW_NUM_OPCODES] = {
 	[SIW_OP_INVAL_STAG] = IB_WC_LOCAL_INV,
 	[SIW_OP_REG_MR] = IB_WC_REG_MR,
 	[SIW_OP_RECEIVE] = IB_WC_RECV,
-	[SIW_OP_READ_RESPONSE] = -1 /* not used */
+	[SIW_OP_READ_RESPONSE] = -1  
 };
 
 static struct {
@@ -40,11 +40,7 @@ static struct {
 	{ SIW_WC_GENERAL_ERR, IB_WC_GENERAL_ERR }
 };
 
-/*
- * Reap one CQE from the CQ. Only used by kernel clients
- * during CQ normal operation. Might be called during CQ
- * flush for user mapped CQE array as well.
- */
+ 
 int siw_reap_cqe(struct siw_cq *cq, struct ib_wc *wc)
 {
 	struct siw_cqe *cqe;
@@ -58,11 +54,7 @@ int siw_reap_cqe(struct siw_cq *cq, struct ib_wc *wc)
 		wc->wr_id = cqe->id;
 		wc->byte_len = cqe->bytes;
 
-		/*
-		 * During CQ flush, also user land CQE's may get
-		 * reaped here, which do not hold a QP reference
-		 * and do not qualify for memory extension verbs.
-		 */
+		 
 		if (likely(rdma_is_kernel_res(&cq->base_cq.res))) {
 			if (cqe->flags & SIW_WQE_REM_INVAL) {
 				wc->ex.invalidate_rkey = cqe->inval_stag;
@@ -76,13 +68,7 @@ int siw_reap_cqe(struct siw_cq *cq, struct ib_wc *wc)
 				   cq->cq_get % cq->num_cqe, cqe->opcode,
 				   cqe->flags, (void *)(uintptr_t)cqe->id);
 		} else {
-			/*
-			 * A malicious user may set invalid opcode or
-			 * status in the user mmapped CQE array.
-			 * Sanity check and correct values in that case
-			 * to avoid out-of-bounds access to global arrays
-			 * for opcode and status mapping.
-			 */
+			 
 			u8 opcode = cqe->opcode;
 			u16 status = cqe->status;
 
@@ -108,11 +94,7 @@ int siw_reap_cqe(struct siw_cq *cq, struct ib_wc *wc)
 	return 0;
 }
 
-/*
- * siw_cq_flush()
- *
- * Flush all CQ elements.
- */
+ 
 void siw_cq_flush(struct siw_cq *cq)
 {
 	struct ib_wc wc;

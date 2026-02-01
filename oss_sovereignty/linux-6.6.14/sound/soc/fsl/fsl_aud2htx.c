@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2020 NXP
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -53,11 +53,11 @@ static int fsl_aud2htx_dai_probe(struct snd_soc_dai *cpu_dai)
 {
 	struct fsl_aud2htx *aud2htx = dev_get_drvdata(cpu_dai->dev);
 
-	/* DMA request when number of entries < WTMK_LOW */
+	 
 	regmap_update_bits(aud2htx->regmap, AUD2HTX_CTRL_EXT,
 			   AUD2HTX_CTRE_DT_MASK, 0);
 
-	/* Disable interrupts*/
+	 
 	regmap_update_bits(aud2htx->regmap, AUD2HTX_IRQ_MASK,
 			   AUD2HTX_WM_HIGH_IRQ_MASK |
 			   AUD2HTX_WM_LOW_IRQ_MASK |
@@ -66,7 +66,7 @@ static int fsl_aud2htx_dai_probe(struct snd_soc_dai *cpu_dai)
 			   AUD2HTX_WM_LOW_IRQ_MASK |
 			   AUD2HTX_OVF_MASK);
 
-	/* Configure watermark */
+	 
 	regmap_update_bits(aud2htx->regmap, AUD2HTX_CTRL_EXT,
 			   AUD2HTX_CTRE_WL_MASK,
 			   AUD2HTX_WTMK_LOW << AUD2HTX_CTRE_WL_SHIFT);
@@ -234,10 +234,7 @@ static int fsl_aud2htx_probe(struct platform_device *pdev)
 
 	regcache_cache_only(aud2htx->regmap, true);
 
-	/*
-	 * Register platform component before registering cpu dai for there
-	 * is not defer probe for platform component in snd_soc_add_pcm_runtime().
-	 */
+	 
 	ret = devm_snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to pcm register\n");

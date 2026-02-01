@@ -1,29 +1,4 @@
-/*
- * MIPI DSI Bus
- *
- * Copyright (C) 2012-2013, Samsung Electronics, Co., Ltd.
- * Andrzej Hajda <a.hajda@samsung.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -38,25 +13,17 @@
 
 #include <video/mipi_display.h>
 
-/**
- * DOC: dsi helpers
- *
- * These functions contain some common logic and helpers to deal with MIPI DSI
- * peripherals.
- *
- * Helpers are provided for a number of standard MIPI DSI command as well as a
- * subset of the MIPI DCS command set.
- */
+ 
 
 static int mipi_dsi_device_match(struct device *dev, struct device_driver *drv)
 {
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(dev);
 
-	/* attempt OF style match */
+	 
 	if (of_driver_match_device(dev, drv))
 		return 1;
 
-	/* compare DSI device and driver names */
+	 
 	if (!strcmp(dsi->name, drv->name))
 		return 1;
 
@@ -96,14 +63,7 @@ static struct bus_type mipi_dsi_bus_type = {
 	.pm = &mipi_dsi_device_pm_ops,
 };
 
-/**
- * of_find_mipi_dsi_device_by_node() - find the MIPI DSI device matching a
- *    device tree node
- * @np: device tree node
- *
- * Return: A pointer to the MIPI DSI device corresponding to @np or NULL if no
- *    such device exists (or has not been registered yet).
- */
+ 
 struct mipi_dsi_device *of_find_mipi_dsi_device_by_node(struct device_node *np)
 {
 	struct device *dev;
@@ -186,18 +146,7 @@ of_mipi_dsi_device_add(struct mipi_dsi_host *host, struct device_node *node)
 }
 #endif
 
-/**
- * mipi_dsi_device_register_full - create a MIPI DSI device
- * @host: DSI host to which this device is connected
- * @info: pointer to template containing DSI device information
- *
- * Create a MIPI DSI device by using the device information provided by
- * mipi_dsi_device_info template
- *
- * Returns:
- * A pointer to the newly created MIPI DSI device, or, a pointer encoded
- * with an error
- */
+ 
 struct mipi_dsi_device *
 mipi_dsi_device_register_full(struct mipi_dsi_host *host,
 			      const struct mipi_dsi_device_info *info)
@@ -237,10 +186,7 @@ mipi_dsi_device_register_full(struct mipi_dsi_host *host,
 }
 EXPORT_SYMBOL(mipi_dsi_device_register_full);
 
-/**
- * mipi_dsi_device_unregister - unregister MIPI DSI device
- * @dsi: DSI peripheral device
- */
+ 
 void mipi_dsi_device_unregister(struct mipi_dsi_device *dsi)
 {
 	device_unregister(&dsi->dev);
@@ -254,23 +200,7 @@ static void devm_mipi_dsi_device_unregister(void *arg)
 	mipi_dsi_device_unregister(dsi);
 }
 
-/**
- * devm_mipi_dsi_device_register_full - create a managed MIPI DSI device
- * @dev: device to tie the MIPI-DSI device lifetime to
- * @host: DSI host to which this device is connected
- * @info: pointer to template containing DSI device information
- *
- * Create a MIPI DSI device by using the device information provided by
- * mipi_dsi_device_info template
- *
- * This is the managed version of mipi_dsi_device_register_full() which
- * automatically calls mipi_dsi_device_unregister() when @dev is
- * unbound.
- *
- * Returns:
- * A pointer to the newly created MIPI DSI device, or, a pointer encoded
- * with an error
- */
+ 
 struct mipi_dsi_device *
 devm_mipi_dsi_device_register_full(struct device *dev,
 				   struct mipi_dsi_host *host,
@@ -296,15 +226,7 @@ EXPORT_SYMBOL_GPL(devm_mipi_dsi_device_register_full);
 static DEFINE_MUTEX(host_lock);
 static LIST_HEAD(host_list);
 
-/**
- * of_find_mipi_dsi_host_by_node() - find the MIPI DSI host matching a
- *				     device tree node
- * @node: device tree node
- *
- * Returns:
- * A pointer to the MIPI DSI host corresponding to @node or NULL if no
- * such device exists (or has not been registered yet).
- */
+ 
 struct mipi_dsi_host *of_find_mipi_dsi_host_by_node(struct device_node *node)
 {
 	struct mipi_dsi_host *host;
@@ -329,7 +251,7 @@ int mipi_dsi_host_register(struct mipi_dsi_host *host)
 	struct device_node *node;
 
 	for_each_available_child_of_node(host->dev->of_node, node) {
-		/* skip nodes without reg property */
+		 
 		if (!of_property_present(node, "reg"))
 			continue;
 		of_mipi_dsi_device_add(host, node);
@@ -363,10 +285,7 @@ void mipi_dsi_host_unregister(struct mipi_dsi_host *host)
 }
 EXPORT_SYMBOL(mipi_dsi_host_unregister);
 
-/**
- * mipi_dsi_attach - attach a DSI device to its DSI host
- * @dsi: DSI peripheral
- */
+ 
 int mipi_dsi_attach(struct mipi_dsi_device *dsi)
 {
 	const struct mipi_dsi_host_ops *ops = dsi->host->ops;
@@ -378,10 +297,7 @@ int mipi_dsi_attach(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_attach);
 
-/**
- * mipi_dsi_detach - detach a DSI device from its DSI host
- * @dsi: DSI peripheral
- */
+ 
 int mipi_dsi_detach(struct mipi_dsi_device *dsi)
 {
 	const struct mipi_dsi_host_ops *ops = dsi->host->ops;
@@ -400,17 +316,7 @@ static void devm_mipi_dsi_detach(void *arg)
 	mipi_dsi_detach(dsi);
 }
 
-/**
- * devm_mipi_dsi_attach - Attach a MIPI-DSI device to its DSI Host
- * @dev: device to tie the MIPI-DSI device attachment lifetime to
- * @dsi: DSI peripheral
- *
- * This is the managed version of mipi_dsi_attach() which automatically
- * calls mipi_dsi_detach() when @dev is unbound.
- *
- * Returns:
- * 0 on success, a negative error code on failure.
- */
+ 
 int devm_mipi_dsi_attach(struct device *dev,
 			 struct mipi_dsi_device *dsi)
 {
@@ -442,13 +348,7 @@ static ssize_t mipi_dsi_device_transfer(struct mipi_dsi_device *dsi,
 	return ops->transfer(dsi->host, msg);
 }
 
-/**
- * mipi_dsi_packet_format_is_short - check if a packet is of the short format
- * @type: MIPI DSI data type of the packet
- *
- * Return: true if the packet for the given data type is a short packet, false
- * otherwise.
- */
+ 
 bool mipi_dsi_packet_format_is_short(u8 type)
 {
 	switch (type) {
@@ -480,13 +380,7 @@ bool mipi_dsi_packet_format_is_short(u8 type)
 }
 EXPORT_SYMBOL(mipi_dsi_packet_format_is_short);
 
-/**
- * mipi_dsi_packet_format_is_long - check if a packet is of the long format
- * @type: MIPI DSI data type of the packet
- *
- * Return: true if the packet for the given data type is a long packet, false
- * otherwise.
- */
+ 
 bool mipi_dsi_packet_format_is_long(u8 type)
 {
 	switch (type) {
@@ -513,21 +407,14 @@ bool mipi_dsi_packet_format_is_long(u8 type)
 }
 EXPORT_SYMBOL(mipi_dsi_packet_format_is_long);
 
-/**
- * mipi_dsi_create_packet - create a packet from a message according to the
- *     DSI protocol
- * @packet: pointer to a DSI packet structure
- * @msg: message to translate into a packet
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_create_packet(struct mipi_dsi_packet *packet,
 			   const struct mipi_dsi_msg *msg)
 {
 	if (!packet || !msg)
 		return -EINVAL;
 
-	/* do some minimum sanity checking */
+	 
 	if (!mipi_dsi_packet_format_is_short(msg->type) &&
 	    !mipi_dsi_packet_format_is_long(msg->type))
 		return -EINVAL;
@@ -538,15 +425,9 @@ int mipi_dsi_create_packet(struct mipi_dsi_packet *packet,
 	memset(packet, 0, sizeof(*packet));
 	packet->header[0] = ((msg->channel & 0x3) << 6) | (msg->type & 0x3f);
 
-	/* TODO: compute ECC if hardware support is not available */
+	 
 
-	/*
-	 * Long write packets contain the word count in header bytes 1 and 2.
-	 * The payload follows the header and is word count bytes long.
-	 *
-	 * Short write packets encode up to two parameters in header bytes 1
-	 * and 2.
-	 */
+	 
 	if (mipi_dsi_packet_format_is_long(msg->type)) {
 		packet->header[1] = (msg->tx_len >> 0) & 0xff;
 		packet->header[2] = (msg->tx_len >> 8) & 0xff;
@@ -566,12 +447,7 @@ int mipi_dsi_create_packet(struct mipi_dsi_packet *packet,
 }
 EXPORT_SYMBOL(mipi_dsi_create_packet);
 
-/**
- * mipi_dsi_shutdown_peripheral() - sends a Shutdown Peripheral command
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_shutdown_peripheral(struct mipi_dsi_device *dsi)
 {
 	struct mipi_dsi_msg msg = {
@@ -586,12 +462,7 @@ int mipi_dsi_shutdown_peripheral(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_shutdown_peripheral);
 
-/**
- * mipi_dsi_turn_on_peripheral() - sends a Turn On Peripheral command
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_turn_on_peripheral(struct mipi_dsi_device *dsi)
 {
 	struct mipi_dsi_msg msg = {
@@ -606,15 +477,7 @@ int mipi_dsi_turn_on_peripheral(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_turn_on_peripheral);
 
-/*
- * mipi_dsi_set_maximum_return_packet_size() - specify the maximum size of
- *    the payload in a long packet transmitted from the peripheral back to the
- *    host processor
- * @dsi: DSI peripheral device
- * @value: the maximum size of the payload
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_set_maximum_return_packet_size(struct mipi_dsi_device *dsi,
 					    u16 value)
 {
@@ -631,19 +494,10 @@ int mipi_dsi_set_maximum_return_packet_size(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_set_maximum_return_packet_size);
 
-/**
- * mipi_dsi_compression_mode() - enable/disable DSC on the peripheral
- * @dsi: DSI peripheral device
- * @enable: Whether to enable or disable the DSC
- *
- * Enable or disable Display Stream Compression on the peripheral using the
- * default Picture Parameter Set and VESA DSC 1.1 algorithm.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 ssize_t mipi_dsi_compression_mode(struct mipi_dsi_device *dsi, bool enable)
 {
-	/* Note: Needs updating for non-default PPS or algorithm */
+	 
 	u8 tx[2] = { enable << 0, 0 };
 	struct mipi_dsi_msg msg = {
 		.channel = dsi->channel,
@@ -657,15 +511,7 @@ ssize_t mipi_dsi_compression_mode(struct mipi_dsi_device *dsi, bool enable)
 }
 EXPORT_SYMBOL(mipi_dsi_compression_mode);
 
-/**
- * mipi_dsi_picture_parameter_set() - transmit the DSC PPS to the peripheral
- * @dsi: DSI peripheral device
- * @pps: VESA DSC 1.1 Picture Parameter Set
- *
- * Transmit the VESA DSC 1.1 Picture Parameter Set to the peripheral.
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 ssize_t mipi_dsi_picture_parameter_set(struct mipi_dsi_device *dsi,
 				       const struct drm_dsc_picture_parameter_set *pps)
 {
@@ -681,18 +527,7 @@ ssize_t mipi_dsi_picture_parameter_set(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_picture_parameter_set);
 
-/**
- * mipi_dsi_generic_write() - transmit data using a generic write packet
- * @dsi: DSI peripheral device
- * @payload: buffer containing the payload
- * @size: size of payload buffer
- *
- * This function will automatically choose the right data type depending on
- * the payload length.
- *
- * Return: The number of bytes transmitted on success or a negative error code
- * on failure.
- */
+ 
 ssize_t mipi_dsi_generic_write(struct mipi_dsi_device *dsi, const void *payload,
 			       size_t size)
 {
@@ -724,20 +559,7 @@ ssize_t mipi_dsi_generic_write(struct mipi_dsi_device *dsi, const void *payload,
 }
 EXPORT_SYMBOL(mipi_dsi_generic_write);
 
-/**
- * mipi_dsi_generic_read() - receive data using a generic read packet
- * @dsi: DSI peripheral device
- * @params: buffer containing the request parameters
- * @num_params: number of request parameters
- * @data: buffer in which to return the received data
- * @size: size of receive buffer
- *
- * This function will automatically choose the right data type depending on
- * the number of parameters passed in.
- *
- * Return: The number of bytes successfully read or a negative error code on
- * failure.
- */
+ 
 ssize_t mipi_dsi_generic_read(struct mipi_dsi_device *dsi, const void *params,
 			      size_t num_params, void *data, size_t size)
 {
@@ -770,18 +592,7 @@ ssize_t mipi_dsi_generic_read(struct mipi_dsi_device *dsi, const void *params,
 }
 EXPORT_SYMBOL(mipi_dsi_generic_read);
 
-/**
- * mipi_dsi_dcs_write_buffer() - transmit a DCS command with payload
- * @dsi: DSI peripheral device
- * @data: buffer containing data to be transmitted
- * @len: size of transmission buffer
- *
- * This function will automatically choose the right data type depending on
- * the command payload length.
- *
- * Return: The number of bytes successfully transmitted or a negative error
- * code on failure.
- */
+ 
 ssize_t mipi_dsi_dcs_write_buffer(struct mipi_dsi_device *dsi,
 				  const void *data, size_t len)
 {
@@ -812,19 +623,7 @@ ssize_t mipi_dsi_dcs_write_buffer(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_write_buffer);
 
-/**
- * mipi_dsi_dcs_write() - send DCS write command
- * @dsi: DSI peripheral device
- * @cmd: DCS command
- * @data: buffer containing the command payload
- * @len: command payload length
- *
- * This function will automatically choose the right data type depending on
- * the command payload length.
- *
- * Return: The number of bytes successfully transmitted or a negative error
- * code on failure.
- */
+ 
 ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 			   const void *data, size_t len)
 {
@@ -842,7 +641,7 @@ ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 		tx = stack_tx;
 	}
 
-	/* concatenate the DCS command byte and the payload */
+	 
 	tx[0] = cmd;
 	if (data)
 		memcpy(&tx[1], data, len);
@@ -856,15 +655,7 @@ ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_write);
 
-/**
- * mipi_dsi_dcs_read() - send DCS read request command
- * @dsi: DSI peripheral device
- * @cmd: DCS command
- * @data: buffer in which to receive data
- * @len: size of receive buffer
- *
- * Return: The number of bytes read or a negative error code on failure.
- */
+ 
 ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
 			  size_t len)
 {
@@ -881,12 +672,7 @@ ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_read);
 
-/**
- * mipi_dsi_dcs_nop() - send DCS nop packet
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_nop(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -899,12 +685,7 @@ int mipi_dsi_dcs_nop(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_nop);
 
-/**
- * mipi_dsi_dcs_soft_reset() - perform a software reset of the display module
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_soft_reset(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -917,14 +698,7 @@ int mipi_dsi_dcs_soft_reset(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_soft_reset);
 
-/**
- * mipi_dsi_dcs_get_power_mode() - query the display module's current power
- *    mode
- * @dsi: DSI peripheral device
- * @mode: return location for the current power mode
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_get_power_mode(struct mipi_dsi_device *dsi, u8 *mode)
 {
 	ssize_t err;
@@ -942,14 +716,7 @@ int mipi_dsi_dcs_get_power_mode(struct mipi_dsi_device *dsi, u8 *mode)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_get_power_mode);
 
-/**
- * mipi_dsi_dcs_get_pixel_format() - gets the pixel format for the RGB image
- *    data used by the interface
- * @dsi: DSI peripheral device
- * @format: return location for the pixel format
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_get_pixel_format(struct mipi_dsi_device *dsi, u8 *format)
 {
 	ssize_t err;
@@ -967,13 +734,7 @@ int mipi_dsi_dcs_get_pixel_format(struct mipi_dsi_device *dsi, u8 *format)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_get_pixel_format);
 
-/**
- * mipi_dsi_dcs_enter_sleep_mode() - disable all unnecessary blocks inside the
- *    display module except interface communication
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_enter_sleep_mode(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -986,13 +747,7 @@ int mipi_dsi_dcs_enter_sleep_mode(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_enter_sleep_mode);
 
-/**
- * mipi_dsi_dcs_exit_sleep_mode() - enable all blocks inside the display
- *    module
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_exit_sleep_mode(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -1005,13 +760,7 @@ int mipi_dsi_dcs_exit_sleep_mode(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_exit_sleep_mode);
 
-/**
- * mipi_dsi_dcs_set_display_off() - stop displaying the image data on the
- *    display device
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_display_off(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -1024,13 +773,7 @@ int mipi_dsi_dcs_set_display_off(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_display_off);
 
-/**
- * mipi_dsi_dcs_set_display_on() - start displaying the image data on the
- *    display device
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure
- */
+ 
 int mipi_dsi_dcs_set_display_on(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -1043,15 +786,7 @@ int mipi_dsi_dcs_set_display_on(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_display_on);
 
-/**
- * mipi_dsi_dcs_set_column_address() - define the column extent of the frame
- *    memory accessed by the host processor
- * @dsi: DSI peripheral device
- * @start: first column of frame memory
- * @end: last column of frame memory
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_column_address(struct mipi_dsi_device *dsi, u16 start,
 				    u16 end)
 {
@@ -1067,15 +802,7 @@ int mipi_dsi_dcs_set_column_address(struct mipi_dsi_device *dsi, u16 start,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_column_address);
 
-/**
- * mipi_dsi_dcs_set_page_address() - define the page extent of the frame
- *    memory accessed by the host processor
- * @dsi: DSI peripheral device
- * @start: first page of frame memory
- * @end: last page of frame memory
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_page_address(struct mipi_dsi_device *dsi, u16 start,
 				  u16 end)
 {
@@ -1091,13 +818,7 @@ int mipi_dsi_dcs_set_page_address(struct mipi_dsi_device *dsi, u16 start,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_page_address);
 
-/**
- * mipi_dsi_dcs_set_tear_off() - turn off the display module's Tearing Effect
- *    output signal on the TE signal line
- * @dsi: DSI peripheral device
- *
- * Return: 0 on success or a negative error code on failure
- */
+ 
 int mipi_dsi_dcs_set_tear_off(struct mipi_dsi_device *dsi)
 {
 	ssize_t err;
@@ -1110,14 +831,7 @@ int mipi_dsi_dcs_set_tear_off(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_tear_off);
 
-/**
- * mipi_dsi_dcs_set_tear_on() - turn on the display module's Tearing Effect
- *    output signal on the TE signal line.
- * @dsi: DSI peripheral device
- * @mode: the Tearing Effect Output Line mode
- *
- * Return: 0 on success or a negative error code on failure
- */
+ 
 int mipi_dsi_dcs_set_tear_on(struct mipi_dsi_device *dsi,
 			     enum mipi_dsi_dcs_tear_mode mode)
 {
@@ -1133,14 +847,7 @@ int mipi_dsi_dcs_set_tear_on(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_tear_on);
 
-/**
- * mipi_dsi_dcs_set_pixel_format() - sets the pixel format for the RGB image
- *    data used by the interface
- * @dsi: DSI peripheral device
- * @format: pixel format
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_pixel_format(struct mipi_dsi_device *dsi, u8 format)
 {
 	ssize_t err;
@@ -1154,14 +861,7 @@ int mipi_dsi_dcs_set_pixel_format(struct mipi_dsi_device *dsi, u8 format)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_pixel_format);
 
-/**
- * mipi_dsi_dcs_set_tear_scanline() - set the scanline to use as trigger for
- *    the Tearing Effect output signal of the display module
- * @dsi: DSI peripheral device
- * @scanline: scanline to use as trigger
- *
- * Return: 0 on success or a negative error code on failure
- */
+ 
 int mipi_dsi_dcs_set_tear_scanline(struct mipi_dsi_device *dsi, u16 scanline)
 {
 	u8 payload[2] = { scanline >> 8, scanline & 0xff };
@@ -1176,14 +876,7 @@ int mipi_dsi_dcs_set_tear_scanline(struct mipi_dsi_device *dsi, u16 scanline)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_tear_scanline);
 
-/**
- * mipi_dsi_dcs_set_display_brightness() - sets the brightness value of the
- *    display
- * @dsi: DSI peripheral device
- * @brightness: brightness value
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_display_brightness(struct mipi_dsi_device *dsi,
 					u16 brightness)
 {
@@ -1199,14 +892,7 @@ int mipi_dsi_dcs_set_display_brightness(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_display_brightness);
 
-/**
- * mipi_dsi_dcs_get_display_brightness() - gets the current brightness value
- *    of the display
- * @dsi: DSI peripheral device
- * @brightness: brightness value
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_get_display_brightness(struct mipi_dsi_device *dsi,
 					u16 *brightness)
 {
@@ -1225,14 +911,7 @@ int mipi_dsi_dcs_get_display_brightness(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_get_display_brightness);
 
-/**
- * mipi_dsi_dcs_set_display_brightness_large() - sets the 16-bit brightness value
- *    of the display
- * @dsi: DSI peripheral device
- * @brightness: brightness value
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_set_display_brightness_large(struct mipi_dsi_device *dsi,
 					     u16 brightness)
 {
@@ -1248,14 +927,7 @@ int mipi_dsi_dcs_set_display_brightness_large(struct mipi_dsi_device *dsi,
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_display_brightness_large);
 
-/**
- * mipi_dsi_dcs_get_display_brightness_large() - gets the current 16-bit
- *    brightness value of the display
- * @dsi: DSI peripheral device
- * @brightness: brightness value
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_dcs_get_display_brightness_large(struct mipi_dsi_device *dsi,
 					     u16 *brightness)
 {
@@ -1303,13 +975,7 @@ static void mipi_dsi_drv_shutdown(struct device *dev)
 	drv->shutdown(dsi);
 }
 
-/**
- * mipi_dsi_driver_register_full() - register a driver for DSI devices
- * @drv: DSI driver structure
- * @owner: owner module
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 int mipi_dsi_driver_register_full(struct mipi_dsi_driver *drv,
 				  struct module *owner)
 {
@@ -1327,12 +993,7 @@ int mipi_dsi_driver_register_full(struct mipi_dsi_driver *drv,
 }
 EXPORT_SYMBOL(mipi_dsi_driver_register_full);
 
-/**
- * mipi_dsi_driver_unregister() - unregister a driver for DSI devices
- * @drv: DSI driver structure
- *
- * Return: 0 on success or a negative error code on failure.
- */
+ 
 void mipi_dsi_driver_unregister(struct mipi_dsi_driver *drv)
 {
 	driver_unregister(&drv->driver);

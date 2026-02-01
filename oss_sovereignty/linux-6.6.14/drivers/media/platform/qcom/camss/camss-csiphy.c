@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-csiphy.c
- *
- * Qualcomm MSM Camera Subsystem - CSIPHY Module
- *
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2016-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -98,14 +91,7 @@ static const struct csiphy_format csiphy_formats_sdm845[] = {
 	{ MEDIA_BUS_FMT_Y10_1X10, 10 },
 };
 
-/*
- * csiphy_get_bpp - map media bus format to bits per pixel
- * @formats: supported media bus formats array
- * @nformats: size of @formats array
- * @code: media bus format code
- *
- * Return number of bits per pixel
- */
+ 
 static u8 csiphy_get_bpp(const struct csiphy_format *formats,
 			 unsigned int nformats, u32 code)
 {
@@ -120,10 +106,7 @@ static u8 csiphy_get_bpp(const struct csiphy_format *formats,
 	return formats[0].bpp;
 }
 
-/*
- * csiphy_set_clock_rates - Calculate and set clock rates on CSIPHY module
- * @csiphy: CSIPHY device
- */
+ 
 static int csiphy_set_clock_rates(struct csiphy_device *csiphy)
 {
 	struct device *dev = csiphy->camss->dev;
@@ -158,8 +141,8 @@ static int csiphy_set_clock_rates(struct csiphy_device *csiphy)
 				return -EINVAL;
 			}
 
-			/* if sensor pixel clock is not available */
-			/* set highest possible CSIPHY clock rate */
+			 
+			 
 			if (min_rate == 0)
 				j = clock->nfreqs - 1;
 
@@ -183,13 +166,7 @@ static int csiphy_set_clock_rates(struct csiphy_device *csiphy)
 	return 0;
 }
 
-/*
- * csiphy_set_power - Power on/off CSIPHY module
- * @sd: CSIPHY V4L2 subdevice
- * @on: Requested power state
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csiphy_set_power(struct v4l2_subdev *sd, int on)
 {
 	struct csiphy_device *csiphy = v4l2_get_subdevdata(sd);
@@ -230,15 +207,7 @@ static int csiphy_set_power(struct v4l2_subdev *sd, int on)
 	return 0;
 }
 
-/*
- * csiphy_stream_on - Enable streaming on CSIPHY module
- * @csiphy: CSIPHY device
- *
- * Helper function to enable streaming on CSIPHY module.
- * Main configuration of CSIPHY module is also done here.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csiphy_stream_on(struct csiphy_device *csiphy)
 {
 	struct csiphy_config *cfg = &csiphy->cfg;
@@ -268,7 +237,7 @@ static int csiphy_stream_on(struct csiphy_device *csiphy)
 		}
 		writel_relaxed(val, csiphy->base_clk_mux);
 
-		/* Enforce reg write ordering between clk mux & lane enabling */
+		 
 		wmb();
 	}
 
@@ -277,25 +246,14 @@ static int csiphy_stream_on(struct csiphy_device *csiphy)
 	return 0;
 }
 
-/*
- * csiphy_stream_off - Disable streaming on CSIPHY module
- * @csiphy: CSIPHY device
- *
- * Helper function to disable streaming on CSIPHY module
- */
+ 
 static void csiphy_stream_off(struct csiphy_device *csiphy)
 {
 	csiphy->ops->lanes_disable(csiphy, &csiphy->cfg);
 }
 
 
-/*
- * csiphy_set_stream - Enable/disable streaming on CSIPHY module
- * @sd: CSIPHY V4L2 subdevice
- * @enable: Requested streaming state
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csiphy_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct csiphy_device *csiphy = v4l2_get_subdevdata(sd);
@@ -309,15 +267,7 @@ static int csiphy_set_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
-/*
- * __csiphy_get_format - Get pointer to format structure
- * @csiphy: CSIPHY device
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad from which format is requested
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE format structure
- */
+ 
 static struct v4l2_mbus_framefmt *
 __csiphy_get_format(struct csiphy_device *csiphy,
 		    struct v4l2_subdev_state *sd_state,
@@ -331,14 +281,7 @@ __csiphy_get_format(struct csiphy_device *csiphy,
 	return &csiphy->fmt[pad];
 }
 
-/*
- * csiphy_try_format - Handle try format by pad subdev method
- * @csiphy: CSIPHY device
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad on which format is requested
- * @fmt: pointer to v4l2 format structure
- * @which: wanted subdev format
- */
+ 
 static void csiphy_try_format(struct csiphy_device *csiphy,
 			      struct v4l2_subdev_state *sd_state,
 			      unsigned int pad,
@@ -349,13 +292,13 @@ static void csiphy_try_format(struct csiphy_device *csiphy,
 
 	switch (pad) {
 	case MSM_CSIPHY_PAD_SINK:
-		/* Set format on sink pad */
+		 
 
 		for (i = 0; i < csiphy->nformats; i++)
 			if (fmt->code == csiphy->formats[i].code)
 				break;
 
-		/* If not found, use UYVY as default */
+		 
 		if (i >= csiphy->nformats)
 			fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
 
@@ -368,7 +311,7 @@ static void csiphy_try_format(struct csiphy_device *csiphy,
 		break;
 
 	case MSM_CSIPHY_PAD_SRC:
-		/* Set and return a format same as sink pad */
+		 
 
 		*fmt = *__csiphy_get_format(csiphy, sd_state,
 					    MSM_CSID_PAD_SINK,
@@ -378,13 +321,7 @@ static void csiphy_try_format(struct csiphy_device *csiphy,
 	}
 }
 
-/*
- * csiphy_enum_mbus_code - Handle pixel format enumeration
- * @sd: CSIPHY V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @code: pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int csiphy_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_mbus_code_enum *code)
@@ -411,13 +348,7 @@ static int csiphy_enum_mbus_code(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csiphy_enum_frame_size - Handle frame size enumeration
- * @sd: CSIPHY V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fse: pointer to v4l2_subdev_frame_size_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int csiphy_enum_frame_size(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_frame_size_enum *fse)
@@ -448,14 +379,7 @@ static int csiphy_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csiphy_get_format - Handle get format by pads subdev method
- * @sd: CSIPHY V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int csiphy_get_format(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_format *fmt)
@@ -472,14 +396,7 @@ static int csiphy_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csiphy_set_format - Handle set format by pads subdev method
- * @sd: CSIPHY V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int csiphy_set_format(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state,
 			     struct v4l2_subdev_format *fmt)
@@ -495,7 +412,7 @@ static int csiphy_set_format(struct v4l2_subdev *sd,
 			  fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source */
+	 
 	if (fmt->pad == MSM_CSIPHY_PAD_SINK) {
 		format = __csiphy_get_format(csiphy, sd_state,
 					     MSM_CSIPHY_PAD_SRC,
@@ -510,15 +427,7 @@ static int csiphy_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csiphy_init_formats - Initialize formats on all pads
- * @sd: CSIPHY V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int csiphy_init_formats(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_fh *fh)
 {
@@ -536,14 +445,7 @@ static int csiphy_init_formats(struct v4l2_subdev *sd,
 	return csiphy_set_format(sd, fh ? fh->state : NULL, &format);
 }
 
-/*
- * msm_csiphy_subdev_init - Initialize CSIPHY device structure and resources
- * @csiphy: CSIPHY device
- * @res: CSIPHY module resources table
- * @id: CSIPHY module id
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_csiphy_subdev_init(struct camss *camss,
 			   struct csiphy_device *csiphy,
 			   const struct resources *res, u8 id)
@@ -575,7 +477,7 @@ int msm_csiphy_subdev_init(struct camss *camss,
 		return -EINVAL;
 	}
 
-	/* Memory */
+	 
 
 	csiphy->base = devm_platform_ioremap_resource_byname(pdev, res->reg[0]);
 	if (IS_ERR(csiphy->base))
@@ -591,7 +493,7 @@ int msm_csiphy_subdev_init(struct camss *camss,
 		csiphy->base_clk_mux = NULL;
 	}
 
-	/* Interrupt */
+	 
 
 	ret = platform_get_irq_byname(pdev, res->interrupt[0]);
 	if (ret < 0)
@@ -609,7 +511,7 @@ int msm_csiphy_subdev_init(struct camss *camss,
 		return ret;
 	}
 
-	/* Clocks */
+	 
 
 	csiphy->nclocks = 0;
 	while (res->clock[csiphy->nclocks])
@@ -674,15 +576,7 @@ int msm_csiphy_subdev_init(struct camss *camss,
 	return 0;
 }
 
-/*
- * csiphy_link_setup - Setup CSIPHY connections
- * @entity: Pointer to media entity structure
- * @local: Pointer to local pad
- * @remote: Pointer to remote pad
- * @flags: Link flags
- *
- * Rreturn 0 on success
- */
+ 
 static int csiphy_link_setup(struct media_entity *entity,
 			     const struct media_pad *local,
 			     const struct media_pad *remote, u32 flags)
@@ -738,13 +632,7 @@ static const struct media_entity_operations csiphy_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * msm_csiphy_register_entity - Register subdev node for CSIPHY module
- * @csiphy: CSIPHY device
- * @v4l2_dev: V4L2 device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_csiphy_register_entity(struct csiphy_device *csiphy,
 			       struct v4l2_device *v4l2_dev)
 {
@@ -786,10 +674,7 @@ int msm_csiphy_register_entity(struct csiphy_device *csiphy,
 	return ret;
 }
 
-/*
- * msm_csiphy_unregister_entity - Unregister CSIPHY module subdev node
- * @csiphy: CSIPHY device
- */
+ 
 void msm_csiphy_unregister_entity(struct csiphy_device *csiphy)
 {
 	v4l2_device_unregister_subdev(&csiphy->subdev);

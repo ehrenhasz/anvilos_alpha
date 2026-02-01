@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Edgeport USB Serial Converter driver
- *
- * Copyright (C) 2000-2002 Inside Out Networks, All rights reserved.
- * Copyright (C) 2001-2002 Greg Kroah-Hartman <greg@kroah.com>
- *
- * Supports the following devices:
- *	EP/1 EP/2 EP/4 EP/21 EP/22 EP/221 EP/42 EP/421 WATCHPORT
- *
- * For questions or problems with this driver, contact Inside Out
- * Networks technical support, or Peter Berger <pberger@brimson.com>,
- * or Al Borchers <alborchers@steinerpoint.com>.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
@@ -42,42 +30,29 @@
 #define EPROM_PAGE_SIZE		64
 
 
-/* different hardware types */
+ 
 #define HARDWARE_TYPE_930	0
 #define HARDWARE_TYPE_TIUMP	1
 
-/* IOCTL_PRIVATE_TI_GET_MODE Definitions */
-#define	TI_MODE_CONFIGURING	0   /* Device has not entered start device */
-#define	TI_MODE_BOOT		1   /* Staying in boot mode		   */
-#define TI_MODE_DOWNLOAD	2   /* Made it to download mode		   */
-#define TI_MODE_TRANSITIONING	3   /*
-				     * Currently in boot mode but
-				     * transitioning to download mode
-				     */
+ 
+#define	TI_MODE_CONFIGURING	0    
+#define	TI_MODE_BOOT		1    
+#define TI_MODE_DOWNLOAD	2    
+#define TI_MODE_TRANSITIONING	3    
 
-/* read urb state */
+ 
 #define EDGE_READ_URB_RUNNING	0
 #define EDGE_READ_URB_STOPPING	1
 #define EDGE_READ_URB_STOPPED	2
 
 
-/* Product information read from the Edgeport */
+ 
 struct product_info {
-	int	TiMode;			/* Current TI Mode  */
-	u8	hardware_type;		/* Type of hardware */
+	int	TiMode;			 
+	u8	hardware_type;		 
 } __packed;
 
-/*
- * Edgeport firmware header
- *
- * "build_number" has been set to 0 in all three of the images I have
- * seen, and Digi Tech Support suggests that it is safe to ignore it.
- *
- * "length" is the number of bytes of actual data following the header.
- *
- * "checksum" is the low order byte resulting from adding the values of
- * all the data bytes.
- */
+ 
 struct edgeport_fw_hdr {
 	u8 major_version;
 	u8 minor_version;
@@ -93,18 +68,14 @@ struct edgeport_port {
 	u8 shadow_mcr;
 	u8 shadow_lsr;
 	u8 lsr_mask;
-	u32 ump_read_timeout;		/*
-					 * Number of milliseconds the UMP will
-					 * wait without data before completing
-					 * a read short
-					 */
+	u32 ump_read_timeout;		 
 	int baud_rate;
 	int close_pending;
 	int lsr_event;
 
 	struct edgeport_serial	*edge_serial;
 	struct usb_serial_port	*port;
-	u8 bUartMode;		/* Port type, 0: RS232, etc. */
+	u8 bUartMode;		 
 	spinlock_t ep_lock;
 	int ep_read_urb_state;
 	int ep_write_urb_in_use;
@@ -112,11 +83,8 @@ struct edgeport_port {
 
 struct edgeport_serial {
 	struct product_info product_info;
-	u8 TI_I2C_Type;			/* Type of I2C in UMP */
-	u8 TiReadI2C;			/*
-					 * Set to TRUE if we have read the
-					 * I2c in Boot Mode
-					 */
+	u8 TI_I2C_Type;			 
+	u8 TiReadI2C;			 
 	struct mutex es_lock;
 	int num_ports_open;
 	struct usb_serial *serial;
@@ -126,7 +94,7 @@ struct edgeport_serial {
 };
 
 
-/* Devices that this driver supports */
+ 
 static const struct usb_device_id edgeport_1port_id_table[] = {
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_1) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_TI3410_EDGEPORT_1) },
@@ -160,7 +128,7 @@ static const struct usb_device_id edgeport_2port_id_table[] = {
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_221C) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_22C) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_21C) },
-	/* The 4, 8 and 16 port devices show up as multiple 2 port devices */
+	 
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_4S) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
@@ -170,7 +138,7 @@ static const struct usb_device_id edgeport_2port_id_table[] = {
 	{ }
 };
 
-/* Devices that this driver supports */
+ 
 static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_1) },
 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_TI3410_EDGEPORT_1) },
@@ -212,7 +180,7 @@ static const struct usb_device_id id_table_combined[] = {
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
 static bool ignore_cpu_rev;
-static int default_uart_mode;		/* RS232 */
+static int default_uart_mode;		 
 
 static void edge_tty_recv(struct usb_serial_port *port, unsigned char *data,
 		int length);
@@ -230,28 +198,15 @@ static int do_download_mode(struct edgeport_serial *serial,
 static int do_boot_mode(struct edgeport_serial *serial,
 		const struct firmware *fw);
 
-/* sysfs attributes */
+ 
 static int edge_create_sysfs_attrs(struct usb_serial_port *port);
 static int edge_remove_sysfs_attrs(struct usb_serial_port *port);
 
-/*
- * Some release of Edgeport firmware "down3.bin" after version 4.80
- * introduced code to automatically disconnect idle devices on some
- * Edgeport models after periods of inactivity, typically ~60 seconds.
- * This occurs without regard to whether ports on the device are open
- * or not.  Digi International Tech Support suggested:
- *
- * 1.  Adding driver "heartbeat" code to reset the firmware timer by
- *     requesting a descriptor record every 15 seconds, which should be
- *     effective with newer firmware versions that require it, and benign
- *     with older versions that do not. In practice 40 seconds seems often
- *     enough.
- * 2.  The heartbeat code is currently required only on Edgeport/416 models.
- */
+ 
 #define FW_HEARTBEAT_VERSION_CUTOFF ((4 << 8) + 80)
 #define FW_HEARTBEAT_SECS 40
 
-/* Timeouts in msecs: firmware downloads take longer */
+ 
 #define TI_VSEND_TIMEOUT_DEFAULT 1000
 #define TI_VSEND_TIMEOUT_FW_DOWNLOAD 10000
 
@@ -303,7 +258,7 @@ static int send_port_cmd(struct usb_serial_port *port, u8 command, u16 value,
 			data, size, TI_VSEND_TIMEOUT_DEFAULT);
 }
 
-/* clear tx/rx buffers and fifo in TI UMP */
+ 
 static int purge_port(struct usb_serial_port *port, u16 mask)
 {
 	int port_number = port->port_number;
@@ -313,14 +268,7 @@ static int purge_port(struct usb_serial_port *port, u16 mask)
 	return send_port_cmd(port, UMPC_PURGE_PORT, mask, NULL, 0);
 }
 
-/**
- * read_download_mem - Read edgeport memory from TI chip
- * @dev: usb device pointer
- * @start_address: Device CPU address at which to read
- * @length: Length of above data
- * @address_type: Can read both XDATA and I2C
- * @buffer: pointer to input data buffer
- */
+ 
 static int read_download_mem(struct usb_device *dev, int start_address,
 				int length, u8 address_type, u8 *buffer)
 {
@@ -330,10 +278,7 @@ static int read_download_mem(struct usb_device *dev, int start_address,
 
 	dev_dbg(&dev->dev, "%s - @ %x for %d\n", __func__, start_address, length);
 
-	/*
-	 * Read in blocks of 64 bytes
-	 * (TI firmware can't handle more than 64 byte reads)
-	 */
+	 
 	while (length) {
 		if (length > 64)
 			read_length = 64;
@@ -343,10 +288,7 @@ static int read_download_mem(struct usb_device *dev, int start_address,
 		if (read_length > 1) {
 			dev_dbg(&dev->dev, "%s - @ %x for %d\n", __func__, start_address, read_length);
 		}
-		/*
-		 * NOTE: Must use swab as wIndex is sent in little-endian
-		 *       byte order regardless of host byte order.
-		 */
+		 
 		be_start_address = swab16((u16)start_address);
 		status = ti_vread_sync(dev, UMPC_MEMORY_READ,
 					(u16)address_type,
@@ -361,7 +303,7 @@ static int read_download_mem(struct usb_device *dev, int start_address,
 		if (read_length > 1)
 			usb_serial_debug_data(&dev->dev, __func__, read_length, buffer);
 
-		/* Update pointers/length */
+		 
 		start_address += read_length;
 		buffer += read_length;
 		length -= read_length;
@@ -377,7 +319,7 @@ static int read_ram(struct usb_device *dev, int start_address,
 					DTK_ADDR_SPACE_XDATA, buffer);
 }
 
-/* Read edgeport memory to a given block */
+ 
 static int read_boot_mem(struct edgeport_serial *serial,
 				int start_address, int length, u8 *buffer)
 {
@@ -403,7 +345,7 @@ static int read_boot_mem(struct edgeport_serial *serial,
 	return status;
 }
 
-/* Write given block to TI EPROM memory */
+ 
 static int write_boot_mem(struct edgeport_serial *serial,
 				int start_address, int length, u8 *buffer)
 {
@@ -411,7 +353,7 @@ static int write_boot_mem(struct edgeport_serial *serial,
 	int i;
 	u8 *temp;
 
-	/* Must do a read before write */
+	 
 	if (!serial->TiReadI2C) {
 		temp = kmalloc(1, GFP_KERNEL);
 		if (!temp)
@@ -437,7 +379,7 @@ static int write_boot_mem(struct edgeport_serial *serial,
 	return status;
 }
 
-/* Write edgeport I2C memory to TI chip	*/
+ 
 static int write_i2c_mem(struct edgeport_serial *serial,
 		int start_address, int length, u8 address_type, u8 *buffer)
 {
@@ -446,9 +388,9 @@ static int write_i2c_mem(struct edgeport_serial *serial,
 	int write_length;
 	u16 be_start_address;
 
-	/* We can only send a maximum of 1 aligned byte page at a time */
+	 
 
-	/* calculate the number of bytes left in the first page */
+	 
 	write_length = EPROM_PAGE_SIZE -
 				(start_address & (EPROM_PAGE_SIZE - 1));
 
@@ -459,12 +401,7 @@ static int write_i2c_mem(struct edgeport_serial *serial,
 		__func__, start_address, write_length);
 	usb_serial_debug_data(dev, __func__, write_length, buffer);
 
-	/*
-	 * Write first page.
-	 *
-	 * NOTE: Must use swab as wIndex is sent in little-endian byte order
-	 *       regardless of host byte order.
-	 */
+	 
 	be_start_address = swab16((u16)start_address);
 	status = ti_vsend_sync(serial->serial->dev, UMPC_MEMORY_WRITE,
 				(u16)address_type, be_start_address,
@@ -478,10 +415,7 @@ static int write_i2c_mem(struct edgeport_serial *serial,
 	start_address	+= write_length;
 	buffer		+= write_length;
 
-	/*
-	 * We should be aligned now -- can write max page size bytes at a
-	 * time.
-	 */
+	 
 	while (length) {
 		if (length > EPROM_PAGE_SIZE)
 			write_length = EPROM_PAGE_SIZE;
@@ -492,12 +426,7 @@ static int write_i2c_mem(struct edgeport_serial *serial,
 			__func__, start_address, write_length);
 		usb_serial_debug_data(dev, __func__, write_length, buffer);
 
-		/*
-		 * Write next page.
-		 *
-		 * NOTE: Must use swab as wIndex is sent in little-endian byte
-		 *       order regardless of host byte order.
-		 */
+		 
 		be_start_address = swab16((u16)start_address);
 		status = ti_vsend_sync(serial->serial->dev, UMPC_MEMORY_WRITE,
 				(u16)address_type, be_start_address, buffer,
@@ -514,13 +443,7 @@ static int write_i2c_mem(struct edgeport_serial *serial,
 	return status;
 }
 
-/*
- * Examine the UMP DMA registers and LSR
- *
- * Check the MSBit of the X and Y DMA byte count registers.
- * A zero in this bit indicates that the TX DMA buffers are empty
- * then check the TX Empty bit in the UART.
- */
+ 
 static int tx_active(struct edgeport_port *port)
 {
 	int status;
@@ -532,16 +455,13 @@ static int tx_active(struct edgeport_port *port)
 	if (!oedb)
 		return -ENOMEM;
 
-	/*
-	 * Sigh, that's right, just one byte, as not all platforms can
-	 * do DMA from stack
-	 */
+	 
 	lsr = kmalloc(1, GFP_KERNEL);
 	if (!lsr) {
 		kfree(oedb);
 		return -ENOMEM;
 	}
-	/* Read the DMA Count Registers */
+	 
 	status = read_ram(port->port->serial->dev, port->dma_address,
 						sizeof(*oedb), (void *)oedb);
 	if (status)
@@ -549,7 +469,7 @@ static int tx_active(struct edgeport_port *port)
 
 	dev_dbg(&port->port->dev, "%s - XByteCount    0x%X\n", __func__, oedb->XByteCount);
 
-	/* and the LSR */
+	 
 	status = read_ram(port->port->serial->dev,
 			port->uart_base + UMPMEM_OFFS_UART_LSR, 1, lsr);
 
@@ -557,14 +477,14 @@ static int tx_active(struct edgeport_port *port)
 		goto exit_is_tx_active;
 	dev_dbg(&port->port->dev, "%s - LSR = 0x%X\n", __func__, *lsr);
 
-	/* If either buffer has data or we are transmitting then return TRUE */
+	 
 	if ((oedb->XByteCount & 0x80) != 0)
 		bytes_left += 64;
 
 	if ((*lsr & UMP_UART_LSR_TX_MASK) == 0)
 		bytes_left += 1;
 
-	/* We return Not Active if we get any kind of error */
+	 
 exit_is_tx_active:
 	dev_dbg(&port->port->dev, "%s - return %d\n", __func__, bytes_left);
 
@@ -575,12 +495,7 @@ exit_is_tx_active:
 
 static int choose_config(struct usb_device *dev)
 {
-	/*
-	 * There may be multiple configurations on this device, in which case
-	 * we would need to read and parse all of them to find out which one
-	 * we want. However, we just support one config at this point,
-	 * configuration # 1, which is Config Descriptor 0.
-	 */
+	 
 
 	dev_dbg(&dev->dev, "%s - Number of Interfaces = %d\n",
 		__func__, dev->config->desc.bNumInterfaces);
@@ -626,14 +541,14 @@ static int write_rom(struct edgeport_serial *serial, int start_address,
 	return -EINVAL;
 }
 
-/* Read a descriptor header from I2C based on type */
+ 
 static int get_descriptor_addr(struct edgeport_serial *serial,
 				int desc_type, struct ti_i2c_desc *rom_desc)
 {
 	int start_address;
 	int status;
 
-	/* Search for requested descriptor in I2C */
+	 
 	start_address = 2;
 	do {
 		status = read_rom(serial,
@@ -654,7 +569,7 @@ static int get_descriptor_addr(struct edgeport_serial *serial,
 	return 0;
 }
 
-/* Validate descriptor checksum */
+ 
 static int valid_csum(struct ti_i2c_desc *rom_desc, u8 *buffer)
 {
 	u16 i;
@@ -670,7 +585,7 @@ static int valid_csum(struct ti_i2c_desc *rom_desc, u8 *buffer)
 	return 0;
 }
 
-/* Make sure that the I2C image is good */
+ 
 static int check_i2c_image(struct edgeport_serial *serial)
 {
 	struct device *dev = &serial->serial->dev->dev;
@@ -690,7 +605,7 @@ static int check_i2c_image(struct edgeport_serial *serial)
 		return -ENOMEM;
 	}
 
-	/* Read the first byte (Signature0) must be 0x52 or 0x10 */
+	 
 	status = read_rom(serial, 0, 1, buffer);
 	if (status)
 		goto out;
@@ -702,7 +617,7 @@ static int check_i2c_image(struct edgeport_serial *serial)
 	}
 
 	do {
-		/* Validate the I2C */
+		 
 		status = read_rom(serial,
 				start_address,
 				sizeof(struct ti_i2c_desc),
@@ -719,11 +634,11 @@ static int check_i2c_image(struct edgeport_serial *serial)
 
 		dev_dbg(dev, "%s Type = 0x%x\n", __func__, rom_desc->Type);
 
-		/* Skip type 2 record */
+		 
 		ttype = rom_desc->Type & 0x0f;
 		if (ttype != I2C_DESC_TYPE_FIRMWARE_BASIC
 			&& ttype != I2C_DESC_TYPE_FIRMWARE_AUTO) {
-			/* Read the descriptor data */
+			 
 			status = read_rom(serial, start_address +
 						sizeof(struct ti_i2c_desc),
 						le16_to_cpu(rom_desc->Size),
@@ -772,7 +687,7 @@ static int get_manuf_info(struct edgeport_serial *serial, u8 *buffer)
 		goto exit;
 	}
 
-	/* Read the descriptor data */
+	 
 	status = read_rom(serial, start_address+sizeof(struct ti_i2c_desc),
 					le16_to_cpu(rom_desc->Size), buffer);
 	if (status)
@@ -793,7 +708,7 @@ exit:
 	return status;
 }
 
-/* Build firmware header used for firmware update */
+ 
 static int build_i2c_fw_hdr(u8 *header, const struct firmware *fw)
 {
 	u8 *buffer;
@@ -805,20 +720,9 @@ static int build_i2c_fw_hdr(u8 *header, const struct firmware *fw)
 	struct ti_i2c_firmware_rec *firmware_rec;
 	struct edgeport_fw_hdr *fw_hdr = (struct edgeport_fw_hdr *)fw->data;
 
-	/*
-	 * In order to update the I2C firmware we must change the type 2 record
-	 * to type 0xF2.  This will force the UMP to come up in Boot Mode.
-	 * Then while in boot mode, the driver will download the latest
-	 * firmware (padded to 15.5k) into the UMP ram.  And finally when the
-	 * device comes back up in download mode the driver will cause the new
-	 * firmware to be copied from the UMP Ram to I2C and the firmware will
-	 * update the record type from 0xf2 to 0x02.
-	 */
+	 
 
-	/*
-	 * Allocate a 15.5k buffer + 2 bytes for version number (Firmware
-	 * Record)
-	 */
+	 
 	buffer_size = (((1024 * 16) - 512 ) +
 			sizeof(struct ti_i2c_firmware_rec));
 
@@ -826,16 +730,16 @@ static int build_i2c_fw_hdr(u8 *header, const struct firmware *fw)
 	if (!buffer)
 		return -ENOMEM;
 
-	/* Set entire image of 0xffs */
+	 
 	memset(buffer, 0xff, buffer_size);
 
-	/* Copy version number into firmware record */
+	 
 	firmware_rec = (struct ti_i2c_firmware_rec *)buffer;
 
 	firmware_rec->Ver_Major	= fw_hdr->major_version;
 	firmware_rec->Ver_Minor	= fw_hdr->minor_version;
 
-	/* Pointer to fw_down memory image */
+	 
 	img_header = (struct ti_i2c_image_header *)&fw->data[4];
 
 	memcpy(buffer + sizeof(struct ti_i2c_firmware_rec),
@@ -848,7 +752,7 @@ static int build_i2c_fw_hdr(u8 *header, const struct firmware *fw)
 
 	kfree(buffer);
 
-	/* Build new header */
+	 
 	i2c_header =  (struct ti_i2c_desc *)header;
 	firmware_rec =  (struct ti_i2c_firmware_rec*)i2c_header->Data;
 
@@ -861,7 +765,7 @@ static int build_i2c_fw_hdr(u8 *header, const struct firmware *fw)
 	return 0;
 }
 
-/* Try to figure out what type of I2c we have */
+ 
 static int i2c_type_bootmode(struct edgeport_serial *serial)
 {
 	struct device *dev = &serial->serial->dev->dev;
@@ -872,7 +776,7 @@ static int i2c_type_bootmode(struct edgeport_serial *serial)
 	if (!data)
 		return -ENOMEM;
 
-	/* Try to read type 2 */
+	 
 	status = ti_vread_sync(serial->serial->dev, UMPC_MEMORY_READ,
 				DTK_ADDR_SPACE_I2C_TYPE_II, 0, data, 0x01);
 	if (status)
@@ -885,7 +789,7 @@ static int i2c_type_bootmode(struct edgeport_serial *serial)
 		goto out;
 	}
 
-	/* Try to read type 3 */
+	 
 	status = ti_vread_sync(serial->serial->dev, UMPC_MEMORY_READ,
 				DTK_ADDR_SPACE_I2C_TYPE_III, 0,	data, 0x01);
 	if (status)
@@ -918,7 +822,7 @@ static int bulk_xfer(struct usb_serial *serial, void *buffer,
 	return status;
 }
 
-/* Download given firmware image to the device (IN BOOT MODE) */
+ 
 static int download_code(struct edgeport_serial *serial, u8 *image,
 							int image_length)
 {
@@ -927,26 +831,26 @@ static int download_code(struct edgeport_serial *serial, u8 *image,
 	int transfer;
 	int done;
 
-	/* Transfer firmware image */
+	 
 	for (pos = 0; pos < image_length; ) {
-		/* Read the next buffer from file */
+		 
 		transfer = image_length - pos;
 		if (transfer > EDGE_FW_BULK_MAX_PACKET_SIZE)
 			transfer = EDGE_FW_BULK_MAX_PACKET_SIZE;
 
-		/* Transfer data */
+		 
 		status = bulk_xfer(serial->serial, &image[pos],
 							transfer, &done);
 		if (status)
 			break;
-		/* Advance buffer pointer */
+		 
 		pos += done;
 	}
 
 	return status;
 }
 
-/* FIXME!!! */
+ 
 static int config_boot_dev(struct usb_device *dev)
 {
 	return 0;
@@ -992,12 +896,7 @@ static int check_fw_sanity(struct edgeport_serial *serial,
 	return 0;
 }
 
-/*
- * DownloadTIFirmware - Download run-time operating firmware to the TI5052
- *
- * This routine downloads the main operating code into the TI5052, using the
- * boot code already burned into E2PROM or ROM.
- */
+ 
 static int download_fw(struct edgeport_serial *serial)
 {
 	struct device *dev = &serial->serial->interface->dev;
@@ -1021,18 +920,14 @@ static int download_fw(struct edgeport_serial *serial)
 
 	fw_hdr = (struct edgeport_fw_hdr *)fw->data;
 
-	/* If on-board version is newer, "fw_version" will be updated later. */
+	 
 	serial->fw_version = (fw_hdr->major_version << 8) +
 			fw_hdr->minor_version;
 
-	/*
-	 * This routine is entered by both the BOOT mode and the Download mode
-	 * We can determine which code is running by the reading the config
-	 * descriptor and if we have only one bulk pipe it is in boot mode
-	 */
+	 
 	serial->product_info.hardware_type = HARDWARE_TYPE_TIUMP;
 
-	/* Default to type 2 i2c */
+	 
 	serial->TI_I2C_Type = DTK_ADDR_SPACE_I2C_TYPE_II;
 
 	status = choose_config(serial->serial->dev);
@@ -1046,16 +941,12 @@ static int download_fw(struct edgeport_serial *serial)
 		goto out;
 	}
 
-	/*
-	 * Setup initial mode -- the default mode 0 is TI_MODE_CONFIGURING
-	 * if we have more than one endpoint we are definitely in download
-	 * mode
-	 */
+	 
 	if (interface->bNumEndpoints > 1) {
 		serial->product_info.TiMode = TI_MODE_DOWNLOAD;
 		status = do_download_mode(serial, fw);
 	} else {
-		/* Otherwise we will remain in configuring mode */
+		 
 		serial->product_info.TiMode = TI_MODE_CONFIGURING;
 		status = do_boot_mode(serial, fw);
 	}
@@ -1085,10 +976,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 		return status;
 	}
 
-	/*
-	 * Validate Hardware version number
-	 * Read Manufacturing Descriptor from TI Based Edgeport
-	 */
+	 
 	ti_manuf_desc = kmalloc(sizeof(*ti_manuf_desc), GFP_KERNEL);
 	if (!ti_manuf_desc)
 		return -ENOMEM;
@@ -1099,7 +987,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 		return status;
 	}
 
-	/* Check version number of ION descriptor */
+	 
 	if (!ignore_cpu_rev && ti_cpu_rev(ti_manuf_desc) < 2) {
 		dev_dbg(dev, "%s - Wrong CPU Rev %d (Must be 2)\n",
 			__func__, ti_cpu_rev(ti_manuf_desc));
@@ -1113,7 +1001,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 		return -ENOMEM;
 	}
 
-	/* Search for type 2 record (firmware record) */
+	 
 	start_address = get_descriptor_addr(serial,
 			I2C_DESC_TYPE_FIRMWARE_BASIC, rom_desc);
 	if (start_address != 0) {
@@ -1131,10 +1019,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 			return -ENOMEM;
 		}
 
-		/*
-		 * Validate version number
-		 * Read the descriptor data
-		 */
+		 
 		status = read_rom(serial, start_address +
 				sizeof(struct ti_i2c_desc),
 				sizeof(struct ti_i2c_firmware_rec),
@@ -1146,10 +1031,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 			return status;
 		}
 
-		/*
-		 * Check version number of download with current
-		 * version in I2c
-		 */
+		 
 		download_cur_ver = (firmware_version->Ver_Major << 8) +
 				   (firmware_version->Ver_Minor);
 		download_new_ver = (fw_hdr->major_version << 8) +
@@ -1160,10 +1042,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 			firmware_version->Ver_Minor,
 			fw_hdr->major_version, fw_hdr->minor_version);
 
-		/*
-		 * Check if we have an old version in the I2C and
-		 * update if necessary
-		 */
+		 
 		if (download_cur_ver < download_new_ver) {
 			dev_dbg(dev, "%s - Update I2C dld from %d.%d to %d.%d\n",
 				__func__,
@@ -1179,25 +1058,10 @@ static int do_download_mode(struct edgeport_serial *serial,
 				kfree(ti_manuf_desc);
 				return -ENOMEM;
 			}
-			/*
-			 * In order to update the I2C firmware we must
-			 * change the type 2 record to type 0xF2. This
-			 * will force the UMP to come up in Boot Mode.
-			 * Then while in boot mode, the driver will
-			 * download the latest firmware (padded to
-			 * 15.5k) into the UMP ram. Finally when the
-			 * device comes back up in download mode the
-			 * driver will cause the new firmware to be
-			 * copied from the UMP Ram to I2C and the
-			 * firmware will update the record type from
-			 * 0xf2 to 0x02.
-			 */
+			 
 			*record = I2C_DESC_TYPE_FIRMWARE_BLANK;
 
-			/*
-			 * Change the I2C Firmware record type to
-			 * 0xf2 to trigger an update
-			 */
+			 
 			status = write_rom(serial, start_address,
 					sizeof(*record), record);
 			if (status) {
@@ -1208,11 +1072,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 				return status;
 			}
 
-			/*
-			 * verify the write -- must do this in order
-			 * for write to complete before we do the
-			 * hardware reset
-			 */
+			 
 			status = read_rom(serial,
 						start_address,
 						sizeof(*record),
@@ -1237,7 +1097,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 
 			dev_dbg(dev, "%s - HARDWARE RESET\n", __func__);
 
-			/* Reset UMP -- Back to BOOT MODE */
+			 
 			status = ti_vsend_sync(serial->serial->dev,
 					UMPC_HARDWARE_RESET,
 					0, 0, NULL, 0,
@@ -1246,18 +1106,18 @@ static int do_download_mode(struct edgeport_serial *serial,
 			dev_dbg(dev, "%s - HARDWARE RESET return %d\n",
 					__func__, status);
 
-			/* return an error on purpose. */
+			 
 			kfree(record);
 			kfree(firmware_version);
 			kfree(rom_desc);
 			kfree(ti_manuf_desc);
 			return -ENODEV;
 		}
-		/* Same or newer fw version is already loaded */
+		 
 		serial->fw_version = download_cur_ver;
 		kfree(firmware_version);
 	}
-	/* Search for type 0xF2 record (firmware blank record) */
+	 
 	else {
 		start_address = get_descriptor_addr(serial,
 				I2C_DESC_TYPE_FIRMWARE_BLANK, rom_desc);
@@ -1285,17 +1145,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 			dev_dbg(dev, "%s - Found Type BLANK FIRMWARE (Type F2) record\n",
 					__func__);
 
-			/*
-			 * In order to update the I2C firmware we must change
-			 * the type 2 record to type 0xF2. This will force the
-			 * UMP to come up in Boot Mode.  Then while in boot
-			 * mode, the driver will download the latest firmware
-			 * (padded to 15.5k) into the UMP ram. Finally when the
-			 * device comes back up in download mode the driver
-			 * will cause the new firmware to be copied from the
-			 * UMP Ram to I2C and the firmware will update the
-			 * record type from 0xf2 to 0x02.
-			 */
+			 
 			status = build_i2c_fw_hdr(header, fw);
 			if (status) {
 				kfree(vheader);
@@ -1305,10 +1155,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 				return -EINVAL;
 			}
 
-			/*
-			 * Update I2C with type 0xf2 record with correct
-			 * size and checksum
-			 */
+			 
 			status = write_rom(serial,
 						start_address,
 						HEADER_SIZE,
@@ -1321,10 +1168,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 				return -EINVAL;
 			}
 
-			/*
-			 * verify the write -- must do this in order for
-			 * write to complete before we do the hardware reset
-			 */
+			 
 			status = read_rom(serial, start_address,
 							HEADER_SIZE, vheader);
 
@@ -1352,7 +1196,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 
 			dev_dbg(dev, "%s - Start firmware update\n", __func__);
 
-			/* Tell firmware to copy download image into I2C */
+			 
 			status = ti_vsend_sync(serial->serial->dev,
 					UMPC_COPY_DNLD_TO_I2C,
 					0, 0, NULL, 0,
@@ -1371,7 +1215,7 @@ static int do_download_mode(struct edgeport_serial *serial,
 		}
 	}
 
-	/* The device is running the download code */
+	 
 	kfree(rom_desc);
 	kfree(ti_manuf_desc);
 	return 0;
@@ -1387,7 +1231,7 @@ static int do_boot_mode(struct edgeport_serial *serial,
 
 	dev_dbg(dev, "%s - RUNNING IN BOOT MODE\n", __func__);
 
-	/* Configure the TI device so we can use the BULK pipes for download */
+	 
 	status = config_boot_dev(serial->serial->dev);
 	if (status)
 		return status;
@@ -1400,14 +1244,11 @@ static int do_boot_mode(struct edgeport_serial *serial,
 		goto stayinbootmode;
 	}
 
-	/*
-	 * We have an ION device (I2c Must be programmed)
-	 * Determine I2C image type
-	 */
+	 
 	if (i2c_type_bootmode(serial))
 		goto stayinbootmode;
 
-	/* Check for ION Vendor ID and that the I2C is valid */
+	 
 	if (!check_i2c_image(serial)) {
 		struct ti_i2c_image_header *header;
 		int i;
@@ -1415,10 +1256,7 @@ static int do_boot_mode(struct edgeport_serial *serial,
 		u8 *buffer;
 		int buffer_size;
 
-		/*
-		 * Validate Hardware version number
-		 * Read Manufacturing Descriptor from TI Based Edgeport
-		 */
+		 
 		ti_manuf_desc = kmalloc(sizeof(*ti_manuf_desc), GFP_KERNEL);
 		if (!ti_manuf_desc)
 			return -ENOMEM;
@@ -1429,7 +1267,7 @@ static int do_boot_mode(struct edgeport_serial *serial,
 			goto stayinbootmode;
 		}
 
-		/* Check for version 2 */
+		 
 		if (!ignore_cpu_rev && ti_cpu_rev(ti_manuf_desc) < 2) {
 			dev_dbg(dev, "%s - Wrong CPU Rev %d (Must be 2)\n",
 				__func__, ti_cpu_rev(ti_manuf_desc));
@@ -1439,28 +1277,16 @@ static int do_boot_mode(struct edgeport_serial *serial,
 
 		kfree(ti_manuf_desc);
 
-		/*
-		 * In order to update the I2C firmware we must change the type
-		 * 2 record to type 0xF2. This will force the UMP to come up
-		 * in Boot Mode.  Then while in boot mode, the driver will
-		 * download the latest firmware (padded to 15.5k) into the
-		 * UMP ram. Finally when the device comes back up in download
-		 * mode the driver will cause the new firmware to be copied
-		 * from the UMP Ram to I2C and the firmware will update the
-		 * record type from 0xf2 to 0x02.
-		 *
-		 * Do we really have to copy the whole firmware image,
-		 * or could we do this in place!
-		 */
+		 
 
-		/* Allocate a 15.5k buffer + 3 byte header */
+		 
 		buffer_size = (((1024 * 16) - 512) +
 					sizeof(struct ti_i2c_image_header));
 		buffer = kmalloc(buffer_size, GFP_KERNEL);
 		if (!buffer)
 			return -ENOMEM;
 
-		/* Initialize the buffer to 0xff (pad the buffer) */
+		 
 		memset(buffer, 0xff, buffer_size);
 		memcpy(buffer, &fw->data[4], fw->size - 4);
 
@@ -1471,12 +1297,12 @@ static int do_boot_mode(struct edgeport_serial *serial,
 
 		header = (struct ti_i2c_image_header *)buffer;
 
-		/* update length and checksum after padding */
+		 
 		header->Length = cpu_to_le16((u16)(buffer_size -
 					sizeof(struct ti_i2c_image_header)));
 		header->CheckSum = cs;
 
-		/* Download the operational code  */
+		 
 		dev_dbg(dev, "%s - Downloading operational code image version %d.%d (TI UMP)\n",
 				__func__,
 				fw_hdr->major_version, fw_hdr->minor_version);
@@ -1489,7 +1315,7 @@ static int do_boot_mode(struct edgeport_serial *serial,
 			return status;
 		}
 
-		/* Device will reboot */
+		 
 		serial->product_info.TiMode = TI_MODE_TRANSITIONING;
 
 		dev_dbg(dev, "%s - Download successful -- Device rebooting...\n", __func__);
@@ -1498,7 +1324,7 @@ static int do_boot_mode(struct edgeport_serial *serial,
 	}
 
 stayinbootmode:
-	/* Eprom is invalid or blank stay in boot mode */
+	 
 	dev_dbg(dev, "%s - STAYING IN BOOT MODE\n", __func__);
 	serial->product_info.TiMode = TI_MODE_BOOT;
 
@@ -1507,7 +1333,7 @@ stayinbootmode:
 
 static int ti_do_config(struct edgeport_port *port, int feature, int on)
 {
-	on = !!on;	/* 1 or 0 not bitmask */
+	on = !!on;	 
 
 	return send_port_cmd(port->port, feature, on, NULL, 0);
 }
@@ -1527,7 +1353,7 @@ static int restore_mcr(struct edgeport_port *port, u8 mcr)
 	return ti_do_config(port, UMPC_SET_CLR_LOOPBACK, mcr & MCR_LOOPBACK);
 }
 
-/* Convert TI LSR to standard UART flags */
+ 
 static u8 map_line_status(u8 ti_lsr)
 {
 	u8 lsr = 0;
@@ -1536,12 +1362,12 @@ static u8 map_line_status(u8 ti_lsr)
 	if (ti_lsr & flagUmp) \
 		lsr |= flagUart;
 
-	MAP_FLAG(UMP_UART_LSR_OV_MASK, LSR_OVER_ERR)	/* overrun */
-	MAP_FLAG(UMP_UART_LSR_PE_MASK, LSR_PAR_ERR)	/* parity error */
-	MAP_FLAG(UMP_UART_LSR_FE_MASK, LSR_FRM_ERR)	/* framing error */
-	MAP_FLAG(UMP_UART_LSR_BR_MASK, LSR_BREAK)	/* break detected */
-	MAP_FLAG(UMP_UART_LSR_RX_MASK, LSR_RX_AVAIL)	/* rx data available */
-	MAP_FLAG(UMP_UART_LSR_TX_MASK, LSR_TX_EMPTY)	/* tx hold reg empty */
+	MAP_FLAG(UMP_UART_LSR_OV_MASK, LSR_OVER_ERR)	 
+	MAP_FLAG(UMP_UART_LSR_PE_MASK, LSR_PAR_ERR)	 
+	MAP_FLAG(UMP_UART_LSR_FE_MASK, LSR_FRM_ERR)	 
+	MAP_FLAG(UMP_UART_LSR_BR_MASK, LSR_BREAK)	 
+	MAP_FLAG(UMP_UART_LSR_RX_MASK, LSR_RX_AVAIL)	 
+	MAP_FLAG(UMP_UART_LSR_TX_MASK, LSR_TX_EMPTY)	 
 
 #undef MAP_FLAG
 
@@ -1559,7 +1385,7 @@ static void handle_new_msr(struct edgeport_port *edge_port, u8 msr)
 			EDGEPORT_MSR_DELTA_RI | EDGEPORT_MSR_DELTA_CD)) {
 		icount = &edge_port->port->icount;
 
-		/* update input line counters */
+		 
 		if (msr & EDGEPORT_MSR_DELTA_CTS)
 			icount->cts++;
 		if (msr & EDGEPORT_MSR_DELTA_DSR)
@@ -1571,11 +1397,11 @@ static void handle_new_msr(struct edgeport_port *edge_port, u8 msr)
 		wake_up_interruptible(&edge_port->port->port.delta_msr_wait);
 	}
 
-	/* Save the new modem status */
+	 
 	edge_port->shadow_msr = msr & 0xf0;
 
 	tty = tty_port_tty_get(&edge_port->port->port);
-	/* handle CTS flow control */
+	 
 	if (tty && C_CRTSCTS(tty)) {
 		if (msr & EDGEPORT_MSR_CTS)
 			tty_wakeup(tty);
@@ -1595,17 +1421,14 @@ static void handle_new_lsr(struct edgeport_port *edge_port, int lsr_data,
 	edge_port->shadow_lsr = lsr;
 
 	if (new_lsr & LSR_BREAK)
-		/*
-		 * Parity and Framing errors only count if they
-		 * occur exclusive of a break being received.
-		 */
+		 
 		new_lsr &= (u8)(LSR_OVER_ERR | LSR_BREAK);
 
-	/* Place LSR data byte into Rx buffer */
+	 
 	if (lsr_data)
 		edge_tty_recv(edge_port->port, &data, 1);
 
-	/* update input line counters */
+	 
 	icount = &edge_port->port->icount;
 	if (new_lsr & LSR_BREAK)
 		icount->brk++;
@@ -1634,12 +1457,12 @@ static void edge_interrupt_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s - urb shutting down with status: %d\n",
 		    __func__, status);
 		return;
@@ -1682,9 +1505,7 @@ static void edge_interrupt_callback(struct urb *urb)
 	case TIUMP_INTERRUPT_CODE_LSR:
 		lsr = map_line_status(data[1]);
 		if (lsr & UMP_UART_LSR_DATA_MASK) {
-			/*
-			 * Save the LSR event for bulk read completion routine
-			 */
+			 
 			dev_dbg(dev, "%s - LSR Event Port %u LSR Status = %02x\n",
 				__func__, port_number, lsr);
 			edge_port->lsr_event = 1;
@@ -1696,8 +1517,8 @@ static void edge_interrupt_callback(struct urb *urb)
 		}
 		break;
 
-	case TIUMP_INTERRUPT_CODE_MSR:	/* MSR */
-		/* Copy MSR from UMP */
+	case TIUMP_INTERRUPT_CODE_MSR:	 
+		 
 		msr = data[1];
 		dev_dbg(dev, "%s - ===== Port %u MSR Status = %02x ======\n",
 			__func__, port_number, msr);
@@ -1732,12 +1553,12 @@ static void edge_bulk_in_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s - urb shutting down with status: %d\n", __func__, status);
 		return;
 	default:
@@ -1759,7 +1580,7 @@ static void edge_bulk_in_callback(struct urb *urb)
 		dev_dbg(dev, "%s ===== Port %u LSR Status = %02x, Data = %02x ======\n",
 			__func__, port_number, edge_port->lsr_mask, *data);
 		handle_new_lsr(edge_port, 1, edge_port->lsr_mask, *data);
-		/* Adjust buffer length/pointer */
+		 
 		--urb->actual_length;
 		++data;
 	}
@@ -1776,7 +1597,7 @@ static void edge_bulk_in_callback(struct urb *urb)
 	}
 
 exit:
-	/* continue read unless stopped */
+	 
 	spin_lock_irqsave(&edge_port->ep_lock, flags);
 	if (edge_port->ep_read_urb_state == EDGE_READ_URB_RUNNING)
 		retval = usb_submit_urb(urb, GFP_ATOMIC);
@@ -1811,12 +1632,12 @@ static void edge_bulk_out_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s - urb shutting down with status: %d\n",
 		    __func__, status);
 		return;
@@ -1825,7 +1646,7 @@ static void edge_bulk_out_callback(struct urb *urb)
 			"received: %d\n", __func__, status);
 	}
 
-	/* send any buffered data */
+	 
 	tty = tty_port_tty_get(&port->port);
 	edge_send(port, tty);
 	tty_kref_put(tty);
@@ -1846,7 +1667,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	dev = port->serial->dev;
 
-	/* turn off loopback */
+	 
 	status = ti_do_config(edge_port, UMPC_SET_CLR_LOOPBACK, 0);
 	if (status) {
 		dev_err(&port->dev,
@@ -1855,26 +1676,26 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return status;
 	}
 
-	/* set up the port settings */
+	 
 	if (tty)
 		edge_set_termios(tty, port, &tty->termios);
 
-	/* open up the port */
+	 
 
-	/* milliseconds to timeout for DMA transfer */
+	 
 	transaction_timeout = 2;
 
 	edge_port->ump_read_timeout =
 				max(20, ((transaction_timeout * 3) / 2));
 
-	/* milliseconds to timeout for DMA transfer */
+	 
 	open_settings = (u8)(UMP_DMA_MODE_CONTINOUS |
 			     UMP_PIPE_TRANS_TIMEOUT_ENA |
 			     (transaction_timeout << 2));
 
 	dev_dbg(&port->dev, "%s - Sending UMPC_OPEN_PORT\n", __func__);
 
-	/* Tell TI to open and start the port */
+	 
 	status = send_port_cmd(port, UMPC_OPEN_PORT, open_settings, NULL, 0);
 	if (status) {
 		dev_err(&port->dev, "%s - cannot send open command, %d\n",
@@ -1882,7 +1703,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return status;
 	}
 
-	/* Start the DMA? */
+	 
 	status = send_port_cmd(port, UMPC_START_PORT, 0, NULL, 0);
 	if (status) {
 		dev_err(&port->dev, "%s - cannot send start DMA command, %d\n",
@@ -1890,7 +1711,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return status;
 	}
 
-	/* Clear TX and RX buffers in UMP */
+	 
 	status = purge_port(port, UMP_PORT_DIR_OUT | UMP_PORT_DIR_IN);
 	if (status) {
 		dev_err(&port->dev,
@@ -1899,7 +1720,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return status;
 	}
 
-	/* Read Initial MSR */
+	 
 	status = read_port_cmd(port, UMPC_READ_MSR, 0, &edge_port->shadow_msr, 1);
 	if (status) {
 		dev_err(&port->dev, "%s - cannot send read MSR command, %d\n",
@@ -1909,7 +1730,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	dev_dbg(&port->dev, "ShadowMSR 0x%X\n", edge_port->shadow_msr);
 
-	/* Set Initial MCR */
+	 
 	edge_port->shadow_mcr = MCR_RTS | MCR_DTR;
 	dev_dbg(&port->dev, "ShadowMCR 0x%X\n", edge_port->shadow_mcr);
 
@@ -1917,7 +1738,7 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (mutex_lock_interruptible(&edge_serial->es_lock))
 		return -ERESTARTSYS;
 	if (edge_serial->num_ports_open == 0) {
-		/* we are the first port to open, post the interrupt urb */
+		 
 		urb = edge_serial->serial->port[0]->interrupt_in_urb;
 		urb->context = edge_serial;
 		status = usb_submit_urb(urb, GFP_KERNEL);
@@ -1929,14 +1750,11 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		}
 	}
 
-	/*
-	 * reset the data toggle on the bulk endpoints to work around bug in
-	 * host controllers where things get out of sync some times
-	 */
+	 
 	usb_clear_halt(dev, port->write_urb->pipe);
 	usb_clear_halt(dev, port->read_urb->pipe);
 
-	/* start up our bulk read urb */
+	 
 	urb = port->read_urb;
 	edge_port->ep_read_urb_state = EDGE_READ_URB_RUNNING;
 	urb->context = edge_port;
@@ -1971,10 +1789,7 @@ static void edge_close(struct usb_serial_port *port)
 	if (edge_serial == NULL || edge_port == NULL)
 		return;
 
-	/*
-	 * The bulkreadcompletion routine will check
-	 * this flag and dump add read data
-	 */
+	 
 	edge_port->close_pending = 1;
 
 	usb_kill_urb(port->read_urb);
@@ -1990,7 +1805,7 @@ static void edge_close(struct usb_serial_port *port)
 	mutex_lock(&edge_serial->es_lock);
 	--edge_port->edge_serial->num_ports_open;
 	if (edge_port->edge_serial->num_ports_open <= 0) {
-		/* last port is now closed, let's shut down our interrupt urb */
+		 
 		usb_kill_urb(port->serial->port[0]->interrupt_in_urb);
 		edge_port->edge_serial->num_ports_open = 0;
 	}
@@ -2048,24 +1863,21 @@ static void edge_send(struct usb_serial_port *port, struct tty_struct *tty)
 
 	usb_serial_debug_data(&port->dev, __func__, count, port->write_urb->transfer_buffer);
 
-	/* set up our urb */
+	 
 	port->write_urb->transfer_buffer_length = count;
 
-	/* send the data out the bulk port */
+	 
 	result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 	if (result) {
 		dev_err_console(port,
 			"%s - failed submitting write urb, error %d\n",
 				__func__, result);
 		edge_port->ep_write_urb_in_use = 0;
-		/* TODO: reschedule edge_send */
+		 
 	} else
 		edge_port->port->icount.tx += count;
 
-	/*
-	 * wakeup any process waiting for writes to complete
-	 * there is now more room in the buffer for new writes
-	 */
+	 
 	if (tty)
 		tty_wakeup(tty);
 }
@@ -2128,7 +1940,7 @@ static void edge_throttle(struct tty_struct *tty)
 	if (edge_port == NULL)
 		return;
 
-	/* if we are implementing XON/XOFF, send the stop character */
+	 
 	if (I_IXOFF(tty)) {
 		unsigned char stop_char = STOP_CHAR(tty);
 		status = edge_write(tty, port, &stop_char, 1);
@@ -2137,10 +1949,7 @@ static void edge_throttle(struct tty_struct *tty)
 		}
 	}
 
-	/*
-	 * if we are implementing RTS/CTS, stop reads
-	 * and the Edgeport will clear the RTS line
-	 */
+	 
 	if (C_CRTSCTS(tty))
 		stop_read(edge_port);
 
@@ -2155,7 +1964,7 @@ static void edge_unthrottle(struct tty_struct *tty)
 	if (edge_port == NULL)
 		return;
 
-	/* if we are implementing XON/XOFF, send the start character */
+	 
 	if (I_IXOFF(tty)) {
 		unsigned char start_char = START_CHAR(tty);
 		status = edge_write(tty, port, &start_char, 1);
@@ -2163,10 +1972,7 @@ static void edge_unthrottle(struct tty_struct *tty)
 			dev_err(&port->dev, "%s - failed to write start character, %d\n", __func__, status);
 		}
 	}
-	/*
-	 * if we are implementing RTS/CTS, restart reads
-	 * are the Edgeport will assert the RTS line
-	 */
+	 
 	if (C_CRTSCTS(tty)) {
 		status = restart_read(edge_port);
 		if (status)
@@ -2229,7 +2035,7 @@ static void change_port_settings(struct tty_struct *tty,
 
 	config->wFlags = 0;
 
-	/* These flags must be set */
+	 
 	config->wFlags |= UMP_MASK_UART_FLAGS_RECEIVE_MS_INT;
 	config->wFlags |= UMP_MASK_UART_FLAGS_AUTO_START_ON_ERR;
 	config->bUartMode = (u8)(edge_port->bUartMode);
@@ -2277,7 +2083,7 @@ static void change_port_settings(struct tty_struct *tty,
 		dev_dbg(dev, "%s - stop bits = 1\n", __func__);
 	}
 
-	/* figure out the flow control settings */
+	 
 	if (cflag & CRTSCTS) {
 		config->wFlags |= UMP_MASK_UART_FLAGS_OUT_X_CTS_FLOW;
 		config->wFlags |= UMP_MASK_UART_FLAGS_RTS_FLOW;
@@ -2287,14 +2093,11 @@ static void change_port_settings(struct tty_struct *tty,
 		restart_read(edge_port);
 	}
 
-	/*
-	 * if we are implementing XON/XOFF, set the start and stop
-	 * character in the device
-	 */
+	 
 	config->cXon  = START_CHAR(tty);
 	config->cXoff = STOP_CHAR(tty);
 
-	/* if we are implementing INBOUND XON/XOFF */
+	 
 	if (I_IXOFF(tty)) {
 		config->wFlags |= UMP_MASK_UART_FLAGS_IN_X;
 		dev_dbg(dev, "%s - INBOUND XON/XOFF is enabled, XON = %2x, XOFF = %2x\n",
@@ -2302,7 +2105,7 @@ static void change_port_settings(struct tty_struct *tty,
 	} else
 		dev_dbg(dev, "%s - INBOUND XON/XOFF is disabled\n", __func__);
 
-	/* if we are implementing OUTBOUND XON/XOFF */
+	 
 	if (I_IXON(tty)) {
 		config->wFlags |= UMP_MASK_UART_FLAGS_OUT_X;
 		dev_dbg(dev, "%s - OUTBOUND XON/XOFF is enabled, XON = %2x, XOFF = %2x\n",
@@ -2312,13 +2115,13 @@ static void change_port_settings(struct tty_struct *tty,
 
 	tty->termios.c_cflag &= ~CMSPAR;
 
-	/* Round the baud rate */
+	 
 	baud = tty_get_baud_rate(tty);
 	if (!baud) {
-		/* pick a default, any default... */
+		 
 		baud = 9600;
 	} else {
-		/* Avoid a zero divisor. */
+		 
 		baud = min(baud, 461550);
 		tty_encode_baud_rate(tty, baud, baud);
 	}
@@ -2326,7 +2129,7 @@ static void change_port_settings(struct tty_struct *tty,
 	edge_port->baud_rate = baud;
 	config->wBaudRate = (u16)((461550L + baud/2) / baud);
 
-	/* FIXME: Recompute actual baud from divisor here */
+	 
 
 	dev_dbg(dev, "%s - baud rate = %d, wBaudRate = %d\n", __func__, baud, config->wBaudRate);
 
@@ -2339,7 +2142,7 @@ static void change_port_settings(struct tty_struct *tty,
 	dev_dbg(dev, "cXoff:       %d\n", config->cXoff);
 	dev_dbg(dev, "bUartMode:   %d\n", config->bUartMode);
 
-	/* move the word values into big endian mode */
+	 
 	cpu_to_be16s(&config->wFlags);
 	cpu_to_be16s(&config->wBaudRate);
 
@@ -2359,7 +2162,7 @@ static void edge_set_termios(struct tty_struct *tty,
 
 	if (edge_port == NULL)
 		return;
-	/* change the port settings to the new ones specified */
+	 
 	change_port_settings(tty, edge_port, old_termios);
 }
 
@@ -2407,12 +2210,12 @@ static int edge_tiocmget(struct tty_struct *tty)
 
 	msr = edge_port->shadow_msr;
 	mcr = edge_port->shadow_mcr;
-	result = ((mcr & MCR_DTR)	? TIOCM_DTR: 0)	  /* 0x002 */
-		  | ((mcr & MCR_RTS)	? TIOCM_RTS: 0)   /* 0x004 */
-		  | ((msr & EDGEPORT_MSR_CTS)	? TIOCM_CTS: 0)   /* 0x020 */
-		  | ((msr & EDGEPORT_MSR_CD)	? TIOCM_CAR: 0)   /* 0x040 */
-		  | ((msr & EDGEPORT_MSR_RI)	? TIOCM_RI:  0)   /* 0x080 */
-		  | ((msr & EDGEPORT_MSR_DSR)	? TIOCM_DSR: 0);  /* 0x100 */
+	result = ((mcr & MCR_DTR)	? TIOCM_DTR: 0)	   
+		  | ((mcr & MCR_RTS)	? TIOCM_RTS: 0)    
+		  | ((msr & EDGEPORT_MSR_CTS)	? TIOCM_CTS: 0)    
+		  | ((msr & EDGEPORT_MSR_CD)	? TIOCM_CAR: 0)    
+		  | ((msr & EDGEPORT_MSR_RI)	? TIOCM_RI:  0)    
+		  | ((msr & EDGEPORT_MSR_DSR)	? TIOCM_DSR: 0);   
 
 
 	dev_dbg(&port->dev, "%s -- %x\n", __func__, result);
@@ -2426,10 +2229,10 @@ static int edge_break(struct tty_struct *tty, int break_state)
 	struct usb_serial_port *port = tty->driver_data;
 	struct edgeport_port *edge_port = usb_get_serial_port_data(port);
 	int status;
-	int bv = 0;	/* Off */
+	int bv = 0;	 
 
 	if (break_state == -1)
-		bv = 1;	/* On */
+		bv = 1;	 
 
 	status = ti_do_config(edge_port, UMPC_SET_CLR_BREAK, bv);
 	if (status) {
@@ -2460,7 +2263,7 @@ static void edge_heartbeat_work(struct work_struct *work)
 
 	rom_desc = kmalloc(sizeof(*rom_desc), GFP_KERNEL);
 
-	/* Descriptor address request is enough to reset the firmware timer */
+	 
 	if (!rom_desc || !get_descriptor_addr(serial, I2C_DESC_TYPE_ION,
 			rom_desc)) {
 		dev_err(&serial->serial->interface->dev,
@@ -2477,7 +2280,7 @@ static int edge_calc_num_ports(struct usb_serial *serial,
 	struct device *dev = &serial->interface->dev;
 	unsigned char num_ports = serial->type->num_ports;
 
-	/* Make sure we have the required endpoints when in download mode. */
+	 
 	if (serial->interface->cur_altsetting->desc.bNumEndpoints > 1) {
 		if (epds->num_bulk_in < num_ports ||
 				epds->num_bulk_out < num_ports ||
@@ -2496,7 +2299,7 @@ static int edge_startup(struct usb_serial *serial)
 	int status;
 	u16 product_id;
 
-	/* create our private serial structure */
+	 
 	edge_serial = kzalloc(sizeof(struct edgeport_serial), GFP_KERNEL);
 	if (!edge_serial)
 		return -ENOMEM;
@@ -2513,12 +2316,12 @@ static int edge_startup(struct usb_serial *serial)
 	}
 
 	if (status > 0)
-		return 1;	/* bind but do not register any ports */
+		return 1;	 
 
 	product_id = le16_to_cpu(
 			edge_serial->serial->dev->descriptor.idProduct);
 
-	/* Currently only the EP/416 models require heartbeat support */
+	 
 	if (edge_serial->fw_version > FW_HEARTBEAT_VERSION_CUTOFF) {
 		if (product_id == ION_DEVICE_ID_TI_EDGEPORT_416 ||
 			product_id == ION_DEVICE_ID_TI_EDGEPORT_416B) {
@@ -2586,10 +2389,7 @@ static int edge_port_probe(struct usb_serial_port *port)
 	if (ret)
 		goto err;
 
-	/*
-	 * The LSR does not tell when the transmitter shift register has
-	 * emptied so add a one-character drain delay.
-	 */
+	 
 	port->port.drain_delay = 1;
 
 	return 0;
@@ -2608,7 +2408,7 @@ static void edge_port_remove(struct usb_serial_port *port)
 	kfree(edge_port);
 }
 
-/* Sysfs Attributes */
+ 
 
 static ssize_t uart_mode_show(struct device *dev,
 	struct device_attribute *attr, char *buf)

@@ -1,27 +1,4 @@
-/* tinytest.c -- Copyright 2009-2012 Nick Mathewson
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 #ifdef TINYTEST_LOCAL
 #include "tinytest_local.h"
 #endif
@@ -44,13 +21,13 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 #if (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1060 && \
     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1070)
-/* Workaround for a stupid bug in OSX 10.6 */
+ 
 #define FORK_BREAKS_GCOV
 #include <vproc.h>
 #endif
 #endif
 
-#endif /* !NO_FORKING */
+#endif  
 
 #ifndef __GNUC__
 #define __attribute__(x)
@@ -61,26 +38,26 @@
 
 #define LONGEST_TEST_NAME 16384
 
-static int in_tinytest_main = 0; /**< true if we're in tinytest_main().*/
-static int n_ok = 0; /**< Number of tests that have passed */
-static int n_bad = 0; /**< Number of tests that have failed. */
-static int n_skipped = 0; /**< Number of tests that have been skipped. */
+static int in_tinytest_main = 0;  
+static int n_ok = 0;  
+static int n_bad = 0;  
+static int n_skipped = 0;  
 
-static int opt_forked = 0; /**< True iff we're called from inside a win32 fork*/
-static int opt_nofork = 0; /**< Suppress calls to fork() for debugging. */
-static int opt_verbosity = 1; /**< -==quiet,0==terse,1==normal,2==verbose */
+static int opt_forked = 0;  
+static int opt_nofork = 0;  
+static int opt_verbosity = 1;  
 const char *verbosity_flag = "";
 
 const struct testlist_alias_t *cfg_aliases=NULL;
 
 enum outcome { SKIP=2, OK=1, FAIL=0 };
 static enum outcome cur_test_outcome = 0;
-const char *cur_test_prefix = NULL; /**< prefix of the current test group */
-/** Name of the current test, if we haven't logged is yet. Used for --quiet */
+const char *cur_test_prefix = NULL;  
+ 
 const char *cur_test_name = NULL;
 
 #ifdef _WIN32
-/* Copy of argv[0] for win32. */
+ 
 static char commandname[MAX_PATH+1];
 #endif
 
@@ -122,14 +99,7 @@ testcase_run_forked_(const struct testgroup_t *group,
 		     const struct testcase_t *testcase)
 {
 #ifdef _WIN32
-	/* Fork? On Win32?  How primitive!  We'll do what the smart kids do:
-	   we'll invoke our own exe (whose name we recall from the command
-	   line) with a command line that tells it to run just the test we
-	   want, and this time without forking.
-
-	   (No, threads aren't an option.  The whole point of forking is to
-	   share no state between tests.)
-	 */
+	 
 	int ok;
 	char buffer[LONGEST_TEST_NAME+256];
 	STARTUPINFOA si;
@@ -182,7 +152,7 @@ testcase_run_forked_(const struct testgroup_t *group,
 	vproc_transaction_begin(0);
 #endif
 	if (!pid) {
-		/* child. */
+		 
 		int test_r, write_r;
 		char b[1];
 		close(outcome_pipe[0]);
@@ -195,13 +165,12 @@ testcase_run_forked_(const struct testgroup_t *group,
 			exit(1);
 		}
 		exit(0);
-		return FAIL; /* unreachable */
+		return FAIL;  
 	} else {
-		/* parent */
+		 
 		int status, r;
 		char b[1];
-		/* Close this now, so that if the other side closes it,
-		 * our read fails. */
+		 
 		close(outcome_pipe[1]);
 		r = (int)read(outcome_pipe[0], b, 1);
 		if (r == 0) {
@@ -217,7 +186,7 @@ testcase_run_forked_(const struct testgroup_t *group,
 #endif
 }
 
-#endif /* !NO_FORKING */
+#endif  
 
 int
 testcase_run_one(const struct testgroup_t *group,
@@ -268,7 +237,7 @@ testcase_run_one(const struct testgroup_t *group,
 
 	if (opt_forked) {
 		exit(outcome==OK ? 0 : (outcome==SKIP?MAGIC_EXITCODE : 1));
-		return 1; /* unreachable */
+		return 1;  
 	} else {
 		return (int)outcome;
 	}
@@ -288,7 +257,7 @@ tinytest_set_flag_(struct testgroup_t *groups, const char *arg, int set, unsigne
 			struct testcase_t *testcase = &groups[i].cases[j];
 			snprintf(fullname, sizeof(fullname), "%s%s",
 				 groups[i].prefix, testcase->name);
-			if (!flag) { /* Hack! */
+			if (!flag) {  
 				printf("    %s", fullname);
 				if (testcase->flags & TT_OFF_BY_DEFAULT)
 					puts("   (Off by default)");
@@ -386,7 +355,7 @@ tinytest_main(int c, const char **v, struct testgroup_t *groups)
 	const char *sp = strrchr(v[0], '.');
 	const char *extension = "";
 	if (!sp || stricmp(sp, ".exe"))
-		extension = ".exe"; /* Add an exe so CreateProcess will work */
+		extension = ".exe";  
 	snprintf(commandname, sizeof(commandname), "%s%s", v[0], extension);
 	commandname[MAX_PATH]='\0';
 #endif

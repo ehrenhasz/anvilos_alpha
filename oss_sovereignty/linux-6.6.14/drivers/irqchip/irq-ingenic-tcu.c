@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ47xx SoCs TCU IRQ driver
- * Copyright (C) 2019 Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -143,19 +140,10 @@ static int __init ingenic_tcu_irq_init(struct device_node *np,
 	ct->chip.irq_mask_ack = ingenic_tcu_gc_mask_disable_reg_and_ack;
 	ct->chip.flags = IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_SKIP_SET_WAKE;
 
-	/* Mask all IRQs by default */
+	 
 	regmap_write(tcu->map, TCU_REG_TMSR, IRQ_MSK(32));
 
-	/*
-	 * On JZ4740, timer 0 and timer 1 have their own interrupt line;
-	 * timers 2-7 share one interrupt.
-	 * On SoCs >= JZ4770, timer 5 has its own interrupt line;
-	 * timers 0-4 and 6-7 share one single interrupt.
-	 *
-	 * To keep things simple, we just register the same handler to
-	 * all parent interrupts. The handler will properly detect which
-	 * channel fired the interrupt.
-	 */
+	 
 	for (i = 0; i < irqs; i++) {
 		tcu->parent_irqs[i] = irq_of_parse_and_map(np, i);
 		if (!tcu->parent_irqs[i]) {

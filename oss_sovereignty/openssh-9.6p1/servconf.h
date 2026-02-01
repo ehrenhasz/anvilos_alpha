@@ -1,71 +1,56 @@
-/* $OpenBSD: servconf.h,v 1.160 2023/09/06 23:35:35 djm Exp $ */
+ 
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Definitions for server configuration data and for the functions reading it.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
 
 #ifndef SERVCONF_H
 #define SERVCONF_H
 
 #include <openbsd-compat/sys-queue.h>
 
-#define MAX_PORTS		256	/* Max # ports. */
+#define MAX_PORTS		256	 
 
-/* permit_root_login */
+ 
 #define	PERMIT_NOT_SET		-1
 #define	PERMIT_NO		0
 #define	PERMIT_FORCED_ONLY	1
 #define	PERMIT_NO_PASSWD	2
 #define	PERMIT_YES		3
 
-/* use_privsep */
+ 
 #define PRIVSEP_OFF		0
 #define PRIVSEP_ON		1
 #define PRIVSEP_NOSANDBOX	2
 
-/* PermitOpen */
+ 
 #define PERMITOPEN_ANY		0
 #define PERMITOPEN_NONE		-2
 
-/* IgnoreRhosts */
+ 
 #define IGNORE_RHOSTS_NO	0
 #define IGNORE_RHOSTS_YES	1
 #define IGNORE_RHOSTS_SHOSTS	2
 
-#define DEFAULT_AUTH_FAIL_MAX	6	/* Default for MaxAuthTries */
-#define DEFAULT_SESSIONS_MAX	10	/* Default for MaxSessions */
+#define DEFAULT_AUTH_FAIL_MAX	6	 
+#define DEFAULT_SESSIONS_MAX	10	 
 
-/* Magic name for internal sftp-server */
+ 
 #define INTERNAL_SFTP_NAME	"internal-sftp"
 
-/* PubkeyAuthOptions flags */
+ 
 #define PUBKEYAUTH_TOUCH_REQUIRED	(1)
 #define PUBKEYAUTH_VERIFY_REQUIRED	(1<<1)
 
 struct ssh;
 struct fwd_perm_list;
 
-/*
- * Used to store addresses from ListenAddr directives. These may be
- * incomplete, as they may specify addresses that need to be merged
- * with any ports requested by ListenPort.
- */
+ 
 struct queued_listenaddr {
 	char *addr;
-	int port; /* <=0 if unspecified */
+	int port;  
 	char *rdomain;
 };
 
-/* Resolved listen addresses, grouped by optional routing domain */
+ 
 struct listenaddr {
 	char *rdomain;
 	struct addrinfo *addrs;
@@ -74,83 +59,71 @@ struct listenaddr {
 typedef struct {
 	u_int	num_ports;
 	u_int	ports_from_cmdline;
-	int	ports[MAX_PORTS];	/* Port number to listen on. */
+	int	ports[MAX_PORTS];	 
 	struct queued_listenaddr *queued_listen_addrs;
 	u_int	num_queued_listens;
 	struct listenaddr *listen_addrs;
 	u_int	num_listen_addrs;
-	int	address_family;		/* Address family used by the server. */
+	int	address_family;		 
 
-	char	*routing_domain;	/* Bind session to routing domain */
+	char	*routing_domain;	 
 
-	char   **host_key_files;	/* Files containing host keys. */
-	int	*host_key_file_userprovided; /* Key was specified by user. */
-	u_int	num_host_key_files;     /* Number of files for host keys. */
-	char   **host_cert_files;	/* Files containing host certs. */
-	u_int	num_host_cert_files;	/* Number of files for host certs. */
+	char   **host_key_files;	 
+	int	*host_key_file_userprovided;  
+	u_int	num_host_key_files;      
+	char   **host_cert_files;	 
+	u_int	num_host_cert_files;	 
 
-	char   *host_key_agent;		/* ssh-agent socket for host keys. */
-	char   *pid_file;		/* Where to put our pid */
-	char   *moduli_file;		/* moduli file for DH-GEX */
-	int     login_grace_time;	/* Disconnect if no auth in this time
-					 * (sec). */
-	int     permit_root_login;	/* PERMIT_*, see above */
-	int     ignore_rhosts;	/* Ignore .rhosts and .shosts. */
-	int     ignore_user_known_hosts;	/* Ignore ~/.ssh/known_hosts
-						 * for RhostsRsaAuth */
-	int     print_motd;	/* If true, print /etc/motd. */
-	int	print_lastlog;	/* If true, print lastlog */
-	int     x11_forwarding;	/* If true, permit inet (spoofing) X11 fwd. */
-	int     x11_display_offset;	/* What DISPLAY number to start
-					 * searching at */
-	int     x11_use_localhost;	/* If true, use localhost for fake X11 server. */
-	char   *xauth_location;	/* Location of xauth program */
-	int	permit_tty;	/* If false, deny pty allocation */
-	int	permit_user_rc;	/* If false, deny ~/.ssh/rc execution */
-	int     strict_modes;	/* If true, require string home dir modes. */
-	int     tcp_keep_alive;	/* If true, set SO_KEEPALIVE. */
-	int	ip_qos_interactive;	/* IP ToS/DSCP/class for interactive */
-	int	ip_qos_bulk;		/* IP ToS/DSCP/class for bulk traffic */
-	char   *ciphers;	/* Supported SSH2 ciphers. */
-	char   *macs;		/* Supported SSH2 macs. */
-	char   *kex_algorithms;	/* SSH2 kex methods in order of preference. */
-	struct ForwardOptions fwd_opts;	/* forwarding options */
-	SyslogFacility log_facility;	/* Facility for system logging. */
-	LogLevel log_level;	/* Level for system logging. */
-	u_int	num_log_verbose;	/* Verbose log overrides */
+	char   *host_key_agent;		 
+	char   *pid_file;		 
+	char   *moduli_file;		 
+	int     login_grace_time;	 
+	int     permit_root_login;	 
+	int     ignore_rhosts;	 
+	int     ignore_user_known_hosts;	 
+	int     print_motd;	 
+	int	print_lastlog;	 
+	int     x11_forwarding;	 
+	int     x11_display_offset;	 
+	int     x11_use_localhost;	 
+	char   *xauth_location;	 
+	int	permit_tty;	 
+	int	permit_user_rc;	 
+	int     strict_modes;	 
+	int     tcp_keep_alive;	 
+	int	ip_qos_interactive;	 
+	int	ip_qos_bulk;		 
+	char   *ciphers;	 
+	char   *macs;		 
+	char   *kex_algorithms;	 
+	struct ForwardOptions fwd_opts;	 
+	SyslogFacility log_facility;	 
+	LogLevel log_level;	 
+	u_int	num_log_verbose;	 
 	char	**log_verbose;
-	int     hostbased_authentication;	/* If true, permit ssh2 hostbased auth */
-	int     hostbased_uses_name_from_packet_only; /* experimental */
-	char   *hostbased_accepted_algos; /* Algos allowed for hostbased */
-	char   *hostkeyalgorithms;	/* SSH2 server key types */
-	char   *ca_sign_algorithms;	/* Allowed CA signature algorithms */
-	int     pubkey_authentication;	/* If true, permit ssh2 pubkey authentication. */
-	char   *pubkey_accepted_algos;	/* Signature algos allowed for pubkey */
-	int	pubkey_auth_options;	/* -1 or mask of PUBKEYAUTH_* flags */
-	int     kerberos_authentication;	/* If true, permit Kerberos
-						 * authentication. */
-	int     kerberos_or_local_passwd;	/* If true, permit kerberos
-						 * and any other password
-						 * authentication mechanism,
-						 * such as SecurID or
-						 * /etc/passwd */
-	int     kerberos_ticket_cleanup;	/* If true, destroy ticket
-						 * file on logout. */
-	int     kerberos_get_afs_token;		/* If true, try to get AFS token if
-						 * authenticated with Kerberos. */
-	int     gss_authentication;	/* If true, permit GSSAPI authentication */
-	int     gss_cleanup_creds;	/* If true, destroy cred cache on logout */
-	int     gss_strict_acceptor;	/* If true, restrict the GSSAPI acceptor name */
-	int     password_authentication;	/* If true, permit password
-						 * authentication. */
-	int     kbd_interactive_authentication;	/* If true, permit */
-	int     permit_empty_passwd;	/* If false, do not permit empty
-					 * passwords. */
-	int     permit_user_env;	/* If true, read ~/.ssh/environment */
-	char   *permit_user_env_allowlist; /* pattern-list of allowed env names */
-	int     compression;	/* If true, compression is allowed */
-	int	allow_tcp_forwarding; /* One of FORWARD_* */
-	int	allow_streamlocal_forwarding; /* One of FORWARD_* */
+	int     hostbased_authentication;	 
+	int     hostbased_uses_name_from_packet_only;  
+	char   *hostbased_accepted_algos;  
+	char   *hostkeyalgorithms;	 
+	char   *ca_sign_algorithms;	 
+	int     pubkey_authentication;	 
+	char   *pubkey_accepted_algos;	 
+	int	pubkey_auth_options;	 
+	int     kerberos_authentication;	 
+	int     kerberos_or_local_passwd;	 
+	int     kerberos_ticket_cleanup;	 
+	int     kerberos_get_afs_token;		 
+	int     gss_authentication;	 
+	int     gss_cleanup_creds;	 
+	int     gss_strict_acceptor;	 
+	int     password_authentication;	 
+	int     kbd_interactive_authentication;	 
+	int     permit_empty_passwd;	 
+	int     permit_user_env;	 
+	char   *permit_user_env_allowlist;  
+	int     compression;	 
+	int	allow_tcp_forwarding;  
+	int	allow_streamlocal_forwarding;  
 	int	allow_agent_forwarding;
 	int	disable_forwarding;
 	u_int num_allow_users;
@@ -180,30 +153,23 @@ typedef struct {
 	int	per_source_masklen_ipv6;
 	int	max_authtries;
 	int	max_sessions;
-	char   *banner;			/* SSH-2 banner message */
+	char   *banner;			 
 	int	use_dns;
-	int	client_alive_interval;	/*
-					 * poke the client this often to
-					 * see if it's still there
-					 */
-	int	client_alive_count_max;	/*
-					 * If the client is unresponsive
-					 * for this many intervals above,
-					 * disconnect the session
-					 */
+	int	client_alive_interval;	 
+	int	client_alive_count_max;	 
 
-	u_int	num_authkeys_files;	/* Files containing public keys */
+	u_int	num_authkeys_files;	 
 	char   **authorized_keys_files;
 
 	char   *adm_forced_command;
 
-	int	use_pam;		/* Enable auth via PAM */
+	int	use_pam;		 
 
 	int	permit_tun;
 
-	char   **permitted_opens;	/* May also be one of PERMITOPEN_* */
+	char   **permitted_opens;	 
 	u_int   num_permitted_opens;
-	char   **permitted_listens; /* May also be one of PERMITOPEN_* */
+	char   **permitted_listens;  
 	u_int   num_permitted_listens;
 
 	char   *chroot_directory;
@@ -218,7 +184,7 @@ typedef struct {
 	int64_t rekey_limit;
 	int	rekey_interval;
 
-	char   *version_addendum;	/* Appended to SSH banner */
+	char   *version_addendum;	 
 
 	u_int	num_auth_methods;
 	char   **auth_methods;
@@ -227,27 +193,26 @@ typedef struct {
 	int	expose_userauth_info;
 	u_int64_t timing_secret;
 	char   *sk_provider;
-	int	required_rsa_size;	/* minimum size of RSA keys */
+	int	required_rsa_size;	 
 
-	char	**channel_timeouts;	/* inactivity timeout by channel type */
+	char	**channel_timeouts;	 
 	u_int	num_channel_timeouts;
 
 	int	unused_connection_timeout;
 }       ServerOptions;
 
-/* Information about the incoming connection as used by Match */
+ 
 struct connection_info {
 	const char *user;
-	const char *host;	/* possibly resolved hostname */
-	const char *address;	/* remote address */
-	const char *laddress;	/* local address */
-	int lport;		/* local port */
-	const char *rdomain;	/* routing domain if available */
-	int test;		/* test mode, allow some attributes to be
-				 * unspecified */
+	const char *host;	 
+	const char *address;	 
+	const char *laddress;	 
+	int lport;		 
+	const char *rdomain;	 
+	int test;		 
 };
 
-/* List of included files for re-exec from the parsed configuration */
+ 
 struct include_item {
 	char *selector;
 	char *filename;
@@ -257,15 +222,7 @@ struct include_item {
 TAILQ_HEAD(include_list, include_item);
 
 
-/*
- * These are string config options that must be copied between the
- * Match sub-config and the main config, and must be sent from the
- * privsep child to the privsep master. We use a macro to ensure all
- * the options are copied and the copies are done in the correct order.
- *
- * NB. an option must appear in servconf.c:copy_set_server_options() or
- * COPY_MATCH_STRING_OPTS here but never both.
- */
+ 
 #define COPY_MATCH_STRING_OPTS() do { \
 		M_CP_STROPT(banner); \
 		M_CP_STROPT(trusted_user_ca_keys); \
@@ -320,4 +277,4 @@ void	 servconf_add_hostkey(const char *, const int,
 void	 servconf_add_hostcert(const char *, const int,
 	    ServerOptions *, const char *path);
 
-#endif				/* SERVCONF_H */
+#endif				 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/types.h>
 #include <linux/skbuff.h>
 #include <linux/socket.h>
@@ -28,12 +28,10 @@
 #include <net/rtnh.h>
 #include "internal.h"
 
-/* max memory we will use for mpls_route */
+ 
 #define MAX_MPLS_ROUTE_MEM	4096
 
-/* Maximum number of labels to look ahead at when selecting a path of
- * a multipath route
- */
+ 
 #define MAX_MP_SELECT_LABELS 4
 
 #define MPLS_NEIGH_TABLE_UNSPEC (NEIGH_LINK_TABLE + 1)
@@ -106,13 +104,13 @@ static const u8 *mpls_nh_via(const struct mpls_route *rt,
 
 static unsigned int mpls_nh_header_size(const struct mpls_nh *nh)
 {
-	/* The size of the layer 2.5 labels to be added for this route */
+	 
 	return nh->nh_labels * sizeof(struct mpls_shim_hdr);
 }
 
 unsigned int mpls_dev_mtu(const struct net_device *dev)
 {
-	/* The amount of data the layer 2 frame can hold */
+	 
 	return dev->mtu;
 }
 EXPORT_SYMBOL_GPL(mpls_dev_mtu);
@@ -169,22 +167,15 @@ static u32 mpls_multipath_hash(struct mpls_route *rt, struct sk_buff *skb)
 		if (!pskb_may_pull(skb, mpls_hdr_len))
 			break;
 
-		/* Read and decode the current label */
+		 
 		hdr = mpls_hdr(skb) + label_index;
 		dec = mpls_entry_decode(hdr);
 
-		/* RFC6790 - reserved labels MUST NOT be used as keys
-		 * for the load-balancing function
-		 */
+		 
 		if (likely(dec.label >= MPLS_LABEL_FIRST_UNRESERVED)) {
 			hash = jhash_1word(dec.label, hash);
 
-			/* The entropy label follows the entropy label
-			 * indicator, so this means that the entropy
-			 * label was just added to the hash - no need to
-			 * go any deeper either in the label stack or in the
-			 * payload
-			 */
+			 
 			if (eli_seen)
 				break;
 		} else if (dec.label == MPLS_LABEL_ENTROPY) {
@@ -194,7 +185,7 @@ static u32 mpls_multipath_hash(struct mpls_route *rt, struct sk_buff *skb)
 		if (!dec.bos)
 			continue;
 
-		/* found bottom label; does skb have room for a header? */
+		 
 		if (pskb_may_pull(skb, mpls_hdr_len + sizeof(struct iphdr))) {
 			const struct iphdr *v4hdr;
 
@@ -226,11 +217,7 @@ static struct mpls_nh *mpls_get_nexthop(struct mpls_route *rt, u8 index)
 	return (struct mpls_nh *)((u8 *)rt->rt_nh + index * rt->rt_nh_size);
 }
 
-/* number of alive nexthops (rt->rt_nhn_alive) and the flags for
- * a next hop (nh->nh_flags) are modified by netdev event handlers.
- * Since those fields can change at any moment, use READ_ONCE to
- * access both.
- */
+ 
 static const struct mpls_nh *mpls_select_multipath(struct mpls_route *rt,
 						   struct sk_buff *skb)
 {
@@ -239,9 +226,7 @@ static const struct mpls_nh *mpls_select_multipath(struct mpls_route *rt,
 	int n = 0;
 	u8 alive;
 
-	/* No need to look further into packet if there's only
-	 * one path
-	 */
+	 
 	if (rt->rt_nhn == 1)
 		return rt->rt_nh;
 
@@ -273,16 +258,7 @@ static bool mpls_egress(struct net *net, struct mpls_route *rt,
 	enum mpls_payload_type payload_type;
 	bool success = false;
 
-	/* The IPv4 code below accesses through the IPv4 header
-	 * checksum, which is 12 bytes into the packet.
-	 * The IPv6 code below accesses through the IPv6 hop limit
-	 * which is 8 bytes into the packet.
-	 *
-	 * For all supported cases there should always be at least 12
-	 * bytes of packet data present.  The IPv4 header is 20 bytes
-	 * without options and the IPv6 header is always 40 bytes
-	 * long.
-	 */
+	 
 	if (!pskb_may_pull(skb, 12))
 		return false;
 
@@ -296,10 +272,7 @@ static bool mpls_egress(struct net *net, struct mpls_route *rt,
 		u8 new_ttl;
 		skb->protocol = htons(ETH_P_IP);
 
-		/* If propagating TTL, take the decremented TTL from
-		 * the incoming MPLS header, otherwise decrement the
-		 * TTL, but only if not 0 to avoid underflow.
-		 */
+		 
 		if (rt->rt_ttl_propagate == MPLS_TTL_PROP_ENABLED ||
 		    (rt->rt_ttl_propagate == MPLS_TTL_PROP_DEFAULT &&
 		     net->mpls.ip_ttl_propagate))
@@ -318,10 +291,7 @@ static bool mpls_egress(struct net *net, struct mpls_route *rt,
 		struct ipv6hdr *hdr6 = ipv6_hdr(skb);
 		skb->protocol = htons(ETH_P_IPV6);
 
-		/* If propagating TTL, take the decremented TTL from
-		 * the incoming MPLS header, otherwise decrement the
-		 * hop limit, but only if not 0 to avoid underflow.
-		 */
+		 
 		if (rt->rt_ttl_propagate == MPLS_TTL_PROP_ENABLED ||
 		    (rt->rt_ttl_propagate == MPLS_TTL_PROP_DEFAULT &&
 		     net->mpls.ip_ttl_propagate))
@@ -332,7 +302,7 @@ static bool mpls_egress(struct net *net, struct mpls_route *rt,
 		break;
 	}
 	case MPT_UNSPEC:
-		/* Should have decided which protocol it is by now */
+		 
 		break;
 	}
 
@@ -355,7 +325,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 	unsigned int mtu;
 	int err;
 
-	/* Careful this entire function runs inside of an rcu critical section */
+	 
 
 	mdev = mpls_dev_get(dev);
 	if (!mdev)
@@ -380,7 +350,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 
 	skb_dst_drop(skb);
 
-	/* Read and decode the label */
+	 
 	hdr = mpls_hdr(skb);
 	dec = mpls_entry_decode(hdr);
 
@@ -394,7 +364,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 	if (!nh)
 		goto err;
 
-	/* Pop the label */
+	 
 	skb_pull(skb, sizeof(*hdr));
 	skb_reset_network_header(skb);
 
@@ -405,16 +375,16 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 
 	skb_forward_csum(skb);
 
-	/* Verify ttl is valid */
+	 
 	if (dec.ttl <= 1)
 		goto err;
 
-	/* Find the output device */
+	 
 	out_dev = nh->nh_dev;
 	if (!mpls_output_possible(out_dev))
 		goto tx_err;
 
-	/* Verify the destination can hold the packet */
+	 
 	new_header_size = mpls_nh_header_size(nh);
 	mtu = mpls_dev_mtu(out_dev);
 	if (mpls_pkt_too_big(skb, mtu - new_header_size))
@@ -424,7 +394,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 	if (!out_dev->header_ops)
 		hh_len = 0;
 
-	/* Ensure there is enough space for the headers in the skb */
+	 
 	if (skb_cow(skb, hh_len + new_header_size))
 		goto tx_err;
 
@@ -433,7 +403,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 
 	dec.ttl -= 1;
 	if (unlikely(!new_header_size && dec.bos)) {
-		/* Penultimate hop popping */
+		 
 		if (!mpls_egress(dev_net(out_dev), rt, skb, dec))
 			goto err;
 	} else {
@@ -441,7 +411,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 		int i;
 		skb_push(skb, new_header_size);
 		skb_reset_network_header(skb);
-		/* Push the new labels */
+		 
 		hdr = mpls_hdr(skb);
 		bos = dec.bos;
 		for (i = nh->nh_labels - 1; i >= 0; i--) {
@@ -453,7 +423,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
 
 	mpls_stats_inc_outucastpkts(out_dev, skb);
 
-	/* If via wasn't specified then send out using device address */
+	 
 	if (nh->nh_via_table == MPLS_NEIGH_TABLE_UNSPEC)
 		err = neigh_xmit(NEIGH_LINK_TABLE, out_dev,
 				 out_dev->dev_addr, skb);
@@ -505,9 +475,7 @@ struct mpls_route_config {
 	int			rc_mp_len;
 };
 
-/* all nexthops within a route have the same size based on max
- * number of labels and max via length for a hop
- */
+ 
 static struct mpls_route *mpls_rt_alloc(u8 num_nh, u8 max_alen, u8 max_labels)
 {
 	u8 nh_size = MPLS_NH_SIZE(max_labels, max_alen);
@@ -545,7 +513,7 @@ static void mpls_notify_route(struct net *net, unsigned index,
 	int event = new ? RTM_NEWROUTE : RTM_DELROUTE;
 	struct mpls_route *rt = new ? new : old;
 	unsigned nlm_flags = (old && new) ? NLM_F_REPLACE : 0;
-	/* Ignore reserved labels for now */
+	 
 	if (rt && (index >= MPLS_LABEL_FIRST_UNRESERVED))
 		rtmsg_lfib(event, index, rt, nlh, net, portid, nlm_flags);
 }
@@ -565,7 +533,7 @@ static void mpls_route_update(struct net *net, unsigned index,
 
 	mpls_notify_route(net, index, rt, new, info);
 
-	/* If we removed a route free it now */
+	 
 	mpls_rt_free(rt);
 }
 
@@ -671,7 +639,7 @@ static struct net_device *find_outdev(struct net *net,
 	if (IS_ERR(dev))
 		return dev;
 
-	/* The caller is holding rtnl anyways, so release the dev reference */
+	 
 	dev_put(dev);
 
 	return dev;
@@ -690,7 +658,7 @@ static int mpls_nh_assign_dev(struct net *net, struct mpls_route *rt,
 		goto errout;
 	}
 
-	/* Ensure this is a supported device */
+	 
 	err = -EINVAL;
 	if (!mpls_dev_get(dev))
 		goto errout;
@@ -737,7 +705,7 @@ static int nla_get_via(const struct nlattr *nla, u8 *via_alen, u8 *via_table,
 		goto errout;
 	}
 
-	/* Validate the address family */
+	 
 	switch (via->rtvia_family) {
 	case AF_PACKET:
 		*via_table = NEIGH_LINK_TABLE;
@@ -753,7 +721,7 @@ static int nla_get_via(const struct nlattr *nla, u8 *via_alen, u8 *via_table,
 			goto errout;
 		break;
 	default:
-		/* Unsupported address family */
+		 
 		goto errout;
 	}
 
@@ -868,9 +836,7 @@ static u8 mpls_count_nexthops(struct rtnexthop *rtnh, int len,
 
 		*max_labels = max_t(u8, *max_labels, n_labels);
 
-		/* number of nexthops is tracked by a u8.
-		 * Check for overflow.
-		 */
+		 
 		if (nhs == 255)
 			return 0;
 		nhs++;
@@ -878,7 +844,7 @@ static u8 mpls_count_nexthops(struct rtnexthop *rtnh, int len,
 		rtnh = rtnh_next(rtnh, &remaining);
 	}
 
-	/* leftover implies invalid nexthop configuration, discard it */
+	 
 	return remaining > 0 ? 0 : nhs;
 }
 
@@ -902,9 +868,7 @@ static int mpls_nh_build_multi(struct mpls_route_config *cfg,
 		if (!rtnh_ok(rtnh, remaining))
 			goto errout;
 
-		/* neither weighted multipath nor any flags
-		 * are supported
-		 */
+		 
 		if (rtnh->rtnh_hops || rtnh->rtnh_flags)
 			goto errout;
 
@@ -942,14 +906,14 @@ static bool mpls_label_ok(struct net *net, unsigned int *index,
 {
 	bool is_ok = true;
 
-	/* Reserved labels may not be set */
+	 
 	if (*index < MPLS_LABEL_FIRST_UNRESERVED) {
 		NL_SET_ERR_MSG(extack,
 			       "Invalid label - must be MPLS_LABEL_FIRST_UNRESERVED or higher");
 		is_ok = false;
 	}
 
-	/* The full 20 bit range may not be supported. */
+	 
 	if (is_ok && *index >= net->mpls.platform_labels) {
 		NL_SET_ERR_MSG(extack,
 			       "Label >= configured maximum in platform_labels");
@@ -974,7 +938,7 @@ static int mpls_route_add(struct mpls_route_config *cfg,
 
 	index = cfg->rc_label;
 
-	/* If a label was not specified during insert pick one */
+	 
 	if ((index == LABEL_NOT_SPECIFIED) &&
 	    (cfg->rc_nlflags & NLM_F_CREATE)) {
 		index = find_free_label(net);
@@ -983,7 +947,7 @@ static int mpls_route_add(struct mpls_route_config *cfg,
 	if (!mpls_label_ok(net, &index, extack))
 		goto errout;
 
-	/* Append makes no sense with mpls */
+	 
 	err = -EOPNOTSUPP;
 	if (cfg->rc_nlflags & NLM_F_APPEND) {
 		NL_SET_ERR_MSG(extack, "MPLS does not support route append");
@@ -1168,7 +1132,7 @@ nla_put_failure:
 static int mpls_netconf_msgsize_devconf(int type)
 {
 	int size = NLMSG_ALIGN(sizeof(struct netconfmsg))
-			+ nla_total_size(4); /* NETCONFA_IFINDEX */
+			+ nla_total_size(4);  
 	bool all = false;
 
 	if (type == NETCONFA_ALL)
@@ -1192,7 +1156,7 @@ static void mpls_netconf_notify_devconf(struct net *net, int event,
 
 	err = mpls_netconf_fill_devconf(skb, mdev, 0, 0, event, 0, type);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in mpls_netconf_msgsize_devconf() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -1288,7 +1252,7 @@ static int mpls_netconf_get_devconf(struct sk_buff *in_skb,
 					nlh->nlmsg_seq, RTM_NEWNETCONF, 0,
 					NETCONFA_ALL);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in mpls_netconf_msgsize_devconf() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -1408,9 +1372,7 @@ static int mpls_dev_sysctl_register(struct net_device *dev,
 	if (!table)
 		goto out;
 
-	/* Table data contains only offsets relative to the base of
-	 * the mdev at this point, so make them absolute.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(mpls_dev_table); i++) {
 		table[i].data = (char *)mdev + (uintptr_t)table[i].data;
 		table[i].extra1 = mdev;
@@ -1522,7 +1484,7 @@ static int mpls_ifdown(struct net_device *dev, int event)
 					nh_del = true;
 			} endfor_nexthops(rt);
 
-			/* if there are no more nexthops, delete the route */
+			 
 			if (deleted == rt->rt_nhn) {
 				mpls_route_update(net, index, NULL, NULL);
 				continue;
@@ -1732,23 +1694,21 @@ int nla_get_labels(const struct nlattr *nla, u8 max_labels, u8 *labels,
 	bool bos;
 	int i;
 
-	/* len needs to be an even multiple of 4 (the label size). Number
-	 * of labels is a u8 so check for overflow.
-	 */
+	 
 	if (len & 3 || len / 4 > 255) {
 		NL_SET_ERR_MSG_ATTR(extack, nla,
 				    "Invalid length for labels attribute");
 		return -EINVAL;
 	}
 
-	/* Limit the number of new labels allowed */
+	 
 	nla_labels = len/4;
 	if (nla_labels > max_labels) {
 		NL_SET_ERR_MSG(extack, "Too many labels");
 		return -EINVAL;
 	}
 
-	/* when label == NULL, caller wants number of labels */
+	 
 	if (!label)
 		goto out;
 
@@ -1758,9 +1718,7 @@ int nla_get_labels(const struct nlattr *nla, u8 max_labels, u8 *labels,
 		struct mpls_entry_decoded dec;
 		dec = mpls_entry_decode(nla_label + i);
 
-		/* Ensure the bottom of stack flag is properly set
-		 * and ttl and tc are both clear.
-		 */
+		 
 		if (dec.ttl) {
 			NL_SET_ERR_MSG_ATTR(extack, nla,
 					    "TTL in label must be 0");
@@ -1787,10 +1745,7 @@ int nla_get_labels(const struct nlattr *nla, u8 max_labels, u8 *labels,
 
 		switch (dec.label) {
 		case MPLS_LABEL_IMPLNULL:
-			/* RFC3032: This is a label that an LSR may
-			 * assign and distribute, but which never
-			 * actually appears in the encapsulation.
-			 */
+			 
 			NL_SET_ERR_MSG_ATTR(extack, nla,
 					    "Implicit NULL Label (3) can not be used in encapsulation");
 			return -EINVAL;
@@ -1843,12 +1798,9 @@ static int rtm_to_route_config(struct sk_buff *skb,
 			       "MPLS only supports the main route table");
 		goto errout;
 	}
-	/* Any value is acceptable for rtm_protocol */
+	 
 
-	/* As mpls uses destination specific addresses
-	 * (or source specific address in the case of multicast)
-	 * all addresses have universal scope.
-	 */
+	 
 	if (rtm->rtm_scope != RT_SCOPE_UNIVERSE) {
 		NL_SET_ERR_MSG(extack,
 			       "Invalid route scope  - MPLS only supports UNIVERSE");
@@ -1933,7 +1885,7 @@ static int rtm_to_route_config(struct sk_buff *skb,
 		}
 		default:
 			NL_SET_ERR_MSG_ATTR(extack, nla, "Unknown attribute");
-			/* Unsupported attribute */
+			 
 			goto errout;
 		}
 	}
@@ -2076,7 +2028,7 @@ static int mpls_dump_route(struct sk_buff *skb, u32 portid, u32 seq, int event,
 					nh->nh_via_alen))
 				goto nla_put_failure;
 
-			/* length of rtnetlink header + attributes */
+			 
 			rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
 		} endfor_nexthops(rt);
 
@@ -2193,9 +2145,7 @@ static int mpls_dump_routes(struct sk_buff *skb, struct netlink_callback *cb)
 		if (err < 0)
 			return err;
 
-		/* for MPLS, there is only 1 table with fixed type and flags.
-		 * If either are set in the filter then return nothing.
-		 */
+		 
 		if ((filter.table_id && filter.table_id != RT_TABLE_MAIN) ||
 		    (filter.rt_type && filter.rt_type != RTN_UNICAST) ||
 		     filter.flags)
@@ -2237,33 +2187,33 @@ static inline size_t lfib_nlmsg_size(struct mpls_route *rt)
 {
 	size_t payload =
 		NLMSG_ALIGN(sizeof(struct rtmsg))
-		+ nla_total_size(4)			/* RTA_DST */
-		+ nla_total_size(1);			/* RTA_TTL_PROPAGATE */
+		+ nla_total_size(4)			 
+		+ nla_total_size(1);			 
 
 	if (rt->rt_nhn == 1) {
 		struct mpls_nh *nh = rt->rt_nh;
 
 		if (nh->nh_dev)
-			payload += nla_total_size(4); /* RTA_OIF */
-		if (nh->nh_via_table != MPLS_NEIGH_TABLE_UNSPEC) /* RTA_VIA */
+			payload += nla_total_size(4);  
+		if (nh->nh_via_table != MPLS_NEIGH_TABLE_UNSPEC)  
 			payload += nla_total_size(2 + nh->nh_via_alen);
-		if (nh->nh_labels) /* RTA_NEWDST */
+		if (nh->nh_labels)  
 			payload += nla_total_size(nh->nh_labels * 4);
 	} else {
-		/* each nexthop is packed in an attribute */
+		 
 		size_t nhsize = 0;
 
 		for_nexthops(rt) {
 			if (!nh->nh_dev)
 				continue;
 			nhsize += nla_total_size(sizeof(struct rtnexthop));
-			/* RTA_VIA */
+			 
 			if (nh->nh_via_table != MPLS_NEIGH_TABLE_UNSPEC)
 				nhsize += nla_total_size(2 + nh->nh_via_alen);
 			if (nh->nh_labels)
 				nhsize += nla_total_size(nh->nh_labels * 4);
 		} endfor_nexthops(rt);
-		/* nested attribute */
+		 
 		payload += nla_total_size(nhsize);
 	}
 
@@ -2284,7 +2234,7 @@ static void rtmsg_lfib(int event, u32 label, struct mpls_route *rt,
 
 	err = mpls_dump_route(skb, portid, seq, event, label, rt, nlm_flags);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in lfib_nlmsg_size */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -2411,7 +2361,7 @@ static int mpls_getroute(struct sk_buff *in_skb, struct nlmsghdr *in_nlh,
 		err = mpls_dump_route(skb, portid, in_nlh->nlmsg_seq,
 				      RTM_NEWROUTE, in_label, rt, 0);
 		if (err < 0) {
-			/* -EMSGSIZE implies BUG in lfib_nlmsg_size */
+			 
 			WARN_ON(err == -EMSGSIZE);
 			goto errout_free;
 		}
@@ -2450,7 +2400,7 @@ static int mpls_getroute(struct sk_buff *in_skb, struct nlmsghdr *in_nlh,
 		skb_push(skb, hdr_size);
 		skb_reset_network_header(skb);
 
-		/* Push new labels */
+		 
 		hdr = mpls_hdr(skb);
 		bos = true;
 		for (i = n_labels - 1; i >= 0; i--) {
@@ -2533,7 +2483,7 @@ static int resize_platform_label_table(struct net *net, size_t limit)
 			goto nolabels;
 	}
 
-	/* In case the predefined labels need to be populated */
+	 
 	if (limit > MPLS_LABEL_IPV4NULL) {
 		struct net_device *lo = net->loopback_dev;
 		rt0 = mpls_rt_alloc(1, lo->addr_len, 0);
@@ -2564,22 +2514,22 @@ static int resize_platform_label_table(struct net *net, size_t limit)
 	}
 
 	rtnl_lock();
-	/* Remember the original table */
+	 
 	old = rtnl_dereference(net->mpls.platform_label);
 	old_limit = net->mpls.platform_labels;
 
-	/* Free any labels beyond the new table */
+	 
 	for (index = limit; index < old_limit; index++)
 		mpls_route_update(net, index, NULL, NULL);
 
-	/* Copy over the old labels */
+	 
 	cp_size = size;
 	if (old_limit < limit)
 		cp_size = old_limit * sizeof(struct mpls_route *);
 
 	memcpy(labels, old, cp_size);
 
-	/* If needed set the predefined labels */
+	 
 	if ((old_limit <= MPLS_LABEL_IPV6NULL) &&
 	    (limit > MPLS_LABEL_IPV6NULL)) {
 		RCU_INIT_POINTER(labels[MPLS_LABEL_IPV6NULL], rt2);
@@ -2592,7 +2542,7 @@ static int resize_platform_label_table(struct net *net, size_t limit)
 		rt0 = NULL;
 	}
 
-	/* Update the global pointers */
+	 
 	net->mpls.platform_labels = limit;
 	rcu_assign_pointer(net->mpls.platform_label, labels);
 
@@ -2684,9 +2634,7 @@ static int mpls_net_init(struct net *net)
 	if (table == NULL)
 		return -ENOMEM;
 
-	/* Table data contains only offsets relative to the base of
-	 * the mdev at this point, so make them absolute.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(mpls_table) - 1; i++)
 		table[i].data = (char *)net + (uintptr_t)table[i].data;
 
@@ -2711,15 +2659,7 @@ static void mpls_net_exit(struct net *net)
 	unregister_net_sysctl_table(net->mpls.ctl);
 	kfree(table);
 
-	/* An rcu grace period has passed since there was a device in
-	 * the network namespace (and thus the last in flight packet)
-	 * left this network namespace.  This is because
-	 * unregister_netdevice_many and netdev_run_todo has completed
-	 * for each network device that was in this network namespace.
-	 *
-	 * As such no additional rcu synchronization is necessary when
-	 * freeing the platform_label table.
-	 */
+	 
 	rtnl_lock();
 	platform_label = rtnl_dereference(net->mpls.platform_label);
 	platform_labels = net->mpls.platform_labels;

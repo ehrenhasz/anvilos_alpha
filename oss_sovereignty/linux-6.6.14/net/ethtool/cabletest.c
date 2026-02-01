@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/phy.h>
 #include <linux/ethtool_netlink.h>
 #include "netlink.h"
 #include "common.h"
 
-/* 802.3 standard allows 100 meters for BaseT cables. However longer
- * cables might work, depending on the quality of the cables and the
- * PHY. So allow testing for up to 150 meters.
- */
+ 
 #define MAX_CABLE_LENGTH_CM (150 * 100)
 
 const struct nla_policy ethnl_cable_test_act_policy[] = {
@@ -104,9 +101,7 @@ int ethnl_cable_test_alloc(struct phy_device *phydev, u8 cmd)
 {
 	int err = -ENOMEM;
 
-	/* One TDR sample occupies 20 bytes. For a 150 meter cable,
-	 * with four pairs, around 12K is needed.
-	 */
+	 
 	phydev->skb = genlmsg_new(SZ_16K, GFP_KERNEL);
 	if (!phydev->skb)
 		goto out;
@@ -224,7 +219,7 @@ const struct nla_policy ethnl_cable_test_tdr_act_policy[] = {
 	[ETHTOOL_A_CABLE_TEST_TDR_CFG]		= { .type = NLA_NESTED },
 };
 
-/* CABLE_TEST_TDR_ACT */
+ 
 static int ethnl_act_cable_test_tdr_cfg(const struct nlattr *nest,
 					struct genl_info *info,
 					struct phy_tdr_config *cfg)

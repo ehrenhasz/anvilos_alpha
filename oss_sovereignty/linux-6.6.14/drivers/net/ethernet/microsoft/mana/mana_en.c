@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <uapi/linux/bpf.h>
 
@@ -30,7 +30,7 @@ static void mana_adev_idx_free(int idx)
 	ida_free(&mana_adev_ida, idx);
 }
 
-/* Microsoft Azure Network Adapter (MANA) functions */
+ 
 
 static int mana_open(struct net_device *ndev)
 {
@@ -43,7 +43,7 @@ static int mana_open(struct net_device *ndev)
 
 	apc->port_is_up = true;
 
-	/* Ensure port state updated before txq state */
+	 
 	smp_wmb();
 
 	netif_carrier_on(ndev);
@@ -87,7 +87,7 @@ static unsigned int mana_checksum_info(struct sk_buff *skb)
 			return IPPROTO_UDP;
 	}
 
-	/* No csum offloading */
+	 
 	return 0;
 }
 
@@ -106,7 +106,7 @@ static int mana_map_skb(struct sk_buff *skb, struct mana_port_context *apc,
 			struct mana_tx_package *tp, int gso_hs)
 {
 	struct mana_skb_head *ash = (struct mana_skb_head *)skb->head;
-	int hsg = 1; /* num of SGEs of linear part */
+	int hsg = 1;  
 	struct gdma_dev *gd = apc->ac->gdma_dev;
 	int skb_hlen = skb_headlen(skb);
 	int sge0_len, sge1_len = 0;
@@ -171,13 +171,7 @@ frag_err:
 	return -ENOMEM;
 }
 
-/* Handle the case when GSO SKB linear length is too large.
- * MANA NIC requires GSO packets to put only the packet header to SGE0.
- * So, we need 2 SGEs for the skb linear part which contains more than the
- * header.
- * Return a positive value for the number of SGEs, or a negative value
- * for an error.
- */
+ 
 static int mana_fix_skb_head(struct net_device *ndev, struct sk_buff *skb,
 			     int gso_hs)
 {
@@ -198,7 +192,7 @@ static int mana_fix_skb_head(struct net_device *ndev, struct sk_buff *skb,
 	return num_sge;
 }
 
-/* Get the GSO packet's header size */
+ 
 static int mana_get_gso_hs(struct sk_buff *skb)
 {
 	int gso_hs;
@@ -221,7 +215,7 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	enum mana_tx_pkt_format pkt_fmt = MANA_SHORT_PKT_FMT;
 	struct mana_port_context *apc = netdev_priv(ndev);
-	int gso_hs = 0; /* zero for non-GSO pkts */
+	int gso_hs = 0;  
 	u16 txq_idx = skb_get_queue_mapping(skb);
 	struct gdma_dev *gd = apc->ac->gdma_dev;
 	bool ipv4 = false, ipv6 = false;
@@ -352,7 +346,7 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 			pkg.tx_oob.s_oob.comp_udp_csum = 1;
 		} else {
-			/* Can't do offload of this type of checksum */
+			 
 			if (skb_checksum_help(skb))
 				goto tx_drop_count;
 		}
@@ -403,7 +397,7 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 	mana_gd_wq_ring_doorbell(gd->gdma_context, gdma_sq);
 
-	/* skb may be freed after mana_gd_post_work_request. Do not use it. */
+	 
 	skb = NULL;
 
 	tx_stats = &txq->stats;
@@ -510,7 +504,7 @@ static u16 mana_select_queue(struct net_device *ndev, struct sk_buff *skb,
 	return txq;
 }
 
-/* Release pre-allocated RX buffers */
+ 
 static void mana_pre_dealloc_rxbufs(struct mana_port_context *mpc)
 {
 	struct device *dev;
@@ -544,7 +538,7 @@ out1:
 	mpc->rxbpre_headroom = 0;
 }
 
-/* Get a buffer from the pre-allocated RX buffers */
+ 
 static void *mana_get_rxbuf_pre(struct mana_rxq *rxq, dma_addr_t *da)
 {
 	struct net_device *ndev = rxq->ndev;
@@ -558,7 +552,7 @@ static void *mana_get_rxbuf_pre(struct mana_rxq *rxq, dma_addr_t *da)
 		return NULL;
 	}
 
-	/* Check sizes to catch unexpected coding error */
+	 
 	if (mpc->rxbpre_datasize != rxq->datasize) {
 		netdev_err(ndev, "rxbpre_datasize mismatch: %u: %u\n",
 			   mpc->rxbpre_datasize, rxq->datasize);
@@ -583,19 +577,19 @@ static void *mana_get_rxbuf_pre(struct mana_rxq *rxq, dma_addr_t *da)
 	va = mpc->rxbufs_pre[mpc->rxbpre_total];
 	mpc->rxbufs_pre[mpc->rxbpre_total] = NULL;
 
-	/* Deallocate the array after all buffers are gone */
+	 
 	if (!mpc->rxbpre_total)
 		mana_pre_dealloc_rxbufs(mpc);
 
 	return va;
 }
 
-/* Get RX buffer's data size, alloc size, XDP headroom based on MTU */
+ 
 static void mana_get_rxbuf_cfg(int mtu, u32 *datasize, u32 *alloc_size,
 			       u32 *headroom)
 {
 	if (mtu > MANA_XDP_MTU_MAX)
-		*headroom = 0; /* no support for XDP */
+		*headroom = 0;  
 	else
 		*headroom = XDP_PACKET_HEADROOM;
 
@@ -638,7 +632,7 @@ static int mana_pre_alloc_rxbufs(struct mana_port_context *mpc, int new_mtu)
 				goto error;
 
 			page = virt_to_head_page(va);
-			/* Check if the frag falls back to single page */
+			 
 			if (compound_order(page) <
 			    get_order(mpc->rxbpre_alloc_size)) {
 				put_page(page);
@@ -677,7 +671,7 @@ static int mana_change_mtu(struct net_device *ndev, int new_mtu)
 	unsigned int old_mtu = ndev->mtu;
 	int err;
 
-	/* Pre-allocate buffers to prevent failure in mana_attach later */
+	 
 	err = mana_pre_alloc_rxbufs(mpc, new_mtu);
 	if (err) {
 		netdev_err(ndev, "Insufficient memory for new MTU\n");
@@ -986,24 +980,7 @@ int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
 	struct mana_config_vport_req req = {};
 	int err;
 
-	/* This function is used to program the Ethernet port in the hardware
-	 * table. It can be called from the Ethernet driver or the RDMA driver.
-	 *
-	 * For Ethernet usage, the hardware supports only one active user on a
-	 * physical port. The driver checks on the port usage before programming
-	 * the hardware when creating the RAW QP (RDMA driver) or exposing the
-	 * device to kernel NET layer (Ethernet driver).
-	 *
-	 * Because the RDMA driver doesn't know in advance which QP type the
-	 * user will create, it exposes the device with all its ports. The user
-	 * may not be able to create RAW QP on a port if this port is already
-	 * in used by the Ethernet driver from the kernel.
-	 *
-	 * This physical port limitation only applies to the RAW QP. For RC QP,
-	 * the hardware doesn't have this limitation. The user can create RC
-	 * QPs on a physical port up to the hardware limits independent of the
-	 * Ethernet usage on the same port.
-	 */
+	 
 	mutex_lock(&apc->vport_mutex);
 	if (apc->vport_use_count > 0) {
 		mutex_unlock(&apc->vport_mutex);
@@ -1304,7 +1281,7 @@ static void mana_fence_rqs(struct mana_port_context *apc)
 		rxq = apc->rxqs[rxq_idx];
 		err = mana_fence_rq(apc, rxq);
 
-		/* In case of any error, use sleep instead. */
+		 
 		if (err)
 			msleep(100);
 	}
@@ -1332,7 +1309,7 @@ static void mana_unmap_skb(struct sk_buff *skb, struct mana_port_context *apc)
 	struct device *dev = gc->dev;
 	int hsg, i;
 
-	/* Number of SGEs of linear part */
+	 
 	hsg = (skb_is_gso(skb) && skb_headlen(skb) > ash->size[0]) ? 2 : 1;
 
 	for (i = 0; i < hsg; i++)
@@ -1402,9 +1379,7 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
 			break;
 
 		default:
-			/* If the CQE type is unknown, log an error,
-			 * and still free the SKB, update tail, etc.
-			 */
+			 
 			if (net_ratelimit())
 				netdev_err(ndev, "TX: unknown CQE type %d\n",
 					   cqe_oob->cqe_hdr.cqe_type);
@@ -1438,13 +1413,13 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
 	gdma_wq = txq->gdma_sq;
 	avail_space = mana_gd_wq_avail_space(gdma_wq);
 
-	/* Ensure tail updated before checking q stop */
+	 
 	smp_mb();
 
 	net_txq = txq->net_txq;
 	txq_stopped = netif_tx_queue_stopped(net_txq);
 
-	/* Ensure checking txq_stopped before apc->port_is_up. */
+	 
 	smp_rmb();
 
 	if (txq_stopped && apc->port_is_up && avail_space >= MAX_TX_WQE_SIZE) {
@@ -1590,7 +1565,7 @@ drop:
 					 virt_to_head_page(buf_va));
 	} else {
 		WARN_ON_ONCE(rxq->xdp_save_va);
-		/* Save for reuse */
+		 
 		rxq->xdp_save_va = buf_va;
 	}
 
@@ -1607,7 +1582,7 @@ static void *mana_get_rxfrag(struct mana_rxq *rxq, struct device *dev,
 
 	*from_pool = false;
 
-	/* Reuse XDP dropped page if available */
+	 
 	if (rxq->xdp_save_va) {
 		va = rxq->xdp_save_va;
 		rxq->xdp_save_va = NULL;
@@ -1621,7 +1596,7 @@ static void *mana_get_rxfrag(struct mana_rxq *rxq, struct device *dev,
 			return NULL;
 
 		page = virt_to_head_page(va);
-		/* Check if the frag falls back to single page */
+		 
 		if (compound_order(page) < get_order(rxq->alloc_size)) {
 			put_page(page);
 			return NULL;
@@ -1649,7 +1624,7 @@ static void *mana_get_rxfrag(struct mana_rxq *rxq, struct device *dev,
 	return va;
 }
 
-/* Allocate frag for rx buffer, and save the old buf */
+ 
 static void mana_refill_rx_oob(struct device *dev, struct mana_rxq *rxq,
 			       struct mana_recv_buf_oob *rxoob, void **old_buf,
 			       bool *old_fp)
@@ -1716,7 +1691,7 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
 	pktlen = oob->ppi[0].pkt_len;
 
 	if (pktlen == 0) {
-		/* data packets should never have packetlength of zero */
+		 
 		netdev_err(ndev, "RX pkt len=0, rq=%u, cq=%u, rxobj=0x%llx\n",
 			   rxq->gdma_id, cq->gdma_id, rxq->rxobj);
 		return;
@@ -1728,9 +1703,7 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
 
 	mana_refill_rx_oob(dev, rxq, rxbuf_oob, &old_buf, &old_fp);
 
-	/* Unsuccessful refill will have old_buf == NULL.
-	 * In this case, mana_rx_skb() will drop the packet.
-	 */
+	 
 	mana_rx_skb(old_buf, old_fp, oob, rxq);
 
 drop:
@@ -1754,7 +1727,7 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
 		if (WARN_ON_ONCE(comp[i].is_sq))
 			return;
 
-		/* verify recv cqe references the right rxq */
+		 
 		if (WARN_ON_ONCE(comp[i].wq_num != cq->rxq->gdma_id))
 			return;
 
@@ -1884,11 +1857,7 @@ static int mana_create_txq(struct mana_port_context *apc,
 	if (!apc->tx_qp)
 		return -ENOMEM;
 
-	/*  The minimum size of the WQE is 32 bytes, hence
-	 *  MAX_SEND_BUFFERS_PER_QUEUE represents the maximum number of WQEs
-	 *  the SQ can store. This value is then used to size other queues
-	 *  to prevent overflow.
-	 */
+	 
 	txq_size = MAX_SEND_BUFFERS_PER_QUEUE * 32;
 	BUILD_BUG_ON(!PAGE_ALIGNED(txq_size));
 
@@ -1900,7 +1869,7 @@ static int mana_create_txq(struct mana_port_context *apc,
 	for (i = 0; i < apc->num_queues; i++) {
 		apc->tx_qp[i].tx_object = INVALID_MANA_HANDLE;
 
-		/* Create SQ */
+		 
 		txq = &apc->tx_qp[i].txq;
 
 		u64_stats_init(&txq->stats.syncp);
@@ -1917,7 +1886,7 @@ static int mana_create_txq(struct mana_port_context *apc,
 		if (err)
 			goto out;
 
-		/* Create SQ's CQ */
+		 
 		cq = &apc->tx_qp[i].tx_cq;
 		cq->type = MANA_CQ_TYPE_TX;
 
@@ -2178,7 +2147,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
 	mana_get_rxbuf_cfg(ndev->mtu, &rxq->datasize, &rxq->alloc_size,
 			   &rxq->headroom);
 
-	/* Create page pool for RX queue */
+	 
 	err = mana_create_page_pool(rxq, gc);
 	if (err) {
 		netdev_err(ndev, "Create page pool err:%d\n", err);
@@ -2192,7 +2161,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
 	rq_size = PAGE_ALIGN(rq_size);
 	cq_size = PAGE_ALIGN(cq_size);
 
-	/* Create RQ */
+	 
 	memset(&spec, 0, sizeof(spec));
 	spec.type = GDMA_RQ;
 	spec.monitor_avl_buf = true;
@@ -2201,7 +2170,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
 	if (err)
 		goto out;
 
-	/* Create RQ's CQ */
+	 
 	cq = &rxq->rx_cq;
 	cq->type = MANA_CQ_TYPE_RX;
 	cq->rxq = rxq;
@@ -2519,7 +2488,7 @@ int mana_attach(struct net_device *ndev)
 
 	apc->port_is_up = apc->port_st_save;
 
-	/* Ensure port state updated before txq state */
+	 
 	smp_wmb();
 
 	if (apc->port_is_up)
@@ -2548,18 +2517,7 @@ static int mana_dealloc_queues(struct net_device *ndev)
 	if (gd->gdma_context->is_pf)
 		mana_pf_deregister_filter(apc);
 
-	/* No packet can be transmitted now since apc->port_is_up is false.
-	 * There is still a tiny chance that mana_poll_tx_cq() can re-enable
-	 * a txq because it may not timely see apc->port_is_up being cleared
-	 * to false, but it doesn't matter since mana_start_xmit() drops any
-	 * new packets due to apc->port_is_up being false.
-	 *
-	 * Drain all the in-flight TX packets.
-	 * A timeout of 120 seconds for all the queues is used.
-	 * This will break the while loop when h/w is not responding.
-	 * This value of 120 has been decided here considering max
-	 * number of queues.
-	 */
+	 
 
 	for (i = 0; i < apc->num_queues; i++) {
 		txq = &apc->tx_qp[i].txq;
@@ -2588,9 +2546,7 @@ static int mana_dealloc_queues(struct net_device *ndev)
 		}
 		atomic_set(&txq->pending_sends, 0);
 	}
-	/* We're 100% sure the queues can no longer be woken up, because
-	 * we're sure now mana_poll_tx_cq() can't be running.
-	 */
+	 
 
 	apc->rss_state = TRI_STATE_FALSE;
 	err = mana_config_rss(apc, TRI_STATE_FALSE, false, false);
@@ -2614,7 +2570,7 @@ int mana_detach(struct net_device *ndev, bool from_close)
 	apc->port_st_save = apc->port_is_up;
 	apc->port_is_up = false;
 
-	/* Ensure port state updated before txq state */
+	 
 	smp_wmb();
 
 	netif_tx_disable(ndev);
@@ -2856,7 +2812,7 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
 	int err;
 	int i;
 
-	/* adev currently doesn't support suspending, always remove it */
+	 
 	if (gd->adev)
 		remove_adev(gd);
 
@@ -2868,9 +2824,7 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
 			goto out;
 		}
 
-		/* All cleanup actions should stay after rtnl_lock(), otherwise
-		 * other functions may access partially cleaned up data.
-		 */
+		 
 		rtnl_lock();
 
 		err = mana_detach(ndev, false);
@@ -2879,7 +2833,7 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
 				   i, err);
 
 		if (suspending) {
-			/* No need to unregister the ndev. */
+			 
 			rtnl_unlock();
 			continue;
 		}

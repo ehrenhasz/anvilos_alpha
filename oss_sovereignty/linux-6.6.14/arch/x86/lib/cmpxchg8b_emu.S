@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #include <linux/linkage.h>
 #include <asm/export.h>
@@ -9,16 +9,7 @@
 
 #ifndef CONFIG_X86_CMPXCHG64
 
-/*
- * Emulate 'cmpxchg8b (%esi)' on UP
- *
- * Inputs:
- * %esi : memory location to compare
- * %eax : low 32 bits of old value
- * %edx : high 32 bits of old value
- * %ebx : low 32 bits of new value
- * %ecx : high 32 bits of new value
- */
+ 
 SYM_FUNC_START(cmpxchg8b_emu)
 
 	pushfl

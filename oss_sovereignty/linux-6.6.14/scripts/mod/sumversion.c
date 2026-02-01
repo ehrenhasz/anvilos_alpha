@@ -10,28 +10,7 @@
 #include <limits.h>
 #include "modpost.h"
 
-/*
- * Stolen form Cryptographic API.
- *
- * MD4 Message Digest Algorithm (RFC1320).
- *
- * Implementation derived from Andrew Tridgell and Steve French's
- * CIFS MD4 implementation, and the cryptoapi implementation
- * originally based on the public domain implementation written
- * by Colin Plumb in 1993.
- *
- * Copyright (c) Andrew Tridgell 1997-1998.
- * Modified by Steve French (sfrench@us.ibm.com) 2002
- * Copyright (c) Cryptoapi developers.
- * Copyright (c) 2002 David S. Miller (davem@redhat.com)
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- */
+ 
 #define MD4_DIGEST_SIZE		16
 #define MD4_HMAC_BLOCK_SIZE	64
 #define MD4_BLOCK_WORDS		16
@@ -68,7 +47,7 @@ static inline uint32_t H(uint32_t x, uint32_t y, uint32_t z)
 #define ROUND2(a,b,c,d,k,s) (a = lshift(a + G(b,c,d) + k + (uint32_t)0x5A827999,s))
 #define ROUND3(a,b,c,d,k,s) (a = lshift(a + H(b,c,d) + k + (uint32_t)0x6ED9EBA1,s))
 
-/* XXX: this stuff can be optimized */
+ 
 static inline void le32_to_cpu_array(uint32_t *buf, unsigned int words)
 {
 	while (words--) {
@@ -252,7 +231,7 @@ static int parse_comment(const char *file, unsigned long len)
 	return i;
 }
 
-/* FIXME: Handle .s files differently (eg. # starts comments) --RR */
+ 
 static int parse_file(const char *fname, struct md4_ctx *md)
 {
 	char *file;
@@ -262,23 +241,23 @@ static int parse_file(const char *fname, struct md4_ctx *md)
 	len = strlen(file);
 
 	for (i = 0; i < len; i++) {
-		/* Collapse and ignore \ and CR. */
+		 
 		if (file[i] == '\\' && (i+1 < len) && file[i+1] == '\n') {
 			i++;
 			continue;
 		}
 
-		/* Ignore whitespace */
+		 
 		if (isspace(file[i]))
 			continue;
 
-		/* Handle strings as whole units */
+		 
 		if (file[i] == '"') {
 			i += parse_string(file+i, len - i, md);
 			continue;
 		}
 
-		/* Comments: ignore */
+		 
 		if (file[i] == '/' && file[i+1] == '*') {
 			i += parse_comment(file+i, len - i);
 			continue;
@@ -289,7 +268,7 @@ static int parse_file(const char *fname, struct md4_ctx *md)
 	free(file);
 	return 1;
 }
-/* Check whether the file is a static library or not */
+ 
 static bool is_static_library(const char *objfile)
 {
 	int len = strlen(objfile);
@@ -297,8 +276,7 @@ static bool is_static_library(const char *objfile)
 	return objfile[len - 2] == '.' && objfile[len - 1] == 'a';
 }
 
-/* We have dir/file.o.  Open dir/.file.o.cmd, look for source_ and deps_ line
- * to figure out source files. */
+ 
 static int parse_source_files(const char *objfile, struct md4_ctx *md)
 {
 	char *cmd, *file, *line, *dir, *pos;
@@ -324,7 +302,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 
 	pos = file;
 
-	/* Sum all files in the same dir or subdirs. */
+	 
 	while ((line = get_line(&pos))) {
 		char* p = line;
 
@@ -349,10 +327,10 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 		if (!check_files)
 			continue;
 
-		/* Continue until line does not end with '\' */
+		 
 		if ( *(p + strlen(p)-1) != '\\')
 			break;
-		/* Terminate line at first space, to get rid of final ' \' */
+		 
 		while (*p) {
 			if (isspace(*p)) {
 				*p = '\0';
@@ -361,7 +339,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 			p++;
 		}
 
-		/* Check if this file is in same dir as objfile */
+		 
 		if ((strstr(line, dir)+strlen(dir)-1) == strrchr(line, '/')) {
 			if (!parse_file(line, md)) {
 				warn("could not open %s: %s\n",
@@ -373,7 +351,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 
 	}
 
-	/* Everyone parsed OK */
+	 
 	ret = 1;
 out_file:
 	free(file);
@@ -382,7 +360,7 @@ out_file:
 	return ret;
 }
 
-/* Calc and record src checksum. */
+ 
 void get_src_version(const char *modname, char sum[], unsigned sumlen)
 {
 	char *buf;
@@ -390,7 +368,7 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
 	char *fname;
 	char filelist[PATH_MAX + 1];
 
-	/* objects for a module are listed in the first line of *.mod file. */
+	 
 	snprintf(filelist, sizeof(filelist), "%s.mod", modname);
 
 	buf = read_text_file(filelist);

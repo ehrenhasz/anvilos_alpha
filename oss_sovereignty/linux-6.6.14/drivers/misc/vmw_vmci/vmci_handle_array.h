@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VMCI_HANDLE_ARRAY_H_
 #define _VMCI_HANDLE_ARRAY_H_
@@ -22,9 +18,9 @@ struct vmci_handle_arr {
 
 #define VMCI_HANDLE_ARRAY_HEADER_SIZE				\
 	offsetof(struct vmci_handle_arr, entries)
-/* Select a default capacity that results in a 64 byte sized array */
+ 
 #define VMCI_HANDLE_ARRAY_DEFAULT_CAPACITY			6
-/* Make sure that the max array size can be expressed by a u32 */
+ 
 #define VMCI_HANDLE_ARRAY_MAX_CAPACITY				\
 	((U32_MAX - VMCI_HANDLE_ARRAY_HEADER_SIZE - 1) /	\
 	sizeof(struct vmci_handle))
@@ -50,4 +46,4 @@ static inline u32 vmci_handle_arr_get_size(
 }
 
 
-#endif /* _VMCI_HANDLE_ARRAY_H_ */
+#endif  

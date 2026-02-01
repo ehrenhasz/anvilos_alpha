@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *         Roy Luo <royluo@google.com>
- *         Felix Fietkau <nbd@nbd.name>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/timekeeping.h>
@@ -33,7 +27,7 @@ mt7615_write_fw_txp(struct mt7615_dev *dev, struct mt76_tx_info *tx_info,
 	}
 	txp->nbuf = nbuf;
 
-	/* pass partial skb header to fw */
+	 
 	tx_info->buf[0].len = MT_TXD_SIZE + sizeof(*txp);
 	tx_info->buf[1].len = MT_CT_PARSE_LEN;
 	tx_info->buf[1].skip_unmap = true;
@@ -229,7 +223,7 @@ void mt7615_mac_reset_work(struct work_struct *work)
 		cancel_work_sync(&phy2->roc_work);
 	}
 
-	/* lock/unlock all queues to ensure that no tx is pending */
+	 
 	mt76_txq_schedule_all(&dev->mphy);
 	if (ext_phy)
 		mt76_txq_schedule_all(ext_phy);

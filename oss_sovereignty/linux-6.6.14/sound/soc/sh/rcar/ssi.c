@@ -1,78 +1,64 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Renesas R-Car SSIU/SSI support
-//
-// Copyright (C) 2013 Renesas Solutions Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
-// Based on fsi.c
-// Kuninori Morimoto <morimoto.kuninori@renesas.com>
 
-/*
- * you can enable below define if you don't need
- * SSI interrupt status debug message when debugging
- * see rsnd_print_irq_status()
- *
- * #define RSND_DEBUG_NO_IRQ_STATUS 1
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <sound/simple_card_utils.h>
 #include <linux/delay.h>
 #include "rsnd.h"
 #define RSND_SSI_NAME_SIZE 16
 
-/*
- * SSICR
- */
-#define	FORCE		(1u << 31)	/* Fixed */
-#define	DMEN		(1u << 28)	/* DMA Enable */
-#define	UIEN		(1u << 27)	/* Underflow Interrupt Enable */
-#define	OIEN		(1u << 26)	/* Overflow Interrupt Enable */
-#define	IIEN		(1u << 25)	/* Idle Mode Interrupt Enable */
-#define	DIEN		(1u << 24)	/* Data Interrupt Enable */
-#define	CHNL_4		(1u << 22)	/* Channels */
-#define	CHNL_6		(2u << 22)	/* Channels */
-#define	CHNL_8		(3u << 22)	/* Channels */
-#define DWL_MASK	(7u << 19)	/* Data Word Length mask */
-#define	DWL_8		(0u << 19)	/* Data Word Length */
-#define	DWL_16		(1u << 19)	/* Data Word Length */
-#define	DWL_18		(2u << 19)	/* Data Word Length */
-#define	DWL_20		(3u << 19)	/* Data Word Length */
-#define	DWL_22		(4u << 19)	/* Data Word Length */
-#define	DWL_24		(5u << 19)	/* Data Word Length */
-#define	DWL_32		(6u << 19)	/* Data Word Length */
+ 
+#define	FORCE		(1u << 31)	 
+#define	DMEN		(1u << 28)	 
+#define	UIEN		(1u << 27)	 
+#define	OIEN		(1u << 26)	 
+#define	IIEN		(1u << 25)	 
+#define	DIEN		(1u << 24)	 
+#define	CHNL_4		(1u << 22)	 
+#define	CHNL_6		(2u << 22)	 
+#define	CHNL_8		(3u << 22)	 
+#define DWL_MASK	(7u << 19)	 
+#define	DWL_8		(0u << 19)	 
+#define	DWL_16		(1u << 19)	 
+#define	DWL_18		(2u << 19)	 
+#define	DWL_20		(3u << 19)	 
+#define	DWL_22		(4u << 19)	 
+#define	DWL_24		(5u << 19)	 
+#define	DWL_32		(6u << 19)	 
 
-/*
- * System word length
- */
-#define	SWL_16		(1 << 16)	/* R/W System Word Length */
-#define	SWL_24		(2 << 16)	/* R/W System Word Length */
-#define	SWL_32		(3 << 16)	/* R/W System Word Length */
+ 
+#define	SWL_16		(1 << 16)	 
+#define	SWL_24		(2 << 16)	 
+#define	SWL_32		(3 << 16)	 
 
-#define	SCKD		(1 << 15)	/* Serial Bit Clock Direction */
-#define	SWSD		(1 << 14)	/* Serial WS Direction */
-#define	SCKP		(1 << 13)	/* Serial Bit Clock Polarity */
-#define	SWSP		(1 << 12)	/* Serial WS Polarity */
-#define	SDTA		(1 << 10)	/* Serial Data Alignment */
-#define	PDTA		(1 <<  9)	/* Parallel Data Alignment */
-#define	DEL		(1 <<  8)	/* Serial Data Delay */
-#define	CKDV(v)		(v <<  4)	/* Serial Clock Division Ratio */
-#define	TRMD		(1 <<  1)	/* Transmit/Receive Mode Select */
-#define	EN		(1 <<  0)	/* SSI Module Enable */
+#define	SCKD		(1 << 15)	 
+#define	SWSD		(1 << 14)	 
+#define	SCKP		(1 << 13)	 
+#define	SWSP		(1 << 12)	 
+#define	SDTA		(1 << 10)	 
+#define	PDTA		(1 <<  9)	 
+#define	DEL		(1 <<  8)	 
+#define	CKDV(v)		(v <<  4)	 
+#define	TRMD		(1 <<  1)	 
+#define	EN		(1 <<  0)	 
 
-/*
- * SSISR
- */
-#define	UIRQ		(1 << 27)	/* Underflow Error Interrupt Status */
-#define	OIRQ		(1 << 26)	/* Overflow Error Interrupt Status */
-#define	IIRQ		(1 << 25)	/* Idle Mode Interrupt Status */
-#define	DIRQ		(1 << 24)	/* Data Interrupt Status Flag */
+ 
+#define	UIRQ		(1 << 27)	 
+#define	OIRQ		(1 << 26)	 
+#define	IIRQ		(1 << 25)	 
+#define	DIRQ		(1 << 24)	 
 
-/*
- * SSIWSR
- */
-#define CONT		(1 << 8)	/* WS Continue Function */
-#define WS_MODE		(1 << 0)	/* WS Mode */
+ 
+#define CONT		(1 << 8)	 
+#define WS_MODE		(1 << 0)	 
 
 #define SSI_NAME "ssi"
 
@@ -90,15 +76,15 @@ struct rsnd_ssi {
 	int irq;
 	unsigned int usrcnt;
 
-	/* for PIO */
+	 
 	int byte_pos;
 	int byte_per_period;
 	int next_period_byte;
 };
 
-/* flags */
+ 
 #define RSND_SSI_CLK_PIN_SHARE		(1 << 0)
-#define RSND_SSI_NO_BUSIF		(1 << 1) /* SSI+DMA without BUSIF */
+#define RSND_SSI_NO_BUSIF		(1 << 1)  
 #define RSND_SSI_PROBED			(1 << 2)
 
 #define for_each_rsnd_ssi(pos, priv, i)					\
@@ -237,12 +223,7 @@ unsigned int rsnd_ssi_clk_query(struct rsnd_dai *rdai,
 
 	for (j = 0; j < ARRAY_SIZE(ssi_clk_mul_table); j++) {
 
-		/*
-		 * It will set SSIWSR.CONT here, but SSICR.CKDV = 000
-		 * with it is not allowed. (SSIWSR.WS_MODE with
-		 * SSICR.CKDV = 000 is not allowed either).
-		 * Skip it. See SSICR.CKDV
-		 */
+		 
 		if (j == 0)
 			continue;
 
@@ -312,16 +293,7 @@ static int rsnd_ssi_master_clk_start(struct rsnd_mod *mod,
 	if (ret < 0)
 		goto rate_err;
 
-	/*
-	 * SSI clock will be output contiguously
-	 * by below settings.
-	 * This means, rsnd_ssi_master_clk_start()
-	 * and rsnd_ssi_register_setup() are necessary
-	 * for SSI parent
-	 *
-	 * SSICR  : FORCE, SCKD, SWSD
-	 * SSIWSR : CONT
-	 */
+	 
 	ssi->cr_clk = FORCE | rsnd_rdai_width_to_swl(rdai) |
 			SCKD | SWSD | CKDV(idx);
 	ssi->wsr = CONT;
@@ -393,20 +365,13 @@ static void rsnd_ssi_config_init(struct rsnd_mod *mod,
 	if (rdai->sys_delay)
 		cr_own |= DEL;
 
-	/*
-	 * TDM Mode
-	 * see
-	 *	rsnd_ssiu_init_gen2()
-	 */
+	 
 	if (is_tdm || is_tdm_split) {
 		wsr	|= WS_MODE;
 		cr_own	|= CHNL_8;
 	}
 
-	/*
-	 * We shouldn't exchange SWSP after running.
-	 * This means, parent needs to care it.
-	 */
+	 
 	if (rsnd_ssi_is_parent(mod, io))
 		goto init_end;
 
@@ -416,12 +381,7 @@ static void rsnd_ssi_config_init(struct rsnd_mod *mod,
 	cr_own &= ~DWL_MASK;
 	width = snd_pcm_format_width(runtime->format);
 	if (is_tdm_split) {
-		/*
-		 * The SWL and DWL bits in SSICR should be fixed at 32-bit
-		 * setting when TDM split mode.
-		 * see datasheet
-		 *	Operation :: TDM Format Split Function (TDM Split Mode)
-		 */
+		 
 		width = 32;
 	}
 
@@ -441,10 +401,10 @@ static void rsnd_ssi_config_init(struct rsnd_mod *mod,
 	}
 
 	if (rsnd_ssi_is_dma_mode(mod)) {
-		cr_mode = UIEN | OIEN |	/* over/under run */
-			  DMEN;		/* DMA : enable DMA */
+		cr_mode = UIEN | OIEN |	 
+			  DMEN;		 
 	} else {
-		cr_mode = DIEN;		/* PIO : enable Data interrupt */
+		cr_mode = DIEN;		 
 	}
 
 init_end:
@@ -464,9 +424,7 @@ static void rsnd_ssi_register_setup(struct rsnd_mod *mod)
 					ssi->cr_en);
 }
 
-/*
- *	SSI mod common functions
- */
+ 
 static int rsnd_ssi_init(struct rsnd_mod *mod,
 			 struct rsnd_dai_stream *io,
 			 struct rsnd_priv *priv)
@@ -491,7 +449,7 @@ static int rsnd_ssi_init(struct rsnd_mod *mod,
 
 	rsnd_ssi_register_setup(mod);
 
-	/* clear error status */
+	 
 	rsnd_ssi_status_clear(mod);
 
 	return 0;
@@ -555,17 +513,11 @@ static int rsnd_ssi_start(struct rsnd_mod *mod,
 	if (!rsnd_ssi_is_run_mods(mod, io))
 		return 0;
 
-	/*
-	 * EN will be set via SSIU :: SSI_CONTROL
-	 * if Multi channel mode
-	 */
+	 
 	if (rsnd_ssi_multi_secondaries_runtime(io))
 		return 0;
 
-	/*
-	 * EN is for data output.
-	 * SSI parent EN is not needed.
-	 */
+	 
 	if (rsnd_ssi_is_parent(mod, io))
 		return 0;
 
@@ -595,27 +547,18 @@ static int rsnd_ssi_stop(struct rsnd_mod *mod,
 	cr  =	ssi->cr_own	|
 		ssi->cr_clk;
 
-	/*
-	 * disable all IRQ,
-	 * Playback: Wait all data was sent
-	 * Capture:  It might not receave data. Do nothing
-	 */
+	 
 	if (rsnd_io_is_play(io)) {
 		rsnd_mod_write(mod, SSICR, cr | ssi->cr_en);
 		rsnd_ssi_status_check(mod, DIRQ);
 	}
 
-	/* In multi-SSI mode, stop is performed by setting ssi0129 in
-	 * SSI_CONTROL to 0 (in rsnd_ssio_stop_gen2). Do nothing here.
-	 */
+	 
 	if (rsnd_ssi_multi_secondaries_runtime(io))
 		return 0;
 
-	/*
-	 * disable SSI,
-	 * and, wait idle state
-	 */
-	rsnd_mod_write(mod, SSICR, cr);	/* disabled all */
+	 
+	rsnd_mod_write(mod, SSICR, cr);	 
 	rsnd_ssi_status_check(mod, IIRQ);
 
 	ssi->cr_en = 0;
@@ -679,17 +622,17 @@ static void __rsnd_ssi_interrupt(struct rsnd_mod *mod,
 
 	spin_lock(&priv->lock);
 
-	/* ignore all cases if not working */
+	 
 	if (!rsnd_io_is_working(io))
 		goto rsnd_ssi_interrupt_out;
 
 	status = rsnd_ssi_status_get(mod);
 
-	/* PIO only */
+	 
 	if (!is_dma && (status & DIRQ))
 		elapsed = rsnd_ssi_pio_interrupt(mod, io);
 
-	/* DMA only */
+	 
 	if (is_dma && (status & (UIRQ | OIRQ))) {
 		rsnd_print_irq_status(dev, "%s err status : 0x%08x\n",
 				      rsnd_mod_name(mod), status);
@@ -724,40 +667,14 @@ static u32 *rsnd_ssi_get_status(struct rsnd_mod *mod,
 				struct rsnd_dai_stream *io,
 				enum rsnd_mod_type type)
 {
-	/*
-	 * SSIP (= SSI parent) needs to be special, otherwise,
-	 * 2nd SSI might doesn't start. see also rsnd_mod_call()
-	 *
-	 * We can't include parent SSI status on SSI, because we don't know
-	 * how many SSI requests parent SSI. Thus, it is localed on "io" now.
-	 * ex) trouble case
-	 *	Playback: SSI0
-	 *	Capture : SSI1 (needs SSI0)
-	 *
-	 * 1) start Capture  ->	SSI0/SSI1 are started.
-	 * 2) start Playback ->	SSI0 doesn't work, because it is already
-	 *			marked as "started" on 1)
-	 *
-	 * OTOH, using each mod's status is good for MUX case.
-	 * It doesn't need to start in 2nd start
-	 * ex)
-	 *	IO-0: SRC0 -> CTU1 -+-> MUX -> DVC -> SSIU -> SSI0
-	 *			    |
-	 *	IO-1: SRC1 -> CTU2 -+
-	 *
-	 * 1) start IO-0 ->	start SSI0
-	 * 2) start IO-1 ->	SSI0 doesn't need to start, because it is
-	 *			already started on 1)
-	 */
+	 
 	if (type == RSND_MOD_SSIP)
 		return &io->parent_ssi_status;
 
 	return rsnd_mod_get_status(mod, io, type);
 }
 
-/*
- *		SSI PIO
- */
+ 
 static void rsnd_ssi_parent_attach(struct rsnd_mod *mod,
 				   struct rsnd_dai_stream *io)
 {
@@ -792,11 +709,7 @@ static int rsnd_ssi_pcm_new(struct rsnd_mod *mod,
 			    struct rsnd_dai_stream *io,
 			    struct snd_soc_pcm_runtime *rtd)
 {
-	/*
-	 * rsnd_rdai_is_clk_master() will be enabled after set_fmt,
-	 * and, pcm_new will be called after it.
-	 * This function reuse pcm_new at this point.
-	 */
+	 
 	rsnd_ssi_parent_attach(mod, io);
 
 	return 0;
@@ -810,29 +723,13 @@ static int rsnd_ssi_common_probe(struct rsnd_mod *mod,
 	struct rsnd_ssi *ssi = rsnd_mod_to_ssi(mod);
 	int ret = 0;
 
-	/*
-	 * SSIP/SSIU/IRQ are not needed on
-	 * SSI Multi secondaries
-	 */
+	 
 	if (rsnd_ssi_is_multi_secondary(mod, io))
 		return 0;
 
-	/*
-	 * It can't judge ssi parent at this point
-	 * see rsnd_ssi_pcm_new()
-	 */
+	 
 
-	/*
-	 * SSI might be called again as PIO fallback
-	 * It is easy to manual handling for IRQ request/free
-	 *
-	 * OTOH, this function might be called many times if platform is
-	 * using MIX. It needs xxx_attach() many times on xxx_probe().
-	 * Because of it, we can't control .probe/.remove calling count by
-	 * mod->status.
-	 * But it don't need to call request_irq() many times.
-	 * Let's control it by RSND_SSI_PROBED flag.
-	 */
+	 
 	if (!rsnd_flags_has(ssi, RSND_SSI_PROBED)) {
 		ret = request_irq(ssi->irq,
 				  rsnd_ssi_interrupt,
@@ -852,11 +749,11 @@ static int rsnd_ssi_common_remove(struct rsnd_mod *mod,
 	struct rsnd_ssi *ssi = rsnd_mod_to_ssi(mod);
 	struct rsnd_mod *pure_ssi_mod = rsnd_io_to_mod_ssi(io);
 
-	/* Do nothing if non SSI (= SSI parent, multi SSI) mod */
+	 
 	if (pure_ssi_mod != mod)
 		return 0;
 
-	/* PIO will request IRQ again */
+	 
 	if (rsnd_flags_has(ssi, RSND_SSI_PROBED)) {
 		free_irq(ssi->irq, mod);
 
@@ -866,9 +763,7 @@ static int rsnd_ssi_common_remove(struct rsnd_mod *mod,
 	return 0;
 }
 
-/*
- *	SSI PIO functions
- */
+ 
 static bool rsnd_ssi_pio_interrupt(struct rsnd_mod *mod,
 				   struct rsnd_dai_stream *io)
 {
@@ -882,11 +777,7 @@ static bool rsnd_ssi_pio_interrupt(struct rsnd_mod *mod,
 	if (snd_pcm_format_width(runtime->format) == 24)
 		shift = 8;
 
-	/*
-	 * 8/16/32 data can be assesse to TDR/RDR register
-	 * directly as 32bit data
-	 * see rsnd_ssi_init()
-	 */
+	 
 	if (rsnd_io_is_play(io))
 		rsnd_mod_write(mod, SSITDR, (*buf) << shift);
 	else
@@ -963,10 +854,7 @@ static int rsnd_ssi_dma_probe(struct rsnd_mod *mod,
 {
 	int ret;
 
-	/*
-	 * SSIP/SSIU/IRQ/DMA are not needed on
-	 * SSI Multi secondaries
-	 */
+	 
 	if (rsnd_ssi_is_multi_secondary(mod, io))
 		return 0;
 
@@ -974,7 +862,7 @@ static int rsnd_ssi_dma_probe(struct rsnd_mod *mod,
 	if (ret)
 		return ret;
 
-	/* SSI probe might be called many times in MUX multi path */
+	 
 	ret = rsnd_dma_attach(io, mod, &io->dma);
 
 	return ret;
@@ -986,13 +874,7 @@ static int rsnd_ssi_fallback(struct rsnd_mod *mod,
 {
 	struct device *dev = rsnd_priv_to_dev(priv);
 
-	/*
-	 * fallback to PIO
-	 *
-	 * SSI .probe might be called again.
-	 * see
-	 *	rsnd_rdai_continuance_probe()
-	 */
+	 
 	mod->ops = &rsnd_ssi_pio_ops;
 
 	dev_info(dev, "%s fallback to PIO mode\n", rsnd_mod_name(mod));
@@ -1007,16 +889,7 @@ static struct dma_chan *rsnd_ssi_dma_req(struct rsnd_dai_stream *io,
 	int is_play = rsnd_io_is_play(io);
 	char *name;
 
-	/*
-	 * It should use "rcar_sound,ssiu" on DT.
-	 * But, we need to keep compatibility for old version.
-	 *
-	 * If it has "rcar_sound.ssiu", it will be used.
-	 * If not, "rcar_sound.ssi" will be used.
-	 * see
-	 *	rsnd_ssiu_dma_req()
-	 *	rsnd_dma_of_path()
-	 */
+	 
 
 	if (rsnd_ssi_use_busif(io))
 		name = is_play ? "rxu" : "txu";
@@ -1077,9 +950,7 @@ int rsnd_ssi_is_dma_mode(struct rsnd_mod *mod)
 	return mod->ops == &rsnd_ssi_dma_ops;
 }
 
-/*
- *		ssi mod function
- */
+ 
 static void rsnd_ssi_connect(struct rsnd_mod *mod,
 			     struct rsnd_dai_stream *io)
 {
@@ -1093,7 +964,7 @@ static void rsnd_ssi_connect(struct rsnd_mod *mod,
 	enum rsnd_mod_type type;
 	int i;
 
-	/* try SSI -> SSIM1 -> SSIM2 -> SSIM3 */
+	 
 	for (i = 0; i < ARRAY_SIZE(types); i++) {
 		type = types[i];
 		if (!rsnd_io_to_mod(io, type)) {

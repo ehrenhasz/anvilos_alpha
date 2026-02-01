@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S5P/Exynos SoC series MIPI CSIS/DSIM DPHY driver
- *
- * Copyright (C) 2013,2016 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -57,7 +52,7 @@ static const struct mipi_phy_device_desc s5pv210_mipi_phy = {
 	.num_phys = 4,
 	.phys = {
 		{
-			/* EXYNOS_MIPI_PHY_ID_CSIS0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_DSIM0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
@@ -66,7 +61,7 @@ static const struct mipi_phy_device_desc s5pv210_mipi_phy = {
 			.resetn_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_CSIS0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
@@ -75,7 +70,7 @@ static const struct mipi_phy_device_desc s5pv210_mipi_phy = {
 			.resetn_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_CSIS1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_DSIM1,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(1),
@@ -84,7 +79,7 @@ static const struct mipi_phy_device_desc s5pv210_mipi_phy = {
 			.resetn_reg = EXYNOS4_MIPI_PHY_CONTROL(1),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_CSIS1,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(1),
@@ -102,7 +97,7 @@ static const struct mipi_phy_device_desc exynos5420_mipi_phy = {
 	.num_phys = 5,
 	.phys = {
 		{
-			/* EXYNOS_MIPI_PHY_ID_CSIS0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_DSIM0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS5420_MIPI_PHY_CONTROL(0),
@@ -111,7 +106,7 @@ static const struct mipi_phy_device_desc exynos5420_mipi_phy = {
 			.resetn_reg = EXYNOS5420_MIPI_PHY_CONTROL(0),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_CSIS0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS5420_MIPI_PHY_CONTROL(0),
@@ -120,7 +115,7 @@ static const struct mipi_phy_device_desc exynos5420_mipi_phy = {
 			.resetn_reg = EXYNOS5420_MIPI_PHY_CONTROL(0),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_CSIS1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_DSIM1,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS5420_MIPI_PHY_CONTROL(1),
@@ -129,7 +124,7 @@ static const struct mipi_phy_device_desc exynos5420_mipi_phy = {
 			.resetn_reg = EXYNOS5420_MIPI_PHY_CONTROL(1),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_CSIS1,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS5420_MIPI_PHY_CONTROL(1),
@@ -138,7 +133,7 @@ static const struct mipi_phy_device_desc exynos5420_mipi_phy = {
 			.resetn_reg = EXYNOS5420_MIPI_PHY_CONTROL(1),
 			.resetn_map = EXYNOS_MIPI_REGMAP_PMU,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_CSIS2 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_NONE,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS5420_MIPI_PHY_CONTROL(2),
@@ -165,7 +160,7 @@ static const struct mipi_phy_device_desc exynos5433_mipi_phy = {
 	.num_phys = 5,
 	.phys = {
 		{
-			/* EXYNOS_MIPI_PHY_ID_CSIS0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_DSIM0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
@@ -174,7 +169,7 @@ static const struct mipi_phy_device_desc exynos5433_mipi_phy = {
 			.resetn_reg = EXYNOS5433_SYSREG_CAM0_MIPI_DPHY_CON,
 			.resetn_map = EXYNOS_MIPI_REGMAP_CAM0,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM0 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_CSIS0,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(0),
@@ -183,7 +178,7 @@ static const struct mipi_phy_device_desc exynos5433_mipi_phy = {
 			.resetn_reg = EXYNOS5433_SYSREG_DISP_MIPI_PHY,
 			.resetn_map = EXYNOS_MIPI_REGMAP_DISP,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_CSIS1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_NONE,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(1),
@@ -192,7 +187,7 @@ static const struct mipi_phy_device_desc exynos5433_mipi_phy = {
 			.resetn_reg = EXYNOS5433_SYSREG_CAM0_MIPI_DPHY_CON,
 			.resetn_map = EXYNOS_MIPI_REGMAP_CAM0,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_DSIM1 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_NONE,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(1),
@@ -201,7 +196,7 @@ static const struct mipi_phy_device_desc exynos5433_mipi_phy = {
 			.resetn_reg = EXYNOS5433_SYSREG_DISP_MIPI_PHY,
 			.resetn_map = EXYNOS_MIPI_REGMAP_DISP,
 		}, {
-			/* EXYNOS_MIPI_PHY_ID_CSIS2 */
+			 
 			.coupled_phy_id = EXYNOS_MIPI_PHY_ID_NONE,
 			.enable_val = EXYNOS4_PHY_ENABLE,
 			.enable_reg = EXYNOS4_MIPI_PHY_CONTROL(2),
@@ -232,19 +227,19 @@ static int __set_phy_state(const struct exynos_mipi_phy_desc *data,
 
 	spin_lock(&state->slock);
 
-	/* disable in PMU sysreg */
+	 
 	if (!on && data->coupled_phy_id >= 0 &&
 	    state->phys[data->coupled_phy_id].phy->power_count == 0)
 		regmap_update_bits(enable_map, data->enable_reg,
 				   data->enable_val, 0);
-	/* PHY reset */
+	 
 	if (on)
 		regmap_update_bits(resetn_map, data->resetn_reg,
 				   data->resetn_val, data->resetn_val);
 	else
 		regmap_update_bits(resetn_map, data->resetn_reg,
 				   data->resetn_val, 0);
-	/* enable in PMU sysreg */
+	 
 	if (on)
 		regmap_update_bits(enable_map, data->enable_reg,
 				   data->enable_val, data->enable_val);
@@ -352,7 +347,7 @@ static const struct of_device_id exynos_mipi_video_phy_of_match[] = {
 		.compatible = "samsung,exynos5433-mipi-video-phy",
 		.data = &exynos5433_mipi_phy,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, exynos_mipi_video_phy_of_match);
 

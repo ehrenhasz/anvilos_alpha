@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_SDM_GCC_SDM845_H
 #define _DT_BINDINGS_CLK_SDM_GCC_SDM845_H
 
-/* GCC clock registers */
+ 
 #define GCC_AGGRE_NOC_PCIE_TBU_CLK				0
 #define GCC_AGGRE_UFS_CARD_AXI_CLK				1
 #define GCC_AGGRE_UFS_PHY_AXI_CLK				2
@@ -201,7 +199,7 @@
 #define GCC_LPASS_SWAY_CLK					191
 #define GPLL6							192
 
-/* GCC Resets */
+ 
 #define GCC_MMSS_BCR						0
 #define GCC_PCIE_0_BCR						1
 #define GCC_PCIE_1_BCR						2
@@ -229,7 +227,7 @@
 #define GCC_PCIE_0_PHY_BCR					24
 #define GCC_PCIE_1_PHY_BCR					25
 
-/* GCC GDSCRs */
+ 
 #define PCIE_0_GDSC						0
 #define PCIE_1_GDSC						1
 #define UFS_CARD_GDSC						2

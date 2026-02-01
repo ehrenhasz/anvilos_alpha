@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2005-2015 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/tcp.h>
@@ -24,44 +20,19 @@
 #include "workarounds.h"
 #include "ef10_regs.h"
 
-/* Efx legacy TCP segmentation acceleration.
- *
- * Utilises firmware support to go faster than GSO (but not as fast as TSOv2).
- *
- * Requires TX checksum offload support.
- */
+ 
 
 #define PTR_DIFF(p1, p2)  ((u8 *)(p1) - (u8 *)(p2))
 
-/**
- * struct tso_state - TSO state for an SKB
- * @out_len: Remaining length in current segment
- * @seqnum: Current sequence number
- * @ipv4_id: Current IPv4 ID, host endian
- * @packet_space: Remaining space in current packet
- * @dma_addr: DMA address of current position
- * @in_len: Remaining length in current SKB fragment
- * @unmap_len: Length of SKB fragment
- * @unmap_addr: DMA address of SKB fragment
- * @protocol: Network protocol (after any VLAN header)
- * @ip_off: Offset of IP header
- * @tcp_off: Offset of TCP header
- * @header_len: Number of bytes of header
- * @ip_base_len: IPv4 tot_len or IPv6 payload_len, before TCP payload
- * @header_dma_addr: Header DMA address
- * @header_unmap_len: Header DMA mapped length
- *
- * The state used during segmentation.  It is put into this data structure
- * just to make it easy to pass into inline functions.
- */
+ 
 struct tso_state {
-	/* Output position */
+	 
 	unsigned int out_len;
 	unsigned int seqnum;
 	u16 ipv4_id;
 	unsigned int packet_space;
 
-	/* Input position */
+	 
 	dma_addr_t dma_addr;
 	unsigned int in_len;
 	unsigned int unmap_len;
@@ -90,15 +61,7 @@ static inline void prefetch_ptr(struct efx_tx_queue *tx_queue)
 	prefetch(ptr + 0x80);
 }
 
-/**
- * efx_tx_queue_insert - push descriptors onto the TX queue
- * @tx_queue:		Efx TX queue
- * @dma_addr:		DMA address of fragment
- * @len:		Length of fragment
- * @final_buffer:	The final buffer inserted into the queue
- *
- * Push descriptors onto the TX queue.
- */
+ 
 static void efx_tx_queue_insert(struct efx_tx_queue *tx_queue,
 				dma_addr_t dma_addr, unsigned int len,
 				struct efx_tx_buffer **final_buffer)
@@ -121,7 +84,7 @@ static void efx_tx_queue_insert(struct efx_tx_queue *tx_queue,
 		dma_len = tx_queue->efx->type->tx_limit_len(tx_queue,
 				dma_addr, len);
 
-		/* If there's space for everything this is our last buffer. */
+		 
 		if (dma_len >= len)
 			break;
 
@@ -136,10 +99,7 @@ static void efx_tx_queue_insert(struct efx_tx_queue *tx_queue,
 	*final_buffer = buffer;
 }
 
-/*
- * Verify that our various assumptions about sk_buffs and the conditions
- * under which TSO will be attempted hold true.  Return the protocol number.
- */
+ 
 static __be16 efx_tso_check_protocol(struct sk_buff *skb)
 {
 	__be16 protocol = skb->protocol;
@@ -165,7 +125,7 @@ static __be16 efx_tso_check_protocol(struct sk_buff *skb)
 	return protocol;
 }
 
-/* Parse the SKB header and initialise state. */
+ 
 static int tso_start(struct tso_state *st, struct efx_nic *efx,
 		     struct efx_tx_queue *tx_queue,
 		     const struct sk_buff *skb)
@@ -220,15 +180,7 @@ static int tso_get_fragment(struct tso_state *st, struct efx_nic *efx,
 }
 
 
-/**
- * tso_fill_packet_with_fragment - form descriptors for the current fragment
- * @tx_queue:		Efx TX queue
- * @skb:		Socket buffer
- * @st:			TSO state
- *
- * Form descriptors for the current fragment, until we reach the end
- * of fragment or end-of-packet.
- */
+ 
 static void tso_fill_packet_with_fragment(struct efx_tx_queue *tx_queue,
 					  const struct sk_buff *skb,
 					  struct tso_state *st)
@@ -253,7 +205,7 @@ static void tso_fill_packet_with_fragment(struct efx_tx_queue *tx_queue,
 	efx_tx_queue_insert(tx_queue, st->dma_addr, n, &buffer);
 
 	if (st->out_len == 0) {
-		/* Transfer ownership of the skb */
+		 
 		buffer->skb = skb;
 		buffer->flags = EFX_TX_BUF_SKB;
 	} else if (st->packet_space != 0) {
@@ -261,7 +213,7 @@ static void tso_fill_packet_with_fragment(struct efx_tx_queue *tx_queue,
 	}
 
 	if (st->in_len == 0) {
-		/* Transfer ownership of the DMA mapping */
+		 
 		buffer->unmap_len = st->unmap_len;
 		buffer->dma_offset = buffer->unmap_len - buffer->len;
 		st->unmap_len = 0;
@@ -273,15 +225,7 @@ static void tso_fill_packet_with_fragment(struct efx_tx_queue *tx_queue,
 
 #define TCP_FLAGS_OFFSET 13
 
-/**
- * tso_start_new_packet - generate a new header and prepare for the new packet
- * @tx_queue:		Efx TX queue
- * @skb:		Socket buffer
- * @st:			TSO state
- *
- * Generate a new header and prepare for the new packet.  Return 0 on
- * success, or -%ENOMEM if failed to alloc header, or other negative error.
- */
+ 
 static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 				const struct sk_buff *skb,
 				struct tso_state *st)
@@ -293,7 +237,7 @@ static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 
 	if (!is_last) {
 		st->packet_space = skb_shinfo(skb)->gso_size;
-		tcp_flags_mask = 0x09; /* mask out FIN and PSH */
+		tcp_flags_mask = 0x09;  
 	} else {
 		st->packet_space = st->out_len;
 		tcp_flags_mask = 0x00;
@@ -301,9 +245,7 @@ static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 
 	if (WARN_ON(!st->header_unmap_len))
 		return -EINVAL;
-	/* Send the original headers with a TSO option descriptor
-	 * in front
-	 */
+	 
 	tcp_flags = ((u8 *)tcp_hdr(skb))[TCP_FLAGS_OFFSET] & ~tcp_flags_mask;
 
 	buffer->flags = EFX_TX_BUF_OPTION;
@@ -318,9 +260,7 @@ static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 			     ESF_DZ_TX_TSO_TCP_SEQNO, st->seqnum);
 	++tx_queue->insert_count;
 
-	/* We mapped the headers in tso_start().  Unmap them
-	 * when the last segment is completed.
-	 */
+	 
 	buffer = efx_tx_queue_get_insert_buffer(tx_queue);
 	buffer->dma_addr = st->header_dma_addr;
 	buffer->len = st->header_len;
@@ -328,9 +268,7 @@ static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 		buffer->flags = EFX_TX_BUF_CONT | EFX_TX_BUF_MAP_SINGLE;
 		buffer->unmap_len = st->header_unmap_len;
 		buffer->dma_offset = 0;
-		/* Ensure we only unmap them once in case of a
-		 * later DMA mapping error and rollback
-		 */
+		 
 		st->header_unmap_len = 0;
 	} else {
 		buffer->flags = EFX_TX_BUF_CONT;
@@ -340,25 +278,13 @@ static int tso_start_new_packet(struct efx_tx_queue *tx_queue,
 
 	st->seqnum += skb_shinfo(skb)->gso_size;
 
-	/* Linux leaves suitable gaps in the IP ID space for us to fill. */
+	 
 	++st->ipv4_id;
 
 	return 0;
 }
 
-/**
- * efx_enqueue_skb_tso - segment and transmit a TSO socket buffer
- * @tx_queue:		Efx TX queue
- * @skb:		Socket buffer
- * @data_mapped:        Did we map the data? Always set to true
- *                      by this on success.
- *
- * Context: You must hold netif_tx_lock() to call this function.
- *
- * Add socket buffer @skb to @tx_queue, doing TSO or return != 0 if
- * @skb was not enqueued.  @skb is consumed unless return value is
- * %EINVAL.
- */
+ 
 int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 			struct sk_buff *skb,
 			bool *data_mapped)
@@ -372,7 +298,7 @@ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 
 	prefetch(skb->data);
 
-	/* Find the packet protocol and sanity-check it */
+	 
 	state.protocol = efx_tso_check_protocol(skb);
 
 	EFX_WARN_ON_ONCE_PARANOID(tx_queue->write_count != tx_queue->insert_count);
@@ -382,7 +308,7 @@ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 		goto fail;
 
 	if (likely(state.in_len == 0)) {
-		/* Grab the first payload fragment. */
+		 
 		EFX_WARN_ON_ONCE_PARANOID(skb_shinfo(skb)->nr_frags < 1);
 		frag_i = 0;
 		rc = tso_get_fragment(&state, efx,
@@ -390,7 +316,7 @@ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 		if (rc)
 			goto fail;
 	} else {
-		/* Payload starts in the header area. */
+		 
 		frag_i = -1;
 	}
 
@@ -403,10 +329,10 @@ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 	while (1) {
 		tso_fill_packet_with_fragment(tx_queue, skb, &state);
 
-		/* Move onto the next fragment? */
+		 
 		if (state.in_len == 0) {
 			if (++frag_i >= skb_shinfo(skb)->nr_frags)
-				/* End of payload reached. */
+				 
 				break;
 			rc = tso_get_fragment(&state, efx,
 					      skb_shinfo(skb)->frags + frag_i);
@@ -414,7 +340,7 @@ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 				goto fail;
 		}
 
-		/* Start at new packet? */
+		 
 		if (state.packet_space == 0) {
 			rc = tso_start_new_packet(tx_queue, skb, &state);
 			if (rc)
@@ -433,13 +359,13 @@ fail:
 	else
 		netif_err(efx, tx_err, efx->net_dev, "TSO failed, rc = %d\n", rc);
 
-	/* Free the DMA mapping we were in the process of writing out */
+	 
 	if (state.unmap_len) {
 		dma_unmap_page(&efx->pci_dev->dev, state.unmap_addr,
 			       state.unmap_len, DMA_TO_DEVICE);
 	}
 
-	/* Free the header DMA mapping */
+	 
 	if (state.header_unmap_len)
 		dma_unmap_single(&efx->pci_dev->dev, state.header_dma_addr,
 				 state.header_unmap_len, DMA_TO_DEVICE);

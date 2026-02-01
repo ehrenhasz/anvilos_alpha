@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/stddef.h>
 #include <linux/bpf.h>
@@ -10,7 +10,7 @@
 
 #include <bpf_sockopt_helpers.h>
 
-#define SERV6_IP_0		0xfaceb00c /* face:b00c:1234:5678::abcd */
+#define SERV6_IP_0		0xfaceb00c  
 #define SERV6_IP_1		0x12345678
 #define SERV6_IP_2		0x00000000
 #define SERV6_IP_3		0x0000abcd

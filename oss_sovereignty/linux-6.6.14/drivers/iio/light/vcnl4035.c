@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * VCNL4035 Ambient Light and Proximity Sensor - 7-bit I2C slave address 0x60
- *
- * Copyright (c) 2018, DENX Software Engineering GmbH
- * Author: Parthiban Nallathambi <pn@denx.de>
- *
- * TODO: Proximity
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
@@ -26,7 +19,7 @@
 #define VCNL4035_IRQ_NAME	"vcnl4035_event"
 #define VCNL4035_REGMAP_NAME	"vcnl4035_regmap"
 
-/* Device registers */
+ 
 #define VCNL4035_ALS_CONF	0x00
 #define VCNL4035_ALS_THDH	0x01
 #define VCNL4035_ALS_THDL	0x02
@@ -35,7 +28,7 @@
 #define VCNL4035_INT_FLAG	0x0D
 #define VCNL4035_DEV_ID		0x0E
 
-/* Register masks */
+ 
 #define VCNL4035_MODE_ALS_MASK		BIT(0)
 #define VCNL4035_MODE_ALS_WHITE_CHAN	BIT(8)
 #define VCNL4035_MODE_ALS_INT_MASK	BIT(1)
@@ -45,7 +38,7 @@
 #define VCNL4035_INT_ALS_IF_L_MASK	BIT(13)
 #define VCNL4035_DEV_ID_MASK		GENMASK(7, 0)
 
-/* Default values */
+ 
 #define VCNL4035_MODE_ALS_ENABLE	BIT(0)
 #define VCNL4035_MODE_ALS_DISABLE	0x00
 #define VCNL4035_MODE_ALS_INT_ENABLE	BIT(1)
@@ -98,13 +91,13 @@ static irqreturn_t vcnl4035_drdy_irq_thread(int irq, void *private)
 	return IRQ_NONE;
 }
 
-/* Triggered buffer */
+ 
 static irqreturn_t vcnl4035_trigger_consumer_handler(int irq, void *p)
 {
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct vcnl4035_data *data = iio_priv(indio_dev);
-	/* Ensure naturally aligned timestamp */
+	 
 	u8 buffer[ALIGN(sizeof(u16), sizeof(s64)) + sizeof(s64)]  __aligned(8);
 	int ret;
 
@@ -156,19 +149,7 @@ static int vcnl4035_set_pm_runtime_state(struct vcnl4035_data *data, bool on)
 	return ret;
 }
 
-/*
- *	Device IT	INT Time (ms)	Scale (lux/step)
- *	000		50		0.064
- *	001		100		0.032
- *	010		200		0.016
- *	100		400		0.008
- *	101 - 111	800		0.004
- * Values are proportional, so ALS INT is selected for input due to
- * simplicity reason. Integration time value and scaling is
- * calculated based on device INT value
- *
- * Raw value needs to be scaled using ALS steps
- */
+ 
 static int vcnl4035_read_raw(struct iio_dev *indio_dev,
 			    struct iio_chan_spec const *chan, int *val,
 			    int *val2, long mask)
@@ -245,7 +226,7 @@ static int vcnl4035_write_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/* No direct ABI for persistence and threshold, so eventing */
+ 
 static int vcnl4035_read_thresh(struct iio_dev *indio_dev,
 		const struct iio_chan_spec *chan, enum iio_event_type type,
 		enum iio_event_direction dir, enum iio_event_info info,
@@ -285,7 +266,7 @@ static int vcnl4035_write_thresh(struct iio_dev *indio_dev,
 
 	switch (info) {
 	case IIO_EV_INFO_VALUE:
-		/* 16 bit threshold range 0 - 65535 */
+		 
 		if (val < 0 || val > 65535)
 			return -EINVAL;
 		if (dir == IIO_EV_DIR_RISING) {
@@ -307,7 +288,7 @@ static int vcnl4035_write_thresh(struct iio_dev *indio_dev,
 		}
 		return ret;
 	case IIO_EV_INFO_PERIOD:
-		/* allow only 1 2 4 8 as persistence value */
+		 
 		if (val < 0 || val > 8 || hweight8(val) != 1)
 			return -EINVAL;
 		ret = regmap_update_bits(data->regmap, VCNL4035_ALS_CONF,
@@ -426,7 +407,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* ALS white channel enable */
+	 
 	ret = regmap_update_bits(data->regmap, VCNL4035_ALS_CONF,
 				 VCNL4035_MODE_ALS_WHITE_CHAN,
 				 1);
@@ -436,7 +417,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
 		return ret;
 	}
 
-	/* set default integration time - 100 ms for ALS */
+	 
 	ret = regmap_update_bits(data->regmap, VCNL4035_ALS_CONF,
 				 VCNL4035_ALS_IT_MASK,
 				 VCNL4035_ALS_IT_DEFAULT);
@@ -447,7 +428,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
 	}
 	data->als_it_val = VCNL4035_ALS_IT_DEFAULT;
 
-	/* set default persistence time - 1 for ALS */
+	 
 	ret = regmap_update_bits(data->regmap, VCNL4035_ALS_CONF,
 				 VCNL4035_ALS_PERS_MASK,
 				 VCNL4035_ALS_PERS_DEFAULT);
@@ -458,7 +439,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
 	}
 	data->als_persistence = VCNL4035_ALS_PERS_DEFAULT;
 
-	/* set default HIGH threshold for ALS */
+	 
 	ret = regmap_write(data->regmap, VCNL4035_ALS_THDH,
 				VCNL4035_ALS_THDH_DEFAULT);
 	if (ret) {
@@ -468,7 +449,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
 	}
 	data->als_thresh_high = VCNL4035_ALS_THDH_DEFAULT;
 
-	/* set default LOW threshold for ALS */
+	 
 	ret = regmap_write(data->regmap, VCNL4035_ALS_THDL,
 				VCNL4035_ALS_THDL_DEFAULT);
 	if (ret) {
@@ -522,7 +503,7 @@ static int vcnl4035_probe_trigger(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* Trigger setup */
+	 
 	ret = devm_iio_triggered_buffer_setup(indio_dev->dev.parent, indio_dev,
 					NULL, vcnl4035_trigger_consumer_handler,
 					&iio_triggered_buffer_setup_ops);
@@ -531,7 +512,7 @@ static int vcnl4035_probe_trigger(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* IRQ to trigger mapping */
+	 
 	ret = devm_request_threaded_irq(&data->client->dev, data->client->irq,
 			NULL, vcnl4035_drdy_irq_thread,
 			IRQF_TRIGGER_LOW | IRQF_ONESHOT,
@@ -643,7 +624,7 @@ static int vcnl4035_runtime_resume(struct device *dev)
 	if (ret < 0)
 		return ret;
 
-	/* wait for 1 ALS integration cycle */
+	 
 	msleep(data->als_it_val * 100);
 
 	return 0;

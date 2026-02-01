@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBSS mode implementation
- * Copyright 2003-2008, Jouni Malinen <j@w1.fi>
- * Copyright 2004, Instant802 Networks, Inc.
- * Copyright 2005, Devicescape Software, Inc.
- * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
- * Copyright 2009, Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright(c) 2016 Intel Deutschland GmbH
- * Copyright(c) 2018-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -53,14 +42,14 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 	int frame_len;
 	int shift;
 
-	/* Build IBSS probe response */
+	 
 	frame_len = sizeof(struct ieee80211_hdr_3addr) +
-		    12 /* struct ieee80211_mgmt.u.beacon */ +
-		    2 + IEEE80211_MAX_SSID_LEN /* max SSID */ +
-		    2 + 8 /* max Supported Rates */ +
-		    3 /* max DS params */ +
-		    4 /* IBSS params */ +
-		    5 /* Channel Switch Announcement */ +
+		    12   +
+		    2 + IEEE80211_MAX_SSID_LEN   +
+		    2 + 8   +
+		    3   +
+		    4   +
+		    5   +
 		    2 + (IEEE80211_MAX_SUPP_RATES - 8) +
 		    2 + sizeof(struct ieee80211_ht_cap) +
 		    2 + sizeof(struct ieee80211_ht_operation) +
@@ -121,7 +110,7 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 			basic = 0x80;
 		*pos++ = basic | (u8) rate;
 		if (++rates_added == 8) {
-			ri++; /* continue at next rate for EXT_SUPP_RATES */
+			ri++;  
 			break;
 		}
 	}
@@ -135,7 +124,7 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 
 	*pos++ = WLAN_EID_IBSS_PARAMS;
 	*pos++ = 2;
-	/* FIX: set ATIM window based on scan results */
+	 
 	*pos++ = 0;
 	*pos++ = 0;
 
@@ -150,7 +139,7 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 		presp->cntdwn_current_counter = csa_settings->count;
 	}
 
-	/* put the remaining rates in WLAN_EID_EXT_SUPP_RATES */
+	 
 	if (rates_n > 8) {
 		*pos++ = WLAN_EID_EXT_SUPP_RATES;
 		*pos++ = rates_n - 8;
@@ -172,7 +161,7 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 		pos += ifibss->ie_len;
 	}
 
-	/* add HT capability and information IEs */
+	 
 	if (chandef->width != NL80211_CHAN_WIDTH_20_NOHT &&
 	    chandef->width != NL80211_CHAN_WIDTH_5 &&
 	    chandef->width != NL80211_CHAN_WIDTH_10 &&
@@ -183,15 +172,11 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 		ieee80211_apply_htcap_overrides(sdata, &ht_cap);
 
 		pos = ieee80211_ie_build_ht_cap(pos, &ht_cap, ht_cap.cap);
-		/*
-		 * Note: According to 802.11n-2009 9.13.3.1, HT Protection
-		 * field and RIFS Mode are reserved in IBSS mode, therefore
-		 * keep them at 0
-		 */
+		 
 		pos = ieee80211_ie_build_ht_oper(pos, &sband->ht_cap,
 						 chandef, 0, false);
 
-		/* add VHT capability and information IEs */
+		 
 		if (chandef->width != NL80211_CHAN_WIDTH_20 &&
 		    chandef->width != NL80211_CHAN_WIDTH_40 &&
 		    sband->vht_cap.vht_supported) {
@@ -203,7 +188,7 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (local->hw.queues >= IEEE80211_NUM_ACS)
-		pos = ieee80211_add_wmm_info_ie(pos, 0); /* U-APSD not in use */
+		pos = ieee80211_add_wmm_info_ie(pos, 0);  
 
 	presp->head_len = pos - presp->head;
 	if (WARN_ON(presp->head_len > frame_len))
@@ -237,13 +222,13 @@ static void __ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
 
 	sdata_assert_lock(sdata);
 
-	/* Reset own TSF to allow time synchronization work. */
+	 
 	drv_reset_tsf(local, sdata);
 
 	if (!ether_addr_equal(ifibss->bssid, bssid))
 		sta_info_flush(sdata);
 
-	/* if merging, indicate to driver that we leave the old IBSS */
+	 
 	if (sdata->vif.cfg.ibss_joined) {
 		sdata->vif.cfg.ibss_joined = false;
 		sdata->vif.cfg.ibss_creator = false;
@@ -260,7 +245,7 @@ static void __ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
 	if (presp)
 		kfree_rcu(presp, rcu_head);
 
-	/* make a copy of the chandef, it could be modified below. */
+	 
 	chandef = *req_chandef;
 	chan = chandef.chan;
 	if (!cfg80211_reg_can_beacon(local->hw.wiphy, &chandef,
@@ -275,7 +260,7 @@ static void __ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
 		}
 		chandef.width = NL80211_CHAN_WIDTH_20;
 		chandef.center_freq1 = chan->center_freq;
-		/* check again for downgraded chandef */
+		 
 		if (!cfg80211_reg_can_beacon(local->hw.wiphy, &chandef,
 					     NL80211_IFTYPE_ADHOC)) {
 			sdata_info(sdata,
@@ -337,20 +322,11 @@ static void __ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
 	bss_change |= BSS_CHANGED_IBSS;
 	bss_change |= BSS_CHANGED_SSID;
 
-	/*
-	 * In 5 GHz/802.11a, we can always use short slot time.
-	 * (IEEE 802.11-2012 18.3.8.7)
-	 *
-	 * In 2.4GHz, we must always use long slots in IBSS for compatibility
-	 * reasons.
-	 * (IEEE 802.11-2012 19.4.5)
-	 *
-	 * HT follows these specifications (IEEE 802.11-2012 20.3.18)
-	 */
+	 
 	sdata->vif.bss_conf.use_short_slot = chan->band == NL80211_BAND_5GHZ;
 	bss_change |= BSS_CHANGED_ERP_SLOT;
 
-	/* cf. IEEE 802.11 9.2.12 */
+	 
 	sdata->deflink.operating_11g_mode =
 		chan->band == NL80211_BAND_2GHZ && have_higher_than_11mbit;
 
@@ -432,7 +408,7 @@ static void ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
 		chandef.chan = cbss->channel;
 		break;
 	default:
-		/* fall back to 20 MHz for unsupported modes */
+		 
 		cfg80211_chandef_create(&chandef, cbss->channel,
 					NL80211_CHAN_NO_HT);
 		break;
@@ -532,11 +508,11 @@ int ieee80211_ibss_finish_csa(struct ieee80211_sub_if_data *sdata, u64 *changed)
 
 	sdata_assert_lock(sdata);
 
-	/* When not connected/joined, sending CSA doesn't make sense. */
+	 
 	if (ifibss->state != IEEE80211_IBSS_MLME_JOINED)
 		return -ENOLINK;
 
-	/* update cfg80211 bss information with the new channel */
+	 
 	if (!is_zero_ether_addr(ifibss->bssid)) {
 		cbss = cfg80211_get_bss(sdata->local->hw.wiphy,
 					ifibss->chandef.chan,
@@ -544,7 +520,7 @@ int ieee80211_ibss_finish_csa(struct ieee80211_sub_if_data *sdata, u64 *changed)
 					ifibss->ssid_len,
 					IEEE80211_BSS_TYPE_IBSS,
 					IEEE80211_PRIVACY(ifibss->privacy));
-		/* XXX: should not really modify cfg80211 data */
+		 
 		if (cbss) {
 			cbss->channel = sdata->deflink.csa_chandef.chan;
 			cfg80211_put_bss(sdata->local->hw.wiphy, cbss);
@@ -553,7 +529,7 @@ int ieee80211_ibss_finish_csa(struct ieee80211_sub_if_data *sdata, u64 *changed)
 
 	ifibss->chandef = sdata->deflink.csa_chandef;
 
-	/* generate the beacon */
+	 
 	return ieee80211_ibss_csa_beacon(sdata, NULL, changed);
 }
 
@@ -577,14 +553,13 @@ static struct sta_info *ieee80211_ibss_finish_sta(struct sta_info *sta)
 
 	sta_info_pre_move_state(sta, IEEE80211_STA_AUTH);
 	sta_info_pre_move_state(sta, IEEE80211_STA_ASSOC);
-	/* authorize the station only if the network is not RSN protected. If
-	 * not wait for the userspace to authorize it */
+	 
 	if (!sta->sdata->u.ibss.control_port)
 		sta_info_pre_move_state(sta, IEEE80211_STA_AUTHORIZED);
 
 	rate_control_rate_init(sta);
 
-	/* If it fails, maybe we raced another insertion? */
+	 
 	if (sta_info_insert_rcu(sta))
 		return sta_info_get(sdata, addr);
 	return sta;
@@ -603,10 +578,7 @@ ieee80211_ibss_add_sta(struct ieee80211_sub_if_data *sdata, const u8 *bssid,
 	enum nl80211_bss_scan_width scan_width;
 	int band;
 
-	/*
-	 * XXX: Consider removing the least recently used entry and
-	 * 	allow new one to be added.
-	 */
+	 
 	if (local->num_sta >= IEEE80211_IBSS_MAX_STA_ENTRIES) {
 		net_info_ratelimited("%s: No room for a new IBSS STA entry %pM\n",
 				    sdata->name, addr);
@@ -638,7 +610,7 @@ ieee80211_ibss_add_sta(struct ieee80211_sub_if_data *sdata, const u8 *bssid,
 		return NULL;
 	}
 
-	/* make sure mandatory rates are always added */
+	 
 	sband = local->hw.wiphy->bands[band];
 	sta->sta.deflink.supp_rates[band] = supp_rates |
 			ieee80211_mandatory_rates(sband, scan_width);
@@ -716,7 +688,7 @@ static void ieee80211_ibss_disconnect(struct ieee80211_sub_if_data *sdata)
 	sdata->vif.bss_conf.enable_beacon = false;
 	sdata->vif.cfg.ssid_len = 0;
 
-	/* remove beacon */
+	 
 	presp = sdata_dereference(ifibss->presp, sdata);
 	RCU_INIT_POINTER(sdata->u.ibss.presp, NULL);
 	if (presp)
@@ -744,7 +716,7 @@ static void ieee80211_csa_connection_drop_work(struct wiphy *wiphy,
 	synchronize_rcu();
 	skb_queue_purge(&sdata->skb_queue);
 
-	/* trigger a scan to find another IBSS network to join */
+	 
 	wiphy_work_queue(sdata->local->hw.wiphy, &sdata->work);
 
 	sdata_unlock(sdata);
@@ -755,9 +727,7 @@ static void ieee80211_ibss_csa_mark_radar(struct ieee80211_sub_if_data *sdata)
 	struct ieee80211_if_ibss *ifibss = &sdata->u.ibss;
 	int err;
 
-	/* if the current channel is a DFS channel, mark the channel as
-	 * unavailable.
-	 */
+	 
 	err = cfg80211_chandef_dfs_required(sdata->local->hw.wiphy,
 					    &ifibss->chandef,
 					    NL80211_IFTYPE_ADHOC);
@@ -804,15 +774,15 @@ ieee80211_ibss_process_chanswitch(struct ieee80211_sub_if_data *sdata,
 					   ifibss->chandef.chan->band,
 					   vht_cap_info,
 					   conn_flags, ifibss->bssid, &csa_ie);
-	/* can't switch to destination channel, fail */
+	 
 	if (err < 0)
 		goto disconnect;
 
-	/* did not contain a CSA */
+	 
 	if (err)
 		return false;
 
-	/* channel switch is not supported, disconnect */
+	 
 	if (!(sdata->local->hw.wiphy->flags & WIPHY_FLAG_HAS_CHANNEL_SWITCH))
 		goto disconnect;
 
@@ -823,11 +793,7 @@ ieee80211_ibss_process_chanswitch(struct ieee80211_sub_if_data *sdata,
 	case NL80211_CHAN_WIDTH_20_NOHT:
 	case NL80211_CHAN_WIDTH_20:
 	case NL80211_CHAN_WIDTH_40:
-		/* keep our current HT mode (HT20/HT40+/HT40-), even if
-		 * another mode  has been announced. The mode is not adopted
-		 * within the beacon while doing CSA and we should therefore
-		 * keep the mode which we announce.
-		 */
+		 
 		ch_type = cfg80211_get_chandef_type(&ifibss->chandef);
 		cfg80211_chandef_create(&params.chandef, params.chandef.chan,
 					ch_type);
@@ -846,7 +812,7 @@ ieee80211_ibss_process_chanswitch(struct ieee80211_sub_if_data *sdata,
 		}
 		break;
 	default:
-		/* should not happen, conn_flags should prevent VHT modes. */
+		 
 		WARN_ON(1);
 		goto disconnect;
 	}
@@ -869,7 +835,7 @@ ieee80211_ibss_process_chanswitch(struct ieee80211_sub_if_data *sdata,
 	if (err < 0)
 		goto disconnect;
 	if (err > 0 && !ifibss->userspace_handles_dfs) {
-		/* IBSS-DFS only allowed with a control program */
+		 
 		goto disconnect;
 	}
 
@@ -882,7 +848,7 @@ ieee80211_ibss_process_chanswitch(struct ieee80211_sub_if_data *sdata,
 		return true;
 	}
 
-	/* all checks done, now perform the channel switch. */
+	 
 	ibss_dbg(sdata,
 		 "received channel switch announcement to go to channel %d MHz\n",
 		 params.chandef.chan->center_freq);
@@ -917,7 +883,7 @@ ieee80211_rx_mgmt_spectrum_mgmt(struct ieee80211_sub_if_data *sdata,
 	if (len < IEEE80211_MIN_ACTION_SIZE + 1)
 		return;
 
-	/* CSA is the only action we handle for now */
+	 
 	if (mgmt->u.action.u.measurement.action_code !=
 	    WLAN_ACTION_SPCT_CHL_SWITCH)
 		return;
@@ -966,12 +932,7 @@ static void ieee80211_rx_mgmt_auth_ibss(struct ieee80211_sub_if_data *sdata,
 	if (auth_alg != WLAN_AUTH_OPEN || auth_transaction != 1)
 		return;
 
-	/*
-	 * IEEE 802.11 standard does not require authentication in IBSS
-	 * networks and most implementations do not seem to use it.
-	 * However, try to reply to authentication attempts if someone
-	 * has actually implemented this.
-	 */
+	 
 	ieee80211_send_auth(sdata, 2, WLAN_AUTH_OPEN, 0, NULL, 0,
 			    mgmt->sa, sdata->u.ibss.bssid, NULL, 0, 0, 0);
 }
@@ -1010,7 +971,7 @@ static void ieee80211_update_sta_info(struct ieee80211_sub_if_data *sdata,
 			u32 prev_rates;
 
 			prev_rates = sta->sta.deflink.supp_rates[band];
-			/* make sure mandatory rates are always added */
+			 
 			scan_width = NL80211_BSS_CHAN_WIDTH_20;
 			if (rx_status->bw == RATE_INFO_BW_5)
 				scan_width = NL80211_BSS_CHAN_WIDTH_5;
@@ -1044,7 +1005,7 @@ static void ieee80211_update_sta_info(struct ieee80211_sub_if_data *sdata,
 	    sdata->u.ibss.chandef.width != NL80211_CHAN_WIDTH_20_NOHT &&
 	    sdata->u.ibss.chandef.width != NL80211_CHAN_WIDTH_5 &&
 	    sdata->u.ibss.chandef.width != NL80211_CHAN_WIDTH_10) {
-		/* we both use HT */
+		 
 		struct ieee80211_ht_cap htcap_ie;
 		struct cfg80211_chan_def chandef;
 		enum ieee80211_sta_rx_bandwidth bw = sta->sta.deflink.bandwidth;
@@ -1060,7 +1021,7 @@ static void ieee80211_update_sta_info(struct ieee80211_sub_if_data *sdata,
 		if (elems->vht_operation && elems->vht_cap_elem &&
 		    sdata->u.ibss.chandef.width != NL80211_CHAN_WIDTH_20 &&
 		    sdata->u.ibss.chandef.width != NL80211_CHAN_WIDTH_40) {
-			/* we both use VHT */
+			 
 			struct ieee80211_vht_cap cap_ie;
 			struct ieee80211_sta_vht_cap cap = sta->sta.deflink.vht_cap;
 			u32 vht_cap_info =
@@ -1090,7 +1051,7 @@ static void ieee80211_update_sta_info(struct ieee80211_sub_if_data *sdata,
 		u32 changed = IEEE80211_RC_SUPP_RATES_CHANGED;
 		u8 rx_nss = sta->sta.deflink.rx_nss;
 
-		/* Force rx_nss recalculation */
+		 
 		sta->sta.deflink.rx_nss = 0;
 		rate_control_rate_init(sta);
 		if (sta->sta.deflink.rx_nss != rx_nss)
@@ -1127,49 +1088,46 @@ static void ieee80211_rx_bss_info(struct ieee80211_sub_if_data *sdata,
 
 	cbss = container_of((void *)bss, struct cfg80211_bss, priv);
 
-	/* same for beacon and probe response */
+	 
 	beacon_timestamp = le64_to_cpu(mgmt->u.beacon.timestamp);
 
-	/* check if we need to merge IBSS */
+	 
 
-	/* not an IBSS */
+	 
 	if (!(cbss->capability & WLAN_CAPABILITY_IBSS))
 		goto put_bss;
 
-	/* different channel */
+	 
 	if (sdata->u.ibss.fixed_channel &&
 	    sdata->u.ibss.chandef.chan != cbss->channel)
 		goto put_bss;
 
-	/* different SSID */
+	 
 	if (elems->ssid_len != sdata->u.ibss.ssid_len ||
 	    memcmp(elems->ssid, sdata->u.ibss.ssid,
 				sdata->u.ibss.ssid_len))
 		goto put_bss;
 
-	/* process channel switch */
+	 
 	if (sdata->vif.bss_conf.csa_active ||
 	    ieee80211_ibss_process_chanswitch(sdata, elems, true))
 		goto put_bss;
 
-	/* same BSSID */
+	 
 	if (ether_addr_equal(cbss->bssid, sdata->u.ibss.bssid))
 		goto put_bss;
 
-	/* we use a fixed BSSID */
+	 
 	if (sdata->u.ibss.fixed_bssid)
 		goto put_bss;
 
 	if (ieee80211_have_rx_timestamp(rx_status)) {
-		/* time when timestamp field was received */
+		 
 		rx_timestamp =
 			ieee80211_calculate_rx_timestamp(local, rx_status,
 							 len + FCS_LEN, 24);
 	} else {
-		/*
-		 * second best option: get current TSF
-		 * (will return -1 if not supported)
-		 */
+		 
 		rx_timestamp = drv_get_tsf(local, sdata);
 	}
 
@@ -1208,10 +1166,7 @@ void ieee80211_ibss_rx_no_sta(struct ieee80211_sub_if_data *sdata,
 	enum nl80211_bss_scan_width scan_width;
 	int band;
 
-	/*
-	 * XXX: Consider removing the least recently used entry and
-	 * 	allow new one to be added.
-	 */
+	 
 	if (local->num_sta >= IEEE80211_IBSS_MAX_STA_ENTRIES) {
 		net_info_ratelimited("%s: No room for a new IBSS STA entry %pM\n",
 				    sdata->name, addr);
@@ -1238,7 +1193,7 @@ void ieee80211_ibss_rx_no_sta(struct ieee80211_sub_if_data *sdata,
 	if (!sta)
 		return;
 
-	/* make sure mandatory rates are always added */
+	 
 	sband = local->hw.wiphy->bands[band];
 	sta->sta.deflink.supp_rates[band] = supp_rates |
 			ieee80211_mandatory_rates(sband, scan_width);
@@ -1286,9 +1241,7 @@ static void ieee80211_ibss_sta_expire(struct ieee80211_sub_if_data *sdata)
 	mutex_unlock(&local->sta_mtx);
 }
 
-/*
- * This function is called with state == IEEE80211_IBSS_MLME_JOINED
- */
+ 
 
 static void ieee80211_sta_merge_ibss(struct ieee80211_sub_if_data *sdata)
 {
@@ -1332,9 +1285,7 @@ static void ieee80211_sta_create_ibss(struct ieee80211_sub_if_data *sdata)
 	if (ifibss->fixed_bssid) {
 		memcpy(bssid, ifibss->bssid, ETH_ALEN);
 	} else {
-		/* Generate random, not broadcast, locally administered BSSID. Mix in
-		 * own MAC address to make sure that devices that do not have proper
-		 * random number generator get different BSSID. */
+		 
 		get_random_bytes(bssid, ETH_ALEN);
 		for (i = 0; i < ETH_ALEN; i++)
 			bssid[i] ^= sdata->vif.addr[i];
@@ -1424,9 +1375,7 @@ ieee80211_ibss_setup_scan_channels(struct wiphy *wiphy,
 	return n_chan;
 }
 
-/*
- * This function is called with state == IEEE80211_IBSS_MLME_SEARCH
- */
+ 
 
 static void ieee80211_sta_find_ibss(struct ieee80211_sub_if_data *sdata)
 {
@@ -1473,9 +1422,7 @@ static void ieee80211_sta_find_ibss(struct ieee80211_sub_if_data *sdata)
 		return;
 	}
 
-	/* if a fixed bssid and a fixed freq have been provided create the IBSS
-	 * directly and do not waste time scanning
-	 */
+	 
 	if (ifibss->fixed_bssid && ifibss->fixed_channel) {
 		sdata_info(sdata, "Created IBSS using preconfigured BSSID %pM\n",
 			   bssid);
@@ -1486,7 +1433,7 @@ static void ieee80211_sta_find_ibss(struct ieee80211_sub_if_data *sdata)
 
 	ibss_dbg(sdata, "sta_find_ibss: did not try to join ibss\n");
 
-	/* Selected IBSS not found in current scan results - try to scan */
+	 
 	if (time_after(jiffies, ifibss->last_scan_completed +
 					IEEE80211_SCAN_INTERVAL)) {
 		struct ieee80211_channel *channels[8];
@@ -1564,11 +1511,11 @@ static void ieee80211_rx_mgmt_probe_req(struct ieee80211_sub_if_data *sdata,
 	if (pos[1] != 0 &&
 	    (pos[1] != ifibss->ssid_len ||
 	     memcmp(pos + 2, ifibss->ssid, ifibss->ssid_len))) {
-		/* Ignore ProbeReq for foreign SSID */
+		 
 		return;
 	}
 
-	/* Reply with ProbeResp */
+	 
 	skb = dev_alloc_skb(local->tx_headroom + presp->head_len);
 	if (!skb)
 		return;
@@ -1580,7 +1527,7 @@ static void ieee80211_rx_mgmt_probe_req(struct ieee80211_sub_if_data *sdata,
 	ibss_dbg(sdata, "Sending ProbeResp to %pM\n", mgmt->sa);
 	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT;
 
-	/* avoid excessive retries for probe request to wildcard SSIDs */
+	 
 	if (pos[1] == 0)
 		IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_CTL_NO_ACK;
 
@@ -1598,10 +1545,7 @@ void ieee80211_rx_mgmt_probe_beacon(struct ieee80211_sub_if_data *sdata,
 	BUILD_BUG_ON(offsetof(typeof(mgmt->u.probe_resp), variable) !=
 		     offsetof(typeof(mgmt->u.beacon), variable));
 
-	/*
-	 * either beacon or probe_resp but the variable field is at the
-	 * same offset
-	 */
+	 
 	baselen = (u8 *) mgmt->u.probe_resp.variable - (u8 *) mgmt;
 	if (baselen > len)
 		return;
@@ -1631,7 +1575,7 @@ void ieee80211_ibss_rx_queued_mgmt(struct ieee80211_sub_if_data *sdata,
 	sdata_lock(sdata);
 
 	if (!sdata->u.ibss.ssid_len)
-		goto mgmt_out; /* not ready to merge yet */
+		goto mgmt_out;  
 
 	switch (fc & IEEE80211_FCTL_STYPE) {
 	case IEEE80211_STYPE_PROBE_REQ:
@@ -1683,11 +1627,7 @@ void ieee80211_ibss_work(struct ieee80211_sub_if_data *sdata)
 
 	sdata_lock(sdata);
 
-	/*
-	 * Work could be scheduled after scan or similar
-	 * when we aren't even joined (or trying) with a
-	 * network.
-	 */
+	 
 	if (!ifibss->ssid_len)
 		goto out;
 
@@ -1739,7 +1679,7 @@ void ieee80211_ibss_setup_sdata(struct ieee80211_sub_if_data *sdata)
 			ieee80211_csa_connection_drop_work);
 }
 
-/* scan finished notification */
+ 
 void ieee80211_ibss_notify_scan_completed(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata;
@@ -1768,7 +1708,7 @@ int ieee80211_ibss_join(struct ieee80211_sub_if_data *sdata,
 	int ret;
 
 	if (params->chandef.chan->freq_offset) {
-		/* this may work, but is untested */
+		 
 		return -EOPNOTSUPP;
 	}
 
@@ -1806,7 +1746,7 @@ int ieee80211_ibss_join(struct ieee80211_sub_if_data *sdata,
 	sdata->u.ibss.basic_rates = params->basic_rates;
 	sdata->u.ibss.last_scan_completed = jiffies;
 
-	/* fix basic_rates if channel does not support these rates */
+	 
 	rate_flags = ieee80211_chandef_rate_flags(&params->chandef);
 	sband = local->hw.wiphy->bands[params->chandef.chan->band];
 	for (i = 0; i < sband->n_bitrates; i++) {
@@ -1839,15 +1779,7 @@ int ieee80211_ibss_join(struct ieee80211_sub_if_data *sdata,
 	memcpy(&sdata->u.ibss.ht_capa_mask, &params->ht_capa_mask,
 	       sizeof(sdata->u.ibss.ht_capa_mask));
 
-	/*
-	 * 802.11n-2009 9.13.3.1: In an IBSS, the HT Protection field is
-	 * reserved, but an HT STA shall protect HT transmissions as though
-	 * the HT Protection field were set to non-HT mixed mode.
-	 *
-	 * In an IBSS, the RIFS Mode field of the HT Operation element is
-	 * also reserved, but an HT STA shall operate as though this field
-	 * were set to 1.
-	 */
+	 
 
 	sdata->vif.bss_conf.ht_operation_mode |=
 		  IEEE80211_HT_OP_MODE_PROTECTION_NONHT_MIXED
@@ -1873,12 +1805,12 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
 	ifibss->ssid_len = 0;
 	eth_zero_addr(ifibss->bssid);
 
-	/* remove beacon */
+	 
 	kfree(sdata->u.ibss.ie);
 	sdata->u.ibss.ie = NULL;
 	sdata->u.ibss.ie_len = 0;
 
-	/* on the next join, re-program HT parameters */
+	 
 	memset(&ifibss->ht_capa, 0, sizeof(ifibss->ht_capa));
 	memset(&ifibss->ht_capa_mask, 0, sizeof(ifibss->ht_capa_mask));
 

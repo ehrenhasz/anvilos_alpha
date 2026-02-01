@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -538,7 +535,7 @@ static int qlcnic_sriov_setup_vf(struct qlcnic_adapter *adapter)
 		dev_warn(&adapter->pdev->dev,
 			 "Device does not support MSI interrupts\n");
 
-	/* compute and set default and max tx/sds rings */
+	 
 	qlcnic_set_tx_ring_count(adapter, QLCNIC_SINGLE_RING);
 	qlcnic_set_sds_ring_count(adapter, QLCNIC_SINGLE_RING);
 
@@ -1403,9 +1400,7 @@ retry:
 			(cmd->req.arg[0] & 0xffff), func);
 		rsp = QLCNIC_RCODE_TIMEOUT;
 
-		/* After adapter reset PF driver may take some time to
-		 * respond to VF's request. Retry request till maximum retries.
-		 */
+		 
 		if ((trans->req_hdr->cmd_op == QLCNIC_BC_CMD_CHANNEL_INIT) &&
 		    !qlcnic_sriov_retry_bc_cmd(adapter, trans))
 			goto retry;
@@ -1569,9 +1564,7 @@ void qlcnic_sriov_vf_set_multi(struct net_device *netdev)
 		}
 	}
 
-	/* configure unicast MAC address, if there is not sufficient space
-	 * to store all the unicast addresses then enable promiscuous mode
-	 */
+	 
 	if (netdev_uc_count(netdev) > ahw->max_uc_count) {
 		mode = VPORT_MISS_MODE_ACCEPT_ALL;
 	} else if (!netdev_uc_empty(netdev)) {
@@ -1775,7 +1768,7 @@ static int qlcnic_sriov_vf_handle_context_reset(struct qlcnic_adapter *adapter)
 
 	adapter->reset_ctx_cnt++;
 
-	/* Skip the context reset and check if FW is hung */
+	 
 	if (adapter->reset_ctx_cnt < 3) {
 		adapter->need_fw_reset = 1;
 		clear_bit(QLC_83XX_MBX_READY, &mbx->status);
@@ -1784,9 +1777,7 @@ static int qlcnic_sriov_vf_handle_context_reset(struct qlcnic_adapter *adapter)
 		return 0;
 	}
 
-	/* Check if number of resets exceed the threshold.
-	 * If it exceeds the threshold just fail the VF.
-	 */
+	 
 	if (adapter->reset_ctx_cnt > QLC_83XX_VF_RESET_FAIL_THRESH) {
 		clear_bit(QLC_83XX_MODULE_LOADED, &idc->status);
 		adapter->tx_timeo_cnt = 0;

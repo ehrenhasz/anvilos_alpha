@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Gemini power management controller
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Inspired by code from the SL3516 board support by Jason Lee
- * Inspired by code from Janos Laube <janos.dev@gmail.com>
- */
+
+ 
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
@@ -38,7 +32,7 @@ static irqreturn_t gemini_powerbutton_interrupt(int irq, void *data)
 	struct gemini_powercon *gpw = data;
 	u32 val;
 
-	/* ACK the IRQ */
+	 
 	val = readl(gpw->base + GEMINI_PWC_CTRLREG);
 	val |= GEMINI_CTRL_IRQ_CLR;
 	writel(val, gpw->base + GEMINI_PWC_CTRLREG);
@@ -47,11 +41,7 @@ static irqreturn_t gemini_powerbutton_interrupt(int irq, void *data)
 	val &= 0x70U;
 	switch (val) {
 	case GEMINI_STAT_CIR:
-		/*
-		 * We do not yet have a driver for the infrared
-		 * controller so it can cause spurious poweroff
-		 * events. Ignore those for now.
-		 */
+		 
 		dev_info(gpw->dev, "infrared poweroff - ignored\n");
 		break;
 	case GEMINI_STAT_RTC:
@@ -70,7 +60,7 @@ static irqreturn_t gemini_powerbutton_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* This callback needs this static local as it has void as argument */
+ 
 static struct gemini_powercon *gpw_poweroff;
 
 static void gemini_poweroff(void)
@@ -118,27 +108,22 @@ static int gemini_poweroff_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * Enable the power controller. This is crucial on Gemini
-	 * systems: if this is not done, pressing the power button
-	 * will result in unconditional poweroff without any warning.
-	 * This makes the kernel handle the poweroff.
-	 */
+	 
 	val = readl(gpw->base + GEMINI_PWC_CTRLREG);
 	val |= GEMINI_CTRL_ENABLE;
 	writel(val, gpw->base + GEMINI_PWC_CTRLREG);
 
-	/* Clear the IRQ */
+	 
 	val = readl(gpw->base + GEMINI_PWC_CTRLREG);
 	val |= GEMINI_CTRL_IRQ_CLR;
 	writel(val, gpw->base + GEMINI_PWC_CTRLREG);
 
-	/* Wait for this to clear */
+	 
 	val = readl(gpw->base + GEMINI_PWC_STATREG);
 	while (val & 0x70U)
 		val = readl(gpw->base + GEMINI_PWC_STATREG);
 
-	/* Clear the IRQ again */
+	 
 	val = readl(gpw->base + GEMINI_PWC_CTRLREG);
 	val |= GEMINI_CTRL_IRQ_CLR;
 	writel(val, gpw->base + GEMINI_PWC_CTRLREG);

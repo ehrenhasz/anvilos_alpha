@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Generic nexthop implementation
- *
- * Copyright (c) 2017-19 Cumulus Networks
- * Copyright (c) 2017-19 David Ahern <dsa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/nexthop.h>
 #include <linux/rtnetlink.h>
@@ -18,7 +14,7 @@
 #include <net/sock.h>
 
 #define NH_RES_DEFAULT_IDLE_TIMER	(120 * HZ)
-#define NH_RES_DEFAULT_UNBALANCED_TIMER	0	/* No forced rebalancing. */
+#define NH_RES_DEFAULT_UNBALANCED_TIMER	0	 
 
 static void remove_nexthop(struct net *net, struct nexthop *nh,
 			   struct nl_info *nlinfo);
@@ -258,15 +254,7 @@ nh_notifier_res_bucket_idle_timer_get(const struct nh_notifier_info *info,
 	struct nexthop *nh;
 	int err = 0;
 
-	/* When 'force' is false, nexthop bucket replacement is performed
-	 * because the bucket was deemed to be idle. In this case, capable
-	 * listeners can choose to perform an atomic replacement: The bucket is
-	 * only replaced if it is inactive. However, if the idle timer interval
-	 * is smaller than the interval in which a listener is querying
-	 * buckets' activity from the device, then atomic replacement should
-	 * not be tried. Pass the idle timer value to listeners, so that they
-	 * could determine which type of replacement to perform.
-	 */
+	 
 	if (force) {
 		*p_idle_timer_ms = 0;
 		return 0;
@@ -350,28 +338,7 @@ static int __call_nexthop_res_bucket_notifiers(struct net *net, u32 nhg_id,
 	return notifier_to_errno(err);
 }
 
-/* There are three users of RES_TABLE, and NHs etc. referenced from there:
- *
- * 1) a collection of callbacks for NH maintenance. This operates under
- *    RTNL,
- * 2) the delayed work that gradually balances the resilient table,
- * 3) and nexthop_select_path(), operating under RCU.
- *
- * Both the delayed work and the RTNL block are writers, and need to
- * maintain mutual exclusion. Since there are only two and well-known
- * writers for each table, the RTNL code can make sure it has exclusive
- * access thus:
- *
- * - Have the DW operate without locking;
- * - synchronously cancel the DW;
- * - do the writing;
- * - if the write was not actually a delete, call upkeep, which schedules
- *   DW again if necessary.
- *
- * The functions that are always called from the RTNL context use
- * rtnl_dereference(). The functions that can also be called from the DW do
- * a raw dereference and rely on the above mutual exclusion scheme.
- */
+ 
 #define nh_res_dereference(p) (rcu_dereference_raw(p))
 
 static int call_nexthop_res_bucket_notifiers(struct net *net, u32 nhg_id,
@@ -402,10 +369,7 @@ static int call_nexthop_res_table_notifiers(struct net *net, struct nexthop *nh,
 	if (nexthop_notifiers_is_empty(net))
 		return 0;
 
-	/* At this point, the nexthop buckets are still not populated. Only
-	 * emit a notification with the logical nexthops, so that a listener
-	 * could potentially veto it in case of unsupported configuration.
-	 */
+	 
 	nhg = rtnl_dereference(nh->nh_grp);
 	err = nh_notifier_mpath_info_init(&info, nhg);
 	if (err) {
@@ -570,7 +534,7 @@ static void nh_base_seq_inc(struct net *net)
 		;
 }
 
-/* no reference taken; rcu lock or rtnl must be held */
+ 
 struct nexthop *nexthop_find_by_id(struct net *net, u32 id)
 {
 	struct rb_node **pp, *parent = NULL, *next;
@@ -596,7 +560,7 @@ struct nexthop *nexthop_find_by_id(struct net *net, u32 id)
 }
 EXPORT_SYMBOL_GPL(nexthop_find_by_id);
 
-/* used for auto id allocation; called with rtnl held */
+ 
 static u32 nh_find_unused_id(struct net *net)
 {
 	u32 id_start = net->nexthop.last_id_allocated;
@@ -773,11 +737,11 @@ nla_put_failure:
 
 static size_t nh_nlmsg_size_grp_res(struct nh_group *nhg)
 {
-	return nla_total_size(0) +	/* NHA_RES_GROUP */
-		nla_total_size(2) +	/* NHA_RES_GROUP_BUCKETS */
-		nla_total_size(4) +	/* NHA_RES_GROUP_IDLE_TIMER */
-		nla_total_size(4) +	/* NHA_RES_GROUP_UNBALANCED_TIMER */
-		nla_total_size_64bit(8);/* NHA_RES_GROUP_UNBALANCED_TIME */
+	return nla_total_size(0) +	 
+		nla_total_size(2) +	 
+		nla_total_size(4) +	 
+		nla_total_size(4) +	 
+		nla_total_size_64bit(8); 
 }
 
 static size_t nh_nlmsg_size_grp(struct nexthop *nh)
@@ -785,7 +749,7 @@ static size_t nh_nlmsg_size_grp(struct nexthop *nh)
 	struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
 	size_t sz = sizeof(struct nexthop_grp) * nhg->num_nh;
 	size_t tot = nla_total_size(sz) +
-		nla_total_size(2); /* NHA_GROUP_TYPE */
+		nla_total_size(2);  
 
 	if (nhg->resilient)
 		tot += nh_nlmsg_size_grp_res(nhg);
@@ -798,19 +762,17 @@ static size_t nh_nlmsg_size_single(struct nexthop *nh)
 	struct nh_info *nhi = rtnl_dereference(nh->nh_info);
 	size_t sz;
 
-	/* covers NHA_BLACKHOLE since NHA_OIF and BLACKHOLE
-	 * are mutually exclusive
-	 */
-	sz = nla_total_size(4);  /* NHA_OIF */
+	 
+	sz = nla_total_size(4);   
 
 	switch (nhi->family) {
 	case AF_INET:
 		if (nhi->fib_nh.fib_nh_gw_family)
-			sz += nla_total_size(4);  /* NHA_GATEWAY */
+			sz += nla_total_size(4);   
 		break;
 
 	case AF_INET6:
-		/* NHA_GATEWAY */
+		 
 		if (nhi->fib6_nh.fib_nh_gw_family)
 			sz += nla_total_size(sizeof(const struct in6_addr));
 		break;
@@ -818,7 +780,7 @@ static size_t nh_nlmsg_size_single(struct nexthop *nh)
 
 	if (nhi->fib_nhc.nhc_lwtstate) {
 		sz += lwtunnel_get_encap_size(nhi->fib_nhc.nhc_lwtstate);
-		sz += nla_total_size(2);  /* NHA_ENCAP_TYPE */
+		sz += nla_total_size(2);   
 	}
 
 	return sz;
@@ -828,7 +790,7 @@ static size_t nh_nlmsg_size(struct nexthop *nh)
 {
 	size_t sz = NLMSG_ALIGN(sizeof(struct nhmsg));
 
-	sz += nla_total_size(4); /* NHA_ID */
+	sz += nla_total_size(4);  
 
 	if (nh->is_group)
 		sz += nh_nlmsg_size_grp(nh);
@@ -851,7 +813,7 @@ static void nexthop_notify(int event, struct nexthop *nh, struct nl_info *info)
 
 	err = nh_fill_node(skb, nh, event, info->portid, seq, nlflags);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in nh_nlmsg_size() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -877,7 +839,7 @@ nh_res_bucket_idle_point(const struct nh_res_table *res_table,
 {
 	unsigned long time = nh_res_bucket_used_time(bucket);
 
-	/* Bucket was not used since it was migrated. The idle time is now. */
+	 
 	if (time == bucket->migrated_time)
 		return now;
 
@@ -992,7 +954,7 @@ static bool valid_group_nh(struct nexthop *nh, unsigned int npaths,
 	if (nh->is_group) {
 		struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
 
-		/* Nesting groups within groups is not supported. */
+		 
 		if (nhg->hash_threshold) {
 			NL_SET_ERR_MSG(extack,
 				       "Hash-threshold group can not be a nexthop within a group");
@@ -1056,7 +1018,7 @@ static int nh_check_attr_group(struct net *net,
 		return -EINVAL;
 	}
 
-	/* convert len to number of nexthop ids */
+	 
 	len /= sizeof(*nhg);
 
 	nhg = nla_data(tb[NHA_GROUP]);
@@ -1194,9 +1156,7 @@ static struct nexthop *nexthop_select_path_hthr(struct nh_group *nhg, int hash)
 	for (i = 0; i < nhg->num_nh; ++i) {
 		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
 
-		/* nexthops always check if it is good and does
-		 * not rely on a sysctl for this behavior
-		 */
+		 
 		if (!nexthop_is_good_nh(nhge->nh))
 			continue;
 
@@ -1219,9 +1179,7 @@ static struct nexthop *nexthop_select_path_res(struct nh_group *nhg, int hash)
 	struct nh_res_bucket *bucket;
 	struct nh_grp_entry *nhge;
 
-	/* nexthop_select_path() is expected to return a non-NULL value, so
-	 * skip protocol validation and just hand out whatever there is.
-	 */
+	 
 	bucket = &res_table->nh_buckets[bucket_index];
 	nh_res_bucket_set_busy(bucket);
 	nhge = rcu_dereference(bucket->nh_entry);
@@ -1241,7 +1199,7 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
 	else if (nhg->resilient)
 		return nexthop_select_path_res(nhg, hash);
 
-	/* Unreachable. */
+	 
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(nexthop_select_path);
@@ -1293,12 +1251,7 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
 	struct nh_info *nhi;
 	bool is_fdb_nh;
 
-	/* fib6_src is unique to a fib6_info and limits the ability to cache
-	 * routes in fib6_nh within a nexthop that is potentially shared
-	 * across multiple fib entries. If the config wants to use source
-	 * routing it can not use nexthop objects. mlxsw also does not allow
-	 * fib6_src on routes.
-	 */
+	 
 	if (cfg && check_src_addr(&cfg->fc_src, extack) < 0)
 		return -EINVAL;
 
@@ -1328,9 +1281,7 @@ no_v4_nh:
 }
 EXPORT_SYMBOL_GPL(fib6_check_nexthop);
 
-/* if existing nexthop has ipv6 routes linked to it, need
- * to verify this new spec works with ipv6
- */
+ 
 static int fib6_check_nh_list(struct nexthop *old, struct nexthop *new,
 			      struct netlink_ext_ack *extack)
 {
@@ -1364,10 +1315,7 @@ static int nexthop_check_scope(struct nh_info *nhi, u8 scope,
 	return 0;
 }
 
-/* Invoked by fib add code to verify nexthop by id is ok with
- * config for prefix; parts of fib_check_nh not done when nexthop
- * object is used.
- */
+ 
 int fib_check_nexthop(struct nexthop *nh, u8 scope,
 		      struct netlink_ext_ack *extack)
 {
@@ -1390,7 +1338,7 @@ int fib_check_nexthop(struct nexthop *nh, u8 scope,
 			goto out;
 		}
 
-		/* all nexthops in a group have the same scope */
+		 
 		nhi = rtnl_dereference(nhg->nh_entries[0].nh->nh_info);
 		err = nexthop_check_scope(nhi, scope, extack);
 	} else {
@@ -1472,44 +1420,33 @@ static bool nh_res_bucket_should_migrate(struct nh_res_table *res_table,
 	unsigned long idle_point;
 
 	if (!bucket->occupied) {
-		/* The bucket is not occupied, its NHGE pointer is either
-		 * NULL or obsolete. We _have to_ migrate: set force.
-		 */
+		 
 		*force = true;
 		return true;
 	}
 
 	nhge = nh_res_dereference(bucket->nh_entry);
 
-	/* If the bucket is populated by an underweight or balanced
-	 * nexthop, do not migrate.
-	 */
+	 
 	if (!nh_res_nhge_is_ow(nhge))
 		return false;
 
-	/* At this point we know that the bucket is populated with an
-	 * overweight nexthop. It needs to be migrated to a new nexthop if
-	 * the idle timer of unbalanced timer expired.
-	 */
+	 
 
 	idle_point = nh_res_bucket_idle_point(res_table, bucket, now);
 	if (time_after_eq(now, idle_point)) {
-		/* The bucket is idle. We _can_ migrate: unset force. */
+		 
 		*force = false;
 		return true;
 	}
 
-	/* Unbalanced timer of 0 means "never force". */
+	 
 	if (res_table->unbalanced_timer) {
 		unsigned long unb_point;
 
 		unb_point = nh_res_table_unb_point(res_table);
 		if (time_after(now, unb_point)) {
-			/* The bucket is not idle, but the unbalanced timer
-			 * expired. We _can_ migrate, but set force anyway,
-			 * so that drivers know to ignore activity reports
-			 * from the HW.
-			 */
+			 
 			*force = true;
 			return true;
 		}
@@ -1534,11 +1471,7 @@ static bool nh_res_bucket_migrate(struct nh_res_table *res_table,
 					    struct nh_grp_entry,
 					    res.uw_nh_entry);
 	if (WARN_ON_ONCE(!new_nhge))
-		/* If this function is called, "bucket" is either not
-		 * occupied, or it belongs to a next hop that is
-		 * overweight. In either case, there ought to be a
-		 * corresponding underweight next hop.
-		 */
+		 
 		return false;
 
 	if (notify) {
@@ -1554,11 +1487,7 @@ static bool nh_res_bucket_migrate(struct nh_res_table *res_table,
 			pr_err_ratelimited("%s\n", extack._msg);
 			if (!force)
 				return false;
-			/* It is not possible to veto a forced replacement, so
-			 * just clear the hardware flags from the nexthop
-			 * bucket to indicate to user space that this bucket is
-			 * not correctly populated in hardware.
-			 */
+			 
 			bucket->nh_flags &= ~(RTNH_F_OFFLOAD | RTNH_F_TRAP);
 		}
 	}
@@ -1583,13 +1512,7 @@ static void nh_res_table_upkeep(struct nh_res_table *res_table,
 	unsigned long deadline;
 	u16 i;
 
-	/* Deadline is the next time that upkeep should be run. It is the
-	 * earliest time at which one of the buckets might be migrated.
-	 * Start at the most pessimistic estimate: either unbalanced_timer
-	 * from now, or if there is none, idle_timer from now. For each
-	 * encountered time point, call nh_res_time_set_deadline() to
-	 * refine the estimate.
-	 */
+	 
 	if (res_table->unbalanced_timer)
 		deadline = now + res_table->unbalanced_timer;
 	else
@@ -1605,12 +1528,7 @@ static void nh_res_table_upkeep(struct nh_res_table *res_table,
 						   notify_nl, force)) {
 				unsigned long idle_point;
 
-				/* A driver can override the migration
-				 * decision if the HW reports that the
-				 * bucket is actually not idle. Therefore
-				 * remark the bucket as busy again and
-				 * update the deadline.
-				 */
+				 
 				nh_res_bucket_set_busy(bucket);
 				idle_point = nh_res_bucket_idle_point(res_table,
 								      bucket,
@@ -1620,10 +1538,7 @@ static void nh_res_table_upkeep(struct nh_res_table *res_table,
 		}
 	}
 
-	/* If the group is still unbalanced, schedule the next upkeep to
-	 * either the deadline computed above, or the minimum deadline,
-	 * whichever comes later.
-	 */
+	 
 	if (!nh_res_table_is_balanced(res_table)) {
 		unsigned long now = jiffies;
 		unsigned long min_deadline;
@@ -1683,10 +1598,7 @@ static void nh_res_group_rebalance(struct nh_group *nhg,
 	}
 }
 
-/* Migrate buckets in res_table so that they reference NHGE's from NHG with
- * the right NH ID. Set those buckets that do not have a corresponding NHGE
- * entry in NHG as not occupied.
- */
+ 
 static void nh_res_table_migrate_buckets(struct nh_res_table *res_table,
 					 struct nh_group *nhg)
 {
@@ -1716,12 +1628,7 @@ static void nh_res_table_migrate_buckets(struct nh_res_table *res_table,
 static void replace_nexthop_grp_res(struct nh_group *oldg,
 				    struct nh_group *newg)
 {
-	/* For NH group replacement, the new NHG might only have a stub
-	 * hash table with 0 buckets, because the number of buckets was not
-	 * specified. For NH removal, oldg and newg both reference the same
-	 * res_table. So in any case, in the following, we want to work
-	 * with oldg->res_table.
-	 */
+	 
 	struct nh_res_table *old_res_table = rtnl_dereference(oldg->res_table);
 	unsigned long prev_unbalanced_since = old_res_table->unbalanced_since;
 	bool prev_has_uw = !list_empty(&old_res_table->uw_nh_entries);
@@ -1768,7 +1675,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
 	nhg = rtnl_dereference(nhp->nh_grp);
 	newg = nhg->spare;
 
-	/* last entry, keep it visible and remove the parent */
+	 
 	if (nhg->num_nh == 1) {
 		remove_nexthop(net, nhp, nlinfo);
 		return;
@@ -1781,13 +1688,13 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
 	newg->fdb_nh = nhg->fdb_nh;
 	newg->num_nh = nhg->num_nh;
 
-	/* copy old entries to new except the one getting removed */
+	 
 	nhges = nhg->nh_entries;
 	new_nhges = newg->nh_entries;
 	for (i = 0, j = 0; i < nhg->num_nh; ++i) {
 		struct nh_info *nhi;
 
-		/* current nexthop getting removed */
+		 
 		if (nhg->nh_entries[i].nh == nh) {
 			newg->num_nh--;
 			continue;
@@ -1815,9 +1722,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
 	list_del(&nhge->nh_list);
 	nexthop_put(nhge->nh);
 
-	/* Removal of a NH from a resilient group is notified through
-	 * bucket notifications.
-	 */
+	 
 	if (newg->hash_threshold) {
 		err = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, nhp,
 					     &extack);
@@ -1837,7 +1742,7 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
 	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list)
 		remove_nh_grp_entry(net, nhge, nlinfo);
 
-	/* make sure all see the newly published array before releasing rtnl */
+	 
 	synchronize_net();
 }
 
@@ -1862,7 +1767,7 @@ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
 	}
 }
 
-/* not called for nexthop replace */
+ 
 static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
 {
 	struct fib6_info *f6i, *tmp;
@@ -1876,9 +1781,9 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
 	if (do_flush)
 		fib_flush(net);
 
-	/* ip6_del_rt removes the entry from this list hence the _safe */
+	 
 	list_for_each_entry_safe(f6i, tmp, &nh->f6i_list, nh_list) {
-		/* __ip6_del_rt does a release, so do a hold here */
+		 
 		fib6_info_hold(f6i);
 		ipv6_stub->ip6_del_rt(net, f6i,
 				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
@@ -1908,7 +1813,7 @@ static void remove_nexthop(struct net *net, struct nexthop *nh,
 {
 	call_nexthop_notifiers(net, NEXTHOP_EVENT_DEL, nh, NULL);
 
-	/* remove from the tree */
+	 
 	rb_erase(&nh->rb_node, &net->nexthop.rb_root);
 
 	if (nlinfo)
@@ -1920,9 +1825,7 @@ static void remove_nexthop(struct net *net, struct nexthop *nh,
 	nexthop_put(nh);
 }
 
-/* if any FIB entries reference this nexthop, any dst entries
- * need to be regenerated
- */
+ 
 static void nh_rt_cache_flush(struct net *net, struct nexthop *nh,
 			      struct nexthop *replaced_nh)
 {
@@ -1936,9 +1839,7 @@ static void nh_rt_cache_flush(struct net *net, struct nexthop *nh,
 	list_for_each_entry(f6i, &nh->f6i_list, nh_list)
 		ipv6_stub->fib6_update_sernum(net, f6i);
 
-	/* if an IPv6 group was replaced, we have to release all old
-	 * dsts to make sure all refcounts are released
-	 */
+	 
 	if (!replaced_nh->is_group)
 		return;
 
@@ -1984,9 +1885,7 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
 		new_res_table = rtnl_dereference(newg->res_table);
 		old_res_table = rtnl_dereference(oldg->res_table);
 
-		/* Accept if num_nh_buckets was not given, but if it was
-		 * given, demand that the value be correct.
-		 */
+		 
 		if (cfg->nh_grp_res_has_num_buckets &&
 		    cfg->nh_grp_res_num_buckets !=
 		    old_res_table->num_nh_buckets) {
@@ -1994,12 +1893,7 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
 			return -EINVAL;
 		}
 
-		/* Emit a pre-replace notification so that listeners could veto
-		 * a potentially unsupported configuration. Otherwise,
-		 * individual bucket replacement notifications would need to be
-		 * vetoed, which is something that should only happen if the
-		 * bucket is currently active.
-		 */
+		 
 		err = call_nexthop_res_table_notifiers(net, new, extack);
 		if (err)
 			return err;
@@ -2017,13 +1911,13 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
 		rcu_assign_pointer(newg->spare->res_table, old_res_table);
 	}
 
-	/* update parents - used by nexthop code for cleanup */
+	 
 	for (i = 0; i < newg->num_nh; i++)
 		newg->nh_entries[i].nh_parent = old;
 
 	rcu_assign_pointer(old->nh_grp, newg);
 
-	/* Make sure concurrent readers are not using 'oldg' anymore. */
+	 
 	synchronize_net();
 
 	if (newg->resilient) {
@@ -2139,9 +2033,7 @@ static int replace_nexthop_single(struct net *net, struct nexthop *old,
 	if (err)
 		return err;
 
-	/* Hardware flags were set on 'old' as 'new' is not in the red-black
-	 * tree. Therefore, inherit the flags from 'old' to 'new'.
-	 */
+	 
 	new->nh_flags |= old->nh_flags & (RTNH_F_OFFLOAD | RTNH_F_TRAP);
 
 	oldi = rtnl_dereference(old->nh_info);
@@ -2159,7 +2051,7 @@ static int replace_nexthop_single(struct net *net, struct nexthop *old,
 	rcu_assign_pointer(old->nh_info, newi);
 	rcu_assign_pointer(new->nh_info, oldi);
 
-	/* Send a replace notification for all the groups using the nexthop. */
+	 
 	list_for_each_entry(nhge, &old->grp_list, nh_list) {
 		struct nexthop *nhp = nhge->nh_parent;
 
@@ -2169,9 +2061,7 @@ static int replace_nexthop_single(struct net *net, struct nexthop *old,
 			goto err_notify;
 	}
 
-	/* When replacing an IPv4 nexthop with an IPv6 nexthop, potentially
-	 * update IPv4 indication in all the groups using the nexthop.
-	 */
+	 
 	if (oldi->family == AF_INET && newi->family == AF_INET6) {
 		list_for_each_entry(nhge, &old->grp_list, nh_list) {
 			struct nexthop *nhp = nhge->nh_parent;
@@ -2208,10 +2098,7 @@ static void __nexthop_replace_notify(struct net *net, struct nexthop *nh,
 	if (!list_empty(&nh->fi_list)) {
 		struct fib_info *fi;
 
-		/* expectation is a few fib_info per nexthop and then
-		 * a lot of routes per fib_info. So mark the fib_info
-		 * and then walk the fib tables once
-		 */
+		 
 		list_for_each_entry(fi, &nh->fi_list, nh_list)
 			fi->nh_updated = true;
 
@@ -2225,10 +2112,7 @@ static void __nexthop_replace_notify(struct net *net, struct nexthop *nh,
 		ipv6_stub->fib6_rt_update(net, f6i, info);
 }
 
-/* send RTM_NEWROUTE with REPLACE flag set for all FIB entries
- * linked to this nexthop and for all groups that the nexthop
- * is a member of
- */
+ 
 static void nexthop_replace_notify(struct net *net, struct nexthop *nh,
 				   struct nl_info *info)
 {
@@ -2248,9 +2132,7 @@ static int replace_nexthop(struct net *net, struct nexthop *old,
 	struct nh_grp_entry *nhge;
 	int err;
 
-	/* check that existing FIB entries are ok with the
-	 * new nexthop definition
-	 */
+	 
 	err = fib_check_nh_list(old, new, extack);
 	if (err)
 		return err;
@@ -2266,9 +2148,7 @@ static int replace_nexthop(struct net *net, struct nexthop *old,
 	}
 
 	list_for_each_entry(nhge, &old->grp_list, nh_list) {
-		/* if new nexthop is a blackhole, any groups using this
-		 * nexthop cannot have more than 1 path
-		 */
+		 
 		if (new_is_reject &&
 		    nexthop_num_path(nhge->nh_parent) > 1) {
 			NL_SET_ERR_MSG(extack, "Blackhole nexthop can not be a member of a group with more than one path");
@@ -2299,7 +2179,7 @@ static int replace_nexthop(struct net *net, struct nexthop *old,
 	return err;
 }
 
-/* called with rtnl_lock held */
+ 
 static int insert_nexthop(struct net *net, struct nexthop *new_nh,
 			  struct nh_config *cfg, struct netlink_ext_ack *extack)
 {
@@ -2329,12 +2209,12 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
 		} else if (replace) {
 			rc = replace_nexthop(net, nh, new_nh, cfg, extack);
 			if (!rc) {
-				new_nh = nh; /* send notification with old nh */
+				new_nh = nh;  
 				replace_notify = 1;
 			}
 			goto out;
 		} else {
-			/* id already exists and not a replace */
+			 
 			goto out;
 		}
 	}
@@ -2352,9 +2232,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
 		if (nhg->resilient) {
 			res_table = rtnl_dereference(nhg->res_table);
 
-			/* Not passing the number of buckets is OK when
-			 * replacing, but not when creating a new group.
-			 */
+			 
 			if (!cfg->nh_grp_res_has_num_buckets) {
 				NL_SET_ERR_MSG(extack, "Number of buckets not specified for nexthop group insertion");
 				rc = -EINVAL;
@@ -2363,9 +2241,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
 
 			nh_res_group_rebalance(nhg, res_table);
 
-			/* Do not send bucket notifications, we do full
-			 * notification below.
-			 */
+			 
 			nh_res_table_upkeep(res_table, false, false);
 		}
 	}
@@ -2373,9 +2249,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
 	rb_link_node_rcu(&new_nh->rb_node, parent, pp);
 	rb_insert_color(&new_nh->rb_node, root);
 
-	/* The initial insertion is a full notification for hash-threshold as
-	 * well as resilient groups.
-	 */
+	 
 	rc = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new_nh, extack);
 	if (rc)
 		rb_erase(&new_nh->rb_node, &net->nexthop.rb_root);
@@ -2392,8 +2266,8 @@ out:
 	return rc;
 }
 
-/* rtnl */
-/* remove all nexthops tied to a device being deleted */
+ 
+ 
 static void nexthop_flush_dev(struct net_device *dev, unsigned long event)
 {
 	unsigned int hash = nh_dev_hashfn(dev->ifindex);
@@ -2414,7 +2288,7 @@ static void nexthop_flush_dev(struct net_device *dev, unsigned long event)
 	}
 }
 
-/* rtnl; called when net namespace is deleted */
+ 
 static void flush_all_nexthops(struct net *net)
 {
 	struct rb_root *root = &net->nexthop.rb_root;
@@ -2454,7 +2328,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* spare group used for removals */
+	 
 	nhg->spare = nexthop_grp_alloc(num_nh);
 	if (!nhg->spare) {
 		kfree(nhg);
@@ -2552,7 +2426,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
 	if (nhi->fdb_nh)
 		goto out;
 
-	/* sets nh_dev if successful */
+	 
 	err = fib_check_nh(net, fib_nh, tb_id, 0, extack);
 	if (!err) {
 		nh->nh_flags = fib_nh->fib_nh_flags;
@@ -2585,11 +2459,11 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
 	if (!ipv6_addr_any(&cfg->gw.ipv6))
 		fib6_cfg.fc_flags |= RTF_GATEWAY;
 
-	/* sets nh_dev if successful */
+	 
 	err = ipv6_stub->fib6_nh_init(net, fib6_nh, &fib6_cfg, GFP_KERNEL,
 				      extack);
 	if (err) {
-		/* IPv6 is not enabled, don't call fib6_nh_release */
+		 
 		if (err == -EAFNOSUPPORT)
 			goto out;
 		ipv6_stub->fib6_nh_release(fib6_nh);
@@ -2647,7 +2521,7 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
 		return ERR_PTR(err);
 	}
 
-	/* add the entry to the device based hash */
+	 
 	if (!nhi->fdb_nh)
 		nexthop_devhash_add(net, nhi);
 
@@ -2656,7 +2530,7 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
 	return nh;
 }
 
-/* called with rtnl lock held */
+ 
 static struct nexthop *nexthop_add(struct net *net, struct nh_config *cfg,
 				   struct netlink_ext_ack *extack)
 {
@@ -2850,7 +2724,7 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
 			err = rtm_to_nh_config_grp_res(tb[NHA_RES_GROUP],
 						       cfg, extack);
 
-		/* no other attributes should be set */
+		 
 		goto out;
 	}
 
@@ -2915,7 +2789,7 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
 			goto out;
 		}
 	} else {
-		/* device only nexthop (no gateway) */
+		 
 		if (cfg->nh_flags & RTNH_F_ONLINK) {
 			NL_SET_ERR_MSG(extack,
 				       "ONLINK flag can not be set for nexthop without a gateway");
@@ -2947,7 +2821,7 @@ out:
 	return err;
 }
 
-/* rtnl */
+ 
 static int rtm_new_nexthop(struct sk_buff *skb, struct nlmsghdr *nlh,
 			   struct netlink_ext_ack *extack)
 {
@@ -3006,7 +2880,7 @@ static int nh_valid_get_del_req(const struct nlmsghdr *nlh, u32 *id,
 	return __nh_valid_get_del_req(nlh, tb, id, extack);
 }
 
-/* rtnl */
+ 
 static int rtm_del_nexthop(struct sk_buff *skb, struct nlmsghdr *nlh,
 			   struct netlink_ext_ack *extack)
 {
@@ -3033,7 +2907,7 @@ static int rtm_del_nexthop(struct sk_buff *skb, struct nlmsghdr *nlh,
 	return 0;
 }
 
-/* rtnl */
+ 
 static int rtm_get_nexthop(struct sk_buff *in_skb, struct nlmsghdr *nlh,
 			   struct netlink_ext_ack *extack)
 {
@@ -3226,7 +3100,7 @@ static int rtm_dump_nexthop_cb(struct sk_buff *skb, struct netlink_callback *cb,
 			    cb->nlh->nlmsg_seq, NLM_F_MULTI);
 }
 
-/* rtnl */
+ 
 static int rtm_dump_nexthop(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct rtm_dump_nh_ctx *ctx = rtm_dump_nh_ctx(cb);
@@ -3412,7 +3286,7 @@ static int rtm_dump_nexthop_bucket_cb(struct sk_buff *skb,
 	return rtm_dump_nexthop_bucket_nh(skb, cb, nh, dd);
 }
 
-/* rtnl */
+ 
 static int rtm_dump_nexthop_bucket(struct sk_buff *skb,
 				   struct netlink_callback *cb)
 {
@@ -3500,7 +3374,7 @@ static int nh_valid_get_bucket_req(const struct nlmsghdr *nlh,
 	return 0;
 }
 
-/* rtnl */
+ 
 static int rtm_get_nexthop_bucket(struct sk_buff *in_skb, struct nlmsghdr *nlh,
 				  struct netlink_ext_ack *extack)
 {
@@ -3565,7 +3439,7 @@ static void nexthop_sync_mtu(struct net_device *dev, u32 orig_mtu)
 	}
 }
 
-/* rtnl */
+ 
 static int nh_netdev_event(struct notifier_block *this,
 			   unsigned long event, void *ptr)
 {
@@ -3720,9 +3594,7 @@ void nexthop_res_grp_activity_update(struct net *net, u32 id, u16 num_buckets,
 	if (!nhg->resilient)
 		goto out;
 
-	/* Instead of silently ignoring some buckets, demand that the sizes
-	 * be the same.
-	 */
+	 
 	res_table = rcu_dereference(nhg->res_table);
 	if (num_buckets != res_table->num_nh_buckets)
 		goto out;

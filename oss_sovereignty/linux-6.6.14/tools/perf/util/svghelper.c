@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * svghelper.c - helper functions for outputting svg
- *
- * (C) Copyright 2009 Intel Corporation
- *
- * Authors:
- *     Arjan van de Ven <arjan@linux.intel.com>
- */
+
+ 
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -63,10 +56,7 @@ static double time2pixels(u64 __time)
 	return X;
 }
 
-/*
- * Round text sizes so that the svg viewer only needs a discrete
- * number of renderings of the font
- */
+ 
 static double round_text_size(double size)
 {
 	int loop = 100;
@@ -95,10 +85,7 @@ void open_svg(const char *filename, int cpus, int rows, u64 start, u64 end)
 	first_time = first_time / 100000000 * 100000000;
 	last_time = end;
 
-	/*
-	 * if the recording is short, we default to a width of 1000, but
-	 * for longer recordings we want at least 200 units of width per second
-	 */
+	 
 	new_width = (last_time - first_time) / 5000000;
 
 	if (new_width > svg_page_width)
@@ -273,10 +260,10 @@ static char *time_to_string(u64 duration)
 
 	text[0] = 0;
 
-	if (duration < NSEC_PER_USEC) /* less than 1 usec */
+	if (duration < NSEC_PER_USEC)  
 		return text;
 
-	if (duration < NSEC_PER_MSEC) { /* less than 1 msec */
+	if (duration < NSEC_PER_MSEC) {  
 		sprintf(text, "%.1f us", duration / (double)NSEC_PER_USEC);
 		return text;
 	}
@@ -296,7 +283,7 @@ void svg_waiting(int Yslot, int cpu, u64 start, u64 end, const char *backtrace)
 
 	style = "waiting";
 
-	if (end-start > 10 * NSEC_PER_MSEC) /* 10 msec */
+	if (end-start > 10 * NSEC_PER_MSEC)  
 		style = "WAITING";
 
 	text = time_to_string(end-start);
@@ -327,7 +314,7 @@ static char *cpu_model(void)
 	FILE *file;
 
 	cpu_m[0] = 0;
-	/* CPU type */
+	 
 	file = fopen("/proc/cpuinfo", "r");
 	if (file) {
 		while (fgets(buf, 255, file)) {
@@ -339,7 +326,7 @@ static char *cpu_model(void)
 		fclose(file);
 	}
 
-	/* CPU type */
+	 
 	file = fopen("/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies", "r");
 	if (file) {
 		while (fgets(buf, 255, file)) {
@@ -455,7 +442,7 @@ static char *HzToHuman(unsigned long hz)
 
 	Hz = hz;
 
-	/* default: just put the Number in */
+	 
 	sprintf(buffer, "%9lli", Hz);
 
 	if (Hz > 1000)

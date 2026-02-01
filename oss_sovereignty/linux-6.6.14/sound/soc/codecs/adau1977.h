@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ADAU1977/ADAU1978/ADAU1979 driver
- *
- * Copyright 2014 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_CODECS_ADAU1977_H__
 #define __SOUND_SOC_CODECS_ADAU1977_H__

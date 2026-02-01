@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -45,10 +43,10 @@
 
 #define	PM8821_BLOCKS_PER_MASTER	7
 
-#define	PM_IRQF_LVL_SEL			0x01	/* level select */
-#define	PM_IRQF_MASK_FE			0x02	/* mask falling edge */
-#define	PM_IRQF_MASK_RE			0x04	/* mask rising edge */
-#define	PM_IRQF_CLR			0x08	/* clear interrupt */
+#define	PM_IRQF_LVL_SEL			0x01	 
+#define	PM_IRQF_MASK_FE			0x02	 
+#define	PM_IRQF_MASK_RE			0x04	 
+#define	PM_IRQF_CLR			0x08	 
 #define	PM_IRQF_BITS_MASK		0x70
 #define	PM_IRQF_BITS_SHIFT		4
 #define	PM_IRQF_WRITE			0x80
@@ -56,8 +54,8 @@
 #define	PM_IRQF_MASK_ALL		(PM_IRQF_MASK_FE | \
 					PM_IRQF_MASK_RE)
 
-#define REG_HWREV		0x002  /* PMIC4 revision */
-#define REG_HWREV_2		0x0E8  /* PMIC4 revision 2 */
+#define REG_HWREV		0x002   
+#define REG_HWREV_2		0x0E8   
 
 #define PM8XXX_NR_IRQS		256
 #define PM8821_NR_IRQS		112
@@ -75,7 +73,7 @@ struct pm_irq_chip {
 	unsigned int		num_blocks;
 	unsigned int		num_masters;
 	const struct pm_irq_data *pm_irq_data;
-	/* MUST BE AT THE END OF THIS STRUCT */
+	 
 	u8			config[];
 };
 
@@ -136,7 +134,7 @@ static int pm8xxx_irq_block_handler(struct pm_irq_chip *chip, int block)
 		return 0;
 	}
 
-	/* Check IRQ bits */
+	 
 	for (i = 0; i < 8; i++) {
 		if (bits & (1 << i)) {
 			pmirq = block * 8 + i;
@@ -164,7 +162,7 @@ static int pm8xxx_irq_master_handler(struct pm_irq_chip *chip, int master)
 
 	for (i = 0; i < 8; i++)
 		if (blockbits & (1 << i)) {
-			block_number = master * 8 + i;	/* block # */
+			block_number = master * 8 + i;	 
 			ret |= pm8xxx_irq_block_handler(chip, block_number);
 		}
 	return ret;
@@ -182,10 +180,10 @@ static irqreturn_t pm8xxx_irq_handler(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* on pm8xxx series masters start from bit 1 of the root */
+	 
 	masters = root >> 1;
 
-	/* Read allowed masters for blocks. */
+	 
 	for (i = 0; i < chip->num_masters; i++)
 		if (masters & (1 << i))
 			pm8xxx_irq_master_handler(chip, i);
@@ -206,10 +204,10 @@ static void pm8821_irq_block_handler(struct pm_irq_chip *chip,
 		return;
 	}
 
-	/* Convert block offset to global block number */
+	 
 	block += (master * PM8821_BLOCKS_PER_MASTER) - 1;
 
-	/* Check IRQ bits */
+	 
 	for (i = 0; i < 8; i++) {
 		if (bits & BIT(i)) {
 			pmirq = block * 8 + i;
@@ -241,11 +239,11 @@ static irqreturn_t pm8821_irq_handler(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* bits 1 through 7 marks the first 7 blocks in master 0 */
+	 
 	if (master & GENMASK(7, 1))
 		pm8821_irq_master_handler(chip, 0, master);
 
-	/* bit 0 marks if master 1 contains any bits */
+	 
 	if (!(master & BIT(0)))
 		return IRQ_NONE;
 
@@ -529,7 +527,7 @@ static int pm8xxx_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Read PMIC chip revision */
+	 
 	rc = regmap_read(regmap, REG_HWREV, &val);
 	if (rc) {
 		pr_err("Failed to read hw rev reg %d:rc=%d\n", REG_HWREV, rc);
@@ -537,7 +535,7 @@ static int pm8xxx_probe(struct platform_device *pdev)
 	}
 	pr_info("PMIC revision 1: %02X\n", val);
 
-	/* Read PMIC chip revision 2 */
+	 
 	rc = regmap_read(regmap, REG_HWREV_2, &val);
 	if (rc) {
 		pr_err("Failed to read hw rev 2 reg %d:rc=%d\n",

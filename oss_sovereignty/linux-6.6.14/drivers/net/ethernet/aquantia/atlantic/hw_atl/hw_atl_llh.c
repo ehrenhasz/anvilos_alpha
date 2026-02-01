@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_llh.c: Definitions of bitfield and register access functions for
- * Atlantic registers.
- */
+ 
+
+ 
 
 #include "hw_atl_llh.h"
 #include "hw_atl_llh_internal.h"
@@ -57,7 +51,7 @@ u32 hw_atl_ts_data_get(struct aq_hw_s *aq_hw)
 				  HW_ATL_TS_DATA_OUT_SHIFT);
 }
 
-/* global */
+ 
 void hw_atl_reg_glb_cpu_sem_set(struct aq_hw_s *aq_hw, u32 glb_cpu_sem,
 				u32 semaphore)
 {
@@ -96,7 +90,7 @@ u32 hw_atl_reg_glb_mif_id_get(struct aq_hw_s *aq_hw)
 	return aq_hw_read_reg(aq_hw, HW_ATL_GLB_MIF_ID_ADR);
 }
 
-/* stats */
+ 
 u32 hw_atl_rpb_rx_dma_drop_pkt_cnt_get(struct aq_hw_s *aq_hw)
 {
 	return aq_hw_read_reg(aq_hw, HW_ATL_RPB_RX_DMA_DROP_PKT_CNT_ADR);
@@ -122,7 +116,7 @@ u64 hw_atl_stats_tx_dma_good_pkt_counter_get(struct aq_hw_s *aq_hw)
 	return aq_hw_read_reg64(aq_hw, HW_ATL_STATS_TX_DMA_GOOD_PKT_COUNTERLSW);
 }
 
-/* interrupt */
+ 
 void hw_atl_itr_irq_auto_masklsw_set(struct aq_hw_s *aq_hw,
 				     u32 irq_auto_masklsw)
 {
@@ -132,7 +126,7 @@ void hw_atl_itr_irq_auto_masklsw_set(struct aq_hw_s *aq_hw,
 void hw_atl_itr_irq_map_en_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_rx,
 				  u32 rx)
 {
-/* register address for bitfield imr_rx{r}_en */
+ 
 	static u32 itr_imr_rxren_adr[32] = {
 			0x00002100U, 0x00002100U, 0x00002104U, 0x00002104U,
 			0x00002108U, 0x00002108U, 0x0000210CU, 0x0000210CU,
@@ -144,7 +138,7 @@ void hw_atl_itr_irq_map_en_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_rx,
 			0x00002138U, 0x00002138U, 0x0000213CU, 0x0000213CU
 		};
 
-/* bitmask for bitfield imr_rx{r}_en */
+ 
 	static u32 itr_imr_rxren_msk[32] = {
 			0x00008000U, 0x00000080U, 0x00008000U, 0x00000080U,
 			0x00008000U, 0x00000080U, 0x00008000U, 0x00000080U,
@@ -156,7 +150,7 @@ void hw_atl_itr_irq_map_en_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_rx,
 			0x00008000U, 0x00000080U, 0x00008000U, 0x00000080U
 		};
 
-/* lower bit position of bitfield imr_rx{r}_en */
+ 
 	static u32 itr_imr_rxren_shift[32] = {
 			15U, 7U, 15U, 7U, 15U, 7U, 15U, 7U,
 			15U, 7U, 15U, 7U, 15U, 7U, 15U, 7U,
@@ -173,7 +167,7 @@ void hw_atl_itr_irq_map_en_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_rx,
 void hw_atl_itr_irq_map_en_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_tx,
 				  u32 tx)
 {
-/* register address for bitfield imr_tx{t}_en */
+ 
 	static u32 itr_imr_txten_adr[32] = {
 			0x00002100U, 0x00002100U, 0x00002104U, 0x00002104U,
 			0x00002108U, 0x00002108U, 0x0000210CU, 0x0000210CU,
@@ -185,7 +179,7 @@ void hw_atl_itr_irq_map_en_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_tx,
 			0x00002138U, 0x00002138U, 0x0000213CU, 0x0000213CU
 		};
 
-/* bitmask for bitfield imr_tx{t}_en */
+ 
 	static u32 itr_imr_txten_msk[32] = {
 			0x80000000U, 0x00800000U, 0x80000000U, 0x00800000U,
 			0x80000000U, 0x00800000U, 0x80000000U, 0x00800000U,
@@ -197,7 +191,7 @@ void hw_atl_itr_irq_map_en_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_tx,
 			0x80000000U, 0x00800000U, 0x80000000U, 0x00800000U
 		};
 
-/* lower bit position of bitfield imr_tx{t}_en */
+ 
 	static u32 itr_imr_txten_shift[32] = {
 			31U, 23U, 31U, 23U, 31U, 23U, 31U, 23U,
 			31U, 23U, 31U, 23U, 31U, 23U, 31U, 23U,
@@ -213,7 +207,7 @@ void hw_atl_itr_irq_map_en_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_en_tx,
 
 void hw_atl_itr_irq_map_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_rx, u32 rx)
 {
-/* register address for bitfield imr_rx{r}[4:0] */
+ 
 	static u32 itr_imr_rxr_adr[32] = {
 			0x00002100U, 0x00002100U, 0x00002104U, 0x00002104U,
 			0x00002108U, 0x00002108U, 0x0000210CU, 0x0000210CU,
@@ -225,7 +219,7 @@ void hw_atl_itr_irq_map_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_rx, u32 rx)
 			0x00002138U, 0x00002138U, 0x0000213CU, 0x0000213CU
 		};
 
-/* bitmask for bitfield imr_rx{r}[4:0] */
+ 
 	static u32 itr_imr_rxr_msk[32] = {
 			0x00001f00U, 0x0000001FU, 0x00001F00U, 0x0000001FU,
 			0x00001f00U, 0x0000001FU, 0x00001F00U, 0x0000001FU,
@@ -237,7 +231,7 @@ void hw_atl_itr_irq_map_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_rx, u32 rx)
 			0x00001f00U, 0x0000001FU, 0x00001F00U, 0x0000001FU
 		};
 
-/* lower bit position of bitfield imr_rx{r}[4:0] */
+ 
 	static u32 itr_imr_rxr_shift[32] = {
 			8U, 0U, 8U, 0U, 8U, 0U, 8U, 0U,
 			8U, 0U, 8U, 0U, 8U, 0U, 8U, 0U,
@@ -253,7 +247,7 @@ void hw_atl_itr_irq_map_rx_set(struct aq_hw_s *aq_hw, u32 irq_map_rx, u32 rx)
 
 void hw_atl_itr_irq_map_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_tx, u32 tx)
 {
-/* register address for bitfield imr_tx{t}[4:0] */
+ 
 	static u32 itr_imr_txt_adr[32] = {
 			0x00002100U, 0x00002100U, 0x00002104U, 0x00002104U,
 			0x00002108U, 0x00002108U, 0x0000210CU, 0x0000210CU,
@@ -265,7 +259,7 @@ void hw_atl_itr_irq_map_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_tx, u32 tx)
 			0x00002138U, 0x00002138U, 0x0000213CU, 0x0000213CU
 		};
 
-/* bitmask for bitfield imr_tx{t}[4:0] */
+ 
 	static u32 itr_imr_txt_msk[32] = {
 			0x1f000000U, 0x001F0000U, 0x1F000000U, 0x001F0000U,
 			0x1f000000U, 0x001F0000U, 0x1F000000U, 0x001F0000U,
@@ -277,7 +271,7 @@ void hw_atl_itr_irq_map_tx_set(struct aq_hw_s *aq_hw, u32 irq_map_tx, u32 tx)
 			0x1f000000U, 0x001F0000U, 0x1F000000U, 0x001F0000U
 		};
 
-/* lower bit position of bitfield imr_tx{t}[4:0] */
+ 
 	static u32 itr_imr_txt_shift[32] = {
 			24U, 16U, 24U, 16U, 24U, 16U, 24U, 16U,
 			24U, 16U, 24U, 16U, 24U, 16U, 24U, 16U,
@@ -332,13 +326,13 @@ void hw_atl_itr_res_irq_set(struct aq_hw_s *aq_hw, u32 res_irq)
 			    HW_ATL_ITR_RES_SHIFT, res_irq);
 }
 
-/* set RSC interrupt */
+ 
 void hw_atl_itr_rsc_en_set(struct aq_hw_s *aq_hw, u32 enable)
 {
 	aq_hw_write_reg(aq_hw, HW_ATL_ITR_RSC_EN_ADR, enable);
 }
 
-/* set RSC delay */
+ 
 void hw_atl_itr_rsc_delay_set(struct aq_hw_s *aq_hw, u32 delay)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_ITR_RSC_DELAY_ADR,
@@ -347,7 +341,7 @@ void hw_atl_itr_rsc_delay_set(struct aq_hw_s *aq_hw, u32 delay)
 			    delay);
 }
 
-/* rdm */
+ 
 void hw_atl_rdm_cpu_id_set(struct aq_hw_s *aq_hw, u32 cpuid, u32 dca)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_RDM_DCADCPUID_ADR(dca),
@@ -476,7 +470,7 @@ void hw_atl_rdm_rdm_intr_moder_en_set(struct aq_hw_s *aq_hw,
 			    rdm_intr_moder_en);
 }
 
-/* reg */
+ 
 void hw_atl_reg_gen_irq_map_set(struct aq_hw_s *aq_hw, u32 gen_intr_map,
 				u32 regidx)
 {
@@ -600,7 +594,7 @@ void hw_atl_reg_tx_intr_moder_ctrl_set(struct aq_hw_s *aq_hw,
 			tx_intr_moderation_ctl);
 }
 
-/* RPB: rx packet buffer */
+ 
 void hw_atl_rpb_dma_sys_lbk_set(struct aq_hw_s *aq_hw, u32 dma_sys_lbk)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_RPB_DMA_SYS_LBK_ADR,
@@ -704,7 +698,7 @@ void hw_atl_rpb_rx_xoff_en_per_tc_set(struct aq_hw_s *aq_hw,
 			    rx_xoff_en_per_tc);
 }
 
-/* rpf */
+ 
 
 void hw_atl_rpfl2broadcast_count_threshold_set(struct aq_hw_s *aq_hw,
 					       u32 l2broadcast_count_threshold)
@@ -801,19 +795,19 @@ void hw_atl_rpfl2_accept_all_mc_packets_set(struct aq_hw_s *aq_hw,
 void hw_atl_rpf_rpb_user_priority_tc_map_set(struct aq_hw_s *aq_hw,
 					     u32 user_priority, u32 tc)
 {
-/* register address for bitfield rx_tc_up{t}[2:0] */
+ 
 	static u32 rpf_rpb_rx_tc_upt_adr[8] = {
 			0x000054c4U, 0x000054C4U, 0x000054C4U, 0x000054C4U,
 			0x000054c4U, 0x000054C4U, 0x000054C4U, 0x000054C4U
 		};
 
-/* bitmask for bitfield rx_tc_up{t}[2:0] */
+ 
 	static u32 rpf_rpb_rx_tc_upt_msk[8] = {
 			0x00000007U, 0x00000070U, 0x00000700U, 0x00007000U,
 			0x00070000U, 0x00700000U, 0x07000000U, 0x70000000U
 		};
 
-/* lower bit position of bitfield rx_tc_up{t}[2:0] */
+ 
 	static u32 rpf_rpb_rx_tc_upt_shft[8] = {
 			0U, 4U, 8U, 12U, 16U, 20U, 24U, 28U
 		};
@@ -1069,7 +1063,7 @@ void hw_atl_rpf_l4_dpd_set(struct aq_hw_s *aq_hw, u32 val, u32 filter)
 			    HW_ATL_RPF_L4_DPD_SHIFT, val);
 }
 
-/* RPO: rx packet offload */
+ 
 void hw_atl_rpo_ipv4header_crc_offload_en_set(struct aq_hw_s *aq_hw,
 					      u32 ipv4header_crc_offload_en)
 {
@@ -1163,7 +1157,7 @@ void hw_atl_rpo_lro_max_num_of_descriptors_set(struct aq_hw_s *aq_hw,
 					       u32 lro_max_number_of_descriptors,
 					       u32 lro)
 {
-/* Register address for bitfield lro{L}_des_max[1:0] */
+ 
 	static u32 rpo_lro_ldes_max_adr[32] = {
 			0x000055A0U, 0x000055A0U, 0x000055A0U, 0x000055A0U,
 			0x000055A0U, 0x000055A0U, 0x000055A0U, 0x000055A0U,
@@ -1175,7 +1169,7 @@ void hw_atl_rpo_lro_max_num_of_descriptors_set(struct aq_hw_s *aq_hw,
 			0x000055ACU, 0x000055ACU, 0x000055ACU, 0x000055ACU
 		};
 
-/* Bitmask for bitfield lro{L}_des_max[1:0] */
+ 
 	static u32 rpo_lro_ldes_max_msk[32] = {
 			0x00000003U, 0x00000030U, 0x00000300U, 0x00003000U,
 			0x00030000U, 0x00300000U, 0x03000000U, 0x30000000U,
@@ -1187,7 +1181,7 @@ void hw_atl_rpo_lro_max_num_of_descriptors_set(struct aq_hw_s *aq_hw,
 			0x00030000U, 0x00300000U, 0x03000000U, 0x30000000U
 		};
 
-/* Lower bit position of bitfield lro{L}_des_max[1:0] */
+ 
 	static u32 rpo_lro_ldes_max_shift[32] = {
 			0U, 4U, 8U, 12U, 16U, 20U, 24U, 28U,
 			0U, 4U, 8U, 12U, 16U, 20U, 24U, 28U,
@@ -1228,7 +1222,7 @@ void hw_atl_rpo_lro_max_coalescing_interval_set(struct aq_hw_s *aq_hw,
 			    lro_max_coal_interval);
 }
 
-/* rx */
+ 
 void hw_atl_rx_rx_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 rx_reg_res_dis)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_RX_REG_RES_DSBL_ADR,
@@ -1237,7 +1231,7 @@ void hw_atl_rx_rx_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 rx_reg_res_dis)
 			    rx_reg_res_dis);
 }
 
-/* tdm */
+ 
 void hw_atl_tdm_cpu_id_set(struct aq_hw_s *aq_hw, u32 cpuid, u32 dca)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_TDM_DCADCPUID_ADR(dca),
@@ -1326,7 +1320,7 @@ void hw_atl_tdm_tdm_intr_moder_en_set(struct aq_hw_s *aq_hw,
 			    tdm_irq_moderation_en);
 }
 
-/* thm */
+ 
 void hw_atl_thm_lso_tcp_flag_of_first_pkt_set(struct aq_hw_s *aq_hw,
 					      u32 lso_tcp_flag_of_first_pkt)
 {
@@ -1354,7 +1348,7 @@ void hw_atl_thm_lso_tcp_flag_of_middle_pkt_set(struct aq_hw_s *aq_hw,
 			    lso_tcp_flag_of_middle_pkt);
 }
 
-/* TPB: tx packet buffer */
+ 
 void hw_atl_tpb_tx_buff_en_set(struct aq_hw_s *aq_hw, u32 tx_buff_en)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_TPB_TX_BUF_EN_ADR,
@@ -1442,7 +1436,7 @@ void hw_atl_tpb_tx_path_scp_ins_en_set(struct aq_hw_s *aq_hw, u32 tx_path_scp_in
 			    tx_path_scp_ins_en);
 }
 
-/* TPO: tx packet offload */
+ 
 void hw_atl_tpo_ipv4header_crc_offload_en_set(struct aq_hw_s *aq_hw,
 					      u32 ipv4header_crc_offload_en)
 {
@@ -1470,7 +1464,7 @@ void hw_atl_tpo_tx_pkt_sys_lbk_en_set(struct aq_hw_s *aq_hw,
 			    tx_pkt_sys_lbk_en);
 }
 
-/* TPS: tx packet scheduler */
+ 
 void hw_atl_tps_tx_pkt_shed_data_arb_mode_set(struct aq_hw_s *aq_hw,
 					      u32 tx_pkt_shed_data_arb_mode)
 {
@@ -1592,7 +1586,7 @@ void hw_atl_tps_tx_desc_rate_y_set(struct aq_hw_s *aq_hw, const u32 desc,
 			    rate_frac);
 }
 
-/* tx */
+ 
 void hw_atl_tx_tx_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 tx_reg_res_dis)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_TX_REG_RES_DSBL_ADR,
@@ -1600,7 +1594,7 @@ void hw_atl_tx_tx_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 tx_reg_res_dis)
 			    HW_ATL_TX_REG_RES_DSBL_SHIFT, tx_reg_res_dis);
 }
 
-/* msm */
+ 
 u32 hw_atl_msm_reg_access_status_get(struct aq_hw_s *aq_hw)
 {
 	return aq_hw_read_reg_bit(aq_hw, HW_ATL_MSM_REG_ACCESS_BUSY_ADR,
@@ -1643,7 +1637,7 @@ void hw_atl_msm_reg_wr_strobe_set(struct aq_hw_s *aq_hw, u32 reg_wr_strobe)
 			    reg_wr_strobe);
 }
 
-/* pci */
+ 
 void hw_atl_pci_pci_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 pci_reg_res_dis)
 {
 	aq_hw_write_reg_bit(aq_hw, HW_ATL_PCI_REG_RES_DSBL_ADR,

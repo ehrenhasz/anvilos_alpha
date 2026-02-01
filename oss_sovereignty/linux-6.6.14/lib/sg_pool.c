@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/init.h>
 #include <linux/scatterlist.h>
 #include <linux/mempool.h>
@@ -67,20 +67,7 @@ static struct scatterlist *sg_pool_alloc(unsigned int nents, gfp_t gfp_mask)
 	return mempool_alloc(sgp->pool, gfp_mask);
 }
 
-/**
- * sg_free_table_chained - Free a previously mapped sg table
- * @table:	The sg table header to use
- * @nents_first_chunk: size of the first_chunk SGL passed to
- *		sg_alloc_table_chained
- *
- *  Description:
- *    Free an sg table previously allocated and setup with
- *    sg_alloc_table_chained().
- *
- *    @nents_first_chunk has to be same with that same parameter passed
- *    to sg_alloc_table_chained().
- *
- **/
+ 
 void sg_free_table_chained(struct sg_table *table,
 		unsigned nents_first_chunk)
 {
@@ -95,20 +82,7 @@ void sg_free_table_chained(struct sg_table *table,
 }
 EXPORT_SYMBOL_GPL(sg_free_table_chained);
 
-/**
- * sg_alloc_table_chained - Allocate and chain SGLs in an sg table
- * @table:	The sg table header to use
- * @nents:	Number of entries in sg list
- * @first_chunk: first SGL
- * @nents_first_chunk: number of the SGL of @first_chunk
- *
- *  Description:
- *    Allocate and chain SGLs in an sg table. If @nents@ is larger than
- *    @nents_first_chunk a chained sg table will be setup. @first_chunk is
- *    ignored if nents_first_chunk <= 1 because user expects the SGL points
- *    non-chain SGL.
- *
- **/
+ 
 int sg_alloc_table_chained(struct sg_table *table, int nents,
 		struct scatterlist *first_chunk, unsigned nents_first_chunk)
 {
@@ -124,7 +98,7 @@ int sg_alloc_table_chained(struct sg_table *table, int nents,
 		}
 	}
 
-	/* User supposes that the 1st SGL includes real entry */
+	 
 	if (nents_first_chunk <= 1) {
 		first_chunk = NULL;
 		nents_first_chunk = 0;

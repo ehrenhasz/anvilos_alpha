@@ -1,14 +1,4 @@
-/*
- * Allwinner SoCs SRAM Controller Driver
- *
- * Copyright (C) 2015 Maxime Ripard
- *
- * Author: Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/io.h>
@@ -290,7 +280,7 @@ struct sunxi_sramc_variant {
 };
 
 static const struct sunxi_sramc_variant sun4i_a10_sramc_variant = {
-	/* Nothing special */
+	 
 };
 
 static const struct sunxi_sramc_variant sun8i_h3_sramc_variant = {
@@ -331,9 +321,9 @@ static struct regmap_config sunxi_sram_regmap_config = {
 	.reg_bits       = 32,
 	.val_bits       = 32,
 	.reg_stride     = 4,
-	/* last defined register */
+	 
 	.max_register   = SUNXI_SYS_LDO_CTRL_REG,
-	/* other devices have no business accessing other registers */
+	 
 	.readable_reg	= sunxi_sram_regmap_accessible_reg,
 	.writeable_reg	= sunxi_sram_regmap_accessible_reg,
 };

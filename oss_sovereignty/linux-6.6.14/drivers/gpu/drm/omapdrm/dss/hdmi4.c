@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI interface DSS driver for TI's OMAP4 family of SoCs.
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- * Authors: Yong Zhi
- *	Mythri pk <mythripk@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMI"
 
@@ -72,12 +66,7 @@ static irqreturn_t hdmi_irq_handler(int irq, void *data)
 
 	if ((irqstatus & HDMI_IRQ_LINK_CONNECT) &&
 			irqstatus & HDMI_IRQ_LINK_DISCONNECT) {
-		/*
-		 * If we get both connect and disconnect interrupts at the same
-		 * time, turn off the PHY, clear interrupts, and restart, which
-		 * raises connect interrupt if a cable is connected, or nothing
-		 * if cable is not connected.
-		 */
+		 
 		hdmi_wp_set_phy_pwr(wp, HDMI_PHYPWRCMD_OFF);
 
 		hdmi_wp_set_irqstatus(wp, HDMI_IRQ_LINK_CONNECT |
@@ -117,7 +106,7 @@ static int hdmi_power_on_core(struct omap_hdmi *hdmi)
 
 	hdmi4_core_powerdown_disable(&hdmi->core);
 
-	/* Make selection of HDMI in DSS */
+	 
 	dss_select_hdmi_venc_clk_source(hdmi->dss, DSS_HDMI_M_PCLK);
 
 	hdmi->core_enabled = true;
@@ -155,7 +144,7 @@ static int hdmi_power_on_full(struct omap_hdmi *hdmi)
 	if (r)
 		return r;
 
-	/* disable and clear irqs */
+	 
 	hdmi_wp_clear_irqenable(wp, ~HDMI_IRQ_CORE);
 	hdmi_wp_set_irqstatus(wp, ~HDMI_IRQ_CORE);
 
@@ -168,7 +157,7 @@ static int hdmi_power_on_full(struct omap_hdmi *hdmi)
 	if (vm->flags & DISPLAY_FLAGS_DOUBLECLK)
 		pc *= 2;
 
-	/* DSS_HDMI_TCLK is bitclk / 10 */
+	 
 	pc *= 10;
 
 	dss_pll_calc_b(&hdmi->pll.pll, clk_get_rate(hdmi->pll.pll.clkin),
@@ -309,9 +298,7 @@ void hdmi4_core_disable(struct hdmi_core_data *core)
 	mutex_unlock(&hdmi->lock);
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static int hdmi4_bridge_attach(struct drm_bridge *bridge,
 			       enum drm_bridge_attach_flags flags)
@@ -351,10 +338,7 @@ static void hdmi4_bridge_enable(struct drm_bridge *bridge,
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * None of these should fail, as the bridge can't be enabled without a
-	 * valid CRTC to connector path with fully populated new states.
-	 */
+	 
 	connector = drm_atomic_get_new_connector_for_encoder(state,
 							     bridge->encoder);
 	if (WARN_ON(!connector))
@@ -510,9 +494,7 @@ static void hdmi4_bridge_cleanup(struct omap_hdmi *hdmi)
 	drm_bridge_remove(&hdmi->bridge);
 }
 
-/* -----------------------------------------------------------------------------
- * Audio Callbacks
- */
+ 
 
 static int hdmi_audio_startup(struct device *dev,
 			      void (*abort_cb)(struct device *dev))
@@ -628,9 +610,7 @@ static int hdmi_audio_register(struct omap_hdmi *hdmi)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Component Bind & Unbind
- */
+ 
 
 static int hdmi4_bind(struct device *dev, struct device *master, void *data)
 {
@@ -692,9 +672,7 @@ static const struct component_ops hdmi4_component_ops = {
 	.unbind	= hdmi4_unbind,
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove, Suspend & Resume
- */
+ 
 
 static int hdmi4_init_output(struct omap_hdmi *hdmi)
 {

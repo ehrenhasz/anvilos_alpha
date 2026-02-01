@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VPIF header file
- *
- * Copyright (C) 2009 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef VPIF_H
 #define VPIF_H
@@ -12,19 +8,19 @@
 #include <linux/videodev2.h>
 #include <media/davinci/vpif_types.h>
 
-/* Maximum channel allowed */
+ 
 #define VPIF_NUM_CHANNELS		(4)
 #define VPIF_CAPTURE_NUM_CHANNELS	(2)
 #define VPIF_DISPLAY_NUM_CHANNELS	(2)
 
-/* Macros to read/write registers */
+ 
 extern void __iomem *vpif_base;
 extern spinlock_t vpif_lock;
 
 #define regr(reg)               readl((reg) + vpif_base)
 #define regw(value, reg)        writel(value, (reg + vpif_base))
 
-/* Register Address Offsets */
+ 
 #define VPIF_PID			(0x0000)
 #define VPIF_CH0_CTRL			(0x0004)
 #define VPIF_CH1_CTRL			(0x0008)
@@ -125,7 +121,7 @@ extern spinlock_t vpif_lock;
 
 #define VPIF_IODFT_CTRL			(0x01c0)
 
-/* Functions for bit Manipulation */
+ 
 static inline void vpif_set_bit(u32 reg, u32 bit)
 {
 	regw((regr(reg)) | (0x01 << bit), reg);
@@ -136,7 +132,7 @@ static inline void vpif_clr_bit(u32 reg, u32 bit)
 	regw(((regr(reg)) & ~(0x01 << bit)), reg);
 }
 
-/* Macro for Generating mask */
+ 
 #ifdef GENERATE_MASK
 #undef GENERATE_MASK
 #endif
@@ -144,7 +140,7 @@ static inline void vpif_clr_bit(u32 reg, u32 bit)
 #define GENERATE_MASK(bits, pos) \
 		((((0xFFFFFFFF) << (32 - bits)) >> (32 - bits)) << pos)
 
-/* Bit positions in the channel control registers */
+ 
 #define VPIF_CH_DATA_MODE_BIT	(2)
 #define VPIF_CH_YC_MUX_BIT	(3)
 #define VPIF_CH_SDR_FMT_BIT	(4)
@@ -165,22 +161,22 @@ static inline void vpif_clr_bit(u32 reg, u32 bit)
 
 #define VPIF_CH_CLK_EDGE_CTRL_BIT	(31)
 
-/* Mask various length */
+ 
 #define VPIF_CH_EAVSAV_MASK	GENERATE_MASK(13, 0)
 #define VPIF_CH_LEN_MASK	GENERATE_MASK(12, 0)
 #define VPIF_CH_WIDTH_MASK	GENERATE_MASK(13, 0)
 #define VPIF_CH_LEN_SHIFT	(16)
 
-/* VPIF masks for registers */
+ 
 #define VPIF_REQ_SIZE_MASK	(0x1ff)
 
-/* bit posotion of interrupt vpif_ch_intr register */
+ 
 #define VPIF_INTEN_FRAME_CH0	(0x00000001)
 #define VPIF_INTEN_FRAME_CH1	(0x00000002)
 #define VPIF_INTEN_FRAME_CH2	(0x00000004)
 #define VPIF_INTEN_FRAME_CH3	(0x00000008)
 
-/* bit position of clock and channel enable in vpif_chn_ctrl register */
+ 
 
 #define VPIF_CH0_CLK_EN		(0x00000002)
 #define VPIF_CH0_EN		(0x00000001)
@@ -209,19 +205,19 @@ static inline void vpif_clr_bit(u32 reg, u32 bit)
 #define VPIF_CH3_CLIP_ANC_EN	14
 #define VPIF_CH3_CLIP_ACTIVE_EN	13
 
-/* enabled interrupt on both the fields on vpid_ch0_ctrl register */
+ 
 #define channel0_intr_assert()	(regw((regr(VPIF_CH0_CTRL)|\
 	(VPIF_INT_BOTH << VPIF_CH0_INT_CTRL_SHIFT)), VPIF_CH0_CTRL))
 
-/* enabled interrupt on both the fields on vpid_ch1_ctrl register */
+ 
 #define channel1_intr_assert()	(regw((regr(VPIF_CH1_CTRL)|\
 	(VPIF_INT_BOTH << VPIF_CH1_INT_CTRL_SHIFT)), VPIF_CH1_CTRL))
 
-/* enabled interrupt on both the fields on vpid_ch0_ctrl register */
+ 
 #define channel2_intr_assert()	(regw((regr(VPIF_CH2_CTRL)|\
 	(VPIF_INT_BOTH << VPIF_CH2_INT_CTRL_SHIFT)), VPIF_CH2_CTRL))
 
-/* enabled interrupt on both the fields on vpid_ch1_ctrl register */
+ 
 #define channel3_intr_assert()	(regw((regr(VPIF_CH3_CTRL)|\
 	(VPIF_INT_BOTH << VPIF_CH3_INT_CTRL_SHIFT)), VPIF_CH3_CTRL))
 
@@ -259,7 +255,7 @@ static inline void vpif_clr_bit(u32 reg, u32 bit)
 
 extern u8 irq_vpif_capture_channel[VPIF_NUM_CHANNELS];
 
-/* inline function to enable/disable channel0 */
+ 
 static inline void enable_channel0(int enable)
 {
 	if (enable)
@@ -268,7 +264,7 @@ static inline void enable_channel0(int enable)
 		regw((regr(VPIF_CH0_CTRL) & (~VPIF_CH0_EN)), VPIF_CH0_CTRL);
 }
 
-/* inline function to enable/disable channel1 */
+ 
 static inline void enable_channel1(int enable)
 {
 	if (enable)
@@ -277,7 +273,7 @@ static inline void enable_channel1(int enable)
 		regw((regr(VPIF_CH1_CTRL) & (~VPIF_CH1_EN)), VPIF_CH1_CTRL);
 }
 
-/* inline function to enable interrupt for channel0 */
+ 
 static inline void channel0_intr_enable(int enable)
 {
 	unsigned long flags;
@@ -299,7 +295,7 @@ static inline void channel0_intr_enable(int enable)
 	spin_unlock_irqrestore(&vpif_lock, flags);
 }
 
-/* inline function to enable interrupt for channel1 */
+ 
 static inline void channel1_intr_enable(int enable)
 {
 	unsigned long flags;
@@ -321,7 +317,7 @@ static inline void channel1_intr_enable(int enable)
 	spin_unlock_irqrestore(&vpif_lock, flags);
 }
 
-/* inline function to set buffer addresses in case of Y/C non mux mode */
+ 
 static inline void ch0_set_video_buf_addr_yc_nmux(unsigned long top_strt_luma,
 						  unsigned long btm_strt_luma,
 						  unsigned long top_strt_chroma,
@@ -333,7 +329,7 @@ static inline void ch0_set_video_buf_addr_yc_nmux(unsigned long top_strt_luma,
 	regw(btm_strt_chroma, VPIF_CH1_BTM_STRT_ADD_CHROMA);
 }
 
-/* inline function to set buffer addresses in VPIF registers for video data */
+ 
 static inline void ch0_set_video_buf_addr(unsigned long top_strt_luma,
 					  unsigned long btm_strt_luma,
 					  unsigned long top_strt_chroma,
@@ -385,7 +381,7 @@ static inline void ch1_set_hbi_addr(unsigned long top_vbi,
 	regw(btm_vbi, VPIF_CH1_BTM_STRT_ADD_HANC);
 }
 
-/* Inline function to enable raw vbi in the given channel */
+ 
 static inline void disable_raw_feature(u8 channel_id, u8 index)
 {
 	u32 ctrl_reg;
@@ -414,7 +410,7 @@ static inline void enable_raw_feature(u8 channel_id, u8 index)
 		vpif_set_bit(ctrl_reg, VPIF_CH_HANC_EN_BIT);
 }
 
-/* inline function to enable/disable channel2 */
+ 
 static inline void enable_channel2(int enable)
 {
 	if (enable) {
@@ -426,7 +422,7 @@ static inline void enable_channel2(int enable)
 	}
 }
 
-/* inline function to enable/disable channel3 */
+ 
 static inline void enable_channel3(int enable)
 {
 	if (enable) {
@@ -438,7 +434,7 @@ static inline void enable_channel3(int enable)
 	}
 }
 
-/* inline function to enable interrupt for channel2 */
+ 
 static inline void channel2_intr_enable(int enable)
 {
 	unsigned long flags;
@@ -459,7 +455,7 @@ static inline void channel2_intr_enable(int enable)
 	spin_unlock_irqrestore(&vpif_lock, flags);
 }
 
-/* inline function to enable interrupt for channel3 */
+ 
 static inline void channel3_intr_enable(int enable)
 {
 	unsigned long flags;
@@ -481,7 +477,7 @@ static inline void channel3_intr_enable(int enable)
 	spin_unlock_irqrestore(&vpif_lock, flags);
 }
 
-/* inline function to enable raw vbi data for channel2 */
+ 
 static inline void channel2_raw_enable(int enable, u8 index)
 {
 	u32 mask;
@@ -497,7 +493,7 @@ static inline void channel2_raw_enable(int enable, u8 index)
 		vpif_clr_bit(VPIF_CH2_CTRL, mask);
 }
 
-/* inline function to enable raw vbi data for channel3*/
+ 
 static inline void channel3_raw_enable(int enable, u8 index)
 {
 	u32 mask;
@@ -513,7 +509,7 @@ static inline void channel3_raw_enable(int enable, u8 index)
 		vpif_clr_bit(VPIF_CH3_CTRL, mask);
 }
 
-/* function to enable clipping (for both active and blanking regions) on ch 2 */
+ 
 static inline void channel2_clipping_enable(int enable)
 {
 	if (enable) {
@@ -525,7 +521,7 @@ static inline void channel2_clipping_enable(int enable)
 	}
 }
 
-/* function to enable clipping (for both active and blanking regions) on ch 3 */
+ 
 static inline void channel3_clipping_enable(int enable)
 {
 	if (enable) {
@@ -537,7 +533,7 @@ static inline void channel3_clipping_enable(int enable)
 	}
 }
 
-/* inline function to set buffer addresses in case of Y/C non mux mode */
+ 
 static inline void ch2_set_video_buf_addr_yc_nmux(unsigned long top_strt_luma,
 						  unsigned long btm_strt_luma,
 						  unsigned long top_strt_chroma,
@@ -549,7 +545,7 @@ static inline void ch2_set_video_buf_addr_yc_nmux(unsigned long top_strt_luma,
 	regw(btm_strt_chroma, VPIF_CH3_BTM_STRT_ADD_CHROMA);
 }
 
-/* inline function to set buffer addresses in VPIF registers for video data */
+ 
 static inline void ch2_set_video_buf_addr(unsigned long top_strt_luma,
 					  unsigned long btm_strt_luma,
 					  unsigned long top_strt_chroma,
@@ -572,7 +568,7 @@ static inline void ch3_set_video_buf_addr(unsigned long top_strt_luma,
 	regw(btm_strt_chroma, VPIF_CH3_BTM_STRT_ADD_CHROMA);
 }
 
-/* inline function to set buffer addresses in VPIF registers for vbi data */
+ 
 static inline void ch2_set_vbi_addr(unsigned long top_strt_luma,
 				    unsigned long btm_strt_luma,
 				    unsigned long top_strt_chroma,
@@ -608,25 +604,22 @@ static inline int vpif_intr_status(int channel)
 
 #define VPIF_MAX_NAME	(30)
 
-/* This structure will store size parameters as per the mode selected by user */
+ 
 struct vpif_channel_config_params {
-	char name[VPIF_MAX_NAME];	/* Name of the mode */
-	u16 width;			/* Indicates width of the image */
-	u16 height;			/* Indicates height of the image */
-	u8 frm_fmt;			/* Interlaced (0) or progressive (1) */
-	u8 ycmux_mode;			/* This mode requires one (0) or two (1)
-					   channels */
-	u16 eav2sav;			/* length of eav 2 sav */
-	u16 sav2eav;			/* length of sav 2 eav */
-	u16 l1, l3, l5, l7, l9, l11;	/* Other parameter configurations */
-	u16 vsize;			/* Vertical size of the image */
-	u8 capture_format;		/* Indicates whether capture format
-					 * is in BT or in CCD/CMOS */
-	u8  vbi_supported;		/* Indicates whether this mode
-					 * supports capturing vbi or not */
-	u8 hd_sd;			/* HDTV (1) or SDTV (0) format */
-	v4l2_std_id stdid;		/* SDTV format */
-	struct v4l2_dv_timings dv_timings;	/* HDTV format */
+	char name[VPIF_MAX_NAME];	 
+	u16 width;			 
+	u16 height;			 
+	u8 frm_fmt;			 
+	u8 ycmux_mode;			 
+	u16 eav2sav;			 
+	u16 sav2eav;			 
+	u16 l1, l3, l5, l7, l9, l11;	 
+	u16 vsize;			 
+	u8 capture_format;		 
+	u8  vbi_supported;		 
+	u8 hd_sd;			 
+	v4l2_std_id stdid;		 
+	struct v4l2_dv_timings dv_timings;	 
 };
 
 extern const unsigned int vpif_ch_params_count;
@@ -647,21 +640,21 @@ enum data_size {
 	_12BITS,
 };
 
-/* Structure for vpif parameters for raw vbi data */
+ 
 struct vpif_vbi_params {
-	__u32 hstart0;  /* Horizontal start of raw vbi data for first field */
-	__u32 vstart0;  /* Vertical start of raw vbi data for first field */
-	__u32 hsize0;   /* Horizontal size of raw vbi data for first field */
-	__u32 vsize0;   /* Vertical size of raw vbi data for first field */
-	__u32 hstart1;  /* Horizontal start of raw vbi data for second field */
-	__u32 vstart1;  /* Vertical start of raw vbi data for second field */
-	__u32 hsize1;   /* Horizontal size of raw vbi data for second field */
-	__u32 vsize1;   /* Vertical size of raw vbi data for second field */
+	__u32 hstart0;   
+	__u32 vstart0;   
+	__u32 hsize0;    
+	__u32 vsize0;    
+	__u32 hstart1;   
+	__u32 vstart1;   
+	__u32 hsize1;    
+	__u32 vsize1;    
 };
 
-/* structure for vpif parameters */
+ 
 struct vpif_video_params {
-	__u8 storage_mode;	/* Indicates field or frame mode */
+	__u8 storage_mode;	 
 	unsigned long hpitch;
 	v4l2_std_id stdid;
 };
@@ -676,4 +669,4 @@ struct vpif_params {
 	} params;
 };
 
-#endif				/* End of #ifndef VPIF_H */
+#endif				 

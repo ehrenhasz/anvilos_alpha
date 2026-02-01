@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock using the IXP46X
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -34,9 +30,7 @@ struct ixp_clock {
 
 static DEFINE_SPINLOCK(register_lock);
 
-/*
- * Register access functions
- */
+ 
 
 static u64 ixp_systime_read(struct ixp46x_ts_regs *regs)
 {
@@ -65,9 +59,7 @@ static void ixp_systime_write(struct ixp46x_ts_regs *regs, u64 ns)
 	__raw_writel(hi, &regs->systime_hi);
 }
 
-/*
- * Interrupt service routine
- */
+ 
 
 static irqreturn_t isr(int irq, void *priv)
 {
@@ -107,7 +99,7 @@ static irqreturn_t isr(int irq, void *priv)
 	}
 
 	if (val & TTIPEND)
-		ack |= TTIPEND; /* this bit seems to be always set */
+		ack |= TTIPEND;  
 
 	if (ack) {
 		__raw_writel(ack, &regs->event);
@@ -116,9 +108,7 @@ static irqreturn_t isr(int irq, void *priv)
 		return IRQ_NONE;
 }
 
-/*
- * PTP clock operations
- */
+ 
 
 static int ptp_ixp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
@@ -226,7 +216,7 @@ static const struct ptp_clock_info ptp_ixp_caps = {
 	.enable		= ptp_ixp_enable,
 };
 
-/* module operations */
+ 
 
 static struct ixp_clock ixp_clock;
 
@@ -242,7 +232,7 @@ int ixp46x_ptp_find(struct ixp46x_ts_regs *__iomem *regs, int *phc_index)
 }
 EXPORT_SYMBOL_GPL(ixp46x_ptp_find);
 
-/* Called from the registered devm action */
+ 
 static void ptp_ixp_unregister_action(void *d)
 {
 	struct ptp_clock *ptp_clock = d;

@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _SMU73_DISCRETE_H_
 #define _SMU73_DISCRETE_H_
 
@@ -122,8 +101,8 @@ struct SMU73_Discrete_MemoryLevel {
 typedef struct SMU73_Discrete_MemoryLevel SMU73_Discrete_MemoryLevel;
 
 struct SMU73_Discrete_LinkLevel {
-    uint8_t     PcieGenSpeed;           ///< 0:PciE-gen1 1:PciE-gen2 2:PciE-gen3
-    uint8_t     PcieLaneCount;          ///< 1=x1, 2=x2, 3=x4, 4=x8, 5=x12, 6=x16
+    uint8_t     PcieGenSpeed;           
+    uint8_t     PcieLaneCount;          
     uint8_t     EnabledForActivity;
     uint8_t     SPC;
     uint32_t    DownThreshold;
@@ -134,7 +113,7 @@ struct SMU73_Discrete_LinkLevel {
 typedef struct SMU73_Discrete_LinkLevel SMU73_Discrete_LinkLevel;
 
 
-// MC ARB DRAM Timing registers.
+
 struct SMU73_Discrete_MCArbDramTimingTableEntry {
     uint32_t McArbDramTiming;
     uint32_t McArbDramTiming2;
@@ -152,7 +131,7 @@ struct SMU73_Discrete_MCArbDramTimingTable {
 
 typedef struct SMU73_Discrete_MCArbDramTimingTable SMU73_Discrete_MCArbDramTimingTable;
 
-// UVD VCLK/DCLK state (level) definition.
+
 struct SMU73_Discrete_UvdLevel {
     uint32_t VclkFrequency;
     uint32_t DclkFrequency;
@@ -164,7 +143,7 @@ struct SMU73_Discrete_UvdLevel {
 
 typedef struct SMU73_Discrete_UvdLevel SMU73_Discrete_UvdLevel;
 
-// Clocks for other external blocks (VCE, ACP, SAMU).
+
 struct SMU73_Discrete_ExtClkLevel {
     uint32_t Frequency;
     uint32_t MinVoltage;
@@ -198,14 +177,14 @@ struct SMU73_Discrete_StateInfo {
 typedef struct SMU73_Discrete_StateInfo SMU73_Discrete_StateInfo;
 
 struct SMU73_Discrete_DpmTable {
-    // Multi-DPM controller settings
+    
     SMU73_PIDController                  GraphicsPIDController;
     SMU73_PIDController                  MemoryPIDController;
     SMU73_PIDController                  LinkPIDController;
 
     uint32_t                            SystemFlags;
 
-    // SMIO masks for voltage and phase controls
+    
     uint32_t                            VRConfig;
     uint32_t                            SmioMask1;
     uint32_t                            SmioMask2;
@@ -235,7 +214,7 @@ struct SMU73_Discrete_DpmTable {
     uint8_t                             BootPhases;
     uint32_t                            Reserved[4];
 
-    // State table entries for each DPM state
+    
     SMU73_Discrete_GraphicsLevel        GraphicsLevel[SMU73_MAX_LEVELS_GRAPHICS];
     SMU73_Discrete_MemoryLevel          MemoryACPILevel;
     SMU73_Discrete_MemoryLevel          MemoryLevel[SMU73_MAX_LEVELS_MEMORY];
@@ -357,7 +336,7 @@ struct SMU73_Discrete_DpmTable {
 typedef struct SMU73_Discrete_DpmTable SMU73_Discrete_DpmTable;
 
 
-// --------------------------------------------------- Fan Table -----------------------------------------------------------
+
 struct SMU73_Discrete_FanTable {
     uint16_t FdoMode;
     int16_t  TempMin;
@@ -574,54 +553,54 @@ struct SMU_QuadraticCoeffs {
 typedef struct SMU_QuadraticCoeffs SMU_QuadraticCoeffs;
 
 struct SMU73_Discrete_PmFuses {
-  /* dw0-dw1 */
+   
   uint8_t BapmVddCVidHiSidd[8];
 
-  /* dw2-dw3 */
+   
   uint8_t BapmVddCVidLoSidd[8];
 
-  /* dw4-dw5 */
+   
   uint8_t VddCVid[8];
 
-  /* dw1*/
+   
   uint8_t SviLoadLineEn;
   uint8_t SviLoadLineVddC;
   uint8_t SviLoadLineTrimVddC;
   uint8_t SviLoadLineOffsetVddC;
 
-  /* dw2 */
+   
   uint16_t TDC_VDDC_PkgLimit;
   uint8_t TDC_VDDC_ThrottleReleaseLimitPerc;
   uint8_t TDC_MAWt;
 
-  /* dw3 */
+   
   uint8_t TdcWaterfallCtl;
   uint8_t LPMLTemperatureMin;
   uint8_t LPMLTemperatureMax;
   uint8_t Reserved;
 
-  /* dw4-dw7 */
+   
   uint8_t LPMLTemperatureScaler[16];
 
-  /* dw8-dw9 */
+   
   int16_t FuzzyFan_ErrorSetDelta;
   int16_t FuzzyFan_ErrorRateSetDelta;
   int16_t FuzzyFan_PwmSetDelta;
   uint16_t Reserved6;
 
-  /* dw10-dw14 */
+   
   uint8_t GnbLPML[16];
 
-  /* dw15 */
+   
   uint8_t GnbLPMLMaxVid;
   uint8_t GnbLPMLMinVid;
   uint8_t Reserved1[2];
 
-  /* dw16 */
+   
   uint16_t BapmVddCBaseLeakageHiSidd;
   uint16_t BapmVddCBaseLeakageLoSidd;
 
-  /* AVFS */
+   
   uint16_t  VFT_Temp[3];
   uint16_t  padding;
 
@@ -706,13 +685,13 @@ struct SMU7_Discrete_Cac_Verification_Table {
 typedef struct SMU7_Discrete_Cac_Verification_Table SMU7_Discrete_Cac_Verification_Table;
 
 struct SMU7_Discrete_Pm_Status_Table {
-  //Thermal entities
+  
   int32_t  T_meas_max[SMU73_THERMAL_INPUT_LOOP_COUNT];
   int32_t  T_meas_acc[SMU73_THERMAL_INPUT_LOOP_COUNT];
   int32_t  T_meas_acc_cnt[SMU73_THERMAL_INPUT_LOOP_COUNT];
   uint32_t T_hbm_acc;
 
-  //Voltage domains
+  
   uint32_t I_calc_max;
   uint32_t I_calc_acc;
   uint32_t P_meas_acc;
@@ -722,12 +701,12 @@ struct SMU7_Discrete_Pm_Status_Table {
   uint32_t V_meas_load_acc_vddci;
   uint32_t I_meas_acc_vddci;
 
-  //Frequency
+  
   uint16_t Sclk_dpm_residency[8];
   uint16_t Uvd_dpm_residency[8];
   uint16_t Vce_dpm_residency[8];
 
-  //Chip
+  
   uint32_t P_roc_acc;
   uint32_t PkgPwr_max;
   uint32_t PkgPwr_acc;
@@ -744,7 +723,7 @@ struct SMU7_Discrete_Pm_Status_Table {
 
 typedef struct SMU7_Discrete_Pm_Status_Table SMU7_Discrete_Pm_Status_Table;
 
-//FIXME THESE NEED TO BE UPDATED
+
 #define SMU7_SCLK_CAC 0x561
 #define SMU7_MCLK_CAC 0xF9
 #define SMU7_VCLK_CAC 0x2DE
@@ -773,7 +752,7 @@ typedef struct SMU7_Discrete_Pm_Status_Table SMU7_Discrete_Pm_Status_Table;
 #define SMU7_AREA_COEFF_ACP 0x22D1
 #define SMU7_AREA_COEFF_SAMU 0x534
 
-//ThermOutMode values
+
 #define SMU7_THERM_OUT_MODE_DISABLE       0x0
 #define SMU7_THERM_OUT_MODE_THERM_ONLY    0x1
 #define SMU7_THERM_OUT_MODE_THERM_VRHOT   0x2

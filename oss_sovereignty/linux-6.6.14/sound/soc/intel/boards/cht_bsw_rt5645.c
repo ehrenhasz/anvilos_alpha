@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cht-bsw-rt5645.c - ASoc Machine driver for Intel Cherryview-based platforms
- *                     Cherrytrail and Braswell, with RT5645 codec.
- *
- *  Copyright (C) 2015 Intel Corp
- *  Author: Fang, Yang A <yang.a.fang@intel.com>
- *	        N,Harshapriya <harshapriya.n@intel.com>
- *  This file is modified from cht_bsw_rt5672.c
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -45,7 +34,7 @@ struct cht_mc_private {
 };
 
 #define CHT_RT5645_MAP(quirk)	((quirk) & GENMASK(7, 0))
-#define CHT_RT5645_SSP2_AIF2     BIT(16) /* default is using AIF1  */
+#define CHT_RT5645_SSP2_AIF2     BIT(16)  
 #define CHT_RT5645_SSP0_AIF1     BIT(17)
 #define CHT_RT5645_SSP0_AIF2     BIT(18)
 #define CHT_RT5645_PMC_PLT_CLK_0 BIT(19)
@@ -90,11 +79,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			return ret;
 		}
 	} else {
-		/* Set codec sysclk source to its internal clock because codec PLL will
-		 * be off when idle and MCLK will also be off when codec is
-		 * runtime suspended. Codec needs clock for jack detection and button
-		 * press. MCLK is turned off with clock framework or ACPI.
-		 */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, RT5645_SCLK_S_RCCLK,
 					48000 * 512, SND_SOC_CLOCK_IN);
 		if (ret < 0) {
@@ -211,7 +196,7 @@ static int cht_aif1_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int ret;
 
-	/* set codec PLL source to the 19.2MHz platform clock (MCLK) */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, RT5645_PLL1_S_MCLK,
 				  CHT_PLAT_CLK_3_HZ, params_rate(params) * 512);
 	if (ret < 0) {
@@ -237,7 +222,7 @@ static int cht_rt5645_quirk_cb(const struct dmi_system_id *id)
 
 static const struct dmi_system_id cht_rt5645_quirk_table[] = {
 	{
-		/* Strago family Chromebooks */
+		 
 		.callback = cht_rt5645_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_FAMILY, "Intel_Strago"),
@@ -258,7 +243,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 
 	if ((cht_rt5645_quirk & CHT_RT5645_SSP2_AIF2) ||
 	    (cht_rt5645_quirk & CHT_RT5645_SSP0_AIF2)) {
-		/* Select clk_i2s2_asrc as ASRC clock source */
+		 
 		rt5645_sel_asrc_clk_src(component,
 					RT5645_DA_STEREO_FILTER |
 					RT5645_DA_MONO_L_FILTER |
@@ -266,7 +251,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 					RT5645_AD_STEREO_FILTER,
 					RT5645_CLK_SEL_I2S2_ASRC);
 	} else {
-		/* Select clk_i2s1_asrc as ASRC clock source */
+		 
 		rt5645_sel_asrc_clk_src(component,
 					RT5645_DA_STEREO_FILTER |
 					RT5645_DA_MONO_L_FILTER |
@@ -313,16 +298,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 	rt5645_set_jack_detect(component, &ctx->jack, &ctx->jack, &ctx->jack);
 
 
-	/*
-	 * The firmware might enable the clock at
-	 * boot (this information may or may not
-	 * be reflected in the enable clock register).
-	 * To change the rate we must disable the clock
-	 * first to cover these cases. Due to common
-	 * clock framework restrictions that do not allow
-	 * to disable a clock that has not been enabled,
-	 * we need to enable the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(ctx->mclk);
 	if (!ret)
 		clk_disable_unprepare(ctx->mclk);
@@ -344,21 +320,17 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *channels = hw_param_interval(params,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
 	if ((cht_rt5645_quirk & CHT_RT5645_SSP0_AIF1) ||
 		(cht_rt5645_quirk & CHT_RT5645_SSP0_AIF2)) {
 
-		/* set SSP0 to 16-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 
-		/*
-		 * Default mode for SSP configuration is TDM 4 slot, override config
-		 * with explicit setting to I2S 2ch 16-bit. The word length is set with
-		 * dai_set_tdm_slot() since there is no other API exposed
-		 */
+		 
 		ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 					SND_SOC_DAIFMT_I2S     |
 					SND_SOC_DAIFMT_NB_NF   |
@@ -387,12 +359,10 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	} else {
 
-		/* set SSP2 to 24-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 
-		/*
-		 * Default mode for SSP configuration is TDM 4 slot
-		 */
+		 
 		ret = snd_soc_dai_set_fmt(asoc_rtd_to_codec(rtd, 0),
 					SND_SOC_DAIFMT_DSP_B |
 					SND_SOC_DAIFMT_IB_NF |
@@ -402,7 +372,7 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 			return ret;
 		}
 
-		/* TDM 4 slots 24 bit, set Rx & Tx bitmask to 4 active slots */
+		 
 		ret = snd_soc_dai_set_tdm_slot(asoc_rtd_to_codec(rtd, 0), 0xF, 0xF, 4, 24);
 		if (ret < 0) {
 			dev_err(rtd->dev, "can't set codec TDM slot %d\n", ret);
@@ -463,8 +433,8 @@ static struct snd_soc_dai_link cht_dailink[] = {
 		.ops = &cht_aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* CODEC<->CODEC link */
-	/* back ends */
+	 
+	 
 	{
 		.name = "SSP2-Codec",
 		.id = 0,
@@ -478,16 +448,16 @@ static struct snd_soc_dai_link cht_dailink[] = {
 	},
 };
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_RT5645_NAME "bytcht rt5645" /* card name 'sof-bytcht rt5645' */
-#define SOF_CARD_RT5650_NAME "bytcht rt5650" /* card name 'sof-bytcht rt5650' */
+ 
+#define SOF_CARD_RT5645_NAME "bytcht rt5645"  
+#define SOF_CARD_RT5650_NAME "bytcht rt5650"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_RT5645_NAME "chtrt5645"
 #define CARD_RT5650_NAME "chtrt5650"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card snd_soc_card_chtrt5645 = {
 	.owner = THIS_MODULE,
 	.dai_link = cht_dailink,
@@ -522,9 +492,9 @@ static struct cht_acpi_card snd_soc_cards[] = {
 
 static char cht_rt5645_codec_name[SND_ACPI_I2C_ID_LEN];
 
-struct acpi_chan_package {   /* ACPICA seems to require 64 bit integers */
-	u64 aif_value;       /* 1: AIF1, 2: AIF2 */
-	u64 mclock_value;    /* usually 25MHz (0x17d7940), ignored */
+struct acpi_chan_package {    
+	u64 aif_value;        
+	u64 mclock_value;     
 };
 
 static int snd_cht_mc_probe(struct platform_device *pdev)
@@ -568,7 +538,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 	card->dev = &pdev->dev;
 	sprintf(drv->codec_name, "i2c-%s:00", drv->acpi_card->codec_id);
 
-	/* set correct codec name */
+	 
 	for (i = 0; i < ARRAY_SIZE(cht_dailink); i++)
 		if (!strcmp(card->dai_link[i].codecs->name,
 			    "i2c-10EC5645:00")) {
@@ -576,7 +546,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 			dai_index = i;
 		}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(cht_rt5645_codec_name, sizeof(cht_rt5645_codec_name),
@@ -585,27 +555,18 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 	}
 	acpi_dev_put(adev);
 
-	/*
-	 * swap SSP0 if bytcr is detected
-	 * (will be overridden if DMI quirk is detected)
-	 */
+	 
 	if (soc_intel_is_byt()) {
 		if (mach->mach_params.acpi_ipc_irq_index == 0)
 			is_bytcr = true;
 	}
 
 	if (is_bytcr) {
-		/*
-		 * Baytrail CR platforms may have CHAN package in BIOS, try
-		 * to find relevant routing quirk based as done on Windows
-		 * platforms. We have to read the information directly from the
-		 * BIOS, at this stage the card is not created and the links
-		 * with the codec driver/pdata are non-existent
-		 */
+		 
 
 		struct acpi_chan_package chan_package = { 0 };
 
-		/* format specified: 2 64-bit integers */
+		 
 		struct acpi_buffer format = {sizeof("NN"), "NN"};
 		struct acpi_buffer state = {0, NULL};
 		struct snd_soc_acpi_package_context pkg_ctx;
@@ -636,12 +597,12 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		}
 
 		if (!pkg_found) {
-			/* no BIOS indications, assume SSP0-AIF2 connection */
+			 
 			cht_rt5645_quirk |= CHT_RT5645_SSP0_AIF2;
 		}
 	}
 
-	/* check quirks before creating card */
+	 
 	dmi_check_system(cht_rt5645_quirk_table);
 	log_quirks(&pdev->dev);
 
@@ -653,7 +614,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 	    (cht_rt5645_quirk & CHT_RT5645_SSP0_AIF2))
 		cht_dailink[dai_index].cpus->dai_name = "ssp0-port";
 
-	/* override platform name, if required */
+	 
 	platform_name = mach->mach_params.platform;
 
 	ret_val = snd_soc_fixup_dai_links_platform_name(card,
@@ -677,7 +638,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		snd_soc_card_chtrt5645.name = SOF_CARD_RT5645_NAME;
 		snd_soc_card_chtrt5645.driver_name = SOF_DRIVER_NAME;
@@ -690,7 +651,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		snd_soc_card_chtrt5650.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		pdev->dev.driver->pm = &snd_soc_pm_ops;
 

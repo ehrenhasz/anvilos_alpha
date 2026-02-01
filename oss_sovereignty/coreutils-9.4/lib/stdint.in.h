@@ -1,24 +1,4 @@
-/* Copyright (C) 2001-2002, 2004-2023 Free Software Foundation, Inc.
-   Written by Paul Eggert, Bruno Haible, Sam Steingold, Peter Burwood.
-   This file is part of gnulib.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/*
- * ISO C 99 <stdint.h> for platforms that lack it.
- * <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdint.h.html>
- */
+ 
 
 #ifndef _@GUARD_PREFIX@_STDINT_H
 
@@ -27,38 +7,23 @@
 #endif
 @PRAGMA_COLUMNS@
 
-/* When including a system file that in turn includes <inttypes.h>,
-   use the system <inttypes.h>, not our substitute.  This avoids
-   problems with (for example) VMS, whose <sys/bitypes.h> includes
-   <inttypes.h>.  */
+ 
 #define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 
-/* On Android (Bionic libc), <sys/types.h> includes this file before
-   having defined 'time_t'.  Therefore in this case avoid including
-   other system header files; just include the system's <stdint.h>.
-   Ideally we should test __BIONIC__ here, but it is only defined after
-   <sys/cdefs.h> has been included; hence test __ANDROID__ instead.  */
+ 
 #if defined __ANDROID__ && defined _GL_INCLUDING_SYS_TYPES_H
 # @INCLUDE_NEXT@ @NEXT_STDINT_H@
 #else
 
-/* Get those types that are already defined in other system include
-   files, so that we can "#define int8_t signed char" below without
-   worrying about a later system include file containing a "typedef
-   signed char int8_t;" that will get messed up by our macro.  Our
-   macros should all be consistent with the system versions, except
-   for the "fast" types and macros, which we recommend against using
-   in public interfaces due to compiler differences.  */
+ 
 
 #if @HAVE_STDINT_H@
 # if defined __sgi && ! defined __c99
-   /* Bypass IRIX's <stdint.h> if in C89 mode, since it merely annoys users
-      with "This header file is to be used only for c99 mode compilations"
-      diagnostics.  */
+    
 #  define __STDINT_H__
 # endif
 
-  /* Some pre-C++11 <stdint.h> implementations need this.  */
+   
 # ifdef __cplusplus
 #  ifndef __STDC_CONSTANT_MACROS
 #   define __STDC_CONSTANT_MACROS 1
@@ -68,23 +33,17 @@
 #  endif
 # endif
 
-  /* Other systems may have an incomplete or buggy <stdint.h>.
-     Include it before <inttypes.h>, since any "#include <stdint.h>"
-     in <inttypes.h> would reinclude us, skipping our contents because
-     _@GUARD_PREFIX@_STDINT_H is defined.
-     The include_next requires a split double-inclusion guard.  */
+   
 # @INCLUDE_NEXT@ @NEXT_STDINT_H@
 #endif
 
 #if ! defined _@GUARD_PREFIX@_STDINT_H && ! defined _GL_JUST_INCLUDE_SYSTEM_STDINT_H
 #define _@GUARD_PREFIX@_STDINT_H
 
-/* Get SCHAR_MIN, SCHAR_MAX, UCHAR_MAX, INT_MIN, INT_MAX,
-   LONG_MIN, LONG_MAX, ULONG_MAX, _GL_INTEGER_WIDTH.  */
+ 
 #include <limits.h>
 
-/* Override WINT_MIN and WINT_MAX if gnulib's <wchar.h> or <wctype.h> overrides
-   wint_t.  */
+ 
 #if @GNULIBHEADERS_OVERRIDE_WINT_T@
 # undef WINT_MIN
 # undef WINT_MAX
@@ -94,43 +53,29 @@
 
 #if ! @HAVE_C99_STDINT_H@
 
-/* <sys/types.h> defines some of the stdint.h types as well, on glibc,
-   IRIX 6.5, and OpenBSD 3.8 (via <machine/types.h>).
-   AIX 5.2 <sys/types.h> isn't needed and causes troubles.
-   Mac OS X 10.4.6 <sys/types.h> includes <stdint.h> (which is us), but
-   relies on the system <stdint.h> definitions, so include
-   <sys/types.h> after @NEXT_STDINT_H@.  */
+ 
 # if @HAVE_SYS_TYPES_H@ && ! defined _AIX
 #  include <sys/types.h>
 # endif
 
 # if @HAVE_INTTYPES_H@
-  /* In OpenBSD 3.8, <inttypes.h> includes <machine/types.h>, which defines
-     int{8,16,32,64}_t, uint{8,16,32,64}_t and __BIT_TYPES_DEFINED__.
-     <inttypes.h> also defines intptr_t and uintptr_t.  */
+   
 #  include <inttypes.h>
 # elif @HAVE_SYS_INTTYPES_H@
-  /* Solaris 7 <sys/inttypes.h> has the types except the *_fast*_t types, and
-     the macros except for *_FAST*_*, INTPTR_MIN, PTRDIFF_MIN, PTRDIFF_MAX.  */
+   
 #  include <sys/inttypes.h>
 # endif
 
 # if @HAVE_SYS_BITYPES_H@ && ! defined __BIT_TYPES_DEFINED__
-  /* Linux libc4 >= 4.6.7 and libc5 have a <sys/bitypes.h> that defines
-     int{8,16,32,64}_t and __BIT_TYPES_DEFINED__.  In libc5 >= 5.2.2 it is
-     included by <sys/types.h>.  */
+   
 #  include <sys/bitypes.h>
 # endif
 
 # undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 
-/* Minimum and maximum values for an integer type under the usual assumption.
-   Return an unspecified value if BITS == 0, adding a check to pacify
-   picky compilers.  */
+ 
 
-/* These are separate macros, because if you try to merge these macros into
-   a single one, HP-UX cc rejects the resulting expression in constant
-   expressions.  */
+ 
 # define _STDINT_UNSIGNED_MIN(bits, zero) \
     (zero)
 # define _STDINT_SIGNED_MIN(bits, zero) \
@@ -141,10 +86,9 @@
 
 #if !GNULIB_defined_stdint_types
 
-/* 7.18.1.1. Exact-width integer types */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits.  */
+ 
 
 # undef int8_t
 # undef uint8_t
@@ -167,17 +111,12 @@ typedef unsigned int gl_uint32_t;
 # define int32_t gl_int32_t
 # define uint32_t gl_uint32_t
 
-/* If the system defines INT64_MAX, assume int64_t works.  That way,
-   if the underlying platform defines int64_t to be a 64-bit long long
-   int, the code below won't mistakenly define it to be a 64-bit long
-   int, which would mess up C++ name mangling.  We must use #ifdef
-   rather than #if, to avoid an error with HP-UX 10.20 cc.  */
+ 
 
 # ifdef INT64_MAX
 #  define GL_INT64_T
 # else
-/* Do not undefine int64_t if gnulib is not being used with 64-bit
-   types, since otherwise it breaks platforms like Tandem/NSK.  */
+ 
 #  if LONG_MAX >> 31 >> 31 == 1
 #   undef int64_t
 typedef long int gl_int64_t;
@@ -217,17 +156,15 @@ typedef unsigned long long int gl_uint64_t;
 #  endif
 # endif
 
-/* Avoid collision with Solaris 2.5.1 <pthread.h> etc.  */
+ 
 # define _UINT8_T
 # define _UINT32_T
 # define _UINT64_T
 
 
-/* 7.18.1.2. Minimum-width integer types */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits. Therefore the leastN_t types
-   are the same as the corresponding N_t types.  */
+ 
 
 # undef int_least8_t
 # undef uint_least8_t
@@ -250,16 +187,11 @@ typedef unsigned long long int gl_uint64_t;
 #  define uint_least64_t uint64_t
 # endif
 
-/* 7.18.1.3. Fastest minimum-width integer types */
+ 
 
-/* Note: Other <stdint.h> substitutes may define these types differently.
-   It is not recommended to use these types in public header files. */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits. Therefore the fastN_t types
-   are taken from the same list of types.  The following code normally
-   uses types consistent with glibc, as that lessens the chance of
-   incompatibility with older GNU hosts.  */
+ 
 
 # undef int_fast8_t
 # undef uint_fast8_t
@@ -273,8 +205,7 @@ typedef signed char gl_int_fast8_t;
 typedef unsigned char gl_uint_fast8_t;
 
 # ifdef __sun
-/* Define types compatible with SunOS 5.10, so that code compiled under
-   earlier SunOS versions works with code compiled under SunOS 5.10.  */
+ 
 typedef int gl_int_fast32_t;
 typedef unsigned int gl_uint_fast32_t;
 # else
@@ -297,14 +228,9 @@ typedef gl_uint_fast32_t gl_uint_fast16_t;
 #  define uint_fast64_t uint64_t
 # endif
 
-/* 7.18.1.4. Integer types capable of holding object pointers */
+ 
 
-/* kLIBC's <stdint.h> defines _INTPTR_T_DECLARED and needs its own
-   definitions of intptr_t and uintptr_t (which use int and unsigned)
-   to avoid clashes with declarations of system functions like sbrk.
-   Similarly, MinGW WSL-5.4.1 <stdint.h> needs its own intptr_t and
-   uintptr_t to avoid conflicting declarations of system functions like
-   _findclose in <io.h>.  */
+ 
 # if !((defined __KLIBC__ && defined _INTPTR_T_DECLARED) \
        || defined __MINGW32__)
 #  undef intptr_t
@@ -320,14 +246,11 @@ typedef unsigned long int gl_uintptr_t;
 #  define uintptr_t gl_uintptr_t
 # endif
 
-/* 7.18.1.5. Greatest-width integer types */
+ 
 
-/* Note: These types are compiler dependent. It may be unwise to use them in
-   public header files. */
+ 
 
-/* If the system defines INTMAX_MAX, assume that intmax_t works, and
-   similarly for UINTMAX_MAX and uintmax_t.  This avoids problems with
-   assuming one type where another is used by the system.  */
+ 
 
 # ifndef INTMAX_MAX
 #  undef INTMAX_C
@@ -357,21 +280,18 @@ typedef unsigned long int gl_uintmax_t;
 #  endif
 # endif
 
-/* Verify that intmax_t and uintmax_t have the same size.  Too much code
-   breaks if this is not the case.  If this check fails, the reason is likely
-   to be found in the autoconf macros.  */
+ 
 typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
                                 ? 1 : -1];
 
 # define GNULIB_defined_stdint_types 1
-# endif /* !GNULIB_defined_stdint_types */
+# endif  
 
-/* 7.18.2. Limits of specified-width integer types */
+ 
 
-/* 7.18.2.1. Limits of exact-width integer types */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits.  */
+ 
 
 # undef INT8_MIN
 # undef INT8_MAX
@@ -395,8 +315,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 # define UINT32_MAX  4294967295U
 
 # if defined GL_INT64_T && ! defined INT64_MAX
-/* Prefer (- INTMAX_C (1) << 63) over (~ INT64_MAX) because SunPRO C 5.0
-   evaluates the latter incorrectly in preprocessor expressions.  */
+ 
 #  define INT64_MIN  (- INTMAX_C (1) << 63)
 #  define INT64_MAX  INTMAX_C (9223372036854775807)
 # endif
@@ -405,11 +324,9 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define UINT64_MAX  UINTMAX_C (18446744073709551615)
 # endif
 
-/* 7.18.2.2. Limits of minimum-width integer types */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits. Therefore the leastN_t types
-   are the same as the corresponding N_t types.  */
+ 
 
 # undef INT_LEAST8_MIN
 # undef INT_LEAST8_MAX
@@ -444,11 +361,9 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define UINT_LEAST64_MAX  UINT64_MAX
 # endif
 
-/* 7.18.2.3. Limits of fastest minimum-width integer types */
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits. Therefore the fastN_t types
-   are taken from the same list of types.  */
+ 
 
 # undef INT_FAST8_MIN
 # undef INT_FAST8_MAX
@@ -489,7 +404,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define UINT_FAST64_MAX  UINT64_MAX
 # endif
 
-/* 7.18.2.4. Limits of integer types capable of holding object pointers */
+ 
 
 # undef INTPTR_MIN
 # undef INTPTR_MAX
@@ -504,7 +419,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define UINTPTR_MAX  ULONG_MAX
 # endif
 
-/* 7.18.2.5. Limits of greatest-width integer types */
+ 
 
 # ifndef INTMAX_MAX
 #  undef INTMAX_MIN
@@ -525,9 +440,9 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  endif
 # endif
 
-/* 7.18.3. Limits of other integer types */
+ 
 
-/* ptrdiff_t limits */
+ 
 # undef PTRDIFF_MIN
 # undef PTRDIFF_MAX
 # if @APPLE_UNIVERSAL_BUILD@
@@ -545,7 +460,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
     _STDINT_MAX (1, @BITSIZEOF_PTRDIFF_T@, 0@PTRDIFF_T_SUFFIX@)
 # endif
 
-/* sig_atomic_t limits */
+ 
 # undef SIG_ATOMIC_MIN
 # undef SIG_ATOMIC_MAX
 # if @HAVE_SIGNED_SIG_ATOMIC_T@
@@ -560,7 +475,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
                 0@SIG_ATOMIC_T_SUFFIX@)
 
 
-/* size_t limit */
+ 
 # undef SIZE_MAX
 # if @APPLE_UNIVERSAL_BUILD@
 #  ifdef _LP64
@@ -572,12 +487,8 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define SIZE_MAX  _STDINT_MAX (0, @BITSIZEOF_SIZE_T@, 0@SIZE_T_SUFFIX@)
 # endif
 
-/* wchar_t limits */
-/* Get WCHAR_MIN, WCHAR_MAX.
-   This include is not on the top, above, because on OSF/1 4.0 we have a
-   sequence of nested includes
-   <wchar.h> -> <stdio.h> -> <getopt.h> -> <stdlib.h>, and the latter includes
-   <stdint.h> and assumes its types are already defined.  */
+ 
+ 
 # if @HAVE_WCHAR_H@ && ! (defined WCHAR_MIN && defined WCHAR_MAX)
 #  define _GL_JUST_INCLUDE_SYSTEM_WCHAR_H
 #  include <wchar.h>
@@ -595,9 +506,8 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 # define WCHAR_MAX  \
    _STDINT_MAX (@HAVE_SIGNED_WCHAR_T@, @BITSIZEOF_WCHAR_T@, 0@WCHAR_T_SUFFIX@)
 
-/* wint_t limits */
-/* If gnulib's <wchar.h> or <wctype.h> overrides wint_t, @WINT_T_SUFFIX@ is not
-   accurate, therefore use the definitions from above.  */
+ 
+ 
 # if !@GNULIBHEADERS_OVERRIDE_WINT_T@
 #  undef WINT_MIN
 #  undef WINT_MAX
@@ -612,13 +522,12 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
     _STDINT_MAX (@HAVE_SIGNED_WINT_T@, @BITSIZEOF_WINT_T@, 0@WINT_T_SUFFIX@)
 # endif
 
-/* 7.18.4. Macros for integer constants */
+ 
 
-/* 7.18.4.1. Macros for minimum-width integer constants */
-/* According to ISO C 99 Technical Corrigendum 1 */
+ 
+ 
 
-/* Here we assume a standard architecture where the hardware integer
-   types have 8, 16, 32, optionally 64 bits, and int is 32 bits.  */
+ 
 
 # undef INT8_C
 # undef UINT8_C
@@ -652,7 +561,7 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  define UINT64_C(x) x##ULL
 # endif
 
-/* 7.18.4.2. Macros for greatest-width integer constants */
+ 
 
 # ifndef INTMAX_C
 #  if LONG_MAX >> 30 == 1
@@ -674,9 +583,9 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #  endif
 # endif
 
-#endif /* !@HAVE_C99_STDINT_H@ */
+#endif  
 
-/* Macros specified by ISO/IEC TS 18661-1:2014.  */
+ 
 
 #if (!defined UINTMAX_WIDTH \
      && (defined _GNU_SOURCE || defined __STDC_WANT_IEC_60559_BFP_EXT__))
@@ -733,8 +642,8 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 # ifdef SIG_ATOMIC_MAX
 #  define SIG_ATOMIC_WIDTH _GL_INTEGER_WIDTH (SIG_ATOMIC_MIN, SIG_ATOMIC_MAX)
 # endif
-#endif /* !WINT_WIDTH && (_GNU_SOURCE || __STDC_WANT_IEC_60559_BFP_EXT__) */
+#endif  
 
-#endif /* _@GUARD_PREFIX@_STDINT_H */
-#endif /* !(defined __ANDROID__ && ...) */
-#endif /* !defined _@GUARD_PREFIX@_STDINT_H && !defined _GL_JUST_INCLUDE_SYSTEM_STDINT_H */
+#endif  
+#endif  
+#endif  

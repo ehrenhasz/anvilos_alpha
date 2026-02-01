@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Copyright(c) 2016 Google Inc. All rights reserved.
- * Copyright(c) 2016 Linaro Ltd. All rights reserved.
- */
+ 
+ 
 
 #ifndef __ARPC_H
 #define __ARPC_H
 
-/* APBridgeA RPC (ARPC) */
+ 
 
 enum arpc_result {
 	ARPC_SUCCESS		= 0x00,
@@ -18,18 +15,18 @@ enum arpc_result {
 };
 
 struct arpc_request_message {
-	__le16	id;		/* RPC unique id */
-	__le16	size;		/* Size in bytes of header + payload */
-	__u8	type;		/* RPC type */
-	__u8	data[];	/* ARPC data */
+	__le16	id;		 
+	__le16	size;		 
+	__u8	type;		 
+	__u8	data[];	 
 } __packed;
 
 struct arpc_response_message {
-	__le16	id;		/* RPC unique id */
-	__u8	result;		/* Result of RPC */
+	__le16	id;		 
+	__u8	result;		 
 } __packed;
 
-/* ARPC requests */
+ 
 #define ARPC_TYPE_CPORT_CONNECTED		0x01
 #define ARPC_TYPE_CPORT_QUIESCE			0x02
 #define ARPC_TYPE_CPORT_CLEAR			0x03
@@ -60,4 +57,4 @@ struct arpc_cport_shutdown_req {
 	__u8 phase;
 } __packed;
 
-#endif	/* __ARPC_H */
+#endif	 

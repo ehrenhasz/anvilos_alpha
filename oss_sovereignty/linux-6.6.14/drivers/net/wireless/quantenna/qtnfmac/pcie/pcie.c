@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018 Quantenna Communications, Inc. All rights reserved. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/printk.h>
@@ -156,17 +156,17 @@ static void qtnf_tune_pcie_mps(struct pci_dev *pdev)
 	int mps_p, mps_o, mps_m, mps;
 	int ret;
 
-	/* current mps */
+	 
 	mps_o = pcie_get_mps(pdev);
 
-	/* maximum supported mps */
+	 
 	mps_m = 128 << pdev->pcie_mpss;
 
-	/* suggested new mps value */
+	 
 	mps = mps_m;
 
 	if (pdev->bus && pdev->bus->self) {
-		/* parent (bus) mps */
+		 
 		parent = pdev->bus->self;
 
 		if (pci_is_pcie(parent)) {
@@ -189,10 +189,10 @@ static void qtnf_pcie_init_irq(struct qtnf_pcie_bus_priv *priv, bool use_msi)
 {
 	struct pci_dev *pdev = priv->pdev;
 
-	/* fall back to legacy INTx interrupts by default */
+	 
 	priv->msi_enabled = 0;
 
-	/* check if MSI capability is available */
+	 
 	if (use_msi) {
 		if (!pci_enable_msi(pdev)) {
 			pr_debug("enabled MSI interrupt\n");
@@ -451,7 +451,7 @@ static int qtnf_pcie_resume(struct device *dev)
 	return priv->resume_cb(bus);
 }
 
-/* Power Management Hooks */
+ 
 static SIMPLE_DEV_PM_OPS(qtnf_pcie_pm_ops, qtnf_pcie_suspend,
 			 qtnf_pcie_resume);
 #endif

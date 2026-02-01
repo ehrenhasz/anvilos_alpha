@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ucall support. A ucall is a "hypercall to userspace".
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- */
+
+ 
 
 #include <linux/kvm.h>
 

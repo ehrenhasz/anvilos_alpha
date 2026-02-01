@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/vga_switcheroo.h>
 
@@ -27,7 +25,7 @@ static void i915_switcheroo_set_state(struct pci_dev *pdev,
 	if (state == VGA_SWITCHEROO_ON) {
 		drm_info(&i915->drm, "switched on\n");
 		i915->drm.switch_power_state = DRM_SWITCH_POWER_CHANGING;
-		/* i915 resume handler doesn't set to D0 */
+		 
 		pci_set_power_state(pdev, PCI_D0);
 		i915_driver_resume_switcheroo(i915);
 		i915->drm.switch_power_state = DRM_SWITCH_POWER_ON;
@@ -43,11 +41,7 @@ static bool i915_switcheroo_can_switch(struct pci_dev *pdev)
 {
 	struct drm_i915_private *i915 = pdev_to_i915(pdev);
 
-	/*
-	 * FIXME: open_count is protected by drm_global_mutex but that would lead to
-	 * locking inversion with the driver load path. And the access here is
-	 * completely racy anyway. So don't bother with locking for now.
-	 */
+	 
 	return i915 && HAS_DISPLAY(i915) && atomic_read(&i915->drm.open_count) == 0;
 }
 

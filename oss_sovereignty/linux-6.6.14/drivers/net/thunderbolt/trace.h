@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Tracepoints for Thunderbolt/USB4 networking driver
- *
- * Copyright (C) 2023, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM thunderbolt_net
@@ -130,7 +125,7 @@ DEFINE_EVENT(tbnet_skb, tbnet_consume_skb,
 	TP_ARGS(skb)
 );
 
-#endif /* _TRACE_THUNDERBOLT_NET_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

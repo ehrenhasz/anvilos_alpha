@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -27,7 +24,7 @@ static int __set_clk_parents(struct device_node *node, bool clk_supplier)
 		rc = of_parse_phandle_with_args(node, "assigned-clock-parents",
 					"#clock-cells",	index, &clkspec);
 		if (rc < 0) {
-			/* skip empty (null) phandles */
+			 
 			if (rc == -ENOENT)
 				continue;
 			else
@@ -92,7 +89,7 @@ static int __set_clk_rates(struct device_node *node, bool clk_supplier)
 			rc = of_parse_phandle_with_args(node, "assigned-clocks",
 					"#clock-cells",	index, &clkspec);
 			if (rc < 0) {
-				/* skip empty (null) phandles */
+				 
 				if (rc == -ENOENT)
 					continue;
 				else
@@ -124,18 +121,7 @@ static int __set_clk_rates(struct device_node *node, bool clk_supplier)
 	return 0;
 }
 
-/**
- * of_clk_set_defaults() - parse and set assigned clocks configuration
- * @node: device node to apply clock settings for
- * @clk_supplier: true if clocks supplied by @node should also be considered
- *
- * This function parses 'assigned-{clocks/clock-parents/clock-rates}' properties
- * and sets any specified clock parents and rates. The @clk_supplier argument
- * should be set to true if @node may be also a clock supplier of any clock
- * listed in its 'assigned-clocks' or 'assigned-clock-parents' properties.
- * If @clk_supplier is false the function exits returning 0 as soon as it
- * determines the @node is also a supplier of any of the clocks.
- */
+ 
 int of_clk_set_defaults(struct device_node *node, bool clk_supplier)
 {
 	int rc;

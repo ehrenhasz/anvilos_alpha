@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * davinci_nand.c - NAND Flash Driver for DaVinci family chips
- *
- * Copyright © 2006 Texas Instruments.
- *
- * Port to 2.6.23 Copyright © 2008 by:
- *   Sander Huijsen <Shuijsen@optelecom-nkf.com>
- *   Troy Kisky <troy.kisky@boundarydevices.com>
- *   Dirk Behme <Dirk.Behme@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,19 +14,7 @@
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 
-/*
- * This is a device driver for the NAND flash controller found on the
- * various DaVinci family chips.  It handles up to four SoC chipselects,
- * and some flavors of secondary chipselect (e.g. based on A12) as used
- * with multichip packages.
- *
- * The 1-bit ECC hardware is supported, as well as the newer 4-bit ECC
- * available on chips like the DM355 and OMAP-L137 and needed with the
- * more error-prone MLC NAND chips.
- *
- * This driver assumes EM_WAIT connects all the NAND devices' RDY/nBUSY
- * outputs in a "wire-AND" configuration, with no per-chip signals.
- */
+ 
 struct davinci_nand_info {
 	struct nand_controller	controller;
 	struct nand_chip	chip;
@@ -78,11 +57,9 @@ static inline void davinci_nand_writel(struct davinci_nand_info *info,
 	__raw_writel(value, info->base + offset);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * 1-bit hardware ECC ... context maintained for each core chipselect
- */
+ 
 
 static inline uint32_t nand_davinci_readecc_1bit(struct mtd_info *mtd)
 {
@@ -100,12 +77,12 @@ static void nand_davinci_hwctl_1bit(struct nand_chip *chip, int mode)
 
 	info = to_davinci_nand(nand_to_mtd(chip));
 
-	/* Reset ECC hardware */
+	 
 	nand_davinci_readecc_1bit(nand_to_mtd(chip));
 
 	spin_lock_irqsave(&davinci_nand_lock, flags);
 
-	/* Restart ECC hardware */
+	 
 	nandcfr = davinci_nand_readl(info, NANDFCR_OFFSET);
 	nandcfr |= BIT(8 + info->core_chipsel);
 	davinci_nand_writel(info, NANDFCR_OFFSET, nandcfr);
@@ -113,16 +90,14 @@ static void nand_davinci_hwctl_1bit(struct nand_chip *chip, int mode)
 	spin_unlock_irqrestore(&davinci_nand_lock, flags);
 }
 
-/*
- * Read hardware ECC value and pack into three bytes
- */
+ 
 static int nand_davinci_calculate_1bit(struct nand_chip *chip,
 				       const u_char *dat, u_char *ecc_code)
 {
 	unsigned int ecc_val = nand_davinci_readecc_1bit(nand_to_mtd(chip));
 	unsigned int ecc24 = (ecc_val & 0x0fff) | ((ecc_val & 0x0fff0000) >> 4);
 
-	/* invert so that erased block ecc is correct */
+	 
 	ecc24 = ~ecc24;
 	ecc_code[0] = (u_char)(ecc24);
 	ecc_code[1] = (u_char)(ecc24 >> 8);
@@ -142,7 +117,7 @@ static int nand_davinci_correct_1bit(struct nand_chip *chip, u_char *dat,
 
 	if (diff) {
 		if ((((diff >> 12) ^ diff) & 0xfff) == 0xfff) {
-			/* Correctable error */
+			 
 			if ((diff >> (12 + 3)) < chip->ecc.size) {
 				dat[diff >> (12 + 3)] ^= BIT((diff >> 12) & 7);
 				return 1;
@@ -150,11 +125,10 @@ static int nand_davinci_correct_1bit(struct nand_chip *chip, u_char *dat,
 				return -EBADMSG;
 			}
 		} else if (!(diff & (diff - 1))) {
-			/* Single bit ECC error in the ECC itself,
-			 * nothing to fix */
+			 
 			return 1;
 		} else {
-			/* Uncorrectable error */
+			 
 			return -EBADMSG;
 		}
 
@@ -162,19 +136,9 @@ static int nand_davinci_correct_1bit(struct nand_chip *chip, u_char *dat,
 	return 0;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * 4-bit hardware ECC ... context maintained over entire AEMIF
- *
- * This is a syndrome engine, but we avoid NAND_ECC_PLACEMENT_INTERLEAVED
- * since that forces use of a problematic "infix OOB" layout.
- * Among other things, it trashes manufacturer bad block markers.
- * Also, and specific to this hardware, it ECC-protects the "prepad"
- * in the OOB ... while having ECC protection for parts of OOB would
- * seem useful, the current MTD stack sometimes wants to update the
- * OOB without recomputing ECC.
- */
+ 
 
 static void nand_davinci_hwctl_4bit(struct nand_chip *chip, int mode)
 {
@@ -182,12 +146,12 @@ static void nand_davinci_hwctl_4bit(struct nand_chip *chip, int mode)
 	unsigned long flags;
 	u32 val;
 
-	/* Reset ECC hardware */
+	 
 	davinci_nand_readl(info, NAND_4BIT_ECC1_OFFSET);
 
 	spin_lock_irqsave(&davinci_nand_lock, flags);
 
-	/* Start 4-bit ECC calculation for read/write */
+	 
 	val = davinci_nand_readl(info, NANDFCR_OFFSET);
 	val &= ~(0x03 << 4);
 	val |= (info->core_chipsel << 4) | BIT(12);
@@ -198,7 +162,7 @@ static void nand_davinci_hwctl_4bit(struct nand_chip *chip, int mode)
 	spin_unlock_irqrestore(&davinci_nand_lock, flags);
 }
 
-/* Read raw ECC code after writing to NAND. */
+ 
 static void
 nand_davinci_readecc_4bit(struct davinci_nand_info *info, u32 code[4])
 {
@@ -210,7 +174,7 @@ nand_davinci_readecc_4bit(struct davinci_nand_info *info, u32 code[4])
 	code[3] = davinci_nand_readl(info, NAND_4BIT_ECC4_OFFSET) & mask;
 }
 
-/* Terminate read ECC; or return ECC (as bytes) of data written to NAND. */
+ 
 static int nand_davinci_calculate_4bit(struct nand_chip *chip,
 				       const u_char *dat, u_char *ecc_code)
 {
@@ -218,21 +182,13 @@ static int nand_davinci_calculate_4bit(struct nand_chip *chip,
 	u32 raw_ecc[4], *p;
 	unsigned i;
 
-	/* After a read, terminate ECC calculation by a dummy read
-	 * of some 4-bit ECC register.  ECC covers everything that
-	 * was read; correct() just uses the hardware state, so
-	 * ecc_code is not needed.
-	 */
+	 
 	if (info->is_readmode) {
 		davinci_nand_readl(info, NAND_4BIT_ECC1_OFFSET);
 		return 0;
 	}
 
-	/* Pack eight raw 10-bit ecc values into ten bytes, making
-	 * two passes which each convert four values (in upper and
-	 * lower halves of two 32-bit words) into five bytes.  The
-	 * ROM boot loader uses this same packing scheme.
-	 */
+	 
 	nand_davinci_readecc_4bit(info, raw_ecc);
 	for (i = 0, p = raw_ecc; i < 2; i++, p += 2) {
 		*ecc_code++ =   p[0]        & 0xff;
@@ -245,9 +201,7 @@ static int nand_davinci_calculate_4bit(struct nand_chip *chip,
 	return 0;
 }
 
-/* Correct up to 4 bits in data we just read, using state left in the
- * hardware plus the ecc_code computed when it was first written.
- */
+ 
 static int nand_davinci_correct_4bit(struct nand_chip *chip, u_char *data,
 				     u_char *ecc_code, u_char *null)
 {
@@ -260,9 +214,7 @@ static int nand_davinci_correct_4bit(struct nand_chip *chip, u_char *data,
 	unsigned num_errors, corrected;
 	unsigned long timeo;
 
-	/* Unpack ten bytes into eight 10 bit values.  We know we're
-	 * little-endian, and use type punning for less shifting/masking.
-	 */
+	 
 	if (WARN_ON(0x01 & (uintptr_t)ecc_code))
 		return -EINVAL;
 	ecc16 = (unsigned short *)ecc_code;
@@ -276,40 +228,24 @@ static int nand_davinci_correct_4bit(struct nand_chip *chip, u_char *data,
 	ecc10[6] = ((ecc16[3] >> 12) & 0xf)  | ((ecc16[4] << 4) & 0x3f0);
 	ecc10[7] =  (ecc16[4] >>  6) & 0x3ff;
 
-	/* Tell ECC controller about the expected ECC codes. */
+	 
 	for (i = 7; i >= 0; i--)
 		davinci_nand_writel(info, NAND_4BIT_ECC_LOAD_OFFSET, ecc10[i]);
 
-	/* Allow time for syndrome calculation ... then read it.
-	 * A syndrome of all zeroes 0 means no detected errors.
-	 */
+	 
 	davinci_nand_readl(info, NANDFSR_OFFSET);
 	nand_davinci_readecc_4bit(info, syndrome);
 	if (!(syndrome[0] | syndrome[1] | syndrome[2] | syndrome[3]))
 		return 0;
 
-	/*
-	 * Clear any previous address calculation by doing a dummy read of an
-	 * error address register.
-	 */
+	 
 	davinci_nand_readl(info, NAND_ERR_ADD1_OFFSET);
 
-	/* Start address calculation, and wait for it to complete.
-	 * We _could_ start reading more data while this is working,
-	 * to speed up the overall page read.
-	 */
+	 
 	davinci_nand_writel(info, NANDFCR_OFFSET,
 			davinci_nand_readl(info, NANDFCR_OFFSET) | BIT(13));
 
-	/*
-	 * ECC_STATE field reads 0x3 (Error correction complete) immediately
-	 * after setting the 4BITECC_ADD_CALC_START bit. So if you immediately
-	 * begin trying to poll for the state, you may fall right out of your
-	 * loop without any of the correction calculations having taken place.
-	 * The recommendation from the hardware team is to initially delay as
-	 * long as ECC_STATE reads less than 4. After that, ECC HW has entered
-	 * correction state.
-	 */
+	 
 	timeo = jiffies + usecs_to_jiffies(100);
 	do {
 		ecc_state = (davinci_nand_readl(info,
@@ -321,24 +257,24 @@ static int nand_davinci_correct_4bit(struct nand_chip *chip, u_char *data,
 		u32	fsr = davinci_nand_readl(info, NANDFSR_OFFSET);
 
 		switch ((fsr >> 8) & 0x0f) {
-		case 0:		/* no error, should not happen */
+		case 0:		 
 			davinci_nand_readl(info, NAND_ERR_ERRVAL1_OFFSET);
 			return 0;
-		case 1:		/* five or more errors detected */
+		case 1:		 
 			davinci_nand_readl(info, NAND_ERR_ERRVAL1_OFFSET);
 			return -EBADMSG;
-		case 2:		/* error addresses computed */
+		case 2:		 
 		case 3:
 			num_errors = 1 + ((fsr >> 16) & 0x03);
 			goto correct;
-		default:	/* still working on it */
+		default:	 
 			cpu_relax();
 			continue;
 		}
 	}
 
 correct:
-	/* correct each error */
+	 
 	for (i = 0, corrected = 0; i < num_errors; i++) {
 		int error_address, error_value;
 
@@ -370,12 +306,9 @@ correct:
 	return corrected;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* An ECC layout for using 4-bit ECC with small-page flash, storing
- * ten ECC bytes plus the manufacturer's bad block marker byte, and
- * and not overlapping the default BBT markers.
- */
+ 
 static int hwecc4_ooblayout_small_ecc(struct mtd_info *mtd, int section,
 				      struct mtd_oob_region *oobregion)
 {
@@ -476,17 +409,7 @@ static struct davinci_nand_pdata
 			"ti,davinci-nand-use-bbt"))
 			pdata->bbt_options = NAND_BBT_USE_FLASH;
 
-		/*
-		 * Since kernel v4.8, this driver has been fixed to enable
-		 * use of 4-bit hardware ECC with subpages and verified on
-		 * TI's keystone EVMs (K2L, K2HK and K2E).
-		 * However, in the interest of not breaking systems using
-		 * existing UBI partitions, sub-page writes are not being
-		 * (re)enabled. If you want to use subpage writes on Keystone
-		 * platforms (i.e. do not have any existing UBI partitions),
-		 * then use "ti,davinci-nand" as the compatible in your
-		 * device-tree file.
-		 */
+		 
 		if (of_device_is_compatible(pdev->dev.of_node,
 					    "ti,keystone-nand")) {
 			pdata->options |= NAND_NO_SUBPAGE_WRITE;
@@ -513,7 +436,7 @@ static int davinci_nand_attach_chip(struct nand_chip *chip)
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 
-	/* Use board-specific ECC config */
+	 
 	chip->ecc.engine_type = pdata->engine_type;
 	chip->ecc.placement = pdata->ecc_placement;
 
@@ -523,12 +446,7 @@ static int davinci_nand_attach_chip(struct nand_chip *chip)
 		break;
 	case NAND_ECC_ENGINE_TYPE_SOFT:
 		pdata->ecc_bits = 0;
-		/*
-		 * This driver expects Hamming based ECC when engine_type is set
-		 * to NAND_ECC_ENGINE_TYPE_SOFT. Force ecc.algo to
-		 * NAND_ECC_ALGO_HAMMING to avoid adding an extra ->ecc_algo
-		 * field to davinci_nand_pdata.
-		 */
+		 
 		chip->ecc.algo = NAND_ECC_ALGO_HAMMING;
 		break;
 	case NAND_ECC_ENGINE_TYPE_ON_HOST:
@@ -540,12 +458,9 @@ static int davinci_nand_attach_chip(struct nand_chip *chip)
 				return -EINVAL;
 			}
 
-			/*
-			 * No sanity checks:  CPUs must support this,
-			 * and the chips may not use NAND_BUSWIDTH_16.
-			 */
+			 
 
-			/* No sharing 4-bit hardware between chipselects yet */
+			 
 			spin_lock_irq(&davinci_nand_lock);
 			if (ecc4_busy)
 				ret = -EBUSY;
@@ -563,16 +478,7 @@ static int davinci_nand_attach_chip(struct nand_chip *chip)
 			chip->ecc.options = NAND_ECC_GENERIC_ERASED_CHECK;
 			chip->ecc.algo = NAND_ECC_ALGO_BCH;
 
-			/*
-			 * Update ECC layout if needed ... for 1-bit HW ECC, the
-			 * default is OK, but it allocates 6 bytes when only 3
-			 * are needed (for each 512 bytes). For 4-bit HW ECC,
-			 * the default is not usable: 10 bytes needed, not 6.
-			 *
-			 * For small page chips, preserve the manufacturer's
-			 * badblock marking data ... and make sure a flash BBT
-			 * table marker fits in the free bytes.
-			 */
+			 
 			if (chunks == 1) {
 				mtd_set_ooblayout(mtd,
 						  &hwecc4_small_ooblayout_ops);
@@ -584,7 +490,7 @@ static int davinci_nand_attach_chip(struct nand_chip *chip)
 				return -EIO;
 			}
 		} else {
-			/* 1bit ecc hamming */
+			 
 			chip->ecc.calculate = nand_davinci_calculate_1bit;
 			chip->ecc.correct = nand_davinci_correct_1bit;
 			chip->ecc.hwctl = nand_davinci_hwctl_1bit;
@@ -721,11 +627,11 @@ static int nand_davinci_probe(struct platform_device *pdev)
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 
-	/* insist on board-specific configuration */
+	 
 	if (!pdata)
 		return -ENODEV;
 
-	/* which external chipselect will we be managing? */
+	 
 	if (pdata->core_chipsel > 3)
 		return -ENODEV;
 
@@ -746,12 +652,7 @@ static int nand_davinci_probe(struct platform_device *pdev)
 	if (IS_ERR(vaddr))
 		return PTR_ERR(vaddr);
 
-	/*
-	 * This registers range is used to setup NAND settings. In case with
-	 * TI AEMIF driver, the same memory address range is requested already
-	 * by AEMIF, so we cannot request it twice, just ioremap.
-	 * The AEMIF and NAND drivers not use the same registers in this range.
-	 */
+	 
 	base = devm_ioremap(&pdev->dev, res2->start, resource_size(res2));
 	if (!base) {
 		dev_err(&pdev->dev, "ioremap failed for resource %pR\n", res2);
@@ -766,9 +667,9 @@ static int nand_davinci_probe(struct platform_device *pdev)
 	mtd->dev.parent		= &pdev->dev;
 	nand_set_flash_node(&info->chip, pdev->dev.of_node);
 
-	/* options such as NAND_BBT_USE_FLASH */
+	 
 	info->chip.bbt_options	= pdata->bbt_options;
-	/* options such as 16-bit widths */
+	 
 	info->chip.options	= pdata->options;
 	info->chip.bbt_td	= pdata->bbt_td;
 	info->chip.bbt_md	= pdata->bbt_md;
@@ -778,20 +679,20 @@ static int nand_davinci_probe(struct platform_device *pdev)
 	info->core_chipsel	= pdata->core_chipsel;
 	info->mask_chipsel	= pdata->mask_chipsel;
 
-	/* use nandboot-capable ALE/CLE masks by default */
+	 
 	info->mask_ale		= pdata->mask_ale ? : MASK_ALE;
 	info->mask_cle		= pdata->mask_cle ? : MASK_CLE;
 
 	spin_lock_irq(&davinci_nand_lock);
 
-	/* put CSxNAND into NAND mode */
+	 
 	val = davinci_nand_readl(info, NANDFCR_OFFSET);
 	val |= BIT(info->core_chipsel);
 	davinci_nand_writel(info, NANDFCR_OFFSET, val);
 
 	spin_unlock_irq(&davinci_nand_lock);
 
-	/* Scan to find existence of the device(s) */
+	 
 	nand_controller_init(&info->controller);
 	info->controller.ops = &davinci_nand_controller_ops;
 	info->chip.controller = &info->controller;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI da8xx master peripheral priority driver
- *
- * Copyright (C) 2016 BayLibre SAS
- *
- * Author:
- *   Bartosz Golaszewski <bgolaszewski@baylibre.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -14,17 +7,7 @@
 #include <linux/io.h>
 #include <linux/regmap.h>
 
-/*
- * REVISIT: Linux doesn't have a good framework for the kind of performance
- * knobs this driver controls. We can't use device tree properties as it deals
- * with hardware configuration rather than description. We also don't want to
- * commit to maintaining some random sysfs attributes.
- *
- * For now we just hardcode the register values for the boards that need
- * some changes (as is the case for the LCD controller on da850-lcdk - the
- * first board we support here). When linux gets an appropriate framework,
- * we'll easily convert the driver to it.
- */
+ 
 
 #define DA8XX_MSTPRI0_OFFSET		0
 #define DA8XX_MSTPRI1_OFFSET		4
@@ -155,14 +138,7 @@ struct da8xx_mstpri_board_priorities {
 	size_t numprio;
 };
 
-/*
- * Default memory settings of da850 do not meet the throughput/latency
- * requirements of tilcdc. This results in the image displayed being
- * incorrect and the following warning being displayed by the LCDC
- * drm driver:
- *
- *   tilcdc da8xx_lcdc.0: tilcdc_crtc_irq(0x00000020): FIFO underfow
- */
+ 
 static const struct da8xx_mstpri_priority da850_lcdk_priorities[] = {
 	{
 		.which = DA8XX_MSTPRI_LCDC,

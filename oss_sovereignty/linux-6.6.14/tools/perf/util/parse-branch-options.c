@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util/debug.h"
 #include "util/event.h"
 #include <subcmd/parse-options.h>
@@ -56,7 +56,7 @@ int parse_branch_str(const char *str, __u64 *mode)
 		return 0;
 	}
 
-	/* because str is read-only */
+	 
 	s = os = strdup(str);
 	if (!s)
 		return -1;
@@ -85,7 +85,7 @@ int parse_branch_str(const char *str, __u64 *mode)
 		s = p + 1;
 	}
 
-	/* default to any branch */
+	 
 	if ((*mode & ~ONLY_PLM) == 0) {
 		*mode = PERF_SAMPLE_BRANCH_ANY;
 	}
@@ -102,9 +102,7 @@ parse_branch_stack(const struct option *opt, const char *str, int unset)
 	if (unset)
 		return 0;
 
-	/*
-	 * cannot set it twice, -b + --branch-filter for instance
-	 */
+	 
 	if (*mode) {
 		pr_err("Error: Can't use --branch-any (-b) with --branch-filter (-j).\n");
 		return -1;

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2022 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
 
 #include <kunit/test.h>
 #include <linux/module.h>
@@ -18,9 +18,9 @@ static const struct {
 	u8 slot_multiple;
 	u32 bclk;
 } tdm_params_to_bclk_cases[] = {
-	/* rate		fmt	   channels tdm_width tdm_slots slot_multiple bclk */
+	 
 
-	/* From params only */
+	 
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 1,	0,	0,	0,	  128000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 2,	0,	0,	0,	  256000 },
 	{   8000,  SNDRV_PCM_FORMAT_S24_LE, 1,	0,	0,	0,	  192000 },
@@ -40,7 +40,7 @@ static const struct {
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 1,	0,	0,	0,	12288000 },
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 2,	0,	0,	0,	24576000 },
 
-	/* I2S from params */
+	 
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 1,	0,	0,	2,	  256000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 2,	0,	0,	2,	  256000 },
 	{   8000,  SNDRV_PCM_FORMAT_S24_LE, 1,	0,	0,	2,	  384000 },
@@ -60,7 +60,7 @@ static const struct {
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 1,	0,	0,	2,	24576000 },
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 2,	0,	0,	2,	24576000 },
 
-	/* Fixed 8-slot TDM, other values from params */
+	 
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 1,	0,	8,	0,	 1024000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 2,	0,	8,	0,	 1024000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 3,	0,	8,	0,	 1024000 },
@@ -78,7 +78,7 @@ static const struct {
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 3,	0,	8,	0,	98304000 },
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 4,	0,	8,	0,	98304000 },
 
-	/* Fixed 32-bit TDM, other values from params */
+	 
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 1,	32,	0,	0,	  256000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 2,	32,	0,	0,	  512000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 3,	32,	0,	0,	  768000 },
@@ -96,7 +96,7 @@ static const struct {
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 3,	32,	0,	0,	36864000 },
 	{ 384000,  SNDRV_PCM_FORMAT_S32_LE, 4,	32,	0,	0,	49152000 },
 
-	/* Fixed 6-slot 24-bit TDM, other values from params */
+	 
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 1,	24,	6,	0,	 1152000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 2,	24,	6,	0,	 1152000 },
 	{   8000,  SNDRV_PCM_FORMAT_S16_LE, 3,	24,	6,	0,	 1152000 },
@@ -158,7 +158,7 @@ static void test_tdm_params_to_bclk(struct kunit *test)
 		if (tdm_params_to_bclk_cases[i].slot_multiple > 0)
 			continue;
 
-		/* Slot multiple 1 should have the same effect as multiple 0 */
+		 
 		test_tdm_params_to_bclk_one(test,
 					    tdm_params_to_bclk_cases[i].rate,
 					    tdm_params_to_bclk_cases[i].fmt,
@@ -198,10 +198,7 @@ static void test_snd_soc_params_to_bclk(struct kunit *test)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(tdm_params_to_bclk_cases); ++i) {
-		/*
-		 * snd_soc_params_to_bclk() is all the test cases where
-		 * snd_pcm_hw_params values are not overridden.
-		 */
+		 
 		if (tdm_params_to_bclk_cases[i].tdm_width |
 		    tdm_params_to_bclk_cases[i].tdm_slots |
 		    tdm_params_to_bclk_cases[i].slot_multiple)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KVM PMU support for AMD
- *
- * Copyright 2015, Red Hat, Inc. and/or its affiliates.
- *
- * Author:
- *   Wei Huang <wei@redhat.com>
- *
- * Implementation is based on pmu_intel.c file
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/types.h>
@@ -48,10 +39,7 @@ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
 	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
 		if (!guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE))
 			return NULL;
-		/*
-		 * Each PMU counter has a pair of CTL and CTR MSRs. CTLn
-		 * MSRs (accessed via EVNTSEL) are even, CTRn MSRs are odd.
-		 */
+		 
 		idx = (unsigned int)((msr - MSR_F15H_PERF_CTL0) / 2);
 		if (!(msr & 0x1) != (type == PMU_TYPE_EVNTSEL))
 			return NULL;
@@ -87,7 +75,7 @@ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
 	return idx < pmu->nr_arch_gp_counters;
 }
 
-/* idx is the ECX register of RDPMC instruction */
+ 
 static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
 	unsigned int idx, u64 *mask)
 {
@@ -134,13 +122,13 @@ static int amd_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 	struct kvm_pmc *pmc;
 	u32 msr = msr_info->index;
 
-	/* MSR_PERFCTRn */
+	 
 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_COUNTER);
 	if (pmc) {
 		msr_info->data = pmc_read_counter(pmc);
 		return 0;
 	}
-	/* MSR_EVNTSELn */
+	 
 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_EVNTSEL);
 	if (pmc) {
 		msr_info->data = pmc->eventsel;
@@ -157,14 +145,14 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 	u32 msr = msr_info->index;
 	u64 data = msr_info->data;
 
-	/* MSR_PERFCTRn */
+	 
 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_COUNTER);
 	if (pmc) {
 		pmc_write_counter(pmc, data);
 		pmc_update_sample_period(pmc);
 		return 0;
 	}
-	/* MSR_EVNTSELn */
+	 
 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_EVNTSEL);
 	if (pmc) {
 		data &= ~pmu->reserved_bits;
@@ -186,10 +174,7 @@ static void amd_pmu_refresh(struct kvm_vcpu *vcpu)
 	pmu->version = 1;
 	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFMON_V2)) {
 		pmu->version = 2;
-		/*
-		 * Note, PERFMON_V2 is also in 0x80000022.0x0, i.e. the guest
-		 * CPUID entry is guaranteed to be non-NULL.
-		 */
+		 
 		BUILD_BUG_ON(x86_feature_cpuid(X86_FEATURE_PERFMON_V2).function != 0x80000022 ||
 			     x86_feature_cpuid(X86_FEATURE_PERFMON_V2).index);
 		ebx.full = kvm_find_cpuid_entry_index(vcpu, 0x80000022, 0)->ebx;
@@ -211,7 +196,7 @@ static void amd_pmu_refresh(struct kvm_vcpu *vcpu)
 	pmu->counter_bitmask[KVM_PMC_GP] = ((u64)1 << 48) - 1;
 	pmu->reserved_bits = 0xfffffff000280000ull;
 	pmu->raw_event_mask = AMD64_RAW_EVENT_MASK;
-	/* not applicable to AMD; but clean them to prevent any fall out */
+	 
 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
 	pmu->nr_arch_fixed_counters = 0;
 	bitmap_set(pmu->all_valid_pmc_idx, 0, pmu->nr_arch_gp_counters);

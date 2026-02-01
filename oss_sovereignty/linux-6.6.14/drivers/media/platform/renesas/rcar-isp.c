@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Renesas Electronics Corp.
- *
- * Driver for Renesas R-Car ISP Channel Selector
- *
- * The ISP hardware is capable of more than just channel selection, features
- * such as demosaicing, white balance control and color space conversion are
- * also possible. These more advanced features are not supported by the driver
- * due to lack of documentation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -122,7 +113,7 @@ struct rcar_isp {
 	struct v4l2_async_notifier notifier;
 	struct v4l2_subdev *remote;
 
-	struct mutex lock; /* Protects mf and stream_count. */
+	struct mutex lock;  
 	struct v4l2_mbus_framefmt mf;
 	int stream_count;
 };
@@ -189,14 +180,14 @@ static int risp_start(struct rcar_isp *isp)
 		return ret;
 	}
 
-	/* Select CSI-2 input source. */
+	 
 	if (isp->csi_input == RISP_CSI_INPUT1)
 		sel_csi = ISPINPUTSEL0_SEL_CSI0;
 
 	risp_write(isp, ISPINPUTSEL0_REG,
 		   risp_read(isp, ISPINPUTSEL0_REG) | sel_csi);
 
-	/* Configure Channel Selector. */
+	 
 	for (vc = 0; vc < 4; vc++) {
 		u8 ch = vc + 4;
 		u8 dt = format->datatype;
@@ -209,14 +200,14 @@ static int risp_start(struct rcar_isp *isp)
 			   ISPCS_DT_CODE03_EN0 | ISPCS_DT_CODE03_DT0(dt));
 	}
 
-	/* Setup processing method. */
+	 
 	risp_write(isp, ISPPROCMODE_DT_REG(format->datatype),
 		   ISPPROCMODE_DT_PROC_MODE_VC3(format->procmode) |
 		   ISPPROCMODE_DT_PROC_MODE_VC2(format->procmode) |
 		   ISPPROCMODE_DT_PROC_MODE_VC1(format->procmode) |
 		   ISPPROCMODE_DT_PROC_MODE_VC0(format->procmode));
 
-	/* Start ISP. */
+	 
 	risp_write(isp, ISPSTART_REG, ISPSTART_START);
 
 	ret = v4l2_subdev_call(isp->remote, video, s_stream, 1);
@@ -230,7 +221,7 @@ static void risp_stop(struct rcar_isp *isp)
 {
 	v4l2_subdev_call(isp->remote, video, s_stream, 0);
 
-	/* Stop ISP. */
+	 
 	risp_write(isp, ISPSTART_REG, ISPSTART_STOP);
 
 	risp_power_off(isp);
@@ -320,9 +311,7 @@ static const struct v4l2_subdev_ops rcar_isp_subdev_ops = {
 	.pad	= &risp_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * Async handling and registration of subdevices and links
- */
+ 
 
 static int risp_notify_bound(struct v4l2_async_notifier *notifier,
 			     struct v4l2_subdev *subdev,
@@ -408,9 +397,7 @@ static int risp_parse_dt(struct rcar_isp *isp)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Platform Device Driver
- */
+ 
 
 static const struct media_entity_operations risp_entity_ops = {
 	.link_validate = v4l2_subdev_link_validate,
@@ -431,7 +418,7 @@ static int risp_probe_resources(struct rcar_isp *isp,
 static const struct of_device_id risp_of_id_table[] = {
 	{ .compatible = "renesas,r8a779a0-isp" },
 	{ .compatible = "renesas,r8a779g0-isp" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, risp_of_id_table);
 

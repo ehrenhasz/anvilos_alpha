@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_internal.h"
 #include "gem/i915_gem_lmem.h"
@@ -42,7 +40,7 @@ int intel_ring_pin(struct intel_ring *ring, struct i915_gem_ww_ctx *ww)
 	if (atomic_fetch_inc(&ring->pin_count))
 		return 0;
 
-	/* Ring wraparound at offset 0 sometimes hangs. No idea why. */
+	 
 	flags = PIN_OFFSET_BIAS | i915_ggtt_pin_bias(vma);
 
 	if (i915_gem_object_is_stolen(vma->obj))
@@ -69,7 +67,7 @@ int intel_ring_pin(struct intel_ring *ring, struct i915_gem_ww_ctx *ww)
 
 	i915_vma_make_unshrinkable(vma);
 
-	/* Discard any unused bytes beyond that submitted to hw. */
+	 
 	intel_ring_reset(ring, ring->emit);
 
 	ring->vaddr = addr;
@@ -124,10 +122,7 @@ static struct i915_vma *create_ring_vma(struct i915_ggtt *ggtt, int size)
 	if (IS_ERR(obj))
 		return ERR_CAST(obj);
 
-	/*
-	 * Mark ring buffers as read-only from GPU side (so no stray overwrites)
-	 * if supported by the platform's GGTT.
-	 */
+	 
 	if (vm->has_read_only)
 		i915_gem_object_set_readonly(obj);
 
@@ -160,11 +155,7 @@ intel_engine_create_ring(struct intel_engine_cs *engine, int size)
 	ring->size = size;
 	ring->wrap = BITS_PER_TYPE(ring->size) - ilog2(size);
 
-	/*
-	 * Workaround an erratum on the i830 which causes a hang if
-	 * the TAIL pointer points to within the last 2 cachelines
-	 * of the buffer.
-	 */
+	 
 	ring->effective_size = size;
 	if (IS_I830(i915) || IS_I845G(i915))
 		ring->effective_size -= 2 * CACHELINE_BYTES;
@@ -205,7 +196,7 @@ wait_for_space(struct intel_ring *ring,
 		if (target->ring != ring)
 			continue;
 
-		/* Would completion of this request free enough space? */
+		 
 		if (bytes <= __intel_ring_space(target->postfix,
 						ring->emit, ring->size))
 			break;
@@ -236,7 +227,7 @@ u32 *intel_ring_begin(struct i915_request *rq, unsigned int num_dwords)
 	unsigned int total_bytes;
 	u32 *cs;
 
-	/* Packets must be qword aligned. */
+	 
 	GEM_BUG_ON(num_dwords & 1);
 
 	total_bytes = bytes + rq->reserved_space;
@@ -246,20 +237,11 @@ u32 *intel_ring_begin(struct i915_request *rq, unsigned int num_dwords)
 		const int remain_actual = ring->size - ring->emit;
 
 		if (bytes > remain_usable) {
-			/*
-			 * Not enough space for the basic request. So need to
-			 * flush out the remainder and then wait for
-			 * base + reserved.
-			 */
+			 
 			total_bytes += remain_actual;
 			need_wrap = remain_actual | 1;
 		} else  {
-			/*
-			 * The base request will fit but the reserved space
-			 * falls off the end. So we don't need an immediate
-			 * wrap and only need to effectively wait for the
-			 * reserved size from the start of ringbuffer.
-			 */
+			 
 			total_bytes = rq->reserved_space + remain_actual;
 		}
 	}
@@ -267,15 +249,7 @@ u32 *intel_ring_begin(struct i915_request *rq, unsigned int num_dwords)
 	if (unlikely(total_bytes > ring->space)) {
 		int ret;
 
-		/*
-		 * Space is reserved in the ringbuffer for finalising the
-		 * request, as that cannot be allowed to fail. During request
-		 * finalisation, reserved_space is set to 0 to stop the
-		 * overallocation and the assumption is that then we never need
-		 * to wait (which has the risk of failing with EINTR).
-		 *
-		 * See also i915_request_alloc() and i915_request_add().
-		 */
+		 
 		GEM_BUG_ON(!rq->reserved_space);
 
 		ret = wait_for_space(ring,
@@ -291,7 +265,7 @@ u32 *intel_ring_begin(struct i915_request *rq, unsigned int num_dwords)
 		GEM_BUG_ON(ring->emit + need_wrap > ring->size);
 		GEM_BUG_ON(!IS_ALIGNED(need_wrap, sizeof(u64)));
 
-		/* Fill the tail with MI_NOOP */
+		 
 		memset64(ring->vaddr + ring->emit, 0, need_wrap / sizeof(u64));
 		ring->space -= need_wrap;
 		ring->emit = 0;
@@ -308,7 +282,7 @@ u32 *intel_ring_begin(struct i915_request *rq, unsigned int num_dwords)
 	return cs;
 }
 
-/* Align the ring tail to a cacheline boundary */
+ 
 int intel_ring_cacheline_align(struct i915_request *rq)
 {
 	int num_dwords;

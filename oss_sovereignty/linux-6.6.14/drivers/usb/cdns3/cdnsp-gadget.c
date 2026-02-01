@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence CDNSP DRD Driver.
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/dma-mapping.h>
@@ -27,7 +20,7 @@
 
 unsigned int cdnsp_port_speed(unsigned int port_status)
 {
-	/*Detect gadget speed based on PORTSC register*/
+	 
 	if (DEV_SUPERSPEEDPLUS(port_status))
 		return USB_SPEED_SUPER_PLUS;
 	else if (DEV_SUPERSPEED(port_status))
@@ -37,36 +30,18 @@ unsigned int cdnsp_port_speed(unsigned int port_status)
 	else if (DEV_FULLSPEED(port_status))
 		return USB_SPEED_FULL;
 
-	/* If device is detached then speed will be USB_SPEED_UNKNOWN.*/
+	 
 	return USB_SPEED_UNKNOWN;
 }
 
-/*
- * Given a port state, this function returns a value that would result in the
- * port being in the same state, if the value was written to the port status
- * control register.
- * Save Read Only (RO) bits and save read/write bits where
- * writing a 0 clears the bit and writing a 1 sets the bit (RWS).
- * For all other types (RW1S, RW1CS, RW, and RZ), writing a '0' has no effect.
- */
+ 
 u32 cdnsp_port_state_to_neutral(u32 state)
 {
-	/* Save read-only status and port state. */
+	 
 	return (state & CDNSP_PORT_RO) | (state & CDNSP_PORT_RWS);
 }
 
-/**
- * cdnsp_find_next_ext_cap - Find the offset of the extended capabilities
- *                           with capability ID id.
- * @base: PCI MMIO registers base address.
- * @start: Address at which to start looking, (0 or HCC_PARAMS to start at
- *         beginning of list)
- * @id: Extended capability ID to search for.
- *
- * Returns the offset of the next matching extended capability structure.
- * Some capabilities can occur several times,
- * e.g., the EXT_CAPS_PROTOCOL, and this provides a way to find them all.
- */
+ 
 int cdnsp_find_next_ext_cap(void __iomem *base, u32 start, int id)
 {
 	u32 offset = start;
@@ -166,9 +141,7 @@ static void cdnsp_clear_chicken_bits_2(struct cdnsp_device *pdev, u32 bit)
 	writel(bit, reg);
 }
 
-/*
- * Disable interrupts and begin the controller halting process.
- */
+ 
 static void cdnsp_quiesce(struct cdnsp_device *pdev)
 {
 	u32 halted;
@@ -186,15 +159,7 @@ static void cdnsp_quiesce(struct cdnsp_device *pdev)
 	writel(cmd, &pdev->op_regs->command);
 }
 
-/*
- * Force controller into halt state.
- *
- * Disable any IRQs and clear the run/stop bit.
- * Controller will complete any current and actively pipelined transactions, and
- * should halt within 16 ms of the run/stop bit being cleared.
- * Read controller Halted bit in the status register to see when the
- * controller is finished.
- */
+ 
 int cdnsp_halt(struct cdnsp_device *pdev)
 {
 	int ret;
@@ -215,10 +180,7 @@ int cdnsp_halt(struct cdnsp_device *pdev)
 	return 0;
 }
 
-/*
- * device controller died, register read returns 0xffffffff, or command never
- * ends.
- */
+ 
 void cdnsp_died(struct cdnsp_device *pdev)
 {
 	dev_err(pdev->dev, "ERROR: CDNSP controller not responding\n");
@@ -226,9 +188,7 @@ void cdnsp_died(struct cdnsp_device *pdev)
 	cdnsp_halt(pdev);
 }
 
-/*
- * Set the run bit and wait for the device to be running.
- */
+ 
 static int cdnsp_start(struct cdnsp_device *pdev)
 {
 	u32 temp;
@@ -240,10 +200,7 @@ static int cdnsp_start(struct cdnsp_device *pdev)
 
 	pdev->cdnsp_state = 0;
 
-	/*
-	 * Wait for the STS_HALT Status bit to be 0 to indicate the device is
-	 * running.
-	 */
+	 
 	ret = readl_poll_timeout_atomic(&pdev->op_regs->status, temp,
 					!(temp & STS_HALT), 1,
 					CDNSP_MAX_HALT_USEC);
@@ -255,13 +212,7 @@ static int cdnsp_start(struct cdnsp_device *pdev)
 	return ret;
 }
 
-/*
- * Reset a halted controller.
- *
- * This resets pipelines, timers, counters, state machines, etc.
- * Transactions will be terminated immediately, and operational registers
- * will be set to their defaults.
- */
+ 
 int cdnsp_reset(struct cdnsp_device *pdev)
 {
 	u32 command;
@@ -292,10 +243,7 @@ int cdnsp_reset(struct cdnsp_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * CDNSP cannot write any doorbells or operational registers other
-	 * than status until the "Controller Not Ready" flag is cleared.
-	 */
+	 
 	ret = readl_poll_timeout_atomic(&pdev->op_regs->status, temp,
 					!(temp & STS_CNR), 1,
 					10 * 1000);
@@ -310,15 +258,7 @@ int cdnsp_reset(struct cdnsp_device *pdev)
 	return ret;
 }
 
-/*
- * cdnsp_get_endpoint_index - Find the index for an endpoint given its
- * descriptor.Use the return value to right shift 1 for the bitmask.
- *
- * Index = (epnum * 2) + direction - 1,
- * where direction = 0 for OUT, 1 for IN.
- * For control endpoints, the IN index is used (OUT index is unused), so
- * index = (epnum * 2) + direction - 1 = (epnum * 2) + 1 - 1 = (epnum * 2)
- */
+ 
 static unsigned int
 	cdnsp_get_endpoint_index(const struct usb_endpoint_descriptor *desc)
 {
@@ -330,11 +270,7 @@ static unsigned int
 	return (index * 2) + (usb_endpoint_dir_in(desc) ? 1 : 0) - 1;
 }
 
-/*
- * Find the flag for this endpoint (for use in the control context). Use the
- * endpoint index to create a bitmask. The slot context is bit 0, endpoint 0 is
- * bit 1, etc.
- */
+ 
 static unsigned int
 	cdnsp_get_endpoint_flag(const struct usb_endpoint_descriptor *desc)
 {
@@ -395,31 +331,7 @@ unmap:
 	return ret;
 }
 
-/*
- * Remove the request's TD from the endpoint ring. This may cause the
- * controller to stop USB transfers, potentially stopping in the middle of a
- * TRB buffer. The controller should pick up where it left off in the TD,
- * unless a Set Transfer Ring Dequeue Pointer is issued.
- *
- * The TRBs that make up the buffers for the canceled request will be "removed"
- * from the ring. Since the ring is a contiguous structure, they can't be
- * physically removed. Instead, there are two options:
- *
- *  1) If the controller is in the middle of processing the request to be
- *     canceled, we simply move the ring's dequeue pointer past those TRBs
- *     using the Set Transfer Ring Dequeue Pointer command. This will be
- *     the common case, when drivers timeout on the last submitted request
- *     and attempt to cancel.
- *
- *  2) If the controller is in the middle of a different TD, we turn the TRBs
- *     into a series of 1-TRB transfer no-op TDs. No-ops shouldn't be chained.
- *     The controller will need to invalidate the any TRBs it has cached after
- *     the stop endpoint command.
- *
- *  3) The TD may have completed by the time the Stop Endpoint Command
- *     completes, so software needs to handle that case too.
- *
- */
+ 
 int cdnsp_ep_dequeue(struct cdnsp_ep *pep, struct cdnsp_request *preq)
 {
 	struct cdnsp_device *pdev = pep->pdev;
@@ -445,18 +357,13 @@ static void cdnsp_zero_in_ctx(struct cdnsp_device *pdev)
 
 	ctrl_ctx = cdnsp_get_input_control_ctx(&pdev->in_ctx);
 
-	/*
-	 * When a device's add flag and drop flag are zero, any subsequent
-	 * configure endpoint command will leave that endpoint's state
-	 * untouched. Make sure we don't leave any old state in the input
-	 * endpoint contexts.
-	 */
+	 
 	ctrl_ctx->drop_flags = 0;
 	ctrl_ctx->add_flags = 0;
 	slot_ctx = cdnsp_get_slot_ctx(&pdev->in_ctx);
 	slot_ctx->dev_info &= cpu_to_le32(~LAST_CTX_MASK);
 
-	/* Endpoint 0 is always valid */
+	 
 	slot_ctx->dev_info |= cpu_to_le32(LAST_CTX(1));
 	for (i = 1; i < CDNSP_ENDPOINTS_NUM; ++i) {
 		ep_ctx = cdnsp_get_ep_ctx(&pdev->in_ctx, i);
@@ -467,7 +374,7 @@ static void cdnsp_zero_in_ctx(struct cdnsp_device *pdev)
 	}
 }
 
-/* Issue a configure endpoint command and wait for it to finish. */
+ 
 static int cdnsp_configure_endpoint(struct cdnsp_device *pdev)
 {
 	int ret;
@@ -499,7 +406,7 @@ static void cdnsp_invalidate_ep_events(struct cdnsp_device *pdev,
 	while (1) {
 		data = le32_to_cpu(event->trans_event.flags);
 
-		/* Check the owner of the TRB. */
+		 
 		if ((data & TRB_CYCLE) != cycle_state)
 			break;
 
@@ -556,16 +463,13 @@ int cdnsp_wait_for_cmd_compl(struct cdnsp_device *pdev)
 	while (1) {
 		flags = le32_to_cpu(event->event_cmd.flags);
 
-		/* Check the owner of the TRB. */
+		 
 		if ((flags & TRB_CYCLE) != cycle_state)
 			return -EINVAL;
 
 		cmd_dma = le64_to_cpu(event->event_cmd.cmd_trb);
 
-		/*
-		 * Check whether the completion event is for last queued
-		 * command.
-		 */
+		 
 		if (TRB_FIELD_TO_TYPE(flags) != TRB_COMPLETION ||
 		    cmd_dma != (u64)cmd_deq_dma) {
 			if (!cdnsp_last_trb_on_seg(event_deq_seg, event)) {
@@ -643,7 +547,7 @@ static int cdnsp_update_eps_configuration(struct cdnsp_device *pdev,
 
 	ctrl_ctx = cdnsp_get_input_control_ctx(&pdev->in_ctx);
 
-	/* Don't issue the command if there's no endpoints to update. */
+	 
 	if (ctrl_ctx->add_flags == 0 && ctrl_ctx->drop_flags == 0)
 		return 0;
 
@@ -651,7 +555,7 @@ static int cdnsp_update_eps_configuration(struct cdnsp_device *pdev,
 	ctrl_ctx->add_flags &= cpu_to_le32(~EP0_FLAG);
 	ctrl_ctx->drop_flags &= cpu_to_le32(~(SLOT_FLAG | EP0_FLAG));
 
-	/* Fix up Context Entries field. Minimum value is EP0 == BIT(1). */
+	 
 	slot_ctx = cdnsp_get_slot_ctx(&pdev->in_ctx);
 	for (i = CDNSP_ENDPOINTS_NUM; i >= 1; i--) {
 		__le32 le32 = cpu_to_le32(BIT(i));
@@ -679,12 +583,7 @@ static int cdnsp_update_eps_configuration(struct cdnsp_device *pdev,
 	return ret;
 }
 
-/*
- * This submits a Reset Device Command, which will set the device state to 0,
- * set the device address to 0, and disable all the endpoints except the default
- * control endpoint. The USB core should come back and call
- * cdnsp_setup_device(), and then re-set up the configuration.
- */
+ 
 int cdnsp_reset_device(struct cdnsp_device *pdev)
 {
 	struct cdnsp_slot_ctx *slot_ctx;
@@ -695,7 +594,7 @@ int cdnsp_reset_device(struct cdnsp_device *pdev)
 	slot_ctx->dev_info = 0;
 	pdev->device_address = 0;
 
-	/* If device is not setup, there is no point in resetting it. */
+	 
 	slot_ctx = cdnsp_get_slot_ctx(&pdev->out_ctx);
 	slot_state = GET_SLOT_STATE(le32_to_cpu(slot_ctx->dev_state));
 	trace_cdnsp_reset_device(slot_ctx);
@@ -705,10 +604,7 @@ int cdnsp_reset_device(struct cdnsp_device *pdev)
 		cdnsp_halt_endpoint(pdev, &pdev->eps[0], 0);
 	}
 
-	/*
-	 * During Reset Device command controller shall transition the
-	 * endpoint ep0 to the Running State.
-	 */
+	 
 	pdev->eps[0].ep_state &= ~(EP_STOPPED | EP_HALTED);
 	pdev->eps[0].ep_state |= EP_ENABLED;
 
@@ -719,10 +615,7 @@ int cdnsp_reset_device(struct cdnsp_device *pdev)
 	cdnsp_ring_cmd_db(pdev);
 	ret = cdnsp_wait_for_cmd_compl(pdev);
 
-	/*
-	 * After Reset Device command all not default endpoints
-	 * are in Disabled state.
-	 */
+	 
 	for (i = 1; i < CDNSP_ENDPOINTS_NUM; ++i)
 		pdev->eps[i].ep_state |= EP_STOPPED | EP_UNCONFIGURED;
 
@@ -735,20 +628,14 @@ int cdnsp_reset_device(struct cdnsp_device *pdev)
 	return ret;
 }
 
-/*
- * Sets the MaxPStreams field and the Linear Stream Array field.
- * Sets the dequeue pointer to the stream context array.
- */
+ 
 static void cdnsp_setup_streams_ep_input_ctx(struct cdnsp_device *pdev,
 					     struct cdnsp_ep_ctx *ep_ctx,
 					     struct cdnsp_stream_info *stream_info)
 {
 	u32 max_primary_streams;
 
-	/* MaxPStreams is the number of stream context array entries, not the
-	 * number we're actually using. Must be in 2^(MaxPstreams + 1) format.
-	 * fls(0) = 0, fls(0x1) = 1, fls(0x10) = 2, fls(0x100) = 3, etc.
-	 */
+	 
 	max_primary_streams = fls(stream_info->num_stream_ctxs) - 2;
 	ep_ctx->ep_info &= cpu_to_le32(~EP_MAXPSTREAMS_MASK);
 	ep_ctx->ep_info |= cpu_to_le32(EP_MAXPSTREAMS(max_primary_streams)
@@ -756,12 +643,7 @@ static void cdnsp_setup_streams_ep_input_ctx(struct cdnsp_device *pdev,
 	ep_ctx->deq  = cpu_to_le64(stream_info->ctx_array_dma);
 }
 
-/*
- * The drivers use this function to prepare a bulk endpoints to use streams.
- *
- * Don't allow the call to succeed if endpoint only supports one stream
- * (which means it doesn't support streams at all).
- */
+ 
 int cdnsp_alloc_streams(struct cdnsp_device *pdev, struct cdnsp_ep *pep)
 {
 	unsigned int num_streams = usb_ss_max_streams(pep->endpoint.comp_desc);
@@ -774,14 +656,10 @@ int cdnsp_alloc_streams(struct cdnsp_device *pdev, struct cdnsp_ep *pep)
 	if (num_streams > STREAM_NUM_STREAMS)
 		return -EINVAL;
 
-	/*
-	 * Add two to the number of streams requested to account for
-	 * stream 0 that is reserved for controller usage and one additional
-	 * for TASK SET FULL response.
-	 */
+	 
 	num_streams += 2;
 
-	/* The stream context array size must be a power of two */
+	 
 	num_stream_ctxs = roundup_pow_of_two(num_streams);
 
 	trace_cdnsp_stream_number(pep, num_stream_ctxs, num_streams);
@@ -796,7 +674,7 @@ int cdnsp_alloc_streams(struct cdnsp_device *pdev, struct cdnsp_ep *pep)
 	pep->stream_info.td_count = 0;
 	pep->stream_info.first_prime_det = 0;
 
-	/* Subtract 1 for stream 0, which drivers can't use. */
+	 
 	return num_streams - 1;
 }
 
@@ -825,7 +703,7 @@ int cdnsp_enable_slot(struct cdnsp_device *pdev)
 	int slot_state;
 	int ret;
 
-	/* If device is not setup, there is no point in resetting it */
+	 
 	slot_ctx = cdnsp_get_slot_ctx(&pdev->out_ctx);
 	slot_state = GET_SLOT_STATE(le32_to_cpu(slot_ctx->dev_state));
 
@@ -846,10 +724,7 @@ show_trace:
 	return ret;
 }
 
-/*
- * Issue an Address Device command with BSR=0 if setup is SETUP_CONTEXT_ONLY
- * or with BSR = 1 if set_address is SETUP_CONTEXT_ADDRESS.
- */
+ 
 int cdnsp_setup_device(struct cdnsp_device *pdev, enum cdnsp_setup_dev setup)
 {
 	struct cdnsp_input_control_ctx *ctrl_ctx;
@@ -895,7 +770,7 @@ int cdnsp_setup_device(struct cdnsp_device *pdev, enum cdnsp_setup_dev setup)
 
 	trace_cdnsp_handle_cmd_addr_dev(cdnsp_get_slot_ctx(&pdev->out_ctx));
 
-	/* Zero the input context control for later use. */
+	 
 	ctrl_ctx->add_flags = 0;
 	ctrl_ctx->drop_flags = 0;
 
@@ -1023,13 +898,13 @@ static int cdnsp_gadget_ep_disable(struct usb_ep *ep)
 
 	pep->ep_state |= EP_DIS_IN_RROGRESS;
 
-	/* Endpoint was unconfigured by Reset Device command. */
+	 
 	if (!(pep->ep_state & EP_UNCONFIGURED)) {
 		cdnsp_cmd_stop_ep(pdev, pep);
 		cdnsp_cmd_flush_ep(pdev, pep);
 	}
 
-	/* Remove all queued USB requests. */
+	 
 	while (!list_empty(&pep->pending_list)) {
 		preq = next_request(&pep->pending_list);
 		cdnsp_ep_dequeue(pep, preq);
@@ -1135,7 +1010,7 @@ static int cdnsp_gadget_ep_dequeue(struct usb_ep *ep,
 		return -ESHUTDOWN;
 	}
 
-	/* Requests has been dequeued during disabling endpoint. */
+	 
 	if (!(pep->ep_state & EP_ENABLED))
 		return 0;
 
@@ -1269,7 +1144,7 @@ static int cdnsp_run(struct cdnsp_device *pdev,
 			speed);
 		fallthrough;
 	case USB_SPEED_UNKNOWN:
-		/* Default to superspeed. */
+		 
 		speed = USB_SPEED_SUPER;
 		break;
 	}
@@ -1320,7 +1195,7 @@ static int cdnsp_gadget_udc_start(struct usb_gadget *g,
 	spin_lock_irqsave(&pdev->lock, flags);
 	pdev->gadget_driver = driver;
 
-	/* limit speed if necessary */
+	 
 	max_speed = min(driver->max_speed, g->max_speed);
 	ret = cdnsp_run(pdev, max_speed);
 
@@ -1329,11 +1204,7 @@ static int cdnsp_gadget_udc_start(struct usb_gadget *g,
 	return ret;
 }
 
-/*
- * Update Event Ring Dequeue Pointer:
- * - When all events have finished
- * - To avoid "Event Ring Full Error" condition
- */
+ 
 void cdnsp_update_erst_dequeue(struct cdnsp_device *pdev,
 			       union cdnsp_trb *event_ring_deq,
 			       u8 clear_ehb)
@@ -1343,7 +1214,7 @@ void cdnsp_update_erst_dequeue(struct cdnsp_device *pdev,
 
 	temp_64 = cdnsp_read_64(&pdev->ir_set->erst_dequeue);
 
-	/* If necessary, update the HW's version of the event ring deq ptr. */
+	 
 	if (event_ring_deq != pdev->event_ring->dequeue) {
 		deq = cdnsp_trb_virt_to_dma(pdev->event_ring->deq_seg,
 					    pdev->event_ring->dequeue);
@@ -1351,7 +1222,7 @@ void cdnsp_update_erst_dequeue(struct cdnsp_device *pdev,
 		temp_64 |= ((u64)deq & (u64)~ERST_PTR_MASK);
 	}
 
-	/* Clear the event handler busy flag (RW1C). */
+	 
 	if (clear_ehb)
 		temp_64 |= ERST_EHB;
 	else
@@ -1375,7 +1246,7 @@ static void cdnsp_clear_cmd_ring(struct cdnsp_device *pdev)
 		seg = seg->next;
 	}
 
-	/* Set the address in the Command Ring Control register. */
+	 
 	val_64 = cdnsp_read_64(&pdev->op_regs->cmd_ring);
 	val_64 = (val_64 & (u64)CMD_RING_RSVD_BITS) |
 		 (pdev->cmd_ring->first_seg->dma & (u64)~CMD_RING_RSVD_BITS) |
@@ -1394,11 +1265,11 @@ static void cdnsp_consume_all_events(struct cdnsp_device *pdev)
 	event_deq_seg = pdev->event_ring->deq_seg;
 	event = pdev->event_ring->dequeue;
 
-	/* Update ring dequeue pointer. */
+	 
 	while (1) {
 		cycle_bit = (le32_to_cpu(event->event_cmd.flags) & TRB_CYCLE);
 
-		/* Does the controller or driver own the TRB? */
+		 
 		if (cycle_bit != pdev->event_ring->cycle_state)
 			break;
 
@@ -1426,7 +1297,7 @@ static void cdnsp_stop(struct cdnsp_device *pdev)
 
 	cdnsp_cmd_flush_ep(pdev, &pdev->eps[0]);
 
-	/* Remove internally queued request for ep0. */
+	 
 	if (!list_empty(&pdev->eps[0].pending_list)) {
 		struct cdnsp_request *req;
 
@@ -1448,7 +1319,7 @@ static void cdnsp_stop(struct cdnsp_device *pdev)
 	cdnsp_clear_port_change_bit(pdev, &pdev->usb2_port.regs->portsc);
 	cdnsp_clear_port_change_bit(pdev, &pdev->usb3_port.regs->portsc);
 
-	/* Clear interrupt line */
+	 
 	temp = readl(&pdev->ir_set->irq_pending);
 	temp |= IMAN_IP;
 	writel(temp, &pdev->ir_set->irq_pending);
@@ -1459,11 +1330,7 @@ static void cdnsp_stop(struct cdnsp_device *pdev)
 	trace_cdnsp_exit("Controller stopped.");
 }
 
-/*
- * Stop controller.
- * This function is called by the gadget core when the driver is removed.
- * Disable slot, disable IRQs, and quiesce the controller.
- */
+ 
 static int cdnsp_gadget_udc_stop(struct usb_gadget *g)
 {
 	struct cdnsp_device *pdev = gadget_to_cdnsp(g);
@@ -1492,7 +1359,7 @@ static void __cdnsp_gadget_wakeup(struct cdnsp_device *pdev)
 	port_regs = pdev->active_port->regs;
 	portsc = readl(&port_regs->portsc) & PORT_PLS_MASK;
 
-	/* Remote wakeup feature is not enabled by host. */
+	 
 	if (pdev->gadget.speed < USB_SPEED_SUPER && portsc == XDEV_U2) {
 		portpm = readl(&port_regs->portpmsc);
 
@@ -1541,10 +1408,7 @@ static int cdnsp_gadget_pullup(struct usb_gadget *gadget, int is_on)
 
 	trace_cdnsp_pullup(is_on);
 
-	/*
-	 * Disable events handling while controller is being
-	 * enabled/disabled.
-	 */
+	 
 	disable_irq(cdns->dev_irq);
 	spin_lock_irqsave(&pdev->lock, flags);
 
@@ -1588,9 +1452,9 @@ static void cdnsp_get_ep_buffering(struct cdnsp_device *pdev,
 
 	endpoints = HCS_ENDPOINTS(pdev->hcs_params1) / 2;
 
-	/* Set to XBUF_TX_TAG_MASK_0 register. */
+	 
 	reg += XBUF_TX_CMD_OFFSET + (endpoints * 2 + 2) * sizeof(u32);
-	/* Set reg to XBUF_TX_TAG_MASK_N related with this endpoint. */
+	 
 	reg += pep->number * sizeof(u32) * 2;
 
 	pep->buffering = (readl(reg) + 1) / 2;
@@ -1614,7 +1478,7 @@ static int cdnsp_gadget_init_endpoints(struct cdnsp_device *pdev)
 	max_streams = STREAM_LOG_STREAMS;
 
 	for (i = 0; i < CDNSP_ENDPOINTS_NUM; i++) {
-		bool direction = !(i & 1); /* Start from OUT endpoint. */
+		bool direction = !(i & 1);  
 		u8 epnum = ((i + 1) >> 1);
 
 		if (!CDNSP_IF_EP_EXIST(pdev, epnum, direction))
@@ -1623,12 +1487,9 @@ static int cdnsp_gadget_init_endpoints(struct cdnsp_device *pdev)
 		pep = &pdev->eps[i];
 		pep->pdev = pdev;
 		pep->number = epnum;
-		pep->direction = direction; /* 0 for OUT, 1 for IN. */
+		pep->direction = direction;  
 
-		/*
-		 * Ep0 is bidirectional, so ep0in and ep0out are represented by
-		 * pdev->eps[0]
-		 */
+		 
 		if (epnum == 0) {
 			snprintf(pep->name, sizeof(pep->name), "ep%d%s",
 				 epnum, "BiDir");
@@ -1759,7 +1620,7 @@ void cdnsp_irq_reset(struct cdnsp_device *pdev)
 		pdev->gadget.ep0->maxpacket = 64;
 		break;
 	default:
-		/* Low speed is not supported. */
+		 
 		dev_err(pdev->dev, "Unknown device speed\n");
 		break;
 	}
@@ -1795,7 +1656,7 @@ static int cdnsp_gen_setup(struct cdnsp_device *pdev)
 	pdev->run_regs = pdev->regs +
 		(readl(&pdev->cap_regs->run_regs_off) & RTSOFF_MASK);
 
-	/* Cache read-only capability registers */
+	 
 	pdev->hcs_params1 = readl(&pdev->cap_regs->hcs_params1);
 	pdev->hcc_params = readl(&pdev->cap_regs->hc_capbase);
 	pdev->hci_version = HC_VERSION(pdev->hcc_params);
@@ -1803,29 +1664,23 @@ static int cdnsp_gen_setup(struct cdnsp_device *pdev)
 
 	cdnsp_get_rev_cap(pdev);
 
-	/* Make sure the Device Controller is halted. */
+	 
 	ret = cdnsp_halt(pdev);
 	if (ret)
 		return ret;
 
-	/* Reset the internal controller memory state and registers. */
+	 
 	ret = cdnsp_reset(pdev);
 	if (ret)
 		return ret;
 
-	/*
-	 * Set dma_mask and coherent_dma_mask to 64-bits,
-	 * if controller supports 64-bit addressing.
-	 */
+	 
 	if (HCC_64BIT_ADDR(pdev->hcc_params) &&
 	    !dma_set_mask(pdev->dev, DMA_BIT_MASK(64))) {
 		dev_dbg(pdev->dev, "Enabling 64-bit DMA addresses.\n");
 		dma_set_coherent_mask(pdev->dev, DMA_BIT_MASK(64));
 	} else {
-		/*
-		 * This is to avoid error in cases where a 32-bit USB
-		 * controller is used on a 64-bit capable system.
-		 */
+		 
 		ret = dma_set_mask(pdev->dev, DMA_BIT_MASK(32));
 		if (ret)
 			return ret;
@@ -1840,11 +1695,7 @@ static int cdnsp_gen_setup(struct cdnsp_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Software workaround for U1: after transition
-	 * to U1 the controller starts gating clock, and in some cases,
-	 * it causes that controller stack.
-	 */
+	 
 	reg = readl(&pdev->port3x_regs->mode_2);
 	reg &= ~CFG_3XPORT_U1_PIPE_CLK_GATE_EN;
 	writel(reg, &pdev->port3x_regs->mode_2);
@@ -1881,7 +1732,7 @@ static int __cdnsp_gadget_init(struct cdns *cdns)
 		dev_err(cdns->dev, "invalid speed parameter %d\n", max_speed);
 		fallthrough;
 	case USB_SPEED_UNKNOWN:
-		/* Default to SSP */
+		 
 		max_speed = USB_SPEED_SUPER_PLUS;
 		break;
 	}
@@ -1897,10 +1748,7 @@ static int __cdnsp_gadget_init(struct cdns *cdns)
 	if (!pdev->setup_buf)
 		goto free_pdev;
 
-	/*
-	 * Controller supports not aligned buffer but it should improve
-	 * performance.
-	 */
+	 
 	pdev->gadget.quirk_ep_out_aligned_size = true;
 
 	ret = cdnsp_gen_setup(pdev);
@@ -1990,7 +1838,7 @@ static int cdnsp_gadget_resume(struct cdns *cdns, bool hibernated)
 	spin_lock_irqsave(&pdev->lock, flags);
 	max_speed = pdev->gadget_driver->max_speed;
 
-	/* Limit speed if necessary. */
+	 
 	max_speed = min(max_speed, pdev->gadget.max_speed);
 
 	ret = cdnsp_run(pdev, max_speed);
@@ -2003,12 +1851,7 @@ static int cdnsp_gadget_resume(struct cdns *cdns, bool hibernated)
 	return ret;
 }
 
-/**
- * cdnsp_gadget_init - initialize device structure
- * @cdns: cdnsp instance
- *
- * This function initializes the gadget.
- */
+ 
 int cdnsp_gadget_init(struct cdns *cdns)
 {
 	struct cdns_role_driver *rdrv;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __ACPI_VIOT_H__
 #define __ACPI_VIOT_H__
@@ -18,4 +18,4 @@ static inline int viot_iommu_configure(struct device *dev)
 }
 #endif
 
-#endif /* __ACPI_VIOT_H__ */
+#endif  

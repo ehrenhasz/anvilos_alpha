@@ -1,40 +1,4 @@
-/*
- * Shared Atheros AR9170 Header
- *
- * EEPROM layout
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 #ifndef __CARL9170_SHARED_EEPROM_H
 #define __CARL9170_SHARED_EEPROM_H
 
@@ -154,7 +118,7 @@ struct ar9170_eeprom {
 		cal_pier_data_5G[AR5416_MAX_CHAINS][AR5416_NUM_5G_CAL_PIERS],
 		cal_pier_data_2G[AR5416_MAX_CHAINS][AR5416_NUM_2G_CAL_PIERS];
 
-	/* power calibration data */
+	 
 	struct ar9170_calibration_target_power_legacy
 		cal_tgt_pwr_5G[AR5416_NUM_5G_TARGET_PWRS];
 	struct ar9170_calibration_target_power_ht
@@ -168,7 +132,7 @@ struct ar9170_eeprom {
 		cal_tgt_pwr_2G_ht20[AR5416_NUM_2G_OFDM_TARGET_PWRS],
 		cal_tgt_pwr_2G_ht40[AR5416_NUM_2G_OFDM_TARGET_PWRS];
 
-	/* conformance testing limits */
+	 
 	u8	ctl_index[AR5416_NUM_CTLS];
 	struct ar9170_calctl_data
 		ctl_data[AR5416_NUM_CTLS];
@@ -182,7 +146,7 @@ struct ar9170_eeprom {
 #define AR9170_LED_MODE_DISABLE_STATE		0x0004
 #define AR9170_LED_MODE_OFF_IN_PSM		0x0008
 
-/* AR9170_LED_MODE BIT is set */
+ 
 #define AR9170_LED_MODE_FREQUENCY_S		4
 #define AR9170_LED_MODE_FREQUENCY		0x0030
 #define AR9170_LED_MODE_FREQUENCY_1HZ		0x0000
@@ -190,14 +154,14 @@ struct ar9170_eeprom {
 #define AR9170_LED_MODE_FREQUENCY_0_25HZ	0x0020
 #define AR9170_LED_MODE_FREQUENCY_0_125HZ	0x0030
 
-/* AR9170_LED_MODE BIT is not set */
+ 
 #define AR9170_LED_MODE_CONN_STATE_S		4
 #define AR9170_LED_MODE_CONN_STATE		0x0030
 #define AR9170_LED_MODE_CONN_STATE_FORCE_OFF	0x0000
 #define AR9170_LED_MODE_CONN_STATE_FORCE_ON	0x0010
-/* Idle off / Active on */
+ 
 #define AR9170_LED_MODE_CONN_STATE_IOFF_AON	0x0020
-/* Idle on / Active off */
+ 
 #define AR9170_LED_MODE_CONN_STATE_ION_AOFF	0x0010
 
 #define AR9170_LED_MODE_MODE			0x0040
@@ -213,4 +177,4 @@ struct ar9170_led_mode {
 	__le16 led;
 };
 
-#endif /* __CARL9170_SHARED_EEPROM_H */
+#endif  

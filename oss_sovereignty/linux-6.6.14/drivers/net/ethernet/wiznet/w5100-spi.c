@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ethernet driver for the WIZnet W5100/W5200/W5500 chip.
- *
- * Copyright (C) 2016 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Datasheet:
- * http://www.wiznet.co.kr/wp-content/uploads/wiznethome/Chip/W5100/Document/W5100_Datasheet_v1.2.6.pdf
- * http://wiznethome.cafe24.com/wp-content/uploads/wiznethome/Chip/W5200/Documents/W5200_DS_V140E.pdf
- * http://wizwiki.net/wiki/lib/exe/fetch.php?media=products:w5500:w5500_ds_v106e_141230.pdf
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -113,12 +104,10 @@ static const struct w5100_ops w5100_spi_ops = {
 #define W5200_SPI_WRITE_OPCODE 0x80
 
 struct w5200_spi_priv {
-	/* Serialize access to cmd_buf */
+	 
 	struct mutex cmd_lock;
 
-	/* DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8 cmd_buf[4] ____cacheline_aligned;
 };
 
@@ -258,12 +247,10 @@ static const struct w5100_ops w5200_ops = {
 	((W5500_SPI_BLOCK_SELECT(addr) << 3) | BIT(2))
 
 struct w5500_spi_priv {
-	/* Serialize access to cmd_buf */
+	 
 	struct mutex cmd_lock;
 
-	/* DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8 cmd_buf[3] ____cacheline_aligned;
 };
 

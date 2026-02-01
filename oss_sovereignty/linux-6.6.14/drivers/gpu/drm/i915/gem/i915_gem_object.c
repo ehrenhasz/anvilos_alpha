@@ -1,26 +1,4 @@
-/*
- * Copyright © 2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/sched/mm.h>
@@ -57,18 +35,11 @@ unsigned int i915_gem_get_pat_index(struct drm_i915_private *i915,
 bool i915_gem_object_has_cache_level(const struct drm_i915_gem_object *obj,
 				     enum i915_cache_level lvl)
 {
-	/*
-	 * In case the pat_index is set by user space, this kernel mode
-	 * driver should leave the coherency to be managed by user space,
-	 * simply return true here.
-	 */
+	 
 	if (obj->pat_set_by_user)
 		return true;
 
-	/*
-	 * Otherwise the pat_index should have been converted from cache_level
-	 * so that the following comparison is valid.
-	 */
+	 
 	return obj->pat_index == i915_gem_get_pat_index(obj_to_i915(obj), lvl);
 }
 
@@ -93,10 +64,7 @@ void i915_gem_object_init(struct drm_i915_gem_object *obj,
 			  const struct drm_i915_gem_object_ops *ops,
 			  struct lock_class_key *key, unsigned flags)
 {
-	/*
-	 * A gem object is embedded both in a struct ttm_buffer_object :/ and
-	 * in a drm_i915_gem_object. Make sure they are aliased.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(typeof(*obj), base) !=
 		     offsetof(typeof(*obj), __do_not_access.base));
 
@@ -124,15 +92,7 @@ void i915_gem_object_init(struct drm_i915_gem_object *obj,
 	mutex_init(&obj->mm.get_dma_page.lock);
 }
 
-/**
- * __i915_gem_object_fini - Clean up a GEM object initialization
- * @obj: The gem object to cleanup
- *
- * This function cleans up gem object fields that are set up by
- * drm_gem_private_object_init() and i915_gem_object_init().
- * It's primarily intended as a helper for backends that need to
- * clean up the gem object in separate steps.
- */
+ 
 void __i915_gem_object_fini(struct drm_i915_gem_object *obj)
 {
 	mutex_destroy(&obj->mm.get_page.lock);
@@ -140,12 +100,7 @@ void __i915_gem_object_fini(struct drm_i915_gem_object *obj)
 	dma_resv_fini(&obj->base._resv);
 }
 
-/**
- * i915_gem_object_set_cache_coherency - Mark up the object's coherency levels
- * for a given cache_level
- * @obj: #drm_i915_gem_object
- * @cache_level: cache level
- */
+ 
 void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
 					 unsigned int cache_level)
 {
@@ -166,14 +121,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
 		!IS_DGFX(i915);
 }
 
-/**
- * i915_gem_object_set_pat_index - set PAT index to be used in PTE encode
- * @obj: #drm_i915_gem_object
- * @pat_index: PAT index
- *
- * This is a clone of i915_gem_object_set_cache_coherency taking pat index
- * instead of cache_level as its second argument.
- */
+ 
 void i915_gem_object_set_pat_index(struct drm_i915_gem_object *obj,
 				   unsigned int pat_index)
 {
@@ -201,31 +149,15 @@ bool i915_gem_object_can_bypass_llc(struct drm_i915_gem_object *obj)
 {
 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
 
-	/*
-	 * This is purely from a security perspective, so we simply don't care
-	 * about non-userspace objects being able to bypass the LLC.
-	 */
+	 
 	if (!(obj->flags & I915_BO_ALLOC_USER))
 		return false;
 
-	/*
-	 * Always flush cache for UMD objects at creation time.
-	 */
+	 
 	if (obj->pat_set_by_user)
 		return true;
 
-	/*
-	 * EHL and JSL add the 'Bypass LLC' MOCS entry, which should make it
-	 * possible for userspace to bypass the GTT caching bits set by the
-	 * kernel, as per the given object cache_level. This is troublesome
-	 * since the heavy flush we apply when first gathering the pages is
-	 * skipped if the kernel thinks the object is coherent with the GPU. As
-	 * a result it might be possible to bypass the cache and read the
-	 * contents of the page directly, which could be stale data. If it's
-	 * just a case of userspace shooting themselves in the foot then so be
-	 * it, but since i915 takes the stance of always zeroing memory before
-	 * handing it to userspace, we need to prevent this.
-	 */
+	 
 	return (IS_JASPERLAKE(i915) || IS_ELKHARTLAKE(i915));
 }
 
@@ -247,7 +179,7 @@ static void i915_gem_close_object(struct drm_gem_object *gem, struct drm_file *f
 			list_move(&lut->obj_link, &close);
 		}
 
-		/* Break long locks, and carefully continue on from this spot */
+		 
 		if (&ln->obj_link != &obj->lut_list) {
 			list_add_tail(&bookmark.obj_link, &ln->obj_link);
 			if (cond_resched_lock(&obj->lut_lock))
@@ -266,10 +198,7 @@ static void i915_gem_close_object(struct drm_gem_object *gem, struct drm_file *f
 		struct i915_gem_context *ctx = lut->ctx;
 		struct i915_vma *vma;
 
-		/*
-		 * We allow the process to have multiple handles to the same
-		 * vma, in the same fd namespace, by virtue of flink/open.
-		 */
+		 
 
 		mutex_lock(&ctx->lut_mutex);
 		vma = radix_tree_delete(&ctx->handles_vma, lut->handle);
@@ -300,7 +229,7 @@ void __i915_gem_free_object_rcu(struct rcu_head *head)
 
 static void __i915_gem_object_free_mmaps(struct drm_i915_gem_object *obj)
 {
-	/* Skip serialisation and waking the device if known to be not used. */
+	 
 
 	if (obj->userfault_count && !IS_DGFX(to_i915(obj->base.dev)))
 		i915_gem_object_release_mmap_gtt(obj);
@@ -321,15 +250,7 @@ static void __i915_gem_object_free_mmaps(struct drm_i915_gem_object *obj)
 	}
 }
 
-/**
- * __i915_gem_object_pages_fini - Clean up pages use of a gem object
- * @obj: The gem object to clean up
- *
- * This function cleans up usage of the object mm.pages member. It
- * is intended for backends that need to clean up a gem object in
- * separate steps and needs to be called when the object is idle before
- * the object's backing memory is freed.
- */
+ 
 void __i915_gem_object_pages_fini(struct drm_i915_gem_object *obj)
 {
 	assert_object_held_shared(obj);
@@ -355,12 +276,7 @@ void __i915_gem_object_pages_fini(struct drm_i915_gem_object *obj)
 
 	atomic_set(&obj->mm.pages_pin_count, 0);
 
-	/*
-	 * dma_buf_unmap_attachment() requires reservation to be
-	 * locked. The imported GEM shouldn't share reservation lock
-	 * and ttm_bo_cleanup_memtype_use() shouldn't be invoked for
-	 * dma-buf, so it's safe to take the lock.
-	 */
+	 
 	if (obj->base.import_attach)
 		i915_gem_object_lock(obj, NULL);
 
@@ -412,7 +328,7 @@ static void __i915_gem_free_objects(struct drm_i915_private *i915,
 		__i915_gem_object_pages_fini(obj);
 		__i915_gem_free_object(obj);
 
-		/* But keep the pointer alive for RCU-protected lookups */
+		 
 		call_rcu(&obj->rcu, __i915_gem_free_object_rcu);
 		cond_resched();
 	}
@@ -441,24 +357,10 @@ static void i915_gem_free_object(struct drm_gem_object *gem_obj)
 
 	GEM_BUG_ON(i915_gem_object_is_framebuffer(obj));
 
-	/*
-	 * Before we free the object, make sure any pure RCU-only
-	 * read-side critical sections are complete, e.g.
-	 * i915_gem_busy_ioctl(). For the corresponding synchronized
-	 * lookup see i915_gem_object_lookup_rcu().
-	 */
+	 
 	atomic_inc(&i915->mm.free_count);
 
-	/*
-	 * Since we require blocking on struct_mutex to unbind the freed
-	 * object from the GPU before releasing resources back to the
-	 * system, we can not do that directly from the RCU callback (which may
-	 * be a softirq context), but must instead then defer that work onto a
-	 * kthread. We use the RCU callback rather than move the freed object
-	 * directly onto the work queue so that we can mix between using the
-	 * worker and performing frees directly from subsequent allocations for
-	 * crude but effective memory throttling.
-	 */
+	 
 
 	if (llist_add(&obj->freed, &i915->mm.free_list))
 		queue_work(i915->wq, &i915->mm.free_work);
@@ -534,20 +436,7 @@ static bool object_has_mappable_iomem(struct drm_i915_gem_object *obj)
 	return true;
 }
 
-/**
- * i915_gem_object_read_from_page - read data from the page of a GEM object
- * @obj: GEM object to read from
- * @offset: offset within the object
- * @dst: buffer to store the read data
- * @size: size to read
- *
- * Reads data from @obj at the specified offset. The requested region to read
- * from can't cross a page boundary. The caller must ensure that @obj pages
- * are pinned and that @obj is synced wrt. any related writes.
- *
- * Return: %0 on success or -ENODEV if the type of @obj's backing store is
- * unsupported.
- */
+ 
 int i915_gem_object_read_from_page(struct drm_i915_gem_object *obj, u64 offset, void *dst, int size)
 {
 	GEM_BUG_ON(overflows_type(offset >> PAGE_SHIFT, pgoff_t));
@@ -565,19 +454,7 @@ int i915_gem_object_read_from_page(struct drm_i915_gem_object *obj, u64 offset, 
 	return 0;
 }
 
-/**
- * i915_gem_object_evictable - Whether object is likely evictable after unbind.
- * @obj: The object to check
- *
- * This function checks whether the object is likely unvictable after unbind.
- * If the object is not locked when checking, the result is only advisory.
- * If the object is locked when checking, and the function returns true,
- * then an eviction should indeed be possible. But since unlocked vma
- * unpinning and unbinding is currently possible, the object can actually
- * become evictable even if this function returns false.
- *
- * Return: true if the object may be evictable. False otherwise.
- */
+ 
 bool i915_gem_object_evictable(struct drm_i915_gem_object *obj)
 {
 	struct i915_vma *vma;
@@ -601,14 +478,7 @@ bool i915_gem_object_evictable(struct drm_i915_gem_object *obj)
 	return pin_count == 0;
 }
 
-/**
- * i915_gem_object_migratable - Whether the object is migratable out of the
- * current region.
- * @obj: Pointer to the object.
- *
- * Return: Whether the object is allowed to be resident in other
- * regions than the current while pages are present.
- */
+ 
 bool i915_gem_object_migratable(struct drm_i915_gem_object *obj)
 {
 	struct intel_memory_region *mr = READ_ONCE(obj->mm.region);
@@ -619,15 +489,7 @@ bool i915_gem_object_migratable(struct drm_i915_gem_object *obj)
 	return obj->mm.n_placements > 1;
 }
 
-/**
- * i915_gem_object_has_struct_page - Whether the object is page-backed
- * @obj: The object to query.
- *
- * This function should only be called while the object is locked or pinned,
- * otherwise the page backing may change under the caller.
- *
- * Return: True if page-backed, false otherwise.
- */
+ 
 bool i915_gem_object_has_struct_page(const struct drm_i915_gem_object *obj)
 {
 #ifdef CONFIG_LOCKDEP
@@ -638,15 +500,7 @@ bool i915_gem_object_has_struct_page(const struct drm_i915_gem_object *obj)
 	return obj->mem_flags & I915_BO_FLAG_STRUCT_PAGE;
 }
 
-/**
- * i915_gem_object_has_iomem - Whether the object is iomem-backed
- * @obj: The object to query.
- *
- * This function should only be called while the object is locked or pinned,
- * otherwise the iomem backing may change under the caller.
- *
- * Return: True if iomem-backed, false otherwise.
- */
+ 
 bool i915_gem_object_has_iomem(const struct drm_i915_gem_object *obj)
 {
 #ifdef CONFIG_LOCKDEP
@@ -657,23 +511,7 @@ bool i915_gem_object_has_iomem(const struct drm_i915_gem_object *obj)
 	return obj->mem_flags & I915_BO_FLAG_IOMEM;
 }
 
-/**
- * i915_gem_object_can_migrate - Whether an object likely can be migrated
- *
- * @obj: The object to migrate
- * @id: The region intended to migrate to
- *
- * Check whether the object backend supports migration to the
- * given region. Note that pinning may affect the ability to migrate as
- * returned by this function.
- *
- * This function is primarily intended as a helper for checking the
- * possibility to migrate objects and might be slightly less permissive
- * than i915_gem_object_migrate() when it comes to objects with the
- * I915_BO_ALLOC_USER flag set.
- *
- * Return: true if migration is possible, false otherwise.
- */
+ 
 bool i915_gem_object_can_migrate(struct drm_i915_gem_object *obj,
 				 enum intel_region_id id)
 {
@@ -715,31 +553,7 @@ bool i915_gem_object_can_migrate(struct drm_i915_gem_object *obj,
 	return false;
 }
 
-/**
- * i915_gem_object_migrate - Migrate an object to the desired region id
- * @obj: The object to migrate.
- * @ww: An optional struct i915_gem_ww_ctx. If NULL, the backend may
- * not be successful in evicting other objects to make room for this object.
- * @id: The region id to migrate to.
- *
- * Attempt to migrate the object to the desired memory region. The
- * object backend must support migration and the object may not be
- * pinned, (explicitly pinned pages or pinned vmas). The object must
- * be locked.
- * On successful completion, the object will have pages pointing to
- * memory in the new region, but an async migration task may not have
- * completed yet, and to accomplish that, i915_gem_object_wait_migration()
- * must be called.
- *
- * Note: the @ww parameter is not used yet, but included to make sure
- * callers put some effort into obtaining a valid ww ctx if one is
- * available.
- *
- * Return: 0 on success. Negative error code on failure. In particular may
- * return -ENXIO on lack of region space, -EDEADLK for deadlock avoidance
- * if @ww is set, -EINTR or -ERESTARTSYS if signal pending, and
- * -EBUSY if the object is pinned.
- */
+ 
 int i915_gem_object_migrate(struct drm_i915_gem_object *obj,
 			    struct i915_gem_ww_ctx *ww,
 			    enum intel_region_id id)
@@ -747,33 +561,7 @@ int i915_gem_object_migrate(struct drm_i915_gem_object *obj,
 	return __i915_gem_object_migrate(obj, ww, id, obj->flags);
 }
 
-/**
- * __i915_gem_object_migrate - Migrate an object to the desired region id, with
- * control of the extra flags
- * @obj: The object to migrate.
- * @ww: An optional struct i915_gem_ww_ctx. If NULL, the backend may
- * not be successful in evicting other objects to make room for this object.
- * @id: The region id to migrate to.
- * @flags: The object flags. Normally just obj->flags.
- *
- * Attempt to migrate the object to the desired memory region. The
- * object backend must support migration and the object may not be
- * pinned, (explicitly pinned pages or pinned vmas). The object must
- * be locked.
- * On successful completion, the object will have pages pointing to
- * memory in the new region, but an async migration task may not have
- * completed yet, and to accomplish that, i915_gem_object_wait_migration()
- * must be called.
- *
- * Note: the @ww parameter is not used yet, but included to make sure
- * callers put some effort into obtaining a valid ww ctx if one is
- * available.
- *
- * Return: 0 on success. Negative error code on failure. In particular may
- * return -ENXIO on lack of region space, -EDEADLK for deadlock avoidance
- * if @ww is set, -EINTR or -ERESTARTSYS if signal pending, and
- * -EBUSY if the object is pinned.
- */
+ 
 int __i915_gem_object_migrate(struct drm_i915_gem_object *obj,
 			      struct i915_gem_ww_ctx *ww,
 			      enum intel_region_id id,
@@ -801,14 +589,7 @@ int __i915_gem_object_migrate(struct drm_i915_gem_object *obj,
 	return obj->ops->migrate(obj, mr, flags);
 }
 
-/**
- * i915_gem_object_placement_possible - Check whether the object can be
- * placed at certain memory type
- * @obj: Pointer to the object
- * @type: The memory type to check
- *
- * Return: True if the object can be placed in @type. False otherwise.
- */
+ 
 bool i915_gem_object_placement_possible(struct drm_i915_gem_object *obj,
 					enum intel_memory_type type)
 {
@@ -821,7 +602,7 @@ bool i915_gem_object_placement_possible(struct drm_i915_gem_object *obj,
 		case INTEL_MEMORY_SYSTEM:
 			return i915_gem_object_has_pages(obj);
 		default:
-			/* Ignore stolen for now */
+			 
 			GEM_BUG_ON(1);
 			return false;
 		}
@@ -835,15 +616,7 @@ bool i915_gem_object_placement_possible(struct drm_i915_gem_object *obj,
 	return false;
 }
 
-/**
- * i915_gem_object_needs_ccs_pages - Check whether the object requires extra
- * pages when placed in system-memory, in order to save and later restore the
- * flat-CCS aux state when the object is moved between local-memory and
- * system-memory
- * @obj: Pointer to the object
- *
- * Return: True if the object needs extra ccs pages. False otherwise.
- */
+ 
 bool i915_gem_object_needs_ccs_pages(struct drm_i915_gem_object *obj)
 {
 	bool lmem_placement = false;
@@ -856,7 +629,7 @@ bool i915_gem_object_needs_ccs_pages(struct drm_i915_gem_object *obj)
 		return true;
 
 	for (i = 0; i < obj->mm.n_placements; i++) {
-		/* Compression is not allowed for the objects with smem placement */
+		 
 		if (obj->mm.placements[i]->type == INTEL_MEMORY_SYSTEM)
 			return false;
 		if (!lmem_placement &&
@@ -892,17 +665,7 @@ static const struct drm_gem_object_funcs i915_gem_object_funcs = {
 	.export = i915_gem_prime_export,
 };
 
-/**
- * i915_gem_object_get_moving_fence - Get the object's moving fence if any
- * @obj: The object whose moving fence to get.
- * @fence: The resulting fence
- *
- * A non-signaled moving fence means that there is an async operation
- * pending on the object that needs to be waited on before setting up
- * any GPU- or CPU PTEs to the object's pages.
- *
- * Return: Negative error code or 0 for success.
- */
+ 
 int i915_gem_object_get_moving_fence(struct drm_i915_gem_object *obj,
 				     struct dma_fence **fence)
 {
@@ -910,18 +673,7 @@ int i915_gem_object_get_moving_fence(struct drm_i915_gem_object *obj,
 				      fence);
 }
 
-/**
- * i915_gem_object_wait_moving_fence - Wait for the object's moving fence if any
- * @obj: The object whose moving fence to wait for.
- * @intr: Whether to wait interruptible.
- *
- * If the moving fence signaled without an error, it is detached from the
- * object and put.
- *
- * Return: 0 if successful, -ERESTARTSYS if the wait was interrupted,
- * negative error code if the async operation represented by the
- * moving fence failed.
- */
+ 
 int i915_gem_object_wait_moving_fence(struct drm_i915_gem_object *obj,
 				      bool intr)
 {
@@ -939,21 +691,10 @@ int i915_gem_object_wait_moving_fence(struct drm_i915_gem_object *obj,
 	return ret < 0 ? ret : 0;
 }
 
-/*
- * i915_gem_object_has_unknown_state - Return true if the object backing pages are
- * in an unknown_state. This means that userspace must NEVER be allowed to touch
- * the pages, with either the GPU or CPU.
- *
- * ONLY valid to be called after ensuring that all kernel fences have signalled
- * (in particular the fence for moving/clearing the object).
- */
+ 
 bool i915_gem_object_has_unknown_state(struct drm_i915_gem_object *obj)
 {
-	/*
-	 * The below barrier pairs with the dma_fence_signal() in
-	 * __memcpy_work(). We should only sample the unknown_state after all
-	 * the kernel fences have signalled.
-	 */
+	 
 	smp_rmb();
 	return obj->mm.unknown_state;
 }

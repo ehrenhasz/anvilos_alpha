@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter/x_tables.h>
@@ -29,7 +27,7 @@ synproxy_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 		return NF_DROP;
 
 	if (th->syn && !(th->ack || th->fin || th->rst)) {
-		/* Initial SYN from client */
+		 
 		this_cpu_inc(snet->stats->syn_received);
 
 		if (th->ece && th->cwr)
@@ -50,7 +48,7 @@ synproxy_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 		return NF_STOLEN;
 
 	} else if (th->ack && !(th->fin || th->rst || th->syn)) {
-		/* ACK from client */
+		 
 		if (synproxy_recv_client_ack_ipv6(net, skb, th, &opts,
 						  ntohl(th->seq))) {
 			consume_skb(skb);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename: target_core_xcopy.c
- *
- * This file contains support for SPC-4 Extended-Copy offload with generic
- * TCM backends.
- *
- * Copyright (c) 2011-2013 Datera, Inc. All rights reserved.
- *
- * Author:
- * Nicholas A. Bellinger <nab@daterainc.com>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -33,13 +22,7 @@ static struct workqueue_struct *xcopy_wq = NULL;
 
 static sense_reason_t target_parse_xcopy_cmd(struct xcopy_op *xop);
 
-/**
- * target_xcopy_locate_se_dev_e4_iter - compare XCOPY NAA device identifiers
- *
- * @se_dev: device being considered for match
- * @dev_wwn: XCOPY requested NAA dev_wwn
- * @return: 1 on match, 0 on no-match
- */
+ 
 static int target_xcopy_locate_se_dev_e4_iter(struct se_device *se_dev,
 					      const unsigned char *dev_wwn)
 {
@@ -75,7 +58,7 @@ static int target_xcopy_locate_se_dev_e4(struct se_session *sess,
 	struct se_lun *this_lun = NULL;
 	struct se_device *found_dev = NULL;
 
-	/* cmd with NULL sess indicates no associated $FABRIC_MOD */
+	 
 	if (!sess)
 		goto err_out;
 
@@ -118,14 +101,10 @@ static int target_xcopy_parse_tiddesc_e4(struct se_cmd *se_cmd, struct xcopy_op 
 	unsigned char *desc = p;
 	unsigned short ript;
 	u8 desig_len;
-	/*
-	 * Extract RELATIVE INITIATOR PORT IDENTIFIER
-	 */
+	 
 	ript = get_unaligned_be16(&desc[2]);
 	pr_debug("XCOPY 0xe4: RELATIVE INITIATOR PORT IDENTIFIER: %hu\n", ript);
-	/*
-	 * Check for supported code set, association, and designator type
-	 */
+	 
 	if ((desc[4] & 0x0f) != 0x1) {
 		pr_err("XCOPY 0xe4: code set of non binary type not supported\n");
 		return -EINVAL;
@@ -139,19 +118,14 @@ static int target_xcopy_parse_tiddesc_e4(struct se_cmd *se_cmd, struct xcopy_op 
 				(desc[5] & 0x0f));
 		return -EINVAL;
 	}
-	/*
-	 * Check for matching 16 byte length for NAA IEEE Registered Extended
-	 * Assigned designator
-	 */
+	 
 	desig_len = desc[7];
 	if (desig_len != XCOPY_NAA_IEEE_REGEX_LEN) {
 		pr_err("XCOPY 0xe4: invalid desig_len: %d\n", (int)desig_len);
 		return -EINVAL;
 	}
 	pr_debug("XCOPY 0xe4: desig_len: %d\n", (int)desig_len);
-	/*
-	 * Check for NAA IEEE Registered Extended Assigned header..
-	 */
+	 
 	if ((desc[8] & 0xf0) != 0x60) {
 		pr_err("XCOPY 0xe4: Unsupported DESIGNATOR TYPE: 0x%02x\n",
 					(desc[8] & 0xf0));
@@ -166,9 +140,7 @@ static int target_xcopy_parse_tiddesc_e4(struct se_cmd *se_cmd, struct xcopy_op 
 
 	if (cscd_index == xop->stdi) {
 		memcpy(&xop->src_tid_wwn[0], &desc[8], XCOPY_NAA_IEEE_REGEX_LEN);
-		/*
-		 * Determine if the source designator matches the local device
-		 */
+		 
 		if (!memcmp(&xop->local_dev_wwn[0], &xop->src_tid_wwn[0],
 				XCOPY_NAA_IEEE_REGEX_LEN)) {
 			xop->op_origin = XCOL_SOURCE_RECV_OP;
@@ -180,12 +152,7 @@ static int target_xcopy_parse_tiddesc_e4(struct se_cmd *se_cmd, struct xcopy_op 
 
 	if (cscd_index == xop->dtdi) {
 		memcpy(&xop->dst_tid_wwn[0], &desc[8], XCOPY_NAA_IEEE_REGEX_LEN);
-		/*
-		 * Determine if the destination designator matches the local
-		 * device. If @cscd_index corresponds to both source (stdi) and
-		 * destination (dtdi), or dtdi comes after stdi, then
-		 * XCOL_DEST_RECV_OP wins.
-		 */
+		 
 		if (!memcmp(&xop->local_dev_wwn[0], &xop->dst_tid_wwn[0],
 				XCOPY_NAA_IEEE_REGEX_LEN)) {
 			xop->op_origin = XCOL_DEST_RECV_OP;
@@ -219,23 +186,16 @@ static int target_xcopy_parse_target_descriptors(struct se_cmd *se_cmd,
 	if (tdll > RCR_OP_MAX_TARGET_DESC_COUNT * XCOPY_TARGET_DESC_LEN) {
 		pr_err("XCOPY target descriptor supports a maximum"
 			" two src/dest descriptors, tdll: %hu too large..\n", tdll);
-		/* spc4r37 6.4.3.4 CSCD DESCRIPTOR LIST LENGTH field */
+		 
 		*sense_ret = TCM_TOO_MANY_TARGET_DESCS;
 		return -EINVAL;
 	}
-	/*
-	 * Generate an IEEE Registered Extended designator based upon the
-	 * se_device the XCOPY was received upon..
-	 */
+	 
 	memset(&xop->local_dev_wwn[0], 0, XCOPY_NAA_IEEE_REGEX_LEN);
 	spc_gen_naa_6h_vendor_specific(local_dev, &xop->local_dev_wwn[0]);
 
 	while (start < tdll) {
-		/*
-		 * Check target descriptor identification with 0xE4 type, and
-		 * compare the current index with the CSCD descriptor IDs in
-		 * the segment descriptor. Use VPD 0x83 WWPN matching ..
-		 */
+		 
 		switch (desc[0]) {
 		case 0xe4:
 			rc = target_xcopy_parse_tiddesc_e4(se_cmd, xop,
@@ -273,12 +233,7 @@ static int target_xcopy_parse_target_descriptors(struct se_cmd *se_cmd,
 		rc = -EINVAL;
 		break;
 	}
-	/*
-	 * If a matching IEEE NAA 0x83 descriptor for the requested device
-	 * is not located on this node, return COPY_ABORTED with ASQ/ASQC
-	 * 0x0d/0x02 - COPY_TARGET_DEVICE_NOT_REACHABLE to request the
-	 * initiator to fall back to normal copy method.
-	 */
+	 
 	if (rc < 0) {
 		*sense_ret = TCM_COPY_TARGET_DEVICE_NOT_REACHABLE;
 		goto out;
@@ -350,15 +305,13 @@ static int target_xcopy_parse_segment_descriptors(struct xcopy_op *xop,
 	if (sdll > RCR_OP_MAX_SG_DESC_COUNT * XCOPY_SEGMENT_DESC_LEN) {
 		pr_err("XCOPY supports %u segment descriptor(s), sdll: %u too"
 			" large..\n", RCR_OP_MAX_SG_DESC_COUNT, sdll);
-		/* spc4r37 6.4.3.5 SEGMENT DESCRIPTOR LIST LENGTH field */
+		 
 		*sense_ret = TCM_TOO_MANY_SEGMENT_DESCS;
 		return -EINVAL;
 	}
 
 	while (start < sdll) {
-		/*
-		 * Check segment descriptor type code for block -> block
-		 */
+		 
 		switch (desc[0]) {
 		case 0x02:
 			rc = target_xcopy_parse_segdesc_02(xop, desc);
@@ -383,9 +336,7 @@ out:
 	return -EINVAL;
 }
 
-/*
- * Start xcopy_pt ops
- */
+ 
 
 struct xcopy_pt_cmd {
 	struct se_cmd se_cmd;
@@ -417,7 +368,7 @@ static void xcopy_pt_release_cmd(struct se_cmd *se_cmd)
 	struct xcopy_pt_cmd *xpt_cmd = container_of(se_cmd,
 				struct xcopy_pt_cmd, se_cmd);
 
-	/* xpt_cmd is on the stack, nothing to free here */
+	 
 	pr_debug("xpt_cmd done: %p\n", xpt_cmd);
 }
 
@@ -455,9 +406,7 @@ static const struct target_core_fabric_ops xcopy_pt_tfo = {
 	.queue_status		= xcopy_pt_queue_status,
 };
 
-/*
- * End xcopy_pt_ops
- */
+ 
 
 int target_xcopy_setup_pt(void)
 {
@@ -494,19 +443,7 @@ void target_xcopy_release_pt(void)
 		destroy_workqueue(xcopy_wq);
 }
 
-/*
- * target_xcopy_setup_pt_cmd - set up a pass-through command
- * @xpt_cmd:	 Data structure to initialize.
- * @xop:	 Describes the XCOPY operation received from an initiator.
- * @se_dev:	 Backend device to associate with @xpt_cmd if
- *		 @remote_port == true.
- * @cdb:	 SCSI CDB to be copied into @xpt_cmd.
- * @remote_port: If false, use the LUN through which the XCOPY command has
- *		 been received. If true, use @se_dev->xcopy_lun.
- *
- * Set up a SCSI command (READ or WRITE) that will be used to execute an
- * XCOPY command.
- */
+ 
 static int target_xcopy_setup_pt_cmd(
 	struct xcopy_pt_cmd *xpt_cmd,
 	struct xcopy_op *xop,
@@ -516,10 +453,7 @@ static int target_xcopy_setup_pt_cmd(
 {
 	struct se_cmd *cmd = &xpt_cmd->se_cmd;
 
-	/*
-	 * Setup LUN+port to honor reservations based upon xop->op_origin for
-	 * X-COPY PUSH or X-COPY PULL based upon where the CDB was received.
-	 */
+	 
 	if (remote_port) {
 		cmd->se_lun = &se_dev->xcopy_lun;
 		cmd->se_dev = se_dev;
@@ -680,10 +614,7 @@ static void target_xcopy_do_work(struct work_struct *work)
 	dst_lba = xop->dst_lba;
 	nolb = xop->nolb;
 	end_lba = src_lba + nolb;
-	/*
-	 * Break up XCOPY I/O into hw_max_sectors * hw_block_size sized
-	 * I/O based on the smallest max_bytes between src_dev + dst_dev
-	 */
+	 
 	max_bytes_src = (unsigned long long) src_dev->dev_attrib.hw_max_sectors *
 			src_dev->dev_attrib.hw_block_size;
 	max_bytes_dst = (unsigned long long) dst_dev->dev_attrib.hw_max_sectors *
@@ -692,10 +623,7 @@ static void target_xcopy_do_work(struct work_struct *work)
 	max_bytes = min_t(u64, max_bytes_src, max_bytes_dst);
 	max_bytes = min_t(u64, max_bytes, XCOPY_MAX_BYTES);
 
-	/*
-	 * Using shift instead of the division because otherwise GCC
-	 * generates __udivdi3 that is missing on i386
-	 */
+	 
 	max_blocks = max_bytes >> ilog2(src_dev->dev_attrib.block_size);
 
 	pr_debug("%s: nolb: %u, max_blocks: %llu end_lba: %llu\n", __func__,
@@ -708,10 +636,7 @@ static void target_xcopy_do_work(struct work_struct *work)
 		unsigned short cur_nolb = cur_bytes / src_dev->dev_attrib.block_size;
 
 		if (cur_bytes != xop->xop_data_bytes) {
-			/*
-			 * (Re)allocate a buffer large enough to hold the XCOPY
-			 * I/O size, which can be reused each read / write loop.
-			 */
+			 
 			target_free_sgl(xop->xop_data_sg, xop->xop_data_nents);
 			rc = target_alloc_sgl(&xop->xop_data_sg,
 					      &xop->xop_data_nents,
@@ -763,11 +688,7 @@ static void target_xcopy_do_work(struct work_struct *work)
 	return;
 
 out:
-	/*
-	 * The XCOPY command was aborted after some data was transferred.
-	 * Terminate command with CHECK CONDITION status, with the sense key
-	 * set to COPY ABORTED.
-	 */
+	 
 	sense_rc = TCM_COPY_TARGET_DEVICE_NOT_REACHABLE;
 	xcopy_pt_undepend_remotedev(xop);
 	target_free_sgl(xop->xop_data_sg, xop->xop_data_nents);
@@ -779,10 +700,7 @@ err_free:
 	target_complete_cmd_with_sense(ec_cmd, SAM_STAT_CHECK_CONDITION, sense_rc);
 }
 
-/*
- * Returns TCM_NO_SENSE upon success or a sense code != TCM_NO_SENSE if parsing
- * fails.
- */
+ 
 static sense_reason_t target_parse_xcopy_cmd(struct xcopy_op *xop)
 {
 	struct se_cmd *se_cmd = xop->xop_se_cmd;
@@ -801,9 +719,7 @@ static sense_reason_t target_parse_xcopy_cmd(struct xcopy_op *xop)
 	list_id = p[0];
 	list_id_usage = (p[1] & 0x18) >> 3;
 
-	/*
-	 * Determine TARGET DESCRIPTOR LIST LENGTH + SEGMENT DESCRIPTOR LIST LENGTH
-	 */
+	 
 	tdll = get_unaligned_be16(&p[2]);
 	sdll = get_unaligned_be32(&p[8]);
 	if (tdll + sdll > RCR_OP_MAX_DESC_LIST_LEN) {
@@ -831,10 +747,7 @@ static sense_reason_t target_parse_xcopy_cmd(struct xcopy_op *xop)
 		" tdll: %hu sdll: %u inline_dl: %u\n", list_id, list_id_usage,
 		tdll, sdll, inline_dl);
 
-	/*
-	 * skip over the target descriptors until segment descriptors
-	 * have been passed - CSCD ids are needed to determine src and dest.
-	 */
+	 
 	seg_desc = &p[16] + tdll;
 
 	rc = target_xcopy_parse_segment_descriptors(xop, seg_desc, sdll, &ret);
@@ -930,71 +843,39 @@ static sense_reason_t target_rcr_operating_parameters(struct se_cmd *se_cmd)
 		transport_kunmap_data_sg(se_cmd);
 		return TCM_INVALID_CDB_FIELD;
 	}
-	/*
-	 * Set SNLID=1 (Supports no List ID)
-	 */
+	 
 	p[4] = 0x1;
-	/*
-	 * MAXIMUM TARGET DESCRIPTOR COUNT
-	 */
+	 
 	put_unaligned_be16(RCR_OP_MAX_TARGET_DESC_COUNT, &p[8]);
-	/*
-	 * MAXIMUM SEGMENT DESCRIPTOR COUNT
-	 */
+	 
 	put_unaligned_be16(RCR_OP_MAX_SG_DESC_COUNT, &p[10]);
-	/*
-	 * MAXIMUM DESCRIPTOR LIST LENGTH
-	 */
+	 
 	put_unaligned_be32(RCR_OP_MAX_DESC_LIST_LEN, &p[12]);
-	/*
-	 * MAXIMUM SEGMENT LENGTH
-	 */
+	 
 	put_unaligned_be32(RCR_OP_MAX_SEGMENT_LEN, &p[16]);
-	/*
-	 * MAXIMUM INLINE DATA LENGTH for SA 0x04 (NOT SUPPORTED)
-	 */
+	 
 	put_unaligned_be32(0x0, &p[20]);
-	/*
-	 * HELD DATA LIMIT
-	 */
+	 
 	put_unaligned_be32(0x0, &p[24]);
-	/*
-	 * MAXIMUM STREAM DEVICE TRANSFER SIZE
-	 */
+	 
 	put_unaligned_be32(0x0, &p[28]);
-	/*
-	 * TOTAL CONCURRENT COPIES
-	 */
+	 
 	put_unaligned_be16(RCR_OP_TOTAL_CONCURR_COPIES, &p[34]);
-	/*
-	 * MAXIMUM CONCURRENT COPIES
-	 */
+	 
 	p[36] = RCR_OP_MAX_CONCURR_COPIES;
-	/*
-	 * DATA SEGMENT GRANULARITY (log 2)
-	 */
+	 
 	p[37] = RCR_OP_DATA_SEG_GRAN_LOG2;
-	/*
-	 * INLINE DATA GRANULARITY log 2)
-	 */
+	 
 	p[38] = RCR_OP_INLINE_DATA_GRAN_LOG2;
-	/*
-	 * HELD DATA GRANULARITY
-	 */
+	 
 	p[39] = RCR_OP_HELD_DATA_GRAN_LOG2;
-	/*
-	 * IMPLEMENTED DESCRIPTOR LIST LENGTH
-	 */
+	 
 	p[43] = 0x2;
-	/*
-	 * List of implemented descriptor type codes (ordered)
-	 */
-	p[44] = 0x02; /* Copy Block to Block device */
-	p[45] = 0xe4; /* Identification descriptor target descriptor */
+	 
+	p[44] = 0x02;  
+	p[45] = 0xe4;  
 
-	/*
-	 * AVAILABLE DATA (n-3)
-	 */
+	 
 	put_unaligned_be32(42, &p[0]);
 
 	transport_kunmap_data_sg(se_cmd);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CCU_NK_H_
 #define _CCU_NK_H_
@@ -12,11 +10,7 @@
 #include "ccu_div.h"
 #include "ccu_mult.h"
 
-/*
- * struct ccu_nk - Definition of an N-K clock
- *
- * Clocks based on the formula parent * N * K
- */
+ 
 struct ccu_nk {
 	u16			reg;
 	u32			enable;
@@ -60,4 +54,4 @@ static inline struct ccu_nk *hw_to_ccu_nk(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_nk_ops;
 
-#endif /* _CCU_NK_H_ */
+#endif  

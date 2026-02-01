@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2022 NXP
- */
+
+ 
 #include <linux/filter.h>
 #include <linux/compiler.h>
 #include <linux/bpf_trace.h>
@@ -58,7 +57,7 @@ static u32 dpaa2_xsk_run_xdp(struct dpaa2_eth_priv *priv,
 	xsk_buff_dma_sync_for_cpu(xdp_buff, ch->xsk_pool);
 	xdp_act = bpf_prog_run_xdp(xdp_prog, xdp_buff);
 
-	/* xdp.data pointer may have changed */
+	 
 	dpaa2_fd_set_offset(fd, xdp_buff->data - vaddr);
 	dpaa2_fd_set_len(fd, xdp_buff->data_end - xdp_buff->data);
 
@@ -99,7 +98,7 @@ out:
 	return xdp_act;
 }
 
-/* Rx frame processing routine for the AF_XDP fast path */
+ 
 static void dpaa2_xsk_rx(struct dpaa2_eth_priv *priv,
 			 struct dpaa2_eth_channel *ch,
 			 const struct dpaa2_fd *fd,
@@ -120,7 +119,7 @@ static void dpaa2_xsk_rx(struct dpaa2_eth_priv *priv,
 
 	if (fd_format != dpaa2_fd_single) {
 		WARN_ON(priv->xdp_prog);
-		/* AF_XDP doesn't support any other formats */
+		 
 		goto err_frame_format;
 	}
 
@@ -131,15 +130,13 @@ static void dpaa2_xsk_rx(struct dpaa2_eth_priv *priv,
 		return;
 	}
 
-	/* Build skb */
+	 
 	skb = dpaa2_eth_alloc_skb(priv, ch, fd, fd_length, vaddr);
 	if (!skb)
-		/* Nothing else we can do, recycle the buffer and
-		 * drop the frame.
-		 */
+		 
 		goto err_alloc_skb;
 
-	/* Send the skb to the Linux networking stack */
+	 
 	dpaa2_eth_receive_skb(priv, ch, fd, vaddr, fq, percpu_stats, skb);
 
 	return;
@@ -320,9 +317,7 @@ int dpaa2_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
 	if (!ch->xsk_zc)
 		return -EINVAL;
 
-	/* We do not have access to a per channel SW interrupt, so instead we
-	 * schedule a NAPI instance.
-	 */
+	 
 	if (!napi_if_scheduled_mark_missed(&ch->napi))
 		napi_schedule(&ch->napi);
 
@@ -343,35 +338,35 @@ static int dpaa2_xsk_tx_build_fd(struct dpaa2_eth_priv *priv,
 	dma_addr_t addr;
 	int err = 0;
 
-	/* Prepare the HW SGT structure */
+	 
 	sgt_buf_size = priv->tx_data_offset + sizeof(struct dpaa2_sg_entry);
 	sgt_buf = dpaa2_eth_sgt_get(priv);
 	if (unlikely(!sgt_buf))
 		return -ENOMEM;
 	sgt = (struct dpaa2_sg_entry *)(sgt_buf + priv->tx_data_offset);
 
-	/* Get the address of the XSK Tx buffer */
+	 
 	addr = xsk_buff_raw_get_dma(ch->xsk_pool, xdp_desc->addr);
 	xsk_buff_raw_dma_sync_for_device(ch->xsk_pool, addr, xdp_desc->len);
 
-	/* Fill in the HW SGT structure */
+	 
 	dpaa2_sg_set_addr(sgt, addr);
 	dpaa2_sg_set_len(sgt, xdp_desc->len);
 	dpaa2_sg_set_final(sgt, true);
 
-	/* Store the necessary info in the SGT buffer */
+	 
 	swa = (struct dpaa2_eth_swa *)sgt_buf;
 	swa->type = DPAA2_ETH_SWA_XSK;
 	swa->xsk.sgt_size = sgt_buf_size;
 
-	/* Separately map the SGT buffer */
+	 
 	sgt_addr = dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_BIDIRECTIONAL);
 	if (unlikely(dma_mapping_error(dev, sgt_addr))) {
 		err = -ENOMEM;
 		goto sgt_map_failed;
 	}
 
-	/* Initialize FD fields */
+	 
 	memset(fd, 0, sizeof(struct dpaa2_fd));
 	dpaa2_fd_set_offset(fd, priv->tx_data_offset);
 	dpaa2_fd_set_format(fd, dpaa2_fd_sg);
@@ -404,14 +399,14 @@ bool dpaa2_xsk_tx(struct dpaa2_eth_priv *priv,
 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
 	fds = (this_cpu_ptr(priv->fd))->array;
 
-	/* Use the FQ with the same idx as the affine CPU */
+	 
 	fq = &priv->fq[ch->nctx.desired_cpu];
 
 	batch = xsk_tx_peek_release_desc_batch(ch->xsk_pool, budget);
 	if (!batch)
 		return false;
 
-	/* Create a FD for each XSK frame to be sent */
+	 
 	for (i = 0; i < batch; i++) {
 		err = dpaa2_xsk_tx_build_fd(priv, ch, &fds[i], &xdp_descs[i]);
 		if (err) {
@@ -422,7 +417,7 @@ bool dpaa2_xsk_tx(struct dpaa2_eth_priv *priv,
 		trace_dpaa2_tx_xsk_fd(priv->net_dev, &fds[i]);
 	}
 
-	/* Enqueue all the created FDs */
+	 
 	max_retries = batch * DPAA2_ETH_ENQUEUE_RETRIES;
 	total_enqueued = 0;
 	enqueued = 0;
@@ -439,7 +434,7 @@ bool dpaa2_xsk_tx(struct dpaa2_eth_priv *priv,
 	}
 	percpu_extras->tx_portal_busy += retries;
 
-	/* Update statistics */
+	 
 	percpu_stats->tx_packets += total_enqueued;
 	for (i = 0; i < total_enqueued; i++)
 		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);

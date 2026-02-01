@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID driver for the apple ir device
- *
- * Original driver written by James McKenzie
- * Ported to recent 2.6 kernel versions by Greg Kroah-Hartman <gregkh@suse.de>
- * Updated to support newer remotes by Bastien Nocera <hadess@hadess.net>
- * Ported to HID subsystem by Benjamin Tissoires <benjamin.tissoires@gmail.com>
- *
- * Copyright (C) 2006 James McKenzie
- * Copyright (C) 2008 Greg Kroah-Hartman <greg@kroah.com>
- * Copyright (C) 2008 Novell Inc.
- * Copyright (C) 2010, 2012 Bastien Nocera <hadess@hadess.net>
- * Copyright (C) 2013 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- * Copyright (C) 2013 Red Hat Inc. All Rights Reserved
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -28,61 +14,15 @@ MODULE_LICENSE("GPL");
 #define KEY_MASK		0x0F
 #define TWO_PACKETS_MASK	0x40
 
-/*
- * James McKenzie has two devices both of which report the following
- * 25 87 ee 83 0a	+
- * 25 87 ee 83 0c	-
- * 25 87 ee 83 09	<<
- * 25 87 ee 83 06	>>
- * 25 87 ee 83 05	>"
- * 25 87 ee 83 03	menu
- * 26 00 00 00 00	for key repeat
- */
+ 
 
-/*
- * Thomas Glanzmann reports the following responses
- * 25 87 ee ca 0b	+
- * 25 87 ee ca 0d	-
- * 25 87 ee ca 08	<<
- * 25 87 ee ca 07	>>
- * 25 87 ee ca 04	>"
- * 25 87 ee ca 02	menu
- * 26 00 00 00 00       for key repeat
- *
- * He also observes the following event sometimes
- * sent after a key is release, which I interpret
- * as a flat battery message
- * 25 87 e0 ca 06	flat battery
- */
+ 
 
-/*
- * Alexandre Karpenko reports the following responses for Device ID 0x8242
- * 25 87 ee 47 0b	+
- * 25 87 ee 47 0d	-
- * 25 87 ee 47 08	<<
- * 25 87 ee 47 07	>>
- * 25 87 ee 47 04	>"
- * 25 87 ee 47 02	menu
- * 26 87 ee 47 **	for key repeat (** is the code of the key being held)
- */
+ 
 
-/*
- * Bastien Nocera's remote
- * 25 87 ee 91 5f	followed by
- * 25 87 ee 91 05	gives you >"
- *
- * 25 87 ee 91 5c	followed by
- * 25 87 ee 91 05	gives you the middle button
- */
+ 
 
-/*
- * Fabien Andre's remote
- * 25 87 ee a3 5e	followed by
- * 25 87 ee a3 04	gives you >"
- *
- * 25 87 ee a3 5d	followed by
- * 25 87 ee a3 04	gives you the middle button
- */
+ 
 
 static const unsigned short appleir_key_table[] = {
 	KEY_RESERVED,
@@ -108,41 +48,19 @@ struct appleir {
 	struct input_dev *input_dev;
 	struct hid_device *hid;
 	unsigned short keymap[ARRAY_SIZE(appleir_key_table)];
-	struct timer_list key_up_timer;	/* timer for key up */
-	spinlock_t lock;		/* protects .current_key */
-	int current_key;		/* the currently pressed key */
-	int prev_key_idx;		/* key index in a 2 packets message */
+	struct timer_list key_up_timer;	 
+	spinlock_t lock;		 
+	int current_key;		 
+	int prev_key_idx;		 
 };
 
 static int get_key(int data)
 {
-	/*
-	 * The key is coded accross bits 2..9:
-	 *
-	 * 0x00 or 0x01 (        )	key:  0		-> KEY_RESERVED
-	 * 0x02 or 0x03 (  menu  )	key:  1		-> KEY_MENU
-	 * 0x04 or 0x05 (   >"   )	key:  2		-> KEY_PLAYPAUSE
-	 * 0x06 or 0x07 (   >>   )	key:  3		-> KEY_FORWARD
-	 * 0x08 or 0x09 (   <<   )	key:  4		-> KEY_BACK
-	 * 0x0a or 0x0b (    +   )	key:  5		-> KEY_VOLUMEUP
-	 * 0x0c or 0x0d (    -   )	key:  6		-> KEY_VOLUMEDOWN
-	 * 0x0e or 0x0f (        )	key:  7		-> KEY_RESERVED
-	 * 0x50 or 0x51 (        )	key:  8		-> KEY_RESERVED
-	 * 0x52 or 0x53 (        )	key:  9		-> KEY_RESERVED
-	 * 0x54 or 0x55 (        )	key: 10		-> KEY_RESERVED
-	 * 0x56 or 0x57 (        )	key: 11		-> KEY_RESERVED
-	 * 0x58 or 0x59 (        )	key: 12		-> KEY_RESERVED
-	 * 0x5a or 0x5b (        )	key: 13		-> KEY_RESERVED
-	 * 0x5c or 0x5d ( middle )	key: 14		-> KEY_ENTER
-	 * 0x5e or 0x5f (   >"   )	key: 15		-> KEY_PLAYPAUSE
-	 *
-	 * Packets starting with 0x5 are part of a two-packets message,
-	 * we notify the caller by sending a negative value.
-	 */
+	 
 	int key = (data >> 1) & KEY_MASK;
 
 	if ((data & TWO_PACKETS_MASK))
-		/* Part of a 2 packets-command */
+		 
 		key = -key;
 
 	return key;
@@ -195,14 +113,11 @@ static int appleir_raw_event(struct hid_device *hid, struct hid_report *report,
 		int index;
 
 		spin_lock_irqsave(&appleir->lock, flags);
-		/*
-		 * If we already have a key down, take it up before marking
-		 * this one down
-		 */
+		 
 		if (appleir->current_key)
 			key_up(hid, appleir, appleir->current_key);
 
-		/* Handle dual packet commands */
+		 
 		if (appleir->prev_key_idx > 0)
 			index = appleir->prev_key_idx;
 		else
@@ -212,15 +127,11 @@ static int appleir_raw_event(struct hid_device *hid, struct hid_report *report,
 			appleir->current_key = appleir->keymap[index];
 
 			key_down(hid, appleir, appleir->current_key);
-			/*
-			 * Remote doesn't do key up, either pull them up, in
-			 * the test above, or here set a timer which pulls
-			 * them up after 1/8 s
-			 */
+			 
 			mod_timer(&appleir->key_up_timer, jiffies + HZ / 8);
 			appleir->prev_key_idx = 0;
 		} else
-			/* Remember key for next packet */
+			 
 			appleir->prev_key_idx = -index;
 		spin_unlock_irqrestore(&appleir->lock, flags);
 		goto out;
@@ -230,21 +141,18 @@ static int appleir_raw_event(struct hid_device *hid, struct hid_report *report,
 
 	if (!memcmp(data, keyrepeat, sizeof(keyrepeat))) {
 		key_down(hid, appleir, appleir->current_key);
-		/*
-		 * Remote doesn't do key up, either pull them up, in the test
-		 * above, or here set a timer which pulls them up after 1/8 s
-		 */
+		 
 		mod_timer(&appleir->key_up_timer, jiffies + HZ / 8);
 		goto out;
 	}
 
 	if (!memcmp(data, flatbattery, sizeof(flatbattery))) {
 		battery_flat(appleir);
-		/* Fall through */
+		 
 	}
 
 out:
-	/* let hidraw and hiddev handle the report */
+	 
 	return 0;
 }
 
@@ -289,7 +197,7 @@ static int appleir_probe(struct hid_device *hid, const struct hid_device_id *id)
 
 	appleir->hid = hid;
 
-	/* force input as some remotes bypass the input registration */
+	 
 	hid->quirks |= HID_QUIRK_HIDINPUT_FORCE;
 
 	spin_lock_init(&appleir->lock);

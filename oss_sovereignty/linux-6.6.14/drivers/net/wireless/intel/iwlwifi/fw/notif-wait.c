@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2005-2014, 2021 Intel Corporation
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/sched.h>
 #include <linux/export.h>
 
@@ -31,12 +28,7 @@ bool iwl_notification_wait(struct iwl_notif_wait_data *notif_wait,
 			int i;
 			bool found = false;
 
-			/*
-			 * If it already finished (triggered) or has been
-			 * aborted then don't evaluate it again to avoid races,
-			 * Otherwise the function could be called again even
-			 * though it returned true before
-			 */
+			 
 			if (w->triggered || w->aborted)
 				continue;
 
@@ -127,7 +119,7 @@ int iwl_wait_notification(struct iwl_notif_wait_data *notif_wait,
 	if (wait_entry->aborted)
 		return -EIO;
 
-	/* return value is always >= 0 */
+	 
 	if (ret <= 0)
 		return -ETIMEDOUT;
 	return 0;

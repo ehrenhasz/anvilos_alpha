@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Gateworks Corporation
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/hdmi.h>
 #include <linux/i2c.h>
@@ -34,20 +32,20 @@
 
 #define TDA1997X_MBUS_CODES	5
 
-/* debug level */
+ 
 static int debug;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "debug level (0-2)");
 
-/* Audio formats */
+ 
 static const char * const audtype_names[] = {
-	"PCM",			/* PCM Samples */
-	"HBR",			/* High Bit Rate Audio */
-	"OBA",			/* One-Bit Audio */
-	"DST"			/* Direct Stream Transfer */
+	"PCM",			 
+	"HBR",			 
+	"OBA",			 
+	"DST"			 
 };
 
-/* Audio output port formats */
+ 
 enum audfmt_types {
 	AUDFMT_TYPE_DISABLED = 0,
 	AUDFMT_TYPE_I2S,
@@ -59,7 +57,7 @@ static const char * const audfmt_names[] = {
 	"SPDIF",
 };
 
-/* Video input formats */
+ 
 static const char * const hdmi_colorspace_names[] = {
 	"RGB", "YUV422", "YUV444", "YUV420", "", "", "", "",
 };
@@ -72,24 +70,22 @@ static const char * const v4l2_quantization_names[] = {
 	"Limited Range (16-235)",
 };
 
-/* Video output port formats */
+ 
 static const char * const vidfmt_names[] = {
-	"RGB444/YUV444",	/* RGB/YUV444 16bit data bus, 8bpp */
-	"YUV422 semi-planar",	/* YUV422 16bit data base, 8bpp */
-	"YUV422 CCIR656",	/* BT656 (YUV 8bpp 2 clock per pixel) */
+	"RGB444/YUV444",	 
+	"YUV422 semi-planar",	 
+	"YUV422 CCIR656",	 
 	"Invalid",
 };
 
-/*
- * Colorspace conversion matrices
- */
+ 
 struct color_matrix_coefs {
 	const char *name;
-	/* Input offsets */
+	 
 	s16 offint1;
 	s16 offint2;
 	s16 offint3;
-	/* Coeficients */
+	 
 	s16 p11coef;
 	s16 p12coef;
 	s16 p13coef;
@@ -99,7 +95,7 @@ struct color_matrix_coefs {
 	s16 p31coef;
 	s16 p32coef;
 	s16 p33coef;
-	/* Output offsets */
+	 
 	s16 offout1;
 	s16 offout2;
 	s16 offout3;
@@ -115,7 +111,7 @@ enum {
 	RGBFULL_ITU709,
 };
 
-/* NB: 4096 is 1.0 using fixed point numbers */
+ 
 static const struct color_matrix_coefs conv_matrix[] = {
 	{
 		"YUV709 -> RGB full",
@@ -177,28 +173,28 @@ static const struct color_matrix_coefs conv_matrix[] = {
 
 static const struct v4l2_dv_timings_cap tda1997x_dv_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
 
 	V4L2_INIT_BT_TIMINGS(
-		640, 1920,			/* min/max width */
-		350, 1200,			/* min/max height */
-		13000000, 165000000,		/* min/max pixelclock */
-		/* standards */
+		640, 1920,			 
+		350, 1200,			 
+		13000000, 165000000,		 
+		 
 		V4L2_DV_BT_STD_CEA861 | V4L2_DV_BT_STD_DMT |
 			V4L2_DV_BT_STD_GTF | V4L2_DV_BT_STD_CVT,
-		/* capabilities */
+		 
 		V4L2_DV_BT_CAP_INTERLACED | V4L2_DV_BT_CAP_PROGRESSIVE |
 			V4L2_DV_BT_CAP_REDUCED_BLANKING |
 			V4L2_DV_BT_CAP_CUSTOM
 	)
 };
 
-/* regulator supplies */
+ 
 static const char * const tda1997x_supply_name[] = {
-	"DOVDD", /* Digital I/O supply */
-	"DVDD",  /* Digital Core supply */
-	"AVDD",  /* Analog supply */
+	"DOVDD",  
+	"DVDD",   
+	"AVDD",   
 };
 
 #define TDA1997X_NUM_SUPPLIES ARRAY_SIZE(tda1997x_supply_name)
@@ -230,36 +226,36 @@ struct tda1997x_state {
 	struct mutex page_lock;
 	char page;
 
-	/* detected info from chip */
+	 
 	int chip_revision;
 	char port_30bit;
 	char output_2p5;
 	char tmdsb_clk;
 	char tmdsb_soc;
 
-	/* status info */
+	 
 	char hdmi_status;
 	char mptrw_in_progress;
 	char activity_status;
 	char input_detect[2];
 
-	/* video */
+	 
 	struct hdmi_avi_infoframe avi_infoframe;
 	struct v4l2_hdmi_colorimetry colorimetry;
 	u32 rgb_quantization_range;
 	struct v4l2_dv_timings timings;
 	int fps;
 	const struct color_matrix_coefs *conv;
-	u32 mbus_codes[TDA1997X_MBUS_CODES];	/* available modes */
-	u32 mbus_code;		/* current mode */
+	u32 mbus_codes[TDA1997X_MBUS_CODES];	 
+	u32 mbus_code;		 
 	u8 vid_fmt;
 
-	/* controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *detect_tx_5v_ctrl;
 	struct v4l2_ctrl *rgb_quantization_range_ctrl;
 
-	/* audio */
+	 
 	u8  audio_ch_alloc;
 	int audio_samplerate;
 	int audio_channels;
@@ -268,7 +264,7 @@ struct tda1997x_state {
 	struct mutex audio_lock;
 	struct snd_pcm_substream *audio_stream;
 
-	/* EDID */
+	 
 	struct {
 		u8 edid[256];
 		u32 present;
@@ -332,9 +328,7 @@ static int tda1997x_cec_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * I2C transfer
- */
+ 
 
 static int tda1997x_setpage(struct v4l2_subdev *sd, u8 page)
 {
@@ -486,19 +480,17 @@ static int io_write24(struct v4l2_subdev *sd, u16 reg, u32 val)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Hotplug
- */
+ 
 
 enum hpd_mode {
-	HPD_LOW_BP,	/* HPD low and pulse of at least 100ms */
-	HPD_LOW_OTHER,	/* HPD low and pulse of at least 100ms */
-	HPD_HIGH_BP,	/* HIGH */
+	HPD_LOW_BP,	 
+	HPD_LOW_OTHER,	 
+	HPD_HIGH_BP,	 
 	HPD_HIGH_OTHER,
-	HPD_PULSE,	/* HPD low pulse */
+	HPD_PULSE,	 
 };
 
-/* manual HPD (Hot Plug Detect) control */
+ 
 static int tda1997x_manual_hpd(struct v4l2_subdev *sd, enum hpd_mode mode)
 {
 	u8 hpd_auto, hpd_pwr, hpd_man;
@@ -507,46 +499,46 @@ static int tda1997x_manual_hpd(struct v4l2_subdev *sd, enum hpd_mode mode)
 	hpd_pwr = io_read(sd, REG_HPD_POWER);
 	hpd_man = io_read(sd, REG_HPD_MAN_CTRL);
 
-	/* mask out unused bits */
+	 
 	hpd_man &= (HPD_MAN_CTRL_HPD_PULSE |
 		    HPD_MAN_CTRL_5VEN |
 		    HPD_MAN_CTRL_HPD_B |
 		    HPD_MAN_CTRL_HPD_A);
 
 	switch (mode) {
-	/* HPD low and pulse of at least 100ms */
+	 
 	case HPD_LOW_BP:
-		/* hpd_bp=0 */
+		 
 		hpd_pwr &= ~HPD_POWER_BP_MASK;
-		/* disable HPD_A and HPD_B */
+		 
 		hpd_man &= ~(HPD_MAN_CTRL_HPD_A | HPD_MAN_CTRL_HPD_B);
 		io_write(sd, REG_HPD_POWER, hpd_pwr);
 		io_write(sd, REG_HPD_MAN_CTRL, hpd_man);
 		break;
-	/* HPD high */
+	 
 	case HPD_HIGH_BP:
-		/* hpd_bp=1 */
+		 
 		hpd_pwr &= ~HPD_POWER_BP_MASK;
 		hpd_pwr |= 1 << HPD_POWER_BP_SHIFT;
 		io_write(sd, REG_HPD_POWER, hpd_pwr);
 		break;
-	/* HPD low and pulse of at least 100ms */
+	 
 	case HPD_LOW_OTHER:
-		/* disable HPD_A and HPD_B */
+		 
 		hpd_man &= ~(HPD_MAN_CTRL_HPD_A | HPD_MAN_CTRL_HPD_B);
-		/* hp_other=0 */
+		 
 		hpd_auto &= ~HPD_AUTO_HP_OTHER;
 		io_write(sd, REG_HPD_AUTO_CTRL, hpd_auto);
 		io_write(sd, REG_HPD_MAN_CTRL, hpd_man);
 		break;
-	/* HPD high */
+	 
 	case HPD_HIGH_OTHER:
 		hpd_auto |= HPD_AUTO_HP_OTHER;
 		io_write(sd, REG_HPD_AUTO_CTRL, hpd_auto);
 		break;
-	/* HPD low pulse */
+	 
 	case HPD_PULSE:
-		/* disable HPD_A and HPD_B */
+		 
 		hpd_man &= ~(HPD_MAN_CTRL_HPD_A | HPD_MAN_CTRL_HPD_B);
 		io_write(sd, REG_HPD_MAN_CTRL, hpd_man);
 		break;
@@ -565,7 +557,7 @@ static void tda1997x_delayed_work_enable_hpd(struct work_struct *work)
 
 	v4l2_dbg(2, debug, sd, "%s\n", __func__);
 
-	/* Set HPD high */
+	 
 	tda1997x_manual_hpd(sd, HPD_HIGH_OTHER);
 	tda1997x_manual_hpd(sd, HPD_HIGH_BP);
 
@@ -579,7 +571,7 @@ static void tda1997x_disable_edid(struct v4l2_subdev *sd)
 	v4l2_dbg(1, debug, sd, "%s\n", __func__);
 	cancel_delayed_work_sync(&state->delayed_work_enable_hpd);
 
-	/* Set HPD low */
+	 
 	tda1997x_manual_hpd(sd, HPD_LOW_BP);
 }
 
@@ -589,17 +581,13 @@ static void tda1997x_enable_edid(struct v4l2_subdev *sd)
 
 	v4l2_dbg(1, debug, sd, "%s\n", __func__);
 
-	/* Enable hotplug after 100ms */
+	 
 	schedule_delayed_work(&state->delayed_work_enable_hpd, HZ / 10);
 }
 
-/* -----------------------------------------------------------------------------
- * Signal Control
- */
+ 
 
-/*
- * configure vid_fmt based on mbus_code
- */
+ 
 static int
 tda1997x_setup_format(struct tda1997x_state *state, u32 code)
 {
@@ -632,22 +620,14 @@ tda1997x_setup_format(struct tda1997x_state *state, u32 code)
 	return 0;
 }
 
-/*
- * The color conversion matrix will convert between the colorimetry of the
- * HDMI input to the desired output format RGB|YUV. RGB output is to be
- * full-range and YUV is to be limited range.
- *
- * RGB full-range uses values from 0 to 255 which is recommended on a monitor
- * and RGB Limited uses values from 16 to 236 (16=black, 235=white) which is
- * typically recommended on a TV.
- */
+ 
 static void
 tda1997x_configure_csc(struct v4l2_subdev *sd)
 {
 	struct tda1997x_state *state = to_state(sd);
 	struct hdmi_avi_infoframe *avi = &state->avi_infoframe;
 	struct v4l2_hdmi_colorimetry *c = &state->colorimetry;
-	/* Blanking code values depend on output colorspace (RGB or YUV) */
+	 
 	struct blanking_codes {
 		s16 code_gy;
 		s16 code_bu;
@@ -664,7 +644,7 @@ tda1997x_configure_csc(struct v4l2_subdev *sd)
 		vidfmt_names[state->vid_fmt]);
 	state->conv = NULL;
 	switch (state->vid_fmt) {
-	/* RGB output */
+	 
 	case OF_FMT_444:
 		blanking_codes = &rgb_blanking;
 		if (c->colorspace == V4L2_COLORSPACE_SRGB) {
@@ -678,9 +658,9 @@ tda1997x_configure_csc(struct v4l2_subdev *sd)
 		}
 		break;
 
-	/* YUV output */
-	case OF_FMT_422_SMPT: /* semi-planar */
-	case OF_FMT_422_CCIR: /* CCIR656 */
+	 
+	case OF_FMT_422_SMPT:  
+	case OF_FMT_422_CCIR:  
 		blanking_codes = &yuv_blanking;
 		if ((c->colorspace == V4L2_COLORSPACE_SRGB) &&
 		    (c->quantization == V4L2_QUANTIZATION_FULL_RANGE)) {
@@ -701,15 +681,15 @@ tda1997x_configure_csc(struct v4l2_subdev *sd)
 	if (state->conv) {
 		v4l_dbg(1, debug, state->client, "%s\n",
 			state->conv->name);
-		/* enable matrix conversion */
+		 
 		reg = io_read(sd, REG_VDP_CTRL);
 		reg &= ~VDP_CTRL_MATRIX_BP;
 		io_write(sd, REG_VDP_CTRL, reg);
-		/* offset inputs */
+		 
 		io_write16(sd, REG_VDP_MATRIX + 0, state->conv->offint1);
 		io_write16(sd, REG_VDP_MATRIX + 2, state->conv->offint2);
 		io_write16(sd, REG_VDP_MATRIX + 4, state->conv->offint3);
-		/* coefficients */
+		 
 		io_write16(sd, REG_VDP_MATRIX + 6, state->conv->p11coef);
 		io_write16(sd, REG_VDP_MATRIX + 8, state->conv->p12coef);
 		io_write16(sd, REG_VDP_MATRIX + 10, state->conv->p13coef);
@@ -719,18 +699,18 @@ tda1997x_configure_csc(struct v4l2_subdev *sd)
 		io_write16(sd, REG_VDP_MATRIX + 18, state->conv->p31coef);
 		io_write16(sd, REG_VDP_MATRIX + 20, state->conv->p32coef);
 		io_write16(sd, REG_VDP_MATRIX + 22, state->conv->p33coef);
-		/* offset outputs */
+		 
 		io_write16(sd, REG_VDP_MATRIX + 24, state->conv->offout1);
 		io_write16(sd, REG_VDP_MATRIX + 26, state->conv->offout2);
 		io_write16(sd, REG_VDP_MATRIX + 28, state->conv->offout3);
 	} else {
-		/* disable matrix conversion */
+		 
 		reg = io_read(sd, REG_VDP_CTRL);
 		reg |= VDP_CTRL_MATRIX_BP;
 		io_write(sd, REG_VDP_CTRL, reg);
 	}
 
-	/* SetBlankingCodes */
+	 
 	if (blanking_codes) {
 		io_write16(sd, REG_BLK_GY, blanking_codes->code_gy);
 		io_write16(sd, REG_BLK_BU, blanking_codes->code_bu);
@@ -738,7 +718,7 @@ tda1997x_configure_csc(struct v4l2_subdev *sd)
 	}
 }
 
-/* Configure frame detection window and VHREF timing generator */
+ 
 static void
 tda1997x_configure_vhref(struct v4l2_subdev *sd)
 {
@@ -775,14 +755,11 @@ tda1997x_configure_vhref(struct v4l2_subdev *sd)
 	width = V4L2_DV_BT_FRAME_WIDTH(bt);
 	lines = V4L2_DV_BT_FRAME_HEIGHT(bt);
 
-	/*
-	 * Configure Frame Detection Window:
-	 *  horiz area where the VHREF module consider a VSYNC a new frame
-	 */
-	io_write16(sd, REG_FDW_S, 0x2ef); /* start position */
-	io_write16(sd, REG_FDW_E, 0x141); /* end position */
+	 
+	io_write16(sd, REG_FDW_S, 0x2ef);  
+	io_write16(sd, REG_FDW_E, 0x141);  
 
-	/* Set Pixel And Line Counters */
+	 
 	if (state->chip_revision == 0)
 		io_write16(sd, REG_PXCNT_PR, 4);
 	else
@@ -791,31 +768,22 @@ tda1997x_configure_vhref(struct v4l2_subdev *sd)
 	io_write16(sd, REG_LCNT_PR, 1);
 	io_write16(sd, REG_LCNT_NLIN, lines & MASK_VHREF);
 
-	/*
-	 * Configure the VHRef timing generator responsible for rebuilding all
-	 * horiz and vert synch and ref signals from its input allowing auto
-	 * detection algorithms and forcing predefined modes (480i & 576i)
-	 */
+	 
 	reg = VHREF_STD_DET_OFF << VHREF_STD_DET_SHIFT;
 	io_write(sd, REG_VHREF_CTRL, reg);
 
-	/*
-	 * Configure the VHRef timing values. In case the VHREF generator has
-	 * been configured in manual mode, this will allow to manually set all
-	 * horiz and vert ref values (non-active pixel areas) of the generator
-	 * and allows setting the frame reference params.
-	 */
-	/* horizontal reference start/end */
+	 
+	 
 	io_write16(sd, REG_HREF_S, href_start & MASK_VHREF);
 	io_write16(sd, REG_HREF_E, href_end & MASK_VHREF);
-	/* vertical reference f1 start/end */
+	 
 	io_write16(sd, REG_VREF_F1_S, vref_f1_start & MASK_VHREF);
 	io_write(sd, REG_VREF_F1_WIDTH, vref_f1_width);
-	/* vertical reference f2 start/end */
+	 
 	io_write16(sd, REG_VREF_F2_S, vref_f2_start & MASK_VHREF);
 	io_write(sd, REG_VREF_F2_WIDTH, vref_f2_width);
 
-	/* F1/F2 FREF, field polarity */
+	 
 	reg = fieldref_f1_start & MASK_VHREF;
 	reg |= field_polarity << 8;
 	io_write16(sd, REG_FREF_F1_S, reg);
@@ -823,7 +791,7 @@ tda1997x_configure_vhref(struct v4l2_subdev *sd)
 	io_write16(sd, REG_FREF_F2_S, reg);
 }
 
-/* Configure Video Output port signals */
+ 
 static int
 tda1997x_configure_vidout(struct tda1997x_state *state)
 {
@@ -832,56 +800,56 @@ tda1997x_configure_vidout(struct tda1997x_state *state)
 	u8 prefilter;
 	u8 reg;
 
-	/* Configure pixel clock generator: delay, polarity, rate */
+	 
 	reg = (state->vid_fmt == OF_FMT_422_CCIR) ?
 	       PCLK_SEL_X2 : PCLK_SEL_X1;
 	reg |= pdata->vidout_delay_pclk << PCLK_DELAY_SHIFT;
 	reg |= pdata->vidout_inv_pclk << PCLK_INV_SHIFT;
 	io_write(sd, REG_PCLK, reg);
 
-	/* Configure pre-filter */
-	prefilter = 0; /* filters off */
-	/* YUV422 mode requires conversion */
+	 
+	prefilter = 0;  
+	 
 	if ((state->vid_fmt == OF_FMT_422_SMPT) ||
 	    (state->vid_fmt == OF_FMT_422_CCIR)) {
-		/* 2/7 taps for Rv and Bu */
+		 
 		prefilter = FILTERS_CTRL_2_7TAP << FILTERS_CTRL_BU_SHIFT |
 			    FILTERS_CTRL_2_7TAP << FILTERS_CTRL_RV_SHIFT;
 	}
 	io_write(sd, REG_FILTERS_CTRL, prefilter);
 
-	/* Configure video port */
+	 
 	reg = state->vid_fmt & OF_FMT_MASK;
 	if (state->vid_fmt == OF_FMT_422_CCIR)
 		reg |= (OF_BLK | OF_TRC);
 	reg |= OF_VP_ENABLE;
 	io_write(sd, REG_OF, reg);
 
-	/* Configure formatter and conversions */
+	 
 	reg = io_read(sd, REG_VDP_CTRL);
-	/* pre-filter is needed unless (REG_FILTERS_CTRL == 0) */
+	 
 	if (!prefilter)
 		reg |= VDP_CTRL_PREFILTER_BP;
 	else
 		reg &= ~VDP_CTRL_PREFILTER_BP;
-	/* formatter is needed for YUV422 and for trc/blc codes */
+	 
 	if (state->vid_fmt == OF_FMT_444)
 		reg |= VDP_CTRL_FORMATTER_BP;
-	/* formatter and compdel needed for timing/blanking codes */
+	 
 	else
 		reg &= ~(VDP_CTRL_FORMATTER_BP | VDP_CTRL_COMPDEL_BP);
-	/* activate compdel for small sync delays */
+	 
 	if ((pdata->vidout_delay_vs < 4) || (pdata->vidout_delay_hs < 4))
 		reg &= ~VDP_CTRL_COMPDEL_BP;
 	io_write(sd, REG_VDP_CTRL, reg);
 
-	/* Configure DE output signal: delay, polarity, and source */
+	 
 	reg = pdata->vidout_delay_de << DE_FREF_DELAY_SHIFT |
 	      pdata->vidout_inv_de << DE_FREF_INV_SHIFT |
 	      pdata->vidout_sel_de << DE_FREF_SEL_SHIFT;
 	io_write(sd, REG_DE_FREF, reg);
 
-	/* Configure HS/HREF output signal: delay, polarity, and source */
+	 
 	if (state->vid_fmt != OF_FMT_422_CCIR) {
 		reg = pdata->vidout_delay_hs << HS_HREF_DELAY_SHIFT |
 		      pdata->vidout_inv_hs << HS_HREF_INV_SHIFT |
@@ -890,7 +858,7 @@ tda1997x_configure_vidout(struct tda1997x_state *state)
 		reg = HS_HREF_SEL_NONE << HS_HREF_SEL_SHIFT;
 	io_write(sd, REG_HS_HREF, reg);
 
-	/* Configure VS/VREF output signal: delay, polarity, and source */
+	 
 	if (state->vid_fmt != OF_FMT_422_CCIR) {
 		reg = pdata->vidout_delay_vs << VS_VREF_DELAY_SHIFT |
 		      pdata->vidout_inv_vs << VS_VREF_INV_SHIFT |
@@ -902,7 +870,7 @@ tda1997x_configure_vidout(struct tda1997x_state *state)
 	return 0;
 }
 
-/* Configure Audio output port signals */
+ 
 static int
 tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 {
@@ -914,10 +882,10 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 	if (!pdata->audout_format)
 		return 0;
 
-	/* channel assignment (CEA-861-D Table 20) */
+	 
 	io_write(sd, REG_AUDIO_PATH, channel_assignment);
 
-	/* Audio output configuration */
+	 
 	reg = 0;
 	switch (pdata->audout_format) {
 	case AUDFMT_TYPE_I2S:
@@ -941,12 +909,12 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 	case AUDCFG_TYPE_HBR:
 		reg |= AUDCFG_TYPE_HBR << AUDCFG_TYPE_SHIFT;
 		if (pdata->audout_layout == 1) {
-			/* demuxed via AP0:AP3 */
+			 
 			reg |= AUDCFG_HBR_DEMUX << AUDCFG_HBR_SHIFT;
 			if (pdata->audout_format == AUDFMT_TYPE_SPDIF)
 				sp_used_by_fifo = false;
 		} else {
-			/* straight via AP0 */
+			 
 			reg |= AUDCFG_HBR_STRAIGHT << AUDCFG_HBR_SHIFT;
 		}
 		break;
@@ -956,15 +924,15 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 	else
 		reg |= AUDCFG_I2SW_16 << AUDCFG_I2SW_SHIFT;
 
-	/* automatic hardware mute */
+	 
 	if (pdata->audio_auto_mute)
 		reg |= AUDCFG_AUTO_MUTE_EN;
-	/* clock polarity */
+	 
 	if (pdata->audout_invert_clk)
 		reg |= AUDCFG_CLK_INVERT;
 	io_write(sd, REG_AUDCFG, reg);
 
-	/* audio layout */
+	 
 	reg = (pdata->audout_layout) ? AUDIO_LAYOUT_LAYOUT1 : 0;
 	if (!pdata->audout_layoutauto)
 		reg |= AUDIO_LAYOUT_MANUAL;
@@ -972,10 +940,10 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 		reg |= AUDIO_LAYOUT_SP_FLAG;
 	io_write(sd, REG_AUDIO_LAYOUT, reg);
 
-	/* FIFO Latency value */
+	 
 	io_write(sd, REG_FIFO_LATENCY_VAL, 0x80);
 
-	/* Audio output port config */
+	 
 	if (sp_used_by_fifo) {
 		reg = AUDIO_OUT_ENABLE_AP0;
 		if (channel_assignment >= 0x01)
@@ -984,7 +952,7 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 			reg |= AUDIO_OUT_ENABLE_AP2;
 		if (channel_assignment >= 0x0c)
 			reg |= AUDIO_OUT_ENABLE_AP3;
-		/* specific cases where AP1 is not used */
+		 
 		if ((channel_assignment == 0x04)
 		 || (channel_assignment == 0x08)
 		 || (channel_assignment == 0x0c)
@@ -993,7 +961,7 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 		 || (channel_assignment == 0x18)
 		 || (channel_assignment == 0x1c))
 			reg &= ~AUDIO_OUT_ENABLE_AP1;
-		/* specific cases where AP2 is not used */
+		 
 		if ((channel_assignment >= 0x14)
 		 && (channel_assignment <= 0x17))
 			reg &= ~AUDIO_OUT_ENABLE_AP2;
@@ -1007,29 +975,29 @@ tda1997x_configure_audout(struct v4l2_subdev *sd, u8 channel_assignment)
 		reg |= (AUDIO_OUT_ENABLE_ACLK | AUDIO_OUT_ENABLE_WS);
 	io_write(sd, REG_AUDIO_OUT_ENABLE, reg);
 
-	/* reset test mode to normal audio freq auto selection */
+	 
 	io_write(sd, REG_TEST_MODE, 0x00);
 
 	return 0;
 }
 
-/* Soft Reset of specific hdmi info */
+ 
 static int
 tda1997x_hdmi_info_reset(struct v4l2_subdev *sd, u8 info_rst, bool reset_sus)
 {
 	u8 reg;
 
-	/* reset infoframe engine packets */
+	 
 	reg = io_read(sd, REG_HDMI_INFO_RST);
 	io_write(sd, REG_HDMI_INFO_RST, info_rst);
 
-	/* if infoframe engine has been reset clear INT_FLG_MODE */
+	 
 	if (reg & RESET_IF) {
 		reg = io_read(sd, REG_INT_FLG_CLR_MODE);
 		io_write(sd, REG_INT_FLG_CLR_MODE, reg);
 	}
 
-	/* Disable REFTIM to restart start-up-sequencer (SUS) */
+	 
 	reg = io_read(sd, REG_RATE_CTRL);
 	reg &= ~RATE_REFTIM_ENABLE;
 	if (!reset_sus)
@@ -1046,27 +1014,27 @@ tda1997x_power_mode(struct tda1997x_state *state, bool enable)
 	u8 reg;
 
 	if (enable) {
-		/* Automatic control of TMDS */
+		 
 		io_write(sd, REG_PON_OVR_EN, PON_DIS);
-		/* Enable current bias unit */
+		 
 		io_write(sd, REG_CFG1, PON_EN);
-		/* Enable deep color PLL */
+		 
 		io_write(sd, REG_DEEP_PLL7_BYP, PON_DIS);
-		/* Output buffers active */
+		 
 		reg = io_read(sd, REG_OF);
 		reg &= ~OF_VP_ENABLE;
 		io_write(sd, REG_OF, reg);
 	} else {
-		/* Power down EDID mode sequence */
-		/* Output buffers in HiZ */
+		 
+		 
 		reg = io_read(sd, REG_OF);
 		reg |= OF_VP_ENABLE;
 		io_write(sd, REG_OF, reg);
-		/* Disable deep color PLL */
+		 
 		io_write(sd, REG_DEEP_PLL7_BYP, PON_EN);
-		/* Disable current bias unit */
+		 
 		io_write(sd, REG_CFG1, PON_DIS);
-		/* Manual control of TMDS */
+		 
 		io_write(sd, REG_PON_OVR_EN, PON_EN);
 	}
 }
@@ -1093,12 +1061,7 @@ tda1997x_detect_std(struct tda1997x_state *state,
 {
 	struct v4l2_subdev *sd = &state->sd;
 
-	/*
-	 * Read the FMT registers
-	 *   REG_V_PER: Period of a frame (or field) in MCLK (27MHz) cycles
-	 *   REG_H_PER: Period of a line in MCLK (27MHz) cycles
-	 *   REG_HS_WIDTH: Period of horiz sync pulse in MCLK (27MHz) cycles
-	 */
+	 
 	u32 vper, vsync_pos;
 	u16 hper, hsync_pos, hsper, interlaced;
 	u16 htot, hact, hfront, hsync, hback;
@@ -1157,7 +1120,7 @@ tda1997x_detect_std(struct tda1997x_state *state,
 		timings->bt.il_vfrontporch = vfront2;
 		timings->bt.il_vsync = timings->bt.vsync;
 		timings->bt.il_vbackporch = vback2;
-		do_div(timings->bt.pixelclock, vper * 2 /* full frame */);
+		do_div(timings->bt.pixelclock, vper * 2  );
 	} else {
 		timings->bt.il_vfrontporch = 0;
 		timings->bt.il_vsync = 0;
@@ -1170,13 +1133,13 @@ tda1997x_detect_std(struct tda1997x_state *state,
 	return 0;
 }
 
-/* some sort of errata workaround for chip revision 0 (N1) */
+ 
 static void tda1997x_reset_n1(struct tda1997x_state *state)
 {
 	struct v4l2_subdev *sd = &state->sd;
 	u8 reg;
 
-	/* clear HDMI mode flag in BCAPS */
+	 
 	io_write(sd, REG_CLK_CFG, CLK_CFG_SEL_ACLK_EN | CLK_CFG_SEL_ACLK);
 	io_write(sd, REG_PON_OVR_EN, PON_EN);
 	io_write(sd, REG_PON_CBIAS, PON_EN);
@@ -1193,35 +1156,30 @@ static void tda1997x_reset_n1(struct tda1997x_state *state)
 	io_write(sd, REG_MODE_REC_CFG1, reg);
 }
 
-/*
- * Activity detection must only be notified when stable_clk_x AND active_x
- * bits are set to 1. If only stable_clk_x bit is set to 1 but not
- * active_x, it means that the TMDS clock is not in the defined range
- * and activity detection must not be notified.
- */
+ 
 static u8
 tda1997x_read_activity_status_regs(struct v4l2_subdev *sd)
 {
 	u8 reg, status = 0;
 
-	/* Read CLK_A_STATUS register */
+	 
 	reg = io_read(sd, REG_CLK_A_STATUS);
-	/* ignore if not active */
+	 
 	if ((reg & MASK_CLK_STABLE) && !(reg & MASK_CLK_ACTIVE))
 		reg &= ~MASK_CLK_STABLE;
 	status |= ((reg & MASK_CLK_STABLE) >> 2);
 
-	/* Read CLK_B_STATUS register */
+	 
 	reg = io_read(sd, REG_CLK_B_STATUS);
-	/* ignore if not active */
+	 
 	if ((reg & MASK_CLK_STABLE) && !(reg & MASK_CLK_ACTIVE))
 		reg &= ~MASK_CLK_STABLE;
 	status |= ((reg & MASK_CLK_STABLE) >> 1);
 
-	/* Read the SUS_STATUS register */
+	 
 	reg = io_read(sd, REG_SUS_STATUS);
 
-	/* If state = 5 => TMDS is locked */
+	 
 	if ((reg & MASK_SUS_STATUS) == LAST_STATE_REACHED)
 		status |= MASK_SUS_STATE;
 	else
@@ -1238,7 +1196,7 @@ set_rgb_quantization_range(struct tda1997x_state *state)
 	state->colorimetry = v4l2_hdmi_rx_colorimetry(&state->avi_infoframe,
 						      NULL,
 						      state->timings.bt.height);
-	/* If ycbcr_enc is V4L2_YCBCR_ENC_DEFAULT, we receive RGB */
+	 
 	if (c->ycbcr_enc == V4L2_YCBCR_ENC_DEFAULT) {
 		switch (state->rgb_quantization_range) {
 		case V4L2_DV_RGB_RANGE_LIMITED:
@@ -1257,7 +1215,7 @@ set_rgb_quantization_range(struct tda1997x_state *state)
 		state->avi_infoframe.content_type);
 }
 
-/* parse an infoframe and do some sanity checks on it */
+ 
 static unsigned int
 tda1997x_parse_infoframe(struct tda1997x_state *state, u16 addr)
 {
@@ -1267,7 +1225,7 @@ tda1997x_parse_infoframe(struct tda1997x_state *state, u16 addr)
 	u8 reg;
 	int len, err;
 
-	/* read data */
+	 
 	len = io_readn(sd, addr, sizeof(buffer), buffer);
 	err = hdmi_infoframe_unpack(&frame, buffer, len);
 	if (err) {
@@ -1278,9 +1236,9 @@ tda1997x_parse_infoframe(struct tda1997x_state *state, u16 addr)
 	}
 	hdmi_infoframe_log(KERN_INFO, &state->client->dev, &frame);
 	switch (frame.any.type) {
-	/* Audio InfoFrame: see HDMI spec 8.2.2 */
+	 
 	case HDMI_INFOFRAME_TYPE_AUDIO:
-		/* sample rate */
+		 
 		switch (frame.audio.sample_frequency) {
 		case HDMI_AUDIO_SAMPLE_FREQUENCY_32000:
 			state->audio_samplerate = 32000;
@@ -1308,7 +1266,7 @@ tda1997x_parse_infoframe(struct tda1997x_state *state, u16 addr)
 			break;
 		}
 
-		/* sample size */
+		 
 		switch (frame.audio.sample_size) {
 		case HDMI_AUDIO_SAMPLE_SIZE_16:
 			state->audio_samplesize = 16;
@@ -1324,37 +1282,37 @@ tda1997x_parse_infoframe(struct tda1997x_state *state, u16 addr)
 			break;
 		}
 
-		/* Channel Count */
+		 
 		state->audio_channels = frame.audio.channels;
 		if (frame.audio.channel_allocation &&
 		    frame.audio.channel_allocation != state->audio_ch_alloc) {
-			/* use the channel assignment from the infoframe */
+			 
 			state->audio_ch_alloc = frame.audio.channel_allocation;
 			tda1997x_configure_audout(sd, state->audio_ch_alloc);
-			/* reset the audio FIFO */
+			 
 			tda1997x_hdmi_info_reset(sd, RESET_AUDIO, false);
 		}
 		break;
 
-	/* Auxiliary Video information (AVI) InfoFrame: see HDMI spec 8.2.1 */
+	 
 	case HDMI_INFOFRAME_TYPE_AVI:
 		state->avi_infoframe = frame.avi;
 		set_rgb_quantization_range(state);
 
-		/* configure upsampler: 0=bypass 1=repeatchroma 2=interpolate */
+		 
 		reg = io_read(sd, REG_PIX_REPEAT);
 		reg &= ~PIX_REPEAT_MASK_UP_SEL;
 		if (frame.avi.colorspace == HDMI_COLORSPACE_YUV422)
 			reg |= (PIX_REPEAT_CHROMA << PIX_REPEAT_SHIFT);
 		io_write(sd, REG_PIX_REPEAT, reg);
 
-		/* ConfigurePixelRepeater: repeat n-times each pixel */
+		 
 		reg = io_read(sd, REG_PIX_REPEAT);
 		reg &= ~PIX_REPEAT_MASK_REP;
 		reg |= frame.avi.pixel_repeat;
 		io_write(sd, REG_PIX_REPEAT, reg);
 
-		/* configure the receiver with the new colorspace */
+		 
 		tda1997x_configure_csc(sd);
 		break;
 	default:
@@ -1372,24 +1330,24 @@ static void tda1997x_irq_sus(struct tda1997x_state *state, u8 *flags)
 	io_write(sd, REG_INT_FLG_CLR_SUS, source);
 
 	if (source & MASK_MPT) {
-		/* reset MTP in use flag if set */
+		 
 		if (state->mptrw_in_progress)
 			state->mptrw_in_progress = 0;
 	}
 
 	if (source & MASK_SUS_END) {
-		/* reset audio FIFO */
+		 
 		reg = io_read(sd, REG_HDMI_INFO_RST);
 		reg |= MASK_SR_FIFO_FIFO_CTRL;
 		io_write(sd, REG_HDMI_INFO_RST, reg);
 		reg &= ~MASK_SR_FIFO_FIFO_CTRL;
 		io_write(sd, REG_HDMI_INFO_RST, reg);
 
-		/* reset HDMI flags */
+		 
 		state->hdmi_status = 0;
 	}
 
-	/* filter FMT interrupt based on SUS state */
+	 
 	reg = io_read(sd, REG_SUS_STATUS);
 	if (((reg & MASK_SUS_STATUS) != LAST_STATE_REACHED)
 	   || (source & MASK_MPT)) {
@@ -1404,7 +1362,7 @@ static void tda1997x_irq_sus(struct tda1997x_state *state, u8 *flags)
 		}
 		if (debug)
 			tda1997x_detect_std(state, NULL);
-		/* notify user of change in resolution */
+		 
 		v4l2_subdev_notify_event(&state->sd, &tda1997x_ev_fmt);
 	}
 }
@@ -1417,12 +1375,12 @@ static void tda1997x_irq_ddc(struct tda1997x_state *state, u8 *flags)
 	source = io_read(sd, REG_INT_FLG_CLR_DDC);
 	io_write(sd, REG_INT_FLG_CLR_DDC, source);
 	if (source & MASK_EDID_MTP) {
-		/* reset MTP in use flag if set */
+		 
 		if (state->mptrw_in_progress)
 			state->mptrw_in_progress = 0;
 	}
 
-	/* Detection of +5V */
+	 
 	if (source & MASK_DET_5V) {
 		v4l2_ctrl_s_ctrl(state->detect_tx_5v_ctrl,
 				 tda1997x_detect_tx_5v(sd));
@@ -1439,13 +1397,10 @@ static void tda1997x_irq_rate(struct tda1997x_state *state, u8 *flags)
 	source = io_read(sd, REG_INT_FLG_CLR_RATE);
 	io_write(sd, REG_INT_FLG_CLR_RATE, source);
 
-	/* read status regs */
+	 
 	irq_status = tda1997x_read_activity_status_regs(sd);
 
-	/*
-	 * read clock status reg until INT_FLG_CLR_RATE is still 0
-	 * after the read to make sure its the last one
-	 */
+	 
 	reg = source;
 	while (reg != 0) {
 		irq_status = tda1997x_read_activity_status_regs(sd);
@@ -1454,20 +1409,20 @@ static void tda1997x_irq_rate(struct tda1997x_state *state, u8 *flags)
 		source |= reg;
 	}
 
-	/* we only pay attention to stability change events */
+	 
 	if (source & (MASK_RATE_A_ST | MASK_RATE_B_ST)) {
 		int input = (source & MASK_RATE_A_ST)?0:1;
 		u8 mask = 1<<input;
 
-		/* state change */
+		 
 		if ((irq_status & mask) != (state->activity_status & mask)) {
-			/* activity lost */
+			 
 			if ((irq_status & mask) == 0) {
 				v4l_info(state->client,
 					 "HDMI-%c: Digital Activity Lost\n",
 					 input+'A');
 
-				/* bypass up/down sampler and pixel repeater */
+				 
 				reg = io_read(sd, REG_PIX_REPEAT);
 				reg &= ~PIX_REPEAT_MASK_UP_SEL;
 				reg &= ~PIX_REPEAT_MASK_REP;
@@ -1480,7 +1435,7 @@ static void tda1997x_irq_rate(struct tda1997x_state *state, u8 *flags)
 				v4l2_subdev_notify_event(sd, &tda1997x_ev_fmt);
 			}
 
-			/* activity detected */
+			 
 			else {
 				v4l_info(state->client,
 					 "HDMI-%c: Digital Activity Detected\n",
@@ -1488,7 +1443,7 @@ static void tda1997x_irq_rate(struct tda1997x_state *state, u8 *flags)
 				state->input_detect[input] = 1;
 			}
 
-			/* hold onto current state */
+			 
 			state->activity_status = (irq_status & mask);
 		}
 	}
@@ -1502,19 +1457,19 @@ static void tda1997x_irq_info(struct tda1997x_state *state, u8 *flags)
 	source = io_read(sd, REG_INT_FLG_CLR_INFO);
 	io_write(sd, REG_INT_FLG_CLR_INFO, source);
 
-	/* Audio infoframe */
+	 
 	if (source & MASK_AUD_IF) {
 		tda1997x_parse_infoframe(state, AUD_IF);
 		source &= ~MASK_AUD_IF;
 	}
 
-	/* Source Product Descriptor infoframe change */
+	 
 	if (source & MASK_SPD_IF) {
 		tda1997x_parse_infoframe(state, SPD_IF);
 		source &= ~MASK_SPD_IF;
 	}
 
-	/* Auxiliary Video Information infoframe */
+	 
 	if (source & MASK_AVI_IF) {
 		tda1997x_parse_infoframe(state, AVI_IF);
 		source &= ~MASK_AVI_IF;
@@ -1529,10 +1484,10 @@ static void tda1997x_irq_audio(struct tda1997x_state *state, u8 *flags)
 	source = io_read(sd, REG_INT_FLG_CLR_AUDIO);
 	io_write(sd, REG_INT_FLG_CLR_AUDIO, source);
 
-	/* reset audio FIFO on FIFO pointer error or audio mute */
+	 
 	if (source & MASK_ERROR_FIFO_PT ||
 	    source & MASK_MUTE_FLG) {
-		/* audio reset audio FIFO */
+		 
 		reg = io_read(sd, REG_SUS_STATUS);
 		if ((reg & MASK_SUS_STATUS) == LAST_STATE_REACHED) {
 			reg = io_read(sd, REG_HDMI_INFO_RST);
@@ -1540,7 +1495,7 @@ static void tda1997x_irq_audio(struct tda1997x_state *state, u8 *flags)
 			io_write(sd, REG_HDMI_INFO_RST, reg);
 			reg &= ~MASK_SR_FIFO_FIFO_CTRL;
 			io_write(sd, REG_HDMI_INFO_RST, reg);
-			/* reset channel status IT if present */
+			 
 			source &= ~(MASK_CH_STATE);
 		}
 	}
@@ -1577,11 +1532,11 @@ static void tda1997x_irq_hdcp(struct tda1997x_state *state, u8 *flags)
 	source = io_read(sd, REG_INT_FLG_CLR_HDCP);
 	io_write(sd, REG_INT_FLG_CLR_HDCP, source);
 
-	/* reset MTP in use flag if set */
+	 
 	if (source & MASK_HDCP_MTP)
 		state->mptrw_in_progress = 0;
 	if (source & MASK_STATE_C5) {
-		/* REPEATER: mask AUDIO and IF irqs to avoid IF during auth */
+		 
 		reg = io_read(sd, REG_INT_MASK_TOP);
 		reg &= ~(INTERRUPT_AUDIO | INTERRUPT_INFO);
 		io_write(sd, REG_INT_MASK_TOP, reg);
@@ -1597,29 +1552,27 @@ static irqreturn_t tda1997x_isr_thread(int irq, void *d)
 
 	mutex_lock(&state->lock);
 	do {
-		/* read interrupt flags */
+		 
 		flags = io_read(sd, REG_INT_FLG_CLR_TOP);
 		if (flags == 0)
 			break;
 
-		/* SUS interrupt source (Input activity events) */
+		 
 		if (flags & INTERRUPT_SUS)
 			tda1997x_irq_sus(state, &flags);
-		/* DDC interrupt source (Display Data Channel) */
+		 
 		else if (flags & INTERRUPT_DDC)
 			tda1997x_irq_ddc(state, &flags);
-		/* RATE interrupt source (Digital Input activity) */
+		 
 		else if (flags & INTERRUPT_RATE)
 			tda1997x_irq_rate(state, &flags);
-		/* Infoframe change interrupt */
+		 
 		else if (flags & INTERRUPT_INFO)
 			tda1997x_irq_info(state, &flags);
-		/* Audio interrupt source:
-		 *   freq change, DST,OBA,HBR,ASP flags, mute, FIFO err
-		 */
+		 
 		else if (flags & INTERRUPT_AUDIO)
 			tda1997x_irq_audio(state, &flags);
-		/* HDCP interrupt source (content protection) */
+		 
 		if (flags & INTERRUPT_HDCP)
 			tda1997x_irq_hdcp(state, &flags);
 	} while (flags != 0);
@@ -1628,9 +1581,7 @@ static irqreturn_t tda1997x_isr_thread(int irq, void *d)
 	return IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_video_ops
- */
+ 
 
 static int
 tda1997x_g_input_status(struct v4l2_subdev *sd, u32 *status)
@@ -1644,17 +1595,7 @@ tda1997x_g_input_status(struct v4l2_subdev *sd, u32 *status)
 	vper = io_read24(sd, REG_V_PER) & MASK_VPER;
 	hper = io_read16(sd, REG_H_PER) & MASK_HPER;
 	hsper = io_read16(sd, REG_HS_WIDTH) & MASK_HSWIDTH;
-	/*
-	 * The tda1997x supports A/B inputs but only a single output.
-	 * The irq handler monitors for timing changes on both inputs and
-	 * sets the input_detect array to 0|1 depending on signal presence.
-	 * I believe selection of A vs B is automatic.
-	 *
-	 * The vper/hper/hsper registers provide the frame period, line period
-	 * and horiz sync period (units of MCLK clock cycles (27MHz)) and
-	 * testing shows these values to be random if no signal is present
-	 * or locked.
-	 */
+	 
 	v4l2_dbg(1, debug, sd, "inputs:%d/%d timings:%d/%d/%d\n",
 		 state->input_detect[0], state->input_detect[1],
 		 vper, hper, hsper);
@@ -1677,7 +1618,7 @@ static int tda1997x_s_dv_timings(struct v4l2_subdev *sd,
 	v4l_dbg(1, debug, state->client, "%s\n", __func__);
 
 	if (v4l2_match_dv_timings(&state->timings, timings, 0, false))
-		return 0; /* no changes */
+		return 0;  
 
 	if (!v4l2_valid_dv_timings(timings, &tda1997x_dv_timings_cap,
 				   NULL, NULL))
@@ -1685,9 +1626,9 @@ static int tda1997x_s_dv_timings(struct v4l2_subdev *sd,
 
 	mutex_lock(&state->lock);
 	state->timings = *timings;
-	/* setup frame detection window and VHREF timing generator */
+	 
 	tda1997x_configure_vhref(sd);
-	/* configure colorspace conversion */
+	 
 	tda1997x_configure_csc(sd);
 	mutex_unlock(&state->lock);
 
@@ -1730,9 +1671,7 @@ static const struct v4l2_subdev_video_ops tda1997x_video_ops = {
 };
 
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_pad_ops
- */
+ 
 
 static int tda1997x_init_cfg(struct v4l2_subdev *sd,
 			     struct v4l2_subdev_state *sd_state)
@@ -1833,7 +1772,7 @@ static int tda1997x_set_format(struct v4l2_subdev *sd,
 
 		if (ret)
 			return ret;
-		/* mbus_code has changed - re-configure csc/vidout */
+		 
 		tda1997x_configure_csc(sd);
 		tda1997x_configure_vidout(state);
 	}
@@ -1893,15 +1832,15 @@ static int tda1997x_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 
 	tda1997x_disable_edid(sd);
 
-	/* write base EDID */
+	 
 	for (i = 0; i < 128; i++)
 		io_write(sd, REG_EDID_IN_BYTE0 + i, edid->edid[i]);
 
-	/* write CEA Extension */
+	 
 	for (i = 0; i < 128; i++)
 		io_write(sd, REG_EDID_IN_BYTE128 + i, edid->edid[i+128]);
 
-	/* store state */
+	 
 	memcpy(state->edid.edid, edid->edid, 256);
 	state->edid.blocks = edid->blocks;
 
@@ -1935,9 +1874,7 @@ static const struct v4l2_subdev_pad_ops tda1997x_pad_ops = {
 	.enum_dv_timings = tda1997x_enum_dv_timings,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_core_ops
- */
+ 
 
 static int tda1997x_log_infoframe(struct v4l2_subdev *sd, int addr)
 {
@@ -1946,7 +1883,7 @@ static int tda1997x_log_infoframe(struct v4l2_subdev *sd, int addr)
 	u8 buffer[40] = { 0 };
 	int len, err;
 
-	/* read data */
+	 
 	len = io_readn(sd, addr, sizeof(buffer), buffer);
 	v4l2_dbg(1, debug, sd, "infoframe: addr=%d len=%d\n", addr, len);
 	err = hdmi_infoframe_unpack(&frame, buffer, len);
@@ -2037,9 +1974,7 @@ static const struct v4l2_subdev_core_ops tda1997x_core_ops = {
 	.unsubscribe_event = v4l2_event_subdev_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_ops
- */
+ 
 
 static const struct v4l2_subdev_ops tda1997x_subdev_ops = {
 	.core = &tda1997x_core_ops,
@@ -2047,9 +1982,7 @@ static const struct v4l2_subdev_ops tda1997x_subdev_ops = {
 	.pad = &tda1997x_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_controls
- */
+ 
 
 static int tda1997x_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -2057,7 +1990,7 @@ static int tda1997x_s_ctrl(struct v4l2_ctrl *ctrl)
 	struct tda1997x_state *state = to_state(sd);
 
 	switch (ctrl->id) {
-	/* allow overriding the default RGB quantization range */
+	 
 	case V4L2_CID_DV_RX_RGB_RANGE:
 		state->rgb_quantization_range = ctrl->val;
 		set_rgb_quantization_range(state);
@@ -2092,62 +2025,62 @@ static int tda1997x_core_init(struct v4l2_subdev *sd)
 	u8 reg;
 	int i;
 
-	/* disable HPD */
+	 
 	io_write(sd, REG_HPD_AUTO_CTRL, HPD_AUTO_HPD_UNSEL);
 	if (state->chip_revision == 0) {
 		io_write(sd, REG_MAN_SUS_HDMI_SEL, MAN_DIS_HDCP | MAN_RST_HDCP);
 		io_write(sd, REG_CGU_DBG_SEL, 1 << CGU_DBG_CLK_SEL_SHIFT);
 	}
 
-	/* reset infoframe at end of start-up-sequencer */
+	 
 	io_write(sd, REG_SUS_SET_RGB2, 0x06);
 	io_write(sd, REG_SUS_SET_RGB3, 0x06);
 
-	/* Enable TMDS pull-ups */
+	 
 	io_write(sd, REG_RT_MAN_CTRL, RT_MAN_CTRL_RT |
 		 RT_MAN_CTRL_RT_B | RT_MAN_CTRL_RT_A);
 
-	/* enable sync measurement timing */
+	 
 	tda1997x_cec_write(sd, REG_PWR_CONTROL & 0xff, 0x04);
-	/* adjust CEC clock divider */
+	 
 	tda1997x_cec_write(sd, REG_OSC_DIVIDER & 0xff, 0x03);
 	tda1997x_cec_write(sd, REG_EN_OSC_PERIOD_LSB & 0xff, 0xa0);
 	io_write(sd, REG_TIMER_D, 0x54);
-	/* enable power switch */
+	 
 	reg = tda1997x_cec_read(sd, REG_CONTROL & 0xff);
 	reg |= 0x20;
 	tda1997x_cec_write(sd, REG_CONTROL & 0xff, reg);
 	mdelay(50);
 
-	/* read the chip version */
+	 
 	reg = io_read(sd, REG_VERSION);
-	/* get the chip configuration */
+	 
 	reg = io_read(sd, REG_CMTP_REG10);
 
-	/* enable interrupts we care about */
+	 
 	io_write(sd, REG_INT_MASK_TOP,
 		 INTERRUPT_HDCP | INTERRUPT_AUDIO | INTERRUPT_INFO |
 		 INTERRUPT_RATE | INTERRUPT_SUS);
-	/* config_mtp,fmt,sus_end,sus_st */
+	 
 	io_write(sd, REG_INT_MASK_SUS, MASK_MPT | MASK_FMT | MASK_SUS_END);
-	/* rate stability change for inputs A/B */
+	 
 	io_write(sd, REG_INT_MASK_RATE, MASK_RATE_B_ST | MASK_RATE_A_ST);
-	/* aud,spd,avi*/
+	 
 	io_write(sd, REG_INT_MASK_INFO,
 		 MASK_AUD_IF | MASK_SPD_IF | MASK_AVI_IF);
-	/* audio_freq,audio_flg,mute_flg,fifo_err */
+	 
 	io_write(sd, REG_INT_MASK_AUDIO,
 		 MASK_AUDIO_FREQ_FLG | MASK_AUDIO_FLG | MASK_MUTE_FLG |
 		 MASK_ERROR_FIFO_PT);
-	/* HDCP C5 state reached */
+	 
 	io_write(sd, REG_INT_MASK_HDCP, MASK_STATE_C5);
-	/* 5V detect and HDP pulse end */
+	 
 	io_write(sd, REG_INT_MASK_DDC, MASK_DET_5V);
-	/* don't care about AFE/MODE */
+	 
 	io_write(sd, REG_INT_MASK_AFE, 0);
 	io_write(sd, REG_INT_MASK_MODE, 0);
 
-	/* clear all interrupts */
+	 
 	io_write(sd, REG_INT_FLG_CLR_TOP, 0xff);
 	io_write(sd, REG_INT_FLG_CLR_SUS, 0xff);
 	io_write(sd, REG_INT_FLG_CLR_DDC, 0xff);
@@ -2158,64 +2091,61 @@ static int tda1997x_core_init(struct v4l2_subdev *sd)
 	io_write(sd, REG_INT_FLG_CLR_HDCP, 0xff);
 	io_write(sd, REG_INT_FLG_CLR_AFE, 0xff);
 
-	/* init TMDS equalizer */
+	 
 	if (state->chip_revision == 0)
 		io_write(sd, REG_CGU_DBG_SEL, 1 << CGU_DBG_CLK_SEL_SHIFT);
 	io_write24(sd, REG_CLK_MIN_RATE, CLK_MIN_RATE);
 	io_write24(sd, REG_CLK_MAX_RATE, CLK_MAX_RATE);
 	if (state->chip_revision == 0)
 		io_write(sd, REG_WDL_CFG, WDL_CFG_VAL);
-	/* DC filter */
+	 
 	io_write(sd, REG_DEEP_COLOR_CTRL, DC_FILTER_VAL);
-	/* disable test pattern */
+	 
 	io_write(sd, REG_SVC_MODE, 0x00);
-	/* update HDMI INFO CTRL */
+	 
 	io_write(sd, REG_INFO_CTRL, 0xff);
-	/* write HDMI INFO EXCEED value */
+	 
 	io_write(sd, REG_INFO_EXCEED, 3);
 
 	if (state->chip_revision == 0)
 		tda1997x_reset_n1(state);
 
-	/*
-	 * No HDCP acknowledge when HDCP is disabled
-	 * and reset SUS to force format detection
-	 */
+	 
 	tda1997x_hdmi_info_reset(sd, NACK_HDCP, true);
 
-	/* Set HPD low */
+	 
 	tda1997x_manual_hpd(sd, HPD_LOW_BP);
 
-	/* Configure receiver capabilities */
+	 
 	io_write(sd, REG_HDCP_BCAPS, HDCP_HDMI | HDCP_FAST_REAUTH);
 
-	/* Configure HDMI: Auto HDCP mode, packet controlled mute */
+	 
 	reg = HDMI_CTRL_MUTE_AUTO << HDMI_CTRL_MUTE_SHIFT;
 	reg |= HDMI_CTRL_HDCP_AUTO << HDMI_CTRL_HDCP_SHIFT;
 	io_write(sd, REG_HDMI_CTRL, reg);
 
-	/* reset start-up-sequencer to force format detection */
+	 
 	tda1997x_hdmi_info_reset(sd, 0, true);
 
-	/* disable matrix conversion */
+	 
 	reg = io_read(sd, REG_VDP_CTRL);
 	reg |= VDP_CTRL_MATRIX_BP;
 	io_write(sd, REG_VDP_CTRL, reg);
 
-	/* set video output mode */
+	 
 	tda1997x_configure_vidout(state);
 
-	/* configure video output port */
+	 
 	for (i = 0; i < 9; i++) {
 		v4l_dbg(1, debug, state->client, "vidout_cfg[%d]=0x%02x\n", i,
 			pdata->vidout_port_cfg[i]);
 		io_write(sd, REG_VP35_32_CTRL + i, pdata->vidout_port_cfg[i]);
 	}
 
-	/* configure audio output port */
+	 
 	tda1997x_configure_audout(sd, 0);
 
-	/* configure audio clock freq */
+	 
 	switch (pdata->audout_mclk_fs) {
 	case 512:
 		reg = AUDIO_CLOCK_SEL_512FS;
@@ -2238,16 +2168,16 @@ static int tda1997x_core_init(struct v4l2_subdev *sd)
 	}
 	io_write(sd, REG_AUDIO_CLOCK, reg);
 
-	/* reset advanced infoframes (ISRC1/ISRC2/ACP) */
+	 
 	tda1997x_hdmi_info_reset(sd, RESET_AI, false);
-	/* reset infoframe */
+	 
 	tda1997x_hdmi_info_reset(sd, RESET_IF, false);
-	/* reset audio infoframes */
+	 
 	tda1997x_hdmi_info_reset(sd, RESET_AUDIO, false);
-	/* reset gamut */
+	 
 	tda1997x_hdmi_info_reset(sd, RESET_GAMUT, false);
 
-	/* get initial HDMI status */
+	 
 	state->hdmi_status = io_read(sd, REG_HDMI_FLAGS);
 
 	io_write(sd, REG_EDID_ENABLE, EDID_ENABLE_A_EN | EDID_ENABLE_B_EN);
@@ -2295,13 +2225,7 @@ static int tda1997x_parse_dt(struct tda1997x_state *state)
 	int ret;
 	u32 v;
 
-	/*
-	 * setup default values:
-	 * - HREF: active high from start to end of row
-	 * - VS: Vertical Sync active high at beginning of frame
-	 * - DE: Active high when data valid
-	 * - A_CLK: 128*Fs
-	 */
+	 
 	pdata->vidout_sel_hs = HS_HREF_SEL_HREF_VHREF;
 	pdata->vidout_sel_vs = VS_VREF_SEL_VREF_HDMI;
 	pdata->vidout_sel_de = DE_FREF_SEL_DE_VHREF;
@@ -2319,7 +2243,7 @@ static int tda1997x_parse_dt(struct tda1997x_state *state)
 	of_node_put(ep);
 	pdata->vidout_bus_type = bus_cfg.bus_type;
 
-	/* polarity of HS/VS/DE */
+	 
 	flags = bus_cfg.bus.parallel.flags;
 	if (flags & V4L2_MBUS_HSYNC_ACTIVE_LOW)
 		pdata->vidout_inv_hs = 1;
@@ -2329,7 +2253,7 @@ static int tda1997x_parse_dt(struct tda1997x_state *state)
 		pdata->vidout_inv_de = 1;
 	pdata->vidout_bus_width = bus_cfg.bus.parallel.bus_width;
 
-	/* video output port config */
+	 
 	ret = of_property_count_u32_elems(np, "nxp,vidout-portcfg");
 	if (ret > 0) {
 		u32 reg, val, i;
@@ -2347,7 +2271,7 @@ static int tda1997x_parse_dt(struct tda1997x_state *state)
 		return -EINVAL;
 	}
 
-	/* default to channel layout dictated by packet header */
+	 
 	pdata->audout_layoutauto = true;
 
 	pdata->audout_format = AUDFMT_TYPE_DISABLED;
@@ -2423,12 +2347,12 @@ static int tda1997x_identify_module(struct tda1997x_state *state)
 	enum tda1997x_type type;
 	u8 reg;
 
-	/* Read chip configuration*/
+	 
 	reg = io_read(sd, REG_CMTP_REG10);
-	state->tmdsb_clk = (reg >> 6) & 0x01; /* use tmds clock B_inv for B */
-	state->tmdsb_soc = (reg >> 5) & 0x01; /* tmds of input B */
-	state->port_30bit = (reg >> 2) & 0x03; /* 30bit vs 24bit */
-	state->output_2p5 = (reg >> 1) & 0x01; /* output supply 2.5v */
+	state->tmdsb_clk = (reg >> 6) & 0x01;  
+	state->tmdsb_soc = (reg >> 5) & 0x01;  
+	state->port_30bit = (reg >> 2) & 0x03;  
+	state->output_2p5 = (reg >> 1) & 0x01;  
 	switch ((reg >> 4) & 0x03) {
 	case 0x00:
 		type = TDA19971;
@@ -2446,7 +2370,7 @@ static int tda1997x_identify_module(struct tda1997x_state *state)
 		return -EIO;
 	}
 
-	/* read chip revision */
+	 
 	state->chip_revision = io_read(sd, REG_CMTP_REG11);
 
 	return 0;
@@ -2457,11 +2381,9 @@ static const struct media_entity_operations tda1997x_media_ops = {
 };
 
 
-/* -----------------------------------------------------------------------------
- * HDMI Audio Codec
- */
+ 
 
-/* refine sample-rate based on HDMI source */
+ 
 static int tda1997x_pcm_startup(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
@@ -2532,7 +2454,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	u32 *mbus_codes;
 	int i, ret;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -2580,12 +2502,12 @@ static int tda1997x_probe(struct i2c_client *client)
 	INIT_DELAYED_WORK(&state->delayed_work_enable_hpd,
 			  tda1997x_delayed_work_enable_hpd);
 
-	/* set video format based on chip and bus width */
+	 
 	ret = tda1997x_identify_module(state);
 	if (ret)
 		goto err_free_mutex;
 
-	/* initialize subdev */
+	 
 	sd = &state->sd;
 	v4l2_i2c_subdev_init(sd, client, &tda1997x_subdev_ops);
 	snprintf(sd->name, sizeof(sd->name), "%s %d-%04x",
@@ -2595,7 +2517,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	sd->entity.function = MEDIA_ENT_F_DV_DECODER;
 	sd->entity.ops = &tda1997x_media_ops;
 
-	/* set allowed mbus modes based on chip, bus-type, and bus-width */
+	 
 	i = 0;
 	mbus_codes = state->mbus_codes;
 	switch (state->info->type) {
@@ -2670,24 +2592,18 @@ static int tda1997x_probe(struct i2c_client *client)
 		goto err_free_mutex;
 	}
 
-	/* default format */
+	 
 	tda1997x_setup_format(state, state->mbus_codes[0]);
 	state->timings = cea1920x1080;
 
-	/*
-	 * default to SRGB full range quantization
-	 * (in case we don't get an infoframe such as DVI signal
-	 */
+	 
 	state->colorimetry.colorspace = V4L2_COLORSPACE_SRGB;
 	state->colorimetry.quantization = V4L2_QUANTIZATION_FULL_RANGE;
 
-	/* disable/reset HDCP to get correct I2C access to Rx HDMI */
+	 
 	io_write(sd, REG_MAN_SUS_HDMI_SEL, MAN_RST_HDCP | MAN_DIS_HDCP);
 
-	/*
-	 * if N2 version, reset compdel_bp as it may generate some small pixel
-	 * shifts in case of embedded sync/or delay lower than 4
-	 */
+	 
 	if (state->chip_revision != 0) {
 		io_write(sd, REG_MAN_SUS_HDMI_SEL, 0x00);
 		io_write(sd, REG_VDP_CTRL, 0x1f);
@@ -2722,7 +2638,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	if (ret)
 		goto err_free_mutex;
 
-	/* control handlers */
+	 
 	hdl = &state->hdl;
 	v4l2_ctrl_handler_init(hdl, 3);
 	ctrl = v4l2_ctrl_new_std_menu(hdl, &tda1997x_ctrl_ops,
@@ -2731,7 +2647,7 @@ static int tda1997x_probe(struct i2c_client *client)
 			V4L2_DV_IT_CONTENT_TYPE_NO_ITC);
 	if (ctrl)
 		ctrl->flags |= V4L2_CTRL_FLAG_VOLATILE;
-	/* custom controls */
+	 
 	state->detect_tx_5v_ctrl = v4l2_ctrl_new_std(hdl, NULL,
 			V4L2_CID_DV_RX_POWER_PRESENT, 0, 1, 0, 0);
 	state->rgb_quantization_range_ctrl = v4l2_ctrl_new_std_menu(hdl,
@@ -2745,7 +2661,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	}
 	v4l2_ctrl_handler_setup(hdl);
 
-	/* initialize source pads */
+	 
 	state->pads[TDA1997X_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&sd->entity, TDA1997X_NUM_PADS,
 		state->pads);
@@ -2758,7 +2674,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	if (ret)
 		goto err_free_media;
 
-	/* register audio DAI */
+	 
 	if (pdata->audout_format) {
 		u64 formats;
 
@@ -2777,7 +2693,7 @@ static int tda1997x_probe(struct i2c_client *client)
 		v4l_info(state->client, "registered audio codec\n");
 	}
 
-	/* request irq */
+	 
 	ret = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, tda1997x_isr_thread,
 					IRQF_TRIGGER_LOW | IRQF_ONESHOT,

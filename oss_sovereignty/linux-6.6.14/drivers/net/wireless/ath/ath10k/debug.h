@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
@@ -54,7 +50,7 @@ enum ath10k_dbg_aggr_mode {
 	ATH10K_DBG_AGGR_MODE_MAX,
 };
 
-/* Types of packet log events */
+ 
 enum ath_pktlog_type {
 	ATH_PKTLOG_TYPE_TX_CTRL = 1,
 	ATH_PKTLOG_TYPE_TX_STAT,
@@ -63,13 +59,13 @@ enum ath_pktlog_type {
 struct ath10k_pktlog_hdr {
 	__le16 flags;
 	__le16 missed_cnt;
-	__le16 log_type; /* Type of log information foll this header */
-	__le16 size; /* Size of variable length log information in bytes */
+	__le16 log_type;  
+	__le16 size;  
 	__le32 timestamp;
 	u8 payload[];
 } __packed;
 
-/* FIXME: How to calculate the buffer size sanely? */
+ 
 #define ATH10K_FW_STATS_BUF_SIZE (1024 * 1024)
 
 #define ATH10K_TX_POWER_MAX_VAL 70
@@ -207,7 +203,7 @@ static inline int ath10k_debug_fw_stats_request(struct ath10k *ar)
 #define ath10k_debug_get_et_sset_count NULL
 #define ath10k_debug_get_et_stats NULL
 
-#endif /* CONFIG_ATH10K_DEBUGFS */
+#endif  
 #ifdef CONFIG_MAC80211_DEBUGFS
 void ath10k_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			    struct ieee80211_sta *sta, struct dentry *dir);
@@ -249,7 +245,7 @@ void ath10k_sta_update_rx_tid_stats_ampdu(struct ath10k *ar,
 					  int num_ranges)
 {
 }
-#endif /* CONFIG_MAC80211_DEBUGFS */
+#endif  
 
 #ifdef CONFIG_ATH10K_DEBUG
 __printf(3, 4) void __ath10k_dbg(struct ath10k *ar,
@@ -259,7 +255,7 @@ void ath10k_dbg_dump(struct ath10k *ar,
 		     enum ath10k_debug_mask mask,
 		     const char *msg, const char *prefix,
 		     const void *buf, size_t len);
-#else /* CONFIG_ATH10K_DEBUG */
+#else  
 
 static inline int __ath10k_dbg(struct ath10k *ar,
 			       enum ath10k_debug_mask dbg_mask,
@@ -274,15 +270,13 @@ static inline void ath10k_dbg_dump(struct ath10k *ar,
 				   const void *buf, size_t len)
 {
 }
-#endif /* CONFIG_ATH10K_DEBUG */
+#endif  
 
-/* Avoid calling __ath10k_dbg() if debug_mask is not set and tracing
- * disabled.
- */
+ 
 #define ath10k_dbg(ar, dbg_mask, fmt, ...)			\
 do {								\
 	if ((ath10k_debug_mask & dbg_mask) ||			\
 	    trace_ath10k_log_dbg_enabled())			\
 		__ath10k_dbg(ar, dbg_mask, fmt, ##__VA_ARGS__); \
 } while (0)
-#endif /* _DEBUG_H_ */
+#endif  

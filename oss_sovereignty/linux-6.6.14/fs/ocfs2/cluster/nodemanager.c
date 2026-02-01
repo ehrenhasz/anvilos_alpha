@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2004, 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -14,14 +12,12 @@
 #include "masklog.h"
 #include "sys.h"
 
-/* for now we operate under the assertion that there can be only one
- * cluster active at a time.  Changing this will require trickling
- * cluster references throughout where nodes are looked up */
+ 
 struct o2nm_cluster *o2nm_single_cluster = NULL;
 
 static const char *o2nm_fence_method_desc[O2NM_FENCE_METHODS] = {
-	"reset",	/* O2NM_FENCE_RESET */
-	"panic",	/* O2NM_FENCE_PANIC */
+	"reset",	 
+	"panic",	 
 };
 
 static inline void o2nm_lock_subsystem(void);
@@ -138,7 +134,7 @@ u8 o2nm_this_node(void)
 }
 EXPORT_SYMBOL_GPL(o2nm_this_node);
 
-/* node configfs bits */
+ 
 
 static struct o2nm_cluster *to_o2nm_cluster(struct config_item *item)
 {
@@ -166,8 +162,7 @@ static ssize_t o2nm_node_num_show(struct config_item *item, char *page)
 
 static struct o2nm_cluster *to_o2nm_cluster_from_node(struct o2nm_node *node)
 {
-	/* through the first node_set .parent
-	 * mycluster/nodes/mynode == o2nm_cluster->o2nm_node_group->o2nm_node */
+	 
 	if (node->nd_item.ci_parent)
 		return to_o2nm_cluster(node->nd_item.ci_parent->ci_parent);
 	else
@@ -196,13 +191,10 @@ static ssize_t o2nm_node_num_store(struct config_item *item, const char *page,
 	if (tmp >= O2NM_MAX_NODES)
 		return -ERANGE;
 
-	/* once we're in the cl_nodes tree networking can look us up by
-	 * node number and try to use our address and port attributes
-	 * to connect to this node.. make sure that they've been set
-	 * before writing the node attribute? */
+	 
 	if (!test_bit(O2NM_NODE_ATTR_ADDRESS, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
-		return -EINVAL; /* XXX */
+		return -EINVAL;  
 
 	o2nm_lock_subsystem();
 	cluster = to_o2nm_cluster_from_node(node);
@@ -332,14 +324,13 @@ static ssize_t o2nm_node_local_store(struct config_item *item, const char *page,
 	if (!p || (*p && (*p != '\n')))
 		return -EINVAL;
 
-	tmp = !!tmp; /* boolean of whether this node wants to be local */
+	tmp = !!tmp;  
 
-	/* setting local turns on networking rx for now so we require having
-	 * set everything else first */
+	 
 	if (!test_bit(O2NM_NODE_ATTR_ADDRESS, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_NUM, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
-		return -EINVAL; /* XXX */
+		return -EINVAL;  
 
 	o2nm_lock_subsystem();
 	cluster = to_o2nm_cluster_from_node(node);
@@ -348,15 +339,14 @@ static ssize_t o2nm_node_local_store(struct config_item *item, const char *page,
 		goto out;
 	}
 
-	/* the only failure case is trying to set a new local node
-	 * when a different one is already set */
+	 
 	if (tmp && tmp == cluster->cl_has_local &&
 	    cluster->cl_local_node != node->nd_num) {
 		ret = -EBUSY;
 		goto out;
 	}
 
-	/* bring up the rx thread if we're setting the new local node. */
+	 
 	if (tmp && !cluster->cl_has_local) {
 		ret = o2net_start_listening(node);
 		if (ret)
@@ -405,11 +395,11 @@ static const struct config_item_type o2nm_node_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* node set */
+ 
 
 struct o2nm_node_group {
 	struct config_group ns_group;
-	/* some stuff? */
+	 
 };
 
 #if 0
@@ -590,7 +580,7 @@ static struct config_item *o2nm_node_group_make_item(struct config_group *group,
 	if (node == NULL)
 		return ERR_PTR(-ENOMEM);
 
-	strcpy(node->nd_name, name); /* use item.ci_namebuf instead? */
+	strcpy(node->nd_name, name);  
 	config_item_init_type_name(&node->nd_item, name, &o2nm_node_type);
 	spin_lock_init(&node->nd_lock);
 
@@ -616,15 +606,15 @@ static void o2nm_node_group_drop_item(struct config_group *group,
 		}
 	}
 
-	/* XXX call into net to stop this node from trading messages */
+	 
 
 	write_lock(&cluster->cl_nodes_lock);
 
-	/* XXX sloppy */
+	 
 	if (node->nd_ipv4_address)
 		rb_erase(&node->nd_ip_node, &cluster->cl_node_ip_tree);
 
-	/* nd_num might be 0 if the node number hasn't been set.. */
+	 
 	if (cluster->cl_nodes[node->nd_num] == node) {
 		cluster->cl_nodes[node->nd_num] = NULL;
 		clear_bit(node->nd_num, cluster->cl_nodes_bitmap);
@@ -647,7 +637,7 @@ static const struct config_item_type o2nm_node_group_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* cluster */
+ 
 
 static void o2nm_cluster_release(struct config_item *item)
 {
@@ -666,11 +656,11 @@ static const struct config_item_type o2nm_cluster_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* cluster set */
+ 
 
 struct o2nm_cluster_group {
 	struct configfs_subsystem cs_subsys;
-	/* some stuff? */
+	 
 };
 
 #if 0
@@ -689,8 +679,7 @@ static struct config_group *o2nm_cluster_group_make_group(struct config_group *g
 	struct o2nm_node_group *ns = NULL;
 	struct config_group *o2hb_group = NULL, *ret = NULL;
 
-	/* this runs under the parent dir's i_rwsem; there can be only
-	 * one caller in here at a time */
+	 
 	if (o2nm_single_cluster)
 		return ERR_PTR(-ENOSPC);
 
@@ -813,7 +802,7 @@ void o2nm_undepend_this_node(void)
 
 static void __exit exit_o2nm(void)
 {
-	/* XXX sync with hb callbacks and shut down hb? */
+	 
 	o2net_unregister_hb_callbacks();
 	configfs_unregister_subsystem(&o2nm_cluster_group.cs_subsys);
 	o2cb_sys_shutdown();

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _E1000E_82571_H_
 #define _E1000E_82571_H_
@@ -11,17 +11,17 @@
 				 (ID_LED_DEF1_DEF2))
 
 #define E1000_GCR_L1_ACT_WITHOUT_L0S_RX	0x08000000
-#define AN_RETRY_COUNT		5	/* Autoneg Retry Count value */
+#define AN_RETRY_COUNT		5	 
 
-/* Intr Throttling - RW */
+ 
 #define E1000_EITR_82574(_n)	(0x000E8 + (0x4 * (_n)))
 
-#define E1000_EIAC_82574	0x000DC	/* Ext. Interrupt Auto Clear - RW */
+#define E1000_EIAC_82574	0x000DC	 
 #define E1000_EIAC_MASK_82574	0x01F00000
 
 #define E1000_IVAR_INT_ALLOC_VALID	0x8
 
-/* Manageability Operation Mode mask */
+ 
 #define E1000_NVM_INIT_CTRL2_MNGM	0x6000
 
 #define E1000_BASE1000T_STATUS		10

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// kselftest configuration helpers for the hw specific configuration
-//
-// Original author: Jaroslav Kysela <perex@perex.cz>
-// Copyright (c) 2022 Red Hat Inc.
+
+
+
+
+
+
 
 #include <stdio.h>
 #include <stdlib.h>

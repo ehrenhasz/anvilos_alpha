@@ -1,30 +1,16 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef HTC_USB_H
 #define HTC_USB_H
 
-/* old firmware images */
+ 
 #define FIRMWARE_AR7010_1_1     "htc_7010.fw"
 #define FIRMWARE_AR9271         "htc_9271.fw"
 
-/* supported Major FW version */
+ 
 #define MAJOR_VERSION_REQ 1
 #define MINOR_VERSION_REQ 3
-/* minimal and maximal supported Minor FW version. */
+ 
 #define FIRMWARE_MINOR_IDX_MAX  4
 #define FIRMWARE_MINOR_IDX_MIN  3
 #define HTC_FW_PATH	"ath9k_htc"
@@ -50,7 +36,7 @@ extern int htc_use_dev_fw;
 #define ATH_USB_RX_STREAM_MODE_TAG 0x4e00
 #define ATH_USB_TX_STREAM_MODE_TAG 0x697e
 
-/* FIXME: Verify these numbers (with Windows) */
+ 
 #define MAX_TX_URB_NUM  8
 #define MAX_TX_BUF_NUM  256
 #define MAX_TX_BUF_SIZE 32768
@@ -65,13 +51,13 @@ extern int htc_use_dev_fw;
 
 #define MAX_REG_IN_BUF_SIZE 64
 
-/* USB Endpoint definition */
+ 
 #define USB_WLAN_TX_PIPE  1
 #define USB_WLAN_RX_PIPE  2
 #define USB_REG_IN_PIPE   3
 #define USB_REG_OUT_PIPE  4
 
-#define USB_MSG_TIMEOUT 1000 /* (ms) */
+#define USB_MSG_TIMEOUT 1000  
 
 #define HIF_USB_MAX_RXPIPES 2
 #define HIF_USB_MAX_TXPIPES 4
@@ -133,11 +119,11 @@ struct hif_device_usb {
 	int rx_transfer_len;
 	int rx_pad_len;
 	spinlock_t rx_lock;
-	u8 flags; /* HIF_USB_* */
+	u8 flags;  
 };
 
 int ath9k_hif_usb_init(void);
 void ath9k_hif_usb_exit(void);
 void ath9k_hif_usb_dealloc_urbs(struct hif_device_usb *hif_dev);
 
-#endif /* HTC_USB_H */
+#endif  

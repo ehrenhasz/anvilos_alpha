@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Mock-up PTP Hardware Clock driver for virtual network devices
- *
- * Copyright 2023 NXP
- */
+ 
+ 
 
 #ifndef _PTP_MOCK_H_
 #define _PTP_MOCK_H_
@@ -35,4 +31,4 @@ static inline int mock_phc_index(struct mock_phc *phc)
 
 #endif
 
-#endif /* _PTP_MOCK_H_ */
+#endif  

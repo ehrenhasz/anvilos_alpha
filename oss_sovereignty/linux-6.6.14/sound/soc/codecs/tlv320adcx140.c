@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// TLV320ADCX140 Sound driver
-// Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -160,20 +160,20 @@ static const struct regmap_config adcx140_i2c_regmap = {
 	.volatile_reg = adcx140_volatile,
 };
 
-/* Digital Volume control. From -100 to 27 dB in 0.5 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(dig_vol_tlv, -10050, 50, 0);
 
-/* ADC gain. From 0 to 42 dB in 1 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(adc_tlv, 0, 100, 0);
 
-/* DRE Level. From -12 dB to -66 dB in 1 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(dre_thresh_tlv, -6600, 100, 0);
-/* DRE Max Gain. From 2 dB to 26 dB in 2 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(dre_gain_tlv, 200, 200, 0);
 
-/* AGC Level. From -6 dB to -36 dB in 2 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(agc_thresh_tlv, -3600, 200, 0);
-/* AGC Max Gain. From 3 dB to 42 dB in 3 dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(agc_gain_tlv, 300, 300, 0);
 
 static const char * const decimation_filter_text[] = {
@@ -224,7 +224,7 @@ static const struct snd_kcontrol_new in4_resistor_controls[] = {
 	SOC_DAPM_ENUM("CH4 Resistor Select", in4_resistor_enum),
 };
 
-/* Analog/Digital Selection */
+ 
 static const char * const adcx140_mic_sel_text[] = {"Analog", "Line In", "Digital"};
 static const char * const adcx140_analog_sel_text[] = {"Analog", "Line In"};
 
@@ -341,7 +341,7 @@ static const struct snd_kcontrol_new adcx140_dapm_ch4_dre_en_switch =
 static const struct snd_kcontrol_new adcx140_dapm_dre_en_switch =
 	SOC_DAPM_SINGLE("Switch", ADCX140_DSP_CFG1, 3, 1, 0);
 
-/* Output Mixer */
+ 
 static const struct snd_kcontrol_new adcx140_output_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Digital CH1 Switch", 0, 0, 0, 0),
 	SOC_DAPM_SINGLE("Digital CH2 Switch", 0, 0, 0, 0),
@@ -350,7 +350,7 @@ static const struct snd_kcontrol_new adcx140_output_mixer_controls[] = {
 };
 
 static const struct snd_soc_dapm_widget adcx140_dapm_widgets[] = {
-	/* Analog Differential Inputs */
+	 
 	SND_SOC_DAPM_INPUT("MIC1P"),
 	SND_SOC_DAPM_INPUT("MIC1M"),
 	SND_SOC_DAPM_INPUT("MIC2P"),
@@ -373,7 +373,7 @@ static const struct snd_soc_dapm_widget adcx140_dapm_widgets[] = {
 		&adcx140_output_mixer_controls[0],
 		ARRAY_SIZE(adcx140_output_mixer_controls)),
 
-	/* Input Selection to MIC_PGA */
+	 
 	SND_SOC_DAPM_MUX("MIC1P Input Mux", SND_SOC_NOPM, 0, 0,
 			 &adcx140_dapm_mic1p_control),
 	SND_SOC_DAPM_MUX("MIC2P Input Mux", SND_SOC_NOPM, 0, 0,
@@ -383,7 +383,7 @@ static const struct snd_soc_dapm_widget adcx140_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("MIC4P Input Mux", SND_SOC_NOPM, 0, 0,
 			 &adcx140_dapm_mic4p_control),
 
-	/* Input Selection to MIC_PGA */
+	 
 	SND_SOC_DAPM_MUX("MIC1 Analog Mux", SND_SOC_NOPM, 0, 0,
 			 &adcx140_dapm_mic1_analog_control),
 	SND_SOC_DAPM_MUX("MIC2 Analog Mux", SND_SOC_NOPM, 0, 0,
@@ -469,7 +469,7 @@ static const struct snd_soc_dapm_widget adcx140_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route adcx140_audio_map[] = {
-	/* Outputs */
+	 
 	{"CH1_OUT", NULL, "Output Mixer"},
 	{"CH2_OUT", NULL, "Output Mixer"},
 	{"CH3_OUT", NULL, "Output Mixer"},
@@ -508,7 +508,7 @@ static const struct snd_soc_dapm_route adcx140_audio_map[] = {
 	{"CH3_DRE_EN", "Switch", "CH3_ADC"},
 	{"CH4_DRE_EN", "Switch", "CH4_ADC"},
 
-	/* Mic input */
+	 
 	{"CH1_ADC", NULL, "MIC_GAIN_CTL_CH1"},
 	{"CH2_ADC", NULL, "MIC_GAIN_CTL_CH2"},
 	{"CH3_ADC", NULL, "MIC_GAIN_CTL_CH3"},
@@ -684,7 +684,7 @@ static int adcx140_reset(struct adcx140_priv *adcx140)
 
 	if (adcx140->gpio_reset) {
 		gpiod_direction_output(adcx140->gpio_reset, 0);
-		/* 8.4.1: wait for hw shutdown (25ms) + >= 1ms */
+		 
 		usleep_range(30000, 100000);
 		gpiod_direction_output(adcx140->gpio_reset, 1);
 	} else {
@@ -692,7 +692,7 @@ static int adcx140_reset(struct adcx140_priv *adcx140)
 				   ADCX140_RESET);
 	}
 
-	/* 8.4.2: wait >= 10 ms after entering sleep mode. */
+	 
 	usleep_range(10000, 100000);
 
 	return ret;
@@ -769,7 +769,7 @@ static int adcx140_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	int offset = 0;
 	bool inverted_bclk = false;
 
-	/* set master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		iface_reg2 |= ADCX140_BCLK_FSYNC_MASTER;
@@ -781,7 +781,7 @@ static int adcx140_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface_reg1 |= ADCX140_I2S_MODE_BIT;
@@ -801,7 +801,7 @@ static int adcx140_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* signal polarity */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_NF:
 	case SND_SOC_DAIFMT_IB_IF:
@@ -832,7 +832,7 @@ static int adcx140_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	snd_soc_component_update_bits(component, ADCX140_MST_CFG0,
 				      ADCX140_BCLK_FSYNC_MASTER, iface_reg2);
 
-	/* Configure data offset */
+	 
 	snd_soc_component_update_bits(component, ADCX140_ASI_CFG1,
 				      ADCX140_TX_OFFSET_MASK, offset);
 
@@ -848,10 +848,7 @@ static int adcx140_set_dai_tdm_slot(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	struct adcx140_priv *adcx140 = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * The chip itself supports arbitrary masks, but the driver currently
-	 * only supports adjacent slots beginning at the first slot.
-	 */
+	 
 	if (tx_mask != GENMASK(__fls(tx_mask), 0)) {
 		dev_err(component->dev, "Only lower adjacent slots are supported\n");
 		return -EINVAL;
@@ -1003,7 +1000,7 @@ static int adcx140_codec_probe(struct snd_soc_component *component)
 		goto out;
 	}
 
-	/* 8.4.3: Wait >= 1ms after entering active mode. */
+	 
 	usleep_range(1000, 100000);
 
 	pdm_count = device_property_count_u32(adcx140->dev,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/if_macvlan.h>
@@ -114,9 +114,7 @@ void mlx5e_rep_update_flows(struct mlx5e_priv *priv,
 
 		ether_addr_copy(e->h_dest, ha);
 		ether_addr_copy(eth->h_dest, ha);
-		/* Update the encap source mac, in case that we delete
-		 * the flows when encap source mac changed.
-		 */
+		 
 		route_dev = __dev_get_by_index(dev_net(priv->netdev), e->route_dev_ifindex);
 		if (route_dev)
 			ether_addr_copy(eth->h_source, route_dev->dev_addr);
@@ -204,15 +202,7 @@ static int mlx5e_rep_setup_ft_cb(enum tc_setup_type type, void *type_data,
 		if (!mlx5_chains_prios_supported(esw_chains(esw)))
 			return -EOPNOTSUPP;
 
-		/* Re-use tc offload path by moving the ft flow to the
-		 * reserved ft chain.
-		 *
-		 * FT offload can use prio range [0, INT_MAX], so we normalize
-		 * it to range [1, mlx5_esw_chains_get_prio_range(esw)]
-		 * as with tc, where prio 0 isn't supported.
-		 *
-		 * We only support chain 0 of FT offload.
-		 */
+		 
 		if (tmp.common.prio >= mlx5_chains_get_prio_range(esw_chains(esw)))
 			return -EOPNOTSUPP;
 		if (tmp.common.chain_index != 0)
@@ -262,14 +252,14 @@ int mlx5e_rep_tc_init(struct mlx5e_rep_priv *rpriv)
 	mutex_init(&uplink_priv->unready_flows_lock);
 	INIT_LIST_HEAD(&uplink_priv->unready_flows);
 
-	/* init shared tc flow table */
+	 
 	err = mlx5e_tc_esw_init(uplink_priv);
 	return err;
 }
 
 void mlx5e_rep_tc_cleanup(struct mlx5e_rep_priv *rpriv)
 {
-	/* delete shared tc flow table */
+	 
 	mlx5e_tc_esw_cleanup(&rpriv->uplink_priv);
 	mutex_destroy(&rpriv->uplink_priv.unready_flows_lock);
 }
@@ -385,15 +375,7 @@ static int mlx5e_rep_indr_setup_ft_cb(enum tc_setup_type type,
 	case TC_SETUP_CLSFLOWER:
 		memcpy(&tmp, f, sizeof(*f));
 
-		/* Re-use tc offload path by moving the ft flow to the
-		 * reserved ft chain.
-		 *
-		 * FT offload can use prio range [0, INT_MAX], so we normalize
-		 * it to range [1, mlx5_esw_chains_get_prio_range(esw)]
-		 * as with tc, where prio 0 isn't supported.
-		 *
-		 * We only support chain 0 of FT offload.
-		 */
+		 
 		if (!mlx5_chains_prios_supported(esw_chains(esw)) ||
 		    tmp.common.prio >= mlx5_chains_get_prio_range(esw_chains(esw)) ||
 		    tmp.common.chain_index)
@@ -543,9 +525,7 @@ mlx5e_rep_indr_replace_act(struct mlx5e_rep_priv *rpriv,
 	bool add = false;
 	int i;
 
-	/* There is no use case currently for more than one action (e.g. pedit).
-	 * when there will be, need to handle cleaning multiple actions on err.
-	 */
+	 
 	if (!flow_offload_has_one_action(&fl_act->action))
 		return -EOPNOTSUPP;
 
@@ -671,7 +651,7 @@ int mlx5e_rep_tc_netdevice_event_register(struct mlx5e_rep_priv *rpriv)
 {
 	struct mlx5_rep_uplink_priv *uplink_priv = &rpriv->uplink_priv;
 
-	/* init indirect block notifications */
+	 
 	INIT_LIST_HEAD(&uplink_priv->tc_indr_block_priv_list);
 
 	return flow_indr_dev_register(mlx5e_rep_indr_setup_cb, rpriv);
@@ -699,9 +679,7 @@ void mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
 	if (!reg_c0 || reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
 		goto forward;
 
-	/* If mapped_obj_id is not equal to the default flow tag then skb->mark
-	 * is not supported and must be reset back to 0.
-	 */
+	 
 	skb->mark = 0;
 
 	priv = netdev_priv(skb->dev);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cypress Trackpad PS/2 mouse driver
- *
- * Copyright (c) 2012 Cypress Semiconductor Corporation.
- *
- * Author:
- *   Dudley Du <dudl@cypress.com>
- *
- * Additional contributors include:
- *   Kamal Mostafa <kamal@canonical.com>
- *   Kyle Fazzari <git@status.e4ward.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,7 +13,7 @@
 
 #include "cypress_ps2.h"
 
-#undef CYTP_DEBUG_VERBOSE  /* define this and DEBUG for more verbose dump */
+#undef CYTP_DEBUG_VERBOSE   
 
 static void cypress_set_packet_size(struct psmouse *psmouse, unsigned int n)
 {
@@ -67,11 +56,7 @@ static int cypress_ps2_ext_cmd(struct psmouse *psmouse, unsigned short cmd,
 	ps2_begin_command(ps2dev);
 
 	do {
-		/*
-		 * Send extension command byte (0xE8 or 0xF3).
-		 * If sending the command fails, send recovery command
-		 * to make the device return to the ready state.
-		 */
+		 
 		rc = cypress_ps2_sendbyte(psmouse, cmd & 0xff);
 		if (rc == CYTP_PS2_RETRY) {
 			rc = cypress_ps2_sendbyte(psmouse, 0x00);
@@ -142,7 +127,7 @@ static bool cypress_verify_cmd_state(struct psmouse *psmouse,
 	bool resolution_match = false;
 	int i;
 
-	/* callers will do further checking. */
+	 
 	if (cmd == CYTP_CMD_READ_CYPRESS_ID ||
 	    cmd == CYTP_CMD_STANDARD_MODE ||
 	    cmd == CYTP_CMD_READ_TP_METRICS)
@@ -205,7 +190,7 @@ int cypress_detect(struct psmouse *psmouse, bool set_properties)
 	if (cypress_send_ext_cmd(psmouse, CYTP_CMD_READ_CYPRESS_ID, param))
 		return -ENODEV;
 
-	/* Check for Cypress Trackpad signature bytes: 0x33 0xCC */
+	 
 	if (param[0] != 0x33 || param[1] != 0xCC)
 		return -ENODEV;
 
@@ -225,17 +210,14 @@ static int cypress_read_fw_version(struct psmouse *psmouse)
 	if (cypress_send_ext_cmd(psmouse, CYTP_CMD_READ_CYPRESS_ID, param))
 		return -ENODEV;
 
-	/* Check for Cypress Trackpad signature bytes: 0x33 0xCC */
+	 
 	if (param[0] != 0x33 || param[1] != 0xCC)
 		return -ENODEV;
 
 	cytp->fw_version = param[2] & FW_VERSION_MASX;
 	cytp->tp_metrics_supported = (param[2] & TP_METRICS_MASK) ? 1 : 0;
 
-	/*
-	 * Trackpad fw_version 11 (in Dell XPS12) yields a bogus response to
-	 * CYTP_CMD_READ_TP_METRICS so do not try to use it. LP: #1103594.
-	 */
+	 
 	if (cytp->fw_version >= 11)
 		cytp->tp_metrics_supported = 0;
 
@@ -251,7 +233,7 @@ static int cypress_read_tp_metrics(struct psmouse *psmouse)
 	struct cytp_data *cytp = psmouse->private;
 	unsigned char param[8];
 
-	/* set default values for tp metrics. */
+	 
 	cytp->tp_width = CYTP_DEFAULT_WIDTH;
 	cytp->tp_high = CYTP_DEFAULT_HIGH;
 	cytp->tp_max_abs_x = CYTP_ABS_MAX_X;
@@ -266,7 +248,7 @@ static int cypress_read_tp_metrics(struct psmouse *psmouse)
 
 	memset(param, 0, sizeof(param));
 	if (cypress_send_ext_cmd(psmouse, CYTP_CMD_READ_TP_METRICS, param) == 0) {
-		/* Update trackpad parameters. */
+		 
 		cytp->tp_max_abs_x = (param[1] << 8) | param[0];
 		cytp->tp_max_abs_y = (param[3] << 8) | param[2];
 		cytp->tp_min_pressure = param[4];
@@ -349,10 +331,7 @@ static int cypress_set_absolute_mode(struct psmouse *psmouse)
 	return 0;
 }
 
-/*
- * Reset trackpad device.
- * This is also the default mode when trackpad powered on.
- */
+ 
 static void cypress_reset(struct psmouse *psmouse)
 {
 	struct cytp_data *cytp = psmouse->private;
@@ -377,7 +356,7 @@ static int cypress_set_input_params(struct input_dev *input,
 			     cytp->tp_min_pressure, cytp->tp_max_pressure, 0, 0);
 	input_set_abs_params(input, ABS_TOOL_WIDTH, 0, 255, 0, 0);
 
-	/* finger position */
+	 
 	input_set_abs_params(input, ABS_MT_POSITION_X, 0, cytp->tp_max_abs_x, 0, 0);
 	input_set_abs_params(input, ABS_MT_POSITION_Y, 0, cytp->tp_max_abs_y, 0, 0);
 	input_set_abs_params(input, ABS_MT_PRESSURE, 0, 255, 0, 0);
@@ -426,12 +405,12 @@ static int cypress_get_finger_count(unsigned char header_byte)
 		return 1;
 
 	if (header_byte & ABS_HSCROLL_BIT) {
-		/* HSCROLL gets added on to 0 finger count. */
+		 
 		switch (finger_count) {
 			case 0:	return 4;
 			case 2: return 5;
 			default:
-				/* Invalid contact (e.g. palm). Ignore it. */
+				 
 				return 0;
 		}
 	}
@@ -478,12 +457,7 @@ static int cypress_parse_packet(struct psmouse *psmouse,
 	report_data->left = (header_byte & BTN_LEFT_BIT) ? 1 : 0;
 	report_data->right = (header_byte & BTN_RIGHT_BIT) ? 1 : 0;
 
-	/*
-	 * This is only true if one of the mouse buttons were tapped.  Make
-	 * sure it doesn't turn into a click. The regular tap-to-click
-	 * functionality will handle that on its own. If we don't do this,
-	 * disabling tap-to-click won't affect the mouse button zones.
-	 */
+	 
 	if (report_data->tap)
 		report_data->left = 0;
 
@@ -566,22 +540,16 @@ static psmouse_ret_t cypress_validate_byte(struct psmouse *psmouse)
 		return PSMOUSE_BAD_DATA;
 
 	if (index == 0 && (packet[0] & 0xfc) == 0) {
-		/* call packet process for reporting finger leave. */
+		 
 		cypress_process_packet(psmouse, 1);
 		return PSMOUSE_FULL_PACKET;
 	}
 
-	/*
-	 * Perform validation (and adjust packet size) based only on the
-	 * first byte; allow all further bytes through.
-	 */
+	 
 	if (index != 0)
 		return PSMOUSE_GOOD_DATA;
 
-	/*
-	 * If absolute/relative mode bit has not been set yet, just pass
-	 * the byte through.
-	 */
+	 
 	if ((cytp->mode & CYTP_BIT_ABS_REL_MASK) == 0)
 		return PSMOUSE_GOOD_DATA;
 
@@ -694,10 +662,7 @@ int cypress_init(struct psmouse *psmouse)
 	return 0;
 
 err_exit:
-	/*
-	 * Reset Cypress Trackpad as a standard mouse. Then
-	 * let psmouse driver communicating with it as default PS2 mouse.
-	 */
+	 
 	cypress_reset(psmouse);
 
 	psmouse->private = NULL;

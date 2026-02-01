@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -90,16 +87,7 @@ static inline int WQE_PAGE_NUM(struct hinic_wq *wq, u16 idx)
 		& ((wq)->num_q_pages - 1));
 }
 
-/**
- * queue_alloc_page - allocate page for Queue
- * @hwif: HW interface for allocating DMA
- * @vaddr: virtual address will be returned in this address
- * @paddr: physical address will be returned in this address
- * @shadow_vaddr: VM area will be return here for holding WQ page addresses
- * @page_sz: page size of each WQ page
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int queue_alloc_page(struct hinic_hwif *hwif, u64 **vaddr, u64 *paddr,
 			    void ***shadow_vaddr, size_t page_sz)
 {
@@ -115,7 +103,7 @@ static int queue_alloc_page(struct hinic_hwif *hwif, u64 **vaddr, u64 *paddr,
 
 	*paddr = (u64)dma_addr;
 
-	/* use vzalloc for big mem */
+	 
 	*shadow_vaddr = vzalloc(page_sz);
 	if (!*shadow_vaddr)
 		goto err_shadow_vaddr;
@@ -127,13 +115,7 @@ err_shadow_vaddr:
 	return -ENOMEM;
 }
 
-/**
- * wqs_allocate_page - allocate page for WQ set
- * @wqs: Work Queue Set
- * @page_idx: the page index of the page will be allocated
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int wqs_allocate_page(struct hinic_wqs *wqs, int page_idx)
 {
 	return queue_alloc_page(wqs->hwif, &wqs->page_vaddr[page_idx],
@@ -142,11 +124,7 @@ static int wqs_allocate_page(struct hinic_wqs *wqs, int page_idx)
 				WQS_PAGE_SIZE);
 }
 
-/**
- * wqs_free_page - free page of WQ set
- * @wqs: Work Queue Set
- * @page_idx: the page index of the page will be freed
- **/
+ 
 static void wqs_free_page(struct hinic_wqs *wqs, int page_idx)
 {
 	struct hinic_hwif *hwif = wqs->hwif;
@@ -158,12 +136,7 @@ static void wqs_free_page(struct hinic_wqs *wqs, int page_idx)
 	vfree(wqs->shadow_page_vaddr[page_idx]);
 }
 
-/**
- * cmdq_allocate_page - allocate page for cmdq
- * @cmdq_pages: the pages of the cmdq queue struct to hold the page
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int cmdq_allocate_page(struct hinic_cmdq_pages *cmdq_pages)
 {
 	return queue_alloc_page(cmdq_pages->hwif, &cmdq_pages->page_vaddr,
@@ -172,10 +145,7 @@ static int cmdq_allocate_page(struct hinic_cmdq_pages *cmdq_pages)
 				CMDQ_PAGE_SIZE);
 }
 
-/**
- * cmdq_free_page - free page from cmdq
- * @cmdq_pages: the pages of the cmdq queue struct that hold the page
- **/
+ 
 static void cmdq_free_page(struct hinic_cmdq_pages *cmdq_pages)
 {
 	struct hinic_hwif *hwif = cmdq_pages->hwif;
@@ -293,14 +263,7 @@ static void init_wqs_blocks_arr(struct hinic_wqs *wqs)
 	sema_init(&wqs->alloc_blocks_lock, 1);
 }
 
-/**
- * hinic_wqs_alloc - allocate Work Queues set
- * @wqs: Work Queue Set
- * @max_wqs: maximum wqs to allocate
- * @hwif: HW interface for use for the allocation
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_wqs_alloc(struct hinic_wqs *wqs, int max_wqs,
 		    struct hinic_hwif *hwif)
 {
@@ -349,10 +312,7 @@ err_wq_allocate_page:
 	return err;
 }
 
-/**
- * hinic_wqs_free - free Work Queues set
- * @wqs: Work Queue Set
- **/
+ 
 void hinic_wqs_free(struct hinic_wqs *wqs)
 {
 	struct hinic_hwif *hwif = wqs->hwif;
@@ -367,12 +327,7 @@ void hinic_wqs_free(struct hinic_wqs *wqs)
 	free_page_arrays(wqs);
 }
 
-/**
- * alloc_wqes_shadow - allocate WQE shadows for WQ
- * @wq: WQ to allocate shadows for
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int alloc_wqes_shadow(struct hinic_wq *wq)
 {
 	struct hinic_hwif *hwif = wq->hwif;
@@ -395,10 +350,7 @@ err_shadow_idx:
 	return -ENOMEM;
 }
 
-/**
- * free_wqes_shadow - free WQE shadows of WQ
- * @wq: WQ to free shadows from
- **/
+ 
 static void free_wqes_shadow(struct hinic_wq *wq)
 {
 	struct hinic_hwif *hwif = wq->hwif;
@@ -408,12 +360,7 @@ static void free_wqes_shadow(struct hinic_wq *wq)
 	devm_kfree(&pdev->dev, wq->shadow_wqe);
 }
 
-/**
- * free_wq_pages - free pages of WQ
- * @hwif: HW interface for releasing dma addresses
- * @wq: WQ to free pages from
- * @num_q_pages: number pages to free
- **/
+ 
 static void free_wq_pages(struct hinic_wq *wq, struct hinic_hwif *hwif,
 			  int num_q_pages)
 {
@@ -433,14 +380,7 @@ static void free_wq_pages(struct hinic_wq *wq, struct hinic_hwif *hwif,
 	free_wqes_shadow(wq);
 }
 
-/**
- * alloc_wq_pages - alloc pages for WQ
- * @hwif: HW interface for allocating dma addresses
- * @wq: WQ to allocate pages for
- * @max_pages: maximum pages allowed
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int alloc_wq_pages(struct hinic_wq *wq, struct hinic_hwif *hwif,
 			  int max_pages)
 {
@@ -478,7 +418,7 @@ static int alloc_wq_pages(struct hinic_wq *wq, struct hinic_hwif *hwif,
 			goto err_alloc_wq_pages;
 		}
 
-		/* HW uses Big Endian Format */
+		 
 		*paddr = cpu_to_be64(dma_addr);
 	}
 
@@ -489,17 +429,7 @@ err_alloc_wq_pages:
 	return -ENOMEM;
 }
 
-/**
- * hinic_wq_allocate - Allocate the WQ resources from the WQS
- * @wqs: WQ set from which to allocate the WQ resources
- * @wq: WQ to allocate resources for it from the WQ set
- * @wqebb_size: Work Queue Block Byte Size
- * @wq_page_size: the page size in the Work Queue
- * @q_depth: number of wqebbs in WQ
- * @max_wqe_size: maximum WQE size that will be used in the WQ
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_wq_allocate(struct hinic_wqs *wqs, struct hinic_wq *wq,
 		      u16 wqebb_size, u32 wq_page_size, u16 q_depth,
 		      u16 max_wqe_size)
@@ -571,11 +501,7 @@ err_alloc_wq_pages:
 	return err;
 }
 
-/**
- * hinic_wq_free - Free the WQ resources to the WQS
- * @wqs: WQ set to free the WQ resources to it
- * @wq: WQ to free its resources to the WQ set resources
- **/
+ 
 void hinic_wq_free(struct hinic_wqs *wqs, struct hinic_wq *wq)
 {
 	free_wq_pages(wq, wqs->hwif, wq->num_q_pages);
@@ -583,19 +509,7 @@ void hinic_wq_free(struct hinic_wqs *wqs, struct hinic_wq *wq)
 	wqs_return_block(wqs, wq->page_idx, wq->block_idx);
 }
 
-/**
- * hinic_wqs_cmdq_alloc - Allocate wqs for cmdqs
- * @cmdq_pages: will hold the pages of the cmdq
- * @wq: returned wqs
- * @hwif: HW interface
- * @cmdq_blocks: number of cmdq blocks/wq to allocate
- * @wqebb_size: Work Queue Block Byte Size
- * @wq_page_size: the page size in the Work Queue
- * @q_depth: number of wqebbs in WQ
- * @max_wqe_size: maximum WQE size that will be used in the WQ
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_wqs_cmdq_alloc(struct hinic_cmdq_pages *cmdq_pages,
 			 struct hinic_wq *wq, struct hinic_hwif *hwif,
 			 int cmdq_blocks, u16 wqebb_size, u32 wq_page_size,
@@ -679,12 +593,7 @@ err_cmdq_block:
 	return err;
 }
 
-/**
- * hinic_wqs_cmdq_free - Free wqs from cmdqs
- * @cmdq_pages: hold the pages of the cmdq
- * @wq: wqs to free
- * @cmdq_blocks: number of wqs to free
- **/
+ 
 void hinic_wqs_cmdq_free(struct hinic_cmdq_pages *cmdq_pages,
 			 struct hinic_wq *wq, int cmdq_blocks)
 {
@@ -729,14 +638,7 @@ static void copy_wqe_from_shadow(struct hinic_wq *wq, void *shadow_addr,
 	}
 }
 
-/**
- * hinic_get_wqe - get wqe ptr in the current pi and update the pi
- * @wq: wq to get wqe from
- * @wqe_size: wqe size
- * @prod_idx: returned pi
- *
- * Return wqe pointer
- **/
+ 
 struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 				   u16 *prod_idx)
 {
@@ -758,7 +660,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 	curr_prod_idx = end_prod_idx - num_wqebbs;
 	curr_prod_idx = MASKED_WQE_IDX(wq, curr_prod_idx);
 
-	/* end prod index points to the next wqebb, therefore minus 1 */
+	 
 	end_prod_idx = MASKED_WQE_IDX(wq, end_prod_idx - 1);
 
 	curr_pg = WQE_PAGE_NUM(wq, curr_prod_idx);
@@ -766,9 +668,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 
 	*prod_idx = curr_prod_idx;
 
-	/* If we only have one page, still need to get shadown wqe when
-	 * wqe rolling-over page
-	 */
+	 
 	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
 
@@ -781,11 +681,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 	return WQ_PAGE_ADDR(wq, *prod_idx) + WQE_PAGE_OFF(wq, *prod_idx);
 }
 
-/**
- * hinic_return_wqe - return the wqe when transmit failed
- * @wq: wq to return wqe
- * @wqe_size: wqe size
- **/
+ 
 void hinic_return_wqe(struct hinic_wq *wq, unsigned int wqe_size)
 {
 	int num_wqebbs = ALIGN(wqe_size, wq->wqebb_size) / wq->wqebb_size;
@@ -795,11 +691,7 @@ void hinic_return_wqe(struct hinic_wq *wq, unsigned int wqe_size)
 	atomic_add(num_wqebbs, &wq->delta);
 }
 
-/**
- * hinic_put_wqe - return the wqe place to use for a new wqe
- * @wq: wq to return wqe
- * @wqe_size: wqe size
- **/
+ 
 void hinic_put_wqe(struct hinic_wq *wq, unsigned int wqe_size)
 {
 	int num_wqebbs = ALIGN(wqe_size, wq->wqebb_size)
@@ -810,14 +702,7 @@ void hinic_put_wqe(struct hinic_wq *wq, unsigned int wqe_size)
 	atomic_add(num_wqebbs, &wq->delta);
 }
 
-/**
- * hinic_read_wqe - read wqe ptr in the current ci
- * @wq: wq to get read from
- * @wqe_size: wqe size
- * @cons_idx: returned ci
- *
- * Return wqe pointer
- **/
+ 
 struct hinic_hw_wqe *hinic_read_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 				    u16 *cons_idx)
 {
@@ -839,9 +724,7 @@ struct hinic_hw_wqe *hinic_read_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 
 	*cons_idx = curr_cons_idx;
 
-	/* If we only have one page, still need to get shadown wqe when
-	 * wqe rolling-over page
-	 */
+	 
 	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
 
@@ -852,25 +735,13 @@ struct hinic_hw_wqe *hinic_read_wqe(struct hinic_wq *wq, unsigned int wqe_size,
 	return WQ_PAGE_ADDR(wq, *cons_idx) + WQE_PAGE_OFF(wq, *cons_idx);
 }
 
-/**
- * hinic_read_wqe_direct - read wqe directly from ci position
- * @wq: wq
- * @cons_idx: ci position
- *
- * Return wqe
- **/
+ 
 struct hinic_hw_wqe *hinic_read_wqe_direct(struct hinic_wq *wq, u16 cons_idx)
 {
 	return WQ_PAGE_ADDR(wq, cons_idx) + WQE_PAGE_OFF(wq, cons_idx);
 }
 
-/**
- * wqe_shadow - check if a wqe is shadow
- * @wq: wq of the wqe
- * @wqe: the wqe for shadow checking
- *
- * Return true - shadow, false - Not shadow
- **/
+ 
 static inline bool wqe_shadow(struct hinic_wq *wq, struct hinic_hw_wqe *wqe)
 {
 	size_t wqe_shadow_size = wq->num_q_pages * wq->max_wqe_size;
@@ -879,12 +750,7 @@ static inline bool wqe_shadow(struct hinic_wq *wq, struct hinic_hw_wqe *wqe)
 			    &wq->shadow_wqe[wqe_shadow_size]);
 }
 
-/**
- * hinic_write_wqe - write the wqe to the wq
- * @wq: wq to write wqe to
- * @wqe: wqe to write
- * @wqe_size: wqe size
- **/
+ 
 void hinic_write_wqe(struct hinic_wq *wq, struct hinic_hw_wqe *wqe,
 		     unsigned int wqe_size)
 {

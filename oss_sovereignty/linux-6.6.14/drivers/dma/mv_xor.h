@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007, 2008, Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef MV_XOR_H
 #define MV_XOR_H
@@ -19,7 +17,7 @@
 #define MV_XOR_MIN_BYTE_COUNT		SZ_128
 #define MV_XOR_MAX_BYTE_COUNT		(SZ_16M - 1)
 
-/* Values for the XOR_CONFIG register */
+ 
 #define XOR_OPERATION_MODE_XOR		0
 #define XOR_OPERATION_MODE_MEMCPY	2
 #define XOR_OPERATION_MODE_IN_DESC      7
@@ -85,25 +83,10 @@ struct mv_xor_device {
 	u32                  win_end[WINDOW_COUNT];
 };
 
-/**
- * struct mv_xor_chan - internal representation of a XOR channel
- * @pending: allows batching of hardware operations
- * @lock: serializes enqueue/dequeue operations to the descriptors pool
- * @mmr_base: memory mapped register base
- * @idx: the index of the xor channel
- * @chain: device chain view of the descriptors
- * @free_slots: free slots usable by the channel
- * @allocated_slots: slots allocated by the driver
- * @completed_slots: slots completed by HW but still need to be acked
- * @device: parent device
- * @common: common dmaengine channel object members
- * @slots_allocated: records the actual size of the descriptor slot pool
- * @irq_tasklet: bottom half where mv_xor_slot_cleanup runs
- * @op_in_desc: new mode of driver, each op is writen to descriptor.
- */
+ 
 struct mv_xor_chan {
 	int			pending;
-	spinlock_t		lock; /* protects the descriptor slot pool */
+	spinlock_t		lock;  
 	void __iomem		*mmr_base;
 	void __iomem		*mmr_high_base;
 	unsigned int		idx;
@@ -128,16 +111,7 @@ struct mv_xor_chan {
 	struct mv_xor_device	*xordev;
 };
 
-/**
- * struct mv_xor_desc_slot - software descriptor
- * @node: node on the mv_xor_chan lists
- * @hw_desc: virtual address of the hardware descriptor chain
- * @phys: hardware address of the hardware descriptor chain
- * @slot_used: slot in use or not
- * @idx: pool index
- * @tx_list: list of slots that make up a multi-descriptor transaction
- * @async_tx: support for the async_tx api
- */
+ 
 struct mv_xor_desc_slot {
 	struct list_head	node;
 	struct list_head	sg_tx_list;
@@ -147,37 +121,29 @@ struct mv_xor_desc_slot {
 	struct dma_async_tx_descriptor	async_tx;
 };
 
-/*
- * This structure describes XOR descriptor size 64bytes. The
- * mv_phy_src_idx() macro must be used when indexing the values of the
- * phy_src_addr[] array. This is due to the fact that the 'descriptor
- * swap' feature, used on big endian systems, swaps descriptors data
- * within blocks of 8 bytes. So two consecutive values of the
- * phy_src_addr[] array are actually swapped in big-endian, which
- * explains the different mv_phy_src_idx() implementation.
- */
+ 
 #if defined(__LITTLE_ENDIAN)
 struct mv_xor_desc {
-	u32 status;		/* descriptor execution status */
-	u32 crc32_result;	/* result of CRC-32 calculation */
-	u32 desc_command;	/* type of operation to be carried out */
-	u32 phy_next_desc;	/* next descriptor address pointer */
-	u32 byte_count;		/* size of src/dst blocks in bytes */
-	u32 phy_dest_addr;	/* destination block address */
-	u32 phy_src_addr[8];	/* source block addresses */
+	u32 status;		 
+	u32 crc32_result;	 
+	u32 desc_command;	 
+	u32 phy_next_desc;	 
+	u32 byte_count;		 
+	u32 phy_dest_addr;	 
+	u32 phy_src_addr[8];	 
 	u32 reserved0;
 	u32 reserved1;
 };
 #define mv_phy_src_idx(src_idx) (src_idx)
 #else
 struct mv_xor_desc {
-	u32 crc32_result;	/* result of CRC-32 calculation */
-	u32 status;		/* descriptor execution status */
-	u32 phy_next_desc;	/* next descriptor address pointer */
-	u32 desc_command;	/* type of operation to be carried out */
-	u32 phy_dest_addr;	/* destination block address */
-	u32 byte_count;		/* size of src/dst blocks in bytes */
-	u32 phy_src_addr[8];	/* source block addresses */
+	u32 crc32_result;	 
+	u32 status;		 
+	u32 phy_next_desc;	 
+	u32 desc_command;	 
+	u32 phy_dest_addr;	 
+	u32 byte_count;		 
+	u32 phy_src_addr[8];	 
 	u32 reserved1;
 	u32 reserved0;
 };

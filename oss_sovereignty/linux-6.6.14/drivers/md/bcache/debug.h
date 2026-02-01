@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BCACHE_DEBUG_H
 #define _BCACHE_DEBUG_H
 
@@ -15,7 +15,7 @@ void bch_data_verify(struct cached_dev *dc, struct bio *bio);
 #define key_merging_disabled(c)		((c)->key_merging_disabled)
 #define bypass_torture_test(d)		((d)->bypass_torture_test)
 
-#else /* DEBUG */
+#else  
 
 static inline void bch_btree_verify(struct btree *b) {}
 static inline void bch_data_verify(struct cached_dev *dc, struct bio *bio) {}

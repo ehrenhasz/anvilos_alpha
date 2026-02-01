@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ac97.c  --  ALSA Soc AC97 codec support
- *
- * Copyright 2005 Wolfson Microelectronics PLC.
- * Author: Liam Girdwood <lrg@slimlogic.co.uk>
- *
- * Generic AC97 support.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -68,7 +61,7 @@ static int ac97_soc_probe(struct snd_soc_component *component)
 	struct snd_ac97_template ac97_template;
 	int ret;
 
-	/* add codec as bus device for standard ac97 */
+	 
 	ret = snd_ac97_bus(component->card->snd_card, 0, soc_ac97_ops,
 			   NULL, &ac97_bus);
 	if (ret < 0)

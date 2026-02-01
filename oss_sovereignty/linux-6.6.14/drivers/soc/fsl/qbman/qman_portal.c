@@ -1,45 +1,17 @@
-/* Copyright 2008 - 2016 Freescale Semiconductor, Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "qman_priv.h"
 
 struct qman_portal *qman_dma_portal;
 EXPORT_SYMBOL(qman_dma_portal);
 
-/* Enable portal interupts (as opposed to polling mode) */
+ 
 #define CONFIG_FSL_DPA_PIRQ_SLOW  1
 #define CONFIG_FSL_DPA_PIRQ_FAST  1
 
 static struct cpumask portal_cpus;
 static int __qman_portals_probed;
-/* protect qman global registers and global data shared among portals */
+ 
 static DEFINE_SPINLOCK(qman_lock);
 
 static void portal_set_cpu(struct qm_portal_config *pcfg, int cpu)
@@ -84,7 +56,7 @@ static struct qman_portal *init_pcfg(struct qm_portal_config *pcfg)
 	struct qman_portal *p;
 	u32 irq_sources = 0;
 
-	/* We need the same LIODN offset for all portals */
+	 
 	qman_liodn_fixup(pcfg->channel);
 
 	pcfg->iommu_domain = NULL;
@@ -97,7 +69,7 @@ static struct qman_portal *init_pcfg(struct qm_portal_config *pcfg)
 		return NULL;
 	}
 
-	/* Determine what should be interrupt-vs-poll driven */
+	 
 #ifdef CONFIG_FSL_DPA_PIRQ_SLOW
 	irq_sources |= QM_PIRQ_EQCI | QM_PIRQ_EQRI | QM_PIRQ_MRI |
 		       QM_PIRQ_CSCI;
@@ -109,7 +81,7 @@ static struct qman_portal *init_pcfg(struct qm_portal_config *pcfg)
 
 	spin_lock(&qman_lock);
 	if (cpumask_equal(&portal_cpus, cpu_possible_mask)) {
-		/* all assigned portals are initialized now */
+		 
 		qman_init_cgr_all();
 	}
 
@@ -126,7 +98,7 @@ static struct qman_portal *init_pcfg(struct qm_portal_config *pcfg)
 static void qman_portal_update_sdest(const struct qm_portal_config *pcfg,
 							unsigned int cpu)
 {
-#ifdef CONFIG_FSL_PAMU /* TODO */
+#ifdef CONFIG_FSL_PAMU  
 	if (pcfg->iommu_domain) {
 		if (fsl_pamu_configure_l1_stash(pcfg->iommu_domain, cpu) < 0) {
 			dev_err(pcfg->dev,
@@ -147,7 +119,7 @@ static int qman_offline_cpu(unsigned int cpu)
 	if (p) {
 		pcfg = qman_get_qm_portal_config(p);
 		if (pcfg) {
-			/* select any other online CPU */
+			 
 			cpu = cpumask_any_but(cpu_online_mask, cpu);
 			irq_set_affinity(pcfg->irq, cpumask_of(cpu));
 			qman_portal_update_sdest(pcfg, cpu);
@@ -251,7 +223,7 @@ static int qman_portal_probe(struct platform_device *pdev)
 	cpu = cpumask_first_zero(&portal_cpus);
 	if (cpu >= nr_cpu_ids) {
 		__qman_portals_probed = 1;
-		/* unassigned portal, skip init */
+		 
 		spin_unlock(&qman_lock);
 		goto check_cleanup;
 	}
@@ -270,16 +242,13 @@ static int qman_portal_probe(struct platform_device *pdev)
 		goto err_portal_init;
 	}
 
-	/* clear irq affinity if assigned cpu is offline */
+	 
 	if (!cpu_online(cpu))
 		qman_offline_cpu(cpu);
 
 check_cleanup:
 	if (__qman_portals_probed == 1 && qman_requires_cleanup()) {
-		/*
-		 * QMan wasn't reset prior to boot (Kexec for example)
-		 * Empty all the frame queues so they are in reset state
-		 */
+		 
 		for (i = 0; i < qm_get_fqid_maxcnt(); i++) {
 			err =  qman_shutdown_fq(i);
 			if (err) {

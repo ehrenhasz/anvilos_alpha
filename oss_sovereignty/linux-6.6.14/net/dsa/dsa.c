@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DSA topology and switch handling
- *
- * Copyright (c) 2008-2009 Marvell Semiconductor
- * Copyright (c) 2013 Florian Fainelli <florian@openwrt.org>
- * Copyright (c) 2016 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -36,7 +30,7 @@ LIST_HEAD(dsa_tree_list);
 
 static struct workqueue_struct *dsa_owq;
 
-/* Track the bridges with forwarding offload enabled */
+ 
 static unsigned long dsa_fwd_offloading_bridges;
 
 bool dsa_schedule_work(struct work_struct *work)
@@ -50,17 +44,7 @@ void dsa_flush_workqueue(void)
 }
 EXPORT_SYMBOL_GPL(dsa_flush_workqueue);
 
-/**
- * dsa_lag_map() - Map LAG structure to a linear LAG array
- * @dst: Tree in which to record the mapping.
- * @lag: LAG structure that is to be mapped to the tree's array.
- *
- * dsa_lag_id/dsa_lag_by_id can then be used to translate between the
- * two spaces. The size of the mapping space is determined by the
- * driver by setting ds->num_lag_ids. It is perfectly legal to leave
- * it unset if it is not needed, in which case these functions become
- * no-ops.
- */
+ 
 void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag)
 {
 	unsigned int id;
@@ -73,22 +57,10 @@ void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag)
 		}
 	}
 
-	/* No IDs left, which is OK. Some drivers do not need it. The
-	 * ones that do, e.g. mv88e6xxx, will discover that dsa_lag_id
-	 * returns an error for this device when joining the LAG. The
-	 * driver can then return -EOPNOTSUPP back to DSA, which will
-	 * fall back to a software LAG.
-	 */
+	 
 }
 
-/**
- * dsa_lag_unmap() - Remove a LAG ID mapping
- * @dst: Tree in which the mapping is recorded.
- * @lag: LAG structure that was mapped.
- *
- * As there may be multiple users of the mapping, it is only removed
- * if there are no other references to it.
- */
+ 
 void dsa_lag_unmap(struct dsa_switch_tree *dst, struct dsa_lag *lag)
 {
 	unsigned int id;
@@ -145,16 +117,12 @@ unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
 {
 	unsigned int bridge_num = dsa_bridge_num_find(bridge_dev);
 
-	/* Switches without FDB isolation support don't get unique
-	 * bridge numbering
-	 */
+	 
 	if (!max)
 		return 0;
 
 	if (!bridge_num) {
-		/* First port that requests FDB isolation or TX forwarding
-		 * offload for this bridge
-		 */
+		 
 		bridge_num = find_next_zero_bit(&dsa_fwd_offloading_bridges,
 						DSA_MAX_NUM_OFFLOADING_BRIDGES,
 						1);
@@ -170,10 +138,7 @@ unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
 void dsa_bridge_num_put(const struct net_device *bridge_dev,
 			unsigned int bridge_num)
 {
-	/* Since we refcount bridges, we know that when we call this function
-	 * it is no longer in use, so we can just go ahead and remove it from
-	 * the bit mask.
-	 */
+	 
 	clear_bit(bridge_num, &dsa_fwd_offloading_bridges);
 }
 
@@ -379,9 +344,7 @@ struct net_device *dsa_tree_find_first_master(struct dsa_switch_tree *dst)
 	return master;
 }
 
-/* Assign the default CPU port (the first one in the tree) to all ports of the
- * fabric which don't already have one as part of their own switch.
- */
+ 
 static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
 {
 	struct dsa_port *cpu_dp, *dp;
@@ -421,11 +384,7 @@ dsa_switch_preferred_default_local_cpu_port(struct dsa_switch *ds)
 	return cpu_dp;
 }
 
-/* Perform initial assignment of CPU ports to user ports and DSA links in the
- * fabric, giving preference to CPU ports local to each switch. Default to
- * using the first CPU port in the switch tree if the port does not have a CPU
- * port local to this switch.
- */
+ 
 static int dsa_tree_setup_cpu_ports(struct dsa_switch_tree *dst)
 {
 	struct dsa_port *preferred_cpu_dp, *cpu_dp, *dp;
@@ -438,9 +397,9 @@ static int dsa_tree_setup_cpu_ports(struct dsa_switch_tree *dst)
 		if (preferred_cpu_dp && preferred_cpu_dp != cpu_dp)
 			continue;
 
-		/* Prefer a local CPU port */
+		 
 		dsa_switch_for_each_port(dp, cpu_dp->ds) {
-			/* Prefer the first local CPU port found */
+			 
 			if (dp->cpu_dp)
 				continue;
 
@@ -632,11 +591,7 @@ static int dsa_switch_setup(struct dsa_switch *ds)
 	if (ds->setup)
 		return 0;
 
-	/* Initialize ds->phys_mii_mask before registering the slave MDIO bus
-	 * driver and before ops->setup() has run, since the switch drivers and
-	 * the slave MDIO bus driver rely on these values for probing PHY
-	 * devices or not
-	 */
+	 
 	ds->phys_mii_mask |= dsa_user_ports(ds);
 
 	err = dsa_switch_devlink_alloc(ds);
@@ -717,10 +672,7 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
 	ds->setup = false;
 }
 
-/* First tear down the non-shared, then the shared ports. This ensures that
- * all work items scheduled by our switchdev handlers for user ports have
- * completed before we destroy the refcounting kept on the shared ports.
- */
+ 
 static void dsa_tree_teardown_ports(struct dsa_switch_tree *dst)
 {
 	struct dsa_port *dp;
@@ -744,7 +696,7 @@ static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
 		dsa_switch_teardown(dp->ds);
 }
 
-/* Bring shared ports up first, then non-shared ports */
+ 
 static int dsa_tree_setup_ports(struct dsa_switch_tree *dst)
 {
 	struct dsa_port *dp;
@@ -809,7 +761,7 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
 		if (err)
 			break;
 
-		/* Replay master state event */
+		 
 		dsa_tree_master_admin_state_change(dst, master, admin_up);
 		dsa_tree_master_oper_state_change(dst, master,
 						  netif_oper_up(master));
@@ -829,10 +781,7 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
 	dsa_tree_for_each_cpu_port(cpu_dp, dst) {
 		struct net_device *master = cpu_dp->master;
 
-		/* Synthesizing an "admin down" state is sufficient for
-		 * the switches to get a notification if the master is
-		 * currently up and running.
-		 */
+		 
 		dsa_tree_master_admin_state_change(dst, master, false);
 
 		dsa_master_teardown(master);
@@ -956,15 +905,13 @@ static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst,
 
 	dst->tag_ops = tag_ops;
 
-	/* Notify the switches from this tree about the connection
-	 * to the new tagger
-	 */
+	 
 	info.tag_ops = tag_ops;
 	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_CONNECT, &info);
 	if (err && err != -EOPNOTSUPP)
 		goto out_disconnect;
 
-	/* Notify the old tagger about the disconnection from this tree */
+	 
 	info.tag_ops = old_tag_ops;
 	dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_DISCONNECT, &info);
 
@@ -978,10 +925,7 @@ out_disconnect:
 	return err;
 }
 
-/* Since the dsa/tagging sysfs device attribute is per master, the assumption
- * is that all DSA switches within a tree share the same tagger, otherwise
- * they would have formed disjoint trees (different "dsa,member" values).
- */
+ 
 int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
 			      const struct dsa_device_ops *tag_ops,
 			      const struct dsa_device_ops *old_tag_ops)
@@ -993,11 +937,7 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
 	if (!rtnl_trylock())
 		return restart_syscall();
 
-	/* At the moment we don't allow changing the tag protocol under
-	 * traffic. The rtnl_mutex also happens to serialize concurrent
-	 * attempts to change the tagging protocol. If we ever lift the IFF_UP
-	 * restriction, there needs to be another mutex which serializes this.
-	 */
+	 
 	dsa_tree_for_each_user_port(dp, dst) {
 		if (dsa_port_to_master(dp)->flags & IFF_UP)
 			goto out_unlock;
@@ -1006,7 +946,7 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
 			goto out_unlock;
 	}
 
-	/* Notify the tag protocol change */
+	 
 	info.tag_ops = tag_ops;
 	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO, &info);
 	if (err)
@@ -1047,9 +987,7 @@ void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
 	struct dsa_port *cpu_dp = master->dsa_ptr;
 	bool notify = false;
 
-	/* Don't keep track of admin state on LAG DSA masters,
-	 * but rather just of physical DSA masters
-	 */
+	 
 	if (netif_is_lag_master(master))
 		return;
 
@@ -1070,9 +1008,7 @@ void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
 	struct dsa_port *cpu_dp = master->dsa_ptr;
 	bool notify = false;
 
-	/* Don't keep track of oper state on LAG DSA masters,
-	 * but rather just of physical DSA masters
-	 */
+	 
 	if (netif_is_lag_master(master))
 		return;
 
@@ -1106,7 +1042,7 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
 	mutex_init(&dp->vlans_lock);
 	INIT_LIST_HEAD(&dp->fdbs);
 	INIT_LIST_HEAD(&dp->mdbs);
-	INIT_LIST_HEAD(&dp->vlans); /* also initializes &dp->user_vlans */
+	INIT_LIST_HEAD(&dp->vlans);  
 	INIT_LIST_HEAD(&dp->list);
 	list_add_tail(&dp->list, &dst->ports);
 
@@ -1136,10 +1072,7 @@ static enum dsa_tag_protocol dsa_get_tag_protocol(struct dsa_port *dp,
 	unsigned int mdp_upstream;
 	struct dsa_port *mdp;
 
-	/* It is possible to stack DSA switches onto one another when that
-	 * happens the switch driver may want to know if its tagging protocol
-	 * is going to work in such a configuration.
-	 */
+	 
 	if (dsa_slave_dev_check(master)) {
 		mdp = dsa_slave_to_port(master);
 		mds = mdp->ds;
@@ -1148,9 +1081,7 @@ static enum dsa_tag_protocol dsa_get_tag_protocol(struct dsa_port *dp,
 							  DSA_TAG_PROTO_NONE);
 	}
 
-	/* If the master device is not itself a DSA slave in a disjoint DSA
-	 * tree, then return immediately.
-	 */
+	 
 	return ds->ops->get_tag_protocol(ds, dp->index, tag_protocol);
 }
 
@@ -1162,7 +1093,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
 	struct dsa_switch_tree *dst = ds->dst;
 	enum dsa_tag_protocol default_proto;
 
-	/* Find out which protocol the switch would prefer. */
+	 
 	default_proto = dsa_get_tag_protocol(dp, master);
 	if (dst->default_proto) {
 		if (dst->default_proto != default_proto) {
@@ -1174,7 +1105,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
 		dst->default_proto = default_proto;
 	}
 
-	/* See if the user wants to override that preference. */
+	 
 	if (user_protocol) {
 		if (!ds->ops->change_tag_protocol) {
 			dev_err(ds->dev, "Tag protocol cannot be modified\n");
@@ -1210,9 +1141,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
 			return -EINVAL;
 		}
 
-		/* In the case of multiple CPU ports per switch, the tagging
-		 * protocol is still reference-counted only per switch tree.
-		 */
+		 
 		dsa_tag_driver_put(tag_ops);
 	} else {
 		dst->tag_ops = tag_ops;
@@ -1223,19 +1152,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
 	dsa_port_set_tag_protocol(dp, dst->tag_ops);
 	dp->dst = dst;
 
-	/* At this point, the tree may be configured to use a different
-	 * tagger than the one chosen by the switch driver during
-	 * .setup, in the case when a user selects a custom protocol
-	 * through the DT.
-	 *
-	 * This is resolved by syncing the driver with the tree in
-	 * dsa_switch_setup_tag_protocol once .setup has run and the
-	 * driver is ready to accept calls to .change_tag_protocol. If
-	 * the driver does not support the custom protocol at that
-	 * point, the tree is wholly rejected, thereby ensuring that the
-	 * tree and driver are always in agreement on the protocol to
-	 * use.
-	 */
+	 
 	return 0;
 }
 
@@ -1276,7 +1193,7 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
 
 	ports = of_get_child_by_name(dn, "ports");
 	if (!ports) {
-		/* The second possibility is "ethernet-ports" */
+		 
 		ports = of_get_child_by_name(dn, "ethernet-ports");
 		if (!ports) {
 			dev_err(ds->dev, "no ports child node found\n");
@@ -1319,7 +1236,7 @@ static int dsa_switch_parse_member_of(struct dsa_switch *ds,
 	u32 m[2] = { 0, 0 };
 	int sz;
 
-	/* Don't error out if this optional property isn't found */
+	 
 	sz = of_property_read_variable_u32_array(dn, "dsa,member", m, 2, 2);
 	if (sz < 0 && sz != -EINVAL)
 		return sz;
@@ -1466,9 +1383,7 @@ static int dsa_switch_parse(struct dsa_switch *ds, struct dsa_chip_data *cd)
 
 	ds->cd = cd;
 
-	/* We don't support interconnected switches nor multiple trees via
-	 * platform data, so this is the unique switch of the tree.
-	 */
+	 
 	ds->index = 0;
 	ds->dst = dsa_tree_touch(0);
 	if (!ds->dst)
@@ -1566,11 +1481,7 @@ void dsa_unregister_switch(struct dsa_switch *ds)
 }
 EXPORT_SYMBOL_GPL(dsa_unregister_switch);
 
-/* If the DSA master chooses to unregister its net_device on .shutdown, DSA is
- * blocking that operation from completion, due to the dev_hold taken inside
- * netdev_upper_dev_link. Unlink the DSA slave interfaces from being uppers of
- * the DSA master, so that the system can reboot successfully.
- */
+ 
 void dsa_switch_shutdown(struct dsa_switch *ds)
 {
 	struct net_device *master, *slave_dev;
@@ -1590,9 +1501,7 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
 		netdev_upper_dev_unlink(master, slave_dev);
 	}
 
-	/* Disconnect from further netdevice notifiers on the master,
-	 * since netdev_uses_dsa() will now return false.
-	 */
+	 
 	dsa_switch_for_each_cpu_port(dp, ds)
 		dp->master->dsa_ptr = NULL;
 
@@ -1613,7 +1522,7 @@ int dsa_switch_suspend(struct dsa_switch *ds)
 	struct dsa_port *dp;
 	int ret = 0;
 
-	/* Suspend slave network devices */
+	 
 	dsa_switch_for_each_port(dp, ds) {
 		if (!dsa_port_is_initialized(dp))
 			continue;
@@ -1641,7 +1550,7 @@ int dsa_switch_resume(struct dsa_switch *ds)
 	if (ret)
 		return ret;
 
-	/* Resume slave network devices */
+	 
 	dsa_switch_for_each_port(dp, ds) {
 		if (!dsa_port_is_initialized(dp))
 			continue;

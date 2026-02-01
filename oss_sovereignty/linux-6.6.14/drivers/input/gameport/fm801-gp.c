@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  FM801 gameport driver for Linux
- *
- *  Copyright (c) by Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <asm/io.h>
 #include <linux/delay.h>
@@ -40,7 +36,7 @@ static int fm801_gp_cooked_read(struct gameport *gameport, int *axes, int *butto
 	axes[2] = (w == 0xffff) ? -1 : ((w & 0x1fff) << 5);
 	w = inw(gameport->io + 8);
 	axes[3] = (w == 0xffff) ? -1 : ((w & 0x1fff) << 5);
-	outw(0xff, gameport->io); /* reset */
+	outw(0xff, gameport->io);  
 
         return 0;
 }
@@ -100,7 +96,7 @@ static int fm801_gp_probe(struct pci_dev *pci, const struct pci_device_id *id)
 
 	pci_set_drvdata(pci, gp);
 
-	outb(0x60, port->io + 0x0d); /* enable joystick 1 and 2 */
+	outb(0x60, port->io + 0x0d);  
 	gameport_register_port(port);
 
 	return 0;

@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/handshake.yaml */
-/* YNL-GEN uapi header */
+ 
+ 
+ 
+ 
 
 #ifndef _UAPI_LINUX_HANDSHAKE_H
 #define _UAPI_LINUX_HANDSHAKE_H
@@ -71,4 +71,4 @@ enum {
 #define HANDSHAKE_MCGRP_NONE	"none"
 #define HANDSHAKE_MCGRP_TLSHD	"tlshd"
 
-#endif /* _UAPI_LINUX_HANDSHAKE_H */
+#endif  

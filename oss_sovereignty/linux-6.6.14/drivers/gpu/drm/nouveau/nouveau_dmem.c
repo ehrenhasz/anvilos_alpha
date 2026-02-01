@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "nouveau_dmem.h"
 #include "nouveau_drv.h"
 #include "nouveau_chan.h"
@@ -41,13 +21,7 @@
 #include <linux/memremap.h>
 #include <linux/migrate.h>
 
-/*
- * FIXME: this is ugly right now we are using TTM to allocate vram and we pin
- * it in vram while in use. We likely want to overhaul memory management for
- * nouveau to be more page like (not necessarily with system page size but a
- * bigger page size) at lowest level and have some shim layer on top that would
- * provide the same functionality as TTM.
- */
+ 
 #define DMEM_CHUNK_SIZE (2UL << 20)
 #define DMEM_CHUNK_NPAGES (DMEM_CHUNK_SIZE >> PAGE_SHIFT)
 
@@ -118,10 +92,7 @@ static void nouveau_dmem_page_free(struct page *page)
 
 	WARN_ON(!chunk->callocated);
 	chunk->callocated--;
-	/*
-	 * FIXME when chunk->callocated reach 0 we should add the chunk to
-	 * a reclaim list so that it can be freed in case of memory pressure.
-	 */
+	 
 	spin_unlock(&dmem->lock);
 }
 
@@ -131,10 +102,7 @@ static void nouveau_dmem_fence_done(struct nouveau_fence **fence)
 		nouveau_fence_wait(*fence, true, false);
 		nouveau_fence_unref(fence);
 	} else {
-		/*
-		 * FIXME wait for channel to be IDLE before calling finalizing
-		 * the hmem object.
-		 */
+		 
 	}
 }
 
@@ -179,11 +147,7 @@ static vm_fault_t nouveau_dmem_migrate_to_ram(struct vm_fault *vmf)
 		.flags		= MIGRATE_VMA_SELECT_DEVICE_PRIVATE,
 	};
 
-	/*
-	 * FIXME what we really want is to find some heuristic to migrate more
-	 * than just one page on CPU fault. When such fault happens it is very
-	 * likely that more surrounding page will CPU fault too.
-	 */
+	 
 	if (migrate_vma_setup(&args) < 0)
 		return VM_FAULT_SIGBUS;
 	if (!args.cpages)
@@ -239,7 +203,7 @@ nouveau_dmem_chunk_alloc(struct nouveau_drm *drm, struct page **ppage)
 		goto out;
 	}
 
-	/* Allocate unused physical address space for device private pages. */
+	 
 	res = request_free_mem_region(&iomem_resource, DMEM_CHUNK_SIZE,
 				      "nouveau_dmem");
 	if (IS_ERR(res)) {
@@ -347,7 +311,7 @@ nouveau_dmem_resume(struct nouveau_drm *drm)
 	mutex_lock(&drm->dmem->mutex);
 	list_for_each_entry(chunk, &drm->dmem->chunks, list) {
 		ret = nouveau_bo_pin(chunk->bo, NOUVEAU_GEM_DOMAIN_VRAM, false);
-		/* FIXME handle pin failure */
+		 
 		WARN_ON(ret);
 	}
 	mutex_unlock(&drm->dmem->mutex);
@@ -367,9 +331,7 @@ nouveau_dmem_suspend(struct nouveau_drm *drm)
 	mutex_unlock(&drm->dmem->mutex);
 }
 
-/*
- * Evict all pages mapping a chunk.
- */
+ 
 static void
 nouveau_dmem_evict_chunk(struct nouveau_dmem_chunk *chunk)
 {
@@ -389,11 +351,7 @@ nouveau_dmem_evict_chunk(struct nouveau_dmem_chunk *chunk)
 		if (src_pfns[i] & MIGRATE_PFN_MIGRATE) {
 			struct page *dpage;
 
-			/*
-			 * _GFP_NOFAIL because the GPU is going away and there
-			 * is nothing sensible we can do if we can't copy the
-			 * data back.
-			 */
+			 
 			dpage = alloc_page(GFP_HIGHUSER | __GFP_NOFAIL);
 			dst_pfns[i] = migrate_pfn(page_to_pfn(dpage));
 			nouveau_dmem_copy_one(chunk->drm,
@@ -591,7 +549,7 @@ nouveau_dmem_init(struct nouveau_drm *drm)
 {
 	int ret;
 
-	/* This only make sense on PASCAL or newer */
+	 
 	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_PASCAL)
 		return;
 
@@ -604,7 +562,7 @@ nouveau_dmem_init(struct nouveau_drm *drm)
 	mutex_init(&drm->dmem->mutex);
 	spin_lock_init(&drm->dmem->lock);
 
-	/* Initialize migration dma helpers before registering memory */
+	 
 	ret = nouveau_dmem_migrate_init(drm);
 	if (ret) {
 		kfree(drm->dmem);

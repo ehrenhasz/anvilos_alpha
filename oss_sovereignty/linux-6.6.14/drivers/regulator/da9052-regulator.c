@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// da9052-regulator.c: Regulator driver for DA9052
-//
-// Copyright(c) 2011 Dialog Semiconductor Ltd.
-//
-// Author: David Dajun Chen <dchen@diasemi.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -20,7 +20,7 @@
 #include <linux/mfd/da9052/reg.h>
 #include <linux/mfd/da9052/pdata.h>
 
-/* Buck step size */
+ 
 #define DA9052_BUCK_PERI_3uV_STEP		100000
 #define DA9052_BUCK_PERI_REG_MAP_UPTO_3uV	24
 #define DA9052_CONST_3uV			3000000
@@ -29,11 +29,11 @@
 #define DA9052_MAX_UA		3
 #define DA9052_CURRENT_RANGE	4
 
-/* Bit masks */
+ 
 #define DA9052_BUCK_ILIM_MASK_EVEN	0x0c
 #define DA9052_BUCK_ILIM_MASK_ODD	0xc0
 
-/* DA9052 REGULATOR IDs */
+ 
 #define DA9052_ID_BUCK1		0
 #define DA9052_ID_BUCK2		1
 #define DA9052_ID_BUCK3		2
@@ -50,11 +50,9 @@
 #define DA9052_ID_LDO10		13
 
 static const u32 da9052_current_limits[3][4] = {
-	{700000, 800000, 1000000, 1200000},	/* DA9052-BC BUCKs */
-	{1600000, 2000000, 2400000, 3000000},	/* DA9053-AA/Bx BUCK-CORE */
-	{800000, 1000000, 1200000, 1500000},	/* DA9053-AA/Bx BUCK-PRO,
-						 * BUCK-MEM and BUCK-PERI
-						*/
+	{700000, 800000, 1000000, 1200000},	 
+	{1600000, 2000000, 2400000, 3000000},	 
+	{800000, 1000000, 1200000, 1500000},	 
 };
 
 struct da9052_regulator_info {
@@ -90,15 +88,13 @@ static int da9052_dcdc_get_current_limit(struct regulator_dev *rdev)
 	if (ret < 0)
 		return ret;
 
-	/* Determine the even or odd position of the buck current limit
-	 * register field
-	*/
+	 
 	if (offset % 2 == 0)
 		ret = (ret & DA9052_BUCK_ILIM_MASK_EVEN) >> 2;
 	else
 		ret = (ret & DA9052_BUCK_ILIM_MASK_ODD) >> 6;
 
-	/* Select the appropriate current limit range */
+	 
 	if (regulator->da9052->chip_id == DA9052)
 		row = 0;
 	else if (offset == 0)
@@ -115,7 +111,7 @@ static int da9052_dcdc_set_current_limit(struct regulator_dev *rdev, int min_uA,
 	int reg_val = 0;
 	int i, row = 2;
 
-	/* Select the appropriate current limit range */
+	 
 	if (regulator->da9052->chip_id == DA9052)
 		row = 0;
 	else if (offset == 0)
@@ -132,9 +128,7 @@ static int da9052_dcdc_set_current_limit(struct regulator_dev *rdev, int min_uA,
 	if (i < 0)
 		return -EINVAL;
 
-	/* Determine the even or odd position of the buck current limit
-	 * register field
-	*/
+	 
 	if (offset % 2 == 0)
 		return da9052_reg_update(regulator->da9052,
 					 DA9052_BUCKA_REG + offset/2,
@@ -215,9 +209,7 @@ static int da9052_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	if (ret < 0)
 		return ret;
 
-	/* Some LDOs and DCDCs are DVC controlled which requires enabling of
-	 * the activate bit to implment the changes on the output.
-	 */
+	 
 	switch (id) {
 	case DA9052_ID_BUCK1:
 	case DA9052_ID_BUCK2:
@@ -241,9 +233,7 @@ static int da9052_regulator_set_voltage_time_sel(struct regulator_dev *rdev,
 	int id = rdev_get_id(rdev);
 	int ret = 0;
 
-	/* The DVC controlled LDOs and DCDCs ramp with 6.25mV/µs after enabling
-	 * the activate bit.
-	 */
+	 
 	switch (id) {
 	case DA9052_ID_BUCK1:
 	case DA9052_ID_BUCK2:

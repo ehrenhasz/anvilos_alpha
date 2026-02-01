@@ -1,44 +1,28 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_command.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./fireworks.h"
 
-/*
- * This driver uses transaction version 1 or later to use extended hardware
- * information. Then too old devices are not available.
- *
- * Each commands are not required to have continuous sequence numbers. This
- * number is just used to match command and response.
- *
- * This module support a part of commands. Please see FFADO if you want to see
- * whole commands. But there are some commands which FFADO don't implement.
- *
- * Fireworks also supports AV/C general commands and AV/C Stream Format
- * Information commands. But this module don't use them.
- */
+ 
 
 #define KERNEL_SEQNUM_MIN	(SND_EFW_TRANSACTION_USER_SEQNUM_MAX + 2)
 #define KERNEL_SEQNUM_MAX	((u32)~0)
 
-/* for clock source and sampling rate */
+ 
 struct efc_clock {
 	u32 source;
 	u32 sampling_rate;
 	u32 index;
 };
 
-/* command categories */
+ 
 enum efc_category {
 	EFC_CAT_HWINFO		= 0,
 	EFC_CAT_TRANSPORT	= 2,
 	EFC_CAT_HWCTL		= 3,
 };
 
-/* hardware info category commands */
+ 
 enum efc_cmd_hwinfo {
 	EFC_CMD_HWINFO_GET_CAPS		= 0,
 	EFC_CMD_HWINFO_GET_POLLED	= 1,
@@ -49,14 +33,14 @@ enum efc_cmd_transport {
 	EFC_CMD_TRANSPORT_SET_TX_MODE	= 0
 };
 
-/* hardware control category commands */
+ 
 enum efc_cmd_hwctl {
 	EFC_CMD_HWCTL_SET_CLOCK		= 0,
 	EFC_CMD_HWCTL_GET_CLOCK		= 1,
 	EFC_CMD_HWCTL_IDENTIFY		= 5
 };
 
-/* return values in response */
+ 
 enum efr_status {
 	EFR_STATUS_OK			= 0,
 	EFR_STATUS_BAD			= 1,
@@ -109,16 +93,16 @@ efw_transaction(struct snd_efw *efw, unsigned int category,
 	unsigned int buf_bytes, cmd_bytes;
 	int err;
 
-	/* calculate buffer size*/
+	 
 	buf_bytes = sizeof(struct snd_efw_transaction) +
 		    max(param_bytes, resp_bytes);
 
-	/* keep buffer */
+	 
 	buf = kzalloc(buf_bytes, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
 
-	/* to keep consistency of sequence number */
+	 
 	spin_lock(&efw->lock);
 	if ((efw->seqnum < KERNEL_SEQNUM_MIN) ||
 	    (efw->seqnum >= KERNEL_SEQNUM_MAX - 2))
@@ -128,7 +112,7 @@ efw_transaction(struct snd_efw *efw, unsigned int category,
 	seqnum = efw->seqnum;
 	spin_unlock(&efw->lock);
 
-	/* fill transaction header fields */
+	 
 	cmd_bytes = sizeof(struct snd_efw_transaction) + param_bytes;
 	header = (struct snd_efw_transaction *)buf;
 	header->length	 = cpu_to_be32(cmd_bytes / sizeof(__be32));
@@ -138,7 +122,7 @@ efw_transaction(struct snd_efw *efw, unsigned int category,
 	header->command	 = cpu_to_be32(command);
 	header->status	 = 0;
 
-	/* fill transaction command parameters */
+	 
 	memcpy(header->params, params, param_bytes);
 
 	err = snd_efw_transaction_run(efw->unit, buf, cmd_bytes,
@@ -146,7 +130,7 @@ efw_transaction(struct snd_efw *efw, unsigned int category,
 	if (err < 0)
 		goto end;
 
-	/* check transaction header fields */
+	 
 	if ((be32_to_cpu(header->version) < 1) ||
 	    (be32_to_cpu(header->category) != category) ||
 	    (be32_to_cpu(header->command) != command) ||
@@ -162,7 +146,7 @@ efw_transaction(struct snd_efw *efw, unsigned int category,
 	if (resp == NULL)
 		goto end;
 
-	/* fill transaction response parameters */
+	 
 	memset((void *)resp, 0, resp_bytes);
 	resp_bytes = min_t(unsigned int, resp_bytes,
 			   be32_to_cpu(header->length) * sizeof(__be32) -
@@ -173,11 +157,7 @@ end:
 	return err;
 }
 
-/*
- * The address in host system for transaction response is changable when the
- * device supports. struct hwinfo.flags includes its flag. The default is
- * MEMORY_SPACE_EFW_RESPONSE.
- */
+ 
 int snd_efw_command_set_resp_addr(struct snd_efw *efw,
 				  u16 addr_high, u32 addr_low)
 {
@@ -194,11 +174,7 @@ int snd_efw_command_set_resp_addr(struct snd_efw *efw,
 			       addr, sizeof(addr), NULL, 0);
 }
 
-/*
- * This is for timestamp processing. In Windows mode, all 32bit fields of second
- * CIP header in AMDTP transmit packet is used for 'presentation timestamp'. In
- * 'no data' packet the value of this field is 0x90ffffff.
- */
+ 
 int snd_efw_command_set_tx_mode(struct snd_efw *efw,
 				enum snd_efw_transport_mode mode)
 {
@@ -245,7 +221,7 @@ int snd_efw_command_get_hwinfo(struct snd_efw *efw,
 	be32_to_cpus(&hwinfo->amdtp_rx_pcm_channels_4x);
 	be32_to_cpus(&hwinfo->amdtp_tx_pcm_channels_4x);
 
-	/* ensure terminated */
+	 
 	hwinfo->vendor_name[HWINFO_NAME_SIZE_BYTES - 1] = '\0';
 	hwinfo->model_name[HWINFO_NAME_SIZE_BYTES  - 1] = '\0';
 end:
@@ -288,7 +264,7 @@ command_get_clock(struct snd_efw *efw, struct efc_clock *clock)
 	return err;
 }
 
-/* give UINT_MAX if set nothing */
+ 
 static int
 command_set_clock(struct snd_efw *efw,
 		  unsigned int source, unsigned int rate)
@@ -296,22 +272,22 @@ command_set_clock(struct snd_efw *efw,
 	struct efc_clock clock = {0};
 	int err;
 
-	/* check arguments */
+	 
 	if ((source == UINT_MAX) && (rate == UINT_MAX)) {
 		err = -EINVAL;
 		goto end;
 	}
 
-	/* get current status */
+	 
 	err = command_get_clock(efw, &clock);
 	if (err < 0)
 		goto end;
 
-	/* no need */
+	 
 	if ((clock.source == source) && (clock.sampling_rate == rate))
 		goto end;
 
-	/* set params */
+	 
 	if ((source != UINT_MAX) && (clock.source != source))
 		clock.source = source;
 	if ((rate != UINT_MAX) && (clock.sampling_rate != rate))
@@ -329,11 +305,7 @@ command_set_clock(struct snd_efw *efw,
 	if (err < 0)
 		goto end;
 
-	/*
-	 * With firmware version 5.8, just after changing clock state, these
-	 * parameters are not immediately retrieved by get command. In my
-	 * trial, there needs to be 100msec to get changed parameters.
-	 */
+	 
 	msleep(150);
 end:
 	return err;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Lee Revell <rlrevell@joe-job.com>
- *                   James Courtier-Dutton <James@superbug.co.uk>
- *                   Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
- *                   Creative Labs, Inc.
- *
- *  Routines for control of EMU10K1 chips
- */
+
+ 
 
 #include <linux/time.h>
 #include <sound/core.h>
@@ -112,7 +104,7 @@ void snd_emu10k1_ptr_write_multiple(struct snd_emu10k1 *emu, unsigned int chn, .
 		if (reg == REGLIST_END)
 			break;
 		data = va_arg(va, u32);
-		if (snd_BUG_ON(reg & addr_mask))  // Only raw registers supported here
+		if (snd_BUG_ON(reg & addr_mask))  
 			continue;
 		outl((reg << 16) | chn, emu->port + PTR);
 		outl(data, emu->port + DATA);
@@ -163,30 +155,29 @@ int snd_emu10k1_spi_write(struct snd_emu10k1 * emu,
 	int n, result;
 	int err = 0;
 
-	/* This function is not re-entrant, so protect against it. */
+	 
 	spin_lock(&emu->spi_lock);
 	if (emu->card_capabilities->ca0108_chip)
 		reg = P17V_SPI;
 	else {
-		/* For other chip types the SPI register
-		 * is currently unknown. */
+		 
 		err = 1;
 		goto spi_write_exit;
 	}
 	if (data > 0xffff) {
-		/* Only 16bit values allowed */
+		 
 		err = 1;
 		goto spi_write_exit;
 	}
 
 	tmp = snd_emu10k1_ptr20_read(emu, reg, 0);
-	reset = (tmp & ~0x3ffff) | 0x20000; /* Set xxx20000 */
-	set = reset | 0x10000; /* Set xxx1xxxx */
+	reset = (tmp & ~0x3ffff) | 0x20000;  
+	set = reset | 0x10000;  
 	snd_emu10k1_ptr20_write(emu, reg, 0, reset | data);
-	tmp = snd_emu10k1_ptr20_read(emu, reg, 0); /* write post */
+	tmp = snd_emu10k1_ptr20_read(emu, reg, 0);  
 	snd_emu10k1_ptr20_write(emu, reg, 0, set | data);
 	result = 1;
-	/* Wait for status bit to return to 0 */
+	 
 	for (n = 0; n < 100; n++) {
 		udelay(10);
 		tmp = snd_emu10k1_ptr20_read(emu, reg, 0);
@@ -196,19 +187,19 @@ int snd_emu10k1_spi_write(struct snd_emu10k1 * emu,
 		}
 	}
 	if (result) {
-		/* Timed out */
+		 
 		err = 1;
 		goto spi_write_exit;
 	}
 	snd_emu10k1_ptr20_write(emu, reg, 0, reset | data);
-	tmp = snd_emu10k1_ptr20_read(emu, reg, 0); /* Write post */
+	tmp = snd_emu10k1_ptr20_read(emu, reg, 0);  
 	err = 0;
 spi_write_exit:
 	spin_unlock(&emu->spi_lock);
 	return err;
 }
 
-/* The ADC does not support i2c read, so only write is implemented */
+ 
 int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 				u32 reg,
 				u32 value)
@@ -224,22 +215,22 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 		return -EINVAL;
 	}
 
-	/* This function is not re-entrant, so protect against it. */
+	 
 	spin_lock(&emu->i2c_lock);
 
 	tmp = reg << 25 | value << 16;
 
-	/* This controls the I2C connected to the WM8775 ADC Codec */
+	 
 	snd_emu10k1_ptr20_write(emu, P17V_I2C_1, 0, tmp);
-	tmp = snd_emu10k1_ptr20_read(emu, P17V_I2C_1, 0); /* write post */
+	tmp = snd_emu10k1_ptr20_read(emu, P17V_I2C_1, 0);  
 
 	for (retry = 0; retry < 10; retry++) {
-		/* Send the data to i2c */
+		 
 		tmp = 0;
 		tmp = tmp | (I2C_A_ADC_LAST|I2C_A_ADC_START|I2C_A_ADC_ADD);
 		snd_emu10k1_ptr20_write(emu, P17V_I2C_ADDR, 0, tmp);
 
-		/* Wait till the transaction ends */
+		 
 		while (1) {
 			mdelay(1);
 			status = snd_emu10k1_ptr20_read(emu, P17V_I2C_ADDR, 0);
@@ -254,7 +245,7 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 				break;
 			}
 		}
-		//Read back and see if the transaction is successful
+		
 		if ((status & I2C_A_ADC_ABORT) == 0)
 			break;
 	}
@@ -263,7 +254,7 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 		dev_err(emu->card->dev, "Writing to ADC failed!\n");
 		dev_err(emu->card->dev, "status=0x%x, reg=%d, value=%d\n",
 			status, reg, value);
-		/* dump_stack(); */
+		 
 		err = -EINVAL;
 	}
     
@@ -275,16 +266,16 @@ static void snd_emu1010_fpga_write_locked(struct snd_emu10k1 *emu, u32 reg, u32 
 {
 	if (snd_BUG_ON(reg > 0x3f))
 		return;
-	reg += 0x40; /* 0x40 upwards are registers. */
-	if (snd_BUG_ON(value > 0x3f)) /* 0 to 0x3f are values */
+	reg += 0x40;  
+	if (snd_BUG_ON(value > 0x3f))  
 		return;
 	outw(reg, emu->port + A_GPIO);
 	udelay(10);
-	outw(reg | 0x80, emu->port + A_GPIO);  /* High bit clocks the value into the fpga. */
+	outw(reg | 0x80, emu->port + A_GPIO);   
 	udelay(10);
 	outw(value, emu->port + A_GPIO);
 	udelay(10);
-	outw(value | 0x80 , emu->port + A_GPIO);  /* High bit clocks the value into the fpga. */
+	outw(value | 0x80 , emu->port + A_GPIO);   
 }
 
 void snd_emu1010_fpga_write(struct snd_emu10k1 *emu, u32 reg, u32 value)
@@ -298,17 +289,17 @@ void snd_emu1010_fpga_write(struct snd_emu10k1 *emu, u32 reg, u32 value)
 
 static void snd_emu1010_fpga_read_locked(struct snd_emu10k1 *emu, u32 reg, u32 *value)
 {
-	// The higest input pin is used as the designated interrupt trigger,
-	// so it needs to be masked out.
-	// But note that any other input pin change will also cause an IRQ,
-	// so using this function often causes an IRQ as a side effect.
+	
+	
+	
+	
 	u32 mask = emu->card_capabilities->ca0108_chip ? 0x1f : 0x7f;
 	if (snd_BUG_ON(reg > 0x3f))
 		return;
-	reg += 0x40; /* 0x40 upwards are registers. */
+	reg += 0x40;  
 	outw(reg, emu->port + A_GPIO);
 	udelay(10);
-	outw(reg | 0x80, emu->port + A_GPIO);  /* High bit clocks the value into the fpga. */
+	outw(reg | 0x80, emu->port + A_GPIO);   
 	udelay(10);
 	*value = ((inw(emu->port + A_GPIO) >> 8) & mask);
 }
@@ -322,9 +313,7 @@ void snd_emu1010_fpga_read(struct snd_emu10k1 *emu, u32 reg, u32 *value)
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 }
 
-/* Each Destination has one and only one Source,
- * but one Source can feed any number of Destinations simultaneously.
- */
+ 
 void snd_emu1010_fpga_link_dst_src_write(struct snd_emu10k1 *emu, u32 dst, u32 src)
 {
 	unsigned long flags;
@@ -386,7 +375,7 @@ int snd_emu1010_get_raw_rate(struct snd_emu10k1 *emu, u8 src)
 	}
 	snd_emu1010_fpga_read(emu, reg_hi, &value);
 	snd_emu1010_fpga_read(emu, reg_lo, &value2);
-	// FIXME: The /4 is valid for 0404b, but contradicts all other info.
+	
 	return 0x1770000 / 4 / (((value << 5) | value2) + 1);
 }
 
@@ -407,10 +396,10 @@ void snd_emu1010_update_clock(struct snd_emu10k1 *emu)
 	default:
 		clock = snd_emu1010_get_raw_rate(
 				emu, emu->emu1010.wclock & EMU_HANA_WCLOCK_SRC_MASK);
-		// The raw rate reading is rather coarse (it cannot accurately
-		// represent 44.1 kHz) and fluctuates slightly. Luckily, the
-		// clock comes from digital inputs, which use standardized rates.
-		// So we round to the closest standard rate and ignore discrepancies.
+		
+		
+		
+		
 		if (clock < 46000) {
 			clock = 44100;
 			leds = EMU_HANA_DOCK_LEDS_2_EXT | EMU_HANA_DOCK_LEDS_2_44K;
@@ -422,8 +411,8 @@ void snd_emu1010_update_clock(struct snd_emu10k1 *emu)
 	}
 	emu->emu1010.word_clock = clock;
 
-	// FIXME: this should probably represent the AND of all currently
-	// used sources' lock status. But we don't know how to get that ...
+	
+	
 	leds |= EMU_HANA_DOCK_LEDS_2_LOCK;
 
 	snd_emu1010_fpga_write(emu, EMU_HANA_DOCK_LEDS_2, leds);
@@ -641,28 +630,28 @@ int snd_emu10k1_voice_clear_loop_stop_multiple_atomic(struct snd_emu10k1 *emu, u
 
 	for (int tries = 0; tries < 1000; tries++) {
 		const u32 quart = 1U << (REG_SIZE(WC_CURRENTCHANNEL) - 2);
-		// First we wait for the third quarter of the sample cycle ...
+		
 		u32 wc = inl(emu->port + WC);
 		u32 cc = REG_VAL_GET(WC_CURRENTCHANNEL, wc);
 		if (cc >= quart * 2 && cc < quart * 3) {
-			// ... and release the low voices, while the high ones are serviced.
+			
 			outl(SOLEL << 16, emu->port + PTR);
 			outl(soll, emu->port + DATA);
-			// Then we wait for the first quarter of the next sample cycle ...
+			
 			for (; tries < 1000; tries++) {
 				cc = REG_VAL_GET(WC_CURRENTCHANNEL, inl(emu->port + WC));
 				if (cc < quart)
 					goto good;
-				// We will block for 10+ us with interrupts disabled. This is
-				// not nice at all, but necessary for reasonable reliability.
+				
+				
 				udelay(1);
 			}
 			break;
 		good:
-			// ... and release the high voices, while the low ones are serviced.
+			
 			outl(SOLEH << 16, emu->port + PTR);
 			outl(solh, emu->port + DATA);
-			// Finally we verify that nothing interfered in fact.
+			
 			if (REG_VAL_GET(WC_SAMPLECOUNTER, inl(emu->port + WC)) ==
 			    ((REG_VAL_GET(WC_SAMPLECOUNTER, wc) + 1) & REG_MASK0(WC_SAMPLECOUNTER))) {
 				ret = 0;
@@ -671,7 +660,7 @@ int snd_emu10k1_voice_clear_loop_stop_multiple_atomic(struct snd_emu10k1 *emu, u
 			}
 			break;
 		}
-		// Don't block for too long
+		
 		spin_unlock_irqrestore(&emu->emu_lock, flags);
 		udelay(1);
 		spin_lock_irqsave(&emu->emu_lock, flags);

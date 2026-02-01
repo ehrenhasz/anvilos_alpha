@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_file.h>
 
@@ -56,7 +54,7 @@ static struct ivpu_cmdq *ivpu_cmdq_alloc(struct ivpu_file_priv *file_priv, u16 e
 	jobq_header->engine_idx = engine;
 	jobq_header->head = 0;
 	jobq_header->tail = 0;
-	wmb(); /* Flush WC buffer for jobq->header */
+	wmb();  
 
 	return cmdq;
 
@@ -129,12 +127,7 @@ void ivpu_cmdq_release_all(struct ivpu_file_priv *file_priv)
 	mutex_unlock(&file_priv->lock);
 }
 
-/*
- * Mark the doorbell as unregistered and reset job queue pointers.
- * This function needs to be called when the VPU hardware is restarted
- * and FW looses job queue state. The next time job queue is used it
- * will be registered again.
- */
+ 
 static void ivpu_cmdq_reset_locked(struct ivpu_file_priv *file_priv, u16 engine)
 {
 	struct ivpu_cmdq *cmdq = file_priv->cmdq[engine];
@@ -145,7 +138,7 @@ static void ivpu_cmdq_reset_locked(struct ivpu_file_priv *file_priv, u16 engine)
 		cmdq->db_registered = false;
 		cmdq->jobq->header.head = 0;
 		cmdq->jobq->header.tail = 0;
-		wmb(); /* Flush WC buffer for jobq header */
+		wmb();  
 	}
 }
 
@@ -185,7 +178,7 @@ static int ivpu_cmdq_push_job(struct ivpu_cmdq *cmdq, struct ivpu_job *job)
 	u32 tail = READ_ONCE(header->tail);
 	u32 next_entry = (tail + 1) % cmdq->entry_count;
 
-	/* Check if there is space left in job queue */
+	 
 	if (next_entry == header->head) {
 		ivpu_dbg(vdev, JOB, "Job queue full: ctx %d engine %d db %d head %d tail %d\n",
 			 job->file_priv->ctx.id, job->engine_idx, cmdq->db_id, header->head, tail);
@@ -196,16 +189,16 @@ static int ivpu_cmdq_push_job(struct ivpu_cmdq *cmdq, struct ivpu_job *job)
 	entry->batch_buf_addr = job->cmd_buf_vpu_addr;
 	entry->job_id = job->job_id;
 	entry->flags = 0;
-	wmb(); /* Ensure that tail is updated after filling entry */
+	wmb();  
 	header->tail = next_entry;
-	wmb(); /* Flush WC buffer for jobq header */
+	wmb();  
 
 	return 0;
 }
 
 struct ivpu_fence {
 	struct dma_fence base;
-	spinlock_t lock; /* protects base */
+	spinlock_t lock;  
 	struct ivpu_device *vdev;
 };
 
@@ -272,7 +265,7 @@ static void job_release(struct kref *ref)
 	ivpu_dbg(vdev, KREF, "Job released: id %u\n", job->job_id);
 	kfree(job);
 
-	/* Allow the VPU to get suspended, must be called after ivpu_file_priv_put() */
+	 
 	ivpu_rpm_put(vdev);
 }
 
@@ -405,7 +398,7 @@ static int ivpu_direct_job_submission(struct ivpu_job *job)
 	if (ivpu_test_mode == IVPU_TEST_MODE_NULL_HW) {
 		ivpu_job_done(vdev, job->job_id, VPU_JSM_STATUS_SUCCESS);
 		cmdq->jobq->header.head = cmdq->jobq->header.tail;
-		wmb(); /* Flush WC buffer for jobq header */
+		wmb();  
 	} else {
 		ivpu_cmdq_ring_db(vdev, cmdq);
 	}
@@ -483,7 +476,7 @@ ivpu_job_prepare_bos_for_submit(struct drm_file *file, struct ivpu_job *job, u32
 unlock_reservations:
 	drm_gem_unlock_reservations((struct drm_gem_object **)job->bos, buf_count, &acquire_ctx);
 
-	wmb(); /* Flush write combining buffers */
+	wmb();  
 
 	return ret;
 }

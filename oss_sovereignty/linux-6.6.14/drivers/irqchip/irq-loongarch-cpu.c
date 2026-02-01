@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -18,7 +16,7 @@ struct fwnode_handle *cpuintc_handle;
 
 static u32 lpic_gsi_to_irq(u32 gsi)
 {
-	/* Only pch irqdomain transferring is required for LoongArch. */
+	 
 	if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
 		return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_HIGH);
 
@@ -149,7 +147,7 @@ static int __init cpuintc_acpi_init(union acpi_subtable_headers *header,
 	if (irq_domain)
 		return 0;
 
-	/* Mask interrupts. */
+	 
 	clear_csr_ecfg(ECFG0_IM);
 	clear_csr_estat(ESTATF_IP);
 

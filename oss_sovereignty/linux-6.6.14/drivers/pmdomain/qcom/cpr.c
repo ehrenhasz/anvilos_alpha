@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (c) 2019, Linaro Limited
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -25,14 +22,14 @@
 #include <linux/clk.h>
 #include <linux/nvmem-consumer.h>
 
-/* Register Offsets for RB-CPR and Bit Definitions */
+ 
 
-/* RBCPR Version Register */
+ 
 #define REG_RBCPR_VERSION		0
 #define RBCPR_VER_2			0x02
 #define FLAGS_IGNORE_1ST_IRQ_STATUS	BIT(0)
 
-/* RBCPR Gate Count and Target Registers */
+ 
 #define REG_RBCPR_GCNT_TARGET(n)	(0x60 + 4 * (n))
 
 #define RBCPR_GCNT_TARGET_TARGET_SHIFT	0
@@ -40,7 +37,7 @@
 #define RBCPR_GCNT_TARGET_GCNT_SHIFT	12
 #define RBCPR_GCNT_TARGET_GCNT_MASK	GENMASK(9, 0)
 
-/* RBCPR Timer Control */
+ 
 #define REG_RBCPR_TIMER_INTERVAL	0x44
 #define REG_RBIF_TIMER_ADJUST		0x4c
 
@@ -51,7 +48,7 @@
 #define RBIF_TIMER_ADJ_CLAMP_INT_MASK	GENMASK(7, 0)
 #define RBIF_TIMER_ADJ_CLAMP_INT_SHIFT	8
 
-/* RBCPR Config Register */
+ 
 #define REG_RBIF_LIMIT			0x48
 #define RBIF_LIMIT_CEILING_MASK		GENMASK(5, 0)
 #define RBIF_LIMIT_CEILING_SHIFT	6
@@ -69,7 +66,7 @@
 #define RBCPR_STEP_QUOT_IDLE_CLK_MASK	GENMASK(3, 0)
 #define RBCPR_STEP_QUOT_IDLE_CLK_SHIFT	8
 
-/* RBCPR Control Register */
+ 
 #define REG_RBCPR_CTL			0x90
 
 #define RBCPR_CTL_LOOP_EN			BIT(0)
@@ -82,11 +79,11 @@
 #define RBCPR_CTL_DN_THRESHOLD_MASK	GENMASK(3, 0)
 #define RBCPR_CTL_DN_THRESHOLD_SHIFT	28
 
-/* RBCPR Ack/Nack Response */
+ 
 #define REG_RBIF_CONT_ACK_CMD		0x98
 #define REG_RBIF_CONT_NACK_CMD		0x9c
 
-/* RBCPR Result status Register */
+ 
 #define REG_RBCPR_RESULT_0		0xa0
 
 #define RBCPR_RESULT0_BUSY_SHIFT	19
@@ -98,7 +95,7 @@
 #define RBCPR_RESULT0_ERROR_STEPS_MASK	GENMASK(3, 0)
 #define RBCPR_RESULT0_STEP_UP_SHIFT	1
 
-/* RBCPR Interrupt Control Register */
+ 
 #define REG_RBIF_IRQ_EN(n)		(0x100 + 4 * (n))
 #define REG_RBIF_IRQ_CLEAR		0x110
 #define REG_RBIF_IRQ_STATUS		0x114
@@ -116,7 +113,7 @@
 
 #define CPR_NUM_RING_OSC	8
 
-/* CPR eFuse parameters */
+ 
 #define CPR_FUSE_TARGET_QUOT_BITS_MASK	GENMASK(11, 0)
 
 #define CPR_FUSE_MIN_QUOT_DIFF		50
@@ -142,11 +139,11 @@ struct fuse_corner_data {
 	int min_uV;
 	int max_volt_scale;
 	int max_quot_scale;
-	/* fuse quot */
+	 
 	int quot_offset;
 	int quot_scale;
 	int quot_adjust;
-	/* fuse quot_offset */
+	 
 	int quot_offset_scale;
 	int quot_offset_adjust;
 };
@@ -306,7 +303,7 @@ static void cpr_ctl_enable(struct cpr_drv *drv, struct corner *corner)
 	u32 val, mask;
 	const struct cpr_desc *desc = drv->desc;
 
-	/* Program Consecutive Up & Down */
+	 
 	val = desc->timer_cons_down << RBIF_TIMER_ADJ_CONS_DOWN_SHIFT;
 	val |= desc->timer_cons_up << RBIF_TIMER_ADJ_CONS_UP_SHIFT;
 	mask = RBIF_TIMER_ADJ_CONS_UP_MASK | RBIF_TIMER_ADJ_CONS_DOWN_MASK;
@@ -371,12 +368,12 @@ static void cpr_corner_restore(struct cpr_drv *drv, struct corner *corner)
 	gcnt = drv->gcnt;
 	gcnt |= fuse->quot - corner->quot_adjust;
 
-	/* Program the step quotient and idle clocks */
+	 
 	step_quot = desc->idle_clocks << RBCPR_STEP_QUOT_IDLE_CLK_SHIFT;
 	step_quot |= fuse->step_quot & RBCPR_STEP_QUOT_STEPQUOT_MASK;
 	cpr_write(drv, REG_RBCPR_STEP_QUOT, step_quot);
 
-	/* Clear the target quotient value and gate count of all ROs */
+	 
 	for (i = 0; i < CPR_NUM_RING_OSC; i++)
 		cpr_write(drv, REG_RBCPR_GCNT_TARGET(i), 0);
 
@@ -482,11 +479,7 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 	if (dir == UP) {
 		if (desc->clamp_timer_interval &&
 		    error_steps < desc->up_threshold) {
-			/*
-			 * Handle the case where another measurement started
-			 * after the interrupt was triggered due to a core
-			 * exiting from power collapse.
-			 */
+			 
 			error_steps = max(desc->up_threshold,
 					  desc->vdd_apc_step_up_limit);
 		}
@@ -494,13 +487,13 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 		if (last_uV >= corner->max_uV) {
 			cpr_irq_clr_nack(drv);
 
-			/* Maximize the UP threshold */
+			 
 			reg_mask = RBCPR_CTL_UP_THRESHOLD_MASK;
 			reg_mask <<= RBCPR_CTL_UP_THRESHOLD_SHIFT;
 			val = reg_mask;
 			cpr_ctl_modify(drv, reg_mask, val);
 
-			/* Disable UP interrupt */
+			 
 			cpr_irq_set(drv, CPR_INT_DEFAULT & ~CPR_INT_UP);
 
 			return 0;
@@ -509,7 +502,7 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 		if (error_steps > desc->vdd_apc_step_up_limit)
 			error_steps = desc->vdd_apc_step_up_limit;
 
-		/* Calculate new voltage */
+		 
 		new_uV = last_uV + error_steps * step_uV;
 		new_uV = min(new_uV, corner->max_uV);
 
@@ -519,11 +512,7 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 	} else {
 		if (desc->clamp_timer_interval &&
 		    error_steps < desc->down_threshold) {
-			/*
-			 * Handle the case where another measurement started
-			 * after the interrupt was triggered due to a core
-			 * exiting from power collapse.
-			 */
+			 
 			error_steps = max(desc->down_threshold,
 					  desc->vdd_apc_step_down_limit);
 		}
@@ -531,13 +520,13 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 		if (last_uV <= corner->min_uV) {
 			cpr_irq_clr_nack(drv);
 
-			/* Enable auto nack down */
+			 
 			reg_mask = RBCPR_CTL_SW_AUTO_CONT_NACK_DN_EN;
 			val = RBCPR_CTL_SW_AUTO_CONT_NACK_DN_EN;
 
 			cpr_ctl_modify(drv, reg_mask, val);
 
-			/* Disable DOWN interrupt */
+			 
 			cpr_irq_set(drv, CPR_INT_DEFAULT & ~CPR_INT_DOWN);
 
 			return 0;
@@ -546,7 +535,7 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 		if (error_steps > desc->vdd_apc_step_down_limit)
 			error_steps = desc->vdd_apc_step_down_limit;
 
-		/* Calculate new voltage */
+		 
 		new_uV = last_uV - error_steps * step_uV;
 		new_uV = max(new_uV, corner->min_uV);
 
@@ -563,11 +552,11 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 	drv->corner->last_uV = new_uV;
 
 	if (dir == UP) {
-		/* Disable auto nack down */
+		 
 		reg_mask = RBCPR_CTL_SW_AUTO_CONT_NACK_DN_EN;
 		val = 0;
 	} else {
-		/* Restore default threshold for UP */
+		 
 		reg_mask = RBCPR_CTL_UP_THRESHOLD_MASK;
 		reg_mask <<= RBCPR_CTL_UP_THRESHOLD_SHIFT;
 		val = desc->up_threshold;
@@ -576,10 +565,10 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 
 	cpr_ctl_modify(drv, reg_mask, val);
 
-	/* Re-enable default interrupts */
+	 
 	cpr_irq_set(drv, CPR_INT_DEFAULT);
 
-	/* Ack */
+	 
 	cpr_irq_clr_ack(drv);
 
 	return 0;
@@ -612,10 +601,7 @@ static irqreturn_t cpr_irq_handler(int irq, void *dev)
 				    val);
 		ret = IRQ_NONE;
 	} else {
-		/*
-		 * Following sequence of handling is as per each IRQ's
-		 * priority
-		 */
+		 
 		if (val & CPR_INT_UP) {
 			cpr_scale(drv, UP);
 		} else if (val & CPR_INT_DOWN) {
@@ -625,14 +611,14 @@ static irqreturn_t cpr_irq_handler(int irq, void *dev)
 		} else if (val & CPR_INT_MAX) {
 			cpr_irq_clr_nack(drv);
 		} else if (val & CPR_INT_MID) {
-			/* RBCPR_CTL_SW_AUTO_CONT_ACK_EN is enabled */
+			 
 			dev_dbg(drv->dev, "IRQ occurred for Mid Flag\n");
 		} else {
 			dev_dbg(drv->dev,
 				"IRQ occurred for unknown flag (%#08x)\n", val);
 		}
 
-		/* Save register values for the corner */
+		 
 		cpr_corner_save(drv, drv->corner);
 	}
 
@@ -683,43 +669,40 @@ static int cpr_config(struct cpr_drv *drv)
 	struct corner *corner;
 	const struct cpr_desc *desc = drv->desc;
 
-	/* Disable interrupt and CPR */
+	 
 	cpr_write(drv, REG_RBIF_IRQ_EN(0), 0);
 	cpr_write(drv, REG_RBCPR_CTL, 0);
 
-	/* Program the default HW ceiling, floor and vlevel */
+	 
 	val = (RBIF_LIMIT_CEILING_DEFAULT & RBIF_LIMIT_CEILING_MASK)
 		<< RBIF_LIMIT_CEILING_SHIFT;
 	val |= RBIF_LIMIT_FLOOR_DEFAULT & RBIF_LIMIT_FLOOR_MASK;
 	cpr_write(drv, REG_RBIF_LIMIT, val);
 	cpr_write(drv, REG_RBIF_SW_VLEVEL, RBIF_SW_VLEVEL_DEFAULT);
 
-	/*
-	 * Clear the target quotient value and gate count of all
-	 * ring oscillators
-	 */
+	 
 	for (i = 0; i < CPR_NUM_RING_OSC; i++)
 		cpr_write(drv, REG_RBCPR_GCNT_TARGET(i), 0);
 
-	/* Init and save gcnt */
+	 
 	gcnt = (drv->ref_clk_khz * desc->gcnt_us) / 1000;
 	gcnt = gcnt & RBCPR_GCNT_TARGET_GCNT_MASK;
 	gcnt <<= RBCPR_GCNT_TARGET_GCNT_SHIFT;
 	drv->gcnt = gcnt;
 
-	/* Program the delay count for the timer */
+	 
 	val = (drv->ref_clk_khz * desc->timer_delay_us) / 1000;
 	cpr_write(drv, REG_RBCPR_TIMER_INTERVAL, val);
 	dev_dbg(drv->dev, "Timer count: %#0x (for %d us)\n", val,
 		desc->timer_delay_us);
 
-	/* Program Consecutive Up & Down */
+	 
 	val = desc->timer_cons_down << RBIF_TIMER_ADJ_CONS_DOWN_SHIFT;
 	val |= desc->timer_cons_up << RBIF_TIMER_ADJ_CONS_UP_SHIFT;
 	val |= desc->clamp_timer_interval << RBIF_TIMER_ADJ_CLAMP_INT_SHIFT;
 	cpr_write(drv, REG_RBIF_TIMER_ADJUST, val);
 
-	/* Program the control register */
+	 
 	val = desc->up_threshold << RBCPR_CTL_UP_THRESHOLD_SHIFT;
 	val |= desc->down_threshold << RBCPR_CTL_DN_THRESHOLD_SHIFT;
 	val |= RBCPR_CTL_TIMER_EN | RBCPR_CTL_COUNT_MODE;
@@ -754,10 +737,7 @@ static int cpr_set_performance_state(struct generic_pm_domain *domain,
 	dev_dbg(drv->dev, "%s: setting perf state: %u (prev state: %u)\n",
 		__func__, state, cpr_get_cur_perf_state(drv));
 
-	/*
-	 * Determine new corner we're going to.
-	 * Remove one since lowest performance state is 1.
-	 */
+	 
 	corner = drv->corners + state - 1;
 	end = &drv->corners[drv->num_corners - 1];
 	if (corner > end || corner < drv->corners) {
@@ -765,7 +745,7 @@ static int cpr_set_performance_state(struct generic_pm_domain *domain,
 		goto unlock;
 	}
 
-	/* Determine direction */
+	 
 	if (drv->corner > corner)
 		dir = DOWN;
 	else if (drv->corner < corner)
@@ -834,7 +814,7 @@ static int cpr_read_fuse_uV(const struct cpr_desc *desc,
 		return ret;
 
 	steps = bits & ~BIT(desc->cpr_fuses.init_voltage_width - 1);
-	/* Not two's complement.. instead highest bit is sign bit */
+	 
 	if (bits & BIT(desc->cpr_fuses.init_voltage_width - 1))
 		steps = -steps;
 
@@ -863,21 +843,17 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 	if (!step_volt)
 		return -EINVAL;
 
-	/* Populate fuse_corner members */
+	 
 	fuse = drv->fuse_corners;
 	end = &fuse[desc->num_fuse_corners - 1];
 	fdata = desc->cpr_fuses.fuse_corner_data;
 
 	for (i = 0; fuse <= end; fuse++, fuses++, i++, fdata++) {
-		/*
-		 * Update SoC voltages: platforms might choose a different
-		 * regulators than the one used to characterize the algorithms
-		 * (ie, init_voltage_step).
-		 */
+		 
 		fdata->min_uV = roundup(fdata->min_uV, step_volt);
 		fdata->max_uV = roundup(fdata->max_uV, step_volt);
 
-		/* Populate uV */
+		 
 		uV = cpr_read_fuse_uV(desc, fdata, fuses->init_voltage,
 				      step_volt, drv);
 		if (uV < 0)
@@ -888,16 +864,11 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 		fuse->uV = clamp(uV, fuse->min_uV, fuse->max_uV);
 
 		if (fuse == end) {
-			/*
-			 * Allow the highest fuse corner's PVS voltage to
-			 * define the ceiling voltage for that corner in order
-			 * to support SoC's in which variable ceiling values
-			 * are required.
-			 */
+			 
 			end->max_uV = max(end->max_uV, end->uV);
 		}
 
-		/* Populate target quotient by scaling */
+		 
 		ret = nvmem_cell_read_variable_le_u32(drv->dev, fuses->quotient, &fuse->quot);
 		if (ret)
 			return ret;
@@ -907,16 +878,13 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 		fuse->quot += fdata->quot_adjust;
 		fuse->step_quot = desc->step_quot[fuse->ring_osc_idx];
 
-		/* Populate acc settings */
+		 
 		fuse->accs = accs;
 		fuse->num_accs = acc_desc->num_regs_per_fuse;
 		accs += acc_desc->num_regs_per_fuse;
 	}
 
-	/*
-	 * Restrict all fuse corner PVS voltages based upon per corner
-	 * ceiling and floor voltages.
-	 */
+	 
 	for (fuse = drv->fuse_corners, i = 0; fuse <= end; fuse++, i++) {
 		if (fuse->uV > fuse->max_uV)
 			fuse->uV = fuse->max_uV;
@@ -978,7 +946,7 @@ static int cpr_calculate_scaling(const char *quot_offset,
 	}
 
 	freq_diff = fuse->max_freq - prev_fuse->max_freq;
-	freq_diff /= 1000000; /* Convert to MHz */
+	freq_diff /= 1000000;  
 	scaling = 1000 * quot_diff / freq_diff;
 	return min(scaling, fdata->max_quot_scale);
 }
@@ -1000,21 +968,14 @@ static int cpr_interpolate(const struct corner *corner, int step_volt,
 	uV_low = prev_fuse->uV;
 	f_diff = fuse->max_freq - corner->freq;
 
-	/*
-	 * Don't interpolate in the wrong direction. This could happen
-	 * if the adjusted fuse voltage overlaps with the previous fuse's
-	 * adjusted voltage.
-	 */
+	 
 	if (f_high <= f_low || uV_high <= uV_low || f_high <= corner->freq)
 		return corner->uV;
 
 	temp = f_diff * (uV_high - uV_low);
 	temp = div64_ul(temp, f_high - f_low);
 
-	/*
-	 * max_volt_scale has units of uV/MHz while freq values
-	 * have units of Hz.  Divide by 1000000 to convert to.
-	 */
+	 
 	temp_limit = f_diff * fdata->max_volt_scale;
 	do_div(temp_limit, 1000000);
 
@@ -1101,10 +1062,7 @@ static int cpr_corner_init(struct cpr_drv *drv)
 	if (!cdata)
 		return -ENOMEM;
 
-	/*
-	 * Store maximum frequency for each fuse corner based on the frequency
-	 * plan
-	 */
+	 
 	for (level = 1; level <= drv->num_corners; level++) {
 		opp = dev_pm_opp_find_level_exact(&drv->pd.dev, level);
 		if (IS_ERR(opp))
@@ -1131,45 +1089,7 @@ static int cpr_corner_init(struct cpr_drv *drv)
 		dev_pm_opp_put(opp);
 	}
 
-	/*
-	 * Get the quotient adjustment scaling factor, according to:
-	 *
-	 * scaling = min(1000 * (QUOT(corner_N) - QUOT(corner_N-1))
-	 *		/ (freq(corner_N) - freq(corner_N-1)), max_factor)
-	 *
-	 * QUOT(corner_N):	quotient read from fuse for fuse corner N
-	 * QUOT(corner_N-1):	quotient read from fuse for fuse corner (N - 1)
-	 * freq(corner_N):	max frequency in MHz supported by fuse corner N
-	 * freq(corner_N-1):	max frequency in MHz supported by fuse corner
-	 *			 (N - 1)
-	 *
-	 * Then walk through the corners mapped to each fuse corner
-	 * and calculate the quotient adjustment for each one using the
-	 * following formula:
-	 *
-	 * quot_adjust = (freq_max - freq_corner) * scaling / 1000
-	 *
-	 * freq_max: max frequency in MHz supported by the fuse corner
-	 * freq_corner: frequency in MHz corresponding to the corner
-	 * scaling: calculated from above equation
-	 *
-	 *
-	 *     +                           +
-	 *     |                         v |
-	 *   q |           f c           o |           f c
-	 *   u |         c               l |         c
-	 *   o |       f                 t |       f
-	 *   t |     c                   a |     c
-	 *     | c f                     g | c f
-	 *     |                         e |
-	 *     +---------------            +----------------
-	 *       0 1 2 3 4 5 6               0 1 2 3 4 5 6
-	 *          corner                      corner
-	 *
-	 *    c = corner
-	 *    f = fuse corner
-	 *
-	 */
+	 
 	for (apply_scaling = false, i = 0; corner <= end; corner++, i++) {
 		fnum = cdata[i].fuse_corner;
 		fdata = &desc->cpr_fuses.fuse_corner_data[fnum];
@@ -1192,7 +1112,7 @@ static int cpr_corner_init(struct cpr_drv *drv)
 
 			apply_scaling = true;
 		} else if (corner->freq == fuse->max_freq) {
-			/* This is a fuse corner; don't scale anything */
+			 
 			apply_scaling = false;
 		}
 
@@ -1209,7 +1129,7 @@ static int cpr_corner_init(struct cpr_drv *drv)
 		corner->uV = clamp(corner->uV, corner->min_uV, corner->max_uV);
 		corner->last_uV = corner->uV;
 
-		/* Reduce the ceiling voltage if needed */
+		 
 		if (desc->reduce_to_corner_uV && corner->uV < corner->max_uV)
 			corner->max_uV = corner->uV;
 		else if (desc->reduce_to_fuse_uV && fuse->uV < corner->max_uV)
@@ -1310,17 +1230,7 @@ static int cpr_find_initial_corner(struct cpr_drv *drv)
 	end = &drv->corners[drv->num_corners - 1];
 	rate = clk_get_rate(drv->cpu_clk);
 
-	/*
-	 * Some bootloaders set a CPU clock frequency that is not defined
-	 * in the OPP table. When running at an unlisted frequency,
-	 * cpufreq_online() will change to the OPP which has the lowest
-	 * frequency, at or above the unlisted frequency.
-	 * Since cpufreq_online() always "rounds up" in the case of an
-	 * unlisted frequency, this function always "rounds down" in case
-	 * of an unlisted frequency. That way, when cpufreq_online()
-	 * triggers the first ever call to cpr_set_performance_state(),
-	 * it will correctly determine the direction as UP.
-	 */
+	 
 	for (iter = drv->corners; iter <= end; iter++) {
 		if (iter->freq > rate)
 			break;
@@ -1360,7 +1270,7 @@ static const struct cpr_desc qcs404_cpr_desc = {
 		.init_voltage_step = 8000,
 		.init_voltage_width = 6,
 		.fuse_corner_data = (struct fuse_corner_data[]){
-			/* fuse corner 0 */
+			 
 			{
 				.ref_uV = 1224000,
 				.max_uV = 1224000,
@@ -1373,7 +1283,7 @@ static const struct cpr_desc qcs404_cpr_desc = {
 				.quot_offset_scale = 5,
 				.quot_offset_adjust = 0,
 			},
-			/* fuse corner 1 */
+			 
 			{
 				.ref_uV = 1288000,
 				.max_uV = 1288000,
@@ -1386,7 +1296,7 @@ static const struct cpr_desc qcs404_cpr_desc = {
 				.quot_offset_scale = 5,
 				.quot_offset_adjust = 0,
 			},
-			/* fuse corner 2 */
+			 
 			{
 				.ref_uV = 1352000,
 				.max_uV = 1384000,
@@ -1455,25 +1365,11 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 
 	dev_dbg(drv->dev, "attach callback for: %s\n", dev_name(dev));
 
-	/*
-	 * This driver only supports scaling voltage for a CPU cluster
-	 * where all CPUs in the cluster share a single regulator.
-	 * Therefore, save the struct device pointer only for the first
-	 * CPU device that gets attached. There is no need to do any
-	 * additional initialization when further CPUs get attached.
-	 */
+	 
 	if (drv->attached_cpu_dev)
 		goto unlock;
 
-	/*
-	 * cpr_scale_voltage() requires the direction (if we are changing
-	 * to a higher or lower OPP). The first time
-	 * cpr_set_performance_state() is called, there is no previous
-	 * performance state defined. Therefore, we call
-	 * cpr_find_initial_corner() that gets the CPU clock frequency
-	 * set by the bootloader, so that we can determine the direction
-	 * the first time cpr_set_performance_state() is called.
-	 */
+	 
 	drv->cpu_clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(drv->cpu_clk)) {
 		ret = PTR_ERR(drv->cpu_clk);
@@ -1486,14 +1382,7 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 	dev_dbg(drv->dev, "using cpu clk from: %s\n",
 		dev_name(drv->attached_cpu_dev));
 
-	/*
-	 * Everything related to (virtual) corners has to be initialized
-	 * here, when attaching to the power domain, since we need to know
-	 * the maximum frequency for each fuse corner, and this is only
-	 * available after the cpufreq driver has attached to us.
-	 * The reason for this is that we need to know the highest
-	 * frequency associated with each fuse corner.
-	 */
+	 
 	ret = dev_pm_opp_get_opp_count(&drv->pd.dev);
 	if (ret < 0) {
 		dev_err(drv->dev, "could not get OPP count\n");
@@ -1525,7 +1414,7 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 	if (ret)
 		goto unlock;
 
-	/* Configure CPR HW but keep it disabled */
+	 
 	ret = cpr_config(drv);
 	if (ret)
 		goto unlock;
@@ -1538,7 +1427,7 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 		regmap_multi_reg_write(drv->tcsr, acc_desc->config,
 				       acc_desc->num_regs_per_fuse);
 
-	/* Enable ACC if required */
+	 
 	if (acc_desc->enable_mask)
 		regmap_update_bits(drv->tcsr, acc_desc->enable_reg,
 				   acc_desc->enable_mask,
@@ -1658,13 +1547,7 @@ static int cpr_probe(struct platform_device *pdev)
 	if (IS_ERR(drv->vdd_apc))
 		return PTR_ERR(drv->vdd_apc);
 
-	/*
-	 * Initialize fuse corners, since it simply depends
-	 * on data in efuses.
-	 * Everything related to (virtual) corners has to be
-	 * initialized after attaching to the power domain,
-	 * since it depends on the CPU's OPP table.
-	 */
+	 
 	ret = nvmem_cell_read_variable_le_u32(dev, "cpr_fuse_revision", &cpr_rev);
 	if (ret)
 		return ret;

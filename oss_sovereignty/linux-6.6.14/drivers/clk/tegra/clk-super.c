@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -49,10 +47,7 @@ static u8 clk_super_get_parent(struct clk_hw *hw)
 
 	source = (val >> shift) & super_state_to_src_mask(mux);
 
-	/*
-	 * If LP_DIV2_BYPASS is not set and PLLX is current parent then
-	 * PLLX/2 is the input source to CCLKLP.
-	 */
+	 
 	if ((mux->flags & TEGRA_DIVIDER_2) && !(val & SUPER_LP_DIV2_BYPASS) &&
 	    (source == mux->pllx_index))
 		source = mux->div2_index;
@@ -79,11 +74,7 @@ static int clk_super_set_parent(struct clk_hw *hw, u8 index)
 		super_state_to_src_shift(mux, SUPER_STATE_IDLE) :
 		super_state_to_src_shift(mux, SUPER_STATE_RUN);
 
-	/*
-	 * For LP mode super-clock switch between PLLX direct
-	 * and divided-by-2 outputs is allowed only when other
-	 * than PLLX clock source is current parent.
-	 */
+	 
 	if ((mux->flags & TEGRA_DIVIDER_2) && ((index == mux->div2_index) ||
 					       (index == mux->pllx_index))) {
 		parent_index = clk_super_get_parent(hw);
@@ -101,7 +92,7 @@ static int clk_super_set_parent(struct clk_hw *hw, u8 index)
 			index = mux->pllx_index;
 	}
 
-	/* enable PLLP branches to CPU before selecting PLLP source */
+	 
 	if ((mux->flags & TEGRA210_CPU_CLK) &&
 	    (index == CCLK_SRC_PLLP_OUT0 || index == CCLK_SRC_PLLP_OUT4))
 		tegra_clk_set_pllp_out_cpu(true);
@@ -112,7 +103,7 @@ static int clk_super_set_parent(struct clk_hw *hw, u8 index)
 	writel_relaxed(val, mux->reg);
 	udelay(2);
 
-	/* disable PLLP branches to CPU if not used */
+	 
 	if ((mux->flags & TEGRA210_CPU_CLK) &&
 	    index != CCLK_SRC_PLLP_OUT0 && index != CCLK_SRC_PLLP_OUT4)
 		tegra_clk_set_pllp_out_cpu(false);
@@ -231,7 +222,7 @@ struct clk *tegra_clk_register_super_mux(const char *name,
 	super->width = width;
 	super->flags = clk_super_flags;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	super->hw.init = &init;
 
 	clk = tegra_clk_dev_register(&super->hw);
@@ -271,7 +262,7 @@ struct clk *tegra_clk_register_super_clk(const char *name,
 	super->frac_div.lock = lock;
 	super->div_ops = &tegra_clk_frac_div_ops;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	super->hw.init = &init;
 
 	clk = clk_register(NULL, &super->hw);

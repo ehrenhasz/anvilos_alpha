@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Consumer interface the pin control subsystem
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- * Based on bits of regulator core, gpio core and clk core
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+ 
+ 
 #ifndef __LINUX_PINCTRL_CONSUMER_H
 #define __LINUX_PINCTRL_CONSUMER_H
 
@@ -18,13 +10,13 @@
 
 struct device;
 
-/* This struct is private to the core and should be regarded as a cookie */
+ 
 struct pinctrl;
 struct pinctrl_state;
 
 #ifdef CONFIG_PINCTRL
 
-/* External interface to pin control */
+ 
 extern bool pinctrl_gpio_can_use_line(unsigned gpio);
 extern int pinctrl_gpio_request(unsigned gpio);
 extern void pinctrl_gpio_free(unsigned gpio);
@@ -61,7 +53,7 @@ static inline int pinctrl_pm_select_idle_state(struct device *dev)
 }
 #endif
 
-#else /* !CONFIG_PINCTRL */
+#else  
 
 static inline bool pinctrl_gpio_can_use_line(unsigned gpio)
 {
@@ -142,7 +134,7 @@ static inline int pinctrl_pm_select_idle_state(struct device *dev)
 	return 0;
 }
 
-#endif /* CONFIG_PINCTRL */
+#endif  
 
 static inline struct pinctrl * __must_check pinctrl_get_select(struct device *dev,
 							       const char *name)
@@ -206,4 +198,4 @@ static inline struct pinctrl * __must_check devm_pinctrl_get_select_default(stru
 	return devm_pinctrl_get_select(dev, PINCTRL_STATE_DEFAULT);
 }
 
-#endif /* __LINUX_PINCTRL_CONSUMER_H */
+#endif  

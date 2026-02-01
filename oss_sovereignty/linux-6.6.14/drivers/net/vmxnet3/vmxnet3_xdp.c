@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux driver for VMware's vmxnet3 ethernet NIC.
- * Copyright (C) 2008-2023, VMware, Inc. All Rights Reserved.
- * Maintained by: pv-drivers@vmware.com
- *
- */
+
+ 
 
 #include "vmxnet3_int.h"
 #include "vmxnet3_xdp.h"
@@ -97,7 +92,7 @@ vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
 	return 0;
 }
 
-/* This is the main xdp call used by kernel to set/unset eBPF program. */
+ 
 int
 vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
 {
@@ -138,14 +133,14 @@ vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
 	}
 
 	tbi->map_type = VMXNET3_MAP_XDP;
-	if (dma_map) { /* ndo_xdp_xmit */
+	if (dma_map) {  
 		tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
 					       xdpf->data, buf_size,
 					       DMA_TO_DEVICE);
 		if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr))
 			return -EFAULT;
 		tbi->map_type |= VMXNET3_MAP_SINGLE;
-	} else { /* XDP buffer from page pool */
+	} else {  
 		page = virt_to_page(xdpf->data);
 		tbi->dma_addr = page_pool_get_dma_addr(page) +
 				VMXNET3_XDP_HEADROOM;
@@ -162,7 +157,7 @@ vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
 	gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
 	gdesc->dword[2] = cpu_to_le32(dw2);
 
-	/* Setup the EOP desc */
+	 
 	gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
 
 	gdesc->txd.om = 0;
@@ -176,17 +171,14 @@ vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
 
 	vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
 
-	/* set the last buf_info for the pkt */
+	 
 	tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
 
 	dma_wmb();
 	gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
 						  VMXNET3_TXD_GEN);
 
-	/* No need to handle the case when tx_num_deferred doesn't reach
-	 * threshold. Backend driver at hypervisor side will poll and reset
-	 * tq->shared->txNumDeferred to 0.
-	 */
+	 
 	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
 		tq->shared->txNumDeferred = 0;
 		VMXNET3_WRITE_BAR0_REG(adapter,
@@ -218,7 +210,7 @@ vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
 	return err;
 }
 
-/* ndo_xdp_xmit */
+ 
 int
 vmxnet3_xdp_xmit(struct net_device *dev,
 		 int n, struct xdp_frame **frames, u32 flags)
@@ -312,7 +304,7 @@ vmxnet3_build_skb(struct vmxnet3_rx_queue *rq, struct page *page,
 		return NULL;
 	}
 
-	/* bpf prog might change len and data position. */
+	 
 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
 	skb_put(skb, xdp->data_end - xdp->data);
 	skb_mark_for_recycle(skb);
@@ -320,7 +312,7 @@ vmxnet3_build_skb(struct vmxnet3_rx_queue *rq, struct page *page,
 	return skb;
 }
 
-/* Handle packets from DataRing. */
+ 
 int
 vmxnet3_process_xdp_small(struct vmxnet3_adapter *adapter,
 			  struct vmxnet3_rx_queue *rq,
@@ -343,7 +335,7 @@ vmxnet3_process_xdp_small(struct vmxnet3_adapter *adapter,
 			 len, false);
 	xdp_buff_clear_frags_flag(&xdp);
 
-	/* Must copy the data because it's at dataring. */
+	 
 	memcpy(xdp.data, data, len);
 
 	xdp_prog = rcu_dereference(rq->adapter->xdp_bpf_prog);
@@ -360,7 +352,7 @@ out_skb:
 	if (!*skb_xdp_pass)
 		return XDP_DROP;
 
-	/* No need to refill. */
+	 
 	return likely(*skb_xdp_pass) ? act : XDP_DROP;
 }
 

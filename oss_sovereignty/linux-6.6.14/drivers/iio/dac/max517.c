@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  max517.c - Support for Maxim MAX517, MAX518 and MAX519
- *
- *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -17,10 +13,10 @@
 
 #define MAX517_DRV_NAME	"max517"
 
-/* Commands */
+ 
 #define COMMAND_CHANNEL0	0x00
-#define COMMAND_CHANNEL1	0x01 /* for MAX518 and MAX519 */
-#define COMMAND_PD		0x08 /* Power Down */
+#define COMMAND_CHANNEL1	0x01  
+#define COMMAND_PD		0x08  
 
 enum max517_device_ids {
 	ID_MAX517,
@@ -35,11 +31,7 @@ struct max517_data {
 	unsigned short		vref_mv[8];
 };
 
-/*
- * channel: bit 0: channel 1
- *          bit 1: channel 2
- * (this way, it's possible to set both channels at once)
- */
+ 
 static int max517_set_value(struct iio_dev *indio_dev,
 	long val, int channel)
 {
@@ -73,7 +65,7 @@ static int max517_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_SCALE:
-		/* Corresponds to Vref / 2^(bits) */
+		 
 		*val = data->vref_mv[chan->channel];
 		*val2 = 8;
 		return IIO_VAL_FRACTIONAL_LOG2;
@@ -166,7 +158,7 @@ static int max517_probe(struct i2c_client *client)
 	case ID_MAX518:
 		indio_dev->num_channels = 2;
 		break;
-	default:  /* single channel for MAX517 */
+	default:   
 		indio_dev->num_channels = 1;
 		break;
 	}
@@ -174,13 +166,10 @@ static int max517_probe(struct i2c_client *client)
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &max517_info;
 
-	/*
-	 * Reference voltage on MAX518 and default is 5V, else take vref_mv
-	 * from platform_data
-	 */
+	 
 	for (chan = 0; chan < indio_dev->num_channels; chan++) {
 		if (id->driver_data == ID_MAX518 || !platform_data)
-			data->vref_mv[chan] = 5000; /* mV */
+			data->vref_mv[chan] = 5000;  
 		else
 			data->vref_mv[chan] = platform_data->vref_mv[chan];
 	}

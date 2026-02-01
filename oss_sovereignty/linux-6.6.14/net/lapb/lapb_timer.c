@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	LAPB release 002
- *
- *	This code REQUIRES 2.1.15 or higher/ NET3.038
- *
- *	History
- *	LAPB 001	Jonathan Naylor	Started Coding
- *	LAPB 002	Jonathan Naylor	New timer architecture.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -77,9 +69,9 @@ static void lapb_t2timer_expiry(struct timer_list *t)
 	struct lapb_cb *lapb = from_timer(lapb, t, t2timer);
 
 	spin_lock_bh(&lapb->lock);
-	if (timer_pending(&lapb->t2timer)) /* A new timer has been set up */
+	if (timer_pending(&lapb->t2timer))  
 		goto out;
-	if (!lapb->t2timer_running) /* The timer has been stopped */
+	if (!lapb->t2timer_running)  
 		goto out;
 
 	if (lapb->condition & LAPB_ACK_PENDING_CONDITION) {
@@ -97,17 +89,14 @@ static void lapb_t1timer_expiry(struct timer_list *t)
 	struct lapb_cb *lapb = from_timer(lapb, t, t1timer);
 
 	spin_lock_bh(&lapb->lock);
-	if (timer_pending(&lapb->t1timer)) /* A new timer has been set up */
+	if (timer_pending(&lapb->t1timer))  
 		goto out;
-	if (!lapb->t1timer_running) /* The timer has been stopped */
+	if (!lapb->t1timer_running)  
 		goto out;
 
 	switch (lapb->state) {
 
-		/*
-		 *	If we are a DCE, send DM up to N2 times, then switch to
-		 *	STATE_1 and send SABM(E).
-		 */
+		 
 		case LAPB_STATE_0:
 			if (lapb->mode & LAPB_DCE &&
 			    lapb->n2count != lapb->n2) {
@@ -119,9 +108,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
 			}
 			break;
 
-		/*
-		 *	Awaiting connection state, send SABM(E), up to N2 times.
-		 */
+		 
 		case LAPB_STATE_1:
 			if (lapb->n2count == lapb->n2) {
 				lapb_clear_queues(lapb);
@@ -144,9 +131,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
 			}
 			break;
 
-		/*
-		 *	Awaiting disconnection state, send DISC, up to N2 times.
-		 */
+		 
 		case LAPB_STATE_2:
 			if (lapb->n2count == lapb->n2) {
 				lapb_clear_queues(lapb);
@@ -162,9 +147,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
 			}
 			break;
 
-		/*
-		 *	Data transfer state, restransmit I frames, up to N2 times.
-		 */
+		 
 		case LAPB_STATE_3:
 			if (lapb->n2count == lapb->n2) {
 				lapb_clear_queues(lapb);
@@ -181,9 +164,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
 			}
 			break;
 
-		/*
-		 *	Frame reject state, restransmit FRMR frames, up to N2 times.
-		 */
+		 
 		case LAPB_STATE_4:
 			if (lapb->n2count == lapb->n2) {
 				lapb_clear_queues(lapb);

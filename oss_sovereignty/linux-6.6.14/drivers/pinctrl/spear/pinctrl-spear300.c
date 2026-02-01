@@ -1,13 +1,4 @@
-/*
- * Driver for the ST Microelectronics SPEAr300 pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -17,11 +8,11 @@
 
 #define DRIVER_NAME "spear300-pinmux"
 
-/* addresses */
+ 
 #define PMX_CONFIG_REG			0x00
 #define MODE_CONFIG_REG			0x04
 
-/* modes */
+ 
 #define NAND_MODE			(1 << 0)
 #define NOR_MODE			(1 << 1)
 #define PHOTO_FRAME_MODE		(1 << 2)
@@ -156,7 +147,7 @@ static struct spear_pmx_mode *spear300_pmx_modes[] = {
 	&pmx_mode_caml_lcd,
 };
 
-/* fsmc_2chips_pins */
+ 
 static const unsigned fsmc_2chips_pins[] = { 1, 97 };
 static struct spear_muxreg fsmc_2chips_muxreg[] = {
 	{
@@ -183,7 +174,7 @@ static struct spear_pingroup fsmc_2chips_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(fsmc_2chips_modemux),
 };
 
-/* fsmc_4chips_pins */
+ 
 static const unsigned fsmc_4chips_pins[] = { 1, 2, 3, 97 };
 static struct spear_muxreg fsmc_4chips_muxreg[] = {
 	{
@@ -218,7 +209,7 @@ static struct spear_function fsmc_function = {
 	.ngroups = ARRAY_SIZE(fsmc_grps),
 };
 
-/* clcd_lcdmode_pins */
+ 
 static const unsigned clcd_lcdmode_pins[] = { 49, 50 };
 static struct spear_muxreg clcd_lcdmode_muxreg[] = {
 	{
@@ -245,7 +236,7 @@ static struct spear_pingroup clcd_lcdmode_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(clcd_lcdmode_modemux),
 };
 
-/* clcd_pfmode_pins */
+ 
 static const unsigned clcd_pfmode_pins[] = { 47, 48, 49, 50 };
 static struct spear_muxreg clcd_pfmode_muxreg[] = {
 	{
@@ -279,7 +270,7 @@ static struct spear_function clcd_function = {
 	.ngroups = ARRAY_SIZE(clcd_grps),
 };
 
-/* tdm_pins */
+ 
 static const unsigned tdm_pins[] = { 34, 35, 36, 37, 38 };
 static struct spear_muxreg tdm_muxreg[] = {
 	{
@@ -316,7 +307,7 @@ static struct spear_function tdm_function = {
 	.ngroups = ARRAY_SIZE(tdm_grps),
 };
 
-/* i2c_clk_pins */
+ 
 static const unsigned i2c_clk_pins[] = { 45, 46, 47, 48 };
 static struct spear_muxreg i2c_clk_muxreg[] = {
 	{
@@ -352,7 +343,7 @@ static struct spear_function i2c_function = {
 	.ngroups = ARRAY_SIZE(i2c_grps),
 };
 
-/* caml_pins */
+ 
 static const unsigned caml_pins[] = { 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 };
 static struct spear_muxreg caml_muxreg[] = {
 	{
@@ -378,7 +369,7 @@ static struct spear_pingroup caml_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(caml_modemux),
 };
 
-/* camu_pins */
+ 
 static const unsigned camu_pins[] = { 16, 17, 18, 19, 20, 21, 45, 46, 47, 48 };
 static struct spear_muxreg camu_muxreg[] = {
 	{
@@ -411,7 +402,7 @@ static struct spear_function cam_function = {
 	.ngroups = ARRAY_SIZE(cam_grps),
 };
 
-/* dac_pins */
+ 
 static const unsigned dac_pins[] = { 43, 44 };
 static struct spear_muxreg dac_muxreg[] = {
 	{
@@ -445,7 +436,7 @@ static struct spear_function dac_function = {
 	.ngroups = ARRAY_SIZE(dac_grps),
 };
 
-/* i2s_pins */
+ 
 static const unsigned i2s_pins[] = { 39, 40, 41, 42 };
 static struct spear_muxreg i2s_muxreg[] = {
 	{
@@ -481,7 +472,7 @@ static struct spear_function i2s_function = {
 	.ngroups = ARRAY_SIZE(i2s_grps),
 };
 
-/* sdhci_4bit_pins */
+ 
 static const unsigned sdhci_4bit_pins[] = { 28, 29, 30, 31, 32, 33 };
 static struct spear_muxreg sdhci_4bit_muxreg[] = {
 	{
@@ -512,7 +503,7 @@ static struct spear_pingroup sdhci_4bit_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(sdhci_4bit_modemux),
 };
 
-/* sdhci_8bit_pins */
+ 
 static const unsigned sdhci_8bit_pins[] = { 24, 25, 26, 27, 28, 29, 30, 31, 32,
 	33 };
 static struct spear_muxreg sdhci_8bit_muxreg[] = {
@@ -551,7 +542,7 @@ static struct spear_function sdhci_function = {
 	.ngroups = ARRAY_SIZE(sdhci_grps),
 };
 
-/* gpio1_0_to_3_pins */
+ 
 static const unsigned gpio1_0_to_3_pins[] = { 39, 40, 41, 42 };
 static struct spear_muxreg gpio1_0_to_3_muxreg[] = {
 	{
@@ -577,7 +568,7 @@ static struct spear_pingroup gpio1_0_to_3_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gpio1_0_to_3_modemux),
 };
 
-/* gpio1_4_to_7_pins */
+ 
 static const unsigned gpio1_4_to_7_pins[] = { 43, 44, 45, 46 };
 
 static struct spear_muxreg gpio1_4_to_7_muxreg[] = {
@@ -612,7 +603,7 @@ static struct spear_function gpio1_function = {
 	.ngroups = ARRAY_SIZE(gpio1_grps),
 };
 
-/* pingroups */
+ 
 static struct spear_pingroup *spear300_pingroups[] = {
 	SPEAR3XX_COMMON_PINGROUPS,
 	&fsmc_2chips_pingroup,
@@ -631,7 +622,7 @@ static struct spear_pingroup *spear300_pingroups[] = {
 	&gpio1_4_to_7_pingroup,
 };
 
-/* functions */
+ 
 static struct spear_function *spear300_functions[] = {
 	SPEAR3XX_COMMON_FUNCTIONS,
 	&fsmc_function,

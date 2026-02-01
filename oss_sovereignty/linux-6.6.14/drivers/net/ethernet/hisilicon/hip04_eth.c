@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -59,13 +57,13 @@
 #define PPE_INTSTS			0x608
 #define PPE_RINT			0x604
 #define PPE_CFG_STS_MODE		0x700
-#endif /* CONFIG_HI13X1_GMAC */
+#endif  
 
 #define PPE_HIS_RX_PKT_CNT		0x804
 
 #define RESET_DREQ_ALL			0xffffffff
 
-/* REG_INTERRUPT */
+ 
 #define RCV_INT				BIT(10)
 #define RCV_NOBUF			BIT(8)
 #define RCV_DROP			BIT(7)
@@ -73,7 +71,7 @@
 #define DEF_INT_ERR			(RCV_NOBUF | RCV_DROP | TX_DROP)
 #define DEF_INT_MASK			(RCV_INT | DEF_INT_ERR)
 
-/* TX descriptor config */
+ 
 #define TX_FREE_MEM			BIT(0)
 #define TX_READ_ALLOC_L3		BIT(1)
 #if defined(CONFIG_HI13X1_GMAC)
@@ -88,7 +86,7 @@
 #define TX_L3_CHECKSUM			BIT(5)
 #define TX_LOOP_BACK			BIT(11)
 
-/* RX error */
+ 
 #define RX_PKT_DROP			BIT(0)
 #define RX_L2_ERR			BIT(1)
 #define RX_PKT_ERR			(RX_PKT_DROP | RX_L2_ERR)
@@ -128,7 +126,7 @@
 #define PPE_CFG_QOS_VMID_MODE		BIT(15)
 #define PPE_CFG_BUS_LOCAL_REL		(BIT(9) | BIT(15) | BIT(19) | BIT(23))
 
-/* buf unit size is cache_line_size, which is 64, so the shift is 6 */
+ 
 #define PPE_BUF_SIZE_SHIFT		6
 #define PPE_TX_BUF_HOLD			BIT(31)
 #define SOC_CACHE_LINE_MASK		0x3F
@@ -139,10 +137,10 @@
 #define PPE_CFG_QOS_VMID_MODE		BIT(14)
 #define PPE_CFG_BUS_LOCAL_REL		BIT(14)
 
-/* buf unit size is 1, so the shift is 6 */
+ 
 #define PPE_BUF_SIZE_SHIFT		0
 #define PPE_TX_BUF_HOLD			0
-#endif /* CONFIG_HI13X1_GMAC */
+#endif  
 
 #define PPE_CFG_RX_FIFO_FSFU		BIT(11)
 #define PPE_CFG_RX_DEPTH_SHIFT		16
@@ -244,7 +242,7 @@ struct hip04_priv {
 	struct regmap *map;
 	struct work_struct tx_timeout_task;
 
-	/* written only by tx cleanup */
+	 
 	unsigned int tx_tail ____cacheline_aligned_in_smp;
 };
 
@@ -372,20 +370,20 @@ static void hip04_mac_enable(struct net_device *ndev)
 	struct hip04_priv *priv = netdev_priv(ndev);
 	u32 val;
 
-	/* enable tx & rx */
+	 
 	val = readl_relaxed(priv->base + GE_PORT_EN);
 	val |= GE_RX_PORT_EN | GE_TX_PORT_EN;
 	writel_relaxed(val, priv->base + GE_PORT_EN);
 
-	/* clear rx int */
+	 
 	val = RCV_INT;
 	writel_relaxed(val, priv->base + PPE_RINT);
 
-	/* config recv int */
+	 
 	val = GE_RX_INT_THRESHOLD | GE_RX_TIMEOUT;
 	writel_relaxed(val, priv->base + PPE_CFG_RX_PKT_INT);
 
-	/* enable interrupt */
+	 
 	priv->reg_inten = DEF_INT_MASK;
 	writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
 }
@@ -395,11 +393,11 @@ static void hip04_mac_disable(struct net_device *ndev)
 	struct hip04_priv *priv = netdev_priv(ndev);
 	u32 val;
 
-	/* disable int */
+	 
 	priv->reg_inten &= ~(DEF_INT_MASK);
 	writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
 
-	/* disable tx & rx */
+	 
 	val = readl_relaxed(priv->base + GE_PORT_EN);
 	val &= ~(GE_RX_PORT_EN | GE_TX_PORT_EN);
 	writel_relaxed(val, priv->base + GE_PORT_EN);
@@ -481,7 +479,7 @@ static int hip04_tx_reclaim(struct net_device *ndev, bool force)
 	}
 
 	priv->tx_tail = tx_tail;
-	smp_wmb(); /* Ensure tx_tail visible to xmit */
+	smp_wmb();  
 
 out:
 	if (pkts_compl || bytes_compl)
@@ -497,7 +495,7 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
 {
 	unsigned long ns = priv->tx_coalesce_usecs * NSEC_PER_USEC / 2;
 
-	/* allow timer to fire after half the time at the earliest */
+	 
 	hrtimer_start_range_ns(&priv->tx_coalesce_timer, ns_to_ktime(ns),
 			       ns, HRTIMER_MODE_REL);
 }
@@ -550,13 +548,13 @@ hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	stats->tx_bytes += skb->len;
 	stats->tx_packets++;
 
-	/* Ensure tx_head update visible to tx reclaim */
+	 
 	smp_wmb();
 
-	/* queue is getting full, better start cleaning up now */
+	 
 	if (count >= priv->tx_coalesce_frames) {
 		if (napi_schedule_prep(&priv->napi)) {
-			/* disable rx interrupt and timer */
+			 
 			priv->reg_inten &= ~(RCV_INT);
 			writel_relaxed(DEF_INT_MASK & ~RCV_INT,
 				       priv->base + PPE_INTEN);
@@ -564,7 +562,7 @@ hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			__napi_schedule(&priv->napi);
 		}
 	} else if (!hrtimer_is_queued(&priv->tx_coalesce_timer)) {
-		/* cleanup not pending yet, start a new timer */
+		 
 		hip04_start_tx_timer(priv);
 	}
 
@@ -586,7 +584,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	u16 len;
 	u32 err;
 
-	/* clean up tx descriptors */
+	 
 	tx_remaining = hip04_tx_reclaim(ndev, false);
 	priv->rx_cnt_remaining += hip04_recv_cnt(priv);
 	while (priv->rx_cnt_remaining && !last) {
@@ -645,13 +643,13 @@ refill:
 	}
 
 	if (!(priv->reg_inten & RCV_INT)) {
-		/* enable rx interrupt */
+		 
 		priv->reg_inten |= RCV_INT;
 		writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
 	}
 	napi_complete_done(napi, rx);
 done:
-	/* start a new timer if necessary */
+	 
 	if (rx < budget && tx_remaining)
 		hip04_start_tx_timer(priv);
 
@@ -683,7 +681,7 @@ static irqreturn_t hip04_mac_interrupt(int irq, void *dev_id)
 	}
 
 	if (ists & RCV_INT && napi_schedule_prep(&priv->napi)) {
-		/* disable rx interrupt */
+		 
 		priv->reg_inten &= ~(RCV_INT);
 		writel_relaxed(DEF_INT_MASK & ~RCV_INT, priv->base + PPE_INTEN);
 		hrtimer_cancel(&priv->tx_coalesce_timer);
@@ -700,7 +698,7 @@ static enum hrtimer_restart tx_done(struct hrtimer *hrtimer)
 	priv = container_of(hrtimer, struct hip04_priv, tx_coalesce_timer);
 
 	if (napi_schedule_prep(&priv->napi)) {
-		/* disable rx interrupt */
+		 
 		priv->reg_inten &= ~(RCV_INT);
 		writel_relaxed(DEF_INT_MASK & ~RCV_INT, priv->base + PPE_INTEN);
 		__napi_schedule(&priv->napi);
@@ -936,12 +934,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
 
 	hrtimer_init(&priv->tx_coalesce_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 
-	/* BQL will try to keep the TX queue as short as possible, but it can't
-	 * be faster than tx_coalesce_usecs, so we need a fast timeout here,
-	 * but also long enough to gather up enough frames to ensure we don't
-	 * get more interrupts than necessary.
-	 * 200us is enough for 16 frames of 1500 bytes at gigabit ethernet rate
-	 */
+	 
 	priv->tx_coalesce_frames = TX_DESC_NUM * 3 / 4;
 	priv->tx_coalesce_usecs = 200;
 	priv->tx_coalesce_timer.function = tx_done;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/dpi.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "DPI"
 
@@ -52,7 +44,7 @@ static struct dpi_data *dpi_get_data_from_dssdev(struct omap_dss_device *dssdev)
 	return container_of(dssdev, struct dpi_data, output);
 }
 
-/* only used in non-DT mode */
+ 
 static struct dpi_data *dpi_get_data_from_pdev(struct platform_device *pdev)
 {
 	return platform_get_drvdata(pdev);
@@ -60,11 +52,7 @@ static struct dpi_data *dpi_get_data_from_pdev(struct platform_device *pdev)
 
 static struct dss_pll *dpi_get_pll(enum omap_channel channel)
 {
-	/*
-	 * XXX we can't currently use DSI PLL for DPI with OMAP3, as the DSI PLL
-	 * would also be used for DISPC fclk. Meaning, when the DPI output is
-	 * disabled, DISPC clock will be disabled, and TV out will stop.
-	 */
+	 
 	switch (omapdss_get_version()) {
 	case OMAPDSS_VER_OMAP24xx:
 	case OMAPDSS_VER_OMAP34xx_ES1:
@@ -122,7 +110,7 @@ static enum omap_dss_clk_source dpi_get_alt_clk_src(enum omap_channel channel)
 	case OMAP_DSS_CHANNEL_LCD3:
 		return OMAP_DSS_CLK_SRC_DSI2_PLL_HSDIV_DISPC;
 	default:
-		/* this shouldn't happen */
+		 
 		WARN_ON(1);
 		return OMAP_DSS_CLK_SRC_FCK;
 	}
@@ -131,11 +119,11 @@ static enum omap_dss_clk_source dpi_get_alt_clk_src(enum omap_channel channel)
 struct dpi_clk_calc_ctx {
 	struct dss_pll *pll;
 
-	/* inputs */
+	 
 
 	unsigned long pck_min, pck_max;
 
-	/* outputs */
+	 
 
 	struct dss_pll_clock_info dsi_cinfo;
 	unsigned long fck;
@@ -147,11 +135,7 @@ static bool dpi_calc_dispc_cb(int lckd, int pckd, unsigned long lck,
 {
 	struct dpi_clk_calc_ctx *ctx = data;
 
-	/*
-	 * Odd dividers give us uneven duty cycle, causing problem when level
-	 * shifted. So skip all odd dividers when the pixel clock is on the
-	 * higher side.
-	 */
+	 
 	if (ctx->pck_min >= 100000000) {
 		if (lckd > 1 && lckd % 2 != 0)
 			return false;
@@ -174,11 +158,7 @@ static bool dpi_calc_hsdiv_cb(int m_dispc, unsigned long dispc,
 {
 	struct dpi_clk_calc_ctx *ctx = data;
 
-	/*
-	 * Odd dividers give us uneven duty cycle, causing problem when level
-	 * shifted. So skip all odd dividers when the pixel clock is on the
-	 * higher side.
-	 */
+	 
 	if (m_dispc > 1 && m_dispc % 2 != 0 && ctx->pck_min >= 100000000)
 		return false;
 
@@ -241,12 +221,7 @@ static bool dpi_dss_clk_calc(unsigned long pck, struct dpi_clk_calc_ctx *ctx)
 {
 	int i;
 
-	/*
-	 * DSS fck gives us very few possibilities, so finding a good pixel
-	 * clock may not be possible. We try multiple times to find the clock,
-	 * each time widening the pixel clock range we look for, up to
-	 * +/- ~15MHz.
-	 */
+	 
 
 	for (i = 0; i < 25; ++i) {
 		bool ok;
@@ -547,7 +522,7 @@ static int dpi_verify_dsi_pll(struct dss_pll *pll)
 {
 	int r;
 
-	/* do initial setup with the PLL to see if it is operational */
+	 
 
 	r = dss_pll_enable(pll);
 	if (r)
@@ -591,7 +566,7 @@ static void dpi_init_pll(struct dpi_data *dpi)
 	if (!pll)
 		return;
 
-	/* On DRA7 we need to set a mux to use the PLL */
+	 
 	if (omapdss_get_version() == OMAPDSS_VER_DRA7xx)
 		dss_ctrl_pll_set_control_mux(pll->id, dpi->output.dispc_channel);
 
@@ -603,12 +578,7 @@ static void dpi_init_pll(struct dpi_data *dpi)
 	dpi->pll = pll;
 }
 
-/*
- * Return a hardcoded channel for the DPI output. This should work for
- * current use cases, but this can be later expanded to either resolve
- * the channel in some more dynamic manner, or get the channel as a user
- * parameter.
- */
+ 
 static enum omap_channel dpi_get_channel(int port_num)
 {
 	switch (omapdss_get_version()) {

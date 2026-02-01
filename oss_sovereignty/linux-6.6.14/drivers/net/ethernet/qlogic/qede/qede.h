@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QEDE_H_
 #define _QEDE_H_
@@ -58,7 +55,7 @@ struct qede_stats_common {
 	u64 link_change_count;
 	u64 ptp_skip_txts;
 
-	/* port */
+	 
 	u64 rx_64_byte_packets;
 	u64 rx_65_to_127_byte_packets;
 	u64 rx_128_to_255_byte_packets;
@@ -205,29 +202,24 @@ struct qede_dev {
 
 	struct qed_int_info		int_info;
 
-	/* Smaller private variant of the RTNL lock */
+	 
 	struct mutex			qede_lock;
-	u32				state; /* Protected by qede_lock */
+	u32				state;  
 	u16				rx_buf_size;
 	u32				rx_copybreak;
 
-	/* L2 header size + 2*VLANs (8 bytes) + LLC SNAP (8 bytes) */
+	 
 #define ETH_OVERHEAD			(ETH_HLEN + 8 + 8)
-	/* Max supported alignment is 256 (8 shift)
-	 * minimal alignment shift 6 is optimal for 57xxx HW performance
-	 */
+	 
 #define QEDE_RX_ALIGN_SHIFT		max(6, min(8, L1_CACHE_SHIFT))
-	/* We assume skb_build() uses sizeof(struct skb_shared_info) bytes
-	 * at the end of skb->data, to avoid wasting a full cache line.
-	 * This reduces memory use (skb->truesize).
-	 */
+	 
 #define QEDE_FW_RX_ALIGN_END					\
 	max_t(u64, 1UL << QEDE_RX_ALIGN_SHIFT,			\
 	      SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
 	struct qede_stats		stats;
 
-	/* Bitfield to track initialized RSS params */
+	 
 	u32				rss_params_inited;
 #define QEDE_RSS_INDIR_INITED		BIT(0)
 #define QEDE_RSS_KEY_INITED		BIT(1)
@@ -237,7 +229,7 @@ struct qede_dev {
 	u32				rss_key[10];
 	u8				rss_caps;
 
-	/* Both must be a power of two */
+	 
 	u16				q_num_rx_buffers;
 	u16				q_num_tx_buffers;
 
@@ -272,7 +264,7 @@ struct qede_dev {
 	struct delayed_work		periodic_task;
 	unsigned long			stats_coal_ticks;
 	u32				stats_coal_usecs;
-	spinlock_t			stats_lock; /* lock for vport stats access */
+	spinlock_t			stats_lock;  
 };
 
 enum QEDE_STATE {
@@ -286,10 +278,7 @@ enum QEDE_STATE {
 #define	MAX_NUM_TC	8
 #define	MAX_NUM_PRI	8
 
-/* The driver supports the new build_skb() API:
- * RX ring buffer contains pointer to kmalloc() data only,
- * skb are built only after the frame was DMA-ed.
- */
+ 
 struct sw_rx_data {
 	struct page *data;
 	dma_addr_t mapping;
@@ -303,20 +292,11 @@ enum qede_agg_state {
 };
 
 struct qede_agg_info {
-	/* rx_buf is a data buffer that can be placed / consumed from rx bd
-	 * chain. It has two purposes: We will preallocate the data buffer
-	 * for each aggregation when we open the interface and will place this
-	 * buffer on the rx-bd-ring when we receive TPA_START. We don't want
-	 * to be in a state where allocation fails, as we can't reuse the
-	 * consumer buffer in the rx-chain since FW may still be writing to it
-	 * (since header needs to be modified for TPA).
-	 * The second purpose is to keep a pointer to the bd buffer during
-	 * aggregation.
-	 */
+	 
 	struct sw_rx_data buffer;
 	struct sk_buff *skb;
 
-	/* We need some structs from the start cookie until termination */
+	 
 	u16 vlan_tag;
 
 	bool tpa_start_fail;
@@ -330,7 +310,7 @@ struct qede_rx_queue {
 	__le16 *hw_cons_ptr;
 	void __iomem *hw_rxq_prod_addr;
 
-	/* Required for the allocation of replacement buffers */
+	 
 	struct device *dev;
 
 	struct bpf_prog *xdp_prog;
@@ -342,7 +322,7 @@ struct qede_rx_queue {
 	u8 data_direction;
 	u8 rxq_id;
 
-	/* Used once per each NAPI run */
+	 
 	u16 num_rx_buffers;
 
 	u16 rx_headroom;
@@ -354,10 +334,10 @@ struct qede_rx_queue {
 	struct qed_chain rx_bd_ring;
 	struct qed_chain rx_comp_ring ____cacheline_aligned;
 
-	/* GRO */
+	 
 	struct qede_agg_info tpa_info[ETH_TPA_MAX_AGGS_NUM];
 
-	/* Used once per each NAPI run */
+	 
 	u64 rcv_pkts;
 
 	u64 rx_hw_errors;
@@ -378,7 +358,7 @@ union db_prod {
 struct sw_tx_bd {
 	struct sk_buff *skb;
 	u8 flags;
-/* Set on the first BD descriptor when there is a split BD */
+ 
 #define QEDE_TSO_SPLIT_BD		BIT(0)
 };
 
@@ -393,7 +373,7 @@ struct qede_tx_queue {
 	bool				is_legacy;
 	u16				sw_tx_cons;
 	u16				sw_tx_prod;
-	u16				num_tx_buffers; /* Slowpath only */
+	u16				num_tx_buffers;  
 
 	u64				xmit_pkts;
 	u64				stopped_cnt;
@@ -401,16 +381,16 @@ struct qede_tx_queue {
 
 	__le16				*hw_cons_ptr;
 
-	/* Needed for the mapping of packets */
+	 
 	struct device			*dev;
 
 	void __iomem			*doorbell_addr;
 	union db_prod			tx_db;
 
-	/* Spinlock for XDP queues in case of XDP_REDIRECT */
+	 
 	spinlock_t			xdp_tx_lock;
 
-	int				index; /* Slowpath only */
+	int				index;  
 #define QEDE_TXQ_XDP_TO_IDX(edev, txq)	((txq)->index - \
 					 QEDE_MAX_TSS_CNT(edev))
 #define QEDE_TXQ_IDX_TO_XDP(edev, idx)	((idx) + QEDE_MAX_TSS_CNT(edev))
@@ -424,9 +404,7 @@ struct qede_tx_queue {
 	[QEDE_NDEV_TXQ_ID_TO_TXQ_COS(edev, idx)]))
 #define QEDE_FP_TC0_TXQ(fp)		(&((fp)->txq[0]))
 
-	/* Regular Tx requires skb + metadata for release purpose,
-	 * while XDP requires the pages and the mapped address.
-	 */
+	 
 	union {
 		struct sw_tx_bd		*skbs;
 		struct sw_tx_xdp	*xdp;
@@ -434,7 +412,7 @@ struct qede_tx_queue {
 
 	struct qed_chain		tx_pbl;
 
-	/* Slowpath; Should be kept in end [unless missing padding] */
+	 
 	void				*handle;
 	u16				cos;
 	u16				ndev_txq_id;
@@ -474,7 +452,7 @@ struct qede_fastpath {
 	char				name[IFNAMSIZ + 8];
 };
 
-/* Debug print definitions */
+ 
 #define DP_NAME(edev)			netdev_name((edev)->ndev)
 
 #define XMIT_PLAIN			0
@@ -523,7 +501,7 @@ struct qede_reload_args {
 	} u;
 };
 
-/* Datapath functions definition */
+ 
 netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev);
 int qede_xdp_transmit(struct net_device *dev, int n_frames,
 		      struct xdp_frame **frames, u32 flags);
@@ -538,7 +516,7 @@ int qede_free_tx_pkt(struct qede_dev *edev,
 int qede_poll(struct napi_struct *napi, int budget);
 irqreturn_t qede_msix_fp_int(int irq, void *fp_cookie);
 
-/* Filtering function definitions */
+ 
 void qede_force_mac(void *dev, u8 *mac, bool forced);
 void qede_udp_ports_update(void *dev, u16 vxlan_port, u16 geneve_port);
 int qede_set_mac_addr(struct net_device *ndev, void *p);
@@ -606,4 +584,4 @@ int qede_set_per_coalesce(struct net_device *dev, u32 queue,
 #define for_each_cos_in_txq(edev, var) \
 	for ((var) = 0; (var) < (edev)->dev_info.num_tc; (var)++)
 
-#endif /* _QEDE_H_ */
+#endif  

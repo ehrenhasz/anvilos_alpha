@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Synopsys DesignWare PCIe host controller driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		https://www.samsung.com
- *
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/irqchip/chained_irq.h>
@@ -53,7 +46,7 @@ static struct msi_domain_info dw_pcie_msi_domain_info = {
 	.chip	= &dw_pcie_msi_irq_chip,
 };
 
-/* MSI int handler */
+ 
 irqreturn_t dw_handle_msi_irq(struct dw_pcie_rp *pp)
 {
 	int i, pos;
@@ -85,7 +78,7 @@ irqreturn_t dw_handle_msi_irq(struct dw_pcie_rp *pp)
 	return ret;
 }
 
-/* Chained MSI interrupt service routine */
+ 
 static void dw_chained_msi_isr(struct irq_desc *desc)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
@@ -278,7 +271,7 @@ static void dw_pcie_msi_init(struct dw_pcie_rp *pp)
 	if (!pci_msi_enabled() || !pp->has_msi_ctrl)
 		return;
 
-	/* Program the msi_data */
+	 
 	dw_pcie_writel_dbi(pci, PCIE_MSI_ADDR_LO, lower_32_bits(msi_target));
 	dw_pcie_writel_dbi(pci, PCIE_MSI_ADDR_HI, upper_32_bits(msi_target));
 }
@@ -291,7 +284,7 @@ static int dw_pcie_parse_split_msi_irq(struct dw_pcie_rp *pp)
 	u32 ctrl, max_vectors;
 	int irq;
 
-	/* Parse any "msiX" IRQs described in the devicetree */
+	 
 	for (ctrl = 0; ctrl < MAX_MSI_CTRLS; ctrl++) {
 		char msi_name[] = "msiX";
 
@@ -307,7 +300,7 @@ static int dw_pcie_parse_split_msi_irq(struct dw_pcie_rp *pp)
 		pp->msi_irq[ctrl] = irq;
 	}
 
-	/* If no "msiX" IRQs, caller should fallback to "msi" IRQ */
+	 
 	if (ctrl == 0)
 		return -ENXIO;
 
@@ -368,16 +361,7 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
 						    dw_chained_msi_isr, pp);
 	}
 
-	/*
-	 * Even though the iMSI-RX Module supports 64-bit addresses some
-	 * peripheral PCIe devices may lack 64-bit message support. In
-	 * order not to miss MSI TLPs from those devices the MSI target
-	 * address has to be within the lowest 4GB.
-	 *
-	 * Note until there is a better alternative found the reservation is
-	 * done by allocating from the artificially limited DMA-coherent
-	 * memory.
-	 */
+	 
 	ret = dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
 	if (ret)
 		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
@@ -429,7 +413,7 @@ int dw_pcie_host_init(struct dw_pcie_rp *pp)
 
 	pp->bridge = bridge;
 
-	/* Get the I/O range from DT */
+	 
 	win = resource_list_first_type(&bridge->windows, IORESOURCE_IO);
 	if (win) {
 		pp->io_size = resource_size(win->res);
@@ -437,7 +421,7 @@ int dw_pcie_host_init(struct dw_pcie_rp *pp)
 		pp->io_base = pci_pio_to_address(win->res->start);
 	}
 
-	/* Set default bus ops */
+	 
 	bridge->ops = &dw_pcie_ops;
 	bridge->child_ops = &dw_child_pcie_ops;
 
@@ -452,10 +436,7 @@ int dw_pcie_host_init(struct dw_pcie_rp *pp)
 				     of_property_read_bool(np, "msi-parent") ||
 				     of_property_read_bool(np, "msi-map"));
 
-		/*
-		 * For the has_msi_ctrl case the default assignment is handled
-		 * in the dw_pcie_msi_host_init().
-		 */
+		 
 		if (!pp->has_msi_ctrl && !pp->num_vectors) {
 			pp->num_vectors = MSI_DEF_NUM_VECTORS;
 		} else if (pp->num_vectors > MAX_MSI_IRQS) {
@@ -493,7 +474,7 @@ int dw_pcie_host_init(struct dw_pcie_rp *pp)
 			goto err_remove_edma;
 	}
 
-	/* Ignore errors, the link may come up later */
+	 
 	dw_pcie_wait_for_link(pci);
 
 	bridge->sysdata = pp;
@@ -549,14 +530,7 @@ static void __iomem *dw_pcie_other_conf_map_bus(struct pci_bus *bus,
 	int type, ret;
 	u32 busdev;
 
-	/*
-	 * Checking whether the link is up here is a last line of defense
-	 * against platforms that forward errors on the system bus as
-	 * SError upon PCI configuration transactions issued when the link
-	 * is down. This check is racy by definition and does not stop
-	 * the system from triggering an SError if the link goes down
-	 * after this check is performed.
-	 */
+	 
 	if (!dw_pcie_link_up(pci))
 		return NULL;
 
@@ -650,16 +624,13 @@ static int dw_pcie_iatu_setup(struct dw_pcie_rp *pp)
 	struct resource_entry *entry;
 	int i, ret;
 
-	/* Note the very first outbound ATU is used for CFG IOs */
+	 
 	if (!pci->num_ob_windows) {
 		dev_err(pci->dev, "No outbound iATU found\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Ensure all out/inbound windows are disabled before proceeding with
-	 * the MEM/IO (dma-)ranges setups.
-	 */
+	 
 	for (i = 0; i < pci->num_ob_windows; i++)
 		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_OB, i);
 
@@ -737,10 +708,7 @@ int dw_pcie_setup_rc(struct dw_pcie_rp *pp)
 	u32 val, ctrl, num_ctrls;
 	int ret;
 
-	/*
-	 * Enable DBI read-only registers for writing/updating configuration.
-	 * Write permission gets disabled towards the end of this function.
-	 */
+	 
 	dw_pcie_dbi_ro_wr_en(pci);
 
 	dw_pcie_setup(pci);
@@ -748,7 +716,7 @@ int dw_pcie_setup_rc(struct dw_pcie_rp *pp)
 	if (pp->has_msi_ctrl) {
 		num_ctrls = pp->num_vectors / MAX_MSI_IRQS_PER_CTRL;
 
-		/* Initialize IRQ Status array */
+		 
 		for (ctrl = 0; ctrl < num_ctrls; ctrl++) {
 			dw_pcie_writel_dbi(pci, PCIE_MSI_INTR0_MASK +
 					    (ctrl * MSI_REG_CTRL_BLOCK_SIZE),
@@ -761,34 +729,30 @@ int dw_pcie_setup_rc(struct dw_pcie_rp *pp)
 
 	dw_pcie_msi_init(pp);
 
-	/* Setup RC BARs */
+	 
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, 0x00000004);
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_1, 0x00000000);
 
-	/* Setup interrupt pins */
+	 
 	val = dw_pcie_readl_dbi(pci, PCI_INTERRUPT_LINE);
 	val &= 0xffff00ff;
 	val |= 0x00000100;
 	dw_pcie_writel_dbi(pci, PCI_INTERRUPT_LINE, val);
 
-	/* Setup bus numbers */
+	 
 	val = dw_pcie_readl_dbi(pci, PCI_PRIMARY_BUS);
 	val &= 0xff000000;
 	val |= 0x00ff0100;
 	dw_pcie_writel_dbi(pci, PCI_PRIMARY_BUS, val);
 
-	/* Setup command register */
+	 
 	val = dw_pcie_readl_dbi(pci, PCI_COMMAND);
 	val &= 0xffff0000;
 	val |= PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 		PCI_COMMAND_MASTER | PCI_COMMAND_SERR;
 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);
 
-	/*
-	 * If the platform provides its own child bus config accesses, it means
-	 * the platform uses its own address translation component rather than
-	 * ATU, so we should not program the ATU here.
-	 */
+	 
 	if (pp->bridge->child_ops == &dw_child_pcie_ops) {
 		ret = dw_pcie_iatu_setup(pp);
 		if (ret)
@@ -797,7 +761,7 @@ int dw_pcie_setup_rc(struct dw_pcie_rp *pp)
 
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, 0);
 
-	/* Program correct class for RC */
+	 
 	dw_pcie_writew_dbi(pci, PCI_CLASS_DEVICE, PCI_CLASS_BRIDGE_PCI);
 
 	val = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
@@ -816,10 +780,7 @@ int dw_pcie_suspend_noirq(struct dw_pcie *pci)
 	u32 val;
 	int ret;
 
-	/*
-	 * If L1SS is supported, then do not put the link into L2 as some
-	 * devices such as NVMe expect low resume latency.
-	 */
+	 
 	if (dw_pcie_readw_dbi(pci, offset + PCI_EXP_LNKCTL) & PCI_EXP_LNKCTL_ASPM_L1)
 		return 0;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Realtek RTL2832 DVB-T demodulator driver
- *
- * Copyright (C) 2012 Thomas Mair <thomas.mair86@gmail.com>
- * Copyright (C) 2012-2014 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "rtl2832_priv.h"
 
@@ -216,10 +211,7 @@ static int rtl2832_set_if(struct dvb_frontend *fe, u32 if_freq)
 	u64 pset_iffreq;
 	u8 en_bbin = (if_freq == 0 ? 0x1 : 0x0);
 
-	/*
-	* PSET_IFFREQ = - floor((IfFreqHz % CrystalFreqHz) * pow(2, 22)
-	*		/ CrystalFreqHz)
-	*/
+	 
 	pset_iffreq = if_freq % dev->pdata->clk;
 	pset_iffreq *= 0x400000;
 	pset_iffreq = div_u64(pset_iffreq, dev->pdata->clk);
@@ -249,7 +241,7 @@ static int rtl2832_init(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *c = &dev->fe.dtv_property_cache;
 	const struct rtl2832_reg_value *init;
 	int i, ret, len;
-	/* initialization values for the demodulator registers */
+	 
 	struct rtl2832_reg_value rtl2832_initial_regs[] = {
 		{DVBT_AD_EN_REG,		0x1},
 		{DVBT_AD_EN_REG1,		0x1},
@@ -308,7 +300,7 @@ static int rtl2832_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* load tuner specific settings */
+	 
 	dev_dbg(&client->dev, "load settings for tuner=%02x\n",
 		dev->pdata->tuner);
 	switch (dev->pdata->tuner) {
@@ -349,7 +341,7 @@ static int rtl2832_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* init stats here in order signal app which stats are supported */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.len = 1;
@@ -409,7 +401,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 	u64 bw_mode, num, num2;
 	u32 resamp_ratio, cfreq_off_ratio;
 	static u8 bw_params[3][32] = {
-	/* 6 MHz bandwidth */
+	 
 		{
 		0xf5, 0xff, 0x15, 0x38, 0x5d, 0x6d, 0x52, 0x07, 0xfa, 0x2f,
 		0x53, 0xf5, 0x3f, 0xca, 0x0b, 0x91, 0xea, 0x30, 0x63, 0xb2,
@@ -417,7 +409,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 		0x19, 0xe0,
 		},
 
-	/*  7 MHz bandwidth */
+	 
 		{
 		0xe7, 0xcc, 0xb5, 0xba, 0xe8, 0x2f, 0x67, 0x61, 0x00, 0xaf,
 		0x86, 0xf2, 0xbf, 0x59, 0x04, 0x11, 0xb6, 0x33, 0xa4, 0x30,
@@ -425,7 +417,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 		0x19, 0x10,
 		},
 
-	/*  8 MHz bandwidth */
+	 
 		{
 		0x09, 0xf6, 0xd2, 0xa7, 0x9a, 0xc9, 0x27, 0x77, 0x06, 0xbf,
 		0xec, 0xf4, 0x4f, 0x0b, 0xfc, 0x01, 0x63, 0x35, 0x54, 0xa7,
@@ -437,11 +429,11 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 	dev_dbg(&client->dev, "frequency=%u bandwidth_hz=%u inversion=%u\n",
 		c->frequency, c->bandwidth_hz, c->inversion);
 
-	/* program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
-	/* If the frontend has get_if_frequency(), use it */
+	 
 	if (fe->ops.tuner_ops.get_if_frequency) {
 		u32 if_freq;
 
@@ -481,10 +473,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* calculate and set resample ratio
-	* RSAMP_RATIO = floor(CrystalFreqHz * 7 * pow(2, 22)
-	*	/ ConstWithBandwidthMode)
-	*/
+	 
 	num = dev->pdata->clk * 7ULL;
 	num *= 0x400000;
 	num = div_u64(num, bw_mode);
@@ -493,10 +482,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* calculate and set cfreq off ratio
-	* CFREQ_OFF_RATIO = - floor(ConstWithBandwidthMode * pow(2, 20)
-	*	/ (CrystalFreqHz * 7))
-	*/
+	 
 	num = bw_mode << 20;
 	num2 = dev->pdata->clk * 7ULL;
 	num = div_u64(num, num2);
@@ -506,7 +492,7 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* soft reset */
+	 
 	ret = rtl2832_wr_demod_reg(dev, DVBT_SOFT_RST, 0x1);
 	if (ret)
 		goto err;
@@ -664,9 +650,9 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	dev->fe_status = *status;
 
-	/* signal strength */
+	 
 	if (dev->fe_status & FE_HAS_SIGNAL) {
-		/* read digital AGC */
+		 
 		ret = regmap_bulk_read(dev->regmap, 0x305, &u8tmp, 1);
 		if (ret)
 			goto err;
@@ -682,7 +668,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (dev->fe_status & FE_HAS_VITERBI) {
 		unsigned hierarchy, constellation;
 		#define CONSTELLATION_NUM 3
@@ -697,12 +683,12 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		if (ret)
 			goto err;
 
-		constellation = (u8tmp >> 2) & 0x03; /* [3:2] */
+		constellation = (u8tmp >> 2) & 0x03;  
 		ret = -EINVAL;
 		if (constellation > CONSTELLATION_NUM - 1)
 			goto err;
 
-		hierarchy = (u8tmp >> 4) & 0x07; /* [6:4] */
+		hierarchy = (u8tmp >> 4) & 0x07;  
 		if (hierarchy > HIERARCHY_NUM - 1)
 			goto err;
 
@@ -725,7 +711,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* BER */
+	 
 	if (dev->fe_status & FE_HAS_LOCK) {
 		ret = regmap_bulk_read(dev->regmap, 0x34e, buf, 2);
 		if (ret)
@@ -756,7 +742,7 @@ static int rtl2832_read_snr(struct dvb_frontend *fe, u16 *snr)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 
-	/* report SNR in resolution of 0.1 dB */
+	 
 	if (c->cnr.stat[0].scale == FE_SCALE_DECIBEL)
 		*snr = div_s64(c->cnr.stat[0].svalue, 100);
 	else
@@ -775,19 +761,14 @@ static int rtl2832_read_ber(struct dvb_frontend *fe, u32 *ber)
 	return 0;
 }
 
-/*
- * I2C gate/mux/repeater logic
- * There is delay mechanism to avoid unneeded I2C gate open / close. Gate close
- * is delayed here a little bit in order to see if there is sequence of I2C
- * messages sent to same I2C bus.
- */
+ 
 static void rtl2832_i2c_gate_work(struct work_struct *work)
 {
 	struct rtl2832_dev *dev = container_of(work, struct rtl2832_dev, i2c_gate_work.work);
 	struct i2c_client *client = dev->client;
 	int ret;
 
-	/* close gate */
+	 
 	ret = regmap_update_bits(dev->regmap, 0x101, 0x08, 0x00);
 	if (ret)
 		goto err;
@@ -803,10 +784,10 @@ static int rtl2832_select(struct i2c_mux_core *muxc, u32 chan_id)
 	struct i2c_client *client = dev->client;
 	int ret;
 
-	/* terminate possible gate closing */
+	 
 	cancel_delayed_work(&dev->i2c_gate_work);
 
-	/* open gate */
+	 
 	ret = regmap_update_bits(dev->regmap, 0x101, 0x08, 0x08);
 	if (ret)
 		goto err;
@@ -952,7 +933,7 @@ static int rtl2832_pid_filter_ctrl(struct dvb_frontend *fe, int onoff)
 
 	dev_dbg(&client->dev, "onoff=%d, slave_ts=%d\n", onoff, dev->slave_ts);
 
-	/* enable / disable PID filter */
+	 
 	if (onoff)
 		u8tmp = 0x80;
 	else
@@ -982,7 +963,7 @@ static int rtl2832_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid,
 	dev_dbg(&client->dev, "index=%d pid=%04x onoff=%d slave_ts=%d\n",
 		index, pid, onoff, dev->slave_ts);
 
-	/* skip invalid PIDs (0x2000) */
+	 
 	if (pid > 0x1fff || index > 32)
 		return 0;
 
@@ -991,7 +972,7 @@ static int rtl2832_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid,
 	else
 		clear_bit(index, &dev->filters);
 
-	/* enable / disable PIDs */
+	 
 	buf[0] = (dev->filters >>  0) & 0xff;
 	buf[1] = (dev->filters >>  8) & 0xff;
 	buf[2] = (dev->filters >> 16) & 0xff;
@@ -1004,7 +985,7 @@ static int rtl2832_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid,
 	if (ret)
 		goto err;
 
-	/* add PID */
+	 
 	buf[0] = (pid >> 8) & 0xff;
 	buf[1] = (pid >> 0) & 0xff;
 
@@ -1042,20 +1023,20 @@ static int rtl2832_probe(struct i2c_client *client)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* allocate memory for the internal state */
+	 
 	dev = kzalloc(sizeof(struct rtl2832_dev), GFP_KERNEL);
 	if (dev == NULL) {
 		ret = -ENOMEM;
 		goto err;
 	}
 
-	/* setup the state */
+	 
 	i2c_set_clientdata(client, dev);
 	dev->client = client;
 	dev->pdata = client->dev.platform_data;
 	dev->sleeping = true;
 	INIT_DELAYED_WORK(&dev->i2c_gate_work, rtl2832_i2c_gate_work);
-	/* create regmap */
+	 
 	dev->regmap_config.reg_bits =  8;
 	dev->regmap_config.val_bits =  8;
 	dev->regmap_config.volatile_reg = rtl2832_volatile_reg;
@@ -1069,12 +1050,12 @@ static int rtl2832_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* check if the demod is there */
+	 
 	ret = regmap_bulk_read(dev->regmap, 0x000, &tmp, 1);
 	if (ret)
 		goto err_regmap_exit;
 
-	/* create muxed i2c adapter for demod tuner bus */
+	 
 	dev->muxc = i2c_mux_alloc(i2c, &i2c->dev, 1, 0, I2C_MUX_LOCKED,
 				  rtl2832_select, rtl2832_deselect);
 	if (!dev->muxc) {
@@ -1086,11 +1067,11 @@ static int rtl2832_probe(struct i2c_client *client)
 	if (ret)
 		goto err_regmap_exit;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&dev->fe.ops, &rtl2832_ops, sizeof(struct dvb_frontend_ops));
 	dev->fe.demodulator_priv = dev;
 
-	/* setup callbacks */
+	 
 	pdata->get_dvb_frontend = rtl2832_get_dvb_frontend;
 	pdata->get_i2c_adapter = rtl2832_get_i2c_adapter;
 	pdata->slave_ts_ctrl = rtl2832_slave_ts_ctrl;

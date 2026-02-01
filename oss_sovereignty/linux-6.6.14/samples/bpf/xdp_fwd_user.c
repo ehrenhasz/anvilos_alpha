@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2017-18 David Ahern <dsahern@gmail.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/if_link.h>
@@ -39,7 +29,7 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
 		return err;
 	}
 
-	/* Adding ifindex as a possible egress TX port */
+	 
 	err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
 	if (err)
 		printf("ERROR: failed using device %s as TX-port\n", name);
@@ -96,9 +86,7 @@ static int do_detach(int ifindex, const char *ifname, const char *app_name)
 	if (err < 0)
 		printf("ERROR: failed to detach program from %s (%s)\n",
 		       ifname, strerror(errno));
-	/* TODO: Remember to cleanup map, when adding use of shared map
-	 *  bpf_map_delete_elem((map_fd, &idx);
-	 */
+	 
 close_out:
 	close(prog_fd);
 	return err;
@@ -176,9 +164,7 @@ int main(int argc, char **argv)
 		err = bpf_object__load(obj);
 		if (err) {
 			printf("Does kernel support devmap lookup?\n");
-			/* If not, the error message will be:
-			 *  "cannot pass map_type 14 into func bpf_map_lookup_elem#1"
-			 */
+			 
 			return 1;
 		}
 

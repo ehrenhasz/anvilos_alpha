@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6352 family SERDES PCS support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 #include <linux/mii.h>
@@ -99,7 +93,7 @@ static int mv88e639x_pcs_setup_irq(struct mv88e639x_pcs *mpcs,
 
 	irq = mv88e6xxx_serdes_irq_mapping(chip, port);
 	if (!irq) {
-		/* Use polling mode */
+		 
 		mpcs->sgmii_pcs.poll = true;
 		mpcs->xg_pcs.poll = true;
 		return 0;
@@ -184,7 +178,7 @@ static int mv88e639x_sgmii_pcs_enable(struct phylink_pcs *pcs)
 {
 	struct mv88e639x_pcs *mpcs = sgmii_pcs_to_mv88e639x_pcs(pcs);
 
-	/* power enable done in post_config */
+	 
 	mpcs->handle_irq = mv88e639x_sgmii_handle_irq;
 
 	return mv88e639x_sgmii_pcs_control_irq(mpcs, !!mpcs->irq);
@@ -214,11 +208,7 @@ static int mv88e6390_erratum_3_14(struct mv88e639x_pcs *mpcs)
 		MV88E6390_PORT10_LANE2, MV88E6390_PORT10_LANE3 };
 	int err, i;
 
-	/* 88e6190x and 88e6390x errata 3.14:
-	 * After chip reset, SERDES reconfiguration or SERDES core
-	 * Software Reset, the SERDES lanes may not be properly aligned
-	 * resulting in CRC errors
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(lanes); i++) {
 		err = mdiobus_c45_write(mpcs->mdio.bus, lanes[i],
@@ -327,7 +317,7 @@ static int mv88e639x_sgmii_pcs_config(struct phylink_pcs *pcs,
 	else
 		bmcr = val & ~BMCR_ANENABLE;
 
-	/* setting ANENABLE triggers a restart of negotiation */
+	 
 	if (bmcr == val)
 		return changed;
 
@@ -473,7 +463,7 @@ mv88e639x_pcs_select(struct mv88e6xxx_chip *chip, int port,
 	}
 }
 
-/* Marvell 88E6390 Specific support */
+ 
 
 static irqreturn_t mv88e6390_xg_handle_irq(struct mv88e639x_pcs *mpcs)
 {
@@ -574,10 +564,8 @@ static int mv88e6390_pcs_init(struct mv88e6xxx_chip *chip, int port)
 	if (err)
 		goto err_free;
 
-	/* 6390 and 6390x has the checker, 6393x doesn't appear to? */
-	/* This is to enable gathering the statistics. Maybe this
-	 * should call out to a helper? Or we could do this at init time.
-	 */
+	 
+	 
 	err = mv88e6390_pcs_enable_checker(mpcs);
 	if (err)
 		goto err_free;
@@ -597,7 +585,7 @@ const struct mv88e6xxx_pcs_ops mv88e6390_pcs_ops = {
 	.pcs_select = mv88e639x_pcs_select,
 };
 
-/* Marvell 88E6393X Specific support */
+ 
 
 static int mv88e6393x_power_lane(struct mv88e639x_pcs *mpcs, bool enable)
 {
@@ -608,14 +596,7 @@ static int mv88e6393x_power_lane(struct mv88e639x_pcs *mpcs, bool enable)
 				enable ? 0 : val);
 }
 
-/* mv88e6393x family errata 4.6:
- * Cannot clear PwrDn bit on SERDES if device is configured CPU_MGD mode or
- * P0_mode is configured for [x]MII.
- * Workaround: Set SERDES register 4.F002 bit 5=0 and bit 15=1.
- *
- * It seems that after this workaround the SERDES is automatically powered up
- * (the bit is cleared), so power it down.
- */
+ 
 static int mv88e6393x_erratum_4_6(struct mv88e639x_pcs *mpcs)
 {
 	int err;
@@ -639,12 +620,7 @@ static int mv88e6393x_erratum_4_6(struct mv88e639x_pcs *mpcs)
 	return mv88e6393x_power_lane(mpcs, false);
 }
 
-/* mv88e6393x family errata 4.8:
- * When a SERDES port is operating in 1000BASE-X or SGMII mode link may not
- * come up after hardware reset or software reset of SERDES core. Workaround
- * is to write SERDES register 4.F074.14=1 for only those modes and 0 in all
- * other modes.
- */
+ 
 static int mv88e6393x_erratum_4_8(struct mv88e639x_pcs *mpcs)
 {
 	u16 reg, poc;
@@ -666,11 +642,7 @@ static int mv88e6393x_erratum_4_8(struct mv88e639x_pcs *mpcs)
 				MV88E6393X_ERRATA_4_8_BIT, reg);
 }
 
-/* mv88e6393x family errata 5.2:
- * For optimal signal integrity the following sequence should be applied to
- * SERDES operating in 10G mode. These registers only apply to 10G operation
- * and have no effect on other speeds.
- */
+ 
 static int mv88e6393x_erratum_5_2(struct mv88e639x_pcs *mpcs)
 {
 	static const struct {
@@ -698,20 +670,7 @@ static int mv88e6393x_erratum_5_2(struct mv88e639x_pcs *mpcs)
 	return 0;
 }
 
-/* Inband AN is broken on Amethyst in 2500base-x mode when set by standard
- * mechanism (via cmode).
- * We can get around this by configuring the PCS mode to 1000base-x and then
- * writing value 0x58 to register 1e.8000. (This must be done while SerDes
- * receiver and transmitter are disabled, which is, when this function is
- * called.)
- * It seem that when we do this configuration to 2500base-x mode (by changing
- * PCS mode to 1000base-x and frequency to 3.125 GHz from 1.25 GHz) and then
- * configure to sgmii or 1000base-x, the device thinks that it already has
- * SerDes at 1.25 GHz and does not change the 1e.8000 register, leaving SerDes
- * at 3.125 GHz.
- * To avoid this, change PCS mode back to 2500base-x when disabling SerDes from
- * 2500base-x mode.
- */
+ 
 static int mv88e6393x_fix_2500basex_an(struct mv88e639x_pcs *mpcs, bool on)
 {
 	u16 reg;
@@ -858,7 +817,7 @@ static void mv88e6393x_xg_pcs_disable(struct phylink_pcs *pcs)
 	mv88e6393x_power_lane(mpcs, false);
 }
 
-/* The PCS has to be powered down while CMODE is changed */
+ 
 static void mv88e6393x_xg_pcs_pre_config(struct phylink_pcs *pcs,
 					 phy_interface_t interface)
 {

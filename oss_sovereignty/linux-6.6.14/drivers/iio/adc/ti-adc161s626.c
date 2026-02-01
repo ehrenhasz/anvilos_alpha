@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ti-adc161s626.c - Texas Instruments ADC161S626 1-channel differential ADC
- *
- * ADC Devices Supported:
- *  adc141s626 - 14-bit ADC
- *  adc161s626 - 16-bit ADC
- *
- * Copyright (C) 2016-2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>

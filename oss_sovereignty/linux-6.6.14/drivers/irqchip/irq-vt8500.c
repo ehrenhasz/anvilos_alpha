@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  arch/arm/mach-vt8500/irq.c
- *
- *  Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- *  Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
- */
 
-/*
- * This file is copied and modified from the original irq.c provided by
- * Alexey Charkov. Minor changes have been made for Device Tree Support.
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -29,14 +21,14 @@
 
 #define VT8500_ICPC_IRQ		0x20
 #define VT8500_ICPC_FIQ		0x24
-#define VT8500_ICDC		0x40		/* Destination Control 64*u32 */
-#define VT8500_ICIS		0x80		/* Interrupt status, 16*u32 */
+#define VT8500_ICDC		0x40		 
+#define VT8500_ICIS		0x80		 
 
-/* ICPC */
+ 
 #define ICPC_MASK		0x3F
 #define ICPC_ROTATE		BIT(6)
 
-/* IC_DCTR */
+ 
 #define ICDC_IRQ		0x00
 #define ICDC_FIQ		0x01
 #define ICDC_DSS0		0x02
@@ -55,15 +47,15 @@
 #define VT8500_EDGE		( VT8500_TRIGGER_RISING \
 				| VT8500_TRIGGER_FALLING)
 
-/* vt8500 has 1 intc, wm8505 and wm8650 have 2 */
+ 
 #define VT8500_INTC_MAX		2
 
 struct vt8500_irq_data {
-	void __iomem 		*base;		/* IO Memory base address */
-	struct irq_domain	*domain;	/* Domain for this controller */
+	void __iomem 		*base;		 
+	struct irq_domain	*domain;	 
 };
 
-/* Global variable for accessing io-mem addresses */
+ 
 static struct vt8500_irq_data intc[VT8500_INTC_MAX];
 static u32 active_cnt = 0;
 
@@ -141,11 +133,11 @@ static void __init vt8500_init_irq_hw(void __iomem *base)
 {
 	u32 i;
 
-	/* Enable rotating priority for IRQ */
+	 
 	writel(ICPC_ROTATE, base + VT8500_ICPC_IRQ);
 	writel(0x00, base + VT8500_ICPC_FIQ);
 
-	/* Disable all interrupts and route them to IRQ */
+	 
 	for (i = 0; i < 64; i++)
 		writeb(VT8500_INT_DISABLE | ICDC_IRQ, base + VT8500_ICDC + i);
 }
@@ -169,14 +161,11 @@ static void __exception_irq_entry vt8500_handle_irq(struct pt_regs *regs)
 	int irqnr;
 	void __iomem *base;
 
-	/* Loop through each active controller */
+	 
 	for (i=0; i<active_cnt; i++) {
 		base = intc[i].base;
 		irqnr = readl_relaxed(base) & 0x3F;
-		/*
-		  Highest Priority register default = 63, so check that this
-		  is a real interrupt by checking the status register
-		*/
+		 
 		if (irqnr == 63) {
 			stat = readl_relaxed(base + VT8500_ICIS + 4);
 			if (!(stat & BIT(31)))
@@ -221,9 +210,9 @@ static int __init vt8500_irq_init(struct device_node *node,
 
 	active_cnt++;
 
-	/* check if this is a slaved controller */
+	 
 	if (of_irq_count(np) != 0) {
-		/* check that we have the correct number of interrupts */
+		 
 		if (of_irq_count(np) != 8) {
 			pr_err("%s: Incorrect IRQ map for slaved controller\n",
 					__func__);

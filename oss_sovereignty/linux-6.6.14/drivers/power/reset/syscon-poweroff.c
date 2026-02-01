@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic Syscon Poweroff Driver
- *
- * Copyright (c) 2015, National Instruments Corp.
- * Author: Moritz Fischer <moritz.fischer@ettus.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -22,7 +17,7 @@ static u32 mask;
 
 static void syscon_poweroff(void)
 {
-	/* Issue the poweroff */
+	 
 	regmap_update_bits(map, offset, mask, value);
 
 	mdelay(1000);
@@ -53,11 +48,11 @@ static int syscon_poweroff_probe(struct platform_device *pdev)
 	}
 
 	if (value_err) {
-		/* support old binding */
+		 
 		value = mask;
 		mask = 0xFFFFFFFF;
 	} else if (mask_err) {
-		/* support value without mask*/
+		 
 		mask = 0xFFFFFFFF;
 	}
 

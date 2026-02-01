@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 
 #include "test_progs.h"
 #include "testing_helpers.h"

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI TPS68470 PMIC platform data definition.
- *
- * Copyright (c) 2021 Dan Scally <djrscally@gmail.com>
- * Copyright (c) 2021 Red Hat Inc.
- *
- * Red Hat authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/gpio/machine.h>
@@ -74,7 +66,7 @@ static const struct regulator_init_data surface_go_tps68470_vcm_reg_init_data = 
 	.consumer_supplies = int347a_vcm_consumer_supplies,
 };
 
-/* Ensure the always-on VIO regulator has the same voltage as VSIO */
+ 
 static const struct regulator_init_data surface_go_tps68470_vio_reg_init_data = {
 	.constraints = {
 		.min_uV = 1800600,

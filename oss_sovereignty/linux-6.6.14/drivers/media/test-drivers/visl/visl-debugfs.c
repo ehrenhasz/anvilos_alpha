@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Debugfs tracing for bitstream buffers. This is similar to VA-API's
- * LIBVA_TRACE_BUFDATA in that the raw bitstream can be dumped as a debugging
- * aid.
- *
- * Produces one file per OUTPUT buffer. Files are automatically cleared on
- * STREAMOFF unless the module parameter "keep_bitstream_buffers" is set.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/list.h>

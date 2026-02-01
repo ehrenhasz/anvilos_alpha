@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI wrapper
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMIWP"
 
@@ -49,7 +45,7 @@ u32 hdmi_wp_get_irqstatus(struct hdmi_wp_data *wp)
 void hdmi_wp_set_irqstatus(struct hdmi_wp_data *wp, u32 irqstatus)
 {
 	hdmi_write_reg(wp->base, HDMI_WP_IRQSTATUS, irqstatus);
-	/* flush posted write */
+	 
 	hdmi_read_reg(wp->base, HDMI_WP_IRQSTATUS);
 }
 
@@ -63,17 +59,17 @@ void hdmi_wp_clear_irqenable(struct hdmi_wp_data *wp, u32 mask)
 	hdmi_write_reg(wp->base, HDMI_WP_IRQENABLE_CLR, mask);
 }
 
-/* PHY_PWR_CMD */
+ 
 int hdmi_wp_set_phy_pwr(struct hdmi_wp_data *wp, enum hdmi_phy_pwr val)
 {
-	/* Return if already the state */
+	 
 	if (REG_GET(wp->base, HDMI_WP_PWR_CTRL, 5, 4) == val)
 		return 0;
 
-	/* Command for power control of HDMI PHY */
+	 
 	REG_FLD_MOD(wp->base, HDMI_WP_PWR_CTRL, val, 7, 6);
 
-	/* Status of the power control of HDMI PHY */
+	 
 	if (hdmi_wait_for_bit_change(wp->base, HDMI_WP_PWR_CTRL, 5, 4, val)
 			!= val) {
 		DSSERR("Failed to set PHY power mode to %d\n", val);
@@ -83,13 +79,13 @@ int hdmi_wp_set_phy_pwr(struct hdmi_wp_data *wp, enum hdmi_phy_pwr val)
 	return 0;
 }
 
-/* PLL_PWR_CMD */
+ 
 int hdmi_wp_set_pll_pwr(struct hdmi_wp_data *wp, enum hdmi_pll_pwr val)
 {
-	/* Command for power control of HDMI PLL */
+	 
 	REG_FLD_MOD(wp->base, HDMI_WP_PWR_CTRL, val, 3, 2);
 
-	/* wait till PHY_PWR_STATUS is set */
+	 
 	if (hdmi_wait_for_bit_change(wp->base, HDMI_WP_PWR_CTRL, 1, 0, val)
 			!= val) {
 		DSSERR("Failed to set PLL_PWR_STATUS\n");
@@ -151,12 +147,12 @@ void hdmi_wp_video_config_interface(struct hdmi_wp_data *wp,
 	hsync_inv = !!(vm->flags & DISPLAY_FLAGS_HSYNC_LOW);
 
 	r = hdmi_read_reg(wp->base, HDMI_WP_VIDEO_CFG);
-	r = FLD_MOD(r, 1, 7, 7);	/* VSYNC_POL to dispc active high */
-	r = FLD_MOD(r, 1, 6, 6);	/* HSYNC_POL to dispc active high */
-	r = FLD_MOD(r, vsync_inv, 5, 5);	/* CORE_VSYNC_INV */
-	r = FLD_MOD(r, hsync_inv, 4, 4);	/* CORE_HSYNC_INV */
+	r = FLD_MOD(r, 1, 7, 7);	 
+	r = FLD_MOD(r, 1, 6, 6);	 
+	r = FLD_MOD(r, vsync_inv, 5, 5);	 
+	r = FLD_MOD(r, hsync_inv, 4, 4);	 
 	r = FLD_MOD(r, !!(vm->flags & DISPLAY_FLAGS_INTERLACED), 3, 3);
-	r = FLD_MOD(r, 1, 1, 0); /* HDMI_TIMING_MASTER_24BIT */
+	r = FLD_MOD(r, 1, 1, 0);  
 	hdmi_write_reg(wp->base, HDMI_WP_VIDEO_CFG, r);
 }
 
@@ -169,12 +165,7 @@ void hdmi_wp_video_config_timing(struct hdmi_wp_data *wp,
 
 	DSSDBG("Enter hdmi_wp_video_config_timing\n");
 
-	/*
-	 * On OMAP4 and OMAP5 ES1 the HSW field is programmed as is. On OMAP5
-	 * ES2+ (including DRA7/AM5 SoCs) HSW field is programmed to hsync_len-1.
-	 * However, we don't support OMAP5 ES1 at all, so we can just check for
-	 * OMAP4 here.
-	 */
+	 
 	if (wp->version == 4)
 		hsync_len_offset = 0;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2018 Intel Corporation.
- */
+ 
+ 
 
 #ifndef HFI1_VERBS_H
 #define HFI1_VERBS_H
@@ -34,18 +32,15 @@ struct hfi1_packet;
 
 #define HFI1_MAX_RDMA_ATOMIC     16
 
-/*
- * Increment this value if any changes that break userspace ABI
- * compatibility are made.
- */
+ 
 #define HFI1_UVERBS_ABI_VERSION       2
 
-/* IB Performance Manager status values */
+ 
 #define IB_PMA_SAMPLE_STATUS_DONE       0x00
 #define IB_PMA_SAMPLE_STATUS_STARTED    0x01
 #define IB_PMA_SAMPLE_STATUS_RUNNING    0x02
 
-/* Mandatory IB performance counter select values. */
+ 
 #define IB_PMA_PORT_XMIT_DATA   cpu_to_be16(0x0001)
 #define IB_PMA_PORT_RCV_DATA    cpu_to_be16(0x0002)
 #define IB_PMA_PORT_XMIT_PKTS   cpu_to_be16(0x0003)
@@ -60,7 +55,7 @@ struct hfi1_packet;
 #define RC_OP(x) IB_OPCODE_RC_##x
 #define UC_OP(x) IB_OPCODE_UC_##x
 
-/* flags passed by hfi1_ib_rcv() */
+ 
 enum {
 	HFI1_HAS_GRH = (1 << 0),
 };
@@ -70,7 +65,7 @@ enum {
 #define LRH_9B_BYTES (sizeof_field(struct ib_header, lrh))
 #define LRH_9B_DWORDS (LRH_9B_BYTES / sizeof(u32))
 
-/* 24Bits for qpn, upper 8Bits reserved */
+ 
 struct opa_16b_mgmt {
 	__be32 dest_qpn;
 	__be32 src_qpn;
@@ -90,10 +85,10 @@ struct hfi1_16b_header {
 
 struct hfi1_opa_header {
 	union {
-		struct ib_header ibh; /* 9B header */
-		struct hfi1_16b_header opah; /* 16B header */
+		struct ib_header ibh;  
+		struct hfi1_16b_header opah;  
 	};
-	u8 hdr_type; /* 9B or 16B */
+	u8 hdr_type;  
 } __packed;
 
 struct hfi1_ahg_info {
@@ -108,65 +103,62 @@ struct hfi1_sdma_header {
 	struct hfi1_opa_header hdr;
 } __packed;
 
-/*
- * hfi1 specific data structures that will be hidden from rvt after the queue
- * pair is made common
- */
+ 
 struct hfi1_qp_priv {
-	struct hfi1_ahg_info *s_ahg;              /* ahg info for next header */
-	struct sdma_engine *s_sde;                /* current sde */
-	struct send_context *s_sendcontext;       /* current sendcontext */
-	struct hfi1_ctxtdata *rcd;                /* QP's receive context */
-	struct page **pages;                      /* for TID page scan */
-	u32 tid_enqueue;                          /* saved when tid waited */
-	u8 s_sc;		                  /* SC[0..4] for next packet */
+	struct hfi1_ahg_info *s_ahg;               
+	struct sdma_engine *s_sde;                 
+	struct send_context *s_sendcontext;        
+	struct hfi1_ctxtdata *rcd;                 
+	struct page **pages;                       
+	u32 tid_enqueue;                           
+	u8 s_sc;		                   
 	struct iowait s_iowait;
-	struct timer_list s_tid_timer;            /* for timing tid wait */
-	struct timer_list s_tid_retry_timer;      /* for timing tid ack */
-	struct list_head tid_wait;                /* for queueing tid space */
+	struct timer_list s_tid_timer;             
+	struct timer_list s_tid_retry_timer;       
+	struct list_head tid_wait;                 
 	struct hfi1_opfn_data opfn;
 	struct tid_flow_state flow_state;
 	struct tid_rdma_qp_params tid_rdma;
 	struct rvt_qp *owner;
 	u16 s_running_pkt_size;
-	u8 hdr_type; /* 9B or 16B */
-	struct rvt_sge_state tid_ss;       /* SGE state pointer for 2nd leg */
-	atomic_t n_requests;               /* # of TID RDMA requests in the */
-					   /* queue */
-	atomic_t n_tid_requests;            /* # of sent TID RDMA requests */
+	u8 hdr_type;  
+	struct rvt_sge_state tid_ss;        
+	atomic_t n_requests;                
+					    
+	atomic_t n_tid_requests;             
 	unsigned long tid_timer_timeout_jiffies;
 	unsigned long tid_retry_timeout_jiffies;
 
-	/* variables for the TID RDMA SE state machine */
+	 
 	u8 s_state;
 	u8 s_retry;
-	u8 rnr_nak_state;       /* RNR NAK state */
+	u8 rnr_nak_state;        
 	u8 s_nak_state;
 	u32 s_nak_psn;
 	u32 s_flags;
 	u32 s_tid_cur;
 	u32 s_tid_head;
 	u32 s_tid_tail;
-	u32 r_tid_head;     /* Most recently added TID RDMA request */
-	u32 r_tid_tail;     /* the last completed TID RDMA request */
-	u32 r_tid_ack;      /* the TID RDMA request to be ACK'ed */
-	u32 r_tid_alloc;    /* Request for which we are allocating resources */
-	u32 pending_tid_w_segs; /* Num of pending tid write segments */
-	u32 pending_tid_w_resp; /* Num of pending tid write responses */
-	u32 alloc_w_segs;       /* Number of segments for which write */
-			       /* resources have been allocated for this QP */
+	u32 r_tid_head;      
+	u32 r_tid_tail;      
+	u32 r_tid_ack;       
+	u32 r_tid_alloc;     
+	u32 pending_tid_w_segs;  
+	u32 pending_tid_w_resp;  
+	u32 alloc_w_segs;        
+			        
 
-	/* For TID RDMA READ */
-	u32 tid_r_reqs;         /* Num of tid reads requested */
-	u32 tid_r_comp;         /* Num of tid reads completed */
-	u32 pending_tid_r_segs; /* Num of pending tid read segments */
-	u16 pkts_ps;            /* packets per segment */
-	u8 timeout_shift;       /* account for number of packets per segment */
+	 
+	u32 tid_r_reqs;          
+	u32 tid_r_comp;          
+	u32 pending_tid_r_segs;  
+	u16 pkts_ps;             
+	u8 timeout_shift;        
 
 	u32 r_next_psn_kdeth;
 	u32 r_next_psn_kdeth_save;
 	u32 s_resync_psn;
-	u8 sync_pt;           /* Set when QP reaches sync point */
+	u8 sync_pt;            
 	u8 resync;
 };
 
@@ -174,18 +166,15 @@ struct hfi1_qp_priv {
 
 struct hfi1_swqe_priv {
 	struct tid_rdma_request tid_req;
-	struct rvt_sge_state ss;  /* Used for TID RDMA READ Request */
+	struct rvt_sge_state ss;   
 };
 
 struct hfi1_ack_priv {
-	struct rvt_sge_state ss;               /* used for TID WRITE RESP */
+	struct rvt_sge_state ss;                
 	struct tid_rdma_request tid_req;
 };
 
-/*
- * This structure is used to hold commonly lookedup and computed values during
- * the send engine progress.
- */
+ 
 struct iowait_work;
 struct hfi1_pkt_state {
 	struct hfi1_ibdev *dev;
@@ -205,8 +194,8 @@ struct hfi1_pkt_state {
 #define HFI1_PSN_CREDIT  16
 
 struct hfi1_opcode_stats {
-	u64 n_packets;          /* number of packets */
-	u64 n_bytes;            /* total number of bytes */
+	u64 n_packets;           
+	u64 n_bytes;             
 };
 
 struct hfi1_opcode_stats_perctx {
@@ -227,34 +216,34 @@ struct hfi1_ibport {
 	struct rvt_qp __rcu *qp[2];
 	struct rvt_ibport rvp;
 
-	/* the first 16 entries are sl_to_vl for !OPA */
+	 
 	u8 sl_to_sc[32];
 	u8 sc_to_sl[32];
 };
 
 struct hfi1_ibdev {
-	struct rvt_dev_info rdi; /* Must be first */
+	struct rvt_dev_info rdi;  
 
-	/* QP numbers are shared by all IB ports */
-	/* protect txwait list */
+	 
+	 
 	seqlock_t txwait_lock ____cacheline_aligned_in_smp;
-	struct list_head txwait;        /* list for wait verbs_txreq */
-	struct list_head memwait;       /* list for wait kernel memory */
+	struct list_head txwait;         
+	struct list_head memwait;        
 	struct kmem_cache *verbs_txreq_cache;
 	u64 n_txwait;
 	u64 n_kmem_wait;
 	u64 n_tidwait;
 
-	/* protect iowait lists */
+	 
 	seqlock_t iowait_lock ____cacheline_aligned_in_smp;
 	u64 n_piowait;
 	u64 n_piodrain;
 	struct timer_list mem_timer;
 
 #ifdef CONFIG_DEBUG_FS
-	/* per HFI debugfs */
+	 
 	struct dentry *hfi1_ibdev_dbg;
-	/* per HFI symlinks to above */
+	 
 	struct dentry *hfi1_ibdev_link;
 #ifdef CONFIG_FAULT_INJECTION
 	struct fault *fault;
@@ -278,9 +267,7 @@ static inline struct rvt_qp *iowait_to_qp(struct iowait *s_iowait)
 	return priv->owner;
 }
 
-/*
- * This must be called with s_lock held.
- */
+ 
 void hfi1_bad_pkey(struct hfi1_ibport *ibp, u32 key, u32 sl,
 		   u32 qp1, u32 qp2, u32 lid1, u32 lid2);
 void hfi1_cap_mask_chg(struct rvt_dev_info *rdi, u32 port_num);
@@ -291,40 +278,24 @@ int hfi1_process_mad(struct ib_device *ibdev, int mad_flags, u32 port,
 		     const struct ib_mad *in_mad, struct ib_mad *out_mad,
 		     size_t *out_mad_size, u16 *out_mad_pkey_index);
 
-/*
- * The PSN_MASK and PSN_SHIFT allow for
- * 1) comparing two PSNs
- * 2) returning the PSN with any upper bits masked
- * 3) returning the difference between to PSNs
- *
- * The number of significant bits in the PSN must
- * necessarily be at least one bit less than
- * the container holding the PSN.
- */
+ 
 #define PSN_MASK 0x7FFFFFFF
 #define PSN_SHIFT 1
 #define PSN_MODIFY_MASK 0xFFFFFF
 
-/*
- * Compare two PSNs
- * Returns an integer <, ==, or > than zero.
- */
+ 
 static inline int cmp_psn(u32 a, u32 b)
 {
 	return (((int)a) - ((int)b)) << PSN_SHIFT;
 }
 
-/*
- * Return masked PSN
- */
+ 
 static inline u32 mask_psn(u32 a)
 {
 	return a & PSN_MASK;
 }
 
-/*
- * Return delta between two PSNs
- */
+ 
 static inline u32 delta_psn(u32 a, u32 b)
 {
 	return (((int)a - (int)b) << PSN_SHIFT) >> PSN_SHIFT;
@@ -340,10 +311,7 @@ static inline struct tid_rdma_request *ack_to_tid_req(struct rvt_ack_entry *e)
 	return &((struct hfi1_ack_priv *)e->priv)->tid_req;
 }
 
-/*
- * Look through all the active flows for a TID RDMA request and find
- * the one (if it exists) that contains the specified PSN.
- */
+ 
 static inline u32 __full_flow_psn(struct flow_state *state, u32 psn)
 {
 	return mask_psn((state->generation << HFI1_KDETH_BTH_SEQ_SHIFT) |
@@ -458,7 +426,7 @@ extern const u8 hdr_len_by_opcode[];
 
 extern const int ib_rvt_state_ops[];
 
-extern __be64 ib_hfi1_sys_image_guid;    /* in network order */
+extern __be64 ib_hfi1_sys_image_guid;     
 
 extern unsigned int hfi1_max_cqes;
 
@@ -484,4 +452,4 @@ extern unsigned short piothreshold;
 
 extern const u32 ib_hfi1_rnr_table[];
 
-#endif                          /* HFI1_VERBS_H */
+#endif                           

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_ADDR_LOCATION
 #define __PERF_ADDR_LOCATION 1
 
@@ -28,4 +28,4 @@ void addr_location__exit(struct addr_location *al);
 
 void addr_location__copy(struct addr_location *dst, struct addr_location *src);
 
-#endif /* __PERF_ADDR_LOCATION */
+#endif  

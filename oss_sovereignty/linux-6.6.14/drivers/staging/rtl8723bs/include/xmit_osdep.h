@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __XMIT_OSDEP_H_
 #define __XMIT_OSDEP_H_
 
 
 struct pkt_file {
 	struct sk_buff *pkt;
-	__kernel_size_t pkt_len;	 /* the remainder length of the open_file */
+	__kernel_size_t pkt_len;	  
 	unsigned char *cur_buffer;
 	u8 *buf_start;
 	u8 *cur_addr;
@@ -41,4 +37,4 @@ extern signed int rtw_endofpktfile(struct pkt_file *pfile);
 extern void rtw_os_pkt_complete(struct adapter *padapter, struct sk_buff *pkt);
 extern void rtw_os_xmit_complete(struct adapter *padapter, struct xmit_frame *pxframe);
 
-#endif /* __XMIT_OSDEP_H_ */
+#endif  

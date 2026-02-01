@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arcx Anybus-S Controller driver
- *
- * Copyright (C) 2018 Arcx Inc
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,7 +16,7 @@
 #include <linux/regulator/machine.h>
 #include <linux/regmap.h>
 
-/* move to <linux/anybuss-controller.h> when taking this out of staging */
+ 
 #include "anybuss-controller.h"
 
 #define CPLD_STATUS1		0x80
@@ -41,7 +37,7 @@ struct controller_priv {
 	bool common_reset;
 	struct gpio_desc *reset_gpiod;
 	void __iomem *cpld_base;
-	struct mutex ctrl_lock; /* protects CONTROL register */
+	struct mutex ctrl_lock;  
 	u8 control_reg;
 	char version[3];
 	u16 design_no;
@@ -50,24 +46,13 @@ struct controller_priv {
 static void do_reset(struct controller_priv *cd, u8 rst_bit, bool reset)
 {
 	mutex_lock(&cd->ctrl_lock);
-	/*
-	 * CPLD_CONTROL is write-only, so cache its value in
-	 * cd->control_reg
-	 */
+	 
 	if (reset)
 		cd->control_reg &= ~rst_bit;
 	else
 		cd->control_reg |= rst_bit;
 	writeb(cd->control_reg, cd->cpld_base + CPLD_CONTROL);
-	/*
-	 * h/w work-around:
-	 * the hardware is 'too fast', so a reset followed by an immediate
-	 * not-reset will _not_ change the anybus reset line in any way,
-	 * losing the reset. to prevent this from happening, introduce
-	 * a minimum reset duration.
-	 * Verified minimum safe duration required using a scope
-	 * on 14-June-2018: 100 us.
-	 */
+	 
 	if (reset)
 		usleep_range(100, 200);
 	mutex_unlock(&cd->ctrl_lock);
@@ -99,17 +84,7 @@ static void export_reset_1(struct device *dev, bool assert)
 	anybuss_reset(cd, 1, assert);
 }
 
-/*
- * parallel bus limitation:
- *
- * the anybus is 8-bit wide. we can't assume that the hardware will translate
- * word accesses on the parallel bus to multiple byte-accesses on the anybus.
- *
- * the imx WEIM bus does not provide this type of translation.
- *
- * to be safe, we will limit parallel bus accesses to a single byte
- * at a time for now.
- */
+ 
 
 static const struct regmap_config arcx_regmap_cfg = {
 	.reg_bits = 16,
@@ -117,10 +92,7 @@ static const struct regmap_config arcx_regmap_cfg = {
 	.max_register = 0x7ff,
 	.use_single_read = true,
 	.use_single_write = true,
-	/*
-	 * single-byte parallel bus accesses are atomic, so don't
-	 * require any synchronization.
-	 */
+	 
 	.disable_locking = true,
 };
 
@@ -240,7 +212,7 @@ static int controller_probe(struct platform_device *pdev)
 	if (IS_ERR(cd->reset_gpiod))
 		return PTR_ERR(cd->reset_gpiod);
 
-	/* CPLD control memory, sits at index 0 */
+	 
 	cd->cpld_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(cd->cpld_base)) {
 		dev_err(dev,
@@ -249,7 +221,7 @@ static int controller_probe(struct platform_device *pdev)
 		goto out_reset;
 	}
 
-	/* identify cpld */
+	 
 	status1 = readb(cd->cpld_base + CPLD_STATUS1);
 	cd->design_no = (readb(cd->cpld_base + CPLD_DESIGN_HI) << 8) |
 				readb(cd->cpld_base + CPLD_DESIGN_LO);
@@ -276,7 +248,7 @@ static int controller_probe(struct platform_device *pdev)
 			if (!IS_ERR(host))
 				continue;
 			err = PTR_ERR(host);
-			/* -ENODEV is fine, it just means no card detected */
+			 
 			if (err != -ENODEV)
 				goto out_reset;
 		}
@@ -287,7 +259,7 @@ static int controller_probe(struct platform_device *pdev)
 		err = id;
 		goto out_reset;
 	}
-	/* export can power readout as a regulator */
+	 
 	config.dev = dev;
 	config.driver_data = cd;
 	regulator = devm_regulator_register(dev, &can_power_desc, &config);
@@ -295,7 +267,7 @@ static int controller_probe(struct platform_device *pdev)
 		err = PTR_ERR(regulator);
 		goto out_ida;
 	}
-	/* make controller info visible to userspace */
+	 
 	cd->class_dev = kzalloc(sizeof(*cd->class_dev), GFP_KERNEL);
 	if (!cd->class_dev) {
 		err = -ENOMEM;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019-2022 MediaTek Inc.
- * Copyright (c) 2022 BayLibre
- */
+ 
+ 
 #ifndef _MTK_DP_REG_H_
 #define _MTK_DP_REG_H_
 
@@ -12,7 +9,7 @@
 #define MTK_DP_HPD_CONNECT		BIT(2)
 #define MTK_DP_HPD_INTERRUPT		BIT(3)
 
-/* offset: 0x0 */
+ 
 #define DP_PHY_GLB_BIAS_GEN_00		0x0
 #define RG_XTP_GLB_BIAS_INTR_CTRL		GENMASK(20, 16)
 #define DP_PHY_GLB_DPAUX_TX		0x8
@@ -51,7 +48,7 @@
 #define RG_XTP_GLB_CKDET_EN			BIT(1)
 #define RG_DPAUX_RX_EN				BIT(0)
 
-/* offset: TOP_OFFSET (0x2000) */
+ 
 #define MTK_DP_TOP_PWR_STATE		0x2000
 #define DP_PWR_STATE_MASK			GENMASK(1, 0)
 #define DP_PWR_STATE_BANDGAP			BIT(0)
@@ -77,7 +74,7 @@
 #define MEM_ISO_EN				BIT(0)
 #define FUSE_SEL				BIT(2)
 
-/* offset: ENC0_OFFSET (0x3000) */
+ 
 #define MTK_DP_ENC0_P0_3000			0x3000
 #define LANE_NUM_DP_ENC0_P0_MASK			GENMASK(1, 0)
 #define VIDEO_MUTE_SW_DP_ENC0_P0			BIT(2)
@@ -196,7 +193,7 @@
 #define AUDIO_CH_SRC_SEL_DP_ENC0_P0			BIT(4)
 #define ISRC1_HB3_DP_ENC0_P0_MASK			GENMASK(15, 8)
 
-/* offset: ENC1_OFFSET (0x3200) */
+ 
 #define MTK_DP_ENC1_P0_3200			0x3200
 #define MTK_DP_ENC1_P0_3280			0x3280
 #define SDP_PACKET_TYPE_DP_ENC1_P0_MASK			GENMASK(4, 0)
@@ -232,7 +229,7 @@
 #define DP_ENC_DUMMY_RW_1_AUDIO_RST_EN			BIT(0)
 #define DP_ENC_DUMMY_RW_1				BIT(9)
 
-/* offset: TRANS_OFFSET (0x3400) */
+ 
 #define MTK_DP_TRANS_P0_3400				0x3400
 #define PATTERN1_EN_DP_TRANS_P0_MASK				BIT(12)
 #define PATTERN2_EN_DP_TRANS_P0_MASK				BIT(13)
@@ -283,7 +280,7 @@
 #define DP_TRANS_DUMMY_RW_0					BIT(3)
 #define DP_TRANS_DUMMY_RW_0_MASK				GENMASK(3, 2)
 
-/* offset: AUX_OFFSET (0x3600) */
+ 
 #define MTK_DP_AUX_P0_360C			0x360c
 #define AUX_TIMEOUT_THR_AUX_TX_P0_MASK			GENMASK(12, 0)
 #define AUX_TIMEOUT_THR_AUX_TX_P0_VAL			0x1595
@@ -347,4 +344,4 @@
 #define MTK_DP_AUX_P0_37C8			0x37c8
 #define MTK_ATOP_EN_AUX_TX_P0				BIT(0)
 
-#endif /*_MTK_DP_REG_H_*/
+#endif  

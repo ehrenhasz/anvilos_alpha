@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2007 Cisco Systems, Inc. All rights reserved.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -284,9 +253,7 @@ static int add_drivers(struct mlx4_dev *dev)
 		if (IS_ERR(priv->adev[i])) {
 			mlx4_warn(dev, "Device[%d] (%s) failed to load\n", i,
 				  mlx4_adev_devices[i].suffix);
-			/* We continue to rescan drivers and leave to the caller
-			 * to make decision if to release everything or
-			 * continue. */
+			 
 			ret = PTR_ERR(priv->adev[i]);
 			priv->adev[i] = NULL;
 		}
@@ -319,8 +286,7 @@ static void delete_drivers(struct mlx4_dev *dev)
 	}
 }
 
-/* This function is used after mlx4_dev is reconfigured.
- */
+ 
 static int rescan_drivers_locked(struct mlx4_dev *dev)
 {
 	lockdep_assert_held(&intf_mutex);
@@ -362,7 +328,7 @@ void mlx4_unregister_device(struct mlx4_dev *dev)
 	mlx4_stop_catas_poll(dev);
 	if (dev->persist->interface_state & MLX4_INTERFACE_STATE_DELETION &&
 	    mlx4_is_slave(dev)) {
-		/* In mlx4_remove_one on a VF */
+		 
 		u32 slave_read =
 			swab32(readl(&mlx4_priv(dev)->mfunc.comm->slave_read));
 

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <linux/in.h>
 #include <linux/if.h>
@@ -58,15 +27,11 @@ MODULE_PARM_DESC(rds_ib_mr_8k_pool_size, " Max number of 8K mr per HCA");
 module_param(rds_ib_retry_count, int, 0444);
 MODULE_PARM_DESC(rds_ib_retry_count, " Number of hw retries before reporting an error");
 
-/*
- * we have a clumsy combination of RCU and a rwsem protecting this list
- * because it is used both in the get_mr fast path and while blocking in
- * the FMR flushing path.
- */
+ 
 DECLARE_RWSEM(rds_ib_devices_lock);
 struct list_head rds_ib_devices;
 
-/* NOTE: if also grabbing ibdev lock, grab this first */
+ 
 DEFINE_SPINLOCK(ib_nodev_conns_lock);
 LIST_HEAD(ib_nodev_conns);
 
@@ -91,10 +56,7 @@ static void rds_ib_dev_shutdown(struct rds_ib_device *rds_ibdev)
 	spin_unlock_irqrestore(&rds_ibdev->spinlock, flags);
 }
 
-/*
- * rds_ib_destroy_mr_pool() blocks on a few things and mrs drop references
- * from interrupt context so we push freing off into a work struct in krdsd.
- */
+ 
 static void rds_ib_dev_free(struct work_struct *work)
 {
 	struct rds_ib_ipaddr *i_ipaddr, *i_next;
@@ -130,11 +92,11 @@ static int rds_ib_add_one(struct ib_device *device)
 	struct rds_ib_device *rds_ibdev;
 	int ret;
 
-	/* Only handle IB (no iWARP) devices */
+	 
 	if (device->node_type != RDMA_NODE_IB_CA)
 		return -EOPNOTSUPP;
 
-	/* Device must support FRWR */
+	 
 	if (!(device->attrs.device_cap_flags & IB_DEVICE_MEM_MGT_EXTENSIONS))
 		return -EOPNOTSUPP;
 
@@ -227,22 +189,7 @@ put_dev:
 	return ret;
 }
 
-/*
- * New connections use this to find the device to associate with the
- * connection.  It's not in the fast path so we're not concerned about the
- * performance of the IB call.  (As of this writing, it uses an interrupt
- * blocking spinlock to serialize walking a per-device list of all registered
- * clients.)
- *
- * RCU is used to handle incoming connections racing with device teardown.
- * Rather than use a lock to serialize removal from the client_data and
- * getting a new reference, we use an RCU grace period.  The destruction
- * path removes the device from client_data and then waits for all RCU
- * readers to finish.
- *
- * A new connection can get NULL from this if its arriving on a
- * device that is in the process of being removed.
- */
+ 
 struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
 {
 	struct rds_ib_device *rds_ibdev;
@@ -255,31 +202,21 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
 	return rds_ibdev;
 }
 
-/*
- * The IB stack is letting us know that a device is going away.  This can
- * happen if the underlying HCA driver is removed or if PCI hotplug is removing
- * the pci function, for example.
- *
- * This can be called at any time and can be racing with any other RDS path.
- */
+ 
 static void rds_ib_remove_one(struct ib_device *device, void *client_data)
 {
 	struct rds_ib_device *rds_ibdev = client_data;
 
 	rds_ib_dev_shutdown(rds_ibdev);
 
-	/* stop connection attempts from getting a reference to this device. */
+	 
 	ib_set_client_data(device, &rds_ib_client, NULL);
 
 	down_write(&rds_ib_devices_lock);
 	list_del_rcu(&rds_ibdev->list);
 	up_write(&rds_ib_devices_lock);
 
-	/*
-	 * This synchronize rcu is waiting for readers of both the ib
-	 * client data and the devices list to finish before we drop
-	 * both of those references.
-	 */
+	 
 	synchronize_rcu();
 	rds_ib_dev_put(rds_ibdev);
 	rds_ib_dev_put(rds_ibdev);
@@ -297,7 +234,7 @@ static int rds_ib_conn_info_visitor(struct rds_connection *conn,
 	struct rds_info_rdma_connection *iinfo = buffer;
 	struct rds_ib_connection *ic = conn->c_transport_data;
 
-	/* We will only ever look at IB transports */
+	 
 	if (conn->c_trans != &rds_ib_transport)
 		return 0;
 	if (conn->c_isv6)
@@ -329,14 +266,14 @@ static int rds_ib_conn_info_visitor(struct rds_connection *conn,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/* IPv6 version of rds_ib_conn_info_visitor(). */
+ 
 static int rds6_ib_conn_info_visitor(struct rds_connection *conn,
 				     void *buffer)
 {
 	struct rds6_info_rdma_connection *iinfo6 = buffer;
 	struct rds_ib_connection *ic = conn->c_transport_data;
 
-	/* We will only ever look at IB transports */
+	 
 	if (conn->c_trans != &rds_ib_transport)
 		return 0;
 
@@ -379,7 +316,7 @@ static void rds_ib_ic_info(struct socket *sock, unsigned int len,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/* IPv6 version of rds_ib_ic_info(). */
+ 
 static void rds6_ib_ic_info(struct socket *sock, unsigned int len,
 			    struct rds_info_iterator *iter,
 			    struct rds_info_lengths *lens)
@@ -393,16 +330,7 @@ static void rds6_ib_ic_info(struct socket *sock, unsigned int len,
 }
 #endif
 
-/*
- * Early RDS/IB was built to only bind to an address if there is an IPoIB
- * device with that address set.
- *
- * If it were me, I'd advocate for something more flexible.  Sending and
- * receiving should be device-agnostic.  Transports would try and maintain
- * connections between peers who have messages queued.  Userspace would be
- * allowed to influence which paths have priority.  We could call userspace
- * asserting this policy "routing".
- */
+ 
 static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 			      __u32 scope_id)
 {
@@ -416,9 +344,7 @@ static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 	bool isv4;
 
 	isv4 = ipv6_addr_v4mapped(addr);
-	/* Create a CMA ID and try to bind it. This catches both
-	 * IB and iWARP capable NICs.
-	 */
+	 
 	cm_id = rdma_create_id(&init_net, rds_rdma_cm_event_handler,
 			       NULL, RDMA_PS_TCP, IB_QPT_RC);
 	if (IS_ERR(cm_id))
@@ -437,11 +363,7 @@ static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 		sin6.sin6_scope_id = scope_id;
 		sa = (struct sockaddr *)&sin6;
 
-		/* XXX Do a special IPv6 link local address check here.  The
-		 * reason is that rdma_bind_addr() always succeeds with IPv6
-		 * link local address regardless it is indeed configured in a
-		 * system.
-		 */
+		 
 		if (ipv6_addr_type(addr) & IPV6_ADDR_LINKLOCAL) {
 			struct net_device *dev;
 
@@ -450,9 +372,7 @@ static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 				goto out;
 			}
 
-			/* Use init_net for now as RDS is not network
-			 * name space aware.
-			 */
+			 
 			dev = dev_get_by_index(&init_net, scope_id);
 			if (!dev) {
 				ret = -EADDRNOTAVAIL;
@@ -471,10 +391,9 @@ static int rds_ib_laddr_check(struct net *net, const struct in6_addr *addr,
 #endif
 	}
 
-	/* rdma_bind_addr will only succeed for IB & iWARP devices */
+	 
 	ret = rdma_bind_addr(cm_id, sa);
-	/* due to this, we will claim to support iWARP devices unless we
-	   check node_type. */
+	 
 	if (ret || !cm_id->device ||
 	    cm_id->device->node_type != RDMA_NODE_IB_CA)
 		ret = -EADDRNOTAVAIL;
@@ -492,7 +411,7 @@ out:
 static void rds_ib_unregister_client(void)
 {
 	ib_unregister_client(&rds_ib_client);
-	/* wait for rds_ib_dev_free() to complete */
+	 
 	flush_workqueue(rds_wq);
 }
 
@@ -527,10 +446,7 @@ void rds_ib_exit(void)
 
 static u8 rds_ib_get_tos_map(u8 tos)
 {
-	/* 1:1 user to transport map for RDMA transport.
-	 * In future, if custom map is desired, hook can export
-	 * user configurable map.
-	 */
+	 
 	return tos;
 }
 

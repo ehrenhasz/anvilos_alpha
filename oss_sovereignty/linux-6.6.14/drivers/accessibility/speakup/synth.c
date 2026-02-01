@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
-#include <linux/ctype.h>	/* for isdigit() and friends */
+#include <linux/ctype.h>	 
 #include <linux/fs.h>
-#include <linux/mm.h>		/* for verify_area */
-#include <linux/errno.h>	/* for -EBUSY */
-#include <linux/ioport.h>	/* for check_region, request_region */
+#include <linux/mm.h>		 
+#include <linux/errno.h>	 
+#include <linux/ioport.h>	 
 #include <linux/interrupt.h>
-#include <linux/delay.h>	/* for loops_per_sec */
+#include <linux/delay.h>	 
 #include <linux/kmod.h>
 #include <linux/jiffies.h>
-#include <linux/uaccess.h>	/* for copy_from_user */
+#include <linux/uaccess.h>	 
 #include <linux/sched.h>
 #include <linux/timer.h>
 #include <linux/kthread.h>
@@ -25,18 +25,7 @@ static int module_status;
 bool spk_quiet_boot;
 
 struct speakup_info_t speakup_info = {
-	/*
-	 * This spinlock is used to protect the entire speakup machinery, and
-	 * must be taken at each kernel->speakup transition and released at
-	 * each corresponding speakup->kernel transition.
-	 *
-	 * The progression thread only interferes with the speakup machinery
-	 * through the synth buffer, so only needs to take the lock
-	 * while tinkering with the buffer.
-	 *
-	 * We use spin_lock/trylock_irqsave and spin_unlock_irqrestore with this
-	 * spinlock because speakup needs to disable the keyboard IRQ.
-	 */
+	 
 	.spinlock = __SPIN_LOCK_UNLOCKED(speakup_info.spinlock),
 	.flushing = 0,
 };
@@ -44,13 +33,7 @@ EXPORT_SYMBOL_GPL(speakup_info);
 
 static int do_synth_init(struct spk_synth *in_synth);
 
-/*
- * Main loop of the progression thread: keep eating from the buffer
- * and push to the serial port, waiting as needed
- *
- * For devices that have a "full" notification mechanism, the driver can
- * adapt the loop the way they prefer.
- */
+ 
 static void _spk_do_catch_up(struct spk_synth *synth, int unicode)
 {
 	u16 ch;
@@ -160,10 +143,10 @@ int spk_synth_is_alive_restart(struct spk_synth *synth)
 	if (synth->alive)
 		return 1;
 	if (synth->io_ops->wait_for_xmitr(synth) > 0) {
-		/* restart */
+		 
 		synth->alive = 1;
 		synth_printf("%s", synth->init);
-		return 2; /* reenabled */
+		return 2;  
 	}
 	pr_warn("%s: can't restart synth\n", synth->long_name);
 	return 0;
@@ -352,7 +335,7 @@ struct var_t synth_time_vars[] = {
 	V_LAST_VAR
 };
 
-/* called by: speakup_init() */
+ 
 int synth_init(char *synth_name)
 {
 	int ret = 0;
@@ -369,13 +352,13 @@ int synth_init(char *synth_name)
 	}
 
 	mutex_lock(&spk_mutex);
-	/* First, check if we already have it loaded. */
+	 
 	list_for_each_entry(tmp, &synths, node) {
 		if (strcmp(tmp->name, synth_name) == 0)
 			synth = tmp;
 	}
 
-	/* If we got one, initialize it now. */
+	 
 	if (synth)
 		ret = do_synth_init(synth);
 	else
@@ -385,7 +368,7 @@ int synth_init(char *synth_name)
 	return ret;
 }
 
-/* called by: synth_add() */
+ 
 static int do_synth_init(struct spk_synth *in_synth)
 {
 	struct var_t *var;
@@ -447,7 +430,7 @@ void synth_release(void)
 	synth = NULL;
 }
 
-/* called by: all_driver_init() */
+ 
 int synth_add(struct spk_synth *in_synth)
 {
 	int status = 0;

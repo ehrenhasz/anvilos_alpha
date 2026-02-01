@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017, Intel Corporation
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -9,11 +7,11 @@
 #include "stratix10-clk.h"
 #include "clk.h"
 
-/* Clock Manager offsets */
+ 
 #define CLK_MGR_PLL_CLK_SRC_SHIFT	16
 #define CLK_MGR_PLL_CLK_SRC_MASK	0x3
 
-/* PLL Clock enable bits */
+ 
 #define SOCFPGA_PLL_POWER		0
 #define SOCFPGA_PLL_RESET_MASK		0x2
 #define SOCFPGA_PLL_REFDIV_MASK		0x00003F00
@@ -44,7 +42,7 @@ static unsigned long n5x_clk_pll_recalc_rate(struct clk_hw *hwclk,
 	unsigned long fdiv, reg, rdiv, qdiv;
 	u32 power = 1;
 
-	/* read VCO1 reg for numerator and denominator */
+	 
 	reg = readl(socfpgaclk->hw.reg + 0x8);
 	fdiv = (reg & SOCFPGA_N5X_PLLDIV_FDIV_MASK) >> SOCFPGA_N5X_PLLDIV_FDIV_SHIFT;
 	rdiv = (reg & SOCFPGA_N5X_PLLDIV_RDIV_MASK);
@@ -65,13 +63,13 @@ static unsigned long agilex_clk_pll_recalc_rate(struct clk_hw *hwclk,
 	unsigned long arefdiv, reg, mdiv;
 	unsigned long long vco_freq;
 
-	/* read VCO1 reg for numerator and denominator */
+	 
 	reg = readl(socfpgaclk->hw.reg);
 	arefdiv = (reg & SOCFPGA_PLL_AREFDIV_MASK) >> SOCFPGA_PLL_REFDIV_SHIFT;
 
 	vco_freq = (unsigned long long)parent_rate / arefdiv;
 
-	/* Read mdiv and fdiv from the fdbck register */
+	 
 	reg = readl(socfpgaclk->hw.reg + 0x24);
 	mdiv = reg & SOCFPGA_AGILEX_PLL_MDIV_MASK;
 
@@ -88,14 +86,14 @@ static unsigned long clk_pll_recalc_rate(struct clk_hw *hwclk,
 	unsigned long reg;
 	unsigned long long vco_freq;
 
-	/* read VCO1 reg for numerator and denominator */
+	 
 	reg = readl(socfpgaclk->hw.reg);
 	refdiv = (reg & SOCFPGA_PLL_REFDIV_MASK) >> SOCFPGA_PLL_REFDIV_SHIFT;
 
 	vco_freq = parent_rate;
 	do_div(vco_freq, refdiv);
 
-	/* Read mdiv and fdiv from the fdbck register */
+	 
 	reg = readl(socfpgaclk->hw.reg + 0x4);
 	mdiv = (reg & SOCFPGA_PLL_MDIV_MASK) >> SOCFPGA_PLL_MDIV_SHIFT;
 	vco_freq = (unsigned long long)vco_freq * (mdiv + 6);
@@ -142,7 +140,7 @@ static int clk_pll_prepare(struct clk_hw *hwclk)
 	struct socfpga_pll *socfpgaclk = to_socfpga_clk(hwclk);
 	u32 reg;
 
-	/* Bring PLL out of reset */
+	 
 	reg = readl(socfpgaclk->hw.reg);
 	reg |= SOCFPGA_PLL_RESET_MASK;
 	writel(reg, socfpgaclk->hw.reg);
@@ -155,7 +153,7 @@ static int n5x_clk_pll_prepare(struct clk_hw *hwclk)
 	struct socfpga_pll *socfpgaclk = to_socfpga_clk(hwclk);
 	u32 reg;
 
-	/* Bring PLL out of reset */
+	 
 	reg = readl(socfpgaclk->hw.reg + 0x4);
 	reg |= SOCFPGA_PLL_RESET_MASK;
 	writel(reg, socfpgaclk->hw.reg + 0x4);

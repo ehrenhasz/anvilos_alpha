@@ -1,21 +1,10 @@
-/*
- * Broadcom specific AMBA
- * PCI Core
- *
- * Copyright 2005, 2011, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
- * Copyright 2011, 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/export.h>
 #include <linux/bcma/bcma.h>
 
-/**************************************************
- * R/W ops.
- **************************************************/
+ 
 
 u32 bcma_pcie_read(struct bcma_drv_pci *pc, u32 address)
 {
@@ -62,7 +51,7 @@ static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
 	u32 v;
 	int i;
 
-	/* enable mdio access to SERDES */
+	 
 	v = BCMA_CORE_PCI_MDIOCTL_PREAM_EN;
 	v |= BCMA_CORE_PCI_MDIOCTL_DIVISOR_VAL;
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_CONTROL, v);
@@ -83,7 +72,7 @@ static u16 bcma_pcie_mdio_read(struct bcma_drv_pci *pc, u16 device, u8 address)
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_DATA, v);
-	/* Wait for the device to complete the transaction */
+	 
 	udelay(10);
 	for (i = 0; i < max_retries; i++) {
 		v = pcicore_read32(pc, BCMA_CORE_PCI_MDIO_CONTROL);
@@ -105,7 +94,7 @@ static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
 	u32 v;
 	int i;
 
-	/* enable mdio access to SERDES */
+	 
 	v = BCMA_CORE_PCI_MDIOCTL_PREAM_EN;
 	v |= BCMA_CORE_PCI_MDIOCTL_DIVISOR_VAL;
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_CONTROL, v);
@@ -126,7 +115,7 @@ static void bcma_pcie_mdio_write(struct bcma_drv_pci *pc, u16 device,
 	v |= BCMA_CORE_PCI_MDIODATA_TA;
 	v |= data;
 	pcicore_write32(pc, BCMA_CORE_PCI_MDIO_DATA, v);
-	/* Wait for the device to complete the transaction */
+	 
 	udelay(10);
 	for (i = 0; i < max_retries; i++) {
 		v = pcicore_read32(pc, BCMA_CORE_PCI_MDIO_CONTROL);
@@ -144,9 +133,7 @@ static u16 bcma_pcie_mdio_writeread(struct bcma_drv_pci *pc, u16 device,
 	return bcma_pcie_mdio_read(pc, device, address);
 }
 
-/**************************************************
- * Early init.
- **************************************************/
+ 
 
 static void bcma_core_pci_fixcfg(struct bcma_drv_pci *pc)
 {
@@ -166,10 +153,7 @@ static void bcma_core_pci_fixcfg(struct bcma_drv_pci *pc)
 	}
 }
 
-/*
- * Apply some early fixes required before accessing SPROM.
- * See also si_pci_fixcfg.
- */
+ 
 void bcma_core_pci_early_init(struct bcma_drv_pci *pc)
 {
 	if (pc->early_setup_done)
@@ -185,9 +169,7 @@ out:
 	pc->early_setup_done = true;
 }
 
-/**************************************************
- * Workarounds.
- **************************************************/
+ 
 
 static u8 bcma_pcicore_polarity_workaround(struct bcma_drv_pci *pc)
 {
@@ -216,8 +198,8 @@ static void bcma_pcicore_serdes_workaround(struct bcma_drv_pci *pc)
 		                     tmp & ~BCMA_CORE_PCI_PLL_CTRL_FREQDET_EN);
 }
 
-/* Fix MISC config to allow coming out of L2/L3-Ready state w/o PRST */
-/* Needs to happen when coming out of 'standby'/'hibernate' */
+ 
+ 
 static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
 {
 	u16 val16;
@@ -233,9 +215,7 @@ static void bcma_core_pci_config_fixup(struct bcma_drv_pci *pc)
 	}
 }
 
-/**************************************************
- * Init.
- **************************************************/
+ 
 
 static void bcma_core_pci_clientmode_init(struct bcma_drv_pci *pc)
 {

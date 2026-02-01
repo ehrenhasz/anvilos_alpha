@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of SoundBlaster cards - MIDI interface
- *
- * --
- *
- * Sun May  9 22:54:38 BST 1999 George David Morrison <gdm@gedamo.demon.co.uk>
- *   Fixed typo in snd_sb8dsp_midi_new_device which prevented midi from 
- *   working.
- *
- * Sun May 11 12:34:56 UTC 2003 Clemens Ladisch <clemens@ladisch.de>
- *   Added full duplex UART mode for DSP version 2.0 and later.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/time.h>
@@ -30,7 +18,7 @@ irqreturn_t snd_sb8dsp_midi_interrupt(struct snd_sb *chip)
 	
 	rmidi = chip->rmidi;
 	if (!rmidi) {
-		inb(SBP(chip, DATA_AVAIL));	/* ack interrupt */
+		inb(SBP(chip, DATA_AVAIL));	 
 		return IRQ_NONE;
 	}
 
@@ -65,7 +53,7 @@ static int snd_sb8dsp_midi_input_open(struct snd_rawmidi_substream *substream)
 	chip->midi_substream_input = substream;
 	if (!(chip->open & SB_OPEN_MIDI_OUTPUT)) {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
-		snd_sbdsp_reset(chip);		/* reset DSP */
+		snd_sbdsp_reset(chip);		 
 		if (chip->hardware >= SB_HW_20)
 			snd_sbdsp_command(chip, SB_DSP_MIDI_UART_IRQ);
 	} else {
@@ -92,7 +80,7 @@ static int snd_sb8dsp_midi_output_open(struct snd_rawmidi_substream *substream)
 	chip->midi_substream_output = substream;
 	if (!(chip->open & SB_OPEN_MIDI_INPUT)) {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
-		snd_sbdsp_reset(chip);		/* reset DSP */
+		snd_sbdsp_reset(chip);		 
 		if (chip->hardware >= SB_HW_20)
 			snd_sbdsp_command(chip, SB_DSP_MIDI_UART_IRQ);
 	} else {
@@ -112,7 +100,7 @@ static int snd_sb8dsp_midi_input_close(struct snd_rawmidi_substream *substream)
 	chip->midi_substream_input = NULL;
 	if (!(chip->open & SB_OPEN_MIDI_OUTPUT)) {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
-		snd_sbdsp_reset(chip);		/* reset DSP */
+		snd_sbdsp_reset(chip);		 
 	} else {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
 	}
@@ -131,7 +119,7 @@ static int snd_sb8dsp_midi_output_close(struct snd_rawmidi_substream *substream)
 	chip->midi_substream_output = NULL;
 	if (!(chip->open & SB_OPEN_MIDI_INPUT)) {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
-		snd_sbdsp_reset(chip);		/* reset DSP */
+		snd_sbdsp_reset(chip);		 
 	} else {
 		spin_unlock_irqrestore(&chip->open_lock, flags);
 	}
@@ -168,7 +156,7 @@ static void snd_sb8dsp_midi_output_write(struct snd_rawmidi_substream *substream
 	char byte;
 	int max = 32;
 
-	/* how big is Tx FIFO? */
+	 
 	chip = substream->rmidi->private_data;
 	while (max-- > 0) {
 		spin_lock_irqsave(&chip->open_lock, flags);
@@ -183,7 +171,7 @@ static void snd_sb8dsp_midi_output_write(struct snd_rawmidi_substream *substream
 			while ((inb(SBP(chip, STATUS)) & 0x80) != 0 && --timeout > 0)
 				;
 			if (timeout == 0) {
-				/* Tx FIFO full - try again later */
+				 
 				spin_unlock_irqrestore(&chip->open_lock, flags);
 				break;
 			}

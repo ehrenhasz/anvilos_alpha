@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bio.h>
@@ -108,15 +106,7 @@ static int compression_compress_pages(int type, struct list_head *ws,
 				out_pages, total_in, total_out);
 	case BTRFS_COMPRESS_NONE:
 	default:
-		/*
-		 * This can happen when compression races with remount setting
-		 * it to 'no compress', while caller doesn't call
-		 * inode_need_compress() to check if we really need to
-		 * compress.
-		 *
-		 * Not a big deal, just need to inform caller that we
-		 * haven't allocated any pages yet.
-		 */
+		 
 		*out_pages = 0;
 		return -E2BIG;
 	}
@@ -131,10 +121,7 @@ static int compression_decompress_bio(struct list_head *ws,
 	case BTRFS_COMPRESS_ZSTD: return zstd_decompress_bio(ws, cb);
 	case BTRFS_COMPRESS_NONE:
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
@@ -152,10 +139,7 @@ static int compression_decompress(int type, struct list_head *ws,
 						start_byte, srclen, destlen);
 	case BTRFS_COMPRESS_NONE:
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
@@ -182,10 +166,7 @@ static void end_compressed_bio_read(struct btrfs_bio *bbio)
 	bio_put(&bbio->bio);
 }
 
-/*
- * Clear the writeback bits on all of the file
- * pages for a compressed write
- */
+ 
 static noinline void end_compressed_writeback(const struct compressed_bio *cb)
 {
 	struct inode *inode = &cb->bbio.inode->vfs_inode;
@@ -216,7 +197,7 @@ static noinline void end_compressed_writeback(const struct compressed_bio *cb)
 		}
 		folio_batch_release(&fbatch);
 	}
-	/* the inode may be gone now */
+	 
 }
 
 static void btrfs_finish_compressed_write_work(struct work_struct *work)
@@ -229,19 +210,13 @@ static void btrfs_finish_compressed_write_work(struct work_struct *work)
 
 	if (cb->writeback)
 		end_compressed_writeback(cb);
-	/* Note, our inode could be gone now */
+	 
 
 	btrfs_free_compressed_pages(cb);
 	bio_put(&cb->bbio.bio);
 }
 
-/*
- * Do the cleanup once all the compressed pages hit the disk.  This will clear
- * writeback on the file pages and free the compressed pages.
- *
- * This also calls the writeback end hooks for the file pages so that metadata
- * and checksums can be updated in the file.
- */
+ 
 static void end_compressed_bio_write(struct btrfs_bio *bbio)
 {
 	struct compressed_bio *cb = to_compressed_bio(bbio);
@@ -258,22 +233,14 @@ static void btrfs_add_compressed_bio_pages(struct compressed_bio *cb)
 	while (offset < cb->compressed_len) {
 		u32 len = min_t(u32, cb->compressed_len - offset, PAGE_SIZE);
 
-		/* Maximum compressed extent is smaller than bio size limit. */
+		 
 		__bio_add_page(bio, cb->compressed_pages[offset >> PAGE_SHIFT],
 			       len, 0);
 		offset += len;
 	}
 }
 
-/*
- * worker function to build and submit bios for previously compressed pages.
- * The corresponding pages in the inode should be marked for writeback
- * and the compressed pages should have a reference on them for dropping
- * when the IO is complete.
- *
- * This also checksums the file bytes and gets things ready for
- * the end io hooks.
- */
+ 
 void btrfs_submit_compressed_write(struct btrfs_ordered_extent *ordered,
 				   struct page **compressed_pages,
 				   unsigned int nr_pages,
@@ -304,17 +271,7 @@ void btrfs_submit_compressed_write(struct btrfs_ordered_extent *ordered,
 	btrfs_submit_bio(&cb->bbio, 0);
 }
 
-/*
- * Add extra pages in the same compressed file extent so that we don't need to
- * re-read the same extent again and again.
- *
- * NOTE: this won't work well for subpage, as for subpage read, we lock the
- * full page then submit bio for each compressed/regular extents.
- *
- * This means, if we have several sectors in the same page points to the same
- * on-disk compressed data, we will re-read the same extent many times and
- * this function can only help for the next page.
- */
+ 
 static noinline int add_ra_bio_pages(struct inode *inode,
 				     u64 compressed_end,
 				     struct compressed_bio *cb,
@@ -339,13 +296,7 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 	if (isize == 0)
 		return 0;
 
-	/*
-	 * For current subpage support, we only support 64K page size,
-	 * which means maximum compressed extent size (128K) is just 2x page
-	 * size.
-	 * This makes readahead less effective, so here disable readahead for
-	 * subpage for now, until full compressed write is supported.
-	 */
+	 
 	if (btrfs_sb(inode->i_sb)->sectorsize < PAGE_SIZE)
 		return 0;
 
@@ -364,14 +315,11 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 			sectors_missed += (PAGE_SIZE - offset_in_page(cur)) >>
 					  fs_info->sectorsize_bits;
 
-			/* Beyond threshold, no need to continue */
+			 
 			if (sectors_missed > 4)
 				break;
 
-			/*
-			 * Jump to next page start as we already have page for
-			 * current offset.
-			 */
+			 
 			cur = (pg_index << PAGE_SHIFT) + PAGE_SIZE;
 			continue;
 		}
@@ -383,7 +331,7 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 
 		if (add_to_page_cache_lru(page, mapping, pg_index, GFP_NOFS)) {
 			put_page(page);
-			/* There is already a page, skip to page end */
+			 
 			cur = (pg_index << PAGE_SHIFT) + PAGE_SIZE;
 			continue;
 		}
@@ -406,11 +354,7 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 		em = lookup_extent_mapping(em_tree, cur, page_end + 1 - cur);
 		read_unlock(&em_tree->lock);
 
-		/*
-		 * At this point, we have a locked page in the page cache for
-		 * these bytes in the file.  But, we have to make sure they map
-		 * to this compressed extent on disk.
-		 */
+		 
 		if (!em || cur < em->start ||
 		    (cur + fs_info->sectorsize > extent_map_end(em)) ||
 		    (em->block_start >> SECTOR_SHIFT) != orig_bio->bi_iter.bi_sector) {
@@ -440,11 +384,7 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 			put_page(page);
 			break;
 		}
-		/*
-		 * If it's subpage, we also need to increase its
-		 * subpage::readers number, as at endio we will decrease
-		 * subpage::readers and to unlock the page.
-		 */
+		 
 		if (fs_info->sectorsize < PAGE_SIZE)
 			btrfs_subpage_start_reader(fs_info, page, cur, add_size);
 		put_page(page);
@@ -453,17 +393,7 @@ static noinline int add_ra_bio_pages(struct inode *inode,
 	return 0;
 }
 
-/*
- * for a compressed read, the bio we get passed has all the inode pages
- * in it.  We don't actually do IO on those pages but allocate new ones
- * to hold the compressed pages on disk.
- *
- * bio->bi_iter.bi_sector points to the compressed extent on disk
- * bio->bi_io_vec points to all of the inode pages
- *
- * After the compressed pages are read, we copy the bytes into the
- * bio we were passed and then call the bio end_io calls
- */
+ 
 void btrfs_submit_compressed_read(struct btrfs_bio *bbio)
 {
 	struct btrfs_inode *inode = bbio->inode;
@@ -480,7 +410,7 @@ void btrfs_submit_compressed_read(struct btrfs_bio *bbio)
 	blk_status_t ret;
 	int ret2;
 
-	/* we need the actual starting offset of this extent in the file */
+	 
 	read_lock(&em_tree->lock);
 	em = lookup_extent_mapping(em_tree, file_offset, fs_info->sectorsize);
 	read_unlock(&em_tree->lock);
@@ -522,7 +452,7 @@ void btrfs_submit_compressed_read(struct btrfs_bio *bbio)
 	add_ra_bio_pages(&inode->vfs_inode, em_start + em_len, cb, &memstall,
 			 &pflags);
 
-	/* include any pages we added in add_ra-bio_pages */
+	 
 	cb->len = bbio->bio.bi_iter.bi_size;
 	cb->bbio.bio.bi_iter.bi_sector = bbio->bio.bi_iter.bi_sector;
 	btrfs_add_compressed_bio_pages(cb);
@@ -541,35 +471,14 @@ out:
 	btrfs_bio_end_io(bbio, ret);
 }
 
-/*
- * Heuristic uses systematic sampling to collect data from the input data
- * range, the logic can be tuned by the following constants:
- *
- * @SAMPLING_READ_SIZE - how many bytes will be copied from for each sample
- * @SAMPLING_INTERVAL  - range from which the sampled data can be collected
- */
+ 
 #define SAMPLING_READ_SIZE	(16)
 #define SAMPLING_INTERVAL	(256)
 
-/*
- * For statistical analysis of the input data we consider bytes that form a
- * Galois Field of 256 objects. Each object has an attribute count, ie. how
- * many times the object appeared in the sample.
- */
+ 
 #define BUCKET_SIZE		(256)
 
-/*
- * The size of the sample is based on a statistical sampling rule of thumb.
- * The common way is to perform sampling tests as long as the number of
- * elements in each cell is at least 5.
- *
- * Instead of 5, we choose 32 to obtain more accurate results.
- * If the data contain the maximum number of symbols, which is 256, we obtain a
- * sample size bound by 8192.
- *
- * For a sample of at most 8KB of data per data range: 16 consecutive bytes
- * from up to 512 locations.
- */
+ 
 #define MAX_SAMPLE_SIZE		(BTRFS_MAX_UNCOMPRESSED *		\
 				 SAMPLING_READ_SIZE / SAMPLING_INTERVAL)
 
@@ -578,12 +487,12 @@ struct bucket_item {
 };
 
 struct heuristic_ws {
-	/* Partial copy of input data */
+	 
 	u8 *sample;
 	u32 sample_size;
-	/* Buckets store counters for each byte value */
+	 
 	struct bucket_item *bucket;
-	/* Sorting buffer */
+	 
 	struct bucket_item *bucket_b;
 	struct list_head list;
 };
@@ -634,7 +543,7 @@ const struct btrfs_compress_op btrfs_heuristic_compress = {
 };
 
 static const struct btrfs_compress_op * const btrfs_compress_op[] = {
-	/* The heuristic is represented as compression type 0 */
+	 
 	&btrfs_heuristic_compress,
 	&btrfs_zlib_compress,
 	&btrfs_lzo_compress,
@@ -649,10 +558,7 @@ static struct list_head *alloc_workspace(int type, unsigned int level)
 	case BTRFS_COMPRESS_LZO:  return lzo_alloc_workspace(level);
 	case BTRFS_COMPRESS_ZSTD: return zstd_alloc_workspace(level);
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
@@ -665,10 +571,7 @@ static void free_workspace(int type, struct list_head *ws)
 	case BTRFS_COMPRESS_LZO:  return lzo_free_workspace(ws);
 	case BTRFS_COMPRESS_ZSTD: return zstd_free_workspace(ws);
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
@@ -684,10 +587,7 @@ static void btrfs_init_workspace_manager(int type)
 	atomic_set(&wsm->total_ws, 0);
 	init_waitqueue_head(&wsm->ws_wait);
 
-	/*
-	 * Preallocate one workspace for each compression type so we can
-	 * guarantee forward progress in the worst case
-	 */
+	 
 	workspace = alloc_workspace(type, 0);
 	if (IS_ERR(workspace)) {
 		pr_warn(
@@ -713,12 +613,7 @@ static void btrfs_cleanup_workspace_manager(int type)
 	}
 }
 
-/*
- * This finds an available workspace or allocates a new one.
- * If it's not possible to allocate a new one, waits until there's one.
- * Preallocation makes a forward progress guarantees and we do not return
- * errors.
- */
+ 
 struct list_head *btrfs_get_workspace(int type, unsigned int level)
 {
 	struct workspace_manager *wsm;
@@ -761,11 +656,7 @@ again:
 	atomic_inc(total_ws);
 	spin_unlock(ws_lock);
 
-	/*
-	 * Allocation helpers call vmalloc that can't use GFP_NOFS, so we have
-	 * to turn it off here because we might get called from the restricted
-	 * context of btrfs_compress_bio/btrfs_compress_pages
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 	workspace = alloc_workspace(type, level);
 	memalloc_nofs_restore(nofs_flag);
@@ -774,20 +665,11 @@ again:
 		atomic_dec(total_ws);
 		wake_up(ws_wait);
 
-		/*
-		 * Do not return the error but go back to waiting. There's a
-		 * workspace preallocated for each type and the compression
-		 * time is bounded so we get to a workspace eventually. This
-		 * makes our caller's life easier.
-		 *
-		 * To prevent silent and low-probability deadlocks (when the
-		 * initial preallocation fails), check if there are any
-		 * workspaces at all.
-		 */
+		 
 		if (atomic_read(total_ws) == 0) {
 			static DEFINE_RATELIMIT_STATE(_rs,
-					/* once per minute */ 60 * HZ,
-					/* no burst */ 1);
+					  60 * HZ,
+					  1);
 
 			if (__ratelimit(&_rs)) {
 				pr_warn("BTRFS: no compression workspaces, low memory, retrying\n");
@@ -806,18 +688,12 @@ static struct list_head *get_workspace(int type, int level)
 	case BTRFS_COMPRESS_LZO:  return btrfs_get_workspace(type, level);
 	case BTRFS_COMPRESS_ZSTD: return zstd_get_workspace(level);
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
 
-/*
- * put a workspace struct back on the list or free it if we have enough
- * idle ones sitting around
- */
+ 
 void btrfs_put_workspace(int type, struct list_head *ws)
 {
 	struct workspace_manager *wsm;
@@ -857,18 +733,12 @@ static void put_workspace(int type, struct list_head *ws)
 	case BTRFS_COMPRESS_LZO:  return btrfs_put_workspace(type, ws);
 	case BTRFS_COMPRESS_ZSTD: return zstd_put_workspace(ws);
 	default:
-		/*
-		 * This can't happen, the type is validated several times
-		 * before we get here.
-		 */
+		 
 		BUG();
 	}
 }
 
-/*
- * Adjust @level according to the limits of the compression algorithm or
- * fallback to default
- */
+ 
 static unsigned int btrfs_compress_set_level(int type, unsigned level)
 {
 	const struct btrfs_compress_op *ops = btrfs_compress_op[type];
@@ -881,26 +751,7 @@ static unsigned int btrfs_compress_set_level(int type, unsigned level)
 	return level;
 }
 
-/*
- * Given an address space and start and length, compress the bytes into @pages
- * that are allocated on demand.
- *
- * @type_level is encoded algorithm and level, where level 0 means whatever
- * default the algorithm chooses and is opaque here;
- * - compression algo are 0-3
- * - the level are bits 4-7
- *
- * @out_pages is an in/out parameter, holds maximum number of pages to allocate
- * and returns number of actually allocated pages
- *
- * @total_in is used to return the number of bytes actually read.  It
- * may be smaller than the input length if we had to exit early because we
- * ran out of room in the pages array or because we cross the
- * max_out threshold.
- *
- * @total_out is an in/out parameter, must be set to the input length and will
- * be also used to return the total number of compressed bytes
- */
+ 
 int btrfs_compress_pages(unsigned int type_level, struct address_space *mapping,
 			 u64 start, struct page **pages,
 			 unsigned long *out_pages,
@@ -935,11 +786,7 @@ static int btrfs_decompress_bio(struct compressed_bio *cb)
 	return ret;
 }
 
-/*
- * a less complex decompression routine.  Our compressed data fits in a
- * single page, and we want to read a single page out of it.
- * start_byte tells us the offset into the compressed data we're interested in
- */
+ 
 int btrfs_decompress(int type, const u8 *data_in, struct page *dest_page,
 		     unsigned long start_byte, size_t srclen, size_t destlen)
 {
@@ -976,60 +823,28 @@ void __cold btrfs_exit_compress(void)
 	bioset_exit(&btrfs_compressed_bioset);
 }
 
-/*
- * Copy decompressed data from working buffer to pages.
- *
- * @buf:		The decompressed data buffer
- * @buf_len:		The decompressed data length
- * @decompressed:	Number of bytes that are already decompressed inside the
- * 			compressed extent
- * @cb:			The compressed extent descriptor
- * @orig_bio:		The original bio that the caller wants to read for
- *
- * An easier to understand graph is like below:
- *
- * 		|<- orig_bio ->|     |<- orig_bio->|
- * 	|<-------      full decompressed extent      ----->|
- * 	|<-----------    @cb range   ---->|
- * 	|			|<-- @buf_len -->|
- * 	|<--- @decompressed --->|
- *
- * Note that, @cb can be a subpage of the full decompressed extent, but
- * @cb->start always has the same as the orig_file_offset value of the full
- * decompressed extent.
- *
- * When reading compressed extent, we have to read the full compressed extent,
- * while @orig_bio may only want part of the range.
- * Thus this function will ensure only data covered by @orig_bio will be copied
- * to.
- *
- * Return 0 if we have copied all needed contents for @orig_bio.
- * Return >0 if we need continue decompress.
- */
+ 
 int btrfs_decompress_buf2page(const char *buf, u32 buf_len,
 			      struct compressed_bio *cb, u32 decompressed)
 {
 	struct bio *orig_bio = &cb->orig_bbio->bio;
-	/* Offset inside the full decompressed extent */
+	 
 	u32 cur_offset;
 
 	cur_offset = decompressed;
-	/* The main loop to do the copy */
+	 
 	while (cur_offset < decompressed + buf_len) {
 		struct bio_vec bvec;
 		size_t copy_len;
 		u32 copy_start;
-		/* Offset inside the full decompressed extent */
+		 
 		u32 bvec_offset;
 
 		bvec = bio_iter_iovec(orig_bio, orig_bio->bi_iter);
-		/*
-		 * cb->start may underflow, but subtracting that value can still
-		 * give us correct offset inside the full decompressed extent.
-		 */
+		 
 		bvec_offset = page_offset(bvec.bv_page) + bvec.bv_offset - cb->start;
 
-		/* Haven't reached the bvec range, exit */
+		 
 		if (decompressed + buf_len <= bvec_offset)
 			return 1;
 
@@ -1038,53 +853,25 @@ int btrfs_decompress_buf2page(const char *buf, u32 buf_len,
 			       decompressed + buf_len) - copy_start;
 		ASSERT(copy_len);
 
-		/*
-		 * Extra range check to ensure we didn't go beyond
-		 * @buf + @buf_len.
-		 */
+		 
 		ASSERT(copy_start - decompressed < buf_len);
 		memcpy_to_page(bvec.bv_page, bvec.bv_offset,
 			       buf + copy_start - decompressed, copy_len);
 		cur_offset += copy_len;
 
 		bio_advance(orig_bio, copy_len);
-		/* Finished the bio */
+		 
 		if (!orig_bio->bi_iter.bi_size)
 			return 0;
 	}
 	return 1;
 }
 
-/*
- * Shannon Entropy calculation
- *
- * Pure byte distribution analysis fails to determine compressibility of data.
- * Try calculating entropy to estimate the average minimum number of bits
- * needed to encode the sampled data.
- *
- * For convenience, return the percentage of needed bits, instead of amount of
- * bits directly.
- *
- * @ENTROPY_LVL_ACEPTABLE - below that threshold, sample has low byte entropy
- *			    and can be compressible with high probability
- *
- * @ENTROPY_LVL_HIGH - data are not compressible with high probability
- *
- * Use of ilog2() decreases precision, we lower the LVL to 5 to compensate.
- */
+ 
 #define ENTROPY_LVL_ACEPTABLE		(65)
 #define ENTROPY_LVL_HIGH		(80)
 
-/*
- * For increasead precision in shannon_entropy calculation,
- * let's do pow(n, M) to save more digits after comma:
- *
- * - maximum int bit length is 64
- * - ilog2(MAX_SAMPLE_SIZE)	-> 13
- * - 13 * 4 = 52 < 64		-> M = 4
- *
- * So use pow(n, 4).
- */
+ 
 static inline u32 ilog2_w(u64 n)
 {
 	return ilog2(n * n * n * n);
@@ -1115,20 +902,12 @@ static u8 get4bits(u64 num, int shift) {
 	u8 low4bits;
 
 	num >>= shift;
-	/* Reverse order */
+	 
 	low4bits = (COUNTERS_SIZE - 1) - (num % COUNTERS_SIZE);
 	return low4bits;
 }
 
-/*
- * Use 4 bits as radix base
- * Use 16 u32 counters for calculating new position in buf array
- *
- * @array     - array that will be sorted
- * @array_buf - buffer array to store sorting results
- *              must be equal in size to @array
- * @num       - array size
- */
+ 
 static void radix_sort(struct bucket_item *array, struct bucket_item *array_buf,
 		       int num)
 {
@@ -1141,10 +920,7 @@ static void radix_sort(struct bucket_item *array, struct bucket_item *array_buf,
 	int shift;
 	int i;
 
-	/*
-	 * Try avoid useless loop iterations for small numbers stored in big
-	 * counters.  Example: 48 33 4 ... in 64bit array
-	 */
+	 
 	max_num = array[0].count;
 	for (i = 1; i < num; i++) {
 		buf_num = array[i].count;
@@ -1178,12 +954,7 @@ static void radix_sort(struct bucket_item *array, struct bucket_item *array_buf,
 
 		shift += RADIX_BASE;
 
-		/*
-		 * Normal radix expects to move data from a temporary array, to
-		 * the main one.  But that requires some CPU time. Avoid that
-		 * by doing another sort iteration to original array instead of
-		 * memcpy()
-		 */
+		 
 		memset(counters, 0, sizeof(counters));
 
 		for (i = 0; i < num; i ++) {
@@ -1207,22 +978,7 @@ static void radix_sort(struct bucket_item *array, struct bucket_item *array_buf,
 	}
 }
 
-/*
- * Size of the core byte set - how many bytes cover 90% of the sample
- *
- * There are several types of structured binary data that use nearly all byte
- * values. The distribution can be uniform and counts in all buckets will be
- * nearly the same (eg. encrypted data). Unlikely to be compressible.
- *
- * Other possibility is normal (Gaussian) distribution, where the data could
- * be potentially compressible, but we have to take a few more steps to decide
- * how much.
- *
- * @BYTE_CORE_SET_LOW  - main part of byte values repeated frequently,
- *                       compression algo can easy fix that
- * @BYTE_CORE_SET_HIGH - data have uniform distribution and with high
- *                       probability is not compressible
- */
+ 
 #define BYTE_CORE_SET_LOW		(64)
 #define BYTE_CORE_SET_HIGH		(200)
 
@@ -1233,7 +989,7 @@ static int byte_core_set_size(struct heuristic_ws *ws)
 	const u32 core_set_threshold = ws->sample_size * 90 / 100;
 	struct bucket_item *bucket = ws->bucket;
 
-	/* Sort in reverse order */
+	 
 	radix_sort(ws->bucket, ws->bucket_b, BUCKET_SIZE);
 
 	for (i = 0; i < BYTE_CORE_SET_LOW; i++)
@@ -1251,17 +1007,7 @@ static int byte_core_set_size(struct heuristic_ws *ws)
 	return i;
 }
 
-/*
- * Count byte values in buckets.
- * This heuristic can detect textual data (configs, xml, json, html, etc).
- * Because in most text-like data byte set is restricted to limited number of
- * possible characters, and that restriction in most cases makes data easy to
- * compress.
- *
- * @BYTE_SET_THRESHOLD - consider all data within this byte set size:
- *	less - compressible
- *	more - need additional analysis
- */
+ 
 #define BYTE_SET_THRESHOLD		(64)
 
 static u32 byte_set_size(const struct heuristic_ws *ws)
@@ -1274,11 +1020,7 @@ static u32 byte_set_size(const struct heuristic_ws *ws)
 			byte_set_size++;
 	}
 
-	/*
-	 * Continue collecting count of byte values in buckets.  If the byte
-	 * set size is bigger then the threshold, it's pointless to continue,
-	 * the detection technique would fail for this type of data.
-	 */
+	 
 	for (; i < BUCKET_SIZE; i++) {
 		if (ws->bucket[i].count > 0) {
 			byte_set_size++;
@@ -1306,22 +1048,14 @@ static void heuristic_collect_sample(struct inode *inode, u64 start, u64 end,
 	u32 i, curr_sample_pos;
 	u8 *in_data;
 
-	/*
-	 * Compression handles the input data by chunks of 128KiB
-	 * (defined by BTRFS_MAX_UNCOMPRESSED)
-	 *
-	 * We do the same for the heuristic and loop over the whole range.
-	 *
-	 * MAX_SAMPLE_SIZE - calculated under assumption that heuristic will
-	 * process no more than BTRFS_MAX_UNCOMPRESSED at a time.
-	 */
+	 
 	if (end - start > BTRFS_MAX_UNCOMPRESSED)
 		end = start + BTRFS_MAX_UNCOMPRESSED;
 
 	index = start >> PAGE_SHIFT;
 	index_end = end >> PAGE_SHIFT;
 
-	/* Don't miss unaligned end */
+	 
 	if (!PAGE_ALIGNED(end))
 		index_end++;
 
@@ -1329,10 +1063,10 @@ static void heuristic_collect_sample(struct inode *inode, u64 start, u64 end,
 	while (index < index_end) {
 		page = find_get_page(inode->i_mapping, index);
 		in_data = kmap_local_page(page);
-		/* Handle case where the start is not aligned to PAGE_SIZE */
+		 
 		i = start % PAGE_SIZE;
 		while (i < PAGE_SIZE - SAMPLING_READ_SIZE) {
-			/* Don't sample any garbage from the last page */
+			 
 			if (start > end - SAMPLING_READ_SIZE)
 				break;
 			memcpy(&ws->sample[curr_sample_pos], &in_data[i],
@@ -1350,21 +1084,7 @@ static void heuristic_collect_sample(struct inode *inode, u64 start, u64 end,
 	ws->sample_size = curr_sample_pos;
 }
 
-/*
- * Compression heuristic.
- *
- * For now is's a naive and optimistic 'return true', we'll extend the logic to
- * quickly (compared to direct compression) detect data characteristics
- * (compressible/incompressible) to avoid wasting CPU time on incompressible
- * data.
- *
- * The following types of analysis can be performed:
- * - detect mostly zero data
- * - detect data with low "byte set" size (text, etc)
- * - detect data with low/high "core byte" set
- *
- * Return non-zero if the compression should be done, 0 otherwise.
- */
+ 
 int btrfs_compress_heuristic(struct inode *inode, u64 start, u64 end)
 {
 	struct list_head *ws_list = get_workspace(0, 0);
@@ -1412,21 +1132,7 @@ int btrfs_compress_heuristic(struct inode *inode, u64 start, u64 end)
 		goto out;
 	}
 
-	/*
-	 * For the levels below ENTROPY_LVL_HIGH, additional analysis would be
-	 * needed to give green light to compression.
-	 *
-	 * For now just assume that compression at that level is not worth the
-	 * resources because:
-	 *
-	 * 1. it is possible to defrag the data later
-	 *
-	 * 2. the data would turn out to be hardly compressible, eg. 150 byte
-	 * values, every bucket has counter at level ~54. The heuristic would
-	 * be confused. This can happen when data have some internal repeated
-	 * patterns like "abbacbbc...". This can be detected by analyzing
-	 * pairs of bytes, which is too costly.
-	 */
+	 
 	if (i < ENTROPY_LVL_HIGH) {
 		ret = 5;
 		goto out;
@@ -1440,10 +1146,7 @@ out:
 	return ret;
 }
 
-/*
- * Convert the compression suffix (eg. after "zlib" starting with ":") to
- * level, unrecognized string will set the default level
- */
+ 
 unsigned int btrfs_compress_str2level(unsigned int type, const char *str)
 {
 	unsigned int level = 0;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2017 Linaro Ltd.
- */
+ 
+ 
 #ifndef __VENUS_FIRMWARE_H__
 #define __VENUS_FIRMWARE_H__
 

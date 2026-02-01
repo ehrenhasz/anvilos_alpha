@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2011, 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014, Sony Mobile Communications Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -92,7 +89,7 @@ static int pm8941_reboot_notify(struct notifier_block *nb,
 	unsigned int reset_type;
 	int error;
 
-	/* PMICs with revision 0 have the enable bit in same register as ctrl */
+	 
 	if (pwrkey->revision == 0)
 		enable_reg = PON_PS_HOLD_RST_CTL;
 	else
@@ -107,10 +104,7 @@ static int pm8941_reboot_notify(struct notifier_block *nb,
 			"unable to clear ps hold reset enable: %d\n",
 			error);
 
-	/*
-	 * Updates of PON_PS_HOLD_ENABLE requires 3 sleep cycles between
-	 * writes.
-	 */
+	 
 	usleep_range(100, 1000);
 
 	switch (code) {
@@ -170,10 +164,7 @@ static irqreturn_t pm8941_pwrkey_irq(int irq, void *_data)
 		pwrkey->sw_debounce_end_time = ktime_add_us(ktime_get(),
 						pwrkey->sw_debounce_time_us);
 
-	/*
-	 * Simulate a press event in case a release event occurred without a
-	 * corresponding press event.
-	 */
+	 
 	if (!pwrkey->last_status && !sts) {
 		input_report_key(pwrkey->input, pwrkey->code, 1);
 		input_sync(pwrkey->input);
@@ -274,11 +265,7 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 	pwrkey->regmap = dev_get_regmap(parent, NULL);
 	if (!pwrkey->regmap) {
 		regmap_node = parent->of_node;
-		/*
-		 * We failed to get regmap for parent. Let's see if we are
-		 * a child of pon node and read regmap and reg from its
-		 * parent.
-		 */
+		 
 		pwrkey->regmap = dev_get_regmap(parent->parent, NULL);
 		if (!pwrkey->regmap) {
 			dev_err(&pdev->dev, "failed to locate regmap\n");
@@ -294,7 +281,7 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 	pwrkey->baseaddr = be32_to_cpup(addr);
 
 	if (pwrkey->data->has_pon_pbs) {
-		/* PON_PBS base address is optional */
+		 
 		addr = of_get_address(regmap_node, 1, NULL, NULL);
 		if (addr)
 			pwrkey->pon_pbs_baseaddr = be32_to_cpup(addr);

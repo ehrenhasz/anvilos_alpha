@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010 Cisco Systems, Inc.
- */
 
-/* XXX TBD some includes may be extraneous */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -34,10 +32,7 @@
 
 static void ft_sess_delete_all(struct ft_tport *);
 
-/*
- * Lookup or allocate target local port.
- * Caller holds ft_lport_lock.
- */
+ 
 static struct ft_tport *ft_tport_get(struct fc_lport *lport)
 {
 	struct ft_tpg *tpg;
@@ -73,10 +68,7 @@ static struct ft_tport *ft_tport_get(struct fc_lport *lport)
 	return tport;
 }
 
-/*
- * Delete a target local port.
- * Caller holds ft_lport_lock.
- */
+ 
 static void ft_tport_delete(struct ft_tport *tport)
 {
 	struct fc_lport *lport;
@@ -96,10 +88,7 @@ static void ft_tport_delete(struct ft_tport *tport)
 	kfree_rcu(tport, rcu);
 }
 
-/*
- * Add local port.
- * Called thru fc_lport_iterate().
- */
+ 
 void ft_lport_add(struct fc_lport *lport, void *arg)
 {
 	mutex_lock(&ft_lport_lock);
@@ -108,10 +97,7 @@ void ft_lport_add(struct fc_lport *lport, void *arg)
 	mutex_unlock(&ft_lport_lock);
 }
 
-/*
- * Delete local port.
- * Called thru fc_lport_iterate().
- */
+ 
 void ft_lport_del(struct fc_lport *lport, void *arg)
 {
 	struct ft_tport *tport;
@@ -123,10 +109,7 @@ void ft_lport_del(struct fc_lport *lport, void *arg)
 	mutex_unlock(&ft_lport_lock);
 }
 
-/*
- * Notification of local port change from libfc.
- * Create or delete local port and associated tport.
- */
+ 
 int ft_lport_notify(struct notifier_block *nb, unsigned long event, void *arg)
 {
 	struct fc_lport *lport = arg;
@@ -142,19 +125,13 @@ int ft_lport_notify(struct notifier_block *nb, unsigned long event, void *arg)
 	return NOTIFY_DONE;
 }
 
-/*
- * Hash function for FC_IDs.
- */
+ 
 static u32 ft_sess_hash(u32 port_id)
 {
 	return hash_32(port_id, FT_SESS_HASH_BITS);
 }
 
-/*
- * Find session in local port.
- * Sessions and hash lists are RCU-protected.
- * A reference is taken which must be eventually freed.
- */
+ 
 static struct ft_sess *ft_sess_get(struct fc_lport *lport, u32 port_id)
 {
 	struct ft_tport *tport;
@@ -200,10 +177,7 @@ static int ft_sess_alloc_cb(struct se_portal_group *se_tpg,
 	return 0;
 }
 
-/*
- * Allocate session and enter it in the hash for the local port.
- * Caller holds ft_lport_lock.
- */
+ 
 static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 				      struct fc_rport_priv *rdata)
 {
@@ -223,7 +197,7 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 	if (!sess)
 		return ERR_PTR(-ENOMEM);
 
-	kref_init(&sess->kref); /* ref for table entry */
+	kref_init(&sess->kref);  
 	sess->tport = tport;
 	sess->port_id = port_id;
 
@@ -239,10 +213,7 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 	return sess;
 }
 
-/*
- * Unhash the session.
- * Caller holds ft_lport_lock.
- */
+ 
 static void ft_sess_unhash(struct ft_sess *sess)
 {
 	struct ft_tport *tport = sess->tport;
@@ -254,10 +225,7 @@ static void ft_sess_unhash(struct ft_sess *sess)
 	sess->params = 0;
 }
 
-/*
- * Delete session from hash.
- * Caller holds ft_lport_lock.
- */
+ 
 static struct ft_sess *ft_sess_delete(struct ft_tport *tport, u32 port_id)
 {
 	struct hlist_head *head;
@@ -280,10 +248,7 @@ static void ft_close_sess(struct ft_sess *sess)
 	ft_sess_put(sess);
 }
 
-/*
- * Delete all sessions from tport.
- * Caller holds ft_lport_lock.
- */
+ 
 static void ft_sess_delete_all(struct ft_tport *tport)
 {
 	struct hlist_head *head;
@@ -293,19 +258,14 @@ static void ft_sess_delete_all(struct ft_tport *tport)
 	     head < &tport->hash[FT_SESS_HASH_SIZE]; head++) {
 		hlist_for_each_entry_rcu(sess, head, hash) {
 			ft_sess_unhash(sess);
-			ft_close_sess(sess);	/* release from table */
+			ft_close_sess(sess);	 
 		}
 	}
 }
 
-/*
- * TCM ops for sessions.
- */
+ 
 
-/*
- * Remove session and send PRLO.
- * This is called when the ACL is being deleted or queue depth is changing.
- */
+ 
 void ft_sess_close(struct se_session *se_sess)
 {
 	struct ft_sess *sess = se_sess->fabric_sess_ptr;
@@ -321,15 +281,15 @@ void ft_sess_close(struct se_session *se_sess)
 	ft_sess_unhash(sess);
 	mutex_unlock(&ft_lport_lock);
 	ft_close_sess(sess);
-	/* XXX Send LOGO or PRLO */
-	synchronize_rcu();		/* let transport deregister happen */
+	 
+	synchronize_rcu();		 
 }
 
 u32 ft_sess_get_index(struct se_session *se_sess)
 {
 	struct ft_sess *sess = se_sess->fabric_sess_ptr;
 
-	return sess->port_id;	/* XXX TBD probably not what is needed */
+	return sess->port_id;	 
 }
 
 u32 ft_sess_get_port_name(struct se_session *se_sess,
@@ -340,9 +300,7 @@ u32 ft_sess_get_port_name(struct se_session *se_sess,
 	return ft_format_wwn(buf, len, sess->port_name);
 }
 
-/*
- * libfc ops involving sessions.
- */
+ 
 
 static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 			  const struct fc_els_spp *rspp, struct fc_els_spp *spp)
@@ -353,7 +311,7 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 
 	tport = ft_tport_get(rdata->local_port);
 	if (!tport)
-		goto not_target;	/* not a target for this local port */
+		goto not_target;	 
 
 	if (!rspp)
 		goto fill;
@@ -361,17 +319,12 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 	if (rspp->spp_flags & (FC_SPP_OPA_VAL | FC_SPP_RPA_VAL))
 		return FC_SPP_RESP_NO_PA;
 
-	/*
-	 * If both target and initiator bits are off, the SPP is invalid.
-	 */
+	 
 	fcp_parm = ntohl(rspp->spp_params);
 	if (!(fcp_parm & (FCP_SPPF_INIT_FCN | FCP_SPPF_TARG_FCN)))
 		return FC_SPP_RESP_INVL;
 
-	/*
-	 * Create session (image pair) only if requested by
-	 * EST_IMG_PAIR flag and if the requestor is an initiator.
-	 */
+	 
 	if (rspp->spp_flags & FC_SPP_EST_IMG_PAIR) {
 		spp->spp_flags |= FC_SPP_EST_IMG_PAIR;
 		if (!(fcp_parm & FCP_SPPF_INIT_FCN))
@@ -390,12 +343,10 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 		sess->port_name = rdata->ids.port_name;
 		sess->max_frame = rdata->maxframe_size;
 
-		/* XXX TBD - clearing actions.  unit attn, see 4.10 */
+		 
 	}
 
-	/*
-	 * OR in our service parameters with other provider (initiator), if any.
-	 */
+	 
 fill:
 	fcp_parm = ntohl(spp->spp_params);
 	fcp_parm &= ~FCP_SPPF_RETRY;
@@ -409,15 +360,7 @@ not_target:
 	return 0;
 }
 
-/**
- * ft_prli() - Handle incoming or outgoing PRLI for the FCP target
- * @rdata: remote port private
- * @spp_len: service parameter page length
- * @rspp: received service parameter page (NULL for outgoing PRLI)
- * @spp: response service parameter page
- *
- * Returns spp response code.
- */
+ 
 static int ft_prli(struct fc_rport_priv *rdata, u32 spp_len,
 		   const struct fc_els_spp *rspp, struct fc_els_spp *spp)
 {
@@ -466,15 +409,12 @@ static void ft_prlo(struct fc_rport_priv *rdata)
 		return;
 	}
 	mutex_unlock(&ft_lport_lock);
-	ft_close_sess(sess);		/* release from table */
+	ft_close_sess(sess);		 
 	rdata->prli_count--;
-	/* XXX TBD - clearing actions.  unit attn, see 4.10 */
+	 
 }
 
-/*
- * Handle incoming FCP request.
- * Caller has verified that the frame is type FCP.
- */
+ 
 static void ft_recv(struct fc_lport *lport, struct fc_frame *fp)
 {
 	struct ft_sess *sess;
@@ -485,16 +425,14 @@ static void ft_recv(struct fc_lport *lport, struct fc_frame *fp)
 	sess = ft_sess_get(lport, sid);
 	if (!sess) {
 		TFC_SESS_DBG(lport, "sid %x sess lookup failed\n", sid);
-		/* TBD XXX - if FCP_CMND, send PRLO */
+		 
 		fc_frame_free(fp);
 		return;
 	}
-	ft_recv_req(sess, fp);	/* must do ft_sess_put() */
+	ft_recv_req(sess, fp);	 
 }
 
-/*
- * Provider ops for libfc.
- */
+ 
 struct fc4_prov ft_prov = {
 	.prli = ft_prli,
 	.prlo = ft_prlo,

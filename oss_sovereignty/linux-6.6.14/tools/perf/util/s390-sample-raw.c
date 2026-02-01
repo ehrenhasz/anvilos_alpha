@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2019
- * Author(s): Thomas Richter <tmricht@linux.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (version 2 only)
- * as published by the Free Software Foundation.
- *
- * Architecture specific trace_event function. Save event's bc000 raw data
- * to file. File name is aux.ctr.## where ## stands for the CPU number the
- * sample was taken from.
- */
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>
@@ -40,10 +29,7 @@ static bool ctrset_valid(struct cf_ctrset_entry *set)
 	return set->def == S390_CPUMCF_DIAG_DEF;
 }
 
-/* CPU Measurement Counter Facility raw data is a byte stream. It is 8 byte
- * aligned and might have trailing padding bytes.
- * Display the raw data on screen.
- */
+ 
 static bool s390_cpumcfdg_testctr(struct perf_sample *sample)
 {
 	size_t len = sample->raw_size, offset = 0;
@@ -61,15 +47,7 @@ static bool s390_cpumcfdg_testctr(struct perf_sample *sample)
 		ce.res1 = be16_to_cpu(cep->res1);
 
 		if (!ctrset_valid(&ce) || offset + ctrset_size(&ce) > len) {
-			/* Raw data for counter sets are always multiple of 8
-			 * bytes. Prepending a 4 bytes size field to the
-			 * raw data block in the sample causes the perf tool
-			 * to append 4 padding bytes to make the raw data part
-			 * of the sample a multiple of eight bytes again.
-			 *
-			 * If the last entry (trailer) is 4 bytes off the raw
-			 * area data end, all is good.
-			 */
+			 
 			if (len - offset - sizeof(*te) == 4)
 				break;
 			pr_err("Invalid counter set entry at %zd\n", offset);
@@ -80,7 +58,7 @@ static bool s390_cpumcfdg_testctr(struct perf_sample *sample)
 	return true;
 }
 
-/* Dump event bc000 on screen, already tested on correctness. */
+ 
 static void s390_cpumcfdg_dumptrail(const char *color, size_t offset,
 				    struct cf_trailer_entry *tep)
 {
@@ -111,19 +89,19 @@ static void s390_cpumcfdg_dumptrail(const char *color, size_t offset,
 		      te.tod_base, te.mach_type);
 }
 
-/* Return starting number of a counter set */
+ 
 static int get_counterset_start(int setnr)
 {
 	switch (setnr) {
-	case CPUMF_CTR_SET_BASIC:		/* Basic counter set */
+	case CPUMF_CTR_SET_BASIC:		 
 		return 0;
-	case CPUMF_CTR_SET_USER:		/* Problem state counter set */
+	case CPUMF_CTR_SET_USER:		 
 		return 32;
-	case CPUMF_CTR_SET_CRYPTO:		/* Crypto counter set */
+	case CPUMF_CTR_SET_CRYPTO:		 
 		return 64;
-	case CPUMF_CTR_SET_EXT:			/* Extended counter set */
+	case CPUMF_CTR_SET_EXT:			 
 		return 128;
-	case CPUMF_CTR_SET_MT_DIAG:		/* Diagnostic counter set */
+	case CPUMF_CTR_SET_MT_DIAG:		 
 		return 448;
 	default:
 		return -1;
@@ -151,16 +129,12 @@ static int get_counter_name_callback(void *vdata, struct pmu_event_info *info)
 	rc = sscanf(event_str, "event=%x", &event_nr);
 	if (rc == 1 && event_nr == data->wanted) {
 		data->result = strdup(info->name);
-		return 1; /* Terminate the search. */
+		return 1;  
 	}
 	return 0;
 }
 
-/* Scan the PMU and extract the logical name of a counter from the event. Input
- * is the counter set and counter number with in the set. Construct the event
- * number and use this as key. If they match return the name of this counter.
- * If no match is found a NULL pointer is returned.
- */
+ 
 static char *get_counter_name(int set, int nr, struct perf_pmu *pmu)
 {
 	struct get_counter_name_data data = {
@@ -171,7 +145,7 @@ static char *get_counter_name(int set, int nr, struct perf_pmu *pmu)
 	if (!pmu)
 		return NULL;
 
-	perf_pmu__for_each_event(pmu, /*skip_duplicate_pmus=*/ true,
+	perf_pmu__for_each_event(pmu,   true,
 				 &data, get_counter_name_callback);
 	return data.result;
 }
@@ -192,7 +166,7 @@ static void s390_cpumcfdg_dump(struct perf_pmu *pmu, struct perf_sample *sample)
 		ce.ctr = be16_to_cpu(cep->ctr);
 		ce.res1 = be16_to_cpu(cep->res1);
 
-		if (!ctrset_valid(&ce)) {	/* Print trailer */
+		if (!ctrset_valid(&ce)) {	 
 			s390_cpumcfdg_dumptrail(color, offset,
 						(struct cf_trailer_entry *)cep);
 			return;
@@ -212,11 +186,7 @@ static void s390_cpumcfdg_dump(struct perf_pmu *pmu, struct perf_sample *sample)
 	}
 }
 
-/* S390 specific trace event function. Check for PERF_RECORD_SAMPLE events
- * and if the event was triggered by a counter set diagnostic event display
- * its raw data.
- * The function is only invoked when the dump flag -D is set.
- */
+ 
 void evlist__s390_sample_raw(struct evlist *evlist, union perf_event *event, struct perf_sample *sample)
 {
 	struct evsel *evsel;
@@ -229,7 +199,7 @@ void evlist__s390_sample_raw(struct evlist *evlist, union perf_event *event, str
 	    evsel->core.attr.config != PERF_EVENT_CPUM_CF_DIAG)
 		return;
 
-	/* Display raw data on screen */
+	 
 	if (!s390_cpumcfdg_testctr(sample)) {
 		pr_err("Invalid counter set data encountered\n");
 		return;

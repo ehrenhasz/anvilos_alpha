@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IP Payload Compression Protocol (IPComp) - RFC3173.
- *
- * Copyright (c) 2003 James Morris <jmorris@intercode.com.au>
- *
- * Todo:
- *   - Tunable compression parameters.
- *   - Compression stats.
- *   - Adaptive compression.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/err.h>
 #include <linux/rtnetlink.h>
@@ -53,7 +44,7 @@ static int ipcomp4_err(struct sk_buff *skb, u32 info)
 	return 0;
 }
 
-/* We always hold one tunnel user reference to indicate a tunnel */
+ 
 static struct xfrm_state *ipcomp_tunnel_create(struct xfrm_state *x)
 {
 	struct net *net = xs_net(x);
@@ -89,10 +80,7 @@ error:
 	goto out;
 }
 
-/*
- * Must be protected by xfrm_cfg_mutex.  State and tunnel user references are
- * always incremented on success.
- */
+ 
 static int ipcomp_tunnel_attach(struct xfrm_state *x)
 {
 	struct net *net = xs_net(x);

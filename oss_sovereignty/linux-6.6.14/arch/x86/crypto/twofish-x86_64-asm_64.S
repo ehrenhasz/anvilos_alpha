@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/***************************************************************************
-*   Copyright (C) 2006 by Joachim Fritschi, <jfritschi@freenet.de>        *
-*                                                                         *
-***************************************************************************/
+ 
+ 
 
 .file "twofish-x86_64-asm.S"
 .text
@@ -15,16 +12,16 @@
 #define c_offset	8
 #define d_offset	12
 
-/* Structure of the crypto context struct*/
+ 
 
-#define s0	0	/* S0 Array 256 Words each */
-#define s1	1024	/* S1 Array */
-#define s2	2048	/* S2 Array */
-#define s3	3072	/* S3 Array */
-#define w	4096	/* 8 whitening keys (word) */
-#define k	4128	/* key 1-32 ( word ) */
+#define s0	0	 
+#define s1	1024	 
+#define s2	2048	 
+#define s3	3072	 
+#define w	4096	 
+#define k	4128	 
 
-/* define a few register aliases to allow macro substitution */
+ 
 
 #define R0     %rax
 #define R0D    %eax
@@ -47,22 +44,16 @@
 #define R3H    %dh
 
 
-/* performs input whitening */
+ 
 #define input_whitening(src,context,offset)\
 	xor	w+offset(context),	src;
 
-/* performs input whitening */
+ 
 #define output_whitening(src,context,offset)\
 	xor	w+16+offset(context),	src;
 
 
-/*
- * a input register containing a (rotated 16)
- * b input register containing b
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- */
+ 
 #define encrypt_round(a,b,c,d,round)\
 	movzx	b ## B,		%edi;\
 	mov	s1(%r11,%rdi,4),%r8d;\
@@ -91,14 +82,7 @@
 	add	k+4+round(%r11),%r8d;\
 	xor	%r8d,		d ## D;
 
-/*
- * a input register containing a(rotated 16)
- * b input register containing b
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- * during the round a and b are prepared for the output whitening
- */
+ 
 #define encrypt_last_round(a,b,c,d,round)\
 	mov	b ## D,		%r10d;\
 	shl	$32,		%r10;\
@@ -129,13 +113,7 @@
 	add	k+4+round(%r11),%r8d;\
 	xor	%r8d,		d ## D
 
-/*
- * a input register containing a
- * b input register containing b (rotated 16)
- * c input register containing c (already rol $1)
- * d input register containing d
- * operations on a and b are interleaved to increase performance
- */
+ 
 #define decrypt_round(a,b,c,d,round)\
 	movzx	a ## B,		%edi;\
 	mov	(%r11,%rdi,4),	%r9d;\
@@ -164,14 +142,7 @@
 	xor	%r8d,		d ## D;\
 	rol	$15,		d ## D;
 
-/*
- * a input register containing a
- * b input register containing b
- * c input register containing c (already rol $1)
- * d input register containing d
- * operations on a and b are interleaved to increase performance
- * during the round a and b are prepared for the output whitening
- */
+ 
 #define decrypt_last_round(a,b,c,d,round)\
 	movzx	a ## B,		%edi;\
 	mov	(%r11,%rdi,4),	%r9d;\
@@ -205,11 +176,10 @@
 SYM_FUNC_START(twofish_enc_blk)
 	pushq    R1
 
-	/* %rdi contains the ctx address */
-	/* %rsi contains the output address */
-	/* %rdx contains the input address */
-	/* ctx address is moved to free one non-rex register
-	as target for the 8bit high operations */
+	 
+	 
+	 
+	 
 	mov	%rdi,		%r11
 
 	movq	(R3),	R1
@@ -258,11 +228,10 @@ SYM_FUNC_END(twofish_enc_blk)
 SYM_FUNC_START(twofish_dec_blk)
 	pushq    R1
 
-	/* %rdi contains the ctx address */
-	/* %rsi contains the output address */
-	/* %rdx contains the input address */
-	/* ctx address is moved to free one non-rex register
-	as target for the 8bit high operations */
+	 
+	 
+	 
+	 
 	mov	%rdi,		%r11
 
 	movq	(R3),	R1

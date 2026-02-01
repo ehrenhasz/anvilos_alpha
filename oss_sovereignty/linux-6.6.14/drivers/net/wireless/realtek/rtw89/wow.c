@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2022  Realtek Corporation
- */
+
+ 
 #include "cam.h"
 #include "core.h"
 #include "debug.h"
@@ -117,16 +116,12 @@ static void rtw89_wow_show_wakeup_reason(struct rtw89_dev *rtwdev)
 		rtw89_debug(rtwdev, RTW89_DBG_WOW, "WOW: Rx gtk rekey\n");
 		break;
 	case RTW89_WOW_RSN_RX_PATTERN_MATCH:
-		/* Current firmware and driver don't report pattern index
-		 * Use pattern_idx to 0 defaultly.
-		 */
+		 
 		wakeup.pattern_idx = 0;
 		rtw89_debug(rtwdev, RTW89_DBG_WOW, "WOW: Rx pattern match packet\n");
 		break;
 	case RTW89_WOW_RSN_RX_NLO:
-		/* Current firmware and driver don't report ssid index.
-		 * Use 0 for n_matches based on its comment.
-		 */
+		 
 		nd_info.n_matches = 0;
 		wakeup.net_detect = &nd_info;
 		rtw89_debug(rtwdev, RTW89_DBG_WOW, "Rx NLO\n");
@@ -147,9 +142,7 @@ static void rtw89_wow_vif_iter(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvi
 	struct rtw89_wow_param *rtw_wow = &rtwdev->wow;
 	struct ieee80211_vif *vif = rtwvif_to_vif(rtwvif);
 
-	/* Current wowlan function support setting of only one STATION vif.
-	 * So when one suitable vif is found, stop the iteration.
-	 */
+	 
 	if (rtw_wow->wow_vif || vif->type != NL80211_IFTYPE_STATION)
 		return;
 
@@ -209,7 +202,7 @@ static u16 rtw89_calc_crc(u8 *pdata, int length)
 	for (i = 0; i < length; i++)
 		crc = __rtw89_cal_crc16(pdata[i], crc);
 
-	/* get 1' complement */
+	 
 	return ~crc;
 }
 
@@ -221,13 +214,7 @@ static int rtw89_wow_pattern_get_type(struct rtw89_vif *rtwvif,
 
 	ether_addr_copy_mask(da, pattern, da_mask);
 
-	/* Each pattern is divided into different kinds by DA address
-	 *  a. DA is broadcast address: set bc = 0;
-	 *  b. DA is multicast address: set mc = 0
-	 *  c. DA is unicast address same as dev's mac address: set uc = 0
-	 *  d. DA is unmasked. Also called wildcard type: set uc = bc = mc = 0
-	 *  e. Others is invalid type.
-	 */
+	 
 
 	if (is_broadcast_ether_addr(da))
 		rtw_pattern->bc = true;
@@ -236,7 +223,7 @@ static int rtw89_wow_pattern_get_type(struct rtw89_vif *rtwvif,
 	else if (ether_addr_equal(da, rtwvif->mac_addr) &&
 		 da_mask == GENMASK(5, 0))
 		rtw_pattern->uc = true;
-	else if (!da_mask) /*da_mask == 0 mean wildcard*/
+	else if (!da_mask)  
 		return 0;
 	else
 		return -EPERM;
@@ -269,41 +256,21 @@ static int rtw89_wow_pattern_generate(struct rtw89_dev *rtwdev,
 	if (ret)
 		return ret;
 
-	/* translate mask from os to mask for hw
-	 * pattern from OS uses 'ethenet frame', like this:
-	 * |    6   |    6   |   2  |     20    |  Variable  |  4  |
-	 * |--------+--------+------+-----------+------------+-----|
-	 * |    802.3 Mac Header    | IP Header | TCP Packet | FCS |
-	 * |   DA   |   SA   | Type |
-	 *
-	 * BUT, packet catched by our HW is in '802.11 frame', begin from LLC
-	 * |     24 or 30      |    6   |   2  |     20    |  Variable  |  4  |
-	 * |-------------------+--------+------+-----------+------------+-----|
-	 * | 802.11 MAC Header |       LLC     | IP Header | TCP Packet | FCS |
-	 *		       | Others | Tpye |
-	 *
-	 * Therefore, we need translate mask_from_OS to mask_to_hw.
-	 * We should left-shift mask by 6 bits, then set the new bit[0~5] = 0,
-	 * because new mask[0~5] means 'SA', but our HW packet begins from LLC,
-	 * bit[0~5] corresponds to first 6 Bytes in LLC, they just don't match.
-	 */
+	 
 
-	/* Shift 6 bits */
+	 
 	for (i = 0; i < mask_len - 1; i++) {
 		mask_hw[i] = u8_get_bits(mask[i], GENMASK(7, 6)) |
 			     u8_get_bits(mask[i + 1], GENMASK(5, 0)) << 2;
 	}
 	mask_hw[i] = u8_get_bits(mask[i], GENMASK(7, 6));
 
-	/* Set bit 0-5 to zero */
+	 
 	mask_hw[0] &= ~GENMASK(5, 0);
 
 	memcpy(rtw_pattern->mask, mask_hw, sizeof(rtw_pattern->mask));
 
-	/* To get the wake up pattern from the mask.
-	 * We do not count first 12 bits which means
-	 * DA[6] and SA[6] in the pattern to match HW design.
-	 */
+	 
 	count = 0;
 	for (i = 12; i < len; i++) {
 		if ((mask[i / 8] >> (i % 8)) & 0x01) {

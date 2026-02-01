@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -16,11 +14,7 @@
 #include "osnoise.h"
 #include "utils.h"
 
-/*
- * osnoise_get_cpus - return the original "osnoise/cpus" content
- *
- * It also saves the value to be restored.
- */
+ 
 char *osnoise_get_cpus(struct osnoise_context *context)
 {
 	if (context->curr_cpus)
@@ -31,20 +25,11 @@ char *osnoise_get_cpus(struct osnoise_context *context)
 
 	context->orig_cpus = tracefs_instance_file_read(NULL, "osnoise/cpus", NULL);
 
-	/*
-	 * The error value (NULL) is the same for tracefs_instance_file_read()
-	 * and this functions, so:
-	 */
+	 
 	return context->orig_cpus;
 }
 
-/*
- * osnoise_set_cpus - configure osnoise to run on *cpus
- *
- * "osnoise/cpus" file is used to set the cpus in which osnoise/timerlat
- * will run. This function opens this file, saves the current value,
- * and set the cpus passed as argument.
- */
+ 
 int osnoise_set_cpus(struct osnoise_context *context, char *cpus)
 {
 	char *orig_cpus = osnoise_get_cpus(context);
@@ -72,13 +57,7 @@ int osnoise_set_cpus(struct osnoise_context *context, char *cpus)
 	return 0;
 }
 
-/*
- * osnoise_restore_cpus - restore the original "osnoise/cpus"
- *
- * osnoise_set_cpus() saves the original data for the "osnoise/cpus"
- * file. This function restore the original config it was previously
- * modified.
- */
+ 
 void osnoise_restore_cpus(struct osnoise_context *context)
 {
 	int retval;
@@ -89,7 +68,7 @@ void osnoise_restore_cpus(struct osnoise_context *context)
 	if (!context->curr_cpus)
 		return;
 
-	/* nothing to do? */
+	 
 	if (!strcmp(context->orig_cpus, context->curr_cpus))
 		goto out_done;
 
@@ -104,9 +83,7 @@ out_done:
 	context->curr_cpus = NULL;
 }
 
-/*
- * osnoise_put_cpus - restore cpus config and cleanup data
- */
+ 
 void osnoise_put_cpus(struct osnoise_context *context)
 {
 	osnoise_restore_cpus(context);
@@ -118,11 +95,7 @@ void osnoise_put_cpus(struct osnoise_context *context)
 	context->orig_cpus = NULL;
 }
 
-/*
- * osnoise_read_ll_config - read a long long value from a config
- *
- * returns -1 on error.
- */
+ 
 static long long osnoise_read_ll_config(char *rel_path)
 {
 	long long retval;
@@ -132,7 +105,7 @@ static long long osnoise_read_ll_config(char *rel_path)
 	if (!buffer)
 		return -1;
 
-	/* get_llong_from_str returns -1 on error */
+	 
 	retval = get_llong_from_str(buffer);
 
 	debug_msg("reading %s returned %lld\n", rel_path, retval);
@@ -142,11 +115,7 @@ static long long osnoise_read_ll_config(char *rel_path)
 	return retval;
 }
 
-/*
- * osnoise_write_ll_config - write a long long value to a config in rel_path
- *
- * returns -1 on error.
- */
+ 
 static long long osnoise_write_ll_config(char *rel_path, long long value)
 {
 	char buffer[BUFF_U64_STR_SIZE];
@@ -160,11 +129,7 @@ static long long osnoise_write_ll_config(char *rel_path, long long value)
 	return retval;
 }
 
-/*
- * osnoise_get_runtime - return the original "osnoise/runtime_us" value
- *
- * It also saves the value to be restored.
- */
+ 
 unsigned long long osnoise_get_runtime(struct osnoise_context *context)
 {
 	long long runtime_us;
@@ -186,11 +151,7 @@ out_err:
 	return OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_get_period - return the original "osnoise/period_us" value
- *
- * It also saves the value to be restored.
- */
+ 
 unsigned long long osnoise_get_period(struct osnoise_context *context)
 {
 	long long period_us;
@@ -244,13 +205,7 @@ static int __osnoise_write_period(struct osnoise_context *context,
 	return 0;
 }
 
-/*
- * osnoise_set_runtime_period - set osnoise runtime and period
- *
- * Osnoise's runtime and period are related as runtime <= period.
- * Thus, this function saves the original values, and then tries
- * to set the runtime and period if they are != 0.
- */
+ 
 int osnoise_set_runtime_period(struct osnoise_context *context,
 			       unsigned long long runtime,
 			       unsigned long long period)
@@ -265,7 +220,7 @@ int osnoise_set_runtime_period(struct osnoise_context *context,
 	curr_runtime_us = osnoise_get_runtime(context);
 	curr_period_us = osnoise_get_period(context);
 
-	/* error getting any value? */
+	 
 	if (curr_period_us == OSNOISE_TIME_INIT_VAL || curr_runtime_us == OSNOISE_TIME_INIT_VAL)
 		return -1;
 
@@ -298,9 +253,7 @@ int osnoise_set_runtime_period(struct osnoise_context *context,
 	return 0;
 }
 
-/*
- * osnoise_restore_runtime_period - restore the original runtime and period
- */
+ 
 void osnoise_restore_runtime_period(struct osnoise_context *context)
 {
 	unsigned long long orig_runtime = context->orig_runtime_us;
@@ -324,9 +277,7 @@ out_done:
 	context->period_us = OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_put_runtime_period - restore original values and cleanup data
- */
+ 
 void osnoise_put_runtime_period(struct osnoise_context *context)
 {
 	osnoise_restore_runtime_period(context);
@@ -338,9 +289,7 @@ void osnoise_put_runtime_period(struct osnoise_context *context)
 		context->orig_period_us = OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_get_timerlat_period_us - read and save the original "timerlat_period_us"
- */
+ 
 static long long
 osnoise_get_timerlat_period_us(struct osnoise_context *context)
 {
@@ -363,9 +312,7 @@ out_err:
 	return OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_set_timerlat_period_us - set "timerlat_period_us"
- */
+ 
 int osnoise_set_timerlat_period_us(struct osnoise_context *context, long long timerlat_period_us)
 {
 	long long curr_timerlat_period_us = osnoise_get_timerlat_period_us(context);
@@ -383,9 +330,7 @@ int osnoise_set_timerlat_period_us(struct osnoise_context *context, long long ti
 	return 0;
 }
 
-/*
- * osnoise_restore_timerlat_period_us - restore "timerlat_period_us"
- */
+ 
 void osnoise_restore_timerlat_period_us(struct osnoise_context *context)
 {
 	int retval;
@@ -404,9 +349,7 @@ out_done:
 	context->timerlat_period_us = OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_put_timerlat_period_us - restore original values and cleanup data
- */
+ 
 void osnoise_put_timerlat_period_us(struct osnoise_context *context)
 {
 	osnoise_restore_timerlat_period_us(context);
@@ -417,9 +360,7 @@ void osnoise_put_timerlat_period_us(struct osnoise_context *context)
 	context->orig_timerlat_period_us = OSNOISE_TIME_INIT_VAL;
 }
 
-/*
- * osnoise_get_stop_us - read and save the original "stop_tracing_us"
- */
+ 
 static long long
 osnoise_get_stop_us(struct osnoise_context *context)
 {
@@ -442,9 +383,7 @@ out_err:
 	return OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_set_stop_us - set "stop_tracing_us"
- */
+ 
 int osnoise_set_stop_us(struct osnoise_context *context, long long stop_us)
 {
 	long long curr_stop_us = osnoise_get_stop_us(context);
@@ -462,9 +401,7 @@ int osnoise_set_stop_us(struct osnoise_context *context, long long stop_us)
 	return 0;
 }
 
-/*
- * osnoise_restore_stop_us - restore the original "stop_tracing_us"
- */
+ 
 void osnoise_restore_stop_us(struct osnoise_context *context)
 {
 	int retval;
@@ -483,9 +420,7 @@ out_done:
 	context->stop_us = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_put_stop_us - restore original values and cleanup data
- */
+ 
 void osnoise_put_stop_us(struct osnoise_context *context)
 {
 	osnoise_restore_stop_us(context);
@@ -496,9 +431,7 @@ void osnoise_put_stop_us(struct osnoise_context *context)
 	context->orig_stop_us = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_get_stop_total_us - read and save the original "stop_tracing_total_us"
- */
+ 
 static long long
 osnoise_get_stop_total_us(struct osnoise_context *context)
 {
@@ -521,9 +454,7 @@ out_err:
 	return OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_set_stop_total_us - set "stop_tracing_total_us"
- */
+ 
 int osnoise_set_stop_total_us(struct osnoise_context *context, long long stop_total_us)
 {
 	long long curr_stop_total_us = osnoise_get_stop_total_us(context);
@@ -541,9 +472,7 @@ int osnoise_set_stop_total_us(struct osnoise_context *context, long long stop_to
 	return 0;
 }
 
-/*
- * osnoise_restore_stop_total_us - restore the original "stop_tracing_total_us"
- */
+ 
 void osnoise_restore_stop_total_us(struct osnoise_context *context)
 {
 	int retval;
@@ -563,9 +492,7 @@ out_done:
 	context->stop_total_us = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_put_stop_total_us - restore original values and cleanup data
- */
+ 
 void osnoise_put_stop_total_us(struct osnoise_context *context)
 {
 	osnoise_restore_stop_total_us(context);
@@ -576,9 +503,7 @@ void osnoise_put_stop_total_us(struct osnoise_context *context)
 	context->orig_stop_total_us = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_get_print_stack - read and save the original "print_stack"
- */
+ 
 static long long
 osnoise_get_print_stack(struct osnoise_context *context)
 {
@@ -601,9 +526,7 @@ out_err:
 	return OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_set_print_stack - set "print_stack"
- */
+ 
 int osnoise_set_print_stack(struct osnoise_context *context, long long print_stack)
 {
 	long long curr_print_stack = osnoise_get_print_stack(context);
@@ -621,9 +544,7 @@ int osnoise_set_print_stack(struct osnoise_context *context, long long print_sta
 	return 0;
 }
 
-/*
- * osnoise_restore_print_stack - restore the original "print_stack"
- */
+ 
 void osnoise_restore_print_stack(struct osnoise_context *context)
 {
 	int retval;
@@ -642,9 +563,7 @@ out_done:
 	context->print_stack = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_put_print_stack - restore original values and cleanup data
- */
+ 
 void osnoise_put_print_stack(struct osnoise_context *context)
 {
 	osnoise_restore_print_stack(context);
@@ -655,9 +574,7 @@ void osnoise_put_print_stack(struct osnoise_context *context)
 	context->orig_print_stack = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_get_tracing_thresh - read and save the original "tracing_thresh"
- */
+ 
 static long long
 osnoise_get_tracing_thresh(struct osnoise_context *context)
 {
@@ -680,9 +597,7 @@ out_err:
 	return OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_set_tracing_thresh - set "tracing_thresh"
- */
+ 
 int osnoise_set_tracing_thresh(struct osnoise_context *context, long long tracing_thresh)
 {
 	long long curr_tracing_thresh = osnoise_get_tracing_thresh(context);
@@ -700,9 +615,7 @@ int osnoise_set_tracing_thresh(struct osnoise_context *context, long long tracin
 	return 0;
 }
 
-/*
- * osnoise_restore_tracing_thresh - restore the original "tracing_thresh"
- */
+ 
 void osnoise_restore_tracing_thresh(struct osnoise_context *context)
 {
 	int retval;
@@ -721,9 +634,7 @@ out_done:
 	context->tracing_thresh = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * osnoise_put_tracing_thresh - restore original values and cleanup data
- */
+ 
 void osnoise_put_tracing_thresh(struct osnoise_context *context)
 {
 	osnoise_restore_tracing_thresh(context);
@@ -744,19 +655,14 @@ static int osnoise_options_get_option(char *option)
 	if (!options)
 		return OSNOISE_OPTION_INIT_VAL;
 
-	/*
-	 * Check first if the option is disabled.
-	 */
+	 
 	snprintf(no_option, sizeof(no_option), "NO_%s", option);
 
 	opt = strstr(options, no_option);
 	if (opt)
 		goto out_free;
 
-	/*
-	 * Now that it is not disabled, if the string is there, it is
-	 * enabled. If the string is not there, the option does not exist.
-	 */
+	 
 	opt = strstr(options, option);
 	if (opt)
 		retval = 1;
@@ -902,17 +808,13 @@ static void osnoise_put_workload(struct osnoise_context *context)
 	context->orig_opt_workload = OSNOISE_OPTION_INIT_VAL;
 }
 
-/*
- * enable_osnoise - enable osnoise tracer in the trace_instance
- */
+ 
 int enable_osnoise(struct trace_instance *trace)
 {
 	return enable_tracer_by_name(trace->inst, "osnoise");
 }
 
-/*
- * enable_timerlat - enable timerlat tracer in the trace_instance
- */
+ 
 int enable_timerlat(struct trace_instance *trace)
 {
 	return enable_tracer_by_name(trace->inst, "timerlat");
@@ -923,9 +825,7 @@ enum {
 	FLAG_CONTEXT_DELETED		= (1 << 1),
 };
 
-/*
- * osnoise_get_context - increase the usage of a context and return it
- */
+ 
 int osnoise_get_context(struct osnoise_context *context)
 {
 	int ret;
@@ -940,12 +840,7 @@ int osnoise_get_context(struct osnoise_context *context)
 	return ret;
 }
 
-/*
- * osnoise_context_alloc - alloc an osnoise_context
- *
- * The osnoise context contains the information of the "osnoise/" configs.
- * It is used to set and restore the config.
- */
+ 
 struct osnoise_context *osnoise_context_alloc(void)
 {
 	struct osnoise_context *context;
@@ -977,12 +872,7 @@ struct osnoise_context *osnoise_context_alloc(void)
 	return context;
 }
 
-/*
- * osnoise_put_context - put the osnoise_put_context
- *
- * If there is no other user for the context, the original data
- * is restored.
- */
+ 
 void osnoise_put_context(struct osnoise_context *context)
 {
 	if (--context->ref < 1)
@@ -1004,9 +894,7 @@ void osnoise_put_context(struct osnoise_context *context)
 	free(context);
 }
 
-/*
- * osnoise_destroy_tool - disable trace, restore configs and free data
- */
+ 
 void osnoise_destroy_tool(struct osnoise_tool *top)
 {
 	if (!top)
@@ -1020,12 +908,7 @@ void osnoise_destroy_tool(struct osnoise_tool *top)
 	free(top);
 }
 
-/*
- * osnoise_init_tool - init an osnoise tool
- *
- * It allocs data, create a context to store data and
- * creates a new trace instance for the tool.
- */
+ 
 struct osnoise_tool *osnoise_init_tool(char *tool_name)
 {
 	struct osnoise_tool *top;
@@ -1049,9 +932,7 @@ out_err:
 	return NULL;
 }
 
-/*
- * osnoise_init_trace_tool - init a tracer instance to trace osnoise events
- */
+ 
 struct osnoise_tool *osnoise_init_trace_tool(char *tracer)
 {
 	struct osnoise_tool *trace;
@@ -1107,10 +988,7 @@ int osnoise_main(int argc, char *argv[])
 	if (argc == 0)
 		goto usage;
 
-	/*
-	 * if osnoise was called without any argument, run the
-	 * default cmdline.
-	 */
+	 
 	if (argc == 1) {
 		osnoise_top_main(argc, argv);
 		exit(0);
@@ -1119,7 +997,7 @@ int osnoise_main(int argc, char *argv[])
 	if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0)) {
 		osnoise_usage(0);
 	} else if (strncmp(argv[1], "-", 1) == 0) {
-		/* the user skipped the tool, call the default one */
+		 
 		osnoise_top_main(argc, argv);
 		exit(0);
 	} else if (strcmp(argv[1], "top") == 0) {

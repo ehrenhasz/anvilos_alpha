@@ -1,16 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_DDP_H_
 #define _ICE_DDP_H_
 
 #include "ice_type.h"
 
-/* Package minimal version supported */
+ 
 #define ICE_PKG_SUPP_VER_MAJ 1
 #define ICE_PKG_SUPP_VER_MNR 3
 
-/* Package format version */
+ 
 #define ICE_PKG_FMT_VER_MAJ 1
 #define ICE_PKG_FMT_VER_MNR 0
 #define ICE_PKG_FMT_VER_UPD 0
@@ -20,10 +20,10 @@
 
 #define ICE_FV_OFFSET_INVAL 0x1FF
 
-/* Extraction Sequence (Field Vector) Table */
+ 
 struct ice_fv_word {
 	u8 prot_id;
-	u16 off; /* Offset within the protocol header */
+	u16 off;  
 	u8 resvrd;
 } __packed;
 
@@ -35,70 +35,54 @@ struct ice_fv {
 };
 
 enum ice_ddp_state {
-	/* Indicates that this call to ice_init_pkg
-	 * successfully loaded the requested DDP package
-	 */
+	 
 	ICE_DDP_PKG_SUCCESS = 0,
 
-	/* Generic error for already loaded errors, it is mapped later to
-	 * the more specific one (one of the next 3)
-	 */
+	 
 	ICE_DDP_PKG_ALREADY_LOADED = -1,
 
-	/* Indicates that a DDP package of the same version has already been
-	 * loaded onto the device by a previous call or by another PF
-	 */
+	 
 	ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED = -2,
 
-	/* The device has a DDP package that is not supported by the driver */
+	 
 	ICE_DDP_PKG_ALREADY_LOADED_NOT_SUPPORTED = -3,
 
-	/* The device has a compatible package
-	 * (but different from the request) already loaded
-	 */
+	 
 	ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED = -4,
 
-	/* The firmware loaded on the device is not compatible with
-	 * the DDP package loaded
-	 */
+	 
 	ICE_DDP_PKG_FW_MISMATCH = -5,
 
-	/* The DDP package file is invalid */
+	 
 	ICE_DDP_PKG_INVALID_FILE = -6,
 
-	/* The version of the DDP package provided is higher than
-	 * the driver supports
-	 */
+	 
 	ICE_DDP_PKG_FILE_VERSION_TOO_HIGH = -7,
 
-	/* The version of the DDP package provided is lower than the
-	 * driver supports
-	 */
+	 
 	ICE_DDP_PKG_FILE_VERSION_TOO_LOW = -8,
 
-	/* The signature of the DDP package file provided is invalid */
+	 
 	ICE_DDP_PKG_FILE_SIGNATURE_INVALID = -9,
 
-	/* The DDP package file security revision is too low and not
-	 * supported by firmware
-	 */
+	 
 	ICE_DDP_PKG_FILE_REVISION_TOO_LOW = -10,
 
-	/* An error occurred in firmware while loading the DDP package */
+	 
 	ICE_DDP_PKG_LOAD_ERROR = -11,
 
-	/* Other errors */
+	 
 	ICE_DDP_PKG_ERR = -12
 };
 
-/* Package and segment headers and tables */
+ 
 struct ice_pkg_hdr {
 	struct ice_pkg_ver pkg_format_ver;
 	__le32 seg_count;
 	__le32 seg_offset[];
 };
 
-/* generic segment */
+ 
 struct ice_generic_seg_hdr {
 #define SEGMENT_TYPE_METADATA 0x00000001
 #define SEGMENT_TYPE_ICE 0x00000010
@@ -108,7 +92,7 @@ struct ice_generic_seg_hdr {
 	char seg_id[ICE_PKG_NAME_SIZE];
 };
 
-/* ice specific segment */
+ 
 
 union ice_device_id {
 	struct {
@@ -150,7 +134,7 @@ struct ice_run_time_cfg_seg {
 	struct ice_buf_table buf_table;
 };
 
-/* global metadata specific segment */
+ 
 struct ice_global_metadata_seg {
 	struct ice_generic_seg_hdr hdr;
 	struct ice_pkg_ver pkg_ver;
@@ -163,7 +147,7 @@ struct ice_global_metadata_seg {
 #define ICE_MIN_S_SZ 1
 #define ICE_MAX_S_SZ 4084
 
-/* section information */
+ 
 struct ice_section_entry {
 	__le32 type;
 	__le16 offset;
@@ -188,7 +172,7 @@ struct ice_buf_hdr {
 	  struct_size_t(struct ice_buf_hdr,  section_entry, 1) - (hd_sz)) / \
 	 (ent_sz))
 
-/* ice package section IDs */
+ 
 #define ICE_SID_METADATA 1
 #define ICE_SID_XLT0_SW 10
 #define ICE_SID_XLT_KEY_BUILDER_SW 11
@@ -253,13 +237,13 @@ struct ice_meta_sect {
 #define ICE_SID_CDID_KEY_BUILDER_PE 87
 #define ICE_SID_CDID_REDIR_PE 88
 
-/* Label Metadata section IDs */
+ 
 #define ICE_SID_LBL_FIRST 0x80000010
 #define ICE_SID_LBL_RXPARSER_TMEM 0x80000018
-/* The following define MUST be updated to reflect the last label section ID */
+ 
 #define ICE_SID_LBL_LAST 0x80000038
 
-/* Label ICE runtime configuration section IDs */
+ 
 #define ICE_SID_TX_5_LAYER_TOPO 0x10
 
 enum ice_block {
@@ -284,7 +268,7 @@ enum ice_sect {
 	ICE_SECT_COUNT
 };
 
-/* package labels */
+ 
 struct ice_label {
 	__le16 value;
 #define ICE_PKG_LABEL_SIZE 64
@@ -314,10 +298,7 @@ struct ice_sw_fv_list_entry {
 	struct ice_fv *fv_ptr;
 };
 
-/* The BOOST TCAM stores the match packet header in reverse order, meaning
- * the fields are reversed; in addition, this means that the normally big endian
- * fields of the packet are now little endian.
- */
+ 
 struct ice_boost_key_value {
 #define ICE_BOOST_REMAINING_HV_KEY 15
 	u8 remaining_hv_key[ICE_BOOST_REMAINING_HV_KEY];
@@ -331,16 +312,14 @@ struct ice_boost_key {
 	struct ice_boost_key_value key2;
 };
 
-/* package Boost TCAM entry */
+ 
 struct ice_boost_tcam_entry {
 	__le16 addr;
 	__le16 reserved;
-	/* break up the 40 bytes of key into different fields */
+	 
 	struct ice_boost_key key;
 	u8 boost_hit_index_group;
-	/* The following contains bitfields which are not on byte boundaries.
-	 * These fields are currently unused by driver software.
-	 */
+	 
 #define ICE_BOOST_BIT_FIELDS 43
 	u8 bit_fields[ICE_BOOST_BIT_FIELDS];
 };
@@ -357,7 +336,7 @@ struct ice_boost_tcam_section {
 				       sizeof(struct ice_boost_tcam_entry),    \
 			       sizeof(struct ice_boost_tcam_entry))
 
-/* package Marker Ptype TCAM entry */
+ 
 struct ice_marker_ptype_tcam_entry {
 #define ICE_MARKER_PTYPE_TCAM_ADDR_MAX 1024
 	__le16 addr;
@@ -395,7 +374,7 @@ struct ice_prof_redir_section {
 	u8 redir_value[];
 };
 
-/* package buffer building */
+ 
 
 struct ice_buf_build {
 	struct ice_buf buf;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (C) 2017 Hari Bathini, IBM Corporation
- */
+ 
+ 
 
 #ifndef __PERF_NAMESPACES_H
 #define __PERF_NAMESPACES_H
@@ -80,4 +77,4 @@ static inline void __nsinfo__zput(struct nsinfo **nsip)
 
 const char *perf_ns__name(unsigned int id);
 
-#endif  /* __PERF_NAMESPACES_H */
+#endif   

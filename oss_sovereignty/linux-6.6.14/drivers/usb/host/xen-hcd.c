@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xen-hcd.c
- *
- * Xen USB Virtual Host Controller driver
- *
- * Copyright (C) 2009, FUJITSU LABORATORIES LTD.
- * Author: Noboru Iwamatsu <n_iwamatsu@jp.fujitsu.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -22,32 +15,32 @@
 
 #include <xen/interface/io/usbif.h>
 
-/* Private per-URB data */
+ 
 struct urb_priv {
 	struct list_head list;
 	struct urb *urb;
-	int req_id;		/* RING_REQUEST id for submitting */
-	int unlink_req_id;	/* RING_REQUEST id for unlinking */
+	int req_id;		 
+	int unlink_req_id;	 
 	int status;
-	bool unlinked;		/* dequeued marker */
+	bool unlinked;		 
 };
 
-/* virtual roothub port status */
+ 
 struct rhport_status {
 	__u32 status;
-	bool resuming;		/* in resuming */
-	bool c_connection;	/* connection changed */
+	bool resuming;		 
+	bool c_connection;	 
 	unsigned long timeout;
 };
 
-/* status of attached device */
+ 
 struct vdevice_status {
 	int devnum;
 	enum usb_device_state status;
 	enum usb_device_speed speed;
 };
 
-/* RING request shadow */
+ 
 struct usb_shadow {
 	struct xenusb_urb_request req;
 	struct urb *urb;
@@ -55,7 +48,7 @@ struct usb_shadow {
 };
 
 struct xenhcd_info {
-	/* Virtual Host Controller has 4 urb queues */
+	 
 	struct list_head pending_submit_list;
 	struct list_head pending_unlink_list;
 	struct list_head in_progress_list;
@@ -63,16 +56,16 @@ struct xenhcd_info {
 
 	spinlock_t lock;
 
-	/* timer that kick pending and giveback waiting urbs */
+	 
 	struct timer_list watchdog;
 	unsigned long actions;
 
-	/* virtual root hub */
+	 
 	int rh_numports;
 	struct rhport_status ports[XENUSB_MAX_PORTNR];
 	struct vdevice_status devices[XENUSB_MAX_PORTNR];
 
-	/* Xen related staff */
+	 
 	struct xenbus_device *xbdev;
 	int urb_ring_ref;
 	int conn_ring_ref;
@@ -142,9 +135,7 @@ static void xenhcd_timer_action(struct xenhcd_info *info,
 	}
 }
 
-/*
- * set virtual port connection status
- */
+ 
 static void xenhcd_set_connect_state(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -171,28 +162,26 @@ static void xenhcd_set_connect_state(struct xenhcd_info *info, int portnum)
 			info->ports[port].status |= USB_PORT_STAT_CONNECTION;
 			info->ports[port].status |= USB_PORT_STAT_HIGH_SPEED;
 			break;
-		default: /* error */
+		default:  
 			return;
 		}
 		info->ports[port].status |= (USB_PORT_STAT_C_CONNECTION << 16);
 	}
 }
 
-/*
- * set virtual device connection status
- */
+ 
 static int xenhcd_rhport_connect(struct xenhcd_info *info, __u8 portnum,
 				 __u8 speed)
 {
 	int port;
 
 	if (portnum < 1 || portnum > info->rh_numports)
-		return -EINVAL; /* invalid port number */
+		return -EINVAL;  
 
 	port = portnum - 1;
 	if (info->devices[port].speed != speed) {
 		switch (speed) {
-		case XENUSB_SPEED_NONE: /* disconnect */
+		case XENUSB_SPEED_NONE:  
 			info->devices[port].status = USB_STATE_NOTATTACHED;
 			break;
 		case XENUSB_SPEED_LOW:
@@ -200,7 +189,7 @@ static int xenhcd_rhport_connect(struct xenhcd_info *info, __u8 portnum,
 		case XENUSB_SPEED_HIGH:
 			info->devices[port].status = USB_STATE_ATTACHED;
 			break;
-		default: /* error */
+		default:  
 			return -EINVAL;
 		}
 		info->devices[port].speed = speed;
@@ -212,9 +201,7 @@ static int xenhcd_rhport_connect(struct xenhcd_info *info, __u8 portnum,
 	return 0;
 }
 
-/*
- * SetPortFeature(PORT_SUSPENDED)
- */
+ 
 static void xenhcd_rhport_suspend(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -224,9 +211,7 @@ static void xenhcd_rhport_suspend(struct xenhcd_info *info, int portnum)
 	info->devices[port].status = USB_STATE_SUSPENDED;
 }
 
-/*
- * ClearPortFeature(PORT_SUSPENDED)
- */
+ 
 static void xenhcd_rhport_resume(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -238,9 +223,7 @@ static void xenhcd_rhport_resume(struct xenhcd_info *info, int portnum)
 	}
 }
 
-/*
- * SetPortFeature(PORT_POWER)
- */
+ 
 static void xenhcd_rhport_power_on(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -255,12 +238,7 @@ static void xenhcd_rhport_power_on(struct xenhcd_info *info, int portnum)
 	}
 }
 
-/*
- * ClearPortFeature(PORT_POWER)
- * SetConfiguration(non-zero)
- * Power_Source_Off
- * Over-current
- */
+ 
 static void xenhcd_rhport_power_off(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -273,9 +251,7 @@ static void xenhcd_rhport_power_off(struct xenhcd_info *info, int portnum)
 	}
 }
 
-/*
- * ClearPortFeature(PORT_ENABLE)
- */
+ 
 static void xenhcd_rhport_disable(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -288,9 +264,7 @@ static void xenhcd_rhport_disable(struct xenhcd_info *info, int portnum)
 		info->devices[port].status = USB_STATE_POWERED;
 }
 
-/*
- * SetPortFeature(PORT_RESET)
- */
+ 
 static void xenhcd_rhport_reset(struct xenhcd_info *info, int portnum)
 {
 	int port;
@@ -304,7 +278,7 @@ static void xenhcd_rhport_reset(struct xenhcd_info *info, int portnum)
 	if (info->devices[port].status != USB_STATE_NOTATTACHED)
 		info->devices[port].status = USB_STATE_ATTACHED;
 
-	/* 10msec reset signaling */
+	 
 	info->ports[port].timeout = jiffies + msecs_to_jiffies(10);
 }
 
@@ -321,7 +295,7 @@ static int xenhcd_bus_suspend(struct usb_hcd *hcd)
 	if (!test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags)) {
 		ret = -ESHUTDOWN;
 	} else {
-		/* suspend any active ports*/
+		 
 		for (i = 1; i <= ports; i++)
 			xenhcd_rhport_suspend(info, i);
 	}
@@ -344,7 +318,7 @@ static int xenhcd_bus_resume(struct usb_hcd *hcd)
 	if (!test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags)) {
 		ret = -ESHUTDOWN;
 	} else {
-		/* resume any suspended ports*/
+		 
 		for (i = 1; i <= ports; i++)
 			xenhcd_rhport_resume(info, i);
 	}
@@ -361,36 +335,31 @@ static void xenhcd_hub_descriptor(struct xenhcd_info *info,
 	int ports = info->rh_numports;
 
 	desc->bDescriptorType = 0x29;
-	desc->bPwrOn2PwrGood = 10; /* EHCI says 20ms max */
+	desc->bPwrOn2PwrGood = 10;  
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = ports;
 
-	/* size of DeviceRemovable and PortPwrCtrlMask fields */
+	 
 	temp = 1 + (ports / 8);
 	desc->bDescLength = 7 + 2 * temp;
 
-	/* bitmaps for DeviceRemovable and PortPwrCtrlMask */
+	 
 	memset(&desc->u.hs.DeviceRemovable[0], 0, temp);
 	memset(&desc->u.hs.DeviceRemovable[temp], 0xff, temp);
 
-	/* per-port over current reporting and no power switching */
+	 
 	temp = 0x000a;
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 }
 
-/* port status change mask for hub_status_data */
+ 
 #define PORT_C_MASK	((USB_PORT_STAT_C_CONNECTION |		\
 			  USB_PORT_STAT_C_ENABLE |		\
 			  USB_PORT_STAT_C_SUSPEND |		\
 			  USB_PORT_STAT_C_OVERCURRENT |		\
 			  USB_PORT_STAT_C_RESET) << 16)
 
-/*
- * See USB 2.0 Spec, 11.12.4 Hub and Port Status Change Bitmap.
- * If port status changed, writes the bitmap to buf and return
- * that length(number of bytes).
- * If Nothing changed, return 0.
- */
+ 
 static int xenhcd_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
 	struct xenhcd_info *info = xenhcd_hcd_to_info(hcd);
@@ -400,7 +369,7 @@ static int xenhcd_hub_status_data(struct usb_hcd *hcd, char *buf)
 	int ret;
 	int changed = 0;
 
-	/* initialize the status to no-changes */
+	 
 	ports = info->rh_numports;
 	ret = 1 + (ports / 8);
 	memset(buf, 0, ret);
@@ -408,7 +377,7 @@ static int xenhcd_hub_status_data(struct usb_hcd *hcd, char *buf)
 	spin_lock_irqsave(&info->lock, flags);
 
 	for (i = 0; i < ports; i++) {
-		/* check status for each port */
+		 
 		if (info->ports[i].status & PORT_C_MASK) {
 			buf[(i + 1) / 8] |= 1 << (i + 1) % 8;
 			changed = 1;
@@ -436,7 +405,7 @@ static int xenhcd_hub_control(struct usb_hcd *hcd, __u16 typeReq, __u16 wValue,
 	spin_lock_irqsave(&info->lock, flags);
 	switch (typeReq) {
 	case ClearHubFeature:
-		/* ignore this request */
+		 
 		break;
 	case ClearPortFeature:
 		if (!wIndex || wIndex > ports)
@@ -464,7 +433,7 @@ static int xenhcd_hub_control(struct usb_hcd *hcd, __u16 typeReq, __u16 wValue,
 		xenhcd_hub_descriptor(info, (struct usb_hub_descriptor *)buf);
 		break;
 	case GetHubStatus:
-		/* always local power supply good and no over-current exists. */
+		 
 		*(__le32 *)buf = cpu_to_le32(0);
 		break;
 	case GetPortStatus:
@@ -473,7 +442,7 @@ static int xenhcd_hub_control(struct usb_hcd *hcd, __u16 typeReq, __u16 wValue,
 
 		wIndex--;
 
-		/* resume completion */
+		 
 		if (info->ports[wIndex].resuming &&
 		    time_after_eq(jiffies, info->ports[wIndex].timeout)) {
 			info->ports[wIndex].status |=
@@ -481,7 +450,7 @@ static int xenhcd_hub_control(struct usb_hcd *hcd, __u16 typeReq, __u16 wValue,
 			info->ports[wIndex].status &= ~USB_PORT_STAT_SUSPEND;
 		}
 
-		/* reset completion */
+		 
 		if ((info->ports[wIndex].status & USB_PORT_STAT_RESET) != 0 &&
 		    time_after_eq(jiffies, info->ports[wIndex].timeout)) {
 			info->ports[wIndex].status |=
@@ -533,14 +502,14 @@ static int xenhcd_hub_control(struct usb_hcd *hcd, __u16 typeReq, __u16 wValue,
 		break;
 
 	case SetHubFeature:
-		/* not supported */
+		 
 	default:
 error:
 		ret = -EPIPE;
 	}
 	spin_unlock_irqrestore(&info->lock, flags);
 
-	/* check status for each port */
+	 
 	for (i = 0; i < ports; i++) {
 		if (info->ports[i].status & PORT_C_MASK)
 			changed = 1;
@@ -563,7 +532,7 @@ static inline unsigned int xenhcd_get_id_from_freelist(struct xenhcd_info *info)
 
 	free = info->shadow_free;
 	info->shadow_free = info->shadow[free].req.id;
-	info->shadow[free].req.id = 0x0fff; /* debug */
+	info->shadow[free].req.id = 0x0fff;  
 	return free;
 }
 
@@ -837,9 +806,7 @@ static void xenhcd_kick_pending_urbs(struct xenhcd_info *info)
 	xenhcd_timer_action_done(info, TIMER_SCAN_PENDING_URBS);
 }
 
-/*
- * caller must lock info->lock
- */
+ 
 static void xenhcd_cancel_all_enqueued_urbs(struct xenhcd_info *info)
 {
 	struct urb_priv *urbp, *tmp;
@@ -852,10 +819,10 @@ static void xenhcd_cancel_all_enqueued_urbs(struct xenhcd_info *info)
 			if (info->error)
 				return;
 			if (urbp->urb->status == -EINPROGRESS)
-				/* not dequeued */
+				 
 				xenhcd_giveback_urb(info, urbp->urb,
 						    -ESHUTDOWN);
-			else	/* dequeued */
+			else	 
 				xenhcd_giveback_urb(info, urbp->urb,
 						    urbp->urb->status);
 		}
@@ -866,9 +833,7 @@ static void xenhcd_cancel_all_enqueued_urbs(struct xenhcd_info *info)
 		xenhcd_giveback_urb(info, urbp->urb, -ESHUTDOWN);
 }
 
-/*
- * caller must lock info->lock
- */
+ 
 static void xenhcd_giveback_unlinked_urbs(struct xenhcd_info *info)
 {
 	struct urb_priv *urbp, *tmp;
@@ -904,20 +869,20 @@ static int xenhcd_unlink_urb(struct xenhcd_info *info, struct urb_priv *urbp)
 {
 	int ret;
 
-	/* already unlinked? */
+	 
 	if (urbp->unlinked)
 		return -EBUSY;
 
 	urbp->unlinked = true;
 
-	/* the urb is still in pending_submit queue */
+	 
 	if (urbp->req_id == ~0) {
 		list_move_tail(&urbp->list, &info->giveback_waiting_list);
 		xenhcd_timer_action(info, TIMER_SCAN_PENDING_URBS);
 		return 0;
 	}
 
-	/* send unlink request to backend */
+	 
 	if (RING_FULL(&info->urb_ring)) {
 		list_move_tail(&urbp->list, &info->pending_unlink_list);
 		xenhcd_timer_action(info, TIMER_RING_WATCHDOG);
@@ -970,7 +935,7 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info,
 		xenhcd_set_error(info, "Illegal index on urb-ring");
 		goto err;
 	}
-	rmb(); /* ensure we see queued responses up to "rp" */
+	rmb();  
 
 	for (i = info->urb_ring.rsp_cons; i != rp; i++) {
 		RING_COPY_RESPONSE(&info->urb_ring, i, &res);
@@ -1028,7 +993,7 @@ static int xenhcd_conn_notify(struct xenhcd_info *info, unsigned int *eoiflag)
 		spin_unlock_irqrestore(&info->lock, flags);
 		return 0;
 	}
-	rmb(); /* ensure we see queued responses up to "rp" */
+	rmb();  
 
 	while (rc != rp) {
 		RING_COPY_RESPONSE(&info->conn_ring, rc, &res);
@@ -1085,7 +1050,7 @@ static irqreturn_t xenhcd_int(int irq, void *dev_id)
 
 	while (xenhcd_urb_request_done(info, &eoiflag) |
 	       xenhcd_conn_notify(info, &eoiflag))
-		/* Yield point for this unbounded loop. */
+		 
 		cond_resched();
 
 	xen_irq_lateeoi(irq, eoiflag);
@@ -1233,7 +1198,7 @@ static int xenhcd_connect(struct xenbus_device *dev)
 	if (err)
 		return err;
 
-	/* prepare ring for hotplug notification */
+	 
 	for (idx = 0; idx < XENUSB_CONN_RING_SIZE; idx++) {
 		req = RING_GET_REQUEST(&info->conn_ring, idx);
 		req->id = idx;
@@ -1270,9 +1235,7 @@ static void xenhcd_watchdog(struct timer_list *timer)
 	spin_unlock_irqrestore(&info->lock, flags);
 }
 
-/*
- * one-time HC init
- */
+ 
 static int xenhcd_setup(struct usb_hcd *hcd)
 {
 	struct xenhcd_info *info = xenhcd_hcd_to_info(hcd);
@@ -1289,9 +1252,7 @@ static int xenhcd_setup(struct usb_hcd *hcd)
 	return 0;
 }
 
-/*
- * start HC running
- */
+ 
 static int xenhcd_run(struct usb_hcd *hcd)
 {
 	hcd->uses_new_polling = 1;
@@ -1300,26 +1261,21 @@ static int xenhcd_run(struct usb_hcd *hcd)
 	return 0;
 }
 
-/*
- * stop running HC
- */
+ 
 static void xenhcd_stop(struct usb_hcd *hcd)
 {
 	struct xenhcd_info *info = xenhcd_hcd_to_info(hcd);
 
 	del_timer_sync(&info->watchdog);
 	spin_lock_irq(&info->lock);
-	/* cancel all urbs */
+	 
 	hcd->state = HC_STATE_HALT;
 	xenhcd_cancel_all_enqueued_urbs(info);
 	xenhcd_giveback_unlinked_urbs(info);
 	spin_unlock_irq(&info->lock);
 }
 
-/*
- * called as .urb_enqueue()
- * non-error returns are promise to giveback the urb later
- */
+ 
 static int xenhcd_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 			      gfp_t mem_flags)
 {
@@ -1355,9 +1311,7 @@ static int xenhcd_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 	return ret;
 }
 
-/*
- * called as .urb_dequeue()
- */
+ 
 static int xenhcd_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 {
 	struct xenhcd_info *info = xenhcd_hcd_to_info(hcd);
@@ -1378,13 +1332,10 @@ static int xenhcd_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 	return ret;
 }
 
-/*
- * called from usb_get_current_frame_number(),
- * but, almost all drivers not use such function.
- */
+ 
 static int xenhcd_get_frame(struct usb_hcd *hcd)
 {
-	/* it means error, but probably no problem :-) */
+	 
 	return 0;
 }
 
@@ -1394,17 +1345,17 @@ static struct hc_driver xenhcd_usb20_hc_driver = {
 	.hcd_priv_size = sizeof(struct xenhcd_info),
 	.flags = HCD_USB2,
 
-	/* basic HC lifecycle operations */
+	 
 	.reset = xenhcd_setup,
 	.start = xenhcd_run,
 	.stop = xenhcd_stop,
 
-	/* managing urb I/O */
+	 
 	.urb_enqueue = xenhcd_urb_enqueue,
 	.urb_dequeue = xenhcd_urb_dequeue,
 	.get_frame_number = xenhcd_get_frame,
 
-	/* root hub operations */
+	 
 	.hub_status_data = xenhcd_hub_status_data,
 	.hub_control = xenhcd_hub_control,
 #ifdef CONFIG_PM
@@ -1419,17 +1370,17 @@ static struct hc_driver xenhcd_usb11_hc_driver = {
 	.hcd_priv_size = sizeof(struct xenhcd_info),
 	.flags = HCD_USB11,
 
-	/* basic HC lifecycle operations */
+	 
 	.reset = xenhcd_setup,
 	.start = xenhcd_run,
 	.stop = xenhcd_stop,
 
-	/* managing urb I/O */
+	 
 	.urb_enqueue = xenhcd_urb_enqueue,
 	.urb_dequeue = xenhcd_urb_dequeue,
 	.get_frame_number = xenhcd_get_frame,
 
-	/* root hub operations */
+	 
 	.hub_status_data = xenhcd_hub_status_data,
 	.hub_control = xenhcd_hub_control,
 #ifdef CONFIG_PM
@@ -1518,7 +1469,7 @@ static void xenhcd_backend_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's Closing state. */
+		fallthrough;	 
 	case XenbusStateClosing:
 		xenhcd_disconnect(dev);
 		break;

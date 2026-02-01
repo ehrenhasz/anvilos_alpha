@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8804.h  --  WM8804 S/PDIF transceiver driver
- *
- * Copyright 2010 Wolfson Microelectronics plc
- *
- * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM8804_H
 #define _WM8804_H
 
 #include <linux/regmap.h>
 
-/*
- * Register values.
- */
+ 
 #define WM8804_RST_DEVID1			0x00
 #define WM8804_DEVID2				0x01
 #define WM8804_DEVREV				0x02
@@ -67,4 +59,4 @@ extern const struct dev_pm_ops wm8804_pm;
 int wm8804_probe(struct device *dev, struct regmap *regmap);
 void wm8804_remove(struct device *dev);
 
-#endif  /* _WM8804_H */
+#endif   

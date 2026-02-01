@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv04_sw_chan(p) container_of((p), struct nv04_sw_chan, base)
 #include "priv.h"
 #include "chan.h"
@@ -36,9 +14,7 @@ struct nv04_sw_chan {
 	atomic_t ref;
 };
 
-/*******************************************************************************
- * software object classes
- ******************************************************************************/
+ 
 
 static int
 nv04_nvsw_mthd_get_ref(struct nvkm_nvsw *nvsw, void *data, u32 size)
@@ -80,9 +56,7 @@ nv04_nvsw_new(struct nvkm_sw_chan *chan, const struct nvkm_oclass *oclass,
 	return nvkm_nvsw_new_(&nv04_nvsw, chan, oclass, data, size, pobject);
 }
 
-/*******************************************************************************
- * software context
- ******************************************************************************/
+ 
 
 static bool
 nv04_sw_chan_mthd(struct nvkm_sw_chan *base, int subc, u32 mthd, u32 data)
@@ -119,9 +93,7 @@ nv04_sw_chan_new(struct nvkm_sw *sw, struct nvkm_chan *fifo,
 	return nvkm_sw_chan_ctor(&nv04_sw_chan, sw, fifo, oclass, &chan->base);
 }
 
-/*******************************************************************************
- * software engine/subdev functions
- ******************************************************************************/
+ 
 
 static const struct nvkm_sw_func
 nv04_sw = {

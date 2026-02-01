@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
 
-/*******************************************************************************
- * Communicates with the dongle by using dcmd codes.
- * For certain dcmd codes, the dongle interprets string data from the host.
- ******************************************************************************/
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -126,7 +121,7 @@ struct msgbuf_completion_hdr {
 	__le16				flow_ring_id;
 };
 
-/* Data struct for the MSGBUF_TYPE_GEN_STATUS */
+ 
 struct msgbuf_gen_status {
 	struct msgbuf_common_hdr	msg;
 	struct msgbuf_completion_hdr	compl_hdr;
@@ -134,7 +129,7 @@ struct msgbuf_gen_status {
 	__le32				rsvd0[3];
 };
 
-/* Data struct for the MSGBUF_TYPE_RING_STATUS */
+ 
 struct msgbuf_ring_status {
 	struct msgbuf_common_hdr	msg;
 	struct msgbuf_completion_hdr	compl_hdr;
@@ -1410,12 +1405,12 @@ void brcmf_msgbuf_delete_flowring(struct brcmf_pub *drvr, u16 flowid)
 	int err;
 	int retry = BRCMF_MAX_TXSTATUS_WAIT_RETRIES;
 
-	/* make sure it is not in txflow */
+	 
 	brcmf_commonring_lock(commonring_del);
 	flow->rings[flowid]->status = RING_CLOSING;
 	brcmf_commonring_unlock(commonring_del);
 
-	/* wait for commonring txflow finished */
+	 
 	while (retry && atomic_read(&commonring_del->outstanding_tx)) {
 		usleep_range(5000, 10000);
 		retry--;
@@ -1425,7 +1420,7 @@ void brcmf_msgbuf_delete_flowring(struct brcmf_pub *drvr, u16 flowid)
 		atomic_set(&commonring_del->outstanding_tx, 0);
 	}
 
-	/* no need to submit if firmware can not be reached */
+	 
 	if (drvr->bus_if->state != BRCMF_BUS_UP) {
 		brcmf_dbg(MSGBUF, "bus down, flowring will be removed\n");
 		brcmf_msgbuf_remove_flowring(msgbuf, flowid);

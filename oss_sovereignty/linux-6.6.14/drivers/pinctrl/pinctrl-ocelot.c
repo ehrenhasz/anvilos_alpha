@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Microsemi SoCs pinctrl driver
- *
- * Author: <alexandre.belloni@free-electrons.com>
- * License: Dual MIT/GPL
- * Copyright (c) 2017 Microsemi Corporation
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -36,7 +30,7 @@ enum {
 	PINCONF_DRIVE_STRENGTH,
 };
 
-/* GPIO standard registers */
+ 
 #define OCELOT_GPIO_OUT_SET	0x0
 #define OCELOT_GPIO_OUT_CLR	0x4
 #define OCELOT_GPIO_OUT		0x8
@@ -312,7 +306,7 @@ struct ocelot_pmx_func {
 struct ocelot_pin_caps {
 	unsigned int pin;
 	unsigned char functions[OCELOT_FUNC_PER_PIN];
-	unsigned char a_functions[OCELOT_FUNC_PER_PIN];	/* Additional functions */
+	unsigned char a_functions[OCELOT_FUNC_PER_PIN];	 
 };
 
 struct ocelot_pincfg_data {
@@ -968,8 +962,8 @@ static struct ocelot_pin_caps lan966x_pin_##p = {              \
 	},                                                     \
 }
 
-/* Pinmuxing table taken from data sheet */
-/*        Pin   FUNC0    FUNC1     FUNC2      FUNC3     FUNC4     FUNC5      FUNC6    FUNC7 */
+ 
+ 
 LAN966X_P(0,    GPIO,    NONE,     NONE,      NONE,     NONE,     NONE,      NONE,        R);
 LAN966X_P(1,    GPIO,    NONE,     NONE,      NONE,     NONE,     NONE,      NONE,        R);
 LAN966X_P(2,    GPIO,    NONE,     NONE,      NONE,     NONE,     NONE,      NONE,        R);
@@ -1191,14 +1185,7 @@ static int ocelot_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	if (f < 0)
 		return -EINVAL;
 
-	/*
-	 * f is encoded on two bits.
-	 * bit 0 of f goes in BIT(pin) of ALT[0], bit 1 of f goes in BIT(pin) of
-	 * ALT[1]
-	 * This is racy because both registers can't be updated at the same time
-	 * but it doesn't matter much for now.
-	 * Note: ALT0/ALT1 are organized specially for 64 gpio targets
-	 */
+	 
 	regmap_update_bits(info->map, REG_ALT(0, info, pin->pin),
 			   BIT(p), f << p);
 	regmap_update_bits(info->map, REG_ALT(1, info, pin->pin),
@@ -1219,14 +1206,7 @@ static int lan966x_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	if (f < 0)
 		return -EINVAL;
 
-	/*
-	 * f is encoded on three bits.
-	 * bit 0 of f goes in BIT(pin) of ALT[0], bit 1 of f goes in BIT(pin) of
-	 * ALT[1], bit 2 of f goes in BIT(pin) of ALT[2]
-	 * This is racy because three registers can't be updated at the same time
-	 * but it doesn't matter much for now.
-	 * Note: ALT0/ALT1/ALT2 are organized specially for 78 gpio targets
-	 */
+	 
 	regmap_update_bits(info->map, REG_ALT(0, info, pin->pin),
 			   BIT(p), f << p);
 	regmap_update_bits(info->map, REG_ALT(1, info, pin->pin),
@@ -1450,7 +1430,7 @@ static int ocelot_pinconf_get(struct pinctrl_dev *pctldev,
 			val = (val == 0);
 		else if (param == PIN_CONFIG_BIAS_PULL_DOWN)
 			val = !!(val & info->pincfg_data->pd_bit);
-		else    /* PIN_CONFIG_BIAS_PULL_UP */
+		else     
 			val = !!(val & info->pincfg_data->pu_bit);
 		break;
 
@@ -1850,36 +1830,28 @@ static void ocelot_irq_unmask_level(struct irq_data *data)
 
 	trigger_level = irqd_get_trigger_type(data);
 
-	/* Check if the interrupt line is still active. */
+	 
 	regmap_read(info->map, REG(OCELOT_GPIO_IN, info, gpio), &val);
 	if ((!(val & bit) && trigger_level == IRQ_TYPE_LEVEL_LOW) ||
 	      (val & bit && trigger_level == IRQ_TYPE_LEVEL_HIGH))
 		active = true;
 
-	/*
-	 * Check if the interrupt controller has seen any changes in the
-	 * interrupt line.
-	 */
+	 
 	regmap_read(info->map, REG(OCELOT_GPIO_INTR, info, gpio), &val);
 	if (val & bit)
 		ack = true;
 
-	/* Try to clear any rising edges */
+	 
 	if (!active && ack)
 		regmap_write_bits(info->map, REG(OCELOT_GPIO_INTR, info, gpio),
 				  bit, bit);
 
-	/* Enable the interrupt now */
+	 
 	gpiochip_enable_irq(chip, gpio);
 	regmap_update_bits(info->map, REG(OCELOT_GPIO_INTR_ENA, info, gpio),
 			   bit, bit);
 
-	/*
-	 * In case the interrupt line is still active then it means that
-	 * there happen another interrupt while the line was active.
-	 * So we missed that one, so we need to kick the interrupt again
-	 * handler.
-	 */
+	 
 	regmap_read(info->map, REG(OCELOT_GPIO_IN, info, gpio), &val);
 	if ((!(val & bit) && trigger_level == IRQ_TYPE_LEVEL_LOW) ||
 	      (val & bit && trigger_level == IRQ_TYPE_LEVEL_HIGH))
@@ -2107,7 +2079,7 @@ static int ocelot_pinctrl_probe(struct platform_device *pdev)
 	dev_set_drvdata(dev, info);
 	info->dev = dev;
 
-	/* Pinconf registers */
+	 
 	if (info->desc->confops) {
 		pincfg = ocelot_pinctrl_create_pincfg(pdev, info);
 		if (IS_ERR(pincfg))

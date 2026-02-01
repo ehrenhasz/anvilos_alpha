@@ -1,8 +1,4 @@
-/*
-** $Id: lvm.h,v 2.18.1.1 2013/04/12 18:48:47 roberto Exp $
-** Lua virtual machine
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef lvm_h
 #define lvm_h
@@ -22,7 +18,7 @@
 #define luaV_rawequalobj(o1,o2)		equalobj(NULL,o1,o2)
 
 
-/* not to called directly */
+ 
 LUAI_FUNC int luaV_equalobj_ (lua_State *L, const TValue *t1, const TValue *t2);
 
 

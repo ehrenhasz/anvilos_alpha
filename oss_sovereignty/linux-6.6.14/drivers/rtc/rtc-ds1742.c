@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An rtc driver for the Dallas DS1742
- *
- * Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
- *
- * Copyright (C) 2006 Torsten Ertbjerg Rasmussen <tr@newtec.dk>
- *  - nvram size determined from resource
- *  - this ds1742 driver now supports ds1743.
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/kernel.h>
@@ -36,14 +28,14 @@
 #define RTC_SECONDS_MASK	0x7f
 #define RTC_DAY_MASK		0x07
 
-/* Bits in the Control/Century register */
+ 
 #define RTC_WRITE		0x80
 #define RTC_READ		0x40
 
-/* Bits in the Seconds register */
+ 
 #define RTC_STOP		0x80
 
-/* Bits in the Day register */
+ 
 #define RTC_BATT_FLAG		0x80
 
 struct rtc_plat_data {
@@ -70,7 +62,7 @@ static int ds1742_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	writeb(bin2bcd(tm->tm_min), ioaddr + RTC_MINUTES);
 	writeb(bin2bcd(tm->tm_sec) & RTC_SECONDS_MASK, ioaddr + RTC_SECONDS);
 
-	/* RTC_CENTURY and RTC_CONTROL share same register */
+	 
 	writeb(RTC_WRITE | (century & RTC_CENTURY_MASK), ioaddr + RTC_CENTURY);
 	writeb(century & RTC_CENTURY_MASK, ioaddr + RTC_CONTROL);
 	return 0;
@@ -83,7 +75,7 @@ static int ds1742_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned int year, month, day, hour, minute, second, week;
 	unsigned int century;
 
-	/* give enough time to update RTC in case of continuous read */
+	 
 	if (pdata->last_jiffies == jiffies)
 		msleep(1);
 	pdata->last_jiffies = jiffies;
@@ -103,7 +95,7 @@ static int ds1742_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_mday = bcd2bin(day);
 	tm->tm_wday = bcd2bin(week);
 	tm->tm_mon = bcd2bin(month) - 1;
-	/* year is 1900 + tm->tm_year */
+	 
 	tm->tm_year = bcd2bin(year) + bcd2bin(century) * 100 - 1900;
 
 	return 0;
@@ -167,7 +159,7 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 	nvmem_cfg.size = resource_size(res) - RTC_SIZE;
 	nvmem_cfg.priv = pdata;
 
-	/* turn RTC on if it was not on */
+	 
 	ioaddr = pdata->ioaddr_rtc;
 	sec = readb(ioaddr + RTC_SECONDS);
 	if (sec & RTC_STOP) {

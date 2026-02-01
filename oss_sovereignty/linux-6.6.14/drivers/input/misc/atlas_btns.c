@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  atlas_btns.c - Atlas Wallmount Touchscreen ACPI Extras
- *
- *  Copyright (C) 2006 Jaya Kumar
- *  Based on Toshiba ACPI by John Belmonte and ASUS ACPI
- *  This work was sponsored by CIS(M) Sdn Bhd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,7 +16,7 @@
 static unsigned short atlas_keymap[16];
 static struct input_dev *input_dev;
 
-/* button handling code */
+ 
 static acpi_status acpi_atlas_button_setup(acpi_handle region_handle,
 		    u32 function, void *handler_context, void **return_context)
 {
@@ -93,7 +87,7 @@ static int atlas_acpi_button_add(struct acpi_device *device)
 		return err;
 	}
 
-	/* hookup button handler */
+	 
 	status = acpi_install_address_space_handler(device->handle,
 				0x81, &acpi_atlas_button_handler,
 				&acpi_atlas_button_setup, device);

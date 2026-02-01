@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LEDs driver for Dialog Semiconductor DA9030/DA9034
- *
- * Copyright (C) 2008 Compulab, Ltd.
- *	Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- *	Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -21,7 +13,7 @@
 #define DA9030_LED3_CONTROL	0x22
 #define DA9030_LED4_CONTROL	0x23
 #define DA9030_LEDPC_CONTROL	0x24
-#define DA9030_MISC_CONTROL_A	0x26	/* Vibrator Control */
+#define DA9030_MISC_CONTROL_A	0x26	 
 
 #define DA9034_LED1_CONTROL	0x35
 #define DA9034_LED2_CONTROL	0x36
@@ -53,14 +45,14 @@ static int da903x_led_set(struct led_classdev *led_cdev,
 	case DA9030_ID_LED_PC:
 		offset = DA9030_LED_OFFSET(led->id);
 		val = led->flags & ~0x87;
-		val |= value ? 0x80 : 0; /* EN bit */
-		val |= (0x7 - (value >> 5)) & 0x7; /* PWM<2:0> */
+		val |= value ? 0x80 : 0;  
+		val |= (0x7 - (value >> 5)) & 0x7;  
 		ret = da903x_write(led->master, DA9030_LED1_CONTROL + offset,
 				   val);
 		break;
 	case DA9030_ID_VIBRA:
 		val = led->flags & ~0x80;
-		val |= value ? 0x80 : 0; /* EN bit */
+		val |= value ? 0x80 : 0;  
 		ret = da903x_write(led->master, DA9030_MISC_CONTROL_A, val);
 		break;
 	case DA9034_ID_LED_1:

@@ -1,41 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * pcm3724.c
- * Comedi driver for Advantech PCM-3724 Digital I/O board
- *
- * Drew Csillag <drew_csillag@yahoo.com>
- */
 
-/*
- * Driver: pcm3724
- * Description: Advantech PCM-3724
- * Devices: [Advantech] PCM-3724 (pcm3724)
- * Author: Drew Csillag <drew_csillag@yahoo.com>
- * Status: tested
- *
- * This is driver for digital I/O boards PCM-3724 with 48 DIO.
- * It needs 8255.o for operations and only immediate mode is supported.
- * See the source for configuration details.
- *
- * Copy/pasted/hacked from pcm724.c
- *
- * Configuration Options:
- *   [0] - I/O port base address
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_8255.h>
 
-/*
- * Register I/O Map
- *
- * This board has two standard 8255 devices that provide six 8-bit DIO ports
- * (48 channels total). Six 74HCT245 chips (one for each port) buffer the
- * I/O lines to increase driving capability. Because the 74HCT245 is a
- * bidirectional, tri-state line buffer, two additional I/O ports are used
- * to control the direction of data and the enable of each port.
- */
+ 
 #define PCM3724_8255_0_BASE		0x00
 #define PCM3724_8255_1_BASE		0x04
 #define PCM3724_DIO_DIR_REG		0x08
@@ -53,7 +25,7 @@
 #define PCM3724_GATE_CTRL_B1_ENA	BIT(4)
 #define PCM3724_GATE_CTRL_A1_ENA	BIT(5)
 
-/* used to track configured dios */
+ 
 struct priv_pcm3724 {
 	int dio_1;
 	int dio_2;
@@ -61,7 +33,7 @@ struct priv_pcm3724 {
 
 static int compute_buffer(int config, int devno, struct comedi_subdevice *s)
 {
-	/* 1 in io_bits indicates output */
+	 
 	if (s->io_bits & 0x0000ff) {
 		if (devno == 0)
 			config |= PCM3724_DIO_DIR_A0_OUT;
@@ -94,7 +66,7 @@ static void do_3724_config(struct comedi_device *dev,
 
 	config = I8255_CTRL_CW;
 
-	/* 1 in io_bits indicates output, 1 in config indicates input */
+	 
 	if (!(s->io_bits & 0x0000ff))
 		config |= I8255_CTRL_A_IO;
 
@@ -154,7 +126,7 @@ static void enable_chan(struct comedi_device *dev, struct comedi_subdevice *s,
 	outb(gatecfg, dev->iobase + PCM3724_GATE_CTRL_REG);
 }
 
-/* overriding the 8255 insn config */
+ 
 static int subdev_3724_insn_config(struct comedi_device *dev,
 				   struct comedi_subdevice *s,
 				   struct comedi_insn *insn,

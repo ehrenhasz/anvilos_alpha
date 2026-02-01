@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sound card driver for Intel Broadwell Wildcat Point with Realtek 286
- *
- * Copyright (C) 2013, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -54,7 +50,7 @@ static const struct snd_soc_dapm_route card_routes[] = {
 	{"DMIC1 Pin", NULL, "DMIC1"},
 	{"DMIC2 Pin", NULL, "DMIC2"},
 
-	/* CODEC BE connections */
+	 
 	{"SSP0 CODEC IN", NULL, "AIF1 Capture"},
 	{"AIF1 Playback", NULL, "SSP0 CODEC OUT"},
 };
@@ -86,10 +82,10 @@ static int codec_link_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_interval *rate = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
 
-	/* The ADSP will convert the FE rate to 48kHz, stereo. */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
-	/* Set SSP0 to 16 bit. */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 
 	return 0;
@@ -126,7 +122,7 @@ SND_SOC_DAILINK_DEF(codec, DAILINK_COMP_ARRAY(COMP_CODEC("i2c-INT343A:00", "rt28
 SND_SOC_DAILINK_DEF(ssp0_port, DAILINK_COMP_ARRAY(COMP_CPU("ssp0-port")));
 
 static struct snd_soc_dai_link card_dai_links[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "System PCM",
 		.stream_name = "System Playback/Capture",
@@ -164,9 +160,9 @@ static struct snd_soc_dai_link card_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(loopback, dummy, platform),
 	},
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "Codec",
 		.id = 0,
 		.nonatomic = 1,
@@ -218,8 +214,8 @@ static struct snd_soc_card bdw_rt286_card = {
 	.fully_routed = true,
 };
 
-/* Use space before codec name to simplify card ID, and simplify driver name. */
-#define SOF_CARD_NAME "bdw rt286" /* card name will be 'sof-bdw rt286' */
+ 
+#define SOF_CARD_NAME "bdw rt286"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "broadwell-rt286"

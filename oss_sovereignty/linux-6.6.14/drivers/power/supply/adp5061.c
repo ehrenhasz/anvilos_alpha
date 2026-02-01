@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADP5061 I2C Programmable Linear Battery Charger
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,7 +13,7 @@
 #include <linux/of.h>
 #include <linux/regmap.h>
 
-/* ADP5061 registers definition */
+ 
 #define ADP5061_ID			0x00
 #define ADP5061_REV			0x01
 #define ADP5061_VINX_SET		0x02
@@ -35,23 +31,23 @@
 #define ADP5061_BATTERY_SHORT		0x10
 #define ADP5061_IEND			0x11
 
-/* ADP5061_VINX_SET */
+ 
 #define ADP5061_VINX_SET_ILIM_MSK		GENMASK(3, 0)
 #define ADP5061_VINX_SET_ILIM_MODE(x)		(((x) & 0x0F) << 0)
 
-/* ADP5061_TERM_SET */
+ 
 #define ADP5061_TERM_SET_VTRM_MSK		GENMASK(7, 2)
 #define ADP5061_TERM_SET_VTRM_MODE(x)		(((x) & 0x3F) << 2)
 #define ADP5061_TERM_SET_CHG_VLIM_MSK		GENMASK(1, 0)
 #define ADP5061_TERM_SET_CHG_VLIM_MODE(x)	(((x) & 0x03) << 0)
 
-/* ADP5061_CHG_CURR */
+ 
 #define ADP5061_CHG_CURR_ICHG_MSK		GENMASK(6, 2)
 #define ADP5061_CHG_CURR_ICHG_MODE(x)		(((x) & 0x1F) << 2)
 #define ADP5061_CHG_CURR_ITRK_DEAD_MSK		GENMASK(1, 0)
 #define ADP5061_CHG_CURR_ITRK_DEAD_MODE(x)	(((x) & 0x03) << 0)
 
-/* ADP5061_VOLTAGE_TH */
+ 
 #define ADP5061_VOLTAGE_TH_DIS_RCH_MSK		BIT(7)
 #define ADP5061_VOLTAGE_TH_DIS_RCH_MODE(x)	(((x) & 0x01) << 7)
 #define ADP5061_VOLTAGE_TH_VRCH_MSK		GENMASK(6, 5)
@@ -61,7 +57,7 @@
 #define ADP5061_VOLTAGE_TH_VWEAK_MSK		GENMASK(2, 0)
 #define ADP5061_VOLTAGE_TH_VWEAK_MODE(x)	(((x) & 0x07) << 0)
 
-/* ADP5061_CHG_STATUS_1 */
+ 
 #define ADP5061_CHG_STATUS_1_VIN_OV(x)		(((x) >> 7) & 0x1)
 #define ADP5061_CHG_STATUS_1_VIN_OK(x)		(((x) >> 6) & 0x1)
 #define ADP5061_CHG_STATUS_1_VIN_ILIM(x)	(((x) >> 5) & 0x1)
@@ -69,17 +65,17 @@
 #define ADP5061_CHG_STATUS_1_CHDONE(x)		(((x) >> 3) & 0x1)
 #define ADP5061_CHG_STATUS_1_CHG_STATUS(x)	(((x) >> 0) & 0x7)
 
-/* ADP5061_CHG_STATUS_2 */
+ 
 #define ADP5061_CHG_STATUS_2_THR_STATUS(x)	(((x) >> 5) & 0x7)
 #define ADP5061_CHG_STATUS_2_RCH_LIM_INFO(x)	(((x) >> 3) & 0x1)
 #define ADP5061_CHG_STATUS_2_BAT_STATUS(x)	(((x) >> 0) & 0x7)
 
-/* ADP5061_IEND */
+ 
 #define ADP5061_IEND_IEND_MSK			GENMASK(7, 5)
 #define ADP5061_IEND_IEND_MODE(x)		(((x) & 0x07) << 5)
 
 #define ADP5061_NO_BATTERY	0x01
-#define ADP5061_ICHG_MAX	1300 // mA
+#define ADP5061_ICHG_MAX	1300 
 
 enum adp5061_chg_status {
 	ADP5061_CHG_OFF,
@@ -160,7 +156,7 @@ static int adp5061_get_status(struct adp5061_state *st,
 	u8 buf[2];
 	int ret;
 
-	/* CHG_STATUS1 and CHG_STATUS2 are adjacent regs */
+	 
 	ret = regmap_bulk_read(st->regmap, ADP5061_CHG_STATUS_1,
 			       &buf[0], 2);
 	if (ret < 0)
@@ -192,7 +188,7 @@ static int adp5061_set_input_current_limit(struct adp5061_state *st, int val)
 {
 	int index;
 
-	/* Convert from uA to mA */
+	 
 	val /= 1000;
 	index = adp5061_get_array_index(adp5061_in_current_lim,
 					ARRAY_SIZE(adp5061_in_current_lim),
@@ -209,7 +205,7 @@ static int adp5061_set_min_voltage(struct adp5061_state *st, int val)
 {
 	int index;
 
-	/* Convert from uV to mV */
+	 
 	val /= 1000;
 	index = adp5061_get_array_index(adp5061_vmin,
 					ARRAY_SIZE(adp5061_vmin),
@@ -277,7 +273,7 @@ static int adp5061_set_max_voltage(struct adp5061_state *st, int val)
 {
 	int vmax_index;
 
-	/* Convert from uV to mV */
+	 
 	val /= 1000;
 	if (val > 4500)
 		val = 4500;
@@ -298,7 +294,7 @@ static int adp5061_set_const_chg_vmax(struct adp5061_state *st, int val)
 {
 	int index;
 
-	/* Convert from uV to mV */
+	 
 	val /= 1000;
 	index = adp5061_get_array_index(adp5061_const_chg_vmax,
 					ARRAY_SIZE(adp5061_const_chg_vmax),
@@ -316,7 +312,7 @@ static int adp5061_set_const_chg_current(struct adp5061_state *st, int val)
 
 	int index;
 
-	/* Convert from uA to mA */
+	 
 	val /= 1000;
 	if (val > ADP5061_ICHG_MAX)
 		val = ADP5061_ICHG_MAX;
@@ -371,7 +367,7 @@ static int adp5061_set_prechg_current(struct adp5061_state *st, int val)
 {
 	int index;
 
-	/* Convert from uA to mA */
+	 
 	val /= 1000;
 	index = adp5061_get_array_index(adp5061_prechg_current,
 					ARRAY_SIZE(adp5061_prechg_current),
@@ -404,7 +400,7 @@ static int adp5061_set_vweak_th(struct adp5061_state *st, int val)
 {
 	int index;
 
-	/* Convert from uV to mV */
+	 
 	val /= 1000;
 	index = adp5061_get_array_index(adp5061_vweak_th,
 					ARRAY_SIZE(adp5061_vweak_th),
@@ -459,7 +455,7 @@ static int adp5061_get_charger_status(struct adp5061_state *st,
 		val->intval = POWER_SUPPLY_STATUS_FULL;
 		break;
 	case ADP5061_CHG_TIMER_EXP:
-		/* The battery must be discharging if there is a charge fault */
+		 
 		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
 		break;
 	default:
@@ -480,17 +476,17 @@ static int adp5061_get_battery_status(struct adp5061_state *st,
 		return ret;
 
 	switch (ADP5061_CHG_STATUS_2_BAT_STATUS(status2)) {
-	case 0x0: /* Battery monitor off */
-	case 0x1: /* No battery */
+	case 0x0:  
+	case 0x1:  
 		val->intval = POWER_SUPPLY_CAPACITY_LEVEL_UNKNOWN;
 		break;
-	case 0x2: /* VBAT < VTRK */
+	case 0x2:  
 		val->intval = POWER_SUPPLY_CAPACITY_LEVEL_CRITICAL;
 		break;
-	case 0x3: /* VTRK < VBAT_SNS < VWEAK */
+	case 0x3:  
 		val->intval = POWER_SUPPLY_CAPACITY_LEVEL_LOW;
 		break;
-	case 0x4: /* VBAT_SNS > VWEAK */
+	case 0x4:  
 		val->intval = POWER_SUPPLY_CAPACITY_LEVEL_NORMAL;
 		break;
 	default:
@@ -555,59 +551,34 @@ static int adp5061_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
 		return adp5061_get_chg_type(st, val);
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
-		/* This property is used to indicate the input current
-		 * limit into VINx (ILIM)
-		 */
+		 
 		return adp5061_get_input_current_limit(st, val);
 	case POWER_SUPPLY_PROP_VOLTAGE_MAX:
-		/* This property is used to indicate the termination
-		 * voltage (VTRM)
-		 */
+		 
 		return adp5061_get_max_voltage(st, val);
 	case POWER_SUPPLY_PROP_VOLTAGE_MIN:
-		/*
-		 * This property is used to indicate the trickle to fast
-		 * charge threshold (VTRK_DEAD)
-		 */
+		 
 		return adp5061_get_min_voltage(st, val);
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
-		/* This property is used to indicate the charging
-		 * voltage limit (CHG_VLIM)
-		 */
+		 
 		return adp5061_get_chg_volt_lim(st, val);
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
-		/*
-		 * This property is used to indicate the value of the constant
-		 * current charge (ICHG)
-		 */
+		 
 		return adp5061_get_const_chg_current(st, val);
 	case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
-		/*
-		 * This property is used to indicate the value of the trickle
-		 * and weak charge currents (ITRK_DEAD)
-		 */
+		 
 		return adp5061_get_prechg_current(st, val);
 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
-		/*
-		 * This property is used to set the VWEAK threshold
-		 * bellow this value, weak charge mode is entered
-		 * above this value, fast chargerge mode is entered
-		 */
+		 
 		return adp5061_get_vweak_th(st, val);
 	case POWER_SUPPLY_PROP_STATUS:
-		/*
-		 * Indicate the charger status in relation to power
-		 * supply status property
-		 */
+		 
 		return adp5061_get_charger_status(st, val);
 	case POWER_SUPPLY_PROP_CAPACITY_LEVEL:
-		/*
-		 * Indicate the battery status in relation to power
-		 * supply capacity level property
-		 */
+		 
 		return adp5061_get_battery_status(st, val);
 	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
-		/* Indicate the values of the termination current */
+		 
 		return adp5061_get_termination_current(st, val);
 	default:
 		return -EINVAL;

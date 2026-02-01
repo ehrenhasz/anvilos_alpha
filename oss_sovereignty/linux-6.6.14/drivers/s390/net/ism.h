@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef S390_ISM_H
 #define S390_ISM_H
 
@@ -11,9 +11,7 @@
 
 #define UTIL_STR_LEN	16
 
-/*
- * Do not use the first word of the DMB bits to ensure 8 byte aligned access.
- */
+ 
 #define ISM_DMB_WORD_OFFSET	1
 #define ISM_DMB_BIT_OFFSET	(ISM_DMB_WORD_OFFSET * 32)
 #define ISM_IDENT_MASK		0x00FFFF
@@ -181,8 +179,8 @@ struct ism_eq {
 };
 
 struct ism_sba {
-	u32 s : 1;	/* summary bit */
-	u32 e : 1;	/* event bit */
+	u32 s : 1;	 
+	u32 e : 1;	 
 	u32 : 30;
 	u32 dmb_bits[ISM_NR_DMBS / 32];
 	u32 reserved[3];
@@ -231,4 +229,4 @@ static inline int __ism_move(struct ism_dev *ism, u64 dmb_req, void *data,
 	return __zpci_store_block(data, req, dmb_req);
 }
 
-#endif /* S390_ISM_H */
+#endif  

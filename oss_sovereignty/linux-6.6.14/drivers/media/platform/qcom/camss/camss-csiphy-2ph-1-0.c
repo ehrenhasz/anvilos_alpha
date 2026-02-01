@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-csiphy-2ph-1-0.c
- *
- * Qualcomm MSM Camera Subsystem - CSIPHY Module 2phase v1.0
- *
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2016-2018 Linaro Ltd.
- */
+
+ 
 
 #include "camss-csiphy.h"
 
@@ -49,10 +42,7 @@ static void csiphy_hw_version_read(struct csiphy_device *csiphy,
 	dev_dbg(dev, "CSIPHY HW Version = 0x%02x\n", hw_version);
 }
 
-/*
- * csiphy_reset - Perform software reset on CSIPHY module
- * @csiphy: CSIPHY device
- */
+ 
 static void csiphy_reset(struct csiphy_device *csiphy)
 {
 	writel_relaxed(0x1, csiphy->base + CAMSS_CSI_PHY_GLBL_RESET);
@@ -60,23 +50,14 @@ static void csiphy_reset(struct csiphy_device *csiphy)
 	writel_relaxed(0x0, csiphy->base + CAMSS_CSI_PHY_GLBL_RESET);
 }
 
-/*
- * csiphy_settle_cnt_calc - Calculate settle count value
- *
- * Helper function to calculate settle count value. This is
- * based on the CSI2 T_hs_settle parameter which in turn
- * is calculated based on the CSI2 transmitter link frequency.
- *
- * Return settle count value or 0 if the CSI2 link frequency
- * is not available
- */
+ 
 static u8 csiphy_settle_cnt_calc(s64 link_freq, u32 timer_clk_rate)
 {
-	u32 ui; /* ps */
-	u32 timer_period; /* ps */
-	u32 t_hs_prepare_max; /* ps */
-	u32 t_hs_prepare_zero_min; /* ps */
-	u32 t_hs_settle; /* ps */
+	u32 ui;  
+	u32 timer_period;  
+	u32 t_hs_prepare_max;  
+	u32 t_hs_prepare_zero_min;  
+	u32 t_hs_settle;  
 	u8 settle_cnt;
 
 	if (link_freq <= 0)
@@ -154,13 +135,7 @@ static void csiphy_lanes_disable(struct csiphy_device *csiphy,
 	writel_relaxed(0x0, csiphy->base + CAMSS_CSI_PHY_GLBL_PWR_CFG);
 }
 
-/*
- * csiphy_isr - CSIPHY module interrupt handler
- * @irq: Interrupt line
- * @dev: CSIPHY device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t csiphy_isr(int irq, void *dev)
 {
 	struct csiphy_device *csiphy = dev;

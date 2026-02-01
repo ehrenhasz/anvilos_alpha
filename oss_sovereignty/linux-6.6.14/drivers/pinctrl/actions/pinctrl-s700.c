@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi Owl S700 Pinctrl driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Author: David Liu <liuwei@actions-semi.com>
- *
- * Author: Pathiban Nallathambi <pn@denx.de>
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -16,7 +8,7 @@
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-owl.h"
 
-/* Pinctrl registers offset */
+ 
 #define MFCTL0			(0x0040)
 #define MFCTL1			(0x0044)
 #define MFCTL2			(0x0048)
@@ -31,21 +23,18 @@
 #define PAD_DRV1		(0x0084)
 #define PAD_DRV2		(0x0088)
 
-/*
- * Most pins affected by the pinmux can also be GPIOs. Define these first.
- * These must match how the GPIO driver names/numbers its pins.
- */
+ 
 #define _GPIOA(offset)		(offset)
 #define _GPIOB(offset)		(32 + (offset))
 #define _GPIOC(offset)		(64 + (offset))
 #define _GPIOD(offset)		(96 + (offset))
 #define _GPIOE(offset)		(128 + (offset))
 
-/* All non-GPIO pins follow */
+ 
 #define NUM_GPIOS		(_GPIOE(7) + 1)
 #define _PIN(offset)		(NUM_GPIOS + (offset))
 
-/* Ethernet MAC */
+ 
 #define ETH_TXD0		_GPIOA(14)
 #define ETH_TXD1		_GPIOA(15)
 #define ETH_TXD2		_GPIOE(4)
@@ -61,12 +50,12 @@
 #define ETH_MDC			_GPIOA(22)
 #define ETH_MDIO		_GPIOA(23)
 
-/* SIRQ */
+ 
 #define SIRQ0			_GPIOA(24)
 #define SIRQ1			_GPIOA(25)
 #define SIRQ2			_GPIOA(26)
 
-/* I2S */
+ 
 #define I2S_D0			_GPIOA(27)
 #define I2S_BCLK0		_GPIOA(28)
 #define I2S_LRCLK0		_GPIOA(29)
@@ -76,13 +65,13 @@
 #define I2S_LRCLK1		_GPIOB(1)
 #define I2S_MCLK1		_GPIOB(2)
 
-/* PCM1 */
+ 
 #define PCM1_IN			_GPIOD(28)
 #define PCM1_CLK		_GPIOD(29)
 #define PCM1_SYNC		_GPIOD(30)
 #define PCM1_OUT		_GPIOD(31)
 
-/* KEY */
+ 
 #define KS_IN0			_GPIOB(3)
 #define KS_IN1			_GPIOB(4)
 #define KS_IN2			_GPIOB(5)
@@ -91,7 +80,7 @@
 #define KS_OUT1			_GPIOB(8)
 #define KS_OUT2			_GPIOB(9)
 
-/* LVDS */
+ 
 #define LVDS_OEP		_GPIOB(10)
 #define LVDS_OEN		_GPIOB(11)
 #define LVDS_ODP		_GPIOB(12)
@@ -115,7 +104,7 @@
 #define LCD0_D18		_GPIOB(30)
 #define LCD0_D2			_GPIOB(31)
 
-/* DSI */
+ 
 #define DSI_DP3			_GPIOC(0)
 #define DSI_DN3			_GPIOC(1)
 #define DSI_DP1			_GPIOC(2)
@@ -127,7 +116,7 @@
 #define DSI_DP2			_GPIOC(8)
 #define DSI_DN2			_GPIOC(9)
 
-/* SD */
+ 
 #define SD0_D0			_GPIOC(10)
 #define SD0_D1			_GPIOC(11)
 #define SD0_D2			_GPIOC(12)
@@ -145,27 +134,27 @@
 #define SD1_D2			SD0_D6
 #define SD1_D3			SD0_D7
 
-/* SPI */
+ 
 #define SPI0_SS			_GPIOC(23)
 #define SPI0_MISO		_GPIOC(24)
 
-/* UART for console */
+ 
 #define UART0_RX		_GPIOC(26)
 #define UART0_TX		_GPIOC(27)
 
-/* UART for Bluetooth */
+ 
 #define UART2_RX		_GPIOD(18)
 #define UART2_TX		_GPIOD(19)
 #define UART2_RTSB		_GPIOD(20)
 #define UART2_CTSB		_GPIOD(21)
 
-/* UART for 3G */
+ 
 #define UART3_RX		_GPIOD(22)
 #define UART3_TX		_GPIOD(23)
 #define UART3_RTSB		_GPIOD(24)
 #define UART3_CTSB		_GPIOD(25)
 
-/* I2C */
+ 
 #define I2C0_SCLK		_GPIOC(28)
 #define I2C0_SDATA		_GPIOC(29)
 #define I2C1_SCLK		_GPIOE(0)
@@ -173,7 +162,7 @@
 #define I2C2_SCLK		_GPIOE(2)
 #define I2C2_SDATA		_GPIOE(3)
 
-/* CSI*/
+ 
 #define CSI_DN0			_PIN(0)
 #define CSI_DP0			_PIN(1)
 #define CSI_DN1			_PIN(2)
@@ -185,11 +174,11 @@
 #define CSI_DN3			_PIN(8)
 #define CSI_DP3			_PIN(9)
 
-/* Sensor */
+ 
 #define SENSOR0_PCLK		_GPIOC(31)
 #define SENSOR0_CKOUT		_GPIOD(10)
 
-/* NAND (1.8v / 3.3v) */
+ 
 #define DNAND_D0		_PIN(10)
 #define DNAND_D1		_PIN(11)
 #define DNAND_D2		_PIN(12)
@@ -211,7 +200,7 @@
 #define DNAND_CEB2		_GPIOD(16)
 #define DNAND_CEB3		_GPIOD(17)
 
-/* System */
+ 
 #define PORB			_PIN(22)
 #define CLKO_25M		_PIN(23)
 #define BSEL			_PIN(24)
@@ -224,7 +213,7 @@
 #define _LASTPAD		PKG3
 #define NUM_PADS		(_PIN(28) + 1)
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc s700_pads[] = {
 	PINCTRL_PIN(ETH_TXD0, "eth_txd0"),
 	PINCTRL_PIN(ETH_TXD1, "eth_txd1"),
@@ -417,65 +406,65 @@ enum s700_pinmux_functions {
 	S700_MUX_RESERVED,
 };
 
-/* mfp0_31_30 reserved */
+ 
 
-/* rgmii_txd23 */
+ 
 static unsigned int  rgmii_txd23_mfp_pads[]		= { ETH_TXD2, ETH_TXD3};
 static unsigned int  rgmii_txd23_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_I2C1,
 							    S700_MUX_UART3 };
-/* rgmii_rxd2 */
+ 
 static unsigned int  rgmii_rxd2_mfp_pads[]		= { ETH_RXD2 };
 static unsigned int  rgmii_rxd2_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_PWM0,
 							    S700_MUX_UART3 };
-/* rgmii_rxd3 */
+ 
 static unsigned int  rgmii_rxd3_mfp_pads[]		= { ETH_RXD3};
 static unsigned int  rgmii_rxd3_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_PWM2,
 							    S700_MUX_UART3 };
-/* lcd0_d18 */
+ 
 static unsigned int  lcd0_d18_mfp_pads[]		= { LCD0_D18 };
 static unsigned int  lcd0_d18_mfp_funcs[]		= { S700_MUX_NOR,
 							    S700_MUX_SENS1,
 							    S700_MUX_PWM2,
 							    S700_MUX_PWM4,
 							    S700_MUX_LCD0 };
-/* rgmii_txd01 */
+ 
 static unsigned int  rgmii_txd01_mfp_pads[]		= { ETH_CRS_DV };
 static unsigned int  rgmii_txd01_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_RESERVED,
 							    S700_MUX_SPI2,
 							    S700_MUX_UART4,
 							    S700_MUX_PWM4 };
-/* rgmii_txd0 */
+ 
 static unsigned int  rgmii_txd0_mfp_pads[]		= { ETH_TXD0 };
 static unsigned int  rgmii_txd0_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_ETH_SGMII,
 							    S700_MUX_SPI2,
 							    S700_MUX_UART6,
 							    S700_MUX_PWM4 };
-/* rgmii_txd1 */
+ 
 static unsigned int  rgmii_txd1_mfp_pads[]		= { ETH_TXD1 };
 static unsigned int  rgmii_txd1_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_ETH_SGMII,
 							    S700_MUX_SPI2,
 							    S700_MUX_UART6,
 							    S700_MUX_PWM5 };
-/* rgmii_txen */
+ 
 static unsigned int  rgmii_txen_mfp_pads[]		= { ETH_TXEN };
 static unsigned int  rgmii_txen_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI3,
 							    S700_MUX_PWM0 };
-/* rgmii_rxen */
+ 
 static unsigned int  rgmii_rxen_mfp_pads[]		= { ETH_RXER };
 static unsigned int  rgmii_rxen_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI3,
 							    S700_MUX_PWM1 };
-/* mfp0_12_11 reserved */
-/* rgmii_rxd1*/
+ 
+ 
 static unsigned int  rgmii_rxd1_mfp_pads[]		= { ETH_RXD1 };
 static unsigned int  rgmii_rxd1_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_UART2,
@@ -483,7 +472,7 @@ static unsigned int  rgmii_rxd1_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_PWM2,
 							    S700_MUX_UART5,
 							    S700_MUX_ETH_SGMII };
-/* rgmii_rxd0 */
+ 
 static unsigned int  rgmii_rxd0_mfp_pads[]		= { ETH_RXD0 };
 static unsigned int  rgmii_rxd0_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_UART2,
@@ -491,31 +480,31 @@ static unsigned int  rgmii_rxd0_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_PWM3,
 							    S700_MUX_UART5,
 							    S700_MUX_ETH_SGMII };
-/* rgmii_ref_clk */
+ 
 static unsigned int  rgmii_ref_clk_mfp_pads[]		= { ETH_REF_CLK };
 static unsigned int  rgmii_ref_clk_mfp_funcs[]		= { S700_MUX_ETH_RGMII,
 							    S700_MUX_UART4,
 							    S700_MUX_SPI2,
 							    S700_MUX_RESERVED,
 							    S700_MUX_ETH_SGMII };
-/* i2s_d0 */
+ 
 static unsigned int  i2s_d0_mfp_pads[]			= { I2S_D0 };
 static unsigned int  i2s_d0_mfp_funcs[]			= { S700_MUX_I2S0,
 							    S700_MUX_NOR };
-/* i2s_pcm1 */
+ 
 static unsigned int  i2s_pcm1_mfp_pads[]		= { I2S_LRCLK0,
 							    I2S_MCLK0 };
 static unsigned int  i2s_pcm1_mfp_funcs[]		= { S700_MUX_I2S0,
 							    S700_MUX_NOR,
 							    S700_MUX_PCM1,
 							    S700_MUX_BT };
-/* i2s0_pcm0 */
+ 
 static unsigned int  i2s0_pcm0_mfp_pads[]		= { I2S_BCLK0 };
 static unsigned int  i2s0_pcm0_mfp_funcs[]		= { S700_MUX_I2S0,
 							    S700_MUX_NOR,
 							    S700_MUX_PCM0,
 							    S700_MUX_BT };
-/* i2s1_pcm0 */
+ 
 static unsigned int  i2s1_pcm0_mfp_pads[]		= { I2S_BCLK1,
 							    I2S_LRCLK1,
 							    I2S_MCLK1 };
@@ -524,11 +513,11 @@ static unsigned int  i2s1_pcm0_mfp_funcs[]		= { S700_MUX_I2S1,
 							    S700_MUX_NOR,
 							    S700_MUX_PCM0,
 							    S700_MUX_BT };
-/* i2s_d1 */
+ 
 static unsigned int  i2s_d1_mfp_pads[]			= { I2S_D1 };
 static unsigned int  i2s_d1_mfp_funcs[]			= { S700_MUX_I2S1,
 							    S700_MUX_NOR };
-/* ks_in2 */
+ 
 static unsigned int  ks_in2_mfp_pads[]			= { KS_IN2 };
 static unsigned int  ks_in2_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_JTAG,
@@ -538,7 +527,7 @@ static unsigned int  ks_in2_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_SENS1,
 							    S700_MUX_PWM0,
 							    S700_MUX_P0 };
-/* ks_in1 */
+ 
 static unsigned int  ks_in1_mfp_pads[]			= { KS_IN1 };
 static unsigned int  ks_in1_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_JTAG,
@@ -548,7 +537,7 @@ static unsigned int  ks_in1_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_SENS1,
 							    S700_MUX_PWM1,
 							    S700_MUX_USB30 };
-/* ks_in0 */
+ 
 static unsigned int  ks_in0_mfp_pads[]			= { KS_IN0 };
 static unsigned int  ks_in0_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_JTAG,
@@ -558,7 +547,7 @@ static unsigned int  ks_in0_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_SENS1,
 							    S700_MUX_PWM4,
 							    S700_MUX_P0 };
-/* ks_in3 */
+ 
 static unsigned int  ks_in3_mfp_pads[]			= { KS_IN3 };
 static unsigned int  ks_in3_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_JTAG,
@@ -566,7 +555,7 @@ static unsigned int  ks_in3_mfp_funcs[]			= { S700_MUX_KS,
 							    S700_MUX_PWM1,
 							    S700_MUX_BT,
 							    S700_MUX_SENS1 };
-/* ks_out0 */
+ 
 static unsigned int  ks_out0_mfp_pads[]			= { KS_OUT0 };
 static unsigned int  ks_out0_mfp_funcs[]		= { S700_MUX_KS,
 							    S700_MUX_UART5,
@@ -577,7 +566,7 @@ static unsigned int  ks_out0_mfp_funcs[]		= { S700_MUX_KS,
 							    S700_MUX_SD0,
 							    S700_MUX_UART4 };
 
-/* ks_out1 */
+ 
 static unsigned int  ks_out1_mfp_pads[]			= { KS_OUT1 };
 static unsigned int  ks_out1_mfp_funcs[]		= { S700_MUX_KS,
 							    S700_MUX_JTAG,
@@ -587,7 +576,7 @@ static unsigned int  ks_out1_mfp_funcs[]		= { S700_MUX_KS,
 							    S700_MUX_SENS1,
 							    S700_MUX_SD0,
 							    S700_MUX_UART4 };
-/* ks_out2 */
+ 
 static unsigned int  ks_out2_mfp_pads[]			= { KS_OUT2 };
 static unsigned int  ks_out2_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_KS,
@@ -596,7 +585,7 @@ static unsigned int  ks_out2_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_UART5,
 							    S700_MUX_SENS1,
 							    S700_MUX_BT };
-/* lvds_o_pn */
+ 
 static unsigned int  lvds_o_pn_mfp_pads[]		= { LVDS_OEP,
 							    LVDS_OEN,
 							    LVDS_ODP,
@@ -612,58 +601,58 @@ static unsigned int  lvds_o_pn_mfp_funcs[]		= { S700_MUX_LVDS,
 							    S700_MUX_BT,
 							    S700_MUX_LCD0 };
 
-/* dsi_dn0 */
+ 
 static unsigned int  dsi_dn0_mfp_pads[]			= { DSI_DN0 };
 static unsigned int  dsi_dn0_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI0 };
-/* dsi_dp2 */
+ 
 static unsigned int  dsi_dp2_mfp_pads[]			= { DSI_DP2 };
 static unsigned int  dsi_dp2_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI0,
 							    S700_MUX_SD1 };
-/* lcd0_d2 */
+ 
 static unsigned int  lcd0_d2_mfp_pads[]			= { LCD0_D2 };
 static unsigned int  lcd0_d2_mfp_funcs[]		= { S700_MUX_NOR,
 							    S700_MUX_SD0,
 							    S700_MUX_RESERVED,
 							    S700_MUX_PWM3,
 							    S700_MUX_LCD0 };
-/* dsi_dp3 */
+ 
 static unsigned int  dsi_dp3_mfp_pads[]			= { DSI_DP3 };
 static unsigned int  dsi_dp3_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_SD0,
 							    S700_MUX_SD1,
 							    S700_MUX_LCD0 };
-/* dsi_dn3 */
+ 
 static unsigned int  dsi_dn3_mfp_pads[]			= { DSI_DN3 };
 static unsigned int  dsi_dn3_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_SD0,
 							    S700_MUX_SD1,
 							    S700_MUX_LCD0 };
-/* dsi_dp0 */
+ 
 static unsigned int  dsi_dp0_mfp_pads[]			= { DSI_DP0 };
 static unsigned int  dsi_dp0_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_RESERVED,
 							    S700_MUX_SD0,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI0 };
-/* lvds_ee_pn */
+ 
 static unsigned int  lvds_ee_pn_mfp_pads[]		= { LVDS_EEP,
 							    LVDS_EEN };
 static unsigned int  lvds_ee_pn_mfp_funcs[]		= { S700_MUX_LVDS,
 							    S700_MUX_NOR,
 							    S700_MUX_BT,
 							    S700_MUX_LCD0 };
-/* uart2_rx_tx */
+ 
 static unsigned int  uart2_rx_tx_mfp_pads[]		= { UART2_RX,
 							    UART2_TX };
 static unsigned int  uart2_rx_tx_mfp_funcs[]		= { S700_MUX_UART2,
 							    S700_MUX_NOR,
 							    S700_MUX_SPI0,
 							    S700_MUX_PCM0 };
-/* spi0_i2c_pcm */
+ 
 static unsigned int  spi0_i2c_pcm_mfp_pads[]		= { SPI0_SS,
 							    SPI0_MISO };
 static unsigned int  spi0_i2c_pcm_mfp_funcs[]		= { S700_MUX_SPI0,
@@ -672,16 +661,16 @@ static unsigned int  spi0_i2c_pcm_mfp_funcs[]		= { S700_MUX_SPI0,
 							    S700_MUX_PCM1,
 							    S700_MUX_PCM0,
 							    S700_MUX_I2C2 };
-/* mfp2_31 reserved */
+ 
 
-/* dsi_dnp1_cp_d2 */
+ 
 static unsigned int  dsi_dnp1_cp_d2_mfp_pads[]		= { DSI_DP1,
 							    DSI_CP,
 							    DSI_CN };
 static unsigned int  dsi_dnp1_cp_d2_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_LCD0,
 							    S700_MUX_RESERVED };
-/* dsi_dnp1_cp_d17 */
+ 
 static unsigned int  dsi_dnp1_cp_d17_mfp_pads[]		= { DSI_DP1,
 							    DSI_CP,
 							    DSI_CN };
@@ -689,7 +678,7 @@ static unsigned int  dsi_dnp1_cp_d17_mfp_pads[]		= { DSI_DP1,
 static unsigned int  dsi_dnp1_cp_d17_mfp_funcs[]	= { S700_MUX_DSI,
 							    S700_MUX_RESERVED,
 							    S700_MUX_LCD0 };
-/* lvds_e_pn */
+ 
 static unsigned int  lvds_e_pn_mfp_pads[]		= { LVDS_EDP,
 							    LVDS_EDN,
 							    LVDS_ECP,
@@ -702,32 +691,32 @@ static unsigned int  lvds_e_pn_mfp_pads[]		= { LVDS_EDP,
 static unsigned int  lvds_e_pn_mfp_funcs[]		= { S700_MUX_LVDS,
 							    S700_MUX_NOR,
 							    S700_MUX_LCD0 };
-/* dsi_dn2 */
+ 
 static unsigned int  dsi_dn2_mfp_pads[]			= { DSI_DN2 };
 static unsigned int  dsi_dn2_mfp_funcs[]		= { S700_MUX_DSI,
 							    S700_MUX_RESERVED,
 							    S700_MUX_SD1,
 							    S700_MUX_UART2,
 							    S700_MUX_SPI0 };
-/* uart2_rtsb */
+ 
 static unsigned int  uart2_rtsb_mfp_pads[]		= { UART2_RTSB };
 static unsigned int  uart2_rtsb_mfp_funcs[]		= { S700_MUX_UART2,
 							    S700_MUX_UART0 };
 
-/* uart2_ctsb */
+ 
 static unsigned int  uart2_ctsb_mfp_pads[]		= { UART2_CTSB };
 static unsigned int  uart2_ctsb_mfp_funcs[]		= { S700_MUX_UART2,
 							    S700_MUX_UART0 };
-/* uart3_rtsb */
+ 
 static unsigned int  uart3_rtsb_mfp_pads[]		= { UART3_RTSB };
 static unsigned int  uart3_rtsb_mfp_funcs[]		= { S700_MUX_UART3,
 							    S700_MUX_UART5 };
 
-/* uart3_ctsb */
+ 
 static unsigned int  uart3_ctsb_mfp_pads[]		= { UART3_CTSB };
 static unsigned int  uart3_ctsb_mfp_funcs[]		= { S700_MUX_UART3,
 							    S700_MUX_UART5 };
-/* sd0_d0 */
+ 
 static unsigned int  sd0_d0_mfp_pads[]			= { SD0_D0 };
 static unsigned int  sd0_d0_mfp_funcs[]			= { S700_MUX_SD0,
 							    S700_MUX_NOR,
@@ -735,7 +724,7 @@ static unsigned int  sd0_d0_mfp_funcs[]			= { S700_MUX_SD0,
 							    S700_MUX_JTAG,
 							    S700_MUX_UART2,
 							    S700_MUX_UART5 };
-/* sd0_d1 */
+ 
 static unsigned int  sd0_d1_mfp_pads[]			= { SD0_D1 };
 static unsigned int  sd0_d1_mfp_funcs[]			= { S700_MUX_SD0,
 							    S700_MUX_NOR,
@@ -743,7 +732,7 @@ static unsigned int  sd0_d1_mfp_funcs[]			= { S700_MUX_SD0,
 							    S700_MUX_RESERVED,
 							    S700_MUX_UART2,
 							    S700_MUX_UART5 };
-/* sd0_d2_d3 */
+ 
 static unsigned int  sd0_d2_d3_mfp_pads[]		= { SD0_D2,
 							    SD0_D3 };
 static unsigned int  sd0_d2_d3_mfp_funcs[]		= { S700_MUX_SD0,
@@ -753,7 +742,7 @@ static unsigned int  sd0_d2_d3_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_UART2,
 							    S700_MUX_UART1 };
 
-/* sd1_d0_d3 */
+ 
 static unsigned int  sd1_d0_d3_mfp_pads[]		= { SD1_D0,
 							    SD1_D1,
 							    SD1_D2,
@@ -763,22 +752,22 @@ static unsigned int  sd1_d0_d3_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_RESERVED,
 							    S700_MUX_SD1 };
 
-/* sd0_cmd */
+ 
 static unsigned int  sd0_cmd_mfp_pads[]			= { SD0_CMD };
 static unsigned int  sd0_cmd_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_NOR,
 							    S700_MUX_RESERVED,
 							    S700_MUX_JTAG };
-/* sd0_clk */
+ 
 static unsigned int  sd0_clk_mfp_pads[]			= { SD0_CLK };
 static unsigned int  sd0_clk_mfp_funcs[]		= { S700_MUX_SD0,
 							    S700_MUX_RESERVED,
 							    S700_MUX_JTAG };
-/* sd1_cmd */
+ 
 static unsigned int  sd1_cmd_mfp_pads[]			= { SD1_CMD };
 static unsigned int  sd1_cmd_mfp_funcs[]		= { S700_MUX_SD1,
 							    S700_MUX_NOR };
-/* uart0_rx */
+ 
 static unsigned int  uart0_rx_mfp_pads[]		= { UART0_RX };
 static unsigned int  uart0_rx_mfp_funcs[]		= { S700_MUX_UART0,
 							    S700_MUX_UART2,
@@ -786,26 +775,26 @@ static unsigned int  uart0_rx_mfp_funcs[]		= { S700_MUX_UART0,
 							    S700_MUX_I2C0,
 							    S700_MUX_PCM1,
 							    S700_MUX_I2S1 };
-/* dnand_data_wr1 reserved */
+ 
 
-/* clko_25m */
+ 
 static unsigned int  clko_25m_mfp_pads[]		= { CLKO_25M };
 static unsigned int  clko_25m_mfp_funcs[]		= { S700_MUX_RESERVED,
 							    S700_MUX_CLKO_25M };
-/* csi_cn_cp */
+ 
 static unsigned int  csi_cn_cp_mfp_pads[]		= { CSI_CN,
 							    CSI_CP };
 static unsigned int  csi_cn_cp_mfp_funcs[]		= { S700_MUX_MIPI_CSI,
 							    S700_MUX_SENS0 };
-/* dnand_acle_ce07_24 reserved */
+ 
 
-/* sens0_ckout */
+ 
 static unsigned int  sens0_ckout_mfp_pads[]		= { SENSOR0_CKOUT };
 static unsigned int  sens0_ckout_mfp_funcs[]		= { S700_MUX_SENS0,
 							    S700_MUX_NOR,
 							    S700_MUX_SENS1,
 							    S700_MUX_PWM1 };
-/* uart0_tx */
+ 
 static unsigned int  uart0_tx_mfp_pads[]		= { UART0_TX };
 static unsigned int  uart0_tx_mfp_funcs[]		= { S700_MUX_UART0,
 							    S700_MUX_UART2,
@@ -814,7 +803,7 @@ static unsigned int  uart0_tx_mfp_funcs[]		= { S700_MUX_UART0,
 							    S700_MUX_SPDIF,
 							    S700_MUX_PCM1,
 							    S700_MUX_I2S1 };
-/* i2c0_mfp */
+ 
 static unsigned int  i2c0_mfp_pads[]		= { I2C0_SCLK,
 							    I2C0_SDATA };
 static unsigned int  i2c0_mfp_funcs[]		= { S700_MUX_I2C0,
@@ -822,7 +811,7 @@ static unsigned int  i2c0_mfp_funcs[]		= { S700_MUX_I2C0,
 							    S700_MUX_I2C1,
 							    S700_MUX_UART1,
 							    S700_MUX_SPI1 };
-/* csi_dn_dp */
+ 
 static unsigned int  csi_dn_dp_mfp_pads[]		= { CSI_DN0,
 							    CSI_DN1,
 							    CSI_DN2,
@@ -833,36 +822,36 @@ static unsigned int  csi_dn_dp_mfp_pads[]		= { CSI_DN0,
 							    CSI_DP3 };
 static unsigned int  csi_dn_dp_mfp_funcs[]		= { S700_MUX_MIPI_CSI,
 							    S700_MUX_SENS0 };
-/* sen0_pclk */
+ 
 static unsigned int  sen0_pclk_mfp_pads[]		= { SENSOR0_PCLK };
 static unsigned int  sen0_pclk_mfp_funcs[]		= { S700_MUX_SENS0,
 							    S700_MUX_NOR,
 							    S700_MUX_PWM0 };
-/* pcm1_in */
+ 
 static unsigned int  pcm1_in_mfp_pads[]			= { PCM1_IN };
 static unsigned int  pcm1_in_mfp_funcs[]		= { S700_MUX_PCM1,
 							    S700_MUX_SENS1,
 							    S700_MUX_BT,
 							    S700_MUX_PWM4 };
-/* pcm1_clk */
+ 
 static unsigned int  pcm1_clk_mfp_pads[]		= { PCM1_CLK };
 static unsigned int  pcm1_clk_mfp_funcs[]		= { S700_MUX_PCM1,
 							    S700_MUX_SENS1,
 							    S700_MUX_BT,
 							    S700_MUX_PWM5 };
-/* pcm1_sync */
+ 
 static unsigned int  pcm1_sync_mfp_pads[]		= { PCM1_SYNC };
 static unsigned int  pcm1_sync_mfp_funcs[]		= { S700_MUX_PCM1,
 							    S700_MUX_SENS1,
 							    S700_MUX_BT,
 							    S700_MUX_I2C3 };
-/* pcm1_out */
+ 
 static unsigned int  pcm1_out_mfp_pads[]		= { PCM1_OUT };
 static unsigned int  pcm1_out_mfp_funcs[]		= { S700_MUX_PCM1,
 							    S700_MUX_SENS1,
 							    S700_MUX_BT,
 							    S700_MUX_I2C3 };
-/* dnand_data_wr */
+ 
 static unsigned int  dnand_data_wr_mfp_pads[]		= { DNAND_D0,
 							    DNAND_D1,
 							    DNAND_D2,
@@ -875,7 +864,7 @@ static unsigned int  dnand_data_wr_mfp_pads[]		= { DNAND_D0,
 							    DNAND_RDBN };
 static unsigned int  dnand_data_wr_mfp_funcs[]		= { S700_MUX_NAND,
 							    S700_MUX_SD2 };
-/* dnand_acle_ce0 */
+ 
 static unsigned int  dnand_acle_ce0_mfp_pads[]		= { DNAND_ALE,
 							    DNAND_CLE,
 							    DNAND_CEB0,
@@ -883,19 +872,19 @@ static unsigned int  dnand_acle_ce0_mfp_pads[]		= { DNAND_ALE,
 static unsigned int  dnand_acle_ce0_mfp_funcs[]		= { S700_MUX_NAND,
 							    S700_MUX_SPI2 };
 
-/* nand_ceb2 */
+ 
 static unsigned int  nand_ceb2_mfp_pads[]		= { DNAND_CEB2 };
 static unsigned int  nand_ceb2_mfp_funcs[]		= { S700_MUX_NAND,
 							    S700_MUX_PWM5 };
-/* nand_ceb3 */
+ 
 static unsigned int  nand_ceb3_mfp_pads[]		= { DNAND_CEB3 };
 static unsigned int  nand_ceb3_mfp_funcs[]		= { S700_MUX_NAND,
 							    S700_MUX_PWM4 };
-/*****End MFP group data****************************/
+ 
 
-/*****PADDRV group data****************************/
+ 
 
-/*PAD_DRV0*/
+ 
 static unsigned int  sirq_drv_pads[]			= { SIRQ0,
 							    SIRQ1,
 							    SIRQ2 };
@@ -944,7 +933,7 @@ static unsigned int  ks_in_drv_pads[]			= { KS_IN0,
 							    KS_IN2,
 							    KS_IN3 };
 
-/*PAD_DRV1*/
+ 
 static unsigned int  ks_out_drv_pads[]			= { KS_OUT0,
 							    KS_OUT1,
 							    KS_OUT2 };
@@ -996,7 +985,7 @@ static unsigned int  sd0_clk_drv_pads[]			= { SD0_CLK };
 static unsigned int  spi0_all_drv_pads[]		= { SPI0_SS,
 							    SPI0_MISO };
 
-/*PAD_DRV2*/
+ 
 static unsigned int  uart0_rx_drv_pads[]		= { UART0_RX };
 
 static unsigned int  uart0_tx_drv_pads[]		= { UART0_TX };
@@ -1023,7 +1012,7 @@ static unsigned int  uart3_all_drv_pads[]		= { UART3_RX,
 							    UART3_RTSB,
 							    UART3_CTSB };
 
-/* all pinctrl groups of S700 board */
+ 
 static const struct owl_pingroup s700_groups[] = {
 	MUX_PG(rgmii_txd23_mfp, 0, 28, 2),
 	MUX_PG(rgmii_rxd2_mfp, 0, 26, 2),
@@ -1592,7 +1581,7 @@ static const struct owl_pinmux_func s700_functions[] = {
 	[S700_MUX_LCD0] = FUNCTION(lcd0),
 };
 
-/* PAD_ST0 */
+ 
 static PAD_ST_CONF(UART2_TX, 0, 31, 1);
 static PAD_ST_CONF(I2C0_SDATA, 0, 30, 1);
 static PAD_ST_CONF(UART0_RX, 0, 29, 1);
@@ -1614,7 +1603,7 @@ static PAD_ST_CONF(KS_OUT2, 0, 4, 1);
 static PAD_ST_CONF(ETH_TXD3, 0, 3, 1);
 static PAD_ST_CONF(ETH_TXD2, 0, 2, 1);
 
-/* PAD_ST1 */
+ 
 static PAD_ST_CONF(DSI_DP2, 1, 31, 1);
 static PAD_ST_CONF(DSI_DN2, 1, 30, 1);
 static PAD_ST_CONF(I2S_LRCLK0, 1, 29, 1);
@@ -1643,7 +1632,7 @@ static PAD_ST_CONF(SPI0_SS, 1, 2, 1);
 static PAD_ST_CONF(I2S_BCLK0, 1, 1, 1);
 static PAD_ST_CONF(I2S_MCLK0, 1, 0, 1);
 
-/* PAD_PULLCTL0 */
+ 
 static PAD_PULLCTL_CONF(PCM1_SYNC, 0, 30, 1);
 static PAD_PULLCTL_CONF(PCM1_OUT, 0, 29, 1);
 static PAD_PULLCTL_CONF(KS_OUT2, 0, 28, 1);
@@ -1663,7 +1652,7 @@ static PAD_PULLCTL_CONF(KS_OUT0, 0, 2, 1);
 static PAD_PULLCTL_CONF(KS_OUT1, 0, 1, 1);
 static PAD_PULLCTL_CONF(DSI_DP1, 0, 0, 1);
 
-/* PAD_PULLCTL1 */
+ 
 static PAD_PULLCTL_CONF(SD0_D0, 1, 17, 1);
 static PAD_PULLCTL_CONF(SD0_D1, 1, 16, 1);
 static PAD_PULLCTL_CONF(SD0_D2, 1, 15, 1);
@@ -1674,7 +1663,7 @@ static PAD_PULLCTL_CONF(UART0_RX, 1, 2, 1);
 static PAD_PULLCTL_CONF(UART0_TX, 1, 1, 1);
 static PAD_PULLCTL_CONF(CLKO_25M, 1, 0, 1);
 
-/* PAD_PULLCTL2 */
+ 
 static PAD_PULLCTL_CONF(ETH_TXD2, 2, 18, 1);
 static PAD_PULLCTL_CONF(ETH_TXD3, 2, 17, 1);
 static PAD_PULLCTL_CONF(SPI0_SS, 2, 16, 1);
@@ -1684,7 +1673,7 @@ static PAD_PULLCTL_CONF(I2C1_SCLK, 2, 9, 1);
 static PAD_PULLCTL_CONF(I2C2_SDATA, 2, 8, 1);
 static PAD_PULLCTL_CONF(I2C2_SCLK, 2, 7, 1);
 
-/* Pad info table for the pinmux subsystem */
+ 
 static const struct owl_padinfo s700_padinfo[NUM_PADS] = {
 	[ETH_TXD0] = PAD_INFO_ST(ETH_TXD0),
 	[ETH_TXD1] = PAD_INFO_ST(ETH_TXD1),
@@ -1810,7 +1799,7 @@ static const struct owl_gpio_port s700_gpio_ports[] = {
 	OWL_GPIO_PORT(B, 0x000C, 32, 0x0, 0x4, 0x8, 0x204, 0x210, 0x214, 0x238, 1),
 	OWL_GPIO_PORT(C, 0x0018, 32, 0x0, 0x4, 0x8, 0x204, 0x218, 0x21C, 0x240, 2),
 	OWL_GPIO_PORT(D, 0x0024, 32, 0x0, 0x4, 0x8, 0x204, 0x220, 0x224, 0x248, 3),
-	/* 0x24C (INTC_GPIOD_TYPE1) used to tweak the driver to handle generic */
+	 
 	OWL_GPIO_PORT(E, 0x0030, 8, 0x0, 0x4, 0x8, 0x204, 0x228, 0x22C, 0x24C, 4),
 };
 

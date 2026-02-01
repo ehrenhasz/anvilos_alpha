@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ptrace.h>
 #include <asm/bugs.h>
@@ -49,12 +49,7 @@ static void do_user_cp_fault(struct pt_regs *regs, unsigned long error_code)
 	struct task_struct *tsk;
 	unsigned long ssp;
 
-	/*
-	 * An exception was just taken from userspace. Since interrupts are disabled
-	 * here, no scheduling should have messed with the registers yet and they
-	 * will be whatever is live in userspace. So read the SSP before enabling
-	 * interrupts so locking the fpregs to do it later is not required.
-	 */
+	 
 	rdmsrl(MSR_IA32_PL3_SSP, ssp);
 
 	cond_local_irq_enable(regs);
@@ -63,7 +58,7 @@ static void do_user_cp_fault(struct pt_regs *regs, unsigned long error_code)
 	tsk->thread.error_code = error_code;
 	tsk->thread.trap_nr = X86_TRAP_CP;
 
-	/* Ratelimit to prevent log spamming. */
+	 
 	if (show_unhandled_signals && unhandled_signal(tsk, SIGSEGV) &&
 	    __ratelimit(&cpf_rate)) {
 		pr_emerg("%s[%d] control protection ip:%lx sp:%lx ssp:%lx error:%lx(%s)%s",

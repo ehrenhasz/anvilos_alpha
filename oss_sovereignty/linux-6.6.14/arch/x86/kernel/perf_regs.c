@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -36,10 +36,7 @@ static unsigned int pt_regs_offset[PERF_REG_X86_MAX] = {
 	PT_REGS_OFFSET(PERF_REG_X86_FS, fs),
 	PT_REGS_OFFSET(PERF_REG_X86_GS, gs),
 #else
-	/*
-	 * The pt_regs struct does not store
-	 * ds, es, fs, gs in 64 bit mode.
-	 */
+	 
 	(unsigned int) -1,
 	(unsigned int) -1,
 	(unsigned int) -1,
@@ -106,7 +103,7 @@ void perf_get_regs_user(struct perf_regs *regs_user,
 	regs_user->regs = task_pt_regs(current);
 	regs_user->abi = perf_reg_abi(current);
 }
-#else /* CONFIG_X86_64 */
+#else  
 #define REG_NOSUPPORT ((1ULL << PERF_REG_X86_DS) | \
 		       (1ULL << PERF_REG_X86_ES) | \
 		       (1ULL << PERF_REG_X86_FS) | \
@@ -142,12 +139,7 @@ void perf_get_regs_user(struct perf_regs *regs_user,
 		return;
 	}
 
-	/*
-	 * If we're in an NMI that interrupted task_pt_regs setup, then
-	 * we can't sample user regs at all.  This check isn't really
-	 * sufficient, though, as we could be in an NMI inside an interrupt
-	 * that happened during task_pt_regs setup.
-	 */
+	 
 	if (regs->sp > (unsigned long)&user_regs->r11 &&
 	    regs->sp <= (unsigned long)(user_regs + 1)) {
 		regs_user->abi = PERF_SAMPLE_REGS_ABI_NONE;
@@ -155,10 +147,7 @@ void perf_get_regs_user(struct perf_regs *regs_user,
 		return;
 	}
 
-	/*
-	 * These registers are always saved on 64-bit syscall entry.
-	 * On 32-bit entry points, they are saved too except r8..r11.
-	 */
+	 
 	regs_user_copy->ip = user_regs->ip;
 	regs_user_copy->ax = user_regs->ax;
 	regs_user_copy->cx = user_regs->cx;
@@ -174,12 +163,7 @@ void perf_get_regs_user(struct perf_regs *regs_user,
 	regs_user_copy->sp = user_regs->sp;
 	regs_user_copy->cs = user_regs->cs;
 	regs_user_copy->ss = user_regs->ss;
-	/*
-	 * Store user space frame-pointer value on sample
-	 * to facilitate stack unwinding for cases when
-	 * user space executable code has such support
-	 * enabled at compile time:
-	 */
+	 
 	regs_user_copy->bp = user_regs->bp;
 
 	regs_user_copy->bx = -1;
@@ -187,16 +171,10 @@ void perf_get_regs_user(struct perf_regs *regs_user,
 	regs_user_copy->r13 = -1;
 	regs_user_copy->r14 = -1;
 	regs_user_copy->r15 = -1;
-	/*
-	 * For this to be at all useful, we need a reasonable guess for
-	 * the ABI.  Be careful: we're in NMI context, and we're
-	 * considering current to be the current task, so we should
-	 * be careful not to look at any other percpu variables that might
-	 * change during context switches.
-	 */
+	 
 	regs_user->abi = user_64bit_mode(user_regs) ?
 		PERF_SAMPLE_REGS_ABI_64 : PERF_SAMPLE_REGS_ABI_32;
 
 	regs_user->regs = regs_user_copy;
 }
-#endif /* CONFIG_X86_32 */
+#endif  

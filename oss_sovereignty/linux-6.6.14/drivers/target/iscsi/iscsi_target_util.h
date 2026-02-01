@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_UTIL_H
 #define ISCSI_TARGET_UTIL_H
 
 #include <linux/types.h>
-#include <scsi/iscsi_proto.h>        /* itt_t */
+#include <scsi/iscsi_proto.h>         
 
 #define MARKER_SIZE	8
 
@@ -73,4 +73,4 @@ extern void iscsit_collect_login_stats(struct iscsit_conn *, u8, u8);
 extern struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsit_conn *);
 extern void iscsit_fill_cxn_timeout_err_stats(struct iscsit_session *);
 
-#endif /*** ISCSI_TARGET_UTIL_H ***/
+#endif  

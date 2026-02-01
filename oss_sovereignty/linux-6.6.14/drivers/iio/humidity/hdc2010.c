@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * hdc2010.c - Support for the TI HDC2010 and HDC2080
- * temperature + relative humidity sensors
- *
- * Copyright (C) 2020 Norphonic AS
- * Author: Eugene Zaikonnikov <ez@norphonic.com>
- *
- * Datasheet: https://www.ti.com/product/HDC2010/datasheet
- * Datasheet: https://www.ti.com/product/HDC2080/datasheet
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -193,7 +184,7 @@ static int hdc2010_read_raw(struct iio_dev *indio_dev,
 		iio_device_release_direct_mode(indio_dev);
 		if (ret < 0)
 			return ret;
-		/* Scaling up the value so we can use same offset as RAW */
+		 
 		*val = ret * 256;
 		return IIO_VAL_INT;
 	}
@@ -271,10 +262,7 @@ static int hdc2010_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->lock);
 
-	/*
-	 * As DEVICE ID register does not differentiate between
-	 * HDC2010 and HDC2080, we have the name hardcoded
-	 */
+	 
 	indio_dev->name = "hdc2010";
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &hdc2010_info;
@@ -282,15 +270,12 @@ static int hdc2010_probe(struct i2c_client *client)
 	indio_dev->channels = hdc2010_channels;
 	indio_dev->num_channels = ARRAY_SIZE(hdc2010_channels);
 
-	/* Enable Automatic Measurement Mode at 5Hz */
+	 
 	ret = hdc2010_update_drdy_config(data, HDC2010_AMM, HDC2010_AMM);
 	if (ret)
 		return ret;
 
-	/*
-	 * We enable both temp and humidity measurement.
-	 * However the measurement won't start even in AMM until triggered.
-	 */
+	 
 	tmp = (data->measurement_config & ~HDC2010_MEAS_CONF) |
 		HDC2010_MEAS_TRIG;
 
@@ -314,7 +299,7 @@ static void hdc2010_remove(struct i2c_client *client)
 
 	iio_device_unregister(indio_dev);
 
-	/* Disable Automatic Measurement Mode */
+	 
 	if (hdc2010_update_drdy_config(data, HDC2010_AMM, 0))
 		dev_warn(&client->dev, "Unable to restore default AMM\n");
 }

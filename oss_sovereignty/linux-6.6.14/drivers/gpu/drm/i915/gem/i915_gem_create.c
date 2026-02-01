@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 
@@ -42,10 +40,7 @@ static int object_set_placements(struct drm_i915_gem_object *obj,
 
 	GEM_BUG_ON(!n_placements);
 
-	/*
-	 * For the common case of one memory region, skip storing an
-	 * allocated array and just point at the region directly.
-	 */
+	 
 	if (n_placements == 1) {
 		struct intel_memory_region *mr = placements[0];
 		struct drm_i915_private *i915 = mr->i915;
@@ -78,7 +73,7 @@ static int i915_gem_publish(struct drm_i915_gem_object *obj,
 	int ret;
 
 	ret = drm_gem_handle_create(file, &obj->base, handle_p);
-	/* drop reference from allocate - handle holds it now */
+	 
 	i915_gem_object_put(obj);
 	if (ret)
 		return ret;
@@ -104,7 +99,7 @@ __i915_gem_object_create_user_ext(struct drm_i915_private *i915, u64 size,
 	if (size == 0)
 		return ERR_PTR(-EINVAL);
 
-	/* For most of the ABI (e.g. mmap) we think in system pages */
+	 
 	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
 
 	if (i915_gem_object_size_2big(size))
@@ -118,10 +113,7 @@ __i915_gem_object_create_user_ext(struct drm_i915_private *i915, u64 size,
 	if (ret)
 		goto object_free;
 
-	/*
-	 * I915_BO_ALLOC_USER will make sure the object is cleared before
-	 * any user access.
-	 */
+	 
 	flags = I915_BO_ALLOC_USER;
 
 	ret = mr->ops->init_object(mr, obj, I915_BO_INVALID_OFFSET, size, 0, flags);
@@ -130,7 +122,7 @@ __i915_gem_object_create_user_ext(struct drm_i915_private *i915, u64 size,
 
 	GEM_BUG_ON(size != obj->base.size);
 
-	/* Add any flag set by create_ext options */
+	 
 	obj->flags |= ext_flags;
 
 	trace_i915_gem_object_create(obj);
@@ -143,18 +135,7 @@ object_free:
 	return ERR_PTR(ret);
 }
 
-/**
- * __i915_gem_object_create_user - Creates a new object using the same path as
- *                                 DRM_I915_GEM_CREATE_EXT
- * @i915: i915 private
- * @size: size of the buffer, in bytes
- * @placements: possible placement regions, in priority order
- * @n_placements: number of possible placement regions
- *
- * This function is exposed primarily for selftests and does very little
- * error checking.  It is assumed that the set of placement regions has
- * already been verified to be valid.
- */
+ 
 struct drm_i915_gem_object *
 __i915_gem_object_create_user(struct drm_i915_private *i915, u64 size,
 			      struct intel_memory_region **placements,
@@ -189,10 +170,10 @@ i915_gem_dumb_create(struct drm_file *file,
 		return -EINVAL;
 	}
 
-	/* have to work out size/pitch and return them */
+	 
 	args->pitch = ALIGN(args->width * cpp, 64);
 
-	/* align stride to page size so that we can remap */
+	 
 	if (args->pitch > intel_plane_fb_max_stride(to_i915(dev), format,
 						    DRM_FORMAT_MOD_LINEAR))
 		args->pitch = ALIGN(args->pitch, 4096);
@@ -215,12 +196,7 @@ i915_gem_dumb_create(struct drm_file *file,
 	return i915_gem_publish(obj, file, &args->size, &args->handle);
 }
 
-/**
- * i915_gem_create_ioctl - Creates a new mm object and returns a handle to it.
- * @dev: drm device pointer
- * @data: ioctl data blob
- * @file: drm file pointer
- */
+ 
 int
 i915_gem_create_ioctl(struct drm_device *dev, void *data,
 		      struct drm_file *file)
@@ -405,7 +381,7 @@ static int ext_set_pat(struct i915_user_extension __user *base, void *data)
 	BUILD_BUG_ON(sizeof(struct drm_i915_gem_create_ext_set_pat) !=
 		     offsetofend(struct drm_i915_gem_create_ext_set_pat, rsvd));
 
-	/* Limiting the extension only to Meteor Lake */
+	 
 	if (!IS_METEORLAKE(i915))
 		return -ENODEV;
 
@@ -432,12 +408,7 @@ static const i915_user_extension_fn create_extensions[] = {
 };
 
 #define PAT_INDEX_NOT_SET	0xffff
-/**
- * i915_gem_create_ext_ioctl - Creates a new mm object and returns a handle to it.
- * @dev: drm device pointer
- * @data: ioctl data blob
- * @file: drm file pointer
- */
+ 
 int
 i915_gem_create_ext_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *file)
@@ -469,10 +440,7 @@ i915_gem_create_ext_ioctl(struct drm_device *dev, void *data,
 		if (ext_data.n_placements == 1)
 			return -EINVAL;
 
-		/*
-		 * We always need to be able to spill to system memory, if we
-		 * can't place in the mappable part of LMEM.
-		 */
+		 
 		if (!(ext_data.placement_mask & BIT(INTEL_REGION_SMEM)))
 			return -EINVAL;
 	} else {
@@ -490,7 +458,7 @@ i915_gem_create_ext_ioctl(struct drm_device *dev, void *data,
 
 	if (ext_data.pat_index != PAT_INDEX_NOT_SET) {
 		i915_gem_object_set_pat_index(obj, ext_data.pat_index);
-		/* Mark pat_index is set by UMD */
+		 
 		obj->pat_set_by_user = true;
 	}
 

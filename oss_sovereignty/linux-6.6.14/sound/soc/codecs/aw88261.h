@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88261.h  --  AW88261 ALSA SoC Audio driver
-//
-// Copyright (c) 2023 awinic Technology CO., LTD
-//
-// Author: Jimmy Zhang <zhangjianming@awinic.com>
-// Author: Weidong Wang <wangweidong.a@awinic.com>
-//
+
+
+
+
+
+
+
+
+
 
 #ifndef __AW88261_H__
 #define __AW88261_H__
@@ -305,7 +305,7 @@
 #define AW88261_BST_OS_WIDTH_50NS_VALUE	\
 	(AW88261_BST_OS_WIDTH_50NS << AW88261_BST_OS_WIDTH_START_BIT)
 
-/* BST_LOOPR bit 1:0 (BSTCTRL6 0x65) */
+ 
 #define AW88261_BST_LOOPR_START_BIT	(0)
 #define AW88261_BST_LOOPR_BITS_LEN	(2)
 #define AW88261_BST_LOOPR_MASK		\
@@ -315,7 +315,7 @@
 #define AW88261_BST_LOOPR_340K_VALUE	\
 	(AW88261_BST_LOOPR_340K << AW88261_BST_LOOPR_START_BIT)
 
-/* RSQN_DLY bit 15:14 (BSTCTRL7 0x66) */
+ 
 #define AW88261_RSQN_DLY_START_BIT	(14)
 #define AW88261_RSQN_DLY_BITS_LEN	(2)
 #define AW88261_RSQN_DLY_MASK		\
@@ -325,7 +325,7 @@
 #define AW88261_RSQN_DLY_35NS_VALUE	\
 	(AW88261_RSQN_DLY_35NS << AW88261_RSQN_DLY_START_BIT)
 
-/* BURST_SSMODE bit 3 (BSTCTRL8 0x67) */
+ 
 #define AW88261_BURST_SSMODE_START_BIT	(3)
 #define AW88261_BURST_SSMODE_BITS_LEN	(1)
 #define AW88261_BURST_SSMODE_MASK	\
@@ -335,7 +335,7 @@
 #define AW88261_BURST_SSMODE_FAST_VALUE	\
 	(AW88261_BURST_SSMODE_FAST << AW88261_BURST_SSMODE_START_BIT)
 
-/* BST_BURST bit 9:7 (BSTCTRL9 0x68) */
+ 
 #define AW88261_BST_BURST_START_BIT	(7)
 #define AW88261_BST_BURST_BITS_LEN	(3)
 #define AW88261_BST_BURST_MASK		\

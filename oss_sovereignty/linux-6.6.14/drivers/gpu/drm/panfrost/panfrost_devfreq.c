@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2019 Collabora ltd. */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
@@ -78,7 +78,7 @@ static int panfrost_devfreq_get_dev_status(struct device *dev,
 
 static struct devfreq_dev_profile panfrost_devfreq_profile = {
 	.timer = DEVFREQ_TIMER_DELAYED,
-	.polling_ms = 50, /* ~3 frames */
+	.polling_ms = 50,  
 	.target = panfrost_devfreq_target,
 	.get_dev_status = panfrost_devfreq_get_dev_status,
 };
@@ -90,12 +90,7 @@ static int panfrost_read_speedbin(struct device *dev)
 
 	ret = nvmem_cell_read_variable_le_u32(dev, "speed-bin", &val);
 	if (ret) {
-		/*
-		 * -ENOENT means that this platform doesn't support speedbins
-		 * as it didn't declare any speed-bin nvmem: in this case, we
-		 * keep going without it; any other error means that we are
-		 * supposed to read the bin value, but we failed doing so.
-		 */
+		 
 		if (ret != -ENOENT && ret != -EOPNOTSUPP) {
 			DRM_DEV_ERROR(dev, "Cannot read speed-bin (%d).", ret);
 			return ret;
@@ -119,10 +114,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
 	struct panfrost_devfreq *pfdevfreq = &pfdev->pfdevfreq;
 
 	if (pfdev->comp->num_supplies > 1) {
-		/*
-		 * GPUs with more than 1 supply require platform-specific handling:
-		 * continue without devfreq
-		 */
+		 
 		DRM_DEV_INFO(dev, "More than 1 supply is not supported yet\n");
 		return 0;
 	}
@@ -133,7 +125,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
 
 	ret = devm_pm_opp_set_regulators(dev, pfdev->comp->supply_names);
 	if (ret) {
-		/* Continue if the optional regulator is missing */
+		 
 		if (ret != -ENODEV) {
 			if (ret != -EPROBE_DEFER)
 				DRM_DEV_ERROR(dev, "Couldn't set OPP regulators\n");
@@ -143,7 +135,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
 
 	ret = devm_pm_opp_of_add_table(dev);
 	if (ret) {
-		/* Optional, continue without devfreq */
+		 
 		if (ret == -ENODEV)
 			ret = 0;
 		return ret;
@@ -162,10 +154,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
 
 	panfrost_devfreq_profile.initial_freq = cur_freq;
 
-	/*
-	 * Set the recommend OPP this will enable and configure the regulator
-	 * if any and will avoid a switch off by regulator_late_cleanup()
-	 */
+	 
 	ret = dev_pm_opp_set_opp(dev, opp);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "Couldn't set recommended OPP\n");
@@ -174,10 +163,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
 
 	dev_pm_opp_put(opp);
 
-	/*
-	 * Setup default thresholds for the simple_ondemand governor.
-	 * The values are chosen based on experiments.
-	 */
+	 
 	pfdevfreq->gov_data.upthreshold = 45;
 	pfdevfreq->gov_data.downdifferential = 5;
 

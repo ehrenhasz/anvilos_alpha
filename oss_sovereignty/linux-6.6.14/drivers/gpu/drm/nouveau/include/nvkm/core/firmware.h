@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_FIRMWARE_H__
 #define __NVKM_FIRMWARE_H__
 #include <core/memory.h>

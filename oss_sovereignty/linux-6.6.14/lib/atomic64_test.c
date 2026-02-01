@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Testsuite for atomic64_t functions
- *
- * Copyright © 2010  Luca Barbieri
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -14,7 +10,7 @@
 #include <linux/module.h>
 
 #ifdef CONFIG_X86
-#include <asm/cpufeature.h>	/* for boot_cpu_has below */
+#include <asm/cpufeature.h>	 
 #endif
 
 #define TEST(bit, op, c_op, val)				\
@@ -28,10 +24,7 @@ do {								\
 		(unsigned long long)r);				\
 } while (0)
 
-/*
- * Test for a atomic operation family,
- * @test should be a macro accepting parameters (bit, op, ...)
- */
+ 
 
 #define FAMILY_TEST(test, bit, op, args...)	\
 do {						\
@@ -239,7 +232,7 @@ static __init void test_atomic64(void)
 	r += one;
 	BUG_ON(v.counter != r);
 
-	/* Confirm the return value fits in an int, even if the value doesn't */
+	 
 	INIT(v3);
 	r_int = atomic64_inc_not_zero(&v);
 	BUG_ON(!r_int);

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * BTF-to-C dumper test for multi-dimensional array output.
- *
- * Copyright (c) 2019 Facebook
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+
+ 
+ 
 typedef int arr_t[2];
 
 typedef int multiarr_t[3][4][5];
@@ -27,7 +23,7 @@ struct root_struct {
 	fn_ptr_multiarr_t _6;
 };
 
-/* ------ END-EXPECTED-OUTPUT ------ */
+ 
 
 int f(struct root_struct *s)
 {

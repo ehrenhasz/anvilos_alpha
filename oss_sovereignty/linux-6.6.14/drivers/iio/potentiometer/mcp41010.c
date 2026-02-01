@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Industrial I/O driver for Microchip digital potentiometers
- *
- * Copyright (c) 2018 Chris Coffey <cmc@babblebit.net>
- * Based on: Slawomir Stepien's code from mcp4131.c
- *
- * Datasheet: https://ww1.microchip.com/downloads/en/devicedoc/11195c.pdf
- *
- * DEVID	#Wipers	#Positions	Resistance (kOhm)
- * mcp41010	1	256		10
- * mcp41050	1	256		50
- * mcp41100	1	256		100
- * mcp42010	2	256		10
- * mcp42050	2	256		50
- * mcp42100	2	256		100
- */
+
+ 
 
 #include <linux/cache.h>
 #include <linux/err.h>
@@ -58,8 +43,8 @@ static const struct mcp41010_cfg mcp41010_cfg[] = {
 struct mcp41010_data {
 	struct spi_device *spi;
 	const struct mcp41010_cfg *cfg;
-	struct mutex lock; /* Protect write sequences */
-	unsigned int value[MCP41010_MAX_WIPERS]; /* Cache wiper values */
+	struct mutex lock;  
+	unsigned int value[MCP41010_MAX_WIPERS];  
 	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
 };
 

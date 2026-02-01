@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Facebook
+
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
@@ -21,9 +21,7 @@ static __always_inline __u32 rol32(__u32 word, unsigned int shift)
 	return (word << shift) | (word >> ((-shift) & 31));
 }
 
-/* copy paste of jhash from kernel sources to make sure llvm
- * can compile it into valid sequence of bpf instructions
- */
+ 
 #define __jhash_mix(a, b, c)			\
 {						\
 	a -= c;  a ^= rol32(c, 4);  c += b;	\
@@ -79,7 +77,7 @@ u32 jhash(const void *key, u32 length, u32 initval)
 	case 2:  a += (u32)k[1]<<8;
 	case 1:  a += k[0];
 		 __jhash_final(a, b, c);
-	case 0: /* Nothing left to add */
+	case 0:  
 		break;
 	}
 
@@ -354,9 +352,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
 	iph->check = 0;
 	iph->tos = 1;
 	iph->tot_len = bpf_htons(pkt_bytes + sizeof(struct iphdr));
-	/* don't update iph->daddr, since it will overwrite old eth_proto
-	 * and multiple iterations of bpf_prog_run() will fail
-	 */
+	 
 
 	iph->saddr = ((0xFFFF0000 & ip_suffix) | 4268) ^ dst->dst;
 	iph->ttl = 4;
@@ -522,8 +518,8 @@ static bool get_packet_dst(struct real_definition **real,
 		memset(pckt->flow.srcv6, 0, 16);
 	}
 	hash = get_packet_hash(pckt, hash_16bytes);
-	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
-	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+	if (hash != 0x358459b7    &&
+	    hash != 0x2f4bc6bb  )
 		return false;
 	key = 2 * vip_info->vip_num + hash % 2;
 	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
@@ -580,10 +576,7 @@ static void connection_table_lookup(struct real_definition **real,
 	*real = bpf_map_lookup_elem(&reals, &key);
 }
 
-/* don't believe your eyes!
- * below function has 6 arguments whereas bpf and llvm allow maximum of 5
- * but since it's _static_ llvm can optimize one argument away
- */
+ 
 __attribute__ ((noinline))
 static int process_l3_headers_v6(struct packet_description *pckt,
 				 __u8 *protocol, __u64 off,

@@ -1,45 +1,7 @@
-/*  linux/drivers/scsi/esas2r/atioctl.h
- *      ATTO IOCTL Handling
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-/*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  NO WARRANTY
- *  THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- *  LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- *  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- *  solely responsible for determining the appropriateness of using and
- *  distributing the Program and assumes all risks associated with its
- *  exercise of rights under this Agreement, including but not limited to
- *  the risks and costs of program errors, damage to or loss of data,
- *  programs or equipment, and unavailability or interruption of operations.
- *
- *  DISCLAIMER OF LIABILITY
- *  NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- *  USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- *  HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+ 
+ 
+ 
+ 
 
 #include "atvda.h"
 
@@ -49,7 +11,7 @@
 #define EXPRESS_IOCTL_SIGNATURE        "Express"
 #define EXPRESS_IOCTL_SIGNATURE_SIZE   8
 
-/* structure definitions for IOCTls */
+ 
 
 struct __packed atto_express_ioctl_header {
 	u8 signature[EXPRESS_IOCTL_SIGNATURE_SIZE];
@@ -72,10 +34,7 @@ struct __packed atto_express_ioctl_header {
 	u8 pad[5];
 };
 
-/*
- * NOTE - if channel == 0xFF, the request is
- * handled on the adapter it came in on.
- */
+ 
 #define MAX_NODE_NAMES  256
 
 struct __packed atto_firmware_rw_request {
@@ -125,20 +84,17 @@ struct __packed atto_channel_info {
 	u32 hbaapi_rev;
 };
 
-/*
- * CSMI control codes
- * class independent
- */
+ 
 #define CSMI_CC_GET_DRVR_INFO        1
 #define CSMI_CC_GET_CNTLR_CFG        2
 #define CSMI_CC_GET_CNTLR_STS        3
 #define CSMI_CC_FW_DOWNLOAD          4
 
-/* RAID class */
+ 
 #define CSMI_CC_GET_RAID_INFO        10
 #define CSMI_CC_GET_RAID_CFG         11
 
-/* HBA class */
+ 
 #define CSMI_CC_GET_PHY_INFO         20
 #define CSMI_CC_SET_PHY_INFO         21
 #define CSMI_CC_GET_LINK_ERRORS      22
@@ -151,23 +107,20 @@ struct __packed atto_channel_info {
 #define CSMI_CC_TASK_MGT             29
 #define CSMI_CC_GET_CONN_INFO        30
 
-/* PHY class */
+ 
 #define CSMI_CC_PHY_CTRL             60
 
-/*
- * CSMI status codes
- * class independent
- */
+ 
 #define CSMI_STS_SUCCESS             0
 #define CSMI_STS_FAILED              1
 #define CSMI_STS_BAD_CTRL_CODE       2
 #define CSMI_STS_INV_PARAM           3
 #define CSMI_STS_WRITE_ATTEMPTED     4
 
-/* RAID class */
+ 
 #define CSMI_STS_INV_RAID_SET        1000
 
-/* HBA class */
+ 
 #define CSMI_STS_PHY_CHANGED         CSMI_STS_SUCCESS
 #define CSMI_STS_PHY_UNCHANGEABLE    2000
 #define CSMI_STS_INV_LINK_RATE       2001
@@ -185,7 +138,7 @@ struct __packed atto_channel_info {
 #define CSMI_STS_NO_SCSI_ADDR        2013
 #define CSMI_STS_NO_DEV_ADDR         2014
 
-/* CSMI class independent structures */
+ 
 struct atto_csmi_get_driver_info {
 	char name[81];
 	char description[81];
@@ -303,7 +256,7 @@ struct atto_csmi_fw_download {
 
 };
 
-/* CSMI RAID class structures */
+ 
 struct atto_csmi_get_raid_info {
 	u32 num_raid_sets;
 	u32 max_drivesper_set;
@@ -327,7 +280,7 @@ struct atto_csmi_raid_drives {
 	#define CSMI_DRV_USE_MEMBER      1
 	#define CSMI_DRV_USE_SPARE       2
 
-	u8 reserved[30]; /* spec says 22 */
+	u8 reserved[30];  
 };
 
 struct atto_csmi_get_raid_cfg {
@@ -343,7 +296,7 @@ struct atto_csmi_get_raid_cfg {
 	struct atto_csmi_raid_drives drives[1];
 };
 
-/* CSMI HBA class structures */
+ 
 struct atto_csmi_phy_entity {
 	u8 ident_frame[0x1C];
 	u8 port_id;
@@ -398,12 +351,7 @@ struct atto_csmi_get_link_errors {
 	u32 loss_ofdw_sync_cnt;
 	u32 phy_reseterr_cnt;
 
-	/*
-	 * The following field has been added by ATTO for ease of
-	 * implementation of additional statistics.  Drivers must validate
-	 * the length of the IOCTL payload prior to filling them in so CSMI
-	 * complaint applications function correctly.
-	 */
+	 
 
 	u32 crc_err_cnt;
 };
@@ -561,7 +509,7 @@ struct atto_csmi_get_conn_info {
 	u8 reserved[15];
 };
 
-/* CSMI PHY class structures */
+ 
 struct atto_csmi_character {
 	u8 type_flags;
 	#define CSMI_CTF_POS_DISP        0x01
@@ -889,9 +837,7 @@ struct __packed atto_hba_get_device_address {
 	u8 address[256];
 };
 
-/* The following functions are supported by firmware but do not have any
- * associated driver structures
- */
+ 
 #define ATTO_FUNC_PHY_CTRL           0x06
 #define ATTO_FUNC_CONN_CTRL          0x0C
 #define ATTO_FUNC_ADAP_CTRL          0x0E
@@ -945,7 +891,7 @@ struct __packed atto_hba_sas_device_info {
 
     #define ATTO_SDI_MAX_PHYS_WIDE_PORT  16
 
-	u8 phy_id[ATTO_SDI_MAX_PHYS_WIDE_PORT]; /* IDs of parent exp/adapt */
+	u8 phy_id[ATTO_SDI_MAX_PHYS_WIDE_PORT];  
 	#define ATTO_SDI_PHY_ID_INV      ATTO_SAS_PHY_ID_INV
 	u32 exp_target_id;
 	u32 sas_port_mask;
@@ -962,7 +908,7 @@ struct __packed atto_hba_sas_device_info {
 
 	u8 ini_flags;
 	u8 tgt_flags;
-	u8 link_rate; /* SMP_RATE_XXX */
+	u8 link_rate;  
 	u8 loc_flags;
 	#define ATTO_SDI_LF_DIRECT       0x01
 	#define ATTO_SDI_LF_EXPANDER     0x02
@@ -989,7 +935,7 @@ struct __packed atto_hba_get_device_info {
 
 struct atto_ioctl {
 	u8 version;
-	u8 function; /* ATTO_FUNC_XXX */
+	u8 function;  
 	u8 status;
 #define ATTO_STS_SUCCESS         0x00
 #define ATTO_STS_FAILED          0x01
@@ -1057,7 +1003,7 @@ struct __packed atto_ioctl_vda_flash_cmd {
 		} info;
 
 		struct {
-			char file_name[16]; /* 8.3 fname, NULL term, wc=* */
+			char file_name[16];  
 			u32 file_size;
 		} file;
 	} data;
@@ -1149,9 +1095,9 @@ struct __packed atto_ioctl_vda_gsv_cmd {
 
 struct __packed atto_ioctl_vda {
 	u8 version;
-	u8 function;    /* VDA_FUNC_XXXX */
-	u8 status;      /* ATTO_STS_XXX */
-	u8 vda_status;  /* RS_XXX (if status == ATTO_STS_SUCCESS) */
+	u8 function;     
+	u8 status;       
+	u8 vda_status;   
 	u32 data_length;
 	u8 reserved[8];
 
@@ -1189,8 +1135,8 @@ struct __packed atto_ioctl_smp {
 #define ATTO_SMP_FUNC_SEND_CMD_DIRECT    0x04
 #define ATTO_SMP_FUNC_DISC_SMP_DIRECT    0x05
 
-	u8 status;      /* ATTO_STS_XXX */
-	u8 smp_status;  /* if status == ATTO_STS_SUCCESS */
+	u8 status;       
+	u8 smp_status;   
 	#define ATTO_SMP_STS_SUCCESS     0x00
 	#define ATTO_SMP_STS_FAILURE     0x01
 	#define ATTO_SMP_STS_RESCAN      0x02
@@ -1204,7 +1150,7 @@ struct __packed atto_ioctl_smp {
 	u32 req_length;
 	u32 rsp_length;
 	u8 flags;
-	#define ATTO_SMPF_ROOT_EXP       0x01 /* expander direct attached */
+	#define ATTO_SMPF_ROOT_EXP       0x01  
 
 	u8 reserved[31];
 
@@ -1232,24 +1178,24 @@ struct __packed atto_express_ioctl {
 	} data;
 };
 
-/* The struct associated with the code is listed after the definition */
+ 
 #define EXPRESS_IOCTL_MIN             0x4500
-#define EXPRESS_IOCTL_RW_FIRMWARE     0x4500            /* FIRMWARERW    */
-#define EXPRESS_IOCTL_READ_PARAMS     0x4501            /* PARAMRW       */
-#define EXPRESS_IOCTL_WRITE_PARAMS    0x4502            /* PARAMRW       */
-#define EXPRESS_IOCTL_FC_API          0x4503            /* internal      */
-#define EXPRESS_IOCTL_GET_CHANNELS    0x4504            /* CHANNELLIST   */
-#define EXPRESS_IOCTL_CHAN_INFO       0x4505            /* CHANNELINFO   */
-#define EXPRESS_IOCTL_DEFAULT_PARAMS  0x4506            /* PARAMRW       */
-#define EXPRESS_ADDR_MEMORY           0x4507            /* MEMADDR       */
-#define EXPRESS_RW_MEMORY             0x4508            /* MEMRW         */
-#define EXPRESS_TSDK_DUMP             0x4509            /* TSDKDUMP      */
-#define EXPRESS_IOCTL_SMP             0x450A            /* IOCTL_SMP     */
-#define EXPRESS_CSMI                  0x450B            /* CSMI          */
-#define EXPRESS_IOCTL_HBA             0x450C            /* IOCTL_HBA     */
-#define EXPRESS_IOCTL_VDA             0x450D            /* IOCTL_VDA     */
-#define EXPRESS_IOCTL_GET_ID          0x450E            /* GET_ID        */
-#define EXPRESS_IOCTL_GET_MOD_INFO    0x450F            /* MODULE_INFO   */
+#define EXPRESS_IOCTL_RW_FIRMWARE     0x4500             
+#define EXPRESS_IOCTL_READ_PARAMS     0x4501             
+#define EXPRESS_IOCTL_WRITE_PARAMS    0x4502             
+#define EXPRESS_IOCTL_FC_API          0x4503             
+#define EXPRESS_IOCTL_GET_CHANNELS    0x4504             
+#define EXPRESS_IOCTL_CHAN_INFO       0x4505             
+#define EXPRESS_IOCTL_DEFAULT_PARAMS  0x4506             
+#define EXPRESS_ADDR_MEMORY           0x4507             
+#define EXPRESS_RW_MEMORY             0x4508             
+#define EXPRESS_TSDK_DUMP             0x4509             
+#define EXPRESS_IOCTL_SMP             0x450A             
+#define EXPRESS_CSMI                  0x450B             
+#define EXPRESS_IOCTL_HBA             0x450C             
+#define EXPRESS_IOCTL_VDA             0x450D             
+#define EXPRESS_IOCTL_GET_ID          0x450E             
+#define EXPRESS_IOCTL_GET_MOD_INFO    0x450F             
 #define EXPRESS_IOCTL_MAX             0x450F
 
 #endif

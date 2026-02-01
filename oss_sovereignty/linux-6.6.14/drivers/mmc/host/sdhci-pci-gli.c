@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Genesys Logic, Inc.
- *
- * Authors: Ben Chuang <ben.chuang@genesyslogic.com.tw>
- *
- * Version: v0.9.0 (2019-08-08)
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -19,7 +13,7 @@
 #include "sdhci-pci.h"
 #include "cqhci.h"
 
-/*  Genesys Logic extra registers */
+ 
 #define SDHCI_GLI_9750_WT         0x800
 #define   SDHCI_GLI_9750_WT_EN      BIT(0)
 #define   GLI_9750_WT_EN_ON	    0x1
@@ -226,7 +220,7 @@
 
 #define GLI_MAX_TUNING_LOOP 40
 
-/* Genesys Logic chipset */
+ 
 static inline void gl9750_wt_on(struct sdhci_host *host)
 {
 	u32 wt_value;
@@ -295,7 +289,7 @@ static void gli_set_9750(struct sdhci_host *host)
 				    GLI_9750_SW_CTRL_4_VALUE);
 	sdhci_writel(host, sw_ctrl_value, SDHCI_GLI_9750_SW_CTRL);
 
-	/* reset the tuning flow after reinit and before starting tuning */
+	 
 	pll_value &= ~SDHCI_GLI_9750_PLL_TX2_INV;
 	pll_value &= ~SDHCI_GLI_9750_PLL_TX2_DLY;
 	pll_value |= FIELD_PREP(SDHCI_GLI_9750_PLL_TX2_INV,
@@ -327,27 +321,27 @@ static void gli_set_9750(struct sdhci_host *host)
 	sdhci_writel(host, pll_value, SDHCI_GLI_9750_PLL);
 	sdhci_writel(host, misc_value, SDHCI_GLI_9750_MISC);
 
-	/* disable tuned clk */
+	 
 	ctrl2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 	ctrl2 &= ~SDHCI_CTRL_TUNED_CLK;
 	sdhci_writew(host, ctrl2, SDHCI_HOST_CONTROL2);
 
-	/* enable tuning parameters control */
+	 
 	control_value &= ~SDHCI_GLI_9750_TUNING_CONTROL_EN;
 	control_value |= FIELD_PREP(SDHCI_GLI_9750_TUNING_CONTROL_EN,
 				    GLI_9750_TUNING_CONTROL_EN_ON);
 	sdhci_writel(host, control_value, SDHCI_GLI_9750_TUNING_CONTROL);
 
-	/* write tuning parameters */
+	 
 	sdhci_writel(host, parameter_value, SDHCI_GLI_9750_TUNING_PARAMETERS);
 
-	/* disable tuning parameters control */
+	 
 	control_value &= ~SDHCI_GLI_9750_TUNING_CONTROL_EN;
 	control_value |= FIELD_PREP(SDHCI_GLI_9750_TUNING_CONTROL_EN,
 				    GLI_9750_TUNING_CONTROL_EN_OFF);
 	sdhci_writel(host, control_value, SDHCI_GLI_9750_TUNING_CONTROL);
 
-	/* clear tuned clk */
+	 
 	ctrl2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 	ctrl2 &= ~SDHCI_CTRL_TUNED_CLK;
 	sdhci_writew(host, ctrl2, SDHCI_HOST_CONTROL2);
@@ -397,7 +391,7 @@ static int __sdhci_execute_tuning_9750(struct sdhci_host *host, u32 opcode)
 			ctrl = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 			if (!(ctrl & SDHCI_CTRL_EXEC_TUNING)) {
 				if (ctrl & SDHCI_CTRL_TUNED_CLK)
-					return 0; /* Success! */
+					return 0;  
 				break;
 			}
 		}
@@ -454,7 +448,7 @@ static void gl9750_set_pll(struct sdhci_host *host, u8 dir, u16 ldiv, u8 pdiv)
 	sdhci_writel(host, pll, SDHCI_GLI_9750_PLL);
 	gl9750_wt_off(host);
 
-	/* wait for pll stable */
+	 
 	mdelay(1);
 }
 
@@ -494,7 +488,7 @@ static void gl9750_set_ssc_pll_205mhz(struct sdhci_host *host)
 {
 	bool enable = gl9750_ssc_enable(host);
 
-	/* set pll to 205MHz and ssc */
+	 
 	gl9750_set_ssc(host, enable, 0xF, 0x5A1D);
 	gl9750_set_pll(host, 0x1, 0x246, 0x0);
 }
@@ -503,7 +497,7 @@ static void gl9750_set_ssc_pll_100mhz(struct sdhci_host *host)
 {
 	bool enable = gl9750_ssc_enable(host);
 
-	/* set pll to 100MHz and ssc */
+	 
 	gl9750_set_ssc(host, enable, 0xE, 0x51EC);
 	gl9750_set_pll(host, 0x1, 0x244, 0x1);
 }
@@ -512,7 +506,7 @@ static void gl9750_set_ssc_pll_50mhz(struct sdhci_host *host)
 {
 	bool enable = gl9750_ssc_enable(host);
 
-	/* set pll to 50MHz and ssc */
+	 
 	gl9750_set_ssc(host, enable, 0xE, 0x51EC);
 	gl9750_set_pll(host, 0x1, 0x244, 0x3);
 }
@@ -555,19 +549,19 @@ static void gl9750_hw_setting(struct sdhci_host *host)
 
 	value = sdhci_readl(host, SDHCI_GLI_9750_CFG2);
 	value &= ~SDHCI_GLI_9750_CFG2_L1DLY;
-	/* set ASPM L1 entry delay to 7.9us */
+	 
 	value |= FIELD_PREP(SDHCI_GLI_9750_CFG2_L1DLY,
 			    GLI_9750_CFG2_L1DLY_VALUE);
 	sdhci_writel(host, value, SDHCI_GLI_9750_CFG2);
 
-	/* toggle PM state to allow GL9750 to enter ASPM L1.2 */
+	 
 	pci_read_config_dword(pdev, PCI_GLI_9750_PM_CTRL, &value);
 	value |= PCI_GLI_9750_PM_STATE;
 	pci_write_config_dword(pdev, PCI_GLI_9750_PM_CTRL, value);
 	value &= ~PCI_GLI_9750_PM_STATE;
 	pci_write_config_dword(pdev, PCI_GLI_9750_PM_CTRL, value);
 
-	/* mask the replay timer timeout of AER */
+	 
 	pci_read_config_dword(pdev, PCI_GLI_9750_CORRERR_MASK, &value);
 	value |= PCI_GLI_9750_CORRERR_MASK_REPLAY_TIMER_TIMEOUT;
 	pci_write_config_dword(pdev, PCI_GLI_9750_CORRERR_MASK, value);
@@ -650,7 +644,7 @@ static void gl9755_set_pll(struct pci_dev *pdev, u8 dir, u16 ldiv, u8 pdiv)
 	pci_write_config_dword(pdev, PCI_GLI_9755_PLL, pll);
 	gl9755_wt_off(pdev);
 
-	/* wait for pll stable */
+	 
 	mdelay(1);
 }
 
@@ -690,7 +684,7 @@ static void gl9755_set_ssc_pll_205mhz(struct pci_dev *pdev)
 {
 	bool enable = gl9755_ssc_enable(pdev);
 
-	/* set pll to 205MHz and ssc */
+	 
 	gl9755_set_ssc(pdev, enable, 0xF, 0x5A1D);
 	gl9755_set_pll(pdev, 0x1, 0x246, 0x0);
 }
@@ -699,7 +693,7 @@ static void gl9755_set_ssc_pll_100mhz(struct pci_dev *pdev)
 {
 	bool enable = gl9755_ssc_enable(pdev);
 
-	/* set pll to 100MHz and ssc */
+	 
 	gl9755_set_ssc(pdev, enable, 0xE, 0x51EC);
 	gl9755_set_pll(pdev, 0x1, 0x244, 0x1);
 }
@@ -708,7 +702,7 @@ static void gl9755_set_ssc_pll_50mhz(struct pci_dev *pdev)
 {
 	bool enable = gl9755_ssc_enable(pdev);
 
-	/* set pll to 50MHz and ssc */
+	 
 	gl9755_set_ssc(pdev, enable, 0xE, 0x51EC);
 	gl9755_set_pll(pdev, 0x1, 0x244, 0x3);
 }
@@ -750,10 +744,7 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
 	gl9755_wt_on(pdev);
 
 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
-	/*
-	 * Apple ARM64 platforms using these chips may have
-	 * inverted CD/WP detection.
-	 */
+	 
 	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
 		value |= PCI_GLI_9755_INVERT_CD;
 	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
@@ -762,26 +753,26 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
 	value &= ~PCI_GLI_9755_DMACLK;
 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
 
-	/* enable short circuit protection */
+	 
 	pci_read_config_dword(pdev, PCI_GLI_9755_SerDes, &value);
 	value &= ~PCI_GLI_9755_SCP_DIS;
 	pci_write_config_dword(pdev, PCI_GLI_9755_SerDes, value);
 
 	pci_read_config_dword(pdev, PCI_GLI_9755_CFG2, &value);
 	value &= ~PCI_GLI_9755_CFG2_L1DLY;
-	/* set ASPM L1 entry delay to 7.9us */
+	 
 	value |= FIELD_PREP(PCI_GLI_9755_CFG2_L1DLY,
 			    GLI_9755_CFG2_L1DLY_VALUE);
 	pci_write_config_dword(pdev, PCI_GLI_9755_CFG2, value);
 
-	/* toggle PM state to allow GL9755 to enter ASPM L1.2 */
+	 
 	pci_read_config_dword(pdev, PCI_GLI_9755_PM_CTRL, &value);
 	value |= PCI_GLI_9755_PM_STATE;
 	pci_write_config_dword(pdev, PCI_GLI_9755_PM_CTRL, value);
 	value &= ~PCI_GLI_9755_PM_STATE;
 	pci_write_config_dword(pdev, PCI_GLI_9755_PM_CTRL, value);
 
-	/* mask the replay timer timeout of AER */
+	 
 	pci_read_config_dword(pdev, PCI_GLI_9755_CORRERR_MASK, &value);
 	value |= PCI_GLI_9755_CORRERR_MASK_REPLAY_TIMER_TIMEOUT;
 	pci_write_config_dword(pdev, PCI_GLI_9755_CORRERR_MASK, value);
@@ -876,7 +867,7 @@ static void gl9767_set_pll(struct pci_dev *pdev, u8 dir, u16 ldiv, u8 pdiv)
 
 	gl9767_vhs_read(pdev);
 
-	/* wait for pll stable */
+	 
 	usleep_range(1000, 1100);
 }
 
@@ -884,7 +875,7 @@ static void gl9767_set_ssc_pll_205mhz(struct pci_dev *pdev)
 {
 	bool enable = gl9767_ssc_enable(pdev);
 
-	/* set pll to 205MHz and ssc */
+	 
 	gl9767_set_ssc(pdev, enable, 0x1F, 0xF5C3);
 	gl9767_set_pll(pdev, 0x1, 0x246, 0x0);
 }
@@ -1117,43 +1108,13 @@ static int gli_probe_slot_gl9767(struct sdhci_pci_slot *slot)
 
 static void sdhci_gli_voltage_switch(struct sdhci_host *host)
 {
-	/*
-	 * According to Section 3.6.1 signal voltage switch procedure in
-	 * SD Host Controller Simplified Spec. 4.20, steps 6~8 are as
-	 * follows:
-	 * (6) Set 1.8V Signal Enable in the Host Control 2 register.
-	 * (7) Wait 5ms. 1.8V voltage regulator shall be stable within this
-	 *     period.
-	 * (8) If 1.8V Signal Enable is cleared by Host Controller, go to
-	 *     step (12).
-	 *
-	 * Wait 5ms after set 1.8V signal enable in Host Control 2 register
-	 * to ensure 1.8V signal enable bit is set by GL9750/GL9755.
-	 *
-	 * ...however, the controller in the NUC10i3FNK4 (a 9755) requires
-	 * slightly longer than 5ms before the control register reports that
-	 * 1.8V is ready, and far longer still before the card will actually
-	 * work reliably.
-	 */
+	 
 	usleep_range(100000, 110000);
 }
 
 static void sdhci_gl9767_voltage_switch(struct sdhci_host *host)
 {
-	/*
-	 * According to Section 3.6.1 signal voltage switch procedure in
-	 * SD Host Controller Simplified Spec. 4.20, steps 6~8 are as
-	 * follows:
-	 * (6) Set 1.8V Signal Enable in the Host Control 2 register.
-	 * (7) Wait 5ms. 1.8V voltage regulator shall be stable within this
-	 *     period.
-	 * (8) If 1.8V Signal Enable is cleared by Host Controller, go to
-	 *     step (12).
-	 *
-	 * Wait 5ms after set 1.8V signal enable in Host Control 2 register
-	 * to ensure 1.8V signal enable bit is set by GL9767.
-	 *
-	 */
+	 
 	usleep_range(5000, 5500);
 }
 
@@ -1323,7 +1284,7 @@ static int gl9763e_add_host(struct sdhci_pci_slot *slot)
 	if (ret)
 		goto cleanup;
 
-	/* Disable LPM negotiation to avoid entering L1 state. */
+	 
 	gl9763e_set_low_power_negotiation(slot, false);
 
 	return 0;
@@ -1353,7 +1314,7 @@ static void gli_set_gl9763e(struct sdhci_pci_slot *slot)
 
 	pci_read_config_dword(pdev, PCIE_GLI_9763E_CFG2, &value);
 	value &= ~GLI_9763E_CFG2_L1DLY;
-	/* set ASPM L1 entry delay to 21us */
+	 
 	value |= FIELD_PREP(GLI_9763E_CFG2_L1DLY, GLI_9763E_CFG2_L1DLY_MID);
 	pci_write_config_dword(pdev, PCIE_GLI_9763E_CFG2, value);
 
@@ -1375,7 +1336,7 @@ static int gl9763e_runtime_suspend(struct sdhci_pci_chip *chip)
 	struct sdhci_host *host = slot->host;
 	u16 clock;
 
-	/* Enable LPM negotiation to allow entering L1 state */
+	 
 	gl9763e_set_low_power_negotiation(slot, true);
 
 	clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
@@ -1400,7 +1361,7 @@ static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
 	clock &= ~SDHCI_CLOCK_INT_STABLE;
 	sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
 
-	/* Wait max 150 ms */
+	 
 	if (read_poll_timeout(sdhci_readw, clock, (clock & SDHCI_CLOCK_INT_STABLE),
 			      1000, 150000, false, host, SDHCI_CLOCK_CONTROL)) {
 		pr_err("%s: PLL clock never stabilised.\n",
@@ -1411,7 +1372,7 @@ static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
 	clock |= SDHCI_CLOCK_CARD_EN;
 	sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
 
-	/* Disable LPM negotiation to avoid entering L1 state. */
+	 
 	gl9763e_set_low_power_negotiation(slot, false);
 
 	return 0;
@@ -1442,10 +1403,7 @@ static int gl9763e_resume(struct sdhci_pci_chip *chip)
 	if (ret)
 		return ret;
 
-	/*
-	 * Disable LPM negotiation to bring device back in sync
-	 * with its runtime_pm state.
-	 */
+	 
 	gl9763e_set_low_power_negotiation(slot, false);
 
 	return 0;
@@ -1456,12 +1414,7 @@ static int gl9763e_suspend(struct sdhci_pci_chip *chip)
 	struct sdhci_pci_slot *slot = chip->slots[0];
 	int ret;
 
-	/*
-	 * Certain SoCs can suspend only with the bus in low-
-	 * power state, notably x86 SoCs when using S0ix.
-	 * Re-enable LPM negotiation to allow entering L1 state
-	 * and entering system suspend.
-	 */
+	 
 	gl9763e_set_low_power_negotiation(slot, true);
 
 	ret = cqhci_suspend(slot->host->mmc);

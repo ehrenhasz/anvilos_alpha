@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _HNS_ROCE_COMMON_H
 #define _HNS_ROCE_COMMON_H
@@ -104,7 +74,7 @@
 
 #define hr_reg_read(ptr, field) _hr_reg_read(ptr, field)
 
-/*************ROCEE_REG DEFINITION****************/
+ 
 #define ROCEE_VENDOR_ID_REG			0x0
 #define ROCEE_VENDOR_PART_ID_REG		0x4
 
@@ -175,7 +145,7 @@
 #define ROCEE_ECC_UCERR_ALM0_REG		0xB34
 #define ROCEE_ECC_CERR_ALM0_REG			0xB40
 
-/* V2 ROCEE REG */
+ 
 #define ROCEE_TX_CMQ_BASEADDR_L_REG		0x07000
 #define ROCEE_TX_CMQ_BASEADDR_H_REG		0x07004
 #define ROCEE_TX_CMQ_DEPTH_REG			0x07008
@@ -196,4 +166,4 @@
 #define ROCEE_VF_ABN_INT_EN_REG			0x13008
 #define ROCEE_VF_EVENT_INT_EN_REG		0x1300c
 
-#endif /* _HNS_ROCE_COMMON_H */
+#endif  

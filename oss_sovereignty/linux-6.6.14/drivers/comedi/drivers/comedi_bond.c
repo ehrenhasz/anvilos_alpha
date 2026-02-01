@@ -1,41 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi_bond.c
- * A Comedi driver to 'bond' or merge multiple drivers and devices as one.
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- * Copyright (C) 2005 Calin A. Culianu <calin@ajvar.org>
- */
 
-/*
- * Driver: comedi_bond
- * Description: A driver to 'bond' (merge) multiple subdevices from multiple
- * devices together as one.
- * Devices:
- * Author: ds
- * Updated: Mon, 10 Oct 00:18:25 -0500
- * Status: works
- *
- * This driver allows you to 'bond' (merge) multiple comedi subdevices
- * (coming from possibly difference boards and/or drivers) together.  For
- * example, if you had a board with 2 different DIO subdevices, and
- * another with 1 DIO subdevice, you could 'bond' them with this driver
- * so that they look like one big fat DIO subdevice.  This makes writing
- * applications slightly easier as you don't have to worry about managing
- * different subdevices in the application -- you just worry about
- * indexing one linear array of channel id's.
- *
- * Right now only DIO subdevices are supported as that's the personal itch
- * I am scratching with this driver.  If you want to add support for AI and AO
- * subdevs, go right on ahead and do so!
- *
- * Commands aren't supported -- although it would be cool if they were.
- *
- * Configuration Options:
- *   List of comedi-minors to bond.  All subdevices of the same type
- *   within each minor will be concatenated together in the order given here.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/string.h>
@@ -70,7 +36,7 @@ static int bonding_dio_insn_bits(struct comedi_device *dev,
 	write_mask = data[0];
 	data_bits = data[1];
 	base_chan = CR_CHAN(insn->chanspec);
-	/* do a maximum of 32 channels, starting from base_chan. */
+	 
 	n_left = devpriv->nchans - base_chan;
 	if (n_left > 32)
 		n_left = 32;
@@ -81,14 +47,11 @@ static int bonding_dio_insn_bits(struct comedi_device *dev,
 		struct bonded_device *bdev = *devs++;
 
 		if (base_chan < bdev->nchans) {
-			/* base channel falls within bonded device */
+			 
 			unsigned int b_chans, b_mask, b_write_mask, b_data_bits;
 			int ret;
 
-			/*
-			 * Get num channels to do for bonded device and set
-			 * up mask and data bits for bonded device.
-			 */
+			 
 			b_chans = bdev->nchans - base_chan;
 			if (b_chans > n_left)
 				b_chans = n_left;
@@ -96,24 +59,21 @@ static int bonding_dio_insn_bits(struct comedi_device *dev,
 						: 0xffffffff;
 			b_write_mask = (write_mask >> n_done) & b_mask;
 			b_data_bits = (data_bits >> n_done) & b_mask;
-			/* Read/Write the new digital lines. */
+			 
 			ret = comedi_dio_bitfield2(bdev->dev, bdev->subdev,
 						   b_write_mask, &b_data_bits,
 						   base_chan);
 			if (ret < 0)
 				return ret;
-			/* Place read bits into data[1]. */
+			 
 			data[1] &= ~(b_mask << n_done);
 			data[1] |= (b_data_bits & b_mask) << n_done;
-			/*
-			 * Set up for following bonded device (if still have
-			 * channels to read/write).
-			 */
+			 
 			base_chan = 0;
 			n_done += b_chans;
 			n_left -= b_chans;
 		} else {
-			/* Skip bonded devices before base channel. */
+			 
 			base_chan -= bdev->nchans;
 		}
 	} while (n_left);
@@ -131,23 +91,12 @@ static int bonding_dio_insn_config(struct comedi_device *dev,
 	struct bonded_device *bdev;
 	struct bonded_device **devs;
 
-	/*
-	 * Locate bonded subdevice and adjust channel.
-	 */
+	 
 	devs = devpriv->devs;
 	for (bdev = *devs++; chan >= bdev->nchans; bdev = *devs++)
 		chan -= bdev->nchans;
 
-	/*
-	 * The input or output configuration of each digital line is
-	 * configured by a special insn_config instruction.  chanspec
-	 * contains the channel to be changed, and data[0] contains the
-	 * configuration instruction INSN_CONFIG_DIO_OUTPUT,
-	 * INSN_CONFIG_DIO_INPUT or INSN_CONFIG_DIO_QUERY.
-	 *
-	 * Note that INSN_CONFIG_DIO_OUTPUT == COMEDI_OUTPUT,
-	 * and INSN_CONFIG_DIO_INPUT == COMEDI_INPUT.  This is deliberate ;)
-	 */
+	 
 	switch (data[0]) {
 	case INSN_CONFIG_DIO_OUTPUT:
 	case INSN_CONFIG_DIO_INPUT:
@@ -174,10 +123,7 @@ static int do_dev_config(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	memset(&devs_opened, 0, sizeof(devs_opened));
 	devpriv->name[0] = 0;
-	/*
-	 * Loop through all comedi devices specified on the command-line,
-	 * building our device list.
-	 */
+	 
 	for (i = 0; i < COMEDI_NDEVCONFOPTS && (!i || it->options[i]); ++i) {
 		char file[sizeof("/dev/comediXXXXXX")];
 		int minor = it->options[i];
@@ -213,7 +159,7 @@ static int do_dev_config(struct comedi_device *dev, struct comedi_devconfig *it)
 			return -ENODEV;
 		}
 
-		/* Do DIO, as that's all we support now.. */
+		 
 		while ((sdev = comedi_find_subdevice_by_type(d, COMEDI_SUBD_DIO,
 							     sdev + 1)) > -1) {
 			nchans = comedi_get_n_channels(d, sdev);
@@ -233,12 +179,9 @@ static int do_dev_config(struct comedi_device *dev, struct comedi_devconfig *it)
 			bdev->nchans = nchans;
 			devpriv->nchans += nchans;
 
-			/*
-			 * Now put bdev pointer at end of devpriv->devs array
-			 * list..
-			 */
+			 
 
-			/* ergh.. ugly.. we need to realloc :(  */
+			 
 			devs = krealloc(devpriv->devs,
 					(devpriv->ndevs + 1) * sizeof(*devs),
 					GFP_KERNEL);
@@ -251,7 +194,7 @@ static int do_dev_config(struct comedi_device *dev, struct comedi_devconfig *it)
 			devpriv->devs = devs;
 			devpriv->devs[devpriv->ndevs++] = bdev;
 			{
-				/* Append dev:subdev to devpriv->name */
+				 
 				char buf[20];
 
 				snprintf(buf, sizeof(buf), "%u:%u ",
@@ -281,9 +224,7 @@ static int bonding_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
-	/*
-	 * Setup our bonding from config params.. sets up our private struct..
-	 */
+	 
 	ret = do_dev_config(dev, it);
 	if (ret)
 		return ret;

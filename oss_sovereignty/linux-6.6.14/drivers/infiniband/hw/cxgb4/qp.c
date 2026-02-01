@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <rdma/uverbs_ioctl.h>
@@ -150,10 +120,7 @@ static int alloc_sq(struct c4iw_rdev *rdev, struct t4_sq *sq, int user)
 static int destroy_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 		      struct c4iw_dev_ucontext *uctx, int has_rq)
 {
-	/*
-	 * uP clears EQ contexts when the connection exits rdma mode,
-	 * so no need to post a RESET WR for these EQs.
-	 */
+	 
 	dealloc_sq(rdev, &wq->sq);
 	kfree(wq->sq.sw_sq);
 	c4iw_put_qpid(rdev, wq->sq.qid, uctx);
@@ -169,11 +136,7 @@ static int destroy_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 	return 0;
 }
 
-/*
- * Determine the BAR2 virtual address and qid. If pbar2_pa is not NULL,
- * then this is a user mapping so compute the page-aligned physical address
- * for mapping.
- */
+ 
 void __iomem *c4iw_bar2_addrs(struct c4iw_rdev *rdev, unsigned int qid,
 			      enum cxgb4_bar2_qtype qtype,
 			      unsigned int *pbar2_qid, u64 *pbar2_pa)
@@ -227,7 +190,7 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 				       GFP_KERNEL);
 		if (!wq->sq.sw_sq) {
 			ret = -ENOMEM;
-			goto free_rq_qid;//FIXME
+			goto free_rq_qid;
 		}
 
 		if (need_rq) {
@@ -242,9 +205,7 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 	}
 
 	if (need_rq) {
-		/*
-		 * RQT must be a power of 2 and at least 16 deep.
-		 */
+		 
 		wq->rq.rqt_size =
 			roundup_pow_of_two(max_t(u16, wq->rq.size, 16));
 		wq->rq.rqt_hwaddr = c4iw_rqtpool_alloc(rdev, wq->rq.rqt_size);
@@ -289,9 +250,7 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 						 &wq->rq.bar2_qid,
 						 user ? &wq->rq.bar2_pa : NULL);
 
-	/*
-	 * User mode must have bar2 access.
-	 */
+	 
 	if (user && (!wq->sq.bar2_pa || (need_rq && !wq->rq.bar2_pa))) {
 		pr_warn("%s: sqid %u or rqid %u not in BAR2 range\n",
 			pci_name(rdev->lldi.pdev), wq->sq.qid, wq->rq.qid);
@@ -302,7 +261,7 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 	wq->rdev = rdev;
 	wq->rq.msn = 1;
 
-	/* build fw_ri_res_wr */
+	 
 	wr_len = sizeof(*res_wr) + 2 * sizeof(*res);
 	if (need_rq)
 		wr_len += sizeof(*res);
@@ -324,16 +283,14 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 	res->u.sqrq.restype = FW_RI_RES_TYPE_SQ;
 	res->u.sqrq.op = FW_RI_RES_OP_WRITE;
 
-	/*
-	 * eqsize is the number of 64B entries plus the status page size.
-	 */
+	 
 	eqsize = wq->sq.size * T4_SQ_NUM_SLOTS +
 		rdev->hw_queue.t4_eq_status_entries;
 
 	res->u.sqrq.fetchszm_to_iqid = cpu_to_be32(
-		FW_RI_RES_WR_HOSTFCMODE_V(0) |	/* no host cidx updates */
-		FW_RI_RES_WR_CPRIO_V(0) |	/* don't keep in chip cache */
-		FW_RI_RES_WR_PCIECHN_V(0) |	/* set by uP at ri_init time */
+		FW_RI_RES_WR_HOSTFCMODE_V(0) |	 
+		FW_RI_RES_WR_CPRIO_V(0) |	 
+		FW_RI_RES_WR_PCIECHN_V(0) |	 
 		(t4_sq_onchip(&wq->sq) ? FW_RI_RES_WR_ONCHIP_F : 0) |
 		FW_RI_RES_WR_IQID_V(scq->cqid));
 	res->u.sqrq.dcaen_to_eqsize = cpu_to_be32(
@@ -353,17 +310,15 @@ static int create_qp(struct c4iw_rdev *rdev, struct t4_wq *wq,
 		res->u.sqrq.restype = FW_RI_RES_TYPE_RQ;
 		res->u.sqrq.op = FW_RI_RES_OP_WRITE;
 
-		/*
-		 * eqsize is the number of 64B entries plus the status page size
-		 */
+		 
 		eqsize = wq->rq.size * T4_RQ_NUM_SLOTS +
 			rdev->hw_queue.t4_eq_status_entries;
 		res->u.sqrq.fetchszm_to_iqid =
-			/* no host cidx updates */
+			 
 			cpu_to_be32(FW_RI_RES_WR_HOSTFCMODE_V(0) |
-			/* don't keep in chip cache */
+			 
 			FW_RI_RES_WR_CPRIO_V(0) |
-			/* set by uP at ri_init time */
+			 
 			FW_RI_RES_WR_PCIECHN_V(0) |
 			FW_RI_RES_WR_IQID_V(rcq->cqid));
 		res->u.sqrq.dcaen_to_eqsize =
@@ -563,10 +518,7 @@ static int build_rdma_write(struct t4_sq *sq, union t4_wr *wqe,
 	if (wr->num_sge > T4_MAX_SEND_SGE)
 		return -EINVAL;
 
-	/*
-	 * iWARP protocol supports 64 bit immediate data but rdma api
-	 * limits it to 32bit.
-	 */
+	 
 	if (wr->opcode == IB_WR_RDMA_WRITE_WITH_IMM)
 		wqe->write.iw_imm_data.ib_imm_data.imm_data32 = wr->ex.imm_data;
 	else
@@ -620,15 +572,7 @@ static void build_rdma_write_cmpl(struct t4_sq *sq,
 	u32 plen;
 	int size;
 
-	/*
-	 * This code assumes the struct fields preceding the write isgl
-	 * fit in one 64B WR slot.  This is because the WQE is built
-	 * directly in the dma queue, and wrapping is only handled
-	 * by the code buildling sgls.  IE the "fixed part" of the wr
-	 * structs must all fit in 64B.  The WQE build code should probably be
-	 * redesigned to avoid this restriction, but for now just add
-	 * the BUILD_BUG_ON() to catch if this WQE struct gets too big.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct fw_ri_rdma_write_cmpl_wr, u) > 64);
 
 	wcwr->stag_sink = cpu_to_be32(rdma_wr(wr)->rkey);
@@ -640,14 +584,14 @@ static void build_rdma_write_cmpl(struct t4_sq *sq,
 	wcwr->r2 = 0;
 	wcwr->r3 = 0;
 
-	/* SEND_INV SGL */
+	 
 	if (wr->next->send_flags & IB_SEND_INLINE)
 		build_immd_cmpl(sq, &wcwr->u_cmpl.immd_src, wr->next);
 	else
 		build_isgl((__be64 *)sq->queue, (__be64 *)&sq->queue[sq->size],
 			   &wcwr->u_cmpl.isgl_src, wr->next->sg_list, 1, NULL);
 
-	/* WRITE SGL */
+	 
 	build_isgl((__be64 *)sq->queue, (__be64 *)&sq->queue[sq->size],
 		   wcwr->u.isgl_src, wr->sg_list, wr->num_sge, &plen);
 
@@ -699,15 +643,12 @@ static void post_write_cmpl(struct c4iw_qp *qhp, const struct ib_send_wr *wr)
 	u8 len16;
 	u16 idx;
 
-	/*
-	 * The sw_sq entries still look like a WRITE and a SEND and consume
-	 * 2 slots. The FW WR, however, will be a single uber-WR.
-	 */
+	 
 	wqe = (union t4_wr *)((u8 *)qhp->wq.sq.queue +
 	       qhp->wq.sq.wq_pidx * T4_EQ_ENTRY_SIZE);
 	build_rdma_write_cmpl(&qhp->wq.sq, &wqe->write_cmpl, wr, &len16);
 
-	/* WRITE swsqe */
+	 
 	swsqe = &qhp->wq.sq.sw_sq[qhp->wq.sq.pidx];
 	swsqe->opcode = FW_RI_RDMA_WRITE;
 	swsqe->idx = qhp->wq.sq.pidx;
@@ -723,12 +664,12 @@ static void post_write_cmpl(struct c4iw_qp *qhp, const struct ib_send_wr *wr)
 
 	write_wrid = qhp->wq.sq.pidx;
 
-	/* just bump the sw_sq */
+	 
 	qhp->wq.sq.in_use++;
 	if (++qhp->wq.sq.pidx == qhp->wq.sq.size)
 		qhp->wq.sq.pidx = 0;
 
-	/* SEND_WITH_INV swsqe */
+	 
 	swsqe = &qhp->wq.sq.sw_sq[qhp->wq.sq.pidx];
 	if (wr->next->opcode == IB_WR_SEND)
 		swsqe->opcode = FW_RI_SEND;
@@ -1093,10 +1034,7 @@ int c4iw_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	rhp = qhp->rhp;
 	spin_lock_irqsave(&qhp->lock, flag);
 
-	/*
-	 * If the qp has been flushed, then just insert a special
-	 * drain cqe.
-	 */
+	 
 	if (qhp->wq.flushed) {
 		spin_unlock_irqrestore(&qhp->lock, flag);
 		err = complete_sq_drain_wrs(qhp, wr, bad_wr);
@@ -1109,15 +1047,7 @@ int c4iw_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		return -ENOMEM;
 	}
 
-	/*
-	 * Fastpath for NVMe-oF target WRITE + SEND_WITH_INV wr chain which is
-	 * the response for small NVMEe-oF READ requests.  If the chain is
-	 * exactly a WRITE->SEND_WITH_INV or a WRITE->SEND and the sgl depths
-	 * and lengths meet the requirements of the fw_ri_write_cmpl_wr work
-	 * request, then build and post the write_cmpl WR. If any of the tests
-	 * below are not true, then we continue on with the tradtional WRITE
-	 * and SEND WRs.
-	 */
+	 
 	if (qhp->rhp->rdev.lldi.write_cmpl_support &&
 	    CHELSIO_CHIP_VERSION(qhp->rhp->rdev.lldi.adapter_type) >=
 	    CHELSIO_T5 &&
@@ -1272,10 +1202,7 @@ int c4iw_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	qhp = to_c4iw_qp(ibqp);
 	spin_lock_irqsave(&qhp->lock, flag);
 
-	/*
-	 * If the qp has been flushed, then just insert a special
-	 * drain cqe.
-	 */
+	 
 	if (qhp->wq.flushed) {
 		spin_unlock_irqrestore(&qhp->lock, flag);
 		complete_rq_drain_wrs(qhp, wr);
@@ -1590,9 +1517,7 @@ static void post_terminate(struct c4iw_qp *qhp, struct t4_cqe *err_cqe,
 	c4iw_ofld_send(&qhp->rhp->rdev, skb);
 }
 
-/*
- * Assumes qhp lock is held.
- */
+ 
 static void __flush_qp(struct c4iw_qp *qhp, struct c4iw_cq *rchp,
 		       struct c4iw_cq *schp)
 {
@@ -1602,7 +1527,7 @@ static void __flush_qp(struct c4iw_qp *qhp, struct c4iw_cq *rchp,
 
 	pr_debug("qhp %p rchp %p schp %p\n", qhp, rchp, schp);
 
-	/* locking hierarchy: cqs lock first, then qp lock. */
+	 
 	spin_lock_irqsave(&rchp->lock, flag);
 	if (schp != rchp)
 		spin_lock(&schp->lock);
@@ -1667,7 +1592,7 @@ static void flush_qp(struct c4iw_qp *qhp)
 
 	if (qhp->ibqp.uobject) {
 
-		/* for user qps, qhp->wq.flushed is protected by qhp->mutex */
+		 
 		if (qhp->wq.flushed)
 			return;
 
@@ -1848,7 +1773,7 @@ int c4iw_modify_qp(struct c4iw_dev *rhp, struct c4iw_qp *qhp,
 
 	mutex_lock(&qhp->mutex);
 
-	/* Process attr changes if in IDLE */
+	 
 	if (mask & C4IW_QP_ATTR_VALID_MODIFY) {
 		if (qhp->attr.state != C4IW_QP_STATE_IDLE) {
 			ret = -EIO;
@@ -1908,12 +1833,7 @@ int c4iw_modify_qp(struct c4iw_dev *rhp, struct c4iw_qp *qhp,
 			qhp->ep = qhp->attr.llp_stream_handle;
 			set_state(qhp, C4IW_QP_STATE_RTS);
 
-			/*
-			 * Ref the endpoint here and deref when we
-			 * disassociate the endpoint from the QP.  This
-			 * happens in CLOSING->IDLE transition or *->ERROR
-			 * transition.
-			 */
+			 
 			c4iw_get_ep(&qhp->ep->com);
 			ret = rdma_init(rhp, qhp);
 			if (ret)
@@ -1977,9 +1897,7 @@ int c4iw_modify_qp(struct c4iw_dev *rhp, struct c4iw_qp *qhp,
 		break;
 	case C4IW_QP_STATE_CLOSING:
 
-		/*
-		 * Allow kernel users to move to ERROR for qp draining.
-		 */
+		 
 		if (!internal && (qhp->ibqp.uobject || attrs->next_state !=
 				  C4IW_QP_STATE_ERROR)) {
 			ret = -EINVAL;
@@ -2030,7 +1948,7 @@ err:
 	pr_debug("disassociating ep %p qpid 0x%x\n", qhp->ep,
 		 qhp->wq.sq.qid);
 
-	/* disassociate the LLP connection */
+	 
 	qhp->attr.llp_stream_handle = NULL;
 	if (!ep)
 		ep = qhp->ep;
@@ -2046,21 +1964,14 @@ out:
 	if (terminate)
 		post_terminate(qhp, NULL, internal ? GFP_ATOMIC : GFP_KERNEL);
 
-	/*
-	 * If disconnect is 1, then we need to initiate a disconnect
-	 * on the EP.  This can be a normal close (RTS->CLOSING) or
-	 * an abnormal close (RTS/CLOSING->ERROR).
-	 */
+	 
 	if (disconnect) {
 		c4iw_ep_disconnect(ep, abort, internal ? GFP_ATOMIC :
 							 GFP_KERNEL);
 		c4iw_put_ep(&ep->com);
 	}
 
-	/*
-	 * If free is 1, then we've disassociated the EP from the QP
-	 * and we need to dereference the EP.
-	 */
+	 
 	if (free)
 		c4iw_put_ep(&ep->com);
 	pr_debug("exit state %d\n", qhp->attr.state);
@@ -2366,11 +2277,11 @@ int c4iw_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 	if (attr_mask & ~IB_QP_ATTR_STANDARD_BITS)
 		return -EOPNOTSUPP;
 
-	/* iwarp does not support the RTR state */
+	 
 	if ((attr_mask & IB_QP_STATE) && (attr->qp_state == IB_QPS_RTR))
 		attr_mask &= ~IB_QP_STATE;
 
-	/* Make sure we still have something left to do */
+	 
 	if (!attr_mask)
 		return 0;
 
@@ -2391,11 +2302,7 @@ int c4iw_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 			 C4IW_QP_ATTR_ENABLE_RDMA_WRITE |
 			 C4IW_QP_ATTR_ENABLE_RDMA_BIND) : 0;
 
-	/*
-	 * Use SQ_PSN and RQ_PSN to pass in IDX_INC values for
-	 * ringing the queue db when we're in DB_FULL mode.
-	 * Only allow this on T4 devices.
-	 */
+	 
 	attrs.sq_db_inc = attr->sq_psn;
 	attrs.rq_db_inc = attr->rq_psn;
 	mask |= (attr_mask & IB_QP_SQ_PSN) ? C4IW_QP_ATTR_SQ_DB : 0;
@@ -2430,15 +2337,13 @@ int c4iw_modify_srq(struct ib_srq *ib_srq, struct ib_srq_attr *attr,
 	struct c4iw_srq *srq = to_c4iw_srq(ib_srq);
 	int ret = 0;
 
-	/*
-	 * XXX 0 mask == a SW interrupt for srq_limit reached...
-	 */
+	 
 	if (udata && !srq_attr_mask) {
 		c4iw_dispatch_srq_limit_reached_event(srq);
 		goto out;
 	}
 
-	/* no support for this yet */
+	 
 	if (srq_attr_mask & IB_SRQ_MAX_WR) {
 		ret = -EINVAL;
 		goto out;
@@ -2554,9 +2459,7 @@ static int alloc_srq_queue(struct c4iw_srq *srq, struct c4iw_dev_ucontext *uctx,
 				      &wq->bar2_qid,
 			user ? &wq->bar2_pa : NULL);
 
-	/*
-	 * User mode must have bar2 access.
-	 */
+	 
 
 	if (user && !wq->bar2_va) {
 		pr_warn(MOD "%s: srqid %u not in BAR2 range.\n",
@@ -2565,7 +2468,7 @@ static int alloc_srq_queue(struct c4iw_srq *srq, struct c4iw_dev_ucontext *uctx,
 		goto err_free_queue;
 	}
 
-	/* build fw_ri_res_wr */
+	 
 	wr_len = sizeof(*res_wr) + sizeof(*res);
 
 	skb = alloc_skb(wr_len, GFP_KERNEL);
@@ -2584,18 +2487,16 @@ static int alloc_srq_queue(struct c4iw_srq *srq, struct c4iw_dev_ucontext *uctx,
 	res->u.srq.restype = FW_RI_RES_TYPE_SRQ;
 	res->u.srq.op = FW_RI_RES_OP_WRITE;
 
-	/*
-	 * eqsize is the number of 64B entries plus the status page size.
-	 */
+	 
 	eqsize = wq->size * T4_RQ_NUM_SLOTS +
 		rdev->hw_queue.t4_eq_status_entries;
 	res->u.srq.eqid = cpu_to_be32(wq->qid);
 	res->u.srq.fetchszm_to_iqid =
-						/* no host cidx updates */
+						 
 		cpu_to_be32(FW_RI_RES_WR_HOSTFCMODE_V(0) |
-		FW_RI_RES_WR_CPRIO_V(0) |       /* don't keep in chip cache */
-		FW_RI_RES_WR_PCIECHN_V(0) |     /* set by uP at ri_init time */
-		FW_RI_RES_WR_FETCHRO_V(0));     /* relaxed_ordering */
+		FW_RI_RES_WR_CPRIO_V(0) |        
+		FW_RI_RES_WR_PCIECHN_V(0) |      
+		FW_RI_RES_WR_FETCHRO_V(0));      
 	res->u.srq.dcaen_to_eqsize =
 		cpu_to_be32(FW_RI_RES_WR_DCAEN_V(0) |
 		FW_RI_RES_WR_DCACPU_V(0) |
@@ -2688,9 +2589,7 @@ int c4iw_create_srq(struct ib_srq *ib_srq, struct ib_srq_init_attr *attrs,
 	if (attrs->attr.max_sge > T4_MAX_RECV_SGE)
 		return -E2BIG;
 
-	/*
-	 * SRQ RQT and RQ must be a power of 2 and at least 16 deep.
-	 */
+	 
 	rqsize = attrs->attr.max_wr + 1;
 	rqsize = roundup_pow_of_two(max_t(u16, rqsize, 16));
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel I/OAT DMA Linux driver
- * Copyright(c) 2004 - 2015 Intel Corporation.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -120,7 +117,7 @@ static ssize_t ring_active_show(struct dma_chan *c, char *page)
 {
 	struct ioatdma_chan *ioat_chan = to_ioat_chan(c);
 
-	/* ...taken outside the lock, no need to be precise */
+	 
 	return sprintf(page, "%d\n", ioat_ring_active(ioat_chan));
 }
 static struct ioat_sysfs_entry ring_active_attr = __ATTR_RO(ring_active);

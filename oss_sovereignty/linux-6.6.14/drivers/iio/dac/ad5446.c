@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD5446 SPI DAC driver
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
@@ -28,17 +24,7 @@
 #define MODE_PWRDWN_100k	0x2
 #define MODE_PWRDWN_TRISTATE	0x3
 
-/**
- * struct ad5446_state - driver instance specific data
- * @dev:		this device
- * @chip_info:		chip model specific constants, available modes etc
- * @reg:		supply regulator
- * @vref_mv:		actual reference voltage used
- * @cached_val:		store/retrieve values during power down
- * @pwr_down_mode:	power down mode (1k, 100k or tristate)
- * @pwr_down:		true if the device is in power down
- * @lock:		lock to protect the data buffer during write ops
- */
+ 
 
 struct ad5446_state {
 	struct device		*dev;
@@ -51,12 +37,7 @@ struct ad5446_state {
 	struct mutex			lock;
 };
 
-/**
- * struct ad5446_chip_info - chip specific information
- * @channel:		channel spec for the DAC
- * @int_vref_mv:	AD5620/40/60: the internal reference voltage
- * @write:		chip specific helper function to write to the register
- */
+ 
 
 struct ad5446_chip_info {
 	struct iio_chan_spec	channel;
@@ -313,13 +294,7 @@ static int ad5660_write(struct ad5446_state *st, unsigned val)
 	return spi_write(spi, data, sizeof(data));
 }
 
-/*
- * ad5446_supported_spi_device_ids:
- * The AD5620/40/60 parts are available in different fixed internal reference
- * voltage options. The actual part numbers may look differently
- * (and a bit cryptic), however this style is used to make clear which
- * parts are supported here.
- */
+ 
 enum ad5446_supported_spi_device_ids {
 	ID_AD5300,
 	ID_AD5310,
@@ -450,26 +425,26 @@ static const struct spi_device_id ad5446_spi_ids[] = {
 	{"ad5446", ID_AD5446},
 	{"ad5450", ID_AD5450},
 	{"ad5451", ID_AD5451},
-	{"ad5452", ID_AD5444}, /* ad5452 is compatible to the ad5444 */
-	{"ad5453", ID_AD5446}, /* ad5453 is compatible to the ad5446 */
+	{"ad5452", ID_AD5444},  
+	{"ad5453", ID_AD5446},  
 	{"ad5512a", ID_AD5512A},
 	{"ad5541a", ID_AD5541A},
-	{"ad5542a", ID_AD5541A}, /* ad5541a and ad5542a are compatible */
-	{"ad5543", ID_AD5541A}, /* ad5541a and ad5543 are compatible */
+	{"ad5542a", ID_AD5541A},  
+	{"ad5543", ID_AD5541A},  
 	{"ad5553", ID_AD5553},
 	{"ad5600", ID_AD5600},
 	{"ad5601", ID_AD5601},
 	{"ad5611", ID_AD5611},
 	{"ad5621", ID_AD5621},
 	{"ad5641", ID_AD5641},
-	{"ad5620-2500", ID_AD5620_2500}, /* AD5620/40/60: */
-	{"ad5620-1250", ID_AD5620_1250}, /* part numbers may look differently */
+	{"ad5620-2500", ID_AD5620_2500},  
+	{"ad5620-1250", ID_AD5620_1250},  
 	{"ad5640-2500", ID_AD5640_2500},
 	{"ad5640-1250", ID_AD5640_1250},
 	{"ad5660-2500", ID_AD5660_2500},
 	{"ad5660-1250", ID_AD5660_1250},
 	{"ad5662", ID_AD5662},
-	{"dac081s101", ID_AD5300}, /* compatible Texas Instruments chips */
+	{"dac081s101", ID_AD5300},  
 	{"dac101s101", ID_AD5310},
 	{"dac121s101", ID_AD5320},
 	{"dac7512", ID_AD5320},
@@ -540,13 +515,7 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
 	return 0;
 }
 
-/*
- * ad5446_supported_i2c_device_ids:
- * The AD5620/40/60 parts are available in different fixed internal reference
- * voltage options. The actual part numbers may look differently
- * (and a bit cryptic), however this style is used to make clear which
- * parts are supported here.
- */
+ 
 enum ad5446_supported_i2c_device_ids {
 	ID_AD5602,
 	ID_AD5612,

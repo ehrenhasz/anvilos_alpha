@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Regulator support for WM8400
-//
-// Copyright 2008 Wolfson Microelectronics PLC.
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/bug.h>
 #include <linux/err.h>
@@ -39,15 +39,15 @@ static unsigned int wm8400_dcdc_get_mode(struct regulator_dev *dev)
 	if (ret != 0)
 		return 0;
 
-	/* Datasheet: hibernate */
+	 
 	if (data[0] & WM8400_DC1_SLEEP)
 		return REGULATOR_MODE_STANDBY;
 
-	/* Datasheet: standby */
+	 
 	if (!(data[0] & WM8400_DC1_ACTIVE))
 		return REGULATOR_MODE_IDLE;
 
-	/* Datasheet: active with or without force PWM */
+	 
 	if (data[1] & WM8400_DC1_FRC_PWM)
 		return REGULATOR_MODE_FAST;
 	else
@@ -62,7 +62,7 @@ static int wm8400_dcdc_set_mode(struct regulator_dev *dev, unsigned int mode)
 
 	switch (mode) {
 	case REGULATOR_MODE_FAST:
-		/* Datasheet: active with force PWM */
+		 
 		ret = regmap_update_bits(rmap, WM8400_DCDC1_CONTROL_2 + offset,
 				      WM8400_DC1_FRC_PWM, WM8400_DC1_FRC_PWM);
 		if (ret != 0)
@@ -73,7 +73,7 @@ static int wm8400_dcdc_set_mode(struct regulator_dev *dev, unsigned int mode)
 				       WM8400_DC1_ACTIVE);
 
 	case REGULATOR_MODE_NORMAL:
-		/* Datasheet: active */
+		 
 		ret = regmap_update_bits(rmap, WM8400_DCDC1_CONTROL_2 + offset,
 				      WM8400_DC1_FRC_PWM, 0);
 		if (ret != 0)
@@ -84,7 +84,7 @@ static int wm8400_dcdc_set_mode(struct regulator_dev *dev, unsigned int mode)
 				       WM8400_DC1_ACTIVE);
 
 	case REGULATOR_MODE_IDLE:
-		/* Datasheet: standby */
+		 
 		return regmap_update_bits(rmap, WM8400_DCDC1_CONTROL_1 + offset,
 				       WM8400_DC1_ACTIVE | WM8400_DC1_SLEEP, 0);
 	default:
@@ -228,17 +228,7 @@ static struct platform_driver wm8400_regulator_driver = {
 	.probe = wm8400_regulator_probe,
 };
 
-/**
- * wm8400_register_regulator - enable software control of a WM8400 regulator
- *
- * This function enables software control of a WM8400 regulator via
- * the regulator API.  It is intended to be called from the
- * platform_init() callback of the WM8400 MFD driver.
- *
- * @dev:      The WM8400 device to operate on.
- * @reg:      The regulator to control.
- * @initdata: Regulator initdata for the regulator.
- */
+ 
 int wm8400_register_regulator(struct device *dev, int reg,
 			      struct regulator_init_data *initdata)
 {

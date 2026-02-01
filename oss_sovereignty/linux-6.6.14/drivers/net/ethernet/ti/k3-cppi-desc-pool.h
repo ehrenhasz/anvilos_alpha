@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* TI K3 CPPI5 descriptors pool
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- */
+ 
+ 
 
 #ifndef K3_CPPI_DESC_POOL_H_
 #define K3_CPPI_DESC_POOL_H_
@@ -27,4 +24,4 @@ void *k3_cppi_desc_pool_alloc(struct k3_cppi_desc_pool *pool);
 void k3_cppi_desc_pool_free(struct k3_cppi_desc_pool *pool, void *addr);
 size_t k3_cppi_desc_pool_avail(struct k3_cppi_desc_pool *pool);
 
-#endif /* K3_CPPI_DESC_POOL_H_ */
+#endif  

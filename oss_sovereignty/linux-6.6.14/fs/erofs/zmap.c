@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2018-2019 HUAWEI, Inc.
- *             https://www.huawei.com/
- */
+
+ 
 #include "internal.h"
 #include <asm/unaligned.h>
 #include <trace/events/erofs.h>
@@ -13,7 +10,7 @@ struct z_erofs_maprecorder {
 	void *kaddr;
 
 	unsigned long lcn;
-	/* compression extent information gathered */
+	 
 	u8  type, headtype;
 	u16 clusterofs;
 	u16 delta[2];
@@ -111,7 +108,7 @@ static int get_compacted_la_distance(unsigned int lclusterbits,
 		++d1;
 	} while (++i < vcnt);
 
-	/* vcnt - 1 (Z_EROFS_LCLUSTER_TYPE_NONHEAD) item */
+	 
 	if (!(lo & Z_EROFS_LI_D0_CBLKCNT))
 		d1 += lo - 1;
 	return d1;
@@ -136,7 +133,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
 	else
 		return -EOPNOTSUPP;
 
-	/* it doesn't equal to round_up(..) */
+	 
 	m->nextpackoff = round_down(pos, vcnt << amortizedshift) +
 			 (vcnt << amortizedshift);
 	big_pcluster = vi->z_advise & Z_EROFS_ADVISE_BIG_PCLUSTER_1;
@@ -153,7 +150,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
 	if (type == Z_EROFS_LCLUSTER_TYPE_NONHEAD) {
 		m->clusterofs = 1 << lclusterbits;
 
-		/* figure out lookahead_distance: delta[1] if needed */
+		 
 		if (lookahead)
 			m->delta[1] = get_compacted_la_distance(lclusterbits,
 						encodebits, vcnt, in, i);
@@ -169,11 +166,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
 			m->delta[0] = lo;
 			return 0;
 		}
-		/*
-		 * since the last lcluster in the pack is special,
-		 * of which lo saves delta[1] rather than delta[0].
-		 * Hence, get delta[0] by the previous lcluster indirectly.
-		 */
+		 
 		lo = decode_compactedbits(lclusterbits, lomask,
 					  in, encodebits * (i - 1), &type);
 		if (type != Z_EROFS_LCLUSTER_TYPE_NONHEAD)
@@ -185,7 +178,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
 	}
 	m->clusterofs = lo;
 	m->delta[0] = 0;
-	/* figout out blkaddr (pblk) for HEAD lclusters */
+	 
 	if (!big_pcluster) {
 		nblk = 1;
 		while (i > 0) {
@@ -210,7 +203,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
 					nblk += lo & ~Z_EROFS_LI_D0_CBLKCNT;
 					continue;
 				}
-				/* bigpcluster shouldn't have plain d0 == 1 */
+				 
 				if (lo <= 1) {
 					DBG_BUGON(1);
 					return -EFSCORRUPTED;
@@ -242,7 +235,7 @@ static int z_erofs_load_compact_lcluster(struct z_erofs_maprecorder *m,
 		return -EINVAL;
 
 	m->lcn = lcn;
-	/* used to align to 32-byte (compacted_2b) alignment */
+	 
 	compacted_4b_initial = (32 - ebase % 32) / 4;
 	if (compacted_4b_initial == 32 / 4)
 		compacted_4b_initial = 0;
@@ -362,14 +355,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
 	if (err)
 		return err;
 
-	/*
-	 * If the 1st NONHEAD lcluster has already been handled initially w/o
-	 * valid compressedblks, which means at least it mustn't be CBLKCNT, or
-	 * an internal implemenatation error is detected.
-	 *
-	 * The following code can also handle it properly anyway, but let's
-	 * BUG_ON in the debugging mode only for developers to notice that.
-	 */
+	 
 	DBG_BUGON(lcn == initial_lcn &&
 		  m->type == Z_EROFS_LCLUSTER_TYPE_NONHEAD);
 
@@ -377,10 +363,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
 	case Z_EROFS_LCLUSTER_TYPE_PLAIN:
 	case Z_EROFS_LCLUSTER_TYPE_HEAD1:
 	case Z_EROFS_LCLUSTER_TYPE_HEAD2:
-		/*
-		 * if the 1st NONHEAD lcluster is actually PLAIN or HEAD type
-		 * rather than CBLKCNT, it's a 1 lcluster-sized pcluster.
-		 */
+		 
 		m->compressedblks = 1 << (lclusterbits - sb->s_blocksize_bits);
 		break;
 	case Z_EROFS_LCLUSTER_TYPE_NONHEAD:
@@ -414,7 +397,7 @@ static int z_erofs_get_extent_decompressedlen(struct z_erofs_maprecorder *m)
 	int err;
 
 	do {
-		/* handle the last EOF pcluster (no next HEAD lcluster) */
+		 
 		if ((lcn << lclusterbits) >= inode->i_size) {
 			map->m_llen = inode->i_size - map->m_la;
 			return 0;
@@ -430,7 +413,7 @@ static int z_erofs_get_extent_decompressedlen(struct z_erofs_maprecorder *m)
 		} else if (m->type == Z_EROFS_LCLUSTER_TYPE_PLAIN ||
 			   m->type == Z_EROFS_LCLUSTER_TYPE_HEAD1 ||
 			   m->type == Z_EROFS_LCLUSTER_TYPE_HEAD2) {
-			/* go on until the next HEAD lcluster */
+			 
 			if (lcn != headlcn)
 				break;
 			m->delta[1] = 1;
@@ -484,16 +467,12 @@ static int z_erofs_do_map_blocks(struct inode *inode,
 		if (endoff >= m.clusterofs) {
 			m.headtype = m.type;
 			map->m_la = (m.lcn << lclusterbits) | m.clusterofs;
-			/*
-			 * For ztailpacking files, in order to inline data more
-			 * effectively, special EOF lclusters are now supported
-			 * which can have three parts at most.
-			 */
+			 
 			if (ztailpacking && end > inode->i_size)
 				end = inode->i_size;
 			break;
 		}
-		/* m.lcn should be >= 1 if endoff < m.clusterofs */
+		 
 		if (!m.lcn) {
 			erofs_err(inode->i_sb,
 				  "invalid logical cluster 0 at nid %llu",
@@ -506,7 +485,7 @@ static int z_erofs_do_map_blocks(struct inode *inode,
 		m.delta[0] = 1;
 		fallthrough;
 	case Z_EROFS_LCLUSTER_TYPE_NONHEAD:
-		/* get the corresponding first chunk */
+		 
 		err = z_erofs_extent_lookback(&m, m.delta[0]);
 		if (err)
 			goto unmap_out;
@@ -524,7 +503,7 @@ static int z_erofs_do_map_blocks(struct inode *inode,
 
 	if (flags & EROFS_GET_BLOCKS_FINDTAIL) {
 		vi->z_tailextent_headlcn = m.lcn;
-		/* for non-compact indexes, fragmentoff is 64 bits */
+		 
 		if (fragment && vi->datalayout == EROFS_INODE_COMPRESSED_FULL)
 			vi->z_fragmentoff |= (u64)m.pblk << 32;
 	}
@@ -588,10 +567,7 @@ static int z_erofs_fill_inode_lazy(struct inode *inode)
 	struct z_erofs_map_header *h;
 
 	if (test_bit(EROFS_I_Z_INITED_BIT, &vi->flags)) {
-		/*
-		 * paired with smp_mb() at the end of the function to ensure
-		 * fields will only be observed after the bit is set.
-		 */
+		 
 		smp_mb();
 		return 0;
 	}
@@ -611,10 +587,7 @@ static int z_erofs_fill_inode_lazy(struct inode *inode)
 	}
 
 	h = kaddr + erofs_blkoff(sb, pos);
-	/*
-	 * if the highest bit of the 8-byte map header is set, the whole file
-	 * is stored in the packed inode. The rest bits keeps z_fragmentoff.
-	 */
+	 
 	if (h->h_clusterbits >> Z_EROFS_FRAGMENT_INODE_BIT) {
 		vi->z_advise = Z_EROFS_ADVISE_FRAGMENT_PCLUSTER;
 		vi->z_fragmentoff = le64_to_cpu(*(__le64 *)h) ^ (1ULL << 63);
@@ -686,7 +659,7 @@ static int z_erofs_fill_inode_lazy(struct inode *inode)
 			goto out_put_metabuf;
 	}
 done:
-	/* paired with smp_mb() at the beginning of the function */
+	 
 	smp_mb();
 	set_bit(EROFS_I_Z_INITED_BIT, &vi->flags);
 out_put_metabuf:
@@ -704,7 +677,7 @@ int z_erofs_map_blocks_iter(struct inode *inode, struct erofs_map_blocks *map,
 
 	trace_z_erofs_map_blocks_iter_enter(inode, map, flags);
 
-	/* when trying to read beyond EOF, leave it unmapped */
+	 
 	if (map->m_la >= inode->i_size) {
 		map->m_llen = map->m_la + 1 - inode->i_size;
 		map->m_la = inode->i_size;
@@ -753,15 +726,7 @@ static int z_erofs_iomap_begin_report(struct inode *inode, loff_t offset,
 	} else {
 		iomap->type = IOMAP_HOLE;
 		iomap->addr = IOMAP_NULL_ADDR;
-		/*
-		 * No strict rule on how to describe extents for post EOF, yet
-		 * we need to do like below. Otherwise, iomap itself will get
-		 * into an endless loop on post EOF.
-		 *
-		 * Calculate the effective offset by subtracting extent start
-		 * (map.m_la) from the requested offset, and add it to length.
-		 * (NB: offset >= map.m_la always)
-		 */
+		 
 		if (iomap->offset >= inode->i_size)
 			iomap->length = length + offset - map.m_la;
 	}

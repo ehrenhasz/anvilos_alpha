@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for MT9P031 CMOS Image Sensor from Aptina
- *
- * Copyright (C) 2011, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- * Copyright (C) 2011, Javier Martin <javier.martin@vista-silicon.com>
- * Copyright (C) 2011, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- *
- * Based on the MT9V032 driver and Bastian Hecht's code.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -120,10 +112,10 @@ enum mt9p031_model {
 struct mt9p031 {
 	struct v4l2_subdev subdev;
 	struct media_pad pad;
-	struct v4l2_rect crop;  /* Sensor window */
+	struct v4l2_rect crop;   
 	struct v4l2_mbus_framefmt format;
 	struct mt9p031_platform_data *pdata;
-	struct mutex power_lock; /* lock to protect power_count */
+	struct mutex power_lock;  
 	int power_count;
 
 	struct clk *clk;
@@ -139,7 +131,7 @@ struct mt9p031 {
 	struct v4l2_ctrl *blc_auto;
 	struct v4l2_ctrl *blc_offset;
 
-	/* Registers cache */
+	 
 	u16 output_control;
 	u16 mode2;
 };
@@ -193,7 +185,7 @@ static int mt9p031_reset(struct mt9p031 *mt9p031)
 	struct i2c_client *client = v4l2_get_subdevdata(&mt9p031->subdev);
 	int ret;
 
-	/* Disable chip output, synchronous option update */
+	 
 	ret = mt9p031_write(client, MT9P031_RST, MT9P031_RST_ENABLE);
 	if (ret < 0)
 		return ret;
@@ -243,9 +235,7 @@ static int mt9p031_clk_setup(struct mt9p031 *mt9p031)
 
 	ext_freq = clk_get_rate(mt9p031->clk);
 
-	/* If the external clock frequency is out of bounds for the PLL use the
-	 * pixel clock divider only and disable the PLL.
-	 */
+	 
 	if (ext_freq > limits.ext_clock_max) {
 		unsigned int div;
 
@@ -310,19 +300,19 @@ static int mt9p031_power_on(struct mt9p031 *mt9p031)
 	unsigned long rate, delay;
 	int ret;
 
-	/* Ensure RESET_BAR is active */
+	 
 	if (mt9p031->reset) {
 		gpiod_set_value(mt9p031->reset, 1);
 		usleep_range(1000, 2000);
 	}
 
-	/* Bring up the supplies */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(mt9p031->regulators),
 				   mt9p031->regulators);
 	if (ret < 0)
 		return ret;
 
-	/* Enable clock */
+	 
 	if (mt9p031->clk) {
 		ret = clk_prepare_enable(mt9p031->clk);
 		if (ret) {
@@ -332,13 +322,13 @@ static int mt9p031_power_on(struct mt9p031 *mt9p031)
 		}
 	}
 
-	/* Now RESET_BAR must be high */
+	 
 	if (mt9p031->reset) {
 		gpiod_set_value(mt9p031->reset, 0);
-		/* Wait 850000 EXTCLK cycles before de-asserting reset. */
+		 
 		rate = clk_get_rate(mt9p031->clk);
 		if (!rate)
-			rate = 6000000;	/* Slowest supported clock, 6 MHz */
+			rate = 6000000;	 
 		delay = DIV_ROUND_UP(850000 * 1000, rate);
 		msleep(delay);
 	}
@@ -379,7 +369,7 @@ static int __mt9p031_set_power(struct mt9p031 *mt9p031, bool on)
 		return ret;
 	}
 
-	/* Configure the pixel clock polarity */
+	 
 	if (mt9p031->pdata && mt9p031->pdata->pixclk_pol) {
 		ret = mt9p031_write(client, MT9P031_PIXEL_CLOCK_CONTROL,
 				MT9P031_PIXEL_CLOCK_INVERT);
@@ -390,9 +380,7 @@ static int __mt9p031_set_power(struct mt9p031 *mt9p031, bool on)
 	return v4l2_ctrl_handler_setup(&mt9p031->ctrls);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev video operations
- */
+ 
 
 static int mt9p031_set_params(struct mt9p031 *mt9p031)
 {
@@ -407,12 +395,7 @@ static int mt9p031_set_params(struct mt9p031 *mt9p031)
 	unsigned int ybin;
 	int ret;
 
-	/* Windows position and size.
-	 *
-	 * TODO: Make sure the start coordinates and window size match the
-	 * skipping, binning and mirroring (see description of registers 2 and 4
-	 * in table 13, and Binning section on page 41).
-	 */
+	 
 	ret = mt9p031_write(client, MT9P031_COLUMN_START, crop->left);
 	if (ret < 0)
 		return ret;
@@ -426,9 +409,7 @@ static int mt9p031_set_params(struct mt9p031 *mt9p031)
 	if (ret < 0)
 		return ret;
 
-	/* Row and column binning and skipping. Use the maximum binning value
-	 * compatible with the skipping settings.
-	 */
+	 
 	xskip = DIV_ROUND_CLOSEST(crop->width, format->width);
 	yskip = DIV_ROUND_CLOSEST(crop->height, format->height);
 	xbin = 1 << (ffs(xskip) - 1);
@@ -443,9 +424,7 @@ static int mt9p031_set_params(struct mt9p031 *mt9p031)
 	if (ret < 0)
 		return ret;
 
-	/* Blanking - use minimum value for horizontal blanking and default
-	 * value for vertical blanking.
-	 */
+	 
 	hblank = 346 * ybin + 64 + (80 >> min_t(unsigned int, xbin, 3));
 	vblank = MT9P031_VERTICAL_BLANK_DEF;
 
@@ -467,19 +446,19 @@ static int mt9p031_s_stream(struct v4l2_subdev *subdev, int enable)
 	int ret;
 
 	if (!enable) {
-		/* enable pause restart */
+		 
 		val = MT9P031_FRAME_PAUSE_RESTART;
 		ret = mt9p031_write(client, MT9P031_RESTART, val);
 		if (ret < 0)
 			return ret;
 
-		/* enable restart + keep pause restart set */
+		 
 		val |= MT9P031_FRAME_RESTART;
 		ret = mt9p031_write(client, MT9P031_RESTART, val);
 		if (ret < 0)
 			return ret;
 
-		/* Stop sensor readout */
+		 
 		ret = mt9p031_set_output_control(mt9p031,
 						 MT9P031_OUTPUT_CONTROL_CEN, 0);
 		if (ret < 0)
@@ -492,17 +471,13 @@ static int mt9p031_s_stream(struct v4l2_subdev *subdev, int enable)
 	if (ret < 0)
 		return ret;
 
-	/* Switch to master "normal" mode */
+	 
 	ret = mt9p031_set_output_control(mt9p031, 0,
 					 MT9P031_OUTPUT_CONTROL_CEN);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * - clear pause restart
-	 * - don't clear restart as clearing restart manually can cause
-	 *   undefined behavior
-	 */
+	 
 	val = MT9P031_FRAME_RESTART;
 	ret = mt9p031_write(client, MT9P031_RESTART, val);
 	if (ret < 0)
@@ -600,7 +575,7 @@ static int mt9p031_set_format(struct v4l2_subdev *subdev,
 	__crop = __mt9p031_get_pad_crop(mt9p031, sd_state, format->pad,
 					format->which);
 
-	/* Clamp the width and height to avoid dividing by zero. */
+	 
 	width = clamp_t(unsigned int, ALIGN(format->format.width, 2),
 			max_t(unsigned int, __crop->width / 7,
 			      MT9P031_WINDOW_WIDTH_MIN),
@@ -659,9 +634,7 @@ static int mt9p031_set_selection(struct v4l2_subdev *subdev,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/* Clamp the crop rectangle boundaries and align them to a multiple of 2
-	 * pixels to ensure a GRBG Bayer pattern.
-	 */
+	 
 	rect.left = clamp(ALIGN(sel->r.left, 2), MT9P031_COLUMN_START_MIN,
 			  MT9P031_COLUMN_START_MAX);
 	rect.top = clamp(ALIGN(sel->r.top, 2), MT9P031_ROW_START_MIN,
@@ -682,9 +655,7 @@ static int mt9p031_set_selection(struct v4l2_subdev *subdev,
 					sel->which);
 
 	if (rect.width != __crop->width || rect.height != __crop->height) {
-		/* Reset the output image size if the crop rectangle size has
-		 * been modified.
-		 */
+		 
 		__format = __mt9p031_get_pad_format(mt9p031, sd_state,
 						    sel->pad,
 						    sel->which);
@@ -728,9 +699,7 @@ static int mt9p031_init_cfg(struct v4l2_subdev *subdev,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev control operations
- */
+ 
 
 #define V4L2_CID_BLC_AUTO		(V4L2_CID_USER_BASE | 0x1002)
 #define V4L2_CID_BLC_TARGET_LEVEL	(V4L2_CID_USER_BASE | 0x1003)
@@ -781,20 +750,7 @@ static int mt9p031_s_ctrl(struct v4l2_ctrl *ctrl)
 				     ctrl->val & 0xffff);
 
 	case V4L2_CID_GAIN:
-		/* Gain is controlled by 2 analog stages and a digital stage.
-		 * Valid values for the 3 stages are
-		 *
-		 * Stage                Min     Max     Step
-		 * ------------------------------------------
-		 * First analog stage   x1      x2      1
-		 * Second analog stage  x1      x4      0.125
-		 * Digital stage        x1      x16     0.125
-		 *
-		 * To minimize noise, the gain stages should be used in the
-		 * second analog stage, first analog stage, digital stage order.
-		 * Gain from a previous stage should be pushed to its maximum
-		 * value before the next stage is used.
-		 */
+		 
 		if (ctrl->val <= 32) {
 			data = ctrl->val;
 		} else if (ctrl->val <= 64) {
@@ -824,16 +780,12 @@ static int mt9p031_s_ctrl(struct v4l2_ctrl *ctrl)
 					MT9P031_READ_MODE_2_ROW_MIR, 0);
 
 	case V4L2_CID_TEST_PATTERN:
-		/* The digital side of the Black Level Calibration function must
-		 * be disabled when generating a test pattern to avoid artifacts
-		 * in the image. Activate (deactivate) the BLC-related controls
-		 * when the test pattern is enabled (disabled).
-		 */
+		 
 		v4l2_ctrl_activate(mt9p031->blc_auto, ctrl->val == 0);
 		v4l2_ctrl_activate(mt9p031->blc_offset, ctrl->val == 0);
 
 		if (!ctrl->val) {
-			/* Restore the BLC settings. */
+			 
 			ret = mt9p031_restore_blc(mt9p031);
 			if (ret < 0)
 				return ret;
@@ -851,7 +803,7 @@ static int mt9p031_s_ctrl(struct v4l2_ctrl *ctrl)
 		if (ret < 0)
 			return ret;
 
-		/* Disable digital BLC when generating a test pattern. */
+		 
 		ret = mt9p031_set_mode2(mt9p031, MT9P031_READ_MODE_2_ROW_BLC,
 					0);
 		if (ret < 0)
@@ -962,9 +914,7 @@ static const struct v4l2_ctrl_config mt9p031_ctrls[] = {
 	}
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev core operations
- */
+ 
 
 static int mt9p031_set_power(struct v4l2_subdev *subdev, int on)
 {
@@ -973,16 +923,14 @@ static int mt9p031_set_power(struct v4l2_subdev *subdev, int on)
 
 	mutex_lock(&mt9p031->power_lock);
 
-	/* If the power count is modified from 0 to != 0 or from != 0 to 0,
-	 * update the power state.
-	 */
+	 
 	if (mt9p031->power_count == !on) {
 		ret = __mt9p031_set_power(mt9p031, !!on);
 		if (ret < 0)
 			goto out;
 	}
 
-	/* Update the power count. */
+	 
 	mt9p031->power_count += on ? 1 : -1;
 	WARN_ON(mt9p031->power_count < 0);
 
@@ -991,9 +939,7 @@ out:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev internal operations
- */
+ 
 
 static int mt9p031_registered(struct v4l2_subdev *subdev)
 {
@@ -1008,7 +954,7 @@ static int mt9p031_registered(struct v4l2_subdev *subdev)
 		return ret;
 	}
 
-	/* Read out the chip version register */
+	 
 	data = mt9p031_read(client, MT9P031_CHIP_VERSION);
 	mt9p031_power_off(mt9p031);
 
@@ -1064,9 +1010,7 @@ static const struct v4l2_subdev_internal_ops mt9p031_subdev_internal_ops = {
 	.close = mt9p031_close,
 };
 
-/* -----------------------------------------------------------------------------
- * Driver initialization and probing
- */
+ 
 
 static struct mt9p031_platform_data *
 mt9p031_get_pdata(struct i2c_client *client)
@@ -1238,7 +1182,7 @@ static const struct of_device_id mt9p031_of_match[] = {
 	{ .compatible = "aptina,mt9p006", },
 	{ .compatible = "aptina,mt9p031", },
 	{ .compatible = "aptina,mt9p031m", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt9p031_of_match);
 #endif

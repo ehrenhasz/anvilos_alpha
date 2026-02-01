@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ioperm.c - Test case for ioperm(2)
- * Copyright (c) 2015 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <err.h>
@@ -96,10 +93,7 @@ int main(void)
 	expect_gp(0x80);
 	expect_gp(0xed);
 
-	/*
-	 * Probe for ioperm support.  Note that clearing ioperm bits
-	 * works even as nonroot.
-	 */
+	 
 	printf("[RUN]\tenable 0x80\n");
 	if (ioperm(0x80, 1, 1) != 0) {
 		printf("[OK]\tioperm(0x80, 1, 1) failed (%d) -- try running as root\n",
@@ -117,7 +111,7 @@ int main(void)
 	expect_gp(0x80);
 	expect_gp(0xed);
 
-	/* Make sure that fork() preserves ioperm. */
+	 
 	if (ioperm(0x80, 1, 1) != 0) {
 		printf("[FAIL]\tioperm(0x80, 1, 0) failed (%d)", errno);
 		return 1;
@@ -157,11 +151,11 @@ int main(void)
 		}
 	}
 
-	/* Verify that the child dropping 0x80 did not affect the parent */
+	 
 	printf("\tVerify that unsharing the bitmap worked\n");
 	expect_ok(0x80);
 
-	/* Test the capability checks. */
+	 
 	printf("\tDrop privileges\n");
 	if (setresuid(1, 1, 1) != 0) {
 		printf("[WARN]\tDropping privileges failed\n");

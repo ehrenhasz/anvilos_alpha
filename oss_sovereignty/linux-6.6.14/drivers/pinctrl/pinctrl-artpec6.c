@@ -1,12 +1,4 @@
-/*
- * Driver for the Axis ARTPEC-6 pin controller
- *
- * Author: Chris Paterson <chris.paterson@linux.pieboy.co.uk>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -23,10 +15,10 @@
 #include "pinconf.h"
 #include "pinctrl-utils.h"
 
-#define ARTPEC6_LAST_PIN	97	/* 97 pins in pinmux */
-#define ARTPEC6_MAX_MUXABLE	35	/* Last pin with muxable function */
+#define ARTPEC6_LAST_PIN	97	 
+#define ARTPEC6_MAX_MUXABLE	35	 
 
-/* Pinmux control register bit definitions */
+ 
 #define ARTPEC6_PINMUX_UDC0_MASK	0x00000001
 #define ARTPEC6_PINMUX_UDC0_SHIFT	0
 #define ARTPEC6_PINMUX_UDC1_MASK	0x00000002
@@ -36,13 +28,13 @@
 #define ARTPEC6_PINMUX_SEL_MASK		0x00003000
 #define ARTPEC6_PINMUX_SEL_SHIFT	12
 
-/* Pinmux configurations */
+ 
 #define ARTPEC6_CONFIG_0		0
 #define ARTPEC6_CONFIG_1		1
 #define ARTPEC6_CONFIG_2		2
 #define ARTPEC6_CONFIG_3		3
 
-/* Pin drive strength options */
+ 
 #define ARTPEC6_DRIVE_4mA		4
 #define ARTPEC6_DRIVE_4mA_SET		0
 #define ARTPEC6_DRIVE_6mA		6
@@ -77,7 +69,7 @@ struct artpec6_pmx_func {
 	const unsigned int num_groups;
 };
 
-/* pins */
+ 
 static struct pinctrl_pin_desc artpec6_pins[] = {
 	PINCTRL_PIN(0, "GPIO0"),
 	PINCTRL_PIN(1, "GPIO1"),
@@ -277,61 +269,61 @@ static const struct artpec6_pin_group artpec6_pin_groups[] = {
 		.config = ARTPEC6_CONFIG_3,
 	},
 	{
-		.name = "uart0grp0",	/* All pins. */
+		.name = "uart0grp0",	 
 		.pins = uart0_pins0,
 		.num_pins = ARRAY_SIZE(uart0_pins0),
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart0grp1",	/* RX/TX and RTS/CTS */
+		.name = "uart0grp1",	 
 		.pins = uart0_pins1,
 		.num_pins = ARRAY_SIZE(uart0_pins1),
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart0grp2",	/* Only RX/TX pins. */
+		.name = "uart0grp2",	 
 		.pins = uart0_pins1,
 		.num_pins = ARRAY_SIZE(uart0_pins1) - 2,
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart1grp0",	/* RX/TX and RTS/CTS */
+		.name = "uart1grp0",	 
 		.pins = uart1_pins0,
 		.num_pins = ARRAY_SIZE(uart1_pins0),
 		.config = ARTPEC6_CONFIG_2,
 	},
 	{
-		.name = "uart1grp1",	/* Only RX/TX pins. */
+		.name = "uart1grp1",	 
 		.pins = uart1_pins0,
 		.num_pins = 2,
 		.config = ARTPEC6_CONFIG_2,
 	},
 	{
-		.name = "uart2grp0",	/* Full pinout */
+		.name = "uart2grp0",	 
 		.pins = uart2_pins0,
 		.num_pins = ARRAY_SIZE(uart2_pins0),
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart2grp1",	/* RX/TX and RTS/CTS */
+		.name = "uart2grp1",	 
 		.pins = uart2_pins1,
 		.num_pins = ARRAY_SIZE(uart2_pins1),
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart2grp2",	/* Only RX/TX */
+		.name = "uart2grp2",	 
 		.pins = uart2_pins1,
 		.num_pins = 2,
 		.config = ARTPEC6_CONFIG_1,
 	},
 	{
-		.name = "uart3grp0",	/* RX/TX and CTS/RTS */
+		.name = "uart3grp0",	 
 		.pins = uart3_pins0,
 		.num_pins = ARRAY_SIZE(uart3_pins0),
 		.config = ARTPEC6_CONFIG_0,
 	},
 	{
-		.name = "uart3grp1",	/* Only RX/TX */
+		.name = "uart3grp1",	 
 		.pins = uart3_pins0,
 		.num_pins = ARRAY_SIZE(uart3_pins0),
 		.config = ARTPEC6_CONFIG_0,
@@ -343,19 +335,19 @@ static const struct artpec6_pin_group artpec6_pin_groups[] = {
 		.config = ARTPEC6_CONFIG_2,
 	},
 	{
-		.name = "uart5grp0",	/* TX/RX and RTS/CTS */
+		.name = "uart5grp0",	 
 		.pins = uart5_pins0,
 		.num_pins = ARRAY_SIZE(uart5_pins0),
 		.config = ARTPEC6_CONFIG_2,
 	},
 	{
-		.name = "uart5grp1",	/* Only TX/RX */
+		.name = "uart5grp1",	 
 		.pins = uart5_pins0,
 		.num_pins = 2,
 		.config = ARTPEC6_CONFIG_2,
 	},
 	{
-		.name = "uart5nocts",	/* TX/RX/RTS */
+		.name = "uart5nocts",	 
 		.pins = uart5_pins0,
 		.num_pins = ARRAY_SIZE(uart5_pins0) - 1,
 		.config = ARTPEC6_CONFIG_2,
@@ -392,15 +384,11 @@ struct pin_register {
 	unsigned int reg_base;
 };
 
-/*
- * The register map has two holes where the pin number
- * no longer fits directly with the register offset.
- * This table allows us to map this easily.
- */
+ 
 static const struct pin_register pin_register[] = {
-	{ 0, 35, 0x0 },		/* 0x0 - 0x8c */
-	{ 36, 52, 0x100 },	/* 0x100 - 0x140 */
-	{ 53, 96, 0x180 },	/* 0x180 - 0x22c */
+	{ 0, 35, 0x0 },		 
+	{ 36, 52, 0x100 },	 
+	{ 53, 96, 0x180 },	 
 };
 
 static unsigned int artpec6_pmx_reg_offset(unsigned int pin)
@@ -413,10 +401,7 @@ static unsigned int artpec6_pmx_reg_offset(unsigned int pin)
 				pin_register[i].reg_base;
 		}
 	}
-	/*
-	 * Anything we return here is wrong, but we can only
-	 * get here if pin is outside registered range.
-	 */
+	 
 	pr_err("%s: Impossible pin %d\n", __func__, pin);
 	return 0;
 }
@@ -470,7 +455,7 @@ static unsigned int artpec6_pconf_drive_field_to_mA(int field)
 	case ARTPEC6_DRIVE_9mA_SET:
 		return ARTPEC6_DRIVE_9mA;
 	default:
-		/* Shouldn't happen */
+		 
 		return 0;
 	}
 }
@@ -660,15 +645,12 @@ static void artpec6_pmx_select_func(struct pinctrl_dev *pctldev,
 	struct artpec6_pmx *pmx = pinctrl_dev_get_drvdata(pctldev);
 
 	for (i = 0; i < artpec6_pin_groups[group].num_pins; i++) {
-		/*
-		 * Registers for pins above a ARTPEC6_MAX_MUXABLE
-		 * do not have a SEL field and are always selected.
-		 */
+		 
 		if (artpec6_pin_groups[group].pins[i] > ARTPEC6_MAX_MUXABLE)
 			continue;
 
 		if (!strcmp(artpec6_pmx_get_fname(pctldev, function), "gpio")) {
-			/* GPIO is always config 0 */
+			 
 			val = ARTPEC6_CONFIG_0 << ARTPEC6_PINMUX_SEL_SHIFT;
 		} else {
 			if (enable)
@@ -737,7 +719,7 @@ static int artpec6_pconf_get(struct pinctrl_dev *pctldev, unsigned int pin,
 	enum pin_config_param param = pinconf_to_config_param(*config);
 	unsigned int regval;
 
-	/* Check for valid pin */
+	 
 	if (pin >= pmx->num_pins) {
 		dev_dbg(pmx->dev, "pinconf is not supported for pin %s\n",
 			pmx->pins[pin].name);
@@ -747,10 +729,10 @@ static int artpec6_pconf_get(struct pinctrl_dev *pctldev, unsigned int pin,
 	dev_dbg(pmx->dev, "getting configuration for pin %s\n",
 		pmx->pins[pin].name);
 
-	/* Read pin register values */
+	 
 	regval = readl(pmx->base + artpec6_pmx_reg_offset(pin));
 
-	/* If valid, get configuration for parameter */
+	 
 	switch (param) {
 	case PIN_CONFIG_BIAS_DISABLE:
 		if (!(regval & ARTPEC6_PINMUX_UDC1_MASK))
@@ -780,17 +762,7 @@ static int artpec6_pconf_get(struct pinctrl_dev *pctldev, unsigned int pin,
 	return 0;
 }
 
-/*
- * Valid combinations of param and arg:
- *
- * param		     arg
- * PIN_CONFIG_BIAS_DISABLE:   x (disable bias)
- * PIN_CONFIG_BIAS_PULL_UP:   1 (pull up bias + enable)
- * PIN_CONFIG_BIAS_PULL_DOWN: 1 (pull down bias + enable)
- * PIN_CONFIG_DRIVE_STRENGTH: x (4mA, 6mA, 8mA, 9mA)
- *
- * All other args are invalid. All other params are not supported.
- */
+ 
 static int artpec6_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 			     unsigned long *configs, unsigned int num_configs)
 {
@@ -801,7 +773,7 @@ static int artpec6_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 	void __iomem *reg;
 	int i;
 
-	/* Check for valid pin */
+	 
 	if (pin >= pmx->num_pins) {
 		dev_dbg(pmx->dev, "pinconf is not supported for pin %s\n",
 			pmx->pins[pin].name);
@@ -813,7 +785,7 @@ static int artpec6_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 
 	reg = pmx->base + artpec6_pmx_reg_offset(pin);
 
-	/* For each config */
+	 
 	for (i = 0; i < num_configs; i++) {
 		int drive;
 
@@ -836,7 +808,7 @@ static int artpec6_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 
 			regval = readl(reg);
 			regval |= (arg << ARTPEC6_PINMUX_UDC0_SHIFT);
-			regval &= ~ARTPEC6_PINMUX_UDC1_MASK; /* Enable */
+			regval &= ~ARTPEC6_PINMUX_UDC1_MASK;  
 			writel(regval, reg);
 			break;
 
@@ -849,7 +821,7 @@ static int artpec6_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 
 			regval = readl(reg);
 			regval &= ~(arg << ARTPEC6_PINMUX_UDC0_SHIFT);
-			regval &= ~ARTPEC6_PINMUX_UDC1_MASK; /* Enable */
+			regval &= ~ARTPEC6_PINMUX_UDC1_MASK;  
 			writel(regval, reg);
 			break;
 
@@ -917,7 +889,7 @@ static struct pinctrl_desc artpec6_desc = {
 	.confops = &artpec6_pconf_ops,
 };
 
-/* The reset values say 4mA, but we want 8mA as default. */
+ 
 static void artpec6_pmx_reset(struct artpec6_pmx *pmx)
 {
 	void __iomem *base = pmx->base;

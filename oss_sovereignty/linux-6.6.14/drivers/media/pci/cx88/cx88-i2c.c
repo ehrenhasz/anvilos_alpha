@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- *
- * cx88-i2c.c  --  all the i2c code is here
- *
- * Copyright (C) 1996,97,98 Ralph  Metzler (rjkm@thp.uni-koeln.de)
- *			   & Marcus Metzler (mocm@thp.uni-koeln.de)
- * (c) 2002 Yurij Sysoev <yurij@naturesoft.net>
- * (c) 1999-2003 Gerd Knorr <kraxel@bytesex.org>
- * (c) 2005 Mauro Carvalho Chehab <mchehab@kernel.org>
- *	- Multituner support and i2c address binding
- */
+
+ 
 
 #include "cx88.h"
 
@@ -39,7 +29,7 @@ MODULE_PARM_DESC(i2c_udelay,
 			__func__, ##arg);				\
 } while (0)
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static void cx8800_bit_setscl(void *data, int state)
 {
@@ -83,7 +73,7 @@ static int cx8800_bit_getsda(void *data)
 	return state & 0x01;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_algo_bit_data cx8800_i2c_algo_template = {
 	.setsda  = cx8800_bit_setsda,
@@ -94,7 +84,7 @@ static const struct i2c_algo_bit_data cx8800_i2c_algo_template = {
 	.timeout = 200,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const char * const i2c_devs[128] = {
 	[0x1c >> 1] = "lgdt330x",
@@ -120,10 +110,10 @@ static void do_i2c_scan(const char *name, struct i2c_client *c)
 	}
 }
 
-/* init + register i2c adapter */
+ 
 int cx88_i2c_init(struct cx88_core *core, struct pci_dev *pci)
 {
-	/* Prevents usage of invalid delay values */
+	 
 	if (i2c_udelay < 5)
 		i2c_udelay = 5;
 

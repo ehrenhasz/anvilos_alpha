@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Camera Access Layer (CAL) - Video Device
- *
- * Copyright (c) 2015-2020 Texas Instruments Inc.
- *
- * Authors:
- *	Benoit Parrot <bparrot@ti.com>
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/ioctl.h>
 #include <linux/pm_runtime.h>
@@ -25,7 +17,7 @@
 
 #include "cal.h"
 
-/*  Print Four-character-code (FOURCC) */
+ 
 static char *fourcc_to_str(u32 fmt)
 {
 	static char code[5];
@@ -39,10 +31,7 @@ static char *fourcc_to_str(u32 fmt)
 	return code;
 }
 
-/* ------------------------------------------------------------------
- *	V4L2 Common IOCTLs
- * ------------------------------------------------------------------
- */
+ 
 
 static int cal_querycap(struct file *file, void *priv,
 			struct v4l2_capability *cap)
@@ -63,10 +52,7 @@ static int cal_g_fmt_vid_cap(struct file *file, void *priv,
 	return 0;
 }
 
-/* ------------------------------------------------------------------
- *	V4L2 Video Node Centric IOCTLs
- * ------------------------------------------------------------------
- */
+ 
 
 static const struct cal_format_info *find_format_by_pix(struct cal_ctx *ctx,
 							u32 pixelformat)
@@ -164,11 +150,7 @@ static void cal_calc_format_size(struct cal_ctx *ctx,
 {
 	u32 bpl, max_width;
 
-	/*
-	 * Maximum width is bound by the DMA max width in bytes.
-	 * We need to recalculate the actual maxi width depending on the
-	 * number of bytes per pixels required.
-	 */
+	 
 	max_width = CAL_MAX_WIDTH_BYTES / (ALIGN(fmtinfo->bpp, 8) >> 3);
 	v4l_bound_align_image(&f->fmt.pix.width, 48, max_width, 2,
 			      &f->fmt.pix.height, 32, CAL_MAX_HEIGHT_LINES,
@@ -201,14 +183,14 @@ static int cal_legacy_try_fmt_vid_cap(struct file *file, void *priv,
 		ctx_dbg(3, ctx, "Fourcc format (0x%08x) not found.\n",
 			f->fmt.pix.pixelformat);
 
-		/* Just get the first one enumerated */
+		 
 		fmtinfo = ctx->active_fmt[0];
 		f->fmt.pix.pixelformat = fmtinfo->fourcc;
 	}
 
 	f->fmt.pix.field = ctx->v_fmt.fmt.pix.field;
 
-	/* check for/find a valid width/height */
+	 
 	found = false;
 	fse.pad = 0;
 	fse.code = fmtinfo->code;
@@ -234,15 +216,12 @@ static int cal_legacy_try_fmt_vid_cap(struct file *file, void *priv,
 	}
 
 	if (!found) {
-		/* use existing values as default */
+		 
 		f->fmt.pix.width = ctx->v_fmt.fmt.pix.width;
 		f->fmt.pix.height =  ctx->v_fmt.fmt.pix.height;
 	}
 
-	/*
-	 * Use current colorspace for now, it will get
-	 * updated properly during s_fmt
-	 */
+	 
 	f->fmt.pix.colorspace = ctx->v_fmt.fmt.pix.colorspace;
 	cal_calc_format_size(ctx, fmtinfo, f);
 	return 0;
@@ -277,7 +256,7 @@ static int cal_legacy_s_fmt_vid_cap(struct file *file, void *priv,
 	if (ret)
 		return ret;
 
-	/* Just double check nothing has gone wrong */
+	 
 	if (sd_fmt.format.code != fmtinfo->code) {
 		ctx_dbg(3, ctx,
 			"%s subdev changed format on us, this should not happen\n",
@@ -311,7 +290,7 @@ static int cal_legacy_enum_framesizes(struct file *file, void *fh,
 	};
 	int ret;
 
-	/* check for valid format */
+	 
 	fmtinfo = find_format_by_pix(ctx, fsize->pixel_format);
 	if (!fmtinfo) {
 		ctx_dbg(3, ctx, "Invalid pixel code: %x\n",
@@ -359,7 +338,7 @@ static int cal_legacy_s_input(struct file *file, void *priv, unsigned int i)
 	return i > 0 ? -EINVAL : 0;
 }
 
-/* timeperframe is arbitrary and continuous */
+ 
 static int cal_legacy_enum_frameintervals(struct file *file, void *priv,
 					  struct v4l2_frmivalenum *fival)
 {
@@ -429,10 +408,7 @@ static const struct v4l2_ioctl_ops cal_ioctl_legacy_ops = {
 	.vidioc_s_parm		= cal_legacy_s_parm,
 };
 
-/* ------------------------------------------------------------------
- *	V4L2 Media Controller Centric IOCTLs
- * ------------------------------------------------------------------
- */
+ 
 
 static int cal_mc_enum_fmt_vid_cap(struct file *file, void  *priv,
 				   struct v4l2_fmtdesc *f)
@@ -468,19 +444,12 @@ static void cal_mc_try_fmt(struct cal_ctx *ctx, struct v4l2_format *f,
 	const struct cal_format_info *fmtinfo;
 	unsigned int bpp;
 
-	/*
-	 * Default to the first format if the requested pixel format code isn't
-	 * supported.
-	 */
+	 
 	fmtinfo = cal_format_by_fourcc(f->fmt.pix.pixelformat);
 	if (!fmtinfo)
 		fmtinfo = &cal_formats[0];
 
-	/*
-	 * Clamp the size, update the pixel format. The field and colorspace are
-	 * accepted as-is, except for V4L2_FIELD_ANY that is turned into
-	 * V4L2_FIELD_NONE.
-	 */
+	 
 	bpp = ALIGN(fmtinfo->bpp, 8);
 
 	format->width = clamp_t(unsigned int, format->width,
@@ -493,11 +462,7 @@ static void cal_mc_try_fmt(struct cal_ctx *ctx, struct v4l2_format *f,
 	if (format->field == V4L2_FIELD_ANY)
 		format->field = V4L2_FIELD_NONE;
 
-	/*
-	 * Calculate the number of bytes per line and the image size. The
-	 * hardware stores the stride as a number of 16 bytes words, in a
-	 * signed 15-bit value. Only 14 bits are thus usable.
-	 */
+	 
 	format->bytesperline = ALIGN(clamp(format->bytesperline,
 					   format->width * bpp / 8,
 					   ((1U << 14) - 1) * 16), 16);
@@ -592,10 +557,7 @@ static const struct v4l2_ioctl_ops cal_ioctl_mc_ops = {
 	.vidioc_log_status    = v4l2_ctrl_log_status,
 };
 
-/* ------------------------------------------------------------------
- *	videobuf2 Common Operations
- * ------------------------------------------------------------------
- */
+ 
 
 static int cal_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,
@@ -647,7 +609,7 @@ static void cal_buffer_queue(struct vb2_buffer *vb)
 					      vb.vb2_buf);
 	unsigned long flags;
 
-	/* recheck locking */
+	 
 	spin_lock_irqsave(&ctx->dma.lock, flags);
 	list_add_tail(&buf->list, &ctx->dma.queue);
 	spin_unlock_irqrestore(&ctx->dma.lock, flags);
@@ -658,7 +620,7 @@ static void cal_release_buffers(struct cal_ctx *ctx,
 {
 	struct cal_buffer *buf, *tmp;
 
-	/* Release all queued buffers. */
+	 
 	spin_lock_irq(&ctx->dma.lock);
 
 	list_for_each_entry_safe(buf, tmp, &ctx->dma.queue, list) {
@@ -679,10 +641,7 @@ static void cal_release_buffers(struct cal_ctx *ctx,
 	spin_unlock_irq(&ctx->dma.lock);
 }
 
-/* ------------------------------------------------------------------
- *	videobuf2 Operations
- * ------------------------------------------------------------------
- */
+ 
 
 static int cal_video_check_format(struct cal_ctx *ctx)
 {
@@ -730,10 +689,7 @@ static int cal_start_streaming(struct vb2_queue *vq, unsigned int count)
 		goto error_release_buffers;
 	}
 
-	/*
-	 * Verify that the currently configured format matches the output of
-	 * the connected CAMERARX.
-	 */
+	 
 	ret = cal_video_check_format(ctx);
 	if (ret < 0) {
 		ctx_dbg(3, ctx,
@@ -811,17 +767,14 @@ static const struct vb2_ops cal_video_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* ------------------------------------------------------------------
- *	V4L2 Initialization and Registration
- * ------------------------------------------------------------------
- */
+ 
 
 static const struct v4l2_file_operations cal_fops = {
 	.owner		= THIS_MODULE,
 	.open           = v4l2_fh_open,
 	.release        = vb2_fop_release,
 	.poll		= vb2_fop_poll,
-	.unlocked_ioctl = video_ioctl2, /* V4L2 ioctl handler */
+	.unlocked_ioctl = video_ioctl2,  
 	.mmap           = vb2_fop_mmap,
 };
 
@@ -832,7 +785,7 @@ static int cal_ctx_v4l2_init_formats(struct cal_ctx *ctx)
 	unsigned int i, j, k;
 	int ret = 0;
 
-	/* Enumerate sub device formats and enable all matching local formats */
+	 
 	ctx->active_fmt = devm_kcalloc(ctx->cal->dev, cal_num_formats,
 				       sizeof(*ctx->active_fmt), GFP_KERNEL);
 	if (!ctx->active_fmt)
@@ -892,7 +845,7 @@ static int cal_ctx_v4l2_init_formats(struct cal_ctx *ctx)
 		return -EINVAL;
 	}
 
-	/* Save current format */
+	 
 	v4l2_fill_pix_format(&ctx->v_fmt.fmt.pix, &mbus_fmt);
 	ctx->v_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	ctx->v_fmt.fmt.pix.pixelformat = fmtinfo->fourcc;
@@ -922,7 +875,7 @@ static int cal_ctx_v4l2_init_mc_format(struct cal_ctx *ctx)
 
 	ctx->v_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-	/* Save current format */
+	 
 	cal_calc_format_size(ctx, fmtinfo, &ctx->v_fmt);
 	ctx->fmtinfo = fmtinfo;
 
@@ -1000,7 +953,7 @@ int cal_ctx_v4l2_init(struct cal_ctx *ctx)
 	mutex_init(&ctx->mutex);
 	init_waitqueue_head(&ctx->dma.wait);
 
-	/* Initialize the vb2 queue. */
+	 
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_DMABUF;
 	q->drv_priv = ctx;
@@ -1016,7 +969,7 @@ int cal_ctx_v4l2_init(struct cal_ctx *ctx)
 	if (ret)
 		return ret;
 
-	/* Initialize the video device and media entity. */
+	 
 	vfd->fops = &cal_fops;
 	vfd->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING
 			 | (cal_mc_api ? V4L2_CAP_IO_MC : 0);
@@ -1034,7 +987,7 @@ int cal_ctx_v4l2_init(struct cal_ctx *ctx)
 		return ret;
 
 	if (!cal_mc_api) {
-		/* Initialize the control handler. */
+		 
 		struct v4l2_ctrl_handler *hdl = &ctx->ctrl_handler;
 
 		ret = v4l2_ctrl_handler_init(hdl, 11);

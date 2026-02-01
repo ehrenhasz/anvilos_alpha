@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An i2c driver for the Xicor/Intersil X1205 RTC
- * Copyright 2004 Karen Spearel
- * Copyright 2005 Alessandro Zummo
- *
- * please send all reports to:
- *	Karen Spearel <kas111 at gmail dot com>
- *	Alessandro Zummo <a.zummo@towertech.it>
- *
- * based on a lot of other RTC drivers.
- *
- * Information and datasheet:
- * http://www.intersil.com/cda/deviceinfo/0,1477,X1205,00.html
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/bcd.h>
@@ -21,7 +8,7 @@
 #include <linux/module.h>
 #include <linux/bitops.h>
 
-/* offsets into CCR area */
+ 
 
 #define CCR_SEC			0
 #define CCR_MIN			1
@@ -32,7 +19,7 @@
 #define CCR_WDAY		6
 #define CCR_Y2K			7
 
-#define X1205_REG_SR		0x3F	/* status register */
+#define X1205_REG_SR		0x3F	 
 #define X1205_REG_Y2K		0x37
 #define X1205_REG_DW		0x36
 #define X1205_REG_YR		0x35
@@ -62,29 +49,25 @@
 #define X1205_REG_MNA0		0x01
 #define X1205_REG_SCA0		0x00
 
-#define X1205_CCR_BASE		0x30	/* Base address of CCR */
-#define X1205_ALM0_BASE		0x00	/* Base address of ALARM0 */
+#define X1205_CCR_BASE		0x30	 
+#define X1205_ALM0_BASE		0x00	 
 
-#define X1205_SR_RTCF		0x01	/* Clock failure */
-#define X1205_SR_WEL		0x02	/* Write Enable Latch */
-#define X1205_SR_RWEL		0x04	/* Register Write Enable */
-#define X1205_SR_AL0		0x20	/* Alarm 0 match */
+#define X1205_SR_RTCF		0x01	 
+#define X1205_SR_WEL		0x02	 
+#define X1205_SR_RWEL		0x04	 
+#define X1205_SR_AL0		0x20	 
 
 #define X1205_DTR_DTR0		0x01
 #define X1205_DTR_DTR1		0x02
 #define X1205_DTR_DTR2		0x04
 
-#define X1205_HR_MIL		0x80	/* Set in ccr.hour for 24 hr mode */
+#define X1205_HR_MIL		0x80	 
 
-#define X1205_INT_AL0E		0x20	/* Alarm 0 enable */
+#define X1205_INT_AL0E		0x20	 
 
 static struct i2c_driver x1205_driver;
 
-/*
- * In the routines that deal directly with the x1205 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch
- * Epoch is initialized as 2000. Time is set to UTC.
- */
+ 
 static int x1205_get_datetime(struct i2c_client *client, struct rtc_time *tm,
 				unsigned char reg_base)
 {
@@ -93,12 +76,12 @@ static int x1205_get_datetime(struct i2c_client *client, struct rtc_time *tm,
 	int i;
 
 	struct i2c_msg msgs[] = {
-		{/* setup read ptr */
+		{ 
 			.addr = client->addr,
 			.len = 2,
 			.buf = dt_addr
 		},
-		{/* read date */
+		{ 
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = 8,
@@ -106,7 +89,7 @@ static int x1205_get_datetime(struct i2c_client *client, struct rtc_time *tm,
 		},
 	};
 
-	/* read date registers */
+	 
 	if (i2c_transfer(client->adapter, &msgs[0], 2) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -119,16 +102,16 @@ static int x1205_get_datetime(struct i2c_client *client, struct rtc_time *tm,
 		buf[0], buf[1], buf[2], buf[3],
 		buf[4], buf[5], buf[6], buf[7]);
 
-	/* Mask out the enable bits if these are alarm registers */
+	 
 	if (reg_base < X1205_CCR_BASE)
 		for (i = 0; i <= 4; i++)
 			buf[i] &= 0x7F;
 
 	tm->tm_sec = bcd2bin(buf[CCR_SEC]);
 	tm->tm_min = bcd2bin(buf[CCR_MIN]);
-	tm->tm_hour = bcd2bin(buf[CCR_HOUR] & 0x3F); /* hr is 0-23 */
+	tm->tm_hour = bcd2bin(buf[CCR_HOUR] & 0x3F);  
 	tm->tm_mday = bcd2bin(buf[CCR_MDAY]);
-	tm->tm_mon = bcd2bin(buf[CCR_MONTH]) - 1; /* mon is 0-11 */
+	tm->tm_mon = bcd2bin(buf[CCR_MONTH]) - 1;  
 	tm->tm_year = bcd2bin(buf[CCR_YEAR])
 			+ (bcd2bin(buf[CCR_Y2K]) * 100) - 1900;
 	tm->tm_wday = buf[CCR_WDAY];
@@ -147,12 +130,12 @@ static int x1205_get_status(struct i2c_client *client, unsigned char *sr)
 	static unsigned char sr_addr[2] = { 0, X1205_REG_SR };
 
 	struct i2c_msg msgs[] = {
-		{     /* setup read ptr */
+		{      
 			.addr = client->addr,
 			.len = 2,
 			.buf = sr_addr
 		},
-		{    /* read status */
+		{     
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = 1,
@@ -160,7 +143,7 @@ static int x1205_get_status(struct i2c_client *client, unsigned char *sr)
 		},
 	};
 
-	/* read status register */
+	 
 	if (i2c_transfer(client->adapter, &msgs[0], 2) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -192,25 +175,25 @@ static int x1205_set_datetime(struct i2c_client *client, struct rtc_time *tm,
 	buf[CCR_SEC] = bin2bcd(tm->tm_sec);
 	buf[CCR_MIN] = bin2bcd(tm->tm_min);
 
-	/* set hour and 24hr bit */
+	 
 	buf[CCR_HOUR] = bin2bcd(tm->tm_hour) | X1205_HR_MIL;
 
 	buf[CCR_MDAY] = bin2bcd(tm->tm_mday);
 
-	/* month, 1 - 12 */
+	 
 	buf[CCR_MONTH] = bin2bcd(tm->tm_mon + 1);
 
-	/* year, since the rtc epoch*/
+	 
 	buf[CCR_YEAR] = bin2bcd(tm->tm_year % 100);
 	buf[CCR_WDAY] = tm->tm_wday & 0x07;
 	buf[CCR_Y2K] = bin2bcd((tm->tm_year + 1900) / 100);
 
-	/* If writing alarm registers, set compare bits on registers 0-4 */
+	 
 	if (reg_base < X1205_CCR_BASE)
 		for (i = 0; i <= 4; i++)
 			buf[i] |= 0x80;
 
-	/* this sequence is required to unlock the chip */
+	 
 	xfer = i2c_master_send(client, wel, 3);
 	if (xfer != 3) {
 		dev_err(&client->dev, "%s: wel - %d\n", __func__, xfer);
@@ -232,15 +215,15 @@ static int x1205_set_datetime(struct i2c_client *client, struct rtc_time *tm,
 		return -EIO;
 	}
 
-	/* If we wrote to the nonvolatile region, wait 10msec for write cycle*/
+	 
 	if (reg_base < X1205_CCR_BASE) {
 		unsigned char al0e[3] = { 0, X1205_REG_INT, 0 };
 
 		msleep(10);
 
-		/* ...and set or clear the AL0E bit in the INT register */
+		 
 
-		/* Need to set RWEL again as the write has cleared it */
+		 
 		xfer = i2c_master_send(client, rwel, 3);
 		if (xfer != 3) {
 			dev_err(&client->dev,
@@ -262,11 +245,11 @@ static int x1205_set_datetime(struct i2c_client *client, struct rtc_time *tm,
 			return -EIO;
 		}
 
-		/* and wait 10msec again for this write to complete */
+		 
 		msleep(10);
 	}
 
-	/* disable further writes */
+	 
 	xfer = i2c_master_send(client, diswe, 3);
 	if (xfer != 3) {
 		dev_err(&client->dev, "%s: diswe - %d\n", __func__, xfer);
@@ -296,12 +279,12 @@ static int x1205_get_dtrim(struct i2c_client *client, int *trim)
 	static unsigned char dtr_addr[2] = { 0, X1205_REG_DTR };
 
 	struct i2c_msg msgs[] = {
-		{	/* setup read ptr */
+		{	 
 			.addr = client->addr,
 			.len = 2,
 			.buf = dtr_addr
 		},
-		{      /* read dtr */
+		{       
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = 1,
@@ -309,7 +292,7 @@ static int x1205_get_dtrim(struct i2c_client *client, int *trim)
 		},
 	};
 
-	/* read dtr register */
+	 
 	if (i2c_transfer(client->adapter, &msgs[0], 2) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -337,12 +320,12 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 	static unsigned char atr_addr[2] = { 0, X1205_REG_ATR };
 
 	struct i2c_msg msgs[] = {
-		{/* setup read ptr */
+		{ 
 			.addr = client->addr,
 			.len = 2,
 			.buf = atr_addr
 		},
-		{/* read atr */
+		{ 
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = 1,
@@ -350,7 +333,7 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 		},
 	};
 
-	/* read atr register */
+	 
 	if (i2c_transfer(client->adapter, &msgs[0], 2) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -358,10 +341,7 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 
 	dev_dbg(&client->dev, "%s: raw atr=%x\n", __func__, atr);
 
-	/* atr is a two's complement value on 6 bits,
-	 * perform sign extension. The formula is
-	 * Catr = (atr * 0.25pF) + 11.00pF.
-	 */
+	 
 	atr = sign_extend32(atr, 5);
 
 	dev_dbg(&client->dev, "%s: raw atr=%x (%d)\n", __func__, atr, atr);
@@ -381,11 +361,9 @@ static int x1205_validate_client(struct i2c_client *client)
 {
 	int i, xfer;
 
-	/* Probe array. We will read the register at the specified
-	 * address and check if the given bits are zero.
-	 */
+	 
 	static const unsigned char probe_zero_pattern[] = {
-		/* register, mask */
+		 
 		X1205_REG_SR,	0x18,
 		X1205_REG_DTR,	0xF8,
 		X1205_REG_ATR,	0xC0,
@@ -394,7 +372,7 @@ static int x1205_validate_client(struct i2c_client *client)
 	};
 
 	static const struct x1205_limit probe_limits_pattern[] = {
-		/* register, mask, min, max */
+		 
 		{ X1205_REG_Y2K,	0xFF,	19,	20	},
 		{ X1205_REG_DW,		0xFF,	0,	6	},
 		{ X1205_REG_YR,		0xFF,	0,	99	},
@@ -407,7 +385,7 @@ static int x1205_validate_client(struct i2c_client *client)
 		{ X1205_REG_Y2K0,	0xFF,	19,	20	},
 	};
 
-	/* check that registers have bits a 0 where expected */
+	 
 	for (i = 0; i < ARRAY_SIZE(probe_zero_pattern); i += 2) {
 		unsigned char buf;
 
@@ -445,7 +423,7 @@ static int x1205_validate_client(struct i2c_client *client)
 		}
 	}
 
-	/* check limits (only registers with bcd values) */
+	 
 	for (i = 0; i < ARRAY_SIZE(probe_limits_pattern); i++) {
 		unsigned char reg, value;
 
@@ -497,12 +475,12 @@ static int x1205_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	static unsigned char int_addr[2] = { 0, X1205_REG_INT };
 	struct i2c_client *client = to_i2c_client(dev);
 	struct i2c_msg msgs[] = {
-		{ /* setup read ptr */
+		{  
 			.addr = client->addr,
 			.len = 2,
 			.buf = int_addr
 		},
-		{/* read INT register */
+		{ 
 
 			.addr = client->addr,
 			.flags = I2C_M_RD,
@@ -511,7 +489,7 @@ static int x1205_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		},
 	};
 
-	/* read interrupt register and status register */
+	 
 	if (i2c_transfer(client->adapter, &msgs[0], 2) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -636,7 +614,7 @@ static int x1205_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, rtc);
 
-	/* Check for power failures and eventually enable the osc */
+	 
 	err = x1205_get_status(client, &sr);
 	if (!err) {
 		if (sr & X1205_SR_RTCF) {

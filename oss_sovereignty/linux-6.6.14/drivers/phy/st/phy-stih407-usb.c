@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 STMicroelectronics
- *
- * STMicroelectronics Generic PHY driver for STiH407 USB2.
- *
- * Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -21,11 +15,11 @@
 #define PHYPARAM_REG	1
 #define PHYCTRL_REG	2
 
-/* Default PHY_SEL and REFCLKSEL configuration */
+ 
 #define STIH407_USB_PICOPHY_CTRL_PORT_CONF	0x6
 #define STIH407_USB_PICOPHY_CTRL_PORT_MASK	0x1f
 
-/* ports parameters overriding */
+ 
 #define STIH407_USB_PICOPHY_PARAM_DEF		0x39a4dc
 #define STIH407_USB_PICOPHY_PARAM_MASK		0xffffffff
 
@@ -69,13 +63,7 @@ static int stih407_usb2_exit_port(struct phy *phy)
 {
 	struct stih407_usb2_picophy *phy_dev = phy_get_drvdata(phy);
 
-	/*
-	 * Only port reset is asserted, phy global reset is kept untouched
-	 * as other ports may still be active. When all ports are in reset
-	 * state, assumption is made that power will be cut off on the phy, in
-	 * case of suspend for instance. Theoretically, asserting individual
-	 * reset (like here) or global reset should be equivalent.
-	 */
+	 
 	return reset_control_assert(phy_dev->rstport);
 }
 
@@ -113,7 +101,7 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 		return PTR_ERR(phy_dev->rstport);
 	}
 
-	/* Reset port by default: only deassert it in phy init */
+	 
 	reset_control_assert(phy_dev->rstport);
 
 	phy_dev->regmap = syscon_regmap_lookup_by_phandle(np, "st,syscfg");
@@ -156,7 +144,7 @@ static int stih407_usb2_picophy_probe(struct platform_device *pdev)
 
 static const struct of_device_id stih407_usb2_picophy_of_match[] = {
 	{ .compatible = "st,stih407-usb2-phy" },
-	{ /*sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, stih407_usb2_picophy_of_match);

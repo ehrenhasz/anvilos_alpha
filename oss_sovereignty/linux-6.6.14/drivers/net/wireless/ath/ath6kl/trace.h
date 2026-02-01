@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: ISC */
+ 
 #if !defined(_ATH6KL_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 
 #include <net/cfg80211.h>
@@ -17,11 +17,11 @@ static inline unsigned int ath6kl_get_wmi_id(void *buf, size_t buf_len)
 
 	return le16_to_cpu(hdr->cmd_id);
 }
-#endif /* __ATH6KL_TRACE_H */
+#endif  
 
 #define _ATH6KL_TRACE_H
 
-/* create empty functions when tracing is disabled */
+ 
 #if !defined(CONFIG_ATH6KL_TRACING)
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, ...) \
@@ -31,7 +31,7 @@ static inline void trace_ ## name(proto) {}
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(evt_class, name, proto, ...) \
 static inline void trace_ ## name(proto) {}
-#endif /* !CONFIG_ATH6KL_TRACING || __CHECKER__ */
+#endif  
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ath6kl
@@ -315,13 +315,13 @@ TRACE_EVENT(ath6kl_log_dbg_dump,
 	)
 );
 
-#endif /* _ ATH6KL_TRACE_H || TRACE_HEADER_MULTI_READ*/
+#endif  
 
-/* we don't want to use include/trace/events */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

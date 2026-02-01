@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #define _GNU_SOURCE
 #include <signal.h>
@@ -14,7 +14,7 @@
 #include <sys/resource.h>
 #include <setjmp.h>
 
-/* sigaltstack()-enforced minimum stack */
+ 
 #define ENFORCED_MINSIGSTKSZ	2048
 
 #ifndef AT_MINSIGSTKSZ

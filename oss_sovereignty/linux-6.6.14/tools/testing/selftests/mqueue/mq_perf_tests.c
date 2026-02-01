@@ -1,25 +1,4 @@
-/*
- * This application is Copyright 2012 Red Hat, Inc.
- *	Doug Ledford <dledford@redhat.com>
- *
- * mq_perf_tests is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * mq_perf_tests is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * For the full text of the license, see <http://www.gnu.org/licenses/>.
- *
- * mq_perf_tests.c
- *   Tests various types of message queue workloads, concentrating on those
- *   situations that invole large message sizes, large message queue depths,
- *   or both, and reports back useful metrics about kernel message queue
- *   performance.
- *
- */
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -176,11 +155,11 @@ void shutdown(int exit_val, char *err_cause, int line_no)
 	int errno_at_shutdown = errno;
 	int i;
 
-	/* In case we get called by multiple threads or from an sighandler */
+	 
 	if (in_shutdown++)
 		return;
 
-	/* Free the cpu_set allocated using CPU_ALLOC in main function */
+	 
 	CPU_FREE(cpu_set);
 
 	for (i = 0; i < num_cpus_to_pin; i++)
@@ -193,10 +172,7 @@ void shutdown(int exit_val, char *err_cause, int line_no)
 		if (mq_close(queue))
 			perror("mq_close() during shutdown");
 	if (queue_path)
-		/*
-		 * Be silent if this fails, if we cleaned up already it's
-		 * expected to fail
-		 */
+		 
 		mq_unlink(queue_path);
 	if (saved_max_msgs)
 		__set(max_msgs, saved_max_msgs,
@@ -279,16 +255,7 @@ static inline void setr(int type, struct rlimit *rlim)
 		shutdown(7, "setrlimit()", __LINE__);
 }
 
-/**
- * open_queue - open the global queue for testing
- * @attr - An attr struct specifying the desired queue traits
- * @result - An attr struct that lists the actual traits the queue has
- *
- * This open is not allowed to fail, failure will result in an orderly
- * shutdown of the program.  The global queue_path is used to set what
- * queue to open, the queue descriptor is saved in the global queue
- * variable.
- */
+ 
 static inline void open_queue(struct mq_attr *attr)
 {
 	int flags = O_RDWR | O_EXCL | O_CREAT | O_NONBLOCK;
@@ -410,18 +377,7 @@ struct test test2[] = {
 	{NULL, NULL}
 };
 
-/**
- * Tests to perform (all done with MSG_SIZE messages):
- *
- * 1) Time to add/remove message with 0 messages on queue
- * 1a) with constant prio
- * 2) Time to add/remove message when queue close to capacity:
- * 2a) with constant prio
- * 2b) with increasing prio
- * 2c) with decreasing prio
- * 2d) with random prio
- * 3) Test limits of priorities honored (double check _SC_MQ_PRIO_MAX)
- */
+ 
 void *perf_test_thread(void *arg)
 {
 	char buff[MSG_SIZE];
@@ -591,8 +547,7 @@ int main(int argc, char *argv[])
 				if (next_option)
 					option = ++next_option;
 			} while (next_option && num_cpus_to_pin < MAX_CPUS);
-			/* Double check that they didn't give us the same CPU
-			 * more than once */
+			 
 			for (cpu = 0; cpu < num_cpus_to_pin; cpu++) {
 				if (CPU_ISSET_S(cpus_to_pin[cpu], cpu_set_size,
 						cpu_set)) {
@@ -605,12 +560,7 @@ int main(int argc, char *argv[])
 			}
 			break;
 		case 'p':
-			/*
-			 * Although we can create a msg queue with a
-			 * non-absolute path name, unlink will fail.  So,
-			 * if the name doesn't start with a /, add one
-			 * when we save it.
-			 */
+			 
 			option = queue_path;
 			if (*option != '/') {
 				queue_path = malloc(strlen(option) + 2);
@@ -644,7 +594,7 @@ int main(int argc, char *argv[])
 	if (!max_msgsize)
 		shutdown(2, "Failed to open msgsize_max", __LINE__);
 
-	/* Load up the current system values for everything we can */
+	 
 	getr(RLIMIT_MSGQUEUE, &saved_limits);
 	cur_limits = saved_limits;
 	saved_max_msgs = cur_max_msgs = get(max_msgs);
@@ -654,7 +604,7 @@ int main(int argc, char *argv[])
 	if (errno)
 		shutdown(2, "getpriority()", __LINE__);
 
-	/* Tell the user our initial state */
+	 
 	printf("\nInitial system state:\n");
 	printf("\tUsing queue path:\t\t\t%s\n", queue_path);
 	printf("\tRLIMIT_MSGQUEUE(soft):\t\t\t%ld\n",

@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include "clk_mgr.h"
 #include "resource.h"
@@ -99,7 +76,7 @@ struct _vcs_dpi_ip_params_st dcn3_14_ip = {
 };
 
 static struct _vcs_dpi_soc_bounding_box_st dcn3_14_soc = {
-		/*TODO: correct dispclk/dppclk voltage level determination*/
+		 
 	.clock_limits = {
 		{
 			.state = 0,
@@ -190,7 +167,7 @@ void dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 
 	dc_assert_fp_enabled();
 
-	// Default clock levels are used for diags, which may lead to overclocking.
+	
 	if (dc->config.use_default_clock_table == false) {
 		dcn3_14_ip.max_num_otg = dc->res_pool->res_cap->num_timing_generator;
 		dcn3_14_ip.max_num_dpp = dc->res_pool->pipe_count;
@@ -204,7 +181,7 @@ void dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 		ASSERT(dcn3_14_soc.num_chans);
 		ASSERT(clk_table->num_entries);
 
-		/* Prepass to find max clocks independent of voltage level. */
+		 
 		for (i = 0; i < clk_table->num_entries; ++i) {
 			if (clk_table->entries[i].dispclk_mhz > max_dispclk_mhz)
 				max_dispclk_mhz = clk_table->entries[i].dispclk_mhz;
@@ -213,7 +190,7 @@ void dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 		}
 
 		for (i = 0; i < clk_table->num_entries; i++) {
-			/* loop backwards*/
+			 
 			for (closest_clk_lvl = 0, j = dcn3_14_soc.num_states - 1; j >= 0; j--) {
 				if ((unsigned int) dcn3_14_soc.clock_limits[j].dcfclk_mhz <= clk_table->entries[i].dcfclk_mhz) {
 					closest_clk_lvl = j;
@@ -221,17 +198,17 @@ void dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 				}
 			}
 			if (clk_table->num_entries == 1) {
-				/*smu gives one DPM level, let's take the highest one*/
+				 
 				closest_clk_lvl = dcn3_14_soc.num_states - 1;
 			}
 
 			clock_limits[i].state = i;
 
-			/* Clocks dependent on voltage level. */
+			 
 			clock_limits[i].dcfclk_mhz = clk_table->entries[i].dcfclk_mhz;
 			if (clk_table->num_entries == 1 &&
 				clock_limits[i].dcfclk_mhz < dcn3_14_soc.clock_limits[closest_clk_lvl].dcfclk_mhz) {
-				/*SMU fix not released yet*/
+				 
 				clock_limits[i].dcfclk_mhz = dcn3_14_soc.clock_limits[closest_clk_lvl].dcfclk_mhz;
 			}
 			clock_limits[i].fabricclk_mhz = clk_table->entries[i].fclk_mhz;
@@ -240,7 +217,7 @@ void dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 			if (clk_table->entries[i].memclk_mhz && clk_table->entries[i].wck_ratio)
 				clock_limits[i].dram_speed_mts = clk_table->entries[i].memclk_mhz * 2 * clk_table->entries[i].wck_ratio;
 
-			/* Clocks independent of voltage level. */
+			 
 			clock_limits[i].dispclk_mhz = max_dispclk_mhz ? max_dispclk_mhz :
 				dcn3_14_soc.clock_limits[closest_clk_lvl].dispclk_mhz;
 
@@ -274,13 +251,7 @@ static bool is_dual_plane(enum surface_pixel_format format)
 	return format >= SURFACE_PIXEL_FORMAT_VIDEO_BEGIN || format == SURFACE_PIXEL_FORMAT_GRPH_RGBE_ALPHA;
 }
 
-/*
- * micro_sec_to_vert_lines () - converts time to number of vertical lines for a given timing
- *
- * @param: num_us: number of microseconds
- * @return: number of vertical lines. If exact number of vertical lines is not found then
- *          it will round up to next number of lines to guarantee num_us
- */
+ 
 static unsigned int micro_sec_to_vert_lines(unsigned int num_us, struct dc_crtc_timing *timing)
 {
 	unsigned int num_lines = 0;
@@ -339,10 +310,10 @@ int dcn314_populate_dml_pipes_from_context_fpu(struct dc *dc, struct dc_state *c
 
 		pipes[pipe_cnt].pipe.dest.vblank_nom = timing->v_total - pipes[pipe_cnt].pipe.dest.vactive;
 		pipes[pipe_cnt].pipe.dest.vblank_nom = min(pipes[pipe_cnt].pipe.dest.vblank_nom, num_lines);
-		// vblank_nom should not smaller than (VSync (timing->v_sync_width + v_back_porch) + 2)
-		// + 2 is because
-		// 1 -> VStartup_start should be 1 line before VSync
-		// 1 -> always reserve 1 line between start of vblank to vstartup signal
+		
+		
+		
+		
 		pipes[pipe_cnt].pipe.dest.vblank_nom =
 			max(pipes[pipe_cnt].pipe.dest.vblank_nom, timing->v_sync_width + v_back_porch + 2);
 		pipes[pipe_cnt].pipe.dest.vblank_nom = min(pipes[pipe_cnt].pipe.dest.vblank_nom, max_allowed_vblank_nom);
@@ -352,15 +323,11 @@ int dcn314_populate_dml_pipes_from_context_fpu(struct dc *dc, struct dc_state *c
 				pipe->plane_state->src_rect.width < pipe->plane_state->dst_rect.width))
 			upscaled = true;
 
-		/* Apply HostVM policy - either based on hypervisor globally enabled, or rIOMMU active */
+		 
 		if (dc->debug.dml_hostvm_override == DML_HOSTVM_NO_OVERRIDE)
 			pipes[i].pipe.src.hostvm = dc->vm_pa_config.is_hvm_enabled || dc->res_pool->hubbub->riommu_active;
 
-		/*
-		 * Immediate flip can be set dynamically after enabling the plane.
-		 * We need to require support for immediate flip or underflow can be
-		 * intermittently experienced depending on peak b/w requirements.
-		 */
+		 
 		pipes[pipe_cnt].pipe.src.immediate_flip = true;
 
 		pipes[pipe_cnt].pipe.src.unbounded_req_mode = false;
@@ -398,7 +365,7 @@ int dcn314_populate_dml_pipes_from_context_fpu(struct dc *dc, struct dc_state *c
 				&& pipe->plane_state->src_rect.width <= 1920 && pipe->plane_state->src_rect.height <= 1080) {
 			dc->config.enable_4to1MPC = true;
 		} else if (!is_dual_plane(pipe->plane_state->format) && pipe->plane_state->src_rect.width <= 5120) {
-			/* Limit to 5k max to avoid forced pipe split when there is not enough detile for swath */
+			 
 			context->bw_ctx.dml.ip.det_buffer_size_kbytes = 192;
 			pipes[0].pipe.src.unbounded_req_mode = true;
 		}

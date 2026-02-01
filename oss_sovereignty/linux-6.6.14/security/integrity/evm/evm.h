@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005-2010 IBM Corporation
- *
- * Authors:
- * Mimi Zohar <zohar@us.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * File: evm.h
- */
+ 
+ 
 
 #ifndef __INTEGRITY_EVM_H
 #define __INTEGRITY_EVM_H
@@ -20,7 +12,7 @@
 #define EVM_INIT_HMAC	0x0001
 #define EVM_INIT_X509	0x0002
 #define EVM_ALLOW_METADATA_WRITES	0x0004
-#define EVM_SETUP_COMPLETE 0x80000000 /* userland has signaled key load */
+#define EVM_SETUP_COMPLETE 0x80000000  
 
 #define EVM_KEY_MASK (EVM_INIT_HMAC | EVM_INIT_X509)
 #define EVM_INIT_MASK (EVM_INIT_HMAC | EVM_INIT_X509 | EVM_SETUP_COMPLETE | \
@@ -38,7 +30,7 @@ extern int evm_initialized;
 
 extern int evm_hmac_attrs;
 
-/* List of EVM protected security xattrs */
+ 
 extern struct list_head evm_config_xattrnames;
 
 struct evm_digest {

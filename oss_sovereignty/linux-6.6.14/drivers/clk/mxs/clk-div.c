@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_div - mxs integer divider clock
- * @divider: the parent class
- * @ops: pointer to clk_ops of parent class
- * @reg: register address
- * @busy: busy bit shift
- *
- * The mxs divider clock is a subclass of basic clk_divider with an
- * addtional busy bit.
- */
+ 
 struct clk_div {
 	struct clk_divider divider;
 	const struct clk_ops *ops;

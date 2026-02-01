@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abilis Systems TB10x pin control driver
- *
- * Copyright (C) Abilis Systems 2012
- *
- * Author: Christian Ruppert <christian.ruppert@abilis.com>
- */
+
+ 
 
 #include <linux/stringify.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -37,7 +31,7 @@
 	(((1 << PCFG_PORT_BITWIDTH) - 1) << (PCFG_PORT_BITWIDTH * (PORT)))
 
 static const struct pinctrl_pin_desc tb10x_pins[] = {
-	/* Port 1 */
+	 
 	PINCTRL_PIN(TB10X_PORT1 +  0, "MICLK_S0"),
 	PINCTRL_PIN(TB10X_PORT1 +  1, "MISTRT_S0"),
 	PINCTRL_PIN(TB10X_PORT1 +  2, "MIVAL_S0"),
@@ -49,7 +43,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT1 +  8, "MIVAL_S1"),
 	PINCTRL_PIN(TB10X_PORT1 +  9, "MISTRT_S1"),
 	PINCTRL_PIN(TB10X_PORT1 + 10, "MICLK_S1"),
-	/* Port 2 */
+	 
 	PINCTRL_PIN(TB10X_PORT2 +  0, "MICLK_S2"),
 	PINCTRL_PIN(TB10X_PORT2 +  1, "MISTRT_S2"),
 	PINCTRL_PIN(TB10X_PORT2 +  2, "MIVAL_S2"),
@@ -61,7 +55,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT2 +  8, "MIVAL_S3"),
 	PINCTRL_PIN(TB10X_PORT2 +  9, "MISTRT_S3"),
 	PINCTRL_PIN(TB10X_PORT2 + 10, "MICLK_S3"),
-	/* Port 3 */
+	 
 	PINCTRL_PIN(TB10X_PORT3 +  0, "MICLK_S4"),
 	PINCTRL_PIN(TB10X_PORT3 +  1, "MISTRT_S4"),
 	PINCTRL_PIN(TB10X_PORT3 +  2, "MIVAL_S4"),
@@ -73,7 +67,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT3 +  8, "MIVAL_S5"),
 	PINCTRL_PIN(TB10X_PORT3 +  9, "MISTRT_S5"),
 	PINCTRL_PIN(TB10X_PORT3 + 10, "MICLK_S5"),
-	/* Port 4 */
+	 
 	PINCTRL_PIN(TB10X_PORT4 +  0, "MICLK_S6"),
 	PINCTRL_PIN(TB10X_PORT4 +  1, "MISTRT_S6"),
 	PINCTRL_PIN(TB10X_PORT4 +  2, "MIVAL_S6"),
@@ -85,7 +79,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT4 +  8, "MIVAL_S7"),
 	PINCTRL_PIN(TB10X_PORT4 +  9, "MISTRT_S7"),
 	PINCTRL_PIN(TB10X_PORT4 + 10, "MICLK_S7"),
-	/* Port 5 */
+	 
 	PINCTRL_PIN(TB10X_PORT5 +  0, "PC_CE1N"),
 	PINCTRL_PIN(TB10X_PORT5 +  1, "PC_CE2N"),
 	PINCTRL_PIN(TB10X_PORT5 +  2, "PC_REGN"),
@@ -140,7 +134,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT5 + 51, "PC_MDI6"),
 	PINCTRL_PIN(TB10X_PORT5 + 52, "PC_MDI7"),
 	PINCTRL_PIN(TB10X_PORT5 + 53, "PC_MICLK"),
-	/* Port 6 */
+	 
 	PINCTRL_PIN(TB10X_PORT6 + 0, "T_MOSTRT_S0"),
 	PINCTRL_PIN(TB10X_PORT6 + 1, "T_MOVAL_S0"),
 	PINCTRL_PIN(TB10X_PORT6 + 2, "T_MDO_S0"),
@@ -151,7 +145,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT6 + 7, "T_MOVAL_S2"),
 	PINCTRL_PIN(TB10X_PORT6 + 8, "T_MDO_S2"),
 	PINCTRL_PIN(TB10X_PORT6 + 9, "T_MOSTRT_S3"),
-	/* Port 7 */
+	 
 	PINCTRL_PIN(TB10X_PORT7 + 0, "UART0_TXD"),
 	PINCTRL_PIN(TB10X_PORT7 + 1, "UART0_RXD"),
 	PINCTRL_PIN(TB10X_PORT7 + 2, "UART0_CTS"),
@@ -160,18 +154,18 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 	PINCTRL_PIN(TB10X_PORT7 + 5, "UART1_RXD"),
 	PINCTRL_PIN(TB10X_PORT7 + 6, "UART1_CTS"),
 	PINCTRL_PIN(TB10X_PORT7 + 7, "UART1_RTS"),
-	/* Port 8 */
+	 
 	PINCTRL_PIN(TB10X_PORT8 + 0, "SPI3_CLK"),
 	PINCTRL_PIN(TB10X_PORT8 + 1, "SPI3_MISO"),
 	PINCTRL_PIN(TB10X_PORT8 + 2, "SPI3_MOSI"),
 	PINCTRL_PIN(TB10X_PORT8 + 3, "SPI3_SSN"),
-	/* Port 9 */
+	 
 	PINCTRL_PIN(TB10X_PORT9 + 0, "SPI1_CLK"),
 	PINCTRL_PIN(TB10X_PORT9 + 1, "SPI1_MISO"),
 	PINCTRL_PIN(TB10X_PORT9 + 2, "SPI1_MOSI"),
 	PINCTRL_PIN(TB10X_PORT9 + 3, "SPI1_SSN0"),
 	PINCTRL_PIN(TB10X_PORT9 + 4, "SPI1_SSN1"),
-	/* Unmuxed GPIOs */
+	 
 	PINCTRL_PIN(TB10X_GPIOS +  0, "GPIOB0"),
 	PINCTRL_PIN(TB10X_GPIOS +  1, "GPIOB1"),
 
@@ -206,7 +200,7 @@ static const struct pinctrl_pin_desc tb10x_pins[] = {
 };
 
 
-/* Port 1 */
+ 
 static const unsigned mis0_pins[]  = {	TB10X_PORT1 + 0, TB10X_PORT1 + 1,
 					TB10X_PORT1 + 2, TB10X_PORT1 + 3};
 static const unsigned gpioa_pins[] = {	TB10X_PORT1 + 4, TB10X_PORT1 + 5,
@@ -220,7 +214,7 @@ static const unsigned mip1_pins[]  = {	TB10X_PORT1 + 0, TB10X_PORT1 + 1,
 					TB10X_PORT1 + 8, TB10X_PORT1 + 9,
 					TB10X_PORT1 + 10};
 
-/* Port 2 */
+ 
 static const unsigned mis2_pins[]  = {	TB10X_PORT2 + 0, TB10X_PORT2 + 1,
 					TB10X_PORT2 + 2, TB10X_PORT2 + 3};
 static const unsigned gpioc_pins[] = {	TB10X_PORT2 + 4, TB10X_PORT2 + 5,
@@ -234,7 +228,7 @@ static const unsigned mip3_pins[]  = {	TB10X_PORT2 + 0, TB10X_PORT2 + 1,
 					TB10X_PORT2 + 8, TB10X_PORT2 + 9,
 					TB10X_PORT2 + 10};
 
-/* Port 3 */
+ 
 static const unsigned mis4_pins[]  = {	TB10X_PORT3 + 0, TB10X_PORT3 + 1,
 					TB10X_PORT3 + 2, TB10X_PORT3 + 3};
 static const unsigned gpioe_pins[] = {	TB10X_PORT3 + 4, TB10X_PORT3 + 5,
@@ -248,7 +242,7 @@ static const unsigned mip5_pins[]  = {	TB10X_PORT3 + 0, TB10X_PORT3 + 1,
 					TB10X_PORT3 + 8, TB10X_PORT3 + 9,
 					TB10X_PORT3 + 10};
 
-/* Port 4 */
+ 
 static const unsigned mis6_pins[]  = {	TB10X_PORT4 + 0, TB10X_PORT4 + 1,
 					TB10X_PORT4 + 2, TB10X_PORT4 + 3};
 static const unsigned gpiog_pins[] = {	TB10X_PORT4 + 4, TB10X_PORT4 + 5,
@@ -262,7 +256,7 @@ static const unsigned mip7_pins[]  = {	TB10X_PORT4 + 0, TB10X_PORT4 + 1,
 					TB10X_PORT4 + 8, TB10X_PORT4 + 9,
 					TB10X_PORT4 + 10};
 
-/* Port 6 */
+ 
 static const unsigned mop_pins[] = {	TB10X_PORT6 + 0, TB10X_PORT6 + 1,
 					TB10X_PORT6 + 2, TB10X_PORT6 + 3,
 					TB10X_PORT6 + 4, TB10X_PORT6 + 5,
@@ -276,7 +270,7 @@ static const unsigned mos2_pins[] = {	TB10X_PORT6 + 6, TB10X_PORT6 + 7,
 					TB10X_PORT6 + 8};
 static const unsigned mos3_pins[] = {	TB10X_PORT6 + 9};
 
-/* Port 7 */
+ 
 static const unsigned uart0_pins[] = {	TB10X_PORT7 + 0, TB10X_PORT7 + 1,
 					TB10X_PORT7 + 2, TB10X_PORT7 + 3};
 static const unsigned uart1_pins[] = {	TB10X_PORT7 + 4, TB10X_PORT7 + 5,
@@ -286,13 +280,13 @@ static const unsigned gpiol_pins[] = {	TB10X_PORT7 + 0, TB10X_PORT7 + 1,
 static const unsigned gpiom_pins[] = {	TB10X_PORT7 + 4, TB10X_PORT7 + 5,
 					TB10X_PORT7 + 6, TB10X_PORT7 + 7};
 
-/* Port 8 */
+ 
 static const unsigned spi3_pins[] = {	TB10X_PORT8 + 0, TB10X_PORT8 + 1,
 					TB10X_PORT8 + 2, TB10X_PORT8 + 3};
 static const unsigned jtag_pins[] = {	TB10X_PORT8 + 0, TB10X_PORT8 + 1,
 					TB10X_PORT8 + 2, TB10X_PORT8 + 3};
 
-/* Port 9 */
+ 
 static const unsigned spi1_pins[] = {	TB10X_PORT9 + 0, TB10X_PORT9 + 1,
 					TB10X_PORT9 + 2, TB10X_PORT9 + 3,
 					TB10X_PORT9 + 4};
@@ -300,7 +294,7 @@ static const unsigned gpion_pins[] = {	TB10X_PORT9 + 0, TB10X_PORT9 + 1,
 					TB10X_PORT9 + 2, TB10X_PORT9 + 3,
 					TB10X_PORT9 + 4};
 
-/* Port 5 */
+ 
 static const unsigned gpioj_pins[] = {	TB10X_PORT5 + 0, TB10X_PORT5 + 1,
 					TB10X_PORT5 + 2, TB10X_PORT5 + 3,
 					TB10X_PORT5 + 4, TB10X_PORT5 + 5,
@@ -377,7 +371,7 @@ static const unsigned stc1_pins[] = {	TB10X_PORT5 + 25, TB10X_PORT5 + 26,
 					TB10X_PORT5 + 29, TB10X_PORT5 + 30,
 					TB10X_PORT5 + 44};
 
-/* Unmuxed GPIOs */
+ 
 static const unsigned gpiob_pins[] = {	TB10X_GPIOS + 0, TB10X_GPIOS + 1};
 static const unsigned gpiod_pins[] = {	TB10X_GPIOS + 2, TB10X_GPIOS + 3};
 static const unsigned gpiof_pins[] = {	TB10X_GPIOS + 4, TB10X_GPIOS + 5};
@@ -454,29 +448,13 @@ struct tb10x_of_pinfunc {
 
 #define TB10X_PORTS (9)
 
-/**
- * struct tb10x_port - state of an I/O port
- * @mode: Node this port is currently in.
- * @count: Number of enabled functions which require this port to be
- *         configured in @mode.
- */
+ 
 struct tb10x_port {
 	unsigned int mode;
 	unsigned int count;
 };
 
-/**
- * struct tb10x_pinctrl - TB10x pin controller internal state
- * @pctl: pointer to the pinctrl_dev structure of this pin controller.
- * @base: register set base address.
- * @pingroups: pointer to an array of the pin groups this driver manages.
- * @pinfuncgrpcnt: number of pingroups in @pingroups.
- * @pinfuncnt: number of pin functions in @pinfuncs.
- * @mutex: mutex for exclusive access to a pin controller's state.
- * @ports: current state of each port.
- * @gpios: Indicates if a given pin is currently used as GPIO (1) or not (0).
- * @pinfuncs: flexible array of pin functions this driver manages.
- */
+ 
 struct tb10x_pinctrl {
 	struct pinctrl_dev *pctl;
 	void *base;
@@ -609,39 +587,25 @@ static int tb10x_gpio_request_enable(struct pinctrl_dev *pctl,
 
 	mutex_lock(&state->mutex);
 
-	/*
-	 * Figure out to which port the requested GPIO belongs and how to
-	 * configure that port.
-	 * This loop also checks for pin conflicts between GPIOs and other
-	 * functions.
-	 */
+	 
 	for (i = 0; i < state->pinfuncgrpcnt; i++) {
 		const struct tb10x_pinfuncgrp *pfg = &state->pingroups[i];
 		unsigned int mode = pfg->mode;
 		int j, port = pfg->port;
 
-		/*
-		 * Skip pin groups which are always mapped and don't need
-		 * to be configured.
-		 */
+		 
 		if (port < 0)
 			continue;
 
 		for (j = 0; j < pfg->pincnt; j++) {
 			if (pin == pfg->pins[j]) {
 				if (pfg->isgpio) {
-					/*
-					 * Remember the GPIO-only setting of
-					 * the port this pin belongs to.
-					 */
+					 
 					muxport = port;
 					muxmode = mode;
 				} else if (state->ports[port].count
 					&& (state->ports[port].mode == mode)) {
-					/*
-					 * Error: The requested pin is already
-					 * used for something else.
-					 */
+					 
 					mutex_unlock(&state->mutex);
 					return -EBUSY;
 				}
@@ -650,20 +614,10 @@ static int tb10x_gpio_request_enable(struct pinctrl_dev *pctl,
 		}
 	}
 
-	/*
-	 * If we haven't returned an error at this point, the GPIO pin is not
-	 * used by another function and the GPIO request can be granted:
-	 * Register pin as being used as GPIO so we don't allocate it to
-	 * another function later.
-	 */
+	 
 	set_bit(pin, state->gpios);
 
-	/*
-	 * Potential conflicts between GPIOs and pin functions were caught
-	 * earlier in this function and tb10x_pinctrl_set_config will do the
-	 * Right Thing, either configure the port in GPIO only mode or leave
-	 * another mode compatible with this GPIO request untouched.
-	 */
+	 
 	if (muxport >= 0)
 		tb10x_pinctrl_set_config(state, muxport, muxmode);
 
@@ -697,20 +651,14 @@ static int tb10x_pctl_set_mux(struct pinctrl_dev *pctl,
 
 	mutex_lock(&state->mutex);
 
-	/*
-	 * Check if the requested function is compatible with previously
-	 * requested functions.
-	 */
+	 
 	if (state->ports[grp->port].count
 			&& (state->ports[grp->port].mode != grp->mode)) {
 		mutex_unlock(&state->mutex);
 		return -EBUSY;
 	}
 
-	/*
-	 * Check if the requested function is compatible with previously
-	 * requested GPIOs.
-	 */
+	 
 	for (i = 0; i < grp->pincnt; i++)
 		if (test_bit(grp->pins[i], state->gpios)) {
 			mutex_unlock(&state->mutex);

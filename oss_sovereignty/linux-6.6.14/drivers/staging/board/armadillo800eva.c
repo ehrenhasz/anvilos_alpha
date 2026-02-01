@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Staging board support for Armadillo 800 eva.
- * Enable not-yet-DT-capable devices here.
- *
- * Based on board-armadillo800eva.c
- *
- * Copyright (C) 2012 Renesas Solutions Corp.
- * Copyright (C) 2012 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/fb.h>

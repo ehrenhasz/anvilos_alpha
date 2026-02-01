@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __HSW_IPS_H__
 #define __HSW_IPS_H__
@@ -24,4 +22,4 @@ int hsw_ips_compute_config(struct intel_atomic_state *state,
 void hsw_ips_get_config(struct intel_crtc_state *crtc_state);
 void hsw_ips_crtc_debugfs_add(struct intel_crtc *crtc);
 
-#endif /* __HSW_IPS_H__ */
+#endif  

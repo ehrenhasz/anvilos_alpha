@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _nbio_7_0_OFFSET_HEADER
 #define _nbio_7_0_OFFSET_HEADER
 
 
 
-// addressBlock: nbio_iohub_nb_nbcfg_nb_cfgdec
-// base address: 0x0
+
+
 #define cfgNB_NBCFG0_NB_VENDOR_ID                                                                       0x0000
 #define cfgNB_NBCFG0_NB_DEVICE_ID                                                                       0x0002
 #define cfgNB_NBCFG0_NB_COMMAND                                                                         0x0004
@@ -74,8 +55,8 @@
 #define cfgNB_NBCFG0_NB_SMN_DATA_6                                                                      0x00fc
 
 
-// addressBlock: nbio_iohub_iommu_l2_iommul2cfg
-// base address: 0x0
+
+
 #define cfgIOMMU_L2_0_IOMMU_VENDOR_ID                                                                   0x0000
 #define cfgIOMMU_L2_0_IOMMU_DEVICE_ID                                                                   0x0002
 #define cfgIOMMU_L2_0_IOMMU_COMMAND                                                                     0x0004
@@ -123,8 +104,8 @@
 #define cfgIOMMU_L2_0_SMMU_AIDR_W                                                                       0x00c0
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_rc_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_RC0_VENDOR_ID                                                                   0x0000
 #define cfgBIF_CFG_DEV0_RC0_DEVICE_ID                                                                   0x0002
 #define cfgBIF_CFG_DEV0_RC0_COMMAND                                                                     0x0004
@@ -249,8 +230,8 @@
 #define cfgBIF_CFG_DEV0_RC0_PCIE_ACS_CNTL                                                               0x02a6
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev1_rc_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV1_RC0_VENDOR_ID                                                                   0x0000
 #define cfgBIF_CFG_DEV1_RC0_DEVICE_ID                                                                   0x0002
 #define cfgBIF_CFG_DEV1_RC0_COMMAND                                                                     0x0004
@@ -375,8 +356,8 @@
 #define cfgBIF_CFG_DEV1_RC0_PCIE_ACS_CNTL                                                               0x02a6
 
 
-// addressBlock: nbio_iohub_nb_pciedummy0_pciedummy_cfgdec
-// base address: 0x0
+
+
 #define cfgNB_PCIEDUMMY0_0_DEVICE_VENDOR_ID                                                             0x0000
 #define cfgNB_PCIEDUMMY0_0_STATUS_COMMAND                                                               0x0004
 #define cfgNB_PCIEDUMMY0_0_CLASS_CODE_REVID                                                             0x0008
@@ -384,8 +365,8 @@
 #define cfgNB_PCIEDUMMY0_0_HEADER_TYPE_W                                                                0x0040
 
 
-// addressBlock: nbio_iohub_nb_pciedummy1_pciedummy_cfgdec
-// base address: 0x0
+
+
 #define cfgNB_PCIEDUMMY1_0_DEVICE_VENDOR_ID                                                             0x0000
 #define cfgNB_PCIEDUMMY1_0_STATUS_COMMAND                                                               0x0004
 #define cfgNB_PCIEDUMMY1_0_CLASS_CODE_REVID                                                             0x0008
@@ -393,8 +374,8 @@
 #define cfgNB_PCIEDUMMY1_0_HEADER_TYPE_W                                                                0x0040
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgVENDOR_ID                                                                                    0x0000
 #define cfgDEVICE_ID                                                                                    0x0002
 #define cfgCOMMAND                                                                                      0x0004
@@ -646,261 +627,261 @@
 #define cfgPCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW6                                                   0x04e8
 #define cfgPCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW7                                                   0x04ec
 #define cfgPCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8                                                   0x04f0
-//#define cfgBIF_CFG_DEV0_EPF0_VENDOR_ID                                                                  0x0000
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_ID                                                                  0x0002
-//#define cfgBIF_CFG_DEV0_EPF0_COMMAND                                                                    0x0004
-//#define cfgBIF_CFG_DEV0_EPF0_STATUS                                                                     0x0006
-//#define cfgBIF_CFG_DEV0_EPF0_REVISION_ID                                                                0x0008
-//#define cfgBIF_CFG_DEV0_EPF0_PROG_INTERFACE                                                             0x0009
-//#define cfgBIF_CFG_DEV0_EPF0_SUB_CLASS                                                                  0x000a
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_CLASS                                                                 0x000b
-//#define cfgBIF_CFG_DEV0_EPF0_CACHE_LINE                                                                 0x000c
-//#define cfgBIF_CFG_DEV0_EPF0_LATENCY                                                                    0x000d
-//#define cfgBIF_CFG_DEV0_EPF0_HEADER                                                                     0x000e
-//#define cfgBIF_CFG_DEV0_EPF0_BIST                                                                       0x000f
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_1                                                                0x0010
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_2                                                                0x0014
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_3                                                                0x0018
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_4                                                                0x001c
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_5                                                                0x0020
-//#define cfgBIF_CFG_DEV0_EPF0_BASE_ADDR_6                                                                0x0024
-//#define cfgBIF_CFG_DEV0_EPF0_ADAPTER_ID                                                                 0x002c
-//#define cfgBIF_CFG_DEV0_EPF0_ROM_BASE_ADDR                                                              0x0030
-//#define cfgBIF_CFG_DEV0_EPF0_CAP_PTR                                                                    0x0034
-//#define cfgBIF_CFG_DEV0_EPF0_INTERRUPT_LINE                                                             0x003c
-//#define cfgBIF_CFG_DEV0_EPF0_INTERRUPT_PIN                                                              0x003d
-//#define cfgBIF_CFG_DEV0_EPF0_MIN_GRANT                                                                  0x003e
-//#define cfgBIF_CFG_DEV0_EPF0_MAX_LATENCY                                                                0x003f
-//#define cfgBIF_CFG_DEV0_EPF0_VENDOR_CAP_LIST                                                            0x0048
-//#define cfgBIF_CFG_DEV0_EPF0_ADAPTER_ID_W                                                               0x004c
-//#define cfgBIF_CFG_DEV0_EPF0_PMI_CAP_LIST                                                               0x0050
-//#define cfgBIF_CFG_DEV0_EPF0_PMI_CAP                                                                    0x0052
-//#define cfgBIF_CFG_DEV0_EPF0_PMI_STATUS_CNTL                                                            0x0054
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_CAP_LIST                                                              0x0064
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_CAP                                                                   0x0066
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_CAP                                                                 0x0068
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_CNTL                                                                0x006c
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_STATUS                                                              0x006e
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_CAP                                                                   0x0070
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_CNTL                                                                  0x0074
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_STATUS                                                                0x0076
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_CAP2                                                                0x0088
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_CNTL2                                                               0x008c
-//#define cfgBIF_CFG_DEV0_EPF0_DEVICE_STATUS2                                                             0x008e
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_CAP2                                                                  0x0090
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_CNTL2                                                                 0x0094
-//#define cfgBIF_CFG_DEV0_EPF0_LINK_STATUS2                                                               0x0096
-//#define cfgBIF_CFG_DEV0_EPF0_SLOT_CAP2                                                                  0x0098
-//#define cfgBIF_CFG_DEV0_EPF0_SLOT_CNTL2                                                                 0x009c
-//#define cfgBIF_CFG_DEV0_EPF0_SLOT_STATUS2                                                               0x009e
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_CAP_LIST                                                               0x00a0
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MSG_CNTL                                                               0x00a2
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MSG_ADDR_LO                                                            0x00a4
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MSG_ADDR_HI                                                            0x00a8
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MSG_DATA                                                               0x00a8
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MASK                                                                   0x00ac
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MSG_DATA_64                                                            0x00ac
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_MASK_64                                                                0x00b0
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_PENDING                                                                0x00b0
-//#define cfgBIF_CFG_DEV0_EPF0_MSI_PENDING_64                                                             0x00b4
-//#define cfgBIF_CFG_DEV0_EPF0_MSIX_CAP_LIST                                                              0x00c0
-//#define cfgBIF_CFG_DEV0_EPF0_MSIX_MSG_CNTL                                                              0x00c2
-//#define cfgBIF_CFG_DEV0_EPF0_MSIX_TABLE                                                                 0x00c4
-//#define cfgBIF_CFG_DEV0_EPF0_MSIX_PBA                                                                   0x00c8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_ENH_CAP_LIST                                          0x0100
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR                                                   0x0104
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC1                                                      0x0108
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC2                                                      0x010c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC_ENH_CAP_LIST                                                       0x0110
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PORT_VC_CAP_REG1                                                      0x0114
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PORT_VC_CAP_REG2                                                      0x0118
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PORT_VC_CNTL                                                          0x011c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PORT_VC_STATUS                                                        0x011e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC0_RESOURCE_CAP                                                      0x0120
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC0_RESOURCE_CNTL                                                     0x0124
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC0_RESOURCE_STATUS                                                   0x012a
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC1_RESOURCE_CAP                                                      0x012c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC1_RESOURCE_CNTL                                                     0x0130
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VC1_RESOURCE_STATUS                                                   0x0136
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DEV_SERIAL_NUM_ENH_CAP_LIST                                           0x0140
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DEV_SERIAL_NUM_DW1                                                    0x0144
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DEV_SERIAL_NUM_DW2                                                    0x0148
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ADV_ERR_RPT_ENH_CAP_LIST                                              0x0150
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_UNCORR_ERR_STATUS                                                     0x0154
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_UNCORR_ERR_MASK                                                       0x0158
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_UNCORR_ERR_SEVERITY                                                   0x015c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_CORR_ERR_STATUS                                                       0x0160
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_CORR_ERR_MASK                                                         0x0164
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ADV_ERR_CAP_CNTL                                                      0x0168
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_HDR_LOG0                                                              0x016c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_HDR_LOG1                                                              0x0170
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_HDR_LOG2                                                              0x0174
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_HDR_LOG3                                                              0x0178
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TLP_PREFIX_LOG0                                                       0x0188
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TLP_PREFIX_LOG1                                                       0x018c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TLP_PREFIX_LOG2                                                       0x0190
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TLP_PREFIX_LOG3                                                       0x0194
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR_ENH_CAP_LIST                                                      0x0200
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR1_CAP                                                              0x0204
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR1_CNTL                                                             0x0208
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR2_CAP                                                              0x020c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR2_CNTL                                                             0x0210
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR3_CAP                                                              0x0214
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR3_CNTL                                                             0x0218
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR4_CAP                                                              0x021c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR4_CNTL                                                             0x0220
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR5_CAP                                                              0x0224
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR5_CNTL                                                             0x0228
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR6_CAP                                                              0x022c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_BAR6_CNTL                                                             0x0230
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PWR_BUDGET_ENH_CAP_LIST                                               0x0240
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PWR_BUDGET_DATA_SELECT                                                0x0244
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PWR_BUDGET_DATA                                                       0x0248
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PWR_BUDGET_CAP                                                        0x024c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_ENH_CAP_LIST                                                      0x0250
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_CAP                                                               0x0254
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_LATENCY_INDICATOR                                                 0x0258
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_STATUS                                                            0x025c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_CNTL                                                              0x025e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_0                                              0x0260
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_1                                              0x0261
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_2                                              0x0262
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_3                                              0x0263
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_4                                              0x0264
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_5                                              0x0265
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_6                                              0x0266
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_DPA_SUBSTATE_PWR_ALLOC_7                                              0x0267
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SECONDARY_ENH_CAP_LIST                                                0x0270
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LINK_CNTL3                                                            0x0274
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_ERROR_STATUS                                                     0x0278
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_0_EQUALIZATION_CNTL                                              0x027c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_1_EQUALIZATION_CNTL                                              0x027e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_2_EQUALIZATION_CNTL                                              0x0280
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_3_EQUALIZATION_CNTL                                              0x0282
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_4_EQUALIZATION_CNTL                                              0x0284
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_5_EQUALIZATION_CNTL                                              0x0286
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_6_EQUALIZATION_CNTL                                              0x0288
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_7_EQUALIZATION_CNTL                                              0x028a
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_8_EQUALIZATION_CNTL                                              0x028c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_9_EQUALIZATION_CNTL                                              0x028e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_10_EQUALIZATION_CNTL                                             0x0290
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_11_EQUALIZATION_CNTL                                             0x0292
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_12_EQUALIZATION_CNTL                                             0x0294
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_13_EQUALIZATION_CNTL                                             0x0296
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_14_EQUALIZATION_CNTL                                             0x0298
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LANE_15_EQUALIZATION_CNTL                                             0x029a
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ACS_ENH_CAP_LIST                                                      0x02a0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ACS_CAP                                                               0x02a4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ACS_CNTL                                                              0x02a6
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ATS_ENH_CAP_LIST                                                      0x02b0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ATS_CAP                                                               0x02b4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ATS_CNTL                                                              0x02b6
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PAGE_REQ_ENH_CAP_LIST                                                 0x02c0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PAGE_REQ_CNTL                                                         0x02c4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PAGE_REQ_STATUS                                                       0x02c6
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_OUTSTAND_PAGE_REQ_CAPACITY                                            0x02c8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_OUTSTAND_PAGE_REQ_ALLOC                                               0x02cc
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PASID_ENH_CAP_LIST                                                    0x02d0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PASID_CAP                                                             0x02d4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_PASID_CNTL                                                            0x02d6
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TPH_REQR_ENH_CAP_LIST                                                 0x02e0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TPH_REQR_CAP                                                          0x02e4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_TPH_REQR_CNTL                                                         0x02e8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_ENH_CAP_LIST                                                       0x02f0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_CAP                                                                0x02f4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_CNTL                                                               0x02f6
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_ADDR0                                                              0x02f8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_ADDR1                                                              0x02fc
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_RCV0                                                               0x0300
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_RCV1                                                               0x0304
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_BLOCK_ALL0                                                         0x0308
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_BLOCK_ALL1                                                         0x030c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_BLOCK_UNTRANSLATED_0                                               0x0310
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_MC_BLOCK_UNTRANSLATED_1                                               0x0314
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LTR_ENH_CAP_LIST                                                      0x0320
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_LTR_CAP                                                               0x0324
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ARI_ENH_CAP_LIST                                                      0x0328
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ARI_CAP                                                               0x032c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_ARI_CNTL                                                              0x032e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_ENH_CAP_LIST                                                    0x0330
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_CAP                                                             0x0334
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_CONTROL                                                         0x0338
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_STATUS                                                          0x033a
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_INITIAL_VFS                                                     0x033c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_TOTAL_VFS                                                       0x033e
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_NUM_VFS                                                         0x0340
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_FUNC_DEP_LINK                                                   0x0342
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_FIRST_VF_OFFSET                                                 0x0344
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_STRIDE                                                       0x0346
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_DEVICE_ID                                                    0x034a
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_SUPPORTED_PAGE_SIZE                                             0x034c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_SYSTEM_PAGE_SIZE                                                0x0350
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_0                                                  0x0354
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_1                                                  0x0358
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_2                                                  0x035c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_3                                                  0x0360
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_4                                                  0x0364
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_BASE_ADDR_5                                                  0x0368
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_SRIOV_VF_MIGRATION_STATE_ARRAY_OFFSET                                 0x036c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_ENH_CAP_LIST_GPUIOV                                   0x0400
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV                                            0x0404
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_SRIOV_SHADOW                               0x0408
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_INTR_ENABLE                                0x040c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_INTR_STATUS                                0x0410
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_RESET_CONTROL                              0x0414
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_HVVM_MBOX_DW0                              0x0418
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_HVVM_MBOX_DW1                              0x041c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_HVVM_MBOX_DW2                              0x0420
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_CONTEXT                                    0x0424
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_TOTAL_FB                                   0x0428
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_OFFSETS                                    0x042c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF0_FB                                     0x0430
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF1_FB                                     0x0434
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF2_FB                                     0x0438
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF3_FB                                     0x043c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF4_FB                                     0x0440
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF5_FB                                     0x0444
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF6_FB                                     0x0448
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF7_FB                                     0x044c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF8_FB                                     0x0450
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF9_FB                                     0x0454
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF10_FB                                    0x0458
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF11_FB                                    0x045c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF12_FB                                    0x0460
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF13_FB                                    0x0464
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF14_FB                                    0x0468
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VF15_FB                                    0x046c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW0                                 0x0470
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW1                                 0x0474
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW2                                 0x0478
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW3                                 0x047c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW4                                 0x0480
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW5                                 0x0484
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW6                                 0x0488
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW7                                 0x048c
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVDSCH_DW8                                 0x0490
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW0                                 0x04a0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW1                                 0x04a4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW2                                 0x04a8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW3                                 0x04ac
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW4                                 0x04b0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW5                                 0x04b4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW6                                 0x04b8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW7                                 0x04bc
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_VCESCH_DW8                                 0x04c0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW0                                 0x04d0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW1                                 0x04d4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW2                                 0x04d8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW3                                 0x04dc
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW4                                 0x04e0
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW5                                 0x04e4
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW6                                 0x04e8
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW7                                 0x04ec
-//#define cfgBIF_CFG_DEV0_EPF0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8                                 0x04f0
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf1_bifcfgdecp
-// base address: 0x0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define cfgBIF_CFG_DEV0_EPF1_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF1_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF1_0_COMMAND                                                                  0x0004
@@ -1154,8 +1135,8 @@
 #define cfgBIF_CFG_DEV0_EPF1_0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_GFXSCH_DW8                               0x04f0
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf2_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF2_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF2_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF2_0_COMMAND                                                                  0x0004
@@ -1281,8 +1262,8 @@
 #define cfgBIF_CFG_DEV0_EPF2_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf3_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF3_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF3_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF3_0_COMMAND                                                                  0x0004
@@ -1408,8 +1389,8 @@
 #define cfgBIF_CFG_DEV0_EPF3_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf4_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF4_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF4_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF4_0_COMMAND                                                                  0x0004
@@ -1535,8 +1516,8 @@
 #define cfgBIF_CFG_DEV0_EPF4_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf5_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF5_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF5_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF5_0_COMMAND                                                                  0x0004
@@ -1662,8 +1643,8 @@
 #define cfgBIF_CFG_DEV0_EPF5_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf6_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF6_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF6_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF6_0_COMMAND                                                                  0x0004
@@ -1789,8 +1770,8 @@
 #define cfgBIF_CFG_DEV0_EPF6_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf7_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF7_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF7_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF7_0_COMMAND                                                                  0x0004
@@ -1916,8 +1897,8 @@
 #define cfgBIF_CFG_DEV0_EPF7_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev1_epf0_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV1_EPF0_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV1_EPF0_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV1_EPF0_0_COMMAND                                                                  0x0004
@@ -2072,8 +2053,8 @@
 #define cfgBIF_CFG_DEV1_EPF0_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev1_epf1_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV1_EPF1_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV1_EPF1_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV1_EPF1_0_COMMAND                                                                  0x0004
@@ -2199,8 +2180,8 @@
 #define cfgBIF_CFG_DEV1_EPF1_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev1_epf2_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV1_EPF2_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV1_EPF2_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV1_EPF2_0_COMMAND                                                                  0x0004
@@ -2326,8 +2307,8 @@
 #define cfgBIF_CFG_DEV1_EPF2_0_PCIE_ARI_CNTL                                                            0x032e
 
 
-// addressBlock: nbio_pcie0_bifplr0_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR0_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR0_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR0_0_COMMAND                                                                            0x0004
@@ -2499,8 +2480,8 @@
 #define cfgBIFPLR0_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr1_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR1_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR1_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR1_0_COMMAND                                                                            0x0004
@@ -2672,8 +2653,8 @@
 #define cfgBIFPLR1_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr2_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR2_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR2_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR2_0_COMMAND                                                                            0x0004
@@ -2845,8 +2826,8 @@
 #define cfgBIFPLR2_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr3_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR3_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR3_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR3_0_COMMAND                                                                            0x0004
@@ -3018,8 +2999,8 @@
 #define cfgBIFPLR3_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr4_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR4_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR4_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR4_0_COMMAND                                                                            0x0004
@@ -3191,8 +3172,8 @@
 #define cfgBIFPLR4_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr5_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR5_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR5_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR5_0_COMMAND                                                                            0x0004
@@ -3364,8 +3345,8 @@
 #define cfgBIFPLR5_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_pcie0_bifplr6_cfgdecp
-// base address: 0x0
+
+
 #define cfgBIFPLR6_0_VENDOR_ID                                                                          0x0000
 #define cfgBIFPLR6_0_DEVICE_ID                                                                          0x0002
 #define cfgBIFPLR6_0_COMMAND                                                                            0x0004
@@ -3537,8 +3518,8 @@
 #define cfgBIFPLR6_0_PCIE_ESM_CAP_7                                                                     0x03ec
 
 
-// addressBlock: nbio_dbgu0_dbgudec
-// base address: 0x700
+
+
 #define mmport_a_addr                                                                                  0x01ac
 #define mmport_a_addr_BASE_IDX                                                                         1
 #define mmport_a_data_lo                                                                               0x01ad
@@ -3565,8 +3546,8 @@
 #define mmport_d_data_hi_BASE_IDX                                                                      1
 
 
-// addressBlock: nbio_iohub_iommu_l2mmio_l2mmiocfg
-// base address: 0x0
+
+
 #define mmIOMMU_MMIO_DEVTBL_BASE_0                                                                     0x0000
 #define mmIOMMU_MMIO_DEVTBL_BASE_0_BASE_IDX                                                            0
 #define mmIOMMU_MMIO_DEVTBL_BASE_1                                                                     0x0001
@@ -4009,8 +3990,8 @@
 #define mmIOMMU_MMIO_COUNTER_RPT_BANK_1_CNT_3_1_BASE_IDX                                               3
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmMM_INDEX                                                                                     0x0000
 #define mmMM_INDEX_BASE_IDX                                                                            0
 #define mmMM_DATA                                                                                      0x0001
@@ -4019,8 +4000,8 @@
 #define mmMM_INDEX_HI_BASE_IDX                                                                         0
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_SYSDEC
-// base address: 0x0
+
+
 #define mmSYSHUB_INDEX_OVLP                                                                            0x0008
 #define mmSYSHUB_INDEX_OVLP_BASE_IDX                                                                   0
 #define mmSYSHUB_DATA_OVLP                                                                             0x0009
@@ -4121,22 +4102,22 @@
 #define mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL_BASE_IDX                                                    1
 
 
-// addressBlock: nbio_nbif0_syshub_mmreg_ind_syshubdec
-// base address: 0x0
+
+
 #define mmSYSHUB_INDEX                                                                                 0x0008
 #define mmSYSHUB_INDEX_BASE_IDX                                                                        0
 #define mmSYSHUB_DATA                                                                                  0x0009
 #define mmSYSHUB_DATA_BASE_IDX                                                                         0
 
 
-// addressBlock: nbio_nbif0_rcc_strap_BIFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_STRAP0                                                                         0x000f
 #define mmRCC_DEV0_EPF0_STRAP0_BASE_IDX                                                                2
 
 
-// addressBlock: nbio_nbif0_rcc_ep_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmEP_PCIE_SCRATCH                                                                              0x0023
 #define mmEP_PCIE_SCRATCH_BASE_IDX                                                                     2
 #define mmEP_PCIE_CNTL                                                                                 0x0025
@@ -4207,8 +4188,8 @@
 #define mmEP_PCIE_LC_SPEED_CNTL_BASE_IDX                                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dwn_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmDN_PCIE_RESERVED                                                                             0x0040
 #define mmDN_PCIE_RESERVED_BASE_IDX                                                                    2
 #define mmDN_PCIE_SCRATCH                                                                              0x0041
@@ -4225,8 +4206,8 @@
 #define mmDN_PCIE_CFG_CNTL_BASE_IDX                                                                    2
 
 
-// addressBlock: nbio_nbif0_rcc_dwnp_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmPCIE_ERR_CNTL                                                                                0x004f
 #define mmPCIE_ERR_CNTL_BASE_IDX                                                                       2
 #define mmPCIE_RX_CNTL                                                                                 0x0050
@@ -4241,8 +4222,8 @@
 #define mmLTR_MSG_INFO_FROM_EP_BASE_IDX                                                                2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_ERR_LOG                                                                                  0x0085
 #define mmRCC_ERR_LOG_BASE_IDX                                                                         2
 #define mmRCC_DOORBELL_APER_EN                                                                         0x00c0
@@ -4257,8 +4238,8 @@
 #endif
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmRCC_ERR_INT_CNTL                                                                             0x0086
 #define mmRCC_ERR_INT_CNTL_BASE_IDX                                                                    2
 #define mmRCC_BACO_CNTL_MISC                                                                           0x0087
@@ -4325,8 +4306,8 @@
 #define mmRCC_MH_ARB_CNTL_BASE_IDX                                                                     2
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_BIFDEC1
-// base address: 0x0
+
+
 #define mmBIF_MM_INDACCESS_CNTL                                                                        0x00e6
 #define mmBIF_MM_INDACCESS_CNTL_BASE_IDX                                                               2
 #define mmBUS_CNTL                                                                                     0x00e7
@@ -4461,8 +4442,8 @@
 #define mmBIF_CLKREQB_PAD_CNTL_BASE_IDX                                                                2
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BME_STATUS                                                                               0x00eb
 #define mmBIF_BME_STATUS_BASE_IDX                                                                      2
 #define mmBIF_ATOMIC_ERR_LOG                                                                           0x00ec
@@ -4507,8 +4488,8 @@
 #define mmBIF_VMHV_MAILBOX_BASE_IDX                                                                    2
 
 
-// addressBlock: nbio_nbif0_gdc_GDCDEC
-// base address: 0x0
+
+
 #define mmNGDC_SDP_PORT_CTRL                                                                           0x01c2
 #define mmNGDC_SDP_PORT_CTRL_BASE_IDX                                                                  2
 #define mmSHUB_REGS_IF_CTL                                                                             0x01c3
@@ -4537,8 +4518,8 @@
 #define mmGDC_PG_MISC_CNTL_BASE_IDX                                                                    2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_BIFDEC2
-// base address: 0x0
+
+
 #define mmGFXMSIX_VECT0_ADDR_LO                                                                        0x0400
 #define mmGFXMSIX_VECT0_ADDR_LO_BASE_IDX                                                               3
 #define mmGFXMSIX_VECT0_ADDR_HI                                                                        0x0401
@@ -4567,8 +4548,8 @@
 #define mmGFXMSIX_PBA_BASE_IDX                                                                         3
 
 
-// addressBlock: syshub_mmreg_ind_syshubind
-// base address: 0x0
+
+
 #define ixSYSHUB_MMREG_IND_SYSHUB_DS_CTRL_SOCCLK                                                       0x10000
 #define ixSYSHUB_MMREG_IND_SYSHUB_DS_CTRL2_SOCCLK                                                      0x10004
 #define ixSYSHUB_MMREG_IND_SYSHUB_BGEN_ENHANCEMENT_BYPASS_EN_SOCCLK                                    0x10008

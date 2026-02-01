@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2018 IBM Corporation
+
+
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -26,43 +26,14 @@
 
 #include "aspeed_gfx.h"
 
-/**
- * DOC: ASPEED GFX Driver
- *
- * This driver is for the ASPEED BMC SoC's 'GFX' display hardware, also called
- * the 'SOC Display Controller' in the datasheet. This driver runs on the ARM
- * based BMC systems, unlike the ast driver which runs on a host CPU and is for
- * a PCIe graphics device.
- *
- * The AST2500 supports a total of 3 output paths:
- *
- *   1. VGA output, the output target can choose either or both to the DAC
- *   or DVO interface.
- *
- *   2. Graphics CRT output, the output target can choose either or both to
- *   the DAC or DVO interface.
- *
- *   3. Video input from DVO, the video input can be used for video engine
- *   capture or DAC display output.
- *
- * Output options are selected in SCU2C.
- *
- * The "VGA mode" device is the PCI attached controller. The "Graphics CRT"
- * is the ARM's internal display controller.
- *
- * The driver only supports a simple configuration consisting of a 40MHz
- * pixel clock, fixed by hardware limitations, and the VGA output path.
- *
- * The driver was written with the 'AST2500 Software Programming Guide' v17,
- * which is available under NDA from ASPEED.
- */
+ 
 
 struct aspeed_gfx_config {
-	u32 dac_reg;		/* DAC register in SCU */
-	u32 int_clear_reg;	/* Interrupt clear register */
-	u32 vga_scratch_reg;	/* VGA scratch register in SCU */
-	u32 throd_val;		/* Default Threshold Seting */
-	u32 scan_line_max;	/* Max memory size of one scan line */
+	u32 dac_reg;		 
+	u32 int_clear_reg;	 
+	u32 vga_scratch_reg;	 
+	u32 throd_val;		 
+	u32 scan_line_max;	 
 };
 
 static const struct aspeed_gfx_config ast2400_config = {
@@ -201,7 +172,7 @@ static int aspeed_gfx_load(struct drm_device *drm)
 	}
 	clk_prepare_enable(priv->clk);
 
-	/* Sanitize control registers */
+	 
 	writel(0, priv->base + CRT_CTRL1);
 	writel(0, priv->base + CRT_CTRL2);
 

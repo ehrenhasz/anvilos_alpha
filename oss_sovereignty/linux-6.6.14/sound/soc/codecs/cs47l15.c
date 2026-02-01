@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ALSA SoC Audio driver for CS47L15 codec
-//
-// Copyright (C) 2016-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,7 +30,7 @@
 #define CS47L15_NUM_ADSP 1
 #define CS47L15_MONO_OUTPUTS 1
 
-/* Mid-mode registers */
+ 
 #define CS47L15_ADC_INT_BIAS_MASK	0x3800
 #define CS47L15_ADC_INT_BIAS_SHIFT	11
 #define CS47L15_PGA_BIAS_SEL_MASK	0x03
@@ -127,7 +127,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
 
 	switch (ucontrol->value.integer.value[0]) {
 	case 0:
-		/* Set IN1 to normal mode */
+		 
 		snd_soc_component_update_bits(component, MADERA_DMIC1L_CONTROL,
 					      MADERA_IN1_OSR_MASK,
 					      5 << MADERA_IN1_OSR_SHIFT);
@@ -139,7 +139,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
 		cs47l15->in1_lp_mode = false;
 		break;
 	default:
-		/* Set IN1 to LP mode */
+		 
 		snd_soc_component_update_bits(component, MADERA_DMIC1L_CONTROL,
 					      MADERA_IN1_OSR_MASK,
 					      4 << MADERA_IN1_OSR_SHIFT);
@@ -593,10 +593,7 @@ SND_SOC_DAPM_PGA("SPD1TX2", MADERA_SPD1_TX_CONTROL,
 SND_SOC_DAPM_OUT_DRV("SPD1", MADERA_SPD1_TX_CONTROL,
 		     MADERA_SPD1_ENA_SHIFT, 0, NULL, 0),
 
-/*
- * mux_in widgets : arranged in the order of sources
- * specified in MADERA_MIXER_INPUT_ROUTES
- */
+ 
 
 SND_SOC_DAPM_PGA("Noise Generator", MADERA_COMFORT_NOISE_GENERATOR,
 		 MADERA_NOISE_GEN_ENA_SHIFT, 0, NULL, 0),
@@ -716,7 +713,7 @@ SND_SOC_DAPM_PGA("ISRC2INT4", MADERA_ISRC_2_CTRL_3,
 
 WM_ADSP2("DSP1", 0, cs47l15_adsp_power_ev),
 
-/* end of ordered widget list */
+ 
 
 MADERA_MIXER_WIDGETS(EQ1, "EQ1"),
 MADERA_MIXER_WIDGETS(EQ2, "EQ2"),
@@ -862,7 +859,7 @@ SND_SOC_DAPM_OUTPUT("MICSUPP"),
 	{ name, "DSP1.6", "DSP1" }
 
 static const struct snd_soc_dapm_route cs47l15_dapm_routes[] = {
-	/* Internal clock domains */
+	 
 	{ "EQ1", NULL, "FXCLK" },
 	{ "EQ2", NULL, "FXCLK" },
 	{ "EQ3", NULL, "FXCLK" },
@@ -1370,7 +1367,7 @@ static int cs47l15_probe(struct platform_device *pdev)
 
 	BUILD_BUG_ON(ARRAY_SIZE(cs47l15_dai) > MADERA_MAX_DAI);
 
-	/* quick exit if Madera irqchip driver hasn't completed probe */
+	 
 	if (!madera->irq_dev) {
 		dev_dbg(&pdev->dev, "irqchip driver not ready\n");
 		return -EPROBE_DEFER;
@@ -1437,7 +1434,7 @@ static int cs47l15_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cs47l15_dai); i++)
 		madera_init_dai(&cs47l15->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs47l15_digital_vu); i++)
 		regmap_update_bits(madera->regmap, cs47l15_digital_vu[i],
 				   CS47L15_DIG_VU, CS47L15_DIG_VU);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * isl6421.h - driver for lnb supply and control ic ISL6421
- *
- * Copyright (C) 2006 Andrew de Quincey
- * Copyright (C) 2006 Oliver Endriss
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -67,11 +60,7 @@ static int isl6421_set_voltage(struct dvb_frontend *fe,
 		return -EINVAL;
 	}
 
-	/*
-	 * If LNBf were not powered on, disable dynamic current limit, as,
-	 * according with datasheet, highly capacitive load on the output may
-	 * cause a difficult start-up.
-	 */
+	 
 	if (isl6421->is_off && !is_off)
 		isl6421->config |= ISL6421_DCL;
 
@@ -84,14 +73,14 @@ static int isl6421_set_voltage(struct dvb_frontend *fe,
 	if (ret != 2)
 		return -EIO;
 
-	/* Store off status now in case future commands fail */
+	 
 	isl6421->is_off = is_off;
 
-	/* On overflow, the device will try again after 900 ms (typically) */
+	 
 	if (!is_off && (buf & ISL6421_OLF1))
 		msleep(1000);
 
-	/* Re-enable dynamic current limit */
+	 
 	if ((isl6421->config & ISL6421_DCL) &&
 	    !(isl6421->override_or & ISL6421_DCL)) {
 		isl6421->config &= ~ISL6421_DCL;
@@ -103,7 +92,7 @@ static int isl6421_set_voltage(struct dvb_frontend *fe,
 			return -EIO;
 	}
 
-	/* Check if overload flag is active. If so, disable power */
+	 
 	if (!is_off && (buf & ISL6421_OLF1)) {
 		isl6421->config &= ~(ISL6421_VSEL1 | ISL6421_EN1);
 		ret = i2c_transfer(isl6421->i2c, msg, 1);
@@ -166,10 +155,10 @@ static int isl6421_set_tone(struct dvb_frontend *fe,
 
 static void isl6421_release(struct dvb_frontend *fe)
 {
-	/* power off */
+	 
 	isl6421_set_voltage(fe, SEC_VOLTAGE_OFF);
 
-	/* free */
+	 
 	kfree(fe->sec_priv);
 	fe->sec_priv = NULL;
 }
@@ -181,19 +170,19 @@ struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter 
 	if (!isl6421)
 		return NULL;
 
-	/* default configuration */
+	 
 	isl6421->config = ISL6421_ISEL1;
 	isl6421->i2c = i2c;
 	isl6421->i2c_addr = i2c_addr;
 	fe->sec_priv = isl6421;
 
-	/* bits which should be forced to '1' */
+	 
 	isl6421->override_or = override_set;
 
-	/* bits which should be forced to '0' */
+	 
 	isl6421->override_and = ~override_clear;
 
-	/* detect if it is present or not */
+	 
 	if (isl6421_set_voltage(fe, SEC_VOLTAGE_OFF)) {
 		kfree(isl6421);
 		fe->sec_priv = NULL;
@@ -202,10 +191,10 @@ struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter 
 
 	isl6421->is_off = true;
 
-	/* install release callback */
+	 
 	fe->ops.release_sec = isl6421_release;
 
-	/* override frontend ops */
+	 
 	fe->ops.set_voltage = isl6421_set_voltage;
 	fe->ops.enable_high_lnb_voltage = isl6421_enable_high_lnb_voltage;
 	if (override_tone)

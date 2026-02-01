@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2018 by Delphix. All rights reserved.
- * Copyright (c) 2018 Datto Inc.
- */
+ 
 
 #include <sys/dataset_kstats.h>
 #include <sys/dmu_objset.h>
@@ -89,25 +67,11 @@ dataset_kstats_update(kstat_t *ksp, int rw)
 int
 dataset_kstats_create(dataset_kstats_t *dk, objset_t *objset)
 {
-	/*
-	 * There should not be anything wrong with having kstats for
-	 * snapshots. Since we are not sure how useful they would be
-	 * though nor how much their memory overhead would matter in
-	 * a filesystem with many snapshots, we skip them for now.
-	 */
+	 
 	if (dmu_objset_is_snapshot(objset))
 		return (0);
 
-	/*
-	 * At the time of this writing, KSTAT_STRLEN is 255 in Linux,
-	 * and the spa_name can theoretically be up to 256 characters.
-	 * In reality though the spa_name can be 240 characters max
-	 * [see origin directory name check in pool_namecheck()]. Thus,
-	 * the naming scheme for the module name below should not cause
-	 * any truncations. In the event that a truncation does happen
-	 * though, due to some future change, we silently skip creating
-	 * the kstat and log the event.
-	 */
+	 
 	char kstat_module_name[KSTAT_STRLEN];
 	int n = snprintf(kstat_module_name, sizeof (kstat_module_name),
 	    "zfs/%s", spa_name(dmu_objset_spa(objset)));

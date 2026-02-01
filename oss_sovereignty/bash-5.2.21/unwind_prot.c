@@ -1,31 +1,14 @@
-/* unwind_prot.c - a simple unwind-protect system for internal variables */
+ 
 
-/* I can't stand it anymore!  Please can't we just write the
-   whole Unix system in lisp or something? */
+ 
 
-/* Copyright (C) 1987-2021 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* **************************************************************** */
-/*								    */
-/*		      Unwind Protection Scheme for Bash		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 #include "config.h"
 
 #include "bashtypes.h"
@@ -48,20 +31,18 @@
 #include "unwind_prot.h"
 #include "sig.h"
 #include "quit.h"
-#include "bashintl.h"	/* for _() */
-#include "error.h"	/* for internal_warning */
+#include "bashintl.h"	 
+#include "error.h"	 
 #include "ocache.h"
 
-/* Structure describing a saved variable and the value to restore it to.  */
+ 
 typedef struct {
   char *variable;
   int size;
-  char desired_setting[1]; /* actual size is `size' */
+  char desired_setting[1];  
 } SAVED_VAR;
 
-/* If HEAD.CLEANUP is null, then ARG.V contains a tag to throw back to.
-   If HEAD.CLEANUP is restore_variable, then SV.V contains the saved
-   variable.  Otherwise, call HEAD.CLEANUP (ARG.V) to clean up.  */
+ 
 typedef union uwp {
   struct uwp_head {
     union uwp *next;
@@ -89,7 +70,7 @@ static void unwind_protect_mem_internal PARAMS((char *, char *));
 
 static UNWIND_ELT *unwind_protect_list = (UNWIND_ELT *)NULL;
 
-/* Allocating from a cache of unwind-protect elements */
+ 
 #define UWCACHESIZE	128
 
 sh_obj_cache_t uwcache = {0, 0, 0};
@@ -108,8 +89,7 @@ uwp_init ()
   ocache_create (uwcache, UNWIND_ELT, UWCACHESIZE);
 }
 
-/* Run a function without interrupts.  This relies on the fact that the
-   FUNCTION cannot call QUIT (). */
+ 
 static void
 without_interrupts (function, arg1, arg2)
      VFunction *function;
@@ -118,7 +98,7 @@ without_interrupts (function, arg1, arg2)
   (*function)(arg1, arg2);
 }
 
-/* Start the beginning of a region. */
+ 
 void
 begin_unwind_frame (tag)
      char *tag;
@@ -126,7 +106,7 @@ begin_unwind_frame (tag)
   add_unwind_protect ((Function *)NULL, tag);
 }
 
-/* Discard the unwind protects back to TAG. */
+ 
 void
 discard_unwind_frame (tag)
      char *tag;
@@ -135,7 +115,7 @@ discard_unwind_frame (tag)
     without_interrupts (unwind_frame_discard_internal, tag, (char *)NULL);
 }
 
-/* Run the unwind protects back to TAG. */
+ 
 void
 run_unwind_frame (tag)
      char *tag;
@@ -144,7 +124,7 @@ run_unwind_frame (tag)
     without_interrupts (unwind_frame_run_internal, tag, (char *)NULL);
 }
 
-/* Add the function CLEANUP with ARG to the list of unwindable things. */
+ 
 void
 add_unwind_protect (cleanup, arg)
      Function *cleanup;
@@ -153,7 +133,7 @@ add_unwind_protect (cleanup, arg)
   without_interrupts (add_unwind_protect_internal, (char *)cleanup, arg);
 }
 
-/* Remove the top unwind protect from the list. */
+ 
 void
 remove_unwind_protect ()
 {
@@ -162,7 +142,7 @@ remove_unwind_protect ()
       (remove_unwind_protect_internal, (char *)NULL, (char *)NULL);
 }
 
-/* Run the list of cleanup functions in unwind_protect_list. */
+ 
 void
 run_unwind_protects ()
 {
@@ -171,7 +151,7 @@ run_unwind_protects ()
       (run_unwind_protects_internal, (char *)NULL, (char *)NULL);
 }
 
-/* Erase the unwind-protect list.  If flags is 1, free the elements. */
+ 
 void
 clear_unwind_protect_list (flags)
      int flags;
@@ -208,11 +188,11 @@ unwind_protect_tag_on_stack (tag)
   return 0;
 }
 
-/* **************************************************************** */
-/*								    */
-/*			The Actual Functions		 	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 static void
 add_unwind_protect_internal (cleanup, arg)
@@ -286,9 +266,7 @@ unwind_frame_discard_internal (tag, ignore)
     internal_warning (_("unwind_frame_discard: %s: frame not found"), tag);
 }
 
-/* Restore the value of a variable, based on the contents of SV.
-   sv->desired_setting is a block of memory SIZE bytes long holding the
-   value itself.  This block of memory is copied back into the variable. */
+ 
 static inline void
 restore_variable (sv)
      SAVED_VAR *sv;
@@ -308,7 +286,7 @@ unwind_frame_run_internal (tag, ignore)
     {
       unwind_protect_list = elt->head.next;
 
-      /* If tag, then compare. */
+       
       if (elt->head.cleanup == 0)
 	{
 	  if (tag && STREQ (elt->arg.v, tag))
@@ -353,9 +331,7 @@ unwind_protect_mem_internal (var, psize)
   unwind_protect_list = elt;
 }
 
-/* Save the value of a variable so it will be restored when unwind-protects
-   are run.  VAR is a pointer to the variable.  SIZE is the size in
-   bytes of VAR.  */
+ 
 void
 unwind_protect_mem (var, size)
      char *var;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TFRC library initialisation
- *
- * Copyright (c) 2007 The University of Aberdeen, Scotland, UK
- * Copyright (c) 2007 Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 #include <linux/moduleparam.h>
 #include "tfrc.h"
 

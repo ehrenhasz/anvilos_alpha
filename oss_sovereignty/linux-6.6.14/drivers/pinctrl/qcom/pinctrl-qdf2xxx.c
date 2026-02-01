@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- *
- * GPIO and pin control functions on this SOC are handled by the "TLMM"
- * device.  The driver which controls this device is pinctrl-msm.c.  Each
- * SOC with a TLMM is expected to create a client driver that registers
- * with pinctrl-msm.c.  This means that all TLMM drivers are pin control
- * drivers.
- *
- * This pin control driver is intended to be used only an ACPI-enabled
- * system.  As such, UEFI will handle all pin control configuration, so
- * this driver does not provide pin control functions.  It is effectively
- * a GPIO-only driver.  The alternative is to duplicate the GPIO code of
- * pinctrl-msm.c into another driver.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -22,10 +8,10 @@
 
 #include "pinctrl-msm.h"
 
-/* A maximum of 256 allows us to use a u8 array to hold the GPIO numbers */
+ 
 #define MAX_GPIOS	256
 
-/* maximum size of each gpio name (enough room for "gpioXXX" + null) */
+ 
 #define NAME_SIZE	8
 
 static int qdf2xxx_pinctrl_probe(struct platform_device *pdev)
@@ -36,11 +22,11 @@ static int qdf2xxx_pinctrl_probe(struct platform_device *pdev)
 	char (*names)[NAME_SIZE];
 	unsigned int i;
 	u32 num_gpios;
-	unsigned int avail_gpios; /* The number of GPIOs we support */
-	u8 gpios[MAX_GPIOS];      /* An array of supported GPIOs */
+	unsigned int avail_gpios;  
+	u8 gpios[MAX_GPIOS];       
 	int ret;
 
-	/* Query the number of GPIOs from ACPI */
+	 
 	ret = device_property_read_u32(&pdev->dev, "num-gpios", &num_gpios);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "missing 'num-gpios' property\n");
@@ -51,16 +37,13 @@ static int qdf2xxx_pinctrl_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* The number of GPIOs in the approved list */
+	 
 	ret = device_property_count_u8(&pdev->dev, "gpios");
 	if (ret < 0) {
 		dev_err(&pdev->dev, "missing 'gpios' property\n");
 		return ret;
 	}
-	/*
-	 * The number of available GPIOs should be non-zero, and no
-	 * more than the total number of GPIOS.
-	 */
+	 
 	if (!ret || ret > num_gpios) {
 		dev_err(&pdev->dev, "invalid 'gpios' property\n");
 		return -ENODEV;
@@ -84,16 +67,13 @@ static int qdf2xxx_pinctrl_probe(struct platform_device *pdev)
 	if (!pinctrl || !pins || !groups || !names)
 		return -ENOMEM;
 
-	/*
-	 * Initialize the array.  GPIOs not listed in the 'gpios' array
-	 * still need a number, but nothing else.
-	 */
+	 
 	for (i = 0; i < num_gpios; i++) {
 		pins[i].number = i;
 		groups[i].grp.pins = &pins[i].number;
 	}
 
-	/* Populate the entries that are meant to be exposed as GPIOs. */
+	 
 	for (i = 0; i < avail_gpios; i++) {
 		unsigned int gpio = gpios[i];
 

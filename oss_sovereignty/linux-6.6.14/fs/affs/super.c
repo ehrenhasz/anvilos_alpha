@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/affs/inode.c
- *
- *  (c) 1996  Hans-Joachim Widmaier - Rewritten
- *
- *  (C) 1993  Ray Burr - Modified for Amiga FFS filesystem.
- *
- *  (C) 1992  Eric Youngdale Modified for ISO 9660 filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -140,10 +130,7 @@ static int __init init_inodecache(void)
 
 static void destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(affs_inode_cachep);
 }
@@ -193,7 +180,7 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 	char *p;
 	substring_t args[MAX_OPT_ARGS];
 
-	/* Fill in defaults */
+	 
 
 	*uid        = current_uid();
 	*gid        = current_gid();
@@ -281,7 +268,7 @@ parse_options(char *options, kuid_t *uid, kgid_t *gid, int *mode, int *reserved,
 			break;
 		}
 		case Opt_ignore:
-		 	/* Silently ignore the quota options */
+		 	 
 			break;
 		default:
 			pr_warn("Unrecognized mount option \"%s\" or missing value\n",
@@ -326,9 +313,7 @@ static int affs_show_options(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
-/* This function definitely needs to be split up. Some fine day I'll
- * hopefully have the guts to do so. Until then: sorry for the mess.
- */
+ 
 
 static int affs_fill_super(struct super_block *sb, void *data, int silent)
 {
@@ -345,7 +330,7 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 	kgid_t			 gid;
 	int			 reserved;
 	unsigned long		 mount_flags;
-	int			 tmp_flags;	/* fix remount prototype... */
+	int			 tmp_flags;	 
 	u8			 sig[4];
 	int			 ret;
 
@@ -376,7 +361,7 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 		pr_err("Error parsing options\n");
 		return -EINVAL;
 	}
-	/* N.B. after this point s_prefix must be released */
+	 
 
 	sbi->s_flags   = mount_flags;
 	sbi->s_mode    = i;
@@ -384,16 +369,13 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->s_gid     = gid;
 	sbi->s_reserved= reserved;
 
-	/* Get the size of the device in 512-byte blocks.
-	 * If we later see that the partition uses bigger
-	 * blocks, we will have to change it.
-	 */
+	 
 
 	size = bdev_nr_sectors(sb->s_bdev);
 	pr_debug("initial blocksize=%d, #blocks=%d\n", 512, size);
 
 	affs_set_blocksize(sb, PAGE_SIZE);
-	/* Try to find root block. Its location depends on the block size. */
+	 
 
 	i = bdev_logical_block_size(sb->s_bdev);
 	j = PAGE_SIZE;
@@ -410,16 +392,7 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 		affs_set_blocksize(sb, blocksize);
 		sbi->s_partition_size = size;
 
-		/* The root block location that was calculated above is not
-		 * correct if the partition size is an odd number of 512-
-		 * byte blocks, which will be rounded down to a number of
-		 * 1024-byte blocks, and if there were an even number of
-		 * reserved blocks. Ideally, all partition checkers should
-		 * report the real number of blocks of the real blocksize,
-		 * but since this just cannot be done, we have to try to
-		 * find the root block anyways. In the above case, it is one
-		 * block behind the calculated one. So we check this one, too.
-		 */
+		 
 		for (num_bm = 0; num_bm < 2; num_bm++) {
 			pr_debug("Dev %s, trying root=%u, bs=%d, "
 				"size=%d, reserved=%d\n",
@@ -444,13 +417,13 @@ static int affs_fill_super(struct super_block *sb, void *data, int silent)
 		pr_err("No valid root block on device %s\n", sb->s_id);
 	return -EINVAL;
 
-	/* N.B. after this point bh must be released */
+	 
 got_root:
-	/* Keep super block in cache */
+	 
 	sbi->s_root_bh = root_bh;
 	root_block = sbi->s_root_block;
 
-	/* Find out which kind of FS we have */
+	 
 	boot_bh = sb_bread(sb, 0);
 	if (!boot_bh) {
 		pr_err("Cannot read boot block\n");
@@ -460,10 +433,7 @@ got_root:
 	brelse(boot_bh);
 	chksum = be32_to_cpu(*(__be32 *)sig);
 
-	/* Dircache filesystems are compatible with non-dircache ones
-	 * when reading. As long as they aren't supported, writing is
-	 * not recommended.
-	 */
+	 
 	if ((chksum == FS_DCFFS || chksum == MUFS_DCFFS || chksum == FS_DCOFS
 	     || chksum == MUFS_DCOFS) && !sb_rdonly(sb)) {
 		pr_notice("Dircache FS - mounting %s read only\n", sb->s_id);
@@ -527,7 +497,7 @@ got_root:
 		return ret;
 	sb->s_flags = tmp_flags;
 
-	/* set up enough so that it can read an inode */
+	 
 
 	root_inode = affs_iget(sb, root_block);
 	if (IS_ERR(root_inode))
@@ -583,7 +553,7 @@ affs_remount(struct super_block *sb, int *flags, char *data)
 	sbi->s_mode  = mode;
 	sbi->s_uid   = uid;
 	sbi->s_gid   = gid;
-	/* protect against readers */
+	 
 	spin_lock(&sbi->symlink_lock);
 	if (prefix) {
 		kfree(sbi->s_prefix);

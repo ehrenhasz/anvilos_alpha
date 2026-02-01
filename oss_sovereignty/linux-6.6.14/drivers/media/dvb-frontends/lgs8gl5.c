@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Legend Silicon LGS-8GL5 DMB-TH OFDM demodulator driver
 
-    Copyright (C) 2008 Sirius International (Hong Kong) Limited
-	Timothy Lee <timothy.lee@siriushk.com>
-
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -55,7 +48,7 @@ static int debug;
 	} while (0)
 
 
-/* Writes into demod's register */
+ 
 static int
 lgs8gl5_write_reg(struct lgs8gl5_state *state, u8 reg, u8 data)
 {
@@ -76,7 +69,7 @@ lgs8gl5_write_reg(struct lgs8gl5_state *state, u8 reg, u8 data)
 }
 
 
-/* Reads from demod's register */
+ 
 static int
 lgs8gl5_read_reg(struct lgs8gl5_state *state, u8 reg)
 {
@@ -115,8 +108,8 @@ lgs8gl5_update_reg(struct lgs8gl5_state *state, u8 reg, u8 data)
 }
 
 
-/* Writes into alternate device's register */
-/* TODO:  Find out what that device is for! */
+ 
+ 
 static int
 lgs8gl5_update_alt_reg(struct lgs8gl5_state *state, u8 reg, u8 data)
 {
@@ -164,7 +157,7 @@ lgs8gl5_soft_reset(struct lgs8gl5_state *state)
 }
 
 
-/* Starts demodulation */
+ 
 static void
 lgs8gl5_start_demod(struct lgs8gl5_state *state)
 {
@@ -189,7 +182,7 @@ lgs8gl5_start_demod(struct lgs8gl5_state *state)
 	lgs8gl5_update_reg(state, REG_37, 0x01);
 	lgs8gl5_soft_reset(state);
 
-	/* Wait for carrier */
+	 
 	for (n = 0;  n < 10;  n++) {
 		val = lgs8gl5_read_reg(state, REG_STRENGTH);
 		dprintk("Wait for carrier[%d] 0x%02X\n", n, val);
@@ -200,7 +193,7 @@ lgs8gl5_start_demod(struct lgs8gl5_state *state)
 	if (!(val & REG_STRENGTH_CARRIER))
 		return;
 
-	/* Wait for lock */
+	 
 	for (n = 0;  n < 20;  n++) {
 		val = lgs8gl5_read_reg(state, REG_STATUS);
 		dprintk("Wait for lock[%d] 0x%02X\n", n, val);
@@ -315,7 +308,7 @@ lgs8gl5_set_frontend(struct dvb_frontend *fe)
 			fe->ops.i2c_gate_ctrl(fe, 0);
 	}
 
-	/* lgs8gl5_set_inversion(state, p->inversion); */
+	 
 
 	lgs8gl5_start_demod(state);
 
@@ -374,20 +367,20 @@ lgs8gl5_attach(const struct lgs8gl5_config *config, struct i2c_adapter *i2c)
 
 	dprintk("%s\n", __func__);
 
-	/* Allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct lgs8gl5_state), GFP_KERNEL);
 	if (state == NULL)
 		goto error;
 
-	/* Setup the state */
+	 
 	state->config = config;
 	state->i2c    = i2c;
 
-	/* Check if the demod is there */
+	 
 	if (lgs8gl5_read_reg(state, REG_RESET) < 0)
 		goto error;
 
-	/* Create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &lgs8gl5_ops,
 		sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;

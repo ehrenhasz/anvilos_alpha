@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/slab.h>
 #include <linux/wait.h>
@@ -34,7 +34,7 @@ struct avcs_cmdrsp_get_version {
 	struct avcs_svc_info svc_api_info[];
 } __packed;
 
-/* for ADSP2.8 and above */
+ 
 struct avcs_svc_api_info {
 	uint32_t service_id;
 	uint32_t api_version;
@@ -229,21 +229,14 @@ static bool __q6core_is_adsp_ready(struct q6core *core)
 			return true;
 	}
 
-	/* assume that the adsp is up if we not support this command */
+	 
 	if (!core->get_state_supported)
 		return true;
 
 	return false;
 }
 
-/**
- * q6core_get_svc_api_info() - Get version number of a service.
- *
- * @svc_id: service id of the service.
- * @ainfo: Valid struct pointer to fill svc api information.
- *
- * Return: zero on success and error code on failure or unsupported
- */
+ 
 int q6core_get_svc_api_info(int svc_id, struct q6core_svc_api_info *ainfo)
 {
 	int i;
@@ -293,11 +286,7 @@ int q6core_get_svc_api_info(int svc_id, struct q6core_svc_api_info *ainfo)
 }
 EXPORT_SYMBOL_GPL(q6core_get_svc_api_info);
 
-/**
- * q6core_is_adsp_ready() - Get status of adsp
- *
- * Return: Will be an true if adsp is ready and false if not.
- */
+ 
 bool q6core_is_adsp_ready(void)
 {
 	unsigned long  timeout;

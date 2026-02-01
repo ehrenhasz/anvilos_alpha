@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2006, 2007 Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -62,11 +29,11 @@ struct workqueue_struct *mlx4_wq;
 
 #ifdef CONFIG_MLX4_DEBUG
 
-int mlx4_debug_level; /* 0 by default */
+int mlx4_debug_level;  
 module_param_named(debug_level, mlx4_debug_level, int, 0644);
 MODULE_PARM_DESC(debug_level, "Enable debug tracing if > 0");
 
-#endif /* CONFIG_MLX4_DEBUG */
+#endif  
 
 #ifdef CONFIG_PCI_MSI
 
@@ -74,11 +41,11 @@ static int msi_x = 1;
 module_param(msi_x, int, 0444);
 MODULE_PARM_DESC(msi_x, "0 - don't use MSI-X, 1 - use MSI-X, >1 - limit number of MSI-X irqs to msi_x");
 
-#else /* CONFIG_PCI_MSI */
+#else  
 
 #define msi_x (0)
 
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
 static uint8_t num_vfs[3] = {0, 0, 0};
 static int num_vfs_argc;
@@ -129,7 +96,7 @@ static const struct mlx4_profile default_profile = {
 	.num_cq		= 1 << 16,
 	.num_mcg	= 1 << 13,
 	.num_mpt	= 1 << 19,
-	.num_mtt	= 1 << 20, /* It is really num mtt segements */
+	.num_mtt	= 1 << 20,  
 };
 
 static const struct mlx4_profile low_mem_profile = {
@@ -149,7 +116,7 @@ MODULE_PARM_DESC(log_num_mac, "Log2 max number of MACs per ETH port (1-7)");
 static int log_num_vlan;
 module_param_named(log_num_vlan, log_num_vlan, int, 0444);
 MODULE_PARM_DESC(log_num_vlan, "Log2 max number of VLANs per ETH port (0-7)");
-/* Log2 max number of VLANs per ETH port (0-7) */
+ 
 #define MLX4_LOG_NUM_VLANS 7
 #define MLX4_MIN_LOG_NUM_VLANS 0
 #define MLX4_MIN_LOG_NUM_MAC 1
@@ -292,10 +259,7 @@ static void mlx4_devlink_set_params_init_values(struct devlink *devlink)
 static inline void mlx4_set_num_reserved_uars(struct mlx4_dev *dev,
 					      struct mlx4_dev_cap *dev_cap)
 {
-	/* The reserved_uars is calculated by system page size unit.
-	 * Therefore, adjustment is added when the uar page size is less
-	 * than the system page size
-	 */
+	 
 	dev->caps.reserved_uars	=
 		max_t(int,
 		      mlx4_get_num_reserved_uar(dev),
@@ -362,14 +326,12 @@ static void mlx4_enable_cqe_eqe_stride(struct mlx4_dev *dev)
 {
 	struct mlx4_caps *dev_cap = &dev->caps;
 
-	/* FW not supporting or cancelled by user */
+	 
 	if (!(dev_cap->flags2 & MLX4_DEV_CAP_FLAG2_EQE_STRIDE) ||
 	    !(dev_cap->flags2 & MLX4_DEV_CAP_FLAG2_CQE_STRIDE))
 		return;
 
-	/* Must have 64B CQE_EQE enabled by FW to use bigger stride
-	 * When FW has NCSI it may decide not to report 64B CQE/EQEs
-	 */
+	 
 	if (!(dev_cap->flags & MLX4_DEV_CAP_FLAG_64B_EQE) ||
 	    !(dev_cap->flags & MLX4_DEV_CAP_FLAG_64B_CQE)) {
 		dev_cap->flags2 &= ~MLX4_DEV_CAP_FLAG2_CQE_STRIDE;
@@ -379,7 +341,7 @@ static void mlx4_enable_cqe_eqe_stride(struct mlx4_dev *dev)
 
 	if (cache_line_size() == 128 || cache_line_size() == 256) {
 		mlx4_dbg(dev, "Enabling CQE stride cacheLine supported\n");
-		/* Changing the real data inside CQE size to 32B */
+		 
 		dev_cap->flags &= ~MLX4_DEV_CAP_FLAG_64B_CQE;
 		dev_cap->flags &= ~MLX4_DEV_CAP_FLAG_64B_EQE;
 
@@ -400,9 +362,7 @@ static int _mlx4_dev_port(struct mlx4_dev *dev, int port,
 	dev->caps.ib_mtu_cap[port]	    = port_cap->ib_mtu;
 	dev->phys_caps.gid_phys_table_len[port]  = port_cap->max_gids;
 	dev->phys_caps.pkey_phys_table_len[port] = port_cap->max_pkeys;
-	/* set gid and pkey table operating lengths by default
-	 * to non-sriov values
-	 */
+	 
 	dev->caps.gid_table_len[port]  = port_cap->max_gids;
 	dev->caps.pkey_table_len[port] = port_cap->max_pkeys;
 	dev->caps.port_width_cap[port] = port_cap->max_port_width;
@@ -512,10 +472,7 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.reserved_srqs	     = dev_cap->reserved_srqs;
 	dev->caps.max_sq_desc_sz     = dev_cap->max_sq_desc_sz;
 	dev->caps.max_rq_desc_sz     = dev_cap->max_rq_desc_sz;
-	/*
-	 * Subtract 1 from the limit because we need to allocate a
-	 * spare CQE to enable resizing the CQ.
-	 */
+	 
 	dev->caps.max_cqes	     = dev_cap->max_cq_sz - 1;
 	dev->caps.reserved_cqs	     = dev_cap->reserved_cqs;
 	dev->caps.reserved_eqs	     = dev_cap->reserved_eqs;
@@ -542,11 +499,9 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.wol_port[2]          = dev_cap->wol_port[2];
 	dev->caps.health_buffer_addrs  = dev_cap->health_buffer_addrs;
 
-	/* Save uar page shift */
+	 
 	if (!mlx4_is_slave(dev)) {
-		/* Virtual PCI function needs to determine UAR page size from
-		 * firmware. Only master PCI function can set the uar page size
-		 */
+		 
 		if (enable_4k_uar || !dev->persist->num_vfs)
 			dev->uar_page_shift = DEFAULT_UAR_PAGE_SHIFT;
 		else
@@ -560,20 +515,15 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 
 		memset(&hca_param, 0, sizeof(hca_param));
 		err = mlx4_QUERY_HCA(dev, &hca_param);
-		/* Turn off PHV_EN flag in case phv_check_en is set.
-		 * phv_check_en is a HW check that parse the packet and verify
-		 * phv bit was reported correctly in the wqe. To allow QinQ
-		 * PHV_EN flag should be set and phv_check_en must be cleared
-		 * otherwise QinQ packets will be drop by the HW.
-		 */
+		 
 		if (err || hca_param.phv_check_en)
 			dev->caps.flags2 &= ~MLX4_DEV_CAP_FLAG2_PHV_EN;
 	}
 
-	/* Sense port always allowed on supported devices for ConnectX-1 and -2 */
+	 
 	if (mlx4_priv(dev)->pci_dev_data & MLX4_PCI_DEV_FORCE_SENSE_PORT)
 		dev->caps.flags |= MLX4_DEV_CAP_FLAG_SENSE_SUPPORT;
-	/* Don't do sense port on multifunction devices (for now at least) */
+	 
 	if (mlx4_is_mfunc(dev))
 		dev->caps.flags &= ~MLX4_DEV_CAP_FLAG_SENSE_SUPPORT;
 
@@ -588,17 +538,15 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	for (i = 1; i <= dev->caps.num_ports; ++i) {
 		dev->caps.port_type[i] = MLX4_PORT_TYPE_NONE;
 		if (dev->caps.supported_type[i]) {
-			/* if only ETH is supported - assign ETH */
+			 
 			if (dev->caps.supported_type[i] == MLX4_PORT_TYPE_ETH)
 				dev->caps.port_type[i] = MLX4_PORT_TYPE_ETH;
-			/* if only IB is supported, assign IB */
+			 
 			else if (dev->caps.supported_type[i] ==
 				 MLX4_PORT_TYPE_IB)
 				dev->caps.port_type[i] = MLX4_PORT_TYPE_IB;
 			else {
-				/* if IB and ETH are supported, we set the port
-				 * type according to user selection of port type;
-				 * if user selected none, take the FW hint */
+				 
 				if (port_type_array[i - 1] == MLX4_PORT_TYPE_NONE)
 					dev->caps.port_type[i] = dev->caps.suggested_type[i] ?
 						MLX4_PORT_TYPE_ETH : MLX4_PORT_TYPE_IB;
@@ -606,22 +554,13 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 					dev->caps.port_type[i] = port_type_array[i - 1];
 			}
 		}
-		/*
-		 * Link sensing is allowed on the port if 3 conditions are true:
-		 * 1. Both protocols are supported on the port.
-		 * 2. Different types are supported on the port
-		 * 3. FW declared that it supports link sensing
-		 */
+		 
 		mlx4_priv(dev)->sense.sense_allowed[i] =
 			((dev->caps.supported_type[i] == MLX4_PORT_TYPE_AUTO) &&
 			 (dev->caps.flags & MLX4_DEV_CAP_FLAG_DPDP) &&
 			 (dev->caps.flags & MLX4_DEV_CAP_FLAG_SENSE_SUPPORT));
 
-		/*
-		 * If "default_sense" bit is set, we move the port to "AUTO" mode
-		 * and perform sense_port FW command to try and set the correct
-		 * port type from beginning
-		 */
+		 
 		if (mlx4_priv(dev)->sense.sense_allowed[i] && dev->caps.default_sense[i]) {
 			enum mlx4_port_type sensed_port = MLX4_PORT_TYPE_NONE;
 			dev->caps.possible_type[i] = MLX4_PORT_TYPE_AUTO;
@@ -737,7 +676,7 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	return 0;
 }
 
-/*The function checks if there are live vf, return the num of them*/
+ 
 static int mlx4_how_many_lives_vf(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -745,7 +684,7 @@ static int mlx4_how_many_lives_vf(struct mlx4_dev *dev)
 	int i;
 	int ret = 0;
 
-	for (i = 1/*the ppf is 0*/; i < dev->num_slaves; ++i) {
+	for (i = 1 ; i < dev->num_slaves; ++i) {
 		s_state = &priv->mfunc.master.slave_state[i];
 		if (s_state->active && s_state->last_cmd !=
 		    MLX4_COMM_CMD_RESET) {
@@ -766,7 +705,7 @@ int mlx4_get_parav_qkey(struct mlx4_dev *dev, u32 qpn, u32 *qkey)
 		return -EINVAL;
 
 	if (qpn >= dev->phys_caps.base_tunnel_sqpn)
-		/* tunnel qp */
+		 
 		qk += qpn - dev->phys_caps.base_tunnel_sqpn;
 	else
 		qk += qpn - dev->phys_caps.base_proxy_sqpn;
@@ -926,9 +865,7 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 		goto free_mem;
 	}
 
-	/* fail if the hca has an unknown global capability
-	 * at this time global_caps should be always zeroed
-	 */
+	 
 	if (hca_param->global_caps) {
 		mlx4_err(dev, "Unknown hca global capabilities\n");
 		err = -EINVAL;
@@ -957,10 +894,10 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 		goto free_mem;
 	}
 
-	/* Set uar_page_shift for VF */
+	 
 	dev->uar_page_shift = hca_param->uar_page_sz + 12;
 
-	/* Make sure the master uar page size is valid */
+	 
 	if (dev->uar_page_shift > PAGE_SHIFT) {
 		mlx4_err(dev,
 			 "Invalid configuration: uar page size is larger than system page size\n");
@@ -968,13 +905,10 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 		goto free_mem;
 	}
 
-	/* Set reserved_uars based on the uar_page_shift */
+	 
 	mlx4_set_num_reserved_uars(dev, dev_cap);
 
-	/* Although uar page size in FW differs from system page size,
-	 * upper software layers (mlx4_ib, mlx4_en and part of mlx4_core)
-	 * still works with assumption that uar page size == system page size
-	 */
+	 
 	dev->caps.uar_page_size = PAGE_SIZE;
 
 	err = mlx4_QUERY_FUNC_CAP(dev, 0, func_cap);
@@ -1059,7 +993,7 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 
 	if (hca_param->dev_cap_enabled & MLX4_DEV_CAP_CQE_STRIDE_ENABLED) {
 		dev->caps.cqe_size = hca_param->cqe_size;
-		/* User still need to know when CQE > 32B */
+		 
 		dev->caps.userspace_caps |= MLX4_USER_DEV_CAP_LARGE_CQE;
 	}
 
@@ -1090,10 +1024,7 @@ free_mem:
 	return err;
 }
 
-/*
- * Change the port configuration of the device.
- * Every user of this function must hold the port mutex.
- */
+ 
 int mlx4_change_port_types(struct mlx4_dev *dev,
 			   enum mlx4_port_type *port_types)
 {
@@ -1102,8 +1033,7 @@ int mlx4_change_port_types(struct mlx4_dev *dev,
 	int port;
 
 	for (port = 0; port <  dev->caps.num_ports; port++) {
-		/* Change the port type only if the new type is different
-		 * from the current, and not set to Auto */
+		 
 		if (port_types[port] != dev->caps.port_type[port + 1])
 			change = 1;
 	}
@@ -1172,7 +1102,7 @@ static int __set_port_type(struct mlx4_port_info *info,
 	mutex_lock(&priv->port_mutex);
 	info->tmp_type = port_type;
 
-	/* Possible type is always the one that was delivered */
+	 
 	mdev->caps.possible_type[info->port] = info->tmp_type;
 
 	for (i = 0; i < mdev->caps.num_ports; i++) {
@@ -1202,9 +1132,7 @@ static int __set_port_type(struct mlx4_port_info *info,
 	if (err)
 		goto out;
 
-	/* We are about to apply the changes after the configuration
-	 * was verified, no need to remember the temporary types
-	 * any more */
+	 
 	for (i = 0; i < mdev->caps.num_ports; i++)
 		priv->port[i + 1].tmp_type = 0;
 
@@ -1343,7 +1271,7 @@ err_set_port:
 	return err ? err : count;
 }
 
-/* bond for multi-function device */
+ 
 #define MAX_MF_BOND_ALLOWED_SLAVES 63
 static int mlx4_mf_bond(struct mlx4_dev *dev)
 {
@@ -1355,20 +1283,18 @@ static int mlx4_mf_bond(struct mlx4_dev *dev)
 	slaves_port1 = mlx4_phys_to_slaves_pport(dev, 1);
 	slaves_port2 = mlx4_phys_to_slaves_pport(dev, 2);
 
-	/* only single port vfs are allowed */
+	 
 	if (bitmap_weight_and(slaves_port1.slaves, slaves_port2.slaves,
 			      dev->persist->num_vfs + 1) > 1) {
 		mlx4_warn(dev, "HA mode unsupported for dual ported VFs\n");
 		return -EINVAL;
 	}
 
-	/* number of virtual functions is number of total functions minus one
-	 * physical function for each port.
-	 */
+	 
 	nvfs = bitmap_weight(slaves_port1.slaves, dev->persist->num_vfs + 1) +
 		bitmap_weight(slaves_port2.slaves, dev->persist->num_vfs + 1) - 2;
 
-	/* limit on maximum allowed VFs */
+	 
 	if (nvfs > MAX_MF_BOND_ALLOWED_SLAVES) {
 		mlx4_warn(dev, "HA mode is not supported for %d VFs (max %d are allowed)\n",
 			  nvfs, MAX_MF_BOND_ALLOWED_SLAVES);
@@ -1485,7 +1411,7 @@ static int mlx4_port_map_set(struct mlx4_dev *dev, struct mlx4_port_map *v2p)
 
 	mutex_lock(&priv->bond_mutex);
 
-	/* zero means keep current mapping for this port */
+	 
 	if (port1 == 0)
 		port1 = priv->v2p.port1;
 	if (port2 == 0)
@@ -1494,8 +1420,7 @@ static int mlx4_port_map_set(struct mlx4_dev *dev, struct mlx4_port_map *v2p)
 	if ((port1 < 1) || (port1 > MLX4_MAX_PORTS) ||
 	    (port2 < 1) || (port2 > MLX4_MAX_PORTS) ||
 	    (port1 == 2 && port2 == 1)) {
-		/* besides boundary checks cross mapping makes
-		 * no sense and therefore not allowed */
+		 
 		err = -EINVAL;
 	} else if ((port1 == priv->v2p.port1) &&
 		 (port2 == priv->v2p.port2)) {
@@ -1711,13 +1636,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 		goto err_unmap_cmpt;
 	}
 
-	/*
-	 * Reserved MTT entries must be aligned up to a cacheline
-	 * boundary, since the FW will write to them, while the driver
-	 * writes to all other MTT entries. (The variable
-	 * dev->caps.mtt_entry_sz below is really the MTT segment
-	 * size, not the raw entry size)
-	 */
+	 
 	dev->caps.reserved_mtts =
 		ALIGN(dev->caps.reserved_mtts * dev->caps.mtt_entry_sz,
 		      dma_get_cache_alignment()) / dev->caps.mtt_entry_sz;
@@ -1806,13 +1725,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 		goto err_unmap_cq;
 	}
 
-	/*
-	 * For flow steering device managed mode it is required to use
-	 * mlx4_init_icm_table. For B0 steering mode it's not strictly
-	 * required, but for simplicity just map the whole multicast
-	 * group table now.  The table isn't very big and it's a lot
-	 * easier than trying to track ref counts.
-	 */
+	 
 	err = mlx4_init_icm_table(dev, &priv->mcg_table.table,
 				  init_hca->mc_base,
 				  mlx4_get_mgm_entry_size(dev),
@@ -2036,18 +1949,12 @@ static int mlx4_comm_check_offline(struct mlx4_dev *dev)
 		if (!offline_bit)
 			return 0;
 
-		/* If device removal has been requested,
-		 * do not continue retrying.
-		 */
+		 
 		if (dev->persist->interface_state &
 		    MLX4_INTERFACE_STATE_NOWAIT)
 			break;
 
-		/* There are cases as part of AER/Reset flow that PF needs
-		 * around 100 msec to load. We therefore sleep for 100 msec
-		 * to allow other tasks to make use of that CPU during this
-		 * time interval.
-		 */
+		 
 		msleep(100);
 	}
 	mlx4_err(dev, "Communication channel is offline.\n");
@@ -2094,8 +2001,7 @@ static int mlx4_init_slave(struct mlx4_dev *dev)
 	mlx4_warn(dev, "Sending reset\n");
 	ret_from_reset = mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0,
 				       MLX4_COMM_CMD_NA_OP, MLX4_COMM_TIME);
-	/* if we are in the middle of flr the slave will try
-	 * NUM_OF_RESET_RETRIES times before leaving.*/
+	 
 	if (ret_from_reset) {
 		if (MLX4_DELAY_RESET_SLAVE == ret_from_reset) {
 			mlx4_warn(dev, "slave is currently in the middle of FLR - Deferring probe\n");
@@ -2105,8 +2011,7 @@ static int mlx4_init_slave(struct mlx4_dev *dev)
 			goto err;
 	}
 
-	/* check the driver version - the slave I/F revision
-	 * must match the master's */
+	 
 	slave_read = swab32(readl(&priv->mfunc.comm->slave_read));
 	cmd_channel_ver = mlx4_comm_get_version();
 
@@ -2412,10 +2317,7 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 			}
 		}
 
-		/*
-		 * If TS is supported by FW
-		 * read HCA frequency by QUERY_HCA command
-		 */
+		 
 		if (dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_TS) {
 			err = mlx4_QUERY_HCA(dev, init_hca);
 			if (err) {
@@ -2426,18 +2328,13 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 					init_hca->hca_core_clock;
 			}
 
-			/* In case we got HCA frequency 0 - disable timestamping
-			 * to avoid dividing by zero
-			 */
+			 
 			if (!dev->caps.hca_core_clock) {
 				dev->caps.flags2 &= ~MLX4_DEV_CAP_FLAG2_TS;
 				mlx4_err(dev,
 					 "HCA frequency is 0 - timestamping is not supported\n");
 			} else if (map_internal_clock(dev)) {
-				/*
-				 * Map internal clock,
-				 * in case of failure disable timestamping
-				 */
+				 
 				dev->caps.flags2 &= ~MLX4_DEV_CAP_FLAG2_TS;
 				mlx4_err(dev, "Failed to map internal clock. Timestamping is not supported\n");
 			}
@@ -2478,7 +2375,7 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 	if (map_bf_area(dev))
 		mlx4_dbg(dev, "Failed to map blue flame area\n");
 
-	/*Only the master set the ports, all the rest got it from it.*/
+	 
 	if (!mlx4_is_slave(dev))
 		mlx4_set_port_mask(dev);
 
@@ -2488,7 +2385,7 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 		goto unmap_bf;
 	}
 
-	/* Query CONFIG_DEV parameters */
+	 
 	err = mlx4_config_dev_retrieval(dev, &params);
 	if (err && err != -EOPNOTSUPP) {
 		mlx4_err(dev, "Failed to query CONFIG_DEV parameters\n");
@@ -2538,7 +2435,7 @@ static int mlx4_init_counters_table(struct mlx4_dev *dev)
 		return -ENOSPC;
 
 	nent_pow2 = roundup_pow_of_two(dev->caps.max_counters);
-	/* reserve last counter index for sink counter */
+	 
 	return mlx4_bitmap_init(&priv->counters_bitmap, nent_pow2,
 				nent_pow2 - 1, 0,
 				nent_pow2 - dev->caps.max_counters + 1);
@@ -2715,7 +2612,7 @@ void mlx4_set_random_admin_guid(struct mlx4_dev *dev, int entry, int port)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	__be64 guid;
 
-	/* hw GUID */
+	 
 	if (entry == 0)
 		return;
 
@@ -2853,7 +2750,7 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 					  port, err);
 			dev->caps.ib_port_def_cap[port] = ib_port_default_caps;
 
-			/* initialize per-slave default ib port capabilities */
+			 
 			if (mlx4_is_master(dev)) {
 				int i;
 				for (i = 0; i < dev->num_slaves; i++) {
@@ -2943,7 +2840,7 @@ static int mlx4_init_affinity_hint(struct mlx4_dev *dev, int port, int eqn)
 
 	requested_cpu = eqn - off - !!(eqn > MLX4_EQ_ASYNC);
 
-	/* Meaning EQs are shared, and this call comes from the second port */
+	 
 	if (requested_cpu < 0)
 		return 0;
 
@@ -2987,7 +2884,7 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 			kfree(entries);
 			goto no_msi;
 		}
-		/* 1 is reserved for events (asyncrounous EQ) */
+		 
 		dev->caps.num_comp_vectors = nreq - 1;
 
 		priv->eq_table.eq[MLX4_EQ_ASYNC].irq = entries[0].vector;
@@ -3004,9 +2901,7 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 			if (MLX4_IS_LEGACY_EQ_MODE(dev->caps)) {
 				bitmap_fill(priv->eq_table.eq[i].actv_ports.ports,
 					    dev->caps.num_ports);
-				/* We don't set affinity hint when there
-				 * aren't enough EQs
-				 */
+				 
 			} else {
 				set_bit(port,
 					priv->eq_table.eq[i].actv_ports.ports);
@@ -3014,22 +2909,12 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 					mlx4_warn(dev, "Couldn't init hint cpumask for EQ %d\n",
 						  i);
 			}
-			/* We divide the Eqs evenly between the two ports.
-			 * (dev->caps.num_comp_vectors / dev->caps.num_ports)
-			 * refers to the number of Eqs per port
-			 * (i.e eqs_per_port). Theoretically, we would like to
-			 * write something like (i + 1) % eqs_per_port == 0.
-			 * However, since there's an asynchronous Eq, we have
-			 * to skip over it by comparing this condition to
-			 * !!((i + 1) > MLX4_EQ_ASYNC).
-			 */
+			 
 			if ((dev->caps.num_comp_vectors > dev->caps.num_ports) &&
 			    ((i + 1) %
 			     (dev->caps.num_comp_vectors / dev->caps.num_ports)) ==
 			    !!((i + 1) > MLX4_EQ_ASYNC))
-				/* If dev->caps.num_comp_vectors < dev->caps.num_ports,
-				 * everything is shared anyway.
-				 */
+				 
 				port++;
 		}
 
@@ -3092,10 +2977,7 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
 	if (err)
 		return err;
 
-	/* Ethernet and IB drivers will normally set the port type,
-	 * but if they are not built set the type now to prevent
-	 * devlink_port_type_warn() from firing.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
 	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
 		devlink_port_type_eth_set(&info->devlink_port);
@@ -3349,7 +3231,7 @@ static int mlx4_check_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap
 			      int *nvfs)
 {
 	int requested_vfs = nvfs[0] + nvfs[1] + nvfs[2];
-	/* Checking for 64 VFs as a limitation of CX2 */
+	 
 	if (!(dev_cap->flags2 & MLX4_DEV_CAP_FLAG2_80_VFS) &&
 	    requested_vfs >= 64) {
 		mlx4_err(dev, "Requested %d VFs, but FW does not support more than 64\n",
@@ -3422,14 +3304,12 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
 	dev->rev_id = pdev->revision;
 	dev->numa_node = dev_to_node(&pdev->dev);
 
-	/* Detect if this device is a virtual function */
+	 
 	if (pci_dev_data & MLX4_PCI_DEV_IS_VF) {
 		mlx4_warn(dev, "Detected virtual function - running in slave mode\n");
 		dev->flags |= MLX4_FLAG_SLAVE;
 	} else {
-		/* We reset the device and enable SRIOV only for physical
-		 * devices.  Try to claim ownership on the device;
-		 * if already taken, skip -- do not allow multiple PFs */
+		 
 		err = mlx4_get_ownership(dev);
 		if (err) {
 			if (err < 0)
@@ -3444,11 +3324,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
 		atomic_set(&priv->opreq_count, 0);
 		INIT_WORK(&priv->opreq_task, mlx4_opreq_action);
 
-		/*
-		 * Now reset the HCA before we touch the PCI capabilities or
-		 * attempt a firmware command, since a boot ROM may have left
-		 * the HCA in an undefined state.
-		 */
+		 
 		err = mlx4_reset(dev);
 		if (err) {
 			mlx4_err(dev, "Failed to reset HCA, aborting\n");
@@ -3464,9 +3340,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
 		}
 	}
 
-	/* on load remove any previous indication of internal error,
-	 * device is up.
-	 */
+	 
 	dev->persist->state = MLX4_DEVICE_STATE_UP;
 
 slave_start:
@@ -3476,9 +3350,7 @@ slave_start:
 		goto err_sriov;
 	}
 
-	/* In slave functions, the communication channel must be initialized
-	 * before posting commands. Also, init num_slaves before calling
-	 * mlx4_init_hca */
+	 
 	if (mlx4_is_mfunc(dev)) {
 		if (mlx4_is_master(dev)) {
 			dev->num_slaves = MLX4_MAX_NUM_SLAVES;
@@ -3500,7 +3372,7 @@ slave_start:
 	}
 
 	if (mlx4_is_master(dev)) {
-		/* when we hit the goto slave_start below, dev_cap already initialized */
+		 
 		if (!dev_cap) {
 			dev_cap = kzalloc(sizeof(*dev_cap), GFP_KERNEL);
 
@@ -3539,10 +3411,7 @@ slave_start:
 				goto slave_start;
 			}
 		} else {
-			/* Legacy mode FW requires SRIOV to be enabled before
-			 * doing QUERY_DEV_CAP, since max_eq's value is different if
-			 * SRIOV is enabled.
-			 */
+			 
 			memset(dev_cap, 0, sizeof(*dev_cap));
 			err = mlx4_QUERY_DEV_CAP(dev, dev_cap);
 			if (err) {
@@ -3558,10 +3427,9 @@ slave_start:
 	err = mlx4_init_hca(dev);
 	if (err) {
 		if (err == -EACCES) {
-			/* Not primary Physical function
-			 * Running in slave mode */
+			 
 			mlx4_cmd_cleanup(dev, MLX4_CMD_CLEANUP_ALL);
-			/* We're not a PF */
+			 
 			if (dev->flags & MLX4_FLAG_SRIOV) {
 				if (!existing_vfs)
 					pci_disable_sriov(pdev);
@@ -3587,9 +3455,7 @@ slave_start:
 			dev->flags = dev_flags;
 			err = mlx4_cmd_init(dev);
 			if (err) {
-				/* Only VHCR is cleaned up, so could still
-				 * send FW commands
-				 */
+				 
 				mlx4_err(dev, "Failed to init VHCR command interface, aborting\n");
 				goto err_close;
 			}
@@ -3604,15 +3470,11 @@ slave_start:
 		}
 	}
 
-	/* check if the device is functioning at its maximum possible speed.
-	 * No return code for this call, just warn the user in case of PCI
-	 * express device capabilities are under-satisfied by the bus.
-	 */
+	 
 	if (!mlx4_is_slave(dev))
 		pcie_print_link_status(dev->persist->pdev);
 
-	/* In master functions, the communication channel must be initialized
-	 * after obtaining its address from fw */
+	 
 	if (mlx4_is_master(dev)) {
 		if (dev->caps.num_ports < 2 &&
 		    num_vfs_argc > 1) {
@@ -3636,9 +3498,7 @@ slave_start:
 			}
 		}
 
-		/* In master functions, the communication channel
-		 * must be initialized after obtaining its address from fw
-		 */
+		 
 		err = mlx4_multi_func_init(dev);
 		if (err) {
 			mlx4_err(dev, "Failed to init master mfunc interface, aborting.\n");
@@ -3681,9 +3541,7 @@ slave_start:
 	if (err)
 		goto err_steer;
 
-	/* When PF resources are ready arm its comm channel to enable
-	 * getting commands
-	 */
+	 
 	if (mlx4_is_master(dev)) {
 		err = mlx4_ARM_COMM_CHANNEL(dev);
 		if (err) {
@@ -3808,10 +3666,7 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
 		return err;
 	}
 
-	/* Due to requirement that all VFs and the PF are *guaranteed* 2 MACS
-	 * per port, we must limit the number of VFs to 63 (since their are
-	 * 128 MACs)
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(nvfs) && i < num_vfs_argc;
 	     total_vfs += nvfs[param_map[num_vfs_argc - 1][i]], i++) {
 		nvfs[param_map[num_vfs_argc - 1][i]] = num_vfs[i];
@@ -3849,7 +3704,7 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
 		}
 	}
 
-	/* Check for BARs. */
+	 
 	if (!(pci_dev_data & MLX4_PCI_DEV_IS_VF) &&
 	    !(pci_resource_flags(pdev, 0) & IORESOURCE_MEM)) {
 		dev_err(&pdev->dev, "Missing DCS, aborting (driver_data: 0x%x, pci_resource_flags(pdev, 0):0x%lx)\n",
@@ -3881,13 +3736,11 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
 		}
 	}
 
-	/* Allow large DMA segments, up to the firmware limit of 1 GB */
+	 
 	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
-	/* Detect if this device is a virtual function */
+	 
 	if (pci_dev_data & MLX4_PCI_DEV_IS_VF) {
-		/* When acting as pf, we normally skip vfs unless explicitly
-		 * requested to probe them.
-		 */
+		 
 		if (total_vfs) {
 			unsigned vfs_offset = 0;
 
@@ -3950,7 +3803,7 @@ static void mlx4_devlink_param_load_driverinit_values(struct devlink *devlink)
 					      &saved_value);
 	if (!err && mlx4_internal_err_reset != saved_value.vbool) {
 		mlx4_internal_err_reset = saved_value.vbool;
-		/* Notify on value changed on runtime configuration mode */
+		 
 		devl_param_value_changed(devlink,
 					 DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET);
 	}
@@ -4105,7 +3958,7 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 	if (priv->removed)
 		return;
 
-	/* saving current ports type for further use */
+	 
 	for (i = 0; i < dev->caps.num_ports; i++) {
 		dev->persist->curr_port_type[i] = dev->caps.port_type[i + 1];
 		dev->persist->curr_port_poss_type[i] = dev->caps.
@@ -4191,7 +4044,7 @@ static void mlx4_remove_one(struct pci_dev *pdev)
 	persist->interface_state |= MLX4_INTERFACE_STATE_DELETION;
 	mutex_unlock(&persist->interface_state_mutex);
 
-	/* Disabling SR-IOV is not allowed while there are active vf's */
+	 
 	if (mlx4_is_master(dev) && dev->flags & MLX4_FLAG_SRIOV) {
 		active_vfs = mlx4_how_many_lives_vf(dev);
 		if (active_vfs) {
@@ -4200,9 +4053,7 @@ static void mlx4_remove_one(struct pci_dev *pdev)
 		}
 	}
 
-	/* device marked to be under deletion running now without the lock
-	 * letting other tasks to be terminated
-	 */
+	 
 	if (persist->interface_state & MLX4_INTERFACE_STATE_UP)
 		mlx4_unload_one(pdev);
 	else
@@ -4290,46 +4141,43 @@ int mlx4_restart_one(struct pci_dev *pdev)
 
 static const struct pci_device_id mlx4_pci_table[] = {
 #ifdef CONFIG_MLX4_CORE_GEN2
-	/* MT25408 "Hermon" */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_SDR),	/* SDR */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_DDR),	/* DDR */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_QDR),	/* QDR */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_DDR_GEN2), /* DDR Gen2 */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_QDR_GEN2),	/* QDR Gen2 */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_EN),	/* EN 10GigE */
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_EN_GEN2),  /* EN 10GigE Gen2 */
-	/* MT25458 ConnectX EN 10GBASE-T */
+	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_SDR),	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_DDR),	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_QDR),	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_DDR_GEN2),  
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_QDR_GEN2),	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_EN),	 
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_HERMON_EN_GEN2),   
+	 
 	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX_EN),
-	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_T_GEN2),	/* Gen2 */
-	/* MT26468 ConnectX EN 10GigE PCIe Gen2*/
+	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_T_GEN2),	 
+	 
 	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_GEN2),
-	/* MT26438 ConnectX EN 40GigE PCIe Gen2 5GT/s */
+	 
 	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_5_GEN2),
-	/* MT26478 ConnectX2 40GigE PCIe Gen2 */
+	 
 	MLX_SP(PCI_DEVICE_ID_MELLANOX_CONNECTX2),
-	/* MT25400 Family [ConnectX-2] */
-	MLX_VF(0x1002),					/* Virtual Function */
-#endif /* CONFIG_MLX4_CORE_GEN2 */
-	/* MT27500 Family [ConnectX-3] */
+	 
+	MLX_VF(0x1002),					 
+#endif  
+	 
 	MLX_GN(PCI_DEVICE_ID_MELLANOX_CONNECTX3),
-	MLX_VF(0x1004),					/* Virtual Function */
-	MLX_GN(0x1005),					/* MT27510 Family */
-	MLX_GN(0x1006),					/* MT27511 Family */
-	MLX_GN(PCI_DEVICE_ID_MELLANOX_CONNECTX3_PRO),	/* MT27520 Family */
-	MLX_GN(0x1008),					/* MT27521 Family */
-	MLX_GN(0x1009),					/* MT27530 Family */
-	MLX_GN(0x100a),					/* MT27531 Family */
-	MLX_GN(0x100b),					/* MT27540 Family */
-	MLX_GN(0x100c),					/* MT27541 Family */
-	MLX_GN(0x100d),					/* MT27550 Family */
-	MLX_GN(0x100e),					/* MT27551 Family */
-	MLX_GN(0x100f),					/* MT27560 Family */
-	MLX_GN(0x1010),					/* MT27561 Family */
+	MLX_VF(0x1004),					 
+	MLX_GN(0x1005),					 
+	MLX_GN(0x1006),					 
+	MLX_GN(PCI_DEVICE_ID_MELLANOX_CONNECTX3_PRO),	 
+	MLX_GN(0x1008),					 
+	MLX_GN(0x1009),					 
+	MLX_GN(0x100a),					 
+	MLX_GN(0x100b),					 
+	MLX_GN(0x100c),					 
+	MLX_GN(0x100d),					 
+	MLX_GN(0x100e),					 
+	MLX_GN(0x100f),					 
+	MLX_GN(0x1010),					 
 
-	/*
-	 * See the mellanox_check_broken_intx_masking() quirk when
-	 * adding devices
-	 */
+	 
 
 	{ 0, }
 };
@@ -4531,7 +4379,7 @@ static int __init mlx4_verify_params(void)
 		return -1;
 	}
 
-	/* Check if module param for ports type has legal combination */
+	 
 	if (port_type_array[0] == false && port_type_array[1] == true) {
 		pr_warn("Module parameter configuration ETH/IB is not supported. Switching to default configuration IB/IB\n");
 		port_type_array[0] = true;

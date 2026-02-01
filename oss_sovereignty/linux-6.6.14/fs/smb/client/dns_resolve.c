@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (c) 2007 Igor Mammedov
- *   Author(s): Igor Mammedov (niallain@gmail.com)
- *              Steve French (sfrench@us.ibm.com)
- *              Wang Lei (wang840925@gmail.com)
- *		David Howells (dhowells@redhat.com)
- *
- *   Contains the CIFS DFS upcall routines used for hostname to
- *   IP address translation.
- *
- */
+
+ 
 
 #include <linux/inet.h>
 #include <linux/slab.h>
@@ -20,14 +9,7 @@
 #include "cifsproto.h"
 #include "cifs_debug.h"
 
-/**
- * dns_resolve_server_name_to_ip - Resolve UNC server name to ip address.
- * @unc: UNC path specifying the server (with '/' as delimiter)
- * @ip_addr: Where to return the IP address.
- * @expiry: Where to return the expiry time for the dns record.
- *
- * Returns zero success, -ve on error.
- */
+ 
 int
 dns_resolve_server_name_to_ip(const char *unc, struct sockaddr *ip_addr, time64_t *expiry)
 {
@@ -44,11 +26,11 @@ dns_resolve_server_name_to_ip(const char *unc, struct sockaddr *ip_addr, time64_
 		return -EINVAL;
 	}
 
-	/* Discount leading slashes for cifs */
+	 
 	len -= 2;
 	hostname = unc + 2;
 
-	/* Search for server name delimiter */
+	 
 	sep = memchr(hostname, '/', len);
 	if (sep)
 		len = sep - hostname;
@@ -56,7 +38,7 @@ dns_resolve_server_name_to_ip(const char *unc, struct sockaddr *ip_addr, time64_
 		cifs_dbg(FYI, "%s: probably server name is whole unc: %s\n",
 			 __func__, unc);
 
-	/* Try to interpret hostname as an IPv4 or IPv6 address */
+	 
 	rc = cifs_convert_address(ip_addr, hostname, len);
 	if (rc > 0) {
 		cifs_dbg(FYI, "%s: unc is IP, skipping dns upcall: %*.*s\n", __func__, len, len,
@@ -64,7 +46,7 @@ dns_resolve_server_name_to_ip(const char *unc, struct sockaddr *ip_addr, time64_
 		return 0;
 	}
 
-	/* Perform the upcall */
+	 
 	rc = dns_query(current->nsproxy->net_ns, NULL, hostname, len,
 		       NULL, &ip, expiry, false);
 	if (rc < 0) {

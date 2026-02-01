@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef _MTK_DISP_DRV_H_
 #define _MTK_DISP_DRV_H_

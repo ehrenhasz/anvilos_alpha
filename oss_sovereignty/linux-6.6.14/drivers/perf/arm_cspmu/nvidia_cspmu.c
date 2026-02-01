@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- *
- */
 
-/* Support for NVIDIA specific attributes. */
+ 
+
+ 
 
 #include <linux/topology.h>
 
@@ -365,7 +362,7 @@ int nv_cspmu_init_ops(struct arm_cspmu *cspmu)
 
 	prodid = FIELD_GET(ARM_CSPMU_PMIIDR_PRODUCTID, cspmu->impl.pmiidr);
 
-	/* Find matching PMU. */
+	 
 	for (; match->prodid; match++) {
 		const u32 prodid_mask = match->prodid_mask;
 
@@ -381,13 +378,13 @@ int nv_cspmu_init_ops(struct arm_cspmu *cspmu)
 
 	cspmu->impl.ctx = ctx;
 
-	/* NVIDIA specific callbacks. */
+	 
 	impl_ops->event_filter			= nv_cspmu_event_filter;
 	impl_ops->get_event_attrs		= nv_cspmu_get_event_attrs;
 	impl_ops->get_format_attrs		= nv_cspmu_get_format_attrs;
 	impl_ops->get_name			= nv_cspmu_get_name;
 
-	/* Set others to NULL to use default callback. */
+	 
 	impl_ops->event_type			= NULL;
 	impl_ops->event_attr_is_visible		= NULL;
 	impl_ops->get_identifier		= NULL;

@@ -1,58 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics st_lsm6dsx sensor driver
- *
- * The ST LSM6DSx IMU MEMS series consists of 3D digital accelerometer
- * and 3D digital gyroscope system-in-package with a digital I2C/SPI serial
- * interface standard output.
- * LSM6DSx IMU MEMS series has a dynamic user-selectable full-scale
- * acceleration range of +-2/+-4/+-8/+-16 g and an angular rate range of
- * +-125/+-245/+-500/+-1000/+-2000 dps
- * LSM6DSx series has an integrated First-In-First-Out (FIFO) buffer
- * allowing dynamic batching of sensor data.
- * LSM9DSx series is similar but includes an additional magnetometer, handled
- * by a different driver.
- *
- * Supported sensors:
- * - LSM6DS3:
- *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416
- *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
- *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
- *   - FIFO size: 8KB
- *
- * - LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC/LSM6DS3TR-C:
- *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416
- *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
- *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
- *   - FIFO size: 4KB
- *
- * - LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP/
- *   LSM6DSTX/LSM6DSO16IS/ISM330IS:
- *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416,
- *     833
- *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
- *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
- *   - FIFO size: 3KB
- *
- * - LSM6DSV/LSM6DSV16X:
- *   - Accelerometer/Gyroscope supported ODR [Hz]: 7.5, 15, 30, 60, 120, 240,
- *     480, 960
- *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
- *   - Gyroscope supported full-scale [dps]: +-125/+-250/+-500/+-1000/+-2000
- *   - FIFO size: 3KB
- *
- * - LSM9DS1/LSM6DS0:
- *   - Accelerometer supported ODR [Hz]: 10, 50, 119, 238, 476, 952
- *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
- *   - Gyroscope supported ODR [Hz]: 15, 60, 119, 238, 476, 952
- *   - Gyroscope supported full-scale [dps]: +-245/+-500/+-2000
- *   - FIFO size: 32
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -77,7 +24,7 @@
 
 #define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
 
-#define ST_LSM6DSX_TS_SENSITIVITY		25000UL /* 25us */
+#define ST_LSM6DSX_TS_SENSITIVITY		25000UL  
 
 static const struct iio_chan_spec st_lsm6dsx_acc_channels[] = {
 	ST_LSM6DSX_CHANNEL_ACC(IIO_ACCEL, 0x28, IIO_MOD_X, 0),
@@ -343,7 +290,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
 				.mask = GENMASK(11, 0),
 			},
 			.max_size = 1365,
-			.th_wl = 3, /* 1LSB = 2B */
+			.th_wl = 3,  
 		},
 		.ts_settings = {
 			.timer_en = {
@@ -509,7 +456,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
 				.mask = GENMASK(11, 0),
 			},
 			.max_size = 682,
-			.th_wl = 3, /* 1LSB = 2B */
+			.th_wl = 3,  
 		},
 		.ts_settings = {
 			.timer_en = {
@@ -709,7 +656,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
 				.mask = GENMASK(10, 0),
 			},
 			.max_size = 682,
-			.th_wl = 3, /* 1LSB = 2B */
+			.th_wl = 3,  
 		},
 		.ts_settings = {
 			.timer_en = {
@@ -1617,10 +1564,7 @@ int st_lsm6dsx_check_odr(struct st_lsm6dsx_sensor *sensor, u32 odr, u8 *val)
 
 	odr_table = &sensor->hw->settings->odr_table[sensor->id];
 	for (i = 0; i < odr_table->odr_len; i++) {
-		/*
-		 * ext devices can run at different odr respect to
-		 * accel sensor
-		 */
+		 
 		if (odr_table->odr_avl[i].milli_hz >= odr)
 			break;
 	}
@@ -1668,12 +1612,7 @@ st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u32 req_odr)
 		u32 odr;
 		int i;
 
-		/*
-		 * i2c embedded controller relies on the accelerometer sensor as
-		 * bus read/write trigger so we need to enable accel device
-		 * at odr = max(accel_odr, ext_odr) in order to properly
-		 * communicate with i2c slave devices
-		 */
+		 
 		ref_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
 		for (i = ST_LSM6DSX_ID_ACC; i < ST_LSM6DSX_ID_MAX; i++) {
 			if (!hw->iio_devs[i] || i == sensor->id)
@@ -1681,12 +1620,12 @@ st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u32 req_odr)
 
 			odr = st_lsm6dsx_check_odr_dependency(hw, req_odr, i);
 			if (odr != req_odr)
-				/* device already configured */
+				 
 				return 0;
 		}
 		break;
 	}
-	default: /* should never occur */
+	default:  
 		return -EINVAL;
 	}
 
@@ -1752,10 +1691,7 @@ static int st_lsm6dsx_read_oneshot(struct st_lsm6dsx_sensor *sensor,
 	if (err < 0)
 		return err;
 
-	/*
-	 * we need to wait for sensor settling time before
-	 * reading data in order to avoid corrupted samples
-	 */
+	 
 	delay = 1000000000 / sensor->odr;
 	usleep_range(3 * delay, 4 * delay);
 
@@ -1862,7 +1798,7 @@ static int st_lsm6dsx_event_setup(struct st_lsm6dsx_hw *hw, int state)
 			return err;
 	}
 
-	/* Enable wakeup interrupt */
+	 
 	data = ST_LSM6DSX_SHIFT_VAL(state, hw->irq_routing->mask);
 	return st_lsm6dsx_update_bits_locked(hw, hw->irq_routing->addr,
 					     hw->irq_routing->mask, data);
@@ -1951,18 +1887,18 @@ st_lsm6dsx_write_event_config(struct iio_dev *iio_dev,
 	if (state) {
 		enable_event = hw->enable_event | BIT(chan->channel2);
 
-		/* do not enable events if they are already enabled */
+		 
 		if (hw->enable_event)
 			goto out;
 	} else {
 		enable_event = hw->enable_event & ~BIT(chan->channel2);
 
-		/* only turn off sensor if no events is enabled */
+		 
 		if (enable_event)
 			goto out;
 	}
 
-	/* stop here if no changes have been made */
+	 
 	if (hw->enable_event == enable_event)
 		return 0;
 
@@ -2180,7 +2116,7 @@ static int st_lsm6dsx_init_shub(struct st_lsm6dsx_hw *hw)
 	}
 
 	if (hub_settings->aux_sens.addr) {
-		/* configure aux sensors */
+		 
 		err = st_lsm6dsx_set_page(hw, true);
 		if (err < 0)
 			return err;
@@ -2212,7 +2148,7 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
 	int err, val;
 
 	ts_settings = &hw->settings->ts_settings;
-	/* enable hw timestamp generation if necessary */
+	 
 	if (ts_settings->timer_en.addr) {
 		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->timer_en.mask);
 		err = regmap_update_bits(hw->regmap,
@@ -2222,7 +2158,7 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
 			return err;
 	}
 
-	/* enable high resolution for hw ts timer if necessary */
+	 
 	if (ts_settings->hr_timer.addr) {
 		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->hr_timer.mask);
 		err = regmap_update_bits(hw->regmap,
@@ -2232,7 +2168,7 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
 			return err;
 	}
 
-	/* enable ts queueing in FIFO if necessary */
+	 
 	if (ts_settings->fifo_en.addr) {
 		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->fifo_en.mask);
 		err = regmap_update_bits(hw->regmap,
@@ -2242,20 +2178,14 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
 			return err;
 	}
 
-	/* calibrate timestamp sensitivity */
+	 
 	hw->ts_gain = ST_LSM6DSX_TS_SENSITIVITY;
 	if (ts_settings->freq_fine) {
 		err = regmap_read(hw->regmap, ts_settings->freq_fine, &val);
 		if (err < 0)
 			return err;
 
-		/*
-		 * linearize the AN5192 formula:
-		 * 1 / (1 + x) ~= 1 - x (Taylor’s Series)
-		 * ttrim[s] = 1 / (40000 * (1 + 0.0015 * val))
-		 * ttrim[ns] ~= 25000 - 37.5 * val
-		 * ttrim[ns] ~= 25000 - (37500 * val) / 1000
-		 */
+		 
 		hw->ts_gain -= ((s8)val * 37500) / 1000;
 	}
 
@@ -2267,17 +2197,12 @@ static int st_lsm6dsx_reset_device(struct st_lsm6dsx_hw *hw)
 	const struct st_lsm6dsx_reg *reg;
 	int err;
 
-	/*
-	 * flush hw FIFO before device reset in order to avoid
-	 * possible races on interrupt line 1. If the first interrupt
-	 * line is asserted during hw reset the device will work in
-	 * I3C-only mode (if it is supported)
-	 */
+	 
 	err = st_lsm6dsx_flush_fifo(hw);
 	if (err < 0 && err != -ENOTSUPP)
 		return err;
 
-	/* device sw reset */
+	 
 	reg = &hw->settings->reset;
 	err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
 				 ST_LSM6DSX_SHIFT_VAL(1, reg->mask));
@@ -2286,7 +2211,7 @@ static int st_lsm6dsx_reset_device(struct st_lsm6dsx_hw *hw)
 
 	msleep(50);
 
-	/* reload trimming parameter */
+	 
 	reg = &hw->settings->boot;
 	err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
 				 ST_LSM6DSX_SHIFT_VAL(1, reg->mask));
@@ -2307,14 +2232,14 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
 	if (err < 0)
 		return err;
 
-	/* enable Block Data Update */
+	 
 	reg = &hw->settings->bdu;
 	err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
 				 ST_LSM6DSX_SHIFT_VAL(1, reg->mask));
 	if (err < 0)
 		return err;
 
-	/* enable FIFO watermak interrupt */
+	 
 	err = st_lsm6dsx_get_drdy_reg(hw, &reg);
 	if (err < 0)
 		return err;
@@ -2324,7 +2249,7 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
 	if (err < 0)
 		return err;
 
-	/* enable Latched interrupts for device events */
+	 
 	if (hw->settings->irq_config.lir.addr) {
 		reg = &hw->settings->irq_config.lir;
 		err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
@@ -2332,7 +2257,7 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
 		if (err < 0)
 			return err;
 
-		/* enable clear on read for latched interrupts */
+		 
 		if (hw->settings->irq_config.clear_on_read.addr) {
 			reg = &hw->settings->irq_config.clear_on_read;
 			err = regmap_update_bits(hw->regmap,
@@ -2343,7 +2268,7 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
 		}
 	}
 
-	/* enable drdy-mas if available */
+	 
 	if (hw->settings->drdy_mask.addr) {
 		reg = &hw->settings->drdy_mask;
 		err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
@@ -2462,17 +2387,7 @@ static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
 	if (!hw->settings->fifo_ops.read_fifo)
 		return event ? IRQ_HANDLED : IRQ_NONE;
 
-	/*
-	 * If we are using edge IRQs, new samples can arrive while
-	 * processing current interrupt since there are no hw
-	 * guarantees the irq line stays "low" long enough to properly
-	 * detect the new interrupt. In this case the new sample will
-	 * be missed.
-	 * Polling FIFO status register allow us to read new
-	 * samples even if the interrupt arrives while processing
-	 * previous data and the timeslot where the line is "low" is
-	 * too short to be properly detected.
-	 */
+	 
 	do {
 		mutex_lock(&hw->fifo_lock);
 		len = hw->settings->fifo_ops.read_fifo(hw);
@@ -2611,7 +2526,7 @@ static int st_lsm6dsx_sw_buffers_setup(struct st_lsm6dsx_hw *hw)
 
 static int st_lsm6dsx_init_regulators(struct device *dev)
 {
-	/* vdd-vddio power regulators */
+	 
 	static const char * const regulators[] = { "vdd", "vddio" };
 	int err;
 
@@ -2757,10 +2672,7 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
 	}
 
 	if (!hw->irq || !hw->settings->fifo_ops.read_fifo) {
-		/*
-		 * Rely on sw triggers (e.g. hr-timers) if irq pin is not
-		 * connected of if the device does not support HW FIFO
-		 */
+		 
 		err = st_lsm6dsx_sw_buffers_setup(hw);
 		if (err)
 			return err;
@@ -2806,7 +2718,7 @@ static int st_lsm6dsx_suspend(struct device *dev)
 
 		if (device_may_wakeup(dev) &&
 		    sensor->id == ST_LSM6DSX_ID_ACC && hw->enable_event) {
-			/* Enable wake from IRQ */
+			 
 			enable_irq_wake(hw->irq);
 			continue;
 		}

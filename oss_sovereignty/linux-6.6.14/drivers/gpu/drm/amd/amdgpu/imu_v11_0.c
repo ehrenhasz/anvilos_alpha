@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include "amdgpu.h"
@@ -55,7 +34,7 @@ static int imu_v11_0_init_microcode(struct amdgpu_device *adev)
 		goto out;
 	imu_hdr = (const struct imu_firmware_header_v1_0 *)adev->gfx.imu_fw->data;
 	adev->gfx.imu_fw_version = le32_to_cpu(imu_hdr->header.ucode_version);
-	//adev->gfx.imu_feature_version = le32_to_cpu(imu_hdr->ucode_feature_version);
+	
 	
 	if (adev->firmware.load_type == AMDGPU_FW_LOAD_PSP) {
 		info = &adev->firmware.ucode[AMDGPU_UCODE_ID_IMU_I];
@@ -91,7 +70,7 @@ static int imu_v11_0_load_microcode(struct amdgpu_device *adev)
 		return -EINVAL;
 
 	hdr = (const struct imu_firmware_header_v1_0 *)adev->gfx.imu_fw->data;
-	//amdgpu_ucode_print_rlc_hdr(&hdr->header);
+	
 
 	fw_data = (const __le32 *)(adev->gfx.imu_fw->data +
 			le32_to_cpu(hdr->header.ucode_array_offset_bytes));
@@ -142,7 +121,7 @@ static void imu_v11_0_setup(struct amdgpu_device *adev)
 {
 	int imu_reg_val;
 
-	//enable IMU debug mode
+	
 	WREG32_SOC15(GC, 0, regGFX_IMU_C2PMSG_ACCESS_CTRL0, 0xffffff);
 	WREG32_SOC15(GC, 0, regGFX_IMU_C2PMSG_ACCESS_CTRL1, 0xffff);
 
@@ -152,7 +131,7 @@ static void imu_v11_0_setup(struct amdgpu_device *adev)
 		WREG32_SOC15(GC, 0, regGFX_IMU_C2PMSG_16, imu_reg_val);
 	}
 
-	//disble imu Rtavfs, SmsRepair, DfllBTC, and ClkB
+	
 	imu_reg_val = RREG32_SOC15(GC, 0, regGFX_IMU_SCRATCH_10);
 	imu_reg_val |= 0x10007;
 	WREG32_SOC15(GC, 0, regGFX_IMU_SCRATCH_10, imu_reg_val);
@@ -162,7 +141,7 @@ static int imu_v11_0_start(struct amdgpu_device *adev)
 {
 	int imu_reg_val;
 
-	//Start IMU by set GFX_IMU_CORE_CTRL.CRESET = 0
+	
 	imu_reg_val = RREG32_SOC15(GC, 0, regGFX_IMU_CORE_CTRL);
 	imu_reg_val &= 0xfffffffe;
 	WREG32_SOC15(GC, 0, regGFX_IMU_CORE_CTRL, imu_reg_val);
@@ -340,7 +319,7 @@ static void program_imu_rlc_ram(struct amdgpu_device *adev,
 		WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_ADDR_LOW, reg);
 		WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_DATA, data);
 	}
-	//Indicate the latest entry
+	
 	WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_ADDR_HIGH, 0);
 	WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_ADDR_LOW, 0);
 	WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_DATA, 0);
@@ -369,7 +348,7 @@ static void imu_v11_0_program_rlc_ram(struct amdgpu_device *adev)
 		break;
 	}
 
-	//Indicate the contents of the RAM are valid
+	
 	reg_data = RREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_INDEX);
 	reg_data |= GFX_IMU_RLC_RAM_INDEX__RAM_VALID_MASK;
 	WREG32_SOC15(GC, 0, regGFX_IMU_RLC_RAM_INDEX, reg_data);

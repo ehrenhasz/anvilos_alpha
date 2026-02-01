@@ -1,20 +1,4 @@
-/* seq - print sequence of numbers to standard output.
-   Copyright (C) 1994-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ulrich Drepper.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -26,8 +10,7 @@
 #include "quote.h"
 #include "xstrtod.h"
 
-/* Roll our own isfinite/isnan rather than using <math.h>, so that we don't
-   have to worry about linking -lm just for isfinite.  */
+ 
 #ifndef isfinite
 # define isfinite(x) ((x) * 0 == 0)
 #endif
@@ -35,27 +18,25 @@
 # define isnan(x) ((x) != (x))
 #endif
 
-/* Limit below which seq_fast has more throughput.
-   Determined with: seq 0 200 inf | pv > /dev/null  */
-#define SEQ_FAST_STEP_LIMIT 200  /* Keep in sync with texinfo description.  */
+ 
+#define SEQ_FAST_STEP_LIMIT 200   
 #define SEQ_FAST_STEP_LIMIT_DIGITS 3
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "seq"
 
 #define AUTHORS proper_name ("Ulrich Drepper")
 
-/* True if the locale settings were honored.  */
+ 
 static bool locale_ok;
 
-/* If true print all number with equal width.  */
+ 
 static bool equal_width;
 
-/* The string used to separate two numbers.  */
+ 
 static char const *separator;
 
-/* The string output after all numbers have been output.
-   Usually "\n" or "\0".  */
+ 
 static char const terminator[] = "\n";
 
 static struct option const long_options[] =
@@ -377,9 +358,9 @@ get_default_format (operand first, operand step, operand last)
           if (last.precision && prec == 0)
             last_width--;  /* don't include space for '.' */
           if (last.precision == 0 && prec)
-            last_width++;  /* include space for '.' */
+            last_width++;   
           if (first.precision == 0 && prec)
-            first_width++;  /* include space for '.' */
+            first_width++;   
           size_t width = MAX (first_width, last_width);
           if (width <= INT_MAX)
             {
@@ -398,9 +379,7 @@ get_default_format (operand first, operand step, operand last)
   return "%Lg";
 }
 
-/* The NUL-terminated string S0 of length S_LEN represents a valid
-   non-negative decimal integer.  Adjust the string and length so
-   that the pair describe the next-larger value.  */
+ 
 static void
 incr (char **s0, size_t *s_len)
 {
@@ -418,8 +397,7 @@ incr (char **s0, size_t *s_len)
   ++*s_len;
 }
 
-/* Compare A and B (each a NUL-terminated digit string), with lengths
-   given by A_LEN and B_LEN.  Return +1 if A < B, -1 if B < A, else 0.  */
+ 
 static int
 cmp (char const *a, size_t a_len, char const *b, size_t b_len)
 {
@@ -430,8 +408,7 @@ cmp (char const *a, size_t a_len, char const *b, size_t b_len)
   return (memcmp (a, b, a_len));
 }
 
-/* Trim leading 0's from S, but if S is all 0's, leave one.
-   Return a pointer to the trimmed string.  */
+ 
 ATTRIBUTE_PURE
 static char const *
 trim_leading_zeros (char const *s)
@@ -440,36 +417,32 @@ trim_leading_zeros (char const *s)
   while (*s == '0')
     ++s;
 
-  /* If there were only 0's, back up, to leave one.  */
+   
   if (!*s && s != p)
     --s;
   return s;
 }
 
-/* Print all whole numbers from A to B, inclusive -- to stdout, each
-   followed by a newline.  If B < A, return and print nothing.
-   Otherwise, do all the work and exit.  */
+ 
 static void
 seq_fast (char const *a, char const *b, uintmax_t step)
 {
   bool inf = STREQ (b, "inf");
 
-  /* Skip past any leading 0's.  Without this, our naive cmp
-     function would declare 000 to be larger than 99.  */
+   
   a = trim_leading_zeros (a);
   b = trim_leading_zeros (b);
 
   size_t p_len = strlen (a);
   size_t q_len = inf ? 0 : strlen (b);
 
-  /* Allow for at least 31 digits without realloc.
-     1 more than p_len is needed for the inf case.  */
+   
 #define INITIAL_ALLOC_DIGITS 31
   size_t inc_size = MAX (MAX (p_len + 1, q_len), INITIAL_ALLOC_DIGITS);
-  /* Ensure we only increase by at most 1 digit at buffer boundaries.  */
+   
   static_assert (SEQ_FAST_STEP_LIMIT_DIGITS < INITIAL_ALLOC_DIGITS - 1);
 
-  /* Copy input strings (incl NUL) to end of new buffers.  */
+   
   char *p0 = xmalloc (inc_size + 1);
   char *p = memcpy (p0 + inc_size - p_len, a, p_len + 1);
   char *q;
@@ -485,19 +458,17 @@ seq_fast (char const *a, char const *b, uintmax_t step)
   bool ok = inf || cmp (p, p_len, q, q_len) <= 0;
   if (ok)
     {
-      /* Reduce number of fwrite calls which is seen to
-         give a speed-up of more than 2x over the unbuffered code
-         when printing the first 10^9 integers.  */
+       
       size_t buf_size = MAX (BUFSIZ, (inc_size + 1) * 2);
       char *buf = xmalloc (buf_size);
       char const *buf_end = buf + buf_size;
 
       char *bufp = buf;
 
-      /* Write first number to buffer.  */
+       
       bufp = mempcpy (bufp, p, p_len);
 
-      /* Append separator then number.  */
+       
       while (true)
         {
           for (uintmax_t n_incr = step; n_incr; n_incr--)
@@ -508,7 +479,7 @@ seq_fast (char const *a, char const *b, uintmax_t step)
 
           *bufp++ = *separator;
 
-          /* Double up the buffers when needed for the inf case.  */
+           
           if (p_len == inc_size)
             {
               inc_size *= 2;
@@ -526,8 +497,7 @@ seq_fast (char const *a, char const *b, uintmax_t step)
             }
 
           bufp = mempcpy (bufp, p, p_len);
-          /* If no place for another separator + number then
-             output buffer so far, and reset to start of buffer.  */
+           
           if (buf_end - (p_len + 1) < bufp)
             {
               if (fwrite (buf, bufp - buf, 1, stdout) != 1)
@@ -536,7 +506,7 @@ seq_fast (char const *a, char const *b, uintmax_t step)
             }
         }
 
-      /* Write any remaining buffered output, and the terminator.  */
+       
       *bufp++ = *terminator;
       if (fwrite (buf, bufp - buf, 1, stdout) != 1)
         write_error ();
@@ -549,7 +519,7 @@ seq_fast (char const *a, char const *b, uintmax_t step)
   free (q0);
 }
 
-/* Return true if S consists of at least one digit and no non-digits.  */
+ 
 ATTRIBUTE_PURE
 static bool
 all_digits_p (char const *s)
@@ -567,7 +537,7 @@ main (int argc, char **argv)
   operand last;
   struct layout layout = { 0, 0 };
 
-  /* The printf(3) format used for output.  */
+   
   char const *format_str = nullptr;
 
   initialize_main (&argc, &argv);
@@ -581,15 +551,13 @@ main (int argc, char **argv)
   equal_width = false;
   separator = "\n";
 
-  /* We have to handle negative numbers in the command line but this
-     conflicts with the command line arguments.  So explicitly check first
-     whether the next argument looks like a negative number.  */
+   
   while (optind < argc)
     {
       if (argv[optind][0] == '-'
           && ((optc = argv[optind][1]) == '.' || ISDIGIT (optc)))
         {
-          /* means negative number */
+           
           break;
         }
 
@@ -643,13 +611,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  /* If the following hold:
-     - no format string, [FIXME: relax this, eventually]
-     - integer start (or no start)
-     - integer end
-     - integer increment <= SEQ_FAST_STEP_LIMIT
-     then use the much more efficient integer-only code,
-     operating on arbitrarily large numbers.  */
+   
   bool fast_step_ok = false;
   if (n_args != 3
       || (all_digits_p (argv[optind + 1])
@@ -667,7 +629,7 @@ main (int argc, char **argv)
       char const *s2 = argv[optind + (n_args - 1)];
       seq_fast (s1, s2, step.value);
 
-      /* Upon any failure, let the more general code deal with it.  */
+       
     }
 
   last = scan_arg (argv[optind++]);
@@ -691,8 +653,7 @@ main (int argc, char **argv)
         }
     }
 
-  /* Try the fast method again, for integers of the form 1e1 etc.,
-     or "inf" end value.  */
+   
   if (first.precision == 0 && step.precision == 0 && last.precision == 0
       && isfinite (first.value) && 0 <= first.value && 0 <= last.value
       && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
@@ -703,7 +664,7 @@ main (int argc, char **argv)
       if (asprintf (&s1, "%0.Lf", first.value) < 0)
         xalloc_die ();
       if (! isfinite (last.value))
-        s2 = xstrdup ("inf"); /* Ensure "inf" is used.  */
+        s2 = xstrdup ("inf");  
       else if (asprintf (&s2, "%0.Lf", last.value) < 0)
         xalloc_die ();
 
@@ -712,7 +673,7 @@ main (int argc, char **argv)
 
       free (s1);
       free (s2);
-      /* Upon any failure, let the more general code deal with it.  */
+       
     }
 
   if (format_str == nullptr)

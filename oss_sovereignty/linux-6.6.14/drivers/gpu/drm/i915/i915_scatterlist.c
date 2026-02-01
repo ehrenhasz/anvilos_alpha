@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_scatterlist.h"
 #include "i915_ttm_buddy_manager.h"
@@ -32,7 +28,7 @@ bool i915_sg_trim(struct sg_table *orig_st)
 
 		new_sg = sg_next(new_sg);
 	}
-	GEM_BUG_ON(new_sg); /* Should walk exactly nents and hit the end */
+	GEM_BUG_ON(new_sg);  
 
 	sg_free_table(orig_st);
 
@@ -53,30 +49,13 @@ static const struct i915_refct_sgt_ops rsgt_ops = {
 	.release = i915_refct_sgt_release
 };
 
-/**
- * i915_refct_sgt_init - Initialize a struct i915_refct_sgt with default ops
- * @rsgt: The struct i915_refct_sgt to initialize.
- * @size: The size of the underlying memory buffer.
- */
+ 
 void i915_refct_sgt_init(struct i915_refct_sgt *rsgt, size_t size)
 {
 	__i915_refct_sgt_init(rsgt, size, &rsgt_ops);
 }
 
-/**
- * i915_rsgt_from_mm_node - Create a refcounted sg_table from a struct
- * drm_mm_node
- * @node: The drm_mm_node.
- * @region_start: An offset to add to the dma addresses of the sg list.
- * @page_alignment: Required page alignment for each sg entry. Power of two.
- *
- * Create a struct sg_table, initializing it from a struct drm_mm_node,
- * taking a maximum segment length into account, splitting into segments
- * if necessary.
- *
- * Return: A pointer to a kmalloced struct i915_refct_sgt on success, negative
- * error code cast to an error pointer on failure.
- */
+ 
 struct i915_refct_sgt *i915_rsgt_from_mm_node(const struct drm_mm_node *node,
 					      u64 region_start,
 					      u32 page_alignment)
@@ -96,7 +75,7 @@ struct i915_refct_sgt *i915_rsgt_from_mm_node(const struct drm_mm_node *node,
 
 	i915_refct_sgt_init(rsgt, node->size << PAGE_SHIFT);
 	st = &rsgt->table;
-	/* restricted by sg_alloc_table */
+	 
 	if (WARN_ON(overflows_type(DIV_ROUND_UP_ULL(node->size, segment_pages),
 				   unsigned int))) {
 		i915_refct_sgt_put(rsgt);
@@ -146,20 +125,7 @@ struct i915_refct_sgt *i915_rsgt_from_mm_node(const struct drm_mm_node *node,
 	return rsgt;
 }
 
-/**
- * i915_rsgt_from_buddy_resource - Create a refcounted sg_table from a struct
- * i915_buddy_block list
- * @res: The struct i915_ttm_buddy_resource.
- * @region_start: An offset to add to the dma addresses of the sg list.
- * @page_alignment: Required page alignment for each sg entry. Power of two.
- *
- * Create a struct sg_table, initializing it from struct i915_buddy_block list,
- * taking a maximum segment length into account, splitting into segments
- * if necessary.
- *
- * Return: A pointer to a kmalloced struct i915_refct_sgts on success, negative
- * error code cast to an error pointer on failure.
- */
+ 
 struct i915_refct_sgt *i915_rsgt_from_buddy_resource(struct ttm_resource *res,
 						     u64 region_start,
 						     u32 page_alignment)
@@ -184,7 +150,7 @@ struct i915_refct_sgt *i915_rsgt_from_buddy_resource(struct ttm_resource *res,
 
 	i915_refct_sgt_init(rsgt, size);
 	st = &rsgt->table;
-	/* restricted by sg_alloc_table */
+	 
 	if (WARN_ON(overflows_type(PFN_UP(res->size), unsigned int))) {
 		i915_refct_sgt_put(rsgt);
 		return ERR_PTR(-E2BIG);

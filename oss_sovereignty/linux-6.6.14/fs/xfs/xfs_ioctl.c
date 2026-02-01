@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -43,17 +40,7 @@
 #include <linux/namei.h>
 #include <linux/fileattr.h>
 
-/*
- * xfs_find_handle maps from userspace xfs_fsop_handlereq structure to
- * a file or fs handle.
- *
- * XFS_IOC_PATH_TO_FSHANDLE
- *    returns fs handle for a mount point or path within that mount point
- * XFS_IOC_FD_TO_HANDLE
- *    returns full handle for a FD opened in user space
- * XFS_IOC_PATH_TO_HANDLE
- *    returns full handle for a path
- */
+ 
 int
 xfs_find_handle(
 	unsigned int		cmd,
@@ -80,10 +67,7 @@ xfs_find_handle(
 	}
 	ip = XFS_I(inode);
 
-	/*
-	 * We can only generate handles for inodes residing on a XFS filesystem,
-	 * and only for regular files, directories or symbolic links.
-	 */
+	 
 	error = -EINVAL;
 	if (inode->i_sb->s_magic != XFS_SB_MAGIC)
 		goto out_put;
@@ -98,9 +82,7 @@ xfs_find_handle(
 	memcpy(&handle.ha_fsid, ip->i_mount->m_fixedfsid, sizeof(xfs_fsid_t));
 
 	if (cmd == XFS_IOC_PATH_TO_FSHANDLE) {
-		/*
-		 * This handle only contains an fsid, zero the rest.
-		 */
+		 
 		memset(&handle.ha_fid, 0, sizeof(handle.ha_fid));
 		hsize = sizeof(xfs_fsid_t);
 	} else {
@@ -127,10 +109,7 @@ xfs_find_handle(
 	return error;
 }
 
-/*
- * No need to do permission checks on the various pathname components
- * as the handle operations are privileged.
- */
+ 
 STATIC int
 xfs_handle_acceptable(
 	void			*context,
@@ -139,9 +118,7 @@ xfs_handle_acceptable(
 	return 1;
 }
 
-/*
- * Convert userspace handle data into a dentry.
- */
+ 
 struct dentry *
 xfs_handle_to_dentry(
 	struct file		*parfilp,
@@ -151,9 +128,7 @@ xfs_handle_to_dentry(
 	xfs_handle_t		handle;
 	struct xfs_fid64	fid;
 
-	/*
-	 * Only allow handle opens under a directory.
-	 */
+	 
 	if (!S_ISDIR(file_inode(parfilp)->i_mode))
 		return ERR_PTR(-ENOTDIR);
 
@@ -205,7 +180,7 @@ xfs_open_by_handle(
 		return PTR_ERR(dentry);
 	inode = d_inode(dentry);
 
-	/* Restrict xfs_open_by_handle to directories & regular files. */
+	 
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode))) {
 		error = -EPERM;
 		goto out_dput;
@@ -228,7 +203,7 @@ xfs_open_by_handle(
 		goto out_dput;
 	}
 
-	/* Can't write directories. */
+	 
 	if (S_ISDIR(inode->i_mode) && (fmode & FMODE_WRITE)) {
 		error = -EISDIR;
 		goto out_dput;
@@ -278,7 +253,7 @@ xfs_readlink_by_handle(
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
-	/* Restrict this handle operation to symlinks only. */
+	 
 	if (!d_is_symlink(dentry)) {
 		error = -EINVAL;
 		goto out_dput;
@@ -296,11 +271,7 @@ xfs_readlink_by_handle(
 	return error;
 }
 
-/*
- * Format an attribute and copy it out to the user's buffer.
- * Take care to check values and protect against them changing later,
- * we may be reading them directly out of a user buffer.
- */
+ 
 static void
 xfs_ioc_attr_put_listent(
 	struct xfs_attr_list_context *context,
@@ -319,16 +290,14 @@ xfs_ioc_attr_put_listent(
 	ASSERT(context->firstu >= sizeof(*alist));
 	ASSERT(context->firstu <= context->bufsize);
 
-	/*
-	 * Only list entries in the right namespace.
-	 */
+	 
 	if (context->attr_filter != (flags & XFS_ATTR_NSP_ONDISK_MASK))
 		return;
 
 	arraytop = sizeof(*alist) +
 			context->count * sizeof(alist->al_offset[0]);
 
-	/* decrement by the actual bytes used by the attr */
+	 
 	context->firstu -= round_up(offsetof(struct xfs_attrlist_ent, a_name) +
 			namelen + 1, sizeof(uint32_t));
 	if (context->firstu < arraytop) {
@@ -386,17 +355,13 @@ xfs_ioc_attr_list(
 	    bufsize > XFS_XATTR_LIST_MAX)
 		return -EINVAL;
 
-	/*
-	 * Reject flags, only allow namespaces.
-	 */
+	 
 	if (flags & ~(XFS_IOC_ATTR_ROOT | XFS_IOC_ATTR_SECURE))
 		return -EINVAL;
 	if (flags == (XFS_IOC_ATTR_ROOT | XFS_IOC_ATTR_SECURE))
 		return -EINVAL;
 
-	/*
-	 * Validate the cursor.
-	 */
+	 
 	if (copy_from_user(&context.cursor, ucursor, sizeof(context.cursor)))
 		return -EFAULT;
 	if (context.cursor.pad1 || context.cursor.pad2)
@@ -410,9 +375,7 @@ xfs_ioc_attr_list(
 	if (!buffer)
 		return -ENOMEM;
 
-	/*
-	 * Initialize the output buffer.
-	 */
+	 
 	context.dp = dp;
 	context.resynch = 1;
 	context.attr_filter = xfs_attr_filter(flags);
@@ -592,7 +555,7 @@ xfs_attrmulti_by_handle(
 	if (copy_from_user(&am_hreq, arg, sizeof(xfs_fsop_attrmulti_handlereq_t)))
 		return -EFAULT;
 
-	/* overflow check */
+	 
 	if (am_hreq.opcount >= INT_MAX / sizeof(xfs_attr_multiop_t))
 		return -E2BIG;
 
@@ -628,7 +591,7 @@ xfs_attrmulti_by_handle(
 	return error;
 }
 
-/* Return 0 on success or positive error */
+ 
 int
 xfs_fsbulkstat_one_fmt(
 	struct xfs_ibulk		*breq,
@@ -671,8 +634,8 @@ xfs_ioc_fsbulkstat(
 	xfs_ino_t		lastino;
 	int			error;
 
-	/* done = 1 if there are more stats to get and if bulkstat */
-	/* should be called again (unused here, but used in dmapi) */
+	 
+	 
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -695,17 +658,7 @@ xfs_ioc_fsbulkstat(
 	breq.ubuffer = bulkreq.ubuffer;
 	breq.icount = bulkreq.icount;
 
-	/*
-	 * FSBULKSTAT_SINGLE expects that *lastip contains the inode number
-	 * that we want to stat.  However, FSINUMBERS and FSBULKSTAT expect
-	 * that *lastip contains either zero or the number of the last inode to
-	 * be examined by the previous call and return results starting with
-	 * the next inode after that.  The new bulk request back end functions
-	 * take the inode to start with, so we have to compute the startino
-	 * parameter from lastino to maintain correct function.  lastino == 0
-	 * is a special case because it has traditionally meant "first inode
-	 * in filesystem".
-	 */
+	 
 	if (cmd == XFS_IOC_FSINUMBERS) {
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_inumbers(&breq, xfs_fsinumbers_fmt);
@@ -714,7 +667,7 @@ xfs_ioc_fsbulkstat(
 		breq.startino = lastino;
 		breq.icount = 1;
 		error = xfs_bulkstat_one(&breq, xfs_fsbulkstat_one_fmt);
-	} else {	/* XFS_IOC_FSBULKSTAT */
+	} else {	 
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_bulkstat(&breq, xfs_fsbulkstat_one_fmt);
 		lastino = breq.startino - 1;
@@ -734,7 +687,7 @@ xfs_ioc_fsbulkstat(
 	return 0;
 }
 
-/* Return 0 on success or positive error */
+ 
 static int
 xfs_bulkstat_fmt(
 	struct xfs_ibulk		*breq,
@@ -745,12 +698,7 @@ xfs_bulkstat_fmt(
 	return xfs_ibulk_advance(breq, sizeof(struct xfs_bulkstat));
 }
 
-/*
- * Check the incoming bulk request @hdr from userspace and initialize the
- * internal @breq bulk request appropriately.  Returns 0 if the bulk request
- * should proceed; -ECANCELED if there's nothing to do; or the usual
- * negative error code.
- */
+ 
 static int
 xfs_bulk_ireq_setup(
 	struct xfs_mount	*mp,
@@ -769,11 +717,7 @@ xfs_bulk_ireq_setup(
 	breq->ocount = 0;
 	breq->flags = 0;
 
-	/*
-	 * The @ino parameter is a special value, so we must look it up here.
-	 * We're not allowed to have IREQ_AGNO, and we only return one inode
-	 * worth of data.
-	 */
+	 
 	if (hdr->flags & XFS_BULK_IREQ_SPECIAL) {
 		if (hdr->flags & XFS_BULK_IREQ_AGNO)
 			return -EINVAL;
@@ -788,11 +732,7 @@ xfs_bulk_ireq_setup(
 		breq->icount = 1;
 	}
 
-	/*
-	 * The IREQ_AGNO flag means that we only want results from a given AG.
-	 * If @hdr->ino is zero, we start iterating in that AG.  If @hdr->ino is
-	 * beyond the specified AG then we return no results.
-	 */
+	 
 	if (hdr->flags & XFS_BULK_IREQ_AGNO) {
 		if (hdr->agno >= mp->m_sb.sb_agcount)
 			return -EINVAL;
@@ -804,13 +744,13 @@ xfs_bulk_ireq_setup(
 
 		breq->flags |= XFS_IBULK_SAME_AG;
 
-		/* Asking for an inode past the end of the AG?  We're done! */
+		 
 		if (XFS_INO_TO_AGNO(mp, breq->startino) > hdr->agno)
 			return -ECANCELED;
 	} else if (hdr->agno)
 		return -EINVAL;
 
-	/* Asking for an inode past the end of the FS?  We're done! */
+	 
 	if (XFS_INO_TO_AGNO(mp, breq->startino) >= mp->m_sb.sb_agcount)
 		return -ECANCELED;
 
@@ -820,10 +760,7 @@ xfs_bulk_ireq_setup(
 	return 0;
 }
 
-/*
- * Update the userspace bulk request @hdr to reflect the end state of the
- * internal bulk request @breq.
- */
+ 
 static void
 xfs_bulk_ireq_teardown(
 	struct xfs_bulk_ireq	*hdr,
@@ -833,7 +770,7 @@ xfs_bulk_ireq_teardown(
 	hdr->ocount = breq->ocount;
 }
 
-/* Handle the v5 bulkstat ioctl. */
+ 
 STATIC int
 xfs_ioc_bulkstat(
 	struct file			*file,
@@ -885,7 +822,7 @@ xfs_inumbers_fmt(
 	return xfs_ibulk_advance(breq, sizeof(struct xfs_inumbers));
 }
 
-/* Handle the v5 inumbers ioctl. */
+ 
 STATIC int
 xfs_ioc_inumbers(
 	struct xfs_mount		*mp,
@@ -980,9 +917,7 @@ xfs_ioc_ag_geometry(
 	return 0;
 }
 
-/*
- * Linux extended inode flags interface.
- */
+ 
 
 static void
 xfs_fill_fsxattr(
@@ -998,11 +933,7 @@ xfs_fill_fsxattr(
 	if (ip->i_diflags & XFS_DIFLAG_EXTSIZE) {
 		fa->fsx_extsize = XFS_FSB_TO_B(mp, ip->i_extsize);
 	} else if (ip->i_diflags & XFS_DIFLAG_EXTSZINHERIT) {
-		/*
-		 * Don't let a misaligned extent size hint on a directory
-		 * escape to userspace if it won't pass the setattr checks
-		 * later.
-		 */
+		 
 		if ((ip->i_diflags & XFS_DIFLAG_RTINHERIT) &&
 		    ip->i_extsize % mp->m_sb.sb_rextsize > 0) {
 			fa->fsx_xflags &= ~(FS_XFLAG_EXTSIZE |
@@ -1058,7 +989,7 @@ xfs_flags2diflags(
 	struct xfs_inode	*ip,
 	unsigned int		xflags)
 {
-	/* can't set PREALLOC this way, just preserve it */
+	 
 	uint16_t		di_flags =
 		(ip->i_diflags & XFS_DIFLAG_PREALLOC);
 
@@ -1122,23 +1053,23 @@ xfs_ioctl_setattr_xflags(
 	struct xfs_mount	*mp = ip->i_mount;
 	uint64_t		i_flags2;
 
-	/* Can't change realtime flag if any extents are allocated. */
+	 
 	if ((ip->i_df.if_nextents || ip->i_delayed_blks) &&
 	    XFS_IS_REALTIME_INODE(ip) != (fa->fsx_xflags & FS_XFLAG_REALTIME))
 		return -EINVAL;
 
-	/* If realtime flag is set then must have realtime device */
+	 
 	if (fa->fsx_xflags & FS_XFLAG_REALTIME) {
 		if (mp->m_sb.sb_rblocks == 0 || mp->m_sb.sb_rextsize == 0 ||
 		    (ip->i_extsize % mp->m_sb.sb_rextsize))
 			return -EINVAL;
 	}
 
-	/* Clear reflink if we are actually able to set the rt flag. */
+	 
 	if ((fa->fsx_xflags & FS_XFLAG_REALTIME) && xfs_is_reflink_inode(ip))
 		ip->i_diflags2 &= ~XFS_DIFLAG2_REFLINK;
 
-	/* diflags2 only valid for v3 inodes. */
+	 
 	i_flags2 = xfs_flags2diflags2(ip, fa->fsx_xflags);
 	if (i_flags2 && !xfs_has_v3inodes(mp))
 		return -EINVAL;
@@ -1174,12 +1105,7 @@ xfs_ioctl_setattr_prepare_dax(
 		d_mark_dontcache(inode);
 }
 
-/*
- * Set up the transaction structure for the setattr operation, checking that we
- * have permission to do so. On success, return a clean transaction and the
- * inode locked exclusively ready for further operation specific checks. On
- * failure, return an error without modifying or locking the inode.
- */
+ 
 static struct xfs_trans *
 xfs_ioctl_setattr_get_trans(
 	struct xfs_inode	*ip,
@@ -1209,10 +1135,7 @@ out_error:
 	return ERR_PTR(error);
 }
 
-/*
- * Validate a proposed extent size hint.  For regular files, the hint can only
- * be changed if no extents are allocated.
- */
+ 
 static int
 xfs_ioctl_setattr_check_extsize(
 	struct xfs_inode	*ip,
@@ -1234,12 +1157,7 @@ xfs_ioctl_setattr_check_extsize(
 
 	new_diflags = xfs_flags2diflags(ip, fa->fsx_xflags);
 
-	/*
-	 * Inode verifiers do not check that the extent size hint is an integer
-	 * multiple of the rt extent size on a directory with both rtinherit
-	 * and extszinherit flags set.  Don't let sysadmins misconfigure
-	 * directories.
-	 */
+	 
 	if ((new_diflags & XFS_DIFLAG_RTINHERIT) &&
 	    (new_diflags & XFS_DIFLAG_EXTSZINHERIT)) {
 		unsigned int	rtextsize_bytes;
@@ -1288,7 +1206,7 @@ xfs_ioctl_setattr_check_projid(
 	if (!fa->fsx_valid)
 		return 0;
 
-	/* Disallow 32bit project ids if 32bit IDs are not enabled. */
+	 
 	if (fa->fsx_projid > (uint16_t)-1 &&
 	    !xfs_has_projid32(ip->i_mount))
 		return -EINVAL;
@@ -1324,14 +1242,7 @@ xfs_fileattr_set(
 	if (error)
 		return error;
 
-	/*
-	 * If disk quotas is on, we make sure that the dquots do exist on disk,
-	 * before we start any other transactions. Trying to do this later
-	 * is messy. We don't care to take a readlock to look at the ids
-	 * in inode here, because we can't hold it across the trans_reserve.
-	 * If the IDs do change before we take the ilock, we're covered
-	 * because the i_*dquot fields will get updated anyway.
-	 */
+	 
 	if (fa->fsx_valid && XFS_IS_QUOTA_ON(mp)) {
 		error = xfs_qm_vop_dqalloc(ip, VFS_I(ip)->i_uid,
 				VFS_I(ip)->i_gid, fa->fsx_projid,
@@ -1362,19 +1273,13 @@ xfs_fileattr_set(
 
 	if (!fa->fsx_valid)
 		goto skip_xattr;
-	/*
-	 * Change file ownership.  Must be the owner or privileged.  CAP_FSETID
-	 * overrides the following restrictions:
-	 *
-	 * The set-user-ID and set-group-ID bits of a file will be cleared upon
-	 * successful return from chown()
-	 */
+	 
 
 	if ((VFS_I(ip)->i_mode & (S_ISUID|S_ISGID)) &&
 	    !capable_wrt_inode_uidgid(idmap, VFS_I(ip), CAP_FSETID))
 		VFS_I(ip)->i_mode &= ~(S_ISUID|S_ISGID);
 
-	/* Change the ownerships and register project quota modifications */
+	 
 	if (ip->i_projid != fa->fsx_projid) {
 		if (XFS_IS_PQUOTA_ON(mp)) {
 			olddquot = xfs_qm_vop_chown(tp, ip,
@@ -1383,11 +1288,7 @@ xfs_fileattr_set(
 		ip->i_projid = fa->fsx_projid;
 	}
 
-	/*
-	 * Only set the extent size hint if we've already determined that the
-	 * extent size hint should be set on the inode. If no extent size flags
-	 * are set on the inode then unconditionally clear the extent size hint.
-	 */
+	 
 	if (ip->i_diflags & (XFS_DIFLAG_EXTSIZE | XFS_DIFLAG_EXTSZINHERIT))
 		ip->i_extsize = XFS_B_TO_FSB(mp, fa->fsx_extsize);
 	else
@@ -1403,9 +1304,7 @@ xfs_fileattr_set(
 skip_xattr:
 	error = xfs_trans_commit(tp);
 
-	/*
-	 * Release any dquot(s) the inode had kept before chown.
-	 */
+	 
 	xfs_qm_dqrele(olddquot);
 	xfs_qm_dqrele(pdqp);
 
@@ -1456,7 +1355,7 @@ xfs_ioc_getbmap(
 		bmx.bmv_iflags = BMV_IF_ATTRFORK;
 		fallthrough;
 	case XFS_IOC_GETBMAP:
-		/* struct getbmap is a strict subset of struct getbmapx. */
+		 
 		recsize = sizeof(struct getbmap);
 		break;
 	case XFS_IOC_GETBMAPX:
@@ -1521,11 +1420,7 @@ xfs_ioc_getfsmap(
 		       sizeof(head.fmh_keys[1].fmr_reserved)))
 		return -EINVAL;
 
-	/*
-	 * Use an internal memory buffer so that we don't have to copy fsmap
-	 * data to userspace while holding locks.  Start by trying to allocate
-	 * up to 128k for the buffer, but fall back to a single page if needed.
-	 */
+	 
 	count = min_t(unsigned int, head.fmh_count,
 			131072 / sizeof(struct fsmap));
 	recs = kvcalloc(count, sizeof(struct fsmap), GFP_KERNEL);
@@ -1554,22 +1449,15 @@ xfs_ioc_getfsmap(
 		xhead.fmh_count = min_t(unsigned int, count,
 					head.fmh_count - head.fmh_entries);
 
-		/* Run query, record how many entries we got. */
+		 
 		error = xfs_getfsmap(ip->i_mount, &xhead, recs);
 		switch (error) {
 		case 0:
-			/*
-			 * There are no more records in the result set.  Copy
-			 * whatever we got to userspace and break out.
-			 */
+			 
 			done = true;
 			break;
 		case -ECANCELED:
-			/*
-			 * The internal memory buffer is full.  Copy whatever
-			 * records we got to userspace and go again if we have
-			 * not yet filled the userspace buffer.
-			 */
+			 
 			error = 0;
 			break;
 		default:
@@ -1578,33 +1466,27 @@ xfs_ioc_getfsmap(
 		head.fmh_entries += xhead.fmh_entries;
 		head.fmh_oflags = xhead.fmh_oflags;
 
-		/*
-		 * If the caller wanted a record count or there aren't any
-		 * new records to return, we're done.
-		 */
+		 
 		if (head.fmh_count == 0 || xhead.fmh_entries == 0)
 			break;
 
-		/* Copy all the records we got out to userspace. */
+		 
 		if (copy_to_user(user_recs, recs,
 				 xhead.fmh_entries * sizeof(struct fsmap))) {
 			error = -EFAULT;
 			goto out_free;
 		}
 
-		/* Remember the last record flags we copied to userspace. */
+		 
 		last_rec = &recs[xhead.fmh_entries - 1];
 		last_flags = last_rec->fmr_flags;
 
-		/* Set up the low key for the next iteration. */
+		 
 		xfs_fsmap_to_internal(&xhead.fmh_keys[0], last_rec);
 		trace_xfs_getfsmap_low_key(ip->i_mount, &xhead.fmh_keys[0]);
 	} while (!done && head.fmh_entries < head.fmh_count);
 
-	/*
-	 * If there are no more records in the query result set and we're not
-	 * in counting mode, mark the last record returned with the LAST flag.
-	 */
+	 
 	if (done && head.fmh_count > 0 && head.fmh_entries > 0) {
 		struct fsmap __user	*user_rec;
 
@@ -1618,7 +1500,7 @@ xfs_ioc_getfsmap(
 		}
 	}
 
-	/* copy back header */
+	 
 	if (copy_to_user(arg, &head, sizeof(struct fsmap_head))) {
 		error = -EFAULT;
 		goto out_free;
@@ -1661,7 +1543,7 @@ xfs_ioc_swapext(
 	struct fd	f, tmp;
 	int		error = 0;
 
-	/* Pull information for the target fd */
+	 
 	f = fdget((int)sxp->sx_fdtarget);
 	if (!f.file) {
 		error = -EINVAL;
@@ -1694,11 +1576,7 @@ xfs_ioc_swapext(
 		goto out_put_tmp_file;
 	}
 
-	/*
-	 * We need to ensure that the fds passed in point to XFS inodes
-	 * before we cast and access them as XFS structures as we have no
-	 * control over what the user passes us here.
-	 */
+	 
 	if (f.file->f_op != &xfs_file_operations ||
 	    tmp.file->f_op != &xfs_file_operations) {
 		error = -EINVAL;
@@ -1741,10 +1619,10 @@ xfs_ioc_getlabel(
 	struct xfs_sb		*sbp = &mp->m_sb;
 	char			label[XFSLABEL_MAX + 1];
 
-	/* Paranoia */
+	 
 	BUILD_BUG_ON(sizeof(sbp->sb_fname) > FSLABEL_MAX);
 
-	/* 1 larger than sb_fname, so this ensures a trailing NUL char */
+	 
 	memset(label, 0, sizeof(label));
 	spin_lock(&mp->m_sb_lock);
 	strncpy(label, sbp->sb_fname, XFSLABEL_MAX);
@@ -1768,12 +1646,7 @@ xfs_ioc_setlabel(
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
-	/*
-	 * The generic ioctl allows up to FSLABEL_MAX chars, but XFS is much
-	 * smaller, at 12 bytes.  We copy one more to be sure we find the
-	 * (required) NULL character to test the incoming label length.
-	 * NB: The on disk label doesn't need to be null terminated.
-	 */
+	 
 	if (copy_from_user(label, newlabel, XFSLABEL_MAX + 1))
 		return -EFAULT;
 	len = strnlen(label, XFSLABEL_MAX + 1);
@@ -1789,21 +1662,11 @@ xfs_ioc_setlabel(
 	memcpy(sbp->sb_fname, label, len);
 	spin_unlock(&mp->m_sb_lock);
 
-	/*
-	 * Now we do several things to satisfy userspace.
-	 * In addition to normal logging of the primary superblock, we also
-	 * immediately write these changes to sector zero for the primary, then
-	 * update all backup supers (as xfs_db does for a label change), then
-	 * invalidate the block device page cache.  This is so that any prior
-	 * buffered reads from userspace (i.e. from blkid) are invalidated,
-	 * and userspace will see the newly-written label.
-	 */
+	 
 	error = xfs_sync_sb_buf(mp);
 	if (error)
 		goto out;
-	/*
-	 * growfs also updates backup supers so lock against that.
-	 */
+	 
 	mutex_lock(&mp->m_growlock);
 	error = xfs_update_secondary_sbs(mp);
 	mutex_unlock(&mp->m_growlock);
@@ -1861,21 +1724,13 @@ xfs_fs_eofblocks_from_user(
 	return 0;
 }
 
-/*
- * These long-unused ioctls were removed from the official ioctl API in 5.17,
- * but retain these definitions so that we can log warnings about them.
- */
+ 
 #define XFS_IOC_ALLOCSP		_IOW ('X', 10, struct xfs_flock64)
 #define XFS_IOC_FREESP		_IOW ('X', 11, struct xfs_flock64)
 #define XFS_IOC_ALLOCSP64	_IOW ('X', 36, struct xfs_flock64)
 #define XFS_IOC_FREESP64	_IOW ('X', 37, struct xfs_flock64)
 
-/*
- * Note: some of the ioctl's return positive numbers as a
- * byte count indicating success, such as readlink_by_handle.
- * So we don't "sign flip" like most other routines.  This means
- * true errors need to be returned as a negative value.
- */
+ 
 long
 xfs_file_ioctl(
 	struct file		*filp,
@@ -2024,7 +1879,7 @@ xfs_file_ioctl(
 		if (error)
 			return error;
 
-		/* input parameter is passed in resblks field of structure */
+		 
 		in = inout.resblks;
 		error = xfs_reserve_blocks(mp, &in, &inout);
 		mnt_drop_write_file(filp);

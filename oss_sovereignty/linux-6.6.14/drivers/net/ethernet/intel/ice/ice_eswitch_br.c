@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2023, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_eswitch_br.h"
@@ -20,7 +20,7 @@ static const struct rhashtable_params ice_fdb_ht_params = {
 
 static bool ice_eswitch_br_is_dev_valid(const struct net_device *dev)
 {
-	/* Accept only PF netdev, PRs and LAG */
+	 
 	return ice_is_port_repr_netdev(dev) || netif_is_ice(dev) ||
 		netif_is_lag_master(dev);
 }
@@ -400,7 +400,7 @@ ice_eswitch_br_fdb_entry_create(struct net_device *netdev,
 	unsigned long event;
 	int err;
 
-	/* untagged filtering is not yet supported */
+	 
 	if (!(bridge->flags & ICE_ESWITCH_BR_VLAN_FILTERING) && vid)
 		return;
 
@@ -660,7 +660,7 @@ ice_eswitch_br_set_pvid(struct ice_esw_br_port *port,
 	if (port->pvid == vlan->vid || vlan->vid == 1)
 		return 0;
 
-	/* Setting port vlan on uplink isn't supported by hw */
+	 
 	if (port->type == ICE_ESWITCH_BR_UPLINK_PORT)
 		return -EOPNOTSUPP;
 
@@ -986,9 +986,7 @@ ice_eswitch_br_deinit(struct ice_esw_br_offloads *br_offloads,
 	if (!bridge)
 		return;
 
-	/* Cleanup all the ports that were added asynchronously
-	 * through NETDEV_CHANGEUPPER event.
-	 */
+	 
 	ice_eswitch_br_ports_flush(bridge);
 	WARN_ON(!xa_empty(&bridge->ports));
 	xa_destroy(&bridge->ports);
@@ -1039,7 +1037,7 @@ ice_eswitch_br_get(struct ice_esw_br_offloads *br_offloads, int ifindex,
 		return bridge;
 	}
 
-	/* Create the bridge if it doesn't exist yet */
+	 
 	bridge = ice_eswitch_br_init(br_offloads, ifindex);
 	if (IS_ERR(bridge))
 		NL_SET_ERR_MSG_MOD(extack, "Failed to init the bridge");
@@ -1051,7 +1049,7 @@ static void
 ice_eswitch_br_verify_deinit(struct ice_esw_br_offloads *br_offloads,
 			     struct ice_esw_br *bridge)
 {
-	/* Remove the bridge if it exists and there are no ports left */
+	 
 	if (!bridge || !xa_empty(&bridge->ports))
 		return;
 
@@ -1232,11 +1230,7 @@ ice_eswitch_br_offloads_deinit(struct ice_pf *pf)
 	unregister_switchdev_blocking_notifier(&br_offloads->switchdev_blk);
 	unregister_switchdev_notifier(&br_offloads->switchdev_nb);
 	destroy_workqueue(br_offloads->wq);
-	/* Although notifier block is unregistered just before,
-	 * so we don't get any new events, some events might be
-	 * already in progress. Hold the rtnl lock and wait for
-	 * them to finished.
-	 */
+	 
 	rtnl_lock();
 	ice_eswitch_br_offloads_dealloc(pf);
 	rtnl_unlock();

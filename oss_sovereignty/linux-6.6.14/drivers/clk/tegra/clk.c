@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk.h>
@@ -20,7 +18,7 @@
 
 #include "clk.h"
 
-/* Global data of Tegra CPU CAR ops */
+ 
 static struct device_node *tegra_car_np;
 static struct tegra_cpu_car_ops dummy_car_ops;
 struct tegra_cpu_car_ops *tegra_cpu_car_ops = &dummy_car_ops;
@@ -32,7 +30,7 @@ static struct clk **clks;
 static int clk_num;
 static struct clk_onecell_data clk_data;
 
-/* Handlers for SoC-specific reset lines */
+ 
 static int (*special_reset_assert)(unsigned long);
 static int (*special_reset_deassert)(unsigned long);
 static unsigned int num_special_reset;
@@ -101,13 +99,7 @@ static void __iomem *clk_base;
 static int tegra_clk_rst_assert(struct reset_controller_dev *rcdev,
 		unsigned long id)
 {
-	/*
-	 * If peripheral is on the APB bus then we must read the APB bus to
-	 * flush the write operation in apb bus. This will avoid peripheral
-	 * access after disabling clock. Since the reset driver has no
-	 * knowledge of which reset IDs represent which devices, simply do
-	 * this all the time.
-	 */
+	 
 	tegra_read_chipid();
 
 	if (id < periph_banks * 32) {
@@ -196,11 +188,7 @@ void tegra_clk_periph_resume(void)
 	for (i = 0; i < periph_banks; i++, idx++)
 		writel_relaxed(periph_state_ctx[idx],
 			       clk_base + periph_regs[i].enb_reg);
-	/*
-	 * All non-boot peripherals will be in reset state on resume.
-	 * Wait for 5us of reset propagation delay before de-asserting
-	 * the peripherals based on the saved context.
-	 */
+	 
 	fence_udelay(5, clk_base);
 
 	for (i = 0; i < periph_banks; i++, idx++)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HackRF driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,16 +11,12 @@
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-vmalloc.h>
 
-/*
- * Used Avago MGA-81563 RF amplifier could be destroyed pretty easily with too
- * strong signal or transmitting to bad antenna.
- * Set RF gain control to 'grabbed' state by default for sure.
- */
+ 
 static bool hackrf_enable_rf_gain_ctrl;
 module_param_named(enable_rf_gain_ctrl, hackrf_enable_rf_gain_ctrl, bool, 0644);
 MODULE_PARM_DESC(enable_rf_gain_ctrl, "enable RX/TX RF amplifier control (warn: could damage amplifier)");
 
-/* HackRF USB API commands (from HackRF Library) */
+ 
 enum {
 	CMD_SET_TRANSCEIVER_MODE           = 0x01,
 	CMD_SAMPLE_RATE_SET                = 0x06,
@@ -38,11 +30,7 @@ enum {
 	CMD_SET_TXVGA_GAIN                 = 0x15,
 };
 
-/*
- *       bEndpointAddress     0x81  EP 1 IN
- *         Transfer Type            Bulk
- *       wMaxPacketSize     0x0200  1x 512 bytes
- */
+ 
 #define MAX_BULK_BUFS            (6)
 #define BULK_BUFFER_SIZE         (128 * 512)
 
@@ -64,17 +52,17 @@ static const struct v4l2_frequency_band bands_rx_tx[] = {
 		.index = 0,
 		.capability = V4L2_TUNER_CAP_1HZ | V4L2_TUNER_CAP_FREQ_BANDS,
 		.rangelow   =          1,
-		.rangehigh  = 4294967294LL, /* max u32, hw goes over 7GHz */
+		.rangehigh  = 4294967294LL,  
 	},
 };
 
-/* stream formats */
+ 
 struct hackrf_format {
 	u32	pixelformat;
 	u32	buffersize;
 };
 
-/* format descriptions for capture and preview */
+ 
 static struct hackrf_format formats[] = {
 	{
 		.pixelformat	= V4L2_SDR_FMT_CS8,
@@ -84,14 +72,14 @@ static struct hackrf_format formats[] = {
 
 static const unsigned int NUM_FORMATS = ARRAY_SIZE(formats);
 
-/* intermediate buffers with raw data from the USB device */
+ 
 struct hackrf_buffer {
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
 };
 
 struct hackrf_dev {
-#define USB_STATE_URB_BUF                1 /* XXX: set manually */
+#define USB_STATE_URB_BUF                1  
 #define RX_ON                            4
 #define TX_ON                            5
 #define RX_ADC_FREQUENCY                11
@@ -114,19 +102,19 @@ struct hackrf_dev {
 	struct video_device tx_vdev;
 	struct v4l2_device v4l2_dev;
 
-	/* videobuf2 queue and queued buffers list */
+	 
 	struct vb2_queue rx_vb2_queue;
 	struct vb2_queue tx_vb2_queue;
 	struct list_head rx_buffer_list;
 	struct list_head tx_buffer_list;
-	spinlock_t buffer_list_lock; /* Protects buffer_list */
-	unsigned int sequence;	     /* Buffer sequence counter */
-	unsigned int vb_full;        /* vb is full and packets dropped */
-	unsigned int vb_empty;       /* vb is empty and packets dropped */
+	spinlock_t buffer_list_lock;  
+	unsigned int sequence;	      
+	unsigned int vb_full;         
+	unsigned int vb_empty;        
 
-	/* Note if taking both locks v4l2_lock must always be locked first! */
-	struct mutex v4l2_lock;      /* Protects everything else */
-	struct mutex vb_queue_lock;  /* Protects vb_queue */
+	 
+	struct mutex v4l2_lock;       
+	struct mutex vb_queue_lock;   
 
 	struct urb     *urb_list[MAX_BULK_BUFS];
 	int            buf_num;
@@ -136,11 +124,11 @@ struct hackrf_dev {
 	int            urbs_initialized;
 	int            urbs_submitted;
 
-	/* USB control message buffer */
+	 
 	#define BUF_SIZE 24
 	u8 buf[BUF_SIZE];
 
-	/* Current configuration */
+	 
 	unsigned int f_adc;
 	unsigned int f_dac;
 	unsigned int f_rx;
@@ -148,7 +136,7 @@ struct hackrf_dev {
 	u32 pixelformat;
 	u32 buffersize;
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler rx_ctrl_handler;
 	struct v4l2_ctrl *rx_bandwidth_auto;
 	struct v4l2_ctrl *rx_bandwidth;
@@ -161,7 +149,7 @@ struct hackrf_dev {
 	struct v4l2_ctrl *tx_rf_gain;
 	struct v4l2_ctrl *tx_lna_gain;
 
-	/* Sample rate calc */
+	 
 	unsigned long jiffies_next;
 	unsigned int sample;
 	unsigned int sample_measured;
@@ -178,7 +166,7 @@ struct hackrf_dev {
 			_i >> 8, _l & 0xff, _l >> 8, _direction, _l, _b); \
 }
 
-/* execute firmware command */
+ 
 static int hackrf_ctrl_msg(struct hackrf_dev *dev, u8 request, u16 value,
 		u16 index, u8 *data, u16 size)
 {
@@ -209,7 +197,7 @@ static int hackrf_ctrl_msg(struct hackrf_dev *dev, u8 request, u16 value,
 		goto err;
 	}
 
-	/* write request */
+	 
 	if (!(requesttype & USB_DIR_IN))
 		memcpy(dev->buf, data, size);
 
@@ -223,7 +211,7 @@ static int hackrf_ctrl_msg(struct hackrf_dev *dev, u8 request, u16 value,
 		goto err;
 	}
 
-	/* read request */
+	 
 	if (requesttype & USB_DIR_IN)
 		memcpy(data, dev->buf, size);
 
@@ -243,22 +231,22 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 	static const struct {
 		u32 freq;
 	} bandwidth_lut[] = {
-		{ 1750000}, /*  1.75 MHz */
-		{ 2500000}, /*  2.5  MHz */
-		{ 3500000}, /*  3.5  MHz */
-		{ 5000000}, /*  5    MHz */
-		{ 5500000}, /*  5.5  MHz */
-		{ 6000000}, /*  6    MHz */
-		{ 7000000}, /*  7    MHz */
-		{ 8000000}, /*  8    MHz */
-		{ 9000000}, /*  9    MHz */
-		{10000000}, /* 10    MHz */
-		{12000000}, /* 12    MHz */
-		{14000000}, /* 14    MHz */
-		{15000000}, /* 15    MHz */
-		{20000000}, /* 20    MHz */
-		{24000000}, /* 24    MHz */
-		{28000000}, /* 28    MHz */
+		{ 1750000},  
+		{ 2500000},  
+		{ 3500000},  
+		{ 5000000},  
+		{ 5500000},  
+		{ 6000000},  
+		{ 7000000},  
+		{ 8000000},  
+		{ 9000000},  
+		{10000000},  
+		{12000000},  
+		{14000000},  
+		{15000000},  
+		{20000000},  
+		{24000000},  
+		{28000000},  
 	};
 
 	if (!rx && !tx) {
@@ -266,7 +254,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 		return 0;
 	}
 
-	/* ADC / DAC frequency */
+	 
 	if (rx && test_and_clear_bit(RX_ADC_FREQUENCY, &dev->flags)) {
 		dev_dbg(&intf->dev, "RX ADC frequency=%u Hz\n", dev->f_adc);
 		uitmp1 = dev->f_adc;
@@ -294,7 +282,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 			goto err;
 	}
 
-	/* bandwidth */
+	 
 	if (rx && test_and_clear_bit(RX_BANDWIDTH, &dev->flags)) {
 		if (dev->rx_bandwidth_auto->val == true)
 			uitmp = dev->f_adc;
@@ -342,7 +330,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 			goto err;
 	}
 
-	/* RX / TX RF frequency */
+	 
 	if (rx && test_and_clear_bit(RX_RF_FREQUENCY, &dev->flags)) {
 		dev_dbg(&intf->dev, "RX RF frequency=%u Hz\n", dev->f_rx);
 		uitmp1 = dev->f_rx / 1000000;
@@ -370,7 +358,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 			goto err;
 	}
 
-	/* RX RF gain */
+	 
 	if (rx && test_and_clear_bit(RX_RF_GAIN, &dev->flags)) {
 		dev_dbg(&intf->dev, "RX RF gain val=%d->%d\n",
 			dev->rx_rf_gain->cur.val, dev->rx_rf_gain->val);
@@ -382,7 +370,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 		set_bit(TX_RF_GAIN, &dev->flags);
 	}
 
-	/* TX RF gain */
+	 
 	if (tx && test_and_clear_bit(TX_RF_GAIN, &dev->flags)) {
 		dev_dbg(&intf->dev, "TX RF gain val=%d->%d\n",
 			dev->tx_rf_gain->cur.val, dev->tx_rf_gain->val);
@@ -394,7 +382,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 		set_bit(RX_RF_GAIN, &dev->flags);
 	}
 
-	/* RX LNA gain */
+	 
 	if (rx && test_and_clear_bit(RX_LNA_GAIN, &dev->flags)) {
 		dev_dbg(dev->dev, "RX LNA gain val=%d->%d\n",
 			dev->rx_lna_gain->cur.val, dev->rx_lna_gain->val);
@@ -405,7 +393,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 			goto err;
 	}
 
-	/* RX IF gain */
+	 
 	if (rx && test_and_clear_bit(RX_IF_GAIN, &dev->flags)) {
 		dev_dbg(&intf->dev, "IF gain val=%d->%d\n",
 			dev->rx_if_gain->cur.val, dev->rx_if_gain->val);
@@ -416,7 +404,7 @@ static int hackrf_set_params(struct hackrf_dev *dev)
 			goto err;
 	}
 
-	/* TX LNA gain */
+	 
 	if (tx && test_and_clear_bit(TX_LNA_GAIN, &dev->flags)) {
 		dev_dbg(&intf->dev, "TX LNA gain val=%d->%d\n",
 			dev->tx_lna_gain->cur.val, dev->tx_lna_gain->val);
@@ -433,7 +421,7 @@ err:
 	return ret;
 }
 
-/* Private functions */
+ 
 static struct hackrf_buffer *hackrf_get_next_buffer(struct hackrf_dev *dev,
 						    struct list_head *buffer_list)
 {
@@ -456,7 +444,7 @@ static void hackrf_copy_stream(struct hackrf_dev *dev, void *dst, void *src,
 {
 	memcpy(dst, src, src_len);
 
-	/* calculate sample rate and output it in 10 seconds intervals */
+	 
 	if (unlikely(time_is_before_jiffies(dev->jiffies_next))) {
 		#define MSECS 10000UL
 		unsigned int msecs = jiffies_to_msecs(jiffies -
@@ -470,14 +458,11 @@ static void hackrf_copy_stream(struct hackrf_dev *dev, void *dst, void *src,
 				samples * 1000UL / msecs);
 	}
 
-	/* total number of samples */
+	 
 	dev->sample += src_len / 2;
 }
 
-/*
- * This gets called for the bulk stream pipe. This is done in interrupt
- * time, so it has to be fast, not crash, and not stall. Neat.
- */
+ 
 static void hackrf_urb_complete_in(struct urb *urb)
 {
 	struct hackrf_dev *dev = urb->context;
@@ -489,19 +474,19 @@ static void hackrf_urb_complete_in(struct urb *urb)
 			    urb->actual_length, urb->transfer_buffer_length);
 
 	switch (urb->status) {
-	case 0:             /* success */
-	case -ETIMEDOUT:    /* NAK */
+	case 0:              
+	case -ETIMEDOUT:     
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:            /* error */
+	default:             
 		dev_err_ratelimited(&intf->dev, "URB failed %d\n", urb->status);
 		goto exit_usb_submit_urb;
 	}
 
-	/* get buffer to write */
+	 
 	buffer = hackrf_get_next_buffer(dev, &dev->rx_buffer_list);
 	if (unlikely(buffer == NULL)) {
 		dev->vb_full++;
@@ -534,18 +519,18 @@ static void hackrf_urb_complete_out(struct urb *urb)
 			    urb->actual_length, urb->transfer_buffer_length);
 
 	switch (urb->status) {
-	case 0:             /* success */
-	case -ETIMEDOUT:    /* NAK */
+	case 0:              
+	case -ETIMEDOUT:     
 		break;
-	case -ECONNRESET:   /* kill */
+	case -ECONNRESET:    
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	default:            /* error */
+	default:             
 		dev_err_ratelimited(&intf->dev, "URB failed %d\n", urb->status);
 	}
 
-	/* get buffer to read */
+	 
 	buffer = hackrf_get_next_buffer(dev, &dev->tx_buffer_list);
 	if (unlikely(buffer == NULL)) {
 		dev->vb_empty++;
@@ -574,7 +559,7 @@ static int hackrf_kill_urbs(struct hackrf_dev *dev)
 
 	for (i = dev->urbs_submitted - 1; i >= 0; i--) {
 		dev_dbg(dev->dev, "kill urb=%d\n", i);
-		/* stop the URB */
+		 
 		usb_kill_urb(dev->urb_list[i]);
 	}
 	dev->urbs_submitted = 0;
@@ -654,7 +639,7 @@ static int hackrf_free_urbs(struct hackrf_dev *dev)
 	for (i = dev->urbs_initialized - 1; i >= 0; i--) {
 		if (dev->urb_list[i]) {
 			dev_dbg(dev->dev, "free urb=%d\n", i);
-			/* free the URBs */
+			 
 			usb_free_urb(dev->urb_list[i]);
 		}
 	}
@@ -677,7 +662,7 @@ static int hackrf_alloc_urbs(struct hackrf_dev *dev, bool rcv)
 		complete = &hackrf_urb_complete_out;
 	}
 
-	/* allocate the URBs */
+	 
 	for (i = 0; i < MAX_BULK_BUFS; i++) {
 		dev_dbg(dev->dev, "alloc urb=%d\n", i);
 		dev->urb_list[i] = usb_alloc_urb(0, GFP_KERNEL);
@@ -701,7 +686,7 @@ static int hackrf_alloc_urbs(struct hackrf_dev *dev, bool rcv)
 	return 0;
 }
 
-/* The user yanked out the cable... */
+ 
 static void hackrf_disconnect(struct usb_interface *intf)
 {
 	struct v4l2_device *v = usb_get_intfdata(intf);
@@ -711,7 +696,7 @@ static void hackrf_disconnect(struct usb_interface *intf)
 
 	mutex_lock(&dev->vb_queue_lock);
 	mutex_lock(&dev->v4l2_lock);
-	/* No need to keep the urbs around after disconnection */
+	 
 	dev->udev = NULL;
 	v4l2_device_disconnect(&dev->v4l2_dev);
 	video_unregister_device(&dev->tx_vdev);
@@ -722,7 +707,7 @@ static void hackrf_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&dev->v4l2_dev);
 }
 
-/* Videobuf2 operations */
+ 
 static void hackrf_return_all_buffers(struct vb2_queue *vq,
 				      enum vb2_buffer_state state)
 {
@@ -756,7 +741,7 @@ static int hackrf_queue_setup(struct vb2_queue *vq,
 
 	dev_dbg(dev->dev, "nbuffers=%d\n", *nbuffers);
 
-	/* Need at least 8 buffers */
+	 
 	if (vq->num_buffers + *nbuffers < 8)
 		*nbuffers = 8 - vq->num_buffers;
 	*nplanes = 1;
@@ -798,7 +783,7 @@ static int hackrf_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	mutex_lock(&dev->v4l2_lock);
 
-	/* Allow only RX or TX, not both same time */
+	 
 	if (vq->type == V4L2_BUF_TYPE_SDR_CAPTURE) {
 		if (test_bit(TX_ON, &dev->flags)) {
 			ret = -EBUSY;
@@ -835,7 +820,7 @@ static int hackrf_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (ret)
 		goto err;
 
-	/* start hardware streaming */
+	 
 	ret = hackrf_ctrl_msg(dev, CMD_SET_TRANSCEIVER_MODE, mode, 0, NULL, 0);
 	if (ret)
 		goto err;
@@ -865,7 +850,7 @@ static void hackrf_stop_streaming(struct vb2_queue *vq)
 
 	mutex_lock(&dev->v4l2_lock);
 
-	/* stop hardware streaming */
+	 
 	hackrf_ctrl_msg(dev, CMD_SET_TRANSCEIVER_MODE, 0, 0, NULL, 0);
 
 	hackrf_kill_urbs(dev);
@@ -1374,7 +1359,7 @@ static int hackrf_probe(struct usb_interface *intf,
 	set_bit(RX_RF_FREQUENCY, &dev->flags);
 	set_bit(TX_RF_FREQUENCY, &dev->flags);
 
-	/* Detect device */
+	 
 	ret = hackrf_ctrl_msg(dev, CMD_BOARD_ID_READ, 0, 0, &u8tmp, 1);
 	if (ret == 0)
 		ret = hackrf_ctrl_msg(dev, CMD_VERSION_STRING_READ, 0, 0,
@@ -1388,7 +1373,7 @@ static int hackrf_probe(struct usb_interface *intf,
 	dev_info(dev->dev, "Board ID: %02x\n", u8tmp);
 	dev_info(dev->dev, "Firmware version: %s\n", buf);
 
-	/* Init vb2 queue structure for receiver */
+	 
 	dev->rx_vb2_queue.type = V4L2_BUF_TYPE_SDR_CAPTURE;
 	dev->rx_vb2_queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF |
 				     VB2_READ;
@@ -1403,7 +1388,7 @@ static int hackrf_probe(struct usb_interface *intf,
 		goto err_kfree;
 	}
 
-	/* Init vb2 queue structure for transmitter */
+	 
 	dev->tx_vb2_queue.type = V4L2_BUF_TYPE_SDR_OUTPUT;
 	dev->tx_vb2_queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF |
 				     VB2_WRITE;
@@ -1418,7 +1403,7 @@ static int hackrf_probe(struct usb_interface *intf,
 		goto err_kfree;
 	}
 
-	/* Register controls for receiver */
+	 
 	v4l2_ctrl_handler_init(&dev->rx_ctrl_handler, 5);
 	dev->rx_bandwidth_auto = v4l2_ctrl_new_std(&dev->rx_ctrl_handler,
 		&hackrf_ctrl_ops_rx, V4L2_CID_RF_TUNER_BANDWIDTH_AUTO,
@@ -1441,7 +1426,7 @@ static int hackrf_probe(struct usb_interface *intf,
 	v4l2_ctrl_grab(dev->rx_rf_gain, !hackrf_enable_rf_gain_ctrl);
 	v4l2_ctrl_handler_setup(&dev->rx_ctrl_handler);
 
-	/* Register controls for transmitter */
+	 
 	v4l2_ctrl_handler_init(&dev->tx_ctrl_handler, 4);
 	dev->tx_bandwidth_auto = v4l2_ctrl_new_std(&dev->tx_ctrl_handler,
 		&hackrf_ctrl_ops_tx, V4L2_CID_RF_TUNER_BANDWIDTH_AUTO,
@@ -1462,7 +1447,7 @@ static int hackrf_probe(struct usb_interface *intf,
 	v4l2_ctrl_grab(dev->tx_rf_gain, !hackrf_enable_rf_gain_ctrl);
 	v4l2_ctrl_handler_setup(&dev->tx_ctrl_handler);
 
-	/* Register the v4l2_device structure */
+	 
 	dev->v4l2_dev.release = hackrf_video_release;
 	ret = v4l2_device_register(&intf->dev, &dev->v4l2_dev);
 	if (ret) {
@@ -1470,7 +1455,7 @@ static int hackrf_probe(struct usb_interface *intf,
 		goto err_v4l2_ctrl_handler_free_tx;
 	}
 
-	/* Init video_device structure for receiver */
+	 
 	dev->rx_vdev = hackrf_template;
 	dev->rx_vdev.queue = &dev->rx_vb2_queue;
 	dev->rx_vdev.queue->lock = &dev->vb_queue_lock;
@@ -1490,7 +1475,7 @@ static int hackrf_probe(struct usb_interface *intf,
 	dev_info(dev->dev, "Registered as %s\n",
 		 video_device_node_name(&dev->rx_vdev));
 
-	/* Init video_device structure for transmitter */
+	 
 	dev->tx_vdev = hackrf_template;
 	dev->tx_vdev.queue = &dev->tx_vb2_queue;
 	dev->tx_vdev.queue->lock = &dev->vb_queue_lock;
@@ -1527,14 +1512,14 @@ err:
 	return ret;
 }
 
-/* USB device ID list */
+ 
 static const struct usb_device_id hackrf_id_table[] = {
-	{ USB_DEVICE(0x1d50, 0x6089) }, /* HackRF One */
+	{ USB_DEVICE(0x1d50, 0x6089) },  
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, hackrf_id_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver hackrf_driver = {
 	.name                     = KBUILD_MODNAME,
 	.probe                    = hackrf_probe,

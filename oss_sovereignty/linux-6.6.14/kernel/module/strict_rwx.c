@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Module strict rwx
- *
- * Copyright (C) 2015 Rusty Russell
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mm.h>
@@ -20,12 +16,7 @@ static void module_set_memory(const struct module *mod, enum mod_mem_type type,
 	set_memory((unsigned long)mod_mem->base, mod_mem->size >> PAGE_SHIFT);
 }
 
-/*
- * Since some arches are moving towards PAGE_KERNEL module allocations instead
- * of PAGE_KERNEL_EXEC, keep module_enable_x() independent of
- * CONFIG_STRICT_MODULE_RWX because they are needed regardless of whether we
- * are strict.
- */
+ 
 void module_enable_x(const struct module *mod)
 {
 	for_class_mod_mem_type(type, text)

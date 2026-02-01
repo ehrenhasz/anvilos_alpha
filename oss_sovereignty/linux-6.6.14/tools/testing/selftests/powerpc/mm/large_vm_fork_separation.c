@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2019, Michael Ellerman, IBM Corp.
-//
-// Test that allocating memory beyond the memory limit and then forking is
-// handled correctly, ie. the child is able to access the mappings beyond the
-// memory limit and the child's writes are not visible to the parent.
+
+
+
+
+
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 
 
 #ifndef MAP_FIXED_NOREPLACE
-#define MAP_FIXED_NOREPLACE	MAP_FIXED	// "Should be safe" above 512TB
+#define MAP_FIXED_NOREPLACE	MAP_FIXED	
 #endif
 
 
@@ -30,7 +30,7 @@ static int test(void)
 	page_size = sysconf(_SC_PAGESIZE);
 	SKIP_IF(page_size != 65536);
 
-	// Create a mapping at 512TB to allocate an extended_id
+	
 	p = mmap((void *)(512ul << 40), page_size, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
 	if (p == MAP_FAILED) {
@@ -61,7 +61,7 @@ static int test(void)
 	FAIL_IF(write(p2c[1], &c, 1) != 1);
 	FAIL_IF(read(c2p[0], &c, 1) != 1);
 
-	// Prevent compiler optimisation
+	
 	barrier();
 
 	rc = 0;

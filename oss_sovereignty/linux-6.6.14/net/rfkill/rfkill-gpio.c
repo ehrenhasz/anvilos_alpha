@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -120,7 +118,7 @@ static int rfkill_gpio_probe(struct platform_device *pdev)
 
 	rfkill->shutdown_gpio = gpio;
 
-	/* Make sure at-least one GPIO is defined for this instance */
+	 
 	if (!rfkill->reset_gpio && !rfkill->shutdown_gpio) {
 		dev_err(&pdev->dev, "invalid platform data\n");
 		return -EINVAL;

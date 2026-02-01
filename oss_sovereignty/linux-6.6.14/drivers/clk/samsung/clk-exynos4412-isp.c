@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Samsung Electronics Co., Ltd.
- * Author: Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Common Clock Framework support for Exynos4412 ISP module.
-*/
+
+ 
 
 #include <dt-bindings/clock/exynos4.h>
 #include <linux/slab.h>
@@ -16,18 +11,16 @@
 
 #include "clk.h"
 
-/* Exynos4x12 specific registers, which belong to ISP power domain */
+ 
 #define E4X12_DIV_ISP0		0x0300
 #define E4X12_DIV_ISP1		0x0304
 #define E4X12_GATE_ISP0		0x0800
 #define E4X12_GATE_ISP1		0x0804
 
-/* NOTE: Must be equal to the last clock ID increased by one */
+ 
 #define CLKS_NR_ISP		(CLK_ISP_DIV_MCUISP1 + 1)
 
-/*
- * Support for CMU save/restore across system suspends
- */
+ 
 static struct samsung_clk_reg_dump *exynos4x12_save_isp;
 
 static const unsigned long exynos4x12_clk_isp_save[] __initconst = {

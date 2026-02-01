@@ -1,19 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is for all the tests relating directly to Control Flow Integrity.
- */
+
+ 
 #include "lkdtm.h"
 #include <asm/page.h>
 
 static int called_count;
 
-/* Function taking one argument, without a return value. */
+ 
 static noinline void lkdtm_increment_void(int *counter)
 {
 	(*counter)++;
 }
 
-/* Function taking one argument, returning int. */
+ 
 static noinline int lkdtm_increment_int(int *counter)
 {
 	(*counter)++;
@@ -21,21 +19,16 @@ static noinline int lkdtm_increment_int(int *counter)
 	return *counter;
 }
 
-/* Don't allow the compiler to inline the calls. */
+ 
 static noinline void lkdtm_indirect_call(void (*func)(int *))
 {
 	func(&called_count);
 }
 
-/*
- * This tries to call an indirect function with a mismatched prototype.
- */
+ 
 static void lkdtm_CFI_FORWARD_PROTO(void)
 {
-	/*
-	 * Matches lkdtm_increment_void()'s prototype, but not
-	 * lkdtm_increment_int()'s prototype.
-	 */
+	 
 	pr_info("Calling matched prototype ...\n");
 	lkdtm_indirect_call(lkdtm_increment_void);
 
@@ -46,10 +39,7 @@ static void lkdtm_CFI_FORWARD_PROTO(void)
 	pr_expected_config(CONFIG_CFI_CLANG);
 }
 
-/*
- * This can stay local to LKDTM, as there should not be a production reason
- * to disable PAC && SCS.
- */
+ 
 #ifdef CONFIG_ARM64_PTR_AUTH_KERNEL
 # ifdef CONFIG_ARM64_BTI_KERNEL
 #  define __no_pac             "branch-protection=bti"
@@ -68,18 +58,18 @@ static void lkdtm_CFI_FORWARD_PROTO(void)
 #define no_pac_addr(addr)      \
 	((__force __typeof__(addr))((uintptr_t)(addr) | PAGE_OFFSET))
 
-/* The ultimate ROP gadget. */
+ 
 static noinline __no_ret_protection
 void set_return_addr_unchecked(unsigned long *expected, unsigned long *addr)
 {
-	/* Use of volatile is to make sure final write isn't seen as a dead store. */
+	 
 	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
 
-	/* Make sure we've found the right place on the stack before writing it. */
+	 
 	if (no_pac_addr(*ret_addr) == expected)
 		*ret_addr = (addr);
 	else
-		/* Check architecture, stack layout, or compiler behavior... */
+		 
 		pr_warn("Eek: return address mismatch! %px != %px\n",
 			*ret_addr, addr);
 }
@@ -87,14 +77,14 @@ void set_return_addr_unchecked(unsigned long *expected, unsigned long *addr)
 static noinline
 void set_return_addr(unsigned long *expected, unsigned long *addr)
 {
-	/* Use of volatile is to make sure final write isn't seen as a dead store. */
+	 
 	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
 
-	/* Make sure we've found the right place on the stack before writing it. */
+	 
 	if (no_pac_addr(*ret_addr) == expected)
 		*ret_addr = (addr);
 	else
-		/* Check architecture, stack layout, or compiler behavior... */
+		 
 		pr_warn("Eek: return address mismatch! %px != %px\n",
 			*ret_addr, addr);
 }
@@ -103,17 +93,14 @@ static volatile int force_check;
 
 static void lkdtm_CFI_BACKWARD(void)
 {
-	/* Use calculated gotos to keep labels addressable. */
+	 
 	void *labels[] = { NULL, &&normal, &&redirected, &&check_normal, &&check_redirected };
 
 	pr_info("Attempting unchecked stack return address redirection ...\n");
 
-	/* Always false */
+	 
 	if (force_check) {
-		/*
-		 * Prepare to call with NULLs to avoid parameters being treated as
-		 * constants in -02.
-		 */
+		 
 		set_return_addr_unchecked(NULL, NULL);
 		set_return_addr(NULL, NULL);
 		if (force_check)
@@ -127,20 +114,17 @@ static void lkdtm_CFI_BACKWARD(void)
 		return;
 	}
 
-	/*
-	 * Use fallthrough switch case to keep basic block ordering between
-	 * set_return_addr*() and the label after it.
-	 */
+	 
 	switch (force_check) {
 	case 0:
 		set_return_addr_unchecked(&&normal, &&redirected);
 		fallthrough;
 	case 1:
 normal:
-		/* Always true */
+		 
 		if (!force_check) {
 			pr_err("FAIL: stack return address manipulation failed!\n");
-			/* If we can't redirect "normally", we can't test mitigations. */
+			 
 			return;
 		}
 		break;
@@ -158,7 +142,7 @@ redirected:
 		fallthrough;
 	case 1:
 check_normal:
-		/* Always true */
+		 
 		if (!force_check) {
 			pr_info("ok: control flow unchanged.\n");
 			return;

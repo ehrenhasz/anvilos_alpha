@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_sfq.c	Stochastic Fairness Queueing discipline.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,75 +19,22 @@
 #include <net/red.h>
 
 
-/*	Stochastic Fairness Queuing algorithm.
-	=======================================
+ 
 
-	Source:
-	Paul E. McKenney "Stochastic Fairness Queuing",
-	IEEE INFOCOMM'90 Proceedings, San Francisco, 1990.
-
-	Paul E. McKenney "Stochastic Fairness Queuing",
-	"Interworking: Research and Experience", v.2, 1991, p.113-131.
-
-
-	See also:
-	M. Shreedhar and George Varghese "Efficient Fair
-	Queuing using Deficit Round Robin", Proc. SIGCOMM 95.
-
-
-	This is not the thing that is usually called (W)FQ nowadays.
-	It does not use any timestamp mechanism, but instead
-	processes queues in round-robin order.
-
-	ADVANTAGE:
-
-	- It is very cheap. Both CPU and memory requirements are minimal.
-
-	DRAWBACKS:
-
-	- "Stochastic" -> It is not 100% fair.
-	When hash collisions occur, several flows are considered as one.
-
-	- "Round-robin" -> It introduces larger delays than virtual clock
-	based schemes, and should not be used for isolating interactive
-	traffic	from non-interactive. It means, that this scheduler
-	should be used as leaf of CBQ or P3, which put interactive traffic
-	to higher priority band.
-
-	We still need true WFQ for top level CSZ, but using WFQ
-	for the best effort traffic is absolutely pointless:
-	SFQ is superior for this purpose.
-
-	IMPLEMENTATION:
-	This implementation limits :
-	- maximal queue length per flow to 127 packets.
-	- max mtu to 2^18-1;
-	- max 65408 flows,
-	- number of hash buckets to 65536.
-
-	It is easy to increase these values, but not in flight.  */
-
-#define SFQ_MAX_DEPTH		127 /* max number of packets per flow */
+#define SFQ_MAX_DEPTH		127  
 #define SFQ_DEFAULT_FLOWS	128
-#define SFQ_MAX_FLOWS		(0x10000 - SFQ_MAX_DEPTH - 1) /* max number of flows */
+#define SFQ_MAX_FLOWS		(0x10000 - SFQ_MAX_DEPTH - 1)  
 #define SFQ_EMPTY_SLOT		0xffff
 #define SFQ_DEFAULT_HASH_DIVISOR 1024
 
-/* We use 16 bits to store allot, and want to handle packets up to 64K
- * Scale allot by 8 (1<<3) so that no overflow occurs.
- */
+ 
 #define SFQ_ALLOT_SHIFT		3
 #define SFQ_ALLOT_SIZE(X)	DIV_ROUND_UP(X, 1 << SFQ_ALLOT_SHIFT)
 
-/* This type should contain at least SFQ_MAX_DEPTH + 1 + SFQ_MAX_FLOWS values */
+ 
 typedef u16 sfq_index;
 
-/*
- * We dont use pointers to save space.
- * Small indexes [0 ... SFQ_MAX_FLOWS - 1] are 'pointers' to slots[] array
- * while following values [SFQ_MAX_FLOWS ... SFQ_MAX_FLOWS + SFQ_MAX_DEPTH]
- * are 'pointers' to dep[] array
- */
+ 
 struct sfq_head {
 	sfq_index	next;
 	sfq_index	prev;
@@ -100,53 +43,47 @@ struct sfq_head {
 struct sfq_slot {
 	struct sk_buff	*skblist_next;
 	struct sk_buff	*skblist_prev;
-	sfq_index	qlen; /* number of skbs in skblist */
-	sfq_index	next; /* next slot in sfq RR chain */
-	struct sfq_head dep; /* anchor in dep[] chains */
-	unsigned short	hash; /* hash value (index in ht[]) */
-	short		allot; /* credit for this slot */
+	sfq_index	qlen;  
+	sfq_index	next;  
+	struct sfq_head dep;  
+	unsigned short	hash;  
+	short		allot;  
 
 	unsigned int    backlog;
 	struct red_vars vars;
 };
 
 struct sfq_sched_data {
-/* frequently used fields */
-	int		limit;		/* limit of total number of packets in this qdisc */
-	unsigned int	divisor;	/* number of slots in hash table */
+ 
+	int		limit;		 
+	unsigned int	divisor;	 
 	u8		headdrop;
-	u8		maxdepth;	/* limit of packets per flow */
+	u8		maxdepth;	 
 
 	siphash_key_t 	perturbation;
-	u8		cur_depth;	/* depth of longest slot */
+	u8		cur_depth;	 
 	u8		flags;
-	unsigned short  scaled_quantum; /* SFQ_ALLOT_SIZE(quantum) */
+	unsigned short  scaled_quantum;  
 	struct tcf_proto __rcu *filter_list;
 	struct tcf_block *block;
-	sfq_index	*ht;		/* Hash table ('divisor' slots) */
-	struct sfq_slot	*slots;		/* Flows table ('maxflows' entries) */
+	sfq_index	*ht;		 
+	struct sfq_slot	*slots;		 
 
 	struct red_parms *red_parms;
 	struct tc_sfqred_stats stats;
-	struct sfq_slot *tail;		/* current slot in round */
+	struct sfq_slot *tail;		 
 
 	struct sfq_head	dep[SFQ_MAX_DEPTH + 1];
-					/* Linked lists of slots, indexed by depth
-					 * dep[0] : list of unused flows
-					 * dep[1] : list of flows with 1 packet
-					 * dep[X] : list of flows with X packets
-					 */
+					 
 
-	unsigned int	maxflows;	/* number of flows in flows array */
+	unsigned int	maxflows;	 
 	int		perturb_period;
-	unsigned int	quantum;	/* Allotment per round: MUST BE >= MTU */
+	unsigned int	quantum;	 
 	struct timer_list perturb_timer;
 	struct Qdisc	*sch;
 };
 
-/*
- * sfq_head are either in a sfq_slot or in dep[] array
- */
+ 
 static inline struct sfq_head *sfq_dep_head(struct sfq_sched_data *q, sfq_index val)
 {
 	if (val < SFQ_MAX_FLOWS)
@@ -197,9 +134,7 @@ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
 	return 0;
 }
 
-/*
- * x : slot number [0 .. SFQ_MAX_FLOWS - 1]
- */
+ 
 static inline void sfq_link(struct sfq_sched_data *q, sfq_index x)
 {
 	sfq_index p, n;
@@ -212,7 +147,7 @@ static inline void sfq_link(struct sfq_sched_data *q, sfq_index x)
 	slot->dep.next = n;
 	slot->dep.prev = p;
 
-	q->dep[qlen].next = x;		/* sfq_dep_head(q, p)->next = x */
+	q->dep[qlen].next = x;		 
 	sfq_dep_head(q, n)->prev = x;
 }
 
@@ -251,9 +186,9 @@ static inline void sfq_inc(struct sfq_sched_data *q, sfq_index x)
 	sfq_link(q, x);
 }
 
-/* helper functions : might be changed when/if skb use a standard list_head */
+ 
 
-/* remove one skb from tail of slot queue */
+ 
 static inline struct sk_buff *slot_dequeue_tail(struct sfq_slot *slot)
 {
 	struct sk_buff *skb = slot->skblist_prev;
@@ -264,7 +199,7 @@ static inline struct sk_buff *slot_dequeue_tail(struct sfq_slot *slot)
 	return skb;
 }
 
-/* remove one skb from head of slot queue */
+ 
 static inline struct sk_buff *slot_dequeue_head(struct sfq_slot *slot)
 {
 	struct sk_buff *skb = slot->skblist_next;
@@ -281,7 +216,7 @@ static inline void slot_queue_init(struct sfq_slot *slot)
 	slot->skblist_prev = slot->skblist_next = (struct sk_buff *)slot;
 }
 
-/* add skb to slot queue (tail add) */
+ 
 static inline void slot_queue_add(struct sfq_slot *slot, struct sk_buff *skb)
 {
 	skb->prev = slot->skblist_prev;
@@ -298,7 +233,7 @@ static unsigned int sfq_drop(struct Qdisc *sch, struct sk_buff **to_free)
 	unsigned int len;
 	struct sfq_slot *slot;
 
-	/* Queue is full! Find the longest slot and drop tail packet from it */
+	 
 	if (d > 1) {
 		x = q->dep[d].next;
 		slot = &q->slots[x];
@@ -314,7 +249,7 @@ drop:
 	}
 
 	if (d == 1) {
-		/* It is difficult to believe, but ALL THE SLOTS HAVE LENGTH 1. */
+		 
 		x = q->tail->next;
 		slot = &q->slots[x];
 		q->tail->next = slot->next;
@@ -325,13 +260,13 @@ drop:
 	return 0;
 }
 
-/* Is ECN parameter configured */
+ 
 static int sfq_prob_mark(const struct sfq_sched_data *q)
 {
 	return q->flags & TC_RED_ECN;
 }
 
-/* Should packets over max threshold just be marked */
+ 
 static int sfq_hard_mark(const struct sfq_sched_data *q)
 {
 	return (q->flags & (TC_RED_ECN | TC_RED_HARDDROP)) == TC_RED_ECN;
@@ -365,13 +300,13 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 	x = q->ht[hash];
 	slot = &q->slots[x];
 	if (x == SFQ_EMPTY_SLOT) {
-		x = q->dep[0].next; /* get a free slot */
+		x = q->dep[0].next;  
 		if (x >= SFQ_MAX_FLOWS)
 			return qdisc_drop(skb, sch, to_free);
 		q->ht[hash] = x;
 		slot = &q->slots[x];
 		slot->hash = hash;
-		slot->backlog = 0; /* should already be 0 anyway... */
+		slot->backlog = 0;  
 		red_set_vars(&slot->vars);
 		goto enqueue;
 	}
@@ -388,7 +323,7 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 		case RED_PROB_MARK:
 			qdisc_qstats_overlimit(sch);
 			if (sfq_prob_mark(q)) {
-				/* We know we have at least one packet in queue */
+				 
 				if (sfq_headdrop(q) &&
 				    INET_ECN_set_ce(slot->skblist_next)) {
 					q->stats.prob_mark_head++;
@@ -405,7 +340,7 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 		case RED_HARD_MARK:
 			qdisc_qstats_overlimit(sch);
 			if (sfq_hard_mark(q)) {
-				/* We know we have at least one packet in queue */
+				 
 				if (sfq_headdrop(q) &&
 				    INET_ECN_set_ce(slot->skblist_next)) {
 					q->stats.forced_mark_head++;
@@ -426,7 +361,7 @@ congestion_drop:
 		if (!sfq_headdrop(q))
 			return qdisc_drop(skb, sch, to_free);
 
-		/* We know we have at least one packet in queue */
+		 
 		head = slot_dequeue_head(slot);
 		delta = qdisc_pkt_len(head) - qdisc_pkt_len(skb);
 		sch->qstats.backlog -= delta;
@@ -443,19 +378,16 @@ enqueue:
 	slot->backlog += qdisc_pkt_len(skb);
 	slot_queue_add(slot, skb);
 	sfq_inc(q, x);
-	if (slot->qlen == 1) {		/* The flow is new */
-		if (q->tail == NULL) {	/* It is the first flow */
+	if (slot->qlen == 1) {		 
+		if (q->tail == NULL) {	 
 			slot->next = x;
 		} else {
 			slot->next = q->tail->next;
 			q->tail->next = x;
 		}
-		/* We put this flow at the end of our flow list.
-		 * This might sound unfair for a new flow to wait after old ones,
-		 * but we could endup servicing new flows only, and freeze old ones.
-		 */
+		 
 		q->tail = slot;
-		/* We could use a bigger initial quantum for new flows */
+		 
 		slot->allot = q->scaled_quantum;
 	}
 	if (++sch->q.qlen <= q->limit)
@@ -463,15 +395,13 @@ enqueue:
 
 	qlen = slot->qlen;
 	dropped = sfq_drop(sch, to_free);
-	/* Return Congestion Notification only if we dropped a packet
-	 * from this flow.
-	 */
+	 
 	if (qlen != slot->qlen) {
 		qdisc_tree_reduce_backlog(sch, 0, dropped - qdisc_pkt_len(skb));
 		return NET_XMIT_CN;
 	}
 
-	/* As we dropped a packet, better let upper stack know this */
+	 
 	qdisc_tree_reduce_backlog(sch, 1, dropped);
 	return NET_XMIT_SUCCESS;
 }
@@ -484,7 +414,7 @@ sfq_dequeue(struct Qdisc *sch)
 	sfq_index a, next_a;
 	struct sfq_slot *slot;
 
-	/* No active slots */
+	 
 	if (q->tail == NULL)
 		return NULL;
 
@@ -502,12 +432,12 @@ next_slot:
 	sch->q.qlen--;
 	qdisc_qstats_backlog_dec(sch, skb);
 	slot->backlog -= qdisc_pkt_len(skb);
-	/* Is the slot empty? */
+	 
 	if (slot->qlen == 0) {
 		q->ht[slot->hash] = SFQ_EMPTY_SLOT;
 		next_a = slot->next;
 		if (a == next_a) {
-			q->tail = NULL; /* no more active slots */
+			q->tail = NULL;  
 			return skb;
 		}
 		q->tail->next = next_a;
@@ -526,12 +456,7 @@ sfq_reset(struct Qdisc *sch)
 		rtnl_kfree_skbs(skb, skb);
 }
 
-/*
- * When q->perturbation is changed, we rehash all queued skbs
- * to avoid OOO (Out Of Order) effects.
- * We dont use sfq_dequeue()/sfq_enqueue() because we dont want to change
- * counters.
- */
+ 
 static void sfq_rehash(struct Qdisc *sch)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
@@ -565,7 +490,7 @@ static void sfq_rehash(struct Qdisc *sch)
 
 		slot = &q->slots[x];
 		if (x == SFQ_EMPTY_SLOT) {
-			x = q->dep[0].next; /* get a free slot */
+			x = q->dep[0].next;  
 			if (x >= SFQ_MAX_FLOWS) {
 drop:
 				qdisc_qstats_backlog_dec(sch, skb);
@@ -587,8 +512,8 @@ drop:
 							slot->backlog);
 		slot->backlog += qdisc_pkt_len(skb);
 		sfq_inc(q, x);
-		if (slot->qlen == 1) {		/* The flow is new */
-			if (q->tail == NULL) {	/* It is the first flow */
+		if (slot->qlen == 1) {		 
+			if (q->tail == NULL) {	 
 				slot->next = x;
 			} else {
 				slot->next = q->tail->next;
@@ -641,7 +566,7 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
 	    (!is_power_of_2(ctl->divisor) || ctl->divisor > 65536))
 		return -EINVAL;
 
-	/* slot->allot is a short, make sure quantum is not too big. */
+	 
 	if (ctl->quantum) {
 		unsigned int scaled = SFQ_ALLOT_SIZE(ctl->quantum);
 
@@ -770,7 +695,7 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt,
 	q->ht = sfq_alloc(sizeof(q->ht[0]) * q->divisor);
 	q->slots = sfq_alloc(sizeof(q->slots[0]) * q->maxflows);
 	if (!q->ht || !q->slots) {
-		/* Note: sfq_destroy() will be called by our caller */
+		 
 		return -ENOMEM;
 	}
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CCI cache coherent interconnect support
- *
- * Copyright (C) 2013 ARM Ltd.
- */
+ 
+ 
 
 #ifndef __LINUX_ARM_CCI_H
 #define __LINUX_ARM_CCI_H

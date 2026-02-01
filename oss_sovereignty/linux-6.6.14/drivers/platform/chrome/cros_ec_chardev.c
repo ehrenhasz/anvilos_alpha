@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Miscellaneous character driver for ChromeOS Embedded Controller
- *
- * Copyright 2014 Google, Inc.
- * Copyright 2019 Google LLC
- *
- * This file is a rework and part of the code is ported from
- * drivers/mfd/cros_ec_dev.c that was originally written by
- * Bill Richardson.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -27,7 +18,7 @@
 
 #define DRV_NAME		"cros-ec-chardev"
 
-/* Arbitrary bounded size for the event queue */
+ 
 #define CROS_MAX_EVENT_LEN	PAGE_SIZE
 
 struct chardev_data {
@@ -77,7 +68,7 @@ static int ec_get_version(struct cros_ec_dev *ec, char *str, int maxlen)
 
 	resp = (struct ec_response_get_version *)msg->data;
 	if (resp->current_image >= ARRAY_SIZE(current_image_name))
-		resp->current_image = 3; /* invalid */
+		resp->current_image = 3;  
 
 	snprintf(str, maxlen, "%s\n%s\n%s\n%s\n", CROS_EC_DEV_VERSION,
 		 resp->version_string_ro, resp->version_string_rw,
@@ -154,9 +145,7 @@ out:
 	return event;
 }
 
-/*
- * Device file ops
- */
+ 
 static int cros_ec_chardev_open(struct inode *inode, struct file *filp)
 {
 	struct miscdevice *mdev = filp->private_data;
@@ -207,33 +196,28 @@ static ssize_t cros_ec_chardev_read(struct file *filp, char __user *buffer,
 	size_t count;
 	int ret;
 
-	if (priv->event_mask) { /* queued MKBP event */
+	if (priv->event_mask) {  
 		struct ec_event *event;
 
 		event = cros_ec_chardev_fetch_event(priv, length != 0,
 						!(filp->f_flags & O_NONBLOCK));
 		if (IS_ERR(event))
 			return PTR_ERR(event);
-		/*
-		 * length == 0 is special - no IO is done but we check
-		 * for error conditions.
-		 */
+		 
 		if (length == 0)
 			return 0;
 
-		/* The event is 1 byte of type plus the payload */
+		 
 		count = min(length, event->size + 1);
 		ret = copy_to_user(buffer, &event->event_type, count);
 		kfree(event);
-		if (ret) /* the copy failed */
+		if (ret)  
 			return -EFAULT;
 		*offset = count;
 		return count;
 	}
 
-	/*
-	 * Legacy behavior if no event mask is defined
-	 */
+	 
 	if (*offset != 0)
 		return 0;
 
@@ -268,9 +252,7 @@ static int cros_ec_chardev_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * Ioctls
- */
+ 
 static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
 {
 	struct cros_ec_command *s_cmd;
@@ -302,7 +284,7 @@ static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
 
 	s_cmd->command += ec->cmd_offset;
 	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
-	/* Only copy data to userland if data was received. */
+	 
 	if (ret < 0)
 		goto exit;
 
@@ -320,7 +302,7 @@ static long cros_ec_chardev_ioctl_readmem(struct cros_ec_dev *ec,
 	struct cros_ec_readmem s_mem = { };
 	long num;
 
-	/* Not every platform supports direct reads */
+	 
 	if (!ec_dev->cmd_readmem)
 		return -ENOTTY;
 
@@ -380,7 +362,7 @@ static int cros_ec_chardev_probe(struct platform_device *pdev)
 	struct cros_ec_platform *ec_platform = dev_get_platdata(ec_dev->dev);
 	struct chardev_data *data;
 
-	/* Create a char device: we want to create it anew */
+	 
 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;

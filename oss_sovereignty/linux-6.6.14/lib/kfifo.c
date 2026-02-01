@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A generic kernel FIFO implementation
- *
- * Copyright (C) 2009/2010 Stefani Seibold <stefani@seibold.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -13,9 +9,7 @@
 #include <linux/uaccess.h>
 #include <linux/kfifo.h>
 
-/*
- * internal helper to calculate the unused elements in a fifo
- */
+ 
 static inline unsigned int kfifo_unused(struct __kfifo *fifo)
 {
 	return (fifo->mask + 1) - (fifo->in - fifo->out);
@@ -24,10 +18,7 @@ static inline unsigned int kfifo_unused(struct __kfifo *fifo)
 int __kfifo_alloc(struct __kfifo *fifo, unsigned int size,
 		size_t esize, gfp_t gfp_mask)
 {
-	/*
-	 * round up to the next power of 2, since our 'let the indices
-	 * wrap' technique works only in this case.
-	 */
+	 
 	size = roundup_pow_of_two(size);
 
 	fifo->in = 0;
@@ -103,10 +94,7 @@ static void kfifo_copy_in(struct __kfifo *fifo, const void *src,
 
 	memcpy(fifo->data + off, src, l);
 	memcpy(fifo->data, src + l, len - l);
-	/*
-	 * make sure that the data in the fifo is up to date before
-	 * incrementing the fifo->in index counter
-	 */
+	 
 	smp_wmb();
 }
 
@@ -142,10 +130,7 @@ static void kfifo_copy_out(struct __kfifo *fifo, void *dst,
 
 	memcpy(dst, fifo->data + off, l);
 	memcpy(dst + l, fifo->data, len - l);
-	/*
-	 * make sure that the data is copied before
-	 * incrementing the fifo->out index counter
-	 */
+	 
 	smp_wmb();
 }
 
@@ -197,13 +182,10 @@ static unsigned long kfifo_copy_from_user(struct __kfifo *fifo,
 		if (unlikely(ret))
 			ret = DIV_ROUND_UP(ret, esize);
 	}
-	/*
-	 * make sure that the data in the fifo is up to date before
-	 * incrementing the fifo->in index counter
-	 */
+	 
 	smp_wmb();
 	*copied = len - ret * esize;
-	/* return the number of elements which are not copied */
+	 
 	return ret;
 }
 
@@ -257,13 +239,10 @@ static unsigned long kfifo_copy_to_user(struct __kfifo *fifo, void __user *to,
 		if (unlikely(ret))
 			ret = DIV_ROUND_UP(ret, esize);
 	}
-	/*
-	 * make sure that the data is copied before
-	 * incrementing the fifo->out index counter
-	 */
+	 
 	smp_wmb();
 	*copied = len - ret * esize;
-	/* return the number of elements which are not copied */
+	 
 	return ret;
 }
 
@@ -391,10 +370,7 @@ EXPORT_SYMBOL(__kfifo_max_r);
 
 #define	__KFIFO_PEEK(data, out, mask) \
 	((data)[(out) & (mask)])
-/*
- * __kfifo_peek_n internal helper function for determinate the length of
- * the next record in the fifo
- */
+ 
 static unsigned int __kfifo_peek_n(struct __kfifo *fifo, size_t recsize)
 {
 	unsigned int l;
@@ -414,10 +390,7 @@ static unsigned int __kfifo_peek_n(struct __kfifo *fifo, size_t recsize)
 	(data)[(in) & (mask)] = (unsigned char)(val) \
 	)
 
-/*
- * __kfifo_poke_n internal helper function for storing the length of
- * the record into the fifo
- */
+ 
 static void __kfifo_poke_n(struct __kfifo *fifo, unsigned int n, size_t recsize)
 {
 	unsigned int mask = fifo->mask;

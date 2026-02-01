@@ -1,43 +1,4 @@
-/*
- * Scsi Host Layer for MPT (Message Passing Technology) based controllers
- *
- * Copyright (C) 2012-2014  LSI Corporation
- * Copyright (C) 2013-2015 Avago Technologies
- *  (mailto: MPT-FusionLinux.pdl@avagotech.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * NO WARRANTY
- * THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- * LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- * solely responsible for determining the appropriateness of using and
- * distributing the Program and assumes all risks associated with its
- * exercise of rights under this Agreement, including but not limited to
- * the risks and costs of program errors, damage to or loss of data,
- * programs or equipment, and unavailability or interruption of operations.
-
- * DISCLAIMER OF LIABILITY
- * NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- * HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
-
- * You should have received a copy of the GNU General Public License
- * along with this program.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -46,10 +7,7 @@
 
 #include "mpt3sas_base.h"
 
-/**
- * _warpdrive_disable_ddio - Disable direct I/O for all the volumes
- * @ioc: per adapter object
- */
+ 
 static void
 _warpdrive_disable_ddio(struct MPT3SAS_ADAPTER *ioc)
 {
@@ -78,10 +36,7 @@ _warpdrive_disable_ddio(struct MPT3SAS_ADAPTER *ioc)
 }
 
 
-/**
- * mpt3sas_get_num_volumes - Get number of volumes in the ioc
- * @ioc: per adapter object
- */
+ 
 u8
 mpt3sas_get_num_volumes(struct MPT3SAS_ADAPTER *ioc)
 {
@@ -105,11 +60,7 @@ mpt3sas_get_num_volumes(struct MPT3SAS_ADAPTER *ioc)
 }
 
 
-/**
- * mpt3sas_init_warpdrive_properties - Set properties for warpdrive direct I/O.
- * @ioc: per adapter object
- * @raid_device: the raid_device object
- */
+ 
 void
 mpt3sas_init_warpdrive_properties(struct MPT3SAS_ADAPTER *ioc,
 	struct _raid_device *raid_device)
@@ -156,10 +107,7 @@ mpt3sas_init_warpdrive_properties(struct MPT3SAS_ADAPTER *ioc,
 		return;
 	}
 
-	/*
-	 * WARPDRIVE:If number of physical disks in a volume exceeds the max pds
-	 * assumed for WARPDRIVE, disable direct I/O
-	 */
+	 
 	if (num_pds > MPT_MAX_WARPDRIVE_PDS) {
 		ioc_warn(ioc, "WarpDrive : Direct IO is disabled for the drive with handle(0x%04x): num_mem=%d, max_mem_allowed=%d\n",
 			 raid_device->handle, num_pds, MPT_MAX_WARPDRIVE_PDS);
@@ -177,7 +125,7 @@ mpt3sas_init_warpdrive_properties(struct MPT3SAS_ADAPTER *ioc,
 				 vol_pg0->PhysDisk[count].PhysDiskNum);
 			goto out_error;
 		}
-		/* Disable direct I/O if member drive lba exceeds 4 bytes */
+		 
 		dev_max_lba = le64_to_cpu(pd_pg0.DeviceMaxLBA);
 		if (dev_max_lba >> 32) {
 			ioc_info(ioc, "WarpDrive : Direct IO is disabled for the drive with handle(0x%04x) member handle (0x%04x) unsupported max lba 0x%016llx\n",
@@ -190,10 +138,7 @@ mpt3sas_init_warpdrive_properties(struct MPT3SAS_ADAPTER *ioc,
 		raid_device->pd_handle[count] = le16_to_cpu(pd_pg0.DevHandle);
 	}
 
-	/*
-	 * Assumption for WD: Direct I/O is not supported if the volume is
-	 * not RAID0
-	 */
+	 
 	if (raid_device->volume_type != MPI2_RAID_VOL_TYPE_RAID0) {
 		ioc_info(ioc, "WarpDrive : Direct IO is disabled for the drive with handle(0x%04x): type=%d, s_sz=%uK, blk_size=%u\n",
 			 raid_device->handle, raid_device->volume_type,
@@ -225,10 +170,7 @@ mpt3sas_init_warpdrive_properties(struct MPT3SAS_ADAPTER *ioc,
 
 	ioc_info(ioc, "WarpDrive : Direct IO is Enabled for the drive with handle(0x%04x)\n",
 		 raid_device->handle);
-	/*
-	 * WARPDRIVE: Though the following fields are not used for direct IO,
-	 * stored for future purpose:
-	 */
+	 
 	raid_device->max_lba = le64_to_cpu(vol_pg0->MaxLBA);
 	raid_device->stripe_sz = le32_to_cpu(vol_pg0->StripeSize);
 	raid_device->block_sz = le16_to_cpu(vol_pg0->BlockSize);
@@ -245,13 +187,7 @@ out_error:
 	return;
 }
 
-/**
- * mpt3sas_setup_direct_io - setup MPI request for WARPDRIVE Direct I/O
- * @ioc: per adapter object
- * @scmd: pointer to scsi command object
- * @raid_device: pointer to raid device data structure
- * @mpi_request: pointer to the SCSI_IO reqest message frame
- */
+ 
 void
 mpt3sas_setup_direct_io(struct MPT3SAS_ADAPTER *ioc, struct scsi_cmnd *scmd,
 	struct _raid_device *raid_device, Mpi25SCSIIORequest_t *mpi_request)
@@ -279,7 +215,7 @@ mpt3sas_setup_direct_io(struct MPT3SAS_ADAPTER *ioc, struct scsi_cmnd *scmd,
 	stripe_exp = raid_device->stripe_exponent;
 	stripe_off = v_lba & (stripe_sz - 1);
 
-	/* Return unless IO falls within a stripe */
+	 
 	if (stripe_off + io_size > stripe_sz)
 		return;
 

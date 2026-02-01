@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/rtnetlink.h>
@@ -34,11 +31,7 @@ static u32 gve_get_msglevel(struct net_device *netdev)
 	return priv->msg_enable;
 }
 
-/* For the following stats column string names, make sure the order
- * matches how it is filled in the code. For xdp_aborted, xdp_drop,
- * xdp_pass, xdp_tx, xdp_redirect, make sure it also matches the order
- * as declared in enum xdp_action inside file uapi/linux/bpf.h .
- */
+ 
 static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
 	"rx_packets", "tx_packets", "rx_bytes", "tx_bytes",
 	"rx_dropped", "tx_dropped", "tx_timeouts",
@@ -230,7 +223,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 	data[i++] = tx_pkts;
 	data[i++] = rx_bytes;
 	data[i++] = tx_bytes;
-	/* total rx dropped packets */
+	 
 	data[i++] = rx_skb_alloc_fail + rx_buf_alloc_fail +
 		    rx_desc_err_dropped_pkt;
 	data[i++] = tx_dropped;
@@ -246,12 +239,12 @@ gve_get_ethtool_stats(struct net_device *netdev,
 	data[i++] = priv->stats_report_trigger_cnt;
 	i = GVE_MAIN_STATS_LEN;
 
-	/* For rx cross-reporting stats, start from nic rx stats in report */
+	 
 	base_stats_idx = GVE_TX_STATS_REPORT_NUM * num_tx_queues +
 		GVE_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues;
 	max_stats_idx = NIC_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues +
 		base_stats_idx;
-	/* Preprocess the stats report for rx, map queue id to start index */
+	 
 	skip_nic_stats = false;
 	for (stats_idx = base_stats_idx; stats_idx < max_stats_idx;
 		stats_idx += NIC_RX_STATS_REPORT_NUM) {
@@ -259,13 +252,13 @@ gve_get_ethtool_stats(struct net_device *netdev,
 		u32 queue_id = be32_to_cpu(report_stats[stats_idx].queue_id);
 
 		if (stat_name == 0) {
-			/* no stats written by NIC yet */
+			 
 			skip_nic_stats = true;
 			break;
 		}
 		rx_qid_to_stats_idx[queue_id] = stats_idx;
 	}
-	/* walk RX rings */
+	 
 	if (priv->rx) {
 		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
 			struct gve_rx_ring *rx = &priv->rx[ring];
@@ -288,15 +281,15 @@ gve_get_ethtool_stats(struct net_device *netdev,
 			data[i++] = rx->rx_frag_flip_cnt;
 			data[i++] = rx->rx_frag_copy_cnt;
 			data[i++] = rx->rx_frag_alloc_cnt;
-			/* rx dropped packets */
+			 
 			data[i++] = tmp_rx_skb_alloc_fail +
 				tmp_rx_buf_alloc_fail +
 				tmp_rx_desc_err_dropped_pkt;
 			data[i++] = rx->rx_copybreak_pkt;
 			data[i++] = rx->rx_copied_pkt;
-			/* stats from NIC */
+			 
 			if (skip_nic_stats) {
-				/* skip NIC rx stats */
+				 
 				i += NIC_RX_STATS_REPORT_NUM;
 			} else {
 				stats_idx = rx_qid_to_stats_idx[ring];
@@ -307,7 +300,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 					data[i++] = value;
 				}
 			}
-			/* XDP rx counters */
+			 
 			do {
 				start =	u64_stats_fetch_begin(&priv->rx[ring].statss);
 				for (j = 0; j < GVE_XDP_ACTIONS; j++)
@@ -317,17 +310,17 @@ gve_get_ethtool_stats(struct net_device *netdev,
 				data[i + j++] = rx->xdp_alloc_fails;
 			} while (u64_stats_fetch_retry(&priv->rx[ring].statss,
 						       start));
-			i += GVE_XDP_ACTIONS + 3; /* XDP rx counters */
+			i += GVE_XDP_ACTIONS + 3;  
 		}
 	} else {
 		i += priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS;
 	}
 
-	/* For tx cross-reporting stats, start from nic tx stats in report */
+	 
 	base_stats_idx = max_stats_idx;
 	max_stats_idx = NIC_TX_STATS_REPORT_NUM * num_tx_queues +
 		max_stats_idx;
-	/* Preprocess the stats report for tx, map queue id to start index */
+	 
 	skip_nic_stats = false;
 	for (stats_idx = base_stats_idx; stats_idx < max_stats_idx;
 		stats_idx += NIC_TX_STATS_REPORT_NUM) {
@@ -335,13 +328,13 @@ gve_get_ethtool_stats(struct net_device *netdev,
 		u32 queue_id = be32_to_cpu(report_stats[stats_idx].queue_id);
 
 		if (stat_name == 0) {
-			/* no stats written by NIC yet */
+			 
 			skip_nic_stats = true;
 			break;
 		}
 		tx_qid_to_stats_idx[queue_id] = stats_idx;
 	}
-	/* walk TX rings */
+	 
 	if (priv->tx) {
 		for (ring = 0; ring < num_tx_queues; ring++) {
 			struct gve_tx_ring *tx = &priv->tx[ring];
@@ -351,9 +344,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 				data[i++] = tx->done;
 				data[i++] = tx->req - tx->done;
 			} else {
-				/* DQO doesn't currently support
-				 * posted/completed descriptor counts;
-				 */
+				 
 				data[i++] = 0;
 				data[i++] = 0;
 				data[i++] = tx->dqo_tx.tail - tx->dqo_tx.head;
@@ -369,9 +360,9 @@ gve_get_ethtool_stats(struct net_device *netdev,
 			data[i++] = tx->stop_queue;
 			data[i++] = gve_tx_load_event_counter(priv, tx);
 			data[i++] = tx->dma_mapping_error;
-			/* stats from NIC */
+			 
 			if (skip_nic_stats) {
-				/* skip NIC tx stats */
+				 
 				i += NIC_TX_STATS_REPORT_NUM;
 			} else {
 				stats_idx = tx_qid_to_stats_idx[ring];
@@ -381,7 +372,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 					data[i++] = value;
 				}
 			}
-			/* XDP xsk counters */
+			 
 			data[i++] = tx->xdp_xsk_wakeup;
 			data[i++] = tx->xdp_xsk_done;
 			do {
@@ -391,7 +382,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 				data[i + 2] = tx->xdp_xmit_errors;
 			} while (u64_stats_fetch_retry(&priv->tx[ring].statss,
 						       start));
-			i += 3; /* XDP tx counters */
+			i += 3;  
 		}
 	} else {
 		i += num_tx_queues * NUM_GVE_TX_CNTS;
@@ -399,7 +390,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
 
 	kfree(rx_qid_to_stats_idx);
 	kfree(tx_qid_to_stats_idx);
-	/* AQ Stats */
+	 
 	data[i++] = priv->adminq_prod_cnt;
 	data[i++] = priv->adminq_cmd_fail;
 	data[i++] = priv->adminq_timeouts;
@@ -444,7 +435,7 @@ static int gve_set_channels(struct net_device *netdev,
 
 	gve_get_channels(netdev, &old_settings);
 
-	/* Changing combined is not allowed */
+	 
 	if (cmd->combined_count != old_settings.combined_count)
 		return -EINVAL;
 
@@ -537,7 +528,7 @@ static u32 gve_get_priv_flags(struct net_device *netdev)
 	struct gve_priv *priv = netdev_priv(netdev);
 	u32 ret_flags = 0;
 
-	/* Only 1 flag exists currently: report-stats (BIT(O)), so set that flag. */
+	 
 	if (priv->ethtool_flags & BIT(0))
 		ret_flags |= BIT(0);
 	return ret_flags;
@@ -553,20 +544,20 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
 	ori_flags = READ_ONCE(priv->ethtool_flags);
 	new_flags = ori_flags;
 
-	/* Only one priv flag exists: report-stats (BIT(0))*/
+	 
 	if (flags & BIT(0))
 		new_flags |= BIT(0);
 	else
 		new_flags &= ~(BIT(0));
 	priv->ethtool_flags = new_flags;
-	/* start report-stats timer when user turns report stats on. */
+	 
 	if (flags & BIT(0)) {
 		mod_timer(&priv->stats_report_timer,
 			  round_jiffies(jiffies +
 					msecs_to_jiffies(priv->stats_report_timer_period)));
 	}
-	/* Zero off gve stats when report-stats turned off and */
-	/* delete report stats timer. */
+	 
+	 
 	if (!(flags & BIT(0)) && (ori_flags & BIT(0))) {
 		int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
 			num_tx_queues;

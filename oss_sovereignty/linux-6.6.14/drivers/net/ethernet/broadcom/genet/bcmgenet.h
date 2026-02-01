@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014-2020 Broadcom
- */
+ 
+ 
 
 #ifndef __BCMGENET_H__
 #define __BCMGENET_H__
@@ -18,38 +16,36 @@
 
 #include "../unimac.h"
 
-/* total number of Buffer Descriptors, same for Rx/Tx */
+ 
 #define TOTAL_DESC				256
 
-/* which ring is descriptor based */
+ 
 #define DESC_INDEX				16
 
-/* Body(1500) + EH_SIZE(14) + VLANTAG(4) + BRCMTAG(6) + FCS(4) = 1528.
- * 1536 is multiple of 256 bytes
- */
+ 
 #define ENET_BRCM_TAG_LEN	6
 #define ENET_PAD		8
 #define ENET_MAX_MTU_SIZE	(ETH_DATA_LEN + ETH_HLEN + VLAN_HLEN + \
 				 ENET_BRCM_TAG_LEN + ETH_FCS_LEN + ENET_PAD)
 #define DMA_MAX_BURST_LENGTH    0x10
 
-/* misc. configuration */
+ 
 #define MAX_NUM_OF_FS_RULES		16
 #define CLEAR_ALL_HFB			0xFF
 #define DMA_FC_THRESH_HI		(TOTAL_DESC >> 4)
 #define DMA_FC_THRESH_LO		5
 
-/* 64B receive/transmit status block */
+ 
 struct status_64 {
-	u32	length_status;		/* length and peripheral status */
-	u32	ext_status;		/* Extended status*/
-	u32	rx_csum;		/* partial rx checksum */
-	u32	unused1[9];		/* unused */
-	u32	tx_csum_info;		/* Tx checksum info. */
-	u32	unused2[3];		/* unused */
+	u32	length_status;		 
+	u32	ext_status;		 
+	u32	rx_csum;		 
+	u32	unused1[9];		 
+	u32	tx_csum_info;		 
+	u32	unused2[3];		 
 };
 
-/* Rx status bits */
+ 
 #define STATUS_RX_EXT_MASK		0x1FFFFF
 #define STATUS_RX_CSUM_MASK		0xFFFF
 #define STATUS_RX_CSUM_OK		0x10000
@@ -61,78 +57,78 @@ struct status_64 {
 #define STATUS_RX_PROTO_MASK		3
 #define STATUS_RX_PROTO_SHIFT		18
 #define STATUS_FILTER_INDEX_MASK	0xFFFF
-/* Tx status bits */
+ 
 #define STATUS_TX_CSUM_START_MASK	0X7FFF
 #define STATUS_TX_CSUM_START_SHIFT	16
 #define STATUS_TX_CSUM_PROTO_UDP	0x8000
 #define STATUS_TX_CSUM_OFFSET_MASK	0x7FFF
 #define STATUS_TX_CSUM_LV		0x80000000
 
-/* DMA Descriptor */
-#define DMA_DESC_LENGTH_STATUS	0x00	/* in bytes of data in buffer */
-#define DMA_DESC_ADDRESS_LO	0x04	/* lower bits of PA */
-#define DMA_DESC_ADDRESS_HI	0x08	/* upper 32 bits of PA, GENETv4+ */
+ 
+#define DMA_DESC_LENGTH_STATUS	0x00	 
+#define DMA_DESC_ADDRESS_LO	0x04	 
+#define DMA_DESC_ADDRESS_HI	0x08	 
 
-/* Rx/Tx common counter group */
+ 
 struct bcmgenet_pkt_counters {
-	u32	cnt_64;		/* RO Received/Transmited 64 bytes packet */
-	u32	cnt_127;	/* RO Rx/Tx 127 bytes packet */
-	u32	cnt_255;	/* RO Rx/Tx 65-255 bytes packet */
-	u32	cnt_511;	/* RO Rx/Tx 256-511 bytes packet */
-	u32	cnt_1023;	/* RO Rx/Tx 512-1023 bytes packet */
-	u32	cnt_1518;	/* RO Rx/Tx 1024-1518 bytes packet */
-	u32	cnt_mgv;	/* RO Rx/Tx 1519-1522 good VLAN packet */
-	u32	cnt_2047;	/* RO Rx/Tx 1522-2047 bytes packet*/
-	u32	cnt_4095;	/* RO Rx/Tx 2048-4095 bytes packet*/
-	u32	cnt_9216;	/* RO Rx/Tx 4096-9216 bytes packet*/
+	u32	cnt_64;		 
+	u32	cnt_127;	 
+	u32	cnt_255;	 
+	u32	cnt_511;	 
+	u32	cnt_1023;	 
+	u32	cnt_1518;	 
+	u32	cnt_mgv;	 
+	u32	cnt_2047;	 
+	u32	cnt_4095;	 
+	u32	cnt_9216;	 
 };
 
-/* RSV, Receive Status Vector */
+ 
 struct bcmgenet_rx_counters {
 	struct  bcmgenet_pkt_counters pkt_cnt;
-	u32	pkt;		/* RO (0x428) Received pkt count*/
-	u32	bytes;		/* RO Received byte count */
-	u32	mca;		/* RO # of Received multicast pkt */
-	u32	bca;		/* RO # of Receive broadcast pkt */
-	u32	fcs;		/* RO # of Received FCS error  */
-	u32	cf;		/* RO # of Received control frame pkt*/
-	u32	pf;		/* RO # of Received pause frame pkt */
-	u32	uo;		/* RO # of unknown op code pkt */
-	u32	aln;		/* RO # of alignment error count */
-	u32	flr;		/* RO # of frame length out of range count */
-	u32	cde;		/* RO # of code error pkt */
-	u32	fcr;		/* RO # of carrier sense error pkt */
-	u32	ovr;		/* RO # of oversize pkt*/
-	u32	jbr;		/* RO # of jabber count */
-	u32	mtue;		/* RO # of MTU error pkt*/
-	u32	pok;		/* RO # of Received good pkt */
-	u32	uc;		/* RO # of unicast pkt */
-	u32	ppp;		/* RO # of PPP pkt */
-	u32	rcrc;		/* RO (0x470),# of CRC match pkt */
+	u32	pkt;		 
+	u32	bytes;		 
+	u32	mca;		 
+	u32	bca;		 
+	u32	fcs;		 
+	u32	cf;		 
+	u32	pf;		 
+	u32	uo;		 
+	u32	aln;		 
+	u32	flr;		 
+	u32	cde;		 
+	u32	fcr;		 
+	u32	ovr;		 
+	u32	jbr;		 
+	u32	mtue;		 
+	u32	pok;		 
+	u32	uc;		 
+	u32	ppp;		 
+	u32	rcrc;		 
 };
 
-/* TSV, Transmit Status Vector */
+ 
 struct bcmgenet_tx_counters {
 	struct bcmgenet_pkt_counters pkt_cnt;
-	u32	pkts;		/* RO (0x4a8) Transmited pkt */
-	u32	mca;		/* RO # of xmited multicast pkt */
-	u32	bca;		/* RO # of xmited broadcast pkt */
-	u32	pf;		/* RO # of xmited pause frame count */
-	u32	cf;		/* RO # of xmited control frame count */
-	u32	fcs;		/* RO # of xmited FCS error count */
-	u32	ovr;		/* RO # of xmited oversize pkt */
-	u32	drf;		/* RO # of xmited deferral pkt */
-	u32	edf;		/* RO # of xmited Excessive deferral pkt*/
-	u32	scl;		/* RO # of xmited single collision pkt */
-	u32	mcl;		/* RO # of xmited multiple collision pkt*/
-	u32	lcl;		/* RO # of xmited late collision pkt */
-	u32	ecl;		/* RO # of xmited excessive collision pkt*/
-	u32	frg;		/* RO # of xmited fragments pkt*/
-	u32	ncl;		/* RO # of xmited total collision count */
-	u32	jbr;		/* RO # of xmited jabber count*/
-	u32	bytes;		/* RO # of xmited byte count */
-	u32	pok;		/* RO # of xmited good pkt */
-	u32	uc;		/* RO (0x0x4f0)# of xmited unitcast pkt */
+	u32	pkts;		 
+	u32	mca;		 
+	u32	bca;		 
+	u32	pf;		 
+	u32	cf;		 
+	u32	fcs;		 
+	u32	ovr;		 
+	u32	drf;		 
+	u32	edf;		 
+	u32	scl;		 
+	u32	mcl;		 
+	u32	lcl;		 
+	u32	ecl;		 
+	u32	frg;		 
+	u32	ncl;		 
+	u32	jbr;		 
+	u32	bytes;		 
+	u32	pok;		 
+	u32	uc;		 
 };
 
 struct bcmgenet_mib_counters {
@@ -234,7 +230,7 @@ struct bcmgenet_mib_counters {
 #define HFB_FLT_LEN_V2			0x04
 #define HFB_FLT_LEN_V3PLUS		0x1C
 
-/* uniMac intrl2 registers */
+ 
 #define INTRL2_CPU_STAT			0x00
 #define INTRL2_CPU_SET			0x04
 #define INTRL2_CPU_CLEAR		0x08
@@ -242,7 +238,7 @@ struct bcmgenet_mib_counters {
 #define INTRL2_CPU_MASK_SET		0x10
 #define INTRL2_CPU_MASK_CLEAR		0x14
 
-/* INTRL2 instance 0 definitions */
+ 
 #define UMAC_IRQ_SCB			(1 << 0)
 #define UMAC_IRQ_EPHY			(1 << 1)
 #define UMAC_IRQ_PHY_DET_R		(1 << 2)
@@ -268,16 +264,16 @@ struct bcmgenet_mib_counters {
 #define UMAC_IRQ_TXDMA_BDONE		(1 << 18)
 #define UMAC_IRQ_TXDMA_DONE		UMAC_IRQ_TXDMA_MBDONE
 
-/* Only valid for GENETv3+ */
+ 
 #define UMAC_IRQ_MDIO_DONE		(1 << 23)
 #define UMAC_IRQ_MDIO_ERROR		(1 << 24)
 
-/* INTRL2 instance 1 definitions */
+ 
 #define UMAC_IRQ1_TX_INTR_MASK		0xFFFF
 #define UMAC_IRQ1_RX_INTR_MASK		0xFFFF
 #define UMAC_IRQ1_RX_INTR_SHIFT		16
 
-/* Register block offsets */
+ 
 #define GENET_SYS_OFF			0x0000
 #define GENET_GR_BRIDGE_OFF		0x0040
 #define GENET_EXT_OFF			0x0080
@@ -286,7 +282,7 @@ struct bcmgenet_mib_counters {
 #define GENET_RBUF_OFF			0x0300
 #define GENET_UMAC_OFF			0x0800
 
-/* SYS block offsets and register definitions */
+ 
 #define SYS_REV_CTRL			0x00
 #define SYS_PORT_CTRL			0x04
 #define  PORT_MODE_INT_EPHY		0
@@ -301,7 +297,7 @@ struct bcmgenet_mib_counters {
 #define SYS_TBUF_FLUSH_CTRL		0x0C
 #define RBUF_FLUSH_CTRL_V1		0x04
 
-/* Ext block register offsets and definitions */
+ 
 #define EXT_EXT_PWR_MGMT		0x00
 #define  EXT_PWR_DOWN_BIAS		(1 << 0)
 #define  EXT_PWR_DOWN_DLL		(1 << 1)
@@ -332,11 +328,11 @@ struct bcmgenet_mib_counters {
 #define  EXT_CFG_IDDQ_GLOBAL_PWR	(1 << 3)
 #define  EXT_GPHY_RESET			(1 << 5)
 
-/* DMA rings size */
+ 
 #define DMA_RING_SIZE			(0x40)
 #define DMA_RINGS_SIZE			(DMA_RING_SIZE * (DESC_INDEX + 1))
 
-/* DMA registers common definitions */
+ 
 #define DMA_RW_POINTER_MASK		0x1FF
 #define DMA_P_INDEX_DISCARD_CNT_MASK	0xFFFF
 #define DMA_P_INDEX_DISCARD_CNT_SHIFT	16
@@ -345,60 +341,60 @@ struct bcmgenet_mib_counters {
 #define DMA_P_INDEX_MASK		0xFFFF
 #define DMA_C_INDEX_MASK		0xFFFF
 
-/* DMA ring size register */
+ 
 #define DMA_RING_SIZE_MASK		0xFFFF
 #define DMA_RING_SIZE_SHIFT		16
 #define DMA_RING_BUFFER_SIZE_MASK	0xFFFF
 
-/* DMA interrupt threshold register */
+ 
 #define DMA_INTR_THRESHOLD_MASK		0x01FF
 
-/* DMA XON/XOFF register */
+ 
 #define DMA_XON_THREHOLD_MASK		0xFFFF
 #define DMA_XOFF_THRESHOLD_MASK		0xFFFF
 #define DMA_XOFF_THRESHOLD_SHIFT	16
 
-/* DMA flow period register */
+ 
 #define DMA_FLOW_PERIOD_MASK		0xFFFF
 #define DMA_MAX_PKT_SIZE_MASK		0xFFFF
 #define DMA_MAX_PKT_SIZE_SHIFT		16
 
 
-/* DMA control register */
+ 
 #define DMA_EN				(1 << 0)
 #define DMA_RING_BUF_EN_SHIFT		0x01
 #define DMA_RING_BUF_EN_MASK		0xFFFF
 #define DMA_TSB_SWAP_EN			(1 << 20)
 
-/* DMA status register */
+ 
 #define DMA_DISABLED			(1 << 0)
 #define DMA_DESC_RAM_INIT_BUSY		(1 << 1)
 
-/* DMA SCB burst size register */
+ 
 #define DMA_SCB_BURST_SIZE_MASK		0x1F
 
-/* DMA activity vector register */
+ 
 #define DMA_ACTIVITY_VECTOR_MASK	0x1FFFF
 
-/* DMA backpressure mask register */
+ 
 #define DMA_BACKPRESSURE_MASK		0x1FFFF
 #define DMA_PFC_ENABLE			(1 << 31)
 
-/* DMA backpressure status register */
+ 
 #define DMA_BACKPRESSURE_STATUS_MASK	0x1FFFF
 
-/* DMA override register */
+ 
 #define DMA_LITTLE_ENDIAN_MODE		(1 << 0)
 #define DMA_REGISTER_MODE		(1 << 1)
 
-/* DMA timeout register */
+ 
 #define DMA_TIMEOUT_MASK		0xFFFF
-#define DMA_TIMEOUT_VAL			5000	/* micro seconds */
+#define DMA_TIMEOUT_VAL			5000	 
 
-/* TDMA rate limiting control register */
+ 
 #define DMA_RATE_LIMIT_EN_MASK		0xFFFF
 
-/* TDMA arbitration control register */
+ 
 #define DMA_ARBITER_MODE_MASK		0x03
 #define DMA_RING_BUF_PRIORITY_MASK	0x1F
 #define DMA_RING_BUF_PRIORITY_SHIFT	5
@@ -406,21 +402,21 @@ struct bcmgenet_mib_counters {
 #define DMA_PRIO_REG_SHIFT(q)		(((q) % 6) * DMA_RING_BUF_PRIORITY_SHIFT)
 #define DMA_RATE_ADJ_MASK		0xFF
 
-/* Tx/Rx Dma Descriptor common bits*/
+ 
 #define DMA_BUFLENGTH_MASK		0x0fff
 #define DMA_BUFLENGTH_SHIFT		16
 #define DMA_OWN				0x8000
 #define DMA_EOP				0x4000
 #define DMA_SOP				0x2000
 #define DMA_WRAP			0x1000
-/* Tx specific Dma descriptor bits */
+ 
 #define DMA_TX_UNDERRUN			0x0200
 #define DMA_TX_APPEND_CRC		0x0040
 #define DMA_TX_OW_CRC			0x0020
 #define DMA_TX_DO_CSUM			0x0010
 #define DMA_TX_QTAG_SHIFT		7
 
-/* Rx Specific Dma descriptor bits */
+ 
 #define DMA_RX_CHK_V3PLUS		0x8000
 #define DMA_RX_CHK_V12			0x1000
 #define DMA_RX_BRDCAST			0x0040
@@ -445,7 +441,7 @@ struct enet_cb {
 	DEFINE_DMA_UNMAP_LEN(dma_len);
 };
 
-/* power management mode */
+ 
 enum bcmgenet_power_mode {
 	GENET_POWER_CABLE_SENSE = 0,
 	GENET_POWER_PASSIVE,
@@ -454,9 +450,7 @@ enum bcmgenet_power_mode {
 
 struct bcmgenet_priv;
 
-/* We support both runtime GENET detection and compile-time
- * to optimize code-paths for a given hardware
- */
+ 
 enum bcmgenet_version {
 	GENET_V1 = 1,
 	GENET_V2,
@@ -471,15 +465,13 @@ enum bcmgenet_version {
 #define GENET_IS_V4(p)	((p)->version == GENET_V4)
 #define GENET_IS_V5(p)	((p)->version == GENET_V5)
 
-/* Hardware flags */
+ 
 #define GENET_HAS_40BITS	(1 << 0)
 #define GENET_HAS_EXT		(1 << 1)
 #define GENET_HAS_MDIO_INTR	(1 << 2)
 #define GENET_HAS_MOCA_LINK_DET	(1 << 3)
 
-/* BCMGENET hardware parameters, keep this structure nicely aligned
- * since it is going to be used in hot paths
- */
+ 
 struct bcmgenet_hw_params {
 	u8		tx_queues;
 	u8		tx_bds_per_q;
@@ -500,29 +492,29 @@ struct bcmgenet_hw_params {
 };
 
 struct bcmgenet_skb_cb {
-	struct enet_cb *first_cb;	/* First control block of SKB */
-	struct enet_cb *last_cb;	/* Last control block of SKB */
-	unsigned int bytes_sent;	/* bytes on the wire (no TSB) */
+	struct enet_cb *first_cb;	 
+	struct enet_cb *last_cb;	 
+	unsigned int bytes_sent;	 
 };
 
 #define GENET_CB(skb)	((struct bcmgenet_skb_cb *)((skb)->cb))
 
 struct bcmgenet_tx_ring {
-	spinlock_t	lock;		/* ring lock */
-	struct napi_struct napi;	/* NAPI per tx queue */
+	spinlock_t	lock;		 
+	struct napi_struct napi;	 
 	unsigned long	packets;
 	unsigned long	bytes;
-	unsigned int	index;		/* ring index */
-	unsigned int	queue;		/* queue index */
-	struct enet_cb	*cbs;		/* tx ring buffer control block*/
-	unsigned int	size;		/* size of each tx ring */
-	unsigned int    clean_ptr;      /* Tx ring clean pointer */
-	unsigned int	c_index;	/* last consumer index of each ring*/
-	unsigned int	free_bds;	/* # of free bds for each ring */
-	unsigned int	write_ptr;	/* Tx ring write pointer SW copy */
-	unsigned int	prod_index;	/* Tx ring producer index SW copy */
-	unsigned int	cb_ptr;		/* Tx ring initial CB ptr */
-	unsigned int	end_ptr;	/* Tx ring end CB ptr */
+	unsigned int	index;		 
+	unsigned int	queue;		 
+	struct enet_cb	*cbs;		 
+	unsigned int	size;		 
+	unsigned int    clean_ptr;       
+	unsigned int	c_index;	 
+	unsigned int	free_bds;	 
+	unsigned int	write_ptr;	 
+	unsigned int	prod_index;	 
+	unsigned int	cb_ptr;		 
+	unsigned int	end_ptr;	 
 	void (*int_enable)(struct bcmgenet_tx_ring *);
 	void (*int_disable)(struct bcmgenet_tx_ring *);
 	struct bcmgenet_priv *priv;
@@ -537,18 +529,18 @@ struct bcmgenet_net_dim {
 };
 
 struct bcmgenet_rx_ring {
-	struct napi_struct napi;	/* Rx NAPI struct */
+	struct napi_struct napi;	 
 	unsigned long	bytes;
 	unsigned long	packets;
 	unsigned long	errors;
 	unsigned long	dropped;
-	unsigned int	index;		/* Rx ring index */
-	struct enet_cb	*cbs;		/* Rx ring buffer control block */
-	unsigned int	size;		/* Rx ring size */
-	unsigned int	c_index;	/* Rx last consumer index */
-	unsigned int	read_ptr;	/* Rx ring read pointer */
-	unsigned int	cb_ptr;		/* Rx ring initial CB ptr */
-	unsigned int	end_ptr;	/* Rx ring end CB ptr */
+	unsigned int	index;		 
+	struct enet_cb	*cbs;		 
+	unsigned int	size;		 
+	unsigned int	c_index;	 
+	unsigned int	read_ptr;	 
+	unsigned int	cb_ptr;		 
+	unsigned int	end_ptr;	 
 	unsigned int	old_discards;
 	struct bcmgenet_net_dim dim;
 	u32		rx_max_coalesced_frames;
@@ -570,20 +562,20 @@ struct bcmgenet_rxnfc_rule {
 	enum bcmgenet_rxnfc_state state;
 };
 
-/* device context */
+ 
 struct bcmgenet_priv {
 	void __iomem *base;
 	enum bcmgenet_version version;
 	struct net_device *dev;
 
-	/* transmit variables */
+	 
 	void __iomem *tx_bds;
 	struct enet_cb *tx_cbs;
 	unsigned int num_tx_bds;
 
 	struct bcmgenet_tx_ring tx_rings[DESC_INDEX + 1];
 
-	/* receive variables */
+	 
 	void __iomem *rx_bds;
 	struct enet_cb *rx_cbs;
 	unsigned int num_rx_bds;
@@ -593,13 +585,13 @@ struct bcmgenet_priv {
 
 	struct bcmgenet_rx_ring rx_rings[DESC_INDEX + 1];
 
-	/* other misc variables */
+	 
 	struct bcmgenet_hw_params *hw_params;
 	unsigned autoneg_pause:1;
 	unsigned tx_pause:1;
 	unsigned rx_pause:1;
 
-	/* MDIO bus variables */
+	 
 	wait_queue_head_t wq;
 	bool internal_phy;
 	struct device_node *phy_dn;
@@ -609,24 +601,24 @@ struct bcmgenet_priv {
 	struct clk *clk_eee;
 	bool clk_eee_enabled;
 
-	/* PHY device variables */
+	 
 	phy_interface_t phy_interface;
 	int phy_addr;
 	int ext_phy;
 	bool ephy_16nm;
 
-	/* Interrupt variables */
+	 
 	struct work_struct bcmgenet_irq_work;
 	int irq0;
 	int irq1;
 	int wol_irq;
 	bool wol_irq_disabled;
 
-	/* shared status */
+	 
 	spinlock_t lock;
 	unsigned int irq0_stat;
 
-	/* HW descriptors/checksum variables */
+	 
 	bool crc_fwd_en;
 
 	u32 dma_max_burst_length;
@@ -637,7 +629,7 @@ struct bcmgenet_priv {
 	struct platform_device *pdev;
 	struct platform_device *mii_pdev;
 
-	/* WOL */
+	 
 	struct clk *clk_wol;
 	u32 wolopts;
 	u8 sopass[SOPASS_MAX];
@@ -652,9 +644,7 @@ struct bcmgenet_priv {
 static inline u32 bcmgenet_##name##_readl(struct bcmgenet_priv *priv,	\
 					u32 off)			\
 {									\
-	/* MIPS chips strapped for BE will automagically configure the	\
-	 * peripheral registers for CPU-native byte order.		\
-	 */								\
+	 								\
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN)) \
 		return __raw_readl(priv->base + offset + off);		\
 	else								\
@@ -673,20 +663,20 @@ GENET_IO_MACRO(ext, GENET_EXT_OFF);
 GENET_IO_MACRO(umac, GENET_UMAC_OFF);
 GENET_IO_MACRO(sys, GENET_SYS_OFF);
 
-/* interrupt l2 registers accessors */
+ 
 GENET_IO_MACRO(intrl2_0, GENET_INTRL2_0_OFF);
 GENET_IO_MACRO(intrl2_1, GENET_INTRL2_1_OFF);
 
-/* HFB register accessors  */
+ 
 GENET_IO_MACRO(hfb, priv->hw_params->hfb_offset);
 
-/* GENET v2+ HFB control and filter len helpers */
+ 
 GENET_IO_MACRO(hfb_reg, priv->hw_params->hfb_reg_offset);
 
-/* RBUF register accessors */
+ 
 GENET_IO_MACRO(rbuf, GENET_RBUF_OFF);
 
-/* MDIO routines */
+ 
 int bcmgenet_mii_init(struct net_device *dev);
 int bcmgenet_mii_config(struct net_device *dev, bool init);
 int bcmgenet_mii_probe(struct net_device *dev);
@@ -695,7 +685,7 @@ void bcmgenet_phy_pause_set(struct net_device *dev, bool rx, bool tx);
 void bcmgenet_phy_power_set(struct net_device *dev, bool enable);
 void bcmgenet_mii_setup(struct net_device *dev);
 
-/* Wake-on-LAN routines */
+ 
 void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol);
 int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol);
 int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
@@ -706,4 +696,4 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
 void bcmgenet_eee_enable_set(struct net_device *dev, bool enable,
 			     bool tx_lpi_enabled);
 
-#endif /* __BCMGENET_H__ */
+#endif  

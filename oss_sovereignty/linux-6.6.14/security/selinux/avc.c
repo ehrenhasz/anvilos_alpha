@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implementation of the kernel access vector cache (AVC).
- *
- * Authors:  Stephen Smalley, <stephen.smalley.work@gmail.com>
- *	     James Morris <jmorris@redhat.com>
- *
- * Update:   KaiGai, Kohei <kaigai@ak.jp.nec.com>
- *	Replaced the avc_lock spinlock by RCU.
- *
- * Copyright (C) 2003 Red Hat, Inc., James Morris <jmorris@redhat.com>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/kernel.h>
@@ -54,26 +44,26 @@ struct avc_entry {
 
 struct avc_node {
 	struct avc_entry	ae;
-	struct hlist_node	list; /* anchored in avc_cache->slots[i] */
+	struct hlist_node	list;  
 	struct rcu_head		rhead;
 };
 
 struct avc_xperms_decision_node {
 	struct extended_perms_decision xpd;
-	struct list_head xpd_list; /* list of extended_perms_decision */
+	struct list_head xpd_list;  
 };
 
 struct avc_xperms_node {
 	struct extended_perms xp;
-	struct list_head xpd_head; /* list head of extended_perms_decision */
+	struct list_head xpd_head;  
 };
 
 struct avc_cache {
-	struct hlist_head	slots[AVC_CACHE_SLOTS]; /* head for avc_node->list */
-	spinlock_t		slots_lock[AVC_CACHE_SLOTS]; /* lock for writes */
-	atomic_t		lru_hint;	/* LRU hint for reclaim scan */
+	struct hlist_head	slots[AVC_CACHE_SLOTS];  
+	spinlock_t		slots_lock[AVC_CACHE_SLOTS];  
+	atomic_t		lru_hint;	 
 	atomic_t		active_nodes;
-	u32			latest_notif;	/* latest revocation notification */
+	u32			latest_notif;	 
 };
 
 struct avc_callback_node {
@@ -127,11 +117,7 @@ static inline u32 avc_hash(u32 ssid, u32 tsid, u16 tclass)
 	return (ssid ^ (tsid<<2) ^ (tclass<<4)) & (AVC_CACHE_SLOTS - 1);
 }
 
-/**
- * avc_init - Initialize the AVC.
- *
- * Initialize the access vector cache.
- */
+ 
 void __init avc_init(void)
 {
 	avc_node_cachep = kmem_cache_create("avc_node", sizeof(struct avc_node),
@@ -178,10 +164,7 @@ int avc_get_hash_stats(char *page)
 			 slots_used, AVC_CACHE_SLOTS, max_chain_len);
 }
 
-/*
- * using a linked list for extended_perms_decision lookup because the list is
- * always small. i.e. less than 5, typically 1
- */
+ 
 static struct extended_perms_decision *avc_xperms_decision_lookup(u8 driver,
 					struct avc_xperms_node *xp_node)
 {
@@ -266,18 +249,12 @@ static void avc_copy_xperms_decision(struct extended_perms_decision *dest,
 				sizeof(src->dontaudit->p));
 }
 
-/*
- * similar to avc_copy_xperms_decision, but only copy decision
- * information relevant to this perm
- */
+ 
 static inline void avc_quick_copy_xperms_decision(u8 perm,
 			struct extended_perms_decision *dest,
 			struct extended_perms_decision *src)
 {
-	/*
-	 * compute index of the u32 of the 256 bits (8 u32s) that contain this
-	 * command permission
-	 */
+	 
 	u8 i = perm >> 5;
 
 	dest->used = src->used;
@@ -366,7 +343,7 @@ static int avc_xperms_populate(struct avc_node *node,
 	memcpy(dest->xp.drivers.p, src->xp.drivers.p, sizeof(dest->xp.drivers.p));
 	dest->xp.len = src->xp.len;
 
-	/* for each source xpd allocate a destination xpd and copy */
+	 
 	list_for_each_entry(src_xpd, &src->xpd_head, xpd_list) {
 		dest_xpd = avc_xperms_decision_alloc(src_xpd->xpd.used);
 		if (!dest_xpd)
@@ -540,18 +517,7 @@ static inline struct avc_node *avc_search_node(u32 ssid, u32 tsid, u16 tclass)
 	return ret;
 }
 
-/**
- * avc_lookup - Look up an AVC entry.
- * @ssid: source security identifier
- * @tsid: target security identifier
- * @tclass: target security class
- *
- * Look up an AVC entry that is valid for the
- * (@ssid, @tsid), interpreting the permissions
- * based on @tclass.  If a valid AVC entry exists,
- * then this function returns the avc_node.
- * Otherwise, this function returns NULL.
- */
+ 
 static struct avc_node *avc_lookup(u32 ssid, u32 tsid, u16 tclass)
 {
 	struct avc_node *node;
@@ -588,23 +554,7 @@ static int avc_latest_notif_update(u32 seqno, int is_insert)
 	return ret;
 }
 
-/**
- * avc_insert - Insert an AVC entry.
- * @ssid: source security identifier
- * @tsid: target security identifier
- * @tclass: target security class
- * @avd: resulting av decision
- * @xp_node: resulting extended permissions
- *
- * Insert an AVC entry for the SID pair
- * (@ssid, @tsid) and class @tclass.
- * The access vectors and the sequence number are
- * normally provided by the security server in
- * response to a security_compute_av() call.  If the
- * sequence number @avd->seqno is not less than the latest
- * revocation notification, then the function copies
- * the access vectors into a cache entry.
- */
+ 
 static void avc_insert(u32 ssid, u32 tsid, u16 tclass,
 		       struct av_decision *avd, struct avc_xperms_node *xp_node)
 {
@@ -644,12 +594,7 @@ found:
 	spin_unlock_irqrestore(lock, flag);
 }
 
-/**
- * avc_audit_pre_callback - SELinux specific information
- * will be called by generic audit code
- * @ab: the audit buffer
- * @a: audit_data
- */
+ 
 static void avc_audit_pre_callback(struct audit_buffer *ab, void *a)
 {
 	struct common_audit_data *ad = a;
@@ -685,12 +630,7 @@ static void avc_audit_pre_callback(struct audit_buffer *ab, void *a)
 	audit_log_format(ab, " } for ");
 }
 
-/**
- * avc_audit_post_callback - SELinux specific information
- * will be called by generic audit code
- * @ab: the audit buffer
- * @a: audit_data
- */
+ 
 static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 {
 	struct common_audit_data *ad = a;
@@ -726,7 +666,7 @@ static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 	kfree(tcontext);
 	kfree(scontext);
 
-	/* in case of invalid context report also the actual context string */
+	 
 	rc = security_sid_to_context_inval(sad->ssid, &scontext,
 					   &scontext_len);
 	if (!rc && scontext) {
@@ -748,11 +688,7 @@ static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 	}
 }
 
-/*
- * This is the slow part of avc audit with big stack footprint.
- * Note that it is non-blocking and can be called from under
- * rcu_read_lock().
- */
+ 
 noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 			    u32 requested, u32 audited, u32 denied, int result,
 			    struct common_audit_data *a)
@@ -782,15 +718,7 @@ noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 	return 0;
 }
 
-/**
- * avc_add_callback - Register a callback for security events.
- * @callback: callback function
- * @events: security events
- *
- * Register a callback function for events in the set @events.
- * Returns %0 on success or -%ENOMEM if insufficient memory
- * exists to add the callback.
- */
+ 
 int __init avc_add_callback(int (*callback)(u32 event), u32 events)
 {
 	struct avc_callback_node *c;
@@ -810,24 +738,7 @@ out:
 	return rc;
 }
 
-/**
- * avc_update_node - Update an AVC entry
- * @event : Updating event
- * @perms : Permission mask bits
- * @driver: xperm driver information
- * @xperm: xperm permissions
- * @ssid: AVC entry source sid
- * @tsid: AVC entry target sid
- * @tclass : AVC entry target object class
- * @seqno : sequence number when decision was made
- * @xpd: extended_perms_decision to be added to the node
- * @flags: the AVC_* flags, e.g. AVC_EXTENDED_PERMS, or 0.
- *
- * if a valid AVC entry doesn't exist,this function returns -ENOENT.
- * if kmalloc() called internal returns NULL, this function returns -ENOMEM.
- * otherwise, this function updates the AVC entry. The original AVC-entry object
- * will release later by RCU.
- */
+ 
 static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 			   u32 tsid, u16 tclass, u32 seqno,
 			   struct extended_perms_decision *xpd,
@@ -846,7 +757,7 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 		goto out;
 	}
 
-	/* Lock the target slot */
+	 
 	hvalue = avc_hash(ssid, tsid, tclass);
 
 	head = &selinux_avc.avc_cache.slots[hvalue];
@@ -870,9 +781,7 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 		goto out_unlock;
 	}
 
-	/*
-	 * Copy and replace original node.
-	 */
+	 
 
 	avc_node_populate(node, ssid, tsid, tclass, &orig->ae.avd);
 
@@ -917,9 +826,7 @@ out:
 	return rc;
 }
 
-/**
- * avc_flush - Flush the cache
- */
+ 
 static void avc_flush(void)
 {
 	struct hlist_head *head;
@@ -933,10 +840,7 @@ static void avc_flush(void)
 		lock = &selinux_avc.avc_cache.slots_lock[i];
 
 		spin_lock_irqsave(lock, flag);
-		/*
-		 * With preemptable RCU, the outer spinlock does not
-		 * prevent RCU grace periods from ending.
-		 */
+		 
 		rcu_read_lock();
 		hlist_for_each_entry(node, head, list)
 			avc_node_delete(node);
@@ -945,10 +849,7 @@ static void avc_flush(void)
 	}
 }
 
-/**
- * avc_ss_reset - Flush the cache and revalidate migrated permissions.
- * @seqno: policy sequence number
- */
+ 
 int avc_ss_reset(u32 seqno)
 {
 	struct avc_callback_node *c;
@@ -959,8 +860,7 @@ int avc_ss_reset(u32 seqno)
 	for (c = avc_callbacks; c; c = c->next) {
 		if (c->events & AVC_CALLBACK_RESET) {
 			tmprc = c->callback(AVC_CALLBACK_RESET);
-			/* save the first error encountered for the return
-			   value and continue processing the callbacks */
+			 
 			if (!rc)
 				rc = tmprc;
 		}
@@ -970,18 +870,7 @@ int avc_ss_reset(u32 seqno)
 	return rc;
 }
 
-/**
- * avc_compute_av - Add an entry to the AVC based on the security policy
- * @ssid: subject
- * @tsid: object/target
- * @tclass: object class
- * @avd: access vector decision
- * @xp_node: AVC extended permissions node
- *
- * Slow-path helper function for avc_has_perm_noaudit, when the avc_node lookup
- * fails.  Don't inline this, since it's the slow-path and just results in a
- * bigger stack frame.
- */
+ 
 static noinline void avc_compute_av(u32 ssid, u32 tsid, u16 tclass,
 				    struct av_decision *avd,
 				    struct avc_xperms_node *xp_node)
@@ -1008,13 +897,7 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
 	return 0;
 }
 
-/*
- * The avc extended permissions logic adds an additional 256 bits of
- * permissions to an avc node when extended permissions for that node are
- * specified in the avtab. If the additional 256 permissions is not adequate,
- * as-is the case with ioctls, then multiple may be chained together and the
- * driver field is used to specify which set contains the permission.
- */
+ 
 int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 			   u8 driver, u8 xperm, struct common_audit_data *ad)
 {
@@ -1043,7 +926,7 @@ int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 		memcpy(&avd, &node->ae.avd, sizeof(avd));
 		xp_node = node->ae.xp_node;
 	}
-	/* if extended permissions are not defined, only consider av_decision */
+	 
 	if (!xp_node || !xp_node->xp.len)
 		goto decision;
 
@@ -1053,10 +936,7 @@ int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 
 	xpd = avc_xperms_decision_lookup(driver, xp_node);
 	if (unlikely(!xpd)) {
-		/*
-		 * Compute the extended_perms_decision only if the driver
-		 * is flagged
-		 */
+		 
 		if (!security_xperm_test(xp_node->xp.drivers.p, driver)) {
 			avd.allowed &= ~requested;
 			goto decision;
@@ -1091,19 +971,7 @@ decision:
 	return rc;
 }
 
-/**
- * avc_perm_nonode - Add an entry to the AVC
- * @ssid: subject
- * @tsid: object/target
- * @tclass: object class
- * @requested: requested permissions
- * @flags: AVC flags
- * @avd: access vector decision
- *
- * This is the "we have no node" part of avc_has_perm_noaudit(), which is
- * unlikely and needs extra stack space for the new node that we generate, so
- * don't inline it.
- */
+ 
 static noinline int avc_perm_nonode(u32 ssid, u32 tsid, u16 tclass,
 				    u32 requested, unsigned int flags,
 				    struct av_decision *avd)
@@ -1119,26 +987,7 @@ static noinline int avc_perm_nonode(u32 ssid, u32 tsid, u16 tclass,
 	return 0;
 }
 
-/**
- * avc_has_perm_noaudit - Check permissions but perform no auditing.
- * @ssid: source security identifier
- * @tsid: target security identifier
- * @tclass: target security class
- * @requested: requested permissions, interpreted based on @tclass
- * @flags:  AVC_STRICT or 0
- * @avd: access vector decisions
- *
- * Check the AVC to determine whether the @requested permissions are granted
- * for the SID pair (@ssid, @tsid), interpreting the permissions
- * based on @tclass, and call the security server on a cache miss to obtain
- * a new decision and add it to the cache.  Return a copy of the decisions
- * in @avd.  Return %0 if all @requested permissions are granted,
- * -%EACCES if any permissions are denied, or another -errno upon
- * other errors.  This function is typically called by avc_has_perm(),
- * but may also be called directly to separate permission checking from
- * auditing, e.g. in cases where a lock must be held for the check but
- * should be released for the auditing.
- */
+ 
 inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
 				u16 tclass, u32 requested,
 				unsigned int flags,
@@ -1167,22 +1016,7 @@ inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
 	return 0;
 }
 
-/**
- * avc_has_perm - Check permissions and perform any appropriate auditing.
- * @ssid: source security identifier
- * @tsid: target security identifier
- * @tclass: target security class
- * @requested: requested permissions, interpreted based on @tclass
- * @auditdata: auxiliary audit data
- *
- * Check the AVC to determine whether the @requested permissions are granted
- * for the SID pair (@ssid, @tsid), interpreting the permissions
- * based on @tclass, and call the security server on a cache miss to obtain
- * a new decision and add it to the cache.  Audit the granting or denial of
- * permissions in accordance with the policy.  Return %0 if all @requested
- * permissions are granted, -%EACCES if any permissions are denied, or
- * another -errno upon other errors.
- */
+ 
 int avc_has_perm(u32 ssid, u32 tsid, u16 tclass,
 		 u32 requested, struct common_audit_data *auditdata)
 {

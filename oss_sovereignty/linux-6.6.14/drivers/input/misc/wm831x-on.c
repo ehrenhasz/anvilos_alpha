@@ -1,21 +1,4 @@
-/*
- * wm831x-on.c - WM831X ON pin driver
- *
- * Copyright (C) 2009 Wolfson Microelectronics plc
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -33,10 +16,7 @@ struct wm831x_on {
 	struct wm831x *wm831x;
 };
 
-/*
- * The chip gives us an interrupt when the ON pin is asserted but we
- * then need to poll to see when the pin is deasserted.
- */
+ 
 static void wm831x_poll_on(struct work_struct *work)
 {
 	struct wm831x_on *wm831x_on = container_of(work, struct wm831x_on,

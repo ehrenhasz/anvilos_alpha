@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2020 Facebook
+
+
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -27,7 +27,7 @@ static int do_pin(int argc, char **argv)
 	objfile = GET_ARG();
 	path = GET_ARG();
 
-	/* optional arguments */
+	 
 	if (argc) {
 		if (is_prefix(*argv, "map")) {
 			NEXT_ARG();

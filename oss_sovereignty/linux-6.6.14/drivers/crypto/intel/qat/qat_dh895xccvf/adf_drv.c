@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -99,7 +99,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	accel_pci_dev = &accel_dev->accel_pci_dev;
 	accel_pci_dev->pci_dev = pdev;
 
-	/* Add accel device to accel table */
+	 
 	if (adf_devmgr_add_dev(accel_dev, pf)) {
 		dev_err(&pdev->dev, "Failed to add new accelerator device.\n");
 		kfree(accel_dev);
@@ -108,7 +108,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	INIT_LIST_HEAD(&accel_dev->crypto_list);
 
 	accel_dev->owner = THIS_MODULE;
-	/* Allocate and configure device configuration structure */
+	 
 	hw_data = kzalloc_node(sizeof(*hw_data), GFP_KERNEL,
 			       dev_to_node(&pdev->dev));
 	if (!hw_data) {
@@ -118,23 +118,23 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	accel_dev->hw_device = hw_data;
 	adf_init_hw_data_dh895xcciov(accel_dev->hw_device);
 
-	/* Get Accelerators and Accelerators Engines masks */
+	 
 	hw_data->accel_mask = hw_data->get_accel_mask(hw_data);
 	hw_data->ae_mask = hw_data->get_ae_mask(hw_data);
 	accel_pci_dev->sku = hw_data->get_sku(hw_data);
 
-	/* Create device configuration table */
+	 
 	ret = adf_cfg_dev_add(accel_dev);
 	if (ret)
 		goto out_err;
 
-	/* enable PCI device */
+	 
 	if (pci_enable_device(pdev)) {
 		ret = -EFAULT;
 		goto out_err;
 	}
 
-	/* set dma identifier */
+	 
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
 	if (ret) {
 		dev_err(&pdev->dev, "No usable DMA configuration\n");
@@ -146,7 +146,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_err_disable;
 	}
 
-	/* Find and map all the device's BARS */
+	 
 	i = 0;
 	bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
 	for_each_set_bit(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {
@@ -164,7 +164,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 	pci_set_master(pdev);
-	/* Completion for VF2PF request/response message exchange */
+	 
 	init_completion(&accel_dev->vf.msg_received);
 
 	adf_dbgfs_init(accel_dev);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/video/dummycon.c -- A dummy console driver
- *
- *  To be used if there's no other console driver (e.g. for plain VGA text)
- *  available, usually until fbcon takes console over.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kdev_t.h>
@@ -14,21 +9,19 @@
 #include <linux/init.h>
 #include <linux/module.h>
 
-/*
- *  Dummy console driver
- */
+ 
 
 #if defined(__arm__)
 #define DUMMY_COLUMNS	screen_info.orig_video_cols
 #define DUMMY_ROWS	screen_info.orig_video_lines
 #else
-/* set by Kconfig. Use 80x25 for 640x480 and 160x64 for 1280x1024 */
+ 
 #define DUMMY_COLUMNS	CONFIG_DUMMY_CONSOLE_COLUMNS
 #define DUMMY_ROWS	CONFIG_DUMMY_CONSOLE_ROWS
 #endif
 
 #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
-/* These are both protected by the console_lock */
+ 
 static RAW_NOTIFIER_HEAD(dummycon_output_nh);
 static bool dummycon_putc_called;
 
@@ -63,7 +56,7 @@ static void dummycon_putcs(struct vc_data *vc, const unsigned short *s,
 	int i;
 
 	if (!dummycon_putc_called) {
-		/* Ignore erases */
+		 
 		for (i = 0 ; i < count; i++) {
 			if (s[i] != vc->vc_video_erase_char)
 				break;
@@ -79,7 +72,7 @@ static void dummycon_putcs(struct vc_data *vc, const unsigned short *s,
 
 static int dummycon_blank(struct vc_data *vc, int blank, int mode_switch)
 {
-	/* Redraw, so that we get putc(s) for output done while blanked */
+	 
 	return 1;
 }
 #else
@@ -124,11 +117,7 @@ static int dummycon_switch(struct vc_data *vc)
 	return 0;
 }
 
-/*
- *  The console `switch' structure for the dummy console
- *
- *  Most of the operations are dummies.
- */
+ 
 
 const struct consw dummy_con = {
 	.owner =		THIS_MODULE,

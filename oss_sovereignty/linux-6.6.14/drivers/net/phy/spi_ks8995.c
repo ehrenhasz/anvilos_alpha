@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SPI driver for Micrel/Kendin KS8995M and KSZ8864RMN ethernet switches
- *
- * Copyright (C) 2008 Gabor Juhos <juhosg at openwrt.org>
- *
- * This file was based on: drivers/spi/at25.c
- *     Copyright (C) 2006 David Brownell
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,53 +16,53 @@
 #define DRV_VERSION		"0.1.1"
 #define DRV_DESC		"Micrel KS8995 Ethernet switch SPI driver"
 
-/* ------------------------------------------------------------------------ */
+ 
 
-#define KS8995_REG_ID0		0x00    /* Chip ID0 */
-#define KS8995_REG_ID1		0x01    /* Chip ID1 */
+#define KS8995_REG_ID0		0x00     
+#define KS8995_REG_ID1		0x01     
 
-#define KS8995_REG_GC0		0x02    /* Global Control 0 */
-#define KS8995_REG_GC1		0x03    /* Global Control 1 */
-#define KS8995_REG_GC2		0x04    /* Global Control 2 */
-#define KS8995_REG_GC3		0x05    /* Global Control 3 */
-#define KS8995_REG_GC4		0x06    /* Global Control 4 */
-#define KS8995_REG_GC5		0x07    /* Global Control 5 */
-#define KS8995_REG_GC6		0x08    /* Global Control 6 */
-#define KS8995_REG_GC7		0x09    /* Global Control 7 */
-#define KS8995_REG_GC8		0x0a    /* Global Control 8 */
-#define KS8995_REG_GC9		0x0b    /* Global Control 9 */
+#define KS8995_REG_GC0		0x02     
+#define KS8995_REG_GC1		0x03     
+#define KS8995_REG_GC2		0x04     
+#define KS8995_REG_GC3		0x05     
+#define KS8995_REG_GC4		0x06     
+#define KS8995_REG_GC5		0x07     
+#define KS8995_REG_GC6		0x08     
+#define KS8995_REG_GC7		0x09     
+#define KS8995_REG_GC8		0x0a     
+#define KS8995_REG_GC9		0x0b     
 
-#define KS8995_REG_PC(p, r)	((0x10 * p) + r)	 /* Port Control */
-#define KS8995_REG_PS(p, r)	((0x10 * p) + r + 0xe)  /* Port Status */
+#define KS8995_REG_PC(p, r)	((0x10 * p) + r)	  
+#define KS8995_REG_PS(p, r)	((0x10 * p) + r + 0xe)   
 
-#define KS8995_REG_TPC0		0x60    /* TOS Priority Control 0 */
-#define KS8995_REG_TPC1		0x61    /* TOS Priority Control 1 */
-#define KS8995_REG_TPC2		0x62    /* TOS Priority Control 2 */
-#define KS8995_REG_TPC3		0x63    /* TOS Priority Control 3 */
-#define KS8995_REG_TPC4		0x64    /* TOS Priority Control 4 */
-#define KS8995_REG_TPC5		0x65    /* TOS Priority Control 5 */
-#define KS8995_REG_TPC6		0x66    /* TOS Priority Control 6 */
-#define KS8995_REG_TPC7		0x67    /* TOS Priority Control 7 */
+#define KS8995_REG_TPC0		0x60     
+#define KS8995_REG_TPC1		0x61     
+#define KS8995_REG_TPC2		0x62     
+#define KS8995_REG_TPC3		0x63     
+#define KS8995_REG_TPC4		0x64     
+#define KS8995_REG_TPC5		0x65     
+#define KS8995_REG_TPC6		0x66     
+#define KS8995_REG_TPC7		0x67     
 
-#define KS8995_REG_MAC0		0x68    /* MAC address 0 */
-#define KS8995_REG_MAC1		0x69    /* MAC address 1 */
-#define KS8995_REG_MAC2		0x6a    /* MAC address 2 */
-#define KS8995_REG_MAC3		0x6b    /* MAC address 3 */
-#define KS8995_REG_MAC4		0x6c    /* MAC address 4 */
-#define KS8995_REG_MAC5		0x6d    /* MAC address 5 */
+#define KS8995_REG_MAC0		0x68     
+#define KS8995_REG_MAC1		0x69     
+#define KS8995_REG_MAC2		0x6a     
+#define KS8995_REG_MAC3		0x6b     
+#define KS8995_REG_MAC4		0x6c     
+#define KS8995_REG_MAC5		0x6d     
 
-#define KS8995_REG_IAC0		0x6e    /* Indirect Access Control 0 */
-#define KS8995_REG_IAC1		0x6f    /* Indirect Access Control 0 */
-#define KS8995_REG_IAD7		0x70    /* Indirect Access Data 7 */
-#define KS8995_REG_IAD6		0x71    /* Indirect Access Data 6 */
-#define KS8995_REG_IAD5		0x72    /* Indirect Access Data 5 */
-#define KS8995_REG_IAD4		0x73    /* Indirect Access Data 4 */
-#define KS8995_REG_IAD3		0x74    /* Indirect Access Data 3 */
-#define KS8995_REG_IAD2		0x75    /* Indirect Access Data 2 */
-#define KS8995_REG_IAD1		0x76    /* Indirect Access Data 1 */
-#define KS8995_REG_IAD0		0x77    /* Indirect Access Data 0 */
+#define KS8995_REG_IAC0		0x6e     
+#define KS8995_REG_IAC1		0x6f     
+#define KS8995_REG_IAD7		0x70     
+#define KS8995_REG_IAD6		0x71     
+#define KS8995_REG_IAD5		0x72     
+#define KS8995_REG_IAD4		0x73     
+#define KS8995_REG_IAD3		0x74     
+#define KS8995_REG_IAD2		0x75     
+#define KS8995_REG_IAD1		0x76     
+#define KS8995_REG_IAD0		0x77     
 
-#define KSZ8864_REG_ID1		0xfe	/* Chip ID in bit 7 */
+#define KSZ8864_REG_ID1		0xfe	 
 
 #define KS8995_REGS_SIZE	0x80
 #define KSZ8864_REGS_SIZE	0x100
@@ -79,7 +72,7 @@
 #define ID1_CHIPID_S		4
 #define ID1_REVISION_M		0x7
 #define ID1_REVISION_S		1
-#define ID1_START_SW		1	/* start the switch */
+#define ID1_START_SW		1	 
 
 #define FAMILY_KS8995		0x95
 #define FAMILY_KSZ8795		0x87
@@ -91,7 +84,7 @@
 #define KS8995_CMD_WRITE	0x02U
 #define KS8995_CMD_READ		0x03U
 
-#define KS8995_RESET_DELAY	10 /* usec */
+#define KS8995_RESET_DELAY	10  
 
 enum ks8995_chip_variant {
 	ks8995,
@@ -171,30 +164,20 @@ static inline u8 get_chip_rev(u8 val)
 	return (val >> ID1_REVISION_S) & ID1_REVISION_M;
 }
 
-/* create_spi_cmd - create a chip specific SPI command header
- * @ks: pointer to switch instance
- * @cmd: SPI command for switch
- * @address: register address for command
- *
- * Different chip families use different bit pattern to address the switches
- * registers:
- *
- * KS8995: 8bit command + 8bit address
- * KSZ8795: 3bit command + 12bit address + 1bit TR (?)
- */
+ 
 static inline __be16 create_spi_cmd(struct ks8995_switch *ks, int cmd,
 				    unsigned address)
 {
 	u16 result = cmd;
 
-	/* make room for address (incl. address shift) */
+	 
 	result <<= ks->chip->addr_width + ks->chip->addr_shift;
-	/* add address */
+	 
 	result |= address << ks->chip->addr_shift;
-	/* SPI protocol needs big endian */
+	 
 	return cpu_to_be16(result);
 }
-/* ------------------------------------------------------------------------ */
+ 
 static int ks8995_read(struct ks8995_switch *ks, char *buf,
 		 unsigned offset, size_t count)
 {
@@ -263,7 +246,7 @@ static inline int ks8995_write_reg(struct ks8995_switch *ks, u8 addr, u8 val)
 	return ks8995_write(ks, &buf, addr, 1) != 1;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int ks8995_stop(struct ks8995_switch *ks)
 {
@@ -312,24 +295,20 @@ static ssize_t ks8995_registers_write(struct file *filp, struct kobject *kobj,
 	return ks8995_write(ks8995, buf, off, count);
 }
 
-/* ks8995_get_revision - get chip revision
- * @ks: pointer to switch instance
- *
- * Verify chip family and id and get chip revision.
- */
+ 
 static int ks8995_get_revision(struct ks8995_switch *ks)
 {
 	int err;
 	u8 id0, id1, ksz8864_id;
 
-	/* read family id */
+	 
 	err = ks8995_read_reg(ks, KS8995_REG_ID0, &id0);
 	if (err) {
 		err = -EIO;
 		goto err_out;
 	}
 
-	/* verify family id */
+	 
 	if (id0 != ks->chip->family_id) {
 		dev_err(&ks->spi->dev, "chip family id mismatch: expected 0x%02x but 0x%02x read\n",
 			ks->chip->family_id, id0);
@@ -339,20 +318,20 @@ static int ks8995_get_revision(struct ks8995_switch *ks)
 
 	switch (ks->chip->family_id) {
 	case FAMILY_KS8995:
-		/* try reading chip id at CHIP ID1 */
+		 
 		err = ks8995_read_reg(ks, KS8995_REG_ID1, &id1);
 		if (err) {
 			err = -EIO;
 			goto err_out;
 		}
 
-		/* verify chip id */
+		 
 		if ((get_chip_id(id1) == CHIPID_M) &&
 		    (get_chip_id(id1) == ks->chip->chip_id)) {
-			/* KS8995MA */
+			 
 			ks->revision_id = get_chip_rev(id1);
 		} else if (get_chip_id(id1) != CHIPID_M) {
-			/* KSZ8864RMN */
+			 
 			err = ks8995_read_reg(ks, KS8995_REG_ID1, &ksz8864_id);
 			if (err) {
 				err = -EIO;
@@ -371,7 +350,7 @@ static int ks8995_get_revision(struct ks8995_switch *ks)
 		}
 		break;
 	case FAMILY_KSZ8795:
-		/* try reading chip id at CHIP ID1 */
+		 
 		err = ks8995_read_reg(ks, KS8995_REG_ID1, &id1);
 		if (err) {
 			err = -EIO;
@@ -405,7 +384,7 @@ static const struct bin_attribute ks8995_registers_attr = {
 	.write  = ks8995_registers_write,
 };
 
-/* ------------------------------------------------------------------------ */
+ 
 static int ks8995_probe(struct spi_device *spi)
 {
 	struct ks8995_switch *ks;
@@ -438,8 +417,8 @@ static int ks8995_probe(struct spi_device *spi)
 	if (err)
 		return err;
 
-	/* de-assert switch reset */
-	/* FIXME: this likely requires a delay */
+	 
+	 
 	gpiod_set_value_cansleep(ks->reset_gpio, 0);
 
 	spi_set_drvdata(spi, ks);
@@ -483,11 +462,11 @@ static void ks8995_remove(struct spi_device *spi)
 
 	sysfs_remove_bin_file(&spi->dev.kobj, &ks->regs_attr);
 
-	/* assert reset */
+	 
 	gpiod_set_value_cansleep(ks->reset_gpio, 1);
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 static struct spi_driver ks8995_driver = {
 	.driver = {
 		.name	    = "spi-ks8995",

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2014-2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
-// Based on driver from 2011:
-//   Juergen Beisert, Pengutronix <kernel@pengutronix.de>
-//
-// This is the driver for the imx25 TCQ (Touchscreen Conversion Queue)
-// connected to the imx25 ADC.
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -48,7 +48,7 @@ static struct regmap_config mx25_tcq_regconfig = {
 
 static const struct of_device_id mx25_tcq_ids[] = {
 	{ .compatible = "fsl,imx25-tcq", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mx25_tcq_ids);
 
@@ -102,15 +102,15 @@ static void imx25_setup_queue_cfgs(struct mx25_tcq_priv *priv,
 
 	regmap_write(priv->core_regs, MX25_TSC_TICR, precharge_cfg);
 
-	/* PRECHARGE */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_PRECHARGE),
 		     precharge_cfg);
 
-	/* TOUCH_DETECT */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_TOUCH_DETECT),
 		     touch_detect_cfg);
 
-	/* X Measurement */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_X_MEASUREMENT),
 		     MX25_ADCQ_CFG_YPLL_OFF |
 		     MX25_ADCQ_CFG_XNUR_LOW |
@@ -121,7 +121,7 @@ static void imx25_setup_queue_cfgs(struct mx25_tcq_priv *priv,
 		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
 		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
 
-	/* Y Measurement */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_Y_MEASUREMENT),
 		     MX25_ADCQ_CFG_YNLR |
 		     MX25_ADCQ_CFG_YPLL_HIGH |
@@ -133,7 +133,7 @@ static void imx25_setup_queue_cfgs(struct mx25_tcq_priv *priv,
 		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
 		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
 
-	/* Enable the touch detection right now */
+	 
 	regmap_write(priv->core_regs, MX25_TSC_TICR, touch_detect_cfg |
 		     MX25_ADCQ_CFG_IGS);
 }
@@ -143,7 +143,7 @@ static int imx25_setup_queue_4wire(struct mx25_tcq_priv *priv,
 {
 	imx25_setup_queue_cfgs(priv, settling_cnt);
 
-	/* Setup the conversion queue */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
 		     MX25_ADCQ_ITEM(0, MX25_CFG_PRECHARGE) |
 		     MX25_ADCQ_ITEM(1, MX25_CFG_TOUCH_DETECT) |
@@ -152,10 +152,7 @@ static int imx25_setup_queue_4wire(struct mx25_tcq_priv *priv,
 		     MX25_ADCQ_ITEM(4, MX25_CFG_PRECHARGE) |
 		     MX25_ADCQ_ITEM(5, MX25_CFG_TOUCH_DETECT));
 
-	/*
-	 * We measure X/Y with 'sample_count' number of samples and execute a
-	 * touch detection twice, with 1 sample each
-	 */
+	 
 	priv->expected_samples = priv->sample_count * 2 + 2;
 	*items = 6;
 
@@ -210,26 +207,26 @@ static void mx25_tcq_fifo_reset(struct mx25_tcq_priv *priv)
 
 static void mx25_tcq_re_enable_touch_detection(struct mx25_tcq_priv *priv)
 {
-	/* stop the queue from looping */
+	 
 	mx25_tcq_force_queue_stop(priv);
 
-	/* for a clean touch detection, preload the X plane */
+	 
 	regmap_write(priv->core_regs, MX25_TSC_TICR, MX25_PRECHARGE_VALUE);
 
-	/* waste some time now to pre-load the X plate to high voltage */
+	 
 	mx25_tcq_fifo_reset(priv);
 
-	/* re-enable the detection right now */
+	 
 	regmap_write(priv->core_regs, MX25_TSC_TICR,
 		     MX25_TOUCH_DETECT_VALUE | MX25_ADCQ_CFG_IGS);
 
 	regmap_update_bits(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_PD,
 			   MX25_ADCQ_SR_PD);
 
-	/* enable the pen down event to be a source for the interrupt */
+	 
 	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_PD_IRQ, 0);
 
-	/* lets fire the next IRQ if someone touches the touchscreen */
+	 
 	mx25_tcq_enable_touch_irq(priv);
 }
 
@@ -268,13 +265,10 @@ static void mx25_tcq_create_event_for_4wire(struct mx25_tcq_priv *priv,
 	}
 
 	if (samples != 0) {
-		/*
-		 * only if both touch measures are below a threshold,
-		 * the position is valid
-		 */
+		 
 		if (touch_pre < priv->pen_threshold &&
 		    touch_post < priv->pen_threshold) {
-			/* valid samples, generate a report */
+			 
 			x_pos /= priv->sample_count;
 			y_pos /= priv->sample_count;
 			input_report_abs(priv->idev, ABS_X, x_pos);
@@ -282,24 +276,16 @@ static void mx25_tcq_create_event_for_4wire(struct mx25_tcq_priv *priv,
 			input_report_key(priv->idev, BTN_TOUCH, 1);
 			input_sync(priv->idev);
 
-			/* get next sample */
+			 
 			mx25_tcq_enable_fifo_irq(priv);
 		} else if (touch_pre >= priv->pen_threshold &&
 			   touch_post >= priv->pen_threshold) {
-			/*
-			 * if both samples are invalid,
-			 * generate a release report
-			 */
+			 
 			input_report_key(priv->idev, BTN_TOUCH, 0);
 			input_sync(priv->idev);
 			mx25_tcq_re_enable_touch_detection(priv);
 		} else {
-			/*
-			 * if only one of both touch measurements are
-			 * below the threshold, still some bouncing
-			 * happens. Take additional samples in this
-			 * case to be sure
-			 */
+			 
 			mx25_tcq_enable_fifo_irq(priv);
 		}
 	}
@@ -313,11 +299,7 @@ static irqreturn_t mx25_tcq_irq_thread(int irq, void *dev_id)
 	u32 stats;
 	unsigned int i;
 
-	/*
-	 * Check how many samples are available. We always have to read exactly
-	 * sample_count samples from the fifo, or a multiple of sample_count.
-	 * Otherwise we mixup samples into different touch events.
-	 */
+	 
 	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
 	samples = MX25_ADCQ_SR_FDN(stats);
 	samples -= samples % priv->sample_count;
@@ -364,7 +346,7 @@ static irqreturn_t mx25_tcq_irq(int irq, void *dev_id)
 	return ret;
 }
 
-/* configure the state machine for a 4-wire touchscreen */
+ 
 static int mx25_tcq_init(struct mx25_tcq_priv *priv)
 {
 	u32 tgcr;
@@ -382,17 +364,17 @@ static int mx25_tcq_init(struct mx25_tcq_priv *priv)
 	debounce_cnt = DIV_ROUND_UP(priv->pen_debounce, adc_period * 8) - 1;
 	settling_cnt = DIV_ROUND_UP(priv->settling_time, adc_period * 8) - 1;
 
-	/* Reset */
+	 
 	regmap_write(priv->regs, MX25_ADCQ_CR,
 		     MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST);
 	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
 			   MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST, 0);
 
-	/* up to 128 * 8 ADC clocks are possible */
+	 
 	if (debounce_cnt > 127)
 		debounce_cnt = 127;
 
-	/* up to 255 * 8 ADC clocks are possible */
+	 
 	if (settling_cnt > 255)
 		settling_cnt = 255;
 
@@ -405,22 +387,22 @@ static int mx25_tcq_init(struct mx25_tcq_priv *priv)
 			   MX25_ADCQ_CR_LITEMID(itemct - 1) |
 			   MX25_ADCQ_CR_WMRK(priv->expected_samples - 1));
 
-	/* setup debounce count */
+	 
 	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR,
 			   MX25_TGCR_PDBTIME_MASK,
 			   MX25_TGCR_PDBTIME(debounce_cnt));
 
-	/* enable debounce */
+	 
 	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDBEN,
 			   MX25_TGCR_PDBEN);
 	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDEN,
 			   MX25_TGCR_PDEN);
 
-	/* enable the engine on demand */
+	 
 	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_QSM_MASK,
 			   MX25_ADCQ_CR_QSM_FQS);
 
-	/* Enable repeat and repeat wait */
+	 
 	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
 			   MX25_ADCQ_CR_RPT | MX25_ADCQ_CR_RWAIT_MASK,
 			   MX25_ADCQ_CR_RPT |
@@ -436,7 +418,7 @@ static int mx25_tcq_parse_dt(struct platform_device *pdev,
 	u32 wires;
 	int error;
 
-	/* Setup defaults */
+	 
 	priv->pen_threshold = 500;
 	priv->sample_count = 3;
 	priv->pen_debounce = 1000000;
@@ -455,7 +437,7 @@ static int mx25_tcq_parse_dt(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* These are optional, we don't care about the return values */
+	 
 	of_property_read_u32(np, "fsl,pen-threshold", &priv->pen_threshold);
 	of_property_read_u32(np, "fsl,settling-time-ns", &priv->settling_time);
 	of_property_read_u32(np, "fsl,pen-debounce-ns", &priv->pen_debounce);

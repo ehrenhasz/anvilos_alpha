@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6115_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM6115_H
 
-/* GCC clocks */
+ 
 #define GPLL0							0
 #define GPLL0_OUT_AUX2						1
 #define GPLL0_OUT_MAIN						2
@@ -173,7 +171,7 @@
 #define GCC_UFS_CLKREF_CLK					165
 #define GCC_DISP_GPLL0_CLK_SRC					166
 
-/* GCC resets */
+ 
 #define GCC_QUSB2PHY_PRIM_BCR					0
 #define GCC_QUSB2PHY_SEC_BCR					1
 #define GCC_SDCC1_BCR						2
@@ -187,7 +185,7 @@
 #define GCC_USB3_PHY_PRIM_SP0_BCR				10
 #define GCC_SDCC2_BCR						11
 
-/* Indexes for GDSCs */
+ 
 #define GCC_CAMSS_TOP_GDSC			0
 #define GCC_UFS_PHY_GDSC			1
 #define GCC_USB30_PRIM_GDSC			2

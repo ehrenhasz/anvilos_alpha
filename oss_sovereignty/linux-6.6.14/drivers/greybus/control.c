@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus CPort control protocol.
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/greybus.h>
 
-/* Highest control-protocol version supported */
+ 
 #define GB_CONTROL_VERSION_MAJOR	0
 #define GB_CONTROL_VERSION_MINOR	1
 
@@ -100,7 +95,7 @@ int gb_control_get_bundle_versions(struct gb_control *control)
 	return 0;
 }
 
-/* Get Manifest's size from the interface */
+ 
 int gb_control_get_manifest_size_operation(struct gb_interface *intf)
 {
 	struct gb_control_get_manifest_size_response response;
@@ -118,7 +113,7 @@ int gb_control_get_manifest_size_operation(struct gb_interface *intf)
 	return le16_to_cpu(response.size);
 }
 
-/* Reads Manifest from the interface */
+ 
 int gb_control_get_manifest_operation(struct gb_interface *intf, void *manifest,
 				      size_t size)
 {
@@ -497,7 +492,7 @@ int gb_control_enable(struct gb_control *control)
 	if (control->protocol_major > 0 || control->protocol_minor > 1)
 		control->has_bundle_version = true;
 
-	/* FIXME: use protocol version instead */
+	 
 	if (!(control->intf->quirks & GB_INTERFACE_QUIRK_NO_BUNDLE_ACTIVATE))
 		control->has_bundle_activate = true;
 

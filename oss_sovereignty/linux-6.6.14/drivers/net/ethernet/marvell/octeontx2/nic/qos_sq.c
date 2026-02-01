@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Physical Function ethernet driver
- *
- * Copyright (C) 2023 Marvell.
- *
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <net/tso.h>
@@ -41,38 +37,34 @@ static int otx2_qos_sq_aura_pool_init(struct otx2_nic *pfvf, int qidx)
 	int err, ptr;
 	u64 iova, pa;
 
-	/* Calculate number of SQBs needed.
-	 *
-	 * For a 128byte SQE, and 4K size SQB, 31 SQEs will fit in one SQB.
-	 * Last SQE is used for pointing to next SQB.
-	 */
+	 
 	num_sqbs = (hw->sqb_size / 128) - 1;
 	num_sqbs = (qset->sqe_cnt + num_sqbs) / num_sqbs;
 
-	/* Get no of stack pages needed */
+	 
 	stack_pages =
 		(num_sqbs + hw->stack_pg_ptrs - 1) / hw->stack_pg_ptrs;
 
 	pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
 	pool = &pfvf->qset.pool[pool_id];
 
-	/* Initialize aura context */
+	 
 	err = otx2_aura_init(pfvf, pool_id, pool_id, num_sqbs);
 	if (err)
 		return err;
 
-	/* Initialize pool context */
+	 
 	err = otx2_pool_init(pfvf, pool_id, stack_pages,
 			     num_sqbs, hw->sqb_size, AURA_NIX_SQ);
 	if (err)
 		goto aura_free;
 
-	/* Flush accumulated messages */
+	 
 	err = otx2_sync_mbox_msg(&pfvf->mbox);
 	if (err)
 		goto pool_free;
 
-	/* Allocate pointers and free them to aura/pool */
+	 
 	sq = &qset->sq[qidx];
 	sq->sqb_count = 0;
 	sq->sqb_ptrs = kcalloc(num_sqbs, sizeof(*sq->sqb_ptrs), GFP_KERNEL);
@@ -147,7 +139,7 @@ static void otx2_qos_sq_free_sqbs(struct otx2_nic *pfvf, int qidx)
 	memset((void *)sq, 0, sizeof(*sq));
 }
 
-/* send queue id */
+ 
 static void otx2_qos_sqb_flush(struct otx2_nic *pfvf, int qidx)
 {
 	int sqe_tail, sqe_head;
@@ -266,7 +258,7 @@ void otx2_qos_disable_sq(struct otx2_nic *pfvf, int qidx)
 
 	sq_idx = hw->non_qos_queues + qidx;
 
-	/* If the DOWN flag is set SQs are already freed */
+	 
 	if (pfvf->flags & OTX2_FLAG_INTF_DOWN)
 		return;
 

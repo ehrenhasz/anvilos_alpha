@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+ 
+ 
 #ifndef _D71_DEV_H_
 #define _D71_DEV_H_
 
@@ -14,11 +10,11 @@
 struct d71_pipeline {
 	struct komeda_pipeline base;
 
-	/* d71 private pipeline blocks */
+	 
 	u32 __iomem	*lpu_addr;
 	u32 __iomem	*cu_addr;
 	u32 __iomem	*dou_addr;
-	u32 __iomem	*dou_ft_coeff_addr; /* forward transform coeffs table */
+	u32 __iomem	*dou_ft_coeff_addr;  
 };
 
 struct d71_dev {
@@ -32,9 +28,9 @@ struct d71_dev {
 	u32	supports_dual_link : 1;
 	u32	integrates_tbu : 1;
 
-	/* global register blocks */
+	 
 	u32 __iomem	*gcu_addr;
-	/* scaling coeffs table */
+	 
 	u32 __iomem	*glb_scl_coeff_addr[D71_MAX_GLB_SCL_COEFF];
 	u32 __iomem	*periph_addr;
 
@@ -51,4 +47,4 @@ void d71_read_block_header(u32 __iomem *reg, struct block_header *blk);
 
 void d71_dump(struct komeda_dev *mdev, struct seq_file *sf);
 
-#endif /* !_D71_DEV_H_ */
+#endif  

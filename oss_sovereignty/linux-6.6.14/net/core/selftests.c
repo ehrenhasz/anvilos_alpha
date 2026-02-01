@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Synopsys, Inc. and/or its affiliates.
- * stmmac Selftests Support
- *
- * Author: Jose Abreu <joabreu@synopsys.com>
- *
- * Ported from stmmac by:
- * Copyright (C) 2021 Oleksij Rempel <o.rempel@pengutronix.de>
- */
+
+ 
 
 #include <linux/phy.h>
 #include <net/selftests.h>
@@ -347,7 +339,7 @@ static const struct net_test {
 		.name = "PHY dev is present            ",
 		.fn = net_test_phy_phydev,
 	}, {
-		/* This test should be done before all PHY loopback test */
+		 
 		.name = "PHY internal loopback, enable ",
 		.fn = net_test_phy_loopback_enable,
 	}, {
@@ -360,7 +352,7 @@ static const struct net_test {
 		.name = "PHY internal loopback, TCP    ",
 		.fn = net_test_phy_loopback_tcp,
 	}, {
-		/* This test should be done after all PHY loopback test */
+		 
 		.name = "PHY internal loopback, disable",
 		.fn = net_test_phy_loopback_disable,
 	},

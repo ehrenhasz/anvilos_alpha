@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulator controller driver for UniPhier SoC
-// Copyright 2018 Socionext Inc.
-// Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -128,7 +128,7 @@ static int uniphier_regulator_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* USB3 controller data */
+ 
 #define USB3VBUS_OFFSET		0x0
 #define USB3VBUS_REG		BIT(4)
 #define USB3VBUS_REG_EN		BIT(3)
@@ -178,7 +178,7 @@ static const struct uniphier_regulator_soc_data uniphier_pxs2_usb3_data = {
 };
 
 static const struct of_device_id uniphier_regulator_match[] = {
-	/* USB VBUS */
+	 
 	{
 		.compatible = "socionext,uniphier-pro4-usb3-regulator",
 		.data = &uniphier_pro4_usb3_data,
@@ -203,7 +203,7 @@ static const struct of_device_id uniphier_regulator_match[] = {
 		.compatible = "socionext,uniphier-nx1-usb3-regulator",
 		.data = &uniphier_pxs2_usb3_data,
 	},
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, uniphier_regulator_match);
 

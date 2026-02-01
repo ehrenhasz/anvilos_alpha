@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * File: pn_dev.h
- *
- * Phonet network device
- *
- * Copyright (C) 2008 Nokia Corporation.
- */
+ 
+ 
 
 #ifndef PN_DEV_H
 #define PN_DEV_H

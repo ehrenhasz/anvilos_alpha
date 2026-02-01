@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <drm/drm_bridge_connector.h>
@@ -59,9 +56,7 @@ static void power_off(struct drm_bridge *bridge)
 	const struct hdmi_platform_config *config = hdmi->config;
 	int i, ret;
 
-	/* TODO do we need to wait for final vblank somewhere before
-	 * cutting the clocks?
-	 */
+	 
 	mdelay(16 + 4);
 
 	for (i = 0; i < config->pwr_clk_cnt; i++)
@@ -95,12 +90,7 @@ static void msm_hdmi_config_avi_infoframe(struct hdmi *hdmi)
 		return;
 	}
 
-	/*
-	 * the AVI_INFOx registers don't map exactly to how the AVI infoframes
-	 * are packed according to the spec. The checksum from the header is
-	 * written to the LSB byte of AVI_INFO0 and the version is written to
-	 * the third byte from the LSB of AVI_INFO3
-	 */
+	 
 	hdmi_write(hdmi, REG_HDMI_AVI_INFO(0),
 		   buffer[3] |
 		   buffer[4] << 8 |
@@ -277,10 +267,7 @@ static enum drm_mode_status msm_hdmi_bridge_mode_valid(struct drm_bridge *bridge
 
 	requested = 1000 * mode->clock;
 
-	/* for mdp5/apq8074, we manage our own pixel clk (as opposed to
-	 * mdp4/dtv stuff where pixel clk is assigned to mdp/encoder
-	 * instead):
-	 */
+	 
 	if (kms->funcs->round_pixclk)
 		actual = kms->funcs->round_pixclk(kms,
 			requested, hdmi_bridge->hdmi->encoder);
@@ -316,7 +303,7 @@ msm_hdmi_hotplug_work(struct work_struct *work)
 	drm_bridge_hpd_notify(bridge, drm_bridge_detect(bridge));
 }
 
-/* initialize bridge */
+ 
 struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi)
 {
 	struct drm_bridge *bridge = NULL;

@@ -1,48 +1,14 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
-/*
- *
- *
- * Macros, constants, types, and funcs for p80211 data types
- *
- * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
- * --------------------------------------------------------------------
- *
- * linux-wlan
- *
- * --------------------------------------------------------------------
- *
- * Inquiries regarding the linux-wlan Open Source project can be
- * made directly to:
- *
- * AbsoluteValue Systems Inc.
- * info@linux-wlan.com
- * http://www.linux-wlan.com
- *
- * --------------------------------------------------------------------
- *
- * Portions of the development of this software were funded by
- * Intersil Corporation as part of PRISM(R) chipset product development.
- *
- * --------------------------------------------------------------------
- *
- * This file declares some of the constants and types used in various
- * parts of the linux-wlan system.
- *
- * Notes:
- *   - Constant values are always in HOST byte order.
- *
- * All functions and statics declared here are implemented in p80211types.c
- *   --------------------------------------------------------------------
- */
+ 
+ 
 
 #ifndef _P80211TYPES_H
 #define _P80211TYPES_H
 
-/*----------------------------------------------------------------*/
-/* The following constants are indexes into the Mib Category List */
-/* and the Message Category List */
+ 
+ 
+ 
 
-/* Mib Category List */
+ 
 #define P80211_MIB_CAT_DOT11SMT		1
 #define P80211_MIB_CAT_DOT11MAC		2
 #define P80211_MIB_CAT_DOT11PHY		3
@@ -51,16 +17,16 @@
 #define P80211SEC_DOT11MAC		P80211_MIB_CAT_DOT11MAC
 #define P80211SEC_DOT11PHY		P80211_MIB_CAT_DOT11PHY
 
-/* Message Category List */
+ 
 #define P80211_MSG_CAT_DOT11REQ		1
 #define P80211_MSG_CAT_DOT11IND		2
 
-/*----------------------------------------------------------------*/
-/* p80211 enumeration constants.  The value to text mappings for */
-/*  these is in p80211types.c.  These defines were generated */
-/*  from the mappings. */
+ 
+ 
+ 
+ 
 
-/* error codes for lookups */
+ 
 
 #define P80211ENUM_truth_false			0
 #define P80211ENUM_truth_true			1
@@ -86,31 +52,19 @@
 #define P80211ENUM_msgitem_status_data_ok		0
 #define P80211ENUM_msgitem_status_no_value		1
 
-/*----------------------------------------------------------------*/
-/* p80211 max length constants for the different pascal strings. */
+ 
+ 
 
-#define MAXLEN_PSTR6		(6)	/* pascal array of 6 bytes */
-#define MAXLEN_PSTR14		(14)	/* pascal array of 14 bytes */
-#define MAXLEN_PSTR32		(32)	/* pascal array of 32 bytes */
-#define MAXLEN_PSTR255		(255)	/* pascal array of 255 bytes */
-#define MAXLEN_MIBATTRIBUTE	(392)	/* maximum mibattribute */
-					/* where the size of the DATA itself */
-					/* is a DID-LEN-DATA triple */
-					/* with a max size of 4+4+384 */
+#define MAXLEN_PSTR6		(6)	 
+#define MAXLEN_PSTR14		(14)	 
+#define MAXLEN_PSTR32		(32)	 
+#define MAXLEN_PSTR255		(255)	 
+#define MAXLEN_MIBATTRIBUTE	(392)	 
+					 
+					 
+					 
 
-/*----------------------------------------------------------------
- * The following constants and macros are used to construct and
- * deconstruct the Data ID codes.  The coding is as follows:
- *
- *     ...rwtnnnnnnnniiiiiiggggggssssss      s - Section
- *                                           g - Group
- *                                           i - Item
- *                                           n - Index
- *                                           t - Table flag
- *                                           w - Write flag
- *                                           r - Read flag
- *                                           . - Unused
- */
+ 
 
 #define P80211DID_LSB_SECTION		(0)
 #define P80211DID_LSB_GROUP		(6)
@@ -172,11 +126,11 @@
 					P80211DID_MASK_ACCESS, \
 					P80211DID_LSB_ACCESS)
 
-/*----------------------------------------------------------------*/
-/* The following structure types are used to store data items in */
-/*  messages. */
+ 
+ 
+ 
 
-/* Template pascal string */
+ 
 struct p80211pstr {
 	u8 len;
 } __packed;
@@ -186,38 +140,38 @@ struct p80211pstrd {
 	u8 data[];
 } __packed;
 
-/* Maximum pascal string */
+ 
 struct p80211pstr255 {
 	u8 len;
 	u8 data[MAXLEN_PSTR255];
 } __packed;
 
-/* pascal string for macaddress and bssid */
+ 
 struct p80211pstr6 {
 	u8 len;
 	u8 data[MAXLEN_PSTR6];
 } __packed;
 
-/* pascal string for channel list */
+ 
 struct p80211pstr14 {
 	u8 len;
 	u8 data[MAXLEN_PSTR14];
 } __packed;
 
-/* pascal string for ssid */
+ 
 struct p80211pstr32 {
 	u8 len;
 	u8 data[MAXLEN_PSTR32];
 } __packed;
 
-/* prototype template */
+ 
 struct p80211item {
 	u32 did;
 	u16 status;
 	u16 len;
 } __packed;
 
-/* prototype template w/ data item */
+ 
 struct p80211itemd {
 	u32 did;
 	u16 status;
@@ -225,7 +179,7 @@ struct p80211itemd {
 	u8 data[];
 } __packed;
 
-/* message data item for int, BOUNDEDINT, ENUMINT */
+ 
 struct p80211item_uint32 {
 	u32 did;
 	u16 status;
@@ -233,7 +187,7 @@ struct p80211item_uint32 {
 	u32 data;
 } __packed;
 
-/* message data item for OCTETSTR, DISPLAYSTR */
+ 
 struct p80211item_pstr6 {
 	u32 did;
 	u16 status;
@@ -241,7 +195,7 @@ struct p80211item_pstr6 {
 	struct p80211pstr6 data;
 } __packed;
 
-/* message data item for OCTETSTR, DISPLAYSTR */
+ 
 struct p80211item_pstr14 {
 	u32 did;
 	u16 status;
@@ -249,7 +203,7 @@ struct p80211item_pstr14 {
 	struct p80211pstr14 data;
 } __packed;
 
-/* message data item for OCTETSTR, DISPLAYSTR */
+ 
 struct p80211item_pstr32 {
 	u32 did;
 	u16 status;
@@ -257,7 +211,7 @@ struct p80211item_pstr32 {
 	struct p80211pstr32 data;
 } __packed;
 
-/* message data item for OCTETSTR, DISPLAYSTR */
+ 
 struct p80211item_pstr255 {
 	u32 did;
 	u16 status;
@@ -265,7 +219,7 @@ struct p80211item_pstr255 {
 	struct p80211pstr255 data;
 } __packed;
 
-/* message data item for UNK 392, namely mib items */
+ 
 struct p80211item_unk392 {
 	u32 did;
 	u16 status;
@@ -273,7 +227,7 @@ struct p80211item_unk392 {
 	u8 data[MAXLEN_MIBATTRIBUTE];
 } __packed;
 
-/* message data item for UNK 1025, namely p2 pdas */
+ 
 struct p80211item_unk1024 {
 	u32 did;
 	u16 status;
@@ -281,7 +235,7 @@ struct p80211item_unk1024 {
 	u8 data[1024];
 } __packed;
 
-/* message data item for UNK 4096, namely p2 download chunks */
+ 
 struct p80211item_unk4096 {
 	u32 did;
 	u16 status;
@@ -289,4 +243,4 @@ struct p80211item_unk4096 {
 	u8 data[4096];
 } __packed;
 
-#endif /* _P80211TYPES_H */
+#endif  

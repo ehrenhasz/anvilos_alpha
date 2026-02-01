@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for the configuration register space at port I/O locations
- * 0x22 and 0x23 variously used by PC architectures, e.g. the MP Spec,
- * Cyrix CPUs, numerous chipsets.
- */
+ 
+ 
 #ifndef _ASM_X86_PC_CONF_REG_H
 #define _ASM_X86_PC_CONF_REG_H
 
@@ -30,4 +26,4 @@ static inline void pc_conf_set(u8 reg, u8 data)
 	outb(data, PC_CONF_DATA);
 }
 
-#endif /* _ASM_X86_PC_CONF_REG_H */
+#endif  

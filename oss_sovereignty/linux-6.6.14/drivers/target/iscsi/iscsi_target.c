@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains main functions related to the iSCSI Target Core Driver.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <crypto/hash.h>
 #include <linux/string.h>
@@ -106,10 +99,7 @@ void iscsit_put_tiqn_for_login(struct iscsi_tiqn *tiqn)
 	spin_unlock(&tiqn->tiqn_state_lock);
 }
 
-/*
- * Note that IQN formatting is expected to be done in userspace, and
- * no explict IQN format checks are done here.
- */
+ 
 struct iscsi_tiqn *iscsit_add_tiqn(unsigned char *buf)
 {
 	struct iscsi_tiqn *tiqn = NULL;
@@ -161,9 +151,7 @@ struct iscsi_tiqn *iscsit_add_tiqn(unsigned char *buf)
 
 static void iscsit_wait_for_tiqn(struct iscsi_tiqn *tiqn)
 {
-	/*
-	 * Wait for accesses to said struct iscsi_tiqn to end.
-	 */
+	 
 	spin_lock(&tiqn->tiqn_state_lock);
 	while (tiqn->tiqn_access_count != 0) {
 		spin_unlock(&tiqn->tiqn_state_lock);
@@ -175,12 +163,7 @@ static void iscsit_wait_for_tiqn(struct iscsi_tiqn *tiqn)
 
 void iscsit_del_tiqn(struct iscsi_tiqn *tiqn)
 {
-	/*
-	 * iscsit_set_tiqn_shutdown sets tiqn->tiqn_state = TIQN_STATE_SHUTDOWN
-	 * while holding tiqn->tiqn_state_lock.  This means that all subsequent
-	 * attempts to access this struct iscsi_tiqn will fail from both transport
-	 * fabric and control code paths.
-	 */
+	 
 	if (iscsit_set_tiqn_shutdown(tiqn) < 0) {
 		pr_err("iscsit_set_tiqn_shutdown() failed\n");
 		return;
@@ -201,18 +184,14 @@ void iscsit_del_tiqn(struct iscsi_tiqn *tiqn)
 int iscsit_access_np(struct iscsi_np *np, struct iscsi_portal_group *tpg)
 {
 	int ret;
-	/*
-	 * Determine if the network portal is accepting storage traffic.
-	 */
+	 
 	spin_lock_bh(&np->np_thread_lock);
 	if (np->np_thread_state != ISCSI_NP_THREAD_ACTIVE) {
 		spin_unlock_bh(&np->np_thread_lock);
 		return -1;
 	}
 	spin_unlock_bh(&np->np_thread_lock);
-	/*
-	 * Determine if the portal group is accepting storage traffic.
-	 */
+	 
 	spin_lock_bh(&tpg->tpg_state_lock);
 	if (tpg->tpg_state != TPG_STATE_ACTIVE) {
 		spin_unlock_bh(&tpg->tpg_state_lock);
@@ -220,9 +199,7 @@ int iscsit_access_np(struct iscsi_np *np, struct iscsi_portal_group *tpg)
 	}
 	spin_unlock_bh(&tpg->tpg_state_lock);
 
-	/*
-	 * Here we serialize access across the TIQN+TPG Tuple.
-	 */
+	 
 	ret = down_interruptible(&tpg->np_login_sem);
 	if (ret != 0)
 		return -1;
@@ -319,11 +296,7 @@ static struct iscsi_np *iscsit_get_np(
 
 		match = iscsit_check_np_match(sockaddr, np, network_transport);
 		if (match) {
-			/*
-			 * Increment the np_exports reference count now to
-			 * prevent iscsit_del_np() below from being called
-			 * while iscsi_tpg_add_network_portal() is called.
-			 */
+			 
 			np->np_exports++;
 			spin_unlock_bh(&np->np_thread_lock);
 			return np;
@@ -343,9 +316,7 @@ struct iscsi_np *iscsit_add_np(
 
 	mutex_lock(&np_lock);
 
-	/*
-	 * Locate the existing struct iscsi_np if already active..
-	 */
+	 
 	np = iscsit_get_np(sockaddr, network_transport);
 	if (np) {
 		mutex_unlock(&np_lock);
@@ -379,13 +350,7 @@ struct iscsi_np *iscsit_add_np(
 		mutex_unlock(&np_lock);
 		return ERR_PTR(ret);
 	}
-	/*
-	 * Increment the np_exports reference count now to prevent
-	 * iscsit_del_np() below from being run while a new call to
-	 * iscsi_tpg_add_network_portal() for a matching iscsi_np is
-	 * active.  We don't need to hold np->np_thread_lock at this
-	 * point because iscsi_np has not been added to g_np_list yet.
-	 */
+	 
 	np->np_exports = 1;
 	np->np_thread_state = ISCSI_NP_THREAD_ACTIVE;
 
@@ -448,10 +413,7 @@ int iscsit_del_np(struct iscsi_np *np)
 	spin_unlock_bh(&np->np_thread_lock);
 
 	if (np->np_thread) {
-		/*
-		 * We need to send the signal to wakeup Linux/Net
-		 * which may be sleeping in sock_accept()..
-		 */
+		 
 		send_sig(SIGINT, np->np_thread, 1);
 		kthread_stop(np->np_thread);
 		np->np_thread = NULL;
@@ -763,7 +725,7 @@ cpumask_out:
 bitmap_out:
 	vfree(iscsit_global->ts_bitmap);
 configfs_out:
-	/* XXX: this probably wants it to be it's own unwind step.. */
+	 
 	if (iscsit_global->discovery_tpg)
 		iscsit_tpg_disable_portal_group(iscsit_global->discovery_tpg, 1);
 	target_unregister_template(&iscsi_ops);
@@ -781,9 +743,7 @@ static void __exit iscsi_target_cleanup_module(void)
 	kmem_cache_destroy(lio_ooo_cache);
 	kmem_cache_destroy(lio_r2t_cache);
 
-	/*
-	 * Shutdown discovery sessions and disable discovery TPG
-	 */
+	 
 	if (iscsit_global->discovery_tpg)
 		iscsit_tpg_disable_portal_group(iscsit_global->discovery_tpg, 1);
 
@@ -860,10 +820,7 @@ static int iscsit_add_reject_from_cmd(
 
 	cmd->i_state = ISTATE_SEND_REJECT;
 	iscsit_add_cmd_to_response_queue(cmd, conn, cmd->i_state);
-	/*
-	 * Perform the kref_put now if se_cmd has already been setup by
-	 * scsit_setup_scsi_cmd()
-	 */
+	 
 	if (do_put) {
 		pr_debug("iscsi reject: calling target_put_sess_cmd >>>>>>\n");
 		target_put_sess_cmd(&cmd->se_cmd);
@@ -883,10 +840,7 @@ int iscsit_reject_cmd(struct iscsit_cmd *cmd, u8 reason, unsigned char *buf)
 }
 EXPORT_SYMBOL(iscsit_reject_cmd);
 
-/*
- * Map some portion of the allocated scatterlist to an iovec, suitable for
- * kernel sockets to copy data in/out.
- */
+ 
 static int iscsit_map_iovec(struct iscsit_cmd *cmd, struct kvec *iov, int nvec,
 			    u32 data_offset, u32 data_length)
 {
@@ -894,9 +848,7 @@ static int iscsit_map_iovec(struct iscsit_cmd *cmd, struct kvec *iov, int nvec,
 	struct scatterlist *sg;
 	unsigned int page_off;
 
-	/*
-	 * We know each entry in t_data_sg contains a page.
-	 */
+	 
 	u32 ent = data_offset / PAGE_SIZE;
 
 	if (!data_length)
@@ -1014,7 +966,7 @@ int iscsit_setup_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	hdr			= (struct iscsi_scsi_req *) buf;
 	payload_length		= ntoh24(hdr->dlength);
 
-	/* FIXME; Add checks for AdditionalHeaderSegment */
+	 
 
 	if (!(hdr->flags & ISCSI_FLAG_CMD_WRITE) &&
 	    !(hdr->flags & ISCSI_FLAG_CMD_FINAL)) {
@@ -1026,16 +978,7 @@ int iscsit_setup_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 
 	if (((hdr->flags & ISCSI_FLAG_CMD_READ) ||
 	     (hdr->flags & ISCSI_FLAG_CMD_WRITE)) && !hdr->data_length) {
-		/*
-		 * From RFC-3720 Section 10.3.1:
-		 *
-		 * "Either or both of R and W MAY be 1 when either the
-		 *  Expected Data Transfer Length and/or Bidirectional Read
-		 *  Expected Data Transfer Length are 0"
-		 *
-		 * For this case, go ahead and clear the unnecssary bits
-		 * to avoid any confusion with ->data_direction.
-		 */
+		 
 		hdr->flags &= ~ISCSI_FLAG_CMD_READ;
 		hdr->flags &= ~ISCSI_FLAG_CMD_WRITE;
 
@@ -1134,9 +1077,7 @@ int iscsit_setup_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 
 	cmd->data_direction = data_direction;
 	iscsi_task_attr = hdr->flags & ISCSI_FLAG_CMD_ATTR_MASK;
-	/*
-	 * Figure out the SAM Task Attribute for the incoming SCSI CDB
-	 */
+	 
 	if ((iscsi_task_attr == ISCSI_ATTR_UNTAGGED) ||
 	    (iscsi_task_attr == ISCSI_ATTR_SIMPLE))
 		sam_task_attr = TCM_SIMPLE_TAG;
@@ -1185,9 +1126,7 @@ int iscsit_setup_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		iscsit_attach_datain_req(cmd, dr);
 	}
 
-	/*
-	 * Initialize struct se_cmd descriptor from target_core_mod infrastructure
-	 */
+	 
 	__target_init_cmd(&cmd->se_cmd, &iscsi_ops,
 			  conn->sess->se_sess, be32_to_cpu(hdr->data_length),
 			  cmd->data_direction, sam_task_attr,
@@ -1234,10 +1173,7 @@ attach_cmd:
 	spin_lock_bh(&conn->cmd_lock);
 	list_add_tail(&cmd->i_conn_node, &conn->conn_cmd_list);
 	spin_unlock_bh(&conn->cmd_lock);
-	/*
-	 * Check if we need to delay processing because of ALUA
-	 * Active/NonOptimized primary access state..
-	 */
+	 
 	core_alua_check_nonop_delay(&cmd->se_cmd);
 
 	return 0;
@@ -1258,16 +1194,7 @@ int iscsit_process_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 			    struct iscsi_scsi_req *hdr)
 {
 	int cmdsn_ret = 0;
-	/*
-	 * Check the CmdSN against ExpCmdSN/MaxCmdSN here if
-	 * the Immediate Bit is not set, and no Immediate
-	 * Data is attached.
-	 *
-	 * A PDU/CmdSN carrying Immediate Data can only
-	 * be processed after the DataCRC has passed.
-	 * If the DataCRC fails, the CmdSN MUST NOT
-	 * be acknowledged. (See below)
-	 */
+	 
 	if (!cmd->immediate_data) {
 		cmdsn_ret = iscsit_sequence_cmd(conn, cmd,
 					(unsigned char *)hdr, hdr->cmdsn);
@@ -1281,9 +1208,7 @@ int iscsit_process_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 
 	iscsit_ack_from_expstatsn(conn, be32_to_cpu(hdr->exp_statsn));
 
-	/*
-	 * If no Immediate Data is attached, it's OK to return now.
-	 */
+	 
 	if (!cmd->immediate_data) {
 		if (!cmd->sense_reason && cmd->unsolicited_data)
 			iscsit_set_unsolicited_dataout(cmd);
@@ -1294,17 +1219,10 @@ int iscsit_process_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		return 0;
 	}
 
-	/*
-	 * Early CHECK_CONDITIONs with ImmediateData never make it to command
-	 * execution.  These exceptions are processed in CmdSN order using
-	 * iscsit_check_received_cmdsn() in iscsit_get_immediate_data() below.
-	 */
+	 
 	if (cmd->sense_reason)
 		return 1;
-	/*
-	 * Call directly into transport_generic_new_cmd() to perform
-	 * the backend memory allocation.
-	 */
+	 
 	cmd->sense_reason = transport_generic_new_cmd(&cmd->se_cmd);
 	if (cmd->sense_reason)
 		return 1;
@@ -1320,9 +1238,7 @@ iscsit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
 	int cmdsn_ret = 0, immed_ret = IMMEDIATE_DATA_NORMAL_OPERATION;
 	int rc;
 
-	/*
-	 * Special case for Unsupported SAM WRITE Opcodes and ImmediateData=Yes.
-	 */
+	 
 	if (dump_payload) {
 		u32 length = min(cmd->se_cmd.data_length - cmd->write_data_done,
 				 cmd->first_burst_len);
@@ -1340,11 +1256,7 @@ iscsit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
 	}
 
 	if (immed_ret == IMMEDIATE_DATA_NORMAL_OPERATION) {
-		/*
-		 * A PDU/CmdSN carrying Immediate Data passed
-		 * DataCRC, check against ExpCmdSN/MaxCmdSN if
-		 * Immediate Bit is not set.
-		 */
+		 
 		cmdsn_ret = iscsit_sequence_cmd(cmd->conn, cmd,
 					(unsigned char *)hdr, hdr->cmdsn);
 		if (cmdsn_ret == CMDSN_ERROR_CANNOT_RECOVER)
@@ -1358,20 +1270,10 @@ iscsit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
 			iscsit_set_unsolicited_dataout(cmd);
 
 	} else if (immed_ret == IMMEDIATE_DATA_ERL1_CRC_FAILURE) {
-		/*
-		 * Immediate Data failed DataCRC and ERL>=1,
-		 * silently drop this PDU and let the initiator
-		 * plug the CmdSN gap.
-		 *
-		 * FIXME: Send Unsolicited NOPIN with reserved
-		 * TTT here to help the initiator figure out
-		 * the missing CmdSN, although they should be
-		 * intelligent enough to determine the missing
-		 * CmdSN and issue a retry to plug the sequence.
-		 */
+		 
 		cmd->i_state = ISTATE_REMOVE;
 		iscsit_add_cmd_to_immediate_queue(cmd, cmd->conn, cmd->i_state);
-	} else /* immed_ret == IMMEDIATE_DATA_CANNOT_RECOVER */
+	} else  
 		return -1;
 
 	return 0;
@@ -1388,10 +1290,7 @@ iscsit_handle_scsi_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	rc = iscsit_setup_scsi_cmd(conn, cmd, buf);
 	if (rc < 0)
 		return 0;
-	/*
-	 * Allocation iovecs needed for struct socket operations for
-	 * traditional iSCSI block I/O.
-	 */
+	 
 	if (iscsit_allocate_iovecs(cmd) < 0) {
 		return iscsit_reject_cmd(cmd,
 				ISCSI_REASON_BOOKMARK_NO_RESOURCES, buf);
@@ -1448,7 +1347,7 @@ static u32 iscsit_do_crypto_hash_sg(
 		crypto_ahash_update(hash);
 
 		data_length -= cur_len;
-		/* iscsit_map_iovec has already checked for invalid sg pointers */
+		 
 		sg = sg_next(sg);
 	}
 
@@ -1492,7 +1391,7 @@ __iscsit_check_dataout_hdr(struct iscsit_conn *conn, void *buf,
 	struct se_cmd *se_cmd;
 	int rc;
 
-	/* iSCSI write */
+	 
 	atomic_long_add(payload_length, &conn->sess->rx_data_octets);
 
 	pr_debug("Got DataOut ITT: 0x%08x, TTT: 0x%08x,"
@@ -1532,39 +1431,22 @@ __iscsit_check_dataout_hdr(struct iscsit_conn *conn, void *buf,
 					TCM_UNEXPECTED_UNSOLICITED_DATA, 0);
 			return -1;
 		}
-		/*
-		 * Special case for dealing with Unsolicited DataOUT
-		 * and Unsupported SAM WRITE Opcodes and SE resource allocation
-		 * failures;
-		 */
+		 
 
-		/* Something's amiss if we're not in WRITE_PENDING state... */
+		 
 		WARN_ON(se_cmd->t_state != TRANSPORT_WRITE_PENDING);
 		if (!(se_cmd->se_cmd_flags & SCF_SUPPORTED_SAM_OPCODE))
 			dump_unsolicited_data = 1;
 
 		if (dump_unsolicited_data) {
-			/*
-			 * Check if a delayed TASK_ABORTED status needs to
-			 * be sent now if the ISCSI_FLAG_CMD_FINAL has been
-			 * received with the unsolicited data out.
-			 */
+			 
 			if (hdr->flags & ISCSI_FLAG_CMD_FINAL)
 				iscsit_stop_dataout_timer(cmd);
 
 			return iscsit_dump_data_payload(conn, payload_length, 1);
 		}
 	} else {
-		/*
-		 * For the normal solicited data path:
-		 *
-		 * Check for a delayed TASK_ABORTED status and dump any
-		 * incoming data out payload if one exists.  Also, when the
-		 * ISCSI_FLAG_CMD_FINAL is set to denote the end of the current
-		 * data out sequence, we decrement outstanding_r2ts.  Once
-		 * outstanding_r2ts reaches zero, go ahead and send the delayed
-		 * TASK_ABORTED status.
-		 */
+		 
 		if (se_cmd->transport_state & CMD_T_ABORTED) {
 			if (hdr->flags & ISCSI_FLAG_CMD_FINAL &&
 			    --cmd->outstanding_r2ts < 1)
@@ -1573,10 +1455,7 @@ __iscsit_check_dataout_hdr(struct iscsit_conn *conn, void *buf,
 			return iscsit_dump_data_payload(conn, payload_length, 1);
 		}
 	}
-	/*
-	 * Perform DataSN, DataSequenceInOrder, DataPDUInOrder, and
-	 * within-command recovery checks before receiving the payload.
-	 */
+	 
 	rc = iscsit_check_pre_dataout(cmd, buf);
 	if (rc == DATAOUT_WITHIN_COMMAND_RECOVERY)
 		return 0;
@@ -1696,10 +1575,7 @@ iscsit_check_dataout_payload(struct iscsit_cmd *cmd, struct iscsi_data *hdr,
 {
 	struct iscsit_conn *conn = cmd->conn;
 	int rc, ooo_cmdsn;
-	/*
-	 * Increment post receive data and CRC values or perform
-	 * within-command recovery.
-	 */
+	 
 	rc = iscsit_check_post_dataout(cmd, (unsigned char *)hdr, data_crc_failed);
 	if ((rc == DATAOUT_NORMAL) || (rc == DATAOUT_WITHIN_COMMAND_RECOVERY))
 		return 0;
@@ -1707,10 +1583,7 @@ iscsit_check_dataout_payload(struct iscsit_cmd *cmd, struct iscsi_data *hdr,
 		iscsit_set_dataout_sequence_values(cmd);
 		conn->conn_transport->iscsit_get_dataout(conn, cmd, false);
 	} else if (rc == DATAOUT_SEND_TO_TRANSPORT) {
-		/*
-		 * Handle extra special case for out of order
-		 * Unsolicited Data Out.
-		 */
+		 
 		spin_lock_bh(&cmd->istate_lock);
 		ooo_cmdsn = (cmd->cmd_flags & ICF_OOO_CMDSN);
 		cmd->cmd_flags |= ICF_GOT_LAST_DATAOUT;
@@ -1722,7 +1595,7 @@ iscsit_check_dataout_payload(struct iscsit_cmd *cmd, struct iscsi_data *hdr,
 			return 0;
 		target_execute_cmd(&cmd->se_cmd);
 		return 0;
-	} else /* DATAOUT_CANNOT_RECOVER */
+	} else  
 		return -1;
 
 	return 0;
@@ -1795,13 +1668,7 @@ int iscsit_setup_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		hdr->itt == RESERVED_ITT ? "Response" : "Request",
 		hdr->itt, hdr->ttt, hdr->cmdsn, hdr->exp_statsn,
 		payload_length);
-	/*
-	 * This is not a response to a Unsolicited NopIN, which means
-	 * it can either be a NOPOUT ping request (with a valid ITT),
-	 * or a NOPOUT not requesting a NOPIN (with a reserved ITT).
-	 * Either way, make sure we allocate an struct iscsit_cmd, as both
-	 * can contain ping data.
-	 */
+	 
 	if (hdr->ttt == cpu_to_be32(0xFFFFFFFF)) {
 		cmd->iscsi_opcode	= ISCSI_OP_NOOP_OUT;
 		cmd->i_state		= ISTATE_SEND_NOPIN;
@@ -1823,9 +1690,7 @@ int iscsit_process_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 {
 	struct iscsit_cmd *cmd_p = NULL;
 	int cmdsn_ret = 0;
-	/*
-	 * Initiator is expecting a NopIN ping reply..
-	 */
+	 
 	if (hdr->itt != RESERVED_ITT) {
 		if (!cmd)
 			return iscsit_add_reject(conn, ISCSI_REASON_PROTOCOL_ERROR,
@@ -1852,9 +1717,7 @@ int iscsit_process_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 
 		return 0;
 	}
-	/*
-	 * This was a response to a unsolicited NOPIN ping.
-	 */
+	 
 	if (hdr->ttt != cpu_to_be32(0xFFFFFFFF)) {
 		cmd_p = iscsit_find_cmd_from_ttt(conn, be32_to_cpu(hdr->ttt));
 		if (!cmd_p)
@@ -1868,10 +1731,7 @@ int iscsit_process_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		iscsit_start_nopin_timer(conn);
 		return 0;
 	}
-	/*
-	 * Otherwise, initiator is not expecting a NOPIN is response.
-	 * Just ignore for now.
-	 */
+	 
 
 	if (cmd)
 		iscsit_free_cmd(cmd, false);
@@ -1892,9 +1752,7 @@ static int iscsit_handle_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cm
 	ret = iscsit_setup_nop_out(conn, cmd, hdr);
 	if (ret < 0)
 		return 0;
-	/*
-	 * Handle NOP-OUT payload for traditional iSCSI sockets
-	 */
+	 
 	if (payload_length && hdr->ttt == cpu_to_be32(0xFFFFFFFF)) {
 		u32 checksum, data_crc, padding = 0;
 		int niov = 0, rx_got, rx_size = payload_length;
@@ -1946,10 +1804,7 @@ static int iscsit_handle_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cm
 					ret = -1;
 					goto out;
 				} else {
-					/*
-					 * Silently drop this PDU and let the
-					 * initiator plug the CmdSN gap.
-					 */
+					 
 					pr_debug("Dropping NOPOUT"
 					" Command CmdSN: 0x%08x due to"
 					" DataCRC error.\n", hdr->cmdsn);
@@ -1964,9 +1819,7 @@ static int iscsit_handle_nop_out(struct iscsit_conn *conn, struct iscsit_cmd *cm
 		}
 
 		ping_data[payload_length] = '\0';
-		/*
-		 * Attach ping data to struct iscsit_cmd->buf_ptr.
-		 */
+		 
 		cmd->buf_ptr = ping_data;
 		cmd->buf_ptr_size = payload_length;
 
@@ -2060,10 +1913,7 @@ iscsit_handle_task_mgt_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 
 	target_get_sess_cmd(&cmd->se_cmd, true);
 
-	/*
-	 * TASK_REASSIGN for ERL=2 / connection stays inside of
-	 * LIO-Target $FABRIC_MOD
-	 */
+	 
 	if (function != ISCSI_TM_FUNC_TASK_REASSIGN) {
 		tcm_function = iscsit_convert_tmf(function);
 		if (tcm_function == TMR_UNKNOWN) {
@@ -2090,9 +1940,7 @@ iscsit_handle_task_mgt_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	cmd->exp_stat_sn	= be32_to_cpu(hdr->exp_statsn);
 	se_tmr			= cmd->se_cmd.se_tmr_req;
 	tmr_req			= cmd->tmr_req;
-	/*
-	 * Locate the struct se_lun for all TMRs not related to ERL=2 TASK_REASSIGN
-	 */
+	 
 	if (function != ISCSI_TM_FUNC_TASK_REASSIGN) {
 		ret = transport_lookup_tmr_lun(&cmd->se_cmd);
 		if (ret < 0) {
@@ -2126,10 +1974,7 @@ iscsit_handle_task_mgt_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		break;
 	case ISCSI_TM_FUNC_TASK_REASSIGN:
 		se_tmr->response = iscsit_tmr_task_reassign(cmd, buf);
-		/*
-		 * Perform sanity checks on the ExpDataSN only if the
-		 * TASK_REASSIGN was successful.
-		 */
+		 
 		if (se_tmr->response)
 			break;
 
@@ -2167,27 +2012,18 @@ attach:
 
 	if (out_of_order_cmdsn || !(hdr->opcode & ISCSI_OP_IMMEDIATE))
 		return 0;
-	/*
-	 * Found the referenced task, send to transport for processing.
-	 */
+	 
 	if (se_tmr->call_transport)
 		return transport_generic_handle_tmr(&cmd->se_cmd);
 
-	/*
-	 * Could not find the referenced LUN, task, or Task Management
-	 * command not authorized or supported.  Change state and
-	 * let the tx_thread send the response.
-	 *
-	 * For connection recovery, this is also the default action for
-	 * TMR TASK_REASSIGN.
-	 */
+	 
 	iscsit_add_cmd_to_response_queue(cmd, conn, cmd->i_state);
 	target_put_sess_cmd(&cmd->se_cmd);
 	return 0;
 }
 EXPORT_SYMBOL(iscsit_handle_task_mgt_cmd);
 
-/* #warning FIXME: Support Text Command parameters besides SendTargets */
+ 
 int
 iscsit_setup_text_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 		      struct iscsi_text *hdr)
@@ -2249,7 +2085,7 @@ iscsit_process_text_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 			" SendTargets, cannot continue.\n");
 		goto reject;
 	}
-	/* '=' confirmed in strncmp */
+	 
 	text_ptr = strchr(text_in, '=');
 	BUG_ON(!text_ptr);
 	if (!strncmp("=All", text_ptr, 5)) {
@@ -2348,10 +2184,7 @@ iscsit_handle_text_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 						" ERL=0.\n");
 					goto reject;
 				} else {
-					/*
-					 * Silently drop this PDU and let the
-					 * initiator plug the CmdSN gap.
-					 */
+					 
 					pr_debug("Dropping Text"
 					" Command CmdSN: 0x%08x due to"
 					" DataCRC error.\n", hdr->cmdsn);
@@ -2415,10 +2248,7 @@ int iscsit_logout_closeconnection(struct iscsit_cmd *cmd, struct iscsit_conn *co
 	pr_debug("Received logout request CLOSECONNECTION for CID:"
 		" %hu on CID: %hu.\n", cmd->logout_cid, conn->cid);
 
-	/*
-	 * A Logout Request with a CLOSECONNECTION reason code for a CID
-	 * can arrive on a connection with a differing CID.
-	 */
+	 
 	if (conn->cid == cmd->logout_cid) {
 		spin_lock_bh(&conn->state_lock);
 		pr_debug("Moving to TARG_CONN_STATE_IN_LOGOUT.\n");
@@ -2430,14 +2260,7 @@ int iscsit_logout_closeconnection(struct iscsit_cmd *cmd, struct iscsit_conn *co
 
 		spin_unlock_bh(&conn->state_lock);
 	} else {
-		/*
-		 * Handle all different cid CLOSECONNECTION requests in
-		 * iscsit_logout_post_handler_diffcid() as to give enough
-		 * time for any non immediate command's CmdSN to be
-		 * acknowledged on the connection in question.
-		 *
-		 * Here we simply make sure the CID is still around.
-		 */
+		 
 		l_conn = iscsit_get_conn_from_cid(sess,
 				cmd->logout_cid);
 		if (!l_conn) {
@@ -2528,10 +2351,7 @@ iscsit_handle_logout_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	cmd->logout_reason      = reason_code;
 	cmd->data_direction     = DMA_NONE;
 
-	/*
-	 * We need to sleep in these cases (by returning 1) until the Logout
-	 * Response gets sent in the tx thread.
-	 */
+	 
 	if ((reason_code == ISCSI_LOGOUT_REASON_CLOSE_SESSION) ||
 	   ((reason_code == ISCSI_LOGOUT_REASON_CLOSE_CONNECTION) &&
 	    be16_to_cpu(hdr->cid) == conn->cid))
@@ -2544,10 +2364,7 @@ iscsit_handle_logout_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
 	if (reason_code != ISCSI_LOGOUT_REASON_RECOVERY)
 		iscsit_ack_from_expstatsn(conn, be32_to_cpu(hdr->exp_statsn));
 
-	/*
-	 * Immediate commands are executed, well, immediately.
-	 * Non-Immediate Logout Commands are executed in CmdSN order.
-	 */
+	 
 	if (cmd->immediate_cmd) {
 		int ret = iscsit_execute_cmd(cmd, 0);
 
@@ -2585,10 +2402,7 @@ int iscsit_handle_snack(
 		return iscsit_add_reject(conn, ISCSI_REASON_PROTOCOL_ERROR,
 					 buf);
 	}
-	/*
-	 * SNACK_DATA and SNACK_R2T are both 0,  so check which function to
-	 * call from inside iscsi_send_recovery_datain_or_r2t().
-	 */
+	 
 	switch (hdr->flags & ISCSI_FLAG_SNACK_TYPE_MASK) {
 	case 0:
 		return iscsit_handle_recovery_datain_or_r2t(conn, buf,
@@ -2605,7 +2419,7 @@ int iscsit_handle_snack(
 			be32_to_cpu(hdr->begrun),
 			be32_to_cpu(hdr->runlength));
 	case ISCSI_FLAG_SNACK_TYPE_RDATA:
-		/* FIXME: Support R-Data SNACK */
+		 
 		pr_err("R-Data SNACK Not Supported.\n");
 		return iscsit_add_reject(conn, ISCSI_REASON_PROTOCOL_ERROR,
 					 buf);
@@ -2652,10 +2466,7 @@ static int iscsit_handle_immediate_data(
 	iov_count = iov_ret;
 	iov = &cmd->iov_data[0];
 	if (rx_size < length) {
-		/*
-		 * Special case: length of immediate data exceeds the data
-		 * buffer size derived from the CDB.
-		 */
+		 
 		overflow_buf = kmalloc(length - rx_size, GFP_KERNEL);
 		if (!overflow_buf) {
 			iscsit_unmap_iovec(cmd);
@@ -2736,8 +2547,7 @@ static int iscsit_handle_immediate_data(
 	return IMMEDIATE_DATA_NORMAL_OPERATION;
 }
 
-/* #warning iscsi_build_conn_drop_async_message() only sends out on connections
-	with active network interface */
+ 
 static void iscsit_build_conn_drop_async_message(struct iscsit_conn *conn)
 {
 	struct iscsit_cmd *cmd;
@@ -2746,10 +2556,7 @@ static void iscsit_build_conn_drop_async_message(struct iscsit_conn *conn)
 
 	lockdep_assert_held(&conn->sess->conn_lock);
 
-	/*
-	 * Only send a Asynchronous Message on connections whos network
-	 * interface is still functional.
-	 */
+	 
 	list_for_each_entry(conn_p, &conn->sess->sess_conn_list, conn_list) {
 		if (conn_p->conn_state == TARG_CONN_STATE_LOGGED_IN) {
 			iscsit_inc_conn_usage_count(conn_p);
@@ -2880,9 +2687,7 @@ static int iscsit_send_datain(struct iscsit_cmd *cmd, struct iscsit_conn *conn)
 				cmd->init_task_tag);
 		return -1;
 	}
-	/*
-	 * Be paranoid and double check the logic for now.
-	 */
+	 
 	if ((datain.offset + datain.length) > cmd->se_cmd.data_length) {
 		pr_err("Command ITT: 0x%08x, datain.offset: %u and"
 			" datain.length: %u exceeds cmd->data_length: %u\n",
@@ -2892,10 +2697,7 @@ static int iscsit_send_datain(struct iscsit_cmd *cmd, struct iscsit_conn *conn)
 	}
 
 	atomic_long_add(datain.length, &conn->sess->tx_data_octets);
-	/*
-	 * Special case for successfully execution w/ both DATAIN
-	 * and Sense Data.
-	 */
+	 
 	if ((datain.flags & ISCSI_FLAG_DATA_STATUS) &&
 	    (cmd->se_cmd.se_cmd_flags & SCF_TRANSPORT_TASK_SENSE))
 		datain.flags &= ~ISCSI_FLAG_DATA_STATUS;
@@ -2932,11 +2734,7 @@ iscsit_build_logout_rsp(struct iscsit_cmd *cmd, struct iscsit_conn *conn,
 	struct iscsit_conn *logout_conn = NULL;
 	struct iscsi_conn_recovery *cr = NULL;
 	struct iscsit_session *sess = conn->sess;
-	/*
-	 * The actual shutting down of Sessions and/or Connections
-	 * for CLOSESESSION and CLOSECONNECTION Logout Requests
-	 * is done in scsi_logout_post_handler().
-	 */
+	 
 	switch (cmd->logout_reason) {
 	case ISCSI_LOGOUT_REASON_CLOSE_SESSION:
 		pr_debug("iSCSI session logout successful, setting"
@@ -2946,17 +2744,7 @@ iscsit_build_logout_rsp(struct iscsit_cmd *cmd, struct iscsit_conn *conn,
 	case ISCSI_LOGOUT_REASON_CLOSE_CONNECTION:
 		if (cmd->logout_response == ISCSI_LOGOUT_CID_NOT_FOUND)
 			break;
-		/*
-		 * For CLOSECONNECTION logout requests carrying
-		 * a matching logout CID -> local CID, the reference
-		 * for the local CID will have been incremented in
-		 * iscsi_logout_closeconnection().
-		 *
-		 * For CLOSECONNECTION logout requests carrying
-		 * a different CID than the connection it arrived
-		 * on, the connection responding to cmd->logout_cid
-		 * is stopped in iscsit_logout_post_handler_diffcid().
-		 */
+		 
 
 		pr_debug("iSCSI CID: %hu logout on CID: %hu"
 			" successful.\n", cmd->logout_cid, conn->cid);
@@ -2966,10 +2754,7 @@ iscsit_build_logout_rsp(struct iscsit_cmd *cmd, struct iscsit_conn *conn,
 		if ((cmd->logout_response == ISCSI_LOGOUT_RECOVERY_UNSUPPORTED) ||
 		    (cmd->logout_response == ISCSI_LOGOUT_CLEANUP_FAILED))
 			break;
-		/*
-		 * If the connection is still active from our point of view
-		 * force connection recovery to occur.
-		 */
+		 
 		logout_conn = iscsit_get_conn_from_cid_rcfr(sess,
 				cmd->logout_cid);
 		if (logout_conn) {
@@ -3061,9 +2846,7 @@ iscsit_build_nopin_rsp(struct iscsit_cmd *cmd, struct iscsit_conn *conn,
 }
 EXPORT_SYMBOL(iscsit_build_nopin_rsp);
 
-/*
- *	Unsolicited NOPIN, either requesting a response or not.
- */
+ 
 static int iscsit_send_unsolicited_nopin(
 	struct iscsit_cmd *cmd,
 	struct iscsit_conn *conn,
@@ -3096,10 +2879,7 @@ iscsit_send_nopin(struct iscsit_cmd *cmd, struct iscsit_conn *conn)
 
 	iscsit_build_nopin_rsp(cmd, conn, hdr, true);
 
-	/*
-	 * NOPOUT Ping Data is attached to struct iscsit_cmd->buf_ptr.
-	 * NOPOUT DataSegmentLength is at struct iscsit_cmd->buf_ptr_size.
-	 */
+	 
 	pr_debug("Echoing back %u bytes of ping data.\n", cmd->buf_ptr_size);
 
 	return conn->conn_transport->iscsit_xmit_pdu(conn, cmd, NULL,
@@ -3160,10 +2940,7 @@ static int iscsit_send_r2t(
 	return 0;
 }
 
-/*
- *	@recovery: If called from iscsi_task_reassign_complete_write() for
- *		connection recovery.
- */
+ 
 int iscsit_build_r2ts_for_cmd(
 	struct iscsit_conn *conn,
 	struct iscsit_cmd *cmd,
@@ -3291,9 +3068,7 @@ static int iscsit_send_response(struct iscsit_cmd *cmd, struct iscsit_conn *conn
 
 	iscsit_build_rsp_pdu(cmd, conn, inc_stat_sn, hdr);
 
-	/*
-	 * Attach SENSE DATA payload to iSCSI Response PDU
-	 */
+	 
 	if (cmd->se_cmd.sense_buffer &&
 	   ((cmd->se_cmd.se_cmd_flags & SCF_TRANSPORT_TASK_SENSE) ||
 	    (cmd->se_cmd.se_cmd_flags & SCF_EMULATED_TASK_SENSE))) {
@@ -3385,7 +3160,7 @@ iscsit_build_sendtargets_response(struct iscsit_cmd *cmd,
 	struct iscsi_tpg_np *tpg_np;
 	int buffer_len, end_of_buf = 0, len = 0, payload_len = 0;
 	int target_name_printed;
-	unsigned char buf[ISCSI_IQN_LEN+12]; /* iqn + "TargetName=" + \0 */
+	unsigned char buf[ISCSI_IQN_LEN+12];  
 	unsigned char *text_in = cmd->text_in_ptr, *text_ptr = NULL;
 	bool active;
 
@@ -3396,10 +3171,7 @@ iscsit_build_sendtargets_response(struct iscsit_cmd *cmd,
 	if (!payload)
 		return -ENOMEM;
 
-	/*
-	 * Locate pointer to iqn./eui. string for ICF_SENDTARGETS_SINGLE
-	 * explicit case..
-	 */
+	 
 	if (cmd->cmd_flags & ICF_SENDTARGETS_SINGLE) {
 		text_ptr = strchr(text_in, '=');
 		if (!text_ptr) {
@@ -3408,9 +3180,7 @@ iscsit_build_sendtargets_response(struct iscsit_cmd *cmd,
 			kfree(payload);
 			return -EINVAL;
 		}
-		/*
-		 * Skip over '=' character..
-		 */
+		 
 		text_ptr += 1;
 	}
 
@@ -3426,10 +3196,7 @@ iscsit_build_sendtargets_response(struct iscsit_cmd *cmd,
 		spin_lock(&tiqn->tiqn_tpg_lock);
 		list_for_each_entry(tpg, &tiqn->tiqn_tpg_list, tpg_list) {
 
-			/* If demo_mode_discovery=0 and generate_node_acls=0
-			 * (demo mode dislabed) do not return
-			 * TargetName+TargetAddress unless a NodeACL exists.
-			 */
+			 
 
 			if ((tpg->tpg_attrib.generate_node_acls == 0) &&
 			    (tpg->tpg_attrib.demo_mode_discovery == 0) &&
@@ -3554,11 +3321,7 @@ iscsit_build_text_rsp(struct iscsit_cmd *cmd, struct iscsit_conn *conn,
 	hdr->statsn = cpu_to_be32(cmd->stat_sn);
 
 	iscsit_increment_maxcmdsn(cmd, conn->sess);
-	/*
-	 * Reset maxcmdsn_inc in multi-part text payload exchanges to
-	 * correctly increment MaxCmdSN for each response answering a
-	 * non immediate text request with a valid CmdSN.
-	 */
+	 
 	cmd->maxcmdsn_inc = 0;
 	hdr->exp_cmdsn = cpu_to_be32(conn->sess->exp_cmd_sn);
 	hdr->max_cmdsn = cpu_to_be32((u32) atomic_read(&conn->sess->max_cmd_sn));
@@ -3628,14 +3391,7 @@ void iscsit_thread_get_cpumask(struct iscsit_conn *conn)
 	int ord, cpu;
 	cpumask_var_t conn_allowed_cpumask;
 
-	/*
-	 * bitmap_id is assigned from iscsit_global->ts_bitmap from
-	 * within iscsit_start_kthreads()
-	 *
-	 * Here we use bitmap_id to determine which CPU that this
-	 * iSCSI connection's RX/TX threads will be scheduled to
-	 * execute upon.
-	 */
+	 
 	if (!zalloc_cpumask_var(&conn_allowed_cpumask, GFP_KERNEL)) {
 		ord = conn->bitmap_id % cpumask_weight(cpu_online_mask);
 		for_each_online_cpu(cpu) {
@@ -3659,19 +3415,14 @@ void iscsit_thread_get_cpumask(struct iscsit_conn *conn)
 		}
 		free_cpumask_var(conn_allowed_cpumask);
 	}
-	/*
-	 * This should never be reached..
-	 */
+	 
 	dump_stack();
 	cpumask_setall(conn->conn_cpumask);
 }
 
 static void iscsit_thread_reschedule(struct iscsit_conn *conn)
 {
-	/*
-	 * If iscsit_global->allowed_cpumask modified, reschedule iSCSI
-	 * connection's RX/TX threads update conn->allowed_cpumask.
-	 */
+	 
 	if (!cpumask_equal(iscsit_global->allowed_cpumask,
 			   conn->allowed_cpumask)) {
 		iscsit_thread_get_cpumask(conn);
@@ -3687,20 +3438,10 @@ void iscsit_thread_check_cpumask(
 	struct task_struct *p,
 	int mode)
 {
-	/*
-	 * The TX and RX threads maybe call iscsit_thread_check_cpumask()
-	 * at the same time. The RX thread might be faster and return from
-	 * iscsit_thread_reschedule() with conn_rx_reset_cpumask set to 0.
-	 * Then the TX thread sets it back to 1.
-	 * The next time the RX thread loops, it sees conn_rx_reset_cpumask
-	 * set to 1 and calls set_cpus_allowed_ptr() again and set it to 0.
-	 */
+	 
 	iscsit_thread_reschedule(conn);
 
-	/*
-	 * mode == 1 signals iscsi_target_tx_thread() usage.
-	 * mode == 0 signals iscsi_target_rx_thread() usage.
-	 */
+	 
 	if (mode == 1) {
 		if (!conn->conn_tx_reset_cpumask)
 			return;
@@ -3709,11 +3450,7 @@ void iscsit_thread_check_cpumask(
 			return;
 	}
 
-	/*
-	 * Update the CPU mask for this single kthread so that
-	 * both TX and RX kthreads are scheduled to run on the
-	 * same CPU.
-	 */
+	 
 	set_cpus_allowed_ptr(p, conn->conn_cpumask);
 	if (mode == 1)
 		conn->conn_tx_reset_cpumask = 0;
@@ -3801,10 +3538,10 @@ check_rsp_state:
 		if (ret < 0)
 			goto err;
 		else if (!ret)
-			/* more drs */
+			 
 			goto check_rsp_state;
 		else if (ret == 1) {
-			/* all done */
+			 
 			spin_lock_bh(&cmd->istate_lock);
 			cmd->i_state = ISTATE_SENT_STATUS;
 			spin_unlock_bh(&cmd->istate_lock);
@@ -3814,8 +3551,7 @@ check_rsp_state:
 
 			return 0;
 		} else if (ret == 2) {
-			/* Still must send status,
-			   SCF_TRANSPORT_TASK_SENSE was set */
+			 
 			spin_lock_bh(&cmd->istate_lock);
 			cmd->i_state = ISTATE_SEND_STATUS;
 			spin_unlock_bh(&cmd->istate_lock);
@@ -3923,17 +3659,11 @@ int iscsi_target_tx_thread(void *arg)
 	struct iscsit_conn *conn = arg;
 	bool conn_freed = false;
 
-	/*
-	 * Allow ourselves to be interrupted by SIGINT so that a
-	 * connection recovery / failure event can be triggered externally.
-	 */
+	 
 	allow_signal(SIGINT);
 
 	while (!kthread_should_stop()) {
-		/*
-		 * Ensure that both TX and RX per connection kthreads
-		 * are scheduled to run on the same CPU.
-		 */
+		 
 		iscsit_thread_check_cpumask(conn, current, 1);
 
 		wait_event_interruptible(conn->queues_wq,
@@ -3959,11 +3689,7 @@ get_immediate:
 	}
 
 transport_err:
-	/*
-	 * Avoid the normal connection failure code-path if this connection
-	 * is still within LOGIN mode, and iscsi_np process context is
-	 * responsible for cleaning up the early connection failure.
-	 */
+	 
 	if (conn->conn_state != TARG_CONN_STATE_IN_LOGIN)
 		iscsit_take_action_for_connection_exit(conn, &conn_freed);
 out:
@@ -4076,10 +3802,7 @@ static void iscsit_get_rx_pdu(struct iscsit_conn *conn)
 		return;
 
 	while (!kthread_should_stop()) {
-		/*
-		 * Ensure that both TX and RX per connection kthreads
-		 * are scheduled to run on the same CPU.
-		 */
+		 
 		iscsit_thread_check_cpumask(conn, current, 0);
 
 		memset(&iov, 0, sizeof(struct kvec));
@@ -4130,10 +3853,7 @@ static void iscsit_get_rx_pdu(struct iscsit_conn *conn)
 				pr_err("HeaderDigest CRC32C failed,"
 					" received 0x%08x, computed 0x%08x\n",
 					digest, checksum);
-				/*
-				 * Set the PDU to 0xff so it will intentionally
-				 * hit default in the switch below.
-				 */
+				 
 				memset(buffer, 0xff, ISCSI_HDR_LEN);
 				atomic_long_inc(&conn->sess->conn_digest_errors);
 			} else {
@@ -4171,15 +3891,9 @@ int iscsi_target_rx_thread(void *arg)
 	struct iscsit_conn *conn = arg;
 	bool conn_freed = false;
 
-	/*
-	 * Allow ourselves to be interrupted by SIGINT so that a
-	 * connection recovery / failure event can be triggered externally.
-	 */
+	 
 	allow_signal(SIGINT);
-	/*
-	 * Wait for iscsi_post_login_handler() to complete before allowing
-	 * incoming iscsi/tcp socket I/O, and/or failing the connection.
-	 */
+	 
 	rc = wait_for_completion_interruptible(&conn->rx_login_comp);
 	if (rc < 0 || iscsi_target_check_conn_state(conn))
 		goto out;
@@ -4208,11 +3922,7 @@ static void iscsit_release_commands_from_conn(struct iscsit_conn *conn)
 	LIST_HEAD(tmp_list);
 	struct iscsit_cmd *cmd = NULL, *cmd_tmp = NULL;
 	struct iscsit_session *sess = conn->sess;
-	/*
-	 * We expect this function to only ever be called from either RX or TX
-	 * thread context via iscsit_close_connection() once the other context
-	 * has been reset -> returned sleeping pre-handler state.
-	 */
+	 
 	spin_lock_bh(&conn->cmd_lock);
 	list_splice_init(&conn->conn_cmd_list, &tmp_list);
 
@@ -4225,11 +3935,7 @@ static void iscsit_release_commands_from_conn(struct iscsit_conn *conn)
 		spin_lock_irq(&se_cmd->t_state_lock);
 		if (se_cmd->transport_state & CMD_T_ABORTED) {
 			if (!(se_cmd->transport_state & CMD_T_TAS))
-				/*
-				 * LIO's abort path owns the cleanup for this,
-				 * so put it back on the list and let
-				 * aborted_task handle it.
-				 */
+				 
 				list_move_tail(&cmd->i_conn_node,
 					       &conn->conn_cmd_list);
 		} else {
@@ -4237,10 +3943,7 @@ static void iscsit_release_commands_from_conn(struct iscsit_conn *conn)
 		}
 
 		if (cmd->se_cmd.t_state == TRANSPORT_WRITE_PENDING) {
-			/*
-			 * We never submitted the cmd to LIO core, so we have
-			 * to tell LIO to perform the completion process.
-			 */
+			 
 			spin_unlock_irq(&se_cmd->t_state_lock);
 			target_complete_cmd(&cmd->se_cmd, SAM_STAT_TASK_ABORTED);
 			continue;
@@ -4257,11 +3960,7 @@ static void iscsit_release_commands_from_conn(struct iscsit_conn *conn)
 
 	}
 
-	/*
-	 * Wait on commands that were cleaned up via the aborted_task path.
-	 * LLDs that implement iscsit_wait_conn will already have waited for
-	 * commands.
-	 */
+	 
 	if (!conn->conn_transport->iscsit_wait_conn) {
 		target_stop_cmd_counter(conn->cmd_cnt);
 		target_wait_for_cmds(conn->cmd_cnt);
@@ -4289,17 +3988,7 @@ int iscsit_close_connection(
 
 	pr_debug("Closing iSCSI connection CID %hu on SID:"
 		" %u\n", conn->cid, sess->sid);
-	/*
-	 * Always up conn_logout_comp for the traditional TCP and HW_OFFLOAD
-	 * case just in case the RX Thread in iscsi_target_rx_opcode() is
-	 * sleeping and the logout response never got sent because the
-	 * connection failed.
-	 *
-	 * However for iser-target, isert_wait4logout() is using conn_logout_comp
-	 * to signal logout response TX interrupt completion.  Go ahead and skip
-	 * this for iser since isert_rx_opcode() does not wait on logout failure,
-	 * and to avoid iscsit_conn pointer dereference in iser-target code.
-	 */
+	 
 	if (!conn->conn_transport->rdma_shutdown)
 		complete(&conn->conn_logout_comp);
 
@@ -4329,15 +4018,7 @@ int iscsit_close_connection(
 	if (conn->conn_transport->iscsit_wait_conn)
 		conn->conn_transport->iscsit_wait_conn(conn);
 
-	/*
-	 * During Connection recovery drop unacknowledged out of order
-	 * commands for this connection, and prepare the other commands
-	 * for reallegiance.
-	 *
-	 * During normal operation clear the out of order commands (but
-	 * do not free the struct iscsi_ooo_cmdsn's) and release all
-	 * struct iscsit_cmds.
-	 */
+	 
 	if (atomic_read(&conn->connection_recovery)) {
 		iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(conn);
 		iscsit_prepare_cmds_for_reallegiance(conn);
@@ -4347,11 +4028,7 @@ int iscsit_close_connection(
 	}
 	iscsit_free_queue_reqs_for_conn(conn);
 
-	/*
-	 * Handle decrementing session or connection usage count if
-	 * a logout response was not able to be sent because the
-	 * connection failed.  Fall back to Session Recovery here.
-	 */
+	 
 	if (atomic_read(&conn->conn_logout_remove)) {
 		if (conn->conn_logout_reason == ISCSI_LOGOUT_REASON_CLOSE_SESSION) {
 			iscsit_dec_conn_usage_count(conn);
@@ -4368,21 +4045,13 @@ int iscsit_close_connection(
 	spin_lock_bh(&sess->conn_lock);
 	list_del(&conn->conn_list);
 
-	/*
-	 * Attempt to let the Initiator know this connection failed by
-	 * sending an Connection Dropped Async Message on another
-	 * active connection.
-	 */
+	 
 	if (atomic_read(&conn->connection_recovery))
 		iscsit_build_conn_drop_async_message(conn);
 
 	spin_unlock_bh(&sess->conn_lock);
 
-	/*
-	 * If connection reinstatement is being performed on this connection,
-	 * up the connection reinstatement semaphore that is being blocked on
-	 * in iscsit_cause_connection_reinstatement().
-	 */
+	 
 	spin_lock_bh(&conn->state_lock);
 	if (atomic_read(&conn->sleep_on_conn_wait_comp)) {
 		spin_unlock_bh(&conn->state_lock);
@@ -4391,12 +4060,7 @@ int iscsit_close_connection(
 		spin_lock_bh(&conn->state_lock);
 	}
 
-	/*
-	 * If connection reinstatement is being performed on this connection
-	 * by receiving a REMOVECONNFORRECOVERY logout request, up the
-	 * connection wait rcfr semaphore that is being blocked on
-	 * an iscsit_connection_reinstatement_rcfr().
-	 */
+	 
 	if (atomic_read(&conn->connection_wait_rcfr)) {
 		spin_unlock_bh(&conn->state_lock);
 		complete(&conn->conn_wait_rcfr_comp);
@@ -4406,10 +4070,7 @@ int iscsit_close_connection(
 	atomic_set(&conn->connection_reinstatement, 1);
 	spin_unlock_bh(&conn->state_lock);
 
-	/*
-	 * If any other processes are accessing this connection pointer we
-	 * must wait until they have completed.
-	 */
+	 
 	iscsit_check_conn_usage_count(conn);
 
 	ahash_request_free(conn->conn_tx_hash);
@@ -4436,20 +4097,12 @@ int iscsit_close_connection(
 	pr_debug("Decremented iSCSI connection count to %d from node:"
 		" %s\n", atomic_read(&sess->nconn),
 		sess->sess_ops->InitiatorName);
-	/*
-	 * Make sure that if one connection fails in an non ERL=2 iSCSI
-	 * Session that they all fail.
-	 */
+	 
 	if ((sess->sess_ops->ErrorRecoveryLevel != 2) && !conn_logout &&
 	     !atomic_read(&sess->session_logout))
 		atomic_set(&sess->session_fall_back_to_erl0, 1);
 
-	/*
-	 * If this was not the last connection in the session, and we are
-	 * performing session reinstatement or falling back to ERL=0, call
-	 * iscsit_stop_session() without sleeping to shutdown the other
-	 * active connections.
-	 */
+	 
 	if (atomic_read(&sess->nconn)) {
 		if (!atomic_read(&sess->session_reinstatement) &&
 		    !atomic_read(&sess->session_fall_back_to_erl0)) {
@@ -4466,19 +4119,7 @@ int iscsit_close_connection(
 		return 0;
 	}
 
-	/*
-	 * If this was the last connection in the session and one of the
-	 * following is occurring:
-	 *
-	 * Session Reinstatement is not being performed, and are falling back
-	 * to ERL=0 call iscsit_close_session().
-	 *
-	 * Session Logout was requested.  iscsit_close_session() will be called
-	 * elsewhere.
-	 *
-	 * Session Continuation is not being performed, start the Time2Retain
-	 * handler and check if sleep_on_sess_wait_sem is active.
-	 */
+	 
 	if (!atomic_read(&sess->session_reinstatement) &&
 	     atomic_read(&sess->session_fall_back_to_erl0)) {
 		spin_unlock_bh(&sess->conn_lock);
@@ -4518,10 +4159,7 @@ int iscsit_close_connection(
 	}
 }
 
-/*
- * If the iSCSI Session for the iSCSI Initiator Node exists,
- * forcefully shutdown the iSCSI NEXUS.
- */
+ 
 int iscsit_close_session(struct iscsit_session *sess, bool can_sleep)
 {
 	struct iscsi_portal_group *tpg = sess->tpg;
@@ -4543,21 +4181,10 @@ int iscsit_close_session(struct iscsit_session *sess, bool can_sleep)
 	if (sess->sess_ops->ErrorRecoveryLevel == 2)
 		iscsit_free_connection_recovery_entries(sess);
 
-	/*
-	 * transport_deregister_session_configfs() will clear the
-	 * struct se_node_acl->nacl_sess pointer now as a iscsi_np process context
-	 * can be setting it again with __transport_register_session() in
-	 * iscsi_post_login_handler() again after the iscsit_stop_session()
-	 * completes in iscsi_np context.
-	 */
+	 
 	transport_deregister_session_configfs(sess->se_sess);
 
-	/*
-	 * If any other processes are accessing this session pointer we must
-	 * wait until they have completed.  If we are in an interrupt (the
-	 * time2retain handler) and contain and active session usage count we
-	 * restart the timer and exit.
-	 */
+	 
 	if (iscsit_check_session_usage_count(sess, can_sleep)) {
 		atomic_set(&sess->session_logout, 0);
 		iscsit_start_time2retain_handler(sess);
@@ -4594,15 +4221,7 @@ static void iscsit_logout_post_handler_closesession(
 {
 	struct iscsit_session *sess = conn->sess;
 	int sleep = 1;
-	/*
-	 * Traditional iscsi/tcp will invoke this logic from TX thread
-	 * context during session logout, so clear tx_thread_active and
-	 * sleep if iscsit_close_connection() has not already occured.
-	 *
-	 * Since iser-target invokes this logic from it's own workqueue,
-	 * always sleep waiting for RX/TX thread shutdown to complete
-	 * within iscsit_close_connection().
-	 */
+	 
 	if (!conn->conn_transport->rdma_shutdown) {
 		sleep = cmpxchg(&conn->tx_thread_active, true, false);
 		if (!sleep)
@@ -4672,9 +4291,7 @@ static void iscsit_logout_post_handler_diffcid(
 	iscsit_dec_conn_usage_count(l_conn);
 }
 
-/*
- *	Return of 0 causes the TX thread to restart.
- */
+ 
 int iscsit_logout_post_handler(
 	struct iscsit_cmd *cmd,
 	struct iscsit_conn *conn)

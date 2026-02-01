@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implementation of the IOMMU SVA API for the ARM SMMUv3
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/mmu_context.h>
@@ -37,10 +35,7 @@ struct arm_smmu_bond {
 
 static DEFINE_MUTEX(sva_lock);
 
-/*
- * Check if the CPU ASID is available on the SMMU side. If a private context
- * descriptor is using it, try to replace it.
- */
+ 
 static struct arm_smmu_ctx_desc *
 arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
 {
@@ -57,7 +52,7 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
 	if (cd->mm) {
 		if (WARN_ON(cd->mm != mm))
 			return ERR_PTR(-EINVAL);
-		/* All devices bound to this mm use the same cd struct. */
+		 
 		refcount_inc(&cd->refs);
 		return cd;
 	}
@@ -69,20 +64,12 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
 		       XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL);
 	if (ret)
 		return ERR_PTR(-ENOSPC);
-	/*
-	 * Race with unmap: TLB invalidations will start targeting the new ASID,
-	 * which isn't assigned yet. We'll do an invalidate-all on the old ASID
-	 * later, so it doesn't matter.
-	 */
+	 
 	cd->asid = new_asid;
-	/*
-	 * Update ASID and invalidate CD in all associated masters. There will
-	 * be some overlap between use of both ASIDs, until we invalidate the
-	 * TLB.
-	 */
+	 
 	arm_smmu_write_ctx_desc(smmu_domain, IOMMU_NO_PASID, cd);
 
-	/* Invalidate TLB entries previously associated with that context */
+	 
 	arm_smmu_tlb_inv_asid(smmu, asid);
 
 	xa_erase(&arm_smmu_asid_xa, asid);
@@ -97,7 +84,7 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
 	struct arm_smmu_ctx_desc *cd;
 	struct arm_smmu_ctx_desc *ret = NULL;
 
-	/* Don't free the mm until we release the ASID */
+	 
 	mmgrab(mm);
 
 	asid = arm64_mm_context_get(mm);
@@ -155,10 +142,7 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
 
 	cd->ttbr = virt_to_phys(mm->pgd);
 	cd->tcr = tcr;
-	/*
-	 * MAIR value is pretty much constant and global, so we can just get it
-	 * from the current CPU register
-	 */
+	 
 	cd->mair = read_sysreg(mair_el1);
 	cd->asid = asid;
 	cd->mm = mm;
@@ -179,20 +163,14 @@ out_drop_mm:
 static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
 {
 	if (arm_smmu_free_asid(cd)) {
-		/* Unpin ASID */
+		 
 		arm64_mm_context_put(cd->mm);
 		mmdrop(cd->mm);
 		kfree(cd);
 	}
 }
 
-/*
- * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, this
- * is used as a threshold to replace per-page TLBI commands to issue in the
- * command queue with an address-space TLBI command, when SMMU w/o a range
- * invalidation feature handles too many per-page TLBI commands, which will
- * otherwise result in a soft lockup.
- */
+ 
 #define CMDQ_MAX_TLBI_OPS		(1 << (PAGE_SHIFT - 3))
 
 static void arm_smmu_mm_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
@@ -204,11 +182,7 @@ static void arm_smmu_mm_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
 	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
 	size_t size;
 
-	/*
-	 * The mm_types defines vm_end as the first byte after the end address,
-	 * different from IOMMU subsystem using the last address of an address
-	 * range. So do a simple translation here by calculating size correctly.
-	 */
+	 
 	size = end - start;
 	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
 		if (size >= CMDQ_MAX_TLBI_OPS * PAGE_SIZE)
@@ -243,10 +217,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
 		return;
 	}
 
-	/*
-	 * DMA may still be running. Keep the cd valid to avoid C_BAD_CD events,
-	 * but disable translation.
-	 */
+	 
 	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
 
 	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
@@ -267,7 +238,7 @@ static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
 	.free_notifier			= arm_smmu_mmu_notifier_free,
 };
 
-/* Allocate or get existing MMU notifier for this {domain, mm} pair */
+ 
 static struct arm_smmu_mmu_notifier *
 arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
 			  struct mm_struct *mm)
@@ -312,7 +283,7 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
 	return smmu_mn;
 
 err_put_notifier:
-	/* Frees smmu_mn */
+	 
 	mmu_notifier_put(&smmu_mn->mn);
 err_free_cd:
 	arm_smmu_free_shared_cd(cd);
@@ -331,16 +302,13 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
 	list_del(&smmu_mn->list);
 	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, NULL);
 
-	/*
-	 * If we went through clear(), we've already invalidated, and no
-	 * new TLB entry can have been formed.
-	 */
+	 
 	if (!smmu_mn->cleared) {
 		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
 		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
 	}
 
-	/* Frees smmu_mn */
+	 
 	mmu_notifier_put(&smmu_mn->mn);
 	arm_smmu_free_shared_cd(cd);
 }
@@ -357,7 +325,7 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
 	if (!master || !master->sva_enabled)
 		return ERR_PTR(-ENODEV);
 
-	/* If bind() was already called for this {dev, mm} pair, reuse it. */
+	 
 	list_for_each_entry(bond, &master->bonds, list) {
 		if (bond->mm == mm) {
 			refcount_inc(&bond->refs);
@@ -403,27 +371,20 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
 	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
 		return false;
 
-	/*
-	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
-	 * not even pretending to support AArch32 here. Abort if the MMU outputs
-	 * addresses larger than what we support.
-	 */
+	 
 	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
 	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_EL1_PARANGE_SHIFT);
 	oas = id_aa64mmfr0_parange_to_phys_shift(fld);
 	if (smmu->oas < oas)
 		return false;
 
-	/* We can support bigger ASIDs than the CPU, but not smaller */
+	 
 	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_EL1_ASIDBITS_SHIFT);
 	asid_bits = fld ? 16 : 8;
 	if (smmu->asid_bits < asid_bits)
 		return false;
 
-	/*
-	 * See max_pinned_asids in arch/arm64/mm/context.c. The following is
-	 * generally the maximum number of bindable processes.
-	 */
+	 
 	if (arm64_kernel_unmapped_at_el0())
 		asid_bits--;
 	dev_dbg(smmu->dev, "%d shared contexts\n", (1 << asid_bits) -
@@ -434,7 +395,7 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
 
 bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
 {
-	/* We're not keeping track of SIDs in fault events */
+	 
 	if (master->num_streams != 1)
 		return false;
 
@@ -446,7 +407,7 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
 	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
 		return false;
 
-	/* SSID support is mandatory for the moment */
+	 
 	return master->ssid_bits;
 }
 
@@ -465,10 +426,7 @@ static int arm_smmu_master_sva_enable_iopf(struct arm_smmu_master *master)
 	int ret;
 	struct device *dev = master->dev;
 
-	/*
-	 * Drivers for devices supporting PRI or stall should enable IOPF first.
-	 * Others have device-specific fault handlers and don't need IOPF.
-	 */
+	 
 	if (!arm_smmu_master_iopf_supported(master))
 		return 0;
 
@@ -528,10 +486,7 @@ int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
 
 void arm_smmu_sva_notifier_synchronize(void)
 {
-	/*
-	 * Some MMU notifiers may still be waiting to be freed, using
-	 * arm_smmu_mmu_notifier_free(). Wait for them.
-	 */
+	 
 	mmu_notifier_synchronize();
 }
 

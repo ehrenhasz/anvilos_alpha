@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Spreatrum SC9860 clock driver
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -69,7 +69,7 @@ static SPRD_SC_GATE_CLK(gpll_gate,	"gpll-gate",	"ext-26m", 0x32c,
 		0x1000, BIT(0), CLK_IGNORE_UNUSED, CLK_GATE_SET_TO_DISABLE);
 
 static struct sprd_clk_common *sc9860_pmu_gate_clks[] = {
-	/* address base is 0x402b0000 */
+	 
 	&mpll0_gate.common,
 	&mpll1_gate.common,
 	&dpll0_gate.common,
@@ -117,57 +117,57 @@ static const struct sprd_clk_desc sc9860_pmu_gate_desc = {
 	.hw_clks        = &sc9860_pmu_gate_hws,
 };
 
-/* GPLL/LPLL/DPLL/RPLL/CPLL */
+ 
 static const u64 itable1[4] = {3, 780000000, 988000000, 1196000000};
 
-/* TWPLL/MPLL0/MPLL1 */
+ 
 static const u64 itable2[4] = {3, 1638000000, 2080000000, 2600000000UL};
 
 static const struct clk_bit_field f_mpll0[PLL_FACT_MAX] = {
-	{ .shift = 20,	.width = 1 },	/* lock_done	*/
-	{ .shift = 19,	.width = 1 },	/* div_s	*/
-	{ .shift = 18,	.width = 1 },	/* mod_en	*/
-	{ .shift = 17,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 11,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 56,	.width = 1 },	/* postdiv	*/
+	{ .shift = 20,	.width = 1 },	 
+	{ .shift = 19,	.width = 1 },	 
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 17,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 11,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 56,	.width = 1 },	 
 };
 static SPRD_PLL_WITH_ITABLE_K_FVCO(mpll0_clk, "mpll0", "mpll0-gate", 0x24,
 				   2, itable2, f_mpll0, 200,
 				   1000, 1000, 1, 1300000000);
 
 static const struct clk_bit_field f_mpll1[PLL_FACT_MAX] = {
-	{ .shift = 20,	.width = 1 },	/* lock_done	*/
-	{ .shift = 19,	.width = 1 },	/* div_s	*/
-	{ .shift = 18,	.width = 1 },	/* mod_en	*/
-	{ .shift = 17,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 11,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 56,	.width = 1 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 20,	.width = 1 },	 
+	{ .shift = 19,	.width = 1 },	 
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 17,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 11,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 56,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(mpll1_clk, "mpll1", "mpll1-gate", 0x2c,
 			       2, itable2, f_mpll1, 200);
 
 static const struct clk_bit_field f_dpll[PLL_FACT_MAX] = {
-	{ .shift = 16,	.width = 1 },	/* lock_done	*/
-	{ .shift = 15,	.width = 1 },	/* div_s	*/
-	{ .shift = 14,	.width = 1 },	/* mod_en	*/
-	{ .shift = 13,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 8,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 16,	.width = 1 },	 
+	{ .shift = 15,	.width = 1 },	 
+	{ .shift = 14,	.width = 1 },	 
+	{ .shift = 13,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 8,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(dpll0_clk, "dpll0", "dpll0-gate", 0x34,
 			       2, itable1, f_dpll, 200);
@@ -176,17 +176,17 @@ static SPRD_PLL_WITH_ITABLE_1K(dpll1_clk, "dpll1", "dpll1-gate", 0x3c,
 			       2, itable1, f_dpll, 200);
 
 static const struct clk_bit_field f_rpll[PLL_FACT_MAX] = {
-	{ .shift = 0,	.width = 1 },	/* lock_done	*/
-	{ .shift = 3,	.width = 1 },	/* div_s	*/
-	{ .shift = 80,	.width = 1 },	/* mod_en	*/
-	{ .shift = 81,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 14,	.width = 2 },	/* ibias	*/
-	{ .shift = 16,	.width = 7 },	/* n		*/
-	{ .shift = 4,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 3,	.width = 1 },	 
+	{ .shift = 80,	.width = 1 },	 
+	{ .shift = 81,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 14,	.width = 2 },	 
+	{ .shift = 16,	.width = 7 },	 
+	{ .shift = 4,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(rpll0_clk, "rpll0", "rpll0-gate", 0x44,
 			       3, itable1, f_rpll, 200);
@@ -195,33 +195,33 @@ static SPRD_PLL_WITH_ITABLE_1K(rpll1_clk, "rpll1", "rpll1-gate", 0x50,
 			       3, itable1, f_rpll, 200);
 
 static const struct clk_bit_field f_twpll[PLL_FACT_MAX] = {
-	{ .shift = 21,	.width = 1 },	/* lock_done	*/
-	{ .shift = 20,	.width = 1 },	/* div_s	*/
-	{ .shift = 19,	.width = 1 },	/* mod_en	*/
-	{ .shift = 18,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 13,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 21,	.width = 1 },	 
+	{ .shift = 20,	.width = 1 },	 
+	{ .shift = 19,	.width = 1 },	 
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 13,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(twpll_clk, "twpll", "twpll-gate", 0x5c,
 			       2, itable2, f_twpll, 200);
 
 static const struct clk_bit_field f_ltepll[PLL_FACT_MAX] = {
-	{ .shift = 31,	.width = 1 },	/* lock_done	*/
-	{ .shift = 27,	.width = 1 },	/* div_s	*/
-	{ .shift = 26,	.width = 1 },	/* mod_en	*/
-	{ .shift = 25,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 20,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 31,	.width = 1 },	 
+	{ .shift = 27,	.width = 1 },	 
+	{ .shift = 26,	.width = 1 },	 
+	{ .shift = 25,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 20,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(ltepll0_clk, "ltepll0", "ltepll0-gate",
 			       0x64, 2, itable1,
@@ -231,34 +231,34 @@ static SPRD_PLL_WITH_ITABLE_1K(ltepll1_clk, "ltepll1", "ltepll1-gate",
 			       f_ltepll, 200);
 
 static const struct clk_bit_field f_gpll[PLL_FACT_MAX] = {
-	{ .shift = 18,	.width = 1 },	/* lock_done	*/
-	{ .shift = 15,	.width = 1 },	/* div_s	*/
-	{ .shift = 14,	.width = 1 },	/* mod_en	*/
-	{ .shift = 13,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 8,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 17,	.width = 1 },	/* postdiv	*/
+	{ .shift = 18,	.width = 1 },	 
+	{ .shift = 15,	.width = 1 },	 
+	{ .shift = 14,	.width = 1 },	 
+	{ .shift = 13,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 8,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 17,	.width = 1 },	 
 };
 static SPRD_PLL_WITH_ITABLE_K_FVCO(gpll_clk, "gpll", "gpll-gate", 0x9c,
 				   2, itable1, f_gpll, 200,
 				   1000, 1000, 1, 600000000);
 
 static const struct clk_bit_field f_cppll[PLL_FACT_MAX] = {
-	{ .shift = 17,	.width = 1 },	/* lock_done	*/
-	{ .shift = 15,	.width = 1 },	/* div_s	*/
-	{ .shift = 14,	.width = 1 },	/* mod_en	*/
-	{ .shift = 13,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 8,	.width = 2 },	/* ibias	*/
-	{ .shift = 0,	.width = 7 },	/* n		*/
-	{ .shift = 57,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 17,	.width = 1 },	 
+	{ .shift = 15,	.width = 1 },	 
+	{ .shift = 14,	.width = 1 },	 
+	{ .shift = 13,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 8,	.width = 2 },	 
+	{ .shift = 0,	.width = 7 },	 
+	{ .shift = 57,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_WITH_ITABLE_1K(cppll_clk, "cppll", "cppll-gate", 0xc4,
 			       2, itable1, f_cppll, 200);
@@ -300,7 +300,7 @@ static CLK_FIXED_FACTOR(m0_39m, "m0-39m", "mpll0", 32, 1, 0);
 static CLK_FIXED_FACTOR(m1_63m, "m1-63m", "mpll1", 32, 1, 0);
 
 static struct sprd_clk_common *sc9860_pll_clks[] = {
-	/* address base is 0x40400000 */
+	 
 	&mpll0_clk.common,
 	&mpll1_clk.common,
 	&dpll0_clk.common,
@@ -436,7 +436,7 @@ static SPRD_COMP_CLK(iis3_clk,	"iis3",	iis_parents, 0x78,
 		     0, 2, 8, 6, 0);
 
 static struct sprd_clk_common *sc9860_ap_clks[] = {
-	/* address base is 0x20000000 */
+	 
 	&ap_apb.common,
 	&ap_usb3.common,
 	&uart0_clk.common,
@@ -655,7 +655,7 @@ static SPRD_MUX_CLK(ap_axi, "ap-axi", ap_axi_parents, 0x324,
 		    0, 2, SC9860_MUX_FLAG);
 
 static struct sprd_clk_common *sc9860_aon_prediv[] = {
-	/* address base is 0x402d0000 */
+	 
 	&aon_apb.common,
 	&aux0_clk.common,
 	&aux1_clk.common,
@@ -780,7 +780,7 @@ static SPRD_SC_GATE_CLK(ce1_eb,		"ce1-eb",	"ap-axi", 0x0,
 		     0x1000, BIT(25), CLK_IGNORE_UNUSED, 0);
 
 static struct sprd_clk_common *sc9860_apahb_gate[] = {
-	/* address base is 0x20210000 */
+	 
 	&usb3_eb.common,
 	&usb3_suspend.common,
 	&usb3_ref_eb.common,
@@ -999,7 +999,7 @@ static SPRD_SC_GATE_CLK(rtcdv10_eb, "rtcdv10-eb",	"aon-apb", 0x10,
 		     0x1000, BIT(27), CLK_IGNORE_UNUSED, 0);
 
 static struct sprd_clk_common *sc9860_aon_gate[] = {
-	/* address base is 0x402e0000 */
+	 
 	&avs_lit_eb.common,
 	&avs_big_eb.common,
 	&ap_intc5_eb.common,
@@ -1202,7 +1202,7 @@ static SPRD_COMP_CLK_TABLE(big_mcu, "big-mcu", big_mcu_parents, 0x24,
 			   mcu_table, 0, 4, 4, 3, 0);
 
 static struct sprd_clk_common *sc9860_aonsecure_clk[] = {
-	/* address base is 0x40880000 */
+	 
 	&lit_mcu.common,
 	&big_mcu.common,
 };
@@ -1259,7 +1259,7 @@ static SPRD_SC_GATE_CLK(agcp_audif_eb,	"agcp-audif-eb",	"aon-apb",
 		     0x0, 0x100, BIT(20), 0, 0);
 
 static struct sprd_clk_common *sc9860_agcp_gate[] = {
-	/* address base is 0x415e0000 */
+	 
 	&agcp_iis0_eb.common,
 	&agcp_iis1_eb.common,
 	&agcp_iis2_eb.common,
@@ -1317,7 +1317,7 @@ static SPRD_COMP_CLK(gpu_clk,	"gpu",	gpu_parents, 0x20,
 		     0, 2, 8, 4, 0);
 
 static struct sprd_clk_common *sc9860_gpu_clk[] = {
-	/* address base is 0x60200000 */
+	 
 	&gpu_clk.common,
 };
 
@@ -1357,7 +1357,7 @@ static SPRD_MUX_CLK(vsp_26m, "vsp-26m", vsp_26m_parents, 0x30,
 		    0, 1, SC9860_MUX_FLAG);
 
 static struct sprd_clk_common *sc9860_vsp_clk[] = {
-	/* address base is 0x61000000 */
+	 
 	&ahb_vsp.common,
 	&vsp_clk.common,
 	&vsp_enc.common,
@@ -1408,7 +1408,7 @@ static SPRD_GATE_CLK(vpp_bm_gate,	"vpp-bm-gate",	"ahb-vsp", 0x8,
 		     BIT(10), 0, 0);
 
 static struct sprd_clk_common *sc9860_vsp_gate[] = {
-	/* address base is 0x61100000 */
+	 
 	&vsp_dec_eb.common,
 	&vsp_ckg_eb.common,
 	&vsp_mmu_eb.common,
@@ -1463,7 +1463,7 @@ static SPRD_GATE_CLK(mipi_csi1_eb, "mipi-csi1-eb", "ahb-cam", 0x50,
 		     BIT(16), 0, 0);
 
 static struct sprd_clk_common *sc9860_cam_clk[] = {
-	/* address base is 0x62000000 */
+	 
 	&ahb_cam.common,
 	&sensor0_clk.common,
 	&sensor1_clk.common,
@@ -1594,7 +1594,7 @@ static SPRD_SC_GATE_CLK(ic_in_i_en,	"ic-in-i-en",	"ahb-cam", 0x28,
 		     0x1000, BIT(9), 0, 0);
 
 static struct sprd_clk_common *sc9860_cam_gate[] = {
-	/* address base is 0x62100000 */
+	 
 	&dcam0_eb.common,
 	&dcam1_eb.common,
 	&isp0_eb.common,
@@ -1719,7 +1719,7 @@ static SPRD_COMP_CLK(dispc1_dpi, "dispc1-dpi", dispc_parents,	0x40,
 		     0, 2, 8, 2, 0);
 
 static struct sprd_clk_common *sc9860_disp_clk[] = {
-	/* address base is 0x63000000 */
+	 
 	&ahb_disp.common,
 	&dispc0_dpi.common,
 	&dispc1_dpi.common,
@@ -1804,7 +1804,7 @@ static SPRD_GATE_CLK(gspm0idle_gate, "gspm0idle-gate", "ahb-disp",  0x8,
 		     BIT(15), 0, 0);
 
 static struct sprd_clk_common *sc9860_disp_gate[] = {
-	/* address base is 0x63100000 */
+	 
 	&dispc0_eb.common,
 	&dispc1_eb.common,
 	&dispc_mmu_eb.common,
@@ -1925,7 +1925,7 @@ static SPRD_SC_GATE_CLK(spi3_eb,	"spi3-eb",	"ap-apb", 0x0,
 		     0x1000, BIT(20), CLK_IGNORE_UNUSED, 0);
 
 static struct sprd_clk_common *sc9860_apapb_gate[] = {
-	/* address base is 0x70b00000 */
+	 
 	&sim0_eb.common,
 	&iis0_eb.common,
 	&iis1_eb.common,
@@ -1983,37 +1983,37 @@ static const struct sprd_clk_desc sc9860_apapb_gate_desc = {
 };
 
 static const struct of_device_id sprd_sc9860_clk_ids[] = {
-	{ .compatible = "sprd,sc9860-pmu-gate",		/* 0x402b */
+	{ .compatible = "sprd,sc9860-pmu-gate",		 
 	  .data = &sc9860_pmu_gate_desc },
-	{ .compatible = "sprd,sc9860-pll",		/* 0x4040 */
+	{ .compatible = "sprd,sc9860-pll",		 
 	  .data = &sc9860_pll_desc },
-	{ .compatible = "sprd,sc9860-ap-clk",		/* 0x2000 */
+	{ .compatible = "sprd,sc9860-ap-clk",		 
 	  .data = &sc9860_ap_clk_desc },
-	{ .compatible = "sprd,sc9860-aon-prediv",	/* 0x402d */
+	{ .compatible = "sprd,sc9860-aon-prediv",	 
 	  .data = &sc9860_aon_prediv_desc },
-	{ .compatible = "sprd,sc9860-apahb-gate",	/* 0x2021 */
+	{ .compatible = "sprd,sc9860-apahb-gate",	 
 	  .data = &sc9860_apahb_gate_desc },
-	{ .compatible = "sprd,sc9860-aon-gate",		/* 0x402e */
+	{ .compatible = "sprd,sc9860-aon-gate",		 
 	  .data = &sc9860_aon_gate_desc },
-	{ .compatible = "sprd,sc9860-aonsecure-clk",	/* 0x4088 */
+	{ .compatible = "sprd,sc9860-aonsecure-clk",	 
 	  .data = &sc9860_aonsecure_clk_desc },
-	{ .compatible = "sprd,sc9860-agcp-gate",	/* 0x415e */
+	{ .compatible = "sprd,sc9860-agcp-gate",	 
 	  .data = &sc9860_agcp_gate_desc },
-	{ .compatible = "sprd,sc9860-gpu-clk",		/* 0x6020 */
+	{ .compatible = "sprd,sc9860-gpu-clk",		 
 	  .data = &sc9860_gpu_clk_desc },
-	{ .compatible = "sprd,sc9860-vsp-clk",		/* 0x6100 */
+	{ .compatible = "sprd,sc9860-vsp-clk",		 
 	  .data = &sc9860_vsp_clk_desc },
-	{ .compatible = "sprd,sc9860-vsp-gate",		/* 0x6110 */
+	{ .compatible = "sprd,sc9860-vsp-gate",		 
 	  .data = &sc9860_vsp_gate_desc },
-	{ .compatible = "sprd,sc9860-cam-clk",		/* 0x6200 */
+	{ .compatible = "sprd,sc9860-cam-clk",		 
 	  .data = &sc9860_cam_clk_desc },
-	{ .compatible = "sprd,sc9860-cam-gate",		/* 0x6210 */
+	{ .compatible = "sprd,sc9860-cam-gate",		 
 	  .data = &sc9860_cam_gate_desc },
-	{ .compatible = "sprd,sc9860-disp-clk",		/* 0x6300 */
+	{ .compatible = "sprd,sc9860-disp-clk",		 
 	  .data = &sc9860_disp_clk_desc },
-	{ .compatible = "sprd,sc9860-disp-gate",	/* 0x6310 */
+	{ .compatible = "sprd,sc9860-disp-gate",	 
 	  .data = &sc9860_disp_gate_desc },
-	{ .compatible = "sprd,sc9860-apapb-gate",	/* 0x70b0 */
+	{ .compatible = "sprd,sc9860-apapb-gate",	 
 	  .data = &sc9860_apapb_gate_desc },
 	{ }
 };

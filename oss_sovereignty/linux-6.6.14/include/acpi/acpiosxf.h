@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: acpiosxf.h - All interfaces to the OS Services Layer (OSL). These
- *                    interfaces must be implemented by OSL to interface the
- *                    ACPI components to the host operating system.
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef __ACPIOSXF_H__
 #define __ACPIOSXF_H__
@@ -15,7 +7,7 @@
 #include <acpi/platform/acenv.h>
 #include <acpi/actypes.h>
 
-/* Types for acpi_os_execute */
+ 
 
 typedef enum {
 	OSL_GLOBAL_LOCK_HANDLER,
@@ -30,7 +22,7 @@ typedef enum {
 #define ACPI_NO_UNIT_LIMIT          ((u32) -1)
 #define ACPI_MUTEX_SEM              1
 
-/* Functions for acpi_os_signal */
+ 
 
 #define ACPI_SIGNAL_FATAL           0
 #define ACPI_SIGNAL_BREAKPOINT      1
@@ -41,9 +33,7 @@ struct acpi_signal_fatal_info {
 	u32 argument;
 };
 
-/*
- * OSL Initialization and shutdown primitives
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_initialize
 acpi_status acpi_os_initialize(void);
 #endif
@@ -52,9 +42,7 @@ acpi_status acpi_os_initialize(void);
 acpi_status acpi_os_terminate(void);
 #endif
 
-/*
- * ACPI Table interfaces
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_root_pointer
 acpi_physical_address acpi_os_get_root_pointer(void);
 #endif
@@ -78,9 +66,7 @@ acpi_os_physical_table_override(struct acpi_table_header *existing_table,
 				u32 *new_table_length);
 #endif
 
-/*
- * Spinlock primitives
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_create_lock
 acpi_status acpi_os_create_lock(acpi_spinlock * out_handle);
 #endif
@@ -97,10 +83,7 @@ acpi_cpu_flags acpi_os_acquire_lock(acpi_spinlock handle);
 void acpi_os_release_lock(acpi_spinlock handle, acpi_cpu_flags flags);
 #endif
 
-/*
- * RAW spinlock primitives. If the OS does not provide them, fallback to
- * spinlock primitives
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_create_raw_lock
 # define acpi_os_create_raw_lock(out_handle)	acpi_os_create_lock(out_handle)
 #endif
@@ -118,9 +101,7 @@ void acpi_os_release_lock(acpi_spinlock handle, acpi_cpu_flags flags);
 	acpi_os_release_lock(handle, flags)
 #endif
 
-/*
- * Semaphore primitives
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_create_semaphore
 acpi_status
 acpi_os_create_semaphore(u32 max_units,
@@ -140,10 +121,7 @@ acpi_os_wait_semaphore(acpi_semaphore handle, u32 units, u16 timeout);
 acpi_status acpi_os_signal_semaphore(acpi_semaphore handle, u32 units);
 #endif
 
-/*
- * Mutex primitives. May be configured to use semaphores instead via
- * ACPI_MUTEX_TYPE (see platform/acenv.h)
- */
+ 
 #if (ACPI_MUTEX_TYPE != ACPI_BINARY_SEMAPHORE)
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_create_mutex
@@ -164,9 +142,7 @@ void acpi_os_release_mutex(acpi_mutex handle);
 
 #endif
 
-/*
- * Memory allocation and mapping
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_allocate
 void *acpi_os_allocate(acpi_size size);
 #endif
@@ -193,9 +169,7 @@ acpi_os_get_physical_address(void *logical_address,
 			     acpi_physical_address *physical_address);
 #endif
 
-/*
- * Memory/Object Cache
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_create_cache
 acpi_status
 acpi_os_create_cache(char *cache_name,
@@ -219,9 +193,7 @@ void *acpi_os_acquire_object(acpi_cache_t * cache);
 acpi_status acpi_os_release_object(acpi_cache_t * cache, void *object);
 #endif
 
-/*
- * Interrupt handlers
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_install_interrupt_handler
 acpi_status
 acpi_os_install_interrupt_handler(u32 interrupt_number,
@@ -235,9 +207,7 @@ acpi_os_remove_interrupt_handler(u32 interrupt_number,
 				 acpi_osd_handler service_routine);
 #endif
 
-/*
- * Threads and Scheduling
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_thread_id
 acpi_thread_id acpi_os_get_thread_id(void);
 #endif
@@ -260,9 +230,7 @@ void acpi_os_sleep(u64 milliseconds);
 void acpi_os_stall(u32 microseconds);
 #endif
 
-/*
- * Platform and hardware-independent I/O interfaces
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_read_port
 acpi_status acpi_os_read_port(acpi_io_address address, u32 *value, u32 width);
 #endif
@@ -271,9 +239,7 @@ acpi_status acpi_os_read_port(acpi_io_address address, u32 *value, u32 width);
 acpi_status acpi_os_write_port(acpi_io_address address, u32 value, u32 width);
 #endif
 
-/*
- * Platform and hardware-independent physical memory interfaces
- */
+ 
 int acpi_os_read_iomem(void __iomem *virt_addr, u64 *value, u32 width);
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_read_memory
@@ -286,11 +252,7 @@ acpi_status
 acpi_os_write_memory(acpi_physical_address address, u64 value, u32 width);
 #endif
 
-/*
- * Platform and hardware-independent PCI configuration space access
- * Note: Can't use "Register" as a parameter, changed to "Reg" --
- * certain compilers complain.
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_read_pci_configuration
 acpi_status
 acpi_os_read_pci_configuration(struct acpi_pci_id *pci_id,
@@ -303,9 +265,7 @@ acpi_os_write_pci_configuration(struct acpi_pci_id *pci_id,
 				u32 reg, u64 value, u32 width);
 #endif
 
-/*
- * Miscellaneous
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_readable
 u8 acpi_os_readable(void *pointer, acpi_size length);
 #endif
@@ -326,9 +286,7 @@ acpi_status acpi_os_signal(u32 function, void *info);
 acpi_status acpi_os_enter_sleep(u8 sleep_state, u32 rega_value, u32 regb_value);
 #endif
 
-/*
- * Debug print routines
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_printf
 ACPI_PRINTF_LIKE(1)
 void ACPI_INTERNAL_VAR_XFACE acpi_os_printf(const char *format, ...);
@@ -342,9 +300,7 @@ void acpi_os_vprintf(const char *format, va_list args);
 void acpi_os_redirect_output(void *destination);
 #endif
 
-/*
- * Debug IO
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_line
 acpi_status acpi_os_get_line(char *buffer, u32 buffer_length, u32 *bytes_read);
 #endif
@@ -371,9 +327,7 @@ acpi_os_trace_point(acpi_trace_event_type type,
 		    u8 begin, u8 *aml, char *pathname);
 #endif
 
-/*
- * Obtain ACPI table(s)
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_table_by_name
 acpi_status
 acpi_os_get_table_by_name(char *signature,
@@ -395,15 +349,13 @@ acpi_os_get_table_by_address(acpi_physical_address address,
 			     struct acpi_table_header **table);
 #endif
 
-/*
- * Directory manipulation
- */
+ 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_open_directory
 void *acpi_os_open_directory(char *pathname,
 			     char *wildcard_spec, char requested_file_type);
 #endif
 
-/* requeste_file_type values */
+ 
 
 #define REQUEST_FILE_ONLY                   0
 #define REQUEST_DIR_ONLY                    1
@@ -416,4 +368,4 @@ char *acpi_os_get_next_filename(void *dir_handle);
 void acpi_os_close_directory(void *dir_handle);
 #endif
 
-#endif				/* __ACPIOSXF_H__ */
+#endif				 

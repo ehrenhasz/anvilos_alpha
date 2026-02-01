@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016 Synaptics Incorporated
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rmi.h>
@@ -11,7 +9,7 @@
 
 #define RMI_F30_QUERY_SIZE			2
 
-/* Defs for Query 0 */
+ 
 #define RMI_F30_EXTENDED_PATTERNS		0x01
 #define RMI_F30_HAS_MAPPABLE_BUTTONS		BIT(1)
 #define RMI_F30_HAS_LED				BIT(2)
@@ -20,10 +18,10 @@
 #define RMI_F30_HAS_GPIO_DRV_CTL		BIT(5)
 #define RMI_F30_HAS_MECH_MOUSE_BTNS		BIT(6)
 
-/* Defs for Query 1 */
+ 
 #define RMI_F30_GPIO_LED_COUNT			0x1F
 
-/* Defs for Control Registers */
+ 
 #define RMI_F30_CTRL_1_GPIO_DEBOUNCE		0x01
 #define RMI_F30_CTRL_1_HALT			BIT(4)
 #define RMI_F30_CTRL_1_HALTED			BIT(5)
@@ -55,7 +53,7 @@ struct rmi_f30_ctrl_data {
 };
 
 struct f30_data {
-	/* Query Data */
+	 
 	bool has_extended_pattern;
 	bool has_mappable_buttons;
 	bool has_led;
@@ -67,7 +65,7 @@ struct f30_data {
 
 	u8 register_count;
 
-	/* Control Register Data */
+	 
 	struct rmi_f30_ctrl_data ctrl[RMI_F30_CTRL_MAX_REG_BLOCKS];
 	u8 ctrl_regs[RMI_F30_CTRL_REGS_MAX_SIZE];
 	u32 ctrl_regs_size;
@@ -127,7 +125,7 @@ static irqreturn_t rmi_f30_attention(int irq, void *ctx)
 	int error;
 	int i;
 
-	/* Read the gpi led data. */
+	 
 	if (drvdata->attn_data.data) {
 		if (drvdata->attn_data.size < f30->register_count) {
 			dev_warn(&fn->dev,
@@ -168,12 +166,12 @@ static int rmi_f30_config(struct rmi_function *fn)
 				rmi_get_platform_data(fn->rmi_dev);
 	int error;
 
-	/* can happen if gpio_data.disable is set */
+	 
 	if (!f30)
 		return 0;
 
 	if (pdata->gpio_data.trackstick_buttons) {
-		/* Try [re-]establish link to F03. */
+		 
 		f30->f03 = rmi_find_function(fn->rmi_dev, 0x03);
 		f30->trackstick_buttons = f30->f03 != NULL;
 	}
@@ -181,7 +179,7 @@ static int rmi_f30_config(struct rmi_function *fn)
 	if (pdata->gpio_data.disable) {
 		drv->clear_irq_bits(fn->rmi_dev, fn->irq_mask);
 	} else {
-		/* Write Control Register values back to device */
+		 
 		error = rmi_write_block(fn->rmi_dev, fn->fd.control_base_addr,
 					f30->ctrl_regs, f30->ctrl_regs_size);
 		if (error) {
@@ -212,10 +210,7 @@ static bool rmi_f30_is_valid_button(int button, struct rmi_f30_ctrl_data *ctrl)
 	int byte_position = button >> 3;
 	int bit_position = button & 0x07;
 
-	/*
-	 * ctrl2 -> dir == 0 -> input mode
-	 * ctrl3 -> data == 1 -> actual button
-	 */
+	 
 	return !(ctrl[2].regs[byte_position] & BIT(bit_position)) &&
 		(ctrl[3].regs[byte_position] & BIT(bit_position));
 }
@@ -259,11 +254,7 @@ static int rmi_f30_map_gpios(struct rmi_function *fn,
 	input->keycodesize = sizeof(f30->gpioled_key_map[0]);
 	input->keycodemax = f30->gpioled_count;
 
-	/*
-	 * Buttonpad could be also inferred from f30->has_mech_mouse_btns,
-	 * but I am not sure, so use only the pdata info and the number of
-	 * mapped buttons.
-	 */
+	 
 	if (pdata->gpio_data.buttonpad || (button - BTN_LEFT == 1))
 		__set_bit(INPUT_PROP_BUTTONPAD, input->propbit);
 
@@ -320,13 +311,13 @@ static int rmi_f30_initialize(struct rmi_function *fn, struct f30_data *f30)
 	}
 
 	if (f30->has_led || f30->has_gpio_driver_control) {
-		/* control 6 uses a byte per gpio/led */
+		 
 		rmi_f30_set_ctrl_data(&f30->ctrl[6], &control_address,
 				      f30->gpioled_count, &ctrl_reg);
 	}
 
 	if (f30->has_mappable_buttons) {
-		/* control 7 uses a byte per gpio/led */
+		 
 		rmi_f30_set_ctrl_data(&f30->ctrl[7], &control_address,
 				      f30->gpioled_count, &ctrl_reg);
 	}

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -34,7 +32,7 @@ static const u32 tegra_shared_plane_formats[] = {
 	DRM_FORMAT_RGBA5551,
 	DRM_FORMAT_ARGB8888,
 	DRM_FORMAT_ABGR8888,
-	/* new on Tegra114 */
+	 
 	DRM_FORMAT_ABGR4444,
 	DRM_FORMAT_ABGR1555,
 	DRM_FORMAT_BGRA5551,
@@ -45,7 +43,7 @@ static const u32 tegra_shared_plane_formats[] = {
 	DRM_FORMAT_BGR565,
 	DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_XBGR8888,
-	/* planar formats */
+	 
 	DRM_FORMAT_UYVY,
 	DRM_FORMAT_YUYV,
 	DRM_FORMAT_YUV420,
@@ -60,18 +58,14 @@ static const u64 tegra_shared_plane_modifiers[] = {
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(3),
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(4),
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(5),
-	/*
-	 * The GPU sector layout is only supported on Tegra194, but these will
-	 * be filtered out later on by ->format_mod_supported() on SoCs where
-	 * it isn't supported.
-	 */
+	 
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(0) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(1) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(2) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(3) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(4) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
 	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(5) | DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT,
-	/* sentinel */
+	 
 	DRM_FORMAT_MOD_INVALID
 };
 
@@ -157,16 +151,11 @@ int tegra_display_hub_prepare(struct tegra_display_hub *hub)
 {
 	unsigned int i;
 
-	/*
-	 * XXX Enabling/disabling windowgroups needs to happen when the owner
-	 * display controller is disabled. There's currently no good point at
-	 * which this could be executed, so unconditionally enable all window
-	 * groups for now.
-	 */
+	 
 	for (i = 0; i < hub->soc->num_wgrps; i++) {
 		struct tegra_windowgroup *wgrp = &hub->wgrps[i];
 
-		/* Skip orphaned window group whose parent DC is disabled */
+		 
 		if (wgrp->parent)
 			tegra_windowgroup_enable(wgrp);
 	}
@@ -178,14 +167,11 @@ void tegra_display_hub_cleanup(struct tegra_display_hub *hub)
 {
 	unsigned int i;
 
-	/*
-	 * XXX Remove this once window groups can be more fine-grainedly
-	 * enabled and disabled.
-	 */
+	 
 	for (i = 0; i < hub->soc->num_wgrps; i++) {
 		struct tegra_windowgroup *wgrp = &hub->wgrps[i];
 
-		/* Skip orphaned window group whose parent DC is disabled */
+		 
 		if (wgrp->parent)
 			tegra_windowgroup_disable(wgrp);
 	}
@@ -274,11 +260,7 @@ static int tegra_shared_plane_set_owner(struct tegra_plane *plane,
 		return -EBUSY;
 	}
 
-	/*
-	 * This seems to happen whenever the head has been disabled with one
-	 * or more windows being active. This is harmless because we'll just
-	 * reassign the window to the new head anyway.
-	 */
+	 
 	if (old && owner == OWNER_MASK)
 		dev_dbg(dev, "window %u not owned by head %u but %u\n", index,
 			old->pipe, owner);
@@ -385,7 +367,7 @@ static void tegra_dc_assign_shared_plane(struct tegra_dc *dc,
 	value = SLOTS(1);
 	tegra_plane_writel(plane, value, DC_WIN_CORE_IHUB_WGRP_FETCH_METER);
 
-	/* disable watermark */
+	 
 	value = tegra_plane_readl(plane, DC_WIN_CORE_IHUB_WGRP_LATENCY_CTLA);
 	value &= ~LATENCY_CTL_MODE_ENABLE;
 	tegra_plane_writel(plane, value, DC_WIN_CORE_IHUB_WGRP_LATENCY_CTLA);
@@ -394,12 +376,12 @@ static void tegra_dc_assign_shared_plane(struct tegra_dc *dc,
 	value |= WATERMARK_MASK;
 	tegra_plane_writel(plane, value, DC_WIN_CORE_IHUB_WGRP_LATENCY_CTLB);
 
-	/* pipe meter */
+	 
 	value = tegra_plane_readl(plane, DC_WIN_CORE_PRECOMP_WGRP_PIPE_METER);
 	value = PIPE_METER_INT(0) | PIPE_METER_FRAC(0);
 	tegra_plane_writel(plane, value, DC_WIN_CORE_PRECOMP_WGRP_PIPE_METER);
 
-	/* mempool entries */
+	 
 	value = tegra_plane_readl(plane, DC_WIN_CORE_IHUB_WGRP_POOL_CONFIG);
 	value = MEMPOOL_ENTRIES(0x331);
 	tegra_plane_writel(plane, value, DC_WIN_CORE_IHUB_WGRP_POOL_CONFIG);
@@ -433,7 +415,7 @@ static int tegra_shared_plane_atomic_check(struct drm_plane *plane,
 	struct tegra_dc *dc = to_tegra_dc(new_plane_state->crtc);
 	int err;
 
-	/* no need for further checks if the plane is being disabled */
+	 
 	if (!new_plane_state->crtc || !new_plane_state->fb)
 		return 0;
 
@@ -459,11 +441,7 @@ static int tegra_shared_plane_atomic_check(struct drm_plane *plane,
 		return -EINVAL;
 	}
 
-	/*
-	 * Tegra doesn't support different strides for U and V planes so we
-	 * error out if the user tries to display a framebuffer with such a
-	 * configuration.
-	 */
+	 
 	if (new_plane_state->fb->format->num_planes > 2) {
 		if (new_plane_state->fb->pitches[2] != new_plane_state->fb->pitches[1]) {
 			DRM_ERROR("unsupported UV-plane configuration\n");
@@ -471,7 +449,7 @@ static int tegra_shared_plane_atomic_check(struct drm_plane *plane,
 		}
 	}
 
-	/* XXX scaling is not yet supported, add a check here */
+	 
 
 	err = tegra_plane_state_add(&tegra->base, new_plane_state);
 	if (err < 0)
@@ -490,7 +468,7 @@ static void tegra_shared_plane_atomic_disable(struct drm_plane *plane,
 	u32 value;
 	int err;
 
-	/* rien ne va plus */
+	 
 	if (!old_state || !old_state->crtc)
 		return;
 
@@ -502,11 +480,7 @@ static void tegra_shared_plane_atomic_disable(struct drm_plane *plane,
 		return;
 	}
 
-	/*
-	 * XXX Legacy helpers seem to sometimes call ->atomic_disable() even
-	 * on planes that are already disabled. Make sure we fallback to the
-	 * head for this particular state instead of crashing.
-	 */
+	 
 	if (WARN_ON(p->dc == NULL))
 		p->dc = dc;
 
@@ -547,7 +521,7 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 	bool yuv;
 	int err;
 
-	/* rien ne va plus */
+	 
 	if (!new_state->crtc || !new_state->fb)
 		return;
 
@@ -568,7 +542,7 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 
 	tegra_plane_writel(p, VCOUNTER, DC_WIN_CORE_ACT_CONTROL);
 
-	/* blending */
+	 
 	value = BLEND_FACTOR_DST_ALPHA_ZERO | BLEND_FACTOR_SRC_ALPHA_K2 |
 		BLEND_FACTOR_DST_COLOR_NEG_K1_TIMES_SRC |
 		BLEND_FACTOR_SRC_COLOR_K1_TIMES_SRC;
@@ -582,7 +556,7 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 	value = K2(255) | K1(255) | WINDOW_LAYER_DEPTH(255 - zpos);
 	tegra_plane_writel(p, value, DC_WIN_BLEND_LAYER_CONTROL);
 
-	/* scaling */
+	 
 	min_width = min(new_state->src_w >> 16, new_state->crtc_w);
 
 	value = tegra_plane_readl(p, DC_WINC_PRECOMP_WGRP_PIPE_CAPC);
@@ -625,15 +599,11 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 
 	tegra_plane_writel(p, bypass, DC_WIN_WINDOWGROUP_SET_INPUT_SCALER_USAGE);
 
-	/* disable compression */
+	 
 	tegra_plane_writel(p, 0, DC_WINBUF_CDE_CONTROL);
 
 #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-	/*
-	 * Physical address bit 39 in Tegra194 is used as a switch for special
-	 * logic that swizzles the memory using either the legacy Tegra or the
-	 * dGPU sector layout.
-	 */
+	 
 	if (tegra_plane_state->tiling.sector_layout == TEGRA_BO_SECTOR_LAYOUT_GPU)
 		addr_flag = BIT_ULL(39);
 #endif
@@ -700,7 +670,7 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 		else
 			value |= DEGAMMA_YUV12;
 
-		/* XXX parameterize */
+		 
 		value |= COLOR_SPACE_YUV_2020;
 	} else {
 		if (!tegra_plane_format_is_indexed(tegra_plane_state->format))
@@ -716,14 +686,14 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 	if (dc->soc->supports_block_linear) {
 		unsigned long height = tegra_plane_state->tiling.value;
 
-		/* XXX */
+		 
 		switch (tegra_plane_state->tiling.mode) {
 		case TEGRA_BO_TILING_MODE_PITCH:
 			value = DC_WINBUF_SURFACE_KIND_BLOCK_HEIGHT(0) |
 				DC_WINBUF_SURFACE_KIND_PITCH;
 			break;
 
-		/* XXX not supported on Tegra186 and later */
+		 
 		case TEGRA_BO_TILING_MODE_TILED:
 			value = DC_WINBUF_SURFACE_KIND_TILED;
 			break;
@@ -737,7 +707,7 @@ static void tegra_shared_plane_atomic_update(struct drm_plane *plane,
 		tegra_plane_writel(p, value, DC_WINBUF_SURFACE_KIND);
 	}
 
-	/* disable gamut CSC */
+	 
 	value = tegra_plane_readl(p, DC_WIN_WINDOW_SET_CONTROL);
 	value &= ~CONTROL_CSC_ENABLE;
 	tegra_plane_writel(p, value, DC_WIN_WINDOW_SET_CONTROL);
@@ -781,7 +751,7 @@ struct drm_plane *tegra_shared_plane_create(struct drm_device *drm,
 
 	p = &plane->base.base;
 
-	/* planes can be assigned to arbitrary CRTCs */
+	 
 	possible_crtcs = BIT(tegra->num_crtcs) - 1;
 
 	num_formats = ARRAY_SIZE(tegra_shared_plane_formats);
@@ -859,14 +829,7 @@ int tegra_display_hub_atomic_check(struct drm_device *drm,
 	if (IS_ERR(hub_state))
 		return PTR_ERR(hub_state);
 
-	/*
-	 * The display hub display clock needs to be fed by the display clock
-	 * with the highest frequency to ensure proper functioning of all the
-	 * displays.
-	 *
-	 * Note that this isn't used before Tegra186, but it doesn't hurt and
-	 * conditionalizing it would make the code less clean.
-	 */
+	 
 	for_each_oldnew_crtc_in_state(state, crtc, old, new, i) {
 		struct tegra_dc_state *dc = to_dc_state(new);
 
@@ -1145,7 +1108,7 @@ static int tegra_display_hub_probe(struct platform_device *pdev)
 
 	of_node_put(child);
 
-	/* XXX: enable clock across reset? */
+	 
 	err = reset_control_assert(hub->rst);
 	if (err < 0)
 		return err;
@@ -1208,7 +1171,7 @@ static const struct of_device_id tegra_display_hub_of_match[] = {
 		.compatible = "nvidia,tegra186-display",
 		.data = &tegra186_display_hub
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, tegra_display_hub_of_match);

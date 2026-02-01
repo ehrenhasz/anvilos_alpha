@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2013-2014 Freescale Semiconductor, Inc.
- * Copyright 2018 Angelo Dureghello <angelo@sysam.it>
- */
+ 
+ 
 #ifndef _FSL_EDMA_COMMON_H_
 #define _FSL_EDMA_COMMON_H_
 
@@ -94,21 +91,19 @@ struct fsl_edma3_ch_reg {
 	__le32	ch_sbr;
 	__le32	ch_pri;
 	__le32	ch_mux;
-	__le32  ch_mattr; /* edma4, reserved for edma3 */
+	__le32  ch_mattr;  
 	__le32  ch_reserved;
 	struct fsl_edma_hw_tcd tcd;
 } __packed;
 
-/*
- * These are iomem pointers, for both v32 and v64.
- */
+ 
 struct edma_regs {
 	void __iomem *cr;
 	void __iomem *es;
 	void __iomem *erqh;
-	void __iomem *erql;	/* aka erq on v32 */
+	void __iomem *erql;	 
 	void __iomem *eeih;
-	void __iomem *eeil;	/* aka eei on v32 */
+	void __iomem *eeil;	 
 	void __iomem *seei;
 	void __iomem *ceei;
 	void __iomem *serq;
@@ -176,16 +171,16 @@ struct fsl_edma_desc {
 #define FSL_EDMA_DRV_HAS_PD		BIT(5)
 #define FSL_EDMA_DRV_HAS_CHCLK		BIT(6)
 #define FSL_EDMA_DRV_HAS_CHMUX		BIT(7)
-/* imx8 QM audio edma remote local swapped */
+ 
 #define FSL_EDMA_DRV_QUIRK_SWAPPED	BIT(8)
-/* control and status register is in tcd address space, edma3 reg layout */
+ 
 #define FSL_EDMA_DRV_SPLIT_REG		BIT(9)
 #define FSL_EDMA_DRV_BUS_8BYTE		BIT(10)
 #define FSL_EDMA_DRV_DEV_TO_DEV		BIT(11)
 #define FSL_EDMA_DRV_ALIGN_64BYTE	BIT(12)
-/* Need clean CHn_CSR DONE before enable TCD's ESG */
+ 
 #define FSL_EDMA_DRV_CLEAR_DONE_E_SG	BIT(13)
-/* Need clean CHn_CSR DONE before enable TCD's MAJORELINK */
+ 
 #define FSL_EDMA_DRV_CLEAR_DONE_E_LINK	BIT(14)
 
 #define FSL_EDMA_DRV_EDMA3	(FSL_EDMA_DRV_SPLIT_REG |	\
@@ -202,7 +197,7 @@ struct fsl_edma_desc {
 				 FSL_EDMA_DRV_CLEAR_DONE_E_LINK)
 
 struct fsl_edma_drvdata {
-	u32			dmamuxs; /* only used before v3 */
+	u32			dmamuxs;  
 	u32			chreg_off;
 	u32			chreg_space_sz;
 	u32			flags;
@@ -246,12 +241,7 @@ struct fsl_edma_engine {
 	edma_writel(chan->edma, val,				\
 		   (void __iomem *)&(container_of(chan->tcd, struct fsl_edma3_ch_reg, tcd)->__name))
 
-/*
- * R/W functions for big- or little-endian registers:
- * The eDMA controller's endian is independent of the CPU core's endian.
- * For the big-endian IP module, the offset for 8-bit or 16-bit registers
- * should also be swapped opposite to that in little-endian IP.
- */
+ 
 static inline u32 edma_readl(struct fsl_edma_engine *edma, void __iomem *addr)
 {
 	if (edma->big_endian)
@@ -271,7 +261,7 @@ static inline u16 edma_readw(struct fsl_edma_engine *edma, void __iomem *addr)
 static inline void edma_writeb(struct fsl_edma_engine *edma,
 			       u8 val, void __iomem *addr)
 {
-	/* swap the reg offset for these in big-endian mode */
+	 
 	if (edma->big_endian)
 		iowrite8(val, (void __iomem *)((unsigned long)addr ^ 0x3));
 	else
@@ -281,7 +271,7 @@ static inline void edma_writeb(struct fsl_edma_engine *edma,
 static inline void edma_writew(struct fsl_edma_engine *edma,
 			       u16 val, void __iomem *addr)
 {
-	/* swap the reg offset for these in big-endian mode */
+	 
 	if (edma->big_endian)
 		iowrite16be(val, (void __iomem *)((unsigned long)addr ^ 0x2));
 	else
@@ -348,4 +338,4 @@ void fsl_edma_free_chan_resources(struct dma_chan *chan);
 void fsl_edma_cleanup_vchan(struct dma_device *dmadev);
 void fsl_edma_setup_regs(struct fsl_edma_engine *edma);
 
-#endif /* _FSL_EDMA_COMMON_H_ */
+#endif  

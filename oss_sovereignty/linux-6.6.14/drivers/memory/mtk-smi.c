@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Yong Wu <yong.wu@mediatek.com>
- */
+
+ 
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -20,13 +17,13 @@
 #include <dt-bindings/memory/mt2701-larb-port.h>
 #include <dt-bindings/memory/mtk-memory-port.h>
 
-/* SMI COMMON */
+ 
 #define SMI_L1LEN			0x100
 
 #define SMI_L1_ARB			0x200
 #define SMI_BUS_SEL			0x220
 #define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
-/* All are MMU0 defaultly. Only specialize mmu1 here. */
+ 
 #define F_MMU1_LARB(larbid)		(0x1 << SMI_BUS_LARB_SHIFT(larbid))
 
 #define SMI_READ_FIFO_TH		0x230
@@ -36,7 +33,7 @@
 #define SMI_DCM				0x300
 #define SMI_DUMMY			0x444
 
-/* SMI LARB */
+ 
 #define SMI_LARB_SLP_CON                0xc
 #define SLP_PROT_EN                     BIT(0)
 #define SLP_PROT_RDY                    BIT(16)
@@ -51,33 +48,29 @@
 #define SMI_LARB_OSTDL_PORT		0x200
 #define SMI_LARB_OSTDL_PORTx(id)	(SMI_LARB_OSTDL_PORT + (((id) & 0x1f) << 2))
 
-/* Below are about mmu enable registers, they are different in SoCs */
-/* gen1: mt2701 */
+ 
+ 
 #define REG_SMI_SECUR_CON_BASE		0x5c0
 
-/* every register control 8 port, register offset 0x4 */
+ 
 #define REG_SMI_SECUR_CON_OFFSET(id)	(((id) >> 3) << 2)
 #define REG_SMI_SECUR_CON_ADDR(id)	\
 	(REG_SMI_SECUR_CON_BASE + REG_SMI_SECUR_CON_OFFSET(id))
 
-/*
- * every port have 4 bit to control, bit[port + 3] control virtual or physical,
- * bit[port + 2 : port + 1] control the domain, bit[port] control the security
- * or non-security.
- */
+ 
 #define SMI_SECUR_CON_VAL_MSK(id)	(~(0xf << (((id) & 0x7) << 2)))
 #define SMI_SECUR_CON_VAL_VIRT(id)	BIT((((id) & 0x7) << 2) + 3)
-/* mt2701 domain should be set to 3 */
+ 
 #define SMI_SECUR_CON_VAL_DOMAIN(id)	(0x3 << ((((id) & 0x7) << 2) + 1))
 
-/* gen2: */
-/* mt8167 */
+ 
+ 
 #define MT8167_SMI_LARB_MMU_EN		0xfc0
 
-/* mt8173 */
+ 
 #define MT8173_SMI_LARB_MMU_EN		0xf00
 
-/* general */
+ 
 #define SMI_LARB_NONSEC_CON(id)		(0x380 + ((id) * 4))
 #define F_MMU_EN			BIT(0)
 #define BANK_SEL(id)			({		\
@@ -101,19 +94,16 @@ struct mtk_smi_reg_pair {
 
 enum mtk_smi_type {
 	MTK_SMI_GEN1,
-	MTK_SMI_GEN2,		/* gen2 smi common */
-	MTK_SMI_GEN2_SUB_COMM,	/* gen2 smi sub common */
+	MTK_SMI_GEN2,		 
+	MTK_SMI_GEN2_SUB_COMM,	 
 };
 
-/* larbs: Require apb/smi clocks while gals is optional. */
+ 
 static const char * const mtk_smi_larb_clks[] = {"apb", "smi", "gals"};
 #define MTK_SMI_LARB_REQ_CLK_NR		2
 #define MTK_SMI_LARB_OPT_CLK_NR		1
 
-/*
- * common: Require these four clocks in has_gals case. Otherwise, only apb/smi are required.
- * sub common: Require apb/smi/gals0 clocks in has_gals case. Otherwise, only apb/smi are required.
- */
+ 
 static const char * const mtk_smi_common_clks[] = {"apb", "smi", "gals0", "gals1"};
 #define MTK_SMI_CLK_NR_MAX		ARRAY_SIZE(mtk_smi_common_clks)
 #define MTK_SMI_COM_REQ_CLK_NR		2
@@ -123,7 +113,7 @@ static const char * const mtk_smi_common_clks[] = {"apb", "smi", "gals0", "gals1
 struct mtk_smi_common_plat {
 	enum mtk_smi_type	type;
 	bool			has_gals;
-	u32			bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
+	u32			bus_sel;  
 
 	const struct mtk_smi_reg_pair	*init;
 };
@@ -140,19 +130,19 @@ struct mtk_smi {
 	struct device			*dev;
 	unsigned int			clk_num;
 	struct clk_bulk_data		clks[MTK_SMI_CLK_NR_MAX];
-	struct clk			*clk_async; /*only needed by mt2701*/
+	struct clk			*clk_async;  
 	union {
-		void __iomem		*smi_ao_base; /* only for gen1 */
-		void __iomem		*base;	      /* only for gen2 */
+		void __iomem		*smi_ao_base;  
+		void __iomem		*base;	       
 	};
-	struct device			*smi_common_dev; /* for sub common */
+	struct device			*smi_common_dev;  
 	const struct mtk_smi_common_plat *plat;
 };
 
-struct mtk_smi_larb { /* larb: local arbiter */
+struct mtk_smi_larb {  
 	struct mtk_smi			smi;
 	void __iomem			*base;
-	struct device			*smi_common_dev; /* common or sub-common dev */
+	struct device			*smi_common_dev;  
 	const struct mtk_smi_larb_gen	*larb_gen;
 	int				larbid;
 	u32				*mmu;
@@ -180,7 +170,7 @@ mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
 static void
 mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
 {
-	/* Do nothing as the iommu is always enabled. */
+	 
 }
 
 static const struct component_ops mtk_smi_larb_component_ops = {
@@ -202,10 +192,10 @@ static int mtk_smi_larb_config_port_gen1(struct device *dev)
 
 	for (i = 0; i < larb_port_num; i++, m4u_port_id++) {
 		if (*larb->mmu & BIT(i)) {
-			/* bit[port + 3] controls the virtual or physical */
+			 
 			sec_con_val = SMI_SECUR_CON_VAL_VIRT(m4u_port_id);
 		} else {
-			/* do not need to enable m4u for this port */
+			 
 			continue;
 		}
 		reg_val = readl(common->smi_ao_base
@@ -260,11 +250,7 @@ static int mtk_smi_larb_config_port_gen2_general(struct device *dev)
 	for (i = 0; i < SMI_LARB_PORT_NR_MAX && larbostd && !!larbostd[i]; i++)
 		writel_relaxed(larbostd[i], larb->base + SMI_LARB_OSTDL_PORTx(i));
 
-	/*
-	 * When mmu_en bits are in security world, the bank_sel still is in the
-	 * LARB_NONSEC_CON below. And the mmu_en bits of LARB_NONSEC_CON have no
-	 * effect in this case.
-	 */
+	 
 	if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_CFG_PORT_SEC_CTL)) {
 		arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL, IOMMU_ATF_CMD_CONFIG_SMI_LARB,
 			      larb->larbid, *larb->mmu, 0, 0, 0, 0, &res);
@@ -333,9 +319,9 @@ static const u8 mtk_smi_larb_mt8188_ostd[][SMI_LARB_PORT_NR_MAX] = {
 };
 
 static const u8 mtk_smi_larb_mt8195_ostd[][SMI_LARB_PORT_NR_MAX] = {
-	[0] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb0 */
-	[1] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb1 */
-	[2] = {0x12, 0x12, 0x12, 0x12, 0x0a,},      /* ... */
+	[0] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,},  
+	[1] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,},  
+	[2] = {0x12, 0x12, 0x12, 0x12, 0x0a,},       
 	[3] = {0x12, 0x12, 0x12, 0x12, 0x28, 0x28, 0x0a,},
 	[4] = {0x06, 0x01, 0x17, 0x06, 0x0a,},
 	[5] = {0x06, 0x01, 0x17, 0x06, 0x06, 0x01, 0x06, 0x0a,},
@@ -387,30 +373,30 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
 	.config_port                = mtk_smi_larb_config_port_gen2_general,
-	.larb_direct_to_common_mask = BIT(8) | BIT(9),      /* bdpsys */
+	.larb_direct_to_common_mask = BIT(8) | BIT(9),       
 };
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt6779 = {
 	.config_port  = mtk_smi_larb_config_port_gen2_general,
 	.larb_direct_to_common_mask =
 		BIT(4) | BIT(6) | BIT(11) | BIT(12) | BIT(13),
-		/* DUMMY | IPU0 | IPU1 | CCU | MDLA */
+		 
 };
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt8167 = {
-	/* mt8167 do not need the port in larb */
+	 
 	.config_port = mtk_smi_larb_config_port_mt8167,
 };
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
-	/* mt8173 do not need the port in larb */
+	 
 	.config_port = mtk_smi_larb_config_port_mt8173,
 };
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
 	.config_port                = mtk_smi_larb_config_port_gen2_general,
 	.larb_direct_to_common_mask = BIT(2) | BIT(3) | BIT(7),
-				      /* IPU0 | IPU1 | CCU */
+				       
 };
 
 static const struct mtk_smi_larb_gen mtk_smi_larb_mt8186 = {
@@ -460,7 +446,7 @@ static int mtk_smi_larb_sleep_ctrl_enable(struct mtk_smi_larb *larb)
 	ret = readl_poll_timeout_atomic(larb->base + SMI_LARB_SLP_CON,
 					tmp, !!(tmp & SLP_PROT_RDY), 10, 1000);
 	if (ret) {
-		/* TODO: Reset this larb if it fails here. */
+		 
 		dev_err(larb->smi.dev, "sleep ctrl is not ready(0x%x).\n", tmp);
 	}
 	return ret;
@@ -485,7 +471,7 @@ static int mtk_smi_device_link_common(struct device *dev, struct device **com_de
 	smi_com_pdev = of_find_device_by_node(smi_com_node);
 	of_node_put(smi_com_node);
 	if (smi_com_pdev) {
-		/* smi common is the supplier, Make sure it is ready before */
+		 
 		if (!platform_get_drvdata(smi_com_pdev)) {
 			put_device(&smi_com_pdev->dev);
 			return -EPROBE_DEFER;
@@ -589,7 +575,7 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
 	if (MTK_SMI_CAPS(larb->larb_gen->flags_general, MTK_SMI_FLAG_SLEEP_CTL))
 		mtk_smi_larb_sleep_ctrl_disable(larb);
 
-	/* Configure the basic setting for this larb */
+	 
 	return larb_gen->config_port(dev);
 }
 
@@ -759,12 +745,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * for mtk smi gen 1, we need to get the ao(always on) base to config
-	 * m4u port, and we need to enable the aync clock for transform the smi
-	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
-	 * base.
-	 */
+	 
 	if (common->plat->type == MTK_SMI_GEN1) {
 		common->smi_ao_base = devm_platform_ioremap_resource(pdev, 0);
 		if (IS_ERR(common->smi_ao_base))
@@ -783,7 +764,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
 			return PTR_ERR(common->base);
 	}
 
-	/* link its smi-common if this is smi-sub-common */
+	 
 	if (common->plat->type == MTK_SMI_GEN2_SUB_COMM) {
 		ret = mtk_smi_device_link_common(dev, &common->smi_common_dev);
 		if (ret < 0)
@@ -809,7 +790,7 @@ static int __maybe_unused mtk_smi_common_resume(struct device *dev)
 {
 	struct mtk_smi *common = dev_get_drvdata(dev);
 	const struct mtk_smi_reg_pair *init = common->plat->init;
-	u32 bus_sel = common->plat->bus_sel; /* default is 0 */
+	u32 bus_sel = common->plat->bus_sel;  
 	int ret, i;
 
 	ret = clk_bulk_prepare_enable(common->clk_num, common->clks);

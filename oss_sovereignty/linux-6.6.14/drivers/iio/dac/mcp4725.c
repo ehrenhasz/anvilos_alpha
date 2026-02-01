@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mcp4725.c - Support for Microchip MCP4725/6
- *
- * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * Based on max517 by Roland Stigge <stigge@antcom.de>
- *
- * driver for the Microchip I2C 12-bit digital-to-analog converter (DAC)
- * (7-bit I2C slave address 0x60, the three LSBs can be configured in
- * hardware)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -68,7 +58,7 @@ static int mcp4725_resume(struct device *dev)
 	u8 outbuf[2];
 	int ret;
 
-	/* restore previous DAC value */
+	 
 	outbuf[0] = (data->dac_value >> 8) & 0xf;
 	outbuf[1] = data->dac_value & 0xff;
 	data->powerdown = false;
@@ -100,7 +90,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
 	if (!state)
 		return 0;
 
-	inoutbuf[0] = 0x60; /* write EEPROM */
+	inoutbuf[0] = 0x60;  
 	inoutbuf[0] |= data->ref_mode << 3;
 	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode + 1) << 1) : 0;
 	inoutbuf[1] = data->dac_value >> 4;
@@ -112,7 +102,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
 	else if (ret != 3)
 		return -EIO;
 
-	/* wait for write complete, takes up to 50ms */
+	 
 	while (tries--) {
 		msleep(20);
 		ret = i2c_master_recv(data->client, inoutbuf, 3);
@@ -373,7 +363,7 @@ static const struct iio_info mcp4725_info = {
 static int mcp4725_probe_dt(struct device *dev,
 			    struct mcp4725_platform_data *pdata)
 {
-	/* check if is the vref-supply defined */
+	 
 	pdata->use_vref = device_property_read_bool(dev, "vref-supply");
 	pdata->vref_buffered =
 		device_property_read_bool(dev, "microchip,vref-buffered");
@@ -459,7 +449,7 @@ static int mcp4725_probe(struct i2c_client *client)
 	indio_dev->num_channels = 1;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* read current DAC value and settings */
+	 
 	err = i2c_master_recv(client, inbuf, data->id == MCP4725 ? 3 : 4);
 
 	if (err < 0) {
@@ -468,7 +458,7 @@ static int mcp4725_probe(struct i2c_client *client)
 	}
 	pd = (inbuf[0] >> 1) & 0x3;
 	data->powerdown = pd > 0;
-	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
+	data->powerdown_mode = pd ? pd - 1 : 2;  
 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
 	if (data->id == MCP4726)
 		ref = (inbuf[3] >> 3) & 0x3;

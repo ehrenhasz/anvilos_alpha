@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_perf_oa_regs.h"
@@ -13,19 +11,11 @@
 #include "intel_gt_regs.h"
 #include "intel_tlb.h"
 
-/*
- * HW architecture suggest typical invalidation time at 40us,
- * with pessimistic cases up to 100us and a recommendation to
- * cap at 1ms. We go a bit higher just in case.
- */
+ 
 #define TLB_INVAL_TIMEOUT_US 100
 #define TLB_INVAL_TIMEOUT_MS 4
 
-/*
- * On Xe_HP the TLB invalidation registers are located at the same MMIO offsets
- * but are now considered MCR registers.  Since they exist within a GAM range,
- * the primary instance of the register rolls up the status from each unit.
- */
+ 
 static int wait_for_invalidate(struct intel_engine_cs *engine)
 {
 	if (engine->tlb_inv.mcr)
@@ -60,7 +50,7 @@ static void mmio_invalidate_full(struct intel_gt *gt)
 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
 
 	intel_gt_mcr_lock(gt, &flags);
-	spin_lock(&uncore->lock); /* serialise invalidate with GT reset */
+	spin_lock(&uncore->lock);  
 
 	awake = 0;
 	for_each_engine(engine, gt, id) {
@@ -81,7 +71,7 @@ static void mmio_invalidate_full(struct intel_gt *gt)
 
 	GT_TRACE(gt, "invalidated engines %08x\n", awake);
 
-	/* Wa_2207587034:tgl,dg1,rkl,adl-s,adl-p */
+	 
 	if (awake &&
 	    (IS_TIGERLAKE(i915) ||
 	     IS_DG1(i915) ||
@@ -100,12 +90,7 @@ static void mmio_invalidate_full(struct intel_gt *gt)
 					   engine->name, TLB_INVAL_TIMEOUT_MS);
 	}
 
-	/*
-	 * Use delayed put since a) we mostly expect a flurry of TLB
-	 * invalidations so it is good to avoid paying the forcewake cost and
-	 * b) it works around a bug in Icelake which cannot cope with too rapid
-	 * transitions.
-	 */
+	 
 	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
 }
 
@@ -113,7 +98,7 @@ static bool tlb_seqno_passed(const struct intel_gt *gt, u32 seqno)
 {
 	u32 cur = intel_gt_tlb_seqno(gt);
 
-	/* Only skip if a *full* TLB invalidate barrier has passed */
+	 
 	return (s32)(cur - ALIGN(seqno, 2)) > 0;
 }
 

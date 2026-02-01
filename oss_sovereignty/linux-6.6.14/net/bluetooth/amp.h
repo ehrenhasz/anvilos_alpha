@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-   Copyright (c) 2011,2012 Intel Corp.
-
-*/
+ 
+ 
 
 #ifndef __AMP_H
 #define __AMP_H
@@ -57,4 +54,4 @@ void amp_create_logical_link(struct l2cap_chan *chan);
 void amp_disconnect_logical_link(struct hci_chan *hchan);
 void amp_destroy_logical_link(struct hci_chan *hchan, u8 reason);
 
-#endif /* __AMP_H */
+#endif  

@@ -1,34 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2011, 2015 by Delphix. All rights reserved.
- * Copyright (c) 2013 Steven Hartland. All rights reserved.
- */
+ 
 
-/*
- * zhack is a debugging tool that can write changes to ZFS pool using libzpool
- * for testing purposes. Altering pools with zhack is unsupported and may
- * result in corrupted pools.
- */
+ 
 
 #include <zfs_prop.h>
 #include <stdio.h>
@@ -122,18 +96,14 @@ space_delta_cb(dmu_object_type_t bonustype, const void *data,
 {
 	(void) data, (void) zoi;
 
-	/*
-	 * Is it a valid type of object to track?
-	 */
+	 
 	if (bonustype != DMU_OT_ZNODE && bonustype != DMU_OT_SA)
 		return (ENOENT);
 	(void) fprintf(stderr, "modifying object that needs user accounting");
 	abort();
 }
 
-/*
- * Target is the dataset whose pool we want to open.
- */
+ 
 static void
 zhack_import(char *target, boolean_t readonly)
 {
@@ -292,10 +262,7 @@ zhack_do_feature_enable(int argc, char **argv)
 	zfeature_info_t feature;
 	const spa_feature_t nodeps[] = { SPA_FEATURE_NONE };
 
-	/*
-	 * Features are not added to the pool's label until their refcounts
-	 * are incremented, so fi_mos can just be left as false for now.
-	 */
+	 
 	desc = NULL;
 	feature.fi_uname = "zhack";
 	feature.fi_flags = 0;
@@ -391,12 +358,7 @@ zhack_do_feature_ref(int argc, char **argv)
 	zfeature_info_t feature;
 	const spa_feature_t nodeps[] = { SPA_FEATURE_NONE };
 
-	/*
-	 * fi_desc does not matter here because it was written to disk
-	 * when the feature was enabled, but we need to properly set the
-	 * feature for read or write based on the information we read off
-	 * disk later.
-	 */
+	 
 	feature.fi_uname = "zhack";
 	feature.fi_flags = 0;
 	feature.fi_desc = NULL;
@@ -608,10 +570,7 @@ zhack_repair_check_label(uberblock_t *ub, const int l, const char **cfg_keys,
 static int
 zhack_repair_undetach(uberblock_t *ub, nvlist_t *cfg, const int l)
 {
-	/*
-	 * Uberblock root block pointer has valid birth TXG.
-	 * Copying it to the label NVlist
-	 */
+	 
 	if (ub->ub_rootbp.blk_birth != 0) {
 		const uint64_t txg = ub->ub_rootbp.blk_birth;
 		ub->ub_txg = txg;

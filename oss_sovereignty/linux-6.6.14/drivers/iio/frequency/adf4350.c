@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADF4350/ADF4351 SPI Wideband Synthesizer driver
- *
- * Copyright 2012-2013 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -37,8 +33,8 @@ struct adf4350_state {
 	struct adf4350_platform_data	*pdata;
 	struct clk			*clk;
 	unsigned long			clkin;
-	unsigned long			chspc; /* Channel Spacing */
-	unsigned long			fpfd; /* Phase Frequency Detector */
+	unsigned long			chspc;  
+	unsigned long			fpfd;  
 	unsigned long			min_out_freq;
 	unsigned			r0_fract;
 	unsigned			r0_int;
@@ -47,17 +43,9 @@ struct adf4350_state {
 	unsigned long			regs[6];
 	unsigned long			regs_hw[6];
 	unsigned long long		freq_req;
-	/*
-	 * Lock to protect the state of the device from potential concurrent
-	 * writes. The device is configured via a sequence of SPI writes,
-	 * and this lock is meant to prevent the start of another sequence
-	 * before another one has finished.
-	 */
+	 
 	struct mutex			lock;
-	/*
-	 * DMA (thus cache coherency maintenance) may require that
-	 * transfer buffers live in their own cache lines.
-	 */
+	 
 	__be32				val __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -158,10 +146,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
 		st->r4_rf_div_sel++;
 	}
 
-	/*
-	 * Allow a predefined reference division factor
-	 * if not set, compute our own
-	 */
+	 
 	if (pdata->ref_div_factor)
 		r_cnt = pdata->ref_div_factor - 1;
 
@@ -173,7 +158,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
 				r_cnt = adf4350_tune_r_cnt(st, r_cnt);
 				st->r1_mod = st->fpfd / chspc;
 				if (r_cnt > ADF4350_MAX_R_CNT) {
-					/* try higher spacing values */
+					 
 					chspc++;
 					r_cnt = 0;
 				}
@@ -181,7 +166,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
 		} while (r_cnt == 0);
 
 		tmp = freq * (u64)st->r1_mod + (st->fpfd >> 1);
-		do_div(tmp, st->fpfd); /* Div round closest (n + d/2)/d */
+		do_div(tmp, st->fpfd);  
 		st->r0_fract = do_div(tmp, st->r1_mod);
 		st->r0_int = tmp;
 	} while (mdiv > st->r0_int);
@@ -322,7 +307,7 @@ static ssize_t adf4350_read(struct iio_dev *indio_dev,
 		val = (u64)((st->r0_int * st->r1_mod) + st->r0_fract) *
 			(u64)st->fpfd;
 		do_div(val, st->r1_mod * (1 << st->r4_rf_div_sel));
-		/* PLL unlocked? return error */
+		 
 		if (st->lock_detect_gpiod)
 			if (!gpiod_get_value(st->lock_detect_gpiod)) {
 				dev_dbg(&st->spi->dev, "PLL un-locked\n");
@@ -359,10 +344,7 @@ static ssize_t adf4350_read(struct iio_dev *indio_dev,
 }
 
 static const struct iio_chan_spec_ext_info adf4350_ext_info[] = {
-	/* Ideally we use IIO_CHAN_INFO_FREQUENCY, but there are
-	 * values > 2^32 in order to support the entire frequency range
-	 * in Hz. Using scale is a bit ugly.
-	 */
+	 
 	_ADF4350_EXT_INFO("frequency", ADF4350_FREQ),
 	_ADF4350_EXT_INFO("frequency_resolution", ADF4350_FREQ_RESOLUTION),
 	_ADF4350_EXT_INFO("refin_frequency", ADF4350_FREQ_REFIN),
@@ -407,7 +389,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
 	pdata->ref_doubler_en = device_property_read_bool(dev, "adi,reference-doubler-enable");
 	pdata->ref_div2_en = device_property_read_bool(dev, "adi,reference-div2-enable");
 
-	/* r2_user_settings */
+	 
 	pdata->r2_user_settings = 0;
 	if (device_property_read_bool(dev, "adi,phase-detector-polarity-positive-enable"))
 		pdata->r2_user_settings |= ADF4350_REG2_PD_POLARITY_POS;
@@ -427,7 +409,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
 	if (device_property_read_bool(dev, "adi,low-spur-mode-enable"))
 		pdata->r2_user_settings |= ADF4350_REG2_NOISE_MODE(0x3);
 
-	/* r3_user_settings */
+	 
 
 	pdata->r3_user_settings = 0;
 	if (device_property_read_bool(dev, "adi,cycle-slip-reduction-enable"))
@@ -447,7 +429,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
 	device_property_read_u32(dev, "adi,clk-divider-mode", &tmp);
 	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV_MODE(tmp);
 
-	/* r4_user_settings */
+	 
 
 	pdata->r4_user_settings = 0;
 	if (device_property_read_bool(dev, "adi,aux-output-enable"))
@@ -562,7 +544,7 @@ static int adf4350_probe(struct spi_device *spi)
 static const struct of_device_id adf4350_of_match[] = {
 	{ .compatible = "adi,adf4350", },
 	{ .compatible = "adi,adf4351", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, adf4350_of_match);
 

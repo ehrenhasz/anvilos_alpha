@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI Hardware Watchdog (WDAT) driver.
- *
- * Copyright (C) 2016, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/ioport.h>
@@ -15,29 +10,14 @@
 
 #define MAX_WDAT_ACTIONS ACPI_WDAT_ACTION_RESERVED
 
-/**
- * struct wdat_instruction - Single ACPI WDAT instruction
- * @entry: Copy of the ACPI table instruction
- * @reg: Register the instruction is accessing
- * @node: Next instruction in action sequence
- */
+ 
 struct wdat_instruction {
 	struct acpi_wdat_entry entry;
 	void __iomem *reg;
 	struct list_head node;
 };
 
-/**
- * struct wdat_wdt - ACPI WDAT watchdog device
- * @pdev: Parent platform device
- * @wdd: Watchdog core device
- * @period: How long is one watchdog period in ms
- * @stopped_in_sleep: Is this watchdog stopped by the firmware in S1-S5
- * @stopped: Was the watchdog stopped by the driver in suspend
- * @instructions: An array of instruction lists indexed by an action number from
- *                the WDAT table. There can be %NULL entries for not implemented
- *                actions.
- */
+ 
 struct wdat_wdt {
 	struct platform_device *pdev;
 	struct watchdog_device wdd;
@@ -124,7 +104,7 @@ static int wdat_wdt_run_action(struct wdat_wdt *wdat, unsigned int action,
 
 	dev_dbg(&wdat->pdev->dev, "Running action %#x\n", action);
 
-	/* Run each instruction sequentially */
+	 
 	list_for_each_entry(instr, wdat->instructions[action], node) {
 		const struct acpi_wdat_entry *entry = &instr->entry;
 		const struct acpi_generic_address *gas;
@@ -205,12 +185,7 @@ static int wdat_wdt_enable_reboot(struct wdat_wdt *wdat)
 {
 	int ret;
 
-	/*
-	 * WDAT specification says that the watchdog is required to reboot
-	 * the system when it fires. However, it also states that it is
-	 * recommended to make it configurable through hardware register. We
-	 * enable reboot now if it is configurable, just in case.
-	 */
+	 
 	ret = wdat_wdt_run_action(wdat, ACPI_WDAT_SET_REBOOT, 0, NULL);
 	if (ret && ret != -EOPNOTSUPP) {
 		dev_err(&wdat->pdev->dev,
@@ -235,7 +210,7 @@ static void wdat_wdt_boot_status(struct wdat_wdt *wdat)
 	if (boot_status)
 		wdat->wdd.bootstatus = WDIOF_CARDRESET;
 
-	/* Clear the boot status in case BIOS did not do it */
+	 
 	ret = wdat_wdt_run_action(wdat, ACPI_WDAT_SET_STATUS, 0, NULL);
 	if (ret && ret != -EOPNOTSUPP)
 		dev_err(&wdat->pdev->dev, "Failed to clear boot status\n");
@@ -334,7 +309,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
 	if (!regs)
 		return -ENOMEM;
 
-	/* WDAT specification wants to have >= 1ms period */
+	 
 	if (tbl->timer_period < 1)
 		return -EINVAL;
 	if (tbl->min_count > tbl->max_count)
@@ -348,7 +323,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
 	wdat->wdd.ops = &wdat_wdt_ops;
 	wdat->pdev = pdev;
 
-	/* Request and map all resources */
+	 
 	for (i = 0; i < pdev->num_resources; i++) {
 		void __iomem *reg;
 
@@ -406,7 +381,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
 			continue;
 		}
 
-		/* Find the matching resource */
+		 
 		for (j = 0; j < pdev->num_resources; j++) {
 			res = &pdev->resource[j];
 			if (resource_contains(res, &r)) {
@@ -447,11 +422,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, wdat);
 
-	/*
-	 * Set initial timeout so that userspace has time to configure the
-	 * watchdog properly after it has opened the device. In some cases
-	 * the BIOS default is too short and causes immediate reboot.
-	 */
+	 
 	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
 		dev_warn(dev, "Invalid timeout %d given, using %d\n",
 			 timeout, WDAT_DEFAULT_TIMEOUT);
@@ -476,12 +447,7 @@ static int wdat_wdt_suspend_noirq(struct device *dev)
 	if (!watchdog_active(&wdat->wdd))
 		return 0;
 
-	/*
-	 * We need to stop the watchdog if firmware is not doing it or if we
-	 * are going suspend to idle (where firmware is not involved). If
-	 * firmware is stopping the watchdog we kick it here one more time
-	 * to give it some time.
-	 */
+	 
 	wdat->stopped = false;
 	if (acpi_target_system_state() == ACPI_STATE_S0 ||
 	    !wdat->stopped_in_sleep) {
@@ -504,11 +470,7 @@ static int wdat_wdt_resume_noirq(struct device *dev)
 		return 0;
 
 	if (!wdat->stopped) {
-		/*
-		 * Looks like the boot firmware reinitializes the watchdog
-		 * before it hands off to the OS on resume from sleep so we
-		 * stop and reprogram the watchdog here.
-		 */
+		 
 		ret = wdat_wdt_stop(&wdat->wdd);
 		if (ret)
 			return ret;

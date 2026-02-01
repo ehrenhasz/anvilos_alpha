@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
- */
-/*
- * driver for Chrontel CH7301 DVI Transmitter
- */
+
+ 
+ 
 
 #include <linux/slab.h>
 #include "via_aux.h"

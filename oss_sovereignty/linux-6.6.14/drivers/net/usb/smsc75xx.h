@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
- /***************************************************************************
- *
- * Copyright (C) 2007-2010 SMSC
- *
- *****************************************************************************/
+ 
+  
 
 #ifndef _SMSC75XX_H
 #define _SMSC75XX_H
 
-/* Tx command words */
+ 
 #define TX_CMD_A_LSO			(0x08000000)
 #define TX_CMD_A_IPE			(0x04000000)
 #define TX_CMD_A_TPE			(0x02000000)
@@ -22,7 +18,7 @@
 #define TX_MSS_MIN			((u16)8)
 #define TX_CMD_B_VTAG			(0x0000FFFF)
 
-/* Rx command words */
+ 
 #define RX_CMD_A_ICE			(0x80000000)
 #define RX_CMD_A_TCE			(0x40000000)
 #define RX_CMD_A_IPV			(0x20000000)
@@ -50,7 +46,7 @@
 #define RX_CMD_B_CSUM_SHIFT		(16)
 #define RX_CMD_B_VTAG			(0x0000FFFF)
 
-/* SCSRs */
+ 
 #define ID_REV				(0x0000)
 
 #define FPGA_REV			(0x0004)
@@ -255,7 +251,7 @@
 #define FCT_FLOW_THRESHOLD_OFF_SHIFT	(8)
 #define FCT_FLOW_THRESHOLD_ON		(0x0000007F)
 
-/* MAC CSRs */
+ 
 #define MAC_CR				(0x100)
 #define MAC_CR_ADP			(0x00002000)
 #define MAC_CR_ADD			(0x00001000)
@@ -363,9 +359,9 @@
 #define IPV4_ADDRX			(0x590)
 
 
-/* Vendor-specific PHY Definitions */
+ 
 
-/* Mode Control/Status Register */
+ 
 #define PHY_MODE_CTRL_STS		(17)
 #define MODE_CTRL_STS_EDPWRDOWN		((u16)0x2000)
 #define MODE_CTRL_STS_ENERGYON		((u16)0x0002)
@@ -392,12 +388,12 @@
 #define PHY_SPECIAL_SPD_100HALF		((u16)0x0008)
 #define PHY_SPECIAL_SPD_100FULL		((u16)0x0018)
 
-/* USB Vendor Requests */
+ 
 #define USB_VENDOR_REQUEST_WRITE_REGISTER	0xA0
 #define USB_VENDOR_REQUEST_READ_REGISTER	0xA1
 #define USB_VENDOR_REQUEST_GET_STATS		0xA2
 
-/* Interrupt Endpoint status word bitfields */
+ 
 #define INT_ENP_RDFO_INT		((u32)BIT(22))
 #define INT_ENP_TXE_INT			((u32)BIT(21))
 #define INT_ENP_TX_DIS_INT		((u32)BIT(19))
@@ -406,4 +402,4 @@
 #define INT_ENP_MAC_ERR_INT		((u32)BIT(15))
 #define INT_ENP_RX_FIFO_DATA_INT	((u32)BIT(12))
 
-#endif /* _SMSC75XX_H */
+#endif  

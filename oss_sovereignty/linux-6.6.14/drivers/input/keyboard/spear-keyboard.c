@@ -1,14 +1,4 @@
-/*
- * SPEAr Keyboard Driver
- * Based on omap-keypad driver
- *
- * Copyright (C) 2010 ST Microelectronics
- * Rajeev Kumar <rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/errno.h>
@@ -25,13 +15,13 @@
 #include <linux/types.h>
 #include <linux/platform_data/keyboard-spear.h>
 
-/* Keyboard Registers */
+ 
 #define MODE_CTL_REG	0x00
 #define STATUS_REG	0x0C
 #define DATA_REG	0x10
 #define INTR_MASK	0x54
 
-/* Register Values */
+ 
 #define NUM_ROWS	16
 #define NUM_COLS	16
 #define MODE_CTL_PCLK_FREQ_SHIFT	9
@@ -82,7 +72,7 @@ static irqreturn_t spear_kbd_interrupt(int irq, void *dev_id)
 		kbd->last_key = KEY_RESERVED;
 	}
 
-	/* following reads active (row, col) pair */
+	 
 	val = readl_relaxed(kbd->io_base + DATA_REG) &
 		(DATA_ROW_MASK | DATA_COLUMN_MASK);
 	key = kbd->keycodes[val];
@@ -93,7 +83,7 @@ static irqreturn_t spear_kbd_interrupt(int irq, void *dev_id)
 
 	kbd->last_key = key;
 
-	/* clear interrupt */
+	 
 	writel_relaxed(0, kbd->io_base + STATUS_REG);
 
 	return IRQ_HANDLED;
@@ -111,17 +101,17 @@ static int spear_kbd_open(struct input_dev *dev)
 	if (error)
 		return error;
 
-	/* keyboard rate to be programmed is input clock (in MHz) - 1 */
+	 
 	val = clk_get_rate(kbd->clk) / 1000000 - 1;
 	val = (val & MODE_CTL_PCLK_FREQ_MSK) << MODE_CTL_PCLK_FREQ_SHIFT;
 
-	/* program keyboard */
+	 
 	val = MODE_CTL_SCAN_RATE_80 | MODE_CTL_KEYBOARD | val |
 		(kbd->mode << MODE_CTL_KEYNUM_SHIFT);
 	writel_relaxed(val, kbd->io_base + MODE_CTL_REG);
 	writel_relaxed(1, kbd->io_base + STATUS_REG);
 
-	/* start key scan */
+	 
 	val = readl_relaxed(kbd->io_base + MODE_CTL_REG);
 	val |= MODE_CTL_START_SCAN;
 	writel_relaxed(val, kbd->io_base + MODE_CTL_REG);
@@ -134,7 +124,7 @@ static void spear_kbd_close(struct input_dev *dev)
 	struct spear_kbd *kbd = input_get_drvdata(dev);
 	u32 val;
 
-	/* stop key scan */
+	 
 	val = readl_relaxed(kbd->io_base + MODE_CTL_REG);
 	val &= ~MODE_CTL_START_SCAN;
 	writel_relaxed(val, kbd->io_base + MODE_CTL_REG);
@@ -291,7 +281,7 @@ static int spear_kbd_suspend(struct device *dev)
 
 	mutex_lock(&input_dev->mutex);
 
-	/* explicitly enable clock as we may program device */
+	 
 	clk_enable(kbd->clk);
 
 	mode_ctl_reg = readl_relaxed(kbd->io_base + MODE_CTL_REG);
@@ -300,10 +290,7 @@ static int spear_kbd_suspend(struct device *dev)
 		if (!enable_irq_wake(kbd->irq))
 			kbd->irq_wake_enabled = true;
 
-		/*
-		 * reprogram the keyboard operating frequency as on some
-		 * platform it may change during system suspended
-		 */
+		 
 		if (kbd->suspended_rate)
 			rate = kbd->suspended_rate / 1000000 - 1;
 		else
@@ -323,11 +310,11 @@ static int spear_kbd_suspend(struct device *dev)
 		}
 	}
 
-	/* store current configuration */
+	 
 	if (input_device_enabled(input_dev))
 		kbd->mode_ctl_reg = mode_ctl_reg;
 
-	/* restore previous clk state */
+	 
 	clk_disable(kbd->clk);
 
 	mutex_unlock(&input_dev->mutex);
@@ -353,7 +340,7 @@ static int spear_kbd_resume(struct device *dev)
 			clk_enable(kbd->clk);
 	}
 
-	/* restore current configuration */
+	 
 	if (input_device_enabled(input_dev))
 		writel_relaxed(kbd->mode_ctl_reg, kbd->io_base + MODE_CTL_REG);
 

@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// soc-component.c
-//
-// Copyright 2009-2011 Wolfson Microelectronics PLC.
-// Copyright (C) 2019 Renesas Electronics Corp.
-//
-// Mark Brown <broonie@opensource.wolfsonmicro.com>
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
+
+
+
+
+
+
+
+
+
+
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
 #include <sound/soc.h>
@@ -18,11 +18,11 @@
 static inline int _soc_component_ret(struct snd_soc_component *component,
 				     const char *func, int ret, int reg)
 {
-	/* Positive/Zero values are not errors */
+	 
 	if (ret >= 0)
 		return ret;
 
-	/* Negative values might be errors */
+	 
 	switch (ret) {
 	case -EPROBE_DEFER:
 	case -ENOTSUPP:
@@ -53,10 +53,7 @@ static inline int soc_component_field_shift(struct snd_soc_component *component,
 	return (ffs(mask) - 1);
 }
 
-/*
- * We might want to check substream by using list.
- * In such case, we can update these macros.
- */
+ 
 #define soc_component_mark_push(component, substream, tgt)	((component)->mark_##tgt = substream)
 #define soc_component_mark_pop(component, substream, tgt)	((component)->mark_##tgt = NULL)
 #define soc_component_mark_match(component, substream, tgt)	((component)->mark_##tgt == substream)
@@ -77,16 +74,7 @@ int snd_soc_component_init(struct snd_soc_component *component)
 	return soc_component_ret(component, ret);
 }
 
-/**
- * snd_soc_component_set_sysclk - configure COMPONENT system or master clock.
- * @component: COMPONENT
- * @clk_id: DAI specific clock ID
- * @source: Source for the clock
- * @freq: new clock frequency in Hz
- * @dir: new clock direction - input/output.
- *
- * Configures the CODEC master (MCLK) or system (SYSCLK) clocking.
- */
+ 
 int snd_soc_component_set_sysclk(struct snd_soc_component *component,
 				 int clk_id, int source, unsigned int freq,
 				 int dir)
@@ -101,16 +89,7 @@ int snd_soc_component_set_sysclk(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_set_sysclk);
 
-/*
- * snd_soc_component_set_pll - configure component PLL.
- * @component: COMPONENT
- * @pll_id: DAI specific PLL ID
- * @source: DAI specific source for the PLL
- * @freq_in: PLL input clock frequency in Hz
- * @freq_out: requested PLL output clock frequency in Hz
- *
- * Configures and enables PLL to generate output clock based on input clock.
- */
+ 
 int snd_soc_component_set_pll(struct snd_soc_component *component, int pll_id,
 			      int source, unsigned int freq_in,
 			      unsigned int freq_out)
@@ -242,7 +221,7 @@ int snd_soc_component_notify_control(struct snd_soc_component *component,
 	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 	struct snd_kcontrol *kctl;
 
-	/* When updating, change also snd_soc_dapm_widget_name_cmp() */
+	 
 	if (component->name_prefix)
 		snprintf(name, ARRAY_SIZE(name), "%s %s", component->name_prefix, ctl);
 	else
@@ -259,14 +238,7 @@ int snd_soc_component_notify_control(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_notify_control);
 
-/**
- * snd_soc_component_set_jack - configure component jack.
- * @component: COMPONENTs
- * @jack: structure to use for the jack
- * @data: can be used if codec driver need extra data for configuring jack
- *
- * Configures and enables jack detection function.
- */
+ 
 int snd_soc_component_set_jack(struct snd_soc_component *component,
 			       struct snd_soc_jack *jack, void *data)
 {
@@ -279,14 +251,7 @@ int snd_soc_component_set_jack(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_set_jack);
 
-/**
- * snd_soc_component_get_jack_type
- * @component: COMPONENTs
- *
- * Returns the jack type of the component
- * This can either be the supported type or one read from
- * devicetree with the property: jack-type.
- */
+ 
 int snd_soc_component_get_jack_type(
 	struct snd_soc_component *component)
 {
@@ -308,7 +273,7 @@ int snd_soc_component_module_get(struct snd_soc_component *component,
 	    !try_module_get(component->dev->driver->owner))
 		ret = -ENODEV;
 
-	/* mark module if succeeded */
+	 
 	if (ret == 0)
 		soc_component_mark_push(component, mark, module);
 
@@ -324,7 +289,7 @@ void snd_soc_component_module_put(struct snd_soc_component *component,
 	if (component->driver->module_get_upon_open == !!upon_open)
 		module_put(component->dev->driver->owner);
 
-	/* remove the mark from module */
+	 
 	soc_component_mark_pop(component, mark, module);
 }
 
@@ -336,7 +301,7 @@ int snd_soc_component_open(struct snd_soc_component *component,
 	if (component->driver->open)
 		ret = component->driver->open(component, substream);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_component_mark_push(component, substream, open);
 
@@ -355,7 +320,7 @@ int snd_soc_component_close(struct snd_soc_component *component,
 	if (component->driver->close)
 		ret = component->driver->close(component, substream);
 
-	/* remove marked substream */
+	 
 	soc_component_mark_pop(component, substream, open);
 
 	return soc_component_ret(component, ret);
@@ -414,11 +379,7 @@ int snd_soc_component_of_xlate_dai_name(struct snd_soc_component *component,
 	if (component->driver->of_xlate_dai_name)
 		return component->driver->of_xlate_dai_name(component,
 							    args, dai_name);
-	/*
-	 * Don't use soc_component_ret here because we may not want to report
-	 * the error just yet. If a device has more than one component, the
-	 * first may not match and we don't want spam the log with this.
-	 */
+	 
 	return -ENOTSUPP;
 }
 
@@ -426,24 +387,14 @@ void snd_soc_component_setup_regmap(struct snd_soc_component *component)
 {
 	int val_bytes = regmap_get_val_bytes(component->regmap);
 
-	/* Errors are legitimate for non-integer byte multiples */
+	 
 	if (val_bytes > 0)
 		component->val_bytes = val_bytes;
 }
 
 #ifdef CONFIG_REGMAP
 
-/**
- * snd_soc_component_init_regmap() - Initialize regmap instance for the
- *                                   component
- * @component: The component for which to initialize the regmap instance
- * @regmap: The regmap instance that should be used by the component
- *
- * This function allows deferred assignment of the regmap instance that is
- * associated with the component. Only use this if the regmap instance is not
- * yet ready when the component is registered. The function must also be called
- * before the first IO attempt of the component.
- */
+ 
 void snd_soc_component_init_regmap(struct snd_soc_component *component,
 				   struct regmap *regmap)
 {
@@ -452,17 +403,7 @@ void snd_soc_component_init_regmap(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_init_regmap);
 
-/**
- * snd_soc_component_exit_regmap() - De-initialize regmap instance for the
- *                                   component
- * @component: The component for which to de-initialize the regmap instance
- *
- * Calls regmap_exit() on the regmap instance associated to the component and
- * removes the regmap instance from the component.
- *
- * This function should only be used if snd_soc_component_init_regmap() was used
- * to initialize the regmap instance.
- */
+ 
 void snd_soc_component_exit_regmap(struct snd_soc_component *component)
 {
 	regmap_exit(component->regmap);
@@ -481,7 +422,7 @@ int snd_soc_component_compr_open(struct snd_soc_component *component,
 	    component->driver->compress_ops->open)
 		ret = component->driver->compress_ops->open(component, cstream);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_component_mark_push(component, cstream, compr_open);
 
@@ -500,7 +441,7 @@ void snd_soc_component_compr_free(struct snd_soc_component *component,
 	    component->driver->compress_ops->free)
 		component->driver->compress_ops->free(component, cstream);
 
-	/* remove marked substream */
+	 
 	soc_component_mark_pop(component, cstream, compr_open);
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_compr_free);
@@ -741,13 +682,7 @@ static unsigned int soc_component_read_no_lock(
 	return val;
 }
 
-/**
- * snd_soc_component_read() - Read register value
- * @component: Component to read from
- * @reg: Register to read
- *
- * Return: read value
- */
+ 
 unsigned int snd_soc_component_read(struct snd_soc_component *component,
 				    unsigned int reg)
 {
@@ -775,14 +710,7 @@ static int soc_component_write_no_lock(
 	return soc_component_ret_reg_rw(component, ret, reg);
 }
 
-/**
- * snd_soc_component_write() - Write register value
- * @component: Component to write to
- * @reg: Register to write
- * @val: Value to write to the register
- *
- * Return: 0 on success, a negative error code otherwise.
- */
+ 
 int snd_soc_component_write(struct snd_soc_component *component,
 			    unsigned int reg, unsigned int val)
 {
@@ -817,17 +745,7 @@ static int snd_soc_component_update_bits_legacy(
 	return soc_component_ret_reg_rw(component, ret, reg);
 }
 
-/**
- * snd_soc_component_update_bits() - Perform read/modify/write cycle
- * @component: Component to update
- * @reg: Register to update
- * @mask: Mask that specifies which bits to update
- * @val: New value for the bits specified by mask
- *
- * Return: 1 if the operation was successful and the value of the register
- * changed, 0 if the operation was successful, but the value did not change.
- * Returns a negative error code otherwise.
- */
+ 
 int snd_soc_component_update_bits(struct snd_soc_component *component,
 				  unsigned int reg, unsigned int mask, unsigned int val)
 {
@@ -847,23 +765,7 @@ int snd_soc_component_update_bits(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_update_bits);
 
-/**
- * snd_soc_component_update_bits_async() - Perform asynchronous
- *  read/modify/write cycle
- * @component: Component to update
- * @reg: Register to update
- * @mask: Mask that specifies which bits to update
- * @val: New value for the bits specified by mask
- *
- * This function is similar to snd_soc_component_update_bits(), but the update
- * operation is scheduled asynchronously. This means it may not be completed
- * when the function returns. To make sure that all scheduled updates have been
- * completed snd_soc_component_async_complete() must be called.
- *
- * Return: 1 if the operation was successful and the value of the register
- * changed, 0 if the operation was successful, but the value did not change.
- * Returns a negative error code otherwise.
- */
+ 
 int snd_soc_component_update_bits_async(struct snd_soc_component *component,
 					unsigned int reg, unsigned int mask, unsigned int val)
 {
@@ -883,14 +785,7 @@ int snd_soc_component_update_bits_async(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_update_bits_async);
 
-/**
- * snd_soc_component_read_field() - Read register field value
- * @component: Component to read from
- * @reg: Register to read
- * @mask: mask of the register field
- *
- * Return: read value of register field.
- */
+ 
 unsigned int snd_soc_component_read_field(struct snd_soc_component *component,
 					  unsigned int reg, unsigned int mask)
 {
@@ -904,15 +799,7 @@ unsigned int snd_soc_component_read_field(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_read_field);
 
-/**
- * snd_soc_component_write_field() - write to register field
- * @component: Component to write to
- * @reg: Register to write
- * @mask: mask of the register field to update
- * @val: value of the field to write
- *
- * Return: 1 for change, otherwise 0.
- */
+ 
 int snd_soc_component_write_field(struct snd_soc_component *component,
 				  unsigned int reg, unsigned int mask,
 				  unsigned int val)
@@ -924,13 +811,7 @@ int snd_soc_component_write_field(struct snd_soc_component *component,
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_write_field);
 
-/**
- * snd_soc_component_async_complete() - Ensure asynchronous I/O has completed
- * @component: Component for which to wait
- *
- * This function blocks until all asynchronous I/O which has previously been
- * scheduled using snd_soc_component_update_bits_async() has completed.
- */
+ 
 void snd_soc_component_async_complete(struct snd_soc_component *component)
 {
 	if (component->regmap)
@@ -938,18 +819,7 @@ void snd_soc_component_async_complete(struct snd_soc_component *component)
 }
 EXPORT_SYMBOL_GPL(snd_soc_component_async_complete);
 
-/**
- * snd_soc_component_test_bits - Test register for change
- * @component: component
- * @reg: Register to test
- * @mask: Mask that specifies which bits to test
- * @value: Value to test against
- *
- * Tests a register with a new value and checks if the new value is
- * different from the old value.
- *
- * Return: 1 for change, otherwise 0.
- */
+ 
 int snd_soc_component_test_bits(struct snd_soc_component *component,
 				unsigned int reg, unsigned int mask, unsigned int value)
 {
@@ -967,7 +837,7 @@ int snd_soc_pcm_component_pointer(struct snd_pcm_substream *substream)
 	struct snd_soc_component *component;
 	int i;
 
-	/* FIXME: use 1st pointer */
+	 
 	for_each_rtd_components(rtd, i, component)
 		if (component->driver->pointer)
 			return component->driver->pointer(component, substream);
@@ -998,12 +868,7 @@ void snd_soc_pcm_component_delay(struct snd_pcm_substream *substream,
 	snd_pcm_sframes_t delay;
 	int i;
 
-	/*
-	 * We're looking for the delay through the full audio path so it needs to
-	 * be the maximum of the Components doing transmit and the maximum of the
-	 * Components doing receive (ie, all CPUs and all CODECs) rather than
-	 * just the maximum of all Components.
-	 */
+	 
 	for_each_rtd_components(rtd, i, component) {
 		if (!component->driver->delay)
 			continue;
@@ -1024,7 +889,7 @@ int snd_soc_pcm_component_ioctl(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component;
 	int i;
 
-	/* FIXME: use 1st ioctl */
+	 
 	for_each_rtd_components(rtd, i, component)
 		if (component->driver->ioctl)
 			return soc_component_ret(
@@ -1061,7 +926,7 @@ int snd_soc_pcm_component_copy(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component;
 	int i;
 
-	/* FIXME. it returns 1st copy now */
+	 
 	for_each_rtd_components(rtd, i, component)
 		if (component->driver->copy)
 			return soc_component_ret(component,
@@ -1079,7 +944,7 @@ struct page *snd_soc_pcm_component_page(struct snd_pcm_substream *substream,
 	struct page *page;
 	int i;
 
-	/* FIXME. it returns 1st page now */
+	 
 	for_each_rtd_components(rtd, i, component) {
 		if (component->driver->page) {
 			page = component->driver->page(component,
@@ -1099,7 +964,7 @@ int snd_soc_pcm_component_mmap(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component;
 	int i;
 
-	/* FIXME. it returns 1st mmap now */
+	 
 	for_each_rtd_components(rtd, i, component)
 		if (component->driver->mmap)
 			return soc_component_ret(
@@ -1171,7 +1036,7 @@ int snd_soc_pcm_component_hw_params(struct snd_pcm_substream *substream,
 			if (ret < 0)
 				return soc_component_ret(component, ret);
 		}
-		/* mark substream if succeeded */
+		 
 		soc_component_mark_push(component, substream, hw_params);
 	}
 
@@ -1195,7 +1060,7 @@ void snd_soc_pcm_component_hw_free(struct snd_pcm_substream *substream,
 				soc_component_ret(component, ret);
 		}
 
-		/* remove marked substream */
+		 
 		soc_component_mark_pop(component, substream, hw_params);
 	}
 }
@@ -1239,7 +1104,7 @@ int snd_soc_pcm_component_trigger(struct snd_pcm_substream *substream,
 
 			r = soc_component_trigger(component, substream, cmd);
 			if (r < 0)
-				ret = r; /* use last ret */
+				ret = r;  
 			soc_component_mark_pop(component, substream, trigger);
 		}
 	}
@@ -1259,7 +1124,7 @@ int snd_soc_pcm_component_pm_runtime_get(struct snd_soc_pcm_runtime *rtd,
 			pm_runtime_put_noidle(component->dev);
 			return soc_component_ret(component, ret);
 		}
-		/* mark stream if succeeded */
+		 
 		soc_component_mark_push(component, stream, pm);
 	}
 
@@ -1279,7 +1144,7 @@ void snd_soc_pcm_component_pm_runtime_put(struct snd_soc_pcm_runtime *rtd,
 		pm_runtime_mark_last_busy(component->dev);
 		pm_runtime_put_autosuspend(component->dev);
 
-		/* remove marked stream */
+		 
 		soc_component_mark_pop(component, stream, pm);
 	}
 }
@@ -1290,7 +1155,7 @@ int snd_soc_pcm_component_ack(struct snd_pcm_substream *substream)
 	struct snd_soc_component *component;
 	int i;
 
-	/* FIXME: use 1st pointer */
+	 
 	for_each_rtd_components(rtd, i, component)
 		if (component->driver->ack)
 			return component->driver->ack(component, substream);

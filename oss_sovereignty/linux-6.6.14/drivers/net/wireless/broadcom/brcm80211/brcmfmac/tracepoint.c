@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 
 #include <linux/device.h>
-#include <linux/module.h> /* bug in tracepoint.h, it should include this */
+#include <linux/module.h>  
 
 #ifndef __CHECKER__
 #define CREATE_TRACE_POINTS

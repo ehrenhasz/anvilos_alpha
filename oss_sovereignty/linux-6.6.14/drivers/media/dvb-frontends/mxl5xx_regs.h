@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2011-2013 MaxLinear, Inc. All rights reserved
- *
- * This program may alternatively be licensed under a proprietary license from
- * MaxLinear, Inc.
- *
- */
+ 
+ 
 
 #ifndef __MXL58X_REGISTERS_H__
 #define __MXL58X_REGISTERS_H__
@@ -13,8 +7,8 @@
 #define HYDRA_INTR_STATUS_REG               0x80030008
 #define HYDRA_INTR_MASK_REG                 0x8003000C
 
-#define HYDRA_CRYSTAL_SETTING               0x3FFFC5F0 /* 0 - 24 MHz & 1 - 27 MHz */
-#define HYDRA_CRYSTAL_CAP                   0x3FFFEDA4 /* 0 - 24 MHz & 1 - 27 MHz */
+#define HYDRA_CRYSTAL_SETTING               0x3FFFC5F0  
+#define HYDRA_CRYSTAL_CAP                   0x3FFFEDA4  
 
 #define HYDRA_CPU_RESET_REG                 0x8003003C
 #define HYDRA_CPU_RESET_DATA                0x00000400
@@ -38,39 +32,39 @@
 #define HYDRA_PRCM_ROOT_CLK_DISABLE         0x00000000
 
 #define HYDRA_CPU_RESET_CHECK_REG           0x80030008
-#define HYDRA_CPU_RESET_CHECK_OFFSET        0x40000000  /* <bit 30> */
+#define HYDRA_CPU_RESET_CHECK_OFFSET        0x40000000   
 
 #define HYDRA_SKU_ID_REG                    0x90000190
 
 #define FW_DL_SIGN_ADDR                     0x3FFFEAE0
 
-/* Register to check if FW is running or not */
+ 
 #define HYDRA_HEAR_BEAT                     0x3FFFEDDC
 
-/* Firmware version */
+ 
 #define HYDRA_FIRMWARE_VERSION              0x3FFFEDB8
 #define HYDRA_FW_RC_VERSION                 0x3FFFCFAC
 
-/* Firmware patch version */
+ 
 #define HYDRA_FIRMWARE_PATCH_VERSION        0x3FFFEDC2
 
-/* SOC operating temperature in C */
+ 
 #define HYDRA_TEMPARATURE                   0x3FFFEDB4
 
-/* Demod & Tuner status registers */
-/* Demod 0 status base address */
+ 
+ 
 #define HYDRA_DEMOD_0_BASE_ADDR             0x3FFFC64C
 
-/* Tuner 0 status base address */
+ 
 #define HYDRA_TUNER_0_BASE_ADDR             0x3FFFCE4C
 
 #define POWER_FROM_ADCRSSI_READBACK         0x3FFFEB6C
 
-/* Macros to determine base address of respective demod or tuner */
+ 
 #define HYDRA_DMD_STATUS_OFFSET(demodID)        ((demodID) * 0x100)
 #define HYDRA_TUNER_STATUS_OFFSET(tunerID)      ((tunerID) * 0x40)
 
-/* Demod status address offset from respective demod's base address */
+ 
 #define HYDRA_DMD_AGC_DIG_LEVEL_ADDR_OFFSET               0x3FFFC64C
 #define HYDRA_DMD_LOCK_STATUS_ADDR_OFFSET                 0x3FFFC650
 #define HYDRA_DMD_ACQ_STATUS_ADDR_OFFSET                  0x3FFFC654
@@ -102,9 +96,9 @@
 #define HYDRA_DMD_DVBS_BER_COUNT_ADDR_OFFSET              0x3FFFC6A4
 #define HYDRA_DMD_DVBS_BER_WINDOW_ADDR_OFFSET             0x3FFFC6A8
 
-/* Debug-purpose DVB-S DMD 0 */
-#define HYDRA_DMD_DVBS_1ST_CORR_RS_ERRORS_ADDR_OFFSET     0x3FFFC6C8  /* corrected RS Errors: 1st iteration */
-#define HYDRA_DMD_DVBS_1ST_UNCORR_RS_ERRORS_ADDR_OFFSET   0x3FFFC6CC  /* uncorrected RS Errors: 1st iteration */
+ 
+#define HYDRA_DMD_DVBS_1ST_CORR_RS_ERRORS_ADDR_OFFSET     0x3FFFC6C8   
+#define HYDRA_DMD_DVBS_1ST_UNCORR_RS_ERRORS_ADDR_OFFSET   0x3FFFC6CC   
 #define HYDRA_DMD_DVBS_BER_COUNT_1ST_ADDR_OFFSET          0x3FFFC6D0
 #define HYDRA_DMD_DVBS_BER_WINDOW_1ST_ADDR_OFFSET         0x3FFFC6D4
 
@@ -115,9 +109,9 @@
 #define HYDRA_DMD_STATUS_CENTER_FREQ_IN_KHZ_ADDR          0x3FFFC704
 #define HYDRA_DMD_STATUS_INPUT_POWER_ADDR                 0x3FFFC708
 
-/* DVB-S new scaled_BER_count for a new BER API, see HYDRA-1343 "DVB-S post viterbi information" */
-#define DMD0_STATUS_DVBS_1ST_SCALED_BER_COUNT_ADDR        0x3FFFC710 /* DMD 0: 1st iteration BER count scaled by HYDRA_BER_COUNT_SCALING_FACTOR */
-#define DMD0_STATUS_DVBS_SCALED_BER_COUNT_ADDR            0x3FFFC714 /* DMD 0: 2nd iteration BER count scaled by HYDRA_BER_COUNT_SCALING_FACTOR */
+ 
+#define DMD0_STATUS_DVBS_1ST_SCALED_BER_COUNT_ADDR        0x3FFFC710  
+#define DMD0_STATUS_DVBS_SCALED_BER_COUNT_ADDR            0x3FFFC714  
 
 #define DMD0_SPECTRUM_MIN_GAIN_STATUS                     0x3FFFC73C
 #define DMD0_SPECTRUM_MIN_GAIN_WB_SAGC_VALUE              0x3FFFC740
@@ -125,7 +119,7 @@
 
 #define HYDRA_DMD_STATUS_END_ADDR_OFFSET                  0x3FFFC748
 
-/* Tuner status address offset from respective tuners's base address */
+ 
 #define HYDRA_TUNER_DEMOD_ID_ADDR_OFFSET                  0x3FFFCE4C
 #define HYDRA_TUNER_AGC_LOCK_OFFSET                       0x3FFFCE50
 #define HYDRA_TUNER_SPECTRUM_STATUS_OFFSET                0x3FFFCE54
@@ -151,7 +145,7 @@
 #define MXL_HYDRA_FPGA_A_ADDRESS                          0x91C00000
 #define MXL_HYDRA_FPGA_B_ADDRESS                          0x91D00000
 
-/* TS control base address */
+ 
 #define HYDRA_TS_CTRL_BASE_ADDR                           0x90700000
 
 #define MPEG_MUX_MODE_SLICE0_REG            (HYDRA_TS_CTRL_BASE_ADDR + 0x08)
@@ -193,7 +187,7 @@
 #define REGULAR_PID_TBL_REG_ADDRESS_6       (HYDRA_TS_CTRL_BASE_ADDR + 0xA400)
 #define REGULAR_PID_TBL_REG_ADDRESS_7       (HYDRA_TS_CTRL_BASE_ADDR + 0xA600)
 
-/***************************************************************************/
+ 
 
 #define PAD_MUX_GPIO_00_SYNC_BASEADDR                          0x90000188
 
@@ -205,7 +199,7 @@
 
 #define   XPT_NCO_COUNT_BASEADDR1                                0x9070023C
 
-/* V2 DigRF status register */
+ 
 
 #define   XPT_PID_BASEADDR                                       0x90708000
 
@@ -317,8 +311,8 @@
 
 #define   XPT_DMD0_BASEADDR                                      0x9070024C
 
-/* V2 AGC Gain Freeze & step */
-#define   DBG_ENABLE_DISABLE_AGC                                 (0x3FFFCF60) /* 1: DISABLE, 0:ENABLE */
+ 
+#define   DBG_ENABLE_DISABLE_AGC                                 (0x3FFFCF60)  
 #define   WB_DFE0_DFE_FB_RF1_BASEADDR                            0x903004A4
 
 #define   WB_DFE1_DFE_FB_RF1_BASEADDR                            0x904004A4
@@ -355,4 +349,4 @@
 
 #define   DMD_TEI_BASEADDR                                       0x3FFFEBE0
 
-#endif /* __MXL58X_REGISTERS_H__ */
+#endif  

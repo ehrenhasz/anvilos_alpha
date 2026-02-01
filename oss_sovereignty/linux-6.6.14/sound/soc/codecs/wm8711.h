@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8711.h  --  WM8711 Soc Audio driver
- *
- * Copyright 2006 Wolfson Microelectronics
- *
- * Author: Mike Arthur <linux@wolfsonmicro.com>
- *
- * Based on wm8731.h
- */
+ 
+ 
 
 #ifndef _WM8711_H
 #define _WM8711_H
 
-/* WM8711 register space */
+ 
 
 #define WM8711_LOUT1V   0x02
 #define WM8711_ROUT1V   0x03

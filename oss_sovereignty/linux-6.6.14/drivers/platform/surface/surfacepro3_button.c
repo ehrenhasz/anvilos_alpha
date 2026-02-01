@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * power/home/volume button support for
- * Microsoft Surface Pro 3/4 tablet.
- *
- * Copyright (c) 2015 Intel Corporation.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,7 +15,7 @@
 #define SURFACE_BUTTON_DEVICE_NAME	"Surface Pro 3/4 Buttons"
 
 #define MSHW0040_DSM_REVISION		0x01
-#define MSHW0040_DSM_GET_OMPR		0x02	// get OEM Platform Revision
+#define MSHW0040_DSM_GET_OMPR		0x02	
 static const guid_t MSHW0040_DSM_UUID =
 	GUID_INIT(0x6fd05c69, 0xcde3, 0x49f4, 0x95, 0xed, 0xab, 0x16, 0x65,
 		  0x49, 0x80, 0x35);
@@ -44,18 +38,7 @@ MODULE_AUTHOR("Chen Yu");
 MODULE_DESCRIPTION("Surface Pro3 Button Driver");
 MODULE_LICENSE("GPL v2");
 
-/*
- * Power button, Home button, Volume buttons support is supposed to
- * be covered by drivers/input/misc/soc_button_array.c, which is implemented
- * according to "Windows ACPI Design Guide for SoC Platforms".
- * However surface pro3 seems not to obey the specs, instead it uses
- * device VGBI(MSHW0028) for dispatching the events.
- * We choose acpi_driver rather than platform_driver/i2c_driver because
- * although VGBI has an i2c resource connected to i2c controller, it
- * is not embedded in any i2c controller's scope, thus neither platform_device
- * will be created, nor i2c_client will be enumerated, we have to use
- * acpi_driver.
- */
+ 
 static const struct acpi_device_id surface_button_device_ids[] = {
 	{SURFACE_PRO3_BUTTON_HID,    0},
 	{SURFACE_PRO4_BUTTON_HID,    0},
@@ -66,7 +49,7 @@ MODULE_DEVICE_TABLE(acpi, surface_button_device_ids);
 struct surface_button {
 	unsigned int type;
 	struct input_dev *input;
-	char phys[32];			/* for input device */
+	char phys[32];			 
 	unsigned long pushed;
 	bool suspended;
 };
@@ -79,28 +62,28 @@ static void surface_button_notify(struct acpi_device *device, u32 event)
 	bool pressed = false;
 
 	switch (event) {
-	/* Power button press,release handle */
+	 
 	case SURFACE_BUTTON_NOTIFY_PRESS_POWER:
 		pressed = true;
 		fallthrough;
 	case SURFACE_BUTTON_NOTIFY_RELEASE_POWER:
 		key_code = KEY_POWER;
 		break;
-	/* Home button press,release handle */
+	 
 	case SURFACE_BUTTON_NOTIFY_PRESS_HOME:
 		pressed = true;
 		fallthrough;
 	case SURFACE_BUTTON_NOTIFY_RELEASE_HOME:
 		key_code = KEY_LEFTMETA;
 		break;
-	/* Volume up button press,release handle */
+	 
 	case SURFACE_BUTTON_NOTIFY_PRESS_VOLUME_UP:
 		pressed = true;
 		fallthrough;
 	case SURFACE_BUTTON_NOTIFY_RELEASE_VOLUME_UP:
 		key_code = KEY_VOLUMEUP;
 		break;
-	/* Volume down button press,release handle */
+	 
 	case SURFACE_BUTTON_NOTIFY_PRESS_VOLUME_DOWN:
 		pressed = true;
 		fallthrough;
@@ -146,32 +129,20 @@ static int surface_button_resume(struct device *dev)
 }
 #endif
 
-/*
- * Surface Pro 4 and Surface Book 2 / Surface Pro 2017 use the same device
- * ID (MSHW0040) for the power/volume buttons. Make sure this is the right
- * device by checking for the _DSM method and OEM Platform Revision.
- *
- * Returns true if the driver should bind to this device, i.e. the device is
- * either MSWH0028 (Pro 3) or MSHW0040 on a Pro 4 or Book 1.
- */
+ 
 static bool surface_button_check_MSHW0040(struct acpi_device *dev)
 {
 	acpi_handle handle = dev->handle;
 	union acpi_object *result;
-	u64 oem_platform_rev = 0;	// valid revisions are nonzero
+	u64 oem_platform_rev = 0;	
 
-	// get OEM platform revision
+	
 	result = acpi_evaluate_dsm_typed(handle, &MSHW0040_DSM_UUID,
 					 MSHW0040_DSM_REVISION,
 					 MSHW0040_DSM_GET_OMPR,
 					 NULL, ACPI_TYPE_INTEGER);
 
-	/*
-	 * If evaluating the _DSM fails, the method is not present. This means
-	 * that we have either MSHW0028 or MSHW0040 on Pro 4 or Book 1, so we
-	 * should use this driver. We use revision 0 indicating it is
-	 * unavailable.
-	 */
+	 
 
 	if (result) {
 		oem_platform_rev = result->integer.value;

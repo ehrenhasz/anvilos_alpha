@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for watchdog device controlled through GPIO-line
- *
- * Author: 2013, Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -37,10 +33,10 @@ struct gpio_wdt_priv {
 
 static void gpio_wdt_disable(struct gpio_wdt_priv *priv)
 {
-	/* Eternal ping */
+	 
 	gpiod_set_value_cansleep(priv->gpiod, 1);
 
-	/* Put GPIO back to tristate */
+	 
 	if (priv->hw_algo == HW_ALGO_TOGGLE)
 		gpiod_direction_input(priv->gpiod);
 }
@@ -51,12 +47,12 @@ static int gpio_wdt_ping(struct watchdog_device *wdd)
 
 	switch (priv->hw_algo) {
 	case HW_ALGO_TOGGLE:
-		/* Toggle output pin */
+		 
 		priv->state = !priv->state;
 		gpiod_set_value_cansleep(priv->gpiod, priv->state);
 		break;
 	case HW_ALGO_LEVEL:
-		/* Pulse */
+		 
 		gpiod_set_value_cansleep(priv->gpiod, 1);
 		udelay(1);
 		gpiod_set_value_cansleep(priv->gpiod, 0);
@@ -140,7 +136,7 @@ static int gpio_wdt_probe(struct platform_device *pdev)
 				   "hw_margin_ms", &hw_margin);
 	if (ret)
 		return ret;
-	/* Disallow values lower than 2 and higher than 65535 ms */
+	 
 	if (hw_margin < 2 || hw_margin > 65535)
 		return -EINVAL;
 

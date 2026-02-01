@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * geniv: Shared IV generator code
- *
- * This file provides common code to IV generators such as seqiv.
- *
- * Copyright (c) 2007-2019 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/geniv.h>
 #include <crypto/internal/rng.h>

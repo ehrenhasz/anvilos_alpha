@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM timer
 
@@ -26,10 +26,7 @@ DECLARE_EVENT_CLASS(timer_class,
 	TP_printk("timer=%p", __entry->timer)
 );
 
-/**
- * timer_init - called when the timer is initialized
- * @timer:	pointer to struct timer_list
- */
+ 
 DEFINE_EVENT(timer_class, timer_init,
 
 	TP_PROTO(struct timer_list *timer),
@@ -44,12 +41,7 @@ DEFINE_EVENT(timer_class, timer_init,
 		{  TIMER_PINNED,	"P" },		\
 		{  TIMER_IRQSAFE,	"I" })
 
-/**
- * timer_start - called when the timer is started
- * @timer:	pointer to struct timer_list
- * @expires:	the timers expiry time
- * @flags:	the timers flags
- */
+ 
 TRACE_EVENT(timer_start,
 
 	TP_PROTO(struct timer_list *timer,
@@ -82,13 +74,7 @@ TRACE_EVENT(timer_start,
 		  decode_timer_flags(__entry->flags & TIMER_TRACE_FLAGMASK))
 );
 
-/**
- * timer_expire_entry - called immediately before the timer callback
- * @timer:	pointer to struct timer_list
- * @baseclk:	value of timer_base::clk when timer expires
- *
- * Allows to determine the timer latency.
- */
+ 
 TRACE_EVENT(timer_expire_entry,
 
 	TP_PROTO(struct timer_list *timer, unsigned long baseclk),
@@ -114,16 +100,7 @@ TRACE_EVENT(timer_expire_entry,
 		  __entry->baseclk)
 );
 
-/**
- * timer_expire_exit - called immediately after the timer callback returns
- * @timer:	pointer to struct timer_list
- *
- * When used in combination with the timer_expire_entry tracepoint we can
- * determine the runtime of the timer callback function.
- *
- * NOTE: Do NOT dereference timer in TP_fast_assign. The pointer might
- * be invalid. We solely track the pointer.
- */
+ 
 DEFINE_EVENT(timer_class, timer_expire_exit,
 
 	TP_PROTO(struct timer_list *timer),
@@ -131,10 +108,7 @@ DEFINE_EVENT(timer_class, timer_expire_exit,
 	TP_ARGS(timer)
 );
 
-/**
- * timer_cancel - called when the timer is canceled
- * @timer:	pointer to struct timer_list
- */
+ 
 DEFINE_EVENT(timer_class, timer_cancel,
 
 	TP_PROTO(struct timer_list *timer),
@@ -164,12 +138,7 @@ DEFINE_EVENT(timer_class, timer_cancel,
 		{ HRTIMER_MODE_ABS_PINNED_HARD, "ABS|PINNED|HARD" },	\
 		{ HRTIMER_MODE_REL_PINNED_HARD,	"REL|PINNED|HARD" })
 
-/**
- * hrtimer_init - called when the hrtimer is initialized
- * @hrtimer:	pointer to struct hrtimer
- * @clockid:	the hrtimers clock
- * @mode:	the hrtimers mode
- */
+ 
 TRACE_EVENT(hrtimer_init,
 
 	TP_PROTO(struct hrtimer *hrtimer, clockid_t clockid,
@@ -194,11 +163,7 @@ TRACE_EVENT(hrtimer_init,
 		  decode_hrtimer_mode(__entry->mode))
 );
 
-/**
- * hrtimer_start - called when the hrtimer is started
- * @hrtimer:	pointer to struct hrtimer
- * @mode:	the hrtimers mode
- */
+ 
 TRACE_EVENT(hrtimer_start,
 
 	TP_PROTO(struct hrtimer *hrtimer, enum hrtimer_mode mode),
@@ -228,14 +193,7 @@ TRACE_EVENT(hrtimer_start,
 		  decode_hrtimer_mode(__entry->mode))
 );
 
-/**
- * hrtimer_expire_entry - called immediately before the hrtimer callback
- * @hrtimer:	pointer to struct hrtimer
- * @now:	pointer to variable which contains current time of the
- *		timers base.
- *
- * Allows to determine the timer latency.
- */
+ 
 TRACE_EVENT(hrtimer_expire_entry,
 
 	TP_PROTO(struct hrtimer *hrtimer, ktime_t *now),
@@ -276,13 +234,7 @@ DECLARE_EVENT_CLASS(hrtimer_class,
 	TP_printk("hrtimer=%p", __entry->hrtimer)
 );
 
-/**
- * hrtimer_expire_exit - called immediately after the hrtimer callback returns
- * @hrtimer:	pointer to struct hrtimer
- *
- * When used in combination with the hrtimer_expire_entry tracepoint we can
- * determine the runtime of the callback function.
- */
+ 
 DEFINE_EVENT(hrtimer_class, hrtimer_expire_exit,
 
 	TP_PROTO(struct hrtimer *hrtimer),
@@ -290,10 +242,7 @@ DEFINE_EVENT(hrtimer_class, hrtimer_expire_exit,
 	TP_ARGS(hrtimer)
 );
 
-/**
- * hrtimer_cancel - called when the hrtimer is canceled
- * @hrtimer:	pointer to struct hrtimer
- */
+ 
 DEFINE_EVENT(hrtimer_class, hrtimer_cancel,
 
 	TP_PROTO(struct hrtimer *hrtimer),
@@ -301,13 +250,7 @@ DEFINE_EVENT(hrtimer_class, hrtimer_cancel,
 	TP_ARGS(hrtimer)
 );
 
-/**
- * itimer_state - called when itimer is started or canceled
- * @which:	name of the interval timer
- * @value:	the itimers value, itimer is canceled if value->it_value is
- *		zero, otherwise it is started
- * @expires:	the itimers expiry time
- */
+ 
 TRACE_EVENT(itimer_state,
 
 	TP_PROTO(int which, const struct itimerspec64 *const value,
@@ -339,12 +282,7 @@ TRACE_EVENT(itimer_state,
 		  __entry->interval_sec, __entry->interval_nsec / NSEC_PER_USEC)
 );
 
-/**
- * itimer_expire - called when itimer expires
- * @which:	type of the interval timer
- * @pid:	pid of the process which owns the timer
- * @now:	current time, used to calculate the latency of itimer
- */
+ 
 TRACE_EVENT(itimer_expire,
 
 	TP_PROTO(int which, struct pid *pid, unsigned long long now),
@@ -382,12 +320,12 @@ TRACE_EVENT(itimer_expire,
 #undef tick_dep_mask_name
 #undef tick_dep_name_end
 
-/* The MASK will convert to their bits and they need to be processed too */
+ 
 #define tick_dep_name(sdep) TRACE_DEFINE_ENUM(TICK_DEP_BIT_##sdep); \
 	TRACE_DEFINE_ENUM(TICK_DEP_MASK_##sdep);
 #define tick_dep_name_end(sdep)  TRACE_DEFINE_ENUM(TICK_DEP_BIT_##sdep); \
 	TRACE_DEFINE_ENUM(TICK_DEP_MASK_##sdep);
-/* NONE only has a mask defined for it */
+ 
 #define tick_dep_mask_name(sdep) TRACE_DEFINE_ENUM(TICK_DEP_MASK_##sdep);
 
 TICK_DEP_NAMES
@@ -424,7 +362,7 @@ TRACE_EVENT(tick_stop,
 );
 #endif
 
-#endif /*  _TRACE_TIMER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

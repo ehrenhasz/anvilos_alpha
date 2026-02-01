@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2018 Google LLC
- * Copyright (c) 2021 Aspeed Technology Inc.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -10,11 +7,11 @@
 #include <linux/regmap.h>
 #include <linux/platform_device.h>
 
-/* register offsets */
+ 
 #define HICR9	0x98
 #define HICRA	0x9c
 
-/* attributes options */
+ 
 #define UART_ROUTING_IO1	"io1"
 #define UART_ROUTING_IO2	"io2"
 #define UART_ROUTING_IO3	"io3"
@@ -62,7 +59,7 @@ static ssize_t aspeed_uart_routing_store(struct device *dev,
 	.store = aspeed_uart_routing_store,			\
 }
 
-/* routing selector for AST25xx */
+ 
 static struct aspeed_uart_routing_selector ast2500_io6_sel = {
 	.dev_attr = ROUTING_ATTR(UART_ROUTING_IO6),
 	.reg = HICR9,
@@ -284,7 +281,7 @@ static const struct attribute_group ast2500_uart_routing_attr_group = {
 	.attrs = ast2500_uart_routing_attrs,
 };
 
-/* routing selector for AST26xx */
+ 
 static struct aspeed_uart_routing_selector ast2600_uart10_sel = {
 	.dev_attr = ROUTING_ATTR(UART_ROUTING_UART10),
 	.reg = HICR9,

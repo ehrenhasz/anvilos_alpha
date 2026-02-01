@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * FILS AEAD for (Re)Association Request/Response frames
- * Copyright 2016, Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/hash.h>
@@ -31,12 +28,12 @@ static int aes_s2v(struct crypto_shash *tfm,
 
 	desc->tfm = tfm;
 
-	/* D = AES-CMAC(K, <zero>) */
+	 
 	crypto_shash_digest(desc, tmp, AES_BLOCK_SIZE, d);
 
 	for (i = 0; i < num_elem - 1; i++) {
-		/* D = dbl(D) xor AES_CMAC(K, Si) */
-		gf_mulx(d); /* dbl */
+		 
+		gf_mulx(d);  
 		crypto_shash_digest(desc, addr[i], len[i], tmp);
 		crypto_xor(d, tmp, AES_BLOCK_SIZE);
 	}
@@ -44,25 +41,25 @@ static int aes_s2v(struct crypto_shash *tfm,
 	crypto_shash_init(desc);
 
 	if (len[i] >= AES_BLOCK_SIZE) {
-		/* len(Sn) >= 128 */
-		/* T = Sn xorend D */
+		 
+		 
 		crypto_shash_update(desc, addr[i], len[i] - AES_BLOCK_SIZE);
 		crypto_xor(d, addr[i] + len[i] - AES_BLOCK_SIZE,
 			   AES_BLOCK_SIZE);
 	} else {
-		/* len(Sn) < 128 */
-		/* T = dbl(D) xor pad(Sn) */
-		gf_mulx(d); /* dbl */
+		 
+		 
+		gf_mulx(d);  
 		crypto_xor(d, addr[i], len[i]);
 		d[len[i]] ^= 0x80;
 	}
-	/* V = AES-CMAC(K, T) */
+	 
 	crypto_shash_finup(desc, d, AES_BLOCK_SIZE, v);
 
 	return 0;
 }
 
-/* Note: addr[] and len[] needs to have one extra slot at the end. */
+ 
 static int aes_siv_encrypt(const u8 *key, size_t key_len,
 			   const u8 *plain, size_t plain_len,
 			   size_t num_elem, const u8 *addr[],
@@ -76,18 +73,18 @@ static int aes_siv_encrypt(const u8 *key, size_t key_len,
 	struct scatterlist src[1], dst[1];
 	u8 *tmp;
 
-	key_len /= 2; /* S2V key || CTR key */
+	key_len /= 2;  
 
 	addr[num_elem] = plain;
 	len[num_elem] = plain_len;
 	num_elem++;
 
-	/* S2V */
+	 
 
 	tfm = crypto_alloc_shash("cmac(aes)", 0, 0);
 	if (IS_ERR(tfm))
 		return PTR_ERR(tfm);
-	/* K1 for S2V */
+	 
 	res = crypto_shash_setkey(tfm, key, key_len);
 	if (!res)
 		res = aes_s2v(tfm, num_elem, addr, len, v);
@@ -95,30 +92,26 @@ static int aes_siv_encrypt(const u8 *key, size_t key_len,
 	if (res)
 		return res;
 
-	/* Use a temporary buffer of the plaintext to handle need for
-	 * overwriting this during AES-CTR.
-	 */
+	 
 	tmp = kmemdup(plain, plain_len, GFP_KERNEL);
 	if (!tmp)
 		return -ENOMEM;
 
-	/* IV for CTR before encrypted data */
+	 
 	memcpy(out, v, AES_BLOCK_SIZE);
 
-	/* Synthetic IV to be used as the initial counter in CTR:
-	 * Q = V bitand (1^64 || 0^1 || 1^31 || 0^1 || 1^31)
-	 */
+	 
 	v[8] &= 0x7f;
 	v[12] &= 0x7f;
 
-	/* CTR */
+	 
 
 	tfm2 = crypto_alloc_skcipher("ctr(aes)", 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(tfm2)) {
 		kfree(tmp);
 		return PTR_ERR(tfm2);
 	}
-	/* K2 for CTR */
+	 
 	res = crypto_skcipher_setkey(tfm2, key + key_len, key_len);
 	if (res)
 		goto fail;
@@ -140,7 +133,7 @@ fail:
 	return res;
 }
 
-/* Note: addr[] and len[] needs to have one extra slot at the end. */
+ 
 static int aes_siv_decrypt(const u8 *key, size_t key_len,
 			   const u8 *iv_crypt, size_t iv_c_len,
 			   size_t num_elem, const u8 *addr[], size_t len[],
@@ -156,7 +149,7 @@ static int aes_siv_decrypt(const u8 *key, size_t key_len,
 	u8 check[AES_BLOCK_SIZE];
 
 	crypt_len = iv_c_len - AES_BLOCK_SIZE;
-	key_len /= 2; /* S2V key || CTR key */
+	key_len /= 2;  
 	addr[num_elem] = out;
 	len[num_elem] = crypt_len;
 	num_elem++;
@@ -164,18 +157,16 @@ static int aes_siv_decrypt(const u8 *key, size_t key_len,
 	memcpy(iv, iv_crypt, AES_BLOCK_SIZE);
 	memcpy(frame_iv, iv_crypt, AES_BLOCK_SIZE);
 
-	/* Synthetic IV to be used as the initial counter in CTR:
-	 * Q = V bitand (1^64 || 0^1 || 1^31 || 0^1 || 1^31)
-	 */
+	 
 	iv[8] &= 0x7f;
 	iv[12] &= 0x7f;
 
-	/* CTR */
+	 
 
 	tfm2 = crypto_alloc_skcipher("ctr(aes)", 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(tfm2))
 		return PTR_ERR(tfm2);
-	/* K2 for CTR */
+	 
 	res = crypto_skcipher_setkey(tfm2, key + key_len, key_len);
 	if (res) {
 		crypto_free_skcipher(tfm2);
@@ -197,12 +188,12 @@ static int aes_siv_decrypt(const u8 *key, size_t key_len,
 	if (res)
 		return res;
 
-	/* S2V */
+	 
 
 	tfm = crypto_alloc_shash("cmac(aes)", 0, 0);
 	if (IS_ERR(tfm))
 		return PTR_ERR(tfm);
-	/* K1 for S2V */
+	 
 	res = crypto_shash_setkey(tfm, key, key_len);
 	if (!res)
 		res = aes_s2v(tfm, num_elem, addr, len, check);
@@ -236,26 +227,24 @@ int fils_encrypt_assoc_req(struct sk_buff *skb,
 					 ies, skb->data + skb->len - ies);
 	if (!session || session->datalen != 1 + 8)
 		return -EINVAL;
-	/* encrypt after FILS Session element */
+	 
 	encr = (u8 *)session->data + 1 + 8;
 
-	/* AES-SIV AAD vectors */
+	 
 
-	/* The STA's MAC address */
+	 
 	addr[0] = mgmt->sa;
 	len[0] = ETH_ALEN;
-	/* The AP's BSSID */
+	 
 	addr[1] = mgmt->da;
 	len[1] = ETH_ALEN;
-	/* The STA's nonce */
+	 
 	addr[2] = assoc_data->fils_nonces;
 	len[2] = FILS_NONCE_LEN;
-	/* The AP's nonce */
+	 
 	addr[3] = &assoc_data->fils_nonces[FILS_NONCE_LEN];
 	len[3] = FILS_NONCE_LEN;
-	/* The (Re)Association Request frame from the Capability Information
-	 * field to the FILS Session element (both inclusive).
-	 */
+	 
 	addr[4] = capab;
 	len[4] = encr - capab;
 
@@ -290,26 +279,24 @@ int fils_decrypt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 			 mgmt->sa);
 		return -EINVAL;
 	}
-	/* decrypt after FILS Session element */
+	 
 	encr = (u8 *)session->data + 1 + 8;
 
-	/* AES-SIV AAD vectors */
+	 
 
-	/* The AP's BSSID */
+	 
 	addr[0] = mgmt->sa;
 	len[0] = ETH_ALEN;
-	/* The STA's MAC address */
+	 
 	addr[1] = mgmt->da;
 	len[1] = ETH_ALEN;
-	/* The AP's nonce */
+	 
 	addr[2] = &assoc_data->fils_nonces[FILS_NONCE_LEN];
 	len[2] = FILS_NONCE_LEN;
-	/* The STA's nonce */
+	 
 	addr[3] = assoc_data->fils_nonces;
 	len[3] = FILS_NONCE_LEN;
-	/* The (Re)Association Response frame from the Capability Information
-	 * field to the FILS Session element (both inclusive).
-	 */
+	 
 	addr[4] = capab;
 	len[4] = encr - capab;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Toradex Colibri VF50 Touchscreen driver
- *
- * Copyright 2015 Toradex AG
- *
- * Originally authored by Stefan Agner for 3.0 kernel
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -46,9 +40,7 @@ struct vf50_touch_device {
 	bool stop_touchscreen;
 };
 
-/*
- * Enables given plates and measures touch parameters using ADC
- */
+ 
 static int adc_ts_measure(struct iio_channel *channel,
 			  struct gpio_desc *plate_p, struct gpio_desc *plate_m)
 {
@@ -79,27 +71,20 @@ error_iio_read:
 	return value;
 }
 
-/*
- * Enable touch detection using falling edge detection on XM
- */
+ 
 static void vf50_ts_enable_touch_detection(struct vf50_touch_device *vf50_ts)
 {
-	/* Enable plate YM (needs to be strong GND, high active) */
+	 
 	gpiod_set_value(vf50_ts->gpio_ym, 1);
 
-	/*
-	 * Let the platform mux to idle state in order to enable
-	 * Pull-Up on GPIO
-	 */
+	 
 	pinctrl_pm_select_idle_state(&vf50_ts->pdev->dev);
 
-	/* Wait for the pull-up to be stable on high */
+	 
 	usleep_range(COLI_PULLUP_MIN_DELAY_US, COLI_PULLUP_MAX_DELAY_US);
 }
 
-/*
- * ADC touch screen sampling bottom half irq handler
- */
+ 
 static irqreturn_t vf50_ts_irq_bh(int irq, void *private)
 {
 	struct vf50_touch_device *vf50_ts = private;
@@ -107,29 +92,26 @@ static irqreturn_t vf50_ts_irq_bh(int irq, void *private)
 	int val_x, val_y, val_z1, val_z2, val_p = 0;
 	bool discard_val_on_start = true;
 
-	/* Disable the touch detection plates */
+	 
 	gpiod_set_value(vf50_ts->gpio_ym, 0);
 
-	/* Let the platform mux to default state in order to mux as ADC */
+	 
 	pinctrl_pm_select_default_state(dev);
 
 	while (!vf50_ts->stop_touchscreen) {
-		/* X-Direction */
+		 
 		val_x = adc_ts_measure(&vf50_ts->channels[0],
 				vf50_ts->gpio_xp, vf50_ts->gpio_xm);
 		if (val_x < 0)
 			break;
 
-		/* Y-Direction */
+		 
 		val_y = adc_ts_measure(&vf50_ts->channels[1],
 				vf50_ts->gpio_yp, vf50_ts->gpio_ym);
 		if (val_y < 0)
 			break;
 
-		/*
-		 * Touch pressure
-		 * Measure on XP/YM
-		 */
+		 
 		val_z1 = adc_ts_measure(&vf50_ts->channels[2],
 				vf50_ts->gpio_yp, vf50_ts->gpio_xm);
 		if (val_z1 < 0)
@@ -139,12 +121,9 @@ static irqreturn_t vf50_ts_irq_bh(int irq, void *private)
 		if (val_z2 < 0)
 			break;
 
-		/* Validate signal (avoid calculation using noise) */
+		 
 		if (val_z1 > 64 && val_x > 64) {
-			/*
-			 * Calculate resistance between the plates
-			 * lower resistance means higher pressure
-			 */
+			 
 			int r_x = (1000 * val_x) / VF_ADC_MAX;
 
 			val_p = (r_x * val_z2) / val_z1 - r_x;
@@ -158,26 +137,15 @@ static irqreturn_t vf50_ts_irq_bh(int irq, void *private)
 			"Measured values: x: %d, y: %d, z1: %d, z2: %d, p: %d\n",
 			val_x, val_y, val_z1, val_z2, val_p);
 
-		/*
-		 * If touch pressure is too low, stop measuring and reenable
-		 * touch detection
-		 */
+		 
 		if (val_p < vf50_ts->min_pressure || val_p > 2000)
 			break;
 
-		/*
-		 * The pressure may not be enough for the first x and the
-		 * second y measurement, but, the pressure is ok when the
-		 * driver is doing the third and fourth measurement. To
-		 * take care of this, we drop the first measurement always.
-		 */
+		 
 		if (discard_val_on_start) {
 			discard_val_on_start = false;
 		} else {
-			/*
-			 * Report touch position and sleep for
-			 * the next measurement.
-			 */
+			 
 			input_report_abs(vf50_ts->ts_input,
 					ABS_X, VF_ADC_MAX - val_x);
 			input_report_abs(vf50_ts->ts_input,
@@ -192,7 +160,7 @@ static irqreturn_t vf50_ts_irq_bh(int irq, void *private)
 			     COLI_PULLUP_MAX_DELAY_US);
 	}
 
-	/* Report no more touch, re-enable touch detection */
+	 
 	input_report_abs(vf50_ts->ts_input, ABS_PRESSURE, 0);
 	input_report_key(vf50_ts->ts_input, BTN_TOUCH, 0);
 	input_sync(vf50_ts->ts_input);
@@ -212,7 +180,7 @@ static int vf50_ts_open(struct input_dev *dev_input)
 
 	touchdev->stop_touchscreen = false;
 
-	/* Mux detection before request IRQ, wait for pull-up to settle */
+	 
 	vf50_ts_enable_touch_detection(touchdev);
 
 	return 0;
@@ -225,7 +193,7 @@ static void vf50_ts_close(struct input_dev *dev_input)
 
 	touchdev->stop_touchscreen = true;
 
-	/* Make sure IRQ is not running past close */
+	 
 	mb();
 	synchronize_irq(touchdev->pen_irq);
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ras
 #define TRACE_INCLUDE_FILE ras_event
@@ -14,14 +14,9 @@
 #include <linux/cper.h>
 #include <linux/mm.h>
 
-/*
- * MCE Extended Error Log trace event
- *
- * These events are generated when hardware detects a corrected or
- * uncorrected event.
- */
+ 
 
-/* memory trace event */
+ 
 
 #if defined(CONFIG_ACPI_EXTLOG) || defined(CONFIG_ACPI_EXTLOG_MODULE)
 TRACE_EVENT(extlog_mem_event,
@@ -77,24 +72,11 @@ TRACE_EVENT(extlog_mem_event,
 );
 #endif
 
-/*
- * Hardware Events Report
- *
- * Those events are generated when hardware detected a corrected or
- * uncorrected event, and are meant to replace the current API to report
- * errors defined on both EDAC and MCE subsystems.
- *
- * FIXME: Add events for handling memory errors originated from the
- *        MCE subsystem.
- */
+ 
 
-/*
- * Hardware-independent Memory Controller specific events
- */
+ 
 
-/*
- * Default error mechanisms for Memory Controller errors (CE and UE)
- */
+ 
 TRACE_EVENT(mc_event,
 
 	TP_PROTO(const unsigned int err_type,
@@ -162,12 +144,7 @@ TRACE_EVENT(mc_event,
 		  __get_str(driver_detail))
 );
 
-/*
- * ARM Processor Events Report
- *
- * This event is generated when hardware detects an ARM processor error
- * has occurred. UEFI 2.6 spec section N.2.4.4.
- */
+ 
 TRACE_EVENT(arm_event,
 
 	TP_PROTO(const struct cper_sec_proc_arm *proc),
@@ -207,15 +184,7 @@ TRACE_EVENT(arm_event,
 		  __entry->running_state, __entry->psci_state)
 );
 
-/*
- * Non-Standard Section Report
- *
- * This event is generated when hardware detected a hardware
- * error event, which may be of non-standard section as defined
- * in UEFI spec appendix "Common Platform Error Record", or may
- * be of sections for which TRACE_EVENT is not defined.
- *
- */
+ 
 TRACE_EVENT(non_standard_event,
 
 	TP_PROTO(const guid_t *sec_type,
@@ -252,19 +221,7 @@ TRACE_EVENT(non_standard_event,
 		  __print_hex(__get_dynamic_array(buf), __entry->len))
 );
 
-/*
- * PCIe AER Trace event
- *
- * These events are generated when hardware detects a corrected or
- * uncorrected event on a PCIe device. The event report has
- * the following structure:
- *
- * char * dev_name -	The name of the slot where the device resides
- *			([domain:]bus:device.function).
- * u32 status -		Either the correctable or uncorrectable register
- *			indicating what error or errors have been seen
- * u8 severity -	error severity 0:NONFATAL 1:FATAL 2:CORRECTED
- */
+ 
 
 #define aer_correctable_errors					\
 	{PCI_ERR_COR_RCVR,	"Receiver Error"},		\
@@ -338,13 +295,7 @@ TRACE_EVENT(aer_event,
 			"Not available")
 );
 
-/*
- * memory-failure recovery action result event
- *
- * unsigned long pfn -	Page Frame Number of the corrupted page
- * int type	-	Page types of the corrupted page
- * int result	-	Result of recovery action
- */
+ 
 
 #ifdef CONFIG_MEMORY_FAILURE
 #define MF_ACTION_RESULT	\
@@ -375,10 +326,7 @@ TRACE_EVENT(aer_event,
 	EM ( MF_MSG_UNSPLIT_THP, "unsplit thp" )			\
 	EMe ( MF_MSG_UNKNOWN, "unknown page" )
 
-/*
- * First define the enums in MM_ACTION_RESULT to be exported to userspace
- * via TRACE_DEFINE_ENUM().
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b) TRACE_DEFINE_ENUM(a);
@@ -387,10 +335,7 @@ TRACE_EVENT(aer_event,
 MF_ACTION_RESULT
 MF_PAGE_TYPE
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)		{ a, b },
@@ -421,8 +366,8 @@ TRACE_EVENT(memory_failure_event,
 		__print_symbolic(__entry->result, MF_ACTION_RESULT)
 	)
 );
-#endif /* CONFIG_MEMORY_FAILURE */
-#endif /* _TRACE_HW_EVENT_MC_H */
+#endif  
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

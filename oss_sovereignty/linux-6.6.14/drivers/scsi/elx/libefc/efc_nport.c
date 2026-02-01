@@ -1,29 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
 
-/*
- * NPORT
- *
- * Port object for physical port and NPIV ports.
- */
+ 
 
-/*
- * NPORT REFERENCE COUNTING
- *
- * A nport reference should be taken when:
- * - an nport is allocated
- * - a vport populates associated nport
- * - a remote node is allocated
- * - a unsolicited frame is processed
- * The reference should be dropped when:
- * - the unsolicited frame processesing is done
- * - the remote node is removed
- * - the vport is removed
- * - the nport is removed
- */
+ 
+
+ 
 
 #include "efc.h"
 
@@ -46,7 +26,7 @@ efc_nport_find_wwn(struct efc_domain *domain, uint64_t wwnn, uint64_t wwpn)
 {
 	struct efc_nport *nport = NULL;
 
-	/* Find a nport, given the WWNN and WWPN */
+	 
 	list_for_each_entry(nport, &domain->nport_list, list_entry) {
 		if (nport->wwnn == wwnn && nport->wwpn == wwpn)
 			return nport;
@@ -71,7 +51,7 @@ efc_nport_alloc(struct efc_domain *domain, uint64_t wwpn, uint64_t wwnn,
 	if (domain->efc->enable_ini)
 		enable_ini = 0;
 
-	/* Return a failure if this nport has already been allocated */
+	 
 	if ((wwpn != 0) || (wwnn != 0)) {
 		nport = efc_nport_find_wwn(domain, wwnn, wwpn);
 		if (nport) {
@@ -86,7 +66,7 @@ efc_nport_alloc(struct efc_domain *domain, uint64_t wwpn, uint64_t wwnn,
 	if (!nport)
 		return nport;
 
-	/* initialize refcount */
+	 
 	kref_init(&nport->ref);
 	nport->release = _efc_nport_free;
 
@@ -101,23 +81,20 @@ efc_nport_alloc(struct efc_domain *domain, uint64_t wwpn, uint64_t wwnn,
 	nport->enable_rscn = (nport->enable_ini ||
 			(nport->enable_tgt && enable_target_rscn(nport->efc)));
 
-	/* Copy service parameters from domain */
+	 
 	memcpy(nport->service_params, domain->service_params,
 	       sizeof(struct fc_els_flogi));
 
-	/* Update requested fc_id */
+	 
 	nport->fc_id = fc_id;
 
-	/* Update the nport's service parameters for the new wwn's */
+	 
 	nport->wwpn = wwpn;
 	nport->wwnn = wwnn;
 	snprintf(nport->wwnn_str, sizeof(nport->wwnn_str), "%016llX",
 		 (unsigned long long)wwnn);
 
-	/*
-	 * if this is the "first" nport of the domain,
-	 * then make it the "phys" nport
-	 */
+	 
 	if (list_empty(&domain->nport_list))
 		domain->nport = nport;
 
@@ -142,10 +119,7 @@ efc_nport_free(struct efc_nport *nport)
 	domain = nport->domain;
 	efc_log_debug(domain->efc, "[%s] free nport\n", nport->display_name);
 	list_del(&nport->list_entry);
-	/*
-	 * if this is the physical nport,
-	 * then clear it out of the domain
-	 */
+	 
 	if (nport == domain->nport)
 		domain->nport = NULL;
 
@@ -165,7 +139,7 @@ efc_nport_find(struct efc_domain *domain, u32 d_id)
 {
 	struct efc_nport *nport;
 
-	/* Find a nport object, given an FC_ID */
+	 
 	nport = xa_load(&domain->lookup, d_id);
 	if (!nport || !kref_get_unless_zero(&nport->ref))
 		return NULL;
@@ -181,14 +155,14 @@ efc_nport_attach(struct efc_nport *nport, u32 fc_id)
 	struct efc *efc = nport->efc;
 	unsigned long index;
 
-	/* Set our lookup */
+	 
 	rc = xa_err(xa_store(&nport->domain->lookup, fc_id, nport, GFP_ATOMIC));
 	if (rc) {
 		efc_log_err(efc, "Sport lookup store failed: %d\n", rc);
 		return rc;
 	}
 
-	/* Update our display_name */
+	 
 	efc_node_fcid_display(fc_id, nport->display_name,
 			      sizeof(nport->display_name));
 
@@ -199,7 +173,7 @@ efc_nport_attach(struct efc_nport *nport, u32 fc_id)
 	efc_log_debug(nport->efc, "[%s] attach nport: fc_id x%06x\n",
 		      nport->display_name, fc_id);
 
-	/* Register a nport, given an FC_ID */
+	 
 	rc = efc_cmd_nport_attach(efc, nport, fc_id);
 	if (rc < 0) {
 		efc_log_err(nport->efc,
@@ -222,12 +196,8 @@ efc_nport_shutdown(struct efc_nport *nport)
 			continue;
 		}
 
-		/*
-		 * If this is a vport, logout of the fabric
-		 * controller so that it deletes the vport
-		 * on the switch.
-		 */
-		/* if link is down, don't send logo */
+		 
+		 
 		if (efc->link_status == EFC_LINK_STATUS_DOWN) {
 			efc_node_post_event(node, EFC_EVT_SHUTDOWN, NULL);
 			continue;
@@ -237,15 +207,12 @@ efc_nport_shutdown(struct efc_nport *nport)
 			      node->display_name);
 
 		if (!efc_send_logo(node)) {
-			/* sent LOGO, wait for response */
+			 
 			efc_node_transition(node, __efc_d_wait_logo_rsp, NULL);
 			continue;
 		}
 
-		/*
-		 * failed to send LOGO,
-		 * go ahead and cleanup node anyways
-		 */
+		 
 		node_printf(node, "Failed to send LOGO\n");
 		efc_node_post_event(node, EFC_EVT_SHUTDOWN_EXPLICIT_LOGO, NULL);
 	}
@@ -257,7 +224,7 @@ efc_vport_link_down(struct efc_nport *nport)
 	struct efc *efc = nport->efc;
 	struct efc_vport *vport;
 
-	/* Clear the nport reference in the vport specification */
+	 
 	list_for_each_entry(vport, &efc->vport_list, list_entry) {
 		if (vport->nport == nport) {
 			kref_put(&nport->ref, nport->release);
@@ -285,25 +252,25 @@ __efc_nport_common(const char *funcname, struct efc_sm_ctx *ctx,
 			efc_sm_transition(ctx, __efc_nport_attached, NULL);
 		break;
 	case EFC_EVT_SHUTDOWN:
-		/* Flag this nport as shutting down */
+		 
 		nport->shutting_down = true;
 
 		if (nport->is_vport)
 			efc_vport_link_down(nport);
 
 		if (xa_empty(&nport->lookup)) {
-			/* Remove the nport from the domain's lookup table */
+			 
 			xa_erase(&domain->lookup, nport->fc_id);
 			efc_sm_transition(ctx, __efc_nport_wait_port_free,
 					  NULL);
 			if (efc_cmd_nport_free(efc, nport)) {
 				efc_log_debug(nport->efc,
 					      "efc_hw_port_free failed\n");
-				/* Not much we can do, free the nport anyways */
+				 
 				efc_nport_free(nport);
 			}
 		} else {
-			/* sm: node list is not empty / shutdown nodes */
+			 
 			efc_sm_transition(ctx,
 					  __efc_nport_wait_shutdown, NULL);
 			efc_nport_shutdown(nport);
@@ -326,14 +293,14 @@ __efc_nport_allocated(struct efc_sm_ctx *ctx,
 	nport_sm_trace(nport);
 
 	switch (evt) {
-	/* the physical nport is attached */
+	 
 	case EFC_EVT_NPORT_ATTACH_OK:
 		WARN_ON(nport != domain->nport);
 		efc_sm_transition(ctx, __efc_nport_attached, NULL);
 		break;
 
 	case EFC_EVT_NPORT_ALLOC_OK:
-		/* ignore */
+		 
 		break;
 	default:
 		__efc_nport_common(__func__, ctx, evt, arg);
@@ -362,7 +329,7 @@ __efc_nport_vport_init(struct efc_sm_ctx *ctx,
 		}
 
 		efc_sm_transition(ctx, __efc_nport_vport_wait_alloc, NULL);
-		/* If wwpn is zero, then we'll let the f/w assign wwpn*/
+		 
 		if (efc_cmd_nport_alloc(efc, nport, nport->domain,
 					nport->wwpn == 0 ? NULL :
 					(uint8_t *)&be_wwpn)) {
@@ -399,17 +366,11 @@ __efc_nport_vport_wait_alloc(struct efc_sm_ctx *ctx,
 				 "%016llX", nport->wwpn);
 		}
 
-		/* Update the nport's service parameters */
+		 
 		sp->fl_wwpn = cpu_to_be64(nport->wwpn);
 		sp->fl_wwnn = cpu_to_be64(nport->wwnn);
 
-		/*
-		 * if nport->fc_id is uninitialized,
-		 * then request that the fabric node use FDISC
-		 * to find an fc_id.
-		 * Otherwise we're restoring vports, or we're in
-		 * fabric emulation mode, so attach the fc_id
-		 */
+		 
 		if (nport->fc_id == U32_MAX) {
 			struct efc_node *fabric;
 
@@ -443,23 +404,18 @@ __efc_nport_vport_allocated(struct efc_sm_ctx *ctx,
 
 	nport_sm_trace(nport);
 
-	/*
-	 * This state is entered after the nport is allocated;
-	 * it then waits for a fabric node
-	 * FDISC to complete, which requests a nport attach.
-	 * The nport attach complete is handled in this state.
-	 */
+	 
 	switch (evt) {
 	case EFC_EVT_NPORT_ATTACH_OK: {
 		struct efc_node *node;
 
-		/* Find our fabric node, and forward this event */
+		 
 		node = efc_node_find(nport, FC_FID_FLOGI);
 		if (!node) {
 			efc_log_debug(efc, "can't find node %06x\n", FC_FID_FLOGI);
 			break;
 		}
-		/* sm: / forward nport attach to fabric node */
+		 
 		efc_node_post_event(node, evt, NULL);
 		efc_sm_transition(ctx, __efc_nport_attached, NULL);
 		break;
@@ -513,10 +469,7 @@ __efc_nport_attached(struct efc_sm_ctx *ctx,
 
 		efc->tt.new_nport(efc, nport);
 
-		/*
-		 * Update the vport (if its not the physical nport)
-		 * parameters
-		 */
+		 
 		if (nport->is_vport)
 			efc_vport_update_spec(nport);
 		break;
@@ -550,19 +503,16 @@ __efc_nport_wait_shutdown(struct efc_sm_ctx *ctx,
 	case EFC_EVT_NPORT_ALLOC_FAIL:
 	case EFC_EVT_NPORT_ATTACH_OK:
 	case EFC_EVT_NPORT_ATTACH_FAIL:
-		/* ignore these events - just wait for the all free event */
+		 
 		break;
 
 	case EFC_EVT_ALL_CHILD_NODES_FREE: {
-		/*
-		 * Remove the nport from the domain's
-		 * sparse vector lookup table
-		 */
+		 
 		xa_erase(&domain->lookup, nport->fc_id);
 		efc_sm_transition(ctx, __efc_nport_wait_port_free, NULL);
 		if (efc_cmd_nport_free(efc, nport)) {
 			efc_log_err(nport->efc, "efc_hw_port_free failed\n");
-			/* Not much we can do, free the nport anyways */
+			 
 			efc_nport_free(nport);
 		}
 		break;
@@ -582,10 +532,10 @@ __efc_nport_wait_port_free(struct efc_sm_ctx *ctx,
 
 	switch (evt) {
 	case EFC_EVT_NPORT_ATTACH_OK:
-		/* Ignore as we are waiting for the free CB */
+		 
 		break;
 	case EFC_EVT_NPORT_FREE_OK: {
-		/* All done, free myself */
+		 
 		efc_nport_free(nport);
 		break;
 	}
@@ -626,7 +576,7 @@ efc_vport_start(struct efc_domain *domain)
 	int rc = 0;
 	unsigned long flags = 0;
 
-	/* Use the vport spec to find the associated vports and start them */
+	 
 	spin_lock_irqsave(&efc->vport_lock, flags);
 	list_for_each_entry_safe(vport, next, &efc->vport_list, list_entry) {
 		if (!vport->nport) {
@@ -659,10 +609,7 @@ efc_nport_vport_new(struct efc_domain *domain, uint64_t wwpn, uint64_t wwnn,
 		return -EIO;
 	}
 
-	/*
-	 * Create a vport spec if we need to recreate
-	 * this vport after a link up event
-	 */
+	 
 	vport = efc_vport_create_spec(domain->efc, wwnn, wwpn, fc_id, ini, tgt,
 				      tgt_data, ini_data);
 	if (!vport) {
@@ -687,7 +634,7 @@ efc_nport_vport_del(struct efc *efc, struct efc_domain *domain,
 	unsigned long flags = 0;
 
 	spin_lock_irqsave(&efc->vport_lock, flags);
-	/* walk the efc_vport_list and remove from there */
+	 
 	list_for_each_entry_safe(vport, next, &efc->vport_list, list_entry) {
 		if (vport->wwpn == wwpn && vport->wwnn == wwnn) {
 			list_del(&vport->list_entry);
@@ -698,7 +645,7 @@ efc_nport_vport_del(struct efc *efc, struct efc_domain *domain,
 	spin_unlock_irqrestore(&efc->vport_lock, flags);
 
 	if (!domain) {
-		/* No domain means no nport to look for */
+		 
 		return 0;
 	}
 
@@ -706,7 +653,7 @@ efc_nport_vport_del(struct efc *efc, struct efc_domain *domain,
 	list_for_each_entry(nport, &domain->nport_list, list_entry) {
 		if (nport->wwpn == wwpn && nport->wwnn == wwnn) {
 			kref_put(&nport->ref, nport->release);
-			/* Shutdown this NPORT */
+			 
 			efc_sm_post_event(&nport->sm, EFC_EVT_SHUTDOWN, NULL);
 			break;
 		}
@@ -739,11 +686,7 @@ efc_vport_create_spec(struct efc *efc, uint64_t wwnn, uint64_t wwpn,
 	struct efc_vport *vport;
 	unsigned long flags = 0;
 
-	/*
-	 * walk the efc_vport_list and return failure
-	 * if a valid(vport with non zero WWPN and WWNN) vport entry
-	 * is already created
-	 */
+	 
 	spin_lock_irqsave(&efc->vport_lock, flags);
 	list_for_each_entry(vport, &efc->vport_list, list_entry) {
 		if ((wwpn && vport->wwpn == wwpn) &&

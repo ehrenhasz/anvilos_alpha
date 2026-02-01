@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -94,7 +90,7 @@ static const struct reset_control_ops sun4i_a10_display_reset_ops = {
 static int sun4i_a10_display_reset_xlate(struct reset_controller_dev *rcdev,
 					 const struct of_phandle_args *spec)
 {
-	/* We only have a single reset signal */
+	 
 	return 0;
 }
 

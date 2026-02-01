@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Asymmetric public-key cryptography key type
- *
- * See Documentation/crypto/asymmetric-keys.rst
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 #include <keys/asymmetric-subtype.h>
 #include <keys/asymmetric-parser.h>
 #include <crypto/public_key.h>
@@ -31,23 +25,7 @@ EXPORT_SYMBOL_GPL(key_being_used_for);
 static LIST_HEAD(asymmetric_key_parsers);
 static DECLARE_RWSEM(asymmetric_key_parsers_sem);
 
-/**
- * find_asymmetric_key - Find a key by ID.
- * @keyring: The keys to search.
- * @id_0: The first ID to look for or NULL.
- * @id_1: The second ID to look for or NULL, matched together with @id_0
- * against @keyring keys' id[0] and id[1].
- * @id_2: The fallback ID to match against @keyring keys' id[2] if both of the
- * other IDs are NULL.
- * @partial: Use partial match for @id_0 and @id_1 if true, exact if false.
- *
- * Find a key in the given keyring by identifier.  The preferred identifier is
- * the id_0 and the fallback identifier is the id_1.  If both are given, the
- * former is matched (exactly or partially) against either of the sought key's
- * identifiers and the latter must match the found key's second identifier
- * exactly.  If both are missing, id_2 must match the sought key's third
- * identifier exactly.
- */
+ 
 struct key *find_asymmetric_key(struct key *keyring,
 				const struct asymmetric_key_id *id_0,
 				const struct asymmetric_key_id *id_1,
@@ -73,7 +51,7 @@ struct key *find_asymmetric_key(struct key *keyring,
 		len = id_2->len;
 	}
 
-	/* Construct an identifier "id:<keyid>". */
+	 
 	p = req = kmalloc(2 + 1 + len * 2 + 1, GFP_KERNEL);
 	if (!req)
 		return ERR_PTR(-ENOMEM);
@@ -102,7 +80,7 @@ struct key *find_asymmetric_key(struct key *keyring,
 
 	if (IS_ERR(ref)) {
 		switch (PTR_ERR(ref)) {
-			/* Hide some search errors */
+			 
 		case -EACCES:
 		case -ENOTDIR:
 		case -EAGAIN:
@@ -135,15 +113,7 @@ reject:
 }
 EXPORT_SYMBOL_GPL(find_asymmetric_key);
 
-/**
- * asymmetric_key_generate_id: Construct an asymmetric key ID
- * @val_1: First binary blob
- * @len_1: Length of first binary blob
- * @val_2: Second binary blob
- * @len_2: Length of second binary blob
- *
- * Construct an asymmetric key ID from a pair of binary blobs.
- */
+ 
 struct asymmetric_key_id *asymmetric_key_generate_id(const void *val_1,
 						     size_t len_1,
 						     const void *val_2,
@@ -162,11 +132,7 @@ struct asymmetric_key_id *asymmetric_key_generate_id(const void *val_1,
 }
 EXPORT_SYMBOL_GPL(asymmetric_key_generate_id);
 
-/**
- * asymmetric_key_id_same - Return true if two asymmetric keys IDs are the same.
- * @kid1: The key ID to compare
- * @kid2: The key ID to compare
- */
+ 
 bool asymmetric_key_id_same(const struct asymmetric_key_id *kid1,
 			    const struct asymmetric_key_id *kid2)
 {
@@ -178,12 +144,7 @@ bool asymmetric_key_id_same(const struct asymmetric_key_id *kid1,
 }
 EXPORT_SYMBOL_GPL(asymmetric_key_id_same);
 
-/**
- * asymmetric_key_id_partial - Return true if two asymmetric keys IDs
- * partially match
- * @kid1: The key ID to compare
- * @kid2: The key ID to compare
- */
+ 
 bool asymmetric_key_id_partial(const struct asymmetric_key_id *kid1,
 			       const struct asymmetric_key_id *kid2)
 {
@@ -196,12 +157,7 @@ bool asymmetric_key_id_partial(const struct asymmetric_key_id *kid1,
 }
 EXPORT_SYMBOL_GPL(asymmetric_key_id_partial);
 
-/**
- * asymmetric_match_key_ids - Search asymmetric key IDs 1 & 2
- * @kids: The pair of key IDs to check
- * @match_id: The key ID we're looking for
- * @match: The match function to use
- */
+ 
 static bool asymmetric_match_key_ids(
 	const struct asymmetric_key_ids *kids,
 	const struct asymmetric_key_id *match_id,
@@ -218,7 +174,7 @@ static bool asymmetric_match_key_ids(
 	return false;
 }
 
-/* helper function can be called directly with pre-allocated memory */
+ 
 inline int __asymmetric_key_hex_to_key_id(const char *id,
 				   struct asymmetric_key_id *match_id,
 				   size_t hexlen)
@@ -227,10 +183,7 @@ inline int __asymmetric_key_hex_to_key_id(const char *id,
 	return hex2bin(match_id->data, id, hexlen);
 }
 
-/**
- * asymmetric_key_hex_to_key_id - Convert a hex string into a key ID.
- * @id: The ID as a hex string.
- */
+ 
 struct asymmetric_key_id *asymmetric_key_hex_to_key_id(const char *id)
 {
 	struct asymmetric_key_id *match_id;
@@ -255,9 +208,7 @@ struct asymmetric_key_id *asymmetric_key_hex_to_key_id(const char *id)
 	return match_id;
 }
 
-/*
- * Match asymmetric keys by an exact match on one of the first two IDs.
- */
+ 
 static bool asymmetric_key_cmp(const struct key *key,
 			       const struct key_match_data *match_data)
 {
@@ -268,9 +219,7 @@ static bool asymmetric_key_cmp(const struct key *key,
 					asymmetric_key_id_same);
 }
 
-/*
- * Match asymmetric keys by a partial match on one of the first two IDs.
- */
+ 
 static bool asymmetric_key_cmp_partial(const struct key *key,
 				       const struct key_match_data *match_data)
 {
@@ -281,9 +230,7 @@ static bool asymmetric_key_cmp_partial(const struct key *key,
 					asymmetric_key_id_partial);
 }
 
-/*
- * Match asymmetric keys by an exact match on the third IDs.
- */
+ 
 static bool asymmetric_key_cmp_name(const struct key *key,
 				    const struct key_match_data *match_data)
 {
@@ -293,20 +240,7 @@ static bool asymmetric_key_cmp_name(const struct key *key,
 	return kids && asymmetric_key_id_same(kids->id[2], match_id);
 }
 
-/*
- * Preparse the match criterion.  If we don't set lookup_type and cmp,
- * the default will be an exact match on the key description.
- *
- * There are some specifiers for matching key IDs rather than by the key
- * description:
- *
- *	"id:<id>" - find a key by partial match on one of the first two IDs
- *	"ex:<id>" - find a key by exact match on one of the first two IDs
- *	"dn:<id>" - find a key by exact match on the third ID
- *
- * These have to be searched by iteration rather than by direct lookup because
- * the key is hashed according to its description.
- */
+ 
 static int asymmetric_key_match_preparse(struct key_match_data *match_data)
 {
 	struct asymmetric_key_id *match_id;
@@ -348,17 +282,13 @@ default_match:
 	return 0;
 }
 
-/*
- * Free the preparsed the match criterion.
- */
+ 
 static void asymmetric_key_match_free(struct key_match_data *match_data)
 {
 	kfree(match_data->preparsed);
 }
 
-/*
- * Describe the asymmetric key
- */
+ 
 static void asymmetric_key_describe(const struct key *key, struct seq_file *m)
 {
 	const struct asymmetric_key_subtype *subtype = asymmetric_key_subtype(key);
@@ -386,18 +316,12 @@ static void asymmetric_key_describe(const struct key *key, struct seq_file *m)
 		}
 
 		seq_puts(m, " [");
-		/* put something here to indicate the key's capabilities */
+		 
 		seq_putc(m, ']');
 	}
 }
 
-/*
- * Preparse a asymmetric payload to get format the contents appropriately for the
- * internal payload to cut down on the number of scans of the data performed.
- *
- * We also generate a proposed description from the contents of the key that
- * can be used to name the key if the user doesn't want to provide one.
- */
+ 
 static int asymmetric_key_preparse(struct key_preparsed_payload *prep)
 {
 	struct asymmetric_key_parser *parser;
@@ -427,9 +351,7 @@ static int asymmetric_key_preparse(struct key_preparsed_payload *prep)
 	return ret;
 }
 
-/*
- * Clean up the key ID list
- */
+ 
 static void asymmetric_key_free_kids(struct asymmetric_key_ids *kids)
 {
 	int i;
@@ -441,9 +363,7 @@ static void asymmetric_key_free_kids(struct asymmetric_key_ids *kids)
 	}
 }
 
-/*
- * Clean up the preparse data
- */
+ 
 static void asymmetric_key_free_preparse(struct key_preparsed_payload *prep)
 {
 	struct asymmetric_key_subtype *subtype = prep->payload.data[asym_subtype];
@@ -460,9 +380,7 @@ static void asymmetric_key_free_preparse(struct key_preparsed_payload *prep)
 	kfree(prep->description);
 }
 
-/*
- * dispose of the data dangling from the corpse of a asymmetric key
- */
+ 
 static void asymmetric_key_destroy(struct key *key)
 {
 	struct asymmetric_key_subtype *subtype = asymmetric_key_subtype(key);
@@ -500,9 +418,7 @@ static struct key_restriction *asymmetric_restriction_alloc(
 	return keyres;
 }
 
-/*
- * look up keyring restrict functions for asymmetric keys
- */
+ 
 static struct key_restriction *asymmetric_lookup_restriction(
 	const char *restriction)
 {
@@ -622,10 +538,7 @@ struct key_type key_type_asymmetric = {
 };
 EXPORT_SYMBOL_GPL(key_type_asymmetric);
 
-/**
- * register_asymmetric_key_parser - Register a asymmetric key blob parser
- * @parser: The parser to register
- */
+ 
 int register_asymmetric_key_parser(struct asymmetric_key_parser *parser)
 {
 	struct asymmetric_key_parser *cursor;
@@ -653,10 +566,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(register_asymmetric_key_parser);
 
-/**
- * unregister_asymmetric_key_parser - Unregister a asymmetric key blob parser
- * @parser: The parser to unregister
- */
+ 
 void unregister_asymmetric_key_parser(struct asymmetric_key_parser *parser)
 {
 	down_write(&asymmetric_key_parsers_sem);
@@ -667,9 +577,7 @@ void unregister_asymmetric_key_parser(struct asymmetric_key_parser *parser)
 }
 EXPORT_SYMBOL_GPL(unregister_asymmetric_key_parser);
 
-/*
- * Module stuff
- */
+ 
 static int __init asymmetric_key_init(void)
 {
 	return register_key_type(&key_type_asymmetric);

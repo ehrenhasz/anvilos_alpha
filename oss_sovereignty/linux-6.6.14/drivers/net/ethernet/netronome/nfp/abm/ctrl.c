@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -270,7 +270,7 @@ int nfp_abm_ctrl_prio_map_update(struct nfp_abm_link *alink, u32 *packed)
 	if (err)
 		return err;
 
-	/* Write data_len and wipe reserved */
+	 
 	nn_writeq(nn, nn->tlv_caps.mbox_off + NFP_NET_ABM_MBOX_DATALEN,
 		  alink->abm->prio_map_len);
 
@@ -364,13 +364,13 @@ int nfp_abm_ctrl_find_addrs(struct nfp_abm *abm)
 
 	abm->pf_id = nfp_cppcore_pcie_unit(pf->cpp);
 
-	/* Check if Qdisc offloads are supported */
+	 
 	res = nfp_pf_rtsym_read_optional(pf, NFP_RED_SUPPORT_SYM_NAME, 1);
 	if (res < 0)
 		return res;
 	abm->red_support = res;
 
-	/* Read count of prios and prio bands */
+	 
 	res = nfp_pf_rtsym_read_optional(pf, NFP_NUM_BANDS_SYM_NAME, 1);
 	if (res < 0)
 		return res;
@@ -381,7 +381,7 @@ int nfp_abm_ctrl_find_addrs(struct nfp_abm *abm)
 		return res;
 	abm->num_prios = res;
 
-	/* Read available actions */
+	 
 	res = nfp_pf_rtsym_read_optional(pf, NFP_ACT_MASK_SYM_NAME,
 					 BIT(NFP_ABM_ACT_MARK_DROP));
 	if (res < 0)
@@ -391,7 +391,7 @@ int nfp_abm_ctrl_find_addrs(struct nfp_abm *abm)
 	abm->prio_map_len = nfp_abm_ctrl_prio_map_size(abm);
 	abm->dscp_mask = GENMASK(7, 8 - order_base_2(abm->num_prios));
 
-	/* Check values are sane, U16_MAX is arbitrarily chosen as max */
+	 
 	if (!is_power_of_2(abm->num_bands) || !is_power_of_2(abm->num_prios) ||
 	    abm->num_bands > U16_MAX || abm->num_prios > U16_MAX ||
 	    (abm->num_bands == 1) != (abm->num_prios == 1)) {
@@ -401,7 +401,7 @@ int nfp_abm_ctrl_find_addrs(struct nfp_abm *abm)
 		return -EINVAL;
 	}
 
-	/* Find level and stat symbols */
+	 
 	if (!abm->red_support)
 		return 0;
 

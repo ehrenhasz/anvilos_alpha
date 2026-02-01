@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2012, Intel Corporation.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/time.h>
@@ -13,9 +10,9 @@
 
 static struct {
 	u32 usage_id;
-	int unit; /* 0 for default others from HID sensor spec */
-	int scale_val0; /* scale, whole number */
-	int scale_val1; /* scale, fraction in nanos */
+	int unit;  
+	int scale_val0;  
+	int scale_val1;  
 } unit_conversion[] = {
 	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
 	{HID_USAGE_SENSOR_ACCEL_3D,
@@ -98,14 +95,7 @@ static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
 	*val2 = no % divisor * int_pow(10, 6 - exp);
 }
 
-/*
-VTF format uses exponent and variable size format.
-For example if the size is 2 bytes
-0x0067 with VTF16E14 format -> +1.03
-To convert just change to 0x67 to decimal and use two decimal as E14 stands
-for 10^-2.
-Negative numbers are 2's complement
-*/
+ 
 static void convert_from_vtf_format(u32 value, int size, int exp,
 					int *val1, int *val2)
 {
@@ -341,17 +331,7 @@ int hid_sensor_write_raw_hyst_rel_value(struct hid_sensor_common *st,
 }
 EXPORT_SYMBOL_NS(hid_sensor_write_raw_hyst_rel_value, IIO_HID);
 
-/*
- * This fuction applies the unit exponent to the scale.
- * For example:
- * 9.806650000 ->exp:2-> val0[980]val1[665000000]
- * 9.000806000 ->exp:2-> val0[900]val1[80600000]
- * 0.174535293 ->exp:2-> val0[17]val1[453529300]
- * 1.001745329 ->exp:0-> val0[1]val1[1745329]
- * 1.001745329 ->exp:2-> val0[100]val1[174532900]
- * 1.001745329 ->exp:4-> val0[10017]val1[453290000]
- * 9.806650000 ->exp:-2-> val0[0]val1[98066500]
- */
+ 
 static void adjust_exponent_nano(int *val0, int *val1, int scale0,
 				  int scale1, int exp)
 {
@@ -441,7 +421,7 @@ int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
 					HID_FEATURE_REPORT, usage_id,
 					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
 					&st->poll);
-	/* Default unit of measure is milliseconds */
+	 
 	if (st->poll.units == 0)
 		st->poll.units = HID_USAGE_SENSOR_UNITS_MILLISECOND;
 
@@ -529,10 +509,7 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
 			HID_FEATURE_REPORT, usage_id,
 			HID_USAGE_SENSOR_PROP_SENSITIVITY_REL_PCT,
 			&st->sensitivity_rel);
-	/*
-	 * Set Sensitivity field ids, when there is no individual modifier, will
-	 * check absolute sensitivity and relative sensitivity of data field
-	 */
+	 
 	for (i = 0; i < sensitivity_addresses_len; i++) {
 		if (st->sensitivity.index < 0)
 			sensor_hub_input_get_attribute_info(

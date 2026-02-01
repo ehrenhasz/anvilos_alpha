@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek PCIe host controller driver.
- *
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *	   Honghui Zhang <honghui.zhang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,13 +23,13 @@
 
 #include "../pci.h"
 
-/* PCIe shared registers */
+ 
 #define PCIE_SYS_CFG		0x00
 #define PCIE_INT_ENABLE		0x0c
 #define PCIE_CFG_ADDR		0x20
 #define PCIE_CFG_DATA		0x24
 
-/* PCIe per port registers */
+ 
 #define PCIE_BAR0_SETUP		0x10
 #define PCIE_CLASS		0x34
 #define PCIE_LINK_STATUS	0x50
@@ -57,7 +51,7 @@
 	(PCIE_CONF_REG(regn) | PCIE_CONF_FUN(fun) | \
 	 PCIE_CONF_DEV(dev) | PCIE_CONF_BUS(bus))
 
-/* MediaTek specific configuration registers */
+ 
 #define PCIE_FTS_NUM		0x70c
 #define PCIE_FTS_NUM_MASK	GENMASK(15, 8)
 #define PCIE_FTS_NUM_L0(x)	((x) & 0xff << 8)
@@ -66,12 +60,12 @@
 #define PCIE_FC_CREDIT_MASK	(GENMASK(31, 31) | GENMASK(28, 16))
 #define PCIE_FC_CREDIT_VAL(x)	((x) << 16)
 
-/* PCIe V2 share registers */
+ 
 #define PCIE_SYS_CFG_V2		0x0
 #define PCIE_CSR_LTSSM_EN(x)	BIT(0 + (x) * 8)
 #define PCIE_CSR_ASPM_L1_EN(x)	BIT(1 + (x) * 8)
 
-/* PCIe V2 per-port registers */
+ 
 #define PCIE_MSI_VECTOR		0x0c0
 
 #define PCIE_CONF_VEND_ID	0x100
@@ -93,14 +87,10 @@
 #define AHB2PCIE_SIZE(x)	((x) & GENMASK(4, 0))
 #define PCIE_AXI_WINDOW0	0x448
 #define WIN_ENABLE		BIT(7)
-/*
- * Define PCIe to AHB window size as 2^33 to support max 8GB address space
- * translate, support least 4GB DRAM size access from EP DMA(physical DRAM
- * start from 0x40000000).
- */
+ 
 #define PCIE2AHB_SIZE	0x21
 
-/* PCIe V2 configuration transaction header */
+ 
 #define PCIE_CFG_HEADER0	0x460
 #define PCIE_CFG_HEADER1	0x464
 #define PCIE_CFG_HEADER2	0x468
@@ -141,16 +131,7 @@
 
 struct mtk_pcie_port;
 
-/**
- * struct mtk_pcie_soc - differentiate between host generations
- * @need_fix_class_id: whether this host's class ID needed to be fixed or not
- * @need_fix_device_id: whether this host's device ID needed to be fixed or not
- * @no_msi: Bridge has no MSI support, and relies on an external block
- * @device_id: device ID which this host need to be fixed
- * @ops: pointer to configuration access functions
- * @startup: pointer to controller setting functions
- * @setup_irq: pointer to initialize IRQ functions
- */
+ 
 struct mtk_pcie_soc {
 	bool need_fix_class_id;
 	bool need_fix_device_id;
@@ -161,29 +142,7 @@ struct mtk_pcie_soc {
 	int (*setup_irq)(struct mtk_pcie_port *port, struct device_node *node);
 };
 
-/**
- * struct mtk_pcie_port - PCIe port information
- * @base: IO mapped register base
- * @list: port list
- * @pcie: pointer to PCIe host info
- * @reset: pointer to port reset control
- * @sys_ck: pointer to transaction/data link layer clock
- * @ahb_ck: pointer to AHB slave interface operating clock for CSR access
- *          and RC initiated MMIO access
- * @axi_ck: pointer to application layer MMIO channel operating clock
- * @aux_ck: pointer to pe2_mac_bridge and pe2_mac_core operating clock
- *          when pcie_mac_ck/pcie_pipe_ck is turned off
- * @obff_ck: pointer to OBFF functional block operating clock
- * @pipe_ck: pointer to LTSSM and PHY/MAC layer operating clock
- * @phy: pointer to PHY control block
- * @slot: port slot
- * @irq: GIC irq
- * @irq_domain: legacy INTx IRQ domain
- * @inner_domain: inner IRQ domain
- * @msi_domain: MSI IRQ domain
- * @lock: protect the msi_irq_in_use bitmap
- * @msi_irq_in_use: bit map for assigned MSI IRQ
- */
+ 
 struct mtk_pcie_port {
 	void __iomem *base;
 	struct list_head list;
@@ -205,16 +164,7 @@ struct mtk_pcie_port {
 	DECLARE_BITMAP(msi_irq_in_use, MTK_MSI_IRQS_NUM);
 };
 
-/**
- * struct mtk_pcie - PCIe host information
- * @dev: pointer to PCIe device
- * @base: IO mapped register base
- * @cfg: IO mapped register map for PCIe config
- * @free_ck: free-run reference clock
- * @mem: non-prefetchable memory resource
- * @ports: pointer to PCIe port information
- * @soc: pointer to SoC-dependent operations
- */
+ 
 struct mtk_pcie {
 	struct device *dev;
 	void __iomem *base;
@@ -286,23 +236,23 @@ static int mtk_pcie_hw_rd_cfg(struct mtk_pcie_port *port, u32 bus, u32 devfn,
 {
 	u32 tmp;
 
-	/* Write PCIe configuration transaction header for Cfgrd */
+	 
 	writel(CFG_HEADER_DW0(CFG_WRRD_TYPE_0, CFG_RD_FMT),
 	       port->base + PCIE_CFG_HEADER0);
 	writel(CFG_HEADER_DW1(where, size), port->base + PCIE_CFG_HEADER1);
 	writel(CFG_HEADER_DW2(where, PCI_FUNC(devfn), PCI_SLOT(devfn), bus),
 	       port->base + PCIE_CFG_HEADER2);
 
-	/* Trigger h/w to transmit Cfgrd TLP */
+	 
 	tmp = readl(port->base + PCIE_APP_TLP_REQ);
 	tmp |= APP_CFG_REQ;
 	writel(tmp, port->base + PCIE_APP_TLP_REQ);
 
-	/* Check completion status */
+	 
 	if (mtk_pcie_check_cfg_cpld(port))
 		return PCIBIOS_SET_FAILED;
 
-	/* Read cpld payload of Cfgrd */
+	 
 	*val = readl(port->base + PCIE_CFG_RDATA);
 
 	if (size == 1)
@@ -316,23 +266,23 @@ static int mtk_pcie_hw_rd_cfg(struct mtk_pcie_port *port, u32 bus, u32 devfn,
 static int mtk_pcie_hw_wr_cfg(struct mtk_pcie_port *port, u32 bus, u32 devfn,
 			      int where, int size, u32 val)
 {
-	/* Write PCIe configuration transaction header for Cfgwr */
+	 
 	writel(CFG_HEADER_DW0(CFG_WRRD_TYPE_0, CFG_WR_FMT),
 	       port->base + PCIE_CFG_HEADER0);
 	writel(CFG_HEADER_DW1(where, size), port->base + PCIE_CFG_HEADER1);
 	writel(CFG_HEADER_DW2(where, PCI_FUNC(devfn), PCI_SLOT(devfn), bus),
 	       port->base + PCIE_CFG_HEADER2);
 
-	/* Write Cfgwr data */
+	 
 	val = val << 8 * (where & 3);
 	writel(val, port->base + PCIE_CFG_WDATA);
 
-	/* Trigger h/w to transmit Cfgwr TLP */
+	 
 	val = readl(port->base + PCIE_APP_TLP_REQ);
 	val |= APP_CFG_REQ;
 	writel(val, port->base + PCIE_APP_TLP_REQ);
 
-	/* Check completion status */
+	 
 	return mtk_pcie_check_cfg_cpld(port);
 }
 
@@ -343,10 +293,7 @@ static struct mtk_pcie_port *mtk_pcie_find_port(struct pci_bus *bus,
 	struct mtk_pcie_port *port;
 	struct pci_dev *dev = NULL;
 
-	/*
-	 * Walk the bus hierarchy to get the devfn value
-	 * of the port in the root bus.
-	 */
+	 
 	while (bus && bus->number) {
 		dev = bus->self;
 		bus = dev->bus;
@@ -396,7 +343,7 @@ static void mtk_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 	struct mtk_pcie_port *port = irq_data_get_irq_chip_data(data);
 	phys_addr_t addr;
 
-	/* MT2712/MT7622 only support 32-bit MSI addresses */
+	 
 	addr = virt_to_phys(port->base + PCIE_MSI_VECTOR);
 	msg->address_hi = 0;
 	msg->address_lo = lower_32_bits(addr);
@@ -570,7 +517,7 @@ static int mtk_pcie_init_irq_domain(struct mtk_pcie_port *port,
 	struct device_node *pcie_intc_node;
 	int ret;
 
-	/* Setup INTx */
+	 
 	pcie_intc_node = of_get_next_child(node, NULL);
 	if (!pcie_intc_node) {
 		dev_err(dev, "no PCIe Intc node found\n");
@@ -606,7 +553,7 @@ static void mtk_pcie_intr_handler(struct irq_desc *desc)
 	status = readl(port->base + PCIE_INT_STATUS);
 	if (status & INTX_MASK) {
 		for_each_set_bit_from(bit, &status, PCI_NUM_INTX + INTX_SHIFT) {
-			/* Clear the INTx */
+			 
 			writel(1 << bit, port->base + PCIE_INT_STATUS);
 			generic_handle_domain_irq(port->irq_domain,
 						  bit - INTX_SHIFT);
@@ -617,13 +564,7 @@ static void mtk_pcie_intr_handler(struct irq_desc *desc)
 		if (status & MSI_STATUS){
 			unsigned long imsi_status;
 
-			/*
-			 * The interrupt status can be cleared even if the
-			 * MSI status remains pending. As such, given the
-			 * edge-triggered interrupt type, its status should
-			 * be cleared before being dispatched to the
-			 * handler of the underlying device.
-			 */
+			 
 			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
 			while ((imsi_status = readl(port->base + PCIE_IMSI_STATUS))) {
 				for_each_set_bit(bit, &imsi_status, MTK_MSI_IRQS_NUM)
@@ -679,7 +620,7 @@ static int mtk_pcie_startup_port_v2(struct mtk_pcie_port *port)
 	if (!mem)
 		return -EINVAL;
 
-	/* MT7622 platforms need to enable LTSSM and ASPM from PCIe subsys */
+	 
 	if (pcie->base) {
 		val = readl(pcie->base + PCIE_SYS_CFG_V2);
 		val |= PCIE_CSR_LTSSM_EN(port->slot) |
@@ -691,30 +632,22 @@ static int mtk_pcie_startup_port_v2(struct mtk_pcie_port *port)
 		regmap_update_bits(pcie->cfg, PCIE_SYS_CFG_V2, val, val);
 	}
 
-	/* Assert all reset signals */
+	 
 	writel(0, port->base + PCIE_RST_CTRL);
 
-	/*
-	 * Enable PCIe link down reset, if link status changed from link up to
-	 * link down, this will reset MAC control registers and configuration
-	 * space.
-	 */
+	 
 	writel(PCIE_LINKDOWN_RST_EN, port->base + PCIE_RST_CTRL);
 
-	/*
-	 * Described in PCIe CEM specification sections 2.2 (PERST# Signal) and
-	 * 2.2.1 (Initial Power-Up (G3 to S0)). The deassertion of PERST# should
-	 * be delayed 100ms (TPVPERL) for the power and clock to become stable.
-	 */
+	 
 	msleep(100);
 
-	/* De-assert PHY, PE, PIPE, MAC and configuration reset	*/
+	 
 	val = readl(port->base + PCIE_RST_CTRL);
 	val |= PCIE_PHY_RSTB | PCIE_PERSTB | PCIE_PIPE_SRSTB |
 	       PCIE_MAC_SRSTB | PCIE_CRSTB;
 	writel(val, port->base + PCIE_RST_CTRL);
 
-	/* Set up vendor ID and class code */
+	 
 	if (soc->need_fix_class_id) {
 		val = PCI_VENDOR_ID_MEDIATEK;
 		writew(val, port->base + PCIE_CONF_VEND_ID);
@@ -726,14 +659,14 @@ static int mtk_pcie_startup_port_v2(struct mtk_pcie_port *port)
 	if (soc->need_fix_device_id)
 		writew(soc->device_id, port->base + PCIE_CONF_DEVICE_ID);
 
-	/* 100ms timeout value should be enough for Gen1/2 training */
+	 
 	err = readl_poll_timeout(port->base + PCIE_LINK_STATUS_V2, val,
 				 !!(val & PCIE_PORT_LINKUP_V2), 20,
 				 100 * USEC_PER_MSEC);
 	if (err)
 		return -ETIMEDOUT;
 
-	/* Set INTx mask */
+	 
 	val = readl(port->base + PCIE_INT_MASK);
 	val &= ~INTX_MASK;
 	writel(val, port->base + PCIE_INT_MASK);
@@ -741,7 +674,7 @@ static int mtk_pcie_startup_port_v2(struct mtk_pcie_port *port)
 	if (IS_ENABLED(CONFIG_PCI_MSI))
 		mtk_pcie_enable_msi(port);
 
-	/* Set AHB to PCIe translation windows */
+	 
 	val = lower_32_bits(mem->start) |
 	      AHB2PCIE_SIZE(fls(resource_size(mem)));
 	writel(val, port->base + PCIE_AHB_TRANS_BASE0_L);
@@ -749,7 +682,7 @@ static int mtk_pcie_startup_port_v2(struct mtk_pcie_port *port)
 	val = upper_32_bits(mem->start);
 	writel(val, port->base + PCIE_AHB_TRANS_BASE0_H);
 
-	/* Set PCIe to AXI translation memory space.*/
+	 
 	val = PCIE2AHB_SIZE | WIN_ENABLE;
 	writel(val, port->base + PCIE_AXI_WINDOW0);
 
@@ -781,36 +714,36 @@ static int mtk_pcie_startup_port(struct mtk_pcie_port *port)
 	u32 val;
 	int err;
 
-	/* assert port PERST_N */
+	 
 	val = readl(pcie->base + PCIE_SYS_CFG);
 	val |= PCIE_PORT_PERST(port->slot);
 	writel(val, pcie->base + PCIE_SYS_CFG);
 
-	/* de-assert port PERST_N */
+	 
 	val = readl(pcie->base + PCIE_SYS_CFG);
 	val &= ~PCIE_PORT_PERST(port->slot);
 	writel(val, pcie->base + PCIE_SYS_CFG);
 
-	/* 100ms timeout value should be enough for Gen1/2 training */
+	 
 	err = readl_poll_timeout(port->base + PCIE_LINK_STATUS, val,
 				 !!(val & PCIE_PORT_LINKUP), 20,
 				 100 * USEC_PER_MSEC);
 	if (err)
 		return -ETIMEDOUT;
 
-	/* enable interrupt */
+	 
 	val = readl(pcie->base + PCIE_INT_ENABLE);
 	val |= PCIE_PORT_INT_EN(port->slot);
 	writel(val, pcie->base + PCIE_INT_ENABLE);
 
-	/* map to all DDR region. We need to set it before cfg operation. */
+	 
 	writel(PCIE_BAR_MAP_MAX | PCIE_BAR_ENABLE,
 	       port->base + PCIE_BAR0_SETUP);
 
-	/* configure class code and revision ID */
+	 
 	writel(PCIE_CLASS_CODE | PCIE_REVISION_ID, port->base + PCIE_CLASS);
 
-	/* configure FC credit */
+	 
 	writel(PCIE_CONF_ADDR(PCIE_FC_CREDIT, func, slot, 0),
 	       pcie->base + PCIE_CFG_ADDR);
 	val = readl(pcie->base + PCIE_CFG_DATA);
@@ -820,7 +753,7 @@ static int mtk_pcie_startup_port(struct mtk_pcie_port *port)
 	       pcie->base + PCIE_CFG_ADDR);
 	writel(val, pcie->base + PCIE_CFG_DATA);
 
-	/* configure RC FTS number to 250 when it leaves L0s */
+	 
 	writel(PCIE_CONF_ADDR(PCIE_FTS_NUM, func, slot, 0),
 	       pcie->base + PCIE_CFG_ADDR);
 	val = readl(pcie->base + PCIE_CFG_DATA);
@@ -942,7 +875,7 @@ static int mtk_pcie_parse_port(struct mtk_pcie *pcie,
 		return PTR_ERR(port->sys_ck);
 	}
 
-	/* sys_ck might be divided into the following parts in some chips */
+	 
 	snprintf(name, sizeof(name), "ahb_ck%d", slot);
 	port->ahb_ck = devm_clk_get_optional(dev, name);
 	if (IS_ERR(port->ahb_ck))
@@ -973,7 +906,7 @@ static int mtk_pcie_parse_port(struct mtk_pcie *pcie,
 	if (PTR_ERR(port->reset) == -EPROBE_DEFER)
 		return PTR_ERR(port->reset);
 
-	/* some platforms may use default PHY setting */
+	 
 	snprintf(name, sizeof(name), "pcie-phy%d", slot);
 	port->phy = devm_phy_optional_get(dev, name);
 	if (IS_ERR(port->phy))
@@ -1002,7 +935,7 @@ static int mtk_pcie_subsys_powerup(struct mtk_pcie *pcie)
 	struct device_node *cfg_node;
 	int err;
 
-	/* get shared registers, which are optional */
+	 
 	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "subsys");
 	if (regs) {
 		pcie->base = devm_ioremap_resource(dev, regs);
@@ -1030,7 +963,7 @@ static int mtk_pcie_subsys_powerup(struct mtk_pcie *pcie)
 	pm_runtime_enable(dev);
 	pm_runtime_get_sync(dev);
 
-	/* enable top level clock */
+	 
 	err = clk_prepare_enable(pcie->free_ck);
 	if (err) {
 		dev_err(dev, "failed to enable free_ck\n");
@@ -1078,11 +1011,11 @@ static int mtk_pcie_setup(struct mtk_pcie *pcie)
 	if (err)
 		return err;
 
-	/* enable each port, and then check link status */
+	 
 	list_for_each_entry_safe(port, tmp, &pcie->ports, list)
 		mtk_pcie_enable_port(port);
 
-	/* power down PCIe subsys if slots are all empty (link down) */
+	 
 	if (list_empty(&pcie->ports))
 		mtk_pcie_subsys_powerdown(pcie);
 
@@ -1191,7 +1124,7 @@ static int mtk_pcie_resume_noirq(struct device *dev)
 	list_for_each_entry_safe(port, tmp, &pcie->ports, list)
 		mtk_pcie_enable_port(port);
 
-	/* In case of EP was removed while system suspend. */
+	 
 	if (list_empty(&pcie->ports))
 		clk_disable_unprepare(pcie->free_ck);
 

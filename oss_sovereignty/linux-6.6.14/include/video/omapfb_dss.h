@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 Texas Instruments, Inc.
- */
+ 
+ 
 
 #ifndef __OMAPFB_DSS_H
 #define __OMAPFB_DSS_H
@@ -81,25 +79,25 @@ enum omap_channel {
 };
 
 enum omap_color_mode {
-	OMAP_DSS_COLOR_CLUT1	= 1 << 0,  /* BITMAP 1 */
-	OMAP_DSS_COLOR_CLUT2	= 1 << 1,  /* BITMAP 2 */
-	OMAP_DSS_COLOR_CLUT4	= 1 << 2,  /* BITMAP 4 */
-	OMAP_DSS_COLOR_CLUT8	= 1 << 3,  /* BITMAP 8 */
-	OMAP_DSS_COLOR_RGB12U	= 1 << 4,  /* RGB12, 16-bit container */
-	OMAP_DSS_COLOR_ARGB16	= 1 << 5,  /* ARGB16 */
-	OMAP_DSS_COLOR_RGB16	= 1 << 6,  /* RGB16 */
-	OMAP_DSS_COLOR_RGB24U	= 1 << 7,  /* RGB24, 32-bit container */
-	OMAP_DSS_COLOR_RGB24P	= 1 << 8,  /* RGB24, 24-bit container */
-	OMAP_DSS_COLOR_YUV2	= 1 << 9,  /* YUV2 4:2:2 co-sited */
-	OMAP_DSS_COLOR_UYVY	= 1 << 10, /* UYVY 4:2:2 co-sited */
-	OMAP_DSS_COLOR_ARGB32	= 1 << 11, /* ARGB32 */
-	OMAP_DSS_COLOR_RGBA32	= 1 << 12, /* RGBA32 */
-	OMAP_DSS_COLOR_RGBX32	= 1 << 13, /* RGBx32 */
-	OMAP_DSS_COLOR_NV12		= 1 << 14, /* NV12 format: YUV 4:2:0 */
-	OMAP_DSS_COLOR_RGBA16		= 1 << 15, /* RGBA16 - 4444 */
-	OMAP_DSS_COLOR_RGBX16		= 1 << 16, /* RGBx16 - 4444 */
-	OMAP_DSS_COLOR_ARGB16_1555	= 1 << 17, /* ARGB16 - 1555 */
-	OMAP_DSS_COLOR_XRGB16_1555	= 1 << 18, /* xRGB16 - 1555 */
+	OMAP_DSS_COLOR_CLUT1	= 1 << 0,   
+	OMAP_DSS_COLOR_CLUT2	= 1 << 1,   
+	OMAP_DSS_COLOR_CLUT4	= 1 << 2,   
+	OMAP_DSS_COLOR_CLUT8	= 1 << 3,   
+	OMAP_DSS_COLOR_RGB12U	= 1 << 4,   
+	OMAP_DSS_COLOR_ARGB16	= 1 << 5,   
+	OMAP_DSS_COLOR_RGB16	= 1 << 6,   
+	OMAP_DSS_COLOR_RGB24U	= 1 << 7,   
+	OMAP_DSS_COLOR_RGB24P	= 1 << 8,   
+	OMAP_DSS_COLOR_YUV2	= 1 << 9,   
+	OMAP_DSS_COLOR_UYVY	= 1 << 10,  
+	OMAP_DSS_COLOR_ARGB32	= 1 << 11,  
+	OMAP_DSS_COLOR_RGBA32	= 1 << 12,  
+	OMAP_DSS_COLOR_RGBX32	= 1 << 13,  
+	OMAP_DSS_COLOR_NV12		= 1 << 14,  
+	OMAP_DSS_COLOR_RGBA16		= 1 << 15,  
+	OMAP_DSS_COLOR_RGBX16		= 1 << 16,  
+	OMAP_DSS_COLOR_ARGB16_1555	= 1 << 17,  
+	OMAP_DSS_COLOR_XRGB16_1555	= 1 << 18,  
 };
 
 enum omap_dss_load_mode {
@@ -157,7 +155,7 @@ enum omap_dss_rotation_type {
 	OMAP_DSS_ROT_TILER	= 1 << 2,
 };
 
-/* clockwise rotation angle */
+ 
 enum omap_dss_rotation_angle {
 	OMAP_DSS_ROT_0   = 0,
 	OMAP_DSS_ROT_90  = 1,
@@ -184,14 +182,14 @@ enum omap_dss_output_id {
 	OMAP_DSS_OUTPUT_HDMI	= 1 << 6,
 };
 
-/* DSI */
+ 
 
 enum omap_dss_dsi_trans_mode {
-	/* Sync Pulses: both sync start and end packets sent */
+	 
 	OMAP_DSS_DSI_PULSE_MODE,
-	/* Sync Events: only sync start packets sent */
+	 
 	OMAP_DSS_DSI_EVENT_MODE,
-	/* Burst: only sync start packets sent, pixels are time compressed */
+	 
 	OMAP_DSS_DSI_BURST_MODE,
 };
 
@@ -201,24 +199,24 @@ struct omap_dss_dsi_videomode_timings {
 	unsigned ndl;
 	unsigned bitspp;
 
-	/* pixels */
+	 
 	u16 hact;
-	/* lines */
+	 
 	u16 vact;
 
-	/* DSI video mode blanking data */
-	/* Unit: byte clock cycles */
+	 
+	 
 	u16 hss;
 	u16 hsa;
 	u16 hse;
 	u16 hfp;
 	u16 hbp;
-	/* Unit: line clocks */
+	 
 	u16 vsa;
 	u16 vfp;
 	u16 vbp;
 
-	/* DSI blanking modes */
+	 
 	int blanking_mode;
 	int hsa_blanking_mode;
 	int hbp_blanking_mode;
@@ -243,45 +241,42 @@ struct omap_dss_dsi_config {
 };
 
 struct omap_video_timings {
-	/* Unit: pixels */
+	 
 	u16 x_res;
-	/* Unit: pixels */
+	 
 	u16 y_res;
-	/* Unit: Hz */
+	 
 	u32 pixelclock;
-	/* Unit: pixel clocks */
-	u16 hsw;	/* Horizontal synchronization pulse width */
-	/* Unit: pixel clocks */
-	u16 hfp;	/* Horizontal front porch */
-	/* Unit: pixel clocks */
-	u16 hbp;	/* Horizontal back porch */
-	/* Unit: line clocks */
-	u16 vsw;	/* Vertical synchronization pulse width */
-	/* Unit: line clocks */
-	u16 vfp;	/* Vertical front porch */
-	/* Unit: line clocks */
-	u16 vbp;	/* Vertical back porch */
+	 
+	u16 hsw;	 
+	 
+	u16 hfp;	 
+	 
+	u16 hbp;	 
+	 
+	u16 vsw;	 
+	 
+	u16 vfp;	 
+	 
+	u16 vbp;	 
 
-	/* Vsync logic level */
+	 
 	enum omap_dss_signal_level vsync_level;
-	/* Hsync logic level */
+	 
 	enum omap_dss_signal_level hsync_level;
-	/* Interlaced or Progressive timings */
+	 
 	bool interlace;
-	/* Pixel clock edge to drive LCD data */
+	 
 	enum omap_dss_signal_edge data_pclk_edge;
-	/* Data enable logic level */
+	 
 	enum omap_dss_signal_level de_level;
-	/* Pixel clock edges to drive HSYNC and VSYNC signals */
+	 
 	enum omap_dss_signal_edge sync_pclk_edge;
 
 	bool double_pixel;
 };
 
-/* Hardcoded timings for tv modes. Venc only uses these to
- * identify the mode, and does not actually use the configs
- * itself. However, the configs should be something that
- * a normal monitor can also show */
+ 
 extern const struct omap_video_timings omap_dss_pal_timings;
 extern const struct omap_video_timings omap_dss_ntsc_timings;
 
@@ -293,7 +288,7 @@ struct omap_dss_cpr_coefs {
 
 struct omap_overlay_info {
 	dma_addr_t paddr;
-	dma_addr_t p_uv_addr;  /* for NV12 format */
+	dma_addr_t p_uv_addr;   
 	u16 screen_width;
 	u16 width;
 	u16 height;
@@ -304,8 +299,8 @@ struct omap_overlay_info {
 
 	u16 pos_x;
 	u16 pos_y;
-	u16 out_width;	/* if 0, out_width == width */
-	u16 out_height;	/* if 0, out_height == height */
+	u16 out_width;	 
+	u16 out_height;	 
 	u8 global_alpha;
 	u8 pre_mult_alpha;
 	u8 zorder;
@@ -315,25 +310,16 @@ struct omap_overlay {
 	struct kobject kobj;
 	struct list_head list;
 
-	/* static fields */
+	 
 	const char *name;
 	enum omap_plane id;
 	enum omap_color_mode supported_modes;
 	enum omap_overlay_caps caps;
 
-	/* dynamic fields */
+	 
 	struct omap_overlay_manager *manager;
 
-	/*
-	 * The following functions do not block:
-	 *
-	 * is_enabled
-	 * set_overlay_info
-	 * get_overlay_info
-	 *
-	 * The rest of the functions may block and cannot be called from
-	 * interrupt context
-	 */
+	 
 
 	int (*enable)(struct omap_overlay *ovl);
 	int (*disable)(struct omap_overlay *ovl);
@@ -369,26 +355,17 @@ struct omap_overlay_manager_info {
 struct omap_overlay_manager {
 	struct kobject kobj;
 
-	/* static fields */
+	 
 	const char *name;
 	enum omap_channel id;
 	struct list_head overlays;
 	enum omap_display_type supported_displays;
 	enum omap_dss_output_id supported_outputs;
 
-	/* dynamic fields */
+	 
 	struct omap_dss_device *output;
 
-	/*
-	 * The following functions do not block:
-	 *
-	 * set_manager_info
-	 * get_manager_info
-	 * apply
-	 *
-	 * The rest of the functions may block and cannot be called from
-	 * interrupt context
-	 */
+	 
 
 	int (*set_output)(struct omap_overlay_manager *mgr,
 		struct omap_dss_device *output);
@@ -406,18 +383,12 @@ struct omap_overlay_manager {
 	struct omap_dss_device *(*get_device)(struct omap_overlay_manager *mgr);
 };
 
-/* 22 pins means 1 clk lane and 10 data lanes */
+ 
 #define OMAP_DSS_MAX_DSI_PINS 22
 
 struct omap_dsi_pin_config {
 	int num_pins;
-	/*
-	 * pin numbers in the following order:
-	 * clk+, clk-
-	 * data1+, data1-
-	 * data2+, data2-
-	 * ...
-	 */
+	 
 	int pins[OMAP_DSS_MAX_DSI_PINS];
 };
 
@@ -548,7 +519,7 @@ struct omapdss_dsi_ops {
 	void (*disable)(struct omap_dss_device *dssdev, bool disconnect_lanes,
 			bool enter_ulps);
 
-	/* bus configuration */
+	 
 	int (*set_config)(struct omap_dss_device *dssdev,
 			const struct omap_dss_dsi_config *cfg);
 	int (*configure_pins)(struct omap_dss_device *dssdev,
@@ -573,7 +544,7 @@ struct omapdss_dsi_ops {
 			int vc_id);
 	void (*release_vc)(struct omap_dss_device *dssdev, int channel);
 
-	/* data transfer */
+	 
 	int (*dcs_write)(struct omap_dss_device *dssdev, int channel,
 			u8 *data, int len);
 	int (*dcs_write_nosync)(struct omap_dss_device *dssdev, int channel,
@@ -603,7 +574,7 @@ struct omap_dss_device {
 
 	struct list_head panel_list;
 
-	/* alias in the form of "display%d" */
+	 
 	char alias[16];
 
 	enum omap_display_type type;
@@ -641,7 +612,7 @@ struct omap_dss_device {
 
 	const char *name;
 
-	/* used to match device to driver */
+	 
 	const char *driver_name;
 
 	void *data;
@@ -657,7 +628,7 @@ struct omap_dss_device {
 		const struct omapdss_dsi_ops *dsi;
 	} ops;
 
-	/* helper variable for driver suspend/resume */
+	 
 	bool activate_after_resume;
 
 	enum omap_display_caps caps;
@@ -666,21 +637,21 @@ struct omap_dss_device {
 
 	enum omap_dss_display_state state;
 
-	/* OMAP DSS output specific fields */
+	 
 
 	struct list_head list;
 
-	/* DISPC channel for this output */
+	 
 	enum omap_channel dispc_channel;
 	bool dispc_channel_connected;
 
-	/* output instance */
+	 
 	enum omap_dss_output_id id;
 
-	/* the port number in the DT node */
+	 
 	int port_num;
 
-	/* dynamic fields */
+	 
 	struct omap_overlay_manager *manager;
 
 	struct omap_dss_device *dst;
@@ -868,7 +839,7 @@ static inline struct omap_overlay *omap_dss_get_overlay(int num)
 { return NULL; };
 
 
-#endif /* FB_OMAP2 */
+#endif  
 
 
-#endif /* __OMAPFB_DSS_H */
+#endif  

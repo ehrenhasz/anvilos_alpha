@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cedrus VPU driver
- *
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- * Copyright (C) 2018 Bootlin
- *
- * Based on the vim2m driver, that is:
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -109,7 +97,7 @@ void cedrus_prepare_format(struct v4l2_pix_format *pix_fmt)
 
 	pix_fmt->field = V4L2_FIELD_NONE;
 
-	/* Limit to hardware min/max. */
+	 
 	width = clamp(width, CEDRUS_MIN_WIDTH, CEDRUS_MAX_WIDTH);
 	height = clamp(height, CEDRUS_MIN_HEIGHT, CEDRUS_MAX_HEIGHT);
 
@@ -118,38 +106,38 @@ void cedrus_prepare_format(struct v4l2_pix_format *pix_fmt)
 	case V4L2_PIX_FMT_H264_SLICE:
 	case V4L2_PIX_FMT_HEVC_SLICE:
 	case V4L2_PIX_FMT_VP8_FRAME:
-		/* Zero bytes per line for encoded source. */
+		 
 		bytesperline = 0;
-		/* Choose some minimum size since this can't be 0 */
+		 
 		sizeimage = max_t(u32, SZ_1K, sizeimage);
 		break;
 
 	case V4L2_PIX_FMT_NV12_32L32:
-		/* 32-aligned stride. */
+		 
 		bytesperline = ALIGN(width, 32);
 
-		/* 32-aligned height. */
+		 
 		height = ALIGN(height, 32);
 
-		/* Luma plane size. */
+		 
 		sizeimage = bytesperline * height;
 
-		/* Chroma plane size. */
+		 
 		sizeimage += bytesperline * ALIGN(height, 64) / 2;
 
 		break;
 
 	case V4L2_PIX_FMT_NV12:
-		/* 16-aligned stride. */
+		 
 		bytesperline = ALIGN(width, 16);
 
-		/* 16-aligned height. */
+		 
 		height = ALIGN(height, 16);
 
-		/* Luma plane size. */
+		 
 		sizeimage = bytesperline * height;
 
-		/* Chroma plane size. */
+		 
 		sizeimage += bytesperline * height / 2;
 
 		break;
@@ -179,7 +167,7 @@ static int cedrus_enum_fmt(struct file *file, struct v4l2_fmtdesc *f,
 	struct cedrus_ctx *ctx = cedrus_file2ctx(file);
 	unsigned int i, index;
 
-	/* Index among formats that match the requested direction. */
+	 
 	index = 0;
 
 	for (i = 0; i < CEDRUS_FORMATS_COUNT; i++) {
@@ -195,7 +183,7 @@ static int cedrus_enum_fmt(struct file *file, struct v4l2_fmtdesc *f,
 		index++;
 	}
 
-	/* Matched format. */
+	 
 	if (i < CEDRUS_FORMATS_COUNT) {
 		f->pixelformat = cedrus_formats[i].pixelformat;
 
@@ -352,7 +340,7 @@ static int cedrus_s_fmt_vid_out_p(struct cedrus_ctx *ctx,
 		break;
 	}
 
-	/* Propagate format information to capture. */
+	 
 	ctx->dst_fmt.colorspace = pix_fmt->colorspace;
 	ctx->dst_fmt.xfer_func = pix_fmt->xfer_func;
 	ctx->dst_fmt.ycbcr_enc = pix_fmt->ycbcr_enc;
@@ -376,19 +364,11 @@ static int cedrus_s_fmt_vid_out(struct file *file, void *priv,
 	struct vb2_queue *peer_vq;
 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, f->type);
-	/*
-	 * In order to support dynamic resolution change,
-	 * the decoder admits a resolution change, as long
-	 * as the pixelformat remains. Can't be done if streaming.
-	 */
+	 
 	if (vb2_is_streaming(vq) || (vb2_is_busy(vq) &&
 	    f->fmt.pix.pixelformat != ctx->src_fmt.pixelformat))
 		return -EBUSY;
-	/*
-	 * Since format change on the OUTPUT queue will reset
-	 * the CAPTURE queue, we can't allow doing so
-	 * when the CAPTURE queue has buffers allocated.
-	 */
+	 
 	peer_vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 				  V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	if (vb2_is_busy(peer_vq))
@@ -493,11 +473,7 @@ static int cedrus_buf_prepare(struct vb2_buffer *vb)
 	if (vb2_plane_size(vb, 0) < pix_fmt->sizeimage)
 		return -EINVAL;
 
-	/*
-	 * Buffer's bytesused must be written by driver for CAPTURE buffers.
-	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
-	 * it to buffer length).
-	 */
+	 
 	if (V4L2_TYPE_IS_CAPTURE(vq->type))
 		vb2_set_plane_payload(vb, 0, pix_fmt->sizeimage);
 

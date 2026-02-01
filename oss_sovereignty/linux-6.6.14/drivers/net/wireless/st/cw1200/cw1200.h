@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common private data for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *
- * Based on the mac80211 Prism54 code, which is
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- *
- * Based on the islsm (softmac prism54) driver, which is:
- * Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- */
+ 
+ 
 
 #ifndef CW1200_H
 #define CW1200_H
@@ -26,7 +15,7 @@
 #include "txrx.h"
 #include "pm.h"
 
-/* Forward declarations */
+ 
 struct hwbus_ops;
 struct task_struct;
 struct cw1200_debug_priv;
@@ -56,7 +45,7 @@ struct cw1200_ht_info {
 	u16                             operation_mode;
 };
 
-/* Please keep order */
+ 
 enum cw1200_join_status {
 	CW1200_JOIN_STATUS_PASSIVE = 0,
 	CW1200_JOIN_STATUS_MONITOR,
@@ -89,22 +78,22 @@ struct cw1200_link_entry {
 };
 
 struct cw1200_common {
-	/* interfaces to the rest of the stack */
+	 
 	struct ieee80211_hw		*hw;
 	struct ieee80211_vif		*vif;
 	struct device			*pdev;
 
-	/* Statistics */
+	 
 	struct ieee80211_low_level_stats stats;
 
-	/* Our macaddr */
+	 
 	u8 mac_addr[ETH_ALEN];
 
-	/* Hardware interface */
+	 
 	const struct hwbus_ops		*hwbus_ops;
 	struct hwbus_priv		*hwbus_priv;
 
-	/* Hardware information */
+	 
 	enum {
 		HIF_9000_SILICON_VERSATILE = 0,
 		HIF_8601_VERSATILE,
@@ -131,13 +120,13 @@ struct cw1200_common {
 	struct cw1200_queue_stats	tx_queue_stats;
 	int				tx_burst_idx;
 
-	/* firmware/hardware info */
+	 
 	unsigned int tx_hdr_len;
 
-	/* Radio data */
+	 
 	int output_power;
 
-	/* BBP/MAC state */
+	 
 	struct ieee80211_rate		*rates;
 	struct ieee80211_rate		*mcs_rates;
 	struct ieee80211_channel	*channel;
@@ -181,7 +170,7 @@ struct cw1200_common {
 	u32				erp_info;
 	u32				rts_threshold;
 
-	/* BH */
+	 
 	atomic_t			bh_rx;
 	atomic_t			bh_tx;
 	atomic_t			bh_term;
@@ -201,15 +190,13 @@ struct cw1200_common {
 	bool				powersave_enabled;
 	bool				device_can_sleep;
 
-	/* Scan status */
+	 
 	struct cw1200_scan scan;
-	/* Keep cw1200 awake (WUP = 1) 1 second after each scan to avoid
-	 * FW issue with sleeping/waking up.
-	 */
+	 
 	atomic_t			recent_scan;
 	struct delayed_work		clear_recent_scan_work;
 
-	/* WSM */
+	 
 	struct wsm_startup_ind		wsm_caps;
 	struct mutex			wsm_cmd_mux;
 	struct wsm_buf			wsm_cmd_buf;
@@ -219,10 +206,10 @@ struct cw1200_common {
 	int                             firmware_ready;
 	atomic_t			tx_lock;
 
-	/* WSM debug */
+	 
 	int				wsm_enable_wsm_dumps;
 
-	/* WSM Join */
+	 
 	enum cw1200_join_status	join_status;
 	u32			pending_frame_id;
 	bool			join_pending;
@@ -233,13 +220,13 @@ struct cw1200_common {
 	int			join_dtim_period;
 	bool			delayed_unjoin;
 
-	/* TX/RX and security */
+	 
 	s8			wep_default_key_id;
 	struct work_struct	wep_key_work;
 	u32			key_map;
 	struct wsm_add_key	keys[WSM_KEY_MAX_INDEX + 1];
 
-	/* AP powersave */
+	 
 	u32			link_id_map;
 	struct cw1200_link_entry link_id_db[CW1200_MAX_STA_IN_AP_MODE];
 	struct work_struct	link_id_work;
@@ -247,7 +234,7 @@ struct cw1200_common {
 	u32			sta_asleep_mask;
 	u32			pspoll_mask;
 	bool			aid0_bit_set;
-	spinlock_t		ps_state_lock; /* Protect power save state */
+	spinlock_t		ps_state_lock;  
 	bool			buffered_multicasts;
 	bool			tx_multicast;
 	struct work_struct	set_tim_work;
@@ -256,27 +243,27 @@ struct cw1200_common {
 	struct work_struct	multicast_stop_work;
 	struct timer_list	mcast_timeout;
 
-	/* WSM events and CQM implementation */
-	spinlock_t		event_queue_lock; /* Protect event queue */
+	 
+	spinlock_t		event_queue_lock;  
 	struct list_head	event_queue;
 	struct work_struct	event_handler;
 
 	struct delayed_work	bss_loss_work;
-	spinlock_t		bss_loss_lock; /* Protect BSS loss state */
+	spinlock_t		bss_loss_lock;  
 	int                     bss_loss_state;
 	u32                     bss_loss_confirm_id;
 	int			delayed_link_loss;
 	struct work_struct	bss_params_work;
 
-	/* TX rate policy cache */
+	 
 	struct tx_policy_cache tx_policy_cache;
 	struct work_struct tx_policy_upload_work;
 
-	/* legacy PS mode switch in suspend */
+	 
 	int			ps_mode_switch_in_progress;
 	wait_queue_head_t	ps_mode_switch_done;
 
-	/* Workaround for WFD testcase 6.1.10*/
+	 
 	struct work_struct	linkid_reset_work;
 	u8			action_frame_sa[ETH_ALEN];
 	u8			action_linkid;
@@ -286,7 +273,7 @@ struct cw1200_sta_priv {
 	int link_id;
 };
 
-/* interfaces for the drivers */
+ 
 int cw1200_core_probe(const struct hwbus_ops *hwbus_ops,
 		      struct hwbus_priv *hwbus,
 		      struct device *pdev,
@@ -317,4 +304,4 @@ static inline int cw1200_ht_ampdu_density(const struct cw1200_ht_info *ht_info)
 	return ht_info->ht_cap.ampdu_density;
 }
 
-#endif /* CW1200_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5592R Digital <-> Analog converters driver
- *
- * Copyright 2014-2016 Analog Devices Inc.
- * Author: Paul Cercueil <paul.cercueil@analog.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -170,7 +165,7 @@ static int ad5592r_reset(struct ad5592r_state *st)
 		gpiod_set_value(gpio, 1);
 	} else {
 		mutex_lock(&st->lock);
-		/* Writing this magic value resets the device */
+		 
 		st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
 		mutex_unlock(&st->lock);
 	}
@@ -220,7 +215,7 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
 
 		case CH_MODE_GPIO:
 			st->gpio_map |= BIT(i);
-			st->gpio_in |= BIT(i); /* Default to input */
+			st->gpio_in |= BIT(i);  
 			break;
 
 		case CH_MODE_UNUSED:
@@ -249,7 +244,7 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
 
 	mutex_lock(&st->lock);
 
-	/* Pull down unused pins to GND */
+	 
 	ret = ops->reg_write(st, AD5592R_REG_PULLDOWN, pulldown);
 	if (ret)
 		goto err_unlock;
@@ -258,7 +253,7 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
 	if (ret)
 		goto err_unlock;
 
-	/* Configure pins that we use */
+	 
 	ret = ops->reg_write(st, AD5592R_REG_DAC_EN, dac);
 	if (ret)
 		goto err_unlock;
@@ -279,7 +274,7 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
 	if (ret)
 		goto err_unlock;
 
-	/* Verify that we can read back at least one register */
+	 
 	ret = ops->reg_read(st, AD5592R_REG_ADC_EN, &read_back);
 	if (!ret && (read_back & 0xff) != adc)
 		ret = -EIO;

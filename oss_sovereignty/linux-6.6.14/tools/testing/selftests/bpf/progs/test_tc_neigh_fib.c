@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -140,9 +140,7 @@ static __always_inline int tc_redir(struct __sk_buff *skb)
 	return TC_ACT_SHOT;
 }
 
-/* these are identical, but keep them separate for compatibility with the
- * section names expected by test_tc_redirect.sh
- */
+ 
 SEC("tc")
 int tc_dst(struct __sk_buff *skb)
 {

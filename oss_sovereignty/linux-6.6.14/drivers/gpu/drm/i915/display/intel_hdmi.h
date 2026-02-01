@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_HDMI_H__
 #define __INTEL_HDMI_H__
@@ -60,4 +58,4 @@ int intel_hdmi_dsc_get_num_slices(const struct intel_crtc_state *crtc_state,
 int intel_hdmi_dsc_get_slice_height(int vactive);
 struct drm_i915_private *intel_hdmi_to_i915(struct intel_hdmi *intel_hdmi);
 
-#endif /* __INTEL_HDMI_H__ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog devices AD5380, AD5381, AD5382, AD5383, AD5390, AD5391, AD5392
- * multi-channel Digital to Analog Converters driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -31,27 +26,14 @@
 #define AD5380_CTRL_INT_VREF_2V5		BIT(12)
 #define AD5380_CTRL_INT_VREF_EN			BIT(10)
 
-/**
- * struct ad5380_chip_info - chip specific information
- * @channel_template:	channel specification template
- * @num_channels:	number of channels
- * @int_vref:		internal vref in uV
- */
+ 
 struct ad5380_chip_info {
 	struct iio_chan_spec	channel_template;
 	unsigned int		num_channels;
 	unsigned int		int_vref;
 };
 
-/**
- * struct ad5380_state - driver instance specific data
- * @regmap:		regmap instance used by the device
- * @chip_info:		chip model specific constants, available modes etc
- * @vref_reg:		vref supply regulator
- * @vref:		actual reference voltage used in uA
- * @pwr_down:		whether the chip is currently in power down mode
- * @lock:		lock to protect the data buffer during regmap ops
- */
+ 
 struct ad5380_state {
 	struct regmap			*regmap;
 	const struct ad5380_chip_info	*chip_info;

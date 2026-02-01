@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x2u.h"
 #include "eeprom.h"
@@ -140,7 +138,7 @@ int mt76x2u_phy_set_channel(struct mt76x02_dev *dev,
 
 	mt76x2_mcu_init_gain(dev, channel, dev->cal.rx.mcu_gain, true);
 
-	/* Enable LDPC Rx */
+	 
 	if (mt76xx_rev(dev) >= MT76XX_REV_E3)
 		mt76_set(dev, MT_BBP(RXO, 13), BIT(10));
 
@@ -153,7 +151,7 @@ int mt76x2u_phy_set_channel(struct mt76x02_dev *dev,
 
 	mt76x02_mcu_calibrate(dev, MCU_CAL_RXDCOC, channel);
 
-	/* Rx LPF calibration */
+	 
 	if (!dev->cal.init_cal_done)
 		mt76x02_mcu_calibrate(dev, MCU_CAL_RC, 0);
 	dev->cal.init_cal_done = true;
@@ -174,13 +172,13 @@ int mt76x2u_phy_set_channel(struct mt76x02_dev *dev,
 	mt76x02_init_agc_gain(dev);
 
 	if (mt76x2_tssi_enabled(dev)) {
-		/* init default values for temp compensation */
+		 
 		mt76_rmw_field(dev, MT_TX_ALC_CFG_1, MT_TX_ALC_CFG_1_TEMP_COMP,
 			       0x38);
 		mt76_rmw_field(dev, MT_TX_ALC_CFG_2, MT_TX_ALC_CFG_2_TEMP_COMP,
 			       0x38);
 
-		/* init tssi calibration */
+		 
 		if (!mt76x2_channel_silent(dev)) {
 			struct ieee80211_channel *chan;
 			u32 flag = 0;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 MediaTek Inc.
- * Author: Stanley Chu <stanley.chu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -14,7 +11,7 @@
 
 #include "phy-mtk-io.h"
 
-/* mphy register and offsets */
+ 
 #define MP_GLB_DIG_8C               0x008C
 #define FRC_PLL_ISO_EN              BIT(8)
 #define PLL_ISO_EN                  BIT(9)
@@ -61,30 +58,30 @@ static void ufs_mtk_phy_set_active(struct ufs_mtk_phy *phy)
 {
 	void __iomem *mmio = phy->mmio;
 
-	/* release DA_MP_PLL_PWR_ON */
+	 
 	mtk_phy_set_bits(mmio + MP_GLB_DIG_8C, PLL_PWR_ON);
 	mtk_phy_clear_bits(mmio + MP_GLB_DIG_8C, FRC_FRC_PWR_ON);
 
-	/* release DA_MP_PLL_ISO_EN */
+	 
 	mtk_phy_clear_bits(mmio + MP_GLB_DIG_8C, PLL_ISO_EN);
 	mtk_phy_clear_bits(mmio + MP_GLB_DIG_8C, FRC_PLL_ISO_EN);
 
-	/* release DA_MP_CDR_PWR_ON */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_RX_44, CDR_PWR_ON);
 	mtk_phy_clear_bits(mmio + MP_LN_RX_44, FRC_CDR_PWR_ON);
 
-	/* release DA_MP_CDR_ISO_EN */
+	 
 	mtk_phy_clear_bits(mmio + MP_LN_RX_44, CDR_ISO_EN);
 	mtk_phy_clear_bits(mmio + MP_LN_RX_44, FRC_CDR_ISO_EN);
 
-	/* release DA_MP_RX0_SQ_EN */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_DIG_RX_AC, RX_SQ_EN);
 	mtk_phy_clear_bits(mmio + MP_LN_DIG_RX_AC, FRC_RX_SQ_EN);
 
-	/* delay 1us to wait DIFZ stable */
+	 
 	udelay(1);
 
-	/* release DIFZ */
+	 
 	mtk_phy_clear_bits(mmio + MP_LN_DIG_RX_9C, FSM_DIFZ_FRC);
 }
 
@@ -92,26 +89,26 @@ static void ufs_mtk_phy_set_deep_hibern(struct ufs_mtk_phy *phy)
 {
 	void __iomem *mmio = phy->mmio;
 
-	/* force DIFZ */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_DIG_RX_9C, FSM_DIFZ_FRC);
 
-	/* force DA_MP_RX0_SQ_EN */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_DIG_RX_AC, FRC_RX_SQ_EN);
 	mtk_phy_clear_bits(mmio + MP_LN_DIG_RX_AC, RX_SQ_EN);
 
-	/* force DA_MP_CDR_ISO_EN */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_RX_44, FRC_CDR_ISO_EN);
 	mtk_phy_set_bits(mmio + MP_LN_RX_44, CDR_ISO_EN);
 
-	/* force DA_MP_CDR_PWR_ON */
+	 
 	mtk_phy_set_bits(mmio + MP_LN_RX_44, FRC_CDR_PWR_ON);
 	mtk_phy_clear_bits(mmio + MP_LN_RX_44, CDR_PWR_ON);
 
-	/* force DA_MP_PLL_ISO_EN */
+	 
 	mtk_phy_set_bits(mmio + MP_GLB_DIG_8C, FRC_PLL_ISO_EN);
 	mtk_phy_set_bits(mmio + MP_GLB_DIG_8C, PLL_ISO_EN);
 
-	/* force DA_MP_PLL_PWR_ON */
+	 
 	mtk_phy_set_bits(mmio + MP_GLB_DIG_8C, FRC_FRC_PWR_ON);
 	mtk_phy_clear_bits(mmio + MP_GLB_DIG_8C, PLL_PWR_ON);
 }

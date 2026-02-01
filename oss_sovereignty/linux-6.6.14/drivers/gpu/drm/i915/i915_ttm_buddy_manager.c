@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -181,16 +179,12 @@ static bool i915_ttm_buddy_man_intersects(struct ttm_resource_manager *man,
 
 	GEM_BUG_ON(!place->lpfn);
 
-	/*
-	 * If we just want something mappable then we can quickly check
-	 * if the current victim resource is using any of the CPU
-	 * visible portion.
-	 */
+	 
 	if (!place->fpfn &&
 	    place->lpfn == i915_ttm_buddy_man_visible_size(man))
 		return bman_res->used_visible_size > 0;
 
-	/* Check each drm buddy block individually */
+	 
 	list_for_each_entry(block, &bman_res->blocks, link) {
 		unsigned long fpfn =
 			drm_buddy_block_offset(block) >> PAGE_SHIFT;
@@ -223,7 +217,7 @@ static bool i915_ttm_buddy_man_compatible(struct ttm_resource_manager *man,
 	    place->lpfn == i915_ttm_buddy_man_visible_size(man))
 		return bman_res->used_visible_size == PFN_UP(res->size);
 
-	/* Check each drm buddy block individually */
+	 
 	list_for_each_entry(block, &bman_res->blocks, link) {
 		unsigned long fpfn =
 			drm_buddy_block_offset(block) >> PAGE_SHIFT;
@@ -269,34 +263,7 @@ static const struct ttm_resource_manager_func i915_ttm_buddy_manager_func = {
 	.debug = i915_ttm_buddy_man_debug,
 };
 
-/**
- * i915_ttm_buddy_man_init - Setup buddy allocator based ttm manager
- * @bdev: The ttm device
- * @type: Memory type we want to manage
- * @use_tt: Set use_tt for the manager
- * @size: The size in bytes to manage
- * @visible_size: The CPU visible size in bytes to manage
- * @default_page_size: The default minimum page size in bytes for allocations,
- * this must be at least as large as @chunk_size, and can be overridden by
- * setting the BO page_alignment, to be larger or smaller as needed.
- * @chunk_size: The minimum page size in bytes for our allocations i.e
- * order-zero
- *
- * Note that the starting address is assumed to be zero here, since this
- * simplifies keeping the property where allocated blocks having natural
- * power-of-two alignment. So long as the real starting address is some large
- * power-of-two, or naturally start from zero, then this should be fine.  Also
- * the &i915_ttm_buddy_man_reserve interface can be used to preserve alignment
- * if say there is some unusable range from the start of the region. We can
- * revisit this in the future and make the interface accept an actual starting
- * offset and let it take care of the rest.
- *
- * Note that if the @size is not aligned to the @chunk_size then we perform the
- * required rounding to get the usable size. The final size in pages can be
- * taken from &ttm_resource_manager.size.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int i915_ttm_buddy_man_init(struct ttm_device *bdev,
 			    unsigned int type, bool use_tt,
 			    u64 size, u64 visible_size, u64 default_page_size,
@@ -336,16 +303,7 @@ err_free_bman:
 	return err;
 }
 
-/**
- * i915_ttm_buddy_man_fini - Destroy the buddy allocator ttm manager
- * @bdev: The ttm device
- * @type: Memory type we want to manage
- *
- * Note that if we reserved anything with &i915_ttm_buddy_man_reserve, this will
- * also be freed for us here.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int i915_ttm_buddy_man_fini(struct ttm_device *bdev, unsigned int type)
 {
 	struct ttm_resource_manager *man = ttm_manager_type(bdev, type);
@@ -374,16 +332,7 @@ int i915_ttm_buddy_man_fini(struct ttm_device *bdev, unsigned int type)
 	return 0;
 }
 
-/**
- * i915_ttm_buddy_man_reserve - Reserve address range
- * @man: The buddy allocator ttm manager
- * @start: The offset in bytes, where the region start is assumed to be zero
- * @size: The size in bytes
- *
- * Note that the starting address for the region is always assumed to be zero.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int i915_ttm_buddy_man_reserve(struct ttm_resource_manager *man,
 			       u64 start, u64 size)
 {
@@ -414,11 +363,7 @@ int i915_ttm_buddy_man_reserve(struct ttm_resource_manager *man,
 	return ret;
 }
 
-/**
- * i915_ttm_buddy_man_visible_size - Return the size of the CPU visible portion
- * in pages.
- * @man: The buddy allocator ttm manager
- */
+ 
 u64 i915_ttm_buddy_man_visible_size(struct ttm_resource_manager *man)
 {
 	struct i915_ttm_buddy_manager *bman = to_buddy_manager(man);
@@ -426,15 +371,7 @@ u64 i915_ttm_buddy_man_visible_size(struct ttm_resource_manager *man)
 	return bman->visible_size;
 }
 
-/**
- * i915_ttm_buddy_man_avail - Query the avail tracking for the manager.
- *
- * @man: The buddy allocator ttm manager
- * @avail: The total available memory in pages for the entire manager.
- * @visible_avail: The total available memory in pages for the CPU visible
- * portion. Note that this will always give the same value as @avail on
- * configurations that don't have a small BAR.
- */
+ 
 void i915_ttm_buddy_man_avail(struct ttm_resource_manager *man,
 			      u64 *avail, u64 *visible_avail)
 {

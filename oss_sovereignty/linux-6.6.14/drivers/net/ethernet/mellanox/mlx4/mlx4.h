@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef MLX4_H
 #define MLX4_H
@@ -131,9 +97,9 @@ enum {
 	MLX4_VF_SMI_ENABLED
 };
 
-/*The flag indicates that the slave should delay the RESET cmd*/
+ 
 #define MLX4_DELAY_RESET_SLAVE 0xbbbbbbb
-/*indicates how many retries will be done if we are in the middle of FLR*/
+ 
 #define NUM_OF_RESET_RETRIES	10
 #define SLEEP_TIME_IN_RESET	(2 * 1000)
 enum mlx4_resource {
@@ -164,15 +130,7 @@ enum mlx4_res_tracker_free_type {
 	RES_TR_FREE_STRUCTS_ONLY,
 };
 
-/*
- *Virtual HCR structures.
- * mlx4_vhcr is the sw representation, in machine endianness
- *
- * mlx4_vhcr_cmd is the formalized structure, the one that is passed
- * to FW to go through communication channel.
- * It is big endian, and has the same structure as the physical HCR
- * used by command interface
- */
+ 
 struct mlx4_vhcr {
 	u64	in_param;
 	u64	out_param;
@@ -212,9 +170,9 @@ struct mlx4_cmd_info {
 
 #ifdef CONFIG_MLX4_DEBUG
 extern int mlx4_debug_level;
-#else /* CONFIG_MLX4_DEBUG */
+#else  
 #define mlx4_debug_level	(0)
-#endif /* CONFIG_MLX4_DEBUG */
+#endif  
 
 #define mlx4_dbg(mdev, format, ...)					\
 do {									\
@@ -297,9 +255,7 @@ struct mlx4_icm_table {
 #define MLX4_CQ_TO_EQ_VECTOR(vector)	((vector) + \
 					 !!((int)(vector) >= MLX4_EQ_ASYNC))
 
-/*
- * Must be packed because mtt_seg is 64 bits but only aligned to 32 bits.
- */
+ 
 struct mlx4_mpt_entry {
 	__be32 flags;
 	__be32 qpn;
@@ -317,9 +273,7 @@ struct mlx4_mpt_entry {
 	__be32 first_byte_offset;
 } __packed;
 
-/*
- * Must be packed because start is 64 bits but only aligned to 32 bits.
- */
+ 
 struct mlx4_eq_context {
 	__be32			flags;
 	u16			reserved1[3];
@@ -386,7 +340,7 @@ struct mlx4_eq_tasklet {
 	struct list_head list;
 	struct list_head process_list;
 	struct tasklet_struct task;
-	/* lock on completion tasklet list */
+	 
 	spinlock_t lock;
 };
 
@@ -492,12 +446,12 @@ struct mlx4_slave_state {
 	struct mlx4_slave_eqe eq[MLX4_MFUNC_MAX_EQES];
 	struct list_head mcast_filters[MLX4_MAX_PORTS + 1];
 	struct mlx4_vlan_fltr *vlan_filter[MLX4_MAX_PORTS + 1];
-	/* event type to eq number lookup */
+	 
 	struct mlx4_slave_event_eq_info event_eq[MLX4_EVENT_TYPES_NUM];
 	u16 eq_pi;
 	u16 eq_ci;
 	spinlock_t lock;
-	/*initialized via the kzalloc*/
+	 
 	u8 is_slave_going_down;
 	u32 cookie;
 	enum slave_port_state port_state[MLX4_MAX_PORTS + 1];
@@ -540,7 +494,7 @@ struct slave_list {
 };
 
 struct resource_allocator {
-	spinlock_t alloc_lock; /* protect quotas */
+	spinlock_t alloc_lock;  
 	union {
 		unsigned int res_reserved;
 		unsigned int res_port_rsvd[MLX4_MAX_PORTS];
@@ -556,9 +510,9 @@ struct resource_allocator {
 
 struct mlx4_resource_tracker {
 	spinlock_t lock;
-	/* tree for each resources */
+	 
 	struct rb_root res_tree[MLX4_NUM_OF_RESOURCE_TYPE];
-	/* num_of_slave's lists, one per slave */
+	 
 	struct slave_list *slave_list;
 	struct resource_allocator res_alloc[MLX4_NUM_OF_RESOURCE_TYPE];
 };
@@ -605,7 +559,7 @@ struct mlx4_mfunc_master_ctx {
 	struct mlx4_slave_event_eq slave_eq;
 	struct mutex		gen_eqe_mutex[MLX4_MFUNC_MAX];
 	struct mlx4_qos_manager qos_ctl[MLX4_MAX_PORTS + 1];
-	u32			next_slave; /* mlx4_master_comm_channel */
+	u32			next_slave;  
 };
 
 struct mlx4_mfunc {
@@ -926,8 +880,8 @@ struct mlx4_priv {
 	int			reserved_mtts;
 	int			fs_hash_mode;
 	u8 virt2phys_pkey[MLX4_MFUNC_MAX][MLX4_MAX_PORTS][MLX4_MAX_PORT_PKEYS];
-	struct mlx4_port_map	v2p; /* cached port mapping configuration */
-	struct mutex		bond_mutex; /* for bond mode */
+	struct mlx4_port_map	v2p;  
+	struct mutex		bond_mutex;  
 	__be64			slave_node_guids[MLX4_MFUNC_MAX];
 
 	atomic_t		opreq_count;
@@ -1266,7 +1220,7 @@ int mlx4_bond_mac_table(struct mlx4_dev *dev);
 int mlx4_unbond_mac_table(struct mlx4_dev *dev);
 
 int mlx4_SET_PORT(struct mlx4_dev *dev, u8 port, int pkey_tbl_sz);
-/* resource tracker functions*/
+ 
 int mlx4_get_slave_from_resource_id(struct mlx4_dev *dev,
 				    enum mlx4_resource resource_type,
 				    u64 resource_id, int *slave);
@@ -1415,10 +1369,10 @@ void mlx4_vf_immed_vlan_work_handler(struct work_struct *_work);
 
 void mlx4_init_quotas(struct mlx4_dev *dev);
 
-/* for VFs, replace zero MACs with randomly-generated MACs at driver start */
+ 
 void mlx4_replace_zero_macs(struct mlx4_dev *dev);
 int mlx4_get_slave_num_gids(struct mlx4_dev *dev, int slave, int port);
-/* Returns the VF index of slave */
+ 
 int mlx4_get_vf_indx(struct mlx4_dev *dev, int slave);
 int mlx4_config_mad_demux(struct mlx4_dev *dev);
 int mlx4_do_bond(struct mlx4_dev *dev, bool enable);
@@ -1433,28 +1387,16 @@ enum mlx4_zone_flags {
 };
 
 enum mlx4_zone_alloc_flags {
-	/* No two objects could overlap between zones. UID
-	 * could be left unused. If this flag is given and
-	 * two overlapped zones are used, an object will be free'd
-	 * from the smallest possible matching zone.
-	 */
+	 
 	MLX4_ZONE_ALLOC_FLAGS_NO_OVERLAP	= 1UL << 0,
 };
 
 struct mlx4_zone_allocator;
 
-/* Create a new zone allocator */
+ 
 struct mlx4_zone_allocator *mlx4_zone_allocator_create(enum mlx4_zone_alloc_flags flags);
 
-/* Attach a mlx4_bitmap <bitmap> of priority <priority> to the zone allocator
- * <zone_alloc>. Allocating an object from this zone adds an offset <offset>.
- * Similarly, when searching for an object to free, this offset it taken into
- * account. The use_rr mlx4_ib parameter for allocating objects from this <bitmap>
- * is given through the MLX4_ZONE_USE_RR flag in <flags>.
- * When an allocation fails, <zone_alloc> tries to allocate from other zones
- * according to the policy set by <flags>. <puid> is the unique identifier
- * received to this zone.
- */
+ 
 int mlx4_zone_add_one(struct mlx4_zone_allocator *zone_alloc,
 		      struct mlx4_bitmap *bitmap,
 		      u32 flags,
@@ -1462,35 +1404,24 @@ int mlx4_zone_add_one(struct mlx4_zone_allocator *zone_alloc,
 		      int offset,
 		      u32 *puid);
 
-/* Remove bitmap indicated by <uid> from <zone_alloc> */
+ 
 int mlx4_zone_remove_one(struct mlx4_zone_allocator *zone_alloc, u32 uid);
 
-/* Delete the zone allocator <zone_alloc. This function doesn't destroy
- * the attached bitmaps.
- */
+ 
 void mlx4_zone_allocator_destroy(struct mlx4_zone_allocator *zone_alloc);
 
-/* Allocate <count> objects with align <align> and skip_mask <skip_mask>
- * from the mlx4_bitmap whose uid is <uid>. The bitmap which we actually
- * allocated from is returned in <puid>. If the allocation fails, a negative
- * number is returned. Otherwise, the offset of the first object is returned.
- */
+ 
 u32 mlx4_zone_alloc_entries(struct mlx4_zone_allocator *zones, u32 uid, int count,
 			    int align, u32 skip_mask, u32 *puid);
 
-/* Free <count> objects, start from <obj> of the uid <uid> from zone_allocator
- * <zones>.
- */
+ 
 u32 mlx4_zone_free_entries(struct mlx4_zone_allocator *zones,
 			   u32 uid, u32 obj, u32 count);
 
-/* If <zones> was allocated with MLX4_ZONE_ALLOC_FLAGS_NO_OVERLAP, instead of
- * specifying the uid when freeing an object, zone allocator could figure it by
- * itself. Other parameters are similar to mlx4_zone_free.
- */
+ 
 u32 mlx4_zone_free_entries_unique(struct mlx4_zone_allocator *zones, u32 obj, u32 count);
 
-/* Returns a pointer to mlx4_bitmap that was attached to <zones> with <uid> */
+ 
 struct mlx4_bitmap *mlx4_zone_get_bitmap(struct mlx4_zone_allocator *zones, u32 uid);
 
-#endif /* MLX4_H */
+#endif  

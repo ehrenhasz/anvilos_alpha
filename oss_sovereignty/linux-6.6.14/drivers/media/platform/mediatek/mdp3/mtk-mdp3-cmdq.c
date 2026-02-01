@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/mailbox_controller.h>
 #include <linux/platform_device.h>
@@ -59,7 +56,7 @@ static int mdp_path_subfrm_require(const struct mdp_path *path,
 	if (CFG_CHECK(MT8183, p_id))
 		num_comp = CFG_GET(MT8183, path->config, num_components);
 
-	/* Decide which mutex to use based on the current pipeline */
+	 
 	switch (path->comps[0].comp->public_id) {
 	case MDP_COMP_RDMA0:
 		index = MDP_PIPE_RDMA0;
@@ -79,7 +76,7 @@ static int mdp_path_subfrm_require(const struct mdp_path *path,
 	}
 	*mutex_id = data->pipe_info[index].mutex_id;
 
-	/* Set mutex mod */
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		if (is_output_disabled(p_id, ctx->param, count))
@@ -115,8 +112,8 @@ static int mdp_path_subfrm_run(const struct mdp_path *path,
 	if (CFG_CHECK(MT8183, p_id))
 		num_comp = CFG_GET(MT8183, path->config, num_components);
 
-	/* Wait WROT SRAM shared to DISP RDMA */
-	/* Clear SOF event for each engine */
+	 
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		if (is_output_disabled(p_id, ctx->param, count))
@@ -126,10 +123,10 @@ static int mdp_path_subfrm_run(const struct mdp_path *path,
 			MM_REG_CLEAR(cmd, event);
 	}
 
-	/* Enable the mutex */
+	 
 	mtk_mutex_enable_by_cmdq(mutex[*mutex_id], (void *)&cmd->pkt);
 
-	/* Wait SOF events and clear mutex modules (optional) */
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		if (is_output_disabled(p_id, ctx->param, count))
@@ -184,17 +181,17 @@ static int mdp_path_config_subfrm(struct mdp_cmdq_cmd *cmd,
 	if (CFG_CHECK(MT8183, p_id))
 		ctrl = CFG_ADDR(MT8183, path->config, ctrls[count]);
 
-	/* Acquire components */
+	 
 	ret = mdp_path_subfrm_require(path, cmd, &mutex_id, count);
 	if (ret)
 		return ret;
-	/* Enable mux settings */
+	 
 	for (index = 0; index < ctrl->num_sets; index++) {
 		set = &ctrl->sets[index];
 		cmdq_pkt_write_mask(&cmd->pkt, set->subsys_id, set->reg,
 				    set->value, 0xFFFFFFFF);
 	}
-	/* Config sub-frame information */
+	 
 	for (index = (num_comp - 1); index >= 0; index--) {
 		ctx = &path->comps[index];
 		if (is_output_disabled(p_id, ctx->param, count))
@@ -203,11 +200,11 @@ static int mdp_path_config_subfrm(struct mdp_cmdq_cmd *cmd,
 		if (ret)
 			return ret;
 	}
-	/* Run components */
+	 
 	ret = mdp_path_subfrm_run(path, cmd, &mutex_id, count);
 	if (ret)
 		return ret;
-	/* Wait components done */
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		if (is_output_disabled(p_id, ctx->param, count))
@@ -216,14 +213,14 @@ static int mdp_path_config_subfrm(struct mdp_cmdq_cmd *cmd,
 		if (ret)
 			return ret;
 	}
-	/* Advance to the next sub-frame */
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		ret = call_op(ctx, advance_subfrm, cmd, count);
 		if (ret)
 			return ret;
 	}
-	/* Disable mux settings */
+	 
 	for (index = 0; index < ctrl->num_sets; index++) {
 		set = &ctrl->sets[index];
 		cmdq_pkt_write_mask(&cmd->pkt, set->subsys_id, set->reg,
@@ -248,15 +245,15 @@ static int mdp_path_config(struct mdp_dev *mdp, struct mdp_cmdq_cmd *cmd,
 	if (CFG_CHECK(MT8183, p_id))
 		num_sub = CFG_GET(MT8183, path->config, num_subfrms);
 
-	/* Config path frame */
-	/* Reset components */
+	 
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		ret = call_op(ctx, init_comp, cmd);
 		if (ret)
 			return ret;
 	}
-	/* Config frame mode */
+	 
 	for (index = 0; index < num_comp; index++) {
 		const struct v4l2_rect *compose;
 		u32 out = 0;
@@ -271,13 +268,13 @@ static int mdp_path_config(struct mdp_dev *mdp, struct mdp_cmdq_cmd *cmd,
 			return ret;
 	}
 
-	/* Config path sub-frames */
+	 
 	for (count = 0; count < num_sub; count++) {
 		ret = mdp_path_config_subfrm(cmd, path, count);
 		if (ret)
 			return ret;
 	}
-	/* Post processing information */
+	 
 	for (index = 0; index < num_comp; index++) {
 		ctx = &path->comps[index];
 		ret = call_op(ctx, post_process, cmd);

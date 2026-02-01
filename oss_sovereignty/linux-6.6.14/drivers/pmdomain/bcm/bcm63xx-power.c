@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM63xx Power Domain Controller Driver
- *
- * Copyright (C) 2020 Álvaro Fernández Rojas <noltari@gmail.com>
- */
+
+ 
 
 #include <dt-bindings/soc/bcm6318-pm.h>
 #include <dt-bindings/soc/bcm6328-pm.h>
@@ -207,7 +203,7 @@ static const struct bcm63xx_power_data bcm6318_power_domains[] = {
 		.bit = BCM6318_POWER_DOMAIN_PAD,
 		.flags = GENPD_FLAG_ALWAYS_ON,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -243,7 +239,7 @@ static const struct bcm63xx_power_data bcm6328_power_domains[] = {
 		.name = "ephy",
 		.bit = BCM6328_POWER_DOMAIN_EPHY,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -293,7 +289,7 @@ static const struct bcm63xx_power_data bcm6362_power_domains[] = {
 		.name = "wlan-pads",
 		.bit = BCM6362_POWER_DOMAIN_WLAN_PADS,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -343,7 +339,7 @@ static const struct bcm63xx_power_data bcm63268_power_domains[] = {
 		.name = "wlan-pads",
 		.bit = BCM63268_POWER_DOMAIN_WLAN_PADS,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 
@@ -361,7 +357,7 @@ static const struct of_device_id bcm63xx_power_of_match[] = {
 		.compatible = "brcm,bcm63268-power-controller",
 		.data = &bcm63268_power_domains,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <cgroup_helpers.h>
@@ -99,11 +97,7 @@ static void test_egress_only(int parent_cgroup_fd, int child_cgroup_fd)
 	if (CHECK(!obj, "skel-load", "errno %d", errno))
 		return;
 
-	/* Attach to parent cgroup, trigger packet from child.
-	 * Assert that there is only one run and in that run the storage is
-	 * parent cgroup's storage.
-	 * Also assert that child cgroup's storage does not exist
-	 */
+	 
 	parent_link = bpf_program__attach_cgroup(obj->progs.egress,
 						 parent_cgroup_fd);
 	if (!ASSERT_OK_PTR(parent_link, "parent-cg-attach"))
@@ -123,10 +117,7 @@ static void test_egress_only(int parent_cgroup_fd, int child_cgroup_fd)
 	if (assert_storage_noexist(obj->maps.cgroup_storage, &key))
 		goto close_bpf_object;
 
-	/* Attach to parent and child cgroup, trigger packet from child.
-	 * Assert that there are two additional runs, one that run with parent
-	 * cgroup's storage and one with child cgroup's storage.
-	 */
+	 
 	child_link = bpf_program__attach_cgroup(obj->progs.egress,
 						child_cgroup_fd);
 	if (!ASSERT_OK_PTR(child_link, "child-cg-attach"))
@@ -169,11 +160,7 @@ static void test_isolated(int parent_cgroup_fd, int child_cgroup_fd)
 	if (CHECK(!obj, "skel-load", "errno %d", errno))
 		return;
 
-	/* Attach to parent cgroup, trigger packet from child.
-	 * Assert that there is three runs, two with parent cgroup egress and
-	 * one with parent cgroup ingress, stored in separate parent storages.
-	 * Also assert that child cgroup's storages does not exist
-	 */
+	 
 	parent_egress1_link = bpf_program__attach_cgroup(obj->progs.egress1,
 							 parent_cgroup_fd);
 	if (!ASSERT_OK_PTR(parent_egress1_link, "parent-egress1-cg-attach"))
@@ -211,11 +198,7 @@ static void test_isolated(int parent_cgroup_fd, int child_cgroup_fd)
 	if (assert_storage_noexist(obj->maps.cgroup_storage, &key))
 		goto close_bpf_object;
 
-	/* Attach to parent and child cgroup, trigger packet from child.
-	 * Assert that there is six additional runs, parent cgroup egresses and
-	 * ingress, child cgroup egresses and ingress.
-	 * Assert that egree and ingress storages are separate.
-	 */
+	 
 	child_egress1_link = bpf_program__attach_cgroup(obj->progs.egress1,
 							child_cgroup_fd);
 	if (!ASSERT_OK_PTR(child_egress1_link, "child-egress1-cg-attach"))
@@ -282,11 +265,7 @@ static void test_shared(int parent_cgroup_fd, int child_cgroup_fd)
 	if (CHECK(!obj, "skel-load", "errno %d", errno))
 		return;
 
-	/* Attach to parent cgroup, trigger packet from child.
-	 * Assert that there is three runs, two with parent cgroup egress and
-	 * one with parent cgroup ingress.
-	 * Also assert that child cgroup's storage does not exist
-	 */
+	 
 	parent_egress1_link = bpf_program__attach_cgroup(obj->progs.egress1,
 							 parent_cgroup_fd);
 	if (!ASSERT_OK_PTR(parent_egress1_link, "parent-egress1-cg-attach"))
@@ -317,10 +296,7 @@ static void test_shared(int parent_cgroup_fd, int child_cgroup_fd)
 	if (assert_storage_noexist(obj->maps.cgroup_storage, &key))
 		goto close_bpf_object;
 
-	/* Attach to parent and child cgroup, trigger packet from child.
-	 * Assert that there is six additional runs, parent cgroup egresses and
-	 * ingress, child cgroup egresses and ingress.
-	 */
+	 
 	child_egress1_link = bpf_program__attach_cgroup(obj->progs.egress1,
 							child_cgroup_fd);
 	if (!ASSERT_OK_PTR(child_egress1_link, "child-egress1-cg-attach"))

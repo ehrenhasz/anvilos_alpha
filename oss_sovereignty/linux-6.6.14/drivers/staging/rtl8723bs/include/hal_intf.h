@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __HAL_INTF_H__
 #define __HAL_INTF_H__
 
@@ -82,9 +78,9 @@ enum {
 	HW_VAR_FIFO_CLEARN_UP,
 	HW_VAR_CHECK_TXBUF,
 	HW_VAR_PCIE_STOP_TX_DMA,
-	HW_VAR_APFM_ON_MAC, /* Auto FSM to Turn On, include clock, isolation, power control for MAC only */
-	/*  The valid upper nav range for the HW updating, if the true value is larger than the upper range, the HW won't update it. */
-	/*  Unit in microsecond. 0 means disable this function. */
+	HW_VAR_APFM_ON_MAC,  
+	 
+	 
 	HW_VAR_SYS_CLKR,
 	HW_VAR_NAV_UPPER,
 	HW_VAR_C2H_HANDLE,
@@ -119,17 +115,17 @@ enum hal_def_variable {
 	HAL_DEF_DRVINFO_SZ,
 	HAL_DEF_MAX_RECVBUF_SZ,
 	HAL_DEF_RX_PACKET_OFFSET,
-	HAL_DEF_DBG_DUMP_RXPKT,/* for dbg */
-	HAL_DEF_DBG_DM_FUNC,/* for dbg */
+	HAL_DEF_DBG_DUMP_RXPKT, 
+	HAL_DEF_DBG_DM_FUNC, 
 	HAL_DEF_RA_DECISION_RATE,
 	HAL_DEF_RA_SGI,
 	HAL_DEF_PT_PWR_STATUS,
-	HAL_DEF_TX_LDPC,				/*  LDPC support */
-	HAL_DEF_RX_LDPC,				/*  LDPC support */
-	HAL_DEF_TX_STBC,				/*  TX STBC support */
-	HAL_DEF_RX_STBC,				/*  RX STBC support */
-	HAL_DEF_EXPLICIT_BEAMFORMER,/*  Explicit  Compressed Steering Capable */
-	HAL_DEF_EXPLICIT_BEAMFORMEE,/*  Explicit Compressed Beamforming Feedback Capable */
+	HAL_DEF_TX_LDPC,				 
+	HAL_DEF_RX_LDPC,				 
+	HAL_DEF_TX_STBC,				 
+	HAL_DEF_RX_STBC,				 
+	HAL_DEF_EXPLICIT_BEAMFORMER, 
+	HAL_DEF_EXPLICIT_BEAMFORMEE, 
 	HW_VAR_MAX_RX_AMPDU_FACTOR,
 	HW_DEF_RA_INFO_DUMP,
 	HAL_DEF_DBG_DUMP_TXPKT,
@@ -139,11 +135,11 @@ enum hal_def_variable {
 	HAL_DEF_TX_PAGE_SIZE,
 	HAL_DEF_TX_PAGE_BOUNDARY,
 	HAL_DEF_TX_PAGE_BOUNDARY_WOWLAN,
-	HAL_DEF_ANT_DETECT,/* to do for 8723a */
-	HAL_DEF_PCI_SUUPORT_L1_BACKDOOR, /*  Determine if the L1 Backdoor setting is turned on. */
+	HAL_DEF_ANT_DETECT, 
+	HAL_DEF_PCI_SUUPORT_L1_BACKDOOR,  
 	HAL_DEF_PCI_AMD_L1_SUPPORT,
-	HAL_DEF_PCI_ASPM_OSC, /*  Support for ASPM OSC, added by Roger, 2013.03.27. */
-	HAL_DEF_MACID_SLEEP, /*  Support for MACID sleep */
+	HAL_DEF_PCI_ASPM_OSC,  
+	HAL_DEF_MACID_SLEEP,  
 	HAL_DEF_DBG_RX_INFO_DUMP,
 };
 
@@ -227,9 +223,7 @@ struct hal_ops {
 	u8 (*interface_ps_func)(struct adapter *padapter, enum hal_intf_ps_func efunc_id, u8 *val);
 
 	s32	(*hal_xmit)(struct adapter *padapter, struct xmit_frame *pxmitframe);
-	/*
-	 * mgnt_xmit should be implemented to run in interrupt context
-	 */
+	 
 	s32 (*mgnt_xmit)(struct adapter *padapter, struct xmit_frame *pmgntframe);
 	s32	(*hal_xmitframe_enqueue)(struct adapter *padapter, struct xmit_frame *pxmitframe);
 
@@ -358,4 +352,4 @@ s32 rtw_hal_macid_wakeup(struct adapter *padapter, u32 macid);
 
 s32 rtw_hal_fill_h2c_cmd(struct adapter *, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
-#endif /* __HAL_INTF_H__ */
+#endif  

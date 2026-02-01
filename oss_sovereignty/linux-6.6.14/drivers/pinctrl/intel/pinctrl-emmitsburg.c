@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Emmitsburg PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2020, Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -30,9 +25,9 @@
 #define EBG_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, EBG)
 
-/* Emmitsburg */
+ 
 static const struct pinctrl_pin_desc ebg_pins[] = {
-	/* GPP_A */
+	 
 	PINCTRL_PIN(0, "ESPI_ALERT0B"),
 	PINCTRL_PIN(1, "ESPI_ALERT1B"),
 	PINCTRL_PIN(2, "ESPI_IO_0"),
@@ -54,7 +49,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(18, "SRCCLKREQB_8"),
 	PINCTRL_PIN(19, "SRCCLKREQB_9"),
 	PINCTRL_PIN(20, "ESPI_CLK_LOOPBK"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(21, "GSXDOUT"),
 	PINCTRL_PIN(22, "GSXSLOAD"),
 	PINCTRL_PIN(23, "GSXDIN"),
@@ -79,7 +74,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(42, "GPPC_B_21"),
 	PINCTRL_PIN(43, "GPPC_B_22"),
 	PINCTRL_PIN(44, "PS_ONB"),
-	/* SPI */
+	 
 	PINCTRL_PIN(45, "SPI0_IO_2"),
 	PINCTRL_PIN(46, "SPI0_IO_3"),
 	PINCTRL_PIN(47, "SPI0_MOSI_IO_0"),
@@ -101,7 +96,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(63, "GPPC_S_10"),
 	PINCTRL_PIN(64, "GPPC_S_11"),
 	PINCTRL_PIN(65, "SPI_CLK_LOOPBK"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(66, "ME_SML0CLK"),
 	PINCTRL_PIN(67, "ME_SML0DATA"),
 	PINCTRL_PIN(68, "ME_SML0ALERTB"),
@@ -124,7 +119,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(85, "MC_SMBCLK"),
 	PINCTRL_PIN(86, "MC_SMBDATA"),
 	PINCTRL_PIN(87, "MC_SMBALERTB"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(88, "HS_SMBCLK"),
 	PINCTRL_PIN(89, "HS_SMBDATA"),
 	PINCTRL_PIN(90, "HS_SMBALERTB"),
@@ -149,7 +144,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(109, "GLB_RST_WARN_B"),
 	PINCTRL_PIN(110, "USB2_OCB_7"),
 	PINCTRL_PIN(111, "GPP_D_23"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(112, "SATA1_XPCIE_0"),
 	PINCTRL_PIN(113, "SATA1_XPCIE_1"),
 	PINCTRL_PIN(114, "SATA1_XPCIE_2"),
@@ -174,7 +169,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(133, "GBE_UART_TXD"),
 	PINCTRL_PIN(134, "GBE_UART_RTSB"),
 	PINCTRL_PIN(135, "GBE_UART_CTSB"),
-	/* JTAG */
+	 
 	PINCTRL_PIN(136, "JTAG_TDO"),
 	PINCTRL_PIN(137, "JTAG_TDI"),
 	PINCTRL_PIN(138, "JTAG_TCK"),
@@ -185,7 +180,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(143, "GLB_PC_DISABLE"),
 	PINCTRL_PIN(144, "DBG_PMODE"),
 	PINCTRL_PIN(145, "GLB_EXT_ACC_DISABLE"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(146, "GBE_GPIO12"),
 	PINCTRL_PIN(147, "GBE_GPIO13"),
 	PINCTRL_PIN(148, "GBE_SDP_TIMESYNC0_S2N"),
@@ -206,7 +201,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(163, "NAC_NCSI_CLK_OUT_2"),
 	PINCTRL_PIN(164, "PMCALERTB"),
 	PINCTRL_PIN(165, "GPPC_H_19"),
-	/* GPP_J */
+	 
 	PINCTRL_PIN(166, "CPUPWRGD"),
 	PINCTRL_PIN(167, "CPU_THRMTRIP_N"),
 	PINCTRL_PIN(168, "PLTRST_CPUB"),
@@ -225,7 +220,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(181, "CPU_ERR2_N"),
 	PINCTRL_PIN(182, "GPP_J_16"),
 	PINCTRL_PIN(183, "GPP_J_17"),
-	/* GPP_I */
+	 
 	PINCTRL_PIN(184, "GBE_GPIO4"),
 	PINCTRL_PIN(185, "GBE_GPIO5"),
 	PINCTRL_PIN(186, "GBE_GPIO6"),
@@ -250,7 +245,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(205, "GBE4_I2C_DATA"),
 	PINCTRL_PIN(206, "GBE_GPIO8"),
 	PINCTRL_PIN(207, "GBE_GPIO9"),
-	/* GPP_L */
+	 
 	PINCTRL_PIN(208, "PM_SYNC_0"),
 	PINCTRL_PIN(209, "PM_DOWN_0"),
 	PINCTRL_PIN(210, "PM_SYNC_CLK_0"),
@@ -269,7 +264,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(223, "NAC_GBE_SMB_ALRT_N"),
 	PINCTRL_PIN(224, "NAC_GBE_SMB_CLK_IN"),
 	PINCTRL_PIN(225, "NAC_GBE_SMB_CLK_OUT"),
-	/* GPP_M */
+	 
 	PINCTRL_PIN(226, "GPP_M_0"),
 	PINCTRL_PIN(227, "GPP_M_1"),
 	PINCTRL_PIN(228, "GPP_M_2"),
@@ -288,7 +283,7 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 	PINCTRL_PIN(241, "GPP_M_15"),
 	PINCTRL_PIN(242, "GPP_M_16"),
 	PINCTRL_PIN(243, "GPP_M_17"),
-	/* GPP_N */
+	 
 	PINCTRL_PIN(244, "GPP_N_0"),
 	PINCTRL_PIN(245, "NAC_NCSI_TXD0"),
 	PINCTRL_PIN(246, "GPP_N_2"),
@@ -310,31 +305,31 @@ static const struct pinctrl_pin_desc ebg_pins[] = {
 };
 
 static const struct intel_padgroup ebg_community0_gpps[] = {
-	EBG_GPP(0, 0, 20),	/* GPP_A */
-	EBG_GPP(1, 21, 44),	/* GPP_B */
-	EBG_GPP(2, 45, 65),	/* SPI */
+	EBG_GPP(0, 0, 20),	 
+	EBG_GPP(1, 21, 44),	 
+	EBG_GPP(2, 45, 65),	 
 };
 
 static const struct intel_padgroup ebg_community1_gpps[] = {
-	EBG_GPP(0, 66, 87),	/* GPP_C */
-	EBG_GPP(1, 88, 111),	/* GPP_D */
+	EBG_GPP(0, 66, 87),	 
+	EBG_GPP(1, 88, 111),	 
 };
 
 static const struct intel_padgroup ebg_community3_gpps[] = {
-	EBG_GPP(0, 112, 135),	/* GPP_E */
-	EBG_GPP(1, 136, 145),	/* JTAG */
+	EBG_GPP(0, 112, 135),	 
+	EBG_GPP(1, 136, 145),	 
 };
 
 static const struct intel_padgroup ebg_community4_gpps[] = {
-	EBG_GPP(0, 146, 165),	/* GPP_H */
-	EBG_GPP(1, 166, 183),	/* GPP_J */
+	EBG_GPP(0, 146, 165),	 
+	EBG_GPP(1, 166, 183),	 
 };
 
 static const struct intel_padgroup ebg_community5_gpps[] = {
-	EBG_GPP(0, 184, 207),	/* GPP_I */
-	EBG_GPP(1, 208, 225),	/* GPP_L */
-	EBG_GPP(2, 226, 243),	/* GPP_M */
-	EBG_GPP(3, 244, 261),	/* GPP_N */
+	EBG_GPP(0, 184, 207),	 
+	EBG_GPP(1, 208, 225),	 
+	EBG_GPP(2, 226, 243),	 
+	EBG_GPP(3, 244, 261),	 
 };
 
 static const struct intel_community ebg_communities[] = {

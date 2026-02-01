@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS security handling
- *
- * Copyright (C) 2007, 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -17,9 +13,7 @@
 static DEFINE_HASHTABLE(afs_permits_cache, 10);
 static DEFINE_SPINLOCK(afs_permits_lock);
 
-/*
- * get a key
- */
+ 
 struct key *afs_request_key(struct afs_cell *cell)
 {
 	struct key *key;
@@ -35,19 +29,17 @@ struct key *afs_request_key(struct afs_cell *cell)
 			return key;
 		}
 
-		/* act as anonymous user */
+		 
 		_leave(" = {%x} [anon]", key_serial(cell->anonymous_key));
 		return key_get(cell->anonymous_key);
 	} else {
-		/* act as authorised user */
+		 
 		_leave(" = {%x} [auth]", key_serial(key));
 		return key;
 	}
 }
 
-/*
- * Get a key when pathwalk is in rcuwalk mode.
- */
+ 
 struct key *afs_request_key_rcu(struct afs_cell *cell)
 {
 	struct key *key;
@@ -64,19 +56,17 @@ struct key *afs_request_key_rcu(struct afs_cell *cell)
 			return key;
 		}
 
-		/* act as anonymous user */
+		 
 		_leave(" = {%x} [anon]", key_serial(cell->anonymous_key));
 		return key_get(cell->anonymous_key);
 	} else {
-		/* act as authorised user */
+		 
 		_leave(" = {%x} [auth]", key_serial(key));
 		return key;
 	}
 }
 
-/*
- * Dispose of a list of permits.
- */
+ 
 static void afs_permits_rcu(struct rcu_head *rcu)
 {
 	struct afs_permits *permits =
@@ -88,9 +78,7 @@ static void afs_permits_rcu(struct rcu_head *rcu)
 	kfree(permits);
 }
 
-/*
- * Discard a permission cache.
- */
+ 
 void afs_put_permits(struct afs_permits *permits)
 {
 	if (permits && refcount_dec_and_test(&permits->usage)) {
@@ -101,9 +89,7 @@ void afs_put_permits(struct afs_permits *permits)
 	}
 }
 
-/*
- * Clear a permit cache on callback break.
- */
+ 
 void afs_clear_permits(struct afs_vnode *vnode)
 {
 	struct afs_permits *permits;
@@ -117,10 +103,7 @@ void afs_clear_permits(struct afs_vnode *vnode)
 	afs_put_permits(permits);
 }
 
-/*
- * Hash a list of permits.  Use simple addition to make it easy to add an extra
- * one at an as-yet indeterminate position in the list.
- */
+ 
 static void afs_hash_permits(struct afs_permits *permits)
 {
 	unsigned long h = permits->nr_permits;
@@ -134,12 +117,7 @@ static void afs_hash_permits(struct afs_permits *permits)
 	permits->h = h;
 }
 
-/*
- * Cache the CallerAccess result obtained from doing a fileserver operation
- * that returned a vnode status for a particular key.  If a callback break
- * occurs whilst the operation was in progress then we have to ditch the cache
- * as the ACL *may* have changed.
- */
+ 
 void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 		      unsigned int cb_break, struct afs_status_cb *scb)
 {
@@ -154,9 +132,7 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 
 	rcu_read_lock();
 
-	/* Check for the common case first: We got back the same access as last
-	 * time we tried and already have it recorded.
-	 */
+	 
 	permits = rcu_dereference(vnode->permit_cache);
 	if (permits) {
 		if (!permits->invalidated) {
@@ -175,7 +151,7 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 					break;
 				}
 
-				/* The cache is still good. */
+				 
 				rcu_read_unlock();
 				return;
 			}
@@ -184,9 +160,7 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 		changed |= permits->invalidated;
 		size = permits->nr_permits;
 
-		/* If this set of permits is now wrong, clear the permits
-		 * pointer so that no one tries to use the stale information.
-		 */
+		 
 		if (changed) {
 			spin_lock(&vnode->lock);
 			if (permits != rcu_access_pointer(vnode->permit_cache))
@@ -203,21 +177,13 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 	if (afs_cb_is_broken(cb_break, vnode))
 		goto someone_else_changed_it;
 
-	/* We need a ref on any permits list we want to copy as we'll have to
-	 * drop the lock to do memory allocation.
-	 */
+	 
 	if (permits && !refcount_inc_not_zero(&permits->usage))
 		goto someone_else_changed_it;
 
 	rcu_read_unlock();
 
-	/* Speculatively create a new list with the revised permission set.  We
-	 * discard this if we find an extant match already in the hash, but
-	 * it's easier to compare with memcmp this way.
-	 *
-	 * We fill in the key pointers at this time, but we don't get the refs
-	 * yet.
-	 */
+	 
 	size++;
 	new = kzalloc(struct_size(new, permits, size), GFP_NOFS);
 	if (!new)
@@ -246,7 +212,7 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key,
 
 	afs_hash_permits(new);
 
-	/* Now see if the permit list we want is actually already available */
+	 
 	spin_lock(&afs_permits_lock);
 
 	hash_for_each_possible(afs_permits_cache, xpermits, hash_node, new->h) {
@@ -293,9 +259,7 @@ out_put:
 someone_else_changed_it_unlock:
 	spin_unlock(&vnode->lock);
 someone_else_changed_it:
-	/* Someone else changed the cache under us - don't recheck at this
-	 * time.
-	 */
+	 
 	rcu_read_unlock();
 	return;
 }
@@ -309,7 +273,7 @@ static bool afs_check_permit_rcu(struct afs_vnode *vnode, struct key *key,
 	_enter("{%llx:%llu},%x",
 	       vnode->fid.vid, vnode->fid.vnode, key_serial(key));
 
-	/* check the permits to see if we've got one yet */
+	 
 	if (key == vnode->volume->cell->anonymous_key) {
 		*_access = vnode->status.anon_access;
 		_leave(" = t [anon %x]", *_access);
@@ -334,11 +298,7 @@ static bool afs_check_permit_rcu(struct afs_vnode *vnode, struct key *key,
 	return false;
 }
 
-/*
- * check with the fileserver to see if the directory or parent directory is
- * permitted to be accessed with this authorisation, and if so, what access it
- * is granted
- */
+ 
 int afs_check_permit(struct afs_vnode *vnode, struct key *key,
 		     afs_access_t *_access)
 {
@@ -349,7 +309,7 @@ int afs_check_permit(struct afs_vnode *vnode, struct key *key,
 	_enter("{%llx:%llu},%x",
 	       vnode->fid.vid, vnode->fid.vnode, key_serial(key));
 
-	/* check the permits to see if we've got one yet */
+	 
 	if (key == vnode->volume->cell->anonymous_key) {
 		_debug("anon");
 		*_access = vnode->status.anon_access;
@@ -373,9 +333,7 @@ int afs_check_permit(struct afs_vnode *vnode, struct key *key,
 	}
 
 	if (!valid) {
-		/* Check the status on the file we're actually interested in
-		 * (the post-processing will cache the result).
-		 */
+		 
 		_debug("no valid permit");
 
 		ret = afs_fetch_status(vnode, key, false, _access);
@@ -390,11 +348,7 @@ int afs_check_permit(struct afs_vnode *vnode, struct key *key,
 	return 0;
 }
 
-/*
- * check the permissions on an AFS file
- * - AFS ACLs are attached to directories only, and a file is controlled by its
- *   parent directory's ACL
- */
+ 
 int afs_permission(struct mnt_idmap *idmap, struct inode *inode,
 		   int mask)
 {
@@ -426,13 +380,13 @@ int afs_permission(struct mnt_idmap *idmap, struct inode *inode,
 		if (ret < 0)
 			goto error;
 
-		/* check the permits to see if we've got one yet */
+		 
 		ret = afs_check_permit(vnode, key, &access);
 		if (ret < 0)
 			goto error;
 	}
 
-	/* interpret the access mask */
+	 
 	_debug("REQ %x ACC %x on %s",
 	       mask, access, S_ISDIR(inode->i_mode) ? "dir" : "file");
 
@@ -443,8 +397,8 @@ int afs_permission(struct mnt_idmap *idmap, struct inode *inode,
 				goto permission_denied;
 		}
 		if (mask & MAY_WRITE) {
-			if (!(access & (AFS_ACE_DELETE | /* rmdir, unlink, rename from */
-					AFS_ACE_INSERT))) /* create, mkdir, symlink, rename to */
+			if (!(access & (AFS_ACE_DELETE |  
+					AFS_ACE_INSERT)))  
 				goto permission_denied;
 		}
 	} else {

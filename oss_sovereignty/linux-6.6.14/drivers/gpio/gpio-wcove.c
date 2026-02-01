@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Whiskey Cove PMIC GPIO Driver
- *
- * This driver is written based on gpio-crystalcove.c
- *
- * Copyright (C) 2016 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -16,29 +10,18 @@
 #include <linux/regmap.h>
 #include <linux/seq_file.h>
 
-/*
- * Whiskey Cove PMIC has 13 physical GPIO pins divided into 3 banks:
- * Bank 0: Pin  0 - 6
- * Bank 1: Pin  7 - 10
- * Bank 2: Pin 11 - 12
- * Each pin has one output control register and one input control register.
- */
+ 
 #define BANK0_NR_PINS		7
 #define BANK1_NR_PINS		4
 #define BANK2_NR_PINS		2
 #define WCOVE_GPIO_NUM		(BANK0_NR_PINS + BANK1_NR_PINS + BANK2_NR_PINS)
 #define WCOVE_VGPIO_NUM		94
-/* GPIO output control registers (one per pin): 0x4e44 - 0x4e50 */
+ 
 #define GPIO_OUT_CTRL_BASE	0x4e44
-/* GPIO input control registers (one per pin): 0x4e51 - 0x4e5d */
+ 
 #define GPIO_IN_CTRL_BASE	0x4e51
 
-/*
- * GPIO interrupts are organized in two groups:
- * Group 0: Bank 0 pins (Pin 0 - 6)
- * Group 1: Bank 1 and Bank 2 pins (Pin 7 - 12)
- * Each group has two registers (one bit per pin): status and mask.
- */
+ 
 #define GROUP0_NR_IRQS		7
 #define GROUP1_NR_IRQS		6
 #define IRQ_MASK_BASE		0x4e19
@@ -77,17 +60,7 @@ enum ctrl_register {
 	IRQ_MASK,
 };
 
-/*
- * struct wcove_gpio - Whiskey Cove GPIO controller
- * @buslock: for bus lock/sync and unlock.
- * @chip: the abstract gpio_chip structure.
- * @dev: the gpio device
- * @regmap: the regmap from the parent device.
- * @regmap_irq_chip: the regmap of the gpio irq chip.
- * @update: pending IRQ setting update, to be written to the chip upon unlock.
- * @intcnt: the Interrupt Detect value to be written.
- * @set_irq_mask: true if the IRQ mask needs to be set, false to clear.
- */
+ 
 struct wcove_gpio {
 	struct mutex buslock;
 	struct gpio_chip chip;
@@ -347,9 +320,9 @@ static irqreturn_t wcove_gpio_irq_handler(int irq, void *data)
 	if (!pending)
 		return IRQ_NONE;
 
-	/* Iterate until no interrupt is pending */
+	 
 	while (pending) {
-		/* One iteration is for all pending bits */
+		 
 		for_each_set_bit(gpio, &pending, WCOVE_GPIO_NUM) {
 			unsigned int mask, reg = to_ireg(gpio, IRQ_STATUS, &mask);
 
@@ -358,7 +331,7 @@ static irqreturn_t wcove_gpio_irq_handler(int irq, void *data)
 			regmap_set_bits(wg->regmap, reg, mask);
 		}
 
-		/* Next iteration */
+		 
 		if (regmap_bulk_read(wg->regmap, IRQ_STATUS_BASE, p, 2)) {
 			dev_err(wg->dev, "Failed to read irq status\n");
 			break;
@@ -410,13 +383,7 @@ static int wcove_gpio_probe(struct platform_device *pdev)
 	struct device *dev;
 	struct gpio_irq_chip *girq;
 
-	/*
-	 * This gpio platform device is created by a mfd device (see
-	 * drivers/mfd/intel_soc_pmic_bxtwc.c for details). Information
-	 * shared by all sub-devices created by the mfd device, the regmap
-	 * pointer for instance, is stored as driver data of the mfd device
-	 * driver.
-	 */
+	 
 	pmic = dev_get_drvdata(pdev->dev.parent);
 	if (!pmic)
 		return -ENODEV;
@@ -459,7 +426,7 @@ static int wcove_gpio_probe(struct platform_device *pdev)
 
 	girq = &wg->chip.irq;
 	gpio_irq_chip_set_chip(girq, &wcove_irqchip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -480,12 +447,12 @@ static int wcove_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Enable GPIO0 interrupts */
+	 
 	ret = regmap_clear_bits(wg->regmap, IRQ_MASK_BASE + 0, GPIO_IRQ0_MASK);
 	if (ret)
 		return ret;
 
-	/* Enable GPIO1 interrupts */
+	 
 	ret = regmap_clear_bits(wg->regmap, IRQ_MASK_BASE + 1, GPIO_IRQ1_MASK);
 	if (ret)
 		return ret;
@@ -493,11 +460,7 @@ static int wcove_gpio_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * Whiskey Cove PMIC itself is a analog device(but with digital control
- * interface) providing power management support for other devices in
- * the accompanied SoC, so we have no .pm for Whiskey Cove GPIO driver.
- */
+ 
 static struct platform_driver wcove_gpio_driver = {
 	.driver = {
 		.name = "bxt_wcove_gpio",

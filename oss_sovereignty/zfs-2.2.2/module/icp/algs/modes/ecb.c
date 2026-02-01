@@ -1,36 +1,12 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <modes/modes.h>
 #include <sys/crypto/common.h>
 #include <sys/crypto/impl.h>
 
-/*
- * Algorithm independent ECB functions.
- */
+ 
 int
 ecb_cipher_contiguous_blocks(ecb_ctx_t *ctx, char *data, size_t length,
     crypto_data_t *out, size_t block_size,
@@ -48,7 +24,7 @@ ecb_cipher_contiguous_blocks(ecb_ctx_t *ctx, char *data, size_t length,
 	size_t out_data_1_len;
 
 	if (length + ctx->ecb_remainder_len < block_size) {
-		/* accumulate bytes here and return */
+		 
 		memcpy((uint8_t *)ctx->ecb_remainder + ctx->ecb_remainder_len,
 		    datap,
 		    length);
@@ -61,7 +37,7 @@ ecb_cipher_contiguous_blocks(ecb_ctx_t *ctx, char *data, size_t length,
 	crypto_init_ptrs(out, &iov_or_mp, &offset);
 
 	do {
-		/* Unprocessed data from last call. */
+		 
 		if (ctx->ecb_remainder_len > 0) {
 			need = block_size - ctx->ecb_remainder_len;
 
@@ -80,16 +56,16 @@ ecb_cipher_contiguous_blocks(ecb_ctx_t *ctx, char *data, size_t length,
 		crypto_get_ptrs(out, &iov_or_mp, &offset, &out_data_1,
 		    &out_data_1_len, &out_data_2, block_size);
 
-		/* copy block to where it belongs */
+		 
 		memcpy(out_data_1, lastp, out_data_1_len);
 		if (out_data_2 != NULL) {
 			memcpy(out_data_2, lastp + out_data_1_len,
 			    block_size - out_data_1_len);
 		}
-		/* update offset */
+		 
 		out->cd_offset += block_size;
 
-		/* Update pointer to next block of data to be processed. */
+		 
 		if (ctx->ecb_remainder_len != 0) {
 			datap += need;
 			ctx->ecb_remainder_len = 0;
@@ -99,7 +75,7 @@ ecb_cipher_contiguous_blocks(ecb_ctx_t *ctx, char *data, size_t length,
 
 		remainder = (size_t)&data[length] - (size_t)datap;
 
-		/* Incomplete last block. */
+		 
 		if (remainder > 0 && remainder < block_size) {
 			memcpy(ctx->ecb_remainder, datap, remainder);
 			ctx->ecb_remainder_len = remainder;

@@ -1,28 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/lib/vsprintf.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
 
-/* vsprintf.c -- Lars Wirzenius & Linus Torvalds. */
-/*
- * Wirzenius wrote this portably, Torvalds fucked it up :-)
- */
+ 
 
-/*
- * Fri Jul 13 2001 Crutcher Dunnavant <crutcher+kernel@datastacks.com>
- * - changed to provide snprintf and vsnprintf functions
- * So Feb  1 16:51:32 CET 2004 Juergen Quade <quade@hsnr.de>
- * - scnprintf and vscnprintf
- */
+ 
+ 
+
+ 
 
 #include <linux/stdarg.h>
 #include <linux/build_bug.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/errname.h>
-#include <linux/module.h>	/* for KSYM_SYMBOL_LEN */
+#include <linux/module.h>	 
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
@@ -47,16 +36,16 @@
 #include <linux/blkdev.h>
 #endif
 
-#include "../mm/internal.h"	/* For the trace_print_flags arrays */
+#include "../mm/internal.h"	 
 
-#include <asm/page.h>		/* for PAGE_SIZE */
-#include <asm/byteorder.h>	/* cpu_to_le16 */
+#include <asm/page.h>		 
+#include <asm/byteorder.h>	 
 #include <asm/unaligned.h>
 
 #include <linux/string_helpers.h>
 #include "kstrtox.h"
 
-/* Disable pointer hashing if requested */
+ 
 bool no_hash_pointers __ro_after_init;
 EXPORT_SYMBOL_GPL(no_hash_pointers);
 
@@ -71,10 +60,10 @@ static noinline unsigned long long simple_strntoull(const char *startp, size_t m
 	prefix_chars = cp - startp;
 	if (prefix_chars < max_chars) {
 		rv = _parse_integer_limit(cp, base, &result, max_chars - prefix_chars);
-		/* FIXME */
+		 
 		cp += (rv & ~KSTRTOX_OVERFLOW);
 	} else {
-		/* Field too short for prefix + digit, skip over without converting */
+		 
 		cp = startp + max_chars;
 	}
 
@@ -84,14 +73,7 @@ static noinline unsigned long long simple_strntoull(const char *startp, size_t m
 	return result;
 }
 
-/**
- * simple_strtoull - convert a string to an unsigned long long
- * @cp: The start of the string
- * @endp: A pointer to the end of the parsed string will be placed here
- * @base: The number base to use
- *
- * This function has caveats. Please use kstrtoull instead.
- */
+ 
 noinline
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base)
 {
@@ -99,28 +81,14 @@ unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int bas
 }
 EXPORT_SYMBOL(simple_strtoull);
 
-/**
- * simple_strtoul - convert a string to an unsigned long
- * @cp: The start of the string
- * @endp: A pointer to the end of the parsed string will be placed here
- * @base: The number base to use
- *
- * This function has caveats. Please use kstrtoul instead.
- */
+ 
 unsigned long simple_strtoul(const char *cp, char **endp, unsigned int base)
 {
 	return simple_strtoull(cp, endp, base);
 }
 EXPORT_SYMBOL(simple_strtoul);
 
-/**
- * simple_strtol - convert a string to a signed long
- * @cp: The start of the string
- * @endp: A pointer to the end of the parsed string will be placed here
- * @base: The number base to use
- *
- * This function has caveats. Please use kstrtol instead.
- */
+ 
 long simple_strtol(const char *cp, char **endp, unsigned int base)
 {
 	if (*cp == '-')
@@ -133,26 +101,14 @@ EXPORT_SYMBOL(simple_strtol);
 static long long simple_strntoll(const char *cp, size_t max_chars, char **endp,
 				 unsigned int base)
 {
-	/*
-	 * simple_strntoull() safely handles receiving max_chars==0 in the
-	 * case cp[0] == '-' && max_chars == 1.
-	 * If max_chars == 0 we can drop through and pass it to simple_strntoull()
-	 * and the content of *cp is irrelevant.
-	 */
+	 
 	if (*cp == '-' && max_chars > 0)
 		return -simple_strntoull(cp + 1, max_chars - 1, endp, base);
 
 	return simple_strntoull(cp, max_chars, endp, base);
 }
 
-/**
- * simple_strtoll - convert a string to a signed long long
- * @cp: The start of the string
- * @endp: A pointer to the end of the parsed string will be placed here
- * @base: The number base to use
- *
- * This function has caveats. Please use kstrtoll instead.
- */
+ 
 long long simple_strtoll(const char *cp, char **endp, unsigned int base)
 {
 	return simple_strntoll(cp, INT_MAX, endp, base);
@@ -171,30 +127,7 @@ int skip_atoi(const char **s)
 	return i;
 }
 
-/*
- * Decimal conversion is by far the most typical, and is used for
- * /proc and /sys data. This directly impacts e.g. top performance
- * with many processes running. We optimize it for speed by emitting
- * two characters at a time, using a 200 byte lookup table. This
- * roughly halves the number of multiplications compared to computing
- * the digits one at a time. Implementation strongly inspired by the
- * previous version, which in turn used ideas described at
- * <http://www.cs.uiowa.edu/~jones/bcd/divide.html> (with permission
- * from the author, Douglas W. Jones).
- *
- * It turns out there is precisely one 26 bit fixed-point
- * approximation a of 64/100 for which x/100 == (x * (u64)a) >> 32
- * holds for all x in [0, 10^8-1], namely a = 0x28f5c29. The actual
- * range happens to be somewhat larger (x <= 1073741898), but that's
- * irrelevant for our purpose.
- *
- * For dividing a number in the range [10^4, 10^6-1] by 100, we still
- * need a 32x32->64 bit multiply, so we simply use the same constant.
- *
- * For dividing a number in the range [100, 10^4-1] by 100, there are
- * several options. The simplest is (x * 0x147b) >> 19, which is valid
- * for all x <= 43698.
- */
+ 
 
 static const u16 decpair[100] = {
 #define _(x) (__force u16) cpu_to_le16(((x % 10) | ((x / 10) << 8)) + 0x3030)
@@ -211,48 +144,43 @@ static const u16 decpair[100] = {
 #undef _
 };
 
-/*
- * This will print a single '0' even if r == 0, since we would
- * immediately jump to out_r where two 0s would be written but only
- * one of them accounted for in buf. This is needed by ip4_string
- * below. All other callers pass a non-zero value of r.
-*/
+ 
 static noinline_for_stack
 char *put_dec_trunc8(char *buf, unsigned r)
 {
 	unsigned q;
 
-	/* 1 <= r < 10^8 */
+	 
 	if (r < 100)
 		goto out_r;
 
-	/* 100 <= r < 10^8 */
+	 
 	q = (r * (u64)0x28f5c29) >> 32;
 	*((u16 *)buf) = decpair[r - 100*q];
 	buf += 2;
 
-	/* 1 <= q < 10^6 */
+	 
 	if (q < 100)
 		goto out_q;
 
-	/*  100 <= q < 10^6 */
+	 
 	r = (q * (u64)0x28f5c29) >> 32;
 	*((u16 *)buf) = decpair[q - 100*r];
 	buf += 2;
 
-	/* 1 <= r < 10^4 */
+	 
 	if (r < 100)
 		goto out_r;
 
-	/* 100 <= r < 10^4 */
+	 
 	q = (r * 0x147b) >> 19;
 	*((u16 *)buf) = decpair[r - 100*q];
 	buf += 2;
 out_q:
-	/* 1 <= q < 100 */
+	 
 	r = q;
 out_r:
-	/* 1 <= r < 100 */
+	 
 	*((u16 *)buf) = decpair[r];
 	buf += r < 10 ? 1 : 2;
 	return buf;
@@ -264,22 +192,22 @@ char *put_dec_full8(char *buf, unsigned r)
 {
 	unsigned q;
 
-	/* 0 <= r < 10^8 */
+	 
 	q = (r * (u64)0x28f5c29) >> 32;
 	*((u16 *)buf) = decpair[r - 100*q];
 	buf += 2;
 
-	/* 0 <= q < 10^6 */
+	 
 	r = (q * (u64)0x28f5c29) >> 32;
 	*((u16 *)buf) = decpair[q - 100*r];
 	buf += 2;
 
-	/* 0 <= r < 10^4 */
+	 
 	q = (r * 0x147b) >> 19;
 	*((u16 *)buf) = decpair[r - 100*q];
 	buf += 2;
 
-	/* 0 <= q < 100 */
+	 
 	*((u16 *)buf) = decpair[q];
 	buf += 2;
 	return buf;
@@ -290,10 +218,10 @@ char *put_dec(char *buf, unsigned long long n)
 {
 	if (n >= 100*1000*1000)
 		buf = put_dec_full8(buf, do_div(n, 100*1000*1000));
-	/* 1 <= n <= 1.6e11 */
+	 
 	if (n >= 100*1000*1000)
 		buf = put_dec_full8(buf, do_div(n, 100*1000*1000));
-	/* 1 <= n < 1e8 */
+	 
 	return put_dec_trunc8(buf, n);
 }
 
@@ -304,21 +232,15 @@ put_dec_full4(char *buf, unsigned r)
 {
 	unsigned q;
 
-	/* 0 <= r < 10^4 */
+	 
 	q = (r * 0x147b) >> 19;
 	*((u16 *)buf) = decpair[r - 100*q];
 	buf += 2;
-	/* 0 <= q < 100 */
+	 
 	*((u16 *)buf) = decpair[q];
 }
 
-/*
- * Call put_dec_full4 on x % 10000, return x / 10000.
- * The approximation x/10000 == (x * 0x346DC5D7) >> 43
- * holds for all x < 1,128,869,999.  The largest value this
- * helper will ever be asked to convert is 1,125,520,955.
- * (second call in the put_dec code, assuming n is all-ones).
- */
+ 
 static noinline_for_stack
 unsigned put_dec_helper4(char *buf, unsigned x)
 {
@@ -328,11 +250,7 @@ unsigned put_dec_helper4(char *buf, unsigned x)
         return q;
 }
 
-/* Based on code by Douglas W. Jones found at
- * <http://www.cs.uiowa.edu/~jones/bcd/decimal.html#sixtyfour>
- * (with permission from the author).
- * Performs no 64-bit division and hence should be fast on 32-bit machines.
- */
+ 
 static
 char *put_dec(char *buf, unsigned long long n)
 {
@@ -341,13 +259,12 @@ char *put_dec(char *buf, unsigned long long n)
 	if (n < 100*1000*1000)
 		return put_dec_trunc8(buf, n);
 
-	d1  = ((uint32_t)n >> 16); /* implicit "& 0xffff" */
+	d1  = ((uint32_t)n >> 16);  
 	h   = (n >> 32);
 	d2  = (h      ) & 0xffff;
-	d3  = (h >> 16); /* implicit "& 0xffff" */
+	d3  = (h >> 16);  
 
-	/* n = 2^48 d3 + 2^32 d2 + 2^16 d1 + d0
-	     = 281_4749_7671_0656 d3 + 42_9496_7296 d2 + 6_5536 d1 + d0 */
+	 
 	q   = 656 * d3 + 7296 * d2 + 5536 * d1 + ((uint32_t)n & 0xffff);
 	q = put_dec_helper4(buf, q);
 
@@ -369,19 +286,14 @@ char *put_dec(char *buf, unsigned long long n)
 
 #endif
 
-/*
- * Convert passed number to decimal string.
- * Returns the length of string.  On buffer overflow, returns 0.
- *
- * If speed is not important, use snprintf(). It's easy to read the code.
- */
+ 
 int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
 {
-	/* put_dec requires 2-byte alignment of the buffer. */
+	 
 	char tmp[sizeof(num) * 3] __aligned(2);
 	int idx, len;
 
-	/* put_dec() may work incorrectly for num = 0 (generate "", not "0") */
+	 
 	if (num <= 9) {
 		tmp[0] = '0' + num;
 		len = 1;
@@ -406,20 +318,20 @@ int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
 	return len + width;
 }
 
-#define SIGN	1		/* unsigned/signed, must be 1 */
-#define LEFT	2		/* left justified */
-#define PLUS	4		/* show plus */
-#define SPACE	8		/* space if plus */
-#define ZEROPAD	16		/* pad with zero, must be 16 == '0' - ' ' */
-#define SMALL	32		/* use lowercase in hex (must be 32 == 0x20) */
-#define SPECIAL	64		/* prefix hex with "0x", octal with "0" */
+#define SIGN	1		 
+#define LEFT	2		 
+#define PLUS	4		 
+#define SPACE	8		 
+#define ZEROPAD	16		 
+#define SMALL	32		 
+#define SPECIAL	64		 
 
 static_assert(SIGN == 1);
 static_assert(ZEROPAD == ('0' - ' '));
 static_assert(SMALL == ('a' ^ 'A'));
 
 enum format_type {
-	FORMAT_TYPE_NONE, /* Just a string part */
+	FORMAT_TYPE_NONE,  
 	FORMAT_TYPE_WIDTH,
 	FORMAT_TYPE_PRECISION,
 	FORMAT_TYPE_CHAR,
@@ -441,11 +353,11 @@ enum format_type {
 };
 
 struct printf_spec {
-	unsigned int	type:8;		/* format_type enum */
-	signed int	field_width:24;	/* width of output field */
-	unsigned int	flags:8;	/* flags to number() */
-	unsigned int	base:8;		/* number base, 8, 10 or 16 only */
-	signed int	precision:16;	/* # of digits/chars */
+	unsigned int	type:8;		 
+	signed int	field_width:24;	 
+	unsigned int	flags:8;	 
+	unsigned int	base:8;		 
+	signed int	precision:16;	 
 } __packed;
 static_assert(sizeof(struct printf_spec) == 8);
 
@@ -456,7 +368,7 @@ static noinline_for_stack
 char *number(char *buf, char *end, unsigned long long num,
 	     struct printf_spec spec)
 {
-	/* put_dec requires 2-byte alignment of the buffer. */
+	 
 	char tmp[3 * sizeof(num)] __aligned(2);
 	char sign;
 	char locase;
@@ -466,8 +378,7 @@ char *number(char *buf, char *end, unsigned long long num,
 	int field_width = spec.field_width;
 	int precision = spec.precision;
 
-	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
-	 * produces same digits or (maybe lowercased) letters */
+	 
 	locase = (spec.flags & SMALL);
 	if (spec.flags & LEFT)
 		spec.flags &= ~ZEROPAD;
@@ -492,11 +403,11 @@ char *number(char *buf, char *end, unsigned long long num,
 			field_width--;
 	}
 
-	/* generate full string in tmp[], in reverse order */
+	 
 	i = 0;
 	if (num < spec.base)
 		tmp[i++] = hex_asc_upper[num] | locase;
-	else if (spec.base != 10) { /* 8 or 16 */
+	else if (spec.base != 10) {  
 		int mask = spec.base - 1;
 		int shift = 3;
 
@@ -506,14 +417,14 @@ char *number(char *buf, char *end, unsigned long long num,
 			tmp[i++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
 			num >>= shift;
 		} while (num);
-	} else { /* base 10 */
+	} else {  
 		i = put_dec(tmp, num) - tmp;
 	}
 
-	/* printing 100 using %2d gives "100", not "00" */
+	 
 	if (i > precision)
 		precision = i;
-	/* leading space padding */
+	 
 	field_width -= precision;
 	if (!(spec.flags & (ZEROPAD | LEFT))) {
 		while (--field_width >= 0) {
@@ -522,13 +433,13 @@ char *number(char *buf, char *end, unsigned long long num,
 			++buf;
 		}
 	}
-	/* sign */
+	 
 	if (sign) {
 		if (buf < end)
 			*buf = sign;
 		++buf;
 	}
-	/* "0x" / "0" prefix */
+	 
 	if (need_pfx) {
 		if (spec.base == 16 || !is_zero) {
 			if (buf < end)
@@ -541,7 +452,7 @@ char *number(char *buf, char *end, unsigned long long num,
 			++buf;
 		}
 	}
-	/* zero or space padding */
+	 
 	if (!(spec.flags & LEFT)) {
 		char c = ' ' + (spec.flags & ZEROPAD);
 
@@ -551,19 +462,19 @@ char *number(char *buf, char *end, unsigned long long num,
 			++buf;
 		}
 	}
-	/* hmm even more zero padding? */
+	 
 	while (i <= --precision) {
 		if (buf < end)
 			*buf = '0';
 		++buf;
 	}
-	/* actual digits of result */
+	 
 	while (--i >= 0) {
 		if (buf < end)
 			*buf = tmp[i];
 		++buf;
 	}
-	/* trailing space padding */
+	 
 	while (--field_width >= 0) {
 		if (buf < end)
 			*buf = ' ';
@@ -579,7 +490,7 @@ char *special_hex_number(char *buf, char *end, unsigned long long num, int size)
 	struct printf_spec spec;
 
 	spec.type = FORMAT_TYPE_PTR;
-	spec.field_width = 2 + 2 * size;	/* 0x + hex */
+	spec.field_width = 2 + 2 * size;	 
 	spec.flags = SPECIAL | SMALL | ZEROPAD;
 	spec.base = 16;
 	spec.precision = -1;
@@ -590,7 +501,7 @@ char *special_hex_number(char *buf, char *end, unsigned long long num, int size)
 static void move_right(char *buf, char *end, unsigned len, unsigned spaces)
 {
 	size_t size;
-	if (buf >= end)	/* nowhere to put anything */
+	if (buf >= end)	 
 		return;
 	size = end - buf;
 	if (size <= spaces) {
@@ -605,14 +516,7 @@ static void move_right(char *buf, char *end, unsigned len, unsigned spaces)
 	memset(buf, ' ', spaces);
 }
 
-/*
- * Handle field width padding for a string.
- * @buf: current buffer position
- * @n: length of string
- * @end: end of output buffer
- * @spec: for field width and flags
- * Returns: new buffer position after padding.
- */
+ 
 static noinline_for_stack
 char *widen_string(char *buf, int n, char *end, struct printf_spec spec)
 {
@@ -620,7 +524,7 @@ char *widen_string(char *buf, int n, char *end, struct printf_spec spec)
 
 	if (likely(n >= spec.field_width))
 		return buf;
-	/* we want to pad the sucker */
+	 
 	spaces = spec.field_width - n;
 	if (!(spec.flags & LEFT)) {
 		move_right(buf - n, end, n, spaces);
@@ -634,7 +538,7 @@ char *widen_string(char *buf, int n, char *end, struct printf_spec spec)
 	return buf;
 }
 
-/* Handle string from a well known address. */
+ 
 static char *string_nocheck(char *buf, char *end, const char *s,
 			    struct printf_spec spec)
 {
@@ -662,36 +566,24 @@ static char *err_ptr(char *buf, char *end, void *ptr,
 	if (sym)
 		return string_nocheck(buf, end, sym, spec);
 
-	/*
-	 * Somebody passed ERR_PTR(-1234) or some other non-existing
-	 * Efoo - or perhaps CONFIG_SYMBOLIC_ERRNAME=n. Fall back to
-	 * printing it as its decimal representation.
-	 */
+	 
 	spec.flags |= SIGN;
 	spec.base = 10;
 	return number(buf, end, err, spec);
 }
 
-/* Be careful: error messages must fit into the given buffer. */
+ 
 static char *error_string(char *buf, char *end, const char *s,
 			  struct printf_spec spec)
 {
-	/*
-	 * Hard limit to avoid a completely insane messages. It actually
-	 * works pretty well because most error messages are in
-	 * the many pointer format modifiers.
-	 */
+	 
 	if (spec.precision == -1)
 		spec.precision = 2 * sizeof(void *);
 
 	return string_nocheck(buf, end, s, spec);
 }
 
-/*
- * Do not call any complex external code here. Nested printk()/vsprintf()
- * might cause infinite loops. Failures might break printk() and would
- * be hard to debug.
- */
+ 
 static const char *check_pointer_msg(const void *ptr)
 {
 	if (!ptr)
@@ -741,7 +633,7 @@ static char *pointer_string(char *buf, char *end,
 	return number(buf, end, (unsigned long int)ptr, spec);
 }
 
-/* Make pointers available for printing early in the boot sequence. */
+ 
 static int debug_boot_weak_hash __ro_after_init;
 
 static int __init debug_boot_weak_hash_enable(char *str)
@@ -759,7 +651,7 @@ static int fill_ptr_key(struct notifier_block *nb, unsigned long action, void *d
 {
 	get_random_bytes(&ptr_key, sizeof(ptr_key));
 
-	/* Pairs with smp_rmb() before reading ptr_key. */
+	 
 	smp_wmb();
 	WRITE_ONCE(filled_random_ptr_key, true);
 	return NOTIFY_DONE;
@@ -773,7 +665,7 @@ static int __init vsprintf_init_hashval(void)
 }
 subsys_initcall(vsprintf_init_hashval)
 
-/* Maps a pointer to a 32 bit unique identifier. */
+ 
 static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
 {
 	unsigned long hashval;
@@ -781,15 +673,12 @@ static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
 	if (!READ_ONCE(filled_random_ptr_key))
 		return -EBUSY;
 
-	/* Pairs with smp_wmb() after writing ptr_key. */
+	 
 	smp_rmb();
 
 #ifdef CONFIG_64BIT
 	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
-	/*
-	 * Mask off the first 32 bits, this makes explicit that we have
-	 * modified the address (and 32 bits is plenty for a unique ID).
-	 */
+	 
 	hashval = hashval & 0xffffffff;
 #else
 	hashval = (unsigned long)siphash_1u32((u32)ptr, &ptr_key);
@@ -810,14 +699,11 @@ static char *ptr_to_id(char *buf, char *end, const void *ptr,
 	unsigned long hashval;
 	int ret;
 
-	/*
-	 * Print the real pointer value for NULL and error pointers,
-	 * as they are not actual addresses.
-	 */
+	 
 	if (IS_ERR_OR_NULL(ptr))
 		return pointer_string(buf, end, ptr, spec);
 
-	/* When debugging early boot use non-cryptographically secure hash. */
+	 
 	if (unlikely(debug_boot_weak_hash)) {
 		hashval = hash_long((unsigned long)ptr, 32);
 		return pointer_string(buf, end, (const void *)hashval, spec);
@@ -826,7 +712,7 @@ static char *ptr_to_id(char *buf, char *end, const void *ptr,
 	ret = __ptr_to_hashval(ptr, &hashval);
 	if (ret) {
 		spec.field_width = 2 * sizeof(ptr);
-		/* string length must be less than default_width */
+		 
 		return error_string(buf, end, str, spec);
 	}
 
@@ -836,10 +722,7 @@ static char *ptr_to_id(char *buf, char *end, const void *ptr,
 static char *default_pointer(char *buf, char *end, const void *ptr,
 			     struct printf_spec spec)
 {
-	/*
-	 * default is to _not_ leak addresses, so hash before printing,
-	 * unless no_hash_pointers is specified on the command line.
-	 */
+	 
 	if (unlikely(no_hash_pointers))
 		return pointer_string(buf, end, ptr, spec);
 
@@ -854,30 +737,19 @@ char *restricted_pointer(char *buf, char *end, const void *ptr,
 {
 	switch (kptr_restrict) {
 	case 0:
-		/* Handle as %p, hash and do _not_ leak addresses. */
+		 
 		return default_pointer(buf, end, ptr, spec);
 	case 1: {
 		const struct cred *cred;
 
-		/*
-		 * kptr_restrict==1 cannot be used in IRQ context
-		 * because its test for CAP_SYSLOG would be meaningless.
-		 */
+		 
 		if (in_hardirq() || in_serving_softirq() || in_nmi()) {
 			if (spec.field_width == -1)
 				spec.field_width = 2 * sizeof(ptr);
 			return error_string(buf, end, "pK-error", spec);
 		}
 
-		/*
-		 * Only print the real pointer value if the current
-		 * process has CAP_SYSLOG and is running with the
-		 * same credentials it started with. This is because
-		 * access to files is checked at open() time, but %pK
-		 * checks permission at read() time. We don't want to
-		 * leak pointer values if a binary opens a file using
-		 * %pK and then elevates privileges before reading it.
-		 */
+		 
 		cred = current_cred();
 		if (!has_capability_noaudit(current, CAP_SYSLOG) ||
 		    !uid_eq(cred->euid, cred->uid) ||
@@ -887,7 +759,7 @@ char *restricted_pointer(char *buf, char *end, const void *ptr,
 	}
 	case 2:
 	default:
-		/* Always print 0's for %pK */
+		 
 		ptr = NULL;
 		break;
 	}
@@ -1073,8 +945,7 @@ char *resource_string(char *buf, char *end, struct resource *res,
 		.flags = LEFT,
 	};
 
-	/* 32-bit res (sizeof==4): 10 chars in dec, 10 in hex ("0x" + 8)
-	 * 64-bit res (sizeof==8): 20 chars in dec, 18 in hex ("0x" + 16) */
+	 
 #define RSRC_BUF_SIZE		((2 * sizeof(resource_size_t)) + 4)
 #define FLAG_BUF_SIZE		(2 * sizeof(res->flags))
 #define DECODED_BUF_SIZE	sizeof("[mem - 64bit pref window disabled]")
@@ -1143,12 +1014,11 @@ static noinline_for_stack
 char *hex_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
 		 const char *fmt)
 {
-	int i, len = 1;		/* if we pass '%ph[CDN]', field width remains
-				   negative value, fallback to the default */
+	int i, len = 1;		 
 	char separator;
 
 	if (spec.field_width == 0)
-		/* nothing to print */
+		 
 		return buf;
 
 	if (check_pointer(&buf, end, addr, spec))
@@ -1202,7 +1072,7 @@ char *bitmap_string(char *buf, char *end, const unsigned long *bitmap,
 	if (check_pointer(&buf, end, bitmap, spec))
 		return buf;
 
-	/* reused to print numbers */
+	 
 	spec = (struct printf_spec){ .flags = SMALL | ZEROPAD, .base = 16 };
 
 	chunksz = nr_bits & (CHUNKSZ - 1);
@@ -1335,7 +1205,7 @@ char *ip4_string(char *p, const u8 *addr, const char *fmt)
 		break;
 	}
 	for (i = 0; i < 4; i++) {
-		char temp[4] __aligned(2);	/* hold each IP quad in reverse order */
+		char temp[4] __aligned(2);	 
 		int digits = put_dec_trunc8(temp, addr[index]) - temp;
 		if (leading_zeros) {
 			if (digits < 3)
@@ -1343,7 +1213,7 @@ char *ip4_string(char *p, const u8 *addr, const char *fmt)
 			if (digits < 2)
 				*p++ = '0';
 		}
-		/* reverse the digits in the quad */
+		 
 		while (digits--)
 			*p++ = temp[digits];
 		if (i < 3)
@@ -1379,7 +1249,7 @@ char *ip6_compressed_string(char *p, const char *addr)
 	else
 		range = 8;
 
-	/* find position of longest 0 run */
+	 
 	for (i = 0; i < range; i++) {
 		for (j = i; j < range; j++) {
 			if (in6.s6_addr16[j] != 0)
@@ -1393,10 +1263,10 @@ char *ip6_compressed_string(char *p, const char *addr)
 			colonpos = i;
 		}
 	}
-	if (longest == 1)		/* don't compress a single 0 */
+	if (longest == 1)		 
 		colonpos = -1;
 
-	/* emit address */
+	 
 	for (i = 0; i < range; i++) {
 		if (i == colonpos) {
 			if (needcolon || i == 0)
@@ -1410,7 +1280,7 @@ char *ip6_compressed_string(char *p, const char *addr)
 			*p++ = ':';
 			needcolon = false;
 		}
-		/* hex u16 without leading 0s */
+		 
 		word = ntohs(in6.s6_addr16[i]);
 		hi = word >> 8;
 		lo = word & 0xff;
@@ -1621,7 +1491,7 @@ char *escaped_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
 	int len;
 
 	if (spec.field_width == 0)
-		return buf;				/* nothing to print */
+		return buf;				 
 
 	if (check_pointer(&buf, end, addr, spec))
 		return buf;
@@ -1660,11 +1530,7 @@ char *escaped_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
 
 	len = spec.field_width < 0 ? 1 : spec.field_width;
 
-	/*
-	 * string_escape_mem() writes as many characters as it can to
-	 * the given buffer, and returns the total size of the output
-	 * had the buffer been big enough.
-	 */
+	 
 	buf += string_escape_mem(addr, len, buf, buf < end ? end - buf : 0, flags, NULL);
 
 	return buf;
@@ -1773,7 +1639,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
 	for (i = 0; i < sizeof(u32); i++) {
 		unsigned char c = val >> (i * 8);
 
-		/* Print non-control ASCII characters as-is, dot otherwise */
+		 
 		*p++ = isascii(c) && isprint(c) ? c : '.';
 	}
 
@@ -2018,19 +1884,19 @@ char *format_page_flags(char *buf, char *end, unsigned long flags)
 		*buf = '(';
 	buf++;
 
-	/* Page flags from the main area. */
+	 
 	if (main_flags) {
 		buf = format_flags(buf, end, main_flags, pageflag_names);
 		append = true;
 	}
 
-	/* Page flags from the fields area */
+	 
 	for (i = 0; i < ARRAY_SIZE(pff); i++) {
-		/* Skip undefined fields. */
+		 
 		if (!pff[i].width)
 			continue;
 
-		/* Format: Flag Name + '=' (equals sign) + Number + '|' (separator) */
+		 
 		if (append) {
 			if (buf < end)
 				*buf = '|';
@@ -2108,12 +1974,9 @@ char *fwnode_full_name_string(struct fwnode_handle *fwnode, char *buf,
 {
 	int depth;
 
-	/* Loop starting from the root node to the current node. */
+	 
 	for (depth = fwnode_count_parents(fwnode); depth >= 0; depth--) {
-		/*
-		 * Only get a reference for other nodes (i.e. parent nodes).
-		 * fwnode refcount may be 0 here.
-		 */
+		 
 		struct fwnode_handle *__fwnode = depth ?
 			fwnode_get_nth_parent(fwnode, depth) : fwnode;
 
@@ -2152,7 +2015,7 @@ char *device_node_string(char *buf, char *end, struct device_node *dn,
 	if (check_pointer(&buf, end, dn, spec))
 		return buf;
 
-	/* simple case without anything any more format specifiers */
+	 
 	fmt++;
 	if (fmt[0] == '\0' || strcspn(fmt,"fnpPFcC") > 0)
 		fmt = "f";
@@ -2166,27 +2029,27 @@ char *device_node_string(char *buf, char *end, struct device_node *dn,
 		}
 
 		switch (*fmt) {
-		case 'f':	/* full_name */
+		case 'f':	 
 			buf = fwnode_full_name_string(of_fwnode_handle(dn), buf,
 						      end);
 			break;
-		case 'n':	/* name */
+		case 'n':	 
 			p = fwnode_get_name(of_fwnode_handle(dn));
 			precision = str_spec.precision;
 			str_spec.precision = strchrnul(p, '@') - p;
 			buf = string(buf, end, p, str_spec);
 			str_spec.precision = precision;
 			break;
-		case 'p':	/* phandle */
+		case 'p':	 
 			buf = number(buf, end, (unsigned int)dn->phandle, default_dec_spec);
 			break;
-		case 'P':	/* path-spec */
+		case 'P':	 
 			p = fwnode_get_name(of_fwnode_handle(dn));
 			if (!p[1])
 				p = "/";
 			buf = string(buf, end, p, str_spec);
 			break;
-		case 'F':	/* flags */
+		case 'F':	 
 			tbuf[0] = of_node_check_flag(dn, OF_DYNAMIC) ? 'D' : '-';
 			tbuf[1] = of_node_check_flag(dn, OF_DETACHED) ? 'd' : '-';
 			tbuf[2] = of_node_check_flag(dn, OF_POPULATED) ? 'P' : '-';
@@ -2194,12 +2057,12 @@ char *device_node_string(char *buf, char *end, struct device_node *dn,
 			tbuf[4] = 0;
 			buf = string_nocheck(buf, end, tbuf, str_spec);
 			break;
-		case 'c':	/* major compatible string */
+		case 'c':	 
 			ret = of_property_read_string(dn, "compatible", &p);
 			if (!ret)
 				buf = string(buf, end, p, str_spec);
 			break;
-		case 'C':	/* full compatible string */
+		case 'C':	 
 			has_mult = false;
 			of_property_for_each_string(dn, "compatible", prop, p) {
 				if (has_mult)
@@ -2237,10 +2100,10 @@ char *fwnode_string(char *buf, char *end, struct fwnode_handle *fwnode,
 	fmt++;
 
 	switch (*fmt) {
-	case 'P':	/* name */
+	case 'P':	 
 		buf = string(buf, end, fwnode_get_name(fwnode), str_spec);
 		break;
-	case 'f':	/* full_name */
+	case 'f':	 
 	default:
 		buf = fwnode_full_name_string(fwnode, buf, end);
 		break;
@@ -2274,140 +2137,10 @@ int __init no_hash_pointers_enable(char *str)
 }
 early_param("no_hash_pointers", no_hash_pointers_enable);
 
-/* Used for Rust formatting ('%pA'). */
+ 
 char *rust_fmt_argument(char *buf, char *end, void *ptr);
 
-/*
- * Show a '%p' thing.  A kernel extension is that the '%p' is followed
- * by an extra set of alphanumeric characters that are extended format
- * specifiers.
- *
- * Please update scripts/checkpatch.pl when adding/removing conversion
- * characters.  (Search for "check for vsprintf extension").
- *
- * Right now we handle:
- *
- * - 'S' For symbolic direct pointers (or function descriptors) with offset
- * - 's' For symbolic direct pointers (or function descriptors) without offset
- * - '[Ss]R' as above with __builtin_extract_return_addr() translation
- * - 'S[R]b' as above with module build ID (for use in backtraces)
- * - '[Ff]' %pf and %pF were obsoleted and later removed in favor of
- *	    %ps and %pS. Be careful when re-using these specifiers.
- * - 'B' For backtraced symbolic direct pointers with offset
- * - 'Bb' as above with module build ID (for use in backtraces)
- * - 'R' For decoded struct resource, e.g., [mem 0x0-0x1f 64bit pref]
- * - 'r' For raw struct resource, e.g., [mem 0x0-0x1f flags 0x201]
- * - 'b[l]' For a bitmap, the number of bits is determined by the field
- *       width which must be explicitly specified either as part of the
- *       format string '%32b[l]' or through '%*b[l]', [l] selects
- *       range-list format instead of hex format
- * - 'M' For a 6-byte MAC address, it prints the address in the
- *       usual colon-separated hex notation
- * - 'm' For a 6-byte MAC address, it prints the hex address without colons
- * - 'MF' For a 6-byte MAC FDDI address, it prints the address
- *       with a dash-separated hex notation
- * - '[mM]R' For a 6-byte MAC address, Reverse order (Bluetooth)
- * - 'I' [46] for IPv4/IPv6 addresses printed in the usual way
- *       IPv4 uses dot-separated decimal without leading 0's (1.2.3.4)
- *       IPv6 uses colon separated network-order 16 bit hex with leading 0's
- *       [S][pfs]
- *       Generic IPv4/IPv6 address (struct sockaddr *) that falls back to
- *       [4] or [6] and is able to print port [p], flowinfo [f], scope [s]
- * - 'i' [46] for 'raw' IPv4/IPv6 addresses
- *       IPv6 omits the colons (01020304...0f)
- *       IPv4 uses dot-separated decimal with leading 0's (010.123.045.006)
- *       [S][pfs]
- *       Generic IPv4/IPv6 address (struct sockaddr *) that falls back to
- *       [4] or [6] and is able to print port [p], flowinfo [f], scope [s]
- * - '[Ii][4S][hnbl]' IPv4 addresses in host, network, big or little endian order
- * - 'I[6S]c' for IPv6 addresses printed as specified by
- *       https://tools.ietf.org/html/rfc5952
- * - 'E[achnops]' For an escaped buffer, where rules are defined by combination
- *                of the following flags (see string_escape_mem() for the
- *                details):
- *                  a - ESCAPE_ANY
- *                  c - ESCAPE_SPECIAL
- *                  h - ESCAPE_HEX
- *                  n - ESCAPE_NULL
- *                  o - ESCAPE_OCTAL
- *                  p - ESCAPE_NP
- *                  s - ESCAPE_SPACE
- *                By default ESCAPE_ANY_NP is used.
- * - 'U' For a 16 byte UUID/GUID, it prints the UUID/GUID in the form
- *       "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
- *       Options for %pU are:
- *         b big endian lower case hex (default)
- *         B big endian UPPER case hex
- *         l little endian lower case hex
- *         L little endian UPPER case hex
- *           big endian output byte order is:
- *             [0][1][2][3]-[4][5]-[6][7]-[8][9]-[10][11][12][13][14][15]
- *           little endian output byte order is:
- *             [3][2][1][0]-[5][4]-[7][6]-[8][9]-[10][11][12][13][14][15]
- * - 'V' For a struct va_format which contains a format string * and va_list *,
- *       call vsnprintf(->format, *->va_list).
- *       Implements a "recursive vsnprintf".
- *       Do not use this feature without some mechanism to verify the
- *       correctness of the format string and va_list arguments.
- * - 'K' For a kernel pointer that should be hidden from unprivileged users.
- *       Use only for procfs, sysfs and similar files, not printk(); please
- *       read the documentation (path below) first.
- * - 'NF' For a netdev_features_t
- * - '4cc' V4L2 or DRM FourCC code, with endianness and raw numerical value.
- * - 'h[CDN]' For a variable-length buffer, it prints it as a hex string with
- *            a certain separator (' ' by default):
- *              C colon
- *              D dash
- *              N no separator
- *            The maximum supported length is 64 bytes of the input. Consider
- *            to use print_hex_dump() for the larger input.
- * - 'a[pd]' For address types [p] phys_addr_t, [d] dma_addr_t and derivatives
- *           (default assumed to be phys_addr_t, passed by reference)
- * - 'd[234]' For a dentry name (optionally 2-4 last components)
- * - 'D[234]' Same as 'd' but for a struct file
- * - 'g' For block_device name (gendisk + partition number)
- * - 't[RT][dt][r][s]' For time and date as represented by:
- *      R    struct rtc_time
- *      T    time64_t
- * - 'C' For a clock, it prints the name (Common Clock Framework) or address
- *       (legacy clock framework) of the clock
- * - 'Cn' For a clock, it prints the name (Common Clock Framework) or address
- *        (legacy clock framework) of the clock
- * - 'G' For flags to be printed as a collection of symbolic strings that would
- *       construct the specific value. Supported flags given by option:
- *       p page flags (see struct page) given as pointer to unsigned long
- *       g gfp flags (GFP_* and __GFP_*) given as pointer to gfp_t
- *       v vma flags (VM_*) given as pointer to unsigned long
- * - 'OF[fnpPcCF]'  For a device tree object
- *                  Without any optional arguments prints the full_name
- *                  f device node full_name
- *                  n device node name
- *                  p device node phandle
- *                  P device node path spec (name + @unit)
- *                  F device node flags
- *                  c major compatible string
- *                  C full compatible string
- * - 'fw[fP]'	For a firmware node (struct fwnode_handle) pointer
- *		Without an option prints the full name of the node
- *		f full name
- *		P node name, including a possible unit address
- * - 'x' For printing the address unmodified. Equivalent to "%lx".
- *       Please read the documentation (path below) before using!
- * - '[ku]s' For a BPF/tracing related format specifier, e.g. used out of
- *           bpf_trace_printk() where [ku] prefix specifies either kernel (k)
- *           or user (u) memory to probe, and:
- *              s a string, equivalent to "%s" on direct vsnprintf() use
- *
- * ** When making changes please also update:
- *	Documentation/core-api/printk-formats.rst
- *
- * Note: The default behaviour (unadorned %p) is to hash the address,
- * rendering it useful as a unique identifier.
- *
- * There is also a '%pA' format specifier, but it is only intended to be used
- * from Rust code to format core::fmt::Arguments. Do *not* use it from C.
- * See rust/kernel/print.rs for details.
- */
+ 
 static noinline_for_stack
 char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	      struct printf_spec spec)
@@ -2431,20 +2164,13 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 		default:
 			return bitmap_string(buf, end, ptr, spec, fmt);
 		}
-	case 'M':			/* Colon separated: 00:01:02:03:04:05 */
-	case 'm':			/* Contiguous: 000102030405 */
-					/* [mM]F (FDDI) */
-					/* [mM]R (Reverse order; Bluetooth) */
+	case 'M':			 
+	case 'm':			 
+					 
+					 
 		return mac_address_string(buf, end, ptr, spec, fmt);
-	case 'I':			/* Formatted IP supported
-					 * 4:	1.2.3.4
-					 * 6:	0001:0203:...:0708
-					 * 6c:	1::708 or 1::1.2.3.4
-					 */
-	case 'i':			/* Contiguous:
-					 * 4:	001.002.003.004
-					 * 6:   000102...0f
-					 */
+	case 'I':			 
+	case 'i':			 
 		return ip_addr_string(buf, end, ptr, spec, fmt);
 	case 'E':
 		return escaped_string(buf, end, ptr, spec, fmt);
@@ -2488,7 +2214,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	case 'x':
 		return pointer_string(buf, end, ptr, spec);
 	case 'e':
-		/* %pe with a non-ERR_PTR gets treated as plain %p */
+		 
 		if (!IS_ERR(ptr))
 			return default_pointer(buf, end, ptr, spec);
 		return err_ptr(buf, end, ptr, spec);
@@ -2505,34 +2231,14 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	}
 }
 
-/*
- * Helper function to decode printf style format.
- * Each call decode a token from the format and return the
- * number of characters read (or likely the delta where it wants
- * to go on the next call).
- * The decoded token is returned through the parameters
- *
- * 'h', 'l', or 'L' for integer fields
- * 'z' support added 23/7/1999 S.H.
- * 'z' changed to 'Z' --davidm 1/25/99
- * 'Z' changed to 'z' --adobriyan 2017-01-25
- * 't' added for ptrdiff_t
- *
- * @fmt: the format string
- * @type of the token returned
- * @flags: various flags such as +, -, # tokens..
- * @field_width: overwritten width
- * @base: base of the number (octal, hex, ...)
- * @precision: precision of a number
- * @qualifier: qualifier of a number (long, size_t, ...)
- */
+ 
 static noinline_for_stack
 int format_decode(const char *fmt, struct printf_spec *spec)
 {
 	const char *start = fmt;
 	char qualifier;
 
-	/* we finished early by reading the field width */
+	 
 	if (spec->type == FORMAT_TYPE_WIDTH) {
 		if (spec->field_width < 0) {
 			spec->field_width = -spec->field_width;
@@ -2542,7 +2248,7 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 		goto precision;
 	}
 
-	/* we finished early by reading the precision */
+	 
 	if (spec->type == FORMAT_TYPE_PRECISION) {
 		if (spec->precision < 0)
 			spec->precision = 0;
@@ -2551,7 +2257,7 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 		goto qualifier;
 	}
 
-	/* By default */
+	 
 	spec->type = FORMAT_TYPE_NONE;
 
 	for (; *fmt ; ++fmt) {
@@ -2559,14 +2265,14 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 			break;
 	}
 
-	/* Return the current non-format string */
+	 
 	if (fmt != start || !*fmt)
 		return fmt - start;
 
-	/* Process flags */
+	 
 	spec->flags = 0;
 
-	while (1) { /* this also skips first '%' */
+	while (1) {  
 		bool found = true;
 
 		++fmt;
@@ -2584,19 +2290,19 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 			break;
 	}
 
-	/* get field width */
+	 
 	spec->field_width = -1;
 
 	if (isdigit(*fmt))
 		spec->field_width = skip_atoi(&fmt);
 	else if (*fmt == '*') {
-		/* it's the next argument */
+		 
 		spec->type = FORMAT_TYPE_WIDTH;
 		return ++fmt - start;
 	}
 
 precision:
-	/* get the precision */
+	 
 	spec->precision = -1;
 	if (*fmt == '.') {
 		++fmt;
@@ -2605,14 +2311,14 @@ precision:
 			if (spec->precision < 0)
 				spec->precision = 0;
 		} else if (*fmt == '*') {
-			/* it's the next argument */
+			 
 			spec->type = FORMAT_TYPE_PRECISION;
 			return ++fmt - start;
 		}
 	}
 
 qualifier:
-	/* get the conversion qualifier */
+	 
 	qualifier = 0;
 	if (*fmt == 'h' || _tolower(*fmt) == 'l' ||
 	    *fmt == 'z' || *fmt == 't') {
@@ -2628,7 +2334,7 @@ qualifier:
 		}
 	}
 
-	/* default base */
+	 
 	spec->base = 10;
 	switch (*fmt) {
 	case 'c':
@@ -2647,7 +2353,7 @@ qualifier:
 		spec->type = FORMAT_TYPE_PERCENT_CHAR;
 		return ++fmt - start;
 
-	/* integer number formats - set up the flags and "break" */
+	 
 	case 'o':
 		spec->base = 8;
 		break;
@@ -2668,11 +2374,7 @@ qualifier:
 		break;
 
 	case 'n':
-		/*
-		 * Since %n poses a greater security risk than
-		 * utility, treat it as any other invalid or
-		 * unsupported format specifier.
-		 */
+		 
 		fallthrough;
 
 	default:
@@ -2722,49 +2424,21 @@ set_precision(struct printf_spec *spec, int prec)
 	}
 }
 
-/**
- * vsnprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @size: The size of the buffer, including the trailing null space
- * @fmt: The format string to use
- * @args: Arguments for the format string
- *
- * This function generally follows C99 vsnprintf, but has some
- * extensions and a few limitations:
- *
- *  - ``%n`` is unsupported
- *  - ``%p*`` is handled by pointer()
- *
- * See pointer() or Documentation/core-api/printk-formats.rst for more
- * extensive description.
- *
- * **Please update the documentation in both places when making changes**
- *
- * The return value is the number of characters which would
- * be generated for the given input, excluding the trailing
- * '\0', as per ISO C99. If you want to have the exact
- * number of characters written into @buf as return value
- * (not including the trailing '\0'), use vscnprintf(). If the
- * return is greater than or equal to @size, the resulting
- * string is truncated.
- *
- * If you're not already dealing with a va_list consider using snprintf().
- */
+ 
 int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	unsigned long long num;
 	char *str, *end;
 	struct printf_spec spec = {0};
 
-	/* Reject out-of-range values early.  Large positive sizes are
-	   used for unknown buffer sizes. */
+	 
 	if (WARN_ON_ONCE(size > INT_MAX))
 		return 0;
 
 	str = buf;
 	end = buf + size;
 
-	/* Make sure end is always >= buf */
+	 
 	if (end < buf) {
 		end = ((void *)-1);
 		size = end - buf;
@@ -2837,14 +2511,7 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 			break;
 
 		case FORMAT_TYPE_INVALID:
-			/*
-			 * Presumably the arguments passed gcc's type
-			 * checking, but there is no safe or sane way
-			 * for us to continue parsing the format and
-			 * fetching from the va_list; the remaining
-			 * specifiers and arguments would be out of
-			 * sync.
-			 */
+			 
 			goto out;
 
 		default:
@@ -2898,27 +2565,13 @@ out:
 			end[-1] = '\0';
 	}
 
-	/* the trailing null byte doesn't count towards the total */
+	 
 	return str-buf;
 
 }
 EXPORT_SYMBOL(vsnprintf);
 
-/**
- * vscnprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @size: The size of the buffer, including the trailing null space
- * @fmt: The format string to use
- * @args: Arguments for the format string
- *
- * The return value is the number of characters which have been written into
- * the @buf not including the trailing '\0'. If @size is == 0 the function
- * returns 0.
- *
- * If you're not already dealing with a va_list consider using scnprintf().
- *
- * See the vsnprintf() documentation for format string extensions over C99.
- */
+ 
 int vscnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	int i;
@@ -2935,20 +2588,7 @@ int vscnprintf(char *buf, size_t size, const char *fmt, va_list args)
 }
 EXPORT_SYMBOL(vscnprintf);
 
-/**
- * snprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @size: The size of the buffer, including the trailing null space
- * @fmt: The format string to use
- * @...: Arguments for the format string
- *
- * The return value is the number of characters which would be
- * generated for the given input, excluding the trailing null,
- * as per ISO C99.  If the return is greater than or equal to
- * @size, the resulting string is truncated.
- *
- * See the vsnprintf() documentation for format string extensions over C99.
- */
+ 
 int snprintf(char *buf, size_t size, const char *fmt, ...)
 {
 	va_list args;
@@ -2962,16 +2602,7 @@ int snprintf(char *buf, size_t size, const char *fmt, ...)
 }
 EXPORT_SYMBOL(snprintf);
 
-/**
- * scnprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @size: The size of the buffer, including the trailing null space
- * @fmt: The format string to use
- * @...: Arguments for the format string
- *
- * The return value is the number of characters written into @buf not including
- * the trailing '\0'. If @size is == 0 the function returns 0.
- */
+ 
 
 int scnprintf(char *buf, size_t size, const char *fmt, ...)
 {
@@ -2986,38 +2617,14 @@ int scnprintf(char *buf, size_t size, const char *fmt, ...)
 }
 EXPORT_SYMBOL(scnprintf);
 
-/**
- * vsprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @fmt: The format string to use
- * @args: Arguments for the format string
- *
- * The function returns the number of characters written
- * into @buf. Use vsnprintf() or vscnprintf() in order to avoid
- * buffer overflows.
- *
- * If you're not already dealing with a va_list consider using sprintf().
- *
- * See the vsnprintf() documentation for format string extensions over C99.
- */
+ 
 int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	return vsnprintf(buf, INT_MAX, fmt, args);
 }
 EXPORT_SYMBOL(vsprintf);
 
-/**
- * sprintf - Format a string and place it in a buffer
- * @buf: The buffer to place the result into
- * @fmt: The format string to use
- * @...: Arguments for the format string
- *
- * The function returns the number of characters written
- * into @buf. Use snprintf() or scnprintf() in order to avoid
- * buffer overflows.
- *
- * See the vsnprintf() documentation for format string extensions over C99.
- */
+ 
 int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;
@@ -3032,29 +2639,9 @@ int sprintf(char *buf, const char *fmt, ...)
 EXPORT_SYMBOL(sprintf);
 
 #ifdef CONFIG_BINARY_PRINTF
-/*
- * bprintf service:
- * vbin_printf() - VA arguments to binary data
- * bstr_printf() - Binary data to text string
- */
+ 
 
-/**
- * vbin_printf - Parse a format string and place args' binary value in a buffer
- * @bin_buf: The buffer to place args' binary value
- * @size: The size of the buffer(by words(32bits), not characters)
- * @fmt: The format string to use
- * @args: Arguments for the format string
- *
- * The format follows C99 vsnprintf, except %n is ignored, and its argument
- * is skipped.
- *
- * The return value is the number of words(32bits) which would be generated for
- * the given input.
- *
- * NOTE:
- * If the return value is greater than @size, the resulting bin_buf is NOT
- * valid for bstr_printf().
- */
+ 
 int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args)
 {
 	struct printf_spec spec = {0};
@@ -3103,7 +2690,7 @@ int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args)
 		case FORMAT_TYPE_WIDTH:
 		case FORMAT_TYPE_PRECISION:
 			width = (int)save_arg(int);
-			/* Pointers may require the width */
+			 
 			if (*fmt == 'p')
 				set_field_width(&spec, width);
 			break;
@@ -3129,9 +2716,9 @@ int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args)
 		}
 
 		case FORMAT_TYPE_PTR:
-			/* Dereferenced pointers must be done now */
+			 
 			switch (*fmt) {
-			/* Dereference of functions is still OK */
+			 
 			case 'S':
 			case 's':
 			case 'x':
@@ -3149,9 +2736,9 @@ int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args)
 				if (str + 1 < end)
 					*str++ = '\0';
 				else
-					end[-1] = '\0'; /* Must be nul terminated */
+					end[-1] = '\0';  
 			}
-			/* skip all alphanumeric pointer suffixes */
+			 
 			while (isalnum(*fmt))
 				fmt++;
 			break;
@@ -3192,28 +2779,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(vbin_printf);
 
-/**
- * bstr_printf - Format a string from binary arguments and place it in a buffer
- * @buf: The buffer to place the result into
- * @size: The size of the buffer, including the trailing null space
- * @fmt: The format string to use
- * @bin_buf: Binary arguments for the format string
- *
- * This function like C99 vsnprintf, but the difference is that vsnprintf gets
- * arguments from stack, and bstr_printf gets arguments from @bin_buf which is
- * a binary buffer that generated by vbin_printf.
- *
- * The format follows C99 vsnprintf, but has some extensions:
- *  see vsnprintf comment for details.
- *
- * The return value is the number of characters which would
- * be generated for the given input, excluding the trailing
- * '\0', as per ISO C99. If you want to have the exact
- * number of characters written into @buf as return value
- * (not including the trailing '\0'), use vscnprintf(). If the
- * return is greater than or equal to @size, the resulting
- * string is truncated.
- */
+ 
 int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 {
 	struct printf_spec spec = {0};
@@ -3241,7 +2807,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 	value;								\
 })
 
-	/* Make sure end is always >= buf */
+	 
 	if (end < buf) {
 		end = ((void *)-1);
 		size = end - buf;
@@ -3305,7 +2871,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 		case FORMAT_TYPE_PTR: {
 			bool process = false;
 			int copy, len;
-			/* Non function dereferences were already done */
+			 
 			switch (*fmt) {
 			case 'S':
 			case 's':
@@ -3319,7 +2885,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 					process = true;
 					break;
 				}
-				/* Pointer dereference was already processed */
+				 
 				if (str < end) {
 					len = copy = strlen(args);
 					if (copy > end - str)
@@ -3384,9 +2950,9 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
 			}
 
 			str = number(str, end, num, spec);
-		} /* default: */
-		} /* switch(spec.type) */
-	} /* while(*fmt) */
+		}  
+		}  
+	}  
 
 out:
 	if (size > 0) {
@@ -3398,21 +2964,12 @@ out:
 
 #undef get_arg
 
-	/* the trailing null byte doesn't count towards the total */
+	 
 	return str - buf;
 }
 EXPORT_SYMBOL_GPL(bstr_printf);
 
-/**
- * bprintf - Parse a format string and place args' binary value in a buffer
- * @bin_buf: The buffer to place args' binary value
- * @size: The size of the buffer(by words(32bits), not characters)
- * @fmt: The format string to use
- * @...: Arguments for the format string
- *
- * The function returns the number of words(u32) written
- * into @bin_buf.
- */
+ 
 int bprintf(u32 *bin_buf, size_t size, const char *fmt, ...)
 {
 	va_list args;
@@ -3426,14 +2983,9 @@ int bprintf(u32 *bin_buf, size_t size, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(bprintf);
 
-#endif /* CONFIG_BINARY_PRINTF */
+#endif  
 
-/**
- * vsscanf - Unformat a buffer into a list of arguments
- * @buf:	input buffer
- * @fmt:	format of buffer
- * @args:	arguments
- */
+ 
 int vsscanf(const char *buf, const char *fmt, va_list args)
 {
 	const char *str = buf;
@@ -3450,16 +3002,14 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 	bool is_sign;
 
 	while (*fmt) {
-		/* skip any white space in format */
-		/* white space in format matches any amount of
-		 * white space, including none, in the input.
-		 */
+		 
+		 
 		if (isspace(*fmt)) {
 			fmt = skip_spaces(++fmt);
 			str = skip_spaces(str);
 		}
 
-		/* anything that is not a conversion must match exactly */
+		 
 		if (*fmt != '%' && *fmt) {
 			if (*fmt++ != *str++)
 				break;
@@ -3470,14 +3020,12 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			break;
 		++fmt;
 
-		/* skip this conversion.
-		 * advance both strings to next white space
-		 */
+		 
 		if (*fmt == '*') {
 			if (!*str)
 				break;
 			while (!isspace(*fmt) && *fmt != '%' && *fmt) {
-				/* '%*[' not yet supported, invalid format */
+				 
 				if (*fmt == '[')
 					return num;
 				fmt++;
@@ -3487,7 +3035,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			continue;
 		}
 
-		/* get field width */
+		 
 		field_width = -1;
 		if (isdigit(*fmt)) {
 			field_width = skip_atoi(&fmt);
@@ -3495,7 +3043,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 				break;
 		}
 
-		/* get conversion qualifier */
+		 
 		qualifier = -1;
 		if (*fmt == 'h' || _tolower(*fmt) == 'l' ||
 		    *fmt == 'z') {
@@ -3515,7 +3063,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			break;
 
 		if (*fmt == 'n') {
-			/* return number of characters read so far */
+			 
 			*va_arg(args, int *) = str - buf;
 			++fmt;
 			continue;
@@ -3544,31 +3092,17 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			char *s = (char *)va_arg(args, char *);
 			if (field_width == -1)
 				field_width = SHRT_MAX;
-			/* first, skip leading white space in buffer */
+			 
 			str = skip_spaces(str);
 
-			/* now copy until next white space */
+			 
 			while (*str && !isspace(*str) && field_width--)
 				*s++ = *str++;
 			*s = '\0';
 			num++;
 		}
 		continue;
-		/*
-		 * Warning: This implementation of the '[' conversion specifier
-		 * deviates from its glibc counterpart in the following ways:
-		 * (1) It does NOT support ranges i.e. '-' is NOT a special
-		 *     character
-		 * (2) It cannot match the closing bracket ']' itself
-		 * (3) A field width is required
-		 * (4) '%*[' (discard matching input) is currently not supported
-		 *
-		 * Example usage:
-		 * ret = sscanf("00:0a:95","%2[^:]:%2[^:]:%2[^:]",
-		 *		buf1, buf2, buf3);
-		 * if (ret < 3)
-		 *    // etc..
-		 */
+		 
 		case '[':
 		{
 			char *s = (char *)va_arg(args, char *);
@@ -3576,7 +3110,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			unsigned int len = 0;
 			bool negate = (*fmt == '^');
 
-			/* field width is required */
+			 
 			if (field_width == -1)
 				return num;
 
@@ -3586,18 +3120,18 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 			for ( ; *fmt && *fmt != ']'; ++fmt, ++len)
 				__set_bit((u8)*fmt, set);
 
-			/* no ']' or no character set found */
+			 
 			if (!*fmt || !len)
 				return num;
 			++fmt;
 
 			if (negate) {
 				bitmap_complement(set, set, 256);
-				/* exclude null '\0' byte */
+				 
 				__clear_bit(0, set);
 			}
 
-			/* match must be non-empty */
+			 
 			if (!test_bit((u8)*str, set))
 				return num;
 
@@ -3623,18 +3157,16 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 		case 'u':
 			break;
 		case '%':
-			/* looking for '%' in str */
+			 
 			if (*str++ != '%')
 				return num;
 			continue;
 		default:
-			/* invalid format; stop here */
+			 
 			return num;
 		}
 
-		/* have some sort of integer conversion.
-		 * first, skip white space in buffer.
-		 */
+		 
 		str = skip_spaces(str);
 
 		digit = *str;
@@ -3662,7 +3194,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 						 &next, base);
 
 		switch (qualifier) {
-		case 'H':	/* that's 'hh' in format */
+		case 'H':	 
 			if (is_sign)
 				*va_arg(args, signed char *) = val.s;
 			else
@@ -3707,12 +3239,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 }
 EXPORT_SYMBOL(vsscanf);
 
-/**
- * sscanf - Unformat a buffer into a list of arguments
- * @buf:	input buffer
- * @fmt:	formatting of buffer
- * @...:	resulting arguments
- */
+ 
 int sscanf(const char *buf, const char *fmt, ...)
 {
 	va_list args;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/rtnetlink.h>
@@ -32,7 +29,7 @@ bool wil_has_other_active_ifaces(struct wil6210_priv *wil,
 
 bool wil_has_active_ifaces(struct wil6210_priv *wil, bool up, bool ok)
 {
-	/* use NULL ndev argument to check all interfaces */
+	 
 	return wil_has_other_active_ifaces(wil, NULL, up, ok);
 }
 
@@ -137,7 +134,7 @@ static int wil6210_netdev_poll_tx(struct napi_struct *napi, int budget)
 	int tx_done = 0;
 	uint i;
 
-	/* always process ALL Tx complete, regardless budget - it is fast */
+	 
 	for (i = 0; i < WIL6210_MAX_TX_RINGS; i++) {
 		struct wil_ring *ring = &wil->ring_tx[i];
 		struct wil_ring_tx_data *txdata = &wil->ring_tx_data[i];
@@ -172,7 +169,7 @@ static int wil6210_netdev_poll_tx_edma(struct napi_struct *napi, int budget)
 	struct wil6210_priv *wil = container_of(napi, struct wil6210_priv,
 						napi_tx);
 	int tx_done;
-	/* There is only one status TX ring */
+	 
 	struct wil_status_ring *sring = &wil->srings[wil->tx_sring_idx];
 
 	if (!sring->va)
@@ -233,10 +230,7 @@ static void wil_connect_timer_fn(struct timer_list *t)
 
 	wil_err(wil, "Connect timeout detected, disconnect station\n");
 
-	/* reschedule to thread context - disconnect won't
-	 * run from atomic context.
-	 * queue on wmi_wq to prevent race with connect event.
-	 */
+	 
 	q = queue_work(wil->wmi_wq, &vif->disconnect_worker);
 	wil_dbg_wmi(wil, "queue_work of disconnect_worker -> %d\n", q);
 }
@@ -506,18 +500,16 @@ void wil_vif_remove(struct wil6210_priv *wil, u8 mid)
 	mutex_unlock(&wil->mutex);
 
 	ndev = vif_to_ndev(vif);
-	/* during unregister_netdevice cfg80211_leave may perform operations
-	 * such as stop AP, disconnect, so we only clear the VIF afterwards
-	 */
+	 
 	cfg80211_unregister_netdevice(ndev);
 
 	if (any_active && vif->mid != 0)
 		wmi_port_delete(wil, vif->mid);
 
-	/* make sure no one is accessing the VIF before removing */
+	 
 	mutex_lock(&wil->vif_mutex);
 	wil->vifs[mid] = NULL;
-	/* ensure NAPI code will see the NULL VIF */
+	 
 	wmb();
 	if (test_bit(wil_status_napi_en, wil->status)) {
 		napi_synchronize(&wil->napi_rx);
@@ -531,10 +523,7 @@ void wil_vif_remove(struct wil6210_priv *wil, u8 mid)
 	wil_probe_client_flush(vif);
 	cancel_work_sync(&vif->probe_client_worker);
 	cancel_work_sync(&vif->enable_tx_key_worker);
-	/* for VIFs, ndev will be freed by destructor after RTNL is unlocked.
-	 * the main interface will be freed in wil_if_free, we need to keep it
-	 * a bit longer so logging macros will work.
-	 */
+	 
 }
 
 void wil_if_remove(struct wil6210_priv *wil)

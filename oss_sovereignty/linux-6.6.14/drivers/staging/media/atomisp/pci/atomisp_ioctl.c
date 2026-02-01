@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -38,13 +21,10 @@
 #include "device_access.h"
 #include "irq.h"
 
-static const char *DRIVER = "atomisp";	/* max size 15 */
-static const char *CARD = "ATOM ISP";	/* max size 31 */
+static const char *DRIVER = "atomisp";	 
+static const char *CARD = "ATOM ISP";	 
 
-/*
- * FIXME: ISP should not know beforehand all CIDs supported by sensor.
- * Instead, it needs to propagate to sensor unkonwn CIDs.
- */
+ 
 static struct v4l2_queryctrl ci_v4l2_controls[] = {
 	{
 		.id = V4L2_CID_AUTO_WHITE_BALANCE,
@@ -312,9 +292,7 @@ static struct v4l2_queryctrl ci_v4l2_controls[] = {
 
 static const u32 ctrls_num = ARRAY_SIZE(ci_v4l2_controls);
 
-/*
- * supported V4L2 fmts and resolutions
- */
+ 
 const struct atomisp_format_bridge atomisp_output_fmts[] = {
 	{
 		.pixelformat = V4L2_PIX_FMT_YUV420,
@@ -376,7 +354,7 @@ const struct atomisp_format_bridge atomisp_output_fmts[] = {
 		.mbus_code = MEDIA_BUS_FMT_UYVY8_1X16,
 		.sh_fmt = IA_CSS_FRAME_FORMAT_UYVY,
 		.description = "UYVY, interleaved"
-	}, { /* This one is for parallel sensors! DO NOT USE! */
+	}, {  
 		.pixelformat = V4L2_PIX_FMT_UYVY,
 		.depth = 16,
 		.mbus_code = MEDIA_BUS_FMT_UYVY8_2X8,
@@ -480,7 +458,7 @@ const struct atomisp_format_bridge atomisp_output_fmts[] = {
 		.sh_fmt = IA_CSS_FRAME_FORMAT_BINARY_8,
 		.description = "JPEG"
 	}, {
-		/* This is a custom format being used by M10MO to send the RAW data */
+		 
 		.pixelformat = V4L2_PIX_FMT_CUSTOM_M10MO_RAW,
 		.depth = 8,
 		.mbus_code = V4L2_MBUS_FMT_CUSTOM_M10MO_RAW,
@@ -531,10 +509,7 @@ int atomisp_pipe_check(struct atomisp_video_pipe *pipe, bool settings_change)
 	return 0;
 }
 
-/*
- * v4l2 ioctls
- * return ISP capabilities
- */
+ 
 static int atomisp_querycap(struct file *file, void *fh,
 			    struct v4l2_capability *cap)
 {
@@ -548,9 +523,7 @@ static int atomisp_querycap(struct file *file, void *fh,
 	return 0;
 }
 
-/*
- * enum input are used to check primary/secondary camera
- */
+ 
 static int atomisp_enum_input(struct file *file, void *fh,
 			      struct v4l2_input *input)
 {
@@ -569,12 +542,7 @@ static int atomisp_enum_input(struct file *file, void *fh,
 	strscpy(input->name, isp->inputs[index].camera->name,
 		sizeof(input->name));
 
-	/*
-	 * HACK: append actuator's name to sensor's
-	 * As currently userspace can't talk directly to subdev nodes, this
-	 * ioctl is the only way to enum inputs + possible external actuators
-	 * for 3A tuning purpose.
-	 */
+	 
 	if (!IS_ISP2401)
 		motor = isp->inputs[index].motor;
 	else
@@ -599,9 +567,7 @@ static int atomisp_enum_input(struct file *file, void *fh,
 	return 0;
 }
 
-/*
- * get input are used to get current primary/secondary camera
- */
+ 
 static int atomisp_g_input(struct file *file, void *fh, unsigned int *input)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -619,9 +585,7 @@ static int atomisp_s_fmt_cap(struct file *file, void *fh,
 	return atomisp_set_fmt(vdev, f);
 }
 
-/*
- * set input are used to set current primary/secondary camera
- */
+ 
 static int atomisp_s_input(struct file *file, void *fh, unsigned int input)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -647,7 +611,7 @@ static int atomisp_s_input(struct file *file, void *fh, unsigned int input)
 		return -EINVAL;
 	}
 
-	/* power off the current owned sensor, as it is not used this time */
+	 
 	if (isp->inputs[asd->input_curr].asd == asd &&
 	    asd->input_curr != input) {
 		ret = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
@@ -655,23 +619,20 @@ static int atomisp_s_input(struct file *file, void *fh, unsigned int input)
 		if (ret && ret != -ENOIOCTLCMD)
 			dev_warn(isp->dev,
 				 "Failed to power-off sensor\n");
-		/* clear the asd field to show this camera is not used */
+		 
 		isp->inputs[asd->input_curr].asd = NULL;
 	}
 
-	/* powe on the new sensor */
+	 
 	ret = v4l2_subdev_call(isp->inputs[input].camera, core, s_power, 1);
 	if (ret && ret != -ENOIOCTLCMD) {
 		dev_err(isp->dev, "Failed to power-on sensor\n");
 		return ret;
 	}
-	/*
-	 * Some sensor driver resets the run mode during power-on, thus force
-	 * update the run mode to sensor after power-on.
-	 */
+	 
 	atomisp_update_run_mode(asd);
 
-	/* select operating sensor */
+	 
 	ret = v4l2_subdev_call(isp->inputs[input].camera, video, s_routing,
 			       0, 0, 0);
 	if (ret && (ret != -ENOIOCTLCMD)) {
@@ -691,16 +652,13 @@ static int atomisp_s_input(struct file *file, void *fh, unsigned int input)
 		ret = v4l2_subdev_call(motor, core, init, 1);
 
 	asd->input_curr = input;
-	/* mark this camera is used by the current stream */
+	 
 	isp->inputs[input].asd = asd;
 
 	return 0;
 }
 
-/*
- * With crop any framesize <= sensor-size can be made, give
- * userspace a list of sizes to choice from.
- */
+ 
 static int atomisp_enum_framesizes_crop_inner(struct atomisp_device *isp,
 					      struct v4l2_frmsizeenum *fsize,
 					      const struct v4l2_rect *active,
@@ -728,10 +686,7 @@ static int atomisp_enum_framesizes_crop_inner(struct atomisp_device *isp,
 		    (frame_sizes[i].height + padding_h) > native->height)
 			continue;
 
-		/*
-		 * Skip sizes where width and height are less then 2/3th of the
-		 * sensor size to avoid sizes with a too small field of view.
-		 */
+		 
 		if (frame_sizes[i].width < (active->width * 2 / 3) &&
 		    frame_sizes[i].height < (active->height * 2 / 3))
 			continue;
@@ -860,16 +815,11 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
 	for (i = 0; i < ARRAY_SIZE(atomisp_output_fmts); i++) {
 		format = &atomisp_output_fmts[i];
 
-		/*
-		 * Is the atomisp-supported format is valid for the
-		 * sensor (configuration)? If not, skip it.
-		 *
-		 * FIXME: fix the pipeline to allow sensor format too.
-		 */
+		 
 		if (format->sh_fmt == IA_CSS_FRAME_FORMAT_RAW)
 			continue;
 
-		/* Found a match. Now let's pick f->index'th one. */
+		 
 		if (fi < f->index) {
 			fi++;
 			continue;
@@ -884,7 +834,7 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
 	return -EINVAL;
 }
 
-/* This function looks up the closest available resolution. */
+ 
 static int atomisp_try_fmt_cap(struct file *file, void *fh,
 			       struct v4l2_format *f)
 {
@@ -904,7 +854,7 @@ static int atomisp_g_fmt_cap(struct file *file, void *fh,
 
 	f->fmt.pix = pipe->pix;
 
-	/* If s_fmt was issued, just return whatever is was previouly set */
+	 
 	if (f->fmt.pix.sizeimage)
 		return 0;
 
@@ -1016,14 +966,7 @@ error:
 	return -ENOMEM;
 }
 
-/*
- * FIXME the abuse of buf->reserved2 in the qbuf and dqbuf wrappers comes from
- * the original atomisp buffer handling and should be replaced with proper V4L2
- * per frame parameters use.
- *
- * Once this is fixed these wrappers can be removed, replacing them with direct
- * calls to vb2_ioctl_[d]qbuf().
- */
+ 
 static int atomisp_qbuf_wrapper(struct file *file, void *fh, struct v4l2_buffer *buf)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -1034,7 +977,7 @@ static int atomisp_qbuf_wrapper(struct file *file, void *fh, struct v4l2_buffer 
 		return -EINVAL;
 
 	if (buf->reserved2 & ATOMISP_BUFFER_HAS_PER_FRAME_SETTING) {
-		/* this buffer will have a per-frame parameter */
+		 
 		pipe->frame_request_config_id[buf->index] = buf->reserved2 &
 			~ATOMISP_BUFFER_HAS_PER_FRAME_SETTING;
 		dev_dbg(isp->dev,
@@ -1066,12 +1009,7 @@ static int atomisp_dqbuf_wrapper(struct file *file, void *fh, struct v4l2_buffer
 
 	buf->reserved = asd->frame_status[buf->index];
 
-	/*
-	 * Hack:
-	 * Currently frame_status in the enum type which takes no more lower
-	 * 8 bit.
-	 * use bit[31:16] for exp_id as it is only in the range of 1~255
-	 */
+	 
 	buf->reserved &= 0x0000ffff;
 	if (!(buf->flags & V4L2_BUF_FLAG_ERROR))
 		buf->reserved |= frame->exp_id;
@@ -1083,10 +1021,10 @@ static int atomisp_dqbuf_wrapper(struct file *file, void *fh, struct v4l2_buffer
 	return 0;
 }
 
-/* Input system HW workaround */
-/* Input system address translation corrupts burst during */
-/* invalidate. SW workaround for this is to set burst length */
-/* manually to 128 in case of 13MPx snapshot and to 1 otherwise. */
+ 
+ 
+ 
+ 
 static void atomisp_dma_burst_len_cfg(struct atomisp_sub_device *asd)
 {
 	struct v4l2_mbus_framefmt *sink;
@@ -1118,10 +1056,10 @@ int atomisp_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (ret)
 		goto out_unlock;
 
-	/* Input system HW workaround */
+	 
 	atomisp_dma_burst_len_cfg(asd);
 
-	/* Invalidate caches. FIXME: should flush only necessary buffers */
+	 
 	wbinvd();
 
 	if (asd->params.css_update_params_needed) {
@@ -1153,7 +1091,7 @@ int atomisp_start_streaming(struct vb2_queue *vq, unsigned int count)
 	asd->postview_exp_id = 1;
 	asd->preview_exp_id = 1;
 
-	/* handle per_frame_setting parameter and buffers */
+	 
 	atomisp_handle_parameter_and_buffer(pipe);
 
 	atomisp_qbuffers_to_css(asd);
@@ -1171,14 +1109,14 @@ int atomisp_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (atomisp_freq_scaling(isp, ATOMISP_DFS_MODE_AUTO, false) < 0)
 		dev_dbg(isp->dev, "DFS auto mode failed!\n");
 
-	/* Enable the CSI interface on ANN B0/K0 */
+	 
 	if (isp->media_dev.hw_revision >= ((ATOMISP_HW_REVISION_ISP2401 <<
 					    ATOMISP_HW_REVISION_SHIFT) | ATOMISP_HW_STEPPING_B0)) {
 		pci_write_config_word(pdev, MRFLD_PCI_CSI_CONTROL,
 				      isp->saved_regs.csi_control | MRFLD_PCI_CSI_CONTROL_CSI_READY);
 	}
 
-	/* stream on the sensor */
+	 
 	ret = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
 			       video, s_stream, 1);
 	if (ret) {
@@ -1207,15 +1145,10 @@ void atomisp_stop_streaming(struct vb2_queue *vq)
 	dev_dbg(isp->dev, "Stop stream\n");
 
 	mutex_lock(&isp->mutex);
-	/*
-	 * There is no guarantee that the buffers queued to / owned by the ISP
-	 * will properly be returned to the queue when stopping. Set a flag to
-	 * avoid new buffers getting queued and then wait for all the current
-	 * buffers to finish.
-	 */
+	 
 	pipe->stopping = true;
 	mutex_unlock(&isp->mutex);
-	/* wait max 1 second */
+	 
 	ret = wait_event_timeout(pipe->vb_queue.done_wq,
 				 atomisp_buffers_in_css(pipe) == 0, HZ);
 	mutex_lock(&isp->mutex);
@@ -1246,7 +1179,7 @@ void atomisp_stop_streaming(struct vb2_queue *vq)
 		asd->params.flash_state = ATOMISP_FLASH_IDLE;
 	}
 
-	/* Disable the CSI interface on ANN B0/K0 */
+	 
 	if (isp->media_dev.hw_revision >= ((ATOMISP_HW_REVISION_ISP2401 <<
 					    ATOMISP_HW_REVISION_SHIFT) | ATOMISP_HW_STEPPING_B0)) {
 		pci_write_config_word(pdev, MRFLD_PCI_CSI_CONTROL,
@@ -1256,16 +1189,12 @@ void atomisp_stop_streaming(struct vb2_queue *vq)
 	if (atomisp_freq_scaling(isp, ATOMISP_DFS_MODE_LOW, false))
 		dev_warn(isp->dev, "DFS failed.\n");
 
-	/*
-	 * ISP work around, need to reset ISP to allow next stream on to work.
-	 * Streams have already been destroyed by atomisp_css_stop().
-	 * Disable PUNIT/ISP acknowlede/handshake - SRSE=3 and then reset.
-	 */
+	 
 	pci_write_config_dword(pdev, PCI_I_CONTROL,
 			       isp->saved_regs.i_control | MRFLD_PCI_I_CONTROL_SRSE_RESET_MASK);
 	atomisp_reset(isp);
 
-	/* Streams were destroyed by atomisp_css_stop(), recreate them. */
+	 
 	ret = atomisp_create_pipes_stream(&isp->asd);
 	if (ret)
 		dev_warn(isp->dev, "Recreating streams failed: %d\n", ret);
@@ -1273,11 +1202,7 @@ void atomisp_stop_streaming(struct vb2_queue *vq)
 	mutex_unlock(&isp->mutex);
 }
 
-/*
- * To get the current value of a control.
- * applications initialize the id field of a struct v4l2_control and
- * call this ioctl with a pointer to this structure
- */
+ 
 static int atomisp_g_ctrl(struct file *file, void *fh,
 			  struct v4l2_control *control)
 {
@@ -1347,11 +1272,7 @@ static int atomisp_g_ctrl(struct file *file, void *fh,
 	return ret;
 }
 
-/*
- * To change the value of a control.
- * applications initialize the id and value fields of a struct v4l2_control
- * and call this ioctl.
- */
+ 
 static int atomisp_s_ctrl(struct file *file, void *fh,
 			  struct v4l2_control *control)
 {
@@ -1424,12 +1345,7 @@ static int atomisp_s_ctrl(struct file *file, void *fh,
 	return ret;
 }
 
-/*
- * To query the attributes of a control.
- * applications set the id field of a struct v4l2_queryctrl and call the
- * this ioctl with a pointer to this structure. The driver fills
- * the rest of the structure.
- */
+ 
 static int atomisp_queryctl(struct file *file, void *fh,
 			    struct v4l2_queryctrl *qc)
 {
@@ -1446,7 +1362,7 @@ static int atomisp_queryctl(struct file *file, void *fh,
 			return v4l2_queryctrl(isp->inputs[asd->input_curr].camera->
 					    ctrl_handler, qc);
 		}
-		/* ISP2401 */
+		 
 		if (isp->motor)
 			return v4l2_queryctrl(isp->motor->ctrl_handler, qc);
 		else
@@ -1501,10 +1417,7 @@ static int atomisp_camera_g_ext_ctrls(struct file *file, void *fh,
 		case V4L2_CID_TEST_PATTERN_COLOR_GR:
 		case V4L2_CID_TEST_PATTERN_COLOR_GB:
 		case V4L2_CID_TEST_PATTERN_COLOR_B:
-			/*
-			 * Exposure related control will be handled by sensor
-			 * driver
-			 */
+			 
 			ret =
 			    v4l2_g_ctrl(isp->inputs[asd->input_curr].camera->
 					ctrl_handler, &ctrl);
@@ -1550,17 +1463,14 @@ static int atomisp_camera_g_ext_ctrls(struct file *file, void *fh,
 	return ret;
 }
 
-/* This ioctl allows the application to get multiple controls by class */
+ 
 static int atomisp_g_ext_ctrls(struct file *file, void *fh,
 			       struct v4l2_ext_controls *c)
 {
 	struct v4l2_control ctrl;
 	int i, ret = 0;
 
-	/*
-	 * input_lock is not need for the Camera related IOCTLs
-	 * The input_lock downgrade the FPS of 3A
-	 */
+	 
 	ret = atomisp_camera_g_ext_ctrls(file, fh, c);
 	if (ret != -EINVAL)
 		return ret;
@@ -1640,10 +1550,7 @@ static int atomisp_camera_s_ext_ctrls(struct file *file, void *fh,
 				ret =
 				    v4l2_s_ctrl(NULL, isp->flash->ctrl_handler,
 						&ctrl);
-				/*
-				 * When flash mode is changed we need to reset
-				 * flash state
-				 */
+				 
 				if (ctrl.id == V4L2_CID_FLASH_MODE) {
 					asd->params.flash_state =
 					    ATOMISP_FLASH_IDLE;
@@ -1671,17 +1578,14 @@ static int atomisp_camera_s_ext_ctrls(struct file *file, void *fh,
 	return ret;
 }
 
-/* This ioctl allows the application to set multiple controls by class */
+ 
 static int atomisp_s_ext_ctrls(struct file *file, void *fh,
 			       struct v4l2_ext_controls *c)
 {
 	struct v4l2_control ctrl;
 	int i, ret = 0;
 
-	/*
-	 * input_lock is not need for the Camera related IOCTLs
-	 * The input_lock downgrade the FPS of 3A
-	 */
+	 
 	ret = atomisp_camera_s_ext_ctrls(file, fh, c);
 	if (ret != -EINVAL)
 		return ret;
@@ -1699,9 +1603,7 @@ static int atomisp_s_ext_ctrls(struct file *file, void *fh,
 	return ret;
 }
 
-/*
- * vidioc_g/s_param are used to switch isp running mode
- */
+ 
 static int atomisp_g_parm(struct file *file, void *fh,
 			  struct v4l2_streamparm *parm)
 {

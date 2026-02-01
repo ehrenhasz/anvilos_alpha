@@ -1,9 +1,4 @@
-/* Copyright 2016 Netflix, Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <linux/ptrace.h>
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/bpf_perf_event.h>
@@ -30,7 +25,7 @@ int do_sample(struct bpf_perf_event_data *ctx)
 	if (value)
 		*value += 1;
 	else
-		/* E2BIG not tested for this example only */
+		 
 		bpf_map_update_elem(&ip_map, &ip, &init_val, BPF_NOEXIST);
 
 	return 0;

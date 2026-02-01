@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-//
-// Actions Semi Owl SoCs Reset Management Unit driver
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+ 
+
+
+
+
+
 
 #ifndef _OWL_RESET_H_
 #define _OWL_RESET_H_
@@ -28,4 +28,4 @@ static inline struct owl_reset *to_owl_reset(struct reset_controller_dev *rcdev)
 
 extern const struct reset_control_ops owl_reset_ops;
 
-#endif /* _OWL_RESET_H_ */
+#endif  

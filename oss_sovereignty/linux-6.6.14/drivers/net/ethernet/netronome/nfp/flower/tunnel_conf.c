@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/inetdevice.h>
@@ -20,13 +20,7 @@
 #define NFP_TUN_PRE_TUN_IDX_BIT		BIT(3)
 #define NFP_TUN_PRE_TUN_IPV6_BIT	BIT(7)
 
-/**
- * struct nfp_tun_pre_tun_rule - rule matched before decap
- * @flags:		options for the rule offset
- * @port_idx:		index of destination MAC address for the rule
- * @vlan_tci:		VLAN info associated with MAC
- * @host_ctx_id:	stats context of rule to update
- */
+ 
 struct nfp_tun_pre_tun_rule {
 	__be32 flags;
 	__be16 port_idx;
@@ -34,16 +28,7 @@ struct nfp_tun_pre_tun_rule {
 	__be32 host_ctx_id;
 };
 
-/**
- * struct nfp_tun_active_tuns - periodic message of active tunnels
- * @seq:		sequence number of the message
- * @count:		number of tunnels report in message
- * @flags:		options part of the request
- * @tun_info.ipv4:		dest IPv4 address of active route
- * @tun_info.egress_port:	port the encapsulated packet egressed
- * @tun_info.extra:		reserved for future use
- * @tun_info:		tunnels that have sent traffic in reported period
- */
+ 
 struct nfp_tun_active_tuns {
 	__be32 seq;
 	__be32 count;
@@ -55,16 +40,7 @@ struct nfp_tun_active_tuns {
 	} tun_info[];
 };
 
-/**
- * struct nfp_tun_active_tuns_v6 - periodic message of active IPv6 tunnels
- * @seq:		sequence number of the message
- * @count:		number of tunnels report in message
- * @flags:		options part of the request
- * @tun_info.ipv6:		dest IPv6 address of active route
- * @tun_info.egress_port:	port the encapsulated packet egressed
- * @tun_info.extra:		reserved for future use
- * @tun_info:		tunnels that have sent traffic in reported period
- */
+ 
 struct nfp_tun_active_tuns_v6 {
 	__be32 seq;
 	__be32 count;
@@ -76,33 +52,20 @@ struct nfp_tun_active_tuns_v6 {
 	} tun_info[];
 };
 
-/**
- * struct nfp_tun_req_route_ipv4 - NFP requests a route/neighbour lookup
- * @ingress_port:	ingress port of packet that signalled request
- * @ipv4_addr:		destination ipv4 address for route
- * @reserved:		reserved for future use
- */
+ 
 struct nfp_tun_req_route_ipv4 {
 	__be32 ingress_port;
 	__be32 ipv4_addr;
 	__be32 reserved[2];
 };
 
-/**
- * struct nfp_tun_req_route_ipv6 - NFP requests an IPv6 route/neighbour lookup
- * @ingress_port:	ingress port of packet that signalled request
- * @ipv6_addr:		destination ipv6 address for route
- */
+ 
 struct nfp_tun_req_route_ipv6 {
 	__be32 ingress_port;
 	struct in6_addr ipv6_addr;
 };
 
-/**
- * struct nfp_offloaded_route - routes that are offloaded to the NFP
- * @list:	list pointer
- * @ip_add:	destination of route - can be IPv4 or IPv6
- */
+ 
 struct nfp_offloaded_route {
 	struct list_head list;
 	u8 ip_add[];
@@ -110,22 +73,13 @@ struct nfp_offloaded_route {
 
 #define NFP_FL_IPV4_ADDRS_MAX        32
 
-/**
- * struct nfp_tun_ipv4_addr - set the IP address list on the NFP
- * @count:	number of IPs populated in the array
- * @ipv4_addr:	array of IPV4_ADDRS_MAX 32 bit IPv4 addresses
- */
+ 
 struct nfp_tun_ipv4_addr {
 	__be32 count;
 	__be32 ipv4_addr[NFP_FL_IPV4_ADDRS_MAX];
 };
 
-/**
- * struct nfp_ipv4_addr_entry - cached IPv4 addresses
- * @ipv4_addr:	IP address
- * @ref_count:	number of rules currently using this IP
- * @list:	list pointer
- */
+ 
 struct nfp_ipv4_addr_entry {
 	__be32 ipv4_addr;
 	int ref_count;
@@ -134,11 +88,7 @@ struct nfp_ipv4_addr_entry {
 
 #define NFP_FL_IPV6_ADDRS_MAX        4
 
-/**
- * struct nfp_tun_ipv6_addr - set the IP address list on the NFP
- * @count:	number of IPs populated in the array
- * @ipv6_addr:	array of IPV6_ADDRS_MAX 128 bit IPv6 addresses
- */
+ 
 struct nfp_tun_ipv6_addr {
 	__be32 count;
 	struct in6_addr ipv6_addr[NFP_FL_IPV6_ADDRS_MAX];
@@ -146,13 +96,7 @@ struct nfp_tun_ipv6_addr {
 
 #define NFP_TUN_MAC_OFFLOAD_DEL_FLAG	0x2
 
-/**
- * struct nfp_tun_mac_addr_offload - configure MAC address of tunnel EP on NFP
- * @flags:	MAC address offload options
- * @count:	number of MAC addresses in the message (should be 1)
- * @index:	index of MAC address in the lookup table
- * @addr:	interface MAC address
- */
+ 
 struct nfp_tun_mac_addr_offload {
 	__be16 flags;
 	__be16 count;
@@ -160,12 +104,7 @@ struct nfp_tun_mac_addr_offload {
 	u8 addr[ETH_ALEN];
 };
 
-/**
- * struct nfp_neigh_update_work - update neighbour information to nfp
- * @work:	Work queue for writing neigh to the nfp
- * @n:		neighbour entry
- * @app:	Back pointer to app
- */
+ 
 struct nfp_neigh_update_work {
 	struct work_struct work;
 	struct neighbour *n;
@@ -180,15 +119,7 @@ enum nfp_flower_mac_offload_cmd {
 
 #define NFP_MAX_MAC_INDEX       0xff
 
-/**
- * struct nfp_tun_offloaded_mac - hashtable entry for an offloaded MAC
- * @ht_node:		Hashtable entry
- * @addr:		Offloaded MAC address
- * @index:		Offloaded index for given MAC address
- * @ref_count:		Number of devs using this MAC address
- * @repr_list:		List of reprs sharing this MAC address
- * @bridge_count:	Number of bridge/internal devs with MAC
- */
+ 
 struct nfp_tun_offloaded_mac {
 	struct rhash_head ht_node;
 	u8 addr[ETH_ALEN];
@@ -239,7 +170,7 @@ void nfp_tunnel_keep_alive(struct nfp_app *app, struct sk_buff *skb)
 		if (!n)
 			continue;
 
-		/* Update the used timestamp of neighbour */
+		 
 		neigh_event_send(n, NULL);
 		neigh_release(n);
 	}
@@ -281,7 +212,7 @@ void nfp_tunnel_keep_alive_v6(struct nfp_app *app, struct sk_buff *skb)
 		if (!n)
 			continue;
 
-		/* Update the used timestamp of neighbour */
+		 
 		neigh_event_send(n, NULL);
 		neigh_release(n);
 	}
@@ -329,10 +260,7 @@ nfp_tun_mutual_link(struct nfp_predt_entry *predt,
 	if (flow_pay->pre_tun_rule.is_ipv6 != neigh->is_ipv6)
 		return;
 
-	/* In the case of bonding it is possible that there might already
-	 * be a flow linked (as the MAC address gets shared). If a flow
-	 * is already linked just return.
-	 */
+	 
 	if (neigh->flow)
 		return;
 
@@ -563,7 +491,7 @@ nfp_tun_write_neigh(struct net_device *netdev, struct nfp_app *app,
 			payload->dst_ipv4 = flowi4->daddr;
 			mtype = NFP_FLOWER_CMSG_TYPE_TUN_NEIGH;
 		}
-		/* Trigger ARP to verify invalid neighbour state. */
+		 
 		neigh_event_send(neigh, NULL);
 		rhashtable_remove_fast(&priv->neigh_table,
 				       &nn_entry->ht_node,
@@ -650,12 +578,7 @@ static void nfp_tun_neigh_update(struct work_struct *work)
 		flow6.daddr = *(struct in6_addr *)n->primary_key;
 		if (!neigh_invalid) {
 			struct dst_entry *dst;
-			/* Use ipv6_dst_lookup_flow to populate flow6->saddr
-			 * and other fields. This information is only needed
-			 * for new entries, lookup can be skipped when an entry
-			 * gets invalidated - as only the daddr is needed for
-			 * deleting.
-			 */
+			 
 			dst = ip6_dst_lookup_flow(dev_net(n->dev), NULL,
 						  &flow6, NULL);
 			if (IS_ERR(dst))
@@ -664,19 +587,14 @@ static void nfp_tun_neigh_update(struct work_struct *work)
 			dst_release(dst);
 		}
 		nfp_tun_write_neigh(n->dev, app, &flow6, n, true, false);
-#endif /* CONFIG_IPV6 */
+#endif  
 	} else {
 		struct flowi4 flow4 = {};
 
 		flow4.daddr = *(__be32 *)n->primary_key;
 		if (!neigh_invalid) {
 			struct rtable *rt;
-			/* Use ip_route_output_key to populate flow4->saddr and
-			 * other fields. This information is only needed for
-			 * new entries, lookup can be skipped when an entry
-			 * gets invalidated - as only the daddr is needed for
-			 * deleting.
-			 */
+			 
 			rt = ip_route_output_key(dev_net(n->dev), &flow4);
 			err = PTR_ERR_OR_ZERO(rt);
 			if (err)
@@ -686,7 +604,7 @@ static void nfp_tun_neigh_update(struct work_struct *work)
 		}
 		nfp_tun_write_neigh(n->dev, app, &flow4, n, false, false);
 	}
-#endif /* CONFIG_INET */
+#endif  
 out:
 	nfp_tun_release_neigh_update_work(update_work);
 }
@@ -768,7 +686,7 @@ void nfp_tunnel_request_route_v4(struct nfp_app *app, struct sk_buff *skb)
 	flow.flowi4_proto = IPPROTO_UDP;
 
 #if IS_ENABLED(CONFIG_INET)
-	/* Do a route lookup on same namespace as ingress port. */
+	 
 	rt = ip_route_output_key(dev_net(netdev), &flow);
 	err = PTR_ERR_OR_ZERO(rt);
 	if (err)
@@ -777,7 +695,7 @@ void nfp_tunnel_request_route_v4(struct nfp_app *app, struct sk_buff *skb)
 	goto fail_rcu_unlock;
 #endif
 
-	/* Get the neighbour entry for the lookup */
+	 
 	n = dst_neigh_lookup(&rt->dst, &flow.daddr);
 	ip_rt_put(rt);
 	if (!n)
@@ -1003,7 +921,7 @@ __nfp_tunnel_offload_mac(struct nfp_app *app, const u8 *mac, u16 idx, bool del)
 	if (del)
 		payload.flags = cpu_to_be16(NFP_TUN_MAC_OFFLOAD_DEL_FLAG);
 
-	/* FW supports multiple MACs per cmsg but restrict to single. */
+	 
 	payload.count = cpu_to_be16(1);
 	payload.index = cpu_to_be16(idx);
 	ether_addr_copy(payload.addr, mac);
@@ -1062,7 +980,7 @@ nfp_tunnel_offloaded_macs_inc_ref_and_link(struct nfp_tun_offloaded_mac *entry,
 		repr = netdev_priv(netdev);
 		repr_priv = repr->app_priv;
 
-		/* If modifing MAC, remove repr from old list first. */
+		 
 		if (mod)
 			list_del(&repr_priv->mac_list);
 
@@ -1092,12 +1010,12 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
 			return 0;
 		}
 
-		/* MAC is global but matches need to go to pre_tun table. */
+		 
 		nfp_mac_idx = entry->index | NFP_TUN_PRE_TUN_IDX_BIT;
 	}
 
 	if (!nfp_mac_idx) {
-		/* Assign a global index if non-repr or MAC is now shared. */
+		 
 		if (entry || !port) {
 			ida_idx = ida_alloc_max(&priv->tun.mac_off_ids,
 						NFP_MAX_MAC_INDEX, GFP_KERNEL);
@@ -1137,7 +1055,7 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
 	err = __nfp_tunnel_offload_mac(app, netdev->dev_addr,
 				       nfp_mac_idx, false);
 	if (err) {
-		/* If not shared then free. */
+		 
 		if (!entry->ref_count)
 			goto err_remove_hash;
 		goto err_free_ida;
@@ -1176,7 +1094,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
 		return 0;
 
 	entry->ref_count--;
-	/* If del is part of a mod then mac_list is still in use elsewhere. */
+	 
 	if (nfp_netdev_is_nfp_repr(netdev) && !mod) {
 		repr = netdev_priv(netdev);
 		repr_priv = repr->app_priv;
@@ -1200,7 +1118,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
 		}
 	}
 
-	/* If MAC is now used by 1 repr set the offloaded MAC index to port. */
+	 
 	if (entry->ref_count == 1 && list_is_singular(&entry->repr_list)) {
 		int port, err;
 
@@ -1235,7 +1153,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
 	else
 		nfp_mac_idx = entry->index;
 
-	/* If MAC has global ID then extract and free the ida entry. */
+	 
 	if (nfp_tunnel_is_mac_idx_global(nfp_mac_idx)) {
 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
 		ida_free(&priv->tun.mac_off_ids, ida_idx);
@@ -1305,7 +1223,7 @@ nfp_tunnel_offload_mac(struct nfp_app *app, struct net_device *netdev,
 		ether_addr_copy(off_mac, netdev->dev_addr);
 		break;
 	case NFP_TUNNEL_MAC_OFFLOAD_DEL:
-		/* Only attempt delete if add was successful. */
+		 
 		if (!*mac_offloaded)
 			break;
 
@@ -1321,7 +1239,7 @@ nfp_tunnel_offload_mac(struct nfp_app *app, struct net_device *netdev,
 
 		break;
 	case NFP_TUNNEL_MAC_OFFLOAD_MOD:
-		/* Ignore if changing to the same address. */
+		 
 		if (ether_addr_equal(netdev->dev_addr, off_mac))
 			break;
 
@@ -1329,7 +1247,7 @@ nfp_tunnel_offload_mac(struct nfp_app *app, struct net_device *netdev,
 		if (err)
 			goto err_put_non_repr_priv;
 
-		/* Delete the previous MAC address. */
+		 
 		err = nfp_tunnel_del_shared_mac(app, netdev, off_mac, true);
 		if (err)
 			nfp_flower_cmsg_warn(app, "Failed to remove offload of replaced MAC addr on %s.\n",
@@ -1373,7 +1291,7 @@ int nfp_tunnel_mac_event_handler(struct nfp_app *app,
 			nfp_flower_cmsg_warn(app, "Failed to offload MAC on %s.\n",
 					     netdev_name(netdev));
 	} else if (event == NETDEV_CHANGEADDR) {
-		/* Only offload addr change if netdev is already up. */
+		 
 		if (!(netdev->flags & IFF_UP))
 			return NOTIFY_OK;
 
@@ -1383,12 +1301,7 @@ int nfp_tunnel_mac_event_handler(struct nfp_app *app,
 			nfp_flower_cmsg_warn(app, "Failed to offload MAC change on %s.\n",
 					     netdev_name(netdev));
 	} else if (event == NETDEV_CHANGEUPPER) {
-		/* If a repr is attached to a bridge then tunnel packets
-		 * entering the physical port are directed through the bridge
-		 * datapath and cannot be directly detunneled. Therefore,
-		 * associated offloaded MACs and indexes should not be used
-		 * by fw for detunneling.
-		 */
+		 
 		struct netdev_notifier_changeupper_info *info = ptr;
 		struct net_device *upper = info->upper_dev;
 		struct nfp_flower_repr_priv *repr_priv;
@@ -1444,18 +1357,13 @@ int nfp_flower_xmit_pre_tun_flow(struct nfp_app *app,
 	payload.vlan_tci = flow->pre_tun_rule.vlan_tci;
 	payload.host_ctx_id = flow->meta.host_ctx_id;
 
-	/* Lookup MAC index for the pre-tunnel rule egress device.
-	 * Note that because the device is always an internal port, it will
-	 * have a constant global index so does not need to be tracked.
-	 */
+	 
 	mac_entry = nfp_tunnel_lookup_offloaded_macs(app,
 						     internal_dev->dev_addr);
 	if (!mac_entry)
 		return -ENOENT;
 
-	/* Set/clear IPV6 bit. cpu_to_be16() swap will lead to MSB being
-	 * set/clear for port_idx.
-	 */
+	 
 	key_meta = (struct nfp_flower_meta_tci *)flow->unmasked_data;
 	if (key_meta->nfp_flow_key_layer & NFP_FLOWER_LAYER_IPV6)
 		mac_entry->index |= NFP_TUN_PRE_TUN_IPV6_BIT;
@@ -1464,7 +1372,7 @@ int nfp_flower_xmit_pre_tun_flow(struct nfp_app *app,
 
 	payload.port_idx = cpu_to_be16(mac_entry->index);
 
-	/* Copy mac id and vlan to flow - dev may not exist at delete time. */
+	 
 	flow->pre_tun_rule.vlan_tci = payload.vlan_tci;
 	flow->pre_tun_rule.port_idx = payload.port_idx;
 
@@ -1510,7 +1418,7 @@ int nfp_tunnel_config_start(struct nfp_app *app)
 	struct nfp_flower_priv *priv = app->priv;
 	int err;
 
-	/* Initialise rhash for MAC offload tracking. */
+	 
 	err = rhashtable_init(&priv->tun.offloaded_macs,
 			      &offloaded_macs_params);
 	if (err)
@@ -1518,13 +1426,13 @@ int nfp_tunnel_config_start(struct nfp_app *app)
 
 	ida_init(&priv->tun.mac_off_ids);
 
-	/* Initialise priv data for IPv4/v6 offloading. */
+	 
 	mutex_init(&priv->tun.ipv4_off_lock);
 	INIT_LIST_HEAD(&priv->tun.ipv4_off_list);
 	mutex_init(&priv->tun.ipv6_off_lock);
 	INIT_LIST_HEAD(&priv->tun.ipv6_off_list);
 
-	/* Initialise priv data for neighbour offloading. */
+	 
 	priv->tun.neigh_nb.notifier_call = nfp_tun_neigh_event_handler;
 
 	err = register_netevent_notifier(&priv->tun.neigh_nb);
@@ -1547,7 +1455,7 @@ void nfp_tunnel_config_stop(struct nfp_app *app)
 
 	ida_destroy(&priv->tun.mac_off_ids);
 
-	/* Free any memory that may be occupied by ipv4 list. */
+	 
 	list_for_each_safe(ptr, storage, &priv->tun.ipv4_off_list) {
 		ip_entry = list_entry(ptr, struct nfp_ipv4_addr_entry, list);
 		list_del(&ip_entry->list);
@@ -1556,7 +1464,7 @@ void nfp_tunnel_config_stop(struct nfp_app *app)
 
 	mutex_destroy(&priv->tun.ipv6_off_lock);
 
-	/* Destroy rhash. Entries should be cleaned on netdev notifier unreg. */
+	 
 	rhashtable_free_and_destroy(&priv->tun.offloaded_macs,
 				    nfp_check_rhashtable_empty, NULL);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LP5562 LED driver
- *
- * Copyright (C) 2013 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -22,21 +16,21 @@
 #define LP5562_PROGRAM_LENGTH		32
 #define LP5562_MAX_LEDS			4
 
-/* ENABLE Register 00h */
+ 
 #define LP5562_REG_ENABLE		0x00
 #define LP5562_EXEC_ENG1_M		0x30
 #define LP5562_EXEC_ENG2_M		0x0C
 #define LP5562_EXEC_ENG3_M		0x03
 #define LP5562_EXEC_M			0x3F
-#define LP5562_MASTER_ENABLE		0x40	/* Chip master enable */
-#define LP5562_LOGARITHMIC_PWM		0x80	/* Logarithmic PWM adjustment */
+#define LP5562_MASTER_ENABLE		0x40	 
+#define LP5562_LOGARITHMIC_PWM		0x80	 
 #define LP5562_EXEC_RUN			0x2A
 #define LP5562_ENABLE_DEFAULT	\
 	(LP5562_MASTER_ENABLE | LP5562_LOGARITHMIC_PWM)
 #define LP5562_ENABLE_RUN_PROGRAM	\
 	(LP5562_ENABLE_DEFAULT | LP5562_EXEC_RUN)
 
-/* OPMODE Register 01h */
+ 
 #define LP5562_REG_OP_MODE		0x01
 #define LP5562_MODE_ENG1_M		0x30
 #define LP5562_MODE_ENG2_M		0x0C
@@ -54,45 +48,45 @@
 #define LP5562_ENG3_IS_LOADING(mode)	\
 	((mode & LP5562_MODE_ENG3_M) == LP5562_LOAD_ENG3)
 
-/* BRIGHTNESS Registers */
+ 
 #define LP5562_REG_R_PWM		0x04
 #define LP5562_REG_G_PWM		0x03
 #define LP5562_REG_B_PWM		0x02
 #define LP5562_REG_W_PWM		0x0E
 
-/* CURRENT Registers */
+ 
 #define LP5562_REG_R_CURRENT		0x07
 #define LP5562_REG_G_CURRENT		0x06
 #define LP5562_REG_B_CURRENT		0x05
 #define LP5562_REG_W_CURRENT		0x0F
 
-/* CONFIG Register 08h */
+ 
 #define LP5562_REG_CONFIG		0x08
 #define LP5562_PWM_HF			0x40
 #define LP5562_PWRSAVE_EN		0x20
-#define LP5562_CLK_INT			0x01	/* Internal clock */
+#define LP5562_CLK_INT			0x01	 
 #define LP5562_DEFAULT_CFG		(LP5562_PWM_HF | LP5562_PWRSAVE_EN)
 
-/* RESET Register 0Dh */
+ 
 #define LP5562_REG_RESET		0x0D
 #define LP5562_RESET			0xFF
 
-/* PROGRAM ENGINE Registers */
+ 
 #define LP5562_REG_PROG_MEM_ENG1	0x10
 #define LP5562_REG_PROG_MEM_ENG2	0x30
 #define LP5562_REG_PROG_MEM_ENG3	0x50
 
-/* LEDMAP Register 70h */
+ 
 #define LP5562_REG_ENG_SEL		0x70
 #define LP5562_ENG_SEL_PWM		0
 #define LP5562_ENG_FOR_RGB_M		0x3F
-#define LP5562_ENG_SEL_RGB		0x1B	/* R:ENG1, G:ENG2, B:ENG3 */
+#define LP5562_ENG_SEL_RGB		0x1B	 
 #define LP5562_ENG_FOR_W_M		0xC0
-#define LP5562_ENG1_FOR_W		0x40	/* W:ENG1 */
-#define LP5562_ENG2_FOR_W		0x80	/* W:ENG2 */
-#define LP5562_ENG3_FOR_W		0xC0	/* W:ENG3 */
+#define LP5562_ENG1_FOR_W		0x40	 
+#define LP5562_ENG2_FOR_W		0x80	 
+#define LP5562_ENG3_FOR_W		0xC0	 
 
-/* Program Commands */
+ 
 #define LP5562_CMD_DISABLE		0x00
 #define LP5562_CMD_LOAD			0x15
 #define LP5562_CMD_RUN			0x2A
@@ -101,13 +95,13 @@
 
 static inline void lp5562_wait_opmode_done(void)
 {
-	/* operation mode change needs to be longer than 153 us */
+	 
 	usleep_range(200, 300);
 }
 
 static inline void lp5562_wait_enable_done(void)
 {
-	/* it takes more 488 us to update ENABLE register */
+	 
 	usleep_range(500, 600);
 }
 
@@ -156,7 +150,7 @@ static void lp5562_run_engine(struct lp55xx_chip *chip, bool start)
 	u8 mode;
 	u8 exec;
 
-	/* stop engine */
+	 
 	if (!start) {
 		lp55xx_write(chip, LP5562_REG_ENABLE, LP5562_ENABLE_DEFAULT);
 		lp5562_wait_enable_done();
@@ -167,10 +161,7 @@ static void lp5562_run_engine(struct lp55xx_chip *chip, bool start)
 		return;
 	}
 
-	/*
-	 * To run the engine,
-	 * operation mode and enable register should updated at the same time
-	 */
+	 
 
 	ret = lp55xx_read(chip, LP5562_REG_OP_MODE, &mode);
 	if (ret)
@@ -180,7 +171,7 @@ static void lp5562_run_engine(struct lp55xx_chip *chip, bool start)
 	if (ret)
 		return;
 
-	/* change operation mode to RUN only when each engine is loading */
+	 
 	if (LP5562_ENG1_IS_LOADING(mode)) {
 		mode = (mode & ~LP5562_MODE_ENG1_M) | LP5562_RUN_ENG1;
 		exec = (exec & ~LP5562_EXEC_ENG1_M) | LP5562_RUN_ENG1;
@@ -221,13 +212,13 @@ static int lp5562_update_firmware(struct lp55xx_chip *chip,
 	int ret;
 	int i;
 
-	/* clear program memory before updating */
+	 
 	for (i = 0; i < LP5562_PROGRAM_LENGTH; i++)
 		lp55xx_write(chip, addr[idx] + i, 0);
 
 	i = 0;
 	while ((offset < size - 1) && (i < LP5562_PROGRAM_LENGTH)) {
-		/* separate sscanfs because length is working only for %s */
+		 
 		ret = sscanf(data + offset, "%2s%n ", c, &nrchars);
 		if (ret != 1)
 			goto err;
@@ -241,7 +232,7 @@ static int lp5562_update_firmware(struct lp55xx_chip *chip,
 		i++;
 	}
 
-	/* Each instruction is 16bit long. Check that length is even */
+	 
 	if (i % 2)
 		goto err;
 
@@ -260,21 +251,14 @@ static void lp5562_firmware_loaded(struct lp55xx_chip *chip)
 {
 	const struct firmware *fw = chip->fw;
 
-	/*
-	 * the firmware is encoded in ascii hex character, with 2 chars
-	 * per byte
-	 */
+	 
 	if (fw->size > (LP5562_PROGRAM_LENGTH * 2)) {
 		dev_err(&chip->cl->dev, "firmware data size overflow: %zu\n",
 			fw->size);
 		return;
 	}
 
-	/*
-	 * Program memory sequence
-	 *  1) set engine mode to "LOAD"
-	 *  2) write firmware data into program memory
-	 */
+	 
 
 	lp5562_load_engine(chip);
 	lp5562_update_firmware(chip, fw->data, fw->size);
@@ -285,14 +269,14 @@ static int lp5562_post_init_device(struct lp55xx_chip *chip)
 	int ret;
 	u8 cfg = LP5562_DEFAULT_CFG;
 
-	/* Set all PWMs to direct control mode */
+	 
 	ret = lp55xx_write(chip, LP5562_REG_OP_MODE, LP5562_CMD_DIRECT);
 	if (ret)
 		return ret;
 
 	lp5562_wait_opmode_done();
 
-	/* Update configuration for the clock setting */
+	 
 	if (!lp55xx_is_extclk_used(chip))
 		cfg |= LP5562_CLK_INT;
 
@@ -300,13 +284,13 @@ static int lp5562_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* Initialize all channels PWM to zero -> leds off */
+	 
 	lp55xx_write(chip, LP5562_REG_R_PWM, 0);
 	lp55xx_write(chip, LP5562_REG_G_PWM, 0);
 	lp55xx_write(chip, LP5562_REG_B_PWM, 0);
 	lp55xx_write(chip, LP5562_REG_W_PWM, 0);
 
-	/* Set LED map as register PWM by default */
+	 
 	lp55xx_write(chip, LP5562_REG_ENG_SEL, LP5562_ENG_SEL_PWM);
 
 	return 0;
@@ -345,7 +329,7 @@ static void lp5562_write_program_memory(struct lp55xx_chip *chip,
 	lp55xx_write(chip, base + i + 1, 0);
 }
 
-/* check the size of program count */
+ 
 static inline bool _is_pc_overflow(struct lp55xx_predef_pattern *ptn)
 {
 	return ptn->size_r >= LP5562_PROGRAM_LENGTH ||
@@ -371,16 +355,16 @@ static int lp5562_run_predef_led_pattern(struct lp55xx_chip *chip, int mode)
 
 	lp5562_stop_engine(chip);
 
-	/* Set LED map as RGB */
+	 
 	lp55xx_write(chip, LP5562_REG_ENG_SEL, LP5562_ENG_SEL_RGB);
 
-	/* Load engines */
+	 
 	for (i = LP55XX_ENGINE_1; i <= LP55XX_ENGINE_3; i++) {
 		chip->engine_idx = i;
 		lp5562_load_engine(chip);
 	}
 
-	/* Clear program registers */
+	 
 	lp55xx_write(chip, LP5562_REG_PROG_MEM_ENG1, 0);
 	lp55xx_write(chip, LP5562_REG_PROG_MEM_ENG1 + 1, 0);
 	lp55xx_write(chip, LP5562_REG_PROG_MEM_ENG2, 0);
@@ -388,7 +372,7 @@ static int lp5562_run_predef_led_pattern(struct lp55xx_chip *chip, int mode)
 	lp55xx_write(chip, LP5562_REG_PROG_MEM_ENG3, 0);
 	lp55xx_write(chip, LP5562_REG_PROG_MEM_ENG3 + 1, 0);
 
-	/* Program engines */
+	 
 	lp5562_write_program_memory(chip, LP5562_REG_PROG_MEM_ENG1,
 				ptn->r, ptn->size_r);
 	lp5562_write_program_memory(chip, LP5562_REG_PROG_MEM_ENG2,
@@ -396,7 +380,7 @@ static int lp5562_run_predef_led_pattern(struct lp55xx_chip *chip, int mode)
 	lp5562_write_program_memory(chip, LP5562_REG_PROG_MEM_ENG3,
 				ptn->b, ptn->size_b);
 
-	/* Run engines */
+	 
 	lp5562_run_engine(chip, true);
 
 	return 0;
@@ -439,12 +423,7 @@ static ssize_t lp5562_store_engine_mux(struct device *dev,
 	u8 mask;
 	u8 val;
 
-	/* LED map
-	 * R ... Engine 1 (fixed)
-	 * G ... Engine 2 (fixed)
-	 * B ... Engine 3 (fixed)
-	 * W ... Engine 1 or 2 or 3
-	 */
+	 
 
 	if (sysfs_streq(buf, "RGB")) {
 		mask = LP5562_ENG_FOR_RGB_M;
@@ -492,7 +471,7 @@ static const struct attribute_group lp5562_group = {
 	.attrs = lp5562_attributes,
 };
 
-/* Chip specific configurations */
+ 
 static struct lp55xx_device_config lp5562_cfg = {
 	.max_channel  = LP5562_MAX_LEDS,
 	.reset = {

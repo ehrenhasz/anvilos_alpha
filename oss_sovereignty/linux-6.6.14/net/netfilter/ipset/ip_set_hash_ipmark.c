@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:ip,mark type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -20,28 +20,28 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1	   Forceadd support */
-/*				2	   skbinfo support */
-#define IPSET_TYPE_REV_MAX	3	/* bucketsize, initval support  */
+ 
+ 
+#define IPSET_TYPE_REV_MAX	3	 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vytas Dauksa <vytas.dauksa@smoothwall.net>");
 IP_SET_MODULE_DESC("hash:ip,mark", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:ip,mark");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_ipmark
 #define IP_SET_HASH_WITH_MARKMASK
 
-/* IPv4 variant */
+ 
 
-/* Member elements */
+ 
 struct hash_ipmark4_elem {
 	__be32 ip;
 	__u32 mark;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_ipmark4_data_equal(const struct hash_ipmark4_elem *ip1,
@@ -166,14 +166,14 @@ hash_ipmark4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return ret;
 }
 
-/* IPv6 variant */
+ 
 
 struct hash_ipmark6_elem {
 	union nf_inet_addr ip;
 	__u32 mark;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_ipmark6_data_equal(const struct hash_ipmark6_elem *ip1,

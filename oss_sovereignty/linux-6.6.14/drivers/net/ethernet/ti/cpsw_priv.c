@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments Ethernet Switch Driver
- *
- * Copyright (C) 2019 Texas Instruments
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_trace.h>
@@ -72,9 +68,7 @@ void cpsw_tx_handler(void *token, int len, int status)
 		dev_kfree_skb_any(skb);
 	}
 
-	/* Check whether the queue is stopped due to stalled tx dma, if the
-	 * queue is stopped then start the queue as we have free desc for tx
-	 */
+	 
 	txq = netdev_get_tx_queue(ndev, ch);
 	if (unlikely(netif_tx_queue_stopped(txq)))
 		netif_tx_wake_queue(txq);
@@ -134,7 +128,7 @@ int cpsw_tx_mq_poll(struct napi_struct *napi_tx, int budget)
 	u32			ch_map;
 	struct cpsw_vector	*txv;
 
-	/* process every unprocessed channel */
+	 
 	ch_map = cpdma_ctrl_txchs_state(cpsw->dma);
 	for (ch = 0, num_tx = 0; ch_map & 0xff; ch_map <<= 1, ch++) {
 		if (!(ch_map & 0x80))
@@ -184,7 +178,7 @@ int cpsw_rx_mq_poll(struct napi_struct *napi_rx, int budget)
 	u32			ch_map;
 	struct cpsw_vector	*rxv;
 
-	/* process every unprocessed channel */
+	 
 	ch_map = cpdma_ctrl_rxchs_state(cpsw->dma);
 	for (ch = 0, num_rx = 0; ch_map; ch_map >>= 1, ch++) {
 		if (!(ch_map & 0x01))
@@ -234,13 +228,13 @@ void cpsw_rx_vlan_encap(struct sk_buff *skb)
 	struct cpsw_common *cpsw = priv->cpsw;
 	u16 vtag, vid, prio, pkt_type;
 
-	/* Remove VLAN header encapsulation word */
+	 
 	skb_pull(skb, CPSW_RX_VLAN_ENCAP_HDR_SIZE);
 
 	pkt_type = (rx_vlan_encap_hdr >>
 		    CPSW_RX_VLAN_ENCAP_HDR_PKT_TYPE_SHIFT) &
 		    CPSW_RX_VLAN_ENCAP_HDR_PKT_TYPE_MSK;
-	/* Ignore unknown & Priority-tagged packets*/
+	 
 	if (pkt_type == CPSW_RX_VLAN_ENCAP_HDR_PKT_RESERV ||
 	    pkt_type == CPSW_RX_VLAN_ENCAP_HDR_PKT_PRIO_TAG)
 		return;
@@ -248,11 +242,11 @@ void cpsw_rx_vlan_encap(struct sk_buff *skb)
 	vid = (rx_vlan_encap_hdr >>
 	       CPSW_RX_VLAN_ENCAP_HDR_VID_SHIFT) &
 	       VLAN_VID_MASK;
-	/* Ignore vid 0 and pass packet as is */
+	 
 	if (!vid)
 		return;
 
-	/* Untag P0 packets if set for vlan */
+	 
 	if (!cpsw_ale_get_vlan_p0_untag(cpsw->ale, vid)) {
 		prio = (rx_vlan_encap_hdr >>
 			CPSW_RX_VLAN_ENCAP_HDR_PRIO_SHIFT) &
@@ -262,7 +256,7 @@ void cpsw_rx_vlan_encap(struct sk_buff *skb)
 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vtag);
 	}
 
-	/* strip vlan tag for VLAN-tagged packet */
+	 
 	if (pkt_type == CPSW_RX_VLAN_ENCAP_HDR_PKT_VLAN_TAG) {
 		memmove(skb->data + VLAN_HLEN, skb->data, 2 * ETH_ALEN);
 		skb_pull(skb, VLAN_HLEN);
@@ -322,7 +316,7 @@ int cpsw_need_resplit(struct cpsw_common *cpsw)
 	int i, rlim_ch_num;
 	int speed, ch_rate;
 
-	/* re-split resources only in case speed was changed */
+	 
 	speed = cpsw_get_common_speed(cpsw);
 	if (speed == cpsw->speed || !speed)
 		return 0;
@@ -337,7 +331,7 @@ int cpsw_need_resplit(struct cpsw_common *cpsw)
 		rlim_ch_num++;
 	}
 
-	/* cases not dependent on speed */
+	 
 	if (!rlim_ch_num || rlim_ch_num == cpsw->tx_ch_num)
 		return 0;
 
@@ -371,9 +365,7 @@ void cpsw_split_res(struct cpsw_common *cpsw)
 	} else {
 		max_rate = cpsw->speed * 1000;
 
-		/* if max_rate is less then expected due to reduced link speed,
-		 * split proportionally according next potential max speed
-		 */
+		 
 		if (max_rate < consumed_rate)
 			max_rate *= 10;
 
@@ -387,7 +379,7 @@ void cpsw_split_res(struct cpsw_common *cpsw)
 			      (cpsw->tx_ch_num - rlim_ch_num);
 	}
 
-	/* split tx weight/budget */
+	 
 	budget = NAPI_POLL_WEIGHT;
 	for (i = 0; i < cpsw->tx_ch_num; i++) {
 		ch_rate = cpdma_chan_get_rate(txv[i].ch);
@@ -417,7 +409,7 @@ void cpsw_split_res(struct cpsw_common *cpsw)
 	if (budget)
 		txv[bigest_rate_ch].budget += budget;
 
-	/* split rx budget */
+	 
 	budget = NAPI_POLL_WEIGHT;
 	ch_budget = budget / cpsw->rx_ch_num;
 	for (i = 0; i < cpsw->rx_ch_num; i++) {
@@ -701,7 +693,7 @@ static int cpsw_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
 {
 	return -EOPNOTSUPP;
 }
-#endif /*CONFIG_TI_CPTS*/
+#endif  
 
 int cpsw_ndo_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 {
@@ -766,7 +758,7 @@ int cpsw_ndo_set_tx_maxrate(struct net_device *ndev, int queue, u32 rate)
 	if (ret)
 		return ret;
 
-	/* update rates for slaves tx queues */
+	 
 	for (i = 0; i < cpsw->data.slaves; i++) {
 		slave = &cpsw->slaves[i];
 		if (!slave->ndev)
@@ -829,9 +821,7 @@ static int cpsw_set_fifo_bw(struct cpsw_priv *priv, int fifo, int bw)
 	if (bw > priv->shp_cfg_speed * 1000)
 		goto err;
 
-	/* shaping has to stay enabled for highest fifos linearly
-	 * and fifo bw no more then interface can allow
-	 */
+	 
 	slave = &cpsw->slaves[cpsw_slave_index(cpsw, priv)];
 	send_pct = slave_read(slave, SEND_PERCENT);
 	for (i = CPSW_FIFO_SHAPERS_NUM; i > 0; i--) {
@@ -899,36 +889,32 @@ static int cpsw_set_fifo_rlimit(struct cpsw_priv *priv, int fifo, int bw)
 
 	val = slave_read(slave, tx_in_ctl_rg);
 	if (cpsw_shp_is_off(priv)) {
-		/* disable FIFOs rate limited queues */
+		 
 		val &= ~(0xf << CPSW_FIFO_RATE_EN_SHIFT);
 
-		/* set type of FIFO queues to normal priority mode */
+		 
 		val &= ~(3 << CPSW_FIFO_QUEUE_TYPE_SHIFT);
 
-		/* set type of FIFO queues to be rate limited */
+		 
 		if (bw)
 			val |= 2 << CPSW_FIFO_QUEUE_TYPE_SHIFT;
 		else
 			priv->shp_cfg_speed = 0;
 	}
 
-	/* toggle a FIFO rate limited queue */
+	 
 	if (bw)
 		val |= BIT(fifo + CPSW_FIFO_RATE_EN_SHIFT);
 	else
 		val &= ~BIT(fifo + CPSW_FIFO_RATE_EN_SHIFT);
 	slave_write(slave, val, tx_in_ctl_rg);
 
-	/* FIFO transmit shape enable */
+	 
 	cpsw_fifo_shp_on(priv, fifo, bw);
 	return 0;
 }
 
-/* Defaults:
- * class A - prio 3
- * class B - prio 2
- * shaping for class A should be set first
- */
+ 
 static int cpsw_set_cbs(struct net_device *ndev,
 			struct tc_cbs_qopt_offload *qopt)
 {
@@ -941,21 +927,18 @@ static int cpsw_set_cbs(struct net_device *ndev,
 
 	tc = netdev_txq_to_tc(priv->ndev, qopt->queue);
 
-	/* enable channels in backward order, as highest FIFOs must be rate
-	 * limited first and for compliance with CPDMA rate limited channels
-	 * that also used in bacward order. FIFO0 cannot be rate limited.
-	 */
+	 
 	fifo = cpsw_tc_to_fifo(tc, ndev->num_tc);
 	if (!fifo) {
 		dev_err(priv->dev, "Last tc%d can't be rate limited", tc);
 		return -EINVAL;
 	}
 
-	/* do nothing, it's disabled anyway */
+	 
 	if (!qopt->enable && !priv->fifo_bw[fifo])
 		return 0;
 
-	/* shapers can be set if link speed is known */
+	 
 	slave = &cpsw->slaves[cpsw_slave_index(cpsw, priv)];
 	if (slave->phy && slave->phy->link) {
 		if (priv->shp_cfg_speed &&
@@ -1026,7 +1009,7 @@ static int cpsw_set_mqprio(struct net_device *ndev, void *type_data)
 	}
 
 	if (!mqprio->qopt.hw) {
-		/* restore default configuration */
+		 
 		netdev_reset_tc(ndev);
 		tx_prio_map = TX_PRIORITY_MAPPING;
 	}
@@ -1239,9 +1222,7 @@ int cpsw_create_xdp_rxqs(struct cpsw_common *cpsw)
 		if (ret)
 			goto err_cleanup;
 
-		/* using same page pool is allowed as no running rx handlers
-		 * simultaneously for both ndevs
-		 */
+		 
 		for (i = 0; i < cpsw->data.slaves; i++) {
 			ndev = cpsw->slaves[i].ndev;
 			if (!ndev)
@@ -1336,7 +1317,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
 		return CPSW_XDP_PASS;
 
 	act = bpf_prog_run_xdp(prog, xdp);
-	/* XDP prog might have changed packet data and boundaries */
+	 
 	*len = xdp->data_end - xdp->data;
 
 	switch (act) {
@@ -1355,11 +1336,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
 		if (xdp_do_redirect(ndev, xdp, prog))
 			goto drop;
 
-		/*  Have to flush here, per packet, instead of doing it in bulk
-		 *  at the end of the napi handler. The RX devices on this
-		 *  particular hardware is sharing a common queue, so the
-		 *  incoming device might change per packet.
-		 */
+		 
 		xdp_do_flush_map();
 		break;
 	default:
@@ -1367,7 +1344,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
 		fallthrough;
 	case XDP_ABORTED:
 		trace_xdp_exception(ndev, prog, act);
-		fallthrough;	/* handle aborts by dropping packet */
+		fallthrough;	 
 	case XDP_DROP:
 		ndev->stats.rx_bytes += *len;
 		ndev->stats.rx_packets++;

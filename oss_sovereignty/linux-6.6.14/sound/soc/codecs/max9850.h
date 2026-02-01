@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * max9850.h  --  codec driver for max9850
- *
- * Copyright (C) 2011 taskit GmbH
- * Author: Christian Glindkamp <christian.glindkamp@taskit.de>
- */
+ 
+ 
 
 #ifndef _MAX9850_H
 #define _MAX9850_H
@@ -23,7 +18,7 @@
 
 #define MAX9850_CACHEREGNUM 11
 
-/* MAX9850_DIGITAL_AUDIO */
+ 
 #define MAX9850_MASTER			(1<<7)
 #define MAX9850_INV			(1<<6)
 #define MAX9850_BCINV			(1<<5)

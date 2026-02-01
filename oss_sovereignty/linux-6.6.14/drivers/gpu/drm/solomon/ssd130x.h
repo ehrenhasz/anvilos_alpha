@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for:
- * DRM driver for Solomon SSD130x OLED displays
- *
- * Copyright 2022 Red Hat Inc.
- * Author: Javier Martinez Canillas <javierm@redhat.com>
- *
- * Based on drivers/video/fbdev/ssd1307fb.c
- * Copyright 2012 Free Electrons
- */
+ 
+ 
 
 #ifndef __SSD130X_H__
 #define __SSD130X_H__
@@ -84,7 +75,7 @@ struct ssd130x_device {
 	struct regulator *vcc_reg;
 	u32 vcomh;
 	u32 width;
-	/* Cached address ranges */
+	 
 	u8 col_start;
 	u8 col_end;
 	u8 page_start;
@@ -97,4 +88,4 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap);
 void ssd130x_remove(struct ssd130x_device *ssd130x);
 void ssd130x_shutdown(struct ssd130x_device *ssd130x);
 
-#endif /* __SSD130X_H__ */
+#endif  

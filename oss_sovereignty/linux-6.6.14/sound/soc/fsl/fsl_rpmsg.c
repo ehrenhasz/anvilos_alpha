@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2018-2021 NXP
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -23,7 +23,7 @@
 				SNDRV_PCM_RATE_48000)
 #define FSL_RPMSG_FORMATS	SNDRV_PCM_FMTBIT_S16_LE
 
-/* 192kHz/32bit/2ch/60s size is 0x574e00 */
+ 
 #define LPA_LARGE_BUFFER_SIZE  (0x6000000)
 
 static const unsigned int fsl_rpmsg_rates[] = {
@@ -46,7 +46,7 @@ static int fsl_rpmsg_hw_params(struct snd_pcm_substream *substream,
 	u64 rate = params_rate(params);
 	int ret = 0;
 
-	/* Get current pll parent */
+	 
 	while (p && rpmsg->pll8k && rpmsg->pll11k) {
 		struct clk *pp = clk_get_parent(p);
 
@@ -58,7 +58,7 @@ static int fsl_rpmsg_hw_params(struct snd_pcm_substream *substream,
 		p = pp;
 	}
 
-	/* Switch to another pll parent if needed. */
+	 
 	if (pll) {
 		npll = (do_div(rate, 8000) ? rpmsg->pll11k : rpmsg->pll8k);
 		if (!clk_is_match(pll, npll)) {
@@ -184,7 +184,7 @@ static const struct of_device_id fsl_rpmsg_ids[] = {
 	{ .compatible = "fsl,imx8mp-rpmsg-audio", .data = &imx8mp_data},
 	{ .compatible = "fsl,imx8ulp-rpmsg-audio", .data = &imx7ulp_data},
 	{ .compatible = "fsl,imx93-rpmsg-audio", .data = &imx93_data},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_rpmsg_ids);
 
@@ -212,7 +212,7 @@ static int fsl_rpmsg_probe(struct platform_device *pdev)
 		rpmsg->buffer_size = IMX_DEFAULT_DMABUF_SIZE;
 	}
 
-	/* Get the optional clocks */
+	 
 	rpmsg->ipg = devm_clk_get_optional(&pdev->dev, "ipg");
 	if (IS_ERR(rpmsg->ipg))
 		return PTR_ERR(rpmsg->ipg);

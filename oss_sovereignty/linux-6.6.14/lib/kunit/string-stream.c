@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * C++ stream style string builder used in KUnit for building messages.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/list.h>
@@ -47,10 +42,10 @@ int string_stream_vadd(struct string_stream *stream,
 	int len;
 	va_list args_for_counting;
 
-	/* Make a copy because `vsnprintf` could change it */
+	 
 	va_copy(args_for_counting, args);
 
-	/* Need space for null byte. */
+	 
 	len = vsnprintf(NULL, 0, fmt, args_for_counting) + 1;
 
 	va_end(args_for_counting);
@@ -100,7 +95,7 @@ static void string_stream_clear(struct string_stream *stream)
 char *string_stream_get_string(struct string_stream *stream)
 {
 	struct string_stream_fragment *frag_container;
-	size_t buf_len = stream->length + 1; /* +1 for null byte. */
+	size_t buf_len = stream->length + 1;  
 	char *buf;
 
 	buf = kunit_kzalloc(stream->test, buf_len, stream->gfp);

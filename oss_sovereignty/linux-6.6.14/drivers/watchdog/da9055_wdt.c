@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * System monitoring driver for DA9055 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,7 +28,7 @@ struct da9055_wdt_data {
 
 static const struct {
 	u8 reg_val;
-	int user_time;  /* In seconds */
+	int user_time;   
 } da9055_wdt_maps[] = {
 	{ 0, 0 },
 	{ 1, 2 },
@@ -43,9 +36,9 @@ static const struct {
 	{ 3, 8 },
 	{ 4, 16 },
 	{ 5, 32 },
-	{ 5, 33 },  /* Actual time  32.768s so included both 32s and 33s */
+	{ 5, 33 },   
 	{ 6, 65 },
-	{ 6, 66 },  /* Actual time 65.536s so include both, 65s and 66s */
+	{ 6, 66 },   
 	{ 7, 131 },
 };
 
@@ -83,13 +76,10 @@ static int da9055_wdt_ping(struct watchdog_device *wdt_dev)
 	struct da9055_wdt_data *driver_data = watchdog_get_drvdata(wdt_dev);
 	struct da9055 *da9055 = driver_data->da9055;
 
-	/*
-	 * We have a minimum time for watchdog window called TWDMIN. A write
-	 * to the watchdog before this elapsed time will cause an error.
-	 */
+	 
 	mdelay(DA9055_TWDMIN);
 
-	/* Reset the watchdog timer */
+	 
 	return da9055_reg_update(da9055, DA9055_REG_CONTROL_E,
 				 DA9055_WATCHDOG_MASK, 1);
 }

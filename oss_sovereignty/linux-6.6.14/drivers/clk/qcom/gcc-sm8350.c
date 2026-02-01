@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020-2021, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -1235,7 +1232,7 @@ static struct clk_regmap_div gcc_usb30_sec_mock_utmi_postdiv_clk_src = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_aggre_noc_pcie_0_axi_clk = {
 	.halt_reg = 0x6b080,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1249,7 +1246,7 @@ static struct clk_branch gcc_aggre_noc_pcie_0_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_aggre_noc_pcie_1_axi_clk = {
 	.halt_reg = 0x8d084,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1413,7 +1410,7 @@ static struct clk_branch gcc_boot_rom_ahb_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_camera_hf_axi_clk = {
 	.halt_reg = 0x26010,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1429,7 +1426,7 @@ static struct clk_branch gcc_camera_hf_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_camera_sf_axi_clk = {
 	.halt_reg = 0x26014,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1485,7 +1482,7 @@ static struct clk_branch gcc_cfg_noc_usb3_sec_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ddrss_gpu_axi_clk = {
 	.halt_reg = 0x71154,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1501,7 +1498,7 @@ static struct clk_branch gcc_ddrss_gpu_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ddrss_pcie_sf_tbu_clk = {
 	.halt_reg = 0x8d080,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1517,7 +1514,7 @@ static struct clk_branch gcc_ddrss_pcie_sf_tbu_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_disp_hf_axi_clk = {
 	.halt_reg = 0x2700c,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1533,7 +1530,7 @@ static struct clk_branch gcc_disp_hf_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_disp_sf_axi_clk = {
 	.halt_reg = 0x27014,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1603,7 +1600,7 @@ static struct clk_branch gcc_gp3_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_gpu_gpll0_clk_src = {
 	.halt_check = BRANCH_HALT_DELAY,
 	.clkr = {
@@ -1621,7 +1618,7 @@ static struct clk_branch gcc_gpu_gpll0_clk_src = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_gpu_gpll0_div_clk_src = {
 	.halt_check = BRANCH_HALT_DELAY,
 	.clkr = {
@@ -1762,7 +1759,7 @@ static struct clk_branch gcc_pcie_0_clkref_en = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_pcie_0_mstr_axi_clk = {
 	.halt_reg = 0x6b01c,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1778,7 +1775,7 @@ static struct clk_branch gcc_pcie_0_mstr_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_pcie_0_pipe_clk = {
 	.halt_reg = 0x6b030,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1871,7 +1868,7 @@ static struct clk_branch gcc_pcie_1_clkref_en = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_pcie_1_mstr_axi_clk = {
 	.halt_reg = 0x8d01c,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -1887,7 +1884,7 @@ static struct clk_branch gcc_pcie_1_mstr_axi_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_pcie_1_pipe_clk = {
 	.halt_reg = 0x8d030,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -2806,7 +2803,7 @@ static struct clk_branch gcc_ufs_card_phy_aux_hw_ctl_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_card_rx_symbol_0_clk = {
 	.halt_reg = 0x75020,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -2825,7 +2822,7 @@ static struct clk_branch gcc_ufs_card_rx_symbol_0_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_card_rx_symbol_1_clk = {
 	.halt_reg = 0x750b8,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -2844,7 +2841,7 @@ static struct clk_branch gcc_ufs_card_rx_symbol_1_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_card_tx_symbol_0_clk = {
 	.halt_reg = 0x7501c,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3038,7 +3035,7 @@ static struct clk_branch gcc_ufs_phy_phy_aux_hw_ctl_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_phy_rx_symbol_0_clk = {
 	.halt_reg = 0x77020,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3057,7 +3054,7 @@ static struct clk_branch gcc_ufs_phy_rx_symbol_0_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_phy_rx_symbol_1_clk = {
 	.halt_reg = 0x770b8,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3076,7 +3073,7 @@ static struct clk_branch gcc_ufs_phy_rx_symbol_1_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_ufs_phy_tx_symbol_0_clk = {
 	.halt_reg = 0x7701c,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3295,7 +3292,7 @@ static struct clk_branch gcc_usb3_prim_phy_com_aux_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_usb3_prim_phy_pipe_clk = {
 	.halt_reg = 0xf05c,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3365,7 +3362,7 @@ static struct clk_branch gcc_usb3_sec_phy_com_aux_clk = {
 	},
 };
 
-/* Clock ON depends on external parent clock, so don't poll */
+ 
 static struct clk_branch gcc_usb3_sec_phy_pipe_clk = {
 	.halt_reg = 0x1005c,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3384,7 +3381,7 @@ static struct clk_branch gcc_usb3_sec_phy_pipe_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_video_axi0_clk = {
 	.halt_reg = 0x28010,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -3400,7 +3397,7 @@ static struct clk_branch gcc_video_axi0_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_video_axi1_clk = {
 	.halt_reg = 0x28018,
 	.halt_check = BRANCH_HALT_SKIP,
@@ -3806,11 +3803,7 @@ static int gcc_sm8350_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 	}
 
-	/*
-	 * Keep the critical clock always-On
-	 * GCC_CAMERA_AHB_CLK, GCC_CAMERA_XO_CLK, GCC_DISP_AHB_CLK, GCC_DISP_XO_CLK,
-	 * GCC_GPU_CFG_AHB_CLK, GCC_VIDEO_AHB_CLK, GCC_VIDEO_XO_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x26004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x26018, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x27004, BIT(0), BIT(0));
@@ -3823,7 +3816,7 @@ static int gcc_sm8350_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks */
+	 
 	regmap_update_bits(regmap, gcc_ufs_phy_ice_core_clk.halt_reg, BIT(14), BIT(14));
 
 	return qcom_cc_really_probe(pdev, &gcc_sm8350_desc, regmap);

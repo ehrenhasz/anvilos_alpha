@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * musb_trace.h - MUSB Controller Trace Support
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com
- *
- * Author: Bin Liu <b-liu@ti.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM musb
@@ -374,11 +368,11 @@ DEFINE_EVENT(musb_cppi41, musb_cppi41_free,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-#endif /* CONFIG_USB_TI_CPPI41_DMA */
+#endif  
 
-#endif /* __MUSB_TRACE_H */
+#endif  
 
-/* this part has to be here */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

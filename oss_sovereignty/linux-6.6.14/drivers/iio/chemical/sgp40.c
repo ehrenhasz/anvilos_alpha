@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * sgp40.c - Support for Sensirion SGP40 Gas Sensor
- *
- * Copyright (C) 2021 Andreas Klinger <ak@it-klinger.de>
- *
- * I2C slave address: 0x59
- *
- * Datasheet can be found here:
- * https://www.sensirion.com/file/datasheet_sgp40
- *
- * There are two functionalities supported:
- *
- * 1) read raw logarithmic resistance value from sensor
- *    --> useful to pass it to the algorithm of the sensor vendor for
- *    measuring deteriorations and improvements of air quality.
- *
- * 2) calculate an estimated absolute voc index (0 - 500 index points) for
- *    measuring the air quality.
- *    For this purpose the value of the resistance for which the voc index
- *    will be 250 can be set up using calibbias.
- *
- * Compensation values of relative humidity and temperature can be set up
- * by writing to the out values of temp and humidityrelative.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/crc8.h>
@@ -31,10 +8,7 @@
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>
 
-/*
- * floating point calculation of voc is done as integer
- * where numbers are multiplied by 1 << SGP40_CALC_POWER
- */
+ 
 #define SGP40_CALC_POWER	14
 
 #define SGP40_CRC8_POLYNOMIAL	0x31
@@ -48,7 +22,7 @@ struct sgp40_data {
 	int			rht;
 	int			temp;
 	int			res_calibbias;
-	/* Prevent concurrent access to rht, tmp, calibbias */
+	 
 	struct mutex		lock;
 };
 
@@ -88,15 +62,7 @@ static const struct iio_chan_spec sgp40_channels[] = {
 	},
 };
 
-/*
- * taylor approximation of e^x:
- * y = 1 + x + x^2 / 2 + x^3 / 6 + x^4 / 24 + ... + x^n / n!
- *
- * Because we are calculating x real value multiplied by 2^power we get
- * an additional 2^power^n to divide for every element. For a reasonable
- * precision this would overflow after a few iterations. Therefore we
- * divide the x^n part whenever its about to overflow (xmax).
- */
+ 
 
 static u32 sgp40_exp(int exp, u32 power, u32 rounds)
 {
@@ -124,7 +90,7 @@ static u32 sgp40_exp(int exp, u32 power, u32 rounds)
                 factorial *= i;
                 y += (xp >> divider) / factorial;
                 divider += power;
-                /* divide when next multiplication would overflow */
+                 
                 if (xp >= xmax) {
                         xp >>= power;
                         divider -= power;
@@ -142,12 +108,12 @@ static int sgp40_calc_voc(struct sgp40_data *data, u16 resistance_raw, int *voc)
 	int x;
 	u32 exp = 0;
 
-	/* we calculate as a multiple of 16384 (2^14) */
+	 
 	mutex_lock(&data->lock);
 	x = ((int)resistance_raw - data->res_calibbias) * 106;
 	mutex_unlock(&data->lock);
 
-	/* voc = 500 / (1 + e^x) */
+	 
 	exp = sgp40_exp(x, SGP40_CALC_POWER, 18);
 	*voc = 500 * ((1 << (SGP40_CALC_POWER * 2)) / ((1<<SGP40_CALC_POWER) + exp));
 
@@ -170,12 +136,12 @@ static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance
 	mutex_lock(&data->lock);
 
 	ticks = (data->rht / 10) * 65535 / 10000;
-	ticks16 = (u16)clamp(ticks, 0u, 65535u); /* clamp between 0 .. 100 %rH */
+	ticks16 = (u16)clamp(ticks, 0u, 65535u);  
 	tg.rht_ticks = cpu_to_be16(ticks16);
 	tg.rht_crc = crc8(sgp40_crc8_table, (u8 *)&tg.rht_ticks, 2, SGP40_CRC8_INIT);
 
 	ticks = ((data->temp + 45000) / 10 ) * 65535 / 17500;
-	ticks16 = (u16)clamp(ticks, 0u, 65535u); /* clamp between -45 .. +130 °C */
+	ticks16 = (u16)clamp(ticks, 0u, 65535u);  
 	tg.temp_ticks = cpu_to_be16(ticks16);
 	tg.temp_crc = crc8(sgp40_crc8_table, (u8 *)&tg.temp_ticks, 2, SGP40_CRC8_INIT);
 
@@ -248,11 +214,7 @@ static int sgp40_read_raw(struct iio_dev *indio_dev,
 			return ret;
 
 		*val = voc / (1 << SGP40_CALC_POWER);
-		/*
-		 * calculation should fit into integer, where:
-		 * voc <= (500 * 2^SGP40_CALC_POWER) = 8192000
-		 * (with SGP40_CALC_POWER = 14)
-		 */
+		 
 		*val2 = ((voc % (1 << SGP40_CALC_POWER)) * 244) / (1 << (SGP40_CALC_POWER - 12));
 		dev_dbg(data->dev, "voc: %d val: %d.%06d\n", voc, *val, *val2);
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -331,10 +293,10 @@ static int sgp40_probe(struct i2c_client *client)
 
 	mutex_init(&data->lock);
 
-	/* set default values */
-	data->rht = 50000;		/* 50 % */
-	data->temp = 25000;		/* 25 °C */
-	data->res_calibbias = 30000;	/* resistance raw value for voc index of 250 */
+	 
+	data->rht = 50000;		 
+	data->temp = 25000;		 
+	data->res_calibbias = 30000;	 
 
 	indio_dev->info = &sgp40_info;
 	indio_dev->name = id->name;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP
- *
- * Copyright (c) 2022, Intel Corporation.
- */
+
+ 
 
 #include "protocol.h"
 #include "mib.h"
@@ -54,9 +51,7 @@ static int mptcp_userspace_pm_append_new_local_addr(struct mptcp_sock *msk,
 	}
 
 	if (!match && !addr_match && !id_match) {
-		/* Memory for the entry is allocated from the
-		 * sock option buffer.
-		 */
+		 
 		e = sock_kmalloc(sk, sizeof(*e), GFP_ATOMIC);
 		if (!e) {
 			ret = -ENOMEM;
@@ -80,11 +75,7 @@ append_err:
 	return ret;
 }
 
-/* If the subflow is closed from the other peer (not via a
- * subflow destroy command then), we want to keep the entry
- * not to assign the same ID to another address and to be
- * able to send RM_ADDR after the removal of the subflow.
- */
+ 
 static int mptcp_userspace_pm_delete_local_addr(struct mptcp_sock *msk,
 						struct mptcp_pm_addr_entry *addr)
 {
@@ -92,9 +83,7 @@ static int mptcp_userspace_pm_delete_local_addr(struct mptcp_sock *msk,
 
 	list_for_each_entry_safe(entry, tmp, &msk->pm.userspace_pm_local_addr_list, list) {
 		if (mptcp_addresses_equal(&entry->addr, &addr->addr, false)) {
-			/* TODO: a refcount is needed because the entry can
-			 * be used multiple times (e.g. fullmesh mode).
-			 */
+			 
 			list_del_rcu(&entry->list);
 			kfree(entry);
 			msk->pm.local_addr_used--;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS segment usage file.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Koji Sato.
- * Revised by Ryusuke Konishi.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -18,18 +11,12 @@
 
 #include <trace/events/nilfs2.h>
 
-/**
- * struct nilfs_sufile_info - on-memory private data of sufile
- * @mi: on-memory private data of metadata file
- * @ncleansegs: number of clean segments
- * @allocmin: lower limit of allocatable segment range
- * @allocmax: upper limit of allocatable segment range
- */
+ 
 struct nilfs_sufile_info {
 	struct nilfs_mdt_info mi;
-	unsigned long ncleansegs;/* number of clean segments */
-	__u64 allocmin;		/* lower limit of allocatable segment range */
-	__u64 allocmax;		/* upper limit of allocatable segment range */
+	unsigned long ncleansegs; 
+	__u64 allocmin;		 
+	__u64 allocmax;		 
 };
 
 static inline struct nilfs_sufile_info *NILFS_SUI(struct inode *sufile)
@@ -116,43 +103,13 @@ static void nilfs_sufile_mod_counter(struct buffer_head *header_bh,
 	mark_buffer_dirty(header_bh);
 }
 
-/**
- * nilfs_sufile_get_ncleansegs - return the number of clean segments
- * @sufile: inode of segment usage file
- */
+ 
 unsigned long nilfs_sufile_get_ncleansegs(struct inode *sufile)
 {
 	return NILFS_SUI(sufile)->ncleansegs;
 }
 
-/**
- * nilfs_sufile_updatev - modify multiple segment usages at a time
- * @sufile: inode of segment usage file
- * @segnumv: array of segment numbers
- * @nsegs: size of @segnumv array
- * @create: creation flag
- * @ndone: place to store number of modified segments on @segnumv
- * @dofunc: primitive operation for the update
- *
- * Description: nilfs_sufile_updatev() repeatedly calls @dofunc
- * against the given array of segments.  The @dofunc is called with
- * buffers of a header block and the sufile block in which the target
- * segment usage entry is contained.  If @ndone is given, the number
- * of successfully modified segments from the head is stored in the
- * place @ndone points to.
- *
- * Return Value: On success, zero is returned.  On error, one of the
- * following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - Given segment usage is in hole block (may be returned if
- *            @create is zero)
- *
- * %-EINVAL - Invalid segment usage number
- */
+ 
 int nilfs_sufile_updatev(struct inode *sufile, __u64 *segnumv, size_t nsegs,
 			 int create, size_t *ndone,
 			 void (*dofunc)(struct inode *, __u64,
@@ -202,7 +159,7 @@ int nilfs_sufile_updatev(struct inode *sufile, __u64 *segnumv, size_t nsegs,
 		if (blkoff == prev_blkoff)
 			continue;
 
-		/* get different block */
+		 
 		brelse(bh);
 		ret = nilfs_mdt_get_block(sufile, blkoff, create, NULL, &bh);
 		if (unlikely(ret < 0))
@@ -252,17 +209,7 @@ int nilfs_sufile_update(struct inode *sufile, __u64 segnum, int create,
 	return ret;
 }
 
-/**
- * nilfs_sufile_set_alloc_range - limit range of segment to be allocated
- * @sufile: inode of segment usage file
- * @start: minimum segment number of allocatable region (inclusive)
- * @end: maximum segment number of allocatable region (inclusive)
- *
- * Return Value: On success, 0 is returned.  On error, one of the
- * following negative error codes is returned.
- *
- * %-ERANGE - invalid segment region
- */
+ 
 int nilfs_sufile_set_alloc_range(struct inode *sufile, __u64 start, __u64 end)
 {
 	struct nilfs_sufile_info *sui = NILFS_SUI(sufile);
@@ -281,23 +228,7 @@ int nilfs_sufile_set_alloc_range(struct inode *sufile, __u64 start, __u64 end)
 	return ret;
 }
 
-/**
- * nilfs_sufile_alloc - allocate a segment
- * @sufile: inode of segment usage file
- * @segnump: pointer to segment number
- *
- * Description: nilfs_sufile_alloc() allocates a clean segment.
- *
- * Return Value: On success, 0 is returned and the segment number of the
- * allocated segment is stored in the place pointed by @segnump. On error, one
- * of the following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOSPC - No clean segment left.
- */
+ 
 int nilfs_sufile_alloc(struct inode *sufile, __u64 *segnump)
 {
 	struct buffer_head *header_bh, *su_bh;
@@ -329,11 +260,7 @@ int nilfs_sufile_alloc(struct inode *sufile, __u64 *segnump)
 	for (cnt = 0; cnt < nsegments; cnt += nsus) {
 		if (segnum > maxsegnum) {
 			if (cnt < sui->allocmax - sui->allocmin + 1) {
-				/*
-				 * wrap around in the limited region.
-				 * if allocation started from
-				 * sui->allocmin, this never happens.
-				 */
+				 
 				segnum = sui->allocmin;
 				maxsegnum = last_alloc;
 			} else if (segnum > sui->allocmin &&
@@ -344,7 +271,7 @@ int nilfs_sufile_alloc(struct inode *sufile, __u64 *segnump)
 				segnum = 0;
 				maxsegnum = sui->allocmin - 1;
 			} else {
-				break; /* never happens */
+				break;  
 			}
 		}
 		trace_nilfs2_segment_usage_check(sufile, segnum, cnt);
@@ -361,7 +288,7 @@ int nilfs_sufile_alloc(struct inode *sufile, __u64 *segnump)
 		for (j = 0; j < nsus; j++, su = (void *)su + susz, segnum++) {
 			if (!nilfs_segment_usage_clean(su))
 				continue;
-			/* found a clean segment */
+			 
 			nilfs_segment_usage_set_dirty(su);
 			kunmap_atomic(kaddr);
 
@@ -388,7 +315,7 @@ int nilfs_sufile_alloc(struct inode *sufile, __u64 *segnump)
 		brelse(su_bh);
 	}
 
-	/* no segments left */
+	 
 	ret = -ENOSPC;
 
  out_header:
@@ -442,7 +369,7 @@ void nilfs_sufile_do_scrap(struct inode *sufile, __u64 segnum,
 	clean = nilfs_segment_usage_clean(su);
 	dirty = nilfs_segment_usage_dirty(su);
 
-	/* make the segment garbage */
+	 
 	su->su_lastmod = cpu_to_le64(0);
 	su->su_nblocks = cpu_to_le32(0);
 	su->su_flags = cpu_to_le32(BIT(NILFS_SEGMENT_USAGE_DIRTY));
@@ -487,11 +414,7 @@ void nilfs_sufile_do_free(struct inode *sufile, __u64 segnum,
 	trace_nilfs2_segment_usage_freed(sufile, segnum);
 }
 
-/**
- * nilfs_sufile_mark_dirty - mark the buffer having a segment usage dirty
- * @sufile: inode of segment usage file
- * @segnum: segment number
- */
+ 
 int nilfs_sufile_mark_dirty(struct inode *sufile, __u64 segnum)
 {
 	struct buffer_head *bh;
@@ -516,12 +439,7 @@ int nilfs_sufile_mark_dirty(struct inode *sufile, __u64 segnum)
 				    "active segment %llu is erroneous",
 				    (unsigned long long)segnum);
 		} else {
-			/*
-			 * Segments marked erroneous are never allocated by
-			 * nilfs_sufile_alloc(); only active segments, ie,
-			 * the segments indexed by ns_segnum or ns_nextnum,
-			 * can be erroneous here.
-			 */
+			 
 			WARN_ON_ONCE(1);
 		}
 		ret = -EIO;
@@ -537,13 +455,7 @@ out_sem:
 	return ret;
 }
 
-/**
- * nilfs_sufile_set_segment_usage - set usage of a segment
- * @sufile: inode of segment usage file
- * @segnum: segment number
- * @nblocks: number of live blocks in the segment
- * @modtime: modification time (option)
- */
+ 
 int nilfs_sufile_set_segment_usage(struct inode *sufile, __u64 segnum,
 				   unsigned long nblocks, time64_t modtime)
 {
@@ -560,10 +472,7 @@ int nilfs_sufile_set_segment_usage(struct inode *sufile, __u64 segnum,
 	kaddr = kmap_atomic(bh->b_page);
 	su = nilfs_sufile_block_get_segment_usage(sufile, segnum, bh, kaddr);
 	if (modtime) {
-		/*
-		 * Check segusage error and set su_lastmod only when updating
-		 * this entry with a valid timestamp, not for cancellation.
-		 */
+		 
 		WARN_ON_ONCE(nilfs_segment_usage_error(su));
 		su->su_lastmod = cpu_to_le64(modtime);
 	}
@@ -579,22 +488,7 @@ int nilfs_sufile_set_segment_usage(struct inode *sufile, __u64 segnum,
 	return ret;
 }
 
-/**
- * nilfs_sufile_get_stat - get segment usage statistics
- * @sufile: inode of segment usage file
- * @sustat: pointer to a structure of segment usage statistics
- *
- * Description: nilfs_sufile_get_stat() returns information about segment
- * usage.
- *
- * Return Value: On success, 0 is returned, and segment usage information is
- * stored in the place pointed by @sustat. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_sufile_get_stat(struct inode *sufile, struct nilfs_sustat *sustat)
 {
 	struct buffer_head *header_bh;
@@ -653,23 +547,7 @@ void nilfs_sufile_do_set_error(struct inode *sufile, __u64 segnum,
 	nilfs_mdt_mark_dirty(sufile);
 }
 
-/**
- * nilfs_sufile_truncate_range - truncate range of segment array
- * @sufile: inode of segment usage file
- * @start: start segment number (inclusive)
- * @end: end segment number (inclusive)
- *
- * Return Value: On success, 0 is returned.  On error, one of the
- * following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-EINVAL - Invalid number of segments specified
- *
- * %-EBUSY - Dirty or active segments are present in the range
- */
+ 
 static int nilfs_sufile_truncate_range(struct inode *sufile,
 				       __u64 start, __u64 end)
 {
@@ -709,7 +587,7 @@ static int nilfs_sufile_truncate_range(struct inode *sufile,
 		if (ret < 0) {
 			if (ret != -ENOENT)
 				goto out_header;
-			/* hole */
+			 
 			continue;
 		}
 		kaddr = kmap_atomic(su_bh->b_page);
@@ -741,7 +619,7 @@ static int nilfs_sufile_truncate_range(struct inode *sufile,
 		brelse(su_bh);
 
 		if (n == segusages_per_block) {
-			/* make hole */
+			 
 			nilfs_sufile_delete_segment_usage_block(sufile, segnum);
 		}
 	}
@@ -758,22 +636,7 @@ out:
 	return ret;
 }
 
-/**
- * nilfs_sufile_resize - resize segment array
- * @sufile: inode of segment usage file
- * @newnsegs: new number of segments
- *
- * Return Value: On success, 0 is returned.  On error, one of the
- * following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOSPC - Enough free space is not left for shrinking
- *
- * %-EBUSY - Dirty or active segments exist in the region to be truncated
- */
+ 
 int nilfs_sufile_resize(struct inode *sufile, __u64 newnsegs)
 {
 	struct the_nilfs *nilfs = sufile->i_sb->s_fs_info;
@@ -801,19 +664,14 @@ int nilfs_sufile_resize(struct inode *sufile, __u64 newnsegs)
 
 	if (newnsegs > nsegs) {
 		sui->ncleansegs += newnsegs - nsegs;
-	} else /* newnsegs < nsegs */ {
+	} else   {
 		ret = nilfs_sufile_truncate_range(sufile, newnsegs, nsegs - 1);
 		if (ret < 0)
 			goto out_header;
 
 		sui->ncleansegs -= nsegs - newnsegs;
 
-		/*
-		 * If the sufile is successfully truncated, immediately adjust
-		 * the segment allocation space while locking the semaphore
-		 * "mi_sem" so that nilfs_sufile_alloc() never allocates
-		 * segments in the truncated space.
-		 */
+		 
 		sui->allocmax = newnsegs - 1;
 		sui->allocmin = 0;
 	}
@@ -834,23 +692,7 @@ out:
 	return ret;
 }
 
-/**
- * nilfs_sufile_get_suinfo -
- * @sufile: inode of segment usage file
- * @segnum: segment number to start looking
- * @buf: array of suinfo
- * @sisz: byte size of suinfo
- * @nsi: size of suinfo array
- *
- * Description:
- *
- * Return Value: On success, 0 is returned and .... On error, one of the
- * following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 ssize_t nilfs_sufile_get_suinfo(struct inode *sufile, __u64 segnum, void *buf,
 				unsigned int sisz, size_t nsi)
 {
@@ -880,7 +722,7 @@ ssize_t nilfs_sufile_get_suinfo(struct inode *sufile, __u64 segnum, void *buf,
 		if (ret < 0) {
 			if (ret != -ENOENT)
 				goto out;
-			/* hole */
+			 
 			memset(si, 0, sisz * n);
 			si = (void *)si + sisz * n;
 			continue;
@@ -909,26 +751,7 @@ ssize_t nilfs_sufile_get_suinfo(struct inode *sufile, __u64 segnum, void *buf,
 	return ret;
 }
 
-/**
- * nilfs_sufile_set_suinfo - sets segment usage info
- * @sufile: inode of segment usage file
- * @buf: array of suinfo_update
- * @supsz: byte size of suinfo_update
- * @nsup: size of suinfo_update array
- *
- * Description: Takes an array of nilfs_suinfo_update structs and updates
- * segment usage accordingly. Only the fields indicated by the sup_flags
- * are updated.
- *
- * Return Value: On success, 0 is returned. On error, one of the
- * following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-EINVAL - Invalid values in input (segment number, flags or nblocks)
- */
+ 
 ssize_t nilfs_sufile_set_suinfo(struct inode *sufile, void *buf,
 				unsigned int supsz, size_t nsup)
 {
@@ -979,11 +802,7 @@ ssize_t nilfs_sufile_set_suinfo(struct inode *sufile, void *buf,
 			su->su_nblocks = cpu_to_le32(sup->sup_sui.sui_nblocks);
 
 		if (nilfs_suinfo_update_flags(sup)) {
-			/*
-			 * Active flag is a virtual flag projected by running
-			 * nilfs kernel code - drop it not to write it to
-			 * disk.
-			 */
+			 
 			sup->sup_sui.sui_flags &=
 					~BIT(NILFS_SEGMENT_USAGE_ACTIVE);
 
@@ -1016,7 +835,7 @@ ssize_t nilfs_sufile_set_suinfo(struct inode *sufile, void *buf,
 		if (blkoff == prev_blkoff)
 			continue;
 
-		/* get different block */
+		 
 		mark_buffer_dirty(bh);
 		put_bh(bh);
 		ret = nilfs_mdt_get_block(sufile, blkoff, 1, NULL, &bh);
@@ -1040,22 +859,7 @@ ssize_t nilfs_sufile_set_suinfo(struct inode *sufile, void *buf,
 	return ret;
 }
 
-/**
- * nilfs_sufile_trim_fs() - trim ioctl handle function
- * @sufile: inode of segment usage file
- * @range: fstrim_range structure
- *
- * start:	First Byte to trim
- * len:		number of Bytes to trim from start
- * minlen:	minimum extent length in Bytes
- *
- * Decription: nilfs_sufile_trim_fs goes through all segments containing bytes
- * from start to start+len. start is rounded up to the next block boundary
- * and start+len is rounded down. For each clean segment blkdev_issue_discard
- * function is invoked.
- *
- * Return Value: On success, 0 is returned or negative error code, otherwise.
- */
+ 
 int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 {
 	struct the_nilfs *nilfs = sufile->i_sb->s_fs_info;
@@ -1081,11 +885,7 @@ int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 	start_block = (range->start + nilfs->ns_blocksize - 1) >>
 			nilfs->ns_blocksize_bits;
 
-	/*
-	 * range->len can be very large (actually, it is set to
-	 * ULLONG_MAX by default) - truncate upper end of the range
-	 * carefully so as not to overflow.
-	 */
+	 
 	if (max_blocks - start_block < len)
 		end_block = max_blocks - 1;
 	else
@@ -1105,7 +905,7 @@ int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 		if (ret < 0) {
 			if (ret != -ENOENT)
 				goto out_sem;
-			/* hole */
+			 
 			segnum += n;
 			continue;
 		}
@@ -1121,19 +921,19 @@ int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 						&seg_end);
 
 			if (!nblocks) {
-				/* start new extent */
+				 
 				start = seg_start;
 				nblocks = seg_end - seg_start + 1;
 				continue;
 			}
 
 			if (start + nblocks == seg_start) {
-				/* add to previous extent */
+				 
 				nblocks += seg_end - seg_start + 1;
 				continue;
 			}
 
-			/* discard previous extent */
+			 
 			if (start < start_block) {
 				nblocks -= start_block - start;
 				start = start_block;
@@ -1157,7 +957,7 @@ int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 					sufile, segnum, su_bh, kaddr);
 			}
 
-			/* start new extent */
+			 
 			start = seg_start;
 			nblocks = seg_end - seg_start + 1;
 		}
@@ -1167,7 +967,7 @@ int nilfs_sufile_trim_fs(struct inode *sufile, struct fstrim_range *range)
 
 
 	if (nblocks) {
-		/* discard last extent */
+		 
 		if (start < start_block) {
 			nblocks -= start_block - start;
 			start = start_block;
@@ -1192,13 +992,7 @@ out_sem:
 	return ret;
 }
 
-/**
- * nilfs_sufile_read - read or get sufile inode
- * @sb: super block instance
- * @susize: size of a segment usage entry
- * @raw_inode: on-disk sufile inode
- * @inodep: buffer to store the inode
- */
+ 
 int nilfs_sufile_read(struct super_block *sb, size_t susize,
 		      struct nilfs_inode *raw_inode, struct inode **inodep)
 {

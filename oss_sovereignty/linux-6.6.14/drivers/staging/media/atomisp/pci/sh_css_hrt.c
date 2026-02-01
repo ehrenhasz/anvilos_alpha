@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "platform_support.h"
 
@@ -31,7 +19,7 @@
 #define __INLINE_FIFO_MONITOR__
 #include "fifo_monitor.h"
 
-/* System independent */
+ 
 #include "sh_css_internal.h"
 
 bool sh_css_hrt_system_is_idle(void)
@@ -65,12 +53,7 @@ bool sh_css_hrt_system_is_idle(void)
 int sh_css_hrt_sp_wait(void)
 {
 	irq_sw_channel_id_t	irq_id = IRQ_SW_CHANNEL0_ID;
-	/*
-	 * Wait till SP is idle or till there is a SW2 interrupt
-	 * The SW2 interrupt will be used when frameloop runs on SP
-	 * and signals an event with similar meaning as SP idle
-	 * (e.g. frame_done)
-	 */
+	 
 	while (!sp_ctrl_getbit(SP0_ID, SP_SC_REG, SP_IDLE_BIT) &&
 	       ((irq_reg_load(IRQ0_ID,
 			      _HRT_IRQ_CONTROLLER_STATUS_REG_IDX) &

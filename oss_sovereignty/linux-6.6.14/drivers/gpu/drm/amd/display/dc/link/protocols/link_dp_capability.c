@@ -1,38 +1,6 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file implements dp specific link capability retrieval sequence. It is
- * responsible for retrieving, parsing, overriding, deciding capability obtained
- * from dp link. Link capability consists of encoders, DPRXs, cables, retimers,
- * usb and all other possible backend capabilities. Other components should
- * include this header file in order to access link capability. Accessing link
- * capability by dereferencing dc_link outside dp_link_capability is not a
- * recommended method as it makes the component dependent on the underlying data
- * structure used to represent link capability instead of function interfaces.
- */
+ 
 
 #include "link_dp_capability.h"
 #include "link_ddc.h"
@@ -53,7 +21,7 @@
 
 #define DC_LOGGER \
 	link->ctx->logger
-#define DC_TRACE_LEVEL_MESSAGE(...) /* do nothing */
+#define DC_TRACE_LEVEL_MESSAGE(...)  
 
 #ifndef MAX
 #define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
@@ -68,12 +36,7 @@ struct dp_lt_fallback_entry {
 };
 
 static const struct dp_lt_fallback_entry dp_lt_fallbacks[] = {
-		/* This link training fallback array is ordered by
-		 * link bandwidth from highest to lowest.
-		 * DP specs makes it a normative policy to always
-		 * choose the next highest link bandwidth during
-		 * link training fallback.
-		 */
+		 
 		{LANE_COUNT_FOUR, LINK_RATE_UHBR20},
 		{LANE_COUNT_FOUR, LINK_RATE_UHBR13_5},
 		{LANE_COUNT_TWO, LINK_RATE_UHBR20},
@@ -135,26 +98,26 @@ static int translate_dpcd_max_bpc(enum dpcd_downstream_port_max_bpc bpc)
 uint8_t dp_parse_lttpr_repeater_count(uint8_t lttpr_repeater_count)
 {
 	switch (lttpr_repeater_count) {
-	case 0x80: // 1 lttpr repeater
+	case 0x80: 
 		return 1;
-	case 0x40: // 2 lttpr repeaters
+	case 0x40: 
 		return 2;
-	case 0x20: // 3 lttpr repeaters
+	case 0x20: 
 		return 3;
-	case 0x10: // 4 lttpr repeaters
+	case 0x10: 
 		return 4;
-	case 0x08: // 5 lttpr repeaters
+	case 0x08: 
 		return 5;
-	case 0x04: // 6 lttpr repeaters
+	case 0x04: 
 		return 6;
-	case 0x02: // 7 lttpr repeaters
+	case 0x02: 
 		return 7;
-	case 0x01: // 8 lttpr repeaters
+	case 0x01: 
 		return 8;
 	default:
 		break;
 	}
-	return 0; // invalid value
+	return 0; 
 }
 
 uint32_t link_bw_kbps_from_raw_frl_link_rate_data(uint8_t bw)
@@ -180,34 +143,34 @@ uint32_t link_bw_kbps_from_raw_frl_link_rate_data(uint8_t bw)
 static enum dc_link_rate linkRateInKHzToLinkRateMultiplier(uint32_t link_rate_in_khz)
 {
 	enum dc_link_rate link_rate;
-	// LinkRate is normally stored as a multiplier of 0.27 Gbps per lane. Do the translation.
+	
 	switch (link_rate_in_khz) {
 	case 1620000:
-		link_rate = LINK_RATE_LOW;	// Rate_1 (RBR)	- 1.62 Gbps/Lane
+		link_rate = LINK_RATE_LOW;	
 		break;
 	case 2160000:
-		link_rate = LINK_RATE_RATE_2;	// Rate_2	- 2.16 Gbps/Lane
+		link_rate = LINK_RATE_RATE_2;	
 		break;
 	case 2430000:
-		link_rate = LINK_RATE_RATE_3;	// Rate_3	- 2.43 Gbps/Lane
+		link_rate = LINK_RATE_RATE_3;	
 		break;
 	case 2700000:
-		link_rate = LINK_RATE_HIGH;	// Rate_4 (HBR)	- 2.70 Gbps/Lane
+		link_rate = LINK_RATE_HIGH;	
 		break;
 	case 3240000:
-		link_rate = LINK_RATE_RBR2;	// Rate_5 (RBR2)- 3.24 Gbps/Lane
+		link_rate = LINK_RATE_RBR2;	
 		break;
 	case 4320000:
-		link_rate = LINK_RATE_RATE_6;	// Rate_6	- 4.32 Gbps/Lane
+		link_rate = LINK_RATE_RATE_6;	
 		break;
 	case 5400000:
-		link_rate = LINK_RATE_HIGH2;	// Rate_7 (HBR2)- 5.40 Gbps/Lane
+		link_rate = LINK_RATE_HIGH2;	
 		break;
 	case 6750000:
-		link_rate = LINK_RATE_RATE_8;	// Rate_8	- 6.75 Gbps/Lane
+		link_rate = LINK_RATE_RATE_8;	
 		break;
 	case 8100000:
-		link_rate = LINK_RATE_HIGH3;	// Rate_9 (HBR3)- 8.10 Gbps/Lane
+		link_rate = LINK_RATE_HIGH3;	
 		break;
 	default:
 		link_rate = LINK_RATE_UNKNOWN;
@@ -230,16 +193,14 @@ static union dp_cable_id intersect_cable_id(
 	return out;
 }
 
-/*
- * Return PCON's post FRL link training supported BW if its non-zero, otherwise return max_supported_frl_bw.
- */
+ 
 static uint32_t intersect_frl_link_bw_support(
 	const uint32_t max_supported_frl_bw_in_kbps,
 	const union hdmi_encoded_link_bw hdmi_encoded_link_bw)
 {
 	uint32_t supported_bw_in_kbps = max_supported_frl_bw_in_kbps;
 
-	// HDMI_ENCODED_LINK_BW bits are only valid if HDMI Link Configuration bit is 1 (FRL mode)
+	 
 	if (hdmi_encoded_link_bw.bits.FRL_MODE) {
 		if (hdmi_encoded_link_bw.bits.BW_48Gbps)
 			supported_bw_in_kbps = 48000000;
@@ -266,10 +227,7 @@ static enum clock_source_id get_clock_source_id(struct dc_link *link)
 	if (dp_cs != NULL) {
 		dp_cs_id = dp_cs->id;
 	} else {
-		/*
-		 * dp clock source is not initialized for some reason.
-		 * Should not happen, CLOCK_SOURCE_ID_EXTERNAL will be used
-		 */
+		 
 		ASSERT(dp_cs);
 	}
 
@@ -294,18 +252,14 @@ static void dp_wa_power_up_0010FA(struct dc_link *link, uint8_t *dpcd_data,
 
 	if (link->dpcd_caps.dongle_type == DISPLAY_DONGLE_DP_VGA_CONVERTER) {
 		switch (link->dpcd_caps.branch_dev_id) {
-		/* 0010FA active dongles (DP-VGA, DP-DLDVI converters) power down
-		 * all internal circuits including AUX communication preventing
-		 * reading DPCD table and EDID (spec violation).
-		 * Encoder will skip DP RX power down on disable_output to
-		 * keep receiver powered all the time.*/
+		 
 		case DP_BRANCH_DEVICE_ID_0010FA:
 		case DP_BRANCH_DEVICE_ID_0080E1:
 		case DP_BRANCH_DEVICE_ID_00E04C:
 			link->wa_flags.dp_keep_receiver_powered = true;
 			break;
 
-		/* TODO: May need work around for other dongles. */
+		 
 		default:
 			link->wa_flags.dp_keep_receiver_powered = false;
 			break;
@@ -316,9 +270,7 @@ static void dp_wa_power_up_0010FA(struct dc_link *link, uint8_t *dpcd_data,
 
 bool dp_is_fec_supported(const struct dc_link *link)
 {
-	/* TODO - use asic cap instead of link_enc->features
-	 * we no longer know which link enc to use for this link before commit
-	 */
+	 
 	struct link_encoder *link_enc = NULL;
 
 	link_enc = link_enc_cfg_get_link_enc(link);
@@ -351,7 +303,7 @@ bool dp_should_enable_fec(const struct dc_link *link)
 
 bool dp_is_128b_132b_signal(struct pipe_ctx *pipe_ctx)
 {
-	/* If this assert is hit then we have a link encoder dynamic management issue */
+	 
 	ASSERT(pipe_ctx->stream_res.hpo_dp_stream_enc ? pipe_ctx->link_res.hpo_dp_link_enc != NULL : true);
 	return (pipe_ctx->stream_res.hpo_dp_stream_enc &&
 			pipe_ctx->link_res.hpo_dp_link_enc &&
@@ -366,11 +318,7 @@ bool dp_is_lttpr_present(struct dc_link *link)
 			link->dpcd_caps.lttpr_caps.revision.raw >= 0x14);
 }
 
-/* in DP compliance test, DPR-120 may have
- * a random value in its MAX_LINK_BW dpcd field.
- * We map it to the maximum supported link rate that
- * is smaller than MAX_LINK_BW in this case.
- */
+ 
 static enum dc_link_rate get_link_rate_from_max_link_bw(
 		 uint8_t max_link_bw)
 {
@@ -448,9 +396,9 @@ static enum dc_lane_count reduce_lane_count(enum dc_lane_count lane_count)
 
 static enum dc_link_rate reduce_link_rate(const struct dc_link *link, enum dc_link_rate link_rate)
 {
-	// NEEDSWORK: provide some details about why this function never returns some of the
-	// obscure link rates such as 4.32 Gbps or 3.24 Gbps and if such behavior is intended.
-	//
+	 
+	 
+	 
 
 	switch (link_rate) {
 	case LINK_RATE_UHBR20:
@@ -506,13 +454,7 @@ static enum dc_link_rate increase_link_rate(struct dc_link *link,
 	case LINK_RATE_HIGH3:
 		return LINK_RATE_UHBR10;
 	case LINK_RATE_UHBR10:
-		/* upto DP2.x specs UHBR13.5 is the only link rate that could be
-		 * not supported by DPRX when higher link rate is supported.
-		 * so we treat it as a special case for code simplicity. When we
-		 * have new specs with more link rates like this, we should
-		 * consider a more generic solution to handle discrete link
-		 * rate capabilities.
-		 */
+		 
 		return link->dpcd_caps.dp_128b_132b_supported_link_rates.bits.UHBR13_5 ?
 				LINK_RATE_UHBR13_5 : LINK_RATE_UHBR20;
 	case LINK_RATE_UHBR13_5:
@@ -535,7 +477,7 @@ static bool decide_fallback_link_setting_max_bw_policy(
 		return false;
 
 	while (cur_idx < ARRAY_SIZE(dp_lt_fallbacks))
-		/* find current index */
+		 
 		if (dp_lt_fallbacks[cur_idx].lane_count == cur->lane_count &&
 				dp_lt_fallbacks[cur_idx].link_rate == cur->link_rate)
 			break;
@@ -545,20 +487,13 @@ static bool decide_fallback_link_setting_max_bw_policy(
 	next_idx = cur_idx + 1;
 
 	while (next_idx < ARRAY_SIZE(dp_lt_fallbacks))
-		/* find next index */
+		 
 		if (dp_lt_fallbacks[next_idx].lane_count > max->lane_count ||
 				dp_lt_fallbacks[next_idx].link_rate > max->link_rate)
 			next_idx++;
 		else if (dp_lt_fallbacks[next_idx].link_rate == LINK_RATE_UHBR13_5 &&
 				link->dpcd_caps.dp_128b_132b_supported_link_rates.bits.UHBR13_5 == 0)
-			/* upto DP2.x specs UHBR13.5 is the only link rate that
-			 * could be not supported by DPRX when higher link rate
-			 * is supported. so we treat it as a special case for
-			 * code simplicity. When we have new specs with more
-			 * link rates like this, we should consider a more
-			 * generic solution to handle discrete link rate
-			 * capabilities.
-			 */
+			 
 			next_idx++;
 		else
 			break;
@@ -572,14 +507,7 @@ static bool decide_fallback_link_setting_max_bw_policy(
 	return found;
 }
 
-/*
- * function: set link rate and lane count fallback based
- * on current link setting and last link training result
- * return value:
- *			true - link setting could be set
- *			false - has reached minimum setting
- *					and no further fallback could be done
- */
+ 
 bool decide_fallback_link_setting(
 		struct dc_link *link,
 		struct dc_link_settings *max,
@@ -621,11 +549,7 @@ bool decide_fallback_link_setting(
 			cur->lane_count = reduce_lane_count(cur->lane_count);
 		} else if (!reached_minimum_link_rate(cur->link_rate)) {
 			cur->link_rate = reduce_link_rate(link, cur->link_rate);
-			/* Reduce max link rate to avoid potential infinite loop.
-			 * Needed so that any subsequent CR_FAIL fallback can't
-			 * re-set the link rate higher than the link rate from
-			 * the latest EQ_FAIL fallback.
-			 */
+			 
 			max->link_rate = cur->link_rate;
 			cur->lane_count = max->lane_count;
 		} else {
@@ -637,11 +561,7 @@ bool decide_fallback_link_setting(
 	{
 		if (!reached_minimum_link_rate(cur->link_rate)) {
 			cur->link_rate = reduce_link_rate(link, cur->link_rate);
-			/* Reduce max link rate to avoid potential infinite loop.
-			 * Needed so that any subsequent CR_FAIL fallback can't
-			 * re-set the link rate higher than the link rate from
-			 * the latest EQ_FAIL fallback.
-			 */
+			 
 			max->link_rate = cur->link_rate;
 			cur->lane_count = max->lane_count;
 		} else {
@@ -665,10 +585,7 @@ static bool decide_dp_link_settings(struct dc_link *link, struct dc_link_setting
 	if (req_bw > dp_link_bandwidth_kbps(link, &link->verified_link_cap))
 		return false;
 
-	/* search for the minimum link setting that:
-	 * 1. is supported according to the link training result
-	 * 2. could support the b/w requested by the timing
-	 */
+	 
 	while (current_link_setting.link_rate <=
 			link->verified_link_cap.link_rate) {
 		link_bw = dp_link_bandwidth_kbps(
@@ -703,10 +620,7 @@ bool edp_decide_link_settings(struct dc_link *link,
 	struct dc_link_settings current_link_setting;
 	uint32_t link_bw;
 
-	/*
-	 * edp_supported_link_rates_count is only valid for eDP v1.4 or higher.
-	 * Per VESA eDP spec, "The DPCD revision for eDP v1.4 is 13h"
-	 */
+	 
 	if (!edp_is_ilr_optimization_enabled(link)) {
 		*link_setting = link->verified_link_cap;
 		return true;
@@ -720,10 +634,7 @@ bool edp_decide_link_settings(struct dc_link *link,
 	initial_link_setting.link_rate_set = 0;
 	current_link_setting = initial_link_setting;
 
-	/* search for the minimum link setting that:
-	 * 1. is supported according to the link training result
-	 * 2. could support the b/w requested by the timing
-	 */
+	 
 	while (current_link_setting.link_rate <=
 			link->verified_link_cap.link_rate) {
 		link_bw = dp_link_bandwidth_kbps(
@@ -767,12 +678,9 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 	policy = link->panel_config.dsc.force_dsc_edp_policy;
 	if (max_link_rate == LINK_RATE_UNKNOWN)
 		max_link_rate = link->verified_link_cap.link_rate;
-	/*
-	 * edp_supported_link_rates_count is only valid for eDP v1.4 or higher.
-	 * Per VESA eDP spec, "The DPCD revision for eDP v1.4 is 13h"
-	 */
+	 
 	if (!edp_is_ilr_optimization_enabled(link)) {
-		/* for DSC enabled case, we search for minimum lane count */
+		 
 		memset(&initial_link_setting, 0, sizeof(initial_link_setting));
 		initial_link_setting.lane_count = LANE_COUNT_ONE;
 		initial_link_setting.link_rate = LINK_RATE_LOW;
@@ -783,10 +691,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 		if (req_bw > dp_link_bandwidth_kbps(link, &link->verified_link_cap))
 			return false;
 
-		/* search for the minimum link setting that:
-		 * 1. is supported according to the link training result
-		 * 2. could support the b/w requested by the timing
-		 */
+		 
 		while (current_link_setting.link_rate <=
 				max_link_rate) {
 			link_bw = dp_link_bandwidth_kbps(
@@ -797,7 +702,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 				return true;
 			}
 			if (policy) {
-				/* minimize lane */
+				 
 				if (current_link_setting.link_rate < max_link_rate) {
 					current_link_setting.link_rate =
 							increase_link_rate(link,
@@ -813,7 +718,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 						break;
 				}
 			} else {
-				/* minimize link rate */
+				 
 				if (current_link_setting.lane_count <
 						link->verified_link_cap.lane_count) {
 					current_link_setting.lane_count =
@@ -831,7 +736,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 		return false;
 	}
 
-	/* if optimize edp link is supported */
+	 
 	memset(&initial_link_setting, 0, sizeof(initial_link_setting));
 	initial_link_setting.lane_count = LANE_COUNT_ONE;
 	initial_link_setting.link_rate = link->dpcd_caps.edp_supported_link_rates[0];
@@ -840,10 +745,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 	initial_link_setting.link_rate_set = 0;
 	current_link_setting = initial_link_setting;
 
-	/* search for the minimum link setting that:
-	 * 1. is supported according to the link training result
-	 * 2. could support the b/w requested by the timing
-	 */
+	 
 	while (current_link_setting.link_rate <=
 			max_link_rate) {
 		link_bw = dp_link_bandwidth_kbps(
@@ -854,7 +756,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 			return true;
 		}
 		if (policy) {
-			/* minimize lane */
+			 
 			if (current_link_setting.link_rate_set <
 					link->dpcd_caps.edp_supported_link_rates_count
 					&& current_link_setting.link_rate < max_link_rate) {
@@ -873,7 +775,7 @@ bool decide_edp_link_settings_with_dsc(struct dc_link *link,
 					break;
 			}
 		} else {
-			/* minimize link rate */
+			 
 			if (current_link_setting.lane_count <
 					link->verified_link_cap.lane_count) {
 				current_link_setting.lane_count =
@@ -908,9 +810,7 @@ bool link_decide_link_settings(struct dc_stream_state *stream,
 
 	memset(link_setting, 0, sizeof(*link_setting));
 
-	/* if preferred is specified through AMDDP, use it, if it's enough
-	 * to drive the mode
-	 */
+	 
 	if (link->preferred_link_setting.lane_count !=
 			LANE_COUNT_UNKNOWN &&
 			link->preferred_link_setting.link_rate !=
@@ -919,18 +819,16 @@ bool link_decide_link_settings(struct dc_stream_state *stream,
 		return true;
 	}
 
-	/* MST doesn't perform link training for now
-	 * TODO: add MST specific link training routine
-	 */
+	 
 	if (stream->signal == SIGNAL_TYPE_DISPLAY_PORT_MST) {
 		decide_mst_link_settings(link, link_setting);
 	} else if (link->connector_signal == SIGNAL_TYPE_EDP) {
-		/* enable edp link optimization for DSC eDP case */
+		 
 		if (stream->timing.flags.DSC) {
 			enum dc_link_rate max_link_rate = LINK_RATE_UNKNOWN;
 
 			if (link->panel_config.dsc.force_dsc_edp_policy) {
-				/* calculate link max link rate cap*/
+				 
 				struct dc_link_settings tmp_link_setting;
 				struct dc_crtc_timing tmp_timing = stream->timing;
 				uint32_t orig_req_bw;
@@ -988,7 +886,7 @@ static void read_dp_device_vendor_id(struct dc_link *link)
 {
 	struct dp_device_vendor_id dp_id;
 
-	/* read IEEE branch device id */
+	 
 	core_link_read_dpcd(
 		link,
 		DP_BRANCH_OUI,
@@ -1016,11 +914,7 @@ static enum dc_status wake_up_aux_channel(struct dc_link *link)
 		status = core_link_read_dpcd(link, DP_SET_POWER,
 				&dpcd_power_state, sizeof(dpcd_power_state));
 
-		/* Delay 1 ms if AUX CH is in power down state. Based on spec
-		 * section 2.3.1.2, if AUX CH may be powered down due to
-		 * write to DPCD 600h = 2. Sink AUX CH is monitoring differential
-		 * signal and may need up to 1 ms before being able to reply.
-		 */
+		 
 		if (status != DC_OK || dpcd_power_state == DP_SET_POWER_D3) {
 			fsleep(1000);
 			aux_channel_retry_cnt++;
@@ -1054,7 +948,7 @@ static void get_active_converter_info(
 	union dp_downstream_port_present ds_port = { .byte = data };
 	memset(&link->dpcd_caps.dongle_caps, 0, sizeof(link->dpcd_caps.dongle_caps));
 
-	/* decode converter info*/
+	 
 	if (!ds_port.fields.PORT_PRESENT) {
 		link->dpcd_caps.dongle_type = DISPLAY_DONGLE_NONE;
 		set_dongle_type(link->ddc,
@@ -1063,7 +957,7 @@ static void get_active_converter_info(
 		return;
 	}
 
-	/* DPCD 0x5 bit 0 = 1, it indicate it's branch device */
+	 
 	link->dpcd_caps.is_branch_dev = ds_port.fields.PORT_PRESENT;
 
 	switch (ds_port.fields.PORT_TYPE) {
@@ -1071,8 +965,7 @@ static void get_active_converter_info(
 		link->dpcd_caps.dongle_type = DISPLAY_DONGLE_DP_VGA_CONVERTER;
 		break;
 	case DOWNSTREAM_DVI_HDMI_DP_PLUS_PLUS:
-		/* At this point we don't know is it DVI or HDMI or DP++,
-		 * assume DVI.*/
+		 
 		link->dpcd_caps.dongle_type = DISPLAY_DONGLE_DP_DVI_CONVERTER;
 		break;
 	default:
@@ -1081,14 +974,14 @@ static void get_active_converter_info(
 	}
 
 	if (link->dpcd_caps.dpcd_rev.raw >= DPCD_REV_11) {
-		uint8_t det_caps[16]; /* CTS 4.2.2.7 expects source to read Detailed Capabilities Info : 00080h-0008F.*/
+		uint8_t det_caps[16];  
 		union dwnstream_port_caps_byte0 *port_caps =
 			(union dwnstream_port_caps_byte0 *)det_caps;
 		if (core_link_read_dpcd(link, DP_DOWNSTREAM_PORT_0,
 				det_caps, sizeof(det_caps)) == DC_OK) {
 
 			switch (port_caps->bits.DWN_STRM_PORTX_TYPE) {
-			/*Handle DP case as DONGLE_NONE*/
+			 
 			case DOWN_STREAM_DETAILED_DP:
 				link->dpcd_caps.dongle_type = DISPLAY_DONGLE_NONE;
 				break;
@@ -1102,7 +995,7 @@ static void get_active_converter_info(
 				break;
 			case DOWN_STREAM_DETAILED_HDMI:
 			case DOWN_STREAM_DETAILED_DP_PLUS_PLUS:
-				/*Handle DP++ active converter case, process DP++ case as HDMI case according DP1.4 spec*/
+				 
 				link->dpcd_caps.dongle_type =
 					DISPLAY_DONGLE_DP_HDMI_CONVERTER;
 
@@ -1118,7 +1011,7 @@ static void get_active_converter_info(
 
 					link->dpcd_caps.dongle_caps.is_dp_hdmi_s3d_converter =
 						hdmi_caps.bits.FRAME_SEQ_TO_FRAME_PACK;
-					/*YCBCR capability only for HDMI case*/
+					 
 					if (port_caps->bits.DWN_STRM_PORTX_TYPE
 							== DOWN_STREAM_DETAILED_HDMI) {
 						link->dpcd_caps.dongle_caps.is_dp_hdmi_ycbcr422_pass_through =
@@ -1142,7 +1035,7 @@ static void get_active_converter_info(
 								link_bw_kbps_from_raw_frl_link_rate_data(
 										hdmi_color_caps.bits.MAX_ENCODED_LINK_BW_SUPPORT);
 
-						// Intersect reported max link bw support with the supported link rate post FRL link training
+						 
 						if (core_link_read_dpcd(link, DP_PCON_HDMI_POST_FRL_STATUS,
 								&hdmi_encoded_link_bw.raw, sizeof(hdmi_encoded_link_bw)) == DC_OK) {
 							link->dpcd_caps.dongle_caps.dp_hdmi_frl_max_link_bw_in_kbps = intersect_frl_link_bw_support(
@@ -1222,10 +1115,7 @@ static void get_active_converter_info(
 static void apply_usbc_combo_phy_reset_wa(struct dc_link *link,
 		struct dc_link_settings *link_settings)
 {
-	/* Temporary Renoir-specific workaround PHY will sometimes be in bad
-	 * state on hotplugging display from certain USB-C dongle, so add extra
-	 * cycle of enabling and disabling the PHY before first link training.
-	 */
+	 
 	struct link_resource link_res = {0};
 	enum clock_source_id dp_cs_id = get_clock_source_id(link);
 
@@ -1309,8 +1199,8 @@ void dpcd_set_source_specific_data(struct dc_link *link)
 				(uint8_t)(link->ctx->asic_id.chip_id >> 8);
 		amd_device_id.dce_version =
 				(uint8_t)(link->ctx->dce_version);
-		amd_device_id.dal_version_byte1 = 0x0; // needed? where to get?
-		amd_device_id.dal_version_byte2 = 0x0; // needed? where to get?
+		amd_device_id.dal_version_byte1 = 0x0;  
+		amd_device_id.dal_version_byte2 = 0x0;  
 
 		core_link_read_dpcd(link, DP_SOURCE_OUI,
 				(uint8_t *)(&amd_signature),
@@ -1442,10 +1332,7 @@ bool read_is_mst_supported(struct dc_link *link)
 
 }
 
-/* Read additional sink caps defined in source specific DPCD area
- * This function currently only reads from SinkCapability address (DP_SOURCE_SINK_CAP)
- * TODO: Add FS caps and read from DP_SOURCE_SINK_FS_CAP as well
- */
+ 
 static bool dpcd_read_sink_ext_caps(struct dc_link *link)
 {
 	uint8_t dpcd_data = 0;
@@ -1473,15 +1360,13 @@ enum dc_status dp_retrieve_lttpr_cap(struct dc_link *link)
 	enum dc_status status;
 	bool is_lttpr_present;
 
-	/* Logic to determine LTTPR support*/
+	 
 	bool vbios_lttpr_interop = link->dc->caps.vbios_lttpr_aware;
 
 	if (!vbios_lttpr_interop || !link->dc->caps.extended_aux_timeout_support)
 		return DC_NOT_SUPPORTED;
 
-	/* By reading LTTPR capability, RX assumes that we will enable
-	 * LTTPR extended aux timeout if LTTPR is present.
-	 */
+	 
 	status = core_link_read_dpcd(
 			link,
 			DP_LT_TUNABLE_PHY_REPEATER_FIELD_DATA_STRUCTURE_REV,
@@ -1519,8 +1404,7 @@ enum dc_status dp_retrieve_lttpr_cap(struct dc_link *link)
 			lttpr_dpcd_data[DP_PHY_REPEATER_128B132B_RATES -
 							DP_LT_TUNABLE_PHY_REPEATER_FIELD_DATA_STRUCTURE_REV];
 
-	/* If this chip cap is set, at least one retimer must exist in the chain
-	 * Override count to 1 if we receive a known bad count (0 or an invalid value) */
+	 
 	if ((link->chip_caps & EXT_DISPLAY_PATH_CAPS__DP_FIXED_VS_EN) &&
 			(dp_parse_lttpr_repeater_count(link->dpcd_caps.lttpr_caps.phy_repeater_cnt) == 0)) {
 		ASSERT(0);
@@ -1528,7 +1412,7 @@ enum dc_status dp_retrieve_lttpr_cap(struct dc_link *link)
 		DC_LOG_DC("lttpr_caps forced phy_repeater_cnt = %d\n", link->dpcd_caps.lttpr_caps.phy_repeater_cnt);
 	}
 
-	/* Attempt to train in LTTPR transparent mode if repeater count exceeds 8. */
+	 
 	is_lttpr_present = dp_is_lttpr_present(link);
 
 	if (is_lttpr_present)
@@ -1540,12 +1424,9 @@ enum dc_status dp_retrieve_lttpr_cap(struct dc_link *link)
 
 static bool retrieve_link_cap(struct dc_link *link)
 {
-	/* DP_ADAPTER_CAP - DP_DPCD_REV + 1 == 16 and also DP_DSC_BITS_PER_PIXEL_INC - DP_DSC_SUPPORT + 1 == 16,
-	 * which means size 16 will be good for both of those DPCD register block reads
-	 */
+	 
 	uint8_t dpcd_data[16];
-	/*Only need to read 1 byte starting from DP_DPRX_FEATURE_ENUMERATION_LIST.
-	 */
+	 
 	uint8_t dpcd_dprx_data = '\0';
 
 	struct dp_device_vendor_id sink_id;
@@ -1556,7 +1437,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 	uint32_t read_dpcd_retry_cnt = 3;
 	int i;
 	struct dp_sink_hw_fw_revision dp_hw_fw_revision;
-	const uint32_t post_oui_delay = 30; // 30ms
+	const uint32_t post_oui_delay = 30;  
 	bool is_fec_supported = false;
 	bool is_dsc_basic_supported = false;
 	bool is_dsc_passthrough_supported = false;
@@ -1567,10 +1448,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 	memset(&edp_config_cap, '\0',
 		sizeof(union edp_configuration_cap));
 
-	/* if extended timeout is supported in hardware,
-	 * default to LTTPR timeout (3.2ms) first as a W/A for DP link layer
-	 * CTS 4.2.1.1 regression introduced by CTS specs requirement update.
-	 */
+	 
 	try_to_configure_aux_timeout(link->ddc,
 			LINK_AUX_DEFAULT_LTTPR_TIMEOUT_PERIOD);
 
@@ -1587,13 +1465,11 @@ static bool retrieve_link_cap(struct dc_link *link)
 	if (dp_is_lttpr_present(link))
 		configure_lttpr_mode_transparent(link);
 
-	/* Read DP tunneling information. */
+	 
 	status = dpcd_get_tunneling_device_data(link);
 
 	dpcd_set_source_specific_data(link);
-	/* Sink may need to configure internals based on vendor, so allow some
-	 * time before proceeding with possibly vendor specific transactions
-	 */
+	 
 	msleep(post_oui_delay);
 
 	for (i = 0; i < read_dpcd_retry_cnt; i++) {
@@ -1664,7 +1540,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 		if (status != DC_OK)
 			dm_error("%s: Read DPRX caps data failed.\n", __func__);
 
-		/* AdaptiveSyncCapability  */
+		 
 		dpcd_dprx_data = 0;
 		for (i = 0; i < read_dpcd_retry_cnt; i++) {
 			status = core_link_read_dpcd(
@@ -1686,12 +1562,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 	}
 
 
-	/* Error condition checking...
-	 * It is impossible for Sink to report Max Lane Count = 0.
-	 * It is possible for Sink to report Max Link Rate = 0, if it is
-	 * an eDP device that is reporting specialized link rates in the
-	 * SUPPORTED_LINK_RATE table.
-	 */
+	 
 	if (dpcd_data[DP_MAX_LANE_COUNT - DP_DPCD_REV] == 0)
 		return false;
 
@@ -1700,7 +1571,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 
 	read_dp_device_vendor_id(link);
 
-	/* TODO - decouple raw mst capability from policy decision */
+	 
 	link->dpcd_caps.is_mst_capable = read_is_mst_supported(link);
 	DC_LOG_DC("%s: MST_Support: %s\n", __func__, str_yes_no(link->dpcd_caps.is_mst_capable));
 
@@ -1739,13 +1610,13 @@ static bool retrieve_link_cap(struct dc_link *link)
 	link->test_pattern_enabled = false;
 	link->compliance_test_state.raw = 0;
 
-	/* read sink count */
+	 
 	core_link_read_dpcd(link,
 			DP_SINK_COUNT,
 			&link->dpcd_caps.sink_count.raw,
 			sizeof(link->dpcd_caps.sink_count.raw));
 
-	/* read sink ieee oui */
+	 
 	core_link_read_dpcd(link,
 			DP_SINK_OUI,
 			(uint8_t *)(&sink_id),
@@ -1775,15 +1646,13 @@ static bool retrieve_link_cap(struct dc_link *link)
 		dp_hw_fw_revision.ieee_fw_rev,
 		sizeof(dp_hw_fw_revision.ieee_fw_rev));
 
-	/* Quirk for Retina panels: wrong DP_MAX_LINK_RATE */
+	 
 	{
 		uint8_t str_mbp_2018[] = { 101, 68, 21, 103, 98, 97 };
 		uint8_t fwrev_mbp_2018[] = { 7, 4 };
 		uint8_t fwrev_mbp_2018_vega[] = { 8, 4 };
 
-		/* We also check for the firmware revision as 16,1 models have an
-		 * identical device id and are incorrectly quirked otherwise.
-		 */
+		 
 		if ((link->dpcd_caps.sink_dev_id == 0x0010fa) &&
 		    !memcmp(link->dpcd_caps.sink_dev_id_str, str_mbp_2018,
 			     sizeof(str_mbp_2018)) &&
@@ -1798,7 +1667,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 	memset(&link->dpcd_caps.dsc_caps, '\0',
 			sizeof(link->dpcd_caps.dsc_caps));
 	memset(&link->dpcd_caps.fec_cap, '\0', sizeof(link->dpcd_caps.fec_cap));
-	/* Read DSC and FEC sink capabilities if DP revision is 1.4 and up */
+	 
 	if (link->dpcd_caps.dpcd_rev.raw >= DPCD_REV_14) {
 		status = core_link_read_dpcd(
 				link,
@@ -1836,9 +1705,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 					link->dpcd_caps.dsc_caps.dsc_branch_decoder_caps.fields.BRANCH_MAX_LINE_WIDTH);
 		}
 
-		/* Apply work around to disable FEC and DSC for USB4 tunneling in TBT3 compatibility mode
-		 * only if required.
-		 */
+		 
 		if (link->ep_type == DISPLAY_ENDPOINT_USB4_DPIA &&
 				link->dc->debug.dpia_debug.bits.enable_force_tbt3_work_around &&
 				link->dpcd_caps.is_branch_dev &&
@@ -1846,9 +1713,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 				link->dpcd_caps.branch_hw_revision == DP_BRANCH_HW_REV_10 &&
 				(link->dpcd_caps.fec_cap.bits.FEC_CAPABLE ||
 				link->dpcd_caps.dsc_caps.dsc_basic_caps.fields.dsc_support.DSC_SUPPORT)) {
-			/* A TBT3 device is expected to report no support for FEC or DSC to a USB4 DPIA.
-			 * Clear FEC and DSC capabilities as a work around if that is not the case.
-			 */
+			 
 			link->wa_flags.dpia_forced_tbt3_mode = true;
 			memset(&link->dpcd_caps.dsc_caps, '\0', sizeof(link->dpcd_caps.dsc_caps));
 			memset(&link->dpcd_caps.fec_cap, '\0', sizeof(link->dpcd_caps.fec_cap));
@@ -1908,7 +1773,7 @@ static bool retrieve_link_cap(struct dc_link *link)
 	retrieve_cable_id(link);
 	dpcd_write_cable_id_to_dprx(link);
 
-	/* Connectivity log: detection */
+	 
 	CONN_DATA_DETECT(link, dpcd_data, sizeof(dpcd_data), "Rx Caps: ");
 
 	return true;
@@ -1932,18 +1797,15 @@ void detect_edp_sink_caps(struct dc_link *link)
 	link->dpcd_caps.edp_supported_link_rates_count = 0;
 	memset(supported_link_rates, 0, sizeof(supported_link_rates));
 
-	/*
-	 * edp_supported_link_rates_count is only valid for eDP v1.4 or higher.
-	 * Per VESA eDP spec, "The DPCD revision for eDP v1.4 is 13h"
-	 */
+	 
 	if (link->dpcd_caps.dpcd_rev.raw >= DPCD_REV_13) {
-		// Read DPCD 00010h - 0001Fh 16 bytes at one shot
+		 
 		core_link_read_dpcd(link, DP_SUPPORTED_LINK_RATES,
 							supported_link_rates, sizeof(supported_link_rates));
 
 		for (entry = 0; entry < 16; entry += 2) {
-			// DPCD register reports per-lane link rate = 16-bit link rate capability
-			// value X 200 kHz. Need multiplier to find link rate in kHz.
+			 
+			 
 			link_rate_in_khz = (supported_link_rates[entry+1] * 0x100 +
 										supported_link_rates[entry]) * 200;
 
@@ -1975,9 +1837,7 @@ void detect_edp_sink_caps(struct dc_link *link)
 	core_link_read_dpcd(link, DP_EDP_DPCD_REV,
 		&link->dpcd_caps.edp_rev,
 		sizeof(link->dpcd_caps.edp_rev));
-	/*
-	 * PSR is only valid for eDP v1.3 or higher.
-	 */
+	 
 	if (link->dpcd_caps.edp_rev >= DP_EDP_13) {
 		core_link_read_dpcd(link, DP_PSR_SUPPORT,
 			&link->dpcd_caps.psr_info.psr_version,
@@ -1996,17 +1856,13 @@ void detect_edp_sink_caps(struct dc_link *link)
 		}
 	}
 
-	/*
-	 * ALPM is only valid for eDP v1.4 or higher.
-	 */
+	 
 	if (link->dpcd_caps.dpcd_rev.raw >= DP_EDP_14)
 		core_link_read_dpcd(link, DP_RECEIVER_ALPM_CAP,
 			&link->dpcd_caps.alpm_caps.raw,
 			sizeof(link->dpcd_caps.alpm_caps.raw));
 
-	/*
-	 * Read REPLAY info
-	 */
+	 
 	core_link_read_dpcd(link, DP_SINK_PR_PIXEL_DEVIATION_PER_LINE,
 			&link->dpcd_caps.pr_info.pixel_deviation_per_line,
 			sizeof(link->dpcd_caps.pr_info.pixel_deviation_per_line));
@@ -2058,11 +1914,11 @@ struct dc_link_settings dp_get_max_link_cap(struct dc_link *link)
 	link_enc = link_enc_cfg_get_link_enc(link);
 	ASSERT(link_enc);
 
-	/* get max link encoder capability */
+	 
 	if (link_enc)
 		link_enc->funcs->get_max_link_cap(link_enc, &max_link_cap);
 
-	/* Lower link settings based on sink's link cap */
+	 
 	if (link->reported_link_cap.lane_count < max_link_cap.lane_count)
 		max_link_cap.lane_count =
 				link->reported_link_cap.lane_count;
@@ -2074,21 +1930,7 @@ struct dc_link_settings dp_get_max_link_cap(struct dc_link *link)
 		max_link_cap.link_spread =
 				link->reported_link_cap.link_spread;
 
-	/* Lower link settings based on cable attributes
-	 * Cable ID is a DP2 feature to identify max certified link rate that
-	 * a cable can carry. The cable identification method requires both
-	 * cable and display hardware support. Since the specs comes late, it is
-	 * anticipated that the first round of DP2 cables and displays may not
-	 * be fully compatible to reliably return cable ID data. Therefore the
-	 * decision of our cable id policy is that if the cable can return non
-	 * zero cable id data, we will take cable's link rate capability into
-	 * account. However if we get zero data, the cable link rate capability
-	 * is considered inconclusive. In this case, we will not take cable's
-	 * capability into account to avoid of over limiting hardware capability
-	 * from users. The max overall link rate capability is still determined
-	 * after actual dp pre-training. Cable id is considered as an auxiliary
-	 * method of determining max link bandwidth capability.
-	 */
+	 
 	cable_max_link_rate = get_cable_max_link_rate(link);
 
 	if (!link->dc->debug.ignore_cable_id &&
@@ -2096,9 +1938,7 @@ struct dc_link_settings dp_get_max_link_cap(struct dc_link *link)
 			cable_max_link_rate < max_link_cap.link_rate)
 		max_link_cap.link_rate = cable_max_link_rate;
 
-	/* account for lttpr repeaters cap
-	 * notes: repeaters do not snoop in the DPRX Capabilities addresses (3.6.3).
-	 */
+	 
 	if (dp_is_lttpr_present(link)) {
 		if (link->dpcd_caps.lttpr_caps.max_lane_count < max_link_cap.lane_count)
 			max_link_cap.lane_count = link->dpcd_caps.lttpr_caps.max_lane_count;
@@ -2137,7 +1977,7 @@ static bool dp_verify_link_cap(
 	memset(&irq_data, 0, sizeof(irq_data));
 	cur_link_settings = max_link_settings;
 
-	/* Grant extended timeout request */
+	 
 	if (dp_is_lttpr_present(link) && link->dpcd_caps.lttpr_caps.max_ext_timeout > 0) {
 		uint8_t grant = link->dpcd_caps.lttpr_caps.max_ext_timeout & 0x80;
 
@@ -2230,9 +2070,7 @@ bool dp_verify_link_cap_with_retries(
 	return success;
 }
 
-/*
- * Check if there is a native DP or passive DP-HDMI dongle connected
- */
+ 
 bool dp_is_sink_present(struct dc_link *link)
 {
 	enum gpio_result gpio_result;
@@ -2255,11 +2093,8 @@ bool dp_is_sink_present(struct dc_link *link)
 		return present;
 	}
 
-	/* Open GPIO and set it to I2C mode */
-	/* Note: this GpioMode_Input will be converted
-	 * to GpioConfigType_I2cAuxDualMode in GPIO component,
-	 * which indicates we need additional delay
-	 */
+	 
+	 
 
 	if (dal_ddc_open(ddc, GPIO_MODE_INPUT,
 			 GPIO_DDC_CONFIG_TYPE_MODE_I2C) != GPIO_RESULT_OK) {
@@ -2268,14 +2103,7 @@ bool dp_is_sink_present(struct dc_link *link)
 		return present;
 	}
 
-	/*
-	 * Read GPIO: DP sink is present if both clock and data pins are zero
-	 *
-	 * [W/A] plug-unplug DP cable, sometimes customer board has
-	 * one short pulse on clk_pin(1V, < 1ms). DP will be config to HDMI/DVI
-	 * then monitor can't br light up. Add retry 3 times
-	 * But in real passive dongle, it need additional 3ms to detect
-	 */
+	 
 	do {
 		gpio_result = dal_gpio_get_value(ddc->pin_clock, &clock_pin);
 		ASSERT(gpio_result == GPIO_RESULT_OK);

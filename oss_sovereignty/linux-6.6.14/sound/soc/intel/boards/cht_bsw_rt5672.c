@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cht_bsw_rt5672.c - ASoc Machine driver for Intel Cherryview-based platforms
- *                     Cherrytrail and Braswell, with RT5672 codec.
- *
- *  Copyright (C) 2014 Intel Corp
- *  Author: Subhransu S. Prusty <subhransu.s.prusty@intel.com>
- *          Mengdong Lin <mengdong.lin@intel.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/input.h>
@@ -24,7 +17,7 @@
 #include "../common/soc-intel-quirks.h"
 
 
-/* The platform clock #3 outputs 19.2Mhz clock to codec as I2S MCLK */
+ 
 #define CHT_PLAT_CLK_3_HZ	19200000
 #define CHT_CODEC_DAI	"rt5670-aif1"
 
@@ -35,7 +28,7 @@ struct cht_mc_private {
 	bool use_ssp0;
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin cht_bsw_headset_pins[] = {
 	{
 		.pin = "Headset Mic",
@@ -72,7 +65,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			}
 		}
 
-		/* set codec PLL source to the 19.2MHz platform clock (MCLK) */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, 0, RT5670_PLL1_S_MCLK,
 				CHT_PLAT_CLK_3_HZ, 48000 * 512);
 		if (ret < 0) {
@@ -80,7 +73,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			return ret;
 		}
 
-		/* set codec sysclk source to PLL */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, RT5670_SCLK_S_PLL1,
 			48000 * 512, SND_SOC_CLOCK_IN);
 		if (ret < 0) {
@@ -88,11 +81,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 			return ret;
 		}
 	} else {
-		/* Set codec sysclk source to its internal clock because codec
-		 * PLL will be off when idle and MCLK will also be off by ACPI
-		 * when codec is runtime suspended. Codec needs clock for jack
-		 * detection and button press.
-		 */
+		 
 		snd_soc_dai_set_sysclk(codec_dai, RT5670_SCLK_S_RCCLK,
 				       48000 * 512, SND_SOC_CLOCK_IN);
 
@@ -159,7 +148,7 @@ static int cht_aif1_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int ret;
 
-	/* set codec PLL source to the 19.2MHz platform clock (MCLK) */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, RT5670_PLL1_S_MCLK,
 				  CHT_PLAT_CLK_3_HZ, params_rate(params) * 512);
 	if (ret < 0) {
@@ -167,7 +156,7 @@ static int cht_aif1_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* set codec sysclk source to PLL */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT5670_SCLK_S_PLL1,
 				     params_rate(params) * 512,
 				     SND_SOC_CLOCK_IN);
@@ -195,11 +184,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 	if (devm_acpi_dev_add_driver_gpios(component->dev, cht_rt5672_gpios))
 		dev_warn(runtime->dev, "Unable to add GPIO mapping table\n");
 
-	/* Select codec ASRC clock source to track I2S1 clock, because codec
-	 * is in slave mode and 100fs I2S format (BCLK = 100 * LRCLK) cannot
-	 * be supported by RT5672. Otherwise, ASRC will be disabled and cause
-	 * noise.
-	 */
+	 
 	rt5670_sel_asrc_clk_src(component,
 				RT5670_DA_STEREO_FILTER
 				| RT5670_DA_MONO_L_FILTER
@@ -236,16 +221,7 @@ static int cht_codec_init(struct snd_soc_pcm_runtime *runtime)
 
 	rt5670_set_jack_detect(component, &ctx->headset);
 	if (ctx->mclk) {
-		/*
-		 * The firmware might enable the clock at
-		 * boot (this information may or may not
-		 * be reflected in the enable clock register).
-		 * To change the rate we must disable the clock
-		 * first to cover these cases. Due to common
-		 * clock framework restrictions that do not allow
-		 * to disable a clock that has not been enabled,
-		 * we need to enable the clock first.
-		 */
+		 
 		ret = clk_prepare_enable(ctx->mclk);
 		if (!ret)
 			clk_disable_unprepare(ctx->mclk);
@@ -270,33 +246,21 @@ static int cht_codec_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret, bits;
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
 	if (ctx->use_ssp0) {
-		/* set SSP0 to 16-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S16_LE);
 		bits = 16;
 	} else {
-		/* set SSP2 to 24-bit */
+		 
 		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 		bits = 24;
 	}
 
-	/*
-	 * The default mode for the cpu-dai is TDM 4 slot. The default mode
-	 * for the codec-dai is I2S. So we need to either set the cpu-dai to
-	 * I2S mode to match the codec-dai, or set the codec-dai to TDM 4 slot
-	 * (or program both to yet another mode).
-	 * One board, the Lenovo Miix 2 10, uses not 1 but 2 codecs connected
-	 * to SSP2. The second piggy-backed, output-only codec is inside the
-	 * keyboard-dock (which has extra speakers). Unlike the main rt5672
-	 * codec, we cannot configure this codec, it is hard coded to use
-	 * 2 channel 24 bit I2S. For this to work we must use I2S mode on this
-	 * board. Since we only support 2 channels anyways, there is no need
-	 * for TDM on any cht-bsw-rt5672 designs. So we use I2S 2ch everywhere.
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -348,7 +312,7 @@ SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("sst-mfld-platform")));
 
 static struct snd_soc_dai_link cht_dailink[] = {
-	/* Front End DAI links */
+	 
 	[MERR_DPCM_AUDIO] = {
 		.name = "Audio Port",
 		.stream_name = "Audio",
@@ -369,9 +333,9 @@ static struct snd_soc_dai_link cht_dailink[] = {
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP2 - Codec */
+		 
 		.name = "SSP2-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -419,14 +383,14 @@ static int cht_resume_post(struct snd_soc_card *card)
 	return 0;
 }
 
-/* use space before codec name to simplify card ID, and simplify driver name */
-#define SOF_CARD_NAME "bytcht rt5672" /* card name will be 'sof-bytcht rt5672' */
+ 
+#define SOF_CARD_NAME "bytcht rt5672"  
 #define SOF_DRIVER_NAME "SOF"
 
 #define CARD_NAME "cht-bsw-rt5672"
-#define DRIVER_NAME NULL /* card name will be used for driver name */
+#define DRIVER_NAME NULL  
 
-/* SoC card */
+ 
 static struct snd_soc_card snd_soc_card_cht = {
 	.owner = THIS_MODULE,
 	.dai_link = cht_dailink,
@@ -460,7 +424,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	strcpy(drv->codec_name, RT5672_I2C_DEFAULT);
 
-	/* find index of codec dai */
+	 
 	for (i = 0; i < ARRAY_SIZE(cht_dailink); i++) {
 		if (!strcmp(cht_dailink[i].codecs->name, RT5672_I2C_DEFAULT)) {
 			dai_index = i;
@@ -468,7 +432,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* fixup codec name based on HID */
+	 
 	adev = acpi_dev_get_first_match_dev(mach->id, NULL, -1);
 	if (adev) {
 		snprintf(drv->codec_name, sizeof(drv->codec_name),
@@ -477,13 +441,13 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 	}
 	acpi_dev_put(adev);
 
-	/* Use SSP0 on Bay Trail CR devices */
+	 
 	if (soc_intel_is_byt() && mach->mach_params.acpi_ipc_irq_index == 0) {
 		cht_dailink[dai_index].cpus->dai_name = "ssp0-port";
 		drv->use_ssp0 = true;
 	}
 
-	/* override platform name, if required */
+	 
 	snd_soc_card_cht.dev = &pdev->dev;
 	platform_name = mach->mach_params.platform;
 
@@ -505,7 +469,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 
 	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
 
-	/* set card and driver name */
+	 
 	if (sof_parent) {
 		snd_soc_card_cht.name = SOF_CARD_NAME;
 		snd_soc_card_cht.driver_name = SOF_DRIVER_NAME;
@@ -514,11 +478,11 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
 		snd_soc_card_cht.driver_name = DRIVER_NAME;
 	}
 
-	/* set pm ops */
+	 
 	if (sof_parent)
 		pdev->dev.driver->pm = &snd_soc_pm_ops;
 
-	/* register the soc card */
+	 
 	ret_val = devm_snd_soc_register_card(&pdev->dev, &snd_soc_card_cht);
 	if (ret_val) {
 		dev_err(&pdev->dev,

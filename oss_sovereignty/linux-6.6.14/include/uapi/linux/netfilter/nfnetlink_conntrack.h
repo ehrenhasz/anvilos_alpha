@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _IPCONNTRACK_NETLINK_H
 #define _IPCONNTRACK_NETLINK_H
 #include <linux/netfilter/nfnetlink.h>
@@ -34,7 +34,7 @@ enum ctattr_type {
 	CTA_PROTOINFO,
 	CTA_HELP,
 	CTA_NAT_SRC,
-#define CTA_NAT	CTA_NAT_SRC	/* backwards compatibility */
+#define CTA_NAT	CTA_NAT_SRC	 
 	CTA_TIMEOUT,
 	CTA_MARK,
 	CTA_COUNTERS_ORIG,
@@ -47,7 +47,7 @@ enum ctattr_type {
 	CTA_NAT_SEQ_ADJ_ORIG	= CTA_SEQ_ADJ_ORIG,
 	CTA_SEQ_ADJ_REPLY,
 	CTA_NAT_SEQ_ADJ_REPLY	= CTA_SEQ_ADJ_REPLY,
-	CTA_SECMARK,		/* obsolete */
+	CTA_SECMARK,		 
 	CTA_ZONE,
 	CTA_SECCTX,
 	CTA_TIMESTAMP,
@@ -136,10 +136,10 @@ enum ctattr_protoinfo_sctp {
 
 enum ctattr_counters {
 	CTA_COUNTERS_UNSPEC,
-	CTA_COUNTERS_PACKETS,		/* 64bit counters */
-	CTA_COUNTERS_BYTES,		/* 64bit counters */
-	CTA_COUNTERS32_PACKETS,		/* old 32bit counters, unused */
-	CTA_COUNTERS32_BYTES,		/* old 32bit counters, unused */
+	CTA_COUNTERS_PACKETS,		 
+	CTA_COUNTERS_BYTES,		 
+	CTA_COUNTERS32_PACKETS,		 
+	CTA_COUNTERS32_BYTES,		 
 	CTA_COUNTERS_PAD,
 	__CTA_COUNTERS_MAX
 };
@@ -244,13 +244,13 @@ enum ctattr_secctx {
 
 enum ctattr_stats_cpu {
 	CTA_STATS_UNSPEC,
-	CTA_STATS_SEARCHED,	/* no longer used */
+	CTA_STATS_SEARCHED,	 
 	CTA_STATS_FOUND,
-	CTA_STATS_NEW,		/* no longer used */
+	CTA_STATS_NEW,		 
 	CTA_STATS_INVALID,
-	CTA_STATS_IGNORE,	/* no longer used */
-	CTA_STATS_DELETE,	/* no longer used */
-	CTA_STATS_DELETE_LIST,	/* no longer used */
+	CTA_STATS_IGNORE,	 
+	CTA_STATS_DELETE,	 
+	CTA_STATS_DELETE_LIST,	 
 	CTA_STATS_INSERT,
 	CTA_STATS_INSERT_FAILED,
 	CTA_STATS_DROP,
@@ -288,4 +288,4 @@ enum ctattr_filter {
 };
 #define CTA_FILTER_MAX (__CTA_FILTER_MAX - 1)
 
-#endif /* _IPCONNTRACK_NETLINK_H */
+#endif  

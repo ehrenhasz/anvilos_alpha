@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hid-cp2112.c - Silicon Labs HID USB to SMBus master bridge
- * Copyright (c) 2013,2014 Uplogix, Inc.
- * David Barksdale <dbarksdale@uplogix.com>
- */
 
-/*
- * The Silicon Labs CP2112 chip is a USB HID device which provides an
- * SMBus controller for talking to slave devices and 8 GPIO pins. The
- * host communicates with the CP2112 via raw HID reports.
- *
- * Data Sheet:
- *   https://www.silabs.com/Support%20Documents/TechnicalDocs/CP2112.pdf
- * Programming Interface Specification:
- *   https://www.silabs.com/documents/public/application-notes/an495-cp2112-interface-specification.pdf
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -72,37 +59,35 @@ enum {
 };
 
 struct cp2112_smbus_config_report {
-	u8 report;		/* CP2112_SMBUS_CONFIG */
-	__be32 clock_speed;	/* Hz */
-	u8 device_address;	/* Stored in the upper 7 bits */
-	u8 auto_send_read;	/* 1 = enabled, 0 = disabled */
-	__be16 write_timeout;	/* ms, 0 = no timeout */
-	__be16 read_timeout;	/* ms, 0 = no timeout */
-	u8 scl_low_timeout;	/* 1 = enabled, 0 = disabled */
-	__be16 retry_time;	/* # of retries, 0 = no limit */
+	u8 report;		 
+	__be32 clock_speed;	 
+	u8 device_address;	 
+	u8 auto_send_read;	 
+	__be16 write_timeout;	 
+	__be16 read_timeout;	 
+	u8 scl_low_timeout;	 
+	__be16 retry_time;	 
 } __packed;
 
 struct cp2112_usb_config_report {
-	u8 report;	/* CP2112_USB_CONFIG */
-	__le16 vid;	/* Vendor ID */
-	__le16 pid;	/* Product ID */
-	u8 max_power;	/* Power requested in 2mA units */
-	u8 power_mode;	/* 0x00 = bus powered
-			   0x01 = self powered & regulator off
-			   0x02 = self powered & regulator on */
+	u8 report;	 
+	__le16 vid;	 
+	__le16 pid;	 
+	u8 max_power;	 
+	u8 power_mode;	 
 	u8 release_major;
 	u8 release_minor;
-	u8 mask;	/* What fields to program */
+	u8 mask;	 
 } __packed;
 
 struct cp2112_read_req_report {
-	u8 report;	/* CP2112_DATA_READ_REQUEST */
+	u8 report;	 
 	u8 slave_address;
 	__be16 length;
 } __packed;
 
 struct cp2112_write_read_req_report {
-	u8 report;	/* CP2112_DATA_WRITE_READ_REQUEST */
+	u8 report;	 
 	u8 slave_address;
 	__be16 length;
 	u8 target_address_length;
@@ -110,42 +95,39 @@ struct cp2112_write_read_req_report {
 } __packed;
 
 struct cp2112_write_req_report {
-	u8 report;	/* CP2112_DATA_WRITE_REQUEST */
+	u8 report;	 
 	u8 slave_address;
 	u8 length;
 	u8 data[61];
 } __packed;
 
 struct cp2112_force_read_report {
-	u8 report;	/* CP2112_DATA_READ_FORCE_SEND */
+	u8 report;	 
 	__be16 length;
 } __packed;
 
 struct cp2112_xfer_status_report {
-	u8 report;	/* CP2112_TRANSFER_STATUS_RESPONSE */
-	u8 status0;	/* STATUS0_* */
-	u8 status1;	/* STATUS1_* */
+	u8 report;	 
+	u8 status0;	 
+	u8 status1;	 
 	__be16 retries;
 	__be16 length;
 } __packed;
 
 struct cp2112_string_report {
-	u8 dummy;		/* force .string to be aligned */
+	u8 dummy;		 
 	struct_group_attr(contents, __packed,
-		u8 report;		/* CP2112_*_STRING */
-		u8 length;		/* length in bytes of everything after .report */
-		u8 type;		/* USB_DT_STRING */
-		wchar_t string[30];	/* UTF16_LITTLE_ENDIAN string */
+		u8 report;		 
+		u8 length;		 
+		u8 type;		 
+		wchar_t string[30];	 
 	);
 } __packed;
 
-/* Number of times to request transfer status before giving up waiting for a
-   transfer to complete. This may need to be changed if SMBUS clock, retries,
-   or read/write/scl_low timeout settings are changed. */
+ 
 static const int XFER_STATUS_RETRIES = 10;
 
-/* Time in ms to wait for a CP2112_DATA_READ_RESPONSE or
-   CP2112_TRANSFER_STATUS_RESPONSE. */
+ 
 static const int RESPONSE_TIMEOUT = 50;
 
 static const struct hid_device_id cp2112_devices[] = {
@@ -307,10 +289,7 @@ static int cp2112_gpio_direction_output(struct gpio_chip *chip,
 
 	mutex_unlock(&dev->lock);
 
-	/*
-	 * Set gpio value when output direction is already set,
-	 * as specified in AN495, Rev. 0.2, cpt. 4.4
-	 */
+	 
 	cp2112_gpio_set(chip, offset, value);
 
 	return 0;
@@ -361,14 +340,7 @@ static int cp2112_wait(struct cp2112_device *dev, atomic_t *avail)
 {
 	int ret = 0;
 
-	/* We have sent either a CP2112_TRANSFER_STATUS_REQUEST or a
-	 * CP2112_DATA_READ_FORCE_SEND and we are waiting for the response to
-	 * come in cp2112_raw_event or timeout. There will only be one of these
-	 * in flight at any one time. The timeout is extremely large and is a
-	 * last resort if the CP2112 has died. If we do timeout we don't expect
-	 * to receive the response which would cause data races, it's not like
-	 * we can do anything about it anyway.
-	 */
+	 
 	ret = wait_event_interruptible_timeout(dev->wait,
 		atomic_read(avail), msecs_to_jiffies(RESPONSE_TIMEOUT));
 	if (-ERESTARTSYS == ret)
@@ -544,7 +516,7 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		}
 		if (count < 0)
 			return count;
-	} else if (dev->hwversion > 1 &&  /* no repeated start in rev 1 */
+	} else if (dev->hwversion > 1 &&   
 		   num == 2 &&
 		   msgs[0].addr == msgs[1].addr &&
 		   !(msgs[0].flags & I2C_M_RD) && (msgs[1].flags & I2C_M_RD)) {
@@ -608,14 +580,7 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		}
 		count += ret;
 		if (count > read_length) {
-			/*
-			 * The hardware returned too much data.
-			 * This is mostly harmless because cp2112_read()
-			 * has a limit check so didn't overrun our
-			 * buffer.  Nevertheless, we return an error
-			 * because something is seriously wrong and
-			 * it shouldn't go unnoticed.
-			 */
+			 
 			hid_err(hdev, "long read: %d > %zd\n",
 				ret, read_length - count + ret);
 			ret = -EIO;
@@ -623,7 +588,7 @@ static int cp2112_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 		}
 	}
 
-	/* return the number of transferred messages */
+	 
 	ret = num;
 
 power_normal:
@@ -1037,12 +1002,7 @@ static const struct attribute_group cp2112_attr_group = {
 	}
 };
 
-/* Chmoding our sysfs attributes is simply a way to expose which fields in the
- * PROM have already been programmed. We do not depend on this preventing
- * writing to these attributes since the CP2112 will simply ignore writes to
- * already-programmed fields. This is why there is no sense in fixing this
- * racy behaviour.
- */
+ 
 static void chmod_sysfs_attrs(struct hid_device *hdev)
 {
 	struct attribute **attr;
@@ -1100,7 +1060,7 @@ static void cp2112_gpio_poll_callback(struct work_struct *work)
 	int irq, virq, ret;
 
 	ret = cp2112_gpio_get_all(&dev->gc);
-	if (ret == -ENODEV) /* the hardware has been disconnected */
+	if (ret == -ENODEV)  
 		return;
 	if (ret < 0)
 		goto exit;
@@ -1118,7 +1078,7 @@ static void cp2112_gpio_poll_callback(struct work_struct *work)
 		irq_type = irqd_get_trigger_type(d);
 
 		if (gpio_mask & BIT(virq)) {
-			/* Level High */
+			 
 
 			if (irq_type & IRQ_TYPE_LEVEL_HIGH)
 				handle_nested_irq(irq);
@@ -1127,7 +1087,7 @@ static void cp2112_gpio_poll_callback(struct work_struct *work)
 			    !(dev->gpio_prev_state & BIT(virq)))
 				handle_nested_irq(irq);
 		} else {
-			/* Level Low */
+			 
 
 			if (irq_type & IRQ_TYPE_LEVEL_LOW)
 				handle_nested_irq(irq);
@@ -1301,7 +1261,7 @@ static int cp2112_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
 	girq = &dev->gc.irq;
 	gpio_irq_chip_set_chip(girq, &cp2112_gpio_irqchip);
-	/* The event comes from the outside so no parent handler */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -1354,12 +1314,7 @@ static void cp2112_remove(struct hid_device *hdev)
 	}
 
 	gpiochip_remove(&dev->gc);
-	/* i2c_del_adapter has finished removing all i2c devices from our
-	 * adapter. Well behaved devices should no longer call our cp2112_xfer
-	 * and should have waited for any pending calls to finish. It has also
-	 * waited for device_unregister(&adap->dev) to complete. Therefore we
-	 * can safely free our struct cp2112_device.
-	 */
+	 
 	hid_hw_close(hdev);
 	hid_hw_stop(hdev);
 }

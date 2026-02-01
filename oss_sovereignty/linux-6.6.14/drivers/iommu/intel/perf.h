@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * perf.h - performance monitor header
- *
- * Copyright (C) 2021 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+ 
+ 
 
 enum latency_type {
 	DMAR_LATENCY_INV_IOTLB = 0,
@@ -16,13 +10,13 @@ enum latency_type {
 };
 
 enum latency_count {
-	COUNTS_10e2 = 0,	/* < 0.1us	*/
-	COUNTS_10e3,		/* 0.1us ~ 1us	*/
-	COUNTS_10e4,		/* 1us ~ 10us	*/
-	COUNTS_10e5,		/* 10us ~ 100us	*/
-	COUNTS_10e6,		/* 100us ~ 1ms	*/
-	COUNTS_10e7,		/* 1ms ~ 10ms	*/
-	COUNTS_10e8_plus,	/* 10ms and plus*/
+	COUNTS_10e2 = 0,	 
+	COUNTS_10e3,		 
+	COUNTS_10e4,		 
+	COUNTS_10e5,		 
+	COUNTS_10e6,		 
+	COUNTS_10e7,		 
+	COUNTS_10e8_plus,	 
 	COUNTS_MIN,
 	COUNTS_MAX,
 	COUNTS_SUM,
@@ -70,4 +64,4 @@ dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
 {
 	return 0;
 }
-#endif /* CONFIG_DMAR_PERF */
+#endif  

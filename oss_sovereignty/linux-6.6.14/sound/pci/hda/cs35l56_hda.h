@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * HDA audio driver for Cirrus Logic CS35L56 smart amp
- *
- * Copyright (C) 2023 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+ 
 
 #ifndef __CS35L56_HDA_H__
 #define __CS35L56_HDA_H__
@@ -45,4 +39,4 @@ extern const struct dev_pm_ops cs35l56_hda_pm_ops;
 int cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id);
 void cs35l56_hda_remove(struct device *dev);
 
-#endif /*__CS35L56_HDA_H__*/
+#endif  

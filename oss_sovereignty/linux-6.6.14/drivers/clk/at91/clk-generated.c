@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2015 Atmel Corporation,
- *                     Nicolas Ferre <nicolas.ferre@atmel.com>
- *
- * Based on clk-programmable & clk-peripheral drivers by Boris BREZILLON.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -142,7 +137,7 @@ static int clk_generated_determine_rate(struct clk_hw *hw,
 	int i;
 	u32 div;
 
-	/* do not look for a rate that is outside of our range */
+	 
 	if (gck->range.max && req->rate > gck->range.max)
 		req->rate = gck->range.max;
 	if (gck->range.min && req->rate < gck->range.min)
@@ -173,15 +168,7 @@ static int clk_generated_determine_rate(struct clk_hw *hw,
 			break;
 	}
 
-	/*
-	 * The audio_pll rate can be modified, unlike the five others clocks
-	 * that should never be altered.
-	 * The audio_pll can technically be used by multiple consumers. However,
-	 * with the rate locking, the first consumer to enable to clock will be
-	 * the one definitely setting the rate of the clock.
-	 * Since audio IPs are most likely to request the same rate, we enforce
-	 * that the only clks able to modify gck rate are those of audio IPs.
-	 */
+	 
 
 	if (gck->chg_pid < 0)
 		goto end;
@@ -216,7 +203,7 @@ end:
 	return 0;
 }
 
-/* No modification of hardware as we have the flag CLK_SET_PARENT_GATE set */
+ 
 static int clk_generated_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct clk_generated *gck = to_clk_generated(hw);
@@ -239,7 +226,7 @@ static u8 clk_generated_get_parent(struct clk_hw *hw)
 	return gck->parent_id;
 }
 
-/* No modification of hardware as we have the flag CLK_SET_RATE_GATE set */
+ 
 static int clk_generated_set_rate(struct clk_hw *hw,
 				  unsigned long rate,
 				  unsigned long parent_rate)
@@ -291,15 +278,7 @@ static const struct clk_ops generated_ops = {
 	.restore_context = clk_generated_restore_context,
 };
 
-/**
- * clk_generated_startup - Initialize a given clock to its default parent and
- * divisor parameter.
- *
- * @gck:	Generated clock to set the startup parameters for.
- *
- * Take parameters from the hardware and update local clock configuration
- * accordingly.
- */
+ 
 static void clk_generated_startup(struct clk_generated *gck)
 {
 	u32 tmp;

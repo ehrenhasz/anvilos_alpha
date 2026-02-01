@@ -1,45 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2017 - 2018 Covalent IO, Inc. http://covalent.io */
-
-#ifndef _LINUX_SKMSG_H
-#define _LINUX_SKMSG_H
-
-#include <linux/bpf.h>
-#include <linux/filter.h>
-#include <linux/scatterlist.h>
-#include <linux/skbuff.h>
-
-#include <net/sock.h>
-#include <net/tcp.h>
-#include <net/strparser.h>
-
-#define MAX_MSG_FRAGS			MAX_SKB_FRAGS
-#define NR_MSG_FRAG_IDS			(MAX_MSG_FRAGS + 1)
-
-enum __sk_action {
-	__SK_DROP = 0,
-	__SK_PASS,
-	__SK_REDIRECT,
-	__SK_NONE,
-};
-
-struct sk_msg_sg {
-	u32				start;
-	u32				curr;
-	u32				end;
-	u32				size;
-	u32				copybreak;
-	DECLARE_BITMAP(copy, MAX_MSG_FRAGS + 2);
-	/* The extra two elements:
-	 * 1) used for chaining the front and sections when the list becomes
-	 *    partitioned (e.g. end < start). The crypto APIs require the
-	 *    chaining;
-	 * 2) to chain tailer SG entries after the message.
-	 */
+ 
+ 
 	struct scatterlist		data[MAX_MSG_FRAGS + 2];
 };
 
-/* UAPI in filter.c depends on struct sk_msg_sg being first element. */
+ 
 struct sk_msg {
 	struct sk_msg_sg		sg;
 	void				*data;
@@ -82,7 +46,7 @@ struct sk_psock {
 	u32				apply_bytes;
 	u32				cork_bytes;
 	u32				eval;
-	bool				redir_ingress; /* undefined if sk_redir is null */
+	bool				redir_ingress;  
 	struct sk_msg			*cork;
 	struct sk_psock_progs		progs;
 #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
@@ -510,7 +474,7 @@ static inline bool sk_is_udp(const struct sock *sk)
 
 #define BPF_F_STRPARSER	(1UL << 1)
 
-/* We only have two bits so far. */
+ 
 #define BPF_F_PTR_MASK ~(BPF_F_INGRESS | BPF_F_STRPARSER)
 
 static inline bool skb_bpf_strparser(const struct sk_buff *skb)
@@ -556,5 +520,5 @@ static inline void skb_bpf_redirect_clear(struct sk_buff *skb)
 {
 	skb->_sk_redir = 0;
 }
-#endif /* CONFIG_NET_SOCK_MSG */
-#endif /* _LINUX_SKMSG_H */
+#endif  
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/i2c/busses/i2c-tegra.c
- *
- * Copyright (C) 2010 Google, Inc.
- * Author: Colin Cross <ccross@android.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -134,74 +129,23 @@
 #define I2C_MST_FIFO_STATUS_TX			GENMASK(23, 16)
 #define I2C_MST_FIFO_STATUS_RX			GENMASK(7, 0)
 
-/* configuration load timeout in microseconds */
+ 
 #define I2C_CONFIG_LOAD_TIMEOUT			1000000
 
-/* packet header size in bytes */
+ 
 #define I2C_PACKET_HEADER_SIZE			12
 
-/*
- * I2C Controller will use PIO mode for transfers up to 32 bytes in order to
- * avoid DMA overhead, otherwise external APB DMA controller will be used.
- * Note that the actual MAX PIO length is 20 bytes because 32 bytes include
- * I2C_PACKET_HEADER_SIZE.
- */
+ 
 #define I2C_PIO_MODE_PREFERRED_LEN		32
 
-/*
- * msg_end_type: The bus control which needs to be sent at end of transfer.
- * @MSG_END_STOP: Send stop pulse.
- * @MSG_END_REPEAT_START: Send repeat-start.
- * @MSG_END_CONTINUE: Don't send stop or repeat-start.
- */
+ 
 enum msg_end_type {
 	MSG_END_STOP,
 	MSG_END_REPEAT_START,
 	MSG_END_CONTINUE,
 };
 
-/**
- * struct tegra_i2c_hw_feature : per hardware generation features
- * @has_continue_xfer_support: continue-transfer supported
- * @has_per_pkt_xfer_complete_irq: Has enable/disable capability for transfer
- *		completion interrupt on per packet basis.
- * @has_config_load_reg: Has the config load register to load the new
- *		configuration.
- * @clk_divisor_hs_mode: Clock divisor in HS mode.
- * @clk_divisor_std_mode: Clock divisor in standard mode. It is
- *		applicable if there is no fast clock source i.e. single clock
- *		source.
- * @clk_divisor_fast_mode: Clock divisor in fast mode. It is
- *		applicable if there is no fast clock source i.e. single clock
- *		source.
- * @clk_divisor_fast_plus_mode: Clock divisor in fast mode plus. It is
- *		applicable if there is no fast clock source (i.e. single
- *		clock source).
- * @has_multi_master_mode: The I2C controller supports running in single-master
- *		or multi-master mode.
- * @has_slcg_override_reg: The I2C controller supports a register that
- *		overrides the second level clock gating.
- * @has_mst_fifo: The I2C controller contains the new MST FIFO interface that
- *		provides additional features and allows for longer messages to
- *		be transferred in one go.
- * @quirks: I2C adapter quirks for limiting write/read transfer size and not
- *		allowing 0 length transfers.
- * @supports_bus_clear: Bus Clear support to recover from bus hang during
- *		SDA stuck low from device for some unknown reasons.
- * @has_apb_dma: Support of APBDMA on corresponding Tegra chip.
- * @tlow_std_mode: Low period of the clock in standard mode.
- * @thigh_std_mode: High period of the clock in standard mode.
- * @tlow_fast_fastplus_mode: Low period of the clock in fast/fast-plus modes.
- * @thigh_fast_fastplus_mode: High period of the clock in fast/fast-plus modes.
- * @setup_hold_time_std_mode: Setup and hold time for start and stop conditions
- *		in standard mode.
- * @setup_hold_time_fast_fast_plus_mode: Setup and hold time for start and stop
- *		conditions in fast/fast-plus modes.
- * @setup_hold_time_hs_mode: Setup and hold time for start and stop conditions
- *		in HS mode.
- * @has_interface_timing_reg: Has interface timing register to program the tuned
- *		timing settings.
- */
+ 
 struct tegra_i2c_hw_feature {
 	bool has_continue_xfer_support;
 	bool has_per_pkt_xfer_complete_irq;
@@ -226,37 +170,7 @@ struct tegra_i2c_hw_feature {
 	bool has_interface_timing_reg;
 };
 
-/**
- * struct tegra_i2c_dev - per device I2C context
- * @dev: device reference for power management
- * @hw: Tegra I2C HW feature
- * @adapter: core I2C layer adapter information
- * @div_clk: clock reference for div clock of I2C controller
- * @clocks: array of I2C controller clocks
- * @nclocks: number of clocks in the array
- * @rst: reset control for the I2C controller
- * @base: ioremapped registers cookie
- * @base_phys: physical base address of the I2C controller
- * @cont_id: I2C controller ID, used for packet header
- * @irq: IRQ number of transfer complete interrupt
- * @is_dvc: identifies the DVC I2C controller, has a different register layout
- * @is_vi: identifies the VI I2C controller, has a different register layout
- * @msg_complete: transfer completion notifier
- * @msg_buf_remaining: size of unsent data in the message buffer
- * @msg_len: length of message in current transfer
- * @msg_err: error code for completed message
- * @msg_buf: pointer to current message data
- * @msg_read: indicates that the transfer is a read access
- * @timings: i2c timings information like bus frequency
- * @multimaster_mode: indicates that I2C controller is in multi-master mode
- * @dma_chan: DMA channel
- * @dma_phys: handle to DMA resources
- * @dma_buf: pointer to allocated DMA buffer
- * @dma_buf_size: DMA buffer size
- * @dma_mode: indicates active DMA transfer
- * @dma_complete: DMA completion notifier
- * @atomic_mode: indicates active atomic transfer
- */
+ 
 struct tegra_i2c_dev {
 	struct device *dev;
 	struct i2c_adapter adapter;
@@ -310,10 +224,7 @@ static u32 dvc_readl(struct tegra_i2c_dev *i2c_dev, unsigned int reg)
 	return readl_relaxed(i2c_dev->base + reg);
 }
 
-/*
- * If necessary, i2c_writel() and i2c_readl() will offset the register
- * in order to talk to the I2C block inside the DVC block.
- */
+ 
 static u32 tegra_i2c_reg_addr(struct tegra_i2c_dev *i2c_dev, unsigned int reg)
 {
 	if (IS_DVC(i2c_dev))
@@ -328,7 +239,7 @@ static void i2c_writel(struct tegra_i2c_dev *i2c_dev, u32 val, unsigned int reg)
 {
 	writel_relaxed(val, i2c_dev->base + tegra_i2c_reg_addr(i2c_dev, reg));
 
-	/* read back register to make sure that register writes completed */
+	 
 	if (reg != I2C_TX_FIFO)
 		readl_relaxed(i2c_dev->base + tegra_i2c_reg_addr(i2c_dev, reg));
 	else if (IS_VI(i2c_dev))
@@ -351,12 +262,7 @@ static void i2c_writesl_vi(struct tegra_i2c_dev *i2c_dev, void *data,
 {
 	u32 *data32 = data;
 
-	/*
-	 * VI I2C controller has known hardware bug where writes get stuck
-	 * when immediate multiple writes happen to TX_FIFO register.
-	 * Recommended software work around is to read I2C register after
-	 * each write to TX_FIFO register to flush out the data.
-	 */
+	 
 	while (len--)
 		i2c_writel(i2c_dev, *data32++, reg);
 }
@@ -452,11 +358,7 @@ static int tegra_i2c_init_dma(struct tegra_i2c_dev *i2c_dev)
 		return 0;
 	}
 
-	/*
-	 * The same channel will be used for both RX and TX.
-	 * Keeping the name as "tx" for backward compatibility
-	 * with existing devicetrees.
-	 */
+	 
 	i2c_dev->dma_chan = dma_request_chan(i2c_dev->dev, "tx");
 	if (IS_ERR(i2c_dev->dma_chan)) {
 		err = PTR_ERR(i2c_dev->dma_chan);
@@ -492,13 +394,7 @@ err_out:
 	return err;
 }
 
-/*
- * One of the Tegra I2C blocks is inside the DVC (Digital Voltage Controller)
- * block.  This block is identical to the rest of the I2C blocks, except that
- * it only supports master mode, it has registers moved around, and it needs
- * some extra init to get it into I2C mode.  The register moves are handled
- * by i2c_readl() and i2c_writel().
- */
+ 
 static void tegra_dvc_init(struct tegra_i2c_dev *i2c_dev)
 {
 	u32 val;
@@ -611,14 +507,7 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
 	struct i2c_timings *t = &i2c_dev->timings;
 	int err;
 
-	/*
-	 * The reset shouldn't ever fail in practice. The failure will be a
-	 * sign of a severe problem that needs to be resolved. Still we don't
-	 * want to fail the initialization completely because this may break
-	 * kernel boot up since voltage regulators use I2C. Hence, we will
-	 * emit a noisy warning on error, which won't stay unnoticed and
-	 * won't hose machine entirely.
-	 */
+	 
 	if (handle)
 		err = acpi_evaluate_object(handle, "_RST", NULL, NULL);
 	else
@@ -662,7 +551,7 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
 		break;
 	}
 
-	/* make sure clock divisor programmed correctly */
+	 
 	clk_divisor = FIELD_PREP(I2C_CLK_DIVISOR_HSMODE,
 				 i2c_dev->hw->clk_divisor_hs_mode) |
 		      FIELD_PREP(I2C_CLK_DIVISOR_STD_FAST_MODE, non_hs_mode);
@@ -674,10 +563,7 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
 		i2c_writel(i2c_dev, val, I2C_INTERFACE_TIMING_0);
 	}
 
-	/*
-	 * Configure setup and hold times only when tsu_thd is non-zero.
-	 * Otherwise, preserve the chip default values.
-	 */
+	 
 	if (i2c_dev->hw->has_interface_timing_reg && tsu_thd)
 		i2c_writel(i2c_dev, tsu_thd, I2C_INTERFACE_TIMING_1);
 
@@ -717,12 +603,7 @@ static int tegra_i2c_disable_packet_mode(struct tegra_i2c_dev *i2c_dev)
 {
 	u32 cnfg;
 
-	/*
-	 * NACK interrupt is generated before the I2C controller generates
-	 * the STOP condition on the bus.  So, wait for 2 clock periods
-	 * before disabling the controller so that the STOP condition has
-	 * been delivered properly.
-	 */
+	 
 	udelay(DIV_ROUND_UP(2 * 1000000, i2c_dev->timings.bus_freq_hz));
 
 	cnfg = i2c_readl(i2c_dev, I2C_CNFG);
@@ -739,10 +620,7 @@ static int tegra_i2c_empty_rx_fifo(struct tegra_i2c_dev *i2c_dev)
 	u8 *buf = i2c_dev->msg_buf;
 	u32 val;
 
-	/*
-	 * Catch overflow due to message fully sent before the check for
-	 * RX FIFO availability.
-	 */
+	 
 	if (WARN_ON_ONCE(!(i2c_dev->msg_buf_remaining)))
 		return -EINVAL;
 
@@ -754,7 +632,7 @@ static int tegra_i2c_empty_rx_fifo(struct tegra_i2c_dev *i2c_dev)
 		rx_fifo_avail = FIELD_GET(I2C_FIFO_STATUS_RX, val);
 	}
 
-	/* round down to exclude partial word at the end of buffer */
+	 
 	words_to_transfer = buf_remaining / BYTES_PER_FIFO_WORD;
 	if (words_to_transfer > rx_fifo_avail)
 		words_to_transfer = rx_fifo_avail;
@@ -765,16 +643,9 @@ static int tegra_i2c_empty_rx_fifo(struct tegra_i2c_dev *i2c_dev)
 	buf_remaining -= words_to_transfer * BYTES_PER_FIFO_WORD;
 	rx_fifo_avail -= words_to_transfer;
 
-	/*
-	 * If there is a partial word at the end of buffer, handle it
-	 * manually to prevent overwriting past the end of buffer.
-	 */
+	 
 	if (rx_fifo_avail > 0 && buf_remaining > 0) {
-		/*
-		 * buf_remaining > 3 check not needed as rx_fifo_avail == 0
-		 * when (words_to_transfer was > rx_fifo_avail) earlier
-		 * in this function.
-		 */
+		 
 		val = i2c_readl(i2c_dev, I2C_RX_FIFO);
 		val = cpu_to_le32(val);
 		memcpy(buf, &val, buf_remaining);
@@ -782,7 +653,7 @@ static int tegra_i2c_empty_rx_fifo(struct tegra_i2c_dev *i2c_dev)
 		rx_fifo_avail--;
 	}
 
-	/* RX FIFO must be drained, otherwise it's an Overflow case. */
+	 
 	if (WARN_ON_ONCE(rx_fifo_avail))
 		return -EINVAL;
 
@@ -807,26 +678,15 @@ static int tegra_i2c_fill_tx_fifo(struct tegra_i2c_dev *i2c_dev)
 		tx_fifo_avail = FIELD_GET(I2C_FIFO_STATUS_TX, val);
 	}
 
-	/* round down to exclude partial word at the end of buffer */
+	 
 	words_to_transfer = buf_remaining / BYTES_PER_FIFO_WORD;
 
-	/*
-	 * This hunk pushes 4 bytes at a time into the TX FIFO.
-	 *
-	 * It's very common to have < 4 bytes, hence there is no word
-	 * to push if we have less than 4 bytes to transfer.
-	 */
+	 
 	if (words_to_transfer) {
 		if (words_to_transfer > tx_fifo_avail)
 			words_to_transfer = tx_fifo_avail;
 
-		/*
-		 * Update state before writing to FIFO.  Note that this may
-		 * cause us to finish writing all bytes (AKA buf_remaining
-		 * goes to 0), hence we have a potential for an interrupt
-		 * (PACKET_XFER_COMPLETE is not maskable), but GIC interrupt
-		 * is disabled at this point.
-		 */
+		 
 		buf_remaining -= words_to_transfer * BYTES_PER_FIFO_WORD;
 		tx_fifo_avail -= words_to_transfer;
 
@@ -841,17 +701,9 @@ static int tegra_i2c_fill_tx_fifo(struct tegra_i2c_dev *i2c_dev)
 		buf += words_to_transfer * BYTES_PER_FIFO_WORD;
 	}
 
-	/*
-	 * If there is a partial word at the end of buffer, handle it manually
-	 * to prevent reading past the end of buffer, which could cross a page
-	 * boundary and fault.
-	 */
+	 
 	if (tx_fifo_avail > 0 && buf_remaining > 0) {
-		/*
-		 * buf_remaining > 3 check not needed as tx_fifo_avail == 0
-		 * when (words_to_transfer was > tx_fifo_avail) earlier
-		 * in this function for non-zero words_to_transfer.
-		 */
+		 
 		memcpy(&val, buf, buf_remaining);
 		val = le32_to_cpu(val);
 
@@ -890,21 +742,14 @@ static irqreturn_t tegra_i2c_isr(int irq, void *dev_id)
 		goto err;
 	}
 
-	/*
-	 * I2C transfer is terminated during the bus clear, so skip
-	 * processing the other interrupts.
-	 */
+	 
 	if (i2c_dev->hw->supports_bus_clear && (status & I2C_INT_BUS_CLR_DONE))
 		goto err;
 
 	if (!i2c_dev->dma_mode) {
 		if (i2c_dev->msg_read && (status & I2C_INT_RX_FIFO_DATA_REQ)) {
 			if (tegra_i2c_empty_rx_fifo(i2c_dev)) {
-				/*
-				 * Overflow error condition: message fully sent,
-				 * with no XFER_COMPLETE interrupt but hardware
-				 * asks to transfer more.
-				 */
+				 
 				i2c_dev->msg_err |= I2C_ERR_RX_BUFFER_OVERFLOW;
 				goto err;
 			}
@@ -923,21 +768,11 @@ static irqreturn_t tegra_i2c_isr(int irq, void *dev_id)
 	if (IS_DVC(i2c_dev))
 		dvc_writel(i2c_dev, DVC_STATUS_I2C_DONE_INTR, DVC_STATUS);
 
-	/*
-	 * During message read XFER_COMPLETE interrupt is triggered prior to
-	 * DMA completion and during message write XFER_COMPLETE interrupt is
-	 * triggered after DMA completion.
-	 *
-	 * PACKETS_XFER_COMPLETE indicates completion of all bytes of transfer,
-	 * so forcing msg_buf_remaining to 0 in DMA mode.
-	 */
+	 
 	if (status & I2C_INT_PACKET_XFER_COMPLETE) {
 		if (i2c_dev->dma_mode)
 			i2c_dev->msg_buf_remaining = 0;
-		/*
-		 * Underflow error condition: XFER_COMPLETE before message
-		 * fully sent.
-		 */
+		 
 		if (WARN_ON_ONCE(i2c_dev->msg_buf_remaining)) {
 			i2c_dev->msg_err |= I2C_ERR_UNKNOWN_INTERRUPT;
 			goto err;
@@ -946,7 +781,7 @@ static irqreturn_t tegra_i2c_isr(int irq, void *dev_id)
 	}
 	goto done;
 err:
-	/* mask all interrupts on error */
+	 
 	tegra_i2c_mask_irq(i2c_dev,
 			   I2C_INT_NO_ACK |
 			   I2C_INT_ARBITRATION_LOST |
@@ -1079,16 +914,7 @@ static unsigned long tegra_i2c_wait_completion(struct tegra_i2c_dev *i2c_dev,
 						  msecs_to_jiffies(timeout_ms));
 		disable_irq(i2c_dev->irq);
 
-		/*
-		 * Under some rare circumstances (like running KASAN +
-		 * NFS root) CPU, which handles interrupt, may stuck in
-		 * uninterruptible state for a significant time.  In this
-		 * case we will get timeout if I2C transfer is running on
-		 * a sibling CPU, despite of IRQ being raised.
-		 *
-		 * In order to handle this rare condition, the IRQ status
-		 * needs to be checked after timeout.
-		 */
+		 
 		if (ret == 0)
 			ret = tegra_i2c_poll_completion(i2c_dev, complete, 0);
 	}
@@ -1192,7 +1018,7 @@ static int tegra_i2c_error_recover(struct tegra_i2c_dev *i2c_dev,
 
 	tegra_i2c_init(i2c_dev);
 
-	/* start recovery upon arbitration loss in single master mode */
+	 
 	if (i2c_dev->msg_err == I2C_ERR_ARBITRATION_LOST) {
 		if (!i2c_dev->multimaster_mode)
 			return i2c_recover_bus(&i2c_dev->adapter);
@@ -1230,11 +1056,7 @@ static int tegra_i2c_xfer_msg(struct tegra_i2c_dev *i2c_dev,
 	i2c_dev->msg_read = !!(msg->flags & I2C_M_RD);
 	reinit_completion(&i2c_dev->msg_complete);
 
-	/*
-	 * For SMBUS block read command, read only 1 byte in the first transfer.
-	 * Adjust that 1 byte for the next transfer in the msg buffer and msg
-	 * length.
-	 */
+	 
 	if (msg->flags & I2C_M_RECV_LEN) {
 		if (end_state == MSG_END_CONTINUE) {
 			i2c_dev->msg_len = 1;
@@ -1258,10 +1080,7 @@ static int tegra_i2c_xfer_msg(struct tegra_i2c_dev *i2c_dev,
 
 	tegra_i2c_config_fifo_trig(i2c_dev, xfer_size);
 
-	/*
-	 * Transfer time in mSec = Total bits / transfer rate
-	 * Total bits = 9 bits per byte (including ACK bit) + Start & stop bits
-	 */
+	 
 	xfer_time += DIV_ROUND_CLOSEST(((xfer_size * 9) + 2) * MSEC_PER_SEC,
 				       i2c_dev->timings.bus_freq_hz);
 
@@ -1322,11 +1141,7 @@ static int tegra_i2c_xfer_msg(struct tegra_i2c_dev *i2c_dev,
 						      &i2c_dev->dma_complete,
 						      xfer_time);
 
-		/*
-		 * Synchronize DMA first, since dmaengine_terminate_sync()
-		 * performs synchronization after the transfer's termination
-		 * and we want to get a completion if transfer succeeded.
-		 */
+		 
 		dmaengine_synchronize(i2c_dev->dma_chan);
 		dmaengine_terminate_sync(i2c_dev->dma_chan);
 
@@ -1386,18 +1201,18 @@ static int tegra_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 		enum msg_end_type end_type = MSG_END_STOP;
 
 		if (i < (num - 1)) {
-			/* check whether follow up message is coming */
+			 
 			if (msgs[i + 1].flags & I2C_M_NOSTART)
 				end_type = MSG_END_CONTINUE;
 			else
 				end_type = MSG_END_REPEAT_START;
 		}
-		/* If M_RECV_LEN use ContinueXfer to read the first byte */
+		 
 		if (msgs[i].flags & I2C_M_RECV_LEN) {
 			ret = tegra_i2c_xfer_msg(i2c_dev, &msgs[i], MSG_END_CONTINUE);
 			if (ret)
 				break;
-			/* Set the msg length from first byte */
+			 
 			msgs[i].len += msgs[i].buf[0];
 			dev_dbg(i2c_dev->dev, "reading %d bytes\n", msgs[i].len);
 		}
@@ -1442,7 +1257,7 @@ static const struct i2c_algorithm tegra_i2c_algo = {
 	.functionality		= tegra_i2c_func,
 };
 
-/* payload size is only 12 bit */
+ 
 static const struct i2c_adapter_quirks tegra_i2c_quirks = {
 	.flags = I2C_AQ_NO_ZERO_LEN,
 	.max_read_len = SZ_4K,
@@ -1773,7 +1588,7 @@ static int tegra_i2c_probe(struct platform_device *pdev)
 
 	i2c_dev->irq = err;
 
-	/* interrupt will be enabled during of transfer time */
+	 
 	irq_set_status_flags(i2c_dev->irq, IRQ_NOAUTOEN);
 
 	err = devm_request_threaded_irq(i2c_dev->dev, i2c_dev->irq,
@@ -1797,15 +1612,7 @@ static int tegra_i2c_probe(struct platform_device *pdev)
 	if (err)
 		goto release_clocks;
 
-	/*
-	 * VI I2C is in VE power domain which is not always ON and not
-	 * IRQ-safe.  Thus, IRQ-safe device shouldn't be attached to a
-	 * non IRQ-safe domain because this prevents powering off the power
-	 * domain.
-	 *
-	 * VI I2C device shouldn't be marked as IRQ-safe because VI I2C won't
-	 * be used for atomic transfers.
-	 */
+	 
 	if (!IS_VI(i2c_dev))
 		pm_runtime_irq_safe(i2c_dev->dev);
 
@@ -1873,11 +1680,7 @@ static int __maybe_unused tegra_i2c_runtime_resume(struct device *dev)
 	if (err)
 		return err;
 
-	/*
-	 * VI I2C device is attached to VE power domain which goes through
-	 * power ON/OFF during runtime PM resume/suspend, meaning that
-	 * controller needs to be re-initialized after power ON.
-	 */
+	 
 	if (IS_VI(i2c_dev)) {
 		err = tegra_i2c_init(i2c_dev);
 		if (err)
@@ -1922,10 +1725,7 @@ static int __maybe_unused tegra_i2c_resume(struct device *dev)
 	struct tegra_i2c_dev *i2c_dev = dev_get_drvdata(dev);
 	int err;
 
-	/*
-	 * We need to ensure that clocks are enabled so that registers can be
-	 * restored in tegra_i2c_init().
-	 */
+	 
 	err = tegra_i2c_runtime_resume(dev);
 	if (err)
 		return err;
@@ -1934,11 +1734,7 @@ static int __maybe_unused tegra_i2c_resume(struct device *dev)
 	if (err)
 		return err;
 
-	/*
-	 * In case we are runtime suspended, disable clocks again so that we
-	 * don't unbalance the clock reference counts during the next runtime
-	 * resume transition.
-	 */
+	 
 	if (pm_runtime_status_suspended(dev)) {
 		err = tegra_i2c_runtime_suspend(dev);
 		if (err)

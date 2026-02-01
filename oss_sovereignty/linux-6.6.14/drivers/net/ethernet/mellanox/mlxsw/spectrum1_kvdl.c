@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -60,7 +60,7 @@ static const struct mlxsw_sp1_kvdl_part_info mlxsw_sp1_kvdl_parts_info[] = {
 
 struct mlxsw_sp1_kvdl_part {
 	struct mlxsw_sp1_kvdl_part_info info;
-	unsigned long usage[];	/* Entries */
+	unsigned long usage[];	 
 };
 
 struct mlxsw_sp1_kvdl {
@@ -151,9 +151,7 @@ static int mlxsw_sp1_kvdl_alloc(struct mlxsw_sp *mlxsw_sp, void *priv,
 	struct mlxsw_sp1_kvdl *kvdl = priv;
 	struct mlxsw_sp1_kvdl_part *part;
 
-	/* Find partition with smallest allocation size satisfying the
-	 * requested size.
-	 */
+	 
 	part = mlxsw_sp1_kvdl_alloc_size_part(kvdl, entry_count);
 	if (IS_ERR(part))
 		return PTR_ERR(part);

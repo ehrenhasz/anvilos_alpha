@@ -1,72 +1,8 @@
-/****************************************************************************
- * Copyright 2019,2020 Thomas E. Dickey                                     *
- * Copyright 1998-2015,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- ****************************************************************************/
+ 
 
-/******************************************************************************
-
-NAME
-   hashmap.c -- fill in scramble vector based on text hashes
-
-SYNOPSIS
-   void _nc_hash_map(void)
-
-DESCRIPTION:
-   This code attempts to recognize pairs of old and new lines in the physical
-and virtual screens.  When a line pair is recognized, the old line index is
-placed in the oldindex member of the virtual screen line, to be used by the
-vertical-motion optimizer portion of the update logic (see hardscroll.c).
-
-   Line pairs are recognized by applying a modified Heckel's algorithm,
-sped up by hashing.  If a line hash is unique in both screens, those
-lines must be a pair. Then if the lines just before or after the pair
-are the same or similar, they are a pair too.
-
-   We don't worry about false pairs produced by hash collisions, on the
-assumption that such cases are rare and will only make the latter stages
-of update less efficient, not introduce errors.
-
-HOW TO TEST THIS:
-
-Use the following production:
-
-hashmap: hashmap.c
-	$(CC) -g -DHASHDEBUG hashmap.c hardscroll.c ../objects/lib_trace.o -o hashmap
-
-AUTHOR
-    Eric S. Raymond <esr@snark.thyrsus.com>, May 1996
-    Bug fixes and improvements by Alexander V. Lukyanov <lav@yars.free.net>, 1997
-
-*****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -96,7 +32,7 @@ static NCURSES_CH_T newtext[MAXLINES][TEXTWIDTH(sp)];
 # define NEWTEXT(sp,m)	newtext[m]
 # define PENDING(sp,n)  1
 
-#else /* !HASHDEBUG */
+#else  
 
 # define OLDNUM(sp,n)	(sp)->_oldnum_list[n]
 # define OLDTEXT(sp,n)	CurScreen(sp)->_line[n].text
@@ -104,7 +40,7 @@ static NCURSES_CH_T newtext[MAXLINES][TEXTWIDTH(sp)];
 # define TEXTWIDTH(sp)	(CurScreen(sp)->_maxx + 1)
 # define PENDING(sp,n)  (NewScreen(sp)->_line[n].firstchar != _NOCHANGE)
 
-#endif /* !HASHDEBUG */
+#endif  
 
 #define oldhash(sp)	((sp)->oldhash)
 #define newhash(sp)	((sp)->newhash)
@@ -134,7 +70,7 @@ hash(SCREEN *sp, NCURSES_CH_T *text)
     return result;
 }
 
-/* approximate update cost */
+ 
 static int
 update_cost(SCREEN *sp, NCURSES_CH_T *from, NCURSES_CH_T *to)
 {
@@ -167,10 +103,7 @@ update_cost_from_blank(SCREEN *sp, NCURSES_CH_T *to)
     return cost;
 }
 
-/*
- * Returns true when moving line 'from' to line 'to' seems to be cost
- * effective. 'blank' indicates whether the line 'to' would become blank.
- */
+ 
 static NCURSES_INLINE bool
 cost_effective(SCREEN *sp, const int from, const int to, const int blank)
 {
@@ -183,10 +116,7 @@ cost_effective(SCREEN *sp, const int from, const int to, const int blank)
     if (new_from == _NEWINDEX)
 	new_from = from;
 
-    /*
-     * On the left side of >= is the cost before moving;
-     * on the right side -- cost after moving.
-     */
+     
     return (((blank ? update_cost_from_blank(sp, NEWTEXT(sp, to))
 	      : update_cost(sp, OLDTEXT(sp, to), NEWTEXT(sp, to)))
 	     + update_cost(sp, OLDTEXT(sp, new_from), NEWTEXT(sp, from)))
@@ -199,15 +129,12 @@ cost_effective(SCREEN *sp, const int from, const int to, const int blank)
 static void
 grow_hunks(SCREEN *sp)
 {
-    int back_limit;		/* limits for cells to fill */
-    int back_ref_limit;		/* limit for references */
+    int back_limit;		 
+    int back_ref_limit;		 
     int i;
     int next_hunk;
 
-    /*
-     * This is tricky part.  We have unique pairs to use as anchors.
-     * Use these to deduce the presence of spans of identical lines.
-     */
+     
     back_limit = 0;
     back_ref_limit = 0;
 
@@ -221,7 +148,7 @@ grow_hunks(SCREEN *sp)
 	int start = i;
 	int shift = OLDNUM(sp, i) - i;
 
-	/* get forward limit */
+	 
 	i = start + 1;
 	while (i < screen_lines(sp)
 	       && OLDNUM(sp, i) != _NEWINDEX
@@ -238,7 +165,7 @@ grow_hunks(SCREEN *sp)
 	    forward_ref_limit = OLDNUM(sp, i);
 
 	i = start - 1;
-	/* grow back */
+	 
 	if (shift < 0)
 	    back_limit = back_ref_limit + (-shift);
 	while (i >= back_limit) {
@@ -258,7 +185,7 @@ grow_hunks(SCREEN *sp)
 	}
 
 	i = end;
-	/* grow forward */
+	 
 	if (shift > 0)
 	    forward_limit = forward_ref_limit - shift;
 	while (i < forward_limit) {
@@ -305,13 +232,13 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
     }
 
     if (oldhash(SP_PARM) && newhash(SP_PARM)) {
-	/* re-hash only changed lines */
+	 
 	for (i = 0; i < screen_lines(SP_PARM); i++) {
 	    if (PENDING(SP_PARM, i))
 		newhash(SP_PARM)[i] = hash(SP_PARM, NEWTEXT(SP_PARM, i));
 	}
     } else {
-	/* re-hash all */
+	 
 	if (oldhash(SP_PARM) == 0)
 	    oldhash(SP_PARM) = typeCalloc(unsigned long,
 					    (size_t) screen_lines(SP_PARM));
@@ -319,7 +246,7 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
 	    newhash(SP_PARM) = typeCalloc(unsigned long,
 					    (size_t) screen_lines(SP_PARM));
 	if (!oldhash(SP_PARM) || !newhash(SP_PARM))
-	    return;		/* malloc failure */
+	    return;		 
 	for (i = 0; i < screen_lines(SP_PARM); i++) {
 	    newhash(SP_PARM)[i] = hash(SP_PARM, NEWTEXT(SP_PARM, i));
 	    oldhash(SP_PARM)[i] = hash(SP_PARM, OLDTEXT(SP_PARM, i));
@@ -335,9 +262,7 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
     }
 #endif
 
-    /*
-     * Set up and count line-hash values.
-     */
+     
     memset(hashtab(SP_PARM), '\0',
 	   sizeof(*(hashtab(SP_PARM)))
 	   * ((size_t) screen_lines(SP_PARM) + 1) * 2);
@@ -347,7 +272,7 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
 	for (hsp = hashtab(SP_PARM); hsp->hashval; hsp++)
 	    if (hsp->hashval == hashval)
 		break;
-	hsp->hashval = hashval;	/* in case this is a new entry */
+	hsp->hashval = hashval;	 
 	hsp->oldcount++;
 	hsp->oldindex = i;
     }
@@ -357,20 +282,14 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
 	for (hsp = hashtab(SP_PARM); hsp->hashval; hsp++)
 	    if (hsp->hashval == hashval)
 		break;
-	hsp->hashval = hashval;	/* in case this is a new entry */
+	hsp->hashval = hashval;	 
 	hsp->newcount++;
 	hsp->newindex = i;
 
-	OLDNUM(SP_PARM, i) = _NEWINDEX;		/* initialize old indices array */
+	OLDNUM(SP_PARM, i) = _NEWINDEX;		 
     }
 
-    /*
-     * Mark line pairs corresponding to unique hash pairs.
-     *
-     * We don't mark lines with offset 0, because it can make fail
-     * extending hunks by cost_effective. Otherwise, it does not
-     * have any side effects.
-     */
+     
     for (hsp = hashtab(SP_PARM); hsp->hashval; hsp++)
 	if (hsp->oldcount == 1 && hsp->newcount == 1
 	    && hsp->oldindex != hsp->newindex) {
@@ -382,12 +301,7 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
 
     grow_hunks(SP_PARM);
 
-    /*
-     * Eliminate bad or impossible shifts -- this includes removing
-     * those hunks which could not grow because of conflicts, as well
-     * those which are to be moved too far, they are likely to destroy
-     * more than carry.
-     */
+     
     for (i = 0; i < screen_lines(SP_PARM);) {
 	int start, shift, size;
 
@@ -411,7 +325,7 @@ NCURSES_SP_NAME(_nc_hash_map) (NCURSES_SP_DCL0)
 	}
     }
 
-    /* After clearing invalid hunks, try grow the rest. */
+     
     grow_hunks(SP_PARM);
 }
 
@@ -511,16 +425,16 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
     _nc_tracing = TRACE_MOVE;
 #endif
     for (;;) {
-	/* grab a test command */
+	 
 	if (fgets(line, sizeof(line), stdin) == (char *) NULL)
 	    break;
 
 	switch (line[0]) {
-	case '#':		/* comment */
+	case '#':		 
 	    (void) fputs(line, stderr);
 	    break;
 
-	case 'l':		/* get initial line number vector */
+	case 'l':		 
 	    for (n = 0; n < screen_lines(sp); n++) {
 		reallines[n] = n;
 		oldnums[n] = _NEWINDEX;
@@ -533,7 +447,7 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
 		((st = strtok((char *) NULL, " ")) != 0);
 	    break;
 
-	case 'n':		/* use following letters as text of new lines */
+	case 'n':		 
 	    for (n = 0; n < screen_lines(sp); n++)
 		CharOf(newtext[n][0]) = '.';
 	    for (n = 0; n < screen_lines(sp); n++)
@@ -543,7 +457,7 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
 		    CharOf(newtext[n][0]) = line[n + 1];
 	    break;
 
-	case 'o':		/* use following letters as text of old lines */
+	case 'o':		 
 	    for (n = 0; n < screen_lines(sp); n++)
 		CharOf(oldtext[n][0]) = '.';
 	    for (n = 0; n < screen_lines(sp); n++)
@@ -553,7 +467,7 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
 		    CharOf(oldtext[n][0]) = line[n + 1];
 	    break;
 
-	case 'd':		/* dump state of test arrays */
+	case 'd':		 
 #ifdef TRACE
 	    _nc_linedump();
 #endif
@@ -569,7 +483,7 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
 	    putchar('\n');
 	    break;
 
-	case 'h':		/* apply hash mapper and see scroll optimization */
+	case 'h':		 
 	    _nc_hash_map();
 	    (void) fputs("Result:\n", stderr);
 #ifdef TRACE
@@ -587,6 +501,6 @@ main(int argc GCC_UNUSED, char *argv[]GCC_UNUSED)
     exit_curses(EXIT_SUCCESS);
 }
 
-#endif /* HASHDEBUG */
+#endif  
 
-/* hashmap.c ends here */
+ 

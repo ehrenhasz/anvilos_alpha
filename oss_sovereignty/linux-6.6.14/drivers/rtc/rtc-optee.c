@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Microchip.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -36,14 +34,7 @@ struct optee_rtc_info {
 	struct optee_rtc_time range_max;
 };
 
-/**
- * struct optee_rtc - OP-TEE RTC private data
- * @dev:		OP-TEE based RTC device.
- * @ctx:		OP-TEE context handler.
- * @session_id:		RTC TA session identifier.
- * @shm:		Memory pool shared with RTC device.
- * @features:		Bitfield of RTC features
- */
+ 
 struct optee_rtc {
 	struct device *dev;
 	struct tee_context *ctx;
@@ -64,7 +55,7 @@ static int optee_rtc_readtime(struct device *dev, struct rtc_time *tm)
 	inv_arg.session = priv->session_id;
 	inv_arg.num_params = 4;
 
-	/* Fill invoke cmd params */
+	 
 	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
 	param[0].u.memref.shm = priv->shm;
 	param[0].u.memref.size = sizeof(struct optee_rtc_time);
@@ -257,12 +248,12 @@ static int optee_rtc_probe(struct device *dev)
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
-	/* Open context with TEE driver */
+	 
 	priv->ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(priv->ctx))
 		return -ENODEV;
 
-	/* Open session with rtc Trusted App */
+	 
 	export_uuid(sess_arg.uuid, &rtc_device->id.uuid);
 	sess_arg.clnt_login = TEE_IOCTL_LOGIN_REE_KERNEL;
 
@@ -297,10 +288,7 @@ static int optee_rtc_probe(struct device *dev)
 	if (err)
 		goto out_shm;
 
-	/*
-	 * We must clear this bit after registering because rtc_register_device
-	 * will set it if it sees that .set_offset is provided.
-	 */
+	 
 	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
 		clear_bit(RTC_FEATURE_CORRECTION, rtc->features);
 

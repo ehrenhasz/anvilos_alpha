@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_hgo.c  --  R-Car VSP1 Histogram Generator 1D
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -19,9 +13,7 @@
 
 #define HGO_DATA_SIZE				((2 + 256) * 4)
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline u32 vsp1_hgo_read(struct vsp1_hgo *hgo, u32 reg)
 {
@@ -34,9 +26,7 @@ static inline void vsp1_hgo_write(struct vsp1_hgo *hgo,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Frame End Handler
- */
+ 
 
 void vsp1_hgo_frame_end(struct vsp1_entity *entity)
 {
@@ -92,9 +82,7 @@ void vsp1_hgo_frame_end(struct vsp1_entity *entity)
 	vsp1_histogram_buffer_complete(&hgo->histo, buf, size);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 #define V4L2_CID_VSP1_HGO_MAX_RGB		(V4L2_CID_USER_BASE | 0x1001)
 #define V4L2_CID_VSP1_HGO_NUM_BINS		(V4L2_CID_USER_BASE | 0x1002)
@@ -125,9 +113,7 @@ static const struct v4l2_ctrl_config hgo_num_bins_control = {
 	.flags = V4L2_CTRL_FLAG_MODIFY_LAYOUT,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void hgo_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -175,9 +161,7 @@ static const struct vsp1_entity_operations hgo_entity_ops = {
 	.destroy = vsp1_histogram_destroy,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 static const unsigned int hgo_mbus_formats[] = {
 	MEDIA_BUS_FMT_AYUV8_1X32,
@@ -194,7 +178,7 @@ struct vsp1_hgo *vsp1_hgo_create(struct vsp1_device *vsp1)
 	if (hgo == NULL)
 		return ERR_PTR(-ENOMEM);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&hgo->ctrls.handler,
 			       vsp1->info->gen >= 3 ? 2 : 1);
 	hgo->ctrls.max_rgb = v4l2_ctrl_new_custom(&hgo->ctrls.handler,
@@ -209,7 +193,7 @@ struct vsp1_hgo *vsp1_hgo_create(struct vsp1_device *vsp1)
 
 	hgo->histo.entity.subdev.ctrl_handler = &hgo->ctrls.handler;
 
-	/* Initialize the video device and queue for statistics data. */
+	 
 	ret = vsp1_histogram_init(vsp1, &hgo->histo, VSP1_ENTITY_HGO, "hgo",
 				  &hgo_entity_ops, hgo_mbus_formats,
 				  ARRAY_SIZE(hgo_mbus_formats),

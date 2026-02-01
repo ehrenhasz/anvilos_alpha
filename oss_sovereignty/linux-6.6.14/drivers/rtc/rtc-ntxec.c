@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * The Netronix embedded controller is a microcontroller found in some
- * e-book readers designed by the original design manufacturer Netronix, Inc.
- * It contains RTC, battery monitoring, system power management, and PWM
- * functionality.
- *
- * This driver implements access to the RTC time and date.
- *
- * Copyright 2020 Jonathan Neuschäfer <j.neuschaefer@gmx.net>
- */
+
+ 
 
 #include <linux/mfd/ntxec.h>
 #include <linux/module.h>
@@ -61,11 +52,7 @@ retry:
 	tm->tm_year = (value >> 8) + 100;
 	tm->tm_mon = (value & 0xff) - 1;
 
-	/*
-	 * Read the minutes/seconds field again. If it changed since the first
-	 * read, we can't assume that the values read so far are consistent,
-	 * and should start from the beginning.
-	 */
+	 
 	res = regmap_read(rtc->ec->regmap, NTXEC_REG_READ_MINUTE_SECOND, &value);
 	if (res < 0)
 		return res;
@@ -80,13 +67,7 @@ static int ntxec_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct ntxec_rtc *rtc = dev_get_drvdata(dev);
 
-	/*
-	 * To avoid time overflows while we're writing the full date/time,
-	 * set the seconds field to zero before doing anything else. For the
-	 * next 59 seconds (plus however long it takes until the RTC's next
-	 * update of the second field), the seconds field will not overflow
-	 * into the other fields.
-	 */
+	 
 	struct reg_sequence regs[] = {
 		{ NTXEC_REG_WRITE_SECOND, ntxec_reg8(0) },
 		{ NTXEC_REG_WRITE_YEAR, ntxec_reg8(tm->tm_year - 100) },
@@ -126,7 +107,7 @@ static int ntxec_rtc_probe(struct platform_device *pdev)
 
 	dev->ops = &ntxec_rtc_ops;
 	dev->range_min = RTC_TIMESTAMP_BEGIN_2000;
-	dev->range_max = 9025257599LL; /* 2255-12-31 23:59:59 */
+	dev->range_max = 9025257599LL;  
 
 	return devm_rtc_register_device(dev);
 }

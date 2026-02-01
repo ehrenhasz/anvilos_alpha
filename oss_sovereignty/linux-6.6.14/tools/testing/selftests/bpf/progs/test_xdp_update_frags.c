@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/if_ether.h>
 #include <bpf/bpf_helpers.h>
@@ -27,10 +23,10 @@ int xdp_adjust_frags(struct xdp_md *xdp)
 	if (err < 0)
 		return XDP_DROP;
 
-	if (val[0] != 0xaa || val[15] != 0xaa) /* marker */
+	if (val[0] != 0xaa || val[15] != 0xaa)  
 		return XDP_DROP;
 
-	val[0] = 0xbb; /* update the marker */
+	val[0] = 0xbb;  
 	val[15] = 0xbb;
 	err = bpf_xdp_store_bytes(xdp, offset, val, sizeof(val));
 	if (err < 0)

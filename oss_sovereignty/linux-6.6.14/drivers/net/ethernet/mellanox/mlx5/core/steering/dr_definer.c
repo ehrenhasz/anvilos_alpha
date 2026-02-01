@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "dr_types.h"
 #include "dr_ste.h"
@@ -73,9 +73,7 @@ dr_definer_create_obj(struct mlx5dr_domain *dmn, u16 format_id,
 	if (ret)
 		goto err_free_definer_obj;
 
-	/* Definer ID can have 32 bits, but STE format
-	 * supports only definers with 8 bit IDs.
-	 */
+	 
 	if (definer_obj->id > 0xff) {
 		mlx5dr_err(dmn, "Unsupported definer ID (%d)\n", definer_obj->id);
 		goto err_destroy_definer;

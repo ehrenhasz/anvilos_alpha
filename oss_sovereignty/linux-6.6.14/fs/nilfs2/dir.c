@@ -1,33 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS directory entry operations
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Modified for NILFS by Amagai Yoshiji.
- */
-/*
- *  linux/fs/ext2/dir.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/dir.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  ext2 directory handling functions
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- *
- * All code that works with directory layout had been switched to pagecache
- * and moved here. AV
- */
+
+ 
+ 
 
 #include <linux/pagemap.h>
 #include "nilfs.h"
@@ -55,10 +28,7 @@ static inline __le16 nilfs_rec_len_to_disk(unsigned int len)
 	return cpu_to_le16(len);
 }
 
-/*
- * nilfs uses block-sized chunks. Arguably, sector-sized ones would be
- * more robust, but we have what we have
- */
+ 
 static inline unsigned int nilfs_chunk_size(struct inode *inode)
 {
 	return inode->i_sb->s_blocksize;
@@ -70,10 +40,7 @@ static inline void nilfs_put_page(struct page *page)
 	put_page(page);
 }
 
-/*
- * Return the offset into page `page_nr' of the last valid
- * byte in that page, plus one.
- */
+ 
 static unsigned int nilfs_last_byte(struct inode *inode, unsigned long page_nr)
 {
 	unsigned int last_byte = inode->i_size;
@@ -109,7 +76,7 @@ static void nilfs_commit_chunk(struct page *page,
 	if (IS_DIRSYNC(dir))
 		nilfs_set_transaction_flag(NILFS_TI_SYNC);
 	err = nilfs_set_file_dirty(dir, nr_dirty);
-	WARN_ON(err); /* do not happen */
+	WARN_ON(err);  
 	unlock_page(page);
 }
 
@@ -150,7 +117,7 @@ out:
 	SetPageChecked(page);
 	return true;
 
-	/* Too bad, we had an error */
+	 
 
 Ebadsize:
 	nilfs_error(sb,
@@ -205,11 +172,7 @@ fail:
 	return ERR_PTR(-EIO);
 }
 
-/*
- * NOTE! unlike strncmp, nilfs_match returns 1 for success, 0 for failure.
- *
- * len <= NILFS_NAME_LEN and de != NULL are guaranteed by caller.
- */
+ 
 static int
 nilfs_match(int len, const unsigned char *name, struct nilfs_dir_entry *de)
 {
@@ -220,9 +183,7 @@ nilfs_match(int len, const unsigned char *name, struct nilfs_dir_entry *de)
 	return !memcmp(name, de->name, len);
 }
 
-/*
- * p is at least 6 bytes before the end of page
- */
+ 
 static struct nilfs_dir_entry *nilfs_next_entry(struct nilfs_dir_entry *p)
 {
 	return (struct nilfs_dir_entry *)((char *)p +
@@ -313,14 +274,7 @@ static int nilfs_readdir(struct file *file, struct dir_context *ctx)
 	return 0;
 }
 
-/*
- *	nilfs_find_entry()
- *
- * finds an entry in the specified directory with the wanted name. It
- * returns the page in which the entry was found, and the entry itself
- * (as a parameter - res_dir). Page is returned mapped and unlocked.
- * Entry is guaranteed to be valid.
- */
+ 
 struct nilfs_dir_entry *
 nilfs_find_entry(struct inode *dir, const struct qstr *qstr,
 		 struct page **res_page)
@@ -337,7 +291,7 @@ nilfs_find_entry(struct inode *dir, const struct qstr *qstr,
 	if (npages == 0)
 		goto out;
 
-	/* OFFSET_CACHE */
+	 
 	*res_page = NULL;
 
 	start = ei->i_dir_start_lookup;
@@ -367,7 +321,7 @@ nilfs_find_entry(struct inode *dir, const struct qstr *qstr,
 		}
 		if (++n >= npages)
 			n = 0;
-		/* next page is past the blocks we've got */
+		 
 		if (unlikely(n > (dir->i_blocks >> (PAGE_SHIFT - 9)))) {
 			nilfs_error(dir->i_sb,
 			       "dir %lu size %lld exceeds block count %llu",
@@ -413,7 +367,7 @@ ino_t nilfs_inode_by_name(struct inode *dir, const struct qstr *qstr)
 	return res;
 }
 
-/* Releases the page */
+ 
 void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
 		    struct page *page, struct inode *inode)
 {
@@ -432,9 +386,7 @@ void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
 	dir->i_mtime = inode_set_ctime_current(dir);
 }
 
-/*
- *	Parent is locked.
- */
+ 
 int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 {
 	struct inode *dir = d_inode(dentry->d_parent);
@@ -451,11 +403,7 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 	unsigned int from, to;
 	int err;
 
-	/*
-	 * We take care of directory expansion in the same loop.
-	 * This code plays outside i_size, so it locks the page
-	 * to protect that region.
-	 */
+	 
 	for (n = 0; n <= npages; n++) {
 		char *dir_end;
 
@@ -470,7 +418,7 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 		kaddr += PAGE_SIZE - reclen;
 		while ((char *)de <= kaddr) {
 			if ((char *)de == dir_end) {
-				/* We hit i_size */
+				 
 				name_len = 0;
 				rec_len = chunk_size;
 				de->rec_len = nilfs_rec_len_to_disk(chunk_size);
@@ -521,7 +469,7 @@ got_it:
 	nilfs_commit_chunk(page, page->mapping, from, to);
 	dir->i_mtime = inode_set_ctime_current(dir);
 	nilfs_mark_inode_dirty(dir);
-	/* OFFSET_CACHE */
+	 
 out_put:
 	nilfs_put_page(page);
 out:
@@ -531,10 +479,7 @@ out_unlock:
 	goto out_put;
 }
 
-/*
- * nilfs_delete_entry deletes a directory entry by merging it with the
- * previous entry. Page is up-to-date. Releases the page.
- */
+ 
 int nilfs_delete_entry(struct nilfs_dir_entry *dir, struct page *page)
 {
 	struct address_space *mapping = page->mapping;
@@ -573,9 +518,7 @@ out:
 	return err;
 }
 
-/*
- * Set the first fragment of directory.
- */
+ 
 int nilfs_make_empty(struct inode *inode, struct inode *parent)
 {
 	struct address_space *mapping = inode->i_mapping;
@@ -615,9 +558,7 @@ fail:
 	return err;
 }
 
-/*
- * routine to check that the specified directory is empty (for rmdir)
- */
+ 
 int nilfs_empty_dir(struct inode *inode)
 {
 	struct page *page = NULL;
@@ -643,7 +584,7 @@ int nilfs_empty_dir(struct inode *inode)
 				goto not_empty;
 			}
 			if (de->inode != 0) {
-				/* check for . and .. */
+				 
 				if (de->name[0] != '.')
 					goto not_empty;
 				if (de->name_len > 2)
@@ -673,7 +614,7 @@ const struct file_operations nilfs_dir_operations = {
 	.unlocked_ioctl	= nilfs_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= nilfs_compat_ioctl,
-#endif	/* CONFIG_COMPAT */
+#endif	 
 	.fsync		= nilfs_sync_file,
 
 };

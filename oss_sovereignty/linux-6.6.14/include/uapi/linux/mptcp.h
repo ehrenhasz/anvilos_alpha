@@ -1,17 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_MPTCP_H
 #define _UAPI_MPTCP_H
 
 #ifndef __KERNEL__
-#include <netinet/in.h>		/* for sockaddr_in and sockaddr_in6	*/
-#include <sys/socket.h>		/* for struct sockaddr			*/
+#include <netinet/in.h>		 
+#include <sys/socket.h>		 
 #endif
 
 #include <linux/const.h>
 #include <linux/types.h>
-#include <linux/in.h>		/* for sockaddr_in			*/
-#include <linux/in6.h>		/* for sockaddr_in6			*/
-#include <linux/socket.h>	/* for sockaddr_storage and sa_family	*/
+#include <linux/in.h>		 
+#include <linux/in6.h>		 
+#include <linux/socket.h>	 
 
 #define MPTCP_SUBFLOW_FLAG_MCAP_REM		_BITUL(0)
 #define MPTCP_SUBFLOW_FLAG_MCAP_LOC		_BITUL(1)
@@ -41,24 +41,22 @@ enum {
 
 #define MPTCP_SUBFLOW_ATTR_MAX (__MPTCP_SUBFLOW_ATTR_MAX - 1)
 
-/* netlink interface */
+ 
 #define MPTCP_PM_NAME		"mptcp_pm"
 #define MPTCP_PM_CMD_GRP_NAME	"mptcp_pm_cmds"
 #define MPTCP_PM_EV_GRP_NAME	"mptcp_pm_events"
 #define MPTCP_PM_VER		0x1
 
-/*
- * ATTR types defined for MPTCP
- */
+ 
 enum {
 	MPTCP_PM_ATTR_UNSPEC,
 
-	MPTCP_PM_ATTR_ADDR,				/* nested address */
-	MPTCP_PM_ATTR_RCV_ADD_ADDRS,			/* u32 */
-	MPTCP_PM_ATTR_SUBFLOWS,				/* u32 */
-	MPTCP_PM_ATTR_TOKEN,				/* u32 */
-	MPTCP_PM_ATTR_LOC_ID,				/* u8 */
-	MPTCP_PM_ATTR_ADDR_REMOTE,			/* nested address */
+	MPTCP_PM_ATTR_ADDR,				 
+	MPTCP_PM_ATTR_RCV_ADD_ADDRS,			 
+	MPTCP_PM_ATTR_SUBFLOWS,				 
+	MPTCP_PM_ATTR_TOKEN,				 
+	MPTCP_PM_ATTR_LOC_ID,				 
+	MPTCP_PM_ATTR_ADDR_REMOTE,			 
 
 	__MPTCP_PM_ATTR_MAX
 };
@@ -68,13 +66,13 @@ enum {
 enum {
 	MPTCP_PM_ADDR_ATTR_UNSPEC,
 
-	MPTCP_PM_ADDR_ATTR_FAMILY,			/* u16 */
-	MPTCP_PM_ADDR_ATTR_ID,				/* u8 */
-	MPTCP_PM_ADDR_ATTR_ADDR4,			/* struct in_addr */
-	MPTCP_PM_ADDR_ATTR_ADDR6,			/* struct in6_addr */
-	MPTCP_PM_ADDR_ATTR_PORT,			/* u16 */
-	MPTCP_PM_ADDR_ATTR_FLAGS,			/* u32 */
-	MPTCP_PM_ADDR_ATTR_IF_IDX,			/* s32 */
+	MPTCP_PM_ADDR_ATTR_FAMILY,			 
+	MPTCP_PM_ADDR_ATTR_ID,				 
+	MPTCP_PM_ADDR_ATTR_ADDR4,			 
+	MPTCP_PM_ADDR_ATTR_ADDR6,			 
+	MPTCP_PM_ADDR_ATTR_PORT,			 
+	MPTCP_PM_ADDR_ATTR_FLAGS,			 
+	MPTCP_PM_ADDR_ATTR_IF_IDX,			 
 
 	__MPTCP_PM_ADDR_ATTR_MAX
 };
@@ -130,48 +128,7 @@ struct mptcp_info {
 	__u64	mptcpi_bytes_acked;
 };
 
-/*
- * MPTCP_EVENT_CREATED: token, family, saddr4 | saddr6, daddr4 | daddr6,
- *                      sport, dport
- * A new MPTCP connection has been created. It is the good time to allocate
- * memory and send ADD_ADDR if needed. Depending on the traffic-patterns
- * it can take a long time until the MPTCP_EVENT_ESTABLISHED is sent.
- *
- * MPTCP_EVENT_ESTABLISHED: token, family, saddr4 | saddr6, daddr4 | daddr6,
- *			    sport, dport
- * A MPTCP connection is established (can start new subflows).
- *
- * MPTCP_EVENT_CLOSED: token
- * A MPTCP connection has stopped.
- *
- * MPTCP_EVENT_ANNOUNCED: token, rem_id, family, daddr4 | daddr6 [, dport]
- * A new address has been announced by the peer.
- *
- * MPTCP_EVENT_REMOVED: token, rem_id
- * An address has been lost by the peer.
- *
- * MPTCP_EVENT_SUB_ESTABLISHED: token, family, loc_id, rem_id,
- *                              saddr4 | saddr6, daddr4 | daddr6, sport,
- *                              dport, backup, if_idx [, error]
- * A new subflow has been established. 'error' should not be set.
- *
- * MPTCP_EVENT_SUB_CLOSED: token, family, loc_id, rem_id, saddr4 | saddr6,
- *                         daddr4 | daddr6, sport, dport, backup, if_idx
- *                         [, error]
- * A subflow has been closed. An error (copy of sk_err) could be set if an
- * error has been detected for this subflow.
- *
- * MPTCP_EVENT_SUB_PRIORITY: token, family, loc_id, rem_id, saddr4 | saddr6,
- *                           daddr4 | daddr6, sport, dport, backup, if_idx
- *                           [, error]
- * The priority of a subflow has changed. 'error' should not be set.
- *
- * MPTCP_EVENT_LISTENER_CREATED: family, sport, saddr4 | saddr6
- * A new PM listener is created.
- *
- * MPTCP_EVENT_LISTENER_CLOSED: family, sport, saddr4 | saddr6
- * A PM listener is closed.
- */
+ 
 enum mptcp_event_type {
 	MPTCP_EVENT_UNSPEC = 0,
 	MPTCP_EVENT_CREATED = 1,
@@ -193,31 +150,31 @@ enum mptcp_event_type {
 enum mptcp_event_attr {
 	MPTCP_ATTR_UNSPEC = 0,
 
-	MPTCP_ATTR_TOKEN,	/* u32 */
-	MPTCP_ATTR_FAMILY,	/* u16 */
-	MPTCP_ATTR_LOC_ID,	/* u8 */
-	MPTCP_ATTR_REM_ID,	/* u8 */
-	MPTCP_ATTR_SADDR4,	/* be32 */
-	MPTCP_ATTR_SADDR6,	/* struct in6_addr */
-	MPTCP_ATTR_DADDR4,	/* be32 */
-	MPTCP_ATTR_DADDR6,	/* struct in6_addr */
-	MPTCP_ATTR_SPORT,	/* be16 */
-	MPTCP_ATTR_DPORT,	/* be16 */
-	MPTCP_ATTR_BACKUP,	/* u8 */
-	MPTCP_ATTR_ERROR,	/* u8 */
-	MPTCP_ATTR_FLAGS,	/* u16 */
-	MPTCP_ATTR_TIMEOUT,	/* u32 */
-	MPTCP_ATTR_IF_IDX,	/* s32 */
-	MPTCP_ATTR_RESET_REASON,/* u32 */
-	MPTCP_ATTR_RESET_FLAGS, /* u32 */
-	MPTCP_ATTR_SERVER_SIDE,	/* u8 */
+	MPTCP_ATTR_TOKEN,	 
+	MPTCP_ATTR_FAMILY,	 
+	MPTCP_ATTR_LOC_ID,	 
+	MPTCP_ATTR_REM_ID,	 
+	MPTCP_ATTR_SADDR4,	 
+	MPTCP_ATTR_SADDR6,	 
+	MPTCP_ATTR_DADDR4,	 
+	MPTCP_ATTR_DADDR6,	 
+	MPTCP_ATTR_SPORT,	 
+	MPTCP_ATTR_DPORT,	 
+	MPTCP_ATTR_BACKUP,	 
+	MPTCP_ATTR_ERROR,	 
+	MPTCP_ATTR_FLAGS,	 
+	MPTCP_ATTR_TIMEOUT,	 
+	MPTCP_ATTR_IF_IDX,	 
+	MPTCP_ATTR_RESET_REASON, 
+	MPTCP_ATTR_RESET_FLAGS,  
+	MPTCP_ATTR_SERVER_SIDE,	 
 
 	__MPTCP_ATTR_AFTER_LAST
 };
 
 #define MPTCP_ATTR_MAX (__MPTCP_ATTR_AFTER_LAST - 1)
 
-/* MPTCP Reset reason codes, rfc8684 */
+ 
 #define MPTCP_RST_EUNSPEC	0
 #define MPTCP_RST_EMPTCP	1
 #define MPTCP_RST_ERESOURCE	2
@@ -227,10 +184,10 @@ enum mptcp_event_attr {
 #define MPTCP_RST_EMIDDLEBOX	6
 
 struct mptcp_subflow_data {
-	__u32		size_subflow_data;		/* size of this structure in userspace */
-	__u32		num_subflows;			/* must be 0, set by kernel */
-	__u32		size_kernel;			/* must be 0, set by kernel */
-	__u32		size_user;			/* size of one element in data[] */
+	__u32		size_subflow_data;		 
+	__u32		num_subflows;			 
+	__u32		size_kernel;			 
+	__u32		size_user;			 
 } __attribute__((aligned(8)));
 
 struct mptcp_subflow_addrs {
@@ -255,27 +212,21 @@ struct mptcp_subflow_info {
 };
 
 struct mptcp_full_info {
-	__u32		size_tcpinfo_kernel;	/* must be 0, set by kernel */
+	__u32		size_tcpinfo_kernel;	 
 	__u32		size_tcpinfo_user;
-	__u32		size_sfinfo_kernel;	/* must be 0, set by kernel */
+	__u32		size_sfinfo_kernel;	 
 	__u32		size_sfinfo_user;
-	__u32		num_subflows;		/* must be 0, set by kernel (real subflow count) */
-	__u32		size_arrays_user;	/* max subflows that userspace is interested in;
-						 * the buffers at subflow_info/tcp_info
-						 * are respectively at least:
-						 *  size_arrays * size_sfinfo_user
-						 *  size_arrays * size_tcpinfo_user
-						 * bytes wide
-						 */
+	__u32		num_subflows;		 
+	__u32		size_arrays_user;	 
 	__aligned_u64		subflow_info;
 	__aligned_u64		tcp_info;
 	struct mptcp_info	mptcp_info;
 };
 
-/* MPTCP socket options */
+ 
 #define MPTCP_INFO		1
 #define MPTCP_TCPINFO		2
 #define MPTCP_SUBFLOW_ADDRS	3
 #define MPTCP_FULL_INFO		4
 
-#endif /* _UAPI_MPTCP_H */
+#endif  

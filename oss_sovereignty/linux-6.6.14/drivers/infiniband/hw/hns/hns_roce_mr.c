@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/vmalloc.h>
 #include <rdma/ib_umem.h>
@@ -55,7 +24,7 @@ static int alloc_mr_key(struct hns_roce_dev *hr_dev, struct hns_roce_mr *mr)
 	int err;
 	int id;
 
-	/* Allocate a key for mr from mr_table */
+	 
 	id = ida_alloc_range(&mtpt_ida->ida, mtpt_ida->min, mtpt_ida->max,
 			     GFP_KERNEL);
 	if (id < 0) {
@@ -63,7 +32,7 @@ static int alloc_mr_key(struct hns_roce_dev *hr_dev, struct hns_roce_mr *mr)
 		return -ENOMEM;
 	}
 
-	mr->key = hw_index_to_key(id); /* MR key */
+	mr->key = hw_index_to_key(id);  
 
 	err = hns_roce_table_get(hr_dev, &hr_dev->mr_table.mtpt_table,
 				 (unsigned long)id);
@@ -101,7 +70,7 @@ static int alloc_mr_pbl(struct hns_roce_dev *hr_dev, struct hns_roce_mr *mr,
 	buf_attr.region[0].hopnum = mr->pbl_hop_num;
 	buf_attr.region_count = 1;
 	buf_attr.user_access = mr->access;
-	/* fast MR's buffer is alloced before mapping, not at creation */
+	 
 	buf_attr.mtt_only = is_fast;
 
 	err = hns_roce_mtr_create(hr_dev, &mr->pbl_mtr, &buf_attr,
@@ -146,7 +115,7 @@ static int hns_roce_mr_enable(struct hns_roce_dev *hr_dev,
 	struct device *dev = hr_dev->dev;
 	int ret;
 
-	/* Allocate mailbox memory */
+	 
 	mailbox = hns_roce_alloc_cmd_mailbox(hr_dev);
 	if (IS_ERR(mailbox))
 		return PTR_ERR(mailbox);
@@ -198,7 +167,7 @@ struct ib_mr *hns_roce_get_dma_mr(struct ib_pd *pd, int acc)
 	mr->pd = to_hr_pd(pd)->pdn;
 	mr->access = acc;
 
-	/* Allocate memory region key */
+	 
 	hns_roce_hem_list_init(&mr->pbl_mtr.hem_list);
 	ret = alloc_mr_key(hr_dev, mr);
 	if (ret)
@@ -375,7 +344,7 @@ struct ib_mr *hns_roce_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
 	mr->pd = to_hr_pd(pd)->pdn;
 	mr->size = max_num_sg * (1 << PAGE_SHIFT);
 
-	/* Allocate memory region key */
+	 
 	ret = alloc_mr_key(hr_dev, mr);
 	if (ret)
 		goto err_free;
@@ -486,7 +455,7 @@ static int hns_roce_mw_enable(struct hns_roce_dev *hr_dev,
 	unsigned long mtpt_idx = key_to_hw_index(mw->rkey);
 	int ret;
 
-	/* prepare HEM entry memory */
+	 
 	ret = hns_roce_table_get(hr_dev, &mr_table->mtpt_table, mtpt_idx);
 	if (ret)
 		return ret;
@@ -534,7 +503,7 @@ int hns_roce_alloc_mw(struct ib_mw *ibmw, struct ib_udata *udata)
 	int ret;
 	int id;
 
-	/* Allocate a key for mw from mr_table */
+	 
 	id = ida_alloc_range(&mtpt_ida->ida, mtpt_ida->min, mtpt_ida->max,
 			     GFP_KERNEL);
 	if (id < 0) {
@@ -611,10 +580,7 @@ static inline bool mtr_has_mtt(struct hns_roce_buf_attr *attr)
 		    attr->region[i].hopnum > 0)
 			return true;
 
-	/* because the mtr only one root base address, when hopnum is 0 means
-	 * root base address equals the first buffer address, thus all alloced
-	 * memory must in a continuous space accessed by direct mode.
-	 */
+	 
 	return false;
 }
 
@@ -629,10 +595,7 @@ static inline size_t mtr_bufs_size(struct hns_roce_buf_attr *attr)
 	return size;
 }
 
-/*
- * check the given pages in continuous address space
- * Returns 0 on success, or the error page num.
- */
+ 
 static inline int mtr_check_direct_pages(dma_addr_t *pages, int page_count,
 					 unsigned int page_shift)
 {
@@ -648,13 +611,13 @@ static inline int mtr_check_direct_pages(dma_addr_t *pages, int page_count,
 
 static void mtr_free_bufs(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr)
 {
-	/* release user buffers */
+	 
 	if (mtr->umem) {
 		ib_umem_release(mtr->umem);
 		mtr->umem = NULL;
 	}
 
-	/* release kernel buffers */
+	 
 	if (mtr->kmem) {
 		hns_roce_buf_free(hr_dev, mtr->kmem);
 		mtr->kmem = NULL;
@@ -703,7 +666,7 @@ static int mtr_map_bufs(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 	int npage;
 	int ret;
 
-	/* alloc a tmp array to store buffer's dma address */
+	 
 	pages = kvcalloc(page_count, sizeof(dma_addr_t), GFP_KERNEL);
 	if (!pages)
 		return -ENOMEM;
@@ -750,10 +713,7 @@ int hns_roce_mtr_map(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 	unsigned int i, mapped_cnt;
 	int ret = 0;
 
-	/*
-	 * Only use the first page address as root ba when hopnum is 0, this
-	 * is because the addresses of all pages are consecutive in this case.
-	 */
+	 
 	if (mtr->hem_cfg.is_direct) {
 		mtr->hem_cfg.root_ba = pages[0];
 		return 0;
@@ -762,7 +722,7 @@ int hns_roce_mtr_map(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 	for (i = 0, mapped_cnt = 0; i < mtr->hem_cfg.region_count &&
 	     mapped_cnt < page_cnt; i++) {
 		r = &mtr->hem_cfg.region[i];
-		/* if hopnum is 0, no need to map pages in this region */
+		 
 		if (!r->hopnum) {
 			mapped_cnt += r->count;
 			continue;
@@ -811,7 +771,7 @@ int hns_roce_mtr_find(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 	if (!mtt_buf || mtt_max < 1)
 		goto done;
 
-	/* no mtt memory in direct mode, so just return the buffer address */
+	 
 	if (cfg->is_direct) {
 		start_index = offset >> HNS_HW_PAGE_SHIFT;
 		for (mtt_count = 0; mtt_count < cfg->region_count &&
@@ -863,19 +823,14 @@ static int mtr_init_buf_cfg(struct hns_roce_dev *hr_dev,
 	unsigned int page_shift;
 	size_t buf_size;
 
-	/* If mtt is disabled, all pages must be within a continuous range */
+	 
 	cfg->is_direct = !mtr_has_mtt(attr);
 	buf_size = mtr_bufs_size(attr);
 	if (cfg->is_direct) {
-		/* When HEM buffer uses 0-level addressing, the page size is
-		 * equal to the whole buffer size, and we split the buffer into
-		 * small pages which is used to check whether the adjacent
-		 * units are in the continuous space and its size is fixed to
-		 * 4K based on hns ROCEE's requirement.
-		 */
+		 
 		page_shift = HNS_HW_PAGE_SHIFT;
 
-		/* The ROCEE requires the page size to be 4K * 2 ^ N. */
+		 
 		cfg->buf_pg_count = 1;
 		cfg->buf_pg_shift = HNS_HW_PAGE_SHIFT +
 			order_base_2(DIV_ROUND_UP(buf_size, HNS_HW_PAGE_SIZE));
@@ -888,9 +843,7 @@ static int mtr_init_buf_cfg(struct hns_roce_dev *hr_dev,
 		first_region_padding = unalinged_size;
 	}
 
-	/* Convert buffer size to page index and page count for each region and
-	 * the buffer's offset needs to be appended to the first region.
-	 */
+	 
 	for (page_cnt = 0, region_cnt = 0; region_cnt < attr->region_count &&
 	     region_cnt < ARRAY_SIZE(cfg->region); region_cnt++) {
 		r = &cfg->region[region_cnt];
@@ -979,16 +932,7 @@ static void mtr_free_mtt(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr)
 	hns_roce_hem_list_release(hr_dev, &mtr->hem_list);
 }
 
-/**
- * hns_roce_mtr_create - Create hns memory translate region.
- *
- * @hr_dev: RoCE device struct pointer
- * @mtr: memory translate region
- * @buf_attr: buffer attribute for creating mtr
- * @ba_page_shift: page shift for multi-hop base address table
- * @udata: user space context, if it's NULL, means kernel space
- * @user_addr: userspace virtual address to start at
- */
+ 
 int hns_roce_mtr_create(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 			struct hns_roce_buf_attr *buf_attr,
 			unsigned int ba_page_shift, struct ib_udata *udata,
@@ -1014,9 +958,7 @@ int hns_roce_mtr_create(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 		return ret;
 	}
 
-	/* The caller has its own buffer list and invokes the hns_roce_mtr_map()
-	 * to finish the MTT configuration.
-	 */
+	 
 	if (buf_attr->mtt_only) {
 		mtr->umem = NULL;
 		mtr->kmem = NULL;
@@ -1029,7 +971,7 @@ int hns_roce_mtr_create(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 		goto err_alloc_mtt;
 	}
 
-	/* Write buffer's dma address to MTT */
+	 
 	ret = mtr_map_bufs(hr_dev, mtr, buf_page_cnt, buf_page_shift);
 	if (ret)
 		ibdev_err(ibdev, "failed to map mtr bufs, ret = %d.\n", ret);
@@ -1044,9 +986,9 @@ err_alloc_mtt:
 
 void hns_roce_mtr_destroy(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr)
 {
-	/* release multi-hop addressing resource */
+	 
 	hns_roce_hem_list_release(hr_dev, &mtr->hem_list);
 
-	/* free buffers */
+	 
 	mtr_free_bufs(hr_dev, mtr);
 }

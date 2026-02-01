@@ -1,103 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Wacom protocol 4 serial tablet driver
- *
- * Copyright 2014      Hans de Goede <hdegoede@redhat.com>
- * Copyright 2011-2012 Julian Squires <julian@cipht.net>
- *
- * Many thanks to Bill Seremetis, without whom PenPartner support
- * would not have been possible. Thanks to Patrick Mahoney.
- *
- * This driver was developed with reference to much code written by others,
- * particularly:
- *  - elo, gunze drivers by Vojtech Pavlik <vojtech@ucw.cz>;
- *  - wacom_w8001 driver by Jaya Kumar <jayakumar.lkml@gmail.com>;
- *  - the USB wacom input driver, credited to many people
- *    (see drivers/input/tablet/wacom.h);
- *  - new and old versions of linuxwacom / xf86-input-wacom credited to
- *    Frederic Lepied, France. <Lepied@XFree86.org> and
- *    Ping Cheng, Wacom. <pingc@wacom.com>;
- *  - and xf86wacom.c (a presumably ancient version of the linuxwacom code),
- *    by Frederic Lepied and Raph Levien <raph@gtk.org>.
- *
- * To do:
- *  - support pad buttons; (requires access to a model with pad buttons)
- *  - support (protocol 4-style) tilt (requires access to a > 1.4 rom model)
- */
 
-/*
- * Wacom serial protocol 4 documentation taken from linuxwacom-0.9.9 code,
- * protocol 4 uses 7 or 9 byte of data in the following format:
- *
- *	Byte 1
- *	bit 7  Sync bit always 1
- *	bit 6  Pointing device detected
- *	bit 5  Cursor = 0 / Stylus = 1
- *	bit 4  Reserved
- *	bit 3  1 if a button on the pointing device has been pressed
- *	bit 2  P0 (optional)
- *	bit 1  X15
- *	bit 0  X14
- *
- *	Byte 2
- *	bit 7  Always 0
- *	bits 6-0 = X13 - X7
- *
- *	Byte 3
- *	bit 7  Always 0
- *	bits 6-0 = X6 - X0
- *
- *	Byte 4
- *	bit 7  Always 0
- *	bit 6  B3
- *	bit 5  B2
- *	bit 4  B1
- *	bit 3  B0
- *	bit 2  P1 (optional)
- *	bit 1  Y15
- *	bit 0  Y14
- *
- *	Byte 5
- *	bit 7  Always 0
- *	bits 6-0 = Y13 - Y7
- *
- *	Byte 6
- *	bit 7  Always 0
- *	bits 6-0 = Y6 - Y0
- *
- *	Byte 7
- *	bit 7 Always 0
- *	bit 6  Sign of pressure data; or wheel-rel for cursor tool
- *	bit 5  P7; or REL1 for cursor tool
- *	bit 4  P6; or REL0 for cursor tool
- *	bit 3  P5
- *	bit 2  P4
- *	bit 1  P3
- *	bit 0  P2
- *
- *	byte 8 and 9 are optional and present only
- *	in tilt mode.
- *
- *	Byte 8
- *	bit 7 Always 0
- *	bit 6 Sign of tilt X
- *	bit 5  Xt6
- *	bit 4  Xt5
- *	bit 3  Xt4
- *	bit 2  Xt3
- *	bit 1  Xt2
- *	bit 0  Xt1
- *
- *	Byte 9
- *	bit 7 Always 0
- *	bit 6 Sign of tilt Y
- *	bit 5  Yt6
- *	bit 4  Yt5
- *	bit 3  Yt4
- *	bit 2  Yt3
- *	bit 1  Yt2
- *	bit 0  Yt1
- */
+ 
+
+ 
 
 #include <linux/completion.h>
 #include <linux/init.h>
@@ -117,10 +21,7 @@ MODULE_LICENSE("GPL");
 #define REQUEST_MAX_COORDINATES		"~C\r"
 #define REQUEST_CONFIGURATION_STRING	"~R\r"
 #define REQUEST_RESET_TO_PROTOCOL_IV	"\r#"
-/*
- * Note: sending "\r$\r" causes at least the Digitizer II to send
- * packets in ASCII instead of binary.  "\r#" seems to undo that.
- */
+ 
 
 #define COMMAND_START_SENDING_PACKETS		"ST\r"
 #define COMMAND_STOP_SENDING_PACKETS		"SP\r"
@@ -134,16 +35,16 @@ MODULE_LICENSE("GPL");
 #define COMMAND_ENABLE_PRESSURE_MODE		"PH1\r"
 #define COMMAND_Z_FILTER			"ZF1\r"
 
-/* Note that this is a protocol 4 packet without tilt information. */
+ 
 #define PACKET_LENGTH		7
 #define DATA_SIZE		32
 
-/* flags */
+ 
 #define F_COVERS_SCREEN		0x01
 #define F_HAS_STYLUS2		0x02
 #define F_HAS_SCROLLWHEEL	0x04
 
-/* device IDs */
+ 
 #define STYLUS_DEVICE_ID	0x02
 #define CURSOR_DEVICE_ID	0x06
 #define ERASER_DEVICE_ID	0x0A
@@ -177,12 +78,12 @@ struct wacom {
 };
 
 enum {
-	MODEL_CINTIQ		= 0x504C, /* PL */
-	MODEL_CINTIQ2		= 0x4454, /* DT */
-	MODEL_DIGITIZER_II	= 0x5544, /* UD */
-	MODEL_GRAPHIRE		= 0x4554, /* ET */
-	MODEL_PENPARTNER	= 0x4354, /* CT */
-	MODEL_ARTPAD_II		= 0x4B54, /* KT */
+	MODEL_CINTIQ		= 0x504C,  
+	MODEL_CINTIQ2		= 0x4454,  
+	MODEL_DIGITIZER_II	= 0x5544,  
+	MODEL_GRAPHIRE		= 0x4554,  
+	MODEL_PENPARTNER	= 0x4354,  
+	MODEL_ARTPAD_II		= 0x4B54,  
 };
 
 static void wacom_handle_model_response(struct wacom *wacom)
@@ -197,7 +98,7 @@ static void wacom_handle_model_response(struct wacom *wacom)
 		major_v = minor_v = 0;
 
 	switch (wacom->data[2] << 8 | wacom->data[3]) {
-	case MODEL_CINTIQ:	/* UNTESTED */
+	case MODEL_CINTIQ:	 
 	case MODEL_CINTIQ2:
 		if ((wacom->data[2] << 8 | wacom->data[3]) == MODEL_CINTIQ) {
 			wacom->dev->name = "Wacom Cintiq";
@@ -210,12 +111,12 @@ static void wacom_handle_model_response(struct wacom *wacom)
 		wacom->res_y = 508;
 
 		switch (wacom->data[5] << 8 | wacom->data[6]) {
-		case 0x3731: /* PL-710 */
+		case 0x3731:  
 			wacom->res_x = 2540;
 			wacom->res_y = 2540;
 			fallthrough;
-		case 0x3535: /* PL-550 */
-		case 0x3830: /* PL-800 */
+		case 0x3535:  
+		case 0x3830:  
 			wacom->extra_z_bits = 2;
 		}
 
@@ -246,7 +147,7 @@ static void wacom_handle_model_response(struct wacom *wacom)
 		wacom->dev->name = "Wacom Digitizer II";
 		wacom->dev->id.version = MODEL_DIGITIZER_II;
 		if (major_v == 1 && minor_v <= 2)
-			wacom->extra_z_bits = 0; /* UNTESTED */
+			wacom->extra_z_bits = 0;  
 		break;
 
 	default:
@@ -354,7 +255,7 @@ static void wacom_handle_packet(struct wacom *wacom)
 		input_report_key(wacom->dev, BTN_LEFT, button & 1);
 		input_report_key(wacom->dev, BTN_RIGHT, button & 2);
 		input_report_key(wacom->dev, BTN_MIDDLE, button & 4);
-		/* handle relative wheel for non-stylus device */
+		 
 		z = (wacom->data[6] & 0x30) >> 4;
 		if (wacom->data[6] & 0x40)
 			z = -z;
@@ -377,22 +278,14 @@ static irqreturn_t wacom_interrupt(struct serio *serio, unsigned char data,
 	if (data & 0x80)
 		wacom->idx = 0;
 
-	/*
-	 * We're either expecting a carriage return-terminated ASCII
-	 * response string, or a seven-byte packet with the MSB set on
-	 * the first byte.
-	 *
-	 * Note however that some tablets (the PenPartner, for
-	 * example) don't send a carriage return at the end of a
-	 * command.  We handle these by waiting for timeout.
-	 */
+	 
 	if (data == '\r' && !(wacom->data[0] & 0x80)) {
 		wacom_handle_response(wacom);
 		wacom_clear_data_buf(wacom);
 		return IRQ_HANDLED;
 	}
 
-	/* Leave place for 0 termination */
+	 
 	if (wacom->idx > (DATA_SIZE - 2)) {
 		dev_dbg(&wacom->dev->dev,
 			"throwing away %d bytes of garbage\n", wacom->idx);
@@ -433,7 +326,7 @@ static int wacom_send_setup_string(struct wacom *wacom, struct serio *serio)
 	const u8 *cmd;
 
 	switch (wacom->dev->id.version) {
-	case MODEL_CINTIQ:	/* UNTESTED */
+	case MODEL_CINTIQ:	 
 		cmd = COMMAND_ORIGIN_IN_UPPER_LEFT
 			COMMAND_TRANSMIT_AT_MAX_RATE
 			COMMAND_ENABLE_CONTINUOUS_MODE
@@ -476,7 +369,7 @@ static int wacom_send_and_wait(struct wacom *wacom, struct serio *serio,
 
 	u = wait_for_completion_timeout(&wacom->cmd_done, HZ);
 	if (u == 0) {
-		/* Timeout, process what we've received. */
+		 
 		wacom_handle_response(wacom);
 	}
 
@@ -488,9 +381,7 @@ static int wacom_setup(struct wacom *wacom, struct serio *serio)
 {
 	int err;
 
-	/* Note that setting the link speed is the job of inputattach.
-	 * We assume that reset negotiation has already happened,
-	 * here. */
+	 
 	err = wacom_send_and_wait(wacom, serio, REQUEST_MODEL_AND_ROM_VERSION,
 				  "model and version");
 	if (err)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ 
 
 #ifndef __FUN_HCI_H
 #define __FUN_HCI_H
@@ -224,8 +224,8 @@ struct fun_admin_epcq_req {
 
 			__be64 address;
 
-			__be16 tailroom; /* per packet tailroom in bytes */
-			__u8 headroom; /* per packet headroom in 2B units */
+			__be16 tailroom;  
+			__u8 headroom;  
 			__u8 intcoal_kbytes;
 			__u8 intcoal_holdoff_nentries;
 			__u8 intcoal_holdoff_usecs;
@@ -244,7 +244,7 @@ struct fun_admin_epcq_req {
 			__be16 flags;
 			__be32 id;
 
-			__be16 headroom; /* headroom in bytes */
+			__be16 headroom;  
 			__u8 rsvd1[6];
 		} modify;
 	} u;
@@ -304,7 +304,7 @@ struct fun_admin_epsq_req {
 			__u8 entry_size_log2;
 			__be16 nentries;
 
-			__be64 address; /* DMA address of epsq */
+			__be64 address;  
 
 			__u8 rsvd2[3];
 			__u8 intcoal_kbytes;
@@ -317,10 +317,10 @@ struct fun_admin_epsq_req {
 
 			__u8 rsvd3[4];
 			__be16 tph_cpuid;
-			__u8 buf_size_log2; /* log2 of RQ buffer size */
-			__u8 head_wb_size_log2; /* log2 of head write back size */
+			__u8 buf_size_log2;  
+			__u8 head_wb_size_log2;  
 
-			__be64 head_wb_address; /* DMA address for head writeback */
+			__be64 head_wb_address;  
 		} create;
 	} u;
 };
@@ -469,7 +469,7 @@ enum fun_admin_port_key {
 };
 
 struct fun_subop_imm {
-	__u8 subop; /* see fun_data_subop enum */
+	__u8 subop;  
 	__u8 flags;
 	__u8 nsgl;
 	__u8 rsvd0;
@@ -487,11 +487,11 @@ enum fun_subop_sgl_flags {
 
 enum fun_data_op {
 	FUN_DATAOP_INVALID = 0x0,
-	FUN_DATAOP_SL = 0x1, /* scatter */
-	FUN_DATAOP_GL = 0x2, /* gather */
-	FUN_DATAOP_SGL = 0x3, /* scatter-gather */
-	FUN_DATAOP_IMM = 0x4, /* immediate data */
-	FUN_DATAOP_RQBUF = 0x8, /* rq buffer */
+	FUN_DATAOP_SL = 0x1,  
+	FUN_DATAOP_GL = 0x2,  
+	FUN_DATAOP_SGL = 0x3,  
+	FUN_DATAOP_IMM = 0x4,  
+	FUN_DATAOP_RQBUF = 0x8,  
 };
 
 struct fun_dataop_gl {
@@ -584,7 +584,7 @@ struct fun_admin_port_req {
 			__u8 subop;
 			__u8 rsvd0;
 			__be16 flags;
-			__be32 id; /* portid */
+			__be32 id;  
 
 			struct fun_admin_write48_req write48[];
 		} write;
@@ -592,7 +592,7 @@ struct fun_admin_port_req {
 			__u8 subop;
 			__u8 rsvd0;
 			__be16 flags;
-			__be32 id; /* portid */
+			__be32 id;  
 
 			struct fun_admin_read48_req read48[];
 		} read;
@@ -663,21 +663,21 @@ struct fun_admin_port_rsp {
 		struct fun_admin_port_write_rsp {
 			__u8 subop;
 			__u8 rsvd0[3];
-			__be32 id; /* portid */
+			__be32 id;  
 
 			struct fun_admin_write48_rsp write48[];
 		} write;
 		struct fun_admin_port_read_rsp {
 			__u8 subop;
 			__u8 rsvd0[3];
-			__be32 id; /* portid */
+			__be32 id;  
 
 			struct fun_admin_read48_rsp read48[];
 		} read;
 		struct fun_admin_port_inetaddr_event_rsp {
 			__u8 subop;
 			__u8 rsvd0[3];
-			__be32 id; /* portid */
+			__be32 id;  
 		} inetaddr_event;
 	} u;
 };
@@ -705,9 +705,9 @@ enum fun_xcvr_type {
 	FUN_XCVR_SMF = 0x2,
 	FUN_XCVR_MMF = 0x3,
 	FUN_XCVR_AOC = 0x4,
-	FUN_XCVR_SFPP = 0x10, /* SFP+ or later */
-	FUN_XCVR_QSFPP = 0x11, /* QSFP+ or later */
-	FUN_XCVR_QSFPDD = 0x12, /* QSFP-DD */
+	FUN_XCVR_SFPP = 0x10,  
+	FUN_XCVR_QSFPP = 0x11,  
+	FUN_XCVR_QSFPDD = 0x12,  
 };
 
 struct fun_admin_port_notif {
@@ -716,7 +716,7 @@ struct fun_admin_port_notif {
 	__u8 subop;
 	__u8 rsvd0;
 	__be16 id;
-	__be32 speed; /* in 10 Mbps units */
+	__be32 speed;  
 
 	__u8 link_state;
 	__u8 missed_events;
@@ -754,7 +754,7 @@ struct fun_admin_rss_req {
 			__be32 id;
 
 			__be32 rsvd1;
-			__be32 viid; /* VI flow id */
+			__be32 viid;  
 
 			__be64 metadata[1];
 
@@ -792,7 +792,7 @@ struct fun_admin_vi_req {
 			__be32 id;
 
 			__be32 rsvd1;
-			__be32 portid; /* port flow id */
+			__be32 portid;  
 		} create;
 	} u;
 };
@@ -814,7 +814,7 @@ struct fun_admin_eth_req {
 			__be32 id;
 
 			__be32 rsvd1;
-			__be32 portid; /* port flow id */
+			__be32 portid;  
 		} create;
 	} u;
 };
@@ -859,7 +859,7 @@ struct fun_admin_swu_req {
 			__be32 fourcc;
 			__be32 rsvd1;
 
-			__be64 image_size; /* upgrade image length */
+			__be64 image_size;  
 		} upgrade;
 		struct fun_admin_swu_upgrade_data_req {
 			__u8 subop;
@@ -867,12 +867,12 @@ struct fun_admin_swu_req {
 			__be16 flags;
 			__be32 id;
 
-			__be32 offset; /* offset of data in this command */
-			__be32 size; /* total size of data in this command */
+			__be32 offset;  
+			__be32 size;  
 		} upgrade_data;
 	} u;
 
-	struct fun_subop_sgl sgl[]; /* in, out buffers through sgl */
+	struct fun_subop_sgl sgl[];  
 };
 
 #define FUN_ADMIN_SWU_CREATE_REQ_INIT(_subop, _flags, _id)       \
@@ -1075,15 +1075,15 @@ enum {
 };
 
 struct fun_eth_offload {
-	__be16 flags; /* combination of above flags */
-	__be16 mss; /* TSO max seg size */
-	__be16 tcp_doff_flags; /* TCP data offset + flags 16b word */
+	__be16 flags;  
+	__be16 mss;  
+	__be16 tcp_doff_flags;  
 	__be16 vlan;
 
-	__be16 inner_l3_off; /* Inner L3 header offset */
-	__be16 inner_l4_off; /* Inner L4 header offset */
-	__be16 outer_l3_off; /* Outer L3 header offset */
-	__be16 outer_l4_off; /* Outer L4 header offset */
+	__be16 inner_l3_off;  
+	__be16 inner_l4_off;  
+	__be16 outer_l3_off;  
+	__be16 outer_l4_off;  
 };
 
 static inline void fun_eth_offload_init(struct fun_eth_offload *s, u16 flags,
@@ -1239,4 +1239,4 @@ struct fun_admin_adi_req {
 		.id = cpu_to_be32(_id),                       \
 	}
 
-#endif /* __FUN_HCI_H */
+#endif  

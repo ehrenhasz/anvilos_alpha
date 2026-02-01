@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+
 
 #include <linux/bitmap.h>
 #include <linux/delay.h>
@@ -24,29 +24,29 @@ enum {
 	AQA_MAX_QUEUE_SIZE = 4096
 };
 
-/* context for admin commands */
+ 
 struct fun_cmd_ctx {
-	fun_admin_callback_t cb;  /* callback to invoke on completion */
-	void *cb_data;            /* user data provided to callback */
-	int cpu;                  /* CPU where the cmd's tag was allocated */
+	fun_admin_callback_t cb;   
+	void *cb_data;             
+	int cpu;                   
 };
 
-/* Context for synchronous admin commands. */
+ 
 struct fun_sync_cmd_ctx {
 	struct completion compl;
-	u8 *rsp_buf;              /* caller provided response buffer */
-	unsigned int rsp_len;     /* response buffer size */
-	u8 rsp_status;            /* command response status */
+	u8 *rsp_buf;               
+	unsigned int rsp_len;      
+	u8 rsp_status;             
 };
 
-/* Wait for the CSTS.RDY bit to match @enabled. */
+ 
 static int fun_wait_ready(struct fun_dev *fdev, bool enabled)
 {
 	unsigned int cap_to = NVME_CAP_TIMEOUT(fdev->cap_reg);
 	u32 bit = enabled ? NVME_CSTS_RDY : 0;
 	unsigned long deadline;
 
-	deadline = ((cap_to + 1) * HZ / 2) + jiffies; /* CAP.TO is in 500ms */
+	deadline = ((cap_to + 1) * HZ / 2) + jiffies;  
 
 	for (;;) {
 		u32 csts = readl(fdev->bar + NVME_REG_CSTS);
@@ -71,9 +71,7 @@ static int fun_wait_ready(struct fun_dev *fdev, bool enabled)
 	return -ETIMEDOUT;
 }
 
-/* Check CSTS and return an error if it is unreadable or has unexpected
- * RDY value.
- */
+ 
 static int fun_check_csts_rdy(struct fun_dev *fdev, unsigned int expected_rdy)
 {
 	u32 csts = readl(fdev->bar + NVME_REG_CSTS);
@@ -90,9 +88,7 @@ static int fun_check_csts_rdy(struct fun_dev *fdev, unsigned int expected_rdy)
 	return 0;
 }
 
-/* Check that CSTS RDY has the expected value. Then write a new value to the CC
- * register and wait for CSTS RDY to match the new CC ENABLE state.
- */
+ 
 static int fun_update_cc_enable(struct fun_dev *fdev, unsigned int initial_rdy)
 {
 	int rc = fun_check_csts_rdy(fdev, initial_rdy);
@@ -220,7 +216,7 @@ static int fun_init_cmd_ctx(struct fun_dev *fdev, unsigned int ntags)
 	return 0;
 }
 
-/* Allocate and enable an admin queue and assign it the first IRQ vector. */
+ 
 static int fun_enable_admin_queue(struct fun_dev *fdev,
 				  const struct fun_dev_params *areq)
 {
@@ -323,10 +319,7 @@ static void fun_disable_admin_queue(struct fun_dev *fdev)
 	fdev->admin_q = NULL;
 }
 
-/* Return %true if the admin queue has stopped servicing commands as can be
- * detected through registers. This isn't exhaustive and may provide false
- * negatives.
- */
+ 
 static bool fun_adminq_stopped(struct fun_dev *fdev)
 {
 	u32 csts = readl(fdev->bar + NVME_REG_CSTS);
@@ -357,9 +350,7 @@ static int fun_wait_for_tag(struct fun_dev *fdev, int *cpup)
 	return tag;
 }
 
-/* Submit an asynchronous admin command. Caller is responsible for implementing
- * any waiting or timeout. Upon command completion the callback @cb is called.
- */
+ 
 int fun_submit_admin_cmd(struct fun_dev *fdev, struct fun_admin_req_common *cmd,
 			 fun_admin_callback_t cb, void *cb_data, bool wait_ok)
 {
@@ -406,10 +397,7 @@ int fun_submit_admin_cmd(struct fun_dev *fdev, struct fun_admin_req_common *cmd,
 	return rc;
 }
 
-/* Abandon a pending admin command by clearing the issuer's callback data.
- * Failure indicates that the command either has already completed or its
- * completion is racing with this call.
- */
+ 
 static bool fun_abandon_admin_cmd(struct fun_dev *fd,
 				  const struct fun_admin_req_common *cmd,
 				  void *cb_data)
@@ -420,9 +408,7 @@ static bool fun_abandon_admin_cmd(struct fun_dev *fd,
 	return cmpxchg(&cmd_ctx->cb_data, cb_data, NULL) == cb_data;
 }
 
-/* Stop submission of new admin commands and wake up any processes waiting for
- * tags. Already submitted commands are left to complete or time out.
- */
+ 
 static void fun_admin_stop(struct fun_dev *fdev)
 {
 	spin_lock(&fdev->admin_q->sq_lock);
@@ -431,16 +417,14 @@ static void fun_admin_stop(struct fun_dev *fdev)
 	sbitmap_queue_wake_all(&fdev->admin_sbq);
 }
 
-/* The callback for synchronous execution of admin commands. It copies the
- * command response to the caller's buffer and signals completion.
- */
+ 
 static void fun_admin_cmd_sync_cb(struct fun_dev *fd, void *rsp, void *cb_data)
 {
 	const struct fun_admin_rsp_common *rsp_common = rsp;
 	struct fun_sync_cmd_ctx *ctx = cb_data;
 
 	if (!ctx)
-		return;         /* command issuer timed out and left */
+		return;          
 	if (ctx->rsp_buf) {
 		unsigned int rsp_len = rsp_common->len8 * 8;
 
@@ -456,7 +440,7 @@ static void fun_admin_cmd_sync_cb(struct fun_dev *fd, void *rsp, void *cb_data)
 	complete(&ctx->compl);
 }
 
-/* Submit a synchronous admin command. */
+ 
 int fun_submit_admin_sync_cmd(struct fun_dev *fdev,
 			      struct fun_admin_req_common *cmd, void *rsp,
 			      size_t rspsize, unsigned int timeout)
@@ -481,15 +465,12 @@ int fun_submit_admin_sync_cmd(struct fun_dev *fdev,
 	jiffies_left = wait_for_completion_timeout(&ctx.compl,
 						   msecs_to_jiffies(timeout));
 	if (!jiffies_left) {
-		/* The command timed out. Attempt to cancel it so we can return.
-		 * But if the command is in the process of completing we'll
-		 * wait for it.
-		 */
+		 
 		if (fun_abandon_admin_cmd(fdev, cmd, &ctx)) {
 			dev_err(fdev->dev, "admin command timed out: %*ph\n",
 				cmdlen, cmd);
 			fun_admin_stop(fdev);
-			/* see if the timeout was due to a queue failure */
+			 
 			if (fun_adminq_stopped(fdev))
 				dev_err(fdev->dev,
 					"device does not accept admin commands\n");
@@ -508,7 +489,7 @@ int fun_submit_admin_sync_cmd(struct fun_dev *fdev,
 }
 EXPORT_SYMBOL_GPL(fun_submit_admin_sync_cmd);
 
-/* Return the number of device resources of the requested type. */
+ 
 int fun_get_res_count(struct fun_dev *fdev, enum fun_admin_op res)
 {
 	union {
@@ -527,7 +508,7 @@ int fun_get_res_count(struct fun_dev *fdev, enum fun_admin_op res)
 }
 EXPORT_SYMBOL_GPL(fun_get_res_count);
 
-/* Request that the instance of resource @res with the given id be deleted. */
+ 
 int fun_res_destroy(struct fun_dev *fdev, enum fun_admin_op res,
 		    unsigned int flags, u32 id)
 {
@@ -541,7 +522,7 @@ int fun_res_destroy(struct fun_dev *fdev, enum fun_admin_op res,
 }
 EXPORT_SYMBOL_GPL(fun_res_destroy);
 
-/* Bind two entities of the given types and IDs. */
+ 
 int fun_bind(struct fun_dev *fdev, enum fun_admin_bind_type type0,
 	     unsigned int id0, enum fun_admin_bind_type type1,
 	     unsigned int id1)
@@ -576,15 +557,11 @@ static int fun_get_dev_limits(struct fun_dev *fdev)
 		return rc;
 	sq_count = rc;
 
-	/* The admin queue consumes 1 CQ and at least 1 SQ. To be usable the
-	 * device must provide additional queues.
-	 */
+	 
 	if (cq_count < 2 || sq_count < 2 + !!fdev->admin_q->rq_depth)
 		return -EINVAL;
 
-	/* Calculate the max QID based on SQ/CQ/doorbell counts.
-	 * SQ/CQ doorbells alternate.
-	 */
+	 
 	num_dbs = (pci_resource_len(pdev, 0) - NVME_REG_DBS) >>
 		  (2 + NVME_CAP_STRIDE(fdev->cap_reg));
 	fdev->max_qid = min3(cq_count, sq_count, num_dbs / 2) - 1;
@@ -592,7 +569,7 @@ static int fun_get_dev_limits(struct fun_dev *fdev)
 	return 0;
 }
 
-/* Allocate all MSI-X vectors available on a function and at least @min_vecs. */
+ 
 static int fun_alloc_irqs(struct pci_dev *pdev, unsigned int min_vecs)
 {
 	int vecs, num_msix = pci_msix_vec_count(pdev);
@@ -615,7 +592,7 @@ static int fun_alloc_irqs(struct pci_dev *pdev, unsigned int min_vecs)
 	return vecs;
 }
 
-/* Allocate and initialize the IRQ manager state. */
+ 
 static int fun_alloc_irq_mgr(struct fun_dev *fdev)
 {
 	fdev->irq_map = bitmap_zalloc(fdev->num_irqs, GFP_KERNEL);
@@ -623,13 +600,13 @@ static int fun_alloc_irq_mgr(struct fun_dev *fdev)
 		return -ENOMEM;
 
 	spin_lock_init(&fdev->irqmgr_lock);
-	/* mark IRQ 0 allocated, it is used by the admin queue */
+	 
 	__set_bit(0, fdev->irq_map);
 	fdev->irqs_avail = fdev->num_irqs - 1;
 	return 0;
 }
 
-/* Reserve @nirqs of the currently available IRQs and return their indices. */
+ 
 int fun_reserve_irqs(struct fun_dev *fdev, unsigned int nirqs, u16 *irq_indices)
 {
 	unsigned int b, n = 0;
@@ -658,7 +635,7 @@ unlock:
 }
 EXPORT_SYMBOL(fun_reserve_irqs);
 
-/* Release @nirqs previously allocated IRQS with the supplied indices. */
+ 
 void fun_release_irqs(struct fun_dev *fdev, unsigned int nirqs,
 		      u16 *irq_indices)
 {
@@ -704,9 +681,7 @@ void fun_serv_sched(struct fun_dev *fd)
 }
 EXPORT_SYMBOL_GPL(fun_serv_sched);
 
-/* Check and try to get the device into a proper state for initialization,
- * i.e., CSTS.RDY = CC.EN = 0.
- */
+ 
 static int sanitize_dev(struct fun_dev *fdev)
 {
 	int rc;
@@ -714,21 +689,19 @@ static int sanitize_dev(struct fun_dev *fdev)
 	fdev->cap_reg = readq(fdev->bar + NVME_REG_CAP);
 	fdev->cc_reg = readl(fdev->bar + NVME_REG_CC);
 
-	/* First get RDY to agree with the current EN. Give RDY the opportunity
-	 * to complete a potential recent EN change.
-	 */
+	 
 	rc = fun_wait_ready(fdev, fdev->cc_reg & NVME_CC_ENABLE);
 	if (rc)
 		return rc;
 
-	/* Next, reset the device if EN is currently 1. */
+	 
 	if (fdev->cc_reg & NVME_CC_ENABLE)
 		rc = fun_disable_ctrl(fdev);
 
 	return rc;
 }
 
-/* Undo the device initialization of fun_dev_enable(). */
+ 
 void fun_dev_disable(struct fun_dev *fdev)
 {
 	struct pci_dev *pdev = to_pci_dev(fdev->dev);
@@ -752,12 +725,7 @@ void fun_dev_disable(struct fun_dev *fdev)
 }
 EXPORT_SYMBOL(fun_dev_disable);
 
-/* Perform basic initialization of a device, including
- * - PCI config space setup and BAR0 mapping
- * - interrupt management initialization
- * - 1 admin queue setup
- * - determination of some device limits, such as number of queues.
- */
+ 
 int fun_dev_enable(struct fun_dev *fdev, struct pci_dev *pdev,
 		   const struct fun_dev_params *areq, const char *name)
 {
@@ -791,7 +759,7 @@ int fun_dev_enable(struct fun_dev *fdev, struct pci_dev *pdev,
 	fdev->service_flags = FUN_SERV_DISABLED;
 	fdev->serv_cb = areq->serv_cb;
 
-	rc = fun_alloc_irqs(pdev, areq->min_msix + 1); /* +1 for admin CQ */
+	rc = fun_alloc_irqs(pdev, areq->min_msix + 1);  
 	if (rc < 0)
 		goto disable_dev;
 	fdev->num_irqs = rc;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/slab.h>
 #include "glob.h"
@@ -190,11 +187,7 @@ static struct smb_version_cmds smb2_0_server_cmds[NUMBER_OF_SMB2_COMMANDS] = {
 	[SMB2_CHANGE_NOTIFY_HE]	=	{ .proc = smb2_notify},
 };
 
-/**
- * init_smb2_1_server() - initialize a smb server connection with smb2.1
- *			command dispatcher
- * @conn:	connection instance
- */
+ 
 void init_smb2_1_server(struct ksmbd_conn *conn)
 {
 	conn->vals = &smb21_server_values;
@@ -207,11 +200,7 @@ void init_smb2_1_server(struct ksmbd_conn *conn)
 		conn->vals->capabilities |= SMB2_GLOBAL_CAP_LEASING;
 }
 
-/**
- * init_smb3_0_server() - initialize a smb server connection with smb3.0
- *			command dispatcher
- * @conn:	connection instance
- */
+ 
 void init_smb3_0_server(struct ksmbd_conn *conn)
 {
 	conn->vals = &smb30_server_values;
@@ -232,11 +221,7 @@ void init_smb3_0_server(struct ksmbd_conn *conn)
 		conn->vals->capabilities |= SMB2_GLOBAL_CAP_MULTI_CHANNEL;
 }
 
-/**
- * init_smb3_02_server() - initialize a smb server connection with smb3.02
- *			command dispatcher
- * @conn:	connection instance
- */
+ 
 void init_smb3_02_server(struct ksmbd_conn *conn)
 {
 	conn->vals = &smb302_server_values;
@@ -258,11 +243,7 @@ void init_smb3_02_server(struct ksmbd_conn *conn)
 		conn->vals->capabilities |= SMB2_GLOBAL_CAP_MULTI_CHANNEL;
 }
 
-/**
- * init_smb3_11_server() - initialize a smb server connection with smb3.11
- *			command dispatcher
- * @conn:	connection instance
- */
+ 
 int init_smb3_11_server(struct ksmbd_conn *conn)
 {
 	conn->vals = &smb311_server_values;

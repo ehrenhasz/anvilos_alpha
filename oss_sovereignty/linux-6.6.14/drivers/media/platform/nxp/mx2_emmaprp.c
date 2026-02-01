@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support eMMa-PrP through mem2mem framework.
- *
- * eMMa-PrP is a piece of HW that allows fetching buffers
- * from one memory location and do several operations on
- * them such as scaling or format conversion giving, as a result
- * a new processed buffer in another memory location.
- *
- * Based on mem2mem_testdev.c by Pawel Osciak.
- *
- * Copyright (c) 2011 Vista Silicon S.L.
- * Javier Martin <javier.martin@vista-silicon.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/slab.h>
@@ -40,24 +28,24 @@ module_param(debug, bool, 0644);
 #define MAX_W 2040
 #define MAX_H 2046
 
-#define S_ALIGN		1 /* multiple of 2 */
-#define W_ALIGN_YUV420	3 /* multiple of 8 */
-#define W_ALIGN_OTHERS	2 /* multiple of 4 */
-#define H_ALIGN		1 /* multiple of 2 */
+#define S_ALIGN		1  
+#define W_ALIGN_YUV420	3  
+#define W_ALIGN_OTHERS	2  
+#define H_ALIGN		1  
 
-/* Flags that indicate a format can be used for capture/output */
+ 
 #define MEM2MEM_CAPTURE	(1 << 0)
 #define MEM2MEM_OUTPUT	(1 << 1)
 
 #define MEM2MEM_NAME		"m2m-emmaprp"
 
-/* In bytes, per queue */
+ 
 #define MEM2MEM_VID_MEM_LIMIT	SZ_16M
 
 #define dprintk(dev, fmt, arg...) \
 	v4l2_dbg(1, debug, &dev->v4l2_dev, "%s: " fmt, __func__, ## arg)
 
-/* EMMA PrP */
+ 
 #define PRP_CNTL                        0x00
 #define PRP_INTR_CNTL                   0x04
 #define PRP_INTRSTATUS                  0x08
@@ -125,7 +113,7 @@ module_param(debug, bool, 0644);
 #define PRP_SIZE_HEIGHT(x)	(x)
 #define PRP_SIZE_WIDTH(x)	((x) << 16)
 
-/* IRQ Enable and status register */
+ 
 #define PRP_INTR_RDERR          (1 << 0)
 #define PRP_INTR_CH1WERR        (1 << 1)
 #define PRP_INTR_CH2WERR        (1 << 2)
@@ -146,7 +134,7 @@ module_param(debug, bool, 0644);
 
 struct emmaprp_fmt {
 	u32	fourcc;
-	/* Types the format can be used for */
+	 
 	u32	types;
 };
 
@@ -161,7 +149,7 @@ static struct emmaprp_fmt formats[] = {
 	},
 };
 
-/* Per-queue, driver-specific private data */
+ 
 struct emmaprp_q_data {
 	unsigned int		width;
 	unsigned int		height;
@@ -209,7 +197,7 @@ struct emmaprp_dev {
 struct emmaprp_ctx {
 	struct v4l2_fh		fh;
 	struct emmaprp_dev	*dev;
-	/* Abort requested by m2m */
+	 
 	int			aborting;
 	struct emmaprp_q_data	q_data[2];
 };
@@ -228,9 +216,7 @@ static struct emmaprp_q_data *get_q_data(struct emmaprp_ctx *ctx,
 	return NULL;
 }
 
-/*
- * mem2mem callbacks
- */
+ 
 static void emmaprp_job_abort(void *priv)
 {
 	struct emmaprp_ctx *ctx = priv;
@@ -295,12 +281,12 @@ static void emmaprp_device_run(void *priv)
 		return;
 	}
 
-	/* Input frame parameters */
+	 
 	writel(p_in, pcdev->base_emma + PRP_SOURCE_Y_PTR);
 	writel(PRP_SIZE_WIDTH(s_width) | PRP_SIZE_HEIGHT(s_height),
 	       pcdev->base_emma + PRP_SRC_FRAME_SIZE);
 
-	/* Output frame parameters */
+	 
 	writel(p_out, pcdev->base_emma + PRP_DEST_Y_PTR);
 	writel(p_out + d_size, pcdev->base_emma + PRP_DEST_CB_PTR);
 	writel(p_out + d_size + (d_size >> 2),
@@ -308,7 +294,7 @@ static void emmaprp_device_run(void *priv)
 	writel(PRP_SIZE_WIDTH(d_width) | PRP_SIZE_HEIGHT(d_height),
 	       pcdev->base_emma + PRP_CH2_OUT_IMAGE_SIZE);
 
-	/* IRQ configuration */
+	 
 	tmp = readl(pcdev->base_emma + PRP_INTR_CNTL);
 	writel(tmp | PRP_INTR_RDERR |
 		PRP_INTR_CH2WERR |
@@ -317,7 +303,7 @@ static void emmaprp_device_run(void *priv)
 
 	emmaprp_dump_regs(pcdev);
 
-	/* Enable transfer */
+	 
 	tmp = readl(pcdev->base_emma + PRP_CNTL);
 	writel(tmp | PRP_CNTL_CH2_OUT_YUV420 |
 		PRP_CNTL_DATA_IN_YUV422 |
@@ -333,7 +319,7 @@ static irqreturn_t emmaprp_irq(int irq_emma, void *data)
 	unsigned long flags;
 	u32 irqst;
 
-	/* Check irq flags and clear irq */
+	 
 	irqst = readl(pcdev->base_emma + PRP_INTRSTATUS);
 	writel(irqst, pcdev->base_emma + PRP_INTRSTATUS);
 	dprintk(pcdev, "irqst = 0x%08x\n", irqst);
@@ -349,7 +335,7 @@ static irqreturn_t emmaprp_irq(int irq_emma, void *data)
 		(irqst & PRP_INTR_ST_CH2WERR)) {
 			pr_err("PrP bus error occurred, this transfer is probably corrupted\n");
 			writel(PRP_CNTL_SWRST, pcdev->base_emma + PRP_CNTL);
-		} else if (irqst & PRP_INTR_ST_CH2B1CI) { /* buffer ready */
+		} else if (irqst & PRP_INTR_ST_CH2B1CI) {  
 			src_vb = v4l2_m2m_src_buf_remove(curr_ctx->fh.m2m_ctx);
 			dst_vb = v4l2_m2m_dst_buf_remove(curr_ctx->fh.m2m_ctx);
 
@@ -372,9 +358,7 @@ static irqreturn_t emmaprp_irq(int irq_emma, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * video ioctls
- */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 			   struct v4l2_capability *cap)
 {
@@ -392,23 +376,22 @@ static int enum_fmt(struct v4l2_fmtdesc *f, u32 type)
 
 	for (i = 0; i < NUM_FORMATS; ++i) {
 		if (formats[i].types & type) {
-			/* index-th format of type type found ? */
+			 
 			if (num == f->index)
 				break;
-			/* Correct type but haven't reached our index yet,
-			 * just increment per-type index */
+			 
 			++num;
 		}
 	}
 
 	if (i < NUM_FORMATS) {
-		/* Format found */
+		 
 		fmt = &formats[i];
 		f->pixelformat = fmt->fourcc;
 		return 0;
 	}
 
-	/* Format not found */
+	 
 	return -EINVAL;
 }
 
@@ -441,7 +424,7 @@ static int vidioc_g_fmt(struct emmaprp_ctx *ctx, struct v4l2_format *f)
 	f->fmt.pix.pixelformat	= q_data->fmt->fourcc;
 	if (f->fmt.pix.pixelformat == V4L2_PIX_FMT_YUV420)
 		f->fmt.pix.bytesperline = q_data->width * 3 / 2;
-	else /* YUYV */
+	else  
 		f->fmt.pix.bytesperline = q_data->width * 2;
 	f->fmt.pix.sizeimage	= q_data->sizeimage;
 
@@ -474,8 +457,7 @@ static int vidioc_try_fmt(struct v4l2_format *f)
 	else if (V4L2_FIELD_NONE != field)
 		return -EINVAL;
 
-	/* V4L2 specification suggests the driver corrects the format struct
-	 * if any of the dimensions is unsupported */
+	 
 	f->fmt.pix.field = field;
 
 	if (f->fmt.pix.pixelformat == V4L2_PIX_FMT_YUV420) {
@@ -556,7 +538,7 @@ static int vidioc_s_fmt(struct emmaprp_ctx *ctx, struct v4l2_format *f)
 	q_data->height		= f->fmt.pix.height;
 	if (q_data->fmt->fourcc == V4L2_PIX_FMT_YUV420)
 		q_data->sizeimage = q_data->width * q_data->height * 3 / 2;
-	else /* YUYV */
+	else  
 		q_data->sizeimage = q_data->width * q_data->height * 2;
 
 	dprintk(ctx->dev,
@@ -614,9 +596,7 @@ static const struct v4l2_ioctl_ops emmaprp_ioctl_ops = {
 };
 
 
-/*
- * Queue operations
- */
+ 
 static int emmaprp_queue_setup(struct vb2_queue *vq,
 				unsigned int *nbuffers, unsigned int *nplanes,
 				unsigned int sizes[], struct device *alloc_devs[])
@@ -714,9 +694,7 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/*
- * File operations
- */
+ 
 static int emmaprp_open(struct file *file)
 {
 	struct emmaprp_dev *pcdev = video_drvdata(file);

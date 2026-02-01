@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005 Stephen Street / StreetFire Sound Labs
- * Copyright (C) 2013, 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef SPI_PXA2XX_H
 #define SPI_PXA2XX_H
@@ -21,26 +18,26 @@ struct spi_device;
 struct spi_transfer;
 
 struct driver_data {
-	/* SSP Info */
+	 
 	struct ssp_device *ssp;
 
-	/* SPI framework hookup */
+	 
 	enum pxa_ssp_type ssp_type;
 	struct spi_controller *controller;
 
-	/* PXA hookup */
+	 
 	struct pxa2xx_spi_controller *controller_info;
 
-	/* SSP masks*/
+	 
 	u32 dma_cr1;
 	u32 int_cr1;
 	u32 clear_sr;
 	u32 mask_sr;
 
-	/* DMA engine support */
+	 
 	atomic_t dma_running;
 
-	/* Current transfer state info */
+	 
 	void *tx;
 	void *tx_end;
 	void *rx;
@@ -52,7 +49,7 @@ struct driver_data {
 
 	void __iomem *lpss_base;
 
-	/* Optional slave FIFO ready signal */
+	 
 	struct gpio_desc *gpiod_ready;
 };
 
@@ -129,4 +126,4 @@ extern int pxa2xx_spi_set_dma_burst_and_threshold(struct chip_data *chip,
 						  u32 *burst_code,
 						  u32 *threshold);
 
-#endif /* SPI_PXA2XX_H */
+#endif  

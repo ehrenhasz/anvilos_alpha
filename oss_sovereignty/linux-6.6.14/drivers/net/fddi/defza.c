@@ -1,31 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*	FDDI network adapter driver for DEC FDDIcontroller 700/700-C devices.
- *
- *	Copyright (c) 2018  Maciej W. Rozycki
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
- *	References:
- *
- *	Dave Sawyer & Phil Weeks & Frank Itkowsky,
- *	"DEC FDDIcontroller 700 Port Specification",
- *	Revision 1.1, Digital Equipment Corporation
- */
 
-/* ------------------------------------------------------------------------- */
-/* FZA configurable parameters.                                              */
+ 
 
-/* The number of transmit ring descriptors; either 0 for 512 or 1 for 1024.  */
+ 
+ 
+
+ 
 #define FZA_RING_TX_MODE 0
 
-/* The number of receive ring descriptors; from 2 up to 256.  */
+ 
 #define FZA_RING_RX_SIZE 256
 
-/* End of FZA configurable parameters.  No need to change anything below.    */
-/* ------------------------------------------------------------------------- */
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -67,23 +53,19 @@ MODULE_LICENSE("GPL");
 static int loopback;
 module_param(loopback, int, 0644);
 
-/* Ring Purger Multicast */
+ 
 static u8 hw_addr_purger[8] = { 0x09, 0x00, 0x2b, 0x02, 0x01, 0x05 };
-/* Directed Beacon Multicast */
+ 
 static u8 hw_addr_beacon[8] = { 0x01, 0x80, 0xc2, 0x00, 0x01, 0x00 };
 
-/* Shorthands for MMIO accesses that we require to be strongly ordered
- * WRT preceding MMIO accesses.
- */
+ 
 #define readw_o readw_relaxed
 #define readl_o readl_relaxed
 
 #define writew_o writew_relaxed
 #define writel_o writel_relaxed
 
-/* Shorthands for MMIO accesses that we are happy with being weakly ordered
- * WRT preceding MMIO accesses.
- */
+ 
 #define readw_u readw_relaxed
 #define readl_u readl_relaxed
 #define readq_u readq_relaxed
@@ -222,27 +204,27 @@ static inline void fza_regs_dump(struct fza_private *fp)
 
 static inline void fza_do_reset(struct fza_private *fp)
 {
-	/* Reset the board. */
+	 
 	writew_o(FZA_RESET_INIT, &fp->regs->reset);
-	readw_o(&fp->regs->reset);	/* Synchronize. */
-	readw_o(&fp->regs->reset);	/* Read it back for a small delay. */
+	readw_o(&fp->regs->reset);	 
+	readw_o(&fp->regs->reset);	 
 	writew_o(FZA_RESET_CLR, &fp->regs->reset);
 
-	/* Enable all interrupt events we handle. */
+	 
 	writew_o(fp->int_mask, &fp->regs->int_mask);
-	readw_o(&fp->regs->int_mask);	/* Synchronize. */
+	readw_o(&fp->regs->int_mask);	 
 }
 
 static inline void fza_do_shutdown(struct fza_private *fp)
 {
-	/* Disable the driver mode. */
+	 
 	writew_o(FZA_CONTROL_B_IDLE, &fp->regs->control_b);
 
-	/* And reset the board. */
+	 
 	writew_o(FZA_RESET_INIT, &fp->regs->reset);
-	readw_o(&fp->regs->reset);	/* Synchronize. */
+	readw_o(&fp->regs->reset);	 
 	writew_o(FZA_RESET_CLR, &fp->regs->reset);
-	readw_o(&fp->regs->reset);	/* Synchronize. */
+	readw_o(&fp->regs->reset);	 
 }
 
 static int fza_reset(struct fza_private *fp)
@@ -258,10 +240,7 @@ static int fza_reset(struct fza_private *fp)
 	fza_do_reset(fp);
 	spin_unlock_irqrestore(&fp->lock, flags);
 
-	/* DEC says RESET needs up to 30 seconds to complete.  My DEFZA-AA
-	 * rev. C03 happily finishes in 9.7 seconds. :-)  But we need to
-	 * be on the safe side...
-	 */
+	 
 	t = wait_event_timeout(fp->state_chg_wait, fp->state_chg_flag,
 			       45 * HZ);
 	status = readw_u(&fp->regs->status);
@@ -295,7 +274,7 @@ static struct fza_ring_cmd __iomem *fza_cmd_send(struct net_device *dev,
 	old_mask = fp->int_mask;
 	new_mask = old_mask & ~FZA_MASK_STATE_CHG;
 	writew_u(new_mask, &fp->regs->int_mask);
-	readw_o(&fp->regs->int_mask);			/* Synchronize. */
+	readw_o(&fp->regs->int_mask);			 
 	fp->int_mask = new_mask;
 
 	buf = fp->mmio + readl_u(&ring->buffer);
@@ -339,7 +318,7 @@ static struct fza_ring_cmd __iomem *fza_cmd_send(struct net_device *dev,
 		writel_u(fp->lem_threshold, &buf->param.lem_threshold);
 		fza_writes(&fp->station_id, &buf->param.station_id,
 			   sizeof(buf->param.station_id));
-		/* Convert to milliseconds due to buggy firmware. */
+		 
 		writel_u(fp->rtoken_timeout / 12500,
 			 &buf->param.rtoken_timeout);
 		writel_u(fp->ring_purger, &buf->param.ring_purger);
@@ -362,7 +341,7 @@ static struct fza_ring_cmd __iomem *fza_cmd_send(struct net_device *dev,
 		break;
 	}
 
-	/* Trigger the command. */
+	 
 	writel_u(FZA_RING_OWN_FZA | command, &ring->cmd_own);
 	writew_o(FZA_CONTROL_A_CMD_POLL, &fp->regs->control_a);
 
@@ -388,12 +367,10 @@ static int fza_init_send(struct net_device *dev,
 	ring = fza_cmd_send(dev, FZA_RING_CMD_INIT);
 	spin_unlock_irqrestore(&fp->lock, flags);
 	if (!ring)
-		/* This should never happen in the uninitialized state,
-		 * so do not try to recover and just consider it fatal.
-		 */
+		 
 		return -ENOBUFS;
 
-	/* INIT may take quite a long time (160ms for my C03). */
+	 
 	t = wait_event_timeout(fp->cmd_done_wait, fp->cmd_done_flag, 3 * HZ);
 	if (fp->cmd_done_flag == 0) {
 		pr_err("%s: INIT command timed out!, state %x\n", fp->name,
@@ -419,7 +396,7 @@ static void fza_rx_init(struct fza_private *fp)
 {
 	int i;
 
-	/* Fill the host receive descriptor ring. */
+	 
 	for (i = 0; i < FZA_RING_RX_SIZE; i++) {
 		writel_o(0, &fp->ring_hst_rx[i].rmc);
 		writel_o((fp->rx_dma[i] + 0x1000) >> 9,
@@ -457,9 +434,9 @@ static int fza_do_xmit(union fza_buffer_txp ub, int len,
 
 	left_len = len;
 	frag_len = FZA_TX_BUFFER_SIZE;
-	/* First descriptor is relinquished last. */
+	 
 	own = FZA_RING_TX_OWN_HOST;
-	/* First descriptor carries frame length; we don't use cut-through. */
+	 
 	rmc = FZA_RING_TX_SOP | FZA_RING_TX_VBC | len;
 	do {
 		i = fp->ring_rmc_tx_index;
@@ -469,9 +446,7 @@ static int fza_do_xmit(union fza_buffer_txp ub, int len,
 			frag_len = left_len;
 		left_len -= frag_len;
 
-		/* Length must be a multiple of 4 as only word writes are
-		 * permitted!
-		 */
+		 
 		frag_len = (frag_len + 3) & ~3;
 		if (smt)
 			fza_moves(ub.mmio_ptr, rmc_tx_ptr, frag_len);
@@ -479,7 +454,7 @@ static int fza_do_xmit(union fza_buffer_txp ub, int len,
 			fza_writes(ub.data_ptr, rmc_tx_ptr, frag_len);
 
 		if (left_len == 0)
-			rmc |= FZA_RING_TX_EOP;		/* Mark last frag. */
+			rmc |= FZA_RING_TX_EOP;		 
 
 		writel_o(rmc, &fp->ring_rmc_tx[i].rmc);
 		writel_o(own, &fp->ring_rmc_tx[i].own);
@@ -488,7 +463,7 @@ static int fza_do_xmit(union fza_buffer_txp ub, int len,
 		fp->ring_rmc_tx_index = (fp->ring_rmc_tx_index + 1) %
 					fp->ring_rmc_tx_size;
 
-		/* Settings for intermediate frags. */
+		 
 		own = FZA_RING_TX_OWN_RMC;
 		rmc = 0;
 	} while (left_len > 0);
@@ -502,7 +477,7 @@ static int fza_do_xmit(union fza_buffer_txp ub, int len,
 
 	writel_o(FZA_RING_TX_OWN_RMC, &fp->ring_rmc_tx[first].own);
 
-	/* Go, go, go! */
+	 
 	writew_o(FZA_CONTROL_A_TX_POLL, &fp->regs->control_a);
 
 	return 0;
@@ -523,7 +498,7 @@ static int fza_do_recv_smt(struct fza_buffer_tx *data_ptr, int len,
 
 	smt_rx_ptr = fp->mmio + readl_u(&fp->ring_smt_rx[i].buffer);
 
-	/* Length must be a multiple of 4 as only word writes are permitted! */
+	 
 	fza_writes(data_ptr, smt_rx_ptr, (len + 3) & ~3);
 
 	writel_o(rmc, &fp->ring_smt_rx[i].rmc);
@@ -532,7 +507,7 @@ static int fza_do_recv_smt(struct fza_buffer_tx *data_ptr, int len,
 	fp->ring_smt_rx_index =
 		(fp->ring_smt_rx_index + 1) % fp->ring_smt_rx_size;
 
-	/* Grab it! */
+	 
 	writew_o(FZA_CONTROL_A_SMT_RX_POLL, &fp->regs->control_a);
 
 	return 0;
@@ -553,12 +528,12 @@ static void fza_tx(struct net_device *dev)
 			break;
 
 		rmc = readl_u(&fp->ring_rmc_tx[i].rmc);
-		/* Only process the first descriptor. */
+		 
 		if ((rmc & FZA_RING_TX_SOP) != 0) {
 			if ((rmc & FZA_RING_TX_DCC_MASK) ==
 			    FZA_RING_TX_DCC_SUCCESS) {
 				int pkt_len = (rmc & FZA_RING_PBC_MASK) - 3;
-								/* Omit PRH. */
+								 
 
 				fp->stats.tx_packets++;
 				fp->stats.tx_bytes += pkt_len;
@@ -604,7 +579,7 @@ static inline int fza_rx_err(struct fza_private *fp,
 	if (unlikely((rmc & FZA_RING_RX_BAD) != 0)) {
 		fp->stats.rx_errors++;
 
-		/* Check special status codes. */
+		 
 		if ((rmc & (FZA_RING_RX_CRC | FZA_RING_RX_RRR_MASK |
 			    FZA_RING_RX_DA_MASK | FZA_RING_RX_SA_MASK)) ==
 		     (FZA_RING_RX_CRC | FZA_RING_RX_RRR_DADDR |
@@ -617,13 +592,13 @@ static inline int fza_rx_err(struct fza_private *fp,
 			    FZA_RING_RX_DA_MASK | FZA_RING_RX_SA_MASK)) ==
 		     (FZA_RING_RX_CRC | FZA_RING_RX_RRR_DADDR |
 		      FZA_RING_RX_DA_CAM | FZA_RING_RX_SA_CAM)) {
-			/* Halt the interface to trigger a reset. */
+			 
 			writew_o(FZA_CONTROL_A_HALT, &fp->regs->control_a);
-			readw_o(&fp->regs->control_a);	/* Synchronize. */
+			readw_o(&fp->regs->control_a);	 
 			return 1;
 		}
 
-		/* Check the MAC status. */
+		 
 		switch (rmc & FZA_RING_RX_RRR_MASK) {
 		case FZA_RING_RX_RRR_OK:
 			if ((rmc & FZA_RING_RX_CRC) != 0)
@@ -635,9 +610,9 @@ static inline int fza_rx_err(struct fza_private *fp,
 		case FZA_RING_RX_RRR_SADDR:
 		case FZA_RING_RX_RRR_DADDR:
 		case FZA_RING_RX_RRR_ABORT:
-			/* Halt the interface to trigger a reset. */
+			 
 			writew_o(FZA_CONTROL_A_HALT, &fp->regs->control_a);
-			readw_o(&fp->regs->control_a);	/* Synchronize. */
+			readw_o(&fp->regs->control_a);	 
 			return 1;
 		case FZA_RING_RX_RRR_LENGTH:
 			fp->stats.rx_frame_errors++;
@@ -647,7 +622,7 @@ static inline int fza_rx_err(struct fza_private *fp,
 		}
 	}
 
-	/* Packet received successfully; validate the length. */
+	 
 	switch (fc & FDDI_FC_K_FORMAT_MASK) {
 	case FDDI_FC_K_FORMAT_MANAGEMENT:
 		if ((fc & FDDI_FC_K_CLASS_MASK) == FDDI_FC_K_CLASS_ASYNC)
@@ -692,14 +667,12 @@ static void fza_rx(struct net_device *dev)
 		skb = fp->rx_skbuff[i];
 		dma = fp->rx_dma[i];
 
-		/* The RMC doesn't count the preamble and the starting
-		 * delimiter.  We fix it up here for a total of 3 octets.
-		 */
+		 
 		dma_rmb();
 		len = (rmc & FZA_RING_PBC_MASK) + 3;
 		frame = (struct fza_fddihdr *)skb->data;
 
-		/* We need to get at real FC. */
+		 
 		dma_sync_single_for_cpu(fp->bdev,
 					dma +
 					((u8 *)&frame->hdr.fc - (u8 *)frame),
@@ -710,7 +683,7 @@ static void fza_rx(struct net_device *dev)
 		if (fza_rx_err(fp, rmc, fc))
 			goto err_rx;
 
-		/* We have to 512-byte-align RX buffers... */
+		 
 		newskb = fza_alloc_skb_irq(dev, FZA_RX_BUFFER_SIZE + 511);
 		if (newskb) {
 			fza_skb_align(newskb, 512);
@@ -723,14 +696,14 @@ static void fza_rx(struct net_device *dev)
 			}
 		}
 		if (newskb) {
-			int pkt_len = len - 7;	/* Omit P, SD and FCS. */
+			int pkt_len = len - 7;	 
 			int is_multi;
 			int rx_stat;
 
 			dma_unmap_single(fp->bdev, dma, FZA_RX_BUFFER_SIZE,
 					 DMA_FROM_DEVICE);
 
-			/* Queue SMT frames to the SMT receive ring. */
+			 
 			if ((fc & (FDDI_FC_K_CLASS_MASK |
 				   FDDI_FC_K_FORMAT_MASK)) ==
 			     (FDDI_FC_K_CLASS_ASYNC |
@@ -747,8 +720,8 @@ static void fza_rx(struct net_device *dev)
 
 			is_multi = ((frame->hdr.daddr[0] & 0x01) != 0);
 
-			skb_reserve(skb, 3);	/* Skip over P and SD. */
-			skb_put(skb, pkt_len);	/* And cut off FCS. */
+			skb_reserve(skb, 3);	 
+			skb_put(skb, pkt_len);	 
 			skb->protocol = fddi_type_trans(skb, dev);
 
 			rx_stat = netif_rx(skb);
@@ -803,12 +776,10 @@ static void fza_tx_smt(struct net_device *dev)
 				struct fza_buffer_tx *skb_data_ptr;
 				struct sk_buff *skb;
 
-				/* Length must be a multiple of 4 as only word
-				 * reads are permitted!
-				 */
+				 
 				skb = fza_alloc_skb_irq(dev, (len + 3) & ~3);
 				if (!skb)
-					goto err_no_skb;	/* Drop. */
+					goto err_no_skb;	 
 
 				skb_data_ptr = (struct fza_buffer_tx *)
 					       skb->data;
@@ -816,7 +787,7 @@ static void fza_tx_smt(struct net_device *dev)
 				fza_reads(smt_tx_ptr, skb_data_ptr,
 					  (len + 3) & ~3);
 				skb->dev = dev;
-				skb_reserve(skb, 3);	/* Skip over PRH. */
+				skb_reserve(skb, 3);	 
 				skb_put(skb, len - 3);
 				skb_reset_network_header(skb);
 
@@ -828,7 +799,7 @@ err_no_skb:
 				;
 			}
 
-			/* Queue the frame to the RMC transmit ring. */
+			 
 			fza_do_xmit((union fza_buffer_txp)
 				    { .mmio_ptr = smt_tx_ptr },
 				    len, dev, 1);
@@ -869,7 +840,7 @@ static void fza_tx_flush(struct net_device *dev)
 	u32 own;
 	int i;
 
-	/* Clean up the SMT TX ring. */
+	 
 	i = fp->ring_smt_tx_index;
 	do {
 		writel_o(FZA_RING_OWN_FZA, &fp->ring_smt_tx[i].own);
@@ -878,7 +849,7 @@ static void fza_tx_flush(struct net_device *dev)
 
 	} while (i != fp->ring_smt_tx_index);
 
-	/* Clean up the RMC TX ring. */
+	 
 	i = fp->ring_rmc_tx_index;
 	do {
 		own = readl_o(&fp->ring_rmc_tx[i].own);
@@ -893,7 +864,7 @@ static void fza_tx_flush(struct net_device *dev)
 
 	} while (i != fp->ring_rmc_tx_index);
 
-	/* Done. */
+	 
 	writew_o(FZA_CONTROL_A_FLUSH_DONE, &fp->regs->control_a);
 }
 
@@ -903,17 +874,17 @@ static irqreturn_t fza_interrupt(int irq, void *dev_id)
 	struct fza_private *fp = netdev_priv(dev);
 	uint int_event;
 
-	/* Get interrupt events. */
+	 
 	int_event = readw_o(&fp->regs->int_event) & fp->int_mask;
 	if (int_event == 0)
 		return IRQ_NONE;
 
-	/* Clear the events. */
+	 
 	writew_u(int_event, &fp->regs->int_event);
 
-	/* Now handle the events.  The order matters. */
+	 
 
-	/* Command finished interrupt. */
+	 
 	if ((int_event & FZA_EVENT_CMD_DONE) != 0) {
 		fp->irq_count_cmd_done++;
 
@@ -923,31 +894,31 @@ static irqreturn_t fza_interrupt(int irq, void *dev_id)
 		spin_unlock(&fp->lock);
 	}
 
-	/* Transmit finished interrupt. */
+	 
 	if ((int_event & FZA_EVENT_TX_DONE) != 0) {
 		fp->irq_count_tx_done++;
 		fza_tx(dev);
 	}
 
-	/* Host receive interrupt. */
+	 
 	if ((int_event & FZA_EVENT_RX_POLL) != 0) {
 		fp->irq_count_rx_poll++;
 		fza_rx(dev);
 	}
 
-	/* SMT transmit interrupt. */
+	 
 	if ((int_event & FZA_EVENT_SMT_TX_POLL) != 0) {
 		fp->irq_count_smt_tx_poll++;
 		fza_tx_smt(dev);
 	}
 
-	/* Transmit ring flush request. */
+	 
 	if ((int_event & FZA_EVENT_FLUSH_TX) != 0) {
 		fp->irq_count_flush_tx++;
 		fza_tx_flush(dev);
 	}
 
-	/* Link status change interrupt. */
+	 
 	if ((int_event & FZA_EVENT_LINK_ST_CHG) != 0) {
 		uint status;
 
@@ -962,13 +933,13 @@ static irqreturn_t fza_interrupt(int irq, void *dev_id)
 		}
 	}
 
-	/* Unsolicited event interrupt. */
+	 
 	if ((int_event & FZA_EVENT_UNS_POLL) != 0) {
 		fp->irq_count_uns_poll++;
 		fza_uns(dev);
 	}
 
-	/* State change interrupt. */
+	 
 	if ((int_event & FZA_EVENT_STATE_CHG) != 0) {
 		uint status, state;
 
@@ -1050,19 +1021,19 @@ static void fza_reset_timer(struct timer_list *t)
 		pr_err("%s: RESET timed out!\n", fp->name);
 		pr_info("%s: trying harder...\n", fp->name);
 
-		/* Assert the board reset. */
+		 
 		writew_o(FZA_RESET_INIT, &fp->regs->reset);
-		readw_o(&fp->regs->reset);		/* Synchronize. */
+		readw_o(&fp->regs->reset);		 
 
 		fp->timer_state = 1;
 		fp->reset_timer.expires = jiffies + HZ;
 	} else {
-		/* Clear the board reset. */
+		 
 		writew_u(FZA_RESET_CLR, &fp->regs->reset);
 
-		/* Enable all interrupt events we handle. */
+		 
 		writew_o(fp->int_mask, &fp->regs->int_mask);
-		readw_o(&fp->regs->int_mask);		/* Synchronize. */
+		readw_o(&fp->regs->int_mask);		 
 
 		fp->timer_state = 0;
 		fp->reset_timer.expires = jiffies + 45 * HZ;
@@ -1082,9 +1053,9 @@ static netdev_tx_t fza_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	int ret;
 	u8 fc;
 
-	skb_push(skb, 3);			/* Make room for PRH. */
+	skb_push(skb, 3);			 
 
-	/* Decode FC to set PRH. */
+	 
 	fc = skb->data[3];
 	skb->data[0] = 0;
 	skb->data[1] = 0;
@@ -1094,11 +1065,11 @@ static netdev_tx_t fza_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	switch (fc & FDDI_FC_K_FORMAT_MASK) {
 	case FDDI_FC_K_FORMAT_MANAGEMENT:
 		if ((fc & FDDI_FC_K_CONTROL_MASK) == 0) {
-			/* Token. */
+			 
 			skb->data[0] |= FZA_PRH0_TKN_TYPE_IMM;
 			skb->data[1] |= FZA_PRH1_TKN_SEND_NONE;
 		} else {
-			/* SMT or MAC. */
+			 
 			skb->data[0] |= FZA_PRH0_TKN_TYPE_UNR;
 			skb->data[1] |= FZA_PRH1_TKN_SEND_UNR;
 		}
@@ -1115,14 +1086,11 @@ static netdev_tx_t fza_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		break;
 	}
 
-	/* SMT transmit interrupts may sneak frames into the RMC
-	 * transmit ring.  We disable them while queueing a frame
-	 * to maintain consistency.
-	 */
+	 
 	old_mask = fp->int_mask;
 	new_mask = old_mask & ~FZA_MASK_SMT_TX_POLL;
 	writew_u(new_mask, &fp->regs->int_mask);
-	readw_o(&fp->regs->int_mask);			/* Synchronize. */
+	readw_o(&fp->regs->int_mask);			 
 	fp->int_mask = new_mask;
 	ret = fza_do_xmit((union fza_buffer_txp)
 			  { .data_ptr = (struct fza_buffer_tx *)skb->data },
@@ -1131,9 +1099,7 @@ static netdev_tx_t fza_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	writew_u(fp->int_mask, &fp->regs->int_mask);
 
 	if (ret) {
-		/* Probably an SMT packet filled the remaining space,
-		 * so just stop the queue, but don't report it as an error.
-		 */
+		 
 		netif_stop_queue(dev);
 		pr_debug("%s: queue stopped\n", fp->name);
 		fp->stats.tx_dropped++;
@@ -1156,7 +1122,7 @@ static int fza_open(struct net_device *dev)
 	long t;
 
 	for (i = 0; i < FZA_RING_RX_SIZE; i++) {
-		/* We have to 512-byte-align RX buffers... */
+		 
 		skb = fza_alloc_skb(dev, FZA_RX_BUFFER_SIZE + 511);
 		if (skb) {
 			fza_skb_align(skb, 512);
@@ -1187,7 +1153,7 @@ static int fza_open(struct net_device *dev)
 	if (ret != 0)
 		return ret;
 
-	/* Purger and Beacon multicasts need to be supplied before PARAM. */
+	 
 	fza_set_rx_mode(dev);
 
 	spin_lock_irqsave(&fp->lock, flags);
@@ -1231,12 +1197,12 @@ static int fza_close(struct net_device *dev)
 	spin_lock_irqsave(&fp->lock, flags);
 	fp->state = FZA_STATE_UNINITIALIZED;
 	fp->state_chg_flag = 0;
-	/* Shut the interface down. */
+	 
 	writew_o(FZA_CONTROL_A_SHUT, &fp->regs->control_a);
-	readw_o(&fp->regs->control_a);			/* Synchronize. */
+	readw_o(&fp->regs->control_a);			 
 	spin_unlock_irqrestore(&fp->lock, flags);
 
-	/* DEC says SHUT needs up to 10 seconds to complete. */
+	 
 	t = wait_event_timeout(fp->state_chg_wait, fp->state_chg_flag,
 			       15 * HZ);
 	state = FZA_STATUS_GET_STATE(readw_o(&fp->regs->status));
@@ -1308,7 +1274,7 @@ static int fza_probe(struct device *bdev)
 	fp->bdev = bdev;
 	fp->name = dev_name(bdev);
 
-	/* Request the I/O MEM resource. */
+	 
 	start = tdev->resource.start;
 	len = tdev->resource.end - start + 1;
 	if (!request_mem_region(start, len, dev_name(bdev))) {
@@ -1317,7 +1283,7 @@ static int fza_probe(struct device *bdev)
 		goto err_out_kfree;
 	}
 
-	/* MMIO mapping setup. */
+	 
 	mmio = ioremap(start, len);
 	if (!mmio) {
 		pr_err("%s: cannot map MMIO\n", fp->name);
@@ -1325,7 +1291,7 @@ static int fza_probe(struct device *bdev)
 		goto err_out_resource;
 	}
 
-	/* Initialize the new device structure. */
+	 
 	switch (loopback) {
 	case FZA_LOOP_NORMAL:
 	case FZA_LOOP_INTERN:
@@ -1353,7 +1319,7 @@ static int fza_probe(struct device *bdev)
 
 	timer_setup(&fp->reset_timer, fza_reset_timer, 0);
 
-	/* Sanitize the board. */
+	 
 	fza_regs_dump(fp);
 	fza_do_shutdown(fp);
 
@@ -1363,12 +1329,10 @@ static int fza_probe(struct device *bdev)
 		goto err_out_map;
 	}
 
-	/* Enable the driver mode. */
+	 
 	writew_o(FZA_CONTROL_B_DRIVER, &fp->regs->control_b);
 
-	/* For some reason transmit done interrupts can trigger during
-	 * reset.  This avoids a division error in the handler.
-	 */
+	 
 	fp->ring_rmc_tx_size = FZA_RING_TX_SIZE;
 
 	ret = fza_reset(fp);
@@ -1429,7 +1393,7 @@ static int fza_probe(struct device *bdev)
 	pr_debug("    smt_tx_size: %u\n", readl_u(&init->smt_tx_size));
 	pr_debug("         smt_rx: 0x%08x\n", readl_u(&init->smt_rx));
 	pr_debug("    smt_rx_size: %u\n", readl_u(&init->smt_rx_size));
-	/* TC systems are always LE, so don't bother swapping. */
+	 
 	pr_debug("        hw_addr: 0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
 		 (readl_u(&init->hw_addr[0]) >> 0) & 0xff,
 		 (readl_u(&init->hw_addr[0]) >> 8) & 0xff,
@@ -1443,7 +1407,7 @@ static int fza_probe(struct device *bdev)
 	pr_debug("        def_tvx: %u\n", readl_u(&init->def_tvx));
 	pr_debug("      def_t_max: %u\n", readl_u(&init->def_t_max));
 	pr_debug("  lem_threshold: %u\n", readl_u(&init->lem_threshold));
-	/* Don't bother swapping, see above. */
+	 
 	pr_debug(" def_station_id: 0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
 		 (readl_u(&init->def_station_id[0]) >> 0) & 0xff,
 		 (readl_u(&init->def_station_id[0]) >> 8) & 0xff,
@@ -1472,14 +1436,12 @@ static int fza_probe(struct device *bdev)
 	pr_info("%s: ROM rev. %.4s, firmware rev. %.4s, RMC rev. %.4s, "
 		"SMT ver. %u\n", fp->name, rom_rev, fw_rev, rmc_rev, smt_ver);
 
-	/* Now that we fetched initial parameters just shut the interface
-	 * until opened.
-	 */
+	 
 	ret = fza_close(dev);
 	if (ret != 0)
 		goto err_out_irq;
 
-	/* The FZA-specific entries in the device structure. */
+	 
 	dev->netdev_ops = &netdev_ops;
 
 	ret = register_netdev(dev);

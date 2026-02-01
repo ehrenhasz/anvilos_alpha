@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -2666,7 +2664,7 @@ static int gcc_qdu1000_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Update FORCE_MEM_CORE_ON for gcc_pcie_0_mstr_axi_clk */
+	 
 	regmap_update_bits(regmap, 0x9d024, BIT(14), BIT(14));
 
 	ret = qcom_cc_register_rcg_dfs(regmap, gcc_dfs_clocks,

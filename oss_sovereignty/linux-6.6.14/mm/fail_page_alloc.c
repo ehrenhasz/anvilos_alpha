@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fault-inject.h>
 #include <linux/mm.h>
 
@@ -35,7 +35,7 @@ bool __should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)
 			(gfp_mask & __GFP_DIRECT_RECLAIM))
 		return false;
 
-	/* See comment in __should_failslab() */
+	 
 	if (gfp_mask & __GFP_NOWARN)
 		flags |= FAULT_NOWARN;
 
@@ -63,4 +63,4 @@ static int __init fail_page_alloc_debugfs(void)
 
 late_initcall(fail_page_alloc_debugfs);
 
-#endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Class Core
- *
- * Copyright (C) 2005 John Lenz <lenz@cs.wisc.edu>
- * Copyright (C) 2005-2007 Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/device.h>
@@ -30,7 +25,7 @@ static ssize_t brightness_show(struct device *dev,
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 
-	/* no lock needed for this */
+	 
 	led_update_brightness(led_cdev);
 
 	return sprintf(buf, "%u\n", led_cdev->brightness);
@@ -165,10 +160,7 @@ static void led_remove_brightness_hw_changed(struct led_classdev *led_cdev)
 }
 #endif
 
-/**
- * led_classdev_suspend - suspend an led_classdev.
- * @led_cdev: the led_classdev to suspend.
- */
+ 
 void led_classdev_suspend(struct led_classdev *led_cdev)
 {
 	led_cdev->flags |= LED_SUSPENDED;
@@ -177,10 +169,7 @@ void led_classdev_suspend(struct led_classdev *led_cdev)
 }
 EXPORT_SYMBOL_GPL(led_classdev_suspend);
 
-/**
- * led_classdev_resume - resume an led_classdev.
- * @led_cdev: the led_classdev to resume.
- */
+ 
 void led_classdev_resume(struct led_classdev *led_cdev)
 {
 	led_set_brightness_nopm(led_cdev, led_cdev->brightness);
@@ -239,14 +228,7 @@ static const struct class leds_class = {
 	.pm = &leds_class_dev_pm_ops,
 };
 
-/**
- * of_led_get() - request a LED device via the LED framework
- * @np: device node to get the LED device from
- * @index: the index of the LED
- *
- * Returns the LED device parsed from the phandle specified in the "leds"
- * property of a device tree node or a negative error-code on failure.
- */
+ 
 struct led_classdev *of_led_get(struct device_node *np, int index)
 {
 	struct device *led_dev;
@@ -264,10 +246,7 @@ struct led_classdev *of_led_get(struct device_node *np, int index)
 }
 EXPORT_SYMBOL_GPL(of_led_get);
 
-/**
- * led_put() - release a LED device
- * @led_cdev: LED device
- */
+ 
 void led_put(struct led_classdev *led_cdev)
 {
 	module_put(led_cdev->dev->parent->driver->owner);
@@ -298,17 +277,7 @@ static struct led_classdev *__devm_led_get(struct device *dev, struct led_classd
 	return led;
 }
 
-/**
- * devm_of_led_get - Resource-managed request of a LED device
- * @dev:	LED consumer
- * @index:	index of the LED to obtain in the consumer
- *
- * The device node of the device is parse to find the request LED device.
- * The LED device returned from this function is automatically released
- * on driver detach.
- *
- * @return a pointer to a LED device or ERR_PTR(errno) on failure.
- */
+ 
 struct led_classdev *__must_check devm_of_led_get(struct device *dev,
 						  int index)
 {
@@ -325,13 +294,7 @@ struct led_classdev *__must_check devm_of_led_get(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_of_led_get);
 
-/**
- * led_get() - request a LED device via the LED framework
- * @dev: device for which to get the LED device
- * @con_id: name of the LED from the device's point of view
- *
- * @return a pointer to a LED device or ERR_PTR(errno) on failure.
- */
+ 
 struct led_classdev *led_get(struct device *dev, char *con_id)
 {
 	struct led_lookup_data *lookup;
@@ -358,16 +321,7 @@ struct led_classdev *led_get(struct device *dev, char *con_id)
 }
 EXPORT_SYMBOL_GPL(led_get);
 
-/**
- * devm_led_get() - request a LED device via the LED framework
- * @dev: device for which to get the LED device
- * @con_id: name of the LED from the device's point of view
- *
- * The LED device returned from this function is automatically released
- * on driver detach.
- *
- * @return a pointer to a LED device or ERR_PTR(errno) on failure.
- */
+ 
 struct led_classdev *devm_led_get(struct device *dev, char *con_id)
 {
 	struct led_classdev *led;
@@ -380,13 +334,7 @@ struct led_classdev *devm_led_get(struct device *dev, char *con_id)
 }
 EXPORT_SYMBOL_GPL(devm_led_get);
 
-/**
- * led_add_lookup() - Add a LED lookup table entry
- * @led_lookup: the lookup table entry to add
- *
- * Add a LED lookup table entry. On systems without devicetree the lookup table
- * is used by led_get() to find LEDs.
- */
+ 
 void led_add_lookup(struct led_lookup_data *led_lookup)
 {
 	mutex_lock(&leds_lookup_lock);
@@ -395,10 +343,7 @@ void led_add_lookup(struct led_lookup_data *led_lookup)
 }
 EXPORT_SYMBOL_GPL(led_add_lookup);
 
-/**
- * led_remove_lookup() - Remove a LED lookup table entry
- * @led_lookup: the lookup table entry to remove
- */
+ 
 void led_remove_lookup(struct led_lookup_data *led_lookup)
 {
 	mutex_lock(&leds_lookup_lock);
@@ -407,18 +352,7 @@ void led_remove_lookup(struct led_lookup_data *led_lookup)
 }
 EXPORT_SYMBOL_GPL(led_remove_lookup);
 
-/**
- * devm_of_led_get_optional - Resource-managed request of an optional LED device
- * @dev:	LED consumer
- * @index:	index of the LED to obtain in the consumer
- *
- * The device node of the device is parsed to find the requested LED device.
- * The LED device returned from this function is automatically released
- * on driver detach.
- *
- * @return a pointer to a LED device, ERR_PTR(errno) on failure and NULL if the
- * led was not found.
- */
+ 
 struct led_classdev *__must_check devm_of_led_get_optional(struct device *dev,
 							int index)
 {
@@ -453,14 +387,7 @@ static int led_classdev_next_name(const char *init_name, char *name,
 	return i;
 }
 
-/**
- * led_classdev_register_ext - register a new object of led_classdev class
- *			       with init data.
- *
- * @parent: parent of LED device
- * @led_cdev: the led_classdev structure for this device.
- * @init_data: LED class device initialization data
- */
+ 
 int led_classdev_register_ext(struct device *parent,
 			      struct led_classdev *led_cdev,
 			      struct led_init_data *init_data)
@@ -539,7 +466,7 @@ int led_classdev_register_ext(struct device *parent,
 #ifdef CONFIG_LEDS_BRIGHTNESS_HW_CHANGED
 	led_cdev->brightness_hw_changed = -1;
 #endif
-	/* add to the list of leds */
+	 
 	down_write(&leds_list_lock);
 	list_add_tail(&led_cdev->node, &leds_list);
 	up_write(&leds_list_lock);
@@ -564,12 +491,7 @@ int led_classdev_register_ext(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(led_classdev_register_ext);
 
-/**
- * led_classdev_unregister - unregisters a object of led_properties class.
- * @led_cdev: the led device to unregister
- *
- * Unregisters a previously registered via led_classdev_register object.
- */
+ 
 void led_classdev_unregister(struct led_classdev *led_cdev)
 {
 	if (IS_ERR_OR_NULL(led_cdev->dev))
@@ -584,7 +506,7 @@ void led_classdev_unregister(struct led_classdev *led_cdev)
 
 	led_cdev->flags |= LED_UNREGISTERING;
 
-	/* Stop blinking */
+	 
 	led_stop_software_blink(led_cdev);
 
 	if (!(led_cdev->flags & LED_RETAIN_AT_SHUTDOWN))
@@ -610,13 +532,7 @@ static void devm_led_classdev_release(struct device *dev, void *res)
 	led_classdev_unregister(*(struct led_classdev **)res);
 }
 
-/**
- * devm_led_classdev_register_ext - resource managed led_classdev_register_ext()
- *
- * @parent: parent of LED device
- * @led_cdev: the led_classdev structure for this device.
- * @init_data: LED class device initialization data
- */
+ 
 int devm_led_classdev_register_ext(struct device *parent,
 				   struct led_classdev *led_cdev,
 				   struct led_init_data *init_data)
@@ -651,11 +567,7 @@ static int devm_led_classdev_match(struct device *dev, void *res, void *data)
 	return *p == data;
 }
 
-/**
- * devm_led_classdev_unregister() - resource managed led_classdev_unregister()
- * @dev: The device to unregister.
- * @led_cdev: the led_classdev structure for this device.
- */
+ 
 void devm_led_classdev_unregister(struct device *dev,
 				  struct led_classdev *led_cdev)
 {

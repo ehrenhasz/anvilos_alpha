@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs debugging statistics
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- * Copyright (c) 2012 Linux Foundation
- * Copyright (c) 2012 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/backing-dev.h>
@@ -26,9 +19,7 @@ static DEFINE_RAW_SPINLOCK(f2fs_stat_lock);
 static struct dentry *f2fs_debugfs_root;
 #endif
 
-/*
- * This function calculates BDF of every segments
- */
+ 
 void f2fs_update_sit_info(struct f2fs_sb_info *sbi)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
@@ -66,13 +57,13 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
 	int i;
 
-	/* these will be changed if online resize is done */
+	 
 	si->main_area_segs = le32_to_cpu(raw_super->segment_count_main);
 	si->main_area_sections = le32_to_cpu(raw_super->section_count);
 	si->main_area_zones = si->main_area_sections /
 				le32_to_cpu(raw_super->secs_per_zone);
 
-	/* general extent cache stats */
+	 
 	for (i = 0; i < NR_EXTENT_CACHES; i++) {
 		struct extent_tree_info *eti = &sbi->extent_tree[i];
 
@@ -84,14 +75,14 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 		si->zombie_tree[i] = atomic_read(&eti->total_zombie_tree);
 		si->ext_node[i] = atomic_read(&eti->total_ext_node);
 	}
-	/* read extent_cache only */
+	 
 	si->hit_largest = atomic64_read(&sbi->read_hit_largest);
 	si->hit_total[EX_READ] += si->hit_largest;
 
-	/* block age extent_cache only */
+	 
 	si->allocated_data_blocks = atomic64_read(&sbi->allocated_data_blocks);
 
-	/* validation check of the segment numbers */
+	 
 	si->ndirty_node = get_pages(sbi, F2FS_DIRTY_NODES);
 	si->ndirty_dent = get_pages(sbi, F2FS_DIRTY_DENTS);
 	si->ndirty_meta = get_pages(sbi, F2FS_DIRTY_META);
@@ -226,9 +217,7 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	si->inplace_count = atomic_read(&sbi->inplace_count);
 }
 
-/*
- * This function calculates memory footprint.
- */
+ 
 static void update_mem_info(struct f2fs_sb_info *sbi)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
@@ -237,18 +226,18 @@ static void update_mem_info(struct f2fs_sb_info *sbi)
 	if (si->base_mem)
 		goto get_cache;
 
-	/* build stat */
+	 
 	si->base_mem = sizeof(struct f2fs_stat_info);
 
-	/* build superblock */
+	 
 	si->base_mem += sizeof(struct f2fs_sb_info) + sbi->sb->s_blocksize;
 	si->base_mem += 2 * sizeof(struct f2fs_inode_info);
 	si->base_mem += sizeof(*sbi->ckpt);
 
-	/* build sm */
+	 
 	si->base_mem += sizeof(struct f2fs_sm_info);
 
-	/* build sit */
+	 
 	si->base_mem += sizeof(struct sit_info);
 	si->base_mem += MAIN_SEGS(sbi) * sizeof(struct seg_entry);
 	si->base_mem += f2fs_bitmap_size(MAIN_SEGS(sbi));
@@ -259,21 +248,21 @@ static void update_mem_info(struct f2fs_sb_info *sbi)
 		si->base_mem += MAIN_SECS(sbi) * sizeof(struct sec_entry);
 	si->base_mem += __bitmap_size(sbi, SIT_BITMAP);
 
-	/* build free segmap */
+	 
 	si->base_mem += sizeof(struct free_segmap_info);
 	si->base_mem += f2fs_bitmap_size(MAIN_SEGS(sbi));
 	si->base_mem += f2fs_bitmap_size(MAIN_SECS(sbi));
 
-	/* build curseg */
+	 
 	si->base_mem += sizeof(struct curseg_info) * NR_CURSEG_TYPE;
 	si->base_mem += PAGE_SIZE * NR_CURSEG_TYPE;
 
-	/* build dirty segmap */
+	 
 	si->base_mem += sizeof(struct dirty_seglist_info);
 	si->base_mem += NR_DIRTY_TYPE * f2fs_bitmap_size(MAIN_SEGS(sbi));
 	si->base_mem += f2fs_bitmap_size(MAIN_SECS(sbi));
 
-	/* build nm */
+	 
 	si->base_mem += sizeof(struct f2fs_nm_info);
 	si->base_mem += __bitmap_size(sbi, NAT_BITMAP);
 	si->base_mem += (NM_I(sbi)->nat_bits_blocks << F2FS_BLKSIZE_BITS);
@@ -285,11 +274,11 @@ static void update_mem_info(struct f2fs_sb_info *sbi)
 get_cache:
 	si->cache_mem = 0;
 
-	/* build gc */
+	 
 	if (sbi->gc_thread)
 		si->cache_mem += sizeof(struct f2fs_gc_kthread);
 
-	/* build merge flush thread */
+	 
 	if (SM_I(sbi)->fcc_info)
 		si->cache_mem += sizeof(struct flush_cmd_control);
 	if (SM_I(sbi)->dcc_info) {
@@ -298,7 +287,7 @@ get_cache:
 			atomic_read(&SM_I(sbi)->dcc_info->discard_cmd_cnt);
 	}
 
-	/* free nids */
+	 
 	si->cache_mem += (NM_I(sbi)->nid_cnt[FREE_NID] +
 				NM_I(sbi)->nid_cnt[PREALLOC_NID]) *
 				sizeof(struct free_nid);
@@ -635,12 +624,12 @@ static int stat_show(struct seq_file *s, void *v)
 		seq_printf(s, "LFS: %u blocks in %u segments\n",
 			   si->block_count[LFS], si->segment_count[LFS]);
 
-		/* segment usage info */
+		 
 		f2fs_update_sit_info(sbi);
 		seq_printf(s, "\nBDF: %u, avg. vblocks: %u\n",
 			   si->bimodal, si->avg_vblocks);
 
-		/* memory footprint */
+		 
 		update_mem_info(sbi);
 		seq_printf(s, "\nMemory: %llu KB\n",
 			(si->base_mem + si->cache_mem + si->page_mem) >> 10);
@@ -684,14 +673,14 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
 	si->sbi = sbi;
 	sbi->stat_info = si;
 
-	/* general extent cache stats */
+	 
 	for (i = 0; i < NR_EXTENT_CACHES; i++) {
 		atomic64_set(&sbi->total_hit_ext[i], 0);
 		atomic64_set(&sbi->read_hit_rbtree[i], 0);
 		atomic64_set(&sbi->read_hit_cached[i], 0);
 	}
 
-	/* read extent_cache only */
+	 
 	atomic64_set(&sbi->read_hit_largest, 0);
 
 	atomic_set(&sbi->inline_xattr, 0);

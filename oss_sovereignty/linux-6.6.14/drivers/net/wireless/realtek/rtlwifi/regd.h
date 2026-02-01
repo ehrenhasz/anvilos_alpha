@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL_REGD_H__
 #define __RTL_REGD_H__
 
-/* for kernel 3.14 , both value are changed to IEEE80211_CHAN_NO_IR*/
+ 
 #define IEEE80211_CHAN_NO_IBSS IEEE80211_CHAN_NO_IR
 #define IEEE80211_CHAN_PASSIVE_SCAN IEEE80211_CHAN_NO_IR
 
@@ -29,7 +29,7 @@ enum country_code_type_t {
 	COUNTRY_CODE_TELEC_NETGEAR = 12,
 	COUNTRY_CODE_WORLD_WIDE_13_5G_ALL = 13,
 
-	/*add new channel plan above this line */
+	 
 	COUNTRY_CODE_MAX
 };
 

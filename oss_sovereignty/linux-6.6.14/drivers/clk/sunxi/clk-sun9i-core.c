@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -14,14 +10,7 @@
 #include "clk-factors.h"
 
 
-/*
- * sun9i_a80_get_pll4_factors() - calculates n, p, m factors for PLL4
- * PLL4 rate is calculated as follows
- * rate = (parent_rate * n >> p) / (m + 1);
- * parent_rate is always 24MHz
- *
- * p and m are named div1 and div2 in Allwinner's SDK
- */
+ 
 
 static void sun9i_a80_get_pll4_factors(struct factors_request *req)
 {
@@ -29,22 +18,22 @@ static void sun9i_a80_get_pll4_factors(struct factors_request *req)
 	int m = 1;
 	int p = 1;
 
-	/* Normalize value to a 6 MHz multiple (24 MHz / 4) */
+	 
 	n = DIV_ROUND_UP(req->rate, 6000000);
 
-	/* If n is too large switch to steps of 12 MHz */
+	 
 	if (n > 255) {
 		m = 0;
 		n = (n + 1) / 2;
 	}
 
-	/* If n is still too large switch to steps of 24 MHz */
+	 
 	if (n > 255) {
 		p = 0;
 		n = (n + 1) / 2;
 	}
 
-	/* n must be between 12 and 255 */
+	 
 	if (n > 255)
 		n = 255;
 	else if (n < 12)
@@ -90,11 +79,7 @@ static void __init sun9i_a80_pll4_setup(struct device_node *node)
 CLK_OF_DECLARE(sun9i_a80_pll4, "allwinner,sun9i-a80-pll4-clk", sun9i_a80_pll4_setup);
 
 
-/*
- * sun9i_a80_get_gt_factors() - calculates m factor for GT
- * GT rate is calculated as follows
- * rate = parent_rate / (m + 1);
- */
+ 
 
 static void sun9i_a80_get_gt_factors(struct factors_request *req)
 {
@@ -105,7 +90,7 @@ static void sun9i_a80_get_gt_factors(struct factors_request *req)
 
 	div = DIV_ROUND_UP(req->parent_rate, req->rate);
 
-	/* maximum divider is 4 */
+	 
 	if (div > 4)
 		div = 4;
 
@@ -138,18 +123,14 @@ static void __init sun9i_a80_gt_setup(struct device_node *node)
 		return;
 	}
 
-	/* The GT bus clock needs to be always enabled */
+	 
 	sunxi_factors_register_critical(node, &sun9i_a80_gt_data,
 					&sun9i_a80_gt_lock, reg);
 }
 CLK_OF_DECLARE(sun9i_a80_gt, "allwinner,sun9i-a80-gt-clk", sun9i_a80_gt_setup);
 
 
-/*
- * sun9i_a80_get_ahb_factors() - calculates p factor for AHB0/1/2
- * AHB rate is calculated as follows
- * rate = parent_rate >> p;
- */
+ 
 
 static void sun9i_a80_get_ahb_factors(struct factors_request *req)
 {
@@ -160,7 +141,7 @@ static void sun9i_a80_get_ahb_factors(struct factors_request *req)
 
 	_p = order_base_2(DIV_ROUND_UP(req->parent_rate, req->rate));
 
-	/* maximum p is 3 */
+	 
 	if (_p > 3)
 		_p = 3;
 
@@ -225,11 +206,7 @@ static void __init sun9i_a80_apb0_setup(struct device_node *node)
 CLK_OF_DECLARE(sun9i_a80_apb0, "allwinner,sun9i-a80-apb0-clk", sun9i_a80_apb0_setup);
 
 
-/*
- * sun9i_a80_get_apb1_factors() - calculates m, p factors for APB1
- * APB1 rate is calculated as follows
- * rate = (parent_rate >> p) / (m + 1);
- */
+ 
 
 static void sun9i_a80_get_apb1_factors(struct factors_request *req)
 {
@@ -240,7 +217,7 @@ static void sun9i_a80_get_apb1_factors(struct factors_request *req)
 
 	div = DIV_ROUND_UP(req->parent_rate, req->rate);
 
-	/* Highest possible divider is 256 (p = 3, m = 31) */
+	 
 	if (div > 256)
 		div = 256;
 

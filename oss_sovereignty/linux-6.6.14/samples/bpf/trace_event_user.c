@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -19,7 +18,7 @@
 #define SAMPLE_FREQ 50
 
 static int pid;
-/* counts, stackmap */
+ 
 static int map_fd[2];
 struct bpf_program *prog;
 static bool sys_read_seen, sys_write_seen;
@@ -117,7 +116,7 @@ static void print_stacks(void)
 		err_exit(error);
 	}
 
-	/* clear stack map */
+	 
 	while (bpf_map_get_next_key(stack_map, &stackid, &next_id) == 0) {
 		bpf_map_delete_elem(stack_map, &next_id);
 		stackid = next_id;
@@ -145,10 +144,10 @@ static void test_perf_event_all_cpu(struct perf_event_attr *attr)
 		goto err;
 	}
 
-	/* system wide perf event, no need to inherit */
+	 
 	attr->inherit = 0;
 
-	/* open perf_event on all cpus */
+	 
 	for (i = 0; i < nr_cpus; i++) {
 		pmu_fd = sys_perf_event_open(attr, -1, i, -1, 0);
 		if (pmu_fd < 0) {
@@ -183,12 +182,10 @@ static void test_perf_event_task(struct perf_event_attr *attr)
 	struct bpf_link *link = NULL;
 	int pmu_fd, error = 1;
 
-	/* per task perf event, enable inherit so the "dd ..." command can be traced properly.
-	 * Enabling inherit will cause bpf_perf_prog_read_time helper failure.
-	 */
+	 
 	attr->inherit = 1;
 
-	/* open task bound event */
+	 
 	pmu_fd = sys_perf_event_open(attr, 0, -1, -1, 0);
 	if (pmu_fd < 0) {
 		printf("sys_perf_event_open failed\n");
@@ -249,18 +246,18 @@ static void test_bpf_perf_event(void)
 		.sample_freq = SAMPLE_FREQ,
 		.freq = 1,
 		.type = PERF_TYPE_RAW,
-		/* Intel Instruction Retired */
+		 
 		.config = 0xc0,
 	};
 	struct perf_event_attr attr_type_raw_lock_load = {
 		.sample_freq = SAMPLE_FREQ,
 		.freq = 1,
 		.type = PERF_TYPE_RAW,
-		/* Intel MEM_UOPS_RETIRED.LOCK_LOADS */
+		 
 		.config = 0x21d0,
-		/* Request to record lock address from PEBS */
+		 
 		.sample_type = PERF_SAMPLE_ADDR,
-		/* Record address value requires precise event */
+		 
 		.precise_ip = 2,
 	};
 
@@ -321,7 +318,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		printf("loading BPF object file failed\n");
 		goto cleanup;

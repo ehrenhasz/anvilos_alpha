@@ -1,18 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include "rx.h"
 #include "en/xdp.h"
 #include <net/xdp_sock_drv.h>
 #include <linux/filter.h>
 
-/* RX data path */
+ 
 
 static struct mlx5e_xdp_buff *xsk_buff_to_mxbuf(struct xdp_buff *xdp)
 {
-	/* mlx5e_xdp_buff shares its layout with xdp_buff_xsk
-	 * and private mlx5e_xdp_buff fields fall into xdp_buff_xsk->cb
-	 */
+	 
 	return (struct mlx5e_xdp_buff *)xdp;
 }
 
@@ -24,7 +22,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
 	struct mlx5e_umr_wqe *umr_wqe;
 	struct xdp_buff **xsk_buffs;
 	int batch, i;
-	u32 offset; /* 17-bit value with MTT. */
+	u32 offset;  
 	u16 pi;
 
 	if (unlikely(!xsk_buff_can_alloc(rq->xsk_pool, rq->mpwqe.pages_per_wqe)))
@@ -35,12 +33,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
 	batch = xsk_buff_alloc_batch(rq->xsk_pool, xsk_buffs,
 				     rq->mpwqe.pages_per_wqe);
 
-	/* If batch < pages_per_wqe, either:
-	 * 1. Some (or all) descriptors were invalid.
-	 * 2. dma_need_sync is true, and it fell back to allocating one frame.
-	 * In either case, try to continue allocating frames one by one, until
-	 * the first error, which will mean there are no more valid descriptors.
-	 */
+	 
 	for (; batch < rq->mpwqe.pages_per_wqe; batch++) {
 		xsk_buffs[batch] = xsk_buff_alloc(rq->xsk_pool);
 		if (unlikely(!xsk_buffs[batch]))
@@ -126,7 +119,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
 	umr_wqe->ctrl.opmod_idx_opcode =
 		cpu_to_be32((icosq->pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) | MLX5_OPCODE_UMR);
 
-	/* Optimized for speed: keep in sync with mlx5e_mpwrq_umr_entry_size. */
+	 
 	offset = ix * rq->mpwqe.mtts_per_wqe;
 	if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_ALIGNED))
 		offset = offset * sizeof(struct mlx5_mtt) / MLX5_OCTWORD;
@@ -164,9 +157,7 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq, u16 ix, int wqe_bulk)
 	u32 contig, alloc;
 	int i;
 
-	/* Each rq->wqe.frags->xskp is 1:1 mapped to an element inside the
-	 * rq->wqe.alloc_units->xsk_buffs array allocated here.
-	 */
+	 
 	buffs = rq->wqe.alloc_units->xsk_buffs;
 	contig = mlx5_wq_cyc_get_size(wq) - ix;
 	if (wqe_bulk <= contig) {
@@ -184,7 +175,7 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq, u16 ix, int wqe_bulk)
 		dma_addr_t addr;
 
 		wqe = mlx5_wq_cyc_get_wqe(wq, j);
-		/* Assumes log_num_frags == 0. */
+		 
 		frag = &rq->wqe.frags[j];
 
 		addr = xsk_buff_xdp_get_frame_dma(*frag->xskp);
@@ -207,7 +198,7 @@ int mlx5e_xsk_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk)
 		dma_addr_t addr;
 
 		wqe = mlx5_wq_cyc_get_wqe(wq, j);
-		/* Assumes log_num_frags == 0. */
+		 
 		frag = &rq->wqe.frags[j];
 
 		*frag->xskp = xsk_buff_alloc(rq->xsk_pool);
@@ -254,50 +245,31 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
 	struct mlx5e_xdp_buff *mxbuf = xsk_buff_to_mxbuf(wi->alloc_units.xsk_buffs[page_idx]);
 	struct bpf_prog *prog;
 
-	/* Check packet size. Note LRO doesn't use linear SKB */
+	 
 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
 		rq->stats->oversize_pkts_sw_drop++;
 		return NULL;
 	}
 
-	/* head_offset is not used in this function, because xdp->data and the
-	 * DMA address point directly to the necessary place. Furthermore, in
-	 * the current implementation, UMR pages are mapped to XSK frames, so
-	 * head_offset should always be 0.
-	 */
+	 
 	WARN_ON_ONCE(head_offset);
 
-	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
+	 
 	mxbuf->cqe = cqe;
 	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
 	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
 	net_prefetch(mxbuf->xdp.data);
 
-	/* Possible flows:
-	 * - XDP_REDIRECT to XSKMAP:
-	 *   The page is owned by the userspace from now.
-	 * - XDP_TX and other XDP_REDIRECTs:
-	 *   The page was returned by ZCA and recycled.
-	 * - XDP_DROP:
-	 *   Recycle the page.
-	 * - XDP_PASS:
-	 *   Allocate an SKB, copy the data and recycle the page.
-	 *
-	 * Pages to be recycled go to the Reuse Ring on MPWQE deallocation. Its
-	 * size is the same as the Driver RX Ring's size, and pages for WQEs are
-	 * allocated first from the Reuse Ring, so it has enough space.
-	 */
+	 
 
 	prog = rcu_dereference(rq->xdp_prog);
 	if (likely(prog && mlx5e_xdp_handle(rq, prog, mxbuf))) {
 		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
-			__set_bit(page_idx, wi->skip_release_bitmap); /* non-atomic */
-		return NULL; /* page/packet was consumed by XDP */
+			__set_bit(page_idx, wi->skip_release_bitmap);  
+		return NULL;  
 	}
 
-	/* XDP_PASS: copy the data from the UMEM to a new SKB and reuse the
-	 * frame. On SKB allocation failure, NULL is returned.
-	 */
+	 
 	return mlx5e_xsk_construct_skb(rq, &mxbuf->xdp);
 }
 
@@ -309,14 +281,10 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
 	struct mlx5e_xdp_buff *mxbuf = xsk_buff_to_mxbuf(*wi->xskp);
 	struct bpf_prog *prog;
 
-	/* wi->offset is not used in this function, because xdp->data and the
-	 * DMA address point directly to the necessary place. Furthermore, the
-	 * XSK allocator allocates frames per packet, instead of pages, so
-	 * wi->offset should always be 0.
-	 */
+	 
 	WARN_ON_ONCE(wi->offset);
 
-	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
+	 
 	mxbuf->cqe = cqe;
 	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
 	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
@@ -326,12 +294,9 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
 	if (likely(prog && mlx5e_xdp_handle(rq, prog, mxbuf))) {
 		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
 			wi->flags |= BIT(MLX5E_WQE_FRAG_SKIP_RELEASE);
-		return NULL; /* page/packet was consumed by XDP */
+		return NULL;  
 	}
 
-	/* XDP_PASS: copy the data from the UMEM to a new SKB. The frame reuse
-	 * will be handled by mlx5e_free_rx_wqe.
-	 * On SKB allocation failure, NULL is returned.
-	 */
+	 
 	return mlx5e_xsk_construct_skb(rq, &mxbuf->xdp);
 }

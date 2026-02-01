@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Wait until an inotify event on the given cgroup file.
- */
+
+ 
 #include <linux/limits.h>
 #include <sys/inotify.h>
 #include <sys/mman.h>
@@ -58,9 +56,7 @@ int main(int argc, char *argv[])
 		fail_message("inotify_add_watch() fails on %s!\n");
 	fds.fd = fd;
 
-	/*
-	 * poll waiting loop
-	 */
+	 
 	for (;;) {
 		int ret = poll(&fds, 1, 10000);
 

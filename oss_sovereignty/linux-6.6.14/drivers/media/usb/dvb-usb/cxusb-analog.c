@@ -1,25 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// DVB USB compliant linux driver for Conexant USB reference design -
-// (analog part).
-//
-// Copyright (C) 2011, 2017, 2018
-//	Maciej S. Szmigiero (mail@maciej.szmigiero.name)
-//
-// In case there are new analog / DVB-T hybrid devices released in the market
-// using the same general design as Medion MD95700: a CX25840 video decoder
-// outputting a BT.656 stream to a USB bridge chip which then forwards it to
-// the host in isochronous USB packets this code should be made generic, with
-// board specific bits implemented via separate card structures.
-//
-// This is, however, unlikely as the Medion model was released
-// years ago (in 2005).
-//
-// TODO:
-//  * audio support,
-//  * finish radio support (requires audio of course),
-//  * VBI support,
-//  * controls support
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -135,7 +135,7 @@ static bool cxusb_auxbuf_make_space(struct dvb_usb_device *dvbdev,
 	return false;
 }
 
-/* returns false if some data was overwritten */
+ 
 static bool cxusb_auxbuf_append_urb(struct dvb_usb_device *dvbdev,
 				    struct cxusb_medion_auxbuf *auxbuf,
 				    struct urb *urb)
@@ -298,7 +298,7 @@ static void cxusb_medion_cf_refc_vbi_smpl(struct dvb_usb_device *dvbdev,
 	bt656->fmode = START_SEARCH;
 }
 
-/* returns whether the whole 4-byte code should be skipped in the buffer */
+ 
 static bool cxusb_medion_cf_ref_code(struct dvb_usb_device *dvbdev,
 				     struct cxusb_bt656_params *bt656,
 				     bool firstfield,
@@ -375,7 +375,7 @@ static bool cxusb_medion_copy_samples(struct dvb_usb_device *dvbdev,
 						 maxlinesamples);
 	else if (bt656->fmode == LINE_SAMPLES)
 		cxusb_medion_cs_line_smpl(bt656, maxlinesamples, val);
-	else /* TODO: copy VBI samples */
+	else  
 		bt656->pos++;
 
 	return true;
@@ -404,10 +404,7 @@ static bool cxusb_medion_copy_field(struct dvb_usb_device *dvbdev,
 
 			if (buf[1] == CXUSB_BT656_PREAMBLE[1] &&
 			    buf[2] == CXUSB_BT656_PREAMBLE[2]) {
-				/*
-				 * is this a field change?
-				 * if so, terminate copying the current field
-				 */
+				 
 				if (cxusb_medion_cf_refc_fld_chg(dvbdev,
 								 bt656,
 								 firstfield,
@@ -448,10 +445,7 @@ static bool cxusb_medion_v_process_auxbuf(struct cxusb_medion_dev *cxdev,
 	struct dvb_usb_device *dvbdev = cxdev->dvbdev;
 	struct cxusb_bt656_params *bt656 = &cxdev->bt656;
 
-	/*
-	 * if this is a new frame
-	 * fetch a buffer from list
-	 */
+	 
 	if (bt656->mode == NEW_FRAME) {
 		if (!list_empty(&cxdev->buflist)) {
 			cxdev->vbuf =
@@ -484,10 +478,7 @@ static bool cxusb_medion_v_process_auxbuf(struct cxusb_medion_dev *cxdev,
 					     cxdev->width * 2))
 			return false;
 
-		/*
-		 * do not trim buffer there in case
-		 * we need to reset the search later
-		 */
+		 
 
 		cxusb_vprintk(dvbdev, URB, "will copy field 2\n");
 		bt656->mode = SECOND_FIELD;
@@ -566,16 +557,7 @@ static bool cxusb_medion_v_complete_handle_urb(struct cxusb_medion_dev *cxdev,
 		if (len > 0) {
 			cxusb_vprintk(dvbdev, URB, "appending URB\n");
 
-			/*
-			 * append new data to auxbuf while
-			 * overwriting old data if necessary
-			 *
-			 * if any overwrite happens then we can no
-			 * longer rely on consistency of the whole
-			 * data so let's start again the current
-			 * auxbuf frame assembling process from
-			 * the beginning
-			 */
+			 
 			*auxbuf_reset =
 				!cxusb_auxbuf_append_urb(dvbdev,
 							 &cxdev->auxbuf,
@@ -591,7 +573,7 @@ static bool cxusb_medion_v_complete_handle_urb(struct cxusb_medion_dev *cxdev,
 			"unable to resubmit URB %u (%d), you'll have to restart streaming\n",
 			urbn, ret);
 
-	/* next URB is complete already? reschedule us then to handle it */
+	 
 	return test_bit(cxdev->nexturb, &cxdev->urbcomplete);
 }
 
@@ -615,7 +597,7 @@ static void cxusb_medion_v_complete_work(struct work_struct *work)
 	reschedule = cxusb_medion_v_complete_handle_urb(cxdev, &auxbuf_reset);
 
 	if (cxusb_medion_v_process_auxbuf(cxdev, auxbuf_reset))
-		/* reschedule us until auxbuf no longer can produce any frame */
+		 
 		reschedule = true;
 
 	if (reschedule) {
@@ -692,12 +674,9 @@ static int cxusb_medion_v_ss_auxbuf_alloc(struct cxusb_medion_dev *cxdev,
 	unsigned int framelen, urblen, auxbuflen;
 
 	framelen = (cxdev->width * 2 + 4 + 4) *
-		(cxdev->height + 50 /* VBI lines */);
+		(cxdev->height + 50  );
 
-	/*
-	 * try to fit a whole frame into each URB, as long as doing so
-	 * does not require very high order memory allocations
-	 */
+	 
 	BUILD_BUG_ON(CXUSB_VIDEO_URB_MAX_SIZE / CXUSB_VIDEO_PKT_SIZE >
 		     CXUSB_VIDEO_MAX_FRAME_PKTS);
 	*npackets = min_t(int, (framelen + CXUSB_VIDEO_PKT_SIZE - 1) /
@@ -734,7 +713,7 @@ static u32 cxusb_medion_norm2field_order(v4l2_std_id norm)
 
 	if (is625)
 		return V4L2_FIELD_SEQ_TB;
-	else /* is525 */
+	else  
 		return V4L2_FIELD_SEQ_BT;
 }
 
@@ -745,7 +724,7 @@ static u32 cxusb_medion_field_order(struct cxusb_medion_dev *cxdev)
 	int ret;
 	v4l2_std_id norm;
 
-	/* TV tuner is PAL-only so it is always TB */
+	 
 	if (cxdev->input == 0)
 		return V4L2_FIELD_SEQ_TB;
 
@@ -781,7 +760,7 @@ static int cxusb_medion_v_start_streaming(struct vb2_queue *q,
 	cxusb_vprintk(dvbdev, OPS, "should start streaming\n");
 
 	if (cxdev->stop_streaming) {
-		/* stream is being stopped */
+		 
 		ret = -EBUSY;
 		goto ret_retbufs;
 	}
@@ -812,11 +791,7 @@ static int cxusb_medion_v_start_streaming(struct vb2_queue *q,
 		u8 *streambuf;
 		struct urb *surb;
 
-		/*
-		 * TODO: change this to an array of single pages to avoid
-		 * doing a large continuous allocation when (if)
-		 * s-g isochronous USB transfers are supported
-		 */
+		 
 		streambuf = kmalloc(npackets * CXUSB_VIDEO_PKT_SIZE,
 				    GFP_KERNEL);
 		if (!streambuf) {
@@ -916,7 +891,7 @@ static void cxusb_medion_v_stop_streaming(struct vb2_queue *q)
 		dev_err(&dvbdev->udev->dev, "unable to stop stream (%d)\n",
 			ret);
 
-	/* let URB completion run */
+	 
 	mutex_unlock(cxdev->videodev->lock);
 
 	for (i = 0; i < CXUSB_VIDEO_URBS; i++)
@@ -927,7 +902,7 @@ static void cxusb_medion_v_stop_streaming(struct vb2_queue *q)
 
 	mutex_lock(cxdev->videodev->lock);
 
-	/* free transfer buffer and URB */
+	 
 	vfree(cxdev->auxbuf.buf);
 
 	cxusb_medion_urbs_free(cxdev);
@@ -945,7 +920,7 @@ static void cxusub_medion_v_buf_queue(struct vb2_buffer *vb)
 	struct dvb_usb_device *dvbdev = vb2_get_drv_priv(vb->vb2_queue);
 	struct cxusb_medion_dev *cxdev = dvbdev->priv;
 
-	/* cxusb_vprintk(dvbdev, OPS, "mmmm.. a fresh buffer...\n"); */
+	 
 
 	list_add_tail(&vbuf->list, &cxdev->buflist);
 }
@@ -1137,11 +1112,11 @@ static int cxusb_medion_set_norm(struct cxusb_medion_dev *cxdev,
 		      (unsigned int)cxdev->input,
 		      (unsigned long)norm);
 
-	/* no autodetection support */
+	 
 	if (norm == V4L2_STD_UNKNOWN)
 		return -EINVAL;
 
-	/* on composite or S-Video any std is acceptable */
+	 
 	if (cxdev->input != 0) {
 		ret = v4l2_subdev_call(cxdev->cx25840, video, s_std, norm);
 		if (ret)
@@ -1150,7 +1125,7 @@ static int cxusb_medion_set_norm(struct cxusb_medion_dev *cxdev,
 		goto ret_savenorm;
 	}
 
-	/* TV tuner is only able to demodulate PAL */
+	 
 	if ((norm & ~V4L2_STD_PAL) != 0)
 		return -EINVAL;
 
@@ -1231,30 +1206,19 @@ static int cxusb_medion_g_tuner(struct file *file, void *fh,
 	tuner->capability = 0;
 	tuner->afc = 0;
 
-	/*
-	 * fills:
-	 * always: capability (static), rangelow (static), rangehigh (static)
-	 * radio mode: afc (may fail silently), rxsubchans (static), audmode
-	 */
+	 
 	ret = v4l2_subdev_call(cxdev->tda9887, tuner, g_tuner, tuner);
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * fills:
-	 * always: capability (static), rangelow (static), rangehigh (static)
-	 * radio mode: rxsubchans (always stereo), audmode,
-	 * signal (might be wrong)
-	 */
+	 
 	ret = v4l2_subdev_call(cxdev->tuner, tuner, g_tuner, tuner);
 	if (ret != 0)
 		return ret;
 
 	tuner->signal = 0;
 
-	/*
-	 * fills: TV mode: capability, rxsubchans, audmode, signal
-	 */
+	 
 	ret = v4l2_subdev_call(cxdev->cx25840, tuner, g_tuner, tuner);
 	if (ret != 0)
 		return ret;
@@ -1288,10 +1252,7 @@ static int cxusb_medion_s_tuner(struct file *file, void *fh,
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * make sure that cx25840 is in a correct TV / radio mode,
-	 * since calls above may have changed it for tuner / IF demod
-	 */
+	 
 	if (vdev->vfl_type == VFL_TYPE_VIDEO)
 		v4l2_subdev_call(cxdev->cx25840, video, s_std, cxdev->norm);
 	else
@@ -1331,10 +1292,7 @@ static int cxusb_medion_s_frequency(struct file *file, void *fh,
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * make sure that cx25840 is in a correct TV / radio mode,
-	 * since calls above may have changed it for tuner / IF demod
-	 */
+	 
 	if (vdev->vfl_type == VFL_TYPE_VIDEO)
 		v4l2_subdev_call(cxdev->cx25840, video, s_std, cxdev->norm);
 	else
@@ -1374,10 +1332,7 @@ static int cxusb_medion_querystd(struct file *file, void *fh,
 	v4l2_std_id norm_mask;
 	int ret;
 
-	/*
-	 * make sure we don't have improper std bits set for the TV tuner
-	 * (could happen when no signal was present yet after reset)
-	 */
+	 
 	if (cxdev->input == 0)
 		norm_mask = V4L2_STD_PAL;
 	else
@@ -1444,10 +1399,7 @@ static const struct v4l2_ioctl_ops cxusb_radio_ioctl = {
 	.vidioc_log_status = cxusb_medion_log_status
 };
 
-/*
- * in principle, this should be const, but s_io_pin_config is declared
- * to take non-const, and gcc complains
- */
+ 
 static struct v4l2_subdev_io_pin_config cxusub_medion_pin_config[] = {
 	{ .pin = CX25840_PIN_DVALID_PRGM0, .function = CX25840_PAD_DEFAULT,
 	  .strength = CX25840_PIN_DRIVE_MEDIUM },
@@ -1469,16 +1421,13 @@ int cxusb_medion_analog_init(struct dvb_usb_device *dvbdev)
 	};
 	int ret;
 
-	/* switch tuner to analog mode so IF demod will become accessible */
+	 
 	ret = i2c_transfer(&dvbdev->i2c_adap, &tuner_analog_msg, 1);
 	if (ret != 1)
 		dev_warn(&dvbdev->udev->dev,
 			 "tuner analog switch failed (%d)\n", ret);
 
-	/*
-	 * cx25840 might have lost power during mode switching so we need
-	 * to set it again
-	 */
+	 
 	ret = v4l2_subdev_call(cxdev->cx25840, core, reset, 0);
 	if (ret != 0)
 		dev_warn(&dvbdev->udev->dev,
@@ -1490,12 +1439,12 @@ int cxusb_medion_analog_init(struct dvb_usb_device *dvbdev)
 		dev_warn(&dvbdev->udev->dev,
 			 "cx25840 initial input setting failed (%d)\n", ret);
 
-	/* composite */
+	 
 	cxdev->input = 1;
 	cxdev->videodev->tvnorms = V4L2_STD_ALL;
 	cxdev->norm = V4L2_STD_PAL;
 
-	/* TODO: setup audio samples insertion */
+	 
 
 	ret = v4l2_subdev_call(cxdev->cx25840, core, s_io_pin_config,
 			       ARRAY_SIZE(cxusub_medion_pin_config),
@@ -1504,7 +1453,7 @@ int cxusb_medion_analog_init(struct dvb_usb_device *dvbdev)
 		dev_warn(&dvbdev->udev->dev,
 			 "cx25840 pin config failed (%d)\n", ret);
 
-	/* make sure that we aren't in radio mode */
+	 
 	v4l2_subdev_call(cxdev->tda9887, video, s_std, cxdev->norm);
 	v4l2_subdev_call(cxdev->tuner, video, s_std, cxdev->norm);
 	v4l2_subdev_call(cxdev->cx25840, video, s_std, cxdev->norm);
@@ -1533,11 +1482,7 @@ static int cxusb_videoradio_open(struct file *f)
 	struct dvb_usb_device *dvbdev = video_drvdata(f);
 	int ret;
 
-	/*
-	 * no locking needed since this call only modifies analog
-	 * state if there are no other analog handles currenly
-	 * opened so ops done via them cannot create a conflict
-	 */
+	 
 	ret = cxusb_medion_get(dvbdev, CXUSB_OPEN_ANALOG);
 	if (ret != 0)
 		return ret;
@@ -1712,7 +1657,7 @@ static int cxusb_medion_register_analog_subdevs(struct dvb_usb_device *dvbdev)
 	int ret;
 	struct tuner_setup tun_setup;
 
-	/* attach cx25840 capture chip */
+	 
 	cxdev->cx25840 = v4l2_i2c_new_subdev(&cxdev->v4l2dev,
 					     &dvbdev->i2c_adap,
 					     "cx25840", 0x44, NULL);
@@ -1721,14 +1666,7 @@ static int cxusb_medion_register_analog_subdevs(struct dvb_usb_device *dvbdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * Initialize cx25840 chip by calling its subdevice init core op.
-	 *
-	 * This switches it into the generic mode that disables some of
-	 * ivtv-related hacks in the cx25840 driver while allowing setting
-	 * of the chip video output configuration (passed in the call below
-	 * as the last argument).
-	 */
+	 
 	ret = v4l2_subdev_call(cxdev->cx25840, core, init,
 			       CX25840_VCONFIG_FMT_BT656 |
 			       CX25840_VCONFIG_RES_8BIT |
@@ -1745,7 +1683,7 @@ static int cxusb_medion_register_analog_subdevs(struct dvb_usb_device *dvbdev)
 		return ret;
 	}
 
-	/* attach analog tuner */
+	 
 	cxdev->tuner = v4l2_i2c_new_subdev(&cxdev->v4l2dev,
 					   &dvbdev->i2c_adap,
 					   "tuner", 0x61, NULL);
@@ -1754,14 +1692,14 @@ static int cxusb_medion_register_analog_subdevs(struct dvb_usb_device *dvbdev)
 		return -ENODEV;
 	}
 
-	/* configure it */
+	 
 	memset(&tun_setup, 0, sizeof(tun_setup));
 	tun_setup.addr = 0x61;
 	tun_setup.type = TUNER_PHILIPS_FMD1216ME_MK3;
 	tun_setup.mode_mask = T_RADIO | T_ANALOG_TV;
 	v4l2_subdev_call(cxdev->tuner, tuner, s_type_addr, &tun_setup);
 
-	/* attach IF demod */
+	 
 	cxdev->tda9887 = v4l2_i2c_new_subdev(&cxdev->v4l2dev,
 					     &dvbdev->i2c_adap,
 					     "tuner", 0x43, NULL);

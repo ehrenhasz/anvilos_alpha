@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2023, Advanced Micro Devices, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "tc_conntrack.h"
 #include "tc.h"
@@ -49,9 +42,7 @@ static void efx_tc_ct_free(void *ptr, void *arg)
 		  "tc ct_entry %lx still present at teardown\n",
 		  conn->cookie);
 
-	/* We can release the counter, but we can't remove the CT itself
-	 * from hardware because the table meta is already gone.
-	 */
+	 
 	efx_tc_flower_release_counter(efx, conn->cnt);
 	kfree(conn);
 }
@@ -73,9 +64,7 @@ fail_ct_zone_ht:
 	return rc;
 }
 
-/* Only call this in init failure teardown.
- * Normal exit should fini instead as there may be entries in the table.
- */
+ 
 void efx_tc_destroy_conntrack(struct efx_nic *efx)
 {
 	rhashtable_destroy(&efx->tc->ct_ht);
@@ -255,16 +244,14 @@ static int efx_tc_ct_parse_match(struct efx_nic *efx, struct flow_rule *fr,
 		tcp_interesting_flags = EFX_NF_TCP_FLAG(SYN) |
 					EFX_NF_TCP_FLAG(RST) |
 					EFX_NF_TCP_FLAG(FIN);
-		/* If any of the tcp_interesting_flags is set, we always
-		 * inhibit CT lookup in LHS (so SW can update CT table).
-		 */
+		 
 		if (fm.key->flags & tcp_interesting_flags) {
 			netif_dbg(efx, drv, efx->net_dev,
 				  "Unsupported conntrack tcp.flags %04x/%04x\n",
 				   ntohs(fm.key->flags), ntohs(fm.mask->flags));
 			return -EOPNOTSUPP;
 		}
-		/* Other TCP flags cannot be filtered at CT */
+		 
 		if (fm.mask->flags & ~tcp_interesting_flags) {
 			netif_dbg(efx, drv, efx->net_dev,
 				  "Unsupported conntrack tcp.flags %04x/%04x\n",
@@ -308,13 +295,13 @@ static int efx_tc_ct_replace(struct efx_tc_ct_zone *ct_zone,
 		goto release;
 	}
 
-	/* Parse match */
+	 
 	conn->zone = ct_zone;
 	rc = efx_tc_ct_parse_match(efx, fr, conn);
 	if (rc)
 		goto release;
 
-	/* Parse actions */
+	 
 	flow_action_for_each(i, fa, &fr->action) {
 		switch (fa->id) {
 		case FLOW_ACTION_CT_METADATA:
@@ -334,7 +321,7 @@ static int efx_tc_ct_replace(struct efx_tc_ct_zone *ct_zone,
 		}
 	}
 
-	/* fill in defaults for unmangled values */
+	 
 	conn->nat_ip = conn->dnat ? conn->dst_ip : conn->src_ip;
 	conn->l4_natport = conn->dnat ? conn->l4_dport : conn->l4_sport;
 
@@ -365,14 +352,14 @@ release:
 	return rc;
 }
 
-/* Caller must follow with efx_tc_ct_remove_finish() after RCU grace period! */
+ 
 static void efx_tc_ct_remove(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 {
 	int rc;
 
-	/* Remove it from HW */
+	 
 	rc = efx_mae_remove_ct(efx, conn);
-	/* Delete it from SW */
+	 
 	rhashtable_remove_fast(&efx->tc->ct_ht, &conn->linkage,
 			       efx_tc_ct_ht_params);
 	if (rc) {
@@ -387,10 +374,7 @@ static void efx_tc_ct_remove(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 
 static void efx_tc_ct_remove_finish(struct efx_nic *efx, struct efx_tc_ct_entry *conn)
 {
-	/* Remove related CT counter.  This is delayed after the conn object we
-	 * are working with has been successfully removed.  This protects the
-	 * counter from being used-after-free inside efx_tc_ct_stats.
-	 */
+	 
 	efx_tc_flower_release_counter(efx, conn->cnt);
 	kfree(conn);
 }
@@ -437,7 +421,7 @@ static int efx_tc_ct_stats(struct efx_tc_ct_zone *ct_zone,
 
 	cnt = conn->cnt;
 	spin_lock_bh(&cnt->lock);
-	/* Report only last use */
+	 
 	flow_stats_update(&tc->stats, 0, 0, 0, cnt->touched,
 			  FLOW_ACTION_HW_STATS_DELAYED);
 	spin_unlock_bh(&cnt->lock);
@@ -483,13 +467,13 @@ struct efx_tc_ct_zone *efx_tc_ct_register_zone(struct efx_nic *efx, u16 zone,
 						&ct_zone->linkage,
 						efx_tc_ct_zone_ht_params);
 	if (old) {
-		/* don't need our new entry */
+		 
 		kfree(ct_zone);
-		if (IS_ERR(old)) /* oh dear, it's actually an error */
+		if (IS_ERR(old))  
 			return ERR_CAST(old);
 		if (!refcount_inc_not_zero(&old->ref))
 			return ERR_PTR(-EAGAIN);
-		/* existing entry found */
+		 
 		WARN_ON_ONCE(old->nf_ft != ct_ft);
 		netif_dbg(efx, drv, efx->net_dev,
 			  "Found existing ct_zone for %u\n", zone);
@@ -519,7 +503,7 @@ void efx_tc_ct_unregister_zone(struct efx_nic *efx,
 	struct efx_tc_ct_entry *conn, *next;
 
 	if (!refcount_dec_and_test(&ct_zone->ref))
-		return; /* still in use */
+		return;  
 	nf_flow_table_offload_del_cb(ct_zone->nf_ft, efx_tc_flow_block, ct_zone);
 	rhashtable_remove_fast(&efx->tc->ct_zone_ht, &ct_zone->linkage,
 			       efx_tc_ct_zone_ht_params);
@@ -527,7 +511,7 @@ void efx_tc_ct_unregister_zone(struct efx_nic *efx,
 	list_for_each_entry(conn, &ct_zone->cts, list)
 		efx_tc_ct_remove(efx, conn);
 	synchronize_rcu();
-	/* need to use _safe because efx_tc_ct_remove_finish() frees conn */
+	 
 	list_for_each_entry_safe(conn, next, &ct_zone->cts, list)
 		efx_tc_ct_remove_finish(efx, conn);
 	mutex_unlock(&ct_zone->mutex);

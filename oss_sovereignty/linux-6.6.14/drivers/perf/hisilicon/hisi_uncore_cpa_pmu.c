@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC CPA(Coherency Protocol Agent) hardware event counters support
- *
- * Copyright (C) 2022 HiSilicon Limited
- * Author: Qi Liu <liuqi115@huawei.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 
 #define pr_fmt(fmt) "cpa pmu: " fmt
 #include <linux/acpi.h>
@@ -19,7 +12,7 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* CPA register definition */
+ 
 #define CPA_PERF_CTRL		0x1c00
 #define CPA_EVENT_CTRL		0x1c04
 #define CPA_INT_MASK		0x1c70
@@ -30,12 +23,12 @@
 #define CPA_CNT0_LOWER		0x1d00
 #define CPA_CFG_REG		0x0534
 
-/* CPA operation command */
+ 
 #define CPA_PERF_CTRL_EN	BIT_ULL(0)
 #define CPA_EVTYPE_MASK		0xffUL
 #define CPA_PM_CTRL		BIT_ULL(9)
 
-/* CPA has 8-counters */
+ 
 #define CPA_NR_COUNTERS		0x8
 #define CPA_COUNTER_BITS	64
 #define CPA_NR_EVENTS		0xff
@@ -63,18 +56,12 @@ static void hisi_cpa_pmu_write_evtype(struct hisi_pmu *cpa_pmu, int idx,
 {
 	u32 reg, reg_idx, shift, val;
 
-	/*
-	 * Select the appropriate event select register(CPA_EVENT_TYPE0/1).
-	 * There are 2 event select registers for the 8 hardware counters.
-	 * Event code is 8-bits and for the former 4 hardware counters,
-	 * CPA_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
-	 * CPA_EVENT_TYPE1 is chosen.
-	 */
+	 
 	reg = CPA_EVENT_TYPE0 + (idx / 4) * 4;
 	reg_idx = idx % 4;
 	shift = CPA_REG_OFFSET * reg_idx;
 
-	/* Write event code to CPA_EVENT_TYPEx Register */
+	 
 	val = readl(cpa_pmu->base + reg);
 	val &= ~(CPA_EVTYPE_MASK << shift);
 	val |= type << shift;
@@ -122,7 +109,7 @@ static void hisi_cpa_pmu_enable_counter(struct hisi_pmu *cpa_pmu,
 {
 	u32 val;
 
-	/* Enable counter index in CPA_EVENT_CTRL register */
+	 
 	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
 	val |= 1 << hwc->idx;
 	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
@@ -133,7 +120,7 @@ static void hisi_cpa_pmu_disable_counter(struct hisi_pmu *cpa_pmu,
 {
 	u32 val;
 
-	/* Clear counter index in CPA_EVENT_CTRL register */
+	 
 	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
 	val &= ~(1UL << hwc->idx);
 	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
@@ -144,7 +131,7 @@ static void hisi_cpa_pmu_enable_counter_int(struct hisi_pmu *cpa_pmu,
 {
 	u32 val;
 
-	/* Write 0 to enable interrupt */
+	 
 	val = readl(cpa_pmu->base + CPA_INT_MASK);
 	val &= ~(1UL << hwc->idx);
 	writel(val, cpa_pmu->base + CPA_INT_MASK);
@@ -155,7 +142,7 @@ static void hisi_cpa_pmu_disable_counter_int(struct hisi_pmu *cpa_pmu,
 {
 	u32 val;
 
-	/* Write 1 to mask interrupt */
+	 
 	val = readl(cpa_pmu->base + CPA_INT_MASK);
 	val |= 1 << hwc->idx;
 	writel(val, cpa_pmu->base + CPA_INT_MASK);
@@ -318,7 +305,7 @@ static int hisi_cpa_pmu_probe(struct platform_device *pdev)
 
 	hisi_pmu_init(cpa_pmu, THIS_MODULE);
 
-	/* Power Management should be disabled before using CPA PMU. */
+	 
 	hisi_cpa_pmu_disable_pm(cpa_pmu);
 	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
 				       &cpa_pmu->node);

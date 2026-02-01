@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * Generic non-thread safe hash map implementation.
- *
- * Copyright (c) 2019 Facebook
- */
+
+ 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,13 +8,13 @@
 #include <linux/err.h>
 #include "hashmap.h"
 
-/* make sure libbpf doesn't use kernel-only integer typedefs */
+ 
 #pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
 
-/* prevent accidental re-addition of reallocarray() */
+ 
 #pragma GCC poison reallocarray
 
-/* start with 4 buckets */
+ 
 #define HASHMAP_MIN_CAP_BITS 2
 
 static void hashmap_add_entry(struct hashmap_entry **pprev,
@@ -94,7 +90,7 @@ size_t hashmap__capacity(const struct hashmap *map)
 
 static bool hashmap_needs_to_grow(struct hashmap *map)
 {
-	/* grow if empty or more than 75% filled */
+	 
 	return (map->cap == 0) || ((map->sz + 1) * 4 / 3 > map->cap);
 }
 

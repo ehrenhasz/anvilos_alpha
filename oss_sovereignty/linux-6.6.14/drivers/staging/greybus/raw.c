@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus driver for the Raw protocol
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -37,21 +32,16 @@ static int raw_major;
 static const struct file_operations raw_fops;
 static DEFINE_IDA(minors);
 
-/* Number of minor devices this driver supports */
+ 
 #define NUM_MINORS	256
 
-/* Maximum size of any one send data buffer we support */
+ 
 #define MAX_PACKET_SIZE	(PAGE_SIZE * 2)
 
-/*
- * Maximum size of the data in the receive buffer we allow before we start to
- * drop messages on the floor
- */
+ 
 #define MAX_DATA_SIZE	(MAX_PACKET_SIZE * 8)
 
-/*
- * Add the raw data message to the list of received messages.
- */
+ 
 static int receive_data(struct gb_raw *raw, u32 len, u8 *data)
 {
 	struct raw_data *raw_data;
@@ -99,7 +89,7 @@ static int gb_raw_request_handler(struct gb_operation *op)
 		return -EINVAL;
 	}
 
-	/* Verify size of payload */
+	 
 	if (op->request->payload_size < sizeof(*receive)) {
 		dev_err(dev, "raw receive request too small (%zu < %zu)\n",
 			op->request->payload_size, sizeof(*receive));
@@ -228,7 +218,7 @@ static void gb_raw_disconnect(struct gb_bundle *bundle)
 	struct raw_data *raw_data;
 	struct raw_data *temp;
 
-	// FIXME - handle removing a connection when the char device node is open.
+	
 	device_destroy(raw_class, raw->dev);
 	cdev_del(&raw->cdev);
 	gb_connection_disable(connection);
@@ -245,14 +235,7 @@ static void gb_raw_disconnect(struct gb_bundle *bundle)
 	kfree(raw);
 }
 
-/*
- * Character device node interfaces.
- *
- * Note, we are using read/write to only allow a single read/write per message.
- * This means for read(), you have to provide a big enough buffer for the full
- * message to be copied into.  If the buffer isn't big enough, the read() will
- * fail with -ENOSPC.
- */
+ 
 
 static int raw_open(struct inode *inode, struct file *file)
 {

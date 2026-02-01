@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -29,32 +26,20 @@
 
 struct kmem_cache		*xfs_attr_intent_cache;
 
-/*
- * xfs_attr.c
- *
- * Provide the external interfaces to manage attribute lists.
- */
+ 
 
-/*========================================================================
- * Function prototypes for the kernel.
- *========================================================================*/
+ 
 
-/*
- * Internal routines when attribute list fits inside the inode.
- */
+ 
 STATIC int xfs_attr_shortform_addname(xfs_da_args_t *args);
 
-/*
- * Internal routines when attribute list is one block.
- */
+ 
 STATIC int xfs_attr_leaf_get(xfs_da_args_t *args);
 STATIC int xfs_attr_leaf_removename(xfs_da_args_t *args);
 STATIC int xfs_attr_leaf_hasname(struct xfs_da_args *args, struct xfs_buf **bp);
 STATIC int xfs_attr_leaf_try_add(struct xfs_da_args *args);
 
-/*
- * Internal routines when attribute list is more than one block.
- */
+ 
 STATIC int xfs_attr_node_get(xfs_da_args_t *args);
 STATIC void xfs_attr_restore_rmt_blk(struct xfs_da_args *args);
 static int xfs_attr_node_try_addname(struct xfs_attr_intent *attr);
@@ -75,10 +60,7 @@ xfs_inode_hasattr(
 	return 1;
 }
 
-/*
- * Returns true if the there is exactly only block in the attr fork, in which
- * case the attribute fork consists of a single leaf block entry.
- */
+ 
 bool
 xfs_attr_is_leaf(
 	struct xfs_inode	*ip)
@@ -95,24 +77,9 @@ xfs_attr_is_leaf(
 	return imap.br_startoff == 0 && imap.br_blockcount == 1;
 }
 
-/*
- * XXX (dchinner): name path state saving and refilling is an optimisation to
- * avoid needing to look up name entries after rolling transactions removing
- * remote xattr blocks between the name entry lookup and name entry removal.
- * This optimisation got sidelined when combining the set and remove state
- * machines, but the code has been left in place because it is worthwhile to
- * restore the optimisation once the combined state machine paths have settled.
- *
- * This comment is a public service announcement to remind Future Dave that he
- * still needs to restore this code to working order.
- */
+ 
 #if 0
-/*
- * Fill in the disk block numbers in the state structure for the buffers
- * that are attached to the state structure.
- * This is done so that we can quickly reattach ourselves to those buffers
- * after some set of transaction commits have released these buffers.
- */
+ 
 static int
 xfs_attr_fillstate(xfs_da_state_t *state)
 {
@@ -122,10 +89,7 @@ xfs_attr_fillstate(xfs_da_state_t *state)
 
 	trace_xfs_attr_fillstate(state->args);
 
-	/*
-	 * Roll down the "path" in the state structure, storing the on-disk
-	 * block number for those buffers in the "path".
-	 */
+	 
 	path = &state->path;
 	ASSERT((path->active >= 0) && (path->active < XFS_DA_NODE_MAXDEPTH));
 	for (blk = path->blk, level = 0; level < path->active; blk++, level++) {
@@ -137,10 +101,7 @@ xfs_attr_fillstate(xfs_da_state_t *state)
 		}
 	}
 
-	/*
-	 * Roll down the "altpath" in the state structure, storing the on-disk
-	 * block number for those buffers in the "altpath".
-	 */
+	 
 	path = &state->altpath;
 	ASSERT((path->active >= 0) && (path->active < XFS_DA_NODE_MAXDEPTH));
 	for (blk = path->blk, level = 0; level < path->active; blk++, level++) {
@@ -155,12 +116,7 @@ xfs_attr_fillstate(xfs_da_state_t *state)
 	return 0;
 }
 
-/*
- * Reattach the buffers to the state structure based on the disk block
- * numbers stored in the state structure.
- * This is done after some set of transaction commits have released those
- * buffers from our grip.
- */
+ 
 static int
 xfs_attr_refillstate(xfs_da_state_t *state)
 {
@@ -170,10 +126,7 @@ xfs_attr_refillstate(xfs_da_state_t *state)
 
 	trace_xfs_attr_refillstate(state->args);
 
-	/*
-	 * Roll down the "path" in the state structure, storing the on-disk
-	 * block number for those buffers in the "path".
-	 */
+	 
 	path = &state->path;
 	ASSERT((path->active >= 0) && (path->active < XFS_DA_NODE_MAXDEPTH));
 	for (blk = path->blk, level = 0; level < path->active; blk++, level++) {
@@ -188,10 +141,7 @@ xfs_attr_refillstate(xfs_da_state_t *state)
 		}
 	}
 
-	/*
-	 * Roll down the "altpath" in the state structure, storing the on-disk
-	 * block number for those buffers in the "altpath".
-	 */
+	 
 	path = &state->altpath;
 	ASSERT((path->active >= 0) && (path->active < XFS_DA_NODE_MAXDEPTH));
 	for (blk = path->blk, level = 0; level < path->active; blk++, level++) {
@@ -212,14 +162,9 @@ xfs_attr_refillstate(xfs_da_state_t *state)
 static int xfs_attr_fillstate(xfs_da_state_t *state) { return 0; }
 #endif
 
-/*========================================================================
- * Overall external interface routines.
- *========================================================================*/
+ 
 
-/*
- * Retrieve an extended attribute and its value.  Must have ilock.
- * Returns 0 on successful retrieval, otherwise an error.
- */
+ 
 int
 xfs_attr_get_ilocked(
 	struct xfs_da_args	*args)
@@ -236,22 +181,7 @@ xfs_attr_get_ilocked(
 	return xfs_attr_node_get(args);
 }
 
-/*
- * Retrieve an extended attribute by name, and its value if requested.
- *
- * If args->valuelen is zero, then the caller does not want the value, just an
- * indication whether the attribute exists and the size of the value if it
- * exists. The size is returned in args.valuelen.
- *
- * If args->value is NULL but args->valuelen is non-zero, allocate the buffer
- * for the value after existence of the attribute has been determined. The
- * caller always has to free args->value if it is set, no matter if this
- * function was successful or not.
- *
- * If the attribute is found, but exceeds the size limit set by the caller in
- * args->valuelen, return -ERANGE with the size of the attribute that was found
- * in args->valuelen.
- */
+ 
 int
 xfs_attr_get(
 	struct xfs_da_args	*args)
@@ -268,7 +198,7 @@ xfs_attr_get(
 	args->whichfork = XFS_ATTR_FORK;
 	args->hashval = xfs_da_hashname(args->name, args->namelen);
 
-	/* Entirely possible to look up a name which doesn't exist */
+	 
 	args->op_flags = XFS_DA_OP_OKNOENT;
 
 	lock_mode = xfs_ilock_attr_map_shared(args->dp);
@@ -278,9 +208,7 @@ xfs_attr_get(
 	return error;
 }
 
-/*
- * Calculate how many blocks we need for the new attribute,
- */
+ 
 int
 xfs_attr_calc_size(
 	struct xfs_da_args	*args,
@@ -290,22 +218,16 @@ xfs_attr_calc_size(
 	int			size;
 	int			nblks;
 
-	/*
-	 * Determine space new attribute will use, and if it would be
-	 * "local" or "remote" (note: local != inline).
-	 */
+	 
 	size = xfs_attr_leaf_newentsize(args, local);
 	nblks = XFS_DAENTER_SPACE_RES(mp, XFS_ATTR_FORK);
 	if (*local) {
 		if (size > (args->geo->blksize / 2)) {
-			/* Double split possible */
+			 
 			nblks *= 2;
 		}
 	} else {
-		/*
-		 * Out of line attribute, cannot double split, but
-		 * make room for the attribute value itself.
-		 */
+		 
 		uint	dblocks = xfs_attr3_rmt_blocks(mp, args->valuelen);
 		nblks += dblocks;
 		nblks += XFS_NEXTENTADD_SPACE_RES(mp, dblocks, XFS_ATTR_FORK);
@@ -314,7 +236,7 @@ xfs_attr_calc_size(
 	return nblks;
 }
 
-/* Initialize transaction reservation for attr operations */
+ 
 void
 xfs_init_attr_trans(
 	struct xfs_da_args	*args,
@@ -336,11 +258,7 @@ xfs_init_attr_trans(
 	}
 }
 
-/*
- * Add an attr to a shortform fork. If there is no space,
- * xfs_attr_shortform_addname() will convert to leaf format and return -ENOSPC.
- * to use.
- */
+ 
 STATIC int
 xfs_attr_try_sf_addname(
 	struct xfs_inode	*dp,
@@ -349,9 +267,7 @@ xfs_attr_try_sf_addname(
 
 	int			error;
 
-	/*
-	 * Build initial attribute list (if required).
-	 */
+	 
 	if (dp->i_af.if_format == XFS_DINODE_FMT_EXTENTS)
 		xfs_attr_shortform_create(args);
 
@@ -359,10 +275,7 @@ xfs_attr_try_sf_addname(
 	if (error == -ENOSPC)
 		return error;
 
-	/*
-	 * Commit the shortform mods, and we're done.
-	 * NOTE: this is also the error path (EEXIST, etc).
-	 */
+	 
 	if (!error && !(args->op_flags & XFS_DA_OP_NOTIME))
 		xfs_trans_ichgtime(args->trans, dp, XFS_ICHGTIME_CHG);
 
@@ -387,10 +300,7 @@ xfs_attr_sf_addname(
 		goto out;
 	}
 
-	/*
-	 * It won't fit in the shortform, transform to a leaf block.  GROT:
-	 * another possible req'mt for a double-split btree op.
-	 */
+	 
 	error = xfs_attr_shortform_to_leaf(args);
 	if (error)
 		return error;
@@ -401,17 +311,7 @@ out:
 	return error;
 }
 
-/*
- * Handle the state change on completion of a multi-state attr operation.
- *
- * If the XFS_DA_OP_REPLACE flag is set, this means the operation was the first
- * modification in a attr replace operation and we still have to do the second
- * state, indicated by @replace_state.
- *
- * We consume the XFS_DA_OP_REPLACE flag so that when we are called again on
- * completion of the second half of the attr replace operation we correctly
- * signal that it is done.
- */
+ 
 static enum xfs_delattr_state
 xfs_attr_complete_op(
 	struct xfs_attr_intent	*attr,
@@ -437,10 +337,7 @@ xfs_attr_leaf_addname(
 
 	ASSERT(xfs_attr_is_leaf(args->dp));
 
-	/*
-	 * Use the leaf buffer we may already hold locked as a result of
-	 * a sf-to-leaf conversion.
-	 */
+	 
 	error = xfs_attr_leaf_try_add(args);
 
 	if (error == -ENOSPC) {
@@ -448,21 +345,14 @@ xfs_attr_leaf_addname(
 		if (error)
 			return error;
 
-		/*
-		 * We're not in leaf format anymore, so roll the transaction and
-		 * retry the add to the newly allocated node block.
-		 */
+		 
 		attr->xattri_dela_state = XFS_DAS_NODE_ADD;
 		goto out;
 	}
 	if (error)
 		return error;
 
-	/*
-	 * We need to commit and roll if we need to allocate remote xattr blocks
-	 * or perform more xattr manipulations. Otherwise there is nothing more
-	 * to do and we can return success.
-	 */
+	 
 	if (args->rmtblkno)
 		attr->xattri_dela_state = XFS_DAS_LEAF_SET_RMT;
 	else
@@ -473,13 +363,7 @@ out:
 	return error;
 }
 
-/*
- * Add an entry to a node format attr tree.
- *
- * Note that we might still have a leaf here - xfs_attr_is_leaf() cannot tell
- * the difference between leaf + remote attr blocks and a node format tree,
- * so we may still end up having to convert from leaf to node format here.
- */
+ 
 static int
 xfs_attr_node_addname(
 	struct xfs_attr_intent	*attr)
@@ -496,10 +380,7 @@ xfs_attr_node_addname(
 		error = xfs_attr3_leaf_to_node(args);
 		if (error)
 			return error;
-		/*
-		 * No state change, we really are in node form now
-		 * but we need the transaction rolled to continue.
-		 */
+		 
 		goto out;
 	}
 	if (error)
@@ -522,17 +403,12 @@ xfs_attr_rmtval_alloc(
 	struct xfs_da_args              *args = attr->xattri_da_args;
 	int				error = 0;
 
-	/*
-	 * If there was an out-of-line value, allocate the blocks we
-	 * identified for its storage and copy the value.  This is done
-	 * after we create the attribute so that we don't overflow the
-	 * maximum size of a transaction and/or hit a deadlock.
-	 */
+	 
 	if (attr->xattri_blkcnt > 0) {
 		error = xfs_attr_rmtval_set_blk(attr);
 		if (error)
 			return error;
-		/* Roll the transaction only if there is more to allocate. */
+		 
 		if (attr->xattri_blkcnt > 0)
 			goto out;
 	}
@@ -543,11 +419,7 @@ xfs_attr_rmtval_alloc(
 
 	attr->xattri_dela_state = xfs_attr_complete_op(attr,
 						++attr->xattri_dela_state);
-	/*
-	 * If we are not doing a rename, we've finished the operation but still
-	 * have to clear the incomplete flag protecting the new attr from
-	 * exposing partially initialised state if we crash during creation.
-	 */
+	 
 	if (attr->xattri_dela_state == XFS_DAS_DONE)
 		error = xfs_attr3_leaf_clearflag(args);
 out:
@@ -555,10 +427,7 @@ out:
 	return error;
 }
 
-/*
- * Mark an attribute entry INCOMPLETE and save pointers to the relevant buffers
- * for later deletion of the entry.
- */
+ 
 static int
 xfs_attr_leaf_mark_incomplete(
 	struct xfs_da_args	*args,
@@ -566,22 +435,16 @@ xfs_attr_leaf_mark_incomplete(
 {
 	int			error;
 
-	/*
-	 * Fill in disk block numbers in the state structure
-	 * so that we can get the buffers back after we commit
-	 * several transactions in the following calls.
-	 */
+	 
 	error = xfs_attr_fillstate(state);
 	if (error)
 		return error;
 
-	/*
-	 * Mark the attribute as INCOMPLETE
-	 */
+	 
 	return xfs_attr3_leaf_setflag(args);
 }
 
-/* Ensure the da state of an xattr deferred work item is ready to go. */
+ 
 static inline void
 xfs_attr_item_init_da_state(
 	struct xfs_attr_intent	*attr)
@@ -594,11 +457,7 @@ xfs_attr_item_init_da_state(
 		xfs_da_state_reset(attr->xattri_da_state, args);
 }
 
-/*
- * Initial setup for xfs_attr_node_removename.  Make sure the attr is there and
- * the blocks are valid.  Attr keys with remote blocks will be marked
- * incomplete.
- */
+ 
 static
 int xfs_attr_node_removename_setup(
 	struct xfs_attr_intent		*attr)
@@ -632,11 +491,7 @@ out:
 	return error;
 }
 
-/*
- * Remove the original attr we have just replaced. This is dependent on the
- * original lookup and insert placing the old attr in args->blkno/args->index
- * and the new attr in args->blkno2/args->index2.
- */
+ 
 static int
 xfs_attr_leaf_remove_attr(
 	struct xfs_attr_intent		*attr)
@@ -657,16 +512,12 @@ xfs_attr_leaf_remove_attr(
 	forkoff = xfs_attr_shortform_allfit(bp, dp);
 	if (forkoff)
 		error = xfs_attr3_leaf_to_shortform(bp, args, forkoff);
-		/* bp is gone due to xfs_da_shrink_inode */
+		 
 
 	return error;
 }
 
-/*
- * Shrink an attribute from leaf to shortform. Used by the node format remove
- * path when the node format collapses to a single block and so we have to check
- * if it can be collapsed further.
- */
+ 
 static int
 xfs_attr_leaf_shrink(
 	struct xfs_da_args	*args)
@@ -686,7 +537,7 @@ xfs_attr_leaf_shrink(
 	forkoff = xfs_attr_shortform_allfit(bp, dp);
 	if (forkoff) {
 		error = xfs_attr3_leaf_to_shortform(bp, args, forkoff);
-		/* bp is gone due to xfs_da_shrink_inode */
+		 
 	} else {
 		xfs_trans_brelse(args->trans, bp);
 	}
@@ -694,14 +545,7 @@ xfs_attr_leaf_shrink(
 	return error;
 }
 
-/*
- * Run the attribute operation specified in @attr.
- *
- * This routine is meant to function as a delayed operation and will set the
- * state to XFS_DAS_DONE when the operation is complete.  Calling functions will
- * need to handle this, and recall the function until either an error or
- * XFS_DAS_DONE is detected.
- */
+ 
 int
 xfs_attr_set_iter(
 	struct xfs_attr_intent		*attr)
@@ -709,7 +553,7 @@ xfs_attr_set_iter(
 	struct xfs_da_args              *args = attr->xattri_da_args;
 	int				error = 0;
 
-	/* State machine switch */
+	 
 next_state:
 	switch (attr->xattri_dela_state) {
 	case XFS_DAS_UNINIT:
@@ -767,30 +611,17 @@ next_state:
 
 	case XFS_DAS_LEAF_REPLACE:
 	case XFS_DAS_NODE_REPLACE:
-		/*
-		 * We must "flip" the incomplete flags on the "new" and "old"
-		 * attribute/value pairs so that one disappears and one appears
-		 * atomically.
-		 */
+		 
 		error = xfs_attr3_leaf_flipflags(args);
 		if (error)
 			return error;
-		/*
-		 * We must commit the flag value change now to make it atomic
-		 * and then we can start the next trans in series at REMOVE_OLD.
-		 */
+		 
 		attr->xattri_dela_state++;
 		break;
 
 	case XFS_DAS_LEAF_REMOVE_OLD:
 	case XFS_DAS_NODE_REMOVE_OLD:
-		/*
-		 * If we have a remote attr, start the process of removing it
-		 * by invalidating any cached buffers.
-		 *
-		 * If we don't have a remote attr, we skip the remote block
-		 * removal state altogether with a second state increment.
-		 */
+		 
 		xfs_attr_restore_rmt_blk(args);
 		if (args->rmtblkno) {
 			error = xfs_attr_rmtval_invalidate(args);
@@ -813,14 +644,7 @@ next_state:
 		if (error)
 			return error;
 
-		/*
-		 * We've finished removing the remote attr blocks, so commit the
-		 * transaction and move on to removing the attr name from the
-		 * leaf/node block. Removing the attr might require a full
-		 * transaction reservation for btree block freeing, so we
-		 * can't do that in the same transaction where we removed the
-		 * remote attr blocks.
-		 */
+		 
 		attr->xattri_dela_state++;
 		break;
 
@@ -847,9 +671,7 @@ next_state:
 }
 
 
-/*
- * Return EEXIST if attr is found, or ENOATTR if not
- */
+ 
 static int
 xfs_attr_lookup(
 	struct xfs_da_args	*args)
@@ -883,8 +705,8 @@ xfs_attr_lookup(
 static int
 xfs_attr_intent_init(
 	struct xfs_da_args	*args,
-	unsigned int		op_flags,	/* op flag (set or remove) */
-	struct xfs_attr_intent	**attr)		/* new xfs_attr_intent */
+	unsigned int		op_flags,	 
+	struct xfs_attr_intent	**attr)		 
 {
 
 	struct xfs_attr_intent	*new;
@@ -897,7 +719,7 @@ xfs_attr_intent_init(
 	return 0;
 }
 
-/* Sets an attribute for an inode as a deferred operation */
+ 
 static int
 xfs_attr_defer_add(
 	struct xfs_da_args	*args)
@@ -916,7 +738,7 @@ xfs_attr_defer_add(
 	return 0;
 }
 
-/* Sets an attribute for an inode as a deferred operation */
+ 
 static int
 xfs_attr_defer_replace(
 	struct xfs_da_args	*args)
@@ -935,7 +757,7 @@ xfs_attr_defer_replace(
 	return 0;
 }
 
-/* Removes an attribute for an inode as a deferred operation */
+ 
 static int
 xfs_attr_defer_remove(
 	struct xfs_da_args	*args)
@@ -955,10 +777,7 @@ xfs_attr_defer_remove(
 	return 0;
 }
 
-/*
- * Note: If args->value is NULL the attribute will be removed, just like the
- * Linux ->setattr API.
- */
+ 
 int
 xfs_attr_set(
 	struct xfs_da_args	*args)
@@ -982,12 +801,7 @@ xfs_attr_set(
 	args->whichfork = XFS_ATTR_FORK;
 	args->hashval = xfs_da_hashname(args->name, args->namelen);
 
-	/*
-	 * We have no control over the attribute names that userspace passes us
-	 * to remove, so we have to allow the name lookup prior to attribute
-	 * removal to fail as well.  Preserve the logged flag, since we need
-	 * to pass that through to the logging code.
-	 */
+	 
 	args->op_flags = XFS_DA_OP_OKNOENT |
 					(args->op_flags & XFS_DA_OP_LOGGED);
 
@@ -995,10 +809,7 @@ xfs_attr_set(
 		XFS_STATS_INC(mp, xs_attr_set);
 		args->total = xfs_attr_calc_size(args, &local);
 
-		/*
-		 * If the inode doesn't have an attribute fork, add one.
-		 * (inode must not be locked when we call this routine)
-		 */
+		 
 		if (xfs_inode_has_attr_fork(dp) == 0) {
 			int sf_size = sizeof(struct xfs_attr_sf_hdr) +
 				xfs_attr_sf_entsize_byname(args->namelen,
@@ -1016,10 +827,7 @@ xfs_attr_set(
 		rmt_blks = xfs_attr3_rmt_blocks(mp, XFS_XATTR_SIZE_MAX);
 	}
 
-	/*
-	 * Root fork attributes can use reserved data blocks for this
-	 * operation if necessary
-	 */
+	 
 	xfs_init_attr_trans(args, &tres, &total);
 	error = xfs_trans_alloc_inode(dp, &tres, total, 0, rsvd, &args->trans);
 	if (error)
@@ -1038,23 +846,23 @@ xfs_attr_set(
 	error = xfs_attr_lookup(args);
 	switch (error) {
 	case -EEXIST:
-		/* if no value, we are performing a remove operation */
+		 
 		if (!args->value) {
 			error = xfs_attr_defer_remove(args);
 			break;
 		}
-		/* Pure create fails if the attr already exists */
+		 
 		if (args->attr_flags & XATTR_CREATE)
 			goto out_trans_cancel;
 
 		error = xfs_attr_defer_replace(args);
 		break;
 	case -ENOATTR:
-		/* Can't remove what isn't there. */
+		 
 		if (!args->value)
 			goto out_trans_cancel;
 
-		/* Pure replace fails if no existing attr to replace. */
+		 
 		if (args->attr_flags & XATTR_REPLACE)
 			goto out_trans_cancel;
 
@@ -1066,19 +874,14 @@ xfs_attr_set(
 	if (error)
 		goto out_trans_cancel;
 
-	/*
-	 * If this is a synchronous mount, make sure that the
-	 * transaction goes to disk before returning to the user.
-	 */
+	 
 	if (xfs_has_wsync(mp))
 		xfs_trans_set_sync(args->trans);
 
 	if (!(args->op_flags & XFS_DA_OP_NOTIME))
 		xfs_trans_ichgtime(args->trans, dp, XFS_ICHGTIME_CHG);
 
-	/*
-	 * Commit the last in the sequence of transactions.
-	 */
+	 
 	xfs_trans_log_inode(args->trans, dp, XFS_ILOG_CORE);
 	error = xfs_trans_commit(args->trans);
 out_unlock:
@@ -1091,9 +894,7 @@ out_trans_cancel:
 	goto out_unlock;
 }
 
-/*========================================================================
- * External routines when attribute list is inside the inode
- *========================================================================*/
+ 
 
 static inline int xfs_attr_sf_totsize(struct xfs_inode *dp)
 {
@@ -1103,10 +904,7 @@ static inline int xfs_attr_sf_totsize(struct xfs_inode *dp)
 	return be16_to_cpu(sf->hdr.totsize);
 }
 
-/*
- * Add a name to the shortform attribute list structure
- * This is the external routine.
- */
+ 
 static int
 xfs_attr_shortform_addname(
 	struct xfs_da_args	*args)
@@ -1130,12 +928,7 @@ xfs_attr_shortform_addname(
 		if (error)
 			return error;
 
-		/*
-		 * Since we have removed the old attr, clear XFS_DA_OP_REPLACE
-		 * so that the new attr doesn't fit in shortform format, the
-		 * leaf format add routine won't trip over the attr not being
-		 * around.
-		 */
+		 
 		args->op_flags &= ~XFS_DA_OP_REPLACE;
 		break;
 	case 0:
@@ -1160,11 +953,9 @@ xfs_attr_shortform_addname(
 }
 
 
-/*========================================================================
- * External routines when attribute list is one block
- *========================================================================*/
+ 
 
-/* Save the current remote block info and clear the current pointers. */
+ 
 static void
 xfs_attr_save_rmt_blk(
 	struct xfs_da_args	*args)
@@ -1179,7 +970,7 @@ xfs_attr_save_rmt_blk(
 	args->rmtvaluelen = 0;
 }
 
-/* Set stored info about a remote block */
+ 
 static void
 xfs_attr_restore_rmt_blk(
 	struct xfs_da_args	*args)
@@ -1191,16 +982,7 @@ xfs_attr_restore_rmt_blk(
 	args->rmtvaluelen = args->rmtvaluelen2;
 }
 
-/*
- * Tries to add an attribute to an inode in leaf form
- *
- * This function is meant to execute as part of a delayed operation and leaves
- * the transaction handling to the caller.  On success the attribute is added
- * and the inode and transaction are left dirty.  If there is not enough space,
- * the attr data is converted to node format and -ENOSPC is returned. Caller is
- * responsible for handling the dirty inode and transaction or adding the attr
- * in node format.
- */
+ 
 STATIC int
 xfs_attr_leaf_try_add(
 	struct xfs_da_args	*args)
@@ -1212,9 +994,7 @@ xfs_attr_leaf_try_add(
 	if (error)
 		return error;
 
-	/*
-	 * Look up the xattr name to set the insertion point for the new xattr.
-	 */
+	 
 	error = xfs_attr3_leaf_lookup_int(bp, args);
 	switch (error) {
 	case -ENOATTR:
@@ -1226,11 +1006,7 @@ xfs_attr_leaf_try_add(
 			goto out_brelse;
 
 		trace_xfs_attr_leaf_replace(args);
-		/*
-		 * Save the existing remote attr state so that the current
-		 * values reflect the state of the new attribute we are about to
-		 * add, not the attribute we just found and will remove later.
-		 */
+		 
 		xfs_attr_save_rmt_blk(args);
 		break;
 	case 0:
@@ -1246,9 +1022,7 @@ out_brelse:
 	return error;
 }
 
-/*
- * Return EEXIST if attr is found, or ENOATTR if not
- */
+ 
 STATIC int
 xfs_attr_leaf_hasname(
 	struct xfs_da_args	*args,
@@ -1267,12 +1041,7 @@ xfs_attr_leaf_hasname(
 	return error;
 }
 
-/*
- * Remove a name from the leaf attribute list structure
- *
- * This leaf block cannot have a "remote" value, we only call this routine
- * if bmap_one_block() says there is only one block (ie: no remote blks).
- */
+ 
 STATIC int
 xfs_attr_leaf_removename(
 	struct xfs_da_args	*args)
@@ -1283,9 +1052,7 @@ xfs_attr_leaf_removename(
 
 	trace_xfs_attr_leaf_removename(args);
 
-	/*
-	 * Remove the attribute.
-	 */
+	 
 	dp = args->dp;
 
 	error = xfs_attr_leaf_hasname(args, &bp);
@@ -1299,25 +1066,16 @@ xfs_attr_leaf_removename(
 
 	xfs_attr3_leaf_remove(bp, args);
 
-	/*
-	 * If the result is small enough, shrink it all into the inode.
-	 */
+	 
 	forkoff = xfs_attr_shortform_allfit(bp, dp);
 	if (forkoff)
 		return xfs_attr3_leaf_to_shortform(bp, args, forkoff);
-		/* bp is gone due to xfs_da_shrink_inode */
+		 
 
 	return 0;
 }
 
-/*
- * Look up a name in a leaf attribute list structure.
- *
- * This leaf block cannot have a "remote" value, we only call this routine
- * if bmap_one_block() says there is only one block (ie: no remote blks).
- *
- * Returns 0 on successful retrieval, otherwise an error.
- */
+ 
 STATIC int
 xfs_attr_leaf_get(xfs_da_args_t *args)
 {
@@ -1340,7 +1098,7 @@ xfs_attr_leaf_get(xfs_da_args_t *args)
 	return error;
 }
 
-/* Return EEXIST if attr is found, or ENOATTR if not. */
+ 
 STATIC int
 xfs_attr_node_lookup(
 	struct xfs_da_args	*args,
@@ -1348,9 +1106,7 @@ xfs_attr_node_lookup(
 {
 	int			retval, error;
 
-	/*
-	 * Search to see if name exists, and get back a pointer to it.
-	 */
+	 
 	error = xfs_da3_node_lookup_int(state, &retval);
 	if (error)
 		return error;
@@ -1358,9 +1114,7 @@ xfs_attr_node_lookup(
 	return retval;
 }
 
-/*========================================================================
- * External routines when attribute list size > geo->blksize
- *========================================================================*/
+ 
 
 STATIC int
 xfs_attr_node_addname_find_attr(
@@ -1369,10 +1123,7 @@ xfs_attr_node_addname_find_attr(
 	struct xfs_da_args	*args = attr->xattri_da_args;
 	int			error;
 
-	/*
-	 * Search to see if name already exists, and get back a pointer
-	 * to where it should go.
-	 */
+	 
 	xfs_attr_item_init_da_state(attr);
 	error = xfs_attr_node_lookup(args, attr->xattri_da_state);
 	switch (error) {
@@ -1386,11 +1137,7 @@ xfs_attr_node_addname_find_attr(
 
 
 		trace_xfs_attr_node_replace(args);
-		/*
-		 * Save the existing remote attr state so that the current
-		 * values reflect the state of the new attribute we are about to
-		 * add, not the attribute we just found and will remove later.
-		 */
+		 
 		xfs_attr_save_rmt_blk(args);
 		break;
 	case 0:
@@ -1408,13 +1155,7 @@ error:
 	return error;
 }
 
-/*
- * Add a name to a Btree-format attribute list.
- *
- * This will involve walking down the Btree, and may involve splitting
- * leaf nodes and even splitting intermediate nodes up to and including
- * the root node (a special case of an intermediate node).
- */
+ 
 static int
 xfs_attr_node_try_addname(
 	struct xfs_attr_intent		*attr)
@@ -1431,27 +1172,16 @@ xfs_attr_node_try_addname(
 	error = xfs_attr3_leaf_add(blk->bp, state->args);
 	if (error == -ENOSPC) {
 		if (state->path.active == 1) {
-			/*
-			 * Its really a single leaf node, but it had
-			 * out-of-line values so it looked like it *might*
-			 * have been a b-tree. Let the caller deal with this.
-			 */
+			 
 			goto out;
 		}
 
-		/*
-		 * Split as many Btree elements as required.
-		 * This code tracks the new and old attr's location
-		 * in the index/blkno/rmtblkno/rmtblkcnt fields and
-		 * in the index2/blkno2/rmtblkno2/rmtblkcnt2 fields.
-		 */
+		 
 		error = xfs_da3_split(state);
 		if (error)
 			goto out;
 	} else {
-		/*
-		 * Addition succeeded, update Btree hashvals.
-		 */
+		 
 		xfs_da3_fixhashpath(state, &state->path);
 	}
 
@@ -1469,9 +1199,7 @@ xfs_attr_node_removename(
 	struct xfs_da_state_blk	*blk;
 	int			retval;
 
-	/*
-	 * Remove the name and update the hashvals in the tree.
-	 */
+	 
 	blk = &state->path.blk[state->path.active-1];
 	ASSERT(blk->magic == XFS_ATTR_LEAF_MAGIC);
 	retval = xfs_attr3_leaf_remove(blk->bp, args);
@@ -1489,11 +1217,7 @@ xfs_attr_node_remove_attr(
 	int				retval = 0;
 	int				error = 0;
 
-	/*
-	 * The attr we are removing has already been marked incomplete, so
-	 * we need to set the filter appropriately to re-find the "old"
-	 * attribute entry after any split ops.
-	 */
+	 
 	args->attr_filter |= XFS_ATTR_INCOMPLETE;
 	error = xfs_da3_node_lookup_int(state, &retval);
 	if (error)
@@ -1501,9 +1225,7 @@ xfs_attr_node_remove_attr(
 
 	error = xfs_attr_node_removename(args, state);
 
-	/*
-	 * Check to see if the tree needs to be collapsed.
-	 */
+	 
 	if (retval && (state->path.active > 1)) {
 		error = xfs_da3_join(state);
 		if (error)
@@ -1518,15 +1240,7 @@ out:
 	return retval;
 }
 
-/*
- * Retrieve the attribute data from a node attribute list.
- *
- * This routine gets called for any attribute fork that has more than one
- * block, ie: both true Btree attr lists and for single-leaf-blocks with
- * "remote" values taking up more blocks.
- *
- * Returns 0 on successful retrieval, otherwise an error.
- */
+ 
 STATIC int
 xfs_attr_node_get(
 	struct xfs_da_args	*args)
@@ -1538,23 +1252,17 @@ xfs_attr_node_get(
 
 	trace_xfs_attr_node_get(args);
 
-	/*
-	 * Search to see if name exists, and get back a pointer to it.
-	 */
+	 
 	state = xfs_da_state_alloc(args);
 	error = xfs_attr_node_lookup(args, state);
 	if (error != -EEXIST)
 		goto out_release;
 
-	/*
-	 * Get the value, local or "remote"
-	 */
+	 
 	blk = &state->path.blk[state->path.active - 1];
 	error = xfs_attr3_leaf_getvalue(blk->bp, args);
 
-	/*
-	 * If not in a transaction, we have to release all the buffers.
-	 */
+	 
 out_release:
 	for (i = 0; i < state->path.active; i++) {
 		xfs_trans_brelse(args->trans, state->path.blk[i].bp);
@@ -1565,20 +1273,17 @@ out_release:
 	return error;
 }
 
-/* Returns true if the attribute entry name is valid. */
+ 
 bool
 xfs_attr_namecheck(
 	const void	*name,
 	size_t		length)
 {
-	/*
-	 * MAXNAMELEN includes the trailing null, but (name/length) leave it
-	 * out, so use >= for the length check.
-	 */
+	 
 	if (length >= MAXNAMELEN)
 		return false;
 
-	/* There shouldn't be any nulls here */
+	 
 	return !memchr(name, 0, length);
 }
 

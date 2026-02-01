@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB 338x super/high/full speed USB device controller.
- * Unlike many such controllers, this one talks PCI.
- *
- * Copyright (C) 2002 NetChip Technology, Inc. (http://www.netchip.com)
- * Copyright (C) 2003 David Brownell
- * Copyright (C) 2014 Ricardo Ribalda - Qtechnology/AS
- */
+
+ 
 
 #ifndef __LINUX_USB_USB338X_H
 #define __LINUX_USB_USB338X_H
 
 #include <linux/usb/net2280.h>
 
-/*
- * Extra defined bits for net2280 registers
- */
+ 
 #define     SCRATCH			      0x0b
 
 #define     DEFECT7374_FSM_FIELD                28
@@ -26,7 +17,7 @@
 #define     SET_SEL                             22
 #define     SUPER_SPEED_MODE                     8
 
-/*ep_cfg*/
+ 
 #define     MAX_BURST_SIZE                      24
 #define     EP_FIFO_BYTE_COUNT                  16
 #define     IN_ENDPOINT_ENABLE                  14
@@ -82,7 +73,7 @@ struct usb338x_usb_ext_regs {
 } __packed;
 
 struct usb338x_fifo_regs {
-	/* offset 0x0500, 0x0520, 0x0540, 0x0560, 0x0580 */
+	 
 	u32     ep_fifo_size_base;
 #define     IN_FIFO_BASE_ADDRESS                                22
 #define     IN_FIFO_SIZE                                        16
@@ -96,15 +87,15 @@ struct usb338x_fifo_regs {
 } __packed;
 
 
-/* Link layer */
+ 
 struct usb338x_ll_regs {
-	/* offset 0x700 */
+	 
 	u32   ll_ltssm_ctrl1;
 	u32   ll_ltssm_ctrl2;
 	u32   ll_ltssm_ctrl3;
 	u32   unused1;
 
-	/* 0x710 */
+	 
 	u32   unused2;
 	u32   ll_general_ctrl0;
 	u32   ll_general_ctrl1;
@@ -129,36 +120,36 @@ struct usb338x_ll_regs {
 #define     SELECT_INVERT_LANE_POLARITY                         7
 #define     FORCE_INVERT_LANE_POLARITY                          6
 
-	/* 0x720 */
+	 
 	u32   ll_general_ctrl3;
 	u32   ll_general_ctrl4;
 	u32   ll_error_gen;
 	u32   unused3;
 
-	/* 0x730 */
+	 
 	u32   unused4[4];
 
-	/* 0x740 */
+	 
 	u32   unused5[2];
 	u32   ll_lfps_5;
 #define     TIMER_LFPS_6US                                      16
 	u32   ll_lfps_6;
 #define     TIMER_LFPS_80US                                     0
 
-	/* 0x750 */
+	 
 	u32   unused6[8];
 
-	/* 0x770 */
+	 
 	u32   unused7[3];
 	u32   ll_tsn_counters_2;
 #define     HOT_TX_NORESET_TS2                                  24
 
-	/* 0x780 */
+	 
 	u32   ll_tsn_counters_3;
 #define     HOT_RX_RESET_TS2                                    0
 	u32   unused8[3];
 
-	/* 0x790 */
+	 
 	u32   unused9;
 	u32   ll_lfps_timers_2;
 #define     LFPS_TIMERS_2_WORKAROUND_VALUE			0x084d
@@ -167,18 +158,18 @@ struct usb338x_ll_regs {
 #define     RECOVERY_IDLE_TO_RECOVER_FMW                        3
 } __packed;
 
-/* protocol layer */
+ 
 struct usb338x_pl_regs {
-	/* offset 0x800 */
+	 
 	u32   pl_reg_1;
 	u32   pl_reg_2;
 	u32   pl_reg_3;
 	u32   pl_reg_4;
 	u32   pl_ep_ctrl;
-	/* Protocol Layer Endpoint Control*/
+	 
 #define     PL_EP_CTRL                                  0x810
 #define     ENDPOINT_SELECT                             0
-	/* [4:0] */
+	 
 #define     EP_INITIALIZED                              16
 #define     SEQUENCE_NUMBER_RESET                       17
 #define     CLEAR_ACK_ERROR_CODE                        20
@@ -186,23 +177,23 @@ struct usb338x_pl_regs {
 	u32   pl_reg_7;
 	u32   pl_reg_8;
 	u32   pl_ep_status_1;
-	/* Protocol Layer Endpoint Status 1*/
+	 
 #define     PL_EP_STATUS_1                              0x820
 #define     STATE                                       16
 #define     ACK_GOOD_NORMAL                             0x11
 #define     ACK_GOOD_MORE_ACKS_TO_COME                  0x16
 	u32   pl_ep_status_2;
 	u32   pl_ep_status_3;
-	/* Protocol Layer Endpoint Status 3*/
+	 
 #define     PL_EP_STATUS_3                              0x828
 #define     SEQUENCE_NUMBER                             0
 	u32   pl_ep_status_4;
-	/* Protocol Layer Endpoint Status 4*/
+	 
 #define     PL_EP_STATUS_4                              0x82c
 	u32   pl_ep_cfg_4;
-	/* Protocol Layer Endpoint Configuration 4*/
+	 
 #define     PL_EP_CFG_4                                 0x830
 #define     NON_CTRL_IN_TOLERATE_BAD_DIR                6
 } __packed;
 
-#endif /* __LINUX_USB_USB338X_H */
+#endif  

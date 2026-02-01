@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * APIC driver for "bigsmp" xAPIC machines with more than 8 virtual CPUs.
- *
- * Drives the local APIC in "clustered mode".
- */
+
+ 
 #include <linux/cpumask.h>
 #include <linux/dmi.h>
 #include <linux/smp.h>
@@ -25,7 +21,7 @@ static bool bigsmp_check_apicid_used(physid_mask_t *map, int apicid)
 
 static void bigsmp_ioapic_phys_id_map(physid_mask_t *phys_map, physid_mask_t *retmap)
 {
-	/* For clustered we don't have a good way to do this yet - hack */
+	 
 	physids_promote(0xFFL, retmap);
 }
 
@@ -44,7 +40,7 @@ static void bigsmp_send_IPI_all(int vector)
 	default_send_IPI_mask_sequence_phys(cpu_online_mask, vector);
 }
 
-static int dmi_bigsmp; /* can be set by dmi scanners */
+static int dmi_bigsmp;  
 
 static int hp_ht_bigsmp(const struct dmi_system_id *d)
 {
@@ -67,7 +63,7 @@ static const struct dmi_system_id bigsmp_dmi_table[] = {
 			DMI_MATCH(DMI_BIOS_VERSION, "P47-"),
 		}
 	},
-	{ } /* NULL entry stops DMI scanning */
+	{ }  
 };
 
 static int probe_bigsmp(void)

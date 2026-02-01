@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Richtek Technology Corp.
- *
- * ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -167,7 +163,7 @@ static int rtq6056_adc_read_channel(struct rtq6056_priv *priv,
 	if (ret)
 		return ret;
 
-	/* Power and VBUS is unsigned 16-bit, others are signed 16-bit */
+	 
 	if (addr == RTQ6056_REG_BUSVOLT || addr == RTQ6056_REG_POWER)
 		*val = regval;
 	else
@@ -181,17 +177,17 @@ static int rtq6056_adc_read_scale(struct iio_chan_spec const *ch, int *val,
 {
 	switch (ch->address) {
 	case RTQ6056_REG_SHUNTVOLT:
-		/* VSHUNT lsb  2.5uV */
+		 
 		*val = 2500;
 		*val2 = 1000000;
 		return IIO_VAL_FRACTIONAL;
 	case RTQ6056_REG_BUSVOLT:
-		/* VBUS lsb 1.25mV */
+		 
 		*val = 1250;
 		*val2 = 1000;
 		return IIO_VAL_FRACTIONAL;
 	case RTQ6056_REG_POWER:
-		/* Power lsb 25mW */
+		 
 		*val = 25;
 		return IIO_VAL_INT;
 	default:
@@ -199,11 +195,7 @@ static int rtq6056_adc_read_scale(struct iio_chan_spec const *ch, int *val,
 	}
 }
 
-/*
- * Sample frequency for channel VSHUNT and VBUS. The indices correspond
- * with the bit value expected by the chip. And it can be found at
- * https://www.richtek.com/assets/product_file/RTQ6056/DSQ6056-00.pdf
- */
+ 
 static const int rtq6056_samp_freq_list[] = {
 	7194, 4926, 3717, 1904, 964, 485, 243, 122,
 };
@@ -239,11 +231,7 @@ static int rtq6056_adc_set_samp_freq(struct rtq6056_priv *priv,
 	return 0;
 }
 
-/*
- * Available averaging rate for rtq6056. The indices correspond with the bit
- * value expected by the chip. And it can be found at
- * https://www.richtek.com/assets/product_file/RTQ6056/DSQ6056-00.pdf
- */
+ 
 static const int rtq6056_avg_sample_list[] = {
 	1, 4, 16, 64, 128, 256, 512, 1024,
 };
@@ -382,7 +370,7 @@ static int rtq6056_set_shunt_resistor(struct rtq6056_priv *priv,
 		return -EINVAL;
 	}
 
-	/* calibration = 5120000 / (Rshunt (uOhm) * current lsb (1mA)) */
+	 
 	calib_val = 5120000 / resistor_uohm;
 	ret = regmap_write(priv->regmap, RTQ6056_REG_CALIBRATION, calib_val);
 	if (ret)
@@ -487,7 +475,7 @@ static void rtq6056_enter_shutdown_state(void *dev)
 {
 	struct rtq6056_priv *priv = dev_get_drvdata(dev);
 
-	/* Enter shutdown state */
+	 
 	regmap_field_write(priv->rm_fields[F_OPMODE], 0);
 }
 
@@ -565,10 +553,7 @@ static int rtq6056_probe(struct i2c_client *i2c)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to init regmap field\n");
 
-	/*
-	 * By default, configure average sample as 1, bus and shunt conversion
-	 * time as 1037 microsecond, and operating mode to all on.
-	 */
+	 
 	ret = regmap_write(regmap, RTQ6056_REG_CONFIG, RTQ6056_DEFAULT_CONFIG);
 	if (ret)
 		return dev_err_probe(dev, ret,
@@ -586,7 +571,7 @@ static int rtq6056_probe(struct i2c_client *i2c)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to enable pm_runtime\n");
 
-	/* By default, use 2000 micro-Ohm resistor */
+	 
 	shunt_resistor_uohm = 2000;
 	device_property_read_u32(dev, "shunt-resistor-micro-ohms",
 				 &shunt_resistor_uohm);
@@ -616,7 +601,7 @@ static int rtq6056_runtime_suspend(struct device *dev)
 {
 	struct rtq6056_priv *priv = dev_get_drvdata(dev);
 
-	/* Configure to shutdown mode */
+	 
 	return regmap_field_write(priv->rm_fields[F_OPMODE], 0);
 }
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* TWL6040 clock module driver for OMAP4 McPDM functional clock
-*
-* Copyright (C) 2012 Texas Instruments Inc.
-* Peter Ujfalusi <peter.ujfalusi@ti.com>
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -30,7 +25,7 @@ static int twl6040_pdmclk_is_prepared(struct clk_hw *hw)
 static int twl6040_pdmclk_reset_one_clock(struct twl6040_pdmclk *pdmclk,
 					  unsigned int reg)
 {
-	const u8 reset_mask = TWL6040_HPLLRST;	/* Same for HPPLL and LPPLL */
+	const u8 reset_mask = TWL6040_HPLLRST;	 
 	int ret;
 
 	ret = twl6040_set_bits(pdmclk->twl6040, reg, reset_mask);
@@ -44,11 +39,7 @@ static int twl6040_pdmclk_reset_one_clock(struct twl6040_pdmclk *pdmclk,
 	return 0;
 }
 
-/*
- * TWL6040A2 Phoenix Audio IC erratum #6: "PDM Clock Generation Issue At
- * Cold Temperature". This affects cold boot and deeper idle states it
- * seems. The workaround consists of resetting HPPLL and LPPLL.
- */
+ 
 static int twl6040_pdmclk_quirk_reset_clocks(struct twl6040_pdmclk *pdmclk)
 {
 	int ret;

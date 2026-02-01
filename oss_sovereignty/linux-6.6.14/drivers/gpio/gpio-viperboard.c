@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Nano River Technologies viperboard GPIO lib driver
- *
- *  (C) 2012 by Lemonage GmbH
- *  Author: Lars Poeschel <poeschel@lemonage.de>
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -60,23 +54,23 @@ struct vprbrd_gpiob_msg {
 } __packed;
 
 struct vprbrd_gpio {
-	struct gpio_chip gpioa; /* gpio a related things */
+	struct gpio_chip gpioa;  
 	u32 gpioa_out;
 	u32 gpioa_val;
-	struct gpio_chip gpiob; /* gpio b related things */
+	struct gpio_chip gpiob;  
 	u32 gpiob_out;
 	u32 gpiob_val;
 	struct vprbrd *vb;
 };
 
-/* gpioa sampling clock module parameter */
+ 
 static unsigned char gpioa_clk;
 static unsigned int gpioa_freq = VPRBRD_GPIOA_FREQ_DEFAULT;
 module_param(gpioa_freq, uint, 0);
 MODULE_PARM_DESC(gpioa_freq,
 	"gpio-a sampling freq in Hz (default is 1000Hz) valid values: 10, 100, 1000, 10000, 100000, 1000000");
 
-/* ----- begin of gipo a chip -------------------------------------------- */
+ 
 
 static int vprbrd_gpioa_get(struct gpio_chip *chip,
 		unsigned int offset)
@@ -86,7 +80,7 @@ static int vprbrd_gpioa_get(struct gpio_chip *chip,
 	struct vprbrd *vb = gpio->vb;
 	struct vprbrd_gpioa_msg *gamsg = (struct vprbrd_gpioa_msg *)vb->buf;
 
-	/* if io is set to output, just return the saved value */
+	 
 	if (gpio->gpioa_out & (1 << offset))
 		return !!(gpio->gpioa_val & (1 << offset));
 
@@ -247,9 +241,9 @@ static int vprbrd_gpioa_direction_output(struct gpio_chip *chip,
 	return 0;
 }
 
-/* ----- end of gpio a chip ---------------------------------------------- */
+ 
 
-/* ----- begin of gipo b chip -------------------------------------------- */
+ 
 
 static int vprbrd_gpiob_setdir(struct vprbrd *vb, unsigned int offset,
 	unsigned int dir)
@@ -281,7 +275,7 @@ static int vprbrd_gpiob_get(struct gpio_chip *chip,
 	struct vprbrd *vb = gpio->vb;
 	struct vprbrd_gpiob_msg *gbmsg = (struct vprbrd_gpiob_msg *)vb->buf;
 
-	/* if io is set to output, just return the saved value */
+	 
 	if (gpio->gpiob_out & (1 << offset))
 		return gpio->gpiob_val & (1 << offset);
 
@@ -298,7 +292,7 @@ static int vprbrd_gpiob_get(struct gpio_chip *chip,
 	if (ret != sizeof(struct vprbrd_gpiob_msg))
 		return ret;
 
-	/* cache the read values */
+	 
 	gpio->gpiob_val = be16_to_cpu(val);
 
 	return (gpio->gpiob_val >> offset) & 0x1;
@@ -380,7 +374,7 @@ static int vprbrd_gpiob_direction_output(struct gpio_chip *chip,
 	return ret;
 }
 
-/* ----- end of gpio b chip ---------------------------------------------- */
+ 
 
 static int vprbrd_gpio_probe(struct platform_device *pdev)
 {
@@ -393,7 +387,7 @@ static int vprbrd_gpio_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	vb_gpio->vb = vb;
-	/* registering gpio a */
+	 
 	vb_gpio->gpioa.label = "viperboard gpio a";
 	vb_gpio->gpioa.parent = &pdev->dev;
 	vb_gpio->gpioa.owner = THIS_MODULE;
@@ -409,7 +403,7 @@ static int vprbrd_gpio_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* registering gpio b */
+	 
 	vb_gpio->gpiob.label = "viperboard gpio b";
 	vb_gpio->gpiob.parent = &pdev->dev;
 	vb_gpio->gpiob.owner = THIS_MODULE;

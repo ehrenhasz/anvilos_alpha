@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <test_progs.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -61,7 +61,7 @@ static void do_dummy_read_opts(struct bpf_program *prog, struct bpf_iter_attach_
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* not check contents, but ensure read() ends without error */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	CHECK(len < 0, "read", "read failed: %s\n", strerror(errno));
@@ -100,20 +100,18 @@ static void do_read_map_iter_fd(struct bpf_object_skeleton **skel, struct bpf_pr
 		return;
 	}
 
-	/* Close link and map fd prematurely */
+	 
 	bpf_link__destroy(link);
 	bpf_object__destroy_skeleton(*skel);
 	*skel = NULL;
 
-	/* Try to let map free work to run first if map is freed */
+	 
 	usleep(100);
-	/* Memory used by both sock map and sock local storage map are
-	 * freed after two synchronize_rcu() calls, so wait for it
-	 */
+	 
 	kern_sync_rcu();
 	kern_sync_rcu();
 
-	/* Read after both map fd and link fd are closed */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	ASSERT_GE(len, 0, "read_iterator");
@@ -517,7 +515,7 @@ static void test_unix(void)
 	bpf_iter_unix__destroy(skel);
 }
 
-/* The expected string is less than 16 bytes */
+ 
 static int do_read_with_fd(int iter_fd, const char *expected,
 			   bool read_one_char)
 {
@@ -598,7 +596,7 @@ static void test_file_iter(void)
 	if (!ASSERT_OK_PTR(link, "attach_iter"))
 		goto out;
 
-	/* unlink this path if it exists. */
+	 
 	unlink(path);
 
 	err = bpf_link__pin(link, path);
@@ -609,10 +607,7 @@ static void test_file_iter(void)
 	if (err)
 		goto unlink_path;
 
-	/* file based iterator seems working fine. Let us a link update
-	 * of the underlying link and `cat` the iterator again, its content
-	 * should change.
-	 */
+	 
 	skel2 = bpf_iter_test_kern2__open_and_load();
 	if (!ASSERT_OK_PTR(skel2, "bpf_iter_test_kern2__open_and_load"))
 		goto unlink_path;
@@ -647,11 +642,7 @@ static void test_overflow(bool test_e2big_overflow, bool ret1)
 	if (!ASSERT_OK_PTR(skel, "bpf_iter_test_kern4__open"))
 		return;
 
-	/* create two maps: bpf program will only do bpf_seq_write
-	 * for these two maps. The goal is one map output almost
-	 * fills seq_file buffer and then the other will trigger
-	 * overflow and needs restart.
-	 */
+	 
 	map1_fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, 4, 8, 1, NULL);
 	if (CHECK(map1_fd < 0, "bpf_map_create",
 		  "map_creation failed: %s\n", strerror(errno)))
@@ -661,11 +652,7 @@ static void test_overflow(bool test_e2big_overflow, bool ret1)
 		  "map_creation failed: %s\n", strerror(errno)))
 		goto free_map1;
 
-	/* bpf_seq_printf kernel buffer is 8 pages, so one map
-	 * bpf_seq_write will mostly fill it, and the other map
-	 * will partially fill and then trigger overflow and need
-	 * bpf_seq_read restart.
-	 */
+	 
 	iter_size = sysconf(_SC_PAGE_SIZE) << 3;
 
 	if (test_e2big_overflow) {
@@ -684,7 +671,7 @@ static void test_overflow(bool test_e2big_overflow, bool ret1)
 		  "bpf_iter_test_kern4__load"))
 		goto free_map2;
 
-	/* setup filtering map_id in bpf program */
+	 
 	map_info_len = sizeof(map_info);
 	err = bpf_map_get_info_by_fd(map1_fd, &map_info, &map_info_len);
 	if (CHECK(err, "get_map_info", "get map info failed: %s\n",
@@ -710,7 +697,7 @@ static void test_overflow(bool test_e2big_overflow, bool ret1)
 	if (!buf)
 		goto close_iter;
 
-	/* do read */
+	 
 	total_read_len = 0;
 	if (test_e2big_overflow) {
 		while ((len = read(iter_fd, buf, expected_read_len)) > 0)
@@ -790,7 +777,7 @@ static void test_bpf_hash_map(void)
 	if (!ASSERT_OK(err, "bpf_iter_bpf_hash_map__load"))
 		goto out;
 
-	/* iterator with hashmap2 and hashmap3 should fail */
+	 
 	memset(&linfo, 0, sizeof(linfo));
 	linfo.map.map_fd = bpf_map__fd(skel->maps.hashmap2);
 	opts.link_info = &linfo;
@@ -804,7 +791,7 @@ static void test_bpf_hash_map(void)
 	if (!ASSERT_ERR_PTR(link, "attach_iter"))
 		goto out;
 
-	/* hashmap1 should be good, update map values here */
+	 
 	map_fd = bpf_map__fd(skel->maps.hashmap1);
 	for (i = 0; i < bpf_map__max_entries(skel->maps.hashmap1); i++) {
 		key.a = i + 1;
@@ -820,7 +807,7 @@ static void test_bpf_hash_map(void)
 			goto out;
 	}
 
-	/* Sleepable program is prohibited for hash map iterator */
+	 
 	linfo.map.map_fd = map_fd;
 	link = bpf_program__attach_iter(skel->progs.sleepable_dummy_dump, &opts);
 	if (!ASSERT_ERR_PTR(link, "attach_sleepable_prog_to_iter"))
@@ -835,13 +822,13 @@ static void test_bpf_hash_map(void)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	if (!ASSERT_EQ(skel->bss->key_sum_a, expected_key_a, "key_sum_a"))
 		goto close_iter;
 	if (!ASSERT_EQ(skel->bss->key_sum_b, expected_key_b, "key_sum_b"))
@@ -885,7 +872,7 @@ static void test_bpf_percpu_hash_map(void)
 	if (!ASSERT_OK_PTR(skel, "bpf_iter_bpf_percpu_hash_map__load"))
 		goto out;
 
-	/* update map values here */
+	 
 	map_fd = bpf_map__fd(skel->maps.hashmap1);
 	for (i = 0; i < bpf_map__max_entries(skel->maps.hashmap1); i++) {
 		key.a = i + 1;
@@ -916,13 +903,13 @@ static void test_bpf_percpu_hash_map(void)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	if (!ASSERT_EQ(skel->bss->key_sum_a, expected_key_a, "key_sum_a"))
 		goto close_iter;
 	if (!ASSERT_EQ(skel->bss->key_sum_b, expected_key_b, "key_sum_b"))
@@ -981,14 +968,14 @@ static void test_bpf_array_map(void)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	start = 0;
 	while ((len = read(iter_fd, buf + start, sizeof(buf) - start)) > 0)
 		start += len;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	res_first_key = *(__u32 *)buf;
 	res_first_val = *(__u64 *)(buf + sizeof(__u32));
 	if (CHECK(res_first_key != 0 || res_first_val != first_val,
@@ -1064,7 +1051,7 @@ static void test_bpf_percpu_array_map(void)
 	if (!ASSERT_OK_PTR(skel, "bpf_iter_bpf_percpu_array_map__load"))
 		goto out;
 
-	/* update map values here */
+	 
 	map_fd = bpf_map__fd(skel->maps.arraymap1);
 	for (i = 0; i < bpf_map__max_entries(skel->maps.arraymap1); i++) {
 		expected_key += i;
@@ -1091,13 +1078,13 @@ static void test_bpf_percpu_array_map(void)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	if (!ASSERT_EQ(skel->bss->key_sum, expected_key, "key_sum"))
 		goto close_iter;
 	if (!ASSERT_EQ(skel->bss->val_sum, expected_val, "val_sum"))
@@ -1112,7 +1099,7 @@ out:
 	free(val);
 }
 
-/* An iterator program deletes all local storage in a map. */
+ 
 static void test_bpf_sk_storage_delete(void)
 {
 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
@@ -1150,13 +1137,13 @@ static void test_bpf_sk_storage_delete(void)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto free_link;
 
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	err = bpf_map_lookup_elem(map_fd, &sock_fd, &val);
 	if (CHECK(!err || errno != ENOENT, "bpf_map_lookup_elem",
 		  "map value wasn't deleted (err=%d, errno=%d)\n", err, errno))
@@ -1172,12 +1159,7 @@ out:
 	bpf_iter_bpf_sk_storage_helpers__destroy(skel);
 }
 
-/* This creates a socket and its local storage. It then runs a task_iter BPF
- * program that replaces the existing socket local storage with the tgid of the
- * only task owning a file descriptor to this socket, this process, prog_tests.
- * It then runs a tcp socket iterator that negates the value in the existing
- * socket local storage, the test verifies that the resulting value is -pid.
- */
+ 
 static void test_bpf_sk_storage_get(void)
 {
 	struct bpf_iter_bpf_sk_storage_helpers *skel;
@@ -1289,13 +1271,13 @@ static void test_bpf_sk_storage_map(void)
 		goto free_link;
 
 	skel->bss->to_add_val = time(NULL);
-	/* do some tests */
+	 
 	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
 		;
 	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
 		goto close_iter;
 
-	/* test results */
+	 
 	if (!ASSERT_EQ(skel->bss->ipv6_sk_count, num_sockets, "ipv6_sk_count"))
 		goto close_iter;
 
@@ -1382,7 +1364,7 @@ static void test_ksym_iter(void)
 static char task_vma_output[CMP_BUFFER_SIZE];
 static char proc_maps_output[CMP_BUFFER_SIZE];
 
-/* remove \0 and \t from str, and only keep the first line */
+ 
 static void str_strip_first_line(char *str)
 {
 	char *dst = str, *src = str;
@@ -1428,9 +1410,7 @@ static void test_task_vma_common(struct bpf_iter_attach_opts *opts)
 	if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 		goto out;
 
-	/* Read CMP_BUFFER_SIZE (1kB) from bpf_iter. Read in small chunks
-	 * to trigger seq_file corner cases.
-	 */
+	 
 	len = 0;
 	while (len < CMP_BUFFER_SIZE) {
 		err = read_fd_into_buffer(iter_fd, task_vma_output + len,
@@ -1444,7 +1424,7 @@ static void test_task_vma_common(struct bpf_iter_attach_opts *opts)
 	if (opts)
 		ASSERT_EQ(skel->bss->one_task_error, 0, "unexpected task");
 
-	/* read CMP_BUFFER_SIZE (1kB) from /proc/pid/maps */
+	 
 	snprintf(maps_path, 64, "/proc/%u/maps", skel->bss->pid);
 	proc_maps_fd = open(maps_path, O_RDONLY);
 	if (!ASSERT_GE(proc_maps_fd, 0, "open_proc_maps"))
@@ -1453,7 +1433,7 @@ static void test_task_vma_common(struct bpf_iter_attach_opts *opts)
 	if (!ASSERT_GE(err, 0, "read_prog_maps_fd"))
 		goto out;
 
-	/* strip and compare the first line of the two files */
+	 
 	str_strip_first_line(task_vma_output);
 	str_strip_first_line(proc_maps_output);
 
@@ -1498,7 +1478,7 @@ static void test_task_vma_dead_task(void)
 
 	child_pid = fork();
 	if (child_pid == 0) {
-		/* Fork short-lived processes in the background. */
+		 
 		while (cur_tm < start_tm + wait_sec) {
 			system("echo > /dev/null");
 			cur_tm = time(NULL);
@@ -1514,7 +1494,7 @@ static void test_task_vma_dead_task(void)
 		if (!ASSERT_GE(iter_fd, 0, "create_iter"))
 			goto out;
 
-		/* Drain all data from iter_fd. */
+		 
 		while (cur_tm < start_tm + wait_sec) {
 			err = read_fd_into_buffer(iter_fd, task_vma_output, CMP_BUFFER_SIZE);
 			if (!ASSERT_GE(err, 0, "read_iter_fd"))
@@ -1565,7 +1545,7 @@ static void test_task_vma(void)
 	test_task_vma_common(NULL);
 }
 
-/* uprobe attach point */
+ 
 static noinline int trigger_func(int arg)
 {
 	asm volatile ("");

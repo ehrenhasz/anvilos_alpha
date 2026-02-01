@@ -1,20 +1,4 @@
-/*
- * @section LICENSE
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
+ 
 
 #ifndef __RSI_SDIO_INTF__
 #define __RSI_SDIO_INTF__
@@ -36,13 +20,13 @@ enum sdio_interrupt_type {
 	UNKNOWN_INT         = 0XE
 };
 
-/* Buffer status register related info */
+ 
 #define PKT_BUFF_SEMI_FULL                      0
 #define PKT_BUFF_FULL                           1
 #define PKT_MGMT_BUFF_FULL                      2
 #define MSDU_PKT_PENDING                        3
 #define RECV_NUM_BLOCKS                         4
-/* Interrupt Bit Related Macros */
+ 
 #define PKT_BUFF_AVAILABLE                      1
 #define FW_ASSERT_IND                           2
 
@@ -54,7 +38,7 @@ enum sdio_interrupt_type {
 #define RSI_INT_ENABLE_MASK			0xfc
 #define RSI_SD_REQUEST_MASTER                   0x10000
 
-/* FOR SD CARD ONLY */
+ 
 #define SDIO_RX_NUM_BLOCKS_REG                  0x000F1
 #define SDIO_FW_STATUS_REG                      0x000F2
 #define SDIO_NXT_RD_DELAY2                      0x000F5
@@ -78,7 +62,7 @@ enum sdio_interrupt_type {
 		FIRMWARE_ASSERT_IND : UNKNOWN_INT; \
 	}
 
-/* common registers in SDIO function1 */
+ 
 #define TA_SOFT_RESET_REG            0x0004
 #define TA_TH0_PC_REG                0x0400
 #define TA_HOLD_THREAD_REG           0x0844

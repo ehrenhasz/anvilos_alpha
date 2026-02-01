@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Rockchip NAND Flash controller driver.
- * Copyright (C) 2020 Rockchip Inc.
- * Author: Yifeng Zhao <yifeng.zhao@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -18,20 +14,9 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/*
- * NFC Page Data Layout:
- *	1024 bytes data + 4Bytes sys data + 28Bytes~124Bytes ECC data +
- *	1024 bytes data + 4Bytes sys data + 28Bytes~124Bytes ECC data +
- *	......
- * NAND Page Data Layout:
- *	1024 * n data + m Bytes oob
- * Original Bad Block Mask Location:
- *	First byte of oob(spare).
- * nand_chip->oob_poi data layout:
- *	4Bytes sys data + .... + 4Bytes sys data + ECC data.
- */
+ 
 
-/* NAND controller register definition */
+ 
 #define NFC_READ			(0)
 #define NFC_WRITE			(1)
 
@@ -43,10 +28,10 @@
 
 #define NFC_FMWAIT			(0x04)
 #define   FLCTL_RST			BIT(0)
-#define   FLCTL_WR			(1)	/* 0: read, 1: write */
+#define   FLCTL_WR			(1)	 
 #define   FLCTL_XFER_ST			BIT(2)
 #define   FLCTL_XFER_EN			BIT(3)
-#define   FLCTL_ACORRECT		BIT(10) /* Auto correct error bits. */
+#define   FLCTL_ACORRECT		BIT(10)  
 #define   FLCTL_XFER_READY		BIT(20)
 #define   FLCTL_XFER_SECTOR		(22)
 #define   FLCTL_TOG_FIX			BIT(29)
@@ -55,11 +40,11 @@
 #define   BCHCTL_BANK			(5)
 
 #define   DMA_ST			BIT(0)
-#define   DMA_WR			(1)	/* 0: write, 1: read */
+#define   DMA_WR			(1)	 
 #define   DMA_EN			BIT(2)
-#define   DMA_AHB_SIZE			(3)	/* 0: 1, 1: 2, 2: 4 */
-#define   DMA_BURST_SIZE		(6)	/* 0: 1, 3: 4, 5: 8, 7: 16 */
-#define   DMA_INC_NUM			(9)	/* 1 - 16 */
+#define   DMA_AHB_SIZE			(3)	 
+#define   DMA_BURST_SIZE		(6)	 
+#define   DMA_INC_NUM			(9)	 
 
 #define ECC_ERR_CNT(x, e) ((((x) >> (e).low) & (e).low_mask) |\
 	  (((x) >> (e).high) & (e).high_mask) << (e).low_bn)
@@ -78,9 +63,9 @@
 #define MAX_DATA_SIZE			0xFFFC
 #define MAX_ADDRESS_CYC			6
 #define NFC_ECC_MAX_MODES		4
-#define NFC_MAX_NSELS			(8) /* Some Socs only have 1 or 2 CSs. */
-#define NFC_SYS_DATA_SIZE		(4) /* 4 bytes sys data in oob pre 1024 data.*/
-#define RK_DEFAULT_CLOCK_RATE		(150 * 1000 * 1000) /* 150 Mhz */
+#define NFC_MAX_NSELS			(8)  
+#define NFC_SYS_DATA_SIZE		(4)  
+#define RK_DEFAULT_CLOCK_RATE		(150 * 1000 * 1000)  
 #define ACCTIMING(csrw, rwpw, rwcs)	((csrw) << 12 | (rwpw) << 5 | (rwcs))
 
 enum nfc_type {
@@ -89,15 +74,7 @@ enum nfc_type {
 	NFC_V9,
 };
 
-/**
- * struct rk_ecc_cnt_status: represent a ecc status data.
- * @err_flag_bit: error flag bit index at register.
- * @low: ECC count low bit index at register.
- * @low_mask: mask bit.
- * @low_bn: ECC count low bit number.
- * @high: ECC count high bit index at register.
- * @high_mask: mask bit
- */
+ 
 struct ecc_cnt_status {
 	u8 err_flag_bit;
 	u8 low;
@@ -107,26 +84,7 @@ struct ecc_cnt_status {
 	u8 high_mask;
 };
 
-/**
- * @type: NFC version
- * @ecc_strengths: ECC strengths
- * @ecc_cfgs: ECC config values
- * @flctl_off: FLCTL register offset
- * @bchctl_off: BCHCTL register offset
- * @dma_data_buf_off: DMA_DATA_BUF register offset
- * @dma_oob_buf_off: DMA_OOB_BUF register offset
- * @dma_cfg_off: DMA_CFG register offset
- * @dma_st_off: DMA_ST register offset
- * @bch_st_off: BCG_ST register offset
- * @randmz_off: RANDMZ register offset
- * @int_en_off: interrupt enable register offset
- * @int_clr_off: interrupt clean register offset
- * @int_st_off: interrupt status register offset
- * @oob0_off: oob0 register offset
- * @oob1_off: oob1 register offset
- * @ecc0: represent ECC0 status data
- * @ecc1: represent ECC1 status data
- */
+ 
 struct nfc_cfg {
 	enum nfc_type type;
 	u8 ecc_strengths[NFC_ECC_MAX_MODES];
@@ -159,7 +117,7 @@ struct rk_nfc_nand_chip {
 
 	u8 nsels;
 	u8 sels[];
-	/* Nothing after this field. */
+	 
 };
 
 struct rk_nfc {
@@ -252,7 +210,7 @@ static int rk_nfc_hw_ecc_setup(struct nand_chip *chip, u32 strength)
 
 	writel(reg, nfc->regs + nfc->cfg->bchctl_off);
 
-	/* Save chip ECC setting */
+	 
 	nfc->cur_ecc = strength;
 
 	return 0;
@@ -267,7 +225,7 @@ static void rk_nfc_select_chip(struct nand_chip *chip, int cs)
 
 	if (cs < 0) {
 		nfc->selected_bank = -1;
-		/* Deselect the currently selected target. */
+		 
 		val = readl_relaxed(nfc->regs + NFC_FMCTL);
 		val &= ~FMCTL_CE_SEL_M;
 		writel(val, nfc->regs + NFC_FMCTL);
@@ -283,19 +241,13 @@ static void rk_nfc_select_chip(struct nand_chip *chip, int cs)
 
 	writel(val, nfc->regs + NFC_FMCTL);
 
-	/*
-	 * Compare current chip timing with selected chip timing and
-	 * change if needed.
-	 */
+	 
 	if (nfc->cur_timing != rknand->timing) {
 		writel(rknand->timing, nfc->regs + NFC_FMWAIT);
 		nfc->cur_timing = rknand->timing;
 	}
 
-	/*
-	 * Compare current chip ECC setting with selected chip ECC setting and
-	 * change if needed.
-	 */
+	 
 	if (nfc->cur_ecc != ecc->strength)
 		rk_nfc_hw_ecc_setup(chip, ecc->strength);
 }
@@ -432,7 +384,7 @@ static int rk_nfc_setup_interface(struct nand_chip *chip, int target,
 	else
 		rate = clk_get_rate(nfc->nfc_clk);
 
-	/* Turn clock rate into kHz. */
+	 
 	rate /= 1000;
 
 	tc2rw = 1;
@@ -447,19 +399,9 @@ static int rk_nfc_setup_interface(struct nand_chip *chip, int target,
 	if (trwpw < temp)
 		trwpw = temp;
 
-	/*
-	 * ACCON: access timing control register
-	 * -------------------------------------
-	 * 31:18: reserved
-	 * 17:12: csrw, clock cycles from the falling edge of CSn to the
-	 *   falling edge of RDn or WRn
-	 * 11:11: reserved
-	 * 10:05: rwpw, the width of RDn or WRn in processor clock cycles
-	 * 04:00: rwcs, clock cycles from the rising edge of RDn or WRn to the
-	 *   rising edge of CSn
-	 */
+	 
 
-	/* Save chip timing */
+	 
 	rknand->timing = ACCTIMING(tc2rw, trwpw, trw2c);
 
 	return 0;
@@ -516,10 +458,7 @@ static int rk_nfc_write_page_raw(struct nand_chip *chip, const u8 *buf,
 	if ((chip->options & NAND_IS_BOOT_MEDIUM) &&
 	    (page < (pages_per_blk * rknand->boot_blks)) &&
 	    rknand->boot_ecc != ecc->strength) {
-		/*
-		 * There's currently no method to notify the MTD framework that
-		 * a different ECC strength is in use for the boot blocks.
-		 */
+		 
 		return -EIO;
 	}
 
@@ -527,45 +466,12 @@ static int rk_nfc_write_page_raw(struct nand_chip *chip, const u8 *buf,
 		memset(nfc->page_buf, 0xff, mtd->writesize + mtd->oobsize);
 
 	for (i = 0; i < ecc->steps; i++) {
-		/* Copy data to the NFC buffer. */
+		 
 		if (buf)
 			memcpy(rk_nfc_data_ptr(chip, i),
 			       rk_nfc_buf_to_data_ptr(chip, buf, i),
 			       ecc->size);
-		/*
-		 * The first four bytes of OOB are reserved for the
-		 * boot ROM. In some debugging cases, such as with a
-		 * read, erase and write back test these 4 bytes stored
-		 * in OOB also need to be written back.
-		 *
-		 * The function nand_block_bad detects bad blocks like:
-		 *
-		 * bad = chip->oob_poi[chip->badblockpos];
-		 *
-		 * chip->badblockpos == 0 for a large page NAND Flash,
-		 * so chip->oob_poi[0] is the bad block mask (BBM).
-		 *
-		 * The OOB data layout on the NFC is:
-		 *
-		 *    PA0  PA1  PA2  PA3  | BBM OOB1 OOB2 OOB3 | ...
-		 *
-		 * or
-		 *
-		 *    0xFF 0xFF 0xFF 0xFF | BBM OOB1 OOB2 OOB3 | ...
-		 *
-		 * The code here just swaps the first 4 bytes with the last
-		 * 4 bytes without losing any data.
-		 *
-		 * The chip->oob_poi data layout:
-		 *
-		 *    BBM  OOB1 OOB2 OOB3 |......|  PA0  PA1  PA2  PA3
-		 *
-		 * The rk_nfc_ooblayout_free() function already has reserved
-		 * these 4 bytes together with 2 bytes for BBM
-		 * by reducing it's length:
-		 *
-		 * oob_region->length = rknand->metadata_size - NFC_SYS_DATA_SIZE - 2;
-		 */
+		 
 		if (!i)
 			memcpy(rk_nfc_oob_ptr(chip, i),
 			       rk_nfc_buf_to_oob_ptr(chip, ecc->steps - 1),
@@ -574,7 +480,7 @@ static int rk_nfc_write_page_raw(struct nand_chip *chip, const u8 *buf,
 			memcpy(rk_nfc_oob_ptr(chip, i),
 			       rk_nfc_buf_to_oob_ptr(chip, i - 1),
 			       NFC_SYS_DATA_SIZE);
-		/* Copy ECC data to the NFC buffer. */
+		 
 		memcpy(rk_nfc_oob_ptr(chip, i) + NFC_SYS_DATA_SIZE,
 		       rk_nfc_buf_to_oob_ecc_ptr(chip, i),
 		       ecc->bytes);
@@ -607,32 +513,7 @@ static int rk_nfc_write_page_hwecc(struct nand_chip *chip, const u8 *buf,
 	else
 		memset(nfc->page_buf, 0xFF, mtd->writesize);
 
-	/*
-	 * The first blocks (4, 8 or 16 depending on the device) are used
-	 * by the boot ROM and the first 32 bits of OOB need to link to
-	 * the next page address in the same block. We can't directly copy
-	 * OOB data from the MTD framework, because this page address
-	 * conflicts for example with the bad block marker (BBM),
-	 * so we shift all OOB data including the BBM with 4 byte positions.
-	 * As a consequence the OOB size available to the MTD framework is
-	 * also reduced with 4 bytes.
-	 *
-	 *    PA0  PA1  PA2  PA3 | BBM OOB1 OOB2 OOB3 | ...
-	 *
-	 * If a NAND is not a boot medium or the page is not a boot block,
-	 * the first 4 bytes are left untouched by writing 0xFF to them.
-	 *
-	 *   0xFF 0xFF 0xFF 0xFF | BBM OOB1 OOB2 OOB3 | ...
-	 *
-	 * The code here just swaps the first 4 bytes with the last
-	 * 4 bytes without losing any data.
-	 *
-	 * The chip->oob_poi data layout:
-	 *
-	 *    BBM  OOB1 OOB2 OOB3 |......|  PA0  PA1  PA2  PA3
-	 *
-	 * Configure the ECC algorithm supported by the boot ROM.
-	 */
+	 
 	if ((page < (pages_per_blk * rknand->boot_blks)) &&
 	    (chip->options & NAND_IS_BOOT_MEDIUM)) {
 		boot_rom_mode = 1;
@@ -669,11 +550,7 @@ static int rk_nfc_write_page_hwecc(struct nand_chip *chip, const u8 *buf,
 					  msecs_to_jiffies(100));
 	if (!ret)
 		dev_warn(nfc->dev, "write: wait dma done timeout.\n");
-	/*
-	 * Whether the DMA transfer is completed or not. The driver
-	 * needs to check the NFC`s status register to see if the data
-	 * transfer was completed.
-	 */
+	 
 	ret = rk_nfc_wait_for_xfer_done(nfc);
 
 	dma_unmap_single(nfc->dev, dma_data, mtd->writesize,
@@ -710,23 +587,14 @@ static int rk_nfc_read_page_raw(struct nand_chip *chip, u8 *buf, int oob_on,
 	if ((chip->options & NAND_IS_BOOT_MEDIUM) &&
 	    (page < (pages_per_blk * rknand->boot_blks)) &&
 	    rknand->boot_ecc != ecc->strength) {
-		/*
-		 * There's currently no method to notify the MTD framework that
-		 * a different ECC strength is in use for the boot blocks.
-		 */
+		 
 		return -EIO;
 	}
 
 	nand_read_page_op(chip, page, 0, NULL, 0);
 	rk_nfc_read_buf(nfc, nfc->page_buf, mtd->writesize + mtd->oobsize);
 	for (i = 0; i < ecc->steps; i++) {
-		/*
-		 * The first four bytes of OOB are reserved for the
-		 * boot ROM. In some debugging cases, such as with a read,
-		 * erase and write back test, these 4 bytes also must be
-		 * saved somewhere, otherwise this information will be
-		 * lost during a write back.
-		 */
+		 
 		if (!i)
 			memcpy(rk_nfc_buf_to_oob_ptr(chip, ecc->steps - 1),
 			       rk_nfc_oob_ptr(chip, i),
@@ -736,12 +604,12 @@ static int rk_nfc_read_page_raw(struct nand_chip *chip, u8 *buf, int oob_on,
 			       rk_nfc_oob_ptr(chip, i),
 			       NFC_SYS_DATA_SIZE);
 
-		/* Copy ECC data from the NFC buffer. */
+		 
 		memcpy(rk_nfc_buf_to_oob_ecc_ptr(chip, i),
 		       rk_nfc_oob_ptr(chip, i) + NFC_SYS_DATA_SIZE,
 		       ecc->bytes);
 
-		/* Copy data from the NFC buffer. */
+		 
 		if (buf)
 			memcpy(rk_nfc_buf_to_data_ptr(chip, buf, i),
 			       rk_nfc_data_ptr(chip, i),
@@ -776,11 +644,7 @@ static int rk_nfc_read_page_hwecc(struct nand_chip *chip, u8 *buf, int oob_on,
 				 ecc->steps * oob_step,
 				 DMA_FROM_DEVICE);
 
-	/*
-	 * The first blocks (4, 8 or 16 depending on the device)
-	 * are used by the boot ROM.
-	 * Configure the ECC algorithm supported by the boot ROM.
-	 */
+	 
 	if ((page < (pages_per_blk * rknand->boot_blks)) &&
 	    (chip->options & NAND_IS_BOOT_MEDIUM)) {
 		boot_rom_mode = 1;
@@ -796,11 +660,7 @@ static int rk_nfc_read_page_hwecc(struct nand_chip *chip, u8 *buf, int oob_on,
 					  msecs_to_jiffies(100));
 	if (!ret)
 		dev_warn(nfc->dev, "read: wait dma done timeout.\n");
-	/*
-	 * Whether the DMA transfer is completed or not. The driver
-	 * needs to check the NFC`s status register to see if the data
-	 * transfer was completed.
-	 */
+	 
 	ret = rk_nfc_wait_for_xfer_done(nfc);
 
 	dma_unmap_single(nfc->dev, dma_data, mtd->writesize,
@@ -874,12 +734,12 @@ static int rk_nfc_read_oob(struct nand_chip *chip, int page)
 
 static inline void rk_nfc_hw_init(struct rk_nfc *nfc)
 {
-	/* Disable flash wp. */
+	 
 	writel(FMCTL_WP, nfc->regs + NFC_FMCTL);
-	/* Config default timing 40ns at 150 Mhz NFC clock. */
+	 
 	writel(0x1081, nfc->regs + NFC_FMWAIT);
 	nfc->cur_timing = 0x1081;
-	/* Disable randomizer and DMA. */
+	 
 	writel(0, nfc->regs + nfc->cfg->randmz_off);
 	writel(0, nfc->regs + nfc->cfg->dma_cfg_off);
 	writel(FLCTL_RST, nfc->regs + nfc->cfg->flctl_off);
@@ -977,16 +837,13 @@ static int rk_nfc_ecc_init(struct device *dev, struct mtd_info *mtd)
 	int i;
 
 	nfc_max_strength = nfc->cfg->ecc_strengths[0];
-	/* If optional dt settings not present. */
+	 
 	if (!ecc->size || !ecc->strength ||
 	    ecc->strength > nfc_max_strength) {
 		chip->ecc.size = 1024;
 		ecc->steps = mtd->writesize / ecc->size;
 
-		/*
-		 * HW ECC always requests the number of ECC bytes per 1024 byte
-		 * blocks. The first 4 OOB bytes are reserved for sys data.
-		 */
+		 
 		max_strength = ((mtd->oobsize / ecc->steps) - 4) * 8 /
 				 fls(8 * 1024);
 		if (max_strength > nfc_max_strength)
@@ -1042,7 +899,7 @@ static int rk_nfc_attach_chip(struct nand_chip *chip)
 		return -EIO;
 	}
 
-	/* Check buffer first, avoid duplicate alloc buffer. */
+	 
 	new_page_len = mtd->writesize + mtd->oobsize;
 	if (nfc->page_buf && new_page_len > nfc->page_buf_size) {
 		buf = krealloc(nfc->page_buf, new_page_len,
@@ -1155,7 +1012,7 @@ static int rk_nfc_nand_chip_init(struct device *dev, struct rk_nfc *nfc,
 	chip->options |= NAND_USES_DMA | NAND_NO_SUBPAGE_WRITE;
 	chip->bbt_options = NAND_BBT_USE_FLASH | NAND_BBT_NO_OOB;
 
-	/* Set default mode in case dt entry is missing. */
+	 
 	chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 
 	mtd = nand_to_mtd(chip);
@@ -1357,7 +1214,7 @@ static const struct of_device_id rk_nfc_id_table[] = {
 		.compatible = "rockchip,rv1108-nfc",
 		.data = &nfc_v8_cfg
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rk_nfc_id_table);
 
@@ -1389,7 +1246,7 @@ static int rk_nfc_probe(struct platform_device *pdev)
 	nfc->nfc_clk = devm_clk_get(dev, "nfc");
 	if (IS_ERR(nfc->nfc_clk)) {
 		dev_dbg(dev, "no NFC clk\n");
-		/* Some earlier models, such as rk3066, have no NFC clk. */
+		 
 	}
 
 	nfc->ahb_clk = devm_clk_get(dev, "ahb");
@@ -1462,7 +1319,7 @@ static int __maybe_unused rk_nfc_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Reset NAND chip if VCC was powered off. */
+	 
 	list_for_each_entry(rknand, &nfc->chips, node) {
 		chip = &rknand->chip;
 		for (i = 0; i < rknand->nsels; i++)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/core/netclassid_cgroup.c	Classid Cgroupfs Handling
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/cgroup.h>
@@ -53,11 +49,7 @@ static void cgrp_css_free(struct cgroup_subsys_state *css)
 	kfree(css_cls_state(css));
 }
 
-/*
- * To avoid freezing of sockets creation for tasks with big number of threads
- * and opened sockets lets release file_lock every 1000 iterated descriptors.
- * New sockets will already have been created with new classid.
- */
+ 
 
 struct update_classid_context {
 	u32 classid;
@@ -134,7 +126,7 @@ static struct cftype ss_files[] = {
 		.read_u64	= read_classid,
 		.write_u64	= write_classid,
 	},
-	{ }	/* terminate */
+	{ }	 
 };
 
 struct cgroup_subsys net_cls_cgrp_subsys = {

@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP token management
- * Copyright (c) 2017 - 2019, Intel Corporation.
- *
- * Note: This code is based on mptcp_ctrl.c from multipath-tcp.org,
- *       authored by:
- *
- *       Sébastien Barré <sebastien.barre@uclouvain.be>
- *       Christoph Paasch <christoph.paasch@uclouvain.be>
- *       Jaakko Korkeaniemi <jaakko.korkeaniemi@aalto.fi>
- *       Gregory Detal <gregory.detal@uclouvain.be>
- *       Fabien Duchêne <fabien.duchene@uclouvain.be>
- *       Andreas Seelinger <Andreas.Seelinger@rwth-aachen.de>
- *       Lavkesh Lahngir <lavkesh51@gmail.com>
- *       Andreas Ripke <ripke@neclab.eu>
- *       Vlad Dogaru <vlad.dogaru@intel.com>
- *       Octavian Purdila <octavian.purdila@intel.com>
- *       John Ronan <jronan@tssg.org>
- *       Catalin Nicutar <catalin.nicutar@gmail.com>
- *       Brandon Heller <brandonh@stanford.edu>
- */
+
+ 
 
 #define pr_fmt(fmt) "MPTCP: " fmt
 
@@ -50,7 +31,7 @@ static struct token_bucket *token_bucket(u32 token)
 	return &token_hash[token & token_mask];
 }
 
-/* called with bucket lock held */
+ 
 static struct mptcp_subflow_request_sock *
 __token_lookup_req(struct token_bucket *t, u32 token)
 {
@@ -63,7 +44,7 @@ __token_lookup_req(struct token_bucket *t, u32 token)
 	return NULL;
 }
 
-/* called with bucket lock held */
+ 
 static struct mptcp_sock *
 __token_lookup_msk(struct token_bucket *t, u32 token)
 {
@@ -84,27 +65,12 @@ static bool __token_bucket_busy(struct token_bucket *t, u32 token)
 
 static void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
 {
-	/* we might consider a faster version that computes the key as a
-	 * hash of some information available in the MPTCP socket. Use
-	 * random data at the moment, as it's probably the safest option
-	 * in case multiple sockets are opened in different namespaces at
-	 * the same time.
-	 */
+	 
 	get_random_bytes(key, sizeof(u64));
 	mptcp_crypto_key_sha(*key, token, idsn);
 }
 
-/**
- * mptcp_token_new_request - create new key/idsn/token for subflow_request
- * @req: the request socket
- *
- * This function is called when a new mptcp connection is coming in.
- *
- * It creates a unique token to identify the new mptcp connection,
- * a secret local key and the initial data sequence number (idsn).
- *
- * Returns 0 on success.
- */
+ 
 int mptcp_token_new_request(struct request_sock *req)
 {
 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
@@ -132,22 +98,7 @@ int mptcp_token_new_request(struct request_sock *req)
 	return 0;
 }
 
-/**
- * mptcp_token_new_connect - create new key/idsn/token for subflow
- * @ssk: the socket that will initiate a connection
- *
- * This function is called when a new outgoing mptcp connection is
- * initiated.
- *
- * It creates a unique token to identify the new mptcp connection,
- * a secret local key and the initial data sequence number (idsn).
- *
- * On success, the mptcp connection can be found again using
- * the computed token at a later time, this is needed to process
- * join requests.
- *
- * returns 0 on success.
- */
+ 
 int mptcp_token_new_connect(struct sock *ssk)
 {
 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
@@ -180,14 +131,7 @@ again:
 	return 0;
 }
 
-/**
- * mptcp_token_accept - replace a req sk with full sock in token hash
- * @req: the request socket to be removed
- * @msk: the just cloned socket linked to the new connection
- *
- * Called when a SYN packet creates a new logical connection, i.e.
- * is not a join request.
- */
+ 
 void mptcp_token_accept(struct mptcp_subflow_request_sock *req,
 			struct mptcp_sock *msk)
 {
@@ -199,7 +143,7 @@ void mptcp_token_accept(struct mptcp_subflow_request_sock *req,
 	bucket = token_bucket(req->token);
 	spin_lock_bh(&bucket->lock);
 
-	/* pedantic lookup check for the moved token */
+	 
 	pos = __token_lookup_req(bucket, req->token);
 	if (!WARN_ON_ONCE(pos != req))
 		hlist_nulls_del_init_rcu(&req->token_node);
@@ -233,16 +177,7 @@ found:
 	return true;
 }
 
-/**
- * mptcp_token_get_sock - retrieve mptcp connection sock using its token
- * @net: restrict to this namespace
- * @token: token of the mptcp connection to retrieve
- *
- * This function returns the mptcp connection structure with the given token.
- * A reference count on the mptcp socket returned is taken.
- *
- * returns NULL if no connection with the given token value exists.
- */
+ 
 struct mptcp_sock *mptcp_token_get_sock(struct net *net, u32 token)
 {
 	struct hlist_nulls_node *pos;
@@ -282,18 +217,7 @@ found:
 }
 EXPORT_SYMBOL_GPL(mptcp_token_get_sock);
 
-/**
- * mptcp_token_iter_next - iterate over the token container from given pos
- * @net: namespace to be iterated
- * @s_slot: start slot number
- * @s_num: start number inside the given lock
- *
- * This function returns the first mptcp connection structure found inside the
- * token container starting from the specified position, or NULL.
- *
- * On successful iteration, the iterator is moved to the next position and
- * a reference to the returned socket is acquired.
- */
+ 
 struct mptcp_sock *mptcp_token_iter_next(const struct net *net, long *s_slot,
 					 long *s_num)
 {
@@ -341,12 +265,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(mptcp_token_iter_next);
 
-/**
- * mptcp_token_destroy_request - remove mptcp connection/token
- * @req: mptcp request socket dropping the token
- *
- * Remove the token associated to @req.
- */
+ 
 void mptcp_token_destroy_request(struct request_sock *req)
 {
 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
@@ -366,12 +285,7 @@ void mptcp_token_destroy_request(struct request_sock *req)
 	spin_unlock_bh(&bucket->lock);
 }
 
-/**
- * mptcp_token_destroy - remove mptcp connection/token
- * @msk: mptcp connection dropping the token
- *
- * Remove the token associated to @msk
- */
+ 
 void mptcp_token_destroy(struct mptcp_sock *msk)
 {
 	struct sock *sk = (struct sock *)msk;
@@ -400,7 +314,7 @@ void __init mptcp_token_init(void)
 	token_hash = alloc_large_system_hash("MPTCP token",
 					     sizeof(struct token_bucket),
 					     0,
-					     20,/* one slot per 1MB of memory */
+					     20, 
 					     HASH_ZERO,
 					     NULL,
 					     &token_mask,

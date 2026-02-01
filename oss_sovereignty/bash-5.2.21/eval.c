@@ -1,22 +1,6 @@
-/* eval.c -- reading and evaluating commands. */
+ 
 
-/* Copyright (C) 1996-2022 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -51,8 +35,7 @@
 static void send_pwd_to_eterm PARAMS((void));
 static sighandler alrm_catcher PARAMS((int));
 
-/* Read and execute commands until EOF is reached.  This assumes that
-   the input source has already been initialized. */
+ 
 int
 reader_loop ()
 {
@@ -76,10 +59,9 @@ reader_loop ()
 
 #if defined (PROCESS_SUBSTITUTION)
       unlink_fifo_list ();
-#endif /* PROCESS_SUBSTITUTION */
+#endif  
 
-      /* XXX - why do we set this every time through the loop?  And why do
-	 it if SIGINT is trapped in an interactive shell? */
+       
       if (interactive_shell && signal_is_ignored (SIGINT) == 0 && signal_is_trapped (SIGINT) == 0)
 	set_signal_handler (SIGINT, sigint_sighandler);
 
@@ -89,10 +71,10 @@ reader_loop ()
 
 	  switch (code)
 	    {
-	      /* Some kind of throw to top_level has occurred. */
+	       
 	    case ERREXIT:
 	      if (exit_immediately_on_error)
-		reset_local_contexts ();	/* not in a function */
+		reset_local_contexts ();	 
 	    case FORCE_EOF:
 	    case EXITPROG:
 	    case EXITBLTIN:
@@ -101,9 +83,7 @@ reader_loop ()
 	      goto exec_done;
 
 	    case DISCARD:
-	      /* Make sure the exit status is reset to a non-zero value, but
-		 leave existing non-zero values (e.g., > 128 on signal)
-		 alone. */
+	       
 	      if (last_command_exit_value == 0)
 		set_exit_status (EXECUTION_FAILURE);
 	      if (subshell_environment)
@@ -112,7 +92,7 @@ reader_loop ()
 		  EOF_Reached = EOF;
 		  goto exec_done;
 		}
-	      /* Obstack free command elements, etc. */
+	       
 	      if (current_command)
 		{
 		  dispose_command (current_command);
@@ -132,7 +112,7 @@ reader_loop ()
 	dispose_used_env_vars ();
 
 #if (defined (ultrix) && defined (mips)) || defined (C_ALLOCA)
-      /* Attempt to reclaim memory allocated with alloca (). */
+       
       (void) alloca (0);
 #endif
 
@@ -148,8 +128,7 @@ reader_loop ()
 	    {
 	      global_command = (COMMAND *)NULL;
 
-	      /* If the shell is interactive, expand and display $PS0 after reading a
-		 command (possibly a list or pipeline) and before executing it. */
+	       
 	      if (interactive && ps0_prompt)
 		{
 		  char *ps0_string;
@@ -182,7 +161,7 @@ reader_loop ()
 	}
       else
 	{
-	  /* Parse error, maybe discard rest of stream if not interactive. */
+	   
 	  if (interactive == 0)
 	    EOF_Reached = EOF;
 	}
@@ -193,7 +172,7 @@ reader_loop ()
   return (last_command_exit_value);
 }
 
-/* Pretty print shell scripts */
+ 
 int
 pretty_print_loop ()
 {
@@ -213,10 +192,10 @@ pretty_print_loop ()
 	{
 	  current_command = global_command;
 	  global_command = 0;
-	  posixly_correct = 1;			/* print posix-conformant */
+	  posixly_correct = 1;			 
 	  if (current_command && (command_to_print = make_command_string (current_command)))
 	    {
-	      printf ("%s\n", command_to_print);	/* for now */
+	      printf ("%s\n", command_to_print);	 
 	      last_was_newline = 0;
 	    }
 	  else if (last_was_newline == 0)
@@ -243,13 +222,12 @@ alrm_catcher(i)
   msg = _("\007timed out waiting for input: auto-logout\n");
   write (1, msg, strlen (msg));
 
-  bash_logout ();	/* run ~/.bash_logout if this is a login shell */
+  bash_logout ();	 
   jump_to_top_level (EXITPROG);
   SIGRETURN (0);
 }
 
-/* Send an escape sequence to emacs term mode to tell it the
-   current working directory. */
+ 
 static void
 send_pwd_to_eterm ()
 {
@@ -264,7 +242,7 @@ send_pwd_to_eterm ()
 }
 
 #if defined (ARRAY_VARS)
-/* Caller ensures that A has a non-zero number of elements */
+ 
 int
 execute_array_command (a, v)
      ARRAY *a;
@@ -307,7 +285,7 @@ execute_prompt_command ()
       return;
     }
   else if (assoc_p (pcv))
-    return;	/* currently don't allow associative arrays here */
+    return;	 
 #endif
 
   command_to_execute = value_cell (pcv);
@@ -315,10 +293,7 @@ execute_prompt_command ()
     execute_variable_command (command_to_execute, "PROMPT_COMMAND");
 }
 
-/* Call the YACC-generated parser and return the status of the parse.
-   Input is read from the current input stream (bash_input).  yyparse
-   leaves the parsed command in the global variable GLOBAL_COMMAND.
-   This is where PROMPT_COMMAND is executed. */
+ 
 int
 parse_command ()
 {
@@ -327,12 +302,8 @@ parse_command ()
   need_here_doc = 0;
   run_pending_traps ();
 
-  /* Allow the execution of a random command just before the printing
-     of each primary prompt.  If the shell variable PROMPT_COMMAND
-     is set then its value (array or string) is the command(s) to execute. */
-  /* The tests are a combination of SHOULD_PROMPT() and prompt_again() 
-     from parse.y, which are the conditions under which the prompt is
-     actually printed. */
+   
+   
   if (interactive && bash_input.type != st_string && parser_expanding_alias() == 0)
     {
 #if defined (READLINE)
@@ -341,7 +312,7 @@ parse_command ()
         execute_prompt_command ();
 
       if (running_under_emacs == 2)
-	send_pwd_to_eterm ();	/* Yuck */
+	send_pwd_to_eterm ();	 
     }
 
   current_command_line_count = 0;
@@ -353,9 +324,7 @@ parse_command ()
   return (r);
 }
 
-/* Read and parse a command, returning the status of the parse.  The command
-   is left in the globval variable GLOBAL_COMMAND for use by reader_loop.
-   This is where the shell timeout code is executed. */
+ 
 int
 read_command ()
 {
@@ -366,7 +335,7 @@ read_command ()
   set_current_prompt_level (1);
   global_command = (COMMAND *)NULL;
 
-  /* Only do timeouts if interactive. */
+   
   tmout_var = (SHELL_VAR *)NULL;
   tmout_len = 0;
   old_alrm = (SigHandler *)NULL;

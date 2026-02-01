@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/kernel.h>
 #include <drv_types.h>
@@ -14,7 +10,7 @@
 
 u8 rtw_hal_data_init(struct adapter *padapter)
 {
-	if (is_primary_adapter(padapter)) {	/* if (padapter->isprimary) */
+	if (is_primary_adapter(padapter)) {	 
 		padapter->hal_data_sz = sizeof(struct hal_com_data);
 		padapter->HalData = vzalloc(padapter->hal_data_sz);
 		if (!padapter->HalData)
@@ -25,7 +21,7 @@ u8 rtw_hal_data_init(struct adapter *padapter)
 
 void rtw_hal_data_deinit(struct adapter *padapter)
 {
-	if (is_primary_adapter(padapter)) {	/* if (padapter->isprimary) */
+	if (is_primary_adapter(padapter)) {	 
 		if (padapter->HalData) {
 			vfree(padapter->HalData);
 			padapter->HalData = NULL;
@@ -78,24 +74,7 @@ void dump_chip_info(struct hal_version	ChipVersion)
 
 #define	EEPROM_CHANNEL_PLAN_BY_HW_MASK	0x80
 
-/*
- * Description:
- *Use hardware(efuse), driver parameter(registry) and default channel plan
- *to decide which one should be used.
- *
- * Parameters:
- *padapter			pointer of adapter
- *hw_channel_plan		channel plan from HW (efuse/eeprom)
- *					BIT[7] software configure mode; 0:Enable, 1:disable
- *					BIT[6:0] Channel Plan
- *sw_channel_plan		channel plan from SW (registry/module param)
- *def_channel_plan	channel plan used when HW/SW both invalid
- *AutoLoadFail		efuse autoload fail or not
- *
- * Return:
- *Final channel plan decision
- *
- */
+ 
 u8 hal_com_config_channel_plan(
 	struct adapter *padapter,
 	u8 hw_channel_plan,
@@ -349,53 +328,53 @@ static void _OneOutPipeMapping(struct adapter *padapter)
 {
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 
-	pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
-	pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
-	pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[0];/* BE */
-	pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[0];/* BK */
+	pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[0]; 
 
-	pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0];/* BCN */
-	pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0];/* MGT */
-	pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
-	pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+	pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0]; 
+	pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0]; 
 }
 
 static void _TwoOutPipeMapping(struct adapter *padapter, bool bWIFICfg)
 {
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 
-	if (bWIFICfg) { /* WMM */
+	if (bWIFICfg) {  
 
-		/* 	BK,	BE,	VI,	VO,	BCN,	CMD, MGT, HIGH, HCCA */
-		/*   0,		1,	0,	1,	0,	0,	0,	0,		0	}; */
-		/* 0:ep_0 num, 1:ep_1 num */
+		 
+		 
+		 
 
-		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[1];/* VO */
-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
-		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[0];/* BK */
+		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[1]; 
+		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1]; 
+		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[0]; 
 
-		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0];/* BCN */
-		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0];/* MGT */
-		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
-		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0]; 
 
-	} else { /* typical setting */
+	} else {  
 
 
-		/* BK,	BE,	VI,	VO,	BCN,	CMD, MGT, HIGH, HCCA */
-		/*   1,		1,	0,	0,	0,	0,	0,	0,		0	}; */
-		/* 0:ep_0 num, 1:ep_1 num */
+		 
+		 
+		 
 
-		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
-		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[1];/* BK */
+		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1]; 
+		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[1]; 
 
-		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0];/* BCN */
-		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0];/* MGT */
-		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
-		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0]; 
 
 	}
 
@@ -405,38 +384,38 @@ static void _ThreeOutPipeMapping(struct adapter *padapter, bool bWIFICfg)
 {
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 
-	if (bWIFICfg) { /* for WMM */
+	if (bWIFICfg) {  
 
-		/* 	BK,	BE,	VI,	VO,	BCN,	CMD, MGT, HIGH, HCCA */
-		/*   1,		2,	1,	0,	0,	0,	0,	0,		0	}; */
-		/* 0:H, 1:N, 2:L */
+		 
+		 
+		 
 
-		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1];/* VI */
-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2];/* BE */
-		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[1];/* BK */
+		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1]; 
+		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2]; 
+		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[1]; 
 
-		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0];/* BCN */
-		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0];/* MGT */
-		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
-		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0]; 
 
-	} else { /* typical setting */
+	} else {  
 
 
-		/* 	BK,	BE,	VI,	VO,	BCN,	CMD, MGT, HIGH, HCCA */
-		/*   2,		2,	1,	0,	0,	0,	0,	0,		0	}; */
-		/* 0:H, 1:N, 2:L */
+		 
+		 
+		 
 
-		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1];/* VI */
-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2];/* BE */
-		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[2];/* BK */
+		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1]; 
+		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2]; 
+		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[2]; 
 
-		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0];/* BCN */
-		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0];/* MGT */
-		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
-		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+		pdvobjpriv->Queue2Pipe[4] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[5] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0]; 
+		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0]; 
 	}
 
 }
@@ -481,22 +460,14 @@ void rtw_init_hal_com_default_value(struct adapter *Adapter)
 	pHalData->AntDetection = 1;
 }
 
-/*
-* C2H event format:
-* Field	 TRIGGER		CONTENT	   CMD_SEQ	CMD_LEN		 CMD_ID
-* BITS	 [127:120]	[119:16]      [15:8]		  [7:4]		   [3:0]
-*/
+ 
 
 void c2h_evt_clear(struct adapter *adapter)
 {
 	rtw_write8(adapter, REG_C2HEVT_CLEAR, C2H_EVT_HOST_CLOSE);
 }
 
-/*
-* C2H event format:
-* Field    TRIGGER    CMD_LEN    CONTENT    CMD_SEQ    CMD_ID
-* BITS    [127:120]   [119:112]    [111:16]	     [15:8]         [7:0]
-*/
+ 
 s32 c2h_evt_read_88xx(struct adapter *adapter, u8 *buf)
 {
 	s32 ret = _FAIL;
@@ -510,9 +481,9 @@ s32 c2h_evt_read_88xx(struct adapter *adapter, u8 *buf)
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 
 	if (trigger == C2H_EVT_HOST_CLOSE)
-		goto exit; /* Not ready */
+		goto exit;  
 	else if (trigger != C2H_EVT_FW_CLOSE)
-		goto clear_evt; /* Not a valid value */
+		goto clear_evt;  
 
 	c2h_evt = (struct c2h_evt_hdr_88xx *)buf;
 
@@ -522,17 +493,14 @@ s32 c2h_evt_read_88xx(struct adapter *adapter, u8 *buf)
 	c2h_evt->seq = rtw_read8(adapter, REG_C2HEVT_CMD_SEQ_88XX);
 	c2h_evt->plen = rtw_read8(adapter, REG_C2HEVT_CMD_LEN_88XX);
 
-	/* Read the content */
+	 
 	for (i = 0; i < c2h_evt->plen; i++)
 		c2h_evt->payload[i] = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL + 2 + i);
 
 	ret = _SUCCESS;
 
 clear_evt:
-	/*
-	* Clear event to notify FW we have read the command.
-	* If this field isn't clear, the FW won't update the next command message.
-	*/
+	 
 	c2h_evt_clear(adapter);
 exit:
 	return ret;
@@ -553,15 +521,15 @@ void rtw_hal_update_sta_rate_mask(struct adapter *padapter, struct sta_info *pst
 
 	tx_ra_bitmap = 0;
 
-	/* b/g mode ra_bitmap */
+	 
 	for (i = 0; i < sizeof(psta->bssrateset); i++) {
 		if (psta->bssrateset[i])
 			tx_ra_bitmap |= rtw_get_bit_value_from_ieee_value(psta->bssrateset[i]&0x7f);
 	}
 
-	/* n mode ra_bitmap */
+	 
 	if (psta->htpriv.ht_option) {
-		limit = 8; /*   1R */
+		limit = 8;  
 
 		for (i = 0; i < limit; i++) {
 			if (psta->htpriv.ht_cap.mcs.rx_mask[i/8] & BIT(i%8))
@@ -602,11 +570,11 @@ void SetHwReg(struct adapter *adapter, u8 variable, u8 *val)
 		struct security_priv *sec = &adapter->securitypriv;
 		u8 reg_scr = rtw_read8(adapter, REG_SECCFG);
 
-		if (val) { /* Enable default key related setting */
+		if (val) {  
 			reg_scr |= SCR_TXBCUSEDK;
 			if (sec->dot11AuthAlgrthm != dot11AuthAlgrthm_8021X)
 				reg_scr |= (SCR_RxUseDK|SCR_TxUseDK);
-		} else /* Disable default key related setting */
+		} else  
 			reg_scr &= ~(SCR_RXBCUSEDK|SCR_TXBCUSEDK|SCR_RxUseDK|SCR_TxUseDK);
 
 		rtw_write8(adapter, REG_SECCFG, reg_scr);
@@ -617,10 +585,10 @@ void SetHwReg(struct adapter *adapter, u8 variable, u8 *val)
 		break;
 	case HW_VAR_DM_FUNC_OP:
 		if (*((u8 *)val) == true) {
-			/* save dm flag */
+			 
 			odm->BK_SupportAbility = odm->SupportAbility;
 		} else {
-			/* restore dm flag */
+			 
 			odm->SupportAbility = odm->BK_SupportAbility;
 		}
 		break;
@@ -634,17 +602,14 @@ void SetHwReg(struct adapter *adapter, u8 variable, u8 *val)
 		}
 		break;
 	case HW_VAR_DM_FUNC_CLR:
-		/*
-		* input is already a mask to clear function
-		* don't invert it again! George, Lucas@20130513
-		*/
+		 
 		odm->SupportAbility &= *((u32 *)val);
 		break;
 	case HW_VAR_AMPDU_MIN_SPACE:
-		/* TODO - Is something needed here? */
+		 
 		break;
 	case HW_VAR_WIRELESS_MODE:
-		/* TODO - Is something needed here? */
+		 
 		break;
 	default:
 		netdev_dbg(adapter->pnetdev,
@@ -705,19 +670,19 @@ u8 SetHalDefVar(
 		u8 dm_func = *((u8 *)value);
 		struct dm_priv *dm = &hal_data->dmpriv;
 
-		if (dm_func == 0) { /* disable all dynamic func */
+		if (dm_func == 0) {  
 			odm->SupportAbility = DYNAMIC_FUNC_DISABLE;
-		} else if (dm_func == 1) {/* disable DIG */
+		} else if (dm_func == 1) { 
 			odm->SupportAbility  &= (~DYNAMIC_BB_DIG);
-		} else if (dm_func == 2) {/* disable High power */
+		} else if (dm_func == 2) { 
 			odm->SupportAbility  &= (~DYNAMIC_BB_DYNAMIC_TXPWR);
-		} else if (dm_func == 3) {/* disable tx power tracking */
+		} else if (dm_func == 3) { 
 			odm->SupportAbility  &= (~DYNAMIC_RF_CALIBRATION);
-		} else if (dm_func == 4) {/* disable BT coexistence */
+		} else if (dm_func == 4) { 
 			dm->DMFlag &= (~DYNAMIC_FUNC_BT);
-		} else if (dm_func == 5) {/* disable antenna diversity */
+		} else if (dm_func == 5) { 
 			odm->SupportAbility  &= (~DYNAMIC_BB_ANT_DIV);
-		} else if (dm_func == 6) {/* turn on all dynamic func */
+		} else if (dm_func == 6) { 
 			if (!(odm->SupportAbility  & DYNAMIC_BB_DIG)) {
 				struct dig_t	*pDigTable = &odm->DM_DigTable;
 				pDigTable->CurIGValue = rtw_read8(adapter, 0xc50);
@@ -819,7 +784,7 @@ void SetHalODMVar(
 {
 	struct hal_com_data	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
-	/* _irqL irqL; */
+	 
 	switch (eVariable) {
 	case HAL_ODM_STA_INFO:
 		{
@@ -827,10 +792,10 @@ void SetHalODMVar(
 			if (bSet) {
 				ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS, psta->mac_id, psta);
 			} else {
-				/* spin_lock_bh(&pHalData->odm_stainfo_lock); */
+				 
 				ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS, psta->mac_id, NULL);
 
-				/* spin_unlock_bh(&pHalData->odm_stainfo_lock); */
+				 
 		    }
 		}
 		break;
@@ -883,14 +848,14 @@ void rtw_hal_check_rxfifo_full(struct adapter *adapter)
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
 	int save_cnt = false;
 
-	/* switch counter to RX fifo */
-	/* printk("8723b or 8192e , MAC_667 set 0xf0\n"); */
+	 
+	 
 	rtw_write8(adapter, REG_RXERR_RPT+3, rtw_read8(adapter, REG_RXERR_RPT+3)|0xf0);
 	save_cnt = true;
-	/* todo: other chips */
+	 
 
 	if (save_cnt) {
-		/* rtw_write8(adapter, REG_RXERR_RPT+3, rtw_read8(adapter, REG_RXERR_RPT+3)|0xa0); */
+		 
 		pdbgpriv->dbg_rx_fifo_last_overflow = pdbgpriv->dbg_rx_fifo_curr_overflow;
 		pdbgpriv->dbg_rx_fifo_curr_overflow = rtw_read16(adapter, REG_RXERR_RPT);
 		pdbgpriv->dbg_rx_fifo_diff_overflow = pdbgpriv->dbg_rx_fifo_curr_overflow-pdbgpriv->dbg_rx_fifo_last_overflow;
@@ -969,7 +934,7 @@ void rtw_bb_rf_gain_offset(struct adapter *padapter)
 		if (padapter->eeprompriv.EEPROMRFGainVal != 0xff) {
 			res = rtw_hal_read_rfreg(padapter, RF_PATH_A, 0x7f, 0xffffffff);
 			res &= 0xfff87fff;
-			/* res &= 0xfff87fff; */
+			 
 			for (i = 0; i < ARRAY_SIZE(Array_kfreemap); i += 2) {
 				v1 = Array[i];
 				v2 = Array[i+1];
@@ -980,8 +945,8 @@ void rtw_bb_rf_gain_offset(struct adapter *padapter)
 			}
 			PHY_SetRFReg(padapter, RF_PATH_A, REG_RF_BB_GAIN_OFFSET, BIT18|BIT17|BIT16|BIT15, target);
 
-			/* res |= (padapter->eeprompriv.EEPROMRFGainVal & 0x0f)<< 15; */
-			/* rtw_hal_write_rfreg(padapter, RF_PATH_A, REG_RF_BB_GAIN_OFFSET, RF_GAIN_OFFSET_MASK, res); */
+			 
+			 
 			res = rtw_hal_read_rfreg(padapter, RF_PATH_A, 0x7f, 0xffffffff);
 		}
 	}

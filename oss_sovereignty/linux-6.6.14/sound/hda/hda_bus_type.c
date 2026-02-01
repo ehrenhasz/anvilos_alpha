@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HD-audio bus
- */
+
+ 
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/module.h>
@@ -12,14 +10,7 @@
 MODULE_DESCRIPTION("HD-audio bus");
 MODULE_LICENSE("GPL");
 
-/**
- * hdac_get_device_id - gets the hdac device id entry
- * @hdev: HD-audio core device
- * @drv: HD-audio codec driver
- *
- * Compares the hdac device vendor_id and revision_id to the hdac_device
- * driver id_table and returns the matching device id entry.
- */
+ 
 const struct hda_device_id *
 hdac_get_device_id(struct hdac_device *hdev, struct hdac_driver *drv)
 {
@@ -54,10 +45,7 @@ static int hda_bus_match(struct device *dev, struct device_driver *drv)
 	if (hdev->type != hdrv->type)
 		return 0;
 
-	/*
-	 * if driver provided a match function use that otherwise we will
-	 * use hdac_codec_match function
-	 */
+	 
 	if (hdrv->match)
 		return hdrv->match(hdev, hdrv);
 	else

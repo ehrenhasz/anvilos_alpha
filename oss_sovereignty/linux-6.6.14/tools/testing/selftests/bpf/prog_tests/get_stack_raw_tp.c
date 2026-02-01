@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -24,9 +24,7 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
 {
 	bool good_kern_stack = false, good_user_stack = false;
 	const char *nonjit_func = "___bpf_prog_run";
-	/* perfbuf-submitted data is 4-byte aligned, but we need 8-byte
-	 * alignment, so copy data into a local variable, for simplicity
-	 */
+	 
 	struct get_stack_trace_t e;
 	int i, num_stack;
 	struct ksym *ks;
@@ -39,11 +37,7 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
 		bool found = false;
 
 		num_stack = size / sizeof(__u64);
-		/* If jit is enabled, we do not have a good way to
-		 * verify the sanity of the kernel stack. So we
-		 * just assume it is good if the stack is not empty.
-		 * This could be improved in the future.
-		 */
+		 
 		if (env.jit_enabled) {
 			found = num_stack > 0;
 		} else {
@@ -131,7 +125,7 @@ void test_get_stack_raw_tp(void)
 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))
 		goto close_prog;
 
-	/* trigger some syscall action */
+	 
 	for (i = 0; i < MAX_CNT_RAWTP; i++)
 		nanosleep(&tv, NULL);
 

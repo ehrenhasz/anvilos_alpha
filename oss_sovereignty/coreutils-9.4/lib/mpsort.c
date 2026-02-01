@@ -1,21 +1,4 @@
-/* Sort a vector of pointers to data.
-
-   Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -23,15 +6,14 @@
 
 #include <string.h>
 
-/* The type of qsort-style comparison functions.  */
+ 
 
 typedef int (*comparison_function) (void const *, void const *);
 
 static void mpsort_with_tmp (void const **restrict, size_t,
                              void const **restrict, comparison_function);
 
-/* Sort a vector BASE containing N pointers, placing the sorted array
-   into TMP.  Compare pointers with CMP.  N must be at least 2.  */
+ 
 
 static void
 mpsort_into_tmp (void const **restrict base, size_t n,
@@ -78,9 +60,7 @@ mpsort_into_tmp (void const **restrict base, size_t n,
   memcpy (tmp, base + a, (alim - a) * sizeof *base);
 }
 
-/* Sort a vector BASE containing N pointers, in place.  Use TMP
-   (containing N / 2 pointers) for temporary storage.  Compare
-   pointers with CMP.  */
+ 
 
 static void
 mpsort_with_tmp (void const **restrict base, size_t n,
@@ -145,9 +125,7 @@ mpsort_with_tmp (void const **restrict base, size_t n,
     }
 }
 
-/* Sort a vector BASE containing N pointers, in place.  BASE must
-   contain enough storage to hold N + N / 2 vectors; the trailing
-   vectors are used for temporaries.  Compare pointers with CMP.  */
+ 
 
 void
 mpsort (void const **base, size_t n, comparison_function cmp)

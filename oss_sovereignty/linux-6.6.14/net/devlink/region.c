@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -14,10 +11,7 @@ struct devlink_region {
 		const struct devlink_region_ops *ops;
 		const struct devlink_port_region_ops *port_ops;
 	};
-	struct mutex snapshot_lock; /* protects snapshot_list,
-				     * max_snapshots and cur_snapshots
-				     * consistency.
-				     */
+	struct mutex snapshot_lock;  
 	struct list_head snapshot_list;
 	u32 max_snapshots;
 	u32 cur_snapshots;
@@ -261,21 +255,7 @@ void devlink_regions_notify_unregister(struct devlink *devlink)
 		devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_DEL);
 }
 
-/**
- * __devlink_snapshot_id_increment - Increment number of snapshots using an id
- *	@devlink: devlink instance
- *	@id: the snapshot id
- *
- *	Track when a new snapshot begins using an id. Load the count for the
- *	given id from the snapshot xarray, increment it, and store it back.
- *
- *	Called when a new snapshot is created with the given id.
- *
- *	The id *must* have been previously allocated by
- *	devlink_region_snapshot_id_get().
- *
- *	Returns 0 on success, or an error on failure.
- */
+ 
 static int __devlink_snapshot_id_increment(struct devlink *devlink, u32 id)
 {
 	unsigned long count;
@@ -304,21 +284,7 @@ unlock:
 	return err;
 }
 
-/**
- * __devlink_snapshot_id_decrement - Decrease number of snapshots using an id
- *	@devlink: devlink instance
- *	@id: the snapshot id
- *
- *	Track when a snapshot is deleted and stops using an id. Load the count
- *	for the given id from the snapshot xarray, decrement it, and store it
- *	back.
- *
- *	If the count reaches zero, erase this id from the xarray, freeing it
- *	up for future re-use by devlink_region_snapshot_id_get().
- *
- *	Called when a snapshot using the given id is deleted, and when the
- *	initial allocator of the id is finished using it.
- */
+ 
 static void __devlink_snapshot_id_decrement(struct devlink *devlink, u32 id)
 {
 	unsigned long count;
@@ -339,29 +305,14 @@ static void __devlink_snapshot_id_decrement(struct devlink *devlink, u32 id)
 		__xa_store(&devlink->snapshot_ids, id, xa_mk_value(count),
 			   GFP_ATOMIC);
 	} else {
-		/* If this was the last user, we can erase this id */
+		 
 		__xa_erase(&devlink->snapshot_ids, id);
 	}
 unlock:
 	xa_unlock(&devlink->snapshot_ids);
 }
 
-/**
- *	__devlink_snapshot_id_insert - Insert a specific snapshot ID
- *	@devlink: devlink instance
- *	@id: the snapshot id
- *
- *	Mark the given snapshot id as used by inserting a zero value into the
- *	snapshot xarray.
- *
- *	This must be called while holding the devlink instance lock. Unlike
- *	devlink_snapshot_id_get, the initial reference count is zero, not one.
- *	It is expected that the id will immediately be used before
- *	releasing the devlink instance lock.
- *
- *	Returns zero on success, or an error code if the snapshot id could not
- *	be inserted.
- */
+ 
 static int __devlink_snapshot_id_insert(struct devlink *devlink, u32 id)
 {
 	int err;
@@ -377,42 +328,14 @@ static int __devlink_snapshot_id_insert(struct devlink *devlink, u32 id)
 	return err;
 }
 
-/**
- *	__devlink_region_snapshot_id_get - get snapshot ID
- *	@devlink: devlink instance
- *	@id: storage to return snapshot id
- *
- *	Allocates a new snapshot id. Returns zero on success, or a negative
- *	error on failure. Must be called while holding the devlink instance
- *	lock.
- *
- *	Snapshot IDs are tracked using an xarray which stores the number of
- *	users of the snapshot id.
- *
- *	Note that the caller of this function counts as a 'user', in order to
- *	avoid race conditions. The caller must release its hold on the
- *	snapshot by using devlink_region_snapshot_id_put.
- */
+ 
 static int __devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id)
 {
 	return xa_alloc(&devlink->snapshot_ids, id, xa_mk_value(1),
 			xa_limit_32b, GFP_KERNEL);
 }
 
-/**
- *	__devlink_region_snapshot_create - create a new snapshot
- *	This will add a new snapshot of a region. The snapshot
- *	will be stored on the region struct and can be accessed
- *	from devlink. This is useful for future analyses of snapshots.
- *	Multiple snapshots can be created on a region.
- *	The @snapshot_id should be obtained using the getter function.
- *
- *	Must be called only while holding the region snapshot lock.
- *
- *	@region: devlink region of the snapshot
- *	@data: snapshot data
- *	@snapshot_id: snapshot id to be created
- */
+ 
 static int
 __devlink_region_snapshot_create(struct devlink_region *region,
 				 u8 *data, u32 snapshot_id)
@@ -423,7 +346,7 @@ __devlink_region_snapshot_create(struct devlink_region *region,
 
 	lockdep_assert_held(&region->snapshot_lock);
 
-	/* check if region can hold one more snapshot */
+	 
 	if (region->cur_snapshots == region->max_snapshots)
 		return -ENOSPC;
 
@@ -801,7 +724,7 @@ devlink_nl_region_read_fill(struct sk_buff *skb, devlink_chunk_fill_t *cb,
 	int err = 0;
 	u8 *data;
 
-	/* Allocate and re-use a single buffer */
+	 
 	data = kmalloc(DEVLINK_REGION_READ_CHUNK_SIZE, GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -970,7 +893,7 @@ int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
 	if (end_offset > region->size)
 		end_offset = region->size;
 
-	/* return 0 if there is no further data to read */
+	 
 	if (start_offset == end_offset) {
 		err = 0;
 		goto out_unlock;
@@ -1012,7 +935,7 @@ int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
 	if (err && err != -EMSGSIZE)
 		goto nla_put_failure;
 
-	/* Check if there was any progress done to prevent infinite loop */
+	 
 	if (ret_offset == start_offset) {
 		err = -EINVAL;
 		goto nla_put_failure;
@@ -1034,14 +957,7 @@ out_unlock:
 	return err;
 }
 
-/**
- * devl_region_create - create a new address region
- *
- * @devlink: devlink
- * @ops: region operations and name
- * @region_max_snapshots: Maximum supported number of snapshots for region
- * @region_size: size of region
- */
+ 
 struct devlink_region *devl_region_create(struct devlink *devlink,
 					  const struct devlink_region_ops *ops,
 					  u32 region_max_snapshots,
@@ -1074,16 +990,7 @@ struct devlink_region *devl_region_create(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_region_create);
 
-/**
- *	devlink_region_create - create a new address region
- *
- *	@devlink: devlink
- *	@ops: region operations and name
- *	@region_max_snapshots: Maximum supported number of snapshots for region
- *	@region_size: size of region
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 struct devlink_region *
 devlink_region_create(struct devlink *devlink,
 		      const struct devlink_region_ops *ops,
@@ -1099,16 +1006,7 @@ devlink_region_create(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_region_create);
 
-/**
- *	devlink_port_region_create - create a new address region for a port
- *
- *	@port: devlink port
- *	@ops: region operations and name
- *	@region_max_snapshots: Maximum supported number of snapshots for region
- *	@region_size: size of region
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 struct devlink_region *
 devlink_port_region_create(struct devlink_port *port,
 			   const struct devlink_port_region_ops *ops,
@@ -1155,11 +1053,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(devlink_port_region_create);
 
-/**
- * devl_region_destroy - destroy address region
- *
- * @region: devlink region to destroy
- */
+ 
 void devl_region_destroy(struct devlink_region *region)
 {
 	struct devlink *devlink = region->devlink;
@@ -1167,7 +1061,7 @@ void devl_region_destroy(struct devlink_region *region)
 
 	devl_assert_locked(devlink);
 
-	/* Free all snapshots of region */
+	 
 	mutex_lock(&region->snapshot_lock);
 	list_for_each_entry_safe(snapshot, ts, &region->snapshot_list, list)
 		devlink_region_snapshot_del(region, snapshot);
@@ -1181,13 +1075,7 @@ void devl_region_destroy(struct devlink_region *region)
 }
 EXPORT_SYMBOL_GPL(devl_region_destroy);
 
-/**
- *	devlink_region_destroy - destroy address region
- *
- *	@region: devlink region to destroy
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_region_destroy(struct devlink_region *region)
 {
 	struct devlink *devlink = region->devlink;
@@ -1198,55 +1086,21 @@ void devlink_region_destroy(struct devlink_region *region)
 }
 EXPORT_SYMBOL_GPL(devlink_region_destroy);
 
-/**
- *	devlink_region_snapshot_id_get - get snapshot ID
- *
- *	This callback should be called when adding a new snapshot,
- *	Driver should use the same id for multiple snapshots taken
- *	on multiple regions at the same time/by the same trigger.
- *
- *	The caller of this function must use devlink_region_snapshot_id_put
- *	when finished creating regions using this id.
- *
- *	Returns zero on success, or a negative error code on failure.
- *
- *	@devlink: devlink
- *	@id: storage to return id
- */
+ 
 int devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id)
 {
 	return __devlink_region_snapshot_id_get(devlink, id);
 }
 EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
 
-/**
- *	devlink_region_snapshot_id_put - put snapshot ID reference
- *
- *	This should be called by a driver after finishing creating snapshots
- *	with an id. Doing so ensures that the ID can later be released in the
- *	event that all snapshots using it have been destroyed.
- *
- *	@devlink: devlink
- *	@id: id to release reference on
- */
+ 
 void devlink_region_snapshot_id_put(struct devlink *devlink, u32 id)
 {
 	__devlink_snapshot_id_decrement(devlink, id);
 }
 EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_put);
 
-/**
- *	devlink_region_snapshot_create - create a new snapshot
- *	This will add a new snapshot of a region. The snapshot
- *	will be stored on the region struct and can be accessed
- *	from devlink. This is useful for future analyses of snapshots.
- *	Multiple snapshots can be created on a region.
- *	The @snapshot_id should be obtained using the getter function.
- *
- *	@region: devlink region of the snapshot
- *	@data: snapshot data
- *	@snapshot_id: snapshot id to be created
- */
+ 
 int devlink_region_snapshot_create(struct devlink_region *region,
 				   u8 *data, u32 snapshot_id)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * xen console driver interface to hvc_console.c
- *
- * (c) 2007 Gerd Hoffmann <kraxel@suse.de>
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/delay.h>
@@ -30,7 +26,7 @@
 
 #include "hvc_console.h"
 
-#define HVC_COOKIE   0x58656e /* "Xen" in hex */
+#define HVC_COOKIE   0x58656e  
 
 struct xencons_info {
 	struct list_head list;
@@ -49,7 +45,7 @@ struct xencons_info {
 static LIST_HEAD(xenconsoles);
 static DEFINE_SPINLOCK(xencons_lock);
 
-/* ------------------------------------------------------------------ */
+ 
 
 static struct xencons_info *vtermno_to_xencons(int vtermno)
 {
@@ -80,7 +76,7 @@ static inline int xenbus_devid_to_vtermno(int devid)
 
 static inline void notify_daemon(struct xencons_info *cons)
 {
-	/* Use evtchn: this is called early, before irq is set up. */
+	 
 	notify_remote_via_evtchn(cons->evtchn);
 }
 
@@ -95,7 +91,7 @@ static int __write_console(struct xencons_info *xencons,
 	spin_lock_irqsave(&xencons->ring_lock, flags);
 	cons = intf->out_cons;
 	prod = intf->out_prod;
-	mb();			/* update queue values before going on */
+	mb();			 
 
 	if ((prod - cons) > sizeof(intf->out)) {
 		spin_unlock_irqrestore(&xencons->ring_lock, flags);
@@ -106,7 +102,7 @@ static int __write_console(struct xencons_info *xencons,
 	while ((sent < len) && ((prod - cons) < sizeof(intf->out)))
 		intf->out[MASK_XENCONS_IDX(prod++, intf->out)] = data[sent++];
 
-	wmb();			/* write ring before updating pointer */
+	wmb();			 
 	intf->out_prod = prod;
 	spin_unlock_irqrestore(&xencons->ring_lock, flags);
 
@@ -122,12 +118,7 @@ static int domU_write_console(uint32_t vtermno, const char *data, int len)
 	if (cons == NULL)
 		return -EINVAL;
 
-	/*
-	 * Make sure the whole buffer is emitted, polling if
-	 * necessary.  We don't ever want to rely on the hvc daemon
-	 * because the most interesting console output is when the
-	 * kernel is crippled.
-	 */
+	 
 	while (len) {
 		int sent = __write_console(cons, data, len);
 
@@ -160,7 +151,7 @@ static int domU_read_console(uint32_t vtermno, char *buf, int len)
 	spin_lock_irqsave(&xencons->ring_lock, flags);
 	cons = intf->in_cons;
 	prod = intf->in_prod;
-	mb();			/* get pointers before reading ring */
+	mb();			 
 
 	if ((prod - cons) > sizeof(intf->in)) {
 		spin_unlock_irqrestore(&xencons->ring_lock, flags);
@@ -171,18 +162,10 @@ static int domU_read_console(uint32_t vtermno, char *buf, int len)
 	while (cons != prod && recv < len)
 		buf[recv++] = intf->in[MASK_XENCONS_IDX(cons++, intf->in)];
 
-	mb();			/* read ring before consuming */
+	mb();			 
 	intf->in_cons = cons;
 
-	/*
-	 * When to mark interrupt having been spurious:
-	 * - there was no new data to be read, and
-	 * - the backend did not consume some output bytes, and
-	 * - the previous round with no read data didn't see consumed bytes
-	 *   (we might have a race with an interrupt being in flight while
-	 *   updating xencons->out_cons, so account for that by allowing one
-	 *   round without any visible reason)
-	 */
+	 
 	if (intf->out_cons != xencons->out_cons) {
 		xencons->out_cons = intf->out_cons;
 		xencons->out_cons_same = 0;
@@ -214,10 +197,7 @@ static int dom0_read_console(uint32_t vtermno, char *buf, int len)
 	return HYPERVISOR_console_io(CONSOLEIO_read, len, buf);
 }
 
-/*
- * Either for a dom0 to write to the system console, or a domU with a
- * debug version of Xen
- */
+ 
 static int dom0_write_console(uint32_t vtermno, const char *str, int len)
 {
 	int rc = HYPERVISOR_console_io(CONSOLEIO_write, len, (char *)str);
@@ -252,15 +232,10 @@ static int xen_hvm_console_init(void)
 			return -ENOMEM;
 		spin_lock_init(&info->ring_lock);
 	} else if (info->intf != NULL) {
-		/* already configured */
+		 
 		return 0;
 	}
-	/*
-	 * If the toolstack (or the hypervisor) hasn't set these values, the
-	 * default value is 0. Even though gfn = 0 and evtchn = 0 are
-	 * theoretically correct values, in practice they never are and they
-	 * mean that a legacy toolstack hasn't initialized the pv console correctly.
-	 */
+	 
 	r = hvm_get_parameter(HVM_PARAM_CONSOLE_EVTCHN, &v);
 	if (r < 0 || v == 0)
 		goto err;
@@ -289,7 +264,7 @@ static int xencons_info_pv_init(struct xencons_info *info, int vtermno)
 {
 	spin_lock_init(&info->ring_lock);
 	info->evtchn = xen_start_info->console.domU.evtchn;
-	/* GFN == MFN for PV guest */
+	 
 	info->intf = gfn_to_virt(xen_start_info->console.domU.mfn);
 	info->vtermno = vtermno;
 
@@ -315,7 +290,7 @@ static int xen_pv_console_init(void)
 		if (!info)
 			return -ENOMEM;
 	} else if (info->intf != NULL) {
-		/* already configured */
+		 
 		return 0;
 	}
 	spin_lock_irqsave(&xencons_lock, flags);
@@ -385,7 +360,7 @@ static void xencons_disconnect_backend(struct xencons_info *info)
 		info->irq = 0;
 		info->evtchn = 0;
 	}
-	/* evtchn_put() will also close it so this is only an error path */
+	 
 	if (info->evtchn > 0)
 		xenbus_free_evtchn(info->xbdev, info->evtchn);
 	info->evtchn = 0;
@@ -555,15 +530,11 @@ static void xencons_backend_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's CLOSING state */
+		fallthrough;	 
 	case XenbusStateClosing: {
 		struct xencons_info *info = dev_get_drvdata(&dev->dev);;
 
-		/*
-		 * Don't tear down the evtchn and grant ref before the other
-		 * end has disconnected, but do stop userspace from trying
-		 * to use the device before we allow the backend to close.
-		 */
+		 
 		if (info->hvc) {
 			hvc_remove(info->hvc);
 			info->hvc = NULL;
@@ -589,7 +560,7 @@ static struct xenbus_driver xencons_driver = {
 	.otherend_changed = xencons_backend_changed,
 	.not_essential = true,
 };
-#endif /* CONFIG_HVC_XEN_FRONTEND */
+#endif  
 
 static int __init xen_hvc_init(void)
 {
@@ -619,7 +590,7 @@ static int __init xen_hvc_init(void)
 		info->irq = bind_evtchn_to_irq_lateeoi(info->evtchn);
 	}
 	if (info->irq < 0)
-		info->irq = 0; /* NO_IRQ */
+		info->irq = 0;  
 	else
 		irq_set_noprobe(info->irq);
 
@@ -728,7 +699,7 @@ struct console xenboot_console = {
 	.flags		= CON_PRINTBUFFER | CON_BOOT | CON_ANYTIME,
 	.index		= -1,
 };
-#endif	/* CONFIG_EARLY_PRINTK */
+#endif	 
 
 void xen_raw_console_write(const char *str)
 {

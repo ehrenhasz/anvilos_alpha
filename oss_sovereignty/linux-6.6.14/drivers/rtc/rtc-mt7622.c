@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for MediaTek SoC based RTC
- *
- * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -45,49 +41,36 @@
 #define MTK_RTC_INT		0x30
 #define RTC_INT_AL_STA		BIT(4)
 
-/*
- * Ranges from 0x40 to 0x78 provide RTC time setup for year, month,
- * day of month, day of week, hour, minute and second.
- */
+ 
 #define MTK_RTC_TREG(_t, _f)	(0x40 + (0x4 * (_f)) + ((_t) * 0x20))
 
 #define MTK_RTC_AL_CTL		0x7c
 #define	RTC_AL_EN		BIT(0)
 #define	RTC_AL_ALL		GENMASK(7, 0)
 
-/*
- * The offset is used in the translation for the year between in struct
- * rtc_time and in hardware register MTK_RTC_TREG(x,MTK_YEA)
- */
+ 
 #define MTK_RTC_TM_YR_OFFSET	100
 
-/*
- * The lowest value for the valid tm_year. RTC hardware would take incorrectly
- * tm_year 100 as not a leap year and thus it is also required being excluded
- * from the valid options.
- */
+ 
 #define MTK_RTC_TM_YR_L		(MTK_RTC_TM_YR_OFFSET + 1)
 
-/*
- * The most year the RTC can hold is 99 and the next to 99 in year register
- * would be wraparound to 0, for MT7622.
- */
+ 
 #define MTK_RTC_HW_YR_LIMIT	99
 
-/* The highest value for the valid tm_year */
+ 
 #define MTK_RTC_TM_YR_H		(MTK_RTC_TM_YR_OFFSET + MTK_RTC_HW_YR_LIMIT)
 
-/* Simple macro helps to check whether the hardware supports the tm_year */
+ 
 #define MTK_RTC_TM_YR_VALID(_y)	((_y) >= MTK_RTC_TM_YR_L && \
 				 (_y) <= MTK_RTC_TM_YR_H)
 
-/* Types of the function the RTC provides are time counter and alarm. */
+ 
 enum {
 	MTK_TC,
 	MTK_AL,
 };
 
-/* Indexes are used for the pointer to relevant registers in MTK_RTC_TREG */
+ 
 enum {
 	MTK_YEA,
 	MTK_MON,
@@ -137,7 +120,7 @@ static void mtk_clr(struct mtk_rtc *rtc, u32 reg, u32 val)
 
 static void mtk_rtc_hw_init(struct mtk_rtc *hw)
 {
-	/* The setup of the init sequence is for allowing RTC got to work */
+	 
 	mtk_w32(hw, MTK_RTC_PWRCHK1, RTC_PWRCHK1_MAGIC);
 	mtk_w32(hw, MTK_RTC_PWRCHK2, RTC_PWRCHK2_MAGIC);
 	mtk_w32(hw, MTK_RTC_KEY, RTC_KEY_MAGIC);
@@ -154,12 +137,7 @@ static void mtk_rtc_get_alarm_or_time(struct mtk_rtc *hw, struct rtc_time *tm,
 {
 	u32 year, mon, mday, wday, hour, min, sec;
 
-	/*
-	 * Read again until the field of the second is not changed which
-	 * ensures all fields in the consistent state. Note that MTK_SEC must
-	 * be read first. In this way, it guarantees the others remain not
-	 * changed when the results for two MTK_SEC consecutive reads are same.
-	 */
+	 
 	do {
 		sec = mtk_r32(hw, MTK_RTC_TREG(time_alarm, MTK_SEC));
 		min = mtk_r32(hw, MTK_RTC_TREG(time_alarm, MTK_MIN));
@@ -177,7 +155,7 @@ static void mtk_rtc_get_alarm_or_time(struct mtk_rtc *hw, struct rtc_time *tm,
 	tm->tm_mday = mday;
 	tm->tm_mon  = mon - 1;
 
-	/* Rebase to the absolute year which userspace queries */
+	 
 	tm->tm_year = year + MTK_RTC_TM_YR_OFFSET;
 }
 
@@ -186,7 +164,7 @@ static void mtk_rtc_set_alarm_or_time(struct mtk_rtc *hw, struct rtc_time *tm,
 {
 	u32 year;
 
-	/* Rebase to the relative year which RTC hardware requires */
+	 
 	year = tm->tm_year - MTK_RTC_TM_YR_OFFSET;
 
 	mtk_w32(hw, MTK_RTC_TREG(time_alarm, MTK_YEA), year);
@@ -205,11 +183,11 @@ static irqreturn_t mtk_rtc_alarmirq(int irq, void *id)
 
 	irq_sta = mtk_r32(hw, MTK_RTC_INT);
 	if (irq_sta & RTC_INT_AL_STA) {
-		/* Stop alarm also implicitly disables the alarm interrupt */
+		 
 		mtk_w32(hw, MTK_RTC_AL_CTL, 0);
 		rtc_update_irq(hw->rtc, 1, RTC_IRQF | RTC_AF);
 
-		/* Ack alarm interrupt status */
+		 
 		mtk_w32(hw, MTK_RTC_INT, RTC_INT_AL_STA);
 		return IRQ_HANDLED;
 	}
@@ -233,12 +211,12 @@ static int mtk_rtc_settime(struct device *dev, struct rtc_time *tm)
 	if (!MTK_RTC_TM_YR_VALID(tm->tm_year))
 		return -EINVAL;
 
-	/* Stop time counter before setting a new one*/
+	 
 	mtk_set(hw, MTK_RTC_CTL, RTC_RC_STOP);
 
 	mtk_rtc_set_alarm_or_time(hw, tm, MTK_TC);
 
-	/* Restart the time counter */
+	 
 	mtk_clr(hw, MTK_RTC_CTL, RTC_RC_STOP);
 
 	return 0;
@@ -265,22 +243,15 @@ static int mtk_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	if (!MTK_RTC_TM_YR_VALID(alrm_tm->tm_year))
 		return -EINVAL;
 
-	/*
-	 * Stop the alarm also implicitly including disables interrupt before
-	 * setting a new one.
-	 */
+	 
 	mtk_clr(hw, MTK_RTC_AL_CTL, RTC_AL_EN);
 
-	/*
-	 * Avoid contention between mtk_rtc_setalarm and IRQ handler so that
-	 * disabling the interrupt and awaiting for pending IRQ handler to
-	 * complete.
-	 */
+	 
 	synchronize_irq(hw->irq);
 
 	mtk_rtc_set_alarm_or_time(hw, alrm_tm, MTK_AL);
 
-	/* Restart the alarm with the new setup */
+	 
 	mtk_w32(hw, MTK_RTC_AL_CTL, RTC_AL_ALL);
 
 	return 0;
@@ -388,9 +359,9 @@ static int mtk_rtc_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(mtk_rtc_pm_ops, mtk_rtc_suspend, mtk_rtc_resume);
 
 #define MTK_RTC_PM_OPS (&mtk_rtc_pm_ops)
-#else	/* CONFIG_PM */
+#else	 
 #define MTK_RTC_PM_OPS NULL
-#endif	/* CONFIG_PM */
+#endif	 
 
 static struct platform_driver mtk_rtc_driver = {
 	.probe	= mtk_rtc_probe,

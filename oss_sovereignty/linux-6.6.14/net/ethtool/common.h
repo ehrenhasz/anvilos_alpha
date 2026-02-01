@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _ETHTOOL_COMMON_H
 #define _ETHTOOL_COMMON_H
@@ -8,7 +8,7 @@
 
 #define ETHTOOL_DEV_FEATURE_WORDS	DIV_ROUND_UP(NETDEV_FEATURE_COUNT, 32)
 
-/* compose link mode index from speed, type and duplex */
+ 
 #define ETHTOOL_LINK_MODE(speed, type, duplex) \
 	ETHTOOL_LINK_MODE_ ## speed ## base ## type ## _ ## duplex ## _BIT
 
@@ -56,4 +56,4 @@ int ethtool_get_module_eeprom_call(struct net_device *dev,
 
 bool __ethtool_dev_mm_supported(struct net_device *dev);
 
-#endif /* _ETHTOOL_COMMON_H */
+#endif  

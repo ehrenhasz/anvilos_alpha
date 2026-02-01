@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * Alexander Aring <aar@pengutronix.de>
- *
- * Based on: net/wireless/sysfs.c
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/rtnetlink.h>

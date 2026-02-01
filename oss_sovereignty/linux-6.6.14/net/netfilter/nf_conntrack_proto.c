@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/types.h>
 #include <linux/netfilter.h>
@@ -114,7 +114,7 @@ const struct nf_conntrack_l4proto *nf_ct_l4proto_find(u8 l4proto)
 #endif
 #if IS_ENABLED(CONFIG_IPV6)
 	case IPPROTO_ICMPV6: return &nf_conntrack_l4proto_icmpv6;
-#endif /* CONFIG_IPV6 */
+#endif  
 	}
 
 	return &nf_conntrack_l4proto_generic;
@@ -154,7 +154,7 @@ unsigned int nf_confirm(void *priv,
 	if (!help && !seqadj_needed)
 		return nf_conntrack_confirm(skb);
 
-	/* helper->help() do not expect ICMP packets */
+	 
 	if (ctinfo == IP_CT_RELATED_REPLY)
 		return nf_conntrack_confirm(skb);
 
@@ -178,7 +178,7 @@ unsigned int nf_confirm(void *priv,
 		const struct nf_conntrack_helper *helper;
 		int ret;
 
-		/* rcu_read_lock()ed by nf_hook */
+		 
 		helper = rcu_dereference(help->helper);
 		if (helper) {
 			ret = helper->help(skb,
@@ -195,7 +195,7 @@ unsigned int nf_confirm(void *priv,
 		return NF_DROP;
 	}
 
-	/* We've seen it coming out the other side: confirm it */
+	 
 	return nf_conntrack_confirm(skb);
 }
 EXPORT_SYMBOL_GPL(nf_confirm);
@@ -211,15 +211,13 @@ static unsigned int ipv4_conntrack_local(void *priv,
 					 struct sk_buff *skb,
 					 const struct nf_hook_state *state)
 {
-	if (ip_is_fragment(ip_hdr(skb))) { /* IP_NODEFRAG setsockopt set */
+	if (ip_is_fragment(ip_hdr(skb))) {  
 		enum ip_conntrack_info ctinfo;
 		struct nf_conn *tmpl;
 
 		tmpl = nf_ct_get(skb, &ctinfo);
 		if (tmpl && nf_ct_is_template(tmpl)) {
-			/* when skipping ct, clear templates to avoid fooling
-			 * later targets/matches
-			 */
+			 
 			skb->_nfct = 0;
 			nf_ct_put(tmpl);
 		}
@@ -229,9 +227,7 @@ static unsigned int ipv4_conntrack_local(void *priv,
 	return nf_conntrack_in(skb, state);
 }
 
-/* Connection tracking may drop packets, but never alters them, so
- * make it the first hook.
- */
+ 
 static const struct nf_hook_ops ipv4_conntrack_ops[] = {
 	{
 		.hook		= ipv4_conntrack_in,
@@ -259,11 +255,7 @@ static const struct nf_hook_ops ipv4_conntrack_ops[] = {
 	},
 };
 
-/* Fast function for those who don't want to parse /proc (and I don't
- * blame them).
- * Reversing the socket's dst/src point of view gives us the reply
- * mapping.
- */
+ 
 static int
 getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 {
@@ -282,7 +274,7 @@ getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 	tuple.dst.protonum = sk->sk_protocol;
 	release_sock(sk);
 
-	/* We only do TCP and SCTP at the moment: is there a better way? */
+	 
 	if (tuple.dst.protonum != IPPROTO_TCP &&
 	    tuple.dst.protonum != IPPROTO_SCTP)
 		return -ENOPROTOOPT;

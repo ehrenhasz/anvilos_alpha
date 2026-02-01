@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_PORT_H
 #define HINIC_PORT_H
@@ -97,13 +94,13 @@ enum hinic_link_mode {
 };
 
 enum hinic_port_type {
-	HINIC_PORT_TP,		/* BASET */
+	HINIC_PORT_TP,		 
 	HINIC_PORT_AUI,
 	HINIC_PORT_MII,
-	HINIC_PORT_FIBRE,	/* OPTICAL */
+	HINIC_PORT_FIBRE,	 
 	HINIC_PORT_BNC,
 	HINIC_PORT_ELEC,
-	HINIC_PORT_COPPER,	/* PORT_DA */
+	HINIC_PORT_COPPER,	 
 	HINIC_PORT_AOC,
 	HINIC_PORT_BACKPLANE,
 	HINIC_PORT_NONE = 0xEF,
@@ -196,7 +193,7 @@ struct hinic_cable_plug_event {
 	u8	rsvd0[6];
 
 	u16	func_id;
-	u8	plugged; /* 0: unplugged, 1: plugged */
+	u8	plugged;  
 	u8	port_id;
 };
 
@@ -248,7 +245,7 @@ struct hinic_link_mode_cmd {
 
 	u16	func_id;
 	u16	rsvd1;
-	u16	supported;	/* 0xFFFF represents invalid value */
+	u16	supported;	 
 	u16	advertised;
 };
 
@@ -267,7 +264,7 @@ struct hinic_set_autoneg_cmd {
 	u8	rsvd0[6];
 
 	u16	func_id;
-	u16	enable;	/* 1: enable , 0: disable */
+	u16	enable;	 
 };
 
 struct hinic_link_ksettings_info {
@@ -279,10 +276,10 @@ struct hinic_link_ksettings_info {
 	u16	rsvd1;
 
 	u32	valid_bitmap;
-	u32	speed;		/* enum nic_speed_level */
-	u8	autoneg;	/* 0 - off; 1 - on */
-	u8	fec;		/* 0 - RSFEC; 1 - BASEFEC; 2 - NOFEC */
-	u8	rsvd2[18];	/* reserved for duplex, port, etc. */
+	u32	speed;		 
+	u8	autoneg;	 
+	u8	fec;		 
+	u8	rsvd2[18];	 
 };
 
 struct hinic_tso_config {
@@ -335,8 +332,8 @@ struct hinic_lro_timer {
 	u8	version;
 	u8	rsvd0[6];
 
-	u8	type;   /* 0: set timer value, 1: get timer value */
-	u8	enable; /* when set lro time, enable should be 1 */
+	u8	type;    
+	u8	enable;  
 	u16	rsvd1;
 	u32	timer;
 };
@@ -688,7 +685,7 @@ struct hinic_set_pfc {
 	u8	rsvd1[4];
 };
 
-/* get or set loopback mode, need to modify by base API */
+ 
 #define HINIC_INTERNAL_LP_MODE			5
 #define LOOP_MODE_MIN				1
 #define LOOP_MODE_MAX				6
@@ -721,7 +718,7 @@ struct hinic_cmd_get_light_module_abs {
 	u8 rsvd0[6];
 
 	u8 port_id;
-	u8 abs_status; /* 0:present, 1:absent */
+	u8 abs_status;  
 	u8 rsv[2];
 };
 

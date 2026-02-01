@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: driver entry for initial, open, close, tx and rx.
- *
- * Author: Lyndon Chen
- *
- * Date: Dec 8, 2005
- *
- * Functions:
- *
- *   vt6656_probe - module initial (insmod) driver entry
- *   vnt_free_tx_bufs - free tx buffer function
- *   vnt_init_registers- initial MAC & BBP & RF internal registers.
- *
- * Revision History:
- */
+
+ 
 #undef __NO_VERSION__
 
 #include <linux/bits.h>
@@ -34,11 +17,9 @@
 #include "usbpipe.h"
 #include "channel.h"
 
-/*
- * define module options
- */
+ 
 
-/* version information */
+ 
 #define DRIVER_AUTHOR \
 	"VIA Networking Technologies, Inc., <lyndonchen@vntek.com.tw>"
 MODULE_AUTHOR(DRIVER_AUTHOR);
@@ -58,17 +39,11 @@ MODULE_PARM_DESC(tx_buffers, "Number of receive usb tx buffers");
 #define RTS_THRESH_DEF     2347
 #define FRAG_THRESH_DEF     2346
 
-/* BasebandType[] baseband type selected
- * 0: indicate 802.11a type
- * 1: indicate 802.11b type
- * 2: indicate 802.11g type
- */
+ 
 
 #define BBP_TYPE_DEF     2
 
-/*
- * Static vars definitions
- */
+ 
 
 static const struct usb_device_id vt6656_table[] = {
 	{USB_DEVICE(VNT_USB_VENDOR_ID, VNT_USB_PRODUCT_ID)},
@@ -77,13 +52,13 @@ static const struct usb_device_id vt6656_table[] = {
 
 static void vnt_set_options(struct vnt_private *priv)
 {
-	/* Set number of TX buffers */
+	 
 	if (vnt_tx_buffers < CB_MIN_TX_DESC || vnt_tx_buffers > CB_MAX_TX_DESC)
 		priv->num_tx_context = TX_DESC_DEF0;
 	else
 		priv->num_tx_context = vnt_tx_buffers;
 
-	/* Set number of RX buffers */
+	 
 	if (vnt_rx_buffers < CB_MIN_RX_DESC || vnt_rx_buffers > CB_MAX_RX_DESC)
 		priv->num_rcb = RX_DESC_DEF0;
 	else
@@ -160,7 +135,7 @@ static int vnt_check_firmware_version(struct vnt_private *priv)
 	}
 
 	if (priv->firmware_version < FIRMWARE_VERSION) {
-		/* branch to loader for download new firmware */
+		 
 		ret = vnt_firmware_branch_to_sram(priv);
 		if (ret) {
 			dev_dbg(&priv->usb->dev,
@@ -174,9 +149,7 @@ end:
 	return ret;
 }
 
-/*
- * initialization of MAC & BBP registers
- */
+ 
 static int vnt_init_registers(struct vnt_private *priv)
 {
 	int ret;
@@ -220,7 +193,7 @@ static int vnt_init_registers(struct vnt_private *priv)
 	init_cmd->short_retry_limit = priv->hw->wiphy->retry_short;
 	init_cmd->long_retry_limit = priv->hw->wiphy->retry_long;
 
-	/* issue card_init command to device */
+	 
 	ret = vnt_control_out(priv, MESSAGE_TYPE_CARDINIT, 0, 0,
 			      sizeof(struct vnt_cmd_card_init),
 			      (u8 *)init_cmd);
@@ -237,23 +210,23 @@ static int vnt_init_registers(struct vnt_private *priv)
 		goto end;
 	}
 
-	/* local ID for AES functions */
+	 
 	ret = vnt_control_in(priv, MESSAGE_TYPE_READ, MAC_REG_LOCALID,
 			     MESSAGE_REQUEST_MACREG, 1, &priv->local_id);
 	if (ret)
 		goto end;
 
-	/* do MACbSoftwareReset in MACvInitialize */
+	 
 
 	priv->top_ofdm_basic_rate = RATE_24M;
 	priv->top_cck_basic_rate = RATE_1M;
 
-	/* target to IF pin while programming to RF chip */
+	 
 	priv->power = 0xFF;
 
 	priv->cck_pwr = priv->eeprom[EEP_OFS_PWR_CCK];
 	priv->ofdm_pwr_g = priv->eeprom[EEP_OFS_PWR_OFDMG];
-	/* load power table */
+	 
 	for (ii = 0; ii < ARRAY_SIZE(priv->cck_pwr_tbl); ii++) {
 		priv->cck_pwr_tbl[ii] =
 			priv->eeprom[ii + EEP_OFS_CCK_PWR_TBL];
@@ -266,18 +239,15 @@ static int vnt_init_registers(struct vnt_private *priv)
 			priv->ofdm_pwr_tbl[ii] = priv->ofdm_pwr_g;
 	}
 
-	/*
-	 * original zonetype is USA, but custom zonetype is Europe,
-	 * then need to recover 12, 13, 14 channels with 11 channel
-	 */
+	 
 	for (ii = 11; ii < ARRAY_SIZE(priv->cck_pwr_tbl); ii++) {
 		priv->cck_pwr_tbl[ii] = priv->cck_pwr_tbl[10];
 		priv->ofdm_pwr_tbl[ii] = priv->ofdm_pwr_tbl[10];
 	}
 
-	priv->ofdm_pwr_a = 0x34; /* same as RFbMA2829SelectChannel */
+	priv->ofdm_pwr_a = 0x34;  
 
-	/* load OFDM A power table */
+	 
 	for (ii = 0; ii < CB_MAX_CHANNEL_5G; ii++) {
 		priv->ofdm_a_pwr_tbl[ii] =
 			priv->eeprom[ii + EEP_OFS_OFDMA_PWR_TBL];
@@ -295,7 +265,7 @@ static int vnt_init_registers(struct vnt_private *priv)
 
 	antenna &= (EEP_ANTENNA_AUX | EEP_ANTENNA_MAIN);
 
-	if (antenna == 0) /* if not set default is both */
+	if (antenna == 0)  
 		antenna = (EEP_ANTENNA_AUX | EEP_ANTENNA_MAIN);
 
 	if (antenna == (EEP_ANTENNA_AUX | EEP_ANTENNA_MAIN)) {
@@ -326,18 +296,18 @@ static int vnt_init_registers(struct vnt_private *priv)
 		}
 	}
 
-	/* Set initial antenna mode */
+	 
 	ret = vnt_set_antenna_mode(priv, priv->rx_antenna_mode);
 	if (ret)
 		goto end;
 
-	/* default Auto Mode */
+	 
 	priv->bb_type = BB_TYPE_11G;
 
-	/* get RFType */
+	 
 	priv->rf_type = init_rsp->rf_type;
 
-	/* load vt3266 calibration parameters in EEPROM */
+	 
 	if (priv->rf_type == RF_VT3226D0) {
 		if ((priv->eeprom[EEP_OFS_MAJOR_VER] == 0x1) &&
 		    (priv->eeprom[EEP_OFS_MINOR_VER] >= 0x4)) {
@@ -345,39 +315,35 @@ static int vnt_init_registers(struct vnt_private *priv)
 			calib_tx_dc = priv->eeprom[EEP_OFS_CALIB_TX_DC];
 			calib_rx_iq = priv->eeprom[EEP_OFS_CALIB_RX_IQ];
 			if (calib_tx_iq || calib_tx_dc || calib_rx_iq) {
-				/* CR255, enable TX/RX IQ and
-				 * DC compensation mode
-				 */
+				 
 				ret = vnt_control_out_u8(priv,
 							 MESSAGE_REQUEST_BBREG,
 							 0xff, 0x03);
 				if (ret)
 					goto end;
 
-				/* CR251, TX I/Q Imbalance Calibration */
+				 
 				ret = vnt_control_out_u8(priv,
 							 MESSAGE_REQUEST_BBREG,
 							 0xfb, calib_tx_iq);
 				if (ret)
 					goto end;
 
-				/* CR252, TX DC-Offset Calibration */
+				 
 				ret = vnt_control_out_u8(priv,
 							 MESSAGE_REQUEST_BBREG,
 							 0xfC, calib_tx_dc);
 				if (ret)
 					goto end;
 
-				/* CR253, RX I/Q Imbalance Calibration */
+				 
 				ret = vnt_control_out_u8(priv,
 							 MESSAGE_REQUEST_BBREG,
 							 0xfd, calib_rx_iq);
 				if (ret)
 					goto end;
 			} else {
-				/* CR255, turn off
-				 * BB Calibration compensation
-				 */
+				 
 				ret = vnt_control_out_u8(priv,
 							 MESSAGE_REQUEST_BBREG,
 							 0xff, 0x0);
@@ -387,11 +353,11 @@ static int vnt_init_registers(struct vnt_private *priv)
 		}
 	}
 
-	/* get permanent network address */
+	 
 	memcpy(priv->permanent_net_addr, init_rsp->net_addr, 6);
 	ether_addr_copy(priv->current_net_addr, priv->permanent_net_addr);
 
-	/* if exist SW network address, use it */
+	 
 	dev_dbg(&priv->usb->dev, "Network address = %pM\n",
 		priv->current_net_addr);
 
@@ -464,13 +430,13 @@ static void vnt_free_rx_bufs(struct vnt_private *priv)
 		if (!rcb)
 			continue;
 
-		/* deallocate URBs */
+		 
 		if (rcb->urb) {
 			usb_kill_urb(rcb->urb);
 			usb_free_urb(rcb->urb);
 		}
 
-		/* deallocate skb */
+		 
 		if (rcb->skb)
 			dev_kfree_skb(rcb->skb);
 
@@ -516,7 +482,7 @@ static int vnt_alloc_bufs(struct vnt_private *priv)
 
 		rcb->priv = priv;
 
-		/* allocate URBs */
+		 
 		rcb->urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!rcb->urb) {
 			ret = -ENOMEM;
@@ -528,7 +494,7 @@ static int vnt_alloc_bufs(struct vnt_private *priv)
 			ret = -ENOMEM;
 			goto free_rx_tx;
 		}
-		/* submit rx urb */
+		 
 		ret = vnt_submit_rx_urb(priv, rcb);
 		if (ret)
 			goto free_rx_tx;
@@ -592,7 +558,7 @@ static int vnt_start(struct ieee80211_hw *hw)
 	if (ret)
 		goto free_all;
 
-	priv->int_interval = 1;  /* bInterval is set to 1 */
+	priv->int_interval = 1;   
 
 	ret = vnt_start_interrupt_urb(priv);
 	if (ret)
@@ -624,7 +590,7 @@ static void vnt_stop(struct ieee80211_hw *hw)
 	for (i = 0; i < MAX_KEY_TABLE; i++)
 		vnt_mac_disable_keyentry(priv, i);
 
-	/* clear all keys */
+	 
 	priv->key_entry_inuse = 0;
 
 	if (!test_bit(DEVICE_FLAGS_UNPLUG, &priv->flags))
@@ -673,7 +639,7 @@ static int vnt_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 
 	priv->op_mode = vif->type;
 
-	/* LED blink on TX */
+	 
 	vnt_mac_set_led(priv, LEDSTS_STS, LEDSTS_INTER);
 
 	return 0;
@@ -705,7 +671,7 @@ static void vnt_remove_interface(struct ieee80211_hw *hw,
 
 	priv->op_mode = NL80211_IFTYPE_UNSPECIFIED;
 
-	/* LED slow blink */
+	 
 	vnt_mac_set_led(priv, LEDSTS_STS, LEDSTS_SLOW);
 }
 
@@ -735,7 +701,7 @@ static int vnt_config(struct ieee80211_hw *hw, u32 changed)
 		vnt_rf_setpower(priv, conf->chandef.chan);
 
 	if (conf->flags & (IEEE80211_CONF_OFFCHANNEL | IEEE80211_CONF_IDLE))
-		/* Set max sensitivity*/
+		 
 		vnt_update_pre_ed_threshold(priv, true);
 	else
 		vnt_update_pre_ed_threshold(priv, false);
@@ -1097,7 +1063,7 @@ static int vt6656_resume(struct usb_interface *intf)
 	return 0;
 }
 
-#endif /* CONFIG_PM */
+#endif  
 
 MODULE_DEVICE_TABLE(usb, vt6656_table);
 
@@ -1109,7 +1075,7 @@ static struct usb_driver vt6656_driver = {
 #ifdef CONFIG_PM
 	.suspend = vt6656_suspend,
 	.resume = vt6656_resume,
-#endif /* CONFIG_PM */
+#endif  
 };
 
 module_usb_driver(vt6656_driver);

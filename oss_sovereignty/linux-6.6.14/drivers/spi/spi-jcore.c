@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * J-Core SPI controller driver
- *
- * Copyright (C) 2012-2016 Smart Energy Instruments, Inc.
- *
- * Current version by Rich Felker
- * Based loosely on initial version by Oleksandr G Zhadan
- *
- */
+
+ 
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/errno.h>
@@ -103,7 +95,7 @@ static int jcore_spi_txrx(struct spi_controller *host, struct spi_device *spi,
 	void __iomem *data_reg = hw->base + DATA_REG;
 	u32 xmit;
 
-	/* data buffers */
+	 
 	const unsigned char *tx;
 	unsigned char *rx;
 	unsigned int len;
@@ -152,7 +144,7 @@ static int jcore_spi_probe(struct platform_device *pdev)
 	if (!host)
 		return err;
 
-	/* Setup the host state. */
+	 
 	host->num_chipselect = 3;
 	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	host->transfer_one = jcore_spi_txrx;
@@ -164,7 +156,7 @@ static int jcore_spi_probe(struct platform_device *pdev)
 	hw->host = host;
 	platform_set_drvdata(pdev, hw);
 
-	/* Find and map our resources */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		goto exit_busy;
@@ -176,14 +168,7 @@ static int jcore_spi_probe(struct platform_device *pdev)
 	if (!hw->base)
 		goto exit_busy;
 
-	/*
-	 * The SPI clock rate controlled via a configurable clock divider
-	 * which is applied to the reference clock. A 50 MHz reference is
-	 * most suitable for obtaining standard SPI clock rates, but some
-	 * designs may have a different reference clock, and the DT must
-	 * make the driver aware so that it can properly program the
-	 * requested rate. If the clock is omitted, 50 MHz is assumed.
-	 */
+	 
 	clock_freq = 50000000;
 	clk = devm_clk_get(&pdev->dev, "ref_clk");
 	if (!IS_ERR(clk)) {
@@ -195,11 +180,11 @@ static int jcore_spi_probe(struct platform_device *pdev)
 	}
 	hw->clock_freq = clock_freq;
 
-	/* Initialize all CS bits to high. */
+	 
 	hw->cs_reg = JCORE_SPI_CTRL_CS_BITS;
 	jcore_spi_baudrate(hw, 400000);
 
-	/* Register our spi controller */
+	 
 	err = devm_spi_register_controller(&pdev->dev, host);
 	if (err)
 		goto exit;

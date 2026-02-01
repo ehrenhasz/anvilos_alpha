@@ -1,16 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2021, Qing Zhang <zhangqing@loongson.cn>
- *  Loongson-2K1000 reset support
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <linux/pm.h>
 #include <asm/reboot.h>
 
-#define	PM1_STS		0x0c /* Power Management 1 Status Register */
-#define	PM1_CNT		0x14 /* Power Management 1 Control Register */
-#define	RST_CNT		0x30 /* Reset Control Register */
+#define	PM1_STS		0x0c  
+#define	PM1_CNT		0x14  
+#define	RST_CNT		0x30  
 
 static void __iomem *base;
 
@@ -21,9 +18,9 @@ static void ls2k_restart(char *command)
 
 static void ls2k_poweroff(void)
 {
-	/* Clear */
+	 
 	writel((readl(base + PM1_STS) & 0xffffffff), base + PM1_STS);
-	/* Sleep Enable | Soft Off*/
+	 
 	writel(GENMASK(12, 10) | BIT(13), base + PM1_CNT);
 }
 

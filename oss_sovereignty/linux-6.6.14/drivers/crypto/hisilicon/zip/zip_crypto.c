@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 #include <crypto/internal/acompress.h>
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
@@ -7,14 +7,14 @@
 #include <linux/scatterlist.h>
 #include "zip.h"
 
-/* hisi_zip_sqe dw3 */
+ 
 #define HZIP_BD_STATUS_M			GENMASK(7, 0)
-/* hisi_zip_sqe dw7 */
+ 
 #define HZIP_IN_SGE_DATA_OFFSET_M		GENMASK(23, 0)
 #define HZIP_SQE_TYPE_M				GENMASK(31, 28)
-/* hisi_zip_sqe dw8 */
+ 
 #define HZIP_OUT_SGE_DATA_OFFSET_M		GENMASK(23, 0)
-/* hisi_zip_sqe dw9 */
+ 
 #define HZIP_REQ_TYPE_M				GENMASK(7, 0)
 #define HZIP_ALG_TYPE_ZLIB			0x02
 #define HZIP_ALG_TYPE_GZIP			0x03
@@ -364,7 +364,7 @@ static int hisi_zip_do_work(struct hisi_zip_req *req,
 
 	hisi_zip_fill_sqe(qp_ctx->ctx, &zip_sqe, qp->req_type, req);
 
-	/* send command to start a task */
+	 
 	atomic64_inc(&dfx->send_cnt);
 	ret = hisi_qp_send(qp, &zip_sqe);
 	if (unlikely(ret < 0)) {
@@ -450,7 +450,7 @@ static int hisi_zip_acompress(struct acomp_req *acomp_req)
 	int head_size;
 	int ret;
 
-	/* let's output compression head now */
+	 
 	head_size = add_comp_head(acomp_req->dst, qp_ctx->qp->req_type);
 	if (unlikely(head_size < 0)) {
 		dev_err_ratelimited(dev, "failed to add comp head (%d)!\n",
@@ -569,7 +569,7 @@ static int hisi_zip_ctx_init(struct hisi_zip_ctx *hisi_zip_ctx, u8 req_type, int
 	hisi_zip = container_of(qps[0]->qm, struct hisi_zip, qm);
 
 	for (i = 0; i < HZIP_CTX_Q_NUM; i++) {
-		/* alg_type = 0 for compress, 1 for decompress in hw sqe */
+		 
 		qp_ctx = &hisi_zip_ctx->qp_ctx[i];
 		qp_ctx->ctx = hisi_zip_ctx;
 		ret = hisi_zip_start_qp(qps[i], qp_ctx, i, req_type);

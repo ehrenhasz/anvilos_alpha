@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/if_vlan.h>
@@ -46,15 +43,11 @@
 	((_desc)->nfrags__length = \
 	cpu_to_le32(((_frags) & 0xff) | (((_len) & 0xffffff) << 8)))
 
-/* owner bits of status_desc */
+ 
 #define STATUS_OWNER_HOST	(0x1ULL << 56)
 #define STATUS_OWNER_PHANTOM	(0x2ULL << 56)
 
-/* Status descriptor:
-   0-3 port, 4-7 status, 8-11 type, 12-27 total_length
-   28-43 reference_handle, 44-47 protocol, 48-52 pkt_offset
-   53-55 desc_cnt, 56-57 owner, 58-63 opcode
- */
+ 
 #define qlcnic_get_sts_port(sts_data)	\
 	((sts_data) & 0x0F)
 #define qlcnic_get_sts_status(sts_data)	\
@@ -95,7 +88,7 @@
 
 #define qlcnic_83xx_get_lro_sts_mss(sts) ((sts) & 0xffff)
 
-/* opcode field in status_desc */
+ 
 #define QLCNIC_SYN_OFFLOAD	0x03
 #define QLCNIC_RXPKT_DESC  	0x04
 #define QLCNIC_OLD_RXPKT_DESC	0x3f
@@ -109,7 +102,7 @@
 
 #define QLCNIC_TCP_TS_HDR_SIZE (QLCNIC_TCP_HDR_SIZE + QLCNIC_TCP_TS_OPTION_SIZE)
 
-/* for status field in status_desc */
+ 
 #define STATUS_CKSUM_LOOP	0
 #define STATUS_CKSUM_OK		2
 
@@ -386,7 +379,7 @@ static int qlcnic_tx_encap_pkt(struct qlcnic_adapter *adapter,
 				inner_tcp_hdrlen(skb) -
 				skb_inner_mac_header(skb);
 
-		/* VXLAN header size = 8 */
+		 
 		outer_hdr_len = skb_transport_offset(skb) + 8 +
 				sizeof(struct udphdr);
 		first_desc->outer_hdr_length = outer_hdr_len;
@@ -396,10 +389,7 @@ static int qlcnic_tx_encap_pkt(struct qlcnic_adapter *adapter,
 		first_desc->mss = cpu_to_le16(skb_shinfo(skb)->gso_size);
 		first_desc->hdr_length = inner_hdr_len;
 
-		/* Copy inner and outer headers in Tx descriptor(s)
-		 * If total_hdr_len > cmd_desc_type0, use multiple
-		 * descriptors
-		 */
+		 
 		copied = 0;
 		descr_size = (int)sizeof(struct cmd_desc_type0);
 		while (copied < total_hdr_len) {
@@ -415,9 +405,7 @@ static int qlcnic_tx_encap_pkt(struct qlcnic_adapter *adapter,
 
 		tx_ring->producer = producer;
 
-		/* Make sure updated tx_ring->producer is visible
-		 * for qlcnic_tx_avail()
-		 */
+		 
 		smp_mb();
 		adapter->stats.encap_lso_frames++;
 
@@ -435,14 +423,14 @@ static int qlcnic_tx_encap_pkt(struct qlcnic_adapter *adapter,
 		opcode = QLCNIC_TX_ENCAP_PKT;
 	}
 
-	/* Prepare first 16 bits of byte offset 16 of Tx descriptor */
+	 
 	if (ip_hdr(skb)->version == 6)
 		encap_descr |= QLCNIC_ENCAP_OUTER_L3_IP6;
 
-	/* outer IP header's size in 32bit words size*/
+	 
 	encap_descr |= (skb_network_header_len(skb) >> 2) << 6;
 
-	/* outer IP header offset */
+	 
 	encap_descr |= skb_network_offset(skb) << 10;
 	first_desc->encap_descr = cpu_to_le16(encap_descr);
 
@@ -503,8 +491,7 @@ set_flags:
 		opcode = (protocol == ETH_P_IPV6) ? QLCNIC_TX_TCP_LSO6 :
 						    QLCNIC_TX_TCP_LSO;
 
-		/* For LSO, we need to copy the MAC/IP/TCP headers into
-		* the descriptor ring */
+		 
 		copied = 0;
 		offset = 2;
 
@@ -513,10 +500,10 @@ set_flags:
 			first_desc->tcp_hdr_offset = VLAN_HLEN;
 			first_desc->ip_hdr_offset = VLAN_HLEN;
 
-			/* Only in case of TSO on vlan device */
+			 
 			flags |= QLCNIC_FLAGS_VLAN_TAGGED;
 
-			/* Create a TSO vlan header template for firmware */
+			 
 			hwdesc = &tx_ring->desc_head[producer];
 			tx_ring->cmd_buf_arr[producer].skb = NULL;
 
@@ -676,9 +663,7 @@ netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 
 	frag_count = skb_shinfo(skb)->nr_frags + 1;
 
-	/* 14 frags supported for normal packet and
-	 * 32 frags supported for TSO packet
-	 */
+	 
 	if (!skb_is_gso(skb) && frag_count > QLCNIC_MAX_FRAGS_PER_TX) {
 		for (i = 0; i < (frag_count - QLCNIC_MAX_FRAGS_PER_TX); i++)
 			delta += skb_frag_size(&skb_shinfo(skb)->frags[i]);
@@ -721,7 +706,7 @@ netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 		k = i % 4;
 
 		if ((k == 0) && (i > 0)) {
-			/* move to next desc.*/
+			 
 			producer = get_next_index(producer, num_txd);
 			hwdesc = &tx_ring->desc_head[producer];
 			qlcnic_clear_cmddesc((u64 *)hwdesc);
@@ -755,7 +740,7 @@ netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	else if (protocol == ETH_P_IPV6)
 		l4_is_udp = ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
 
-	/* Check if it is a VXLAN packet */
+	 
 	if (!skb->encapsulation || !l4_is_udp ||
 	    !qlcnic_encap_tx_offload(adapter)) {
 		if (unlikely(qlcnic_tx_pkt(adapter, first_desc, skb,
@@ -773,7 +758,7 @@ netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	tx_ring->tx_stats.tx_bytes += skb->len;
 	tx_ring->tx_stats.xmit_called++;
 
-	/* Ensure writes are complete before HW fetches Tx descriptors */
+	 
 	wmb();
 	qlcnic_update_cmd_producer(tx_ring);
 
@@ -798,9 +783,7 @@ void qlcnic_advert_link_change(struct qlcnic_adapter *adapter, int linkup)
 	} else if (!adapter->ahw->linkup && linkup) {
 		adapter->ahw->linkup = 1;
 
-		/* Do not advertise Link up to the stack if device
-		 * is in loopback mode
-		 */
+		 
 		if (qlcnic_83xx_check(adapter) && adapter->ahw->lb_mode) {
 			netdev_info(netdev, "NIC Link is up for loopback test\n");
 			return;
@@ -866,7 +849,7 @@ static void qlcnic_post_rx_buffers_nodb(struct qlcnic_adapter *adapter,
 		count++;
 		list_del(&buffer->list);
 
-		/* make a rcv descriptor  */
+		 
 		pdesc = &rds_ring->desc_head[producer];
 		handle = qlcnic_get_ref_handle(adapter,
 					       buffer->ref_handle, ring_id);
@@ -936,19 +919,7 @@ static int qlcnic_process_cmd_ring(struct qlcnic_adapter *adapter,
 		}
 		adapter->tx_timeo_cnt = 0;
 	}
-	/*
-	 * If everything is freed up to consumer then check if the ring is full
-	 * If the ring is full then check if more needs to be freed and
-	 * schedule the call back again.
-	 *
-	 * This happens when there are 2 CPUs. One could be freeing and the
-	 * other filling it. If the ring is full when we get out of here and
-	 * the card has already interrupted the host then the host can miss the
-	 * interrupt.
-	 *
-	 * There is still a possible race condition and the host could miss an
-	 * interrupt. The card has to take care of this.
-	 */
+	 
 	hw_consumer = le32_to_cpu(*(tx_ring->hw_consumer));
 	done = (sw_consumer == hw_consumer);
 
@@ -972,7 +943,7 @@ static int qlcnic_poll(struct napi_struct *napi, int budget)
 					      budget);
 	work_done = qlcnic_process_rcv_ring(sds_ring, budget);
 
-	/* Check if we need a repoll */
+	 
 	if (!tx_complete)
 		work_done = budget;
 
@@ -1002,7 +973,7 @@ static int qlcnic_tx_poll(struct napi_struct *napi, int budget)
 		if (test_bit(__QLCNIC_DEV_UP, &adapter->state))
 			qlcnic_enable_tx_intr(adapter, tx_ring);
 	} else {
-		/* As qlcnic_process_cmd_ring() returned 0, we need a repoll*/
+		 
 		work_done = budget;
 	}
 
@@ -1180,7 +1151,7 @@ static inline int qlcnic_check_rx_tagging(struct qlcnic_adapter *adapter,
 		return 0;
 
 	if (*vlan_tag == adapter->rx_pvid) {
-		/* Outer vlan tag. Packet should follow non-vlan path */
+		 
 		*vlan_tag = 0xffff;
 		return 0;
 	}
@@ -1459,7 +1430,7 @@ void qlcnic_post_rx_buffers(struct qlcnic_adapter *adapter,
 		count++;
 		list_del(&buffer->list);
 
-		/* make a rcv descriptor  */
+		 
 		pdesc = &rds_ring->desc_head[producer];
 		pdesc->addr_buffer = cpu_to_le64(buffer->dma);
 		handle = qlcnic_get_ref_handle(adapter, buffer->ref_handle,
@@ -1919,7 +1890,7 @@ static int qlcnic_83xx_process_rcv_ring(struct qlcnic_host_sds_ring *sds_ring,
 			adapter->stats.null_rxbuf++;
 skip:
 		desc = &sds_ring->desc_head[consumer];
-		/* Reset the descriptor */
+		 
 		desc->status_desc_data[1] = 0;
 		consumer = get_next_index(consumer, sds_ring->num_desc);
 		count++;
@@ -1956,13 +1927,13 @@ static int qlcnic_83xx_msix_sriov_vf_poll(struct napi_struct *napi, int budget)
 
 	sds_ring = container_of(napi, struct qlcnic_host_sds_ring, napi);
 	adapter = sds_ring->adapter;
-	/* tx ring count = 1 */
+	 
 	tx_ring = adapter->tx_ring;
 
 	tx_complete = qlcnic_process_cmd_ring(adapter, tx_ring, budget);
 	work_done = qlcnic_83xx_process_rcv_ring(sds_ring, budget);
 
-	/* Check if we need a repoll */
+	 
 	if (!tx_complete)
 		work_done = budget;
 
@@ -1984,13 +1955,13 @@ static int qlcnic_83xx_poll(struct napi_struct *napi, int budget)
 
 	sds_ring = container_of(napi, struct qlcnic_host_sds_ring, napi);
 	adapter = sds_ring->adapter;
-	/* tx ring count = 1 */
+	 
 	tx_ring = adapter->tx_ring;
 
 	tx_complete = qlcnic_process_cmd_ring(adapter, tx_ring, budget);
 	work_done = qlcnic_83xx_process_rcv_ring(sds_ring, budget);
 
-	/* Check if we need a repoll */
+	 
 	if (!tx_complete)
 		work_done = budget;
 
@@ -2016,7 +1987,7 @@ static int qlcnic_83xx_msix_tx_poll(struct napi_struct *napi, int budget)
 		if (test_bit(__QLCNIC_DEV_UP , &adapter->state))
 			qlcnic_enable_tx_intr(adapter, tx_ring);
 	} else {
-		/* need a repoll */
+		 
 		work_done = budget;
 	}
 

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SC8280XP_H
 #define _DT_BINDINGS_CLK_QCOM_DISP_CC_SC8280XP_H
 
-/* DISPCC clocks */
+ 
 #define DISP_CC_PLL0					0
 #define DISP_CC_PLL1					1
 #define DISP_CC_PLL1_OUT_EVEN				2
@@ -89,11 +87,11 @@
 #define DISP_CC_XO_CLK					79
 #define DISP_CC_XO_CLK_SRC				80
 
-/* DISPCC resets */
+ 
 #define DISP_CC_MDSS_CORE_BCR				0
 #define DISP_CC_MDSS_RSCC_BCR				1
 
-/* DISPCC GDSCs */
+ 
 #define MDSS_GDSC					0
 #define MDSS_INT2_GDSC					1
 

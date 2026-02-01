@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "phy.h"
 #include "reg.h"
@@ -50999,7 +50998,7 @@ DECLARE_DIG_TABLE(rtw89_8852a_tia_gain_a);
 const struct rtw89_phy_table rtw89_8852a_phy_bb_table = {
 	.regs		= rtw89_8852a_phy_bb_regs,
 	.n_regs		= ARRAY_SIZE(rtw89_8852a_phy_bb_regs),
-	.rf_path	= 0, /* don't care */
+	.rf_path	= 0,  
 };
 
 const struct rtw89_phy_table rtw89_8852a_phy_radioa_table = {
@@ -51017,7 +51016,7 @@ const struct rtw89_phy_table rtw89_8852a_phy_radiob_table = {
 const struct rtw89_phy_table rtw89_8852a_phy_nctl_table = {
 	.regs		= rtw89_8852a_phy_nctl_regs,
 	.n_regs		= ARRAY_SIZE(rtw89_8852a_phy_nctl_regs),
-	.rf_path	= 0, /* don't care */
+	.rf_path	= 0,  
 };
 
 const struct rtw89_txpwr_table rtw89_8852a_byr_table = {

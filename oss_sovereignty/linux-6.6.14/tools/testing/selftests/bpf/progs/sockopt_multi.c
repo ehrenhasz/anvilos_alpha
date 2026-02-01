@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <netinet/in.h>
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -17,12 +17,12 @@ int _getsockopt_child(struct bpf_sockopt *ctx)
 		goto out;
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	if (optval[0] != 0x80)
-		return 0; /* EPERM, unexpected optval from the kernel */
+		return 0;  
 
-	ctx->retval = 0; /* Reset system call return value to zero */
+	ctx->retval = 0;  
 
 	optval[0] = 0x90;
 	ctx->optlen = 1;
@@ -30,7 +30,7 @@ int _getsockopt_child(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;
@@ -46,12 +46,12 @@ int _getsockopt_parent(struct bpf_sockopt *ctx)
 		goto out;
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	if (optval[0] != 0x90)
-		return 0; /* EPERM, unexpected optval from the kernel */
+		return 0;  
 
-	ctx->retval = 0; /* Reset system call return value to zero */
+	ctx->retval = 0;  
 
 	optval[0] = 0xA0;
 	ctx->optlen = 1;
@@ -59,7 +59,7 @@ int _getsockopt_parent(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;
@@ -75,7 +75,7 @@ int _setsockopt(struct bpf_sockopt *ctx)
 		goto out;
 
 	if (optval + 1 > optval_end)
-		return 0; /* EPERM, bounds check */
+		return 0;  
 
 	optval[0] += 0x10;
 	ctx->optlen = 1;
@@ -83,7 +83,7 @@ int _setsockopt(struct bpf_sockopt *ctx)
 	return 1;
 
 out:
-	/* optval larger than PAGE_SIZE use kernel's buffer. */
+	 
 	if (ctx->optlen > page_size)
 		ctx->optlen = 0;
 	return 1;

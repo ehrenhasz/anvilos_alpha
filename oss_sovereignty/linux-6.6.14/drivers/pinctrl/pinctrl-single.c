@@ -1,13 +1,4 @@
-/*
- * Generic device tree based pinctrl driver for one register per pin
- * type pinmux controllers
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -37,27 +28,14 @@
 #define DRIVER_NAME			"pinctrl-single"
 #define PCS_OFF_DISABLED		~0U
 
-/**
- * struct pcs_func_vals - mux function register offset and value pair
- * @reg:	register virtual address
- * @val:	register value
- * @mask:	mask
- */
+ 
 struct pcs_func_vals {
 	void __iomem *reg;
 	unsigned val;
 	unsigned mask;
 };
 
-/**
- * struct pcs_conf_vals - pinconf parameter, pinconf register offset
- * and value, enable, disable, mask
- * @param:	config parameter
- * @val:	user input bits in the pinconf register
- * @enable:	enable bits in the pinconf register
- * @disable:	disable bits in the pinconf register
- * @mask:	mask bits in the register value
- */
+ 
 struct pcs_conf_vals {
 	enum pin_config_param param;
 	unsigned val;
@@ -66,27 +44,13 @@ struct pcs_conf_vals {
 	unsigned mask;
 };
 
-/**
- * struct pcs_conf_type - pinconf property name, pinconf param pair
- * @name:	property name in DTS file
- * @param:	config parameter
- */
+ 
 struct pcs_conf_type {
 	const char *name;
 	enum pin_config_param param;
 };
 
-/**
- * struct pcs_function - pinctrl function
- * @name:	pinctrl function name
- * @vals:	register and vals array
- * @nvals:	number of entries in vals array
- * @pgnames:	array of pingroup names the function uses
- * @npgnames:	number of pingroup names the function uses
- * @conf:	array of pin configurations
- * @nconfs:	number of pin configurations available
- * @node:	list node
- */
+ 
 struct pcs_function {
 	const char *name;
 	struct pcs_func_vals *vals;
@@ -98,13 +62,7 @@ struct pcs_function {
 	struct list_head node;
 };
 
-/**
- * struct pcs_gpiofunc_range - pin ranges with same mux value of gpio function
- * @offset:	offset base of pins
- * @npins:	number pins with the same mux value of gpio function
- * @gpiofunc:	mux value of gpio function
- * @node:	list node
- */
+ 
 struct pcs_gpiofunc_range {
 	unsigned offset;
 	unsigned npins;
@@ -112,28 +70,13 @@ struct pcs_gpiofunc_range {
 	struct list_head node;
 };
 
-/**
- * struct pcs_data - wrapper for data needed by pinctrl framework
- * @pa:		pindesc array
- * @cur:	index to current element
- *
- * REVISIT: We should be able to drop this eventually by adding
- * support for registering pins individually in the pinctrl
- * framework for those drivers that don't need a static array.
- */
+ 
 struct pcs_data {
 	struct pinctrl_pin_desc *pa;
 	int cur;
 };
 
-/**
- * struct pcs_soc_data - SoC specific settings
- * @flags:	initial SoC specific PCS_FEAT_xxx values
- * @irq:	optional interrupt for the controller
- * @irq_enable_mask:	optional SoC specific interrupt enable mask
- * @irq_status_mask:	optional SoC specific interrupt status mask
- * @rearm:	optional SoC specific wake-up rearm function
- */
+ 
 struct pcs_soc_data {
 	unsigned flags;
 	int irq;
@@ -142,36 +85,7 @@ struct pcs_soc_data {
 	void (*rearm)(void);
 };
 
-/**
- * struct pcs_device - pinctrl device instance
- * @res:	resources
- * @base:	virtual address of the controller
- * @saved_vals: saved values for the controller
- * @size:	size of the ioremapped area
- * @dev:	device entry
- * @np:		device tree node
- * @pctl:	pin controller device
- * @flags:	mask of PCS_FEAT_xxx values
- * @missing_nr_pinctrl_cells: for legacy binding, may go away
- * @socdata:	soc specific data
- * @lock:	spinlock for register access
- * @mutex:	mutex protecting the lists
- * @width:	bits per mux register
- * @fmask:	function register mask
- * @fshift:	function register shift
- * @foff:	value to turn mux off
- * @fmax:	max number of functions in fmask
- * @bits_per_mux: number of bits per mux
- * @bits_per_pin: number of bits per pin
- * @pins:	physical pins on the SoC
- * @gpiofuncs:	list of gpio functions
- * @irqs:	list of interrupt registers
- * @chip:	chip container for this instance
- * @domain:	IRQ domain for this instance
- * @desc:	pin controller descriptor
- * @read:	register read function to use
- * @write:	register write function to use
- */
+ 
 struct pcs_device {
 	struct resource *res;
 	void __iomem *base;
@@ -220,24 +134,13 @@ static enum pin_config_param pcs_bias[] = {
 	PIN_CONFIG_BIAS_PULL_UP,
 };
 
-/*
- * This lock class tells lockdep that irqchip core that this single
- * pinctrl can be in a different category than its parents, so it won't
- * report false recursion.
- */
+ 
 static struct lock_class_key pcs_lock_class;
 
-/* Class for the IRQ request mutex */
+ 
 static struct lock_class_key pcs_request_class;
 
-/*
- * REVISIT: Reads and writes could eventually use regmap or something
- * generic. But at least on omaps, some mux registers are performance
- * critical as they may need to be remuxed every time before and after
- * idle. Adding tests for register access width for every read and
- * write like regmap is doing is not desired, and caching the registers
- * does not help in this case.
- */
+ 
 
 static unsigned __maybe_unused pcs_readb(void __iomem *reg)
 {
@@ -343,7 +246,7 @@ static int pcs_get_function(struct pinctrl_dev *pctldev, unsigned pin,
 	struct function_desc *function;
 	unsigned fselector;
 
-	/* If pin is not described in DTS & enabled, mux_setting is NULL. */
+	 
 	setting = pdesc->mux_setting;
 	if (!setting)
 		return -ENOTSUPP;
@@ -367,7 +270,7 @@ static int pcs_set_mux(struct pinctrl_dev *pctldev, unsigned fselector,
 	int i;
 
 	pcs = pinctrl_dev_get_drvdata(pctldev);
-	/* If function mask is null, needn't enable it. */
+	 
 	if (!pcs->fmask)
 		return 0;
 	function = pinmux_generic_get_function(pctldev, fselector);
@@ -411,7 +314,7 @@ static int pcs_request_gpio(struct pinctrl_dev *pctldev,
 	struct list_head *pos, *tmp;
 	unsigned data;
 
-	/* If function mask is null, return directly. */
+	 
 	if (!pcs->fmask)
 		return -ENOTSUPP;
 
@@ -451,7 +354,7 @@ static const struct pinmux_ops pcs_pinmux_ops = {
 	.gpio_request_enable = pcs_request_gpio,
 };
 
-/* Clear BIAS value */
+ 
 static void pcs_pinconf_clear_bias(struct pinctrl_dev *pctldev, unsigned pin)
 {
 	unsigned long config;
@@ -462,10 +365,7 @@ static void pcs_pinconf_clear_bias(struct pinctrl_dev *pctldev, unsigned pin)
 	}
 }
 
-/*
- * Check whether PIN_CONFIG_BIAS_DISABLE is valid.
- * It's depend on that PULL_DOWN & PULL_UP configs are all invalid.
- */
+ 
 static bool pcs_pinconf_bias_disable(struct pinctrl_dev *pctldev, unsigned pin)
 {
 	unsigned long config;
@@ -509,7 +409,7 @@ static int pcs_pinconf_get(struct pinctrl_dev *pctldev,
 		offset = pin * (pcs->width / BITS_PER_BYTE);
 		data = pcs->read(pcs->base + offset) & func->conf[i].mask;
 		switch (func->conf[i].param) {
-		/* 4 parameters */
+		 
 		case PIN_CONFIG_BIAS_PULL_DOWN:
 		case PIN_CONFIG_BIAS_PULL_UP:
 		case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
@@ -518,7 +418,7 @@ static int pcs_pinconf_get(struct pinctrl_dev *pctldev,
 				return -ENOTSUPP;
 			*config = 0;
 			break;
-		/* 2 parameters */
+		 
 		case PIN_CONFIG_INPUT_SCHMITT:
 			for (j = 0; j < func->nconfs; j++) {
 				switch (func->conf[j].param) {
@@ -569,7 +469,7 @@ static int pcs_pinconf_set(struct pinctrl_dev *pctldev,
 			data = pcs->read(pcs->base + offset);
 			arg = pinconf_to_config_argument(configs[j]);
 			switch (func->conf[i].param) {
-			/* 2 parameters */
+			 
 			case PIN_CONFIG_INPUT_SCHMITT:
 			case PIN_CONFIG_DRIVE_STRENGTH:
 			case PIN_CONFIG_SLEW_RATE:
@@ -579,7 +479,7 @@ static int pcs_pinconf_set(struct pinctrl_dev *pctldev,
 				data &= ~func->conf[i].mask;
 				data |= (arg << shift) & func->conf[i].mask;
 				break;
-			/* 4 parameters */
+			 
 			case PIN_CONFIG_BIAS_DISABLE:
 				pcs_pinconf_clear_bias(pctldev, pin);
 				break;
@@ -604,7 +504,7 @@ static int pcs_pinconf_set(struct pinctrl_dev *pctldev,
 		}
 		if (i >= func->nconfs)
 			return -ENOTSUPP;
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -622,7 +522,7 @@ static int pcs_pinconf_group_get(struct pinctrl_dev *pctldev,
 	for (i = 0; i < npins; i++) {
 		if (pcs_pinconf_get(pctldev, pins[i], config))
 			return -ENOTSUPP;
-		/* configs do not match between two pins */
+		 
 		if (i && (old != *config))
 			return -ENOTSUPP;
 		old = *config;
@@ -676,11 +576,7 @@ static const struct pinconf_ops pcs_pinconf_ops = {
 	.is_generic = true,
 };
 
-/**
- * pcs_add_pin() - add a pin to the static per controller pin array
- * @pcs: pcs driver instance
- * @offset: register offset from base
- */
+ 
 static int pcs_add_pin(struct pcs_device *pcs, unsigned int offset)
 {
 	struct pcs_soc_data *pcs_soc = &pcs->socdata;
@@ -713,15 +609,7 @@ static int pcs_add_pin(struct pcs_device *pcs, unsigned int offset)
 	return i;
 }
 
-/**
- * pcs_allocate_pin_table() - adds all the pins for the pinctrl driver
- * @pcs: pcs driver instance
- *
- * In case of errors, resources are freed in pcs_free_resources.
- *
- * If your hardware needs holes in the address space, then just set
- * up multiple driver instances.
- */
+ 
 static int pcs_allocate_pin_table(struct pcs_device *pcs)
 {
 	int mux_bytes, nr_pins, i;
@@ -760,18 +648,7 @@ static int pcs_allocate_pin_table(struct pcs_device *pcs)
 	return 0;
 }
 
-/**
- * pcs_add_function() - adds a new function to the function list
- * @pcs: pcs driver instance
- * @fcn: new function allocated
- * @name: name of the function
- * @vals: array of mux register value pairs used by the function
- * @nvals: number of mux register value pairs
- * @pgnames: array of pingroup names for the function
- * @npgnames: number of pingroup names
- *
- * Caller must take care of locking.
- */
+ 
 static int pcs_add_function(struct pcs_device *pcs,
 			    struct pcs_function **fcn,
 			    const char *name,
@@ -804,13 +681,7 @@ static int pcs_add_function(struct pcs_device *pcs,
 	return selector;
 }
 
-/**
- * pcs_get_pin_by_offset() - get a pin index based on the register offset
- * @pcs: pcs driver instance
- * @offset: register offset from the base
- *
- * Note that this is OK as long as the pins are in a static array.
- */
+ 
 static int pcs_get_pin_by_offset(struct pcs_device *pcs, unsigned offset)
 {
 	unsigned index;
@@ -829,11 +700,7 @@ static int pcs_get_pin_by_offset(struct pcs_device *pcs, unsigned offset)
 	return index;
 }
 
-/*
- * check whether data matches enable bits or disable bits
- * Return value: 1 for matching enable bits, 0 for matching disable bits,
- *               and negative value for matching failure.
- */
+ 
 static int pcs_config_match(unsigned data, unsigned enable, unsigned disable)
 {
 	int ret = -EINVAL;
@@ -864,7 +731,7 @@ static void add_setting(unsigned long **setting, enum pin_config_param param,
 	(*setting)++;
 }
 
-/* add pinconf setting with 2 parameters */
+ 
 static void pcs_add_conf2(struct pcs_device *pcs, struct device_node *np,
 			  const char *name, enum pin_config_param param,
 			  struct pcs_conf_vals **conf, unsigned long **settings)
@@ -875,15 +742,15 @@ static void pcs_add_conf2(struct pcs_device *pcs, struct device_node *np,
 	ret = of_property_read_u32_array(np, name, value, 2);
 	if (ret)
 		return;
-	/* set value & mask */
+	 
 	value[0] &= value[1];
 	shift = ffs(value[1]) - 1;
-	/* skip enable & disable */
+	 
 	add_config(conf, param, value[0], 0, 0, value[1]);
 	add_setting(settings, param, value[0] >> shift);
 }
 
-/* add pinconf setting with 4 parameters */
+ 
 static void pcs_add_conf4(struct pcs_device *pcs, struct device_node *np,
 			  const char *name, enum pin_config_param param,
 			  struct pcs_conf_vals **conf, unsigned long **settings)
@@ -891,7 +758,7 @@ static void pcs_add_conf4(struct pcs_device *pcs, struct device_node *np,
 	unsigned value[4];
 	int ret;
 
-	/* value to set, enable, disable, mask */
+	 
 	ret = of_property_read_u32_array(np, name, value, 4);
 	if (ret)
 		return;
@@ -932,11 +799,11 @@ static int pcs_parse_pinconf(struct pcs_device *pcs, struct device_node *np,
 			PIN_CONFIG_INPUT_SCHMITT_ENABLE, },
 	};
 
-	/* If pinconf isn't supported, don't parse properties in below. */
+	 
 	if (!PCS_HAS_PINCONF)
 		return -ENOTSUPP;
 
-	/* cacluate how much properties are supported in current node */
+	 
 	for (i = 0; i < ARRAY_SIZE(prop2); i++) {
 		if (of_property_present(np, prop2[i].name))
 			nconfs++;
@@ -975,25 +842,7 @@ static int pcs_parse_pinconf(struct pcs_device *pcs, struct device_node *np,
 	return 0;
 }
 
-/**
- * pcs_parse_one_pinctrl_entry() - parses a device tree mux entry
- * @pcs: pinctrl driver instance
- * @np: device node of the mux entry
- * @map: map entry
- * @num_maps: number of map
- * @pgnames: pingroup names
- *
- * Note that this binding currently supports only sets of one register + value.
- *
- * Also note that this driver tries to avoid understanding pin and function
- * names because of the extra bloat they would cause especially in the case of
- * a large number of pins. This driver just sets what is specified for the board
- * in the .dts file. Further user space debugging tools can be developed to
- * decipher the pin and function names using debugfs.
- *
- * If you are concerned about the boot time, set up the static pins in
- * the bootloader, and only set up selected pins as device tree entries.
- */
+ 
 static int pcs_parse_one_pinctrl_entry(struct pcs_device *pcs,
 						struct device_node *np,
 						struct pinctrl_map **map,
@@ -1162,7 +1011,7 @@ static int pcs_parse_bits_in_pinctrl_entry(struct pcs_device *pcs,
 			break;
 		}
 
-		/* Index plus two value cells */
+		 
 		offset = pinctrl_spec.args[0];
 		val = pinctrl_spec.args[1];
 		mask = pinctrl_spec.args[2];
@@ -1170,7 +1019,7 @@ static int pcs_parse_bits_in_pinctrl_entry(struct pcs_device *pcs,
 		dev_dbg(pcs->dev, "%pOFn index: 0x%x value: 0x%x mask: 0x%x\n",
 			pinctrl_spec.np, offset, val, mask);
 
-		/* Parse pins in each row from LSB */
+		 
 		while (mask) {
 			bit_pos = __ffs(mask);
 			pin_num_from_lsb = bit_pos / pcs->bits_per_pin;
@@ -1242,13 +1091,7 @@ free_vals:
 
 	return res;
 }
-/**
- * pcs_dt_node_to_map() - allocates and parses pinctrl maps
- * @pctldev: pinctrl instance
- * @np_config: device tree pinmux entry
- * @map: array of map entries
- * @num_maps: number of maps
- */
+ 
 static int pcs_dt_node_to_map(struct pinctrl_dev *pctldev,
 				struct device_node *np_config,
 				struct pinctrl_map **map, unsigned *num_maps)
@@ -1259,7 +1102,7 @@ static int pcs_dt_node_to_map(struct pinctrl_dev *pctldev,
 
 	pcs = pinctrl_dev_get_drvdata(pctldev);
 
-	/* create 2 maps. One is for pinmux, and the other is for pinconf. */
+	 
 	*map = devm_kcalloc(pcs->dev, 2, sizeof(**map), GFP_KERNEL);
 	if (!*map)
 		return -ENOMEM;
@@ -1300,10 +1143,7 @@ free_map:
 	return ret;
 }
 
-/**
- * pcs_irq_free() - free interrupt
- * @pcs: pcs driver instance
- */
+ 
 static void pcs_irq_free(struct pcs_device *pcs)
 {
 	struct pcs_soc_data *pcs_soc = &pcs->socdata;
@@ -1320,10 +1160,7 @@ static void pcs_irq_free(struct pcs_device *pcs)
 		irq_set_chained_handler(pcs_soc->irq, NULL);
 }
 
-/**
- * pcs_free_resources() - free memory used by this driver
- * @pcs: pcs driver instance
- */
+ 
 static void pcs_free_resources(struct pcs_device *pcs)
 {
 	pcs_irq_free(pcs);
@@ -1346,7 +1183,7 @@ static int pcs_add_gpio_func(struct device_node *node, struct pcs_device *pcs)
 	for (i = 0; ; i++) {
 		ret = of_parse_phandle_with_args(node, propname, cellname,
 						 i, &gpiospec);
-		/* Do not treat it as error. Only treat it as end condition. */
+		 
 		if (ret) {
 			ret = 0;
 			break;
@@ -1366,13 +1203,7 @@ static int pcs_add_gpio_func(struct device_node *node, struct pcs_device *pcs)
 	return ret;
 }
 
-/**
- * struct pcs_interrupt
- * @reg:	virtual address of interrupt register
- * @hwirq:	hardware irq number
- * @irq:	virtual irq number
- * @node:	list node
- */
+ 
 struct pcs_interrupt {
 	void __iomem *reg;
 	irq_hw_number_t hwirq;
@@ -1380,15 +1211,7 @@ struct pcs_interrupt {
 	struct list_head node;
 };
 
-/**
- * pcs_irq_set() - enables or disables an interrupt
- * @pcs_soc: SoC specific settings
- * @irq: interrupt
- * @enable: enable or disable the interrupt
- *
- * Note that this currently assumes one interrupt per pinctrl
- * register that is typically used for wake-up events.
- */
+ 
 static inline void pcs_irq_set(struct pcs_soc_data *pcs_soc,
 			       int irq, const bool enable)
 {
@@ -1414,7 +1237,7 @@ static inline void pcs_irq_set(struct pcs_soc_data *pcs_soc,
 			mask &= ~soc_mask;
 		pcs->write(mask, pcswi->reg);
 
-		/* flush posted write */
+		 
 		mask = pcs->read(pcswi->reg);
 		raw_spin_unlock(&pcs->lock);
 	}
@@ -1423,10 +1246,7 @@ static inline void pcs_irq_set(struct pcs_soc_data *pcs_soc,
 		pcs_soc->rearm();
 }
 
-/**
- * pcs_irq_mask() - mask pinctrl interrupt
- * @d: interrupt data
- */
+ 
 static void pcs_irq_mask(struct irq_data *d)
 {
 	struct pcs_soc_data *pcs_soc = irq_data_get_irq_chip_data(d);
@@ -1434,10 +1254,7 @@ static void pcs_irq_mask(struct irq_data *d)
 	pcs_irq_set(pcs_soc, d->irq, false);
 }
 
-/**
- * pcs_irq_unmask() - unmask pinctrl interrupt
- * @d: interrupt data
- */
+ 
 static void pcs_irq_unmask(struct irq_data *d)
 {
 	struct pcs_soc_data *pcs_soc = irq_data_get_irq_chip_data(d);
@@ -1445,14 +1262,7 @@ static void pcs_irq_unmask(struct irq_data *d)
 	pcs_irq_set(pcs_soc, d->irq, true);
 }
 
-/**
- * pcs_irq_set_wake() - toggle the suspend and resume wake up
- * @d: interrupt data
- * @state: wake-up state
- *
- * Note that this should be called only for suspend and resume.
- * For runtime PM, the wake-up events should be enabled by default.
- */
+ 
 static int pcs_irq_set_wake(struct irq_data *d, unsigned int state)
 {
 	if (state)
@@ -1463,14 +1273,7 @@ static int pcs_irq_set_wake(struct irq_data *d, unsigned int state)
 	return 0;
 }
 
-/**
- * pcs_irq_handle() - common interrupt handler
- * @pcs_soc: SoC specific settings
- *
- * Note that this currently assumes we have one interrupt bit per
- * mux register. This interrupt is typically used for wake-up events.
- * For more complex interrupts different handlers can be specified.
- */
+ 
 static int pcs_irq_handle(struct pcs_soc_data *pcs_soc)
 {
 	struct pcs_device *pcs;
@@ -1496,14 +1299,7 @@ static int pcs_irq_handle(struct pcs_soc_data *pcs_soc)
 	return count;
 }
 
-/**
- * pcs_irq_handler() - handler for the shared interrupt case
- * @irq: interrupt
- * @d: data
- *
- * Use this for cases where multiple instances of
- * pinctrl-single share a single interrupt like on omaps.
- */
+ 
 static irqreturn_t pcs_irq_handler(int irq, void *d)
 {
 	struct pcs_soc_data *pcs_soc = d;
@@ -1511,13 +1307,7 @@ static irqreturn_t pcs_irq_handler(int irq, void *d)
 	return pcs_irq_handle(pcs_soc) ? IRQ_HANDLED : IRQ_NONE;
 }
 
-/**
- * pcs_irq_chain_handler() - handler for the dedicated chained interrupt case
- * @desc: interrupt descriptor
- *
- * Use this if you have a separate interrupt for each
- * pinctrl-single instance.
- */
+ 
 static void pcs_irq_chain_handler(struct irq_desc *desc)
 {
 	struct pcs_soc_data *pcs_soc = irq_desc_get_handler_data(desc);
@@ -1526,7 +1316,7 @@ static void pcs_irq_chain_handler(struct irq_desc *desc)
 	chip = irq_desc_get_chip(desc);
 	chained_irq_enter(chip, desc);
 	pcs_irq_handle(pcs_soc);
-	/* REVISIT: export and add handle_bad_irq(irq, desc)? */
+	 
 	chained_irq_exit(chip, desc);
 }
 
@@ -1564,11 +1354,7 @@ static const struct irq_domain_ops pcs_irqdomain_ops = {
 	.xlate = irq_domain_xlate_onecell,
 };
 
-/**
- * pcs_irq_init_chained_handler() - set up a chained interrupt handler
- * @pcs: pcs driver instance
- * @np: device node pointer
- */
+ 
 static int pcs_irq_init_chained_handler(struct pcs_device *pcs,
 					struct device_node *np)
 {
@@ -1606,12 +1392,7 @@ static int pcs_irq_init_chained_handler(struct pcs_device *pcs,
 						 pcs_soc);
 	}
 
-	/*
-	 * We can use the register offset as the hardirq
-	 * number as irq_domain_add_simple maps them lazily.
-	 * This way we can easily support more than one
-	 * interrupt per function if needed.
-	 */
+	 
 	num_irqs = pcs->size;
 
 	pcs->domain = irq_domain_add_simple(np, num_irqs, 0,
@@ -1725,16 +1506,7 @@ static int pinctrl_single_resume(struct platform_device *pdev)
 }
 #endif
 
-/**
- * pcs_quirk_missing_pinctrl_cells - handle legacy binding
- * @pcs: pinctrl driver instance
- * @np: device tree node
- * @cells: number of cells
- *
- * Handle legacy binding with no #pinctrl-cells. This should be
- * always two pinctrl-single,bit-per-mux and one for others.
- * At some point we may want to consider removing this.
- */
+ 
 static int pcs_quirk_missing_pinctrl_cells(struct pcs_device *pcs,
 					   struct device_node *np,
 					   int cells)
@@ -1813,7 +1585,7 @@ static int pcs_probe(struct platform_device *pdev)
 		pcs->fshift = __ffs(pcs->fmask);
 		pcs->fmax = pcs->fmask >> pcs->fshift;
 	} else {
-		/* If mask property doesn't exist, function mux is invalid. */
+		 
 		pcs->fmask = 0;
 		pcs->fshift = 0;
 		pcs->fmax = 0;
@@ -1898,7 +1670,7 @@ static int pcs_probe(struct platform_device *pdev)
 	if (pcs->socdata.irq)
 		pcs->flags |= PCS_FEAT_IRQ;
 
-	/* We still need auxdata for some omaps for PRM interrupts */
+	 
 	pdata = dev_get_platdata(&pdev->dev);
 	if (pdata) {
 		if (pdata->rearm)
@@ -1939,25 +1711,25 @@ static int pcs_remove(struct platform_device *pdev)
 
 static const struct pcs_soc_data pinctrl_single_omap_wkup = {
 	.flags = PCS_QUIRK_SHARED_IRQ,
-	.irq_enable_mask = (1 << 14),	/* OMAP_WAKEUP_EN */
-	.irq_status_mask = (1 << 15),	/* OMAP_WAKEUP_EVENT */
+	.irq_enable_mask = (1 << 14),	 
+	.irq_status_mask = (1 << 15),	 
 };
 
 static const struct pcs_soc_data pinctrl_single_dra7 = {
-	.irq_enable_mask = (1 << 24),	/* WAKEUPENABLE */
-	.irq_status_mask = (1 << 25),	/* WAKEUPEVENT */
+	.irq_enable_mask = (1 << 24),	 
+	.irq_status_mask = (1 << 25),	 
 };
 
 static const struct pcs_soc_data pinctrl_single_am437x = {
 	.flags = PCS_QUIRK_SHARED_IRQ | PCS_CONTEXT_LOSS_OFF,
-	.irq_enable_mask = (1 << 29),   /* OMAP_WAKEUP_EN */
-	.irq_status_mask = (1 << 30),   /* OMAP_WAKEUP_EVENT */
+	.irq_enable_mask = (1 << 29),    
+	.irq_status_mask = (1 << 30),    
 };
 
 static const struct pcs_soc_data pinctrl_single_am654 = {
 	.flags = PCS_QUIRK_SHARED_IRQ | PCS_CONTEXT_LOSS_OFF,
-	.irq_enable_mask = (1 << 29),   /* WKUP_EN */
-	.irq_status_mask = (1 << 30),   /* WKUP_EVT */
+	.irq_enable_mask = (1 << 29),    
+	.irq_status_mask = (1 << 30),    
 };
 
 static const struct pcs_soc_data pinctrl_single = {

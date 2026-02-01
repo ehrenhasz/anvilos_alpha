@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/* net/atm/resources.c - Statically allocated resources */
 
-/* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
+ 
 
-/* Fixes
- * Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- * 2002/01 - don't free the whole struct sock on sk->destruct time,
- * 	     use the default destruct function initialized by sock_init_data */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
 
@@ -14,7 +11,7 @@
 #include <linux/string.h>
 #include <linux/atmdev.h>
 #include <linux/sonet.h>
-#include <linux/kernel.h> /* for barrier */
+#include <linux/kernel.h>  
 #include <linux/module.h>
 #include <linux/bitops.h>
 #include <linux/capability.h>
@@ -22,7 +19,7 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 
-#include <net/sock.h>	 /* for struct sock */
+#include <net/sock.h>	  
 
 #include "common.h"
 #include "resources.h"
@@ -139,11 +136,7 @@ void atm_dev_deregister(struct atm_dev *dev)
 	BUG_ON(test_bit(ATM_DF_REMOVED, &dev->flags));
 	set_bit(ATM_DF_REMOVED, &dev->flags);
 
-	/*
-	 * if we remove current device from atm_devs list, new device
-	 * with same number can appear, such we need deregister proc,
-	 * release async all vccs and remove them from vccs list too
-	 */
+	 
 	mutex_lock(&atm_dev_mutex);
 	list_del(&dev->dev_list);
 	mutex_unlock(&atm_dev_mutex);
@@ -347,8 +340,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
 		if (error < 0)
 			goto done;
 		size = error;
-		/* may return 0, but later on size == 0 means "don't
-		   write the length" */
+		 
 		error = put_user(size, sioc_len) ? -EFAULT : 0;
 		goto done;
 	case ATM_SETLOOP:

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_GPIO_H__
 #define __NVBIOS_GPIO_H__
 enum dcb_gpio_func_name {
@@ -35,11 +35,7 @@ struct dcb_gpio_func {
 	u8 line;
 	u8 log[2];
 
-	/* so far, "param" seems to only have an influence on PWM-related
-	 * GPIOs such as FAN_CONTROL and PANEL_BACKLIGHT_LEVEL.
-	 * if param equals 1, hardware PWM is available
-	 * if param equals 0, the host should toggle the GPIO itself
-	 */
+	 
 	u8 param;
 };
 

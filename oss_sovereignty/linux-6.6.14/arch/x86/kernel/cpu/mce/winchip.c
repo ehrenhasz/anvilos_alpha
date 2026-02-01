@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IDT Winchip specific Machine Check Exception Reporting
- * (C) Copyright 2002 Alan Cox <alan@lxorguk.ukuu.org.uk>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -16,7 +13,7 @@
 
 #include "internal.h"
 
-/* Machine check handler for WinChip C6: */
+ 
 noinstr void winchip_machine_check(struct pt_regs *regs)
 {
 	instrumentation_begin();
@@ -25,14 +22,14 @@ noinstr void winchip_machine_check(struct pt_regs *regs)
 	instrumentation_end();
 }
 
-/* Set up machine check reporting on the Winchip C6 series */
+ 
 void winchip_mcheck_init(struct cpuinfo_x86 *c)
 {
 	u32 lo, hi;
 
 	rdmsr(MSR_IDT_FCR1, lo, hi);
-	lo |= (1<<2);	/* Enable EIERRINT (int 18 MCE) */
-	lo &= ~(1<<4);	/* Enable MCE */
+	lo |= (1<<2);	 
+	lo &= ~(1<<4);	 
 	wrmsr(MSR_IDT_FCR1, lo, hi);
 
 	cr4_set_bits(X86_CR4_MCE);

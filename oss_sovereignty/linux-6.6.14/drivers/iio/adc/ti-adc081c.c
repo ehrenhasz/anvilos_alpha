@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI ADC081C/ADC101C/ADC121C 8/10/12-bit ADC driver
- *
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2016 Intel
- *
- * Datasheets:
- *	https://www.ti.com/lit/ds/symlink/adc081c021.pdf
- *	https://www.ti.com/lit/ds/symlink/adc101c021.pdf
- *	https://www.ti.com/lit/ds/symlink/adc121c021.pdf
- *
- * The devices have a very similar interface and differ mostly in the number of
- * bits handled. For the 8-bit and 10-bit models the least-significant 4 or 2
- * bits of value registers are reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -31,10 +17,10 @@ struct adc081c {
 	struct i2c_client *i2c;
 	struct regulator *ref;
 
-	/* 8, 10 or 12 */
+	 
 	int bits;
 
-	/* Ensure natural alignment of buffer elements */
+	 
 	struct {
 		u16 channel;
 		s64 ts __aligned(8);
@@ -112,7 +98,7 @@ DEFINE_ADCxx1C_CHANNELS(adc081c,  8);
 DEFINE_ADCxx1C_CHANNELS(adc101c, 10);
 DEFINE_ADCxx1C_CHANNELS(adc121c, 12);
 
-/* Model ids are indexes in _models array */
+ 
 enum adcxx1c_model_id {
 	ADC081C = 0,
 	ADC101C = 1,
@@ -215,7 +201,7 @@ static const struct i2c_device_id adc081c_id[] = {
 MODULE_DEVICE_TABLE(i2c, adc081c_id);
 
 static const struct acpi_device_id adc081c_acpi_match[] = {
-	/* Used on some AAEON boards */
+	 
 	{ "ADC081C", (kernel_ulong_t)&adcxx1c_models[ADC081C] },
 	{ }
 };

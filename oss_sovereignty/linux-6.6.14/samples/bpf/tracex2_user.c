@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #define MAX_INDEX	64
 #define MAX_STARS	38
 
-/* my_map, my_hist_map */
+ 
 static int map_fd[2];
 
 static void stars(char *str, long val, long max, int width)
@@ -130,7 +130,7 @@ int main(int ac, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -146,12 +146,11 @@ int main(int ac, char **argv)
 	signal(SIGINT, int_exit);
 	signal(SIGTERM, int_exit);
 
-	/* start 'ping' in the background to have some kfree_skb_reason
-	 * events */
+	 
 	f = popen("ping -4 -c5 localhost", "r");
 	(void) f;
 
-	/* start 'dd' in the background to have plenty of 'write' syscalls */
+	 
 	f = popen("dd if=/dev/zero of=/dev/null count=5000000", "r");
 	(void) f;
 

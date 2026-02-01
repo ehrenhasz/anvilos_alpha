@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * trace_events_synth - synthetic trace events
- *
- * Copyright (C) 2015, 2020 Tom Zanussi <tom.zanussi@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kallsyms.h>
@@ -14,7 +10,7 @@
 #include <linux/rculist.h>
 #include <linux/tracefs.h>
 
-/* for gfp flag names */
+ 
 #include <linux/trace_events.h>
 #include <trace/events/mmflags.h>
 #include "trace_probe.h"
@@ -212,7 +208,7 @@ static int synth_field_string_size(char *type)
 		return -EINVAL;
 
 	if (len == 0)
-		return 0; /* variable-length string */
+		return 0;  
 
 	strncpy(buf, start, len);
 	buf[len] = '\0';
@@ -365,13 +361,13 @@ static enum print_line_t print_synth_event(struct trace_iterator *iter,
 
 		fmt = synth_field_fmt(se->fields[i]->type);
 
-		/* parameter types */
+		 
 		if (tr && tr->trace_flags & TRACE_ITER_VERBOSE)
 			trace_seq_printf(s, "%s ", fmt);
 
 		snprintf(print_fmt, sizeof(print_fmt), "%%s=%s%%s", fmt);
 
-		/* parameter values */
+		 
 		if (se->fields[i]->is_string) {
 			if (se->fields[i]->is_dynamic) {
 				union trace_synth_field *data = &entry->fields[n_u64];
@@ -487,11 +483,11 @@ static unsigned int trace_stack(struct synth_trace_event *entry,
 
 	len *= sizeof(long);
 
-	/* Find the dynamic section to copy the stack into. */
+	 
 	data_loc = (void *)entry + data_offset;
 	memcpy(data_loc, stack, len);
 
-	/* Fill in the field that holds the offset/len combo */
+	 
 
 	data->as_dynamic.offset = data_offset;
 	data->as_dynamic.len = len;
@@ -528,7 +524,7 @@ static notrace void trace_event_raw_event_synth(void *__data,
 		str_val = (char *)(long)var_ref_vals[val_idx];
 
 		if (event->dynamic_fields[i]->is_stack) {
-			/* reserve one extra element for size */
+			 
 			len = *((unsigned long *)str_val) + 1;
 			len *= sizeof(unsigned long);
 		} else {
@@ -538,10 +534,7 @@ static notrace void trace_event_raw_event_synth(void *__data,
 		fields_size += len;
 	}
 
-	/*
-	 * Avoid ring buffer recursion detection, as this event
-	 * is being performed within another event.
-	 */
+	 
 	buffer = trace_file->tr->array_buffer.buffer;
 	ring_buffer_nest_start(buffer);
 
@@ -558,7 +551,7 @@ static notrace void trace_event_raw_event_synth(void *__data,
 			len = trace_string(entry, event, str_val,
 					   event->fields[i]->is_dynamic,
 					   data_size, &n_u64);
-			data_size += len; /* only dynamic string increments */
+			data_size += len;  
 		} else if (event->fields[i]->is_stack) {
 			long *stack = (long *)(long)var_ref_vals[val_idx];
 
@@ -610,7 +603,7 @@ static int __set_synth_event_print_fmt(struct synth_event *event,
 	int pos = 0;
 	int i;
 
-	/* When len=0, we just calculate the needed length */
+	 
 #define LEN_OR_ZERO (len ? len - pos : 0)
 
 	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
@@ -637,7 +630,7 @@ static int __set_synth_event_print_fmt(struct synth_event *event,
 
 #undef LEN_OR_ZERO
 
-	/* return the length of print_fmt */
+	 
 	return pos;
 }
 
@@ -647,14 +640,14 @@ static int set_synth_event_print_fmt(struct trace_event_call *call)
 	char *print_fmt;
 	int len;
 
-	/* First: called with 0 length to calculate the needed length */
+	 
 	len = __set_synth_event_print_fmt(event, NULL, 0);
 
 	print_fmt = kmalloc(len + 1, GFP_KERNEL);
 	if (!print_fmt)
 		return -ENOMEM;
 
-	/* Second: actually write the @print_fmt */
+	 
 	__set_synth_event_print_fmt(event, print_fmt, len + 1);
 	call->print_fmt = print_fmt;
 
@@ -671,17 +664,7 @@ static void free_synth_field(struct synth_field *field)
 static int check_field_version(const char *prefix, const char *field_type,
 			       const char *field_name)
 {
-	/*
-	 * For backward compatibility, the old synthetic event command
-	 * format did not require semicolons, and in order to not
-	 * break user space, that old format must still work. If a new
-	 * feature is added, then the format that uses the new feature
-	 * will be required to have semicolons, as nothing that uses
-	 * the old format would be using the new, yet to be created,
-	 * feature. When a new feature is added, this will detect it,
-	 * and return a number greater than 1, and require the format
-	 * to use semicolons.
-	 */
+	 
 	return 1;
 }
 
@@ -900,7 +883,7 @@ static int register_synth_event(struct synth_event *event)
 	}
 
 	ret = set_synth_event_print_fmt(call);
-	/* unregister_trace_event() will be called inside */
+	 
 	if (ret < 0)
 		trace_remove_event_call(call);
  out:
@@ -1009,20 +992,7 @@ static int synth_event_check_arg_fn(void *data)
 	return size ? 0 : -EINVAL;
 }
 
-/**
- * synth_event_add_field - Add a new field to a synthetic event cmd
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @type: The type of the new field to add
- * @name: The name of the new field to add
- *
- * Add a new field to a synthetic event cmd object.  Field ordering is in
- * the same order the fields are added.
- *
- * See synth_field_size() for available types. If field_name contains
- * [n] the field is considered to be an array.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_add_field(struct dynevent_cmd *cmd, const char *type,
 			  const char *name)
 {
@@ -1051,22 +1021,7 @@ int synth_event_add_field(struct dynevent_cmd *cmd, const char *type,
 }
 EXPORT_SYMBOL_GPL(synth_event_add_field);
 
-/**
- * synth_event_add_field_str - Add a new field to a synthetic event cmd
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @type_name: The type and name of the new field to add, as a single string
- *
- * Add a new field to a synthetic event cmd object, as a single
- * string.  The @type_name string is expected to be of the form 'type
- * name', which will be appended by ';'.  No sanity checking is done -
- * what's passed in is assumed to already be well-formed.  Field
- * ordering is in the same order the fields are added.
- *
- * See synth_field_size() for available types. If field_name contains
- * [n] the field is considered to be an array.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_add_field_str(struct dynevent_cmd *cmd, const char *type_name)
 {
 	struct dynevent_arg arg;
@@ -1093,23 +1048,7 @@ int synth_event_add_field_str(struct dynevent_cmd *cmd, const char *type_name)
 }
 EXPORT_SYMBOL_GPL(synth_event_add_field_str);
 
-/**
- * synth_event_add_fields - Add multiple fields to a synthetic event cmd
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @fields: An array of type/name field descriptions
- * @n_fields: The number of field descriptions contained in the fields array
- *
- * Add a new set of fields to a synthetic event cmd object.  The event
- * fields that will be defined for the event should be passed in as an
- * array of struct synth_field_desc, and the number of elements in the
- * array passed in as n_fields.  Field ordering will retain the
- * ordering given in the fields array.
- *
- * See synth_field_size() for available types. If field_name contains
- * [n] the field is considered to be an array.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_add_fields(struct dynevent_cmd *cmd,
 			   struct synth_field_desc *fields,
 			   unsigned int n_fields)
@@ -1132,34 +1071,7 @@ int synth_event_add_fields(struct dynevent_cmd *cmd,
 }
 EXPORT_SYMBOL_GPL(synth_event_add_fields);
 
-/**
- * __synth_event_gen_cmd_start - Start a synthetic event command from arg list
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @name: The name of the synthetic event
- * @mod: The module creating the event, NULL if not created from a module
- * @args: Variable number of arg (pairs), one pair for each field
- *
- * NOTE: Users normally won't want to call this function directly, but
- * rather use the synth_event_gen_cmd_start() wrapper, which
- * automatically adds a NULL to the end of the arg list.  If this
- * function is used directly, make sure the last arg in the variable
- * arg list is NULL.
- *
- * Generate a synthetic event command to be executed by
- * synth_event_gen_cmd_end().  This function can be used to generate
- * the complete command or only the first part of it; in the latter
- * case, synth_event_add_field(), synth_event_add_field_str(), or
- * synth_event_add_fields() can be used to add more fields following
- * this.
- *
- * There should be an even number variable args, each pair consisting
- * of a type followed by a field name.
- *
- * See synth_field_size() for available types. If field_name contains
- * [n] the field is considered to be an array.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int __synth_event_gen_cmd_start(struct dynevent_cmd *cmd, const char *name,
 				struct module *mod, ...)
 {
@@ -1205,31 +1117,7 @@ int __synth_event_gen_cmd_start(struct dynevent_cmd *cmd, const char *name,
 }
 EXPORT_SYMBOL_GPL(__synth_event_gen_cmd_start);
 
-/**
- * synth_event_gen_cmd_array_start - Start synthetic event command from an array
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @name: The name of the synthetic event
- * @mod: The module creating the event, NULL if not created from a module
- * @fields: An array of type/name field descriptions
- * @n_fields: The number of field descriptions contained in the fields array
- *
- * Generate a synthetic event command to be executed by
- * synth_event_gen_cmd_end().  This function can be used to generate
- * the complete command or only the first part of it; in the latter
- * case, synth_event_add_field(), synth_event_add_field_str(), or
- * synth_event_add_fields() can be used to add more fields following
- * this.
- *
- * The event fields that will be defined for the event should be
- * passed in as an array of struct synth_field_desc, and the number of
- * elements in the array passed in as n_fields.  Field ordering will
- * retain the ordering given in the fields array.
- *
- * See synth_field_size() for available types. If field_name contains
- * [n] the field is considered to be an array.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_gen_cmd_array_start(struct dynevent_cmd *cmd, const char *name,
 				    struct module *mod,
 				    struct synth_field_desc *fields,
@@ -1275,12 +1163,7 @@ static int __create_synth_event(const char *name, const char *raw_fields)
 	int i, argc, n_fields = 0, ret = 0;
 	struct synth_event *event = NULL;
 
-	/*
-	 * Argument syntax:
-	 *  - Add synthetic event: <event_name> field[;field] ...
-	 *  - Remove synthetic event: !<event_name> field[;field] ...
-	 *      where 'field' = type field_name
-	 */
+	 
 
 	if (name[0] == '\0') {
 		synth_err(SYNTH_ERR_INVALID_CMD, 0);
@@ -1332,23 +1215,11 @@ static int __create_synth_event(const char *name, const char *raw_fields)
 				goto err_free_arg;
 			}
 
-			/*
-			 * Track the highest version of any field we
-			 * found in the command.
-			 */
+			 
 			if (field_version > cmd_version)
 				cmd_version = field_version;
 
-			/*
-			 * Now sort out what is and isn't valid for
-			 * each supported version.
-			 *
-			 * If we see more than 1 field per loop, it
-			 * means we have multiple fields between
-			 * semicolons, and that's something we no
-			 * longer support in a version 2 or greater
-			 * command.
-			 */
+			 
 			if (cmd_version > 1 && n_fields_this_loop >= 1) {
 				synth_err(SYNTH_ERR_INVALID_CMD, errpos(field_str));
 				ret = -EINVAL;
@@ -1406,30 +1277,7 @@ static int __create_synth_event(const char *name, const char *raw_fields)
 	goto out;
 }
 
-/**
- * synth_event_create - Create a new synthetic event
- * @name: The name of the new synthetic event
- * @fields: An array of type/name field descriptions
- * @n_fields: The number of field descriptions contained in the fields array
- * @mod: The module creating the event, NULL if not created from a module
- *
- * Create a new synthetic event with the given name under the
- * trace/events/synthetic/ directory.  The event fields that will be
- * defined for the event should be passed in as an array of struct
- * synth_field_desc, and the number elements in the array passed in as
- * n_fields. Field ordering will retain the ordering given in the
- * fields array.
- *
- * If the new synthetic event is being created from a module, the mod
- * param must be non-NULL.  This will ensure that the trace buffer
- * won't contain unreadable events.
- *
- * The new synth event should be deleted using synth_event_delete()
- * function.  The new synthetic event can be generated from modules or
- * other kernel code using trace_synth_event() and related functions.
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_create(const char *name, struct synth_field_desc *fields,
 		       unsigned int n_fields, struct module *mod)
 {
@@ -1475,14 +1323,7 @@ static int destroy_synth_event(struct synth_event *se)
 	return ret;
 }
 
-/**
- * synth_event_delete - Delete a synthetic event
- * @event_name: The name of the new synthetic event
- *
- * Delete a synthetic event that was created with synth_event_create().
- *
- * Return: 0 if successful, error otherwise.
- */
+ 
 int synth_event_delete(const char *event_name)
 {
 	struct synth_event *se = NULL;
@@ -1498,16 +1339,7 @@ int synth_event_delete(const char *event_name)
 	mutex_unlock(&event_mutex);
 
 	if (mod) {
-		/*
-		 * It is safest to reset the ring buffer if the module
-		 * being unloaded registered any events that were
-		 * used. The only worry is if a new module gets
-		 * loaded, and takes on the same id as the events of
-		 * this module. When printing out the buffer, traced
-		 * events left over from this module may be passed to
-		 * the new module events and unexpected results may
-		 * occur.
-		 */
+		 
 		tracing_reset_all_online_cpus();
 	}
 
@@ -1608,15 +1440,7 @@ static int synth_event_run_command(struct dynevent_cmd *cmd)
 	return ret;
 }
 
-/**
- * synth_event_cmd_init - Initialize a synthetic event command object
- * @cmd: A pointer to the dynevent_cmd struct representing the new event
- * @buf: A pointer to the buffer used to build the command
- * @maxlen: The length of the buffer passed in @buf
- *
- * Initialize a synthetic event command object.  Use this before
- * calling any of the other dyenvent_cmd functions.
- */
+ 
 void synth_event_cmd_init(struct dynevent_cmd *cmd, char *buf, int maxlen)
 {
 	dynevent_cmd_init(cmd, buf, maxlen, DYNEVENT_TYPE_SYNTH,
@@ -1632,15 +1456,7 @@ __synth_event_trace_init(struct trace_event_file *file,
 
 	memset(trace_state, '\0', sizeof(*trace_state));
 
-	/*
-	 * Normal event tracing doesn't get called at all unless the
-	 * ENABLED bit is set (which attaches the probe thus allowing
-	 * this code to be called, etc).  Because this is called
-	 * directly by the user, we don't have that but we still need
-	 * to honor not logging when disabled.  For the iterated
-	 * trace case, we save the enabled state upon start and just
-	 * ignore the following data calls.
-	 */
+	 
 	if (!(file->flags & EVENT_FILE_FL_ENABLED) ||
 	    trace_trigger_soft_disabled(file)) {
 		trace_state->disabled = true;
@@ -1664,10 +1480,7 @@ __synth_event_trace_start(struct trace_event_file *file,
 	fields_size = trace_state->event->n_u64 * sizeof(u64);
 	fields_size += dynamic_fields_size;
 
-	/*
-	 * Avoid ring buffer recursion detection, as this event
-	 * is being performed within another event.
-	 */
+	 
 	trace_state->buffer = file->tr->array_buffer.buffer;
 	ring_buffer_nest_start(trace_state->buffer);
 
@@ -1691,25 +1504,7 @@ __synth_event_trace_end(struct synth_event_trace_state *trace_state)
 	ring_buffer_nest_end(trace_state->buffer);
 }
 
-/**
- * synth_event_trace - Trace a synthetic event
- * @file: The trace_event_file representing the synthetic event
- * @n_vals: The number of values in vals
- * @args: Variable number of args containing the event values
- *
- * Trace a synthetic event using the values passed in the variable
- * argument list.
- *
- * The argument list should be a list 'n_vals' u64 values.  The number
- * of vals must match the number of field in the synthetic event, and
- * must be in the same order as the synthetic event fields.
- *
- * All vals should be cast to u64, and string vals are just pointers
- * to strings, cast to u64.  Strings will be copied into space
- * reserved in the event for the string, using these pointers.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_trace(struct trace_event_file *file, unsigned int n_vals, ...)
 {
 	unsigned int i, n_u64, len, data_size = 0;
@@ -1720,7 +1515,7 @@ int synth_event_trace(struct trace_event_file *file, unsigned int n_vals, ...)
 	ret = __synth_event_trace_init(file, &state);
 	if (ret) {
 		if (ret == -ENOENT)
-			ret = 0; /* just disabled, not really an error */
+			ret = 0;  
 		return ret;
 	}
 
@@ -1764,7 +1559,7 @@ int synth_event_trace(struct trace_event_file *file, unsigned int n_vals, ...)
 			len = trace_string(state.entry, state.event, str_val,
 					   state.event->fields[i]->is_dynamic,
 					   data_size, &n_u64);
-			data_size += len; /* only dynamic string increments */
+			data_size += len;  
 		} else {
 			struct synth_field *field = state.event->fields[i];
 
@@ -1796,24 +1591,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(synth_event_trace);
 
-/**
- * synth_event_trace_array - Trace a synthetic event from an array
- * @file: The trace_event_file representing the synthetic event
- * @vals: Array of values
- * @n_vals: The number of values in vals
- *
- * Trace a synthetic event using the values passed in as 'vals'.
- *
- * The 'vals' array is just an array of 'n_vals' u64.  The number of
- * vals must match the number of field in the synthetic event, and
- * must be in the same order as the synthetic event fields.
- *
- * All vals should be cast to u64, and string vals are just pointers
- * to strings, cast to u64.  Strings will be copied into space
- * reserved in the event for the string, using these pointers.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_trace_array(struct trace_event_file *file, u64 *vals,
 			    unsigned int n_vals)
 {
@@ -1825,7 +1603,7 @@ int synth_event_trace_array(struct trace_event_file *file, u64 *vals,
 	ret = __synth_event_trace_init(file, &state);
 	if (ret) {
 		if (ret == -ENOENT)
-			ret = 0; /* just disabled, not really an error */
+			ret = 0;  
 		return ret;
 	}
 
@@ -1856,7 +1634,7 @@ int synth_event_trace_array(struct trace_event_file *file, u64 *vals,
 			len = trace_string(state.entry, state.event, str_val,
 					   state.event->fields[i]->is_dynamic,
 					   data_size, &n_u64);
-			data_size += len; /* only dynamic string increments */
+			data_size += len;  
 		} else {
 			struct synth_field *field = state.event->fields[i];
 			u64 val = vals[i];
@@ -1888,34 +1666,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(synth_event_trace_array);
 
-/**
- * synth_event_trace_start - Start piecewise synthetic event trace
- * @file: The trace_event_file representing the synthetic event
- * @trace_state: A pointer to object tracking the piecewise trace state
- *
- * Start the trace of a synthetic event field-by-field rather than all
- * at once.
- *
- * This function 'opens' an event trace, which means space is reserved
- * for the event in the trace buffer, after which the event's
- * individual field values can be set through either
- * synth_event_add_next_val() or synth_event_add_val().
- *
- * A pointer to a trace_state object is passed in, which will keep
- * track of the current event trace state until the event trace is
- * closed (and the event finally traced) using
- * synth_event_trace_end().
- *
- * Note that synth_event_trace_end() must be called after all values
- * have been added for each event trace, regardless of whether adding
- * all field values succeeded or not.
- *
- * Note also that for a given event trace, all fields must be added
- * using either synth_event_add_next_val() or synth_event_add_val()
- * but not both together or interleaved.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_trace_start(struct trace_event_file *file,
 			    struct synth_event_trace_state *trace_state)
 {
@@ -1927,7 +1678,7 @@ int synth_event_trace_start(struct trace_event_file *file,
 	ret = __synth_event_trace_init(file, trace_state);
 	if (ret) {
 		if (ret == -ENOENT)
-			ret = 0; /* just disabled, not really an error */
+			ret = 0;  
 		return ret;
 	}
 
@@ -1953,7 +1704,7 @@ static int __synth_event_add_val(const char *field_name, u64 val,
 		goto out;
 	}
 
-	/* can't mix add_next_synth_val() with add_synth_val() */
+	 
 	if (field_name) {
 		if (trace_state->add_next) {
 			ret = -EINVAL;
@@ -1995,7 +1746,7 @@ static int __synth_event_add_val(const char *field_name, u64 val,
 		char *str_val = (char *)(long)val;
 		char *str_field;
 
-		if (field->is_dynamic) { /* add_val can't do dynamic strings */
+		if (field->is_dynamic) {  
 			ret = -EINVAL;
 			goto out;
 		}
@@ -2030,34 +1781,7 @@ static int __synth_event_add_val(const char *field_name, u64 val,
 	return ret;
 }
 
-/**
- * synth_event_add_next_val - Add the next field's value to an open synth trace
- * @val: The value to set the next field to
- * @trace_state: A pointer to object tracking the piecewise trace state
- *
- * Set the value of the next field in an event that's been opened by
- * synth_event_trace_start().
- *
- * The val param should be the value cast to u64.  If the value points
- * to a string, the val param should be a char * cast to u64.
- *
- * This function assumes all the fields in an event are to be set one
- * after another - successive calls to this function are made, one for
- * each field, in the order of the fields in the event, until all
- * fields have been set.  If you'd rather set each field individually
- * without regard to ordering, synth_event_add_val() can be used
- * instead.
- *
- * Note however that synth_event_add_next_val() and
- * synth_event_add_val() can't be intermixed for a given event trace -
- * one or the other but not both can be used at the same time.
- *
- * Note also that synth_event_trace_end() must be called after all
- * values have been added for each event trace, regardless of whether
- * adding all field values succeeded or not.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_add_next_val(u64 val,
 			     struct synth_event_trace_state *trace_state)
 {
@@ -2065,34 +1789,7 @@ int synth_event_add_next_val(u64 val,
 }
 EXPORT_SYMBOL_GPL(synth_event_add_next_val);
 
-/**
- * synth_event_add_val - Add a named field's value to an open synth trace
- * @field_name: The name of the synthetic event field value to set
- * @val: The value to set the named field to
- * @trace_state: A pointer to object tracking the piecewise trace state
- *
- * Set the value of the named field in an event that's been opened by
- * synth_event_trace_start().
- *
- * The val param should be the value cast to u64.  If the value points
- * to a string, the val param should be a char * cast to u64.
- *
- * This function looks up the field name, and if found, sets the field
- * to the specified value.  This lookup makes this function more
- * expensive than synth_event_add_next_val(), so use that or the
- * none-piecewise synth_event_trace() instead if efficiency is more
- * important.
- *
- * Note however that synth_event_add_next_val() and
- * synth_event_add_val() can't be intermixed for a given event trace -
- * one or the other but not both can be used at the same time.
- *
- * Note also that synth_event_trace_end() must be called after all
- * values have been added for each event trace, regardless of whether
- * adding all field values succeeded or not.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_add_val(const char *field_name, u64 val,
 			struct synth_event_trace_state *trace_state)
 {
@@ -2100,26 +1797,7 @@ int synth_event_add_val(const char *field_name, u64 val,
 }
 EXPORT_SYMBOL_GPL(synth_event_add_val);
 
-/**
- * synth_event_trace_end - End piecewise synthetic event trace
- * @trace_state: A pointer to object tracking the piecewise trace state
- *
- * End the trace of a synthetic event opened by
- * synth_event_trace__start().
- *
- * This function 'closes' an event trace, which basically means that
- * it commits the reserved event and cleans up other loose ends.
- *
- * A pointer to a trace_state object is passed in, which will keep
- * track of the current event trace state opened with
- * synth_event_trace_start().
- *
- * Note that this function must be called after all values have been
- * added for each event trace, regardless of whether adding all field
- * values succeeded or not.
- *
- * Return: 0 on success, err otherwise.
- */
+ 
 int synth_event_trace_end(struct synth_event_trace_state *trace_state)
 {
 	if (!trace_state)
@@ -2145,7 +1823,7 @@ static int create_synth_event(const char *raw_command)
 
 	name = raw_command;
 
-	/* Don't try to process if not our system */
+	 
 	if (name[0] != 's' || name[1] != ':')
 		return -ECANCELED;
 	name += 2;
@@ -2158,7 +1836,7 @@ static int create_synth_event(const char *raw_command)
 
 	fields = skip_spaces(p);
 
-	/* This interface accepts group name prefix */
+	 
 	if (strchr(name, '/')) {
 		len = str_has_prefix(name, SYNTH_SYSTEM "/");
 		if (len == 0) {
@@ -2220,12 +1898,12 @@ static int __synth_event_show(struct seq_file *m, struct synth_event *event)
 
 		type = field->type;
 		t = strstr(type, "__data_loc");
-		if (t) { /* __data_loc belongs in format but not event desc */
+		if (t) {  
 			t += sizeof("__data_loc");
 			type = t;
 		}
 
-		/* parameter values */
+		 
 		seq_printf(m, "%s %s%s", type, field->name,
 			   i == event->n_fields - 1 ? "" : "; ");
 	}
@@ -2294,10 +1972,7 @@ static const struct file_operations synth_events_fops = {
 	.release        = seq_release,
 };
 
-/*
- * Register dynevent at core_initcall. This allows kernel to setup kprobe
- * events in postcore_initcall without tracefs.
- */
+ 
 static __init int trace_events_synth_init_early(void)
 {
 	int err = 0;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * caam - Freescale FSL CAAM support for hw_random
- *
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2018-2019, 2023 NXP
- *
- * Based on caamalg.c crypto API driver.
- *
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/completion.h>
@@ -26,14 +18,12 @@
 
 #define CAAM_RNG_MAX_FIFO_STORE_SIZE	16
 
-/*
- * Length of used descriptors, see caam_init_desc()
- */
+ 
 #define CAAM_RNG_DESC_LEN (CAAM_CMD_SZ +				\
 			   CAAM_CMD_SZ +				\
 			   CAAM_CMD_SZ + CAAM_PTR_SZ_MAX)
 
-/* rng per-device context */
+ 
 struct caam_rng_ctx {
 	struct hwrng rng;
 	struct device *jrdev;
@@ -67,11 +57,11 @@ static void caam_rng_done(struct device *jrdev, u32 *desc, u32 err,
 
 static u32 *caam_init_desc(u32 *desc, dma_addr_t dst_dma)
 {
-	init_job_desc(desc, 0);	/* + 1 cmd_sz */
-	/* Generate random bytes: + 1 cmd_sz */
+	init_job_desc(desc, 0);	 
+	 
 	append_operation(desc, OP_ALG_ALGSEL_RNG | OP_TYPE_CLASS1_ALG |
 			 OP_ALG_PR_ON);
-	/* Store bytes: + 1 cmd_sz + caam_ptr_sz  */
+	 
 	append_fifo_store(desc, dst_dma,
 			  CAAM_RNG_MAX_FIFO_STORE_SIZE, FIFOST_TYPE_RNGSTORE);
 
@@ -246,10 +236,7 @@ static int caam_init(struct hwrng *rng)
 		return err;
 	}
 
-	/*
-	 * Fill async buffer to have early randomness data for
-	 * hw_random
-	 */
+	 
 	caam_rng_fill_async(ctx);
 
 	return 0;
@@ -269,7 +256,7 @@ int caam_rng_init(struct device *ctrldev)
 	struct caam_drv_private *priv = dev_get_drvdata(ctrldev);
 	int ret;
 
-	/* Check for an instantiated RNG before registration */
+	 
 	if (priv->era < 10)
 		rng_inst = (rd_reg32(&priv->jr[0]->perfmon.cha_num_ls) &
 			    CHA_ID_LS_RNG_MASK) >> CHA_ID_LS_RNG_SHIFT;

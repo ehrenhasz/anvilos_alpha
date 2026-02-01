@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO mockup cdev test helper
- *
- * Copyright (C) 2020 Kent Gibson
- */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS42L43 SPI Controller Driver
-//
-// Copyright (C) 2022-2023 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -158,7 +158,7 @@ static int cs42l43_prepare_message(struct spi_controller *ctlr, struct spi_messa
 	struct spi_device *spi = msg->spi;
 	unsigned int spi_config1 = 0;
 
-	/* select another internal CS, which doesn't exist, so CS 0 is not used */
+	 
 	if (spi_get_csgpiod(spi, 0))
 		spi_config1 |= 1 << CS42L43_SPI_SS_SEL_SHIFT;
 	if (spi->mode & SPI_CPOL)
@@ -250,7 +250,7 @@ static int cs42l43_spi_probe(struct platform_device *pdev)
 	regmap_write(priv->regmap, CS42L43_TRAN_CONFIG6, CS42L43_FIFO_SIZE - 1);
 	regmap_write(priv->regmap, CS42L43_TRAN_CONFIG7, CS42L43_FIFO_SIZE - 1);
 
-	// Disable Watchdog timer and enable stall
+	
 	regmap_write(priv->regmap, CS42L43_SPI_CONFIG3, 0);
 	regmap_write(priv->regmap, CS42L43_SPI_CONFIG4, CS42L43_SPI_STALL_ENA_MASK);
 

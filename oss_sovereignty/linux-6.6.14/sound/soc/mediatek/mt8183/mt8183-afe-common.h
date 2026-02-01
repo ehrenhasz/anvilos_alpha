@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8183-afe-common.h  --  Mediatek 8183 audio driver definitions
- *
- * Copyright (c) 2018 MediaTek Inc.
- * Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT_8183_AFE_COMMON_H_
 #define _MT_8183_AFE_COMMON_H_
@@ -48,7 +43,7 @@ enum {
 	MT8183_IRQ_5,
 	MT8183_IRQ_6,
 	MT8183_IRQ_7,
-	MT8183_IRQ_8,	/* hw bundle to TDM */
+	MT8183_IRQ_8,	 
 	MT8183_IRQ_11,
 	MT8183_IRQ_12,
 	MT8183_IRQ_NUM,
@@ -60,7 +55,7 @@ enum {
 	MT8183_MTKAIF_PROTOCOL_2_CLK_P2,
 };
 
-/* MCLK */
+ 
 enum {
 	MT8183_I2S0_MCK = 0,
 	MT8183_I2S1_MCK,
@@ -79,10 +74,10 @@ struct mt8183_afe_private {
 
 	int pm_runtime_bypass_reg_ctl;
 
-	/* dai */
+	 
 	void *dai_priv[MT8183_DAI_NUM];
 
-	/* adda */
+	 
 	int mtkaif_protocol;
 	int mtkaif_calibration_ok;
 	int mtkaif_chosen_phase[4];
@@ -90,7 +85,7 @@ struct mt8183_afe_private {
 	int mtkaif_calibration_num_phase;
 	int mtkaif_dmic;
 
-	/* mck */
+	 
 	int mck_rate[MT8183_MCK_NUM];
 };
 
@@ -102,7 +97,7 @@ unsigned int mt8183_rate_transform(struct device *dev,
 int mt8183_dai_i2s_set_share(struct mtk_base_afe *afe, const char *main_i2s_name,
 			     const char *secondary_i2s_name);
 
-/* dai register */
+ 
 int mt8183_dai_adda_register(struct mtk_base_afe *afe);
 int mt8183_dai_pcm_register(struct mtk_base_afe *afe);
 int mt8183_dai_i2s_register(struct mtk_base_afe *afe);

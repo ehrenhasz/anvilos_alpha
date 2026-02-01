@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -302,12 +302,10 @@ static ssize_t mlxsw_hwmon_module_temp_fault_show(struct device *dev,
 
 	mlxsw_reg_mtbr_temp_unpack(mtbr_pl, 0, &temp, NULL);
 
-	/* Update status and temperature cache. */
+	 
 	switch (temp) {
 	case MLXSW_REG_MTBR_BAD_SENS_INFO:
-		/* Untrusted cable is connected. Reading temperature from its
-		 * sensor is faulty.
-		 */
+		 
 		fault = 1;
 		break;
 	case MLXSW_REG_MTBR_NO_CONN:
@@ -698,11 +696,7 @@ static int mlxsw_hwmon_module_init(struct mlxsw_hwmon_dev *mlxsw_hwmon_dev)
 	mlxsw_reg_mgpir_unpack(mgpir_pl, NULL, NULL, NULL,
 			       &module_sensor_max, NULL);
 
-	/* Add extra attributes for module temperature. Sensor index is
-	 * assigned to sensor_count value, while all indexed before
-	 * sensor_count are already utilized by the sensors connected through
-	 * mtmp register by mlxsw_hwmon_temp_init().
-	 */
+	 
 	mlxsw_hwmon_dev->module_sensor_max = mlxsw_hwmon_dev->sensor_count +
 					     module_sensor_max;
 	for (i = mlxsw_hwmon_dev->sensor_count;
@@ -797,9 +791,7 @@ mlxsw_hwmon_got_active(struct mlxsw_core *mlxsw_core, u8 slot_index,
 	linecard = &hwmon->line_cards[slot_index];
 	if (linecard->active)
 		return;
-	/* For the main board, module sensor indexes start from 1, sensor index
-	 * 0 is used for the ASIC. Use the same numbering for line cards.
-	 */
+	 
 	linecard->sensor_count = 1;
 	linecard->slot_index = slot_index;
 	linecard->hwmon = hwmon;
@@ -844,7 +836,7 @@ mlxsw_hwmon_got_inactive(struct mlxsw_core *mlxsw_core, u8 slot_index,
 		return;
 	linecard->active = false;
 	hwmon_device_unregister(linecard->hwmon_dev);
-	/* Reset attributes counter */
+	 
 	linecard->attrs_count = 0;
 }
 

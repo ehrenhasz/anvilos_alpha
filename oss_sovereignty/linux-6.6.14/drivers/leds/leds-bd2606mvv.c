@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Andreas Kemnade
- *
- * Datasheet:
- * https://fscdn.rohm.com/en/products/databook/datasheet/ic/power/led_driver/bd2606mvv_1-e.pdf
- *
- * If LED brightness cannot be controlled independently due to shared
- * brightness registers, max_brightness is set to 1 and only on/off
- * is possible for the affected LED pair.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -48,7 +39,7 @@ bd2606mvv_brightness_set(struct led_classdev *led_cdev,
 					  1 << led->led_no,
 					  0);
 
-	/* shared brightness register */
+	 
 	err = regmap_write(priv->regmap, led->led_no / 2,
 			   led_cdev->max_brightness == 1 ?
 			   BD2606_MAX_BRIGHTNESS : brightness);
@@ -122,7 +113,7 @@ static int bd2606mvv_probe(struct i2c_client *client)
 			continue;
 
 		init_data.fwnode = led_fwnodes[i];
-		/* Check whether brightness can be independently adjusted. */
+		 
 		if (active_pairs[i / 2] == 2)
 			priv->leds[i].ldev.max_brightness = 1;
 

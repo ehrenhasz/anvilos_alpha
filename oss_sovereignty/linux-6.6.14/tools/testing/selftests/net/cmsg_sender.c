@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <errno.h>
 #include <error.h>
 #include <netdb.h>
@@ -20,9 +20,9 @@
 
 enum {
 	ERN_SUCCESS = 0,
-	/* Well defined errors, callers may depend on these */
+	 
 	ERN_SEND = 1,
-	/* Informational, can reorder */
+	 
 	ERN_HELP,
 	ERN_SEND_SHORT,
 	ERN_SOCK_CREATE,
@@ -494,7 +494,7 @@ int main(int argc, char *argv[])
 		err = ERN_SUCCESS;
 	}
 
-	/* Make sure all timestamps have time to loop back */
+	 
 	usleep(opt.txtime.delay);
 
 	cs_read_cmsg(fd, &msg, cbuf, sizeof(cbuf));

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Authors:
- * Seung-Woo Kim <sw0312.kim@samsung.com>
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *
- * Based on drivers/media/video/s5p-tv/mixer_reg.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -41,23 +33,15 @@
 #define MIXER_WIN_NR		3
 #define VP_DEFAULT_WIN		2
 
-/*
- * Mixer color space conversion coefficient triplet.
- * Used for CSC from RGB to YCbCr.
- * Each coefficient is a 10-bit fixed point number with
- * sign and no integer part, i.e.
- * [0:8] = fractional part (representing a value y = x / 2^9)
- * [9] = sign
- * Negative values are encoded with two's complement.
- */
+ 
 #define MXR_CSC_C(x) ((int)((x) * 512.0) & 0x3ff)
 #define MXR_CSC_CT(a0, a1, a2) \
   ((MXR_CSC_C(a0) << 20) | (MXR_CSC_C(a1) << 10) | (MXR_CSC_C(a2) << 0))
 
-/* YCbCr value, used for mixer background color configuration. */
+ 
 #define MXR_YCBCR_VAL(y, cb, cr) (((y) << 16) | ((cb) << 8) | ((cr) << 0))
 
-/* The pixelformats that are natively supported by the mixer. */
+ 
 #define MXR_FORMAT_RGB565	4
 #define MXR_FORMAT_ARGB1555	5
 #define MXR_FORMAT_ARGB4444	6
@@ -291,7 +275,7 @@ do { \
 static inline void vp_filter_set(struct mixer_context *ctx,
 		int reg_id, const u8 *data, unsigned int size)
 {
-	/* assure 4-byte align */
+	 
 	BUG_ON(size & 3);
 	for (; size; size -= 4, reg_id += 4, data += 4) {
 		u32 val = (data[0] << 24) |  (data[1] << 16) |
@@ -316,7 +300,7 @@ static void mixer_cfg_gfx_blend(struct mixer_context *ctx, unsigned int win,
 	u32 win_alpha = alpha >> 8;
 	u32 val;
 
-	val  = MXR_GRP_CFG_COLOR_KEY_DISABLE; /* no blank key */
+	val  = MXR_GRP_CFG_COLOR_KEY_DISABLE;  
 	switch (pixel_alpha) {
 	case DRM_MODE_BLEND_PIXEL_NONE:
 		break;
@@ -412,7 +396,7 @@ static void mixer_cfg_scan(struct mixer_context *ctx, int width, int height)
 {
 	u32 val;
 
-	/* choosing between interlace and progressive mode */
+	 
 	val = test_bit(MXR_BIT_INTERLACE, &ctx->flags) ?
 		MXR_CFG_SCAN_INTERLACE : MXR_CFG_SCAN_PROGRESSIVE;
 
@@ -435,7 +419,7 @@ static void mixer_cfg_rgb_fmt(struct mixer_context *ctx, struct drm_display_mode
 	} else {
 		val = MXR_CFG_RGB709;
 
-		/* Configure the BT.709 CSC matrix for full range RGB. */
+		 
 		mixer_reg_write(ctx, MXR_CM_COEFF_Y,
 			MXR_CSC_CT( 0.184,  0.614,  0.063) |
 			MXR_CM_COEFF_RGB_FULL);
@@ -543,19 +527,19 @@ static void vp_video_buffer(struct mixer_context *ctx,
 
 	spin_lock_irqsave(&ctx->reg_slock, flags);
 
-	/* interlace or progressive scan mode */
+	 
 	val = (test_bit(MXR_BIT_INTERLACE, &ctx->flags) ? ~0 : 0);
 	vp_reg_writemask(ctx, VP_MODE, val, VP_MODE_LINE_SKIP);
 
-	/* setup format */
+	 
 	val = (is_nv21 ? VP_MODE_NV21 : VP_MODE_NV12);
 	val |= (is_tiled ? VP_MODE_MEM_TILED : VP_MODE_MEM_LINEAR);
 	vp_reg_writemask(ctx, VP_MODE, val, VP_MODE_FMT_MASK);
 
-	/* setting size of input image */
+	 
 	vp_reg_write(ctx, VP_IMG_SIZE_Y, VP_IMG_HSIZE(fb->pitches[0]) |
 		VP_IMG_VSIZE(fb->height));
-	/* chroma plane for NV12/NV21 is half the height of the luma plane */
+	 
 	vp_reg_write(ctx, VP_IMG_SIZE_C, VP_IMG_HSIZE(fb->pitches[1]) |
 		VP_IMG_VSIZE(fb->height / 2));
 
@@ -582,7 +566,7 @@ static void vp_video_buffer(struct mixer_context *ctx,
 
 	vp_reg_write(ctx, VP_ENDIAN_MODE, VP_ENDIAN_MODE_LITTLE);
 
-	/* set buffer address to vp */
+	 
 	vp_reg_write(ctx, VP_TOP_Y_PTR, luma_addr[0]);
 	vp_reg_write(ctx, VP_BOT_Y_PTR, luma_addr[1]);
 	vp_reg_write(ctx, VP_TOP_C_PTR, chroma_addr[0]);
@@ -640,25 +624,25 @@ static void mixer_graph_buffer(struct mixer_context *ctx,
 		break;
 	}
 
-	/* ratio is already checked by common plane code */
+	 
 	x_ratio = state->h_ratio == (1 << 15);
 	y_ratio = state->v_ratio == (1 << 15);
 
 	dst_x_offset = state->crtc.x;
 	dst_y_offset = state->crtc.y;
 
-	/* translate dma address base s.t. the source image offset is zero */
+	 
 	dma_addr = exynos_drm_fb_dma_addr(fb, 0)
 		+ (state->src.x * fb->format->cpp[0])
 		+ (state->src.y * fb->pitches[0]);
 
 	spin_lock_irqsave(&ctx->reg_slock, flags);
 
-	/* setup format */
+	 
 	mixer_reg_writemask(ctx, MXR_GRAPHIC_CFG(win),
 		MXR_GRP_CFG_FORMAT_VAL(fmt), MXR_GRP_CFG_FORMAT_MASK);
 
-	/* setup geometry */
+	 
 	mixer_reg_write(ctx, MXR_GRAPHIC_SPAN(win),
 			fb->pitches[0] / fb->format->cpp[0]);
 
@@ -668,12 +652,12 @@ static void mixer_graph_buffer(struct mixer_context *ctx,
 	val |= MXR_GRP_WH_V_SCALE(y_ratio);
 	mixer_reg_write(ctx, MXR_GRAPHIC_WH(win), val);
 
-	/* setup offsets in display image */
+	 
 	val  = MXR_GRP_DXY_DX(dst_x_offset);
 	val |= MXR_GRP_DXY_DY(dst_y_offset);
 	mixer_reg_write(ctx, MXR_GRAPHIC_DXY(win), val);
 
-	/* set buffer address to mixer */
+	 
 	mixer_reg_write(ctx, MXR_GRAPHIC_BASE(win), dma_addr);
 
 	mixer_cfg_layer(ctx, win, priority, true);
@@ -690,7 +674,7 @@ static void vp_win_reset(struct mixer_context *ctx)
 
 	vp_reg_write(ctx, VP_SRESET, VP_SRESET_PROCESSING);
 	while (--tries) {
-		/* waiting until VP_SRESET_PROCESSING is 0 */
+		 
 		if (~vp_reg_read(ctx, VP_SRESET) & VP_SRESET_PROCESSING)
 			break;
 		mdelay(10);
@@ -706,34 +690,34 @@ static void mixer_win_reset(struct mixer_context *ctx)
 
 	mixer_reg_writemask(ctx, MXR_CFG, MXR_CFG_DST_HDMI, MXR_CFG_DST_MASK);
 
-	/* set output in RGB888 mode */
+	 
 	mixer_reg_writemask(ctx, MXR_CFG, MXR_CFG_OUT_RGB888, MXR_CFG_OUT_MASK);
 
-	/* 16 beat burst in DMA */
+	 
 	mixer_reg_writemask(ctx, MXR_STATUS, MXR_STATUS_16_BURST,
 		MXR_STATUS_BURST_MASK);
 
-	/* reset default layer priority */
+	 
 	mixer_reg_write(ctx, MXR_LAYER_CFG, 0);
 
-	/* set all background colors to RGB (0,0,0) */
+	 
 	mixer_reg_write(ctx, MXR_BG_COLOR0, MXR_YCBCR_VAL(0, 128, 128));
 	mixer_reg_write(ctx, MXR_BG_COLOR1, MXR_YCBCR_VAL(0, 128, 128));
 	mixer_reg_write(ctx, MXR_BG_COLOR2, MXR_YCBCR_VAL(0, 128, 128));
 
 	if (test_bit(MXR_BIT_VP_ENABLED, &ctx->flags)) {
-		/* configuration of Video Processor Registers */
+		 
 		vp_win_reset(ctx);
 		vp_default_filter(ctx);
 	}
 
-	/* disable all layers */
+	 
 	mixer_reg_writemask(ctx, MXR_CFG, 0, MXR_CFG_GRP0_ENABLE);
 	mixer_reg_writemask(ctx, MXR_CFG, 0, MXR_CFG_GRP1_ENABLE);
 	if (test_bit(MXR_BIT_VP_ENABLED, &ctx->flags))
 		mixer_reg_writemask(ctx, MXR_CFG, 0, MXR_CFG_VP_ENABLE);
 
-	/* set all source image offsets to zero */
+	 
 	mixer_reg_write(ctx, MXR_GRAPHIC_SXY(0), 0);
 	mixer_reg_write(ctx, MXR_GRAPHIC_SXY(1), 0);
 
@@ -747,16 +731,16 @@ static irqreturn_t mixer_irq_handler(int irq, void *arg)
 
 	spin_lock(&ctx->reg_slock);
 
-	/* read interrupt status for handling and clearing flags for VSYNC */
+	 
 	val = mixer_reg_read(ctx, MXR_INT_STATUS);
 
-	/* handling VSYNC */
+	 
 	if (val & MXR_INT_STATUS_VSYNC) {
-		/* vsync interrupt use different bit for read and clear */
+		 
 		val |= MXR_INT_CLEAR_VSYNC;
 		val &= ~MXR_INT_STATUS_VSYNC;
 
-		/* interlace scan need to check shadow register */
+		 
 		if (test_bit(MXR_BIT_INTERLACE, &ctx->flags)
 		    && !mixer_is_synced(ctx))
 			goto out;
@@ -765,7 +749,7 @@ static irqreturn_t mixer_irq_handler(int irq, void *arg)
 	}
 
 out:
-	/* clear interrupts */
+	 
 	mixer_reg_write(ctx, MXR_INT_STATUS, val);
 
 	spin_unlock(&ctx->reg_slock);
@@ -877,7 +861,7 @@ static int mixer_initialize(struct mixer_context *mixer_ctx,
 
 	mixer_ctx->drm_dev = drm_dev;
 
-	/* acquire resources: regs, irqs, clocks */
+	 
 	ret = mixer_resources_init(mixer_ctx);
 	if (ret) {
 		DRM_DEV_ERROR(mixer_ctx->dev,
@@ -886,7 +870,7 @@ static int mixer_initialize(struct mixer_context *mixer_ctx,
 	}
 
 	if (test_bit(MXR_BIT_VP_ENABLED, &mixer_ctx->flags)) {
-		/* acquire vp resources: regs, irqs, clocks */
+		 
 		ret = vp_resources_init(mixer_ctx);
 		if (ret) {
 			DRM_DEV_ERROR(mixer_ctx->dev,
@@ -913,7 +897,7 @@ static int mixer_enable_vblank(struct exynos_drm_crtc *crtc)
 	if (!test_bit(MXR_BIT_POWERED, &mixer_ctx->flags))
 		return 0;
 
-	/* enable vsync interrupt */
+	 
 	mixer_reg_writemask(mixer_ctx, MXR_INT_STATUS, ~0, MXR_INT_CLEAR_VSYNC);
 	mixer_reg_writemask(mixer_ctx, MXR_INT_EN, ~0, MXR_INT_EN_VSYNC);
 
@@ -929,7 +913,7 @@ static void mixer_disable_vblank(struct exynos_drm_crtc *crtc)
 	if (!test_bit(MXR_BIT_POWERED, &mixer_ctx->flags))
 		return;
 
-	/* disable vsync interrupt */
+	 
 	mixer_reg_writemask(mixer_ctx, MXR_INT_STATUS, ~0, MXR_INT_CLEAR_VSYNC);
 	mixer_reg_writemask(mixer_ctx, MXR_INT_EN, 0, MXR_INT_EN_VSYNC);
 }
@@ -1167,7 +1151,7 @@ static const struct of_device_id mixer_match_types[] = {
 		.compatible = "samsung,exynos5420-mixer",
 		.data	= &exynos5420_mxr_drv_data,
 	}, {
-		/* end node */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, mixer_match_types);

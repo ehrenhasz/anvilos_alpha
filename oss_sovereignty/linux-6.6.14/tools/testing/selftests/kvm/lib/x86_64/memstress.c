@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * x86_64-specific extensions to memstress.c.
- *
- * Copyright (C) 2022, Google, Inc.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <linux/bitmap.h>
@@ -51,11 +47,7 @@ static void memstress_l1_guest_code(struct vmx_pages *vmx, uint64_t vcpu_id)
 
 uint64_t memstress_nested_pages(int nr_vcpus)
 {
-	/*
-	 * 513 page tables is enough to identity-map 256 TiB of L2 with 1G
-	 * pages and 4-level paging, plus a few pages per-vCPU for data
-	 * structures such as the VMCS.
-	 */
+	 
 	return 513 + 10 * nr_vcpus;
 }
 
@@ -65,11 +57,7 @@ void memstress_setup_ept(struct vmx_pages *vmx, struct kvm_vm *vm)
 
 	prepare_eptp(vmx, vm, 0);
 
-	/*
-	 * Identity map the first 4G and the test region with 1G pages so that
-	 * KVM can shadow the EPT12 with the maximum huge page size supported
-	 * by the backing source.
-	 */
+	 
 	nested_identity_map_1g(vmx, vm, 0, 0x100000000ULL);
 
 	start = align_down(memstress_args.gpa, PG_SIZE_1G);
@@ -94,16 +82,13 @@ void memstress_setup_nested(struct kvm_vm *vm, int nr_vcpus, struct kvm_vcpu *vc
 			memstress_setup_ept(vmx, vm);
 			vmx0 = vmx;
 		} else {
-			/* Share the same EPT table across all vCPUs. */
+			 
 			vmx->eptp = vmx0->eptp;
 			vmx->eptp_hva = vmx0->eptp_hva;
 			vmx->eptp_gpa = vmx0->eptp_gpa;
 		}
 
-		/*
-		 * Override the vCPU to run memstress_l1_guest_code() which will
-		 * bounce it into L2 before calling memstress_guest_code().
-		 */
+		 
 		vcpu_regs_get(vcpus[vcpu_id], &regs);
 		regs.rip = (unsigned long) memstress_l1_guest_code;
 		vcpu_regs_set(vcpus[vcpu_id], &regs);

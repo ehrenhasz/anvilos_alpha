@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdbool.h>
 #include <linux/bpf.h>
@@ -150,7 +150,7 @@ xdp_update_stats(struct xdp_md *xdp, bool tx, bool dut)
 	return 0;
 }
 
-/* Tester */
+ 
 
 SEC("xdp")
 int xdp_tester_check_tx(struct xdp_md *xdp)
@@ -168,7 +168,7 @@ int xdp_tester_check_rx(struct xdp_md *xdp)
 	return XDP_PASS;
 }
 
-/* DUT */
+ 
 
 SEC("xdp")
 int xdp_do_pass(struct xdp_md *xdp)

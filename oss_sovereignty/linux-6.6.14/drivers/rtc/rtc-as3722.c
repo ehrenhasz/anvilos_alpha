@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * rtc-as3722.c - Real Time Clock driver for ams AS3722 PMICs
- *
- * Copyright (C) 2013 ams AG
- * Copyright (c) 2013, NVIDIA Corporation. All rights reserved.
- *
- * Author: Florian Lobmaier <florian.lobmaier@ams.com>
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/completion.h>
@@ -178,7 +170,7 @@ static int as3722_rtc_probe(struct platform_device *pdev)
 	as3722_rtc->dev = &pdev->dev;
 	platform_set_drvdata(pdev, as3722_rtc);
 
-	/* Enable the RTC to make sure it is running. */
+	 
 	ret = as3722_update_bits(as3722, AS3722_RTC_CONTROL_REG,
 			AS3722_RTC_ON | AS3722_RTC_ALARM_WAKEUP_EN,
 			AS3722_RTC_ON | AS3722_RTC_ALARM_WAKEUP_EN);

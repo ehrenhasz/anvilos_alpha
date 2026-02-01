@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Intel(R) 10nm server memory controller.
- * Copyright (c) 2019, Intel Corporation.
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -16,7 +12,7 @@
 #define I10NM_REVISION	"v0.0.6"
 #define EDAC_MOD_STR	"i10nm_edac"
 
-/* Debug macros */
+ 
 #define i10nm_printk(level, fmt, arg...)	\
 	edac_printk(level, "i10nm", fmt, ##arg)
 
@@ -111,7 +107,7 @@ static void __enable_retry_rd_err_log(struct skx_imc *imc, int chan, bool enable
 		d2 = I10NM_GET_REG32(imc, chan, offsets_demand2[0]);
 
 	if (enable) {
-		/* Save default configurations */
+		 
 		imc->chan[chan].retry_rd_err_log_s = s;
 		imc->chan[chan].retry_rd_err_log_d = d;
 		if (offsets_demand2)
@@ -128,7 +124,7 @@ static void __enable_retry_rd_err_log(struct skx_imc *imc, int chan, bool enable
 			d2 |=  RETRY_RD_ERR_LOG_EN;
 		}
 	} else {
-		/* Restore default configurations */
+		 
 		if (imc->chan[chan].retry_rd_err_log_s & RETRY_RD_ERR_LOG_UC)
 			s |=  RETRY_RD_ERR_LOG_UC;
 		if (imc->chan[chan].retry_rd_err_log_s & RETRY_RD_ERR_LOG_NOOVER)
@@ -299,7 +295,7 @@ static void show_retry_rd_err_log(struct decoded_addr *res, char *msg,
 			 corr2 & 0xffff, corr2 >> 16,
 			 corr3 & 0xffff, corr3 >> 16);
 
-	/* Clear status bits */
+	 
 	if (retry_rd_err_log == 2) {
 		if (log0 & RETRY_RD_ERR_LOG_OVER_UC_V) {
 			log0 &= ~RETRY_RD_ERR_LOG_OVER_UC_V;
@@ -335,18 +331,7 @@ static struct pci_dev *pci_get_dev_wrapper(int dom, unsigned int bus,
 	return pdev;
 }
 
-/**
- * i10nm_get_imc_num() - Get the number of present DDR memory controllers.
- *
- * @cfg : The pointer to the structure of EDAC resource configurations.
- *
- * For Granite Rapids CPUs, the number of present DDR memory controllers read
- * at runtime overwrites the value statically configured in @cfg->ddr_imc_num.
- * For other CPUs, the number of present DDR memory controllers is statically
- * configured in @cfg->ddr_imc_num.
- *
- * RETURNS : 0 on success, < 0 on failure.
- */
+ 
 static int i10nm_get_imc_num(struct res_config *cfg)
 {
 	int n, imc_num, chan_num = 0;
@@ -375,9 +360,7 @@ static int i10nm_get_imc_num(struct res_config *cfg)
 
 	switch (cfg->type) {
 	case GNR:
-		/*
-		 * One channel per DDR memory controller for Granite Rapids CPUs.
-		 */
+		 
 		imc_num = chan_num;
 
 		if (!imc_num) {
@@ -391,19 +374,14 @@ static int i10nm_get_imc_num(struct res_config *cfg)
 		}
 
 		if (cfg->ddr_imc_num != imc_num) {
-			/*
-			 * Store the number of present DDR memory controllers.
-			 */
+			 
 			cfg->ddr_imc_num = imc_num;
 			edac_dbg(2, "Set DDR MC number: %d", imc_num);
 		}
 
 		return 0;
 	default:
-		/*
-		 * For other CPUs, the number of present DDR memory controllers
-		 * is statically pre-configured in cfg->ddr_imc_num.
-		 */
+		 
 		return 0;
 	}
 }
@@ -433,10 +411,7 @@ static bool i10nm_check_2lm(struct res_config *cfg)
 	return false;
 }
 
-/*
- * Check whether the error comes from DDRT by ICX/Tremont/SPR model specific error code.
- * Refer to SDM vol3B 17.11.3/17.13.2 Intel IMC MC error codes for IA32_MCi_STATUS.
- */
+ 
 static bool i10nm_mscod_is_ddrt(u32 mscod)
 {
 	switch (res_cfg->type) {
@@ -488,7 +463,7 @@ static bool i10nm_mc_decode_available(struct mce *mce)
 
 	switch (res_cfg->type) {
 	case I10NM:
-		/* Check whether the bank is one of {13,14,17,18,21,22,25,26} */
+		 
 		if (!(ICX_IMCx_CHy & (1 << bank)))
 			return false;
 		break;
@@ -500,7 +475,7 @@ static bool i10nm_mc_decode_available(struct mce *mce)
 		return false;
 	}
 
-	/* DDRT errors can't be decoded from MCA bank registers */
+	 
 	if (MCI_MISC_ECC_MODE(mce->misc) == MCI_MISC_ECC_DDRT)
 		return false;
 
@@ -566,15 +541,7 @@ static bool i10nm_mc_decode(struct decoded_addr *res)
 	return true;
 }
 
-/**
- * get_gnr_mdev() - Get the PCI device of the @logical_idx-th DDR memory controller.
- *
- * @d            : The pointer to the structure of CPU socket EDAC device.
- * @logical_idx  : The logical index of the present memory controller (0 ~ max present MC# - 1).
- * @physical_idx : To store the corresponding physical index of @logical_idx.
- *
- * RETURNS       : The PCI device of the @logical_idx-th DDR memory controller, NULL on failure.
- */
+ 
 static struct pci_dev *get_gnr_mdev(struct skx_dev *d, int logical_idx, int *physical_idx)
 {
 #define GNR_MAX_IMC_PCI_CNT	28
@@ -582,9 +549,7 @@ static struct pci_dev *get_gnr_mdev(struct skx_dev *d, int logical_idx, int *phy
 	struct pci_dev *mdev;
 	int i, logical = 0;
 
-	/*
-	 * Detect present memory controllers from { PCI device: 8-5, function 7-1 }
-	 */
+	 
 	for (i = 0; i < GNR_MAX_IMC_PCI_CNT; i++) {
 		mdev = pci_get_dev_wrapper(d->seg,
 					   d->bus[res_cfg->ddr_mdev_bdf.bus],
@@ -605,16 +570,7 @@ static struct pci_dev *get_gnr_mdev(struct skx_dev *d, int logical_idx, int *phy
 	return NULL;
 }
 
-/**
- * get_ddr_munit() - Get the resource of the i-th DDR memory controller.
- *
- * @d      : The pointer to the structure of CPU socket EDAC device.
- * @i      : The index of the CPU socket relative DDR memory controller.
- * @offset : To store the MMIO offset of the i-th DDR memory controller.
- * @size   : To store the MMIO size of the i-th DDR memory controller.
- *
- * RETURNS : The PCI device of the i-th DDR memory controller, NULL on failure.
- */
+ 
 static struct pci_dev *get_ddr_munit(struct skx_dev *d, int i, u32 *offset, unsigned long *size)
 {
 	struct pci_dev *mdev;
@@ -658,13 +614,7 @@ static struct pci_dev *get_ddr_munit(struct skx_dev *d, int i, u32 *offset, unsi
 	return mdev;
 }
 
-/**
- * i10nm_imc_absent() - Check whether the memory controller @imc is absent
- *
- * @imc    : The pointer to the structure of memory controller EDAC device.
- *
- * RETURNS : true if the memory controller EDAC device is absent, false otherwise.
- */
+ 
 static bool i10nm_imc_absent(struct skx_imc *imc)
 {
 	u32 mcmtr;
@@ -679,15 +629,7 @@ static bool i10nm_imc_absent(struct skx_imc *imc)
 				return false;
 		}
 
-		/*
-		 * Some workstations' absent memory controllers still
-		 * appear as PCIe devices, misleading the EDAC driver.
-		 * By observing that the MMIO registers of these absent
-		 * memory controllers consistently hold the value of ~0.
-		 *
-		 * We identify a memory controller as absent by checking
-		 * if its MMIO register "mcmtr" == ~0 in all its channels.
-		 */
+		 
 		return true;
 	default:
 		return false;
@@ -1013,11 +955,7 @@ static struct notifier_block i10nm_mce_dec = {
 };
 
 #ifdef CONFIG_EDAC_DEBUG
-/*
- * Debug feature.
- * Exercise the address decode logic by writing an address to
- * /sys/kernel/debug/edac/i10nm_test/addr.
- */
+ 
 static struct dentry *i10nm_test;
 
 static int debugfs_u64_set(void *data, u64 val)
@@ -1027,9 +965,9 @@ static int debugfs_u64_set(void *data, u64 val)
 	pr_warn_once("Fake error to 0x%llx injected via debugfs\n", val);
 
 	memset(&m, 0, sizeof(m));
-	/* ADDRV + MemRd + Unknown channel */
+	 
 	m.status = MCI_STATUS_ADDRV + 0x90;
-	/* One corrected error */
+	 
 	m.status |= BIT_ULL(MCI_STATUS_CEC_SHIFT);
 	m.addr = val;
 	skx_mce_check_error(NULL, 0, &m);
@@ -1058,7 +996,7 @@ static void teardown_i10nm_debug(void)
 #else
 static inline void setup_i10nm_debug(void) {}
 static inline void teardown_i10nm_debug(void) {}
-#endif /*CONFIG_EDAC_DEBUG*/
+#endif  
 
 static int __init i10nm_init(void)
 {

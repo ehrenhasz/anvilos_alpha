@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * THC63LVD1024 LVDS to parallel data DRM bridge driver.
- *
- * Copyright (C) 2018 Jacopo Mondi <jacopo+renesas@jmondi.org>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -58,12 +54,7 @@ static enum drm_mode_status thc63_mode_valid(struct drm_bridge *bridge,
 	unsigned int min_freq;
 	unsigned int max_freq;
 
-	/*
-	 * The THC63LVD1024 pixel rate range is 8 to 135 MHz in all modes but
-	 * dual-in, single-out where it is 40 to 150 MHz. As dual-in, dual-out
-	 * isn't supported by the driver yet, simply derive the limits from the
-	 * input mode.
-	 */
+	 
 	if (thc63->timings.dual_link) {
 		min_freq = 40000;
 		max_freq = 150000;

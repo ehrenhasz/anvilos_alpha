@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/cpuhotplug.h>
 #include <linux/cpumask.h>
@@ -11,11 +11,7 @@
 
 #define apic_cluster(apicid) ((apicid) >> 4)
 
-/*
- * __x2apic_send_IPI_mask() possibly needs to read
- * x86_cpu_to_logical_apicid for all online cpus in a sequential way.
- * Using per cpu variable would cost one cache line per cpu.
- */
+ 
 static u32 *x86_cpu_to_logical_apicid __read_mostly;
 
 static DEFINE_PER_CPU(cpumask_var_t, ipi_mask);
@@ -30,7 +26,7 @@ static void x2apic_send_IPI(int cpu, int vector)
 {
 	u32 dest = x86_cpu_to_logical_apicid[cpu];
 
-	/* x2apic MSRs are special and need a special fence: */
+	 
 	weak_wrmsr_fence();
 	__x2apic_send_IPI_dest(dest, vector, APIC_DEST_LOGICAL);
 }
@@ -43,17 +39,17 @@ __x2apic_send_IPI_mask(const struct cpumask *mask, int vector, int apic_dest)
 	unsigned long flags;
 	u32 dest;
 
-	/* x2apic MSRs are special and need a special fence: */
+	 
 	weak_wrmsr_fence();
 	local_irq_save(flags);
 
 	tmpmsk = this_cpu_cpumask_var_ptr(ipi_mask);
 	cpumask_copy(tmpmsk, mask);
-	/* If IPI should not be sent to self, clear current CPU */
+	 
 	if (apic_dest != APIC_DEST_ALLINC)
 		__cpumask_clear_cpu(smp_processor_id(), tmpmsk);
 
-	/* Collapse cpus in a cluster so a single IPI per cluster is sent */
+	 
 	for_each_cpu(cpu, tmpmsk) {
 		struct cpumask *cmsk = per_cpu(cluster_masks, cpu);
 
@@ -65,7 +61,7 @@ __x2apic_send_IPI_mask(const struct cpumask *mask, int vector, int apic_dest)
 			continue;
 
 		__x2apic_send_IPI_dest(dest, vector, APIC_DEST_LOGICAL);
-		/* Remove cluster CPUs from tmpmask */
+		 
 		cpumask_andnot(tmpmsk, tmpmsk, cmsk);
 	}
 
@@ -97,11 +93,7 @@ static void init_x2apic_ldr(void)
 	cpumask_set_cpu(smp_processor_id(), cmsk);
 }
 
-/*
- * As an optimisation during boot, set the cluster_mask for all present
- * CPUs at once, to prevent each of them having to iterate over the others
- * to find the existing cluster_mask.
- */
+ 
 static void prefill_clustermask(struct cpumask *cmsk, unsigned int cpu, u32 cluster)
 {
 	int cpu_i;
@@ -126,43 +118,27 @@ static int alloc_clustermask(unsigned int cpu, u32 cluster, int node)
 	struct cpumask *cmsk = NULL;
 	unsigned int cpu_i;
 
-	/*
-	 * At boot time, the CPU present mask is stable. The cluster mask is
-	 * allocated for the first CPU in the cluster and propagated to all
-	 * present siblings in the cluster. If the cluster mask is already set
-	 * on entry to this function for a given CPU, there is nothing to do.
-	 */
+	 
 	if (per_cpu(cluster_masks, cpu))
 		return 0;
 
 	if (system_state < SYSTEM_RUNNING)
 		goto alloc;
 
-	/*
-	 * On post boot hotplug for a CPU which was not present at boot time,
-	 * iterate over all possible CPUs (even those which are not present
-	 * any more) to find any existing cluster mask.
-	 */
+	 
 	for_each_possible_cpu(cpu_i) {
 		u32 apicid = apic->cpu_present_to_apicid(cpu_i);
 
 		if (apicid != BAD_APICID && apic_cluster(apicid) == cluster) {
 			cmsk = per_cpu(cluster_masks, cpu_i);
-			/*
-			 * If the cluster is already initialized, just store
-			 * the mask and return. There's no need to propagate.
-			 */
+			 
 			if (cmsk) {
 				per_cpu(cluster_masks, cpu) = cmsk;
 				return 0;
 			}
 		}
 	}
-	/*
-	 * No CPU in the cluster has ever been initialized, so fall through to
-	 * the boot time code which will also populate the cluster mask for any
-	 * other CPU in the cluster which is (now) present.
-	 */
+	 
 alloc:
 	cmsk = kzalloc_node(sizeof(*cmsk), GFP_KERNEL, node);
 	if (!cmsk)

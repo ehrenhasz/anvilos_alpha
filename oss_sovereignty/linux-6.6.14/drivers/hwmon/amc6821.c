@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * amc6821.c - Part of lm_sensors, Linux kernel modules for hardware
- *	       monitoring
- * Copyright (C) 2009 T. Mertelj <tomaz.mertelj@guest.arnes.si>
- *
- * Based on max6650.c:
- * Copyright (C) 2007 Hans J. Koch <hjk@hansjkoch.de>
- */
 
-#include <linux/kernel.h>	/* Needed for KERN_INFO */
+ 
+
+#include <linux/kernel.h>	 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -19,21 +12,17 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/*
- * Addresses to scan.
- */
+ 
 
 static const unsigned short normal_i2c[] = {0x18, 0x19, 0x1a, 0x2c, 0x2d, 0x2e,
 	0x4c, 0x4d, 0x4e, I2C_CLIENT_END};
 
-/*
- * Insmod parameters
- */
+ 
 
-static int pwminv;	/*Inverted PWM output. */
+static int pwminv;	 
 module_param(pwminv, int, 0444);
 
-static int init = 1; /*Power-on initialization.*/
+static int init = 1;  
 module_param(init, int, 0444);
 
 enum chips { amc6821 };
@@ -134,17 +123,15 @@ static const u8 fan_reg_hi[] = {AMC6821_REG_TDATA_HI,
 			AMC6821_REG_TACH_LLIMITH,
 			AMC6821_REG_TACH_HLIMITH, };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct amc6821_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid; /* false until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	/* register values */
+	 
 	int temp[TEMP_IDX_LEN];
 
 	u16 fan[FAN1_IDX_LEN];
@@ -236,22 +223,19 @@ static struct amc6821_data *amc6821_update_device(struct device *dev)
 		reg = i2c_smbus_read_byte_data(client, AMC6821_REG_CONF1);
 		reg = (reg >> 5) & 0x3;
 		switch (reg) {
-		case 0: /*open loop: software sets pwm1*/
+		case 0:  
 			data->pwm1_auto_channels_temp = 0;
 			data->pwm1_enable = 1;
 			break;
-		case 2: /*closed loop: remote T (temp2)*/
+		case 2:  
 			data->pwm1_auto_channels_temp = 2;
 			data->pwm1_enable = 2;
 			break;
-		case 3: /*closed loop: local and remote T (temp2)*/
+		case 3:  
 			data->pwm1_auto_channels_temp = 3;
 			data->pwm1_enable = 3;
 			break;
-		case 1: /*
-			 * semi-open loop: software sets rpm, chip controls
-			 * pwm1, currently not implemented
-			 */
+		case 1:  
 			data->pwm1_auto_channels_temp = 0;
 			data->pwm1_enable = 0;
 			break;
@@ -768,7 +752,7 @@ static struct attribute *amc6821_attrs[] = {
 
 ATTRIBUTE_GROUPS(amc6821);
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int amc6821_detect(
 		struct i2c_client *client,
 		struct i2c_board_info *info)
@@ -795,10 +779,7 @@ static int amc6821_detect(
 		return -ENODEV;
 	}
 
-	/*
-	 * Bit 7 of the address register is ignored, so we can check the
-	 * ID registers again
-	 */
+	 
 	dev_id = i2c_smbus_read_byte_data(client, 0x80 | AMC6821_REG_DEV_ID);
 	comp_id = i2c_smbus_read_byte_data(client, 0x80 | AMC6821_REG_COMP_ID);
 	if (dev_id != 0x21 || comp_id != 0x49) {
@@ -914,9 +895,7 @@ static int amc6821_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/*
-	 * Initialize the amc6821 chip
-	 */
+	 
 	err = amc6821_init_client(client);
 	if (err)
 		return err;

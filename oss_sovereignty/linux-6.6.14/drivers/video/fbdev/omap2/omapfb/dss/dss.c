@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/dss.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "DSS"
 
@@ -263,15 +255,15 @@ void dss_sdi_init(int datapairs)
 	BUG_ON(datapairs > 3 || datapairs < 1);
 
 	l = dss_read_reg(DSS_SDI_CONTROL);
-	l = FLD_MOD(l, 0xf, 19, 15);		/* SDI_PDIV */
-	l = FLD_MOD(l, datapairs-1, 3, 2);	/* SDI_PRSEL */
-	l = FLD_MOD(l, 2, 1, 0);		/* SDI_BWSEL */
+	l = FLD_MOD(l, 0xf, 19, 15);		 
+	l = FLD_MOD(l, datapairs-1, 3, 2);	 
+	l = FLD_MOD(l, 2, 1, 0);		 
 	dss_write_reg(DSS_SDI_CONTROL, l);
 
 	l = dss_read_reg(DSS_PLL_CONTROL);
-	l = FLD_MOD(l, 0x7, 25, 22);	/* SDI_PLL_FREQSEL */
-	l = FLD_MOD(l, 0xb, 16, 11);	/* SDI_PLL_REGN */
-	l = FLD_MOD(l, 0xb4, 10, 1);	/* SDI_PLL_REGM */
+	l = FLD_MOD(l, 0x7, 25, 22);	 
+	l = FLD_MOD(l, 0xb, 16, 11);	 
+	l = FLD_MOD(l, 0xb4, 10, 1);	 
 	dss_write_reg(DSS_PLL_CONTROL, l);
 }
 
@@ -281,14 +273,14 @@ int dss_sdi_enable(void)
 
 	dispc_pck_free_enable(1);
 
-	/* Reset SDI PLL */
-	REG_FLD_MOD(DSS_PLL_CONTROL, 1, 18, 18); /* SDI_PLL_SYSRESET */
-	udelay(1);	/* wait 2x PCLK */
+	 
+	REG_FLD_MOD(DSS_PLL_CONTROL, 1, 18, 18);  
+	udelay(1);	 
 
-	/* Lock SDI PLL */
-	REG_FLD_MOD(DSS_PLL_CONTROL, 1, 28, 28); /* SDI_PLL_GOBIT */
+	 
+	REG_FLD_MOD(DSS_PLL_CONTROL, 1, 28, 28);  
 
-	/* Waiting for PLL lock request to complete */
+	 
 	timeout = jiffies + msecs_to_jiffies(500);
 	while (dss_read_reg(DSS_SDI_STATUS) & (1 << 6)) {
 		if (time_after_eq(jiffies, timeout)) {
@@ -297,10 +289,10 @@ int dss_sdi_enable(void)
 		}
 	}
 
-	/* Clearing PLL_GO bit */
+	 
 	REG_FLD_MOD(DSS_PLL_CONTROL, 0, 28, 28);
 
-	/* Waiting for PLL to lock */
+	 
 	timeout = jiffies + msecs_to_jiffies(500);
 	while (!(dss_read_reg(DSS_SDI_STATUS) & (1 << 5))) {
 		if (time_after_eq(jiffies, timeout)) {
@@ -311,7 +303,7 @@ int dss_sdi_enable(void)
 
 	dispc_lcd_enable_signal(1);
 
-	/* Waiting for SDI reset to complete */
+	 
 	timeout = jiffies + msecs_to_jiffies(500);
 	while (!(dss_read_reg(DSS_SDI_STATUS) & (1 << 2))) {
 		if (time_after_eq(jiffies, timeout)) {
@@ -325,8 +317,8 @@ int dss_sdi_enable(void)
  err2:
 	dispc_lcd_enable_signal(0);
  err1:
-	/* Reset SDI PLL */
-	REG_FLD_MOD(DSS_PLL_CONTROL, 0, 18, 18); /* SDI_PLL_SYSRESET */
+	 
+	REG_FLD_MOD(DSS_PLL_CONTROL, 0, 18, 18);  
 
 	dispc_pck_free_enable(0);
 
@@ -339,8 +331,8 @@ void dss_sdi_disable(void)
 
 	dispc_pck_free_enable(0);
 
-	/* Reset SDI PLL */
-	REG_FLD_MOD(DSS_PLL_CONTROL, 0, 18, 18); /* SDI_PLL_SYSRESET */
+	 
+	REG_FLD_MOD(DSS_PLL_CONTROL, 0, 18, 18);  
 }
 
 const char *dss_get_generic_clk_source_name(enum omap_dss_clk_source clk_src)
@@ -414,7 +406,7 @@ static void dss_select_dispc_clk_source(enum omap_dss_clk_source clk_src)
 
 	dss_feat_get_reg_field(FEAT_REG_DISPC_CLK_SWITCH, &start, &end);
 
-	REG_FLD_MOD(DSS_CONTROL, b, start, end);	/* DISPC_CLK_SWITCH */
+	REG_FLD_MOD(DSS_CONTROL, b, start, end);	 
 
 	dss.dispc_clk_source = clk_src;
 }
@@ -442,7 +434,7 @@ void dss_select_dsi_clk_source(int dsi_module,
 	}
 
 	pos = dsi_module == 0 ? 1 : 10;
-	REG_FLD_MOD(DSS_CONTROL, b, pos, pos);	/* DSIx_CLK_SWITCH */
+	REG_FLD_MOD(DSS_CONTROL, b, pos, pos);	 
 
 	dss.dsi_clk_source[dsi_module] = clk_src;
 }
@@ -477,7 +469,7 @@ void dss_select_lcd_clk_source(enum omap_channel channel,
 
 	pos = channel == OMAP_DSS_CHANNEL_LCD ? 0 :
 	     (channel == OMAP_DSS_CHANNEL_LCD2 ? 12 : 19);
-	REG_FLD_MOD(DSS_CONTROL, b, pos, pos);	/* LCDx_CLK_SWITCH */
+	REG_FLD_MOD(DSS_CONTROL, b, pos, pos);	 
 
 	ix = channel == OMAP_DSS_CHANNEL_LCD ? 0 :
 	    (channel == OMAP_DSS_CHANNEL_LCD2 ? 1 : 2);
@@ -501,8 +493,7 @@ enum omap_dss_clk_source dss_get_lcd_clk_source(enum omap_channel channel)
 			(channel == OMAP_DSS_CHANNEL_LCD2 ? 1 : 2);
 		return dss.lcd_clk_source[ix];
 	} else {
-		/* LCD_CLK source is the same as DISPC_FCLK source for
-		 * OMAP2 and OMAP3 */
+		 
 		return dss.dispc_clk_source;
 	}
 }
@@ -612,13 +603,13 @@ void dss_set_venc_output(enum omap_dss_venc_type type)
 	else
 		BUG();
 
-	/* venc out selection. 0 = comp, 1 = svideo */
+	 
 	REG_FLD_MOD(DSS_CONTROL, l, 6, 6);
 }
 
 void dss_set_dac_pwrdn_bgz(bool enable)
 {
-	REG_FLD_MOD(DSS_CONTROL, enable, 5, 5);	/* DAC Power-Down Control */
+	REG_FLD_MOD(DSS_CONTROL, enable, 5, 5);	 
 }
 
 void dss_select_hdmi_venc_clk_source(enum dss_hdmi_venc_clk_source_select src)
@@ -626,13 +617,13 @@ void dss_select_hdmi_venc_clk_source(enum dss_hdmi_venc_clk_source_select src)
 	enum omap_display_type dp;
 	dp = dss_feat_get_supported_displays(OMAP_DSS_CHANNEL_DIGIT);
 
-	/* Complain about invalid selections */
+	 
 	WARN_ON((src == DSS_VENC_TV_CLK) && !(dp & OMAP_DISPLAY_TYPE_VENC));
 	WARN_ON((src == DSS_HDMI_M_PCLK) && !(dp & OMAP_DISPLAY_TYPE_HDMI));
 
-	/* Select only if we have options */
+	 
 	if ((dp & OMAP_DISPLAY_TYPE_VENC) && (dp & OMAP_DISPLAY_TYPE_HDMI))
-		REG_FLD_MOD(DSS_CONTROL, src, 15, 15);	/* VENC_HDMI_SWITCH */
+		REG_FLD_MOD(DSS_CONTROL, src, 15, 15);	 
 }
 
 enum dss_hdmi_venc_clk_source_select dss_get_hdmi_venc_clk_source(void)
@@ -783,7 +774,7 @@ void dss_runtime_put(void)
 	WARN_ON(r < 0 && r != -ENOSYS && r != -EBUSY);
 }
 
-/* DEBUGFS */
+ 
 #if defined(CONFIG_FB_OMAP2_DSS_DEBUGFS)
 void dss_debug_dump_clocks(struct seq_file *s)
 {
@@ -812,10 +803,7 @@ static const enum omap_display_type dra7xx_ports[] = {
 };
 
 static const struct dss_features omap24xx_dss_feats = {
-	/*
-	 * fck div max is really 16, but the divider range has gaps. The range
-	 * from 1 to 6 has no gaps, so let's use that as a max.
-	 */
+	 
 	.fck_div_max		=	6,
 	.dss_fck_multiplier	=	2,
 	.parent_clk_name	=	"core_ck",
@@ -1064,7 +1052,7 @@ static int dss_video_pll_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* DSS HW IP initialisation */
+ 
 static int dss_bind(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -1115,15 +1103,15 @@ static int dss_bind(struct device *dev)
 
 	dss.dss_clk_rate = clk_get_rate(dss.dss_clk);
 
-	/* Select DPLL */
+	 
 	REG_FLD_MOD(DSS_CONTROL, 0, 0, 0);
 
 	dss_select_dispc_clk_source(OMAP_DSS_CLK_SRC_FCK);
 
 #ifdef CONFIG_FB_OMAP2_DSS_VENC
-	REG_FLD_MOD(DSS_CONTROL, 1, 4, 4);	/* venc dac demen */
-	REG_FLD_MOD(DSS_CONTROL, 1, 3, 3);	/* venc clock 4x enable */
-	REG_FLD_MOD(DSS_CONTROL, 0, 2, 2);	/* venc clock mode = normal */
+	REG_FLD_MOD(DSS_CONTROL, 1, 4, 4);	 
+	REG_FLD_MOD(DSS_CONTROL, 1, 3, 3);	 
+	REG_FLD_MOD(DSS_CONTROL, 0, 2, 2);	 
 #endif
 	dss.dsi_clk_source[0] = OMAP_DSS_CLK_SRC_FCK;
 	dss.dsi_clk_source[1] = OMAP_DSS_CLK_SRC_FCK;
@@ -1195,12 +1183,7 @@ static int dss_add_child_component(struct device *dev, void *data)
 {
 	struct component_match **match = data;
 
-	/*
-	 * HACK
-	 * We don't have a working driver for rfbi, so skip it here always.
-	 * Otherwise dss will never get probed successfully, as it will wait
-	 * for rfbi to get probed.
-	 */
+	 
 	if (strstr(dev_name(dev), "rfbi"))
 		return 0;
 
@@ -1214,7 +1197,7 @@ static int dss_probe(struct platform_device *pdev)
 	struct component_match *match = NULL;
 	int r;
 
-	/* add all the child devices as components */
+	 
 	device_for_each_child(&pdev->dev, &match, dss_add_child_component);
 
 	r = component_master_add_with_match(&pdev->dev, &dss_component_ops, match);
@@ -1245,12 +1228,7 @@ static int dss_runtime_resume(struct device *dev)
 
 	pinctrl_pm_select_default_state(dev);
 
-	/*
-	 * Set an arbitrarily high tput request to ensure OPP100.
-	 * What we should really do is to make a request to stay in OPP100,
-	 * without any tput requirements, but that is not currently possible
-	 * via the PM layer.
-	 */
+	 
 
 	r = dss_set_min_bus_tput(dev, 1000000000);
 	if (r)

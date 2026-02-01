@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tusb1210.c - TUSB1210 USB ULPI PHY driver
- *
- * Copyright (C) 2015 Intel Corporation
- *
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -39,7 +33,7 @@
 
 #define TUSB1210_CHG_DET_MAX_RETRIES			5
 
-/* TUSB1210 charger detection work states */
+ 
 enum tusb1210_chg_det_state {
 	TUSB1210_CHG_DET_CONNECTING,
 	TUSB1210_CHG_DET_START_DET,
@@ -105,7 +99,7 @@ static int tusb1210_power_on(struct phy *phy)
 
 	msleep(TUSB1210_RESET_TIME_MS);
 
-	/* Restore the optional eye diagram optimization value */
+	 
 	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
 
 	return 0;
@@ -148,7 +142,7 @@ static int tusb1210_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 		reg &= ~ULPI_OTG_CTRL_DRVVBUS_EXT;
 		break;
 	default:
-		/* nothing */
+		 
 		return 0;
 	}
 
@@ -210,21 +204,7 @@ static void tusb1210_chg_det_handle_ulpi_error(struct tusb1210 *tusb)
 	}
 }
 
-/*
- * Boards using a TUSB121x for charger-detection have 3 power_supply class devs:
- *
- * tusb1211-charger-detect(1) -> charger -> fuel-gauge
- *
- * To determine if an USB charger is connected to the board, the online prop of
- * the charger psy needs to be read. Since the tusb1211-charger-detect psy is
- * the start of the supplier -> supplied-to chain, power_supply_am_i_supplied()
- * cannot be used here.
- *
- * Instead, below is a list of the power_supply names of known chargers for
- * these boards and the charger psy is looked up by name from this list.
- *
- * (1) modelling the external USB charger
- */
+ 
 static const char * const tusb1210_chargers[] = {
 	"bq24190-charger",
 };
@@ -260,22 +240,18 @@ static void tusb1210_chg_det_work(struct work_struct *work)
 	case TUSB1210_CHG_DET_CONNECTING:
 		tusb->chg_type = POWER_SUPPLY_USB_TYPE_UNKNOWN;
 		tusb->chg_det_retries = 0;
-		/* Power on USB controller for ulpi_read()/_write() */
+		 
 		ret = pm_runtime_resume_and_get(tusb->ulpi->dev.parent);
 		if (ret < 0) {
 			dev_err(&tusb->ulpi->dev, "error %d runtime-resuming\n", ret);
-			/* Should never happen, skip charger detection */
+			 
 			tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_CONNECTED, 0);
 			return;
 		}
 		tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_START_DET, 0);
 		break;
 	case TUSB1210_CHG_DET_START_DET:
-		/*
-		 * Use the builtin charger detection FSM to keep things simple.
-		 * This only detects DCP / SDP. This is good enough for the few
-		 * boards which actually rely on the phy for charger detection.
-		 */
+		 
 		mutex_lock(&tusb->phy->mutex);
 		ret = tusb1210_ulpi_write(tusb, TUSB1211_VENDOR_SPECIFIC3_SET,
 					  TUSB1211_VENDOR_SPECIFIC3_SW_USB_DET);
@@ -285,7 +261,7 @@ static void tusb1210_chg_det_work(struct work_struct *work)
 			break;
 		}
 
-		/* Wait 400 ms for the charger detection FSM to finish */
+		 
 		tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_READ_DET, 400);
 		break;
 	case TUSB1210_CHG_DET_READ_DET:
@@ -307,25 +283,25 @@ static void tusb1210_chg_det_work(struct work_struct *work)
 	case TUSB1210_CHG_DET_FINISH_DET:
 		mutex_lock(&tusb->phy->mutex);
 
-		/* Set SW_CONTROL to stop the charger-det FSM */
+		 
 		ret = tusb1210_ulpi_write(tusb, TUSB1211_POWER_CONTROL_SET,
 					  TUSB1211_POWER_CONTROL_SW_CONTROL);
 
-		/* Clear DP_VSRC_EN which may have been enabled by the charger-det FSM */
+		 
 		ret |= tusb1210_ulpi_write(tusb, TUSB1211_POWER_CONTROL_CLEAR,
 					   TUSB1211_POWER_CONTROL_DP_VSRC_EN);
 
-		/* Clear CHGD_IDP_SRC_EN (may have been enabled by the charger-det FSM) */
+		 
 		ret |= tusb1210_ulpi_write(tusb, TUSB1211_VENDOR_SPECIFIC3_CLEAR,
 					   TUSB1211_VENDOR_SPECIFIC3_CHGD_IDP_SRC_EN);
 
-		/* If any of the above fails reset the phy */
+		 
 		if (ret) {
 			tusb1210_reset(tusb);
 			msleep(TUSB1210_RESET_TIME_MS);
 		}
 
-		/* Restore phy-parameters and OTG_CTRL register */
+		 
 		tusb1210_ulpi_write(tusb, ULPI_OTG_CTRL, tusb->otg_ctrl);
 		tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
 				    tusb->vendor_specific2);
@@ -340,19 +316,11 @@ static void tusb1210_chg_det_work(struct work_struct *work)
 			tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_DISCONNECTING, 0);
 		break;
 	case TUSB1210_CHG_DET_DISCONNECTING:
-		/*
-		 * The phy seems to take approx. 600ms longer then the charger
-		 * chip (which is used to get vbus_present) to determine Vbus
-		 * session end. Wait 800ms to ensure the phy has detected and
-		 * signalled Vbus session end.
-		 */
+		 
 		tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_DISCONNECTING_DONE, 800);
 		break;
 	case TUSB1210_CHG_DET_DISCONNECTING_DONE:
-		/*
-		 * The phy often stops reacting to ulpi_read()/_write requests
-		 * after a Vbus-session end. Reset it to work around this.
-		 */
+		 
 		tusb1210_reset(tusb);
 		tusb1210_chg_det_set_type(tusb, POWER_SUPPLY_USB_TYPE_UNKNOWN);
 		tusb1210_chg_det_set_state(tusb, TUSB1210_CHG_DET_DISCONNECTED, 0);
@@ -424,7 +392,7 @@ static const struct power_supply_desc tusb1210_psy_desc = {
 	.get_property = tusb1210_psy_get_prop,
 };
 
-/* Setup charger detection if requested, on errors continue without chg-det */
+ 
 static void tusb1210_probe_charger_detect(struct tusb1210 *tusb)
 {
 	struct power_supply_config psy_cfg = { .drv_data = tusb };
@@ -447,10 +415,7 @@ static void tusb1210_probe_charger_detect(struct tusb1210 *tusb)
 	if (IS_ERR(tusb->psy))
 		return;
 
-	/*
-	 * Delay initial run by 2 seconds to allow the charger driver,
-	 * which is used to determine vbus_present, to load.
-	 */
+	 
 	tusb->chg_det_state = TUSB1210_CHG_DET_DISCONNECTED;
 	INIT_DELAYED_WORK(&tusb->chg_det_work, tusb1210_chg_det_work);
 	queue_delayed_work(system_long_wq, &tusb->chg_det_work, 2 * HZ);
@@ -509,24 +474,21 @@ static int tusb1210_probe(struct ulpi *ulpi)
 
 	gpiod_set_value_cansleep(tusb->gpio_cs, 1);
 
-	/*
-	 * VENDOR_SPECIFIC2 register in TUSB1210 can be used for configuring eye
-	 * diagram optimization and DP/DM swap.
-	 */
+	 
 
 	ret = tusb1210_ulpi_read(tusb, TUSB1210_VENDOR_SPECIFIC2, &reg);
 	if (ret)
 		return ret;
 
-	/* High speed output drive strength configuration */
+	 
 	if (!device_property_read_u8(&ulpi->dev, "ihstx", &val))
 		u8p_replace_bits(&reg, val, (u8)TUSB1210_VENDOR_SPECIFIC2_IHSTX_MASK);
 
-	/* High speed output impedance configuration */
+	 
 	if (!device_property_read_u8(&ulpi->dev, "zhsdrv", &val))
 		u8p_replace_bits(&reg, val, (u8)TUSB1210_VENDOR_SPECIFIC2_ZHSDRV_MASK);
 
-	/* DP/DM swap control */
+	 
 	if (!device_property_read_u8(&ulpi->dev, "datapolarity", &val))
 		u8p_replace_bits(&reg, val, (u8)TUSB1210_VENDOR_SPECIFIC2_DP_MASK);
 
@@ -564,8 +526,8 @@ static void tusb1210_remove(struct ulpi *ulpi)
 #define TI_VENDOR_ID 0x0451
 
 static const struct ulpi_device_id tusb1210_ulpi_id[] = {
-	{ TI_VENDOR_ID, 0x1507, },  /* TUSB1210 */
-	{ TI_VENDOR_ID, 0x1508, },  /* TUSB1211 */
+	{ TI_VENDOR_ID, 0x1507, },   
+	{ TI_VENDOR_ID, 0x1508, },   
 	{ },
 };
 MODULE_DEVICE_TABLE(ulpi, tusb1210_ulpi_id);

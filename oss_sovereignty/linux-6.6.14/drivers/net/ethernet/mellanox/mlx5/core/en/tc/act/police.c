@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "act.h"
 #include "en/tc_priv.h"
@@ -59,7 +59,7 @@ fill_meter_params_from_act(const struct flow_action_entry *act,
 	params->index = act->hw_index;
 	if (act->police.rate_bytes_ps) {
 		params->mode = MLX5_RATE_LIMIT_BPS;
-		/* change rate to bits per second */
+		 
 		params->rate = act->police.rate_bytes_ps << 3;
 		params->burst = act->police.burst;
 	} else if (act->police.rate_pkt_ps) {
@@ -160,7 +160,7 @@ tc_act_police_destroy(struct mlx5e_priv *priv,
 		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
 		return PTR_ERR(meter);
 	}
-	/* first put for the get and second for cleanup */
+	 
 	mlx5e_tc_meter_put(meter);
 	mlx5e_tc_meter_put(meter);
 	return 0;

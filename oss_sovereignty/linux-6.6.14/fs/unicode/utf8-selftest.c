@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel module for testing utf-8 support.
- *
- * Copyright 2017 Collabora Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,7 +13,7 @@
 unsigned int failed_tests;
 unsigned int total_tests;
 
-/* Tests will be based on this version. */
+ 
 #define UTF8_LATEST	UNICODE_AGE(12, 1, 0)
 
 #define _test(cond, func, line, fmt, ...) do {				\
@@ -34,52 +30,45 @@ unsigned int total_tests;
 #define test(cond) _test(cond, __func__, __LINE__, "")
 
 static const struct {
-	/* UTF-8 strings in this vector _must_ be NULL-terminated. */
+	 
 	unsigned char str[10];
 	unsigned char dec[10];
 } nfdi_test_data[] = {
-	/* Trivial sequence */
+	 
 	{
-		/* "ABba" decomposes to itself */
+		 
 		.str = "aBba",
 		.dec = "aBba",
 	},
-	/* Simple equivalent sequences */
+	 
 	{
-               /* 'VULGAR FRACTION ONE QUARTER' cannot decompose to
-                  'NUMBER 1' + 'FRACTION SLASH' + 'NUMBER 4' on
-                  canonical decomposition */
+                
                .str = {0xc2, 0xbc, 0x00},
 	       .dec = {0xc2, 0xbc, 0x00},
 	},
 	{
-		/* 'LATIN SMALL LETTER A WITH DIAERESIS' decomposes to
-		   'LETTER A' + 'COMBINING DIAERESIS' */
+		 
 		.str = {0xc3, 0xa4, 0x00},
 		.dec = {0x61, 0xcc, 0x88, 0x00},
 	},
 	{
-		/* 'LATIN SMALL LETTER LJ' can't decompose to
-		   'LETTER L' + 'LETTER J' on canonical decomposition */
+		 
 		.str = {0xC7, 0x89, 0x00},
 		.dec = {0xC7, 0x89, 0x00},
 	},
 	{
-		/* GREEK ANO TELEIA decomposes to MIDDLE DOT */
+		 
 		.str = {0xCE, 0x87, 0x00},
 		.dec = {0xC2, 0xB7, 0x00}
 	},
-	/* Canonical ordering */
+	 
 	{
-		/* A + 'COMBINING ACUTE ACCENT' + 'COMBINING OGONEK' decomposes
-		   to A + 'COMBINING OGONEK' + 'COMBINING ACUTE ACCENT' */
+		 
 		.str = {0x41, 0xcc, 0x81, 0xcc, 0xa8, 0x0},
 		.dec = {0x41, 0xcc, 0xa8, 0xcc, 0x81, 0x0},
 	},
 	{
-		/* 'LATIN SMALL LETTER A WITH DIAERESIS' + 'COMBINING OGONEK'
-		   decomposes to
-		   'LETTER A' + 'COMBINING OGONEK' + 'COMBINING DIAERESIS' */
+		 
 		.str = {0xc3, 0xa4, 0xCC, 0xA8, 0x00},
 
 		.dec = {0x61, 0xCC, 0xA8, 0xcc, 0x88, 0x00},
@@ -88,71 +77,62 @@ static const struct {
 };
 
 static const struct {
-	/* UTF-8 strings in this vector _must_ be NULL-terminated. */
+	 
 	unsigned char str[30];
 	unsigned char ncf[30];
 } nfdicf_test_data[] = {
-	/* Trivial sequences */
+	 
 	{
-		/* "ABba" folds to lowercase */
+		 
 		.str = {0x41, 0x42, 0x62, 0x61, 0x00},
 		.ncf = {0x61, 0x62, 0x62, 0x61, 0x00},
 	},
 	{
-		/* All ASCII folds to lower-case */
+		 
 		.str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0.1",
 		.ncf = "abcdefghijklmnopqrstuvwxyz0.1",
 	},
 	{
-		/* LATIN SMALL LETTER SHARP S folds to
-		   LATIN SMALL LETTER S + LATIN SMALL LETTER S */
+		 
 		.str = {0xc3, 0x9f, 0x00},
 		.ncf = {0x73, 0x73, 0x00},
 	},
 	{
-		/* LATIN CAPITAL LETTER A WITH RING ABOVE folds to
-		   LATIN SMALL LETTER A + COMBINING RING ABOVE */
+		 
 		.str = {0xC3, 0x85, 0x00},
 		.ncf = {0x61, 0xcc, 0x8a, 0x00},
 	},
-	/* Introduced by UTF-8.0.0. */
-	/* Cherokee letters are interesting test-cases because they fold
-	   to upper-case.  Before 8.0.0, Cherokee lowercase were
-	   undefined, thus, the folding from LC is not stable between
-	   7.0.0 -> 8.0.0, but it is from UC. */
+	 
+	 
 	{
-		/* CHEROKEE SMALL LETTER A folds to CHEROKEE LETTER A */
+		 
 		.str = {0xea, 0xad, 0xb0, 0x00},
 		.ncf = {0xe1, 0x8e, 0xa0, 0x00},
 	},
 	{
-		/* CHEROKEE SMALL LETTER YE folds to CHEROKEE LETTER YE */
+		 
 		.str = {0xe1, 0x8f, 0xb8, 0x00},
 		.ncf = {0xe1, 0x8f, 0xb0, 0x00},
 	},
 	{
-		/* OLD HUNGARIAN CAPITAL LETTER AMB folds to
-		   OLD HUNGARIAN SMALL LETTER AMB */
+		 
 		.str = {0xf0, 0x90, 0xb2, 0x83, 0x00},
 		.ncf = {0xf0, 0x90, 0xb3, 0x83, 0x00},
 	},
-	/* Introduced by UTF-9.0.0. */
+	 
 	{
-		/* OSAGE CAPITAL LETTER CHA folds to
-		   OSAGE SMALL LETTER CHA */
+		 
 		.str = {0xf0, 0x90, 0x92, 0xb5, 0x00},
 		.ncf = {0xf0, 0x90, 0x93, 0x9d, 0x00},
 	},
 	{
-		/* LATIN CAPITAL LETTER SMALL CAPITAL I folds to
-		   LATIN LETTER SMALL CAPITAL I */
+		 
 		.str = {0xea, 0x9e, 0xae, 0x00},
 		.ncf = {0xc9, 0xaa, 0x00},
 	},
-	/* Introduced by UTF-11.0.0. */
+	 
 	{
-		/* GEORGIAN SMALL LETTER AN folds to GEORGIAN MTAVRULI
-		   CAPITAL LETTER AN */
+		 
 		.str = {0xe1, 0xb2, 0x90, 0x00},
 		.ncf = {0xe1, 0x83, 0x90, 0x00},
 	}
@@ -257,16 +237,16 @@ static void check_utf8_comparisons(struct unicode_map *table)
 
 static void check_supported_versions(struct unicode_map *um)
 {
-	/* Unicode 7.0.0 should be supported. */
+	 
 	test(utf8version_is_supported(um, UNICODE_AGE(7, 0, 0)));
 
-	/* Unicode 9.0.0 should be supported. */
+	 
 	test(utf8version_is_supported(um, UNICODE_AGE(9, 0, 0)));
 
-	/* Unicode 1x.0.0 (the latest version) should be supported. */
+	 
 	test(utf8version_is_supported(um, UTF8_LATEST));
 
-	/* Next versions don't exist. */
+	 
 	test(!utf8version_is_supported(um, UNICODE_AGE(13, 0, 0)));
 	test(!utf8version_is_supported(um, UNICODE_AGE(0, 0, 0)));
 	test(!utf8version_is_supported(um, UNICODE_AGE(-1, -1, -1)));

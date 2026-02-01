@@ -1,13 +1,11 @@
-/*
- * ALi AGPGART routines.
- */
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/agp_backend.h>
-#include <asm/page.h>		/* PAGE_SIZE */
+#include <asm/page.h>		 
 #include "agp.h"
 
 #define ALI_AGPCTRL	0xb8
@@ -58,7 +56,7 @@ static void ali_cleanup(void)
 	previous_size = A_SIZE_32(agp_bridge->previous_size);
 
 	pci_read_config_dword(agp_bridge->dev, ALI_TLBCTRL, &temp);
-// clear tag
+
 	pci_write_config_dword(agp_bridge->dev, ALI_TAGCTRL,
 			((temp & 0xffffff00) | 0x00000001|0x00000002));
 
@@ -74,17 +72,17 @@ static int ali_configure(void)
 
 	current_size = A_SIZE_32(agp_bridge->current_size);
 
-	/* aperture size and gatt addr */
+	 
 	pci_read_config_dword(agp_bridge->dev, ALI_ATTBASE, &temp);
 	temp = (((temp & 0x00000ff0) | (agp_bridge->gatt_bus_addr & 0xfffff000))
 			| (current_size->size_value & 0xf));
 	pci_write_config_dword(agp_bridge->dev, ALI_ATTBASE, temp);
 
-	/* tlb control */
+	 
 	pci_read_config_dword(agp_bridge->dev, ALI_TLBCTRL, &temp);
 	pci_write_config_dword(agp_bridge->dev, ALI_TLBCTRL, ((temp & 0xffffff00) | 0x00000010));
 
-	/* address to map to */
+	 
 	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
 						    AGP_APERTURE_BAR);
 
@@ -116,7 +114,7 @@ static int ali_configure(void)
 #endif
 
 	pci_read_config_dword(agp_bridge->dev, ALI_TLBCTRL, &temp);
-	temp &= 0xffffff7f;		//enable TLB
+	temp &= 0xffffff7f;		
 	pci_write_config_dword(agp_bridge->dev, ALI_TLBCTRL, temp);
 
 	return 0;
@@ -160,7 +158,7 @@ static void ali_destroy_page(struct page *page, int flags)
 {
 	if (page) {
 		if (flags & AGP_PAGE_DESTROY_UNMAP) {
-			global_cache_flush();	/* is this really needed?  --hch */
+			global_cache_flush();	 
 			agp_generic_destroy_page(page, flags);
 		} else
 			agp_generic_destroy_page(page, flags);
@@ -186,7 +184,7 @@ static void m1541_destroy_page(struct page *page, int flags)
 }
 
 
-/* Setup function */
+ 
 
 static const struct aper_size_info_32 ali_generic_sizes[7] =
 {
@@ -296,7 +294,7 @@ static struct agp_device_ids ali_agp_device_ids[] =
 		.chipset_name	= "M1683",
 	},
 
-	{ }, /* dummy final entry, always present */
+	{ },  
 };
 
 static int agp_ali_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
@@ -310,7 +308,7 @@ static int agp_ali_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!cap_ptr)
 		return -ENODEV;
 
-	/* probe for known chipsets */
+	 
 	for (j = 0; devs[j].chipset_name; j++) {
 		if (pdev->device == devs[j].device_id)
 			goto found;
@@ -364,7 +362,7 @@ found:
 
 	dev_info(&pdev->dev, "ALi %s chipset\n", devs[j].chipset_name);
 
-	/* Fill in the mode register */
+	 
 	pci_read_config_dword(pdev,
 			bridge->capndx+PCI_AGP_STATUS,
 			&bridge->mode);

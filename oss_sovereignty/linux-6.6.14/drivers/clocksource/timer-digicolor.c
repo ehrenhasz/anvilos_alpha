@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Conexant Digicolor timer driver
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Copyright (C) 2014 Paradox Innovation Ltd.
- *
- * Based on:
- *	Allwinner SoCs hstimer driver
- *
- * Copyright (C) 2013 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
 
-/*
- * Conexant Digicolor SoCs have 8 configurable timers, named from "Timer A" to
- * "Timer H". Timer A is the only one with watchdog support, so it is dedicated
- * to the watchdog driver. This driver uses Timer B for sched_clock(), and
- * Timer C for clockevents.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -58,7 +40,7 @@ struct digicolor_timer {
 	struct clock_event_device ce;
 	void __iomem *base;
 	u32 ticks_per_jiffy;
-	int timer_id; /* one of TIMER_* */
+	int timer_id;  
 };
 
 static struct digicolor_timer *dc_timer(struct clock_event_device *ce)
@@ -152,10 +134,7 @@ static int __init digicolor_timer_init(struct device_node *node)
 	struct clk *clk;
 	int ret, irq;
 
-	/*
-	 * timer registers are shared with the watchdog timer;
-	 * don't map exclusively
-	 */
+	 
 	dc_timer_dev.base = of_iomap(node, 0);
 	if (!dc_timer_dev.base) {
 		pr_err("Can't map registers\n");

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Dove SoC clocks
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -17,50 +8,7 @@
 #include "common.h"
 #include "dove-divider.h"
 
-/*
- * Core Clocks
- *
- * Dove PLL sample-at-reset configuration
- *
- * SAR0[8:5]   : CPU frequency
- *		 5  = 1000 MHz
- *		 6  =  933 MHz
- *		 7  =  933 MHz
- *		 8  =  800 MHz
- *		 9  =  800 MHz
- *		 10 =  800 MHz
- *		 11 = 1067 MHz
- *		 12 =  667 MHz
- *		 13 =  533 MHz
- *		 14 =  400 MHz
- *		 15 =  333 MHz
- *		 others reserved.
- *
- * SAR0[11:9]  : CPU to L2 Clock divider ratio
- *		 0 = (1/1) * CPU
- *		 2 = (1/2) * CPU
- *		 4 = (1/3) * CPU
- *		 6 = (1/4) * CPU
- *		 others reserved.
- *
- * SAR0[15:12] : CPU to DDR DRAM Clock divider ratio
- *		 0  = (1/1) * CPU
- *		 2  = (1/2) * CPU
- *		 3  = (2/5) * CPU
- *		 4  = (1/3) * CPU
- *		 6  = (1/4) * CPU
- *		 8  = (1/5) * CPU
- *		 10 = (1/6) * CPU
- *		 12 = (1/7) * CPU
- *		 14 = (1/8) * CPU
- *		 15 = (1/10) * CPU
- *		 others reserved.
- *
- * SAR0[24:23] : TCLK frequency
- *		 0 = 166 MHz
- *		 1 = 125 MHz
- *		 others reserved.
- */
+ 
 
 #define SAR_DOVE_CPU_FREQ		5
 #define SAR_DOVE_CPU_FREQ_MASK		0xf
@@ -153,9 +101,7 @@ static const struct coreclk_soc_desc dove_coreclks = {
 	.num_ratios = ARRAY_SIZE(dove_coreclk_ratios),
 };
 
-/*
- * Clock Gating Control
- */
+ 
 
 static const struct clk_gating_soc_desc dove_gating_desc[] __initconst = {
 	{ "usb0", NULL, 0, 0 },

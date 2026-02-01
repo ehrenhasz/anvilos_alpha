@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-// Copyright(c) 2015-17 Intel Corporation.
 
-/*
- * Soundwire Intel Master Driver
- */
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
@@ -48,9 +46,7 @@ static int intel_set_bit(void __iomem *base, int offset, u32 value, u32 mask)
 	return intel_wait_bit(base, offset, mask, mask);
 }
 
-/*
- * debugfs
- */
+ 
 #ifdef CONFIG_DEBUG_FS
 
 #define RD_BUF (2 * PAGE_SIZE)
@@ -103,11 +99,7 @@ static int intel_reg_show(struct seq_file *s_file, void *data)
 
 		ret += scnprintf(buf + ret, RD_BUF - ret, "\n PCMSyCH registers\n");
 
-		/*
-		 * the value 10 is the number of PDIs. We will need a
-		 * cleanup to remove hard-coded Intel configurations
-		 * from cadence_master.c
-		 */
+		 
 		for (j = 0; j < 10; j++) {
 			ret += intel_sprintf(s, false, buf, ret,
 					SDW_SHIM_PCMSYCHM(i, j));
@@ -143,7 +135,7 @@ static int intel_set_m_datamode(void *data, u64 value)
 	if (value > SDW_PORT_DATA_MODE_STATIC_1)
 		return -EINVAL;
 
-	/* Userspace changed the hardware state behind the kernel's back */
+	 
 	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 
 	bus->params.m_data_mode = value;
@@ -161,7 +153,7 @@ static int intel_set_s_datamode(void *data, u64 value)
 	if (value > SDW_PORT_DATA_MODE_STATIC_1)
 		return -EINVAL;
 
-	/* Userspace changed the hardware state behind the kernel's back */
+	 
 	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 
 	bus->params.s_data_mode = value;
@@ -199,19 +191,17 @@ static void intel_debugfs_exit(struct sdw_intel *sdw)
 #else
 static void intel_debugfs_init(struct sdw_intel *sdw) {}
 static void intel_debugfs_exit(struct sdw_intel *sdw) {}
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-/*
- * shim ops
- */
-/* this needs to be called with shim_lock */
+ 
+ 
 static void intel_shim_glue_to_master_ip(struct sdw_intel *sdw)
 {
 	void __iomem *shim = sdw->link_res->shim;
 	unsigned int link_id = sdw->instance;
 	u16 ioctl;
 
-	/* Switch to MIP from Glue logic */
+	 
 	ioctl = intel_readw(shim,  SDW_SHIM_IOCTL(link_id));
 
 	ioctl &= ~(SDW_SHIM_IOCTL_DOE);
@@ -231,17 +221,17 @@ static void intel_shim_glue_to_master_ip(struct sdw_intel *sdw)
 	intel_writew(shim, SDW_SHIM_IOCTL(link_id), ioctl);
 	usleep_range(10, 15);
 
-	/* at this point Master IP has full control of the I/Os */
+	 
 }
 
-/* this needs to be called with shim_lock */
+ 
 static void intel_shim_master_ip_to_glue(struct sdw_intel *sdw)
 {
 	unsigned int link_id = sdw->instance;
 	void __iomem *shim = sdw->link_res->shim;
 	u16 ioctl;
 
-	/* Glue logic */
+	 
 	ioctl = intel_readw(shim, SDW_SHIM_IOCTL(link_id));
 	ioctl |= SDW_SHIM_IOCTL_BKE;
 	ioctl |= SDW_SHIM_IOCTL_COE;
@@ -252,17 +242,17 @@ static void intel_shim_master_ip_to_glue(struct sdw_intel *sdw)
 	intel_writew(shim, SDW_SHIM_IOCTL(link_id), ioctl);
 	usleep_range(10, 15);
 
-	/* at this point Integration Glue has full control of the I/Os */
+	 
 }
 
-/* this needs to be called with shim_lock */
+ 
 static void intel_shim_init(struct sdw_intel *sdw)
 {
 	void __iomem *shim = sdw->link_res->shim;
 	unsigned int link_id = sdw->instance;
 	u16 ioctl = 0, act;
 
-	/* Initialize Shim */
+	 
 	ioctl |= SDW_SHIM_IOCTL_BKE;
 	intel_writew(shim, SDW_SHIM_IOCTL(link_id), ioctl);
 	usleep_range(10, 15);
@@ -310,15 +300,15 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
 	wake_en = intel_readw(shim, SDW_SHIM_WAKEEN);
 
 	if (wake_enable) {
-		/* Enable the wakeup */
+		 
 		wake_en |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
 		intel_writew(shim, SDW_SHIM_WAKEEN, wake_en);
 	} else {
-		/* Disable the wake up interrupt */
+		 
 		wake_en &= ~(SDW_SHIM_WAKEEN_ENABLE << link_id);
 		intel_writew(shim, SDW_SHIM_WAKEEN, wake_en);
 
-		/* Clear wake status */
+		 
 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
 		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
 		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
@@ -350,16 +340,7 @@ static int intel_link_power_up(struct sdw_intel *sdw)
 
 	mutex_lock(sdw->link_res->shim_lock);
 
-	/*
-	 * The hardware relies on an internal counter, typically 4kHz,
-	 * to generate the SoundWire SSP - which defines a 'safe'
-	 * synchronization point between commands and audio transport
-	 * and allows for multi link synchronization. The SYNCPRD value
-	 * is only dependent on the oscillator clock provided to
-	 * the IP, so adjust based on _DSD properties reported in DSDT
-	 * tables. The values reported are based on either 24MHz
-	 * (CNL/CML) or 38.4 MHz (ICL/TGL+).
-	 */
+	 
 	if (prop->mclk_freq % 6000000)
 		syncprd = SDW_SHIM_SYNC_SYNCPRD_VAL_38_4;
 	else
@@ -368,22 +349,22 @@ static int intel_link_power_up(struct sdw_intel *sdw)
 	if (!*shim_mask) {
 		dev_dbg(sdw->cdns.dev, "powering up all links\n");
 
-		/* we first need to program the SyncPRD/CPU registers */
+		 
 		dev_dbg(sdw->cdns.dev,
 			"first link up, programming SYNCPRD\n");
 
-		/* set SyncPRD period */
+		 
 		sync_reg = intel_readl(shim, SDW_SHIM_SYNC);
 		u32p_replace_bits(&sync_reg, syncprd, SDW_SHIM_SYNC_SYNCPRD);
 
-		/* Set SyncCPU bit */
+		 
 		sync_reg |= SDW_SHIM_SYNC_SYNCCPU;
 		intel_writel(shim, SDW_SHIM_SYNC, sync_reg);
 
-		/* Link power up sequence */
+		 
 		link_control = intel_readl(shim, SDW_SHIM_LCTL);
 
-		/* only power-up enabled links */
+		 
 		spa_mask = FIELD_PREP(SDW_SHIM_LCTL_SPA_MASK, sdw->link_res->link_mask);
 		cpa_mask = FIELD_PREP(SDW_SHIM_LCTL_CPA_MASK, sdw->link_res->link_mask);
 
@@ -395,7 +376,7 @@ static int intel_link_power_up(struct sdw_intel *sdw)
 			goto out;
 		}
 
-		/* SyncCPU will change once link is active */
+		 
 		ret = intel_wait_bit(shim, SDW_SHIM_SYNC,
 				     SDW_SHIM_SYNC_SYNCCPU, 0);
 		if (ret < 0) {
@@ -441,10 +422,10 @@ static int intel_link_power_down(struct sdw_intel *sdw)
 
 		dev_dbg(sdw->cdns.dev, "powering down all links\n");
 
-		/* Link power down sequence */
+		 
 		link_control = intel_readl(shim, SDW_SHIM_LCTL);
 
-		/* only power-down enabled links */
+		 
 		spa_mask = FIELD_PREP(SDW_SHIM_LCTL_SPA_MASK, ~sdw->link_res->link_mask);
 		cpa_mask = FIELD_PREP(SDW_SHIM_LCTL_CPA_MASK, sdw->link_res->link_mask);
 
@@ -454,10 +435,7 @@ static int intel_link_power_down(struct sdw_intel *sdw)
 		if (ret < 0) {
 			dev_err(sdw->cdns.dev, "%s: could not power down link\n", __func__);
 
-			/*
-			 * we leave the sdw->cdns.link_up flag as false since we've disabled
-			 * the link at this point and cannot handle interrupts any longer.
-			 */
+			 
 		}
 	}
 
@@ -473,7 +451,7 @@ static void intel_shim_sync_arm(struct sdw_intel *sdw)
 
 	mutex_lock(sdw->link_res->shim_lock);
 
-	/* update SYNC register */
+	 
 	sync_reg = intel_readl(shim, SDW_SHIM_SYNC);
 	sync_reg |= (SDW_SHIM_SYNC_CMDSYNC << sdw->instance);
 	intel_writel(shim, SDW_SHIM_SYNC, sync_reg);
@@ -486,14 +464,10 @@ static int intel_shim_sync_go_unlocked(struct sdw_intel *sdw)
 	void __iomem *shim = sdw->link_res->shim;
 	u32 sync_reg;
 
-	/* Read SYNC register */
+	 
 	sync_reg = intel_readl(shim, SDW_SHIM_SYNC);
 
-	/*
-	 * Set SyncGO bit to synchronously trigger a bank switch for
-	 * all the masters. A write to SYNCGO bit clears CMDSYNC bit for all
-	 * the Masters.
-	 */
+	 
 	sync_reg |= SDW_SHIM_SYNC_SYNCGO;
 
 	intel_writel(shim, SDW_SHIM_SYNC, sync_reg);
@@ -514,9 +488,7 @@ static int intel_shim_sync_go(struct sdw_intel *sdw)
 	return ret;
 }
 
-/*
- * PDI routines
- */
+ 
 static void intel_pdi_init(struct sdw_intel *sdw,
 			   struct sdw_cdns_stream_config *config)
 {
@@ -524,7 +496,7 @@ static void intel_pdi_init(struct sdw_intel *sdw,
 	unsigned int link_id = sdw->instance;
 	int pcm_cap;
 
-	/* PCM Stream Capability */
+	 
 	pcm_cap = intel_readw(shim, SDW_SHIM_PCMSCAP(link_id));
 
 	config->pcm_bd = FIELD_GET(SDW_SHIM_PCMSCAP_BSS, pcm_cap);
@@ -544,16 +516,11 @@ intel_pdi_get_ch_cap(struct sdw_intel *sdw, unsigned int pdi_num)
 
 	count = intel_readw(shim, SDW_SHIM_PCMSYCHC(link_id, pdi_num));
 
-	/*
-	 * WORKAROUND: on all existing Intel controllers, pdi
-	 * number 2 reports channel count as 1 even though it
-	 * supports 8 channels. Performing hardcoding for pdi
-	 * number 2.
-	 */
+	 
 	if (pdi_num == 2)
 		count = 7;
 
-	/* zero based values for channel count in register */
+	 
 	count++;
 
 	return count;
@@ -598,15 +565,12 @@ intel_pdi_shim_configure(struct sdw_intel *sdw, struct sdw_cdns_pdi *pdi)
 	unsigned int link_id = sdw->instance;
 	int pdi_conf = 0;
 
-	/* the Bulk and PCM streams are not contiguous */
+	 
 	pdi->intel_alh_id = (link_id * 16) + pdi->num + 3;
 	if (pdi->num >= 2)
 		pdi->intel_alh_id += 2;
 
-	/*
-	 * Program stream parameters to stream SHIM register
-	 * This is applicable for PCM stream only.
-	 */
+	 
 	if (pdi->type != SDW_STREAM_PCM)
 		return;
 
@@ -629,12 +593,12 @@ intel_pdi_alh_configure(struct sdw_intel *sdw, struct sdw_cdns_pdi *pdi)
 	unsigned int link_id = sdw->instance;
 	unsigned int conf;
 
-	/* the Bulk and PCM streams are not contiguous */
+	 
 	pdi->intel_alh_id = (link_id * 16) + pdi->num + 3;
 	if (pdi->num >= 2)
 		pdi->intel_alh_id += 2;
 
-	/* Program Stream config ALH register */
+	 
 	conf = intel_readl(alh, SDW_ALH_STRMZCFG(pdi->intel_alh_id));
 
 	u32p_replace_bits(&conf, SDW_ALH_STRMZCFG_DMAT_VAL, SDW_ALH_STRMZCFG_DMAT);
@@ -664,9 +628,7 @@ static int intel_params_stream(struct sdw_intel *sdw,
 	return -EIO;
 }
 
-/*
- * DAI routines
- */
+ 
 
 static int intel_hw_params(struct snd_pcm_substream *substream,
 			   struct snd_pcm_hw_params *params,
@@ -698,17 +660,17 @@ static int intel_hw_params(struct snd_pcm_substream *substream,
 		goto error;
 	}
 
-	/* do run-time configurations for SHIM, ALH and PDI/PORT */
+	 
 	intel_pdi_shim_configure(sdw, pdi);
 	intel_pdi_alh_configure(sdw, pdi);
 	sdw_cdns_config_stream(cdns, ch, dir, pdi);
 
-	/* store pdi and hw_params, may be needed in prepare step */
+	 
 	dai_runtime->paused = false;
 	dai_runtime->suspended = false;
 	dai_runtime->pdi = pdi;
 
-	/* Inform DSP about PDI stream number */
+	 
 	ret = intel_params_stream(sdw, substream, dai, params,
 				  sdw->instance,
 				  pdi->intel_alh_id);
@@ -722,7 +684,7 @@ static int intel_hw_params(struct snd_pcm_substream *substream,
 
 	sconfig.bps = snd_pcm_format_width(params_format(params));
 
-	/* Port configuration */
+	 
 	pconfig = kzalloc(sizeof(*pconfig), GFP_KERNEL);
 	if (!pconfig) {
 		ret =  -ENOMEM;
@@ -766,15 +728,9 @@ static int intel_prepare(struct snd_pcm_substream *substream,
 
 		dai_runtime->suspended = false;
 
-		/*
-		 * .prepare() is called after system resume, where we
-		 * need to reinitialize the SHIM/ALH/Cadence IP.
-		 * .prepare() is also called to deal with underflows,
-		 * but in those cases we cannot touch ALH/SHIM
-		 * registers
-		 */
+		 
 
-		/* configure stream */
+		 
 		ch = params_channels(hw_params);
 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 			dir = SDW_DATA_DIR_RX;
@@ -785,7 +741,7 @@ static int intel_prepare(struct snd_pcm_substream *substream,
 		intel_pdi_alh_configure(sdw, dai_runtime->pdi);
 		sdw_cdns_config_stream(cdns, ch, dir, dai_runtime->pdi);
 
-		/* Inform DSP about PDI stream number */
+		 
 		ret = intel_params_stream(sdw, substream, dai,
 					  hw_params,
 					  sdw->instance,
@@ -806,12 +762,7 @@ intel_hw_free(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 	if (!dai_runtime)
 		return -EIO;
 
-	/*
-	 * The sdw stream state will transition to RELEASED when stream->
-	 * master_list is empty. So the stream state will transition to
-	 * DEPREPARED for the first cpu-dai and to RELEASED for the last
-	 * cpu-dai.
-	 */
+	 
 	ret = sdw_stream_remove_master(&cdns->bus, dai_runtime->stream);
 	if (ret < 0) {
 		dev_err(dai->dev, "remove master from stream %s failed: %d\n",
@@ -859,12 +810,7 @@ static int intel_trigger(struct snd_pcm_substream *substream, int cmd, struct sn
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 
-		/*
-		 * The .prepare callback is used to deal with xruns and resume operations.
-		 * In the case of xruns, the DMAs and SHIM registers cannot be touched,
-		 * but for resume operations the DMAs and SHIM registers need to be initialized.
-		 * the .trigger callback is used to track the suspend case only.
-		 */
+		 
 
 		dai_runtime->suspended = true;
 
@@ -888,12 +834,7 @@ static int intel_component_probe(struct snd_soc_component *component)
 {
 	int ret;
 
-	/*
-	 * make sure the device is pm_runtime_active before initiating
-	 * bus transactions during the card registration.
-	 * We use pm_runtime_resume() here, without taking a reference
-	 * and releasing it immediately.
-	 */
+	 
 	ret = pm_runtime_resume(component->dev);
 	if (ret < 0 && ret != -EACCES)
 		return ret;
@@ -905,12 +846,7 @@ static int intel_component_dais_suspend(struct snd_soc_component *component)
 {
 	struct snd_soc_dai *dai;
 
-	/*
-	 * In the corner case where a SUSPEND happens during a PAUSE, the ALSA core
-	 * does not throw the TRIGGER_SUSPEND. This leaves the DAIs in an unbalanced state.
-	 * Since the component suspend is called last, we can trap this corner case
-	 * and force the DAIs to release their resources.
-	 */
+	 
 	for_each_component_dais(component, dai) {
 		struct sdw_cdns *cdns = snd_soc_dai_get_drvdata(dai);
 		struct sdw_cdns_dai_runtime *dai_runtime;
@@ -988,7 +924,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 	struct snd_soc_dai_driver *dais;
 	int num_dai, ret, off = 0;
 
-	/* Read the PDI config and initialize cadence PDI */
+	 
 	intel_pdi_init(sdw, &config);
 	ret = sdw_cdns_pdi_init(cdns, config);
 	if (ret)
@@ -996,7 +932,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 
 	intel_pdi_stream_ch_update(sdw, &sdw->cdns.pcm);
 
-	/* DAIs are created based on total number of PDIs supported */
+	 
 	num_dai = cdns->pcm.num_pdi;
 
 	dai_runtime_array = devm_kcalloc(cdns->dev, num_dai,
@@ -1010,7 +946,7 @@ static int intel_register_dai(struct sdw_intel *sdw)
 	if (!dais)
 		return -ENOMEM;
 
-	/* Create PCM DAIs */
+	 
 	stream = &cdns->pcm;
 
 	ret = intel_create_dai(cdns, dais, INTEL_PDI_IN, cdns->pcm.num_in,

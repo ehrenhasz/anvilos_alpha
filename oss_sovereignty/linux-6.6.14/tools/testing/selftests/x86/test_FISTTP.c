@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #undef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #undef __USE_GNU
@@ -95,7 +95,7 @@ int test(void)
 	"	fisttpll res64""\n"
 	: : : "memory"
 	);
-	/* Test truncation to zero (round-to-nearest would give 1 here) */
+	 
 	if (res16 != 0 || res32 != 0 || res64 != 0) {
 		printf("[BAD]\tfisttp ln2\n");
 		return 1;
@@ -119,10 +119,7 @@ int main(int argc, char **argv, char **envp)
 {
 	int err = 0;
 
-	/* SIGILL triggers on 32-bit kernels w/o fisttp emulation
-	 * when run with "no387 nofxsr". Other signals are caught
-	 * just in case.
-	 */
+	 
 	signal(SIGILL, sighandler);
 	signal(SIGFPE, sighandler);
 	signal(SIGSEGV, sighandler);

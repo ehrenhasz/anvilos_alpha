@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #if !defined(_TRACE_KVM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_KVM_H
 
@@ -11,9 +11,7 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kvm
 
-/*
- * Tracepoint for guest mode entry.
- */
+ 
 TRACE_EVENT(kvm_entry,
 	TP_PROTO(struct kvm_vcpu *vcpu),
 	TP_ARGS(vcpu),
@@ -31,9 +29,7 @@ TRACE_EVENT(kvm_entry,
 	TP_printk("vcpu %u, rip 0x%lx", __entry->vcpu_id, __entry->rip)
 );
 
-/*
- * Tracepoint for hypercall.
- */
+ 
 TRACE_EVENT(kvm_hypercall,
 	TP_PROTO(unsigned long nr, unsigned long a0, unsigned long a1,
 		 unsigned long a2, unsigned long a3),
@@ -60,9 +56,7 @@ TRACE_EVENT(kvm_hypercall,
 		 __entry->a3)
 );
 
-/*
- * Tracepoint for hypercall.
- */
+ 
 TRACE_EVENT(kvm_hv_hypercall,
 	TP_PROTO(__u16 code, bool fast,  __u16 var_cnt, __u16 rep_cnt,
 		 __u16 rep_idx, __u64 ingpa, __u64 outgpa),
@@ -109,9 +103,7 @@ TRACE_EVENT(kvm_hv_hypercall_done,
 	TP_printk("result 0x%llx", __entry->result)
 );
 
-/*
- * Tracepoint for Xen hypercall.
- */
+ 
 TRACE_EVENT(kvm_xen_hypercall,
 	    TP_PROTO(u8 cpl, unsigned long nr,
 		     unsigned long a0, unsigned long a1, unsigned long a2,
@@ -148,9 +140,7 @@ TRACE_EVENT(kvm_xen_hypercall,
 
 
 
-/*
- * Tracepoint for PIO.
- */
+ 
 
 #define KVM_PIO_IN   0
 #define KVM_PIO_OUT  1
@@ -187,9 +177,7 @@ TRACE_EVENT(kvm_pio,
 		  __entry->count > 1 ? "(...)" : "")
 );
 
-/*
- * Tracepoint for fast mmio.
- */
+ 
 TRACE_EVENT(kvm_fast_mmio,
 	TP_PROTO(u64 gpa),
 	TP_ARGS(gpa),
@@ -205,9 +193,7 @@ TRACE_EVENT(kvm_fast_mmio,
 	TP_printk("fast mmio at gpa 0x%llx", __entry->gpa)
 );
 
-/*
- * Tracepoint for cpuid.
- */
+ 
 TRACE_EVENT(kvm_cpuid,
 	TP_PROTO(unsigned int function, unsigned int index, unsigned long rax,
 		 unsigned long rbx, unsigned long rcx, unsigned long rdx,
@@ -252,9 +238,7 @@ TRACE_EVENT(kvm_cpuid,
 	AREG(LVTTHMR), AREG(LVTPC), AREG(LVT0), AREG(LVT1), AREG(LVTERR),   \
 	AREG(TMICT), AREG(TMCCT), AREG(TDCR), AREG(SELF_IPI), AREG(EFEAT),  \
 	AREG(ECTRL)
-/*
- * Tracepoint for apic access.
- */
+ 
 TRACE_EVENT(kvm_apic,
 	TP_PROTO(unsigned int rw, unsigned int reg, u64 val),
 	TP_ARGS(rw, reg, val),
@@ -327,14 +311,10 @@ TRACE_EVENT(name,							     \
 		  __entry->intr_info, __entry->error_code)		     \
 )
 
-/*
- * Tracepoint for kvm guest exit:
- */
+ 
 TRACE_EVENT_KVM_EXIT(kvm_exit);
 
-/*
- * Tracepoint for kvm interrupt injection:
- */
+ 
 TRACE_EVENT(kvm_inj_virq,
 	TP_PROTO(unsigned int vector, bool soft, bool reinjected),
 	TP_ARGS(vector, soft, reinjected),
@@ -363,9 +343,7 @@ TRACE_EVENT(kvm_inj_virq,
 	EXS(DF), EXS(TS), EXS(NP), EXS(SS), EXS(GP), EXS(PF),		\
 	EXS(MF), EXS(AC), EXS(MC)
 
-/*
- * Tracepoint for kvm interrupt injection:
- */
+ 
 TRACE_EVENT(kvm_inj_exception,
 	TP_PROTO(unsigned exception, bool has_error, unsigned error_code,
 		 bool reinjected),
@@ -393,9 +371,7 @@ TRACE_EVENT(kvm_inj_exception,
 		  __entry->reinjected ? " [reinjected]" : "")
 );
 
-/*
- * Tracepoint for page fault.
- */
+ 
 TRACE_EVENT(kvm_page_fault,
 	TP_PROTO(struct kvm_vcpu *vcpu, u64 fault_address, u64 error_code),
 	TP_ARGS(vcpu, fault_address, error_code),
@@ -419,9 +395,7 @@ TRACE_EVENT(kvm_page_fault,
 		  __entry->fault_address, __entry->error_code)
 );
 
-/*
- * Tracepoint for guest MSR access.
- */
+ 
 TRACE_EVENT(kvm_msr,
 	TP_PROTO(unsigned write, u32 ecx, u64 data, bool exception),
 	TP_ARGS(write, ecx, data, exception),
@@ -451,9 +425,7 @@ TRACE_EVENT(kvm_msr,
 #define trace_kvm_msr_read_ex(ecx)         trace_kvm_msr(0, ecx, 0, true)
 #define trace_kvm_msr_write_ex(ecx, data)  trace_kvm_msr(1, ecx, data, true)
 
-/*
- * Tracepoint for guest CR access.
- */
+ 
 TRACE_EVENT(kvm_cr,
 	TP_PROTO(unsigned int rw, unsigned int cr, unsigned long val),
 	TP_ARGS(rw, cr, val),
@@ -594,9 +566,7 @@ TRACE_EVENT(kvm_pv_eoi,
 	TP_printk("apicid %x vector %d", __entry->apicid, __entry->vector)
 );
 
-/*
- * Tracepoint for nested VMRUN
- */
+ 
 TRACE_EVENT(kvm_nested_vmenter,
 	    TP_PROTO(__u64 rip, __u64 vmcb, __u64 nested_rip, __u32 int_ctl,
 		     __u32 event_inj, bool tdp_enabled, __u64 guest_tdp_pgd,
@@ -670,14 +640,10 @@ TRACE_EVENT(kvm_nested_intercepts,
 		  __entry->cr_read, __entry->cr_write, __entry->exceptions,
 		  __entry->intercept1, __entry->intercept2, __entry->intercept3)
 );
-/*
- * Tracepoint for #VMEXIT while nested
- */
+ 
 TRACE_EVENT_KVM_EXIT(kvm_nested_vmexit);
 
-/*
- * Tracepoint for #VMEXIT reinjected to the guest
- */
+ 
 TRACE_EVENT(kvm_nested_vmexit_inject,
 	    TP_PROTO(__u32 exit_code,
 		     __u64 exit_info1, __u64 exit_info2,
@@ -710,9 +676,7 @@ TRACE_EVENT(kvm_nested_vmexit_inject,
 		  __entry->exit_int_info, __entry->exit_int_info_err)
 );
 
-/*
- * Tracepoint for nested #vmexit because of interrupt pending
- */
+ 
 TRACE_EVENT(kvm_nested_intr_vmexit,
 	    TP_PROTO(__u64 rip),
 	    TP_ARGS(rip),
@@ -728,9 +692,7 @@ TRACE_EVENT(kvm_nested_intr_vmexit,
 	TP_printk("rip: 0x%016llx", __entry->rip)
 );
 
-/*
- * Tracepoint for nested #vmexit because of interrupt pending
- */
+ 
 TRACE_EVENT(kvm_invlpga,
 	    TP_PROTO(__u64 rip, int asid, u64 address),
 	    TP_ARGS(rip, asid, address),
@@ -751,9 +713,7 @@ TRACE_EVENT(kvm_invlpga,
 		  __entry->rip, __entry->asid, __entry->address)
 );
 
-/*
- * Tracepoint for nested #vmexit because of interrupt pending
- */
+ 
 TRACE_EVENT(kvm_skinit,
 	    TP_PROTO(__u64 rip, __u32 slb),
 	    TP_ARGS(rip, slb),
@@ -951,11 +911,9 @@ TRACE_EVENT(kvm_track_tsc,
 		  __print_symbolic(__entry->host_clock, host_clocks))
 );
 
-#endif /* CONFIG_X86_64 */
+#endif  
 
-/*
- * Tracepoint for PML full VMEXIT.
- */
+ 
 TRACE_EVENT(kvm_pml_full,
 	TP_PROTO(unsigned int vcpu_id),
 	TP_ARGS(vcpu_id),
@@ -1070,9 +1028,7 @@ TRACE_EVENT(kvm_smm_transition,
 		  __entry->smbase)
 );
 
-/*
- * Tracepoint for VT-d posted-interrupts.
- */
+ 
 TRACE_EVENT(kvm_pi_irte_update,
 	TP_PROTO(unsigned int host_irq, unsigned int vcpu_id,
 		 unsigned int gsi, unsigned int gvec,
@@ -1107,9 +1063,7 @@ TRACE_EVENT(kvm_pi_irte_update,
 		  __entry->pi_desc_addr)
 );
 
-/*
- * Tracepoint for kvm_hv_notify_acked_sint.
- */
+ 
 TRACE_EVENT(kvm_hv_notify_acked_sint,
 	TP_PROTO(int vcpu_id, u32 sint),
 	TP_ARGS(vcpu_id, sint),
@@ -1127,9 +1081,7 @@ TRACE_EVENT(kvm_hv_notify_acked_sint,
 	TP_printk("vcpu_id %d sint %u", __entry->vcpu_id, __entry->sint)
 );
 
-/*
- * Tracepoint for synic_set_irq.
- */
+ 
 TRACE_EVENT(kvm_hv_synic_set_irq,
 	TP_PROTO(int vcpu_id, u32 sint, int vector, int ret),
 	TP_ARGS(vcpu_id, sint, vector, ret),
@@ -1153,9 +1105,7 @@ TRACE_EVENT(kvm_hv_synic_set_irq,
 		  __entry->ret)
 );
 
-/*
- * Tracepoint for kvm_hv_synic_send_eoi.
- */
+ 
 TRACE_EVENT(kvm_hv_synic_send_eoi,
 	TP_PROTO(int vcpu_id, int vector),
 	TP_ARGS(vcpu_id, vector),
@@ -1175,9 +1125,7 @@ TRACE_EVENT(kvm_hv_synic_send_eoi,
 	TP_printk("vcpu_id %d vector %d", __entry->vcpu_id, __entry->vector)
 );
 
-/*
- * Tracepoint for synic_set_msr.
- */
+ 
 TRACE_EVENT(kvm_hv_synic_set_msr,
 	TP_PROTO(int vcpu_id, u32 msr, u64 data, bool host),
 	TP_ARGS(vcpu_id, msr, data, host),
@@ -1200,9 +1148,7 @@ TRACE_EVENT(kvm_hv_synic_set_msr,
 		  __entry->vcpu_id, __entry->msr, __entry->data, __entry->host)
 );
 
-/*
- * Tracepoint for stimer_set_config.
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_set_config,
 	TP_PROTO(int vcpu_id, int timer_index, u64 config, bool host),
 	TP_ARGS(vcpu_id, timer_index, config, host),
@@ -1226,9 +1172,7 @@ TRACE_EVENT(kvm_hv_stimer_set_config,
 		  __entry->host)
 );
 
-/*
- * Tracepoint for stimer_set_count.
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_set_count,
 	TP_PROTO(int vcpu_id, int timer_index, u64 count, bool host),
 	TP_ARGS(vcpu_id, timer_index, count, host),
@@ -1252,9 +1196,7 @@ TRACE_EVENT(kvm_hv_stimer_set_count,
 		  __entry->host)
 );
 
-/*
- * Tracepoint for stimer_start(periodic timer case).
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_start_periodic,
 	TP_PROTO(int vcpu_id, int timer_index, u64 time_now, u64 exp_time),
 	TP_ARGS(vcpu_id, timer_index, time_now, exp_time),
@@ -1278,9 +1220,7 @@ TRACE_EVENT(kvm_hv_stimer_start_periodic,
 		  __entry->exp_time)
 );
 
-/*
- * Tracepoint for stimer_start(one-shot timer case).
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_start_one_shot,
 	TP_PROTO(int vcpu_id, int timer_index, u64 time_now, u64 count),
 	TP_ARGS(vcpu_id, timer_index, time_now, count),
@@ -1304,9 +1244,7 @@ TRACE_EVENT(kvm_hv_stimer_start_one_shot,
 		  __entry->count)
 );
 
-/*
- * Tracepoint for stimer_timer_callback.
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_callback,
 	TP_PROTO(int vcpu_id, int timer_index),
 	TP_ARGS(vcpu_id, timer_index),
@@ -1325,9 +1263,7 @@ TRACE_EVENT(kvm_hv_stimer_callback,
 		  __entry->vcpu_id, __entry->timer_index)
 );
 
-/*
- * Tracepoint for stimer_expiration.
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_expiration,
 	TP_PROTO(int vcpu_id, int timer_index, int direct, int msg_send_result),
 	TP_ARGS(vcpu_id, timer_index, direct, msg_send_result),
@@ -1351,9 +1287,7 @@ TRACE_EVENT(kvm_hv_stimer_expiration,
 		  __entry->direct, __entry->msg_send_result)
 );
 
-/*
- * Tracepoint for stimer_cleanup.
- */
+ 
 TRACE_EVENT(kvm_hv_stimer_cleanup,
 	TP_PROTO(int vcpu_id, int timer_index),
 	TP_ARGS(vcpu_id, timer_index),
@@ -1417,9 +1351,7 @@ TRACE_EVENT(kvm_apicv_accept_irq,
 		  __entry->tm ? "level" : "edge")
 );
 
-/*
- * Tracepoint for AMD AVIC
- */
+ 
 TRACE_EVENT(kvm_avic_incomplete_ipi,
 	    TP_PROTO(u32 vcpu, u32 icrh, u32 icrl, u32 id, u32 index),
 	    TP_ARGS(vcpu, icrh, icrl, id, index),
@@ -1546,9 +1478,7 @@ TRACE_EVENT(kvm_hv_timer_state,
 			__entry->hv_timer_in_use)
 );
 
-/*
- * Tracepoint for kvm_hv_flush_tlb.
- */
+ 
 TRACE_EVENT(kvm_hv_flush_tlb,
 	TP_PROTO(u64 processor_mask, u64 address_space, u64 flags, bool guest_mode),
 	TP_ARGS(processor_mask, address_space, flags, guest_mode),
@@ -1572,9 +1502,7 @@ TRACE_EVENT(kvm_hv_flush_tlb,
 		  __entry->flags, __entry->guest_mode ? "(L2)" : "")
 );
 
-/*
- * Tracepoint for kvm_hv_flush_tlb_ex.
- */
+ 
 TRACE_EVENT(kvm_hv_flush_tlb_ex,
 	TP_PROTO(u64 valid_bank_mask, u64 format, u64 address_space, u64 flags, bool guest_mode),
 	TP_ARGS(valid_bank_mask, format, address_space, flags, guest_mode),
@@ -1602,9 +1530,7 @@ TRACE_EVENT(kvm_hv_flush_tlb_ex,
 		  __entry->guest_mode ? "(L2)" : "")
 );
 
-/*
- * Tracepoints for kvm_hv_send_ipi.
- */
+ 
 TRACE_EVENT(kvm_hv_send_ipi,
 	TP_PROTO(u32 vector, u64 processor_mask),
 	TP_ARGS(vector, processor_mask),
@@ -1662,9 +1588,7 @@ TRACE_EVENT(kvm_pv_tlb_flush,
 		__entry->need_flush_tlb ? "true" : "false")
 );
 
-/*
- * Tracepoint for failed nested VMX VM-Enter.
- */
+ 
 TRACE_EVENT(kvm_nested_vmenter_failed,
 	TP_PROTO(const char *msg, u32 err),
 	TP_ARGS(msg, err),
@@ -1683,9 +1607,7 @@ TRACE_EVENT(kvm_nested_vmenter_failed,
 		__print_symbolic(__entry->err, VMX_VMENTER_INSTRUCTION_ERRORS))
 );
 
-/*
- * Tracepoint for syndbg_set_msr.
- */
+ 
 TRACE_EVENT(kvm_hv_syndbg_set_msr,
 	TP_PROTO(int vcpu_id, u32 vp_index, u32 msr, u64 data),
 	TP_ARGS(vcpu_id, vp_index, msr, data),
@@ -1709,9 +1631,7 @@ TRACE_EVENT(kvm_hv_syndbg_set_msr,
 		  __entry->data)
 );
 
-/*
- * Tracepoint for syndbg_get_msr.
- */
+ 
 TRACE_EVENT(kvm_hv_syndbg_get_msr,
 	TP_PROTO(int vcpu_id, u32 vp_index, u32 msr, u64 data),
 	TP_ARGS(vcpu_id, vp_index, msr, data),
@@ -1735,9 +1655,7 @@ TRACE_EVENT(kvm_hv_syndbg_get_msr,
 		  __entry->data)
 );
 
-/*
- * Tracepoint for the start of VMGEXIT processing
- */
+ 
 TRACE_EVENT(kvm_vmgexit_enter,
 	TP_PROTO(unsigned int vcpu_id, struct ghcb *ghcb),
 	TP_ARGS(vcpu_id, ghcb),
@@ -1761,9 +1679,7 @@ TRACE_EVENT(kvm_vmgexit_enter,
 		  __entry->info1, __entry->info2)
 );
 
-/*
- * Tracepoint for the end of VMGEXIT processing
- */
+ 
 TRACE_EVENT(kvm_vmgexit_exit,
 	TP_PROTO(unsigned int vcpu_id, struct ghcb *ghcb),
 	TP_ARGS(vcpu_id, ghcb),
@@ -1787,9 +1703,7 @@ TRACE_EVENT(kvm_vmgexit_exit,
 		  __entry->info1, __entry->info2)
 );
 
-/*
- * Tracepoint for the start of VMGEXIT MSR procotol processing
- */
+ 
 TRACE_EVENT(kvm_vmgexit_msr_protocol_enter,
 	TP_PROTO(unsigned int vcpu_id, u64 ghcb_gpa),
 	TP_ARGS(vcpu_id, ghcb_gpa),
@@ -1808,9 +1722,7 @@ TRACE_EVENT(kvm_vmgexit_msr_protocol_enter,
 		  __entry->vcpu_id, __entry->ghcb_gpa)
 );
 
-/*
- * Tracepoint for the end of VMGEXIT MSR procotol processing
- */
+ 
 TRACE_EVENT(kvm_vmgexit_msr_protocol_exit,
 	TP_PROTO(unsigned int vcpu_id, u64 ghcb_gpa, int result),
 	TP_ARGS(vcpu_id, ghcb_gpa, result),
@@ -1831,12 +1743,12 @@ TRACE_EVENT(kvm_vmgexit_msr_protocol_exit,
 		  __entry->vcpu_id, __entry->ghcb_gpa, __entry->result)
 );
 
-#endif /* _TRACE_KVM_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../arch/x86/kvm
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

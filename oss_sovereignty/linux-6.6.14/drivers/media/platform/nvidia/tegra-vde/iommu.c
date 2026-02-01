@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2016-2019 GRATE-DRIVER project
- */
+
+ 
 
 #include <linux/iommu.h>
 #include <linux/iova.h>
@@ -95,10 +91,7 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
 	if (err)
 		goto put_iova;
 
-	/*
-	 * We're using some static addresses that are not accessible by VDE
-	 * to trap invalid memory accesses.
-	 */
+	 
 	shift = iova_shift(&vde->iova);
 	iova = reserve_iova(&vde->iova, 0x60000000 >> shift,
 			    0x70000000 >> shift);
@@ -109,12 +102,7 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
 
 	vde->iova_resv_static_addresses = iova;
 
-	/*
-	 * BSEV's end-address wraps around due to integer overflow during
-	 * of hardware context preparation if IOVA is allocated at the end
-	 * of address space and VDE can't handle that. Hence simply reserve
-	 * the last page to avoid the problem.
-	 */
+	 
 	iova = reserve_iova(&vde->iova, 0xffffffff >> shift,
 			    (0xffffffff >> shift) + 1);
 	if (!iova) {

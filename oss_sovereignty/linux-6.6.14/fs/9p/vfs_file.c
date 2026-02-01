@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file contians vfs file ops for 9P2000.
- *
- *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -30,12 +25,7 @@
 
 static const struct vm_operations_struct v9fs_mmap_file_vm_ops;
 
-/**
- * v9fs_file_open - open a file (or directory)
- * @inode: inode to be opened
- * @file: file being opened
- *
- */
+ 
 
 int v9fs_file_open(struct inode *inode, struct file *file)
 {
@@ -91,15 +81,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/**
- * v9fs_file_lock - lock a file (or directory)
- * @filp: file to be locked
- * @cmd: lock command
- * @fl: file lock structure
- *
- * Bugs: this looks like a local only lock, we should extend into 9P
- *       by using open exclusive
- */
+ 
 
 static int v9fs_file_lock(struct file *filp, int cmd, struct file_lock *fl)
 {
@@ -133,9 +115,9 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
 	if (res < 0)
 		goto out;
 
-	/* convert posix lock to p9 tlock args */
+	 
 	memset(&flock, 0, sizeof(flock));
-	/* map the lock type */
+	 
 	switch (fl->fl_type) {
 	case F_RDLCK:
 		flock.type = P9_LOCK_TYPE_RDLCK;
@@ -159,10 +141,7 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
 
 	v9ses = v9fs_inode2v9ses(file_inode(filp));
 
-	/*
-	 * if its a blocked request and we get P9_LOCK_BLOCKED as the status
-	 * for lock request, keep on trying
-	 */
+	 
 	for (;;) {
 		res = p9_client_lock_dotl(fid, &flock, &status);
 		if (res < 0)
@@ -175,17 +154,14 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
 		if (schedule_timeout_interruptible(v9ses->session_lock_timeout)
 				!= 0)
 			break;
-		/*
-		 * p9_client_lock_dotl overwrites flock.client_id with the
-		 * server message, free and reuse the client name
-		 */
+		 
 		if (flock.client_id != fid->clnt->name) {
 			kfree(flock.client_id);
 			flock.client_id = fid->clnt->name;
 		}
 	}
 
-	/* map 9p status to VFS status */
+	 
 	switch (status) {
 	case P9_LOCK_SUCCESS:
 		res = 0;
@@ -203,14 +179,11 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
 	}
 
 out_unlock:
-	/*
-	 * incase server returned error for lock request, revert
-	 * it locally
-	 */
+	 
 	if (res < 0 && fl->fl_type != F_UNLCK) {
 		fl_type = fl->fl_type;
 		fl->fl_type = F_UNLCK;
-		/* Even if this fails we want to return the remote error */
+		 
 		locks_lock_file_wait(filp, fl);
 		fl->fl_type = fl_type;
 	}
@@ -230,14 +203,11 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
 	BUG_ON(fid == NULL);
 
 	posix_test_lock(filp, fl);
-	/*
-	 * if we have a conflicting lock locally, no need to validate
-	 * with server
-	 */
+	 
 	if (fl->fl_type != F_UNLCK)
 		return res;
 
-	/* convert posix lock to p9 tgetlock args */
+	 
 	memset(&glock, 0, sizeof(glock));
 	glock.type  = P9_LOCK_TYPE_UNLCK;
 	glock.start = fl->fl_start;
@@ -251,7 +221,7 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
 	res = p9_client_getlock_dotl(fid, &glock);
 	if (res < 0)
 		goto out;
-	/* map 9p lock type to os lock type */
+	 
 	switch (glock.type) {
 	case P9_LOCK_TYPE_RDLCK:
 		fl->fl_type = F_RDLCK;
@@ -277,13 +247,7 @@ out:
 	return res;
 }
 
-/**
- * v9fs_file_lock_dotl - lock a file (or directory)
- * @filp: file to be locked
- * @cmd: lock command
- * @fl: file lock structure
- *
- */
+ 
 
 static int v9fs_file_lock_dotl(struct file *filp, int cmd, struct file_lock *fl)
 {
@@ -307,13 +271,7 @@ static int v9fs_file_lock_dotl(struct file *filp, int cmd, struct file_lock *fl)
 	return ret;
 }
 
-/**
- * v9fs_file_flock_dotl - lock a file
- * @filp: file to be locked
- * @cmd: lock command
- * @fl: file lock structure
- *
- */
+ 
 
 static int v9fs_file_flock_dotl(struct file *filp, int cmd,
 	struct file_lock *fl)
@@ -331,7 +289,7 @@ static int v9fs_file_flock_dotl(struct file *filp, int cmd,
 		filemap_write_and_wait(inode->i_mapping);
 		invalidate_mapping_pages(&inode->i_data, 0, -1);
 	}
-	/* Convert flock to posix lock */
+	 
 	fl->fl_flags |= FL_POSIX;
 	fl->fl_flags ^= FL_FLOCK;
 
@@ -343,12 +301,7 @@ out_err:
 	return ret;
 }
 
-/**
- * v9fs_file_read_iter - read from a file
- * @iocb: The operation parameters
- * @to: The buffer to read into
- *
- */
+ 
 static ssize_t
 v9fs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 {
@@ -374,14 +327,7 @@ v9fs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	return ret;
 }
 
-/*
- * v9fs_file_splice_read - splice-read from a file
- * @in: The 9p file to read from
- * @ppos: Where to find/update the file position
- * @pipe: The pipe to splice into
- * @len: The maximum amount of data to splice
- * @flags: SPLICE_F_* flags
- */
+ 
 static ssize_t v9fs_file_splice_read(struct file *in, loff_t *ppos,
 				     struct pipe_inode_info *pipe,
 				     size_t len, unsigned int flags)
@@ -396,12 +342,7 @@ static ssize_t v9fs_file_splice_read(struct file *in, loff_t *ppos,
 	return filemap_splice_read(in, ppos, pipe, len, flags);
 }
 
-/**
- * v9fs_file_write_iter - write to a file
- * @iocb: The operation parameters
- * @from: The data to write
- *
- */
+ 
 static ssize_t
 v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
@@ -438,10 +379,7 @@ v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 		i_size = i_size_read(inode);
 		if (iocb->ki_pos > i_size) {
 			inode_add_bytes(inode, iocb->ki_pos - i_size);
-			/*
-			 * Need to serialize against i_size_write() in
-			 * v9fs_stat2inode()
-			 */
+			 
 			v9fs_i_size_write(inode, iocb->ki_pos);
 		}
 		return retval;
@@ -527,16 +465,14 @@ v9fs_vm_page_mkwrite(struct vm_fault *vmf)
 	p9_debug(P9_DEBUG_VFS, "folio %p fid %lx\n",
 		 folio, (unsigned long)filp->private_data);
 
-	/* Wait for the page to be written to the cache before we allow it to
-	 * be modified.  We then assume the entire page will need writing back.
-	 */
+	 
 #ifdef CONFIG_9P_FSCACHE
 	if (folio_test_fscache(folio) &&
 	    folio_wait_fscache_killable(folio) < 0)
 		return VM_FAULT_NOPAGE;
 #endif
 
-	/* Update file times before taking page lock */
+	 
 	file_update_time(filp);
 
 	if (folio_lock_killable(folio) < 0)
@@ -559,7 +495,7 @@ static void v9fs_mmap_vm_close(struct vm_area_struct *vma)
 		.nr_to_write = LONG_MAX,
 		.sync_mode = WB_SYNC_ALL,
 		.range_start = (loff_t)vma->vm_pgoff * PAGE_SIZE,
-		 /* absolute end, byte at end included */
+		  
 		.range_end = (loff_t)vma->vm_pgoff * PAGE_SIZE +
 			(vma->vm_end - vma->vm_start - 1),
 	};

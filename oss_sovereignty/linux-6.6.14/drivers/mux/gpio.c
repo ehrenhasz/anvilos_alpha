@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO-controlled multiplexer driver
- *
- * Copyright (C) 2017 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/err.h>
@@ -41,7 +35,7 @@ static const struct mux_control_ops mux_gpio_ops = {
 
 static const struct of_device_id mux_gpio_dt_ids[] = {
 	{ .compatible = "gpio-mux", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mux_gpio_dt_ids);
 

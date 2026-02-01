@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implementation of get_cpuid().
- *
- * Copyright IBM Corp. 2014, 2018
- * Author(s): Alexander Yarygin <yarygin@linux.vnet.ibm.com>
- *	      Thomas Richter <tmricht@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <sys/types.h>
 #include <errno.h>
@@ -37,16 +31,7 @@ int get_cpuid(char *buffer, size_t sz)
 	size_t nbytes;
 	FILE *sysinfo;
 
-	/*
-	 * Scan /proc/sysinfo line by line and read out values for
-	 * Manufacturer:, Type: and Model:, for example:
-	 * Manufacturer:    IBM
-	 * Type:            2964
-	 * Model:           702              N96
-	 * The first word is the Model Capacity and the second word is
-	 * Model (can be omitted). Both words have a maximum size of 16
-	 * bytes.
-	 */
+	 
 	memset(manufacturer, 0, sizeof(manufacturer));
 	memset(type, 0, sizeof(type));
 	memset(model, 0, sizeof(model));
@@ -88,15 +73,11 @@ int get_cpuid(char *buffer, size_t sz)
 	}
 	fclose(sysinfo);
 
-	/* Missing manufacturer, type or model information should not happen */
+	 
 	if (!manufacturer[0] || !type[0] || !model[0])
 		return EINVAL;
 
-	/*
-	 * Scan /proc/service_levels and return the CPU-MF counter facility
-	 * version number and authorization level.
-	 * Optional, does not exist on z/VM guests.
-	 */
+	 
 	sysinfo = fopen(SRVLVL, "r");
 	if (sysinfo == NULL)
 		goto skip_sysinfo;

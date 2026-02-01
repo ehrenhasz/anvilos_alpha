@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
@@ -65,33 +62,7 @@
 #define LLCC_VERSION_2_1_0_0          0x02010000
 #define LLCC_VERSION_4_1_0_0          0x04010000
 
-/**
- * struct llcc_slice_config - Data associated with the llcc slice
- * @usecase_id: Unique id for the client's use case
- * @slice_id: llcc slice id for each client
- * @max_cap: The maximum capacity of the cache slice provided in KB
- * @priority: Priority of the client used to select victim line for replacement
- * @fixed_size: Boolean indicating if the slice has a fixed capacity
- * @bonus_ways: Bonus ways are additional ways to be used for any slice,
- *		if client ends up using more than reserved cache ways. Bonus
- *		ways are allocated only if they are not reserved for some
- *		other client.
- * @res_ways: Reserved ways for the cache slice, the reserved ways cannot
- *		be used by any other client than the one its assigned to.
- * @cache_mode: Each slice operates as a cache, this controls the mode of the
- *             slice: normal or TCM(Tightly Coupled Memory)
- * @probe_target_ways: Determines what ways to probe for access hit. When
- *                    configured to 1 only bonus and reserved ways are probed.
- *                    When configured to 0 all ways in llcc are probed.
- * @dis_cap_alloc: Disable capacity based allocation for a client
- * @retain_on_pc: If this bit is set and client has maintained active vote
- *               then the ways assigned to this client are not flushed on power
- *               collapse.
- * @activate_on_init: Activate the slice immediately after it is programmed
- * @write_scid_en: Bit enables write cache support for a given scid.
- * @write_scid_cacheable_en: Enables write cache cacheable support for a
- *			     given scid (not supported on v2 or older hardware).
- */
+ 
 struct llcc_slice_config {
 	u32 usecase_id;
 	u32 slice_id;
@@ -366,12 +337,12 @@ static const struct llcc_edac_reg_offset llcc_v1_edac_reg_offset = {
 	.trp_interrupt_0_clear = 0x20484,
 	.trp_interrupt_0_enable = 0x20488,
 
-	/* LLCC Common registers */
+	 
 	.cmn_status0 = 0x3000c,
 	.cmn_interrupt_0_enable = 0x3001c,
 	.cmn_interrupt_2_enable = 0x3003c,
 
-	/* LLCC DRP registers */
+	 
 	.drp_ecc_error_cfg = 0x40000,
 	.drp_ecc_error_cntr_clear = 0x40004,
 	.drp_interrupt_status = 0x41000,
@@ -393,12 +364,12 @@ static const struct llcc_edac_reg_offset llcc_v2_1_edac_reg_offset = {
 	.trp_interrupt_0_clear = 0x20484,
 	.trp_interrupt_0_enable = 0x20488,
 
-	/* LLCC Common registers */
+	 
 	.cmn_status0 = 0x3400c,
 	.cmn_interrupt_0_enable = 0x3401c,
 	.cmn_interrupt_2_enable = 0x3403c,
 
-	/* LLCC DRP registers */
+	 
 	.drp_ecc_error_cfg = 0x50000,
 	.drp_ecc_error_cntr_clear = 0x50004,
 	.drp_interrupt_status = 0x50020,
@@ -410,13 +381,13 @@ static const struct llcc_edac_reg_offset llcc_v2_1_edac_reg_offset = {
 	.drp_ecc_db_err_syn0 = 0x52120,
 };
 
-/* LLCC register offset starting from v1.0.0 */
+ 
 static const u32 llcc_v1_reg_offset[] = {
 	[LLCC_COMMON_HW_INFO]	= 0x00030000,
 	[LLCC_COMMON_STATUS0]	= 0x0003000c,
 };
 
-/* LLCC register offset starting from v2.0.1 */
+ 
 static const u32 llcc_v2_1_reg_offset[] = {
 	[LLCC_COMMON_HW_INFO]	= 0x00034000,
 	[LLCC_COMMON_STATUS0]	= 0x0003400c,
@@ -521,13 +492,7 @@ static const struct qcom_llcc_config sm8550_cfg = {
 
 static struct llcc_drv_data *drv_data = (void *) -EPROBE_DEFER;
 
-/**
- * llcc_slice_getd - get llcc slice descriptor
- * @uid: usecase_id for the client
- *
- * A pointer to llcc slice descriptor will be returned on success
- * and error pointer is returned on failure
- */
+ 
 struct llcc_slice_desc *llcc_slice_getd(u32 uid)
 {
 	const struct llcc_slice_config *cfg;
@@ -558,10 +523,7 @@ struct llcc_slice_desc *llcc_slice_getd(u32 uid)
 }
 EXPORT_SYMBOL_GPL(llcc_slice_getd);
 
-/**
- * llcc_slice_putd - llcc slice descritpor
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 void llcc_slice_putd(struct llcc_slice_desc *desc)
 {
 	if (!IS_ERR_OR_NULL(desc))
@@ -585,14 +547,14 @@ static int llcc_update_act_ctrl(u32 sid,
 	act_clear_reg = LLCC_TRP_ACT_CLEARn(sid);
 	status_reg = LLCC_TRP_STATUSn(sid);
 
-	/* Set the ACTIVE trigger */
+	 
 	act_ctrl_reg_val |= ACT_CTRL_ACT_TRIG;
 	ret = regmap_write(drv_data->bcast_regmap, act_ctrl_reg,
 				act_ctrl_reg_val);
 	if (ret)
 		return ret;
 
-	/* Clear the ACTIVE trigger */
+	 
 	act_ctrl_reg_val &= ~ACT_CTRL_ACT_TRIG;
 	ret = regmap_write(drv_data->bcast_regmap, act_ctrl_reg,
 				act_ctrl_reg_val);
@@ -618,13 +580,7 @@ static int llcc_update_act_ctrl(u32 sid,
 	return ret;
 }
 
-/**
- * llcc_slice_activate - Activate the llcc slice
- * @desc: Pointer to llcc slice descriptor
- *
- * A value of zero will be returned on success and a negative errno will
- * be returned in error cases
- */
+ 
 int llcc_slice_activate(struct llcc_slice_desc *desc)
 {
 	int ret;
@@ -658,13 +614,7 @@ int llcc_slice_activate(struct llcc_slice_desc *desc)
 }
 EXPORT_SYMBOL_GPL(llcc_slice_activate);
 
-/**
- * llcc_slice_deactivate - Deactivate the llcc slice
- * @desc: Pointer to llcc slice descriptor
- *
- * A value of zero will be returned on success and a negative errno will
- * be returned in error cases
- */
+ 
 int llcc_slice_deactivate(struct llcc_slice_desc *desc)
 {
 	u32 act_ctrl_val;
@@ -697,10 +647,7 @@ int llcc_slice_deactivate(struct llcc_slice_desc *desc)
 }
 EXPORT_SYMBOL_GPL(llcc_slice_deactivate);
 
-/**
- * llcc_get_slice_id - return the slice id
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 int llcc_get_slice_id(struct llcc_slice_desc *desc)
 {
 	if (IS_ERR_OR_NULL(desc))
@@ -710,10 +657,7 @@ int llcc_get_slice_id(struct llcc_slice_desc *desc)
 }
 EXPORT_SYMBOL_GPL(llcc_get_slice_id);
 
-/**
- * llcc_get_slice_size - return the slice id
- * @desc: Pointer to llcc slice descriptor
- */
+ 
 size_t llcc_get_slice_size(struct llcc_slice_desc *desc)
 {
 	if (IS_ERR_OR_NULL(desc))
@@ -743,13 +687,7 @@ static int _qcom_llcc_cfg_program(const struct llcc_slice_config *config,
 
 	max_cap_cacheline = MAX_CAP_TO_BYTES(config->max_cap);
 
-	/*
-	 * LLCC instances can vary for each target.
-	 * The SW writes to broadcast register which gets propagated
-	 * to each llcc instance (llcc0,.. llccN).
-	 * Since the size of the memory is divided equally amongst the
-	 * llcc instances, we need to configure the max cap accordingly.
-	 */
+	 
 	max_cap_cacheline = max_cap_cacheline / drv_data->num_banks;
 	max_cap_cacheline >>= CACHE_LINE_SIZE_SHIFT;
 	attr1_val |= max_cap_cacheline << ATTR1_MAX_CAP_SHIFT;
@@ -908,7 +846,7 @@ static int qcom_llcc_cfg_program(struct platform_device *pdev,
 
 static int qcom_llcc_remove(struct platform_device *pdev)
 {
-	/* Set the global pointer to a error code to avoid referencing it */
+	 
 	drv_data = ERR_PTR(-ENODEV);
 	return 0;
 }
@@ -953,7 +891,7 @@ static int qcom_llcc_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Initialize the first LLCC bank regmap */
+	 
 	regmap = qcom_llcc_init_mmio(pdev, 0, "llcc0_base");
 	if (IS_ERR(regmap)) {
 		ret = PTR_ERR(regmap);
@@ -978,7 +916,7 @@ static int qcom_llcc_probe(struct platform_device *pdev)
 
 	drv_data->regmaps[0] = regmap;
 
-	/* Initialize rest of LLCC bank regmaps */
+	 
 	for (i = 1; i < num_banks; i++) {
 		char *base = kasprintf(GFP_KERNEL, "llcc%d_base", i);
 
@@ -998,7 +936,7 @@ static int qcom_llcc_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Extract version of the IP */
+	 
 	ret = regmap_read(drv_data->bcast_regmap, cfg->reg_offset[LLCC_COMMON_HW_INFO],
 			  &version);
 	if (ret)
@@ -1032,12 +970,7 @@ static int qcom_llcc_probe(struct platform_device *pdev)
 
 	drv_data->ecc_irq = platform_get_irq_optional(pdev, 0);
 
-	/*
-	 * On some platforms, the access to EDAC registers will be locked by
-	 * the bootloader. So probing the EDAC driver will result in a crash.
-	 * Hence, disable the creation of EDAC platform device for the
-	 * problematic platforms.
-	 */
+	 
 	if (!cfg->no_edac) {
 		llcc_edac = platform_device_register_data(&pdev->dev,
 						"qcom_llcc_edac", -1, drv_data,

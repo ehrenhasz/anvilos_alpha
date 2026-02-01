@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/mutex.h>
@@ -52,11 +31,7 @@ static void pm_calc_rlib_size(struct packet_manager *pm,
 	compute_queue_count = pm->dqm->active_cp_queue_count;
 	gws_queue_count = pm->dqm->gws_queue_count;
 
-	/* check if there is over subscription
-	 * Note: the arbitration between the number of VMIDs and
-	 * hws_max_conc_proc has been done in
-	 * kgd2kfd_device_init().
-	 */
+	 
 	*over_subscription = false;
 
 	if (dev->max_proc_per_quantum > 1)
@@ -70,14 +45,11 @@ static void pm_calc_rlib_size(struct packet_manager *pm,
 	}
 
 	map_queue_size = pm->pmf->map_queues_size;
-	/* calculate run list ib allocation size */
+	 
 	*rlib_size = process_count * pm->pmf->map_process_size +
 		     queue_count * map_queue_size;
 
-	/*
-	 * Increase the allocation size in case we need a chained run list
-	 * when over subscription
-	 */
+	 
 	if (*over_subscription)
 		*rlib_size += pm->pmf->runlist_size;
 
@@ -145,10 +117,10 @@ static int pm_create_runlist_ib(struct packet_manager *pm,
 	pr_debug("Building runlist ib process count: %d queues count %d\n",
 		pm->dqm->processes_count, pm->dqm->active_queue_count);
 
-	/* build the run list ib packet */
+	 
 	list_for_each_entry(cur, queues, list) {
 		qpd = cur->qpd;
-		/* build map process packet */
+		 
 		if (processes_mapped >= pm->dqm->processes_count) {
 			pr_debug("Not enough space left in runlist IB\n");
 			pm_release_ib(pm);
@@ -227,7 +199,7 @@ int pm_init(struct packet_manager *pm, struct device_queue_manager *dqm)
 	switch (dqm->dev->adev->asic_type) {
 	case CHIP_KAVERI:
 	case CHIP_HAWAII:
-		/* PM4 packet structures on CIK are the same as on VI */
+		 
 	case CHIP_CARRIZO:
 	case CHIP_TONGA:
 	case CHIP_FIJI:

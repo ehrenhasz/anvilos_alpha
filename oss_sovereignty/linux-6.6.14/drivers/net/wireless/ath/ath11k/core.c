@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -26,7 +23,7 @@ static unsigned int ath11k_crypto_mode;
 module_param_named(crypto_mode, ath11k_crypto_mode, uint, 0644);
 MODULE_PARM_DESC(crypto_mode, "crypto mode: 0-hardware, 1-software");
 
-/* frame mode values are mapped as per enum ath11k_hw_txrx_mode */
+ 
 unsigned int ath11k_frame_mode = ATH11K_HW_TXRX_NATIVE_WIFI;
 module_param_named(frame_mode, ath11k_frame_mode, uint, 0644);
 MODULE_PARM_DESC(frame_mode,
@@ -68,9 +65,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
 
 		.spectral = {
 			.fft_sz = 2,
-			/* HW bug, expected BIN size is 2 bytes but HW report as 4 bytes.
-			 * so added pad size as 2 bytes to compensate the BIN size
-			 */
+			 
 			.fft_pad_sz = 2,
 			.summary_pad_sz = 0,
 			.fft_hdr_len = 16,
@@ -631,7 +626,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
 		},
 		.max_radios = MAX_RADIOS_5018,
 		.bdf_addr = 0x4BA00000,
-		/* hal_desc_sz and hw ops are similar to qcn9074 */
+		 
 		.hal_desc_sz = sizeof(struct hal_rx_desc_qcn9074),
 		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_IPQ8074,
 		.ring_mask = &ath11k_hw_ring_mask_ipq8074,
@@ -778,9 +773,7 @@ int ath11k_core_suspend(struct ath11k_base *ab)
 	if (!ab->hw_params.supports_suspend)
 		return -EOPNOTSUPP;
 
-	/* so far single_pdev_only chips have supports_suspend as true
-	 * and only the first pdev is valid.
-	 */
+	 
 	pdev = ath11k_core_get_single_pdev(ab);
 	ar = pdev->ar;
 	if (!ar || ar->state != ATH11K_STATE_OFF)
@@ -837,9 +830,7 @@ int ath11k_core_resume(struct ath11k_base *ab)
 	if (!ab->hw_params.supports_suspend)
 		return -EOPNOTSUPP;
 
-	/* so far signle_pdev_only chips have supports_suspend as true
-	 * and only the first pdev is valid.
-	 */
+	 
 	pdev = ath11k_core_get_single_pdev(ab);
 	ar = pdev->ar;
 	if (!ar || ar->state != ATH11K_STATE_OFF)
@@ -920,7 +911,7 @@ static void ath11k_core_check_cc_code_bdfext(const struct dmi_header *hdr, void 
 		return;
 	}
 
-	/* Only one string exists (per spec) */
+	 
 	if (memcmp(smbios->bdf_ext, magic, strlen(magic)) != 0) {
 		ath11k_dbg(ab, ATH11K_DBG_BOOT,
 			   "bdf variant magic does not match.\n");
@@ -937,7 +928,7 @@ static void ath11k_core_check_cc_code_bdfext(const struct dmi_header *hdr, void 
 		}
 	}
 
-	/* Copy extension name without magic prefix */
+	 
 	copied = strscpy(ab->qmi.target.bdf_ext, smbios->bdf_ext + strlen(magic),
 			 sizeof(ab->qmi.target.bdf_ext));
 	if (copied < 0) {
@@ -989,7 +980,7 @@ static int __ath11k_core_create_board_name(struct ath11k_base *ab, char *name,
 					   size_t name_len, bool with_variant,
 					   bool bus_type_mode)
 {
-	/* strlen(',variant=') + strlen(ab->qmi.target.bdf_ext) */
+	 
 	char variant[9 + ATH11K_QMI_BDF_EXT_STR_LENGTH] = { 0 };
 
 	if (with_variant && ab->qmi.target.bdf_ext[0] != '\0')
@@ -1091,7 +1082,7 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
 
 	name_match_found = false;
 
-	/* go through ATH11K_BD_IE_BOARD_/ATH11K_BD_IE_REGDB_ elements */
+	 
 	while (buf_len > sizeof(struct ath11k_fw_ie)) {
 		hdr = buf;
 		board_ie_id = le32_to_cpu(hdr->id);
@@ -1127,7 +1118,7 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
 				   boardname);
 		} else if (board_ie_id == data_id) {
 			if (!name_match_found)
-				/* no match found */
+				 
 				goto next;
 
 			ath11k_dbg(ab, ATH11K_DBG_BOOT,
@@ -1146,14 +1137,14 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
 				    board_ie_id);
 		}
 next:
-		/* jump over the padding */
+		 
 		board_ie_len = ALIGN(board_ie_len, 4);
 
 		buf_len -= board_ie_len;
 		buf += board_ie_len;
 	}
 
-	/* no match found */
+	 
 	ret = -ENOENT;
 
 out:
@@ -1188,7 +1179,7 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
 	ath11k_core_create_firmware_path(ab, filename,
 					 filepath, sizeof(filepath));
 
-	/* magic has extra null byte padded */
+	 
 	magic_len = strlen(ATH11K_BOARD_MAGIC) + 1;
 	if (len < magic_len) {
 		ath11k_err(ab, "failed to find magic value in %s, file too short: %zu\n",
@@ -1203,7 +1194,7 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
 		goto err;
 	}
 
-	/* magic is padded to 4 bytes */
+	 
 	magic_len = ALIGN(magic_len, 4);
 	if (len < magic_len) {
 		ath11k_err(ab, "failed: %s too small to contain board data, len: %zu\n",
@@ -1238,16 +1229,16 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
 							    name_id,
 							    data_id);
 			if (ret == -ENOENT)
-				/* no match found, continue */
+				 
 				goto next;
 			else if (ret)
-				/* there was an error, bail out */
+				 
 				goto err;
-			/* either found or error, so stop searching */
+			 
 			goto out;
 		}
 next:
-		/* jump over the padding */
+		 
 		ie_len = ALIGN(ie_len, 4);
 
 		len -= ie_len;
@@ -1399,7 +1390,7 @@ static void ath11k_core_stop(struct ath11k_base *ab)
 	ath11k_wmi_detach(ab);
 	ath11k_dp_pdev_reo_cleanup(ab);
 
-	/* De-Init of components as needed */
+	 
 }
 
 static int ath11k_core_soc_create(struct ath11k_base *ab)
@@ -1586,7 +1577,7 @@ static int ath11k_core_start(struct ath11k_base *ab)
 		goto err_reo_cleanup;
 	}
 
-	/* put hardware to DBS mode */
+	 
 	if (ab->hw_params.single_pdev_only && ab->hw_params.num_rxmda_per_pdev > 1) {
 		ret = ath11k_wmi_set_hw_mode(ab, WMI_HOST_HW_MODE_DBS);
 		if (ret) {
@@ -1912,9 +1903,7 @@ static void ath11k_core_reset(struct work_struct *work)
 		return;
 	}
 
-	/* Sometimes the recovery will fail and then the next all recovery fail,
-	 * this is to avoid infinite recovery since it can not recovery success.
-	 */
+	 
 	fail_cont_count = atomic_read(&ab->fail_cont_count);
 
 	if (fail_cont_count >= ATH11K_RESET_MAX_FAIL_COUNT_FINAL)
@@ -1927,10 +1916,7 @@ static void ath11k_core_reset(struct work_struct *work)
 	reset_count = atomic_inc_return(&ab->reset_count);
 
 	if (reset_count > 1) {
-		/* Sometimes it happened another reset worker before the previous one
-		 * completed, then the second reset worker will destroy the previous one,
-		 * thus below is to avoid that.
-		 */
+		 
 		ath11k_warn(ab, "already resetting count %d\n", reset_count);
 
 		reinit_completion(&ab->reset_complete);
@@ -1944,7 +1930,7 @@ static void ath11k_core_reset(struct work_struct *work)
 		}
 
 		ab->reset_fail_timeout = jiffies + ATH11K_RESET_FAIL_TIMEOUT_HZ;
-		/* Record the continuous recovery fail count when recovery failed*/
+		 
 		atomic_inc(&ab->fail_cont_count);
 	}
 

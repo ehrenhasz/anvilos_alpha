@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2006 - 2007 Ivo van Doorn
- * Copyright (C) 2007 Dmitry Torokhov
- * Copyright 2009 Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -89,20 +85,10 @@ MODULE_DESCRIPTION("RF switch support");
 MODULE_LICENSE("GPL");
 
 
-/*
- * The locking here should be made much smarter, we currently have
- * a bit of a stupid situation because drivers might want to register
- * the rfkill struct under their own lock, and take this lock during
- * rfkill method calls -- which will cause an AB-BA deadlock situation.
- *
- * To fix that, we need to rework this code here to be mostly lock-free
- * and only use the mutex for list manipulations, not to protect the
- * various other global variables. Then we can avoid holding the mutex
- * around driver operations, and all is happy.
- */
-static LIST_HEAD(rfkill_list);	/* list of registered rf switches */
+ 
+static LIST_HEAD(rfkill_list);	 
 static DEFINE_MUTEX(rfkill_global_mutex);
-static LIST_HEAD(rfkill_fds);	/* list of open fds of /dev/rfkill */
+static LIST_HEAD(rfkill_fds);	 
 
 static unsigned int rfkill_default_state = 1;
 module_param_named(default_state, rfkill_default_state, uint, 0444);
@@ -215,7 +201,7 @@ static int rfkill_global_led_trigger_register(void)
 	if (ret)
 		led_trigger_unregister(&rfkill_any_led_trigger);
 	else
-		/* Delay activation until all global triggers are registered */
+		 
 		rfkill_global_led_trigger_event();
 
 	return ret;
@@ -253,7 +239,7 @@ static int rfkill_global_led_trigger_register(void)
 static void rfkill_global_led_trigger_unregister(void)
 {
 }
-#endif /* CONFIG_RFKILL_LEDS */
+#endif  
 
 static void rfkill_fill_event(struct rfkill_event_ext *ev,
 			      struct rfkill *rfkill,
@@ -297,19 +283,11 @@ static void rfkill_event(struct rfkill *rfkill)
 
 	kobject_uevent(&rfkill->dev.kobj, KOBJ_CHANGE);
 
-	/* also send event to /dev/rfkill */
+	 
 	rfkill_send_events(rfkill, RFKILL_OP_CHANGE);
 }
 
-/**
- * rfkill_set_block - wrapper for set_block method
- *
- * @rfkill: the rfkill struct to use
- * @blocked: the new software state
- *
- * Calls the set_block method (when applicable) and handles notifications
- * etc. as well.
- */
+ 
 static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 {
 	unsigned long flags;
@@ -319,11 +297,7 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 	if (unlikely(rfkill->dev.power.power_state.event & PM_EVENT_SLEEP))
 		return;
 
-	/*
-	 * Some platforms (...!) generate input events which affect the
-	 * _hard_ kill state -- whenever something tries to change the
-	 * current software state query the hardware state too.
-	 */
+	 
 	if (rfkill->ops->query)
 		rfkill->ops->query(rfkill, rfkill->data);
 
@@ -347,11 +321,7 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 
 	spin_lock_irqsave(&rfkill->lock, flags);
 	if (err) {
-		/*
-		 * Failed -- reset status to _PREV, which may be different
-		 * from what we have set _PREV to earlier in this function
-		 * if rfkill_set_sw_state was invoked.
-		 */
+		 
 		if (rfkill->state & RFKILL_BLOCK_SW_PREV)
 			rfkill->state |= RFKILL_BLOCK_SW;
 		else
@@ -396,16 +366,7 @@ static void rfkill_update_global_state(enum rfkill_type type, bool blocked)
 #ifdef CONFIG_RFKILL_INPUT
 static atomic_t rfkill_input_disabled = ATOMIC_INIT(0);
 
-/**
- * __rfkill_switch_all - Toggle state of all switches of given type
- * @type: type of interfaces to be affected
- * @blocked: the new state
- *
- * This function sets the state of all switches of given type,
- * unless a specific switch is suspended.
- *
- * Caller must have acquired rfkill_global_mutex.
- */
+ 
 static void __rfkill_switch_all(const enum rfkill_type type, bool blocked)
 {
 	struct rfkill *rfkill;
@@ -419,16 +380,7 @@ static void __rfkill_switch_all(const enum rfkill_type type, bool blocked)
 	}
 }
 
-/**
- * rfkill_switch_all - Toggle state of all switches of given type
- * @type: type of interfaces to be affected
- * @blocked: the new state
- *
- * Acquires rfkill_global_mutex and calls __rfkill_switch_all(@type, @state).
- * Please refer to __rfkill_switch_all() for details.
- *
- * Does nothing if the EPO lock is active.
- */
+ 
 void rfkill_switch_all(enum rfkill_type type, bool blocked)
 {
 	if (atomic_read(&rfkill_input_disabled))
@@ -442,15 +394,7 @@ void rfkill_switch_all(enum rfkill_type type, bool blocked)
 	mutex_unlock(&rfkill_global_mutex);
 }
 
-/**
- * rfkill_epo - emergency power off all transmitters
- *
- * This kicks all non-suspended rfkill devices to RFKILL_STATE_SOFT_BLOCKED,
- * ignoring everything in its path but rfkill_global_mutex and rfkill->mutex.
- *
- * The global state before the EPO is saved and can be restored later
- * using rfkill_restore_states().
- */
+ 
 void rfkill_epo(void)
 {
 	struct rfkill *rfkill;
@@ -473,13 +417,7 @@ void rfkill_epo(void)
 	mutex_unlock(&rfkill_global_mutex);
 }
 
-/**
- * rfkill_restore_states - restore global states
- *
- * Restore (and sync switches to) the global state from the
- * states in rfkill_default_states.  This can undo the effects of
- * a call to rfkill_epo().
- */
+ 
 void rfkill_restore_states(void)
 {
 	int i;
@@ -495,12 +433,7 @@ void rfkill_restore_states(void)
 	mutex_unlock(&rfkill_global_mutex);
 }
 
-/**
- * rfkill_remove_epo_lock - unlock state changes
- *
- * Used by rfkill-input manually unlock state changes, when
- * the EPO switch is deactivated.
- */
+ 
 void rfkill_remove_epo_lock(void)
 {
 	if (atomic_read(&rfkill_input_disabled))
@@ -511,27 +444,13 @@ void rfkill_remove_epo_lock(void)
 	mutex_unlock(&rfkill_global_mutex);
 }
 
-/**
- * rfkill_is_epo_lock_active - returns true EPO is active
- *
- * Returns 0 (false) if there is NOT an active EPO condition,
- * and 1 (true) if there is an active EPO condition, which
- * locks all radios in one of the BLOCKED states.
- *
- * Can be called in atomic context.
- */
+ 
 bool rfkill_is_epo_lock_active(void)
 {
 	return rfkill_epo_lock_active;
 }
 
-/**
- * rfkill_get_global_sw_state - returns global state for a type
- * @type: the type to get the global state of
- *
- * Returns the current global state for a given wireless
- * device type.
- */
+ 
 bool rfkill_get_global_sw_state(const enum rfkill_type type)
 {
 	return rfkill_global_states[type].cur;
@@ -578,7 +497,7 @@ static void __rfkill_set_sw_state(struct rfkill *rfkill, bool blocked)
 {
 	u32 bit = RFKILL_BLOCK_SW;
 
-	/* if in a ops->set_block right now, use other bit */
+	 
 	if (rfkill->state & RFKILL_BLOCK_SW_SETCALL)
 		bit = RFKILL_BLOCK_SW_PREV;
 
@@ -638,10 +557,7 @@ void rfkill_set_states(struct rfkill *rfkill, bool sw, bool hw)
 
 	spin_lock_irqsave(&rfkill->lock, flags);
 
-	/*
-	 * No need to care about prev/setblock ... this is for uevent only
-	 * and that will get triggered by rfkill_set_block anyway.
-	 */
+	 
 	swprev = !!(rfkill->state & RFKILL_BLOCK_SW);
 	hwprev = !!(rfkill->state & RFKILL_BLOCK_HW);
 	__rfkill_set_sw_state(rfkill, sw);
@@ -665,7 +581,7 @@ void rfkill_set_states(struct rfkill *rfkill, bool sw, bool hw)
 EXPORT_SYMBOL(rfkill_set_states);
 
 static const char * const rfkill_types[] = {
-	NULL, /* RFKILL_TYPE_ALL */
+	NULL,  
 	"wlan",
 	"bluetooth",
 	"ultrawideband",
@@ -1029,11 +945,7 @@ static void rfkill_poll(struct work_struct *work)
 
 	rfkill = container_of(work, struct rfkill, poll_work.work);
 
-	/*
-	 * Poll hardware state -- driver will use one of the
-	 * rfkill_set{,_hw,_sw}_state functions and use its
-	 * return value to update the current status.
-	 */
+	 
 	rfkill->ops->poll(rfkill, rfkill->data);
 
 	queue_delayed_work(system_power_efficient_wq,
@@ -1180,10 +1092,7 @@ static int rfkill_fop_open(struct inode *inode, struct file *file)
 	init_waitqueue_head(&data->read_wait);
 
 	mutex_lock(&rfkill_global_mutex);
-	/*
-	 * start getting events from elsewhere but hold mtx to get
-	 * startup events added first
-	 */
+	 
 
 	list_for_each_entry(rfkill, &rfkill_list, node) {
 		ev = kzalloc(sizeof(*ev), GFP_KERNEL);
@@ -1242,9 +1151,7 @@ static ssize_t rfkill_fop_read(struct file *file, char __user *buf,
 			goto out;
 		}
 		mutex_unlock(&data->mtx);
-		/* since we re-check and it just compares pointers,
-		 * using !list_empty() without locking isn't a problem
-		 */
+		 
 		ret = wait_event_interruptible(data->read_wait,
 					       !list_empty(&data->events));
 		mutex_lock(&data->mtx);
@@ -1277,15 +1184,11 @@ static ssize_t rfkill_fop_write(struct file *file, const char __user *buf,
 	struct rfkill_event_ext ev;
 	int ret;
 
-	/* we don't need the 'hard' variable but accept it */
+	 
 	if (count < RFKILL_EVENT_SIZE_V1 - 1)
 		return -EINVAL;
 
-	/*
-	 * Copy as much data as we can accept into our 'ev' buffer,
-	 * but tell userspace how much we've copied so it can determine
-	 * our API version even in a write() call, if it cares.
-	 */
+	 
 	count = min(count, sizeof(ev));
 	count = min_t(size_t, count, data->max_size);
 	if (copy_from_user(&ev, buf, count))

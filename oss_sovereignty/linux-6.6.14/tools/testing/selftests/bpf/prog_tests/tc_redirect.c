@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/*
- * This test sets up 3 netns (src <-> fwd <-> dst). There is no direct veth link
- * between src and dst. The netns fwd has veth links to each src and dst. The
- * client is in src and server in dst. The test installs a TC BPF program to each
- * host facing veth in fwd which calls into i) bpf_redirect_neigh() to perform the
- * neigh addr population and redirect or ii) bpf_redirect_peer() for namespace
- * switch from ingress side; it also installs a checker prog on the egress side
- * to drop unexpected traffic.
- */
+
+ 
 
 #include <arpa/inet.h>
 #include <linux/if_tun.h>
@@ -172,7 +164,7 @@ static int netns_setup_links_and_routes(struct netns_setup_result *result)
 	SYS(fail, "ip link set veth_dst_fwd netns " NS_FWD);
 	SYS(fail, "ip link set veth_dst netns " NS_DST);
 
-	/** setup in 'src' namespace */
+	 
 	nstoken = open_netns(NS_SRC);
 	if (!ASSERT_OK_PTR(nstoken, "setns src"))
 		goto fail;
@@ -192,15 +184,12 @@ static int netns_setup_links_and_routes(struct netns_setup_result *result)
 
 	close_netns(nstoken);
 
-	/** setup in 'fwd' namespace */
+	 
 	nstoken = open_netns(NS_FWD);
 	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
 		goto fail;
 
-	/* The fwd netns automatically gets a v6 LL address / routes, but also
-	 * needs v4 one in order to start ARP probing. IP4_NET route is added
-	 * to the endpoints so that the ARP processing will reply.
-	 */
+	 
 	SYS(fail, "ip addr add " IP4_SLL "/32 dev veth_src_fwd");
 	SYS(fail, "ip addr add " IP4_DLL "/32 dev veth_dst_fwd");
 	SYS(fail, "ip link set dev veth_src_fwd up");
@@ -213,7 +202,7 @@ static int netns_setup_links_and_routes(struct netns_setup_result *result)
 
 	close_netns(nstoken);
 
-	/** setup in 'dst' namespace */
+	 
 	nstoken = open_netns(NS_DST);
 	if (!ASSERT_OK_PTR(nstoken, "setns dst"))
 		goto fail;
@@ -297,18 +286,18 @@ static int netns_load_bpf(const struct bpf_program *src_prog,
 	LIBBPF_OPTS(bpf_tc_hook, qdisc_veth_dst_fwd);
 	int err;
 
-	/* tc qdisc add dev veth_src_fwd clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_src_fwd, setup_result->ifindex_veth_src_fwd);
-	/* tc filter add dev veth_src_fwd ingress bpf da src_prog */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_INGRESS, src_prog, 0);
-	/* tc filter add dev veth_src_fwd egress bpf da chk_prog */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_EGRESS, chk_prog, 0);
 
-	/* tc qdisc add dev veth_dst_fwd clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_dst_fwd, setup_result->ifindex_veth_dst_fwd);
-	/* tc filter add dev veth_dst_fwd ingress bpf da dst_prog */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS, dst_prog, 0);
-	/* tc filter add dev veth_dst_fwd egress bpf da chk_prog */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS, chk_prog, 0);
 
 	return 0;
@@ -487,16 +476,14 @@ static void test_inet_dtime(int family, int type, const char *addr, __u16 port)
 	if (!ASSERT_GE(listen_fd, 0, "listen"))
 		return;
 
-	/* Ensure the kernel puts the (rcv) timestamp for all skb */
+	 
 	err = setsockopt(listen_fd, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
 			 &opt, sizeof(opt));
 	if (!ASSERT_OK(err, "setsockopt(SO_TIMESTAMPNS_NEW)"))
 		goto done;
 
 	if (type == SOCK_STREAM) {
-		/* Ensure the kernel set EDT when sending out rst/ack
-		 * from the kernel's ctl_sk.
-		 */
+		 
 		err = setsockopt(listen_fd, SOL_TCP, TCP_TX_DELAY, &opt,
 				 sizeof(opt));
 		if (!ASSERT_OK(err, "setsockopt(TCP_TX_DELAY)"))
@@ -546,61 +533,61 @@ static int netns_load_dtime_bpf(struct test_tc_dtime *skel,
 	struct nstoken *nstoken;
 	int err;
 
-	/* setup ns_src tc progs */
+	 
 	nstoken = open_netns(NS_SRC);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_SRC))
 		return -1;
-	/* tc qdisc add dev veth_src clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_src, setup_result->ifindex_veth_src);
-	/* tc filter add dev veth_src ingress bpf da ingress_host */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src, BPF_TC_INGRESS, skel->progs.ingress_host, 0);
-	/* tc filter add dev veth_src egress bpf da egress_host */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src, BPF_TC_EGRESS, skel->progs.egress_host, 0);
 	close_netns(nstoken);
 
-	/* setup ns_dst tc progs */
+	 
 	nstoken = open_netns(NS_DST);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_DST))
 		return -1;
-	/* tc qdisc add dev veth_dst clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_dst, setup_result->ifindex_veth_dst);
-	/* tc filter add dev veth_dst ingress bpf da ingress_host */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst, BPF_TC_INGRESS, skel->progs.ingress_host, 0);
-	/* tc filter add dev veth_dst egress bpf da egress_host */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst, BPF_TC_EGRESS, skel->progs.egress_host, 0);
 	close_netns(nstoken);
 
-	/* setup ns_fwd tc progs */
+	 
 	nstoken = open_netns(NS_FWD);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_FWD))
 		return -1;
-	/* tc qdisc add dev veth_dst_fwd clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_dst_fwd, setup_result->ifindex_veth_dst_fwd);
-	/* tc filter add dev veth_dst_fwd ingress prio 100 bpf da ingress_fwdns_prio100 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS,
 			  skel->progs.ingress_fwdns_prio100, 100);
-	/* tc filter add dev veth_dst_fwd ingress prio 101 bpf da ingress_fwdns_prio101 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS,
 			  skel->progs.ingress_fwdns_prio101, 101);
-	/* tc filter add dev veth_dst_fwd egress prio 100 bpf da egress_fwdns_prio100 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS,
 			  skel->progs.egress_fwdns_prio100, 100);
-	/* tc filter add dev veth_dst_fwd egress prio 101 bpf da egress_fwdns_prio101 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS,
 			  skel->progs.egress_fwdns_prio101, 101);
 
-	/* tc qdisc add dev veth_src_fwd clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_src_fwd, setup_result->ifindex_veth_src_fwd);
-	/* tc filter add dev veth_src_fwd ingress prio 100 bpf da ingress_fwdns_prio100 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_INGRESS,
 			  skel->progs.ingress_fwdns_prio100, 100);
-	/* tc filter add dev veth_src_fwd ingress prio 101 bpf da ingress_fwdns_prio101 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_INGRESS,
 			  skel->progs.ingress_fwdns_prio101, 101);
-	/* tc filter add dev veth_src_fwd egress prio 100 bpf da egress_fwdns_prio100 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_EGRESS,
 			  skel->progs.egress_fwdns_prio100, 100);
-	/* tc filter add dev veth_src_fwd egress prio 101 bpf da egress_fwdns_prio101 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_EGRESS,
 			  skel->progs.egress_fwdns_prio101, 101);
 	close_netns(nstoken);
@@ -723,9 +710,7 @@ static void test_tcp_dtime(struct test_tc_dtime *skel, int family, bool bpf_fwd)
 	skel->bss->test = t;
 	test_inet_dtime(family, SOCK_STREAM, addr, 50000 + t);
 
-	/* fwdns_prio100 prog does not read delivery_time_type, so
-	 * kernel puts the (rcv) timetamp in __sk_buff->tstamp
-	 */
+	 
 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
 		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
 	for (i = INGRESS_FWDNS_P101; i < SET_DTIME; i++)
@@ -757,7 +742,7 @@ static void test_udp_dtime(struct test_tc_dtime *skel, int family, bool bpf_fwd)
 
 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
 		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-	/* non mono delivery time is not forwarded */
+	 
 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
 		  dtime_cnt_str(t, INGRESS_FWDNS_P101));
 	for (i = EGRESS_FWDNS_P100; i < SET_DTIME; i++)
@@ -802,9 +787,7 @@ static void test_tc_redirect_dtime(struct netns_setup_result *setup_result)
 	test_udp_dtime(skel, AF_INET, true);
 	test_udp_dtime(skel, AF_INET6, true);
 
-	/* Test the kernel ip[6]_forward path instead
-	 * of bpf_redirect_neigh().
-	 */
+	 
 	nstoken = open_netns(NS_FWD);
 	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
 		goto done;
@@ -842,7 +825,7 @@ static void test_tc_redirect_neigh_fib(struct netns_setup_result *setup_result)
 			   skel->progs.tc_chk, setup_result))
 		goto done;
 
-	/* bpf_fib_lookup() checks if forwarding is enabled */
+	 
 	if (!ASSERT_OK(set_forwarding(true), "enable forwarding"))
 		goto done;
 
@@ -1004,13 +987,7 @@ static void test_tc_redirect_peer_l3(struct netns_setup_result *setup_result)
 	int src_fd, target_fd = -1;
 	int ifindex;
 
-	/* Start a L3 TUN/TAP tunnel between the src and dst namespaces.
-	 * This test is using TUN/TAP instead of e.g. IPIP or GRE tunnel as those
-	 * expose the L2 headers encapsulating the IP packet to BPF and hence
-	 * don't have skb in suitable state for this test. Alternative to TUN/TAP
-	 * would be e.g. Wireguard which would appear as a pure L3 device to BPF,
-	 * but that requires much more complicated setup.
-	 */
+	 
 	nstoken = open_netns(NS_SRC);
 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_SRC))
 		return;
@@ -1051,23 +1028,20 @@ static void test_tc_redirect_peer_l3(struct netns_setup_result *setup_result)
 	if (!ASSERT_OK(err, "test_tc_peer__load"))
 		goto fail;
 
-	/* Load "tc_src_l3" to the tun_fwd interface to redirect packets
-	 * towards dst, and "tc_dst" to redirect packets
-	 * and "tc_chk" on veth_dst_fwd to drop non-redirected packets.
-	 */
-	/* tc qdisc add dev tun_fwd clsact */
+	 
+	 
 	QDISC_CLSACT_CREATE(&qdisc_tun_fwd, ifindex);
-	/* tc filter add dev tun_fwd ingress bpf da tc_src_l3 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_tun_fwd, BPF_TC_INGRESS, skel->progs.tc_src_l3, 0);
 
-	/* tc qdisc add dev veth_dst_fwd clsact */
+	 
 	QDISC_CLSACT_CREATE(&qdisc_veth_dst_fwd, setup_result->ifindex_veth_dst_fwd);
-	/* tc filter add dev veth_dst_fwd ingress bpf da tc_dst_l3 */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS, skel->progs.tc_dst_l3, 0);
-	/* tc filter add dev veth_dst_fwd egress bpf da tc_chk */
+	 
 	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS, skel->progs.tc_chk, 0);
 
-	/* Setup route and neigh tables */
+	 
 	SYS(fail, "ip -netns " NS_SRC " addr add dev tun_src " IP4_TUN_SRC "/24");
 	SYS(fail, "ip -netns " NS_FWD " addr add dev tun_fwd " IP4_TUN_FWD "/24");
 
@@ -1135,10 +1109,7 @@ void test_tc_redirect(void)
 	pthread_t test_thread;
 	int err;
 
-	/* Run the tests in their own thread to isolate the namespace changes
-	 * so they do not affect the environment of other tests.
-	 * (specifically needed because of unshare(CLONE_NEWNS) in open_netns())
-	 */
+	 
 	err = pthread_create(&test_thread, NULL, &test_tc_redirect_run_tests, NULL);
 	if (ASSERT_OK(err, "pthread_create"))
 		ASSERT_OK(pthread_join(test_thread, NULL), "pthread_join");

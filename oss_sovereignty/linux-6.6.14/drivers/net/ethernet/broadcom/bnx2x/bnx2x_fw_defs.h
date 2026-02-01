@@ -1,13 +1,4 @@
-/* bnx2x_fw_defs.h: Qlogic Everest network driver.
- *
- * Copyright (c) 2007-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #ifndef BNX2X_FW_DEFS_H
 #define BNX2X_FW_DEFS_H
@@ -245,10 +236,10 @@
 	(IRO[386].base + ((fid) * IRO[386].m1))
 #define COMMON_ASM_INVALID_ASSERT_OPCODE 0x0
 
-/* eth hsi version */
+ 
 #define ETH_FP_HSI_VERSION (ETH_FP_HSI_VER_2)
 
-/* Ethernet Ring parameters */
+ 
 #define X_ETH_LOCAL_RING_SIZE 13
 #define FIRST_BD_IN_PKT	0
 #define PARSE_BD_INDEX 1
@@ -256,12 +247,11 @@
 #define U_ETH_NUM_OF_SGES_TO_FETCH 8
 #define U_ETH_MAX_SGES_FOR_PACKET 3
 
-/* Rx ring params */
+ 
 #define U_ETH_LOCAL_BD_RING_SIZE 8
 #define U_ETH_LOCAL_SGE_RING_SIZE 10
 #define U_ETH_SGL_SIZE 8
-	/* The fw will padd the buffer with this value, so the IP header \
-	will be align to 4 Byte */
+	 
 #define IP_HEADER_ALIGNMENT_PADDING 2
 
 #define U_ETH_SGES_PER_PAGE_INVERSE_MASK \
@@ -285,30 +275,30 @@
 #define MULTICAST_RULES_COUNT 16
 #define CLASSIFY_RULES_COUNT 16
 
-/*The CRC32 seed, that is used for the hash(reduction) multicast address */
+ 
 #define ETH_CRC32_HASH_SEED 0x00000000
 
 #define ETH_CRC32_HASH_BIT_SIZE	(8)
 #define ETH_CRC32_HASH_MASK EVAL((1<<ETH_CRC32_HASH_BIT_SIZE)-1)
 
-/* Maximal L2 clients supported */
+ 
 #define ETH_MAX_RX_CLIENTS_E1 18
 #define ETH_MAX_RX_CLIENTS_E1H 28
 #define ETH_MAX_RX_CLIENTS_E2 152
 
-/* Maximal statistics client Ids */
+ 
 #define MAX_STAT_COUNTER_ID_E1 36
 #define MAX_STAT_COUNTER_ID_E1H	56
 #define MAX_STAT_COUNTER_ID_E2 140
 
-#define MAX_MAC_CREDIT_E1 192 /* Per Chip */
-#define MAX_MAC_CREDIT_E1H 256 /* Per Chip */
-#define MAX_MAC_CREDIT_E2 272 /* Per Path */
-#define MAX_VLAN_CREDIT_E1 0 /* Per Chip */
-#define MAX_VLAN_CREDIT_E1H 0 /* Per Chip */
-#define MAX_VLAN_CREDIT_E2 272 /* Per Path */
+#define MAX_MAC_CREDIT_E1 192  
+#define MAX_MAC_CREDIT_E1H 256  
+#define MAX_MAC_CREDIT_E2 272  
+#define MAX_VLAN_CREDIT_E1 0  
+#define MAX_VLAN_CREDIT_E1H 0  
+#define MAX_VLAN_CREDIT_E2 272  
 
-/* Maximal aggregation queues supported */
+ 
 #define ETH_MAX_AGGREGATION_QUEUES_E1 32
 #define ETH_MAX_AGGREGATION_QUEUES_E1H_E2 64
 
@@ -324,7 +314,7 @@
 #define DISABLE_STATISTIC_COUNTER_ID_VALUE 0
 
 
-/* This file defines HSI constants common to all microcode flows */
+ 
 
 #define PROTOCOL_STATE_BIT_OFFSET 6
 
@@ -332,13 +322,13 @@
 #define TOE_STATE (TOE_CONNECTION_TYPE << PROTOCOL_STATE_BIT_OFFSET)
 #define RDMA_STATE (RDMA_CONNECTION_TYPE << PROTOCOL_STATE_BIT_OFFSET)
 
-/* microcode fixed page page size 4K (chains and ring segments) */
+ 
 #define MC_PAGE_SIZE 4096
 
-/* Number of indices per slow-path SB */
+ 
 #define HC_SP_SB_MAX_INDICES 16
 
-/* Number of indices per SB */
+ 
 #define HC_SB_MAX_INDICES_E1X 8
 #define HC_SB_MAX_INDICES_E2 8
 
@@ -351,10 +341,10 @@
 
 #define HC_SB_MAX_DYNAMIC_INDICES 4
 
-/* max number of slow path commands per port */
+ 
 #define MAX_RAMRODS_PER_PORT 8
 
-/**** DEFINES FOR TIMERS/CLOCKS RESOLUTIONS ****/
+ 
 
 #define TIMERS_TICK_SIZE_CHIP (1e-3)
 
@@ -365,7 +355,7 @@
 #define SDM_TIMER_TICK_RESUL_CHIP (4 * (1e-6))
 #define TSDM_TIMER_TICK_RESUL_CHIP (1 * (1e-6))
 
-/**** END DEFINES FOR TIMERS/CLOCKS RESOLUTIONS ****/
+ 
 
 #define XSTORM_IP_ID_ROLL_HALF 0x8000
 #define XSTORM_IP_ID_ROLL_ALL 0
@@ -377,8 +367,7 @@
 #define MAX_TRAFFIC_TYPES 8
 #define MAX_PFC_PRIORITIES 8
 #define MAX_VLAN_PRIORITIES 8
-	/* used by array traffic_type_to_priority[] to mark traffic type \
-	that is not mapped to priority*/
+	 
 #define LLFC_TRAFFIC_TYPE_TO_PRIORITY_UNMAPPED 0xFF
 
 #define C_ERES_PER_PAGE \
@@ -393,8 +382,8 @@
 
 #define UNDEF_IRO 0x80000000
 
-/* used for defining the amount of FCoE tasks supported for PF */
+ 
 #define MAX_FCOE_FUNCS_PER_ENGINE 2
 #define MAX_NUM_FCOE_TASKS_PER_ENGINE 4096
 
-#endif /* BNX2X_FW_DEFS_H */
+#endif  

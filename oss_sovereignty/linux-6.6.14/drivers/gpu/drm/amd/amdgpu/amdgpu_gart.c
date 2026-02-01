@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/vmalloc.h>
@@ -37,40 +11,11 @@
 #include <drm/drm_drv.h>
 #include <drm/ttm/ttm_tt.h>
 
-/*
- * GART
- * The GART (Graphics Aperture Remapping Table) is an aperture
- * in the GPU's address space.  System pages can be mapped into
- * the aperture and look like contiguous pages from the GPU's
- * perspective.  A page table maps the pages in the aperture
- * to the actual backing pages in system memory.
- *
- * Radeon GPUs support both an internal GART, as described above,
- * and AGP.  AGP works similarly, but the GART table is configured
- * and maintained by the northbridge rather than the driver.
- * Radeon hw has a separate AGP aperture that is programmed to
- * point to the AGP aperture provided by the northbridge and the
- * requests are passed through to the northbridge aperture.
- * Both AGP and internal GART can be used at the same time, however
- * that is not currently supported by the driver.
- *
- * This file handles the common internal GART management.
- */
+ 
 
-/*
- * Common GART table functions.
- */
+ 
 
-/**
- * amdgpu_gart_dummy_page_init - init dummy page used by the driver
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate the dummy page used by the driver (all asics).
- * This dummy page is used by the driver as a filler for gart entries
- * when pages are taken out of the GART
- * Returns 0 on sucess, -ENOMEM on failure.
- */
+ 
 static int amdgpu_gart_dummy_page_init(struct amdgpu_device *adev)
 {
 	struct page *dummy_page = ttm_glob.dummy_read_page;
@@ -87,13 +32,7 @@ static int amdgpu_gart_dummy_page_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_gart_dummy_page_fini - free dummy page used by the driver
- *
- * @adev: amdgpu_device pointer
- *
- * Frees the dummy page used by the driver (all asics).
- */
+ 
 void amdgpu_gart_dummy_page_fini(struct amdgpu_device *adev)
 {
 	if (!adev->dummy_page_addr)
@@ -103,15 +42,7 @@ void amdgpu_gart_dummy_page_fini(struct amdgpu_device *adev)
 	adev->dummy_page_addr = 0;
 }
 
-/**
- * amdgpu_gart_table_ram_alloc - allocate system ram for gart page table
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate system memory for GART page table for ASICs that don't have
- * dedicated VRAM.
- * Returns 0 for success, error for failure.
- */
+ 
 int amdgpu_gart_table_ram_alloc(struct amdgpu_device *adev)
 {
 	unsigned int order = get_order(adev->gart.table_size);
@@ -130,10 +61,7 @@ int amdgpu_gart_table_ram_alloc(struct amdgpu_device *adev)
 	if (!p)
 		return -ENOMEM;
 
-	/* If the hardware does not support UTCL2 snooping of the CPU caches
-	 * then set_memory_wc() could be used as a workaround to mark the pages
-	 * as write combine memory.
-	 */
+	 
 	dma_addr = dma_map_page(&adev->pdev->dev, p, 0, adev->gart.table_size,
 				DMA_BIDIRECTIONAL);
 	if (dma_mapping_error(&adev->pdev->dev, dma_addr)) {
@@ -144,7 +72,7 @@ int amdgpu_gart_table_ram_alloc(struct amdgpu_device *adev)
 	}
 
 	dev_info(adev->dev, "%s dma_addr:%pad\n", __func__, &dma_addr);
-	/* Create SG table */
+	 
 	sg = kmalloc(sizeof(*sg), GFP_KERNEL);
 	if (!sg) {
 		ret = -ENOMEM;
@@ -159,7 +87,7 @@ int amdgpu_gart_table_ram_alloc(struct amdgpu_device *adev)
 #ifdef CONFIG_NEED_SG_DMA_LENGTH
 	sg->sgl->dma_length = adev->gart.table_size;
 #endif
-	/* Create SG BO */
+	 
 	memset(&bp, 0, sizeof(bp));
 	bp.size = adev->gart.table_size;
 	bp.byte_align = PAGE_SIZE;
@@ -190,7 +118,7 @@ int amdgpu_gart_table_ram_alloc(struct amdgpu_device *adev)
 
 	adev->gart.bo = bo;
 	adev->gart.ptr = page_to_virt(p);
-	/* Make GART table accessible in VMID0 */
+	 
 	ret = amdgpu_ttm_alloc_gart(&adev->gart.bo->tbo);
 	if (ret)
 		amdgpu_gart_table_ram_free(adev);
@@ -210,14 +138,7 @@ error:
 	return ret;
 }
 
-/**
- * amdgpu_gart_table_ram_free - free gart page table system ram
- *
- * @adev: amdgpu_device pointer
- *
- * Free the system memory used for the GART page tableon ASICs that don't
- * have dedicated VRAM.
- */
+ 
 void amdgpu_gart_table_ram_free(struct amdgpu_device *adev)
 {
 	unsigned int order = get_order(adev->gart.table_size);
@@ -239,16 +160,7 @@ void amdgpu_gart_table_ram_free(struct amdgpu_device *adev)
 	adev->gart.ptr = NULL;
 }
 
-/**
- * amdgpu_gart_table_vram_alloc - allocate vram for gart page table
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate video memory for GART page table
- * (pcie r4xx, r5xx+).  These asics require the
- * gart table to be in video memory.
- * Returns 0 for success, error for failure.
- */
+ 
 int amdgpu_gart_table_vram_alloc(struct amdgpu_device *adev)
 {
 	if (adev->gart.bo != NULL)
@@ -259,34 +171,14 @@ int amdgpu_gart_table_vram_alloc(struct amdgpu_device *adev)
 				       NULL, (void *)&adev->gart.ptr);
 }
 
-/**
- * amdgpu_gart_table_vram_free - free gart page table vram
- *
- * @adev: amdgpu_device pointer
- *
- * Free the video memory used for the GART page table
- * (pcie r4xx, r5xx+).  These asics require the gart table to
- * be in video memory.
- */
+ 
 void amdgpu_gart_table_vram_free(struct amdgpu_device *adev)
 {
 	amdgpu_bo_free_kernel(&adev->gart.bo, NULL, (void *)&adev->gart.ptr);
 }
 
-/*
- * Common gart functions.
- */
-/**
- * amdgpu_gart_unbind - unbind pages from the gart page table
- *
- * @adev: amdgpu_device pointer
- * @offset: offset into the GPU's gart aperture
- * @pages: number of pages to unbind
- *
- * Unbinds the requested pages from the gart page table and
- * replaces them with the dummy page (all asics).
- * Returns 0 for success, -EINVAL for failure.
- */
+ 
+ 
 void amdgpu_gart_unbind(struct amdgpu_device *adev, uint64_t offset,
 			int pages)
 {
@@ -294,7 +186,7 @@ void amdgpu_gart_unbind(struct amdgpu_device *adev, uint64_t offset,
 	unsigned p;
 	int i, j;
 	u64 page_base;
-	/* Starting from VEGA10, system bit must be 0 to mean invalid. */
+	 
 	uint64_t flags = 0;
 	int idx;
 
@@ -325,19 +217,7 @@ void amdgpu_gart_unbind(struct amdgpu_device *adev, uint64_t offset,
 	drm_dev_exit(idx);
 }
 
-/**
- * amdgpu_gart_map - map dma_addresses into GART entries
- *
- * @adev: amdgpu_device pointer
- * @offset: offset into the GPU's gart aperture
- * @pages: number of pages to bind
- * @dma_addr: DMA addresses of pages
- * @flags: page table entry flags
- * @dst: CPU address of the gart table
- *
- * Map the dma_addresses into GART entries (all asics).
- * Returns 0 for success, -EINVAL for failure.
- */
+ 
 void amdgpu_gart_map(struct amdgpu_device *adev, uint64_t offset,
 		    int pages, dma_addr_t *dma_addr, uint64_t flags,
 		    void *dst)
@@ -361,19 +241,7 @@ void amdgpu_gart_map(struct amdgpu_device *adev, uint64_t offset,
 	drm_dev_exit(idx);
 }
 
-/**
- * amdgpu_gart_bind - bind pages into the gart page table
- *
- * @adev: amdgpu_device pointer
- * @offset: offset into the GPU's gart aperture
- * @pages: number of pages to bind
- * @dma_addr: DMA addresses of pages
- * @flags: page table entry flags
- *
- * Binds the requested pages to the gart page table
- * (all asics).
- * Returns 0 for success, -EINVAL for failure.
- */
+ 
 void amdgpu_gart_bind(struct amdgpu_device *adev, uint64_t offset,
 		     int pages, dma_addr_t *dma_addr,
 		     uint64_t flags)
@@ -384,14 +252,7 @@ void amdgpu_gart_bind(struct amdgpu_device *adev, uint64_t offset,
 	amdgpu_gart_map(adev, offset, pages, dma_addr, flags, adev->gart.ptr);
 }
 
-/**
- * amdgpu_gart_invalidate_tlb - invalidate gart TLB
- *
- * @adev: amdgpu device driver pointer
- *
- * Invalidate gart TLB which can be use as a way to flush gart changes
- *
- */
+ 
 void amdgpu_gart_invalidate_tlb(struct amdgpu_device *adev)
 {
 	int i;
@@ -405,14 +266,7 @@ void amdgpu_gart_invalidate_tlb(struct amdgpu_device *adev)
 		amdgpu_gmc_flush_gpu_tlb(adev, 0, i, 0);
 }
 
-/**
- * amdgpu_gart_init - init the driver info for managing the gart
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate the dummy page and init the gart driver info (all asics).
- * Returns 0 for success, error for failure.
- */
+ 
 int amdgpu_gart_init(struct amdgpu_device *adev)
 {
 	int r;
@@ -420,7 +274,7 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
 	if (adev->dummy_page_addr)
 		return 0;
 
-	/* We need PAGE_SIZE >= AMDGPU_GPU_PAGE_SIZE */
+	 
 	if (PAGE_SIZE < AMDGPU_GPU_PAGE_SIZE) {
 		DRM_ERROR("Page size is smaller than GPU page size!\n");
 		return -EINVAL;
@@ -428,7 +282,7 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
 	r = amdgpu_gart_dummy_page_init(adev);
 	if (r)
 		return r;
-	/* Compute table size */
+	 
 	adev->gart.num_cpu_pages = adev->gmc.gart_size / PAGE_SIZE;
 	adev->gart.num_gpu_pages = adev->gmc.gart_size / AMDGPU_GPU_PAGE_SIZE;
 	DRM_INFO("GART: num cpu pages %u, num gpu pages %u\n",

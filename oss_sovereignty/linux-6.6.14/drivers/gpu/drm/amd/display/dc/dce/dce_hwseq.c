@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dce_hwseq.h"
 #include "reg_helper.h"
@@ -52,7 +29,7 @@ void dce_pipe_control_lock(struct dc *dc,
 	uint32_t dcp_grph, scl, blnd, update_lock_mode, val;
 	struct dce_hwseq *hws = dc->hwseq;
 
-	/* Not lock pipe when blank */
+	 
 	if (lock && pipe->stream_res.tg->funcs->is_blanked &&
 	    pipe->stream_res.tg->funcs->is_blanked(pipe->stream_res.tg))
 		return;
@@ -90,7 +67,7 @@ void dce60_pipe_control_lock(struct dc *dc,
 		struct pipe_ctx *pipe,
 		bool lock)
 {
-	/* DCE6 has no BLND_V_UPDATE_LOCK register */
+	 
 }
 #endif
 
@@ -144,7 +121,7 @@ static void dce_disable_sram_shut_down(struct dce_hwseq *hws)
 
 static void dce_underlay_clock_enable(struct dce_hwseq *hws)
 {
-	/* todo: why do we need this at boot? is dce_enable_fe_clock enough? */
+	 
 	if (REG(DCFEV_CLOCK_CONTROL))
 		REG_UPDATE(DCFEV_CLOCK_CONTROL,
 				DCFEV_CLOCK_ENABLE, 1);
@@ -152,12 +129,12 @@ static void dce_underlay_clock_enable(struct dce_hwseq *hws)
 
 static void enable_hw_base_light_sleep(void)
 {
-	/* TODO: implement */
+	 
 }
 
 static void disable_sw_manual_control_light_sleep(void)
 {
-	/* TODO: implement */
+	 
 }
 
 void dce_clock_gating_power_up(struct dce_hwseq *hws,
@@ -206,7 +183,7 @@ void dce_crtc_switch_to_clk_src(struct dce_hwseq *hws,
 	}
 }
 
-/* Only use LUT for 8 bit formats */
+ 
 bool dce_use_lut(enum surface_pixel_format format)
 {
 	switch (format) {

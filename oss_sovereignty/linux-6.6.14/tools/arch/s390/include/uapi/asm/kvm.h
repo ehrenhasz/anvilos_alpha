@@ -1,20 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef __LINUX_KVM_S390_H
 #define __LINUX_KVM_S390_H
-/*
- * KVM s390 specific structures and definitions
- *
- * Copyright IBM Corp. 2008, 2018
- *
- *    Author(s): Carsten Otte <cotte@de.ibm.com>
- *               Christian Borntraeger <borntraeger@de.ibm.com>
- */
+ 
 #include <linux/types.h>
 
 #define __KVM_S390
 #define __KVM_HAVE_GUEST_DEBUG
 
-/* Device control API: s390-specific devices */
+ 
 #define KVM_DEV_FLIC_GET_ALL_IRQS	1
 #define KVM_DEV_FLIC_ENQUEUE		2
 #define KVM_DEV_FLIC_CLEAR_IRQS		3
@@ -26,13 +19,7 @@
 #define KVM_DEV_FLIC_AISM		9
 #define KVM_DEV_FLIC_AIRQ_INJECT	10
 #define KVM_DEV_FLIC_AISM_ALL		11
-/*
- * We can have up to 4*64k pending subchannels + 8 adapter interrupts,
- * as well as up  to ASYNC_PF_PER_VCPU*KVM_MAX_VCPUS pfault done interrupts.
- * There are also sclp and machine checks. This gives us
- * sizeof(kvm_s390_irq)*(4*65536+8+64*64+1+1) = 72 * 266250 = 19170000
- * Lets round up to 8192 pages.
- */
+ 
 #define KVM_S390_MAX_FLOAT_IRQS	266250
 #define KVM_S390_FLIC_MAX_BUFFER	0x2000000
 
@@ -68,7 +55,7 @@ struct kvm_s390_io_adapter_req {
 	__u64 addr;
 };
 
-/* kvm attr_group  on vm fd */
+ 
 #define KVM_S390_VM_MEM_CTRL		0
 #define KVM_S390_VM_TOD			1
 #define KVM_S390_VM_CRYPTO		2
@@ -76,14 +63,14 @@ struct kvm_s390_io_adapter_req {
 #define KVM_S390_VM_MIGRATION		4
 #define KVM_S390_VM_CPU_TOPOLOGY	5
 
-/* kvm attributes for mem_ctrl */
+ 
 #define KVM_S390_VM_MEM_ENABLE_CMMA	0
 #define KVM_S390_VM_MEM_CLR_CMMA	1
 #define KVM_S390_VM_MEM_LIMIT_SIZE	2
 
 #define KVM_S390_NO_MEM_LIMIT		U64_MAX
 
-/* kvm attributes for KVM_S390_VM_TOD */
+ 
 #define KVM_S390_VM_TOD_LOW		0
 #define KVM_S390_VM_TOD_HIGH		1
 #define KVM_S390_VM_TOD_EXT		2
@@ -93,8 +80,8 @@ struct kvm_s390_vm_tod_clock {
 	__u64 tod;
 };
 
-/* kvm attributes for KVM_S390_VM_CPU_MODEL */
-/* processor related attributes are r/w */
+ 
+ 
 #define KVM_S390_VM_CPU_PROCESSOR	0
 struct kvm_s390_vm_cpu_processor {
 	__u64 cpuid;
@@ -103,7 +90,7 @@ struct kvm_s390_vm_cpu_processor {
 	__u64 fac_list[256];
 };
 
-/* machine related attributes are r/o */
+ 
 #define KVM_S390_VM_CPU_MACHINE		1
 struct kvm_s390_vm_cpu_machine {
 	__u64 cpuid;
@@ -137,29 +124,29 @@ struct kvm_s390_vm_cpu_feat {
 
 #define KVM_S390_VM_CPU_PROCESSOR_SUBFUNC	4
 #define KVM_S390_VM_CPU_MACHINE_SUBFUNC		5
-/* for "test bit" instructions MSB 0 bit ordering, for "query" raw blocks */
+ 
 struct kvm_s390_vm_cpu_subfunc {
-	__u8 plo[32];		/* always */
-	__u8 ptff[16];		/* with TOD-clock steering */
-	__u8 kmac[16];		/* with MSA */
-	__u8 kmc[16];		/* with MSA */
-	__u8 km[16];		/* with MSA */
-	__u8 kimd[16];		/* with MSA */
-	__u8 klmd[16];		/* with MSA */
-	__u8 pckmo[16];		/* with MSA3 */
-	__u8 kmctr[16];		/* with MSA4 */
-	__u8 kmf[16];		/* with MSA4 */
-	__u8 kmo[16];		/* with MSA4 */
-	__u8 pcc[16];		/* with MSA4 */
-	__u8 ppno[16];		/* with MSA5 */
-	__u8 kma[16];		/* with MSA8 */
-	__u8 kdsa[16];		/* with MSA9 */
-	__u8 sortl[32];		/* with STFLE.150 */
-	__u8 dfltcc[32];	/* with STFLE.151 */
+	__u8 plo[32];		 
+	__u8 ptff[16];		 
+	__u8 kmac[16];		 
+	__u8 kmc[16];		 
+	__u8 km[16];		 
+	__u8 kimd[16];		 
+	__u8 klmd[16];		 
+	__u8 pckmo[16];		 
+	__u8 kmctr[16];		 
+	__u8 kmf[16];		 
+	__u8 kmo[16];		 
+	__u8 pcc[16];		 
+	__u8 ppno[16];		 
+	__u8 kma[16];		 
+	__u8 kdsa[16];		 
+	__u8 sortl[32];		 
+	__u8 dfltcc[32];	 
 	__u8 reserved[1728];
 };
 
-/* kvm attributes for crypto */
+ 
 #define KVM_S390_VM_CRYPTO_ENABLE_AES_KW	0
 #define KVM_S390_VM_CRYPTO_ENABLE_DEA_KW	1
 #define KVM_S390_VM_CRYPTO_DISABLE_AES_KW	2
@@ -167,24 +154,24 @@ struct kvm_s390_vm_cpu_subfunc {
 #define KVM_S390_VM_CRYPTO_ENABLE_APIE		4
 #define KVM_S390_VM_CRYPTO_DISABLE_APIE		5
 
-/* kvm attributes for migration mode */
+ 
 #define KVM_S390_VM_MIGRATION_STOP	0
 #define KVM_S390_VM_MIGRATION_START	1
 #define KVM_S390_VM_MIGRATION_STATUS	2
 
-/* for KVM_GET_REGS and KVM_SET_REGS */
+ 
 struct kvm_regs {
-	/* general purpose regs for s390 */
+	 
 	__u64 gprs[16];
 };
 
-/* for KVM_GET_SREGS and KVM_SET_SREGS */
+ 
 struct kvm_sregs {
 	__u32 acrs[16];
 	__u64 crs[16];
 };
 
-/* for KVM_GET_FPU and KVM_SET_FPU */
+ 
 struct kvm_fpu {
 	__u32 fpc;
 	__u64 fprs[16];
@@ -199,7 +186,7 @@ struct kvm_fpu {
 struct kvm_debug_exit_arch {
 	__u64 addr;
 	__u8 type;
-	__u8 pad[7]; /* Should be set to 0 */
+	__u8 pad[7];  
 };
 
 struct kvm_hw_breakpoint {
@@ -207,17 +194,17 @@ struct kvm_hw_breakpoint {
 	__u64 phys_addr;
 	__u64 len;
 	__u8 type;
-	__u8 pad[7]; /* Should be set to 0 */
+	__u8 pad[7];  
 };
 
-/* for KVM_SET_GUEST_DEBUG */
+ 
 struct kvm_guest_debug_arch {
 	__u32 nr_hw_bp;
-	__u32 pad; /* Should be set to 0 */
+	__u32 pad;  
 	struct kvm_hw_breakpoint __user *hw_bp;
 };
 
-/* for KVM_SYNC_PFAULT and KVM_REG_S390_PFTOKEN */
+ 
 #define KVM_S390_PFAULT_TOKEN_INVALID	0xffffffffffffffffULL
 
 #define KVM_SYNC_PREFIX (1UL << 0)
@@ -240,37 +227,37 @@ struct kvm_guest_debug_arch {
 	 KVM_SYNC_FPRS | KVM_SYNC_GSCB | KVM_SYNC_BPBC | KVM_SYNC_ETOKEN | \
 	 KVM_SYNC_DIAG318)
 
-/* length and alignment of the sdnx as a power of two */
+ 
 #define SDNXC 8
 #define SDNXL (1UL << SDNXC)
-/* definition of registers in kvm_run */
+ 
 struct kvm_sync_regs {
-	__u64 prefix;	/* prefix register */
-	__u64 gprs[16];	/* general purpose registers */
-	__u32 acrs[16];	/* access registers */
-	__u64 crs[16];	/* control registers */
-	__u64 todpr;	/* tod programmable register [ARCH0] */
-	__u64 cputm;	/* cpu timer [ARCH0] */
-	__u64 ckc;	/* clock comparator [ARCH0] */
-	__u64 pp;	/* program parameter [ARCH0] */
-	__u64 gbea;	/* guest breaking-event address [ARCH0] */
-	__u64 pft;	/* pfault token [PFAULT] */
-	__u64 pfs;	/* pfault select [PFAULT] */
-	__u64 pfc;	/* pfault compare [PFAULT] */
+	__u64 prefix;	 
+	__u64 gprs[16];	 
+	__u32 acrs[16];	 
+	__u64 crs[16];	 
+	__u64 todpr;	 
+	__u64 cputm;	 
+	__u64 ckc;	 
+	__u64 pp;	 
+	__u64 gbea;	 
+	__u64 pft;	 
+	__u64 pfs;	 
+	__u64 pfc;	 
 	union {
-		__u64 vrs[32][2];	/* vector registers (KVM_SYNC_VRS) */
-		__u64 fprs[16];		/* fp registers (KVM_SYNC_FPRS) */
+		__u64 vrs[32][2];	 
+		__u64 fprs[16];		 
 	};
-	__u8  reserved[512];	/* for future vector expansion */
-	__u32 fpc;		/* valid on KVM_SYNC_VRS or KVM_SYNC_FPRS */
-	__u8 bpbc : 1;		/* bp mode */
+	__u8  reserved[512];	 
+	__u32 fpc;		 
+	__u8 bpbc : 1;		 
 	__u8 reserved2 : 7;
-	__u8 padding1[51];	/* riccb needs to be 64byte aligned */
-	__u8 riccb[64];		/* runtime instrumentation controls block */
-	__u64 diag318;		/* diagnose 0x318 info */
-	__u8 padding2[184];	/* sdnx needs to be 256byte aligned */
+	__u8 padding1[51];	 
+	__u8 riccb[64];		 
+	__u64 diag318;		 
+	__u8 padding2[184];	 
 	union {
-		__u8 sdnx[SDNXL];  /* state description annex */
+		__u8 sdnx[SDNXL];   
 		struct {
 			__u64 reserved1[2];
 			__u64 gscb[4];

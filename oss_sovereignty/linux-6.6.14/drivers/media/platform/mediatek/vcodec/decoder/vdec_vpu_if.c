@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PC Chen <pc.chen@mediatek.com>
- */
+
+ 
 
 #include "mtk_vcodec_dec_drv.h"
 #include "vdec_drv_if.h"
@@ -16,27 +13,24 @@ static void handle_init_ack_msg(const struct vdec_vpu_ipi_init_ack *msg)
 
 	mtk_vdec_debug(vpu->ctx, "+ ap_inst_addr = 0x%llx", msg->ap_inst_addr);
 
-	/* mapping VPU address to kernel virtual address */
-	/* the content in vsi is initialized to 0 in VPU */
+	 
+	 
 	vpu->vsi = mtk_vcodec_fw_map_dm_addr(vpu->ctx->dev->fw_handler,
 					     msg->vpu_inst_addr);
 	vpu->inst_addr = msg->vpu_inst_addr;
 
 	mtk_vdec_debug(vpu->ctx, "- vpu_inst_addr = 0x%x", vpu->inst_addr);
 
-	/* Set default ABI version if dealing with unversioned firmware. */
+	 
 	vpu->fw_abi_version = 0;
-	/*
-	 * Instance ID is only used if ABI version >= 2. Initialize it with
-	 * garbage by default.
-	 */
+	 
 	vpu->inst_id = 0xdeadbeef;
 
-	/* VPU firmware does not contain a version field. */
+	 
 	if (mtk_vcodec_fw_get_type(vpu->ctx->dev->fw_handler) == VPU)
 		return;
 
-	/* Check firmware version. */
+	 
 	vpu->fw_abi_version = msg->vdec_abi_version;
 	mtk_vdec_debug(vpu->ctx, "firmware version 0x%x\n", vpu->fw_abi_version);
 	switch (vpu->fw_abi_version) {
@@ -59,7 +53,7 @@ static void handle_get_param_msg_ack(const struct vdec_vpu_ipi_get_param_ack *ms
 
 	mtk_vdec_debug(vpu->ctx, "+ ap_inst_addr = 0x%llx", msg->ap_inst_addr);
 
-	/* param_type is enum vdec_get_param_type */
+	 
 	switch (msg->param_type) {
 	case GET_PARAM_PIC_INFO:
 		vpu->fb_sz[0] = msg->data[0];
@@ -87,16 +81,7 @@ static bool vpu_dec_check_ap_inst(struct mtk_vcodec_dec_dev *dec_dev, struct vde
 	return ret;
 }
 
-/*
- * vpu_dec_ipi_handler - Handler for VPU ipi message.
- *
- * @data: ipi message
- * @len : length of ipi message
- * @priv: callback private data which is passed by decoder when register.
- *
- * This function runs in interrupt context and it means there's an IPI MSG
- * from VPU.
- */
+ 
 static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
 {
 	struct mtk_vcodec_dec_dev *dec_dev;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vmscan
 
@@ -14,7 +14,7 @@
 #define RECLAIM_WB_ANON		0x0001u
 #define RECLAIM_WB_FILE		0x0002u
 #define RECLAIM_WB_MIXED	0x0010u
-#define RECLAIM_WB_SYNC		0x0004u /* Unused, all reclaim async */
+#define RECLAIM_WB_SYNC		0x0004u  
 #define RECLAIM_WB_ASYNC	0x0008u
 #define RECLAIM_WB_LRU		(RECLAIM_WB_ANON|RECLAIM_WB_FILE)
 
@@ -154,7 +154,7 @@ DEFINE_EVENT(mm_vmscan_direct_reclaim_begin_template, mm_vmscan_memcg_softlimit_
 
 	TP_ARGS(order, gfp_flags)
 );
-#endif /* CONFIG_MEMCG */
+#endif  
 
 DECLARE_EVENT_CLASS(mm_vmscan_direct_reclaim_end_template,
 
@@ -194,7 +194,7 @@ DEFINE_EVENT(mm_vmscan_direct_reclaim_end_template, mm_vmscan_memcg_softlimit_re
 
 	TP_ARGS(nr_reclaimed)
 );
-#endif /* CONFIG_MEMCG */
+#endif  
 
 TRACE_EVENT(mm_shrink_slab_start,
 	TP_PROTO(struct shrinker *shr, struct shrink_control *sc,
@@ -312,10 +312,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
 		__entry->lru = lru;
 	),
 
-	/*
-	 * classzone is previous name of the highest_zoneidx.
-	 * Reason not to change it is the ABI requirement of the tracepoint.
-	 */
+	 
 	TP_printk("isolate_mode=%d classzone=%d order=%d nr_requested=%lu nr_scanned=%lu nr_skipped=%lu nr_taken=%lu lru=%s",
 		__entry->isolate_mode,
 		__entry->highest_zoneidx,
@@ -494,7 +491,7 @@ TRACE_EVENT(mm_vmscan_throttled,
 		__entry->usec_delayed,
 		show_throttle_flags(__entry->reason))
 );
-#endif /* _TRACE_VMSCAN_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

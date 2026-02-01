@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #ifdef CONFIG_RFS_ACCEL
 #include <linux/cpu_rmap.h>
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,7 +24,7 @@ MODULE_AUTHOR("Amazon.com, Inc. or its affiliates");
 MODULE_DESCRIPTION(DEVICE_NAME);
 MODULE_LICENSE("GPL");
 
-/* Time in jiffies before concluding the transmitter is hung. */
+ 
 #define TX_TIMEOUT  (5 * HZ)
 
 #define ENA_MAX_RINGS min_t(unsigned int, ENA_MAX_NUM_IO_QUEUES, num_possible_cpus())
@@ -77,7 +75,7 @@ static int ena_create_io_tx_queues_in_range(struct ena_adapter *adapter,
 static void ena_free_all_io_tx_resources_in_range(struct ena_adapter *adapter,
 						  int first_index, int count);
 
-/* Increase a stat by cnt while holding syncp seqlock on 32bit machines */
+ 
 static void ena_increase_stat(u64 *statp, u64 cnt,
 			      struct u64_stats_sync *syncp)
 {
@@ -96,9 +94,7 @@ static void ena_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	struct ena_adapter *adapter = netdev_priv(dev);
 
-	/* Change the state of the device to trigger reset
-	 * Check that we are not in the middle or a trigger already
-	 */
+	 
 
 	if (test_and_set_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags))
 		return;
@@ -153,14 +149,11 @@ static int ena_xmit_common(struct net_device *dev,
 		ena_ring_tx_doorbell(ring);
 	}
 
-	/* prepare the packet's descriptors to dma engine */
+	 
 	rc = ena_com_prepare_tx(ring->ena_com_io_sq, ena_tx_ctx,
 				&nb_hw_desc);
 
-	/* In case there isn't enough space in the queue for the packet,
-	 * we simply drop it. All other failure reasons of
-	 * ena_com_prepare_tx() are fatal and therefore require a device reset.
-	 */
+	 
 	if (unlikely(rc)) {
 		netif_err(adapter, tx_queued, dev,
 			  "Failed to prepare tx bufs\n");
@@ -186,9 +179,7 @@ static int ena_xmit_common(struct net_device *dev,
 	return 0;
 }
 
-/* This is the XDP napi callback. XDP queues use a separate napi callback
- * than Rx/Tx queues.
- */
+ 
 static int ena_xdp_io_poll(struct napi_struct *napi, int budget)
 {
 	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
@@ -209,9 +200,7 @@ static int ena_xdp_io_poll(struct napi_struct *napi, int budget)
 
 	xdp_work_done = ena_clean_xdp_irq(xdp_ring, xdp_budget);
 
-	/* If the device is about to reset or down, avoid unmask
-	 * the interrupt and return 0 so NAPI won't reschedule
-	 */
+	 
 	if (unlikely(!test_bit(ENA_FLAG_DEV_UP, &xdp_ring->adapter->flags))) {
 		napi_complete_done(napi, 0);
 		ret = 0;
@@ -251,7 +240,7 @@ static int ena_xdp_tx_map_frame(struct ena_ring *xdp_ring,
 	size = tx_info->xdpf->len;
 
 	if (xdp_ring->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
-		/* Designate part of the packet for LLQ */
+		 
 		push_len = min_t(u32, size, xdp_ring->tx_max_header_size);
 
 		ena_tx_ctx->push_header = data;
@@ -320,9 +309,7 @@ static int ena_xdp_xmit_frame(struct ena_ring *xdp_ring,
 	if (rc)
 		goto error_unmap_dma;
 
-	/* trigger the dma engine. ena_ring_tx_doorbell()
-	 * calls a memory barrier inside it.
-	 */
+	 
 	if (flags & XDP_XMIT_FLUSH)
 		ena_ring_tx_doorbell(xdp_ring);
 
@@ -347,7 +334,7 @@ static int ena_xdp_xmit(struct net_device *dev, int n,
 	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
 		return -ENETDOWN;
 
-	/* We assume that all rings have the same XDP program */
+	 
 	if (!READ_ONCE(adapter->rx_ring->xdp_bpf_prog))
 		return -ENXIO;
 
@@ -355,7 +342,7 @@ static int ena_xdp_xmit(struct net_device *dev, int n,
 	qid += adapter->xdp_first_ring;
 	xdp_ring = &adapter->tx_ring[qid];
 
-	/* Other CPU ids might try to send thorugh this queue */
+	 
 	spin_lock(&xdp_ring->xdp_tx_lock);
 
 	for (i = 0; i < n; i++) {
@@ -364,13 +351,13 @@ static int ena_xdp_xmit(struct net_device *dev, int n,
 		nxmit++;
 	}
 
-	/* Ring doorbell to make device aware of the packets */
+	 
 	if (flags & XDP_XMIT_FLUSH)
 		ena_ring_tx_doorbell(xdp_ring);
 
 	spin_unlock(&xdp_ring->xdp_tx_lock);
 
-	/* Return number of packets sent */
+	 
 	return nxmit;
 }
 
@@ -399,10 +386,10 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
 			break;
 		}
 
-		/* Find xmit queue */
+		 
 		xdp_ring = rx_ring->xdp_ring;
 
-		/* The XDP queues are shared between XDP_TX and XDP_REDIRECT */
+		 
 		spin_lock(&xdp_ring->xdp_tx_lock);
 
 		if (ena_xdp_xmit_frame(xdp_ring, rx_ring->netdev, xdpf,
@@ -479,9 +466,7 @@ setup_err:
 	return rc;
 }
 
-/* Provides a way for both kernel and bpf-prog to know
- * more about the RX-queue a given XDP frame arrived on.
- */
+ 
 static int ena_xdp_register_rxq_info(struct ena_ring *rx_ring)
 {
 	int rc;
@@ -633,9 +618,7 @@ static int ena_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf)
 	return 0;
 }
 
-/* This is the main xdp callback, it's used by the kernel to set/unset the xdp
- * program as well as to query the current xdp program id.
- */
+ 
 static int ena_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
 {
 	switch (bpf->command) {
@@ -667,7 +650,7 @@ static int ena_init_rx_cpu_rmap(struct ena_adapter *adapter)
 			return rc;
 		}
 	}
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 	return 0;
 }
 
@@ -701,10 +684,10 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
 		txr = &adapter->tx_ring[i];
 		rxr = &adapter->rx_ring[i];
 
-		/* TX common ring state */
+		 
 		ena_init_io_rings_common(adapter, txr, i);
 
-		/* TX specific ring state */
+		 
 		txr->ring_size = adapter->requested_tx_ring_size;
 		txr->tx_max_header_size = ena_dev->tx_max_header_size;
 		txr->tx_mem_queue_type = ena_dev->tx_mem_queue_type;
@@ -714,12 +697,12 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
 		txr->disable_meta_caching = adapter->disable_meta_caching;
 		spin_lock_init(&txr->xdp_tx_lock);
 
-		/* Don't init RX queues for xdp queues */
+		 
 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
-			/* RX common ring state */
+			 
 			ena_init_io_rings_common(adapter, rxr, i);
 
-			/* RX specific ring state */
+			 
 			rxr->ring_size = adapter->requested_rx_ring_size;
 			rxr->rx_copybreak = adapter->rx_copybreak;
 			rxr->sgl_size = adapter->max_rx_sgl_size;
@@ -733,12 +716,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
 	}
 }
 
-/* ena_setup_tx_resources - allocate I/O Tx resources (Descriptors)
- * @adapter: network interface device structure
- * @qid: queue index
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int ena_setup_tx_resources(struct ena_adapter *adapter, int qid)
 {
 	struct ena_ring *tx_ring = &adapter->tx_ring[qid];
@@ -777,11 +755,11 @@ static int ena_setup_tx_resources(struct ena_adapter *adapter, int qid)
 			goto err_push_buf_intermediate_buf;
 	}
 
-	/* Req id ring for TX out of order completions */
+	 
 	for (i = 0; i < tx_ring->ring_size; i++)
 		tx_ring->free_ids[i] = i;
 
-	/* Reset tx statistics */
+	 
 	memset(&tx_ring->tx_stats, 0x0, sizeof(tx_ring->tx_stats));
 
 	tx_ring->next_to_use = 0;
@@ -800,12 +778,7 @@ err_tx_buffer_info:
 	return -ENOMEM;
 }
 
-/* ena_free_tx_resources - Free I/O Tx Resources per Queue
- * @adapter: network interface device structure
- * @qid: queue index
- *
- * Free all transmit software resources
- */
+ 
 static void ena_free_tx_resources(struct ena_adapter *adapter, int qid)
 {
 	struct ena_ring *tx_ring = &adapter->tx_ring[qid];
@@ -839,7 +812,7 @@ err_setup_tx:
 	netif_err(adapter, ifup, adapter->netdev,
 		  "Tx queue %d: allocation failed\n", i);
 
-	/* rewind the index freeing the rings as we go */
+	 
 	while (first_index < i--)
 		ena_free_tx_resources(adapter, i);
 	return rc;
@@ -854,11 +827,7 @@ static void ena_free_all_io_tx_resources_in_range(struct ena_adapter *adapter,
 		ena_free_tx_resources(adapter, i);
 }
 
-/* ena_free_all_io_tx_resources - Free I/O Tx Resources for All Queues
- * @adapter: board private structure
- *
- * Free all transmit software resources
- */
+ 
 static void ena_free_all_io_tx_resources(struct ena_adapter *adapter)
 {
 	ena_free_all_io_tx_resources_in_range(adapter,
@@ -867,12 +836,7 @@ static void ena_free_all_io_tx_resources(struct ena_adapter *adapter)
 					      adapter->num_io_queues);
 }
 
-/* ena_setup_rx_resources - allocate I/O Rx resources (Descriptors)
- * @adapter: network interface device structure
- * @qid: queue index
- *
- * Returns 0 on success, negative on failure
- */
+ 
 static int ena_setup_rx_resources(struct ena_adapter *adapter,
 				  u32 qid)
 {
@@ -886,9 +850,7 @@ static int ena_setup_rx_resources(struct ena_adapter *adapter,
 		return -EEXIST;
 	}
 
-	/* alloc extra element so in rx path
-	 * we can always prefetch rx_info + 1
-	 */
+	 
 	size = sizeof(struct ena_rx_buffer) * (rx_ring->ring_size + 1);
 	node = cpu_to_node(ena_irq->cpu);
 
@@ -910,11 +872,11 @@ static int ena_setup_rx_resources(struct ena_adapter *adapter,
 		}
 	}
 
-	/* Req id ring for receiving RX pkts out of order */
+	 
 	for (i = 0; i < rx_ring->ring_size; i++)
 		rx_ring->free_ids[i] = i;
 
-	/* Reset rx statistics */
+	 
 	memset(&rx_ring->rx_stats, 0x0, sizeof(rx_ring->rx_stats));
 
 	rx_ring->next_to_clean = 0;
@@ -925,12 +887,7 @@ static int ena_setup_rx_resources(struct ena_adapter *adapter,
 	return 0;
 }
 
-/* ena_free_rx_resources - Free I/O Rx Resources
- * @adapter: network interface device structure
- * @qid: queue index
- *
- * Free all receive software resources
- */
+ 
 static void ena_free_rx_resources(struct ena_adapter *adapter,
 				  u32 qid)
 {
@@ -943,11 +900,7 @@ static void ena_free_rx_resources(struct ena_adapter *adapter,
 	rx_ring->free_ids = NULL;
 }
 
-/* ena_setup_all_rx_resources - allocate I/O Rx queues resources for all queues
- * @adapter: board private structure
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int ena_setup_all_rx_resources(struct ena_adapter *adapter)
 {
 	int i, rc = 0;
@@ -965,17 +918,13 @@ err_setup_rx:
 	netif_err(adapter, ifup, adapter->netdev,
 		  "Rx queue %d: allocation failed\n", i);
 
-	/* rewind the index freeing the rings as we go */
+	 
 	while (i--)
 		ena_free_rx_resources(adapter, i);
 	return rc;
 }
 
-/* ena_free_all_io_rx_resources - Free I/O Rx Resources for All Queues
- * @adapter: board private structure
- *
- * Free all receive software resources
- */
+ 
 static void ena_free_all_io_rx_resources(struct ena_adapter *adapter)
 {
 	int i;
@@ -989,9 +938,7 @@ static struct page *ena_alloc_map_page(struct ena_ring *rx_ring,
 {
 	struct page *page;
 
-	/* This would allocate the page on the same NUMA node the executing code
-	 * is running on.
-	 */
+	 
 	page = dev_alloc_page();
 	if (!page) {
 		ena_increase_stat(&rx_ring->rx_stats.page_alloc_fail, 1,
@@ -999,9 +946,7 @@ static struct page *ena_alloc_map_page(struct ena_ring *rx_ring,
 		return ERR_PTR(-ENOSPC);
 	}
 
-	/* To enable NIC-side port-mirroring, AKA SPAN port,
-	 * we make the buffer readable from the nic as well
-	 */
+	 
 	*dma = dma_map_page(rx_ring->dev, page, 0, ENA_PAGE_SIZE,
 			    DMA_BIDIRECTIONAL);
 	if (unlikely(dma_mapping_error(rx_ring->dev, *dma))) {
@@ -1023,14 +968,14 @@ static int ena_alloc_rx_buffer(struct ena_ring *rx_ring,
 	dma_addr_t dma;
 	int tailroom;
 
-	/* restore page offset value in case it has been changed by device */
+	 
 	rx_info->buf_offset = headroom;
 
-	/* if previous allocated page is not used */
+	 
 	if (unlikely(rx_info->page))
 		return 0;
 
-	/* We handle DMA here */
+	 
 	page = ena_alloc_map_page(rx_ring, &dma);
 	if (unlikely(IS_ERR(page)))
 		return PTR_ERR(page);
@@ -1118,7 +1063,7 @@ static int ena_refill_rx_bufs(struct ena_ring *rx_ring, u32 num)
 			   rx_ring->qid, i, num);
 	}
 
-	/* ena_com_write_sq_doorbell issues a wmb() */
+	 
 	if (likely(i))
 		ena_com_write_sq_doorbell(rx_ring->ena_com_io_sq);
 
@@ -1141,9 +1086,7 @@ static void ena_free_rx_bufs(struct ena_adapter *adapter,
 	}
 }
 
-/* ena_refill_all_rx_bufs - allocate all queues Rx buffers
- * @adapter: board private structure
- */
+ 
 static void ena_refill_all_rx_bufs(struct ena_adapter *adapter)
 {
 	struct ena_ring *rx_ring;
@@ -1191,7 +1134,7 @@ static void ena_unmap_tx_buff(struct ena_ring *tx_ring,
 		cnt--;
 	}
 
-	/* unmap remaining mapped pages */
+	 
 	for (i = 0; i < cnt; i++) {
 		dma_unmap_page(tx_ring->dev, dma_unmap_addr(ena_buf, paddr),
 			       dma_unmap_len(ena_buf, len), DMA_TO_DEVICE);
@@ -1199,9 +1142,7 @@ static void ena_unmap_tx_buff(struct ena_ring *tx_ring,
 	}
 }
 
-/* ena_free_tx_bufs - Free Tx Buffers per Queue
- * @tx_ring: TX ring for which buffers be freed
- */
+ 
 static void ena_free_tx_bufs(struct ena_ring *tx_ring)
 {
 	bool print_once = true;
@@ -1343,7 +1284,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
 			break;
 		}
 
-		/* validate that the request id points to a valid skb */
+		 
 		rc = validate_tx_req_id(tx_ring, req_id);
 		if (rc)
 			break;
@@ -1351,7 +1292,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
 		tx_info = &tx_ring->tx_buffer_info[req_id];
 		skb = tx_info->skb;
 
-		/* prefetch skb_end_pointer() to speedup skb_shinfo(skb) */
+		 
 		prefetch(&skb->end);
 
 		tx_info->skb = NULL;
@@ -1383,9 +1324,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
 		  "tx_poll: q %d done. total pkts: %d\n",
 		  tx_ring->qid, tx_pkts);
 
-	/* need to make the rings circular update visible to
-	 * ena_start_xmit() before checking for netif_queue_stopped().
-	 */
+	 
 	smp_mb();
 
 	above_thresh = ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
@@ -1433,9 +1372,7 @@ static bool ena_try_rx_buf_page_reuse(struct ena_rx_buffer *rx_info, u16 buf_len
 {
 	struct ena_com_buf *ena_buf = &rx_info->ena_buf;
 
-	/* More than ENA_MIN_RX_BUF_SIZE left in the reused buffer
-	 * for data + headroom + tailroom.
-	 */
+	 
 	if (SKB_DATA_ALIGN(len + pkt_offset) + ENA_MIN_RX_BUF_SIZE <= ena_buf->len) {
 		page_ref_inc(rx_info->page);
 		rx_info->page_offset += buf_len;
@@ -1511,7 +1448,7 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
 
 	buf_len = SKB_DATA_ALIGN(len + buf_offset + tailroom);
 
-	/* If XDP isn't loaded try to reuse part of the RX buffer */
+	 
 	reuse_rx_buf_page = !is_xdp_loaded &&
 			    ena_try_rx_buf_page_reuse(rx_info, buf_len, len, pkt_offset);
 
@@ -1522,7 +1459,7 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
 	if (unlikely(!skb))
 		return NULL;
 
-	/* Populate skb's linear part */
+	 
 	skb_reserve(skb, buf_offset);
 	skb_put(skb, len);
 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
@@ -1548,7 +1485,7 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
 
 		rx_info = &rx_ring->rx_buffer_info[req_id];
 
-		/* rx_info->buf_offset includes rx_ring->rx_headroom */
+		 
 		buf_offset = rx_info->buf_offset;
 		pkt_offset = buf_offset - rx_ring->rx_headroom;
 		buf_len = SKB_DATA_ALIGN(len + buf_offset + tailroom);
@@ -1576,31 +1513,27 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
 	return skb;
 }
 
-/* ena_rx_checksum - indicate in skb if hw indicated a good cksum
- * @adapter: structure containing adapter specific data
- * @ena_rx_ctx: received packet context/metadata
- * @skb: skb currently being received and modified
- */
+ 
 static void ena_rx_checksum(struct ena_ring *rx_ring,
 				   struct ena_com_rx_ctx *ena_rx_ctx,
 				   struct sk_buff *skb)
 {
-	/* Rx csum disabled */
+	 
 	if (unlikely(!(rx_ring->netdev->features & NETIF_F_RXCSUM))) {
 		skb->ip_summed = CHECKSUM_NONE;
 		return;
 	}
 
-	/* For fragmented packets the checksum isn't valid */
+	 
 	if (ena_rx_ctx->frag) {
 		skb->ip_summed = CHECKSUM_NONE;
 		return;
 	}
 
-	/* if IP and error */
+	 
 	if (unlikely((ena_rx_ctx->l3_proto == ENA_ETH_IO_L3_PROTO_IPV4) &&
 		     (ena_rx_ctx->l3_csum_err))) {
-		/* ipv4 checksum error */
+		 
 		skb->ip_summed = CHECKSUM_NONE;
 		ena_increase_stat(&rx_ring->rx_stats.csum_bad, 1,
 				  &rx_ring->syncp);
@@ -1609,11 +1542,11 @@ static void ena_rx_checksum(struct ena_ring *rx_ring,
 		return;
 	}
 
-	/* if TCP/UDP */
+	 
 	if (likely((ena_rx_ctx->l4_proto == ENA_ETH_IO_L4_PROTO_TCP) ||
 		   (ena_rx_ctx->l4_proto == ENA_ETH_IO_L4_PROTO_UDP))) {
 		if (unlikely(ena_rx_ctx->l4_csum_err)) {
-			/* TCP/UDP checksum error */
+			 
 			ena_increase_stat(&rx_ring->rx_stats.csum_bad, 1,
 					  &rx_ring->syncp);
 			netif_dbg(rx_ring->adapter, rx_err, rx_ring->netdev,
@@ -1652,7 +1585,7 @@ static void ena_set_rx_hash(struct ena_ring *rx_ring,
 		else
 			hash_type = PKT_HASH_TYPE_NONE;
 
-		/* Override hash type if the packet is fragmented */
+		 
 		if (ena_rx_ctx->frag)
 			hash_type = PKT_HASH_TYPE_NONE;
 
@@ -1665,7 +1598,7 @@ static int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp, u
 	struct ena_rx_buffer *rx_info;
 	int ret;
 
-	/* XDP multi-buffer packets not supported */
+	 
 	if (unlikely(num_descs > 1)) {
 		netdev_err_once(rx_ring->adapter->netdev,
 				"xdp: dropped unsupported multi-buffer packets\n");
@@ -1680,7 +1613,7 @@ static int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp, u
 
 	ret = ena_xdp_execute(rx_ring, xdp);
 
-	/* The xdp program might expand the headers */
+	 
 	if (ret == ENA_XDP_PASS) {
 		rx_info->buf_offset = xdp->data - xdp->data_hard_start;
 		rx_ring->ena_bufs[0].len = xdp->data_end - xdp->data;
@@ -1688,13 +1621,7 @@ static int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp, u
 
 	return ret;
 }
-/* ena_clean_rx_irq - Cleanup RX irq
- * @rx_ring: RX ring to clean
- * @napi: napi handler
- * @budget: how many packets driver is allowed to clean
- *
- * Returns the number of cleaned buffers.
- */
+ 
 static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
 			    u32 budget)
 {
@@ -1736,7 +1663,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
 		if (unlikely(ena_rx_ctx.descs == 0))
 			break;
 
-		/* First descriptor might have an offset set by the device */
+		 
 		rx_info = &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id];
 		pkt_offset = ena_rx_ctx.pkt_offset;
 		rx_info->buf_offset += pkt_offset;
@@ -1754,7 +1681,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
 		if (ena_xdp_present_ring(rx_ring))
 			xdp_verdict = ena_xdp_handle_buff(rx_ring, &xdp, ena_rx_ctx.descs);
 
-		/* allocate skb and fill it */
+		 
 		if (xdp_verdict == ENA_XDP_PASS)
 			skb = ena_rx_skb(rx_ring,
 					 rx_ring->ena_bufs,
@@ -1770,9 +1697,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
 					ENA_RX_RING_IDX_NEXT(next_to_clean,
 							     rx_ring->ring_size);
 
-				/* Packets was passed for transmission, unmap it
-				 * from RX side.
-				 */
+				 
 				if (xdp_verdict & ENA_XDP_FORWARDED) {
 					ena_unmap_rx_buff_attrs(rx_ring,
 								&rx_ring->rx_buffer_info[req_id],
@@ -1820,7 +1745,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
 		min_t(int, rx_ring->ring_size / ENA_RX_REFILL_THRESH_DIVIDER,
 		      ENA_RX_REFILL_THRESH_PACKET);
 
-	/* Optimization, try to batch new rx buffers */
+	 
 	if (refill_required > refill_threshold) {
 		ena_com_update_dev_comp_head(rx_ring->ena_com_io_cq);
 		ena_refill_rx_bufs(rx_ring, refill_required);
@@ -1886,17 +1811,13 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
 	u32 rx_interval = tx_ring->smoothed_interval;
 	struct ena_eth_io_intr_reg intr_reg;
 
-	/* Rx ring can be NULL when for XDP tx queues which don't have an
-	 * accompanying rx_ring pair.
-	 */
+	 
 	if (rx_ring)
 		rx_interval = ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev) ?
 			rx_ring->smoothed_interval :
 			ena_com_get_nonadaptive_moderation_interval_rx(rx_ring->ena_dev);
 
-	/* Update intr register: rx intr delay,
-	 * tx intr delay and interrupt unmask
-	 */
+	 
 	ena_com_update_intr_reg(&intr_reg,
 				rx_interval,
 				tx_ring->smoothed_interval,
@@ -1905,11 +1826,7 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
 	ena_increase_stat(&tx_ring->tx_stats.unmask_interrupt, 1,
 			  &tx_ring->syncp);
 
-	/* It is a shared MSI-X.
-	 * Tx and Rx CQ have pointer to it.
-	 * So we use one of them to reach the intr reg
-	 * The Tx ring is used because the rx_ring is NULL for XDP queues
-	 */
+	 
 	ena_com_unmask_intr(tx_ring->ena_com_io_cq, &intr_reg);
 }
 
@@ -1919,7 +1836,7 @@ static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
 	int cpu = get_cpu();
 	int numa_node;
 
-	/* Check only one ring since the 2 rings are running on the same cpu */
+	 
 	if (likely(tx_ring->cpu == cpu))
 		goto out;
 
@@ -1974,7 +1891,7 @@ static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget)
 			break;
 		}
 
-		/* validate that the request id points to a valid xdp_frame */
+		 
 		rc = validate_xdp_req_id(xdp_ring, req_id);
 		if (rc)
 			break;
@@ -2032,15 +1949,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
 	}
 
 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
-	/* On netpoll the budget is zero and the handler should only clean the
-	 * tx completions.
-	 */
+	 
 	if (likely(budget))
 		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
 
-	/* If the device is about to reset or down, avoid unmask
-	 * the interrupt and return 0 so NAPI won't reschedule
-	 */
+	 
 	if (unlikely(!test_bit(ENA_FLAG_DEV_UP, &tx_ring->adapter->flags) ||
 		     test_bit(ENA_FLAG_TRIGGER_RESET, &tx_ring->adapter->flags))) {
 		napi_complete_done(napi, 0);
@@ -2049,16 +1962,12 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
 	} else if ((budget > rx_work_done) && (tx_budget > tx_work_done)) {
 		napi_comp_call = 1;
 
-		/* Update numa and unmask the interrupt only when schedule
-		 * from the interrupt context (vs from sk_busy_loop)
-		 */
+		 
 		if (napi_complete_done(napi, rx_work_done) &&
 		    READ_ONCE(ena_napi->interrupts_masked)) {
-			smp_rmb(); /* make sure interrupts_masked is read */
+			smp_rmb();  
 			WRITE_ONCE(ena_napi->interrupts_masked, false);
-			/* We apply adaptive moderation on Rx path only.
-			 * Tx uses static interrupt moderation.
-			 */
+			 
 			if (ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev))
 				ena_adjust_adaptive_rx_intr_moderation(ena_napi);
 
@@ -2087,37 +1996,30 @@ static irqreturn_t ena_intr_msix_mgmnt(int irq, void *data)
 
 	ena_com_admin_q_comp_intr_handler(adapter->ena_dev);
 
-	/* Don't call the aenq handler before probe is done */
+	 
 	if (likely(test_bit(ENA_FLAG_DEVICE_RUNNING, &adapter->flags)))
 		ena_com_aenq_intr_handler(adapter->ena_dev, data);
 
 	return IRQ_HANDLED;
 }
 
-/* ena_intr_msix_io - MSI-X Interrupt Handler for Tx/Rx
- * @irq: interrupt number
- * @data: pointer to a network interface private napi device structure
- */
+ 
 static irqreturn_t ena_intr_msix_io(int irq, void *data)
 {
 	struct ena_napi *ena_napi = data;
 
-	/* Used to check HW health */
+	 
 	WRITE_ONCE(ena_napi->first_interrupt, true);
 
 	WRITE_ONCE(ena_napi->interrupts_masked, true);
-	smp_wmb(); /* write interrupts_masked before calling napi */
+	smp_wmb();  
 
 	napi_schedule_irqoff(&ena_napi->napi);
 
 	return IRQ_HANDLED;
 }
 
-/* Reserve a single MSI-X vector for management (admin + aenq).
- * plus reserve one vector for each potential io queue.
- * the number of potential io queues is the minimum of what the device
- * supports and the number of vCPUs.
- */
+ 
 static int ena_enable_msix(struct ena_adapter *adapter)
 {
 	int msix_vecs, irq_cnt;
@@ -2128,7 +2030,7 @@ static int ena_enable_msix(struct ena_adapter *adapter)
 		return -EPERM;
 	}
 
-	/* Reserved the max msix vectors we might need */
+	 
 	msix_vecs = ENA_MAX_MSIX_VEC(adapter->max_num_io_queues);
 	netif_dbg(adapter, probe, adapter->netdev,
 		  "Trying to enable MSI-X, vectors %d\n", msix_vecs);
@@ -2290,7 +2192,7 @@ static void ena_free_io_irq(struct ena_adapter *adapter)
 		free_irq_cpu_rmap(adapter->netdev->rx_cpu_rmap);
 		adapter->netdev->rx_cpu_rmap = NULL;
 	}
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 
 	for (i = ENA_IO_IRQ_FIRST_IDX; i < ENA_MAX_MSIX_VEC(io_queue_count); i++) {
 		irq = &adapter->irq_tbl[i];
@@ -2372,13 +2274,13 @@ static void ena_napi_enable_in_range(struct ena_adapter *adapter,
 		napi_enable(&adapter->ena_napi[i].napi);
 }
 
-/* Configure the Rx forwarding */
+ 
 static int ena_rss_configure(struct ena_adapter *adapter)
 {
 	struct ena_com_dev *ena_dev = adapter->ena_dev;
 	int rc;
 
-	/* In case the RSS table wasn't initialized by probe */
+	 
 	if (!ena_dev->rss.tbl_log_size) {
 		rc = ena_rss_init_default(adapter);
 		if (rc && (rc != -EOPNOTSUPP)) {
@@ -2388,17 +2290,17 @@ static int ena_rss_configure(struct ena_adapter *adapter)
 		}
 	}
 
-	/* Set indirect table */
+	 
 	rc = ena_com_indirect_table_set(ena_dev);
 	if (unlikely(rc && rc != -EOPNOTSUPP))
 		return rc;
 
-	/* Configure hash function (if supported) */
+	 
 	rc = ena_com_set_hash_function(ena_dev);
 	if (unlikely(rc && (rc != -EOPNOTSUPP)))
 		return rc;
 
-	/* Configure hash inputs (if supported) */
+	 
 	rc = ena_com_set_hash_ctrl(ena_dev);
 	if (unlikely(rc && (rc != -EOPNOTSUPP)))
 		return rc;
@@ -2418,7 +2320,7 @@ static int ena_up_complete(struct ena_adapter *adapter)
 
 	ena_refill_all_rx_bufs(adapter);
 
-	/* enable transmits */
+	 
 	netif_tx_start_all_queues(adapter->netdev);
 
 	ena_napi_enable_in_range(adapter,
@@ -2581,29 +2483,13 @@ static void set_io_rings_size(struct ena_adapter *adapter,
 	}
 }
 
-/* This function allows queue allocation to backoff when the system is
- * low on memory. If there is not enough memory to allocate io queues
- * the driver will try to allocate smaller queues.
- *
- * The backoff algorithm is as follows:
- *  1. Try to allocate TX and RX and if successful.
- *  1.1. return success
- *
- *  2. Divide by 2 the size of the larger of RX and TX queues (or both if their size is the same).
- *
- *  3. If TX or RX is smaller than 256
- *  3.1. return failure.
- *  4. else
- *  4.1. go back to 1.
- */
+ 
 static int create_queues_with_size_backoff(struct ena_adapter *adapter)
 {
 	int rc, cur_rx_ring_size, cur_tx_ring_size;
 	int new_rx_ring_size, new_tx_ring_size;
 
-	/* current queue sizes might be set to smaller than the requested
-	 * ones due to past queue allocation failures.
-	 */
+	 
 	set_io_rings_size(adapter, adapter->requested_tx_ring_size,
 			  adapter->requested_rx_ring_size);
 
@@ -2660,9 +2546,7 @@ err_setup_tx:
 		new_tx_ring_size = cur_tx_ring_size;
 		new_rx_ring_size = cur_rx_ring_size;
 
-		/* Decrease the size of the larger queue, or
-		 * decrease both if they are the same size.
-		 */
+		 
 		if (cur_rx_ring_size <= cur_tx_ring_size)
 			new_tx_ring_size = cur_tx_ring_size / 2;
 		if (cur_rx_ring_size >= cur_tx_ring_size)
@@ -2695,11 +2579,7 @@ static int ena_up(struct ena_adapter *adapter)
 	io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
 	ena_setup_io_intr(adapter);
 
-	/* napi poll functions should be initialized before running
-	 * request_irq(), to handle a rare condition where there is a pending
-	 * interrupt, causing the ISR to fire immediately while the poll
-	 * function wasn't set yet, causing a null dereference
-	 */
+	 
 	ena_init_napi_in_range(adapter, 0, io_queue_count);
 
 	rc = ena_request_io_irq(adapter);
@@ -2722,14 +2602,12 @@ static int ena_up(struct ena_adapter *adapter)
 
 	set_bit(ENA_FLAG_DEV_UP, &adapter->flags);
 
-	/* Enable completion queues interrupt */
+	 
 	for (i = 0; i < adapter->num_io_queues; i++)
 		ena_unmask_interrupt(&adapter->tx_ring[i],
 				     &adapter->rx_ring[i]);
 
-	/* schedule napi in case we had pending packets
-	 * from the last time we disable napi
-	 */
+	 
 	for (i = 0; i < io_queue_count; i++)
 		napi_schedule(&adapter->ena_napi[i].napi);
 
@@ -2762,10 +2640,10 @@ static void ena_down(struct ena_adapter *adapter)
 	netif_carrier_off(adapter->netdev);
 	netif_tx_disable(adapter->netdev);
 
-	/* After this point the napi handler won't enable the tx queue */
+	 
 	ena_napi_disable_in_range(adapter, 0, io_queue_count);
 
-	/* After destroy the queue there won't be any new interrupts */
+	 
 
 	if (test_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags)) {
 		int rc;
@@ -2774,7 +2652,7 @@ static void ena_down(struct ena_adapter *adapter)
 		if (rc)
 			netif_err(adapter, ifdown, adapter->netdev,
 				  "Device reset failed\n");
-		/* stop submitting admin commands on a device that was reset */
+		 
 		ena_com_set_admin_running_state(adapter->ena_dev, false);
 	}
 
@@ -2790,23 +2668,13 @@ static void ena_down(struct ena_adapter *adapter)
 	ena_free_all_io_rx_resources(adapter);
 }
 
-/* ena_open - Called when a network interface is made active
- * @netdev: network interface device structure
- *
- * Returns 0 on success, negative value on failure
- *
- * The open entry point is called when a network interface is made
- * active by the system (IFF_UP).  At this point all resources needed
- * for transmit and receive operations are allocated, the interrupt
- * handler is registered with the OS, the watchdog timer is started,
- * and the stack is notified that the interface is ready.
- */
+ 
 static int ena_open(struct net_device *netdev)
 {
 	struct ena_adapter *adapter = netdev_priv(netdev);
 	int rc;
 
-	/* Notify the stack of the actual queue counts. */
+	 
 	rc = netif_set_real_num_tx_queues(netdev, adapter->num_io_queues);
 	if (rc) {
 		netif_err(adapter, ifup, netdev, "Can't set num tx queues\n");
@@ -2826,16 +2694,7 @@ static int ena_open(struct net_device *netdev)
 	return rc;
 }
 
-/* ena_close - Disables a network interface
- * @netdev: network interface device structure
- *
- * Returns 0, this is not allowed to fail
- *
- * The close entry point is called when an interface is de-activated
- * by the OS.  The hardware is still under the drivers control, but
- * needs to be disabled.  A global MAC reset is issued to stop the
- * hardware, and all transmit and receive resources are freed.
- */
+ 
 static int ena_close(struct net_device *netdev)
 {
 	struct ena_adapter *adapter = netdev_priv(netdev);
@@ -2848,13 +2707,13 @@ static int ena_close(struct net_device *netdev)
 	if (test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
 		ena_down(adapter);
 
-	/* Check for device status and issue reset if needed*/
+	 
 	check_for_admin_com_state(adapter);
 	if (unlikely(test_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags))) {
 		netif_err(adapter, ifdown, adapter->netdev,
 			  "Destroy failure, restarting device\n");
 		ena_dump_stats_to_dmesg(adapter);
-		/* rtnl lock already obtained in dev_ioctl() layer */
+		 
 		ena_destroy_device(adapter, false);
 		ena_restore_device(adapter);
 	}
@@ -2884,7 +2743,7 @@ int ena_update_queue_params(struct ena_adapter *adapter,
 	large_llq_changed &=
 		new_llq_header_len != adapter->ena_dev->tx_max_header_size;
 
-	/* a check that the configuration is valid is done by caller */
+	 
 	if (large_llq_changed) {
 		adapter->large_llq_header_enabled = !adapter->large_llq_header_enabled;
 
@@ -2939,9 +2798,7 @@ int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count)
 							     new_channel_count);
 	}
 
-	/* We need to destroy the rss table so that the indirection
-	 * table will be reinitialized by ena_up()
-	 */
+	 
 	ena_com_rss_destroy(ena_dev);
 	ena_init_io_rings(adapter,
 			  0,
@@ -3049,15 +2906,7 @@ static int ena_tx_map_skb(struct ena_ring *tx_ring,
 	ena_buf = tx_info->bufs;
 
 	if (tx_ring->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
-		/* When the device is LLQ mode, the driver will copy
-		 * the header into the device memory space.
-		 * the ena_com layer assume the header is in a linear
-		 * memory space.
-		 * This assumption might be wrong since part of the header
-		 * can be in the fragmented buffers.
-		 * Use skb_header_pointer to make sure the header is in a
-		 * linear memory space.
-		 */
+		 
 
 		push_len = min_t(u32, skb->len, tx_ring->tx_max_header_size);
 		*push_hdr = skb_header_pointer(skb, 0, push_len,
@@ -3134,7 +2983,7 @@ error_report_dma_error:
 	return -EINVAL;
 }
 
-/* Called with netif_tx_lock. */
+ 
 static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ena_adapter *adapter = netdev_priv(dev);
@@ -3147,7 +2996,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	int qid, rc;
 
 	netif_dbg(adapter, tx_queued, dev, "%s skb %p\n", __func__, skb);
-	/*  Determine which tx ring we will be placed on */
+	 
 	qid = skb_get_queue_mapping(skb);
 	tx_ring = &adapter->tx_ring[qid];
 	txq = netdev_get_tx_queue(dev, qid);
@@ -3176,7 +3025,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ena_tx_ctx.req_id = req_id;
 	ena_tx_ctx.header_len = header_len;
 
-	/* set flags and meta data */
+	 
 	ena_tx_csum(&ena_tx_ctx, skb, tx_ring->disable_meta_caching);
 
 	rc = ena_xmit_common(dev,
@@ -3190,10 +3039,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	netdev_tx_sent_queue(txq, skb->len);
 
-	/* stop the queue when no more space available, the packet can have up
-	 * to sgl_size + 2. one for the meta descriptor and one for header
-	 * (if the header is larger than tx_max_header_size).
-	 */
+	 
 	if (unlikely(!ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
 						   tx_ring->sgl_size + 2))) {
 		netif_dbg(adapter, tx_queued, dev, "%s stop queue %d\n",
@@ -3203,14 +3049,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		ena_increase_stat(&tx_ring->tx_stats.queue_stop, 1,
 				  &tx_ring->syncp);
 
-		/* There is a rare condition where this function decide to
-		 * stop the queue but meanwhile clean_tx_irq updates
-		 * next_to_completion and terminates.
-		 * The queue will remain stopped forever.
-		 * To solve this issue add a mb() to make sure that
-		 * netif_tx_stop_queue() write is vissible before checking if
-		 * there is additional space in the queue.
-		 */
+		 
 		smp_mb();
 
 		if (ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
@@ -3222,9 +3061,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	if (netif_xmit_stopped(txq) || !netdev_xmit_more())
-		/* trigger the dma engine. ena_ring_tx_doorbell()
-		 * calls a memory barrier inside it.
-		 */
+		 
 		ena_ring_tx_doorbell(tx_ring);
 
 	return NETDEV_TX_OK;
@@ -3242,10 +3079,7 @@ static u16 ena_select_queue(struct net_device *dev, struct sk_buff *skb,
 			    struct net_device *sb_dev)
 {
 	u16 qid;
-	/* we suspect that this is good for in--kernel network services that
-	 * want to loop incoming skb rx to tx in normal user generated traffic,
-	 * most probably we will not get to this
-	 */
+	 
 	if (skb_rx_queue_recorded(skb))
 		qid = skb_get_rx_queue(skb);
 	else
@@ -3260,7 +3094,7 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
 	struct ena_admin_host_info *host_info;
 	int rc;
 
-	/* Allocate only the host info */
+	 
 	rc = ena_com_allocate_host_info(ena_dev);
 	if (rc) {
 		dev_err(dev, "Cannot allocate host info\n");
@@ -3319,7 +3153,7 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
 		return;
 	}
 
-	/* allocate 32 bytes for each string and 64bit for the value */
+	 
 	debug_area_size = ss_count * ETH_GSTRING_LEN + sizeof(u64) * ss_count;
 
 	rc = ena_com_allocate_debug_area(adapter->ena_dev, debug_area_size);
@@ -3444,9 +3278,7 @@ static void ena_calc_io_queue_size(struct ena_adapter *adapter,
 	u32 max_tx_queue_size;
 	u32 max_rx_queue_size;
 
-	/* If this function is called after driver load, the ring sizes have already
-	 * been configured. Take it into account when recalculating ring size.
-	 */
+	 
 	if (adapter->tx_ring->ring_size)
 		tx_queue_size = adapter->tx_ring->ring_size;
 
@@ -3494,9 +3326,7 @@ static void ena_calc_io_queue_size(struct ena_adapter *adapter,
 	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
 	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
 
-	/* When forcing large headers, we multiply the entry size by 2, and therefore divide
-	 * the queue size by 2, leaving the amount of memory used by the queues unchanged.
-	 */
+	 
 	if (adapter->large_llq_header_enabled) {
 		if ((llq->entry_size_ctrl_supported & ENA_ADMIN_LIST_ENTRY_SIZE_256B) &&
 		    ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
@@ -3644,9 +3474,7 @@ static int ena_device_init(struct ena_adapter *adapter, struct pci_dev *pdev,
 		return rc;
 	}
 
-	/* The PCIe configuration space revision id indicate if mmio reg
-	 * read is disabled
-	 */
+	 
 	readless_supported = !(pdev->revision & ENA_MMIO_DISABLE_REG_READ);
 	ena_com_set_mmio_read_mode(ena_dev, readless_supported);
 
@@ -3675,7 +3503,7 @@ static int ena_device_init(struct ena_adapter *adapter, struct pci_dev *pdev,
 		goto err_mmio_read_less;
 	}
 
-	/* ENA admin level init */
+	 
 	rc = ena_com_admin_init(ena_dev, &aenq_handlers);
 	if (rc) {
 		dev_err(dev,
@@ -3683,22 +3511,19 @@ static int ena_device_init(struct ena_adapter *adapter, struct pci_dev *pdev,
 		goto err_mmio_read_less;
 	}
 
-	/* To enable the msix interrupts the driver needs to know the number
-	 * of queues. So the driver uses polling mode to retrieve this
-	 * information
-	 */
+	 
 	ena_com_set_admin_polling_mode(ena_dev, true);
 
 	ena_config_host_info(ena_dev, pdev);
 
-	/* Get Device Attributes*/
+	 
 	rc = ena_com_get_dev_attr_feat(ena_dev, get_feat_ctx);
 	if (rc) {
 		dev_err(dev, "Cannot get attribute for ena device rc=%d\n", rc);
 		goto err_admin_init;
 	}
 
-	/* Try to turn all the available aenq groups */
+	 
 	aenq_groups = BIT(ENA_ADMIN_LINK_CHANGE) |
 		BIT(ENA_ADMIN_FATAL_ERROR) |
 		BIT(ENA_ADMIN_WARNING) |
@@ -3790,9 +3615,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
 	if (test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
 		ena_down(adapter);
 
-	/* Stop the device from sending AENQ events (in case reset flag is set
-	 *  and device is up, ena_down() already reset the device.
-	 */
+	 
 	if (!(test_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags) && dev_up))
 		ena_com_dev_reset(adapter->ena_dev, adapter->reset_reason);
 
@@ -3808,7 +3631,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
 
 	ena_com_mmio_reg_read_request_destroy(ena_dev);
 
-	/* return reset reason to default value */
+	 
 	adapter->reset_reason = ENA_REGS_RESET_NORMAL;
 
 	clear_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
@@ -3850,7 +3673,7 @@ static int ena_restore_device(struct ena_adapter *adapter)
 		dev_err(&pdev->dev, "Enable MSI-X failed\n");
 		goto err_device_destroy;
 	}
-	/* If the interface was up before the reset bring it up */
+	 
 	if (adapter->dev_up_before_reset) {
 		rc = ena_up(adapter);
 		if (rc) {
@@ -3946,16 +3769,14 @@ static int check_missing_comp_in_tx_queue(struct ena_adapter *adapter,
 		last_jiffies = tx_buf->last_jiffies;
 
 		if (last_jiffies == 0)
-			/* no pending Tx at this location */
+			 
 			continue;
 
 		is_tx_comp_time_expired = time_is_before_jiffies(last_jiffies +
 			 2 * adapter->missing_tx_completion_to);
 
 		if (unlikely(!READ_ONCE(ena_napi->first_interrupt) && is_tx_comp_time_expired)) {
-			/* If after graceful period interrupt is still not
-			 * received, we schedule a reset
-			 */
+			 
 			netif_err(adapter, tx_err, adapter->netdev,
 				  "Potential MSIX issue on Tx side Queue = %d. Reset the device\n",
 				  tx_ring->qid);
@@ -4003,7 +3824,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
 	int io_queue_count;
 
 	io_queue_count = adapter->xdp_num_queues + adapter->num_io_queues;
-	/* Make sure the driver doesn't turn the device in other process */
+	 
 	smp_rmb();
 
 	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
@@ -4038,22 +3859,9 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
 	adapter->last_monitored_tx_qid = i % io_queue_count;
 }
 
-/* trigger napi schedule after 2 consecutive detections */
+ 
 #define EMPTY_RX_REFILL 2
-/* For the rare case where the device runs out of Rx descriptors and the
- * napi handler failed to refill new Rx descriptors (due to a lack of memory
- * for example).
- * This case will lead to a deadlock:
- * The device won't send interrupts since all the new Rx packets will be dropped
- * The napi handler won't allocate new Rx descriptors so the device will be
- * able to send new packets.
- *
- * This scenario can happen when the kernel's vm.min_free_kbytes is too small.
- * It is recommended to have at least 512MB, with a minimum of 128MB for
- * constrained environment).
- *
- * When such a situation is detected - Reschedule napi
- */
+ 
 static void check_for_empty_rx_ring(struct ena_adapter *adapter)
 {
 	struct ena_ring *rx_ring;
@@ -4088,7 +3896,7 @@ static void check_for_empty_rx_ring(struct ena_adapter *adapter)
 	}
 }
 
-/* Check for keep alive expiration */
+ 
 static void check_for_missing_keep_alive(struct ena_adapter *adapter)
 {
 	unsigned long keep_alive_expired;
@@ -4131,7 +3939,7 @@ static void ena_update_hints(struct ena_adapter *adapter,
 			hints->admin_completion_tx_timeout * 1000;
 
 	if (hints->mmio_read_timeout)
-		/* convert to usec */
+		 
 		adapter->ena_dev->mmio_read.reg_read_to =
 			hints->mmio_read_timeout * 1000;
 
@@ -4197,7 +4005,7 @@ static void ena_timer_service(struct timer_list *t)
 		return;
 	}
 
-	/* Reset the timer */
+	 
 	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
 }
 
@@ -4223,7 +4031,7 @@ static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
 		io_rx_num = min_t(u32, io_tx_sq_num, io_tx_cq_num);
 	}
 
-	/* In case of LLQ use the llq fields for the tx SQ/CQ */
+	 
 	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
 		io_tx_sq_num = get_feat_ctx->llq.max_llq_num;
 
@@ -4231,7 +4039,7 @@ static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
 	max_num_io_queues = min_t(u32, max_num_io_queues, io_rx_num);
 	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_sq_num);
 	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_cq_num);
-	/* 1 IRQ for mgmnt and 1 IRQs for each IO direction */
+	 
 	max_num_io_queues = min_t(u32, max_num_io_queues, pci_msix_vec_count(pdev) - 1);
 
 	return max_num_io_queues;
@@ -4242,7 +4050,7 @@ static void ena_set_dev_offloads(struct ena_com_dev_get_features_ctx *feat,
 {
 	netdev_features_t dev_features = 0;
 
-	/* Set offload features */
+	 
 	if (feat->offload.tx &
 		ENA_ADMIN_FEATURE_OFFLOAD_DESC_TX_L4_IPV4_CSUM_PART_MASK)
 		dev_features |= NETIF_F_IP_CSUM;
@@ -4283,7 +4091,7 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
 {
 	struct net_device *netdev = adapter->netdev;
 
-	/* Copy mac address */
+	 
 	if (!is_valid_ether_addr(feat->dev_attr.mac_addr)) {
 		eth_hw_addr_random(netdev);
 		ether_addr_copy(adapter->mac_addr, netdev->dev_addr);
@@ -4292,7 +4100,7 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
 		eth_hw_addr_set(netdev, adapter->mac_addr);
 	}
 
-	/* Set offload features */
+	 
 	ena_set_dev_offloads(feat, netdev);
 
 	adapter->max_mtu = feat->dev_attr.max_mtu;
@@ -4352,16 +4160,7 @@ static void ena_release_bars(struct ena_com_dev *ena_dev, struct pci_dev *pdev)
 	pci_release_selected_regions(pdev, release_bars);
 }
 
-/* ena_probe - Device Initialization Routine
- * @pdev: PCI device information struct
- * @ent: entry in ena_pci_tbl
- *
- * Returns 0 on success, negative on failure
- *
- * ena_probe initializes an adapter identified by a pci_dev structure.
- * The OS initialization, configuring of the adapter private structure,
- * and a hardware reset occur.
- */
+ 
 static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct ena_com_dev_get_features_ctx get_feat_ctx;
@@ -4448,9 +4247,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_netdev_destroy;
 	}
 
-	/* Initial TX and RX interrupt delay. Assumes 1 usec granularity.
-	 * Updated during device initialization with the real granularity
-	 */
+	 
 	ena_dev->intr_moder_tx_interval = ENA_INTR_INITIAL_TX_INTERVAL_USECS;
 	ena_dev->intr_moder_rx_interval = ENA_INTR_INITIAL_RX_INTERVAL_USECS;
 	ena_dev->intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
@@ -4557,7 +4354,7 @@ err_rss:
 	ena_com_rss_destroy(ena_dev);
 err_free_msix:
 	ena_com_dev_reset(ena_dev, ENA_REGS_RESET_INIT_ERR);
-	/* stop submitting admin commands on a device that was reset */
+	 
 	ena_com_set_admin_running_state(ena_dev, false);
 	ena_free_mgmnt_irq(adapter);
 	ena_disable_msix(adapter);
@@ -4577,16 +4374,9 @@ err_disable_device:
 	return rc;
 }
 
-/*****************************************************************************/
+ 
 
-/* __ena_shutoff - Helper used in both PCI remove/shutdown routines
- * @pdev: PCI device information struct
- * @shutdown: Is it a shutdown operation? If false, means it is a removal
- *
- * __ena_shutoff is a helper routine that does the real work on shutdown and
- * removal paths; the difference between those paths is with regards to whether
- * dettach or unregister the netdevice.
- */
+ 
 static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
 {
 	struct ena_adapter *adapter = pci_get_drvdata(pdev);
@@ -4601,15 +4391,13 @@ static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
 		free_irq_cpu_rmap(netdev->rx_cpu_rmap);
 		netdev->rx_cpu_rmap = NULL;
 	}
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 
-	/* Make sure timer and reset routine won't be called after
-	 * freeing device resources.
-	 */
+	 
 	del_timer_sync(&adapter->timer_service);
 	cancel_work_sync(&adapter->reset_task);
 
-	rtnl_lock(); /* lock released inside the below if-else block */
+	rtnl_lock();  
 	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
 	ena_destroy_device(adapter, true);
 
@@ -4636,33 +4424,21 @@ static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
 	vfree(ena_dev);
 }
 
-/* ena_remove - Device Removal Routine
- * @pdev: PCI device information struct
- *
- * ena_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.
- */
+ 
 
 static void ena_remove(struct pci_dev *pdev)
 {
 	__ena_shutoff(pdev, false);
 }
 
-/* ena_shutdown - Device Shutdown Routine
- * @pdev: PCI device information struct
- *
- * ena_shutdown is called by the PCI subsystem to alert the driver that
- * a shutdown/reboot (or kexec) is happening and device must be disabled.
- */
+ 
 
 static void ena_shutdown(struct pci_dev *pdev)
 {
 	__ena_shutoff(pdev, true);
 }
 
-/* ena_suspend - PM suspend callback
- * @dev_d: Device information struct
- */
+ 
 static int __maybe_unused ena_suspend(struct device *dev_d)
 {
 	struct pci_dev *pdev = to_pci_dev(dev_d);
@@ -4681,9 +4457,7 @@ static int __maybe_unused ena_suspend(struct device *dev_d)
 	return 0;
 }
 
-/* ena_resume - PM resume callback
- * @dev_d: Device information struct
- */
+ 
 static int __maybe_unused ena_resume(struct device *dev_d)
 {
 	struct ena_adapter *adapter = dev_get_drvdata(dev_d);
@@ -4736,12 +4510,8 @@ static void __exit ena_cleanup(void)
 	}
 }
 
-/******************************************************************************
- ******************************** AENQ Handlers *******************************
- *****************************************************************************/
-/* ena_update_on_link_change:
- * Notify the network interface about the change in link status
- */
+ 
+ 
 static void ena_update_on_link_change(void *adapter_data,
 				      struct ena_admin_aenq_entry *aenq_e)
 {
@@ -4777,9 +4547,7 @@ static void ena_keep_alive_wd(void *adapter_data,
 	tx_drops = ((u64)desc->tx_drops_high << 32) | desc->tx_drops_low;
 
 	u64_stats_update_begin(&adapter->syncp);
-	/* These stats are accumulated by the device, so the counters indicate
-	 * all drops since last reset.
-	 */
+	 
 	adapter->dev_stats.rx_drops = rx_drops;
 	adapter->dev_stats.tx_drops = tx_drops;
 	u64_stats_update_end(&adapter->syncp);
@@ -4809,7 +4577,7 @@ static void ena_notification(void *adapter_data,
 	}
 }
 
-/* This handler will called for unknown event group or unimplemented handlers*/
+ 
 static void unimplemented_aenq_handler(void *data,
 				       struct ena_admin_aenq_entry *aenq_e)
 {

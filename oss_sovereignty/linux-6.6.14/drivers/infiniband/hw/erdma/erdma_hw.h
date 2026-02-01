@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ 
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+ 
+ 
+ 
 
 #ifndef __ERDMA_HW_H__
 #define __ERDMA_HW_H__
@@ -10,7 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 
-/* PCIe device related definition. */
+ 
 #define PCI_VENDOR_ID_ALIBABA 0x1ded
 
 #define ERDMA_PCI_WIDTH 64
@@ -19,11 +19,11 @@
 
 #define ERDMA_BAR_MASK (BIT(ERDMA_FUNC_BAR) | BIT(ERDMA_MISX_BAR))
 
-/* MSI-X related. */
+ 
 #define ERDMA_NUM_MSIX_VEC 32U
 #define ERDMA_MSIX_VECTOR_CMDQ 0
 
-/* PCIe Bar0 Registers. */
+ 
 #define ERDMA_REGS_VERSION_REG 0x0
 #define ERDMA_REGS_DEV_CTRL_REG 0x10
 #define ERDMA_REGS_DEV_ST_REG 0x14
@@ -61,15 +61,15 @@
 #define ERDMA_CMDQ_SQDB_REG 0x200
 #define ERDMA_CMDQ_CQDB_REG 0x300
 
-/* DEV_CTRL_REG details. */
+ 
 #define ERDMA_REG_DEV_CTRL_RESET_MASK 0x00000001
 #define ERDMA_REG_DEV_CTRL_INIT_MASK 0x00000002
 
-/* DEV_ST_REG details. */
+ 
 #define ERDMA_REG_DEV_ST_RESET_DONE_MASK 0x00000001U
 #define ERDMA_REG_DEV_ST_INIT_DONE_MASK 0x00000002U
 
-/* eRDMA PCIe DBs definition. */
+ 
 #define ERDMA_BAR_DB_SPACE_BASE 4096
 
 #define ERDMA_BAR_SQDB_SPACE_OFFSET ERDMA_BAR_DB_SPACE_BASE
@@ -84,7 +84,7 @@
 
 #define ERDMA_SDB_SHARED_PAGE_INDEX 95
 
-/* Doorbell related. */
+ 
 #define ERDMA_DB_SIZE 8
 
 #define ERDMA_CQDB_IDX_MASK GENMASK_ULL(63, 56)
@@ -99,11 +99,11 @@
 
 #define ERDMA_PAGE_SIZE_SUPPORT 0x7FFFF000
 
-/* Hardware page size definition */
+ 
 #define ERDMA_HW_PAGE_SHIFT 12
 #define ERDMA_HW_PAGE_SIZE 4096
 
-/* WQE related. */
+ 
 #define EQE_SIZE 16
 #define EQE_SHIFT 4
 #define RQE_SIZE 32
@@ -119,11 +119,11 @@
 #define ERDMA_MAX_SQE_SIZE 128
 #define ERDMA_MAX_WQEBB_PER_SQE 4
 
-/* CMDQ related. */
+ 
 #define ERDMA_CMDQ_MAX_OUTSTANDING 128
 #define ERDMA_CMDQ_SQE_SIZE 128
 
-/* cmdq sub module definition. */
+ 
 enum CMDQ_WQE_SUB_MOD {
 	CMDQ_SUBMOD_RDMA = 0,
 	CMDQ_SUBMOD_COMMON = 1
@@ -151,7 +151,7 @@ enum CMDQ_COMMON_OPCODE {
 	CMDQ_OPCODE_FREE_DB = 9,
 };
 
-/* cmdq-SQE HDR */
+ 
 #define ERDMA_CMD_HDR_WQEBB_CNT_MASK GENMASK_ULL(54, 52)
 #define ERDMA_CMD_HDR_CONTEXT_COOKIE_MASK GENMASK_ULL(47, 32)
 #define ERDMA_CMD_HDR_SUB_MOD_MASK GENMASK_ULL(25, 24)
@@ -186,7 +186,7 @@ struct erdma_cmdq_destroy_eq_req {
 	u8 qtype;
 };
 
-/* config device cfg */
+ 
 #define ERDMA_CMD_CONFIG_DEVICE_PS_EN_MASK BIT(31)
 #define ERDMA_CMD_CONFIG_DEVICE_PGSHIFT_MASK GENMASK(4, 0)
 
@@ -201,7 +201,7 @@ struct erdma_cmdq_config_mtu_req {
 	u32 mtu;
 };
 
-/* ext db requests(alloc and free) cfg */
+ 
 #define ERDMA_CMD_EXT_DB_CQ_EN_MASK BIT(2)
 #define ERDMA_CMD_EXT_DB_RQ_EN_MASK BIT(1)
 #define ERDMA_CMD_EXT_DB_SQ_EN_MASK BIT(0)
@@ -216,23 +216,23 @@ struct erdma_cmdq_ext_db_req {
 	u32 rsvd1[3];
 };
 
-/* alloc db response qword 0 definition */
+ 
 #define ERDMA_CMD_ALLOC_DB_RESP_RDB_MASK GENMASK_ULL(63, 48)
 #define ERDMA_CMD_ALLOC_DB_RESP_CDB_MASK GENMASK_ULL(47, 32)
 #define ERDMA_CMD_ALLOC_DB_RESP_SDB_MASK GENMASK_ULL(15, 0)
 
-/* create_cq cfg0 */
+ 
 #define ERDMA_CMD_CREATE_CQ_DEPTH_MASK GENMASK(31, 24)
 #define ERDMA_CMD_CREATE_CQ_PAGESIZE_MASK GENMASK(23, 20)
 #define ERDMA_CMD_CREATE_CQ_CQN_MASK GENMASK(19, 0)
 
-/* create_cq cfg1 */
+ 
 #define ERDMA_CMD_CREATE_CQ_MTT_CNT_MASK GENMASK(31, 16)
 #define ERDMA_CMD_CREATE_CQ_MTT_LEVEL_MASK BIT(15)
 #define ERDMA_CMD_CREATE_CQ_MTT_DB_CFG_MASK BIT(11)
 #define ERDMA_CMD_CREATE_CQ_EQN_MASK GENMASK(9, 0)
 
-/* create_cq cfg2 */
+ 
 #define ERDMA_CMD_CREATE_CQ_DB_CFG_MASK GENMASK(15, 0)
 
 struct erdma_cmdq_create_cq_req {
@@ -246,18 +246,18 @@ struct erdma_cmdq_create_cq_req {
 	u32 cfg2;
 };
 
-/* regmr/deregmr cfg0 */
+ 
 #define ERDMA_CMD_MR_VALID_MASK BIT(31)
 #define ERDMA_CMD_MR_VERSION_MASK GENMASK(30, 28)
 #define ERDMA_CMD_MR_KEY_MASK GENMASK(27, 20)
 #define ERDMA_CMD_MR_MPT_IDX_MASK GENMASK(19, 0)
 
-/* regmr cfg1 */
+ 
 #define ERDMA_CMD_REGMR_PD_MASK GENMASK(31, 12)
 #define ERDMA_CMD_REGMR_TYPE_MASK GENMASK(7, 6)
 #define ERDMA_CMD_REGMR_RIGHT_MASK GENMASK(5, 1)
 
-/* regmr cfg2 */
+ 
 #define ERDMA_CMD_REGMR_PAGESIZE_MASK GENMASK(31, 27)
 #define ERDMA_CMD_REGMR_MTT_PAGESIZE_MASK GENMASK(26, 24)
 #define ERDMA_CMD_REGMR_MTT_LEVEL_MASK GENMASK(21, 20)
@@ -285,7 +285,7 @@ struct erdma_cmdq_dereg_mr_req {
 	u32 cfg;
 };
 
-/* modify qp cfg */
+ 
 #define ERDMA_CMD_MODIFY_QP_STATE_MASK GENMASK(31, 24)
 #define ERDMA_CMD_MODIFY_QP_CC_MASK GENMASK(23, 20)
 #define ERDMA_CMD_MODIFY_QP_QPN_MASK GENMASK(19, 0)
@@ -302,25 +302,25 @@ struct erdma_cmdq_modify_qp_req {
 	u32 recv_nxt;
 };
 
-/* create qp cfg0 */
+ 
 #define ERDMA_CMD_CREATE_QP_SQ_DEPTH_MASK GENMASK(31, 20)
 #define ERDMA_CMD_CREATE_QP_QPN_MASK GENMASK(19, 0)
 
-/* create qp cfg1 */
+ 
 #define ERDMA_CMD_CREATE_QP_RQ_DEPTH_MASK GENMASK(31, 20)
 #define ERDMA_CMD_CREATE_QP_PD_MASK GENMASK(19, 0)
 
-/* create qp cqn_mtt_cfg */
+ 
 #define ERDMA_CMD_CREATE_QP_PAGE_SIZE_MASK GENMASK(31, 28)
 #define ERDMA_CMD_CREATE_QP_DB_CFG_MASK BIT(25)
 #define ERDMA_CMD_CREATE_QP_CQN_MASK GENMASK(23, 0)
 
-/* create qp mtt_cfg */
+ 
 #define ERDMA_CMD_CREATE_QP_PAGE_OFFSET_MASK GENMASK(31, 12)
 #define ERDMA_CMD_CREATE_QP_MTT_CNT_MASK GENMASK(11, 1)
 #define ERDMA_CMD_CREATE_QP_MTT_LEVEL_MASK BIT(0)
 
-/* create qp db cfg */
+ 
 #define ERDMA_CMD_CREATE_QP_SQDB_CFG_MASK GENMASK(31, 16)
 #define ERDMA_CMD_CREATE_QP_RQDB_CFG_MASK GENMASK(15, 0)
 
@@ -357,13 +357,13 @@ struct erdma_cmdq_reflush_req {
 	u32 rq_pi;
 };
 
-/* cap qword 0 definition */
+ 
 #define ERDMA_CMD_DEV_CAP_MAX_CQE_MASK GENMASK_ULL(47, 40)
 #define ERDMA_CMD_DEV_CAP_FLAGS_MASK GENMASK_ULL(31, 24)
 #define ERDMA_CMD_DEV_CAP_MAX_RECV_WR_MASK GENMASK_ULL(23, 16)
 #define ERDMA_CMD_DEV_CAP_MAX_MR_SIZE_MASK GENMASK_ULL(7, 0)
 
-/* cap qword 1 definition */
+ 
 #define ERDMA_CMD_DEV_CAP_DMA_LOCAL_KEY_MASK GENMASK_ULL(63, 32)
 #define ERDMA_CMD_DEV_CAP_DEFAULT_CC_MASK GENMASK_ULL(31, 28)
 #define ERDMA_CMD_DEV_CAP_QBLOCK_MASK GENMASK_ULL(27, 16)
@@ -379,7 +379,7 @@ enum {
 
 #define ERDMA_CMD_INFO0_FW_VER_MASK GENMASK_ULL(31, 0)
 
-/* CQE hdr */
+ 
 #define ERDMA_CQE_HDR_OWNER_MASK BIT(31)
 #define ERDMA_CQE_HDR_OPCODE_MASK GENMASK(23, 16)
 #define ERDMA_CQE_HDR_QTYPE_MASK GENMASK(15, 8)
@@ -407,7 +407,7 @@ struct erdma_sge {
 	__le32 key;
 };
 
-/* Receive Queue Element */
+ 
 struct erdma_rqe {
 	__le16 qe_idx;
 	__le16 rsvd0;
@@ -419,7 +419,7 @@ struct erdma_rqe {
 	__le32 stag;
 };
 
-/* SQE */
+ 
 #define ERDMA_SQE_HDR_SGL_LEN_MASK GENMASK_ULL(63, 56)
 #define ERDMA_SQE_HDR_WQEBB_CNT_MASK GENMASK_ULL(54, 52)
 #define ERDMA_SQE_HDR_QPN_MASK GENMASK_ULL(51, 32)
@@ -431,7 +431,7 @@ struct erdma_rqe {
 #define ERDMA_SQE_HDR_CE_MASK BIT_ULL(22)
 #define ERDMA_SQE_HDR_WQEBB_INDEX_MASK GENMASK_ULL(15, 0)
 
-/* REG MR attrs */
+ 
 #define ERDMA_SQE_MR_ACCESS_MASK GENMASK(5, 1)
 #define ERDMA_SQE_MR_MTT_TYPE_MASK GENMASK(7, 6)
 #define ERDMA_SQE_MR_MTT_CNT_MASK GENMASK(31, 12)
@@ -490,16 +490,16 @@ struct erdma_reg_mr_sqe {
 	__le32 rsvd;
 };
 
-/* EQ related. */
+ 
 #define ERDMA_DEFAULT_EQ_DEPTH 4096
 
-/* ceqe */
+ 
 #define ERDMA_CEQE_HDR_DB_MASK BIT_ULL(63)
 #define ERDMA_CEQE_HDR_PI_MASK GENMASK_ULL(55, 32)
 #define ERDMA_CEQE_HDR_O_MASK BIT_ULL(31)
 #define ERDMA_CEQE_HDR_CQN_MASK GENMASK_ULL(19, 0)
 
-/* aeqe */
+ 
 #define ERDMA_AEQE_HDR_O_MASK BIT(31)
 #define ERDMA_AEQE_HDR_TYPE_MASK GENMASK(23, 16)
 #define ERDMA_AEQE_HDR_SUBTYPE_MASK GENMASK(7, 0)

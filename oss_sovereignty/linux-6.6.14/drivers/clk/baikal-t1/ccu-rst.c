@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 CCU Resets interface driver
- */
+
+ 
 
 #define pr_fmt(fmt) "bt1-ccu-rst: " fmt
 
@@ -62,10 +55,7 @@ struct ccu_rst_info {
 	unsigned int mask;
 };
 
-/*
- * Each AXI-bus clock divider is equipped with the corresponding clock-consumer
- * domain reset (it's self-deasserted reset control).
- */
+ 
 static const struct ccu_rst_info axi_rst_info[] = {
 	[CCU_AXI_MAIN_RST] = CCU_RST_TRIG(CCU_AXI_MAIN_BASE, 1),
 	[CCU_AXI_DDR_RST] = CCU_RST_TRIG(CCU_AXI_DDR_BASE, 1),
@@ -80,13 +70,7 @@ static const struct ccu_rst_info axi_rst_info[] = {
 	[CCU_AXI_SRAM_RST] = CCU_RST_TRIG(CCU_AXI_SRAM_BASE, 1),
 };
 
-/*
- * SATA reference clock domain and APB-bus domain are connected with the
- * sefl-deasserted reset control, which can be activated via the corresponding
- * clock divider register. DDR and PCIe sub-domains can be reset with directly
- * controlled reset signals. Resetting the DDR controller though won't end up
- * well while the Linux kernel is working.
- */
+ 
 static const struct ccu_rst_info sys_rst_info[] = {
 	[CCU_SYS_SATA_REF_RST] = CCU_RST_TRIG(CCU_SYS_SATA_REF_BASE, 1),
 	[CCU_SYS_APB_RST] = CCU_RST_TRIG(CCU_SYS_APB_BASE, 1),
@@ -111,7 +95,7 @@ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
 
 	regmap_update_bits(rst->sys_regs, info->base, info->mask, info->mask);
 
-	/* The next delay must be enough to cover all the resets. */
+	 
 	udelay(CCU_RST_DELAY_US);
 
 	return 0;

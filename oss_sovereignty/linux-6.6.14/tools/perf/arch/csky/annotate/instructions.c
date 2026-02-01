@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <linux/compiler.h>
 
@@ -8,7 +8,7 @@ static struct ins_ops *csky__associate_ins_ops(struct arch *arch,
 {
 	struct ins_ops *ops = NULL;
 
-	/* catch all kind of jumps */
+	 
 	if (!strcmp(name, "bt") ||
 	    !strcmp(name, "bf") ||
 	    !strcmp(name, "bez") ||
@@ -23,13 +23,13 @@ static struct ins_ops *csky__associate_ins_ops(struct arch *arch,
 	    !strcmp(name, "jmp"))
 		ops = &jump_ops;
 
-	/* catch function call */
+	 
 	if (!strcmp(name, "bsr") ||
 	    !strcmp(name, "jsri") ||
 	    !strcmp(name, "jsr"))
 		ops = &call_ops;
 
-	/* catch function return */
+	 
 	if (!strcmp(name, "rts"))
 		ops = &ret_ops;
 

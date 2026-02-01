@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -85,7 +71,7 @@ static int ath9k_htc_wait_for_target(struct ath9k_htc_priv *priv)
 		return 0;
 	}
 
-	/* Firmware can take up to 50ms to get ready, to be safe use 1 second */
+	 
 	time_left = wait_for_completion_timeout(&priv->htc->target_wait, HZ);
 	if (!time_left) {
 		dev_err(priv->dev, "ath9k_htc: Target is unresponsive\n");
@@ -142,65 +128,61 @@ static int ath9k_init_htc_services(struct ath9k_htc_priv *priv, u16 devid,
 {
 	int ret;
 
-	/* WMI CMD*/
+	 
 	ret = ath9k_wmi_connect(priv->htc, priv->wmi, &priv->wmi_cmd_ep);
 	if (ret)
 		goto err;
 
-	/* Beacon */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_BEACON_SVC, ath9k_htc_beaconep,
 				    &priv->beacon_ep);
 	if (ret)
 		goto err;
 
-	/* CAB */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_CAB_SVC, ath9k_htc_txep,
 				    &priv->cab_ep);
 	if (ret)
 		goto err;
 
 
-	/* UAPSD */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_UAPSD_SVC, ath9k_htc_txep,
 				    &priv->uapsd_ep);
 	if (ret)
 		goto err;
 
-	/* MGMT */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_MGMT_SVC, ath9k_htc_txep,
 				    &priv->mgmt_ep);
 	if (ret)
 		goto err;
 
-	/* DATA BE */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_DATA_BE_SVC, ath9k_htc_txep,
 				    &priv->data_be_ep);
 	if (ret)
 		goto err;
 
-	/* DATA BK */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_DATA_BK_SVC, ath9k_htc_txep,
 				    &priv->data_bk_ep);
 	if (ret)
 		goto err;
 
-	/* DATA VI */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_DATA_VI_SVC, ath9k_htc_txep,
 				    &priv->data_vi_ep);
 	if (ret)
 		goto err;
 
-	/* DATA VO */
+	 
 	ret = ath9k_htc_connect_svc(priv, WMI_DATA_VO_SVC, ath9k_htc_txep,
 				    &priv->data_vo_ep);
 	if (ret)
 		goto err;
 
-	/*
-	 * Setup required credits before initializing HTC.
-	 * This is a bit hacky, but, since queuing is done in
-	 * the HIF layer, shouldn't matter much.
-	 */
+	 
 
 	if (IS_AR7010_DEVICE(drv_info))
 		priv->htc->credits = 45;
@@ -328,7 +310,7 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 
 	mutex_lock(&priv->wmi->multi_write_mutex);
 
-	/* Store the register/value */
+	 
 	priv->wmi->multi_write[priv->wmi->multi_write_idx].reg =
 		cpu_to_be32(reg_offset);
 	priv->wmi->multi_write[priv->wmi->multi_write_idx].val =
@@ -336,7 +318,7 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 
 	priv->wmi->multi_write_idx++;
 
-	/* If the buffer is full, send it out. */
+	 
 	if (priv->wmi->multi_write_idx == MAX_CMD_NUMBER)
 		ath9k_regwrite_multi(common);
 
@@ -391,7 +373,7 @@ static void ath9k_reg_rmw_buffer(void *hw_priv,
 
 	mutex_lock(&priv->wmi->multi_rmw_mutex);
 
-	/* Store the register/value */
+	 
 	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].reg =
 		cpu_to_be32(reg_offset);
 	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].set =
@@ -401,7 +383,7 @@ static void ath9k_reg_rmw_buffer(void *hw_priv,
 
 	priv->wmi->multi_rmw_idx++;
 
-	/* If the buffer is full, send it out. */
+	 
 	if (priv->wmi->multi_rmw_idx == MAX_RMW_CMD_NUMBER) {
 		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
 			  (u8 *) &priv->wmi->multi_rmw,
@@ -652,12 +634,9 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	INIT_WORK(&priv->fatal_work, ath9k_fatal_work);
 	timer_setup(&priv->tx.cleanup_timer, ath9k_htc_tx_cleanup_timer, 0);
 
-	/*
-	 * Cache line size is used to size and align various
-	 * structures used to communicate with the hardware.
-	 */
+	 
 	ath_read_cachesize(common, &csz);
-	common->cachelsz = csz << 2; /* convert to bytes */
+	common->cachelsz = csz << 2;  
 
 	ret = ath9k_hw_init(ah);
 	if (ret) {
@@ -756,7 +735,7 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 	hw->vif_data_size = sizeof(struct ath9k_htc_vif);
 	hw->sta_data_size = sizeof(struct ath9k_htc_sta);
 
-	/* tx_frame_hdr is larger than tx_mgmt_hdr anyway */
+	 
 	hw->extra_tx_headroom = sizeof(struct tx_frame_hdr) +
 		sizeof(struct htc_frame_hdr) + 4;
 
@@ -805,10 +784,7 @@ static int ath9k_init_firmware_version(struct ath9k_htc_priv *priv)
 		 priv->fw_version_major,
 		 priv->fw_version_minor);
 
-	/*
-	 * Check if the available FW matches the driver's
-	 * required version.
-	 */
+	 
 	if (priv->fw_version_major != MAJOR_VERSION_REQ ||
 	    priv->fw_version_minor < MINOR_VERSION_REQ) {
 		dev_err(priv->dev, "ath9k_htc: Please upgrade to FW version %d.%d\n",
@@ -835,7 +811,7 @@ static int ath9k_init_device(struct ath9k_htc_priv *priv,
 	struct ath_regulatory *reg;
 	char hw_name[64];
 
-	/* Bring up device */
+	 
 	error = ath9k_init_priv(priv, devid, product, drv_info);
 	if (error != 0)
 		goto err_init;
@@ -848,7 +824,7 @@ static int ath9k_init_device(struct ath9k_htc_priv *priv,
 	if (error != 0)
 		goto err_fw;
 
-	/* Initialize regulatory */
+	 
 	error = ath_regd_init(&common->regulatory, priv->hw->wiphy,
 			      ath9k_reg_notifier);
 	if (error)
@@ -856,30 +832,30 @@ static int ath9k_init_device(struct ath9k_htc_priv *priv,
 
 	reg = &common->regulatory;
 
-	/* Setup TX */
+	 
 	error = ath9k_tx_init(priv);
 	if (error != 0)
 		goto err_tx;
 
-	/* Setup RX */
+	 
 	error = ath9k_rx_init(priv);
 	if (error != 0)
 		goto err_rx;
 
 	ath9k_hw_disable(priv->ah);
 #ifdef CONFIG_MAC80211_LEDS
-	/* must be initialized before ieee80211_register_hw */
+	 
 	priv->led_cdev.default_trigger = ieee80211_create_tpt_led_trigger(priv->hw,
 		IEEE80211_TPT_LEDTRIG_FL_RADIO, ath9k_htc_tpt_blink,
 		ARRAY_SIZE(ath9k_htc_tpt_blink));
 #endif
 
-	/* Register with mac80211 */
+	 
 	error = ieee80211_register_hw(hw);
 	if (error)
 		goto err_register;
 
-	/* Handle world regulatory */
+	 
 	if (!ath_is_world_regd(reg)) {
 		error = regulatory_hint(hw->wiphy, reg->alpha2);
 		if (error)
@@ -919,9 +895,9 @@ err_register:
 err_rx:
 	ath9k_tx_cleanup(priv);
 err_tx:
-	/* Nothing */
+	 
 err_regd:
-	/* Nothing */
+	 
 err_fw:
 	ath9k_deinit_priv(priv);
 err_init:
@@ -982,7 +958,7 @@ void ath9k_htc_disconnect_device(struct htc_target *htc_handle, bool hotunplug)
 {
 	if (htc_handle->drv_priv) {
 
-		/* Check if the device has been yanked out. */
+		 
 		if (hotunplug)
 			htc_handle->drv_priv->ah->ah_flags |= AH_UNPLUGGED;
 

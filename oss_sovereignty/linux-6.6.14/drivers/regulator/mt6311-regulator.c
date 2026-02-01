@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2015 MediaTek Inc.
-// Author: Henry Chen <henryc.chen@mediatek.com>
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -23,7 +23,7 @@ static const struct regmap_config mt6311_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/* Default limits measured in millivolts and milliamps */
+ 
 #define MT6311_MIN_UV		600000
 #define MT6311_MAX_UV		1393750
 #define MT6311_STEP_UV		6250
@@ -81,9 +81,7 @@ static const struct regulator_desc mt6311_regulators[] = {
 	MT6311_LDO(VBIASN),
 };
 
-/*
- * I2C driver interface functions
- */
+ 
 static int mt6311_i2c_probe(struct i2c_client *i2c)
 {
 	struct regulator_config config = { };

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Driver for Cirrus Logic CS35L56 smart amp
-//
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/completion.h>
 #include <linux/debugfs.h>
@@ -35,7 +35,7 @@ static int cs35l56_dsp_event(struct snd_soc_dapm_widget *w,
 
 static void cs35l56_wait_dsp_ready(struct cs35l56_private *cs35l56)
 {
-	/* Wait for patching to complete */
+	 
 	flush_work(&cs35l56->dsp_work);
 }
 
@@ -160,11 +160,11 @@ static int cs35l56_play_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Don't wait for ACK, we check in POST_PMU that it completed */
+		 
 		return regmap_write(cs35l56->base.regmap, CS35L56_DSP_VIRTUAL1_MBOX_1,
 				    CS35L56_MBOX_CMD_AUDIO_PLAY);
 	case SND_SOC_DAPM_POST_PMU:
-		/* Wait for firmware to enter PS0 power state */
+		 
 		ret = regmap_read_poll_timeout(cs35l56->base.regmap,
 					       CS35L56_TRANSDUCER_ACTUAL_PS,
 					       val, (val == CS35L56_PS0),
@@ -349,7 +349,7 @@ static int cs35l56_asp_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int f
 			   CS35L56_ASP_BCLK_INV_MASK | CS35L56_ASP_FSYNC_INV_MASK,
 			   val);
 
-	/* Hi-Z DOUT in unused slots and when all TX are disabled */
+	 
 	regmap_update_bits(cs35l56->base.regmap, CS35L56_ASP1_CONTROL3,
 			   CS35L56_ASP1_DOUT_HIZ_CTRL_MASK,
 			   CS35L56_ASP_UNUSED_HIZ_OFF_HIZ);
@@ -362,7 +362,7 @@ static unsigned int cs35l56_make_tdm_config_word(unsigned int reg_val, unsigned 
 	unsigned int channel_shift;
 	int bit_num;
 
-	/* Enable consecutive TX1..TXn for each of the slots set in mask */
+	 
 	channel_shift = 0;
 	for_each_set_bit(bit_num, &mask, 32) {
 		reg_val &= ~(0x3f << channel_shift);
@@ -390,7 +390,7 @@ static int cs35l56_asp_dai_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx
 		return -EINVAL;
 	}
 
-	/* More than 32 slots would give an unsupportable BCLK frequency */
+	 
 	if (slots > 32) {
 		dev_err(cs35l56->base.dev, "tdm invalid slot count %d\n", slots);
 		return -EINVAL;
@@ -399,14 +399,14 @@ static int cs35l56_asp_dai_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx
 	cs35l56->asp_slot_width = (u8)slot_width;
 	cs35l56->asp_slot_count = (u8)slots;
 
-	// Note: rx/tx is from point of view of the CPU end
+	
 	if (tx_mask == 0)
-		tx_mask = 0x3;	// ASPRX1/RX2 in slots 0 and 1
+		tx_mask = 0x3;	
 
 	if (rx_mask == 0)
-		rx_mask = 0xf;	// ASPTX1..TX4 in slots 0..3
+		rx_mask = 0xf;	
 
-	/* Default unused slots to 63 */
+	 
 	regmap_write(cs35l56->base.regmap, CS35L56_ASP1_FRAME_CONTROL1,
 		     cs35l56_make_tdm_config_word(0x3f3f3f3f, rx_mask));
 	regmap_write(cs35l56->base.regmap, CS35L56_ASP1_FRAME_CONTROL5,
@@ -443,7 +443,7 @@ static int cs35l56_asp_dai_hw_params(struct snd_pcm_substream *substream,
 		if (slots == 0) {
 			slots = params_channels(params);
 
-			/* I2S always has an even number of slots */
+			 
 			if (!cs35l56->tdm_mode)
 				slots = round_up(slots, 2);
 		}
@@ -518,7 +518,7 @@ static int cs35l56_sdw_dai_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx
 {
 	struct cs35l56_private *cs35l56 = snd_soc_component_get_drvdata(dai->component);
 
-	/* rx/tx are from point of view of the CPU end so opposite to our rx/tx */
+	 
 	cs35l56->rx_mask = tx_mask;
 	cs35l56->tx_mask = rx_mask;
 
@@ -654,7 +654,7 @@ static void cs35l56_secure_patch(struct cs35l56_private *cs35l56)
 {
 	int ret;
 
-	/* Use wm_adsp to load and apply the firmware patch and coefficient files */
+	 
 	ret = wm_adsp_power_up(&cs35l56->dsp, true);
 	if (ret)
 		dev_dbg(cs35l56->base.dev, "%s: wm_adsp_power_up ret %d\n", __func__, ret);
@@ -675,11 +675,7 @@ static void cs35l56_patch(struct cs35l56_private *cs35l56)
 
 	firmware_missing &= CS35L56_FIRMWARE_MISSING;
 
-	/*
-	 * Disable SoundWire interrupts to prevent race with IRQ work.
-	 * Setting sdw_irq_no_unmask prevents the handler re-enabling
-	 * the SoundWire interrupt.
-	 */
+	 
 	if (cs35l56->sdw_peripheral) {
 		cs35l56->sdw_irq_no_unmask = true;
 		flush_work(&cs35l56->sdw_irq_work);
@@ -693,11 +689,7 @@ static void cs35l56_patch(struct cs35l56_private *cs35l56)
 	if (ret)
 		goto err;
 
-	/*
-	 * Use wm_adsp to load and apply the firmware patch and coefficient files,
-	 * but only if firmware is missing. If firmware is already patched just
-	 * power-up wm_adsp without downloading firmware.
-	 */
+	 
 	ret = wm_adsp_power_up(&cs35l56->dsp, !!firmware_missing);
 	if (ret) {
 		dev_dbg(cs35l56->base.dev, "%s: wm_adsp_power_up ret %d\n", __func__, ret);
@@ -712,11 +704,7 @@ static void cs35l56_patch(struct cs35l56_private *cs35l56)
 	cs35l56_system_reset(&cs35l56->base, !!cs35l56->sdw_peripheral);
 
 	if (cs35l56->sdw_peripheral) {
-		/*
-		 * The system-reset causes the CS35L56 to detach from the bus.
-		 * Wait for the manager to re-enumerate the CS35L56 and
-		 * cs35l56_init() to run again.
-		 */
+		 
 		if (!wait_for_completion_timeout(&cs35l56->init_completion,
 						 msecs_to_jiffies(5000))) {
 			dev_err(cs35l56->base.dev, "%s: init_completion timed out (SDW)\n",
@@ -734,7 +722,7 @@ static void cs35l56_patch(struct cs35l56_private *cs35l56)
 err_unlock:
 	mutex_unlock(&cs35l56->base.irq_lock);
 err:
-	/* Re-enable SoundWire interrupts */
+	 
 	if (cs35l56->sdw_peripheral) {
 		cs35l56->sdw_irq_no_unmask = false;
 		sdw_write_no_pm(cs35l56->sdw_peripheral, CS35L56_SDW_GEN_INT_MASK_1,
@@ -753,12 +741,7 @@ static void cs35l56_dsp_work(struct work_struct *work)
 
 	pm_runtime_get_sync(cs35l56->base.dev);
 
-	/*
-	 * When the device is running in secure mode the firmware files can
-	 * only contain insecure tunings and therefore we do not need to
-	 * shutdown the firmware to apply them and can use the lower cost
-	 * reinit sequence instead.
-	 */
+	 
 	if (cs35l56->base.secured)
 		cs35l56_secure_patch(cs35l56);
 	else
@@ -818,10 +801,7 @@ static int cs35l56_set_bias_level(struct snd_soc_component *component,
 
 	switch (level) {
 	case SND_SOC_BIAS_STANDBY:
-		/*
-		 * Wait for patching to complete when transitioning from
-		 * BIAS_OFF to BIAS_STANDBY
-		 */
+		 
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF)
 			cs35l56_wait_dsp_ready(cs35l56);
 
@@ -846,7 +826,7 @@ static const struct snd_soc_component_driver soc_component_dev_cs35l56 = {
 
 	.set_bias_level = cs35l56_set_bias_level,
 
-	.suspend_bias_off = 1, /* see cs35l56_system_resume() */
+	.suspend_bias_off = 1,  
 };
 
 static int __maybe_unused cs35l56_runtime_suspend_i2c_spi(struct device *dev)
@@ -872,12 +852,7 @@ int cs35l56_system_suspend(struct device *dev)
 	if (cs35l56->component)
 		flush_work(&cs35l56->dsp_work);
 
-	/*
-	 * The interrupt line is normally shared, but after we start suspending
-	 * we can't check if our device is the source of an interrupt, and can't
-	 * clear it. Prevent this race by temporarily disabling the parent irq
-	 * until we reach _no_irq.
-	 */
+	 
 	if (cs35l56->base.irq)
 		disable_irq(cs35l56->base.irq);
 
@@ -891,11 +866,7 @@ int cs35l56_system_suspend_late(struct device *dev)
 
 	dev_dbg(dev, "system_suspend_late\n");
 
-	/*
-	 * Assert RESET before removing supplies.
-	 * RESET is usually shared by all amps so it must not be asserted until
-	 * all driver instances have done their suspend() stage.
-	 */
+	 
 	if (cs35l56->base.reset_gpio) {
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
@@ -913,7 +884,7 @@ int cs35l56_system_suspend_no_irq(struct device *dev)
 
 	dev_dbg(dev, "system_suspend_no_irq\n");
 
-	/* Handlers are now disabled so the parent IRQ can safely be re-enabled. */
+	 
 	if (cs35l56->base.irq)
 		enable_irq(cs35l56->base.irq);
 
@@ -927,13 +898,7 @@ int cs35l56_system_resume_no_irq(struct device *dev)
 
 	dev_dbg(dev, "system_resume_no_irq\n");
 
-	/*
-	 * WAKE interrupts unmask if the CS35L56 hibernates, which can cause
-	 * spurious interrupts, and the interrupt line is normally shared.
-	 * We can't check if our device is the source of an interrupt, and can't
-	 * clear it, until it has fully resumed. Prevent this race by temporarily
-	 * disabling the parent irq until we complete resume().
-	 */
+	 
 	if (cs35l56->base.irq)
 		disable_irq(cs35l56->base.irq);
 
@@ -948,20 +913,20 @@ int cs35l56_system_resume_early(struct device *dev)
 
 	dev_dbg(dev, "system_resume_early\n");
 
-	/* Ensure a spec-compliant RESET pulse. */
+	 
 	if (cs35l56->base.reset_gpio) {
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
 	}
 
-	/* Enable supplies before releasing RESET. */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(cs35l56->supplies), cs35l56->supplies);
 	if (ret) {
 		dev_err(dev, "system_resume_early failed to enable supplies: %d\n", ret);
 		return ret;
 	}
 
-	/* Release shared RESET before drivers start resume(). */
+	 
 	gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 1);
 
 	return 0;
@@ -975,13 +940,10 @@ int cs35l56_system_resume(struct device *dev)
 
 	dev_dbg(dev, "system_resume\n");
 
-	/*
-	 * We might have done a hard reset or the CS35L56 was power-cycled
-	 * so wait for control port to be ready.
-	 */
+	 
 	cs35l56_wait_control_port_ready();
 
-	/* Undo pm_runtime_force_suspend() before re-enabling the irq */
+	 
 	ret = pm_runtime_force_resume(dev);
 	if (cs35l56->base.irq)
 		enable_irq(cs35l56->base.irq);
@@ -989,7 +951,7 @@ int cs35l56_system_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Firmware won't have been loaded if the component hasn't probed */
+	 
 	if (!cs35l56->component)
 		return 0;
 
@@ -1002,10 +964,7 @@ int cs35l56_system_resume(struct device *dev)
 	wm_adsp_power_down(&cs35l56->dsp);
 	queue_work(cs35l56->dsp_wq, &cs35l56->dsp_work);
 
-	/*
-	 * suspend_bias_off ensures we are now in BIAS_OFF so there will be
-	 * a BIAS_OFF->BIAS_STANDBY transition to complete dsp patching.
-	 */
+	 
 
 	return 0;
 }
@@ -1046,7 +1005,7 @@ static int cs35l56_get_firmware_uid(struct cs35l56_private *cs35l56)
 	int ret;
 
 	ret = device_property_read_string(dev, "cirrus,firmware-uid", &prop);
-	/* If bad sw node property, return 0 and fallback to legacy firmware path */
+	 
 	if (ret < 0)
 		return 0;
 
@@ -1074,15 +1033,12 @@ int cs35l56_common_probe(struct cs35l56_private *cs35l56)
 	if (ret != 0)
 		return dev_err_probe(cs35l56->base.dev, ret, "Failed to request supplies\n");
 
-	/* Reset could be controlled by the BIOS or shared by multiple amps */
+	 
 	cs35l56->base.reset_gpio = devm_gpiod_get_optional(cs35l56->base.dev, "reset",
 							   GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l56->base.reset_gpio)) {
 		ret = PTR_ERR(cs35l56->base.reset_gpio);
-		/*
-		 * If RESET is shared the first amp to probe will grab the reset
-		 * line and reset all the amps
-		 */
+		 
 		if (ret != -EBUSY)
 			return dev_err_probe(cs35l56->base.dev, ret, "Failed to get reset GPIO\n");
 
@@ -1095,7 +1051,7 @@ int cs35l56_common_probe(struct cs35l56_private *cs35l56)
 		return dev_err_probe(cs35l56->base.dev, ret, "Failed to enable supplies\n");
 
 	if (cs35l56->base.reset_gpio) {
-		/* ACPI can override GPIOD_OUT_LOW flag so force it to start low */
+		 
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 0);
 		cs35l56_wait_min_reset_pulse();
 		gpiod_set_value_cansleep(cs35l56->base.reset_gpio, 1);
@@ -1133,10 +1089,7 @@ int cs35l56_init(struct cs35l56_private *cs35l56)
 {
 	int ret;
 
-	/*
-	 * Check whether the actions associated with soft reset or one time
-	 * init need to be performed.
-	 */
+	 
 	if (cs35l56->soft_resetting)
 		goto post_soft_reset;
 
@@ -1152,7 +1105,7 @@ int cs35l56_init(struct cs35l56_private *cs35l56)
 	if (ret < 0)
 		return ret;
 
-	/* Populate the DSP information with the revision and security state */
+	 
 	cs35l56->dsp.part = devm_kasprintf(cs35l56->base.dev, GFP_KERNEL, "cs35l56%s-%02x",
 					   cs35l56->base.secured ? "s" : "", cs35l56->base.rev);
 	if (!cs35l56->dsp.part)
@@ -1163,7 +1116,7 @@ int cs35l56_init(struct cs35l56_private *cs35l56)
 		cs35l56->soft_resetting = true;
 		cs35l56_system_reset(&cs35l56->base, !!cs35l56->sdw_peripheral);
 		if (cs35l56->sdw_peripheral) {
-			/* Keep alive while we wait for re-enumeration */
+			 
 			pm_runtime_get_noresume(cs35l56->base.dev);
 			return 0;
 		}
@@ -1173,7 +1126,7 @@ post_soft_reset:
 	if (cs35l56->soft_resetting) {
 		cs35l56->soft_resetting = false;
 
-		/* Done re-enumerating after one-time init so release the keep-alive */
+		 
 		if (cs35l56->sdw_peripheral && !cs35l56->base.init_done)
 			pm_runtime_put_noidle(cs35l56->base.dev);
 
@@ -1185,7 +1138,7 @@ post_soft_reset:
 		dev_dbg(cs35l56->base.dev, "Firmware rebooted after soft reset\n");
 	}
 
-	/* Disable auto-hibernate so that runtime_pm has control */
+	 
 	ret = cs35l56_mbox_send(&cs35l56->base, CS35L56_MBOX_CMD_PREVENT_AUTO_HIBERNATE);
 	if (ret)
 		return ret;
@@ -1194,10 +1147,10 @@ post_soft_reset:
 	if (ret)
 		return ret;
 
-	/* Registers could be dirty after soft reset or SoundWire enumeration */
+	 
 	regcache_sync(cs35l56->base.regmap);
 
-	/* Set ASP1 DOUT to high-impedance when it is not transmitting audio data. */
+	 
 	ret = regmap_set_bits(cs35l56->base.regmap, CS35L56_ASP1_CONTROL3,
 			      CS35L56_ASP1_DOUT_HIZ_CTRL_MASK);
 	if (ret)
@@ -1214,10 +1167,7 @@ void cs35l56_remove(struct cs35l56_private *cs35l56)
 {
 	cs35l56->base.init_done = false;
 
-	/*
-	 * WAKE IRQs unmask if CS35L56 hibernates so free the handler to
-	 * prevent it racing with remove().
-	 */
+	 
 	if (cs35l56->base.irq)
 		devm_free_irq(cs35l56->base.dev, cs35l56->base.irq, &cs35l56->base);
 

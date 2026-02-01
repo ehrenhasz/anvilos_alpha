@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Probe module for 8250/16550-type Exar chips PCI serial ports.
- *
- *  Based on drivers/tty/serial/8250/8250_pci.c,
- *
- *  Copyright (C) 2017 Sudip Mukherjee, All Rights Reserved.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
 #include <linux/io.h>
@@ -54,56 +48,39 @@
 #define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
 
 #define UART_EXAR_INT0		0x80
-#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
-#define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
-#define UART_EXAR_DVID		0x8d	/* Device identification */
+#define UART_EXAR_8XMODE	0x88	 
+#define UART_EXAR_SLEEP		0x8b	 
+#define UART_EXAR_DVID		0x8d	 
 
-#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
-#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
-#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
-#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
-#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
-#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
-#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
+#define UART_EXAR_FCTR		0x08	 
+#define UART_FCTR_EXAR_IRDA	0x10	 
+#define UART_FCTR_EXAR_485	0x20	 
+#define UART_FCTR_EXAR_TRGA	0x00	 
+#define UART_FCTR_EXAR_TRGB	0x60	 
+#define UART_FCTR_EXAR_TRGC	0x80	 
+#define UART_FCTR_EXAR_TRGD	0xc0	 
 
-#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
-#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
+#define UART_EXAR_TXTRG		0x0a	 
+#define UART_EXAR_RXTRG		0x0b	 
 
-#define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
-#define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
-#define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
-#define UART_EXAR_MPIOINV_7_0	0x92	/* MPIOINV[7:0] */
-#define UART_EXAR_MPIOSEL_7_0	0x93	/* MPIOSEL[7:0] */
-#define UART_EXAR_MPIOOD_7_0	0x94	/* MPIOOD[7:0] */
-#define UART_EXAR_MPIOINT_15_8	0x95	/* MPIOINT[15:8] */
-#define UART_EXAR_MPIOLVL_15_8	0x96	/* MPIOLVL[15:8] */
-#define UART_EXAR_MPIO3T_15_8	0x97	/* MPIO3T[15:8] */
-#define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
-#define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
-#define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
+#define UART_EXAR_MPIOINT_7_0	0x8f	 
+#define UART_EXAR_MPIOLVL_7_0	0x90	 
+#define UART_EXAR_MPIO3T_7_0	0x91	 
+#define UART_EXAR_MPIOINV_7_0	0x92	 
+#define UART_EXAR_MPIOSEL_7_0	0x93	 
+#define UART_EXAR_MPIOOD_7_0	0x94	 
+#define UART_EXAR_MPIOINT_15_8	0x95	 
+#define UART_EXAR_MPIOLVL_15_8	0x96	 
+#define UART_EXAR_MPIO3T_15_8	0x97	 
+#define UART_EXAR_MPIOINV_15_8	0x98	 
+#define UART_EXAR_MPIOSEL_15_8	0x99	 
+#define UART_EXAR_MPIOOD_15_8	0x9a	 
 
 #define UART_EXAR_RS485_DLY(x)	((x) << 4)
 
-/*
- * IOT2040 MPIO wiring semantics:
- *
- * MPIO		Port	Function
- * ----		----	--------
- * 0		2 	Mode bit 0
- * 1		2	Mode bit 1
- * 2		2	Terminate bus
- * 3		-	<reserved>
- * 4		3	Mode bit 0
- * 5		3	Mode bit 1
- * 6		3	Terminate bus
- * 7		-	<reserved>
- * 8		2	Enable
- * 9		3	Enable
- * 10		-	Red LED
- * 11..15	-	<unused>
- */
+ 
 
-/* IOT2040 MPIOs 0..7 */
+ 
 #define IOT2040_UART_MODE_RS232		0x01
 #define IOT2040_UART_MODE_RS485		0x02
 #define IOT2040_UART_MODE_RS422		0x03
@@ -112,12 +89,12 @@
 #define IOT2040_UART1_MASK		0x0f
 #define IOT2040_UART2_SHIFT		4
 
-#define IOT2040_UARTS_DEFAULT_MODE	0x11	/* both RS232 */
-#define IOT2040_UARTS_GPIO_LO_MODE	0x88	/* reserved pins as input */
+#define IOT2040_UARTS_DEFAULT_MODE	0x11	 
+#define IOT2040_UARTS_GPIO_LO_MODE	0x88	 
 
-/* IOT2040 MPIOs 8..15 */
+ 
 #define IOT2040_UARTS_ENABLE		0x03
-#define IOT2040_UARTS_GPIO_HI_MODE	0xF8	/* enable & LED as outputs */
+#define IOT2040_UARTS_GPIO_HI_MODE	0xF8	 
 
 struct exar8250;
 
@@ -129,13 +106,7 @@ struct exar8250_platform {
 	void (*unregister_gpio)(struct uart_8250_port *);
 };
 
-/**
- * struct exar8250_board - board information
- * @num_ports: number of serial ports
- * @reg_shift: describes UART register mapping in PCI memory
- * @setup: quirk run at ->probe() stage
- * @exit: quirk run at ->remove() stage
- */
+ 
 struct exar8250_board {
 	unsigned int num_ports;
 	unsigned int reg_shift;
@@ -153,19 +124,11 @@ struct exar8250 {
 
 static void exar_pm(struct uart_port *port, unsigned int state, unsigned int old)
 {
-	/*
-	 * Exar UARTs have a SLEEP register that enables or disables each UART
-	 * to enter sleep mode separately. On the XR17V35x the register
-	 * is accessible to each UART at the UART_EXAR_SLEEP offset, but
-	 * the UART channel may only write to the corresponding bit.
-	 */
+	 
 	serial_port_out(port, UART_EXAR_SLEEP, state ? 0xff : 0);
 }
 
-/*
- * XR17V35x UARTs have an extra fractional divisor register (DLD)
- * Calculate divisor with extra 4-bit fractional portion
- */
+ 
 static unsigned int xr17v35x_get_divisor(struct uart_port *p, unsigned int baud,
 					 unsigned int *frac)
 {
@@ -182,25 +145,17 @@ static void xr17v35x_set_divisor(struct uart_port *p, unsigned int baud,
 {
 	serial8250_do_set_divisor(p, baud, quot, quot_frac);
 
-	/* Preserve bits not related to baudrate; DLD[7:4]. */
+	 
 	quot_frac |= serial_port_in(p, 0x2) & 0xf0;
 	serial_port_out(p, 0x2, quot_frac);
 }
 
 static int xr17v35x_startup(struct uart_port *port)
 {
-	/*
-	 * First enable access to IER [7:5], ISR [5:4], FCR [5:4],
-	 * MCR [7:5] and MSR [7:0]
-	 */
+	 
 	serial_port_out(port, UART_XR_EFR, UART_EFR_ECB);
 
-	/*
-	 * Make sure all interrups are masked until initialization is
-	 * complete and the FIFOs are cleared
-	 *
-	 * Synchronize UART_IER access against the console.
-	 */
+	 
 	spin_lock_irq(&port->lock);
 	serial_port_out(port, UART_IER, 0);
 	spin_unlock_irq(&port->lock);
@@ -241,13 +196,7 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 	port->port.membase = priv->virt + offset;
 	port->port.regshift = board->reg_shift;
 
-	/*
-	 * XR17V35x UARTs have an extra divisor register, DLD that gets enabled
-	 * with when DLAB is set which will cause the device to incorrectly match
-	 * and assign port type to PORT_16650. The EFR for this UART is found
-	 * at offset 0x09. Instead check the Deice ID (DVID) register
-	 * for a 2, 4 or 8 port UART.
-	 */
+	 
 	status = readb(port->port.membase + UART_EXAR_DVID);
 	if (status == 0x82 || status == 0x84 || status == 0x88) {
 		port->port.type = PORT_XR17V35X;
@@ -288,9 +237,7 @@ pci_fastcom335_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 	writeb(32, p + UART_EXAR_TXTRG);
 	writeb(32, p + UART_EXAR_RXTRG);
 
-	/*
-	 * Setup Multipurpose Input/Output pins.
-	 */
+	 
 	if (idx == 0) {
 		switch (pcidev->device) {
 		case PCI_DEVICE_ID_COMMTECH_4222PCI335:
@@ -338,20 +285,16 @@ pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 
 static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
 {
-	/*
-	 * The Commtech adapters required the MPIOs to be driven low. The Exar
-	 * devices will export them as GPIOs, so we pre-configure them safely
-	 * as inputs.
-	 */
+	 
 
 	u8 dir = 0x00;
 
 	if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
 		(pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL)) {
-		// Configure GPIO as inputs for Commtech adapters
+		
 		dir = 0xff;
 	} else {
-		// Configure GPIO as outputs for SeaLevel adapters
+		
 		dir = 0x00;
 	}
 
@@ -527,11 +470,7 @@ static const struct exar8250_platform iot2040_platform = {
 	.unregister_gpio = xr17v35x_unregister_gpio,
 };
 
-/*
- * For SIMATIC IOT2000, only IOT2040 and its variants have the Exar device,
- * IOT2020 doesn't have. Therefore it is sufficient to match on the common
- * board name after the device was found.
- */
+ 
 static const struct dmi_system_id exar_platforms[] = {
 	{
 		.matches = {
@@ -567,10 +506,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 	port->port.rs485_config = platform->rs485_config;
 	port->port.rs485_supported = *(platform->rs485_supported);
 
-	/*
-	 * Setup the UART clock for the devices on expansion slot to
-	 * half the clock speed of the main chip (which is 125MHz)
-	 */
+	 
 	if (idx >= 8)
 		port->port.uartclk /= 2;
 
@@ -586,7 +522,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 	writeb(128, p + UART_EXAR_RXTRG);
 
 	if (idx == 0) {
-		/* Setup Multipurpose Input/Output pins. */
+		 
 		setup_gpio(pcidev, p);
 
 		ret = platform->register_gpio(pcidev, port);
@@ -606,23 +542,15 @@ static void pci_xr17v35x_exit(struct pci_dev *pcidev)
 
 static inline void exar_misc_clear(struct exar8250 *priv)
 {
-	/* Clear all PCI interrupts by reading INT0. No effect on IIR */
+	 
 	readb(priv->virt + UART_EXAR_INT0);
 
-	/* Clear INT0 for Expansion Interface slave ports, too */
+	 
 	if (priv->board->num_ports > 8)
 		readb(priv->virt + 0x2000 + UART_EXAR_INT0);
 }
 
-/*
- * These Exar UARTs have an extra interrupt indicator that could fire for a
- * few interrupts that are not presented/cleared through IIR.  One of which is
- * a wakeup interrupt when coming out of sleep.  These interrupts are only
- * cleared by reading global INT0 or INT1 registers as interrupts are
- * associated with channel 0. The INT[3:0] registers _are_ accessible from each
- * channel's address space, but for the sake of bus efficiency we register a
- * dedicated handler at the PCI device level to handle them.
- */
+ 
 static irqreturn_t exar_misc_handler(int irq, void *data)
 {
 	exar_misc_clear(data);
@@ -683,7 +611,7 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 	if (rc)
 		return rc;
 
-	/* Clear interrupts */
+	 
 	exar_misc_clear(priv);
 
 	for (i = 0; i < nr_ports && i < maxnr; i++) {
@@ -732,7 +660,7 @@ static int __maybe_unused exar_suspend(struct device *dev)
 		if (priv->line[i] >= 0)
 			serial8250_suspend_port(priv->line[i]);
 
-	/* Ensure that every init quirk is properly torn down */
+	 
 	if (priv->board->exit)
 		priv->board->exit(pcidev);
 
@@ -871,16 +799,16 @@ static const struct pci_device_id exar_pci_tbl[] = {
 
 	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
 
-	/* USRobotics USR298x-OEM PCI Modems */
+	 
 	USR_DEVICE(XR17C152, 2980, pbn_exar_XR17C15x),
 	USR_DEVICE(XR17C152, 2981, pbn_exar_XR17C15x),
 
-	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
+	 
 	EXAR_DEVICE(EXAR, XR17C152, pbn_exar_XR17C15x),
 	EXAR_DEVICE(EXAR, XR17C154, pbn_exar_XR17C15x),
 	EXAR_DEVICE(EXAR, XR17C158, pbn_exar_XR17C15x),
 
-	/* Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs */
+	 
 	EXAR_DEVICE(EXAR, XR17V352, pbn_exar_XR17V35x),
 	EXAR_DEVICE(EXAR, XR17V354, pbn_exar_XR17V35x),
 	EXAR_DEVICE(EXAR, XR17V358, pbn_exar_XR17V35x),

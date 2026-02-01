@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _ASM_S390_PERF_REGS_H
 #define _ASM_S390_PERF_REGS_H
 
@@ -41,4 +41,4 @@ enum perf_event_s390_regs {
 	PERF_REG_S390_MAX
 };
 
-#endif /* _ASM_S390_PERF_REGS_H */
+#endif  

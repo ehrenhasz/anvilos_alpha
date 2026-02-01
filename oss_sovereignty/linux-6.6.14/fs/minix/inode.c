@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/minix/inode.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Copyright (C) 1996  Gertjan van Wingerde
- *	Minix V2 fs support.
- *
- *  Modified for 680x0 by Andreas Schwab
- *  Updated to filesystem version 3 by Daniel Aragones
- */
+
+ 
 
 #include <linux/module.h>
 #include "minix.h"
@@ -44,7 +34,7 @@ static void minix_put_super(struct super_block *sb)
 	struct minix_sb_info *sbi = minix_sb(sb);
 
 	if (!sb_rdonly(sb)) {
-		if (sbi->s_version != MINIX_V3)	 /* s_state is now out from V3 sb */
+		if (sbi->s_version != MINIX_V3)	  
 			sbi->s_ms->s_state = sbi->s_mount_state;
 		mark_buffer_dirty(sbi->s_sbh);
 	}
@@ -95,10 +85,7 @@ static int __init init_inodecache(void)
 
 static void destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(minix_inode_cachep);
 }
@@ -126,12 +113,12 @@ static int minix_remount (struct super_block * sb, int * flags, char * data)
 		if (ms->s_state & MINIX_VALID_FS ||
 		    !(sbi->s_mount_state & MINIX_VALID_FS))
 			return 0;
-		/* Mounting a rw partition read-only. */
+		 
 		if (sbi->s_version != MINIX_V3)
 			ms->s_state = sbi->s_mount_state;
 		mark_buffer_dirty(sbi->s_sbh);
 	} else {
-	  	/* Mount a partition which is read-only, read-write. */
+	  	 
 		if (sbi->s_version != MINIX_V3) {
 			sbi->s_mount_state = ms->s_state;
 			ms->s_state &= ~MINIX_VALID_FS;
@@ -157,11 +144,7 @@ static bool minix_check_superblock(struct super_block *sb)
 	if (sbi->s_imap_blocks == 0 || sbi->s_zmap_blocks == 0)
 		return false;
 
-	/*
-	 * s_max_size must not exceed the block mapping limitation.  This check
-	 * is only needed for V1 filesystems, since V2/V3 support an extra level
-	 * of indirect blocks which places the limit well above U32_MAX.
-	 */
+	 
 	if (sbi->s_version == MINIX_V1 &&
 	    sb->s_maxbytes > (7 + 512 + 512*512) * BLOCK_SIZE)
 		return false;
@@ -250,9 +233,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	if (!minix_check_superblock(s))
 		goto out_illegal_sb;
 
-	/*
-	 * Allocate the buffer map to keep the superblock small.
-	 */
+	 
 	i = (sbi->s_imap_blocks + sbi->s_zmap_blocks) * sizeof(bh);
 	map = kzalloc(i, GFP_KERNEL);
 	if (!map)
@@ -275,10 +256,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	minix_set_bit(0,sbi->s_imap[0]->b_data);
 	minix_set_bit(0,sbi->s_zmap[0]->b_data);
 
-	/* Apparently minix can create filesystems that allocate more blocks for
-	 * the bitmaps than needed.  We simply ignore that, but verify it didn't
-	 * create one with not enough blocks and bail out if so.
-	 */
+	 
 	block = minix_blocks_needed(sbi->s_ninodes, s->s_blocksize);
 	if (sbi->s_imap_blocks < block) {
 		printk("MINIX-fs: file system does not have enough "
@@ -295,7 +273,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 		goto out_no_bitmap;
 	}
 
-	/* set up enough so that it can read an inode */
+	 
 	s->s_op = &minix_sops;
 	s->s_time_min = 0;
 	s->s_time_max = U32_MAX;
@@ -311,7 +289,7 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 		goto out_no_root;
 
 	if (!sb_rdonly(s)) {
-		if (sbi->s_version != MINIX_V3) /* s_state is now out from V3 sb */
+		if (sbi->s_version != MINIX_V3)  
 			ms->s_state &= ~MINIX_VALID_FS;
 		mark_buffer_dirty(bh);
 	}
@@ -474,9 +452,7 @@ void minix_set_inode(struct inode *inode, dev_t rdev)
 		init_special_inode(inode, inode->i_mode, rdev);
 }
 
-/*
- * The minix V1 function to read an inode.
- */
+ 
 static struct inode *V1_minix_iget(struct inode *inode)
 {
 	struct buffer_head * bh;
@@ -511,9 +487,7 @@ static struct inode *V1_minix_iget(struct inode *inode)
 	return inode;
 }
 
-/*
- * The minix V2 function to read an inode.
- */
+ 
 static struct inode *V2_minix_iget(struct inode *inode)
 {
 	struct buffer_head * bh;
@@ -552,9 +526,7 @@ static struct inode *V2_minix_iget(struct inode *inode)
 	return inode;
 }
 
-/*
- * The global function to read an inode.
- */
+ 
 struct inode *minix_iget(struct super_block *sb, unsigned long ino)
 {
 	struct inode *inode;
@@ -571,9 +543,7 @@ struct inode *minix_iget(struct super_block *sb, unsigned long ino)
 		return V2_minix_iget(inode);
 }
 
-/*
- * The minix V1 function to synchronize an inode.
- */
+ 
 static struct buffer_head * V1_minix_update_inode(struct inode * inode)
 {
 	struct buffer_head * bh;
@@ -598,9 +568,7 @@ static struct buffer_head * V1_minix_update_inode(struct inode * inode)
 	return bh;
 }
 
-/*
- * The minix V2 function to synchronize an inode.
- */
+ 
 static struct buffer_head * V2_minix_update_inode(struct inode * inode)
 {
 	struct buffer_head * bh;
@@ -665,9 +633,7 @@ int minix_getattr(struct mnt_idmap *idmap, const struct path *path,
 	return 0;
 }
 
-/*
- * The function that is called for file truncation.
- */
+ 
 void minix_truncate(struct inode * inode)
 {
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))

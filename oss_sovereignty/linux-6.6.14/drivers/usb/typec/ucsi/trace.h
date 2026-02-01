@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ucsi
@@ -107,9 +107,9 @@ DEFINE_EVENT(ucsi_log_register_altmode, ucsi_register_altmode,
 	TP_ARGS(recipient, alt)
 );
 
-#endif /* __UCSI_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

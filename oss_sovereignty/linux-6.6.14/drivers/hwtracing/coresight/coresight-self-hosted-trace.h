@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Arm v8 Self-Hosted trace support.
- *
- * Copyright (C) 2021 ARM Ltd.
- */
+ 
+ 
 
 #ifndef __CORESIGHT_SELF_HOSTED_TRACE_H
 #define __CORESIGHT_SELF_HOSTED_TRACE_H
@@ -25,9 +21,9 @@ static inline u64 cpu_prohibit_trace(void)
 {
 	u64 trfcr = read_trfcr();
 
-	/* Prohibit tracing at EL0 & the kernel EL */
+	 
 	write_trfcr(trfcr & ~(TRFCR_ELx_ExTRE | TRFCR_ELx_E0TRE));
-	/* Return the original value of the TRFCR */
+	 
 	return trfcr;
 }
-#endif /*  __CORESIGHT_SELF_HOSTED_TRACE_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	SNAP data link layer. Derived from 802.2
- *
- *		Alan Cox <alan@lxorguk.ukuu.org.uk>,
- *		from the 802.2 layer by Greg Page.
- *		Merged in additions from Greg Page's psnap.c.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -23,9 +17,7 @@ static LIST_HEAD(snap_list);
 static DEFINE_SPINLOCK(snap_lock);
 static struct llc_sap *snap_sap;
 
-/*
- *	Find a snap client by matching the 5 bytes.
- */
+ 
 static struct datalink_proto *find_snap_client(const unsigned char *desc)
 {
 	struct datalink_proto *proto = NULL, *p;
@@ -39,9 +31,7 @@ static struct datalink_proto *find_snap_client(const unsigned char *desc)
 	return proto;
 }
 
-/*
- *	A SNAP packet has arrived
- */
+ 
 static int snap_rcv(struct sk_buff *skb, struct net_device *dev,
 		    struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -57,7 +47,7 @@ static int snap_rcv(struct sk_buff *skb, struct net_device *dev,
 	rcu_read_lock();
 	proto = find_snap_client(skb_transport_header(skb));
 	if (proto) {
-		/* Pass the frame on. */
+		 
 		skb->transport_header += 5;
 		skb_pull_rcsum(skb, 5);
 		rc = proto->rcvfunc(skb, dev, &snap_packet_type, orig_dev);
@@ -75,9 +65,7 @@ drop:
 	goto out;
 }
 
-/*
- *	Put a SNAP header on a frame and pass to 802.2
- */
+ 
 static int snap_request(struct datalink_proto *dl,
 			struct sk_buff *skb, const u8 *dest)
 {
@@ -86,9 +74,7 @@ static int snap_request(struct datalink_proto *dl,
 	return 0;
 }
 
-/*
- *	Set up the SNAP layer
- */
+ 
 EXPORT_SYMBOL(register_snap_client);
 EXPORT_SYMBOL(unregister_snap_client);
 
@@ -116,9 +102,7 @@ static void __exit snap_exit(void)
 module_exit(snap_exit);
 
 
-/*
- *	Register SNAP clients. We don't yet use this for IP.
- */
+ 
 struct datalink_proto *register_snap_client(const unsigned char *desc,
 					    int (*rcvfunc)(struct sk_buff *,
 							   struct net_device *,
@@ -136,7 +120,7 @@ struct datalink_proto *register_snap_client(const unsigned char *desc,
 	if (proto) {
 		memcpy(proto->type, desc, 5);
 		proto->rcvfunc		= rcvfunc;
-		proto->header_length	= 5 + 3; /* snap + 802.2 */
+		proto->header_length	= 5 + 3;  
 		proto->request		= snap_request;
 		list_add_rcu(&proto->node, &snap_list);
 	}
@@ -146,9 +130,7 @@ out:
 	return proto;
 }
 
-/*
- *	Unregister SNAP clients. Protocols no longer want to play with us ...
- */
+ 
 void unregister_snap_client(struct datalink_proto *proto)
 {
 	spin_lock_bh(&snap_lock);

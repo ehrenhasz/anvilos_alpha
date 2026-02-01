@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1251
- *
- * Copyright (C) 2008 Nokia Corporation
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -83,9 +79,7 @@ static void wl1251_spi_wake(struct wl1251 *wl)
 	memset(&t, 0, sizeof(t));
 	spi_message_init(&m);
 
-	/* Set WSPI_INIT_COMMAND
-	 * the data is being send from the MSB to LSB
-	 */
+	 
 	cmd[0] = 0xff;
 	cmd[1] = 0xff;
 	cmd[2] = WSPI_INIT_CMD_START | WSPI_INIT_CMD_TX;
@@ -103,10 +97,7 @@ static void wl1251_spi_wake(struct wl1251 *wl)
 		cmd[6] |= WSPI_INIT_CMD_EN_FIXEDBUSY;
 
 	cmd[7] = crc7_be(0, cmd+2, WSPI_INIT_CMD_CRC_LEN) | WSPI_INIT_CMD_END;
-	/*
-	 * The above is the logical order; it must actually be stored
-	 * in the buffer byte-swapped.
-	 */
+	 
 	__swab32s((u32 *)cmd);
 	__swab32s((u32 *)cmd+1);
 
@@ -151,7 +142,7 @@ static void wl1251_spi_read(struct wl1251 *wl, int addr, void *buf,
 	t[0].len = 4;
 	spi_message_add_tail(&t[0], &m);
 
-	/* Busy and non busy words read */
+	 
 	t[1].rx_buf = busy_buf;
 	t[1].len = WL1251_BUSY_WORD_LEN;
 	spi_message_add_tail(&t[1], &m);
@@ -162,7 +153,7 @@ static void wl1251_spi_read(struct wl1251 *wl, int addr, void *buf,
 
 	spi_sync(wl_spi->spi, &m);
 
-	/* FIXME: check busy words */
+	 
 
 	wl1251_dump(DEBUG_SPI, "spi_read cmd -> ", cmd, sizeof(*cmd));
 	wl1251_dump(DEBUG_SPI, "spi_read buf <- ", buf, len);
@@ -257,9 +248,7 @@ static int wl1251_spi_probe(struct spi_device *spi)
 	wl->if_priv = wl_spi;
 	wl->if_ops = &wl1251_spi_ops;
 
-	/* This is the only SPI value that we need to set here, the rest
-	 * comes from the board-peripherals file
-	 */
+	 
 	spi->bits_per_word = 32;
 
 	ret = spi_setup(spi);

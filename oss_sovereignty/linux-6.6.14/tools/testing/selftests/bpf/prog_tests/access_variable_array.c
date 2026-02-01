@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Bytedance */
+
+ 
 
 #include <test_progs.h>
 #include "test_access_variable_array.skel.h"

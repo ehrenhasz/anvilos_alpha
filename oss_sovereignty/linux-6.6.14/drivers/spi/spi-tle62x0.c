@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support Infineon TLE62x0 driver chips
- *
- * Copyright (c) 2007 Simtec Electronics
- *	Ben Dooks, <ben@simtec.co.uk>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -273,7 +268,7 @@ static int tle62x0_probe(struct spi_device *spi)
 		}
 	}
 
-	/* tle62x0_write(st); */
+	 
 	spi_set_drvdata(spi, st);
 	return 0;
 

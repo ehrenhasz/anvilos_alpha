@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2017 Mellanox Technologies Inc.  All rights reserved.
- * Copyright (c) 2010 Voltaire Inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "%s:%s: " fmt, KBUILD_MODNAME, __func__
 
@@ -44,9 +13,7 @@
 
 static struct {
 	const struct rdma_nl_cbs *cb_table;
-	/* Synchronizes between ongoing netlink commands and netlink client
-	 * unregistration.
-	 */
+	 
 	struct rw_semaphore sem;
 } rdma_nl_types[RDMA_NL_NUM_CLIENTS];
 
@@ -66,10 +33,7 @@ static bool is_nl_msg_valid(unsigned int type, unsigned int op)
 		[RDMA_NL_NLDEV] = RDMA_NLDEV_NUM_OPS,
 	};
 
-	/*
-	 * This BUILD_BUG_ON is intended to catch addition of new
-	 * RDMA netlink protocol without updating the array above.
-	 */
+	 
 	BUILD_BUG_ON(RDMA_NL_NUM_CLIENTS != 6);
 
 	if (type >= RDMA_NL_NUM_CLIENTS)
@@ -83,19 +47,13 @@ get_cb_table(const struct sk_buff *skb, unsigned int type, unsigned int op)
 {
 	const struct rdma_nl_cbs *cb_table;
 
-	/*
-	 * Currently only NLDEV client is supporting netlink commands in
-	 * non init_net net namespace.
-	 */
+	 
 	if (sock_net(skb->sk) != &init_net && type != RDMA_NL_NLDEV)
 		return NULL;
 
 	cb_table = READ_ONCE(rdma_nl_types[type].cb_table);
 	if (!cb_table) {
-		/*
-		 * Didn't get valid reference of the table, attempt module
-		 * load once.
-		 */
+		 
 		up_read(&rdma_nl_types[type].sem);
 
 		request_module("rdma-netlink-subsys-%u", type);
@@ -115,7 +73,7 @@ void rdma_nl_register(unsigned int index,
 	    WARN_ON(READ_ONCE(rdma_nl_types[index].cb_table)))
 		return;
 
-	/* Pairs with the READ_ONCE in is_nl_valid() */
+	 
 	smp_store_release(&rdma_nl_types[index].cb_table, cb_table);
 }
 EXPORT_SYMBOL(rdma_nl_register);
@@ -172,16 +130,13 @@ static int rdma_nl_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 		goto done;
 	}
 
-	/*
-	 * LS responses overload the 0x100 (NLM_F_ROOT) flag.  Don't
-	 * mistakenly call the .dump() function.
-	 */
+	 
 	if (index == RDMA_NL_LS) {
 		if (cb_table[op].doit)
 			err = cb_table[op].doit(skb, nlh, extack);
 		goto done;
 	}
-	/* FIXME: Convert IWCM to properly handle doit callbacks */
+	 
 	if ((nlh->nlmsg_flags & NLM_F_DUMP) || index == RDMA_NL_IWCM) {
 		struct netlink_dump_control c = {
 			.dump = cb_table[op].dump,
@@ -198,12 +153,7 @@ done:
 	return err;
 }
 
-/*
- * This function is similar to netlink_rcv_skb with one exception:
- * It calls to the callback for the netlink messages without NLM_F_REQUEST
- * flag. These messages are intended for RDMA_NL_LS consumer, so it is allowed
- * for that consumer only.
- */
+ 
 static int rdma_nl_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 						   struct nlmsghdr *,
 						   struct netlink_ext_ack *))
@@ -221,18 +171,12 @@ static int rdma_nl_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 		if (nlh->nlmsg_len < NLMSG_HDRLEN || skb->len < nlh->nlmsg_len)
 			return 0;
 
-		/*
-		 * Generally speaking, the only requests are handled
-		 * by the kernel, but RDMA_NL_LS is different, because it
-		 * runs backward netlink scheme. Kernel initiates messages
-		 * and waits for reply with data to keep pathrecord cache
-		 * in sync.
-		 */
+		 
 		if (!(nlh->nlmsg_flags & NLM_F_REQUEST) &&
 		    (RDMA_NL_GET_CLIENT(nlh->nlmsg_type) != RDMA_NL_LS))
 			goto ack;
 
-		/* Skip control messages */
+		 
 		if (nlh->nlmsg_type < NLMSG_MIN_TYPE)
 			goto ack;
 

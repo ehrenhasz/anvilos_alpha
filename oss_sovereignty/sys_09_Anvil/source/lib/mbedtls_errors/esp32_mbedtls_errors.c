@@ -1,23 +1,4 @@
-/*
- *  Error message information
- *
- *  Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
- *  SPDX-License-Identifier: Apache-2.0
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *  This file is part of mbed TLS (https://tls.mbed.org)
- */
+ 
 
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
@@ -190,15 +171,15 @@
 #endif
 
 
-// Error code table type
+
 struct ssl_errs {
     int16_t errnum;
     const char *errstr;
 };
 
-// Table of high level error codes
+
 static const struct ssl_errs mbedtls_high_level_error_tab[] = {
-// BEGIN generated code
+
 #if defined(MBEDTLS_CIPHER_C)
         { -(MBEDTLS_ERR_CIPHER_FEATURE_UNAVAILABLE), "CIPHER_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA), "CIPHER_BAD_INPUT_DATA" },
@@ -207,7 +188,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_CIPHER_FULL_BLOCK_EXPECTED), "CIPHER_FULL_BLOCK_EXPECTED" },
         { -(MBEDTLS_ERR_CIPHER_AUTH_FAILED), "CIPHER_AUTH_FAILED" },
         { -(MBEDTLS_ERR_CIPHER_INVALID_CONTEXT), "CIPHER_INVALID_CONTEXT" },
-#endif /* MBEDTLS_CIPHER_C */
+#endif  
 
 #if defined(MBEDTLS_DHM_C)
         { -(MBEDTLS_ERR_DHM_BAD_INPUT_DATA), "DHM_BAD_INPUT_DATA" },
@@ -220,7 +201,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_DHM_ALLOC_FAILED), "DHM_ALLOC_FAILED" },
         { -(MBEDTLS_ERR_DHM_FILE_IO_ERROR), "DHM_FILE_IO_ERROR" },
         { -(MBEDTLS_ERR_DHM_SET_GROUP_FAILED), "DHM_SET_GROUP_FAILED" },
-#endif /* MBEDTLS_DHM_C */
+#endif  
 
 #if defined(MBEDTLS_ECP_C)
         { -(MBEDTLS_ERR_ECP_BAD_INPUT_DATA), "ECP_BAD_INPUT_DATA" },
@@ -232,14 +213,14 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_ECP_INVALID_KEY), "ECP_INVALID_KEY" },
         { -(MBEDTLS_ERR_ECP_SIG_LEN_MISMATCH), "ECP_SIG_LEN_MISMATCH" },
         { -(MBEDTLS_ERR_ECP_IN_PROGRESS), "ECP_IN_PROGRESS" },
-#endif /* MBEDTLS_ECP_C */
+#endif  
 
 #if defined(MBEDTLS_MD_C)
         { -(MBEDTLS_ERR_MD_FEATURE_UNAVAILABLE), "MD_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_MD_BAD_INPUT_DATA), "MD_BAD_INPUT_DATA" },
         { -(MBEDTLS_ERR_MD_ALLOC_FAILED), "MD_ALLOC_FAILED" },
         { -(MBEDTLS_ERR_MD_FILE_IO_ERROR), "MD_FILE_IO_ERROR" },
-#endif /* MBEDTLS_MD_C */
+#endif  
 
 #if defined(MBEDTLS_PEM_PARSE_C) || defined(MBEDTLS_PEM_WRITE_C)
         { -(MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT), "PEM_NO_HEADER_FOOTER_PRESENT" },
@@ -251,7 +232,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_PEM_PASSWORD_MISMATCH), "PEM_PASSWORD_MISMATCH" },
         { -(MBEDTLS_ERR_PEM_FEATURE_UNAVAILABLE), "PEM_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_PEM_BAD_INPUT_DATA), "PEM_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_PEM_PARSE_C || MBEDTLS_PEM_WRITE_C */
+#endif  
 
 #if defined(MBEDTLS_PK_C)
         { -(MBEDTLS_ERR_PK_ALLOC_FAILED), "PK_ALLOC_FAILED" },
@@ -269,21 +250,21 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE), "PK_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_PK_SIG_LEN_MISMATCH), "PK_SIG_LEN_MISMATCH" },
         { -(MBEDTLS_ERR_PK_BUFFER_TOO_SMALL), "PK_BUFFER_TOO_SMALL" },
-#endif /* MBEDTLS_PK_C */
+#endif  
 
 #if defined(MBEDTLS_PKCS12_C)
         { -(MBEDTLS_ERR_PKCS12_BAD_INPUT_DATA), "PKCS12_BAD_INPUT_DATA" },
         { -(MBEDTLS_ERR_PKCS12_FEATURE_UNAVAILABLE), "PKCS12_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_PKCS12_PBE_INVALID_FORMAT), "PKCS12_PBE_INVALID_FORMAT" },
         { -(MBEDTLS_ERR_PKCS12_PASSWORD_MISMATCH), "PKCS12_PASSWORD_MISMATCH" },
-#endif /* MBEDTLS_PKCS12_C */
+#endif  
 
 #if defined(MBEDTLS_PKCS5_C)
         { -(MBEDTLS_ERR_PKCS5_BAD_INPUT_DATA), "PKCS5_BAD_INPUT_DATA" },
         { -(MBEDTLS_ERR_PKCS5_INVALID_FORMAT), "PKCS5_INVALID_FORMAT" },
         { -(MBEDTLS_ERR_PKCS5_FEATURE_UNAVAILABLE), "PKCS5_FEATURE_UNAVAILABLE" },
         { -(MBEDTLS_ERR_PKCS5_PASSWORD_MISMATCH), "PKCS5_PASSWORD_MISMATCH" },
-#endif /* MBEDTLS_PKCS5_C */
+#endif  
 
 #if defined(MBEDTLS_PKCS7_C)
         { -(MBEDTLS_ERR_PKCS7_INVALID_FORMAT), "PKCS7_INVALID_FORMAT" },
@@ -298,7 +279,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_PKCS7_ALLOC_FAILED), "PKCS7_ALLOC_FAILED" },
         { -(MBEDTLS_ERR_PKCS7_VERIFY_FAIL), "PKCS7_VERIFY_FAIL" },
         { -(MBEDTLS_ERR_PKCS7_CERT_DATE_INVALID), "PKCS7_CERT_DATE_INVALID" },
-#endif /* MBEDTLS_PKCS7_C */
+#endif  
 
 #if defined(MBEDTLS_RSA_C)
         { -(MBEDTLS_ERR_RSA_BAD_INPUT_DATA), "RSA_BAD_INPUT_DATA" },
@@ -310,7 +291,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_RSA_VERIFY_FAILED), "RSA_VERIFY_FAILED" },
         { -(MBEDTLS_ERR_RSA_OUTPUT_TOO_LARGE), "RSA_OUTPUT_TOO_LARGE" },
         { -(MBEDTLS_ERR_RSA_RNG_FAILED), "RSA_RNG_FAILED" },
-#endif /* MBEDTLS_RSA_C */
+#endif  
 
 #if defined(MBEDTLS_SSL_TLS_C)
         { -(MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS), "SSL_CRYPTO_IN_PROGRESS" },
@@ -359,7 +340,7 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_SSL_UNEXPECTED_CID), "SSL_UNEXPECTED_CID" },
         { -(MBEDTLS_ERR_SSL_VERSION_MISMATCH), "SSL_VERSION_MISMATCH" },
         { -(MBEDTLS_ERR_SSL_BAD_CONFIG), "SSL_BAD_CONFIG" },
-#endif /* MBEDTLS_SSL_TLS_C */
+#endif  
 
 #if defined(MBEDTLS_X509_USE_C) || defined(MBEDTLS_X509_CREATE_C)
         { -(MBEDTLS_ERR_X509_FEATURE_UNAVAILABLE), "X509_FEATURE_UNAVAILABLE" },
@@ -382,24 +363,24 @@ static const struct ssl_errs mbedtls_high_level_error_tab[] = {
         { -(MBEDTLS_ERR_X509_FILE_IO_ERROR), "X509_FILE_IO_ERROR" },
         { -(MBEDTLS_ERR_X509_BUFFER_TOO_SMALL), "X509_BUFFER_TOO_SMALL" },
         { -(MBEDTLS_ERR_X509_FATAL_ERROR), "X509_FATAL_ERROR" },
-#endif /* MBEDTLS_X509_USE_C || MBEDTLS_X509_CREATE_C */
-// END generated code
+#endif  
+
 };
 
 static const struct ssl_errs mbedtls_low_level_error_tab[] = {
-// Low level error codes
-//
-// BEGIN generated code
+
+
+
 #if defined(MBEDTLS_AES_C)
     { -(MBEDTLS_ERR_AES_INVALID_KEY_LENGTH), "AES_INVALID_KEY_LENGTH" },
     { -(MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH), "AES_INVALID_INPUT_LENGTH" },
     { -(MBEDTLS_ERR_AES_BAD_INPUT_DATA), "AES_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_AES_C */
+#endif  
 
 #if defined(MBEDTLS_ARIA_C)
     { -(MBEDTLS_ERR_ARIA_BAD_INPUT_DATA), "ARIA_BAD_INPUT_DATA" },
     { -(MBEDTLS_ERR_ARIA_INVALID_INPUT_LENGTH), "ARIA_INVALID_INPUT_LENGTH" },
-#endif /* MBEDTLS_ARIA_C */
+#endif  
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
     { -(MBEDTLS_ERR_ASN1_OUT_OF_DATA), "ASN1_OUT_OF_DATA" },
@@ -409,12 +390,12 @@ static const struct ssl_errs mbedtls_low_level_error_tab[] = {
     { -(MBEDTLS_ERR_ASN1_INVALID_DATA), "ASN1_INVALID_DATA" },
     { -(MBEDTLS_ERR_ASN1_ALLOC_FAILED), "ASN1_ALLOC_FAILED" },
     { -(MBEDTLS_ERR_ASN1_BUF_TOO_SMALL), "ASN1_BUF_TOO_SMALL" },
-#endif /* MBEDTLS_ASN1_PARSE_C */
+#endif  
 
 #if defined(MBEDTLS_BASE64_C)
     { -(MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL), "BASE64_BUFFER_TOO_SMALL" },
     { -(MBEDTLS_ERR_BASE64_INVALID_CHARACTER), "BASE64_INVALID_CHARACTER" },
-#endif /* MBEDTLS_BASE64_C */
+#endif  
 
 #if defined(MBEDTLS_BIGNUM_C)
     { -(MBEDTLS_ERR_MPI_FILE_IO_ERROR), "MPI_FILE_IO_ERROR" },
@@ -425,37 +406,37 @@ static const struct ssl_errs mbedtls_low_level_error_tab[] = {
     { -(MBEDTLS_ERR_MPI_DIVISION_BY_ZERO), "MPI_DIVISION_BY_ZERO" },
     { -(MBEDTLS_ERR_MPI_NOT_ACCEPTABLE), "MPI_NOT_ACCEPTABLE" },
     { -(MBEDTLS_ERR_MPI_ALLOC_FAILED), "MPI_ALLOC_FAILED" },
-#endif /* MBEDTLS_BIGNUM_C */
+#endif  
 
 #if defined(MBEDTLS_CAMELLIA_C)
     { -(MBEDTLS_ERR_CAMELLIA_BAD_INPUT_DATA), "CAMELLIA_BAD_INPUT_DATA" },
     { -(MBEDTLS_ERR_CAMELLIA_INVALID_INPUT_LENGTH), "CAMELLIA_INVALID_INPUT_LENGTH" },
-#endif /* MBEDTLS_CAMELLIA_C */
+#endif  
 
 #if defined(MBEDTLS_CCM_C)
     { -(MBEDTLS_ERR_CCM_BAD_INPUT), "CCM_BAD_INPUT" },
     { -(MBEDTLS_ERR_CCM_AUTH_FAILED), "CCM_AUTH_FAILED" },
-#endif /* MBEDTLS_CCM_C */
+#endif  
 
 #if defined(MBEDTLS_CHACHA20_C)
     { -(MBEDTLS_ERR_CHACHA20_BAD_INPUT_DATA), "CHACHA20_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_CHACHA20_C */
+#endif  
 
 #if defined(MBEDTLS_CHACHAPOLY_C)
     { -(MBEDTLS_ERR_CHACHAPOLY_BAD_STATE), "CHACHAPOLY_BAD_STATE" },
     { -(MBEDTLS_ERR_CHACHAPOLY_AUTH_FAILED), "CHACHAPOLY_AUTH_FAILED" },
-#endif /* MBEDTLS_CHACHAPOLY_C */
+#endif  
 
 #if defined(MBEDTLS_CTR_DRBG_C)
     { -(MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED), "CTR_DRBG_ENTROPY_SOURCE_FAILED" },
     { -(MBEDTLS_ERR_CTR_DRBG_REQUEST_TOO_BIG), "CTR_DRBG_REQUEST_TOO_BIG" },
     { -(MBEDTLS_ERR_CTR_DRBG_INPUT_TOO_BIG), "CTR_DRBG_INPUT_TOO_BIG" },
     { -(MBEDTLS_ERR_CTR_DRBG_FILE_IO_ERROR), "CTR_DRBG_FILE_IO_ERROR" },
-#endif /* MBEDTLS_CTR_DRBG_C */
+#endif  
 
 #if defined(MBEDTLS_DES_C)
     { -(MBEDTLS_ERR_DES_INVALID_INPUT_LENGTH), "DES_INVALID_INPUT_LENGTH" },
-#endif /* MBEDTLS_DES_C */
+#endif  
 
 #if defined(MBEDTLS_ENTROPY_C)
     { -(MBEDTLS_ERR_ENTROPY_SOURCE_FAILED), "ENTROPY_SOURCE_FAILED" },
@@ -463,34 +444,34 @@ static const struct ssl_errs mbedtls_low_level_error_tab[] = {
     { -(MBEDTLS_ERR_ENTROPY_NO_SOURCES_DEFINED), "ENTROPY_NO_SOURCES_DEFINED" },
     { -(MBEDTLS_ERR_ENTROPY_NO_STRONG_SOURCE), "ENTROPY_NO_STRONG_SOURCE" },
     { -(MBEDTLS_ERR_ENTROPY_FILE_IO_ERROR), "ENTROPY_FILE_IO_ERROR" },
-#endif /* MBEDTLS_ENTROPY_C */
+#endif  
 
 #if defined(MBEDTLS_ERROR_C)
     { -(MBEDTLS_ERR_ERROR_GENERIC_ERROR), "ERROR_GENERIC_ERROR" },
     { -(MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED), "ERROR_CORRUPTION_DETECTED" },
-#endif /* MBEDTLS_ERROR_C */
+#endif  
 
 #if defined(MBEDTLS_PLATFORM_C)
     { -(MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED), "PLATFORM_HW_ACCEL_FAILED" },
     { -(MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED), "PLATFORM_FEATURE_UNSUPPORTED" },
-#endif /* MBEDTLS_PLATFORM_C */
+#endif  
 
 #if defined(MBEDTLS_GCM_C)
     { -(MBEDTLS_ERR_GCM_AUTH_FAILED), "GCM_AUTH_FAILED" },
     { -(MBEDTLS_ERR_GCM_BAD_INPUT), "GCM_BAD_INPUT" },
     { -(MBEDTLS_ERR_GCM_BUFFER_TOO_SMALL), "GCM_BUFFER_TOO_SMALL" },
-#endif /* MBEDTLS_GCM_C */
+#endif  
 
 #if defined(MBEDTLS_HKDF_C)
     { -(MBEDTLS_ERR_HKDF_BAD_INPUT_DATA), "HKDF_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_HKDF_C */
+#endif  
 
 #if defined(MBEDTLS_HMAC_DRBG_C)
     { -(MBEDTLS_ERR_HMAC_DRBG_REQUEST_TOO_BIG), "HMAC_DRBG_REQUEST_TOO_BIG" },
     { -(MBEDTLS_ERR_HMAC_DRBG_INPUT_TOO_BIG), "HMAC_DRBG_INPUT_TOO_BIG" },
     { -(MBEDTLS_ERR_HMAC_DRBG_FILE_IO_ERROR), "HMAC_DRBG_FILE_IO_ERROR" },
     { -(MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED), "HMAC_DRBG_ENTROPY_SOURCE_FAILED" },
-#endif /* MBEDTLS_HMAC_DRBG_C */
+#endif  
 
 #if defined(MBEDTLS_LMS_C)
     { -(MBEDTLS_ERR_LMS_BAD_INPUT_DATA), "LMS_BAD_INPUT_DATA" },
@@ -498,7 +479,7 @@ static const struct ssl_errs mbedtls_low_level_error_tab[] = {
     { -(MBEDTLS_ERR_LMS_VERIFY_FAILED), "LMS_VERIFY_FAILED" },
     { -(MBEDTLS_ERR_LMS_ALLOC_FAILED), "LMS_ALLOC_FAILED" },
     { -(MBEDTLS_ERR_LMS_BUFFER_TOO_SMALL), "LMS_BUFFER_TOO_SMALL" },
-#endif /* MBEDTLS_LMS_C */
+#endif  
 
 #if defined(MBEDTLS_NET_C)
     { -(MBEDTLS_ERR_NET_SOCKET_FAILED), "NET_SOCKET_FAILED" },
@@ -514,51 +495,51 @@ static const struct ssl_errs mbedtls_low_level_error_tab[] = {
     { -(MBEDTLS_ERR_NET_INVALID_CONTEXT), "NET_INVALID_CONTEXT" },
     { -(MBEDTLS_ERR_NET_POLL_FAILED), "NET_POLL_FAILED" },
     { -(MBEDTLS_ERR_NET_BAD_INPUT_DATA), "NET_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_NET_C */
+#endif  
 
 #if defined(MBEDTLS_OID_C)
     { -(MBEDTLS_ERR_OID_NOT_FOUND), "OID_NOT_FOUND" },
     { -(MBEDTLS_ERR_OID_BUF_TOO_SMALL), "OID_BUF_TOO_SMALL" },
-#endif /* MBEDTLS_OID_C */
+#endif  
 
 #if defined(MBEDTLS_POLY1305_C)
     { -(MBEDTLS_ERR_POLY1305_BAD_INPUT_DATA), "POLY1305_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_POLY1305_C */
+#endif  
 
 #if defined(MBEDTLS_SHA1_C)
     { -(MBEDTLS_ERR_SHA1_BAD_INPUT_DATA), "SHA1_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_SHA1_C */
+#endif  
 
 #if defined(MBEDTLS_SHA256_C)
     { -(MBEDTLS_ERR_SHA256_BAD_INPUT_DATA), "SHA256_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_SHA256_C */
+#endif  
 
 #if defined(MBEDTLS_SHA512_C)
     { -(MBEDTLS_ERR_SHA512_BAD_INPUT_DATA), "SHA512_BAD_INPUT_DATA" },
-#endif /* MBEDTLS_SHA512_C */
+#endif  
 
 #if defined(MBEDTLS_THREADING_C)
     { -(MBEDTLS_ERR_THREADING_BAD_INPUT_DATA), "THREADING_BAD_INPUT_DATA" },
     { -(MBEDTLS_ERR_THREADING_MUTEX_ERROR), "THREADING_MUTEX_ERROR" },
-#endif /* MBEDTLS_THREADING_C */
-// END generated code
+#endif  
+
 };
 
 static const char *mbedtls_err_prefix = "MBEDTLS_ERR_";
 #define MBEDTLS_ERR_PREFIX_LEN ( sizeof("MBEDTLS_ERR_")-1 )
 
-// copy error text into buffer, ensure null termination, return strlen of result
+
 static size_t mbedtls_err_to_str(int err, const struct ssl_errs tab[], int tab_len, char *buf, size_t buflen) {
     if (buflen == 0) return 0;
 
-    // prefix for all error names
+    
     strncpy(buf, mbedtls_err_prefix, buflen);
     if (buflen <= MBEDTLS_ERR_PREFIX_LEN+1) {
         buf[buflen-1] = 0;
         return buflen-1;
     }
 
-    // append error name from table
+    
     for (int i = 0; i < tab_len; i++) {
         if (tab[i].errnum == err) {
             strncpy(buf+MBEDTLS_ERR_PREFIX_LEN, tab[i].errstr, buflen-MBEDTLS_ERR_PREFIX_LEN);
@@ -583,14 +564,14 @@ void mbedtls_strerror(int ret, char *buf, size_t buflen) {
 
     if (ret < 0) ret = -ret;
 
-    //
-    // High-level error codes
-    //
+    
+    
+    
     uint8_t got_hl = (ret & 0xFF80) != 0;
     if (got_hl) {
         use_ret = ret & 0xFF80;
 
-        // special case, don't try to translate low level code
+        
 #if defined(MBEDTLS_SSL_TLS_C)
         if (use_ret == -(MBEDTLS_ERR_SSL_FATAL_ALERT_MESSAGE)) {
             strncpy(buf, "MBEDTLS_ERR_SSL_FATAL_ALERT_MESSAGE", buflen);
@@ -607,14 +588,14 @@ void mbedtls_strerror(int ret, char *buf, size_t buflen) {
         if (buflen == 0) return;
     }
 
-    //
-    // Low-level error codes
-    //
+    
+    
+    
     use_ret = ret & ~0xFF80;
 
     if (use_ret == 0) return;
 
-    // If high level code is present, make a concatenation between both error strings.
+    
     if (got_hl) {
         if (buflen < 2) return;
         *buf++ = '+';
@@ -625,13 +606,11 @@ void mbedtls_strerror(int ret, char *buf, size_t buflen) {
             ARRAY_SIZE(mbedtls_low_level_error_tab), buf, buflen);
 }
 
-#else /* MBEDTLS_ERROR_C */
+#else  
 
 #if defined(MBEDTLS_ERROR_STRERROR_DUMMY)
 
-/*
- * Provide an non-function in case MBEDTLS_ERROR_C is not defined
- */
+ 
 void mbedtls_strerror( int ret, char *buf, size_t buflen )
 {
     ((void) ret);
@@ -640,6 +619,6 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         buf[0] = '\0';
 }
 
-#endif /* MBEDTLS_ERROR_STRERROR_DUMMY */
+#endif  
 
-#endif /* MBEDTLS_ERROR_C */
+#endif  

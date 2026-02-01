@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA soundcard driver for Miro miroSOUND PCM1 pro
- *                                  miroSOUND PCM12
- *                                  miroSOUND PCM20 Radio
- *
- *   Copyright (C) 2004-2005 Martin Langer <martin-langer@gmx.de>
- *
- *   Based on OSS ACI and ALSA OPTi9xx drivers
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -34,19 +26,19 @@ MODULE_AUTHOR("Martin Langer <martin-langer@gmx.de>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Miro miroSOUND PCM1 pro, PCM12, PCM20 Radio");
 
-static int index = SNDRV_DEFAULT_IDX1;		/* Index 0-MAX */
-static char *id = SNDRV_DEFAULT_STR1;		/* ID for this card */
-static long port = SNDRV_DEFAULT_PORT1; 	/* 0x530,0xe80,0xf40,0x604 */
-static long mpu_port = SNDRV_DEFAULT_PORT1;	/* 0x300,0x310,0x320,0x330 */
-static long fm_port = SNDRV_DEFAULT_PORT1;	/* 0x388 */
-static int irq = SNDRV_DEFAULT_IRQ1;		/* 5,7,9,10,11 */
-static int mpu_irq = SNDRV_DEFAULT_IRQ1;	/* 5,7,9,10 */
-static int dma1 = SNDRV_DEFAULT_DMA1;		/* 0,1,3 */
-static int dma2 = SNDRV_DEFAULT_DMA1;		/* 0,1,3 */
+static int index = SNDRV_DEFAULT_IDX1;		 
+static char *id = SNDRV_DEFAULT_STR1;		 
+static long port = SNDRV_DEFAULT_PORT1; 	 
+static long mpu_port = SNDRV_DEFAULT_PORT1;	 
+static long fm_port = SNDRV_DEFAULT_PORT1;	 
+static int irq = SNDRV_DEFAULT_IRQ1;		 
+static int mpu_irq = SNDRV_DEFAULT_IRQ1;	 
+static int dma1 = SNDRV_DEFAULT_DMA1;		 
+static int dma2 = SNDRV_DEFAULT_DMA1;		 
 static int wss;
 static int ide;
 #ifdef CONFIG_PNP
-static bool isapnp = 1;				/* Enable ISA PnP detection */
+static bool isapnp = 1;				 
 #endif
 
 module_param(index, int, 0444);
@@ -128,7 +120,7 @@ static int snd_miro_pnp_is_probed;
 #ifdef CONFIG_PNP
 
 static const struct pnp_card_device_id snd_miro_pnpids[] = {
-	/* PCM20 and PCM12 in PnP mode */
+	 
 	{ .id = "MIR0924",
 	  .devs = { { "MIR0000" }, { "MIR0002" }, { "MIR0005" } }, },
 	{ .id = "" }
@@ -136,11 +128,9 @@ static const struct pnp_card_device_id snd_miro_pnpids[] = {
 
 MODULE_DEVICE_TABLE(pnp_card, snd_miro_pnpids);
 
-#endif	/* CONFIG_PNP */
+#endif	 
 
-/* 
- *  ACI control
- */
+ 
 
 static int aci_busy_wait(struct snd_miro_aci *aci)
 {
@@ -246,9 +236,7 @@ struct snd_miro_aci *snd_aci_get_aci(void)
 }
 EXPORT_SYMBOL(snd_aci_get_aci);
 
-/*
- *  MIXER part
- */
+ 
 
 #define snd_miro_info_capture	snd_ctl_boolean_mono_info
 
@@ -310,11 +298,7 @@ static int snd_miro_get_preamp(struct snd_kcontrol *kcontrol,
 
 	if (miro->aci->aci_version <= 176) {
 
-		/* 
-		   OSS says it's not readable with versions < 176.
-		   But it doesn't work on my card,
-		   which is a PCM12 with aci_version = 176.
-		*/
+		 
 
 		ucontrol->value.integer.value[0] = miro->aci->aci_preamp;
 		return 0;
@@ -404,13 +388,13 @@ static int snd_miro_info_double(struct snd_kcontrol *kcontrol,
 
 	if ((reg >= ACI_GET_EQ1) && (reg <= ACI_GET_EQ7)) {
 
-		/* equalizer elements */
+		 
 
 		uinfo->value.integer.min = - 0x7f;
 		uinfo->value.integer.max = 0x7f;
 	} else {
 
-		/* non-equalizer elements */
+		 
 
 		uinfo->value.integer.min = 0;
 		uinfo->value.integer.max = 0x20;
@@ -442,7 +426,7 @@ static int snd_miro_get_double(struct snd_kcontrol *kcontrol,
 
 	if ((right_reg >= ACI_GET_EQ1) && (right_reg <= ACI_GET_EQ7)) {
 
-		/* equalizer elements */
+		 
 
 		if (left_val < 0x80) {
 			uinfo->value.integer.value[0] = left_val;
@@ -458,7 +442,7 @@ static int snd_miro_get_double(struct snd_kcontrol *kcontrol,
 
 	} else {
 
-		/* non-equalizer elements */
+		 
 
 		uinfo->value.integer.value[0] = 0x20 - left_val;
 		uinfo->value.integer.value[1] = 0x20 - right_val;
@@ -501,7 +485,7 @@ static int snd_miro_put_double(struct snd_kcontrol *kcontrol,
 
 	if ((getreg_right >= ACI_GET_EQ1) && (getreg_right <= ACI_GET_EQ7)) {
 
-		/* equalizer elements */
+		 
 
 		if (left < -0x7f || left > 0x7f ||
 		    right < -0x7f || right > 0x7f)
@@ -546,7 +530,7 @@ static int snd_miro_put_double(struct snd_kcontrol *kcontrol,
 
 	} else {
 
-		/* non-equalizer elements */
+		 
 
 		if (left < 0 || left > 0x20 ||
 		    right < 0 || right > 0x20)
@@ -584,8 +568,7 @@ MIRO_DOUBLE("PCM Playback Volume", 1, ACI_GET_PCM, ACI_SET_PCM),
 MIRO_DOUBLE("Aux Playback Volume", 2, ACI_GET_LINE2, ACI_SET_LINE2),
 };
 
-/* Equalizer with seven bands (only PCM20) 
-   from -12dB up to +12dB on each band */
+ 
 static const struct snd_kcontrol_new snd_miro_eq_controls[] = {
 MIRO_DOUBLE("Tone Control - 28 Hz", 0, ACI_GET_EQ1, ACI_SET_EQ1),
 MIRO_DOUBLE("Tone Control - 160 Hz", 0, ACI_GET_EQ2, ACI_SET_EQ2),
@@ -662,7 +645,7 @@ static int snd_set_aci_init_values(struct snd_miro *miro)
 	int idx, error;
 	struct snd_miro_aci *aci = miro->aci;
 
-	/* enable WSS on PCM1 */
+	 
 
 	if ((aci->aci_product == 'A') && wss) {
 		error = aci_setvalue(aci, ACI_SET_WSS, wss);
@@ -672,7 +655,7 @@ static int snd_set_aci_init_values(struct snd_miro *miro)
 		}
 	}
 
-	/* enable IDE port */
+	 
 
 	if (ide) {
 		error = aci_setvalue(aci, ACI_SET_IDE, ide);
@@ -682,7 +665,7 @@ static int snd_set_aci_init_values(struct snd_miro *miro)
 		}
 	}
 
-	/* set common aci values */
+	 
 
 	for (idx = 0; idx < ARRAY_SIZE(aci_init_values); idx++) {
 		error = aci_setvalue(aci, aci_init_values[idx][0],
@@ -729,7 +712,7 @@ static int snd_miro_mixer(struct snd_card *card,
 
 	if ((miro->aci->aci_product == 'A') ||
 	    (miro->aci->aci_product == 'B')) {
-		/* PCM1/PCM12 with power-amp and Line 2 */
+		 
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_line_control[0], miro));
 		if (err < 0)
 			return err;
@@ -740,7 +723,7 @@ static int snd_miro_mixer(struct snd_card *card,
 
 	if ((miro->aci->aci_product == 'B') ||
 	    (miro->aci->aci_product == 'C')) {
-		/* PCM12/PCM20 with mic-preamp */
+		 
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_preamp_control[0], miro));
 		if (err < 0)
 			return err;
@@ -752,7 +735,7 @@ static int snd_miro_mixer(struct snd_card *card,
 	}
 
 	if (miro->aci->aci_product == 'C') {
-		/* PCM20 with radio and 7 band equalizer */
+		 
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_radio_control[0], miro));
 		if (err < 0)
 			return err;
@@ -789,7 +772,7 @@ static int snd_miro_init(struct snd_miro *chip,
 
 #ifdef CONFIG_PNP
 	if (isapnp && chip->mc_base)
-		/* PnP resource gives the least 10 bits */
+		 
 		chip->mc_base |= 0xc00;
 	else
 #endif
@@ -880,9 +863,7 @@ static inline void snd_miro_write_mask(struct snd_miro *chip,
 	snd_miro_write(chip, reg, (oldval & ~mask) | (value & mask));
 }
 
-/*
- *  Proc Interface
- */
+ 
 
 static void snd_miro_proc_read(struct snd_info_entry * entry, 
 			       struct snd_info_buffer *buffer)
@@ -891,7 +872,7 @@ static void snd_miro_proc_read(struct snd_info_entry * entry,
 	struct snd_miro_aci *aci = miro->aci;
 	char* model = "unknown";
 
-	/* miroSOUND PCM1 pro, early PCM12 */
+	 
 
 	if ((miro->hardware == OPTi9XX_HW_82C929) &&
 	    (aci->aci_vendor == 'm') &&
@@ -906,7 +887,7 @@ static void snd_miro_proc_read(struct snd_info_entry * entry,
 		}
 	}
 
-	/* miroSOUND PCM12, PCM12 (Rev. E), PCM12 pnp */
+	 
 
 	if ((miro->hardware == OPTi9XX_HW_82C924) &&
 	    (aci->aci_vendor == 'm') &&
@@ -924,7 +905,7 @@ static void snd_miro_proc_read(struct snd_info_entry * entry,
 		}
 	}
 
-	/* miroSOUND PCM20 radio */
+	 
 
 	if ((miro->hardware == OPTi9XX_HW_82C924) &&
 	    (aci->aci_vendor == 'm') &&
@@ -995,9 +976,7 @@ static void snd_miro_proc_init(struct snd_card *card,
 	snd_card_ro_proc_new(card, "miro", miro, snd_miro_proc_read);
 }
 
-/*
- *  Init
- */
+ 
 
 static int snd_miro_configure(struct snd_miro *chip)
 {
@@ -1009,7 +988,7 @@ static int snd_miro_configure(struct snd_miro *chip)
 	unsigned long flags;
 
 	snd_miro_write_mask(chip, OPTi9XX_MC_REG(1), 0x80, 0x80);
-	snd_miro_write_mask(chip, OPTi9XX_MC_REG(2), 0x20, 0x20); /* OPL4 */
+	snd_miro_write_mask(chip, OPTi9XX_MC_REG(2), 0x20, 0x20);  
 	snd_miro_write_mask(chip, OPTi9XX_MC_REG(5), 0x02, 0x02);
 
 	switch (chip->hardware) {
@@ -1018,7 +997,7 @@ static int snd_miro_configure(struct snd_miro *chip)
 		snd_miro_write_mask(chip, OPTi9XX_MC_REG(3), 0xf0, 0xff);
 		break;
 	case OPTi9XX_HW_82C929:
-		/* untested init commands for OPTi929 */
+		 
 		snd_miro_write_mask(chip, OPTi9XX_MC_REG(4), 0x00, 0x0c);
 		break;
 	default:
@@ -1026,7 +1005,7 @@ static int snd_miro_configure(struct snd_miro *chip)
 		return -EINVAL;
 	}
 
-	/* PnP resource says it decodes only 10 bits of address */
+	 
 	switch (chip->wss_base & 0x3ff) {
 	case 0x130:
 		chip->wss_base = 0x530;
@@ -1210,7 +1189,7 @@ static int snd_card_miro_aci_detect(struct snd_card *card,
 
 	mutex_init(&aci->aci_mutex);
 
-	/* get ACI port from OPTi9xx MC 4 */
+	 
 
 	regval=inb(miro->mc_base + 4);
 	aci->aci_port = (regval & 0x10) ? 0x344 : 0x354;
@@ -1223,7 +1202,7 @@ static int snd_card_miro_aci_detect(struct snd_card *card,
 		return -ENOMEM;
 	}
 
-        /* force ACI into a known state */
+         
 	for (i = 0; i < 3; i++)
 		if (snd_aci_cmd(aci, ACI_ERROR_OP, -1, -1) < 0) {
 			snd_printk(KERN_ERR "can't force aci into known state.\n");
@@ -1286,7 +1265,7 @@ static int snd_miro_probe(struct snd_card *card)
 	miro->dma1 = dma1;
 	miro->dma2 = dma2;
 
-	/* init proc interface */
+	 
 	snd_miro_proc_init(card, miro);
 
 	error = snd_miro_configure(miro);
@@ -1318,7 +1297,7 @@ static int snd_miro_probe(struct snd_card *card)
 		return error;
 
 	if (miro->aci->aci_vendor == 'm') {
-		/* It looks like a miro sound card. */
+		 
 		switch (miro->aci->aci_product) {
 		case 'A':
 			sprintf(card->shortname, 
@@ -1474,7 +1453,7 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 static struct isa_driver snd_miro_driver = {
 	.match		= snd_miro_isa_match,
 	.probe		= snd_miro_isa_probe,
-	/* FIXME: suspend/resume */
+	 
 	.driver		= {
 		.name	= DEV_NAME
 	},
@@ -1519,10 +1498,7 @@ static int snd_card_miro_pnp(struct snd_miro *chip,
 	port = pnp_port_start(pdev, 1);
 	fm_port = pnp_port_start(pdev, 2) + 8;
 
-	/*
-	 * The MC(0) is never accessed and the miroSOUND PCM20 card does not
-	 * include it in the PnP resource range. OPTI93x include it.
-	 */
+	 
 	chip->mc_base = pnp_port_start(devmc, 0) - 1;
 	chip->mc_base_size = pnp_port_len(devmc, 0) + 1;
 
@@ -1565,7 +1541,7 @@ static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 	if (err)
 		return err;
 
-	/* only miroSOUND PCM20 and PCM12 == OPTi924 */
+	 
 	err = snd_miro_init(miro, OPTi9XX_HW_82C924);
 	if (err)
 		return err;

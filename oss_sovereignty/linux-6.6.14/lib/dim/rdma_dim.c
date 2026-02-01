@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2019, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/dim.h>
 
@@ -26,7 +24,7 @@ static int rdma_dim_step(struct dim *dim)
 static int rdma_dim_stats_compare(struct dim_stats *curr,
 				  struct dim_stats *prev)
 {
-	/* first stat */
+	 
 	if (!prev->cpms)
 		return DIM_STATS_SAME;
 

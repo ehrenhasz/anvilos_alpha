@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * I2C Address Translator
- *
- * Copyright (c) 2019,2022 Luca Ceresoli <luca@lucaceresoli.net>
- * Copyright (c) 2022,2023 Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
- *
- * Originally based on i2c-mux.c
- */
+
+ 
 
 #include <linux/fwnode.h>
 #include <linux/i2c-atr.h>
@@ -17,34 +10,17 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 
-#define ATR_MAX_ADAPTERS 100	/* Just a sanity limit */
-#define ATR_MAX_SYMLINK_LEN 11	/* Longest name is 10 chars: "channel-99" */
+#define ATR_MAX_ADAPTERS 100	 
+#define ATR_MAX_SYMLINK_LEN 11	 
 
-/**
- * struct i2c_atr_alias_pair - Holds the alias assigned to a client.
- * @node:   List node
- * @client: Pointer to the client on the child bus
- * @alias:  I2C alias address assigned by the driver.
- *          This is the address that will be used to issue I2C transactions
- *          on the parent (physical) bus.
- */
+ 
 struct i2c_atr_alias_pair {
 	struct list_head node;
 	const struct i2c_client *client;
 	u16 alias;
 };
 
-/**
- * struct i2c_atr_chan - Data for a channel.
- * @adap:            The &struct i2c_adapter for the channel
- * @atr:             The parent I2C ATR
- * @chan_id:         The ID of this channel
- * @alias_list:      List of @struct i2c_atr_alias_pair containing the
- *                   assigned aliases
- * @orig_addrs_lock: Mutex protecting @orig_addrs
- * @orig_addrs:      Buffer used to store the original addresses during transmit
- * @orig_addrs_size: Size of @orig_addrs
- */
+ 
 struct i2c_atr_chan {
 	struct i2c_adapter adap;
 	struct i2c_atr *atr;
@@ -52,28 +28,13 @@ struct i2c_atr_chan {
 
 	struct list_head alias_list;
 
-	/* Lock orig_addrs during xfer */
+	 
 	struct mutex orig_addrs_lock;
 	u16 *orig_addrs;
 	unsigned int orig_addrs_size;
 };
 
-/**
- * struct i2c_atr - The I2C ATR instance
- * @parent:    The parent &struct i2c_adapter
- * @dev:       The device that owns the I2C ATR instance
- * @ops:       &struct i2c_atr_ops
- * @priv:      Private driver data, set with i2c_atr_set_driver_data()
- * @algo:      The &struct i2c_algorithm for adapters
- * @lock:      Lock for the I2C bus segment (see &struct i2c_lock_operations)
- * @max_adapters: Maximum number of adapters this I2C ATR can have
- * @num_aliases: Number of aliases in the aliases array
- * @aliases:   The aliases array
- * @alias_mask_lock: Lock protecting alias_use_mask
- * @alias_use_mask: Bitmask for used aliases in aliases array
- * @i2c_nb:    Notifier for remote client add & del events
- * @adapter:   Array of adapters
- */
+ 
 struct i2c_atr {
 	struct i2c_adapter *parent;
 	struct device *dev;
@@ -82,13 +43,13 @@ struct i2c_atr {
 	void *priv;
 
 	struct i2c_algorithm algo;
-	/* lock for the I2C bus segment (see struct i2c_lock_operations) */
+	 
 	struct mutex lock;
 	int max_adapters;
 
 	size_t num_aliases;
 	const u16 *aliases;
-	/* Protects alias_use_mask */
+	 
 	spinlock_t alias_mask_lock;
 	unsigned long *alias_use_mask;
 
@@ -124,13 +85,7 @@ i2c_atr_find_mapping_by_addr(const struct list_head *list, u16 phys_addr)
 	return NULL;
 }
 
-/*
- * Replace all message addresses with their aliases, saving the original
- * addresses.
- *
- * This function is internal for use in i2c_atr_master_xfer(). It must be
- * followed by i2c_atr_unmap_msgs() to restore the original addresses.
- */
+ 
 static int i2c_atr_map_msgs(struct i2c_atr_chan *chan, struct i2c_msg *msgs,
 			    int num)
 {
@@ -138,11 +93,11 @@ static int i2c_atr_map_msgs(struct i2c_atr_chan *chan, struct i2c_msg *msgs,
 	static struct i2c_atr_alias_pair *c2a;
 	int i;
 
-	/* Ensure we have enough room to save the original addresses */
+	 
 	if (unlikely(chan->orig_addrs_size < num)) {
 		u16 *new_buf;
 
-		/* We don't care about old data, hence no realloc() */
+		 
 		new_buf = kmalloc_array(num, sizeof(*new_buf), GFP_KERNEL);
 		if (!new_buf)
 			return -ENOMEM;
@@ -173,13 +128,7 @@ static int i2c_atr_map_msgs(struct i2c_atr_chan *chan, struct i2c_msg *msgs,
 	return 0;
 }
 
-/*
- * Restore all message address aliases with the original addresses. This
- * function is internal for use in i2c_atr_master_xfer() and for this reason it
- * needs no null and size checks on orig_addr.
- *
- * @see i2c_atr_map_msgs()
- */
+ 
 static void i2c_atr_unmap_msgs(struct i2c_atr_chan *chan, struct i2c_msg *msgs,
 			       int num)
 {
@@ -197,17 +146,17 @@ static int i2c_atr_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	struct i2c_adapter *parent = atr->parent;
 	int ret;
 
-	/* Translate addresses */
+	 
 	mutex_lock(&chan->orig_addrs_lock);
 
 	ret = i2c_atr_map_msgs(chan, msgs, num);
 	if (ret < 0)
 		goto err_unlock;
 
-	/* Perform the transfer */
+	 
 	ret = i2c_transfer(parent, msgs, num);
 
-	/* Restore addresses */
+	 
 	i2c_atr_unmap_msgs(chan, msgs, num);
 
 err_unlock:
@@ -309,7 +258,7 @@ static void i2c_atr_release_alias(struct i2c_atr *atr, u16 alias)
 
 	spin_unlock(&atr->alias_mask_lock);
 
-	 /* This should never happen */
+	  
 	dev_warn(atr->dev, "Unable to find mapped alias\n");
 }
 
@@ -366,7 +315,7 @@ static void i2c_atr_detach_client(struct i2c_adapter *adapter,
 
 	c2a = i2c_atr_find_mapping_by_client(&chan->alias_list, client);
 	if (!c2a) {
-		 /* This should never happen */
+		  
 		dev_warn(atr->dev, "Unable to find address mapping\n");
 		return;
 	}
@@ -394,7 +343,7 @@ static int i2c_atr_bus_notifier_call(struct notifier_block *nb,
 	if (!client)
 		return NOTIFY_DONE;
 
-	/* Is the client in one of our adapters? */
+	 
 	for (chan_id = 0; chan_id < atr->max_adapters; ++chan_id) {
 		if (client->adapter == atr->adapter[chan_id])
 			break;

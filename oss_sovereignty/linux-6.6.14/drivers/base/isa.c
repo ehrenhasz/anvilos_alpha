@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ISA bus.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>

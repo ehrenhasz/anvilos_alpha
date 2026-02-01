@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson HTPIC IRQ support
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of_address.h>
@@ -34,7 +31,7 @@ static void htpic_irq_dispatch(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 	pending = readl(priv->base);
-	/* Ack all IRQs at once, otherwise IRQ flood might happen */
+	 
 	writel(pending, priv->base);
 
 	if (!pending)
@@ -59,15 +56,15 @@ static void htpic_reg_init(void)
 	int i;
 
 	for (i = 0; i < HTINT_NUM_VECTORS; i++) {
-		/* Disable all HT Vectors */
+		 
 		writel(0x0, htpic->base + HTINT_EN_OFF + i * 0x4);
-		/* Read back to force write */
+		 
 		(void) readl(htpic->base + i * 0x4);
-		/* Ack all possible pending IRQs */
+		 
 		writel(GENMASK(31, 0), htpic->base + i * 0x4);
 	}
 
-	/* Enable 16 vectors for PIC */
+	 
 	writel(0xffff, htpic->base + HTINT_EN_OFF);
 }
 
@@ -108,7 +105,7 @@ static int __init htpic_of_init(struct device_node *node, struct device_node *pa
 		goto out_iounmap;
 	}
 
-	/* Interrupt may come from any of the 4 interrupt line */
+	 
 	for (i = 0; i < HTPIC_MAX_PARENT_IRQ; i++) {
 		parent_irq[i] = irq_of_parse_and_map(node, i);
 		if (parent_irq[i] <= 0)

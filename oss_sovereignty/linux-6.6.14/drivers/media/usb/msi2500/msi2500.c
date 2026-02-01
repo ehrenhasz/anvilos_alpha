@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Mirics MSi2500 driver
- * Mirics MSi3101 SDR Dongle driver
- *
- * Copyright (C) 2013 Antti Palosaari <crope@iki.fi>
- *
- * That driver is somehow based of pwc driver:
- *  (C) 1999-2004 Nemosoft Unv.
- *  (C) 2004-2006 Luc Saillard (luc@saillard.org)
- *  (C) 2011 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -27,30 +17,17 @@ static bool msi2500_emulated_fmt;
 module_param_named(emulated_formats, msi2500_emulated_fmt, bool, 0644);
 MODULE_PARM_DESC(emulated_formats, "enable emulated formats (disappears in future)");
 
-/*
- *   iConfiguration          0
- *     bInterfaceNumber        0
- *     bAlternateSetting       1
- *     bNumEndpoints           1
- *       bEndpointAddress     0x81  EP 1 IN
- *       bmAttributes            1
- *         Transfer Type            Isochronous
- *       wMaxPacketSize     0x1400  3x 1024 bytes
- *       bInterval               1
- */
+ 
 #define MAX_ISO_BUFS            (8)
 #define ISO_FRAMES_PER_DESC     (8)
 #define ISO_MAX_FRAME_SIZE      (3 * 1024)
 #define ISO_BUFFER_SIZE         (ISO_FRAMES_PER_DESC * ISO_MAX_FRAME_SIZE)
 #define MAX_ISOC_ERRORS         20
 
-/*
- * TODO: These formats should be moved to V4L2 API. Formats are currently
- * disabled from formats[] table, not visible to userspace.
- */
- /* signed 12-bit */
+ 
+  
 #define MSI2500_PIX_FMT_SDR_S12         v4l2_fourcc('D', 'S', '1', '2')
-/* Mirics MSi2500 format 384 */
+ 
 #define MSI2500_PIX_FMT_SDR_MSI2500_384 v4l2_fourcc('M', '3', '8', '4')
 
 static const struct v4l2_frequency_band bands[] = {
@@ -64,13 +41,13 @@ static const struct v4l2_frequency_band bands[] = {
 	},
 };
 
-/* stream formats */
+ 
 struct msi2500_format {
 	u32	pixelformat;
 	u32	buffersize;
 };
 
-/* format descriptions for capture and preview */
+ 
 static struct msi2500_format formats[] = {
 	{
 		.pixelformat	= V4L2_SDR_FMT_CS8,
@@ -95,9 +72,9 @@ static struct msi2500_format formats[] = {
 
 static const unsigned int NUM_FORMATS = ARRAY_SIZE(formats);
 
-/* intermediate buffers with raw data from the USB device */
+ 
 struct msi2500_frame_buf {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
 };
@@ -109,37 +86,37 @@ struct msi2500_dev {
 	struct v4l2_subdev *v4l2_subdev;
 	struct spi_master *master;
 
-	/* videobuf2 queue and queued buffers list */
+	 
 	struct vb2_queue vb_queue;
 	struct list_head queued_bufs;
-	spinlock_t queued_bufs_lock; /* Protects queued_bufs */
+	spinlock_t queued_bufs_lock;  
 
-	/* Note if taking both locks v4l2_lock must always be locked first! */
-	struct mutex v4l2_lock;      /* Protects everything else */
-	struct mutex vb_queue_lock;  /* Protects vb_queue and capt_file */
+	 
+	struct mutex v4l2_lock;       
+	struct mutex vb_queue_lock;   
 
-	/* Pointer to our usb_device, will be NULL after unplug */
-	struct usb_device *udev; /* Both mutexes most be hold when setting! */
+	 
+	struct usb_device *udev;  
 
 	unsigned int f_adc;
 	u32 pixelformat;
 	u32 buffersize;
 	unsigned int num_formats;
 
-	unsigned int isoc_errors; /* number of contiguous ISOC errors */
-	unsigned int vb_full; /* vb is full and packets dropped */
+	unsigned int isoc_errors;  
+	unsigned int vb_full;  
 
 	struct urb *urbs[MAX_ISO_BUFS];
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 
-	u32 next_sample; /* for track lost packets */
-	u32 sample; /* for sample rate calc */
+	u32 next_sample;  
+	u32 sample;  
 	unsigned long jiffies_next;
 };
 
-/* Private functions */
+ 
 static struct msi2500_frame_buf *msi2500_get_next_fill_buf(
 							struct msi2500_dev *dev)
 {
@@ -157,87 +134,7 @@ leave:
 	return buf;
 }
 
-/*
- * +===========================================================================
- * |   00-1023 | USB packet type '504'
- * +===========================================================================
- * |   00-  03 | sequence number of first sample in that USB packet
- * +---------------------------------------------------------------------------
- * |   04-  15 | garbage
- * +---------------------------------------------------------------------------
- * |   16-1023 | samples
- * +---------------------------------------------------------------------------
- * signed 8-bit sample
- * 504 * 2 = 1008 samples
- *
- *
- * +===========================================================================
- * |   00-1023 | USB packet type '384'
- * +===========================================================================
- * |   00-  03 | sequence number of first sample in that USB packet
- * +---------------------------------------------------------------------------
- * |   04-  15 | garbage
- * +---------------------------------------------------------------------------
- * |   16- 175 | samples
- * +---------------------------------------------------------------------------
- * |  176- 179 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * |  180- 339 | samples
- * +---------------------------------------------------------------------------
- * |  340- 343 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * |  344- 503 | samples
- * +---------------------------------------------------------------------------
- * |  504- 507 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * |  508- 667 | samples
- * +---------------------------------------------------------------------------
- * |  668- 671 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * |  672- 831 | samples
- * +---------------------------------------------------------------------------
- * |  832- 835 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * |  836- 995 | samples
- * +---------------------------------------------------------------------------
- * |  996- 999 | control bits for previous samples
- * +---------------------------------------------------------------------------
- * | 1000-1023 | garbage
- * +---------------------------------------------------------------------------
- *
- * Bytes 4 - 7 could have some meaning?
- *
- * Control bits for previous samples is 32-bit field, containing 16 x 2-bit
- * numbers. This results one 2-bit number for 8 samples. It is likely used for
- * bit shifting sample by given bits, increasing actual sampling resolution.
- * Number 2 (0b10) was never seen.
- *
- * 6 * 16 * 2 * 4 = 768 samples. 768 * 4 = 3072 bytes
- *
- *
- * +===========================================================================
- * |   00-1023 | USB packet type '336'
- * +===========================================================================
- * |   00-  03 | sequence number of first sample in that USB packet
- * +---------------------------------------------------------------------------
- * |   04-  15 | garbage
- * +---------------------------------------------------------------------------
- * |   16-1023 | samples
- * +---------------------------------------------------------------------------
- * signed 12-bit sample
- *
- *
- * +===========================================================================
- * |   00-1023 | USB packet type '252'
- * +===========================================================================
- * |   00-  03 | sequence number of first sample in that USB packet
- * +---------------------------------------------------------------------------
- * |   04-  15 | garbage
- * +---------------------------------------------------------------------------
- * |   16-1023 | samples
- * +---------------------------------------------------------------------------
- * signed 14-bit sample
- */
+ 
 
 static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 				  unsigned int src_len)
@@ -245,7 +142,7 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 	unsigned int i, j, transactions, dst_len = 0;
 	u32 sample[3];
 
-	/* There could be 1-3 1024 byte transactions per packet */
+	 
 	transactions = src_len / 1024;
 
 	for (i = 0; i < transactions; i++) {
@@ -259,16 +156,13 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 					    sample[0]);
 		}
 
-		/*
-		 * Dump all unknown 'garbage' data - maybe we will discover
-		 * someday if there is something rational...
-		 */
+		 
 		dev_dbg_ratelimited(dev->dev, "%*ph\n", 12, &src[4]);
 
-		src += 16; /* skip header */
+		src += 16;  
 
 		switch (dev->pixelformat) {
-		case V4L2_SDR_FMT_CU8: /* 504 x IQ samples */
+		case V4L2_SDR_FMT_CU8:  
 		{
 			s8 *s8src = (s8 *)src;
 			u8 *u8dst = (u8 *)dst;
@@ -282,19 +176,19 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 			dev->next_sample = sample[i] + 504;
 			break;
 		}
-		case  V4L2_SDR_FMT_CU16LE: /* 252 x IQ samples */
+		case  V4L2_SDR_FMT_CU16LE:  
 		{
 			s16 *s16src = (s16 *)src;
 			u16 *u16dst = (u16 *)dst;
-			struct {signed int x:14; } se; /* sign extension */
+			struct {signed int x:14; } se;  
 			unsigned int utmp;
 
 			for (j = 0; j < 1008; j += 2) {
-				/* sign extension from 14-bit to signed int */
+				 
 				se.x = *s16src++;
-				/* from signed int to unsigned int */
+				 
 				utmp = se.x + 8192;
-				/* from 14-bit to 16-bit */
+				 
 				*u16dst++ = utmp << 2 | utmp >> 12;
 			}
 
@@ -304,8 +198,8 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 			dev->next_sample = sample[i] + 252;
 			break;
 		}
-		case MSI2500_PIX_FMT_SDR_MSI2500_384: /* 384 x IQ samples */
-			/* Dump unknown 'garbage' data */
+		case MSI2500_PIX_FMT_SDR_MSI2500_384:  
+			 
 			dev_dbg_ratelimited(dev->dev, "%*ph\n", 24, &src[1000]);
 			memcpy(dst, src, 984);
 			src += 984 + 24;
@@ -313,21 +207,21 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 			dst_len += 984;
 			dev->next_sample = sample[i] + 384;
 			break;
-		case V4L2_SDR_FMT_CS8:         /* 504 x IQ samples */
+		case V4L2_SDR_FMT_CS8:          
 			memcpy(dst, src, 1008);
 			src += 1008;
 			dst += 1008;
 			dst_len += 1008;
 			dev->next_sample = sample[i] + 504;
 			break;
-		case MSI2500_PIX_FMT_SDR_S12:  /* 336 x IQ samples */
+		case MSI2500_PIX_FMT_SDR_S12:   
 			memcpy(dst, src, 1008);
 			src += 1008;
 			dst += 1008;
 			dst_len += 1008;
 			dev->next_sample = sample[i] + 336;
 			break;
-		case V4L2_SDR_FMT_CS14LE:      /* 252 x IQ samples */
+		case V4L2_SDR_FMT_CS14LE:       
 			memcpy(dst, src, 1008);
 			src += 1008;
 			dst += 1008;
@@ -339,7 +233,7 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 		}
 	}
 
-	/* calculate sample rate and output it in 10 seconds intervals */
+	 
 	if (unlikely(time_is_before_jiffies(dev->jiffies_next))) {
 		#define MSECS 10000UL
 		unsigned int msecs = jiffies_to_msecs(jiffies -
@@ -356,10 +250,7 @@ static int msi2500_convert_stream(struct msi2500_dev *dev, u8 *dst, u8 *src,
 	return dst_len;
 }
 
-/*
- * This gets called for the Isochronous pipe (stream). This is done in interrupt
- * time, so it has to be fast, not crash, and not stall. Neat.
- */
+ 
 static void msi2500_isoc_handler(struct urb *urb)
 {
 	struct msi2500_dev *dev = (struct msi2500_dev *)urb->context;
@@ -377,20 +268,20 @@ static void msi2500_isoc_handler(struct urb *urb)
 
 	if (unlikely(urb->status != 0)) {
 		dev_dbg(dev->dev, "called with status %d\n", urb->status);
-		/* Give up after a number of contiguous errors */
+		 
 		if (++dev->isoc_errors > MAX_ISOC_ERRORS)
 			dev_dbg(dev->dev, "Too many ISOC errors, bailing out\n");
 		goto handler_end;
 	} else {
-		/* Reset ISOC error counter. We did get here, after all. */
+		 
 		dev->isoc_errors = 0;
 	}
 
-	/* Compact data */
+	 
 	for (i = 0; i < urb->number_of_packets; i++) {
 		void *ptr;
 
-		/* Check frame error */
+		 
 		fstatus = urb->iso_frame_desc[i].status;
 		if (unlikely(fstatus)) {
 			dev_dbg_ratelimited(dev->dev,
@@ -399,14 +290,14 @@ static void msi2500_isoc_handler(struct urb *urb)
 			continue;
 		}
 
-		/* Check if that frame contains data */
+		 
 		flen = urb->iso_frame_desc[i].actual_length;
 		if (unlikely(flen == 0))
 			continue;
 
 		iso_buf = urb->transfer_buffer + urb->iso_frame_desc[i].offset;
 
-		/* Get free framebuffer */
+		 
 		fbuf = msi2500_get_next_fill_buf(dev);
 		if (unlikely(fbuf == NULL)) {
 			dev->vb_full++;
@@ -416,7 +307,7 @@ static void msi2500_isoc_handler(struct urb *urb)
 			continue;
 		}
 
-		/* fill framebuffer */
+		 
 		ptr = vb2_plane_vaddr(&fbuf->vb.vb2_buf, 0);
 		flen = msi2500_convert_stream(dev, ptr, iso_buf, flen);
 		vb2_set_plane_payload(&fbuf->vb.vb2_buf, 0, flen);
@@ -435,7 +326,7 @@ static void msi2500_iso_stop(struct msi2500_dev *dev)
 
 	dev_dbg(dev->dev, "\n");
 
-	/* Unlinking ISOC buffers one by one */
+	 
 	for (i = 0; i < MAX_ISO_BUFS; i++) {
 		if (dev->urbs[i]) {
 			dev_dbg(dev->dev, "Unlinking URB %p\n", dev->urbs[i]);
@@ -450,7 +341,7 @@ static void msi2500_iso_free(struct msi2500_dev *dev)
 
 	dev_dbg(dev->dev, "\n");
 
-	/* Freeing ISOC buffers one by one */
+	 
 	for (i = 0; i < MAX_ISO_BUFS; i++) {
 		if (dev->urbs[i]) {
 			dev_dbg(dev->dev, "Freeing URB\n");
@@ -466,7 +357,7 @@ static void msi2500_iso_free(struct msi2500_dev *dev)
 	}
 }
 
-/* Both v4l2_lock and vb_queue_lock should be locked when calling this */
+ 
 static void msi2500_isoc_cleanup(struct msi2500_dev *dev)
 {
 	dev_dbg(dev->dev, "\n");
@@ -475,7 +366,7 @@ static void msi2500_isoc_cleanup(struct msi2500_dev *dev)
 	msi2500_iso_free(dev);
 }
 
-/* Both v4l2_lock and vb_queue_lock should be locked when calling this */
+ 
 static int msi2500_isoc_init(struct msi2500_dev *dev)
 {
 	struct urb *urb;
@@ -489,7 +380,7 @@ static int msi2500_isoc_init(struct msi2500_dev *dev)
 	if (ret)
 		return ret;
 
-	/* Allocate and init Isochronuous urbs */
+	 
 	for (i = 0; i < MAX_ISO_BUFS; i++) {
 		urb = usb_alloc_urb(ISO_FRAMES_PER_DESC, GFP_KERNEL);
 		if (urb == NULL) {
@@ -523,7 +414,7 @@ static int msi2500_isoc_init(struct msi2500_dev *dev)
 		}
 	}
 
-	/* link */
+	 
 	for (i = 0; i < MAX_ISO_BUFS; i++) {
 		ret = usb_submit_urb(dev->urbs[i], GFP_KERNEL);
 		if (ret) {
@@ -536,11 +427,11 @@ static int msi2500_isoc_init(struct msi2500_dev *dev)
 		dev_dbg(dev->dev, "URB 0x%p submitted.\n", dev->urbs[i]);
 	}
 
-	/* All is done... */
+	 
 	return 0;
 }
 
-/* Must be called with vb_queue_lock hold */
+ 
 static void msi2500_cleanup_queued_bufs(struct msi2500_dev *dev)
 {
 	unsigned long flags;
@@ -559,7 +450,7 @@ static void msi2500_cleanup_queued_bufs(struct msi2500_dev *dev)
 	spin_unlock_irqrestore(&dev->queued_bufs_lock, flags);
 }
 
-/* The user yanked out the cable... */
+ 
 static void msi2500_disconnect(struct usb_interface *intf)
 {
 	struct v4l2_device *v = usb_get_intfdata(intf);
@@ -570,7 +461,7 @@ static void msi2500_disconnect(struct usb_interface *intf)
 
 	mutex_lock(&dev->vb_queue_lock);
 	mutex_lock(&dev->v4l2_lock);
-	/* No need to keep the urbs around after disconnection */
+	 
 	dev->udev = NULL;
 	v4l2_device_disconnect(&dev->v4l2_dev);
 	video_unregister_device(&dev->vdev);
@@ -594,7 +485,7 @@ static int msi2500_querycap(struct file *file, void *fh,
 	return 0;
 }
 
-/* Videobuf2 operations */
+ 
 static int msi2500_queue_setup(struct vb2_queue *vq,
 			       unsigned int *nbuffers,
 			       unsigned int *nplanes, unsigned int sizes[],
@@ -604,7 +495,7 @@ static int msi2500_queue_setup(struct vb2_queue *vq,
 
 	dev_dbg(dev->dev, "nbuffers=%d\n", *nbuffers);
 
-	/* Absolute min and max number of buffers available for mmap() */
+	 
 	*nbuffers = clamp_t(unsigned int, *nbuffers, 8, 32);
 	*nplanes = 1;
 	sizes[0] = PAGE_ALIGN(dev->buffersize);
@@ -621,7 +512,7 @@ static void msi2500_buf_queue(struct vb2_buffer *vb)
 						     vb);
 	unsigned long flags;
 
-	/* Check the device has not disconnected between prep and queuing */
+	 
 	if (unlikely(!dev->udev)) {
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 		return;
@@ -677,7 +568,7 @@ static int msi2500_set_usb_adc(struct msi2500_dev *dev)
 
 	f_sr = dev->f_adc;
 
-	/* set tuner, subdev, filters according to sampling rate */
+	 
 	bandwidth_auto = v4l2_ctrl_find(&dev->hdl,
 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO);
 	if (v4l2_ctrl_g_ctrl(bandwidth_auto)) {
@@ -686,73 +577,33 @@ static int msi2500_set_usb_adc(struct msi2500_dev *dev)
 		v4l2_ctrl_s_ctrl(bandwidth, dev->f_adc);
 	}
 
-	/* select stream format */
+	 
 	switch (dev->pixelformat) {
 	case V4L2_SDR_FMT_CU8:
-		reg7 = 0x000c9407; /* 504 */
+		reg7 = 0x000c9407;  
 		break;
 	case  V4L2_SDR_FMT_CU16LE:
-		reg7 = 0x00009407; /* 252 */
+		reg7 = 0x00009407;  
 		break;
 	case V4L2_SDR_FMT_CS8:
-		reg7 = 0x000c9407; /* 504 */
+		reg7 = 0x000c9407;  
 		break;
 	case MSI2500_PIX_FMT_SDR_MSI2500_384:
-		reg7 = 0x0000a507; /* 384 */
+		reg7 = 0x0000a507;  
 		break;
 	case MSI2500_PIX_FMT_SDR_S12:
-		reg7 = 0x00008507; /* 336 */
+		reg7 = 0x00008507;  
 		break;
 	case V4L2_SDR_FMT_CS14LE:
-		reg7 = 0x00009407; /* 252 */
+		reg7 = 0x00009407;  
 		break;
 	default:
-		reg7 = 0x000c9407; /* 504 */
+		reg7 = 0x000c9407;  
 		break;
 	}
 
-	/*
-	 * Fractional-N synthesizer
-	 *
-	 *           +----------------------------------------+
-	 *           v                                        |
-	 *  Fref   +----+     +-------+     +-----+         +------+     +---+
-	 * ------> | PD | --> |  VCO  | --> | /2  | ------> | /N.F | <-- | K |
-	 *         +----+     +-------+     +-----+         +------+     +---+
-	 *                      |
-	 *                      |
-	 *                      v
-	 *                    +-------+     +-----+  Fout
-	 *                    | /Rout | --> | /12 | ------>
-	 *                    +-------+     +-----+
-	 */
-	/*
-	 * Synthesizer config is just a educated guess...
-	 *
-	 * [7:0]   0x03, register address
-	 * [8]     1, power control
-	 * [9]     ?, power control
-	 * [12:10] output divider
-	 * [13]    0 ?
-	 * [14]    0 ?
-	 * [15]    fractional MSB, bit 20
-	 * [16:19] N
-	 * [23:20] ?
-	 * [24:31] 0x01
-	 *
-	 * output divider
-	 * val   div
-	 *   0     - (invalid)
-	 *   1     4
-	 *   2     6
-	 *   3     8
-	 *   4    10
-	 *   5    12
-	 *   6    14
-	 *   7    16
-	 *
-	 * VCO 202000000 - 720000000++
-	 */
+	 
+	 
 
 	#define F_REF 24000000
 	#define DIV_PRE_N 2
@@ -760,7 +611,7 @@ static int msi2500_set_usb_adc(struct msi2500_dev *dev)
 	reg3 = 0x01000303;
 	reg4 = 0x00000004;
 
-	/* XXX: Filters? AGC? VCO band? */
+	 
 	if (f_sr < 6000000)
 		reg3 |= 0x1 << 20;
 	else if (f_sr < 7000000)
@@ -777,14 +628,14 @@ static int msi2500_set_usb_adc(struct msi2500_dev *dev)
 			break;
 	}
 
-	/* Calculate PLL integer and fractional control word. */
+	 
 	div_n = div_u64_rem(f_vco, DIV_PRE_N * F_REF, &k);
 	k_cw = div_u64((u64) k * 0x200000, DIV_PRE_N * F_REF);
 
 	reg3 |= div_n << 16;
 	reg3 |= (div_out / 2 - 1) << 10;
-	reg3 |= ((k_cw >> 20) & 0x000001) << 15; /* [20] */
-	reg4 |= ((k_cw >>  0) & 0x0fffff) <<  8; /* [19:0] */
+	reg3 |= ((k_cw >> 20) & 0x000001) << 15;  
+	reg4 |= ((k_cw >>  0) & 0x0fffff) <<  8;  
 
 	dev_dbg(dev->dev,
 		"f_sr=%u f_vco=%u div_n=%u k=%u div_out=%u reg3=%08x reg4=%08x\n",
@@ -836,7 +687,7 @@ static int msi2500_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (mutex_lock_interruptible(&dev->v4l2_lock))
 		return -ERESTARTSYS;
 
-	/* wake-up tuner */
+	 
 	v4l2_subdev_call(dev->v4l2_subdev, core, s_power, 1);
 
 	ret = msi2500_set_usb_adc(dev);
@@ -865,14 +716,14 @@ static void msi2500_stop_streaming(struct vb2_queue *vq)
 
 	msi2500_cleanup_queued_bufs(dev);
 
-	/* according to tests, at least 700us delay is required  */
+	 
 	msleep(20);
 	if (dev->udev && !msi2500_ctrl_msg(dev, CMD_STOP_STREAMING, 0)) {
-		/* sleep USB IF / ADC */
+		 
 		msi2500_ctrl_msg(dev, CMD_WREG, 0x01000003);
 	}
 
-	/* sleep tuner */
+	 
 	v4l2_subdev_call(dev->v4l2_subdev, core, s_power, 0);
 
 	mutex_unlock(&dev->v4l2_lock);
@@ -1146,7 +997,7 @@ static int msi2500_transfer_one_message(struct spi_master *master,
 
 	list_for_each_entry(t, &m->transfers, transfer_list) {
 		dev_dbg(dev->dev, "msg=%*ph\n", t->len, t->tx_buf);
-		data = 0x09; /* reg 9 is SPI adapter */
+		data = 0x09;  
 		data |= ((u8 *)t->tx_buf)[0] << 8;
 		data |= ((u8 *)t->tx_buf)[1] << 16;
 		data |= ((u8 *)t->tx_buf)[2] << 24;
@@ -1191,7 +1042,7 @@ static int msi2500_probe(struct usb_interface *intf,
 	if (!msi2500_emulated_fmt)
 		dev->num_formats -= 2;
 
-	/* Init videobuf2 queue structure */
+	 
 	dev->vb_queue.type = V4L2_BUF_TYPE_SDR_CAPTURE;
 	dev->vb_queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_READ;
 	dev->vb_queue.drv_priv = dev;
@@ -1205,13 +1056,13 @@ static int msi2500_probe(struct usb_interface *intf,
 		goto err_free_mem;
 	}
 
-	/* Init video_device structure */
+	 
 	dev->vdev = msi2500_template;
 	dev->vdev.queue = &dev->vb_queue;
 	dev->vdev.queue->lock = &dev->vb_queue_lock;
 	video_set_drvdata(&dev->vdev, dev);
 
-	/* Register the v4l2_device structure */
+	 
 	dev->v4l2_dev.release = msi2500_video_release;
 	ret = v4l2_device_register(&intf->dev, &dev->v4l2_dev);
 	if (ret) {
@@ -1219,7 +1070,7 @@ static int msi2500_probe(struct usb_interface *intf,
 		goto err_free_mem;
 	}
 
-	/* SPI master adapter */
+	 
 	master = spi_alloc_master(dev->dev, 0);
 	if (master == NULL) {
 		ret = -ENOMEM;
@@ -1237,7 +1088,7 @@ static int msi2500_probe(struct usb_interface *intf,
 		goto err_unregister_v4l2_dev;
 	}
 
-	/* load v4l2 subdevice */
+	 
 	sd = v4l2_spi_new_subdev(&dev->v4l2_dev, master, &board_info);
 	dev->v4l2_subdev = sd;
 	if (sd == NULL) {
@@ -1246,7 +1097,7 @@ static int msi2500_probe(struct usb_interface *intf,
 		goto err_unregister_master;
 	}
 
-	/* Register controls */
+	 
 	v4l2_ctrl_handler_init(&dev->hdl, 0);
 	if (dev->hdl.error) {
 		ret = dev->hdl.error;
@@ -1254,7 +1105,7 @@ static int msi2500_probe(struct usb_interface *intf,
 		goto err_free_controls;
 	}
 
-	/* currently all controls are from subdev */
+	 
 	v4l2_ctrl_add_handler(&dev->hdl, sd->ctrl_handler, NULL, true);
 
 	dev->v4l2_dev.ctrl_handler = &dev->hdl;
@@ -1286,15 +1137,15 @@ err:
 	return ret;
 }
 
-/* USB device ID list */
+ 
 static const struct usb_device_id msi2500_id_table[] = {
-	{USB_DEVICE(0x1df7, 0x2500)}, /* Mirics MSi3101 SDR Dongle */
-	{USB_DEVICE(0x2040, 0xd300)}, /* Hauppauge WinTV 133559 LF */
+	{USB_DEVICE(0x1df7, 0x2500)},  
+	{USB_DEVICE(0x2040, 0xd300)},  
 	{}
 };
 MODULE_DEVICE_TABLE(usb, msi2500_id_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver msi2500_driver = {
 	.name                     = KBUILD_MODNAME,
 	.probe                    = msi2500_probe,

@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include <linux/pci.h>
 
@@ -442,7 +420,7 @@ u32 cypress_map_clkf_to_ibias(struct radeon_device *rdev, u32 clkf)
 	u32 ref_clk = rdev->clock.mpll.reference_freq;
 	u32 vco = clkf * ref_clk;
 
-	/* 100 Mhz ref clk */
+	 
 	if (ref_clk == 10000) {
 		if (vco > 500000)
 			return 0xC6;
@@ -459,7 +437,7 @@ u32 cypress_map_clkf_to_ibias(struct radeon_device *rdev, u32 clkf)
 		return 0x4B;
 	}
 
-	/* 27 Mhz ref clk */
+	 
 	if (vco > 250000)
 		return 0x8B;
 	if (vco > 200000)
@@ -1426,7 +1404,7 @@ int cypress_populate_smc_acpi_state(struct radeon_device *rdev,
 		     MRDCKD0_BYPASS |
 		     MRDCKD1_BYPASS);
 
-	/* evergreen only */
+	 
 	if (rdev->family <= CHIP_HEMLOCK)
 		spll_func_cntl |= SPLL_RESET | SPLL_SLEEP | SPLL_BYPASS_EN;
 
@@ -1765,7 +1743,7 @@ static void cypress_program_display_gap(struct radeon_device *rdev)
 
 	if ((rdev->pm.dpm.new_active_crtc_count > 0) &&
 	    (!(rdev->pm.dpm.new_active_crtcs & (1 << pipe)))) {
-		/* find the first active crtc */
+		 
 		for (i = 0; i < rdev->num_crtc; i++) {
 			if (rdev->pm.dpm.new_active_crtcs & (1 << i))
 				break;
@@ -2157,7 +2135,7 @@ bool cypress_dpm_vblank_too_short(struct radeon_device *rdev)
 {
 	struct rv7xx_power_info *pi = rv770_get_pi(rdev);
 	u32 vblank_time = r600_dpm_get_vblank_time(rdev);
-	/* we never hit the non-gddr5 limit so disable it */
+	 
 	u32 switch_limit = pi->mem_gddr5 ? 450 : 0;
 
 	if (vblank_time < switch_limit)

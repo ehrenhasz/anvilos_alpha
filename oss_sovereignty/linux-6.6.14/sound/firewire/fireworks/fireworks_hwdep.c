@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_hwdep.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
 
-/*
- * This codes have five functionalities.
- *
- * 1.get information about firewire node
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock streaming
- * 4.transmit command of EFW transaction
- * 5.receive response of EFW transaction
- *
- */
+ 
+
+ 
 
 #include "fireworks.h"
 
@@ -30,7 +17,7 @@ hwdep_read_resp_buf(struct snd_efw *efw, char __user *buf, long remained,
 	if (remained < sizeof(type) + sizeof(struct snd_efw_transaction))
 		return -ENOSPC;
 
-	/* data type is SNDRV_FIREWIRE_EVENT_EFW_RESPONSE */
+	 
 	type = SNDRV_FIREWIRE_EVENT_EFW_RESPONSE;
 	if (copy_to_user(buf, &type, sizeof(type)))
 		return -EFAULT;
@@ -38,25 +25,21 @@ hwdep_read_resp_buf(struct snd_efw *efw, char __user *buf, long remained,
 	remained -= sizeof(type);
 	buf += sizeof(type);
 
-	/* write into buffer as many responses as possible */
+	 
 	spin_lock_irq(&efw->lock);
 
-	/*
-	 * When another task reaches here during this task's access to user
-	 * space, it picks up current position in buffer and can read the same
-	 * series of responses.
-	 */
+	 
 	pull_ptr = efw->pull_ptr;
 
 	while (efw->push_ptr != pull_ptr) {
 		t = (struct snd_efw_transaction *)(pull_ptr);
 		length = be32_to_cpu(t->length) * sizeof(__be32);
 
-		/* confirm enough space for this response */
+		 
 		if (remained < length)
 			break;
 
-		/* copy from ring buffer to user buffer */
+		 
 		while (length > 0) {
 			till_end = snd_efw_resp_buf_size -
 				(unsigned int)(pull_ptr - efw->resp_buf);
@@ -80,14 +63,7 @@ hwdep_read_resp_buf(struct snd_efw *efw, char __user *buf, long remained,
 		}
 	}
 
-	/*
-	 * All of tasks can read from the buffer nearly simultaneously, but the
-	 * last position for each task is different depending on the length of
-	 * given buffer. Here, for simplicity, a position of buffer is set by
-	 * the latest task. It's better for a listening application to allow one
-	 * thread to read from the buffer. Unless, each task can read different
-	 * sequence of responses depending on variation of buffer length.
-	 */
+	 
 	efw->pull_ptr = pull_ptr;
 
 	spin_unlock_irq(&efw->lock);
@@ -170,7 +146,7 @@ hwdep_write(struct snd_hwdep *hwdep, const char __user *data, long count,
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* check seqnum is not for kernel-land */
+	 
 	seqnum = be32_to_cpu(((struct snd_efw_transaction *)buf)->seqnum);
 	if (seqnum > SND_EFW_TRANSACTION_USER_SEQNUM_MAX) {
 		count = -EINVAL;

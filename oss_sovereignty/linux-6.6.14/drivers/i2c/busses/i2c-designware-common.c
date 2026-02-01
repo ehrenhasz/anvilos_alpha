@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synopsys DesignWare I2C adapter driver.
- *
- * Based on the TI DAVINCI I2C adapter driver.
- *
- * Copyright (C) 2006 Texas Instruments.
- * Copyright (C) 2007 MontaVista Software Inc.
- * Copyright (C) 2009 Provigent Ltd.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -115,14 +107,7 @@ static int dw_reg_write_word(void *context, unsigned int reg, unsigned int val)
 	return 0;
 }
 
-/**
- * i2c_dw_init_regmap() - Initialize registers map
- * @dev: device private data
- *
- * Autodetects needed register access mode and creates the regmap with
- * corresponding read/write callbacks. This must be called before doing any
- * other register access.
- */
+ 
 int i2c_dw_init_regmap(struct dw_i2c_dev *dev)
 {
 	struct regmap_config map_cfg = {
@@ -137,10 +122,7 @@ int i2c_dw_init_regmap(struct dw_i2c_dev *dev)
 	u32 reg;
 	int ret;
 
-	/*
-	 * Skip detecting the registers map configuration if the regmap has
-	 * already been provided by a higher code.
-	 */
+	 
 	if (dev->map)
 		return 0;
 
@@ -166,12 +148,7 @@ int i2c_dw_init_regmap(struct dw_i2c_dev *dev)
 		return -ENODEV;
 	}
 
-	/*
-	 * Note we'll check the return value of the regmap IO accessors only
-	 * at the probe stage. The rest of the code won't do this because
-	 * basically we have MMIO-based regmap so non of the read/write methods
-	 * can fail.
-	 */
+	 
 	dev->map = devm_regmap_init(dev->dev, NULL, dev, &map_cfg);
 	if (IS_ERR(dev->map)) {
 		dev_err(dev->dev, "Failed to init the registers map\n");
@@ -193,10 +170,7 @@ int i2c_dw_validate_speed(struct dw_i2c_dev *dev)
 	struct i2c_timings *t = &dev->timings;
 	unsigned int i;
 
-	/*
-	 * Only standard mode at 100kHz, fast mode at 400kHz,
-	 * fast mode plus at 1MHz and high speed mode at 3.4MHz are supported.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(supported_speeds); i++) {
 		if (t->bus_freq_hz == supported_speeds[i])
 			return 0;
@@ -214,11 +188,7 @@ EXPORT_SYMBOL_GPL(i2c_dw_validate_speed);
 
 #include <linux/dmi.h>
 
-/*
- * The HCNT/LCNT information coming from ACPI should be the most accurate
- * for given platform. However, some systems get it wrong. On such systems
- * we get better results by calculating those based on the input clock.
- */
+ 
 static const struct dmi_system_id i2c_dw_no_acpi_params[] = {
 	{
 		.ident = "Dell Inspiron 7348",
@@ -261,10 +231,7 @@ int i2c_dw_acpi_configure(struct device *device)
 	struct i2c_timings *t = &dev->timings;
 	u32 ss_ht = 0, fp_ht = 0, hs_ht = 0, fs_ht = 0;
 
-	/*
-	 * Try to get SDA hold time and *CNT values from an ACPI method for
-	 * selected speed modes.
-	 */
+	 
 	i2c_dw_acpi_params(device, "SSCN", &dev->ss_hcnt, &dev->ss_lcnt, &ss_ht);
 	i2c_dw_acpi_params(device, "FMCN", &dev->fs_hcnt, &dev->fs_lcnt, &fs_ht);
 	i2c_dw_acpi_params(device, "FPCN", &dev->fp_hcnt, &dev->fp_lcnt, &fp_ht);
@@ -296,10 +263,7 @@ static u32 i2c_dw_acpi_round_bus_speed(struct device *device)
 	int i;
 
 	acpi_speed = i2c_acpi_find_bus_speed(device);
-	/*
-	 * Some DSTDs use a non standard speed, round down to the lowest
-	 * standard speed.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(supported_speeds); i++) {
 		if (acpi_speed >= supported_speeds[i])
 			return supported_speeds[i];
@@ -308,21 +272,18 @@ static u32 i2c_dw_acpi_round_bus_speed(struct device *device)
 	return 0;
 }
 
-#else	/* CONFIG_ACPI */
+#else	 
 
 static inline u32 i2c_dw_acpi_round_bus_speed(struct device *device) { return 0; }
 
-#endif	/* CONFIG_ACPI */
+#endif	 
 
 void i2c_dw_adjust_bus_speed(struct dw_i2c_dev *dev)
 {
 	u32 acpi_speed = i2c_dw_acpi_round_bus_speed(dev->dev);
 	struct i2c_timings *t = &dev->timings;
 
-	/*
-	 * Find bus speed from the "clock-frequency" device property, ACPI
-	 * or by using fast mode if neither is set.
-	 */
+	 
 	if (acpi_speed && t->bus_freq_hz)
 		t->bus_freq_hz = min(t->bus_freq_hz, acpi_speed);
 	else if (acpi_speed || t->bus_freq_hz)
@@ -334,57 +295,20 @@ EXPORT_SYMBOL_GPL(i2c_dw_adjust_bus_speed);
 
 u32 i2c_dw_scl_hcnt(u32 ic_clk, u32 tSYMBOL, u32 tf, int cond, int offset)
 {
-	/*
-	 * DesignWare I2C core doesn't seem to have solid strategy to meet
-	 * the tHD;STA timing spec.  Configuring _HCNT based on tHIGH spec
-	 * will result in violation of the tHD;STA spec.
-	 */
+	 
 	if (cond)
-		/*
-		 * Conditional expression:
-		 *
-		 *   IC_[FS]S_SCL_HCNT + (1+4+3) >= IC_CLK * tHIGH
-		 *
-		 * This is based on the DW manuals, and represents an ideal
-		 * configuration.  The resulting I2C bus speed will be
-		 * faster than any of the others.
-		 *
-		 * If your hardware is free from tHD;STA issue, try this one.
-		 */
+		 
 		return DIV_ROUND_CLOSEST_ULL((u64)ic_clk * tSYMBOL, MICRO) -
 		       8 + offset;
 	else
-		/*
-		 * Conditional expression:
-		 *
-		 *   IC_[FS]S_SCL_HCNT + 3 >= IC_CLK * (tHD;STA + tf)
-		 *
-		 * This is just experimental rule; the tHD;STA period turned
-		 * out to be proportinal to (_HCNT + 3).  With this setting,
-		 * we could meet both tHIGH and tHD;STA timing specs.
-		 *
-		 * If unsure, you'd better to take this alternative.
-		 *
-		 * The reason why we need to take into account "tf" here,
-		 * is the same as described in i2c_dw_scl_lcnt().
-		 */
+		 
 		return DIV_ROUND_CLOSEST_ULL((u64)ic_clk * (tSYMBOL + tf), MICRO) -
 		       3 + offset;
 }
 
 u32 i2c_dw_scl_lcnt(u32 ic_clk, u32 tLOW, u32 tf, int offset)
 {
-	/*
-	 * Conditional expression:
-	 *
-	 *   IC_[FS]S_SCL_LCNT + 1 >= IC_CLK * (tLOW + tf)
-	 *
-	 * DW I2C core starts counting the SCL CNTs for the LOW period
-	 * of the SCL clock (tLOW) as soon as it pulls the SCL line.
-	 * In order to meet the tLOW timing spec, we need to take into
-	 * account the fall time of SCL signal (tf).  Default tf value
-	 * should be 0.3 us, for safety.
-	 */
+	 
 	return DIV_ROUND_CLOSEST_ULL((u64)ic_clk * (tLOW + tf), MICRO) -
 	       1 + offset;
 }
@@ -398,27 +322,21 @@ int i2c_dw_set_sda_hold(struct dw_i2c_dev *dev)
 	if (ret)
 		return ret;
 
-	/* Configure SDA Hold Time if required */
+	 
 	ret = regmap_read(dev->map, DW_IC_COMP_VERSION, &reg);
 	if (ret)
 		goto err_release_lock;
 
 	if (reg >= DW_IC_SDA_HOLD_MIN_VERS) {
 		if (!dev->sda_hold_time) {
-			/* Keep previous hold time setting if no one set it */
+			 
 			ret = regmap_read(dev->map, DW_IC_SDA_HOLD,
 					  &dev->sda_hold_time);
 			if (ret)
 				goto err_release_lock;
 		}
 
-		/*
-		 * Workaround for avoiding TX arbitration lost in case I2C
-		 * slave pulls SDA down "too quickly" after falling edge of
-		 * SCL by enabling non-zero SDA RX hold. Specification says it
-		 * extends incoming SDA low to high transition while SCL is
-		 * high but it appears to help also above issue.
-		 */
+		 
 		if (!(dev->sda_hold_time & DW_IC_SDA_HOLD_RX_MASK))
 			dev->sda_hold_time |= 1 << DW_IC_SDA_HOLD_RX_SHIFT;
 
@@ -463,19 +381,12 @@ void __i2c_dw_disable(struct dw_i2c_dev *dev)
 
 	do {
 		__i2c_dw_disable_nowait(dev);
-		/*
-		 * The enable status register may be unimplemented, but
-		 * in that case this test reads zero and exits the loop.
-		 */
+		 
 		regmap_read(dev->map, DW_IC_ENABLE_STATUS, &status);
 		if ((status & 1) == 0)
 			return;
 
-		/*
-		 * Wait 10 times the signaling period of the highest I2C
-		 * transfer supported by the driver (for 400KHz this is
-		 * 25us) as described in the DesignWare I2C databook.
-		 */
+		 
 		usleep_range(25, 250);
 	} while (timeout--);
 
@@ -484,10 +395,7 @@ void __i2c_dw_disable(struct dw_i2c_dev *dev)
 
 u32 i2c_dw_clk_rate(struct dw_i2c_dev *dev)
 {
-	/*
-	 * Clock is not necessary if we got LCNT/HCNT values directly from
-	 * the platform code.
-	 */
+	 
 	if (WARN_ON_ONCE(!dev->get_clk_rate_khz))
 		return 0;
 	return dev->get_clk_rate_khz(dev);
@@ -498,7 +406,7 @@ int i2c_dw_prepare_clk(struct dw_i2c_dev *dev, bool prepare)
 	int ret;
 
 	if (prepare) {
-		/* Optional interface clock */
+		 
 		ret = clk_prepare_enable(dev->pclk);
 		if (ret)
 			return ret;
@@ -539,9 +447,7 @@ void i2c_dw_release_lock(struct dw_i2c_dev *dev)
 		dev->release_lock();
 }
 
-/*
- * Waiting for bus not busy
- */
+ 
 int i2c_dw_wait_bus_not_busy(struct dw_i2c_dev *dev)
 {
 	unsigned int status;
@@ -581,7 +487,7 @@ int i2c_dw_handle_tx_abort(struct dw_i2c_dev *dev)
 	if (abort_source & DW_IC_TX_ARB_LOST)
 		return -EAGAIN;
 	else if (abort_source & DW_IC_TX_ABRT_GCALL_READ)
-		return -EINVAL; /* wrong msgs[] data */
+		return -EINVAL;  
 	else
 		return -EIO;
 }
@@ -592,7 +498,7 @@ int i2c_dw_set_fifo_size(struct dw_i2c_dev *dev)
 	unsigned int param;
 	int ret;
 
-	/* DW_IC_COMP_PARAM_1 not implement for IP issue */
+	 
 	if ((dev->flags & MODEL_MASK) == MODEL_WANGXUN_SP) {
 		dev->tx_fifo_depth = TXGBE_TX_FIFO_DEPTH;
 		dev->rx_fifo_depth = TXGBE_RX_FIFO_DEPTH;
@@ -600,10 +506,7 @@ int i2c_dw_set_fifo_size(struct dw_i2c_dev *dev)
 		return 0;
 	}
 
-	/*
-	 * Try to detect the FIFO depth if not set by interface driver,
-	 * the depth could be from 2 to 256 from HW spec.
-	 */
+	 
 	ret = i2c_dw_acquire_lock(dev);
 	if (ret)
 		return ret;
@@ -644,10 +547,10 @@ void i2c_dw_disable(struct dw_i2c_dev *dev)
 	if (ret)
 		return;
 
-	/* Disable controller */
+	 
 	__i2c_dw_disable(dev);
 
-	/* Disable all interrupts */
+	 
 	regmap_write(dev->map, DW_IC_INTR_MASK, 0);
 	regmap_read(dev->map, DW_IC_CLR_INTR, &dummy);
 

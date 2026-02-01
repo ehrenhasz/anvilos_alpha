@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020, AngeloGioacchino Del Regno
- *                     <angelogioacchino.delregno@somainline.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -320,12 +316,12 @@ static int gpucc_sdm660_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* 800MHz configuration for GPU PLL0 */
+	 
 	gpu_pll_config.l = 0x29;
 	gpu_pll_config.alpha_hi = 0xaa;
 	clk_alpha_pll_configure(&gpu_pll0_pll_out_main, regmap, &gpu_pll_config);
 
-	/* 740MHz configuration for GPU PLL1 */
+	 
 	gpu_pll_config.l = 0x26;
 	gpu_pll_config.alpha_hi = 0x8a;
 	clk_alpha_pll_configure(&gpu_pll1_pll_out_main, regmap, &gpu_pll_config);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV6 GSO/GRO offload support
- *	Linux INET6 implementation
- *
- *      IPV6 Extension Header GSO/GRO support
- */
+
+ 
 #include <net/protocol.h>
 #include "ip6_offload.h"
 

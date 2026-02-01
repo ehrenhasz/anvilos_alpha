@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Microchip MCP3911, Two-channel Analog Front End
- *
- * Copyright (C) 2018 Marcus Folkesson <marcus.folkesson@gmail.com>
- * Copyright (C) 2018 Kent Gustavsson <kent@minoris.se>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -54,7 +49,7 @@
 #define MCP3911_CHANNEL(x)		(MCP3911_REG_CHANNEL0 + x * 3)
 #define MCP3911_OFFCAL(x)		(MCP3911_REG_OFFCAL_CH0 + x * 6)
 
-/* Internal voltage reference in mV */
+ 
 #define MCP3911_INT_VREF_MV		1200
 
 #define MCP3911_REG_READ(reg, id)	((((reg) << 1) | ((id) << 6) | (1 << 0)) & 0xff)
@@ -238,13 +233,13 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
 			goto out;
 		}
 
-		/* Write offset */
+		 
 		ret = mcp3911_write(adc, MCP3911_OFFCAL(channel->channel), val,
 				    3);
 		if (ret)
 			goto out;
 
-		/* Enable offset*/
+		 
 		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM,
 				MCP3911_STATUSCOM_EN_OFFCAL,
 				MCP3911_STATUSCOM_EN_OFFCAL, 2);
@@ -286,14 +281,7 @@ static int mcp3911_calc_scale_table(struct mcp3911 *adc)
 		ref = ret / 1000;
 	}
 
-	/*
-	 * For 24-bit Conversion
-	 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
-	 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
-	 *
-	 * ref = Reference voltage
-	 * div = (2^23 * 1.5 * gain) = 12582912 * gain
-	 */
+	 
 	for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
 		div = 12582912 * BIT(i);
 		tmp = div_s64((s64)ref * 1000000000LL, div);
@@ -389,10 +377,7 @@ static int mcp3911_config(struct mcp3911 *adc)
 
 	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
 
-	/*
-	 * Fallback to "device-addr" due to historical mismatch between
-	 * dt-bindings and implementation
-	 */
+	 
 	if (ret)
 		device_property_read_u32(dev, "device-addr", &adc->dev_addr);
 	if (adc->dev_addr > 3) {
@@ -435,7 +420,7 @@ static int mcp3911_config(struct mcp3911 *adc)
 	if (ret)
 		return ret;
 
-	/* Address counter incremented, cycle through register types */
+	 
 	regval &= ~MCP3911_STATUSCOM_READ;
 	regval |= FIELD_PREP(MCP3911_STATUSCOM_READ, 0x02);
 
@@ -528,7 +513,7 @@ static int mcp3911_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-       /* Set gain to 1 for all channels */
+        
 	for (int i = 0; i < MCP3911_NUM_CHANNELS; i++) {
 		adc->gain[i] = 1;
 		ret = mcp3911_update(adc, MCP3911_REG_GAIN,
@@ -561,11 +546,7 @@ static int mcp3911_probe(struct spi_device *spi)
 		if (ret)
 			return ret;
 
-		/*
-		 * The device generates interrupts as long as it is powered up.
-		 * Some platforms might not allow the option to power it down so
-		 * don't enable the interrupt to avoid extra load on the system.
-		 */
+		 
 		ret = devm_request_irq(&spi->dev, spi->irq,
 				&iio_trigger_generic_data_rdy_poll, IRQF_NO_AUTOEN | IRQF_ONESHOT,
 				indio_dev->name, adc->trig);

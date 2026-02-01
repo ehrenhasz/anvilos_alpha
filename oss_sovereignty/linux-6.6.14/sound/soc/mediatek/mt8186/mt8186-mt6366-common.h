@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8186-mt6366-common.h
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT8186_MT6366_COMMON_H_
 #define _MT8186_MT6366_COMMON_H_

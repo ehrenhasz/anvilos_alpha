@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -16,16 +16,7 @@
 #include "siw_verbs.h"
 #include "siw_mem.h"
 
-/*
- * siw_rx_umem()
- *
- * Receive data of @len into target referenced by @dest_addr.
- *
- * @srx:	Receive Context
- * @umem:	siw representation of target memory
- * @dest_addr:	user virtual address
- * @len:	number of bytes to place
- */
+ 
 static int siw_rx_umem(struct siw_rx_stream *srx, struct siw_umem *umem,
 		       u64 dest_addr, int len)
 {
@@ -42,7 +33,7 @@ static int siw_rx_umem(struct siw_rx_stream *srx, struct siw_umem *umem,
 				__func__, qp_id(rx_qp(srx)),
 				(void *)(uintptr_t)dest_addr,
 				(void *)(uintptr_t)umem->fp_addr);
-			/* siw internal error */
+			 
 			srx->skb_copied += copied;
 			srx->skb_new -= copied;
 
@@ -74,16 +65,7 @@ static int siw_rx_umem(struct siw_rx_stream *srx, struct siw_umem *umem,
 				kunmap_atomic(dest);
 			} else {
 				kunmap_atomic(dest);
-				/*
-				 * Do CRC on original, not target buffer.
-				 * Some user land applications may
-				 * concurrently write the target buffer,
-				 * which would yield a broken CRC.
-				 * Walking the skb twice is very ineffcient.
-				 * Folding the CRC into skb_copy_bits()
-				 * would be much better, but is currently
-				 * not supported.
-				 */
+				 
 				siw_crc_skb(srx, bytes);
 			}
 		} else {
@@ -151,17 +133,7 @@ static int siw_rx_pbl(struct siw_rx_stream *srx, int *pbl_idx,
 	return copied;
 }
 
-/*
- * siw_rresp_check_ntoh()
- *
- * Check incoming RRESP fragment header against expected
- * header values and update expected values for potential next
- * fragment.
- *
- * NOTE: This function must be called only if a RRESP DDP segment
- *       starts but not for fragmented consecutive pieces of an
- *       already started DDP segment.
- */
+ 
 static int siw_rresp_check_ntoh(struct siw_rx_stream *srx,
 				struct siw_rx_fpdu *frx)
 {
@@ -177,16 +149,7 @@ static int siw_rresp_check_ntoh(struct siw_rx_stream *srx,
 		srx->ddp_to = wqe->sqe.sge[0].laddr;
 		frx->pbl_idx = 0;
 	}
-	/* Below checks extend beyond the semantics of DDP, and
-	 * into RDMAP:
-	 * We check if the read response matches exactly the
-	 * read request which was send to the remote peer to
-	 * trigger this read response. RFC5040/5041 do not
-	 * always have a proper error code for the detected
-	 * error cases. We choose 'base or bounds error' for
-	 * cases where the inbound STag is valid, but offset
-	 * or length do not match our response receive state.
-	 */
+	 
 	if (unlikely(srx->ddp_stag != sink_stag)) {
 		pr_warn("siw: [QP %u]: rresp stag: %08x != %08x\n",
 			qp_id(rx_qp(srx)), sink_stag, srx->ddp_stag);
@@ -215,17 +178,7 @@ error:
 	return -EINVAL;
 }
 
-/*
- * siw_write_check_ntoh()
- *
- * Check incoming WRITE fragment header against expected
- * header values and update expected values for potential next
- * fragment
- *
- * NOTE: This function must be called only if a WRITE DDP segment
- *       starts but not for fragmented consecutive pieces of an
- *       already started DDP segment.
- */
+ 
 static int siw_write_check_ntoh(struct siw_rx_stream *srx,
 				struct siw_rx_fpdu *frx)
 {
@@ -263,17 +216,7 @@ error:
 	return -EINVAL;
 }
 
-/*
- * siw_send_check_ntoh()
- *
- * Check incoming SEND fragment header against expected
- * header values and update expected MSN if no next
- * fragment expected
- *
- * NOTE: This function must be called only if a SEND DDP segment
- *       starts but not for fragmented consecutive pieces of an
- *       already started DDP segment.
- */
+ 
 static int siw_send_check_ntoh(struct siw_rx_stream *srx,
 			       struct siw_rx_fpdu *frx)
 {
@@ -305,12 +248,12 @@ static int siw_send_check_ntoh(struct siw_rx_stream *srx,
 		goto error;
 	}
 	if (frx->first_ddp_seg) {
-		/* initialize user memory write position */
+		 
 		frx->sge_idx = 0;
 		frx->sge_off = 0;
 		frx->pbl_idx = 0;
 
-		/* only valid for SEND_INV and SEND_SE_INV operations */
+		 
 		srx->inval_stag = be32_to_cpu(send->inval_stag);
 	}
 	if (unlikely(wqe->bytes < wqe->processed + srx->fpdu_part_rem)) {
@@ -371,7 +314,7 @@ static struct siw_wqe *siw_rqe_get(struct siw_qp *qp)
 				wqe->mem[i] = NULL;
 				i++;
 			}
-			/* can be re-used by appl */
+			 
 			smp_store_mb(rqe->flags, 0);
 		} else {
 			siw_dbg_qp(qp, "too many sge's: %d\n", rqe->num_sge);
@@ -383,7 +326,7 @@ static struct siw_wqe *siw_rqe_get(struct siw_qp *qp)
 			qp->rq_get++;
 		} else {
 			if (srq->armed) {
-				/* Test SRQ limit */
+				 
 				u32 off = (srq->rq_get + srq->limit) %
 					  srq->num_rqe;
 				struct siw_rqe *rqe2 = &srq->recvq[off];
@@ -405,26 +348,14 @@ out:
 	return wqe;
 }
 
-/*
- * siw_proc_send:
- *
- * Process one incoming SEND and place data into memory referenced by
- * receive wqe.
- *
- * Function supports partially received sends (suspending/resuming
- * current receive wqe processing)
- *
- * return value:
- *	0:       reached the end of a DDP segment
- *	-EAGAIN: to be called again to finish the DDP segment
- */
+ 
 int siw_proc_send(struct siw_qp *qp)
 {
 	struct siw_rx_stream *srx = &qp->rx_stream;
 	struct siw_rx_fpdu *frx = &qp->rx_untagged;
 	struct siw_wqe *wqe;
-	u32 data_bytes; /* all data bytes available */
-	u32 rcvd_bytes; /* sum of data bytes rcvd */
+	u32 data_bytes;  
+	u32 rcvd_bytes;  
 	int rv = 0;
 
 	if (frx->first_ddp_seg) {
@@ -444,23 +375,23 @@ int siw_proc_send(struct siw_qp *qp)
 			siw_qp_event(qp, IB_EVENT_QP_FATAL);
 			return rv;
 		}
-		if (!srx->fpdu_part_rem) /* zero length SEND */
+		if (!srx->fpdu_part_rem)  
 			return 0;
 	}
 	data_bytes = min(srx->fpdu_part_rem, srx->skb_new);
 	rcvd_bytes = 0;
 
-	/* A zero length SEND will skip below loop */
+	 
 	while (data_bytes) {
 		struct ib_pd *pd;
 		struct siw_mem **mem, *mem_p;
 		struct siw_sge *sge;
-		u32 sge_bytes; /* data bytes avail for SGE */
+		u32 sge_bytes;  
 
 		sge = &wqe->rqe.sge[frx->sge_idx];
 
 		if (!sge->length) {
-			/* just skip empty sge's */
+			 
 			frx->sge_idx++;
 			frx->sge_off = 0;
 			frx->pbl_idx = 0;
@@ -469,9 +400,7 @@ int siw_proc_send(struct siw_qp *qp)
 		sge_bytes = min(data_bytes, sge->length - frx->sge_off);
 		mem = &wqe->mem[frx->sge_idx];
 
-		/*
-		 * check with QP's PD if no SRQ present, SRQ's PD otherwise
-		 */
+		 
 		pd = qp->srq == NULL ? qp->pd : qp->srq->base_srq.pd;
 
 		rv = siw_check_sge(pd, sge, mem, IB_ACCESS_LOCAL_WRITE,
@@ -525,18 +454,7 @@ int siw_proc_send(struct siw_qp *qp)
 	return (rv < 0) ? rv : -EAGAIN;
 }
 
-/*
- * siw_proc_write:
- *
- * Place incoming WRITE after referencing and checking target buffer
-
- * Function supports partially received WRITEs (suspending/resuming
- * current receive processing)
- *
- * return value:
- *	0:       reached the end of a DDP segment
- *	-EAGAIN: to be called again to finish the DDP segment
- */
+ 
 int siw_proc_write(struct siw_qp *qp)
 {
 	struct siw_rx_stream *srx = &qp->rx_stream;
@@ -545,7 +463,7 @@ int siw_proc_write(struct siw_qp *qp)
 	int bytes, rv;
 
 	if (srx->state == SIW_GET_DATA_START) {
-		if (!srx->fpdu_part_rem) /* zero length WRITE */
+		if (!srx->fpdu_part_rem)  
 			return 0;
 
 		rv = siw_write_check_ntoh(srx, frx);
@@ -576,10 +494,7 @@ int siw_proc_write(struct siw_qp *qp)
 	}
 	mem = rx_mem(frx);
 
-	/*
-	 * Check if application re-registered memory with different
-	 * key field of STag.
-	 */
+	 
 	if (unlikely(mem->stag != srx->ddp_stag)) {
 		siw_init_terminate(qp, TERM_ERROR_LAYER_DDP,
 				   DDP_ETYPE_TAGGED_BUF,
@@ -625,9 +540,7 @@ int siw_proc_write(struct siw_qp *qp)
 	return -EAGAIN;
 }
 
-/*
- * Inbound RREQ's cannot carry user data.
- */
+ 
 int siw_proc_rreq(struct siw_qp *qp)
 {
 	struct siw_rx_stream *srx = &qp->rx_stream;
@@ -641,21 +554,7 @@ int siw_proc_rreq(struct siw_qp *qp)
 	return -EPROTO;
 }
 
-/*
- * siw_init_rresp:
- *
- * Process inbound RDMA READ REQ. Produce a pseudo READ RESPONSE WQE.
- * Put it at the tail of the IRQ, if there is another WQE currently in
- * transmit processing. If not, make it the current WQE to be processed
- * and schedule transmit processing.
- *
- * Can be called from softirq context and from process
- * context (RREAD socket loopback case!)
- *
- * return value:
- *	0:      success,
- *		failure code otherwise
- */
+ 
 
 static int siw_init_rresp(struct siw_qp *qp, struct siw_rx_stream *srx)
 {
@@ -685,10 +584,7 @@ static int siw_init_rresp(struct siw_qp *qp, struct siw_rx_stream *srx)
 		goto error_irq;
 	}
 	if (tx_work->wr_status == SIW_WR_IDLE) {
-		/*
-		 * immediately schedule READ response w/o
-		 * consuming IRQ entry: IRQ must be empty.
-		 */
+		 
 		tx_work->processed = 0;
 		tx_work->mem[0] = NULL;
 		tx_work->wr_status = SIW_WR_QUEUED;
@@ -704,16 +600,14 @@ static int siw_init_rresp(struct siw_qp *qp, struct siw_rx_stream *srx)
 		resp->sge[0].laddr = laddr;
 		resp->sge[0].lkey = lkey;
 
-		/* Keep aside message sequence number for potential
-		 * error reporting during Read Response generation.
-		 */
+		 
 		resp->sge[1].length = msn;
 
 		resp->raddr = raddr;
 		resp->rkey = rkey;
 		resp->num_sge = length ? 1 : 0;
 
-		/* RRESP now valid as current TX wqe or placed into IRQ */
+		 
 		smp_store_mb(resp->flags, SIW_WQE_VALID);
 	} else {
 error_irq:
@@ -734,12 +628,7 @@ error_irq:
 	return rv;
 }
 
-/*
- * Only called at start of Read.Resonse processing.
- * Transfer pending Read from tip of ORQ into currrent rx wqe,
- * but keep ORQ entry valid until Read.Response processing done.
- * No Queue locking needed.
- */
+ 
 static int siw_orqe_start_rx(struct siw_qp *qp)
 {
 	struct siw_sqe *orqe;
@@ -748,12 +637,12 @@ static int siw_orqe_start_rx(struct siw_qp *qp)
 	if (unlikely(!qp->attrs.orq_size))
 		return -EPROTO;
 
-	/* make sure ORQ indices are current */
+	 
 	smp_mb();
 
 	orqe = orq_get_current(qp);
 	if (READ_ONCE(orqe->flags) & SIW_WQE_VALID) {
-		/* RRESP is a TAGGED RDMAP operation */
+		 
 		wqe = rx_wqe(&qp->rx_tagged);
 		wqe->sqe.id = orqe->id;
 		wqe->sqe.opcode = orqe->opcode;
@@ -765,7 +654,7 @@ static int siw_orqe_start_rx(struct siw_qp *qp)
 		wqe->bytes = orqe->sge[0].length;
 		wqe->processed = 0;
 		wqe->mem[0] = NULL;
-		/* make sure WQE is completely written before valid */
+		 
 		smp_wmb();
 		wqe->wr_status = SIW_WR_INPROGRESS;
 
@@ -774,15 +663,7 @@ static int siw_orqe_start_rx(struct siw_qp *qp)
 	return -EPROTO;
 }
 
-/*
- * siw_proc_rresp:
- *
- * Place incoming RRESP data into memory referenced by RREQ WQE
- * which is at the tip of the ORQ
- *
- * Function supports partially received RRESP's (suspending/resuming
- * current receive processing)
- */
+ 
 int siw_proc_rresp(struct siw_qp *qp)
 {
 	struct siw_rx_stream *srx = &qp->rx_stream;
@@ -799,9 +680,7 @@ int siw_proc_rresp(struct siw_qp *qp)
 			rv = -EPROTO;
 			goto error_term;
 		}
-		/*
-		 * fetch pending RREQ from orq
-		 */
+		 
 		rv = siw_orqe_start_rx(qp);
 		if (rv) {
 			pr_warn("siw: [QP %u]: ORQ empty, size %d\n",
@@ -821,16 +700,14 @@ int siw_proc_rresp(struct siw_qp *qp)
 			goto error_term;
 		}
 	}
-	if (!srx->fpdu_part_rem) /* zero length RRESPONSE */
+	if (!srx->fpdu_part_rem)  
 		return 0;
 
-	sge = wqe->sqe.sge; /* there is only one */
+	sge = wqe->sqe.sge;  
 	mem = &wqe->mem[0];
 
 	if (!(*mem)) {
-		/*
-		 * check target memory which resolves memory on first fragment
-		 */
+		 
 		rv = siw_check_sge(qp->pd, sge, mem, IB_ACCESS_LOCAL_WRITE, 0,
 				   wqe->bytes);
 		if (unlikely(rv)) {
@@ -904,15 +781,11 @@ int siw_proc_terminate(struct siw_qp *qp)
 			be32_to_cpu(term->ddp_mo));
 		return -ECONNRESET;
 	}
-	/*
-	 * Receive remaining pieces of TERM if indicated
-	 */
+	 
 	if (!term->flag_m)
 		return -ECONNRESET;
 
-	/* Do not take the effort to reassemble a network fragmented
-	 * TERM message
-	 */
+	 
 	if (srx->skb_new < sizeof(struct iwarp_ctrl_tagged))
 		return -ECONNRESET;
 
@@ -933,7 +806,7 @@ int siw_proc_terminate(struct siw_qp *qp)
 
 	to_copy = iwarp_pktinfo[op].hdr_len - to_copy;
 
-	/* Again, no network fragmented TERM's */
+	 
 	if (to_copy + MPA_CRC_SIZE > srx->skb_new)
 		return -ECONNRESET;
 
@@ -983,10 +856,7 @@ static int siw_get_trailer(struct siw_qp *qp, struct siw_rx_stream *srx)
 
 	if (srx->pad)
 		crypto_shash_update(srx->mpa_crc_hd, tbuf, srx->pad);
-	/*
-	 * CRC32 is computed, transmitted and received directly in NBO,
-	 * so there's never a reason to convert byte order.
-	 */
+	 
 	crypto_shash_final(srx->mpa_crc_hd, (u8 *)&crc_own);
 	crc_in = (__force __wsum)srx->trailer.crc;
 
@@ -1014,9 +884,7 @@ static int siw_get_hdr(struct siw_rx_stream *srx)
 	int bytes;
 
 	if (srx->fpdu_part_rcvd < MIN_DDP_HDR) {
-		/*
-		 * copy a mimimum sized (tagged) DDP frame control part
-		 */
+		 
 		bytes = min_t(int, srx->skb_new,
 			      MIN_DDP_HDR - srx->fpdu_part_rcvd);
 
@@ -1077,12 +945,7 @@ static int siw_get_hdr(struct siw_rx_stream *srx)
 	set_rx_fpdu_context(qp, opcode);
 	frx = qp->rx_fpdu;
 
-	/*
-	 * Figure out len of current hdr: variable length of
-	 * iwarp hdr may force us to copy hdr information in
-	 * two steps. Only tagged DDP messages are already
-	 * completely received.
-	 */
+	 
 	if (iwarp_pktinfo[opcode].hdr_len > sizeof(struct iwarp_ctrl_tagged)) {
 		int hdrlen = iwarp_pktinfo[opcode].hdr_len;
 
@@ -1101,22 +964,9 @@ static int siw_get_hdr(struct siw_rx_stream *srx)
 			return -EAGAIN;
 	}
 
-	/*
-	 * DDP/RDMAP header receive completed. Check if the current
-	 * DDP segment starts a new RDMAP message or continues a previously
-	 * started RDMAP message.
-	 *
-	 * Alternating reception of DDP segments (or FPDUs) from incomplete
-	 * tagged and untagged RDMAP messages is supported, as long as
-	 * the current tagged or untagged message gets eventually completed
-	 * w/o intersection from another message of the same type
-	 * (tagged/untagged). E.g., a WRITE can get intersected by a SEND,
-	 * but not by a READ RESPONSE etc.
-	 */
+	 
 	if (srx->mpa_crc_hd) {
-		/*
-		 * Restart CRC computation
-		 */
+		 
 		crypto_shash_init(srx->mpa_crc_hd);
 		crypto_shash_update(srx->mpa_crc_hd, (u8 *)c_hdr,
 				    srx->fpdu_part_rcvd);
@@ -1126,14 +976,7 @@ static int siw_get_hdr(struct siw_rx_stream *srx)
 		if (frx->prev_rdmap_op != opcode) {
 			pr_warn("siw: packet intersection: %u : %u\n",
 				frx->prev_rdmap_op, opcode);
-			/*
-			 * The last inbound RDMA operation of same type
-			 * (tagged or untagged) is left unfinished.
-			 * To complete it in error, make it the current
-			 * operation again, even with the header already
-			 * overwritten. For error handling, only the opcode
-			 * and current rx context are relevant.
-			 */
+			 
 			set_rx_fpdu_context(qp, frx->prev_rdmap_op);
 			__rdmap_set_opcode(c_hdr, frx->prev_rdmap_op);
 			return -EPROTO;
@@ -1156,7 +999,7 @@ static int siw_check_tx_fence(struct siw_qp *qp)
 
 	spin_lock_irqsave(&qp->orq_lock, flags);
 
-	/* free current orq entry */
+	 
 	rreq = orq_get_current(qp);
 	WRITE_ONCE(rreq->flags, 0);
 
@@ -1169,11 +1012,11 @@ static int siw_check_tx_fence(struct siw_qp *qp)
 			rv = -EPROTO;
 			goto out;
 		}
-		/* resume SQ processing, if possible */
+		 
 		if (tx_waiting->sqe.opcode == SIW_OP_READ ||
 		    tx_waiting->sqe.opcode == SIW_OP_READ_LOCAL_INV) {
 
-			/* SQ processing was stopped because of a full ORQ */
+			 
 			rreq = orq_get_free(qp);
 			if (unlikely(!rreq)) {
 				pr_warn("siw: [QP %u]: no ORQE\n", qp_id(qp));
@@ -1187,10 +1030,7 @@ static int siw_check_tx_fence(struct siw_qp *qp)
 			resume_tx = 1;
 
 		} else if (siw_orq_empty(qp)) {
-			/*
-			 * SQ processing was stopped by fenced work request.
-			 * Resume since all previous Read's are now completed.
-			 */
+			 
 			qp->tx_ctx.orq_fence = 0;
 			resume_tx = 1;
 		}
@@ -1204,18 +1044,7 @@ out:
 	return rv;
 }
 
-/*
- * siw_rdmap_complete()
- *
- * Complete processing of an RDMA message after receiving all
- * DDP segmens or ABort processing after encountering error case.
- *
- *   o SENDs + RRESPs will need for completion,
- *   o RREQs need for  READ RESPONSE initialization
- *   o WRITEs need memory dereferencing
- *
- * TODO: Failed WRITEs need local error to be surfaced.
- */
+ 
 static int siw_rdmap_complete(struct siw_qp *qp, int error)
 {
 	struct siw_rx_stream *srx = &qp->rx_stream;
@@ -1239,9 +1068,7 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 
 		if (error != 0 && wc_status == SIW_WC_SUCCESS)
 			wc_status = SIW_WC_GENERAL_ERR;
-		/*
-		 * Handle STag invalidation request
-		 */
+		 
 		if (wc_status == SIW_WC_SUCCESS &&
 		    (opcode == RDMAP_SEND_INVAL ||
 		     opcode == RDMAP_SEND_SE_INVAL)) {
@@ -1273,16 +1100,14 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 		if (error != 0) {
 			if ((srx->state == SIW_GET_HDR &&
 			     qp->rx_fpdu->first_ddp_seg) || error == -ENODATA)
-				/* possible RREQ in ORQ left untouched */
+				 
 				break;
 
 			if (wc_status == SIW_WC_SUCCESS)
 				wc_status = SIW_WC_GENERAL_ERR;
 		} else if (rdma_is_kernel_res(&qp->base_qp.res) &&
 			   rx_type(wqe) == SIW_OP_READ_LOCAL_INV) {
-			/*
-			 * Handle any STag invalidation request
-			 */
+			 
 			rv = siw_invalidate_stag(qp->pd, wqe->sqe.sge[0].lkey);
 			if (rv) {
 				siw_init_terminate(qp, TERM_ERROR_LAYER_RDMAP,
@@ -1295,9 +1120,7 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 				}
 			}
 		}
-		/*
-		 * All errors turn the wqe into signalled.
-		 */
+		 
 		if ((wqe->sqe.flags & SIW_WQE_SIGNALLED) || error != 0)
 			rv = siw_sqe_complete(qp, &wqe->sqe, wqe->processed,
 					      wc_status);
@@ -1306,7 +1129,7 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 		if (!error) {
 			rv = siw_check_tx_fence(qp);
 		} else {
-			/* Disable current ORQ element */
+			 
 			if (qp->attrs.orq_size)
 				WRITE_ONCE(orq_get_current(qp)->flags, 0);
 		}
@@ -1323,12 +1146,7 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 		if (wqe->wr_status == SIW_WR_IDLE)
 			break;
 
-		/*
-		 * Free References from memory object if
-		 * attached to receive context (inbound WRITE).
-		 * While a zero-length WRITE is allowed,
-		 * no memory reference got created.
-		 */
+		 
 		if (rx_mem(&qp->rx_tagged)) {
 			siw_mem_put(rx_mem(&qp->rx_tagged));
 			rx_mem(&qp->rx_tagged) = NULL;
@@ -1343,16 +1161,7 @@ static int siw_rdmap_complete(struct siw_qp *qp, int error)
 	return rv;
 }
 
-/*
- * siw_tcp_rx_data()
- *
- * Main routine to consume inbound TCP payload
- *
- * @rd_desc:	read descriptor
- * @skb:	socket buffer
- * @off:	offset in skb
- * @len:	skb->len - offset : payload in skb
- */
+ 
 int siw_tcp_rx_data(read_descriptor_t *rd_desc, struct sk_buff *skb,
 		    unsigned int off, size_t len)
 {
@@ -1371,7 +1180,7 @@ int siw_tcp_rx_data(read_descriptor_t *rd_desc, struct sk_buff *skb,
 		int run_completion = 1;
 
 		if (unlikely(srx->rx_suspend)) {
-			/* Do not process any more data */
+			 
 			srx->skb_copied += srx->skb_new;
 			break;
 		}
@@ -1394,20 +1203,12 @@ int siw_tcp_rx_data(read_descriptor_t *rd_desc, struct sk_buff *skb,
 			break;
 
 		case SIW_GET_DATA_MORE:
-			/*
-			 * Another data fragment of the same DDP segment.
-			 * Setting first_ddp_seg = 0 avoids repeating
-			 * initializations that shall occur only once per
-			 * DDP segment.
-			 */
+			 
 			qp->rx_fpdu->first_ddp_seg = 0;
 			fallthrough;
 
 		case SIW_GET_DATA_START:
-			/*
-			 * Headers will be checked by the opcode-specific
-			 * data receive function below.
-			 */
+			 
 			rv = iwarp_pktinfo[qp->rx_stream.rdmap_op].rx_data(qp);
 			if (!rv) {
 				int mpa_len =
@@ -1427,21 +1228,16 @@ int siw_tcp_rx_data(read_descriptor_t *rd_desc, struct sk_buff *skb,
 			break;
 
 		case SIW_GET_TRAILER:
-			/*
-			 * read CRC + any padding
-			 */
+			 
 			rv = siw_get_trailer(qp, srx);
 			if (likely(!rv)) {
-				/*
-				 * FPDU completed.
-				 * complete RDMAP message if last fragment
-				 */
+				 
 				srx->state = SIW_GET_HDR;
 				srx->fpdu_part_rcvd = 0;
 
 				if (!(srx->hdr.ctrl.ddp_rdmap_ctrl &
 				      DDP_FLAG_LAST))
-					/* more frags */
+					 
 					break;
 
 				rv = siw_rdmap_complete(qp, 0);

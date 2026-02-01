@@ -1,29 +1,7 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "ctxgf100.h"
 
-/*******************************************************************************
- * PGRAPH context implementation
- ******************************************************************************/
+ 
 
 static const struct gf100_gr_init
 gv100_grctx_init_sw_veid_bundle_init_0[] = {
@@ -119,7 +97,7 @@ gv100_grctx_generate_rop_mapping(struct gf100_gr *gr)
 	u32 data;
 	int i, j;
 
-	/* Pack tile map into register format. */
+	 
 	nvkm_wr32(device, 0x418bb8, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0; i < mapregs; i++) {
@@ -130,7 +108,7 @@ gv100_grctx_generate_rop_mapping(struct gf100_gr *gr)
 		nvkm_wr32(device, 0x40780c + (i * 4), data);
 	}
 
-	/* GPC_BROADCAST.TP_BROADCAST */
+	 
 	nvkm_wr32(device, 0x41bfd0, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 	for (i = 0, j = 1; i < 5; i++, j += 4) {
@@ -144,7 +122,7 @@ gv100_grctx_generate_rop_mapping(struct gf100_gr *gr)
 						       v19);
 	}
 
-	/* UNK78xx */
+	 
 	nvkm_wr32(device, 0x4078bc, (gr->tpc_total << 8) |
 				     gr->screen_tile_row_offset);
 }

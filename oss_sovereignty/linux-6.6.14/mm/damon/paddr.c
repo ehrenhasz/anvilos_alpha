@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DAMON Primitives for The Physical Address Space
- *
- * Author: SeongJae Park <sj@kernel.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "damon-pa: " fmt
 
@@ -99,7 +95,7 @@ static bool __damon_pa_young(struct folio *folio, struct vm_area_struct *vma,
 				mmu_notifier_test_young(vma->vm_mm, addr);
 #else
 			WARN_ON_ONCE(1);
-#endif	/* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif	 
 		}
 		if (*accessed) {
 			page_vma_mapped_walk_done(&pvmw);
@@ -107,7 +103,7 @@ static bool __damon_pa_young(struct folio *folio, struct vm_area_struct *vma,
 		}
 	}
 
-	/* If accessed, stop walking */
+	 
 	return *accessed == false;
 }
 
@@ -154,7 +150,7 @@ static void __damon_pa_check_access(struct damon_region *r)
 	static unsigned long last_folio_sz = PAGE_SIZE;
 	static bool last_accessed;
 
-	/* If the region is in the last checked page, reuse the result */
+	 
 	if (ALIGN_DOWN(last_addr, last_folio_sz) ==
 				ALIGN_DOWN(r->sampling_addr, last_folio_sz)) {
 		if (last_accessed)
@@ -211,9 +207,7 @@ static bool __damos_pa_filter_out(struct damos_filter *filter,
 	return matched == filter->matching;
 }
 
-/*
- * damos_pa_filter_out - Return true if the page should be filtered out.
- */
+ 
 static bool damos_pa_filter_out(struct damos *scheme, struct folio *folio)
 {
 	struct damos_filter *filter;
@@ -306,7 +300,7 @@ static unsigned long damon_pa_apply_scheme(struct damon_ctx *ctx,
 	case DAMOS_STAT:
 		break;
 	default:
-		/* DAMOS actions that not yet supported by 'paddr'. */
+		 
 		break;
 	}
 	return 0;

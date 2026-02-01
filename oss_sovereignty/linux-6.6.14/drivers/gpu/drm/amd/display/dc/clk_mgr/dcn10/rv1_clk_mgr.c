@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -46,38 +23,32 @@ static int rv1_determine_dppclk_threshold(struct clk_mgr_internal *clk_mgr, stru
 	int disp_clk_threshold = new_clocks->max_supported_dppclk_khz;
 	bool cur_dpp_div = clk_mgr->base.clks.dispclk_khz > clk_mgr->base.clks.dppclk_khz;
 
-	/* increase clock, looking for div is 0 for current, request div is 1*/
+	 
 	if (dispclk_increase) {
-		/* already divided by 2, no need to reach target clk with 2 steps*/
+		 
 		if (cur_dpp_div)
 			return new_clocks->dispclk_khz;
 
-		/* request disp clk is lower than maximum supported dpp clk,
-		 * no need to reach target clk with two steps.
-		 */
+		 
 		if (new_clocks->dispclk_khz <= disp_clk_threshold)
 			return new_clocks->dispclk_khz;
 
-		/* target dpp clk not request divided by 2, still within threshold */
+		 
 		if (!request_dpp_div)
 			return new_clocks->dispclk_khz;
 
 	} else {
-		/* decrease clock, looking for current dppclk divided by 2,
-		 * request dppclk not divided by 2.
-		 */
+		 
 
-		/* current dpp clk not divided by 2, no need to ramp*/
+		 
 		if (!cur_dpp_div)
 			return new_clocks->dispclk_khz;
 
-		/* current disp clk is lower than current maximum dpp clk,
-		 * no need to ramp
-		 */
+		 
 		if (clk_mgr->base.clks.dispclk_khz <= disp_clk_threshold)
 			return new_clocks->dispclk_khz;
 
-		/* request dpp clk need to be divided by 2 */
+		 
 		if (request_dpp_div)
 			return new_clocks->dispclk_khz;
 	}
@@ -95,74 +66,17 @@ static void ramp_up_dispclk_with_dpp(
 	int dispclk_to_dpp_threshold = rv1_determine_dppclk_threshold(clk_mgr, new_clocks);
 	bool request_dpp_div = new_clocks->dispclk_khz > new_clocks->dppclk_khz;
 
-	/* this function is to change dispclk, dppclk and dprefclk according to
-	 * bandwidth requirement. Its call stack is rv1_update_clocks -->
-	 * update_clocks --> dcn10_prepare_bandwidth / dcn10_optimize_bandwidth
-	 * --> prepare_bandwidth / optimize_bandwidth. before change dcn hw,
-	 * prepare_bandwidth will be called first to allow enough clock,
-	 * watermark for change, after end of dcn hw change, optimize_bandwidth
-	 * is executed to lower clock to save power for new dcn hw settings.
-	 *
-	 * below is sequence of commit_planes_for_stream:
-	 *
-	 * step 1: prepare_bandwidth - raise clock to have enough bandwidth
-	 * step 2: lock_doublebuffer_enable
-	 * step 3: pipe_control_lock(true) - make dchubp register change will
-	 * not take effect right way
-	 * step 4: apply_ctx_for_surface - program dchubp
-	 * step 5: pipe_control_lock(false) - dchubp register change take effect
-	 * step 6: optimize_bandwidth --> dc_post_update_surfaces_to_stream
-	 * for full_date, optimize clock to save power
-	 *
-	 * at end of step 1, dcn clocks (dprefclk, dispclk, dppclk) may be
-	 * changed for new dchubp configuration. but real dcn hub dchubps are
-	 * still running with old configuration until end of step 5. this need
-	 * clocks settings at step 1 should not less than that before step 1.
-	 * this is checked by two conditions: 1. if (should_set_clock(safe_to_lower
-	 * , new_clocks->dispclk_khz, clk_mgr_base->clks.dispclk_khz) ||
-	 * new_clocks->dispclk_khz == clk_mgr_base->clks.dispclk_khz)
-	 * 2. request_dpp_div = new_clocks->dispclk_khz > new_clocks->dppclk_khz
-	 *
-	 * the second condition is based on new dchubp configuration. dppclk
-	 * for new dchubp may be different from dppclk before step 1.
-	 * for example, before step 1, dchubps are as below:
-	 * pipe 0: recout=(0,40,1920,980) viewport=(0,0,1920,979)
-	 * pipe 1: recout=(0,0,1920,1080) viewport=(0,0,1920,1080)
-	 * for dppclk for pipe0 need dppclk = dispclk
-	 *
-	 * new dchubp pipe split configuration:
-	 * pipe 0: recout=(0,0,960,1080) viewport=(0,0,960,1080)
-	 * pipe 1: recout=(960,0,960,1080) viewport=(960,0,960,1080)
-	 * dppclk only needs dppclk = dispclk /2.
-	 *
-	 * dispclk, dppclk are not lock by otg master lock. they take effect
-	 * after step 1. during this transition, dispclk are the same, but
-	 * dppclk is changed to half of previous clock for old dchubp
-	 * configuration between step 1 and step 6. This may cause p-state
-	 * warning intermittently.
-	 *
-	 * for new_clocks->dispclk_khz == clk_mgr_base->clks.dispclk_khz, we
-	 * need make sure dppclk are not changed to less between step 1 and 6.
-	 * for new_clocks->dispclk_khz > clk_mgr_base->clks.dispclk_khz,
-	 * new display clock is raised, but we do not know ratio of
-	 * new_clocks->dispclk_khz and clk_mgr_base->clks.dispclk_khz,
-	 * new_clocks->dispclk_khz /2 does not guarantee equal or higher than
-	 * old dppclk. we could ignore power saving different between
-	 * dppclk = displck and dppclk = dispclk / 2 between step 1 and step 6.
-	 * as long as safe_to_lower = false, set dpclk = dispclk to simplify
-	 * condition check.
-	 * todo: review this change for other asic.
-	 **/
+	 
 	if (!safe_to_lower)
 		request_dpp_div = false;
 
-	/* set disp clk to dpp clk threshold */
+	 
 
 	clk_mgr->funcs->set_dispclk(clk_mgr, dispclk_to_dpp_threshold);
 	clk_mgr->funcs->set_dprefclk(clk_mgr);
 
 
-	/* update request dpp clk division option */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe_ctx = &dc->current_state->res_ctx.pipe_ctx[i];
 
@@ -175,7 +89,7 @@ static void ramp_up_dispclk_with_dpp(
 				true);
 	}
 
-	/* If target clk not same as dppclk threshold, set to target clock */
+	 
 	if (dispclk_to_dpp_threshold != new_clocks->dispclk_khz) {
 		clk_mgr->funcs->set_dispclk(clk_mgr, new_clocks->dispclk_khz);
 		clk_mgr->funcs->set_dprefclk(clk_mgr);
@@ -215,11 +129,7 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 		enter_display_off = true;
 
 	if (enter_display_off == safe_to_lower) {
-		/*
-		 * Notify SMU active displays
-		 * if function pointer not set up, this message is
-		 * sent as part of pplib_apply_display_requirements.
-		 */
+		 
 		if (pp_smu->set_display_count)
 			pp_smu->set_display_count(&pp_smu->pp_smu, display_count);
 	}
@@ -235,7 +145,7 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 		send_request_to_lower = true;
 	}
 
-	// F Clock
+	
 	if (debug->force_fclk_khz != 0)
 		new_clocks->fclk_khz = debug->force_fclk_khz;
 
@@ -244,7 +154,7 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 		send_request_to_lower = true;
 	}
 
-	//DCF Clock
+	
 	if (should_set_clock(safe_to_lower, new_clocks->dcfclk_khz, clk_mgr_base->clks.dcfclk_khz)) {
 		clk_mgr_base->clks.dcfclk_khz = new_clocks->dcfclk_khz;
 		send_request_to_lower = true;
@@ -256,11 +166,9 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 		send_request_to_lower = true;
 	}
 
-	/* make sure dcf clk is before dpp clk to
-	 * make sure we have enough voltage to run dpp clk
-	 */
+	 
 	if (send_request_to_increase) {
-		/*use dcfclk to request voltage*/
+		 
 		if (pp_smu->set_hard_min_fclk_by_freq &&
 				pp_smu->set_hard_min_dcfclk_by_freq &&
 				pp_smu->set_min_deep_sleep_dcfclk) {
@@ -270,8 +178,8 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 		}
 	}
 
-	/* dcn1 dppclk is tied to dispclk */
-	/* program dispclk on = as a w/a for sleep resume clock ramping issues */
+	 
+	 
 	if (should_set_clock(safe_to_lower, new_clocks->dispclk_khz, clk_mgr_base->clks.dispclk_khz)
 			|| new_clocks->dispclk_khz == clk_mgr_base->clks.dispclk_khz) {
 		ramp_up_dispclk_with_dpp(clk_mgr, dc, new_clocks, safe_to_lower);
@@ -280,7 +188,7 @@ static void rv1_update_clocks(struct clk_mgr *clk_mgr_base,
 	}
 
 	if (!send_request_to_increase && send_request_to_lower) {
-		/*use dcfclk to request voltage*/
+		 
 		if (pp_smu->set_hard_min_fclk_by_freq &&
 				pp_smu->set_hard_min_dcfclk_by_freq &&
 				pp_smu->set_min_deep_sleep_dcfclk) {

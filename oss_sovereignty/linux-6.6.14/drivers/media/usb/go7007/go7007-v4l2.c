@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -120,27 +118,7 @@ static void set_formatting(struct go7007 *go)
 		go->pali = 0x48;
 		break;
 	case V4L2_PIX_FMT_MPEG4:
-		/* For future reference: this is the list of MPEG4
-		 * profiles that are available, although they are
-		 * untested:
-		 *
-		 * Profile		pali
-		 * --------------	----
-		 * PROFILE_S_L0		0x08
-		 * PROFILE_S_L1		0x01
-		 * PROFILE_S_L2		0x02
-		 * PROFILE_S_L3		0x03
-		 * PROFILE_ARTS_L1	0x91
-		 * PROFILE_ARTS_L2	0x92
-		 * PROFILE_ARTS_L3	0x93
-		 * PROFILE_ARTS_L4	0x94
-		 * PROFILE_AS_L0	0xf0
-		 * PROFILE_AS_L1	0xf1
-		 * PROFILE_AS_L2	0xf2
-		 * PROFILE_AS_L3	0xf3
-		 * PROFILE_AS_L4	0xf4
-		 * PROFILE_AS_L5	0xf5
-		 */
+		 
 		go->pali = 0xf5;
 		break;
 	}
@@ -416,7 +394,7 @@ static int go7007_start_streaming(struct vb2_queue *q, unsigned int count)
 	v4l2_ctrl_grab(go->mpeg_video_gop_closure, true);
 	v4l2_ctrl_grab(go->mpeg_video_bitrate, true);
 	v4l2_ctrl_grab(go->mpeg_video_aspect_ratio, true);
-	/* Turn on Capture LED */
+	 
 	if (go->board_id == GO7007_BOARDID_ADS_USBAV_709)
 		go7007_write_addr(go, 0x3c82, 0x0005);
 	return ret;
@@ -440,7 +418,7 @@ static void go7007_stop_streaming(struct vb2_queue *q)
 	v4l2_ctrl_grab(go->mpeg_video_gop_closure, false);
 	v4l2_ctrl_grab(go->mpeg_video_bitrate, false);
 	v4l2_ctrl_grab(go->mpeg_video_aspect_ratio, false);
-	/* Turn on Capture LED */
+	 
 	if (go->board_id == GO7007_BOARDID_ADS_USBAV_709)
 		go7007_write_addr(go, 0x3c82, 0x000d);
 }
@@ -495,16 +473,7 @@ static int vidioc_s_parm(struct file *filp, void *priv,
 	return vidioc_g_parm(filp, priv, parm);
 }
 
-/* VIDIOC_ENUMSTD on go7007 were used for enumerating the supported fps and
-   its resolution, when the device is not connected to TV.
-   This is were an API abuse, probably used by the lack of specific IOCTL's to
-   enumerate it, by the time the driver was written.
-
-   However, since kernel 2.6.19, two new ioctls (VIDIOC_ENUM_FRAMEINTERVALS
-   and VIDIOC_ENUM_FRAMESIZES) were added for this purpose.
-
-   The two functions below implement the newer ioctls
-*/
+ 
 static int vidioc_enum_framesizes(struct file *filp, void *priv,
 				  struct v4l2_frmsizeenum *fsize)
 {
@@ -605,7 +574,7 @@ static int vidioc_enum_input(struct file *file, void *priv,
 	strscpy(inp->name, go->board_info->inputs[inp->index].name,
 		sizeof(inp->name));
 
-	/* If this board has a tuner, it will be the first input */
+	 
 	if ((go->board_info->flags & GO7007_BOARD_HAS_TUNER) &&
 			inp->index == 0)
 		inp->type = V4L2_INPUT_TYPE_TUNER;
@@ -761,8 +730,7 @@ static int vidioc_subscribe_event(struct v4l2_fh *fh,
 
 	switch (sub->type) {
 	case V4L2_EVENT_MOTION_DET:
-		/* Allow for up to 30 events (1 second for NTSC) to be
-		 * stored. */
+		 
 		return v4l2_event_subscribe(fh, sub, 30, NULL);
 	default:
 		return v4l2_ctrl_subscribe_event(fh, sub);
@@ -1125,7 +1093,7 @@ int go7007_v4l2_init(struct go7007 *go)
 		v4l2_disable_ioctl(vdev, VIDIOC_S_AUDIO);
 		v4l2_disable_ioctl(vdev, VIDIOC_ENUMAUDIO);
 	}
-	/* Setup correct crystal frequency on this board */
+	 
 	if (go->board_info->sensor_flags & GO7007_SENSOR_SAA7115)
 		v4l2_subdev_call(go->sd_video, video, s_crystal_freq,
 				SAA7115_FREQ_24_576_MHZ,

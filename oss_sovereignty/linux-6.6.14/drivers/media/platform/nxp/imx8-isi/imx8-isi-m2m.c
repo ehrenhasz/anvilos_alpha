@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ISI V4L2 memory to memory driver for i.MX8QXP/QM platform
- *
- * ISI is a Image Sensor Interface of i.MX8QXP/QM platform, which
- * used to process image from camera sensor or memory to memory or DC
- *
- * Copyright (c) 2019 NXP Semiconductor
- */
+
+ 
 
 #include <linux/container_of.h>
 #include <linux/device.h>
@@ -49,7 +42,7 @@ struct mxc_isi_m2m_ctx {
 	struct v4l2_fh fh;
 	struct mxc_isi_m2m *m2m;
 
-	/* Protects the m2m vb2 queues */
+	 
 	struct mutex vb2_lock;
 
 	struct {
@@ -87,9 +80,7 @@ mxc_isi_m2m_ctx_qdata(struct mxc_isi_m2m_ctx *ctx, enum v4l2_buf_type type)
 		return &ctx->queues.cap;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 M2M device operations
- */
+ 
 
 static void mxc_isi_m2m_frame_write_done(struct mxc_isi_pipe *pipe, u32 status)
 {
@@ -129,7 +120,7 @@ static void mxc_isi_m2m_device_run(void *priv)
 
 	mutex_lock(&m2m->lock);
 
-	/* If the context has changed, reconfigure the channel. */
+	 
 	if (m2m->last_ctx != ctx) {
 		const struct v4l2_area in_size = {
 			.width = ctx->queues.out.format.width,
@@ -184,9 +175,7 @@ static const struct v4l2_m2m_ops mxc_isi_m2m_ops = {
 	.device_run = mxc_isi_m2m_device_run,
 };
 
-/* -----------------------------------------------------------------------------
- * videobuf2 queue operations
- */
+ 
 
 static int mxc_isi_m2m_vb2_queue_setup(struct vb2_queue *q,
 				       unsigned int *num_buffers,
@@ -309,9 +298,7 @@ static int mxc_isi_m2m_queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 controls
- */
+ 
 
 static inline struct mxc_isi_m2m_ctx *
 ctrl_to_mxc_isi_m2m_ctx(struct v4l2_ctrl *ctrl)
@@ -374,9 +361,7 @@ static void mxc_isi_m2m_ctx_ctrls_delete(struct mxc_isi_m2m_ctx *ctx)
 	v4l2_ctrl_handler_free(&ctx->ctrls.handler);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int mxc_isi_m2m_querycap(struct file *file, void *fh,
 				struct v4l2_capability *cap)
@@ -414,7 +399,7 @@ __mxc_isi_m2m_try_fmt_vid(struct mxc_isi_m2m_ctx *ctx,
 			  const enum mxc_isi_video_type type)
 {
 	if (type == MXC_ISI_VIDEO_M2M_CAP) {
-		/* Downscaling only  */
+		 
 		pix->width = min(pix->width, ctx->queues.out.format.width);
 		pix->height = min(pix->height, ctx->queues.out.format.height);
 	}
@@ -472,10 +457,7 @@ static int mxc_isi_m2m_s_fmt_vid(struct file *file, void *fh,
 		ctx->queues.out.info = info;
 	}
 
-	/*
-	 * Always set the format on the capture side, due to either format
-	 * propagation or direct setting.
-	 */
+	 
 	ctx->queues.cap.format = *pix;
 	ctx->queues.cap.info = info;
 
@@ -506,10 +488,7 @@ static int mxc_isi_m2m_streamon(struct file *file, void *fh,
 		 cap_pix->height == out_pix->height &&
 		 cap_info->encoding == out_info->encoding;
 
-	/*
-	 * Acquire the pipe and initialize the channel with the first user of
-	 * the M2M device.
-	 */
+	 
 	if (m2m->usage_count == 0) {
 		ret = mxc_isi_channel_acquire(m2m->pipe,
 					      &mxc_isi_m2m_frame_write_done,
@@ -522,10 +501,7 @@ static int mxc_isi_m2m_streamon(struct file *file, void *fh,
 
 	m2m->usage_count++;
 
-	/*
-	 * Allocate resources for the channel, counting how many users require
-	 * buffer chaining.
-	 */
+	 
 	if (!ctx->chained && out_pix->width > MXC_ISI_MAX_WIDTH_UNCHAINED) {
 		ret = mxc_isi_channel_chain(m2m->pipe, bypass);
 		if (ret)
@@ -535,14 +511,11 @@ static int mxc_isi_m2m_streamon(struct file *file, void *fh,
 		ctx->chained = true;
 	}
 
-	/*
-	 * Drop the lock to start the stream, as the .device_run() operation
-	 * needs to acquire it.
-	 */
+	 
 	mutex_unlock(&m2m->lock);
 	ret = v4l2_m2m_ioctl_streamon(file, fh, type);
 	if (ret) {
-		/* Reacquire the lock for the cleanup path. */
+		 
 		mutex_lock(&m2m->lock);
 		goto unchain;
 	}
@@ -575,19 +548,16 @@ static int mxc_isi_m2m_streamoff(struct file *file, void *fh,
 
 	mutex_lock(&m2m->lock);
 
-	/*
-	 * If the last context is this one, reset it to make sure the device
-	 * will be reconfigured when streaming is restarted.
-	 */
+	 
 	if (m2m->last_ctx == ctx)
 		m2m->last_ctx = NULL;
 
-	/* Free the channel resources if this is the last chained context. */
+	 
 	if (ctx->chained && --m2m->chained_count == 0)
 		mxc_isi_channel_unchain(m2m->pipe);
 	ctx->chained = false;
 
-	/* Turn off the light with the last user. */
+	 
 	if (--m2m->usage_count == 0) {
 		mxc_isi_channel_disable(m2m->pipe);
 		mxc_isi_channel_put(m2m->pipe);
@@ -628,9 +598,7 @@ static const struct v4l2_ioctl_ops mxc_isi_m2m_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * Video device file operations
- */
+ 
 
 static void mxc_isi_m2m_init_format(struct mxc_isi_m2m_ctx *ctx,
 				    struct mxc_isi_m2m_ctx_queue_data *qdata,
@@ -722,9 +690,7 @@ static const struct v4l2_file_operations mxc_isi_m2m_fops = {
 	.mmap		= v4l2_m2m_fop_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * Registration
- */
+ 
 
 int mxc_isi_m2m_register(struct mxc_isi_dev *isi, struct v4l2_device *v4l2_dev)
 {
@@ -738,7 +704,7 @@ int mxc_isi_m2m_register(struct mxc_isi_dev *isi, struct v4l2_device *v4l2_dev)
 
 	mutex_init(&m2m->lock);
 
-	/* Initialize the video device and create controls. */
+	 
 	snprintf(vdev->name, sizeof(vdev->name), "mxc_isi.m2m");
 
 	vdev->fops	= &mxc_isi_m2m_fops;
@@ -751,7 +717,7 @@ int mxc_isi_m2m_register(struct mxc_isi_dev *isi, struct v4l2_device *v4l2_dev)
 	vdev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_M2M_MPLANE;
 	video_set_drvdata(vdev, m2m);
 
-	/* Create the M2M device. */
+	 
 	m2m->m2m_dev = v4l2_m2m_init(&mxc_isi_m2m_ops);
 	if (IS_ERR(m2m->m2m_dev)) {
 		dev_err(isi->dev, "failed to initialize m2m device\n");
@@ -759,29 +725,14 @@ int mxc_isi_m2m_register(struct mxc_isi_dev *isi, struct v4l2_device *v4l2_dev)
 		goto err_mutex;
 	}
 
-	/* Register the video device. */
+	 
 	ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
 	if (ret < 0) {
 		dev_err(isi->dev, "failed to register m2m device\n");
 		goto err_m2m;
 	}
 
-	/*
-	 * Populate the media graph. We can't use the mem2mem helper
-	 * v4l2_m2m_register_media_controller() as the M2M interface needs to
-	 * be connected to the existing entities in the graph, so we have to
-	 * wire things up manually:
-	 *
-	 * - The entity in the video_device, which isn't touched by the V4L2
-	 *   core for M2M devices, is used as the source I/O entity in the
-	 *   graph, connected to the crossbar switch.
-	 *
-	 * - The video device at the end of the pipeline provides the sink
-	 *   entity, and is already wired up in the graph.
-	 *
-	 * - A new interface is created, pointing at both entities. The sink
-	 *   entity will thus have two interfaces pointing to it.
-	 */
+	 
 	m2m->pad.flags = MEDIA_PAD_FL_SOURCE;
 	vdev->entity.name = "mxc_isi.output";
 	vdev->entity.function = MEDIA_ENT_F_IO_V4L;

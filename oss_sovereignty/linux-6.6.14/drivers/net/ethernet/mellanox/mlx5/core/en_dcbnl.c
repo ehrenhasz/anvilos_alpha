@@ -1,41 +1,11 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/device.h>
 #include <linux/netdevice.h>
 #include "en.h"
 #include "en/port.h"
 #include "en/port_buffer.h"
 
-#define MLX5E_MAX_BW_ALLOC 100 /* Max percentage of BW allocation */
+#define MLX5E_MAX_BW_ALLOC 100  
 
 #define MLX5E_100MB (100000)
 #define MLX5E_1GB   (1000000)
@@ -43,7 +13,7 @@
 #define MLX5E_CEE_STATE_UP    1
 #define MLX5E_CEE_STATE_DOWN  0
 
-/* Max supported cable length is 1000 meters */
+ 
 #define MLX5E_MAX_CABLE_LENGTH 1000
 
 enum {
@@ -64,8 +34,7 @@ enum {
 static int mlx5e_set_trust_state(struct mlx5e_priv *priv, u8 trust_state);
 static int mlx5e_set_dscp2prio(struct mlx5e_priv *priv, u8 dscp, u8 prio);
 
-/* If dcbx mode is non-host set the dcbx mode to host.
- */
+ 
 static int mlx5e_dcbnl_set_dcbx_mode(struct mlx5e_priv *priv,
 				     enum mlx5_dcbx_oper_mode mode)
 {
@@ -141,14 +110,14 @@ static int mlx5e_dcbnl_ieee_getets(struct net_device *netdev,
 			is_tc_group_6_exist = true;
 	}
 
-	/* Report 0% ets tc if exits*/
+	 
 	if (is_zero_bw_ets_tc) {
 		for (i = 0; i < ets->ets_cap; i++)
 			if (tc_group[i] == MLX5E_LOWEST_PRIO_GROUP)
 				ets->tc_tx_bw[i] = 0;
 	}
 
-	/* Update tc_tsa based on fw setting*/
+	 
 	for (i = 0; i < ets->ets_cap; i++) {
 		if (ets->tc_tx_bw[i] < MLX5E_MAX_BW_ALLOC)
 			priv->dcbx.tc_tsa[i] = IEEE_8021QAZ_TSA_ETS;
@@ -176,7 +145,7 @@ static void mlx5e_build_tc_group(struct ieee_ets *ets, u8 *tc_group, int max_tc)
 		}
 	}
 
-	/* strict group has higher priority than ets group */
+	 
 	strict_group = MLX5E_LOWEST_PRIO_GROUP;
 	if (any_tc_mapped_to_ets)
 		strict_group++;
@@ -235,19 +204,13 @@ static void mlx5e_build_tc_tx_bw(struct ieee_ets *ets, u8 *tc_tx_bw,
 		}
 	}
 
-	/* Make sure the total bw for ets zero bw group is 100% */
+	 
 	if (last_ets_zero_bw_tc != -1)
 		tc_tx_bw[last_ets_zero_bw_tc] +=
 			MLX5E_MAX_BW_ALLOC % num_ets_zero_bw;
 }
 
-/* If there are ETS BW 0,
- *   Set ETS group # to 1 for all ETS non zero BW tcs. Their sum must be 100%.
- *   Set group #0 to all the ETS BW 0 tcs and
- *     equally splits the 100% BW between them
- *   Report both group #0 and #1 as ETS type.
- *     All the tcs in group #0 will be reported with 0% BW.
- */
+ 
 static int mlx5e_dcbnl_ieee_setets_core(struct mlx5e_priv *priv, struct ieee_ets *ets)
 {
 	struct mlx5_core_dev *mdev = priv->mdev;
@@ -292,7 +255,7 @@ static int mlx5e_dbcnl_validate_ets(struct net_device *netdev,
 	int bw_sum = 0;
 	int i;
 
-	/* Validate Priority */
+	 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
 		if (ets->prio_tc[i] >= MLX5E_MAX_PRIORITY) {
 			netdev_err(netdev,
@@ -302,7 +265,7 @@ static int mlx5e_dbcnl_validate_ets(struct net_device *netdev,
 		}
 	}
 
-	/* Validate Bandwidth Sum */
+	 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
 		if (ets->tc_tsa[i] == IEEE_8021QAZ_TSA_ETS) {
 			have_ets_tc = true;
@@ -370,7 +333,7 @@ static int mlx5e_dcbnl_ieee_setpfc(struct net_device *dev,
 	u8 curr_pfc_en;
 	int ret = 0;
 
-	/* pfc_en */
+	 
 	mlx5_query_port_pfc(mdev, &curr_pfc_en, NULL);
 	if (pfc->pfc_en != curr_pfc_en) {
 		ret = mlx5_set_port_pfc(mdev, pfc->pfc_en, pfc->pfc_en);
@@ -425,7 +388,7 @@ static u8 mlx5e_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 		if (dcbx->mode == MLX5E_DCBX_PARAM_VER_OPER_AUTO)
 			return 0;
 
-		/* set dcbx to fw controlled */
+		 
 		if (!mlx5e_dcbnl_set_dcbx_mode(priv, MLX5E_DCBX_PARAM_VER_OPER_AUTO)) {
 			dcbx->mode = MLX5E_DCBX_PARAM_VER_OPER_AUTO;
 			dcbx->cap &= ~DCB_CAP_DCBX_HOST;
@@ -461,32 +424,32 @@ static int mlx5e_dcbnl_ieee_setapp(struct net_device *dev, struct dcb_app *app)
 	    (app->protocol >= MLX5E_MAX_DSCP))
 		return -EINVAL;
 
-	/* Save the old entry info */
+	 
 	temp.selector = IEEE_8021QAZ_APP_SEL_DSCP;
 	temp.protocol = app->protocol;
 	temp.priority = priv->dcbx_dp.dscp2prio[app->protocol];
 
-	/* Check if need to switch to dscp trust state */
+	 
 	if (!priv->dcbx.dscp_app_cnt) {
 		err =  mlx5e_set_trust_state(priv, MLX5_QPTS_TRUST_DSCP);
 		if (err)
 			return err;
 	}
 
-	/* Skip the fw command if new and old mapping are the same */
+	 
 	if (app->priority != priv->dcbx_dp.dscp2prio[app->protocol]) {
 		err = mlx5e_set_dscp2prio(priv, app->protocol, app->priority);
 		if (err)
 			goto fw_err;
 	}
 
-	/* Delete the old entry if exists */
+	 
 	is_new = false;
 	err = dcb_ieee_delapp(dev, &temp);
 	if (err)
 		is_new = true;
 
-	/* Add new entry and update counter */
+	 
 	err = dcb_ieee_setapp(dev, app);
 	if (err)
 		return err;
@@ -514,27 +477,27 @@ static int mlx5e_dcbnl_ieee_delapp(struct net_device *dev, struct dcb_app *app)
 	    (app->protocol >= MLX5E_MAX_DSCP))
 		return -EINVAL;
 
-	/* Skip if no dscp app entry */
+	 
 	if (!priv->dcbx.dscp_app_cnt)
 		return -ENOENT;
 
-	/* Check if the entry matches fw setting */
+	 
 	if (app->priority != priv->dcbx_dp.dscp2prio[app->protocol])
 		return -ENOENT;
 
-	/* Delete the app entry */
+	 
 	err = dcb_ieee_delapp(dev, app);
 	if (err)
 		return err;
 
-	/* Reset the priority mapping back to zero */
+	 
 	err = mlx5e_set_dscp2prio(priv, app->protocol, 0);
 	if (err)
 		goto fw_err;
 
 	priv->dcbx.dscp_app_cnt--;
 
-	/* Check if need to switch to pcp trust state */
+	 
 	if (!priv->dcbx.dscp_app_cnt)
 		err = mlx5e_set_trust_state(priv, MLX5_QPTS_TRUST_PCP);
 
@@ -657,7 +620,7 @@ static u8 mlx5e_dcbnl_setall(struct net_device *netdev)
 		goto out;
 	}
 
-	/* Set PFC */
+	 
 	pfc.pfc_cap = mlx5_max_tc(mdev) + 1;
 	if (!cee_cfg->pfc_enable)
 		pfc.pfc_en = 0;
@@ -1002,7 +965,7 @@ static const struct dcbnl_rtnl_ops mlx5e_dcbnl_ops = {
 	.dcbnl_getbuffer = mlx5e_dcbnl_getbuffer,
 	.dcbnl_setbuffer = mlx5e_dcbnl_setbuffer,
 
-/* CEE interfaces */
+ 
 	.setall         = mlx5e_dcbnl_setall,
 	.getstate       = mlx5e_dcbnl_getstate,
 	.getpermhwaddr  = mlx5e_dcbnl_getpermhwaddr,
@@ -1039,9 +1002,7 @@ static void mlx5e_dcbnl_query_dcbx_mode(struct mlx5e_priv *priv,
 	if (!mlx5_query_port_dcbx_param(priv->mdev, out))
 		*mode = MLX5_GET(dcbx_param, out, version_oper);
 
-	/* From driver's point of view, we only care if the mode
-	 * is host (HOST) or non-host (AUTO)
-	 */
+	 
 	if (*mode != MLX5E_DCBX_PARAM_VER_OPER_HOST)
 		*mode = MLX5E_DCBX_PARAM_VER_OPER_AUTO;
 }
@@ -1064,7 +1025,7 @@ static void mlx5e_ets_init(struct mlx5e_priv *priv)
 	}
 
 	if (ets.ets_cap > 1) {
-		/* tclass[prio=0]=1, tclass[prio=1]=0, tclass[prio=i]=i (for i>1) */
+		 
 		ets.prio_tc[0] = 1;
 		ets.prio_tc[1] = 0;
 	}
@@ -1091,7 +1052,7 @@ static void mlx5e_dcbnl_dscp_app(struct mlx5e_priv *priv, int action)
 	if (!MLX5_DSCP_SUPPORTED(priv->mdev))
 		return;
 
-	/* No SEL_DSCP entry in non DSCP state */
+	 
 	if (priv->dcbx_dp.trust_state != MLX5_QPTS_TRUST_DSCP)
 		return;
 
@@ -1153,7 +1114,7 @@ static int mlx5e_set_trust_state(struct mlx5e_priv *priv, u8 trust_state)
 	mlx5e_params_calc_trust_tx_min_inline_mode(priv->mdev, &new_params,
 						   trust_state);
 
-	/* Skip if tx_min_inline is the same */
+	 
 	if (new_params.tx_min_inline_mode == priv->channels.params.tx_min_inline_mode)
 		reset = false;
 
@@ -1195,10 +1156,7 @@ static int mlx5e_trust_initialize(struct mlx5e_priv *priv)
 	WRITE_ONCE(priv->dcbx_dp.trust_state, trust_state);
 
 	if (priv->dcbx_dp.trust_state == MLX5_QPTS_TRUST_PCP && priv->dcbx.dscp_app_cnt) {
-		/*
-		 * Align the driver state with the register state.
-		 * Temporary state change is required to enable the app list reset.
-		 */
+		 
 		priv->dcbx_dp.trust_state = MLX5_QPTS_TRUST_DSCP;
 		mlx5e_dcbnl_delete_app(priv);
 		priv->dcbx_dp.trust_state = MLX5_QPTS_TRUST_PCP;

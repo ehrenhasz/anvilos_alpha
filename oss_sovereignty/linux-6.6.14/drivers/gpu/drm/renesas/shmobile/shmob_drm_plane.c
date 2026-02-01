@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * shmob_drm_plane.c  --  SH Mobile DRM Planes
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_fb_dma_helper.h>
@@ -63,7 +57,7 @@ static void __shmob_drm_plane_setup(struct shmob_drm_plane *splane,
 	struct shmob_drm_device *sdev = splane->plane.dev->dev_private;
 	u32 format;
 
-	/* TODO: Support ROP3 mode */
+	 
 	format = LDBBSIFR_EN | (splane->alpha << LDBBSIFR_LAY_SHIFT);
 
 	switch (splane->format->fourcc) {

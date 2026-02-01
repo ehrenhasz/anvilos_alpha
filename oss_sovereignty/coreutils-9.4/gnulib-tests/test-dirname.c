@@ -1,35 +1,10 @@
-/* Test the gnulib dirname module.
-   Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "dirname.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-struct test {
-  const char *name;     /* Name under test.  */
-  const char *dir;      /* dir_name (name).  */
-  const char *last;     /* last_component (name).  */
-  const char *base;     /* base_name (name).  */
-  const char *stripped; /* name after strip_trailing_slashes (name).  */
-  bool modified;        /* result of strip_trailing_slashes (name).  */
-  bool absolute;        /* IS_ABSOLUTE_FILE_NAME (name).  */
+ 
+  const char *dir;       
+  const char *last;      
+  const char *base;      
+  const char *stripped;  
+  bool modified;         
+  bool absolute;         
 };
 
 static struct test tests[] = {
@@ -48,8 +23,7 @@ static struct test tests[] = {
 #endif
   {"///",       "/",    "",     "/",    "/",    true,   true},
   {"///a///",   "/",    "a///", "a/",   "///a", true,   true},
-  /* POSIX requires dirname("") and basename("") to both return ".",
-     but dir_name and base_name are defined differently.  */
+   
   {"",          ".",    "",     "",     "",     false,  false},
   {".",         ".",    ".",    ".",    ".",    false,  false},
   {"..",        ".",    "..",   "..",   "..",   false,  false},
@@ -89,7 +63,7 @@ static struct test tests[] = {
   {"a:b:c",     "a:.",  "b:c",  "./b:c","a:b:c",false,  false},
   {"a/b:c",     "a",    "b:c",  "./b:c","a/b:c",false,  false},
   {"a/b:c/",    "a",    "b:c/", "./b:c/","a/b:c",true,  false},
-# else /* ! FILE_SYSTEM_DRIVE_PREFIX_CAN_BE_RELATIVE */
+# else  
   {"c:",        "c:",   "",     "c:",   "c:",   false,  true},
   {"c:/",       "c:",   "",     "c:",   "c:",   true,   true},
   {"c://",      "c:",   "",     "c:",   "c:",   true,   true},
@@ -104,7 +78,7 @@ static struct test tests[] = {
   {"a/b:c",     "a",    "b:c",  "./b:c","a/b:c",false,  false},
   {"a/b:c/",    "a",    "b:c/", "./b:c/","a/b:c",true,  false},
 # endif
-#else /* ! ISSLASH ('\\') */
+#else  
   {"c:",        ".",    "c:",   "c:",   "c:",   false,  false},
   {"c:/",       ".",    "c:/",  "c:/",  "c:",   true,   false},
   {"c://",      ".",    "c://", "c:/",  "c:",   true,   false},
@@ -123,7 +97,7 @@ static struct test tests[] = {
   {"1:/",       ".",    "1:/",  "1:/",  "1:",   true,   false},
   {"/:",        "/",    ":",    ":",    "/:",   false,  true},
   {"/:/",       "/",    ":/",   ":/",   "/:",   true,   true},
-  /* End sentinel.  */
+   
   {NULL,        NULL,   NULL,   NULL,   NULL,   false,  false}
 };
 

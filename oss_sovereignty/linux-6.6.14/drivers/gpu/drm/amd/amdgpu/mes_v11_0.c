@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -110,7 +89,7 @@ static int mes_v11_0_submit_pkt_and_poll_completion(struct amdgpu_mes *mes,
 	if (amdgpu_emu_mode) {
 		timeout *= 100;
 	} else if (amdgpu_sriov_vf(adev)) {
-		/* Worst case in sriov where all other 15 VF timeout, each VF needs about 600ms */
+		 
 		timeout = 15 * 600 * 1000;
 	}
 	BUG_ON(size % 4 != 0);
@@ -206,7 +185,7 @@ static int mes_v11_0_add_hw_queue(struct amdgpu_mes *mes,
 	mes_add_queue_pkt.skip_process_ctx_clear = input->skip_process_ctx_clear;
 	mes_add_queue_pkt.is_kfd_process = input->is_kfd_process;
 
-	/* For KFD, gds_size is re-used for queue size (needed in MES for AQL queues) */
+	 
 	mes_add_queue_pkt.is_aql_queue = input->is_aql_queue;
 	mes_add_queue_pkt.gds_size = input->queue_size;
 
@@ -584,7 +563,7 @@ static void mes_v11_0_enable(struct amdgpu_device *adev, bool enable)
 		soc21_grbm_select(adev, 0, 0, 0, 0);
 		mutex_unlock(&adev->srbm_mutex);
 
-		/* unhalt MES and activate pipe0 */
+		 
 		data = REG_SET_FIELD(0, CP_MES_CNTL, MES_PIPE0_ACTIVE, 1);
 		data = REG_SET_FIELD(data, CP_MES_CNTL, MES_PIPE1_ACTIVE,
 				     adev->enable_mes_kiq ? 1 : 0);
@@ -608,7 +587,7 @@ static void mes_v11_0_enable(struct amdgpu_device *adev, bool enable)
 	}
 }
 
-/* This function is for backdoor MES firmware */
+ 
 static int mes_v11_0_load_microcode(struct amdgpu_device *adev,
 				    enum admgpu_mes_pipe pipe, bool prime_icache)
 {
@@ -632,44 +611,44 @@ static int mes_v11_0_load_microcode(struct amdgpu_device *adev,
 	}
 
 	mutex_lock(&adev->srbm_mutex);
-	/* me=3, pipe=0, queue=0 */
+	 
 	soc21_grbm_select(adev, 3, pipe, 0, 0);
 
 	WREG32_SOC15(GC, 0, regCP_MES_IC_BASE_CNTL, 0);
 
-	/* set ucode start address */
+	 
 	ucode_addr = adev->mes.uc_start_addr[pipe] >> 2;
 	WREG32_SOC15(GC, 0, regCP_MES_PRGRM_CNTR_START,
 		     lower_32_bits(ucode_addr));
 	WREG32_SOC15(GC, 0, regCP_MES_PRGRM_CNTR_START_HI,
 		     upper_32_bits(ucode_addr));
 
-	/* set ucode fimrware address */
+	 
 	WREG32_SOC15(GC, 0, regCP_MES_IC_BASE_LO,
 		     lower_32_bits(adev->mes.ucode_fw_gpu_addr[pipe]));
 	WREG32_SOC15(GC, 0, regCP_MES_IC_BASE_HI,
 		     upper_32_bits(adev->mes.ucode_fw_gpu_addr[pipe]));
 
-	/* set ucode instruction cache boundary to 2M-1 */
+	 
 	WREG32_SOC15(GC, 0, regCP_MES_MIBOUND_LO, 0x1FFFFF);
 
-	/* set ucode data firmware address */
+	 
 	WREG32_SOC15(GC, 0, regCP_MES_MDBASE_LO,
 		     lower_32_bits(adev->mes.data_fw_gpu_addr[pipe]));
 	WREG32_SOC15(GC, 0, regCP_MES_MDBASE_HI,
 		     upper_32_bits(adev->mes.data_fw_gpu_addr[pipe]));
 
-	/* Set 0x3FFFF (256K-1) to CP_MES_MDBOUND_LO */
+	 
 	WREG32_SOC15(GC, 0, regCP_MES_MDBOUND_LO, 0x3FFFF);
 
 	if (prime_icache) {
-		/* invalidate ICACHE */
+		 
 		data = RREG32_SOC15(GC, 0, regCP_MES_IC_OP_CNTL);
 		data = REG_SET_FIELD(data, CP_MES_IC_OP_CNTL, PRIME_ICACHE, 0);
 		data = REG_SET_FIELD(data, CP_MES_IC_OP_CNTL, INVALIDATE_CACHE, 1);
 		WREG32_SOC15(GC, 0, regCP_MES_IC_OP_CNTL, data);
 
-		/* prime the ICACHE. */
+		 
 		data = RREG32_SOC15(GC, 0, regCP_MES_IC_OP_CNTL);
 		data = REG_SET_FIELD(data, CP_MES_IC_OP_CNTL, PRIME_ICACHE, 1);
 		WREG32_SOC15(GC, 0, regCP_MES_IC_OP_CNTL, data);
@@ -724,7 +703,7 @@ static int mes_v11_0_mqd_init(struct amdgpu_ring *ring)
 
 	eop_base_addr = ring->eop_gpu_addr >> 8;
 
-	/* set the EOP size, register value is 2^(EOP_SIZE+1) dwords */
+	 
 	tmp = regCP_HQD_EOP_CONTROL_DEFAULT;
 	tmp = REG_SET_FIELD(tmp, CP_HQD_EOP_CONTROL, EOP_SIZE,
 			(order_base_2(MES_EOP_SIZE / 4) - 1));
@@ -733,38 +712,38 @@ static int mes_v11_0_mqd_init(struct amdgpu_ring *ring)
 	mqd->cp_hqd_eop_base_addr_hi = upper_32_bits(eop_base_addr);
 	mqd->cp_hqd_eop_control = tmp;
 
-	/* disable the queue if it's active */
+	 
 	ring->wptr = 0;
 	mqd->cp_hqd_pq_rptr = 0;
 	mqd->cp_hqd_pq_wptr_lo = 0;
 	mqd->cp_hqd_pq_wptr_hi = 0;
 
-	/* set the pointer to the MQD */
+	 
 	mqd->cp_mqd_base_addr_lo = ring->mqd_gpu_addr & 0xfffffffc;
 	mqd->cp_mqd_base_addr_hi = upper_32_bits(ring->mqd_gpu_addr);
 
-	/* set MQD vmid to 0 */
+	 
 	tmp = regCP_MQD_CONTROL_DEFAULT;
 	tmp = REG_SET_FIELD(tmp, CP_MQD_CONTROL, VMID, 0);
 	mqd->cp_mqd_control = tmp;
 
-	/* set the pointer to the HQD, this is similar CP_RB0_BASE/_HI */
+	 
 	hqd_gpu_addr = ring->gpu_addr >> 8;
 	mqd->cp_hqd_pq_base_lo = lower_32_bits(hqd_gpu_addr);
 	mqd->cp_hqd_pq_base_hi = upper_32_bits(hqd_gpu_addr);
 
-	/* set the wb address whether it's enabled or not */
+	 
 	wb_gpu_addr = ring->rptr_gpu_addr;
 	mqd->cp_hqd_pq_rptr_report_addr_lo = wb_gpu_addr & 0xfffffffc;
 	mqd->cp_hqd_pq_rptr_report_addr_hi =
 		upper_32_bits(wb_gpu_addr) & 0xffff;
 
-	/* only used if CP_PQ_WPTR_POLL_CNTL.CP_PQ_WPTR_POLL_CNTL__EN_MASK=1 */
+	 
 	wb_gpu_addr = ring->wptr_gpu_addr;
 	mqd->cp_hqd_pq_wptr_poll_addr_lo = wb_gpu_addr & 0xfffffff8;
 	mqd->cp_hqd_pq_wptr_poll_addr_hi = upper_32_bits(wb_gpu_addr) & 0xffff;
 
-	/* set up the HQD, this is similar to CP_RB0_CNTL */
+	 
 	tmp = regCP_HQD_PQ_CONTROL_DEFAULT;
 	tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_CONTROL, QUEUE_SIZE,
 			    (order_base_2(ring->ring_size / 4) - 1));
@@ -777,7 +756,7 @@ static int mes_v11_0_mqd_init(struct amdgpu_ring *ring)
 	tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_CONTROL, NO_UPDATE_RPTR, 1);
 	mqd->cp_hqd_pq_control = tmp;
 
-	/* enable doorbell */
+	 
 	tmp = 0;
 	if (ring->use_doorbell) {
 		tmp = REG_SET_FIELD(tmp, CP_HQD_PQ_DOORBELL_CONTROL,
@@ -794,7 +773,7 @@ static int mes_v11_0_mqd_init(struct amdgpu_ring *ring)
 	mqd->cp_hqd_pq_doorbell_control = tmp;
 
 	mqd->cp_hqd_vmid = 0;
-	/* activate the queue */
+	 
 	mqd->cp_hqd_active = 1;
 
 	tmp = regCP_HQD_PERSISTENT_STATE_DEFAULT;
@@ -819,53 +798,53 @@ static void mes_v11_0_queue_init_register(struct amdgpu_ring *ring)
 	mutex_lock(&adev->srbm_mutex);
 	soc21_grbm_select(adev, 3, ring->pipe, 0, 0);
 
-	/* set CP_HQD_VMID.VMID = 0. */
+	 
 	data = RREG32_SOC15(GC, 0, regCP_HQD_VMID);
 	data = REG_SET_FIELD(data, CP_HQD_VMID, VMID, 0);
 	WREG32_SOC15(GC, 0, regCP_HQD_VMID, data);
 
-	/* set CP_HQD_PQ_DOORBELL_CONTROL.DOORBELL_EN=0 */
+	 
 	data = RREG32_SOC15(GC, 0, regCP_HQD_PQ_DOORBELL_CONTROL);
 	data = REG_SET_FIELD(data, CP_HQD_PQ_DOORBELL_CONTROL,
 			     DOORBELL_EN, 0);
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_DOORBELL_CONTROL, data);
 
-	/* set CP_MQD_BASE_ADDR/HI with the MQD base address */
+	 
 	WREG32_SOC15(GC, 0, regCP_MQD_BASE_ADDR, mqd->cp_mqd_base_addr_lo);
 	WREG32_SOC15(GC, 0, regCP_MQD_BASE_ADDR_HI, mqd->cp_mqd_base_addr_hi);
 
-	/* set CP_MQD_CONTROL.VMID=0 */
+	 
 	data = RREG32_SOC15(GC, 0, regCP_MQD_CONTROL);
 	data = REG_SET_FIELD(data, CP_MQD_CONTROL, VMID, 0);
 	WREG32_SOC15(GC, 0, regCP_MQD_CONTROL, 0);
 
-	/* set CP_HQD_PQ_BASE/HI with the ring buffer base address */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_BASE, mqd->cp_hqd_pq_base_lo);
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_BASE_HI, mqd->cp_hqd_pq_base_hi);
 
-	/* set CP_HQD_PQ_RPTR_REPORT_ADDR/HI */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_RPTR_REPORT_ADDR,
 		     mqd->cp_hqd_pq_rptr_report_addr_lo);
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_RPTR_REPORT_ADDR_HI,
 		     mqd->cp_hqd_pq_rptr_report_addr_hi);
 
-	/* set CP_HQD_PQ_CONTROL */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_CONTROL, mqd->cp_hqd_pq_control);
 
-	/* set CP_HQD_PQ_WPTR_POLL_ADDR/HI */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_WPTR_POLL_ADDR,
 		     mqd->cp_hqd_pq_wptr_poll_addr_lo);
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_WPTR_POLL_ADDR_HI,
 		     mqd->cp_hqd_pq_wptr_poll_addr_hi);
 
-	/* set CP_HQD_PQ_DOORBELL_CONTROL */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PQ_DOORBELL_CONTROL,
 		     mqd->cp_hqd_pq_doorbell_control);
 
-	/* set CP_HQD_PERSISTENT_STATE.PRELOAD_SIZE=0x53 */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_PERSISTENT_STATE, mqd->cp_hqd_persistent_state);
 
-	/* set CP_HQD_ACTIVE.ACTIVE=1 */
+	 
 	WREG32_SOC15(GC, 0, regCP_HQD_ACTIVE, mqd->cp_hqd_active);
 
 	soc21_grbm_select(adev, 0, 0, 0, 0);
@@ -924,7 +903,7 @@ static int mes_v11_0_queue_init(struct amdgpu_device *adev,
 		mes_v11_0_queue_init_register(ring);
 	}
 
-	/* get MES scheduler/KIQ versions */
+	 
 	mutex_lock(&adev->srbm_mutex);
 	soc21_grbm_select(adev, 3, pipe, 0, 0);
 
@@ -1014,7 +993,7 @@ static int mes_v11_0_mqd_sw_init(struct amdgpu_device *adev,
 
 	memset(ring->mqd_ptr, 0, mqd_size);
 
-	/* prepare MQD backup */
+	 
 	adev->mes.mqd_backup[pipe] = kmalloc(mqd_size, GFP_KERNEL);
 	if (!adev->mes.mqd_backup[pipe]) {
 		dev_warn(adev->dev,
@@ -1111,7 +1090,7 @@ static void mes_v11_0_kiq_dequeue(struct amdgpu_ring *ring)
 	mutex_lock(&adev->srbm_mutex);
 	soc21_grbm_select(adev, 3, ring->pipe, 0, 0);
 
-	/* disable the queue if it's active */
+	 
 	if (RREG32_SOC15(GC, 0, regCP_HQD_ACTIVE) & 1) {
 		WREG32_SOC15(GC, 0, regCP_HQD_DEQUEUE_REQUEST, 1);
 		for (i = 0; i < adev->usec_timeout; i++) {
@@ -1142,7 +1121,7 @@ static void mes_v11_0_kiq_setting(struct amdgpu_ring *ring)
 	uint32_t tmp;
 	struct amdgpu_device *adev = ring->adev;
 
-	/* tell RLC which is KIQ queue */
+	 
 	tmp = RREG32_SOC15(GC, 0, regRLC_CP_SCHEDULERS);
 	tmp &= 0xffffff00;
 	tmp |= (ring->me << 5) | (ring->pipe << 3) | (ring->queue);
@@ -1155,7 +1134,7 @@ static void mes_v11_0_kiq_clear(struct amdgpu_device *adev)
 {
 	uint32_t tmp;
 
-	/* tell RLC which is KIQ dequeue */
+	 
 	tmp = RREG32_SOC15(GC, 0, regRLC_CP_SCHEDULERS);
 	tmp &= ~RLC_CP_SCHEDULERS__scheduler0_MASK;
 	WREG32_SOC15(GC, 0, regRLC_CP_SCHEDULERS, tmp);
@@ -1247,11 +1226,7 @@ static int mes_v11_0_hw_init(void *handle)
 		goto failure;
 	}
 
-	/*
-	 * Disable KIQ ring usage from the driver once MES is enabled.
-	 * MES uses KIQ ring exclusively so driver cannot access KIQ ring
-	 * with MES enabled.
-	 */
+	 
 	adev->gfx.kiq[0].ring.sched.ready = false;
 	adev->mes.ring.sched.ready = true;
 
@@ -1311,7 +1286,7 @@ static int mes_v11_0_late_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* it's only intended for use in mes_self_test case, not for s0ix and reset */
+	 
 	if (!amdgpu_in_reset(adev) && !adev->in_s0ix && !adev->in_suspend &&
 	    (adev->ip_versions[GC_HWIP][0] != IP_VERSION(11, 0, 3)))
 		amdgpu_mes_self_test(adev);

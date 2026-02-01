@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_pscsi.c
- *
- * This file contains the generic target mode <-> Linux SCSI subsystem plugin.
- *
- * (c) Copyright 2003-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/string.h>
 #include <linux/parser.h>
@@ -41,11 +32,7 @@ static inline struct pscsi_dev_virt *PSCSI_DEV(struct se_device *dev)
 static sense_reason_t pscsi_execute_cmd(struct se_cmd *cmd);
 static enum rq_end_io_ret pscsi_req_done(struct request *, blk_status_t);
 
-/*	pscsi_attach_hba():
- *
- * 	pscsi_get_sh() used scsi_host_lookup() to locate struct Scsi_Host.
- *	from the passed SCSI Host ID.
- */
+ 
 static int pscsi_attach_hba(struct se_hba *hba, u32 host_id)
 {
 	struct pscsi_hba_virt *phv;
@@ -93,9 +80,7 @@ static int pscsi_pmode_enable_hba(struct se_hba *hba, unsigned long mode_flag)
 {
 	struct pscsi_hba_virt *phv = hba->hba_ptr;
 	struct Scsi_Host *sh = phv->phv_lld_host;
-	/*
-	 * Release the struct Scsi_Host
-	 */
+	 
 	if (!mode_flag) {
 		if (!sh)
 			return 0;
@@ -110,10 +95,7 @@ static int pscsi_pmode_enable_hba(struct se_hba *hba, unsigned long mode_flag)
 		scsi_host_put(sh);
 		return 0;
 	}
-	/*
-	 * Otherwise, locate struct Scsi_Host from the original passed
-	 * pSCSI Host ID and enable for phba mode
-	 */
+	 
 	sh = scsi_host_lookup(phv->phv_host_id);
 	if (!sh) {
 		pr_err("pSCSI: Unable to locate SCSI Host for"
@@ -142,15 +124,13 @@ static void pscsi_tape_read_blocksize(struct se_device *dev,
 
 	memset(cdb, 0, MAX_COMMAND_SIZE);
 	cdb[0] = MODE_SENSE;
-	cdb[4] = 0x0c; /* 12 bytes */
+	cdb[4] = 0x0c;  
 
 	ret = scsi_execute_cmd(sdev, cdb, REQ_OP_DRV_IN, buf, 12, HZ, 1, NULL);
 	if (ret)
 		goto out_free;
 
-	/*
-	 * If MODE_SENSE still returns zero, set the default value to 1024.
-	 */
+	 
 	sdev->sector_size = get_unaligned_be24(&buf[9]);
 out_free:
 	if (!sdev->sector_size)
@@ -164,9 +144,7 @@ pscsi_set_inquiry_info(struct scsi_device *sdev, struct t10_wwn *wwn)
 {
 	if (sdev->inquiry_len < INQUIRY_LEN)
 		return;
-	/*
-	 * Use sdev->inquiry data from drivers/scsi/scsi_scan.c:scsi_add_lun()
-	 */
+	 
 	BUILD_BUG_ON(sizeof(wwn->vendor) != INQUIRY_VENDOR_LEN + 1);
 	snprintf(wwn->vendor, sizeof(wwn->vendor),
 		 "%." __stringify(INQUIRY_VENDOR_LEN) "s", sdev->vendor);
@@ -190,8 +168,8 @@ pscsi_get_inquiry_vpd_serial(struct scsi_device *sdev, struct t10_wwn *wwn)
 
 	memset(cdb, 0, MAX_COMMAND_SIZE);
 	cdb[0] = INQUIRY;
-	cdb[1] = 0x01; /* Query VPD */
-	cdb[2] = 0x80; /* Unit Serial Number */
+	cdb[1] = 0x01;  
+	cdb[2] = 0x80;  
 	put_unaligned_be16(INQUIRY_VPD_SERIAL_LEN, &cdb[3]);
 
 	ret = scsi_execute_cmd(sdev, cdb, REQ_OP_DRV_IN, buf,
@@ -225,8 +203,8 @@ pscsi_get_inquiry_vpd_device_ident(struct scsi_device *sdev,
 
 	memset(cdb, 0, MAX_COMMAND_SIZE);
 	cdb[0] = INQUIRY;
-	cdb[1] = 0x01; /* Query VPD */
-	cdb[2] = 0x83; /* Device Identifier */
+	cdb[1] = 0x01;  
+	cdb[2] = 0x83;  
 	put_unaligned_be16(INQUIRY_VPD_DEVICE_IDENTIFIER_LEN, &cdb[3]);
 
 	ret = scsi_execute_cmd(sdev, cdb, REQ_OP_DRV_IN, buf,
@@ -236,7 +214,7 @@ pscsi_get_inquiry_vpd_device_ident(struct scsi_device *sdev,
 
 	page_len = get_unaligned_be16(&buf[2]);
 	while (page_len > 0) {
-		/* Grab a pointer to the Identification descriptor */
+		 
 		page_83 = &buf[off];
 		ident_len = page_83[3];
 		if (!ident_len) {
@@ -301,26 +279,16 @@ static int pscsi_add_device_to_list(struct se_device *dev,
 		min_not_zero(sd->host->max_sectors, queue_max_hw_sectors(q));
 	dev->dev_attrib.hw_queue_depth = sd->queue_depth;
 
-	/*
-	 * Setup our standard INQUIRY info into se_dev->t10_wwn
-	 */
+	 
 	pscsi_set_inquiry_info(sd, &dev->t10_wwn);
 
-	/*
-	 * Locate VPD WWN Information used for various purposes within
-	 * the Storage Engine.
-	 */
+	 
 	if (!pscsi_get_inquiry_vpd_serial(sd, &dev->t10_wwn)) {
-		/*
-		 * If VPD Unit Serial returned GOOD status, try
-		 * VPD Device Identification page (0x83).
-		 */
+		 
 		pscsi_get_inquiry_vpd_device_ident(sd, &dev->t10_wwn);
 	}
 
-	/*
-	 * For TYPE_TAPE, attempt to determine blocksize with MODE_SENSE.
-	 */
+	 
 	if (sd->type == TYPE_TAPE) {
 		pscsi_tape_read_blocksize(dev, sd);
 		dev->dev_attrib.hw_block_size = sd->sector_size;
@@ -343,9 +311,7 @@ static struct se_device *pscsi_alloc_device(struct se_hba *hba,
 	return &pdv->dev;
 }
 
-/*
- * Called with struct Scsi_Host->host_lock called.
- */
+ 
 static int pscsi_create_type_disk(struct se_device *dev, struct scsi_device *sd)
 	__releases(sh->host_lock)
 {
@@ -362,10 +328,7 @@ static int pscsi_create_type_disk(struct se_device *dev, struct scsi_device *sd)
 		return -EIO;
 	}
 	spin_unlock_irq(sh->host_lock);
-	/*
-	 * Claim exclusive struct block_device access to struct scsi_device
-	 * for TYPE_DISK and TYPE_ZBC using supplied udev_path
-	 */
+	 
 	bd = blkdev_get_by_path(dev->udev_path, BLK_OPEN_WRITE | BLK_OPEN_READ,
 				pdv, NULL);
 	if (IS_ERR(bd)) {
@@ -388,9 +351,7 @@ static int pscsi_create_type_disk(struct se_device *dev, struct scsi_device *sd)
 	return 0;
 }
 
-/*
- * Called with struct Scsi_Host->host_lock called.
- */
+ 
 static int pscsi_create_type_nondisk(struct se_device *dev, struct scsi_device *sd)
 	__releases(sh->host_lock)
 {
@@ -436,30 +397,20 @@ static int pscsi_configure_device(struct se_device *dev)
 		return -EINVAL;
 	}
 
-	/*
-	 * If not running in PHV_LLD_SCSI_HOST_NO mode, locate the
-	 * struct Scsi_Host we will need to bring the TCM/pSCSI object online
-	 */
+	 
 	if (!sh) {
 		if (phv->phv_mode == PHV_LLD_SCSI_HOST_NO) {
 			pr_err("pSCSI: Unable to locate struct"
 				" Scsi_Host for PHV_LLD_SCSI_HOST_NO\n");
 			return -ENODEV;
 		}
-		/*
-		 * For the newer PHV_VIRTUAL_HOST_ID struct scsi_device
-		 * reference, we enforce that udev_path has been set
-		 */
+		 
 		if (!(dev->dev_flags & DF_USING_UDEV_PATH)) {
 			pr_err("pSCSI: udev_path attribute has not"
 				" been set before ENABLE=1\n");
 			return -EINVAL;
 		}
-		/*
-		 * If no scsi_host_id= was passed for PHV_VIRTUAL_HOST_ID,
-		 * use the original TCM hba ID to reference Linux/SCSI Host No
-		 * and enable for PHV_LLD_SCSI_HOST_NO mode.
-		 */
+		 
 		if (!(pdv->pdv_flags & PDF_HAS_VIRT_HOST_ID)) {
 			if (hba->dev_count) {
 				pr_err("pSCSI: Unable to set hba_mode"
@@ -496,11 +447,7 @@ static int pscsi_configure_device(struct se_device *dev)
 		    (pdv->pdv_target_id != sd->id) ||
 		    (pdv->pdv_lun_id != sd->lun))
 			continue;
-		/*
-		 * Functions will release the held struct scsi_host->host_lock
-		 * before calling pscsi_add_device_to_list() to register
-		 * struct scsi_device with target_core_mod.
-		 */
+		 
 		switch (sd->type) {
 		case TYPE_DISK:
 		case TYPE_ZBC:
@@ -558,20 +505,13 @@ static void pscsi_destroy_device(struct se_device *dev)
 	struct scsi_device *sd = pdv->pdv_sd;
 
 	if (sd) {
-		/*
-		 * Release exclusive pSCSI internal struct block_device claim for
-		 * struct scsi_device with TYPE_DISK or TYPE_ZBC
-		 * from pscsi_create_type_disk()
-		 */
+		 
 		if ((sd->type == TYPE_DISK || sd->type == TYPE_ZBC) &&
 		    pdv->pdv_bd) {
 			blkdev_put(pdv->pdv_bd, pdv);
 			pdv->pdv_bd = NULL;
 		}
-		/*
-		 * For HBA mode PHV_LLD_SCSI_HOST_NO, release the reference
-		 * to struct Scsi_Host now.
-		 */
+		 
 		if ((phv->phv_mode == PHV_LLD_SCSI_HOST_NO) &&
 		    (phv->phv_lld_host != NULL))
 			scsi_host_put(phv->phv_lld_host);
@@ -591,16 +531,11 @@ static void pscsi_complete_cmd(struct se_cmd *cmd, u8 scsi_status,
 	struct scsi_device *sd = pdv->pdv_sd;
 	unsigned char *cdb = cmd->priv;
 
-	/*
-	 * Special case for REPORT_LUNs which is emulated and not passed on.
-	 */
+	 
 	if (!cdb)
 		return;
 
-	/*
-	 * Hack to make sure that Write-Protect modepage is set if R/O mode is
-	 * forced.
-	 */
+	 
 	if (!cmd->data_length)
 		goto after_mode_sense;
 
@@ -613,7 +548,7 @@ static void pscsi_complete_cmd(struct se_cmd *cmd, u8 scsi_status,
 
 			buf = transport_kmap_data_sg(cmd);
 			if (!buf) {
-				; /* XXX: TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE */
+				;  
 			} else {
 				if (cdb[0] == MODE_SENSE_10) {
 					if (!(buf[3] & 0x80))
@@ -632,14 +567,7 @@ after_mode_sense:
 	if (sd->type != TYPE_TAPE || !cmd->data_length)
 		goto after_mode_select;
 
-	/*
-	 * Hack to correctly obtain the initiator requested blocksize for
-	 * TYPE_TAPE.  Since this value is dependent upon each tape media,
-	 * struct scsi_device->sector_size will not contain the correct value
-	 * by default, so we go ahead and set it so
-	 * TRANSPORT(dev)->get_blockdev() returns the correct value to the
-	 * storage engine.
-	 */
+	 
 	if (((cdb[0] == MODE_SELECT) || (cdb[0] == MODE_SELECT_10)) &&
 	     scsi_status == SAM_STAT_GOOD) {
 		unsigned char *buf;
@@ -672,21 +600,13 @@ after_mode_select:
 	if (scsi_status == SAM_STAT_CHECK_CONDITION) {
 		transport_copy_sense_to_cmd(cmd, req_sense);
 
-		/*
-		 * check for TAPE device reads with
-		 * FM/EOM/ILI set, so that we can get data
-		 * back despite framework assumption that a
-		 * check condition means there is no data
-		 */
+		 
 		if (sd->type == TYPE_TAPE && valid_data &&
 		    cmd->data_direction == DMA_FROM_DEVICE) {
-			/*
-			 * is sense data valid, fixed format,
-			 * and have FM, EOM, or ILI set?
-			 */
-			if (req_sense[0] == 0xf0 &&	/* valid, fixed format */
-			    req_sense[2] & 0xe0 &&	/* FM, EOM, or ILI */
-			    (req_sense[2] & 0xf) == 0) { /* key==NO_SENSE */
+			 
+			if (req_sense[0] == 0xf0 &&	 
+			    req_sense[2] & 0xe0 &&	 
+			    (req_sense[2] & 0xf) == 0) {  
 				pr_debug("Tape FM/EOM/ILI status detected. Treat as normal read.\n");
 				cmd->se_cmd_flags |= SCF_TREAT_READ_AS_NORMAL;
 			}
@@ -845,10 +765,7 @@ pscsi_map_sg(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 		pr_debug("PSCSI: i: %d page: %p len: %d off: %d\n", i,
 			page, len, off);
 
-		/*
-		 * We only have one page of data in each sg element,
-		 * we can not cross a page boundary.
-		 */
+		 
 		if (off + len > PAGE_SIZE)
 			goto fail;
 
@@ -978,10 +895,7 @@ fail_put_request:
 	return ret;
 }
 
-/*	pscsi_get_device_type():
- *
- *
- */
+ 
 static u32 pscsi_get_device_type(struct se_device *dev)
 {
 	struct pscsi_dev_virt *pdv = PSCSI_DEV(dev);

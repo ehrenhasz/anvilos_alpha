@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Clovertrail PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+ 
+ 
 
 #ifndef __ATOMISP_COMPAT_CSS20_H__
 #define __ATOMISP_COMPAT_CSS20_H__
@@ -39,10 +24,7 @@ struct atomisp_sub_device;
 
 #define MAX_STREAMS_PER_CHANNEL	2
 
-/*
- * These are used to indicate the css stream state, corresponding
- * stream handling can be done via judging the different state.
- */
+ 
 enum atomisp_css_stream_state {
 	CSS_STREAM_UNINIT,
 	CSS_STREAM_CREATED,
@@ -50,11 +32,7 @@ enum atomisp_css_stream_state {
 	CSS_STREAM_STOPPED,
 };
 
-/*
- *  Sensor of external ISP can send multiple steams with different mipi data
- * type in the same virtual channel. This information needs to come from the
- * sensor or external ISP
- */
+ 
 struct atomisp_css_isys_config_info {
 	unsigned int input_format;
 	unsigned int width;
@@ -74,7 +52,7 @@ struct atomisp_stream_env {
 	struct ia_css_stream *acc_stream;
 	enum atomisp_css_stream_state acc_stream_state;
 	struct ia_css_stream_config acc_stream_config;
-	unsigned int ch_id; /* virtual channel ID */
+	unsigned int ch_id;  
 	unsigned int isys_configs;
 	struct atomisp_css_isys_config_info isys_info[MAX_STREAMS_PER_CHANNEL];
 };

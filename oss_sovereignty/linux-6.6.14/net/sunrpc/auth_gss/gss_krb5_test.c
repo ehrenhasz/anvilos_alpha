@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Oracle and/or its affiliates.
- *
- * KUnit test of SunRPC's GSS Kerberos mechanism. Subsystem
- * name is "rpcsec_gss_krb5".
- */
+
+ 
 
 #include <kunit/test.h>
 #include <kunit/visibility.h>
@@ -47,7 +42,7 @@ static void kdf_case(struct kunit *test)
 	struct xdr_netobj derivedkey;
 	int err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -57,12 +52,12 @@ static void kdf_case(struct kunit *test)
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, derivedkey.data);
 	derivedkey.len = param->expected_result->len;
 
-	/* Act */
+	 
 	err = gk5e->derive_key(gk5e, param->base_key, &derivedkey,
 			       param->usage, GFP_KERNEL);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    memcmp(param->expected_result->data,
 				   derivedkey.data, derivedkey.len), 0,
@@ -81,7 +76,7 @@ static void checksum_case(struct kunit *test)
 	struct crypto_ahash *tfm;
 	int err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -106,11 +101,11 @@ static void checksum_case(struct kunit *test)
 	checksum.data = kunit_kzalloc(test, checksum.len, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, checksum.data);
 
-	/* Act */
+	 
 	err = gss_krb5_checksum(tfm, NULL, 0, &buf, 0, &checksum);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    memcmp(param->expected_result->data,
 				   checksum.data, checksum.len), 0,
@@ -133,13 +128,7 @@ static void checksum_case(struct kunit *test)
 		.len	= sizeof(name##_str) - 1,		\
 	}
 
-/*
- * RFC 3961 Appendix A.1.  n-fold
- *
- * The n-fold function is defined in section 5.1 of RFC 3961.
- *
- * This test material is copyright (C) The Internet Society (2005).
- */
+ 
 
 DEFINE_HEX_XDR_NETOBJ(nfold_test1_plaintext,
 		      0x30, 0x31, 0x32, 0x33, 0x34, 0x35
@@ -297,7 +286,7 @@ static const struct gss_krb5_test_param rfc3961_nfold_test_params[] = {
 	},
 };
 
-/* Creates the function rfc3961_nfold_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc3961_nfold, rfc3961_nfold_test_params, gss_krb5_get_desc);
 
 static void rfc3961_nfold_case(struct kunit *test)
@@ -305,15 +294,15 @@ static void rfc3961_nfold_case(struct kunit *test)
 	const struct gss_krb5_test_param *param = test->param_value;
 	u8 *result;
 
-	/* Arrange */
+	 
 	result = kunit_kzalloc(test, 4096, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, result);
 
-	/* Act */
+	 
 	krb5_nfold(param->plaintext->len * 8, param->plaintext->data,
 		   param->expected_result->len * 8, result);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    memcmp(param->expected_result->data,
 				   result, param->expected_result->len), 0,
@@ -334,14 +323,7 @@ static struct kunit_suite rfc3961_suite = {
 	.test_cases		= rfc3961_test_cases,
 };
 
-/*
- * From RFC 3962 Appendix B:   Sample Test Vectors
- *
- * Some test vectors for CBC with ciphertext stealing, using an
- * initial vector of all-zero.
- *
- * This test material is copyright (C) The Internet Society (2005).
- */
+ 
 
 DEFINE_HEX_XDR_NETOBJ(rfc3962_encryption_key,
 		      0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x20,
@@ -515,15 +497,11 @@ static const struct gss_krb5_test_param rfc3962_encrypt_test_params[] = {
 	},
 };
 
-/* Creates the function rfc3962_encrypt_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc3962_encrypt, rfc3962_encrypt_test_params,
 		  gss_krb5_get_desc);
 
-/*
- * This tests the implementation of the encryption part of the mechanism.
- * It does not apply a confounder or test the result of HMAC over the
- * plaintext.
- */
+ 
 static void rfc3962_encrypt_case(struct kunit *test)
 {
 	const struct gss_krb5_test_param *param = test->param_value;
@@ -533,7 +511,7 @@ static void rfc3962_encrypt_case(struct kunit *test)
 	void *iv, *text;
 	u32 err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -560,12 +538,12 @@ static void rfc3962_encrypt_case(struct kunit *test)
 	buf.head[0].iov_len = param->plaintext->len;
 	buf.len = buf.head[0].iov_len;
 
-	/* Act */
+	 
 	err = krb5_cbc_cts_encrypt(cts_tfm, cbc_tfm, 0, &buf, NULL,
 				   iv, crypto_sync_skcipher_ivsize(cts_tfm));
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    param->expected_result->len, buf.len,
 			    "ciphertext length mismatch");
@@ -596,14 +574,7 @@ static struct kunit_suite rfc3962_suite = {
 	.test_cases		= rfc3962_test_cases,
 };
 
-/*
- * From RFC 6803 Section 10.  Test vectors
- *
- * Sample results for key derivation
- *
- * Copyright (c) 2012 IETF Trust and the persons identified as the
- * document authors.  All rights reserved.
- */
+ 
 
 DEFINE_HEX_XDR_NETOBJ(camellia128_cts_cmac_basekey,
 		      0x57, 0xd0, 0x29, 0x72, 0x98, 0xff, 0xd9, 0xd3,
@@ -702,19 +673,10 @@ static const struct gss_krb5_test_param rfc6803_kdf_test_params[] = {
 	},
 };
 
-/* Creates the function rfc6803_kdf_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc6803_kdf, rfc6803_kdf_test_params, gss_krb5_get_desc);
 
-/*
- * From RFC 6803 Section 10.  Test vectors
- *
- * Sample checksums.
- *
- * Copyright (c) 2012 IETF Trust and the persons identified as the
- * document authors.  All rights reserved.
- *
- * XXX: These tests are likely to fail on EBCDIC or Unicode platforms.
- */
+ 
 DEFINE_STR_XDR_NETOBJ(rfc6803_checksum_test1_plaintext,
 		      "abcdefghijk");
 DEFINE_HEX_XDR_NETOBJ(rfc6803_checksum_test1_basekey,
@@ -810,20 +772,11 @@ static const struct gss_krb5_test_param rfc6803_checksum_test_params[] = {
 	},
 };
 
-/* Creates the function rfc6803_checksum_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc6803_checksum, rfc6803_checksum_test_params,
 		  gss_krb5_get_desc);
 
-/*
- * From RFC 6803 Section 10.  Test vectors
- *
- * Sample encryptions (all using the default cipher state)
- *
- * Copyright (c) 2012 IETF Trust and the persons identified as the
- * document authors.  All rights reserved.
- *
- * Key usage values are from errata 4326 against RFC 6803.
- */
+ 
 
 static const struct xdr_netobj rfc6803_enc_empty_plaintext = {
 	.len	= 0,
@@ -1107,7 +1060,7 @@ static const struct gss_krb5_test_param rfc6803_encrypt_test_params[] = {
 	},
 };
 
-/* Creates the function rfc6803_encrypt_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc6803_encrypt, rfc6803_encrypt_test_params,
 		  gss_krb5_get_desc);
 
@@ -1129,7 +1082,7 @@ static void rfc6803_encrypt_case(struct kunit *test)
 	size_t len;
 	u32 err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -1183,14 +1136,14 @@ static void rfc6803_encrypt_case(struct kunit *test)
 	err = crypto_ahash_setkey(ahash_tfm, Ki.data, Ki.len);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Act */
+	 
 	err = gss_krb5_checksum(ahash_tfm, NULL, 0, &buf, 0, &checksum);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
 	err = krb5_cbc_cts_encrypt(cts_tfm, cbc_tfm, 0, &buf, NULL, NULL, 0);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test, param->expected_result->len,
 			    buf.len + checksum.len,
 			    "ciphertext length mismatch");
@@ -1233,14 +1186,7 @@ static struct kunit_suite rfc6803_suite = {
 	.test_cases		= rfc6803_test_cases,
 };
 
-/*
- * From RFC 8009 Appendix A.  Test Vectors
- *
- * Sample results for SHA-2 enctype key derivation
- *
- * This test material is copyright (c) 2016 IETF Trust and the
- * persons identified as the document authors.  All rights reserved.
- */
+ 
 
 DEFINE_HEX_XDR_NETOBJ(aes128_cts_hmac_sha256_128_basekey,
 		      0x37, 0x05, 0xd9, 0x60, 0x80, 0xc1, 0x77, 0x28,
@@ -1327,18 +1273,10 @@ static const struct gss_krb5_test_param rfc8009_kdf_test_params[] = {
 	},
 };
 
-/* Creates the function rfc8009_kdf_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc8009_kdf, rfc8009_kdf_test_params, gss_krb5_get_desc);
 
-/*
- * From RFC 8009 Appendix A.  Test Vectors
- *
- * These sample checksums use the above sample key derivation results,
- * including use of the same base-key and key usage values.
- *
- * This test material is copyright (c) 2016 IETF Trust and the
- * persons identified as the document authors.  All rights reserved.
- */
+ 
 
 DEFINE_HEX_XDR_NETOBJ(rfc8009_checksum_plaintext,
 		      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -1374,22 +1312,11 @@ static const struct gss_krb5_test_param rfc8009_checksum_test_params[] = {
 	},
 };
 
-/* Creates the function rfc8009_checksum_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc8009_checksum, rfc8009_checksum_test_params,
 		  gss_krb5_get_desc);
 
-/*
- * From RFC 8009 Appendix A.  Test Vectors
- *
- * Sample encryptions (all using the default cipher state):
- * --------------------------------------------------------
- *
- * These sample encryptions use the above sample key derivation results,
- * including use of the same base-key and key usage values.
- *
- * This test material is copyright (c) 2016 IETF Trust and the
- * persons identified as the document authors.  All rights reserved.
- */
+ 
 
 static const struct xdr_netobj rfc8009_enc_empty_plaintext = {
 	.len	= 0,
@@ -1602,7 +1529,7 @@ static const struct gss_krb5_test_param rfc8009_encrypt_test_params[] = {
 	},
 };
 
-/* Creates the function rfc8009_encrypt_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rfc8009_encrypt, rfc8009_encrypt_test_params,
 		  gss_krb5_get_desc);
 
@@ -1623,7 +1550,7 @@ static void rfc8009_encrypt_case(struct kunit *test)
 	size_t len;
 	u32 err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -1677,13 +1604,13 @@ static void rfc8009_encrypt_case(struct kunit *test)
 	err = crypto_ahash_setkey(ahash_tfm, Ki.data, Ki.len);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Act */
+	 
 	err = krb5_cbc_cts_encrypt(cts_tfm, cbc_tfm, 0, &buf, NULL, NULL, 0);
 	KUNIT_ASSERT_EQ(test, err, 0);
 	err = krb5_etm_checksum(cts_tfm, ahash_tfm, &buf, 0, &checksum);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    param->expected_result->len, buf.len,
 			    "ciphertext length mismatch");
@@ -1726,9 +1653,7 @@ static struct kunit_suite rfc8009_suite = {
 	.test_cases		= rfc8009_test_cases,
 };
 
-/*
- * Encryption self-tests
- */
+ 
 
 DEFINE_STR_XDR_NETOBJ(encrypt_selftest_plaintext,
 		      "This is the plaintext for the encryption self-test.");
@@ -1772,15 +1697,11 @@ static const struct gss_krb5_test_param encrypt_selftest_params[] = {
 	},
 };
 
-/* Creates the function encrypt_selftest_gen_params */
+ 
 KUNIT_ARRAY_PARAM(encrypt_selftest, encrypt_selftest_params,
 		  gss_krb5_get_desc);
 
-/*
- * Encrypt and decrypt plaintext, and ensure the input plaintext
- * matches the output plaintext. A confounder is not added in this
- * case.
- */
+ 
 static void encrypt_selftest_case(struct kunit *test)
 {
 	const struct gss_krb5_test_param *param = test->param_value;
@@ -1790,7 +1711,7 @@ static void encrypt_selftest_case(struct kunit *test)
 	void *text;
 	int err;
 
-	/* Arrange */
+	 
 	gk5e = gss_krb5_lookup_enctype(param->enctype);
 	if (!gk5e)
 		kunit_skip(test, "Encryption type is not available");
@@ -1816,13 +1737,13 @@ static void encrypt_selftest_case(struct kunit *test)
 	buf.head[0].iov_len = param->plaintext->len;
 	buf.len = buf.head[0].iov_len;
 
-	/* Act */
+	 
 	err = krb5_cbc_cts_encrypt(cts_tfm, cbc_tfm, 0, &buf, NULL, NULL, 0);
 	KUNIT_ASSERT_EQ(test, err, 0);
 	err = krb5_cbc_cts_decrypt(cts_tfm, cbc_tfm, 0, &buf);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ_MSG(test,
 			    param->plaintext->len, buf.len,
 			    "length mismatch");

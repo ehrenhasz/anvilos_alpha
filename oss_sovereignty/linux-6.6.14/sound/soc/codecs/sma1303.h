@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * sma1303.h -- sma1303 ALSA SoC Audio driver
- *
- * Copyright 2023 Iron Device Corporation
- *
- * Author: Kiseok Jo <kiseok.jo@irondevice.com>
- *
- */
+ 
+ 
 
 #ifndef _SMA1303_H
 #define _SMA1303_H
@@ -26,28 +19,26 @@
 
 #define  SMA1303_I2C_RETRY_COUNT	3
 
-/*
- * SMA1303 Register Definition
- */
+ 
 
-/* SMA1303 Register Addresses */
+ 
 #define  SMA1303_00_SYSTEM_CTRL		0x00
 #define  SMA1303_01_INPUT1_CTRL1	0x01
 #define  SMA1303_02_INPUT1_CTRL2	0x02
 #define  SMA1303_03_INPUT1_CTRL3	0x03
 #define  SMA1303_04_INPUT1_CTRL4	0x04
-/* 0x05 ~ 0x08 : Reserved */
+ 
 #define  SMA1303_09_OUTPUT_CTRL		0x09
 #define  SMA1303_0A_SPK_VOL		0x0a
 #define  SMA1303_0B_BST_TEST		0x0b
 #define  SMA1303_0C_BST_TEST1		0x0c
 #define  SMA1303_0D_SPK_TEST		0x0d
 #define  SMA1303_0E_MUTE_VOL_CTRL	0x0e
-/* 0x0F : Reserved */
+ 
 #define  SMA1303_10_SYSTEM_CTRL1	0x10
 #define  SMA1303_11_SYSTEM_CTRL2	0x11
 #define  SMA1303_12_SYSTEM_CTRL3	0x12
-/* 0x13 : Reserved */
+ 
 #define  SMA1303_14_MODULATOR		0x14
 #define  SMA1303_15_BASS_SPK1		0x15
 #define  SMA1303_16_BASS_SPK2		0x16
@@ -56,25 +47,25 @@
 #define  SMA1303_19_BASS_SPK5		0x19
 #define  SMA1303_1A_BASS_SPK6		0x1a
 #define  SMA1303_1B_BASS_SPK7		0x1b
-/* 0x1C ~ 0x22 : Reserved */
+ 
 #define  SMA1303_23_COMP_LIM1		0x23
 #define  SMA1303_24_COMP_LIM2		0x24
 #define  SMA1303_25_COMP_LIM3		0x25
 #define  SMA1303_26_COMP_LIM4		0x26
-/* 0x27 ~ 0x32 : Reserved */
+ 
 #define  SMA1303_33_SDM_CTRL		0x33
 #define  SMA1303_34_OTP_DATA1		0x34
-/* 0x35 : Reserved */
+ 
 #define  SMA1303_36_PROTECTION		0x36
 #define  SMA1303_37_SLOPE_CTRL		0x37
 #define  SMA1303_38_OTP_TRM0		0x38
-/* 0x39 ~ 0x3A : Reserved */
+ 
 #define  SMA1303_3B_TEST1		0x3b
 #define  SMA1303_3C_TEST2		0x3c
 #define  SMA1303_3D_TEST3		0x3d
 #define  SMA1303_3E_ATEST1		0x3e
 #define  SMA1303_3F_ATEST2		0x3f
-/* 0x40 ~ 0x8A : Reserved */
+ 
 #define	 SMA1303_8B_PLL_POST_N		0x8b
 #define	 SMA1303_8C_PLL_N		0x8c
 #define	 SMA1303_8D_PLL_A_SETTING	0x8d
@@ -83,12 +74,12 @@
 #define  SMA1303_90_POSTSCALER		0x90
 #define  SMA1303_91_CLASS_G_CTRL	0x91
 #define  SMA1303_92_FDPEC_CTRL		0x92
-/* 0x93 : Reserved */
+ 
 #define  SMA1303_94_BOOST_CTRL1		0x94
 #define  SMA1303_95_BOOST_CTRL2		0x95
 #define  SMA1303_96_BOOST_CTRL3		0x96
 #define  SMA1303_97_BOOST_CTRL4		0x97
-/* 0x98 ~ 0x9F : Reserved */
+ 
 #define  SMA1303_A0_PAD_CTRL0		0xa0
 #define  SMA1303_A1_PAD_CTRL1		0xa1
 #define	 SMA1303_A2_TOP_MAN1		0xa2
@@ -97,15 +88,15 @@
 #define  SMA1303_A5_TDM1		0xa5
 #define  SMA1303_A6_TDM2		0xa6
 #define  SMA1303_A7_CLK_MON		0xa7
-/* 0xA8 ~ 0xF9 : Reserved */
+ 
 #define	 SMA1303_FA_STATUS1		0xfa
 #define	 SMA1303_FB_STATUS2		0xfb
-/* 0xFC ~ 0xFE : Reserved */
+ 
 #define	 SMA1303_FF_DEVICE_INDEX	0xff
 
-/* SMA1303 Registers Bit Fields */
+ 
 
-/* SYSTEM_CTRL : 0x00 */
+ 
 #define SMA1303_RESETBYI2C_MASK (1<<1)
 #define SMA1303_RESETBYI2C_NORMAL (0<<1)
 #define SMA1303_RESETBYI2C_RESET (1<<1)
@@ -114,7 +105,7 @@
 #define SMA1303_POWER_OFF (0<<0)
 #define SMA1303_POWER_ON (1<<0)
 
-/* INTPUT CTRL1 : 0x01 */
+ 
 #define SMA1303_CONTROLLER_DEVICE_MASK (1<<7)
 #define SMA1303_DEVICE_MODE	(0<<7)
 #define SMA1303_CONTROLLER_MODE	(1<<7)
@@ -135,7 +126,7 @@
 #define SMA1303_SCK_FALLING_EDGE	(0<<2)
 #define SMA1303_SCK_RISING_EDGE	(1<<2)
 
-/* INTPUT CTRL2 : 0x02 */
+ 
 #define SMA1303_IMODE_MASK (3<<6)
 #define SMA1303_I2S	(0<<6)
 #define SMA1303_PCM_SHORT (1<<6)
@@ -165,7 +156,7 @@
 #define SMA1303_PCM_8BIT (0<<0)
 #define SMA1303_PCM_16BIT (1<<0)
 
-/* INTPUT CTRL3 : 0x03 */
+ 
 #define SMA1303_PCM_N_SLOT_MASK (15<<0)
 #define SMA1303_PCM_N_SLOT1 (0<<0)
 #define SMA1303_PCM_N_SLOT2 (1<<0)
@@ -184,7 +175,7 @@
 #define SMA1303_PCM_N_SLOT15 (14<<0)
 #define SMA1303_PCM_N_SLOT16 (15<<0)
 
-/* INTPUT CTRL4 : 0x04 */
+ 
 #define SMA1303_PCM1_SLOT_MASK (15<<4)
 #define SMA1303_PCM1_SLOT1 (0<<4)
 #define SMA1303_PCM1_SLOT2 (1<<4)
@@ -221,7 +212,7 @@
 #define SMA1303_PCM2_SLOT15 (14<<0)
 #define SMA1303_PCM2_SLOT16 (15<<0)
 
-/* OUTPUT CTRL : 0x09 */
+ 
 #define SMA1303_PORT_CONFIG_MASK (3<<5)
 #define SMA1303_INPUT_PORT_ONLY (0<<5)
 #define SMA1303_OUTPUT_PORT_ENABLE (2<<5)
@@ -233,7 +224,7 @@
 #define SMA1303_SPEAKER_PATH (3<<0)
 #define SMA1303_POSTSCALER_OUTPUT (4<<0)
 
-/* BST_TEST : 0x0B */
+ 
 #define SMA1303_BST_OFF_SLOPE_MASK (3<<6)
 #define SMA1303_BST_OFF_SLOPE_6_7ns (0<<6)
 #define SMA1303_BST_OFF_SLOPE_4_8ns (1<<6)
@@ -264,7 +255,7 @@
 #define SMA1303_NMOS_NORMAL_MODE (0<<0)
 #define SMA1303_NMOS_TEST_MODE (1<<0)
 
-/* BST_TEST1 : 0x0C */
+ 
 #define SMA1303_SET_OCP_H_MASK (3<<6)
 #define SMA1303_HIGH_OCP_4_5_LVL (0<<6)
 #define SMA1303_HIGH_OCP_3_2_LVL (1<<6)
@@ -283,7 +274,7 @@
 #define SMA1303_EN_SH_PRT_DISABLE (0<<3)
 #define SMA1303_EN_SH_PRT_ENABLE (1<<3)
 
-/* SPK_TEST : 0x0D */
+ 
 #define SMA1303_VREF_MON_MASK (1<<3)
 #define SMA1303_VREF_NORMAL_MODE (0<<3)
 #define SMA1303_VREF_V_MON_MODE (1<<3)
@@ -296,7 +287,7 @@
 #define SMA1303_SPK_OFF_SLOPE_SLOW (0<<0)
 #define SMA1303_SPK_OFF_SLOPE_FAST (3<<0)
 
-/* MUTE_VOL_CTRL : 0x0E */
+ 
 #define SMA1303_VOL_SLOPE_MASK (3<<6)
 #define SMA1303_VOL_SLOPE_OFF (0<<6)
 #define SMA1303_VOL_SLOPE_SLOW (1<<6)
@@ -313,13 +304,13 @@
 #define SMA1303_SPK_UNMUTE (0<<0)
 #define SMA1303_SPK_MUTE (1<<0)
 
-/* SYSTEM_CTRL1 :0x10 */
+ 
 #define SMA1303_SPK_MODE_MASK (7<<2)
 #define SMA1303_SPK_OFF (0<<2)
 #define SMA1303_SPK_MONO (1<<2)
 #define SMA1303_SPK_STEREO (4<<2)
 
-/* SYSTEM_CTRL2 : 0x11 */
+ 
 #define SMA1303_SPK_BS_MASK (1<<6)
 #define SMA1303_SPK_BS_BYP (0<<6)
 #define SMA1303_SPK_BS_EN (1<<6)
@@ -335,7 +326,7 @@
 #define SMA1303_MONOMIX_OFF (0<<0)
 #define SMA1303_MONOMIX_ON (1<<0)
 
-/* SYSTEM_CTRL3 : 0x12 */
+ 
 #define SMA1303_INPUT_MASK (3<<6)
 #define SMA1303_INPUT_0_DB (0<<6)
 #define SMA1303_INPUT_M6_DB (1<<6)
@@ -347,7 +338,7 @@
 #define SMA1303_INPUT_R_M12_DB (2<<4)
 #define SMA1303_INPUT_R_INFI_DB (3<<4)
 
-/* Modulator : 0x14 */
+ 
 #define SMA1303_SPK_HYSFB_MASK (3<<6)
 #define SMA1303_HYSFB_625K (0<<6)
 #define SMA1303_HYSFB_414K (1<<6)
@@ -355,17 +346,17 @@
 #define SMA1303_HYSFB_226K (3<<6)
 #define SMA1303_SPK_BDELAY_MASK (63<<0)
 
-/* SDM CONTROL : 0x33 */
+ 
 #define SMA1303_SDM_Q_SEL_MASK (1<<2)
 #define SMA1303_QUART_SEL_1_DIV_4 (0<<2)
 #define SMA1303_QUART_SEL_1_DIV_8 (1<<2)
 
-/* OTP_DATA1 : 0x34 */
+ 
 #define SMA1303_OTP_LVL_MASK (1<<5)
 #define SMA1303_OTP_LVL_NORMAL (0<<5)
 #define SMA1303_OTP_LVL_LOW (1<<5)
 
-/* PROTECTION : 0x36 */
+ 
 #define SMA1303_EDGE_DIS_MASK (1<<7)
 #define SMA1303_EDGE_DIS_ENABLE (0<<7)
 #define SMA1303_EDGE_DIS_DISABLE (1<<7)
@@ -384,7 +375,7 @@
 #define SMA1303_REC_THR1_SHUT_THR2 (2<<0)
 #define SMA1303_SHUT_THR1_SHUT_THR2 (3<<0)
 
-/* TEST2 : 0x3C */
+ 
 #define SMA1303_SPK_HSDM_BP_MASK (1<<4)
 #define SMA1303_SPK_HSDM_ENABLE (0<<4)
 #define SMA1303_SPK_HSDM_BYPASS (1<<4)
@@ -393,7 +384,7 @@
 #define SMA1303_SDM_SYNC_NORMAL (0<<5)
 #define SMA1303_SDM_SYNC_DISABLE (1<<5)
 
-/* ATEST2 : 0x3F */
+ 
 #define SMA1303_SPK_OUT_FREQ_MASK (1<<2)
 #define SMA1303_SPK_OUT_FREQ_360K (0<<2)
 #define SMA1303_SPK_OUT_FREQ_410K (1<<2)
@@ -411,7 +402,7 @@
 #define SMA1303_FAST_OFF_DRIVE_SPK_DISABLE (0<<0)
 #define SMA1303_FAST_OFF_DRIVE_SPK_ENABLE (1<<0)
 
-/* PLL_CTRL : 0x8E */
+ 
 #define SMA1303_TRM_LVL_MASK (1<<4)
 #define SMA1303_TRM_LVL_NORMAL (0<<4)
 #define SMA1303_TRM_LVL_LOW (1<<4)
@@ -424,12 +415,12 @@
 #define SMA1303_PLL_PD2 (7<<0)
 #define SMA1303_PLL_OPERATION2 (0<<0)
 
-/* POSTSCALER : 0x90 */
+ 
 #define SMA1303_BYP_POST_MASK (1<<0)
 #define SMA1303_EN_POST_SCALER (0<<0)
 #define SMA1303_BYP_POST_SCALER (1<<0)
 
-/* FDPEC CONTROL : 0x92 */
+ 
 #define SMA1303_FLT_VDD_GAIN_MASK (15<<4)
 #define SMA1303_FLT_VDD_GAIN_2P40 (0<<4)
 #define SMA1303_FLT_VDD_GAIN_2P45 (1<<4)
@@ -452,7 +443,7 @@
 #define SMA1303_EN_FAST_CHARGE (0<<2)
 #define SMA1303_DIS_FAST_CHARGE (1<<2)
 
-/* BOOST_CONTROL4 : 0x97 */
+ 
 #define SMA1303_TRM_VBST_MASK (7<<2)
 #define SMA1303_TRM_VBST_5P5 (0<<2)
 #define SMA1303_TRM_VBST_5P6 (1<<2)
@@ -463,7 +454,7 @@
 #define SMA1303_TRM_VBST_6P1 (6<<2)
 #define SMA1303_TRM_VBST_6P2 (7<<2)
 
-/* TOP_MAN1 : 0xA2 */
+ 
 #define SMA1303_PLL_LOCK_SKIP_MASK (1<<7)
 #define SMA1303_PLL_LOCK_ENABLE (0<<7)
 #define SMA1303_PLL_LOCK_DISABLE (1<<7)
@@ -494,7 +485,7 @@
 #define SMA1303_SDO_NORMAL (0<<0)
 #define SMA1303_SDO_OUTPUT_ONLY (1<<0)
 
-/* TOP_MAN2 : 0xA3 */
+ 
 #define SMA1303_MON_OSC_PLL_MASK (1<<7)
 #define SMA1303_PLL_SDO (0<<7)
 #define SMA1303_OSC_SDO (1<<7)
@@ -515,7 +506,7 @@
 #define SMA1303_NORMAL_OPERATION_OSC (0<<0)
 #define SMA1303_POWER_DOWN_OSC (1<<0)
 
-/* TOP_MAN3 0xA4 */
+ 
 #define SMA1303_O_FORMAT_MASK (7<<5)
 #define SMA1303_O_FMT_LJ (1<<5)
 #define SMA1303_O_FMT_I2S (2<<5)
@@ -529,7 +520,7 @@
 #define SMA1303_L_VALID (0<<0)
 #define SMA1303_R_VALID (1<<0)
 
-/* TDM1 FORMAT : 0xA5 */
+ 
 #define SMA1303_TDM_CLK_POL_MASK (1<<7)
 #define SMA1303_TDM_CLK_POL_RISE (0<<7)
 #define SMA1303_TDM_CLK_POL_FALL (1<<7)
@@ -558,7 +549,7 @@
 #define SMA1303_TDM_SLOT2_RX_POS_6 (6<<0)
 #define SMA1303_TDM_SLOT2_RX_POS_7 (7<<0)
 
-/* TDM2 FORMAT : 0xA6 */
+ 
 #define SMA1303_TDM_DL_MASK (1<<7)
 #define SMA1303_TDM_DL_16 (0<<7)
 #define SMA1303_TDM_DL_32 (1<<7)
@@ -587,11 +578,11 @@
 #define SMA1303_TDM_SLOT2_TX_POS_6 (6<<0)
 #define SMA1303_TDM_SLOT2_TX_POS_7 (7<<0)
 
-/* STATUS1 : 0xFA */
+ 
 #define SMA1303_OT1_OK_STATUS (1<<7)
 #define SMA1303_OT2_OK_STATUS (1<<6)
 
-/* STATUS2 : 0xFB */
+ 
 #define SMA1303_OCP_SPK_STATUS (1<<5)
 #define SMA1303_OCP_BST_STATUS (1<<4)
 #define SMA1303_OTP_STAT_OK_0 (5<<1)
@@ -599,7 +590,7 @@
 
 #define SMA1303_CLK_MON_STATUS (1<<0)
 
-/* DEVICE_INFO : 0xFF */
+ 
 #define SMA1303_DEVICE_ID (2<<3)
 #define SMA1303_UVLO_BST_STATUS (1<<2)
 #define SMA1303_REV_NUM_STATUS (3<<0)

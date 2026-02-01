@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Kevin Chen <kevin-cw.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -13,11 +10,7 @@
 
 #include <dt-bindings/clock/mt6797-clk.h>
 
-/*
- * For some clocks, we don't care what their actual rates are. And these
- * clocks may change their rate on different products or different scenarios.
- * So we model these clocks' rate as 0, to denote it's not an actual rate.
- */
+ 
 
 static DEFINE_SPINLOCK(mt6797_clk_lock);
 
@@ -315,10 +308,7 @@ static const char * const anc_md32_parents[] = {
 	"univpll_d5",
 };
 
-/*
- * Clock mux ddrphycfg is needed by the DRAM controller. We mark it as
- * critical as otherwise the system will hang after boot.
- */
+ 
 static const struct mtk_composite top_muxes[] = {
 	MUX(CLK_TOP_MUX_ULPOSC_AXI_CK_MUX_PRE, "ulposc_axi_ck_mux_pre",
 	    ulposc_axi_ck_mux_pre_parents, 0x0040, 3, 1),
@@ -438,10 +428,7 @@ static const struct mtk_gate_regs infra2_cg_regs = {
 	GATE_MTK_FLAGS(_id, _name, _parent, &infra2_cg_regs, _shift,	\
 		       &mtk_clk_gate_ops_setclr, _flags)
 
-/*
- * Clock gates dramc and dramc_b are needed by the DRAM controller.
- * We mark them as critical as otherwise the system will hang after boot.
- */
+ 
 static const struct mtk_gate infra_clks[] = {
 	GATE_ICG0(CLK_INFRA_PMIC_TMR, "infra_pmic_tmr", "ulposc", 0),
 	GATE_ICG0(CLK_INFRA_PMIC_AP, "infra_pmic_ap", "pmicspi_sel", 1),
@@ -671,7 +658,7 @@ static const struct of_device_id of_match_clk_mt6797[] = {
 		.compatible = "mediatek,mt6797-apmixedsys",
 		.data = mtk_apmixedsys_init,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6797);

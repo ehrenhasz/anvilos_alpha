@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  psb GEM interface
- *
- * Copyright (c) 2011, Intel Corporation.
- *
- * Authors: Alan Cox
- *
- * TODO:
- *	-	we need to work out if the MMU is relevant (eg for
- *		accelerated operations on a GEM object)
- */
+
+ 
 
 #include <linux/pagemap.h>
 
@@ -21,9 +11,7 @@
 #include "gem.h"
 #include "psb_drv.h"
 
-/*
- * PSB GEM object
- */
+ 
 
 int psb_gem_pin(struct psb_gem_object *pobj)
 {
@@ -40,7 +28,7 @@ int psb_gem_pin(struct psb_gem_object *pobj)
 		return ret;
 
 	if (pobj->in_gart || pobj->stolen)
-		goto out; /* already mapped */
+		goto out;  
 
 	pages = drm_gem_get_pages(obj);
 	if (IS_ERR(pages)) {
@@ -96,7 +84,7 @@ void psb_gem_unpin(struct psb_gem_object *pobj)
 			     (gpu_base + pobj->offset), npages, 0, 0);
 	psb_gtt_remove_pages(dev_priv, &pobj->resource);
 
-	/* Reset caching flags */
+	 
 	set_pages_array_wb(pobj->pages, npages);
 
 	drm_gem_put_pages(obj, pobj->pages, true, false);
@@ -112,7 +100,7 @@ static void psb_gem_free_object(struct drm_gem_object *obj)
 {
 	struct psb_gem_object *pobj = to_psb_gem_object(obj);
 
-	/* Undo the mmap pin if we are destroying the object */
+	 
 	if (pobj->mmapping)
 		psb_gem_unpin(pobj);
 
@@ -150,7 +138,7 @@ psb_gem_create(struct drm_device *dev, u64 size, const char *name, bool stolen, 
 		return ERR_PTR(-ENOMEM);
 	obj = &pobj->base;
 
-	/* GTT resource */
+	 
 
 	ret = psb_gtt_allocate_resource(dev_priv, &pobj->resource, name, size, align, stolen,
 					&pobj->offset);
@@ -162,7 +150,7 @@ psb_gem_create(struct drm_device *dev, u64 size, const char *name, bool stolen, 
 		pobj->in_gart = 1;
 	}
 
-	/* GEM object */
+	 
 
 	obj->funcs = &psb_gem_object_funcs;
 
@@ -173,7 +161,7 @@ psb_gem_create(struct drm_device *dev, u64 size, const char *name, bool stolen, 
 		if (ret)
 			goto err_release_resource;
 
-		/* Limit the object to 32-bit mappings */
+		 
 		mapping_set_gfp_mask(obj->filp->f_mapping, GFP_KERNEL | __GFP_DMA32);
 	}
 
@@ -186,16 +174,7 @@ err_kfree:
 	return ERR_PTR(ret);
 }
 
-/**
- *	psb_gem_dumb_create	-	create a dumb buffer
- *	@file: our client file
- *	@dev: our device
- *	@args: the requested arguments copied from userspace
- *
- *	Allocate a buffer suitable for use for a frame buffer of the
- *	form described by user space. Give userspace a handle by which
- *	to reference it.
- */
+ 
 int psb_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 			struct drm_mode_create_dumb *args)
 {
@@ -235,22 +214,7 @@ err_drm_gem_object_put:
 	return ret;
 }
 
-/**
- *	psb_gem_fault		-	pagefault handler for GEM objects
- *	@vmf: fault detail
- *
- *	Invoked when a fault occurs on an mmap of a GEM managed area. GEM
- *	does most of the work for us including the actual map/unmap calls
- *	but we need to do the actual page work.
- *
- *	This code eventually needs to handle faulting objects in and out
- *	of the GTT and repacking it when we run out of space. We can put
- *	that off for now and for our simple uses
- *
- *	The VMA was set up by GEM. In doing so it also ensured that the
- *	vma->vm_private_data points to the GEM object that is backing this
- *	mapping.
- */
+ 
 static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -263,18 +227,16 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 	struct drm_device *dev;
 	struct drm_psb_private *dev_priv;
 
-	obj = vma->vm_private_data;	/* GEM object */
+	obj = vma->vm_private_data;	 
 	dev = obj->dev;
 	dev_priv = to_drm_psb_private(dev);
 
 	pobj = to_psb_gem_object(obj);
 
-	/* Make sure we don't parallel update on a fault, nor move or remove
-	   something from beneath our feet */
+	 
 	mutex_lock(&dev_priv->mmap_mutex);
 
-	/* For now the mmap pins the object and it stays pinned. As things
-	   stand that will do us no harm */
+	 
 	if (pobj->mmapping == 0) {
 		err = psb_gem_pin(pobj);
 		if (err < 0) {
@@ -285,11 +247,10 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
 		pobj->mmapping = 1;
 	}
 
-	/* Page relative to the VMA start - we must calculate this ourselves
-	   because vmf->pgoff is the fake GEM offset */
+	 
 	page_offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 
-	/* CPU view of the page, don't go via the GART for CPU writes */
+	 
 	if (pobj->stolen)
 		pfn = (dev_priv->stolen_base + pobj->offset) >> PAGE_SHIFT;
 	else
@@ -301,11 +262,9 @@ fail:
 	return ret;
 }
 
-/*
- * Memory management
- */
+ 
 
-/* Insert vram stolen pages into the GTT. */
+ 
 static void psb_gem_mm_populate_stolen(struct drm_psb_private *pdev)
 {
 	struct drm_device *dev = &pdev->dev;
@@ -375,7 +334,7 @@ void psb_gem_mm_fini(struct drm_device *dev)
 	mutex_destroy(&dev_priv->mmap_mutex);
 }
 
-/* Re-insert all pinned GEM objects into GTT. */
+ 
 static void psb_gem_mm_populate_resources(struct drm_psb_private *pdev)
 {
 	unsigned int restored = 0, total = 0, size = 0;
@@ -384,11 +343,7 @@ static void psb_gem_mm_populate_resources(struct drm_psb_private *pdev)
 	struct psb_gem_object *pobj;
 
 	while (r) {
-		/*
-		 * TODO: GTT restoration needs a refactoring, so that we don't have to touch
-		 *       struct psb_gem_object here. The type represents a GEM object and is
-		 *       not related to the GTT itself.
-		 */
+		 
 		pobj = container_of(r, struct psb_gem_object, resource);
 		if (pobj->pages) {
 			psb_gtt_insert_pages(pdev, &pobj->resource, pobj->pages);

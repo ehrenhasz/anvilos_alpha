@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for Renesas WDT watchdog
- *
- * Copyright (C) 2015-17 Wolfram Sang, Sang Engineering <wsa@sang-engineering.com>
- * Copyright (C) 2015-17 Renesas Electronics Corporation
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -28,15 +23,11 @@
 
 #define RWDT_DEFAULT_TIMEOUT 60U
 
-/*
- * In probe, clk_rate is checked to be not more than 16 bit * biggest clock
- * divider (12 bits). d is only a factor to fully utilize the WDT counter and
- * will not exceed its 16 bits. Thus, no overflow, we stay below 32 bits.
- */
+ 
 #define MUL_BY_CLKS_PER_SEC(p, d) \
 	DIV_ROUND_UP((d) * (p)->clk_rate, clk_divs[(p)->cks])
 
-/* d is 16 bit, clk_divs 12 bit -> no 32 bit overflow */
+ 
 #define DIV_BY_CLKS_PER_SEC(p, d) ((d) * clk_divs[(p)->cks] / (p)->clk_rate)
 
 static const unsigned int clk_divs[] = { 1, 4, 16, 32, 64, 128, 1024, 4096 };
@@ -89,10 +80,10 @@ static int rwdt_start(struct watchdog_device *wdev)
 
 	pm_runtime_get_sync(wdev->parent);
 
-	/* Stop the timer before we modify any register */
+	 
 	val = readb_relaxed(priv->base + RWTCSRA) & ~RWTCSRA_TME;
 	rwdt_write(priv, val, RWTCSRA);
-	/* Delay 2 cycles before setting watchdog counter */
+	 
 	rwdt_wait_cycles(priv, 2);
 
 	rwdt_init_timeout(wdev);
@@ -112,7 +103,7 @@ static int rwdt_stop(struct watchdog_device *wdev)
 	struct rwdt_priv *priv = watchdog_get_drvdata(wdev);
 
 	rwdt_write(priv, priv->cks, RWTCSRA);
-	/* Delay 3 cycles before disabling module clock */
+	 
 	rwdt_wait_cycles(priv, 3);
 	pm_runtime_put(wdev->parent);
 
@@ -127,7 +118,7 @@ static unsigned int rwdt_get_timeleft(struct watchdog_device *wdev)
 	return DIV_BY_CLKS_PER_SEC(priv, 65536 - val);
 }
 
-/* needs to be atomic - no RPM, no usleep_range, no scheduling! */
+ 
 static int rwdt_restart(struct watchdog_device *wdev, unsigned long action,
 			void *data)
 {
@@ -136,14 +127,14 @@ static int rwdt_restart(struct watchdog_device *wdev, unsigned long action,
 
 	clk_prepare_enable(priv->clk);
 
-	/* Stop the timer before we modify any register */
+	 
 	val = readb_relaxed(priv->base + RWTCSRA) & ~RWTCSRA_TME;
 	rwdt_write(priv, val, RWTCSRA);
-	/* Delay 2 cycles before setting watchdog counter */
+	 
 	udelay(DIV_ROUND_UP(2 * 1000000, priv->clk_rate));
 
 	rwdt_write(priv, 0xffff, RWTCNT);
-	/* smallest divider to reboot soon */
+	 
 	rwdt_write(priv, 0, RWTCSRA);
 
 	readb_poll_timeout_atomic(priv->base + RWTCSRA, val,
@@ -151,7 +142,7 @@ static int rwdt_restart(struct watchdog_device *wdev, unsigned long action,
 
 	rwdt_write(priv, RWTCSRA_TME, RWTCSRA);
 
-	/* wait 2 cycles, so watchdog will trigger */
+	 
 	udelay(DIV_ROUND_UP(2 * 1000000, priv->clk_rate));
 
 	return 0;
@@ -173,23 +164,21 @@ static const struct watchdog_ops rwdt_ops = {
 };
 
 #if defined(CONFIG_ARCH_RCAR_GEN2) && defined(CONFIG_SMP)
-/*
- * Watchdog-reset integration is broken on early revisions of R-Car Gen2 SoCs
- */
+ 
 static const struct soc_device_attribute rwdt_quirks_match[] = {
 	{
 		.soc_id = "r8a7790",
 		.revision = "ES1.*",
-		.data = (void *)1,	/* needs single CPU */
+		.data = (void *)1,	 
 	}, {
 		.soc_id = "r8a7791",
 		.revision = "ES1.*",
-		.data = (void *)1,	/* needs single CPU */
+		.data = (void *)1,	 
 	}, {
 		.soc_id = "r8a7792",
-		.data = (void *)0,	/* needs SMP disabled */
+		.data = (void *)0,	 
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static bool rwdt_blacklisted(struct device *dev)
@@ -205,9 +194,9 @@ static bool rwdt_blacklisted(struct device *dev)
 
 	return false;
 }
-#else /* !CONFIG_ARCH_RCAR_GEN2 || !CONFIG_SMP */
+#else  
 static inline bool rwdt_blacklisted(struct device *dev) { return false; }
-#endif /* !CONFIG_ARCH_RCAR_GEN2 || !CONFIG_SMP */
+#endif  
 
 static int rwdt_probe(struct platform_device *pdev)
 {
@@ -271,12 +260,12 @@ static int rwdt_probe(struct platform_device *pdev)
 	watchdog_set_restart_priority(&priv->wdev, 0);
 	watchdog_stop_on_unregister(&priv->wdev);
 
-	/* This overrides the default timeout only if DT configuration was found */
+	 
 	watchdog_init_timeout(&priv->wdev, 0, dev);
 
-	/* Check if FW enabled the watchdog */
+	 
 	if (csra & RWTCSRA_TME) {
-		/* Ensure properly initialized dividers */
+		 
 		rwdt_start(&priv->wdev);
 		set_bit(WDOG_HW_RUNNING, &priv->wdev.status);
 	}
@@ -326,7 +315,7 @@ static const struct of_device_id rwdt_ids[] = {
 	{ .compatible = "renesas,rcar-gen2-wdt", },
 	{ .compatible = "renesas,rcar-gen3-wdt", },
 	{ .compatible = "renesas,rcar-gen4-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rwdt_ids);
 

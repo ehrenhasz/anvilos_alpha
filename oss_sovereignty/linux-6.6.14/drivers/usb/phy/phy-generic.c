@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NOP USB transceiver for all USB transceiver which are either built-in
- * into USB IP or which are mostly autonomous.
- *
- * Copyright (C) 2009 Texas Instruments Inc
- * Author: Ajay Kumar Gupta <ajay.gupta@ti.com>
- *
- * Current status:
- *	This provides a "nop" transceiver for PHYs which are
- *	autonomous such as isp1504, isp1707, etc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -67,7 +57,7 @@ static void nop_reset(struct usb_phy_generic *nop)
 	gpiod_set_value_cansleep(nop->gpiod_reset, 0);
 }
 
-/* interface to regulator framework */
+ 
 static void nop_set_vbus_draw(struct usb_phy_generic *nop, unsigned mA)
 {
 	struct regulator *vbus_draw = nop->vbus_draw;
@@ -114,7 +104,7 @@ static irqreturn_t nop_gpio_vbus_thread(int irq, void *data)
 		otg->state = OTG_STATE_B_PERIPHERAL;
 		nop->phy.last_event = status;
 
-		/* drawing a "unit load" is *always* OK, except for OTG */
+		 
 		nop_set_vbus_draw(nop, 100);
 
 		atomic_notifier_call_chain(&nop->phy.notifier, status,

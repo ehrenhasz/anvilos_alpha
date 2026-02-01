@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <soc/tegra/mc.h>
 
@@ -12,10 +10,7 @@
 #include <soc/tegra/bpmp.h>
 #include "mc.h"
 
-/*
- * MC Client entries are sorted in the increasing order of the
- * override and security register offsets.
- */
+ 
 static const struct tegra_mc_client tegra234_mc_clients[] = {
 	{
 		.id = TEGRA234_MEMORY_CLIENT_HDAR,
@@ -929,19 +924,7 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 	},
 };
 
-/*
- * tegra234_mc_icc_set() - Pass MC client info to the BPMP-FW
- * @src: ICC node for Memory Controller's (MC) Client
- * @dst: ICC node for Memory Controller (MC)
- *
- * Passing the current request info from the MC to the BPMP-FW where
- * LA and PTSA registers are accessed and the final EMC freq is set
- * based on client_id, type, latency and bandwidth.
- * icc_set_bw() makes set_bw calls for both MC and EMC providers in
- * sequence. Both the calls are protected by 'mutex_lock(&icc_lock)'.
- * So, the data passed won't be updated by concurrent set calls from
- * other clients.
- */
+ 
 static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 {
 	struct tegra_mc *mc = icc_provider_to_tegra_mc(dst->provider);
@@ -951,12 +934,7 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	struct tegra_bpmp_message msg;
 	int ret;
 
-	/*
-	 * Same Src and Dst node will happen during boot from icc_node_add().
-	 * This can be used to pre-initialize and set bandwidth for all clients
-	 * before their drivers are loaded. We are skipping this case as for us,
-	 * the pre-initialization already happened in Bootloader(MB2) and BPMP-FW.
-	 */
+	 
 	if (src->id == dst->id)
 		return 0;
 
@@ -1057,9 +1035,6 @@ const struct tegra_mc_soc tegra234_mc_soc = {
 	.icc_ops = &tegra234_mc_icc_ops,
 	.ch_intmask = 0x0000ff00,
 	.global_intstatus_channel_shift = 8,
-	/*
-	 * Additionally, there are lite carveouts but those are not currently
-	 * supported.
-	 */
+	 
 	.num_carveouts = 32,
 };

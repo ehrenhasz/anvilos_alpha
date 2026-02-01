@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -132,7 +129,7 @@ struct mtk_mmsys {
 	const struct mtk_mmsys_driver_data *data;
 	struct platform_device *clks_pdev;
 	struct platform_device *drm_pdev;
-	spinlock_t lock; /* protects mmsys_sw_rst_b reg */
+	spinlock_t lock;  
 	struct reset_controller_dev rcdev;
 	struct cmdq_client_reg cmdq_base;
 };
@@ -382,7 +379,7 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* CMDQ is optional */
+	 
 	ret = cmdq_dev_get_client_reg(dev, &mmsys->cmdq_base, 0);
 	if (ret)
 		dev_dbg(dev, "No mediatek,gce-client-reg!\n");
@@ -432,14 +429,14 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
 	{ .compatible = "mediatek,mt8186-mmsys", .data = &mt8186_mmsys_driver_data },
 	{ .compatible = "mediatek,mt8188-vdosys0", .data = &mt8188_vdosys0_driver_data },
 	{ .compatible = "mediatek,mt8192-mmsys", .data = &mt8192_mmsys_driver_data },
-	/* "mediatek,mt8195-mmsys" compatible is deprecated */
+	 
 	{ .compatible = "mediatek,mt8195-mmsys", .data = &mt8195_vdosys0_driver_data },
 	{ .compatible = "mediatek,mt8195-vdosys0", .data = &mt8195_vdosys0_driver_data },
 	{ .compatible = "mediatek,mt8195-vdosys1", .data = &mt8195_vdosys1_driver_data },
 	{ .compatible = "mediatek,mt8195-vppsys0", .data = &mt8195_vppsys0_driver_data },
 	{ .compatible = "mediatek,mt8195-vppsys1", .data = &mt8195_vppsys1_driver_data },
 	{ .compatible = "mediatek,mt8365-mmsys", .data = &mt8365_mmsys_driver_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_mtk_mmsys);
 

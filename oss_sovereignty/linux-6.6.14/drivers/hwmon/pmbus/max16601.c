@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hardware monitoring driver for Maxim MAX16508, MAX16600, MAX16601,
- * and MAX16602.
- *
- * Implementation notes:
- *
- * This chip series supports two rails, VCORE and VSA. Telemetry information
- * for the two rails is reported in two subsequent I2C addresses. The driver
- * instantiates a dummy I2C client at the second I2C address to report
- * information for the VSA rail in a single instance of the driver.
- * Telemetry for the VSA rail is reported to the PMBus core in PMBus page 2.
- *
- * The chip reports input current using two separate methods. The input current
- * reported with the standard READ_IIN command is derived from the output
- * current. The first method is reported to the PMBus core with PMBus page 0,
- * the second method is reported with PMBus page 1.
- *
- * The chip supports reading per-phase temperatures and per-phase input/output
- * currents for VCORE. Telemetry is reported in vendor specific registers.
- * The driver translates the vendor specific register values to PMBus standard
- * register values and reports per-phase information in PMBus page 0.
- *
- * Copyright 2019, 2020 Google LLC.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/i2c.h>
@@ -61,7 +38,7 @@ static int max16601_read_byte(struct i2c_client *client, int page, int reg)
 	struct max16601_data *data = to_max16601_data(info);
 
 	if (page > 0) {
-		if (page == 2)	/* VSA */
+		if (page == 2)	 
 			return i2c_smbus_read_byte_data(data->vsa, reg);
 		return -EOPNOTSUPP;
 	}
@@ -77,7 +54,7 @@ static int max16601_read_word(struct i2c_client *client, int page, int phase,
 	int ret;
 
 	switch (page) {
-	case 0:		/* VCORE */
+	case 0:		 
 		if (phase == 0xff)
 			return -ENODATA;
 		switch (reg) {
@@ -107,7 +84,7 @@ static int max16601_read_word(struct i2c_client *client, int page, int phase,
 			}
 		}
 		return -EOPNOTSUPP;
-	case 1:		/* VCORE, read IIN/PIN from sensor element */
+	case 1:		 
 		switch (reg) {
 		case PMBUS_READ_IIN:
 			return i2c_smbus_read_word_data(client, REG_IIN_SENSOR);
@@ -118,7 +95,7 @@ static int max16601_read_word(struct i2c_client *client, int page, int phase,
 			break;
 		}
 		return -EOPNOTSUPP;
-	case 2:		/* VSA */
+	case 2:		 
 		switch (reg) {
 		case PMBUS_VIRT_READ_IOUT_MAX:
 			ret = i2c_smbus_read_word_data(data->vsa,
@@ -168,12 +145,12 @@ static int max16601_write_word(struct i2c_client *client, int page, int reg,
 	struct max16601_data *data = to_max16601_data(info);
 
 	switch (page) {
-	case 0:		/* VCORE */
+	case 0:		 
 		return -ENODATA;
-	case 1:		/* VCORE IIN/PIN from sensor element */
+	case 1:		 
 	default:
 		return -EOPNOTSUPP;
-	case 2:		/* VSA */
+	case 2:		 
 		switch (reg) {
 		case PMBUS_VIRT_RESET_IOUT_HISTORY:
 			data->iout_avg_pkg = 0xfc00;
@@ -210,10 +187,7 @@ static int max16601_identify(struct i2c_client *client,
 	if (reg < 0)
 		return reg;
 
-	/*
-	 * If REG_DEFAULT_NUM_POP returns 0, we don't know how many phases
-	 * are populated. Stick with the default in that case.
-	 */
+	 
 	reg &= 0x0f;
 	if (reg && reg <= MAX16601_NUM_PHASES)
 		info->phases[0] = reg;
@@ -282,10 +256,7 @@ static int max16601_get_id(struct i2c_client *client)
 	if (ret < 0 || ret < 11)
 		return -ENODEV;
 
-	/*
-	 * PMBUS_IC_DEVICE_ID is expected to return MAX1660[012]y.xx",
-	 * "MAX16500y.xx".cdxxcccccccccc, or "MAX16508y.xx".
-	 */
+	 
 	if (!strncmp(buf, "MAX16500", 8) || !strncmp(buf, "MAX16508", 8)) {
 		id = max16508;
 	} else if (!strncmp(buf, "MAX16600", 8)) {

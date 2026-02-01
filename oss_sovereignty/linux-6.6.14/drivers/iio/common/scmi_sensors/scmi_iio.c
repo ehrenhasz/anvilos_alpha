@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * System Control and Management Interface(SCMI) based IIO sensor driver
- *
- * Copyright (C) 2021 Google LLC
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -28,9 +24,9 @@ struct scmi_iio_priv {
 	struct scmi_protocol_handle *ph;
 	const struct scmi_sensor_info *sensor_info;
 	struct iio_dev *indio_dev;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
-	/* adding one additional channel for timestamp */
+	 
 	s64 iio_buf[SCMI_IIO_NUM_OF_AXIS + 1];
 	struct notifier_block sensor_update_nb;
 	u32 *freq_avail;
@@ -57,17 +53,10 @@ static int scmi_iio_sensor_update_cb(struct notifier_block *nb,
 	if (!sensor->sensor_info->timestamped) {
 		time_ns = ktime_to_ns(sensor_update->timestamp);
 	} else {
-		/*
-		 *  All the axes are supposed to have the same value for timestamp.
-		 *  We are just using the values from the Axis 0 here.
-		 */
+		 
 		time = sensor_update->readings[0].timestamp;
 
-		/*
-		 *  Timestamp returned by SCMI is in seconds and is equal to
-		 *  time * power-of-10 multiplier(tstamp_scale) seconds.
-		 *  Converting the timestamp to nanoseconds below.
-		 */
+		 
 		tstamp_scale = sensor->sensor_info->tstamp_scale +
 			       const_ilog2(NSEC_PER_SEC) / const_ilog2(10);
 		if (tstamp_scale < 0) {
@@ -150,14 +139,7 @@ static int scmi_iio_set_odr_val(struct iio_dev *iio_dev, int val, int val2)
 
 	uHz = val * MICROHZ_PER_HZ + val2;
 
-	/*
-	 * The seconds field in the sensor interval in SCMI is 16 bits long
-	 * Therefore seconds  = 1/Hz <= 0xFFFF. As floating point calculations are
-	 * discouraged in the kernel driver code, to calculate the scale factor (sf)
-	 * (1* 1000000 * sf)/uHz <= 0xFFFF. Therefore, sf <= (uHz * 0xFFFF)/1000000
-	 * To calculate the multiplier,we convert the sf into char string  and
-	 * count the number of characters
-	 */
+	 
 	sf = (u64)uHz * 0xFFFF;
 	do_div(sf,  MICROHZ_PER_HZ);
 	mult = scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
@@ -380,10 +362,7 @@ static ssize_t scmi_iio_get_raw_available(struct iio_dev *iio_dev,
 	s8 exponent, scale;
 	int len = 0;
 
-	/*
-	 * All the axes are supposed to have the same value for range and resolution.
-	 * We are just using the values from the Axis 0 here.
-	 */
+	 
 	if (sensor->sensor_info->axis[0].extended_attrs) {
 		min_range = sensor->sensor_info->axis[0].attrs.min_range;
 		max_range = sensor->sensor_info->axis[0].attrs.max_range;
@@ -391,10 +370,7 @@ static ssize_t scmi_iio_get_raw_available(struct iio_dev *iio_dev,
 		exponent = sensor->sensor_info->axis[0].exponent;
 		scale = sensor->sensor_info->axis[0].scale;
 
-		/*
-		 * To provide the raw value for the resolution to the userspace,
-		 * need to divide the resolution exponent by the sensor scale
-		 */
+		 
 		exponent = exponent - scale;
 		if (exponent < 0) {
 			rem = do_div(resolution,
@@ -592,7 +568,7 @@ scmi_alloc_iiodev(struct scmi_device *sdev,
 	sensor->indio_dev = iiodev;
 	mutex_init(&sensor->lock);
 
-	/* adding one additional channel for timestamp */
+	 
 	iiodev->num_channels = sensor_info->num_axis + 1;
 	iiodev->name = sensor_info->name;
 	iiodev->info = &scmi_iio_info;
@@ -671,11 +647,11 @@ static int scmi_iio_dev_probe(struct scmi_device *sdev)
 			return -EINVAL;
 		}
 
-		/* This driver only supports 3-axis accel and gyro, skipping other sensors */
+		 
 		if (sensor_info->num_axis != SCMI_IIO_NUM_OF_AXIS)
 			continue;
 
-		/* This driver only supports 3-axis accel and gyro, skipping other sensors */
+		 
 		if (sensor_info->axis[0].type != METERS_SEC_SQUARED &&
 		    sensor_info->axis[0].type != RADIANS_SEC)
 			continue;

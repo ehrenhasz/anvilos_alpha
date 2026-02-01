@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MDP_REG_WROT_H__
 #define __MDP_REG_WROT_H__
@@ -29,7 +26,7 @@
 #define VIDO_BASE_ADDR_C            0xf04
 #define VIDO_BASE_ADDR_V            0xf08
 
-/* MASK */
+ 
 #define VIDO_CTRL_MASK                  0xf530711f
 #define VIDO_MAIN_BUF_SIZE_MASK         0x1fff7f77
 #define VIDO_SOFT_RST_MASK              0x00000001
@@ -52,4 +49,4 @@
 #define VIDO_BASE_ADDR_C_MASK           0xffffffff
 #define VIDO_BASE_ADDR_V_MASK           0xffffffff
 
-#endif  // __MDP_REG_WROT_H__
+#endif  

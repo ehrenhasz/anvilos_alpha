@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitfield.h>
@@ -123,7 +107,7 @@ static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
 		dev_kfree_skb_any(skb);
 		dev_err_ratelimited(port->dev, "Port %s is not opened, drop packets\n",
 				    port_conf->name);
-		/* Dropping skb, caller should not access skb.*/
+		 
 		return 0;
 	}
 

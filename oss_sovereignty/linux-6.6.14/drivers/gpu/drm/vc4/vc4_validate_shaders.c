@@ -1,45 +1,6 @@
-/*
- * Copyright © 2014 Broadcom
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
-/**
- * DOC: Shader validator for VC4.
- *
- * Since the VC4 has no IOMMU between it and system memory, a user
- * with access to execute shaders could escalate privilege by
- * overwriting system memory (using the VPM write address register in
- * the general-purpose DMA mode) or reading system memory it shouldn't
- * (reading it as a texture, uniform data, or direct-addressed TMU
- * lookup).
- *
- * The shader validator walks over a shader's BO, ensuring that its
- * accesses are appropriately bounded, and recording where texture
- * accesses are made so that we can do relocations for them in the
- * uniform stream.
- *
- * Shader BO are immutable for their lifetimes (enforced by not
- * allowing mmaps, GEM prime export, or rendering to from a CL), so
- * this validation is only performed at BO creation time.
- */
+ 
 
 #include "vc4_drv.h"
 #include "vc4_qpu_defines.h"
@@ -47,10 +8,10 @@
 #define LIVE_REG_COUNT (32 + 32 + 4)
 
 struct vc4_shader_validation_state {
-	/* Current IP being validated. */
+	 
 	uint32_t ip;
 
-	/* IP at the end of the BO, do not read shader[max_ip] */
+	 
 	uint32_t max_ip;
 
 	uint64_t *shader;
@@ -58,42 +19,21 @@ struct vc4_shader_validation_state {
 	struct vc4_texture_sample_info tmu_setup[2];
 	int tmu_write_count[2];
 
-	/* For registers that were last written to by a MIN instruction with
-	 * one argument being a uniform, the address of the uniform.
-	 * Otherwise, ~0.
-	 *
-	 * This is used for the validation of direct address memory reads.
-	 */
+	 
 	uint32_t live_min_clamp_offsets[LIVE_REG_COUNT];
 	bool live_max_clamp_regs[LIVE_REG_COUNT];
 	uint32_t live_immediates[LIVE_REG_COUNT];
 
-	/* Bitfield of which IPs are used as branch targets.
-	 *
-	 * Used for validation that the uniform stream is updated at the right
-	 * points and clearing the texturing/clamping state.
-	 */
+	 
 	unsigned long *branch_targets;
 
-	/* Set when entering a basic block, and cleared when the uniform
-	 * address update is found.  This is used to make sure that we don't
-	 * read uniforms when the address is undefined.
-	 */
+	 
 	bool needs_uniform_address_update;
 
-	/* Set when we find a backwards branch.  If the branch is backwards,
-	 * the taraget is probably doing an address reset to read uniforms,
-	 * and so we need to be sure that a uniforms address is present in the
-	 * stream, even if the shader didn't need to read uniforms in later
-	 * basic blocks.
-	 */
+	 
 	bool needs_uniform_address_for_loop;
 
-	/* Set when we find an instruction writing the top half of the
-	 * register files.  If we allowed writing the unusable regs in
-	 * a threaded shader, then the other shader running on our
-	 * QPU's clamp validation would be invalid.
-	 */
+	 
 	bool all_registers_used;
 };
 
@@ -204,20 +144,14 @@ check_tmu_write(struct vc4_validated_shader_info *validated_shader,
 			return false;
 		}
 
-		/* Make sure that this texture load is an add of the base
-		 * address of the UBO to a clamped offset within the UBO.
-		 */
+		 
 		if (is_mul ||
 		    QPU_GET_FIELD(inst, QPU_OP_ADD) != QPU_A_ADD) {
 			DRM_DEBUG("direct TMU load wasn't an add\n");
 			return false;
 		}
 
-		/* We assert that the clamped address is the first
-		 * argument, and the UBO base address is the second argument.
-		 * This is arbitrary, but simpler than supporting flipping the
-		 * two either way.
-		 */
+		 
 		clamp_reg = raddr_add_a_to_live_reg_index(inst);
 		if (clamp_reg == ~0) {
 			DRM_DEBUG("direct TMU load wasn't clamped\n");
@@ -230,9 +164,7 @@ check_tmu_write(struct vc4_validated_shader_info *validated_shader,
 			return false;
 		}
 
-		/* Store the clamp value's offset in p1 (see reloc_tex() in
-		 * vc4_validate.c).
-		 */
+		 
 		validation_state->tmu_setup[tmu].p_offset[1] =
 			clamp_offset;
 
@@ -260,9 +192,7 @@ check_tmu_write(struct vc4_validated_shader_info *validated_shader,
 	validation_state->tmu_setup[tmu].p_offset[validation_state->tmu_write_count[tmu]] =
 		validated_shader->uniforms_size;
 	validation_state->tmu_write_count[tmu]++;
-	/* Since direct uses a RADDR uniform reference, it will get counted in
-	 * check_instruction_reads()
-	 */
+	 
 	if (!is_direct) {
 		if (validation_state->needs_uniform_address_update) {
 			DRM_DEBUG("Texturing with undefined uniform address\n");
@@ -313,21 +243,10 @@ validate_uniform_address_write(struct vc4_validated_shader_info *validated_shade
 	u32 raddr_a = QPU_GET_FIELD(inst, QPU_RADDR_A);
 	u32 raddr_b = QPU_GET_FIELD(inst, QPU_RADDR_B);
 	u32 add_lri = raddr_add_a_to_live_reg_index(inst);
-	/* We want our reset to be pointing at whatever uniform follows the
-	 * uniforms base address.
-	 */
+	 
 	u32 expected_offset = validated_shader->uniforms_size + 4;
 
-	/* We only support absolute uniform address changes, and we
-	 * require that they be in the current basic block before any
-	 * of its uniform reads.
-	 *
-	 * One could potentially emit more efficient QPU code, by
-	 * noticing that (say) an if statement does uniform control
-	 * flow for all threads and that the if reads the same number
-	 * of uniforms on each side.  However, this scheme is easy to
-	 * validate so it's all we allow for now.
-	 */
+	 
 	switch (QPU_GET_FIELD(inst, QPU_SIG)) {
 	case QPU_SIG_NONE:
 	case QPU_SIG_SCOREBOARD_UNLOCK:
@@ -429,9 +348,7 @@ check_reg_write(struct vc4_validated_shader_info *validated_shader,
 	case QPU_W_TLB_COLOR_MS:
 	case QPU_W_TLB_COLOR_ALL:
 	case QPU_W_TLB_Z:
-		/* These only interact with the tile buffer, not main memory,
-		 * so they're safe.
-		 */
+		 
 		return true;
 
 	case QPU_W_TMU0_S:
@@ -449,9 +366,7 @@ check_reg_write(struct vc4_validated_shader_info *validated_shader,
 	case QPU_W_TMU_NOSWAP:
 	case QPU_W_TLB_ALPHA_MASK:
 	case QPU_W_MUTEX_RELEASE:
-		/* XXX: I haven't thought about these, so don't support them
-		 * for now.
-		 */
+		 
 		DRM_DEBUG("Unsupported waddr %d\n", waddr);
 		return false;
 
@@ -461,10 +376,7 @@ check_reg_write(struct vc4_validated_shader_info *validated_shader,
 
 	case QPU_W_VPM:
 	case QPU_W_VPMVCD_SETUP:
-		/* We allow VPM setup in general, even including VPM DMA
-		 * configuration setup, because the (unsafe) DMA can only be
-		 * triggered by QPU_W_VPM_ADDR writes.
-		 */
+		 
 		return true;
 
 	case QPU_W_TLB_STENCIL_SETUP:
@@ -492,14 +404,12 @@ track_live_clamps(struct vc4_validated_shader_info *validated_shader,
 	uint32_t lri_add_a, lri_add, lri_mul;
 	bool add_a_is_min_0;
 
-	/* Check whether OP_ADD's A argumennt comes from a live MAX(x, 0),
-	 * before we clear previous live state.
-	 */
+	 
 	lri_add_a = raddr_add_a_to_live_reg_index(inst);
 	add_a_is_min_0 = (lri_add_a != ~0 &&
 			  validation_state->live_max_clamp_regs[lri_add_a]);
 
-	/* Clear live state for registers written by our instruction. */
+	 
 	lri_add = waddr_to_live_reg_index(waddr_add, ws);
 	lri_mul = waddr_to_live_reg_index(waddr_mul, !ws);
 	if (lri_mul != ~0) {
@@ -510,21 +420,17 @@ track_live_clamps(struct vc4_validated_shader_info *validated_shader,
 		validation_state->live_max_clamp_regs[lri_add] = false;
 		validation_state->live_min_clamp_offsets[lri_add] = ~0;
 	} else {
-		/* Nothing further to do for live tracking, since only ADDs
-		 * generate new live clamp registers.
-		 */
+		 
 		return;
 	}
 
-	/* Now, handle remaining live clamp tracking for the ADD operation. */
+	 
 
 	if (cond_add != QPU_COND_ALWAYS)
 		return;
 
 	if (op_add == QPU_A_MAX) {
-		/* Track live clamps of a value to a minimum of 0 (in either
-		 * arg).
-		 */
+		 
 		if (sig != QPU_SIG_SMALL_IMM || raddr_b != 0 ||
 		    (add_a != QPU_MUX_B && add_b != QPU_MUX_B)) {
 			return;
@@ -532,9 +438,7 @@ track_live_clamps(struct vc4_validated_shader_info *validated_shader,
 
 		validation_state->live_max_clamp_regs[lri_add] = true;
 	} else if (op_add == QPU_A_MIN) {
-		/* Track live clamps of a value clamped to a minimum of 0 and
-		 * a maximum of some uniform's offset.
-		 */
+		 
 		if (!add_a_is_min_0)
 			return;
 
@@ -584,9 +488,7 @@ check_branch(uint64_t inst,
 	if ((int)branch_imm < 0)
 		validation_state->needs_uniform_address_for_loop = true;
 
-	/* We don't want to have to worry about validation of this, and
-	 * there's no need for it.
-	 */
+	 
 	if (waddr_add != QPU_W_NOP || waddr_mul != QPU_W_NOP) {
 		DRM_DEBUG("branch instruction at %d wrote a register.\n",
 			  validation_state->ip);
@@ -607,10 +509,7 @@ check_instruction_reads(struct vc4_validated_shader_info *validated_shader,
 
 	if (raddr_a == QPU_R_UNIF ||
 	    (raddr_b == QPU_R_UNIF && sig != QPU_SIG_SMALL_IMM)) {
-		/* This can't overflow the uint32_t, because we're reading 8
-		 * bytes of instruction to increment by 4 here, so we'd
-		 * already be OOM.
-		 */
+		 
 		validated_shader->uniforms_size += 4;
 
 		if (validation_state->needs_uniform_address_update) {
@@ -628,9 +527,7 @@ check_instruction_reads(struct vc4_validated_shader_info *validated_shader,
 	return true;
 }
 
-/* Make sure that all branches are absolute and point within the shader, and
- * note their targets for later.
- */
+ 
 static bool
 vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
 {
@@ -646,12 +543,7 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
 		uint32_t branch_target_ip;
 
 		if (sig == QPU_SIG_PROG_END) {
-			/* There are two delay slots after program end is
-			 * signaled that are still executed, then we're
-			 * finished.  validation_state->max_ip is the
-			 * instruction after the last valid instruction in the
-			 * program.
-			 */
+			 
 			validation_state->max_ip = ip + 3;
 			continue;
 		}
@@ -676,11 +568,7 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
 			return false;
 		}
 
-		/* The actual branch target is the instruction after the delay
-		 * slots, plus whatever byte offset is in the low 32 bits of
-		 * the instruction.  Make sure we're not branching beyond the
-		 * end of the shader object.
-		 */
+		 
 		if (branch_imm % sizeof(inst) != 0) {
 			DRM_DEBUG("branch target not aligned\n");
 			return false;
@@ -695,9 +583,7 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
 		}
 		set_bit(branch_target_ip, validation_state->branch_targets);
 
-		/* Make sure that the non-branching path is also not outside
-		 * the shader.
-		 */
+		 
 		if (after_delay_ip >= validation_state->max_ip) {
 			DRM_DEBUG("Branch at %d continues past shader end "
 				  "(%d/%d)\n",
@@ -716,9 +602,7 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
 	return true;
 }
 
-/* Resets any known state for the shader, used when we may be branched to from
- * multiple locations in the program (or at shader start).
- */
+ 
 static void
 reset_validation_state(struct vc4_shader_validation_state *validation_state)
 {
@@ -754,22 +638,10 @@ vc4_handle_branch_target(struct vc4_shader_validation_state *validation_state)
 		return false;
 	}
 
-	/* Reset our live values tracking, since this instruction may have
-	 * multiple predecessors.
-	 *
-	 * One could potentially do analysis to determine that, for
-	 * example, all predecessors have a live max clamp in the same
-	 * register, but we don't bother with that.
-	 */
+	 
 	reset_validation_state(validation_state);
 
-	/* Since we've entered a basic block from potentially multiple
-	 * predecessors, we need the uniforms address to be updated before any
-	 * unforms are read.  We require that after any branch point, the next
-	 * uniform to be loaded is a uniform address offset.  That uniform's
-	 * offset will be marked by the uniform address register write
-	 * validation, or a one-off the end-of-program check.
-	 */
+	 
 	validation_state->needs_uniform_address_update = true;
 
 	return true;
@@ -818,7 +690,7 @@ vc4_validate_shader(struct drm_gem_dma_object *shader_obj)
 			goto fail;
 
 		if (ip == last_thread_switch_ip + 3) {
-			/* Reset r0-r3 live clamp data */
+			 
 			int i;
 
 			for (i = 64; i < LIVE_REG_COUNT; i++) {
@@ -894,9 +766,7 @@ vc4_validate_shader(struct drm_gem_dma_object *shader_obj)
 			goto fail;
 		}
 
-		/* There are two delay slots after program end is signaled
-		 * that are still executed, then we're finished.
-		 */
+		 
 		if (found_shader_end && ip == shader_end_ip + 2)
 			break;
 	}
@@ -908,7 +778,7 @@ vc4_validate_shader(struct drm_gem_dma_object *shader_obj)
 		goto fail;
 	}
 
-	/* Might corrupt other thread */
+	 
 	if (validated_shader->is_threaded &&
 	    validation_state.all_registers_used) {
 		DRM_DEBUG("Shader uses threading, but uses the upper "
@@ -916,25 +786,14 @@ vc4_validate_shader(struct drm_gem_dma_object *shader_obj)
 		goto fail;
 	}
 
-	/* If we did a backwards branch and we haven't emitted a uniforms
-	 * reset since then, we still need the uniforms stream to have the
-	 * uniforms address available so that the backwards branch can do its
-	 * uniforms reset.
-	 *
-	 * We could potentially prove that the backwards branch doesn't
-	 * contain any uses of uniforms until program exit, but that doesn't
-	 * seem to be worth the trouble.
-	 */
+	 
 	if (validation_state.needs_uniform_address_for_loop) {
 		if (!require_uniform_address_uniform(validated_shader))
 			goto fail;
 		validated_shader->uniforms_size += 4;
 	}
 
-	/* Again, no chance of integer overflow here because the worst case
-	 * scenario is 8 bytes of uniforms plus handles per 8-byte
-	 * instruction.
-	 */
+	 
 	validated_shader->uniforms_src_size =
 		(validated_shader->uniforms_size +
 		 4 * validated_shader->num_texture_samples);

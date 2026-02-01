@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * tools/testing/selftests/kvm/include/x86_64/evmcs.h
- *
- * Copyright (C) 2018, Red Hat, Inc.
- *
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_EVMCS_H
 #define SELFTEST_KVM_EVMCS_H
@@ -1237,16 +1232,14 @@ static inline int evmcs_vmlaunch(void)
 	return ret;
 }
 
-/*
- * No guest state (e.g. GPRs) is established by this vmresume.
- */
+ 
 static inline int evmcs_vmresume(void)
 {
 	int ret;
 
-	/* HOST_RIP */
+	 
 	current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1;
-	/* HOST_RSP */
+	 
 	current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_POINTER;
 
 	__asm__ __volatile__("push %%rbp;"
@@ -1276,4 +1269,4 @@ static inline int evmcs_vmresume(void)
 	return ret;
 }
 
-#endif /* !SELFTEST_KVM_EVMCS_H */
+#endif  

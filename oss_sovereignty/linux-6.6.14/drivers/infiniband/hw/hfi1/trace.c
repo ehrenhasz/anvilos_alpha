@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015 - 2020 Intel Corporation.
- */
+
+ 
 #define CREATE_TRACE_POINTS
 #include "trace.h"
 #include "exp_rcv.h"
@@ -29,7 +27,7 @@ static u8 __get_16b_hdr_len(struct hfi1_16b_header *hdr)
 
 	if (l4 == OPA_16B_L4_FM) {
 		opcode = IB_OPCODE_UD_SEND_ONLY;
-		return (8 + 8); /* No BTH */
+		return (8 + 8);  
 	}
 
 	if (l4 == OPA_16B_L4_IB_LOCAL)
@@ -259,7 +257,7 @@ const char *parse_everbs_hdrs(
 	}
 
 	switch (opcode) {
-	/* imm */
+	 
 	case OP(RC, SEND_LAST_WITH_IMMEDIATE):
 	case OP(UC, SEND_LAST_WITH_IMMEDIATE):
 	case OP(RC, SEND_ONLY_WITH_IMMEDIATE):
@@ -269,7 +267,7 @@ const char *parse_everbs_hdrs(
 		trace_seq_printf(p, IMM_PRN,
 				 be32_to_cpu(eh->imm_data));
 		break;
-	/* reth + imm */
+	 
 	case OP(RC, RDMA_WRITE_ONLY_WITH_IMMEDIATE):
 	case OP(UC, RDMA_WRITE_ONLY_WITH_IMMEDIATE):
 		trace_seq_printf(p, RETH_PRN " " IMM_PRN,
@@ -278,7 +276,7 @@ const char *parse_everbs_hdrs(
 				 be32_to_cpu(eh->rc.reth.length),
 				 be32_to_cpu(eh->rc.imm_data));
 		break;
-	/* reth */
+	 
 	case OP(RC, RDMA_READ_REQUEST):
 	case OP(RC, RDMA_WRITE_FIRST):
 	case OP(UC, RDMA_WRITE_FIRST):
@@ -313,7 +311,7 @@ const char *parse_everbs_hdrs(
 				 le32_to_cpu(eh->tid_rdma.w_rsp.kdeth0),
 				 le32_to_cpu(eh->tid_rdma.w_rsp.kdeth1),
 				 be32_to_cpu(eh->tid_rdma.w_rsp.aeth) >> 24,
-				 parse_syndrome(/* aeth */
+				 parse_syndrome( 
 					 be32_to_cpu(eh->tid_rdma.w_rsp.aeth)
 					 >> 24),
 				 (be32_to_cpu(eh->tid_rdma.w_rsp.aeth) &
@@ -361,7 +359,7 @@ const char *parse_everbs_hdrs(
 				 le32_to_cpu(eh->tid_rdma.r_rsp.kdeth1),
 				 KDETH_GET(eh->tid_rdma.r_rsp.kdeth1, JKEY),
 				 be32_to_cpu(eh->tid_rdma.r_rsp.aeth) >> 24,
-				 parse_syndrome(/* aeth */
+				 parse_syndrome( 
 					 be32_to_cpu(eh->tid_rdma.r_rsp.aeth)
 					 >> 24),
 				 (be32_to_cpu(eh->tid_rdma.r_rsp.aeth) &
@@ -374,7 +372,7 @@ const char *parse_everbs_hdrs(
 				 le32_to_cpu(eh->tid_rdma.ack.kdeth0),
 				 le32_to_cpu(eh->tid_rdma.ack.kdeth1),
 				 be32_to_cpu(eh->tid_rdma.ack.aeth) >> 24,
-				 parse_syndrome(/* aeth */
+				 parse_syndrome( 
 					 be32_to_cpu(eh->tid_rdma.ack.aeth)
 					 >> 24),
 				 (be32_to_cpu(eh->tid_rdma.ack.aeth) &
@@ -390,7 +388,7 @@ const char *parse_everbs_hdrs(
 				 le32_to_cpu(eh->tid_rdma.resync.kdeth1),
 				 be32_to_cpu(eh->tid_rdma.resync.verbs_qp));
 		break;
-	/* aeth + atomicacketh */
+	 
 	case OP(RC, ATOMIC_ACKNOWLEDGE):
 		trace_seq_printf(p, AETH_PRN " " ATOMICACKETH_PRN,
 				 be32_to_cpu(eh->at.aeth) >> 24,
@@ -398,7 +396,7 @@ const char *parse_everbs_hdrs(
 				 be32_to_cpu(eh->at.aeth) & IB_MSN_MASK,
 				 ib_u64_get(&eh->at.atomic_ack_eth));
 		break;
-	/* atomiceth */
+	 
 	case OP(RC, COMPARE_SWAP):
 	case OP(RC, FETCH_ADD):
 		trace_seq_printf(p, ATOMICETH_PRN,
@@ -407,7 +405,7 @@ const char *parse_everbs_hdrs(
 				 get_ib_ateth_swap(&eh->atomic_eth),
 				 get_ib_ateth_compare(&eh->atomic_eth));
 		break;
-	/* deth */
+	 
 	case OP(UD, SEND_ONLY):
 		trace_seq_printf(p, DETH_ENTROPY_PRN,
 				 be32_to_cpu(eh->ud.deth[0]),
@@ -420,7 +418,7 @@ const char *parse_everbs_hdrs(
 				 be32_to_cpu(eh->ud.deth[0]),
 				 be32_to_cpu(eh->ud.deth[1]) & RVT_QPN_MASK);
 		break;
-	/* ieth */
+	 
 	case OP(RC, SEND_LAST_WITH_INVALIDATE):
 	case OP(RC, SEND_ONLY_WITH_INVALIDATE):
 		trace_seq_printf(p, IETH_PRN,

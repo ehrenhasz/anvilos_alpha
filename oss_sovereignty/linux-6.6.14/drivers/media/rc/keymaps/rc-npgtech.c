@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0+
-// npgtech.h - Keytable for npgtech Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table npgtech[] = {
-	{ 0x1d, KEY_SWITCHVIDEOMODE },	/* switch inputs */
+	{ 0x1d, KEY_SWITCHVIDEOMODE },	 
 	{ 0x2a, KEY_FRONT },
 
 	{ 0x3e, KEY_NUMERIC_1 },
@@ -22,7 +22,7 @@ static struct rc_map_table npgtech[] = {
 	{ 0x1a, KEY_NUMERIC_8 },
 	{ 0x1e, KEY_NUMERIC_9 },
 	{ 0x3a, KEY_NUMERIC_0 },
-	{ 0x22, KEY_NUMLOCK },		/* -/-- */
+	{ 0x22, KEY_NUMLOCK },		 
 	{ 0x20, KEY_REFRESH },
 
 	{ 0x03, KEY_BRIGHTNESSDOWN },
@@ -43,8 +43,8 @@ static struct rc_map_table npgtech[] = {
 	{ 0x14, KEY_REWIND },
 	{ 0x33, KEY_ZOOM },
 	{ 0x32, KEY_KEYBOARD },
-	{ 0x30, KEY_GOTO },		/* Pointing arrow */
-	{ 0x36, KEY_MACRO },		/* Maximize/Minimize (yellow) */
+	{ 0x30, KEY_GOTO },		 
+	{ 0x36, KEY_MACRO },		 
 	{ 0x0b, KEY_RADIO },
 	{ 0x10, KEY_POWER },
 
@@ -54,7 +54,7 @@ static struct rc_map_list npgtech_map = {
 	.map = {
 		.scan     = npgtech,
 		.size     = ARRAY_SIZE(npgtech),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_NPGTECH,
 	}
 };

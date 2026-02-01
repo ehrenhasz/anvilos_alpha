@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+ 
 
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8917_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8917_H
 
-/* Clocks */
+ 
 #define APSS_AHB_CLK_SRC			0
 #define BLSP1_QUP2_I2C_APPS_CLK_SRC		1
 #define BLSP1_QUP2_SPI_APPS_CLK_SRC		2
@@ -171,14 +171,14 @@
 #define VSYNC_CLK_SRC				164
 #define GPLL0_SLEEP_CLK_SRC			165
 
-/* GCC block resets */
+ 
 #define GCC_CAMSS_MICRO_BCR			0
 #define GCC_MSS_BCR				1
 #define GCC_QUSB2_PHY_BCR			2
 #define GCC_USB_HS_BCR				3
 #define GCC_USB2_HS_PHY_ONLY_BCR		4
 
-/* GDSCs */
+ 
 #define CPP_GDSC				0
 #define JPEG_GDSC				1
 #define MDSS_GDSC				2

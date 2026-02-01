@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022, Oracle and/or its affiliates. */
+
+ 
 
 #include <test_progs.h>
 #include <bpf/btf.h>
@@ -8,12 +8,7 @@
 
 #include "cap_helpers.h"
 
-/* Using CAP_LAST_CAP is risky here, since it can get pulled in from
- * an old /usr/include/linux/capability.h and be < CAP_BPF; as a result
- * CAP_BPF would not be included in ALL_CAPS.  Instead use CAP_BPF as
- * we know its value is correct since it is explicitly defined in
- * cap_helpers.h.
- */
+ 
 #define ALL_CAPS	((2ULL << CAP_BPF) - 1)
 
 #define PINPATH		"/sys/fs/bpf/unpriv_bpf_disabled_"
@@ -68,12 +63,7 @@ static void test_unpriv_bpf_disabled_positive(struct test_unpriv_bpf_disabled *s
 	skel->bss->perfbuf_val = 1;
 	skel->bss->ringbuf_val = 2;
 
-	/* Positive tests for unprivileged BPF disabled. Verify we can
-	 * - retrieve and interact with pinned maps;
-	 * - set up and interact with perf buffer;
-	 * - set up and interact with ring buffer;
-	 * - create a link
-	 */
+	 
 	perfbuf = perf_buffer__new(bpf_map__fd(skel->maps.perfbuf), 8, process_perfbuf, NULL, NULL,
 				   NULL);
 	if (!ASSERT_OK_PTR(perfbuf, "perf_buffer__new"))
@@ -83,7 +73,7 @@ static void test_unpriv_bpf_disabled_positive(struct test_unpriv_bpf_disabled *s
 	if (!ASSERT_OK_PTR(ringbuf, "ring_buffer__new"))
 		goto cleanup;
 
-	/* trigger & validate perf event, ringbuf output */
+	 
 	usleep(1);
 
 	ASSERT_GT(perf_buffer__poll(perfbuf, 100), -1, "perf_buffer__poll");
@@ -105,7 +95,7 @@ static void test_unpriv_bpf_disabled_positive(struct test_unpriv_bpf_disabled *s
 		__u32 expected_val = 1;
 		int j;
 
-		/* skip ringbuf, perfbuf */
+		 
 		if (buf)
 			continue;
 
@@ -113,9 +103,9 @@ static void test_unpriv_bpf_disabled_positive(struct test_unpriv_bpf_disabled *s
 			vals[j] = expected_val;
 
 		if (prog_array) {
-			/* need valid prog array value */
+			 
 			vals[0] = prog_fd;
-			/* prog array lookup returns prog id, not fd */
+			 
 			expected_val = prog_id;
 		}
 		ASSERT_OK(bpf_map_update_elem(map_fds[i], &key, vals, 0), "map_update_elem");
@@ -159,22 +149,12 @@ static void test_unpriv_bpf_disabled_negative(struct test_unpriv_bpf_disabled *s
 	__u32 next;
 	int i;
 
-	/* Negative tests for unprivileged BPF disabled.  Verify we cannot
-	 * - load BPF programs;
-	 * - create BPF maps;
-	 * - get a prog/map/link fd by id;
-	 * - get next prog/map/link id
-	 * - query prog
-	 * - BTF load
-	 */
+	 
 	ASSERT_EQ(bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER, "simple_prog", "GPL",
 				prog_insns, prog_insn_cnt, &load_opts),
 		  -EPERM, "prog_load_fails");
 
-	/* some map types require particular correct parameters which could be
-	 * sanity-checked before enforcing -EPERM, so only validate that
-	 * the simple ARRAY and HASH maps are failing with -EPERM
-	 */
+	 
 	for (i = BPF_MAP_TYPE_HASH; i <= BPF_MAP_TYPE_ARRAY; i++)
 		ASSERT_EQ(bpf_map_create(i, NULL, sizeof(int), sizeof(int), 1, NULL),
 			  -EPERM, "map_create_fails");
@@ -254,16 +234,16 @@ void test_unpriv_bpf_disabled(void)
 	for (i = 0; i < NUM_MAPS; i++)
 		ASSERT_OK(bpf_obj_pin(map_fds[i], map_paths[i]), "pin map_fd");
 
-	/* allow user without caps to use perf events */
+	 
 	if (!ASSERT_OK(sysctl_set("/proc/sys/kernel/perf_event_paranoid", perf_event_paranoid_orig,
 				  "-1"),
 		       "set_perf_event_paranoid"))
 		goto cleanup;
-	/* ensure unprivileged bpf disabled is set */
+	 
 	ret = sysctl_set("/proc/sys/kernel/unprivileged_bpf_disabled",
 			 unprivileged_bpf_disabled_orig, "2");
 	if (ret == -EPERM) {
-		/* if unprivileged_bpf_disabled=1, we get -EPERM back; that's okay. */
+		 
 		if (!ASSERT_OK(strcmp(unprivileged_bpf_disabled_orig, "1"),
 			       "unprivileged_bpf_disabled_on"))
 			goto cleanup;

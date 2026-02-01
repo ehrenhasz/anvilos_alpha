@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Brian Starkey <brian.starkey@arm.com>
- *
- * This program is free software and is provided to you under the terms of the
- * GNU General Public License version 2 as published by the Free Software
- * Foundation, and any use by you of this program is subject to the terms
- * of such GNU licence.
- */
+
+ 
 
 #include <linux/dma-fence.h>
 
@@ -19,65 +11,7 @@
 #include <drm/drm_property.h>
 #include <drm/drm_writeback.h>
 
-/**
- * DOC: overview
- *
- * Writeback connectors are used to expose hardware which can write the output
- * from a CRTC to a memory buffer. They are used and act similarly to other
- * types of connectors, with some important differences:
- *
- * * Writeback connectors don't provide a way to output visually to the user.
- *
- * * Writeback connectors are visible to userspace only when the client sets
- *   DRM_CLIENT_CAP_WRITEBACK_CONNECTORS.
- *
- * * Writeback connectors don't have EDID.
- *
- * A framebuffer may only be attached to a writeback connector when the
- * connector is attached to a CRTC. The WRITEBACK_FB_ID property which sets the
- * framebuffer applies only to a single commit (see below). A framebuffer may
- * not be attached while the CRTC is off.
- *
- * Unlike with planes, when a writeback framebuffer is removed by userspace DRM
- * makes no attempt to remove it from active use by the connector. This is
- * because no method is provided to abort a writeback operation, and in any
- * case making a new commit whilst a writeback is ongoing is undefined (see
- * WRITEBACK_OUT_FENCE_PTR below). As soon as the current writeback is finished,
- * the framebuffer will automatically no longer be in active use. As it will
- * also have already been removed from the framebuffer list, there will be no
- * way for any userspace application to retrieve a reference to it in the
- * intervening period.
- *
- * Writeback connectors have some additional properties, which userspace
- * can use to query and control them:
- *
- *  "WRITEBACK_FB_ID":
- *	Write-only object property storing a DRM_MODE_OBJECT_FB: it stores the
- *	framebuffer to be written by the writeback connector. This property is
- *	similar to the FB_ID property on planes, but will always read as zero
- *	and is not preserved across commits.
- *	Userspace must set this property to an output buffer every time it
- *	wishes the buffer to get filled.
- *
- *  "WRITEBACK_PIXEL_FORMATS":
- *	Immutable blob property to store the supported pixel formats table. The
- *	data is an array of u32 DRM_FORMAT_* fourcc values.
- *	Userspace can use this blob to find out what pixel formats are supported
- *	by the connector's writeback engine.
- *
- *  "WRITEBACK_OUT_FENCE_PTR":
- *	Userspace can use this property to provide a pointer for the kernel to
- *	fill with a sync_file file descriptor, which will signal once the
- *	writeback is finished. The value should be the address of a 32-bit
- *	signed integer, cast to a u64.
- *	Userspace should wait for this fence to signal before making another
- *	commit affecting any of the same CRTCs, Planes or Connectors.
- *	**Failure to do so will result in undefined behaviour.**
- *	For this reason it is strongly recommended that all userspace
- *	applications making use of writeback connectors *always* retrieve an
- *	out-fence for the commit and use it appropriately.
- *	From userspace, this property will always read as zero.
- */
+ 
 
 #define fence_to_wb_connector(x) container_of(x->lock, \
 					      struct drm_writeback_connector, \
@@ -150,28 +84,7 @@ static const struct drm_encoder_funcs drm_writeback_encoder_funcs = {
 	.destroy = drm_encoder_cleanup,
 };
 
-/**
- * drm_writeback_connector_init - Initialize a writeback connector and its properties
- * @dev: DRM device
- * @wb_connector: Writeback connector to initialize
- * @con_funcs: Connector funcs vtable
- * @enc_helper_funcs: Encoder helper funcs vtable to be used by the internal encoder
- * @formats: Array of supported pixel formats for the writeback engine
- * @n_formats: Length of the formats array
- * @possible_crtcs: possible crtcs for the internal writeback encoder
- *
- * This function creates the writeback-connector-specific properties if they
- * have not been already created, initializes the connector as
- * type DRM_MODE_CONNECTOR_WRITEBACK, and correctly initializes the property
- * values. It will also create an internal encoder associated with the
- * drm_writeback_connector and set it to use the @enc_helper_funcs vtable for
- * the encoder helper.
- *
- * Drivers should always use this function instead of drm_connector_init() to
- * set up writeback connectors.
- *
- * Returns: 0 on success, or a negative error code
- */
+ 
 int drm_writeback_connector_init(struct drm_device *dev,
 				 struct drm_writeback_connector *wb_connector,
 				 const struct drm_connector_funcs *con_funcs,
@@ -201,35 +114,7 @@ int drm_writeback_connector_init(struct drm_device *dev,
 }
 EXPORT_SYMBOL(drm_writeback_connector_init);
 
-/**
- * drm_writeback_connector_init_with_encoder - Initialize a writeback connector with
- * a custom encoder
- *
- * @dev: DRM device
- * @wb_connector: Writeback connector to initialize
- * @enc: handle to the already initialized drm encoder
- * @con_funcs: Connector funcs vtable
- * @formats: Array of supported pixel formats for the writeback engine
- * @n_formats: Length of the formats array
- *
- * This function creates the writeback-connector-specific properties if they
- * have not been already created, initializes the connector as
- * type DRM_MODE_CONNECTOR_WRITEBACK, and correctly initializes the property
- * values.
- *
- * This function assumes that the drm_writeback_connector's encoder has already been
- * created and initialized before invoking this function.
- *
- * In addition, this function also assumes that callers of this API will manage
- * assigning the encoder helper functions, possible_crtcs and any other encoder
- * specific operation.
- *
- * Drivers should always use this function instead of drm_connector_init() to
- * set up writeback connectors if they want to manage themselves the lifetime of the
- * associated encoder.
- *
- * Returns: 0 on success, or a negative error code
- */
+ 
 int drm_writeback_connector_init_with_encoder(struct drm_device *dev,
 		struct drm_writeback_connector *wb_connector, struct drm_encoder *enc,
 		const struct drm_connector_funcs *con_funcs, const u32 *formats,
@@ -327,25 +212,7 @@ int drm_writeback_prepare_job(struct drm_writeback_job *job)
 }
 EXPORT_SYMBOL(drm_writeback_prepare_job);
 
-/**
- * drm_writeback_queue_job - Queue a writeback job for later signalling
- * @wb_connector: The writeback connector to queue a job on
- * @conn_state: The connector state containing the job to queue
- *
- * This function adds the job contained in @conn_state to the job_queue for a
- * writeback connector. It takes ownership of the writeback job and sets the
- * @conn_state->writeback_job to NULL, and so no access to the job may be
- * performed by the caller after this function returns.
- *
- * Drivers must ensure that for a given writeback connector, jobs are queued in
- * exactly the same order as they will be completed by the hardware (and
- * signaled via drm_writeback_signal_completion).
- *
- * For every call to drm_writeback_queue_job() there must be exactly one call to
- * drm_writeback_signal_completion()
- *
- * See also: drm_writeback_signal_completion()
- */
+ 
 void drm_writeback_queue_job(struct drm_writeback_connector *wb_connector,
 			     struct drm_connector_state *conn_state)
 {
@@ -380,13 +247,7 @@ void drm_writeback_cleanup_job(struct drm_writeback_job *job)
 }
 EXPORT_SYMBOL(drm_writeback_cleanup_job);
 
-/*
- * @cleanup_work: deferred cleanup of a writeback job
- *
- * The job cannot be cleaned up directly in drm_writeback_signal_completion,
- * because it may be called in interrupt context. Dropping the framebuffer
- * reference can sleep, and so the cleanup is deferred to a workqueue.
- */
+ 
 static void cleanup_work(struct work_struct *work)
 {
 	struct drm_writeback_job *job = container_of(work,
@@ -396,22 +257,7 @@ static void cleanup_work(struct work_struct *work)
 	drm_writeback_cleanup_job(job);
 }
 
-/**
- * drm_writeback_signal_completion - Signal the completion of a writeback job
- * @wb_connector: The writeback connector whose job is complete
- * @status: Status code to set in the writeback out_fence (0 for success)
- *
- * Drivers should call this to signal the completion of a previously queued
- * writeback job. It should be called as soon as possible after the hardware
- * has finished writing, and may be called from interrupt context.
- * It is the driver's responsibility to ensure that for a given connector, the
- * hardware completes writeback jobs in the same order as they are queued.
- *
- * Unless the driver is holding its own reference to the framebuffer, it must
- * not be accessed after calling this function.
- *
- * See also: drm_writeback_queue_job()
- */
+ 
 void
 drm_writeback_signal_completion(struct drm_writeback_connector *wb_connector,
 				int status)

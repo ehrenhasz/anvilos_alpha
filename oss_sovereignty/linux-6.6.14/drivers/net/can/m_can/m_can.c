@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-// CAN bus driver for Bosch M_CAN controller
-// Copyright (C) 2014 Freescale Semiconductor, Inc.
-//      Dong Aisheng <b29396@freescale.com>
-// Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
 
-/* Bosch M_CAN user manual can be obtained from:
- * https://github.com/linux-can/can-doc/tree/master/m_can
- */
+
+
+
+
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/can/dev.h>
@@ -26,7 +24,7 @@
 
 #include "m_can.h"
 
-/* registers definition */
+ 
 enum m_can_reg {
 	M_CAN_CREL	= 0x0,
 	M_CAN_ENDN	= 0x4,
@@ -42,7 +40,7 @@ enum m_can_reg {
 	M_CAN_TOCV	= 0x2c,
 	M_CAN_ECR	= 0x40,
 	M_CAN_PSR	= 0x44,
-	/* TDCR Register only available for version >=3.1.x */
+	 
 	M_CAN_TDCR	= 0x48,
 	M_CAN_IR	= 0x50,
 	M_CAN_IE	= 0x54,
@@ -78,29 +76,29 @@ enum m_can_reg {
 	M_CAN_TXEFA	= 0xf8,
 };
 
-/* message ram configuration data length */
+ 
 #define MRAM_CFG_LEN	8
 
-/* Core Release Register (CREL) */
+ 
 #define CREL_REL_MASK		GENMASK(31, 28)
 #define CREL_STEP_MASK		GENMASK(27, 24)
 #define CREL_SUBSTEP_MASK	GENMASK(23, 20)
 
-/* Data Bit Timing & Prescaler Register (DBTP) */
+ 
 #define DBTP_TDC		BIT(23)
 #define DBTP_DBRP_MASK		GENMASK(20, 16)
 #define DBTP_DTSEG1_MASK	GENMASK(12, 8)
 #define DBTP_DTSEG2_MASK	GENMASK(7, 4)
 #define DBTP_DSJW_MASK		GENMASK(3, 0)
 
-/* Transmitter Delay Compensation Register (TDCR) */
+ 
 #define TDCR_TDCO_MASK		GENMASK(14, 8)
 #define TDCR_TDCF_MASK		GENMASK(6, 0)
 
-/* Test Register (TEST) */
+ 
 #define TEST_LBCK		BIT(4)
 
-/* CC Control Register (CCCR) */
+ 
 #define CCCR_TXP		BIT(14)
 #define CCCR_TEST		BIT(7)
 #define CCCR_DAR		BIT(6)
@@ -110,7 +108,7 @@ enum m_can_reg {
 #define CCCR_ASM		BIT(2)
 #define CCCR_CCE		BIT(1)
 #define CCCR_INIT		BIT(0)
-/* for version 3.0.x */
+ 
 #define CCCR_CMR_MASK		GENMASK(11, 10)
 #define CCCR_CMR_CANFD		0x1
 #define CCCR_CMR_CANFD_BRS	0x2
@@ -119,54 +117,54 @@ enum m_can_reg {
 #define CCCR_CME_CAN		0
 #define CCCR_CME_CANFD		0x1
 #define CCCR_CME_CANFD_BRS	0x2
-/* for version >=3.1.x */
+ 
 #define CCCR_EFBI		BIT(13)
 #define CCCR_PXHD		BIT(12)
 #define CCCR_BRSE		BIT(9)
 #define CCCR_FDOE		BIT(8)
-/* for version >=3.2.x */
+ 
 #define CCCR_NISO		BIT(15)
-/* for version >=3.3.x */
+ 
 #define CCCR_WMM		BIT(11)
 #define CCCR_UTSU		BIT(10)
 
-/* Nominal Bit Timing & Prescaler Register (NBTP) */
+ 
 #define NBTP_NSJW_MASK		GENMASK(31, 25)
 #define NBTP_NBRP_MASK		GENMASK(24, 16)
 #define NBTP_NTSEG1_MASK	GENMASK(15, 8)
 #define NBTP_NTSEG2_MASK	GENMASK(6, 0)
 
-/* Timestamp Counter Configuration Register (TSCC) */
+ 
 #define TSCC_TCP_MASK		GENMASK(19, 16)
 #define TSCC_TSS_MASK		GENMASK(1, 0)
 #define TSCC_TSS_DISABLE	0x0
 #define TSCC_TSS_INTERNAL	0x1
 #define TSCC_TSS_EXTERNAL	0x2
 
-/* Timestamp Counter Value Register (TSCV) */
+ 
 #define TSCV_TSC_MASK		GENMASK(15, 0)
 
-/* Error Counter Register (ECR) */
+ 
 #define ECR_RP			BIT(15)
 #define ECR_REC_MASK		GENMASK(14, 8)
 #define ECR_TEC_MASK		GENMASK(7, 0)
 
-/* Protocol Status Register (PSR) */
+ 
 #define PSR_BO		BIT(7)
 #define PSR_EW		BIT(6)
 #define PSR_EP		BIT(5)
 #define PSR_LEC_MASK	GENMASK(2, 0)
 #define PSR_DLEC_MASK	GENMASK(10, 8)
 
-/* Interrupt Register (IR) */
+ 
 #define IR_ALL_INT	0xffffffff
 
-/* Renamed bits for versions > 3.1.x */
+ 
 #define IR_ARA		BIT(29)
 #define IR_PED		BIT(28)
 #define IR_PEA		BIT(27)
 
-/* Bits for version 3.0.x */
+ 
 #define IR_STE		BIT(31)
 #define IR_FOE		BIT(30)
 #define IR_ACKE		BIT(29)
@@ -201,72 +199,72 @@ enum m_can_reg {
 #define IR_RF0N		BIT(0)
 #define IR_ERR_STATE	(IR_BO | IR_EW | IR_EP)
 
-/* Interrupts for version 3.0.x */
+ 
 #define IR_ERR_LEC_30X	(IR_STE	| IR_FOE | IR_ACKE | IR_BE | IR_CRCE)
 #define IR_ERR_BUS_30X	(IR_ERR_LEC_30X | IR_WDI | IR_BEU | IR_BEC | \
 			 IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | IR_RF1L | \
 			 IR_RF0L)
 #define IR_ERR_ALL_30X	(IR_ERR_STATE | IR_ERR_BUS_30X)
 
-/* Interrupts for version >= 3.1.x */
+ 
 #define IR_ERR_LEC_31X	(IR_PED | IR_PEA)
 #define IR_ERR_BUS_31X	(IR_ERR_LEC_31X | IR_WDI | IR_BEU | IR_BEC | \
 			 IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | IR_RF1L | \
 			 IR_RF0L)
 #define IR_ERR_ALL_31X	(IR_ERR_STATE | IR_ERR_BUS_31X)
 
-/* Interrupt Line Select (ILS) */
+ 
 #define ILS_ALL_INT0	0x0
 #define ILS_ALL_INT1	0xFFFFFFFF
 
-/* Interrupt Line Enable (ILE) */
+ 
 #define ILE_EINT1	BIT(1)
 #define ILE_EINT0	BIT(0)
 
-/* Rx FIFO 0/1 Configuration (RXF0C/RXF1C) */
+ 
 #define RXFC_FWM_MASK	GENMASK(30, 24)
 #define RXFC_FS_MASK	GENMASK(22, 16)
 
-/* Rx FIFO 0/1 Status (RXF0S/RXF1S) */
+ 
 #define RXFS_RFL	BIT(25)
 #define RXFS_FF		BIT(24)
 #define RXFS_FPI_MASK	GENMASK(21, 16)
 #define RXFS_FGI_MASK	GENMASK(13, 8)
 #define RXFS_FFL_MASK	GENMASK(6, 0)
 
-/* Rx Buffer / FIFO Element Size Configuration (RXESC) */
+ 
 #define RXESC_RBDS_MASK		GENMASK(10, 8)
 #define RXESC_F1DS_MASK		GENMASK(6, 4)
 #define RXESC_F0DS_MASK		GENMASK(2, 0)
 #define RXESC_64B		0x7
 
-/* Tx Buffer Configuration (TXBC) */
+ 
 #define TXBC_TFQS_MASK		GENMASK(29, 24)
 #define TXBC_NDTB_MASK		GENMASK(21, 16)
 
-/* Tx FIFO/Queue Status (TXFQS) */
+ 
 #define TXFQS_TFQF		BIT(21)
 #define TXFQS_TFQPI_MASK	GENMASK(20, 16)
 #define TXFQS_TFGI_MASK		GENMASK(12, 8)
 #define TXFQS_TFFL_MASK		GENMASK(5, 0)
 
-/* Tx Buffer Element Size Configuration (TXESC) */
+ 
 #define TXESC_TBDS_MASK		GENMASK(2, 0)
 #define TXESC_TBDS_64B		0x7
 
-/* Tx Event FIFO Configuration (TXEFC) */
+ 
 #define TXEFC_EFS_MASK		GENMASK(21, 16)
 
-/* Tx Event FIFO Status (TXEFS) */
+ 
 #define TXEFS_TEFL		BIT(25)
 #define TXEFS_EFF		BIT(24)
 #define TXEFS_EFGI_MASK		GENMASK(12, 8)
 #define TXEFS_EFFL_MASK		GENMASK(5, 0)
 
-/* Tx Event FIFO Acknowledge (TXEFA) */
+ 
 #define TXEFA_EFAI_MASK		GENMASK(4, 0)
 
-/* Message RAM Configuration (in bytes) */
+ 
 #define SIDF_ELEMENT_SIZE	4
 #define XIDF_ELEMENT_SIZE	8
 #define RXF0_ELEMENT_SIZE	72
@@ -275,46 +273,43 @@ enum m_can_reg {
 #define TXE_ELEMENT_SIZE	8
 #define TXB_ELEMENT_SIZE	72
 
-/* Message RAM Elements */
+ 
 #define M_CAN_FIFO_ID		0x0
 #define M_CAN_FIFO_DLC		0x4
 #define M_CAN_FIFO_DATA		0x8
 
-/* Rx Buffer Element */
-/* R0 */
+ 
+ 
 #define RX_BUF_ESI		BIT(31)
 #define RX_BUF_XTD		BIT(30)
 #define RX_BUF_RTR		BIT(29)
-/* R1 */
+ 
 #define RX_BUF_ANMF		BIT(31)
 #define RX_BUF_FDF		BIT(21)
 #define RX_BUF_BRS		BIT(20)
 #define RX_BUF_RXTS_MASK	GENMASK(15, 0)
 
-/* Tx Buffer Element */
-/* T0 */
+ 
+ 
 #define TX_BUF_ESI		BIT(31)
 #define TX_BUF_XTD		BIT(30)
 #define TX_BUF_RTR		BIT(29)
-/* T1 */
+ 
 #define TX_BUF_EFC		BIT(23)
 #define TX_BUF_FDF		BIT(21)
 #define TX_BUF_BRS		BIT(20)
 #define TX_BUF_MM_MASK		GENMASK(31, 24)
 #define TX_BUF_DLC_MASK		GENMASK(19, 16)
 
-/* Tx event FIFO Element */
-/* E1 */
+ 
+ 
 #define TX_EVENT_MM_MASK	GENMASK(31, 24)
 #define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
 
-/* Hrtimer polling interval */
+ 
 #define HRTIMER_POLL_INTERVAL_MS		1
 
-/* The ID and DLC registers are adjacent in M_CAN FIFO memory,
- * and we can save a (potentially slow) bus round trip by combining
- * reads and writes to them.
- */
+ 
 struct id_and_dlc {
 	u32 id;
 	u32 dlc;
@@ -388,21 +383,21 @@ static void m_can_config_endisable(struct m_can_classdev *cdev, bool enable)
 	u32 timeout = 10;
 	u32 val = 0;
 
-	/* Clear the Clock stop request if it was set */
+	 
 	if (cccr & CCCR_CSR)
 		cccr &= ~CCCR_CSR;
 
 	if (enable) {
-		/* enable m_can configuration */
+		 
 		m_can_write(cdev, M_CAN_CCCR, cccr | CCCR_INIT);
 		udelay(5);
-		/* CCCR.CCE can only be set/reset while CCCR.INIT = '1' */
+		 
 		m_can_write(cdev, M_CAN_CCCR, cccr | CCCR_INIT | CCCR_CCE);
 	} else {
 		m_can_write(cdev, M_CAN_CCCR, cccr & ~(CCCR_INIT | CCCR_CCE));
 	}
 
-	/* there's a delay for module initialization */
+	 
 	if (enable)
 		val = CCCR_INIT | CCCR_CCE;
 
@@ -418,7 +413,7 @@ static void m_can_config_endisable(struct m_can_classdev *cdev, bool enable)
 
 static inline void m_can_enable_all_interrupts(struct m_can_classdev *cdev)
 {
-	/* Only interrupt line 0 is used in this driver */
+	 
 	m_can_write(cdev, M_CAN_ILE, ILE_EINT0);
 }
 
@@ -427,9 +422,7 @@ static inline void m_can_disable_all_interrupts(struct m_can_classdev *cdev)
 	m_can_write(cdev, M_CAN_ILE, 0x0);
 }
 
-/* Retrieve internal timestamp counter from TSCV.TSC, and shift it to 32-bit
- * width.
- */
+ 
 static u32 m_can_get_timestamp(struct m_can_classdev *cdev)
 {
 	u32 tscv;
@@ -458,11 +451,7 @@ static void m_can_clean(struct net_device *net)
 	}
 }
 
-/* For peripherals, pass skb to rx-offload, which will push skb from
- * napi. For non-peripherals, RX is done in napi already, so push
- * directly. timestamp is used to ensure good skb ordering in
- * rx-offload and is ignored for non-peripherals.
- */
+ 
 static void m_can_receive_skb(struct m_can_classdev *cdev,
 			      struct sk_buff *skb,
 			      u32 timestamp)
@@ -626,14 +615,12 @@ static int m_can_handle_lec_err(struct net_device *dev,
 	cdev->can.can_stats.bus_error++;
 	stats->rx_errors++;
 
-	/* propagate the error condition to the CAN stack */
+	 
 	skb = alloc_can_err_skb(dev, &cf);
 	if (unlikely(!skb))
 		return 0;
 
-	/* check for 'last error code' which tells us the
-	 * type of the last error to occur on the CAN bus
-	 */
+	 
 	cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
 
 	switch (lec_type) {
@@ -729,17 +716,17 @@ static int m_can_handle_state_change(struct net_device *dev,
 
 	switch (new_state) {
 	case CAN_STATE_ERROR_WARNING:
-		/* error warning state */
+		 
 		cdev->can.can_stats.error_warning++;
 		cdev->can.state = CAN_STATE_ERROR_WARNING;
 		break;
 	case CAN_STATE_ERROR_PASSIVE:
-		/* error passive state */
+		 
 		cdev->can.can_stats.error_passive++;
 		cdev->can.state = CAN_STATE_ERROR_PASSIVE;
 		break;
 	case CAN_STATE_BUS_OFF:
-		/* bus-off state */
+		 
 		cdev->can.state = CAN_STATE_BUS_OFF;
 		m_can_disable_all_interrupts(cdev);
 		cdev->can.can_stats.bus_off++;
@@ -749,7 +736,7 @@ static int m_can_handle_state_change(struct net_device *dev,
 		break;
 	}
 
-	/* propagate the error condition to the CAN stack */
+	 
 	skb = alloc_can_err_skb(dev, &cf);
 	if (unlikely(!skb))
 		return 0;
@@ -758,7 +745,7 @@ static int m_can_handle_state_change(struct net_device *dev,
 
 	switch (new_state) {
 	case CAN_STATE_ERROR_WARNING:
-		/* error warning state */
+		 
 		cf->can_id |= CAN_ERR_CRTL | CAN_ERR_CNT;
 		cf->data[1] = (bec.txerr > bec.rxerr) ?
 			CAN_ERR_CRTL_TX_WARNING :
@@ -767,7 +754,7 @@ static int m_can_handle_state_change(struct net_device *dev,
 		cf->data[7] = bec.rxerr;
 		break;
 	case CAN_STATE_ERROR_PASSIVE:
-		/* error passive state */
+		 
 		cf->can_id |= CAN_ERR_CRTL | CAN_ERR_CNT;
 		ecr = m_can_read(cdev, M_CAN_ECR);
 		if (ecr & ECR_RP)
@@ -778,7 +765,7 @@ static int m_can_handle_state_change(struct net_device *dev,
 		cf->data[7] = bec.rxerr;
 		break;
 	case CAN_STATE_BUS_OFF:
-		/* bus-off state */
+		 
 		cf->can_id |= CAN_ERR_BUSOFF;
 		break;
 	default:
@@ -851,13 +838,13 @@ static int m_can_handle_protocol_error(struct net_device *dev, u32 irqstatus)
 	struct sk_buff *skb;
 	u32 timestamp = 0;
 
-	/* propagate the error condition to the CAN stack */
+	 
 	skb = alloc_can_err_skb(dev, &cf);
 
-	/* update tx error stats since there is protocol error */
+	 
 	stats->tx_errors++;
 
-	/* update arbitration lost status */
+	 
 	if (cdev->version >= 31 && (irqstatus & IR_PEA)) {
 		netdev_dbg(dev, "Protocol error in Arbitration fail\n");
 		cdev->can.can_stats.arbitration_lost++;
@@ -889,7 +876,7 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
 	if (irqstatus & IR_RF0L)
 		work_done += m_can_handle_lost_msg(dev);
 
-	/* handle lec errors on the bus */
+	 
 	if (cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) {
 		u8 lec = FIELD_GET(PSR_LEC_MASK, psr);
 		u8 dlec = FIELD_GET(PSR_DLEC_MASK, psr);
@@ -905,12 +892,12 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
 		}
 	}
 
-	/* handle protocol errors in arbitration phase */
+	 
 	if ((cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
 	    m_can_is_protocol_err(irqstatus))
 		work_done += m_can_handle_protocol_error(dev, irqstatus);
 
-	/* other unproccessed error interrupts */
+	 
 	m_can_handle_other_err(dev, irqstatus);
 
 	return work_done;
@@ -925,16 +912,7 @@ static int m_can_rx_handler(struct net_device *dev, int quota, u32 irqstatus)
 	if (!irqstatus)
 		goto end;
 
-	/* Errata workaround for issue "Needless activation of MRAF irq"
-	 * During frame reception while the MCAN is in Error Passive state
-	 * and the Receive Error Counter has the value MCAN_ECR.REC = 127,
-	 * it may happen that MCAN_IR.MRAF is set although there was no
-	 * Message RAM access failure.
-	 * If MCAN_IR.MRAF is enabled, an interrupt to the Host CPU is generated
-	 * The Message RAM Access Failure interrupt routine needs to check
-	 * whether MCAN_ECR.RP = ’1’ and MCAN_ECR.REC = 127.
-	 * In this case, reset MCAN_IR.MRAF. No further action is required.
-	 */
+	 
 	if (cdev->version <= 31 && irqstatus & IR_MRAF &&
 	    m_can_read(cdev, M_CAN_ECR) & ECR_RP) {
 		struct can_berr_counter bec;
@@ -972,9 +950,7 @@ static int m_can_rx_peripheral(struct net_device *dev, u32 irqstatus)
 
 	work_done = m_can_rx_handler(dev, NAPI_POLL_WEIGHT, irqstatus);
 
-	/* Don't re-enable interrupts if the driver had a fatal error
-	 * (e.g., FIFO read failure).
-	 */
+	 
 	if (work_done < 0)
 		m_can_disable_all_interrupts(cdev);
 
@@ -992,9 +968,7 @@ static int m_can_poll(struct napi_struct *napi, int quota)
 
 	work_done = m_can_rx_handler(dev, quota, irqstatus);
 
-	/* Don't re-enable interrupts if the driver had a fatal error
-	 * (e.g., FIFO read failure).
-	 */
+	 
 	if (work_done >= 0 && work_done < quota) {
 		napi_complete_done(napi, work_done);
 		m_can_enable_all_interrupts(cdev);
@@ -1003,10 +977,7 @@ static int m_can_poll(struct napi_struct *napi, int quota)
 	return work_done;
 }
 
-/* Echo tx skb and update net stats. Peripherals use rx-offload for
- * echo. timestamp is used for peripherals to ensure correct ordering
- * by rx-offload, and is ignored for non-peripherals.
- */
+ 
 static void m_can_tx_update_stats(struct m_can_classdev *cdev,
 				  unsigned int msg_mark,
 				  u32 timestamp)
@@ -1038,18 +1009,18 @@ static int m_can_echo_tx_event(struct net_device *dev)
 
 	struct m_can_classdev *cdev = netdev_priv(dev);
 
-	/* read tx event fifo status */
+	 
 	m_can_txefs = m_can_read(cdev, M_CAN_TXEFS);
 
-	/* Get Tx Event fifo element count */
+	 
 	txe_count = FIELD_GET(TXEFS_EFFL_MASK, m_can_txefs);
 	fgi = FIELD_GET(TXEFS_EFGI_MASK, m_can_txefs);
 
-	/* Get and process all sent elements */
+	 
 	for (i = 0; i < txe_count; i++) {
 		u32 txe, timestamp = 0;
 
-		/* get message marker, timestamp */
+		 
 		err = m_can_txe_fifo_read(cdev, fgi, 4, &txe);
 		if (err) {
 			netdev_err(dev, "TXE FIFO read returned %d\n", err);
@@ -1062,7 +1033,7 @@ static int m_can_echo_tx_event(struct net_device *dev)
 		ack_fgi = fgi;
 		fgi = (++fgi >= cdev->mcfg[MRAM_TXE].num ? 0 : fgi);
 
-		/* update stats */
+		 
 		m_can_tx_update_stats(cdev, msg_mark, timestamp);
 	}
 
@@ -1085,17 +1056,13 @@ static irqreturn_t m_can_isr(int irq, void *dev_id)
 	if (!ir)
 		return IRQ_NONE;
 
-	/* ACK all irqs */
+	 
 	m_can_write(cdev, M_CAN_IR, ir);
 
 	if (cdev->ops->clear_interrupts)
 		cdev->ops->clear_interrupts(cdev);
 
-	/* schedule NAPI in case of
-	 * - rx IRQ
-	 * - state change IRQ
-	 * - bus error IRQ and bus error reporting
-	 */
+	 
 	if ((ir & IR_RF0N) || (ir & IR_ERR_ALL_30X)) {
 		cdev->irqstatus = ir;
 		if (!cdev->is_peripheral) {
@@ -1108,7 +1075,7 @@ static irqreturn_t m_can_isr(int irq, void *dev_id)
 
 	if (cdev->version == 30) {
 		if (ir & IR_TC) {
-			/* Transmission Complete Interrupt*/
+			 
 			u32 timestamp = 0;
 
 			if (cdev->is_peripheral)
@@ -1118,7 +1085,7 @@ static irqreturn_t m_can_isr(int irq, void *dev_id)
 		}
 	} else  {
 		if (ir & IR_TEFN) {
-			/* New TX FIFO Element arrived */
+			 
 			if (m_can_echo_tx_event(dev) != 0)
 				goto out_fail;
 
@@ -1140,9 +1107,9 @@ out_fail:
 
 static const struct can_bittiming_const m_can_bittiming_const_30X = {
 	.name = KBUILD_MODNAME,
-	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
+	.tseg1_min = 2,		 
 	.tseg1_max = 64,
-	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
+	.tseg2_min = 1,		 
 	.tseg2_max = 16,
 	.sjw_max = 16,
 	.brp_min = 1,
@@ -1152,9 +1119,9 @@ static const struct can_bittiming_const m_can_bittiming_const_30X = {
 
 static const struct can_bittiming_const m_can_data_bittiming_const_30X = {
 	.name = KBUILD_MODNAME,
-	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
+	.tseg1_min = 2,		 
 	.tseg1_max = 16,
-	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
+	.tseg2_min = 1,		 
 	.tseg2_max = 8,
 	.sjw_max = 4,
 	.brp_min = 1,
@@ -1164,9 +1131,9 @@ static const struct can_bittiming_const m_can_data_bittiming_const_30X = {
 
 static const struct can_bittiming_const m_can_bittiming_const_31X = {
 	.name = KBUILD_MODNAME,
-	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
+	.tseg1_min = 2,		 
 	.tseg1_max = 256,
-	.tseg2_min = 2,		/* Time segment 2 = phase_seg2 */
+	.tseg2_min = 2,		 
 	.tseg2_max = 128,
 	.sjw_max = 128,
 	.brp_min = 1,
@@ -1176,9 +1143,9 @@ static const struct can_bittiming_const m_can_bittiming_const_31X = {
 
 static const struct can_bittiming_const m_can_data_bittiming_const_31X = {
 	.name = KBUILD_MODNAME,
-	.tseg1_min = 1,		/* Time segment 1 = prop_seg + phase_seg1 */
+	.tseg1_min = 1,		 
 	.tseg1_max = 32,
-	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
+	.tseg2_min = 1,		 
 	.tseg2_max = 16,
 	.sjw_max = 16,
 	.brp_min = 1,
@@ -1211,25 +1178,18 @@ static int m_can_set_bittiming(struct net_device *dev)
 		tseg1 = dbt->prop_seg + dbt->phase_seg1 - 1;
 		tseg2 = dbt->phase_seg2 - 1;
 
-		/* TDC is only needed for bitrates beyond 2.5 MBit/s.
-		 * This is mentioned in the "Bit Time Requirements for CAN FD"
-		 * paper presented at the International CAN Conference 2013
-		 */
+		 
 		if (dbt->bitrate > 2500000) {
 			u32 tdco, ssp;
 
-			/* Use the same value of secondary sampling point
-			 * as the data sampling point
-			 */
+			 
 			ssp = dbt->sample_point;
 
-			/* Equation based on Bosch's M_CAN User Manual's
-			 * Transmitter Delay Compensation Section
-			 */
+			 
 			tdco = (cdev->can.clock.freq / 1000) *
 				ssp / dbt->bitrate;
 
-			/* Max valid TDCO value is 127 */
+			 
 			if (tdco > 127) {
 				netdev_warn(dev, "TDCO value of %u is beyond maximum. Using maximum possible value\n",
 					    tdco);
@@ -1252,16 +1212,7 @@ static int m_can_set_bittiming(struct net_device *dev)
 	return 0;
 }
 
-/* Configure M_CAN chip:
- * - set rx buffer/fifo element size
- * - configure rx fifo
- * - accept non-matching frame into fifo 0
- * - configure tx buffer
- *		- >= v3.1.x: TX FIFO is used
- * - configure mode
- * - setup bittiming
- * - configure timestamp generation
- */
+ 
 static int m_can_chip_config(struct net_device *dev)
 {
 	struct m_can_classdev *cdev = netdev_priv(dev);
@@ -1275,52 +1226,52 @@ static int m_can_chip_config(struct net_device *dev)
 		return err;
 	}
 
-	/* Disable unused interrupts */
+	 
 	interrupts &= ~(IR_ARA | IR_ELO | IR_DRX | IR_TEFF | IR_TEFW | IR_TFE |
 			IR_TCF | IR_HPM | IR_RF1F | IR_RF1W | IR_RF1N |
 			IR_RF0F | IR_RF0W);
 
 	m_can_config_endisable(cdev, true);
 
-	/* RX Buffer/FIFO Element Size 64 bytes data field */
+	 
 	m_can_write(cdev, M_CAN_RXESC,
 		    FIELD_PREP(RXESC_RBDS_MASK, RXESC_64B) |
 		    FIELD_PREP(RXESC_F1DS_MASK, RXESC_64B) |
 		    FIELD_PREP(RXESC_F0DS_MASK, RXESC_64B));
 
-	/* Accept Non-matching Frames Into FIFO 0 */
+	 
 	m_can_write(cdev, M_CAN_GFC, 0x0);
 
 	if (cdev->version == 30) {
-		/* only support one Tx Buffer currently */
+		 
 		m_can_write(cdev, M_CAN_TXBC, FIELD_PREP(TXBC_NDTB_MASK, 1) |
 			    cdev->mcfg[MRAM_TXB].off);
 	} else {
-		/* TX FIFO is used for newer IP Core versions */
+		 
 		m_can_write(cdev, M_CAN_TXBC,
 			    FIELD_PREP(TXBC_TFQS_MASK,
 				       cdev->mcfg[MRAM_TXB].num) |
 			    cdev->mcfg[MRAM_TXB].off);
 	}
 
-	/* support 64 bytes payload */
+	 
 	m_can_write(cdev, M_CAN_TXESC,
 		    FIELD_PREP(TXESC_TBDS_MASK, TXESC_TBDS_64B));
 
-	/* TX Event FIFO */
+	 
 	if (cdev->version == 30) {
 		m_can_write(cdev, M_CAN_TXEFC,
 			    FIELD_PREP(TXEFC_EFS_MASK, 1) |
 			    cdev->mcfg[MRAM_TXE].off);
 	} else {
-		/* Full TX Event FIFO is used */
+		 
 		m_can_write(cdev, M_CAN_TXEFC,
 			    FIELD_PREP(TXEFC_EFS_MASK,
 				       cdev->mcfg[MRAM_TXE].num) |
 			    cdev->mcfg[MRAM_TXE].off);
 	}
 
-	/* rx fifo configuration, blocking mode, fifo size 1 */
+	 
 	m_can_write(cdev, M_CAN_RXF0C,
 		    FIELD_PREP(RXFC_FS_MASK, cdev->mcfg[MRAM_RXF0].num) |
 		    cdev->mcfg[MRAM_RXF0].off);
@@ -1333,7 +1284,7 @@ static int m_can_chip_config(struct net_device *dev)
 	test = m_can_read(cdev, M_CAN_TEST);
 	test &= ~TEST_LBCK;
 	if (cdev->version == 30) {
-		/* Version 3.0.x */
+		 
 
 		cccr &= ~(CCCR_TEST | CCCR_MON | CCCR_DAR |
 			  FIELD_PREP(CCCR_CMR_MASK, FIELD_MAX(CCCR_CMR_MASK)) |
@@ -1343,11 +1294,11 @@ static int m_can_chip_config(struct net_device *dev)
 			cccr |= FIELD_PREP(CCCR_CME_MASK, CCCR_CME_CANFD_BRS);
 
 	} else {
-		/* Version 3.1.x or 3.2.x */
+		 
 		cccr &= ~(CCCR_TEST | CCCR_MON | CCCR_BRSE | CCCR_FDOE |
 			  CCCR_NISO | CCCR_DAR);
 
-		/* Only 3.2.x has NISO Bit implemented */
+		 
 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO)
 			cccr |= CCCR_NISO;
 
@@ -1355,25 +1306,25 @@ static int m_can_chip_config(struct net_device *dev)
 			cccr |= (CCCR_BRSE | CCCR_FDOE);
 	}
 
-	/* Loopback Mode */
+	 
 	if (cdev->can.ctrlmode & CAN_CTRLMODE_LOOPBACK) {
 		cccr |= CCCR_TEST | CCCR_MON;
 		test |= TEST_LBCK;
 	}
 
-	/* Enable Monitoring (all versions) */
+	 
 	if (cdev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
 		cccr |= CCCR_MON;
 
-	/* Disable Auto Retransmission (all versions) */
+	 
 	if (cdev->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
 		cccr |= CCCR_DAR;
 
-	/* Write config */
+	 
 	m_can_write(cdev, M_CAN_CCCR, cccr);
 	m_can_write(cdev, M_CAN_TEST, test);
 
-	/* Enable interrupts */
+	 
 	if (!(cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)) {
 		if (cdev->version == 30)
 			interrupts &= ~(IR_ERR_LEC_30X);
@@ -1382,15 +1333,13 @@ static int m_can_chip_config(struct net_device *dev)
 	}
 	m_can_write(cdev, M_CAN_IE, interrupts);
 
-	/* route all interrupts to INT0 */
+	 
 	m_can_write(cdev, M_CAN_ILS, ILS_ALL_INT0);
 
-	/* set bittiming params */
+	 
 	m_can_set_bittiming(dev);
 
-	/* enable internal timestamp generation, with a prescaler of 16. The
-	 * prescaler is applied to the nominal bit timing
-	 */
+	 
 	m_can_write(cdev, M_CAN_TSCC,
 		    FIELD_PREP(TSCC_TCP_MASK, 0xf) |
 		    FIELD_PREP(TSCC_TSS_MASK, TSCC_TSS_INTERNAL));
@@ -1408,7 +1357,7 @@ static int m_can_start(struct net_device *dev)
 	struct m_can_classdev *cdev = netdev_priv(dev);
 	int ret;
 
-	/* basic m_can configuration */
+	 
 	ret = m_can_chip_config(dev);
 	if (ret)
 		return ret;
@@ -1441,11 +1390,7 @@ static int m_can_set_mode(struct net_device *dev, enum can_mode mode)
 	return 0;
 }
 
-/* Checks core release number of M_CAN
- * returns 0 if an unsupported device is detected
- * else it returns the release and step coded as:
- * return value = 10 * <release> + 1 * <step>
- */
+ 
 static int m_can_check_core_release(struct m_can_classdev *cdev)
 {
 	u32 crel_reg;
@@ -1453,27 +1398,23 @@ static int m_can_check_core_release(struct m_can_classdev *cdev)
 	u8 step;
 	int res;
 
-	/* Read Core Release Version and split into version number
-	 * Example: Version 3.2.1 => rel = 3; step = 2; substep = 1;
-	 */
+	 
 	crel_reg = m_can_read(cdev, M_CAN_CREL);
 	rel = (u8)FIELD_GET(CREL_REL_MASK, crel_reg);
 	step = (u8)FIELD_GET(CREL_STEP_MASK, crel_reg);
 
 	if (rel == 3) {
-		/* M_CAN v3.x.y: create return value */
+		 
 		res = 30 + step;
 	} else {
-		/* Unsupported M_CAN version */
+		 
 		res = 0;
 	}
 
 	return res;
 }
 
-/* Selectable Non ISO support only in version 3.2.x
- * This function checks if the bit is writable.
- */
+ 
 static bool m_can_niso_supported(struct m_can_classdev *cdev)
 {
 	u32 cccr_reg, cccr_poll = 0;
@@ -1495,13 +1436,13 @@ static bool m_can_niso_supported(struct m_can_classdev *cdev)
 		usleep_range(1, 5);
 	}
 
-	/* Clear NISO */
+	 
 	cccr_reg &= ~(CCCR_NISO);
 	m_can_write(cdev, M_CAN_CCCR, cccr_reg);
 
 	m_can_config_endisable(cdev, false);
 
-	/* return false if time out (-ETIMEDOUT), else return true */
+	 
 	return !niso_timeout;
 }
 
@@ -1511,7 +1452,7 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)
 	int m_can_version, err;
 
 	m_can_version = m_can_check_core_release(cdev);
-	/* return if unsupported version */
+	 
 	if (!m_can_version) {
 		dev_err(cdev->dev, "Unsupported version number: %2d",
 			m_can_version);
@@ -1521,22 +1462,22 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)
 	if (!cdev->is_peripheral)
 		netif_napi_add(dev, &cdev->napi, m_can_poll);
 
-	/* Shared properties of all M_CAN versions */
+	 
 	cdev->version = m_can_version;
 	cdev->can.do_set_mode = m_can_set_mode;
 	cdev->can.do_get_berr_counter = m_can_get_berr_counter;
 
-	/* Set M_CAN supported operations */
+	 
 	cdev->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
 		CAN_CTRLMODE_LISTENONLY |
 		CAN_CTRLMODE_BERR_REPORTING |
 		CAN_CTRLMODE_FD |
 		CAN_CTRLMODE_ONE_SHOT;
 
-	/* Set properties depending on M_CAN version */
+	 
 	switch (cdev->version) {
 	case 30:
-		/* CAN_CTRLMODE_FD_NON_ISO is fixed with M_CAN IP v3.0.x */
+		 
 		err = can_set_static_ctrlmode(dev, CAN_CTRLMODE_FD_NON_ISO);
 		if (err)
 			return err;
@@ -1544,7 +1485,7 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)
 		cdev->can.data_bittiming_const = &m_can_data_bittiming_const_30X;
 		break;
 	case 31:
-		/* CAN_CTRLMODE_FD_NON_ISO is fixed with M_CAN IP v3.1.x */
+		 
 		err = can_set_static_ctrlmode(dev, CAN_CTRLMODE_FD_NON_ISO);
 		if (err)
 			return err;
@@ -1553,7 +1494,7 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)
 		break;
 	case 32:
 	case 33:
-		/* Support both MCAN version v3.2.x and v3.3.0 */
+		 
 		cdev->can.bittiming_const = &m_can_bittiming_const_31X;
 		cdev->can.data_bittiming_const = &m_can_data_bittiming_const_31X;
 
@@ -1582,13 +1523,13 @@ static void m_can_stop(struct net_device *dev)
 		hrtimer_cancel(&cdev->hrtimer);
 	}
 
-	/* disable all interrupts */
+	 
 	m_can_disable_all_interrupts(cdev);
 
-	/* Set init mode to disengage from the network */
+	 
 	m_can_config_endisable(cdev, true);
 
-	/* set the state as STOPPED */
+	 
 	cdev->can.state = CAN_STATE_STOPPED;
 }
 
@@ -1622,14 +1563,14 @@ static int m_can_close(struct net_device *dev)
 static int m_can_next_echo_skb_occupied(struct net_device *dev, int putidx)
 {
 	struct m_can_classdev *cdev = netdev_priv(dev);
-	/*get wrap around for loopback skb index */
+	 
 	unsigned int wrap = cdev->can.echo_skb_max;
 	int next_idx;
 
-	/* calculate next index */
+	 
 	next_idx = (++putidx >= wrap ? 0 : putidx);
 
-	/* check if occupied */
+	 
 	return !!cdev->can.echo_skb[next_idx];
 }
 
@@ -1646,8 +1587,8 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
 
 	cdev->tx_skb = NULL;
 
-	/* Generate ID field for TX buffer Element */
-	/* Common to all supported M_CAN versions */
+	 
+	 
 	if (cf->can_id & CAN_EFF_FLAG) {
 		fifo_header.id = cf->can_id & CAN_EFF_MASK;
 		fifo_header.id |= TX_BUF_XTD;
@@ -1663,7 +1604,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
 
 		fifo_header.dlc = can_fd_len2dlc(cf->len) << 16;
 
-		/* Write the frame ID, DLC, and payload to the FIFO element. */
+		 
 		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_ID, &fifo_header, 2);
 		if (err)
 			goto out_fail;
@@ -1693,15 +1634,15 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
 		can_put_echo_skb(skb, dev, 0, 0);
 
 		m_can_write(cdev, M_CAN_TXBAR, 0x1);
-		/* End of xmit function for version 3.0.x */
+		 
 	} else {
-		/* Transmit routine for version >= v3.1.x */
+		 
 
 		txfqs = m_can_read(cdev, M_CAN_TXFQS);
 
-		/* Check if FIFO full */
+		 
 		if (_m_can_tx_fifo_full(txfqs)) {
-			/* This shouldn't happen */
+			 
 			netif_stop_queue(dev);
 			netdev_warn(dev,
 				    "TX queue active although FIFO is full.");
@@ -1715,15 +1656,12 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
 			}
 		}
 
-		/* get put index for frame */
+		 
 		putidx = FIELD_GET(TXFQS_TFQPI_MASK, txfqs);
 
-		/* Construct DLC Field, with CAN-FD configuration.
-		 * Use the put index of the fifo as the message marker,
-		 * used in the TX interrupt for sending the correct echo frame.
-		 */
+		 
 
-		/* get CAN FD configuration of frame */
+		 
 		fdflags = 0;
 		if (can_is_canfd_skb(skb)) {
 			fdflags |= TX_BUF_FDF;
@@ -1743,15 +1681,13 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
 		if (err)
 			goto out_fail;
 
-		/* Push loopback echo.
-		 * Will be looped back on TX interrupt based on message marker
-		 */
+		 
 		can_put_echo_skb(skb, dev, putidx, 0);
 
-		/* Enable TX FIFO element to start transfer  */
+		 
 		m_can_write(cdev, M_CAN_TXBAR, (1 << putidx));
 
-		/* stop network queue if fifo full */
+		 
 		if (m_can_tx_fifo_full(cdev) ||
 		    m_can_next_echo_skb_occupied(dev, putidx))
 			netif_stop_queue(dev);
@@ -1790,11 +1726,7 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
 		if (cdev->can.state == CAN_STATE_BUS_OFF) {
 			m_can_clean(dev);
 		} else {
-			/* Need to stop the queue to avoid numerous requests
-			 * from being sent.  Suggested improvement is to create
-			 * a queueing mechanism that will queue the skbs and
-			 * process them in order.
-			 */
+			 
 			cdev->tx_skb = skb;
 			netif_stop_queue(cdev->net);
 			queue_work(cdev->tx_wq, &cdev->tx_work);
@@ -1832,7 +1764,7 @@ static int m_can_open(struct net_device *dev)
 	if (err)
 		goto out_phy_power_off;
 
-	/* open the can device */
+	 
 	err = open_candev(dev);
 	if (err) {
 		netdev_err(dev, "failed to open can device\n");
@@ -1842,7 +1774,7 @@ static int m_can_open(struct net_device *dev)
 	if (cdev->is_peripheral)
 		can_rx_offload_enable(&cdev->offload);
 
-	/* register interrupt handler */
+	 
 	if (cdev->is_peripheral) {
 		cdev->tx_skb = NULL;
 		cdev->tx_wq = alloc_workqueue("mcan_wq",
@@ -1867,7 +1799,7 @@ static int m_can_open(struct net_device *dev)
 		goto exit_irq_fail;
 	}
 
-	/* start the m_can controller */
+	 
 	err = m_can_start(dev);
 	if (err)
 		goto exit_irq_fail;
@@ -1906,7 +1838,7 @@ static const struct ethtool_ops m_can_ethtool_ops = {
 
 static int register_m_can_dev(struct net_device *dev)
 {
-	dev->flags |= IFF_ECHO;	/* we support local echo */
+	dev->flags |= IFF_ECHO;	 
 	dev->netdev_ops = &m_can_netdev_ops;
 	dev->ethtool_ops = &m_can_ethtool_ops;
 
@@ -1972,9 +1904,7 @@ int m_can_init_ram(struct m_can_classdev *cdev)
 	int end, i, start;
 	int err = 0;
 
-	/* initialize the entire Message RAM in use to avoid possible
-	 * ECC/parity checksum errors when reading an uninitialized buffer
-	 */
+	 
 	start = cdev->mcfg[MRAM_SIDF].off;
 	end = cdev->mcfg[MRAM_TXB].off +
 		cdev->mcfg[MRAM_TXB].num * TXB_ELEMENT_SIZE;
@@ -2023,12 +1953,10 @@ struct m_can_classdev *m_can_class_allocate_dev(struct device *dev,
 		goto out;
 	}
 
-	/* Get TX FIFO size
-	 * Defines the total amount of echo buffers for loopback
-	 */
+	 
 	tx_fifo_size = mram_config_vals[7];
 
-	/* allocate the m_can device */
+	 
 	net_dev = alloc_candev(sizeof_priv, tx_fifo_size);
 	if (!net_dev) {
 		dev_err(dev, "Failed to allocate CAN device");
@@ -2088,9 +2016,7 @@ int m_can_class_register(struct m_can_classdev *cdev)
 	dev_info(cdev->dev, "%s device registered (irq=%d, version=%d)\n",
 		 KBUILD_MODNAME, cdev->net->irq, cdev->version);
 
-	/* Probe finished
-	 * Stop clocks. They will be reactivated once the M_CAN device is opened
-	 */
+	 
 	m_can_clk_stop(cdev);
 
 	return 0;

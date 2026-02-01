@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_OVERLAY_H__
 #define __INTEL_OVERLAY_H__
@@ -26,4 +24,4 @@ intel_overlay_capture_error_state(struct drm_i915_private *dev_priv);
 void intel_overlay_print_error_state(struct drm_i915_error_state_buf *e,
 				     struct intel_overlay_error_state *error);
 
-#endif /* __INTEL_OVERLAY_H__ */
+#endif  

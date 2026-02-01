@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -56,15 +50,15 @@ static int rts5209_extra_init_hw(struct rtsx_pcr *pcr)
 {
 	rtsx_pci_init_cmd(pcr);
 
-	/* Turn off LED */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_GPIO, 0xFF, 0x03);
-	/* Reset ASPM state to default value */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, ASPM_FORCE_CTL, 0x3F, 0);
-	/* Force CLKREQ# PIN to drive 0 to request clock */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PETXCFG, 0x08, 0x08);
-	/* Configure GPIO as output */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_GPIO_DIR, 0xFF, 0x03);
-	/* Configure driving */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, SD30_DRIVE_SEL,
 			0xFF, pcr->sd30_drive_sel_3v3);
 
@@ -120,7 +114,7 @@ static int rts5209_card_power_on(struct rtsx_pcr *pcr, int card)
 	if (err < 0)
 		return err;
 
-	/* To avoid too large in-rush current */
+	 
 	udelay(150);
 
 	rtsx_pci_init_cmd(pcr);
@@ -193,13 +187,7 @@ static const struct pcr_ops rts5209_pcr_ops = {
 	.force_power_down = rts5209_force_power_down,
 };
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5209_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
@@ -207,13 +195,7 @@ static const u32 rts5209_sd_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5209_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
@@ -221,10 +203,7 @@ static const u32 rts5209_sd_pull_ctl_disable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5209_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
@@ -232,10 +211,7 @@ static const u32 rts5209_ms_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5209_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),

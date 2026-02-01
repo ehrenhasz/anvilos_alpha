@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Allwinner sun50i(H6) USB 3.0 phy driver
- *
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- *
- * Based on phy-sun9i-usb.c, which is:
- *
- * Copyright (C) 2014-2015 Chen-Yu Tsai <wens@csie.org>
- *
- * Based on code from Allwinner BSP, which is:
- *
- * Copyright (c) 2010-2015 Allwinner Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -22,25 +10,25 @@
 #include <linux/platform_device.h>
 #include <linux/reset.h>
 
-/* Interface Status and Control Registers */
+ 
 #define SUNXI_ISCR			0x00
 #define SUNXI_PIPE_CLOCK_CONTROL	0x14
 #define SUNXI_PHY_TUNE_LOW		0x18
 #define SUNXI_PHY_TUNE_HIGH		0x1c
 #define SUNXI_PHY_EXTERNAL_CONTROL	0x20
 
-/* USB2.0 Interface Status and Control Register */
+ 
 #define SUNXI_ISCR_FORCE_VBUS		(3 << 12)
 
-/* PIPE Clock Control Register */
+ 
 #define SUNXI_PCC_PIPE_CLK_OPEN		(1 << 6)
 
-/* PHY External Control Register */
+ 
 #define SUNXI_PEC_EXTERN_VBUS		(3 << 1)
 #define SUNXI_PEC_SSC_EN		(1 << 24)
 #define SUNXI_PEC_REF_SSP_EN		(1 << 26)
 
-/* PHY Tune High Register */
+ 
 #define SUNXI_TX_DEEMPH_3P5DB(n)	((n) << 19)
 #define SUNXI_TX_DEEMPH_3P5DB_MASK	GENMASK(24, 19)
 #define SUNXI_TX_DEEMPH_6DB(n)		((n) << 13)
@@ -76,11 +64,7 @@ static void sun50i_usb3_phy_open(struct sun50i_usb3_phy *phy)
 	val |= SUNXI_ISCR_FORCE_VBUS;
 	writel(val, phy->regs + SUNXI_ISCR);
 
-	/*
-	 * All the magic numbers written to the PHY_TUNE_{LOW_HIGH}
-	 * registers are directly taken from the BSP USB3 driver from
-	 * Allwiner.
-	 */
+	 
 	writel(0x0047fc87, phy->regs + SUNXI_PHY_TUNE_LOW);
 
 	val = readl(phy->regs + SUNXI_PHY_TUNE_HIGH);

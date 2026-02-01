@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, Linaro Limited
+
+
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -9,17 +9,7 @@
 #include <uapi/sound/asound.h>
 #include "slimbus.h"
 
-/**
- * struct segdist_code - Segment Distributions code from
- *	Table 20 of SLIMbus Specs Version 2.0
- *
- * @ratem: Channel Rate Multipler(Segments per Superframe)
- * @seg_interval: Number of slots between the first Slot of Segment
- *		and the first slot of the next  consecutive Segment.
- * @segdist_code: Segment Distribution Code SD[11:0]
- * @seg_offset_mask: Segment offset mask in SD[11:0]
- * @segdist_codes: List of all possible Segmet Distribution codes.
- */
+ 
 static const struct segdist_code {
 	int ratem;
 	int seg_interval;
@@ -48,17 +38,9 @@ static const struct segdist_code {
 	{768,	2,	0xc02,	 0x001},
 };
 
-/*
- * Presence Rate table for all Natural Frequencies
- * The Presence rate of a constant bitrate stream is mean flow rate of the
- * stream expressed in occupied Segments of that Data Channel per second.
- * Table 66 from SLIMbus 2.0 Specs
- *
- * Index of the table corresponds to Presence rate code for the respective rate
- * in the table.
- */
+ 
 static const int slim_presence_rate_table[] = {
-	0, /* Not Indicated */
+	0,  
 	12000,
 	24000,
 	48000,
@@ -66,7 +48,7 @@ static const int slim_presence_rate_table[] = {
 	192000,
 	384000,
 	768000,
-	0, /* Reserved */
+	0,  
 	11025,
 	22050,
 	44100,
@@ -84,18 +66,7 @@ static const int slim_presence_rate_table[] = {
 	512000,
 };
 
-/**
- * slim_stream_allocate() - Allocate a new SLIMbus Stream
- * @dev:Slim device to be associated with
- * @name: name of the stream
- *
- * This is very first call for SLIMbus streaming, this API will allocate
- * a new SLIMbus stream and return a valid stream runtime pointer for client
- * to use it in subsequent stream apis. state of stream is set to ALLOCATED
- *
- * Return: valid pointer on success and error code on failure.
- * From ASoC DPCM framework, this state is linked to startup() operation.
- */
+ 
 struct slim_stream_runtime *slim_stream_allocate(struct slim_device *dev,
 						 const char *name)
 {
@@ -189,16 +160,7 @@ static int slim_get_prate_code(int rate)
 	return -EINVAL;
 }
 
-/**
- * slim_stream_prepare() - Prepare a SLIMbus Stream
- *
- * @rt: instance of slim stream runtime to configure
- * @cfg: new configuration for the stream
- *
- * This API will configure SLIMbus stream with config parameters from cfg.
- * return zero on success and error code on failure. From ASoC DPCM framework,
- * this state is linked to hw_params() operation.
- */
+ 
 int slim_stream_prepare(struct slim_stream_runtime *rt,
 			struct slim_stream_config *cfg)
 {
@@ -229,10 +191,7 @@ int slim_stream_prepare(struct slim_stream_runtime *rt,
 	}
 
 	if (cfg->rate % ctrl->a_framer->superfreq) {
-		/*
-		 * data rate not exactly multiple of super frame,
-		 * use PUSH/PULL protocol
-		 */
+		 
 		if (cfg->direction == SNDRV_PCM_STREAM_PLAYBACK)
 			rt->prot = SLIM_PROTO_PUSH;
 		else
@@ -279,7 +238,7 @@ static int slim_define_channel_content(struct slim_stream_runtime *stream,
 	wbuf[0] = port->ch.id;
 	wbuf[1] = port->ch.prrate;
 
-	/* Frequency Locked for ISO Protocol */
+	 
 	if (stream->prot != SLIM_PROTO_ISO)
 		wbuf[1] |= SLIM_CHANNEL_CONTENT_FL;
 
@@ -343,17 +302,7 @@ static int slim_activate_channel(struct slim_stream_runtime *stream,
 	return slim_do_transfer(sdev->ctrl, &txn);
 }
 
-/**
- * slim_stream_enable() - Enable a prepared SLIMbus Stream
- *
- * @stream: instance of slim stream runtime to enable
- *
- * This API will enable all the ports and channels associated with
- * SLIMbus stream
- *
- * Return: zero on success and error code on failure. From ASoC DPCM framework,
- * this state is linked to trigger() start operation.
- */
+ 
 int slim_stream_enable(struct slim_stream_runtime *stream)
 {
 	DEFINE_SLIM_BCAST_TXN(txn, SLIM_MSG_MC_BEGIN_RECONFIGURATION,
@@ -376,7 +325,7 @@ int slim_stream_enable(struct slim_stream_runtime *stream)
 	if (ret)
 		return ret;
 
-	/* define channels first before activating them */
+	 
 	for (i = 0; i < stream->num_ports; i++) {
 		struct slim_port *port = &stream->ports[i];
 
@@ -396,17 +345,7 @@ int slim_stream_enable(struct slim_stream_runtime *stream)
 }
 EXPORT_SYMBOL_GPL(slim_stream_enable);
 
-/**
- * slim_stream_disable() - Disable a SLIMbus Stream
- *
- * @stream: instance of slim stream runtime to disable
- *
- * This API will disable all the ports and channels associated with
- * SLIMbus stream
- *
- * Return: zero on success and error code on failure. From ASoC DPCM framework,
- * this state is linked to trigger() pause operation.
- */
+ 
 int slim_stream_disable(struct slim_stream_runtime *stream)
 {
 	DEFINE_SLIM_BCAST_TXN(txn, SLIM_MSG_MC_BEGIN_RECONFIGURATION,
@@ -433,17 +372,7 @@ int slim_stream_disable(struct slim_stream_runtime *stream)
 }
 EXPORT_SYMBOL_GPL(slim_stream_disable);
 
-/**
- * slim_stream_unprepare() - Un-prepare a SLIMbus Stream
- *
- * @stream: instance of slim stream runtime to unprepare
- *
- * This API will un allocate all the ports and channels associated with
- * SLIMbus stream
- *
- * Return: zero on success and error code on failure. From ASoC DPCM framework,
- * this state is linked to trigger() stop operation.
- */
+ 
 int slim_stream_unprepare(struct slim_stream_runtime *stream)
 {
 	int i;
@@ -462,18 +391,7 @@ int slim_stream_unprepare(struct slim_stream_runtime *stream)
 }
 EXPORT_SYMBOL_GPL(slim_stream_unprepare);
 
-/**
- * slim_stream_free() - Free a SLIMbus Stream
- *
- * @stream: instance of slim stream runtime to free
- *
- * This API will un allocate all the memory associated with
- * slim stream runtime, user is not allowed to make an dereference
- * to stream after this call.
- *
- * Return: zero on success and error code on failure. From ASoC DPCM framework,
- * this state is linked to shutdown() operation.
- */
+ 
 int slim_stream_free(struct slim_stream_runtime *stream)
 {
 	struct slim_device *sdev = stream->dev;

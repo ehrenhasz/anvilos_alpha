@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Generic NCR5380 driver
- *
- * Copyright 1993, Drew Eckhardt
- * Visionary Computing
- * (Unix and Linux consulting and custom programming)
- * drew@colorado.edu
- * +1 (303) 440-4894
- *
- * NCR53C400 extensions (c) 1994,1995,1996, Kevin Lentin
- * K.Lentin@cs.monash.edu.au
- *
- * NCR53C400A extensions (c) 1996, Ingmar Baumgart
- * ingmar@gonzo.schwaben.de
- *
- * DTC3181E extensions (c) 1997, Ronald van Cuijlenborg
- * ronald.van.cuijlenborg@tip.nl or nutty@dds.nl
- *
- * Added ISAPNP support for DTC436 adapters,
- * Thomas Sailer, sailer@ife.ee.ethz.ch
- *
- * See Documentation/scsi/g_NCR5380.rst for more info.
- */
+
+ 
 
 #include <asm/io.h>
 #include <linux/blkdev.h>
@@ -33,7 +11,7 @@
 #include <linux/pnp.h>
 #include <linux/interrupt.h>
 
-/* Definitions for the core NCR5380 driver. */
+ 
 
 #define NCR5380_read(reg) \
 	ioread8(hostdata->io + hostdata->offset + (reg))
@@ -81,7 +59,7 @@
 #define MAX_CARDS 8
 #define DMA_MAX_SIZE 32768
 
-/* old-style parameters for compatibility */
+ 
 static int ncr_irq = -1;
 static int ncr_addr;
 static int ncr_5380;
@@ -116,14 +94,7 @@ static void g_NCR5380_trigger_irq(struct Scsi_Host *instance)
 {
 	struct NCR5380_hostdata *hostdata = shost_priv(instance);
 
-	/*
-	 * An interrupt is triggered whenever BSY = false, SEL = true
-	 * and a bit set in the SELECT_ENABLE_REG is asserted on the
-	 * SCSI bus.
-	 *
-	 * Note that the bus is only driven when the phase control signals
-	 * (I/O, C/D, and MSG) match those in the TCR.
-	 */
+	 
 	NCR5380_write(TARGET_COMMAND_REG,
 	              PHASE_SR_TO_TCR(NCR5380_read(STATUS_REG) & PHASE_MASK));
 	NCR5380_write(SELECT_ENABLE_REG, hostdata->id_mask);
@@ -138,13 +109,7 @@ static void g_NCR5380_trigger_irq(struct Scsi_Host *instance)
 	NCR5380_write(TARGET_COMMAND_REG, 0);
 }
 
-/**
- * g_NCR5380_probe_irq - find the IRQ of a NCR5380 or equivalent
- * @instance: SCSI host instance
- *
- * Autoprobe for the IRQ line used by the card by triggering an IRQ
- * and then looking to see what interrupt actually turned up.
- */
+ 
 
 static int g_NCR5380_probe_irq(struct Scsi_Host *instance)
 {
@@ -162,10 +127,7 @@ static int g_NCR5380_probe_irq(struct Scsi_Host *instance)
 	return irq;
 }
 
-/*
- * Configure I/O address of 53C400A or DTC436 by writing magic numbers
- * to ports 0x779 and 0x379.
- */
+ 
 static void magic_configure(int idx, u8 irq, u8 magic[])
 {
 	u8 cfg = 0;
@@ -209,10 +171,10 @@ static unsigned int ncr_53c400a_ports[] = {
 static unsigned int dtc_3181e_ports[] = {
 	0x220, 0x240, 0x280, 0x2a0, 0x2c0, 0x300, 0x320, 0x340, 0
 };
-static u8 ncr_53c400a_magic[] = {	/* 53C400A & DTC436 */
+static u8 ncr_53c400a_magic[] = {	 
 	0x59, 0xb9, 0xc5, 0xae, 0xa6
 };
-static u8 hp_c2502_magic[] = {	/* HP C2502 */
+static u8 hp_c2502_magic[] = {	 
 	0x0f, 0x22, 0xf0, 0x20, 0x80
 };
 static int hp_c2502_irqs[] = {
@@ -253,15 +215,15 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 	}
 
 	if (is_pmio && ports && magic) {
-		/* wakeup sequence for the NCR53C400A and DTC3181E */
+		 
 
-		/* Disable the adapter and look for a free io port */
+		 
 		magic_configure(-1, 0, magic);
 
 		region_size = 16;
 		if (base)
 			for (i = 0; ports[i]; i++) {
-				if (base == ports[i]) {	/* index found */
+				if (base == ports[i]) {	 
 					if (!request_region(ports[i],
 							    region_size,
 							    "ncr53c80"))
@@ -279,8 +241,8 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 				release_region(ports[i], region_size);
 			}
 		if (ports[i]) {
-			/* At this point we have our region reserved */
-			magic_configure(i, 0, magic); /* no IRQ yet */
+			 
+			magic_configure(i, 0, magic);  
 			base = ports[i];
 			outb(0xc0, base + 9);
 			if (inb(base + 9) != 0x80) {
@@ -291,11 +253,11 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 		} else
 			return -EINVAL;
 	} else if (is_pmio) {
-		/* NCR5380 - no configuration, just grab */
+		 
 		region_size = 8;
 		if (!base || !request_region(base, region_size, "ncr5380"))
 			return -EBUSY;
-	} else {	/* MMIO */
+	} else {	 
 		region_size = NCR53C400_region_size;
 		if (!request_mem_region(base, region_size, "ncr5380"))
 			return -EBUSY;
@@ -324,13 +286,10 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 
 	if (is_pmio) {
 		hostdata->io_port = base;
-		hostdata->io_width = 1; /* 8-bit PDMA by default */
+		hostdata->io_width = 1;  
 		hostdata->offset = 0;
 
-		/*
-		 * On NCR53C400 boards, NCR5380 registers are mapped 8 past
-		 * the base address.
-		 */
+		 
 		switch (board) {
 		case BOARD_NCR53C400:
 			hostdata->io_port += 8;
@@ -339,7 +298,7 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 			hostdata->c400_host_buf = 4;
 			break;
 		case BOARD_DTC3181E:
-			hostdata->io_width = 2;	/* 16-bit PDMA */
+			hostdata->io_width = 2;	 
 			fallthrough;
 		case BOARD_NCR53C400A:
 		case BOARD_HP_C2502:
@@ -366,7 +325,7 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 		}
 	}
 
-	/* Check for vacant slot */
+	 
 	NCR5380_write(MODE_REG, 0);
 	if (NCR5380_read(MODE_REG) != 0) {
 		ret = -ENODEV;
@@ -387,7 +346,7 @@ static int generic_NCR5380_init_one(const struct scsi_host_template *tpnt,
 
 	NCR5380_maybe_reset_bus(instance);
 
-	/* Compatibility with documented NCR5380 kernel parameters */
+	 
 	if (irq == 255 || irq == 0)
 		irq = NO_IRQ;
 	else if (irq == -1)
@@ -483,12 +442,7 @@ static void generic_NCR5380_release_resources(struct Scsi_Host *instance)
 		release_mem_region(base, region_size);
 }
 
-/* wait_for_53c80_access - wait for 53C80 registers to become accessible
- * @hostdata: scsi host private data
- *
- * The registers within the 53C80 logic block are inaccessible until
- * bit 7 in the 53C400 control status register gets asserted.
- */
+ 
 
 static void wait_for_53c80_access(struct NCR5380_hostdata *hostdata)
 {
@@ -496,7 +450,7 @@ static void wait_for_53c80_access(struct NCR5380_hostdata *hostdata)
 
 	do {
 		if (hostdata->board == BOARD_DTC3181E)
-			udelay(4); /* DTC436 chip hangs without this */
+			udelay(4);  
 		if (NCR5380_read(hostdata->c400_ctl_status) & CSR_53C80_REG)
 			return;
 	} while (--count > 0);
@@ -507,14 +461,7 @@ static void wait_for_53c80_access(struct NCR5380_hostdata *hostdata)
 	NCR5380_write(hostdata->c400_ctl_status, CSR_BASE);
 }
 
-/**
- * generic_NCR5380_precv - pseudo DMA receive
- * @hostdata: scsi host private data
- * @dst: buffer to write into
- * @len: transfer size
- *
- * Perform a pseudo DMA mode receive from a 53C400 or equivalent device.
- */
+ 
 
 static inline int generic_NCR5380_precv(struct NCR5380_hostdata *hostdata,
                                         unsigned char *dst, int len)
@@ -527,7 +474,7 @@ static inline int generic_NCR5380_precv(struct NCR5380_hostdata *hostdata,
 
 	do {
 		if (start == len - 128) {
-			/* Ignore End of DMA interrupt for the final buffer */
+			 
 			if (NCR5380_poll_politely(hostdata, hostdata->c400_ctl_status,
 			                          CSR_HOST_BUF_NOT_RDY, 0, 0) < 0)
 				break;
@@ -556,7 +503,7 @@ static inline int generic_NCR5380_precv(struct NCR5380_hostdata *hostdata,
 	residual = len - start;
 
 	if (residual != 0) {
-		/* 53c80 interrupt or transfer timeout. Reset 53c400 logic. */
+		 
 		NCR5380_write(hostdata->c400_ctl_status, CSR_RESET);
 		NCR5380_write(hostdata->c400_ctl_status, CSR_BASE);
 	}
@@ -574,14 +521,7 @@ static inline int generic_NCR5380_precv(struct NCR5380_hostdata *hostdata,
 	return 0;
 }
 
-/**
- * generic_NCR5380_psend - pseudo DMA send
- * @hostdata: scsi host private data
- * @src: buffer to read from
- * @len: transfer size
- *
- * Perform a pseudo DMA mode send to a 53C400 or equivalent device.
- */
+ 
 
 static inline int generic_NCR5380_psend(struct NCR5380_hostdata *hostdata,
                                         unsigned char *src, int len)
@@ -599,7 +539,7 @@ static inline int generic_NCR5380_psend(struct NCR5380_hostdata *hostdata,
 		                           CSR_GATED_53C80_IRQ,
 		                           CSR_GATED_53C80_IRQ, 0) < 0 ||
 		    NCR5380_read(hostdata->c400_ctl_status) & CSR_HOST_BUF_NOT_RDY) {
-			/* Both 128 B buffers are in use */
+			 
 			if (start >= 128)
 				start -= 128;
 			if (start >= 128)
@@ -611,7 +551,7 @@ static inline int generic_NCR5380_psend(struct NCR5380_hostdata *hostdata,
 			break;
 
 		if (NCR5380_read(hostdata->c400_ctl_status) & CSR_GATED_53C80_IRQ) {
-			/* Host buffer is empty, other one is in use */
+			 
 			if (start >= 128)
 				start -= 128;
 			break;
@@ -635,7 +575,7 @@ static inline int generic_NCR5380_psend(struct NCR5380_hostdata *hostdata,
 	residual = len - start;
 
 	if (residual != 0) {
-		/* 53c80 interrupt or transfer timeout. Reset 53c400 logic. */
+		 
 		NCR5380_write(hostdata->c400_ctl_status, CSR_RESET);
 		NCR5380_write(hostdata->c400_ctl_status, CSR_BASE);
 	}
@@ -668,11 +608,11 @@ static int generic_NCR5380_dma_xfer_len(struct NCR5380_hostdata *hostdata,
 	if (hostdata->flags & FLAG_NO_PSEUDO_DMA)
 		return 0;
 
-	/* 53C400 datasheet: non-modulo-128-byte transfers should use PIO */
+	 
 	if (transfersize % 128)
 		return 0;
 
-	/* Limit PDMA send to 512 B to avoid random corruption on DTC3181E */
+	 
 	if (hostdata->board == BOARD_DTC3181E &&
 	    cmd->sc_data_direction == DMA_TO_DEVICE)
 		transfersize = min(transfersize, 512);
@@ -685,7 +625,7 @@ static int generic_NCR5380_dma_residual(struct NCR5380_hostdata *hostdata)
 	return hostdata->pdma_residual;
 }
 
-/* Include the core driver code. */
+ 
 
 #include "NCR5380.c"
 
@@ -769,7 +709,7 @@ static struct pnp_driver generic_NCR5380_pnp_driver = {
 	.probe		= generic_NCR5380_pnp_probe,
 	.remove		= generic_NCR5380_pnp_remove,
 };
-#endif /* defined(CONFIG_PNP) */
+#endif  
 
 static int pnp_registered, isa_registered;
 
@@ -777,7 +717,7 @@ static int __init generic_NCR5380_init(void)
 {
 	int ret = 0;
 
-	/* compatibility with old-style parameters */
+	 
 	if (irq[0] == -1 && base[0] == 0 && card[0] == -1) {
 		irq[0] = ncr_irq;
 		base[0] = ncr_addr;

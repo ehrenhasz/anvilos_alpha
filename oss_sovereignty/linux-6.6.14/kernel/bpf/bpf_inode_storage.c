@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Facebook
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <linux/rculist.h>
 #include <linux/list.h>
@@ -134,7 +131,7 @@ static long bpf_fd_inode_storage_delete_elem(struct bpf_map *map, void *key)
 	return err;
 }
 
-/* *gfp_flags* is a hidden argument provided by the verifier */
+ 
 BPF_CALL_5(bpf_inode_storage_get, struct bpf_map *, map, struct inode *, inode,
 	   void *, value, u64, flags, gfp_t, gfp_flags)
 {
@@ -144,11 +141,7 @@ BPF_CALL_5(bpf_inode_storage_get, struct bpf_map *, map, struct inode *, inode,
 	if (flags & ~(BPF_LOCAL_STORAGE_GET_F_CREATE))
 		return (unsigned long)NULL;
 
-	/* explicitly check that the inode_storage_ptr is not
-	 * NULL as inode_storage_lookup returns NULL in this case and
-	 * bpf_local_storage_update expects the owner to have a
-	 * valid storage pointer.
-	 */
+	 
 	if (!inode || !inode_storage_ptr(inode))
 		return (unsigned long)NULL;
 
@@ -156,9 +149,7 @@ BPF_CALL_5(bpf_inode_storage_get, struct bpf_map *, map, struct inode *, inode,
 	if (sdata)
 		return (unsigned long)sdata->data;
 
-	/* This helper must only called from where the inode is guaranteed
-	 * to have a refcount and cannot be freed.
-	 */
+	 
 	if (flags & BPF_LOCAL_STORAGE_GET_F_CREATE) {
 		sdata = bpf_local_storage_update(
 			inode, (struct bpf_local_storage_map *)map, value,
@@ -177,9 +168,7 @@ BPF_CALL_2(bpf_inode_storage_delete,
 	if (!inode)
 		return -EINVAL;
 
-	/* This helper must only called from where the inode is guaranteed
-	 * to have a refcount and cannot be freed.
-	 */
+	 
 	return inode_storage_delete(inode, map);
 }
 

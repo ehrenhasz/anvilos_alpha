@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 
-/* validate @native and @pcp counter values match @expected */
+ 
 #define CHECK(native, pcp, expected)                                    \
 	do {                                                            \
 		WARN((native) != (expected),                            \
@@ -19,10 +19,7 @@ static DEFINE_PER_CPU(unsigned long, ulong_counter);
 
 static int __init percpu_test_init(void)
 {
-	/*
-	 * volatile prevents compiler from optimizing it uses, otherwise the
-	 * +ul_one/-ul_one below would replace with inc/dec instructions.
-	 */
+	 
 	volatile unsigned int ui_one = 1;
 	long l = 0;
 	unsigned long ul = 0;
@@ -124,7 +121,7 @@ static int __init percpu_test_init(void)
 	preempt_enable();
 
 	pr_info("percpu test done\n");
-	return -EAGAIN;  /* Fail will directly unload the module */
+	return -EAGAIN;   
 }
 
 static void __exit percpu_test_exit(void)

@@ -1,90 +1,11 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- * Notes:
- * The initial adaptation from 4.4BSD Lite sources in September 1995 used 686
- * lines from that version, and made changes/additions for 150 lines.  There
- * was no reformatting, so with/without ignoring whitespace, the amount of
- * change is the same.
- *
- * Comparing with current (2009) source, excluding this comment:
- * a) 209 lines match identically to the 4.4BSD Lite sources, with 771 lines
- *    changed/added.
- * a) Ignoring whitespace, the current version still uses 516 lines from the
- *    4.4BSD Lite sources, with 402 lines changed/added.
- *
- * Raymond's original comment on this follows...
- */
+ 
 
-/*
- * tset.c - terminal initialization utility
- *
- * This code was mostly swiped from 4.4BSD tset, with some obsolescent
- * cruft removed and substantial portions rewritten.  A Regents of the
- * University of California copyright applies to some portions of the
- * code, and is reproduced below:
- */
-/*-
- * Copyright (c) 1980, 1991, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
+ 
 
 #include <reset_cmd.h>
 #include <termcap.h>
@@ -112,7 +33,7 @@ static GCC_NORETURN void exit_error(void);
 
 static int
 CaselessCmp(const char *a, const char *b)
-{				/* strcasecmp isn't portable */
+{				 
     while (*a && *b) {
 	int cmp = LOWERCASE(*a) - LOWERCASE(*b);
 	if (cmp != 0)
@@ -129,7 +50,7 @@ exit_error(void)
     (void) fprintf(stderr, "\n");
     fflush(stderr);
     ExitProgram(EXIT_FAILURE);
-    /* NOTREACHED */
+     
 }
 
 static GCC_NORETURN void
@@ -141,7 +62,7 @@ err(const char *fmt, ...)
     (void) vfprintf(stderr, fmt, ap);
     va_end(ap);
     exit_error();
-    /* NOTREACHED */
+     
 }
 
 static GCC_NORETURN void
@@ -159,21 +80,21 @@ failed(const char *msg)
     _nc_STRNCAT(temp, msg, sizeof(temp), sizeof(temp) - strlen(temp) - 2);
     perror(temp);
     exit_error();
-    /* NOTREACHED */
+     
 }
 
-/* Prompt the user for a terminal type. */
+ 
 static const char *
 askuser(const char *dflt)
 {
     static char answer[256];
 
-    /* We can get recalled; if so, don't continue uselessly. */
+     
     clearerr(stdin);
     if (feof(stdin) || ferror(stdin)) {
 	(void) fprintf(stderr, "\n");
 	exit_error();
-	/* NOTREACHED */
+	 
     }
 
     for (;;) {
@@ -188,7 +109,7 @@ askuser(const char *dflt)
 	if (fgets(answer, sizeof(answer), stdin) == 0) {
 	    if (dflt == 0) {
 		exit_error();
-		/* NOTREACHED */
+		 
 	    }
 	    return (dflt);
 	}
@@ -202,13 +123,9 @@ askuser(const char *dflt)
     }
 }
 
-/**************************************************************************
- *
- * Mapping logic begins here
- *
- **************************************************************************/
+ 
 
-/* Baud rate conditionals for mapping. */
+ 
 #define	GT		0x01
 #define	EQ		0x02
 #define	LT		0x04
@@ -217,11 +134,11 @@ askuser(const char *dflt)
 #define	LE		(LT | EQ)
 
 typedef struct map {
-    struct map *next;		/* Linked list of maps. */
-    const char *porttype;	/* Port type, or "" for any. */
-    const char *type;		/* Terminal type to select. */
-    int conditional;		/* Baud rate conditionals bitmask. */
-    int speed;			/* Baud rate to compare against. */
+    struct map *next;		 
+    const char *porttype;	 
+    const char *type;		 
+    int conditional;		 
+    int speed;			 
 } MAP;
 
 static MAP *cur, *maplist;
@@ -256,7 +173,7 @@ static const SPEEDS speeds[] =
     DATA("2400", B2400),
     DATA("4800", B4800),
     DATA("9600", B9600),
-    /* sgttyb may define up to this point */
+     
 #ifdef B19200
     DATA("19200", B19200),
 #endif
@@ -347,13 +264,13 @@ tbaudrate(char *rate)
     const SPEEDS *sp = 0;
     size_t n;
 
-    /* The baudrate number can be preceded by a 'B', which is ignored. */
+     
     if (*rate == 'B')
 	++rate;
 
     for (n = 0; n < SIZEOF(speeds); ++n) {
 	if (n > 0 && (speeds[n].speed <= speeds[n - 1].speed)) {
-	    /* if the speeds are not increasing, likely a numeric overflow */
+	     
 	    break;
 	}
 	if (!CaselessCmp(rate, speeds[n].string)) {
@@ -366,11 +283,7 @@ tbaudrate(char *rate)
     return (sp->speed);
 }
 
-/*
- * Syntax for -m:
- * [port-type][test baudrate]:terminal-type
- * The baud rate tests are: >, <, @, =, !
- */
+ 
 static void
 add_mapping(const char *port, char *arg)
 {
@@ -400,18 +313,18 @@ add_mapping(const char *port, char *arg)
 
     arg = strpbrk(arg, "><@=!:");
 
-    if (arg == 0) {		/* [?]term */
+    if (arg == 0) {		 
 	mapp->type = mapp->porttype;
 	mapp->porttype = 0;
 	goto done;
     }
 
-    if (arg == mapp->porttype)	/* [><@=! baud]:term */
+    if (arg == mapp->porttype)	 
 	termp = mapp->porttype = 0;
     else
 	termp = base = arg;
 
-    for (;; ++arg) {		/* Optional conditionals. */
+    for (;; ++arg) {		 
 	switch (*arg) {
 	case '<':
 	    if (mapp->conditional & GT)
@@ -424,7 +337,7 @@ add_mapping(const char *port, char *arg)
 	    mapp->conditional |= GT;
 	    break;
 	case '@':
-	case '=':		/* Not documented. */
+	case '=':		 
 	    mapp->conditional |= EQ;
 	    break;
 	case '!':
@@ -440,7 +353,7 @@ add_mapping(const char *port, char *arg)
 	if (mapp->conditional)
 	    goto badmopt;
 	++arg;
-    } else {			/* Optional baudrate. */
+    } else {			 
 	arg = strchr(p = arg, ':');
 	if (arg == 0)
 	    goto badmopt;
@@ -450,15 +363,15 @@ add_mapping(const char *port, char *arg)
 
     mapp->type = arg;
 
-    /* Terminate porttype, if specified. */
+     
     if (termp != 0)
 	*base = '\0';
 
-    /* If a NOT conditional, reverse the test. */
+     
     if (mapp->conditional & NOT)
 	mapp->conditional = ~mapp->conditional & (EQ | GT | LT);
 
-    /* If user specified a port with an option flag, set it. */
+     
   done:
     if (port) {
 	if (mapp->porttype) {
@@ -487,11 +400,7 @@ add_mapping(const char *port, char *arg)
 #endif
 }
 
-/*
- * Return the type of terminal to use for a port of type 'type', as specified
- * by the first applicable mapping in 'map'.  If no mappings apply, return
- * 'type'.
- */
+ 
 static const char *
 mapped(const char *type)
 {
@@ -501,7 +410,7 @@ mapped(const char *type)
     for (mapp = maplist; mapp; mapp = mapp->next)
 	if (mapp->porttype == 0 || !strcmp(mapp->porttype, type)) {
 	    switch (mapp->conditional) {
-	    case 0:		/* No test specified. */
+	    case 0:		 
 		match = TRUE;
 		break;
 	    case EQ:
@@ -525,20 +434,13 @@ mapped(const char *type)
 	    if (match)
 		return (mapp->type);
 	}
-    /* No match found; return given type. */
+     
     return (type);
 }
 
-/**************************************************************************
- *
- * Entry fetching
- *
- **************************************************************************/
+ 
 
-/*
- * Figure out what kind of terminal we're dealing with, and then read in
- * its termcap entry.
- */
+ 
 static const char *
 get_termcap_entry(int fd, char *userarg)
 {
@@ -552,7 +454,7 @@ get_termcap_entry(int fd, char *userarg)
     FILE *fp;
 #endif
     char *ttypath;
-#endif /* HAVE_PATH_TTYS */
+#endif  
 
     (void) fd;
 
@@ -561,7 +463,7 @@ get_termcap_entry(int fd, char *userarg)
 	goto found;
     }
 
-    /* Try the environment. */
+     
     if ((ttype = getenv("TERM")) != 0)
 	goto map;
 
@@ -569,11 +471,7 @@ get_termcap_entry(int fd, char *userarg)
     if ((ttypath = ttyname(fd)) != 0) {
 	p = _nc_basename(ttypath);
 #if HAVE_GETTTYNAM
-	/*
-	 * We have the 4.3BSD library call getttynam(3); that means
-	 * there's an /etc/ttys to look up device-to-type mappings in.
-	 * Try ttyname(3); check for dialup or other mapping.
-	 */
+	 
 	if ((t = getttynam(p))) {
 	    ttype = t->ty_type;
 	    goto map;
@@ -601,25 +499,19 @@ get_termcap_entry(int fd, char *userarg)
 	    }
 	    fclose(fp);
 	}
-#endif /* HAVE_GETTTYNAM */
+#endif  
     }
-#endif /* HAVE_PATH_TTYS */
+#endif  
 
-    /* If still undefined, use "unknown". */
+     
     ttype = "unknown";
 
   map:ttype = mapped(ttype);
 
-    /*
-     * If not a path, remove TERMCAP from the environment so we get a
-     * real entry from /etc/termcap.  This prevents us from being fooled
-     * by out of date stuff in the environment.
-     */
+     
   found:
     if ((p = getenv("TERMCAP")) != 0 && !_nc_is_abs_path(p)) {
-	/* 'unsetenv("TERMCAP")' is not portable.
-	 * The 'environ' array is better.
-	 */
+	 
 	int n;
 	for (n = 0; environ[n] != 0; n++) {
 	    if (!strncmp("TERMCAP=", environ[n], (size_t) 8)) {
@@ -631,17 +523,14 @@ get_termcap_entry(int fd, char *userarg)
 	}
     }
 
-    /*
-     * ttype now contains a pointer to the type of the terminal.
-     * If the first character is '?', ask the user.
-     */
+     
     if (ttype[0] == '?') {
 	if (ttype[1] != '\0')
 	    ttype = askuser(ttype + 1);
 	else
 	    ttype = askuser(0);
     }
-    /* Find the terminfo entry.  If it doesn't exist, ask the user. */
+     
     while (setupterm((NCURSES_CONST char *) ttype, fd, &errret)
 	   != OK) {
 	if (errret == 0) {
@@ -657,21 +546,14 @@ get_termcap_entry(int fd, char *userarg)
 	ttype = askuser(ttype);
     }
 #if BROKEN_LINKER
-    tgetflag("am");		/* force lib_termcap.o to be linked for 'ospeed' */
+    tgetflag("am");		 
 #endif
     return (ttype);
 }
 
-/**************************************************************************
- *
- * Main sequence
- *
- **************************************************************************/
+ 
 
-/*
- * Convert the obsolete argument forms into something that getopt can handle.
- * This means that -e, -i and -k get default arguments supplied for them.
- */
+ 
 static void
 obsolete(char **argv)
 {
@@ -709,10 +591,7 @@ print_shell_commands(const char *ttype)
     int len;
     char *var;
     char *leaf;
-    /*
-     * Figure out what shell we're using.  A hack, we look for an
-     * environmental variable SHELL ending in "csh".
-     */
+     
     if ((var = getenv("SHELL")) != 0
 	&& ((len = (int) strlen(leaf = _nc_basename(var))) >= 3)
 	&& !strcmp(leaf + len - 3, "csh"))
@@ -725,7 +604,7 @@ print_shell_commands(const char *ttype)
 static void
 usage(void)
 {
-#define SKIP(s)			/* nothing */
+#define SKIP(s)			 
 #define KEEP(s) s "\n"
     static const char msg[] =
     {
@@ -755,7 +634,7 @@ usage(void)
     (void) fprintf(stderr, "Usage: %s [options] [terminal]\n", _nc_progname);
     fputs(msg, stderr);
     ExitProgram(EXIT_FAILURE);
-    /* NOTREACHED */
+     
 }
 
 static char
@@ -771,12 +650,12 @@ main(int argc, char **argv)
 {
     int ch, noinit, noset, quiet, Sflag, sflag, showterm;
     const char *ttype;
-    int terasechar = -1;	/* new erase character */
-    int intrchar = -1;		/* new interrupt character */
-    int tkillchar = -1;		/* new kill character */
+    int terasechar = -1;	 
+    int intrchar = -1;		 
+    int tkillchar = -1;		 
     int my_fd;
-    bool opt_c = FALSE;		/* set control-chars */
-    bool opt_w = FALSE;		/* set window-size */
+    bool opt_c = FALSE;		 
+    bool opt_w = FALSE;		 
     TTY mode, oldmode;
 
     _nc_progname = _nc_rootname(*argv);
@@ -784,52 +663,52 @@ main(int argc, char **argv)
     noinit = noset = quiet = Sflag = sflag = showterm = 0;
     while ((ch = getopt(argc, argv, "a:cd:e:Ii:k:m:p:qQrSsVw")) != -1) {
 	switch (ch) {
-	case 'c':		/* set control-chars */
+	case 'c':		 
 	    opt_c = TRUE;
 	    break;
-	case 'a':		/* OBSOLETE: map identifier to type */
+	case 'a':		 
 	    add_mapping("arpanet", optarg);
 	    break;
-	case 'd':		/* OBSOLETE: map identifier to type */
+	case 'd':		 
 	    add_mapping("dialup", optarg);
 	    break;
-	case 'e':		/* erase character */
+	case 'e':		 
 	    terasechar = arg_to_char();
 	    break;
-	case 'I':		/* no initialization strings */
+	case 'I':		 
 	    noinit = 1;
 	    break;
-	case 'i':		/* interrupt character */
+	case 'i':		 
 	    intrchar = arg_to_char();
 	    break;
-	case 'k':		/* kill character */
+	case 'k':		 
 	    tkillchar = arg_to_char();
 	    break;
-	case 'm':		/* map identifier to type */
+	case 'm':		 
 	    add_mapping(0, optarg);
 	    break;
-	case 'p':		/* OBSOLETE: map identifier to type */
+	case 'p':		 
 	    add_mapping("plugboard", optarg);
 	    break;
-	case 'Q':		/* don't output control key settings */
+	case 'Q':		 
 	    quiet = 1;
 	    break;
-	case 'q':		/* display term only */
+	case 'q':		 
 	    noset = 1;
 	    break;
-	case 'r':		/* display term on stderr */
+	case 'r':		 
 	    showterm = 1;
 	    break;
-	case 'S':		/* OBSOLETE: output TERM & TERMCAP */
+	case 'S':		 
 	    Sflag = 1;
 	    break;
-	case 's':		/* output TERM set command */
+	case 's':		 
 	    sflag = 1;
 	    break;
-	case 'V':		/* print curses-version */
+	case 'V':		 
 	    puts(curses_version());
 	    ExitProgram(EXIT_SUCCESS);
-	case 'w':		/* set window-size */
+	case 'w':		 
 	    opt_w = TRUE;
 	    break;
 	case '?':
@@ -880,7 +759,7 @@ main(int argc, char **argv)
 		if (send_init_strings(my_fd, &oldmode)) {
 		    (void) putc('\r', stderr);
 		    (void) fflush(stderr);
-		    (void) napms(1000);		/* Settle the terminal. */
+		    (void) napms(1000);		 
 		}
 	    }
 
@@ -893,10 +772,7 @@ main(int argc, char **argv)
     } else {
 	if (showterm)
 	    (void) fprintf(stderr, "Terminal type is %s.\n", ttype);
-	/*
-	 * If erase, kill and interrupt characters could have been
-	 * modified and not -Q, display the changes.
-	 */
+	 
 	if (!quiet) {
 	    print_tty_chars(&oldmode, &mode);
 	}

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* MPTCP Fast Open Mechanism
- *
- * Copyright (c) 2021-2022, Dmytro SHYTYI
- */
+
+ 
 
 #include "protocol.h"
 
@@ -13,9 +10,7 @@ void mptcp_fastopen_subflow_synack_set_params(struct mptcp_subflow_context *subf
 	struct sk_buff *skb;
 	struct tcp_sock *tp;
 
-	/* on early fallback the subflow context is deleted by
-	 * subflow_syn_recv_sock()
-	 */
+	 
 	if (!subflow)
 		return;
 
@@ -29,20 +24,16 @@ void mptcp_fastopen_subflow_synack_set_params(struct mptcp_subflow_context *subf
 	if (WARN_ON_ONCE(!skb))
 		return;
 
-	/* dequeue the skb from sk receive queue */
+	 
 	__skb_unlink(skb, &ssk->sk_receive_queue);
 	skb_ext_reset(skb);
 	skb_orphan(skb);
 
-	/* We copy the fastopen data, but that don't belong to the mptcp sequence
-	 * space, need to offset it in the subflow sequence, see mptcp_subflow_get_map_offset()
-	 */
+	 
 	tp->copied_seq += skb->len;
 	subflow->ssn_offset += skb->len;
 
-	/* initialize a dummy sequence number, we will update it at MPC
-	 * completion, if needed
-	 */
+	 
 	MPTCP_SKB_CB(skb)->map_seq = -skb->len;
 	MPTCP_SKB_CB(skb)->end_seq = 0;
 	MPTCP_SKB_CB(skb)->offset = 0;

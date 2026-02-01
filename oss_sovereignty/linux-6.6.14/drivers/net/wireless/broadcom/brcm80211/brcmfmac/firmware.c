@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013 Broadcom Corporation
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/kernel.h>
@@ -18,8 +16,8 @@
 #include "chip.h"
 
 #define BRCMF_FW_MAX_NVRAM_SIZE			64000
-#define BRCMF_FW_NVRAM_DEVPATH_LEN		19	/* devpath0=pcie/1/4/ */
-#define BRCMF_FW_NVRAM_PCIEDEV_LEN		10	/* pcie/1/4/ + \0 */
+#define BRCMF_FW_NVRAM_DEVPATH_LEN		19	 
+#define BRCMF_FW_NVRAM_PCIEDEV_LEN		10	 
 #define BRCMF_FW_DEFAULT_BOARDREV		"boardrev=0xff"
 #define BRCMF_FW_MACADDR_FMT			"macaddr=%pM"
 #define BRCMF_FW_MACADDR_LEN			(7 + ETH_ALEN * 3)
@@ -32,22 +30,7 @@ enum nvram_parser_state {
 	END
 };
 
-/**
- * struct nvram_parser - internal info for parser.
- *
- * @state: current parser state.
- * @data: input buffer being parsed.
- * @nvram: output buffer with parse result.
- * @nvram_len: length of parse result.
- * @line: current line.
- * @column: current column in line.
- * @pos: byte offset in input buffer.
- * @entry: start position of key,value entry.
- * @multi_dev_v1: detect pcie multi device v1 (compressed).
- * @multi_dev_v2: detect pcie multi device v2.
- * @boardrev_found: nvram contains boardrev information.
- * @strip_mac: strip the MAC address.
- */
+ 
 struct nvram_parser {
 	enum nvram_parser_state state;
 	const u8 *data;
@@ -63,19 +46,14 @@ struct nvram_parser {
 	bool strip_mac;
 };
 
-/*
- * is_nvram_char() - check if char is a valid one for NVRAM entry
- *
- * It accepts all printable ASCII chars except for '#' which opens a comment.
- * Please note that ' ' (space) while accepted is not a valid key name char.
- */
+ 
 static bool is_nvram_char(char c)
 {
-	/* comment marker excluded */
+	 
 	if (c == '#')
 		return false;
 
-	/* key and value may have any other readable character */
+	 
 	return (c >= 0x20 && c < 0x7f);
 }
 
@@ -114,7 +92,7 @@ static enum nvram_parser_state brcmf_nvram_handle_key(struct nvram_parser *nvp)
 
 	c = nvp->data[nvp->pos];
 	if (c == '=') {
-		/* ignore RAW1 by treating as comment */
+		 
 		if (strncmp(&nvp->data[nvp->entry], "RAW1", 4) == 0)
 			st = COMMENT;
 		else
@@ -125,7 +103,7 @@ static enum nvram_parser_state brcmf_nvram_handle_key(struct nvram_parser *nvp)
 			nvp->multi_dev_v2 = true;
 		if (strncmp(&nvp->data[nvp->entry], "boardrev", 8) == 0)
 			nvp->boardrev_found = true;
-		/* strip macaddr if platform MAC overrides */
+		 
 		if (nvp->strip_mac &&
 		    strncmp(&nvp->data[nvp->entry], "macaddr", 7) == 0)
 			st = COMMENT;
@@ -150,13 +128,13 @@ brcmf_nvram_handle_value(struct nvram_parser *nvp)
 
 	c = nvp->data[nvp->pos];
 	if (!is_nvram_char(c)) {
-		/* key,value pair complete */
+		 
 		ekv = (u8 *)&nvp->data[nvp->pos];
 		skv = (u8 *)&nvp->data[nvp->entry];
 		cplen = ekv - skv;
 		if (nvp->nvram_len + cplen + 1 >= BRCMF_FW_MAX_NVRAM_SIZE)
 			return END;
-		/* copy to output buffer */
+		 
 		memcpy(&nvp->nvram[nvp->nvram_len], skv, cplen);
 		nvp->nvram_len += cplen;
 		nvp->nvram[nvp->nvram_len] = '\0';
@@ -181,7 +159,7 @@ brcmf_nvram_handle_comment(struct nvram_parser *nvp)
 			return END;
 	}
 
-	/* eat all moving to next line */
+	 
 	nvp->line++;
 	nvp->column = 1;
 	nvp->pos += (eoc - sol) + 1;
@@ -190,7 +168,7 @@ brcmf_nvram_handle_comment(struct nvram_parser *nvp)
 
 static enum nvram_parser_state brcmf_nvram_handle_end(struct nvram_parser *nvp)
 {
-	/* final state */
+	 
 	return END;
 }
 
@@ -210,15 +188,15 @@ static int brcmf_init_nvram_parser(struct nvram_parser *nvp,
 
 	memset(nvp, 0, sizeof(*nvp));
 	nvp->data = data;
-	/* Limit size to MAX_NVRAM_SIZE, some files contain lot of comment */
+	 
 	if (data_len > BRCMF_FW_MAX_NVRAM_SIZE)
 		size = BRCMF_FW_MAX_NVRAM_SIZE;
 	else
 		size = data_len;
-	/* Add space for properties we may add */
+	 
 	size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
 	size += BRCMF_FW_MACADDR_LEN + 1;
-	/* Alloc for extra 0 byte + roundup by 4 + length field */
+	 
 	size += 1 + 3 + sizeof(u32);
 	nvp->nvram = kzalloc(size, GFP_KERNEL);
 	if (!nvp->nvram)
@@ -229,15 +207,11 @@ static int brcmf_init_nvram_parser(struct nvram_parser *nvp,
 	return 0;
 }
 
-/* brcmf_fw_strip_multi_v1 :Some nvram files contain settings for multiple
- * devices. Strip it down for one device, use domain_nr/bus_nr to determine
- * which data is to be returned. v1 is the version where nvram is stored
- * compressed and "devpath" maps to index for valid entries.
- */
+ 
 static void brcmf_fw_strip_multi_v1(struct nvram_parser *nvp, u16 domain_nr,
 				    u16 bus_nr)
 {
-	/* Device path with a leading '=' key-value separator */
+	 
 	char pci_path[] = "=pci/?/?";
 	size_t pci_len;
 	char pcie_path[] = "=pcie/?/?";
@@ -252,13 +226,11 @@ static void brcmf_fw_strip_multi_v1(struct nvram_parser *nvp, u16 domain_nr,
 	if (!nvram)
 		goto fail;
 
-	/* min length: devpath0=pcie/1/4/ + 0:x=y */
+	 
 	if (nvp->nvram_len < BRCMF_FW_NVRAM_DEVPATH_LEN + 6)
 		goto fail;
 
-	/* First search for the devpathX and see if it is the configuration
-	 * for domain_nr/bus_nr. Search complete nvp
-	 */
+	 
 	snprintf(pci_path, sizeof(pci_path), "=pci/%d/%d", domain_nr,
 		 bus_nr);
 	pci_len = strlen(pci_path);
@@ -268,9 +240,7 @@ static void brcmf_fw_strip_multi_v1(struct nvram_parser *nvp, u16 domain_nr,
 	found = false;
 	i = 0;
 	while (i < nvp->nvram_len - BRCMF_FW_NVRAM_DEVPATH_LEN) {
-		/* Format: devpathX=pcie/Y/Z/
-		 * Y = domain_nr, Z = bus_nr, X = virtual ID
-		 */
+		 
 		if (strncmp(&nvp->nvram[i], "devpath", 7) == 0 &&
 		    (!strncmp(&nvp->nvram[i + 8], pci_path, pci_len) ||
 		     !strncmp(&nvp->nvram[i + 8], pcie_path, pcie_len))) {
@@ -285,7 +255,7 @@ static void brcmf_fw_strip_multi_v1(struct nvram_parser *nvp, u16 domain_nr,
 	if (!found)
 		goto fail;
 
-	/* Now copy all valid entries, release old nvram and assign new one */
+	 
 	i = 0;
 	j = 0;
 	while (i < nvp->nvram_len) {
@@ -315,12 +285,7 @@ fail:
 	nvp->nvram_len = 0;
 }
 
-/* brcmf_fw_strip_multi_v2 :Some nvram files contain settings for multiple
- * devices. Strip it down for one device, use domain_nr/bus_nr to determine
- * which data is to be returned. v2 is the version where nvram is stored
- * uncompressed, all relevant valid entries are identified by
- * pcie/domain_nr/bus_nr:
- */
+ 
 static void brcmf_fw_strip_multi_v2(struct nvram_parser *nvp, u16 domain_nr,
 				    u16 bus_nr)
 {
@@ -335,10 +300,7 @@ static void brcmf_fw_strip_multi_v2(struct nvram_parser *nvp, u16 domain_nr,
 		return;
 	}
 
-	/* Copy all valid entries, release old nvram and assign new one.
-	 * Valid entries are of type pcie/X/Y/ where X = domain_nr and
-	 * Y = bus_nr.
-	 */
+	 
 	snprintf(prefix, sizeof(prefix), "pcie/%d/%d/", domain_nr, bus_nr);
 	len = strlen(prefix);
 	i = 0;
@@ -387,11 +349,7 @@ static void brcmf_fw_add_macaddr(struct nvram_parser *nvp, u8 *mac)
 	nvp->nvram_len += len + 1;
 }
 
-/* brcmf_nvram_strip :Takes a buffer of "<var>=<value>\n" lines read from a fil
- * and ending in a NUL. Removes carriage returns, empty lines, comment lines,
- * and converts newlines to NULs. Shortens buffer as needed and pads with NULs.
- * End of buffer is completed with token identifying length of buffer.
- */
+ 
 static void *brcmf_fw_nvram_strip(const u8 *data, size_t data_len,
 				  u32 *new_length, u16 domain_nr, u16 bus_nr,
 				  struct device *dev)
@@ -462,14 +420,7 @@ struct brcmf_fw {
 };
 
 #ifdef CONFIG_EFI
-/* In some cases the EFI-var stored nvram contains "ccode=ALL" or "ccode=XV"
- * to specify "worldwide" compatible settings, but these 2 ccode-s do not work
- * properly. "ccode=ALL" causes channels 12 and 13 to not be available,
- * "ccode=XV" causes all 5GHz channels to not be available. So we replace both
- * with "ccode=X2" which allows channels 12+13 and 5Ghz channels in
- * no-Initiate-Radiation mode. This means that we will never send on these
- * channels without first having received valid wifi traffic on the channel.
- */
+ 
 static void brcmf_fw_fix_efi_nvram_ccode(char *data, unsigned long data_len)
 {
 	char *ccode;
@@ -605,7 +556,7 @@ static int brcmf_fw_complete_request(const struct firmware *fw,
 			ret = -ENOENT;
 		break;
 	default:
-		/* something fishy here so bail out early */
+		 
 		brcmf_err("unknown fw type: %d\n", cur->type);
 		release_firmware(fw);
 		ret = -EINVAL;
@@ -627,7 +578,7 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
 	if (!suffix || suffix == path)
 		return NULL;
 
-	/* strip extension at the end */
+	 
 	strscpy(base, path, BRCMF_FW_NAME_LEN);
 	base[suffix - path] = 0;
 
@@ -648,7 +599,7 @@ static int brcmf_fw_request_firmware(const struct firmware **fw,
 	unsigned int i;
 	int ret;
 
-	/* Files can be board-specific, first try board-specific paths */
+	 
 	for (i = 0; i < ARRAY_SIZE(fwctx->req->board_types); i++) {
 		char *alt_path;
 
@@ -701,7 +652,7 @@ static void brcmf_fw_request_done_alt_path(const struct firmware *fw, void *ctx)
 		return;
 	}
 
-	/* Try next board firmware */
+	 
 	if (fwctx->board_index < ARRAY_SIZE(fwctx->req->board_types)) {
 		board_type = fwctx->req->board_types[fwctx->board_index++];
 		if (!board_type)
@@ -721,7 +672,7 @@ static void brcmf_fw_request_done_alt_path(const struct firmware *fw, void *ctx)
 	}
 
 fallback:
-	/* Fall back to canonical path if board firmware not found */
+	 
 	ret = request_firmware_nowait(THIS_MODULE, true, first->path,
 				      fwctx->dev, GFP_KERNEL, fwctx,
 				      brcmf_fw_request_done);
@@ -769,7 +720,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
 	fwctx->req = req;
 	fwctx->done = fw_cb;
 
-	/* First try alternative board-specific path if any */
+	 
 	if (fwctx->req->board_types[0])
 		alt_path = brcm_alt_fw_path(first->path,
 					    fwctx->req->board_types[0]);
@@ -838,7 +789,7 @@ brcmf_fw_alloc_request(u32 chip, u32 chiprev,
 	for (j = 0; j < n_fwnames; j++) {
 		fwreq->items[j].path = fwnames[j].path;
 		fwnames[j].path[0] = '\0';
-		/* check if firmware path is provided by module parameter */
+		 
 		if (brcmf_mp_global.firmware_path[0] != '\0') {
 			strscpy(fwnames[j].path, mp_path,
 				BRCMF_FW_NAME_LEN);

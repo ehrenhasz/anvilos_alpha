@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat, Inc., Frederic Weisbecker <fweisbec@redhat.com>
- *
- * Selftests for a few posix timers interface.
- *
- * Kernel loop code stolen from Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 
 #include <sys/time.h>
 #include <stdio.h>
@@ -21,16 +15,13 @@
 
 static volatile int done;
 
-/* Busy loop in userspace to elapse ITIMER_VIRTUAL */
+ 
 static void user_loop(void)
 {
 	while (!done);
 }
 
-/*
- * Try to spend as much time as possible in kernelspace
- * to elapse ITIMER_PROF.
- */
+ 
 static void kernel_loop(void)
 {
 	void *addr = sbrk(0);
@@ -42,9 +33,7 @@ static void kernel_loop(void)
 	}
 }
 
-/*
- * Sleep until ITIMER_REAL expiration.
- */
+ 
 static void idle_loop(void)
 {
 	pause();
@@ -55,10 +44,7 @@ static void sig_handler(int nr)
 	done = 1;
 }
 
-/*
- * Check the expected timer expiration matches the GTOD elapsed delta since
- * we armed the timer. Keep a 0.5 sec error margin due to various jitter.
- */
+ 
 static int check_diff(struct timeval start, struct timeval end)
 {
 	long long diff;
@@ -203,10 +189,7 @@ static void distribution_handler(int nr)
 		__atomic_fetch_sub(&remain, 1, __ATOMIC_RELAXED);
 }
 
-/*
- * Test that all running threads _eventually_ receive CLOCK_PROCESS_CPUTIME_ID
- * timer signals. This primarily tests that the kernel does not favour any one.
- */
+ 
 static int check_timer_distribution(void)
 {
 	int err, i;
@@ -223,7 +206,7 @@ static int check_timer_distribution(void)
 	printf("Check timer_create() per process signal distribution... ");
 	fflush(stdout);
 
-	remain = nthreads + 1;  /* worker threads + this thread */
+	remain = nthreads + 1;   
 	signal(SIGALRM, distribution_handler);
 	err = timer_create(CLOCK_PROCESS_CPUTIME_ID, NULL, &id);
 	if (err < 0) {
@@ -243,7 +226,7 @@ static int check_timer_distribution(void)
 		}
 	}
 
-	/* Wait for all threads to receive the signal. */
+	 
 	while (__atomic_load_n(&remain, __ATOMIC_RELAXED));
 
 	for (i = 0; i < nthreads; i++) {
@@ -279,15 +262,7 @@ int main(int argc, char **argv)
 	if (check_timer_create(CLOCK_THREAD_CPUTIME_ID) < 0)
 		return ksft_exit_fail();
 
-	/*
-	 * It's unfortunately hard to reliably test a timer expiration
-	 * on parallel multithread cputime. We could arm it to expire
-	 * on DELAY * nr_threads, with nr_threads busy looping, then wait
-	 * the normal DELAY since the time is elapsing nr_threads faster.
-	 * But for that we need to ensure we have real physical free CPUs
-	 * to ensure true parallelism. So test only one thread until we
-	 * find a better solution.
-	 */
+	 
 	if (check_timer_create(CLOCK_PROCESS_CPUTIME_ID) < 0)
 		return ksft_exit_fail();
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Touchscreen driver DMI based configuration code
- *
- * Copyright (c) 2017 Red Hat Inc.
- *
- * Red Hat authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -18,13 +11,13 @@
 #include <linux/string.h>
 
 struct ts_dmi_data {
-	/* The EFI embedded-fw code expects this to be the first member! */
+	 
 	struct efi_embedded_fw_desc embedded_fw;
 	const char *acpi_name;
 	const struct property_entry *properties;
 };
 
-/* NOTE: Please keep all entries sorted alphabetically */
+ 
 
 static const struct property_entry archos_101_cesium_educ_props[] = {
 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1850),
@@ -408,7 +401,7 @@ static const struct ts_dmi_data estar_beauty_hd_data = {
 	.properties	= estar_beauty_hd_props,
 };
 
-/* Generic props + data for upside-down mounted GDIX1001 touchscreens */
+ 
 static const struct property_entry gdix1001_upside_down_props[] = {
 	PROPERTY_ENTRY_BOOL("touchscreen-inverted-x"),
 	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
@@ -1091,24 +1084,24 @@ static const struct ts_dmi_data vinga_twizzle_j116_data = {
 	.properties	= vinga_twizzle_j116_props,
 };
 
-/* NOTE: Please keep this table sorted alphabetically */
+ 
 const struct dmi_system_id touchscreen_dmi_table[] = {
 	{
-		/* Archos 101 Cesium Educ */
+		 
 		.driver_data = (void *)&archos_101_cesium_educ_data,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "ARCHOS 101 Cesium Educ"),
 		},
 	},
 	{
-		/* Bush Windows tablet */
+		 
 		.driver_data = (void *)&bush_bush_windows_tablet_data,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Bush Windows tablet"),
 		},
 	},
 	{
-		/* Chuwi Hi8 */
+		 
 		.driver_data = (void *)&chuwi_hi8_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ilife"),
@@ -1116,7 +1109,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi8 (H1D_S806_206) */
+		 
 		.driver_data = (void *)&chuwi_hi8_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1125,7 +1118,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi8 Air (CWI543) */
+		 
 		.driver_data = (void *)&chuwi_hi8_air_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
@@ -1134,7 +1127,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi8 Pro (CWI513) */
+		 
 		.driver_data = (void *)&chuwi_hi8_pro_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hampoo"),
@@ -1142,7 +1135,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi10 Air */
+		 
 		.driver_data = (void *)&chuwi_hi10_air_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "CHUWI INNOVATION AND TECHNOLOGY(SHENZHEN)CO.LTD"),
@@ -1151,7 +1144,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi10 Plus (CWI527) */
+		 
 		.driver_data = (void *)&chuwi_hi10_plus_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
@@ -1160,7 +1153,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Hi10 Pro (CWI529) */
+		 
 		.driver_data = (void *)&chuwi_hi10_pro_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
@@ -1169,17 +1162,17 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi HiBook (CWI514) */
+		 
 		.driver_data = (void *)&chuwi_hibook_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
 			DMI_MATCH(DMI_BOARD_NAME, "Cherry Trail CR"),
-			/* Above matches are too generic, add bios-date match */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "05/07/2016"),
 		},
 	},
 	{
-		/* Chuwi Vi8 (CWI501) */
+		 
 		.driver_data = (void *)&chuwi_vi8_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1188,7 +1181,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Vi8 (CWI506) */
+		 
 		.driver_data = (void *)&chuwi_vi8_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1197,7 +1190,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Vi8 Plus (CWI519) */
+		 
 		.driver_data = (void *)&chuwi_vi8_plus_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hampoo"),
@@ -1206,7 +1199,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Vi10 (CWI505) */
+		 
 		.driver_data = (void *)&chuwi_vi10_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
@@ -1216,7 +1209,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Chuwi Surbook Mini (CWI540) */
+		 
 		.driver_data = (void *)&chuwi_surbook_mini_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
@@ -1224,7 +1217,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Connect Tablet 9 */
+		 
 		.driver_data = (void *)&connect_tablet9_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Connect"),
@@ -1232,7 +1225,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* CSL Panther Tab HD */
+		 
 		.driver_data = (void *)&csl_panther_tab_hd_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "CSL Computer GmbH & Co. KG"),
@@ -1240,7 +1233,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* CUBE iwork8 Air */
+		 
 		.driver_data = (void *)&cube_iwork8_air_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "cube"),
@@ -1249,7 +1242,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Cube KNote i1101 */
+		 
 		.driver_data = (void *)&cube_knote_i1101_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
@@ -1259,7 +1252,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* DEXP Ursus 7W */
+		 
 		.driver_data = (void *)&dexp_ursus_7w_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1267,7 +1260,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* DEXP Ursus KX210i */
+		 
 		.driver_data = (void *)&dexp_ursus_kx210i_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "INSYDE Corp."),
@@ -1275,7 +1268,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Digma Citi E200 */
+		 
 		.driver_data = (void *)&digma_citi_e200_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Digma"),
@@ -1284,7 +1277,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Estar Beauty HD (MID 7316R) */
+		 
 		.driver_data = (void *)&estar_beauty_hd_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Estar"),
@@ -1292,7 +1285,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* GP-electronic T701 */
+		 
 		.driver_data = (void *)&gp_electronic_t701_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1301,7 +1294,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* I.T.Works TW701 (same hardware as the Trekstor ST70416-6) */
+		 
 		.driver_data = (void *)&trekstor_surftab_wintron70_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1310,7 +1303,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Irbis TW90 */
+		 
 		.driver_data = (void *)&irbis_tw90_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "IRBIS"),
@@ -1318,7 +1311,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Irbis TW118 */
+		 
 		.driver_data = (void *)&irbis_tw118_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "IRBIS"),
@@ -1326,7 +1319,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* I.T.Works TW891 */
+		 
 		.driver_data = (void *)&itworks_tw891_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "To be filled by O.E.M."),
@@ -1334,70 +1327,70 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Jumper EZpad 6 Pro */
+		 
 		.driver_data = (void *)&jumper_ezpad_6_pro_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Jumper"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EZpad"),
 			DMI_MATCH(DMI_BIOS_VERSION, "5.12"),
-			/* Above matches are too generic, add bios-date match */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "08/18/2017"),
 		},
 	},
 	{
-		/* Jumper EZpad 6 Pro B */
+		 
 		.driver_data = (void *)&jumper_ezpad_6_pro_b_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Jumper"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EZpad"),
 			DMI_MATCH(DMI_BIOS_VERSION, "5.12"),
-			/* Above matches are too generic, add bios-date match */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "04/24/2018"),
 		},
 	},
 	{
-		/* Jumper EZpad 6 m4 */
+		 
 		.driver_data = (void *)&jumper_ezpad_6_m4_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "jumper"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EZpad"),
-			/* Jumper8.S106x.A00C.1066 with the version dropped */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "Jumper8.S106x"),
 		},
 	},
 	{
-		/* Jumper EZpad 7 */
+		 
 		.driver_data = (void *)&jumper_ezpad_7_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Jumper"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EZpad"),
-			/* Jumper12x.WJ2012.bsBKRCP05 with the version dropped */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "Jumper12x.WJ2012.bsBKRCP"),
 		},
 	},
 	{
-		/* Jumper EZpad mini3 */
+		 
 		.driver_data = (void *)&jumper_ezpad_mini3_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
-			/* jumperx.T87.KFBNEEA02 with the version-nr dropped */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "jumperx.T87.KFBNEEA"),
 		},
 	},
 	{
-		/* Juno Tablet */
+		 
 		.driver_data = (void *)&gdix1002_00_upside_down_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Default string"),
-			/* Both product- and board-name being "Default string" is somewhat rare */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
 			DMI_MATCH(DMI_BOARD_NAME, "Default string"),
-			/* Above matches are too generic, add partial bios-version match */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "JP2V1."),
 		},
 	},
 	{
-		/* Mediacom WinPad 7.0 W700 (same hw as Wintron surftab 7") */
+		 
 		.driver_data = (void *)&trekstor_surftab_wintron70_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDIACOM"),
@@ -1405,7 +1398,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Mediacom Flexbook Edge 11 (same hw as TS Primebook C11) */
+		 
 		.driver_data = (void *)&trekstor_primebook_c11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDIACOM"),
@@ -1413,7 +1406,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* MP Man Converter 9 */
+		 
 		.driver_data = (void *)&mpman_converter9_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MPMAN"),
@@ -1421,7 +1414,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* MP Man MPWIN895CL */
+		 
 		.driver_data = (void *)&mpman_mpwin895cl_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MPMAN"),
@@ -1429,7 +1422,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Myria MY8307 */
+		 
 		.driver_data = (void *)&myria_my8307_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Complet Electro Serv"),
@@ -1437,7 +1430,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Onda oBook 20 Plus */
+		 
 		.driver_data = (void *)&onda_obook_20_plus_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ONDA"),
@@ -1445,7 +1438,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* ONDA V80 plus v3 (P80PSBG9V3A01501) */
+		 
 		.driver_data = (void *)&onda_v80_plus_v3_data,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONDA"),
@@ -1453,7 +1446,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* ONDA V820w DualOS */
+		 
 		.driver_data = (void *)&onda_v820w_32g_data,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "ONDA"),
@@ -1461,7 +1454,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* ONDA V891 v5 */
+		 
 		.driver_data = (void *)&onda_v891_v5_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ONDA"),
@@ -1470,18 +1463,18 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* ONDA V891w revision P891WBEBV1B00 aka v1 */
+		 
 		.driver_data = (void *)&onda_v891w_v1_data,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "ONDA"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONDA Tablet"),
 			DMI_EXACT_MATCH(DMI_BOARD_VERSION, "V001"),
-			/* Exact match, different versions need different fw */
+			 
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "ONDA.W89EBBN08"),
 		},
 	},
 	{
-		/* ONDA V891w Dual OS P891DCF2V1A01274 64GB */
+		 
 		.driver_data = (void *)&onda_v891w_v3_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
@@ -1490,7 +1483,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Pipo W2S */
+		 
 		.driver_data = (void *)&pipo_w2s_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "PIPO"),
@@ -1498,27 +1491,27 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Pipo W11 */
+		 
 		.driver_data = (void *)&pipo_w11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "PIPO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "To be filled by O.E.M."),
-			/* Above matches are too generic, add bios-ver match */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "JS-BI-10.6-SF133GR300-GA55B-024-F"),
 		},
 	},
 	{
-		/* Ployer Momo7w (same hardware as the Trekstor ST70416-6) */
+		 
 		.driver_data = (void *)&trekstor_surftab_wintron70_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Shenzhen PLOYER"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "MOMO7W"),
-			/* Exact match, different versions need different fw */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "MOMO.G.WI71C.MABMRBA02"),
 		},
 	},
 	{
-		/* Positivo C4128B */
+		 
 		.driver_data = (void *)&positivo_c4128b_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Positivo Tecnologia SA"),
@@ -1526,51 +1519,51 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Point of View mobii wintab p800w (v2.0) */
+		 
 		.driver_data = (void *)&pov_mobii_wintab_p800w_v20_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
 			DMI_MATCH(DMI_BIOS_VERSION, "3BAIR1014"),
-			/* Above matches are too generic, add bios-date match */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "10/24/2014"),
 		},
 	},
 	{
-		/* Predia Basic tablet) */
+		 
 		.driver_data = (void *)&predia_basic_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "CherryTrail"),
-			/* Above matches are too generic, add bios-version match */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "Mx.WT107.KUBNGEA"),
 		},
 	},
 	{
-		/* Point of View mobii wintab p800w (v2.1) */
+		 
 		.driver_data = (void *)&pov_mobii_wintab_p800w_v21_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
 			DMI_MATCH(DMI_BIOS_VERSION, "3BAIR1013"),
-			/* Above matches are too generic, add bios-date match */
+			 
 			DMI_MATCH(DMI_BIOS_DATE, "08/22/2014"),
 		},
 	},
 	{
-		/* Point of View mobii wintab p1006w (v1.0) */
+		 
 		.driver_data = (void *)&pov_mobii_wintab_p1006w_v10_data,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "BayTrail"),
-			/* Note 105b is Foxcon's USB/PCI vendor id */
+			 
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "105B"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
 		},
 	},
 	{
-		/* RCA Cambio W101 v2 */
-		/* https://github.com/onitake/gsl-firmware/discussions/193 */
+		 
+		 
 		.driver_data = (void *)&rca_cambio_w101_v2_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "RCA"),
@@ -1578,7 +1571,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* RWC NANOTE P8 */
+		 
 		.driver_data = (void *)&rwc_nanote_p8_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
@@ -1587,7 +1580,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Schneider SCT101CTM */
+		 
 		.driver_data = (void *)&schneider_sct101ctm_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Default string"),
@@ -1595,7 +1588,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Techbite Arc 11.6 */
+		 
 		.driver_data = (void *)&techbite_arc_11_6_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "mPTech"),
@@ -1604,7 +1597,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Teclast Tbook 11 */
+		 
 		.driver_data = (void *)&teclast_tbook11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TECLAST"),
@@ -1613,7 +1606,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Teclast X3 Plus */
+		 
 		.driver_data = (void *)&teclast_x3_plus_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TECLAST"),
@@ -1622,7 +1615,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Teclast X89 (Android version / BIOS) */
+		 
 		.driver_data = (void *)&gdix1001_00_upside_down_data,
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "WISKY"),
@@ -1630,17 +1623,17 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Teclast X89 (Windows version / BIOS) */
+		 
 		.driver_data = (void *)&gdix1001_01_upside_down_data,
 		.matches = {
-			/* tPAD is too generic, also match on bios date */
+			 
 			DMI_MATCH(DMI_BOARD_VENDOR, "TECLAST"),
 			DMI_MATCH(DMI_BOARD_NAME, "tPAD"),
 			DMI_MATCH(DMI_BIOS_DATE, "12/19/2014"),
 		},
 	},
 	{
-		/* Teclast X98 Plus II */
+		 
 		.driver_data = (void *)&teclast_x98plus2_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TECLAST"),
@@ -1648,20 +1641,16 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Teclast X98 Pro */
+		 
 		.driver_data = (void *)&gdix1001_00_upside_down_data,
 		.matches = {
-			/*
-			 * Only match BIOS date, because the manufacturers
-			 * BIOS does not report the board name at all
-			 * (sometimes)...
-			 */
+			 
 			DMI_MATCH(DMI_BOARD_VENDOR, "TECLAST"),
 			DMI_MATCH(DMI_BIOS_DATE, "10/28/2015"),
 		},
 	},
 	{
-		/* Trekstor Primebook C11 */
+		 
 		.driver_data = (void *)&trekstor_primebook_c11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TREKSTOR"),
@@ -1669,7 +1658,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Trekstor Primebook C11B (same touchscreen as the C11) */
+		 
 		.driver_data = (void *)&trekstor_primebook_c11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TREKSTOR"),
@@ -1677,7 +1666,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Trekstor Primebook C13 */
+		 
 		.driver_data = (void *)&trekstor_primebook_c13_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TREKSTOR"),
@@ -1685,7 +1674,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Trekstor Primetab T13B */
+		 
 		.driver_data = (void *)&trekstor_primetab_t13b_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TREKSTOR"),
@@ -1693,7 +1682,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* TrekStor SurfTab duo W1 10.1 ST10432-10b */
+		 
 		.driver_data = (void *)&trekstor_surftab_duo_w1_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
@@ -1701,7 +1690,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* TrekStor SurfTab twin 10.1 ST10432-8 */
+		 
 		.driver_data = (void *)&trekstor_surftab_twin_10_1_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
@@ -1709,27 +1698,27 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Trekstor Surftab Wintron 7.0 ST70416-6 */
+		 
 		.driver_data = (void *)&trekstor_surftab_wintron70_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ST70416-6"),
-			/* Exact match, different versions need different fw */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "TREK.G.WI71C.JGBMRBA04"),
 		},
 	},
 	{
-		/* Trekstor Surftab Wintron 7.0 ST70416-6, newer BIOS */
+		 
 		.driver_data = (void *)&trekstor_surftab_wintron70_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab wintron 7.0 ST70416-6"),
-			/* Exact match, different versions need different fw */
+			 
 			DMI_MATCH(DMI_BIOS_VERSION, "TREK.G.WI71C.JGBMRBA05"),
 		},
 	},
 	{
-		/* Trekstor Yourbook C11B (same touchscreen as the Primebook C11) */
+		 
 		.driver_data = (void *)&trekstor_primebook_c11_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "TREKSTOR"),
@@ -1737,7 +1726,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Viglen Connect 10 */
+		 
 		.driver_data = (void *)&viglen_connect_10_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Viglen Ltd."),
@@ -1745,14 +1734,14 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Vinga Twizzle J116 */
+		 
 		.driver_data = (void *)&vinga_twizzle_j116_data,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "VINGA Twizzle J116"),
 		},
 	},
 	{
-		/* "WinBook TW100" */
+		 
 		.driver_data = (void *)&gdix1001_00_upside_down_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "WinBook"),
@@ -1760,7 +1749,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		}
 	},
 	{
-		/* WinBook TW700 */
+		 
 		.driver_data = (void *)&gdix1001_00_upside_down_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "WinBook"),
@@ -1768,7 +1757,7 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
 		},
 	},
 	{
-		/* Yours Y8W81, same case and touchscreen as Chuwi Vi8 */
+		 
 		.driver_data = (void *)&chuwi_vi8_data,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "YOURS"),
@@ -1824,10 +1813,10 @@ static int __init ts_dmi_init(void)
 
 	dmi_id = dmi_first_match(touchscreen_dmi_table);
 	if (!dmi_id)
-		return 0; /* Not an error */
+		return 0;  
 
 	ts_data = dmi_id->driver_data;
-	/* Some dmi table entries only provide an efi_embedded_fw_desc */
+	 
 	if (!ts_data->properties)
 		return 0;
 
@@ -1839,9 +1828,5 @@ static int __init ts_dmi_init(void)
 	return error;
 }
 
-/*
- * We are registering out notifier after i2c core is initialized and i2c bus
- * itself is ready (which happens at postcore initcall level), but before
- * ACPI starts enumerating devices (at subsys initcall level).
- */
+ 
 arch_initcall(ts_dmi_init);

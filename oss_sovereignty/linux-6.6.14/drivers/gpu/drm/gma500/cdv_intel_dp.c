@@ -1,29 +1,4 @@
-/*
- * Copyright © 2012 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Keith Packard <keithp@keithp.com>
- *
- */
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -41,14 +16,7 @@
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
 
-/**
- * struct i2c_algo_dp_aux_data - driver interface structure for i2c over dp
- * 				 aux algorithm
- * @running: set by the algo indicating whether an i2c is ongoing or whether
- * 	     the i2c bus is quiescent
- * @address: i2c target address for the currently ongoing transfer
- * @aux_ch: driver callback to transfer a single byte of the i2c payload
- */
+ 
 struct i2c_algo_dp_aux_data {
 	bool running;
 	u16 address;
@@ -57,7 +25,7 @@ struct i2c_algo_dp_aux_data {
 		       uint8_t *read_byte);
 };
 
-/* Run a single AUX_CH I2C transaction, writing/reading data as necessary */
+ 
 static int
 i2c_algo_dp_aux_transaction(struct i2c_adapter *adapter, int mode,
 			    uint8_t write_byte, uint8_t *read_byte)
@@ -70,15 +38,9 @@ i2c_algo_dp_aux_transaction(struct i2c_adapter *adapter, int mode,
 	return ret;
 }
 
-/*
- * I2C over AUX CH
- */
+ 
 
-/*
- * Send the address. If the I2C link is running, this 'restarts'
- * the connection with the new address, this is used for doing
- * a write followed by a read (as needed for DDC)
- */
+ 
 static int
 i2c_algo_dp_aux_address(struct i2c_adapter *adapter, u16 address, bool reading)
 {
@@ -94,10 +56,7 @@ i2c_algo_dp_aux_address(struct i2c_adapter *adapter, u16 address, bool reading)
 	return i2c_algo_dp_aux_transaction(adapter, mode, 0, NULL);
 }
 
-/*
- * Stop the I2C transaction. This closes out the link, sending
- * a bare address packet with the MOT bit turned off
- */
+ 
 static void
 i2c_algo_dp_aux_stop(struct i2c_adapter *adapter, bool reading)
 {
@@ -114,10 +73,7 @@ i2c_algo_dp_aux_stop(struct i2c_adapter *adapter, bool reading)
 	}
 }
 
-/*
- * Write a single byte to the current I2C address, the
- * I2C link must be running or this returns -EIO
- */
+ 
 static int
 i2c_algo_dp_aux_put_byte(struct i2c_adapter *adapter, u8 byte)
 {
@@ -129,10 +85,7 @@ i2c_algo_dp_aux_put_byte(struct i2c_adapter *adapter, u8 byte)
 	return i2c_algo_dp_aux_transaction(adapter, MODE_I2C_WRITE, byte, NULL);
 }
 
-/*
- * Read a single byte from the current I2C address, the
- * I2C link must be running or this returns -EIO
- */
+ 
 static int
 i2c_algo_dp_aux_get_byte(struct i2c_adapter *adapter, u8 *byte_ret)
 {
@@ -214,10 +167,7 @@ i2c_dp_aux_prepare_bus(struct i2c_adapter *adapter)
 	return 0;
 }
 
-/*
- * FIXME: This is the old dp aux helper, gma500 is the last driver that needs to
- * be ported over to the new helper code in drm_dp_helper.c like i915 or radeon.
- */
+ 
 static int
 i2c_dp_aux_add_bus(struct i2c_adapter *adapter)
 {
@@ -271,7 +221,7 @@ struct cdv_intel_dp {
 	int panel_power_cycle_delay;
 	int backlight_on_delay;
 	int backlight_off_delay;
-	struct drm_display_mode *panel_fixed_mode;  /* for eDP */
+	struct drm_display_mode *panel_fixed_mode;   
 	bool panel_on;
 };
 
@@ -300,13 +250,7 @@ static uint32_t dp_vswing_premph_table[] = {
         0x55668954,	0,
         0x559ac0d4,	0x6000,
 };
-/**
- * is_edp - is the given port attached to an eDP panel (either CPU or PCH)
- * @encoder: GMA encoder struct
- *
- * If a CPU or PCH DP output is attached to an eDP panel, this function
- * will return true, and false otherwise.
- */
+ 
 static bool is_edp(struct gma_encoder *encoder)
 {
 	return encoder->type == INTEL_OUTPUT_EDP;
@@ -407,7 +351,7 @@ static void cdv_intel_edp_panel_vdd_off(struct gma_encoder *intel_encoder)
 
 }
 
-/* Returns true if the panel was already on when called */
+ 
 static bool cdv_intel_edp_panel_on(struct gma_encoder *intel_encoder)
 {
 	struct drm_device *dev = intel_encoder->base.dev;
@@ -450,7 +394,7 @@ static void cdv_intel_edp_panel_off (struct gma_encoder *intel_encoder)
 
 	intel_dp->panel_on = false;
 	pp &= ~PANEL_UNLOCK_MASK;
-	/* ILK workaround: disable reset around power sequence */
+	 
 
 	pp &= ~POWER_TARGET_ON;
 	pp &= ~EDP_FORCE_VDD;
@@ -473,12 +417,7 @@ static void cdv_intel_edp_backlight_on (struct gma_encoder *intel_encoder)
 	u32 pp;
 
 	DRM_DEBUG_KMS("\n");
-	/*
-	 * If we enable the backlight right away following a panel power
-	 * on, we may see slight flicker as the panel syncs with the eDP
-	 * link.  So delay a bit to make sure the image is solid before
-	 * allowing it to appear.
-	 */
+	 
 	msleep(300);
 	pp = REG_READ(PP_CONTROL);
 
@@ -520,8 +459,7 @@ cdv_intel_dp_mode_valid(struct drm_connector *connector,
 			return MODE_PANEL;
 	}
 
-	/* only refuse the mode on non eDP since we have seen some weird eDP panels
-	   which are outside spec tolerances but somehow work by magic */
+	 
 	if (!is_edp(encoder) &&
 	    (cdv_intel_dp_link_required(mode->clock, dev_priv->edp.bpp)
 	     > cdv_intel_dp_max_data_rate(max_link_clock, max_lanes)))
@@ -578,12 +516,7 @@ cdv_intel_dp_aux_ch(struct gma_encoder *encoder,
 	uint32_t aux_clock_divider;
 	int try, precharge;
 
-	/* The clock divider is based off the hrawclk,
-	 * and would like to run at 2MHz. So, take the
-	 * hrawclk value and divide by 2 and use that
-	 * On CDV platform it uses 200MHz as hrawclk.
-	 *
-	 */
+	 
 	aux_clock_divider = 200 / 2;
 
 	precharge = 4;
@@ -596,14 +529,14 @@ cdv_intel_dp_aux_ch(struct gma_encoder *encoder,
 		return -EBUSY;
 	}
 
-	/* Must try at least 3 times according to DP spec */
+	 
 	for (try = 0; try < 5; try++) {
-		/* Load the send data into the aux channel data registers */
+		 
 		for (i = 0; i < send_bytes; i += 4)
 			REG_WRITE(ch_data + i,
 				   pack_aux(send + i, send_bytes - i));
 
-		/* Send the command and wait for it to complete */
+		 
 		REG_WRITE(ch_ctl,
 			   DP_AUX_CH_CTL_SEND_BUSY |
 			   DP_AUX_CH_CTL_TIME_OUT_400us |
@@ -620,7 +553,7 @@ cdv_intel_dp_aux_ch(struct gma_encoder *encoder,
 			udelay(100);
 		}
 
-		/* Clear done status and any errors */
+		 
 		REG_WRITE(ch_ctl,
 			   status |
 			   DP_AUX_CH_CTL_DONE |
@@ -635,22 +568,19 @@ cdv_intel_dp_aux_ch(struct gma_encoder *encoder,
 		return -EBUSY;
 	}
 
-	/* Check for timeout or receive error.
-	 * Timeouts occur when the sink is not connected
-	 */
+	 
 	if (status & DP_AUX_CH_CTL_RECEIVE_ERROR) {
 		DRM_ERROR("dp_aux_ch receive error status 0x%08x\n", status);
 		return -EIO;
 	}
 
-	/* Timeouts occur when the device isn't connected, so they're
-	 * "normal" -- don't fill the kernel log with these */
+	 
 	if (status & DP_AUX_CH_CTL_TIME_OUT_ERROR) {
 		DRM_DEBUG_KMS("dp_aux_ch timeout status 0x%08x\n", status);
 		return -ETIMEDOUT;
 	}
 
-	/* Unload any bytes sent back from the other side */
+	 
 	recv_bytes = ((status & DP_AUX_CH_CTL_MESSAGE_SIZE_MASK) >>
 		      DP_AUX_CH_CTL_MESSAGE_SIZE_SHIFT);
 	if (recv_bytes > recv_size)
@@ -663,7 +593,7 @@ cdv_intel_dp_aux_ch(struct gma_encoder *encoder,
 	return recv_bytes;
 }
 
-/* Write data to the aux channel in native mode */
+ 
 static int
 cdv_intel_dp_aux_native_write(struct gma_encoder *encoder,
 			  uint16_t address, uint8_t *send, int send_bytes)
@@ -696,7 +626,7 @@ cdv_intel_dp_aux_native_write(struct gma_encoder *encoder,
 	return send_bytes;
 }
 
-/* Write a single byte to the aux channel in native mode */
+ 
 static int
 cdv_intel_dp_aux_native_write_1(struct gma_encoder *encoder,
 			    uint16_t address, uint8_t byte)
@@ -704,7 +634,7 @@ cdv_intel_dp_aux_native_write_1(struct gma_encoder *encoder,
 	return cdv_intel_dp_aux_native_write(encoder, address, &byte, 1);
 }
 
-/* read bytes from a native aux channel */
+ 
 static int
 cdv_intel_dp_aux_native_read(struct gma_encoder *encoder,
 			 uint16_t address, uint8_t *recv, int recv_bytes)
@@ -760,7 +690,7 @@ cdv_intel_dp_i2c_aux_ch(struct i2c_adapter *adapter, int mode,
 	int reply_bytes;
 	int ret;
 
-	/* Set up the command byte */
+	 
 	if (mode & MODE_I2C_READ)
 		msg[0] = DP_AUX_I2C_READ << 4;
 	else
@@ -801,9 +731,7 @@ cdv_intel_dp_i2c_aux_ch(struct i2c_adapter *adapter, int mode,
 
 		switch ((reply[0] >> 4) & DP_AUX_NATIVE_REPLY_MASK) {
 		case DP_AUX_NATIVE_REPLY_ACK:
-			/* I2C-over-AUX Reply field is only valid
-			 * when paired with AUX ACK.
-			 */
+			 
 			break;
 		case DP_AUX_NATIVE_REPLY_NACK:
 			DRM_DEBUG_KMS("aux_ch native nack\n");
@@ -925,7 +853,7 @@ cdv_intel_dp_mode_fixup(struct drm_encoder *encoder, const struct drm_display_mo
 		}
 	}
 	if (is_edp(intel_encoder)) {
-		/* okay we failed just pick the highest */
+		 
 		intel_dp->lane_count = max_lane_count;
 		intel_dp->link_bw = bws[max_clock];
 		adjusted_mode->clock = cdv_intel_dp_link_clock(intel_dp->link_bw);
@@ -950,11 +878,7 @@ struct cdv_intel_dp_m_n {
 static void
 cdv_intel_reduce_ratio(uint32_t *num, uint32_t *den)
 {
-	/*
-	while (*num > 0xffffff || *den > 0xffffff) {
-		*num >>= 1;
-		*den >>= 1;
-	}*/
+	 
 	uint64_t value, m;
 	m = *num;
 	value = m * (0x800000);
@@ -992,9 +916,7 @@ cdv_intel_dp_set_m_n(struct drm_crtc *crtc, struct drm_display_mode *mode,
 	struct cdv_intel_dp_m_n m_n;
 	int pipe = gma_crtc->pipe;
 
-	/*
-	 * Find the lane count in the intel_encoder private
-	 */
+	 
 	list_for_each_entry(encoder, &mode_config->encoder_list, head) {
 		struct gma_encoder *intel_encoder;
 		struct cdv_intel_dp *intel_dp;
@@ -1014,11 +936,7 @@ cdv_intel_dp_set_m_n(struct drm_crtc *crtc, struct drm_display_mode *mode,
 		}
 	}
 
-	/*
-	 * Compute the GMCH and Link ratios. The '3' here is
-	 * the number of bytes_per_pixel post-LUT, which we always
-	 * set up for 8-bits of R/G/B, or 3 bytes total.
-	 */
+	 
 	cdv_intel_dp_compute_m_n(bpp, lane_count,
 			     mode->clock, adjusted_mode->clock, &m_n);
 
@@ -1070,16 +988,14 @@ cdv_intel_dp_mode_set(struct drm_encoder *encoder, struct drm_display_mode *mode
 	intel_dp->link_configuration[0] = intel_dp->link_bw;
 	intel_dp->link_configuration[1] = intel_dp->lane_count;
 
-	/*
-	 * Check for DPCD version > 1.1 and enhanced framing support
-	 */
+	 
 	if (intel_dp->dpcd[DP_DPCD_REV] >= 0x11 &&
 	    (intel_dp->dpcd[DP_MAX_LANE_COUNT] & DP_ENHANCED_FRAME_CAP)) {
 		intel_dp->link_configuration[1] |= DP_LANE_COUNT_ENHANCED_FRAME_EN;
 		intel_dp->DP |= DP_ENHANCED_FRAMING;
 	}
 
-	/* CPT DP's pipe select is decided in TRANS_DP_CTL */
+	 
 	if (gma_crtc->pipe == 1)
 		intel_dp->DP |= DP_PIPEB_SELECT;
 
@@ -1102,13 +1018,13 @@ cdv_intel_dp_mode_set(struct drm_encoder *encoder, struct drm_display_mode *mode
 }
 
 
-/* If the sink supports it, try to set the power state appropriately */
+ 
 static void cdv_intel_dp_sink_dpms(struct gma_encoder *encoder, int mode)
 {
 	struct cdv_intel_dp *intel_dp = encoder->dev_priv;
 	int ret, i;
 
-	/* Should have a valid DPCD by this point */
+	 
 	if (intel_dp->dpcd[DP_DPCD_REV] < 0x11)
 		return;
 
@@ -1118,10 +1034,7 @@ static void cdv_intel_dp_sink_dpms(struct gma_encoder *encoder, int mode)
 		if (ret != 1)
 			DRM_DEBUG_DRIVER("failed to write sink power state\n");
 	} else {
-		/*
-		 * When turning on, we need to retry for 1ms to give the sink
-		 * time to wake up.
-		 */
+		 
 		for (i = 0; i < 3; i++) {
 			ret = cdv_intel_dp_aux_native_write_1(encoder,
 							  DP_SET_POWER,
@@ -1143,7 +1056,7 @@ static void cdv_intel_dp_prepare(struct drm_encoder *encoder)
 		cdv_intel_edp_panel_off(intel_encoder);
 		cdv_intel_edp_panel_vdd_on(intel_encoder);
         }
-	/* Wake up the sink first */
+	 
 	cdv_intel_dp_sink_dpms(intel_encoder, DRM_MODE_DPMS_ON);
 	cdv_intel_dp_link_down(intel_encoder);
 	if (edp)
@@ -1196,20 +1109,14 @@ cdv_intel_dp_dpms(struct drm_encoder *encoder, int mode)
 	}
 }
 
-/*
- * Native read with retry for link status and receiver capability reads for
- * cases where the sink may still be asleep.
- */
+ 
 static bool
 cdv_intel_dp_aux_native_read_retry(struct gma_encoder *encoder, uint16_t address,
 			       uint8_t *recv, int recv_bytes)
 {
 	int ret, i;
 
-	/*
-	 * Sinks are *supposed* to come up within 1ms from an off state,
-	 * but we're also supposed to retry 3 times per the spec.
-	 */
+	 
 	for (i = 0; i < 3; i++) {
 		ret = cdv_intel_dp_aux_native_read(encoder, address, recv,
 					       recv_bytes);
@@ -1221,10 +1128,7 @@ cdv_intel_dp_aux_native_read_retry(struct gma_encoder *encoder, uint16_t address
 	return false;
 }
 
-/*
- * Fetch AUX CH registers 0x202 - 0x207 which contain
- * link status information
- */
+ 
 static bool
 cdv_intel_dp_get_link_status(struct gma_encoder *encoder)
 {
@@ -1310,7 +1214,7 @@ cdv_intel_get_lane_status(uint8_t link_status[DP_LINK_STATUS_SIZE],
 	return (l >> s) & 0xf;
 }
 
-/* Check for clock recovery is done on all channels */
+ 
 static bool
 cdv_intel_clock_recovery_ok(uint8_t link_status[DP_LINK_STATUS_SIZE], int lane_count)
 {
@@ -1325,7 +1229,7 @@ cdv_intel_clock_recovery_ok(uint8_t link_status[DP_LINK_STATUS_SIZE], int lane_c
 	return true;
 }
 
-/* Check to see if channel eq is done on all channels */
+ 
 #define CHANNEL_EQ_BITS (DP_LANE_CR_DONE|\
 			 DP_LANE_CHANNEL_EQ_DONE|\
 			 DP_LANE_SYMBOL_LOCKED)
@@ -1418,49 +1322,44 @@ cdv_intel_dp_set_vswing_premph(struct gma_encoder *encoder, uint8_t signal_level
 	return;
 #endif
 	DRM_DEBUG_KMS("Test2\n");
-	//return ;
+	
 	cdv_sb_reset(dev);
-	/* ;Swing voltage programming
-        ;gfx_dpio_set_reg(0xc058, 0x0505313A) */
+	 
 	cdv_sb_write(dev, ddi_reg->VSwing5, 0x0505313A);
 
-	/* ;gfx_dpio_set_reg(0x8154, 0x43406055) */
+	 
 	cdv_sb_write(dev, ddi_reg->VSwing1, 0x43406055);
 
-	/* ;gfx_dpio_set_reg(0x8148, 0x55338954)
-	 * The VSwing_PreEmph table is also considered based on the vswing/premp
-	 */
+	 
 	index = (vswing + premph) * 2;
 	if (premph == 1 && vswing == 1) {
 		cdv_sb_write(dev, ddi_reg->VSwing2, 0x055738954);
 	} else
 		cdv_sb_write(dev, ddi_reg->VSwing2, dp_vswing_premph_table[index]);
 
-	/* ;gfx_dpio_set_reg(0x814c, 0x40802040) */
+	 
 	if ((vswing + premph) == DP_TRAIN_VOLTAGE_SWING_LEVEL_3)
 		cdv_sb_write(dev, ddi_reg->VSwing3, 0x70802040);
 	else
 		cdv_sb_write(dev, ddi_reg->VSwing3, 0x40802040);
 
-	/* ;gfx_dpio_set_reg(0x8150, 0x2b405555) */
-	/* cdv_sb_write(dev, ddi_reg->VSwing4, 0x2b405555); */
+	 
+	 
 
-	/* ;gfx_dpio_set_reg(0x8154, 0xc3406055) */
+	 
 	cdv_sb_write(dev, ddi_reg->VSwing1, 0xc3406055);
 
-	/* ;Pre emphasis programming
-	 * ;gfx_dpio_set_reg(0xc02c, 0x1f030040)
-	 */
+	 
 	cdv_sb_write(dev, ddi_reg->PreEmph1, 0x1f030040);
 
-	/* ;gfx_dpio_set_reg(0x8124, 0x00004000) */
+	 
 	index = 2 * premph + 1;
 	cdv_sb_write(dev, ddi_reg->PreEmph2, dp_vswing_premph_table[index]);
 	return;
 }
 
 
-/* Enable corresponding port and start training pattern 1 */
+ 
 static void
 cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 {
@@ -1478,13 +1377,13 @@ cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 
 	reg = DP;
 	reg |= DP_LINK_TRAIN_PAT_1;
-	/* Enable output, wait for it to become active */
+	 
 	REG_WRITE(intel_dp->output_reg, reg);
 	REG_READ(intel_dp->output_reg);
 	gma_wait_for_vblank(dev);
 
 	DRM_DEBUG_KMS("Link config\n");
-	/* Write the link configuration data */
+	 
 	cdv_intel_dp_aux_native_write(encoder, DP_LINK_BW_SET,
 				  intel_dp->link_configuration,
 				  2);
@@ -1498,7 +1397,7 @@ cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 	reg = DP | DP_LINK_TRAIN_PAT_1;
 
 	for (;;) {
-		/* Use intel_dp->train_set[0] to set the voltage and pre emphasis values */
+		 
 		DRM_DEBUG_KMS("DP Link Train Set %x, Link_config %x, %x\n",
 				intel_dp->train_set[0],
 				intel_dp->link_configuration[0],
@@ -1508,7 +1407,7 @@ cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 			DRM_DEBUG_KMS("Failure in aux-transfer setting pattern 1\n");
 		}
 		cdv_intel_dp_set_vswing_premph(encoder, intel_dp->train_set[0]);
-		/* Set training pattern 1 */
+		 
 
 		cdv_intel_dplink_set_level(encoder, DP_TRAINING_PATTERN_1);
 
@@ -1526,14 +1425,14 @@ cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 			break;
 		}
 
-		/* Check to see if we've tried the max voltage */
+		 
 		for (i = 0; i < intel_dp->lane_count; i++)
 			if ((intel_dp->train_set[i] & DP_TRAIN_MAX_SWING_REACHED) == 0)
 				break;
 		if (i == intel_dp->lane_count)
 			break;
 
-		/* Check to see if we've tried the same voltage 5 times */
+		 
 		if ((intel_dp->train_set[0] & DP_TRAIN_VOLTAGE_SWING_MASK) == voltage) {
 			++tries;
 			if (tries == 5)
@@ -1542,7 +1441,7 @@ cdv_intel_dp_start_link_train(struct gma_encoder *encoder)
 			tries = 0;
 		voltage = intel_dp->train_set[0] & DP_TRAIN_VOLTAGE_SWING_MASK;
 
-		/* Compute new intel_dp->train_set as requested by target */
+		 
 		cdv_intel_get_adjust_train(encoder);
 
 	}
@@ -1563,7 +1462,7 @@ cdv_intel_dp_complete_link_train(struct gma_encoder *encoder)
 	u32 reg;
 	uint32_t DP = intel_dp->DP;
 
-	/* channel equalization */
+	 
 	tries = 0;
 	cr_tries = 0;
 
@@ -1576,13 +1475,13 @@ cdv_intel_dp_complete_link_train(struct gma_encoder *encoder)
 				intel_dp->train_set[0],
 				intel_dp->link_configuration[0],
 				intel_dp->link_configuration[1]);
-        	/* channel eq pattern */
+        	 
 
 		if (!cdv_intel_dp_set_link_train(encoder, reg,
 					     DP_TRAINING_PATTERN_2)) {
 			DRM_DEBUG_KMS("Failure in aux-transfer setting pattern 2\n");
 		}
-		/* Use intel_dp->train_set[0] to set the voltage and pre emphasis values */
+		 
 
 		if (cr_tries > 5) {
 			DRM_ERROR("failed to train DP, aborting\n");
@@ -1602,7 +1501,7 @@ cdv_intel_dp_complete_link_train(struct gma_encoder *encoder)
 				intel_dp->link_status[0], intel_dp->link_status[1], intel_dp->link_status[2],
 				intel_dp->link_status[3], intel_dp->link_status[4], intel_dp->link_status[5]);
 
-		/* Make sure clock is still ok */
+		 
 		if (!cdv_intel_clock_recovery_ok(intel_dp->link_status, intel_dp->lane_count)) {
 			cdv_intel_dp_start_link_train(encoder);
 			cr_tries++;
@@ -1614,7 +1513,7 @@ cdv_intel_dp_complete_link_train(struct gma_encoder *encoder)
 			break;
 		}
 
-		/* Try 5 times, then try clock recovery if that fails */
+		 
 		if (tries > 5) {
 			cdv_intel_dp_link_down(encoder);
 			cdv_intel_dp_start_link_train(encoder);
@@ -1623,7 +1522,7 @@ cdv_intel_dp_complete_link_train(struct gma_encoder *encoder)
 			continue;
 		}
 
-		/* Compute new intel_dp->train_set as requested by target */
+		 
 		cdv_intel_get_adjust_train(encoder);
 		++tries;
 
@@ -1681,12 +1580,7 @@ static enum drm_connector_status cdv_dp_detect(struct gma_encoder *encoder)
 	return status;
 }
 
-/*
- * Uses CRT_HOTPLUG_EN and CRT_HOTPLUG_STAT to detect DP connection.
- *
- * \return true if DP port is connected.
- * \return false if DP port is disconnected.
- */
+ 
 static enum drm_connector_status
 cdv_intel_dp_detect(struct drm_connector *connector, bool force)
 {
@@ -1864,7 +1758,7 @@ cdv_intel_dp_destroy(struct drm_connector *connector)
 	struct cdv_intel_dp *intel_dp = gma_encoder->dev_priv;
 
 	if (is_edp(gma_encoder)) {
-	/*	cdv_intel_panel_destroy_backlight(connector->dev); */
+	 
 		kfree(intel_dp->panel_fixed_mode);
 		intel_dp->panel_fixed_mode = NULL;
 	}
@@ -1901,7 +1795,7 @@ static void cdv_intel_dp_add_properties(struct drm_connector *connector)
 	cdv_intel_attach_broadcast_rgb_property(connector);
 }
 
-/* check the VBT to see whether the eDP is on DP-D port */
+ 
 static bool cdv_intel_dpc_is_edp(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -1921,11 +1815,7 @@ static bool cdv_intel_dpc_is_edp(struct drm_device *dev)
 	return false;
 }
 
-/* Cedarview display clock gating
-
-   We need this disable dot get correct behaviour while enabling
-   DP/eDP. TODO - investigate if we can turn it back to normality
-   after enabling */
+ 
 static void cdv_disable_intel_clock_gating(struct drm_device *dev)
 {
 	u32 reg_value;
@@ -1992,7 +1882,7 @@ cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev
 	connector->interlace_allowed = false;
 	connector->doublescan_allowed = false;
 
-	/* Set up the DDC bus. */
+	 
 	switch (output_reg) {
 		case DP_B:
 			name = "DPDDC-B";
@@ -2007,7 +1897,7 @@ cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev
 	cdv_disable_intel_clock_gating(dev);
 
 	cdv_intel_dp_i2c_init(gma_connector, gma_encoder, name);
-        /* FIXME:fail check */
+         
 	cdv_intel_dp_add_properties(connector);
 
 	if (is_edp(gma_encoder)) {
@@ -2030,7 +1920,7 @@ cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev
                 pp_off = REG_READ(PP_OFF_DELAYS);
                 pp_div = REG_READ(PP_DIVISOR);
 
-		/* Pull timing values out of registers */
+		 
                 cur.t1_t3 = (pp_on & PANEL_POWER_UP_DELAY_MASK) >>
                         PANEL_POWER_UP_DELAY_SHIFT;
 
@@ -2070,7 +1960,7 @@ cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev
 					       sizeof(intel_dp->dpcd));
 		cdv_intel_edp_panel_vdd_off(gma_encoder);
 		if (ret <= 0) {
-			/* if this fails, presume the device is a ghost */
+			 
 			DRM_INFO("failed to retrieve link info, disabling eDP\n");
 			drm_encoder_cleanup(encoder);
 			cdv_intel_dp_destroy(connector);
@@ -2081,10 +1971,8 @@ cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev
 				intel_dp->dpcd[2], intel_dp->dpcd[3]);
 
 		}
-		/* The CDV reference driver moves pnale backlight setup into the displays that
-		   have a backlight: this is a good idea and one we should probably adopt, however
-		   we need to migrate all the drivers before we can do that */
-                /*cdv_intel_panel_setup_backlight(dev); */
+		 
+                 
 	}
 	return;
 

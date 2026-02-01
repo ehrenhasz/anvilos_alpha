@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8400.h  --  audio driver for WM8400
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM8400_CODEC_H
 #define _WM8400_CODEC_H

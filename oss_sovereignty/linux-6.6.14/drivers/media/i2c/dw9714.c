@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2015--2017 Intel Corporation.
+
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -12,27 +12,16 @@
 
 #define DW9714_NAME		"dw9714"
 #define DW9714_MAX_FOCUS_POS	1023
-/*
- * This sets the minimum granularity for the focus positions.
- * A value of 1 gives maximum accuracy for a desired focus position
- */
+ 
 #define DW9714_FOCUS_STEPS	1
-/*
- * This acts as the minimum granularity of lens movement.
- * Keep this value power of 2, so the control steps can be
- * uniformly adjusted for gradual lens movement, with desired
- * number of control steps.
- */
+ 
 #define DW9714_CTRL_STEPS	16
 #define DW9714_CTRL_DELAY_US	1000
-/*
- * S[3:2] = 0x00, codes per step for "Linear Slope Control"
- * S[1:0] = 0x00, step period
- */
+ 
 #define DW9714_DEFAULT_S 0x0
 #define DW9714_VAL(data, s) ((data) << 4 | (s))
 
-/* dw9714 device structure */
+ 
 struct dw9714_device {
 	struct v4l2_ctrl_handler ctrls_vcm;
 	struct v4l2_subdev sd;
@@ -208,11 +197,7 @@ static void dw9714_remove(struct i2c_client *client)
 	dw9714_subdev_cleanup(dw9714_dev);
 }
 
-/*
- * This function sets the vcm position, so it consumes least current
- * The lens position is gradually moved in units of DW9714_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int __maybe_unused dw9714_vcm_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -239,12 +224,7 @@ static int __maybe_unused dw9714_vcm_suspend(struct device *dev)
 	return ret;
 }
 
-/*
- * This function sets the vcm position to the value set by the user
- * through v4l2_ctrl_ops s_ctrl handler
- * The lens position is gradually moved in units of DW9714_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int  __maybe_unused dw9714_vcm_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);

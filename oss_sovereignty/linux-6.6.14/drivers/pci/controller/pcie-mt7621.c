@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * BRIEF MODULE DESCRIPTION
- *     PCI init for Ralink RT2880 solution
- *
- * Copyright 2007 Ralink Inc. (bruce_chang@ralinktech.com.tw)
- *
- * May 2007 Bruce Chang
- * Initial Release
- *
- * May 2009 Bruce Chang
- * support RT2880/RT3883 PCIe
- *
- * May 2011 Bruce Chang
- * support RT6855/MT7620 PCIe
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -32,12 +18,12 @@
 
 #include "../pci.h"
 
-/* MediaTek-specific configuration registers */
+ 
 #define PCIE_FTS_NUM			0x70c
 #define PCIE_FTS_NUM_MASK		GENMASK(15, 8)
 #define PCIE_FTS_NUM_L0(x)		(((x) & 0xff) << 8)
 
-/* Host-PCI bridge registers */
+ 
 #define RALINK_PCI_PCICFG_ADDR		0x0000
 #define RALINK_PCI_PCIMSK_ADDR		0x000c
 #define RALINK_PCI_CONFIG_ADDR		0x0020
@@ -45,13 +31,13 @@
 #define RALINK_PCI_MEMBASE		0x0028
 #define RALINK_PCI_IOBASE		0x002c
 
-/* PCIe RC control registers */
+ 
 #define RALINK_PCI_ID			0x0030
 #define RALINK_PCI_CLASS		0x0034
 #define RALINK_PCI_SUBID		0x0038
 #define RALINK_PCI_STATUS		0x0050
 
-/* Some definition values */
+ 
 #define PCIE_REVISION_ID		BIT(0)
 #define PCIE_CLASS_CODE			(0x60400 << 8)
 #define PCIE_BAR_MAP_MAX		GENMASK(30, 16)
@@ -63,18 +49,7 @@
 #define INIT_PORTS_DELAY_MS		100
 #define PERST_DELAY_MS			100
 
-/**
- * struct mt7621_pcie_port - PCIe port information
- * @base: I/O mapped register base
- * @list: port list
- * @pcie: pointer to PCIe host info
- * @clk: pointer to the port clock gate
- * @phy: pointer to PHY control block
- * @pcie_rst: pointer to port reset control
- * @gpio_rst: gpio reset
- * @slot: port slot
- * @enabled: indicates if port is enabled
- */
+ 
 struct mt7621_pcie_port {
 	void __iomem *base;
 	struct list_head list;
@@ -87,14 +62,7 @@ struct mt7621_pcie_port {
 	bool enabled;
 };
 
-/**
- * struct mt7621_pcie - PCIe host information
- * @base: IO Mapped Register Base
- * @dev: Pointer to PCIe device
- * @ports: pointer to PCIe port information
- * @resets_inverted: depends on chip revision
- * reset lines are inverted.
- */
+ 
 struct mt7621_pcie {
 	struct device *dev;
 	void __iomem *base;
@@ -317,10 +285,10 @@ static void mt7621_pcie_reset_assert(struct mt7621_pcie *pcie)
 	struct mt7621_pcie_port *port;
 
 	list_for_each_entry(port, &pcie->ports, list) {
-		/* PCIe RC reset assert */
+		 
 		mt7621_control_assert(port);
 
-		/* PCIe EP reset assert */
+		 
 		mt7621_rst_gpio_pcie_assert(port);
 	}
 
@@ -403,20 +371,20 @@ static void mt7621_pcie_enable_port(struct mt7621_pcie_port *port)
 	u32 slot = port->slot;
 	u32 val;
 
-	/* enable pcie interrupt */
+	 
 	val = pcie_read(pcie, RALINK_PCI_PCIMSK_ADDR);
 	val |= PCIE_PORT_INT_EN(slot);
 	pcie_write(pcie, val, RALINK_PCI_PCIMSK_ADDR);
 
-	/* map 2G DDR region */
+	 
 	pcie_port_write(port, PCIE_BAR_MAP_MAX | PCIE_BAR_ENABLE,
 			PCI_BASE_ADDRESS_0);
 
-	/* configure class code and revision ID */
+	 
 	pcie_port_write(port, PCIE_CLASS_CODE | PCIE_REVISION_ID,
 			RALINK_PCI_CLASS);
 
-	/* configure RC FTS number to 250 when it leaves L0s */
+	 
 	val = read_config(pcie, slot, PCIE_FTS_NUM);
 	val &= ~PCIE_FTS_NUM_MASK;
 	val |= PCIE_FTS_NUM_L0(0x50);
@@ -437,7 +405,7 @@ static int mt7621_pcie_enable_ports(struct pci_host_bridge *host)
 		return -EINVAL;
 	}
 
-	/* Setup MEMWIN and IOWIN */
+	 
 	pcie_write(pcie, 0xffffffff, RALINK_PCI_MEMBASE);
 	pcie_write(pcie, entry->res->start - entry->offset, RALINK_PCI_IOBASE);
 
@@ -469,7 +437,7 @@ static int mt7621_pcie_register_host(struct pci_host_bridge *host)
 
 static const struct soc_device_attribute mt7621_pcie_quirks_match[] = {
 	{ .soc_id = "mt7621", .revision = "E2" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int mt7621_pcie_probe(struct platform_device *pdev)

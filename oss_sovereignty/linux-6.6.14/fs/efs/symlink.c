@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * symlink.c
- *
- * Copyright (c) 1999 Al Smith
- *
- * Portions derived from work (c) 1995,1996 Christian Vogelgsang.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/pagemap.h>
@@ -25,7 +19,7 @@ static int efs_symlink_read_folio(struct file *file, struct folio *folio)
 	if (size > 2 * EFS_BLOCKSIZE)
 		goto fail;
   
-	/* read first 512 bytes of link target */
+	 
 	err = -EIO;
 	bh = sb_bread(inode->i_sb, efs_bmap(inode, 0));
 	if (!bh)

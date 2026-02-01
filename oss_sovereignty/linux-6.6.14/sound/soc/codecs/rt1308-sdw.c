@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt1308-sdw.c -- rt1308 ALSA SoC audio driver
-//
-// Copyright(c) 2019 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
@@ -74,7 +74,7 @@ static const struct regmap_config rt1308_sdw_regmap = {
 	.use_single_write = true,
 };
 
-/* Bus clock frequency */
+ 
 #define RT1308_CLK_FREQ_9600000HZ 9600000
 #define RT1308_CLK_FREQ_12000000HZ 12000000
 #define RT1308_CLK_FREQ_6000000HZ 6000000
@@ -133,11 +133,11 @@ static int rt1308_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x00; /* BITMAP: 00010100 (not enable yet) */
-	prop->sink_ports = 0x2; /* BITMAP:  00000010 */
+	 
+	prop->source_ports = 0x00;  
+	prop->sink_ports = 0x2;  
 
-	/* for sink */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 						sizeof(*prop->sink_dpn_prop),
@@ -156,7 +156,7 @@ static int rt1308_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
 	dev_dbg(&slave->dev, "%s\n", __func__);
@@ -169,7 +169,7 @@ static void rt1308_apply_calib_params(struct rt1308_sdw_priv *rt1308)
 	unsigned int efuse_m_btl_l, efuse_m_btl_r, tmp;
 	unsigned int efuse_c_btl_l, efuse_c_btl_r;
 
-	/* read efuse to apply calibration parameters */
+	 
 	regmap_write(rt1308->regmap, 0xc7f0, 0x04);
 	regmap_write(rt1308->regmap, 0xc7f1, 0xfe);
 	msleep(100);
@@ -223,11 +223,9 @@ static int rt1308_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt1308->first_hw_init)
 		regcache_cache_bypass(rt1308->regmap, true);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!rt1308->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 	pm_runtime_get_noresume(&slave->dev);
@@ -236,14 +234,14 @@ static int rt1308_io_init(struct device *dev, struct sdw_slave *slave)
 	if ((hibernation_flag != 0x00) && rt1308->first_hw_init)
 		goto _preset_ready_;
 
-	/* sw reset */
+	 
 	regmap_write(rt1308->regmap, RT1308_SDW_RESET, 0);
 
 	regmap_read(rt1308->regmap, 0xc710, &tmp);
 	rt1308->hw_ver = tmp;
 	dev_dbg(dev, "%s, hw_ver=0x%x\n", __func__, rt1308->hw_ver);
 
-	/* initial settings */
+	 
 	regmap_write(rt1308->regmap, 0xc103, 0xc0);
 	regmap_write(rt1308->regmap, 0xc030, 0x17);
 	regmap_write(rt1308->regmap, 0xc031, 0x81);
@@ -276,7 +274,7 @@ static int rt1308_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt1308->regmap, 0xc100, 0xd7);
 	regmap_write(rt1308->regmap, 0xc101, 0xd7);
 
-	/* apply BQ params */
+	 
 	rt1308_apply_bq_params(rt1308);
 
 	regmap_write(rt1308->regmap, 0xcf01, 0x01);
@@ -288,7 +286,7 @@ _preset_ready_:
 	} else
 		rt1308->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt1308->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);
@@ -307,14 +305,11 @@ static int rt1308_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt1308->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt1308->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt1308_io_init(&slave->dev, slave);
 }
 
@@ -386,7 +381,7 @@ static SOC_ENUM_SINGLE_DECL(rt1308_rx_data_ch_enum,
 
 static const struct snd_kcontrol_new rt1308_snd_controls[] = {
 
-	/* I2S Data Channel Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1308_rx_data_ch_enum),
 };
 
@@ -401,10 +396,10 @@ static const struct snd_kcontrol_new rt1308_sto_dac_r =
 		RT1308_DVOL_MUTE_R_EN_SFT, 1, 1);
 
 static const struct snd_soc_dapm_widget rt1308_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "DP1 Playback", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Supply Widgets */
+	 
 	SND_SOC_DAPM_SUPPLY("MBIAS20U",
 		RT1308_SDW_OFFSET | (RT1308_POWER << 4),	7, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("ALDO",
@@ -444,12 +439,12 @@ static const struct snd_soc_dapm_widget rt1308_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("PLL2B2",
 		RT1308_SDW_OFFSET_BYTE2 | (RT1308_POWER << 4), 0, 0, NULL, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_DAC("DAC", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_SWITCH("DAC L", SND_SOC_NOPM, 0, 0, &rt1308_sto_dac_l),
 	SND_SOC_DAPM_SWITCH("DAC R", SND_SOC_NOPM, 0, 0, &rt1308_sto_dac_r),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1308_classd_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -521,7 +516,7 @@ static int rt1308_sdw_set_tdm_slot(struct snd_soc_dai *dai,
 
 	rt1308->rx_mask = rx_mask;
 	rt1308->slots = slots;
-	/* slot_width is not used since it's irrelevant for SoundWire */
+	 
 
 	return 0;
 }
@@ -546,10 +541,10 @@ static int rt1308_sdw_hw_params(struct snd_pcm_substream *substream,
 	if (!rt1308->sdw_slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
-	/* port 1 for playback */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		port_config.num = 1;
 	else
@@ -586,10 +581,7 @@ static int rt1308_sdw_pcm_hw_free(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * slave_ops: callbacks for get_clock_stop_mode, clock_stop and
- * port_prep are not defined for now
- */
+ 
 static const struct sdw_slave_ops rt1308_slave_ops = {
 	.read_prop = rt1308_read_prop,
 	.interrupt_callback = rt1308_interrupt_callback,
@@ -633,7 +625,7 @@ static int rt1308_sdw_component_probe(struct snd_soc_component *component)
 	if (ret < 0 && ret != -EACCES)
 		return ret;
 
-	/* apply BQ params */
+	 
 	rt1308_apply_bq_params(rt1308);
 
 	return 0;
@@ -693,10 +685,7 @@ static int rt1308_sdw_init(struct device *dev, struct regmap *regmap,
 
 	regcache_cache_only(rt1308->regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt1308->hw_init = false;
 	rt1308->first_hw_init = false;
 
@@ -707,20 +696,16 @@ static int rt1308_sdw_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -732,7 +717,7 @@ static int rt1308_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &rt1308_sdw_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

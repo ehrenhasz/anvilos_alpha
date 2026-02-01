@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- *               James Liao <jamesjj.liao@mediatek.com>
- * Copyright (c) 2023 Collabora, Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8135-clk.h>
 #include <linux/clk.h>
@@ -85,7 +80,7 @@ static void clk_mt8135_apmixed_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_match_clk_mt8135_apmixed[] = {
 	{ .compatible = "mediatek,mt8135-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8135_apmixed);
 

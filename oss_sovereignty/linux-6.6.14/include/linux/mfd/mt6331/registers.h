@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6331_REGISTERS_H__
 #define __MFD_MT6331_REGISTERS_H__
 
-/* PMIC Registers */
+ 
 #define MT6331_STRUP_CON0		0x0
 #define MT6331_STRUP_CON2		0x2
 #define MT6331_STRUP_CON3		0x4
@@ -581,4 +579,4 @@
 #define MT6331_ACCDET_CON23		0x7A8
 #define MT6331_ACCDET_CON24		0x7AA
 
-#endif /* __MFD_MT6331_REGISTERS_H__ */
+#endif  

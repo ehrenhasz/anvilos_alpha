@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mmp APB clock operation source file
- *
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -14,11 +9,11 @@
 
 #include "clk.h"
 
-/* Common APB clock register bit definitions */
-#define APBC_APBCLK	(1 << 0)  /* APB Bus Clock Enable */
-#define APBC_FNCLK	(1 << 1)  /* Functional Clock Enable */
-#define APBC_RST	(1 << 2)  /* Reset Generation */
-#define APBC_POWER	(1 << 7)  /* Reset Generation */
+ 
+#define APBC_APBCLK	(1 << 0)   
+#define APBC_FNCLK	(1 << 1)   
+#define APBC_RST	(1 << 2)   
+#define APBC_POWER	(1 << 7)   
 
 #define to_clk_apbc(hw) container_of(hw, struct clk_apbc, hw)
 struct clk_apbc {
@@ -35,10 +30,7 @@ static int clk_apbc_prepare(struct clk_hw *hw)
 	unsigned int data;
 	unsigned long flags = 0;
 
-	/*
-	 * It may share same register as MUX clock,
-	 * and it will impact FNCLK enable. Spinlock is needed
-	 */
+	 
 	if (apbc->lock)
 		spin_lock_irqsave(apbc->lock, flags);
 

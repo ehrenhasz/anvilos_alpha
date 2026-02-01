@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for the camera device found on Marvell MMP processors; known
- * to work with the Armada 610 as used in the OLPC 1.75 system.
- *
- * Copyright 2011 Jonathan Corbet <corbet@lwn.net>
- * Copyright 2018 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -47,15 +41,7 @@ static inline struct mmp_camera *mcam_to_cam(struct mcam_camera *mcam)
 	return container_of(mcam, struct mmp_camera, mcam);
 }
 
-/*
- * calc the dphy register values
- * There are three dphy registers being used.
- * dphy[0] - CSI2_DPHY3
- * dphy[1] - CSI2_DPHY5
- * dphy[2] - CSI2_DPHY6
- * CSI2_DPHY3 and CSI2_DPHY6 can be set with a default value
- * or be calculated dynamically
- */
+ 
 static void mmpcam_calc_dphy(struct mcam_camera *mcam)
 {
 	struct mmp_camera *cam = mcam_to_cam(mcam);
@@ -63,79 +49,35 @@ static void mmpcam_calc_dphy(struct mcam_camera *mcam)
 	struct device *dev = &cam->pdev->dev;
 	unsigned long tx_clk_esc;
 
-	/*
-	 * If CSI2_DPHY3 is calculated dynamically,
-	 * pdata->lane_clk should be already set
-	 * either in the board driver statically
-	 * or in the sensor driver dynamically.
-	 */
-	/*
-	 * dphy[0] - CSI2_DPHY3:
-	 *  bit 0 ~ bit 7: HS Term Enable.
-	 *   defines the time that the DPHY
-	 *   wait before enabling the data
-	 *   lane termination after detecting
-	 *   that the sensor has driven the data
-	 *   lanes to the LP00 bridge state.
-	 *   The value is calculated by:
-	 *   (Max T(D_TERM_EN)/Period(DDR)) - 1
-	 *  bit 8 ~ bit 15: HS_SETTLE
-	 *   Time interval during which the HS
-	 *   receiver shall ignore any Data Lane
-	 *   HS transitions.
-	 *   The value has been calibrated on
-	 *   different boards. It seems to work well.
-	 *
-	 *  More detail please refer
-	 *  MIPI Alliance Spectification for D-PHY
-	 *  document for explanation of HS-SETTLE
-	 *  and D-TERM-EN.
-	 */
+	 
+	 
 	switch (pdata->dphy3_algo) {
 	case DPHY3_ALGO_PXA910:
-		/*
-		 * Calculate CSI2_DPHY3 algo for PXA910
-		 */
+		 
 		pdata->dphy[0] =
 			(((1 + (pdata->lane_clk * 80) / 1000) & 0xff) << 8)
 			| (1 + pdata->lane_clk * 35 / 1000);
 		break;
 	case DPHY3_ALGO_PXA2128:
-		/*
-		 * Calculate CSI2_DPHY3 algo for PXA2128
-		 */
+		 
 		pdata->dphy[0] =
 			(((2 + (pdata->lane_clk * 110) / 1000) & 0xff) << 8)
 			| (1 + pdata->lane_clk * 35 / 1000);
 		break;
 	default:
-		/*
-		 * Use default CSI2_DPHY3 value for PXA688/PXA988
-		 */
+		 
 		dev_dbg(dev, "camera: use the default CSI2_DPHY3 value\n");
 	}
 
-	/*
-	 * mipi_clk will never be changed, it is a fixed value on MMP
-	 */
+	 
 	if (IS_ERR(cam->mipi_clk))
 		return;
 
-	/* get the escape clk, this is hard coded */
+	 
 	clk_prepare_enable(cam->mipi_clk);
 	tx_clk_esc = (clk_get_rate(cam->mipi_clk) / 1000000) / 12;
 	clk_disable_unprepare(cam->mipi_clk);
-	/*
-	 * dphy[2] - CSI2_DPHY6:
-	 * bit 0 ~ bit 7: CK Term Enable
-	 *  Time for the Clock Lane receiver to enable the HS line
-	 *  termination. The value is calculated similarly with
-	 *  HS Term Enable
-	 * bit 8 ~ bit 15: CK Settle
-	 *  Time interval during which the HS receiver shall ignore
-	 *  any Clock Lane HS transitions.
-	 *  The value is calibrated on the boards.
-	 */
+	 
 	pdata->dphy[2] =
 		((((534 * tx_clk_esc) / 2000 - 1) & 0xff) << 8)
 		| (((38 * tx_clk_esc) / 1000 - 1) & 0xff);
@@ -162,9 +104,7 @@ static void mcam_init_clk(struct mcam_camera *mcam)
 
 	for (i = 0; i < NR_MCAM_CLK; i++) {
 		if (mcam_clks[i] != NULL) {
-			/* Some clks are not necessary on some boards
-			 * We still try to run even it fails getting clk
-			 */
+			 
 			mcam->clk[i] = devm_clk_get(mcam->dev, mcam_clks[i]);
 			if (IS_ERR(mcam->clk[i]))
 				dev_warn(mcam->dev, "Could not get clk: %s\n",
@@ -201,12 +141,7 @@ static int mmpcam_probe(struct platform_device *pdev)
 		mcam->dphy = pdata->dphy;
 		mcam->lane = pdata->lane;
 	} else {
-		/*
-		 * These are values that used to be hardcoded in mcam-core and
-		 * work well on a OLPC XO 1.75 with a parallel bus sensor.
-		 * If it turns out other setups make sense, the values should
-		 * be obtained from the device tree.
-		 */
+		 
 		mcam->mclk_src = 3;
 		mcam->mclk_div = 2;
 	}
@@ -220,9 +155,7 @@ static int mmpcam_probe(struct platform_device *pdev)
 	mcam->buffer_mode = B_DMA_sg;
 	strscpy(mcam->bus_info, "platform:mmp-camera", sizeof(mcam->bus_info));
 	spin_lock_init(&mcam->dev_lock);
-	/*
-	 * Get our I/O memory.
-	 */
+	 
 	mcam->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(mcam->regs))
 		return PTR_ERR(mcam->regs);
@@ -230,9 +163,7 @@ static int mmpcam_probe(struct platform_device *pdev)
 
 	mcam_init_clk(mcam);
 
-	/*
-	 * Create a match of the sensor against its OF node.
-	 */
+	 
 	ep = fwnode_graph_get_next_endpoint(of_fwnode_handle(pdev->dev.of_node),
 					    NULL);
 	if (!ep)
@@ -248,16 +179,12 @@ static int mmpcam_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/*
-	 * Register the device with the core.
-	 */
+	 
 	ret = mccic_register(mcam);
 	if (ret)
 		goto out;
 
-	/*
-	 * Add OF clock provider.
-	 */
+	 
 	ret = of_clk_add_provider(pdev->dev.of_node, of_clk_src_simple_get,
 								mcam->mclk);
 	if (ret) {
@@ -265,10 +192,7 @@ static int mmpcam_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/*
-	 * Finally, set up our IRQ now that the core is ready to
-	 * deal with it.
-	 */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto out;
@@ -295,9 +219,7 @@ static void mmpcam_remove(struct platform_device *pdev)
 	pm_runtime_force_suspend(mcam->dev);
 }
 
-/*
- * Suspend/resume support.
- */
+ 
 
 static int __maybe_unused mmpcam_runtime_resume(struct device *dev)
 {

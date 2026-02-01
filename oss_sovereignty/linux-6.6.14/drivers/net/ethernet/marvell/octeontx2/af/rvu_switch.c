@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include "rvu.h"
@@ -14,7 +10,7 @@ static void rvu_switch_enable_lbk_link(struct rvu *rvu, u16 pcifunc, bool enable
 	struct nix_hw *nix_hw;
 
 	nix_hw = get_nix_hw(rvu->hw, pfvf->nix_blkaddr);
-	/* Enable LBK links with channel 63 for TX MCAM rule */
+	 
 	rvu_nix_tx_tl2_cfg(rvu, pfvf->nix_blkaddr, pcifunc,
 			   &nix_hw->txsch[NIX_TXSCH_LVL_TL2], enable);
 }
@@ -27,16 +23,13 @@ static int rvu_switch_install_rx_rule(struct rvu *rvu, u16 pcifunc,
 	struct rvu_pfvf *pfvf;
 
 	pfvf = rvu_get_pfvf(rvu, pcifunc);
-	/* If the pcifunc is not initialized then nothing to do.
-	 * This same function will be called again via rvu_switch_update_rules
-	 * after pcifunc is initialized.
-	 */
+	 
 	if (!test_bit(NIXLF_INITIALIZED, &pfvf->flags))
 		return 0;
 
 	ether_addr_copy(req.packet.dmac, pfvf->mac_addr);
 	eth_broadcast_addr((u8 *)&req.mask.dmac);
-	req.hdr.pcifunc = 0; /* AF is requester */
+	req.hdr.pcifunc = 0;  
 	req.vf = pcifunc;
 	req.features = BIT_ULL(NPC_DMAC);
 	req.channel = pfvf->rx_chan_base;
@@ -56,10 +49,7 @@ static int rvu_switch_install_tx_rule(struct rvu *rvu, u16 pcifunc, u16 entry)
 	u8 lbkid;
 
 	pfvf = rvu_get_pfvf(rvu, pcifunc);
-	/* If the pcifunc is not initialized then nothing to do.
-	 * This same function will be called again via rvu_switch_update_rules
-	 * after pcifunc is initialized.
-	 */
+	 
 	if (!test_bit(NIXLF_INITIALIZED, &pfvf->flags))
 		return 0;
 
@@ -68,7 +58,7 @@ static int rvu_switch_install_tx_rule(struct rvu *rvu, u16 pcifunc, u16 entry)
 	lbkid = pfvf->nix_blkaddr == BLKADDR_NIX0 ? 0 : 1;
 	ether_addr_copy(req.packet.dmac, pfvf->mac_addr);
 	eth_broadcast_addr((u8 *)&req.mask.dmac);
-	req.hdr.pcifunc = 0; /* AF is requester */
+	req.hdr.pcifunc = 0;  
 	req.vf = pcifunc;
 	req.entry = entry;
 	req.features = BIT_ULL(NPC_DMAC);
@@ -94,20 +84,10 @@ static int rvu_switch_install_rules(struct rvu *rvu)
 			continue;
 
 		pcifunc = pf << 10;
-		/* rvu_get_nix_blkaddr sets up the corresponding NIX block
-		 * address and NIX RX and TX interfaces for a pcifunc.
-		 * Generally it is called during attach call of a pcifunc but it
-		 * is called here since we are pre-installing rules before
-		 * nixlfs are attached
-		 */
+		 
 		rvu_get_nix_blkaddr(rvu, pcifunc);
 
-		/* MCAM RX rule for a PF/VF already exists as default unicast
-		 * rules installed by AF. Hence change the channel in those
-		 * rules to ignore channel so that packets with the required
-		 * DMAC received from LBK(by other PF/VFs in system) or from
-		 * external world (from wire) are accepted.
-		 */
+		 
 		err = rvu_switch_install_rx_rule(rvu, pcifunc, 0x0);
 		if (err) {
 			dev_err(rvu->dev, "RX rule for PF%d failed(%d)\n",
@@ -233,7 +213,7 @@ void rvu_switch_disable(struct rvu *rvu)
 				"Reverting RX rule for PF%d failed(%d)\n",
 				pf, err);
 
-		/* Disable LBK link */
+		 
 		rvu_switch_enable_lbk_link(rvu, pcifunc, false);
 
 		rvu_get_pf_numvfs(rvu, pf, &numvfs, NULL);

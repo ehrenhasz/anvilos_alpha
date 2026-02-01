@@ -1,19 +1,4 @@
-/* Synopsys DesignWare Core Enterprise Ethernet (XLGMAC) Driver
- *
- * Copyright (c) 2017 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is dual-licensed; you may select either version 2 of
- * the GNU General Public License ("GPL") or BSD license ("BSD").
- *
- * This Synopsys DWC XLGMAC software driver and associated documentation
- * (hereinafter the "Software") is an unsupported proprietary work of
- * Synopsys, Inc. unless otherwise expressly agreed to in writing between
- * Synopsys and you. The Software IS NOT an item of Licensed Software or a
- * Licensed Product under any End User Software License Agreement or
- * Agreement for Licensed Products with Synopsys or any supplement thereto.
- * Synopsys is a registered trademark of Synopsys, Inc. Other names included
- * in the SOFTWARE may be the trademarks of their respective owners.
- */
+ 
 
 #include "dwc-xlgmac.h"
 #include "dwc-xlgmac-reg.h"
@@ -129,7 +114,7 @@ static int xlgmac_init_ring(struct xlgmac_pdata *pdata,
 	if (!ring)
 		return 0;
 
-	/* Descriptors */
+	 
 	ring->dma_desc_count = dma_desc_count;
 	ring->dma_desc_head = dma_alloc_coherent(pdata->dev,
 					(sizeof(struct xlgmac_dma_desc) *
@@ -139,7 +124,7 @@ static int xlgmac_init_ring(struct xlgmac_pdata *pdata,
 	if (!ring->dma_desc_head)
 		return -ENOMEM;
 
-	/* Array of descriptor data */
+	 
 	ring->desc_data_head = kcalloc(dma_desc_count,
 					sizeof(struct xlgmac_desc_data),
 					GFP_KERNEL);
@@ -261,7 +246,7 @@ static int xlgmac_alloc_channels(struct xlgmac_pdata *pdata)
 				    (DMA_CH_INC * i);
 
 		if (pdata->per_channel_irq) {
-			/* Get the per DMA interrupt */
+			 
 			ret = pdata->channel_irq[i];
 			if (ret < 0) {
 				netdev_err(pdata->netdev,
@@ -334,7 +319,7 @@ static int xlgmac_alloc_pages(struct xlgmac_pdata *pdata,
 	struct page *pages = NULL;
 	dma_addr_t pages_dma;
 
-	/* Try to obtain pages, decreasing order if necessary */
+	 
 	gfp |= __GFP_COMP | __GFP_NOWARN;
 	while (order >= 0) {
 		pages = alloc_pages(gfp, order);
@@ -346,7 +331,7 @@ static int xlgmac_alloc_pages(struct xlgmac_pdata *pdata,
 	if (!pages)
 		return -ENOMEM;
 
-	/* Map the pages */
+	 
 	pages_dma = dma_map_page(pdata->dev, pages, 0,
 				 PAGE_SIZE << order, DMA_FROM_DEVICE);
 	if (dma_mapping_error(pdata->dev, pages_dma)) {
@@ -375,10 +360,10 @@ static void xlgmac_set_buffer_data(struct xlgmac_buffer_data *bd,
 
 	pa->pages_offset += len;
 	if ((pa->pages_offset + len) > pa->pages_len) {
-		/* This data descriptor is responsible for unmapping page(s) */
+		 
 		bd->pa_unmap = *pa;
 
-		/* Get a new allocation next time */
+		 
 		pa->pages = NULL;
 		pa->pages_len = 0;
 		pa->pages_offset = 0;
@@ -407,11 +392,11 @@ static int xlgmac_map_rx_buffer(struct xlgmac_pdata *pdata,
 			return ret;
 	}
 
-	/* Set up the header page info */
+	 
 	xlgmac_set_buffer_data(&desc_data->rx.hdr, &ring->rx_hdr_pa,
 			       XLGMAC_SKB_ALLOC_SIZE);
 
-	/* Set up the buffer page info */
+	 
 	xlgmac_set_buffer_data(&desc_data->rx.buf, &ring->rx_buf_pa,
 			       pdata->rx_buf_size);
 
@@ -523,14 +508,14 @@ static int xlgmac_map_tx_skb(struct xlgmac_channel *channel,
 				   TX_PACKET_ATTRIBUTES_VLAN_CTAG_POS,
 				   TX_PACKET_ATTRIBUTES_VLAN_CTAG_LEN);
 
-	/* Save space for a context descriptor if needed */
+	 
 	if ((tso && (pkt_info->mss != ring->tx.cur_mss)) ||
 	    (vlan && (pkt_info->vlan_ctag != ring->tx.cur_vlan_ctag)))
 		cur_index++;
 	desc_data = XLGMAC_GET_DESC_DATA(ring, cur_index);
 
 	if (tso) {
-		/* Map the TSO header */
+		 
 		skb_dma = dma_map_single(pdata->dev, skb->data,
 					 pkt_info->header_len, DMA_TO_DEVICE);
 		if (dma_mapping_error(pdata->dev, skb_dma)) {
@@ -551,7 +536,7 @@ static int xlgmac_map_tx_skb(struct xlgmac_channel *channel,
 		desc_data = XLGMAC_GET_DESC_DATA(ring, cur_index);
 	}
 
-	/* Map the (remainder of the) packet */
+	 
 	for (datalen = skb_headlen(skb) - offset; datalen; ) {
 		len = min_t(unsigned int, datalen, XLGMAC_TX_MAX_BUF_SIZE);
 
@@ -611,14 +596,11 @@ static int xlgmac_map_tx_skb(struct xlgmac_channel *channel,
 		}
 	}
 
-	/* Save the skb address in the last entry. We always have some data
-	 * that has been mapped so desc_data is always advanced past the last
-	 * piece of mapped data - use the entry pointed to by cur_index - 1.
-	 */
+	 
 	desc_data = XLGMAC_GET_DESC_DATA(ring, cur_index - 1);
 	desc_data->skb = skb;
 
-	/* Save the number of descriptor entries used */
+	 
 	pkt_info->desc_count = cur_index - start_index;
 
 	return pkt_info->desc_count;

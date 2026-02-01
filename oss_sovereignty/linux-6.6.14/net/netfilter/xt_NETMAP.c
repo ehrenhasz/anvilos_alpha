@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2000-2001 Svenning Soerensen <svenning@post5.tele.dk>
- * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/ip.h>
 #include <linux/kernel.h>
@@ -97,7 +94,7 @@ netmap_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 	newrange.min_proto   = mr->range[0].min;
 	newrange.max_proto   = mr->range[0].max;
 
-	/* Hand modified range to generic setup. */
+	 
 	return nf_nat_setup_info(ct, &newrange, HOOK2MANIP(xt_hooknum(par)));
 }
 

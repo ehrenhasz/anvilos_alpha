@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_LRC_REG_H_
 #define _INTEL_LRC_REG_H_
@@ -10,7 +8,7 @@
 
 #define CTX_DESC_FORCE_RESTORE BIT_ULL(2)
 
-/* GEN8 to GEN12 Reg State Context */
+ 
 #define CTX_CONTEXT_CONTROL		(0x02 + 1)
 #define CTX_RING_HEAD			(0x04 + 1)
 #define CTX_RING_TAIL			(0x06 + 1)
@@ -53,14 +51,7 @@
 #define GEN8_EXECLISTS_STATUS_BUF 0x370
 #define GEN11_EXECLISTS_STATUS_BUF2 0x3c0
 
-/*
- * The docs specify that the write pointer wraps around after 5h, "After status
- * is written out to the last available status QW at offset 5h, this pointer
- * wraps to 0."
- *
- * Therefore, one must infer than even though there are 3 bits available, 6 and
- * 7 appear to be * reserved.
- */
+ 
 #define GEN8_CSB_ENTRIES 6
 #define GEN8_CSB_PTR_MASK 0x7
 #define GEN8_CSB_READ_PTR_MASK	(GEN8_CSB_PTR_MASK << 8)
@@ -71,11 +62,11 @@
 #define GEN11_CSB_READ_PTR_MASK		(GEN11_CSB_PTR_MASK << 8)
 #define GEN11_CSB_WRITE_PTR_MASK	(GEN11_CSB_PTR_MASK << 0)
 
-#define MAX_CONTEXT_HW_ID	(1 << 21) /* exclusive */
-#define GEN11_MAX_CONTEXT_HW_ID	(1 << 11) /* exclusive */
-/* in Gen12 ID 0x7FF is reserved to indicate idle */
+#define MAX_CONTEXT_HW_ID	(1 << 21)  
+#define GEN11_MAX_CONTEXT_HW_ID	(1 << 11)  
+ 
 #define GEN12_MAX_CONTEXT_HW_ID	(GEN11_MAX_CONTEXT_HW_ID - 1)
-/* in Xe_HP ID 0xFFFF is reserved to indicate "invalid context" */
+ 
 #define XEHP_MAX_CONTEXT_HW_ID	0xFFFF
 
-#endif /* _INTEL_LRC_REG_H_ */
+#endif  

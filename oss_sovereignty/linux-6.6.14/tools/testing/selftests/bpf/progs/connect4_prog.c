@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #include <string.h>
 
@@ -149,14 +149,14 @@ int connect_v4_prog(struct bpf_sock_addr *ctx)
 	struct bpf_sock_tuple tuple = {};
 	struct bpf_sock *sk;
 
-	/* Verify that new destination is available. */
+	 
 	memset(&tuple.ipv4.saddr, 0, sizeof(tuple.ipv4.saddr));
 	memset(&tuple.ipv4.sport, 0, sizeof(tuple.ipv4.sport));
 
 	tuple.ipv4.daddr = bpf_htonl(DST_REWRITE_IP4);
 	tuple.ipv4.dport = bpf_htons(DST_REWRITE_PORT4);
 
-	/* Bind to device and unbind it. */
+	 
 	if (bind_to_device(ctx))
 		return 0;
 
@@ -186,11 +186,11 @@ int connect_v4_prog(struct bpf_sock_addr *ctx)
 
 	bpf_sk_release(sk);
 
-	/* Rewrite congestion control. */
+	 
 	if (ctx->type == SOCK_STREAM && set_cc(ctx))
 		return 0;
 
-	/* Rewrite destination. */
+	 
 	ctx->user_ip4 = bpf_htonl(DST_REWRITE_IP4);
 	ctx->user_port = bpf_htons(DST_REWRITE_PORT4);
 

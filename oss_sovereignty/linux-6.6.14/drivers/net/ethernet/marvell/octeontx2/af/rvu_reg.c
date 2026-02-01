@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -41,7 +37,7 @@ bool rvu_check_valid_reg(int regmap, int regblk, u64 reg)
 	int idx;
 	struct hw_reg_map *map;
 
-	/* Only 64bit offsets */
+	 
 	if (reg & 0x07)
 		return false;
 
@@ -53,7 +49,7 @@ bool rvu_check_valid_reg(int regmap, int regblk, u64 reg)
 		return false;
 	}
 
-	/* Should never happen */
+	 
 	if (map->regblk != regblk)
 		return false;
 

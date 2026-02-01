@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SCLP Store Data support and sysfs interface
- *
- * Copyright IBM Corp. 2017
- */
+
+ 
 
 #define KMSG_COMPONENT "sclp_sd"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -49,25 +45,14 @@ struct sclp_sd_sccb {
 	struct sclp_sd_evbuf evbuf;
 } __packed __aligned(PAGE_SIZE);
 
-/**
- * struct sclp_sd_data - Result of a Store Data request
- * @esize_bytes: Resulting esize in bytes
- * @dsize_bytes: Resulting dsize in bytes
- * @data: Pointer to data - must be released using vfree()
- */
+ 
 struct sclp_sd_data {
 	size_t esize_bytes;
 	size_t dsize_bytes;
 	void *data;
 };
 
-/**
- * struct sclp_sd_listener - Listener for asynchronous Store Data response
- * @list: For enqueueing this struct
- * @id: Event ID of response to listen for
- * @completion: Can be used to wait for response
- * @evbuf: Contains the resulting Store Data response after completion
- */
+ 
 struct sclp_sd_listener {
 	struct list_head list;
 	u32 id;
@@ -75,14 +60,7 @@ struct sclp_sd_listener {
 	struct sclp_sd_evbuf evbuf;
 };
 
-/**
- * struct sclp_sd_file - Sysfs representation of a Store Data entity
- * @kobj: Kobject
- * @data_attr: Attribute for accessing data contents
- * @data_mutex: Mutex to serialize access and updates to @data
- * @data: Data associated with this entity
- * @di: DI value associated with this entity
- */
+ 
 struct sclp_sd_file {
 	struct kobject kobj;
 	struct bin_attribute data_attr;
@@ -98,10 +76,7 @@ static struct sclp_sd_file *config_file;
 static LIST_HEAD(sclp_sd_queue);
 static DEFINE_SPINLOCK(sclp_sd_queue_lock);
 
-/**
- * sclp_sd_listener_add() - Add listener for Store Data responses
- * @listener: Listener to add
- */
+ 
 static void sclp_sd_listener_add(struct sclp_sd_listener *listener)
 {
 	spin_lock_irq(&sclp_sd_queue_lock);
@@ -109,10 +84,7 @@ static void sclp_sd_listener_add(struct sclp_sd_listener *listener)
 	spin_unlock_irq(&sclp_sd_queue_lock);
 }
 
-/**
- * sclp_sd_listener_remove() - Remove listener for Store Data responses
- * @listener: Listener to remove
- */
+ 
 static void sclp_sd_listener_remove(struct sclp_sd_listener *listener)
 {
 	spin_lock_irq(&sclp_sd_queue_lock);
@@ -120,15 +92,7 @@ static void sclp_sd_listener_remove(struct sclp_sd_listener *listener)
 	spin_unlock_irq(&sclp_sd_queue_lock);
 }
 
-/**
- * sclp_sd_listener_init() - Initialize a Store Data response listener
- * @listener: Response listener to initialize
- * @id: Event ID to listen for
- *
- * Initialize a listener for asynchronous Store Data responses. This listener
- * can afterwards be used to wait for a specific response and to retrieve
- * the associated response data.
- */
+ 
 static void sclp_sd_listener_init(struct sclp_sd_listener *listener, u32 id)
 {
 	memset(listener, 0, sizeof(*listener));
@@ -136,12 +100,7 @@ static void sclp_sd_listener_init(struct sclp_sd_listener *listener, u32 id)
 	init_completion(&listener->completion);
 }
 
-/**
- * sclp_sd_receiver() - Receiver for Store Data events
- * @evbuf_hdr: Header of received events
- *
- * Process Store Data events and complete listeners with matching event IDs.
- */
+ 
 static void sclp_sd_receiver(struct evbuf_header *evbuf_hdr)
 {
 	struct sclp_sd_evbuf *evbuf = (struct sclp_sd_evbuf *) evbuf_hdr;
@@ -171,21 +130,7 @@ static struct sclp_register sclp_sd_register = {
 	.receiver_fn = sclp_sd_receiver,
 };
 
-/**
- * sclp_sd_sync() - Perform Store Data request synchronously
- * @page: Address of work page - must be below 2GB
- * @eq: Input EQ value
- * @di: Input DI value
- * @sat: Input SAT value
- * @sa: Input SA value used to specify the address of the target buffer
- * @dsize_ptr: Optional pointer to input and output DSIZE value
- * @esize_ptr: Optional pointer to output ESIZE value
- *
- * Perform Store Data request with specified parameters and wait for completion.
- *
- * Return %0 on success and store resulting DSIZE and ESIZE values in
- * @dsize_ptr and @esize_ptr (if provided). Return non-zero on error.
- */
+ 
 static int sclp_sd_sync(unsigned long page, u8 eq, u8 di, u64 sat, u64 sa,
 			u32 *dsize_ptr, u32 *esize_ptr)
 {
@@ -197,7 +142,7 @@ static int sclp_sd_sync(unsigned long page, u8 eq, u8 di, u64 sat, u64 sa,
 	sclp_sd_listener_init(&listener, __pa(sccb));
 	sclp_sd_listener_add(&listener);
 
-	/* Prepare SCCB */
+	 
 	memset(sccb, 0, PAGE_SIZE);
 	sccb->hdr.length = sizeof(sccb->hdr) + sizeof(sccb->evbuf);
 	evbuf = &sccb->evbuf;
@@ -212,14 +157,14 @@ static int sclp_sd_sync(unsigned long page, u8 eq, u8 di, u64 sat, u64 sa,
 	if (dsize_ptr)
 		evbuf->dsize = *dsize_ptr;
 
-	/* Perform command */
+	 
 	pr_debug("request (eq=%d, di=%d, id=0x%08x)\n", eq, di, listener.id);
 	rc = sclp_sync_request(SCLP_CMDW_WRITE_EVENT_DATA, sccb);
 	pr_debug("request done (rc=%d)\n", rc);
 	if (rc)
 		goto out;
 
-	/* Evaluate response */
+	 
 	if (sccb->hdr.response_code == 0x73f0) {
 		pr_debug("event not supported\n");
 		rc = -EIO;
@@ -255,7 +200,7 @@ static int sclp_sd_sync(unsigned long page, u8 eq, u8 di, u64 sat, u64 sa,
 
 out:
 	if (rc && rc != -ENOENT) {
-		/* Provide some information about what went wrong */
+		 
 		pr_warn("Store Data request failed (eq=%d, di=%d, "
 			"response=0x%04x, flags=0x%02x, status=%d, rc=%d)\n",
 			eq, di, sccb->hdr.response_code, evbuf->hdr.flags,
@@ -268,20 +213,7 @@ out_remove:
 	return rc;
 }
 
-/**
- * sclp_sd_store_data() - Obtain data for specified Store Data entity
- * @result: Resulting data
- * @di: DI value associated with this entity
- *
- * Perform a series of Store Data requests to obtain the size and contents of
- * the specified Store Data entity.
- *
- * Return:
- *   %0:       Success - result is stored in @result. @result->data must be
- *	       released using vfree() after use.
- *   %-ENOENT: No data available for this entity
- *   %<0:      Other error
- */
+ 
 static int sclp_sd_store_data(struct sclp_sd_data *result, u8 di)
 {
 	u32 dsize = 0, esize = 0;
@@ -293,21 +225,21 @@ static int sclp_sd_store_data(struct sclp_sd_data *result, u8 di)
 	if (!page)
 		return -ENOMEM;
 
-	/* Get size */
+	 
 	rc = sclp_sd_sync(page, SD_EQ_SIZE, di, 0, 0, &dsize, &esize);
 	if (rc)
 		goto out;
 	if (dsize == 0)
 		goto out_result;
 
-	/* Allocate memory */
+	 
 	data = vzalloc(array_size((size_t)dsize, PAGE_SIZE));
 	if (!data) {
 		rc = -ENOMEM;
 		goto out;
 	}
 
-	/* Get translation table for buffer */
+	 
 	asce = base_asce_alloc((unsigned long) data, dsize);
 	if (!asce) {
 		vfree(data);
@@ -315,11 +247,11 @@ static int sclp_sd_store_data(struct sclp_sd_data *result, u8 di)
 		goto out;
 	}
 
-	/* Get data */
+	 
 	rc = sclp_sd_sync(page, SD_EQ_STORE_DATA, di, asce, (u64) data, &dsize,
 			  &esize);
 	if (rc) {
-		/* Cancel running request if interrupted */
+		 
 		if (rc == -ERESTARTSYS)
 			sclp_sd_sync(page, SD_EQ_HALT, di, 0, 0, NULL, NULL);
 		vfree(data);
@@ -338,12 +270,7 @@ out:
 	return rc;
 }
 
-/**
- * sclp_sd_data_reset() - Reset Store Data result buffer
- * @data: Data buffer to reset
- *
- * Reset @data to initial state and release associated memory.
- */
+ 
 static void sclp_sd_data_reset(struct sclp_sd_data *data)
 {
 	vfree(data->data);
@@ -352,10 +279,7 @@ static void sclp_sd_data_reset(struct sclp_sd_data *data)
 	data->esize_bytes = 0;
 }
 
-/**
- * sclp_sd_file_release() - Release function for sclp_sd_file object
- * @kobj: Kobject embedded in sclp_sd_file object
- */
+ 
 static void sclp_sd_file_release(struct kobject *kobj)
 {
 	struct sclp_sd_file *sd_file = to_sd_file(kobj);
@@ -364,16 +288,7 @@ static void sclp_sd_file_release(struct kobject *kobj)
 	kfree(sd_file);
 }
 
-/**
- * sclp_sd_file_update() - Update contents of sclp_sd_file object
- * @sd_file: Object to update
- *
- * Obtain the current version of data associated with the Store Data entity
- * @sd_file.
- *
- * On success, return %0 and generate a KOBJ_CHANGE event to indicate that the
- * data may have changed. Return non-zero otherwise.
- */
+ 
 static int sclp_sd_file_update(struct sclp_sd_file *sd_file)
 {
 	const char *name = kobject_name(&sd_file->kobj);
@@ -401,11 +316,7 @@ static int sclp_sd_file_update(struct sclp_sd_file *sd_file)
 	return 0;
 }
 
-/**
- * sclp_sd_file_update_async() - Wrapper for asynchronous update call
- * @data: Object to update
- * @cookie: Unused
- */
+ 
 static void sclp_sd_file_update_async(void *data, async_cookie_t cookie)
 {
 	struct sclp_sd_file *sd_file = data;
@@ -413,15 +324,7 @@ static void sclp_sd_file_update_async(void *data, async_cookie_t cookie)
 	sclp_sd_file_update(sd_file);
 }
 
-/**
- * reload_store() - Store function for "reload" sysfs attribute
- * @kobj: Kobject of sclp_sd_file object
- * @attr: Reload attribute
- * @buf: Data written to sysfs attribute
- * @count: Count of bytes written
- *
- * Initiate a reload of the data associated with an sclp_sd_file object.
- */
+ 
 static ssize_t reload_store(struct kobject *kobj, struct kobj_attribute *attr,
 			    const char *buf, size_t count)
 {
@@ -446,19 +349,7 @@ static struct kobj_type sclp_sd_file_ktype = {
 	.default_groups = sclp_sd_file_default_groups,
 };
 
-/**
- * data_read() - Read function for "data" sysfs attribute
- * @file: Open file pointer
- * @kobj: Kobject of sclp_sd_file object
- * @attr: Data attribute
- * @buffer: Target buffer
- * @off: Requested file offset
- * @size: Requested number of bytes
- *
- * Store the requested portion of the Store Data entity contents into the
- * specified buffer. Return the number of bytes stored on success, or %0
- * on EOF.
- */
+ 
 static ssize_t data_read(struct file *file, struct kobject *kobj,
 			 struct bin_attribute *attr, char *buffer,
 			 loff_t off, size_t size)
@@ -484,22 +375,7 @@ static ssize_t data_read(struct file *file, struct kobject *kobj,
 	return size;
 }
 
-/**
- * sclp_sd_file_create() - Add a sysfs file representing a Store Data entity
- * @name: Name of file
- * @di: DI value associated with this entity
- *
- * Create a sysfs directory with the given @name located under
- *
- *   /sys/firmware/sclp_sd/
- *
- * The files in this directory can be used to access the contents of the Store
- * Data entity associated with @DI.
- *
- * Return pointer to resulting sclp_sd_file object on success, %NULL otherwise.
- * The object must be freed by calling kobject_put() on the embedded kobject
- * pointer after use.
- */
+ 
 static __init struct sclp_sd_file *sclp_sd_file_create(const char *name, u8 di)
 {
 	struct sclp_sd_file *sd_file;
@@ -511,7 +387,7 @@ static __init struct sclp_sd_file *sclp_sd_file_create(const char *name, u8 di)
 	sd_file->di = di;
 	mutex_init(&sd_file->data_mutex);
 
-	/* Create kobject located under /sys/firmware/sclp_sd/ */
+	 
 	sd_file->kobj.kset = sclp_sd_kset;
 	rc = kobject_init_and_add(&sd_file->kobj, &sclp_sd_file_ktype, NULL,
 				  "%s", name);
@@ -531,21 +407,16 @@ static __init struct sclp_sd_file *sclp_sd_file_create(const char *name, u8 di)
 		return NULL;
 	}
 
-	/*
-	 * For completeness only - users interested in entity data should listen
-	 * for KOBJ_CHANGE instead.
-	 */
+	 
 	kobject_uevent(&sd_file->kobj, KOBJ_ADD);
 
-	/* Don't let a slow Store Data request delay further initialization */
+	 
 	async_schedule(sclp_sd_file_update_async, sd_file);
 
 	return sd_file;
 }
 
-/**
- * sclp_sd_init() - Initialize sclp_sd support and register sysfs files
- */
+ 
 static __init int sclp_sd_init(void)
 {
 	int rc;
@@ -554,7 +425,7 @@ static __init int sclp_sd_init(void)
 	if (rc)
 		return rc;
 
-	/* Create kset named "sclp_sd" located under /sys/firmware/ */
+	 
 	rc = -ENOMEM;
 	sclp_sd_kset = kset_create_and_add("sclp_sd", NULL, firmware_kobj);
 	if (!sclp_sd_kset)

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT76_REGS_H
 #define __MT76_REGS_H
@@ -38,20 +35,20 @@
 #define MT_WLAN_FUN_CTRL_WLAN_CLK_EN	BIT(1)
 #define MT_WLAN_FUN_CTRL_WLAN_RESET_RF	BIT(2)
 
-#define MT_WLAN_FUN_CTRL_WLAN_RESET	BIT(3) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_CSR_F20M_CKEN	BIT(3) /* MT76x2 */
+#define MT_WLAN_FUN_CTRL_WLAN_RESET	BIT(3)  
+#define MT_WLAN_FUN_CTRL_CSR_F20M_CKEN	BIT(3)  
 
 #define MT_WLAN_FUN_CTRL_PCIE_CLK_REQ	BIT(4)
 #define MT_WLAN_FUN_CTRL_FRC_WL_ANT_SEL	BIT(5)
 #define MT_WLAN_FUN_CTRL_INV_ANT_SEL	BIT(6)
 #define MT_WLAN_FUN_CTRL_WAKE_HOST	BIT(7)
 
-#define MT_WLAN_FUN_CTRL_THERM_RST	BIT(8) /* MT76x2 */
-#define MT_WLAN_FUN_CTRL_THERM_CKEN	BIT(9) /* MT76x2 */
+#define MT_WLAN_FUN_CTRL_THERM_RST	BIT(8)  
+#define MT_WLAN_FUN_CTRL_THERM_CKEN	BIT(9)  
 
-#define MT_WLAN_FUN_CTRL_GPIO_IN	GENMASK(15, 8) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_GPIO_OUT	GENMASK(23, 16) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_GPIO_OUT_EN	GENMASK(31, 24) /* MT76x0 */
+#define MT_WLAN_FUN_CTRL_GPIO_IN	GENMASK(15, 8)  
+#define MT_WLAN_FUN_CTRL_GPIO_OUT	GENMASK(23, 16)  
+#define MT_WLAN_FUN_CTRL_GPIO_OUT_EN	GENMASK(31, 24)  
 
 #define MT_XO_CTRL0			0x0100
 #define MT_XO_CTRL1			0x0104
@@ -499,14 +496,7 @@
 #define MT_TX_STA_CNT1			0x1710
 #define MT_TX_STA_CNT2			0x1714
 
-/* Vendor driver defines content of the second word of STAT_FIFO as follows:
- *	MT_TX_STAT_FIFO_RATE		GENMASK(26, 16)
- *	MT_TX_STAT_FIFO_ETXBF		BIT(27)
- *	MT_TX_STAT_FIFO_SND		BIT(28)
- *	MT_TX_STAT_FIFO_ITXBF		BIT(29)
- * However, tests show that b16-31 have the same layout as TXWI rate_ctl
- * with rate set to rate at which frame was acked.
- */
+ 
 #define MT_TX_STAT_FIFO			0x1718
 #define MT_TX_STAT_FIFO_VALID		BIT(0)
 #define MT_TX_STAT_FIFO_PID_TYPE	GENMASK(4, 1)
@@ -553,10 +543,10 @@
 #define MT_BBP_AGC_R0_CTRL_CHAN		GENMASK(9, 8)
 #define MT_BBP_AGC_R0_BW		GENMASK(14, 12)
 
-/* AGC, R4/R5 */
+ 
 #define MT_BBP_AGC_LNA_GAIN		GENMASK(21, 16)
 
-/* AGC, R8/R9 */
+ 
 #define MT_BBP_AGC_GAIN			GENMASK(14, 8)
 
 #define MT_BBP_AGC20_RSSI0		GENMASK(7, 0)

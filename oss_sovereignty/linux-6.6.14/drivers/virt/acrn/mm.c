@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACRN: Memory mapping management
- *
- * Copyright (C) 2020 Intel Corporation. All rights reserved.
- *
- * Authors:
- *	Fei Li <lei1.li@intel.com>
- *	Shuo Liu <shuo.a.liu@intel.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mm.h>
@@ -37,17 +29,7 @@ static int modify_region(struct acrn_vm *vm, struct vm_memory_region_op *region)
 	return ret;
 }
 
-/**
- * acrn_mm_region_add() - Set up the EPT mapping of a memory region.
- * @vm:			User VM.
- * @user_gpa:		A GPA of User VM.
- * @service_gpa:	A GPA of Service VM.
- * @size:		Size of the region.
- * @mem_type:		Combination of ACRN_MEM_TYPE_*.
- * @mem_access_right:	Combination of ACRN_MEM_ACCESS_*.
- *
- * Return: 0 on success, <0 on error.
- */
+ 
 int acrn_mm_region_add(struct acrn_vm *vm, u64 user_gpa, u64 service_gpa,
 		       u64 size, u32 mem_type, u32 mem_access_right)
 {
@@ -73,14 +55,7 @@ int acrn_mm_region_add(struct acrn_vm *vm, u64 user_gpa, u64 service_gpa,
 	return ret;
 }
 
-/**
- * acrn_mm_region_del() - Del the EPT mapping of a memory region.
- * @vm:		User VM.
- * @user_gpa:	A GPA of the User VM.
- * @size:	Size of the region.
- *
- * Return: 0 on success, <0 for error.
- */
+ 
 int acrn_mm_region_del(struct acrn_vm *vm, u64 user_gpa, u64 size)
 {
 	struct vm_memory_region_op *region;
@@ -145,13 +120,7 @@ int acrn_vm_memseg_unmap(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 	return ret;
 }
 
-/**
- * acrn_vm_ram_map() - Create a RAM EPT mapping of User VM.
- * @vm:		The User VM pointer
- * @memmap:	Info of the EPT mapping
- *
- * Return: 0 on success, <0 for error.
- */
+ 
 int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 {
 	struct vm_memory_region_batch *regions_info;
@@ -190,13 +159,13 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 	}
 	mmap_read_unlock(current->mm);
 
-	/* Get the page number of the map region */
+	 
 	nr_pages = memmap->len >> PAGE_SHIFT;
 	pages = vzalloc(array_size(nr_pages, sizeof(*pages)));
 	if (!pages)
 		return -ENOMEM;
 
-	/* Lock the pages of user memory map region */
+	 
 	pinned = pin_user_pages_fast(memmap->vma_base,
 				     nr_pages, FOLL_WRITE | FOLL_LONGTERM,
 				     pages);
@@ -208,14 +177,14 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 		goto put_pages;
 	}
 
-	/* Create a kernel map for the map region */
+	 
 	remap_vaddr = vmap(pages, nr_pages, VM_MAP, PAGE_KERNEL);
 	if (!remap_vaddr) {
 		ret = -ENOMEM;
 		goto put_pages;
 	}
 
-	/* Record Service VM va <-> User VM pa mapping */
+	 
 	mutex_lock(&vm->regions_mapping_lock);
 	region_mapping = &vm->regions_mapping[vm->regions_mapping_count];
 	if (vm->regions_mapping_count < ACRN_MEM_MAPPING_MAX) {
@@ -234,7 +203,7 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 	}
 	mutex_unlock(&vm->regions_mapping_lock);
 
-	/* Calculate count of vm_memory_region_op */
+	 
 	while (i < nr_pages) {
 		page = pages[i];
 		VM_BUG_ON_PAGE(PageTail(page), page);
@@ -243,7 +212,7 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 		i += 1 << order;
 	}
 
-	/* Prepare the vm_memory_region_batch */
+	 
 	regions_info = kzalloc(struct_size(regions_info, regions_op,
 					   nr_regions), GFP_KERNEL);
 	if (!regions_info) {
@@ -251,7 +220,7 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 		goto unmap_kernel_map;
 	}
 
-	/* Fill each vm_memory_region_op */
+	 
 	vm_region = regions_info->regions_op;
 	regions_info->vmid = vm->vmid;
 	regions_info->regions_num = nr_regions;
@@ -277,7 +246,7 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
 		i += 1 << order;
 	}
 
-	/* Inform the ACRN Hypervisor to set up EPT mappings */
+	 
 	ret = hcall_set_memory_regions(virt_to_phys(regions_info));
 	if (ret < 0) {
 		dev_dbg(acrn_dev.this_device,
@@ -308,10 +277,7 @@ free_pages:
 	return ret;
 }
 
-/**
- * acrn_vm_all_ram_unmap() - Destroy a RAM EPT mapping of User VM.
- * @vm:	The User VM
- */
+ 
 void acrn_vm_all_ram_unmap(struct acrn_vm *vm)
 {
 	struct vm_memory_mapping *region_mapping;

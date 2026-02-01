@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -12,7 +10,7 @@
 
 #define to_afu_chardev_m(d) dev_get_drvdata(d)
 
-/*********  Adapter attributes  **********************************************/
+ 
 
 static ssize_t caia_version_show(struct device *device,
 				 struct device_attribute *attr,
@@ -60,12 +58,12 @@ static ssize_t psl_timebase_synced_show(struct device *device,
 	struct cxl *adapter = to_cxl_adapter(device);
 	u64 psl_tb, delta;
 
-	/* Recompute the status only in native mode */
+	 
 	if (cpu_has_feature(CPU_FTR_HVMODE)) {
 		psl_tb = adapter->native->sl_ops->timebase_read(adapter);
 		delta = abs(mftb() - psl_tb);
 
-		/* CORE TB and PSL TB difference <= 16usecs ? */
+		 
 		adapter->psl_timebase_synced = (tb_to_ns(delta) < 16000) ? true : false;
 		pr_devel("PSL timebase %s - delta: 0x%016llx\n",
 			 (tb_to_ns(delta) < 16000) ? "synchronized" :
@@ -95,23 +93,19 @@ static ssize_t reset_adapter_store(struct device *device,
 	if ((rc != 1) || (val != 1 && val != -1))
 		return -EINVAL;
 
-	/*
-	 * See if we can lock the context mapping that's only allowed
-	 * when there are no contexts attached to the adapter. Once
-	 * taken this will also prevent any context from getting activated.
-	 */
+	 
 	if (val == 1) {
 		rc =  cxl_adapter_context_lock(adapter);
 		if (rc)
 			goto out;
 
 		rc = cxl_ops->adapter_reset(adapter);
-		/* In case reset failed release context lock */
+		 
 		if (rc)
 			cxl_adapter_context_unlock(adapter);
 
 	} else if (val == -1) {
-		/* Perform a forced adapter reset */
+		 
 		rc = cxl_ops->adapter_reset(adapter);
 	}
 
@@ -195,7 +189,7 @@ static struct device_attribute adapter_attrs[] = {
 };
 
 
-/*********  AFU master specific attributes  **********************************/
+ 
 
 static ssize_t mmio_size_show_master(struct device *device,
 				     struct device_attribute *attr,
@@ -231,7 +225,7 @@ static struct device_attribute afu_master_attrs[] = {
 };
 
 
-/*********  AFU attributes  **************************************************/
+ 
 
 static ssize_t mmio_size_show(struct device *device,
 			      struct device_attribute *attr,
@@ -251,7 +245,7 @@ static ssize_t reset_store_afu(struct device *device,
 	struct cxl_afu *afu = to_cxl_afu(device);
 	int rc;
 
-	/* Not safe to reset if it is currently in use */
+	 
 	mutex_lock(&afu->contexts_lock);
 	if (!idr_is_empty(&afu->contexts_idr)) {
 		rc = -EBUSY;
@@ -304,7 +298,7 @@ static ssize_t irqs_max_store(struct device *device,
 		if (irqs_max > afu->adapter->user_irqs)
 			return -EINVAL;
 	} else {
-		/* pHyp sets a per-AFU limit */
+		 
 		if (irqs_max > afu->guest->max_ints)
 			return -EINVAL;
 	}
@@ -354,7 +348,7 @@ static ssize_t prefault_mode_store(struct device *device,
 	else {
 		if (!radix_enabled()) {
 
-			/* only allowed when not in radix mode */
+			 
 			if (!strncmp(buf, "work_element_descriptor", 23))
 				mode = CXL_PREFAULT_WED;
 			if (!strncmp(buf, "all", 3))
@@ -391,7 +385,7 @@ static ssize_t mode_store(struct device *device, struct device_attribute *attr,
 	int old_mode, mode = -1;
 	int rc = -EBUSY;
 
-	/* can't change this if we have a user */
+	 
 	mutex_lock(&afu->contexts_lock);
 	if (!idr_is_empty(&afu->contexts_idr))
 		goto err;
@@ -408,10 +402,7 @@ static ssize_t mode_store(struct device *device, struct device_attribute *attr,
 		goto err;
 	}
 
-	/*
-	 * afu_deactivate_mode needs to be done outside the lock, prevent
-	 * other contexts coming in before we are ready:
-	 */
+	 
 	old_mode = afu->current_mode;
 	afu->current_mode = 0;
 	afu->num_procs = 0;
@@ -607,15 +598,7 @@ static struct afu_config_record *cxl_sysfs_afu_new_cr(struct cxl_afu *afu, int c
 		goto err;
 	cr->class >>= 8;
 
-	/*
-	 * Export raw AFU PCIe like config record. For now this is read only by
-	 * root - we can expand that later to be readable by non-root and maybe
-	 * even writable provided we have a good use-case. Once we support
-	 * exposing AFUs through a virtual PHB they will get that for free from
-	 * Linux' PCI infrastructure, but until then it's not clear that we
-	 * need it for anything since the main use case is just identifying
-	 * AFUs, which can be done via the vendor, device and class attributes.
-	 */
+	 
 	sysfs_bin_attr_init(&cr->config_attr);
 	cr->config_attr.attr.name = "config";
 	cr->config_attr.attr.mode = S_IRUSR;
@@ -652,7 +635,7 @@ void cxl_sysfs_afu_remove(struct cxl_afu *afu)
 	struct afu_config_record *cr, *tmp;
 	int i;
 
-	/* remove the err buffer bin attribute */
+	 
 	if (afu->eb_len)
 		device_remove_bin_file(&afu->dev, &afu->attr_eb);
 
@@ -686,7 +669,7 @@ int cxl_sysfs_afu_add(struct cxl_afu *afu)
 		}
 	}
 
-	/* conditionally create the add the binary file for error info buffer */
+	 
 	if (afu->eb_len) {
 		sysfs_attr_init(&afu->attr_eb.attr);
 
@@ -719,7 +702,7 @@ err1:
 	cxl_sysfs_afu_remove(afu);
 	return rc;
 err:
-	/* reset the eb_len as we havent created the bin attr */
+	 
 	afu->eb_len = 0;
 
 	for (i--; i >= 0; i--) {

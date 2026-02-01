@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -21,21 +18,7 @@
 
 #include <linux/iversion.h>
 
-/*
- * If we are doing readahead on an inode buffer, we might be in log recovery
- * reading an inode allocation buffer that hasn't yet been replayed, and hence
- * has not had the inode cores stamped into it. Hence for readahead, the buffer
- * may be potentially invalid.
- *
- * If the readahead buffer is invalid, we need to mark it with an error and
- * clear the DONE status of the buffer so that a followup read will re-read it
- * from disk. We don't report the error otherwise to avoid warnings during log
- * recovery and we don't get unnecessary panics on debug kernels. We use EIO here
- * because all we want to do is say readahead failed; there is no-one to report
- * the error to, so this will distinguish it from a non-ra verifier failure.
- * Changes to this readahead error behaviour also need to be reflected in
- * xfs_dquot_buf_readahead_verify().
- */
+ 
 static void
 xfs_inode_buf_verify(
 	struct xfs_buf	*bp,
@@ -45,9 +28,7 @@ xfs_inode_buf_verify(
 	int		i;
 	int		ni;
 
-	/*
-	 * Validate the magic number and version of every inode in the buffer
-	 */
+	 
 	ni = XFS_BB_TO_FSB(mp, bp->b_length) * mp->m_sb.sb_inopblock;
 	for (i = 0; i < ni; i++) {
 		struct xfs_dinode	*dip;
@@ -120,11 +101,7 @@ const struct xfs_buf_ops xfs_inode_buf_ra_ops = {
 };
 
 
-/*
- * This routine is called to map an inode to the buffer containing the on-disk
- * version of the inode.  It returns a pointer to the buffer containing the
- * on-disk inode in the bpp parameter.
- */
+ 
 int
 xfs_imap_to_bp(
 	struct xfs_mount	*mp,
@@ -148,7 +125,7 @@ static inline struct timespec64 xfs_inode_decode_bigtime(uint64_t ts)
 	return tv;
 }
 
-/* Convert an ondisk timestamp to an incore timestamp. */
+ 
 struct timespec64
 xfs_inode_from_disk_ts(
 	struct xfs_dinode		*dip,
@@ -185,11 +162,7 @@ xfs_inode_from_disk(
 		return -EFSCORRUPTED;
 	}
 
-	/*
-	 * First get the permanent information that is needed to allocate an
-	 * inode. If the inode is unused, mode is zero and we shouldn't mess
-	 * with the uninitialized part of it.
-	 */
+	 
 	if (!xfs_has_v3inodes(ip->i_mount))
 		ip->i_flushiter = be16_to_cpu(from->di_flushiter);
 	inode->i_generation = be32_to_cpu(from->di_gen);
@@ -197,11 +170,7 @@ xfs_inode_from_disk(
 	if (!inode->i_mode)
 		return 0;
 
-	/*
-	 * Convert v1 inodes immediately to v2 inode format as this is the
-	 * minimum inode version format we support in the rest of the code.
-	 * They will also be unconditionally written back to disk as v2 inodes.
-	 */
+	 
 	if (unlikely(from->di_version == 1)) {
 		set_nlink(inode, be16_to_cpu(from->di_onlink));
 		ip->i_projid = 0;
@@ -214,12 +183,7 @@ xfs_inode_from_disk(
 	i_uid_write(inode, be32_to_cpu(from->di_uid));
 	i_gid_write(inode, be32_to_cpu(from->di_gid));
 
-	/*
-	 * Time is signed, so need to convert to signed 32 bit before
-	 * storing in inode timestamp which may be 64 bit. Otherwise
-	 * a time before epoch is converted to a time long after epoch
-	 * on 64 bit systems.
-	 */
+	 
 	inode->i_atime = xfs_inode_from_disk_ts(from, from->di_atime);
 	inode->i_mtime = xfs_inode_from_disk_ts(from, from->di_mtime);
 	inode_set_ctime_to_ts(inode,
@@ -260,7 +224,7 @@ out_destroy_data_fork:
 	return error;
 }
 
-/* Convert an incore timestamp to an ondisk timestamp. */
+ 
 static inline xfs_timestamp_t
 xfs_inode_to_disk_ts(
 	struct xfs_inode		*ip,
@@ -287,10 +251,7 @@ xfs_inode_to_disk_iext_counters(
 	if (xfs_inode_has_large_extent_counts(ip)) {
 		to->di_big_nextents = cpu_to_be64(xfs_ifork_nextents(&ip->i_df));
 		to->di_big_anextents = cpu_to_be32(xfs_ifork_nextents(&ip->i_af));
-		/*
-		 * We might be upgrading the inode to use larger extent counters
-		 * than was previously used. Hence zero the unused field.
-		 */
+		 
 		to->di_nrext64_pad = cpu_to_be16(0);
 	} else {
 		to->di_nextents = cpu_to_be32(xfs_ifork_nextents(&ip->i_df));
@@ -363,13 +324,7 @@ xfs_dinode_verify_fork(
 
 	di_nextents = xfs_dfork_nextents(dip, whichfork);
 
-	/*
-	 * For fork types that can contain local data, check that the fork
-	 * format matches the size of local data contained within the fork.
-	 *
-	 * For all types, check that when the size says the should be in extent
-	 * or btree format, the inode isn't claiming it is in local format.
-	 */
+	 
 	if (whichfork == XFS_DATA_FORK) {
 		if (S_ISDIR(mode) || S_ISLNK(mode)) {
 			if (be64_to_cpu(dip->di_size) <= fork_size &&
@@ -384,9 +339,7 @@ xfs_dinode_verify_fork(
 
 	switch (fork_format) {
 	case XFS_DINODE_FMT_LOCAL:
-		/*
-		 * No local regular files yet.
-		 */
+		 
 		if (S_ISREG(mode) && whichfork == XFS_DATA_FORK)
 			return __this_address;
 		if (di_nextents)
@@ -422,8 +375,8 @@ xfs_dinode_verify_forkoff(
 		if (dip->di_forkoff != (roundup(sizeof(xfs_dev_t), 8) >> 3))
 			return __this_address;
 		break;
-	case XFS_DINODE_FMT_LOCAL:	/* fall through ... */
-	case XFS_DINODE_FMT_EXTENTS:    /* fall through ... */
+	case XFS_DINODE_FMT_LOCAL:	 
+	case XFS_DINODE_FMT_EXTENTS:     
 	case XFS_DINODE_FMT_BTREE:
 		if (dip->di_forkoff >= (XFS_LITINO(mp) >> 3))
 			return __this_address;
@@ -470,7 +423,7 @@ xfs_dinode_verify(
 	if (dip->di_magic != cpu_to_be16(XFS_DINODE_MAGIC))
 		return __this_address;
 
-	/* Verify v3 integrity information first */
+	 
 	if (dip->di_version >= 3) {
 		if (!xfs_has_v3inodes(mp))
 			return __this_address;
@@ -483,7 +436,7 @@ xfs_dinode_verify(
 			return __this_address;
 	}
 
-	/* don't allow invalid i_size */
+	 
 	di_size = be64_to_cpu(dip->di_size);
 	if (di_size & (1ULL << 63))
 		return __this_address;
@@ -492,7 +445,7 @@ xfs_dinode_verify(
 	if (mode && xfs_mode_to_ftype(mode) == XFS_DIR3_FT_UNKNOWN)
 		return __this_address;
 
-	/* No zero-length symlinks/dirs. */
+	 
 	if ((S_ISLNK(mode) || S_ISDIR(mode)) && di_size == 0)
 		return __this_address;
 
@@ -504,7 +457,7 @@ xfs_dinode_verify(
 	naextents = xfs_dfork_attr_extents(dip);
 	nblocks = be64_to_cpu(dip->di_nblocks);
 
-	/* Fork checks carried over from xfs_iformat_fork */
+	 
 	if (mode && nextents + naextents > nblocks)
 		return __this_address;
 
@@ -519,12 +472,12 @@ xfs_dinode_verify(
 	if (mode && (flags & XFS_DIFLAG_REALTIME) && !mp->m_rtdev_targp)
 		return __this_address;
 
-	/* check for illegal values of forkoff */
+	 
 	fa = xfs_dinode_verify_forkoff(dip, mp);
 	if (fa)
 		return fa;
 
-	/* Do we have appropriate data fork formats for the mode? */
+	 
 	switch (mode & S_IFMT) {
 	case S_IFIFO:
 	case S_IFCHR:
@@ -541,7 +494,7 @@ xfs_dinode_verify(
 			return fa;
 		break;
 	case 0:
-		/* Uninitialized inode ok. */
+		 
 		break;
 	default:
 		return __this_address;
@@ -552,12 +505,7 @@ xfs_dinode_verify(
 		if (fa)
 			return fa;
 	} else {
-		/*
-		 * If there is no fork offset, this may be a freshly-made inode
-		 * in a new disk cluster, in which case di_aformat is zeroed.
-		 * Otherwise, such an inode must be in EXTENTS format; this goes
-		 * for freed inodes as well.
-		 */
+		 
 		switch (dip->di_aformat) {
 		case 0:
 		case XFS_DINODE_FMT_EXTENTS:
@@ -569,38 +517,38 @@ xfs_dinode_verify(
 			return __this_address;
 	}
 
-	/* extent size hint validation */
+	 
 	fa = xfs_inode_validate_extsize(mp, be32_to_cpu(dip->di_extsize),
 			mode, flags);
 	if (fa)
 		return fa;
 
-	/* only version 3 or greater inodes are extensively verified here */
+	 
 	if (dip->di_version < 3)
 		return NULL;
 
 	flags2 = be64_to_cpu(dip->di_flags2);
 
-	/* don't allow reflink/cowextsize if we don't have reflink */
+	 
 	if ((flags2 & (XFS_DIFLAG2_REFLINK | XFS_DIFLAG2_COWEXTSIZE)) &&
 	     !xfs_has_reflink(mp))
 		return __this_address;
 
-	/* only regular files get reflink */
+	 
 	if ((flags2 & XFS_DIFLAG2_REFLINK) && (mode & S_IFMT) != S_IFREG)
 		return __this_address;
 
-	/* don't let reflink and realtime mix */
+	 
 	if ((flags2 & XFS_DIFLAG2_REFLINK) && (flags & XFS_DIFLAG_REALTIME))
 		return __this_address;
 
-	/* COW extent size hint validation */
+	 
 	fa = xfs_inode_validate_cowextsize(mp, be32_to_cpu(dip->di_cowextsize),
 			mode, flags, flags2);
 	if (fa)
 		return fa;
 
-	/* bigtime iflag can only happen on bigtime filesystems */
+	 
 	if (xfs_dinode_has_bigtime(dip) &&
 	    !xfs_has_bigtime(mp))
 		return __this_address;
@@ -624,21 +572,7 @@ xfs_dinode_calc_crc(
 	dip->di_crc = xfs_end_cksum(crc);
 }
 
-/*
- * Validate di_extsize hint.
- *
- * 1. Extent size hint is only valid for directories and regular files.
- * 2. FS_XFLAG_EXTSIZE is only valid for regular files.
- * 3. FS_XFLAG_EXTSZINHERIT is only valid for directories.
- * 4. Hint cannot be larger than MAXTEXTLEN.
- * 5. Can be changed on directories at any time.
- * 6. Hint value of 0 turns off hints, clears inode flags.
- * 7. Extent size must be a multiple of the appropriate block size.
- *    For realtime files, this is the rt extent size.
- * 8. For non-realtime files, the extent size hint must be limited
- *    to half the AG size to avoid alignment extending the extent beyond the
- *    limits of the AG.
- */
+ 
 xfs_failaddr_t
 xfs_inode_validate_extsize(
 	struct xfs_mount		*mp,
@@ -657,31 +591,7 @@ xfs_inode_validate_extsize(
 	inherit_flag = (flags & XFS_DIFLAG_EXTSZINHERIT);
 	extsize_bytes = XFS_FSB_TO_B(mp, extsize);
 
-	/*
-	 * This comment describes a historic gap in this verifier function.
-	 *
-	 * For a directory with both RTINHERIT and EXTSZINHERIT flags set, this
-	 * function has never checked that the extent size hint is an integer
-	 * multiple of the realtime extent size.  Since we allow users to set
-	 * this combination  on non-rt filesystems /and/ to change the rt
-	 * extent size when adding a rt device to a filesystem, the net effect
-	 * is that users can configure a filesystem anticipating one rt
-	 * geometry and change their minds later.  Directories do not use the
-	 * extent size hint, so this is harmless for them.
-	 *
-	 * If a directory with a misaligned extent size hint is allowed to
-	 * propagate that hint into a new regular realtime file, the result
-	 * is that the inode cluster buffer verifier will trigger a corruption
-	 * shutdown the next time it is run, because the verifier has always
-	 * enforced the alignment rule for regular files.
-	 *
-	 * Because we allow administrators to set a new rt extent size when
-	 * adding a rt section, we cannot add a check to this verifier because
-	 * that will result a new source of directory corruption errors when
-	 * reading an existing filesystem.  Instead, we rely on callers to
-	 * decide when alignment checks are appropriate, and fix things up as
-	 * needed.
-	 */
+	 
 
 	if (rt_flag)
 		blocksize_bytes = XFS_FSB_TO_B(mp, mp->m_sb.sb_rextsize);
@@ -700,7 +610,7 @@ xfs_inode_validate_extsize(
 	if ((hint_flag || inherit_flag) && extsize == 0)
 		return __this_address;
 
-	/* free inodes get flags set to zero but extsize remains */
+	 
 	if (mode && !(hint_flag || inherit_flag) && extsize != 0)
 		return __this_address;
 
@@ -716,19 +626,7 @@ xfs_inode_validate_extsize(
 	return NULL;
 }
 
-/*
- * Validate di_cowextsize hint.
- *
- * 1. CoW extent size hint can only be set if reflink is enabled on the fs.
- *    The inode does not have to have any shared blocks, but it must be a v3.
- * 2. FS_XFLAG_COWEXTSIZE is only valid for directories and regular files;
- *    for a directory, the hint is propagated to new files.
- * 3. Can be changed on files & directories at any time.
- * 4. Hint value of 0 turns off hints, clears inode flags.
- * 5. Extent size must be a multiple of the appropriate block size.
- * 6. The extent size hint must be limited to half the AG size to avoid
- *    alignment extending the extent beyond the limits of the AG.
- */
+ 
 xfs_failaddr_t
 xfs_inode_validate_cowextsize(
 	struct xfs_mount		*mp,
@@ -754,7 +652,7 @@ xfs_inode_validate_cowextsize(
 	if (hint_flag && cowextsize == 0)
 		return __this_address;
 
-	/* free inodes get flags set to zero but cowextsize remains */
+	 
 	if (mode && !hint_flag && cowextsize != 0)
 		return __this_address;
 

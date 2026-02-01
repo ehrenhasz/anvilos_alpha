@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * uniphier_thermal.c - Socionext UniPhier thermal driver
- * Copyright 2014      Panasonic Corporation
- * Copyright 2016-2017 Socionext Inc.
- * Author:
- *	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/interrupt.h>
@@ -16,10 +10,7 @@
 #include <linux/regmap.h>
 #include <linux/thermal.h>
 
-/*
- * block registers
- * addresses are the offset from .block_base
- */
+ 
 #define PVTCTLEN			0x0000
 #define PVTCTLEN_EN			BIT(0)
 
@@ -32,10 +23,7 @@
 #define EMONREPEAT_PERIOD		GENMASK(3, 0)
 #define EMONREPEAT_PERIOD_1000000	0x9
 
-/*
- * common registers
- * addresses are the offset from .map_base
- */
+ 
 #define PVTCTLSEL			0x0900
 #define PVTCTLSEL_MASK			GENMASK(2, 0)
 #define PVTCTLSEL_MONITOR		0
@@ -64,13 +52,13 @@
 #define TMODSETUP1_EN			BIT(15)
 #define TMODSETUP1_VAL(val)		((val) & GENMASK(14, 0))
 
-/* SoC critical temperature */
+ 
 #define CRITICAL_TEMP_LIMIT		(120 * 1000)
 
-/* Max # of alert channels */
+ 
 #define ALERT_CH_NUM			3
 
-/* SoC specific thermal sensor data */
+ 
 struct uniphier_tm_soc_data {
 	u32 map_base;
 	u32 block_base;
@@ -92,22 +80,16 @@ static int uniphier_tm_initialize_sensor(struct uniphier_tm_dev *tdev)
 	u32 tmod_calib[2];
 	int ret;
 
-	/* stop PVT */
+	 
 	regmap_write_bits(map, tdev->data->block_base + PVTCTLEN,
 			  PVTCTLEN_EN, 0);
 
-	/*
-	 * Since SoC has a calibrated value that was set in advance,
-	 * TMODCOEF shows non-zero and PVT refers the value internally.
-	 *
-	 * If TMODCOEF shows zero, the boards don't have the calibrated
-	 * value, and the driver has to set default value from DT.
-	 */
+	 
 	ret = regmap_read(map, tdev->data->map_base + TMODCOEF, &val);
 	if (ret)
 		return ret;
 	if (!val) {
-		/* look for the default values in DT */
+		 
 		ret = of_property_read_u32_array(tdev->dev->of_node,
 						 "socionext,tmod-calibration",
 						 tmod_calib,
@@ -120,16 +102,16 @@ static int uniphier_tm_initialize_sensor(struct uniphier_tm_dev *tdev)
 			TMODSETUP1_EN | TMODSETUP1_VAL(tmod_calib[1]));
 	}
 
-	/* select temperature mode */
+	 
 	regmap_write_bits(map, tdev->data->block_base + PVTCTLMODE,
 			  PVTCTLMODE_MASK, PVTCTLMODE_TEMPMON);
 
-	/* set monitoring period */
+	 
 	regmap_write_bits(map, tdev->data->block_base + EMONREPEAT,
 			  EMONREPEAT_ENDLESS | EMONREPEAT_PERIOD,
 			  EMONREPEAT_ENDLESS | EMONREPEAT_PERIOD_1000000);
 
-	/* set monitor mode */
+	 
 	regmap_write_bits(map, tdev->data->map_base + PVTCTLSEL,
 			  PVTCTLSEL_MASK, PVTCTLSEL_MONITOR);
 
@@ -141,7 +123,7 @@ static void uniphier_tm_set_alert(struct uniphier_tm_dev *tdev, u32 ch,
 {
 	struct regmap *map = tdev->regmap;
 
-	/* set alert temperature */
+	 
 	regmap_write_bits(map, tdev->data->map_base + SETALERT0 + (ch << 2),
 			  SETALERT_EN | SETALERT_TEMP_OVF,
 			  SETALERT_EN |
@@ -158,30 +140,30 @@ static void uniphier_tm_enable_sensor(struct uniphier_tm_dev *tdev)
 		if (tdev->alert_en[i])
 			bits |= PMALERTINTCTL_EN(i);
 
-	/* enable alert interrupt */
+	 
 	regmap_write_bits(map, tdev->data->map_base + PMALERTINTCTL,
 			  PMALERTINTCTL_MASK, bits);
 
-	/* start PVT */
+	 
 	regmap_write_bits(map, tdev->data->block_base + PVTCTLEN,
 			  PVTCTLEN_EN, PVTCTLEN_EN);
 
-	usleep_range(700, 1500);	/* The spec note says at least 700us */
+	usleep_range(700, 1500);	 
 }
 
 static void uniphier_tm_disable_sensor(struct uniphier_tm_dev *tdev)
 {
 	struct regmap *map = tdev->regmap;
 
-	/* disable alert interrupt */
+	 
 	regmap_write_bits(map, tdev->data->map_base + PMALERTINTCTL,
 			  PMALERTINTCTL_MASK, 0);
 
-	/* stop PVT */
+	 
 	regmap_write_bits(map, tdev->data->block_base + PVTCTLEN,
 			  PVTCTLEN_EN, 0);
 
-	usleep_range(1000, 2000);	/* The spec note says at least 1ms */
+	usleep_range(1000, 2000);	 
 }
 
 static int uniphier_tm_get_temp(struct thermal_zone_device *tz, int *out_temp)
@@ -195,7 +177,7 @@ static int uniphier_tm_get_temp(struct thermal_zone_device *tz, int *out_temp)
 	if (ret)
 		return ret;
 
-	/* MSB of the TMOD field is a sign bit */
+	 
 	*out_temp = sign_extend32(temp, TMOD_WIDTH - 1) * 1000;
 
 	return 0;
@@ -215,7 +197,7 @@ static void uniphier_tm_irq_clear(struct uniphier_tm_dev *tdev)
 		bits |= PMALERTINTCTL_CLR(i);
 	}
 
-	/* clear alert interrupt */
+	 
 	regmap_write_bits(tdev->regmap,
 			  tdev->data->map_base + PMALERTINTCTL, mask, bits);
 }
@@ -260,8 +242,8 @@ static int uniphier_tm_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* get regmap from syscon node */
-	parent = of_get_parent(dev->of_node); /* parent should be syscon node */
+	 
+	parent = of_get_parent(dev->of_node);  
 	regmap = syscon_node_to_regmap(parent);
 	of_node_put(parent);
 	if (IS_ERR(regmap)) {
@@ -292,7 +274,7 @@ static int uniphier_tm_probe(struct platform_device *pdev)
 		return PTR_ERR(tdev->tz_dev);
 	}
 
-	/* set alert temperatures */
+	 
 	for (i = 0; i < thermal_zone_get_num_trips(tdev->tz_dev); i++) {
 		struct thermal_trip trip;
 
@@ -321,7 +303,7 @@ static int uniphier_tm_remove(struct platform_device *pdev)
 {
 	struct uniphier_tm_dev *tdev = platform_get_drvdata(pdev);
 
-	/* disable sensor */
+	 
 	uniphier_tm_disable_sensor(tdev);
 
 	return 0;
@@ -356,7 +338,7 @@ static const struct of_device_id uniphier_tm_dt_ids[] = {
 		.compatible = "socionext,uniphier-nx1-thermal",
 		.data       = &uniphier_ld20_tm_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_tm_dt_ids);
 

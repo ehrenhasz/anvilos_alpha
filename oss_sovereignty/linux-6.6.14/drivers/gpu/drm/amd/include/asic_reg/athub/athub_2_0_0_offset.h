@@ -1,29 +1,10 @@
-/*
- * Copyright (C) 2019  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _athub_2_0_0_OFFSET_HEADER
 #define _athub_2_0_0_OFFSET_HEADER
 
 
-// addressBlock: athub_atsdec
-// base address: 0x3000
+
+
 #define mmATC_ATS_CNTL                                                                                 0x0000
 #define mmATC_ATS_CNTL_BASE_IDX                                                                        0
 #define mmATC_ATS_STATUS                                                                               0x0003
@@ -218,8 +199,8 @@
 #define mmATC_ATS_VMID_SNAPSHOT_MMHUB_STAT_BASE_IDX                                                    0
 
 
-// addressBlock: athub_xpbdec
-// base address: 0x3190
+
+
 #define mmXPB_RTR_SRC_APRTR0                                                                           0x0064
 #define mmXPB_RTR_SRC_APRTR0_BASE_IDX                                                                  0
 #define mmXPB_RTR_SRC_APRTR1                                                                           0x0065
@@ -434,8 +415,8 @@
 #define mmXPB_CLG_GUS_UNITID_MAPPING7_BASE_IDX                                                         0
 
 
-// addressBlock: athub_rpbdec
-// base address: 0x3350
+
+
 #define mmRPB_PASSPW_CONF                                                                              0x00d4
 #define mmRPB_PASSPW_CONF_BASE_IDX                                                                     0
 #define mmRPB_BLOCKLEVEL_CONF                                                                          0x00d5

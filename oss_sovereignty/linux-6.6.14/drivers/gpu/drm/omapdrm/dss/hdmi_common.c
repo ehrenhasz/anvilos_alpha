@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define DSS_SUBSYS_NAME "HDMI"
 
@@ -57,15 +57,10 @@ int hdmi_compute_acr(u32 pclk, u32 sample_freq, u32 *n, u32 *cts)
 	if (n == NULL || cts == NULL)
 		return -EINVAL;
 
-	/* TODO: When implemented, query deep color mode here. */
+	 
 	deep_color = 100;
 
-	/*
-	 * When using deep color, the default N value (as in the HDMI
-	 * specification) yields to an non-integer CTS. Hence, we
-	 * modify it while keeping the restrictions described in
-	 * section 7.2.1 of the HDMI 1.4a specification.
-	 */
+	 
 	switch (sample_freq) {
 	case 32000:
 	case 48000:
@@ -142,7 +137,7 @@ int hdmi_compute_acr(u32 pclk, u32 sample_freq, u32 *n, u32 *cts)
 			return -EINVAL;
 		}
 	}
-	/* Calculate CTS. See HDMI 1.3a or 1.4a specifications */
+	 
 	*cts = (pclk/1000) * (*n / 128) * deep_color / (sample_freq / 10);
 
 	return 0;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+ 
+ 
 #ifndef __IPU_PRV_H__
 #define __IPU_PRV_H__
 
@@ -26,8 +23,8 @@ struct ipu_soc;
 #define IPU_CM_DC_REG_OFS	0x00058000
 #define IPU_CM_DMFC_REG_OFS	0x00060000
 
-/* Register addresses */
-/* IPU Common registers */
+ 
+ 
 #define IPU_CM_REG(offset)	(offset)
 
 #define IPU_CONF			IPU_CM_REG(0)
@@ -67,12 +64,12 @@ struct ipu_soc;
 #define IPU_INT_CTRL(n)		IPU_CM_REG(0x003C + 4 * (n))
 #define IPU_INT_STAT(n)		IPU_CM_REG(0x0200 + 4 * (n))
 
-/* SRM_PRI2 */
+ 
 #define DP_S_SRM_MODE_MASK		(0x3 << 3)
 #define DP_S_SRM_MODE_NOW		(0x3 << 3)
 #define DP_S_SRM_MODE_NEXT_FRAME	(0x1 << 3)
 
-/* FS_PROC_FLOW1 */
+ 
 #define FS_PRPENC_ROT_SRC_SEL_MASK	(0xf << 0)
 #define FS_PRPENC_ROT_SRC_SEL_ENC		(0x7 << 0)
 #define FS_PRPVF_ROT_SRC_SEL_MASK	(0xf << 8)
@@ -87,7 +84,7 @@ struct ipu_soc;
 #define FS_VDI_SRC_SEL_CSI_DIRECT		(0x1 << 28)
 #define FS_VDI_SRC_SEL_VDOA			(0x2 << 28)
 
-/* FS_PROC_FLOW2 */
+ 
 #define FS_PRP_ENC_DEST_SEL_MASK	(0xf << 0)
 #define FS_PRP_ENC_DEST_SEL_IRT_ENC		(0x1 << 0)
 #define FS_PRPVF_DEST_SEL_MASK		(0xf << 4)
@@ -272,4 +269,4 @@ struct ipu_prg *ipu_prg_lookup_by_phandle(struct device *dev, const char *name,
 extern struct platform_driver ipu_pre_drv;
 extern struct platform_driver ipu_prg_drv;
 
-#endif				/* __IPU_PRV_H__ */
+#endif				 

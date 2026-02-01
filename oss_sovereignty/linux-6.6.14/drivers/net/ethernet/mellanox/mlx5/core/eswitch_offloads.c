@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/idr.h>
@@ -55,9 +25,7 @@
 #define mlx5_esw_for_each_rep(esw, i, rep) \
 	xa_for_each(&((esw)->offloads.vport_reps), i, rep)
 
-/* There are two match-all miss flows, one for unicast dst mac and
- * one for multicast.
- */
+ 
 #define MLX5_ESW_MISS_FLOWS (2)
 #define UPLINK_REP_INDEX 0
 
@@ -97,9 +65,7 @@ mlx5_eswitch_set_rule_flow_source(struct mlx5_eswitch *esw,
 					 MLX5_FLOW_CONTEXT_FLOW_SOURCE_LOCAL_VPORT;
 }
 
-/* Actually only the upper 16 bits of reg c0 need to be cleared, but the lower 16 bits
- * are not needed as well in the following process. So clear them all for simplicity.
- */
+ 
 void
 mlx5_eswitch_clear_rule_source_port(struct mlx5_eswitch *esw, struct mlx5_flow_spec *spec)
 {
@@ -129,9 +95,7 @@ mlx5_eswitch_set_rule_source_port(struct mlx5_eswitch *esw,
 	void *misc2;
 	void *misc;
 
-	/* Use metadata matching because vport is not represented by single
-	 * VHCA in dual-port RoCE mode, and matching on source vport may fail.
-	 */
+	 
 	if (mlx5_eswitch_vport_match_metadata_enabled(esw)) {
 		if (mlx5_esw_indir_table_decap_vport(attr))
 			vport = mlx5_esw_indir_table_decap_vport(attr);
@@ -317,9 +281,7 @@ esw_setup_chain_src_port_rewrite(struct mlx5_flow_destination *dest,
 	if (!(attr->flags & MLX5_ATTR_FLAG_SRC_REWRITE))
 		return -EOPNOTSUPP;
 
-	/* flow steering cannot handle more than one dest with the same ft
-	 * in a single flow
-	 */
+	 
 	if (esw_attr->out_count - esw_attr->split_count > 1)
 		return -EOPNOTSUPP;
 
@@ -351,11 +313,7 @@ esw_is_indir_table(struct mlx5_eswitch *esw, struct mlx5_flow_attr *attr)
 	bool result = false;
 	int i;
 
-	/* Indirect table is supported only for flows with in_port uplink
-	 * and the destination is vport on the same eswitch as the uplink,
-	 * return false in case at least one of destinations doesn't meet
-	 * this criteria.
-	 */
+	 
 	for (i = esw_attr->split_count; i < esw_attr->out_count; i++) {
 		if (esw_attr->dests[i].vport_valid &&
 		    mlx5_esw_indir_table_needed(esw, attr, esw_attr->dests[i].vport,
@@ -433,7 +391,7 @@ static bool esw_setup_uplink_fwd_ipsec_needed(struct mlx5_eswitch *esw,
 	if (esw->offloads.ft_ipsec_tx_pol &&
 	    esw_attr->dests[attr_idx].vport_valid &&
 	    esw_attr->dests[attr_idx].vport == MLX5_VPORT_UPLINK &&
-	    /* To be aligned with software, encryption is needed only for tunnel device */
+	     
 	    (esw_attr->dests[attr_idx].flags & MLX5_ESW_DEST_ENCAP_VALID) &&
 	    esw_attr->dests[attr_idx].vport != esw_attr->in_rep->vport &&
 	    esw_same_vhca_id(esw_attr->dests[attr_idx].mdev, esw->dev))
@@ -637,7 +595,7 @@ esw_setup_meter(struct mlx5_flow_attr *attr, struct mlx5_flow_act *flow_act)
 	flow_act->exe_aso.object_id = meter->obj_id;
 	flow_act->exe_aso.flow_meter.meter_idx = meter->idx;
 	flow_act->exe_aso.flow_meter.init_color = MLX5_FLOW_METER_COLOR_GREEN;
-	/* use metadata reg 5 for packet color */
+	 
 	flow_act->exe_aso.return_reg_id = 5;
 }
 
@@ -693,7 +651,7 @@ mlx5_eswitch_add_offloaded_rule(struct mlx5_eswitch *esw,
 			goto err_create_goto_table;
 		}
 
-		/* Header rewrite with combined wire+loopback in FDB is not allowed */
+		 
 		if ((flow_act.action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) &&
 		    esw_dests_to_vf_pf_vports(dest, i)) {
 			esw_warn(esw->dev,
@@ -816,9 +774,7 @@ mlx5_eswitch_add_fwd_rule(struct mlx5_eswitch *esw,
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
 	for (i = 0; i < esw_attr->split_count; i++) {
 		if (esw_attr->dests[i].flags & MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE)
-			/* Source port rewrite (forward to ovs internal port or statck device) isn't
-			 * supported in the rule of split action.
-			 */
+			 
 			err = -EOPNOTSUPP;
 		else
 			esw_setup_vport_dest(dest, &flow_act, esw, esw_attr, i, i, false);
@@ -875,7 +831,7 @@ __mlx5_eswitch_del_rule(struct mlx5_eswitch *esw,
 	mlx5_del_flow_rules(rule);
 
 	if (!mlx5e_tc_attr_flags_skip(attr->flags)) {
-		/* unref the term table */
+		 
 		for (i = 0; i < MLX5_MAX_FLOW_FWD_VPORTS; i++) {
 			if (esw_attr->dests[i].termtbl)
 				mlx5_eswitch_termtbl_put(esw, esw_attr->dests[i].termtbl);
@@ -946,7 +902,7 @@ mlx5_eswitch_add_send_to_vport_rule(struct mlx5_eswitch *on_esw,
 
 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS;
 
-	/* source vport is the esw manager */
+	 
 	vport = from_esw->manager_vport;
 
 	if (mlx5_eswitch_vport_match_metadata_enabled(on_esw)) {
@@ -1171,7 +1127,7 @@ static int esw_add_fdb_peer_miss_rules(struct mlx5_eswitch *esw,
 	struct mlx5_flow_destination dest = {};
 	struct mlx5_flow_act flow_act = {0};
 	struct mlx5_flow_handle **flows;
-	/* total vports is the same for both e-switches */
+	 
 	int nvports = esw->total_vports;
 	struct mlx5_flow_handle *flow;
 	struct mlx5_flow_spec *spec;
@@ -1310,9 +1266,7 @@ static void esw_del_fdb_peer_miss_rules(struct mlx5_eswitch *esw,
 
 	if (mlx5_core_ec_sriov_enabled(esw->dev)) {
 		mlx5_esw_for_each_ec_vf_vport(esw, i, vport, mlx5_core_max_ec_vfs(esw->dev)) {
-			/* The flow for a particular vport could be NULL if the other ECPF
-			 * has fewer or no VFs enabled
-			 */
+			 
 			if (!flows[vport->index])
 				continue;
 			mlx5_del_flow_rules(flows[vport->index]);
@@ -1529,9 +1483,7 @@ static void esw_init_chains_offload_flags(struct mlx5_eswitch *esw, u32 *flags)
 		*flags &= ~MLX5_CHAINS_AND_PRIOS_SUPPORTED;
 		esw_warn(dev, "Tc chains and priorities offload aren't supported\n");
 	} else if (!fdb_modify_header_fwd_to_table_supported(esw)) {
-		/* Disabled when ttl workaround is needed, e.g
-		 * when ESWITCH_IPV4_TTL_MODIFY_ENABLE = true in mlxconfig
-		 */
+		 
 		esw_warn(dev,
 			 "Tc chains and priorities offload aren't supported, check firmware version, or mlxconfig settings\n");
 		*flags &= ~MLX5_CHAINS_AND_PRIOS_SUPPORTED;
@@ -1569,7 +1521,7 @@ esw_chains_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *miss_fdb)
 
 	esw->fdb_table.offloads.esw_chains_priv = chains;
 
-	/* Create tc_end_ft which is the always created ft chain */
+	 
 	nf_ft = mlx5_chains_get_table(chains, mlx5_chains_get_nf_ft_chain(chains),
 				      1, 0);
 	if (IS_ERR(nf_ft)) {
@@ -1577,14 +1529,14 @@ esw_chains_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *miss_fdb)
 		goto nf_ft_err;
 	}
 
-	/* Always open the root for fast path */
+	 
 	ft = mlx5_chains_get_table(chains, 0, 1, 0);
 	if (IS_ERR(ft)) {
 		err = PTR_ERR(ft);
 		goto level_0_err;
 	}
 
-	/* Open level 1 for split fdb rules now if prios isn't supported  */
+	 
 	if (!mlx5_chains_prios_supported(chains)) {
 		err = esw_vport_tbl_get(esw);
 		if (err)
@@ -1616,7 +1568,7 @@ esw_chains_destroy(struct mlx5_eswitch *esw, struct mlx5_fs_chains *chains)
 	mlx5_chains_destroy(chains);
 }
 
-#else /* CONFIG_MLX5_CLS_ACT */
+#else  
 
 static int
 esw_chains_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *miss_fdb)
@@ -1654,7 +1606,7 @@ esw_create_send_to_vport_group(struct mlx5_eswitch *esw,
 			 source_eswitch_owner_vhca_id_valid, 1);
 	}
 
-	/* See comment at table_size calculation */
+	 
 	count = MLX5_MAX_PORTS * (esw->total_vports * MAX_SQ_NVPORTS + MAX_PF_SQ);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, *ix + count - 1);
@@ -1843,23 +1795,11 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
 		goto ns_err;
 	}
 
-	/* To be strictly correct:
-	 *	MLX5_MAX_PORTS * (esw->total_vports * MAX_SQ_NVPORTS + MAX_PF_SQ)
-	 * should be:
-	 *	esw->total_vports * MAX_SQ_NVPORTS + MAX_PF_SQ +
-	 *	peer_esw->total_vports * MAX_SQ_NVPORTS + MAX_PF_SQ
-	 * but as the peer device might not be in switchdev mode it's not
-	 * possible. We use the fact that by default FW sets max vfs and max sfs
-	 * to the same value on both devices. If it needs to be changed in the future note
-	 * the peer miss group should also be created based on the number of
-	 * total vports of the peer (currently is also uses esw->total_vports).
-	 */
+	 
 	table_size = MLX5_MAX_PORTS * (esw->total_vports * MAX_SQ_NVPORTS + MAX_PF_SQ) +
 		     esw->total_vports * MLX5_MAX_PORTS + MLX5_ESW_MISS_FLOWS;
 
-	/* create the slow path fdb with encap set, so further table instances
-	 * can be created at run time while VFs are probed if the FW allows that.
-	 */
+	 
 	if (esw->offloads.encap != DEVLINK_ESWITCH_ENCAP_MODE_NONE)
 		flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
 			  MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
@@ -1876,11 +1816,7 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
 	}
 	esw->fdb_table.offloads.slow_fdb = fdb;
 
-	/* Create empty TC-miss managed table. This allows plugging in following
-	 * priorities without directly exposing their level 0 table to
-	 * eswitch_offloads and passing it as miss_fdb to following call to
-	 * esw_chains_create().
-	 */
+	 
 	memset(&ft_attr, 0, sizeof(ft_attr));
 	ft_attr.prio = FDB_TC_MISS;
 	esw->fdb_table.offloads.tc_miss_table = mlx5_create_flow_table(root_ns, &ft_attr);
@@ -1930,7 +1866,7 @@ fdb_chains_err:
 tc_miss_table_err:
 	mlx5_destroy_flow_table(mlx5_eswitch_get_slow_fdb(esw));
 slow_fdb_err:
-	/* Holds true only as long as DMFS is the default */
+	 
 	mlx5_flow_namespace_set_mode(root_ns, MLX5_FLOW_STEERING_MODE_DMFS);
 ns_err:
 	kvfree(flow_group_in);
@@ -1956,7 +1892,7 @@ static void esw_destroy_offloads_fdb_tables(struct mlx5_eswitch *esw)
 
 	mlx5_destroy_flow_table(esw->fdb_table.offloads.tc_miss_table);
 	mlx5_destroy_flow_table(mlx5_eswitch_get_slow_fdb(esw));
-	/* Holds true only as long as DMFS is the default */
+	 
 	mlx5_flow_namespace_set_mode(esw->fdb_table.offloads.ns,
 				     MLX5_FLOW_STEERING_MODE_DMFS);
 	atomic64_set(&esw->user_count, 0);
@@ -2048,10 +1984,7 @@ static void esw_destroy_vport_rx_group(struct mlx5_eswitch *esw)
 
 static int esw_create_vport_rx_drop_rule_index(struct mlx5_eswitch *esw)
 {
-	/* ft_offloads table is enlarged by MLX5_ESW_FT_OFFLOADS_DROP_RULE (1)
-	 * for the drop rule, which is placed at the end of the table.
-	 * So return the total of vport and int_port as rule index.
-	 */
+	 
 	return esw_get_nr_ft_offloads_steering_src_ports(esw);
 }
 
@@ -3093,12 +3026,7 @@ bool mlx5_esw_vport_match_metadata_supported(const struct mlx5_eswitch *esw)
 
 #define MLX5_ESW_METADATA_RSVD_UPLINK 1
 
-/* Share the same metadata for uplink's. This is fine because:
- * (a) In shared FDB mode (LAG) both uplink's are treated the
- *     same and tagged with the same metadata.
- * (b) In non shared FDB mode, packets from physical port0
- *     cannot hit eswitch of PF1 and vice versa.
- */
+ 
 static u32 mlx5_esw_match_metadata_reserved(struct mlx5_eswitch *esw)
 {
 	return MLX5_ESW_METADATA_RSVD_UPLINK;
@@ -3107,18 +3035,18 @@ static u32 mlx5_esw_match_metadata_reserved(struct mlx5_eswitch *esw)
 u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw)
 {
 	u32 vport_end_ida = (1 << ESW_VPORT_BITS) - 1;
-	/* Reserve 0xf for internal port offload */
+	 
 	u32 max_pf_num = (1 << ESW_PFNUM_BITS) - 2;
 	u32 pf_num;
 	int id;
 
-	/* Only 4 bits of pf_num */
+	 
 	pf_num = mlx5_get_dev_index(esw->dev);
 	if (pf_num > max_pf_num)
 		return 0;
 
-	/* Metadata is 4 bits of PFNUM and 12 bits of unique id */
-	/* Use only non-zero vport_id (2-4095) for all PF's */
+	 
+	 
 	id = ida_alloc_range(&esw->offloads.vport_metadata_ida,
 			     MLX5_ESW_METADATA_RSVD_UPLINK + 1,
 			     vport_end_ida, GFP_KERNEL);
@@ -3132,7 +3060,7 @@ void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata)
 {
 	u32 vport_bit_mask = (1 << ESW_VPORT_BITS) - 1;
 
-	/* Metadata contains only 12 bits of actual ida id */
+	 
 	ida_free(&esw->offloads.vport_metadata_ida, metadata & vport_bit_mask);
 }
 
@@ -3388,7 +3316,7 @@ esw_vfs_changed_event_handler(struct mlx5_eswitch *esw, const u32 *out)
 
 	devlink = priv_to_devlink(esw->dev);
 	devl_lock(devlink);
-	/* Number of VFs can only change from "0 to x" or "x to 0". */
+	 
 	if (esw->esw_funcs.num_vfs > 0) {
 		mlx5_eswitch_unload_vf_vports(esw, esw->esw_funcs.num_vfs);
 	} else {
@@ -3456,7 +3384,7 @@ static int mlx5_esw_host_number_init(struct mlx5_eswitch *esw)
 	if (IS_ERR(query_host_out))
 		return PTR_ERR(query_host_out);
 
-	/* Mark non local controller with non zero controller number. */
+	 
 	esw->offloads.host_number = MLX5_GET(query_esw_functions_out, query_host_out,
 					     host_params_context.host_number);
 	kvfree(query_host_out);
@@ -3465,14 +3393,14 @@ static int mlx5_esw_host_number_init(struct mlx5_eswitch *esw)
 
 bool mlx5_esw_offloads_controller_valid(const struct mlx5_eswitch *esw, u32 controller)
 {
-	/* Local controller is always valid */
+	 
 	if (controller == 0)
 		return true;
 
 	if (!mlx5_core_is_ecpf_esw_manager(esw->dev))
 		return false;
 
-	/* External host number starts with zero in device */
+	 
 	return (controller == esw->offloads.host_number + 1);
 }
 
@@ -3516,14 +3444,14 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
 	if (err)
 		goto err_steering_init;
 
-	/* Representor will control the vport link state */
+	 
 	mlx5_esw_for_each_vf_vport(esw, i, vport, esw->esw_funcs.num_vfs)
 		vport->info.link_state = MLX5_VPORT_ADMIN_STATE_DOWN;
 	if (mlx5_core_ec_sriov_enabled(esw->dev))
 		mlx5_esw_for_each_ec_vf_vport(esw, i, vport, esw->esw_funcs.num_ec_vfs)
 			vport->info.link_state = MLX5_VPORT_ADMIN_STATE_DOWN;
 
-	/* Uplink vport rep must load first. */
+	 
 	err = mlx5_esw_offloads_rep_load(esw, MLX5_VPORT_UPLINK);
 	if (err)
 		goto err_uplink;
@@ -3557,9 +3485,7 @@ static int esw_offloads_stop(struct mlx5_eswitch *esw,
 
 	esw->mode = MLX5_ESWITCH_LEGACY;
 
-	/* If changing from switchdev to legacy mode without sriov enabled,
-	 * no need to create legacy fdb.
-	 */
+	 
 	if (!mlx5_core_is_pf(esw->dev) || !mlx5_sriov_is_enabled(esw->dev))
 		return 0;
 
@@ -3682,7 +3608,7 @@ int mlx5_eswitch_block_mode(struct mlx5_core_dev *dev)
 	if (!mlx5_esw_allowed(esw))
 		return 0;
 
-	/* Take TC into account */
+	 
 	err = mlx5_esw_try_lock(esw);
 	if (err < 0)
 		return err;
@@ -4022,7 +3948,7 @@ int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
 static bool
 mlx5_eswitch_vport_has_rep(const struct mlx5_eswitch *esw, u16 vport_num)
 {
-	/* Currently, only ECPF based device has representor for host PF. */
+	 
 	if (vport_num == MLX5_VPORT_PF &&
 	    !mlx5_core_is_ecpf_esw_manager(esw->dev))
 		return false;
@@ -4574,4 +4500,4 @@ unlock:
 	mutex_unlock(&esw->state_lock);
 	return err;
 }
-#endif /* CONFIG_XFRM_OFFLOAD */
+#endif  

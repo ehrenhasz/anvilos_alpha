@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Micro Crystal RV-3029 / RV-3049 rtc class driver
- *
- * Author: Gregory Hermant <gregory.hermant@calao-systems.com>
- *         Michael Buesch <m@bues.ch>
- *
- * based on previously existing rtc class drivers
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,8 +13,8 @@
 #include <linux/kstrtox.h>
 #include <linux/regmap.h>
 
-/* Register map */
-/* control section */
+ 
+ 
 #define RV3029_ONOFF_CTRL		0x00
 #define RV3029_ONOFF_CTRL_WE		BIT(0)
 #define RV3029_ONOFF_CTRL_TE		BIT(1)
@@ -53,19 +46,19 @@
 #define RV3029_RST_CTRL_SYSR		BIT(4)
 #define RV3029_CONTROL_SECTION_LEN	0x05
 
-/* watch section */
+ 
 #define RV3029_W_SEC			0x08
 #define RV3029_W_MINUTES		0x09
 #define RV3029_W_HOURS			0x0A
-#define RV3029_REG_HR_12_24		BIT(6) /* 24h/12h mode */
-#define RV3029_REG_HR_PM		BIT(5) /* PM/AM bit in 12h mode */
+#define RV3029_REG_HR_12_24		BIT(6)  
+#define RV3029_REG_HR_PM		BIT(5)  
 #define RV3029_W_DATE			0x0B
 #define RV3029_W_DAYS			0x0C
 #define RV3029_W_MONTHS			0x0D
 #define RV3029_W_YEARS			0x0E
 #define RV3029_WATCH_SECTION_LEN	0x07
 
-/* alarm section */
+ 
 #define RV3029_A_SC			0x10
 #define RV3029_A_MN			0x11
 #define RV3029_A_HR			0x12
@@ -76,40 +69,40 @@
 #define RV3029_A_AE_X			BIT(7)
 #define RV3029_ALARM_SECTION_LEN	0x07
 
-/* timer section */
+ 
 #define RV3029_TIMER_LOW		0x18
 #define RV3029_TIMER_HIGH		0x19
 
-/* temperature section */
+ 
 #define RV3029_TEMP_PAGE		0x20
 
-/* eeprom data section */
+ 
 #define RV3029_E2P_EEDATA1		0x28
 #define RV3029_E2P_EEDATA2		0x29
 #define RV3029_E2PDATA_SECTION_LEN	0x02
 
-/* eeprom control section */
+ 
 #define RV3029_CONTROL_E2P_EECTRL	0x30
-#define RV3029_EECTRL_THP		BIT(0) /* temp scan interval */
-#define RV3029_EECTRL_THE		BIT(1) /* thermometer enable */
-#define RV3029_EECTRL_FD0		BIT(2) /* CLKOUT */
-#define RV3029_EECTRL_FD1		BIT(3) /* CLKOUT */
-#define RV3029_TRICKLE_1K		BIT(4) /* 1.5K resistance */
-#define RV3029_TRICKLE_5K		BIT(5) /* 5K   resistance */
-#define RV3029_TRICKLE_20K		BIT(6) /* 20K  resistance */
-#define RV3029_TRICKLE_80K		BIT(7) /* 80K  resistance */
+#define RV3029_EECTRL_THP		BIT(0)  
+#define RV3029_EECTRL_THE		BIT(1)  
+#define RV3029_EECTRL_FD0		BIT(2)  
+#define RV3029_EECTRL_FD1		BIT(3)  
+#define RV3029_TRICKLE_1K		BIT(4)  
+#define RV3029_TRICKLE_5K		BIT(5)  
+#define RV3029_TRICKLE_20K		BIT(6)  
+#define RV3029_TRICKLE_80K		BIT(7)  
 #define RV3029_TRICKLE_MASK		(RV3029_TRICKLE_1K |\
 					 RV3029_TRICKLE_5K |\
 					 RV3029_TRICKLE_20K |\
 					 RV3029_TRICKLE_80K)
 #define RV3029_TRICKLE_SHIFT		4
-#define RV3029_CONTROL_E2P_XOFFS	0x31 /* XTAL offset */
-#define RV3029_CONTROL_E2P_XOFFS_SIGN	BIT(7) /* Sign: 1->pos, 0->neg */
-#define RV3029_CONTROL_E2P_QCOEF	0x32 /* XTAL temp drift coef */
-#define RV3029_CONTROL_E2P_TURNOVER	0x33 /* XTAL turnover temp (in *C) */
-#define RV3029_CONTROL_E2P_TOV_MASK	0x3F /* XTAL turnover temp mask */
+#define RV3029_CONTROL_E2P_XOFFS	0x31  
+#define RV3029_CONTROL_E2P_XOFFS_SIGN	BIT(7)  
+#define RV3029_CONTROL_E2P_QCOEF	0x32  
+#define RV3029_CONTROL_E2P_TURNOVER	0x33  
+#define RV3029_CONTROL_E2P_TOV_MASK	0x3F  
 
-/* user ram section */
+ 
 #define RV3029_RAM_PAGE			0x38
 #define RV3029_RAM_SECTION_LEN		8
 
@@ -143,7 +136,7 @@ static int rv3029_eeprom_busywait(struct rv3029_data *rv3029)
 
 static int rv3029_eeprom_exit(struct rv3029_data *rv3029)
 {
-	/* Re-enable eeprom refresh */
+	 
 	return regmap_update_bits(rv3029->regmap, RV3029_ONOFF_CTRL,
 				  RV3029_ONOFF_CTRL_EERE,
 				  RV3029_ONOFF_CTRL_EERE);
@@ -154,16 +147,14 @@ static int rv3029_eeprom_enter(struct rv3029_data *rv3029)
 	unsigned int sr;
 	int ret;
 
-	/* Check whether we are in the allowed voltage range. */
+	 
 	ret = regmap_read(rv3029->regmap, RV3029_STATUS, &sr);
 	if (ret < 0)
 		return ret;
 	if (sr & RV3029_STATUS_VLOW2)
 		return -ENODEV;
 	if (sr & RV3029_STATUS_VLOW1) {
-		/* We clear the bits and retry once just in case
-		 * we had a brown out in early startup.
-		 */
+		 
 		ret = regmap_update_bits(rv3029->regmap, RV3029_STATUS,
 					 RV3029_STATUS_VLOW1, 0);
 		if (ret < 0)
@@ -179,13 +170,13 @@ static int rv3029_eeprom_enter(struct rv3029_data *rv3029)
 		}
 	}
 
-	/* Disable eeprom refresh. */
+	 
 	ret = regmap_update_bits(rv3029->regmap, RV3029_ONOFF_CTRL,
 				 RV3029_ONOFF_CTRL_EERE, 0);
 	if (ret < 0)
 		return ret;
 
-	/* Wait for any previous eeprom accesses to finish. */
+	 
 	ret = rv3029_eeprom_busywait(rv3029);
 	if (ret < 0)
 		rv3029_eeprom_exit(rv3029);
@@ -324,16 +315,16 @@ static int rv3029_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_sec = bcd2bin(regs[RV3029_W_SEC - RV3029_W_SEC]);
 	tm->tm_min = bcd2bin(regs[RV3029_W_MINUTES - RV3029_W_SEC]);
 
-	/* HR field has a more complex interpretation */
+	 
 	{
 		const u8 _hr = regs[RV3029_W_HOURS - RV3029_W_SEC];
 
 		if (_hr & RV3029_REG_HR_12_24) {
-			/* 12h format */
+			 
 			tm->tm_hour = bcd2bin(_hr & 0x1f);
-			if (_hr & RV3029_REG_HR_PM)	/* PM flag set */
+			if (_hr & RV3029_REG_HR_PM)	 
 				tm->tm_hour += 12;
-		} else /* 24h format */
+		} else  
 			tm->tm_hour = bcd2bin(_hr & 0x3f);
 	}
 
@@ -396,7 +387,7 @@ static int rv3029_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	int ret;
 	u8 regs[8];
 
-	/* Activate all the alarms with AE_x bit */
+	 
 	regs[RV3029_A_SC - RV3029_A_SC] = bin2bcd(tm->tm_sec) | RV3029_A_AE_X;
 	regs[RV3029_A_MN - RV3029_A_SC] = bin2bcd(tm->tm_min) | RV3029_A_AE_X;
 	regs[RV3029_A_HR - RV3029_A_SC] = (bin2bcd(tm->tm_hour) & 0x3f)
@@ -410,7 +401,7 @@ static int rv3029_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	regs[RV3029_A_YR - RV3029_A_SC] = (bin2bcd(tm->tm_year - 100))
 		| RV3029_A_AE_X;
 
-	/* Write the alarm */
+	 
 	ret = regmap_bulk_write(rv3029->regmap, RV3029_A_SC, regs,
 				RV3029_ALARM_SECTION_LEN);
 	if (ret < 0)
@@ -438,7 +429,7 @@ static int rv3029_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret < 0)
 		return ret;
 
-	/* clear PON and VLOW2 bits */
+	 
 	return regmap_update_bits(rv3029->regmap, RV3029_STATUS,
 				  RV3029_STATUS_PON | RV3029_STATUS_VLOW2, 0);
 }
@@ -485,8 +476,8 @@ static int rv3029_nvram_read(void *priv, unsigned int offset, void *val,
 }
 
 static const struct rv3029_trickle_tab_elem {
-	u32 r;		/* resistance in ohms */
-	u8 conf;	/* trickle config bits */
+	u32 r;		 
+	u8 conf;	 
 } rv3029_trickle_tab[] = {
 	{
 		.r	= 1076,
@@ -553,13 +544,13 @@ static void rv3029_trickle_config(struct device *dev)
 	if (!of_node)
 		return;
 
-	/* Configure the trickle charger. */
+	 
 	err = of_property_read_u32(of_node, "trickle-resistor-ohms", &ohms);
 	if (err) {
-		/* Disable trickle charger. */
+		 
 		trickle_set_bits = 0;
 	} else {
-		/* Enable trickle charger. */
+		 
 		for (i = 0; i < ARRAY_SIZE(rv3029_trickle_tab); i++) {
 			elem = &rv3029_trickle_tab[i];
 			if (elem->r >= ohms)
@@ -686,13 +677,13 @@ static void rv3029_hwmon_register(struct device *dev, const char *name)
 	}
 }
 
-#else /* CONFIG_RTC_DRV_RV3029_HWMON */
+#else  
 
 static void rv3029_hwmon_register(struct device *dev, const char *name)
 {
 }
 
-#endif /* CONFIG_RTC_DRV_RV3029_HWMON */
+#endif  
 
 static const struct rtc_class_ops rv3029_rtc_ops = {
 	.read_time	= rv3029_read_time,

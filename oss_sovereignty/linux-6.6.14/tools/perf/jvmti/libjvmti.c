@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <linux/string.h>
 #include <sys/types.h>
@@ -42,7 +42,7 @@ do_get_line_number(jvmtiEnv *jvmti, void *pc, jmethodID m, jint bci,
 
 	ret = (*jvmti)->GetLineNumberTable(jvmti, m, &nr_lines, &loc_tab);
 	if (ret == JVMTI_ERROR_ABSENT_INFORMATION || ret == JVMTI_ERROR_NATIVE_METHOD) {
-		/* No debug information for this method */
+		 
 		return ret;
 	} else if (ret != JVMTI_ERROR_NONE) {
 		print_error(jvmti, "GetLineNumberTable", ret);
@@ -56,7 +56,7 @@ do_get_line_number(jvmtiEnv *jvmti, void *pc, jmethodID m, jint bci,
 	if (src_line != -1) {
 		tab->pc = (unsigned long)pc;
 		tab->line_number = loc_tab[src_line].line_number;
-		tab->discrim = 0; /* not yet used */
+		tab->discrim = 0;  
 		tab->methodID = m;
 
 		ret = JVMTI_ERROR_NONE;
@@ -82,9 +82,7 @@ get_line_numbers(jvmtiEnv *jvmti, const void *compile_info, jvmti_line_info_t **
 	if (!(tab && nr_lines))
 		return JVMTI_ERROR_NULL_POINTER;
 
-	/*
-	 * Phase 1 -- get the number of lines necessary
-	 */
+	 
 	for (hdr = compile_info; hdr != NULL; hdr = hdr->next) {
 		if (hdr->kind == JVMTI_CMLR_INLINE_INFO) {
 			rec = (jvmtiCompiledMethodLoadInlineRecord *)hdr;
@@ -95,9 +93,7 @@ get_line_numbers(jvmtiEnv *jvmti, const void *compile_info, jvmti_line_info_t **
 	if (nr_total == 0)
 		return JVMTI_ERROR_NOT_FOUND;
 
-	/*
-	 * Phase 2 -- allocate big enough line table
-	 */
+	 
 	*tab = malloc(nr_total * sizeof(**tab));
 	if (!*tab)
 		return JVMTI_ERROR_OUT_OF_MEMORY;
@@ -107,11 +103,7 @@ get_line_numbers(jvmtiEnv *jvmti, const void *compile_info, jvmti_line_info_t **
 			rec = (jvmtiCompiledMethodLoadInlineRecord *)hdr;
 			for (i = 0; i < rec->numpcs; i++) {
 				c = rec->pcinfo + i;
-                                /*
-                                 * c->methods is the stack of inlined method calls
-                                 * at c->pc. [0] is the leaf method. Caller frames
-                                 * are ignored at the moment.
-                                 */
+                                 
 				ret = do_get_line_number(jvmti, c->pc,
 							 c->methods[0],
 							 c->bcis[0],
@@ -124,7 +116,7 @@ get_line_numbers(jvmtiEnv *jvmti, const void *compile_info, jvmti_line_info_t **
 	*nr_lines = lines_total;
 	return JVMTI_ERROR_NONE;
 }
-#else /* HAVE_JVMTI_CMLR */
+#else  
 
 static jvmtiError
 get_line_numbers(jvmtiEnv *jvmti __maybe_unused, const void *compile_info __maybe_unused,
@@ -132,32 +124,27 @@ get_line_numbers(jvmtiEnv *jvmti __maybe_unused, const void *compile_info __mayb
 {
 	return JVMTI_ERROR_NONE;
 }
-#endif /* HAVE_JVMTI_CMLR */
+#endif  
 
 static void
 copy_class_filename(const char * class_sign, const char * file_name, char * result, size_t max_length)
 {
-	/*
-	* Assume path name is class hierarchy, this is a common practice with Java programs
-	*/
+	 
 	if (*class_sign == 'L') {
 		int j, i = 0;
 		char *p = strrchr(class_sign, '/');
 		if (p) {
-			/* drop the 'L' prefix and copy up to the final '/' */
+			 
 			for (i = 0; i < (p - class_sign); i++)
 				result[i] = class_sign[i+1];
 		}
-		/*
-		* append file name, we use loops and not string ops to avoid modifying
-		* class_sign which is used later for the symbol name
-		*/
+		 
 		for (j = 0; i < (max_length - 1) && file_name && j < strlen(file_name); j++, i++)
 			result[i] = file_name[j];
 
 		result[i] = '\0';
 	} else {
-		/* fallback case */
+		 
 		strlcpy(result, file_name, max_length);
 	}
 }
@@ -243,7 +230,7 @@ compiled_method_load_cb(jvmtiEnv *jvmti,
 	char *func_sign = NULL;
 	uint64_t addr = (uint64_t)(uintptr_t)code_addr;
 	jvmtiError ret;
-	int nr_lines = 0; /* in line_tab[] */
+	int nr_lines = 0;  
 	size_t len;
 	int output_debug_info = 0;
 
@@ -291,9 +278,7 @@ compiled_method_load_cb(jvmtiEnv *jvmti,
 		goto error;
 	}
 
-	/*
-	 * write source line info record if we have it
-	 */
+	 
 	if (output_debug_info)
 		if (jvmti_write_debug_info(jvmti_agent, addr, nr_lines, line_tab, (const char * const *) line_file_names))
 			warnx("jvmti: write_debug_info() failed");
@@ -349,19 +334,14 @@ Agent_OnLoad(JavaVM *jvm, char *options, void *reserved __maybe_unused)
 		return -1;
 	}
 
-	/*
-	 * Request a JVMTI interface version 1 environment
-	 */
+	 
 	ret = (*jvm)->GetEnv(jvm, (void *)&jvmti, JVMTI_VERSION_1);
 	if (ret != JNI_OK) {
 		warnx("jvmti: jvmti version 1 not supported");
 		return -1;
 	}
 
-	/*
-	 * acquire method_load capability, we require it
-	 * request line numbers (optional)
-	 */
+	 
 	memset(&caps1, 0, sizeof(caps1));
 	caps1.can_generate_compiled_method_load_events = 1;
 

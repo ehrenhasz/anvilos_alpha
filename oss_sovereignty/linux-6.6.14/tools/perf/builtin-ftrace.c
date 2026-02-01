@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * builtin-ftrace.c
- *
- * Copyright (c) 2013  LG Electronics,  Namhyung Kim <namhyung@kernel.org>
- * Copyright (c) 2020  Changbin Du <changbin.du@gmail.com>, significant enhancement.
- */
+
+ 
 
 #include "builtin.h"
 
@@ -44,13 +39,7 @@ static void sig_handler(int sig __maybe_unused)
 	done = true;
 }
 
-/*
- * evlist__prepare_workload will send a SIGUSR1 if the fork fails, since
- * we asked by setting its exec_error to the function below,
- * ftrace__workload_exec_failed_signal.
- *
- * XXX We need to handle this more appropriately, emitting an error, etc.
- */
+ 
 static void ftrace__workload_exec_failed_signal(int signo __maybe_unused,
 						siginfo_t *info __maybe_unused,
 						void *ucontext __maybe_unused)
@@ -86,10 +75,7 @@ static int __write_tracing_file(const char *name, const char *val, bool append)
 		goto out;
 	}
 
-	/*
-	 * Copy the original value and append a '\n'. Without this,
-	 * the kernel can hide possible errors.
-	 */
+	 
 	val_copy = strdup(val);
 	if (!val_copy)
 		goto out_close;
@@ -139,7 +125,7 @@ static int read_tracing_file_to_stdout(const char *name)
 		goto out;
 	}
 
-	/* read contents to stdout */
+	 
 	while (true) {
 		int n = read(fd, buf, sizeof(buf));
 		if (n == 0)
@@ -282,8 +268,8 @@ static int set_tracing_cpumask(struct perf_cpu_map *cpumap)
 	int last_cpu;
 
 	last_cpu = perf_cpu_map__cpu(cpumap, perf_cpu_map__nr(cpumap) - 1).cpu;
-	mask_size = last_cpu / 4 + 2; /* one more byte for EOS */
-	mask_size += last_cpu / 32; /* ',' is needed for every 32th cpus */
+	mask_size = last_cpu / 4 + 2;  
+	mask_size += last_cpu / 32;  
 
 	cpumask = malloc(mask_size);
 	if (cpumask == NULL) {
@@ -369,7 +355,7 @@ static int set_tracing_filters(struct perf_ftrace *ftrace)
 	if (ret < 0)
 		return ret;
 
-	/* old kernels do not have this filter */
+	 
 	__set_tracing_filter("set_graph_notrace", &ftrace->nograph_funcs);
 
 	return ret;
@@ -550,12 +536,12 @@ static void select_tracer(struct perf_ftrace *ftrace)
 	bool func = !list_empty(&ftrace->filters) ||
 		    !list_empty(&ftrace->notrace);
 
-	/* The function_graph has priority over function tracer. */
+	 
 	if (graph)
 		ftrace->tracer = "function_graph";
 	else if (func)
 		ftrace->tracer = "function";
-	/* Otherwise, the default tracer is used. */
+	 
 
 	pr_debug("%s tracer is used\n", ftrace->tracer);
 }
@@ -588,7 +574,7 @@ static int __cmd_ftrace(struct perf_ftrace *ftrace)
 		goto out;
 	}
 
-	/* reset ftrace buffer */
+	 
 	if (write_tracing_file("trace", "0") < 0)
 		goto out;
 
@@ -620,7 +606,7 @@ static int __cmd_ftrace(struct perf_ftrace *ftrace)
 	fcntl(trace_fd, F_SETFL, O_NONBLOCK);
 	pollfd.fd = trace_fd;
 
-	/* display column headers */
+	 
 	read_tracing_file_to_stdout("trace");
 
 	if (!ftrace->target.initial_delay) {
@@ -650,7 +636,7 @@ static int __cmd_ftrace(struct perf_ftrace *ftrace)
 				break;
 			if (fwrite(buf, n, 1, stdout) != 1)
 				break;
-			/* flush output since stdout is in full buffering mode due to pager */
+			 
 			fflush(stdout);
 		}
 	}
@@ -659,13 +645,13 @@ static int __cmd_ftrace(struct perf_ftrace *ftrace)
 
 	if (workload_exec_errno) {
 		const char *emsg = str_error_r(workload_exec_errno, buf, sizeof(buf));
-		/* flush stdout first so below error msg appears at the end. */
+		 
 		fflush(stdout);
 		pr_err("workload failed: %s\n", emsg);
 		goto out_close_fd;
 	}
 
-	/* read remaining buffer contents */
+	 
 	while (true) {
 		int n = read(trace_fd, buf, sizeof(buf));
 		if (n <= 0)
@@ -690,31 +676,20 @@ static void make_histogram(int buckets[], char *buf, size_t len, char *linebuf,
 	double num;
 	int i;
 
-	/* ensure NUL termination */
+	 
 	buf[len] = '\0';
 
-	/* handle data line by line */
+	 
 	for (p = buf; (q = strchr(p, '\n')) != NULL; p = q + 1) {
 		*q = '\0';
-		/* move it to the line buffer */
+		 
 		strcat(linebuf, p);
 
-		/*
-		 * parse trace output to get function duration like in
-		 *
-		 * # tracer: function_graph
-		 * #
-		 * # CPU  DURATION                  FUNCTION CALLS
-		 * # |     |   |                     |   |   |   |
-		 *  1) + 10.291 us   |  do_filp_open();
-		 *  1)   4.889 us    |  do_filp_open();
-		 *  1)   6.086 us    |  do_filp_open();
-		 *
-		 */
+		 
 		if (linebuf[0] == '#')
 			goto next;
 
-		/* ignore CPU */
+		 
 		p = strchr(linebuf, ')');
 		if (p == NULL)
 			p = linebuf;
@@ -722,7 +697,7 @@ static void make_histogram(int buckets[], char *buf, size_t len, char *linebuf,
 		while (*p && !isdigit(*p) && (*p != '|'))
 			p++;
 
-		/* no duration */
+		 
 		if (*p == '\0' || *p == '|')
 			goto next;
 
@@ -742,11 +717,11 @@ static void make_histogram(int buckets[], char *buf, size_t len, char *linebuf,
 		buckets[i]++;
 
 next:
-		/* empty the line buffer for the next output  */
+		 
 		linebuf[0] = '\0';
 	}
 
-	/* preserve any remaining output (before newline) */
+	 
 	strcat(linebuf, p);
 }
 
@@ -754,7 +729,7 @@ static void display_histogram(int buckets[], bool use_nsec)
 {
 	int i;
 	int total = 0;
-	int bar_total = 46;  /* to fit in 80 column */
+	int bar_total = 46;   
 	char bar[] = "###############################################";
 	int bar_len;
 
@@ -809,14 +784,14 @@ static int prepare_func_latency(struct perf_ftrace *ftrace)
 		return -1;
 	}
 
-	/* reset ftrace buffer */
+	 
 	if (write_tracing_file("trace", "0") < 0)
 		return -1;
 
 	if (set_tracing_options(ftrace) < 0)
 		return -1;
 
-	/* force to use the function_graph tracer to track duration */
+	 
 	if (write_tracing_file("current_tracer", "function_graph") < 0) {
 		pr_err("failed to set current_tracer to function_graph\n");
 		return -1;
@@ -931,7 +906,7 @@ static int __cmd_latency(struct perf_ftrace *ftrace)
 		goto out;
 	}
 
-	/* read remaining buffer contents */
+	 
 	while (!ftrace->target.use_bpf) {
 		int n = read(trace_fd, buf, sizeof(buf) - 1);
 		if (n <= 0)
@@ -1129,7 +1104,7 @@ int cmd_ftrace(int argc, const char **argv)
 	const struct option common_options[] = {
 	OPT_STRING('p', "pid", &ftrace.target.pid, "pid",
 		   "Trace on existing process id"),
-	/* TODO: Add short option -t after -t/--tracer can be removed. */
+	 
 	OPT_STRING(0, "tid", &ftrace.target.tid, "tid",
 		   "Trace on existing thread id (exclusive to --pid)"),
 	OPT_INCR('v', "verbose", &verbose,
@@ -1219,7 +1194,7 @@ int cmd_ftrace(int argc, const char **argv)
 			argv++;
 		}
 	}
-	/* for backward compatibility */
+	 
 	if (subcmd == PERF_FTRACE_NONE)
 		subcmd = PERF_FTRACE_TRACE;
 
@@ -1230,7 +1205,7 @@ int cmd_ftrace(int argc, const char **argv)
 		goto out_delete_filters;
 	}
 
-	/* Make system wide (-a) the default target. */
+	 
 	if (!argc && target__none(&ftrace.target))
 		ftrace.target.system_wide = true;
 

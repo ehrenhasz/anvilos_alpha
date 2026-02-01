@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rwmmio
 
@@ -103,6 +101,6 @@ TRACE_EVENT(rwmmio_post_read,
 		 __entry->val, __entry->addr)
 );
 
-#endif /* _TRACE_RWMMIO_H */
+#endif  
 
 #include <trace/define_trace.h>

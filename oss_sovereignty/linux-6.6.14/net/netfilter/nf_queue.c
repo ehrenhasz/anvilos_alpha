@@ -1,7 +1,4 @@
-/*
- * Rusty Russell (C)2000 -- This code is GPL.
- * Patrick McHardy (c) 2006-2012
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -23,23 +20,17 @@
 
 static const struct nf_queue_handler __rcu *nf_queue_handler;
 
-/*
- * Hook for nfnetlink_queue to register its queue handler.
- * We do this so that most of the NFQUEUE code can be modular.
- *
- * Once the queue is registered it must reinject all packets it
- * receives, no matter what.
- */
+ 
 
 void nf_register_queue_handler(const struct nf_queue_handler *qh)
 {
-	/* should never happen, we only have one queueing backend in kernel */
+	 
 	WARN_ON(rcu_access_pointer(nf_queue_handler));
 	rcu_assign_pointer(nf_queue_handler, qh);
 }
 EXPORT_SYMBOL(nf_register_queue_handler);
 
-/* The caller must flush their queue before this */
+ 
 void nf_unregister_queue_handler(void)
 {
 	RCU_INIT_POINTER(nf_queue_handler, NULL);
@@ -59,7 +50,7 @@ static void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
 {
 	struct nf_hook_state *state = &entry->state;
 
-	/* Release those devices we held, or Alexey will kill me. */
+	 
 	dev_put(state->in);
 	dev_put(state->out);
 	if (state->sk)
@@ -93,7 +84,7 @@ static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
 #endif
 }
 
-/* Bump dev refs so they don't vanish while packet is out */
+ 
 bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
 {
 	struct nf_hook_state *state = &entry->state;
@@ -161,7 +152,7 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
 	unsigned int route_key_size;
 	int status;
 
-	/* QUEUE == DROP if no one is waiting, to be safe. */
+	 
 	qh = rcu_dereference(nf_queue_handler);
 	if (!qh)
 		return -ESRCH;
@@ -185,7 +176,7 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
 			if (!refcount_inc_not_zero(&sk->sk_refcnt))
 				return -ENOTCONN;
 
-			/* drop refcount on skb_orphan */
+			 
 			skb->destructor = sock_edemux;
 		}
 	}
@@ -231,7 +222,7 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
 	return 0;
 }
 
-/* Packets leaving via this function must come back through nf_reinject(). */
+ 
 int nf_queue(struct sk_buff *skb, struct nf_hook_state *state,
 	     unsigned int index, unsigned int verdict)
 {
@@ -293,7 +284,7 @@ static struct nf_hook_entries *nf_hook_entries_head(const struct net *net, u8 pf
 	return NULL;
 }
 
-/* Caller must hold rcu read-side lock */
+ 
 void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict)
 {
 	const struct nf_hook_entry *hook_entry;
@@ -318,7 +309,7 @@ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict)
 
 	hook_entry = &hooks->hooks[i];
 
-	/* Continue traversal iff userspace said ok... */
+	 
 	if (verdict == NF_REPEAT)
 		verdict = nf_hook_entry_hookfn(hook_entry, skb, &entry->state);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <drm/drm_print.h>
 
@@ -14,11 +12,7 @@ static const u32 ccsc_base[][2] = {
 	[CCSC_D1_MIXER0_LAYOUT]	= {CCSC00_OFFSET, CCSC01_D1_OFFSET},
 };
 
-/*
- * Factors are in two's complement format, 10 bits for fractinal part.
- * First tree values in each line are multiplication factor and last
- * value is constant, which is added at the end.
- */
+ 
 
 static const u32 yuv2rgb[2][2][12] = {
 	[DRM_COLOR_YCBCR_LIMITED_RANGE] = {
@@ -47,28 +41,7 @@ static const u32 yuv2rgb[2][2][12] = {
 	},
 };
 
-/*
- * DE3 has a bit different CSC units. Factors are in two's complement format.
- * First three factors in a row are multiplication factors which have 17 bits
- * for fractional part. Fourth value in a row is comprised of two factors.
- * Upper 16 bits represents difference, which is subtracted from the input
- * value before multiplication and lower 16 bits represents constant, which
- * is addes at the end.
- *
- * x' = c00 * (x + d0) + c01 * (y + d1) + c02 * (z + d2) + const0
- * y' = c10 * (x + d0) + c11 * (y + d1) + c12 * (z + d2) + const1
- * z' = c20 * (x + d0) + c21 * (y + d1) + c22 * (z + d2) + const2
- *
- * Please note that above formula is true only for Blender CSC. Other DE3 CSC
- * units takes only positive value for difference. From what can be deducted
- * from BSP driver code, those units probably automatically assume that
- * difference has to be subtracted.
- *
- * Layout of factors in table:
- * c00 c01 c02 [d0 const0]
- * c10 c11 c12 [d1 const1]
- * c20 c21 c22 [d2 const2]
- */
+ 
 
 static const u32 yuv2rgb_de3[2][3][12] = {
 	[DRM_COLOR_YCBCR_LIMITED_RANGE] = {

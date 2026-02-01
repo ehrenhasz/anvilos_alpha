@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019, Mellanox Technologies */
+ 
+ 
 
 #ifndef MLX5_IFC_DR_H
 #define MLX5_IFC_DR_H
@@ -547,7 +547,7 @@ struct mlx5_ifc_l2_hdr_bits {
 	u8         reserved_at_90[0x10];
 };
 
-/* Both HW set and HW add share the same HW format with different opcodes */
+ 
 struct mlx5_ifc_dr_action_hw_set_bits {
 	u8         opcode[0x8];
 	u8         destination_field_code[0x8];
@@ -600,4 +600,4 @@ struct mlx5_ifc_ste_double_action_aso_v1_bits {
 	};
 };
 
-#endif /* MLX5_IFC_DR_H */
+#endif  

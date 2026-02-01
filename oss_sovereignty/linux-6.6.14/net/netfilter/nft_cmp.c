@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -194,10 +190,7 @@ static const struct nft_expr_ops nft_cmp_ops = {
 	.offload	= nft_cmp_offload,
 };
 
-/* Calculate the mask for the nft_cmp_fast expression. On big endian the
- * mask needs to include the *upper* bytes when interpreting that data as
- * something smaller than the full u32, therefore a cpu_to_le32 is done.
- */
+ 
 static u32 nft_cmp_fast_mask(unsigned int len)
 {
 	__le32 mask = cpu_to_le32(~0U >> (sizeof_field(struct nft_cmp_fast_expr,
@@ -279,7 +272,7 @@ nla_put_failure:
 const struct nft_expr_ops nft_cmp_fast_ops = {
 	.type		= &nft_cmp_type,
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_cmp_fast_expr)),
-	.eval		= NULL,	/* inlined */
+	.eval		= NULL,	 
 	.init		= nft_cmp_fast_init,
 	.dump		= nft_cmp_fast_dump,
 	.reduce		= NFT_REDUCE_READONLY,
@@ -373,7 +366,7 @@ nla_put_failure:
 const struct nft_expr_ops nft_cmp16_fast_ops = {
 	.type		= &nft_cmp_type,
 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_cmp16_fast_expr)),
-	.eval		= NULL,	/* inlined */
+	.eval		= NULL,	 
 	.init		= nft_cmp16_fast_init,
 	.dump		= nft_cmp16_fast_dump,
 	.reduce		= NFT_REDUCE_READONLY,

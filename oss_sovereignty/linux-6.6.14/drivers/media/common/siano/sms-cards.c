@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Card-specific functions for the Siano SMS1xxx USB dongle
- *
- *  Copyright (c) 2008 Michael Krufky <mkrufky@linuxtv.org>
- */
+
+ 
 
 #include "sms-cards.h"
 #include "smsir.h"
@@ -174,46 +170,46 @@ int sms_board_event(struct smscore_device_t *coredev,
 	sms_gpio_assign_11xx_default_led_config(&my_gpio_config);
 
 	switch (gevent) {
-	case BOARD_EVENT_POWER_INIT: /* including hotplug */
-		break; /* BOARD_EVENT_BIND */
+	case BOARD_EVENT_POWER_INIT:  
+		break;  
 
 	case BOARD_EVENT_POWER_SUSPEND:
-		break; /* BOARD_EVENT_POWER_SUSPEND */
+		break;  
 
 	case BOARD_EVENT_POWER_RESUME:
-		break; /* BOARD_EVENT_POWER_RESUME */
+		break;  
 
 	case BOARD_EVENT_BIND:
-		break; /* BOARD_EVENT_BIND */
+		break;  
 
 	case BOARD_EVENT_SCAN_PROG:
-		break; /* BOARD_EVENT_SCAN_PROG */
+		break;  
 	case BOARD_EVENT_SCAN_COMP:
-		break; /* BOARD_EVENT_SCAN_COMP */
+		break;  
 	case BOARD_EVENT_EMERGENCY_WARNING_SIGNAL:
-		break; /* BOARD_EVENT_EMERGENCY_WARNING_SIGNAL */
+		break;  
 	case BOARD_EVENT_FE_LOCK:
-		break; /* BOARD_EVENT_FE_LOCK */
+		break;  
 	case BOARD_EVENT_FE_UNLOCK:
-		break; /* BOARD_EVENT_FE_UNLOCK */
+		break;  
 	case BOARD_EVENT_DEMOD_LOCK:
-		break; /* BOARD_EVENT_DEMOD_LOCK */
+		break;  
 	case BOARD_EVENT_DEMOD_UNLOCK:
-		break; /* BOARD_EVENT_DEMOD_UNLOCK */
+		break;  
 	case BOARD_EVENT_RECEPTION_MAX_4:
-		break; /* BOARD_EVENT_RECEPTION_MAX_4 */
+		break;  
 	case BOARD_EVENT_RECEPTION_3:
-		break; /* BOARD_EVENT_RECEPTION_3 */
+		break;  
 	case BOARD_EVENT_RECEPTION_2:
-		break; /* BOARD_EVENT_RECEPTION_2 */
+		break;  
 	case BOARD_EVENT_RECEPTION_1:
-		break; /* BOARD_EVENT_RECEPTION_1 */
+		break;  
 	case BOARD_EVENT_RECEPTION_LOST_0:
-		break; /* BOARD_EVENT_RECEPTION_LOST_0 */
+		break;  
 	case BOARD_EVENT_MULTIPLEX_OK:
-		break; /* BOARD_EVENT_MULTIPLEX_OK */
+		break;  
 	case BOARD_EVENT_MULTIPLEX_ERRORS:
-		break; /* BOARD_EVENT_MULTIPLEX_ERRORS */
+		break;  
 
 	default:
 		pr_err("Unknown SMS board event\n");
@@ -239,7 +235,7 @@ static int sms_set_gpio(struct smscore_device_t *coredev, int pin, int enable)
 		return -EINVAL;
 
 	if (pin < 0) {
-		/* inverted gpio */
+		 
 		gpio = pin * -1;
 		lvl = enable ? 0 : 1;
 	} else {
@@ -261,14 +257,14 @@ int sms_board_setup(struct smscore_device_t *coredev)
 
 	switch (board_id) {
 	case SMS1XXX_BOARD_HAUPPAUGE_WINDHAM:
-		/* turn off all LEDs */
+		 
 		sms_set_gpio(coredev, board->led_power, 0);
 		sms_set_gpio(coredev, board->led_hi, 0);
 		sms_set_gpio(coredev, board->led_lo, 0);
 		break;
 	case SMS1XXX_BOARD_HAUPPAUGE_TIGER_MINICARD_R2:
 	case SMS1XXX_BOARD_HAUPPAUGE_TIGER_MINICARD:
-		/* turn off LNA */
+		 
 		sms_set_gpio(coredev, board->lna_ctrl, 0);
 		break;
 	}
@@ -283,13 +279,13 @@ int sms_board_power(struct smscore_device_t *coredev, int onoff)
 
 	switch (board_id) {
 	case SMS1XXX_BOARD_HAUPPAUGE_WINDHAM:
-		/* power LED */
+		 
 		sms_set_gpio(coredev,
 			     board->led_power, onoff ? 1 : 0);
 		break;
 	case SMS1XXX_BOARD_HAUPPAUGE_TIGER_MINICARD_R2:
 	case SMS1XXX_BOARD_HAUPPAUGE_TIGER_MINICARD:
-		/* LNA */
+		 
 		if (!onoff)
 			sms_set_gpio(coredev, board->lna_ctrl, 0);
 		break;
@@ -303,7 +299,7 @@ int sms_board_led_feedback(struct smscore_device_t *coredev, int led)
 	int board_id = smscore_get_board_id(coredev);
 	struct sms_board *board = sms_get_board(board_id);
 
-	/* don't touch GPIO if LEDs are already set */
+	 
 	if (smscore_led_state(coredev, -1) == led)
 		return 0;
 

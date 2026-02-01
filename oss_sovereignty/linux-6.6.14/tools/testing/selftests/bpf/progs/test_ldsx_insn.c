@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -25,7 +25,7 @@ int rdonly_map_prog(const void *ctx)
 		return 0;
 
 	done1 = 1;
-	/* val1/val2 readonly map */
+	 
 	if (val1 == val2)
 		ret1 = 1;
 	return 0;
@@ -39,7 +39,7 @@ int map_val_prog(const void *ctx)
 		return 0;
 
 	done2 = 1;
-	/* val1/val2 regular read/write map */
+	 
 	if (val3 == val4)
 		ret2 = 1;
 	return 0;
@@ -55,7 +55,7 @@ long long int_member;
 SEC("?fentry/bpf_testmod_test_arg_ptr_to_struct")
 int BPF_PROG2(test_ptr_struct_arg, struct bpf_testmod_struct_arg_1 *, p)
 {
-	/* probed memory access */
+	 
 	int_member = p->a;
         return 0;
 }
@@ -73,7 +73,7 @@ int _getsockopt(volatile struct bpf_sockopt *ctx)
 	ctx->optlen = -1;
 	ctx->retval = -1;
 
-	/* sign extension for ctx member */
+	 
 	set_optlen = ctx->optlen;
 	set_retval = ctx->retval;
 
@@ -95,11 +95,9 @@ int _tc(volatile struct __sk_buff *skb)
 
 	skb->mark = 0xf6fe;
 
-	/* narrowed sign extension for ctx member */
+	 
 #if __clang_major__ >= 18
-	/* force narrow one-byte signed load. Otherwise, compiler may
-	 * generate a 32-bit unsigned load followed by an s8 movsx.
-	 */
+	 
 	asm volatile ("r1 = *(s8 *)(%[ctx] + %[off_mark])\n\t"
 		      "%[tmp_mark] = r1"
 		      : [tmp_mark]"=r"(tmp_mark)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- *  linux/net/sunrpc/gss_mech_switch.c
- *
- *  Copyright (c) 2001 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  J. Bruce Fields   <bfields@umich.edu>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/slab.h>
@@ -85,12 +78,7 @@ out:
 	return status;
 }
 
-/**
- * gss_mech_register - register a GSS mechanism
- * @gm: GSS mechanism handle
- *
- * Returns zero if successful, or a negative errno.
- */
+ 
 int gss_mech_register(struct gss_api_mech *gm)
 {
 	int status;
@@ -106,11 +94,7 @@ int gss_mech_register(struct gss_api_mech *gm)
 }
 EXPORT_SYMBOL_GPL(gss_mech_register);
 
-/**
- * gss_mech_unregister - release a GSS mechanism
- * @gm: GSS mechanism handle
- *
- */
+ 
 void gss_mech_unregister(struct gss_api_mech *gm)
 {
 	spin_lock(&registered_mechs_lock);
@@ -225,14 +209,7 @@ gss_mech_get_by_pseudoflavor(u32 pseudoflavor)
 	return gm;
 }
 
-/**
- * gss_svc_to_pseudoflavor - map a GSS service number to a pseudoflavor
- * @gm: GSS mechanism handle
- * @qop: GSS quality-of-protection value
- * @service: GSS service value
- *
- * Returns a matching security flavor, or RPC_AUTH_MAXFLAVOR if none is found.
- */
+ 
 rpc_authflavor_t gss_svc_to_pseudoflavor(struct gss_api_mech *gm, u32 qop,
 					 u32 service)
 {
@@ -247,13 +224,7 @@ rpc_authflavor_t gss_svc_to_pseudoflavor(struct gss_api_mech *gm, u32 qop,
 	return RPC_AUTH_MAXFLAVOR;
 }
 
-/**
- * gss_mech_info2flavor - look up a pseudoflavor given a GSS tuple
- * @info: a GSS mech OID, quality of protection, and service value
- *
- * Returns a matching pseudoflavor, or RPC_AUTH_MAXFLAVOR if the tuple is
- * not supported.
- */
+ 
 rpc_authflavor_t gss_mech_info2flavor(struct rpcsec_gss_info *info)
 {
 	rpc_authflavor_t pseudoflavor;
@@ -269,14 +240,7 @@ rpc_authflavor_t gss_mech_info2flavor(struct rpcsec_gss_info *info)
 	return pseudoflavor;
 }
 
-/**
- * gss_mech_flavor2info - look up a GSS tuple for a given pseudoflavor
- * @pseudoflavor: GSS pseudoflavor to match
- * @info: rpcsec_gss_info structure to fill in
- *
- * Returns zero and fills in "info" if pseudoflavor matches a
- * supported mechanism.  Otherwise a negative errno is returned.
- */
+ 
 int gss_mech_flavor2info(rpc_authflavor_t pseudoflavor,
 			 struct rpcsec_gss_info *info)
 {
@@ -347,8 +311,7 @@ gss_mech_put(struct gss_api_mech * gm)
 }
 EXPORT_SYMBOL(gss_mech_put);
 
-/* The mech could probably be determined from the token instead, but it's just
- * as easy for now to pass it in. */
+ 
 int
 gss_import_sec_context(const void *input_token, size_t bufsize,
 		       struct gss_api_mech	*mech,
@@ -364,7 +327,7 @@ gss_import_sec_context(const void *input_token, size_t bufsize,
 						*ctx_id, endtime, gfp_mask);
 }
 
-/* gss_get_mic: compute a mic over message and return mic_token. */
+ 
 
 u32
 gss_get_mic(struct gss_ctx	*context_handle,
@@ -377,7 +340,7 @@ gss_get_mic(struct gss_ctx	*context_handle,
 			      mic_token);
 }
 
-/* gss_verify_mic: check whether the provided mic_token verifies message. */
+ 
 
 u32
 gss_verify_mic(struct gss_ctx		*context_handle,
@@ -390,20 +353,7 @@ gss_verify_mic(struct gss_ctx		*context_handle,
 				 mic_token);
 }
 
-/*
- * This function is called from both the client and server code.
- * Each makes guarantees about how much "slack" space is available
- * for the underlying function in "buf"'s head and tail while
- * performing the wrap.
- *
- * The client and server code allocate RPC_MAX_AUTH_SIZE extra
- * space in both the head and tail which is available for use by
- * the wrap function.
- *
- * Underlying functions should verify they do not use more than
- * RPC_MAX_AUTH_SIZE of extra space in either the head or tail
- * when performing the wrap.
- */
+ 
 u32
 gss_wrap(struct gss_ctx	*ctx_id,
 	 int		offset,
@@ -425,9 +375,7 @@ gss_unwrap(struct gss_ctx	*ctx_id,
 }
 
 
-/* gss_delete_sec_context: free all resources associated with context_handle.
- * Note this differs from the RFC 2744-specified prototype in that we don't
- * bother returning an output token, since it would never be used anyway. */
+ 
 
 u32
 gss_delete_sec_context(struct gss_ctx	**context_handle)

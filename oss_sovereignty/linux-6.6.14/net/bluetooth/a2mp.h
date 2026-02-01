@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-   Copyright (c) 2010,2011 Code Aurora Forum.  All rights reserved.
-   Copyright (c) 2011,2012 Intel Corp.
-
-*/
+ 
+ 
 
 #ifndef __A2MP_H
 #define __A2MP_H
@@ -39,7 +35,7 @@ struct a2mp_cmd {
 	__u8	data[];
 } __packed;
 
-/* A2MP command codes */
+ 
 #define A2MP_COMMAND_REJ         0x01
 struct a2mp_cmd_rej {
 	__le16	reason;
@@ -112,7 +108,7 @@ struct a2mp_physlink_rsp {
 	__u8	status;
 } __packed;
 
-/* A2MP response status */
+ 
 #define A2MP_STATUS_SUCCESS			0x00
 #define A2MP_STATUS_INVALID_CTRL_ID		0x01
 #define A2MP_STATUS_UNABLE_START_LINK_CREATION	0x02
@@ -151,4 +147,4 @@ void a2mp_send_getampassoc_rsp(struct hci_dev *hdev, u8 status);
 void a2mp_send_create_phy_link_req(struct hci_dev *hdev, u8 status);
 void a2mp_send_create_phy_link_rsp(struct hci_dev *hdev, u8 status);
 
-#endif /* __A2MP_H */
+#endif  

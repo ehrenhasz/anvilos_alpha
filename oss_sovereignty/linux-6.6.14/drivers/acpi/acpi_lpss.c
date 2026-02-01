@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI support for Intel Lynxpoint LPSS.
- *
- * Copyright (C) 2013, Intel Corporation
- * Authors: Mika Westerberg <mika.westerberg@linux.intel.com>
- *          Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clkdev.h>
@@ -38,7 +32,7 @@
 #define LPSS_CLK_SIZE	0x04
 #define LPSS_LTR_SIZE	0x18
 
-/* Offsets relative to LPSS_PRIVATE_OFFSET */
+ 
 #define LPSS_CLK_DIVIDER_DEF_MASK	(BIT(1) | BIT(16))
 #define LPSS_RESETS			0x04
 #define LPSS_RESETS_RESET_FUNC		BIT(0)
@@ -60,19 +54,13 @@
 
 #define LPSS_PRV_REG_COUNT		9
 
-/* LPSS Flags */
+ 
 #define LPSS_CLK			BIT(0)
 #define LPSS_CLK_GATE			BIT(1)
 #define LPSS_CLK_DIVIDER		BIT(2)
 #define LPSS_LTR			BIT(3)
 #define LPSS_SAVE_CTX			BIT(4)
-/*
- * For some devices the DSDT AML code for another device turns off the device
- * before our suspend handler runs, causing us to read/save all 1-s (0xffffffff)
- * as ctx register values.
- * Luckily these devices always use the same ctx register values, so we can
- * work around this by saving the ctx registers once on activation.
- */
+ 
 #define LPSS_SAVE_CTX_ONCE		BIT(5)
 #define LPSS_NO_D3_DELAY		BIT(6)
 
@@ -102,27 +90,16 @@ struct lpss_private_data {
 	u32 prv_reg_ctx[LPSS_PRV_REG_COUNT];
 };
 
-/* Devices which need to be in D3 before lpss_iosf_enter_d3_state() proceeds */
+ 
 static u32 pmc_atom_d3_mask = 0xfe000ffe;
 
-/* LPSS run time quirks */
+ 
 static unsigned int lpss_quirks;
 
-/*
- * LPSS_QUIRK_ALWAYS_POWER_ON: override power state for LPSS DMA device.
- *
- * The LPSS DMA controller has neither _PS0 nor _PS3 method. Moreover
- * it can be powered off automatically whenever the last LPSS device goes down.
- * In case of no power any access to the DMA controller will hang the system.
- * The behaviour is reproduced on some HP laptops based on Intel BayTrail as
- * well as on ASuS T100TA transformer.
- *
- * This quirk overrides power state of entire LPSS island to keep DMA powered
- * on whenever we have at least one other device in use.
- */
+ 
 #define LPSS_QUIRK_ALWAYS_POWER_ON	BIT(0)
 
-/* UART Component Parameter Register */
+ 
 #define LPSS_UART_CPR			0xF4
 #define LPSS_UART_CPR_AFCE		BIT(4)
 
@@ -155,10 +132,7 @@ static void lpss_deassert_reset(struct lpss_private_data *pdata)
 	writel(val, pdata->mmio_base + offset);
 }
 
-/*
- * BYT PWM used for backlight control by the i915 driver on systems without
- * the Crystal Cove PMIC.
- */
+ 
 static struct pwm_lookup byt_pwm_lookup[] = {
 	PWM_LOOKUP_WITH_MODULE("80860F09:00", 0, "0000:00:02.0",
 			       "pwm_soc_backlight", 0, PWM_POLARITY_NORMAL,
@@ -169,7 +143,7 @@ static void byt_pwm_setup(struct lpss_private_data *pdata)
 {
 	u64 uid;
 
-	/* Only call pwm_add_table for the first PWM controller */
+	 
 	if (acpi_dev_uid_to_integer(pdata->adev, &uid) || uid != 1)
 		return;
 
@@ -185,9 +159,9 @@ static void byt_i2c_setup(struct lpss_private_data *pdata)
 	acpi_status status;
 	u64 uid;
 
-	/* Expected to always be successfull, but better safe then sorry */
+	 
 	if (!acpi_dev_uid_to_integer(pdata->adev, &uid) && uid) {
-		/* Detect I2C bus shared with PUNIT and ignore its d3 status */
+		 
 		status = acpi_evaluate_integer(handle, "_SEM", NULL, &shared_host);
 		if (ACPI_SUCCESS(status) && shared_host)
 			pmc_atom_d3_mask &= ~(BIT_LPSS2_F1_I2C1 << (uid - 1));
@@ -201,12 +175,7 @@ static void byt_i2c_setup(struct lpss_private_data *pdata)
 	writel(0, pdata->mmio_base + LPSS_I2C_ENABLE);
 }
 
-/*
- * BSW PWM1 is used for backlight control by the i915 driver
- * BSW PWM2 is used for backlight control for fixed (etched into the glass)
- * touch controls on some models. These touch-controls have specialized
- * drivers which know they need the "pwm_soc_lpss_2" con-id.
- */
+ 
 static struct pwm_lookup bsw_pwm_lookup[] = {
 	PWM_LOOKUP_WITH_MODULE("80862288:00", 0, "0000:00:02.0",
 			       "pwm_soc_backlight", 0, PWM_POLARITY_NORMAL,
@@ -220,7 +189,7 @@ static void bsw_pwm_setup(struct lpss_private_data *pdata)
 {
 	u64 uid;
 
-	/* Only call pwm_add_table for the first PWM controller */
+	 
 	if (acpi_dev_uid_to_integer(pdata->adev, &uid) || uid != 1)
 		return;
 
@@ -354,13 +323,13 @@ static const struct x86_cpu_id lpss_cpu_ids[] = {
 
 #define LPSS_ADDR(desc) (0UL)
 
-#endif /* CONFIG_X86_INTEL_LPSS */
+#endif  
 
 static const struct acpi_device_id acpi_lpss_device_ids[] = {
-	/* Generic LPSS devices */
+	 
 	{ "INTL9C60", LPSS_ADDR(lpss_dma_desc) },
 
-	/* Lynxpoint LPSS devices */
+	 
 	{ "INT33C0", LPSS_ADDR(lpt_spi_dev_desc) },
 	{ "INT33C1", LPSS_ADDR(lpt_spi_dev_desc) },
 	{ "INT33C2", LPSS_ADDR(lpt_i2c_dev_desc) },
@@ -370,7 +339,7 @@ static const struct acpi_device_id acpi_lpss_device_ids[] = {
 	{ "INT33C6", LPSS_ADDR(lpt_sdio_dev_desc) },
 	{ "INT33C7", },
 
-	/* BayTrail LPSS devices */
+	 
 	{ "80860F09", LPSS_ADDR(byt_pwm_dev_desc) },
 	{ "80860F0A", LPSS_ADDR(byt_uart_dev_desc) },
 	{ "80860F0E", LPSS_ADDR(byt_spi_dev_desc) },
@@ -379,7 +348,7 @@ static const struct acpi_device_id acpi_lpss_device_ids[] = {
 	{ "INT33B2", },
 	{ "INT33FC", },
 
-	/* Braswell LPSS devices */
+	 
 	{ "80862286", LPSS_ADDR(lpss_dma_desc) },
 	{ "80862288", LPSS_ADDR(bsw_pwm_dev_desc) },
 	{ "80862289", LPSS_ADDR(bsw_pwm2_dev_desc) },
@@ -388,7 +357,7 @@ static const struct acpi_device_id acpi_lpss_device_ids[] = {
 	{ "808622C0", LPSS_ADDR(lpss_dma_desc) },
 	{ "808622C1", LPSS_ADDR(bsw_i2c_dev_desc) },
 
-	/* Broadwell LPSS devices */
+	 
 	{ "INT3430", LPSS_ADDR(lpt_spi_dev_desc) },
 	{ "INT3431", LPSS_ADDR(lpt_spi_dev_desc) },
 	{ "INT3432", LPSS_ADDR(lpt_i2c_dev_desc) },
@@ -398,7 +367,7 @@ static const struct acpi_device_id acpi_lpss_device_ids[] = {
 	{ "INT3436", LPSS_ADDR(lpt_sdio_dev_desc) },
 	{ "INT3437", },
 
-	/* Wildcat Point LPSS devices */
+	 
 	{ "INT3438", LPSS_ADDR(lpt_spi_dev_desc) },
 
 	{ }
@@ -406,7 +375,7 @@ static const struct acpi_device_id acpi_lpss_device_ids[] = {
 
 #ifdef CONFIG_X86_INTEL_LPSS
 
-/* LPSS main clock device. */
+ 
 static struct platform_device *lpss_clk_dev;
 
 static inline void lpt_register_clock_device(void)
@@ -457,7 +426,7 @@ static int register_device_clock(struct acpi_device *adev,
 	}
 
 	if (dev_desc->flags & LPSS_CLK_DIVIDER) {
-		/* Prevent division by zero */
+		 
 		if (!readl(prv_base))
 			writel(LPSS_CLK_DIVIDER_DEF_MASK, prv_base);
 
@@ -499,7 +468,7 @@ struct lpss_device_links {
 	const struct dmi_system_id *dep_missing_ids;
 };
 
-/* Please keep this list sorted alphabetically by vendor and model */
+ 
 static const struct dmi_system_id i2c1_dep_missing_dmi_ids[] = {
 	{
 		.matches = {
@@ -510,24 +479,18 @@ static const struct dmi_system_id i2c1_dep_missing_dmi_ids[] = {
 	{}
 };
 
-/*
- * The _DEP method is used to identify dependencies but instead of creating
- * device links for every handle in _DEP, only links in the following list are
- * created. That is necessary because, in the general case, _DEP can refer to
- * devices that might not have drivers, or that are on different buses, or where
- * the supplier is not enumerated until after the consumer is probed.
- */
+ 
 static const struct lpss_device_links lpss_device_links[] = {
-	/* CHT External sdcard slot controller depends on PMIC I2C ctrl */
+	 
 	{"808622C1", "7", "80860F14", "3", DL_FLAG_PM_RUNTIME},
-	/* CHT iGPU depends on PMIC I2C controller */
+	 
 	{"808622C1", "7", "LNXVIDEO", NULL, DL_FLAG_PM_RUNTIME},
-	/* BYT iGPU depends on the Embedded Controller I2C controller (UID 1) */
+	 
 	{"80860F41", "1", "LNXVIDEO", NULL, DL_FLAG_PM_RUNTIME,
 	 i2c1_dep_missing_dmi_ids},
-	/* BYT CR iGPU depends on PMIC I2C controller (UID 5 on CR) */
+	 
 	{"80860F41", "5", "LNXVIDEO", NULL, DL_FLAG_PM_RUNTIME},
-	/* BYT iGPU depends on PMIC I2C controller (UID 7 on non CR) */
+	 
 	{"80860F41", "7", "LNXVIDEO", NULL, DL_FLAG_PM_RUNTIME},
 };
 
@@ -683,7 +646,7 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
 	acpi_dev_free_resource_list(&resource_list);
 
 	if (!pdata->mmio_base) {
-		/* Avoid acpi_bus_attach() instantiating a pdev for this dev. */
+		 
 		adev->pnp.type.platform_id = 0;
 		goto out_free;
 	}
@@ -700,11 +663,7 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
 			goto out_free;
 	}
 
-	/*
-	 * This works around a known issue in ACPI tables where LPSS devices
-	 * have _PS0 and _PS3 without _PSC (and no power resources), so
-	 * acpi_bus_init_power() will assume that the BIOS has put them into D0.
-	 */
+	 
 	acpi_device_fix_up_power(adev);
 
 	adev->driver_data = pdata;
@@ -719,7 +678,7 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
 	return 1;
 
 out_free:
-	/* Skip the device, but continue the namespace scan */
+	 
 	ret = 0;
 err_out:
 	kfree(pdata);
@@ -843,15 +802,7 @@ static void acpi_lpss_set_ltr(struct device *dev, s32 val)
 }
 
 #ifdef CONFIG_PM
-/**
- * acpi_lpss_save_ctx() - Save the private registers of LPSS device
- * @dev: LPSS device
- * @pdata: pointer to the private data of the LPSS device
- *
- * Most LPSS devices have private registers which may loose their context when
- * the device is powered down. acpi_lpss_save_ctx() saves those registers into
- * prv_reg_ctx array.
- */
+ 
 static void acpi_lpss_save_ctx(struct device *dev,
 			       struct lpss_private_data *pdata)
 {
@@ -866,13 +817,7 @@ static void acpi_lpss_save_ctx(struct device *dev,
 	}
 }
 
-/**
- * acpi_lpss_restore_ctx() - Restore the private registers of LPSS device
- * @dev: LPSS device
- * @pdata: pointer to the private data of the LPSS device
- *
- * Restores the registers that were previously stored with acpi_lpss_save_ctx().
- */
+ 
 static void acpi_lpss_restore_ctx(struct device *dev,
 				  struct lpss_private_data *pdata)
 {
@@ -889,13 +834,8 @@ static void acpi_lpss_restore_ctx(struct device *dev,
 
 static void acpi_lpss_d3_to_d0_delay(struct lpss_private_data *pdata)
 {
-	/*
-	 * The following delay is needed or the subsequent write operations may
-	 * fail. The LPSS devices are actually PCI devices and the PCI spec
-	 * expects 10ms delay before the device can be accessed after D3 to D0
-	 * transition. However some platforms like BSW does not need this delay.
-	 */
-	unsigned int delay = 10;	/* default 10ms delay */
+	 
+	unsigned int delay = 10;	 
 
 	if (pdata->dev_desc->flags & LPSS_NO_D3_DELAY)
 		delay = 0;
@@ -914,12 +854,7 @@ static int acpi_lpss_activate(struct device *dev)
 
 	acpi_lpss_d3_to_d0_delay(pdata);
 
-	/*
-	 * This is called only on ->probe() stage where a device is either in
-	 * known state defined by BIOS or most likely powered off. Due to this
-	 * we have to deassert reset line to be sure that ->probe() will
-	 * recognize the device.
-	 */
+	 
 	if (pdata->dev_desc->flags & (LPSS_SAVE_CTX | LPSS_SAVE_CTX_ONCE))
 		lpss_deassert_reset(pdata);
 
@@ -936,7 +871,7 @@ static void acpi_lpss_dismiss(struct device *dev)
 	acpi_dev_suspend(dev, false);
 }
 
-/* IOSF SB for LPSS island */
+ 
 #define LPSS_IOSF_UNIT_LPIOEP		0xA0
 #define LPSS_IOSF_UNIT_LPIO1		0xAB
 #define LPSS_IOSF_UNIT_LPIO2		0xAC
@@ -961,11 +896,7 @@ static void lpss_iosf_enter_d3_state(void)
 	u32 mask1 = LPSS_GPIODEF0_DMA_D3_MASK | LPSS_GPIODEF0_DMA_LLP;
 	u32 value2 = LPSS_PMCSR_D3hot;
 	u32 mask2 = LPSS_PMCSR_Dx_MASK;
-	/*
-	 * PMC provides an information about actual status of the LPSS devices.
-	 * Here we read the values related to LPSS power island, i.e. LPSS
-	 * devices, excluding both LPSS DMA controllers, along with SCC domain.
-	 */
+	 
 	u32 func_dis, d3_sts_0, pmc_status;
 	int ret;
 
@@ -979,11 +910,7 @@ static void lpss_iosf_enter_d3_state(void)
 	if (ret)
 		goto exit;
 
-	/*
-	 * Get the status of entire LPSS power island per device basis.
-	 * Shutdown both LPSS DMA controllers if and only if all other devices
-	 * are already in D3hot.
-	 */
+	 
 	pmc_status = (~(d3_sts_0 | func_dis)) & pmc_atom_d3_mask;
 	if (pmc_status)
 		goto exit;
@@ -1041,11 +968,7 @@ static int acpi_lpss_suspend(struct device *dev, bool wakeup)
 
 	ret = acpi_dev_suspend(dev, wakeup);
 
-	/*
-	 * This call must be last in the sequence, otherwise PMC will return
-	 * wrong status for devices being about to be powered off. See
-	 * lpss_iosf_enter_d3_state() for further information.
-	 */
+	 
 	if (acpi_target_system_state() == ACPI_STATE_S0 &&
 	    lpss_quirks & LPSS_QUIRK_ALWAYS_POWER_ON && iosf_mbi_available())
 		lpss_iosf_enter_d3_state();
@@ -1058,10 +981,7 @@ static int acpi_lpss_resume(struct device *dev)
 	struct lpss_private_data *pdata = acpi_driver_data(ACPI_COMPANION(dev));
 	int ret;
 
-	/*
-	 * This call is kept first to be in symmetry with
-	 * acpi_lpss_runtime_suspend() one.
-	 */
+	 
 	if (lpss_quirks & LPSS_QUIRK_ALWAYS_POWER_ON && iosf_mbi_available())
 		lpss_iosf_exit_d3_state();
 
@@ -1105,13 +1025,7 @@ static int acpi_lpss_suspend_noirq(struct device *dev)
 	int ret;
 
 	if (pdata->dev_desc->resume_from_noirq) {
-		/*
-		 * The driver's ->suspend_late callback will be invoked by
-		 * acpi_lpss_do_suspend_late(), with the assumption that the
-		 * driver really wanted to run that code in ->suspend_noirq, but
-		 * it could not run after acpi_dev_suspend() and the driver
-		 * expected the latter to be called in the "late" phase.
-		 */
+		 
 		ret = acpi_lpss_do_suspend_late(dev);
 		if (ret)
 			return ret;
@@ -1145,7 +1059,7 @@ static int acpi_lpss_resume_noirq(struct device *dev)
 	struct lpss_private_data *pdata = acpi_driver_data(ACPI_COMPANION(dev));
 	int ret;
 
-	/* Follow acpi_subsys_resume_noirq(). */
+	 
 	if (dev_pm_skip_resume(dev))
 		return 0;
 
@@ -1156,13 +1070,7 @@ static int acpi_lpss_resume_noirq(struct device *dev)
 	if (!pdata->dev_desc->resume_from_noirq)
 		return 0;
 
-	/*
-	 * The driver's ->resume_early callback will be invoked by
-	 * acpi_lpss_do_resume_early(), with the assumption that the driver
-	 * really wanted to run that code in ->resume_noirq, but it could not
-	 * run before acpi_dev_resume() and the driver expected the latter to be
-	 * called in the "early" phase.
-	 */
+	 
 	return acpi_lpss_do_resume_early(dev);
 }
 
@@ -1195,7 +1103,7 @@ static int acpi_lpss_restore_noirq(struct device *dev)
 	if (!pdata->dev_desc->resume_from_noirq)
 		return 0;
 
-	/* This is analogous to what happens in acpi_lpss_resume_noirq(). */
+	 
 	return acpi_lpss_do_restore_early(dev);
 }
 
@@ -1227,7 +1135,7 @@ static int acpi_lpss_poweroff_noirq(struct device *dev)
 		return 0;
 
 	if (pdata->dev_desc->resume_from_noirq) {
-		/* This is analogous to the acpi_lpss_suspend_noirq() case. */
+		 
 		int ret = acpi_lpss_do_poweroff_late(dev);
 
 		if (ret)
@@ -1236,7 +1144,7 @@ static int acpi_lpss_poweroff_noirq(struct device *dev)
 
 	return pm_generic_poweroff_noirq(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int acpi_lpss_runtime_suspend(struct device *dev)
 {
@@ -1251,7 +1159,7 @@ static int acpi_lpss_runtime_resume(struct device *dev)
 
 	return ret ? ret : pm_generic_runtime_resume(dev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static struct dev_pm_domain acpi_lpss_pm_domain = {
 #ifdef CONFIG_PM
@@ -1390,4 +1298,4 @@ void __init acpi_lpss_init(void)
 	acpi_scan_add_handler(&lpss_handler);
 }
 
-#endif /* CONFIG_X86_INTEL_LPSS */
+#endif  

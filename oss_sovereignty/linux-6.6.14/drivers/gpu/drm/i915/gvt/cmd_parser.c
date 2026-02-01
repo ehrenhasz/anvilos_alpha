@@ -1,38 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Ke Yu
- *    Kevin Tian <kevin.tian@intel.com>
- *    Zhiyuan Lv <zhiyuan.lv@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Ping Gao <ping.a.gao@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *    Yulei Zhang <yulei.zhang@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -84,33 +50,33 @@ struct decode_info {
 #define   MI_WAIT_FOR_SPRITE_B_FLIP_PENDING      (1<<10)
 #define   MI_WAIT_FOR_SPRITE_A_FLIP_PENDING      (1<<2)
 
-/* Render Command Map */
+ 
 
-/* MI_* command Opcode (28:23) */
+ 
 #define OP_MI_NOOP                          0x0
-#define OP_MI_SET_PREDICATE                 0x1  /* HSW+ */
+#define OP_MI_SET_PREDICATE                 0x1   
 #define OP_MI_USER_INTERRUPT                0x2
 #define OP_MI_WAIT_FOR_EVENT                0x3
 #define OP_MI_FLUSH                         0x4
 #define OP_MI_ARB_CHECK                     0x5
-#define OP_MI_RS_CONTROL                    0x6  /* HSW+ */
+#define OP_MI_RS_CONTROL                    0x6   
 #define OP_MI_REPORT_HEAD                   0x7
 #define OP_MI_ARB_ON_OFF                    0x8
-#define OP_MI_URB_ATOMIC_ALLOC              0x9  /* HSW+ */
+#define OP_MI_URB_ATOMIC_ALLOC              0x9   
 #define OP_MI_BATCH_BUFFER_END              0xA
 #define OP_MI_SUSPEND_FLUSH                 0xB
-#define OP_MI_PREDICATE                     0xC  /* IVB+ */
-#define OP_MI_TOPOLOGY_FILTER               0xD  /* IVB+ */
-#define OP_MI_SET_APPID                     0xE  /* IVB+ */
-#define OP_MI_RS_CONTEXT                    0xF  /* HSW+ */
-#define OP_MI_LOAD_SCAN_LINES_INCL          0x12 /* HSW+ */
+#define OP_MI_PREDICATE                     0xC   
+#define OP_MI_TOPOLOGY_FILTER               0xD   
+#define OP_MI_SET_APPID                     0xE   
+#define OP_MI_RS_CONTEXT                    0xF   
+#define OP_MI_LOAD_SCAN_LINES_INCL          0x12  
 #define OP_MI_DISPLAY_FLIP                  0x14
 #define OP_MI_SEMAPHORE_MBOX                0x16
 #define OP_MI_SET_CONTEXT                   0x18
 #define OP_MI_MATH                          0x1A
 #define OP_MI_URB_CLEAR                     0x19
-#define OP_MI_SEMAPHORE_SIGNAL		    0x1B  /* BDW+ */
-#define OP_MI_SEMAPHORE_WAIT		    0x1C  /* BDW+ */
+#define OP_MI_SEMAPHORE_SIGNAL		    0x1B   
+#define OP_MI_SEMAPHORE_WAIT		    0x1C   
 
 #define OP_MI_STORE_DATA_IMM                0x20
 #define OP_MI_STORE_DATA_INDEX              0x21
@@ -120,16 +86,16 @@ struct decode_info {
 #define OP_MI_FLUSH_DW                      0x26
 #define OP_MI_CLFLUSH                       0x27
 #define OP_MI_REPORT_PERF_COUNT             0x28
-#define OP_MI_LOAD_REGISTER_MEM             0x29  /* HSW+ */
-#define OP_MI_LOAD_REGISTER_REG             0x2A  /* HSW+ */
-#define OP_MI_RS_STORE_DATA_IMM             0x2B  /* HSW+ */
-#define OP_MI_LOAD_URB_MEM                  0x2C  /* HSW+ */
-#define OP_MI_STORE_URM_MEM                 0x2D  /* HSW+ */
-#define OP_MI_2E			    0x2E  /* BDW+ */
-#define OP_MI_2F			    0x2F  /* BDW+ */
+#define OP_MI_LOAD_REGISTER_MEM             0x29   
+#define OP_MI_LOAD_REGISTER_REG             0x2A   
+#define OP_MI_RS_STORE_DATA_IMM             0x2B   
+#define OP_MI_LOAD_URB_MEM                  0x2C   
+#define OP_MI_STORE_URM_MEM                 0x2D   
+#define OP_MI_2E			    0x2E   
+#define OP_MI_2F			    0x2F   
 #define OP_MI_BATCH_BUFFER_START            0x31
 
-/* Bit definition for dword 0 */
+ 
 #define _CMDBIT_BB_START_IN_PPGTT	(1UL << 8)
 
 #define OP_MI_CONDITIONAL_BATCH_BUFFER_END  0x36
@@ -139,7 +105,7 @@ struct decode_info {
 #define BATCH_BUFFER_ADR_SPACE_BIT(x)	(((x) >> 8) & 1U)
 #define BATCH_BUFFER_2ND_LEVEL_BIT(x)   ((x) >> 22 & 1U)
 
-/* 2D command: Opcode (28:22) */
+ 
 #define OP_2D(x)    ((2<<7) | x)
 
 #define OP_XY_SETUP_BLT                             OP_2D(0x1)
@@ -167,7 +133,7 @@ struct decode_info {
 #define OP_XY_PAT_CHROMA_BLT                        OP_2D(0x76)
 #define OP_XY_PAT_CHROMA_BLT_IMMEDIATE              OP_2D(0x77)
 
-/* 3D/Media Command: Pipeline Type(28:27) Opcode(26:24) Sub Opcode(23:16) */
+ 
 #define OP_3D_MEDIA(sub_type, opcode, sub_opcode) \
 	((3 << 13) | ((sub_type) << 11) | ((opcode) << 8) | (sub_opcode))
 
@@ -194,15 +160,15 @@ struct decode_info {
 #define OP_MEDIA_OBJECT_WALKER                  OP_3D_MEDIA(0x2, 0x1, 0x3)
 #define OP_GPGPU_WALKER                         OP_3D_MEDIA(0x2, 0x1, 0x5)
 
-#define OP_3DSTATE_CLEAR_PARAMS                 OP_3D_MEDIA(0x3, 0x0, 0x04) /* IVB+ */
-#define OP_3DSTATE_DEPTH_BUFFER                 OP_3D_MEDIA(0x3, 0x0, 0x05) /* IVB+ */
-#define OP_3DSTATE_STENCIL_BUFFER               OP_3D_MEDIA(0x3, 0x0, 0x06) /* IVB+ */
-#define OP_3DSTATE_HIER_DEPTH_BUFFER            OP_3D_MEDIA(0x3, 0x0, 0x07) /* IVB+ */
+#define OP_3DSTATE_CLEAR_PARAMS                 OP_3D_MEDIA(0x3, 0x0, 0x04)  
+#define OP_3DSTATE_DEPTH_BUFFER                 OP_3D_MEDIA(0x3, 0x0, 0x05)  
+#define OP_3DSTATE_STENCIL_BUFFER               OP_3D_MEDIA(0x3, 0x0, 0x06)  
+#define OP_3DSTATE_HIER_DEPTH_BUFFER            OP_3D_MEDIA(0x3, 0x0, 0x07)  
 #define OP_3DSTATE_VERTEX_BUFFERS               OP_3D_MEDIA(0x3, 0x0, 0x08)
 #define OP_3DSTATE_VERTEX_ELEMENTS              OP_3D_MEDIA(0x3, 0x0, 0x09)
 #define OP_3DSTATE_INDEX_BUFFER                 OP_3D_MEDIA(0x3, 0x0, 0x0A)
 #define OP_3DSTATE_VF_STATISTICS                OP_3D_MEDIA(0x3, 0x0, 0x0B)
-#define OP_3DSTATE_VF                           OP_3D_MEDIA(0x3, 0x0, 0x0C)  /* HSW+ */
+#define OP_3DSTATE_VF                           OP_3D_MEDIA(0x3, 0x0, 0x0C)   
 #define OP_3DSTATE_CC_STATE_POINTERS            OP_3D_MEDIA(0x3, 0x0, 0x0E)
 #define OP_3DSTATE_SCISSOR_STATE_POINTERS       OP_3D_MEDIA(0x3, 0x0, 0x0F)
 #define OP_3DSTATE_VS                           OP_3D_MEDIA(0x3, 0x0, 0x10)
@@ -214,64 +180,64 @@ struct decode_info {
 #define OP_3DSTATE_CONSTANT_GS                  OP_3D_MEDIA(0x3, 0x0, 0x16)
 #define OP_3DSTATE_CONSTANT_PS                  OP_3D_MEDIA(0x3, 0x0, 0x17)
 #define OP_3DSTATE_SAMPLE_MASK                  OP_3D_MEDIA(0x3, 0x0, 0x18)
-#define OP_3DSTATE_CONSTANT_HS                  OP_3D_MEDIA(0x3, 0x0, 0x19) /* IVB+ */
-#define OP_3DSTATE_CONSTANT_DS                  OP_3D_MEDIA(0x3, 0x0, 0x1A) /* IVB+ */
-#define OP_3DSTATE_HS                           OP_3D_MEDIA(0x3, 0x0, 0x1B) /* IVB+ */
-#define OP_3DSTATE_TE                           OP_3D_MEDIA(0x3, 0x0, 0x1C) /* IVB+ */
-#define OP_3DSTATE_DS                           OP_3D_MEDIA(0x3, 0x0, 0x1D) /* IVB+ */
-#define OP_3DSTATE_STREAMOUT                    OP_3D_MEDIA(0x3, 0x0, 0x1E) /* IVB+ */
-#define OP_3DSTATE_SBE                          OP_3D_MEDIA(0x3, 0x0, 0x1F) /* IVB+ */
-#define OP_3DSTATE_PS                           OP_3D_MEDIA(0x3, 0x0, 0x20) /* IVB+ */
-#define OP_3DSTATE_VIEWPORT_STATE_POINTERS_SF_CLIP OP_3D_MEDIA(0x3, 0x0, 0x21) /* IVB+ */
-#define OP_3DSTATE_VIEWPORT_STATE_POINTERS_CC   OP_3D_MEDIA(0x3, 0x0, 0x23) /* IVB+ */
-#define OP_3DSTATE_BLEND_STATE_POINTERS         OP_3D_MEDIA(0x3, 0x0, 0x24) /* IVB+ */
-#define OP_3DSTATE_DEPTH_STENCIL_STATE_POINTERS OP_3D_MEDIA(0x3, 0x0, 0x25) /* IVB+ */
-#define OP_3DSTATE_BINDING_TABLE_POINTERS_VS    OP_3D_MEDIA(0x3, 0x0, 0x26) /* IVB+ */
-#define OP_3DSTATE_BINDING_TABLE_POINTERS_HS    OP_3D_MEDIA(0x3, 0x0, 0x27) /* IVB+ */
-#define OP_3DSTATE_BINDING_TABLE_POINTERS_DS    OP_3D_MEDIA(0x3, 0x0, 0x28) /* IVB+ */
-#define OP_3DSTATE_BINDING_TABLE_POINTERS_GS    OP_3D_MEDIA(0x3, 0x0, 0x29) /* IVB+ */
-#define OP_3DSTATE_BINDING_TABLE_POINTERS_PS    OP_3D_MEDIA(0x3, 0x0, 0x2A) /* IVB+ */
-#define OP_3DSTATE_SAMPLER_STATE_POINTERS_VS    OP_3D_MEDIA(0x3, 0x0, 0x2B) /* IVB+ */
-#define OP_3DSTATE_SAMPLER_STATE_POINTERS_HS    OP_3D_MEDIA(0x3, 0x0, 0x2C) /* IVB+ */
-#define OP_3DSTATE_SAMPLER_STATE_POINTERS_DS    OP_3D_MEDIA(0x3, 0x0, 0x2D) /* IVB+ */
-#define OP_3DSTATE_SAMPLER_STATE_POINTERS_GS    OP_3D_MEDIA(0x3, 0x0, 0x2E) /* IVB+ */
-#define OP_3DSTATE_SAMPLER_STATE_POINTERS_PS    OP_3D_MEDIA(0x3, 0x0, 0x2F) /* IVB+ */
-#define OP_3DSTATE_URB_VS                       OP_3D_MEDIA(0x3, 0x0, 0x30) /* IVB+ */
-#define OP_3DSTATE_URB_HS                       OP_3D_MEDIA(0x3, 0x0, 0x31) /* IVB+ */
-#define OP_3DSTATE_URB_DS                       OP_3D_MEDIA(0x3, 0x0, 0x32) /* IVB+ */
-#define OP_3DSTATE_URB_GS                       OP_3D_MEDIA(0x3, 0x0, 0x33) /* IVB+ */
-#define OP_3DSTATE_GATHER_CONSTANT_VS           OP_3D_MEDIA(0x3, 0x0, 0x34) /* HSW+ */
-#define OP_3DSTATE_GATHER_CONSTANT_GS           OP_3D_MEDIA(0x3, 0x0, 0x35) /* HSW+ */
-#define OP_3DSTATE_GATHER_CONSTANT_HS           OP_3D_MEDIA(0x3, 0x0, 0x36) /* HSW+ */
-#define OP_3DSTATE_GATHER_CONSTANT_DS           OP_3D_MEDIA(0x3, 0x0, 0x37) /* HSW+ */
-#define OP_3DSTATE_GATHER_CONSTANT_PS           OP_3D_MEDIA(0x3, 0x0, 0x38) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTF_VS             OP_3D_MEDIA(0x3, 0x0, 0x39) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTF_PS             OP_3D_MEDIA(0x3, 0x0, 0x3A) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTI_VS             OP_3D_MEDIA(0x3, 0x0, 0x3B) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTI_PS             OP_3D_MEDIA(0x3, 0x0, 0x3C) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTB_VS             OP_3D_MEDIA(0x3, 0x0, 0x3D) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANTB_PS             OP_3D_MEDIA(0x3, 0x0, 0x3E) /* HSW+ */
-#define OP_3DSTATE_DX9_LOCAL_VALID_VS           OP_3D_MEDIA(0x3, 0x0, 0x3F) /* HSW+ */
-#define OP_3DSTATE_DX9_LOCAL_VALID_PS           OP_3D_MEDIA(0x3, 0x0, 0x40) /* HSW+ */
-#define OP_3DSTATE_DX9_GENERATE_ACTIVE_VS       OP_3D_MEDIA(0x3, 0x0, 0x41) /* HSW+ */
-#define OP_3DSTATE_DX9_GENERATE_ACTIVE_PS       OP_3D_MEDIA(0x3, 0x0, 0x42) /* HSW+ */
-#define OP_3DSTATE_BINDING_TABLE_EDIT_VS        OP_3D_MEDIA(0x3, 0x0, 0x43) /* HSW+ */
-#define OP_3DSTATE_BINDING_TABLE_EDIT_GS        OP_3D_MEDIA(0x3, 0x0, 0x44) /* HSW+ */
-#define OP_3DSTATE_BINDING_TABLE_EDIT_HS        OP_3D_MEDIA(0x3, 0x0, 0x45) /* HSW+ */
-#define OP_3DSTATE_BINDING_TABLE_EDIT_DS        OP_3D_MEDIA(0x3, 0x0, 0x46) /* HSW+ */
-#define OP_3DSTATE_BINDING_TABLE_EDIT_PS        OP_3D_MEDIA(0x3, 0x0, 0x47) /* HSW+ */
+#define OP_3DSTATE_CONSTANT_HS                  OP_3D_MEDIA(0x3, 0x0, 0x19)  
+#define OP_3DSTATE_CONSTANT_DS                  OP_3D_MEDIA(0x3, 0x0, 0x1A)  
+#define OP_3DSTATE_HS                           OP_3D_MEDIA(0x3, 0x0, 0x1B)  
+#define OP_3DSTATE_TE                           OP_3D_MEDIA(0x3, 0x0, 0x1C)  
+#define OP_3DSTATE_DS                           OP_3D_MEDIA(0x3, 0x0, 0x1D)  
+#define OP_3DSTATE_STREAMOUT                    OP_3D_MEDIA(0x3, 0x0, 0x1E)  
+#define OP_3DSTATE_SBE                          OP_3D_MEDIA(0x3, 0x0, 0x1F)  
+#define OP_3DSTATE_PS                           OP_3D_MEDIA(0x3, 0x0, 0x20)  
+#define OP_3DSTATE_VIEWPORT_STATE_POINTERS_SF_CLIP OP_3D_MEDIA(0x3, 0x0, 0x21)  
+#define OP_3DSTATE_VIEWPORT_STATE_POINTERS_CC   OP_3D_MEDIA(0x3, 0x0, 0x23)  
+#define OP_3DSTATE_BLEND_STATE_POINTERS         OP_3D_MEDIA(0x3, 0x0, 0x24)  
+#define OP_3DSTATE_DEPTH_STENCIL_STATE_POINTERS OP_3D_MEDIA(0x3, 0x0, 0x25)  
+#define OP_3DSTATE_BINDING_TABLE_POINTERS_VS    OP_3D_MEDIA(0x3, 0x0, 0x26)  
+#define OP_3DSTATE_BINDING_TABLE_POINTERS_HS    OP_3D_MEDIA(0x3, 0x0, 0x27)  
+#define OP_3DSTATE_BINDING_TABLE_POINTERS_DS    OP_3D_MEDIA(0x3, 0x0, 0x28)  
+#define OP_3DSTATE_BINDING_TABLE_POINTERS_GS    OP_3D_MEDIA(0x3, 0x0, 0x29)  
+#define OP_3DSTATE_BINDING_TABLE_POINTERS_PS    OP_3D_MEDIA(0x3, 0x0, 0x2A)  
+#define OP_3DSTATE_SAMPLER_STATE_POINTERS_VS    OP_3D_MEDIA(0x3, 0x0, 0x2B)  
+#define OP_3DSTATE_SAMPLER_STATE_POINTERS_HS    OP_3D_MEDIA(0x3, 0x0, 0x2C)  
+#define OP_3DSTATE_SAMPLER_STATE_POINTERS_DS    OP_3D_MEDIA(0x3, 0x0, 0x2D)  
+#define OP_3DSTATE_SAMPLER_STATE_POINTERS_GS    OP_3D_MEDIA(0x3, 0x0, 0x2E)  
+#define OP_3DSTATE_SAMPLER_STATE_POINTERS_PS    OP_3D_MEDIA(0x3, 0x0, 0x2F)  
+#define OP_3DSTATE_URB_VS                       OP_3D_MEDIA(0x3, 0x0, 0x30)  
+#define OP_3DSTATE_URB_HS                       OP_3D_MEDIA(0x3, 0x0, 0x31)  
+#define OP_3DSTATE_URB_DS                       OP_3D_MEDIA(0x3, 0x0, 0x32)  
+#define OP_3DSTATE_URB_GS                       OP_3D_MEDIA(0x3, 0x0, 0x33)  
+#define OP_3DSTATE_GATHER_CONSTANT_VS           OP_3D_MEDIA(0x3, 0x0, 0x34)  
+#define OP_3DSTATE_GATHER_CONSTANT_GS           OP_3D_MEDIA(0x3, 0x0, 0x35)  
+#define OP_3DSTATE_GATHER_CONSTANT_HS           OP_3D_MEDIA(0x3, 0x0, 0x36)  
+#define OP_3DSTATE_GATHER_CONSTANT_DS           OP_3D_MEDIA(0x3, 0x0, 0x37)  
+#define OP_3DSTATE_GATHER_CONSTANT_PS           OP_3D_MEDIA(0x3, 0x0, 0x38)  
+#define OP_3DSTATE_DX9_CONSTANTF_VS             OP_3D_MEDIA(0x3, 0x0, 0x39)  
+#define OP_3DSTATE_DX9_CONSTANTF_PS             OP_3D_MEDIA(0x3, 0x0, 0x3A)  
+#define OP_3DSTATE_DX9_CONSTANTI_VS             OP_3D_MEDIA(0x3, 0x0, 0x3B)  
+#define OP_3DSTATE_DX9_CONSTANTI_PS             OP_3D_MEDIA(0x3, 0x0, 0x3C)  
+#define OP_3DSTATE_DX9_CONSTANTB_VS             OP_3D_MEDIA(0x3, 0x0, 0x3D)  
+#define OP_3DSTATE_DX9_CONSTANTB_PS             OP_3D_MEDIA(0x3, 0x0, 0x3E)  
+#define OP_3DSTATE_DX9_LOCAL_VALID_VS           OP_3D_MEDIA(0x3, 0x0, 0x3F)  
+#define OP_3DSTATE_DX9_LOCAL_VALID_PS           OP_3D_MEDIA(0x3, 0x0, 0x40)  
+#define OP_3DSTATE_DX9_GENERATE_ACTIVE_VS       OP_3D_MEDIA(0x3, 0x0, 0x41)  
+#define OP_3DSTATE_DX9_GENERATE_ACTIVE_PS       OP_3D_MEDIA(0x3, 0x0, 0x42)  
+#define OP_3DSTATE_BINDING_TABLE_EDIT_VS        OP_3D_MEDIA(0x3, 0x0, 0x43)  
+#define OP_3DSTATE_BINDING_TABLE_EDIT_GS        OP_3D_MEDIA(0x3, 0x0, 0x44)  
+#define OP_3DSTATE_BINDING_TABLE_EDIT_HS        OP_3D_MEDIA(0x3, 0x0, 0x45)  
+#define OP_3DSTATE_BINDING_TABLE_EDIT_DS        OP_3D_MEDIA(0x3, 0x0, 0x46)  
+#define OP_3DSTATE_BINDING_TABLE_EDIT_PS        OP_3D_MEDIA(0x3, 0x0, 0x47)  
 
-#define OP_3DSTATE_VF_INSTANCING 		OP_3D_MEDIA(0x3, 0x0, 0x49) /* BDW+ */
-#define OP_3DSTATE_VF_SGVS  			OP_3D_MEDIA(0x3, 0x0, 0x4A) /* BDW+ */
-#define OP_3DSTATE_VF_TOPOLOGY   		OP_3D_MEDIA(0x3, 0x0, 0x4B) /* BDW+ */
-#define OP_3DSTATE_WM_CHROMAKEY   		OP_3D_MEDIA(0x3, 0x0, 0x4C) /* BDW+ */
-#define OP_3DSTATE_PS_BLEND   			OP_3D_MEDIA(0x3, 0x0, 0x4D) /* BDW+ */
-#define OP_3DSTATE_WM_DEPTH_STENCIL   		OP_3D_MEDIA(0x3, 0x0, 0x4E) /* BDW+ */
-#define OP_3DSTATE_PS_EXTRA   			OP_3D_MEDIA(0x3, 0x0, 0x4F) /* BDW+ */
-#define OP_3DSTATE_RASTER   			OP_3D_MEDIA(0x3, 0x0, 0x50) /* BDW+ */
-#define OP_3DSTATE_SBE_SWIZ   			OP_3D_MEDIA(0x3, 0x0, 0x51) /* BDW+ */
-#define OP_3DSTATE_WM_HZ_OP   			OP_3D_MEDIA(0x3, 0x0, 0x52) /* BDW+ */
-#define OP_3DSTATE_COMPONENT_PACKING		OP_3D_MEDIA(0x3, 0x0, 0x55) /* SKL+ */
+#define OP_3DSTATE_VF_INSTANCING 		OP_3D_MEDIA(0x3, 0x0, 0x49)  
+#define OP_3DSTATE_VF_SGVS  			OP_3D_MEDIA(0x3, 0x0, 0x4A)  
+#define OP_3DSTATE_VF_TOPOLOGY   		OP_3D_MEDIA(0x3, 0x0, 0x4B)  
+#define OP_3DSTATE_WM_CHROMAKEY   		OP_3D_MEDIA(0x3, 0x0, 0x4C)  
+#define OP_3DSTATE_PS_BLEND   			OP_3D_MEDIA(0x3, 0x0, 0x4D)  
+#define OP_3DSTATE_WM_DEPTH_STENCIL   		OP_3D_MEDIA(0x3, 0x0, 0x4E)  
+#define OP_3DSTATE_PS_EXTRA   			OP_3D_MEDIA(0x3, 0x0, 0x4F)  
+#define OP_3DSTATE_RASTER   			OP_3D_MEDIA(0x3, 0x0, 0x50)  
+#define OP_3DSTATE_SBE_SWIZ   			OP_3D_MEDIA(0x3, 0x0, 0x51)  
+#define OP_3DSTATE_WM_HZ_OP   			OP_3D_MEDIA(0x3, 0x0, 0x52)  
+#define OP_3DSTATE_COMPONENT_PACKING		OP_3D_MEDIA(0x3, 0x0, 0x55)  
 
 #define OP_3DSTATE_DRAWING_RECTANGLE            OP_3D_MEDIA(0x3, 0x1, 0x00)
 #define OP_3DSTATE_SAMPLER_PALETTE_LOAD0        OP_3D_MEDIA(0x3, 0x1, 0x02)
@@ -288,28 +254,23 @@ struct decode_info {
 #define OP_SNB_3DSTATE_HIER_DEPTH_BUFFER        OP_3D_MEDIA(0x3, 0x1, 0x0F)
 #define OP_SNB_3DSTATE_CLEAR_PARAMS             OP_3D_MEDIA(0x3, 0x1, 0x10)
 #define OP_3DSTATE_MONOFILTER_SIZE              OP_3D_MEDIA(0x3, 0x1, 0x11)
-#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_VS       OP_3D_MEDIA(0x3, 0x1, 0x12) /* IVB+ */
-#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_HS       OP_3D_MEDIA(0x3, 0x1, 0x13) /* IVB+ */
-#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_DS       OP_3D_MEDIA(0x3, 0x1, 0x14) /* IVB+ */
-#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_GS       OP_3D_MEDIA(0x3, 0x1, 0x15) /* IVB+ */
-#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_PS       OP_3D_MEDIA(0x3, 0x1, 0x16) /* IVB+ */
+#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_VS       OP_3D_MEDIA(0x3, 0x1, 0x12)  
+#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_HS       OP_3D_MEDIA(0x3, 0x1, 0x13)  
+#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_DS       OP_3D_MEDIA(0x3, 0x1, 0x14)  
+#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_GS       OP_3D_MEDIA(0x3, 0x1, 0x15)  
+#define OP_3DSTATE_PUSH_CONSTANT_ALLOC_PS       OP_3D_MEDIA(0x3, 0x1, 0x16)  
 #define OP_3DSTATE_SO_DECL_LIST                 OP_3D_MEDIA(0x3, 0x1, 0x17)
 #define OP_3DSTATE_SO_BUFFER                    OP_3D_MEDIA(0x3, 0x1, 0x18)
-#define OP_3DSTATE_BINDING_TABLE_POOL_ALLOC     OP_3D_MEDIA(0x3, 0x1, 0x19) /* HSW+ */
-#define OP_3DSTATE_GATHER_POOL_ALLOC            OP_3D_MEDIA(0x3, 0x1, 0x1A) /* HSW+ */
-#define OP_3DSTATE_DX9_CONSTANT_BUFFER_POOL_ALLOC OP_3D_MEDIA(0x3, 0x1, 0x1B) /* HSW+ */
+#define OP_3DSTATE_BINDING_TABLE_POOL_ALLOC     OP_3D_MEDIA(0x3, 0x1, 0x19)  
+#define OP_3DSTATE_GATHER_POOL_ALLOC            OP_3D_MEDIA(0x3, 0x1, 0x1A)  
+#define OP_3DSTATE_DX9_CONSTANT_BUFFER_POOL_ALLOC OP_3D_MEDIA(0x3, 0x1, 0x1B)  
 #define OP_3DSTATE_SAMPLE_PATTERN               OP_3D_MEDIA(0x3, 0x1, 0x1C)
 #define OP_PIPE_CONTROL                         OP_3D_MEDIA(0x3, 0x2, 0x00)
 #define OP_3DPRIMITIVE                          OP_3D_MEDIA(0x3, 0x3, 0x00)
 
-/* VCCP Command Parser */
+ 
 
-/*
- * Below MFX and VBE cmd definition is from vaapi intel driver project (BSD License)
- * git://anongit.freedesktop.org/vaapi/intel-driver
- * src/i965_defines.h
- *
- */
+ 
 
 #define OP_MFX(pipeline, op, sub_opa, sub_opb)     \
 	(3 << 13 | \
@@ -318,48 +279,48 @@ struct decode_info {
 	 (sub_opa) << 5 | \
 	 (sub_opb))
 
-#define OP_MFX_PIPE_MODE_SELECT                    OP_MFX(2, 0, 0, 0)  /* ALL */
-#define OP_MFX_SURFACE_STATE                       OP_MFX(2, 0, 0, 1)  /* ALL */
-#define OP_MFX_PIPE_BUF_ADDR_STATE                 OP_MFX(2, 0, 0, 2)  /* ALL */
-#define OP_MFX_IND_OBJ_BASE_ADDR_STATE             OP_MFX(2, 0, 0, 3)  /* ALL */
-#define OP_MFX_BSP_BUF_BASE_ADDR_STATE             OP_MFX(2, 0, 0, 4)  /* ALL */
-#define OP_2_0_0_5                                 OP_MFX(2, 0, 0, 5)  /* ALL */
-#define OP_MFX_STATE_POINTER                       OP_MFX(2, 0, 0, 6)  /* ALL */
-#define OP_MFX_QM_STATE                            OP_MFX(2, 0, 0, 7)  /* IVB+ */
-#define OP_MFX_FQM_STATE                           OP_MFX(2, 0, 0, 8)  /* IVB+ */
-#define OP_MFX_PAK_INSERT_OBJECT                   OP_MFX(2, 0, 2, 8)  /* IVB+ */
-#define OP_MFX_STITCH_OBJECT                       OP_MFX(2, 0, 2, 0xA)  /* IVB+ */
+#define OP_MFX_PIPE_MODE_SELECT                    OP_MFX(2, 0, 0, 0)   
+#define OP_MFX_SURFACE_STATE                       OP_MFX(2, 0, 0, 1)   
+#define OP_MFX_PIPE_BUF_ADDR_STATE                 OP_MFX(2, 0, 0, 2)   
+#define OP_MFX_IND_OBJ_BASE_ADDR_STATE             OP_MFX(2, 0, 0, 3)   
+#define OP_MFX_BSP_BUF_BASE_ADDR_STATE             OP_MFX(2, 0, 0, 4)   
+#define OP_2_0_0_5                                 OP_MFX(2, 0, 0, 5)   
+#define OP_MFX_STATE_POINTER                       OP_MFX(2, 0, 0, 6)   
+#define OP_MFX_QM_STATE                            OP_MFX(2, 0, 0, 7)   
+#define OP_MFX_FQM_STATE                           OP_MFX(2, 0, 0, 8)   
+#define OP_MFX_PAK_INSERT_OBJECT                   OP_MFX(2, 0, 2, 8)   
+#define OP_MFX_STITCH_OBJECT                       OP_MFX(2, 0, 2, 0xA)   
 
-#define OP_MFD_IT_OBJECT                           OP_MFX(2, 0, 1, 9) /* ALL */
+#define OP_MFD_IT_OBJECT                           OP_MFX(2, 0, 1, 9)  
 
-#define OP_MFX_WAIT                                OP_MFX(1, 0, 0, 0) /* IVB+ */
-#define OP_MFX_AVC_IMG_STATE                       OP_MFX(2, 1, 0, 0) /* ALL */
-#define OP_MFX_AVC_QM_STATE                        OP_MFX(2, 1, 0, 1) /* ALL */
-#define OP_MFX_AVC_DIRECTMODE_STATE                OP_MFX(2, 1, 0, 2) /* ALL */
-#define OP_MFX_AVC_SLICE_STATE                     OP_MFX(2, 1, 0, 3) /* ALL */
-#define OP_MFX_AVC_REF_IDX_STATE                   OP_MFX(2, 1, 0, 4) /* ALL */
-#define OP_MFX_AVC_WEIGHTOFFSET_STATE              OP_MFX(2, 1, 0, 5) /* ALL */
-#define OP_MFD_AVC_PICID_STATE                     OP_MFX(2, 1, 1, 5) /* HSW+ */
-#define OP_MFD_AVC_DPB_STATE			   OP_MFX(2, 1, 1, 6) /* IVB+ */
-#define OP_MFD_AVC_SLICEADDR                       OP_MFX(2, 1, 1, 7) /* IVB+ */
-#define OP_MFD_AVC_BSD_OBJECT                      OP_MFX(2, 1, 1, 8) /* ALL */
-#define OP_MFC_AVC_PAK_OBJECT                      OP_MFX(2, 1, 2, 9) /* ALL */
+#define OP_MFX_WAIT                                OP_MFX(1, 0, 0, 0)  
+#define OP_MFX_AVC_IMG_STATE                       OP_MFX(2, 1, 0, 0)  
+#define OP_MFX_AVC_QM_STATE                        OP_MFX(2, 1, 0, 1)  
+#define OP_MFX_AVC_DIRECTMODE_STATE                OP_MFX(2, 1, 0, 2)  
+#define OP_MFX_AVC_SLICE_STATE                     OP_MFX(2, 1, 0, 3)  
+#define OP_MFX_AVC_REF_IDX_STATE                   OP_MFX(2, 1, 0, 4)  
+#define OP_MFX_AVC_WEIGHTOFFSET_STATE              OP_MFX(2, 1, 0, 5)  
+#define OP_MFD_AVC_PICID_STATE                     OP_MFX(2, 1, 1, 5)  
+#define OP_MFD_AVC_DPB_STATE			   OP_MFX(2, 1, 1, 6)  
+#define OP_MFD_AVC_SLICEADDR                       OP_MFX(2, 1, 1, 7)  
+#define OP_MFD_AVC_BSD_OBJECT                      OP_MFX(2, 1, 1, 8)  
+#define OP_MFC_AVC_PAK_OBJECT                      OP_MFX(2, 1, 2, 9)  
 
-#define OP_MFX_VC1_PRED_PIPE_STATE                 OP_MFX(2, 2, 0, 1) /* ALL */
-#define OP_MFX_VC1_DIRECTMODE_STATE                OP_MFX(2, 2, 0, 2) /* ALL */
-#define OP_MFD_VC1_SHORT_PIC_STATE                 OP_MFX(2, 2, 1, 0) /* IVB+ */
-#define OP_MFD_VC1_LONG_PIC_STATE                  OP_MFX(2, 2, 1, 1) /* IVB+ */
-#define OP_MFD_VC1_BSD_OBJECT                      OP_MFX(2, 2, 1, 8) /* ALL */
+#define OP_MFX_VC1_PRED_PIPE_STATE                 OP_MFX(2, 2, 0, 1)  
+#define OP_MFX_VC1_DIRECTMODE_STATE                OP_MFX(2, 2, 0, 2)  
+#define OP_MFD_VC1_SHORT_PIC_STATE                 OP_MFX(2, 2, 1, 0)  
+#define OP_MFD_VC1_LONG_PIC_STATE                  OP_MFX(2, 2, 1, 1)  
+#define OP_MFD_VC1_BSD_OBJECT                      OP_MFX(2, 2, 1, 8)  
 
-#define OP_MFX_MPEG2_PIC_STATE                     OP_MFX(2, 3, 0, 0) /* ALL */
-#define OP_MFX_MPEG2_QM_STATE                      OP_MFX(2, 3, 0, 1) /* ALL */
-#define OP_MFD_MPEG2_BSD_OBJECT                    OP_MFX(2, 3, 1, 8) /* ALL */
-#define OP_MFC_MPEG2_SLICEGROUP_STATE              OP_MFX(2, 3, 2, 3) /* ALL */
-#define OP_MFC_MPEG2_PAK_OBJECT                    OP_MFX(2, 3, 2, 9) /* ALL */
+#define OP_MFX_MPEG2_PIC_STATE                     OP_MFX(2, 3, 0, 0)  
+#define OP_MFX_MPEG2_QM_STATE                      OP_MFX(2, 3, 0, 1)  
+#define OP_MFD_MPEG2_BSD_OBJECT                    OP_MFX(2, 3, 1, 8)  
+#define OP_MFC_MPEG2_SLICEGROUP_STATE              OP_MFX(2, 3, 2, 3)  
+#define OP_MFC_MPEG2_PAK_OBJECT                    OP_MFX(2, 3, 2, 9)  
 
-#define OP_MFX_2_6_0_0                             OP_MFX(2, 6, 0, 0) /* IVB+ */
-#define OP_MFX_2_6_0_8                             OP_MFX(2, 6, 0, 8) /* IVB+ */
-#define OP_MFX_2_6_0_9                             OP_MFX(2, 6, 0, 9) /* IVB+ */
+#define OP_MFX_2_6_0_0                             OP_MFX(2, 6, 0, 0)  
+#define OP_MFX_2_6_0_8                             OP_MFX(2, 6, 0, 8)  
+#define OP_MFX_2_6_0_9                             OP_MFX(2, 6, 0, 9)  
 
 #define OP_MFX_JPEG_PIC_STATE                      OP_MFX(2, 7, 0, 0)
 #define OP_MFX_JPEG_HUFF_TABLE_STATE               OP_MFX(2, 7, 0, 2)
@@ -382,7 +343,7 @@ typedef int (*parser_cmd_handler)(struct parser_exec_state *s);
 
 #define GVT_CMD_HASH_BITS   7
 
-/* which DWords need address fix */
+ 
 #define ADDR_FIX_1(x1)			(1 << (x1))
 #define ADDR_FIX_2(x1, x2)		(ADDR_FIX_1(x1) | ADDR_FIX_1(x2))
 #define ADDR_FIX_3(x1, x2, x3)		(ADDR_FIX_1(x1) | ADDR_FIX_2(x2, x3))
@@ -412,13 +373,10 @@ struct cmd_info {
 #define F_LEN_MASK	3U
 #define F_LEN_CONST  1U
 #define F_LEN_VAR    0U
-/* value is const although LEN maybe variable */
+ 
 #define F_LEN_VAR_FIXED    (1<<1)
 
-/*
- * command has its own ip advance logic
- * e.g. MI_BATCH_START, MI_BATCH_END
- */
+ 
 #define F_IP_ADVANCE_CUSTOM (1<<2)
 	u32 flag;
 
@@ -429,31 +387,21 @@ struct cmd_info {
 #define R_BCS	BIT(BCS0)
 #define R_VECS	BIT(VECS0)
 #define R_ALL (R_RCS | R_VCS | R_BCS | R_VECS)
-	/* rings that support this cmd: BLT/RCS/VCS/VECS */
+	 
 	intel_engine_mask_t rings;
 
-	/* devices that support this cmd: SNB/IVB/HSW/... */
+	 
 	u16 devices;
 
-	/* which DWords are address that need fix up.
-	 * bit 0 means a 32-bit non address operand in command
-	 * bit 1 means address operand, which could be 32-bit
-	 * or 64-bit depending on different architectures.(
-	 * defined by "gmadr_bytes_in_cmd" in intel_gvt.
-	 * No matter the address length, each address only takes
-	 * one bit in the bitmap.
-	 */
+	 
 	u16 addr_bitmap;
 
-	/* flag == F_LEN_CONST : command length
-	 * flag == F_LEN_VAR : length bias bits
-	 * Note: length is in DWord
-	 */
+	 
 	u32 len;
 
 	parser_cmd_handler handler;
 
-	/* valid length in DWord */
+	 
 	u32 valid_len;
 };
 
@@ -480,32 +428,30 @@ struct parser_exec_state {
 
 	int buf_type;
 
-	/* batch buffer address type */
+	 
 	int buf_addr_type;
 
-	/* graphics memory address of ring buffer start */
+	 
 	unsigned long ring_start;
 	unsigned long ring_size;
 	unsigned long ring_head;
 	unsigned long ring_tail;
 
-	/* instruction graphics memory address */
+	 
 	unsigned long ip_gma;
 
-	/* mapped va of the instr_gma */
+	 
 	void *ip_va;
 	void *rb_va;
 
 	void *ret_bb_va;
-	/* next instruction when return from  batch buffer to ring buffer */
+	 
 	unsigned long ret_ip_gma_ring;
 
-	/* next instruction when return from 2nd batch buffer to batch buffer */
+	 
 	unsigned long ret_ip_gma_bb;
 
-	/* batch buffer address type (GTT or PPGTT)
-	 * used when ret from 2nd level batch buffer
-	 */
+	 
 	int saved_buf_addr_type;
 	bool is_ctx_wa;
 	bool is_init_ctx;
@@ -520,7 +466,7 @@ struct parser_exec_state {
 
 static unsigned long bypass_scan_mask = 0;
 
-/* ring ALL, type = 0 */
+ 
 static const struct sub_op_bits sub_op_mi[] = {
 	{31, 29},
 	{28, 23},
@@ -533,7 +479,7 @@ static const struct decode_info decode_info_mi = {
 	sub_op_mi,
 };
 
-/* ring RCS, command type 2 */
+ 
 static const struct sub_op_bits sub_op_2d[] = {
 	{31, 29},
 	{28, 22},
@@ -546,7 +492,7 @@ static const struct decode_info decode_info_2d = {
 	sub_op_2d,
 };
 
-/* ring RCS, command type 3 */
+ 
 static const struct sub_op_bits sub_op_3d_media[] = {
 	{31, 29},
 	{28, 27},
@@ -561,7 +507,7 @@ static const struct decode_info decode_info_3d_media = {
 	sub_op_3d_media,
 };
 
-/* ring VCS, command type 3 */
+ 
 static const struct sub_op_bits sub_op_mfx_vc[] = {
 	{31, 29},
 	{28, 27},
@@ -577,7 +523,7 @@ static const struct decode_info decode_info_mfx_vc = {
 	sub_op_mfx_vc,
 };
 
-/* ring VECS, command type 3 */
+ 
 static const struct sub_op_bits sub_op_vebox[] = {
 	{31, 29},
 	{28, 27},
@@ -791,7 +737,7 @@ static inline void update_ip_va(struct parser_exec_state *s)
 			len = (s->ip_gma - s->ring_head);
 
 		s->ip_va = s->rb_va + len;
-	} else {/* shadow batch buffer */
+	} else { 
 		s->ip_va = s->ret_bb_va;
 	}
 }
@@ -836,7 +782,7 @@ static inline int cmd_length(struct parser_exec_state *s)
 	return get_cmd_length(s->info, cmd_val(s, 0));
 }
 
-/* do not remove this, some platform may need clflush here */
+ 
 #define patch_value(s, addr, val) do { \
 	*addr = val; \
 } while (0)
@@ -878,9 +824,7 @@ static int cmd_pdp_mmio_update_handler(struct parser_exec_state *s,
 		*cmd_ptr(s, 2) = upper_32_bits(mm->ppgtt_mm.shadow_pdps[0]);
 		*cmd_ptr(s, 4) = lower_32_bits(mm->ppgtt_mm.shadow_pdps[0]);
 	} else {
-		/* Currently all guests use PML4 table and now can't
-		 * have a guest with 3-level table but uses LRI for
-		 * PPGTT update. So this is simply un-testable. */
+		 
 		GEM_BUG_ON(1);
 		gvt_vgpu_err("invalid shared shadow vm type\n");
 		return -EINVAL;
@@ -943,14 +887,14 @@ static int cmd_reg_handler(struct parser_exec_state *s,
 	}
 
 	if (!strncmp(cmd, "pipe_ctrl", 9)) {
-		/* TODO: add LRI POST logic here */
+		 
 		return 0;
 	}
 
 	if (strncmp(cmd, "lri", 3))
 		return -EPERM;
 
-	/* below are all lri handlers */
+	 
 	vreg = &vgpu_vreg(s->vgpu, offset);
 
 	if (is_cmd_update_pdps(offset, s) &&
@@ -959,7 +903,7 @@ static int cmd_reg_handler(struct parser_exec_state *s,
 
 	if (offset == i915_mmio_reg_offset(DERRMR) ||
 		offset == i915_mmio_reg_offset(FORCEWAKE_MT)) {
-		/* Writing to HW VGT_PVINFO_PAGE offset will be discarded */
+		 
 		patch_value(s, cmd_ptr(s, index), VGT_PVINFO_PAGE);
 	}
 
@@ -997,25 +941,16 @@ static int cmd_reg_handler(struct parser_exec_state *s,
 			patch_value(s, cmd_ptr(s, index+1), cmdval_new);
 	}
 
-	/* only patch cmd. restore vreg value if changed in mmio write handler*/
+	 
 	*vreg = vreg_old;
 
-	/* TODO
-	 * In order to let workload with inhibit context to generate
-	 * correct image data into memory, vregs values will be loaded to
-	 * hw via LRIs in the workload with inhibit context. But as
-	 * indirect context is loaded prior to LRIs in workload, we don't
-	 * want reg values specified in indirect context overwritten by
-	 * LRIs in workloads. So, when scanning an indirect context, we
-	 * update reg values in it into vregs, so LRIs in workload with
-	 * inhibit context will restore with correct values
-	 */
+	 
 	if (GRAPHICS_VER(s->engine->i915) == 9 &&
 	    intel_gvt_mmio_is_sr_in_ctx(gvt, offset) &&
 	    !strncmp(cmd, "lri", 3)) {
 		intel_gvt_read_gpa(s->vgpu,
 			s->workload->ring_context_gpa + 12, &ctx_sr_ctl, 4);
-		/* check inhibit context */
+		 
 		if (ctx_sr_ctl & 1) {
 			u32 data = cmd_val(s, index + 1);
 
@@ -1187,22 +1122,22 @@ static int cmd_handler_pipe_control(struct parser_exec_state *s)
 
 	post_sync = (cmd_val(s, 1) & PIPE_CONTROL_POST_SYNC_OP_MASK) >> 14;
 
-	/* LRI post sync */
+	 
 	if (cmd_val(s, 1) & PIPE_CONTROL_MMIO_WRITE)
 		ret = cmd_reg_handler(s, cmd_reg(s, 2), 1, "pipe_ctrl");
-	/* post sync */
+	 
 	else if (post_sync) {
 		if (post_sync == 2)
 			ret = cmd_reg_handler(s, 0x2350, 1, "pipe_ctrl");
 		else if (post_sync == 3)
 			ret = cmd_reg_handler(s, 0x2358, 1, "pipe_ctrl");
 		else if (post_sync == 1) {
-			/* check ggtt*/
+			 
 			if ((cmd_val(s, 1) & PIPE_CONTROL_GLOBAL_GTT_IVB)) {
 				gma = cmd_val(s, 2) & GENMASK(31, 3);
 				if (gmadr_bytes == 8)
 					gma |= (cmd_gma_hi(s, 3)) << 32;
-				/* Store Data Index */
+				 
 				if (cmd_val(s, 1) & (1 << 21))
 					index_mode = true;
 				ret |= cmd_address_audit(s, gma, sizeof(u64),
@@ -1478,7 +1413,7 @@ static int cmd_handler_mi_display_flip(struct parser_exec_state *s)
 	int len = cmd_length(s);
 	u32 valid_len = CMD_LEN(1);
 
-	/* Flip Type == Stereo 3D Flip */
+	 
 	if (DWORD_FIELD(2, 1, 0) == 2)
 		valid_len++;
 	ret = gvt_check_valid_cmd_length(cmd_length(s),
@@ -1607,11 +1542,11 @@ static int cmd_handler_mi_store_data_imm(struct parser_exec_state *s)
 	u32 valid_len = CMD_LEN(2);
 	int ret = 0;
 
-	/* check ppggt */
+	 
 	if (!(cmd_val(s, 0) & (1 << 22)))
 		return 0;
 
-	/* check if QWORD */
+	 
 	if (DWORD_FIELD(0, 21, 21))
 		valid_len++;
 	ret = gvt_check_valid_cmd_length(cmd_length(s),
@@ -1667,7 +1602,7 @@ static int cmd_handler_mi_op_2f(struct parser_exec_state *s)
 	if (!(cmd_val(s, 0) & (1 << 22)))
 		return ret;
 
-	/* check inline data */
+	 
 	if (cmd_val(s, 0) & BIT(18))
 		valid_len = CMD_LEN(9);
 	ret = gvt_check_valid_cmd_length(cmd_length(s),
@@ -1717,18 +1652,18 @@ static int cmd_handler_mi_flush_dw(struct parser_exec_state *s)
 	ret = gvt_check_valid_cmd_length(cmd_length(s),
 			valid_len);
 	if (ret) {
-		/* Check again for Qword */
+		 
 		ret = gvt_check_valid_cmd_length(cmd_length(s),
 			++valid_len);
 		return ret;
 	}
 
-	/* Check post-sync and ppgtt bit */
+	 
 	if (((cmd_val(s, 0) >> 14) & 0x3) && (cmd_val(s, 1) & (1 << 2))) {
 		gma = cmd_val(s, 1) & GENMASK(31, 3);
 		if (gmadr_bytes == 8)
 			gma |= (cmd_val(s, 2) & GENMASK(15, 0)) << 32;
-		/* Store Data Index */
+		 
 		if (cmd_val(s, 0) & (1 << 21))
 			index_mode = true;
 		ret = cmd_address_audit(s, gma, sizeof(u64), index_mode);
@@ -1742,7 +1677,7 @@ static int cmd_handler_mi_flush_dw(struct parser_exec_state *s)
 			patch_value(s, cmd_ptr(s, 0), val);
 		}
 	}
-	/* Check notify bit */
+	 
 	if ((cmd_val(s, 0) & (1 << 8)))
 		set_bit(cmd_interrupt_events[s->engine->id].mi_flush_dw,
 			s->workload->pending_events);
@@ -1786,13 +1721,10 @@ static int copy_gma_to_hva(struct intel_vgpu *vgpu, struct intel_vgpu_mm *mm,
 }
 
 
-/*
- * Check whether a batch buffer needs to be scanned. Currently
- * the only criteria is based on privilege.
- */
+ 
 static int batch_buffer_needs_scan(struct parser_exec_state *s)
 {
-	/* Decide privilege based on address space */
+	 
 	if (cmd_val(s, 0) & BIT(8) &&
 	    !(s->vgpu->scan_nonprivbb & s->engine->mask))
 		return 0;
@@ -1821,7 +1753,7 @@ static int find_bb_size(struct parser_exec_state *s,
 	*bb_size = 0;
 	*bb_end_cmd_offset = 0;
 
-	/* get the start gm address of the batch buffer */
+	 
 	gma = get_gma_bb_from_cmd(s, 1);
 	if (gma == INTEL_GVT_INVALID_ADDR)
 		return -EFAULT;
@@ -1852,7 +1784,7 @@ static int find_bb_size(struct parser_exec_state *s,
 			bb_end = true;
 		} else if (info->opcode == OP_MI_BATCH_BUFFER_START) {
 			if (BATCH_BUFFER_2ND_LEVEL_BIT(cmd) == 0)
-				/* chained batch buffer */
+				 
 				bb_end = true;
 		}
 
@@ -1902,7 +1834,7 @@ static int perform_bb_shadow(struct parser_exec_state *s)
 		s->vgpu->gtt.ggtt_mm : s->workload->shadow_mm;
 	unsigned long start_offset = 0;
 
-	/* get the start gm address of the batch buffer */
+	 
 	gma = get_gma_bb_from_cmd(s, 1);
 	if (gma == INTEL_GVT_INVALID_ADDR)
 		return -EFAULT;
@@ -1917,17 +1849,7 @@ static int perform_bb_shadow(struct parser_exec_state *s)
 
 	bb->ppgtt = (s->buf_addr_type == GTT_BUFFER) ? false : true;
 
-	/* the start_offset stores the batch buffer's start gma's
-	 * offset relative to page boundary. so for non-privileged batch
-	 * buffer, the shadowed gem object holds exactly the same page
-	 * layout as original gem object. This is for the convience of
-	 * replacing the whole non-privilged batch buffer page to this
-	 * shadowed one in PPGTT at the same gma address. (this replacing
-	 * action is not implemented yet now, but may be necessary in
-	 * future).
-	 * for prileged batch buffer, we just change start gma address to
-	 * that of shadowed page.
-	 */
+	 
 	if (bb->ppgtt)
 		start_offset = gma & ~I915_GTT_PAGE_MASK;
 
@@ -1969,14 +1891,7 @@ static int perform_bb_shadow(struct parser_exec_state *s)
 	else
 		bb->bb_offset = 0;
 
-	/*
-	 * ip_va saves the virtual address of the shadow batch buffer, while
-	 * ip_gma saves the graphics address of the original batch buffer.
-	 * As the shadow batch buffer is just a copy from the originial one,
-	 * it should be right to use shadow batch buffer'va and original batch
-	 * buffer's gma in pair. After all, we don't want to pin the shadow
-	 * buffer here (too early).
-	 */
+	 
 	s->ip_va = bb->va + start_offset;
 	s->ip_gma = gma;
 	return 0;
@@ -2022,7 +1937,7 @@ static int cmd_handler_mi_batch_buffer_start(struct parser_exec_state *s)
 		if (ret < 0)
 			gvt_vgpu_err("invalid shadow batch buffer\n");
 	} else {
-		/* emulate a batch buffer end to do return right */
+		 
 		ret = cmd_handler_mi_batch_buffer_end(s);
 		if (ret < 0)
 			return ret;
@@ -2718,7 +2633,7 @@ static void add_cmd_entry(struct intel_gvt *gvt, struct cmd_entry *e)
 	hash_add(gvt->cmd_table, &e->hlist, e->info->opcode);
 }
 
-/* call the cmd handler, and advance ip */
+ 
 static int cmd_parser_exec(struct parser_exec_state *s)
 {
 	struct intel_vgpu *vgpu = s->vgpu;
@@ -2728,7 +2643,7 @@ static int cmd_parser_exec(struct parser_exec_state *s)
 
 	cmd = cmd_val(s, 0);
 
-	/* fastpath for MI_NOOP */
+	 
 	if (cmd == MI_NOOP)
 		info = &cmd_info[mi_noop_index];
 	else
@@ -2782,10 +2697,7 @@ static inline bool gma_out_of_range(unsigned long gma,
 		return (gma > gma_tail) && (gma < gma_head);
 }
 
-/* Keep the consistent return type, e.g EBADRQC for unknown
- * cmd, EFAULT for invalid address, EPERM for nonpriv. later
- * works as the input of VM healthy status.
- */
+ 
 static int command_scan(struct parser_exec_state *s,
 		unsigned long rb_head, unsigned long rb_tail,
 		unsigned long rb_start, unsigned long rb_len)
@@ -2837,7 +2749,7 @@ static int scan_workload(struct intel_vgpu_workload *workload)
 	struct parser_exec_state s;
 	int ret = 0;
 
-	/* ring base is page aligned */
+	 
 	if (WARN_ON(!IS_ALIGNED(workload->rb_start, I915_GTT_PAGE_SIZE)))
 		return -EINVAL;
 
@@ -2880,7 +2792,7 @@ static int scan_wa_ctx(struct intel_shadow_wa_ctx *wa_ctx)
 				struct intel_vgpu_workload,
 				wa_ctx);
 
-	/* ring base is page aligned */
+	 
 	if (WARN_ON(!IS_ALIGNED(wa_ctx->indirect_ctx.guest_gma,
 					I915_GTT_PAGE_SIZE)))
 		return -EINVAL;
@@ -2923,7 +2835,7 @@ static int shadow_workload_ring_buffer(struct intel_vgpu_workload *workload)
 
 	guest_rb_size = _RING_CTL_BUF_SIZE(workload->rb_ctl);
 
-	/* calculate workload ring buffer size */
+	 
 	workload->rb_len = (workload->rb_tail + guest_rb_size -
 			workload->rb_head) % guest_rb_size;
 
@@ -2934,7 +2846,7 @@ static int shadow_workload_ring_buffer(struct intel_vgpu_workload *workload)
 	if (workload->rb_len > s->ring_scan_buffer_size[workload->engine->id]) {
 		void *p;
 
-		/* realloc the new ring buffer if needed */
+		 
 		p = krealloc(s->ring_scan_buffer[workload->engine->id],
 			     workload->rb_len, GFP_KERNEL);
 		if (!p) {
@@ -2947,10 +2859,10 @@ static int shadow_workload_ring_buffer(struct intel_vgpu_workload *workload)
 
 	shadow_ring_buffer_va = s->ring_scan_buffer[workload->engine->id];
 
-	/* get shadow ring buffer va */
+	 
 	workload->shadow_ring_buffer_va = shadow_ring_buffer_va;
 
-	/* head > tail --> copy head <-> top */
+	 
 	if (gma_head > gma_tail) {
 		ret = copy_gma_to_hva(vgpu, vgpu->gtt.ggtt_mm,
 				      gma_head, gma_top, shadow_ring_buffer_va);
@@ -2962,7 +2874,7 @@ static int shadow_workload_ring_buffer(struct intel_vgpu_workload *workload)
 		gma_head = workload->rb_start;
 	}
 
-	/* copy head or start <-> tail */
+	 
 	ret = copy_gma_to_hva(vgpu, vgpu->gtt.ggtt_mm, gma_head, gma_tail,
 				shadow_ring_buffer_va);
 	if (ret < 0) {
@@ -3009,7 +2921,7 @@ static int shadow_indirect_ctx(struct intel_shadow_wa_ctx *wa_ctx)
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
 
-	/* get the va of the shadow batch buffer */
+	 
 	map = i915_gem_object_pin_map(obj, I915_MAP_WB);
 	if (IS_ERR(map)) {
 		gvt_vgpu_err("failed to vmap shadow indirect ctx\n");
@@ -3092,11 +3004,7 @@ int intel_gvt_scan_and_shadow_wa_ctx(struct intel_shadow_wa_ctx *wa_ctx)
 	return 0;
 }
 
-/* generate dummy contexts by sending empty requests to HW, and let
- * the HW to fill Engine Contexts. This dummy contexts are used for
- * initialization purpose (update reg whitelist), so referred to as
- * init context here
- */
+ 
 void intel_gvt_update_reg_whitelist(struct intel_vgpu *vgpu)
 {
 	const unsigned long start = LRC_STATE_PN * PAGE_SIZE;
@@ -3107,7 +3015,7 @@ void intel_gvt_update_reg_whitelist(struct intel_vgpu *vgpu)
 	if (gvt->is_reg_whitelist_updated)
 		return;
 
-	/* scan init ctx to update cmd accessible list */
+	 
 	for_each_engine(engine, gvt->gt, id) {
 		struct parser_exec_state s;
 		void *vaddr;
@@ -3136,7 +3044,7 @@ void intel_gvt_update_reg_whitelist(struct intel_vgpu *vgpu)
 		s.is_ctx_wa = false;
 		s.is_init_ctx = true;
 
-		/* skipping the first RING_CTX_SIZE(0x50) dwords */
+		 
 		ret = ip_gma_set(&s, RING_CTX_SIZE);
 		if (ret == 0) {
 			ret = command_scan(&s, 0, s.ring_size, 0, s.ring_size);
@@ -3165,9 +3073,7 @@ int intel_gvt_scan_engine_context(struct intel_vgpu_workload *workload)
 
 	ctx_size = workload->engine->context_size - PAGE_SIZE;
 
-	/* Only ring contxt is loaded to HW for inhibit context, no need to
-	 * scan engine context
-	 */
+	 
 	if (is_inhibit_context(ce))
 		return 0;
 
@@ -3188,9 +3094,7 @@ int intel_gvt_scan_engine_context(struct intel_vgpu_workload *workload)
 	s.is_ctx_wa = false;
 	s.is_init_ctx = false;
 
-	/* don't scan the first RING_CTX_SIZE(0x50) dwords, as it's ring
-	 * context
-	 */
+	 
 	ret = ip_gma_set(&s, gma_start + gma_head + RING_CTX_SIZE);
 	if (ret)
 		goto out;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test that loads/stores expand the stack segment, or trigger a SEGV, in
- * various conditions.
- *
- * Based on test code by Tom Lane.
- */
+
+ 
 
 #undef NDEBUG
 #include <assert.h>
@@ -33,11 +28,7 @@ enum access_type {
 	STORE,
 };
 
-/*
- * Consume stack until the stack pointer is below @target_sp, then do an access
- * (load or store) at offset @delta from either the base of the stack or the
- * current stack pointer.
- */
+ 
 __attribute__ ((noinline))
 int consume_stack(unsigned long target_sp, unsigned long stack_high, int delta, enum access_type type)
 {
@@ -47,8 +38,8 @@ int consume_stack(unsigned long target_sp, unsigned long stack_high, int delta, 
 	if ((unsigned long)&stack_cur > target_sp)
 		return consume_stack(target_sp, stack_high, delta, type);
 	else {
-		// We don't really need this, but without it GCC might not
-		// generate a recursive call above.
+		
+		
 		stack_top_ptr = &stack_cur;
 
 #ifdef __powerpc__
@@ -64,8 +55,8 @@ int consume_stack(unsigned long target_sp, unsigned long stack_high, int delta, 
 		else
 			c = *p;
 
-		// Do something to prevent the stack frame being popped prior to
-		// our access above.
+		
+		
 		getpid();
 	}
 
@@ -140,7 +131,7 @@ static int test_one(unsigned int stack_used, int delta, enum access_type type)
 	if (WIFEXITED(rc) && WEXITSTATUS(rc) == 0)
 		return 0;
 
-	// We don't expect a non-zero exit that's not a signal
+	
 	assert(!WIFEXITED(rc));
 
 	printf("Faulted:   %s delta %-7d used size 0x%06x signal %d\n",
@@ -150,21 +141,21 @@ static int test_one(unsigned int stack_used, int delta, enum access_type type)
 	return 1;
 }
 
-// This is fairly arbitrary but is well below any of the targets below,
-// so that the delta between the stack pointer and the target is large.
+
+
 #define DEFAULT_SIZE	(32 * _KB)
 
 static void test_one_type(enum access_type type, unsigned long page_size, unsigned long rlim_cur)
 {
 	unsigned long delta;
 
-	// We should be able to access anywhere within the rlimit
+	
 	for (delta = page_size; delta <= rlim_cur; delta += page_size)
 		assert(test_one(DEFAULT_SIZE, delta, type) == 0);
 
 	assert(test_one(DEFAULT_SIZE, rlim_cur, type) == 0);
 
-	// But if we go past the rlimit it should fail
+	
 	assert(test_one(DEFAULT_SIZE, rlim_cur + 1, type) != 0);
 }
 

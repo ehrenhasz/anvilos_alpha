@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- *	Jeffy Chen <jeffy.chen@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -21,9 +16,7 @@
 
 #define ROCKCHIP_VPU981_MIN_SIZE 64
 
-/*
- * Supported formats.
- */
+ 
 
 static const struct hantro_fmt rockchip_vpu_enc_fmts[] = {
 	{
@@ -428,14 +421,14 @@ static irqreturn_t rk3588_vpu981_irq(int irq, void *dev_id)
 
 static int rk3036_vpu_hw_init(struct hantro_dev *vpu)
 {
-	/* Bump ACLK to max. possible freq. to improve performance. */
+	 
 	clk_set_rate(vpu->clocks[0].clk, RK3066_ACLK_MAX_FREQ);
 	return 0;
 }
 
 static int rk3066_vpu_hw_init(struct hantro_dev *vpu)
 {
-	/* Bump ACLKs to max. possible freq. to improve performance. */
+	 
 	clk_set_rate(vpu->clocks[0].clk, RK3066_ACLK_MAX_FREQ);
 	clk_set_rate(vpu->clocks[2].clk, RK3066_ACLK_MAX_FREQ);
 	return 0;
@@ -443,14 +436,14 @@ static int rk3066_vpu_hw_init(struct hantro_dev *vpu)
 
 static int rk3588_vpu981_hw_init(struct hantro_dev *vpu)
 {
-	/* Bump ACLKs to max. possible freq. to improve performance. */
+	 
 	clk_set_rate(vpu->clocks[0].clk, RK3588_ACLK_MAX_FREQ);
 	return 0;
 }
 
 static int rockchip_vpu_hw_init(struct hantro_dev *vpu)
 {
-	/* Bump ACLK to max. possible freq. to improve performance. */
+	 
 	clk_set_rate(vpu->clocks[0].clk, RK3288_ACLK_MAX_FREQ);
 	return 0;
 }
@@ -490,9 +483,7 @@ static void rockchip_vpu2_enc_reset(struct hantro_ctx *ctx)
 	vepu_write(vpu, 0, VEPU_REG_AXI_CTRL);
 }
 
-/*
- * Supported codec ops.
- */
+ 
 static const struct hantro_codec_ops rk3036_vpu_codec_ops[] = {
 	[HANTRO_MODE_H264_DEC] = {
 		.run = hantro_g1_h264_dec_run,
@@ -608,9 +599,7 @@ static const struct hantro_codec_ops rk3588_vpu981_codec_ops[] = {
 		.done = rockchip_vpu981_av1_dec_done,
 	},
 };
-/*
- * VPU variant.
- */
+ 
 
 static const struct hantro_irq rockchip_vdpu1_irqs[] = {
 	{ "vdpu", hantro_g1_irq },
@@ -651,7 +640,7 @@ static const char * const rk3588_vpu981_vpu_clk_names[] = {
 	"aclk", "hclk",
 };
 
-/* VDPU1/VEPU1 */
+ 
 
 const struct hantro_variant rk3036_vpu_variant = {
 	.dec_offset = 0x400,
@@ -670,11 +659,7 @@ const struct hantro_variant rk3036_vpu_variant = {
 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
 };
 
-/*
- * Despite this variant has separate clocks for decoder and encoder,
- * it's still required to enable all four of them for either decoding
- * or encoding and we can't split it in separate g1/h1 variants.
- */
+ 
 const struct hantro_variant rk3066_vpu_variant = {
 	.enc_offset = 0x0,
 	.enc_fmts = rockchip_vpu_enc_fmts,
@@ -715,7 +700,7 @@ const struct hantro_variant rk3288_vpu_variant = {
 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
 };
 
-/* VDPU2/VEPU2 */
+ 
 
 const struct hantro_variant rk3328_vpu_variant = {
 	.dec_offset = 0x400,
@@ -731,11 +716,7 @@ const struct hantro_variant rk3328_vpu_variant = {
 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names),
 };
 
-/*
- * H.264 decoding explicitly disabled in RK3399.
- * This ensures userspace applications use the Rockchip VDEC core,
- * which has better performance.
- */
+ 
 const struct hantro_variant rk3399_vpu_variant = {
 	.enc_offset = 0x0,
 	.enc_fmts = rockchip_vpu_enc_fmts,

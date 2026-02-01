@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM947xx nvram variable access
- *
- * Copyright (C) 2005 Broadcom Corporation
- * Copyright (C) 2006 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2010-2012 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/types.h>
@@ -15,36 +9,32 @@
 #include <linux/mtd/mtd.h>
 #include <linux/bcm47xx_nvram.h>
 
-#define NVRAM_MAGIC			0x48534C46	/* 'FLSH' */
+#define NVRAM_MAGIC			0x48534C46	 
 #define NVRAM_SPACE			0x10000
 #define NVRAM_MAX_GPIO_ENTRIES		32
 #define NVRAM_MAX_GPIO_VALUE_LEN	30
 
-#define FLASH_MIN		0x00020000	/* Minimum flash size */
+#define FLASH_MIN		0x00020000	 
 
 struct nvram_header {
 	u32 magic;
 	u32 len;
-	u32 crc_ver_init;	/* 0:7 crc, 8:15 ver, 16:31 sdram_init */
-	u32 config_refresh;	/* 0:15 sdram_config, 16:31 sdram_refresh */
-	u32 config_ncdl;	/* ncdl values for memc */
+	u32 crc_ver_init;	 
+	u32 config_refresh;	 
+	u32 config_ncdl;	 
 };
 
 static char nvram_buf[NVRAM_SPACE];
 static size_t nvram_len;
 static const u32 nvram_sizes[] = {0x6000, 0x8000, 0xF000, 0x10000};
 
-/**
- * bcm47xx_nvram_is_valid - check for a valid NVRAM at specified memory
- */
+ 
 static bool bcm47xx_nvram_is_valid(void __iomem *nvram)
 {
 	return ((struct nvram_header *)nvram)->magic == NVRAM_MAGIC;
 }
 
-/**
- * bcm47xx_nvram_copy - copy NVRAM to internal buffer
- */
+ 
 static void bcm47xx_nvram_copy(void __iomem *nvram_start, size_t res_size)
 {
 	struct nvram_header __iomem *header = nvram_start;
@@ -66,9 +56,7 @@ static void bcm47xx_nvram_copy(void __iomem *nvram_start, size_t res_size)
 	nvram_len = copy_size;
 }
 
-/**
- * bcm47xx_nvram_find_and_copy - find NVRAM on flash mapping & copy it
- */
+ 
 static int bcm47xx_nvram_find_and_copy(void __iomem *flash_start, size_t res_size)
 {
 	size_t flash_size;
@@ -80,9 +68,9 @@ static int bcm47xx_nvram_find_and_copy(void __iomem *flash_start, size_t res_siz
 		return -EEXIST;
 	}
 
-	/* TODO: when nvram is on nand flash check for bad blocks first. */
+	 
 
-	/* Try every possible flash size and check for NVRAM at its end */
+	 
 	for (flash_size = FLASH_MIN; flash_size <= res_size; flash_size <<= 1) {
 		for (i = 0; i < ARRAY_SIZE(nvram_sizes); i++) {
 			offset = flash_size - nvram_sizes[i];
@@ -91,7 +79,7 @@ static int bcm47xx_nvram_find_and_copy(void __iomem *flash_start, size_t res_siz
 		}
 	}
 
-	/* Try embedded NVRAM at 4 KB and 1 KB as last resorts */
+	 
 
 	offset = 4096;
 	if (bcm47xx_nvram_is_valid(flash_start + offset))
@@ -128,13 +116,7 @@ int bcm47xx_nvram_init_from_iomem(void __iomem *nvram_start, size_t res_size)
 }
 EXPORT_SYMBOL_GPL(bcm47xx_nvram_init_from_iomem);
 
-/*
- * On bcm47xx we need access to the NVRAM very early, so we can't use mtd
- * subsystem to access flash. We can't even use platform device / driver to
- * store memory offset.
- * To handle this we provide following symbol. It's supposed to be called as
- * soon as we get info about flash device, before any NVRAM entry is needed.
- */
+ 
 int bcm47xx_nvram_init_from_mem(u32 base, u32 lim)
 {
 	void __iomem *iobase;
@@ -196,7 +178,7 @@ int bcm47xx_nvram_getenv(const char *name, char *val, size_t val_len)
 			return err;
 	}
 
-	/* Look for name=value and return value */
+	 
 	var = &nvram_buf[sizeof(struct nvram_header)];
 	end = nvram_buf + sizeof(nvram_buf);
 	while (var < end && *var) {
@@ -219,7 +201,7 @@ int bcm47xx_nvram_gpio_pin(const char *name)
 	char nvram_var[] = "gpioXX";
 	char buf[NVRAM_MAX_GPIO_VALUE_LEN];
 
-	/* TODO: Optimize it to don't call getenv so many times */
+	 
 	for (i = 0; i < NVRAM_MAX_GPIO_ENTRIES; i++) {
 		err = snprintf(nvram_var, sizeof(nvram_var), "gpio%i", i);
 		if (err <= 0)

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HWSIM IEEE 802.15.4 interface
- *
- * (C) 2018 Mojatau, Alexander Aring <aring@mojatau.com>
- * Copyright 2007-2012 Siemens AG
- *
- * Based on fakelb, original Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/timer.h>
@@ -32,7 +22,7 @@ static DEFINE_MUTEX(hwsim_phys_lock);
 
 static struct platform_device *mac802154hwsim_dev;
 
-/* MAC802154_HWSIM netlink family */
+ 
 static struct genl_family hwsim_genl_family;
 
 static int hwsim_radio_idx;
@@ -164,9 +154,9 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 
 	memcpy(&hdr, skb->data, 3);
 
-	/* Level 4 filtering: Frame fields validity */
+	 
 	if (pib->filt_level == IEEE802154_FILTERING_4_FRAME_FIELDS) {
-		/* a) Drop reserved frame types */
+		 
 		switch (mac_cb(skb)->type) {
 		case IEEE802154_FC_TYPE_BEACON:
 		case IEEE802154_FC_TYPE_DATA:
@@ -179,7 +169,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* b) Drop reserved frame versions */
+		 
 		switch (hdr.fc.version) {
 		case IEEE802154_2003_STD:
 		case IEEE802154_2006_STD:
@@ -192,7 +182,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* c) PAN ID constraints */
+		 
 		if ((mac_cb(skb)->dest.mode == IEEE802154_ADDR_LONG ||
 		     mac_cb(skb)->dest.mode == IEEE802154_ADDR_SHORT) &&
 		    mac_cb(skb)->dest.pan_id != pib->filt.pan_id &&
@@ -203,7 +193,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* d1) Short address constraints */
+		 
 		if (mac_cb(skb)->dest.mode == IEEE802154_ADDR_SHORT &&
 		    mac_cb(skb)->dest.short_addr != pib->filt.short_addr &&
 		    mac_cb(skb)->dest.short_addr != cpu_to_le16(IEEE802154_ADDR_BROADCAST)) {
@@ -213,7 +203,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* d2) Extended address constraints */
+		 
 		if (mac_cb(skb)->dest.mode == IEEE802154_ADDR_LONG &&
 		    mac_cb(skb)->dest.extended_addr != pib->filt.ieee_addr) {
 			dev_dbg(hw->parent,
@@ -222,7 +212,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* d4) Specific PAN coordinator case (no parent) */
+		 
 		if ((mac_cb(skb)->type == IEEE802154_FC_TYPE_DATA ||
 		     mac_cb(skb)->type == IEEE802154_FC_TYPE_MAC_CMD) &&
 		    mac_cb(skb)->dest.mode == IEEE802154_ADDR_NONE) {
@@ -231,7 +221,7 @@ static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
 			goto drop;
 		}
 
-		/* e) Beacon frames follow specific PAN ID rules */
+		 
 		if (mac_cb(skb)->type == IEEE802154_FC_TYPE_BEACON &&
 		    pib->filt.pan_id != cpu_to_le16(IEEE802154_PANID_BROADCAST) &&
 		    mac_cb(skb)->dest.pan_id != pib->filt.pan_id) {
@@ -265,11 +255,7 @@ static int hwsim_hw_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
 	rcu_read_lock();
 	current_pib = rcu_dereference(current_phy->pib);
 	list_for_each_entry_rcu(e, &current_phy->edges, list) {
-		/* Can be changed later in rx_irqsafe, but this is only a
-		 * performance tweak. Received radio should drop the frame
-		 * in mac802154 stack anyway... so we don't need to be
-		 * 100% of locking here to check on suspended
-		 */
+		 
 		if (e->endpoint->suspended)
 			continue;
 
@@ -522,7 +508,7 @@ done:
 	return skb->len;
 }
 
-/* caller need to held hwsim_phys_lock */
+ 
 static struct hwsim_phy *hwsim_get_radio_by_id(uint32_t idx)
 {
 	struct hwsim_phy *phy;
@@ -626,10 +612,7 @@ static int hwsim_new_edge_nl(struct sk_buff *msg, struct genl_info *info)
 		return -ENOMEM;
 	}
 	list_add_rcu(&e->list, &phy_v0->edges);
-	/* wait until changes are done under hwsim_phys_lock lock
-	 * should prevent of calling this function twice while
-	 * edges list has not the changes yet.
-	 */
+	 
 	synchronize_rcu();
 	mutex_unlock(&hwsim_phys_lock);
 
@@ -669,7 +652,7 @@ static int hwsim_del_edge_nl(struct sk_buff *msg, struct genl_info *info)
 			rcu_read_unlock();
 			list_del_rcu(&e->list);
 			hwsim_free_edge(e);
-			/* same again - wait until list changes are done */
+			 
 			synchronize_rcu();
 			mutex_unlock(&hwsim_phys_lock);
 			return 0;
@@ -739,7 +722,7 @@ static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
 	return -ENOENT;
 }
 
-/* MAC802154_HWSIM netlink policy */
+ 
 
 static const struct nla_policy hwsim_genl_policy[MAC802154_HWSIM_ATTR_MAX + 1] = {
 	[MAC802154_HWSIM_ATTR_RADIO_ID] = { .type = NLA_U32 },
@@ -747,7 +730,7 @@ static const struct nla_policy hwsim_genl_policy[MAC802154_HWSIM_ATTR_MAX + 1] =
 	[MAC802154_HWSIM_ATTR_RADIO_EDGES] = { .type = NLA_NESTED },
 };
 
-/* Generic Netlink operations array */
+ 
 static const struct genl_small_ops hwsim_nl_ops[] = {
 	{
 		.cmd = MAC802154_HWSIM_CMD_NEW_RADIO,
@@ -844,7 +827,7 @@ static void hwsim_edge_unsubscribe_me(struct hwsim_phy *phy)
 	struct hwsim_edge *e;
 
 	rcu_read_lock();
-	/* going to all phy edges and remove phy from it */
+	 
 	list_for_each_entry(tmp, &hwsim_phys, list) {
 		list_for_each_entry_rcu(e, &tmp->edges, list) {
 			if (e->endpoint->idx == phy->idx) {
@@ -911,40 +894,40 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
 	phy = hw->priv;
 	phy->hw = hw;
 
-	/* 868 MHz BPSK	802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 1;
-	/* 915 MHz BPSK	802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 0x7fe;
-	/* 2.4 GHz O-QPSK 802.15.4-2003 */
+	 
 	hw->phy->supported.channels[0] |= 0x7FFF800;
-	/* 868 MHz ASK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[1] |= 1;
-	/* 915 MHz ASK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[1] |= 0x7fe;
-	/* 868 MHz O-QPSK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[2] |= 1;
-	/* 915 MHz O-QPSK 802.15.4-2006 */
+	 
 	hw->phy->supported.channels[2] |= 0x7fe;
-	/* 2.4 GHz CSS 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[3] |= 0x3fff;
-	/* UWB Sub-gigahertz 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 1;
-	/* UWB Low band 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 0x1e;
-	/* UWB High band 802.15.4a-2007 */
+	 
 	hw->phy->supported.channels[4] |= 0xffe0;
-	/* 750 MHz O-QPSK 802.15.4c-2009 */
+	 
 	hw->phy->supported.channels[5] |= 0xf;
-	/* 750 MHz MPSK 802.15.4c-2009 */
+	 
 	hw->phy->supported.channels[5] |= 0xf0;
-	/* 950 MHz BPSK 802.15.4d-2009 */
+	 
 	hw->phy->supported.channels[6] |= 0x3ff;
-	/* 950 MHz GFSK 802.15.4d-2009 */
+	 
 	hw->phy->supported.channels[6] |= 0x3ffc00;
 
 	ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
 
-	/* hwsim phy channel 13 as default */
+	 
 	hw->phy->current_channel = 13;
 	pib = kzalloc(sizeof(*pib), GFP_KERNEL);
 	if (!pib) {

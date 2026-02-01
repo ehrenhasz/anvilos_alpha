@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2015 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #if MICROPY_PY_TERMIOS
 
@@ -56,10 +32,10 @@ static mp_obj_t mod_termios_tcgetattr(mp_obj_t fd_in) {
         if (i == VMIN || i == VTIME) {
             cc->items[i] = MP_OBJ_NEW_SMALL_INT(term.c_cc[i]);
         } else {
-            // https://docs.python.org/3/library/termios.html says value is *string*,
-            // but no way unicode chars could be there, if c_cc is defined to be a
-            // a "char". But it's type is actually cc_t, which can be anything.
-            // TODO: For now, we still deal with it like that.
+            
+            
+            
+            
             cc->items[i] = mp_obj_new_bytes((byte *)&term.c_cc[i], 1);
         }
     }
@@ -72,10 +48,10 @@ static mp_obj_t mod_termios_tcsetattr(mp_obj_t fd_in, mp_obj_t when_in, mp_obj_t
     int fd = mp_obj_get_int(fd_in);
     int when = mp_obj_get_int(when_in);
     if (when == 0) {
-        // We don't export TCSANOW and friends to save on code space. Then
-        // common lazy sense says that passing 0 should be godo enough, and
-        // it is e.g. for glibc. But for other libc's it's not, so set just
-        // treat 0 as defaulting to TCSANOW.
+        
+        
+        
+        
         when = TCSANOW;
     }
 
@@ -153,4 +129,4 @@ const mp_obj_module_t mp_module_termios = {
 
 MP_REGISTER_MODULE(MP_QSTR_termios, mp_module_termios);
 
-#endif // MICROPY_PY_TERMIOS
+#endif 

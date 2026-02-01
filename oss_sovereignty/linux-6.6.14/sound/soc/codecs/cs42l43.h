@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CS42L43 CODEC driver internal data
- *
- * Copyright (C) 2022-2023 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -62,10 +57,10 @@ struct cs42l43_codec {
 	struct completion spkl_shutdown;
 	struct completion spkr_startup;
 	struct completion spkl_startup;
-	// Lock to ensure speaker VU updates don't clash
+	
 	struct mutex spk_vu_lock;
 
-	// Lock for all jack detect operations
+	
 	struct mutex jack_lock;
 	struct snd_soc_jack *jack_hp;
 
@@ -128,4 +123,4 @@ int cs42l43_jack_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *u
 
 extern const struct soc_enum cs42l43_jack_enum;
 
-#endif /* CS42L43_ASOC_INT_H */
+#endif  

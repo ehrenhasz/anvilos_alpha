@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef INITVALS_9340_H
 #define INITVALS_9340_H
@@ -33,7 +18,7 @@
 #define ar9340_1p0_baseband_postamble_dfs_channel ar9300_2p2_baseband_postamble_dfs_channel
 
 static const u32 ar9340_1p0_radio_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x000160ac, 0xa4646800, 0xa4646800, 0xa4646800, 0xa4646800},
 	{0x0001610c, 0x08000000, 0x00000000, 0x00000000, 0x00000000},
 	{0x00016140, 0x10804000, 0x10804000, 0x50804000, 0x50804000},
@@ -42,7 +27,7 @@ static const u32 ar9340_1p0_radio_postamble[][5] = {
 };
 
 static const u32 ar9340Modes_lowest_ob_db_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a410, 0x000050d9, 0x000050d9, 0x000050d9, 0x000050d9},
 	{0x0000a500, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
 	{0x0000a504, 0x06000003, 0x06000003, 0x04000002, 0x04000002},
@@ -115,7 +100,7 @@ static const u32 ar9340Modes_lowest_ob_db_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340_1p0_radio_core[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x00016000, 0x36db6db6},
 	{0x00016004, 0x6db6db40},
 	{0x00016008, 0x73f00000},
@@ -219,7 +204,7 @@ static const u32 ar9340_1p0_radio_core[][2] = {
 };
 
 static const u32 ar9340_1p0_radio_core_40M[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0001609c, 0x02566f3a},
 	{0x000160ac, 0xa4647c00},
 	{0x000160b0, 0x01885f5a},
@@ -228,7 +213,7 @@ static const u32 ar9340_1p0_radio_core_40M[][2] = {
 };
 
 static const u32 ar9340_1p0_baseband_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a8011},
 	{0x00009820, 0x206a022e, 0x206a022e, 0x206a022e, 0x206a022e},
 	{0x00009824, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0},
@@ -278,7 +263,7 @@ static const u32 ar9340_1p0_baseband_postamble[][5] = {
 };
 
 static const u32 ar9340_1p0_baseband_core[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x00009800, 0xafe68e30},
 	{0x00009804, 0xfd14e000},
 	{0x00009808, 0x9c0a9f6b},
@@ -427,7 +412,7 @@ static const u32 ar9340_1p0_baseband_core[][2] = {
 };
 
 static const u32 ar9340Modes_high_power_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f800, 0x0000f800, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03ff0000, 0x03ff0000, 0x03f0f800, 0x03f0f800},
@@ -524,7 +509,7 @@ static const u32 ar9340Modes_high_power_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340Modes_high_ob_db_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x01feee00, 0x01feee00, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f000, 0x0000f000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x01ff0000, 0x01ff0000, 0x03f0f800, 0x03f0f800},
@@ -622,7 +607,7 @@ static const u32 ar9340Modes_high_ob_db_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340Modes_low_ob_db_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f800, 0x0000f800, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03ff0000, 0x03ff0000, 0x03f0f800, 0x03f0f800},
@@ -721,7 +706,7 @@ static const u32 ar9340Modes_low_ob_db_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340Modes_mixed_ob_db_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f800, 0x0000f800, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03ff0000, 0x03ff0000, 0x03f0f800, 0x03f0f800},
@@ -820,7 +805,7 @@ static const u32 ar9340Modes_mixed_ob_db_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340Modes_low_ob_db_and_spur_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03eaac5a, 0x03eaac5a},
 	{0x0000a2e0, 0x0000f800, 0x0000f800, 0x03f330ac, 0x03f330ac},
 	{0x0000a2e4, 0x03ff0000, 0x03ff0000, 0x03fc3f00, 0x03fc3f00},
@@ -920,7 +905,7 @@ static const u32 ar9340Modes_low_ob_db_and_spur_tx_gain_table_1p0[][5] = {
 };
 
 static const u32 ar9340_1p0_mac_core[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x00000008, 0x00000000},
 	{0x00000030, 0x00020085},
 	{0x00000034, 0x00000005},
@@ -1085,7 +1070,7 @@ static const u32 ar9340_1p0_mac_core[][2] = {
 };
 
 static const u32 ar9340_1p0_soc_preamble[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x00007008, 0x00000000},
 	{0x00007020, 0x00000000},
 	{0x00007034, 0x00000002},
@@ -1093,7 +1078,7 @@ static const u32 ar9340_1p0_soc_preamble[][2] = {
 };
 
 static const u32 ar9340_cus227_tx_gain_table_1p0[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	 
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f800, 0x0000f800, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03ff0000, 0x03ff0000, 0x03f0f800, 0x03f0f800},
@@ -1194,4 +1179,4 @@ static const u32 ar9340_cus227_tx_gain_table_1p0[][5] = {
 	{0x0000a3ac, 0x30303030, 0x30303030, 0x30303030, 0x30303030},
 };
 
-#endif /* INITVALS_9340_H */
+#endif  

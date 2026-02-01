@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_REG_H_
 #define _DP_REG_H_
 
-/* DP_TX Registers */
+ 
 #define REG_DP_HW_VERSION			(0x00000000)
 
 #define REG_DP_SW_RESET				(0x00000010)
@@ -307,7 +305,7 @@
 #define REG_DP_PHY_AUX_BIST_CFG			(0x00000050)
 #define REG_DP_PHY_AUX_INTERRUPT_STATUS         (0x000000BC)
 
-/* DP HDCP 1.3 registers */
+ 
 #define DP_HDCP_CTRL                                   (0x0A0)
 #define DP_HDCP_STATUS                                 (0x0A4)
 #define DP_HDCP_SW_UPPER_AKSV                          (0x098)
@@ -332,4 +330,4 @@
 #define HDCP_SEC_DP_TZ_HV_HLOS_HDCP_RCVPORT_DATA11     (0x01C)
 #define HDCP_SEC_DP_TZ_HV_HLOS_HDCP_RCVPORT_DATA12     (0x020)
 
-#endif /* _DP_REG_H_ */
+#endif  

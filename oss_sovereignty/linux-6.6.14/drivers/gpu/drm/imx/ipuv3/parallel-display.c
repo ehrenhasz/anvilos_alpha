@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX drm driver - parallel display implementation
- *
- * Copyright (C) 2012 Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/media-bus-format.h>
@@ -169,15 +165,11 @@ imx_pd_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	struct imx_parallel_display *imxpd = bridge_to_imxpd(bridge);
 	u32 *input_fmts;
 
-	/*
-	 * If the next bridge does not support bus format negotiation, let's
-	 * use the static bus format definition (imxpd->bus_format) if it's
-	 * specified, RGB888 when it's not.
-	 */
+	 
 	if (output_fmt == MEDIA_BUS_FMT_FIXED)
 		output_fmt = imxpd->bus_format ? : MEDIA_BUS_FMT_RGB888_1X24;
 
-	/* Now make sure the requested output format is supported. */
+	 
 	if ((imxpd->bus_format && imxpd->bus_format != output_fmt) ||
 	    !imx_pd_format_supported(output_fmt)) {
 		*num_input_fmts = 0;
@@ -278,11 +270,7 @@ static int imx_pd_bind(struct device *dev, struct device *master, void *data)
 	if (ret)
 		return ret;
 
-	/* set the connector's dpms to OFF so that
-	 * drm_helper_connector_dpms() won't return
-	 * immediately since the current state is ON
-	 * at this point.
-	 */
+	 
 	connector->dpms = DRM_MODE_DPMS_OFF;
 
 	bridge->funcs = &imx_pd_bridge_funcs;
@@ -323,7 +311,7 @@ static int imx_pd_probe(struct platform_device *pdev)
 	if (!imxpd)
 		return -ENOMEM;
 
-	/* port@1 is the output port */
+	 
 	ret = drm_of_find_panel_or_bridge(np, 1, 0, &imxpd->panel,
 					  &imxpd->next_bridge);
 	if (ret && ret != -ENODEV)
@@ -362,7 +350,7 @@ static int imx_pd_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx_pd_dt_ids[] = {
 	{ .compatible = "fsl,imx-parallel-display", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_pd_dt_ids);
 

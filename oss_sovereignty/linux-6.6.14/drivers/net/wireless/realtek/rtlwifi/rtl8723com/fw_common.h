@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __FW_COMMON_H__
 #define __FW_COMMON_H__
@@ -53,7 +53,7 @@ enum rtl8723be_cmd {
 	H2C_8723BE_SELECTIVE_SUSPEND_ROF_CMD,
 	H2C_8723BE_P2P_PS_MODE,
 	H2C_8723BE_PSD_RESULT,
-	/*Not defined CTW CMD for P2P yet*/
+	 
 	H2C_8723BE_P2P_PS_CTW_CMD,
 	MAX_8723BE_H2CCMD
 };

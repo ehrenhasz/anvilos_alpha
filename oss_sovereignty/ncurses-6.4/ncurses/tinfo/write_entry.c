@@ -1,41 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	write_entry.c -- write a terminfo structure onto the file system
- */
+ 
 
 #include <curses.priv.h>
 #include <hashed_db.h>
@@ -47,8 +14,8 @@
 #define TRACE_NUM(n) if (VALID_NUMERIC(Numbers[n])) { \
 	TRACE_OUT(("put Numbers[%u]=%d", (unsigned) (n), Numbers[n])); }
 #else
-#define TRACE_OUT(p)		/*nothing */
-#define TRACE_NUM(n)		/* nothing */
+#define TRACE_OUT(p)		 
+#define TRACE_NUM(n)		 
 #endif
 
 MODULE_ID("$Id: write_entry.c,v 1.120 2022/04/23 19:59:10 tom Exp $")
@@ -102,13 +69,7 @@ write_file(char *filename, TERMTYPE2 *tp)
     }
 }
 
-/*
- * Check for access rights to destination directories
- * Create any directories which don't exist.
- *
- * Note:  there's no reason to return the result of make_db_root(), since
- * this function is called only in instances where that has to succeed.
- */
+ 
 static void
 check_writeable(int code)
 {
@@ -131,7 +92,7 @@ check_writeable(int code)
 
     verified[s - dirnames] = TRUE;
 }
-#endif /* !USE_HASHED_DB */
+#endif  
 
 static int
 make_db_path(char *dst, const char *src, size_t limit)
@@ -169,9 +130,7 @@ make_db_path(char *dst, const char *src, size_t limit)
     return rc;
 }
 
-/*
- * Make a database-root if it doesn't exist.
- */
+ 
 static int
 make_db_root(const char *path)
 {
@@ -197,18 +156,16 @@ make_db_root(const char *path)
 #endif
 		);
 	} else if (_nc_access(path, R_OK | W_OK | X_OK) < 0) {
-	    rc = -1;		/* permission denied */
+	    rc = -1;		 
 	} else if (!(S_ISDIR(statbuf.st_mode))) {
-	    rc = -1;		/* not a directory */
+	    rc = -1;		 
 	}
 #endif
     }
     return rc;
 }
 
-/*
- * Set the write directory for compiled entries.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_set_writedir(const char *dir)
 {
@@ -237,10 +194,7 @@ _nc_set_writedir(const char *dir)
 	}
     }
 
-    /*
-     * Note: because of this code, this logic should be exercised
-     * *once only* per run.
-     */
+     
 #if USE_HASHED_DB
     make_db_path(actual, destination, sizeof(actual));
 #else
@@ -251,25 +205,7 @@ _nc_set_writedir(const char *dir)
     _nc_keep_tic_dir(actual);
 }
 
-/*
- *	Save the compiled version of a description in the filesystem.
- *
- *	make a copy of the name-list
- *	break it up into first-name and all-but-last-name
- *	creat(first-name)
- *	write object information to first-name
- *	close(first-name)
- *      for each name in all-but-last-name
- *	    link to first-name
- *
- *	Using 'time()' to obtain a reference for file timestamps is unreliable,
- *	e.g., with NFS, because the filesystem may have a different time
- *	reference.  We check for pre-existence of links by latching the first
- *	timestamp from a file that we create.
- *
- *	The _nc_warning() calls will report a correct line number only if
- *	_nc_curr_line is properly set before the write_entry() call.
- */
+ 
 
 NCURSES_EXPORT(void)
 _nc_write_entry(TERMTYPE2 *const tp)
@@ -280,7 +216,7 @@ _nc_write_entry(TERMTYPE2 *const tp)
     unsigned limit = sizeof(buffer);
     unsigned offset = 0;
 
-#else /* !USE_HASHED_DB */
+#else  
 
     struct stat statbuf;
     char filename[PATH_MAX];
@@ -291,15 +227,15 @@ _nc_write_entry(TERMTYPE2 *const tp)
 #undef HAVE_LINK
 #define HAVE_LINK 1
 #endif
-#endif /* USE_SYMLINKS */
+#endif  
 
     unsigned limit2 = sizeof(filename) - (2 + LEAF_LEN);
     char saved = '\0';
 
     static int call_count;
-    static time_t start_time;	/* time at start of writes */
+    static time_t start_time;	 
 
-#endif /* USE_HASHED_DB */
+#endif  
 
     char name_list[MAX_TERMINFO_LENGTH];
     char *first_name, *other_names;
@@ -393,7 +329,7 @@ _nc_write_entry(TERMTYPE2 *const tp)
 	    }
 	}
     }
-#else /* !USE_HASHED_DB */
+#else  
     if (call_count++ == 0) {
 	start_time = 0;
     }
@@ -412,21 +348,12 @@ _nc_write_entry(TERMTYPE2 *const tp)
     if (saved)
 	first_name[limit2] = saved;
 
-    /*
-     * Has this primary name been written since the first call to
-     * write_entry()?  If so, the newer write will step on the older,
-     * so warn the user.
-     */
+     
     if (start_time > 0 &&
 	stat(filename, &statbuf) >= 0
 	&& statbuf.st_mtime >= start_time) {
 #if HAVE_LINK && !USE_SYMLINKS
-	/*
-	 * If the file has more than one link, the reason for the previous
-	 * write could be that the current primary name used to be an alias for
-	 * the previous entry.  In that case, unlink the file so that we will
-	 * not modify the previous entry as we write this one.
-	 */
+	 
 	if (statbuf.st_nlink > 1) {
 	    _nc_warning("name redefined.");
 	    unlink(filename);
@@ -488,7 +415,7 @@ _nc_write_entry(TERMTYPE2 *const tp)
 		_nc_STRNCPY(symlinkname + 3, filename, MY_SIZE - 3);
 	    }
 	    symlinkname[MY_SIZE] = '\0';
-#endif /* USE_SYMLINKS */
+#endif  
 #if HAVE_REMOVE
 	    code = remove(linkname);
 #else
@@ -500,14 +427,9 @@ _nc_write_entry(TERMTYPE2 *const tp)
 	    if (symlink(symlinkname, linkname) < 0)
 #else
 	    if (link(filename, linkname) < 0)
-#endif /* USE_SYMLINKS */
+#endif  
 	    {
-		/*
-		 * If there wasn't anything there, and we cannot
-		 * link to the target because it is the same as the
-		 * target, then the source must be on a filesystem
-		 * that uses caseless filenames, such as Win32, etc.
-		 */
+		 
 		if (code == 0 && errno == EEXIST)
 		    _nc_warning("can't link %s to %s", filename, linkname);
 		else if (code == 0 && (errno == EPERM || errno == ENOENT))
@@ -524,11 +446,11 @@ _nc_write_entry(TERMTYPE2 *const tp)
 		DEBUG(1, ("Linked %s", linkname));
 	    }
 	}
-#else /* just make copies */
+#else  
 	    write_file(linkname, tp);
-#endif /* HAVE_LINK */
+#endif  
     }
-#endif /* USE_HASHED_DB */
+#endif  
 }
 
 static size_t
@@ -555,7 +477,7 @@ fake_write(char *dst,
 
 #define Write(buf, size, count) fake_write(buffer, offset, (size_t) limit, (char *) buf, (size_t) count, (size_t) size)
 
-#undef LITTLE_ENDIAN		/* BSD/OS defines this as a feature macro */
+#undef LITTLE_ENDIAN		 
 #define HI(x)			((x) / 256)
 #define LO(x)			((x) % 256)
 #define LITTLE_ENDIAN(p, x)	(p)[0] = (unsigned char)LO(x),  \
@@ -589,9 +511,9 @@ convert_shorts(unsigned char *buf, short *Numbers, size_t count)
 {
     size_t i;
     for (i = 0; i < count; i++) {
-	if (Numbers[i] == ABSENT_NUMERIC) {	/* HI/LO won't work */
+	if (Numbers[i] == ABSENT_NUMERIC) {	 
 	    buf[2 * i] = buf[2 * i + 1] = 0377;
-	} else if (Numbers[i] == CANCELLED_NUMERIC) {	/* HI/LO won't work */
+	} else if (Numbers[i] == CANCELLED_NUMERIC) {	 
 	    buf[2 * i] = 0376;
 	    buf[2 * i + 1] = 0377;
 	} else {
@@ -679,10 +601,7 @@ extended_Strings(TERMTYPE2 *tp)
     return result;
 }
 
-/*
- * _nc_align_termtype() will extend entries that are referenced in a use=
- * clause - discard the unneeded data.
- */
+ 
 static bool
 extended_object(TERMTYPE2 *tp)
 {
@@ -718,12 +637,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 #endif
 
 #if NCURSES_XNAMES
-    /*
-     * Normally we limit the list of values to exclude the "obsolete"
-     * capabilities.  However, if we are accepting extended names, add
-     * these as well, since they are used for supporting translation
-     * to/from termcap.
-     */
+     
     if (_nc_user_definable) {
 	last_bool = BOOLCOUNT;
 	last_num = NUMCOUNT;
@@ -761,7 +675,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 
     nextfree = compute_offsets(tp->Strings, strmax, offsets);
 
-    /* fill in the header */
+     
 #if NCURSES_EXT_NUMBERS
     if (need_ints) {
 	convert_numbers = convert_32bit;
@@ -779,7 +693,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
     LITTLE_ENDIAN(buf + 8, strmax);
     LITTLE_ENDIAN(buf + 10, nextfree);
 
-    /* write out the header */
+     
     TRACE_OUT(("Header of %s @%d", namelist, *offset));
     if (Write(buf, 12, 1) != 1
 	|| Write(namelist, sizeof(char), namelen) != namelen) {
@@ -803,7 +717,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 
     TRACE_OUT(("Numerics begin at %04x", *offset));
 
-    /* the numerics */
+     
     numlen = convert_numbers(buf, tp->Numbers, nummax);
     if (Write(buf, numlen, nummax) != nummax) {
 	return (ERR);
@@ -811,7 +725,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 
     TRACE_OUT(("String offsets begin at %04x", *offset));
 
-    /* the string offsets */
+     
     convert_shorts(buf, offsets, strmax);
     if (Write(buf, SIZEOF_SHORT, strmax) != strmax) {
 	return (ERR);
@@ -819,7 +733,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 
     TRACE_OUT(("String table begins at %04x", *offset));
 
-    /* the strings */
+     
     for (i = 0; i < strmax; i++) {
 	if (VALID_STRING(tp->Strings[i])) {
 	    if (!WRITE_STRING(tp->Strings[i])) {
@@ -858,9 +772,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 	}
 	TRACE_OUT(("will write %u/%lu strings", ext_usage, (unsigned long) strmax));
 
-	/*
-	 * Write the extended header
-	 */
+	 
 	LITTLE_ENDIAN(buf + 0, tp->ext_Booleans);
 	LITTLE_ENDIAN(buf + 2, tp->ext_Numbers);
 	LITTLE_ENDIAN(buf + 4, tp->ext_Strings);
@@ -890,20 +802,14 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 	    }
 	}
 
-	/*
-	 * Convert the offsets for the ext_Strings and ext_Names tables,
-	 * in that order.
-	 */
+	 
 	convert_shorts(buf, offsets, strmax);
 	TRACE_OUT(("WRITE offsets @%d", *offset));
 	if (Write(buf, SIZEOF_SHORT, strmax) != strmax) {
 	    return (ERR);
 	}
 
-	/*
-	 * Write the string table after the offset tables so we do not
-	 * have to do anything about alignment.
-	 */
+	 
 	for (i = 0; i < tp->ext_Strings; i++) {
 	    if (VALID_STRING(tp->Strings[i + STRCOUNT])) {
 		TRACE_OUT(("WRITE ext_Strings[%d]=%s", (int) i,
@@ -914,9 +820,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 	    }
 	}
 
-	/*
-	 * Write the extended names
-	 */
+	 
 	for (i = 0; i < ext_total; i++) {
 	    TRACE_OUT(("WRITE ext_Names[%d]=%s", (int) i, tp->ext_Names[i]));
 	    if (!WRITE_STRING(tp->ext_Names[i])) {
@@ -925,7 +829,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
 	}
 
     }
-#endif /* NCURSES_XNAMES */
+#endif  
 
     total_written++;
     total_parts++;
@@ -933,9 +837,7 @@ _nc_write_object(TERMTYPE2 *tp, char *buffer, unsigned *offset, unsigned limit)
     return (OK);
 }
 
-/*
- * Returns the total number of entries written by this process
- */
+ 
 NCURSES_EXPORT(int)
 _nc_tic_written(void)
 {

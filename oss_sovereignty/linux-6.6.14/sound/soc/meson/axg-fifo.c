@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/of_irq.h>
@@ -15,12 +15,7 @@
 
 #include "axg-fifo.h"
 
-/*
- * This file implements the platform operations common to the playback and
- * capture frontend DAI. The logic behind this two types of fifo is very
- * similar but some difference exist.
- * These differences are handled in the respective DAI drivers
- */
+ 
 
 static struct snd_pcm_hardware axg_fifo_hw = {
 	.info = (SNDRV_PCM_INFO_INTERLEAVED |
@@ -39,7 +34,7 @@ static struct snd_pcm_hardware axg_fifo_hw = {
 	.periods_min = 2,
 	.periods_max = UINT_MAX,
 
-	/* No real justification for this */
+	 
 	.buffer_bytes_max = 1 * 1024 * 1024,
 };
 
@@ -118,31 +113,24 @@ int axg_fifo_pcm_hw_params(struct snd_soc_component *component,
 
 	period = params_period_bytes(params);
 
-	/* Setup dma memory pointers */
+	 
 	end_ptr = runtime->dma_addr + runtime->dma_bytes - AXG_FIFO_BURST;
 	regmap_write(fifo->map, FIFO_START_ADDR, runtime->dma_addr);
 	regmap_write(fifo->map, FIFO_FINISH_ADDR, end_ptr);
 
-	/* Setup interrupt periodicity */
+	 
 	burst_num = period / AXG_FIFO_BURST;
 	regmap_write(fifo->map, FIFO_INT_ADDR, burst_num);
 
-	/*
-	 * Start the fifo request on the smallest of the following:
-	 * - Half the fifo size
-	 * - Half the period size
-	 */
+	 
 	threshold = min(period / 2, fifo->depth / 2);
 
-	/*
-	 * With the threshold in bytes, register value is:
-	 * V = (threshold / burst) - 1
-	 */
+	 
 	threshold /= AXG_FIFO_BURST;
 	regmap_field_write(fifo->field_threshold,
 			   threshold ? threshold - 1 : 0);
 
-	/* Enable irq if necessary  */
+	 
 	irq_en = runtime->no_period_wakeup ? 0 : FIFO_INT_COUNT_REPEAT;
 	regmap_update_bits(fifo->map, FIFO_CTRL0,
 			   CTRL0_INT_EN(FIFO_INT_COUNT_REPEAT),
@@ -164,7 +152,7 @@ int g12a_fifo_pcm_hw_params(struct snd_soc_component *component,
 	if (ret)
 		return ret;
 
-	/* Set the initial memory address of the DMA */
+	 
 	regmap_write(fifo->map, FIFO_INIT_ADDR, runtime->dma_addr);
 
 	return 0;
@@ -176,7 +164,7 @@ int axg_fifo_pcm_hw_free(struct snd_soc_component *component,
 {
 	struct axg_fifo *fifo = axg_fifo_data(ss);
 
-	/* Disable the block count irq */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0,
 			   CTRL0_INT_EN(FIFO_INT_COUNT_REPEAT), 0);
 
@@ -190,7 +178,7 @@ static void axg_fifo_ack_irq(struct axg_fifo *fifo, u8 mask)
 			   CTRL1_INT_CLR(FIFO_INT_MASK),
 			   CTRL1_INT_CLR(mask));
 
-	/* Clear must also be cleared */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL1,
 			   CTRL1_INT_CLR(FIFO_INT_MASK),
 			   0);
@@ -211,7 +199,7 @@ static irqreturn_t axg_fifo_pcm_irq_block(int irq, void *dev_id)
 		dev_dbg(axg_fifo_dev(ss), "unexpected irq - STS 0x%02x\n",
 			status);
 
-	/* Ack irqs */
+	 
 	axg_fifo_ack_irq(fifo, status);
 
 	return IRQ_RETVAL(status);
@@ -226,10 +214,7 @@ int axg_fifo_pcm_open(struct snd_soc_component *component,
 
 	snd_soc_set_runtime_hwparams(ss, &axg_fifo_hw);
 
-	/*
-	 * Make sure the buffer and period size are multiple of the FIFO
-	 * burst
-	 */
+	 
 	ret = snd_pcm_hw_constraint_step(ss->runtime, 0,
 					 SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 					 AXG_FIFO_BURST);
@@ -247,27 +232,27 @@ int axg_fifo_pcm_open(struct snd_soc_component *component,
 	if (ret)
 		return ret;
 
-	/* Enable pclk to access registers and clock the fifo ip */
+	 
 	ret = clk_prepare_enable(fifo->pclk);
 	if (ret)
 		goto free_irq;
 
-	/* Setup status2 so it reports the memory pointer */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL1,
 			   CTRL1_STATUS2_SEL_MASK,
 			   CTRL1_STATUS2_SEL(STATUS2_SEL_DDR_READ));
 
-	/* Make sure the dma is initially disabled */
+	 
 	__dma_enable(fifo, false);
 
-	/* Disable irqs until params are ready */
+	 
 	regmap_update_bits(fifo->map, FIFO_CTRL0,
 			   CTRL0_INT_EN(FIFO_INT_MASK), 0);
 
-	/* Clear any pending interrupt */
+	 
 	axg_fifo_ack_irq(fifo, FIFO_INT_MASK);
 
-	/* Take memory arbitror out of reset */
+	 
 	ret = reset_control_deassert(fifo->arb);
 	if (ret)
 		goto free_clk;
@@ -288,13 +273,13 @@ int axg_fifo_pcm_close(struct snd_soc_component *component,
 	struct axg_fifo *fifo = axg_fifo_data(ss);
 	int ret;
 
-	/* Put the memory arbitror back in reset */
+	 
 	ret = reset_control_assert(fifo->arb);
 
-	/* Disable fifo ip and register access */
+	 
 	clk_disable_unprepare(fifo->pclk);
 
-	/* remove IRQ */
+	 
 	free_irq(fifo->irq, ss);
 
 	return ret;
@@ -372,13 +357,10 @@ int axg_fifo_probe(struct platform_device *pdev)
 	ret = of_property_read_u32(dev->of_node, "amlogic,fifo-depth",
 				   &fifo->depth);
 	if (ret) {
-		/* Error out for anything but a missing property */
+		 
 		if (ret != -EINVAL)
 			return ret;
-		/*
-		 * If the property is missing, it might be because of an old
-		 * DT. In such case, assume the smallest known fifo depth
-		 */
+		 
 		fifo->depth = 256;
 		dev_warn(dev, "fifo depth not found, assume %u bytes\n",
 			 fifo->depth);

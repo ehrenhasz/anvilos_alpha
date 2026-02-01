@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bcache sysfs interfaces
- *
- * Copyright 2010, 2011 Kent Overstreet <kent.overstreet@gmail.com>
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "sysfs.h"
@@ -19,7 +14,7 @@
 
 extern bool bcache_is_reboot;
 
-/* Default is 0 ("writethrough") */
+ 
 static const char * const bch_cache_modes[] = {
 	"writethrough",
 	"writeback",
@@ -34,7 +29,7 @@ static const char * const bch_reada_cache_policies[] = {
 	NULL
 };
 
-/* Default is 0 ("auto") */
+ 
 static const char * const bch_stop_on_failure_modes[] = {
 	"auto",
 	"always",
@@ -223,10 +218,7 @@ SHOW(__bch_cached_dev)
 		char change[20];
 		s64 next_io;
 
-		/*
-		 * Except for dirty and target, other values should
-		 * be 0 if writeback is not running.
-		 */
+		 
 		bch_hprint(rate,
 			   wb ? atomic_long_read(&dc->writeback_rate.rate) << 9
 			      : 0);
@@ -277,7 +269,7 @@ SHOW(__bch_cached_dev)
 	}
 
 	if (attr == &sysfs_backing_dev_uuid) {
-		/* convert binary uuid into 36-byte string plus '\0' */
+		 
 		snprintf(buf, 36+1, "%pU", dc->sb.uuid);
 		strcat(buf, "\n");
 		return strlen(buf);
@@ -296,7 +288,7 @@ STORE(__cached_dev)
 	struct cache_set *c;
 	struct kobj_uevent_env *env;
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 
@@ -459,7 +451,7 @@ STORE(bch_cached_dev)
 	struct cached_dev *dc = container_of(kobj, struct cached_dev,
 					     disk.kobj);
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 
@@ -467,29 +459,20 @@ STORE(bch_cached_dev)
 	size = __cached_dev_store(kobj, attr, buf, size);
 
 	if (attr == &sysfs_writeback_running) {
-		/* dc->writeback_running changed in __cached_dev_store() */
+		 
 		if (IS_ERR_OR_NULL(dc->writeback_thread)) {
-			/*
-			 * reject setting it to 1 via sysfs if writeback
-			 * kthread is not created yet.
-			 */
+			 
 			if (dc->writeback_running) {
 				dc->writeback_running = false;
 				pr_err("%s: failed to run non-existent writeback thread\n",
 						dc->disk.disk->disk_name);
 			}
 		} else
-			/*
-			 * writeback kthread will check if dc->writeback_running
-			 * is true or false.
-			 */
+			 
 			bch_writeback_queue(dc);
 	}
 
-	/*
-	 * Only set BCACHE_DEV_WB_RUNNING when cached device attached to
-	 * a cache set, otherwise it doesn't make sense.
-	 */
+	 
 	if (attr == &sysfs_writeback_percent)
 		if ((dc->disk.c != NULL) &&
 		    (!test_and_set_bit(BCACHE_DEV_WB_RUNNING, &dc->disk.flags)))
@@ -571,7 +554,7 @@ STORE(__bch_flash_dev)
 					       kobj);
 	struct uuid_entry *u = &d->c->uuids[d->id];
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 
@@ -773,7 +756,7 @@ SHOW(__bch_cache_set)
 		return bch_snprint_string_list(buf, PAGE_SIZE, error_actions,
 					       c->on_error);
 
-	/* See count_io_errors for why 88 */
+	 
 	sysfs_print(io_error_halflife,	c->error_decay * 88);
 	sysfs_print(io_error_limit,	c->error_limit);
 
@@ -820,7 +803,7 @@ STORE(__bch_cache_set)
 	struct cache_set *c = container_of(kobj, struct cache_set, kobj);
 	ssize_t v;
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 
@@ -886,7 +869,7 @@ STORE(__bch_cache_set)
 
 	sysfs_strtoul_clamp(io_error_limit, c->error_limit, 0, UINT_MAX);
 
-	/* See count_io_errors() for why 88 */
+	 
 	if (attr == &sysfs_io_error_halflife) {
 		unsigned long v = 0;
 		ssize_t ret;
@@ -924,11 +907,7 @@ STORE(__bch_cache_set)
 	sysfs_strtoul_bool(idle_max_writeback_rate,
 			   c->idle_max_writeback_rate_enabled);
 
-	/*
-	 * write gc_after_writeback here may overwrite an already set
-	 * BCH_DO_AUTO_GC, it doesn't matter because this flag will be
-	 * set in next chance.
-	 */
+	 
 	sysfs_strtoul_clamp(gc_after_writeback, c->gc_after_writeback, 0, 1);
 
 	return size;
@@ -946,7 +925,7 @@ STORE(bch_cache_set_internal)
 {
 	struct cache_set *c = container_of(kobj, struct cache_set, internal);
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 
@@ -1062,7 +1041,7 @@ SHOW(__bch_cache)
 		size_t n = ca->sb.nbuckets, i;
 		size_t unused = 0, available = 0, dirty = 0, meta = 0;
 		uint64_t sum = 0;
-		/* Compute 31 quantiles */
+		 
 		uint16_t q[31], *p, *cached;
 		ssize_t ret;
 
@@ -1143,7 +1122,7 @@ STORE(__bch_cache)
 	struct cache *ca = container_of(kobj, struct cache, kobj);
 	ssize_t v;
 
-	/* no user space access if system is rebooting */
+	 
 	if (bcache_is_reboot)
 		return -EBUSY;
 

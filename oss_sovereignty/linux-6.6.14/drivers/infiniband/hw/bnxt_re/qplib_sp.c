@@ -1,40 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: Slow Path Operators
- */
+ 
 
 #define dev_fmt(fmt) "QPLIB: " fmt
 
@@ -53,7 +17,7 @@
 const struct bnxt_qplib_gid bnxt_qplib_gid_zero = {{ 0, 0, 0, 0, 0, 0, 0, 0,
 						     0, 0, 0, 0, 0, 0, 0, 0 } };
 
-/* Device */
+ 
 
 static bool bnxt_qplib_is_atomic_cap(struct bnxt_qplib_rcfw *rcfw)
 {
@@ -117,9 +81,9 @@ int bnxt_qplib_get_dev_attr(struct bnxt_qplib_rcfw *rcfw,
 	if (rc)
 		goto bail;
 
-	/* Extract the context from the side buffer */
+	 
 	attr->max_qp = le32_to_cpu(sb->max_qp);
-	/* max_qp value reported by FW doesn't include the QP1 */
+	 
 	attr->max_qp += 1;
 	attr->max_qp_rd_atom =
 		sb->max_qp_rd_atom > BNXT_QPLIB_MAX_OUT_RD_ATOM ?
@@ -128,10 +92,7 @@ int bnxt_qplib_get_dev_attr(struct bnxt_qplib_rcfw *rcfw,
 		sb->max_qp_init_rd_atom > BNXT_QPLIB_MAX_OUT_RD_ATOM ?
 		BNXT_QPLIB_MAX_OUT_RD_ATOM : sb->max_qp_init_rd_atom;
 	attr->max_qp_wqes = le16_to_cpu(sb->max_qp_wr);
-	/*
-	 * 128 WQEs needs to be reserved for the HW (8916). Prevent
-	 * reporting the max number
-	 */
+	 
 	attr->max_qp_wqes -= BNXT_QPLIB_RESERVED_QP_WRS + 1;
 	attr->max_qp_sges = bnxt_qplib_is_chip_gen_p5(rcfw->res->cctx) ?
 			    6 : sb->max_sge;
@@ -210,7 +171,7 @@ int bnxt_qplib_set_func_resources(struct bnxt_qplib_res *res,
 	return rc;
 }
 
-/* SGID */
+ 
 int bnxt_qplib_get_sgid(struct bnxt_qplib_res *res,
 			struct bnxt_qplib_sgid_tbl *sgid_tbl, int index,
 			struct bnxt_qplib_gid *gid)
@@ -234,7 +195,7 @@ int bnxt_qplib_del_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 	struct bnxt_qplib_rcfw *rcfw = res->rcfw;
 	int index;
 
-	/* Do we need a sgid_lock here? */
+	 
 	if (!sgid_tbl->active) {
 		dev_err(&res->pdev->dev, "SGID table has no active entries\n");
 		return -ENOMEM;
@@ -248,7 +209,7 @@ int bnxt_qplib_del_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 		dev_warn(&res->pdev->dev, "GID not found in the SGID table\n");
 		return 0;
 	}
-	/* Remove GID from the SGID table */
+	 
 	if (update) {
 		struct creq_delete_gid_resp resp = {};
 		struct bnxt_qplib_cmdqmsg msg = {};
@@ -280,7 +241,7 @@ int bnxt_qplib_del_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 		 index, sgid_tbl->hw_id[index], sgid_tbl->active);
 	sgid_tbl->hw_id[index] = (u16)-1;
 
-	/* unlock */
+	 
 	return 0;
 }
 
@@ -294,7 +255,7 @@ int bnxt_qplib_add_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 	struct bnxt_qplib_rcfw *rcfw = res->rcfw;
 	int i, free_idx;
 
-	/* Do we need a sgid_lock here? */
+	 
 	if (sgid_tbl->active == sgid_tbl->max) {
 		dev_err(&res->pdev->dev, "SGID table is full\n");
 		return -ENOMEM;
@@ -332,11 +293,7 @@ int bnxt_qplib_add_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 		req.gid[1] = cpu_to_be32(((u32 *)gid->data)[2]);
 		req.gid[2] = cpu_to_be32(((u32 *)gid->data)[1]);
 		req.gid[3] = cpu_to_be32(((u32 *)gid->data)[0]);
-		/*
-		 * driver should ensure that all RoCE traffic is always VLAN
-		 * tagged if RoCE traffic is running on non-zero VLAN ID or
-		 * RoCE traffic is running on non-zero Priority.
-		 */
+		 
 		if ((vlan_id != 0xFFFF) || res->prio) {
 			if (vlan_id != 0xFFFF)
 				req.vlan = cpu_to_le16
@@ -346,7 +303,7 @@ int bnxt_qplib_add_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 					 CMDQ_ADD_GID_VLAN_VLAN_EN);
 		}
 
-		/* MAC in network format */
+		 
 		req.src_mac[0] = cpu_to_be16(((u16 *)smac)[0]);
 		req.src_mac[1] = cpu_to_be16(((u16 *)smac)[1]);
 		req.src_mac[2] = cpu_to_be16(((u16 *)smac)[2]);
@@ -358,7 +315,7 @@ int bnxt_qplib_add_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 			return rc;
 		sgid_tbl->hw_id[free_idx] = le32_to_cpu(resp.xid);
 	}
-	/* Add GID to the sgid_tbl */
+	 
 	memcpy(&sgid_tbl->tbl[free_idx], gid, sizeof(*gid));
 	sgid_tbl->tbl[free_idx].vlan_id = vlan_id;
 	sgid_tbl->active++;
@@ -370,7 +327,7 @@ int bnxt_qplib_add_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 		 free_idx, sgid_tbl->hw_id[free_idx], sgid_tbl->active);
 
 	*index = free_idx;
-	/* unlock */
+	 
 	return 0;
 }
 
@@ -401,7 +358,7 @@ int bnxt_qplib_update_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 			 CMDQ_ADD_GID_VLAN_VLAN_EN);
 	}
 
-	/* MAC in network format */
+	 
 	req.src_mac[0] = cpu_to_be16(((u16 *)smac)[0]);
 	req.src_mac[1] = cpu_to_be16(((u16 *)smac)[1]);
 	req.src_mac[2] = cpu_to_be16(((u16 *)smac)[2]);
@@ -414,7 +371,7 @@ int bnxt_qplib_update_sgid(struct bnxt_qplib_sgid_tbl *sgid_tbl,
 	return rc;
 }
 
-/* AH */
+ 
 int bnxt_qplib_create_ah(struct bnxt_qplib_res *res, struct bnxt_qplib_ah *ah,
 			 bool block)
 {
@@ -445,7 +402,7 @@ int bnxt_qplib_create_ah(struct bnxt_qplib_res *res, struct bnxt_qplib_ah *ah,
 	req.pd_id = cpu_to_le32(ah->pd->id);
 	req.traffic_class = ah->traffic_class;
 
-	/* MAC in network format */
+	 
 	memcpy(temp16, ah->dmac, 6);
 	req.dest_mac[0] = cpu_to_le16(temp16[0]);
 	req.dest_mac[1] = cpu_to_le16(temp16[1]);
@@ -470,7 +427,7 @@ int bnxt_qplib_destroy_ah(struct bnxt_qplib_res *res, struct bnxt_qplib_ah *ah,
 	struct cmdq_destroy_ah req = {};
 	int rc;
 
-	/* Clean up the AH table in the device */
+	 
 	bnxt_qplib_rcfw_cmd_prep((struct cmdq_base *)&req,
 				 CMDQ_BASE_OPCODE_DESTROY_AH,
 				 sizeof(req));
@@ -483,7 +440,7 @@ int bnxt_qplib_destroy_ah(struct bnxt_qplib_res *res, struct bnxt_qplib_ah *ah,
 	return rc;
 }
 
-/* MRW */
+ 
 int bnxt_qplib_free_mrw(struct bnxt_qplib_res *res, struct bnxt_qplib_mrw *mrw)
 {
 	struct creq_deallocate_key_resp resp = {};
@@ -516,7 +473,7 @@ int bnxt_qplib_free_mrw(struct bnxt_qplib_res *res, struct bnxt_qplib_mrw *mrw)
 	if (rc)
 		return rc;
 
-	/* Free the qplib's MRW memory */
+	 
 	if (mrw->hwq.max_elements)
 		bnxt_qplib_free_hwq(res, &mrw->hwq);
 
@@ -581,7 +538,7 @@ int bnxt_qplib_dereg_mrw(struct bnxt_qplib_res *res, struct bnxt_qplib_mrw *mrw,
 	if (rc)
 		return rc;
 
-	/* Free the qplib's MR memory */
+	 
 	if (mrw->hwq.max_elements) {
 		mrw->va = 0;
 		mrw->total_size = 0;
@@ -606,10 +563,8 @@ int bnxt_qplib_reg_mr(struct bnxt_qplib_res *res, struct bnxt_qplib_mrw *mr,
 
 	if (num_pbls) {
 		pages = roundup_pow_of_two(num_pbls);
-		/* Allocate memory for the non-leaf pages to store buf ptrs.
-		 * Non-leaf pages always uses system PAGE_SIZE
-		 */
-		/* Free the hwq if it already exist, must be a rereg */
+		 
+		 
 		if (mr->hwq.max_elements)
 			bnxt_qplib_free_hwq(res, &mr->hwq);
 		hwq_attr.res = res;
@@ -633,9 +588,9 @@ int bnxt_qplib_reg_mr(struct bnxt_qplib_res *res, struct bnxt_qplib_mrw *mr,
 				 CMDQ_BASE_OPCODE_REGISTER_MR,
 				 sizeof(req));
 
-	/* Configure the request */
+	 
 	if (mr->hwq.level == PBL_LVL_MAX) {
-		/* No PBL provided, just use system PAGE_SIZE */
+		 
 		level = 0;
 		req.pbl = 0;
 		pg_size = PAGE_SIZE;
@@ -678,7 +633,7 @@ int bnxt_qplib_alloc_fast_reg_page_list(struct bnxt_qplib_res *res,
 	struct bnxt_qplib_sg_info sginfo = {};
 	int pg_ptrs, pages, rc;
 
-	/* Re-calculate the max to fit the HWQ allocation model */
+	 
 	pg_ptrs = roundup_pow_of_two(max_pg_ptrs);
 	pages = pg_ptrs >> MAX_PBL_LVL_1_PGS_SHIFT;
 	if (!pages)
@@ -736,7 +691,7 @@ int bnxt_qplib_get_roce_stats(struct bnxt_qplib_rcfw *rcfw,
 	rc = bnxt_qplib_rcfw_send_message(rcfw, &msg);
 	if (rc)
 		goto bail;
-	/* Extract the context from the side buffer */
+	 
 	stats->to_retransmits = le64_to_cpu(sb->to_retransmits);
 	stats->seq_err_naks_rcvd = le64_to_cpu(sb->seq_err_naks_rcvd);
 	stats->max_retry_exceeded = le64_to_cpu(sb->max_retry_exceeded);
@@ -910,7 +865,7 @@ int bnxt_qplib_modify_cc(struct bnxt_qplib_res *res,
 	void *cmd;
 	int rc;
 
-	/* Prepare the older base command */
+	 
 	req = &tlv_req.base_req;
 	cmd = req;
 	req_size = sizeof(*req);
@@ -933,7 +888,7 @@ int bnxt_qplib_modify_cc(struct bnxt_qplib_res *res,
 	req->cc_mode = cc_param->cc_mode;
 	req->inactivity_th = cpu_to_le16(cc_param->inact_th);
 
-	/* For chip gen P5 onwards fill extended cmd and header */
+	 
 	if (bnxt_qplib_is_chip_gen_p5(res->cctx)) {
 		struct roce_tlv *hdr;
 		u32 payload;
@@ -941,12 +896,12 @@ int bnxt_qplib_modify_cc(struct bnxt_qplib_res *res,
 
 		cmd = &tlv_req;
 		req_size = sizeof(tlv_req);
-		/* Prepare primary tlv header */
+		 
 		hdr = &tlv_req.tlv_hdr;
 		chunks = CHUNKS(sizeof(struct bnxt_qplib_tlv_modify_cc_req));
 		payload = sizeof(struct cmdq_modify_roce_cc);
 		__roce_1st_tlv_prep(hdr, chunks, payload, true);
-		/* Prepare secondary tlv header */
+		 
 		hdr = (struct roce_tlv *)&tlv_req.ext_req;
 		payload = sizeof(struct cmdq_modify_roce_cc_gen1_tlv) -
 			  sizeof(struct roce_tlv);

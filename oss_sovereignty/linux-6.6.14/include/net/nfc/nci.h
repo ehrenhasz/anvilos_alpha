@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2014 Marvell International Ltd.
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- *
- *  Acknowledgements:
- *  This file is based on hci.h, which was written
- *  by Maxim Krasnyansky.
- */
+ 
+ 
 
 #ifndef __NCI_H
 #define __NCI_H
 
 #include <net/nfc/nfc.h>
 
-/* NCI constants */
+ 
 #define NCI_MAX_NUM_MAPPING_CONFIGS				10
 #define NCI_MAX_NUM_RF_CONFIGS					10
 #define NCI_MAX_NUM_CONN					10
@@ -28,7 +16,7 @@
 #define NCI_MAX_LARGE_PARAMS_NCI_v2				15
 #define NCI_VER_2_MASK						0x20
 
-/* NCI Status Codes */
+ 
 #define NCI_STATUS_OK						0x00
 #define NCI_STATUS_REJECTED					0x01
 #define NCI_STATUS_RF_FRAME_CORRUPTED				0x02
@@ -40,40 +28,40 @@
 #define NCI_STATUS_UNKNOWN_OID					0x08
 #define NCI_STATUS_INVALID_PARAM				0x09
 #define NCI_STATUS_MESSAGE_SIZE_EXCEEDED			0x0a
-/* Discovery Specific Status Codes */
+ 
 #define NCI_STATUS_DISCOVERY_ALREADY_STARTED			0xa0
 #define NCI_STATUS_DISCOVERY_TARGET_ACTIVATION_FAILED		0xa1
 #define NCI_STATUS_DISCOVERY_TEAR_DOWN				0xa2
-/* RF Interface Specific Status Codes */
+ 
 #define NCI_STATUS_RF_TRANSMISSION_ERROR			0xb0
 #define NCI_STATUS_RF_PROTOCOL_ERROR				0xb1
 #define NCI_STATUS_RF_TIMEOUT_ERROR				0xb2
-/* NFCEE Interface Specific Status Codes */
+ 
 #define NCI_STATUS_NFCEE_INTERFACE_ACTIVATION_FAILED		0xc0
 #define NCI_STATUS_NFCEE_TRANSMISSION_ERROR			0xc1
 #define NCI_STATUS_NFCEE_PROTOCOL_ERROR				0xc2
 #define NCI_STATUS_NFCEE_TIMEOUT_ERROR				0xc3
 
-/* NFCEE Interface/Protocols */
+ 
 #define NCI_NFCEE_INTERFACE_APDU           0x00
 #define NCI_NFCEE_INTERFACE_HCI_ACCESS     0x01
 #define NCI_NFCEE_INTERFACE_TYPE3_CMD_SET  0x02
 #define NCI_NFCEE_INTERFACE_TRANSPARENT        0x03
 
-/* Destination type */
+ 
 #define NCI_DESTINATION_NFCC_LOOPBACK      0x01
 #define NCI_DESTINATION_REMOTE_NFC_ENDPOINT    0x02
 #define NCI_DESTINATION_NFCEE              0x03
 
-/* Destination-specific parameters type */
+ 
 #define NCI_DESTINATION_SPECIFIC_PARAM_RF_TYPE     0x00
 #define NCI_DESTINATION_SPECIFIC_PARAM_NFCEE_TYPE  0x01
 
-/* NFCEE Discovery Action */
+ 
 #define NCI_NFCEE_DISCOVERY_ACTION_DISABLE			0x00
 #define NCI_NFCEE_DISCOVERY_ACTION_ENABLE			0x01
 
-/* NCI RF Technology and Mode */
+ 
 #define NCI_NFC_A_PASSIVE_POLL_MODE				0x00
 #define NCI_NFC_B_PASSIVE_POLL_MODE				0x01
 #define NCI_NFC_F_PASSIVE_POLL_MODE				0x02
@@ -88,13 +76,13 @@
 
 #define NCI_RF_TECH_MODE_LISTEN_MASK				0x80
 
-/* NCI RF Technologies */
+ 
 #define NCI_NFC_RF_TECHNOLOGY_A					0x00
 #define NCI_NFC_RF_TECHNOLOGY_B					0x01
 #define NCI_NFC_RF_TECHNOLOGY_F					0x02
 #define NCI_NFC_RF_TECHNOLOGY_V					0x03
 
-/* NCI Bit Rates */
+ 
 #define NCI_NFC_BIT_RATE_106					0x00
 #define NCI_NFC_BIT_RATE_212					0x01
 #define NCI_NFC_BIT_RATE_424					0x02
@@ -104,7 +92,7 @@
 #define NCI_NFC_BIT_RATE_6780					0x06
 #define NCI_NFC_BIT_RATE_26					0x20
 
-/* NCI RF Protocols */
+ 
 #define NCI_RF_PROTOCOL_UNKNOWN					0x00
 #define NCI_RF_PROTOCOL_T1T					0x01
 #define NCI_RF_PROTOCOL_T2T					0x02
@@ -113,55 +101,55 @@
 #define NCI_RF_PROTOCOL_NFC_DEP					0x05
 #define NCI_RF_PROTOCOL_T5T					0x06
 
-/* NCI RF Interfaces */
+ 
 #define NCI_RF_INTERFACE_NFCEE_DIRECT				0x00
 #define NCI_RF_INTERFACE_FRAME					0x01
 #define NCI_RF_INTERFACE_ISO_DEP				0x02
 #define NCI_RF_INTERFACE_NFC_DEP				0x03
 
-/* NCI Configuration Parameter Tags */
+ 
 #define NCI_PN_ATR_REQ_GEN_BYTES				0x29
 #define NCI_LN_ATR_RES_GEN_BYTES				0x61
 #define NCI_LA_SEL_INFO						0x32
 #define NCI_LF_PROTOCOL_TYPE					0x50
 #define NCI_LF_CON_BITR_F					0x54
 
-/* NCI Configuration Parameters masks */
+ 
 #define NCI_LA_SEL_INFO_ISO_DEP_MASK				0x20
 #define NCI_LA_SEL_INFO_NFC_DEP_MASK				0x40
 #define NCI_LF_PROTOCOL_TYPE_NFC_DEP_MASK			0x02
 #define NCI_LF_CON_BITR_F_212					0x02
 #define NCI_LF_CON_BITR_F_424					0x04
 
-/* NCI 2.x Feature Enable Bit */
+ 
 #define NCI_FEATURE_DISABLE					0x00
 
-/* NCI Reset types */
+ 
 #define NCI_RESET_TYPE_KEEP_CONFIG				0x00
 #define NCI_RESET_TYPE_RESET_CONFIG				0x01
 
-/* NCI Static RF connection ID */
+ 
 #define NCI_STATIC_RF_CONN_ID					0x00
 
-/* NCI Data Flow Control */
+ 
 #define NCI_DATA_FLOW_CONTROL_NOT_USED				0xff
 
-/* NCI RF_DISCOVER_MAP_CMD modes */
+ 
 #define NCI_DISC_MAP_MODE_POLL					0x01
 #define NCI_DISC_MAP_MODE_LISTEN				0x02
 
-/* NCI Discover Notification Type */
+ 
 #define NCI_DISCOVER_NTF_TYPE_LAST				0x00
 #define NCI_DISCOVER_NTF_TYPE_LAST_NFCC				0x01
 #define NCI_DISCOVER_NTF_TYPE_MORE				0x02
 
-/* NCI Deactivation Type */
+ 
 #define NCI_DEACTIVATE_TYPE_IDLE_MODE				0x00
 #define NCI_DEACTIVATE_TYPE_SLEEP_MODE				0x01
 #define NCI_DEACTIVATE_TYPE_SLEEP_AF_MODE			0x02
 #define NCI_DEACTIVATE_TYPE_DISCOVERY				0x03
 
-/* Message Type (MT) */
+ 
 #define NCI_MT_DATA_PKT						0x00
 #define NCI_MT_CMD_PKT						0x01
 #define NCI_MT_RSP_PKT						0x02
@@ -170,62 +158,62 @@
 #define nci_mt(hdr)			(((hdr)[0]>>5)&0x07)
 #define nci_mt_set(hdr, mt)		((hdr)[0] |= (__u8)(((mt)&0x07)<<5))
 
-/* Packet Boundary Flag (PBF) */
+ 
 #define NCI_PBF_LAST						0x00
 #define NCI_PBF_CONT						0x01
 
 #define nci_pbf(hdr)			(__u8)(((hdr)[0]>>4)&0x01)
 #define nci_pbf_set(hdr, pbf)		((hdr)[0] |= (__u8)(((pbf)&0x01)<<4))
 
-/* Control Opcode manipulation */
+ 
 #define nci_opcode_pack(gid, oid)	(__u16)((((__u16)((gid)&0x0f))<<8)|\
 					((__u16)((oid)&0x3f)))
 #define nci_opcode(hdr)			nci_opcode_pack(hdr[0], hdr[1])
 #define nci_opcode_gid(op)		(__u8)(((op)&0x0f00)>>8)
 #define nci_opcode_oid(op)		(__u8)((op)&0x003f)
 
-/* Payload Length */
+ 
 #define nci_plen(hdr)			(__u8)((hdr)[2])
 
-/* Connection ID */
+ 
 #define nci_conn_id(hdr)		(__u8)(((hdr)[0])&0x0f)
 
-/* GID values */
+ 
 #define NCI_GID_CORE						0x0
 #define NCI_GID_RF_MGMT						0x1
 #define NCI_GID_NFCEE_MGMT					0x2
 #define NCI_GID_PROPRIETARY					0xf
 
-/* ----- NCI over SPI head/crc(tail) room needed for outgoing frames ----- */
+ 
 #define NCI_SPI_HDR_LEN						4
 #define NCI_SPI_CRC_LEN						2
 
-/* ---- NCI Packet structures ---- */
+ 
 #define NCI_CTRL_HDR_SIZE					3
 #define NCI_DATA_HDR_SIZE					3
 
 struct nci_ctrl_hdr {
-	__u8	gid;		/* MT & PBF & GID */
+	__u8	gid;		 
 	__u8	oid;
 	__u8	plen;
 } __packed;
 
 struct nci_data_hdr {
-	__u8	conn_id;	/* MT & PBF & ConnID */
+	__u8	conn_id;	 
 	__u8	rfu;
 	__u8	plen;
 } __packed;
 
-/* ------------------------ */
-/* -----  NCI Commands ---- */
-/* ------------------------ */
+ 
+ 
+ 
 #define NCI_OP_CORE_RESET_CMD		nci_opcode_pack(NCI_GID_CORE, 0x00)
 struct nci_core_reset_cmd {
 	__u8	reset_type;
 } __packed;
 
 #define NCI_OP_CORE_INIT_CMD		nci_opcode_pack(NCI_GID_CORE, 0x01)
-/* To support NCI 2.x */
+ 
 struct nci_core_init_v2_cmd {
 	u8	feature1;
 	u8	feature2;
@@ -240,7 +228,7 @@ struct set_config_param {
 
 struct nci_core_set_config_cmd {
 	__u8	num_params;
-	struct	set_config_param param; /* support 1 param per cmd is enough */
+	struct	set_config_param param;  
 } __packed;
 
 #define NCI_OP_CORE_CONN_CREATE_CMD	nci_opcode_pack(NCI_GID_CORE, 0x04)
@@ -316,9 +304,9 @@ struct nci_nfcee_mode_set_cmd {
 
 #define NCI_OP_CORE_GET_CONFIG_CMD	nci_opcode_pack(NCI_GID_CORE, 0x03)
 
-/* ----------------------- */
-/* ---- NCI Responses ---- */
-/* ----------------------- */
+ 
+ 
+ 
 #define NCI_OP_CORE_RESET_RSP		nci_opcode_pack(NCI_GID_CORE, 0x00)
 struct nci_core_reset_rsp {
 	__u8	status;
@@ -331,8 +319,8 @@ struct nci_core_init_rsp_1 {
 	__u8	status;
 	__le32	nfcc_features;
 	__u8	num_supported_rf_interfaces;
-	__u8	supported_rf_interfaces[];	/* variable size array */
-	/* continuted in nci_core_init_rsp_2 */
+	__u8	supported_rf_interfaces[];	 
+	 
 } __packed;
 
 struct nci_core_init_rsp_2 {
@@ -344,7 +332,7 @@ struct nci_core_init_rsp_2 {
 	__le32	manufact_specific_info;
 } __packed;
 
-/* To support NCI ver 2.x */
+ 
 struct nci_core_init_rsp_nci_ver2 {
 	u8	status;
 	__le32	nfcc_features;
@@ -362,7 +350,7 @@ struct nci_core_init_rsp_nci_ver2 {
 struct nci_core_set_config_rsp {
 	__u8	status;
 	__u8	num_params;
-	__u8	params_id[];	/* variable size array */
+	__u8	params_id[];	 
 } __packed;
 
 #define NCI_OP_CORE_CONN_CREATE_RSP	nci_opcode_pack(NCI_GID_CORE, 0x04)
@@ -393,9 +381,9 @@ struct nci_nfcee_discover_rsp {
 
 #define NCI_OP_CORE_GET_CONFIG_RSP	nci_opcode_pack(NCI_GID_CORE, 0x03)
 
-/* --------------------------- */
-/* ---- NCI Notifications ---- */
-/* --------------------------- */
+ 
+ 
+ 
 #define NCI_OP_CORE_RESET_NTF		nci_opcode_pack(NCI_GID_CORE, 0x00)
 struct nci_core_reset_ntf {
 	u8	reset_trigger;
@@ -428,32 +416,32 @@ struct nci_core_intf_error_ntf {
 #define NCI_OP_RF_DISCOVER_NTF		nci_opcode_pack(NCI_GID_RF_MGMT, 0x03)
 struct rf_tech_specific_params_nfca_poll {
 	__u16	sens_res;
-	__u8	nfcid1_len;	/* 0, 4, 7, or 10 Bytes */
+	__u8	nfcid1_len;	 
 	__u8	nfcid1[NFC_NFCID1_MAXSIZE];
-	__u8	sel_res_len;	/* 0 or 1 Bytes */
+	__u8	sel_res_len;	 
 	__u8	sel_res;
 } __packed;
 
 struct rf_tech_specific_params_nfcb_poll {
 	__u8	sensb_res_len;
-	__u8	sensb_res[NFC_SENSB_RES_MAXSIZE];	/* 11 or 12 Bytes */
+	__u8	sensb_res[NFC_SENSB_RES_MAXSIZE];	 
 } __packed;
 
 struct rf_tech_specific_params_nfcf_poll {
 	__u8	bit_rate;
 	__u8	sensf_res_len;
-	__u8	sensf_res[NFC_SENSF_RES_MAXSIZE];	/* 16 or 18 Bytes */
+	__u8	sensf_res[NFC_SENSF_RES_MAXSIZE];	 
 } __packed;
 
 struct rf_tech_specific_params_nfcv_poll {
 	__u8	res_flags;
 	__u8	dsfid;
-	__u8	uid[NFC_ISO15693_UID_MAXSIZE];	/* 8 Bytes */
+	__u8	uid[NFC_ISO15693_UID_MAXSIZE];	 
 } __packed;
 
 struct rf_tech_specific_params_nfcf_listen {
 	__u8	local_nfcid2_len;
-	__u8	local_nfcid2[NFC_NFCID2_MAXSIZE];	/* 0 or 8 Bytes */
+	__u8	local_nfcid2[NFC_NFCID2_MAXSIZE];	 
 } __packed;
 
 struct nci_rf_discover_ntf {
@@ -485,12 +473,12 @@ struct activation_params_nfcb_poll_iso_dep {
 
 struct activation_params_poll_nfc_dep {
 	__u8	atr_res_len;
-	__u8	atr_res[NFC_ATR_RES_MAXSIZE - 2]; /* ATR_RES from byte 3 */
+	__u8	atr_res[NFC_ATR_RES_MAXSIZE - 2];  
 };
 
 struct activation_params_listen_nfc_dep {
 	__u8	atr_req_len;
-	__u8	atr_req[NFC_ATR_REQ_MAXSIZE - 2]; /* ATR_REQ from byte 3 */
+	__u8	atr_req[NFC_ATR_REQ_MAXSIZE - 2];  
 };
 
 struct nci_rf_intf_activated_ntf {
@@ -558,4 +546,4 @@ struct nci_nfcee_discover_ntf {
 
 #define NCI_OP_CORE_RESET_NTF		nci_opcode_pack(NCI_GID_CORE, 0x00)
 
-#endif /* __NCI_H */
+#endif  

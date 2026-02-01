@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018-2019 MediaTek Inc.
 
-/*
- * Driver for MediaTek Command-Queue DMA Controller
- *
- * Author: Shun-Chih Yu <shun-chih.yu@mediatek.com>
- *
- */
+
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -31,13 +26,13 @@
 #define MTK_CQDMA_DMA_BUSWIDTHS		BIT(DMA_SLAVE_BUSWIDTH_4_BYTES)
 #define MTK_CQDMA_ALIGN_SIZE		1
 
-/* The default number of virtual channel */
+ 
 #define MTK_CQDMA_NR_VCHANS		32
 
-/* The default number of physical channel */
+ 
 #define MTK_CQDMA_NR_PCHANS		3
 
-/* Registers for underlying dma manipulation */
+ 
 #define MTK_CQDMA_INT_FLAG		0x0
 #define MTK_CQDMA_INT_EN		0x4
 #define MTK_CQDMA_EN			0x8
@@ -50,7 +45,7 @@
 #define MTK_CQDMA_SRC2			0x60
 #define MTK_CQDMA_DST2			0x64
 
-/* Registers setting */
+ 
 #define MTK_CQDMA_EN_BIT		BIT(0)
 #define MTK_CQDMA_INT_FLAG_BIT		BIT(0)
 #define MTK_CQDMA_INT_EN_BIT		BIT(0)
@@ -63,18 +58,7 @@
 #define MTK_CQDMA_ADDR_LIMIT		GENMASK(31, 0)
 #define MTK_CQDMA_ADDR2_SHFIT		(32)
 
-/**
- * struct mtk_cqdma_vdesc - The struct holding info describing virtual
- *                         descriptor (CVD)
- * @vd:                    An instance for struct virt_dma_desc
- * @len:                   The total data size device wants to move
- * @residue:               The remaining data size device will move
- * @dest:                  The destination address device wants to move to
- * @src:                   The source address device wants to move from
- * @ch:                    The pointer to the corresponding dma channel
- * @node:                  The lise_head struct to build link-list for VDs
- * @parent:                The pointer to the parent CVD
- */
+ 
 struct mtk_cqdma_vdesc {
 	struct virt_dma_desc vd;
 	size_t len;
@@ -87,16 +71,7 @@ struct mtk_cqdma_vdesc {
 	struct mtk_cqdma_vdesc *parent;
 };
 
-/**
- * struct mtk_cqdma_pchan - The struct holding info describing physical
- *                         channel (PC)
- * @queue:                 Queue for the PDs issued to this PC
- * @base:                  The mapped register I/O base of this PC
- * @irq:                   The IRQ that this PC are using
- * @refcnt:                Track how many VCs are using this PC
- * @tasklet:               Tasklet for this PC
- * @lock:                  Lock protect agaisting multiple VCs access PC
- */
+ 
 struct mtk_cqdma_pchan {
 	struct list_head queue;
 	void __iomem *base;
@@ -106,18 +81,11 @@ struct mtk_cqdma_pchan {
 
 	struct tasklet_struct tasklet;
 
-	/* lock to protect PC */
+	 
 	spinlock_t lock;
 };
 
-/**
- * struct mtk_cqdma_vchan - The struct holding info describing virtual
- *                         channel (VC)
- * @vc:                    An instance for struct virt_dma_chan
- * @pc:                    The pointer to the underlying PC
- * @issue_completion:	   The wait for all issued descriptors completited
- * @issue_synchronize:	   Bool indicating channel synchronization starts
- */
+ 
 struct mtk_cqdma_vchan {
 	struct virt_dma_chan vc;
 	struct mtk_cqdma_pchan *pc;
@@ -125,16 +93,7 @@ struct mtk_cqdma_vchan {
 	bool issue_synchronize;
 };
 
-/**
- * struct mtk_cqdma_device - The struct holding info describing CQDMA
- *                          device
- * @ddev:                   An instance for struct dma_device
- * @clk:                    The clock that device internal is using
- * @dma_requests:           The number of VCs the device supports to
- * @dma_channels:           The number of PCs the device supports to
- * @vc:                     The pointer to all available VCs
- * @pc:                     The pointer to all the underlying PCs
- */
+ 
 struct mtk_cqdma_device {
 	struct dma_device ddev;
 	struct clk *clk;
@@ -230,16 +189,16 @@ static int mtk_cqdma_hard_reset(struct mtk_cqdma_pchan *pc)
 static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
 			    struct mtk_cqdma_vdesc *cvd)
 {
-	/* wait for the previous transaction done */
+	 
 	if (mtk_cqdma_poll_engine_done(pc, true) < 0)
 		dev_err(cqdma2dev(to_cqdma_dev(cvd->ch)), "cqdma wait transaction timeout\n");
 
-	/* warm reset the dma engine for the new transaction */
+	 
 	mtk_dma_set(pc, MTK_CQDMA_RESET, MTK_CQDMA_WARM_RST_BIT);
 	if (mtk_cqdma_poll_engine_done(pc, true) < 0)
 		dev_err(cqdma2dev(to_cqdma_dev(cvd->ch)), "cqdma warm reset timeout\n");
 
-	/* setup the source */
+	 
 	mtk_dma_set(pc, MTK_CQDMA_SRC, cvd->src & MTK_CQDMA_ADDR_LIMIT);
 #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
 	mtk_dma_set(pc, MTK_CQDMA_SRC2, cvd->src >> MTK_CQDMA_ADDR2_SHFIT);
@@ -247,7 +206,7 @@ static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
 	mtk_dma_set(pc, MTK_CQDMA_SRC2, 0);
 #endif
 
-	/* setup the destination */
+	 
 	mtk_dma_set(pc, MTK_CQDMA_DST, cvd->dest & MTK_CQDMA_ADDR_LIMIT);
 #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
 	mtk_dma_set(pc, MTK_CQDMA_DST2, cvd->dest >> MTK_CQDMA_ADDR2_SHFIT);
@@ -255,10 +214,10 @@ static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
 	mtk_dma_set(pc, MTK_CQDMA_DST2, 0);
 #endif
 
-	/* setup the length */
+	 
 	mtk_dma_set(pc, MTK_CQDMA_LEN1, cvd->len);
 
-	/* start dma engine */
+	 
 	mtk_dma_set(pc, MTK_CQDMA_EN, MTK_CQDMA_EN_BIT);
 }
 
@@ -273,28 +232,25 @@ static void mtk_cqdma_issue_vchan_pending(struct mtk_cqdma_vchan *cvc)
 	lockdep_assert_held(&pc->lock);
 
 	list_for_each_entry_safe(vd, vd2, &cvc->vc.desc_issued, node) {
-		/* need to trigger dma engine if PC's queue is empty */
+		 
 		if (list_empty(&pc->queue))
 			trigger_engine = true;
 
 		cvd = to_cqdma_vdesc(vd);
 
-		/* add VD into PC's queue */
+		 
 		list_add_tail(&cvd->node, &pc->queue);
 
-		/* start the dma engine */
+		 
 		if (trigger_engine)
 			mtk_cqdma_start(pc, cvd);
 
-		/* remove VD from list desc_issued */
+		 
 		list_del(&vd->node);
 	}
 }
 
-/*
- * return true if this VC is active,
- * meaning that there are VDs under processing by the PC
- */
+ 
 static bool mtk_cqdma_is_vchan_active(struct mtk_cqdma_vchan *cvc)
 {
 	struct mtk_cqdma_vdesc *cvd;
@@ -306,16 +262,14 @@ static bool mtk_cqdma_is_vchan_active(struct mtk_cqdma_vchan *cvc)
 	return false;
 }
 
-/*
- * return the pointer of the CVD that is just consumed by the PC
- */
+ 
 static struct mtk_cqdma_vdesc
 *mtk_cqdma_consume_work_queue(struct mtk_cqdma_pchan *pc)
 {
 	struct mtk_cqdma_vchan *cvc;
 	struct mtk_cqdma_vdesc *cvd, *ret = NULL;
 
-	/* consume a CVD from PC's queue */
+	 
 	cvd = list_first_entry_or_null(&pc->queue,
 				       struct mtk_cqdma_vdesc, node);
 	if (unlikely(!cvd || !cvd->parent))
@@ -324,20 +278,20 @@ static struct mtk_cqdma_vdesc
 	cvc = to_cqdma_vchan(cvd->ch);
 	ret = cvd;
 
-	/* update residue of the parent CVD */
+	 
 	cvd->parent->residue -= cvd->len;
 
-	/* delete CVD from PC's queue */
+	 
 	list_del(&cvd->node);
 
 	spin_lock(&cvc->vc.lock);
 
-	/* check whether all the child CVDs completed */
+	 
 	if (!cvd->parent->residue) {
-		/* add the parent VD into list desc_completed */
+		 
 		vchan_cookie_complete(&cvd->parent->vd);
 
-		/* setup completion if this VC is under synchronization */
+		 
 		if (cvc->issue_synchronize && !mtk_cqdma_is_vchan_active(cvc)) {
 			complete(&cvc->issue_completion);
 			cvc->issue_synchronize = false;
@@ -346,7 +300,7 @@ static struct mtk_cqdma_vdesc
 
 	spin_unlock(&cvc->vc.lock);
 
-	/* start transaction for next CVD in the queue */
+	 
 	cvd = list_first_entry_or_null(&pc->queue,
 				       struct mtk_cqdma_vdesc, node);
 	if (cvd)
@@ -362,23 +316,20 @@ static void mtk_cqdma_tasklet_cb(struct tasklet_struct *t)
 	unsigned long flags;
 
 	spin_lock_irqsave(&pc->lock, flags);
-	/* consume the queue */
+	 
 	cvd = mtk_cqdma_consume_work_queue(pc);
 	spin_unlock_irqrestore(&pc->lock, flags);
 
-	/* submit the next CVD */
+	 
 	if (cvd) {
 		dma_run_dependencies(&cvd->vd.tx);
 
-		/*
-		 * free child CVD after completion.
-		 * the parent CVD would be freed with desc_free by user.
-		 */
+		 
 		if (cvd->parent != cvd)
 			kfree(cvd);
 	}
 
-	/* re-enable interrupt before leaving tasklet */
+	 
 	enable_irq(pc->irq);
 }
 
@@ -389,12 +340,12 @@ static irqreturn_t mtk_cqdma_irq(int irq, void *devid)
 	bool schedule_tasklet = false;
 	u32 i;
 
-	/* clear interrupt flags for each PC */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i, schedule_tasklet = false) {
 		spin_lock(&cqdma->pc[i]->lock);
 		if (mtk_dma_read(cqdma->pc[i],
 				 MTK_CQDMA_INT_FLAG) & MTK_CQDMA_INT_FLAG_BIT) {
-			/* clear interrupt */
+			 
 			mtk_dma_clr(cqdma->pc[i], MTK_CQDMA_INT_FLAG,
 				    MTK_CQDMA_INT_FLAG_BIT);
 
@@ -404,10 +355,10 @@ static irqreturn_t mtk_cqdma_irq(int irq, void *devid)
 		spin_unlock(&cqdma->pc[i]->lock);
 
 		if (schedule_tasklet) {
-			/* disable interrupt */
+			 
 			disable_irq_nosync(cqdma->pc[i]->irq);
 
-			/* schedule the tasklet to handle the transactions */
+			 
 			tasklet_schedule(&cqdma->pc[i]->tasklet);
 		}
 	}
@@ -472,7 +423,7 @@ static void mtk_cqdma_issue_pending(struct dma_chan *c)
 	unsigned long pc_flags;
 	unsigned long vc_flags;
 
-	/* acquire PC's lock before VS's lock for lock dependency in tasklet */
+	 
 	spin_lock_irqsave(&cvc->pc->lock, pc_flags);
 	spin_lock_irqsave(&cvc->vc.lock, vc_flags);
 
@@ -491,17 +442,7 @@ mtk_cqdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest,
 	struct dma_async_tx_descriptor *tx = NULL, *prev_tx = NULL;
 	size_t i, tlen, nr_vd;
 
-	/*
-	 * In the case that trsanction length is larger than the
-	 * DMA engine supports, a single memcpy transaction needs
-	 * to be separated into several DMA transactions.
-	 * Each DMA transaction would be described by a CVD,
-	 * and the first one is referred as the parent CVD,
-	 * while the others are child CVDs.
-	 * The parent CVD's tx descriptor is the only tx descriptor
-	 * returned to the DMA user, and it should not be completed
-	 * until all the child CVDs completed.
-	 */
+	 
 	nr_vd = DIV_ROUND_UP(len, MTK_CQDMA_MAX_LEN);
 	cvd = kcalloc(nr_vd, sizeof(*cvd), GFP_NOWAIT);
 	if (!cvd)
@@ -515,16 +456,16 @@ mtk_cqdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest,
 			return NULL;
 		}
 
-		/* setup dma channel */
+		 
 		cvd[i]->ch = c;
 
-		/* setup sourece, destination, and length */
+		 
 		tlen = (len > MTK_CQDMA_MAX_LEN) ? MTK_CQDMA_MAX_LEN : len;
 		cvd[i]->len = tlen;
 		cvd[i]->src = src;
 		cvd[i]->dest = dest;
 
-		/* setup tx descriptor */
+		 
 		tx = vchan_tx_prep(to_virt_chan(c), &cvd[i]->vd, flags);
 		tx->next = NULL;
 
@@ -537,7 +478,7 @@ mtk_cqdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest,
 
 		cvd[i]->parent = cvd[0];
 
-		/* update the src, dest, len, prev_tx for the next CVD */
+		 
 		src += tlen;
 		dest += tlen;
 		len -= tlen;
@@ -553,17 +494,14 @@ static void mtk_cqdma_free_inactive_desc(struct dma_chan *c)
 	unsigned long flags;
 	LIST_HEAD(head);
 
-	/*
-	 * set desc_allocated, desc_submitted,
-	 * and desc_issued as the candicates to be freed
-	 */
+	 
 	spin_lock_irqsave(&vc->lock, flags);
 	list_splice_tail_init(&vc->desc_allocated, &head);
 	list_splice_tail_init(&vc->desc_submitted, &head);
 	list_splice_tail_init(&vc->desc_issued, &head);
 	spin_unlock_irqrestore(&vc->lock, flags);
 
-	/* free descriptor lists */
+	 
 	vchan_dma_desc_free_list(vc, &head);
 }
 
@@ -574,11 +512,11 @@ static void mtk_cqdma_free_active_desc(struct dma_chan *c)
 	unsigned long pc_flags;
 	unsigned long vc_flags;
 
-	/* acquire PC's lock first due to lock dependency in dma ISR */
+	 
 	spin_lock_irqsave(&cvc->pc->lock, pc_flags);
 	spin_lock_irqsave(&cvc->vc.lock, vc_flags);
 
-	/* synchronization is required if this VC is active */
+	 
 	if (mtk_cqdma_is_vchan_active(cvc)) {
 		cvc->issue_synchronize = true;
 		sync_needed = true;
@@ -587,11 +525,11 @@ static void mtk_cqdma_free_active_desc(struct dma_chan *c)
 	spin_unlock_irqrestore(&cvc->vc.lock, vc_flags);
 	spin_unlock_irqrestore(&cvc->pc->lock, pc_flags);
 
-	/* waiting for the completion of this VC */
+	 
 	if (sync_needed)
 		wait_for_completion(&cvc->issue_completion);
 
-	/* free all descriptors in list desc_completed */
+	 
 	vchan_synchronize(&cvc->vc);
 
 	WARN_ONCE(!list_empty(&cvc->vc.desc_completed),
@@ -600,10 +538,10 @@ static void mtk_cqdma_free_active_desc(struct dma_chan *c)
 
 static int mtk_cqdma_terminate_all(struct dma_chan *c)
 {
-	/* free descriptors not processed yet by hardware */
+	 
 	mtk_cqdma_free_inactive_desc(c);
 
-	/* free descriptors being processed by hardware */
+	 
 	mtk_cqdma_free_active_desc(c);
 
 	return 0;
@@ -617,7 +555,7 @@ static int mtk_cqdma_alloc_chan_resources(struct dma_chan *c)
 	u32 i, min_refcnt = U32_MAX, refcnt;
 	unsigned long flags;
 
-	/* allocate PC with the minimun refcount */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i) {
 		refcnt = refcount_read(&cqdma->pc[i]->refcnt);
 		if (refcnt < min_refcnt) {
@@ -632,16 +570,13 @@ static int mtk_cqdma_alloc_chan_resources(struct dma_chan *c)
 	spin_lock_irqsave(&pc->lock, flags);
 
 	if (!refcount_read(&pc->refcnt)) {
-		/* allocate PC when the refcount is zero */
+		 
 		mtk_cqdma_hard_reset(pc);
 
-		/* enable interrupt for this PC */
+		 
 		mtk_dma_set(pc, MTK_CQDMA_INT_EN, MTK_CQDMA_INT_EN_BIT);
 
-		/*
-		 * refcount_inc would complain increment on 0; use-after-free.
-		 * Thus, we need to explicitly set it as 1 initially.
-		 */
+		 
 		refcount_set(&pc->refcnt, 1);
 	} else {
 		refcount_inc(&pc->refcnt);
@@ -659,26 +594,26 @@ static void mtk_cqdma_free_chan_resources(struct dma_chan *c)
 	struct mtk_cqdma_vchan *cvc = to_cqdma_vchan(c);
 	unsigned long flags;
 
-	/* free all descriptors in all lists on the VC */
+	 
 	mtk_cqdma_terminate_all(c);
 
 	spin_lock_irqsave(&cvc->pc->lock, flags);
 
-	/* PC is not freed until there is no VC mapped to it */
+	 
 	if (refcount_dec_and_test(&cvc->pc->refcnt)) {
-		/* start the flush operation and stop the engine */
+		 
 		mtk_dma_set(cvc->pc, MTK_CQDMA_FLUSH, MTK_CQDMA_FLUSH_BIT);
 
-		/* wait for the completion of flush operation */
+		 
 		if (mtk_cqdma_poll_engine_done(cvc->pc, true) < 0)
 			dev_err(cqdma2dev(to_cqdma_dev(c)), "cqdma flush timeout\n");
 
-		/* clear the flush bit and interrupt flag */
+		 
 		mtk_dma_clr(cvc->pc, MTK_CQDMA_FLUSH, MTK_CQDMA_FLUSH_BIT);
 		mtk_dma_clr(cvc->pc, MTK_CQDMA_INT_FLAG,
 			    MTK_CQDMA_INT_FLAG_BIT);
 
-		/* disable interrupt for this PC */
+		 
 		mtk_dma_clr(cvc->pc, MTK_CQDMA_INT_EN, MTK_CQDMA_INT_EN_BIT);
 	}
 
@@ -702,7 +637,7 @@ static int mtk_cqdma_hw_init(struct mtk_cqdma_device *cqdma)
 		return err;
 	}
 
-	/* reset all PCs */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i) {
 		spin_lock_irqsave(&cqdma->pc[i]->lock, flags);
 		if (mtk_cqdma_hard_reset(cqdma->pc[i]) < 0) {
@@ -725,7 +660,7 @@ static void mtk_cqdma_hw_deinit(struct mtk_cqdma_device *cqdma)
 	unsigned long flags;
 	u32 i;
 
-	/* reset all PCs */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i) {
 		spin_lock_irqsave(&cqdma->pc[i]->lock, flags);
 		if (mtk_cqdma_hard_reset(cqdma->pc[i]) < 0)
@@ -741,7 +676,7 @@ static void mtk_cqdma_hw_deinit(struct mtk_cqdma_device *cqdma)
 
 static const struct of_device_id mtk_cqdma_match[] = {
 	{ .compatible = "mediatek,mt6765-cqdma" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mtk_cqdma_match);
 
@@ -807,7 +742,7 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
 	if (!cqdma->pc)
 		return -ENOMEM;
 
-	/* initialization for PCs */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i) {
 		cqdma->pc[i] = devm_kcalloc(&pdev->dev, 1,
 					    sizeof(**cqdma->pc), GFP_KERNEL);
@@ -821,7 +756,7 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
 		if (IS_ERR(cqdma->pc[i]->base))
 			return PTR_ERR(cqdma->pc[i]->base);
 
-		/* allocate IRQ resource */
+		 
 		err = platform_get_irq(pdev, i);
 		if (err < 0)
 			return err;
@@ -837,7 +772,7 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* allocate resource for VCs */
+	 
 	cqdma->vc = devm_kcalloc(&pdev->dev, cqdma->dma_requests,
 				 sizeof(*cqdma->vc), GFP_KERNEL);
 	if (!cqdma->vc)
@@ -871,7 +806,7 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, cqdma);
 
-	/* initialize tasklet for each PC */
+	 
 	for (i = 0; i < cqdma->dma_channels; ++i)
 		tasklet_setup(&cqdma->pc[i]->tasklet, mtk_cqdma_tasklet_cb);
 
@@ -892,7 +827,7 @@ static int mtk_cqdma_remove(struct platform_device *pdev)
 	unsigned long flags;
 	int i;
 
-	/* kill VC task */
+	 
 	for (i = 0; i < cqdma->dma_requests; i++) {
 		vc = &cqdma->vc[i];
 
@@ -900,20 +835,20 @@ static int mtk_cqdma_remove(struct platform_device *pdev)
 		tasklet_kill(&vc->vc.task);
 	}
 
-	/* disable interrupt */
+	 
 	for (i = 0; i < cqdma->dma_channels; i++) {
 		spin_lock_irqsave(&cqdma->pc[i]->lock, flags);
 		mtk_dma_clr(cqdma->pc[i], MTK_CQDMA_INT_EN,
 			    MTK_CQDMA_INT_EN_BIT);
 		spin_unlock_irqrestore(&cqdma->pc[i]->lock, flags);
 
-		/* Waits for any pending IRQ handlers to complete */
+		 
 		synchronize_irq(cqdma->pc[i]->irq);
 
 		tasklet_kill(&cqdma->pc[i]->tasklet);
 	}
 
-	/* disable hardware */
+	 
 	mtk_cqdma_hw_deinit(cqdma);
 
 	dma_async_device_unregister(&cqdma->ddev);

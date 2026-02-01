@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra20_i2s.c - Tegra20 I2S driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2010,2012 - NVIDIA, Inc.
- *
- * Based on code copyright/by:
- *
- * Copyright (c) 2009-2010, NVIDIA Corporation.
- * Scott Peterson <speterson@nvidia.com>
- *
- * Copyright (C) 2010 Google, Inc.
- * Iliyan Malchev <malchev@google.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -171,7 +158,7 @@ static int tegra20_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	srate = params_rate(params);
 
-	/* Final "* 2" required by Tegra hardware */
+	 
 	i2sclock = srate * params_channels(params) * sample_size * 2;
 
 	ret = clk_set_rate(i2s->clk_i2s, i2sclock);
@@ -286,10 +273,7 @@ static int tegra20_i2s_filter_rates(struct snd_pcm_hw_params *params,
 			valid_rates |= BIT(i);
 	}
 
-	/*
-	 * At least one rate must be valid, otherwise the parent clock isn't
-	 * audio PLL. Nothing should be filtered in this case.
-	 */
+	 
 	if (!valid_rates)
 		valid_rates = BIT(ARRAY_SIZE(tegra20_i2s_rates)) - 1;
 

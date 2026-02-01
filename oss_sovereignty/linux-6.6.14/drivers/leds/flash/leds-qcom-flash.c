@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -13,7 +11,7 @@
 #include <linux/regmap.h>
 #include <media/v4l2-flash-led-class.h>
 
-/* registers definitions */
+ 
 #define FLASH_TYPE_REG			0x04
 #define FLASH_TYPE_VAL			0x18
 
@@ -58,7 +56,7 @@
 #define FLASH_IRES_5MA_VAL_4CH		1
 #define FLASH_IRES_5MA_VAL_3CH		3
 
-/* constants */
+ 
 #define FLASH_CURRENT_MAX_UA		1500000
 #define TORCH_CURRENT_MAX_UA		500000
 #define FLASH_TOTAL_CURRENT_MAX_UA	2000000
@@ -102,27 +100,27 @@ enum {
 };
 
 static struct reg_field mvflash_3ch_regs[REG_MAX_COUNT] = {
-	REG_FIELD(0x08, 0, 7),			/* status1	*/
-	REG_FIELD(0x09, 0, 7),                  /* status2	*/
-	REG_FIELD(0x0a, 0, 7),                  /* status3	*/
-	REG_FIELD_ID(0x40, 0, 7, 3, 1),         /* chan_timer	*/
-	REG_FIELD_ID(0x43, 0, 6, 3, 1),         /* itarget	*/
-	REG_FIELD(0x46, 7, 7),                  /* module_en	*/
-	REG_FIELD(0x47, 0, 5),                  /* iresolution	*/
-	REG_FIELD_ID(0x49, 0, 2, 3, 1),         /* chan_strobe	*/
-	REG_FIELD(0x4c, 0, 2),                  /* chan_en	*/
+	REG_FIELD(0x08, 0, 7),			 
+	REG_FIELD(0x09, 0, 7),                   
+	REG_FIELD(0x0a, 0, 7),                   
+	REG_FIELD_ID(0x40, 0, 7, 3, 1),          
+	REG_FIELD_ID(0x43, 0, 6, 3, 1),          
+	REG_FIELD(0x46, 7, 7),                   
+	REG_FIELD(0x47, 0, 5),                   
+	REG_FIELD_ID(0x49, 0, 2, 3, 1),          
+	REG_FIELD(0x4c, 0, 2),                   
 };
 
 static struct reg_field mvflash_4ch_regs[REG_MAX_COUNT] = {
-	REG_FIELD(0x06, 0, 7),			/* status1	*/
-	REG_FIELD(0x07, 0, 6),			/* status2	*/
-	REG_FIELD(0x09, 0, 7),			/* status3	*/
-	REG_FIELD_ID(0x3e, 0, 7, 4, 1),		/* chan_timer	*/
-	REG_FIELD_ID(0x42, 0, 6, 4, 1),		/* itarget	*/
-	REG_FIELD(0x46, 7, 7),			/* module_en	*/
-	REG_FIELD(0x49, 0, 3),			/* iresolution	*/
-	REG_FIELD_ID(0x4a, 0, 6, 4, 1),		/* chan_strobe	*/
-	REG_FIELD(0x4e, 0, 3),			/* chan_en	*/
+	REG_FIELD(0x06, 0, 7),			 
+	REG_FIELD(0x07, 0, 6),			 
+	REG_FIELD(0x09, 0, 7),			 
+	REG_FIELD_ID(0x3e, 0, 7, 4, 1),		 
+	REG_FIELD_ID(0x42, 0, 6, 4, 1),		 
+	REG_FIELD(0x46, 7, 7),			 
+	REG_FIELD(0x49, 0, 3),			 
+	REG_FIELD_ID(0x4a, 0, 6, 4, 1),		 
+	REG_FIELD(0x4e, 0, 3),			 
 };
 
 struct qcom_flash_data {
@@ -179,10 +177,7 @@ static int set_flash_current(struct qcom_flash_led *led, u32 current_ma, enum le
 	u8 shift, ires_mask = 0, ires_val = 0, chan_id;
 	int i, rc;
 
-	/*
-	 * Split the current across the channels and set the
-	 * IRESOLUTION and ITARGET registers accordingly.
-	 */
+	 
 	itarg_ua = (current_ma * UA_PER_MA) / led->chan_count + 1;
 	ires_ua = (mode == FLASH_MODE) ? FLASH_IRES_UA : TORCH_IRES_UA;
 
@@ -226,7 +221,7 @@ static int set_flash_timeout(struct qcom_flash_led *led, u32 timeout_ms)
 	u8 timer, chan_id;
 	int rc, i;
 
-	/* set SAFETY_TIMER for all the channels connected to the same LED */
+	 
 	timeout_ms = min_t(u32, timeout_ms, led->max_timeout_ms);
 
 	for (i = 0; i < led->chan_count; i++) {
@@ -252,7 +247,7 @@ static int set_flash_strobe(struct qcom_flash_led *led, enum led_strobe strobe, 
 	u8 strobe_sel, chan_en, chan_id, chan_mask = 0;
 	int rc, i;
 
-	/* Set SW strobe config for all channels connected to the LED */
+	 
 	for (i = 0; i < led->chan_count; i++) {
 		chan_id = led->chan_id[i];
 
@@ -273,7 +268,7 @@ static int set_flash_strobe(struct qcom_flash_led *led, enum led_strobe strobe, 
 		chan_mask |= BIT(chan_id);
 	}
 
-	/* Enable/disable flash channels */
+	 
 	chan_en = state ? chan_mask : 0;
 	rc = regmap_field_update_bits(flash_data->r_fields[REG_CHAN_EN], chan_mask, chan_en);
 	if (rc)
@@ -433,7 +428,7 @@ static int qcom_flash_led_brightness_set(struct led_classdev *led_cdev,
 	if (rc)
 		return rc;
 
-	/* Disable flash timeout for torch LED */
+	 
 	rc = set_flash_timeout(led, 0);
 	if (rc)
 		return rc;
@@ -576,7 +571,7 @@ static int qcom_flash_register_led_device(struct device *dev,
 			return -EINVAL;
 		}
 
-		/* Make chan_id indexing from 0 */
+		 
 		led->chan_id[i] = channels[i] - 1;
 	}
 
@@ -607,7 +602,7 @@ static int qcom_flash_register_led_device(struct device *dev,
 		current_ua = min_t(u32, current_ua, FLASH_CURRENT_MAX_UA * led->chan_count);
 		current_ua = min_t(u32, current_ua, FLASH_TOTAL_CURRENT_MAX_UA);
 
-		/* Initialize flash class LED device brightness settings */
+		 
 		brightness = &flash->brightness;
 		brightness->min = brightness->step = FLASH_IRES_UA * led->chan_count;
 		brightness->max = current_ua;
@@ -625,7 +620,7 @@ static int qcom_flash_register_led_device(struct device *dev,
 
 		timeout_us = min_t(u32, timeout_us, FLASH_TIMEOUT_MAX_US);
 
-		/* Initialize flash class LED device timeout settings */
+		 
 		timeout = &flash->timeout;
 		timeout->min = timeout->step = FLASH_TIMEOUT_STEP_US;
 		timeout->val = timeout->max = timeout_us;

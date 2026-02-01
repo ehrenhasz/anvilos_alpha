@@ -1,23 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains platform specific structure definitions
- * and init function used by Meteor Lake PCH.
- *
- * Copyright (c) 2022, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include "core.h"
 
-/*
- * Die Mapping to Product.
- * Product SOCDie IOEDie PCHDie
- * MTL-M   SOC-M  IOE-M  None
- * MTL-P   SOC-M  IOE-P  None
- * MTL-S   SOC-S  IOE-P  PCH-S
- */
+ 
 
 const struct pmc_bit_map mtl_socm_pfear_map[] = {
 	{"PMC",                 BIT(0)},
@@ -127,7 +114,7 @@ const struct pmc_bit_map mtl_socm_ltr_show_map[] = {
 	{"ESE",                 MTL_PMC_LTR_ESE},
 	{"IOE_PMC",		MTL_PMC_LTR_IOE_PMC},
 
-	/* Below two cannot be used for LTR_IGNORE */
+	 
 	{"CURRENT_PLATFORM",	CNP_PMC_LTR_CUR_PLT},
 	{"AGGREGATED_SYSTEM",	CNP_PMC_LTR_CUR_ASLT},
 	{}
@@ -585,7 +572,7 @@ const struct pmc_bit_map mtl_ioep_ltr_show_map[] = {
 	{"THC1",		TGL_PMC_LTR_THC1},
 	{"SOUTHPORT_G",		MTL_PMC_LTR_SPG},
 
-	/* Below two cannot be used for LTR_IGNORE */
+	 
 	{"CURRENT_PLATFORM",	CNP_PMC_LTR_CUR_PLT},
 	{"AGGREGATED_SYSTEM",	CNP_PMC_LTR_CUR_ASLT},
 	{}
@@ -965,10 +952,7 @@ static void mtl_set_device_d3(unsigned int device)
 	}
 }
 
-/*
- * Set power state of select devices that do not have drivers to D3
- * so that they do not block Package C entry.
- */
+ 
 static void mtl_d3_fixup(void)
 {
 	mtl_set_device_d3(MTL_GNA_PCI_DEV);
@@ -997,7 +981,7 @@ int mtl_core_init(struct pmc_dev *pmcdev)
 	pmcdev->regmap_list = mtl_pmc_info_list;
 	pmc_core_ssram_init(pmcdev);
 
-	/* If regbase not assigned, set map and discover using legacy method */
+	 
 	if (!pmc->regbase) {
 		pmc->map = &mtl_socm_reg_map;
 		ret = get_primary_reg_base(pmc);

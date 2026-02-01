@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 Noralf Trønnes
- */
+ 
+ 
 
 #ifndef __LINUX_DRM_FORMAT_HELPER_H
 #define __LINUX_DRM_FORMAT_HELPER_H
@@ -67,4 +65,4 @@ size_t drm_fb_build_fourcc_list(struct drm_device *dev,
 				const u32 *native_fourccs, size_t native_nfourccs,
 				u32 *fourccs_out, size_t nfourccs_out);
 
-#endif /* __LINUX_DRM_FORMAT_HELPER_H */
+#endif  

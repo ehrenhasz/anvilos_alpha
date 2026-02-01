@@ -1,25 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-
-   Copyright (C) 2014 Intel Corporation
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
+ 
 
 #include <linux/sched/signal.h>
 
@@ -58,15 +37,13 @@ static int req_run(struct hci_request *req, hci_req_complete_t complete,
 
 	bt_dev_dbg(hdev, "length %u", skb_queue_len(&req->cmd_q));
 
-	/* If an error occurred during request building, remove all HCI
-	 * commands queued on the HCI request queue.
-	 */
+	 
 	if (req->err) {
 		skb_queue_purge(&req->cmd_q);
 		return req->err;
 	}
 
-	/* Do not allow empty requests */
+	 
 	if (skb_queue_empty(&req->cmd_q))
 		return -ENODATA;
 
@@ -111,7 +88,7 @@ void hci_req_sync_complete(struct hci_dev *hdev, u8 result, u16 opcode,
 	}
 }
 
-/* Execute request and wait for completion. */
+ 
 int __hci_req_sync(struct hci_dev *hdev, int (*func)(struct hci_request *req,
 						     unsigned long opt),
 		   unsigned long opt, u32 timeout, u8 *hci_status)
@@ -136,11 +113,7 @@ int __hci_req_sync(struct hci_dev *hdev, int (*func)(struct hci_request *req,
 	if (err < 0) {
 		hdev->req_status = 0;
 
-		/* ENODATA means the HCI request command queue is empty.
-		 * This can happen when a request with conditionals doesn't
-		 * trigger any commands to be sent. This is normal behavior
-		 * and should not trigger an error return.
-		 */
+		 
 		if (err == -ENODATA) {
 			if (hci_status)
 				*hci_status = 0;
@@ -194,12 +167,9 @@ int hci_req_sync(struct hci_dev *hdev, int (*req)(struct hci_request *req,
 {
 	int ret;
 
-	/* Serialize all requests */
+	 
 	hci_req_sync_lock(hdev);
-	/* check the state after obtaing the lock to protect the HCI_UP
-	 * against any races from hci_dev_do_close when the controller
-	 * gets removed.
-	 */
+	 
 	if (test_bit(HCI_UP, &hdev->flags))
 		ret = __hci_req_sync(hdev, req, opt, timeout, hci_status);
 	else
@@ -235,7 +205,7 @@ struct sk_buff *hci_prepare_cmd(struct hci_dev *hdev, u16 opcode, u32 plen,
 	return skb;
 }
 
-/* Queue a command to an asynchronous HCI request */
+ 
 void hci_req_add_ev(struct hci_request *req, u16 opcode, u32 plen,
 		    const void *param, u8 event)
 {
@@ -244,9 +214,7 @@ void hci_req_add_ev(struct hci_request *req, u16 opcode, u32 plen,
 
 	bt_dev_dbg(hdev, "opcode 0x%4.4x plen %d", opcode, plen);
 
-	/* If an error occurred during request building, there is no point in
-	 * queueing the HCI command. We can simply return.
-	 */
+	 
 	if (req->err)
 		return;
 
@@ -294,18 +262,10 @@ static void cancel_interleave_scan(struct hci_dev *hdev)
 	hdev->interleave_scan_state = INTERLEAVE_SCAN_NONE;
 }
 
-/* Return true if interleave_scan wasn't started until exiting this function,
- * otherwise, return false
- */
+ 
 static bool __hci_update_interleaved_scan(struct hci_dev *hdev)
 {
-	/* Do interleaved scan only if all of the following are true:
-	 * - There is at least one ADV monitor
-	 * - At least one pending LE connection or one device to be scanned for
-	 * - Monitor offloading is not supported
-	 * If so, we should alternate between allowlist scan and one without
-	 * any filters to save power.
-	 */
+	 
 	bool use_interleaving = hci_is_adv_monitoring(hdev) &&
 				!(list_empty(&hdev->pend_le_conns) &&
 				  list_empty(&hdev->pend_le_reports)) &&
@@ -349,7 +309,7 @@ void hci_req_add_le_scan_disable(struct hci_request *req, bool rpa_le_conn)
 		hci_req_add(req, HCI_OP_LE_SET_SCAN_ENABLE, sizeof(cp), &cp);
 	}
 
-	/* Disable address resolution */
+	 
 	if (hci_dev_test_flag(hdev, HCI_LL_RPA_RESOLUTION) && !rpa_le_conn) {
 		__u8 enable = 0x00;
 
@@ -385,7 +345,7 @@ static void del_from_accept_list(struct hci_request *req, bdaddr_t *bdaddr,
 	}
 }
 
-/* Adds connection to accept list if needed. On error, returns -1. */
+ 
 static int add_to_accept_list(struct hci_request *req,
 			      struct hci_conn_params *params, u8 *num_entries,
 			      bool allow_rpa)
@@ -393,23 +353,23 @@ static int add_to_accept_list(struct hci_request *req,
 	struct hci_cp_le_add_to_accept_list cp;
 	struct hci_dev *hdev = req->hdev;
 
-	/* Already in accept list */
+	 
 	if (hci_bdaddr_list_lookup(&hdev->le_accept_list, &params->addr,
 				   params->addr_type))
 		return 0;
 
-	/* Select filter policy to accept all advertising */
+	 
 	if (*num_entries >= hdev->le_accept_list_size)
 		return -1;
 
-	/* Accept list can not be used with RPAs */
+	 
 	if (!allow_rpa &&
 	    !hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY) &&
 	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
 		return -1;
 	}
 
-	/* During suspend, only wakeable devices can be in accept list */
+	 
 	if (hdev->suspended &&
 	    !(params->flags & HCI_CONN_FLAG_REMOTE_WAKEUP))
 		return 0;
@@ -454,22 +414,13 @@ static u8 update_accept_list(struct hci_request *req)
 	struct bdaddr_list *b;
 	u8 num_entries = 0;
 	bool pend_conn, pend_report;
-	/* We allow usage of accept list even with RPAs in suspend. In the worst
-	 * case, we won't be able to wake from devices that use the privacy1.2
-	 * features. Additionally, once we support privacy1.2 and IRK
-	 * offloading, we can update this to also check for those conditions.
-	 */
+	 
 	bool allow_rpa = hdev->suspended;
 
 	if (use_ll_privacy(hdev))
 		allow_rpa = true;
 
-	/* Go through the current accept list programmed into the
-	 * controller one by one and check if that address is still
-	 * in the list of pending connections or list of devices to
-	 * report. If not present in either list, then queue the
-	 * command to remove it from the controller.
-	 */
+	 
 	list_for_each_entry(b, &hdev->le_accept_list, list) {
 		pend_conn = hci_pend_le_action_lookup(&hdev->pend_le_conns,
 						      &b->bdaddr,
@@ -478,15 +429,13 @@ static u8 update_accept_list(struct hci_request *req)
 							&b->bdaddr,
 							b->bdaddr_type);
 
-		/* If the device is not likely to connect or report,
-		 * remove it from the accept list.
-		 */
+		 
 		if (!pend_conn && !pend_report) {
 			del_from_accept_list(req, &b->bdaddr, b->bdaddr_type);
 			continue;
 		}
 
-		/* Accept list can not be used with RPAs */
+		 
 		if (!allow_rpa &&
 		    !hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY) &&
 		    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
@@ -496,41 +445,25 @@ static u8 update_accept_list(struct hci_request *req)
 		num_entries++;
 	}
 
-	/* Since all no longer valid accept list entries have been
-	 * removed, walk through the list of pending connections
-	 * and ensure that any new device gets programmed into
-	 * the controller.
-	 *
-	 * If the list of the devices is larger than the list of
-	 * available accept list entries in the controller, then
-	 * just abort and return filer policy value to not use the
-	 * accept list.
-	 */
+	 
 	list_for_each_entry(params, &hdev->pend_le_conns, action) {
 		if (add_to_accept_list(req, params, &num_entries, allow_rpa))
 			return 0x00;
 	}
 
-	/* After adding all new pending connections, walk through
-	 * the list of pending reports and also add these to the
-	 * accept list if there is still space. Abort if space runs out.
-	 */
+	 
 	list_for_each_entry(params, &hdev->pend_le_reports, action) {
 		if (add_to_accept_list(req, params, &num_entries, allow_rpa))
 			return 0x00;
 	}
 
-	/* Use the allowlist unless the following conditions are all true:
-	 * - We are not currently suspending
-	 * - There are 1 or more ADV monitors registered and it's not offloaded
-	 * - Interleaved scanning is not currently using the allowlist
-	 */
+	 
 	if (!idr_is_empty(&hdev->adv_monitors_idr) && !hdev->suspended &&
 	    hci_get_adv_monitor_offload_ext(hdev) == HCI_ADV_MONITOR_EXT_NONE &&
 	    hdev->interleave_scan_state != INTERLEAVE_SCAN_ALLOWLIST)
 		return 0x00;
 
-	/* Select filter policy to use accept list */
+	 
 	return 0x01;
 }
 
@@ -556,9 +489,7 @@ static void hci_req_start_scan(struct hci_request *req, u8 type, u16 interval,
 		hci_req_add(req, HCI_OP_LE_SET_ADDR_RESOLV_ENABLE, 1, &enable);
 	}
 
-	/* Use ext scanning if set ext scan param and ext scan enable is
-	 * supported
-	 */
+	 
 	if (use_ext_scan(hdev)) {
 		struct hci_cp_le_set_ext_scan_params *ext_param_cp;
 		struct hci_cp_le_set_ext_scan_enable ext_enable_cp;
@@ -637,14 +568,9 @@ static int hci_update_random_address(struct hci_request *req,
 	struct hci_dev *hdev = req->hdev;
 	int err;
 
-	/* If privacy is enabled use a resolvable private address. If
-	 * current RPA has expired or there is something else than
-	 * the current RPA in use, then generate a new one.
-	 */
+	 
 	if (use_rpa) {
-		/* If Controller supports LL Privacy use own address type is
-		 * 0x03
-		 */
+		 
 		if (use_ll_privacy(hdev))
 			*own_addr_type = ADDR_LE_DEV_RANDOM_RESOLVED;
 		else
@@ -664,24 +590,16 @@ static int hci_update_random_address(struct hci_request *req,
 		return 0;
 	}
 
-	/* In case of required privacy without resolvable private address,
-	 * use an non-resolvable private address. This is useful for active
-	 * scanning and non-connectable advertising.
-	 */
+	 
 	if (require_privacy) {
 		bdaddr_t nrpa;
 
 		while (true) {
-			/* The non-resolvable private address is generated
-			 * from random six bytes with the two most significant
-			 * bits cleared.
-			 */
+			 
 			get_random_bytes(&nrpa, 6);
 			nrpa.b[5] &= 0x3f;
 
-			/* The non-resolvable private address shall not be
-			 * equal to the public address.
-			 */
+			 
 			if (bacmp(&hdev->bdaddr, &nrpa))
 				break;
 		}
@@ -691,15 +609,7 @@ static int hci_update_random_address(struct hci_request *req,
 		return 0;
 	}
 
-	/* If forcing static address is in use or there is no public
-	 * address use the static address as random address (but skip
-	 * the HCI command if the current random address is already the
-	 * static one.
-	 *
-	 * In case BR/EDR has been disabled on a dual-mode controller
-	 * and a static address has been configured, then use that
-	 * address instead of the public BR/EDR address.
-	 */
+	 
 	if (hci_dev_test_flag(hdev, HCI_FORCE_STATIC_ADDR) ||
 	    !bacmp(&hdev->bdaddr, BDADDR_ANY) ||
 	    (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED) &&
@@ -711,27 +621,22 @@ static int hci_update_random_address(struct hci_request *req,
 		return 0;
 	}
 
-	/* Neither privacy nor static address is being used so use a
-	 * public address.
-	 */
+	 
 	*own_addr_type = ADDR_LE_DEV_PUBLIC;
 
 	return 0;
 }
 
-/* Ensure to call hci_req_add_le_scan_disable() first to disable the
- * controller based address resolution to be able to reconfigure
- * resolving list.
- */
+ 
 void hci_req_add_le_passive_scan(struct hci_request *req)
 {
 	struct hci_dev *hdev = req->hdev;
 	u8 own_addr_type;
 	u8 filter_policy;
 	u16 window, interval;
-	/* Default is to enable duplicates filter */
+	 
 	u8 filter_dup = LE_SCAN_FILTER_DUP_ENABLE;
-	/* Background scanning should run with address resolution */
+	 
 	bool addr_resolv = true;
 
 	if (hdev->scanning_paused) {
@@ -739,12 +644,7 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
 		return;
 	}
 
-	/* Set require_privacy to false since no SCAN_REQ are send
-	 * during passive scanning. Not using an non-resolvable address
-	 * here is important so that peer devices using direct
-	 * advertising with our address will be correctly reported
-	 * by the controller.
-	 */
+	 
 	if (hci_update_random_address(req, false, scan_use_rpa(hdev),
 				      &own_addr_type))
 		return;
@@ -754,21 +654,10 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
 		return;
 
 	bt_dev_dbg(hdev, "interleave state %d", hdev->interleave_scan_state);
-	/* Adding or removing entries from the accept list must
-	 * happen before enabling scanning. The controller does
-	 * not allow accept list modification while scanning.
-	 */
+	 
 	filter_policy = update_accept_list(req);
 
-	/* When the controller is using random resolvable addresses and
-	 * with that having LE privacy enabled, then controllers with
-	 * Extended Scanner Filter Policies support can now enable support
-	 * for handling directed advertising.
-	 *
-	 * So instead of using filter polices 0x00 (no accept list)
-	 * and 0x01 (accept list enabled) use the new filter policies
-	 * 0x02 (no accept list) and 0x03 (accept list enabled).
-	 */
+	 
 	if (hci_dev_test_flag(hdev, HCI_PRIVACY) &&
 	    (hdev->le_features[0] & HCI_LE_EXT_SCAN_POLICY))
 		filter_policy |= 0x02;
@@ -783,18 +672,7 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
 		window = hdev->le_scan_window_adv_monitor;
 		interval = hdev->le_scan_int_adv_monitor;
 
-		/* Disable duplicates filter when scanning for advertisement
-		 * monitor for the following reasons.
-		 *
-		 * For HW pattern filtering (ex. MSFT), Realtek and Qualcomm
-		 * controllers ignore RSSI_Sampling_Period when the duplicates
-		 * filter is enabled.
-		 *
-		 * For SW pattern filtering, when we're not doing interleaved
-		 * scanning, it is necessary to disable duplicates filter,
-		 * otherwise hosts can only receive one advertisement and it's
-		 * impossible to know if a peer is still in range.
-		 */
+		 
 		filter_dup = LE_SCAN_FILTER_DUP_DISABLE;
 	} else {
 		window = hdev->le_scan_window;
@@ -858,7 +736,7 @@ static void interleave_scan_work(struct work_struct *work)
 	hci_req_sync(hdev, hci_req_add_le_interleaved_scan, 0,
 		     HCI_CMD_TIMEOUT, &status);
 
-	/* Don't continue interleaving if it was canceled */
+	 
 	if (is_interleave_scanning(hdev))
 		queue_delayed_work(hdev->req_workqueue,
 				   &hdev->interleave_scan, timeout);
@@ -868,16 +746,7 @@ static void set_random_addr(struct hci_request *req, bdaddr_t *rpa)
 {
 	struct hci_dev *hdev = req->hdev;
 
-	/* If we're advertising or initiating an LE connection we can't
-	 * go ahead and change the random address at this time. This is
-	 * because the eventual initiator address used for the
-	 * subsequently created connection will be undefined (some
-	 * controllers use the new address and others the one we had
-	 * when the operation started).
-	 *
-	 * In this kind of scenario skip the update and let the random
-	 * address be updated at the next cycle.
-	 */
+	 
 	if (hci_dev_test_flag(hdev, HCI_LE_ADV) ||
 	    hci_lookup_le_connect(hdev)) {
 		bt_dev_dbg(hdev, "Deferring random address update");

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Core driver for Renesas Synchronization Management Unit (SMU) devices.
- *
- * Copyright (C) 2021 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>

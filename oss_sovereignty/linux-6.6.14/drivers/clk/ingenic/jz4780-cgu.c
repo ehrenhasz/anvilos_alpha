@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ingenic JZ4780 SoC CGU driver
- *
- * Copyright (c) 2013-2015 Imagination Technologies
- * Author: Paul Burton <paul.burton@mips.com>
- * Copyright (c) 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -18,7 +12,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CLOCKCONTROL	0x00
 #define CGU_REG_LCR				0x04
 #define CGU_REG_APLL			0x10
@@ -49,11 +43,11 @@
 #define CGU_REG_BCHCDR			0xac
 #define CGU_REG_CLOCKSTATUS		0xd4
 
-/* bits within the OPCR register */
+ 
 #define OPCR_SPENDN0			BIT(7)
 #define OPCR_SPENDN1			BIT(6)
 
-/* bits within the USBPCR register */
+ 
 #define USBPCR_USB_MODE			BIT(31)
 #define USBPCR_IDPULLUP_MASK	(0x3 << 28)
 #define USBPCR_COMMONONN		BIT(25)
@@ -70,7 +64,7 @@
 #define USBPCR_TXHSXVTUNE_MASK	(0x3 << 4)
 #define USBPCR_TXVREFTUNE_MASK	0xf
 
-/* bits within the USBPCR1 register */
+ 
 #define USBPCR1_REFCLKSEL_SHIFT	26
 #define USBPCR1_REFCLKSEL_MASK	(0x3 << USBPCR1_REFCLKSEL_SHIFT)
 #define USBPCR1_REFCLKSEL_CORE	(0x2 << USBPCR1_REFCLKSEL_SHIFT)
@@ -84,20 +78,20 @@
 #define USBPCR1_WORD_IF0		BIT(19)
 #define USBPCR1_WORD_IF1		BIT(18)
 
-/* bits within the USBRDT register */
+ 
 #define USBRDT_VBFIL_LD_EN		BIT(25)
 #define USBRDT_USBRDT_MASK		0x7fffff
 
-/* bits within the USBVBFIL register */
+ 
 #define USBVBFIL_IDDIGFIL_SHIFT	16
 #define USBVBFIL_IDDIGFIL_MASK	(0xffff << USBVBFIL_IDDIGFIL_SHIFT)
 #define USBVBFIL_USBVBFIL_MASK	(0xffff)
 
-/* bits within the LCR register */
+ 
 #define LCR_PD_SCPU				BIT(31)
 #define LCR_SCPUS				BIT(27)
 
-/* bits within the CLKGR1 register */
+ 
 #define CLKGR1_CORE1			BIT(15)
 
 static struct ingenic_cgu *cgu;
@@ -241,7 +235,7 @@ static int jz4780_core1_enable(struct clk_hw *hw)
 
 	spin_unlock_irqrestore(&cgu->lock, flags);
 
-	/* wait for the CPU to be powered up */
+	 
 	retval = readl_poll_timeout(cgu->base + CGU_REG_LCR, lcr,
 				 !(lcr & LCR_SCPUS), 10, timeout);
 	if (retval == -ETIMEDOUT) {
@@ -263,12 +257,12 @@ static const s8 pll_od_encoding[16] = {
 
 static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4780_CLK_EXCLK] = { "ext", CGU_CLK_EXT },
 	[JZ4780_CLK_RTCLK] = { "rtc", CGU_CLK_EXT },
 
-	/* PLLs */
+	 
 
 #define DEF_PLL(name) { \
 	.reg = CGU_REG_ ## name, \
@@ -315,7 +309,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 
 #undef DEF_PLL
 
-	/* Custom (SoC-specific) OTG PHY */
+	 
 
 	[JZ4780_CLK_OTGPHY] = {
 		"otg_phy", CGU_CLK_CUSTOM,
@@ -323,7 +317,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 		.custom = { &jz4780_otg_phy_ops },
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[JZ4780_CLK_SCLKA] = {
 		"sclk_a", CGU_CLK_MUX,
@@ -341,10 +335,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 
 	[JZ4780_CLK_CPU] = {
 		"cpu", CGU_CLK_DIV,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4780_CLK_CPUMUX, -1, -1, -1 },
 		.div = { CGU_REG_CLOCKCONTROL, 0, 1, 4, 22, -1, -1 },
@@ -352,10 +343,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 
 	[JZ4780_CLK_L2CACHE] = {
 		"l2cache", CGU_CLK_DIV,
-		/*
-		 * The L2 cache clock is critical if caches are enabled and
-		 * disabling it or any parent clocks will hang the system.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4780_CLK_CPUMUX, -1, -1, -1 },
 		.div = { CGU_REG_CLOCKCONTROL, 4, 1, 4, -1, -1, -1 },
@@ -390,10 +378,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 
 	[JZ4780_CLK_DDR] = {
 		"ddr", CGU_CLK_MUX | CGU_CLK_DIV,
-		/*
-		 * Disabling DDR clock or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { -1, JZ4780_CLK_SCLKA, JZ4780_CLK_MPLL, -1 },
 		.mux = { CGU_REG_DDRCDR, 30, 2 },
@@ -548,7 +533,7 @@ static const struct ingenic_cgu_clk_info jz4780_cgu_clocks[] = {
 		.mux = { CGU_REG_OPCR, 2, 1},
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4780_CLK_NEMC] = {
 		"nemc", CGU_CLK_GATE,

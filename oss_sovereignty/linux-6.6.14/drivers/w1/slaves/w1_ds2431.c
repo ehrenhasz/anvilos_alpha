@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * w1_ds2431.c - w1 family 2d (DS2431) driver
- *
- * Copyright (c) 2008 Bernhard Weirich <bernhard.weirich@riedel.net>
- *
- * Heavily inspired by w1_DS2433 driver from Ben Gardner <bgardner@wabtec.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -39,10 +33,7 @@
 #define W1_F2D_READ_RETRIES		10
 #define W1_F2D_READ_MAXLEN		8
 
-/*
- * Check the file size bounds and adjusts count as needed.
- * This would not be needed if the file size didn't reset to 0 after a write.
- */
+ 
 static inline size_t w1_f2d_fix_count(loff_t off, size_t count, size_t size)
 {
 	if (off > size)
@@ -54,13 +45,7 @@ static inline size_t w1_f2d_fix_count(loff_t off, size_t count, size_t size)
 	return count;
 }
 
-/*
- * Read a block from W1 ROM two times and compares the results.
- * If they are equal they are returned, otherwise the read
- * is repeated W1_F2D_READ_RETRIES times.
- *
- * count must not exceed W1_F2D_READ_MAXLEN.
- */
+ 
 static int w1_f2d_readblock(struct w1_slave *sl, int off, int count, char *buf)
 {
 	u8 wrbuf[3];
@@ -107,7 +92,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 
 	mutex_lock(&sl->master->bus_mutex);
 
-	/* read directly from the EEPROM in chunks of W1_F2D_READ_MAXLEN */
+	 
 	while (todo > 0) {
 		int block_read;
 
@@ -129,19 +114,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 	return count;
 }
 
-/*
- * Writes to the scratchpad and reads it back for verification.
- * Then copies the scratchpad to EEPROM.
- * The data must be aligned at W1_F2D_SCRATCH_SIZE bytes and
- * must be W1_F2D_SCRATCH_SIZE bytes long.
- * The master must be locked.
- *
- * @param sl	The slave structure
- * @param addr	Address for the write
- * @param len   length must be <= (W1_F2D_PAGE_SIZE - (addr & W1_F2D_PAGE_MASK))
- * @param data	The data to write
- * @return	0=Success -1=failure
- */
+ 
 static int w1_f2d_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 {
 	int tries = W1_F2D_READ_RETRIES;
@@ -151,7 +124,7 @@ static int w1_f2d_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 
 retry:
 
-	/* Write the data to the scratchpad */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
@@ -162,14 +135,14 @@ retry:
 	w1_write_block(sl->master, wrbuf, 3);
 	w1_write_block(sl->master, data, len);
 
-	/* Read the scratchpad and verify */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
 	w1_write_8(sl->master, W1_F2D_READ_SCRATCH);
 	w1_read_block(sl->master, rdbuf, len + 3);
 
-	/* Compare what was read against the data written */
+	 
 	if ((rdbuf[0] != wrbuf[1]) || (rdbuf[1] != wrbuf[2]) ||
 	    (rdbuf[2] != es) || (memcmp(data, &rdbuf[3], len) != 0)) {
 
@@ -183,7 +156,7 @@ retry:
 		return -1;
 	}
 
-	/* Copy the scratchpad to EEPROM */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
@@ -191,10 +164,10 @@ retry:
 	wrbuf[3] = es;
 	w1_write_block(sl->master, wrbuf, 4);
 
-	/* Sleep for tprog ms to wait for the write to complete */
+	 
 	msleep(W1_F2D_TPROG_MS);
 
-	/* Reset the bus to wake up the EEPROM  */
+	 
 	w1_reset_bus(sl->master);
 
 	return 0;
@@ -214,23 +187,23 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 
 	mutex_lock(&sl->master->bus_mutex);
 
-	/* Can only write data in blocks of the size of the scratchpad */
+	 
 	addr = off;
 	len = count;
 	while (len > 0) {
 
-		/* if len too short or addr not aligned */
+		 
 		if (len < W1_F2D_SCRATCH_SIZE || addr & W1_F2D_SCRATCH_MASK) {
 			char tmp[W1_F2D_SCRATCH_SIZE];
 
-			/* read the block and update the parts to be written */
+			 
 			if (w1_f2d_readblock(sl, addr & ~W1_F2D_SCRATCH_MASK,
 					W1_F2D_SCRATCH_SIZE, tmp)) {
 				count = -EIO;
 				goto out_up;
 			}
 
-			/* copy at most to the boundary of the PAGE or len */
+			 
 			copy = W1_F2D_SCRATCH_SIZE -
 				(addr & W1_F2D_SCRATCH_MASK);
 

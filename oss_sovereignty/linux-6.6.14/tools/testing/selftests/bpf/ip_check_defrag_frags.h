@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* DO NOT EDIT -- this file is generated */
+
+ 
 
 #ifndef _IP_CHECK_DEFRAG_FRAGS_H
 #define _IP_CHECK_DEFRAG_FRAGS_H
@@ -54,4 +54,4 @@ static uint8_t frag6_2[] = {
 	0x45, 0x4d, 0x42, 0x4c, 0x45, 0x20, 0x4d, 0x45,
 };
 
-#endif /* _IP_CHECK_DEFRAG_FRAGS_H */
+#endif  

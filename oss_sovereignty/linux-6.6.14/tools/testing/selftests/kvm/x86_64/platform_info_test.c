@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for x86 KVM_CAP_MSR_PLATFORM_INFO
- *
- * Copyright (C) 2018, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * Verifies expected behavior of controlling guest access to
- * MSR_PLATFORM_INFO.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

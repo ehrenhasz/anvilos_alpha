@@ -1,26 +1,4 @@
-/* Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_DWBC_H__
 #define __DC_DWBC_H__
@@ -31,7 +9,7 @@
 #define DWB_SW_V2	1
 #define DWB_MCIF_BUF_COUNT 4
 
-/* forward declaration of mcif_wb struct */
+ 
 struct mcif_wb;
 
 
@@ -41,16 +19,16 @@ enum dwb_sw_version {
 };
 
 enum dwb_source {
-	dwb_src_scl = 0,	/* for DCE7x/9x, DCN won't support. */
-	dwb_src_blnd,		/* for DCE7x/9x */
-	dwb_src_fmt,		/* for DCE7x/9x */
-	dwb_src_otg0 = 0x100,	/* for DCN1.x/DCN2.x, register: mmDWB_SOURCE_SELECT */
-	dwb_src_otg1,		/* for DCN1.x/DCN2.x */
-	dwb_src_otg2,		/* for DCN1.x/DCN2.x */
-	dwb_src_otg3,		/* for DCN1.x/DCN2.x */
+	dwb_src_scl = 0,	 
+	dwb_src_blnd,		 
+	dwb_src_fmt,		 
+	dwb_src_otg0 = 0x100,	 
+	dwb_src_otg1,		 
+	dwb_src_otg2,		 
+	dwb_src_otg3,		 
 };
 
-/* DCN1.x, DCN2.x support 2 pipes */
+ 
 enum dwb_pipe {
 	dwb_pipe0 = 0,
 	dwb_pipe1,
@@ -88,19 +66,19 @@ enum dwb_ogam_lut_mode {
 };
 
 enum dwb_color_volume {
-	DWB_SRGB_BT709 = 0,	//SDR
-	DWB_PQ = 1,	//HDR
-	DWB_HLG = 2,	//HDR
+	DWB_SRGB_BT709 = 0,	
+	DWB_PQ = 1,	
+	DWB_HLG = 2,	
 };
 
 enum dwb_color_space {
-	DWB_SRGB = 0,	//SDR
-	DWB_BT709 = 1,	//SDR
-	DWB_BT2020 = 2,	//HDR
+	DWB_SRGB = 0,	
+	DWB_BT709 = 1,	
+	DWB_BT2020 = 2,	
 };
 
 struct dwb_efc_hdr_metadata {
-	/*display chromaticities and white point in units of 0.00001 */
+	 
 	unsigned int	chromaticity_green_x;
 	unsigned int	chromaticity_green_y;
 	unsigned int	chromaticity_blue_x;
@@ -110,11 +88,11 @@ struct dwb_efc_hdr_metadata {
 	unsigned int	chromaticity_white_point_x;
 	unsigned int	chromaticity_white_point_y;
 
-	/*in units of candelas per square meter */
+	 
 	unsigned int	min_luminance;
 	unsigned int	max_luminance;
 
-	/*in units of nits */
+	 
 	unsigned int	maximum_content_light_level;
 	unsigned int	maximum_frame_average_light_level;
 };
@@ -124,24 +102,24 @@ struct dwb_efc_display_settings {
 	unsigned int	inputColorSpace;
 	unsigned int	inputBitDepthMinus8;
 	struct dwb_efc_hdr_metadata	hdr_metadata;
-	unsigned int	dwbOutputBlack;	// 0 - Normal, 1 - Output Black
+	unsigned int	dwbOutputBlack;	
 };
 
 struct dwb_warmup_params {
-	bool	warmup_en;	/* false: normal mode, true: enable pattern generator */
-	bool	warmup_mode;	/* false: 420, true: 444 */
-	bool	warmup_depth;	/* false: 8bit, true: 10bit */
-	int	warmup_data;	/* Data to be sent by pattern generator (same for each pixel component) */
-	int	warmup_width;	/* Pattern width (pixels) */
-	int	warmup_height;	/* Pattern height (lines) */
+	bool	warmup_en;	 
+	bool	warmup_mode;	 
+	bool	warmup_depth;	 
+	int	warmup_data;	 
+	int	warmup_width;	 
+	int	warmup_height;	 
 };
 
 struct dwb_caps {
-	enum dce_version hw_version;	/* DCN engine version. */
-	enum dwb_sw_version sw_version;	/* DWB sw implementation version. */
-	unsigned int	reserved[6];	/* Reserved for future use, MUST BE 0. */
+	enum dce_version hw_version;	 
+	enum dwb_sw_version sw_version;	 
+	unsigned int	reserved[6];	 
 	unsigned int	adapter_id;
-	unsigned int	num_pipes;	/* number of DWB pipes */
+	unsigned int	num_pipes;	 
 	struct {
 		unsigned int support_dwb	:1;
 		unsigned int support_ogam	:1;
@@ -149,7 +127,7 @@ struct dwb_caps {
 		unsigned int support_ocsc	:1;
 		unsigned int support_stereo :1;
 	} caps;
-	unsigned int	 reserved2[9];	/* Reserved for future use, MUST BE 0. */
+	unsigned int	 reserved2[9];	 
 };
 
 struct dwbc {
@@ -164,7 +142,7 @@ struct dwbc {
 	enum dc_color_space output_color_space;
 	bool dwb_is_efc_transition;
 	bool dwb_is_drc;
-	int wb_src_plane_inst;/*hubp, mpcc, inst*/
+	int wb_src_plane_inst; 
 	uint32_t mask_id;
     int otg_inst;
     bool mvc_cfg;
@@ -213,7 +191,7 @@ struct dwbc_funcs {
 		struct dwbc *dwbc,
 		const struct dc_transfer_func *in_transfer_func_dwb_ogam);
 
-	//TODO: merge with output_transfer_func?
+	
 	bool (*dwb_ogam_set_input_transfer_func)(
 		struct dwbc *dwbc,
 		const struct dc_transfer_func *in_transfer_func_dwb_ogam);

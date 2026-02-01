@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test the function and performance of kallsyms
- *
- * Copyright (C) Huawei Technologies Co., Ltd., 2022
- *
- * Authors: Zhen Lei <thunder.leizhen@huawei.com> Huawei
- */
+
+ 
 
 #define pr_fmt(fmt) "kallsyms_selftest: " fmt
 
@@ -109,12 +103,7 @@ static void test_kallsyms_compression_ratio(void)
 
 	kallsyms_on_each_symbol(stat_symbol_len, &total_len);
 
-	/*
-	 * A symbol name cannot start with a number. This stub name helps us
-	 * traverse the entire symbol table without finding a match. It's used
-	 * for subsequent performance tests, and its length is the average
-	 * length of all symbol names.
-	 */
+	 
 	memset(stub_name, '4', sizeof(stub_name));
 	pos = total_len / kallsyms_num_syms;
 	stub_name[pos] = 0;
@@ -135,11 +124,7 @@ static void test_kallsyms_compression_ratio(void)
 		off += len;
 	}
 
-	/*
-	 * 1. The length fields is not counted
-	 * 2. The memory occupied by array kallsyms_token_table[] and
-	 *    kallsyms_token_index[] needs to be counted.
-	 */
+	 
 	total_size = off - num;
 	pos = kallsyms_token_index[0xff];
 	total_size += pos + strlen(&kallsyms_token_table[pos]) + 1;
@@ -351,20 +336,14 @@ static int test_kallsyms_basic_function(void)
 		stat->max = INT_MAX;
 		kallsyms_on_each_match_symbol(match_symbol, namebuf, stat);
 
-		/*
-		 * kallsyms_on_each_symbol() is too slow, randomly select some
-		 * symbols for test.
-		 */
+		 
 		if (i >= next) {
 			memset(stat2, 0, sizeof(*stat2));
 			stat2->max = INT_MAX;
 			stat2->name = namebuf;
 			kallsyms_on_each_symbol(find_symbol, stat2);
 
-			/*
-			 * kallsyms_on_each_symbol() and kallsyms_on_each_match_symbol()
-			 * need to get the same traversal result.
-			 */
+			 
 			if (stat->addr != stat2->addr ||
 			    stat->real_cnt != stat2->real_cnt ||
 			    memcmp(stat->addrs, stat2->addrs,
@@ -374,24 +353,18 @@ static int test_kallsyms_basic_function(void)
 				goto failed;
 			}
 
-			/*
-			 * The average of random increments is 128, that is, one of
-			 * them is tested every 128 symbols.
-			 */
+			 
 			get_random_bytes(&rand, sizeof(rand));
 			next = i + (rand & 0xff) + 1;
 		}
 
-		/* Need to be found at least once */
+		 
 		if (!stat->real_cnt) {
 			pr_info("%s: Never found\n", namebuf);
 			goto failed;
 		}
 
-		/*
-		 * kallsyms_lookup_name() returns the address of the first
-		 * symbol found and cannot be NULL.
-		 */
+		 
 		if (!lookup_addr) {
 			pr_info("%s: NULL lookup_addr?!\n", namebuf);
 			goto failed;
@@ -401,10 +374,7 @@ static int test_kallsyms_basic_function(void)
 			goto failed;
 		}
 
-		/*
-		 * If the addresses of all matching symbols are recorded, the
-		 * target address needs to be exist.
-		 */
+		 
 		if (stat->real_cnt <= MAX_NUM_OF_RECORDS) {
 			for (j = 0; j < stat->save_cnt; j++) {
 				if (stat->addrs[j] == addr)

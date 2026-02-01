@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2016-2018 Nuvoton Technology corporation.
-// Copyright (c) 2016, Dell Inc
-// Copyright (c) 2021-2022 Jonathan Neuschäfer
-//
-// This driver uses the following registers:
-// - Pin mux registers, in the GCR (general control registers) block
-// - GPIO registers, specific to each GPIO bank
-// - GPIO event (interrupt) registers, located centrally in the GPIO register
-//   block, shared between all GPIO banks
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/fwnode.h>
@@ -27,12 +27,12 @@
 
 #include "../core.h"
 
-/* GCR registers */
+ 
 #define WPCM450_GCR_MFSEL1	0x0c
 #define WPCM450_GCR_MFSEL2	0x10
 #define WPCM450_GCR_NONE	0
 
-/* GPIO event (interrupt) registers */
+ 
 #define WPCM450_GPEVTYPE	0x00
 #define WPCM450_GPEVPOL		0x04
 #define WPCM450_GPEVDBNC	0x08
@@ -61,31 +61,28 @@ struct wpcm450_pinctrl {
 	struct wpcm450_gpio	gpio_bank[WPCM450_NUM_BANKS];
 	unsigned long		both_edges;
 
-	/*
-	 * This spin lock protects registers and struct wpcm450_pinctrl fields
-	 * against concurrent access.
-	 */
+	 
 	raw_spinlock_t		lock;
 };
 
 struct wpcm450_bank {
-	/* Range of GPIOs in this port */
+	 
 	u8 base;
 	u8 length;
 
-	/* Register offsets (0 = register doesn't exist in this port) */
+	 
 	u8 cfg0, cfg1, cfg2;
 	u8 blink;
 	u8 dataout, datain;
 
-	/* Interrupt bit mapping */
-	u8 first_irq_bit;   /* First bit in GPEVST that belongs to this bank */
-	u8 num_irqs;        /* Number of IRQ-capable GPIOs in this bank */
-	u8 first_irq_gpio;  /* First IRQ-capable GPIO in this bank */
+	 
+	u8 first_irq_bit;    
+	u8 num_irqs;         
+	u8 first_irq_gpio;   
 };
 
 static const struct wpcm450_bank wpcm450_banks[WPCM450_NUM_BANKS] = {
-	/*  range   cfg0  cfg1  cfg2 blink  out   in     IRQ map */
+	 
 	{   0, 16,  0x14, 0x18,    0,    0, 0x1c, 0x20,  0, 16, 0 },
 	{  16, 16,  0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 16,  2, 8 },
 	{  32, 16,  0x3c, 0x40, 0x44,    0, 0x48, 0x4c,  0,  0, 0 },
@@ -183,13 +180,7 @@ static void wpcm450_gpio_irq_unmask(struct irq_data *d)
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
 }
 
-/*
- * This is an implementation of the gpio_chip->get() function, for use in
- * wpcm450_gpio_fix_evpol. Unfortunately, we can't use the bgpio-provided
- * implementation there, because it would require taking gpio_chip->bgpio_lock,
- * which is a spin lock, but wpcm450_gpio_fix_evpol must work in contexts where
- * a raw spin lock is held.
- */
+ 
 static int wpcm450_gpio_get(struct wpcm450_gpio *gpio, int offset)
 {
 	void __iomem *reg = gpio->pctrl->gpio_base + gpio->bank->datain;
@@ -203,13 +194,7 @@ static int wpcm450_gpio_get(struct wpcm450_gpio *gpio, int offset)
 	return level;
 }
 
-/*
- * Since the GPIO controller does not support dual-edge triggered interrupts
- * (IRQ_TYPE_EDGE_BOTH), they are emulated using rising/falling edge triggered
- * interrupts. wpcm450_gpio_fix_evpol sets the interrupt polarity for the
- * specified emulated dual-edge triggered interrupts, so that the next edge can
- * be detected.
- */
+ 
 static void wpcm450_gpio_fix_evpol(struct wpcm450_gpio *gpio, unsigned long all)
 {
 	struct wpcm450_pinctrl *pctrl = gpio->pctrl;
@@ -224,7 +209,7 @@ static void wpcm450_gpio_fix_evpol(struct wpcm450_gpio *gpio, unsigned long all)
 		do {
 			level = wpcm450_gpio_get(gpio, offset);
 
-			/* Switch event polarity to the opposite of the current level */
+			 
 			raw_spin_lock_irqsave(&pctrl->lock, flags);
 			evpol = ioread32(pctrl->gpio_base + WPCM450_GPEVPOL);
 			__assign_bit(bit, &evpol, !level);
@@ -281,12 +266,12 @@ static int wpcm450_gpio_set_irq_type(struct irq_data *d, unsigned int flow_type)
 	iowrite32(evtype, pctrl->gpio_base + WPCM450_GPEVTYPE);
 	iowrite32(evpol, pctrl->gpio_base + WPCM450_GPEVPOL);
 
-	/* clear the event status for good measure */
+	 
 	iowrite32(BIT(bit), pctrl->gpio_base + WPCM450_GPEVST);
 
 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
 
-	/* fix event polarity after clearing event status */
+	 
 	wpcm450_gpio_fix_evpol(gpio, BIT(bit));
 
 	return ret;
@@ -468,7 +453,7 @@ static int hg7_pins[] = { 60 };
 enum {
 #define WPCM450_GRP(x) fn_ ## x
 	WPCM450_GRPS
-	/* add placeholder for none/gpio */
+	 
 	WPCM450_GRP(gpio),
 	WPCM450_GRP(none),
 #undef WPCM450_GRP
@@ -555,7 +540,7 @@ WPCM450_SFUNC(hg7);
 WPCM450_FUNC(gpio, WPCM450_GRPS);
 #undef WPCM450_GRP
 
-/* Function names */
+ 
 static struct wpcm450_func wpcm450_funcs[] = {
 	WPCM450_MKFUNC(smb3),
 	WPCM450_MKFUNC(smb4),
@@ -628,11 +613,11 @@ struct wpcm450_pincfg {
 	int fn1, reg1, bit1;
 };
 
-/* Add this value to bit0 or bit1 to indicate that the MFSEL bit is inverted */
+ 
 #define INV	BIT(5)
 
 static const struct wpcm450_pincfg pincfg[] = {
-	/*		PIN	  FUNCTION 1		   FUNCTION 2 */
+	 
 	WPCM450_PINCFG(0,	 none, NONE, 0,		  none, NONE, 0),
 	WPCM450_PINCFG(1,	 none, NONE, 0,		  none, NONE, 0),
 	WPCM450_PINCFG(2,	 none, NONE, 0,		  none, NONE, 0),
@@ -671,10 +656,10 @@ static const struct wpcm450_pincfg pincfg[] = {
 	WPCM450_PINCFG(34,	 scs3, MFSEL1, 5 | INV,	  none, NONE, 0),
 	WPCM450_PINCFG(35,	 xcs1, MFSEL1, 29,	  none, NONE, 0),
 	WPCM450_PINCFG(36,	 xcs2, MFSEL1, 28,	  none, NONE, 0),
-	WPCM450_PINCFG(37,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(38,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(39,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(40,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
+	WPCM450_PINCFG(37,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(38,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(39,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(40,	 none, NONE, 0,		  none, NONE, 0),  
 	WPCM450_PINCFG(41,	  bsp, MFSEL1, 9,	  none, NONE, 0),
 	WPCM450_PINCFG(42,	  bsp, MFSEL1, 9,	  none, NONE, 0),
 	WPCM450_PINCFG(43,	 hsp1, MFSEL1, 10,	  sdio, MFSEL1, 30),
@@ -744,26 +729,26 @@ static const struct wpcm450_pincfg pincfg[] = {
 	WPCM450_PINCFG(105,	 none, NONE, 0,		  none, NONE, 0),
 	WPCM450_PINCFG(106,	 none, NONE, 0,		  none, NONE, 0),
 	WPCM450_PINCFG(107,	 none, NONE, 0,		  none, NONE, 0),
-	WPCM450_PINCFG(108,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(109,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(110,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(111,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(112,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(113,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
+	WPCM450_PINCFG(108,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(109,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(110,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(111,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(112,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(113,	 none, NONE, 0,		  none, NONE, 0),  
 	WPCM450_PINCFG(114,	 smb0, MFSEL1, 6,	  none, NONE, 0),
 	WPCM450_PINCFG(115,	 smb0, MFSEL1, 6,	  none, NONE, 0),
 	WPCM450_PINCFG(116,	 smb1, MFSEL1, 7,	  none, NONE, 0),
 	WPCM450_PINCFG(117,	 smb1, MFSEL1, 7,	  none, NONE, 0),
 	WPCM450_PINCFG(118,	 smb2, MFSEL1, 8,	  none, NONE, 0),
 	WPCM450_PINCFG(119,	 smb2, MFSEL1, 8,	  none, NONE, 0),
-	WPCM450_PINCFG(120,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(121,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(122,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(123,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(124,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(125,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(126,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
-	WPCM450_PINCFG(127,	 none, NONE, 0,		  none, NONE, 0), /* DVO */
+	WPCM450_PINCFG(120,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(121,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(122,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(123,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(124,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(125,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(126,	 none, NONE, 0,		  none, NONE, 0),  
+	WPCM450_PINCFG(127,	 none, NONE, 0,		  none, NONE, 0),  
 };
 
 #define WPCM450_PIN(n)		PINCTRL_PIN(n, "gpio" #n)
@@ -803,7 +788,7 @@ static const struct pinctrl_pin_desc wpcm450_pins[] = {
 	WPCM450_PIN(124), WPCM450_PIN(125), WPCM450_PIN(126), WPCM450_PIN(127),
 };
 
-/* Helper function to update MFSEL field according to the selected function */
+ 
 static void wpcm450_update_mfsel(struct regmap *gcr_regmap, int reg, int bit, int fn, int fn_selected)
 {
 	bool value = (fn == fn_selected);
@@ -816,7 +801,7 @@ static void wpcm450_update_mfsel(struct regmap *gcr_regmap, int reg, int bit, in
 	regmap_update_bits(gcr_regmap, reg, BIT(bit), value ? BIT(bit) : 0);
 }
 
-/* Enable mode in pin group */
+ 
 static void wpcm450_setfunc(struct regmap *gcr_regmap, const unsigned int *pin,
 			    int npins, int func)
 {

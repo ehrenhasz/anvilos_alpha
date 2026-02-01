@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common private data.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- */
+ 
+ 
 #ifndef WFX_H
 #define WFX_H
 
@@ -22,7 +15,7 @@
 #include "queue.h"
 #include "hif_tx.h"
 
-#define USEC_PER_TXOP 32 /* see struct ieee80211_tx_queue_params */
+#define USEC_PER_TXOP 32  
 #define USEC_PER_TU 1024
 
 struct wfx_hwbus_ops;
@@ -80,7 +73,7 @@ struct wfx_vif {
 
 	unsigned long              uapsd_mask;
 
-	/* avoid some operations in parallel with scan */
+	 
 	struct mutex               scan_lock;
 	struct work_struct         scan_work;
 	struct completion          scan_complete;

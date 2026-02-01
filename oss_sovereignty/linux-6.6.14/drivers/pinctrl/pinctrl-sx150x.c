@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, BayLibre, SAS. All rights reserved.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * Copyright (c) 2010, Code Aurora Forum. All rights reserved.
- *
- * Driver for Semtech SX150X I2C GPIO Expanders
- * The handling of the 4-bit chips (SX1501/SX1504/SX1507) is untested.
- *
- * Author: Gregory Bean <gbean@codeaurora.org>
- */
+
+ 
 
 #include <linux/regmap.h>
 #include <linux/i2c.h>
@@ -29,7 +19,7 @@
 #include "pinconf.h"
 #include "pinctrl-utils.h"
 
-/* The chip models of sx150x */
+ 
 enum {
 	SX150X_123 = 0,
 	SX150X_456,
@@ -164,7 +154,7 @@ static const struct sx150x_device_data sx1501q_device_data = {
 	},
 	.ngpios	= 4,
 	.pins = sx150x_4_pins,
-	.npins = 4, /* oscio not available */
+	.npins = 4,  
 };
 
 static const struct sx150x_device_data sx1502q_device_data = {
@@ -187,7 +177,7 @@ static const struct sx150x_device_data sx1502q_device_data = {
 	},
 	.ngpios	= 8,
 	.pins = sx150x_8_pins,
-	.npins = 8, /* oscio not available */
+	.npins = 8,  
 };
 
 static const struct sx150x_device_data sx1503q_device_data = {
@@ -210,7 +200,7 @@ static const struct sx150x_device_data sx1503q_device_data = {
 	},
 	.ngpios	= 16,
 	.pins = sx150x_16_pins,
-	.npins  = 16, /* oscio not available */
+	.npins  = 16,  
 };
 
 static const struct sx150x_device_data sx1504q_device_data = {
@@ -229,7 +219,7 @@ static const struct sx150x_device_data sx1504q_device_data = {
 	},
 	.ngpios	= 4,
 	.pins = sx150x_4_pins,
-	.npins = 4, /* oscio not available */
+	.npins = 4,  
 };
 
 static const struct sx150x_device_data sx1505q_device_data = {
@@ -251,7 +241,7 @@ static const struct sx150x_device_data sx1505q_device_data = {
 	},
 	.ngpios	= 8,
 	.pins = sx150x_8_pins,
-	.npins = 8, /* oscio not available */
+	.npins = 8,  
 };
 
 static const struct sx150x_device_data sx1506q_device_data = {
@@ -274,7 +264,7 @@ static const struct sx150x_device_data sx1506q_device_data = {
 	},
 	.ngpios	= 16,
 	.pins = sx150x_16_pins,
-	.npins = 16, /* oscio not available */
+	.npins = 16,  
 };
 
 static const struct sx150x_device_data sx1507q_device_data = {
@@ -374,7 +364,7 @@ static bool sx150x_pin_is_oscio(struct sx150x_pinctrl *pctl, unsigned int pin)
 	if (pin >= pctl->data->npins)
 		return false;
 
-	/* OSCIO pin is only present in 789 devices */
+	 
 	if (pctl->data->model != SX150X_789)
 		return false;
 
@@ -506,10 +496,7 @@ static void sx150x_irq_unmask(struct irq_data *d)
 static void sx150x_irq_set_sense(struct sx150x_pinctrl *pctl,
 				 unsigned int line, unsigned int sense)
 {
-	/*
-	 * Every interrupt line is represented by two bits shifted
-	 * proportionally to the line number
-	 */
+	 
 	const unsigned int n = line * 2;
 	const unsigned int mask = ~((SX150X_IRQ_TYPE_EDGE_RISING |
 				     SX150X_IRQ_TYPE_EDGE_FALLING) << n);
@@ -826,7 +813,7 @@ static int sx150x_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 		default:
 			return -ENOTSUPP;
 		}
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -892,10 +879,7 @@ static int sx150x_init_misc(struct sx150x_pinctrl *pctl)
 		reg   = pctl->data->pri.x456.reg_advanced;
 		value = 0x00;
 
-		/*
-		 * Only SX1506 has RegAdvanced, SX1504/5 are expected
-		 * to initialize this offset to zero
-		 */
+		 
 		if (!reg)
 			return 0;
 		break;
@@ -931,7 +915,7 @@ static int sx150x_init_hw(struct sx150x_pinctrl *pctl)
 	if (err < 0)
 		return err;
 
-	/* Set all pins to work in normal mode */
+	 
 	return regmap_write(pctl->regmap, reg[pctl->data->model], 0);
 }
 
@@ -941,11 +925,7 @@ static int sx150x_regmap_reg_width(struct sx150x_pinctrl *pctl,
 	const struct sx150x_device_data *data = pctl->data;
 
 	if (reg == data->reg_sense) {
-		/*
-		 * RegSense packs two bits of configuration per GPIO,
-		 * so we'd need to read twice as many bits as there
-		 * are GPIO in our chip
-		 */
+		 
 		return 2 * data->ngpios;
 	} else if ((data->model == SX150X_789 &&
 		    (reg == data->pri.x789.reg_misc ||
@@ -970,24 +950,7 @@ static unsigned int sx150x_maybe_swizzle(struct sx150x_pinctrl *pctl,
 	unsigned int a, b;
 	const struct sx150x_device_data *data = pctl->data;
 
-	/*
-	 * Whereas SX1509 presents RegSense in a simple layout as such:
-	 *	reg     [ f f e e d d c c ]
-	 *	reg + 1 [ b b a a 9 9 8 8 ]
-	 *	reg + 2 [ 7 7 6 6 5 5 4 4 ]
-	 *	reg + 3 [ 3 3 2 2 1 1 0 0 ]
-	 *
-	 * SX1503 and SX1506 deviate from that data layout, instead storing
-	 * their contents as follows:
-	 *
-	 *	reg     [ f f e e d d c c ]
-	 *	reg + 1 [ 7 7 6 6 5 5 4 4 ]
-	 *	reg + 2 [ b b a a 9 9 8 8 ]
-	 *	reg + 3 [ 3 3 2 2 1 1 0 0 ]
-	 *
-	 * so, taking that into account, we swap two
-	 * inner bytes of a 4-byte result
-	 */
+	 
 
 	if (reg == data->reg_sense &&
 	    data->ngpios == 16 &&
@@ -1004,18 +967,7 @@ static unsigned int sx150x_maybe_swizzle(struct sx150x_pinctrl *pctl,
 	return val;
 }
 
-/*
- * In order to mask the differences between 16 and 8 bit expander
- * devices we set up a sligthly ficticious regmap that pretends to be
- * a set of 32-bit (to accommodate RegSenseLow/RegSenseHigh
- * pair/quartet) registers and transparently reconstructs those
- * registers via multiple I2C/SMBus reads
- *
- * This way the rest of the driver code, interfacing with the chip via
- * regmap API, can work assuming that each GPIO pin is represented by
- * a group of bits at an offset proportional to GPIO number within a
- * given register.
- */
+ 
 static int sx150x_regmap_reg_read(void *context, unsigned int reg,
 				  unsigned int *result)
 {
@@ -1025,34 +977,7 @@ static int sx150x_regmap_reg_read(void *context, unsigned int reg,
 	const int width = sx150x_regmap_reg_width(pctl, reg);
 	unsigned int idx, val;
 
-	/*
-	 * There are four potential cases covered by this function:
-	 *
-	 * 1) 8-pin chip, single configuration bit register
-	 *
-	 *	This is trivial the code below just needs to read:
-	 *		reg  [ 7 6 5 4 3 2 1 0 ]
-	 *
-	 * 2) 8-pin chip, double configuration bit register (RegSense)
-	 *
-	 *	The read will be done as follows:
-	 *		reg      [ 7 7 6 6 5 5 4 4 ]
-	 *		reg + 1  [ 3 3 2 2 1 1 0 0 ]
-	 *
-	 * 3) 16-pin chip, single configuration bit register
-	 *
-	 *	The read will be done as follows:
-	 *		reg     [ f e d c b a 9 8 ]
-	 *		reg + 1 [ 7 6 5 4 3 2 1 0 ]
-	 *
-	 * 4) 16-pin chip, double configuration bit register (RegSense)
-	 *
-	 *	The read will be done as follows:
-	 *		reg     [ f f e e d d c c ]
-	 *		reg + 1 [ b b a a 9 9 8 8 ]
-	 *		reg + 2 [ 7 7 6 6 5 5 4 4 ]
-	 *		reg + 3 [ 3 3 2 2 1 1 0 0 ]
-	 */
+	 
 
 	for (n = width, val = 0, idx = reg; n > 0; n -= 8, idx++) {
 		val <<= 8;
@@ -1158,7 +1083,7 @@ static int sx150x_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* Pinctrl_desc */
+	 
 	pctl->pinctrl_desc.name = "sx150x-pinctrl";
 	pctl->pinctrl_desc.pctlops = &sx150x_pinctrl_ops;
 	pctl->pinctrl_desc.confops = &sx150x_pinconf_ops;
@@ -1173,7 +1098,7 @@ static int sx150x_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Register GPIO controller */
+	 
 	pctl->gpio.base = -1;
 	pctl->gpio.ngpio = pctl->data->npins;
 	pctl->gpio.get_direction = sx150x_gpio_get_direction;
@@ -1188,35 +1113,20 @@ static int sx150x_probe(struct i2c_client *client)
 	if (!pctl->gpio.label)
 		return -ENOMEM;
 
-	/*
-	 * Setting multiple pins is not safe when all pins are not
-	 * handled by the same regmap register. The oscio pin (present
-	 * on the SX150X_789 chips) lives in its own register, so
-	 * would require locking that is not in place at this time.
-	 */
+	 
 	if (pctl->data->model != SX150X_789)
 		pctl->gpio.set_multiple = sx150x_gpio_set_multiple;
 
-	/* Add Interrupt support if an irq is specified */
+	 
 	if (client->irq > 0) {
 		struct gpio_irq_chip *girq;
 
 		pctl->irq.masked = ~0;
 		pctl->irq.sense = 0;
-		/*
-		 * Because sx150x_irq_threaded_fn invokes all of the
-		 * nested interrupt handlers via handle_nested_irq,
-		 * any "handler" assigned to struct gpio_irq_chip
-		 * below is going to be ignored, so the choice of the
-		 * function does not matter that much.
-		 *
-		 * We set it to handle_bad_irq to avoid confusion,
-		 * plus it will be instantly noticeable if it is ever
-		 * called (should not happen)
-		 */
+		 
 		girq = &pctl->gpio.irq;
 		gpio_irq_chip_set_chip(girq, &sx150x_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;
@@ -1237,11 +1147,7 @@ static int sx150x_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/*
-	 * Pin control functions need to be enabled AFTER registering the
-	 * GPIO chip because sx150x_pinconf_set() calls
-	 * sx150x_gpio_direction_output().
-	 */
+	 
 	ret = pinctrl_enable(pctl->pctldev);
 	if (ret) {
 		dev_err(dev, "Failed to enable pinctrl device\n");

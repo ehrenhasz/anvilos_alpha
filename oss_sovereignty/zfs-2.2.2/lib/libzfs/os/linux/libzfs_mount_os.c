@@ -1,33 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2015 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2021 by Delphix. All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- * Copyright 2017 RackTop Systems.
- * Copyright (c) 2018 Datto Inc.
- * Copyright 2018 OmniOS Community Edition (OmniOSce) Association.
- */
+ 
 
 #include <dirent.h>
 #include <dlfcn.h>
@@ -50,8 +23,8 @@
 #include "../../libzfs_impl.h"
 #include <thread_pool.h>
 
-#define	ZS_COMMENT	0x00000000	/* comment */
-#define	ZS_ZFSUTIL	0x00000001	/* caller is zfs(8) */
+#define	ZS_COMMENT	0x00000000	 
+#define	ZS_ZFSUTIL	0x00000001	 
 
 typedef struct option_map {
 	const char *name;
@@ -60,7 +33,7 @@ typedef struct option_map {
 } option_map_t;
 
 static const option_map_t option_map[] = {
-	/* Canonicalized filesystem independent options from mount(8) */
+	 
 	{ MNTOPT_NOAUTO,	MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_DEFAULTS,	MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_NODEVICES,	MS_NODEV,	ZS_COMMENT	},
@@ -80,14 +53,11 @@ static const option_map_t option_map[] = {
 	{ MNTOPT_SYNC,		MS_SYNCHRONOUS,	ZS_COMMENT	},
 	{ MNTOPT_USER,		MS_USERS,	ZS_COMMENT	},
 	{ MNTOPT_USERS,		MS_USERS,	ZS_COMMENT	},
-	/* acl flags passed with util-linux-2.24 mount command */
+	 
 	{ MNTOPT_ACL,		MS_POSIXACL,	ZS_COMMENT	},
 	{ MNTOPT_NOACL,		MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_POSIXACL,	MS_POSIXACL,	ZS_COMMENT	},
-	/*
-	 * Case sensitive options are just listed here to silently
-	 * ignore the error if passed with zfs mount command.
-	 */
+	 
 	{ MNTOPT_CASESENSITIVE,		MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_CASEINSENSITIVE,	MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_CASEMIXED,		MS_COMMENT,	ZS_COMMENT	},
@@ -121,7 +91,7 @@ static const option_map_t option_map[] = {
 	{ MNTOPT_NBMAND,	MS_MANDLOCK,	ZS_COMMENT	},
 	{ MNTOPT_NONBMAND,	MS_COMMENT,	ZS_COMMENT	},
 #endif
-	/* Valid options not found in mount(8) */
+	 
 	{ MNTOPT_BIND,		MS_BIND,	ZS_COMMENT	},
 #ifdef MS_REC
 	{ MNTOPT_RBIND,		MS_BIND|MS_REC,	ZS_COMMENT	},
@@ -133,16 +103,13 @@ static const option_map_t option_map[] = {
 #ifdef MS_SILENT
 	{ MNTOPT_QUIET,		MS_SILENT,	ZS_COMMENT	},
 #endif
-	/* Custom zfs options */
+	 
 	{ MNTOPT_XATTR,		MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_NOXATTR,	MS_COMMENT,	ZS_COMMENT	},
 	{ MNTOPT_ZFSUTIL,	MS_COMMENT,	ZS_ZFSUTIL	},
 	{ NULL,			0,		0		} };
 
-/*
- * Break the mount option in to a name/value pair.  The name is
- * validated against the option map and mount flags set accordingly.
- */
+ 
 static int
 parse_option(char *mntopt, unsigned long *mntflags,
     unsigned long *zfsflags, int sloppy)
@@ -176,16 +143,12 @@ parse_option(char *mntopt, unsigned long *mntflags,
 	if (!sloppy)
 		error = ENOENT;
 out:
-	/* If required further process on the value may be done here */
+	 
 	free(name);
 	return (error);
 }
 
-/*
- * Translate the mount option string in to MS_* mount flags for the
- * kernel vfs.  When sloppy is non-zero unknown options will be ignored
- * otherwise they are considered fatal are copied in to badopt.
- */
+ 
 int
 zfs_parse_mount_options(const char *mntopts, unsigned long *mntflags,
     unsigned long *zfsflags, int sloppy, char *badopt, char *mtabopt)
@@ -200,12 +163,7 @@ zfs_parse_mount_options(const char *mntopts, unsigned long *mntflags,
 	*mntflags = 0;
 	opt = NULL;
 
-	/*
-	 * Scan through all mount options which must be comma delimited.
-	 * We must be careful to notice regions which are double quoted
-	 * and skip commas in these regions.  Each option is then checked
-	 * to determine if it is a known option.
-	 */
+	 
 	for (ptr = opts; ptr && !flag; ptr++) {
 		if (opt == NULL)
 			opt = ptr;
@@ -282,14 +240,7 @@ zfs_adjust_mount_options(zfs_handle_t *zhp, const char *mntpoint,
 {
 	char prop[ZFS_MAXPROPLEN];
 
-	/*
-	 * Checks to see if the ZFS_PROP_SELINUX_CONTEXT exists
-	 * if it does, create a tmp variable in case it's needed
-	 * checks to see if the selinux context is set to the default
-	 * if it is, allow the setting of the other context properties
-	 * this is needed because the 'context' property overrides others
-	 * if it is not the default, set the 'context' property
-	 */
+	 
 	if (zfs_prop_get(zhp, ZFS_PROP_SELINUX_CONTEXT, prop, sizeof (prop),
 	    NULL, NULL, 0, B_FALSE) == 0) {
 		if (strcmp(prop, "none") == 0) {
@@ -306,26 +257,11 @@ zfs_adjust_mount_options(zfs_handle_t *zhp, const char *mntpoint,
 		}
 	}
 
-	/* A hint used to determine an auto-mounted snapshot mount point */
+	 
 	append_mntopt(MNTOPT_MNTPOINT, mntpoint, mntopts, NULL, B_FALSE);
 }
 
-/*
- * By default the filesystem by preparing the mount options (i.e. parsing
- * some flags from the "opts" parameter into the "flags" parameter) and then
- * directly calling the system call mount(2). We don't need the mount utility
- * or update /etc/mtab, because this is a symlink on all modern systems.
- *
- * If the environment variable ZFS_MOUNT_HELPER is set, we fall back to the
- * previous behavior:
- * The filesystem is mounted by invoking the system mount utility rather
- * than by the system call mount(2).  This ensures that the /etc/mtab
- * file is correctly locked for the update.  Performing our own locking
- * and /etc/mtab update requires making an unsafe assumption about how
- * the mount utility performs its locking.  Unfortunately, this also means
- * in the case of a mount failure we do not have the exact errno.  We must
- * make due with return value from the mount process.
- */
+ 
 int
 do_mount(zfs_handle_t *zhp, const char *mntpt, const char *opts, int flags)
 {
@@ -356,7 +292,7 @@ do_mount(zfs_handle_t *zhp, const char *mntpt, const char *opts, int flags)
 		    (char *)mntpt,
 		    (char *)NULL };
 
-		/* Return only the most critical mount error */
+		 
 		error = libzfs_run_process(argv[0], argv,
 		    STDOUT_VERBOSE|STDERR_VERBOSE);
 		if (error) {
@@ -373,7 +309,7 @@ do_mount(zfs_handle_t *zhp, const char *mntpt, const char *opts, int flags)
 			} else if (error & MOUNT_USAGE) {
 				error = EINVAL;
 			} else
-				error = ENXIO; /* Generic error */
+				error = ENXIO;  
 		}
 	}
 
@@ -415,14 +351,14 @@ zfs_mount_delegation_check(void)
 	return ((geteuid() != 0) ? EACCES : 0);
 }
 
-/* Called from the tail end of zpool_disable_datasets() */
+ 
 void
 zpool_disable_datasets_os(zpool_handle_t *zhp, boolean_t force)
 {
 	(void) zhp, (void) force;
 }
 
-/* Called from the tail end of zfs_unmount() */
+ 
 void
 zpool_disable_volume_os(const char *name)
 {

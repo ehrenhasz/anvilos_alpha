@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TM2 touchkey device driver
- *
- * Copyright 2005 Phil Blundell
- * Copyright 2016 Samsung Electronics Co., Ltd.
- *
- * Author: Beomho Seo <beomho.seo@samsung.com>
- * Author: Jaechul Lee <jcsing.lee@samsung.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -116,7 +108,7 @@ static int tm2_touchkey_power_enable(struct tm2_touchkey_data *touchkey)
 	if (error)
 		return error;
 
-	/* waiting for device initialization, at least 150ms */
+	 
 	msleep(150);
 
 	return 0;
@@ -171,7 +163,7 @@ static irqreturn_t tm2_touchkey_irq_handler(int irq, void *devid)
 out:
 	if (touchkey->variant->fixed_regulator &&
 				data & TM2_TOUCHKEY_BIT_PRESS_EV) {
-		/* touch turns backlight on, so make sure we're in sync */
+		 
 		if (touchkey->led_dev.brightness == LED_OFF)
 			tm2_touchkey_led_brightness_set(&touchkey->led_dev,
 							LED_OFF);
@@ -213,14 +205,14 @@ static int tm2_touchkey_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Save VDD for easy access */
+	 
 	touchkey->vdd = touchkey->regulators[1].consumer;
 
 	touchkey->num_keycodes = of_property_read_variable_u32_array(np,
 					"linux,keycodes", touchkey->keycodes, 0,
 					ARRAY_SIZE(touchkey->keycodes));
 	if (touchkey->num_keycodes <= 0) {
-		/* default keycodes */
+		 
 		touchkey->keycodes[0] = KEY_PHONE;
 		touchkey->keycodes[1] = KEY_BACK;
 		touchkey->num_keycodes = 2;
@@ -240,7 +232,7 @@ static int tm2_touchkey_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* input device */
+	 
 	touchkey->input_dev = devm_input_allocate_device(&client->dev);
 	if (!touchkey->input_dev) {
 		dev_err(&client->dev, "failed to allocate input device\n");
@@ -276,7 +268,7 @@ static int tm2_touchkey_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* led device */
+	 
 	touchkey->led_dev.name = TM2_TOUCHKEY_DEV_NAME;
 	touchkey->led_dev.brightness = LED_ON;
 	touchkey->led_dev.max_brightness = LED_ON;

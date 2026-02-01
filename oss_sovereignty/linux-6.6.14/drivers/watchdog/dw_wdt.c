@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2010-2011 Picochip Ltd., Jamie Iles
- * https://www.picochip.com
- *
- * This file implements a driver for the Synopsys DesignWare watchdog device
- * in the many subsystems. The watchdog has 16 different timeout periods
- * and these are a function of the input clock frequency.
- *
- * The DesignWare watchdog cannot be stopped once it has been started so we
- * do not implement a stop function. The watchdog core will continue to send
- * heartbeat requests after the watchdog device has been closed.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -48,7 +37,7 @@
 #define WDOG_COMP_VERSION_REG_OFFSET        0xf8
 #define WDOG_COMP_TYPE_REG_OFFSET           0xfc
 
-/* There are sixteen TOPs (timeout periods) that can be set in the watchdog. */
+ 
 #define DW_WDT_NUM_TOPS		16
 #define DW_WDT_FIX_TOP(_idx)	(1U << (16 + _idx))
 
@@ -88,7 +77,7 @@ struct dw_wdt {
 	struct dw_wdt_timeout	timeouts[DW_WDT_NUM_TOPS];
 	struct watchdog_device	wdd;
 	struct reset_control	*rst;
-	/* Save/restore */
+	 
 	u32			control;
 	u32			timeout;
 
@@ -124,11 +113,7 @@ static unsigned int dw_wdt_find_best_top(struct dw_wdt *dw_wdt,
 {
 	int idx;
 
-	/*
-	 * Find a TOP with timeout greater or equal to the requested number.
-	 * Note we'll select a TOP with maximum timeout if the requested
-	 * timeout couldn't be reached.
-	 */
+	 
 	for (idx = 0; idx < DW_WDT_NUM_TOPS; ++idx) {
 		if (dw_wdt->timeouts[idx].sec >= timeout)
 			break;
@@ -146,10 +131,7 @@ static unsigned int dw_wdt_get_min_timeout(struct dw_wdt *dw_wdt)
 {
 	int idx;
 
-	/*
-	 * We'll find a timeout greater or equal to one second anyway because
-	 * the driver probe would have failed if there was none.
-	 */
+	 
 	for (idx = 0; idx < DW_WDT_NUM_TOPS; ++idx) {
 		if (dw_wdt->timeouts[idx].sec)
 			break;
@@ -178,10 +160,7 @@ static unsigned int dw_wdt_get_timeout(struct dw_wdt *dw_wdt)
 			break;
 	}
 
-	/*
-	 * In IRQ mode due to the two stages counter, the actual timeout is
-	 * twice greater than the TOP setting.
-	 */
+	 
 	return dw_wdt->timeouts[idx].sec * dw_wdt->rmod;
 }
 
@@ -201,14 +180,7 @@ static int dw_wdt_set_timeout(struct watchdog_device *wdd, unsigned int top_s)
 	unsigned int timeout;
 	u32 top_val;
 
-	/*
-	 * Note IRQ mode being enabled means having a non-zero pre-timeout
-	 * setup. In this case we try to find a TOP as close to the half of the
-	 * requested timeout as possible since DW Watchdog IRQ mode is designed
-	 * in two stages way - first timeout rises the pre-timeout interrupt,
-	 * second timeout performs the system reset. So basically the effective
-	 * watchdog-caused reset happens after two watchdog TOPs elapsed.
-	 */
+	 
 	timeout = dw_wdt_find_best_top(dw_wdt, DIV_ROUND_UP(top_s, dw_wdt->rmod),
 				       &top_val);
 	if (dw_wdt->rmod == DW_WDT_RMOD_IRQ)
@@ -216,24 +188,15 @@ static int dw_wdt_set_timeout(struct watchdog_device *wdd, unsigned int top_s)
 	else
 		wdd->pretimeout = 0;
 
-	/*
-	 * Set the new value in the watchdog.  Some versions of dw_wdt
-	 * have TOPINIT in the TIMEOUT_RANGE register (as per
-	 * CP_WDT_DUAL_TOP in WDT_COMP_PARAMS_1).  On those we
-	 * effectively get a pat of the watchdog right here.
-	 */
+	 
 	writel(top_val | top_val << WDOG_TIMEOUT_RANGE_TOPINIT_SHIFT,
 	       dw_wdt->regs + WDOG_TIMEOUT_RANGE_REG_OFFSET);
 
-	/* Kick new TOP value into the watchdog counter if activated. */
+	 
 	if (watchdog_active(wdd))
 		dw_wdt_ping(wdd);
 
-	/*
-	 * In case users set bigger timeout value than HW can support,
-	 * kernel(watchdog_dev.c) helps to feed watchdog before
-	 * wdd->max_hw_heartbeat_ms
-	 */
+	 
 	if (top_s * 1000 <= wdd->max_hw_heartbeat_ms)
 		wdd->timeout = timeout * dw_wdt->rmod;
 	else
@@ -246,11 +209,7 @@ static int dw_wdt_set_pretimeout(struct watchdog_device *wdd, unsigned int req)
 {
 	struct dw_wdt *dw_wdt = to_dw_wdt(wdd);
 
-	/*
-	 * We ignore actual value of the timeout passed from user-space
-	 * using it as a flag whether the pretimeout functionality is intended
-	 * to be activated.
-	 */
+	 
 	dw_wdt_update_mode(dw_wdt, req ? DW_WDT_RMOD_IRQ : DW_WDT_RMOD_RESET);
 	dw_wdt_set_timeout(wdd, wdd->timeout);
 
@@ -261,12 +220,12 @@ static void dw_wdt_arm_system_reset(struct dw_wdt *dw_wdt)
 {
 	u32 val = readl(dw_wdt->regs + WDOG_CONTROL_REG_OFFSET);
 
-	/* Disable/enable interrupt mode depending on the RMOD flag. */
+	 
 	if (dw_wdt->rmod == DW_WDT_RMOD_IRQ)
 		val |= WDOG_CONTROL_REG_RESP_MODE_MASK;
 	else
 		val &= ~WDOG_CONTROL_REG_RESP_MODE_MASK;
-	/* Enable watchdog. */
+	 
 	val |= WDOG_CONTROL_REG_WDT_EN_MASK;
 	writel(val, dw_wdt->regs + WDOG_CONTROL_REG_OFFSET);
 }
@@ -310,7 +269,7 @@ static int dw_wdt_restart(struct watchdog_device *wdd,
 	else
 		dw_wdt_arm_system_reset(dw_wdt);
 
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return 0;
@@ -362,10 +321,7 @@ static irqreturn_t dw_wdt_irq(int irq, void *devid)
 	struct dw_wdt *dw_wdt = devid;
 	u32 val;
 
-	/*
-	 * We don't clear the IRQ status. It's supposed to be done by the
-	 * following ping operations.
-	 */
+	 
 	val = readl(dw_wdt->regs + WDOG_INTERRUPT_STATUS_REG_OFFSET);
 	if (!val)
 		return IRQ_NONE;
@@ -412,13 +368,7 @@ static int dw_wdt_resume(struct device *dev)
 
 static DEFINE_SIMPLE_DEV_PM_OPS(dw_wdt_pm_ops, dw_wdt_suspend, dw_wdt_resume);
 
-/*
- * In case if DW WDT IP core is synthesized with fixed TOP feature disabled the
- * TOPs array can be arbitrary ordered with nearly any sixteen uint numbers
- * depending on the system engineer imagination. The next method handles the
- * passed TOPs array to pre-calculate the effective timeouts and to sort the
- * TOP items out in the ascending order with respect to the timeouts.
- */
+ 
 
 static void dw_wdt_handle_tops(struct dw_wdt *dw_wdt, const u32 *tops)
 {
@@ -426,12 +376,7 @@ static void dw_wdt_handle_tops(struct dw_wdt *dw_wdt, const u32 *tops)
 	int val, tidx;
 	u64 msec;
 
-	/*
-	 * We walk over the passed TOPs array and calculate corresponding
-	 * timeouts in seconds and milliseconds. The milliseconds granularity
-	 * is needed to distinguish the TOPs with very close timeouts and to
-	 * set the watchdog max heartbeat setting further.
-	 */
+	 
 	for (val = 0; val < DW_WDT_NUM_TOPS; ++val) {
 		tout.top_val = val;
 		tout.sec = tops[val] / dw_wdt->rate;
@@ -439,10 +384,7 @@ static void dw_wdt_handle_tops(struct dw_wdt *dw_wdt, const u32 *tops)
 		do_div(msec, dw_wdt->rate);
 		tout.msec = msec - ((u64)tout.sec * MSEC_PER_SEC);
 
-		/*
-		 * Find a suitable place for the current TOP in the timeouts
-		 * array so that the list is remained in the ascending order.
-		 */
+		 
 		for (tidx = 0; tidx < val; ++tidx) {
 			dst = &dw_wdt->timeouts[tidx];
 			if (tout.sec > dst->sec || (tout.sec == dst->sec &&
@@ -462,11 +404,7 @@ static int dw_wdt_init_timeouts(struct dw_wdt *dw_wdt, struct device *dev)
 	const u32 *tops;
 	int ret;
 
-	/*
-	 * Retrieve custom or fixed counter values depending on the
-	 * WDT_USE_FIX_TOP flag found in the component specific parameters
-	 * #1 register.
-	 */
+	 
 	data = readl(dw_wdt->regs + WDOG_COMP_PARAMS_1_REG_OFFSET);
 	if (data & WDOG_COMP_PARAMS_1_USE_FIX_TOP) {
 		tops = dw_wdt_fix_tops;
@@ -482,7 +420,7 @@ static int dw_wdt_init_timeouts(struct dw_wdt *dw_wdt, struct device *dev)
 		}
 	}
 
-	/* Convert the specified TOPs into an array of watchdog timeouts. */
+	 
 	dw_wdt_handle_tops(dw_wdt, tops);
 	if (!dw_wdt->timeouts[DW_WDT_NUM_TOPS - 1].sec) {
 		dev_err(dev, "No any valid TOP detected\n");
@@ -538,12 +476,12 @@ static void dw_wdt_dbgfs_clear(struct dw_wdt *dw_wdt)
 	debugfs_remove_recursive(dw_wdt->dbgfs_dir);
 }
 
-#else /* !CONFIG_DEBUG_FS */
+#else  
 
 static void dw_wdt_dbgfs_init(struct dw_wdt *dw_wdt) {}
 static void dw_wdt_dbgfs_clear(struct dw_wdt *dw_wdt) {}
 
-#endif /* !CONFIG_DEBUG_FS */
+#endif  
 
 static int dw_wdt_drv_probe(struct platform_device *pdev)
 {
@@ -560,12 +498,7 @@ static int dw_wdt_drv_probe(struct platform_device *pdev)
 	if (IS_ERR(dw_wdt->regs))
 		return PTR_ERR(dw_wdt->regs);
 
-	/*
-	 * Try to request the watchdog dedicated timer clock source. It must
-	 * be supplied if asynchronous mode is enabled. Otherwise fallback
-	 * to the common timer/bus clocks configuration, in which the very
-	 * first found clock supply both timer and APB signals.
-	 */
+	 
 	dw_wdt->clk = devm_clk_get_enabled(dev, "tclk");
 	if (IS_ERR(dw_wdt->clk)) {
 		dw_wdt->clk = devm_clk_get_enabled(dev, NULL);
@@ -577,13 +510,7 @@ static int dw_wdt_drv_probe(struct platform_device *pdev)
 	if (dw_wdt->rate == 0)
 		return -EINVAL;
 
-	/*
-	 * Request APB clock if device is configured with async clocks mode.
-	 * In this case both tclk and pclk clocks are supposed to be specified.
-	 * Alas we can't know for sure whether async mode was really activated,
-	 * so the pclk phandle reference is left optional. If it couldn't be
-	 * found we consider the device configured in synchronous clocks mode.
-	 */
+	 
 	dw_wdt->pclk = devm_clk_get_optional_enabled(dev, "pclk");
 	if (IS_ERR(dw_wdt->pclk))
 		return PTR_ERR(dw_wdt->pclk);
@@ -592,15 +519,10 @@ static int dw_wdt_drv_probe(struct platform_device *pdev)
 	if (IS_ERR(dw_wdt->rst))
 		return PTR_ERR(dw_wdt->rst);
 
-	/* Enable normal reset without pre-timeout by default. */
+	 
 	dw_wdt_update_mode(dw_wdt, DW_WDT_RMOD_RESET);
 
-	/*
-	 * Pre-timeout IRQ is optional, since some hardware may lack support
-	 * of it. Note we must request rising-edge IRQ, since the lane is left
-	 * pending either until the next watchdog kick event or up to the
-	 * system reset.
-	 */
+	 
 	ret = platform_get_irq_optional(pdev, 0);
 	if (ret > 0) {
 		ret = devm_request_irq(dev, ret, dw_wdt_irq,
@@ -633,11 +555,7 @@ static int dw_wdt_drv_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(wdd, nowayout);
 	watchdog_init_timeout(wdd, 0, dev);
 
-	/*
-	 * If the watchdog is already running, use its already configured
-	 * timeout. Otherwise use the default or the value provided through
-	 * devicetree.
-	 */
+	 
 	if (dw_wdt_is_enabled(dw_wdt)) {
 		wdd->timeout = dw_wdt_get_timeout(dw_wdt);
 		set_bit(WDOG_HW_RUNNING, &wdd->status);
@@ -677,7 +595,7 @@ static void dw_wdt_drv_remove(struct platform_device *pdev)
 #ifdef CONFIG_OF
 static const struct of_device_id dw_wdt_of_match[] = {
 	{ .compatible = "snps,dw-wdt", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dw_wdt_of_match);
 #endif

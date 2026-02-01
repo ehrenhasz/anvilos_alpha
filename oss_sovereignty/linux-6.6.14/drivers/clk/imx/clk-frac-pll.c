@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018 NXP.
- *
- * This driver supports the fractional plls found in the imx8m SOCs
- *
- * Documentation for this fractional pll can be found at:
- *   https://www.nxp.com/docs/en/reference-manual/IMX8MDQLQRM.pdf#page=834
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -53,11 +46,11 @@ static int clk_wait_ack(struct clk_frac_pll *pll)
 {
 	u32 val;
 
-	/* return directly if the pll is in powerdown or in bypass */
+	 
 	if (readl_relaxed(pll->base) & (PLL_PD_MASK | PLL_BYPASS_MASK))
 		return 0;
 
-	/* Wait for the pll's divfi and divff to be reloaded */
+	 
 	return readl_poll_timeout(pll->base, val, val & PLL_NEWDIV_ACK, 0,
 					PLL_FRAC_ACK_TIMEOUT);
 }
@@ -145,13 +138,7 @@ static long clk_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	return rate / 2;
 }
 
-/*
- * To simplify the clock calculation, we can keep the 'PLL_OUTPUT_VAL' at zero
- * (means the PLL output will be divided by 2). So the PLL output can use
- * the below formula:
- * pllout = parent_rate * 8 / 2 * DIVF_VAL;
- * where DIVF_VAL = 1 + DIVFI + DIVFF / 2^24.
- */
+ 
 static int clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 			    unsigned long parent_rate)
 {
@@ -178,14 +165,14 @@ static int clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	val &= ~0x1f;
 	writel_relaxed(val, pll->base + PLL_CFG0);
 
-	/* Set the NEV_DIV_VAL to reload the DIVFI and DIVFF */
+	 
 	val = readl_relaxed(pll->base + PLL_CFG0);
 	val |= PLL_NEWDIV_VAL;
 	writel_relaxed(val, pll->base + PLL_CFG0);
 
 	ret = clk_wait_ack(pll);
 
-	/* clear the NEV_DIV_VAL */
+	 
 	val = readl_relaxed(pll->base + PLL_CFG0);
 	val &= ~PLL_NEWDIV_VAL;
 	writel_relaxed(val, pll->base + PLL_CFG0);

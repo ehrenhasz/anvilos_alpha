@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  Implementation of dentry (directory cache) functions.
- */
+ 
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
 
-/* Returns 1 if dentry can still be trusted, else 0. */
+ 
 static int orangefs_revalidate_lookup(struct dentry *dentry)
 {
 	struct dentry *parent_dentry = dget_parent(dentry);
@@ -47,7 +41,7 @@ static int orangefs_revalidate_lookup(struct dentry *dentry)
 	err = service_operation(new_op, "orangefs_lookup",
 			get_interruptible_flag(parent_inode));
 
-	/* Positive dentry: reject if error or not the same inode. */
+	 
 	if (inode) {
 		if (err) {
 			gossip_debug(GOSSIP_DCACHE_DEBUG,
@@ -63,7 +57,7 @@ static int orangefs_revalidate_lookup(struct dentry *dentry)
 			goto out_drop;
 		}
 
-	/* Negative dentry: reject if success or error other than ENOENT. */
+	 
 	} else {
 		gossip_debug(GOSSIP_DCACHE_DEBUG, "%s: negative dentry.\n",
 		    __func__);
@@ -89,11 +83,7 @@ out_drop:
 	goto out_release_op;
 }
 
-/*
- * Verify that dentry is valid.
- *
- * Should return 1 if dentry can still be trusted, else 0.
- */
+ 
 static int orangefs_d_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	int ret;
@@ -108,18 +98,15 @@ static int orangefs_d_revalidate(struct dentry *dentry, unsigned int flags)
 	gossip_debug(GOSSIP_DCACHE_DEBUG, "%s: called on dentry %p.\n",
 		     __func__, dentry);
 
-	/* skip root handle lookups. */
+	 
 	if (dentry->d_inode && is_root_handle(dentry->d_inode))
 		return 1;
 
-	/*
-	 * If this passes, the positive dentry still exists or the negative
-	 * dentry still does not exist.
-	 */
+	 
 	if (!orangefs_revalidate_lookup(dentry))
 		return 0;
 
-	/* We do not need to continue with negative dentries. */
+	 
 	if (!dentry->d_inode) {
 		gossip_debug(GOSSIP_DCACHE_DEBUG,
 		    "%s: negative dentry or positive dentry and inode valid.\n",
@@ -127,7 +114,7 @@ static int orangefs_d_revalidate(struct dentry *dentry, unsigned int flags)
 		return 1;
 	}
 
-	/* Now we must perform a getattr to validate the inode contents. */
+	 
 
 	ret = orangefs_inode_check_changed(dentry->d_inode);
 	if (ret < 0) {

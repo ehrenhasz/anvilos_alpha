@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <test_progs.h>
 #include <bpf/btf.h>
 
@@ -22,20 +22,20 @@ void test_btf_split() {
 	if (!ASSERT_OK_PTR(btf1, "empty_main_btf"))
 		return;
 
-	btf__set_pointer_size(btf1, 8); /* enforce 64-bit arch */
+	btf__set_pointer_size(btf1, 8);  
 
-	btf__add_int(btf1, "int", 4, BTF_INT_SIGNED);	/* [1] int */
-	btf__add_ptr(btf1, 1);				/* [2] ptr to int */
+	btf__add_int(btf1, "int", 4, BTF_INT_SIGNED);	 
+	btf__add_ptr(btf1, 1);				 
 
-	btf__add_struct(btf1, "s1", 4);			/* [3] struct s1 { */
-	btf__add_field(btf1, "f1", 1, 0, 0);		/*      int f1; */
-							/* } */
+	btf__add_struct(btf1, "s1", 4);			 
+	btf__add_field(btf1, "f1", 1, 0, 0);		 
+							 
 
 	btf2 = btf__new_empty_split(btf1);
 	if (!ASSERT_OK_PTR(btf2, "empty_split_btf"))
 		goto cleanup;
 
-	/* pointer size should be "inherited" from main BTF */
+	 
 	ASSERT_EQ(btf__pointer_size(btf2), 8, "inherit_ptr_sz");
 
 	str_off = btf__find_str(btf2, "int");
@@ -47,11 +47,11 @@ void test_btf_split() {
 	ASSERT_EQ(btf_is_int(t), true, "int_kind");
 	ASSERT_STREQ(btf__str_by_offset(btf2, t->name_off), "int", "int_name");
 
-	btf__add_struct(btf2, "s2", 16);		/* [4] struct s2 {	*/
-	btf__add_field(btf2, "f1", 3, 0, 0);		/*      struct s1 f1;	*/
-	btf__add_field(btf2, "f2", 1, 32, 0);		/*      int f2;		*/
-	btf__add_field(btf2, "f3", 2, 64, 0);		/*      int *f3;	*/
-							/* } */
+	btf__add_struct(btf2, "s2", 16);		 
+	btf__add_field(btf2, "f1", 3, 0, 0);		 
+	btf__add_field(btf2, "f2", 1, 32, 0);		 
+	btf__add_field(btf2, "f3", 2, 64, 0);		 
+							 
 
 	t = btf__type_by_id(btf1, 4);
 	ASSERT_NULL(t, "split_type_in_main");
@@ -63,7 +63,7 @@ void test_btf_split() {
 	ASSERT_EQ(btf_vlen(t), 3, "split_struct_vlen");
 	ASSERT_STREQ(btf__str_by_offset(btf2, t->name_off), "s2", "split_struct_name");
 
-	/* BTF-to-C dump of split BTF */
+	 
 	dump_buf_file = open_memstream(&dump_buf, &dump_buf_sz);
 	if (!ASSERT_OK_PTR(dump_buf_file, "dump_memstream"))
 		return;
@@ -75,7 +75,7 @@ void test_btf_split() {
 		ASSERT_OK(err, "dump_type_ok");
 	}
 	fflush(dump_buf_file);
-	dump_buf[dump_buf_sz] = 0; /* some libc implementations don't do this */
+	dump_buf[dump_buf_sz] = 0;  
 	ASSERT_STREQ(dump_buf,
 "struct s1 {\n"
 "	int f1;\n"

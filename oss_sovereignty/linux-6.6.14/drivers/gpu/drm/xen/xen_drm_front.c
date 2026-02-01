@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- *  Xen para-virtual DRM device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -241,10 +235,7 @@ static int xen_drm_front_dbuf_destroy(struct xen_drm_front_info *front_info,
 
 	be_alloc = front_info->cfg.be_alloc;
 
-	/*
-	 * For the backend allocated buffer release references now, so backend
-	 * can free the buffer.
-	 */
+	 
 	if (be_alloc)
 		dbuf_free(&front_info->dbuf_list, dbuf_cookie);
 
@@ -260,10 +251,7 @@ static int xen_drm_front_dbuf_destroy(struct xen_drm_front_info *front_info,
 	if (ret == 0)
 		ret = be_stream_wait_io(evtchnl);
 
-	/*
-	 * Do this regardless of communication status with the backend:
-	 * if we cannot remove remote resources remove what we can locally.
-	 */
+	 
 	if (!be_alloc)
 		dbuf_free(&front_info->dbuf_list, dbuf_cookie);
 
@@ -405,15 +393,7 @@ static int xen_drm_drv_dumb_create(struct drm_file *filp,
 	struct drm_gem_object *obj;
 	int ret;
 
-	/*
-	 * Dumb creation is a two stage process: first we create a fully
-	 * constructed GEM object which is communicated to the backend, and
-	 * only after that we can create GEM's handle. This is done so,
-	 * because of the possible races: once you create a handle it becomes
-	 * immediately visible to user-space, so the latter can try accessing
-	 * object without pages etc.
-	 * For details also see drm_gem_handle_create
-	 */
+	 
 	args->pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
 	args->size = args->pitch * args->height;
 
@@ -431,12 +411,12 @@ static int xen_drm_drv_dumb_create(struct drm_file *filp,
 	if (ret)
 		goto fail_backend;
 
-	/* This is the tail of GEM object creation */
+	 
 	ret = drm_gem_handle_create(filp, obj, &args->handle);
 	if (ret)
 		goto fail_handle;
 
-	/* Drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(obj);
 	return 0;
 
@@ -444,7 +424,7 @@ fail_handle:
 	xen_drm_front_dbuf_destroy(drm_info->front_info,
 				   xen_drm_front_dbuf_to_cookie(obj));
 fail_backend:
-	/* drop reference from allocate */
+	 
 	drm_gem_object_put(obj);
 fail:
 	DRM_ERROR("Failed to create dumb buffer: %d\n", ret);
@@ -557,7 +537,7 @@ static void xen_drm_drv_fini(struct xen_drm_front_info *front_info)
 	if (!dev)
 		return;
 
-	/* Nothing to do if device is already unplugged */
+	 
 	if (drm_dev_is_unplugged(dev))
 		return;
 
@@ -570,11 +550,7 @@ static void xen_drm_drv_fini(struct xen_drm_front_info *front_info)
 	xen_drm_front_evtchnl_free_all(front_info);
 	dbuf_free_all(&front_info->dbuf_list);
 
-	/*
-	 * If we are not using backend allocated buffers, then tell the
-	 * backend we are ready to (re)initialize. Otherwise, wait for
-	 * drm_driver.release.
-	 */
+	 
 	if (!front_info->cfg.be_alloc)
 		xenbus_switch_state(front_info->xb_dev,
 				    XenbusStateInitialising);
@@ -591,7 +567,7 @@ static int displback_initwait(struct xen_drm_front_info *front_info)
 		return ret;
 
 	DRM_INFO("Have %d connector(s)\n", cfg->num_connectors);
-	/* Create event channels for all connectors and publish */
+	 
 	ret = xen_drm_front_evtchnl_create_all(front_info);
 	if (ret < 0)
 		return ret;
@@ -610,7 +586,7 @@ static void displback_disconnect(struct xen_drm_front_info *front_info)
 	if (!front_info->drm_info)
 		return;
 
-	/* Tell the backend to wait until we release the DRM driver. */
+	 
 	xenbus_switch_state(front_info->xb_dev, XenbusStateReconfiguring);
 
 	xen_drm_drv_fini(front_info);
@@ -636,7 +612,7 @@ static void displback_changed(struct xenbus_device *xb_dev,
 		if (xb_dev->state == XenbusStateReconfiguring)
 			break;
 
-		/* recovering after backend unexpected closure */
+		 
 		displback_disconnect(front_info);
 		break;
 
@@ -644,7 +620,7 @@ static void displback_changed(struct xenbus_device *xb_dev,
 		if (xb_dev->state == XenbusStateReconfiguring)
 			break;
 
-		/* recovering after backend unexpected closure */
+		 
 		displback_disconnect(front_info);
 		if (xb_dev->state != XenbusStateInitialising)
 			break;
@@ -670,11 +646,7 @@ static void displback_changed(struct xenbus_device *xb_dev,
 		break;
 
 	case XenbusStateClosing:
-		/*
-		 * in this state backend starts freeing resources,
-		 * so let it go into closed state, so we can also
-		 * remove ours
-		 */
+		 
 		break;
 
 	case XenbusStateUnknown:
@@ -720,17 +692,7 @@ static void xen_drv_remove(struct xenbus_device *dev)
 
 	xenbus_switch_state(dev, XenbusStateClosing);
 
-	/*
-	 * On driver removal it is disconnected from XenBus,
-	 * so no backend state change events come via .otherend_changed
-	 * callback. This prevents us from exiting gracefully, e.g.
-	 * signaling the backend to free event channels, waiting for its
-	 * state to change to XenbusStateClosed and cleaning at our end.
-	 * Normally when front driver removed backend will finally go into
-	 * XenbusStateInitWait state.
-	 *
-	 * Workaround: read backend's state manually and wait with time-out.
-	 */
+	 
 	while ((xenbus_read_unsigned(front_info->xb_dev->otherend, "state",
 				     XenbusStateUnknown) != XenbusStateInitWait) &&
 				     --to)
@@ -764,7 +726,7 @@ static struct xenbus_driver xen_driver = {
 
 static int __init xen_drv_init(void)
 {
-	/* At the moment we only support case with XEN_PAGE_SIZE == PAGE_SIZE */
+	 
 	if (XEN_PAGE_SIZE != PAGE_SIZE) {
 		DRM_ERROR(XENDISPL_DRIVER_NAME ": different kernel and Xen page sizes are not supported: XEN_PAGE_SIZE (%lu) != PAGE_SIZE (%lu)\n",
 			  XEN_PAGE_SIZE, PAGE_SIZE);

@@ -1,54 +1,4 @@
-/* printf - format and print data
-   Copyright (C) 1990-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Usage: printf format [argument...]
-
-   A front end to the printf function that lets it be used from the shell.
-
-   Backslash escapes:
-
-   \" = double quote
-   \\ = backslash
-   \a = alert (bell)
-   \b = backspace
-   \c = produce no further output
-   \e = escape
-   \f = form feed
-   \n = new line
-   \r = carriage return
-   \t = horizontal tab
-   \v = vertical tab
-   \ooo = octal number (ooo is 1 to 3 digits)
-   \xhh = hexadecimal number (hhh is 1 to 2 digits)
-   \uhhhh = 16-bit Unicode character (hhhh is 4 digits)
-   \Uhhhhhhhh = 32-bit Unicode character (hhhhhhhh is 8 digits)
-
-   Additional directive:
-
-   %b = print an argument string, interpreting backslash escapes,
-     except that octal escapes are of the form \0 or \0ooo.
-
-   %q = print an argument string in a format that can be
-     reused as shell input.  Escaped characters used the proposed
-     POSIX $'' syntax supported by most shells.
-
-   The 'format' argument is re-used as many times as necessary
-   to convert all of the given arguments.
-
-   David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -61,7 +11,7 @@
 #include "unicodeio.h"
 #include "xprintf.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "printf"
 
 #define AUTHORS proper_name ("David MacKenzie")
@@ -71,14 +21,13 @@
                      (c) >= 'A' && (c) <= 'F' ? (c) - 'A' + 10 : (c) - '0')
 #define octtobin(c) ((c) - '0')
 
-/* The value to return to the calling program.  */
+ 
 static int exit_status;
 
-/* True if the POSIXLY_CORRECT environment variable is set.  */
+ 
 static bool posixly_correct;
 
-/* This message appears in N_() here rather than just in _() below because
-   the sole use would have been in a #define.  */
+ 
 static char const *const cfcc_msg =
  N_("warning: %s: character(s) following character constant have been ignored");
 
@@ -184,10 +133,7 @@ FUNC_NAME (char const *s)						 \
             }								 \
         }								 \
                                                                          \
-      /* If POSIXLY_CORRECT is not set, then give a warning that there	 \
-         are characters following the character constant and that GNU	 \
-         printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
-         set, then don't give the warning.  */				 \
+       				 \
       if (*++s != 0 && !posixly_correct)				 \
         error (0, 0, _(cfcc_msg), s);					 \
     }									 \
@@ -204,38 +150,38 @@ STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
 STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
 STRTOX (long double, vstrtold,   cl_strtold (s, &end))
 
-/* Output a single-character \ escape.  */
+ 
 
 static void
 print_esc_char (char c)
 {
   switch (c)
     {
-    case 'a':			/* Alert. */
+    case 'a':			 
       putchar ('\a');
       break;
-    case 'b':			/* Backspace. */
+    case 'b':			 
       putchar ('\b');
       break;
-    case 'c':			/* Cancel the rest of the output. */
+    case 'c':			 
       exit (EXIT_SUCCESS);
       break;
-    case 'e':			/* Escape. */
+    case 'e':			 
       putchar ('\x1B');
       break;
-    case 'f':			/* Form feed. */
+    case 'f':			 
       putchar ('\f');
       break;
-    case 'n':			/* New line. */
+    case 'n':			 
       putchar ('\n');
       break;
-    case 'r':			/* Carriage return. */
+    case 'r':			 
       putchar ('\r');
       break;
-    case 't':			/* Horizontal tab. */
+    case 't':			 
       putchar ('\t');
       break;
-    case 'v':			/* Vertical tab. */
+    case 'v':			 
       putchar ('\v');
       break;
     default:
@@ -244,22 +190,18 @@ print_esc_char (char c)
     }
 }
 
-/* Print a \ escape sequence starting at ESCSTART.
-   Return the number of characters in the escape sequence
-   besides the backslash.
-   If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
-   is an octal digit; otherwise they are of the form \ooo.  */
+ 
 
 static int
 print_esc (char const *escstart, bool octal_0)
 {
   char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  int esc_value = 0;		 
+  int esc_length;		 
 
   if (*p == 'x')
     {
-      /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
+       
       for (esc_length = 0, ++p;
            esc_length < 2 && isxdigit (to_uchar (*p));
            ++esc_length, ++p)
@@ -270,9 +212,7 @@ print_esc (char const *escstart, bool octal_0)
     }
   else if (isodigit (*p))
     {
-      /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
-         Allow \ooo if octal_0 && *p != '0'; this is an undocumented
-         extension to POSIX that is compatible with Bash 2.05b.  */
+       
       for (esc_length = 0, p += octal_0 && *p == '0';
            esc_length < 3 && isodigit (*p);
            ++esc_length, ++p)
@@ -296,8 +236,7 @@ print_esc (char const *escstart, bool octal_0)
           uni_value = uni_value * 16 + hextobin (*p);
         }
 
-      /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
-         Note print_unicode_char() would print the literal \u.. in this case. */
+       
       if (uni_value >= 0xd800 && uni_value <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
                esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
@@ -316,7 +255,7 @@ print_esc (char const *escstart, bool octal_0)
   return p - escstart - 1;
 }
 
-/* Print string STR, evaluating \ escapes. */
+ 
 
 static void
 print_esc_string (char const *str)
@@ -328,13 +267,7 @@ print_esc_string (char const *str)
       putchar (*str);
 }
 
-/* Evaluate a printf conversion specification.  START is the start of
-   the directive, LENGTH is its length, and CONVERSION specifies the
-   type of conversion.  LENGTH does not include any length modifier or
-   the conversion specifier itself.  FIELD_WIDTH and PRECISION are the
-   field width and precision for '*' values, if HAVE_FIELD_WIDTH and
-   HAVE_PRECISION are true, respectively.  ARGUMENT is the argument to
-   be formatted.  */
+ 
 
 static void
 print_direc (char const *start, size_t length, char conversion,
@@ -342,11 +275,9 @@ print_direc (char const *start, size_t length, char conversion,
              bool have_precision, int precision,
              char const *argument)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  char *p;		 
 
-  /* Create a null-terminated copy of the % directive, with an
-     intmax_t-wide length modifier substituted for any existing
-     integer length modifier.  */
+   
   {
     char *q;
     char const *length_modifier;
@@ -366,7 +297,7 @@ print_direc (char const *start, size_t length, char conversion,
         break;
 
       default:
-        length_modifier = start;  /* Any valid pointer will do.  */
+        length_modifier = start;   
         length_modifier_len = 0;
         break;
       }
@@ -479,22 +410,20 @@ print_direc (char const *start, size_t length, char conversion,
   free (p);
 }
 
-/* Print the text in FORMAT, using ARGV (with ARGC elements) for
-   arguments to any '%' directives.
-   Return the number of elements of ARGV used.  */
+ 
 
 static int
 print_formatted (char const *format, int argc, char **argv)
 {
-  int save_argc = argc;		/* Preserve original value.  */
-  char const *f;		/* Pointer into 'format'.  */
-  char const *direc_start;	/* Start of % directive.  */
-  size_t direc_length;		/* Length of % directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
-  bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  int save_argc = argc;		 
+  char const *f;		 
+  char const *direc_start;	 
+  size_t direc_length;		 
+  bool have_field_width;	 
+  int field_width = 0;		 
+  bool have_precision;		 
+  int precision = 0;		 
+  char ok[UCHAR_MAX + 1];	 
 
   for (f = format; *f; ++f)
     {
@@ -511,8 +440,7 @@ print_formatted (char const *format, int argc, char **argv)
             }
           if (*f == 'b')
             {
-              /* FIXME: Field width and precision are not supported
-                 for %b, even though POSIX requires it.  */
+               
               if (argc > 0)
                 {
                   print_esc_string (*argv);
@@ -601,9 +529,7 @@ print_formatted (char const *format, int argc, char **argv)
                       intmax_t prec = vstrtoimax (*argv);
                       if (prec < 0)
                         {
-                          /* A negative precision is taken as if the
-                             precision were omitted, so -1 is safe
-                             here even if prec < INT_MIN.  */
+                           
                           precision = -1;
                         }
                       else if (INT_MAX < prec)
@@ -675,8 +601,7 @@ main (int argc, char **argv)
 
   posixly_correct = (getenv ("POSIXLY_CORRECT") != nullptr);
 
-  /* We directly parse options, rather than use parse_long_options, in
-     order to avoid accepting abbreviations.  */
+   
   if (argc == 2)
     {
       if (STREQ (argv[1], "--help"))
@@ -690,8 +615,7 @@ main (int argc, char **argv)
         }
     }
 
-  /* The above handles --help and --version.
-     Since there is no other invocation of getopt, handle '--' here.  */
+   
   if (1 < argc && STREQ (argv[1], "--"))
     {
       --argc;

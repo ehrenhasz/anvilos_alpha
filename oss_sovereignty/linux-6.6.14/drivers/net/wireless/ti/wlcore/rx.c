@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/sched.h>
@@ -18,10 +12,7 @@
 #include "io.h"
 #include "hw_ops.h"
 
-/*
- * TODO: this is here just for now, it must be removed when the data
- * operations are in place.
- */
+ 
 #include "../wl12xx/reg.h"
 
 static u32 wlcore_rx_get_buf_size(struct wl1271 *wl,
@@ -56,24 +47,15 @@ static void wl1271_rx_status(struct wl1271 *wl,
 
 	status->rate_idx = wlcore_rate_to_idx(wl, desc->rate, status->band);
 
-	/* 11n support */
+	 
 	if (desc->rate <= wl->hw_min_ht_rate)
 		status->encoding = RX_ENC_HT;
 
-	/*
-	* Read the signal level and antenna diversity indication.
-	* The msb in the signal level is always set as it is a
-	* negative number.
-	* The antenna indication is the msb of the rssi.
-	*/
+	 
 	status->signal = ((desc->rssi & RSSI_LEVEL_BITMASK) | BIT(7));
 	status->antenna = ((desc->rssi & ANT_DIVERSITY_BITMASK) >> 7);
 
-	/*
-	 * FIXME: In wl1251, the SNR should be divided by two.  In wl1271 we
-	 * need to divide by two for now, but TI has been discussing about
-	 * changing it.  This needs to be rechecked.
-	 */
+	 
 	wl->noise = desc->rssi - (desc->snr >> 1);
 
 	status->freq = ieee80211_channel_to_frequency(desc->channel,
@@ -112,10 +94,7 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 	u16 seq_num;
 	u32 pkt_data_len;
 
-	/*
-	 * In PLT mode we seem to get frames and mac80211 warns about them,
-	 * workaround this by not retrieving them at all.
-	 */
+	 
 	if (unlikely(wl->plt))
 		return -EINVAL;
 
@@ -131,7 +110,7 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 	else if (rx_align == WLCORE_RX_BUF_PADDED)
 		offset_to_data = RX_BUF_ALIGN;
 
-	/* the data read starts with the descriptor */
+	 
 	desc = (struct wl1271_rx_descriptor *) data;
 
 	if (desc->packet_class == WL12XX_RX_CLASS_LOGGER) {
@@ -140,7 +119,7 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 		return 0;
 	}
 
-	/* discard corrupted packets */
+	 
 	if (desc->status & WL1271_RX_DESC_DECRYPT_FAIL) {
 		hdr = (void *)(data + sizeof(*desc) + offset_to_data);
 		wl1271_warning("corrupted packet in RX: status: 0x%x len: %d",
@@ -152,22 +131,17 @@ static int wl1271_rx_handle_data(struct wl1271 *wl, u8 *data, u32 length,
 		return -EINVAL;
 	}
 
-	/* skb length not including rx descriptor */
+	 
 	skb = __dev_alloc_skb(pkt_data_len + reserved, GFP_KERNEL);
 	if (!skb) {
 		wl1271_error("Couldn't allocate RX frame");
 		return -ENOMEM;
 	}
 
-	/* reserve the unaligned payload(if any) */
+	 
 	skb_reserve(skb, reserved);
 
-	/*
-	 * Copy packets from aggregation buffer to the skbs without rx
-	 * descriptor and with packet payload aligned care. In case of unaligned
-	 * packets copy the packets in offset of 2 bytes guarantee IP header
-	 * payload aligned to 4 bytes.
-	 */
+	 
 	skb_put_data(skb, data + sizeof(*desc), pkt_data_len);
 	if (rx_align == WLCORE_RX_BUF_PADDED)
 		skb_pull(skb, RX_BUF_ALIGN);
@@ -209,7 +183,7 @@ int wlcore_rx(struct wl1271 *wl, struct wl_fw_status *status)
 	enum wl_rx_buf_align rx_align;
 	int ret = 0;
 
-	/* update rates per link */
+	 
 	hlid = status->counters.hlid;
 
 	if (hlid < WLCORE_MAX_LINKS)
@@ -236,7 +210,7 @@ int wlcore_rx(struct wl1271 *wl, struct wl_fw_status *status)
 			break;
 		}
 
-		/* Read all available packets at once */
+		 
 		des = le32_to_cpu(status->rx_pkt_descs[drv_rx_counter]);
 		ret = wlcore_hw_prepare_read(wl, des, buf_size);
 		if (ret < 0)
@@ -247,18 +221,14 @@ int wlcore_rx(struct wl1271 *wl, struct wl_fw_status *status)
 		if (ret < 0)
 			goto out;
 
-		/* Split data into separate packets */
+		 
 		pkt_offset = 0;
 		while (pkt_offset < buf_size) {
 			des = le32_to_cpu(status->rx_pkt_descs[drv_rx_counter]);
 			pkt_len = wlcore_rx_get_buf_size(wl, des);
 			rx_align = wlcore_hw_get_rx_buf_align(wl, des);
 
-			/*
-			 * the handle data call can only fail in memory-outage
-			 * conditions, in that case the received frame will just
-			 * be dropped.
-			 */
+			 
 			if (wl1271_rx_handle_data(wl,
 						  wl->aggr_buf + pkt_offset,
 						  pkt_len, rx_align,
@@ -278,10 +248,7 @@ int wlcore_rx(struct wl1271 *wl, struct wl_fw_status *status)
 		}
 	}
 
-	/*
-	 * Write the driver's packet counter to the FW. This is only required
-	 * for older hardware revisions
-	 */
+	 
 	if (wl->quirks & WLCORE_QUIRK_END_OF_TRANSACTION) {
 		ret = wlcore_write32(wl, WL12XX_REG_RX_DRIVER_COUNTER,
 				     wl->rx_counter);
@@ -339,4 +306,4 @@ int wl1271_rx_filter_clear_all(struct wl1271 *wl)
 out:
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lochnagar clock control
- *
- * Copyright (c) 2017-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>

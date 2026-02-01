@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Authors: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//
 
-/*
- * Hardware interface for audio DSP on Tigerlake.
- */
+
+
+
+
+
+
+ 
 
 #include <sound/sof/ext_manifest4.h>
 #include "../ipc4-priv.h"
@@ -26,7 +24,7 @@ static int tgl_dsp_core_get(struct snd_sof_dev *sdev, int core)
 {
 	const struct sof_ipc_pm_ops *pm_ops = sdev->ipc->ops->pm;
 
-	/* power up primary core if not already powered up and return */
+	 
 	if (core == SOF_DSP_PRIMARY_CORE)
 		return hda_dsp_enable_core(sdev, BIT(core));
 
@@ -47,33 +45,33 @@ static int tgl_dsp_core_put(struct snd_sof_dev *sdev, int core)
 			return ret;
 	}
 
-	/* power down primary core and return */
+	 
 	if (core == SOF_DSP_PRIMARY_CORE)
 		return hda_dsp_core_reset_power_down(sdev, BIT(core));
 
 	return 0;
 }
 
-/* Tigerlake ops */
+ 
 struct snd_sof_dsp_ops sof_tgl_ops;
 EXPORT_SYMBOL_NS(sof_tgl_ops, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 int sof_tgl_ops_init(struct snd_sof_dev *sdev)
 {
-	/* common defaults */
+	 
 	memcpy(&sof_tgl_ops, &sof_hda_common_ops, sizeof(struct snd_sof_dsp_ops));
 
-	/* probe/remove/shutdown */
+	 
 	sof_tgl_ops.shutdown	= hda_dsp_shutdown_dma_flush;
 
 	if (sdev->pdata->ipc_type == SOF_IPC) {
-		/* doorbell */
+		 
 		sof_tgl_ops.irq_thread	= cnl_ipc_irq_thread;
 
-		/* ipc */
+		 
 		sof_tgl_ops.send_msg	= cnl_ipc_send_msg;
 
-		/* debug */
+		 
 		sof_tgl_ops.ipc_dump	= cnl_ipc_dump;
 
 		sof_tgl_ops.set_power_state = hda_dsp_set_power_state_ipc3;
@@ -91,35 +89,35 @@ int sof_tgl_ops_init(struct snd_sof_dev *sdev)
 
 		ipc4_data->mtrace_type = SOF_IPC4_MTRACE_INTEL_CAVS_2;
 
-		/* External library loading support */
+		 
 		ipc4_data->load_library = hda_dsp_ipc4_load_library;
 
-		/* doorbell */
+		 
 		sof_tgl_ops.irq_thread	= cnl_ipc4_irq_thread;
 
-		/* ipc */
+		 
 		sof_tgl_ops.send_msg	= cnl_ipc4_send_msg;
 
-		/* debug */
+		 
 		sof_tgl_ops.ipc_dump	= cnl_ipc4_dump;
 
 		sof_tgl_ops.set_power_state = hda_dsp_set_power_state_ipc4;
 	}
 
-	/* set DAI driver ops */
+	 
 	hda_set_dai_drv_ops(sdev, &sof_tgl_ops);
 
-	/* debug */
+	 
 	sof_tgl_ops.debug_map	= tgl_dsp_debugfs;
 	sof_tgl_ops.debug_map_count	= ARRAY_SIZE(tgl_dsp_debugfs);
 
-	/* pre/post fw run */
+	 
 	sof_tgl_ops.post_fw_run = hda_dsp_post_fw_run;
 
-	/* firmware run */
+	 
 	sof_tgl_ops.run = hda_dsp_cl_boot_firmware_iccmax;
 
-	/* dsp core get/put */
+	 
 	sof_tgl_ops.core_get = tgl_dsp_core_get;
 	sof_tgl_ops.core_put = tgl_dsp_core_put;
 
@@ -128,7 +126,7 @@ int sof_tgl_ops_init(struct snd_sof_dev *sdev)
 EXPORT_SYMBOL_NS(sof_tgl_ops_init, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 const struct sof_intel_dsp_desc tgl_chip_info = {
-	/* Tigerlake , Alderlake */
+	 
 	.cores_num = 4,
 	.init_core_mask = 1,
 	.host_managed_cores_mask = BIT(0),
@@ -157,7 +155,7 @@ const struct sof_intel_dsp_desc tgl_chip_info = {
 EXPORT_SYMBOL_NS(tgl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 const struct sof_intel_dsp_desc tglh_chip_info = {
-	/* Tigerlake-H */
+	 
 	.cores_num = 2,
 	.init_core_mask = 1,
 	.host_managed_cores_mask = BIT(0),
@@ -186,7 +184,7 @@ const struct sof_intel_dsp_desc tglh_chip_info = {
 EXPORT_SYMBOL_NS(tglh_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 const struct sof_intel_dsp_desc ehl_chip_info = {
-	/* Elkhartlake */
+	 
 	.cores_num = 4,
 	.init_core_mask = 1,
 	.host_managed_cores_mask = BIT(0),
@@ -215,7 +213,7 @@ const struct sof_intel_dsp_desc ehl_chip_info = {
 EXPORT_SYMBOL_NS(ehl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
 
 const struct sof_intel_dsp_desc adls_chip_info = {
-	/* Alderlake-S */
+	 
 	.cores_num = 2,
 	.init_core_mask = BIT(0),
 	.host_managed_cores_mask = BIT(0),

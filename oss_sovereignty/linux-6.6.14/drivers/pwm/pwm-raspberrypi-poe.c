@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- * For more information on Raspberry Pi's PoE hat see:
- * https://www.raspberrypi.org/products/poe-hat/
- *
- * Limitations:
- *  - No disable bit, so a disabled PWM is simulated by duty_cycle 0
- *  - Only normal polarity
- *  - Fixed 12.5 kHz period
- *
- * The current period is completed when HW is reconfigured.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -21,7 +10,7 @@
 #include <dt-bindings/pwm/raspberrypi,firmware-poe-pwm.h>
 
 #define RPI_PWM_MAX_DUTY		255
-#define RPI_PWM_PERIOD_NS		80000 /* 12.5 kHz */
+#define RPI_PWM_PERIOD_NS		80000  
 
 #define RPI_PWM_CUR_DUTY_REG		0x0
 

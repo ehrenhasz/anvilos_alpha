@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2019 Mellanox Technologies. All rights reserved.
- */
+
+ 
 #include <rdma/ib_verbs.h>
 #include <rdma/rdma_counter.h>
 
@@ -26,19 +24,7 @@ static int __counter_set_mode(struct rdma_port_counter *port_counter,
 	return 0;
 }
 
-/*
- * rdma_counter_set_auto_mode() - Turn on/off per-port auto mode
- *
- * @dev: Device to operate
- * @port: Port to use
- * @mask: Mask to configure
- * @extack: Message to the user
- *
- * Return 0 on success. If counter mode wasn't changed then it is considered
- * as success as well.
- * Return -EBUSY when changing to auto mode while there are bounded counters.
- *
- */
+ 
 int rdma_counter_set_auto_mode(struct ib_device *dev, u32 port,
 			       enum rdma_nl_counter_mask mask,
 			       struct netlink_ext_ack *extack)
@@ -269,12 +255,7 @@ static void counter_history_stat_update(struct rdma_counter *counter)
 		port_counter->hstats->value[i] += counter->stats->value[i];
 }
 
-/*
- * rdma_get_counter_auto_mode - Find the counter that @qp should be bound
- *     with in auto mode
- *
- * Return: The counter (with ref-count increased) if found
- */
+ 
 static struct rdma_counter *rdma_get_counter_auto_mode(struct ib_qp *qp,
 						       u32 port)
 {
@@ -316,10 +297,7 @@ static void counter_release(struct kref *kref)
 	rdma_counter_free(counter);
 }
 
-/*
- * rdma_counter_bind_qp_auto - Check and bind the QP to a counter base on
- *   the auto-mode rule
- */
+ 
 int rdma_counter_bind_qp_auto(struct ib_qp *qp, u32 port)
 {
 	struct rdma_port_counter *port_counter;
@@ -353,11 +331,7 @@ int rdma_counter_bind_qp_auto(struct ib_qp *qp, u32 port)
 	return 0;
 }
 
-/*
- * rdma_counter_unbind_qp - Unbind a qp from a counter
- * @force:
- *   true - Decrease the counter ref-count anyway (e.g., qp destroy)
- */
+ 
 int rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
 {
 	struct rdma_counter *counter = qp->counter;
@@ -422,10 +396,7 @@ next:
 	return sum;
 }
 
-/*
- * rdma_counter_get_hwstat_value() - Get the sum value of all counters on a
- *   specific port, including the running ones and history data
- */
+ 
 u64 rdma_counter_get_hwstat_value(struct ib_device *dev, u32 port, u32 index)
 {
 	struct rdma_port_counter *port_counter;
@@ -478,9 +449,7 @@ static struct rdma_counter *rdma_get_counter_by_id(struct ib_device *dev,
 	return counter;
 }
 
-/*
- * rdma_counter_bind_qpn() - Bind QP @qp_num to counter @counter_id
- */
+ 
 int rdma_counter_bind_qpn(struct ib_device *dev, u32 port,
 			  u32 qp_num, u32 counter_id)
 {
@@ -527,10 +496,7 @@ err:
 	return ret;
 }
 
-/*
- * rdma_counter_bind_qpn_alloc() - Alloc a counter and bind QP @qp_num to it
- *   The id of new counter is returned in @counter_id
- */
+ 
 int rdma_counter_bind_qpn_alloc(struct ib_device *dev, u32 port,
 				u32 qp_num, u32 *counter_id)
 {
@@ -575,9 +541,7 @@ err:
 	return ret;
 }
 
-/*
- * rdma_counter_unbind_qpn() - Unbind QP @qp_num from a counter
- */
+ 
 int rdma_counter_unbind_qpn(struct ib_device *dev, u32 port,
 			    u32 qp_num, u32 counter_id)
 {

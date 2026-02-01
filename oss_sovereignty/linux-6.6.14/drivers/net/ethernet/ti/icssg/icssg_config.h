@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Texas Instruments ICSSG Ethernet driver
- *
- * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+ 
+ 
 
 #ifndef __NET_TI_ICSSG_CONFIG_H
 #define __NET_TI_ICSSG_CONFIG_H
@@ -19,18 +15,18 @@ struct icssg_flow_cfg {
 } __packed;
 
 #define PRUETH_PKT_TYPE_CMD	0x10
-#define PRUETH_NAV_PS_DATA_SIZE	16	/* Protocol specific data size */
-#define PRUETH_NAV_SW_DATA_SIZE	16	/* SW related data size */
+#define PRUETH_NAV_PS_DATA_SIZE	16	 
+#define PRUETH_NAV_SW_DATA_SIZE	16	 
 #define PRUETH_MAX_TX_DESC	512
 #define PRUETH_MAX_RX_DESC	512
-#define PRUETH_MAX_RX_FLOWS	1	/* excluding default flow */
+#define PRUETH_MAX_RX_FLOWS	1	 
 #define PRUETH_RX_FLOW_DATA	0
 
 #define PRUETH_EMAC_BUF_POOL_SIZE	SZ_8K
 #define PRUETH_EMAC_POOLS_PER_SLICE	24
 #define PRUETH_EMAC_BUF_POOL_START	8
 #define PRUETH_NUM_BUF_POOLS	8
-#define PRUETH_EMAC_RX_CTX_BUF_SIZE	SZ_16K	/* per slice */
+#define PRUETH_EMAC_RX_CTX_BUF_SIZE	SZ_16K	 
 #define MSMC_RAM_SIZE	\
 	(2 * (PRUETH_EMAC_BUF_POOL_SIZE * PRUETH_NUM_BUF_POOLS + \
 	 PRUETH_EMAC_RX_CTX_BUF_SIZE * 2))
@@ -40,7 +36,7 @@ struct icssg_rxq_ctx {
 	__le32 end;
 } __packed;
 
-/* Load time Fiwmware Configuration */
+ 
 
 #define ICSSG_FW_MGMT_CMD_HEADER	0x81
 #define ICSSG_FW_MGMT_FDB_CMD_TYPE	0x03
@@ -94,10 +90,10 @@ enum icssg_port_state_cmd {
 #define EMAC_ACCEPT_TAG     0xfffe0002
 #define EMAC_ACCEPT_PRIOR   0xfffc0000
 
-/* Config area lies in DRAM */
+ 
 #define ICSSG_CONFIG_OFFSET	0x0
 
-/* Config area lies in shared RAM */
+ 
 #define ICSSG_CONFIG_OFFSET_SLICE0   0
 #define ICSSG_CONFIG_OFFSET_SLICE1   0x8000
 
@@ -146,43 +142,31 @@ struct icssg_setclock_desc {
 #define ICSSG_TS_PUSH_SLICE0	40
 #define ICSSG_TS_PUSH_SLICE1	41
 
-/* FDB FID_C2 flag definitions */
-/* Indicates host port membership.*/
+ 
+ 
 #define ICSSG_FDB_ENTRY_P0_MEMBERSHIP         BIT(0)
-/* Indicates that MAC ID is connected to physical port 1 */
+ 
 #define ICSSG_FDB_ENTRY_P1_MEMBERSHIP         BIT(1)
-/* Indicates that MAC ID is connected to physical port 2 */
+ 
 #define ICSSG_FDB_ENTRY_P2_MEMBERSHIP         BIT(2)
-/* Ageable bit is set for learned entries and cleared for static entries */
+ 
 #define ICSSG_FDB_ENTRY_AGEABLE               BIT(3)
-/* If set for DA then packet is determined to be a special packet */
+ 
 #define ICSSG_FDB_ENTRY_BLOCK                 BIT(4)
-/* If set for DA then the SA from the packet is not learned */
+ 
 #define ICSSG_FDB_ENTRY_SECURE                BIT(5)
-/* If set, it means packet has been seen recently with source address + FID
- * matching MAC address/FID of entry
- */
+ 
 #define ICSSG_FDB_ENTRY_TOUCHED               BIT(6)
-/* Set if entry is valid */
+ 
 #define ICSSG_FDB_ENTRY_VALID                 BIT(7)
 
-/**
- * struct prueth_vlan_tbl - VLAN table entries struct in ICSSG SMEM
- * @fid_c1: membership and forwarding rules flag to this table. See
- *          above to defines for bit definitions
- * @fid: FDB index for this VID (there is 1-1 mapping b/w VID and FID)
- */
+ 
 struct prueth_vlan_tbl {
 	u8 fid_c1;
 	u8 fid;
 } __packed;
 
-/**
- * struct prueth_fdb_slot - Result of FDB slot lookup
- * @mac: MAC address
- * @fid: fid to be associated with MAC
- * @fid_c2: FID_C2 entry for this MAC
- */
+ 
 struct prueth_fdb_slot {
 	u8 mac[ETH_ALEN];
 	u8 fid;
@@ -197,4 +181,4 @@ enum icssg_ietfpe_verify_states {
 	ICSSG_IETFPE_STATE_FAILED,
 	ICSSG_IETFPE_STATE_DISABLED
 };
-#endif /* __NET_TI_ICSSG_CONFIG_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * 842 Software Decompression
- *
- * Copyright (C) 2015 Dan Streetman, IBM Corp
- *
- * See 842.h for details of the 842 compressed format.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define MODULE_NAME "842_decompress"
@@ -13,7 +7,7 @@
 #include "842.h"
 #include "842_debugfs.h"
 
-/* rolling fifo sizes */
+ 
 #define I2_FIFO_SIZE	(2 * (1 << I2_BITS))
 #define I4_FIFO_SIZE	(4 * (1 << I4_BITS))
 #define I8_FIFO_SIZE	(8 * (1 << I8_BITS))
@@ -93,9 +87,7 @@ static int next_bits(struct sw842_param *p, u64 *d, u8 n)
 		return -EINVAL;
 	}
 
-	/* split this up if reading > 8 bytes, or if we're at the end of
-	 * the input buffer and would read past the end
-	 */
+	 
 	if (bits > 64)
 		return __split_next_bits(p, d, n, 32);
 	else if (p->ilen < 8 && bits > 32 && bits <= 56)
@@ -171,16 +163,14 @@ static int __do_index(struct sw842_param *p, u8 size, u8 bits, u64 fsize)
 
 	offset = index * size;
 
-	/* a ring buffer of fsize is used; correct the offset */
+	 
 	if (total > fsize) {
-		/* this is where the current fifo is */
+		 
 		u64 section = round_down(total, fsize);
-		/* the current pos in the fifo */
+		 
 		u64 pos = total - section;
 
-		/* if the offset is past/at the pos, we need to
-		 * go back to the last fifo section
-		 */
+		 
 		if (offset >= pos)
 			section -= fsize;
 
@@ -259,21 +249,7 @@ static int do_op(struct sw842_param *p, u8 o)
 	return 0;
 }
 
-/**
- * sw842_decompress
- *
- * Decompress the 842-compressed buffer of length @ilen at @in
- * to the output buffer @out, using no more than @olen bytes.
- *
- * The compressed buffer must be only a single 842-compressed buffer,
- * with the standard format described in the comments in 842.h
- * Processing will stop when the 842 "END" template is detected,
- * not the end of the buffer.
- *
- * Returns: 0 on success, error on failure.  The @olen parameter
- * will contain the number of output bytes written on success, or
- * 0 on error.
- */
+ 
 int sw842_decompress(const u8 *in, unsigned int ilen,
 		     u8 *out, unsigned int *olen)
 {
@@ -306,10 +282,10 @@ int sw842_decompress(const u8 *in, unsigned int ilen,
 			if (ret)
 				return ret;
 
-			if (p.out == out) /* no previous bytes */
+			if (p.out == out)  
 				return -EINVAL;
 
-			/* copy rep + 1 */
+			 
 			rep++;
 
 			if (rep * 8 > p.olen)
@@ -363,7 +339,7 @@ int sw842_decompress(const u8 *in, unsigned int ilen,
 				atomic_inc(&template_end_count);
 
 			break;
-		default: /* use template */
+		default:  
 			ret = do_op(&p, op);
 			if (ret)
 				return ret;
@@ -371,17 +347,12 @@ int sw842_decompress(const u8 *in, unsigned int ilen,
 		}
 	} while (op != OP_END);
 
-	/*
-	 * crc(0:31) is saved in compressed data starting with the
-	 * next bit after End of stream template.
-	 */
+	 
 	ret = next_bits(&p, &crc, CRC_BITS);
 	if (ret)
 		return ret;
 
-	/*
-	 * Validate CRC saved in compressed data.
-	 */
+	 
 	if (crc != (u64)crc32_be(0, out, total - p.olen)) {
 		pr_debug("CRC mismatch for decompression\n");
 		return -EINVAL;

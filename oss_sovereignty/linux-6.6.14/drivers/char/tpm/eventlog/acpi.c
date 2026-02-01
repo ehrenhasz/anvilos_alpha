@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2005 IBM Corporation
- *
- * Authors:
- *	Seiji Munetoh <munetoh@jp.ibm.com>
- *	Stefan Berger <stefanb@us.ibm.com>
- *	Reiner Sailer <sailer@watson.ibm.com>
- *	Kylene Hall <kjhall@us.ibm.com>
- *	Nayna Jain <nayna@linux.vnet.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Access to the event log extended by the TCG BIOS of PC platform
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/seq_file.h>
@@ -42,7 +29,7 @@ struct acpi_tcpa {
 	};
 };
 
-/* Check that the given log is indeed a TPM2 log. */
+ 
 static bool tpm_is_tpm2_log(void *bios_event_log, u64 len)
 {
 	struct tcg_efi_specid_event_head *efispecid;
@@ -63,7 +50,7 @@ static bool tpm_is_tpm2_log(void *bios_event_log, u64 len)
 	return n == 0;
 }
 
-/* read binary bios log */
+ 
 int tpm_read_log_acpi(struct tpm_chip *chip)
 {
 	struct acpi_tcpa *buff;
@@ -78,9 +65,7 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
 
 	log = &chip->log;
 
-	/* Unfortuntely ACPI does not associate the event log with a specific
-	 * TPM, like PPI. Thus all ACPI TPMs will read the same log.
-	 */
+	 
 	if (!chip->acpi_dev_handle)
 		return -ENODEV;
 
@@ -108,7 +93,7 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
 		acpi_put_table((struct acpi_table_header *)tbl);
 		format = EFI_TCG2_EVENT_LOG_FORMAT_TCG_2;
 	} else {
-		/* Find TCPA entry in RSDT (ACPI_LOGICAL_ADDRESSING) */
+		 
 		status = acpi_get_table(ACPI_SIG_TCPA, 1,
 					(struct acpi_table_header **)&buff);
 		if (ACPI_FAILURE(status))
@@ -135,7 +120,7 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
 		return -EIO;
 	}
 
-	/* malloc EventLog space */
+	 
 	log->bios_event_log = devm_kmalloc(&chip->dev, len, GFP_KERNEL);
 	if (!log->bios_event_log)
 		return -ENOMEM;
@@ -146,7 +131,7 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
 	virt = acpi_os_map_iomem(start, len);
 	if (!virt) {
 		dev_warn(&chip->dev, "%s: Failed to map ACPI memory\n", __func__);
-		/* try EFI log next */
+		 
 		ret = -ENODEV;
 		goto err;
 	}
@@ -157,7 +142,7 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
 
 	if (chip->flags & TPM_CHIP_FLAG_TPM2 &&
 	    !tpm_is_tpm2_log(log->bios_event_log, len)) {
-		/* try EFI log next */
+		 
 		ret = -ENODEV;
 		goto err;
 	}

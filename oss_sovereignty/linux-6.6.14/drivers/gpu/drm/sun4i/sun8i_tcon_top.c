@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018 Jernej Skrabec <jernej.skrabec@siol.net> */
+
+ 
 
 
 #include <linux/bitfield.h>
@@ -175,21 +175,11 @@ static int sun8i_tcon_top_bind(struct device *dev, struct device *master,
 		goto err_assert_reset;
 	}
 
-	/*
-	 * At least on H6, some registers have some bits set by default
-	 * which may cause issues. Clear them here.
-	 */
+	 
 	writel(0, regs + TCON_TOP_PORT_SEL_REG);
 	writel(0, regs + TCON_TOP_GATE_SRC_REG);
 
-	/*
-	 * TCON TOP has two muxes, which select parent clock for each TCON TV
-	 * channel clock. Parent could be either TCON TV or TVE clock. For now
-	 * we leave this fixed to TCON TV, since TVE driver for R40 is not yet
-	 * implemented. Once it is, graph needs to be traversed to determine
-	 * if TVE is active on each TCON TV. If it is, mux should be switched
-	 * to TVE clock parent.
-	 */
+	 
 	i = 0;
 	clk_data->hws[CLK_TCON_TOP_TV0] =
 		sun8i_tcon_top_register_gate(dev, "tcon-tv0", regs,
@@ -275,10 +265,10 @@ static const struct sun8i_tcon_top_quirks sun20i_d1_tcon_top_quirks = {
 };
 
 static const struct sun8i_tcon_top_quirks sun50i_h6_tcon_top_quirks = {
-	/* Nothing special */
+	 
 };
 
-/* sun4i_drv uses this list to check if a device node is a TCON TOP */
+ 
 const struct of_device_id sun8i_tcon_top_of_table[] = {
 	{
 		.compatible = "allwinner,sun8i-r40-tcon-top",
@@ -292,7 +282,7 @@ const struct of_device_id sun8i_tcon_top_of_table[] = {
 		.compatible = "allwinner,sun50i-h6-tcon-top",
 		.data = &sun50i_h6_tcon_top_quirks
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun8i_tcon_top_of_table);
 EXPORT_SYMBOL(sun8i_tcon_top_of_table);

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NVIDIA Tegra DRM GEM helper functions
- *
- * Copyright (C) 2012 Sascha Hauer, Pengutronix
- * Copyright (C) 2013-2015 NVIDIA CORPORATION, All rights reserved.
- *
- * Based on the GEM/CMA helpers
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/iommu.h>
@@ -31,7 +22,7 @@ static unsigned int sg_dma_count_chunks(struct scatterlist *sgl, unsigned int ne
 	struct scatterlist *s;
 
 	for_each_sg(sgl, s, nents, i) {
-		/* sg_dma_address(s) is only valid for entries that have sg_dma_len(s) != 0. */
+		 
 		if (!sg_dma_len(s))
 			continue;
 
@@ -73,9 +64,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
 	map->direction = direction;
 	map->dev = dev;
 
-	/*
-	 * Imported buffers need special treatment to satisfy the semantics of DMA-BUF.
-	 */
+	 
 	if (gem->import_attach) {
 		struct dma_buf *buf = gem->import_attach->dmabuf;
 
@@ -99,10 +88,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
 		goto out;
 	}
 
-	/*
-	 * If we don't have a mapping for this buffer yet, return an SG table
-	 * so that host1x can do the mapping for us via the DMA API.
-	 */
+	 
 	map->sgt = kzalloc(sizeof(*map->sgt), GFP_KERNEL);
 	if (!map->sgt) {
 		err = -ENOMEM;
@@ -110,20 +96,13 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
 	}
 
 	if (obj->pages) {
-		/*
-		 * If the buffer object was allocated from the explicit IOMMU
-		 * API code paths, construct an SG table from the pages.
-		 */
+		 
 		err = sg_alloc_table_from_pages(map->sgt, obj->pages, obj->num_pages, 0, gem->size,
 						GFP_KERNEL);
 		if (err < 0)
 			goto free;
 	} else {
-		/*
-		 * If the buffer object had no pages allocated and if it was
-		 * not imported, it had to be allocated with the DMA API, so
-		 * the DMA API helper can be used.
-		 */
+		 
 		err = dma_get_sgtable(dev, map->sgt, obj->vaddr, obj->iova, gem->size);
 		if (err < 0)
 			goto free;
@@ -134,10 +113,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
 		goto free_sgt;
 
 out:
-	/*
-	 * If we've manually mapped the buffer object through the IOMMU, make sure to return the
-	 * existing IOVA address of our mapping.
-	 */
+	 
 	if (!obj->mm) {
 		map->phys = sg_dma_address(map->sgt->sgl);
 		map->chunks = err;
@@ -497,7 +473,7 @@ void tegra_bo_free_object(struct drm_gem_object *gem)
 	struct host1x_bo_mapping *mapping, *tmp;
 	struct tegra_bo *bo = to_tegra_bo(gem);
 
-	/* remove all mappings of this buffer object from any caches */
+	 
 	list_for_each_entry_safe(mapping, tmp, &bo->base.mappings, list) {
 		if (mapping->cache)
 			host1x_bo_unpin(mapping);
@@ -570,11 +546,7 @@ int __tegra_gem_mmap(struct drm_gem_object *gem, struct vm_area_struct *vma)
 		unsigned long vm_pgoff = vma->vm_pgoff;
 		int err;
 
-		/*
-		 * Clear the VM_PFNMAP flag that was set by drm_gem_mmap(),
-		 * and set the vm_pgoff (used as a fake buffer offset by DRM)
-		 * to 0 as we want to map the whole buffer.
-		 */
+		 
 		vm_flags_clear(vma, VM_PFNMAP);
 		vma->vm_pgoff = 0;
 

@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include <linux/kref.h>
 
@@ -148,7 +144,7 @@ static int live_sanitycheck(void *arg)
 	struct drm_i915_private *i915 = arg;
 	struct i915_perf_stream *stream;
 
-	/* Quick check we can create a perf stream */
+	 
 
 	stream = test_stream(&i915->perf);
 	if (!stream)
@@ -205,7 +201,7 @@ static int live_noa_delay(void *arg)
 	int err;
 	int i;
 
-	/* Check that the GPU delays matches expectations */
+	 
 
 	stream = test_stream(&i915->perf);
 	if (!stream)
@@ -298,7 +294,7 @@ static int live_noa_gpr(void *arg)
 	int err;
 	int i;
 
-	/* Check that the delay does not clobber user context state (GPR) */
+	 
 
 	stream = test_stream(&i915->perf);
 	if (!stream)
@@ -312,7 +308,7 @@ static int live_noa_gpr(void *arg)
 		goto out;
 	}
 
-	/* Poison the ce->vm so we detect writes not to the GGTT gt->scratch */
+	 
 	scratch = __px_vaddr(ce->vm->scratch[0]);
 	memset(scratch, POISON_FREE, PAGE_SIZE);
 
@@ -331,7 +327,7 @@ static int live_noa_gpr(void *arg)
 		}
 	}
 
-	/* Fill the 16 qword [32 dword] GPR with a known unlikely value */
+	 
 	cs = intel_ring_begin(rq, 2 * 32 + 2);
 	if (IS_ERR(cs)) {
 		err = PTR_ERR(cs);
@@ -347,7 +343,7 @@ static int live_noa_gpr(void *arg)
 	*cs++ = MI_NOOP;
 	intel_ring_advance(rq, cs);
 
-	/* Execute the GPU delay */
+	 
 	err = rq->engine->emit_bb_start(rq,
 					i915_ggtt_offset(stream->noa_wait), 0,
 					I915_DISPATCH_SECURE);
@@ -356,7 +352,7 @@ static int live_noa_gpr(void *arg)
 		goto out_rq;
 	}
 
-	/* Read the GPR back, using the pinned global HWSP for convenience */
+	 
 	store = memset32(rq->engine->status_page.addr + 512, 0, 32);
 	for (i = 0; i < 32; i++) {
 		u32 cmd;
@@ -391,7 +387,7 @@ static int live_noa_gpr(void *arg)
 		goto out_rq;
 	}
 
-	/* Verify that the GPR contain our expected values */
+	 
 	for (i = 0; i < 32; i++) {
 		if (store[i] == STACK_MAGIC)
 			continue;
@@ -401,7 +397,7 @@ static int live_noa_gpr(void *arg)
 		err = -EINVAL;
 	}
 
-	/* Verify that the user's scratch page was not used for GPR storage */
+	 
 	if (memchr_inv(scratch, POISON_FREE, PAGE_SIZE)) {
 		pr_err("Scratch page overwritten!\n");
 		igt_hexdump(scratch, 4096);

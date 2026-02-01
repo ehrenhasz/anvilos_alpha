@@ -21,10 +21,7 @@ int bpf_prog1(struct __sk_buff *skb)
 			return SK_DROP;
 	}
 
-	/* This write/read is a bit pointless but tests the verifier and
-	 * strparser handler for read/write pkt data and access into sk
-	 * fields.
-	 */
+	 
 	d = data;
 	d[7] = 1;
 	return skb->len;

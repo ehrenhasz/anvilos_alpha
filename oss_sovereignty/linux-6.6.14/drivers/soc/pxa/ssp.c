@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/arch/arm/mach-pxa/ssp.c
- *
- *  based on linux/arch/arm/mach-sa1100/ssp.c by Russell King
- *
- *  Copyright (C) 2003 Russell King.
- *  Copyright (C) 2003 Wolfson Microelectronics PLC
- *
- *  PXA2xx SSP driver.  This provides the generic core for simple
- *  IO-based SSP applications and allows easy port setup for DMA access.
- *
- *  Author: Liam Girdwood <liam.girdwood@wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -158,9 +146,7 @@ static int pxa_ssp_probe(struct platform_device *pdev)
 			platform_get_device_id(pdev);
 		ssp->type = (int) id->driver_data;
 
-		/* PXA2xx/3xx SSP ports starts from 1 and the internal pdev->id
-		 * starts from 0, do a translation here
-		 */
+		 
 		ssp->port_id = pdev->id + 1;
 	}
 

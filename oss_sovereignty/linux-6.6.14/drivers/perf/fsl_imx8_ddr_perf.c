@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 NXP
- * Copyright 2016 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/init.h>
@@ -36,9 +33,9 @@
 #define EVENT_CYCLES_COUNTER	0
 #define NUM_COUNTERS		4
 
-/* For removing bias if cycle counter CNTL.CP is set to 0xf0 */
+ 
 #define CYCLES_COUNTER_MASK	0x0FFFFFFF
-#define AXI_MASKING_REVERT	0xffff0000	/* AXI_MASKING(MSB 16bits) + AXI_ID(LSB 16bits) */
+#define AXI_MASKING_REVERT	0xffff0000	 
 
 #define to_ddr_pmu(p)		container_of(p, struct ddr_pmu, pmu)
 
@@ -47,13 +44,13 @@
 
 static DEFINE_IDA(ddr_ida);
 
-/* DDR Perf hardware feature */
-#define DDR_CAP_AXI_ID_FILTER			0x1     /* support AXI ID filter */
-#define DDR_CAP_AXI_ID_FILTER_ENHANCED		0x3     /* support enhanced AXI ID filter */
+ 
+#define DDR_CAP_AXI_ID_FILTER			0x1      
+#define DDR_CAP_AXI_ID_FILTER_ENHANCED		0x3      
 
 struct fsl_ddr_devtype_data {
-	unsigned int quirks;    /* quirks needed for different DDR Perf core */
-	const char *identifier;	/* system PMU identifier for userspace */
+	unsigned int quirks;     
+	const char *identifier;	 
 };
 
 static const struct fsl_ddr_devtype_data imx8_devtype_data;
@@ -89,7 +86,7 @@ static const struct of_device_id imx_ddr_pmu_dt_ids[] = {
 	{ .compatible = "fsl,imx8mm-ddr-pmu", .data = &imx8mm_devtype_data},
 	{ .compatible = "fsl,imx8mn-ddr-pmu", .data = &imx8mn_devtype_data},
 	{ .compatible = "fsl,imx8mp-ddr-pmu", .data = &imx8mp_devtype_data},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_ddr_pmu_dt_ids);
 
@@ -328,11 +325,7 @@ static u32 ddr_perf_alloc_counter(struct ddr_pmu *pmu, int event)
 {
 	int i;
 
-	/*
-	 * Always map cycle event to counter 0
-	 * Cycles counter is dedicated for cycle event
-	 * can't used for the other events
-	 */
+	 
 	if (event == EVENT_CYCLES_ID) {
 		if (pmu->events[EVENT_CYCLES_COUNTER] == NULL)
 			return EVENT_CYCLES_COUNTER;
@@ -358,11 +351,7 @@ static u32 ddr_perf_read_counter(struct ddr_pmu *pmu, int counter)
 	struct perf_event *event = pmu->events[counter];
 	void __iomem *base = pmu->base;
 
-	/*
-	 * return bytes instead of bursts from ddr transaction for
-	 * axid-read and axid-write event if PMU core supports enhanced
-	 * filter.
-	 */
+	 
 	base += ddr_perf_is_enhanced_filtered(event) ? COUNTER_DPCR1 :
 						       COUNTER_READ;
 	return readl_relaxed(base + counter * 4);
@@ -385,11 +374,7 @@ static int ddr_perf_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * We must NOT create groups containing mixed PMUs, although software
-	 * events are acceptable (for example to create a CCN group
-	 * periodically read when a hrtimer aka cpu-clock leader triggers).
-	 */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 			!is_software_event(event->group_leader))
 		return -EINVAL;
@@ -422,21 +407,12 @@ static void ddr_perf_counter_enable(struct ddr_pmu *pmu, int config,
 	int val;
 
 	if (enable) {
-		/*
-		 * cycle counter is special which should firstly write 0 then
-		 * write 1 into CLEAR bit to clear it. Other counters only
-		 * need write 0 into CLEAR bit and it turns out to be 1 by
-		 * hardware. Below enable flow is harmless for all counters.
-		 */
+		 
 		writel(0, pmu->base + reg);
 		val = CNTL_EN | CNTL_CLEAR;
 		val |= FIELD_PREP(CNTL_CSV_MASK, config);
 
-		/*
-		 * On i.MX8MP we need to bias the cycle counter to overflow more often.
-		 * We do this by initializing bits [23:16] of the counter value via the
-		 * COUNTER_CTRL Counter Parameter (CP) field.
-		 */
+		 
 		if (pmu->devtype_data->quirks & DDR_CAP_AXI_ID_FILTER_ENHANCED) {
 			if (counter == EVENT_CYCLES_COUNTER)
 				val |= FIELD_PREP(CNTL_CP_MASK, 0xf0);
@@ -444,7 +420,7 @@ static void ddr_perf_counter_enable(struct ddr_pmu *pmu, int config,
 
 		writel(val, pmu->base + reg);
 	} else {
-		/* Disable counter */
+		 
 		val = readl_relaxed(pmu->base + reg) & CNTL_EN_MASK;
 		writel(val, pmu->base + reg);
 	}
@@ -481,7 +457,7 @@ static void ddr_perf_event_update(struct perf_event *event)
 	int ret;
 
 	new_raw_count = ddr_perf_read_counter(pmu, counter);
-	/* Remove the bias applied in ddr_perf_counter_enable(). */
+	 
 	if (pmu->devtype_data->quirks & DDR_CAP_AXI_ID_FILTER_ENHANCED) {
 		if (counter == EVENT_CYCLES_COUNTER)
 			new_raw_count &= CYCLES_COUNTER_MASK;
@@ -489,12 +465,7 @@ static void ddr_perf_event_update(struct perf_event *event)
 
 	local64_add(new_raw_count, &event->count);
 
-	/*
-	 * For legacy SoCs: event counter continue counting when overflow,
-	 *                  no need to clear the counter.
-	 * For new SoCs: event counter stop counting when overflow, need
-	 *               clear counter to let it count again.
-	 */
+	 
 	if (counter != EVENT_CYCLES_COUNTER) {
 		ret = ddr_perf_counter_overflow(pmu, counter);
 		if (ret)
@@ -502,7 +473,7 @@ static void ddr_perf_event_update(struct perf_event *event)
 					     event->attr.config);
 	}
 
-	/* clear counter every time for both cycle counter and event counter */
+	 
 	ddr_perf_counter_clear(pmu, counter);
 }
 
@@ -541,7 +512,7 @@ static int ddr_perf_event_add(struct perf_event *event, int flags)
 		}
 
 		if (ddr_perf_is_filtered(event)) {
-			/* revert axi id masking(axi_mask) value */
+			 
 			cfg1 ^= AXI_MASKING_REVERT;
 			writel(cfg1, pmu->base + COUNTER_DPCR1);
 		}
@@ -632,23 +603,12 @@ static irqreturn_t ddr_perf_irq_handler(int irq, void *p)
 	struct ddr_pmu *pmu = (struct ddr_pmu *) p;
 	struct perf_event *event;
 
-	/* all counter will stop if cycle counter disabled */
+	 
 	ddr_perf_counter_enable(pmu,
 			      EVENT_CYCLES_ID,
 			      EVENT_CYCLES_COUNTER,
 			      false);
-	/*
-	 * When the cycle counter overflows, all counters are stopped,
-	 * and an IRQ is raised. If any other counter overflows, it
-	 * continues counting, and no IRQ is raised. But for new SoCs,
-	 * such as i.MX8MP, event counter would stop when overflow, so
-	 * we need use cycle counter to stop overflow of event counter.
-	 *
-	 * Cycles occur at least 4 times as often as other events, so we
-	 * can update all events on a cycle counter overflow and not
-	 * lose events.
-	 *
-	 */
+	 
 	for (i = 0; i < NUM_COUNTERS; i++) {
 
 		if (!pmu->events[i])
@@ -733,14 +693,14 @@ static int ddr_perf_probe(struct platform_device *pdev)
 
 	pmu->cpuhp_state = ret;
 
-	/* Register the pmu instance for cpu hotplug */
+	 
 	ret = cpuhp_state_add_instance_nocalls(pmu->cpuhp_state, &pmu->node);
 	if (ret) {
 		dev_err(&pdev->dev, "Error %d registering hotplug\n", ret);
 		goto cpuhp_instance_err;
 	}
 
-	/* Request irq */
+	 
 	irq = of_irq_get(np, 0);
 	if (irq < 0) {
 		dev_err(&pdev->dev, "Failed to get irq: %d", irq);

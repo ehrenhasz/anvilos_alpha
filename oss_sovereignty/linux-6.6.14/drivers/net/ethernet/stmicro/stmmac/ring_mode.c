@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  Specialised functions for managing Ring mode
 
-  Copyright(C) 2011  STMicroelectronics Ltd
-
-  It defines all the functions used to handle the normal/enhanced
-  descriptors in case of the DMA is configured to work in chained or
-  in ring mode.
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include "stmmac.h"
 
@@ -105,12 +94,12 @@ static void refill_desc3(struct stmmac_rx_queue *rx_q, struct dma_desc *p)
 {
 	struct stmmac_priv *priv = rx_q->priv_data;
 
-	/* Fill DES3 in case of RING mode */
+	 
 	if (priv->dma_conf.dma_buf_sz == BUF_SIZE_16KiB)
 		p->des3 = cpu_to_le32(le32_to_cpu(p->des2) + BUF_SIZE_8KiB);
 }
 
-/* In ring mode we need to fill the desc3 because it is used as buffer */
+ 
 static void init_desc3(struct dma_desc *p)
 {
 	p->des3 = cpu_to_le32(le32_to_cpu(p->des2) + BUF_SIZE_8KiB);
@@ -121,7 +110,7 @@ static void clean_desc3(struct stmmac_tx_queue *tx_q, struct dma_desc *p)
 	struct stmmac_priv *priv = tx_q->priv_data;
 	unsigned int entry = tx_q->dirty_tx;
 
-	/* des3 is only used for jumbo frames tx or time stamping */
+	 
 	if (unlikely(tx_q->tx_skbuff_dma[entry].is_jumbo ||
 		     (tx_q->tx_skbuff_dma[entry].last_segment &&
 		      !priv->extend_desc && priv->hwts_tx_en)))

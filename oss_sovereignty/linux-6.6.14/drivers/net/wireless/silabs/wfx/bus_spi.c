@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI interface.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2011, Sagrad Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -20,8 +14,8 @@
 #include "main.h"
 #include "bh.h"
 
-#define SET_WRITE 0x7FFF        /* usage: and operation */
-#define SET_READ 0x8000         /* usage: or operation */
+#define SET_WRITE 0x7FFF         
+#define SET_READ 0x8000          
 
 static const struct wfx_platform_data pdata_wf200 = {
 	.file_fw = "wfx/wfm_wf200",
@@ -54,13 +48,7 @@ struct wfx_spi_priv {
 	bool need_swab;
 };
 
-/* The chip reads 16bits of data at time and place them directly into (little endian) CPU register.
- * So, the chip expects bytes order to be "B1 B0 B3 B2" (while LE is "B0 B1 B2 B3" and BE is
- * "B3 B2 B1 B0")
- *
- * A little endian host with bits_per_word == 16 should do the right job natively. The code below to
- * support big endian host and commonly used SPI 8bits.
- */
+ 
 static int wfx_spi_copy_from_io(void *priv, unsigned int addr, void *dst, size_t count)
 {
 	struct wfx_spi_priv *bus = priv;
@@ -98,7 +86,7 @@ static int wfx_spi_copy_to_io(void *priv, unsigned int addr, const void *src, si
 {
 	struct wfx_spi_priv *bus = priv;
 	u16 regaddr = (addr << 12) | (count / 2);
-	/* FIXME: use a bounce buffer */
+	 
 	u16 *src16 = (void *)src;
 	int ret, i;
 	struct spi_message m;
@@ -116,9 +104,7 @@ static int wfx_spi_copy_to_io(void *priv, unsigned int addr, const void *src, si
 
 	cpu_to_le16s(&regaddr);
 
-	/* Register address and CONFIG content always use 16bit big endian
-	 * ("BADC" order)
-	 */
+	 
 	if (bus->need_swab)
 		swab16s(&regaddr);
 	if (bus->need_swab && addr == WFX_REG_CONFIG)
@@ -175,7 +161,7 @@ static int wfx_spi_irq_unsubscribe(void *priv)
 
 static size_t wfx_spi_align_size(void *priv, size_t size)
 {
-	/* Most of SPI controllers avoid DMA if buffer size is not 32bit aligned */
+	 
 	return ALIGN(size, 4);
 }
 
@@ -206,7 +192,7 @@ static int wfx_spi_probe(struct spi_device *func)
 		return -ENODEV;
 	}
 
-	/* Trace below is also displayed by spi_setup() if compiled with DEBUG */
+	 
 	dev_dbg(&func->dev, "SPI params: CS=%d, mode=%d bits/word=%d speed=%d\n",
 		spi_get_chipselect(func, 0), func->mode, func->bits_per_word, func->max_speed_hz);
 	if (func->bits_per_word != 16 && func->bits_per_word != 8)
@@ -249,10 +235,7 @@ static void wfx_spi_remove(struct spi_device *func)
 	wfx_release(bus->core);
 }
 
-/* For dynamic driver binding, kernel does not use OF to match driver. It only
- * use modalias and modalias is a copy of 'compatible' DT node with vendor
- * stripped.
- */
+ 
 static const struct spi_device_id wfx_spi_id[] = {
 	{ "wf200",    (kernel_ulong_t)&pdata_wf200 },
 	{ "brd4001a", (kernel_ulong_t)&pdata_brd4001a },

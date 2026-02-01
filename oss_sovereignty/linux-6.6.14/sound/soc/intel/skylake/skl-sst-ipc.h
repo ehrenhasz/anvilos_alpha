@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel SKL IPC Support
- *
- * Copyright (C) 2014-15, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __SKL_IPC_H
 #define __SKL_IPC_H
@@ -42,15 +38,7 @@ struct skl_dsp_cores {
 	int *usage_count;
 };
 
-/**
- * skl_d0i3_data: skl D0i3 counters data struct
- *
- * @streaming: Count of usecases that can attempt streaming D0i3
- * @non_streaming: Count of usecases that can attempt non-streaming D0i3
- * @non_d0i3: Count of usecases that cannot attempt D0i3
- * @state: current state
- * @work: D0i3 worker thread
- */
+ 
 struct skl_d0i3_data {
 	int streaming;
 	int non_streaming;
@@ -166,4 +154,4 @@ int skl_ipc_process_notification(struct sst_generic_ipc *ipc,
 		struct skl_ipc_header header);
 void skl_ipc_tx_data_copy(struct ipc_message *msg, char *tx_data,
 		size_t tx_size);
-#endif /* __SKL_IPC_H */
+#endif  

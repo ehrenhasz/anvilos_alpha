@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -23,9 +23,7 @@ static u32 attr_to_mask(unsigned int attr_type)
 	return BIT(attr_type - __SUPPORTED_OFFSET);
 }
 
-/* build time check that indices in ethtool_ops::supported_coalesce_params
- * match corresponding attribute types with an offset
- */
+ 
 #define __CHECK_SUPPORTED_OFFSET(x) \
 	static_assert((ETHTOOL_ ## x) == \
 		      BIT((ETHTOOL_A_ ## x) - __SUPPORTED_OFFSET))
@@ -82,33 +80,33 @@ static int coalesce_prepare_data(const struct ethnl_req_info *req_base,
 static int coalesce_reply_size(const struct ethnl_req_info *req_base,
 			       const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u32)) +	/* _RX_USECS */
-	       nla_total_size(sizeof(u32)) +	/* _RX_MAX_FRAMES */
-	       nla_total_size(sizeof(u32)) +	/* _RX_USECS_IRQ */
-	       nla_total_size(sizeof(u32)) +	/* _RX_MAX_FRAMES_IRQ */
-	       nla_total_size(sizeof(u32)) +	/* _TX_USECS */
-	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_FRAMES */
-	       nla_total_size(sizeof(u32)) +	/* _TX_USECS_IRQ */
-	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_FRAMES_IRQ */
-	       nla_total_size(sizeof(u32)) +	/* _STATS_BLOCK_USECS */
-	       nla_total_size(sizeof(u8)) +	/* _USE_ADAPTIVE_RX */
-	       nla_total_size(sizeof(u8)) +	/* _USE_ADAPTIVE_TX */
-	       nla_total_size(sizeof(u32)) +	/* _PKT_RATE_LOW */
-	       nla_total_size(sizeof(u32)) +	/* _RX_USECS_LOW */
-	       nla_total_size(sizeof(u32)) +	/* _RX_MAX_FRAMES_LOW */
-	       nla_total_size(sizeof(u32)) +	/* _TX_USECS_LOW */
-	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_FRAMES_LOW */
-	       nla_total_size(sizeof(u32)) +	/* _PKT_RATE_HIGH */
-	       nla_total_size(sizeof(u32)) +	/* _RX_USECS_HIGH */
-	       nla_total_size(sizeof(u32)) +	/* _RX_MAX_FRAMES_HIGH */
-	       nla_total_size(sizeof(u32)) +	/* _TX_USECS_HIGH */
-	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_FRAMES_HIGH */
-	       nla_total_size(sizeof(u32)) +	/* _RATE_SAMPLE_INTERVAL */
-	       nla_total_size(sizeof(u8)) +	/* _USE_CQE_MODE_TX */
-	       nla_total_size(sizeof(u8)) +	/* _USE_CQE_MODE_RX */
-	       nla_total_size(sizeof(u32)) +	/* _TX_AGGR_MAX_BYTES */
-	       nla_total_size(sizeof(u32)) +	/* _TX_AGGR_MAX_FRAMES */
-	       nla_total_size(sizeof(u32));	/* _TX_AGGR_TIME_USECS */
+	return nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32));	 
 }
 
 static bool coalesce_put_u32(struct sk_buff *skb, u16 attr_type, u32 val,
@@ -195,7 +193,7 @@ static int coalesce_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* COALESCE_SET */
+ 
 
 const struct nla_policy ethnl_coalesce_set_policy[] = {
 	[ETHTOOL_A_COALESCE_HEADER]		=
@@ -241,7 +239,7 @@ ethnl_set_coalesce_validate(struct ethnl_req_info *req_info,
 	if (!ops->get_coalesce || !ops->set_coalesce)
 		return -EOPNOTSUPP;
 
-	/* make sure that only supported parameters are present */
+	 
 	supported_params = ops->supported_coalesce_params;
 	for (a = ETHTOOL_A_COALESCE_RX_USECS; a < __ETHTOOL_A_COALESCE_CNT; a++)
 		if (tb[a] && !(supported_params & attr_to_mask(a))) {
@@ -269,7 +267,7 @@ __ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info,
 	if (ret < 0)
 		return ret;
 
-	/* Update values */
+	 
 	ethnl_update_u32(&coalesce.rx_coalesce_usecs,
 			 tb[ETHTOOL_A_COALESCE_RX_USECS], &mod);
 	ethnl_update_u32(&coalesce.rx_max_coalesced_frames,
@@ -317,7 +315,7 @@ __ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info,
 	ethnl_update_u32(&kernel_coalesce.tx_aggr_time_usecs,
 			 tb[ETHTOOL_A_COALESCE_TX_AGGR_TIME_USECS], &mod);
 
-	/* Update operation modes */
+	 
 	ethnl_update_bool32(&coalesce.use_adaptive_rx_coalesce,
 			    tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX], &mod_mode);
 	ethnl_update_bool32(&coalesce.use_adaptive_tx_coalesce,
@@ -342,13 +340,7 @@ ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
 	bool dual_change;
 	int err, ret;
 
-	/* SET_COALESCE may change operation mode and parameters in one call.
-	 * Changing operation mode may cause the driver to reset the parameter
-	 * values, and therefore ignore user input (driver does not know which
-	 * parameters come from user and which are echoed back from ->get).
-	 * To not complicate the drivers if user tries to change both the mode
-	 * and parameters at once - call the driver twice.
-	 */
+	 
 	err = __ethnl_set_coalesce(req_info, info, &dual_change);
 	if (err < 0)
 		return err;

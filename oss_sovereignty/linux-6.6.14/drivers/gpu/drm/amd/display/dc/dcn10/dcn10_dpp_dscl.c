@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -62,17 +39,11 @@ enum dcn10_coef_filter_type_sel {
 enum dscl_autocal_mode {
 	AUTOCAL_MODE_OFF = 0,
 
-	/* Autocal calculate the scaling ratio and initial phase and the
-	 * DSCL_MODE_SEL must be set to 1
-	 */
+	 
 	AUTOCAL_MODE_AUTOSCALE = 1,
-	/* Autocal perform auto centering without replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOCENTER = 2,
-	/* Autocal perform auto centering and auto replication and the
-	 * DSCL_MODE_SEL must be set to 0
-	 */
+	 
 	AUTOCAL_MODE_AUTOREPLICATE = 3
 };
 
@@ -89,16 +60,16 @@ enum dscl_mode_sel {
 static int dpp1_dscl_get_pixel_depth_val(enum lb_pixel_depth depth)
 {
 	if (depth == LB_PIXEL_DEPTH_30BPP)
-		return 0; /* 10 bpc */
+		return 0;  
 	else if (depth == LB_PIXEL_DEPTH_24BPP)
-		return 1; /* 8 bpc */
+		return 1;  
 	else if (depth == LB_PIXEL_DEPTH_18BPP)
-		return 2; /* 6 bpc */
+		return 2;  
 	else if (depth == LB_PIXEL_DEPTH_36BPP)
-		return 3; /* 12 bpc */
+		return 3;  
 	else {
 		ASSERT(0);
-		return -1; /* Unsupported */
+		return -1;  
 	}
 }
 
@@ -128,7 +99,7 @@ static enum dscl_mode_sel dpp1_dscl_get_dscl_mode(
 	const long long one = dc_fixpt_one.value;
 
 	if (dpp_base->caps->dscl_data_proc_format == DSCL_DATA_PRCESSING_FIXED_FORMAT) {
-		/* DSCL is processing data in fixed format */
+		 
 		if (data->format == PIXEL_FORMAT_FP16)
 			return DSCL_MODE_DSCL_BYPASS;
 	}
@@ -181,27 +152,27 @@ static void dpp1_dscl_set_lb(
 	const struct line_buffer_params *lb_params,
 	enum lb_memory_config mem_size_config)
 {
-	uint32_t max_partitions = 63; /* Currently hardcoded on all ASICs before DCN 3.2 */
+	uint32_t max_partitions = 63;  
 
-	/* LB */
+	 
 	if (dpp->base.caps->dscl_data_proc_format == DSCL_DATA_PRCESSING_FIXED_FORMAT) {
-		/* DSCL caps: pixel data processed in fixed format */
+		 
 		uint32_t pixel_depth = dpp1_dscl_get_pixel_depth_val(lb_params->depth);
 		uint32_t dyn_pix_depth = lb_params->dynamic_pixel_depth;
 
 		REG_SET_7(LB_DATA_FORMAT, 0,
-			PIXEL_DEPTH, pixel_depth, /* Pixel depth stored in LB */
-			PIXEL_EXPAN_MODE, lb_params->pixel_expan_mode, /* Pixel expansion mode */
-			PIXEL_REDUCE_MODE, 1, /* Pixel reduction mode: Rounding */
-			DYNAMIC_PIXEL_DEPTH, dyn_pix_depth, /* Dynamic expansion pixel depth */
-			DITHER_EN, 0, /* Dithering enable: Disabled */
-			INTERLEAVE_EN, lb_params->interleave_en, /* Interleave source enable */
-			LB_DATA_FORMAT__ALPHA_EN, lb_params->alpha_en); /* Alpha enable */
+			PIXEL_DEPTH, pixel_depth,  
+			PIXEL_EXPAN_MODE, lb_params->pixel_expan_mode,  
+			PIXEL_REDUCE_MODE, 1,  
+			DYNAMIC_PIXEL_DEPTH, dyn_pix_depth,  
+			DITHER_EN, 0,  
+			INTERLEAVE_EN, lb_params->interleave_en,  
+			LB_DATA_FORMAT__ALPHA_EN, lb_params->alpha_en);  
 	} else {
-		/* DSCL caps: pixel data processed in float format */
+		 
 		REG_SET_2(LB_DATA_FORMAT, 0,
-			INTERLEAVE_EN, lb_params->interleave_en, /* Interleave source enable */
-			LB_DATA_FORMAT__ALPHA_EN, lb_params->alpha_en); /* Alpha enable */
+			INTERLEAVE_EN, lb_params->interleave_en,  
+			LB_DATA_FORMAT__ALPHA_EN, lb_params->alpha_en);  
 	}
 
 	if (dpp->base.caps->max_lb_partitions == 31)
@@ -231,7 +202,7 @@ static const uint16_t *dpp1_dscl_get_filter_coeffs_64p(int taps, struct fixed31_
 	else if (taps == 1)
 		return NULL;
 	else {
-		/* should never happen, bug */
+		 
 		BREAK_TO_DEBUGGER();
 		return NULL;
 	}
@@ -262,13 +233,13 @@ static void dpp1_dscl_set_scaler_filter(
 				odd_coef = 0;
 
 			REG_SET_4(SCL_COEF_RAM_TAP_DATA, 0,
-				/* Even tap coefficient (bits 1:0 fixed to 0) */
+				 
 				SCL_COEF_RAM_EVEN_TAP_COEF, even_coef,
-				/* Write/read control for even coefficient */
+				 
 				SCL_COEF_RAM_EVEN_TAP_COEF_EN, 1,
-				/* Odd tap coefficient (bits 1:0 fixed to 0) */
+				 
 				SCL_COEF_RAM_ODD_TAP_COEF, odd_coef,
-				/* Write/read control for odd coefficient */
+				 
 				SCL_COEF_RAM_ODD_TAP_COEF_EN, 1);
 		}
 	}
@@ -364,7 +335,7 @@ static void dpp1_dscl_set_scl_filter(
 				scl_mode, dpp->tf_mask->SCL_COEF_RAM_SELECT_CURRENT,
 				dpp->tf_shift->SCL_COEF_RAM_SELECT_CURRENT);
 
-			/* Swap coefficient RAM and set chroma coefficient mode */
+			 
 			REG_SET_2(SCL_MODE, scl_mode,
 					SCL_COEF_RAM_SELECT, !coef_ram_current,
 					SCL_CHROMA_COEF_MODE, chroma_coef_mode);
@@ -384,7 +355,7 @@ static int dpp1_dscl_get_lb_depth_bpc(enum lb_pixel_depth depth)
 		return 12;
 	else {
 		BREAK_TO_DEBUGGER();
-		return -1; /* Unsupported */
+		return -1;  
 	}
 }
 
@@ -410,9 +381,9 @@ void dpp1_dscl_calc_lb_num_partitions(
 
 
 	lb_bpc = dpp1_dscl_get_lb_depth_bpc(scl_data->lb_params.depth);
-	memory_line_size_y = (line_size * lb_bpc + 71) / 72; /* +71 to ceil */
-	memory_line_size_c = (line_size_c * lb_bpc + 71) / 72; /* +71 to ceil */
-	memory_line_size_a = (line_size + 5) / 6; /* +5 to ceil */
+	memory_line_size_y = (line_size * lb_bpc + 71) / 72;  
+	memory_line_size_c = (line_size_c * lb_bpc + 71) / 72;  
+	memory_line_size_a = (line_size + 5) / 6;  
 
 	if (lb_config == LB_MEMORY_CONFIG_1) {
 		lb_memory_size = 816;
@@ -423,7 +394,7 @@ void dpp1_dscl_calc_lb_num_partitions(
 		lb_memory_size_c = 1088;
 		lb_memory_size_a = 1312;
 	} else if (lb_config == LB_MEMORY_CONFIG_3) {
-		/* 420 mode: using 3rd mem from Y, Cr and Cb */
+		 
 		lb_memory_size = 816 + 1088 + 848 + 848 + 848;
 		lb_memory_size_c = 816 + 1088;
 		lb_memory_size_a = 984 + 1312 + 456;
@@ -455,7 +426,7 @@ bool dpp1_dscl_is_lb_conf_valid(int ceil_vratio, int num_partitions, int vtaps)
 		return vtaps <= num_partitions;
 }
 
-/*find first match configuration which meets the min required lb size*/
+ 
 static enum lb_memory_config dpp1_dscl_find_lb_memory_config(struct dcn10_dpp *dpp,
 		const struct scaler_data *scl_data)
 {
@@ -499,7 +470,7 @@ static enum lb_memory_config dpp1_dscl_find_lb_memory_config(struct dcn10_dpp *d
 	dpp->base.caps->dscl_calc_lb_num_partitions(
 			scl_data, LB_MEMORY_CONFIG_0, &num_part_y, &num_part_c);
 
-	/*Ensure we can support the requested number of vtaps*/
+	 
 	ASSERT(dpp1_dscl_is_lb_conf_valid(ceil_vratio, num_part_y, vtaps)
 			&& dpp1_dscl_is_lb_conf_valid(ceil_vratio_c, num_part_c, vtaps_c));
 
@@ -525,9 +496,7 @@ static void dpp1_dscl_set_manual_ratio_init(
 	REG_SET(SCL_VERT_FILTER_SCALE_RATIO_C, 0,
 			SCL_V_SCALE_RATIO_C, dc_fixpt_u3d19(data->ratios.vert_c) << 5);
 
-	/*
-	 * 0.24 format for fraction, first five bits zeroed
-	 */
+	 
 	init_frac = dc_fixpt_u0d19(data->inits.h) << 5;
 	init_int = dc_fixpt_floor(data->inits.h);
 	REG_SET_2(SCL_HORZ_FILTER_INIT, 0,
@@ -573,43 +542,24 @@ static void dpp1_dscl_set_manual_ratio_init(
 	}
 }
 
-/**
- * dpp1_dscl_set_recout - Set the first pixel of RECOUT in the OTG active area
- *
- * @dpp: DPP data struct
- * @recout: Rectangle information
- *
- * This function sets the MPC RECOUT_START and RECOUT_SIZE registers based on
- * the values specified in the recount parameter.
- *
- * Note: This function only have effect if AutoCal is disabled.
- */
+ 
 static void dpp1_dscl_set_recout(struct dcn10_dpp *dpp,
 				 const struct rect *recout)
 {
 	REG_SET_2(RECOUT_START, 0,
-		  /* First pixel of RECOUT in the active OTG area */
+		   
 		  RECOUT_START_X, recout->x,
-		  /* First line of RECOUT in the active OTG area */
+		   
 		  RECOUT_START_Y, recout->y);
 
 	REG_SET_2(RECOUT_SIZE, 0,
-		  /* Number of RECOUT horizontal pixels */
+		   
 		  RECOUT_WIDTH, recout->width,
-		  /* Number of RECOUT vertical lines */
+		   
 		  RECOUT_HEIGHT, recout->height);
 }
 
-/**
- * dpp1_dscl_set_scaler_manual_scale - Manually program scaler and line buffer
- *
- * @dpp_base: High level DPP struct
- * @scl_data: scalaer_data info
- *
- * This is the primary function to program scaler and line buffer in manual
- * scaling mode. To execute the required operations for manual scale, we need
- * to disable AutoCal first.
- */
+ 
 void dpp1_dscl_set_scaler_manual_scale(struct dpp *dpp_base,
 				       const struct scaler_data *scl_data)
 {
@@ -632,27 +582,27 @@ void dpp1_dscl_set_scaler_manual_scale(struct dpp *dpp_base,
 			dpp1_power_on_dscl(dpp_base, true);
 	}
 
-	/* Autocal off */
+	 
 	REG_SET_3(DSCL_AUTOCAL, 0,
 		AUTOCAL_MODE, AUTOCAL_MODE_OFF,
 		AUTOCAL_NUM_PIPE, 0,
 		AUTOCAL_PIPE_ID, 0);
 
-	/*clean scaler boundary mode when Autocal off*/
+	 
 	REG_SET(DSCL_CONTROL, 0,
 		SCL_BOUNDARY_MODE, 0);
 
-	/* Recout */
+	 
 	dpp1_dscl_set_recout(dpp, &scl_data->recout);
 
-	/* MPC Size */
+	 
 	REG_SET_2(MPC_SIZE, 0,
-		/* Number of horizontal pixels of MPC */
+		 
 			 MPC_WIDTH, scl_data->h_active,
-		/* Number of vertical lines of MPC */
+		 
 			 MPC_HEIGHT, scl_data->v_active);
 
-	/* SCL mode */
+	 
 	REG_UPDATE(SCL_MODE, DSCL_MODE, dscl_mode);
 
 	if (dscl_mode == DSCL_MODE_DSCL_BYPASS) {
@@ -661,14 +611,14 @@ void dpp1_dscl_set_scaler_manual_scale(struct dpp *dpp_base,
 		return;
 	}
 
-	/* LB */
+	 
 	lb_config =  dpp1_dscl_find_lb_memory_config(dpp, scl_data);
 	dpp1_dscl_set_lb(dpp, &scl_data->lb_params, lb_config);
 
 	if (dscl_mode == DSCL_MODE_SCALING_444_BYPASS)
 		return;
 
-	/* Black offsets */
+	 
 	if (REG(SCL_BLACK_OFFSET)) {
 		if (ycbcr)
 			REG_SET_2(SCL_BLACK_OFFSET, 0,
@@ -681,10 +631,10 @@ void dpp1_dscl_set_scaler_manual_scale(struct dpp *dpp_base,
 					SCL_BLACK_OFFSET_CBCR, BLACK_OFFSET_RGB_Y);
 	}
 
-	/* Manually calculate scale ratio and init values */
+	 
 	dpp1_dscl_set_manual_ratio_init(dpp, scl_data);
 
-	/* HTaps/VTaps */
+	 
 	REG_SET_4(SCL_TAP_CONTROL, 0,
 		SCL_V_NUM_TAPS, scl_data->taps.v_taps - 1,
 		SCL_H_NUM_TAPS, scl_data->taps.h_taps - 1,

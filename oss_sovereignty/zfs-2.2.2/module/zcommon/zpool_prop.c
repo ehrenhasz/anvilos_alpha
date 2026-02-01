@@ -1,30 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2011 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2021, Colm Buckley <colm@tuatha.org>
- * Copyright (c) 2021, Klara Inc.
- */
+ 
+ 
 
 #include <sys/zio.h>
 #include <sys/spa.h>
@@ -68,7 +43,7 @@ zpool_prop_init(void)
 	struct zfs_mod_supported_features *sfeatures =
 	    zfs_mod_list_supported(ZFS_SYSFS_POOL_PROPERTIES);
 
-	/* string properties */
+	 
 	zprop_register_string(ZPOOL_PROP_ALTROOT, "altroot", NULL, PROP_DEFAULT,
 	    ZFS_TYPE_POOL, "<path>", "ALTROOT", sfeatures);
 	zprop_register_string(ZPOOL_PROP_BOOTFS, "bootfs", NULL, PROP_DEFAULT,
@@ -83,7 +58,7 @@ zpool_prop_init(void)
 	    "off", PROP_DEFAULT, ZFS_TYPE_POOL,
 	    "<file[,file...]> | off | legacy", "COMPATIBILITY", sfeatures);
 
-	/* readonly number properties */
+	 
 	zprop_register_number(ZPOOL_PROP_SIZE, "size", 0, PROP_READONLY,
 	    ZFS_TYPE_POOL, "<size>", "SIZE", B_FALSE, sfeatures);
 	zprop_register_number(ZPOOL_PROP_FREE, "free", 0, PROP_READONLY,
@@ -126,7 +101,7 @@ zpool_prop_init(void)
 	    PROP_READONLY, ZFS_TYPE_POOL, "<1.00x or higher if cloned>",
 	    "BCLONE_RATIO", B_FALSE, sfeatures);
 
-	/* default number properties */
+	 
 	zprop_register_number(ZPOOL_PROP_VERSION, "version", SPA_VERSION,
 	    PROP_DEFAULT, ZFS_TYPE_POOL, "<version>", "VERSION", B_FALSE,
 	    sfeatures);
@@ -134,7 +109,7 @@ zpool_prop_init(void)
 	    ZFS_TYPE_POOL, "<ashift, 9-16, or 0=default>", "ASHIFT", B_FALSE,
 	    sfeatures);
 
-	/* default index (boolean) properties */
+	 
 	zprop_register_index(ZPOOL_PROP_DELEGATION, "delegation", 1,
 	    PROP_DEFAULT, ZFS_TYPE_POOL, "on | off", "DELEGATION",
 	    boolean_table, sfeatures);
@@ -154,7 +129,7 @@ zpool_prop_init(void)
 	    PROP_DEFAULT, ZFS_TYPE_POOL, "on | off", "MULTIHOST",
 	    boolean_table, sfeatures);
 
-	/* default index properties */
+	 
 	zprop_register_index(ZPOOL_PROP_FAILUREMODE, "failmode",
 	    ZIO_FAILURE_MODE_WAIT, PROP_DEFAULT, ZFS_TYPE_POOL,
 	    "wait | continue | panic", "FAILMODE", failuremode_table,
@@ -163,7 +138,7 @@ zpool_prop_init(void)
 	    SPA_AUTOTRIM_OFF, PROP_DEFAULT, ZFS_TYPE_POOL,
 	    "on | off", "AUTOTRIM", boolean_table, sfeatures);
 
-	/* hidden properties */
+	 
 	zprop_register_hidden(ZPOOL_PROP_NAME, "name", PROP_TYPE_STRING,
 	    PROP_READONLY, ZFS_TYPE_POOL, "NAME", B_TRUE, sfeatures);
 	zprop_register_hidden(ZPOOL_PROP_MAXBLOCKSIZE, "maxblocksize",
@@ -181,19 +156,14 @@ zpool_prop_init(void)
 	zfs_mod_list_supported_free(sfeatures);
 }
 
-/*
- * Given a property name and its type, returns the corresponding property ID.
- */
+ 
 zpool_prop_t
 zpool_name_to_prop(const char *propname)
 {
 	return (zprop_name_to_prop(propname, ZFS_TYPE_POOL));
 }
 
-/*
- * Given a pool property ID, returns the corresponding name.
- * Assuming the pool property ID is valid.
- */
+ 
 const char *
 zpool_prop_to_name(zpool_prop_t prop)
 {
@@ -230,9 +200,7 @@ zpool_prop_default_numeric(zpool_prop_t prop)
 	return (zpool_prop_table[prop].pd_numdefault);
 }
 
-/*
- * Returns true if this is a valid feature@ property.
- */
+ 
 boolean_t
 zpool_prop_feature(const char *name)
 {
@@ -240,9 +208,7 @@ zpool_prop_feature(const char *name)
 	return (strncmp(name, prefix, strlen(prefix)) == 0);
 }
 
-/*
- * Returns true if this is a valid unsupported@ property.
- */
+ 
 boolean_t
 zpool_prop_unsupported(const char *name)
 {
@@ -309,14 +275,14 @@ vdev_prop_init(void)
 	static const zprop_index_t boolean_na_table[] = {
 		{ "off",	0},
 		{ "on",		1},
-		{ "-",		2},	/* ZPROP_BOOLEAN_NA */
+		{ "-",		2},	 
 		{ NULL }
 	};
 
 	struct zfs_mod_supported_features *sfeatures =
 	    zfs_mod_list_supported(ZFS_SYSFS_VDEV_PROPERTIES);
 
-	/* string properties */
+	 
 	zprop_register_string(VDEV_PROP_COMMENT, "comment", NULL,
 	    PROP_DEFAULT, ZFS_TYPE_VDEV, "<comment-string>", "COMMENT",
 	    sfeatures);
@@ -336,7 +302,7 @@ vdev_prop_init(void)
 	    PROP_READONLY, ZFS_TYPE_VDEV, "<child[,...]>", "CHILDREN",
 	    sfeatures);
 
-	/* readonly number properties */
+	 
 	zprop_register_number(VDEV_PROP_SIZE, "size", 0, PROP_READONLY,
 	    ZFS_TYPE_VDEV, "<size>", "SIZE", B_FALSE, sfeatures);
 	zprop_register_number(VDEV_PROP_FREE, "free", 0, PROP_READONLY,
@@ -418,7 +384,7 @@ vdev_prop_init(void)
 	    PROP_READONLY, ZFS_TYPE_VDEV, "<bytes>", "TRIMBYTE", B_FALSE,
 	    sfeatures);
 
-	/* default numeric properties */
+	 
 	zprop_register_number(VDEV_PROP_CHECKSUM_N, "checksum_n", UINT64_MAX,
 	    PROP_DEFAULT, ZFS_TYPE_VDEV, "<events>", "CKSUM_N", B_FALSE,
 	    sfeatures);
@@ -432,7 +398,7 @@ vdev_prop_init(void)
 	    PROP_DEFAULT, ZFS_TYPE_VDEV, "<seconds>", "IO_T", B_FALSE,
 	    sfeatures);
 
-	/* default index (boolean) properties */
+	 
 	zprop_register_index(VDEV_PROP_REMOVING, "removing", 0,
 	    PROP_READONLY, ZFS_TYPE_VDEV, "on | off", "REMOVING",
 	    boolean_table, sfeatures);
@@ -440,30 +406,26 @@ vdev_prop_init(void)
 	    PROP_DEFAULT, ZFS_TYPE_VDEV, "on | off", "ALLOCATING",
 	    boolean_na_table, sfeatures);
 
-	/* default index properties */
+	 
 	zprop_register_index(VDEV_PROP_FAILFAST, "failfast", B_TRUE,
 	    PROP_DEFAULT, ZFS_TYPE_VDEV, "on | off", "FAILFAST", boolean_table,
 	    sfeatures);
 
-	/* hidden properties */
+	 
 	zprop_register_hidden(VDEV_PROP_NAME, "name", PROP_TYPE_STRING,
 	    PROP_READONLY, ZFS_TYPE_VDEV, "NAME", B_TRUE, sfeatures);
 
 	zfs_mod_list_supported_free(sfeatures);
 }
 
-/*
- * Given a property name and its type, returns the corresponding property ID.
- */
+ 
 vdev_prop_t
 vdev_name_to_prop(const char *propname)
 {
 	return (zprop_name_to_prop(propname, ZFS_TYPE_VDEV));
 }
 
-/*
- * Returns true if this is a valid user-defined property (one with a ':').
- */
+ 
 boolean_t
 vdev_prop_user(const char *name)
 {
@@ -482,10 +444,7 @@ vdev_prop_user(const char *name)
 	return (foundsep);
 }
 
-/*
- * Given a pool property ID, returns the corresponding name.
- * Assuming the pool property ID is valid.
- */
+ 
 const char *
 vdev_prop_to_name(vdev_prop_t prop)
 {
@@ -530,9 +489,7 @@ vdev_prop_index_to_string(vdev_prop_t prop, uint64_t index,
 	return (zprop_index_to_string(prop, index, string, ZFS_TYPE_VDEV));
 }
 
-/*
- * Returns true if this is a valid vdev property.
- */
+ 
 boolean_t
 zpool_prop_vdev(const char *name)
 {
@@ -566,17 +523,17 @@ vdev_prop_align_right(vdev_prop_t prop)
 #endif
 
 #if defined(_KERNEL)
-/* zpool property functions */
+ 
 EXPORT_SYMBOL(zpool_prop_init);
 EXPORT_SYMBOL(zpool_prop_get_type);
 EXPORT_SYMBOL(zpool_prop_get_table);
 
-/* vdev property functions */
+ 
 EXPORT_SYMBOL(vdev_prop_init);
 EXPORT_SYMBOL(vdev_prop_get_type);
 EXPORT_SYMBOL(vdev_prop_get_table);
 
-/* Pool property functions shared between libzfs and kernel. */
+ 
 EXPORT_SYMBOL(zpool_name_to_prop);
 EXPORT_SYMBOL(zpool_prop_to_name);
 EXPORT_SYMBOL(zpool_prop_default_string);
@@ -588,7 +545,7 @@ EXPORT_SYMBOL(zpool_prop_index_to_string);
 EXPORT_SYMBOL(zpool_prop_string_to_index);
 EXPORT_SYMBOL(zpool_prop_vdev);
 
-/* vdev property functions shared between libzfs and kernel. */
+ 
 EXPORT_SYMBOL(vdev_name_to_prop);
 EXPORT_SYMBOL(vdev_prop_user);
 EXPORT_SYMBOL(vdev_prop_to_name);

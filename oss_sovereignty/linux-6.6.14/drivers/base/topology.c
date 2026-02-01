@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * driver/base/topology.c - Populate sysfs with cpu topology information
- *
- * Written by: Zhang Yanmin, Intel Corporation
- *
- * Copyright (C) 2006, Intel Corp.
- *
- * All rights reserved.
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/cpu.h>
 #include <linux/module.h>
@@ -168,7 +160,7 @@ static const struct attribute_group topology_attr_group = {
 	.name = "topology"
 };
 
-/* Add/Remove cpu_topology interface for CPU device */
+ 
 static int topology_add_dev(unsigned int cpu)
 {
 	struct device *dev = get_cpu_device(cpu);

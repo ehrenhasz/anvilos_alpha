@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   32bit -> 64bit ioctl wrapper for PCM API
- *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
- */
 
-/* This file included from pcm_native.c */
+ 
+
+ 
 
 #include <linux/compat.h>
 #include <linux/slab.h>
@@ -53,10 +50,10 @@ static int snd_pcm_ioctl_forward_compat(struct snd_pcm_substream *substream,
 
 struct snd_pcm_hw_params32 {
 	u32 flags;
-	struct snd_mask masks[SNDRV_PCM_HW_PARAM_LAST_MASK - SNDRV_PCM_HW_PARAM_FIRST_MASK + 1]; /* this must be identical */
-	struct snd_mask mres[5];	/* reserved masks */
+	struct snd_mask masks[SNDRV_PCM_HW_PARAM_LAST_MASK - SNDRV_PCM_HW_PARAM_FIRST_MASK + 1];  
+	struct snd_mask mres[5];	 
 	struct snd_interval intervals[SNDRV_PCM_HW_PARAM_LAST_INTERVAL - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL + 1];
-	struct snd_interval ires[9];	/* reserved intervals */
+	struct snd_interval ires[9];	 
 	u32 rmask;
 	u32 cmask;
 	u32 info;
@@ -103,10 +100,7 @@ static int snd_pcm_ioctl_sw_params_compat(struct snd_pcm_substream *substream,
 	    get_user(params.tstamp_type, &src->tstamp_type) ||
 	    get_user(params.proto, &src->proto))
 		return -EFAULT;
-	/*
-	 * Check silent_size parameter.  Since we have 64bit boundary,
-	 * silence_size must be compared with the 32bit boundary.
-	 */
+	 
 	boundary = recalculate_boundary(substream->runtime);
 	if (boundary && params.silence_size >= boundary)
 		params.silence_size = substream->runtime->boundary;
@@ -148,16 +142,16 @@ static int snd_pcm_ioctl_channel_info_compat(struct snd_pcm_substream *substream
 }
 
 #ifdef CONFIG_X86_X32_ABI
-/* X32 ABI has the same struct as x86-64 for snd_pcm_channel_info */
+ 
 static int snd_pcm_channel_info_user(struct snd_pcm_substream *substream,
 				     struct snd_pcm_channel_info __user *src);
 #define snd_pcm_ioctl_channel_info_x32(s, p)	\
 	snd_pcm_channel_info_user(s, p)
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 
 struct compat_snd_pcm_status64 {
 	snd_pcm_state_t state;
-	u8 rsvd[4]; /* alignment */
+	u8 rsvd[4];  
 	s64 trigger_tstamp_sec;
 	s64 trigger_tstamp_nsec;
 	s64 tstamp_sec;
@@ -188,11 +182,7 @@ static int snd_pcm_status_user_compat64(struct snd_pcm_substream *substream,
 
 	memset(&status, 0, sizeof(status));
 	memset(&compat_status64, 0, sizeof(compat_status64));
-	/*
-	 * with extension, parameters are read/write,
-	 * get audio_tstamp_data from user,
-	 * ignore rest of status structure
-	 */
+	 
 	if (ext && get_user(status.audio_tstamp_data,
 				(u32 __user *)(&src->audio_tstamp_data)))
 		return -EFAULT;
@@ -230,7 +220,7 @@ static int snd_pcm_status_user_compat64(struct snd_pcm_substream *substream,
 	return err;
 }
 
-/* both for HW_PARAMS and HW_REFINE */
+ 
 static int snd_pcm_ioctl_hw_params_compat(struct snd_pcm_substream *substream,
 					  int refine, 
 					  struct snd_pcm_hw_params32 __user *data32)
@@ -247,7 +237,7 @@ static int snd_pcm_ioctl_hw_params_compat(struct snd_pcm_substream *substream,
 	if (!data)
 		return -ENOMEM;
 
-	/* only fifo_size (RO from userspace) is different, so just copy all */
+	 
 	if (copy_from_user(data, data32, sizeof(*data32))) {
 		err = -EFAULT;
 		goto error;
@@ -280,8 +270,7 @@ static int snd_pcm_ioctl_hw_params_compat(struct snd_pcm_substream *substream,
 }
 
 
-/*
- */
+ 
 struct snd_xferi32 {
 	s32 result;
 	u32 buf;
@@ -312,26 +301,21 @@ static int snd_pcm_ioctl_xferi_compat(struct snd_pcm_substream *substream,
 		err = snd_pcm_lib_read(substream, compat_ptr(buf), frames);
 	if (err < 0)
 		return err;
-	/* copy the result */
+	 
 	if (put_user(err, &data32->result))
 		return -EFAULT;
 	return 0;
 }
 
 
-/* snd_xfern needs remapping of bufs */
+ 
 struct snd_xfern32 {
 	s32 result;
-	u32 bufs;  /* this is void **; */
+	u32 bufs;   
 	u32 frames;
 };
 
-/*
- * xfern ioctl nees to copy (up to) 128 pointers on stack.
- * although we may pass the copied pointers through f_op->ioctl, but the ioctl
- * handler there expands again the same 128 pointers on stack, so it is better
- * to handle the function (calling pcm_readv/writev) directly in this handler.
- */
+ 
 static int snd_pcm_ioctl_xfern_compat(struct snd_pcm_substream *substream,
 				      int dir, struct snd_xfern32 __user *data32)
 {
@@ -380,12 +364,12 @@ static int snd_pcm_ioctl_xfern_compat(struct snd_pcm_substream *substream,
 }
 
 #ifdef CONFIG_X86_X32_ABI
-/* X32 ABI has 64bit timespec and 64bit alignment */
+ 
 struct snd_pcm_mmap_status_x32 {
 	snd_pcm_state_t state;
 	s32 pad1;
 	u32 hw_ptr;
-	u32 pad2; /* alignment */
+	u32 pad2;  
 	s64 tstamp_sec;
 	s64 tstamp_nsec;
 	snd_pcm_state_t suspended_state;
@@ -401,7 +385,7 @@ struct snd_pcm_mmap_control_x32 {
 
 struct snd_pcm_sync_ptr_x32 {
 	u32 flags;
-	u32 rsvd; /* alignment */
+	u32 rsvd;  
 	union {
 		struct snd_pcm_mmap_status_x32 status;
 		unsigned char reserved[64];
@@ -442,7 +426,7 @@ static int snd_pcm_ioctl_sync_ptr_x32(struct snd_pcm_substream *substream,
 	if (!boundary)
 		boundary = 0x7fffffff;
 	snd_pcm_stream_lock_irq(substream);
-	/* FIXME: we should consider the boundary for the sync from app */
+	 
 	if (!(sflags & SNDRV_PCM_SYNC_PTR_APPL))
 		control->appl_ptr = scontrol.appl_ptr;
 	else
@@ -472,7 +456,7 @@ static int snd_pcm_ioctl_sync_ptr_x32(struct snd_pcm_substream *substream,
 
 	return 0;
 }
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 
 #ifdef __BIG_ENDIAN
 typedef char __pad_before_u32[4];
@@ -482,15 +466,11 @@ typedef char __pad_before_u32[0];
 typedef char __pad_after_u32[4];
 #endif
 
-/* PCM 2.0.15 API definition had a bug in mmap control; it puts the avail_min
- * at the wrong offset due to a typo in padding type.
- * The bug hits only 32bit.
- * A workaround for incorrect read/write is needed only in 32bit compat mode.
- */
+ 
 struct __snd_pcm_mmap_control64_buggy {
 	__pad_before_u32 __pad1;
 	__u32 appl_ptr;
-	__pad_before_u32 __pad2;	/* SiC! here is the bug */
+	__pad_before_u32 __pad2;	 
 	__pad_before_u32 __pad3;
 	__u32 avail_min;
 	__pad_after_uframe __pad4;
@@ -546,8 +526,7 @@ static int snd_pcm_ioctl_sync_ptr_buggy(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- */
+ 
 enum {
 	SNDRV_PCM_IOCTL_HW_REFINE32 = _IOWR('A', 0x10, struct snd_pcm_hw_params32),
 	SNDRV_PCM_IOCTL_HW_PARAMS32 = _IOWR('A', 0x11, struct snd_pcm_hw_params32),
@@ -567,7 +546,7 @@ enum {
 #ifdef CONFIG_X86_X32_ABI
 	SNDRV_PCM_IOCTL_CHANNEL_INFO_X32 = _IOR('A', 0x32, struct snd_pcm_channel_info),
 	SNDRV_PCM_IOCTL_SYNC_PTR_X32 = _IOWR('A', 0x23, struct snd_pcm_sync_ptr_x32),
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 };
 
 static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned long arg)
@@ -583,11 +562,7 @@ static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
 	if (! substream)
 		return -ENOTTY;
 
-	/*
-	 * When PCM is used on 32bit mode, we need to disable
-	 * mmap of the old PCM status/control records because
-	 * of the size incompatibility.
-	 */
+	 
 	pcm_file->no_compat_mmap = 1;
 
 	switch (cmd) {
@@ -614,7 +589,7 @@ static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
 #ifdef CONFIG_X86_X32_ABI
 		if (in_x32_syscall())
 			return snd_pcm_ioctl_sync_ptr_x32(substream, argp);
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 		return snd_pcm_ioctl_sync_ptr_buggy(substream, argp);
 	case SNDRV_PCM_IOCTL_HW_REFINE32:
 		return snd_pcm_ioctl_hw_params_compat(substream, 1, argp);
@@ -649,7 +624,7 @@ static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
 #ifdef CONFIG_X86_X32_ABI
 	case SNDRV_PCM_IOCTL_CHANNEL_INFO_X32:
 		return snd_pcm_ioctl_channel_info_x32(substream, argp);
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 	}
 
 	return -ENOIOCTLCMD;

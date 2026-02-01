@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef _NET_CORE_SOCK_DESTRUCTOR_H
 #define _NET_CORE_SOCK_DESTRUCTOR_H
 #include <net/tcp.h>

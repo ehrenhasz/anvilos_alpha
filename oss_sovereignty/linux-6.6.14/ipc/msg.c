@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/ipc/msg.c
- * Copyright (C) 1992 Krishna Balasubramanian
- *
- * Removed all the remaining kerneld mess
- * Catch the -EFAULT stuff properly
- * Use GFP_KERNEL for messages as in 1.2
- * Fixed up the unchecked user space derefs
- * Copyright (C) 1998 Alan Cox & Andi Kleen
- *
- * /proc/sysvipc/msg support (c) 1999 Dragos Acostachioaie <dragos@iname.com>
- *
- * mostly rewritten, threaded and wake-one semantics added
- * MSGMAX limit removed, sysctl's added
- * (c) 1999 Manfred Spraul <manfred@colorfullife.com>
- *
- * support for audit of ipc object properties and permission changes
- * Dustin Kirkland <dustin.kirkland@us.ibm.com>
- *
- * namespaces support
- * OpenVZ, SWsoft Inc.
- * Pavel Emelianov <xemul@openvz.org>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/msg.h>
@@ -45,34 +23,26 @@
 #include <linux/uaccess.h>
 #include "util.h"
 
-/* one msq_queue structure for each present queue on the system */
+ 
 struct msg_queue {
 	struct kern_ipc_perm q_perm;
-	time64_t q_stime;		/* last msgsnd time */
-	time64_t q_rtime;		/* last msgrcv time */
-	time64_t q_ctime;		/* last change time */
-	unsigned long q_cbytes;		/* current number of bytes on queue */
-	unsigned long q_qnum;		/* number of messages in queue */
-	unsigned long q_qbytes;		/* max number of bytes on queue */
-	struct pid *q_lspid;		/* pid of last msgsnd */
-	struct pid *q_lrpid;		/* last receive pid */
+	time64_t q_stime;		 
+	time64_t q_rtime;		 
+	time64_t q_ctime;		 
+	unsigned long q_cbytes;		 
+	unsigned long q_qnum;		 
+	unsigned long q_qbytes;		 
+	struct pid *q_lspid;		 
+	struct pid *q_lrpid;		 
 
 	struct list_head q_messages;
 	struct list_head q_receivers;
 	struct list_head q_senders;
 } __randomize_layout;
 
-/*
- * MSG_BARRIER Locking:
- *
- * Similar to the optimization used in ipc/mqueue.c, one syscall return path
- * does not acquire any locks when it sees that a message exists in
- * msg_receiver.r_msg. Therefore r_msg is set using smp_store_release()
- * and accessed using READ_ONCE()+smp_acquire__after_ctrl_dep(). In addition,
- * wake_q_add_safe() is used. See ipc/mqueue.c for more details
- */
+ 
 
-/* one msg_receiver structure for each sleeping receiver */
+ 
 struct msg_receiver {
 	struct list_head	r_list;
 	struct task_struct	*r_tsk;
@@ -84,7 +54,7 @@ struct msg_receiver {
 	struct msg_msg		*r_msg;
 };
 
-/* one msg_sender for each sleeping sender */
+ 
 struct msg_sender {
 	struct list_head	list;
 	struct task_struct	*tsk;
@@ -134,13 +104,7 @@ static void msg_rcu_free(struct rcu_head *head)
 	kfree(msq);
 }
 
-/**
- * newque - Create a new msg queue
- * @ns: namespace
- * @params: ptr to the structure that contains the key and msgflg
- *
- * Called with msg_ids.rwsem held (writer)
- */
+ 
 static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 {
 	struct msg_queue *msq;
@@ -171,7 +135,7 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 	INIT_LIST_HEAD(&msq->q_receivers);
 	INIT_LIST_HEAD(&msq->q_senders);
 
-	/* ipc_addid() locks msq upon success. */
+	 
 	retval = ipc_addid(&msg_ids(ns), &msq->q_perm, ns->msg_ctlmni);
 	if (retval < 0) {
 		ipc_rcu_putref(&msq->q_perm, msg_rcu_free);
@@ -195,10 +159,7 @@ static inline void ss_add(struct msg_queue *msq,
 {
 	mss->tsk = current;
 	mss->msgsz = msgsz;
-	/*
-	 * No memory barrier required: we did ipc_lock_object(),
-	 * and the waker obtains that lock before calling wake_q_add().
-	 */
+	 
 	__set_current_state(TASK_INTERRUPTIBLE);
 	list_add_tail(&mss->list, &msq->q_senders);
 }
@@ -220,20 +181,10 @@ static void ss_wakeup(struct msg_queue *msq,
 		if (kill)
 			mss->list.next = NULL;
 
-		/*
-		 * Stop at the first task we don't wakeup,
-		 * we've already iterated the original
-		 * sender queue.
-		 */
+		 
 		else if (stop_tsk == mss->tsk)
 			break;
-		/*
-		 * We are not in an EIDRM scenario here, therefore
-		 * verify that we really need to wakeup the task.
-		 * To maintain current semantics and wakeup order,
-		 * move the sender to the tail on behalf of the
-		 * blocked task.
-		 */
+		 
 		else if (!msg_fits_inqueue(msq, mss->msgsz)) {
 			if (!stop_tsk)
 				stop_tsk = mss->tsk;
@@ -256,20 +207,13 @@ static void expunge_all(struct msg_queue *msq, int res,
 
 		r_tsk = get_task_struct(msr->r_tsk);
 
-		/* see MSG_BARRIER for purpose/pairing */
+		 
 		smp_store_release(&msr->r_msg, ERR_PTR(res));
 		wake_q_add_safe(wake_q, r_tsk);
 	}
 }
 
-/*
- * freeque() wakes up waiters on the sender and receiver waiting queue,
- * removes the message queue from message queue ID IDR, and cleans up all the
- * messages associated with this queue.
- *
- * msg_ids.rwsem (writer) and the spinlock for this message queue are held
- * before freeque() is called. msg_ids.rwsem remains locked on exit.
- */
+ 
 static void freeque(struct ipc_namespace *ns, struct kern_ipc_perm *ipcp)
 	__releases(RCU)
 	__releases(&msq->q_perm)
@@ -393,11 +337,7 @@ copy_msqid_from_user(struct msqid64_ds *out, void __user *buf, int version)
 	}
 }
 
-/*
- * This function handles some msgctl commands which require the rwsem
- * to be held in write mode.
- * NOTE: no locks must be held, the rwsem is taken inside this function.
- */
+ 
 static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 			struct ipc64_perm *perm, int msg_qbytes)
 {
@@ -424,7 +364,7 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 	switch (cmd) {
 	case IPC_RMID:
 		ipc_lock_object(&msq->q_perm);
-		/* freeque unlocks the ipc object and rcu */
+		 
 		freeque(ns, ipcp);
 		goto out_up;
 	case IPC_SET:
@@ -445,15 +385,9 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 		msq->q_qbytes = msg_qbytes;
 
 		msq->q_ctime = ktime_get_real_seconds();
-		/*
-		 * Sleeping receivers might be excluded by
-		 * stricter permissions.
-		 */
+		 
 		expunge_all(msq, -EAGAIN, &wake_q);
-		/*
-		 * Sleeping senders might be able to send
-		 * due to a larger queue size.
-		 */
+		 
 		ss_wakeup(msq, &wake_q, false);
 		ipc_unlock_object(&msq->q_perm);
 		wake_up_q(&wake_q);
@@ -480,11 +414,7 @@ static int msgctl_info(struct ipc_namespace *ns, int msqid,
 	int err;
 	int max_idx;
 
-	/*
-	 * We must not return kernel stack data.
-	 * due to padding, it's not enough
-	 * to set all member fields.
-	 */
+	 
 	err = security_msg_queue_msgctl(NULL, cmd);
 	if (err)
 		return err;
@@ -530,7 +460,7 @@ static int msgctl_stat(struct ipc_namespace *ns, int msqid,
 			err = PTR_ERR(msq);
 			goto out_unlock;
 		}
-	} else { /* IPC_STAT */
+	} else {  
 		msq = msq_obtain_object_check(ns, msqid);
 		if (IS_ERR(msq)) {
 			err = PTR_ERR(msq);
@@ -538,7 +468,7 @@ static int msgctl_stat(struct ipc_namespace *ns, int msqid,
 		}
 	}
 
-	/* see comment for SHM_STAT_ANY */
+	 
 	if (cmd == MSG_STAT_ANY)
 		audit_ipc_obj(&msq->q_perm);
 	else {
@@ -575,16 +505,10 @@ static int msgctl_stat(struct ipc_namespace *ns, int msqid,
 	p->msg_lrpid  = pid_vnr(msq->q_lrpid);
 
 	if (cmd == IPC_STAT) {
-		/*
-		 * As defined in SUS:
-		 * Return 0 on success
-		 */
+		 
 		err = 0;
 	} else {
-		/*
-		 * MSG_STAT and MSG_STAT_ANY (both Linux specific)
-		 * Return the full id, including the sequence number
-		 */
+		 
 		err = msq->q_perm.id;
 	}
 
@@ -616,7 +540,7 @@ static long ksys_msgctl(int msqid, int cmd, struct msqid_ds __user *buf, int ver
 			err = -EFAULT;
 		return err;
 	}
-	case MSG_STAT:	/* msqid is an index rather than a msg queue id */
+	case MSG_STAT:	 
 	case MSG_STAT_ANY:
 	case IPC_STAT:
 		err = msgctl_stat(ns, msqid, cmd, &msqid64);
@@ -827,7 +751,7 @@ static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg,
 			if (msr->r_maxsize < msg->m_ts) {
 				wake_q_add(wake_q, msr->r_tsk);
 
-				/* See expunge_all regarding memory barrier */
+				 
 				smp_store_release(&msr->r_msg, ERR_PTR(-E2BIG));
 			} else {
 				ipc_update_pid(&msq->q_lrpid, task_pid(msr->r_tsk));
@@ -835,7 +759,7 @@ static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg,
 
 				wake_q_add(wake_q, msr->r_tsk);
 
-				/* See expunge_all regarding memory barrier */
+				 
 				smp_store_release(&msr->r_msg, msg);
 				return 1;
 			}
@@ -884,7 +808,7 @@ static long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		if (ipcperms(ns, &msq->q_perm, S_IWUGO))
 			goto out_unlock0;
 
-		/* raced with RMID? */
+		 
 		if (!ipc_valid_object(&msq->q_perm)) {
 			err = -EIDRM;
 			goto out_unlock0;
@@ -897,13 +821,13 @@ static long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		if (msg_fits_inqueue(msq, msgsz))
 			break;
 
-		/* queue full, wait: */
+		 
 		if (msgflg & IPC_NOWAIT) {
 			err = -EAGAIN;
 			goto out_unlock0;
 		}
 
-		/* enqueue the sender and prepare to block */
+		 
 		ss_add(msq, &s, msgsz);
 
 		if (!ipc_rcu_getref(&msq->q_perm)) {
@@ -919,7 +843,7 @@ static long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		ipc_lock_object(&msq->q_perm);
 
 		ipc_rcu_putref(&msq->q_perm, msg_rcu_free);
-		/* raced with RMID? */
+		 
 		if (!ipc_valid_object(&msq->q_perm)) {
 			err = -EIDRM;
 			goto out_unlock0;
@@ -937,7 +861,7 @@ static long do_msgsnd(int msqid, long mtype, void __user *mtext,
 	msq->q_stime = ktime_get_real_seconds();
 
 	if (!pipelined_send(msq, msg, &wake_q)) {
-		/* no one is waiting for this message, enqueue it */
+		 
 		list_add_tail(&msg->m_list, &msq->q_messages);
 		msq->q_cbytes += msgsz;
 		msq->q_qnum++;
@@ -1003,16 +927,11 @@ static inline int convert_mode(long *msgtyp, int msgflg)
 {
 	if (msgflg & MSG_COPY)
 		return SEARCH_NUMBER;
-	/*
-	 *  find message of correct type.
-	 *  msgtyp = 0 => get first.
-	 *  msgtyp > 0 => get first message of matching type.
-	 *  msgtyp < 0 => get message with least type must be < abs(msgtype).
-	 */
+	 
 	if (*msgtyp == 0)
 		return SEARCH_ANY;
 	if (*msgtyp < 0) {
-		if (*msgtyp == LONG_MIN) /* -LONG_MIN is undefined */
+		if (*msgtyp == LONG_MIN)  
 			*msgtyp = LONG_MAX;
 		else
 			*msgtyp = -*msgtyp;
@@ -1038,17 +957,12 @@ static long do_msg_fill(void __user *dest, struct msg_msg *msg, size_t bufsz)
 }
 
 #ifdef CONFIG_CHECKPOINT_RESTORE
-/*
- * This function creates new kernel message structure, large enough to store
- * bufsz message bytes.
- */
+ 
 static inline struct msg_msg *prepare_copy(void __user *buf, size_t bufsz)
 {
 	struct msg_msg *copy;
 
-	/*
-	 * Create dummy message to copy real message to.
-	 */
+	 
 	copy = load_msg(buf, bufsz);
 	if (!IS_ERR(copy))
 		copy->m_ts = bufsz;
@@ -1135,7 +1049,7 @@ static long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, in
 
 		ipc_lock_object(&msq->q_perm);
 
-		/* raced with RMID? */
+		 
 		if (!ipc_valid_object(&msq->q_perm)) {
 			msg = ERR_PTR(-EIDRM);
 			goto out_unlock0;
@@ -1143,18 +1057,12 @@ static long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, in
 
 		msg = find_msg(msq, &msgtyp, mode);
 		if (!IS_ERR(msg)) {
-			/*
-			 * Found a suitable message.
-			 * Unlink it from the queue.
-			 */
+			 
 			if ((bufsz < msg->m_ts) && !(msgflg & MSG_NOERROR)) {
 				msg = ERR_PTR(-E2BIG);
 				goto out_unlock0;
 			}
-			/*
-			 * If we are copying, then do not unlink message and do
-			 * not update queue parameters.
-			 */
+			 
 			if (msgflg & MSG_COPY) {
 				msg = copy_msg(msg, copy);
 				goto out_unlock0;
@@ -1172,7 +1080,7 @@ static long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, in
 			goto out_unlock0;
 		}
 
-		/* No message waiting. Wait for a message */
+		 
 		if (msgflg & IPC_NOWAIT) {
 			msg = ERR_PTR(-ENOMSG);
 			goto out_unlock0;
@@ -1187,49 +1095,29 @@ static long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, in
 		else
 			msr_d.r_maxsize = bufsz;
 
-		/* memory barrier not require due to ipc_lock_object() */
+		 
 		WRITE_ONCE(msr_d.r_msg, ERR_PTR(-EAGAIN));
 
-		/* memory barrier not required, we own ipc_lock_object() */
+		 
 		__set_current_state(TASK_INTERRUPTIBLE);
 
 		ipc_unlock_object(&msq->q_perm);
 		rcu_read_unlock();
 		schedule();
 
-		/*
-		 * Lockless receive, part 1:
-		 * We don't hold a reference to the queue and getting a
-		 * reference would defeat the idea of a lockless operation,
-		 * thus the code relies on rcu to guarantee the existence of
-		 * msq:
-		 * Prior to destruction, expunge_all(-EIRDM) changes r_msg.
-		 * Thus if r_msg is -EAGAIN, then the queue not yet destroyed.
-		 */
+		 
 		rcu_read_lock();
 
-		/*
-		 * Lockless receive, part 2:
-		 * The work in pipelined_send() and expunge_all():
-		 * - Set pointer to message
-		 * - Queue the receiver task for later wakeup
-		 * - Wake up the process after the lock is dropped.
-		 *
-		 * Should the process wake up before this wakeup (due to a
-		 * signal) it will either see the message and continue ...
-		 */
+		 
 		msg = READ_ONCE(msr_d.r_msg);
 		if (msg != ERR_PTR(-EAGAIN)) {
-			/* see MSG_BARRIER for purpose/pairing */
+			 
 			smp_acquire__after_ctrl_dep();
 
 			goto out_unlock1;
 		}
 
-		 /*
-		  * ... or see -EAGAIN, acquire the lock to check the message
-		  * again.
-		  */
+		  
 		ipc_lock_object(&msq->q_perm);
 
 		msg = READ_ONCE(msr_d.r_msg);

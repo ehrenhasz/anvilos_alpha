@@ -1,8 +1,5 @@
-/* $OpenBSD: hash.c,v 1.6 2019/11/29 00:11:21 djm Exp $ */
-/*
- * Public domain. Author: Christian Weisgerber <naddy@openbsd.org>
- * API compatible reimplementation of function from nacl
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -40,4 +37,4 @@ crypto_hash_sha512(unsigned char *out, const unsigned char *in,
 	SHA512Final(out, &ctx);
 	return 0;
 }
-#endif /* WITH_OPENSSL */
+#endif  

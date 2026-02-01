@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stddef.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -70,7 +70,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
 
 			rv = 1;
 
-			/* Update results */
+			 
 			gp = bpf_map_lookup_elem(&global_map, &key);
 			if (!gp)
 				break;

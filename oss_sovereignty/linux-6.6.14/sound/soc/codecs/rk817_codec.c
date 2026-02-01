@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rk817 ALSA SoC Audio driver
-//
-// Copyright (c) 2018, Fuzhou Rockchip Electronics Co., Ltd All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -26,14 +26,7 @@ struct rk817_codec_priv {
 	bool mic_in_differential;
 };
 
-/*
- * This sets the codec up with the values defined in the default implementation including the APLL
- * from the Rockchip vendor kernel. I do not know if these values are universal despite differing
- * from the default values defined above and taken from the datasheet, or implementation specific.
- * I don't have another implementation to compare from the Rockchip sources. Hard-coding for now.
- * Additionally, I do not know according to the documentation the units accepted for the clock
- * values, so for the moment those are left unvalidated.
- */
+ 
 
 static int rk817_init(struct snd_soc_component *component)
 {
@@ -55,35 +48,23 @@ static int rk817_set_component_pll(struct snd_soc_component *component,
 		int pll_id, int source, unsigned int freq_in,
 		unsigned int freq_out)
 {
-	/* Set resistor value and charge pump current for PLL. */
+	 
 	snd_soc_component_write(component, RK817_CODEC_APLL_CFG1, 0x58);
-	/* Set the PLL feedback clock divide value (values not documented). */
+	 
 	snd_soc_component_write(component, RK817_CODEC_APLL_CFG2, 0x2d);
-	/* Set the PLL pre-divide value (values not documented). */
+	 
 	snd_soc_component_write(component, RK817_CODEC_APLL_CFG3, 0x0c);
-	/* Set the PLL VCO output clock divide and PLL divided ratio of PLL High Clk (values not
-	 * documented).
-	 */
+	 
 	snd_soc_component_write(component, RK817_CODEC_APLL_CFG4, 0xa5);
 
 	return 0;
 }
 
-/*
- * DDAC/DADC L/R volume setting
- * 0db~-95db, 0.375db/step, for example:
- * 0x00: 0dB
- * 0xff: -95dB
- */
+ 
 
 static const DECLARE_TLV_DB_MINMAX(rk817_vol_tlv, -9500, 0);
 
-/*
- * PGA GAIN L/R volume setting
- * 27db~-18db, 3db/step, for example:
- * 0x0: -18dB
- * 0xf: 27dB
- */
+ 
 
 static const DECLARE_TLV_DB_MINMAX(rk817_gain_tlv, -1800, 2700);
 
@@ -96,9 +77,7 @@ static const struct snd_kcontrol_new rk817_volume_controls[] = {
 		rk817_gain_tlv),
 };
 
-/* Since the speaker output and L headphone pin are internally the same, make audio path mutually
- * exclusive with a mux.
- */
+ 
 
 static const char *dac_mux_text[] = {
 	"HP",
@@ -112,14 +91,14 @@ static const struct snd_kcontrol_new dac_mux =
 
 static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 
-	/* capture/playback common */
+	 
 	SND_SOC_DAPM_SUPPLY("LDO Regulator", RK817_CODEC_AREF_RTCFG1, 6, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("IBIAS Block", RK817_CODEC_AREF_RTCFG1, 2, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("VAvg Buffer", RK817_CODEC_AREF_RTCFG1, 1, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("PLL Power", RK817_CODEC_APLL_CFG5, 0, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S TX1 Transfer Start", RK817_CODEC_DI2S_RXCMD_TSD, 5, 0, NULL, 0),
 
-	/* capture path common */
+	 
 	SND_SOC_DAPM_SUPPLY("ADC Clock", RK817_CODEC_DTOP_DIGEN_CLKE, 7, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S TX Clock", RK817_CODEC_DTOP_DIGEN_CLKE, 6, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("ADC Channel Enable", RK817_CODEC_DTOP_DIGEN_CLKE, 5, 0, NULL, 0),
@@ -128,19 +107,19 @@ static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("I2S TX3 Transfer Start", RK817_CODEC_DI2S_TXCR3_TXCMD, 7, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S TX3 Right Justified", RK817_CODEC_DI2S_TXCR3_TXCMD, 3, 0, NULL, 0),
 
-	/* capture path L */
+	 
 	SND_SOC_DAPM_ADC("ADC L", "Capture", RK817_CODEC_AADC_CFG0, 7, 1),
 	SND_SOC_DAPM_SUPPLY("PGA L Power On", RK817_CODEC_AMIC_CFG0, 5, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mic Boost L1", RK817_CODEC_AMIC_CFG0, 3, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mic Boost L2", RK817_CODEC_AMIC_CFG0, 2, 0, NULL, 0),
 
-	/* capture path R */
+	 
 	SND_SOC_DAPM_ADC("ADC R", "Capture", RK817_CODEC_AADC_CFG0, 6, 1),
 	SND_SOC_DAPM_SUPPLY("PGA R Power On", RK817_CODEC_AMIC_CFG0, 4, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mic Boost R1", RK817_CODEC_AMIC_CFG0, 3, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Mic Boost R2", RK817_CODEC_AMIC_CFG0, 3, 0, NULL, 0),
 
-	/* playback path common */
+	 
 	SND_SOC_DAPM_SUPPLY("DAC Clock", RK817_CODEC_DTOP_DIGEN_CLKE, 3, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S RX Clock", RK817_CODEC_DTOP_DIGEN_CLKE, 2, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC Channel Enable", RK817_CODEC_DTOP_DIGEN_CLKE, 1, 0, NULL, 0),
@@ -148,7 +127,7 @@ static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DAC Bias", RK817_CODEC_ADAC_CFG1, 3, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC Mute Off", RK817_CODEC_DDAC_MUTE_MIXCTL, 0, 1, NULL, 0),
 
-	/* playback path speaker */
+	 
 	SND_SOC_DAPM_SUPPLY("Class D Mode", RK817_CODEC_DDAC_MUTE_MIXCTL, 4, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("High Pass Filter", RK817_CODEC_DDAC_MUTE_MIXCTL, 7, 0, NULL, 0),
 	SND_SOC_DAPM_DAC("SPK DAC", "Playback", RK817_CODEC_ADAC_CFG1, 2, 1),
@@ -161,7 +140,7 @@ static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Class D OCPN 2", RK817_CODEC_ACLASSD_CFG2, 1, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Class D OCPN 3", RK817_CODEC_ACLASSD_CFG2, 0, 0, NULL, 0),
 
-	/* playback path headphones */
+	 
 	SND_SOC_DAPM_SUPPLY("Headphone Charge Pump", RK817_CODEC_AHP_CP, 4, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Headphone CP Discharge LDO", RK817_CODEC_AHP_CP, 3, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Headphone OStage", RK817_CODEC_AHP_CFG0, 6, 1, NULL, 0),
@@ -169,10 +148,10 @@ static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 	SND_SOC_DAPM_DAC("DAC L", "Playback", RK817_CODEC_ADAC_CFG1, 1, 1),
 	SND_SOC_DAPM_DAC("DAC R", "Playback", RK817_CODEC_ADAC_CFG1, 0, 1),
 
-	/* Mux for input/output path selection */
+	 
 	SND_SOC_DAPM_MUX("Playback Mux", SND_SOC_NOPM, 1, 0, &dac_mux),
 
-	/* Pins for Simple Card Bindings */
+	 
 	SND_SOC_DAPM_INPUT("MICL"),
 	SND_SOC_DAPM_INPUT("MICR"),
 	SND_SOC_DAPM_OUTPUT("HPOL"),
@@ -182,8 +161,8 @@ static const struct snd_soc_dapm_widget rk817_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 
-	/* capture path */
-	/* left mic */
+	 
+	 
 	{"ADC L", NULL, "LDO Regulator"},
 	{"ADC L", NULL, "IBIAS Block"},
 	{"ADC L", NULL, "VAvg Buffer"},
@@ -201,7 +180,7 @@ static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 	{"MICL", NULL, "I2S TX3 Right Justified"},
 	{"ADC L", NULL, "MICL"},
 
-	/* right mic */
+	 
 	{"ADC R", NULL, "LDO Regulator"},
 	{"ADC R", NULL, "IBIAS Block"},
 	{"ADC R", NULL, "VAvg Buffer"},
@@ -219,8 +198,8 @@ static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 	{"MICR", NULL, "I2S TX3 Right Justified"},
 	{"ADC R", NULL, "MICR"},
 
-	/* playback path */
-	/* speaker path */
+	 
+	 
 	{"SPK DAC", NULL, "LDO Regulator"},
 	{"SPK DAC", NULL, "IBIAS Block"},
 	{"SPK DAC", NULL, "VAvg Buffer"},
@@ -243,7 +222,7 @@ static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 	{"SPK DAC", NULL, "Class D OCPN 3"},
 	{"SPK DAC", NULL, "High Pass Filter"},
 
-	/* headphone path L */
+	 
 	{"DAC L", NULL, "LDO Regulator"},
 	{"DAC L", NULL, "IBIAS Block"},
 	{"DAC L", NULL, "VAvg Buffer"},
@@ -260,7 +239,7 @@ static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 	{"DAC L", NULL, "Headphone OStage"},
 	{"DAC L", NULL, "Headphone Pre Amp"},
 
-	/* headphone path R */
+	 
 	{"DAC R", NULL, "LDO Regulator"},
 	{"DAC R", NULL, "IBIAS Block"},
 	{"DAC R", NULL, "VAvg Buffer"},
@@ -277,7 +256,7 @@ static const struct snd_soc_dapm_route rk817_dapm_routes[] = {
 	{"DAC R", NULL, "Headphone OStage"},
 	{"DAC R", NULL, "Headphone Pre Amp"},
 
-	/* mux path for output selection */
+	 
 	{"Playback Mux", "HP", "DAC L"},
 	{"Playback Mux", "HP", "DAC R"},
 	{"Playback Mux", "SPK", "SPK DAC"},
@@ -424,9 +403,7 @@ static int rk817_probe(struct snd_soc_component *component)
 
 	rk817_init(component);
 
-	/* setting initial pll values so that we can continue to leverage simple-audio-card.
-	 * The values aren't important since no parameters are used.
-	 */
+	 
 
 	snd_soc_component_set_pll(component, 0, 0, 0, 0);
 

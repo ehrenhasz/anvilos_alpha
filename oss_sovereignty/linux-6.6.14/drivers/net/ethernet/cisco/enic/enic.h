@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef _ENIC_H_
 #define _ENIC_H_
@@ -40,7 +37,7 @@ struct enic_msix_entry {
 	cpumask_var_t affinity_mask;
 };
 
-/* Store only the lower range.  Higher range is given by fw. */
+ 
 struct enic_intr_mod_range {
 	u32 small_pkt_range_start;
 	u32 large_pkt_range_start;
@@ -67,10 +64,10 @@ struct enic_rx_coal {
 	u32 use_adaptive_rx_coalesce;
 };
 
-/* priv_flags */
+ 
 #define ENIC_SRIOV_ENABLED		(1 << 0)
 
-/* enic port profile set flags */
+ 
 #define ENIC_PORT_REQUEST_APPLIED	(1 << 0)
 #define ENIC_SET_REQUEST		(1 << 1)
 #define ENIC_SET_NAME			(1 << 2)
@@ -87,13 +84,7 @@ struct enic_port_profile {
 	u8 mac_addr[ETH_ALEN];
 };
 
-/* enic_rfs_fltr_node - rfs filter node in hash table
- *	@@keys: IPv4 5 tuple
- *	@flow_id: flow_id of clsf filter provided by kernel
- *	@fltr_id: filter id of clsf filter returned by adaptor
- *	@rq_id: desired rq index
- *	@node: hlist_node
- */
+ 
 struct enic_rfs_fltr_node {
 	struct flow_keys keys;
 	u32 flow_id;
@@ -102,14 +93,7 @@ struct enic_rfs_fltr_node {
 	struct hlist_node node;
 };
 
-/* enic_rfs_flw_tbl - rfs flow table
- *	@max: Maximum number of filters vNIC supports
- *	@free: Number of free filters available
- *	@toclean: hash table index to clean next
- *	@ht_head: hash table list head
- *	@lock: spin lock
- *	@rfs_may_expire: timer function for enic_rps_may_expire_flow
- */
+ 
 struct enic_rfs_flw_tbl {
 	u16 max;
 	int free;
@@ -128,7 +112,7 @@ struct vxlan_offload {
 	u8 flags;
 };
 
-/* Per-instance private data structure */
+ 
 struct enic {
 	struct net_device *netdev;
 	struct pci_dev *pdev;
@@ -159,14 +143,14 @@ struct enic {
 	bool enic_api_busy;
 	struct enic_port_profile *pp;
 
-	/* work queue cache line section */
+	 
 	____cacheline_aligned struct vnic_wq wq[ENIC_WQ_MAX];
 	spinlock_t wq_lock[ENIC_WQ_MAX];
 	unsigned int wq_count;
 	u16 loop_enable;
 	u16 loop_tag;
 
-	/* receive queue cache line section */
+	 
 	____cacheline_aligned struct vnic_rq rq[ENIC_RQ_MAX];
 	unsigned int rq_count;
 	struct vxlan_offload vxlan;
@@ -174,12 +158,12 @@ struct enic {
 	u64 rq_bad_fcs;
 	struct napi_struct napi[ENIC_RQ_MAX + ENIC_WQ_MAX];
 
-	/* interrupt resource cache line section */
+	 
 	____cacheline_aligned struct vnic_intr intr[ENIC_INTR_MAX];
 	unsigned int intr_count;
-	u32 __iomem *legacy_pba;		/* memory-mapped */
+	u32 __iomem *legacy_pba;		 
 
-	/* completion queue cache line section */
+	 
 	____cacheline_aligned struct vnic_cq cq[ENIC_CQ_MAX];
 	unsigned int cq_count;
 	struct enic_rfs_flw_tbl rfs_h;
@@ -195,8 +179,7 @@ static inline struct net_device *vnic_get_netdev(struct vnic_dev *vdev)
 	return enic->netdev;
 }
 
-/* wrappers function for kernel log
- */
+ 
 #define vdev_err(vdev, fmt, ...)					\
 	dev_err(&(vdev)->pdev->dev, fmt, ##__VA_ARGS__)
 #define vdev_warn(vdev, fmt, ...)					\
@@ -298,4 +281,4 @@ int enic_is_dynamic(struct enic *enic);
 void enic_set_ethtool_ops(struct net_device *netdev);
 int __enic_set_rsskey(struct enic *enic);
 
-#endif /* _ENIC_H_ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RDA Micro GPIO driver
- *
- * Copyright (C) 2012 RDA Micro Inc.
- * Copyright (C) 2019 Manivannan Sadhasivam
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -31,7 +26,7 @@
 
 #define RDA_GPIO_IRQ_MASK		0xff
 
-/* Each bank consists of 32 GPIOs */
+ 
 #define RDA_GPIO_BANK_NR	32
 
 struct rda_gpio {
@@ -93,50 +88,50 @@ static int rda_gpio_set_irq(struct gpio_chip *chip, u32 offset,
 
 	switch (flow_type) {
 	case IRQ_TYPE_EDGE_RISING:
-		/* Set rising edge trigger */
+		 
 		value = BIT(offset) << RDA_GPIO_IRQ_RISE_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_SET);
 
-		/* Switch to edge trigger interrupt */
+		 
 		value = BIT(offset) << RDA_GPIO_LEVEL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_CLR);
 		break;
 
 	case IRQ_TYPE_EDGE_FALLING:
-		/* Set falling edge trigger */
+		 
 		value = BIT(offset) << RDA_GPIO_IRQ_FALL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_SET);
 
-		/* Switch to edge trigger interrupt */
+		 
 		value = BIT(offset) << RDA_GPIO_LEVEL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_CLR);
 		break;
 
 	case IRQ_TYPE_EDGE_BOTH:
-		/* Set both edge trigger */
+		 
 		value = BIT(offset) << RDA_GPIO_IRQ_RISE_SHIFT;
 		value |= BIT(offset) << RDA_GPIO_IRQ_FALL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_SET);
 
-		/* Switch to edge trigger interrupt */
+		 
 		value = BIT(offset) << RDA_GPIO_LEVEL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_CLR);
 		break;
 
 	case IRQ_TYPE_LEVEL_HIGH:
-		/* Set high level trigger */
+		 
 		value = BIT(offset) << RDA_GPIO_IRQ_RISE_SHIFT;
 
-		/* Switch to level trigger interrupt */
+		 
 		value |= BIT(offset) << RDA_GPIO_LEVEL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_SET);
 		break;
 
 	case IRQ_TYPE_LEVEL_LOW:
-		/* Set low level trigger */
+		 
 		value = BIT(offset) << RDA_GPIO_IRQ_FALL_SHIFT;
 
-		/* Switch to level trigger interrupt */
+		 
 		value |= BIT(offset) << RDA_GPIO_LEVEL_SHIFT;
 		writel_relaxed(value, base + RDA_GPIO_INT_CTRL_SET);
 		break;
@@ -187,7 +182,7 @@ static void rda_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_enter(ic, desc);
 
 	status = readl_relaxed(rda_gpio->base + RDA_GPIO_INT_STATUS);
-	/* Only lower 8 bits are capable of generating interrupts */
+	 
 	status &= RDA_GPIO_IRQ_MASK;
 
 	for_each_set_bit(n, &status, RDA_GPIO_BANK_NR)
@@ -222,11 +217,7 @@ static int rda_gpio_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Not all ports have interrupt capability. For instance, on
-	 * RDA8810PL, GPIOC doesn't support interrupt. So we must handle
-	 * those also.
-	 */
+	 
 	rda_gpio->irq = platform_get_irq(pdev, 0);
 
 	rda_gpio->base = devm_platform_ioremap_resource(pdev, 0);
@@ -274,7 +265,7 @@ static int rda_gpio_probe(struct platform_device *pdev)
 
 static const struct of_device_id rda_gpio_of_match[] = {
 	{ .compatible = "rda,8810pl-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rda_gpio_of_match);
 

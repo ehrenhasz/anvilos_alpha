@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_CMD_PARSER_H__
 #define __I915_CMD_PARSER_H__
@@ -23,4 +21,4 @@ int intel_engine_cmd_parser(struct intel_engine_cs *engine,
 			    bool trampoline);
 #define I915_CMD_PARSER_TRAMPOLINE_SIZE 8
 
-#endif /* __I915_CMD_PARSER_H__ */
+#endif  

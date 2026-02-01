@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef SMU71_DISCRETE_H
 #define SMU71_DISCRETE_H
 
@@ -150,8 +129,8 @@ typedef struct SMU71_Discrete_MemoryLevel SMU71_Discrete_MemoryLevel;
 
 struct SMU71_Discrete_LinkLevel
 {
-    uint8_t     PcieGenSpeed;           ///< 0:PciE-gen1 1:PciE-gen2 2:PciE-gen3
-    uint8_t     PcieLaneCount;          ///< 1=x1, 2=x2, 3=x4, 4=x8, 5=x12, 6=x16
+    uint8_t     PcieGenSpeed;           
+    uint8_t     PcieLaneCount;          
     uint8_t     EnabledForActivity;
     uint8_t     SPC;
     uint32_t    DownThreshold;
@@ -163,7 +142,7 @@ typedef struct SMU71_Discrete_LinkLevel SMU71_Discrete_LinkLevel;
 
 
 #ifdef SMU__DYNAMIC_MCARB_SETTINGS
-// MC ARB DRAM Timing registers.
+
 struct SMU71_Discrete_MCArbDramTimingTableEntry
 {
     uint32_t McArbDramTiming;
@@ -182,7 +161,7 @@ struct SMU71_Discrete_MCArbDramTimingTable
 typedef struct SMU71_Discrete_MCArbDramTimingTable SMU71_Discrete_MCArbDramTimingTable;
 #endif
 
-// UVD VCLK/DCLK state (level) definition.
+
 struct SMU71_Discrete_UvdLevel
 {
     uint32_t VclkFrequency;
@@ -196,7 +175,7 @@ struct SMU71_Discrete_UvdLevel
 
 typedef struct SMU71_Discrete_UvdLevel SMU71_Discrete_UvdLevel;
 
-// Clocks for other external blocks (VCE, ACP, SAMU).
+
 struct SMU71_Discrete_ExtClkLevel
 {
     uint32_t Frequency;
@@ -207,10 +186,10 @@ struct SMU71_Discrete_ExtClkLevel
 
 typedef struct SMU71_Discrete_ExtClkLevel SMU71_Discrete_ExtClkLevel;
 
-// Everything that we need to keep track of about the current state.
-// Use this instead of copies of the GraphicsLevel and MemoryLevel structures to keep track of state parameters
-// that need to be checked later.
-// We don't need to cache everything about a state, just a few parameters.
+
+
+
+
 struct SMU71_Discrete_StateInfo
 {
     uint32_t SclkFrequency;
@@ -238,14 +217,14 @@ typedef struct SMU71_Discrete_StateInfo SMU71_Discrete_StateInfo;
 
 struct SMU71_Discrete_DpmTable
 {
-    // Multi-DPM controller settings
+    
     SMU71_PIDController                  GraphicsPIDController;
     SMU71_PIDController                  MemoryPIDController;
     SMU71_PIDController                  LinkPIDController;
 
     uint32_t                            SystemFlags;
 
-    // SMIO masks for voltage and phase controls
+    
     uint32_t                            SmioMaskVddcVid;
     uint32_t                            SmioMaskVddcPhase;
     uint32_t                            SmioMaskVddciVid;
@@ -266,7 +245,7 @@ struct SMU71_Discrete_DpmTable
 
     uint32_t                            Reserved[5];
 
-    // State table entries for each DPM state
+    
     SMU71_Discrete_GraphicsLevel         GraphicsLevel           [SMU71_MAX_LEVELS_GRAPHICS];
     SMU71_Discrete_MemoryLevel           MemoryACPILevel;
     SMU71_Discrete_MemoryLevel           MemoryLevel             [SMU71_MAX_LEVELS_MEMORY];
@@ -343,7 +322,7 @@ struct SMU71_Discrete_DpmTable
 
 typedef struct SMU71_Discrete_DpmTable SMU71_Discrete_DpmTable;
 
-// --------------------------------------------------- AC Timing Parameters ------------------------------------------------
+
 #define SMU71_DISCRETE_MC_REGISTER_ARRAY_SIZE 16
 #define SMU71_DISCRETE_MC_REGISTER_ARRAY_SET_COUNT SMU71_MAX_LEVELS_MEMORY
 
@@ -373,7 +352,7 @@ struct SMU71_Discrete_MCRegisters
 typedef struct SMU71_Discrete_MCRegisters SMU71_Discrete_MCRegisters;
 
 
-// --------------------------------------------------- Fan Table -----------------------------------------------------------
+
 struct SMU71_Discrete_FanTable
 {
     uint16_t FdoMode;
@@ -505,50 +484,50 @@ typedef struct SMU71_AcpiScoreboard SMU71_AcpiScoreboard;
 
 
 struct SMU71_Discrete_PmFuses {
-  // dw0-dw1
+  
   uint8_t BapmVddCVidHiSidd[8];
 
-  // dw2-dw3
+  
   uint8_t BapmVddCVidLoSidd[8];
 
-  // dw4-dw5
+  
   uint8_t VddCVid[8];
 
-  // dw6
+  
   uint8_t SviLoadLineEn;
   uint8_t SviLoadLineVddC;
   uint8_t SviLoadLineTrimVddC;
   uint8_t SviLoadLineOffsetVddC;
 
-  // dw7
+  
   uint16_t TDC_VDDC_PkgLimit;
   uint8_t TDC_VDDC_ThrottleReleaseLimitPerc;
   uint8_t TDC_MAWt;
 
-  // dw8
+  
   uint8_t TdcWaterfallCtl;
   uint8_t LPMLTemperatureMin;
   uint8_t LPMLTemperatureMax;
   uint8_t Reserved;
 
-  // dw9-dw12
+  
   uint8_t LPMLTemperatureScaler[16];
 
-  // dw13-dw14
+  
   int16_t FuzzyFan_ErrorSetDelta;
   int16_t FuzzyFan_ErrorRateSetDelta;
   int16_t FuzzyFan_PwmSetDelta;
   uint16_t Reserved6;
 
-  // dw15
+  
   uint8_t GnbLPML[16];
 
-  // dw15
+  
   uint8_t GnbLPMLMaxVid;
   uint8_t GnbLPMLMinVid;
   uint8_t Reserved1[2];
 
-  // dw16
+  
   uint16_t BapmVddCBaseLeakageHiSidd;
   uint16_t BapmVddCBaseLeakageLoSidd;
 };

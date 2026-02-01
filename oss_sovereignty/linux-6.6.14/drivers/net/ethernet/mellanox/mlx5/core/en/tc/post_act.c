@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "en/tc_priv.h"
 #include "en_tc.h"
@@ -90,7 +90,7 @@ mlx5e_tc_post_act_offload(struct mlx5e_post_act *post_act,
 	if (!spec)
 		return -ENOMEM;
 
-	/* Post action rule matches on fte_id and executes original rule's tc rule action */
+	 
 	mlx5e_tc_match_to_reg_match(spec, FTEID_TO_REG, handle->id, MLX5_POST_ACTION_MASK);
 
 	handle->rule = mlx5e_tc_rule_offload(post_act->priv, spec, handle->attr);
@@ -130,7 +130,7 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *po
 	post_attr->flags |= MLX5_ATTR_FLAG_NO_IN_PORT;
 
 	handle->ns_type = post_act->ns_type;
-	/* Splits were handled before post action */
+	 
 	if (handle->ns_type == MLX5_FLOW_NAMESPACE_FDB)
 		post_attr->esw_attr->split_count = 0;
 
@@ -171,7 +171,7 @@ mlx5e_tc_post_act_get_ft(struct mlx5e_post_act *post_act)
 	return post_act->ft;
 }
 
-/* Allocate a header modify action to write the post action handle fte id to a register. */
+ 
 int
 mlx5e_tc_post_act_set_handle(struct mlx5_core_dev *dev,
 			     struct mlx5e_post_act_handle *handle,

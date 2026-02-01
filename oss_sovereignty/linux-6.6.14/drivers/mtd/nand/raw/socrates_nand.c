@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright © 2008 Ilya Yanok, Emcraft Systems
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -29,12 +27,7 @@ struct socrates_nand_host {
 	struct device		*dev;
 };
 
-/**
- * socrates_nand_write_buf -  write buffer to chip
- * @this:	NAND chip object
- * @buf:	data buffer
- * @len:	number of bytes to write
- */
+ 
 static void socrates_nand_write_buf(struct nand_chip *this, const uint8_t *buf,
 				    int len)
 {
@@ -48,12 +41,7 @@ static void socrates_nand_write_buf(struct nand_chip *this, const uint8_t *buf,
 	}
 }
 
-/**
- * socrates_nand_read_buf -  read chip data into buffer
- * @this:	NAND chip object
- * @buf:	buffer to store date
- * @len:	number of bytes to read
- */
+ 
 static void socrates_nand_read_buf(struct nand_chip *this, uint8_t *buf,
 				   int len)
 {
@@ -70,10 +58,7 @@ static void socrates_nand_read_buf(struct nand_chip *this, uint8_t *buf,
 	}
 }
 
-/**
- * socrates_nand_read_byte -  read one byte from the chip
- * @mtd:	MTD device structure
- */
+ 
 static uint8_t socrates_nand_read_byte(struct nand_chip *this)
 {
 	uint8_t byte;
@@ -81,9 +66,7 @@ static uint8_t socrates_nand_read_byte(struct nand_chip *this)
 	return byte;
 }
 
-/*
- * Hardware specific access to control-lines
- */
+ 
 static void socrates_nand_cmd_ctrl(struct nand_chip *nand_chip, int cmd,
 				   unsigned int ctrl)
 {
@@ -106,15 +89,13 @@ static void socrates_nand_cmd_ctrl(struct nand_chip *nand_chip, int cmd,
 	out_be32(host->io_base, val);
 }
 
-/*
- * Read the Device Ready pin.
- */
+ 
 static int socrates_nand_device_ready(struct nand_chip *nand_chip)
 {
 	struct socrates_nand_host *host = nand_get_controller_data(nand_chip);
 
 	if (in_be32(host->io_base) & FPGA_NAND_BUSY)
-		return 0; /* busy */
+		return 0;  
 	return 1;
 }
 
@@ -131,9 +112,7 @@ static const struct nand_controller_ops socrates_ops = {
 	.attach_chip = socrates_attach_chip,
 };
 
-/*
- * Probe for the NAND device.
- */
+ 
 static int socrates_nand_probe(struct platform_device *ofdev)
 {
 	struct socrates_nand_host *host;
@@ -141,7 +120,7 @@ static int socrates_nand_probe(struct platform_device *ofdev)
 	struct nand_chip *nand_chip;
 	int res;
 
-	/* Allocate memory for the device structure (and zero it) */
+	 
 	host = devm_kzalloc(&ofdev->dev, sizeof(*host), GFP_KERNEL);
 	if (!host)
 		return -ENOMEM;
@@ -160,7 +139,7 @@ static int socrates_nand_probe(struct platform_device *ofdev)
 	host->controller.ops = &socrates_ops;
 	nand_chip->controller = &host->controller;
 
-	/* link the private data structures */
+	 
 	nand_set_controller_data(nand_chip, host);
 	nand_set_flash_node(nand_chip, ofdev->dev.of_node);
 	mtd->name = "socrates_nand";
@@ -172,14 +151,10 @@ static int socrates_nand_probe(struct platform_device *ofdev)
 	nand_chip->legacy.read_buf = socrates_nand_read_buf;
 	nand_chip->legacy.dev_ready = socrates_nand_device_ready;
 
-	/* TODO: I have no idea what real delay is. */
-	nand_chip->legacy.chip_delay = 20;	/* 20us command delay time */
+	 
+	nand_chip->legacy.chip_delay = 20;	 
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	nand_chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
 	dev_set_drvdata(&ofdev->dev, host);
@@ -199,9 +174,7 @@ out:
 	return res;
 }
 
-/*
- * Remove a NAND device.
- */
+ 
 static void socrates_nand_remove(struct platform_device *ofdev)
 {
 	struct socrates_nand_host *host = dev_get_drvdata(&ofdev->dev);

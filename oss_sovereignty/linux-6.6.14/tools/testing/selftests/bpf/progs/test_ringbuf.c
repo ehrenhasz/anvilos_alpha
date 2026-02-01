@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -18,12 +18,12 @@ struct {
 	__uint(type, BPF_MAP_TYPE_RINGBUF);
 } ringbuf SEC(".maps");
 
-/* inputs */
+ 
 int pid = 0;
 long value = 0;
 long flags = 0;
 
-/* outputs */
+ 
 long total = 0;
 long discarded = 0;
 long dropped = 0;
@@ -33,7 +33,7 @@ long ring_size = 0;
 long cons_pos = 0;
 long prod_pos = 0;
 
-/* inner state */
+ 
 long seq = 0;
 
 SEC("fentry/" SYS_PREFIX "sys_getpgid")
@@ -59,9 +59,9 @@ int test_ringbuf(void *ctx)
 	__sync_fetch_and_add(&total, 1);
 
 	if (sample->seq & 1) {
-		/* copy from reserved sample to a new one... */
+		 
 		bpf_ringbuf_output(&ringbuf, sample, sizeof(*sample), flags);
-		/* ...and then discard reserved sample */
+		 
 		bpf_ringbuf_discard(sample, flags);
 		__sync_fetch_and_add(&discarded, 1);
 	} else {

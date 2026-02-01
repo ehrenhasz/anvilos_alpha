@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-ci.c: Digital Devices bridge CI (DuoFlex, CI Bridge) support
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Marcus Metzler <mocm@metzlerbros.de>
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- */
+
+ 
 
 #include "ddbridge.h"
 #include "ddbridge-regs.h"
@@ -15,7 +9,7 @@
 
 #include "cxd2099.h"
 
-/* Octopus CI internal CI interface */
+ 
 
 static int wait_ci_ready(struct ddb_ci *ci)
 {
@@ -166,7 +160,7 @@ static void ci_attach(struct ddb_port *port)
 	ci->nr = port->nr - 2;
 }
 
-/* DuoFlex Dual CI support */
+ 
 
 static int write_creg(struct ddb_ci *ci, u8 data, u8 mask)
 {
@@ -368,7 +362,7 @@ void ddb_ci_detach(struct ddb_port *port)
 		dvb_module_release(port->dvb[0].i2c_client[0]);
 		port->dvb[0].i2c_client[0] = NULL;
 
-		/* free alloc'ed memory if needed */
+		 
 		if (port->en_freedata)
 			kfree(port->en->data);
 

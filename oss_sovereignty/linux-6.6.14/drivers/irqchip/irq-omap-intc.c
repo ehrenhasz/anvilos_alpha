@@ -1,15 +1,4 @@
-/*
- * linux/arch/arm/mach-omap2/irq.c
- *
- * Interrupt handler for OMAP2 boards.
- *
- * Copyright (C) 2005 Nokia Corporation
- * Author: Paul Mundt <paul.mundt@nokia.com>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -25,7 +14,7 @@
 
 #include <linux/irqchip/irq-omap-intc.h>
 
-/* selected INTC register offsets */
+ 
 
 #define INTC_REVISION		0x0000
 #define INTC_SYSCONFIG		0x0010
@@ -44,7 +33,7 @@
 #define INTC_PENDING_IRQ3	0x00f8
 #define INTC_ILR0		0x0100
 
-#define ACTIVEIRQ_MASK		0x7f	/* omap2/3 active interrupt bits */
+#define ACTIVEIRQ_MASK		0x7f	 
 #define SPURIOUSIRQ_MASK	(0x1ffffff << 7)
 #define INTCPS_NR_ILR_REGS	128
 #define INTCPS_NR_MIR_REGS	4
@@ -116,27 +105,24 @@ void omap_intc_restore_context(void)
 	for (i = 0; i < INTCPS_NR_MIR_REGS; i++)
 		intc_writel(INTC_MIR0 + 0x20 * i,
 			intc_context.mir[i]);
-	/* MIRs are saved and restore with other PRCM registers */
+	 
 }
 
 void omap3_intc_prepare_idle(void)
 {
-	/*
-	 * Disable autoidle as it can stall interrupt controller,
-	 * cf. errata ID i540 for 3430 (all revisions up to 3.1.x)
-	 */
+	 
 	intc_writel(INTC_SYSCONFIG, 0);
 	intc_writel(INTC_IDLE, INTC_IDLE_TURBO);
 }
 
 void omap3_intc_resume_idle(void)
 {
-	/* Re-enable autoidle */
+	 
 	intc_writel(INTC_SYSCONFIG, 1);
 	intc_writel(INTC_IDLE, 0);
 }
 
-/* XXX: FIQ and additional INTC support (only MPU at the moment) */
+ 
 static void omap_ack_irq(struct irq_data *d)
 {
 	intc_writel(INTC_CONTROL, 0x1);
@@ -158,13 +144,13 @@ static void __init omap_irq_soft_reset(void)
 		omap_irq_base, tmp >> 4, tmp & 0xf, omap_nr_irqs);
 
 	tmp = intc_readl(INTC_SYSCONFIG);
-	tmp |= 1 << 1;	/* soft reset */
+	tmp |= 1 << 1;	 
 	intc_writel(INTC_SYSCONFIG, tmp);
 
 	while (!(intc_readl(INTC_SYSSTATUS) & 0x1))
-		/* Wait for reset to complete */;
+		 ;
 
-	/* Enable autoidle */
+	 
 	intc_writel(INTC_SYSCONFIG, 1 << 0);
 }
 
@@ -180,7 +166,7 @@ int omap_irq_pending(void)
 
 void omap3_intc_suspend(void)
 {
-	/* A pending interrupt would prevent OMAP from entering suspend */
+	 
 	omap_ack_irq(NULL);
 }
 
@@ -298,12 +284,7 @@ static int __init omap_init_irq(u32 base, struct device_node *node)
 {
 	int ret;
 
-	/*
-	 * FIXME legacy OMAP DMA driver sitting under arch/arm/plat-omap/dma.c
-	 * depends is still not ready for linear IRQ domains; because of that
-	 * we need to temporarily "blacklist" OMAP2 and OMAP3 devices from using
-	 * linear IRQ Domain until that driver is finally fixed.
-	 */
+	 
 	if (of_device_is_compatible(node, "ti,omap2-intc") ||
 			of_device_is_compatible(node, "ti,omap3-intc")) {
 		struct resource res;
@@ -333,22 +314,7 @@ omap_intc_handle_irq(struct pt_regs *regs)
 
 	irqnr = intc_readl(INTC_SIR);
 
-	/*
-	 * A spurious IRQ can result if interrupt that triggered the
-	 * sorting is no longer active during the sorting (10 INTC
-	 * functional clock cycles after interrupt assertion). Or a
-	 * change in interrupt mask affected the result during sorting
-	 * time. There is no special handling required except ignoring
-	 * the SIR register value just read and retrying.
-	 * See section 6.2.5 of AM335x TRM Literature Number: SPRUH73K
-	 *
-	 * Many a times, a spurious interrupt situation has been fixed
-	 * by adding a flush for the posted write acking the IRQ in
-	 * the device driver. Typically, this is going be the device
-	 * driver whose interrupt was handled just before the spurious
-	 * IRQ occurred. Pay attention to those device drivers if you
-	 * run into hitting the spurious IRQ condition below.
-	 */
+	 
 	if (unlikely((irqnr & SPURIOUSIRQ_MASK) == SPURIOUSIRQ_MASK)) {
 		pr_err_once("%s: spurious irq!\n", __func__);
 		irq_err_count++;

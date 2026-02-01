@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  toshiba_acpi.c - Toshiba Laptop ACPI Extras
- *
- *  Copyright (C) 2002-2004 John Belmonte
- *  Copyright (C) 2008 Philip Langdale
- *  Copyright (C) 2010 Pierre Ducroquet
- *  Copyright (C) 2014-2016 Azael Avalos
- *
- *  The devolpment page for this driver is located at
- *  http://memebeam.org/toys/ToshibaAcpiDriver.
- *
- *  Credits:
- *	Jonathan A. Buzzard - Toshiba HCI info, and critical tips on reverse
- *		engineering the Windows drivers
- *	Yasushi Nagato - changes for linux kernel 2.4 -> 2.5
- *	Rob Miller - TV out and hotkeys help
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -59,30 +43,17 @@ MODULE_PARM_DESC(turn_on_panel_on_resume,
 
 #define TOSHIBA_WMI_EVENT_GUID "59142400-C6A3-40FA-BADB-8A2652834100"
 
-/* Scan code for Fn key on TOS1900 models */
+ 
 #define TOS1900_FN_SCAN		0x6e
 
-/* Toshiba ACPI method paths */
+ 
 #define METHOD_VIDEO_OUT	"\\_SB_.VALX.DSSX"
 
-/*
- * The Toshiba configuration interface is composed of the HCI and the SCI,
- * which are defined as follows:
- *
- * HCI is Toshiba's "Hardware Control Interface" which is supposed to
- * be uniform across all their models.  Ideally we would just call
- * dedicated ACPI methods instead of using this primitive interface.
- * However the ACPI methods seem to be incomplete in some areas (for
- * example they allow setting, but not reading, the LCD brightness value),
- * so this is still useful.
- *
- * SCI stands for "System Configuration Interface" which aim is to
- * conceal differences in hardware between different models.
- */
+ 
 
 #define TCI_WORDS			6
 
-/* Operations */
+ 
 #define HCI_SET				0xff00
 #define HCI_GET				0xfe00
 #define SCI_OPEN			0xf100
@@ -90,7 +61,7 @@ MODULE_PARM_DESC(turn_on_panel_on_resume,
 #define SCI_GET				0xf300
 #define SCI_SET				0xf400
 
-/* Return codes */
+ 
 #define TOS_SUCCESS			0x0000
 #define TOS_SUCCESS2			0x0001
 #define TOS_OPEN_CLOSE_OK		0x0044
@@ -106,7 +77,7 @@ MODULE_PARM_DESC(turn_on_panel_on_resume,
 #define TOS_NOT_INITIALIZED		0x8d50
 #define TOS_NOT_INSTALLED		0x8e00
 
-/* Registers */
+ 
 #define HCI_PANEL_POWER_ON		0x0002
 #define HCI_FAN				0x0004
 #define HCI_TR_BACKLIGHT		0x0005
@@ -132,7 +103,7 @@ MODULE_PARM_DESC(turn_on_panel_on_resume,
 #define SCI_TOUCHPAD			0x050e
 #define SCI_KBD_FUNCTION_KEYS		0x0522
 
-/* Field definitions */
+ 
 #define HCI_ACCEL_MASK			0x7fff
 #define HCI_ACCEL_DIRECTION_MASK	0x8000
 #define HCI_HOTKEY_DISABLE		0x0b
@@ -264,11 +235,11 @@ static const struct key_entry toshiba_acpi_keymap[] = {
 	{ KE_KEY, 0xb32, { KEY_NEXTSONG } },
 	{ KE_KEY, 0xb33, { KEY_PLAYPAUSE } },
 	{ KE_KEY, 0xb5a, { KEY_MEDIA } },
-	{ KE_IGNORE, 0x1430, { KEY_RESERVED } }, /* Wake from sleep */
-	{ KE_IGNORE, 0x1501, { KEY_RESERVED } }, /* Output changed */
-	{ KE_IGNORE, 0x1502, { KEY_RESERVED } }, /* HDMI plugged/unplugged */
-	{ KE_IGNORE, 0x1ABE, { KEY_RESERVED } }, /* Protection level set */
-	{ KE_IGNORE, 0x1ABF, { KEY_RESERVED } }, /* Protection level off */
+	{ KE_IGNORE, 0x1430, { KEY_RESERVED } },  
+	{ KE_IGNORE, 0x1501, { KEY_RESERVED } },  
+	{ KE_IGNORE, 0x1502, { KEY_RESERVED } },  
+	{ KE_IGNORE, 0x1ABE, { KEY_RESERVED } },  
+	{ KE_IGNORE, 0x1ABF, { KEY_RESERVED } },  
 	{ KE_END, 0 },
 };
 
@@ -286,18 +257,14 @@ static const struct key_entry toshiba_acpi_alt_keymap[] = {
 	{ KE_END, 0 },
 };
 
-/*
- * Utility
- */
+ 
 
 static inline void _set_bit(u32 *word, u32 mask, int value)
 {
 	*word = (*word & ~mask) | (mask * value);
 }
 
-/*
- * ACPI interface wrappers
- */
+ 
 
 static int write_acpi_int(const char *methodName, int val)
 {
@@ -307,10 +274,7 @@ static int write_acpi_int(const char *methodName, int val)
 	return (status == AE_OK) ? 0 : -EIO;
 }
 
-/*
- * Perform a raw configuration call.  Here we don't care about input or output
- * buffer format.
- */
+ 
 static acpi_status tci_raw(struct toshiba_acpi_dev *dev,
 			   const u32 in[TCI_WORDS], u32 out[TCI_WORDS])
 {
@@ -341,12 +305,7 @@ static acpi_status tci_raw(struct toshiba_acpi_dev *dev,
 	return status;
 }
 
-/*
- * Common hci tasks
- *
- * In addition to the ACPI status, the HCI system returns a result which
- * may be useful (such as "not supported").
- */
+ 
 
 static u32 hci_write(struct toshiba_acpi_dev *dev, u32 reg, u32 in1)
 {
@@ -371,9 +330,7 @@ static u32 hci_read(struct toshiba_acpi_dev *dev, u32 reg, u32 *out1)
 	return out[0];
 }
 
-/*
- * Common sci tasks
- */
+ 
 
 static int sci_open(struct toshiba_acpi_dev *dev)
 {
@@ -392,18 +349,7 @@ static int sci_open(struct toshiba_acpi_dev *dev)
 		pr_info("Toshiba SCI already opened\n");
 		return 1;
 	} else if (out[0] == TOS_NOT_SUPPORTED) {
-		/*
-		 * Some BIOSes do not have the SCI open/close functions
-		 * implemented and return 0x8000 (Not Supported), failing to
-		 * register some supported features.
-		 *
-		 * Simply return 1 if we hit those affected laptops to make the
-		 * supported features work.
-		 *
-		 * In the case that some laptops really do not support the SCI,
-		 * all the SCI dependent functions check for TOS_NOT_SUPPORTED,
-		 * and thus, not registering support for the queried feature.
-		 */
+		 
 		return 1;
 	} else if (out[0] == TOS_NOT_PRESENT) {
 		pr_info("Toshiba SCI is not present\n");
@@ -454,7 +400,7 @@ static u32 sci_write(struct toshiba_acpi_dev *dev, u32 reg, u32 in1)
 	return ACPI_SUCCESS(status) ? out[0] : TOS_FAILURE;
 }
 
-/* Illumination support */
+ 
 static void toshiba_illumination_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { SCI_GET, SCI_ILLUMINATION, 0, 0, 0, 0 };
@@ -487,11 +433,11 @@ static void toshiba_illumination_set(struct led_classdev *cdev,
 	u32 result;
 	u32 state;
 
-	/* First request : initialize communication. */
+	 
 	if (!sci_open(dev))
 		return;
 
-	/* Switch the illumination on/off */
+	 
 	state = brightness ? 1 : 0;
 	result = sci_write(dev, SCI_ILLUMINATION, state);
 	sci_close(dev);
@@ -506,11 +452,11 @@ static enum led_brightness toshiba_illumination_get(struct led_classdev *cdev)
 	u32 result;
 	u32 state;
 
-	/* First request : initialize communication. */
+	 
 	if (!sci_open(dev))
 		return LED_OFF;
 
-	/* Check the illumination */
+	 
 	result = sci_read(dev, SCI_ILLUMINATION, &state);
 	sci_close(dev);
 	if (result == TOS_FAILURE) {
@@ -523,7 +469,7 @@ static enum led_brightness toshiba_illumination_get(struct led_classdev *cdev)
 	return state ? LED_FULL : LED_OFF;
 }
 
-/* KBD Illumination */
+ 
 static void toshiba_kbd_illum_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { SCI_GET, SCI_KBD_ILLUM_STATUS, 0, 0, 0, 0 };
@@ -546,21 +492,16 @@ static void toshiba_kbd_illum_available(struct toshiba_acpi_dev *dev)
 	if (out[0] != TOS_SUCCESS)
 		return;
 
-	/*
-	 * Check for keyboard backlight timeout max value,
-	 * previous kbd backlight implementation set this to
-	 * 0x3c0003, and now the new implementation set this
-	 * to 0x3c001a, use this to distinguish between them.
-	 */
+	 
 	if (out[3] == SCI_KBD_TIME_MAX)
 		dev->kbd_type = 2;
 	else
 		dev->kbd_type = 1;
-	/* Get the current keyboard backlight mode */
+	 
 	dev->kbd_mode = out[2] & SCI_KBD_MODE_MASK;
-	/* Get the current time (1-60 seconds) */
+	 
 	dev->kbd_time = out[2] >> HCI_MISC_SHIFT;
-	/* Flag as supported */
+	 
 	dev->kbd_illum_supported = 1;
 }
 
@@ -605,7 +546,7 @@ static enum led_brightness toshiba_kbd_backlight_get(struct led_classdev *cdev)
 	u32 result;
 	u32 state;
 
-	/* Check the keyboard backlight state */
+	 
 	result = hci_read(dev, HCI_KBD_ILLUMINATION, &state);
 	if (result == TOS_FAILURE) {
 		pr_err("ACPI call to get the keyboard backlight failed\n");
@@ -625,14 +566,14 @@ static void toshiba_kbd_backlight_set(struct led_classdev *cdev,
 	u32 result;
 	u32 state;
 
-	/* Set the keyboard backlight state */
+	 
 	state = brightness ? 1 : 0;
 	result = hci_write(dev, HCI_KBD_ILLUMINATION, state);
 	if (result == TOS_FAILURE)
 		pr_err("ACPI call to set KBD Illumination mode failed\n");
 }
 
-/* TouchPad support */
+ 
 static int toshiba_touchpad_set(struct toshiba_acpi_dev *dev, u32 state)
 {
 	u32 result;
@@ -667,7 +608,7 @@ static int toshiba_touchpad_get(struct toshiba_acpi_dev *dev, u32 *state)
 	return result == TOS_SUCCESS ? 0 : -EIO;
 }
 
-/* Eco Mode support */
+ 
 static void toshiba_eco_mode_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_ECO_MODE, 0, 0, 0, 0 };
@@ -683,18 +624,7 @@ static void toshiba_eco_mode_available(struct toshiba_acpi_dev *dev)
 	}
 
 	if (out[0] == TOS_INPUT_DATA_ERROR || out[0] == TOS_NOT_SUPPORTED) {
-		/*
-		 * If we receive 0x8300 (Input Data Error), it means that the
-		 * LED device is present, but that we just screwed the input
-		 * parameters.
-		 *
-		 * On some laptops 0x8000 (Not supported) is also returned in
-		 * this case, so we need to allow for that as well.
-		 *
-		 * Let's query the status of the LED to see if we really have a
-		 * success response, indicating the actual presense of the LED,
-		 * bail out otherwise.
-		 */
+		 
 		in[3] = 1;
 		status = tci_raw(dev, in, out);
 		if (ACPI_FAILURE(status)) {
@@ -739,14 +669,14 @@ static void toshiba_eco_mode_set_status(struct led_classdev *cdev,
 	u32 out[TCI_WORDS];
 	acpi_status status;
 
-	/* Switch the Eco Mode led on/off */
+	 
 	in[2] = (brightness) ? 1 : 0;
 	status = tci_raw(dev, in, out);
 	if (ACPI_FAILURE(status))
 		pr_err("ACPI call to set ECO led failed\n");
 }
 
-/* Accelerometer support */
+ 
 static void toshiba_accelerometer_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_ACCELEROMETER2, 0, 0, 0, 0 };
@@ -755,10 +685,7 @@ static void toshiba_accelerometer_available(struct toshiba_acpi_dev *dev)
 
 	dev->accelerometer_supported = 0;
 
-	/*
-	 * Check if the accelerometer call exists,
-	 * this call also serves as initialization
-	 */
+	 
 	status = tci_raw(dev, in, out);
 	if (ACPI_FAILURE(status)) {
 		pr_err("ACPI call to query the accelerometer failed\n");
@@ -778,7 +705,7 @@ static int toshiba_accelerometer_get(struct toshiba_acpi_dev *dev,
 	u32 out[TCI_WORDS];
 	acpi_status status;
 
-	/* Check the Accelerometer status */
+	 
 	status = tci_raw(dev, in, out);
 	if (ACPI_FAILURE(status)) {
 		pr_err("ACPI call to query the accelerometer failed\n");
@@ -797,7 +724,7 @@ static int toshiba_accelerometer_get(struct toshiba_acpi_dev *dev,
 	return 0;
 }
 
-/* Sleep (Charge and Music) utilities support */
+ 
 static void toshiba_usb_sleep_charge_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { SCI_GET, SCI_USB_SLEEP_CHARGE, 0, 0, 0, 0 };
@@ -835,7 +762,7 @@ static void toshiba_usb_sleep_charge_available(struct toshiba_acpi_dev *dev)
 		return;
 
 	dev->usbsc_bat_level = out[2];
-	/* Flag as supported */
+	 
 	dev->usb_sleep_charge_supported = 1;
 }
 
@@ -1018,7 +945,7 @@ static int toshiba_usb_sleep_music_set(struct toshiba_acpi_dev *dev, u32 state)
 	return result == TOS_SUCCESS ? 0 : -EIO;
 }
 
-/* Keyboard function keys */
+ 
 static int toshiba_function_keys_get(struct toshiba_acpi_dev *dev, u32 *mode)
 {
 	u32 result;
@@ -1053,7 +980,7 @@ static int toshiba_function_keys_set(struct toshiba_acpi_dev *dev, u32 mode)
 	return (result == TOS_SUCCESS || result == TOS_SUCCESS2) ? 0 : -EIO;
 }
 
-/* Panel Power ON */
+ 
 static int toshiba_panel_power_on_get(struct toshiba_acpi_dev *dev, u32 *state)
 {
 	u32 result;
@@ -1088,7 +1015,7 @@ static int toshiba_panel_power_on_set(struct toshiba_acpi_dev *dev, u32 state)
 	return result == TOS_SUCCESS ? 0 : -EIO;
 }
 
-/* USB Three */
+ 
 static int toshiba_usb_three_get(struct toshiba_acpi_dev *dev, u32 *state)
 {
 	u32 result;
@@ -1123,7 +1050,7 @@ static int toshiba_usb_three_set(struct toshiba_acpi_dev *dev, u32 state)
 	return (result == TOS_SUCCESS || result == TOS_SUCCESS2) ? 0 : -EIO;
 }
 
-/* Hotkey Event type */
+ 
 static int toshiba_hotkey_event_type_get(struct toshiba_acpi_dev *dev,
 					 u32 *type)
 {
@@ -1148,7 +1075,7 @@ static int toshiba_hotkey_event_type_get(struct toshiba_acpi_dev *dev,
 	return 0;
 }
 
-/* Wireless status (RFKill, WLAN, BT, WWAN) */
+ 
 static int toshiba_wireless_status(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_WIRELESS, 0, 0, 0, 0 };
@@ -1174,7 +1101,7 @@ static int toshiba_wireless_status(struct toshiba_acpi_dev *dev)
 	return 0;
 }
 
-/* WWAN */
+ 
 static void toshiba_wwan_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_WIRELESS, 0, 0, 0, 0 };
@@ -1183,16 +1110,7 @@ static void toshiba_wwan_available(struct toshiba_acpi_dev *dev)
 
 	dev->wwan_supported = 0;
 
-	/*
-	 * WWAN support can be queried by setting the in[3] value to
-	 * HCI_WIRELESS_WWAN (0x03).
-	 *
-	 * If supported, out[0] contains TOS_SUCCESS and out[2] contains
-	 * HCI_WIRELESS_WWAN_STATUS (0x2000).
-	 *
-	 * If not supported, out[0] contains TOS_INPUT_DATA_ERROR (0x8300)
-	 * or TOS_NOT_SUPPORTED (0x8000).
-	 */
+	 
 	in[3] = HCI_WIRELESS_WWAN;
 	status = tci_raw(dev, in, out);
 	if (ACPI_FAILURE(status)) {
@@ -1225,11 +1143,7 @@ static int toshiba_wwan_set(struct toshiba_acpi_dev *dev, u32 state)
 	if (out[0] != TOS_SUCCESS)
 		return -EIO;
 
-	/*
-	 * Some devices only need to call HCI_WIRELESS_WWAN_STATUS to
-	 * (de)activate the device, but some others need the
-	 * HCI_WIRELESS_WWAN_POWER call as well.
-	 */
+	 
 	in[3] = HCI_WIRELESS_WWAN_POWER;
 	status = tci_raw(dev, in, out);
 	if (ACPI_FAILURE(status)) {
@@ -1243,7 +1157,7 @@ static int toshiba_wwan_set(struct toshiba_acpi_dev *dev, u32 state)
 	return out[0] == TOS_SUCCESS ? 0 : -EIO;
 }
 
-/* Cooling Method */
+ 
 static void toshiba_cooling_method_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_COOLING_METHOD, 0, 0, 0, 0 };
@@ -1292,7 +1206,7 @@ static int toshiba_cooling_method_set(struct toshiba_acpi_dev *dev, u32 state)
 	return (result == TOS_SUCCESS || result == TOS_SUCCESS2) ? 0 : -EIO;
 }
 
-/* Battery charge control */
+ 
 static void toshiba_battery_charge_mode_available(struct toshiba_acpi_dev *dev)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_BATTERY_CHARGE_MODE, 0, 0, 0, 0 };
@@ -1355,7 +1269,7 @@ static int toshiba_battery_charge_mode_set(struct toshiba_acpi_dev *dev, u32 sta
 	return (result == TOS_SUCCESS || result == TOS_SUCCESS2) ? 0 : -EIO;
 }
 
-/* Transflective Backlight */
+ 
 static int get_tr_backlight_status(struct toshiba_acpi_dev *dev, u32 *status)
 {
 	u32 result = hci_read(dev, HCI_TR_BACKLIGHT, status);
@@ -1382,7 +1296,7 @@ static int set_tr_backlight_status(struct toshiba_acpi_dev *dev, u32 status)
 
 static struct proc_dir_entry *toshiba_proc_dir;
 
-/* LCD Brightness */
+ 
 static int __get_lcd_brightness(struct toshiba_acpi_dev *dev)
 {
 	int brightness = 0;
@@ -1507,7 +1421,7 @@ static const struct proc_ops lcd_proc_ops = {
 	.proc_write	= lcd_proc_write,
 };
 
-/* Video-Out */
+ 
 static int get_video_status(struct toshiba_acpi_dev *dev, u32 *status)
 {
 	u32 result = hci_read(dev, HCI_VIDEO_OUT, status);
@@ -1563,10 +1477,7 @@ static ssize_t video_proc_write(struct file *file, const char __user *buf,
 
 	buffer = cmd;
 
-	/*
-	 * Scan expression.  Multiple expressions may be delimited with ;
-	 * NOTE: To keep scanning simple, invalid fields are ignored.
-	 */
+	 
 	while (remain) {
 		if (sscanf(buffer, " lcd_out : %i", &value) == 1)
 			lcd_out = value & 1;
@@ -1574,7 +1485,7 @@ static ssize_t video_proc_write(struct file *file, const char __user *buf,
 			crt_out = value & 1;
 		else if (sscanf(buffer, " tv_out : %i", &value) == 1)
 			tv_out = value & 1;
-		/* Advance to one character past the next ; */
+		 
 		do {
 			++buffer;
 			--remain;
@@ -1593,10 +1504,7 @@ static ssize_t video_proc_write(struct file *file, const char __user *buf,
 			_set_bit(&new_video_out, HCI_VIDEO_OUT_CRT, crt_out);
 		if (tv_out != -1)
 			_set_bit(&new_video_out, HCI_VIDEO_OUT_TV, tv_out);
-		/*
-		 * To avoid unnecessary video disruption, only write the new
-		 * video setting if something changed.
-		 */
+		 
 		if (new_video_out != video_out)
 			ret = write_acpi_int(METHOD_VIDEO_OUT, new_video_out);
 	}
@@ -1612,7 +1520,7 @@ static const struct proc_ops video_proc_ops = {
 	.proc_write	= video_proc_write,
 };
 
-/* Fan status */
+ 
 static int get_fan_status(struct toshiba_acpi_dev *dev, u32 *status)
 {
 	u32 result = hci_read(dev, HCI_FAN, status);
@@ -1689,7 +1597,7 @@ static const struct proc_ops fan_proc_ops = {
 	.proc_write	= fan_proc_write,
 };
 
-/* Fan RPM */
+ 
 static int get_fan_rpm(struct toshiba_acpi_dev *dev, u32 *rpm)
 {
 	u32 in[TCI_WORDS] = { HCI_GET, HCI_FAN_RPM, 0, 1, 0, 0 };
@@ -1763,9 +1671,7 @@ static int __maybe_unused version_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * Proc and module init
- */
+ 
 
 #define PROC_TOSHIBA		"toshiba"
 
@@ -1806,14 +1712,12 @@ static const struct backlight_ops toshiba_backlight_data = {
 	.update_status  = set_lcd_status,
 };
 
-/* Keyboard backlight work */
+ 
 static void toshiba_acpi_kbd_bl_work(struct work_struct *work);
 
 static DECLARE_WORK(kbd_bl_work, toshiba_acpi_kbd_bl_work);
 
-/*
- * Sysfs files
- */
+ 
 static ssize_t version_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
@@ -1871,37 +1775,31 @@ static ssize_t kbd_backlight_mode_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* Check for supported modes depending on keyboard backlight type */
+	 
 	if (toshiba->kbd_type == 1) {
-		/* Type 1 supports SCI_KBD_MODE_FNZ and SCI_KBD_MODE_AUTO */
+		 
 		if (mode != SCI_KBD_MODE_FNZ && mode != SCI_KBD_MODE_AUTO)
 			return -EINVAL;
 	} else if (toshiba->kbd_type == 2) {
-		/* Type 2 doesn't support SCI_KBD_MODE_FNZ */
+		 
 		if (mode != SCI_KBD_MODE_AUTO && mode != SCI_KBD_MODE_ON &&
 		    mode != SCI_KBD_MODE_OFF)
 			return -EINVAL;
 	}
 
-	/*
-	 * Set the Keyboard Backlight Mode where:
-	 *	Auto - KBD backlight turns off automatically in given time
-	 *	FN-Z - KBD backlight "toggles" when hotkey pressed
-	 *	ON   - KBD backlight is always on
-	 *	OFF  - KBD backlight is always off
-	 */
+	 
 
-	/* Only make a change if the actual mode has changed */
+	 
 	if (toshiba->kbd_mode != mode) {
-		/* Shift the time to "base time" (0x3c0000 == 60 seconds) */
+		 
 		int time = toshiba->kbd_time << HCI_MISC_SHIFT;
 
-		/* OR the "base time" to the actual method format */
+		 
 		if (toshiba->kbd_type == 1) {
-			/* Type 1 requires the current mode */
+			 
 			time |= toshiba->kbd_mode;
 		} else if (toshiba->kbd_type == 2) {
-			/* Type 2 requires the desired mode */
+			 
 			time |= mode;
 		}
 
@@ -1912,20 +1810,7 @@ static ssize_t kbd_backlight_mode_store(struct device *dev,
 		toshiba->kbd_mode = mode;
 		toshiba_acpi->kbd_mode = mode;
 
-		/*
-		 * Some laptop models with the second generation backlit
-		 * keyboard (type 2) do not generate the keyboard backlight
-		 * changed event (0x92), and thus, the driver will never update
-		 * the sysfs entries.
-		 *
-		 * The event is generated right when changing the keyboard
-		 * backlight mode and the *notify function will set the
-		 * kbd_event_generated to true.
-		 *
-		 * In case the event is not generated, schedule the keyboard
-		 * backlight work to update the sysfs entries and emulate the
-		 * event via genetlink.
-		 */
+		 
 		if (toshiba->kbd_type == 2 &&
 		    !toshiba->kbd_event_generated)
 			schedule_work(&kbd_bl_work);
@@ -1984,7 +1869,7 @@ static ssize_t kbd_backlight_timeout_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* Check for supported values depending on kbd_type */
+	 
 	if (toshiba->kbd_type == 1) {
 		if (time < 0 || time > 60)
 			return -EINVAL;
@@ -1993,13 +1878,13 @@ static ssize_t kbd_backlight_timeout_store(struct device *dev,
 			return -EINVAL;
 	}
 
-	/* Set the Keyboard Backlight Timeout */
+	 
 
-	/* Only make a change if the actual timeout has changed */
+	 
 	if (toshiba->kbd_time != time) {
-		/* Shift the time to "base time" (0x3c0000 == 60 seconds) */
+		 
 		time = time << HCI_MISC_SHIFT;
-		/* OR the "base time" to the actual method format */
+		 
 		if (toshiba->kbd_type == 1)
 			time |= SCI_KBD_MODE_FNZ;
 		else if (toshiba->kbd_type == 2)
@@ -2037,7 +1922,7 @@ static ssize_t touchpad_store(struct device *dev,
 	int state;
 	int ret;
 
-	/* Set the TouchPad on/off, 0 - Disable | 1 - Enable */
+	 
 	ret = kstrtoint(buf, 0, &state);
 	if (ret)
 		return ret;
@@ -2092,17 +1977,11 @@ static ssize_t usb_sleep_charge_store(struct device *dev,
 	ret = kstrtoint(buf, 0, &state);
 	if (ret)
 		return ret;
-	/*
-	 * Check for supported values, where:
-	 * 0 - Disabled
-	 * 1 - Alternate (Non USB conformant devices that require more power)
-	 * 2 - Auto (USB conformant devices)
-	 * 3 - Typical
-	 */
+	 
 	if (state != 0 && state != 1 && state != 2 && state != 3)
 		return -EINVAL;
 
-	/* Set the USB charging mode to internal value */
+	 
 	mode = toshiba->usbsc_mode_base;
 	if (state == 0)
 		mode |= SCI_USB_CHARGE_DISABLED;
@@ -2135,10 +2014,10 @@ static ssize_t sleep_functions_on_battery_show(struct device *dev,
 	if (ret < 0)
 		return ret;
 
-	/* Determine the status: 0x4 - Enabled | 0x1 - Disabled */
+	 
 	tmp = state & SCI_USB_CHARGE_BAT_MASK;
 	status = (tmp == 0x4) ? 1 : 0;
-	/* Determine the battery level set */
+	 
 	bat_lvl = state >> HCI_MISC_SHIFT;
 
 	return sprintf(buf, "%d %d\n", status, bat_lvl);
@@ -2158,11 +2037,7 @@ static ssize_t sleep_functions_on_battery_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Set the status of the function:
-	 * 0 - Disabled
-	 * 1-100 - Enabled
-	 */
+	 
 	if (value < 0 || value > 100)
 		return -EINVAL;
 
@@ -2280,11 +2155,7 @@ static ssize_t kbd_function_keys_store(struct device *dev,
 	ret = kstrtoint(buf, 0, &mode);
 	if (ret)
 		return ret;
-	/*
-	 * Check for the function keys mode where:
-	 * 0 - Normal operation (F{1-12} as usual and hotkeys via FN-F{1-12})
-	 * 1 - Special functions (Opposite of the above setting)
-	 */
+	 
 	if (mode != 0 && mode != 1)
 		return -EINVAL;
 
@@ -2361,11 +2232,7 @@ static ssize_t usb_three_store(struct device *dev,
 	ret = kstrtoint(buf, 0, &state);
 	if (ret)
 		return ret;
-	/*
-	 * Check for USB 3 mode where:
-	 * 0 - Disabled (Acts like a USB 2 port, saving power)
-	 * 1 - Enabled
-	 */
+	 
 	if (state != 0 && state != 1)
 		return -EINVAL;
 
@@ -2405,17 +2272,7 @@ static ssize_t cooling_method_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Check for supported values
-	 * Depending on the laptop model, some only support these two:
-	 * 0 - Maximum Performance
-	 * 1 - Battery Optimized
-	 *
-	 * While some others support all three methods:
-	 * 0 - Maximum Performance
-	 * 1 - Performance
-	 * 2 - Battery Optimized
-	 */
+	 
 	if (state < 0 || state > toshiba->max_cooling_method)
 		return -EINVAL;
 
@@ -2488,27 +2345,25 @@ static const struct attribute_group toshiba_attr_group = {
 
 static void toshiba_acpi_kbd_bl_work(struct work_struct *work)
 {
-	/* Update the sysfs entries */
+	 
 	if (sysfs_update_group(&toshiba_acpi->acpi_dev->dev.kobj,
 			       &toshiba_attr_group))
 		pr_err("Unable to update sysfs entries\n");
 
-	/* Notify LED subsystem about keyboard backlight change */
+	 
 	if (toshiba_acpi->kbd_type == 2 &&
 	    toshiba_acpi->kbd_mode != SCI_KBD_MODE_AUTO)
 		led_classdev_notify_brightness_hw_changed(&toshiba_acpi->kbd_led,
 				(toshiba_acpi->kbd_mode == SCI_KBD_MODE_ON) ?
 				LED_FULL : LED_OFF);
 
-	/* Emulate the keyboard backlight event */
+	 
 	acpi_bus_generate_netlink_event(toshiba_acpi->acpi_dev->pnp.device_class,
 					dev_name(&toshiba_acpi->acpi_dev->dev),
 					0x92, 0);
 }
 
-/*
- * IIO device
- */
+ 
 
 enum toshiba_iio_accel_chan {
 	AXIS_X,
@@ -2580,9 +2435,7 @@ static const struct iio_info toshiba_iio_accel_info = {
 	.read_raw = &toshiba_iio_accel_read_raw,
 };
 
-/*
- * Misc device
- */
+ 
 static int toshiba_acpi_smm_bridge(SMMRegisters *regs)
 {
 	u32 in[TCI_WORDS] = { regs->eax, regs->ebx, regs->ecx,
@@ -2596,7 +2449,7 @@ static int toshiba_acpi_smm_bridge(SMMRegisters *regs)
 		return -EIO;
 	}
 
-	/* Fillout the SMM struct with the TCI call results */
+	 
 	regs->eax = out[0];
 	regs->ebx = out[1];
 	regs->ecx = out[2];
@@ -2630,7 +2483,7 @@ static long toshiba_acpi_ioctl(struct file *fp, unsigned int cmd,
 	case TOSHIBA_ACPI_SCI:
 		if (copy_from_user(&regs, argp, sizeof(SMMRegisters)))
 			return -EFAULT;
-		/* Ensure we are being called with a SCI_{GET, SET} register */
+		 
 		if (regs.eax != SCI_GET && regs.eax != SCI_SET)
 			return -EINVAL;
 		if (!sci_open(toshiba_acpi))
@@ -2655,9 +2508,7 @@ static const struct file_operations toshiba_acpi_fops = {
 	.llseek		= noop_llseek,
 };
 
-/*
- * WWAN RFKill handlers
- */
+ 
 static int toshiba_acpi_wwan_set_block(void *data, bool blocked)
 {
 	struct toshiba_acpi_dev *dev = data;
@@ -2716,9 +2567,7 @@ static int toshiba_acpi_setup_wwan_rfkill(struct toshiba_acpi_dev *dev)
 	return ret;
 }
 
-/*
- * Hotkeys
- */
+ 
 static int toshiba_acpi_enable_hotkeys(struct toshiba_acpi_dev *dev)
 {
 	acpi_status status;
@@ -2729,10 +2578,7 @@ static int toshiba_acpi_enable_hotkeys(struct toshiba_acpi_dev *dev)
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
 
-	/*
-	 * Enable the "Special Functions" mode only if they are
-	 * supported and if they are activated.
-	 */
+	 
 	if (dev->kbd_function_keys_supported && dev->special_functions)
 		result = hci_write(dev, HCI_HOTKEY_EVENT,
 				   HCI_HOTKEY_SPECIAL_FUNCTIONS);
@@ -2777,9 +2623,7 @@ static void toshiba_acpi_hotkey_work(struct work_struct *work)
 		pr_err("ACPI NTFY method execution failed\n");
 }
 
-/*
- * Returns hotkey scancode, or < 0 on failure.
- */
+ 
 static int toshiba_acpi_query_hotkey(struct toshiba_acpi_dev *dev)
 {
 	unsigned long long value;
@@ -2801,7 +2645,7 @@ static void toshiba_acpi_report_hotkey(struct toshiba_acpi_dev *dev,
 	if (scancode == 0x100)
 		return;
 
-	/* Act on key press; ignore key release */
+	 
 	if (scancode & 0x80)
 		return;
 
@@ -2835,11 +2679,7 @@ static void toshiba_acpi_process_hotkeys(struct toshiba_acpi_dev *dev)
 				dev->last_key_event = value;
 				break;
 			case TOS_NOT_SUPPORTED:
-				/*
-				 * This is a workaround for an unresolved
-				 * issue on some machines where system events
-				 * sporadically become disabled.
-				 */
+				 
 				result = hci_write(dev, HCI_SYSTEM_EVENT, 1);
 				if (result == TOS_SUCCESS)
 					pr_notice("Re-enabled hotkeys\n");
@@ -2897,13 +2737,7 @@ static int toshiba_acpi_setup_keyboard(struct toshiba_acpi_dev *dev)
 	if (error)
 		goto err_free_dev;
 
-	/*
-	 * For some machines the SCI responsible for providing hotkey
-	 * notification doesn't fire. We can trigger the notification
-	 * whenever the Fn key is pressed using the NTFY method, if
-	 * supported, so if it's present set up an i8042 key filter
-	 * for this purpose.
-	 */
+	 
 	ec_handle = ec_get_handle();
 	if (ec_handle && acpi_has_method(ec_handle, "NTFY")) {
 		INIT_WORK(&dev->hotkey_work, toshiba_acpi_hotkey_work);
@@ -2917,10 +2751,7 @@ static int toshiba_acpi_setup_keyboard(struct toshiba_acpi_dev *dev)
 		dev->ntfy_supported = 1;
 	}
 
-	/*
-	 * Determine hotkey query interface. Prefer using the INFO
-	 * method when it is available.
-	 */
+	 
 	if (acpi_has_method(dev->acpi_dev->handle, "INFO"))
 		dev->info_supported = 1;
 	else if (hci_write(dev, HCI_SYSTEM_EVENT, 1) == TOS_SUCCESS)
@@ -2955,21 +2786,11 @@ static int toshiba_acpi_setup_backlight(struct toshiba_acpi_dev *dev)
 	int brightness;
 	int ret;
 
-	/*
-	 * Some machines don't support the backlight methods at all, and
-	 * others support it read-only. Either of these is pretty useless,
-	 * so only register the backlight device if the backlight method
-	 * supports both reads and writes.
-	 */
+	 
 	brightness = __get_lcd_brightness(dev);
 	if (brightness < 0)
 		return 0;
-	/*
-	 * If transflective backlight is supported and the brightness is zero
-	 * (lowest brightness level), the set_lcd_brightness function will
-	 * activate the transflective backlight, making the LCD appear to be
-	 * turned off, simply increment the brightness level to avoid that.
-	 */
+	 
 	if (dev->tr_backlight_supported && brightness == 0)
 		brightness++;
 	ret = set_lcd_brightness(dev, brightness);
@@ -2985,7 +2806,7 @@ static int toshiba_acpi_setup_backlight(struct toshiba_acpi_dev *dev)
 	props.type = BACKLIGHT_PLATFORM;
 	props.max_brightness = HCI_LCD_BRIGHTNESS_LEVELS - 1;
 
-	/* Adding an extra level and having 0 change to transflective mode */
+	 
 	if (dev->tr_backlight_supported)
 		props.max_brightness++;
 
@@ -3005,7 +2826,7 @@ static int toshiba_acpi_setup_backlight(struct toshiba_acpi_dev *dev)
 	return 0;
 }
 
-/* HWMON support for fan */
+ 
 #if IS_ENABLED(CONFIG_HWMON)
 static umode_t toshiba_acpi_hwmon_is_visible(const void *drvdata,
 					     enum hwmon_sensor_types type,
@@ -3017,12 +2838,7 @@ static umode_t toshiba_acpi_hwmon_is_visible(const void *drvdata,
 static int toshiba_acpi_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 				   u32 attr, int channel, long *val)
 {
-	/*
-	 * There is only a single channel and single attribute (for the
-	 * fan) at this point.
-	 * This can be replaced with more advanced logic in the future,
-	 * should the need arise.
-	 */
+	 
 	if (type == hwmon_fan && channel == 0 && attr == hwmon_fan_input) {
 		u32 value;
 		int ret;
@@ -3053,7 +2869,7 @@ static const struct hwmon_chip_info toshiba_acpi_hwmon_chip_info = {
 };
 #endif
 
-/* ACPI battery hooking */
+ 
 static ssize_t charge_control_end_threshold_show(struct device *device,
 						 struct device_attribute *attr,
 						 char *buf)
@@ -3247,36 +3063,12 @@ static const char *find_hci_method(acpi_handle handle)
 	return NULL;
 }
 
-/*
- * Some Toshibas have a broken acpi-video interface for brightness control,
- * these are quirked in drivers/acpi/video_detect.c to use the GPU native
- * (/sys/class/backlight/intel_backlight) instead.
- * But these need a HCI_SET call to actually turn the panel back on at resume,
- * without this call the screen stays black at resume.
- * Either HCI_LCD_BRIGHTNESS (used by acpi_video's _BCM) or HCI_PANEL_POWER_ON
- * works. toshiba_acpi_resume() uses HCI_PANEL_POWER_ON to avoid changing
- * the configured brightness level.
- */
+ 
 static const struct dmi_system_id turn_on_panel_on_resume_dmi_ids[] = {
 	{
-	 /* Toshiba Portégé R700 */
-	 /* https://bugzilla.kernel.org/show_bug.cgi?id=21012 */
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
-		DMI_MATCH(DMI_PRODUCT_NAME, "PORTEGE R700"),
-		},
-	},
-	{
-	 /* Toshiba Satellite/Portégé R830 */
-	 /* Portégé: https://bugs.freedesktop.org/show_bug.cgi?id=82634 */
-	 /* Satellite: https://bugzilla.kernel.org/show_bug.cgi?id=21012 */
-	 .matches = {
-		DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
-		DMI_MATCH(DMI_PRODUCT_NAME, "R830"),
-		},
-	},
-	{
-	 /* Toshiba Satellite/Portégé Z830 */
+	  
+	  
+	  
 	 .matches = {
 		DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 		DMI_MATCH(DMI_PRODUCT_NAME, "Z830"),
@@ -3322,13 +3114,9 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
 	acpi_dev->driver_data = dev;
 	dev_set_drvdata(&acpi_dev->dev, dev);
 
-	/* Query the BIOS for supported features */
+	 
 
-	/*
-	 * The "Special Functions" are always supported by the laptops
-	 * with the new keyboard layout, query for its presence to help
-	 * determine the keymap layout to use.
-	 */
+	 
 	ret = toshiba_function_keys_get(dev, &dev->special_functions);
 	dev->kbd_function_keys_supported = !ret;
 
@@ -3336,7 +3124,7 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
 	if (toshiba_acpi_setup_keyboard(dev))
 		pr_info("Unable to activate hotkeys\n");
 
-	/* Determine whether or not BIOS supports transflective backlight */
+	 
 	ret = get_tr_backlight_status(dev, &dummy);
 	dev->tr_backlight_supported = !ret;
 
@@ -3363,11 +3151,7 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
 	}
 
 	toshiba_kbd_illum_available(dev);
-	/*
-	 * Only register the LED if KBD illumination is supported
-	 * and the keyboard backlight operation mode is set to FN-Z
-	 * or we detect a second gen keyboard backlight
-	 */
+	 
 	if (dev->kbd_illum_supported &&
 	    (dev->kbd_mode == SCI_KBD_MODE_FNZ || dev->kbd_type == 2)) {
 		dev->kbd_led.name = "toshiba::kbd_backlight";
@@ -3466,10 +3250,7 @@ iio_error:
 
 	toshiba_acpi = dev;
 
-	/*
-	 * As the battery hook relies on the static variable toshiba_acpi being
-	 * set, this must be done after toshiba_acpi is assigned.
-	 */
+	 
 	if (dev->battery_charge_mode_supported)
 		battery_hook_register(&battery_hook);
 
@@ -3485,49 +3266,44 @@ static void toshiba_acpi_notify(struct acpi_device *acpi_dev, u32 event)
 	struct toshiba_acpi_dev *dev = acpi_driver_data(acpi_dev);
 
 	switch (event) {
-	case 0x80: /* Hotkeys and some system events */
-		/*
-		 * Machines with this WMI GUID aren't supported due to bugs in
-		 * their AML.
-		 *
-		 * Return silently to avoid triggering a netlink event.
-		 */
+	case 0x80:  
+		 
 		if (wmi_has_guid(TOSHIBA_WMI_EVENT_GUID))
 			return;
 		toshiba_acpi_process_hotkeys(dev);
 		break;
-	case 0x81: /* Dock events */
+	case 0x81:  
 	case 0x82:
 	case 0x83:
 		pr_info("Dock event received %x\n", event);
 		break;
-	case 0x88: /* Thermal events */
+	case 0x88:  
 		pr_info("Thermal event received\n");
 		break;
-	case 0x8f: /* LID closed */
-	case 0x90: /* LID is closed and Dock has been ejected */
+	case 0x8f:  
+	case 0x90:  
 		break;
-	case 0x8c: /* SATA power events */
+	case 0x8c:  
 	case 0x8b:
 		pr_info("SATA power event received %x\n", event);
 		break;
-	case 0x92: /* Keyboard backlight mode changed */
+	case 0x92:  
 		dev->kbd_event_generated = true;
-		/* Update sysfs entries */
+		 
 		if (sysfs_update_group(&acpi_dev->dev.kobj,
 				       &toshiba_attr_group))
 			pr_err("Unable to update sysfs entries\n");
-		/* Notify LED subsystem about keyboard backlight change */
+		 
 		if (dev->kbd_type == 2 && dev->kbd_mode != SCI_KBD_MODE_AUTO)
 			led_classdev_notify_brightness_hw_changed(&dev->kbd_led,
 					(dev->kbd_mode == SCI_KBD_MODE_ON) ?
 					LED_FULL : LED_OFF);
 		break;
-	case 0x85: /* Unknown */
-	case 0x8d: /* Unknown */
-	case 0x8e: /* Unknown */
-	case 0x94: /* Unknown */
-	case 0x95: /* Unknown */
+	case 0x85:  
+	case 0x8d:  
+	case 0x8e:  
+	case 0x94:  
+	case 0x95:  
 	default:
 		pr_info("Unknown event received %x\n", event);
 		break;

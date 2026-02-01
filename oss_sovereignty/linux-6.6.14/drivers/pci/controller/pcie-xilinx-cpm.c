@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCIe host controller driver for Xilinx Versal CPM DMA Bridge
- *
- * (C) Copyright 2019 - 2020, Xilinx, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/interrupt.h>
@@ -22,7 +18,7 @@
 
 #include "../pci.h"
 
-/* Register definitions */
+ 
 #define XILINX_CPM_PCIE_REG_IDR		0x00000E10
 #define XILINX_CPM_PCIE_REG_IMR		0x00000E14
 #define XILINX_CPM_PCIE_REG_PSCR	0x00000E1C
@@ -38,7 +34,7 @@
 #define XILINX_CPM_PCIE_IR_ENABLE       0x000002A8
 #define XILINX_CPM_PCIE_IR_LOCAL        BIT(0)
 
-/* Interrupt registers definitions */
+ 
 #define XILINX_CPM_PCIE_INTR_LINK_DOWN		0
 #define XILINX_CPM_PCIE_INTR_HOT_RESET		3
 #define XILINX_CPM_PCIE_INTR_CFG_PCIE_TIMEOUT	4
@@ -90,15 +86,15 @@
 #define XILINX_CPM_PCIE_IDRN_MASK		GENMASK(19, 16)
 #define XILINX_CPM_PCIE_IDRN_SHIFT		16
 
-/* Root Port Error FIFO Read Register definitions */
+ 
 #define XILINX_CPM_PCIE_RPEFR_ERR_VALID		BIT(18)
 #define XILINX_CPM_PCIE_RPEFR_REQ_ID		GENMASK(15, 0)
 #define XILINX_CPM_PCIE_RPEFR_ALL_MASK		0xFFFFFFFF
 
-/* Root Port Status/control Register definitions */
+ 
 #define XILINX_CPM_PCIE_REG_RPSC_BEN		BIT(0)
 
-/* Phy Status/Control Register definitions */
+ 
 #define XILINX_CPM_PCIE_REG_PSCR_LNKUP		BIT(11)
 
 enum xilinx_cpm_version {
@@ -106,27 +102,12 @@ enum xilinx_cpm_version {
 	CPM5,
 };
 
-/**
- * struct xilinx_cpm_variant - CPM variant information
- * @version: CPM version
- */
+ 
 struct xilinx_cpm_variant {
 	enum xilinx_cpm_version version;
 };
 
-/**
- * struct xilinx_cpm_pcie - PCIe port information
- * @dev: Device pointer
- * @reg_base: Bridge Register Base
- * @cpm_base: CPM System Level Control and Status Register(SLCR) Base
- * @intx_domain: Legacy IRQ domain pointer
- * @cpm_domain: CPM IRQ domain pointer
- * @cfg: Holds mappings of config space window
- * @intx_irq: legacy interrupt number
- * @irq: Error interrupt number
- * @lock: lock protecting shared register access
- * @variant: CPM version check pointer
- */
+ 
 struct xilinx_cpm_pcie {
 	struct device			*dev;
 	void __iomem			*reg_base;
@@ -203,14 +184,7 @@ static struct irq_chip xilinx_cpm_leg_irq_chip = {
 	.irq_unmask	= xilinx_cpm_unmask_leg_irq,
 };
 
-/**
- * xilinx_cpm_pcie_intx_map - Set the handler for the INTx and mark IRQ as valid
- * @domain: IRQ domain
- * @irq: Virtual IRQ number
- * @hwirq: HW interrupt number
- *
- * Return: Always returns 0.
- */
+ 
 static int xilinx_cpm_pcie_intx_map(struct irq_domain *domain,
 				    unsigned int irq, irq_hw_number_t hwirq)
 {
@@ -222,7 +196,7 @@ static int xilinx_cpm_pcie_intx_map(struct irq_domain *domain,
 	return 0;
 }
 
-/* INTx IRQ Domain operations */
+ 
 static const struct irq_domain_ops intx_domain_ops = {
 	.map = xilinx_cpm_pcie_intx_map,
 };
@@ -310,10 +284,7 @@ static void xilinx_cpm_pcie_event_flow(struct irq_desc *desc)
 					    XILINX_CPM_PCIE_IR_STATUS);
 	}
 
-	/*
-	 * XILINX_CPM_PCIE_MISC_IR_STATUS register is mapped to
-	 * CPM SLCR block.
-	 */
+	 
 	val = readl_relaxed(port->cpm_base + XILINX_CPM_PCIE_MISC_IR_STATUS);
 	if (val)
 		writel_relaxed(val,
@@ -388,19 +359,14 @@ static void xilinx_cpm_free_irq_domains(struct xilinx_cpm_pcie *port)
 	}
 }
 
-/**
- * xilinx_cpm_pcie_init_irq_domain - Initialize IRQ domain
- * @port: PCIe port information
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_cpm_pcie_init_irq_domain(struct xilinx_cpm_pcie *port)
 {
 	struct device *dev = port->dev;
 	struct device_node *node = dev->of_node;
 	struct device_node *pcie_intc_node;
 
-	/* Setup INTx */
+	 
 	pcie_intc_node = of_get_next_child(node, NULL);
 	if (!pcie_intc_node) {
 		dev_err(dev, "No PCIe Intc node found\n");
@@ -472,21 +438,18 @@ static int xilinx_cpm_setup_irq(struct xilinx_cpm_pcie *port)
 		return -ENXIO;
 	}
 
-	/* Plug the INTx chained handler */
+	 
 	irq_set_chained_handler_and_data(port->intx_irq,
 					 xilinx_cpm_pcie_intx_flow, port);
 
-	/* Plug the main event chained handler */
+	 
 	irq_set_chained_handler_and_data(port->irq,
 					 xilinx_cpm_pcie_event_flow, port);
 
 	return 0;
 }
 
-/**
- * xilinx_cpm_pcie_init_port - Initialize hardware
- * @port: PCIe port information
- */
+ 
 static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
 {
 	if (cpm_pcie_link_up(port))
@@ -494,19 +457,16 @@ static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
 	else
 		dev_info(port->dev, "PCIe Link is DOWN\n");
 
-	/* Disable all interrupts */
+	 
 	pcie_write(port, ~XILINX_CPM_PCIE_IDR_ALL_MASK,
 		   XILINX_CPM_PCIE_REG_IMR);
 
-	/* Clear pending interrupts */
+	 
 	pcie_write(port, pcie_read(port, XILINX_CPM_PCIE_REG_IDR) &
 		   XILINX_CPM_PCIE_IMR_ALL_MASK,
 		   XILINX_CPM_PCIE_REG_IDR);
 
-	/*
-	 * XILINX_CPM_PCIE_MISC_IR_ENABLE register is mapped to
-	 * CPM SLCR block.
-	 */
+	 
 	writel(XILINX_CPM_PCIE_MISC_IR_LOCAL,
 	       port->cpm_base + XILINX_CPM_PCIE_MISC_IR_ENABLE);
 
@@ -515,19 +475,13 @@ static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
 		       port->cpm_base + XILINX_CPM_PCIE_IR_ENABLE);
 	}
 
-	/* Enable the Bridge enable bit */
+	 
 	pcie_write(port, pcie_read(port, XILINX_CPM_PCIE_REG_RPSC) |
 		   XILINX_CPM_PCIE_REG_RPSC_BEN,
 		   XILINX_CPM_PCIE_REG_RPSC);
 }
 
-/**
- * xilinx_cpm_pcie_parse_dt - Parse Device tree
- * @port: PCIe port information
- * @bus_range: Bus resource
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
 				    struct resource *bus_range)
 {
@@ -567,12 +521,7 @@ static void xilinx_cpm_free_interrupts(struct xilinx_cpm_pcie *port)
 	irq_set_chained_handler_and_data(port->irq, NULL, NULL);
 }
 
-/**
- * xilinx_cpm_pcie_probe - Probe function
- * @pdev: Platform device pointer
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_cpm_pcie_probe(struct platform_device *pdev)
 {
 	struct xilinx_cpm_pcie *port;

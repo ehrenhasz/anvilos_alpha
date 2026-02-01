@@ -1,63 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple Onboard Audio driver for tas codec
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- *
- * Open questions:
- *  - How to distinguish between 3004 and versions?
- *
- * FIXMEs:
- *  - This codec driver doesn't honour the 'connected'
- *    property of the aoa_codec struct, hence if
- *    it is used in machines where not everything is
- *    connected it will display wrong mixer elements.
- *  - Driver assumes that the microphone is always
- *    monaureal and connected to the right channel of
- *    the input. This should also be a codec-dependent
- *    flag, maybe the codec should have 3 different
- *    bits for the three different possibilities how
- *    it can be hooked up...
- *    But as long as I don't see any hardware hooked
- *    up that way...
- *  - As Apple notes in their code, the tas3004 seems
- *    to delay the right channel by one sample. You can
- *    see this when for example recording stereo in
- *    audacity, or recording the tas output via cable
- *    on another machine (use a sinus generator or so).
- *    I tried programming the BiQuads but couldn't
- *    make the delay work, maybe someone can read the
- *    datasheet and fix it. The relevant Apple comment
- *    is in AppleTAS3004Audio.cpp lines 1637 ff. Note
- *    that their comment describing how they program
- *    the filters sucks...
- *
- * Other things:
- *  - this should actually register *two* aoa_codec
- *    structs since it has two inputs. Then it must
- *    use the prepare callback to forbid running the
- *    secondary output on a different clock.
- *    Also, whatever bus knows how to do this must
- *    provide two soundbus_dev devices and the fabric
- *    must be able to link them correctly.
- *
- *    I don't even know if Apple ever uses the second
- *    port on the tas3004 though, I don't think their
- *    i2s controllers can even do it. OTOH, they all
- *    derive the clocks from common clocks, so it
- *    might just be possible. The framework allows the
- *    codec to refine the transfer_info items in the
- *    usable callback, so we can simply remove the
- *    rates the second instance is not using when it
- *    actually is in use.
- *    Maybe we'll need to make the sound busses have
- *    a 'clock group id' value so the codec can
- *    determine if the two outputs can be driven at
- *    the same time. But that is likely overkill, up
- *    to the fabric to not link them up incorrectly,
- *    and up to the hardware designer to not wire
- *    them up in some weird unusable way.
- */
+
+ 
 #include <linux/i2c.h>
 #include <asm/pmac_low_i2c.h>
 #include <asm/prom.h>
@@ -91,9 +33,7 @@ struct tas {
 	u8			bass, treble;
 	u8			acr;
 	int			drc_range;
-	/* protects hardware access against concurrency from
-	 * userspace when hitting controls and during
-	 * codec init/suspend/resume */
+	 
 	struct mutex		mtx;
 };
 
@@ -117,10 +57,10 @@ static void tas3004_set_drc(struct tas *tas)
 	unsigned char val[6];
 
 	if (tas->drc_enabled)
-		val[0] = 0x50; /* 3:1 above threshold */
+		val[0] = 0x50;  
 	else
-		val[0] = 0x51; /* disabled */
-	val[1] = 0x02; /* 1:1 below threshold */
+		val[0] = 0x51;  
+	val[1] = 0x02;  
 	if (tas->drc_range > 0xef)
 		val[2] = 0xef;
 	else if (tas->drc_range < 0)
@@ -165,12 +105,7 @@ static void tas_set_volume(struct tas *tas)
 	if (tas->mute_l) left = 0;
 	if (tas->mute_r) right = 0;
 
-	/* analysing the volume and mixer tables shows
-	 * that they are similar enough when we shift
-	 * the mixer table down by 4 bits. The error
-	 * is miniscule, in just one item the error
-	 * is 1, at a value of 0x07f17b (mixer table
-	 * value is 0x07f17a) */
+	 
 	tmp = tas_gaintable[left];
 	block[0] = tmp>>20;
 	block[1] = tmp>>12;
@@ -209,7 +144,7 @@ static void tas_set_mixer(struct tas *tas)
 	tas_write_reg(tas, TAS_REG_RMIX, 9, block);
 }
 
-/* alsa stuff */
+ 
 
 static int tas_dev_register(struct snd_device *dev)
 {
@@ -503,11 +438,7 @@ static int tas_snd_capture_source_put(struct snd_kcontrol *kcontrol,
 	mutex_lock(&tas->mtx);
 	oldacr = tas->acr;
 
-	/*
-	 * Despite what the data sheet says in one place, the
-	 * TAS_ACR_B_MONAUREAL bit forces mono output even when
-	 * input A (line in) is selected.
-	 */
+	 
 	tas->acr &= ~(TAS_ACR_INPUT_B | TAS_ACR_B_MONAUREAL);
 	if (ucontrol->value.enumerated.item[0])
 		tas->acr |= TAS_ACR_INPUT_B | TAS_ACR_B_MONAUREAL |
@@ -524,17 +455,7 @@ static int tas_snd_capture_source_put(struct snd_kcontrol *kcontrol,
 
 static const struct snd_kcontrol_new capture_source_control = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-	/* If we name this 'Input Source', it properly shows up in
-	 * alsamixer as a selection, * but it's shown under the
-	 * 'Playback' category.
-	 * If I name it 'Capture Source', it shows up in strange
-	 * ways (two bools of which one can be selected at a
-	 * time) but at least it's shown in the 'Capture'
-	 * category.
-	 * I was told that this was due to backward compatibility,
-	 * but I don't understand then why the mangling is *not*
-	 * done when I name it "Input Source".....
-	 */
+	 
 	.name = "Capture Source",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
 	.info = tas_snd_capture_source_info,
@@ -646,13 +567,13 @@ static const struct snd_kcontrol_new bass_control = {
 
 static struct transfer_info tas_transfers[] = {
 	{
-		/* input */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S16_BE | SNDRV_PCM_FMTBIT_S24_BE,
 		.rates = SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000,
 		.transfer_in = 1,
 	},
 	{
-		/* output */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S16_BE | SNDRV_PCM_FMTBIT_S24_BE,
 		.rates = SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000,
 		.transfer_in = 0,
@@ -695,7 +616,7 @@ static int tas_reset_init(struct tas *tas)
 
 	tas3004_set_drc(tas);
 
-	/* Set treble & bass to 0dB */
+	 
 	tas->treble = TAS3004_TREBLE_ZERO;
 	tas->bass = TAS3004_BASS_ZERO;
 	tas_set_treble(tas);
@@ -716,12 +637,12 @@ static int tas_switch_clock(struct codec_info_item *cii, enum clock_switch clock
 
 	switch(clock) {
 	case CLOCK_SWITCH_PREPARE_SLAVE:
-		/* Clocks are going away, mute mute mute */
+		 
 		tas->codec.gpio->methods->all_amps_off(tas->codec.gpio);
 		tas->hw_enabled = 0;
 		break;
 	case CLOCK_SWITCH_SLAVE:
-		/* Clocks are back, re-init the codec */
+		 
 		mutex_lock(&tas->mtx);
 		tas_reset_init(tas);
 		tas_set_volume(tas);
@@ -731,16 +652,14 @@ static int tas_switch_clock(struct codec_info_item *cii, enum clock_switch clock
 		mutex_unlock(&tas->mtx);
 		break;
 	default:
-		/* doesn't happen as of now */
+		 
 		return -EINVAL;
 	}
 	return 0;
 }
 
 #ifdef CONFIG_PM
-/* we are controlled via i2c and assume that is always up
- * If that wasn't the case, we'd have to suspend once
- * our i2c device is suspended, and then take note of that! */
+ 
 static int tas_suspend(struct tas *tas)
 {
 	mutex_lock(&tas->mtx);
@@ -753,7 +672,7 @@ static int tas_suspend(struct tas *tas)
 
 static int tas_resume(struct tas *tas)
 {
-	/* reset codec */
+	 
 	mutex_lock(&tas->mtx);
 	tas_reset_init(tas);
 	tas_set_volume(tas);
@@ -772,18 +691,16 @@ static int _tas_resume(struct codec_info_item *cii)
 {
 	return tas_resume(cii->codec_data);
 }
-#else /* CONFIG_PM */
+#else  
 #define _tas_suspend	NULL
 #define _tas_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static struct codec_info tas_codec_info = {
 	.transfers = tas_transfers,
-	/* in theory, we can drive it at 512 too...
-	 * but so far the framework doesn't allow
-	 * for that and I don't see much point in it. */
+	 
 	.sysclock_factor = 256,
-	/* same here, could be 32 for just one 16 bit format */
+	 
 	.bus_factor = 64,
 	.owner = THIS_MODULE,
 	.usable = tas_usable,
@@ -889,7 +806,7 @@ static int tas_i2c_probe(struct i2c_client *client)
 	tas->i2c = client;
 	i2c_set_clientdata(client, tas);
 
-	/* seems that half is a saner default */
+	 
 	tas->drc_range = TAS3004_DRC_MAX / 2;
 
 	strscpy(tas->codec.name, "tas", MAX_CODEC_NAME_LEN);
@@ -919,7 +836,7 @@ static void tas_i2c_remove(struct i2c_client *client)
 	aoa_codec_unregister(&tas->codec);
 	of_node_put(tas->codec.node);
 
-	/* power down codec chip */
+	 
 	tas_write_reg(tas, TAS_REG_ACR, 1, &tmp);
 
 	mutex_destroy(&tas->mtx);

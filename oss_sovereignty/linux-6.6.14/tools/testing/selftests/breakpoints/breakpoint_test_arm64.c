@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Google, Inc.
- *
- * Original Code by Pavel Labath <labath@google.com>
- *
- * Code modified by Pratyush Anand <panand@redhat.com>
- * for testing different byte select for each access size.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -83,7 +76,7 @@ static bool set_watchpoint(pid_t pid, int size, int wp)
 	const volatile uint8_t *addr = &var[32 + wp];
 	const int offset = (uintptr_t)addr % 8;
 	const unsigned int byte_mask = ((1 << size) - 1) << offset;
-	const unsigned int type = 2; /* Write */
+	const unsigned int type = 2;  
 	const unsigned int enable = 1;
 	const unsigned int control = byte_mask << 5 | type << 3 | enable;
 	struct user_hwdebug_state dreg_state;

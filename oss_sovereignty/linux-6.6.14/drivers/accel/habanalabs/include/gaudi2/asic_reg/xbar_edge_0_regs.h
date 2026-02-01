@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_XBAR_EDGE_0_REGS_H_
 #define ASIC_REG_XBAR_EDGE_0_REGS_H_
 
-/*
- *****************************************
- *   XBAR_EDGE_0
- *   (Prototype: XBAR)
- *****************************************
- */
+ 
 
 #define mmXBAR_EDGE_0_LBW_HIF0_BASE_ADDR 0x4D48000
 
@@ -196,4 +183,4 @@
 
 #define mmXBAR_EDGE_0_DOWN_CONV_LFSR_CFG_POLY 0x4D481DC
 
-#endif /* ASIC_REG_XBAR_EDGE_0_REGS_H_ */
+#endif  

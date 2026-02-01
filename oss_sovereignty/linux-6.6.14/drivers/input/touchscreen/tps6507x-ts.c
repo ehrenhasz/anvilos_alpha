@@ -1,17 +1,4 @@
-/*
- * Touchscreen driver for the tps6507x chip.
- *
- * Copyright (c) 2009 RidgeRun (todd.fischer@ridgerun.com)
- *
- * Credits:
- *
- *    Using code from tsc2007, MtekVision Co., Ltd.
- *
- * For licencing details see kernel-base/COPYING
- *
- * TPS65070, TPS65073, TPS650731, and TPS650732 support
- * 10 bit touch screen interface.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/workqueue.h>
@@ -22,7 +9,7 @@
 #include <linux/input/tps6507x-ts.h>
 #include <linux/delay.h>
 
-#define TSC_DEFAULT_POLL_PERIOD 30 /* ms */
+#define TSC_DEFAULT_POLL_PERIOD 30  
 #define TPS_DEFAULT_MIN_PRESSURE 0x30
 #define MAX_10BIT ((1 << 10) - 1)
 
@@ -64,7 +51,7 @@ static s32 tps6507x_adc_conversion(struct tps6507x_ts *tsc,
 	u8 adc_status;
 	u8 result;
 
-	/* Route input signal to A/D converter */
+	 
 
 	ret = tps6507x_write_u8(tsc, TPS6507X_REG_TSCMODE, tsc_mode);
 	if (ret) {
@@ -72,7 +59,7 @@ static s32 tps6507x_adc_conversion(struct tps6507x_ts *tsc,
 		goto err;
 	}
 
-	/* Start A/D conversion */
+	 
 
 	ret = tps6507x_write_u8(tsc, TPS6507X_REG_ADCONFIG,
 				TPS6507X_ADCONFIG_CONVERT_TS);
@@ -112,9 +99,7 @@ err:
 	return ret;
 }
 
-/* Need to call tps6507x_adc_standby() after using A/D converter for the
- * touch screen interrupt to work properly.
- */
+ 
 
 static s32 tps6507x_adc_standby(struct tps6507x_ts *tsc)
 {
@@ -204,10 +189,7 @@ static int tps6507x_ts_probe(struct platform_device *pdev)
 	struct input_dev *input_dev;
 	int error;
 
-	/*
-	 * tps_board points to pmic related constants
-	 * coming from the board-evm file.
-	 */
+	 
 	tps_board = dev_get_platdata(tps6507x_dev->dev);
 	if (!tps_board) {
 		dev_err(tps6507x_dev->dev,
@@ -215,10 +197,7 @@ static int tps6507x_ts_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * init_data points to array of regulator_init structures
-	 * coming from the board-evm file.
-	 */
+	 
 	init_data = tps_board->tps6507x_ts_init_data;
 
 	tsc = devm_kzalloc(&pdev->dev, sizeof(struct tps6507x_ts), GFP_KERNEL);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/io.h>
@@ -8,20 +8,7 @@
 #include "ccm.h"
 #include "nfp_net.h"
 
-/* CCM messages via the mailbox.  CMSGs get wrapped into simple TLVs
- * and copied into the mailbox.  Multiple messages can be copied to
- * form a batch.  Threads come in with CMSG formed in an skb, then
- * enqueue that skb onto the request queue.  If threads skb is first
- * in queue this thread will handle the mailbox operation.  It copies
- * up to 64 messages into the mailbox (making sure that both requests
- * and replies will fit.  After FW is done processing the batch it
- * copies the data out and wakes waiting threads.
- * If a thread is waiting it either gets its the message completed
- * (response is copied into the same skb as the request, overwriting
- * it), or becomes the first in queue.
- * Completions and next-to-run are signaled via the control buffer
- * to limit potential cache line bounces.
- */
+ 
 
 #define NFP_CCM_MBOX_BATCH_LIMIT	64
 #define NFP_CCM_TIMEOUT			(NFP_NET_POLL_TIMEOUT * 1000)
@@ -35,14 +22,7 @@ enum nfp_net_mbox_cmsg_state {
 	NFP_NET_MBOX_CMSG_STATE_DONE,
 };
 
-/**
- * struct nfp_ccm_mbox_cmsg_cb - CCM mailbox specific info
- * @state:	processing state (/stage) of the message
- * @err:	error encountered during processing if any
- * @max_len:	max(request_len, reply_len)
- * @exp_reply:	expected reply length (0 means don't validate)
- * @posted:	the message was posted and nobody waits for the reply
- */
+ 
 struct nfp_ccm_mbox_cmsg_cb {
 	enum nfp_net_mbox_cmsg_state state;
 	int err;
@@ -54,8 +34,8 @@ struct nfp_ccm_mbox_cmsg_cb {
 static u32 nfp_ccm_mbox_max_msg(struct nfp_net *nn)
 {
 	return round_down(nn->tlv_caps.mbox_len, 4) -
-		NFP_NET_CFG_MBOX_SIMPLE_VAL - /* common mbox command header */
-		4 * 2; /* Msg TLV plus End TLV headers */
+		NFP_NET_CFG_MBOX_SIMPLE_VAL -  
+		4 * 2;  
 }
 
 static void
@@ -162,7 +142,7 @@ static void nfp_ccm_mbox_copy_in(struct nfp_net *nn, struct sk_buff *last)
 				       skb->len);
 		off += 4;
 
-		/* Write data word by word, skb->data should be aligned */
+		 
 		data = (__be32 *)skb->data;
 		cnt = skb->len / 4;
 		for (i = 0 ; i < cnt; i++) {
@@ -177,7 +157,7 @@ static void nfp_ccm_mbox_copy_in(struct nfp_net *nn, struct sk_buff *last)
 			off += 4;
 		}
 
-		/* Reserve space if reply is bigger */
+		 
 		len = round_up(skb->len, 4);
 		reserve = nfp_ccm_mbox_maxlen(skb) - len;
 		if (reserve > 0) {
@@ -231,7 +211,7 @@ static void nfp_ccm_mbox_copy_out(struct nfp_net *nn, struct sk_buff *last)
 		length = FIELD_GET(NFP_NET_MBOX_TLV_LEN, tlv_hdr);
 		offset = data - nn->dp.ctrl_bar;
 
-		/* Advance past the header */
+		 
 		data += 4;
 
 		if (data + length > end) {
@@ -304,10 +284,7 @@ static void nfp_ccm_mbox_copy_out(struct nfp_net *nn, struct sk_buff *last)
 			else
 				skb_put(skb, length - skb->len);
 
-			/* We overcopy here slightly, but that's okay,
-			 * the skb is large enough, and the garbage will
-			 * be ignored (beyond skb->len).
-			 */
+			 
 			skb_data = (__be32 *)skb->data;
 			memcpy(skb_data, &hdr, 4);
 
@@ -326,7 +303,7 @@ next_tlv:
 		}
 	}
 
-	smp_wmb(); /* order the skb->data vs. cb->state */
+	smp_wmb();  
 	spin_lock_bh(&nn->mbox_cmsg.queue.lock);
 	do {
 		skb = __skb_dequeue(&nn->mbox_cmsg.queue);
@@ -334,7 +311,7 @@ next_tlv:
 
 		if (cb->state != NFP_NET_MBOX_CMSG_STATE_REPLY_FOUND) {
 			cb->err = -ENOENT;
-			smp_wmb(); /* order the cb->err vs. cb->state */
+			smp_wmb();  
 		}
 		cb->state = NFP_NET_MBOX_CMSG_STATE_DONE;
 
@@ -363,7 +340,7 @@ nfp_ccm_mbox_mark_all_err(struct nfp_net *nn, struct sk_buff *last, int err)
 		cb = (void *)skb->cb;
 
 		cb->err = err;
-		smp_wmb(); /* order the cb->err vs. cb->state */
+		smp_wmb();  
 		cb->state = NFP_NET_MBOX_CMSG_STATE_DONE;
 	} while (skb != last);
 
@@ -378,9 +355,9 @@ static void nfp_ccm_mbox_run_queue_unlock(struct nfp_net *nn)
 	struct sk_buff *skb, *last;
 	int cnt, err;
 
-	space -= 4; /* for End TLV */
+	space -= 4;  
 
-	/* First skb must fit, because it's ours and we checked it fits */
+	 
 	cnt = 1;
 	last = skb = __skb_peek(&nn->mbox_cmsg.queue);
 	space -= 4 + nfp_ccm_mbox_maxlen(skb);
@@ -398,9 +375,7 @@ static void nfp_ccm_mbox_run_queue_unlock(struct nfp_net *nn)
 	}
 	spin_unlock_bh(&nn->mbox_cmsg.queue.lock);
 
-	/* Now we own all skb's marked in progress, new requests may arrive
-	 * at the end of the queue.
-	 */
+	 
 
 	nn_ctrl_bar_lock(nn);
 
@@ -426,10 +401,7 @@ static int nfp_ccm_mbox_skb_return(struct sk_buff *skb)
 	return cb->err;
 }
 
-/* If wait timed out but the command is already in progress we have
- * to wait until it finishes.  Runners has ownership of the skbs marked
- * as busy.
- */
+ 
 static int
 nfp_ccm_mbox_unlink_unlock(struct nfp_net *nn, struct sk_buff *skb,
 			   enum nfp_ccm_type type)
@@ -441,7 +413,7 @@ nfp_ccm_mbox_unlink_unlock(struct nfp_net *nn, struct sk_buff *skb,
 		spin_unlock_bh(&nn->mbox_cmsg.queue.lock);
 
 		wait_event(nn->mbox_cmsg.wq, nfp_ccm_mbox_done(skb));
-		smp_rmb(); /* pairs with smp_wmb() after data is written */
+		smp_rmb();  
 		return nfp_ccm_mbox_skb_return(skb);
 	}
 
@@ -477,18 +449,12 @@ nfp_ccm_mbox_msg_prepare(struct nfp_net *nn, struct sk_buff *skb,
 		return -EINVAL;
 	}
 
-	/* If the reply size is unknown assume it will take the entire
-	 * mailbox, the callers should do their best for this to never
-	 * happen.
-	 */
+	 
 	if (!max_reply_size)
 		max_reply_size = mbox_max;
 	max_reply_size = round_up(max_reply_size, 4);
 
-	/* Make sure we can fit the entire reply into the skb,
-	 * and that we don't have to slow down the mbox handler
-	 * with allocations.
-	 */
+	 
 	undersize = max_reply_size - (skb_end_pointer(skb) - skb->data);
 	if (undersize > 0) {
 		err = pskb_expand_head(skb, 0, undersize, flags);
@@ -499,7 +465,7 @@ nfp_ccm_mbox_msg_prepare(struct nfp_net *nn, struct sk_buff *skb,
 		}
 	}
 
-	/* Make sure that request and response both fit into the mailbox */
+	 
 	max_len = max(max_reply_size, round_up(skb->len, 4));
 	if (max_len > mbox_max) {
 		nn_dp_warn(&nn->dp,
@@ -554,7 +520,7 @@ int __nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
 	if (err)
 		goto err_unlock;
 
-	/* First in queue takes the mailbox lock and processes the batch */
+	 
 	if (!nfp_ccm_mbox_is_first(nn, skb)) {
 		bool to;
 
@@ -565,9 +531,9 @@ int __nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
 					 nfp_ccm_mbox_should_run(nn, skb),
 					 msecs_to_jiffies(NFP_CCM_TIMEOUT));
 
-		/* fast path for those completed by another thread */
+		 
 		if (nfp_ccm_mbox_done(skb)) {
-			smp_rmb(); /* pairs with wmb after data is written */
+			smp_rmb();  
 			return nfp_ccm_mbox_skb_return(skb);
 		}
 
@@ -583,7 +549,7 @@ int __nfp_ccm_mbox_communicate(struct nfp_net *nn, struct sk_buff *skb,
 		}
 	}
 
-	/* run queue expects the lock held */
+	 
 	nfp_ccm_mbox_run_queue_unlock(nn);
 	return nfp_ccm_mbox_skb_return(skb);
 
@@ -632,7 +598,7 @@ static void nfp_ccm_mbox_post_wait_work(struct work_struct *work)
 
 	skb = skb_peek(&nn->mbox_cmsg.queue);
 	if (WARN_ON(!skb || !nfp_ccm_mbox_is_posted(skb)))
-		/* Should never happen so it's unclear what to do here.. */
+		 
 		goto exit_unlock_wake;
 
 	err = nfp_net_mbox_reconfig_wait_posted(nn);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_configfs.c
- *
- * This file contains ConfigFS logic for the Generic Target Engine project.
- *
- * (c) Copyright 2008-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- * based on configfs Copyright (C) 2005 Oracle.  All rights reserved.
- *
- ****************************************************************************/
+
+ 
 
 #include <linux/kstrtox.h>
 #include <linux/module.h>
@@ -82,9 +71,7 @@ item_to_hba(struct config_item *item)
 	return container_of(to_config_group(item), struct se_hba, hba_group);
 }
 
-/*
- * Attributes for /sys/kernel/config/target/
- */
+ 
 static ssize_t target_core_item_version_show(struct config_item *item,
 		char *page)
 {
@@ -130,7 +117,7 @@ static ssize_t target_core_item_dbroot_store(struct config_item *item,
 	if (db_root_stage[read_bytes - 1] == '\n')
 		db_root_stage[read_bytes - 1] = '\0';
 
-	/* validate new db root before accepting it */
+	 
 	fp = filp_open(db_root_stage, O_RDONLY, 0);
 	if (IS_ERR(fp)) {
 		pr_err("db_root: cannot open: %s\n", db_root_stage);
@@ -179,9 +166,7 @@ static struct target_fabric_configfs *target_core_get_fabric(
 	return NULL;
 }
 
-/*
- * Called from struct target_core_group_ops->make_group()
- */
+ 
 static struct config_group *target_core_register_fabric(
 	struct config_group *group,
 	const char *name)
@@ -197,24 +182,10 @@ static struct config_group *target_core_register_fabric(
 		pr_debug("target_core_register_fabric() trying autoload for %s\n",
 			 name);
 
-		/*
-		 * Below are some hardcoded request_module() calls to automatically
-		 * local fabric modules when the following is called:
-		 *
-		 * mkdir -p /sys/kernel/config/target/$MODULE_NAME
-		 *
-		 * Note that this does not limit which TCM fabric module can be
-		 * registered, but simply provids auto loading logic for modules with
-		 * mkdir(2) system calls with known TCM fabric modules.
-		 */
+		 
 
 		if (!strncmp(name, "iscsi", 5)) {
-			/*
-			 * Automatically load the LIO Target fabric module when the
-			 * following is called:
-			 *
-			 * mkdir -p $CONFIGFS/target/iscsi
-			 */
+			 
 			ret = request_module("iscsi_target_mod");
 			if (ret < 0) {
 				pr_debug("request_module() failed for"
@@ -222,12 +193,7 @@ static struct config_group *target_core_register_fabric(
 				return ERR_PTR(-EINVAL);
 			}
 		} else if (!strncmp(name, "loopback", 8)) {
-			/*
-			 * Automatically load the tcm_loop fabric module when the
-			 * following is called:
-			 *
-			 * mkdir -p $CONFIGFS/target/loopback
-			 */
+			 
 			ret = request_module("tcm_loop");
 			if (ret < 0) {
 				pr_debug("request_module() failed for"
@@ -246,10 +212,7 @@ static struct config_group *target_core_register_fabric(
 	}
 	pr_debug("Target_Core_ConfigFS: REGISTER -> Located fabric:"
 			" %s\n", tf->tf_ops->fabric_name);
-	/*
-	 * On a successful target_core_get_fabric() look, the returned
-	 * struct target_fabric_configfs *tf will contain a usage reference.
-	 */
+	 
 	pr_debug("Target_Core_ConfigFS: REGISTER tfc_wwn_cit -> %p\n",
 			&tf->tf_wwn_cit);
 
@@ -264,9 +227,7 @@ static struct config_group *target_core_register_fabric(
 	return &tf->tf_group;
 }
 
-/*
- * Called from struct target_core_group_ops->drop_item()
- */
+ 
 static void target_core_deregister_fabric(
 	struct config_group *group,
 	struct config_item *item)
@@ -293,18 +254,14 @@ static struct configfs_group_operations target_core_fabric_group_ops = {
 	.drop_item	= &target_core_deregister_fabric,
 };
 
-/*
- * All item attributes appearing in /sys/kernel/target/ appear here.
- */
+ 
 static struct configfs_attribute *target_core_fabric_item_attrs[] = {
 	&target_core_item_attr_version,
 	&target_core_item_attr_dbroot,
 	NULL,
 };
 
-/*
- * Provides Fabrics Groups and Item Attributes for /sys/kernel/config/target/
- */
+ 
 static const struct config_item_type target_core_fabrics_item = {
 	.ct_group_ops	= &target_core_fabric_group_ops,
 	.ct_attrs	= target_core_fabric_item_attrs,
@@ -332,92 +289,7 @@ void target_undepend_item(struct config_item *item)
 }
 EXPORT_SYMBOL(target_undepend_item);
 
-/*##############################################################################
-// Start functions called by external Target Fabrics Modules
-//############################################################################*/
-static int target_disable_feature(struct se_portal_group *se_tpg)
-{
-	return 0;
-}
-
-static u32 target_default_get_inst_index(struct se_portal_group *se_tpg)
-{
-	return 1;
-}
-
-static u32 target_default_sess_get_index(struct se_session *se_sess)
-{
-	return 0;
-}
-
-static void target_set_default_node_attributes(struct se_node_acl *se_acl)
-{
-}
-
-static int target_default_get_cmd_state(struct se_cmd *se_cmd)
-{
-	return 0;
-}
-
-static int target_fabric_tf_ops_check(const struct target_core_fabric_ops *tfo)
-{
-	if (tfo->fabric_alias) {
-		if (strlen(tfo->fabric_alias) >= TARGET_FABRIC_NAME_SIZE) {
-			pr_err("Passed alias: %s exceeds "
-				"TARGET_FABRIC_NAME_SIZE\n", tfo->fabric_alias);
-			return -EINVAL;
-		}
-	}
-	if (!tfo->fabric_name) {
-		pr_err("Missing tfo->fabric_name\n");
-		return -EINVAL;
-	}
-	if (strlen(tfo->fabric_name) >= TARGET_FABRIC_NAME_SIZE) {
-		pr_err("Passed name: %s exceeds "
-			"TARGET_FABRIC_NAME_SIZE\n", tfo->fabric_name);
-		return -EINVAL;
-	}
-	if (!tfo->tpg_get_wwn) {
-		pr_err("Missing tfo->tpg_get_wwn()\n");
-		return -EINVAL;
-	}
-	if (!tfo->tpg_get_tag) {
-		pr_err("Missing tfo->tpg_get_tag()\n");
-		return -EINVAL;
-	}
-	if (!tfo->release_cmd) {
-		pr_err("Missing tfo->release_cmd()\n");
-		return -EINVAL;
-	}
-	if (!tfo->write_pending) {
-		pr_err("Missing tfo->write_pending()\n");
-		return -EINVAL;
-	}
-	if (!tfo->queue_data_in) {
-		pr_err("Missing tfo->queue_data_in()\n");
-		return -EINVAL;
-	}
-	if (!tfo->queue_status) {
-		pr_err("Missing tfo->queue_status()\n");
-		return -EINVAL;
-	}
-	if (!tfo->queue_tm_rsp) {
-		pr_err("Missing tfo->queue_tm_rsp()\n");
-		return -EINVAL;
-	}
-	if (!tfo->aborted_task) {
-		pr_err("Missing tfo->aborted_task()\n");
-		return -EINVAL;
-	}
-	if (!tfo->check_stop_free) {
-		pr_err("Missing tfo->check_stop_free()\n");
-		return -EINVAL;
-	}
-	/*
-	 * We at least require tfo->fabric_make_wwn(), tfo->fabric_drop_wwn()
-	 * tfo->fabric_make_tpg() and tfo->fabric_drop_tpg() in
-	 * target_core_fabric_configfs.c WWN+TPG group context code.
-	 */
+ 
 	if (!tfo->fabric_make_wwn) {
 		pr_err("Missing tfo->fabric_make_wwn()\n");
 		return -EINVAL;
@@ -512,11 +384,7 @@ void target_unregister_template(const struct target_core_fabric_ops *fo)
 			BUG_ON(atomic_read(&t->tf_access_cnt));
 			list_del(&t->tf_list);
 			mutex_unlock(&g_tf_lock);
-			/*
-			 * Wait for any outstanding fabric se_deve_entry->rcu_head
-			 * callbacks to complete post kfree_rcu(), before allowing
-			 * fabric driver unload of TFO->module to proceed.
-			 */
+			 
 			rcu_barrier();
 			kfree(t->tf_tpg_base_cit.ct_attrs);
 			kfree(t->tf_ops);
@@ -528,17 +396,7 @@ void target_unregister_template(const struct target_core_fabric_ops *fo)
 }
 EXPORT_SYMBOL(target_unregister_template);
 
-/*##############################################################################
-// Stop functions called by external Target Fabrics Modules
-//############################################################################*/
-
-static inline struct se_dev_attrib *to_attrib(struct config_item *item)
-{
-	return container_of(to_config_group(item), struct se_dev_attrib,
-			da_group);
-}
-
-/* Start functions for struct config_item_type tb_dev_attrib_cit */
+ 
 #define DEF_CONFIGFS_ATTRIB_SHOW(_name)					\
 static ssize_t _name##_show(struct config_item *item, char *page)	\
 {									\
@@ -644,11 +502,7 @@ static void dev_set_t10_wwn_model_alias(struct se_device *dev)
 			"INQUIRY_MODEL, truncating to 15 characters\n", dev,
 			configname);
 	}
-	/*
-	 * XXX We can't use sizeof(dev->t10_wwn.model) (INQUIRY_MODEL_LEN + 1)
-	 * here without potentially breaking existing setups, so continue to
-	 * truncate one byte shorter than what can be carried in INQUIRY.
-	 */
+	 
 	strscpy(dev->t10_wwn.model, configname, INQUIRY_MODEL_LEN);
 }
 
@@ -770,10 +624,7 @@ static ssize_t emulate_tpu_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * We expect this value to be non-zero when generic Block Layer
-	 * Discard supported is detected iblock_create_virtdevice().
-	 */
+	 
 	if (flag && !da->max_unmap_block_desc_count) {
 		if (!dev->transport->configure_unmap ||
 		    !dev->transport->configure_unmap(dev)) {
@@ -800,10 +651,7 @@ static ssize_t emulate_tpws_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * We expect this value to be non-zero when generic Block Layer
-	 * Discard supported is detected iblock_create_virtdevice().
-	 */
+	 
 	if (flag && !da->max_unmap_block_desc_count) {
 		if (!dev->transport->configure_unmap ||
 		    !dev->transport->configure_unmap(dev)) {
@@ -844,7 +692,7 @@ static ssize_t pi_prot_type_store(struct config_item *item,
 		return count;
 	}
 	if (!dev->transport->init_prot || !dev->transport->free_prot) {
-		/* 0 is only allowed value for non-supporting backends */
+		 
 		if (flag == 0)
 			return count;
 
@@ -881,7 +729,7 @@ static ssize_t pi_prot_type_store(struct config_item *item,
 	return count;
 }
 
-/* always zero, but attr needs to remain RW to avoid userspace breakage */
+ 
 static ssize_t pi_prot_format_show(struct config_item *item, char *page)
 {
 	return snprintf(page, PAGE_SIZE, "0\n");
@@ -1016,10 +864,7 @@ static ssize_t unmap_zeroes_data_store(struct config_item *item,
 		       da->da_dev, da->da_dev->export_count);
 		return -EINVAL;
 	}
-	/*
-	 * We expect this value to be non-zero when generic Block Layer
-	 * Discard supported is detected iblock_configure_device().
-	 */
+	 
 	if (flag && !da->max_unmap_block_desc_count) {
 		if (!dev->transport->configure_unmap ||
 		    !dev->transport->configure_unmap(dev)) {
@@ -1034,9 +879,7 @@ static ssize_t unmap_zeroes_data_store(struct config_item *item,
 	return count;
 }
 
-/*
- * Note, this can only be called on unexported SE Device Object.
- */
+ 
 static ssize_t queue_depth_store(struct config_item *item,
 		const char *page, size_t count)
 {
@@ -1267,11 +1110,7 @@ CONFIGFS_ATTR(, max_write_same_len);
 CONFIGFS_ATTR(, alua_support);
 CONFIGFS_ATTR(, pgr_support);
 
-/*
- * dev_attrib attributes for devices using the target core SBC/SPC
- * interpreter.  Any backend using spc_parse_cdb should be using
- * these.
- */
+ 
 struct configfs_attribute *sbc_attrib_attrs[] = {
 	&attr_emulate_model_alias,
 	&attr_emulate_dpo,
@@ -1312,11 +1151,7 @@ struct configfs_attribute *sbc_attrib_attrs[] = {
 };
 EXPORT_SYMBOL(sbc_attrib_attrs);
 
-/*
- * Minimal dev_attrib attributes for devices passing through CDBs.
- * In this case we only provide a few read-only attributes for
- * backwards compatibility.
- */
+ 
 struct configfs_attribute *passthrough_attrib_attrs[] = {
 	&attr_hw_pi_prot_type,
 	&attr_hw_block_size,
@@ -1329,10 +1164,7 @@ struct configfs_attribute *passthrough_attrib_attrs[] = {
 };
 EXPORT_SYMBOL(passthrough_attrib_attrs);
 
-/*
- * pr related dev_attrib attributes for devices passing through CDBs,
- * but allowing in core pr emulation.
- */
+ 
 struct configfs_attribute *passthrough_pr_attrib_attrs[] = {
 	&attr_enforce_pr_isids,
 	&attr_force_pr_aptpl,
@@ -1343,9 +1175,9 @@ EXPORT_SYMBOL(passthrough_pr_attrib_attrs);
 TB_CIT_SETUP_DRV(dev_attrib, NULL, NULL);
 TB_CIT_SETUP_DRV(dev_action, NULL, NULL);
 
-/* End functions for struct config_item_type tb_dev_attrib_cit */
+ 
 
-/*  Start functions for struct config_item_type tb_dev_wwn_cit */
+ 
 
 static struct t10_wwn *to_t10_wwn(struct config_item *item)
 {
@@ -1359,12 +1191,7 @@ static ssize_t target_check_inquiry_data(char *buf)
 
 	len = strlen(buf);
 
-	/*
-	 * SPC 4.3.1:
-	 * ASCII data fields shall contain only ASCII printable characters
-	 * (i.e., code values 20h to 7Eh) and may be terminated with one or
-	 * more ASCII null (00h) characters.
-	 */
+	 
 	for (i = 0; i < len; i++) {
 		if (buf[i] < 0x20 || buf[i] > 0x7E) {
 			pr_err("Emulated T10 Inquiry Data contains non-ASCII-printable characters\n");
@@ -1375,9 +1202,7 @@ static ssize_t target_check_inquiry_data(char *buf)
 	return len;
 }
 
-/*
- * STANDARD and VPD page 0x83 T10 Vendor Identification
- */
+ 
 static ssize_t target_wwn_vendor_id_show(struct config_item *item,
 		char *page)
 {
@@ -1389,7 +1214,7 @@ static ssize_t target_wwn_vendor_id_store(struct config_item *item,
 {
 	struct t10_wwn *t10_wwn = to_t10_wwn(item);
 	struct se_device *dev = t10_wwn->t10_dev;
-	/* +2 to allow for a trailing (stripped) '\n' and null-terminator */
+	 
 	unsigned char buf[INQUIRY_VENDOR_LEN + 2];
 	char *stripped = NULL;
 	ssize_t len;
@@ -1397,7 +1222,7 @@ static ssize_t target_wwn_vendor_id_store(struct config_item *item,
 
 	len = strscpy(buf, page, sizeof(buf));
 	if (len > 0) {
-		/* Strip any newline added from userspace. */
+		 
 		stripped = strstrip(buf);
 		len = strlen(stripped);
 	}
@@ -1413,12 +1238,7 @@ static ssize_t target_wwn_vendor_id_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Check to see if any active exports exist.  If they do exist, fail
-	 * here as changing this information on the fly (underneath the
-	 * initiator side OS dependent multipath code) could cause negative
-	 * effects.
-	 */
+	 
 	if (dev->export_count) {
 		pr_err("Unable to set T10 Vendor Identification while"
 			" active %d exports exist\n", dev->export_count);
@@ -1445,7 +1265,7 @@ static ssize_t target_wwn_product_id_store(struct config_item *item,
 {
 	struct t10_wwn *t10_wwn = to_t10_wwn(item);
 	struct se_device *dev = t10_wwn->t10_dev;
-	/* +2 to allow for a trailing (stripped) '\n' and null-terminator */
+	 
 	unsigned char buf[INQUIRY_MODEL_LEN + 2];
 	char *stripped = NULL;
 	ssize_t len;
@@ -1453,7 +1273,7 @@ static ssize_t target_wwn_product_id_store(struct config_item *item,
 
 	len = strscpy(buf, page, sizeof(buf));
 	if (len > 0) {
-		/* Strip any newline added from userspace. */
+		 
 		stripped = strstrip(buf);
 		len = strlen(stripped);
 	}
@@ -1469,12 +1289,7 @@ static ssize_t target_wwn_product_id_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Check to see if any active exports exist.  If they do exist, fail
-	 * here as changing this information on the fly (underneath the
-	 * initiator side OS dependent multipath code) could cause negative
-	 * effects.
-	 */
+	 
 	if (dev->export_count) {
 		pr_err("Unable to set T10 Model while active %d exports exist\n",
 			dev->export_count);
@@ -1501,7 +1316,7 @@ static ssize_t target_wwn_revision_store(struct config_item *item,
 {
 	struct t10_wwn *t10_wwn = to_t10_wwn(item);
 	struct se_device *dev = t10_wwn->t10_dev;
-	/* +2 to allow for a trailing (stripped) '\n' and null-terminator */
+	 
 	unsigned char buf[INQUIRY_REVISION_LEN + 2];
 	char *stripped = NULL;
 	ssize_t len;
@@ -1509,7 +1324,7 @@ static ssize_t target_wwn_revision_store(struct config_item *item,
 
 	len = strscpy(buf, page, sizeof(buf));
 	if (len > 0) {
-		/* Strip any newline added from userspace. */
+		 
 		stripped = strstrip(buf);
 		len = strlen(stripped);
 	}
@@ -1525,12 +1340,7 @@ static ssize_t target_wwn_revision_store(struct config_item *item,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Check to see if any active exports exist.  If they do exist, fail
-	 * here as changing this information on the fly (underneath the
-	 * initiator side OS dependent multipath code) could cause negative
-	 * effects.
-	 */
+	 
 	if (dev->export_count) {
 		pr_err("Unable to set T10 Revision while active %d exports exist\n",
 			dev->export_count);
@@ -1563,10 +1373,7 @@ target_wwn_company_id_store(struct config_item *item,
 	u32 val;
 	int ret;
 
-	/*
-	 * The IEEE COMPANY_ID field should contain a 24-bit canonical
-	 * form OUI assigned by the IEEE.
-	 */
+	 
 	ret = kstrtou32(page, 0, &val);
 	if (ret < 0)
 		return ret;
@@ -1574,12 +1381,7 @@ target_wwn_company_id_store(struct config_item *item,
 	if (val >= 0x1000000)
 		return -EOVERFLOW;
 
-	/*
-	 * Check to see if any active exports exist. If they do exist, fail
-	 * here as changing this information on the fly (underneath the
-	 * initiator side OS dependent multipath code) could cause negative
-	 * effects.
-	 */
+	 
 	if (dev->export_count) {
 		pr_err("Unable to set Company ID while %u exports exist\n",
 		       dev->export_count);
@@ -1594,9 +1396,7 @@ target_wwn_company_id_store(struct config_item *item,
 	return count;
 }
 
-/*
- * VPD page 0x80 Unit serial
- */
+ 
 static ssize_t target_wwn_vpd_unit_serial_show(struct config_item *item,
 		char *page)
 {
@@ -1611,16 +1411,7 @@ static ssize_t target_wwn_vpd_unit_serial_store(struct config_item *item,
 	struct se_device *dev = t10_wwn->t10_dev;
 	unsigned char buf[INQUIRY_VPD_SERIAL_LEN] = { };
 
-	/*
-	 * If Linux/SCSI subsystem_api_t plugin got a VPD Unit Serial
-	 * from the struct scsi_device level firmware, do not allow
-	 * VPD Unit Serial to be emulated.
-	 *
-	 * Note this struct scsi_device could also be emulating VPD
-	 * information from its drivers/scsi LLD.  But for now we assume
-	 * it is doing 'the right thing' wrt a world wide unique
-	 * VPD Unit Serial Number that OS dependent multipath can depend on.
-	 */
+	 
 	if (dev->dev_flags & DF_FIRMWARE_VPD_UNIT_SERIAL) {
 		pr_err("Underlying SCSI device firmware provided VPD"
 			" Unit Serial, ignoring request\n");
@@ -1632,12 +1423,7 @@ static ssize_t target_wwn_vpd_unit_serial_store(struct config_item *item,
 		" INQUIRY_VPD_SERIAL_LEN: %d\n", INQUIRY_VPD_SERIAL_LEN);
 		return -EOVERFLOW;
 	}
-	/*
-	 * Check to see if any active $FABRIC_MOD exports exist.  If they
-	 * do exist, fail here as changing this information on the fly
-	 * (underneath the initiator side OS dependent multipath code)
-	 * could cause negative effects.
-	 */
+	 
 	if (dev->export_count) {
 		pr_err("Unable to set VPD Unit Serial while"
 			" active %d $FABRIC_MOD exports exist\n",
@@ -1645,12 +1431,7 @@ static ssize_t target_wwn_vpd_unit_serial_store(struct config_item *item,
 		return -EINVAL;
 	}
 
-	/*
-	 * This currently assumes ASCII encoding for emulated VPD Unit Serial.
-	 *
-	 * Also, strip any newline added from the userspace
-	 * echo $UUID > $TARGET/$HBA/$STORAGE_OBJECT/wwn/vpd_unit_serial
-	 */
+	 
 	snprintf(buf, INQUIRY_VPD_SERIAL_LEN, "%s", page);
 	snprintf(dev->t10_wwn.unit_serial, INQUIRY_VPD_SERIAL_LEN,
 			"%s", strstrip(buf));
@@ -1662,9 +1443,7 @@ static ssize_t target_wwn_vpd_unit_serial_store(struct config_item *item,
 	return count;
 }
 
-/*
- * VPD page 0x83 Protocol Identifier
- */
+ 
 static ssize_t target_wwn_vpd_protocol_identifier_show(struct config_item *item,
 		char *page)
 {
@@ -1690,9 +1469,7 @@ static ssize_t target_wwn_vpd_protocol_identifier_show(struct config_item *item,
 	return len;
 }
 
-/*
- * Generic wrapper for dumping VPD identifiers by association.
- */
+ 
 #define DEF_DEV_WWN_ASSOC_SHOW(_name, _assoc)				\
 static ssize_t target_wwn_##_name##_show(struct config_item *item,	\
 		char *page)						\
@@ -1730,11 +1507,11 @@ static ssize_t target_wwn_##_name##_show(struct config_item *item,	\
 	return len;							\
 }
 
-/* VPD page 0x83 Association: Logical Unit */
+ 
 DEF_DEV_WWN_ASSOC_SHOW(vpd_assoc_logical_unit, 0x00);
-/* VPD page 0x83 Association: Target Port */
+ 
 DEF_DEV_WWN_ASSOC_SHOW(vpd_assoc_target_port, 0x10);
-/* VPD page 0x83 Association: SCSI Target Device */
+ 
 DEF_DEV_WWN_ASSOC_SHOW(vpd_assoc_scsi_target_device, 0x20);
 
 CONFIGFS_ATTR(target_wwn_, vendor_id);
@@ -1762,9 +1539,9 @@ static struct configfs_attribute *target_core_dev_wwn_attrs[] = {
 
 TB_CIT_SETUP(dev_wwn, NULL, NULL, target_core_dev_wwn_attrs);
 
-/*  End functions for struct config_item_type tb_dev_wwn_cit */
+ 
 
-/*  Start functions for struct config_item_type tb_dev_pr_cit */
+ 
 
 static struct se_device *pr_to_dev(struct config_item *item)
 {
@@ -2099,9 +1876,7 @@ static ssize_t target_pr_res_aptpl_metadata_store(struct config_item *item,
 			}
 			sa_res_key = (u64)tmp_ll;
 			break;
-		/*
-		 * PR APTPL Metadata for Reservation
-		 */
+		 
 		case Opt_res_holder:
 			ret = match_int(args, &arg);
 			if (ret)
@@ -2131,9 +1906,7 @@ static ssize_t target_pr_res_aptpl_metadata_store(struct config_item *item,
 				goto out;
 			mapped_lun = (u64)tmp_ll;
 			break;
-		/*
-		 * PR APTPL Metadata for Target Port
-		 */
+		 
 		case Opt_target_fabric:
 			t_fabric = match_strdup(args);
 			if (!t_fabric) {
@@ -2229,9 +2002,9 @@ static struct configfs_attribute *target_core_dev_pr_attrs[] = {
 
 TB_CIT_SETUP(dev_pr, NULL, NULL, target_core_dev_pr_attrs);
 
-/*  End functions for struct config_item_type tb_dev_pr_cit */
+ 
 
-/*  Start functions for struct config_item_type tb_dev_cit */
+ 
 
 static inline struct se_device *to_device(struct config_item *item)
 {
@@ -2410,16 +2183,9 @@ static ssize_t target_dev_alua_lu_gp_store(struct config_item *item,
 		return -EINVAL;
 	}
 	memcpy(buf, page, count);
-	/*
-	 * Any ALUA logical unit alias besides "NULL" means we will be
-	 * making a new group association.
-	 */
+	 
 	if (strcmp(strstrip(buf), "NULL")) {
-		/*
-		 * core_alua_get_lu_gp_by_name() will increment reference to
-		 * struct t10_alua_lu_gp.  This reference is released with
-		 * core_alua_get_lu_gp_by_name below().
-		 */
+		 
 		lu_gp_new = core_alua_get_lu_gp_by_name(strstrip(buf));
 		if (!lu_gp_new)
 			return -ENODEV;
@@ -2428,10 +2194,7 @@ static ssize_t target_dev_alua_lu_gp_store(struct config_item *item,
 	spin_lock(&lu_gp_mem->lu_gp_mem_lock);
 	lu_gp = lu_gp_mem->lu_gp;
 	if (lu_gp) {
-		/*
-		 * Clearing an existing lu_gp association, and replacing
-		 * with NULL
-		 */
+		 
 		if (!lu_gp_new) {
 			pr_debug("Target_Core_ConfigFS: Releasing %s/%s"
 				" from ALUA LU Group: core/alua/lu_gps/%s, ID:"
@@ -2446,15 +2209,11 @@ static ssize_t target_dev_alua_lu_gp_store(struct config_item *item,
 
 			return count;
 		}
-		/*
-		 * Removing existing association of lu_gp_mem with lu_gp
-		 */
+		 
 		__core_alua_drop_lu_gp_mem(lu_gp_mem, lu_gp);
 		move = 1;
 	}
-	/*
-	 * Associate lu_gp_mem with lu_gp_new.
-	 */
+	 
 	__core_alua_attach_lu_gp_mem(lu_gp_mem, lu_gp_new);
 	spin_unlock(&lu_gp_mem->lu_gp_mem_lock);
 
@@ -2658,19 +2417,16 @@ static void target_core_dev_release(struct config_item *item)
 	target_free_device(dev);
 }
 
-/*
- * Used in target_core_fabric_configfs.c to verify valid se_device symlink
- * within target_fabric_port_link()
- */
+ 
 struct configfs_item_operations target_core_dev_item_ops = {
 	.release		= target_core_dev_release,
 };
 
 TB_CIT_SETUP(dev, &target_core_dev_item_ops, NULL, target_core_dev_attrs);
 
-/* End functions for struct config_item_type tb_dev_cit */
+ 
 
-/* Start functions for struct config_item_type target_core_alua_lu_gp_cit */
+ 
 
 static inline struct t10_alua_lu_gp *to_lu_gp(struct config_item *item)
 {
@@ -2736,7 +2492,7 @@ static ssize_t target_lu_gp_members_show(struct config_item *item, char *page)
 		cur_len = snprintf(buf, LU_GROUP_NAME_BUF, "%s/%s\n",
 			config_item_name(&hba->hba_group.cg_item),
 			config_item_name(&dev->dev_group.cg_item));
-		cur_len++; /* Extra byte for NULL terminator */
+		cur_len++;  
 
 		if ((cur_len + len) > PAGE_SIZE) {
 			pr_warn("Ran out of lu_gp_show_attr"
@@ -2778,9 +2534,9 @@ static const struct config_item_type target_core_alua_lu_gp_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/* End functions for struct config_item_type target_core_alua_lu_gp_cit */
+ 
 
-/* Start functions for struct config_item_type target_core_alua_lu_gps_cit */
+ 
 
 static struct config_group *target_core_alua_create_lu_gp(
 	struct config_group *group,
@@ -2818,10 +2574,7 @@ static void target_core_alua_drop_lu_gp(
 	pr_debug("Target_Core_ConfigFS: Releasing ALUA Logical Unit"
 		" Group: core/alua/lu_gps/%s, ID: %hu\n",
 		config_item_name(item), lu_gp->lu_gp_id);
-	/*
-	 * core_alua_free_lu_gp() is called from target_core_alua_lu_gp_ops->release()
-	 * -> target_core_alua_lu_gp_release()
-	 */
+	 
 	config_item_put(item);
 }
 
@@ -2836,9 +2589,9 @@ static const struct config_item_type target_core_alua_lu_gps_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/* End functions for struct config_item_type target_core_alua_lu_gps_cit */
+ 
 
-/* Start functions for struct config_item_type target_core_alua_tg_pt_gp_cit */
+ 
 
 static inline struct t10_alua_tg_pt_gp *to_tg_pt_gp(struct config_item *item)
 {
@@ -2886,7 +2639,7 @@ static ssize_t target_tg_pt_gp_alua_access_state_store(struct config_item *item,
 	}
 	if (tg_pt_gp->tg_pt_gp_alua_access_type & TPGS_EXPLICIT_ALUA &&
 	    new_state == ALUA_ACCESS_STATE_LBA_DEPENDENT) {
-		/* LBA DEPENDENT is only allowed with implicit ALUA */
+		 
 		pr_err("Unable to process implicit configfs ALUA transition"
 		       " while explicit ALUA management is enabled\n");
 		return -EINVAL;
@@ -3136,7 +2889,7 @@ static ssize_t target_tg_pt_gp_members_show(struct config_item *item,
 			tpg->se_tpg_tfo->tpg_get_wwn(tpg),
 			tpg->se_tpg_tfo->tpg_get_tag(tpg),
 			config_item_name(&lun->lun_group.cg_item));
-		cur_len++; /* Extra byte for NULL terminator */
+		cur_len++;  
 
 		if ((cur_len + len) > PAGE_SIZE) {
 			pr_warn("Ran out of lu_gp_show_attr"
@@ -3208,9 +2961,9 @@ static const struct config_item_type target_core_alua_tg_pt_gp_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/* End functions for struct config_item_type target_core_alua_tg_pt_gp_cit */
+ 
 
-/* Start functions for struct config_item_type tb_alua_tg_pt_gps_cit */
+ 
 
 static struct config_group *target_core_alua_create_tg_pt_gp(
 	struct config_group *group,
@@ -3249,10 +3002,7 @@ static void target_core_alua_drop_tg_pt_gp(
 	pr_debug("Target_Core_ConfigFS: Releasing ALUA Target Port"
 		" Group: alua/tg_pt_gps/%s, ID: %hu\n",
 		config_item_name(item), tg_pt_gp->tg_pt_gp_id);
-	/*
-	 * core_alua_free_tg_pt_gp() is called from target_core_alua_tg_pt_gp_ops->release()
-	 * -> target_core_alua_tg_pt_gp_release().
-	 */
+	 
 	config_item_put(item);
 }
 
@@ -3263,25 +3013,20 @@ static struct configfs_group_operations target_core_alua_tg_pt_gps_group_ops = {
 
 TB_CIT_SETUP(dev_alua_tg_pt_gps, NULL, &target_core_alua_tg_pt_gps_group_ops, NULL);
 
-/* End functions for struct config_item_type tb_alua_tg_pt_gps_cit */
+ 
 
-/* Start functions for struct config_item_type target_core_alua_cit */
+ 
 
-/*
- * target_core_alua_cit is a ConfigFS group that lives under
- * /sys/kernel/config/target/core/alua.  There are default groups
- * core/alua/lu_gps and core/alua/tg_pt_gps that are attached to
- * target_core_alua_cit in target_core_init_configfs() below.
- */
+ 
 static const struct config_item_type target_core_alua_cit = {
 	.ct_item_ops		= NULL,
 	.ct_attrs		= NULL,
 	.ct_owner		= THIS_MODULE,
 };
 
-/* End functions for struct config_item_type target_core_alua_cit */
+ 
 
-/* Start functions for struct config_item_type tb_dev_stat_cit */
+ 
 
 static struct config_group *target_core_stat_mkdir(
 	struct config_group *group,
@@ -3304,9 +3049,9 @@ static struct configfs_group_operations target_core_stat_group_ops = {
 
 TB_CIT_SETUP(dev_stat, NULL, &target_core_stat_group_ops, NULL);
 
-/* End functions for struct config_item_type tb_dev_stat_cit */
+ 
 
-/* Start functions for struct config_item_type target_core_hba_cit */
+ 
 
 static struct config_group *target_core_make_subdev(
 	struct config_group *group,
@@ -3356,9 +3101,7 @@ static struct config_group *target_core_make_subdev(
 	configfs_add_default_group(&dev->dev_stat_grps.stat_group,
 			&dev->dev_group);
 
-	/*
-	 * Add core/$HBA/$DEV/alua/default_tg_pt_gp
-	 */
+	 
 	tg_pt_gp = core_alua_allocate_tg_pt_gp(dev, "default_tg_pt_gp", 1);
 	if (!tg_pt_gp)
 		goto out_free_device;
@@ -3369,9 +3112,7 @@ static struct config_group *target_core_make_subdev(
 	configfs_add_default_group(&tg_pt_gp->tg_pt_gp_group,
 			&dev->t10_alua.alua_tg_pt_gps_group);
 
-	/*
-	 * Add core/$HBA/$DEV/statistics/ default groups
-	 */
+	 
 	target_stat_setup_dev_default_groups(dev);
 
 	mutex_lock(&target_devices_lock);
@@ -3404,17 +3145,12 @@ static void target_core_drop_subdev(
 	configfs_remove_default_groups(&dev->dev_stat_grps.stat_group);
 	configfs_remove_default_groups(&dev->t10_alua.alua_tg_pt_gps_group);
 
-	/*
-	 * core_alua_free_tg_pt_gp() is called from ->default_tg_pt_gp
-	 * directly from target_core_alua_tg_pt_gp_release().
-	 */
+	 
 	dev->t10_alua.default_tg_pt_gp = NULL;
 
 	configfs_remove_default_groups(dev_cg);
 
-	/*
-	 * se_dev is released from target_core_dev_item_ops->release()
-	 */
+	 
 	config_item_put(item);
 
 	mutex_lock(&target_devices_lock);
@@ -3538,18 +3274,15 @@ static struct config_group *target_core_call_addhbatotarget(
 		return ERR_PTR(-EINVAL);
 	}
 	se_plugin_str = buf;
-	/*
-	 * Special case for subsystem plugins that have "_" in their names.
-	 * Namely rd_direct and rd_mcp..
-	 */
+	 
 	str2 = strstr(str+1, "_");
 	if (str2) {
-		*str2 = '\0'; /* Terminate for *se_plugin_str */
-		str2++; /* Skip to start of plugin dependent ID */
+		*str2 = '\0';  
+		str2++;  
 		str = str2;
 	} else {
-		*str = '\0'; /* Terminate for *se_plugin_str */
-		str++; /* Skip to start of plugin dependent ID */
+		*str = '\0';  
+		str++;  
 	}
 
 	ret = kstrtoul(str, 0, &plugin_dep_id);
@@ -3558,9 +3291,7 @@ static struct config_group *target_core_call_addhbatotarget(
 				" plugin_dep_id\n", ret);
 		return ERR_PTR(ret);
 	}
-	/*
-	 * Load up TCM subsystem plugins if they have not already been loaded.
-	 */
+	 
 	transport_subsystem_check_init();
 
 	hba = core_alloc_hba(se_plugin_str, plugin_dep_id, 0);
@@ -3577,10 +3308,7 @@ static void target_core_call_delhbafromtarget(
 	struct config_group *group,
 	struct config_item *item)
 {
-	/*
-	 * core_delete_hba() is called from target_core_hba_item_ops->release()
-	 * -> target_core_hba_release()
-	 */
+	 
 	config_item_put(item);
 }
 
@@ -3596,7 +3324,7 @@ static const struct config_item_type target_core_cit = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* Stop functions for struct config_item_type target_core_hba_cit */
+ 
 
 void target_setup_backend_cits(struct target_backend *tb)
 {
@@ -3646,31 +3374,21 @@ static int __init target_core_init_configfs(void)
 	ret = init_se_kmem_caches();
 	if (ret < 0)
 		return ret;
-	/*
-	 * Create $CONFIGFS/target/core default group for HBA <-> Storage Object
-	 * and ALUA Logical Unit Group and Target Port Group infrastructure.
-	 */
+	 
 	config_group_init_type_name(&target_core_hbagroup, "core",
 			&target_core_cit);
 	configfs_add_default_group(&target_core_hbagroup, &subsys->su_group);
 
-	/*
-	 * Create ALUA infrastructure under /sys/kernel/config/target/core/alua/
-	 */
+	 
 	config_group_init_type_name(&alua_group, "alua", &target_core_alua_cit);
 	configfs_add_default_group(&alua_group, &target_core_hbagroup);
 
-	/*
-	 * Add ALUA Logical Unit Group and Target Port Group ConfigFS
-	 * groups under /sys/kernel/config/target/core/alua/
-	 */
+	 
 	config_group_init_type_name(&alua_lu_gps_group, "lu_gps",
 			&target_core_alua_lu_gps_cit);
 	configfs_add_default_group(&alua_lu_gps_group, &alua_group);
 
-	/*
-	 * Add core/alua/lu_gps/default_lu_gp
-	 */
+	 
 	lu_gp = core_alua_allocate_lu_gp("default_lu_gp", 1);
 	if (IS_ERR(lu_gp)) {
 		ret = -ENOMEM;
@@ -3683,9 +3401,7 @@ static int __init target_core_init_configfs(void)
 
 	default_lu_gp = lu_gp;
 
-	/*
-	 * Register the target_core_mod subsystem with configfs.
-	 */
+	 
 	ret = configfs_register_subsystem(subsys);
 	if (ret < 0) {
 		pr_err("Error %d while registering subsystem %s\n",
@@ -3695,9 +3411,7 @@ static int __init target_core_init_configfs(void)
 	pr_debug("TARGET_CORE[0]: Initialized ConfigFS Fabric"
 		" Infrastructure: "TARGET_CORE_VERSION" on %s/%s"
 		" on "UTS_RELEASE"\n", utsname()->sysname, utsname()->machine);
-	/*
-	 * Register built-in RAMDISK subsystem logic for virtual LUN 0
-	 */
+	 
 	ret = rd_module_init();
 	if (ret < 0)
 		goto out;
@@ -3733,10 +3447,7 @@ static void __exit target_core_exit_configfs(void)
 	configfs_remove_default_groups(&alua_group);
 	configfs_remove_default_groups(&target_core_hbagroup);
 
-	/*
-	 * We expect subsys->su_group.default_groups to be released
-	 * by configfs subsystem provider logic..
-	 */
+	 
 	configfs_unregister_subsystem(&target_core_fabrics);
 
 	core_alua_free_lu_gp(default_lu_gp);

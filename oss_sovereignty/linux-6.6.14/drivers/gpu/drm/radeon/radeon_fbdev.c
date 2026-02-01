@@ -1,28 +1,4 @@
-/*
- * Copyright © 2007 David Airlie
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *     David Airlie
- */
+ 
 
 #include <linux/fb.h>
 #include <linux/pci.h>
@@ -60,7 +36,7 @@ static int radeon_fbdev_create_pinned_object(struct drm_fb_helper *fb_helper,
 	struct radeon_device *rdev = fb_helper->dev->dev_private;
 	struct drm_gem_object *gobj = NULL;
 	struct radeon_bo *rbo = NULL;
-	bool fb_tiled = false; /* useful for testing */
+	bool fb_tiled = false;  
 	u32 tiling_flags = 0;
 	int ret;
 	int aligned_size, size;
@@ -70,7 +46,7 @@ static int radeon_fbdev_create_pinned_object(struct drm_fb_helper *fb_helper,
 	info = drm_get_format_info(rdev->ddev, mode_cmd);
 	cpp = info->cpp[0];
 
-	/* need to align pitch with crtc limits */
+	 
 	mode_cmd->pitches[0] = radeon_align_pitch(rdev, mode_cmd->width, cpp,
 						  fb_tiled);
 
@@ -114,7 +90,7 @@ static int radeon_fbdev_create_pinned_object(struct drm_fb_helper *fb_helper,
 	ret = radeon_bo_reserve(rbo, false);
 	if (unlikely(ret != 0))
 		goto err_radeon_fbdev_destroy_pinned_object;
-	/* Only 27 bit offset for legacy CRTC */
+	 
 	ret = radeon_bo_pin_restricted(rbo, RADEON_GEM_DOMAIN_VRAM,
 				       ASIC_IS_AVIVO(rdev) ? 0 : 1 << 27,
 				       NULL);
@@ -138,9 +114,7 @@ err_radeon_fbdev_destroy_pinned_object:
 	return ret;
 }
 
-/*
- * Fbdev ops and struct fb_ops
- */
+ 
 
 static int radeon_fbdev_fb_open(struct fb_info *info, int user)
 {
@@ -198,9 +172,7 @@ static const struct fb_ops radeon_fbdev_fb_ops = {
 	.fb_destroy = radeon_fbdev_fb_destroy,
 };
 
-/*
- * Fbdev helpers and struct drm_fb_helper_funcs
- */
+ 
 
 static int radeon_fbdev_fb_helper_fb_probe(struct drm_fb_helper *fb_helper,
 					   struct drm_fb_helper_surface_size *sizes)
@@ -217,7 +189,7 @@ static int radeon_fbdev_fb_helper_fb_probe(struct drm_fb_helper *fb_helper,
 	mode_cmd.width = sizes->surface_width;
 	mode_cmd.height = sizes->surface_height;
 
-	/* avivo can't scanout real 24bpp */
+	 
 	if ((sizes->surface_bpp == 24) && ASIC_IS_AVIVO(rdev))
 		sizes->surface_bpp = 32;
 
@@ -242,10 +214,10 @@ static int radeon_fbdev_fb_helper_fb_probe(struct drm_fb_helper *fb_helper,
 		goto err_kfree;
 	}
 
-	/* setup helper */
+	 
 	fb_helper->fb = fb;
 
-	/* okay we have an object now allocate the framebuffer */
+	 
 	info = drm_fb_helper_alloc_info(fb_helper);
 	if (IS_ERR(info)) {
 		ret = PTR_ERR(info);
@@ -254,7 +226,7 @@ static int radeon_fbdev_fb_helper_fb_probe(struct drm_fb_helper *fb_helper,
 
 	info->fbops = &radeon_fbdev_fb_ops;
 
-	/* radeon resume is fragile and needs a vt switch to help it along */
+	 
 	info->skip_vt_switch = false;
 
 	drm_fb_helper_fill_info(info, fb_helper, sizes);
@@ -267,7 +239,7 @@ static int radeon_fbdev_fb_helper_fb_probe(struct drm_fb_helper *fb_helper,
 
 	memset_io(info->screen_base, 0, info->screen_size);
 
-	/* Use default scratch pixmap (info->pixmap.flags = FB_PIXMAP_SYSTEM) */
+	 
 
 	DRM_INFO("fb mappable at 0x%lX\n",  info->fix.smem_start);
 	DRM_INFO("vram apper at 0x%lX\n",  (unsigned long)rdev->mc.aper_base);
@@ -292,9 +264,7 @@ static const struct drm_fb_helper_funcs radeon_fbdev_fb_helper_funcs = {
 	.fb_probe = radeon_fbdev_fb_helper_fb_probe,
 };
 
-/*
- * Fbdev client and struct drm_client_funcs
- */
+ 
 
 static void radeon_fbdev_client_unregister(struct drm_client_dev *client)
 {

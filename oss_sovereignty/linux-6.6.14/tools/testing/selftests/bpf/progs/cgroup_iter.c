@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Google */
+
+ 
 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
@@ -20,13 +20,13 @@ int cgroup_id_printer(struct bpf_iter__cgroup *ctx)
 	struct seq_file *seq = ctx->meta->seq;
 	struct cgroup *cgrp = ctx->cgroup;
 
-	/* epilogue */
+	 
 	if (cgrp == NULL) {
 		BPF_SEQ_PRINTF(seq, "epilogue\n");
 		return 0;
 	}
 
-	/* prologue */
+	 
 	if (ctx->meta->seq_num == 0)
 		BPF_SEQ_PRINTF(seq, "prologue\n");
 

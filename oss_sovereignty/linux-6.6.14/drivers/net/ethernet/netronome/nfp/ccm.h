@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2016-2019 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef NFP_CCM_H
 #define NFP_CCM_H 1
@@ -11,7 +11,7 @@
 struct nfp_app;
 struct nfp_net;
 
-/* Firmware ABI */
+ 
 
 enum nfp_ccm_type {
 	NFP_CCM_TYPE_BPF_MAP_ALLOC	= 1,
@@ -80,19 +80,9 @@ enum nfp_ccm_mbox_tlv_type {
 	NFP_NET_MBOX_TLV_TYPE_RESV	= 4,
 };
 
-/* Implementation */
+ 
 
-/**
- * struct nfp_ccm - common control message handling
- * @app:		APP handle
- *
- * @tag_allocator:	bitmap of control message tags in use
- * @tag_alloc_next:	next tag bit to allocate
- * @tag_alloc_last:	next tag bit to be freed
- *
- * @replies:		received cmsg replies waiting to be consumed
- * @wq:			work queue for waiting for cmsg replies
- */
+ 
 struct nfp_ccm {
 	struct nfp_app *app;
 

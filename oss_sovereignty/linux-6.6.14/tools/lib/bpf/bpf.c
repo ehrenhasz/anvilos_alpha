@@ -1,25 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * common eBPF ELF operations.
- *
- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
- * Copyright (C) 2015 Huawei Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation;
- * version 2.1 of the License (not later!)
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not,  see <http://www.gnu.org/licenses>
- */
+
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -36,10 +17,7 @@
 #include "libbpf.h"
 #include "libbpf_internal.h"
 
-/*
- * When building perf, unistd.h is overridden. __NR_bpf is
- * required to be defined explicitly.
- */
+ 
 #ifndef __NR_bpf
 # if defined(__i386__)
 #  define __NR_bpf 357
@@ -95,14 +73,7 @@ int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size, int attempts)
 	return fd;
 }
 
-/* Probe whether kernel switched from memlock-based (RLIMIT_MEMLOCK) to
- * memcg-based memory accounting for BPF maps and progs. This was done in [0].
- * We use the support for bpf_ktime_get_coarse_ns() helper, which was added in
- * the same 5.11 Linux release ([1]), to detect memcg-based accounting for BPF.
- *
- *   [0] https://lore.kernel.org/bpf/20201201215900.3569844-1-guro@fb.com/
- *   [1] d05512618056 ("bpf: Add bpf_ktime_get_coarse_ns helper")
- */
+ 
 int probe_memcg_account(void)
 {
 	const size_t attr_sz = offsetofend(union bpf_attr, attach_btf_obj_fd);
@@ -114,7 +85,7 @@ int probe_memcg_account(void)
 	union bpf_attr attr;
 	int prog_fd;
 
-	/* attempt loading freplace trying to use custom BTF */
+	 
 	memset(&attr, 0, attr_sz);
 	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
 	attr.insns = ptr_to_u64(insns);
@@ -145,13 +116,13 @@ int bump_rlimit_memlock(void)
 {
 	struct rlimit rlim;
 
-	/* if kernel supports memcg-based accounting, skip bumping RLIMIT_MEMLOCK */
+	 
 	if (memlock_bumped || kernel_supports(NULL, FEAT_MEMCG_ACCOUNT))
 		return 0;
 
 	memlock_bumped = true;
 
-	/* zero memlock_rlim_max disables auto-bumping RLIMIT_MEMLOCK */
+	 
 	if (memlock_rlim == 0)
 		return 0;
 
@@ -214,7 +185,7 @@ alloc_zero_tailing_info(const void *orecord, __u32 cnt,
 	if (!info)
 		return NULL;
 
-	/* zero out bytes kernel does not understand */
+	 
 	nrecord = info;
 	for (i = 0; i < cnt; i++) {
 		memcpy(nrecord, orecord, expected_rec_size);
@@ -316,14 +287,11 @@ int bpf_prog_load(enum bpf_prog_type prog_type,
 	if (fd >= 0)
 		return fd;
 
-	/* After bpf_prog_load, the kernel may modify certain attributes
-	 * to give user space a hint how to deal with loading failure.
-	 * Check to see whether we can make some changes and load again.
-	 */
+	 
 	while (errno == E2BIG && (!finfo || !linfo)) {
 		if (!finfo && attr.func_info_cnt &&
 		    attr.func_info_rec_size < func_info_rec_size) {
-			/* try with corrected func info records */
+			 
 			finfo = alloc_zero_tailing_info(func_info,
 							attr.func_info_cnt,
 							func_info_rec_size,
@@ -359,10 +327,7 @@ int bpf_prog_load(enum bpf_prog_type prog_type,
 	}
 
 	if (log_level == 0 && log_buf) {
-		/* log_level == 0 with non-NULL log_buf requires retrying on error
-		 * with log_level == 1 and log_buf/log_buf_size set, to get details of
-		 * failure
-		 */
+		 
 		attr.log_buf = ptr_to_u64(log_buf);
 		attr.log_size = log_size;
 		attr.log_level = 1;
@@ -371,7 +336,7 @@ int bpf_prog_load(enum bpf_prog_type prog_type,
 		OPTS_SET(opts, log_true_size, attr.log_true_size);
 	}
 done:
-	/* free() doesn't affect errno, so we don't need to restore it */
+	 
 	free(finfo);
 	free(linfo);
 	return libbpf_err_errno(fd);
@@ -644,7 +609,7 @@ int bpf_prog_attach_opts(int prog_fd, int target, enum bpf_attach_type type,
 	relative_fd = OPTS_GET(opts, relative_fd, 0);
 	flags = OPTS_GET(opts, flags, 0);
 
-	/* validate we don't have unexpected combinations of non-zero fields */
+	 
 	if (relative_fd && relative_id)
 		return libbpf_err(-EINVAL);
 
@@ -682,7 +647,7 @@ int bpf_prog_detach_opts(int prog_fd, int target, enum bpf_attach_type type,
 	relative_fd = OPTS_GET(opts, relative_fd, 0);
 	flags = OPTS_GET(opts, flags, 0);
 
-	/* validate we don't have unexpected combinations of non-zero fields */
+	 
 	if (relative_fd && relative_id)
 		return libbpf_err(-EINVAL);
 
@@ -729,7 +694,7 @@ int bpf_link_create(int prog_fd, int target_fd,
 	iter_info_len = OPTS_GET(opts, iter_info_len, 0);
 	target_btf_id = OPTS_GET(opts, target_btf_id, 0);
 
-	/* validate we don't have unexpected combinations of non-zero fields */
+	 
 	if (iter_info_len || target_btf_id) {
 		if (iter_info_len && target_btf_id)
 			return libbpf_err(-EINVAL);
@@ -819,25 +784,18 @@ proceed:
 	fd = sys_bpf_fd(BPF_LINK_CREATE, &attr, attr_sz);
 	if (fd >= 0)
 		return fd;
-	/* we'll get EINVAL if LINK_CREATE doesn't support attaching fentry
-	 * and other similar programs
-	 */
+	 
 	err = -errno;
 	if (err != -EINVAL)
 		return libbpf_err(err);
 
-	/* if user used features not supported by
-	 * BPF_RAW_TRACEPOINT_OPEN command, then just give up immediately
-	 */
+	 
 	if (attr.link_create.target_fd || attr.link_create.target_btf_id)
 		return libbpf_err(err);
 	if (!OPTS_ZEROED(opts, sz))
 		return libbpf_err(err);
 
-	/* otherwise, for few select kinds of programs that can be
-	 * attached using BPF_RAW_TRACEPOINT_OPEN command, try that as
-	 * a fallback for older kernels
-	 */
+	 
 	switch (attach_type) {
 	case BPF_TRACE_RAW_TP:
 	case BPF_LSM_MAC:
@@ -1191,11 +1149,7 @@ int bpf_btf_load(const void *btf_data, size_t btf_size, struct bpf_btf_load_opts
 
 	attr.btf = ptr_to_u64(btf_data);
 	attr.btf_size = btf_size;
-	/* log_level == 0 and log_buf != NULL means "try loading without
-	 * log_buf, but retry with log_buf and log_level=1 on error", which is
-	 * consistent across low-level and high-level BTF and program loading
-	 * APIs within libbpf and provides a sensible behavior in practice
-	 */
+	 
 	if (log_level) {
 		attr.btf_log_buf = ptr_to_u64(log_buf);
 		attr.btf_log_size = (__u32)log_size;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/core/netprio_cgroup.c	Priority Control Group
- *
- * Authors:	Neil Horman <nhorman@tuxdriver.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,34 +21,23 @@
 
 #include <linux/fdtable.h>
 
-/*
- * netprio allocates per-net_device priomap array which is indexed by
- * css->id.  Limiting css ID to 16bits doesn't lose anything.
- */
+ 
 #define NETPRIO_ID_MAX		USHRT_MAX
 
 #define PRIOMAP_MIN_SZ		128
 
-/*
- * Extend @dev->priomap so that it's large enough to accommodate
- * @target_idx.  @dev->priomap.priomap_len > @target_idx after successful
- * return.  Must be called under rtnl lock.
- */
+ 
 static int extend_netdev_table(struct net_device *dev, u32 target_idx)
 {
 	struct netprio_map *old, *new;
 	size_t new_sz, new_len;
 
-	/* is the existing priomap large enough? */
+	 
 	old = rtnl_dereference(dev->priomap);
 	if (old && old->priomap_len > target_idx)
 		return 0;
 
-	/*
-	 * Determine the new size.  Let's keep it power-of-two.  We start
-	 * from PRIOMAP_MIN_SZ and double it until it's large enough to
-	 * accommodate @target_idx.
-	 */
+	 
 	new_sz = PRIOMAP_MIN_SZ;
 	while (true) {
 		new_len = (new_sz - offsetof(struct netprio_map, priomap)) /
@@ -60,12 +45,12 @@ static int extend_netdev_table(struct net_device *dev, u32 target_idx)
 		if (new_len > target_idx)
 			break;
 		new_sz *= 2;
-		/* overflowed? */
+		 
 		if (WARN_ON(new_sz < PRIOMAP_MIN_SZ))
 			return -ENOSPC;
 	}
 
-	/* allocate & copy */
+	 
 	new = kzalloc(new_sz, GFP_KERNEL);
 	if (!new)
 		return -ENOMEM;
@@ -76,20 +61,14 @@ static int extend_netdev_table(struct net_device *dev, u32 target_idx)
 
 	new->priomap_len = new_len;
 
-	/* install the new priomap */
+	 
 	rcu_assign_pointer(dev->priomap, new);
 	if (old)
 		kfree_rcu(old, rcu);
 	return 0;
 }
 
-/**
- * netprio_prio - return the effective netprio of a cgroup-net_device pair
- * @css: css part of the target pair
- * @dev: net_device part of the target pair
- *
- * Should be called under RCU read or rtnl lock.
- */
+ 
 static u32 netprio_prio(struct cgroup_subsys_state *css, struct net_device *dev)
 {
 	struct netprio_map *map = rcu_dereference_rtnl(dev->priomap);
@@ -100,15 +79,7 @@ static u32 netprio_prio(struct cgroup_subsys_state *css, struct net_device *dev)
 	return 0;
 }
 
-/**
- * netprio_set_prio - set netprio on a cgroup-net_device pair
- * @css: css part of the target pair
- * @dev: net_device part of the target pair
- * @prio: prio to set
- *
- * Set netprio to @prio on @css-@dev pair.  Should be called under rtnl
- * lock and may fail under memory pressure for non-zero @prio.
- */
+ 
 static int netprio_set_prio(struct cgroup_subsys_state *css,
 			    struct net_device *dev, u32 prio)
 {
@@ -116,7 +87,7 @@ static int netprio_set_prio(struct cgroup_subsys_state *css,
 	int id = css->id;
 	int ret;
 
-	/* avoid extending priomap for zero writes */
+	 
 	map = rtnl_dereference(dev->priomap);
 	if (!prio && (!map || map->priomap_len <= id))
 		return 0;
@@ -155,10 +126,7 @@ static int cgrp_css_online(struct cgroup_subsys_state *css)
 		return 0;
 
 	rtnl_lock();
-	/*
-	 * Inherit prios from the parent.  As all prios are set during
-	 * onlining, there is no need to clear them on offline.
-	 */
+	 
 	for_each_netdev(&init_net, dev) {
 		u32 prio = netprio_prio(parent_css, dev);
 
@@ -250,7 +218,7 @@ static struct cftype ss_files[] = {
 		.seq_show = read_priomap,
 		.write = write_priomap,
 	},
-	{ }	/* terminate */
+	{ }	 
 };
 
 struct cgroup_subsys net_prio_cgrp_subsys = {
@@ -267,10 +235,7 @@ static int netprio_device_event(struct notifier_block *unused,
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 	struct netprio_map *old;
 
-	/*
-	 * Note this is called with rtnl_lock held so we have update side
-	 * protection on our rcu assignments
-	 */
+	 
 
 	switch (event) {
 	case NETDEV_UNREGISTER:

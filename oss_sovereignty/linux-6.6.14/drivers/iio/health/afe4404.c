@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AFE4404 Heart Rate Monitors and Low-Cost Pulse Oximeters
- *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -27,7 +22,7 @@
 
 #define AFE4404_DRIVER_NAME		"afe4404"
 
-/* AFE4404 registers */
+ 
 #define AFE4404_TIA_GAIN_SEP		0x20
 #define AFE4404_TIA_GAIN		0x21
 #define AFE4404_PROG_TG_STC		0x34
@@ -40,51 +35,42 @@
 #define AFE4404_AVG_LED2_ALED2VAL	0x3f
 #define AFE4404_AVG_LED1_ALED1VAL	0x40
 
-/* AFE4404 CONTROL2 register fields */
+ 
 #define AFE440X_CONTROL2_OSC_ENABLE	BIT(9)
 
 enum afe4404_fields {
-	/* Gains */
+	 
 	F_TIA_GAIN_SEP, F_TIA_CF_SEP,
 	F_TIA_GAIN, TIA_CF,
 
-	/* LED Current */
+	 
 	F_ILED1, F_ILED2, F_ILED3,
 
-	/* Offset DAC */
+	 
 	F_OFFDAC_AMB2, F_OFFDAC_LED1, F_OFFDAC_AMB1, F_OFFDAC_LED2,
 
-	/* sentinel */
+	 
 	F_MAX_FIELDS
 };
 
 static const struct reg_field afe4404_reg_fields[] = {
-	/* Gains */
+	 
 	[F_TIA_GAIN_SEP]	= REG_FIELD(AFE4404_TIA_GAIN_SEP, 0, 2),
 	[F_TIA_CF_SEP]		= REG_FIELD(AFE4404_TIA_GAIN_SEP, 3, 5),
 	[F_TIA_GAIN]		= REG_FIELD(AFE4404_TIA_GAIN, 0, 2),
 	[TIA_CF]		= REG_FIELD(AFE4404_TIA_GAIN, 3, 5),
-	/* LED Current */
+	 
 	[F_ILED1]		= REG_FIELD(AFE440X_LEDCNTRL, 0, 5),
 	[F_ILED2]		= REG_FIELD(AFE440X_LEDCNTRL, 6, 11),
 	[F_ILED3]		= REG_FIELD(AFE440X_LEDCNTRL, 12, 17),
-	/* Offset DAC */
+	 
 	[F_OFFDAC_AMB2]		= REG_FIELD(AFE4404_OFFDAC, 0, 4),
 	[F_OFFDAC_LED1]		= REG_FIELD(AFE4404_OFFDAC, 5, 9),
 	[F_OFFDAC_AMB1]		= REG_FIELD(AFE4404_OFFDAC, 10, 14),
 	[F_OFFDAC_LED2]		= REG_FIELD(AFE4404_OFFDAC, 15, 19),
 };
 
-/**
- * struct afe4404_data - AFE4404 device instance data
- * @dev: Device structure
- * @regmap: Register map of the device
- * @fields: Register fields of the device
- * @regulator: Pointer to the regulator for the IC
- * @trig: IIO trigger for this device
- * @irq: ADC_RDY line interrupt number
- * @buffer: Used to construct a scan to push to the iio buffer.
- */
+ 
 struct afe4404_data {
 	struct device *dev;
 	struct regmap *regmap;
@@ -127,14 +113,14 @@ static const unsigned int afe4404_channel_offdacs[] = {
 };
 
 static const struct iio_chan_spec afe4404_channels[] = {
-	/* ADC values */
+	 
 	AFE440X_INTENSITY_CHAN(LED2, BIT(IIO_CHAN_INFO_OFFSET)),
 	AFE440X_INTENSITY_CHAN(ALED2, BIT(IIO_CHAN_INFO_OFFSET)),
 	AFE440X_INTENSITY_CHAN(LED1, BIT(IIO_CHAN_INFO_OFFSET)),
 	AFE440X_INTENSITY_CHAN(ALED1, BIT(IIO_CHAN_INFO_OFFSET)),
 	AFE440X_INTENSITY_CHAN(LED2_ALED2, 0),
 	AFE440X_INTENSITY_CHAN(LED1_ALED1, 0),
-	/* LED current */
+	 
 	AFE440X_CURRENT_CHAN(LED2),
 	AFE440X_CURRENT_CHAN(ALED2),
 	AFE440X_CURRENT_CHAN(LED1),
@@ -349,7 +335,7 @@ err:
 	return IRQ_HANDLED;
 }
 
-/* Default timings from data-sheet */
+ 
 #define AFE4404_TIMING_PAIRS			\
 	{ AFE440X_PRPCOUNT,	39999	},	\
 	{ AFE440X_LED2LEDSTC,	0	},	\
@@ -413,7 +399,7 @@ static const struct regmap_config afe4404_regmap_config = {
 
 static const struct of_device_id afe4404_of_match[] = {
 	{ .compatible = "ti,afe4404", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, afe4404_of_match);
 
@@ -599,7 +585,7 @@ static void afe4404_remove(struct i2c_client *client)
 
 static const struct i2c_device_id afe4404_ids[] = {
 	{ "afe4404", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, afe4404_ids);
 

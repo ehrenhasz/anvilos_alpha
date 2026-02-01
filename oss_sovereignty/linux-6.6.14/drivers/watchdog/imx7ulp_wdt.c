@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -92,7 +90,7 @@ static int imx7ulp_wdt_wait_rcs(struct imx7ulp_wdt_device *wdt)
 			       timeout))
 		ret = -ETIMEDOUT;
 
-	/* Wait 2.5 clocks after RCS done */
+	 
 	if (wdt->post_rcs_wait)
 		usleep_range(wait_min, wait_min + 2000);
 
@@ -216,7 +214,7 @@ static int imx7ulp_wdt_restart(struct watchdog_device *wdog,
 	if (ret)
 		return ret;
 
-	/* wait for wdog to fire */
+	 
 	while (true)
 		;
 
@@ -250,7 +248,7 @@ static int _imx7ulp_wdt_init(struct imx7ulp_wdt_device *wdt, unsigned int timeou
 		writel(UNLOCK, wdt->base + WDOG_CNT);
 	} else {
 		mb();
-		/* unlock the wdog for reconfiguration */
+		 
 		writel_relaxed(UNLOCK_SEQ0, wdt->base + WDOG_CNT);
 		writel_relaxed(UNLOCK_SEQ1, wdt->base + WDOG_CNT);
 		mb();
@@ -260,7 +258,7 @@ static int _imx7ulp_wdt_init(struct imx7ulp_wdt_device *wdt, unsigned int timeou
 	if (ret)
 		goto init_out;
 
-	/* set an initial timeout value in TOVAL */
+	 
 	writel(timeout, wdt->base + WDOG_TOVAL);
 	writel(cs, wdt->base + WDOG_CS);
 	local_irq_enable();
@@ -275,7 +273,7 @@ init_out:
 
 static int imx7ulp_wdt_init(struct imx7ulp_wdt_device *wdt, unsigned int timeout)
 {
-	/* enable 32bit command sequence and reconfigure */
+	 
 	u32 val = WDOG_CS_CMD32EN | WDOG_CS_CLK | WDOG_CS_UPDATE |
 		  WDOG_CS_WAIT | WDOG_CS_STOP;
 	u32 cs, toval;
@@ -401,7 +399,7 @@ static const struct of_device_id imx7ulp_wdt_dt_ids[] = {
 	{ .compatible = "fsl,imx8ulp-wdt", .data = &imx7ulp_wdt_hw, },
 	{ .compatible = "fsl,imx7ulp-wdt", .data = &imx7ulp_wdt_hw, },
 	{ .compatible = "fsl,imx93-wdt", .data = &imx93_wdt_hw, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx7ulp_wdt_dt_ids);
 

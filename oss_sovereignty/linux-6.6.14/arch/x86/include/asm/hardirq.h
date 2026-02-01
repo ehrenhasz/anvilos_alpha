@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_HARDIRQ_H
 #define _ASM_X86_HARDIRQ_H
 
@@ -9,9 +9,9 @@ typedef struct {
 #if IS_ENABLED(CONFIG_KVM_INTEL)
 	u8	     kvm_cpu_l1tf_flush_l1d;
 #endif
-	unsigned int __nmi_count;	/* arch dependent */
+	unsigned int __nmi_count;	 
 #ifdef CONFIG_X86_LOCAL_APIC
-	unsigned int apic_timer_irqs;	/* arch dependent */
+	unsigned int apic_timer_irqs;	 
 	unsigned int irq_spurious_count;
 	unsigned int icr_read_retry_count;
 #endif
@@ -20,7 +20,7 @@ typedef struct {
 	unsigned int kvm_posted_intr_wakeup_ipis;
 	unsigned int kvm_posted_intr_nested_ipis;
 #endif
-	unsigned int x86_platform_ipis;	/* arch dependent */
+	unsigned int x86_platform_ipis;	 
 	unsigned int apic_perf_irqs;
 	unsigned int apic_irq_work_irqs;
 #ifdef CONFIG_SMP
@@ -77,8 +77,8 @@ static __always_inline bool kvm_get_cpu_l1tf_flush_l1d(void)
 {
 	return __this_cpu_read(irq_stat.kvm_cpu_l1tf_flush_l1d);
 }
-#else /* !IS_ENABLED(CONFIG_KVM_INTEL) */
+#else  
 static inline void kvm_set_cpu_l1tf_flush_l1d(void) { }
-#endif /* IS_ENABLED(CONFIG_KVM_INTEL) */
+#endif  
 
-#endif /* _ASM_X86_HARDIRQ_H */
+#endif  

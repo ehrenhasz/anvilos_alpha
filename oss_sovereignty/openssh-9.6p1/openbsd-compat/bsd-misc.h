@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 1999-2004 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef _BSD_MISC_H
 #define _BSD_MISC_H
@@ -24,27 +10,27 @@ int seed_from_prngd(unsigned char *, size_t);
 
 #ifndef HAVE_SETSID
 #define setsid() setpgrp(0, getpid())
-#endif /* !HAVE_SETSID */
+#endif  
 
 #ifndef HAVE_SETENV
 int setenv(const char *, const char *, int);
-#endif /* !HAVE_SETENV */
+#endif  
 
 #ifndef HAVE_SETLOGIN
 int setlogin(const char *);
-#endif /* !HAVE_SETLOGIN */
+#endif  
 
 #ifndef HAVE_INNETGR
 int innetgr(const char *, const char *, const char *, const char *);
-#endif /* HAVE_INNETGR */
+#endif  
 
 #if !defined(HAVE_SETEUID) && defined(HAVE_SETREUID)
 int seteuid(uid_t);
-#endif /* !defined(HAVE_SETEUID) && defined(HAVE_SETREUID) */
+#endif  
 
 #if !defined(HAVE_SETEGID) && defined(HAVE_SETRESGID)
 int setegid(uid_t);
-#endif /* !defined(HAVE_SETEGID) && defined(HAVE_SETRESGID) */
+#endif  
 
 #if !defined(HAVE_STRERROR) && defined(HAVE_SYS_ERRLIST) && defined(HAVE_SYS_NERR)
 const char *strerror(int);
@@ -60,10 +46,10 @@ struct timeval {
 	long tv_sec;
 	long tv_usec;
 }
-#endif /* HAVE_STRUCT_TIMEVAL */
+#endif  
 
 int utimes(const char *, struct timeval *);
-#endif /* HAVE_UTIMES */
+#endif  
 
 #ifndef AT_FDCWD
 # define AT_FDCWD (-2)
@@ -79,14 +65,14 @@ int fchownat(int, const char *, uid_t, gid_t, int);
 
 #ifndef HAVE_TRUNCATE
 int truncate (const char *, off_t);
-#endif /* HAVE_TRUNCATE */
+#endif  
 
 #ifndef HAVE_STRUCT_TIMESPEC
 struct timespec {
 	time_t	tv_sec;
 	long	tv_nsec;
 };
-#endif /* !HAVE_STRUCT_TIMESPEC */
+#endif  
 
 #if !defined(HAVE_NANOSLEEP) && !defined(HAVE_NSLEEP)
 # include <time.h>
@@ -95,12 +81,12 @@ int nanosleep(const struct timespec *, struct timespec *);
 
 #ifndef HAVE_UTIMENSAT
 # include <time.h>
-/* start with the high bits and work down to minimise risk of overlap */
+ 
 # ifndef AT_SYMLINK_NOFOLLOW
 #  define AT_SYMLINK_NOFOLLOW 0x80000000
 # endif
 int utimensat(int, const char *, const struct timespec[2], int);
-#endif /* !HAVE_UTIMENSAT */
+#endif  
 
 #ifndef HAVE_USLEEP
 int usleep(unsigned int useconds);
@@ -147,7 +133,7 @@ int pselect(int, fd_set *, fd_set *, fd_set *, const struct timespec *,
 int pledge(const char *promises, const char *paths[]);
 #endif
 
-/* bsd-err.h */
+ 
 #ifndef HAVE_ERR
 void err(int, const char *, ...) __attribute__((format(printf, 2, 3)));
 #endif
@@ -194,4 +180,4 @@ struct tm *localtime_r(const time_t *, struct tm *);
 #define realpath(x, y)	(sftp_realpath((x), (y)))
 #endif
 
-#endif /* _BSD_MISC_H */
+#endif  

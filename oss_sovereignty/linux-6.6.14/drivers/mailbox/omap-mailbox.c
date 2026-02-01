@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OMAP mailbox driver
- *
- * Copyright (C) 2006-2009 Nokia Corporation. All rights reserved.
- * Copyright (C) 2013-2021 Texas Instruments Incorporated - https://www.ti.com
- *
- * Contact: Hiroshi DOYU <Hiroshi.DOYU@nokia.com>
- *          Suman Anna <s-anna@ti.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
@@ -47,7 +39,7 @@
 #define MAILBOX_IRQ_NEWMSG(m)		(1 << (2 * (m)))
 #define MAILBOX_IRQ_NOTFULL(m)		(1 << (2 * (m) + 1))
 
-/* Interrupt register configuration types */
+ 
 #define MBOX_INTR_CFG_TYPE1		0
 #define MBOX_INTR_CFG_TYPE2		1
 
@@ -112,7 +104,7 @@ struct omap_mbox {
 	bool			send_no_irq;
 };
 
-/* global variables for the mailbox devices */
+ 
 static DEFINE_MUTEX(omap_mbox_devices_lock);
 static LIST_HEAD(omap_mbox_devices);
 
@@ -140,7 +132,7 @@ void mbox_write_reg(struct omap_mbox_device *mdev, u32 val, size_t ofs)
 	__raw_writel(val, mdev->mbox_base + ofs);
 }
 
-/* Mailbox FIFO handle functions */
+ 
 static u32 mbox_fifo_read(struct omap_mbox *mbox)
 {
 	struct omap_mbox_fifo *fifo = &mbox->rx_fifo;
@@ -169,7 +161,7 @@ static int mbox_fifo_full(struct omap_mbox *mbox)
 	return mbox_read_reg(mbox->parent, fifo->fifo_stat);
 }
 
-/* Mailbox IRQ handle functions */
+ 
 static void ack_mbox_irq(struct omap_mbox *mbox, omap_mbox_irq_t irq)
 {
 	struct omap_mbox_fifo *fifo = (irq == IRQ_TX) ?
@@ -179,7 +171,7 @@ static void ack_mbox_irq(struct omap_mbox *mbox, omap_mbox_irq_t irq)
 
 	mbox_write_reg(mbox->parent, bit, irqstatus);
 
-	/* Flush posted write for irq status to avoid spurious interrupts */
+	 
 	mbox_read_reg(mbox->parent, irqstatus);
 }
 
@@ -217,10 +209,7 @@ static void _omap_mbox_disable_irq(struct omap_mbox *mbox, omap_mbox_irq_t irq)
 	u32 bit = fifo->intr_bit;
 	u32 irqdisable = fifo->irqdisable;
 
-	/*
-	 * Read and update the interrupt configuration register for pre-OMAP4.
-	 * OMAP4 and later SoCs have a dedicated interrupt disabling register.
-	 */
+	 
 	if (!mbox->intr_type)
 		bit = mbox_read_reg(mbox->parent, irqdisable) & ~bit;
 
@@ -249,9 +238,7 @@ void omap_mbox_disable_irq(struct mbox_chan *chan, omap_mbox_irq_t irq)
 }
 EXPORT_SYMBOL(omap_mbox_disable_irq);
 
-/*
- * Message receiver(workqueue)
- */
+ 
 static void mbox_rx_work(struct work_struct *work)
 {
 	struct omap_mbox_queue *mq =
@@ -275,9 +262,7 @@ static void mbox_rx_work(struct work_struct *work)
 	}
 }
 
-/*
- * Mailbox interrupt handler
- */
+ 
 static void __mbox_tx_interrupt(struct omap_mbox *mbox)
 {
 	_omap_mbox_disable_irq(mbox, IRQ_TX);
@@ -304,7 +289,7 @@ static void __mbox_rx_interrupt(struct omap_mbox *mbox)
 		WARN_ON(len != sizeof(msg));
 	}
 
-	/* no more messages in the fifo. clear IRQ source. */
+	 
 	ack_mbox_irq(mbox, IRQ_RX);
 nomem:
 	schedule_work(&mbox->rxq->work);
@@ -538,7 +523,7 @@ static int omap_mbox_chan_send_noirq(struct omap_mbox *mbox, u32 msg)
 		ret = 0;
 		_omap_mbox_disable_irq(mbox, IRQ_RX);
 
-		/* we must read and ack the interrupt directly from here */
+		 
 		mbox_fifo_read(mbox);
 		ack_mbox_irq(mbox, IRQ_RX);
 	}
@@ -555,7 +540,7 @@ static int omap_mbox_chan_send(struct omap_mbox *mbox, u32 msg)
 		ret = 0;
 	}
 
-	/* always enable the interrupt */
+	 
 	_omap_mbox_enable_irq(mbox, IRQ_TX);
 	return ret;
 }
@@ -654,7 +639,7 @@ static const struct of_device_id omap_mailbox_of_match[] = {
 		.data		= &omap4_data,
 	},
 	{
-		/* end */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, omap_mailbox_of_match);
@@ -769,7 +754,7 @@ static int omap_mbox_probe(struct platform_device *pdev)
 	if (!mdev->irq_ctx)
 		return -ENOMEM;
 
-	/* allocate one extra for marking end of list */
+	 
 	list = devm_kcalloc(&pdev->dev, info_count + 1, sizeof(*list),
 			    GFP_KERNEL);
 	if (!list)
@@ -824,10 +809,7 @@ static int omap_mbox_probe(struct platform_device *pdev)
 	mdev->intr_type = intr_type;
 	mdev->mboxes = list;
 
-	/*
-	 * OMAP/K3 Mailbox IP does not have a Tx-Done IRQ, but rather a Tx-Ready
-	 * IRQ and is needed to run the Tx state machine
-	 */
+	 
 	mdev->controller.txdone_irq = true;
 	mdev->controller.dev = mdev->dev;
 	mdev->controller.ops = &omap_mbox_chan_ops;
@@ -845,10 +827,7 @@ static int omap_mbox_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto unregister;
 
-	/*
-	 * just print the raw revision register, the format is not
-	 * uniform across all SoCs
-	 */
+	 
 	l = mbox_read_reg(mdev, MAILBOX_REVISION);
 	dev_info(mdev->dev, "omap mailbox rev 0x%x\n", l);
 
@@ -893,7 +872,7 @@ static int __init omap_mbox_init(void)
 	if (err)
 		return err;
 
-	/* kfifo size sanity check: alignment and minimal size */
+	 
 	mbox_kfifo_size = ALIGN(mbox_kfifo_size, sizeof(u32));
 	mbox_kfifo_size = max_t(unsigned int, mbox_kfifo_size, sizeof(u32));
 

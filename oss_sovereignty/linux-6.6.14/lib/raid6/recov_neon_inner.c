@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Intel Corporation
- * Copyright (C) 2017 Linaro Ltd. <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <arm_neon.h>
 #include "neon.h"
 
 #ifdef CONFIG_ARM
-/*
- * AArch32 does not provide this intrinsic natively because it does not
- * implement the underlying instruction. AArch32 only provides a 64-bit
- * wide vtbl.8 instruction, so use that instead.
- */
+ 
 static uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b)
 {
 	union {
@@ -35,17 +28,7 @@ void __raid6_2data_recov_neon(int bytes, uint8_t *p, uint8_t *q, uint8_t *dp,
 	uint8x16_t qm1 = vld1q_u8(qmul + 16);
 	uint8x16_t x0f = vdupq_n_u8(0x0f);
 
-	/*
-	 * while ( bytes-- ) {
-	 *	uint8_t px, qx, db;
-	 *
-	 *	px    = *p ^ *dp;
-	 *	qx    = qmul[*q ^ *dq];
-	 *	*dq++ = db = pbmul[px] ^ qx;
-	 *	*dp++ = db ^ px;
-	 *	p++; q++;
-	 * }
-	 */
+	 
 
 	while (bytes) {
 		uint8x16_t vx, vy, px, qx, db;
@@ -82,12 +65,7 @@ void __raid6_datap_recov_neon(int bytes, uint8_t *p, uint8_t *q, uint8_t *dq,
 	uint8x16_t qm1 = vld1q_u8(qmul + 16);
 	uint8x16_t x0f = vdupq_n_u8(0x0f);
 
-	/*
-	 * while (bytes--) {
-	 *	*p++ ^= *dq = qmul[*q ^ *dq];
-	 *	q++; dq++;
-	 * }
-	 */
+	 
 
 	while (bytes) {
 		uint8x16_t vx, vy;

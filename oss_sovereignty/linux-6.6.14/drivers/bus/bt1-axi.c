@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 AXI-bus driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,16 +24,7 @@
 #define BT1_AXI_WERRH_ADDR_FLD		24
 #define BT1_AXI_WERRH_ADDR_MASK		GENMASK(31, BT1_AXI_WERRH_ADDR_FLD)
 
-/*
- * struct bt1_axi - Baikal-T1 AXI-bus private data
- * @dev: Pointer to the device structure.
- * @qos_regs: AXI Interconnect QoS tuning registers.
- * @sys_regs: Baikal-T1 System Controller registers map.
- * @irq: Errors IRQ number.
- * @aclk: AXI reference clock.
- * @arst: AXI Interconnect reset line.
- * @count: Number of errors detected.
- */
+ 
 struct bt1_axi {
 	struct device *dev;
 
@@ -69,13 +53,7 @@ static irqreturn_t bt1_axi_isr(int irq, void *data)
 		high & BT1_AXI_WERRH_TYPE ? "no slave" : "slave protocol error",
 		high, low);
 
-	/*
-	 * Print backtrace on each CPU. This might be pointless if the fault
-	 * has happened on the same CPU as the IRQ handler is executed or
-	 * the other core proceeded further execution despite the error.
-	 * But if it's not, by looking at the trace we would get straight to
-	 * the cause of the problem.
-	 */
+	 
 	trigger_all_cpu_backtrace();
 
 	return IRQ_HANDLED;
@@ -213,11 +191,7 @@ static ssize_t inject_error_store(struct device *dev,
 {
 	struct bt1_axi *axi = dev_get_drvdata(dev);
 
-	/*
-	 * Performing unaligned read from the memory will cause the CM2 bus
-	 * error while unaligned writing - the AXI bus write error handled
-	 * by this driver.
-	 */
+	 
 	if (sysfs_streq(data, "bus"))
 		readb(axi->qos_regs);
 	else if (sysfs_streq(data, "unaligned"))

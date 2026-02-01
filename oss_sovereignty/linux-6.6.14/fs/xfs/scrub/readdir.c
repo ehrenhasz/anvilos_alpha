@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2022-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -20,7 +17,7 @@
 #include "scrub/scrub.h"
 #include "scrub/readdir.h"
 
-/* Call a function for every entry in a shortform directory. */
+ 
 STATIC int
 xchk_dir_walk_sf(
 	struct xfs_scrub	*sc,
@@ -47,7 +44,7 @@ xchk_dir_walk_sf(
 
 	sfp = (struct xfs_dir2_sf_hdr *)dp->i_df.if_u1.if_data;
 
-	/* dot entry */
+	 
 	dapos = xfs_dir2_db_off_to_dataptr(geo, geo->datablk,
 			geo->data_entry_offset);
 
@@ -55,7 +52,7 @@ xchk_dir_walk_sf(
 	if (error)
 		return error;
 
-	/* dotdot entry */
+	 
 	dapos = xfs_dir2_db_off_to_dataptr(geo, geo->datablk,
 			geo->data_entry_offset +
 			xfs_dir2_data_entsize(mp, sizeof(".") - 1));
@@ -67,7 +64,7 @@ xchk_dir_walk_sf(
 	if (error)
 		return error;
 
-	/* iterate everything else */
+	 
 	sfep = xfs_dir2_sf_firstentry(sfp);
 	for (i = 0; i < sfp->count; i++) {
 		dapos = xfs_dir2_db_off_to_dataptr(geo, geo->datablk,
@@ -87,7 +84,7 @@ xchk_dir_walk_sf(
 	return 0;
 }
 
-/* Call a function for every entry in a block directory. */
+ 
 STATIC int
 xchk_dir_walk_block(
 	struct xfs_scrub	*sc,
@@ -105,7 +102,7 @@ xchk_dir_walk_block(
 	if (error)
 		return error;
 
-	/* Walk each directory entry. */
+	 
 	end = xfs_dir3_data_end_offset(geo, bp->b_addr);
 	for (off = geo->data_entry_offset; off < end; off = next_off) {
 		struct xfs_name			name = { };
@@ -114,13 +111,13 @@ xchk_dir_walk_block(
 		xfs_ino_t			ino;
 		xfs_dir2_dataptr_t		dapos;
 
-		/* Skip an empty entry. */
+		 
 		if (be16_to_cpu(dup->freetag) == XFS_DIR2_DATA_FREE_TAG) {
 			next_off = off + be16_to_cpu(dup->length);
 			continue;
 		}
 
-		/* Otherwise, find the next entry and report it. */
+		 
 		next_off = off + xfs_dir2_data_entsize(mp, dep->namelen);
 		if (next_off > end)
 			break;
@@ -140,7 +137,7 @@ xchk_dir_walk_block(
 	return error;
 }
 
-/* Read a leaf-format directory buffer. */
+ 
 STATIC int
 xchk_read_leaf_dir_buf(
 	struct xfs_trans	*tp,
@@ -158,11 +155,7 @@ xchk_read_leaf_dir_buf(
 
 	*bpp = NULL;
 
-	/*
-	 * Look for mapped directory blocks at or above the current offset.
-	 * Truncate down to the nearest directory block to start the scanning
-	 * operation.
-	 */
+	 
 	last_da = xfs_dir2_byte_to_da(geo, XFS_DIR2_LEAF_OFFSET);
 	map_off = xfs_dir2_db_to_da(geo, xfs_dir2_byte_to_db(geo, *curoff));
 
@@ -172,7 +165,7 @@ xchk_read_leaf_dir_buf(
 		return 0;
 	xfs_trim_extent(&map, map_off, last_da - map_off);
 
-	/* Read the directory block of that first mapping. */
+	 
 	new_off = xfs_dir2_da_to_byte(geo, map.br_startoff);
 	if (new_off > *curoff)
 		*curoff = new_off;
@@ -180,7 +173,7 @@ xchk_read_leaf_dir_buf(
 	return xfs_dir3_data_read(tp, dp, map.br_startoff, 0, bpp);
 }
 
-/* Call a function for every entry in a leaf directory. */
+ 
 STATIC int
 xchk_dir_walk_leaf(
 	struct xfs_scrub	*sc,
@@ -195,7 +188,7 @@ xchk_dir_walk_leaf(
 	unsigned int		offset = 0;
 	int			error;
 
-	/* Iterate every directory offset in this directory. */
+	 
 	while (curoff < XFS_DIR2_LEAF_OFFSET) {
 		struct xfs_name			name = { };
 		struct xfs_dir2_data_unused	*dup;
@@ -204,10 +197,7 @@ xchk_dir_walk_leaf(
 		unsigned int			length;
 		xfs_dir2_dataptr_t		dapos;
 
-		/*
-		 * If we have no buffer, or we're off the end of the
-		 * current buffer, need to get another one.
-		 */
+		 
 		if (!bp || offset >= geo->blksize) {
 			if (bp) {
 				xfs_trans_brelse(sc->tp, bp);
@@ -219,14 +209,12 @@ xchk_dir_walk_leaf(
 			if (error || !bp)
 				break;
 
-			/*
-			 * Find our position in the block.
-			 */
+			 
 			offset = geo->data_entry_offset;
 			curoff += geo->data_entry_offset;
 		}
 
-		/* Skip an empty entry. */
+		 
 		dup = bp->b_addr + offset;
 		if (be16_to_cpu(dup->freetag) == XFS_DIR2_DATA_FREE_TAG) {
 			length = be16_to_cpu(dup->length);
@@ -235,7 +223,7 @@ xchk_dir_walk_leaf(
 			continue;
 		}
 
-		/* Otherwise, find the next entry and report it. */
+		 
 		dep = bp->b_addr + offset;
 		length = xfs_dir2_data_entsize(mp, dep->namelen);
 
@@ -249,7 +237,7 @@ xchk_dir_walk_leaf(
 		if (error)
 			break;
 
-		/* Advance to the next entry. */
+		 
 		offset += length;
 		curoff += length;
 	}
@@ -259,11 +247,7 @@ xchk_dir_walk_leaf(
 	return error;
 }
 
-/*
- * Call a function for every entry in a directory.
- *
- * Callers must hold the ILOCK.  File types are XFS_DIR3_FT_*.
- */
+ 
 int
 xchk_dir_walk(
 	struct xfs_scrub	*sc,
@@ -288,7 +272,7 @@ xchk_dir_walk(
 	if (dp->i_df.if_format == XFS_DINODE_FMT_LOCAL)
 		return xchk_dir_walk_sf(sc, dp, dirent_fn, priv);
 
-	/* dir2 functions require that the data fork is loaded */
+	 
 	error = xfs_iread_extents(sc->tp, dp, XFS_DATA_FORK);
 	if (error)
 		return error;
@@ -303,12 +287,7 @@ xchk_dir_walk(
 	return xchk_dir_walk_leaf(sc, dp, dirent_fn, priv);
 }
 
-/*
- * Look up the inode number for an exact name in a directory.
- *
- * Callers must hold the ILOCK.  File types are XFS_DIR3_FT_*.  Names are not
- * checked for correctness.
- */
+ 
 int
 xchk_dir_lookup(
 	struct xfs_scrub	*sc,
@@ -341,7 +320,7 @@ xchk_dir_lookup(
 		goto out_check_rval;
 	}
 
-	/* dir2 functions require that the data fork is loaded */
+	 
 	error = xfs_iread_extents(sc->tp, dp, XFS_DATA_FORK);
 	if (error)
 		return error;

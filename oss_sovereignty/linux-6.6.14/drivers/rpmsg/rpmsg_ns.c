@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2020 - All Rights Reserved
- */
+
+ 
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -11,13 +9,7 @@
 
 #include "rpmsg_internal.h"
 
-/**
- * rpmsg_ns_register_device() - register name service device based on rpdev
- * @rpdev: prepared rpdev to be used for creating endpoints
- *
- * This function wraps rpmsg_register_device() preparing the rpdev for use as
- * basis for the rpmsg name service device.
- */
+ 
 int rpmsg_ns_register_device(struct rpmsg_device *rpdev)
 {
 	rpdev->src = RPMSG_NS_ADDR;
@@ -27,7 +19,7 @@ int rpmsg_ns_register_device(struct rpmsg_device *rpdev)
 }
 EXPORT_SYMBOL(rpmsg_ns_register_device);
 
-/* invoked when a name service announcement arrives */
+ 
 static int rpmsg_ns_cb(struct rpmsg_device *rpdev, void *data, int len,
 		       void *priv, u32 src)
 {
@@ -47,7 +39,7 @@ static int rpmsg_ns_cb(struct rpmsg_device *rpdev, void *data, int len,
 		return -EINVAL;
 	}
 
-	/* don't trust the remote processor for null terminating the name */
+	 
 	msg->name[RPMSG_NAME_SIZE - 1] = '\0';
 
 	strncpy(chinfo.name, msg->name, sizeof(chinfo.name));
@@ -80,11 +72,7 @@ static int rpmsg_ns_probe(struct rpmsg_device *rpdev)
 		.name = "name_service",
 	};
 
-	/*
-	 * Create the NS announcement service endpoint associated to the RPMsg
-	 * device. The endpoint will be automatically destroyed when the RPMsg
-	 * device will be deleted.
-	 */
+	 
 	ns_ept = rpmsg_create_ept(rpdev, rpmsg_ns_cb, NULL, ns_chinfo);
 	if (!ns_ept) {
 		dev_err(&rpdev->dev, "failed to create the ns ept\n");

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor network mediation
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2017 Canonical Ltd.
- */
+
+ 
 
 #include "include/apparmor.h"
 #include "include/audit.h"
@@ -67,7 +60,7 @@ static const char * const net_mask_names[] = {
 };
 
 
-/* audit callback for net specific fields */
+ 
 void audit_net_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -105,7 +98,7 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
 	}
 }
 
-/* Generic af perm */
+ 
 int aa_profile_af_perm(struct aa_profile *profile,
 		       struct apparmor_audit_data *ad, u32 request, u16 family,
 		       int type)
@@ -177,7 +170,7 @@ int aa_sk_perm(const char *op, u32 request, struct sock *sk)
 	AA_BUG(!sk);
 	AA_BUG(in_interrupt());
 
-	/* TODO: switch to begin_current_label ???? */
+	 
 	label = begin_current_label_crit_section();
 	error = aa_label_sk_perm(current_cred(), label, op, request, sk);
 	end_current_label_crit_section(label);

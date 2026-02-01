@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * max8997-private.h - Voltage regulator driver for the Maxim 8997
- *
- *  Copyright (C) 2010 Samsung Electrnoics
- *  MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_MAX8997_PRIV_H
 #define __LINUX_MFD_MAX8997_PRIV_H
@@ -107,7 +102,7 @@ enum max8997_pmic_reg {
 	MAX8997_REG_LBCNFG2	= 0x5f,
 	MAX8997_REG_BBCCTRL	= 0x60,
 
-	MAX8997_REG_FLASH1_CUR	= 0x63, /* 0x63 ~ 0x6e for FLASH */
+	MAX8997_REG_FLASH1_CUR	= 0x63,  
 	MAX8997_REG_FLASH2_CUR	= 0x64,
 	MAX8997_REG_MOVIE_CUR	= 0x65,
 	MAX8997_REG_GSMB_CUR	= 0x66,
@@ -181,7 +176,7 @@ enum max8997_muic_reg {
 	MAX8997_MUIC_REG_END		= 0xf,
 };
 
-/* MAX8997-MUIC STATUS1 register */
+ 
 #define STATUS1_ADC_SHIFT		0
 #define STATUS1_ADCLOW_SHIFT		5
 #define STATUS1_ADCERR_SHIFT		6
@@ -189,7 +184,7 @@ enum max8997_muic_reg {
 #define STATUS1_ADCLOW_MASK		(0x1 << STATUS1_ADCLOW_SHIFT)
 #define STATUS1_ADCERR_MASK		(0x1 << STATUS1_ADCERR_SHIFT)
 
-/* MAX8997-MUIC STATUS2 register */
+ 
 #define STATUS2_CHGTYP_SHIFT		0
 #define STATUS2_CHGDETRUN_SHIFT		3
 #define STATUS2_DCDTMR_SHIFT		4
@@ -201,11 +196,11 @@ enum max8997_muic_reg {
 #define STATUS2_DBCHG_MASK		(0x1 << STATUS2_DBCHG_SHIFT)
 #define STATUS2_VBVOLT_MASK		(0x1 << STATUS2_VBVOLT_SHIFT)
 
-/* MAX8997-MUIC STATUS3 register */
+ 
 #define STATUS3_OVP_SHIFT		2
 #define STATUS3_OVP_MASK		(0x1 << STATUS3_OVP_SHIFT)
 
-/* MAX8997-MUIC CONTROL1 register */
+ 
 #define COMN1SW_SHIFT			0
 #define COMP2SW_SHIFT			3
 #define COMN1SW_MASK			(0x7 << COMN1SW_SHIFT)
@@ -267,7 +262,7 @@ enum max8997_haptic_reg {
 	MAX8997_HAPTIC_REG_END		= 0x11,
 };
 
-/* slave addr = 0x0c: using "2nd part" of rev4 datasheet */
+ 
 enum max8997_rtc_reg {
 	MAX8997_RTC_CTRLMASK		= 0x02,
 	MAX8997_RTC_CTRL		= 0x03,
@@ -304,16 +299,16 @@ enum max8997_irq_source {
 	PMIC_INT3,
 	PMIC_INT4,
 
-	FUEL_GAUGE, /* Ignored (MAX17042 driver handles) */
+	FUEL_GAUGE,  
 
 	MUIC_INT1,
 	MUIC_INT2,
 	MUIC_INT3,
 
-	GPIO_LOW, /* Not implemented */
-	GPIO_HI, /* Not implemented */
+	GPIO_LOW,  
+	GPIO_HI,  
 
-	FLASH_STATUS, /* Not implemented */
+	FLASH_STATUS,  
 
 	MAX8997_IRQ_GROUP_NR,
 };
@@ -368,14 +363,14 @@ enum max8997_irq {
 struct max8997_dev {
 	struct device *dev;
 	struct max8997_platform_data *pdata;
-	struct i2c_client *i2c; /* 0xcc / PMIC, Battery Control, and FLASH */
-	struct i2c_client *rtc; /* slave addr 0x0c */
-	struct i2c_client *haptic; /* slave addr 0x90 */
-	struct i2c_client *muic; /* slave addr 0x4a */
+	struct i2c_client *i2c;  
+	struct i2c_client *rtc;  
+	struct i2c_client *haptic;  
+	struct i2c_client *muic;  
 	struct mutex iolock;
 
 	unsigned long type;
-	struct platform_device *battery; /* battery control (not fuel gauge) */
+	struct platform_device *battery;  
 
 	int irq;
 	int ono;
@@ -384,7 +379,7 @@ struct max8997_dev {
 	int irq_masks_cur[MAX8997_IRQ_GROUP_NR];
 	int irq_masks_cache[MAX8997_IRQ_GROUP_NR];
 
-	/* For hibernation */
+	 
 	u8 reg_dump[MAX8997_REG_PMIC_END + MAX8997_MUIC_REG_END +
 		MAX8997_HAPTIC_REG_END];
 
@@ -414,4 +409,4 @@ extern int max8997_update_reg(struct i2c_client *i2c, u8 reg, u8 val, u8 mask);
 
 #define MAX8997_GPIO_INT_MASK	(0x3 << 4)
 #define MAX8997_GPIO_DATA_MASK	(0x1 << 2)
-#endif /*  __LINUX_MFD_MAX8997_PRIV_H */
+#endif  

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD7879-1/AD7889-1 touchscreen (I2C bus)
- *
- * Copyright (C) 2008-2010 Michael Hennerich, Analog Devices Inc.
- */
 
-#include <linux/input.h>	/* BUS_I2C */
+ 
+
+#include <linux/input.h>	 
 #include <linux/i2c.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -15,7 +11,7 @@
 
 #include "ad7879.h"
 
-#define AD7879_DEVID		0x79	/* AD7879-1/AD7889-1 */
+#define AD7879_DEVID		0x79	 
 
 static const struct regmap_config ad7879_i2c_regmap_config = {
 	.reg_bits = 8,

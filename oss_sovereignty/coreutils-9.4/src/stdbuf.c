@@ -1,20 +1,4 @@
-/* stdbuf -- setup the standard streams for a command
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Pádraig Brady.  */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -29,9 +13,9 @@
 #include "xstrtol.h"
 #include "c-ctype.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "stdbuf"
-#define LIB_NAME "libstdbuf.so" /* FIXME: don't hardcode  */
+#define LIB_NAME "libstdbuf.so"  
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
@@ -54,12 +38,7 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Set size to the value of STR, interpreted as a decimal integer,
-   optionally multiplied by various values.
-   Return -1 on error, 0 on success.
-
-   This supports dd BLOCK size suffixes.
-   Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
+ 
 static int
 parse_size (char const *str, size_t *size)
 {

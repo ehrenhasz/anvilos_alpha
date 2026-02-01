@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs42l52.c -- CS42L52 ALSA SoC audio driver
- *
- * Copyright 2012 CirrusLogic, Inc.
- *
- * Author: Georgi Vlaev <joe@nucleusys.com>
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -52,55 +45,55 @@ struct  cs42l52_private {
 };
 
 static const struct reg_default cs42l52_reg_defaults[] = {
-	{ CS42L52_PWRCTL1, 0x9F },	/* r02 PWRCTL 1 */
-	{ CS42L52_PWRCTL2, 0x07 },	/* r03 PWRCTL 2 */
-	{ CS42L52_PWRCTL3, 0xFF },	/* r04 PWRCTL 3 */
-	{ CS42L52_CLK_CTL, 0xA0 },	/* r05 Clocking Ctl */
-	{ CS42L52_IFACE_CTL1, 0x00 },	/* r06 Interface Ctl 1 */
-	{ CS42L52_ADC_PGA_A, 0x80 },	/* r08 Input A Select */
-	{ CS42L52_ADC_PGA_B, 0x80 },	/* r09 Input B Select */
-	{ CS42L52_ANALOG_HPF_CTL, 0xA5 },	/* r0A Analog HPF Ctl */
-	{ CS42L52_ADC_HPF_FREQ, 0x00 },	/* r0B ADC HPF Corner Freq */
-	{ CS42L52_ADC_MISC_CTL, 0x00 },	/* r0C Misc. ADC Ctl */
-	{ CS42L52_PB_CTL1, 0x60 },	/* r0D Playback Ctl 1 */
-	{ CS42L52_MISC_CTL, 0x02 },	/* r0E Misc. Ctl */
-	{ CS42L52_PB_CTL2, 0x00 },	/* r0F Playback Ctl 2 */
-	{ CS42L52_MICA_CTL, 0x00 },	/* r10 MICA Amp Ctl */
-	{ CS42L52_MICB_CTL, 0x00 },	/* r11 MICB Amp Ctl */
-	{ CS42L52_PGAA_CTL, 0x00 },	/* r12 PGAA Vol, Misc. */
-	{ CS42L52_PGAB_CTL, 0x00 },	/* r13 PGAB Vol, Misc. */
-	{ CS42L52_PASSTHRUA_VOL, 0x00 },	/* r14 Bypass A Vol */
-	{ CS42L52_PASSTHRUB_VOL, 0x00 },	/* r15 Bypass B Vol */
-	{ CS42L52_ADCA_VOL, 0x00 },	/* r16 ADCA Volume */
-	{ CS42L52_ADCB_VOL, 0x00 },	/* r17 ADCB Volume */
-	{ CS42L52_ADCA_MIXER_VOL, 0x80 },	/* r18 ADCA Mixer Volume */
-	{ CS42L52_ADCB_MIXER_VOL, 0x80 },	/* r19 ADCB Mixer Volume */
-	{ CS42L52_PCMA_MIXER_VOL, 0x00 },	/* r1A PCMA Mixer Volume */
-	{ CS42L52_PCMB_MIXER_VOL, 0x00 },	/* r1B PCMB Mixer Volume */
-	{ CS42L52_BEEP_FREQ, 0x00 },	/* r1C Beep Freq on Time */
-	{ CS42L52_BEEP_VOL, 0x00 },	/* r1D Beep Volume off Time */
-	{ CS42L52_BEEP_TONE_CTL, 0x00 },	/* r1E Beep Tone Cfg. */
-	{ CS42L52_TONE_CTL, 0x00 },	/* r1F Tone Ctl */
-	{ CS42L52_MASTERA_VOL, 0x00 },	/* r20 Master A Volume */
-	{ CS42L52_MASTERB_VOL, 0x00 },	/* r21 Master B Volume */
-	{ CS42L52_HPA_VOL, 0x00 },	/* r22 Headphone A Volume */
-	{ CS42L52_HPB_VOL, 0x00 },	/* r23 Headphone B Volume */
-	{ CS42L52_SPKA_VOL, 0x00 },	/* r24 Speaker A Volume */
-	{ CS42L52_SPKB_VOL, 0x00 },	/* r25 Speaker B Volume */
-	{ CS42L52_ADC_PCM_MIXER, 0x00 },	/* r26 Channel Mixer and Swap */
-	{ CS42L52_LIMITER_CTL1, 0x00 },	/* r27 Limit Ctl 1 Thresholds */
-	{ CS42L52_LIMITER_CTL2, 0x7F },	/* r28 Limit Ctl 2 Release Rate */
-	{ CS42L52_LIMITER_AT_RATE, 0xC0 },	/* r29 Limiter Attack Rate */
-	{ CS42L52_ALC_CTL, 0x00 },	/* r2A ALC Ctl 1 Attack Rate */
-	{ CS42L52_ALC_RATE, 0x3F },	/* r2B ALC Release Rate */
-	{ CS42L52_ALC_THRESHOLD, 0x3f },	/* r2C ALC Thresholds */
-	{ CS42L52_NOISE_GATE_CTL, 0x00 },	/* r2D Noise Gate Ctl */
-	{ CS42L52_CLK_STATUS, 0x00 },	/* r2E Overflow and Clock Status */
-	{ CS42L52_BATT_COMPEN, 0x00 },	/* r2F battery Compensation */
-	{ CS42L52_BATT_LEVEL, 0x00 },	/* r30 VP Battery Level */
-	{ CS42L52_SPK_STATUS, 0x00 },	/* r31 Speaker Status */
-	{ CS42L52_TEM_CTL, 0x3B },	/* r32 Temp Ctl */
-	{ CS42L52_THE_FOLDBACK, 0x00 },	/* r33 Foldback */
+	{ CS42L52_PWRCTL1, 0x9F },	 
+	{ CS42L52_PWRCTL2, 0x07 },	 
+	{ CS42L52_PWRCTL3, 0xFF },	 
+	{ CS42L52_CLK_CTL, 0xA0 },	 
+	{ CS42L52_IFACE_CTL1, 0x00 },	 
+	{ CS42L52_ADC_PGA_A, 0x80 },	 
+	{ CS42L52_ADC_PGA_B, 0x80 },	 
+	{ CS42L52_ANALOG_HPF_CTL, 0xA5 },	 
+	{ CS42L52_ADC_HPF_FREQ, 0x00 },	 
+	{ CS42L52_ADC_MISC_CTL, 0x00 },	 
+	{ CS42L52_PB_CTL1, 0x60 },	 
+	{ CS42L52_MISC_CTL, 0x02 },	 
+	{ CS42L52_PB_CTL2, 0x00 },	 
+	{ CS42L52_MICA_CTL, 0x00 },	 
+	{ CS42L52_MICB_CTL, 0x00 },	 
+	{ CS42L52_PGAA_CTL, 0x00 },	 
+	{ CS42L52_PGAB_CTL, 0x00 },	 
+	{ CS42L52_PASSTHRUA_VOL, 0x00 },	 
+	{ CS42L52_PASSTHRUB_VOL, 0x00 },	 
+	{ CS42L52_ADCA_VOL, 0x00 },	 
+	{ CS42L52_ADCB_VOL, 0x00 },	 
+	{ CS42L52_ADCA_MIXER_VOL, 0x80 },	 
+	{ CS42L52_ADCB_MIXER_VOL, 0x80 },	 
+	{ CS42L52_PCMA_MIXER_VOL, 0x00 },	 
+	{ CS42L52_PCMB_MIXER_VOL, 0x00 },	 
+	{ CS42L52_BEEP_FREQ, 0x00 },	 
+	{ CS42L52_BEEP_VOL, 0x00 },	 
+	{ CS42L52_BEEP_TONE_CTL, 0x00 },	 
+	{ CS42L52_TONE_CTL, 0x00 },	 
+	{ CS42L52_MASTERA_VOL, 0x00 },	 
+	{ CS42L52_MASTERB_VOL, 0x00 },	 
+	{ CS42L52_HPA_VOL, 0x00 },	 
+	{ CS42L52_HPB_VOL, 0x00 },	 
+	{ CS42L52_SPKA_VOL, 0x00 },	 
+	{ CS42L52_SPKB_VOL, 0x00 },	 
+	{ CS42L52_ADC_PCM_MIXER, 0x00 },	 
+	{ CS42L52_LIMITER_CTL1, 0x00 },	 
+	{ CS42L52_LIMITER_CTL2, 0x7F },	 
+	{ CS42L52_LIMITER_AT_RATE, 0xC0 },	 
+	{ CS42L52_ALC_CTL, 0x00 },	 
+	{ CS42L52_ALC_RATE, 0x3F },	 
+	{ CS42L52_ALC_THRESHOLD, 0x3f },	 
+	{ CS42L52_NOISE_GATE_CTL, 0x00 },	 
+	{ CS42L52_CLK_STATUS, 0x00 },	 
+	{ CS42L52_BATT_COMPEN, 0x00 },	 
+	{ CS42L52_BATT_LEVEL, 0x00 },	 
+	{ CS42L52_SPK_STATUS, 0x00 },	 
+	{ CS42L52_TEM_CTL, 0x3B },	 
+	{ CS42L52_THE_FOLDBACK, 0x00 },	 
 };
 
 static bool cs42l52_readable_register(struct device *dev, unsigned int reg)
@@ -398,7 +391,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
 	SOC_SINGLE_TLV("Bass Gain Volume",
 			    CS42L52_TONE_CTL, 0, 15, 1, hl_tlv),
 
-	/* Limiter */
+	 
 	SOC_SINGLE_TLV("Limiter Max Threshold Volume",
 		       CS42L52_LIMITER_CTL1, 5, 7, 0, limiter_tlv),
 	SOC_SINGLE_TLV("Limiter Cushion Threshold Volume",
@@ -412,7 +405,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
 	SOC_SINGLE("Limiter ZC Switch", CS42L52_LIMITER_CTL1, 0, 1, 0),
 	SOC_SINGLE("Limiter Switch", CS42L52_LIMITER_CTL2, 7, 1, 0),
 
-	/* ALC */
+	 
 	SOC_SINGLE_TLV("ALC Attack Rate Volume", CS42L52_ALC_CTL,
 		       0, 63, 0, limiter_tlv),
 	SOC_SINGLE_TLV("ALC Release Rate Volume", CS42L52_ALC_RATE,
@@ -428,7 +421,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
 		     CS42L52_PGAB_CTL, 6, 1, 1),
 	SOC_DOUBLE("ALC Capture Switch", CS42L52_ALC_CTL, 6, 7, 1, 0),
 
-	/* Noise gate */
+	 
 	SOC_ENUM("NG Type Switch", ng_type_enum),
 	SOC_SINGLE("NG Enable Switch", CS42L52_NOISE_GATE_CTL, 6, 1, 0),
 	SOC_SINGLE("NG Boost Switch", CS42L52_NOISE_GATE_CTL, 5, 1, 1),
@@ -643,51 +636,51 @@ struct cs42l52_clk_para {
 };
 
 static const struct cs42l52_clk_para clk_map_table[] = {
-	/*8k*/
+	 
 	{12288000, 8000, CLK_QS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{18432000, 8000, CLK_QS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{12000000, 8000, CLK_QS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 0},
 	{24000000, 8000, CLK_QS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 1},
 	{27000000, 8000, CLK_QS_MODE, CLK_32K, CLK_27M_MCLK, CLK_R_125, 0},
 
-	/*11.025k*/
+	 
 	{11289600, 11025, CLK_QS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{16934400, 11025, CLK_QS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 
-	/*16k*/
+	 
 	{12288000, 16000, CLK_HS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{18432000, 16000, CLK_HS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{12000000, 16000, CLK_HS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 0},
 	{24000000, 16000, CLK_HS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 1},
 	{27000000, 16000, CLK_HS_MODE, CLK_32K, CLK_27M_MCLK, CLK_R_125, 1},
 
-	/*22.05k*/
+	 
 	{11289600, 22050, CLK_HS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{16934400, 22050, CLK_HS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 
-	/* 32k */
+	 
 	{12288000, 32000, CLK_SS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{18432000, 32000, CLK_SS_MODE, CLK_32K, CLK_NO_27M, CLK_R_128, 0},
 	{12000000, 32000, CLK_SS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 0},
 	{24000000, 32000, CLK_SS_MODE, CLK_32K, CLK_NO_27M, CLK_R_125, 1},
 	{27000000, 32000, CLK_SS_MODE, CLK_32K, CLK_27M_MCLK, CLK_R_125, 0},
 
-	/* 44.1k */
+	 
 	{11289600, 44100, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{16934400, 44100, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 
-	/* 48k */
+	 
 	{12288000, 48000, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{18432000, 48000, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{12000000, 48000, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_125, 0},
 	{24000000, 48000, CLK_SS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_125, 1},
 	{27000000, 48000, CLK_SS_MODE, CLK_NO_32K, CLK_27M_MCLK, CLK_R_125, 1},
 
-	/* 88.2k */
+	 
 	{11289600, 88200, CLK_DS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{16934400, 88200, CLK_DS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 
-	/* 96k */
+	 
 	{12288000, 96000, CLK_DS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{18432000, 96000, CLK_DS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_128, 0},
 	{12000000, 96000, CLK_DS_MODE, CLK_NO_32K, CLK_NO_27M, CLK_R_125, 0},
@@ -743,7 +736,7 @@ static int cs42l52_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	 /* interface format */
+	  
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= CS42L52_IFACE_CTL1_ADC_FMT_I2S |
@@ -765,7 +758,7 @@ static int cs42l52_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -931,9 +924,7 @@ static void cs42l52_beep_work(struct work_struct *work)
 	snd_soc_dapm_sync(dapm);
 }
 
-/* For usability define a way of injecting beep events for the device -
- * many systems will not have a keyboard.
- */
+ 
 static int cs42l52_beep_event(struct input_dev *dev, unsigned int type,
 			     unsigned int code, int hz)
 {
@@ -953,7 +944,7 @@ static int cs42l52_beep_event(struct input_dev *dev, unsigned int type,
 		return -1;
 	}
 
-	/* Kick the beep from a workqueue */
+	 
 	cs42l52->beep_rate = hz;
 	schedule_work(&cs42l52->beep_work);
 	return 0;
@@ -1063,7 +1054,7 @@ static const struct snd_soc_component_driver soc_component_dev_cs42l52 = {
 	.endianness		= 1,
 };
 
-/* Current and threshold powerup sequence Pg37 */
+ 
 static const struct reg_sequence cs42l52_threshold_patch[] = {
 
 	{ 0x00, 0x99 },
@@ -1179,7 +1170,7 @@ static int cs42l52_i2c_probe(struct i2c_client *i2c_client)
 	dev_info(&i2c_client->dev, "Cirrus Logic CS42L52, Revision: %02X\n",
 		 reg & CS42L52_CHIP_REV_MASK);
 
-	/* Set Platform Data */
+	 
 	if (cs42l52->pdata.mica_diff_cfg)
 		regmap_update_bits(cs42l52->regmap, CS42L52_MICA_CTL,
 				   CS42L52_MIC_CTL_TYPE_MASK,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -12,22 +10,15 @@
 
 #include "8250.h"
 
-/*
- * This hardware is similar to 8250, but its register map is a bit different:
- *   - MMIO32 (regshift = 2)
- *   - FCR is not at 2, but 3
- *   - LCR and MCR are not at 3 and 4, they share 4
- *   - No SCR (Instead, CHAR can be used as a scratch register)
- *   - Divisor latch at 9, no divisor latch access bit
- */
+ 
 
 #define UNIPHIER_UART_REGSHIFT		2
 
-/* bit[15:8] = CHAR, bit[7:0] = FCR */
+ 
 #define UNIPHIER_UART_CHAR_FCR		(3 << (UNIPHIER_UART_REGSHIFT))
-/* bit[15:8] = LCR, bit[7:0] = MCR */
+ 
 #define UNIPHIER_UART_LCR_MCR		(4 << (UNIPHIER_UART_REGSHIFT))
-/* Divisor Latch Register */
+ 
 #define UNIPHIER_UART_DLR		(9 << (UNIPHIER_UART_REGSHIFT))
 
 struct uniphier8250_priv {
@@ -43,14 +34,11 @@ static int __init uniphier_early_console_setup(struct earlycon_device *device,
 	if (!device->port.membase)
 		return -ENODEV;
 
-	/* This hardware always expects MMIO32 register interface. */
+	 
 	device->port.iotype = UPIO_MEM32;
 	device->port.regshift = UNIPHIER_UART_REGSHIFT;
 
-	/*
-	 * Do not touch the divisor register in early_serial8250_setup();
-	 * we assume it has been initialized by a boot loader.
-	 */
+	 
 	device->baud = 0;
 
 	return early_serial8250_setup(device, options);
@@ -59,17 +47,14 @@ OF_EARLYCON_DECLARE(uniphier, "socionext,uniphier-uart",
 		    uniphier_early_console_setup);
 #endif
 
-/*
- * The register map is slightly different from that of 8250.
- * IO callbacks must be overridden for correct access to FCR, LCR, MCR and SCR.
- */
+ 
 static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
 {
 	unsigned int valshift = 0;
 
 	switch (offset) {
 	case UART_SCR:
-		/* No SCR for this hardware.  Use CHAR as a scratch register */
+		 
 		valshift = 8;
 		offset = UNIPHIER_UART_CHAR_FCR;
 		break;
@@ -84,11 +69,7 @@ static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
 		break;
 	}
 
-	/*
-	 * The return value must be masked with 0xff because some registers
-	 * share the same offset that must be accessed by 32-bit write/read.
-	 * 8 or 16 bit access to this hardware result in unexpected behavior.
-	 */
+	 
 	return (readl(p->membase + offset) >> valshift) & 0xff;
 }
 
@@ -99,7 +80,7 @@ static void uniphier_serial_out(struct uart_port *p, int offset, int value)
 
 	switch (offset) {
 	case UART_SCR:
-		/* No SCR for this hardware.  Use CHAR as a scratch register */
+		 
 		valshift = 8;
 		fallthrough;
 	case UART_FCR:
@@ -107,7 +88,7 @@ static void uniphier_serial_out(struct uart_port *p, int offset, int value)
 		break;
 	case UART_LCR:
 		valshift = 8;
-		/* Divisor latch access bit does not exist. */
+		 
 		value &= ~UART_LCR_DLAB;
 		fallthrough;
 	case UART_MCR:
@@ -122,11 +103,7 @@ static void uniphier_serial_out(struct uart_port *p, int offset, int value)
 	if (normal) {
 		writel(value, p->membase + offset);
 	} else {
-		/*
-		 * Special case: two registers share the same address that
-		 * must be 32-bit accessed.  As this is not longer atomic safe,
-		 * take a lock just in case.
-		 */
+		 
 		struct uniphier8250_priv *priv = p->private_data;
 		unsigned long flags;
 		u32 tmp;
@@ -140,11 +117,7 @@ static void uniphier_serial_out(struct uart_port *p, int offset, int value)
 	}
 }
 
-/*
- * This hardware does not have the divisor latch access bit.
- * The divisor latch register exists at different address.
- * Override dl_read/write callbacks.
- */
+ 
 static u32 uniphier_serial_dl_read(struct uart_8250_port *up)
 {
 	return readl(up->port.membase + UNIPHIER_UART_DLR);
@@ -287,7 +260,7 @@ static const struct dev_pm_ops uniphier_uart_pm_ops = {
 
 static const struct of_device_id uniphier_uart_match[] = {
 	{ .compatible = "socionext,uniphier-uart" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_uart_match);
 

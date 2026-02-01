@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/log2.h>
@@ -11,18 +9,18 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
-/* System Bus Controller registers */
-#define UNIPHIER_SBC_BASE	0x100	/* base address of bank0 space */
-#define    UNIPHIER_SBC_BASE_BE		BIT(0)	/* bank_enable */
-#define UNIPHIER_SBC_CTRL0	0x200	/* timing parameter 0 of bank0 */
-#define UNIPHIER_SBC_CTRL1	0x204	/* timing parameter 1 of bank0 */
-#define UNIPHIER_SBC_CTRL2	0x208	/* timing parameter 2 of bank0 */
-#define UNIPHIER_SBC_CTRL3	0x20c	/* timing parameter 3 of bank0 */
-#define UNIPHIER_SBC_CTRL4	0x300	/* timing parameter 4 of bank0 */
+ 
+#define UNIPHIER_SBC_BASE	0x100	 
+#define    UNIPHIER_SBC_BASE_BE		BIT(0)	 
+#define UNIPHIER_SBC_CTRL0	0x200	 
+#define UNIPHIER_SBC_CTRL1	0x204	 
+#define UNIPHIER_SBC_CTRL2	0x208	 
+#define UNIPHIER_SBC_CTRL3	0x20c	 
+#define UNIPHIER_SBC_CTRL4	0x300	 
 
-#define UNIPHIER_SBC_STRIDE	0x10	/* register stride to next bank */
-#define UNIPHIER_SBC_NR_BANKS	8	/* number of banks (chip select) */
-#define UNIPHIER_SBC_BASE_DUMMY	0xffffffff	/* data to squash bank 0, 1 */
+#define UNIPHIER_SBC_STRIDE	0x10	 
+#define UNIPHIER_SBC_NR_BANKS	8	 
+#define UNIPHIER_SBC_BASE_DUMMY	0xffffffff	 
 
 struct uniphier_system_bus_bank {
 	u32 base;
@@ -122,10 +120,7 @@ static void uniphier_system_bus_check_boot_swap(
 
 	dev_dbg(priv->dev, "Boot Swap: %s\n", is_swapped ? "on" : "off");
 
-	/*
-	 * If BOOT_SWAP was asserted on power-on-reset, the CS0 and CS1 are
-	 * swapped.  In this case, bank0 and bank1 should be swapped as well.
-	 */
+	 
 	if (is_swapped)
 		swap(priv->bank[0], priv->bank[1]);
 }
@@ -142,19 +137,7 @@ static void uniphier_system_bus_set_reg(
 		end = priv->bank[i].end;
 
 		if (base == end) {
-			/*
-			 * If SBC_BASE0 or SBC_BASE1 is set to zero, the access
-			 * to anywhere in the system bus space is routed to
-			 * bank 0 (if boot swap if off) or bank 1 (if boot swap
-			 * if on).  It means that CPUs cannot get access to
-			 * bank 2 or later.  In other words, bank 0/1 cannot
-			 * be disabled even if its bank_enable bits is cleared.
-			 * This seems odd, but it is how this hardware goes.
-			 * As a workaround, dummy data (0xffffffff) should be
-			 * set when the bank 0/1 is unused.  As for bank 2 and
-			 * later, they can be simply disable by clearing the
-			 * bank_enable bit.
-			 */
+			 
 			if (i < 2)
 				val = UNIPHIER_SBC_BASE_DUMMY;
 			else
@@ -215,7 +198,7 @@ static int uniphier_system_bus_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Now, the bus is configured.  Populate platform_devices below it */
+	 
 	return of_platform_default_populate(dev->of_node, NULL, dev);
 }
 
@@ -232,7 +215,7 @@ static const struct dev_pm_ops uniphier_system_bus_pm_ops = {
 
 static const struct of_device_id uniphier_system_bus_match[] = {
 	{ .compatible = "socionext,uniphier-system-bus" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_system_bus_match);
 

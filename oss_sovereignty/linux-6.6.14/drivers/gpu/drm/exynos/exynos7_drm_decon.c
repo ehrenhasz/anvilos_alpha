@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* drivers/gpu/drm/exynos/exynos7_drm_decon.c
- *
- * Copyright (C) 2014 Samsung Electronics Co.Ltd
- * Authors:
- *	Akshu Agarwal <akshua@gmail.com>
- *	Ajay Kumar <ajaykumar.rs@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -29,9 +23,7 @@
 #include "exynos_drm_plane.h"
 #include "regs-decon7.h"
 
-/*
- * DECON stands for Display and Enhancement controller.
- */
+ 
 
 #define MIN_FB_WIDTH_FOR_16WORD_BURST 128
 
@@ -90,10 +82,7 @@ static void decon_wait_for_vblank(struct exynos_drm_crtc *crtc)
 
 	atomic_set(&ctx->wait_vsync_event, 1);
 
-	/*
-	 * wait for DECON to signal VSYNC interrupt or return after
-	 * timeout which is set to 50ms (refresh rate of 20).
-	 */
+	 
 	if (!wait_event_timeout(ctx->wait_vsync_queue,
 				!atomic_read(&ctx->wait_vsync_event),
 				HZ/20))
@@ -105,7 +94,7 @@ static void decon_clear_channels(struct exynos_drm_crtc *crtc)
 	struct decon_context *ctx = crtc->ctx;
 	unsigned int win, ch_enabled = 0;
 
-	/* Check if any channel is enabled. */
+	 
 	for (win = 0; win < WINDOWS_NR; win++) {
 		u32 val = readl(ctx->regs + WINCON(win));
 
@@ -116,7 +105,7 @@ static void decon_clear_channels(struct exynos_drm_crtc *crtc)
 		}
 	}
 
-	/* Wait for vsync, as disable channel takes effect at next vsync */
+	 
 	if (ch_enabled)
 		decon_wait_for_vblank(ctx->crtc);
 }
@@ -133,7 +122,7 @@ static int decon_ctx_initialize(struct decon_context *ctx,
 
 static void decon_ctx_remove(struct decon_context *ctx)
 {
-	/* detach this sub driver from iommu mapping if supported. */
+	 
 	exynos_drm_unregister_dma(ctx->drm_dev, ctx->dev, &ctx->dma_priv);
 }
 
@@ -143,7 +132,7 @@ static u32 decon_calc_clkdiv(struct decon_context *ctx,
 	unsigned long ideal_clk = mode->clock;
 	u32 clkdiv;
 
-	/* Find the clock divider value that gets us closest to ideal_clk */
+	 
 	clkdiv = DIV_ROUND_UP(clk_get_rate(ctx->vclk), ideal_clk);
 
 	return (clkdiv < 0x100) ? clkdiv : 0xff;
@@ -158,13 +147,13 @@ static void decon_commit(struct exynos_drm_crtc *crtc)
 	if (ctx->suspended)
 		return;
 
-	/* nothing to do if we haven't set the mode yet */
+	 
 	if (mode->htotal == 0 || mode->vtotal == 0)
 		return;
 
 	if (!ctx->i80_if) {
 		int vsync_len, vbpd, vfpd, hsync_len, hbpd, hfpd;
-	      /* setup vertical timing values. */
+	       
 		vsync_len = mode->crtc_vsync_end - mode->crtc_vsync_start;
 		vbpd = mode->crtc_vtotal - mode->crtc_vsync_end;
 		vfpd = mode->crtc_vsync_start - mode->crtc_vdisplay;
@@ -175,12 +164,12 @@ static void decon_commit(struct exynos_drm_crtc *crtc)
 		val = VIDTCON1_VSPW(vsync_len - 1);
 		writel(val, ctx->regs + VIDTCON1);
 
-		/* setup horizontal timing values.  */
+		 
 		hsync_len = mode->crtc_hsync_end - mode->crtc_hsync_start;
 		hbpd = mode->crtc_htotal - mode->crtc_hsync_end;
 		hfpd = mode->crtc_hsync_start - mode->crtc_hdisplay;
 
-		/* setup horizontal timing values.  */
+		 
 		val = VIDTCON2_HBPD(hbpd - 1) | VIDTCON2_HFPD(hfpd - 1);
 		writel(val, ctx->regs + VIDTCON2);
 
@@ -188,17 +177,14 @@ static void decon_commit(struct exynos_drm_crtc *crtc)
 		writel(val, ctx->regs + VIDTCON3);
 	}
 
-	/* setup horizontal and vertical display size. */
+	 
 	val = VIDTCON4_LINEVAL(mode->vdisplay - 1) |
 	       VIDTCON4_HOZVAL(mode->hdisplay - 1);
 	writel(val, ctx->regs + VIDTCON4);
 
 	writel(mode->vdisplay - 1, ctx->regs + LINECNT_OP_THRESHOLD);
 
-	/*
-	 * fields of register with prefix '_F' would be updated
-	 * at vsync(same as dma start)
-	 */
+	 
 	val = VIDCON0_ENVID | VIDCON0_ENVID_F;
 	writel(val, ctx->regs + VIDCON0);
 
@@ -313,13 +299,7 @@ static void decon_win_set_pixfmt(struct decon_context *ctx, unsigned int win,
 
 	DRM_DEV_DEBUG_KMS(ctx->dev, "cpp = %d\n", fb->format->cpp[0]);
 
-	/*
-	 * In case of exynos, setting dma-burst to 16Word causes permanent
-	 * tearing for very small buffers, e.g. cursor buffer. Burst Mode
-	 * switching which is based on plane size is not recommended as
-	 * plane size varies a lot towards the end of the screen and rapid
-	 * movement causes unstable DMA which results into iommu crash/tear.
-	 */
+	 
 
 	padding = (fb->pitches[0] / fb->format->cpp[0]) - fb->width;
 	if (fb->width + padding < MIN_FB_WIDTH_FOR_16WORD_BURST) {
@@ -343,13 +323,7 @@ static void decon_win_set_colkey(struct decon_context *ctx, unsigned int win)
 	writel(keycon1, ctx->regs + WKEYCON1_BASE(win));
 }
 
-/**
- * decon_shadow_protect_win() - disable updating values from shadow registers at vsync
- *
- * @ctx: display and enhancement controller context
- * @win: window to protect registers for
- * @protect: 1 to protect (disable updates)
- */
+ 
 static void decon_shadow_protect_win(struct decon_context *ctx,
 				     unsigned int win, bool protect)
 {
@@ -395,27 +369,19 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 	if (ctx->suspended)
 		return;
 
-	/*
-	 * SHADOWCON/PRTCON register is used for enabling timing.
-	 *
-	 * for example, once only width value of a register is set,
-	 * if the dma is started then decon hardware could malfunction so
-	 * with protect window setting, the register fields with prefix '_F'
-	 * wouldn't be updated at vsync also but updated once unprotect window
-	 * is set.
-	 */
+	 
 
-	/* buffer start address */
+	 
 	val = (unsigned long)exynos_drm_fb_dma_addr(fb, 0);
 	writel(val, ctx->regs + VIDW_BUF_START(win));
 
 	padding = (pitch / cpp) - fb->width;
 
-	/* buffer size */
+	 
 	writel(fb->width + padding, ctx->regs + VIDW_WHOLE_X(win));
 	writel(fb->height, ctx->regs + VIDW_WHOLE_Y(win));
 
-	/* offset from the start of the buffer to read */
+	 
 	writel(state->src.x, ctx->regs + VIDW_OFFSET_X(win));
 	writel(state->src.y, ctx->regs + VIDW_OFFSET_Y(win));
 
@@ -442,7 +408,7 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "osd pos: tx = %d, ty = %d, bx = %d, by = %d\n",
 			state->crtc.x, state->crtc.y, last_x, last_y);
 
-	/* OSD alpha */
+	 
 	alpha = VIDOSDxC_ALPHA0_R_F(0x0) |
 			VIDOSDxC_ALPHA0_G_F(0x0) |
 			VIDOSDxC_ALPHA0_B_F(0x0);
@@ -457,17 +423,17 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 
 	decon_win_set_pixfmt(ctx, win, fb);
 
-	/* hardware window 0 doesn't support color key. */
+	 
 	if (win != 0)
 		decon_win_set_colkey(ctx, win);
 
-	/* wincon */
+	 
 	val = readl(ctx->regs + WINCON(win));
 	val |= WINCONx_TRIPLE_BUF_MODE;
 	val |= WINCONx_ENWIN;
 	writel(val, ctx->regs + WINCON(win));
 
-	/* Enable DMA channel and unprotect windows */
+	 
 	decon_shadow_protect_win(ctx, win, false);
 
 	val = readl(ctx->regs + DECON_UPDATE);
@@ -485,10 +451,10 @@ static void decon_disable_plane(struct exynos_drm_crtc *crtc,
 	if (ctx->suspended)
 		return;
 
-	/* protect windows */
+	 
 	decon_shadow_protect_win(ctx, win, true);
 
-	/* wincon */
+	 
 	val = readl(ctx->regs + WINCON(win));
 	val &= ~WINCONx_ENWIN;
 	writel(val, ctx->regs + WINCON(win));
@@ -544,7 +510,7 @@ static void decon_atomic_enable(struct exynos_drm_crtc *crtc)
 
 	decon_init(ctx);
 
-	/* if vblank was enabled status, enable it again. */
+	 
 	if (test_and_clear_bit(0, &ctx->irq_flags))
 		decon_enable_vblank(ctx->crtc);
 
@@ -561,11 +527,7 @@ static void decon_atomic_disable(struct exynos_drm_crtc *crtc)
 	if (ctx->suspended)
 		return;
 
-	/*
-	 * We need to make sure that all windows are disabled before we
-	 * suspend that connector. Otherwise we might try to scan from
-	 * a destroyed buffer later.
-	 */
+	 
 	for (i = 0; i < WINDOWS_NR; i++)
 		decon_disable_plane(crtc, &ctx->planes[i]);
 
@@ -597,14 +559,14 @@ static irqreturn_t decon_irq_handler(int irq, void *dev_id)
 	if (val & clear_bit)
 		writel(clear_bit, ctx->regs + VIDINTCON1);
 
-	/* check the crtc is detached already from encoder */
+	 
 	if (!ctx->drm_dev)
 		goto out;
 
 	if (!ctx->i80_if) {
 		drm_crtc_handle_vblank(&ctx->crtc->base);
 
-		/* set wait vsync event to zero and wake up queue. */
+		 
 		if (atomic_read(&ctx->wait_vsync_event)) {
 			atomic_set(&ctx->wait_vsync_event, 0);
 			wake_up(&ctx->wait_vsync_queue);

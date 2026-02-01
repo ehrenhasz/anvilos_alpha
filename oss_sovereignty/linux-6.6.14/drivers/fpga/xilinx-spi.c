@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xilinx Spartan6 and 7 Series Slave Serial SPI Driver
- *
- * Copyright (C) 2017 DENX Software Engineering
- *
- * Anatolij Gustschin <agust@denx.de>
- *
- * Manage Xilinx FPGA firmware that is loaded over SPI using
- * the slave serial configuration interface.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -48,18 +39,7 @@ static enum fpga_mgr_states xilinx_spi_state(struct fpga_manager *mgr)
 	return FPGA_MGR_STATE_UNKNOWN;
 }
 
-/**
- * wait_for_init_b - wait for the INIT_B pin to have a given state, or wait
- * a given delay if the pin is unavailable
- *
- * @mgr:        The FPGA manager object
- * @value:      Value INIT_B to wait for (1 = asserted = low)
- * @alt_udelay: Delay to wait if the INIT_B GPIO is not available
- *
- * Returns 0 when the INIT_B GPIO reached the given state or -ETIMEDOUT if
- * too much time passed waiting for that. If no INIT_B GPIO is available
- * then always return 0.
- */
+ 
 static int wait_for_init_b(struct fpga_manager *mgr, int value,
 			   unsigned long alt_udelay)
 {
@@ -105,7 +85,7 @@ static int xilinx_spi_write_init(struct fpga_manager *mgr,
 
 	gpiod_set_value(conf->prog_b, 1);
 
-	err = wait_for_init_b(mgr, 1, 1); /* min is 500 ns */
+	err = wait_for_init_b(mgr, 1, 1);  
 	if (err) {
 		gpiod_set_value(conf->prog_b, 0);
 		return err;
@@ -122,7 +102,7 @@ static int xilinx_spi_write_init(struct fpga_manager *mgr,
 		return -EIO;
 	}
 
-	/* program latency */
+	 
 	usleep_range(7500, 7600);
 	return 0;
 }
@@ -175,11 +155,7 @@ static int xilinx_spi_write_complete(struct fpga_manager *mgr,
 	int done;
 	int ret;
 
-	/*
-	 * This loop is carefully written such that if the driver is
-	 * scheduled out for more than 'timeout', we still check for DONE
-	 * before giving up and we apply 8 extra CCLK cycles in all cases.
-	 */
+	 
 	while (!expired) {
 		expired = time_after(jiffies, timeout);
 
@@ -231,7 +207,7 @@ static int xilinx_spi_probe(struct spi_device *spi)
 
 	conf->spi = spi;
 
-	/* PROGRAM_B is active low */
+	 
 	conf->prog_b = devm_gpiod_get(&spi->dev, "prog_b", GPIOD_OUT_LOW);
 	if (IS_ERR(conf->prog_b))
 		return dev_err_probe(&spi->dev, PTR_ERR(conf->prog_b),

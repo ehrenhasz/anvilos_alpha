@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: utility functions
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_UTIL_H_
 #define _MWIFIEX_UTIL_H_
@@ -23,19 +19,19 @@ struct mwifiex_cb {
 	};
 };
 
-/* size/addr for mwifiex_debug_info */
+ 
 #define item_size(n)		(sizeof_field(struct mwifiex_debug_info, n))
 #define item_addr(n)		(offsetof(struct mwifiex_debug_info, n))
 
-/* size/addr for struct mwifiex_adapter */
+ 
 #define adapter_item_size(n)	(sizeof_field(struct mwifiex_adapter, n))
 #define adapter_item_addr(n)	(offsetof(struct mwifiex_adapter, n))
 
 struct mwifiex_debug_data {
-	char name[32];		/* variable/array name */
-	u32 size;		/* size of the variable/array */
-	size_t addr;		/* address of the variable/array */
-	int num;		/* number of variables in an array */
+	char name[32];		 
+	u32 size;		 
+	size_t addr;		 
+	int num;		 
 };
 
 static inline struct mwifiex_rxinfo *MWIFIEX_SKB_RXCB(struct sk_buff *skb)
@@ -86,4 +82,4 @@ static inline void le16_unaligned_add_cpu(__le16 *var, u16 val)
 	put_unaligned_le16(get_unaligned_le16(var) + val, var);
 }
 
-#endif /* !_MWIFIEX_UTIL_H_ */
+#endif  

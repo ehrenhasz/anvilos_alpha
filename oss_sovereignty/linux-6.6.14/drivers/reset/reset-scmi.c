@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM System Control and Management Interface (ARM SCMI) reset driver
- *
- * Copyright (C) 2019-2021 ARM Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -13,11 +9,7 @@
 
 static const struct scmi_reset_proto_ops *reset_ops;
 
-/**
- * struct scmi_reset_data - reset controller information structure
- * @rcdev: reset controller entity
- * @ph: ARM SCMI protocol handle used for communication with system controller
- */
+ 
 struct scmi_reset_data {
 	struct reset_controller_dev rcdev;
 	const struct scmi_protocol_handle *ph;
@@ -26,16 +18,7 @@ struct scmi_reset_data {
 #define to_scmi_reset_data(p)	container_of((p), struct scmi_reset_data, rcdev)
 #define to_scmi_handle(p)	(to_scmi_reset_data(p)->ph)
 
-/**
- * scmi_reset_assert() - assert device reset
- * @rcdev: reset controller entity
- * @id: ID of the reset to be asserted
- *
- * This function implements the reset driver op to assert a device's reset
- * using the ARM SCMI protocol.
- *
- * Return: 0 for successful request, else a corresponding error value
- */
+ 
 static int
 scmi_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
 {
@@ -44,16 +27,7 @@ scmi_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
 	return reset_ops->assert(ph, id);
 }
 
-/**
- * scmi_reset_deassert() - deassert device reset
- * @rcdev: reset controller entity
- * @id: ID of the reset to be deasserted
- *
- * This function implements the reset driver op to deassert a device's reset
- * using the ARM SCMI protocol.
- *
- * Return: 0 for successful request, else a corresponding error value
- */
+ 
 static int
 scmi_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
 {
@@ -62,16 +36,7 @@ scmi_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
 	return reset_ops->deassert(ph, id);
 }
 
-/**
- * scmi_reset_reset() - reset the device
- * @rcdev: reset controller entity
- * @id: ID of the reset signal to be reset(assert + deassert)
- *
- * This function implements the reset driver op to trigger a device's
- * reset signal using the ARM SCMI protocol.
- *
- * Return: 0 for successful request, else a corresponding error value
- */
+ 
 static int
 scmi_reset_reset(struct reset_controller_dev *rcdev, unsigned long id)
 {

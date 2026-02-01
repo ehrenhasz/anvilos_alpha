@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Silicon Labs Si2146/2147/2148/2157/2158 silicon tuner driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef SI2157_PRIV_H
 #define SI2157_PRIV_H
@@ -19,7 +15,7 @@ enum si2157_pads {
 	SI2157_NUM_PADS
 };
 
-/* state struct */
+ 
 struct si2157_dev {
 	struct mutex i2c_mutex;
 	struct dvb_frontend *fe;
@@ -58,7 +54,7 @@ struct si2157_tuner_info {
 	const char		*fw_name, *fw_alt_name;
 };
 
-/* firmware command struct */
+ 
 #define SI2157_ARGLEN      30
 struct si2157_cmd {
 	u8 args[SI2157_ARGLEN];
@@ -74,12 +70,12 @@ struct si2157_cmd {
 #define SUPPORTS_ATV_IF(dev) (((dev)->part_id == SI2157) || \
 			      ((dev)->part_id == SI2158))
 
-/* Old firmware namespace */
+ 
 #define SI2158_A20_FIRMWARE "dvb-tuner-si2158-a20-01.fw"
 #define SI2141_A10_FIRMWARE "dvb-tuner-si2141-a10-01.fw"
 #define SI2157_A30_FIRMWARE "dvb-tuner-si2157-a30-01.fw"
 
-/* New firmware namespace */
+ 
 #define SI2141_60_FIRMWARE "dvb_driver_si2141_rom60.fw"
 #define SI2141_61_FIRMWARE "dvb_driver_si2141_rom61.fw"
 #define SI2146_11_FIRMWARE "dvb_driver_si2146_rom11.fw"

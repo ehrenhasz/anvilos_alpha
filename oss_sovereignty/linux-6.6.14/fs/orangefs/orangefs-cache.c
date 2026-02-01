@@ -1,20 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
 
-/* tags assigned to kernel upcall operations */
+ 
 static __u64 next_tag_value;
 static DEFINE_SPINLOCK(next_tag_value_lock);
 
-/* the orangefs memory caches */
+ 
 
-/* a cache for orangefs upcall/downcall operations */
+ 
 static struct kmem_cache *op_cache;
 
 int op_cache_initialize(void)
@@ -30,7 +26,7 @@ int op_cache_initialize(void)
 		return -ENOMEM;
 	}
 
-	/* initialize our atomic tag counter */
+	 
 	spin_lock(&next_tag_value_lock);
 	next_tag_value = 100;
 	spin_unlock(&next_tag_value_lock);
@@ -129,7 +125,7 @@ struct orangefs_kernel_op_s *op_alloc(__s32 type)
 
 		new_op->op_state = OP_VFS_STATE_UNKNOWN;
 
-		/* initialize the op specific tag and upcall credentials */
+		 
 		orangefs_new_tag(new_op);
 		new_op->upcall.type = type;
 		new_op->attempts = 0;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tests for Generic Reed Solomon encoder / decoder library
- *
- * Written by Ferdinand Blomqvist
- * Based on previous work by Phil Karn, KA9Q
- */
+
+ 
 #include <linux/rslib.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -42,7 +37,7 @@ struct etab {
 	int	ntrials;
 };
 
-/* List of codes to test */
+ 
 static struct etab Tab[] = {
 	{2,	0x7,	1,	1,	1,	100000	},
 	{3,	0xb,	1,	1,	2,	100000	},
@@ -74,10 +69,10 @@ struct bcstat {
 };
 
 struct wspace {
-	uint16_t	*c;		/* sent codeword */
-	uint16_t	*r;		/* received word */
-	uint16_t	*s;		/* syndrome */
-	uint16_t	*corr;		/* correction buffer */
+	uint16_t	*c;		 
+	uint16_t	*r;		 
+	uint16_t	*s;		 
+	uint16_t	*corr;		 
 	int		*errlocs;
 	int		*derrlocs;
 };
@@ -137,17 +132,7 @@ err:
 }
 
 
-/*
- * Generates a random codeword and stores it in c. Generates random errors and
- * erasures, and stores the random word with errors in r. Erasure positions are
- * stored in derrlocs, while errlocs has one of three values in every position:
- *
- * 0 if there is no error in this position;
- * 1 if there is a symbol error in this position;
- * 2 if there is an erasure without symbol corruption.
- *
- * Returns the number of corrupted symbols.
- */
+ 
 static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
 			int len, int errs, int eras)
 {
@@ -162,27 +147,27 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
 	int errloc;
 	int i;
 
-	/* Load c with random data and encode */
+	 
 	for (i = 0; i < dlen; i++)
 		c[i] = get_random_u32() & nn;
 
 	memset(c + dlen, 0, nroots * sizeof(*c));
 	encode_rs16(rs, c, dlen, c + dlen, 0);
 
-	/* Make copyand add errors and erasures */
+	 
 	memcpy(r, c, len * sizeof(*r));
 	memset(errlocs, 0, len * sizeof(*errlocs));
 	memset(derrlocs, 0, nroots * sizeof(*derrlocs));
 
-	/* Generating random errors */
+	 
 	for (i = 0; i < errs; i++) {
 		do {
-			/* Error value must be nonzero */
+			 
 			errval = get_random_u32() & nn;
 		} while (errval == 0);
 
 		do {
-			/* Must not choose the same location twice */
+			 
 			errloc = get_random_u32_below(len);
 		} while (errlocs[errloc] != 0);
 
@@ -190,22 +175,22 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
 		r[errloc] ^= errval;
 	}
 
-	/* Generating random erasures */
+	 
 	for (i = 0; i < eras; i++) {
 		do {
-			/* Must not choose the same location twice */
+			 
 			errloc = get_random_u32_below(len);
 		} while (errlocs[errloc] != 0);
 
 		derrlocs[i] = errloc;
 
 		if (ewsc && get_random_u32_below(2)) {
-			/* Erasure with the symbol intact */
+			 
 			errlocs[errloc] = 2;
 		} else {
-			/* Erasure with corrupted symbol */
+			 
 			do {
-				/* Error value must be nonzero */
+				 
 				errval = get_random_u32() & nn;
 			} while (errval == 0);
 
@@ -237,7 +222,7 @@ static void compute_syndrome(struct rs_control *rsc, uint16_t *data,
 	int fcr = rs->fcr;
 	int i, j;
 
-	/* Calculating syndrome */
+	 
 	for (i = 0; i < nroots; i++) {
 		syn[i] = data[0];
 		for (j = 1; j < len; j++) {
@@ -251,12 +236,12 @@ static void compute_syndrome(struct rs_control *rsc, uint16_t *data,
 		}
 	}
 
-	/* Convert to index form */
+	 
 	for (i = 0; i < nroots; i++)
 		syn[i] = rs->index_of[syn[i]];
 }
 
-/* Test up to error correction capacity */
+ 
 static void test_uc(struct rs_control *rs, int len, int errs,
 		int eras, int trials, struct estat *stat,
 		struct wspace *ws, int method)
@@ -362,7 +347,7 @@ static int exercise_rs(struct rs_control *rs, struct wspace *ws,
 	return retval;
 }
 
-/* Tests for correct behaviour beyond error correction capacity */
+ 
 static void test_bc(struct rs_control *rs, int len, int errs,
 		int eras, int trials, struct bcstat *stat,
 		struct wspace *ws)
@@ -383,15 +368,7 @@ static void test_bc(struct rs_control *rs, int len, int errs,
 		if (derrs >= 0) {
 			stat->rsuccess++;
 
-			/*
-			 * We check that the returned word is actually a
-			 * codeword. The obvious way to do this would be to
-			 * compute the syndrome, but we don't want to replicate
-			 * that code here. However, all the codes are in
-			 * systematic form, and therefore we can encode the
-			 * returned word, and see whether the parity changes or
-			 * not.
-			 */
+			 
 			memset(corr, 0, nroots * sizeof(*corr));
 			encode_rs16(rs, r, dlen, corr, 0);
 
@@ -503,7 +480,7 @@ static int __init test_rslib_init(void)
 	else
 		pr_info("rslib: test ok\n");
 
-	return -EAGAIN; /* Fail will directly unload the module */
+	return -EAGAIN;  
 }
 
 static void __exit test_rslib_exit(void)

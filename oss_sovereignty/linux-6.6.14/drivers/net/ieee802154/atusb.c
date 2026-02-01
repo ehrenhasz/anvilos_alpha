@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * atusb.c - Driver for the ATUSB IEEE 802.15.4 dongle
- *
- * Written 2013 by Werner Almesberger <werner@almesberger.net>
- *
- * Copyright (c) 2015 - 2016 Stefan Schmidt <stefan@datenfreihafen.org>
- *
- * Based on at86rf230.c and spi_atusb.c.
- * at86rf230.c is
- * Copyright (C) 2009 Siemens AG
- * Written by: Dmitry Eremin-Solenikov <dmitry.baryshkov@siemens.com>
- *
- * spi_atusb.c is
- * Copyright (c) 2011 Richard Sharpe <realrichardsharpe@gmail.com>
- * Copyright (c) 2011 Stefan Schmidt <stefan@datenfreihafen.org>
- * Copyright (c) 2011 Werner Almesberger <werner@almesberger.net>
- *
- * USB initialization is
- * Copyright (c) 2013 Alexander Aring <alex.aring@gmail.com>
- *
- * Busware HUL support is
- * Copyright (c) 2017 Josef Filzmaier <j.filzmaier@gmx.at>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -36,34 +14,34 @@
 #include "at86rf230.h"
 #include "atusb.h"
 
-#define ATUSB_JEDEC_ATMEL	0x1f	/* JEDEC manufacturer ID */
+#define ATUSB_JEDEC_ATMEL	0x1f	 
 
-#define ATUSB_NUM_RX_URBS	4	/* allow for a bit of local latency */
-#define ATUSB_ALLOC_DELAY_MS	100	/* delay after failed allocation */
-#define ATUSB_TX_TIMEOUT_MS	200	/* on the air timeout */
+#define ATUSB_NUM_RX_URBS	4	 
+#define ATUSB_ALLOC_DELAY_MS	100	 
+#define ATUSB_TX_TIMEOUT_MS	200	 
 
 struct atusb {
 	struct ieee802154_hw *hw;
 	struct usb_device *usb_dev;
 	struct atusb_chip_data *data;
-	int shutdown;			/* non-zero if shutting down */
-	int err;			/* set by first error */
+	int shutdown;			 
+	int err;			 
 
-	/* RX variables */
-	struct delayed_work work;	/* memory allocations */
-	struct usb_anchor idle_urbs;	/* URBs waiting to be submitted */
-	struct usb_anchor rx_urbs;	/* URBs waiting for reception */
+	 
+	struct delayed_work work;	 
+	struct usb_anchor idle_urbs;	 
+	struct usb_anchor rx_urbs;	 
 
-	/* TX variables */
+	 
 	struct usb_ctrlrequest tx_dr;
 	struct urb *tx_urb;
 	struct sk_buff *tx_skb;
-	u8 tx_ack_seq;		/* current TX ACK sequence number */
+	u8 tx_ack_seq;		 
 
-	/* Firmware variable */
-	unsigned char fw_ver_maj;	/* Firmware major version number */
-	unsigned char fw_ver_min;	/* Firmware minor version number */
-	unsigned char fw_hw_type;	/* Firmware hardware type */
+	 
+	unsigned char fw_ver_maj;	 
+	unsigned char fw_ver_min;	 
+	unsigned char fw_hw_type;	 
 };
 
 struct atusb_chip_data {
@@ -88,9 +66,7 @@ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
 	if (ret < 0)
 		return ret;
 
-	/* Write the value only into that part of the register which is allowed
-	 * by the mask. All other bits stay as before.
-	 */
+	 
 	tmp = orig & ~mask;
 	tmp |= (value << shift) & mask;
 
@@ -125,10 +101,10 @@ static int atusb_get_and_clear_error(struct atusb *atusb)
 	return err;
 }
 
-/* ----- skb allocation ---------------------------------------------------- */
+ 
 
 #define MAX_PSDU	127
-#define MAX_RX_XFER	(1 + MAX_PSDU + 2 + 1)	/* PHR+PSDU+CRC+LQI */
+#define MAX_RX_XFER	(1 + MAX_PSDU + 2 + 1)	 
 
 #define SKB_ATUSB(skb)	(*(struct atusb **)(skb)->cb)
 
@@ -189,7 +165,7 @@ static void atusb_work_urbs(struct work_struct *work)
 			      msecs_to_jiffies(ATUSB_ALLOC_DELAY_MS) + 1);
 }
 
-/* ----- Asynchronous USB -------------------------------------------------- */
+ 
 
 static void atusb_tx_done(struct atusb *atusb, u8 seq, int reason)
 {
@@ -198,17 +174,13 @@ static void atusb_tx_done(struct atusb *atusb, u8 seq, int reason)
 
 	dev_dbg(&usb_dev->dev, "%s (0x%02x/0x%02x)\n", __func__, seq, expect);
 	if (seq == expect) {
-		/* TODO check for ifs handling in firmware */
+		 
 		if (reason == IEEE802154_SUCCESS)
 			ieee802154_xmit_complete(atusb->hw, atusb->tx_skb, false);
 		else
 			ieee802154_xmit_error(atusb->hw, atusb->tx_skb, reason);
 	} else {
-		/* TODO I experience this case when atusb has a tx complete
-		 * irq before probing, we should fix the firmware it's an
-		 * unlikely case now that seq == expect is then true, but can
-		 * happen and fail with a tx_skb = NULL;
-		 */
+		 
 		ieee802154_xmit_hw_error(atusb->hw, atusb->tx_skb);
 	}
 }
@@ -234,7 +206,7 @@ static void atusb_in_good(struct urb *urb)
 		switch (trac) {
 		case TRAC_SUCCESS:
 		case TRAC_SUCCESS_DATA_PENDING:
-			/* already IEEE802154_SUCCESS */
+			 
 			break;
 		case TRAC_CHANNEL_ACCESS_FAILURE:
 			result = IEEE802154_CHANNEL_ACCESS_FAILURE;
@@ -265,10 +237,10 @@ static void atusb_in_good(struct urb *urb)
 
 	lqi = skb->data[len + 1];
 	dev_dbg(&usb_dev->dev, "atusb_in: rx len %d lqi 0x%02x\n", len, lqi);
-	skb_pull(skb, 1);	/* remove PHR */
-	skb_trim(skb, len);	/* get payload only */
+	skb_pull(skb, 1);	 
+	skb_trim(skb, len);	 
 	ieee802154_rx_irqsafe(atusb->hw, skb, lqi);
-	urb->context = NULL;	/* skb is gone */
+	urb->context = NULL;	 
 }
 
 static void atusb_in(struct urb *urb)
@@ -280,7 +252,7 @@ static void atusb_in(struct urb *urb)
 	dev_dbg(&usb_dev->dev, "%s: status %d len %d\n", __func__,
 		urb->status, urb->actual_length);
 	if (urb->status) {
-		if (urb->status == -ENOENT) { /* being killed */
+		if (urb->status == -ENOENT) {  
 			kfree_skb(skb);
 			urb->context = NULL;
 			return;
@@ -295,7 +267,7 @@ static void atusb_in(struct urb *urb)
 		schedule_delayed_work(&atusb->work, 0);
 }
 
-/* ----- URB allocation/deallocation --------------------------------------- */
+ 
 
 static void atusb_free_urbs(struct atusb *atusb)
 {
@@ -327,7 +299,7 @@ static int atusb_alloc_urbs(struct atusb *atusb, int n)
 	return 0;
 }
 
-/* ----- IEEE 802.15.4 interface operations -------------------------------- */
+ 
 
 static void atusb_xmit_complete(struct urb *urb)
 {
@@ -515,7 +487,7 @@ atusb_set_cca_mode(struct ieee802154_hw *hw, const struct wpan_phy_cca *cca)
 	struct atusb *atusb = hw->priv;
 	u8 val;
 
-	/* mapping 802.15.4 to driver spec */
+	 
 	switch (cca->mode) {
 	case NL802154_CCA_ENERGY:
 		val = 1;
@@ -589,7 +561,7 @@ static int atusb_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
 
 	if (atusb->data) {
 		ret = atusb->data->set_channel(hw, page, channel);
-		/* @@@ ugly synchronization */
+		 
 		msleep(atusb->data->t_channel_switch);
 	}
 
@@ -729,7 +701,7 @@ static const struct ieee802154_ops atusb_ops = {
 	.set_promiscuous_mode	= atusb_set_promiscuous_mode,
 };
 
-/* ----- Firmware and chip version information ----------------------------- */
+ 
 
 static int atusb_get_and_show_revision(struct atusb *atusb)
 {
@@ -738,7 +710,7 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
 	unsigned char buffer[3];
 	int ret;
 
-	/* Get a couple of the ATMega Firmware values */
+	 
 	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
 				   buffer, 3, 1000, GFP_KERNEL);
 	if (!ret) {
@@ -859,7 +831,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
 	case 2:
 		chip = "AT86RF230";
 		atusb->hw->phy->supported.channels[0] = 0x7FFF800;
-		atusb->hw->phy->current_channel = 11;	/* reset default */
+		atusb->hw->phy->current_channel = 11;	 
 		atusb->hw->phy->supported.tx_powers = atusb_powers;
 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
@@ -868,7 +840,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
 	case 3:
 		chip = "AT86RF231";
 		atusb->hw->phy->supported.channels[0] = 0x7FFF800;
-		atusb->hw->phy->current_channel = 11;	/* reset default */
+		atusb->hw->phy->current_channel = 11;	 
 		atusb->hw->phy->supported.tx_powers = atusb_powers;
 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
@@ -913,15 +885,13 @@ static int atusb_set_extended_addr(struct atusb *atusb)
 	u64 addr;
 	int ret;
 
-	/* Firmware versions before 0.3 do not support the EUI64_READ command.
-	 * Just use a random address and be done.
-	 */
+	 
 	if (atusb->fw_ver_maj == 0 && atusb->fw_ver_min < 3) {
 		ieee802154_random_extended_addr(&atusb->hw->phy->perm_extended_addr);
 		return 0;
 	}
 
-	/* Firmware is new enough so we fetch the address from EEPROM */
+	 
 	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
 				   buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000, GFP_KERNEL);
 	if (ret < 0) {
@@ -931,7 +901,7 @@ static int atusb_set_extended_addr(struct atusb *atusb)
 	}
 
 	memcpy(&extended_addr, buffer, IEEE802154_EXTENDED_ADDR_LEN);
-	/* Check if read address is not empty and the unicast bit is set correctly */
+	 
 	if (!ieee802154_is_valid_extended_unicast_addr(extended_addr)) {
 		dev_info(&usb_dev->dev, "no permanent extended address found, random address set\n");
 		ieee802154_random_extended_addr(&atusb->hw->phy->perm_extended_addr);
@@ -945,7 +915,7 @@ static int atusb_set_extended_addr(struct atusb *atusb)
 	return ret;
 }
 
-/* ----- Setup ------------------------------------------------------------- */
+ 
 
 static int atusb_probe(struct usb_interface *interface,
 		       const struct usb_device_id *id)
@@ -1005,37 +975,14 @@ static int atusb_probe(struct usb_interface *interface,
 	if (ret)
 		goto fail;
 
-	/* If we just powered on, we're now in P_ON and need to enter TRX_OFF
-	 * explicitly. Any resets after that will send us straight to TRX_OFF,
-	 * making the command below redundant.
-	 */
+	 
 	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
 			     STATE_FORCE_TRX_OFF, RG_TRX_STATE, NULL, 0, 1000, GFP_KERNEL);
 
-	msleep(1);	/* reset => TRX_OFF, tTR13 = 37 us */
+	msleep(1);	 
 
 #if 0
-	/* Calculating the maximum time available to empty the frame buffer
-	 * on reception:
-	 *
-	 * According to [1], the inter-frame gap is
-	 * R * 20 * 16 us + 128 us
-	 * where R is a random number from 0 to 7. Furthermore, we have 20 bit
-	 * times (80 us at 250 kbps) of SHR of the next frame before the
-	 * transceiver begins storing data in the frame buffer.
-	 *
-	 * This yields a minimum time of 208 us between the last data of a
-	 * frame and the first data of the next frame. This time is further
-	 * reduced by interrupt latency in the atusb firmware.
-	 *
-	 * atusb currently needs about 500 us to retrieve a maximum-sized
-	 * frame. We therefore have to allow reception of a new frame to begin
-	 * while we retrieve the previous frame.
-	 *
-	 * [1] "JN-AN-1035 Calculating data rates in an IEEE 802.15.4-based
-	 *      network", Jennic 2006.
-	 *     http://www.jennic.com/download_file.php?supportFile=JN-AN-1035%20Calculating%20802-15-4%20Data%20Rates-1v0.pdf
-	 */
+	 
 
 	atusb_write_subreg(atusb, SR_RX_SAFE_MODE, 1);
 #endif
@@ -1085,7 +1032,7 @@ static void atusb_disconnect(struct usb_interface *interface)
 	pr_debug("%s done\n", __func__);
 }
 
-/* The devices we work with */
+ 
 static const struct usb_device_id atusb_device_table[] = {
 	{
 		.match_flags		= USB_DEVICE_ID_MATCH_DEVICE |
@@ -1094,7 +1041,7 @@ static const struct usb_device_id atusb_device_table[] = {
 		.idProduct		= ATUSB_PRODUCT_ID,
 		.bInterfaceClass	= USB_CLASS_VENDOR_SPEC
 	},
-	/* end with null element */
+	 
 	{}
 };
 MODULE_DEVICE_TABLE(usb, atusb_device_table);

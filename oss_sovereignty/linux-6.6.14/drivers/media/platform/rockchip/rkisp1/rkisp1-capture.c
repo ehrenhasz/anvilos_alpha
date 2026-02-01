@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - V4l capture device
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pm_runtime.h>
@@ -20,17 +13,7 @@
 
 #include "rkisp1-common.h"
 
-/*
- * NOTE: There are two capture video devices in rkisp1, selfpath and mainpath.
- *
- * differences between selfpath and mainpath
- * available mp sink input: isp
- * available sp sink input : isp, dma(TODO)
- * available mp sink pad fmts: yuv422, raw
- * available sp sink pad fmts: yuv422, yuv420......
- * available mp source fmts: yuv, raw, jpeg(TODO)
- * available sp source fmts: yuv, rgb
- */
+ 
 
 #define RKISP1_SP_DEV_NAME	RKISP1_DRIVER_NAME "_selfpath"
 #define RKISP1_MP_DEV_NAME	RKISP1_DRIVER_NAME "_mainpath"
@@ -43,14 +26,7 @@ enum rkisp1_plane {
 	RKISP1_PLANE_CR	= 2
 };
 
-/*
- * @fourcc: pixel format
- * @fmt_type: helper filed for pixel format
- * @uv_swap: if cb cr swapped, for yuv
- * @write_format: defines how YCbCr self picture data is written to memory
- * @output_format: defines sp output format
- * @mbus: the mbus code on the src resizer pad that matches the pixel format
- */
+ 
 struct rkisp1_capture_fmt_cfg {
 	u32 fourcc;
 	u8 uv_swap;
@@ -84,12 +60,9 @@ struct rkisp1_capture_config {
 	} mi;
 };
 
-/*
- * The supported pixel formats for mainpath. NOTE, pixel formats with identical 'mbus'
- * are grouped together. This is assumed and used by the function rkisp1_cap_enum_mbus_codes
- */
+ 
 static const struct rkisp1_capture_fmt_cfg rkisp1_mp_fmts[] = {
-	/* yuv422 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_YUYV,
 		.uv_swap = 0,
@@ -126,14 +99,14 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_mp_fmts[] = {
 		.write_format = RKISP1_MI_CTRL_MP_WRITE_YUV_PLA_OR_RAW8,
 		.mbus = MEDIA_BUS_FMT_YUYV8_2X8,
 	},
-	/* yuv400 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_GREY,
 		.uv_swap = 0,
 		.write_format = RKISP1_MI_CTRL_MP_WRITE_YUV_PLA_OR_RAW8,
 		.mbus = MEDIA_BUS_FMT_YUYV8_2X8,
 	},
-	/* yuv420 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_NV21,
 		.uv_swap = 1,
@@ -165,7 +138,7 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_mp_fmts[] = {
 		.write_format = RKISP1_MI_CTRL_MP_WRITE_YUV_PLA_OR_RAW8,
 		.mbus = MEDIA_BUS_FMT_YUYV8_1_5X8,
 	},
-	/* raw */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_SRGGB8,
 		.write_format = RKISP1_MI_CTRL_MP_WRITE_YUV_PLA_OR_RAW8,
@@ -217,12 +190,9 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_mp_fmts[] = {
 	},
 };
 
-/*
- * The supported pixel formats for selfpath. NOTE, pixel formats with identical 'mbus'
- * are grouped together. This is assumed and used by the function rkisp1_cap_enum_mbus_codes
- */
+ 
 static const struct rkisp1_capture_fmt_cfg rkisp1_sp_fmts[] = {
-	/* yuv422 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_YUYV,
 		.uv_swap = 0,
@@ -266,7 +236,7 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_sp_fmts[] = {
 		.output_format = RKISP1_MI_CTRL_SP_OUTPUT_YUV422,
 		.mbus = MEDIA_BUS_FMT_YUYV8_2X8,
 	},
-	/* yuv400 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_GREY,
 		.uv_swap = 0,
@@ -274,7 +244,7 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_sp_fmts[] = {
 		.output_format = RKISP1_MI_CTRL_SP_OUTPUT_YUV422,
 		.mbus = MEDIA_BUS_FMT_YUYV8_2X8,
 	},
-	/* rgb */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_XBGR32,
 		.write_format = RKISP1_MI_CTRL_SP_WRITE_PLA,
@@ -286,7 +256,7 @@ static const struct rkisp1_capture_fmt_cfg rkisp1_sp_fmts[] = {
 		.output_format = RKISP1_MI_CTRL_SP_OUTPUT_RGB565,
 		.mbus = MEDIA_BUS_FMT_YUYV8_2X8,
 	},
-	/* yuv420 */
+	 
 	{
 		.fourcc = V4L2_PIX_FMT_NV21,
 		.uv_swap = 1,
@@ -368,10 +338,7 @@ int rkisp1_cap_enum_mbus_codes(struct rkisp1_capture *cap,
 			       struct v4l2_subdev_mbus_code_enum *code)
 {
 	const struct rkisp1_capture_fmt_cfg *fmts = cap->config->fmts;
-	/*
-	 * initialize curr_mbus to non existing mbus code 0 to ensure it is
-	 * different from fmts[0].mbus
-	 */
+	 
 	u32 curr_mbus = 0;
 	int i, n = 0;
 
@@ -388,9 +355,7 @@ int rkisp1_cap_enum_mbus_codes(struct rkisp1_capture *cap,
 	return -EINVAL;
 }
 
-/* ----------------------------------------------------------------------------
- * Stream operations for self-picture path (sp) and main-picture path (mp)
- */
+ 
 
 static void rkisp1_mi_config_ctrl(struct rkisp1_capture *cap)
 {
@@ -411,11 +376,7 @@ static void rkisp1_mi_config_ctrl(struct rkisp1_capture *cap)
 static u32 rkisp1_pixfmt_comp_size(const struct v4l2_pix_format_mplane *pixm,
 				   unsigned int component)
 {
-	/*
-	 * If packed format, then plane_fmt[0].sizeimage is the sum of all
-	 * components, so we need to calculate just the size of Y component.
-	 * See rkisp1_fill_pixfmt().
-	 */
+	 
 	if (!component && pixm->num_planes == 1)
 		return pixm->plane_fmt[0].bytesperline * pixm->height;
 	return pixm->plane_fmt[component].sizeimage;
@@ -444,7 +405,7 @@ static void rkisp1_mp_config(struct rkisp1_capture *cap)
 
 	rkisp1_irq_frame_end_enable(cap);
 
-	/* set uv swapping for semiplanar formats */
+	 
 	if (cap->pix.info->comp_planes == 2) {
 		reg = rkisp1_read(rkisp1, RKISP1_CIF_MI_XTD_FORMAT_CTRL);
 		if (cap->pix.cfg->uv_swap)
@@ -485,7 +446,7 @@ static void rkisp1_sp_config(struct rkisp1_capture *cap)
 
 	rkisp1_irq_frame_end_enable(cap);
 
-	/* set uv swapping for semiplanar formats */
+	 
 	if (cap->pix.info->comp_planes == 2) {
 		reg = rkisp1_read(rkisp1, RKISP1_CIF_MI_XTD_FORMAT_CTRL);
 		if (cap->pix.cfg->uv_swap)
@@ -532,7 +493,7 @@ static void rkisp1_mp_enable(struct rkisp1_capture *cap)
 	mi_ctrl = rkisp1_read(cap->rkisp1, RKISP1_CIF_MI_CTRL);
 	if (v4l2_is_format_bayer(cap->pix.info))
 		mi_ctrl |= RKISP1_CIF_MI_CTRL_RAW_ENABLE;
-	/* YUV */
+	 
 	else
 		mi_ctrl |= RKISP1_CIF_MI_CTRL_MP_ENABLE;
 
@@ -604,9 +565,7 @@ static const struct rkisp1_capture_ops rkisp1_capture_ops_sp = {
 	.is_stopped = rkisp1_sp_is_stopped,
 };
 
-/* ----------------------------------------------------------------------------
- * Frame buffer operations
- */
+ 
 
 static int rkisp1_dummy_buf_create(struct rkisp1_capture *cap)
 {
@@ -617,7 +576,7 @@ static int rkisp1_dummy_buf_create(struct rkisp1_capture *cap)
 			       rkisp1_pixfmt_comp_size(pixm, RKISP1_PLANE_CB),
 			       rkisp1_pixfmt_comp_size(pixm, RKISP1_PLANE_CR));
 
-	/* The driver never access vaddr, no mapping is required */
+	 
 	dummy_buf->vaddr = dma_alloc_attrs(cap->rkisp1->dev,
 					   dummy_buf->size,
 					   &dummy_buf->dma_addr,
@@ -651,11 +610,7 @@ static void rkisp1_set_next_buf(struct rkisp1_capture *cap)
 
 		rkisp1_write(cap->rkisp1, cap->config->mi.y_base_ad_init,
 			     buff_addr[RKISP1_PLANE_Y]);
-		/*
-		 * In order to support grey format we capture
-		 * YUV422 planar format from the camera and
-		 * set the U and V planes to the dummy buffer
-		 */
+		 
 		if (cap->pix.cfg->fourcc == V4L2_PIX_FMT_GREY) {
 			rkisp1_write(cap->rkisp1,
 				     cap->config->mi.cb_base_ad_init,
@@ -672,10 +627,7 @@ static void rkisp1_set_next_buf(struct rkisp1_capture *cap)
 				     buff_addr[RKISP1_PLANE_CR]);
 		}
 	} else {
-		/*
-		 * Use the dummy space allocated by dma_alloc_coherent to
-		 * throw data if there is no available buffer.
-		 */
+		 
 		rkisp1_write(cap->rkisp1, cap->config->mi.y_base_ad_init,
 			     cap->buf.dummy.dma_addr);
 		rkisp1_write(cap->rkisp1, cap->config->mi.cb_base_ad_init,
@@ -684,17 +636,13 @@ static void rkisp1_set_next_buf(struct rkisp1_capture *cap)
 			     cap->buf.dummy.dma_addr);
 	}
 
-	/* Set plane offsets */
+	 
 	rkisp1_write(cap->rkisp1, cap->config->mi.y_offs_cnt_init, 0);
 	rkisp1_write(cap->rkisp1, cap->config->mi.cb_offs_cnt_init, 0);
 	rkisp1_write(cap->rkisp1, cap->config->mi.cr_offs_cnt_init, 0);
 }
 
-/*
- * This function is called when a frame end comes. The next frame
- * is processing and we should set up buffer for next-next frame,
- * otherwise it will overflow.
- */
+ 
 static void rkisp1_handle_buffer(struct rkisp1_capture *cap)
 {
 	struct rkisp1_isp *isp = &cap->rkisp1->isp;
@@ -738,14 +686,7 @@ irqreturn_t rkisp1_capture_isr(int irq, void *ctx)
 			rkisp1_handle_buffer(cap);
 			continue;
 		}
-		/*
-		 * Make sure stream is actually stopped, whose state
-		 * can be read from the shadow register, before
-		 * wake_up() thread which would immediately free all
-		 * frame buffers. stop() takes effect at the next
-		 * frame end that sync the configurations to shadow
-		 * regs.
-		 */
+		 
 		if (!cap->ops->is_stopped(cap)) {
 			cap->ops->stop(cap);
 			continue;
@@ -758,9 +699,7 @@ irqreturn_t rkisp1_capture_isr(int irq, void *ctx)
 	return IRQ_HANDLED;
 }
 
-/* ----------------------------------------------------------------------------
- * Vb2 operations
- */
+ 
 
 static int rkisp1_vb2_queue_setup(struct vb2_queue *queue,
 				  unsigned int *num_buffers,
@@ -801,7 +740,7 @@ static int rkisp1_vb2_buf_init(struct vb2_buffer *vb)
 	for (i = 0; i < pixm->num_planes; i++)
 		ispbuf->buff_addr[i] = vb2_dma_contig_plane_dma_addr(vb, i);
 
-	/* Convert to non-MPLANE */
+	 
 	if (pixm->num_planes == 1) {
 		ispbuf->buff_addr[RKISP1_PLANE_CB] =
 			ispbuf->buff_addr[RKISP1_PLANE_Y] +
@@ -811,10 +750,7 @@ static int rkisp1_vb2_buf_init(struct vb2_buffer *vb)
 			rkisp1_pixfmt_comp_size(pixm, RKISP1_PLANE_CB);
 	}
 
-	/*
-	 * uv swap can be supported for planar formats by switching
-	 * the address of cb and cr
-	 */
+	 
 	if (cap->pix.info->comp_planes == 3 && cap->pix.cfg->uv_swap)
 		swap(ispbuf->buff_addr[RKISP1_PLANE_CR],
 		     ispbuf->buff_addr[RKISP1_PLANE_CB]);
@@ -876,12 +812,7 @@ static void rkisp1_return_all_buffers(struct rkisp1_capture *cap,
 	spin_unlock_irq(&cap->buf.lock);
 }
 
-/*
- * Most registers inside the rockchip ISP1 have shadow register since
- * they must not be changed while processing a frame.
- * Usually, each sub-module updates its shadow register after
- * processing the last pixel of a frame.
- */
+ 
 static void rkisp1_cap_stream_enable(struct rkisp1_capture *cap)
 {
 	struct rkisp1_device *rkisp1 = cap->rkisp1;
@@ -890,21 +821,13 @@ static void rkisp1_cap_stream_enable(struct rkisp1_capture *cap)
 	cap->ops->set_data_path(cap);
 	cap->ops->config(cap);
 
-	/* Setup a buffer for the next frame */
+	 
 	spin_lock_irq(&cap->buf.lock);
 	rkisp1_set_next_buf(cap);
 	cap->ops->enable(cap);
-	/* It's safe to configure ACTIVE and SHADOW registers for the
-	 * first stream. While when the second is starting, do NOT
-	 * force update because it also updates the first one.
-	 *
-	 * The latter case would drop one more buffer(that is 2) since
-	 * there's no buffer in a shadow register when the second FE received.
-	 * This's also required because the second FE maybe corrupt
-	 * especially when run at 120fps.
-	 */
+	 
 	if (!other->is_streaming) {
-		/* force cfg update */
+		 
 		rkisp1_write(rkisp1, RKISP1_CIF_MI_INIT,
 			     RKISP1_CIF_MI_INIT_SOFT_UPD);
 		rkisp1_set_next_buf(cap);
@@ -917,7 +840,7 @@ static void rkisp1_cap_stream_disable(struct rkisp1_capture *cap)
 {
 	int ret;
 
-	/* Stream should stop in interrupt. If it doesn't, stop it by force. */
+	 
 	cap->is_stopping = true;
 	ret = wait_event_timeout(cap->done,
 				 !cap->is_streaming,
@@ -930,13 +853,7 @@ static void rkisp1_cap_stream_disable(struct rkisp1_capture *cap)
 	}
 }
 
-/*
- * rkisp1_pipeline_stream_disable - disable nodes in the pipeline
- *
- * Call s_stream(false) in the reverse order from
- * rkisp1_pipeline_stream_enable() and disable the DMA engine.
- * Should be called before video_device_pipeline_stop()
- */
+ 
 static void rkisp1_pipeline_stream_disable(struct rkisp1_capture *cap)
 	__must_hold(&cap->rkisp1->stream_lock)
 {
@@ -944,10 +861,7 @@ static void rkisp1_pipeline_stream_disable(struct rkisp1_capture *cap)
 
 	rkisp1_cap_stream_disable(cap);
 
-	/*
-	 * If the other capture is streaming, isp and sensor nodes shouldn't
-	 * be disabled, skip them.
-	 */
+	 
 	if (rkisp1->pipe.start_count < 2)
 		v4l2_subdev_call(&rkisp1->isp.sd, video, s_stream, false);
 
@@ -955,12 +869,7 @@ static void rkisp1_pipeline_stream_disable(struct rkisp1_capture *cap)
 			 false);
 }
 
-/*
- * rkisp1_pipeline_stream_enable - enable nodes in the pipeline
- *
- * Enable the DMA Engine and call s_stream(true) through the pipeline.
- * Should be called after video_device_pipeline_start()
- */
+ 
 static int rkisp1_pipeline_stream_enable(struct rkisp1_capture *cap)
 	__must_hold(&cap->rkisp1->stream_lock)
 {
@@ -974,10 +883,7 @@ static int rkisp1_pipeline_stream_enable(struct rkisp1_capture *cap)
 	if (ret)
 		goto err_disable_cap;
 
-	/*
-	 * If the other capture is streaming, isp and sensor nodes are already
-	 * enabled, skip them.
-	 */
+	 
 	if (rkisp1->pipe.start_count > 1)
 		return 0;
 
@@ -1085,9 +991,7 @@ static const struct vb2_ops rkisp1_vb2_ops = {
 	.start_streaming = rkisp1_vb2_start_streaming,
 };
 
-/* ----------------------------------------------------------------------------
- * IOCTLs operations
- */
+ 
 
 static const struct v4l2_format_info *
 rkisp1_fill_pixfmt(struct v4l2_pix_format_mplane *pixm,
@@ -1102,30 +1006,25 @@ rkisp1_fill_pixfmt(struct v4l2_pix_format_mplane *pixm,
 	info = v4l2_format_info(pixm->pixelformat);
 	pixm->num_planes = info->mem_planes;
 	stride = info->bpp[0] * pixm->width;
-	/* Self path supports custom stride but Main path doesn't */
+	 
 	if (id == RKISP1_MAINPATH || plane_y->bytesperline < stride)
 		plane_y->bytesperline = stride;
 	plane_y->sizeimage = plane_y->bytesperline * pixm->height;
 
-	/* normalize stride to pixels per line */
+	 
 	stride = DIV_ROUND_UP(plane_y->bytesperline, info->bpp[0]);
 
 	for (i = 1; i < info->comp_planes; i++) {
 		struct v4l2_plane_pix_format *plane = &pixm->plane_fmt[i];
 
-		/* bytesperline for other components derive from Y component */
+		 
 		plane->bytesperline = DIV_ROUND_UP(stride, info->hdiv) *
 				      info->bpp[i];
 		plane->sizeimage = plane->bytesperline *
 				   DIV_ROUND_UP(pixm->height, info->vdiv);
 	}
 
-	/*
-	 * If pixfmt is packed, then plane_fmt[0] should contain the total size
-	 * considering all components. plane_fmt[i] for i > 0 should be ignored
-	 * by userspace as mem_planes == 1, but we are keeping information there
-	 * for convenience.
-	 */
+	 
 	if (info->mem_planes == 1)
 		for (i = 1; i < info->comp_planes; i++)
 			plane_y->sizeimage += pixm->plane_fmt[i].sizeimage;
@@ -1190,7 +1089,7 @@ static void rkisp1_set_fmt(struct rkisp1_capture *cap,
 	rkisp1_try_fmt(cap, pixm, &cap->pix.cfg, &cap->pix.info);
 	cap->pix.fmt = *pixm;
 
-	/* SP supports custom stride in number of pixels of the Y plane */
+	 
 	if (cap->id == RKISP1_SELFPATH)
 		cap->sp_y_stride = pixm->plane_fmt[0].bytesperline /
 				   cap->pix.info->bpp[0];
@@ -1353,9 +1252,7 @@ static int rkisp1_capture_link_validate(struct media_link *link)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * core functions
- */
+ 
 
 static const struct media_entity_operations rkisp1_media_ops = {
 	.link_validate = rkisp1_capture_link_validate,

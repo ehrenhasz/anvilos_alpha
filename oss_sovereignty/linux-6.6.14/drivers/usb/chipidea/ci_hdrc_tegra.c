@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016, NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -92,7 +90,7 @@ static const struct of_device_id tegra_usb_of_match[] = {
 		.compatible = "nvidia,tegra124-udc",
 		.data = &tegra30_udc_soc_info,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, tegra_usb_of_match);
@@ -113,26 +111,19 @@ static int tegra_usb_reset_controller(struct device *dev)
 	if (!phy_np)
 		return -ENOENT;
 
-	/*
-	 * The 1st USB controller contains some UTMI pad registers that are
-	 * global for all the controllers on the chip. Those registers are
-	 * also cleared when reset is asserted to the 1st controller.
-	 */
+	 
 	rst_utmi = of_reset_control_get_shared(phy_np, "utmi-pads");
 	if (IS_ERR(rst_utmi)) {
 		dev_warn(dev, "can't get utmi-pads reset from the PHY\n");
 		dev_warn(dev, "continuing, but please update your DT\n");
 	} else {
-		/*
-		 * PHY driver performs UTMI-pads reset in a case of a
-		 * non-legacy DT.
-		 */
+		 
 		reset_control_put(rst_utmi);
 	}
 
 	of_node_put(phy_np);
 
-	/* reset control is shared, hence initialize it first */
+	 
 	err = reset_control_deassert(rst);
 	if (err)
 		return err;
@@ -178,14 +169,11 @@ static int tegra_usb_internal_port_reset(struct ehci_hcd *ehci,
 	int retval = 0;
 
 	saved_usbintr = ehci_readl(ehci, &ehci->regs->intr_enable);
-	/* disable USB interrupt */
+	 
 	ehci_writel(ehci, 0, &ehci->regs->intr_enable);
 	spin_unlock_irqrestore(&ehci->lock, *flags);
 
-	/*
-	 * Here we have to do Port Reset at most twice for
-	 * Port Enable bit to be set.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		temp = ehci_readl(ehci, portsc_reg);
 		temp |= PORT_RESET;
@@ -197,12 +185,7 @@ static int tegra_usb_internal_port_reset(struct ehci_hcd *ehci,
 		tries = 100;
 		do {
 			fsleep(1000);
-			/*
-			 * Up to this point, Port Enable bit is
-			 * expected to be set after 2 ms waiting.
-			 * USB1 usually takes extra 45 ms, for safety,
-			 * we take 100 ms as timeout.
-			 */
+			 
 			temp = ehci_readl(ehci, portsc_reg);
 		} while (!(temp & PORT_PE) && tries--);
 		if (temp & PORT_PE)
@@ -211,21 +194,15 @@ static int tegra_usb_internal_port_reset(struct ehci_hcd *ehci,
 	if (i == 2)
 		retval = -ETIMEDOUT;
 
-	/*
-	 * Clear Connect Status Change bit if it's set.
-	 * We can't clear PORT_PEC. It will also cause PORT_PE to be cleared.
-	 */
+	 
 	if (temp & PORT_CSC)
 		ehci_writel(ehci, PORT_CSC, portsc_reg);
 
-	/*
-	 * Write to clear any interrupt status bits that might be set
-	 * during port reset.
-	 */
+	 
 	temp = ehci_readl(ehci, &ehci->regs->status);
 	ehci_writel(ehci, temp, &ehci->regs->status);
 
-	/* restore original interrupt-enable bits */
+	 
 	spin_lock_irqsave(&ehci->lock, *flags);
 	ehci_writel(ehci, saved_usbintr, &ehci->regs->intr_enable);
 
@@ -248,7 +225,7 @@ static int tegra_ehci_hub_control(struct ci_hdrc *ci, u16 typeReq, u16 wValue,
 		if (wValue != USB_PORT_FEAT_RESET || !usb->needs_double_reset)
 			break;
 
-		/* for USB1 port we need to issue Port Reset twice internally */
+		 
 		retval = tegra_usb_internal_port_reset(ehci, status_reg, flags);
 		*done  = true;
 		break;
@@ -259,16 +236,7 @@ static int tegra_ehci_hub_control(struct ci_hdrc *ci, u16 typeReq, u16 wValue,
 
 static void tegra_usb_enter_lpm(struct ci_hdrc *ci, bool enable)
 {
-	/*
-	 * Touching any register which belongs to AHB clock domain will
-	 * hang CPU if USB controller is put into low power mode because
-	 * AHB USB clock is gated on Tegra in the LPM.
-	 *
-	 * Tegra PHY has a separate register for checking the clock status
-	 * and usb_phy_set_suspend() takes care of gating/ungating the clocks
-	 * and restoring the PHY state on Tegra. Hence DEVLC/PORTSC registers
-	 * shouldn't be touched directly by the CI driver.
-	 */
+	 
 	usb_phy_set_suspend(ci->usb_phy, enable);
 }
 
@@ -320,16 +288,12 @@ static int tegra_usb_probe(struct platform_device *pdev)
 		goto fail_power_off;
 	}
 
-	/*
-	 * USB controller registers shouldn't be touched before PHY is
-	 * initialized, otherwise CPU will hang because clocks are gated.
-	 * PHY driver controls gating of internal USB clocks on Tegra.
-	 */
+	 
 	err = usb_phy_init(usb->phy);
 	if (err)
 		goto fail_power_off;
 
-	/* setup and register ChipIdea HDRC device */
+	 
 	usb->soc = soc;
 	usb->data.name = "tegra-usb";
 	usb->data.flags = soc->flags;
@@ -340,7 +304,7 @@ static int tegra_usb_probe(struct platform_device *pdev)
 	usb->data.hub_control = tegra_ehci_hub_control;
 	usb->data.notify_event = tegra_usb_notify_event;
 
-	/* Tegra PHY driver currently doesn't support LPM for ULPI */
+	 
 	if (of_usb_get_phy_mode(pdev->dev.of_node) == USBPHY_INTERFACE_MODE_ULPI)
 		usb->data.flags &= ~CI_HDRC_SUPPORTS_RUNTIME_PM;
 

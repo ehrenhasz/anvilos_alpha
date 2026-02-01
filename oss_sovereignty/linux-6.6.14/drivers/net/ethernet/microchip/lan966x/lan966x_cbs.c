@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 
@@ -9,7 +9,7 @@ int lan966x_cbs_add(struct lan966x_port *port,
 	u32 cir, cbs;
 	u8 se_idx;
 
-	/* Check for invalid values */
+	 
 	if (qopt->idleslope <= 0 ||
 	    qopt->sendslope >= 0 ||
 	    qopt->locredit >= qopt->hicredit)
@@ -21,16 +21,16 @@ int lan966x_cbs_add(struct lan966x_port *port,
 		(qopt->hicredit - qopt->locredit) /
 		-qopt->sendslope;
 
-	/* Rate unit is 100 kbps */
+	 
 	cir = DIV_ROUND_UP(cir, 100);
-	/* Avoid using zero rate */
+	 
 	cir = cir ?: 1;
-	/* Burst unit is 4kB */
+	 
 	cbs = DIV_ROUND_UP(cbs, 4096);
-	/* Avoid using zero burst */
+	 
 	cbs = cbs ?: 1;
 
-	/* Check that actually the result can be written */
+	 
 	if (cir > GENMASK(15, 0) ||
 	    cbs > GENMASK(6, 0))
 		return -EINVAL;

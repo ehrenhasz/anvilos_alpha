@@ -1,26 +1,4 @@
-/* Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_CLOCK_SOURCE_DCE_H__
 #define __DC_CLOCK_SOURCE_DCE_H__
@@ -222,9 +200,7 @@ struct dce110_clk_src_regs {
 	uint32_t PIXCLK_RESYNC_CNTL;
 	uint32_t PLL_CNTL;
 
-	/* below are for DTO.
-	 * todo: should probably use different struct to not waste space
-	 */
+	 
 	uint32_t PHASE[MAX_PIPES];
 	uint32_t MODULO[MAX_PIPES];
 	uint32_t PIXEL_RATE_CNTL[MAX_PIPES];
@@ -307,7 +283,7 @@ bool dcn31_clk_src_construct(
 	const struct dce110_clk_src_shift *cs_shift,
 	const struct dce110_clk_src_mask *cs_mask);
 
-/* this table is use to find *1.001 and /1.001 pixel rates from non-precise pixel rate */
+ 
 struct pixel_rate_range_table_entry {
 	unsigned int range_min_khz;
 	unsigned int range_max_khz;

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <assert.h>
 #include <string.h>
@@ -60,8 +36,8 @@
 
 typedef struct _mp_obj_hash_t {
     mp_obj_base_t base;
-    bool final; // if set, update and digest raise an exception
-    uintptr_t state[0]; // must be aligned to a machine word
+    bool final; 
+    uintptr_t state[0]; 
 } mp_obj_hash_t;
 
 static void hashlib_ensure_not_final(mp_obj_hash_t *self) {
@@ -293,7 +269,7 @@ static mp_obj_t hashlib_md5_digest(mp_obj_t self_in) {
     MD5_Final((byte *)vstr.buf, (MD5_CTX *)self->state);
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-#endif // MICROPY_SSL_AXTLS
+#endif 
 
 #if MICROPY_SSL_MBEDTLS
 
@@ -334,7 +310,7 @@ static mp_obj_t hashlib_md5_digest(mp_obj_t self_in) {
     mbedtls_md5_free((mbedtls_md5_context *)self->state);
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-#endif // MICROPY_SSL_MBEDTLS
+#endif 
 
 static MP_DEFINE_CONST_FUN_OBJ_2(hashlib_md5_update_obj, hashlib_md5_update);
 static MP_DEFINE_CONST_FUN_OBJ_1(hashlib_md5_digest_obj, hashlib_md5_digest);
@@ -352,7 +328,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     make_new, hashlib_md5_make_new,
     locals_dict, &hashlib_md5_locals_dict
     );
-#endif // MICROPY_PY_HASHLIB_MD5
+#endif 
 
 static const mp_rom_map_elem_t mp_module_hashlib_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_hashlib) },
@@ -376,4 +352,4 @@ const mp_obj_module_t mp_module_hashlib = {
 
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_hashlib, mp_module_hashlib);
 
-#endif // MICROPY_PY_HASHLIB
+#endif 

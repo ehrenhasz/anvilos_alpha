@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -36,7 +34,7 @@ static const struct pll_vco lucid_evo_vco[] = {
 };
 
 static const struct alpha_pll_config video_cc_pll0_config = {
-	/* .l includes CAL_L_VAL, L_VAL fields */
+	 
 	.l = 0x0044001e,
 	.alpha = 0x0,
 	.config_ctl_val = 0x20485699,
@@ -64,7 +62,7 @@ static struct clk_alpha_pll video_cc_pll0 = {
 };
 
 static const struct alpha_pll_config video_cc_pll1_config = {
-	/* .l includes CAL_L_VAL, L_VAL fields */
+	 
 	.l = 0x0044002b,
 	.alpha = 0xc000,
 	.config_ctl_val = 0x20485699,
@@ -423,12 +421,7 @@ static int video_cc_sm8450_probe(struct platform_device *pdev)
 	clk_lucid_evo_pll_configure(&video_cc_pll0, regmap, &video_cc_pll0_config);
 	clk_lucid_evo_pll_configure(&video_cc_pll1, regmap, &video_cc_pll1_config);
 
-	/*
-	 * Keep clocks always enabled:
-	 *	video_cc_ahb_clk
-	 *	video_cc_sleep_clk
-	 *	video_cc_xo_clk
-	 */
+	 
 	regmap_update_bits(regmap, 0x80e4, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x8130, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x8114, BIT(0), BIT(0));

@@ -1,21 +1,4 @@
-/* id -- print real and effective UIDs and GIDs
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Arnold Robbins.
-   Major rewrite by David MacKenzie, djm@gnu.ai.mit.edu. */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -32,38 +15,37 @@
 #include "smack.h"
 #include "userspec.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "id"
 
 #define AUTHORS \
   proper_name ("Arnold Robbins"), \
   proper_name ("David MacKenzie")
 
-/* If nonzero, output only the SELinux context.  */
+ 
 static bool just_context = 0;
-/* If true, delimit entries with NUL characters, not whitespace */
+ 
 static bool opt_zero = false;
-/* If true, output the list of all group IDs. -G */
+ 
 static bool just_group_list = false;
-/* If true, output only the group ID(s). -g */
+ 
 static bool just_group = false;
-/* If true, output real UID/GID instead of default effective UID/GID. -r */
+ 
 static bool use_real = false;
-/* If true, output only the user ID(s). -u */
+ 
 static bool just_user = false;
-/* True unless errors have been encountered.  */
+ 
 static bool ok = true;
-/* If true, we are using multiple users. Terminate -G with double NUL. */
+ 
 static bool multiple_users = false;
-/* If true, output user/group name instead of ID number. -n */
+ 
 static bool use_name = false;
 
-/* The real and effective IDs of the user to print. */
+ 
 static uid_t ruid, euid;
 static gid_t rgid, egid;
 
-/* The SELinux context.  Start with a known invalid value so print_full_info
-   knows when 'context' has not been set to a meaningful value.  */
+ 
 static char *context = nullptr;
 
 static void print_user (uid_t uid);
@@ -204,16 +186,12 @@ main (int argc, char **argv)
     error (EXIT_FAILURE, 0,
            _("option --zero not permitted in default format"));
 
-  /* If we are on a SELinux/SMACK-enabled kernel, no user is specified, and
-     either --context is specified or none of (-u,-g,-G) is specified,
-     and we're not in POSIXLY_CORRECT mode, get our context.  Otherwise,
-     leave the context variable alone - it has been initialized to an
-     invalid value that will be not displayed in print_full_info().  */
+   
   if (n_ids == 0
       && (just_context
           || (default_format && ! getenv ("POSIXLY_CORRECT"))))
     {
-      /* Report failure only if --context (-Z) was explicitly requested.  */
+       
       if ((selinux_enabled && getcon (&context) && just_context)
           || (smack_enabled
               && smack_new_label_from_self (&context) < 0
@@ -224,20 +202,15 @@ main (int argc, char **argv)
   if (n_ids >= 1)
     {
       multiple_users = n_ids > 1 ? true : false;
-      /* Changing the value of n_ids to the last index in the array where we
-         have the last possible user id. This helps us because we don't have
-         to declare a different variable to keep a track of where the
-         last username lies in argv[].  */
+       
       n_ids += optind;
-      /* For each username/userid to get its pw_name field */
+       
       for (; optind < n_ids; optind++)
         {
           char *pw_name = nullptr;
           struct passwd *pwd = nullptr;
           char const *spec = argv[optind];
-          /* Disallow an empty spec here as parse_user_spec() doesn't
-             give an error for that as it seems it's a valid way to
-             specify a noop or "reset special bits" depending on the system.  */
+           
           if (*spec)
             {
               if (! parse_user_spec (spec, &euid, nullptr, &pw_name, nullptr))
@@ -261,9 +234,7 @@ main (int argc, char **argv)
     }
   else
     {
-      /* POSIX says identification functions (getuid, getgid, and
-         others) cannot fail, but they can fail under GNU/Hurd and a
-         few other systems.  Test for failure by checking errno.  */
+       
       uid_t NO_UID = -1;
       gid_t NO_GID = -1;
 
@@ -303,9 +274,7 @@ main (int argc, char **argv)
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-/* Convert a gid_t to string.  Do not use this function directly.
-   Instead, use it via the gidtostr macro.
-   Beware that it returns a pointer to static storage.  */
+ 
 static char *
 gidtostr_ptr (gid_t const *gid)
 {
@@ -314,9 +283,7 @@ gidtostr_ptr (gid_t const *gid)
 }
 #define gidtostr(g) gidtostr_ptr (&(g))
 
-/* Convert a uid_t to string.  Do not use this function directly.
-   Instead, use it via the uidtostr macro.
-   Beware that it returns a pointer to static storage.  */
+ 
 static char *
 uidtostr_ptr (uid_t const *uid)
 {
@@ -325,7 +292,7 @@ uidtostr_ptr (uid_t const *uid)
 }
 #define uidtostr(u) uidtostr_ptr (&(u))
 
-/* Print the name or value of user ID UID. */
+ 
 
 static void
 print_user (uid_t uid)
@@ -347,7 +314,7 @@ print_user (uid_t uid)
   fputs (s, stdout);
 }
 
-/* Print all of the info about the user's user and group IDs. */
+ 
 
 static void
 print_full_info (char const *username)
@@ -416,13 +383,12 @@ print_full_info (char const *username)
     free (groups);
   }
 
-  /* POSIX mandates the precise output format, and that it not include
-     any context=... part, so skip that if POSIXLY_CORRECT is set.  */
+   
   if (context)
     printf (_(" context=%s"), context);
 }
 
-/* Print information about the user based on the arguments passed. */
+ 
 
 static void
 print_stuff (char const *pw_name)
@@ -430,11 +396,7 @@ print_stuff (char const *pw_name)
   if (just_user)
       print_user (use_real ? ruid : euid);
 
-  /* print_group and print_group_list return true on successful
-     execution but false if something goes wrong. We then AND this value with
-     the current value of 'ok' because we want to know if one of the previous
-     users faced a problem in these functions. This value of 'ok' is later used
-     to understand what status program should exit with. */
+   
   else if (just_group)
     ok &= print_group (use_real ? rgid : egid, use_name);
   else if (just_group_list)
@@ -445,9 +407,7 @@ print_stuff (char const *pw_name)
   else
     print_full_info (pw_name);
 
-  /* When printing records for more than 1 user, at the end of groups
-     of each user terminate the record with two consequent NUL characters
-     to make parsing and distinguishing between two records possible. */
+   
   if (opt_zero && just_group_list && multiple_users)
     {
       putchar ('\0');

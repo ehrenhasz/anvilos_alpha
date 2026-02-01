@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Finite state machine for vfio-ccw device handling
- *
- * Copyright IBM Corp. 2017
- * Copyright Red Hat, Inc. 2019
- *
- * Author(s): Dong Jia Shi <bjsdjshi@linux.vnet.ibm.com>
- *            Cornelia Huck <cohuck@redhat.com>
- */
+
+ 
 
 #include <linux/vfio.h>
 
@@ -36,25 +28,23 @@ static int fsm_io_helper(struct vfio_ccw_private *private)
 	VFIO_CCW_TRACE_EVENT(5, "stIO");
 	VFIO_CCW_TRACE_EVENT(5, dev_name(&sch->dev));
 
-	/* Issue "Start Subchannel" */
+	 
 	ccode = ssch(sch->schid, orb);
 
 	VFIO_CCW_HEX_EVENT(5, &ccode, sizeof(ccode));
 
 	switch (ccode) {
 	case 0:
-		/*
-		 * Initialize device status information
-		 */
+		 
 		sch->schib.scsw.cmd.actl |= SCSW_ACTL_START_PEND;
 		ret = 0;
 		private->state = VFIO_CCW_STATE_CP_PENDING;
 		break;
-	case 1:		/* Status pending */
-	case 2:		/* Busy */
+	case 1:		 
+	case 2:		 
 		ret = -EBUSY;
 		break;
-	case 3:		/* Device/path not operational */
+	case 3:		 
 	{
 		lpm = orb->cmd.lpm;
 		if (lpm != 0)
@@ -88,24 +78,22 @@ static int fsm_do_halt(struct vfio_ccw_private *private)
 	VFIO_CCW_TRACE_EVENT(2, "haltIO");
 	VFIO_CCW_TRACE_EVENT(2, dev_name(&sch->dev));
 
-	/* Issue "Halt Subchannel" */
+	 
 	ccode = hsch(sch->schid);
 
 	VFIO_CCW_HEX_EVENT(2, &ccode, sizeof(ccode));
 
 	switch (ccode) {
 	case 0:
-		/*
-		 * Initialize device status information
-		 */
+		 
 		sch->schib.scsw.cmd.actl |= SCSW_ACTL_HALT_PEND;
 		ret = 0;
 		break;
-	case 1:		/* Status pending */
-	case 2:		/* Busy */
+	case 1:		 
+	case 2:		 
 		ret = -EBUSY;
 		break;
-	case 3:		/* Device not operational */
+	case 3:		 
 		ret = -ENODEV;
 		break;
 	default:
@@ -127,21 +115,19 @@ static int fsm_do_clear(struct vfio_ccw_private *private)
 	VFIO_CCW_TRACE_EVENT(2, "clearIO");
 	VFIO_CCW_TRACE_EVENT(2, dev_name(&sch->dev));
 
-	/* Issue "Clear Subchannel" */
+	 
 	ccode = csch(sch->schid);
 
 	VFIO_CCW_HEX_EVENT(2, &ccode, sizeof(ccode));
 
 	switch (ccode) {
 	case 0:
-		/*
-		 * Initialize device status information
-		 */
+		 
 		sch->schib.scsw.cmd.actl = SCSW_ACTL_CLEAR_PEND;
-		/* TODO: check what else we might need to clear */
+		 
 		ret = 0;
 		break;
-	case 3:		/* Device not operational */
+	case 3:		 
 		ret = -ENODEV;
 		break;
 	default:
@@ -163,20 +149,15 @@ static void fsm_notoper(struct vfio_ccw_private *private,
 			   event,
 			   private->state);
 
-	/*
-	 * TODO:
-	 * Probably we should send the machine check to the guest.
-	 */
+	 
 	css_sched_sch_todo(sch, SCH_TODO_UNREG);
 	private->state = VFIO_CCW_STATE_NOT_OPER;
 
-	/* This is usually handled during CLOSE event */
+	 
 	cp_free(&private->cp);
 }
 
-/*
- * No operation action.
- */
+ 
 static void fsm_nop(struct vfio_ccw_private *private,
 		    enum vfio_ccw_event event)
 {
@@ -224,10 +205,7 @@ static void fsm_disabled_irq(struct vfio_ccw_private *private,
 {
 	struct subchannel *sch = to_subchannel(private->vdev.dev->parent);
 
-	/*
-	 * An interrupt in a disabled state means a previous disable was not
-	 * successful - should not happen, but we try to disable again.
-	 */
+	 
 	cio_disable_subchannel(sch);
 }
 inline struct subchannel_id get_schid(struct vfio_ccw_private *p)
@@ -237,9 +215,7 @@ inline struct subchannel_id get_schid(struct vfio_ccw_private *p)
 	return sch->schid;
 }
 
-/*
- * Deal with the ccw command request from the userspace.
- */
+ 
 static void fsm_io_request(struct vfio_ccw_private *private,
 			   enum vfio_ccw_event event)
 {
@@ -255,7 +231,7 @@ static void fsm_io_request(struct vfio_ccw_private *private,
 	if (scsw->cmd.fctl & SCSW_FCTL_START_FUNC) {
 		orb = (union orb *)io_region->orb_area;
 
-		/* Don't try to build a cp if transport mode is specified. */
+		 
 		if (orb->tm.b) {
 			io_region->ret_code = -EOPNOTSUPP;
 			VFIO_CCW_MSG_EVENT(2,
@@ -288,7 +264,7 @@ static void fsm_io_request(struct vfio_ccw_private *private,
 			goto err_out;
 		}
 
-		/* Start channel program and wait for I/O interrupt. */
+		 
 		io_region->ret_code = fsm_io_helper(private);
 		if (io_region->ret_code) {
 			VFIO_CCW_MSG_EVENT(2,
@@ -306,7 +282,7 @@ static void fsm_io_request(struct vfio_ccw_private *private,
 				   "sch %x.%x.%04x: halt on io_region\n",
 				   schid.cssid,
 				   schid.ssid, schid.sch_no);
-		/* halt is handled via the async cmd region */
+		 
 		io_region->ret_code = -EOPNOTSUPP;
 		goto err_out;
 	} else if (scsw->cmd.fctl & SCSW_FCTL_CLEAR_FUNC) {
@@ -314,7 +290,7 @@ static void fsm_io_request(struct vfio_ccw_private *private,
 				   "sch %x.%x.%04x: clear on io_region\n",
 				   schid.cssid,
 				   schid.ssid, schid.sch_no);
-		/* clear is handled via the async cmd region */
+		 
 		io_region->ret_code = -EOPNOTSUPP;
 		goto err_out;
 	}
@@ -325,9 +301,7 @@ err_out:
 				      io_region->ret_code, errstr);
 }
 
-/*
- * Deal with an async request from userspace.
- */
+ 
 static void fsm_async_request(struct vfio_ccw_private *private,
 			      enum vfio_ccw_event event)
 {
@@ -341,7 +315,7 @@ static void fsm_async_request(struct vfio_ccw_private *private,
 		cmd_region->ret_code = fsm_do_clear(private);
 		break;
 	default:
-		/* should not happen? */
+		 
 		cmd_region->ret_code = -EINVAL;
 	}
 
@@ -350,9 +324,7 @@ static void fsm_async_request(struct vfio_ccw_private *private,
 					 cmd_region->ret_code);
 }
 
-/*
- * Got an interrupt for a normal io (state busy).
- */
+ 
 static void fsm_irq(struct vfio_ccw_private *private,
 		    enum vfio_ccw_event event)
 {
@@ -418,9 +390,7 @@ err_unlock:
 	vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
 }
 
-/*
- * Device statemachine
- */
+ 
 fsm_func_t *vfio_ccw_jumptable[NR_VFIO_CCW_STATES][NR_VFIO_CCW_EVENTS] = {
 	[VFIO_CCW_STATE_NOT_OPER] = {
 		[VFIO_CCW_EVENT_NOT_OPER]	= fsm_nop,

@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <stddef.h>
 
-/*
- * Override the "basic" built-in string helpers so that they can be used in
- * guest code.  KVM selftests don't support dynamic loading in guest code and
- * will jump into the weeds if the compiler decides to insert an out-of-line
- * call via the PLT.
- */
+ 
 int memcmp(const void *cs, const void *ct, size_t count)
 {
 	const unsigned char *su1, *su2;
@@ -43,6 +38,6 @@ size_t strnlen(const char *s, size_t count)
 	const char *sc;
 
 	for (sc = s; count-- && *sc != '\0'; ++sc)
-		/* nothing */;
+		 ;
 	return sc - s;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2017-2018, Intel Corporation. All rights reserved
- *  Copyright Altera Corporation (C) 2014-2016. All rights reserved.
- *  Copyright 2011-2012 Calxeda, Inc.
- */
+
+ 
 
 #include <asm/cacheflush.h>
 #include <linux/ctype.h>
@@ -73,9 +69,9 @@ static const struct altr_sdram_prv_data a10_data = {
 	.ue_set_mask        = A10_DIAGINT_TDERRA_MASK,
 };
 
-/*********************** EDAC Memory Controller Functions ****************/
+ 
 
-/* The SDRAM controller uses the EDAC Memory Controller framework.       */
+ 
 
 static irqreturn_t altr_sdram_mc_err_handler(int irq, void *dev_id)
 {
@@ -105,7 +101,7 @@ static irqreturn_t altr_sdram_mc_err_handler(int irq, void *dev_id)
 				     err_addr >> PAGE_SHIFT,
 				     err_addr & ~PAGE_MASK, 0,
 				     0, 0, -1, mci->ctl_name, "");
-		/* Clear IRQ to resume */
+		 
 		regmap_write(drvdata->mc_vbase,	priv->ecc_irq_clr_offset,
 			     priv->ecc_irq_clr_mask);
 
@@ -137,10 +133,7 @@ static ssize_t altr_sdr_mc_err_inject_write(struct file *file,
 		    &read_reg);
 	read_reg &= ~(priv->ce_set_mask | priv->ue_set_mask);
 
-	/* Error are injected by writing a word while the SBE or DBE
-	 * bit in the CTLCFG register is set. Reading the word will
-	 * trigger the SBE or DBE error and the corresponding IRQ.
-	 */
+	 
 	if (count == 3) {
 		edac_printk(KERN_ALERT, EDAC_MC,
 			    "Inject Double bit error\n");
@@ -160,20 +153,15 @@ static ssize_t altr_sdr_mc_err_inject_write(struct file *file,
 	ptemp[0] = 0x5A5A5A5A;
 	ptemp[1] = 0xA5A5A5A5;
 
-	/* Clear the error injection bits */
+	 
 	regmap_write(drvdata->mc_vbase,	priv->ce_ue_trgr_offset, read_reg);
-	/* Ensure it has been written out */
+	 
 	wmb();
 
-	/*
-	 * To trigger the error, we need to read the data back
-	 * (the data was written with errors above).
-	 * The READ_ONCE macros and printk are used to prevent the
-	 * the compiler optimizing these reads out.
-	 */
+	 
 	reg = READ_ONCE(ptemp[0]);
 	read_reg = READ_ONCE(ptemp[1]);
-	/* Force Read */
+	 
 	rmb();
 
 	edac_printk(KERN_ALERT, EDAC_MC, "Read Data [0x%X, 0x%X]\n",
@@ -202,7 +190,7 @@ static void altr_sdr_mc_create_debugfs_nodes(struct mem_ctl_info *mci)
 				 &altr_sdr_mc_debug_inject_fops);
 }
 
-/* Get total memory size from Open Firmware DTB */
+ 
 static unsigned long get_total_mem(void)
 {
 	struct device_node *np = NULL;
@@ -294,7 +282,7 @@ static int altr_sdram_probe(struct platform_device *pdev)
 	if (!id)
 		return -ENODEV;
 
-	/* Grab the register range from the sdr controller in device tree */
+	 
 	mc_vbase = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 						   "altr,sdr-syscon");
 	if (IS_ERR(mc_vbase)) {
@@ -303,11 +291,11 @@ static int altr_sdram_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Check specific dependencies for the module */
+	 
 	priv = of_match_node(altr_sdram_ctrl_of_match,
 			     pdev->dev.of_node)->data;
 
-	/* Validate the SDRAM controller has ECC enabled */
+	 
 	if (regmap_read(mc_vbase, priv->ecc_ctrl_offset, &read_reg) ||
 	    ((read_reg & priv->ecc_ctl_en_mask) != priv->ecc_ctl_en_mask)) {
 		edac_printk(KERN_ERR, EDAC_MC,
@@ -315,14 +303,14 @@ static int altr_sdram_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Grab memory size from device tree. */
+	 
 	mem_size = get_total_mem();
 	if (!mem_size) {
 		edac_printk(KERN_ERR, EDAC_MC, "Unable to calculate memory size\n");
 		return -ENODEV;
 	}
 
-	/* Ensure the SDRAM Interrupt is disabled */
+	 
 	if (regmap_update_bits(mc_vbase, priv->ecc_irq_en_offset,
 			       priv->ecc_irq_en_mask, 0)) {
 		edac_printk(KERN_ERR, EDAC_MC,
@@ -330,7 +318,7 @@ static int altr_sdram_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Toggle to clear the SDRAM Error count */
+	 
 	if (regmap_update_bits(mc_vbase, priv->ecc_cnt_rst_offset,
 			       priv->ecc_cnt_rst_mask,
 			       priv->ecc_cnt_rst_mask)) {
@@ -353,7 +341,7 @@ static int altr_sdram_probe(struct platform_device *pdev)
 		return irq;
 	}
 
-	/* Arria10 has a 2nd IRQ */
+	 
 	irq2 = platform_get_irq(pdev, 1);
 
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
@@ -399,9 +387,9 @@ static int altr_sdram_probe(struct platform_device *pdev)
 	if (res < 0)
 		goto err;
 
-	/* Only the Arria10 has separate IRQs */
+	 
 	if (of_machine_is_compatible("altr,socfpga-arria10")) {
-		/* Arria10 specific initialization */
+		 
 		res = a10_init(mc_vbase);
 		if (res < 0)
 			goto err2;
@@ -432,7 +420,7 @@ static int altr_sdram_probe(struct platform_device *pdev)
 		goto err2;
 	}
 
-	/* Infrastructure ready - enable the IRQ */
+	 
 	if (regmap_update_bits(drvdata->mc_vbase, priv->ecc_irq_en_offset,
 			       priv->ecc_irq_en_mask, priv->ecc_irq_en_mask)) {
 		edac_mc_printk(mci, KERN_ERR,
@@ -470,10 +458,7 @@ static int altr_sdram_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * If you want to suspend, need to disable EDAC by removing it
- * from the device tree or defconfig.
- */
+ 
 #ifdef CONFIG_PM
 static int altr_sdram_prepare(struct device *dev)
 {
@@ -501,9 +486,9 @@ static struct platform_driver altr_sdram_edac_driver = {
 
 module_platform_driver(altr_sdram_edac_driver);
 
-#endif	/* CONFIG_EDAC_ALTERA_SDRAM */
+#endif	 
 
-/************************* EDAC Parent Probe *************************/
+ 
 
 static const struct of_device_id altr_edac_device_of_match[];
 
@@ -529,15 +514,9 @@ static struct platform_driver altr_edac_driver = {
 };
 module_platform_driver(altr_edac_driver);
 
-/************************* EDAC Device Functions *************************/
+ 
 
-/*
- * EDAC Device Functions (shared between various IPs).
- * The discrete memories use the EDAC Device framework. The probe
- * and error handling functions are very similar between memories
- * so they are shared. The memory allocation and freeing for EDAC
- * trigger testing are different for each memory.
- */
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_OCRAM
 static const struct edac_device_prv_data ocramecc_data;
@@ -597,10 +576,7 @@ altr_edac_device_trig(struct file *file, const char __user *user_buf,
 	if (!priv->alloc_mem)
 		return -ENOMEM;
 
-	/*
-	 * Note that generic_ptr is initialized to the device * but in
-	 * some alloc_functions, this is overridden and returns data.
-	 */
+	 
 	ptemp = priv->alloc_mem(priv->trig_alloc_sz, &generic_ptr);
 	if (!ptemp) {
 		edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -617,26 +593,26 @@ altr_edac_device_trig(struct file *file, const char __user *user_buf,
 		    "Trigger Error Mask (0x%X)\n", error_mask);
 
 	local_irq_save(flags);
-	/* write ECC corrupted data out. */
+	 
 	for (i = 0; i < (priv->trig_alloc_sz / sizeof(*ptemp)); i++) {
-		/* Read data so we're in the correct state */
+		 
 		rmb();
 		if (READ_ONCE(ptemp[i]))
 			result = -1;
-		/* Toggle Error bit (it is latched), leave ECC enabled */
+		 
 		writel(error_mask, (drvdata->base + priv->set_err_ofst));
 		writel(priv->ecc_enable_mask, (drvdata->base +
 					       priv->set_err_ofst));
 		ptemp[i] = i;
 	}
-	/* Ensure it has been written out */
+	 
 	wmb();
 	local_irq_restore(flags);
 
 	if (result)
 		edac_printk(KERN_ERR, EDAC_DEVICE, "Mem Not Cleared\n");
 
-	/* Read out written data. ECC error caused here */
+	 
 	for (i = 0; i < ALTR_TRIGGER_READ_WRD_CNT; i++)
 		if (READ_ONCE(ptemp[i]) != i)
 			edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -703,14 +679,7 @@ static const struct of_device_id altr_edac_device_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, altr_edac_device_of_match);
 
-/*
- * altr_edac_device_probe()
- *	This is a generic EDAC device driver that will support
- *	various Altera memory devices such as the L2 cache ECC and
- *	OCRAM ECC as well as the memories for other peripherals.
- *	Module specific initialization is done by passing the
- *	function index in the device tree.
- */
+ 
 static int altr_edac_device_probe(struct platform_device *pdev)
 {
 	struct edac_device_ctl_info *dci;
@@ -765,10 +734,10 @@ static int altr_edac_device_probe(struct platform_device *pdev)
 		goto fail1;
 	}
 
-	/* Get driver specific data for this EDAC device */
+	 
 	drvdata->data = of_match_node(altr_edac_device_of_match, np)->data;
 
-	/* Check specific dependencies for the module */
+	 
 	if (drvdata->data->setup) {
 		res = drvdata->data->setup(drvdata);
 		if (res)
@@ -834,14 +803,9 @@ static struct platform_driver altr_edac_device_driver = {
 };
 module_platform_driver(altr_edac_device_driver);
 
-/******************* Arria10 Device ECC Shared Functions *****************/
+ 
 
-/*
- *  Test for memory's ECC dependencies upon entry because platform specific
- *  startup should have initialized the memory and enabled the ECC.
- *  Can't turn on ECC here because accessing un-initialized memory will
- *  cause CE/UE errors possibly causing an ABORT.
- */
+ 
 static int __maybe_unused
 altr_check_ecc_deps(struct altr_edac_device_dev *device)
 {
@@ -883,7 +847,7 @@ static irqreturn_t __maybe_unused altr_edac_a10_ecc_irq(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-/******************* Arria10 Memory Buffer Functions *********************/
+ 
 
 static inline int a10_get_irq_mask(struct device_node *np)
 {
@@ -919,10 +883,7 @@ static inline int ecc_test_bits(u32 bit_mask, void __iomem *ioaddr)
 	return (value & bit_mask) ? 1 : 0;
 }
 
-/*
- * This function uses the memory initialization block in the Arria10 ECC
- * controller to initialize/clear the entire memory data and ECC data.
- */
+ 
 static int __maybe_unused altr_init_memory_port(void __iomem *ioaddr, int port)
 {
 	int limit = ALTR_A10_ECC_INIT_WATCHDOG_10US;
@@ -949,7 +910,7 @@ static int __maybe_unused altr_init_memory_port(void __iomem *ioaddr, int port)
 	if (limit < 0)
 		ret = -EBUSY;
 
-	/* Clear any pending ECC interrupts */
+	 
 	writel(clear_mask, (ioaddr + ALTR_A10_ECC_INTSTAT_OFST));
 
 	return ret;
@@ -967,7 +928,7 @@ altr_init_a10_ecc_block(struct device_node *np, u32 irq_mask,
 
 	ecc_name = (char *)np->name;
 
-	/* Get the ECC Manager - parent of the device EDACs */
+	 
 	np_eccmgr = of_get_parent(np);
 
 	ecc_mgr_map =
@@ -981,7 +942,7 @@ altr_init_a10_ecc_block(struct device_node *np, u32 irq_mask,
 		return -ENODEV;
 	}
 
-	/* Map the ECC Block */
+	 
 	ecc_block_base = of_iomap(np, 0);
 	if (!ecc_block_base) {
 		edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -989,15 +950,15 @@ altr_init_a10_ecc_block(struct device_node *np, u32 irq_mask,
 		return -ENODEV;
 	}
 
-	/* Disable ECC */
+	 
 	regmap_write(ecc_mgr_map, A10_SYSMGR_ECC_INTMASK_SET_OFST, irq_mask);
 	writel(ALTR_A10_ECC_SERRINTEN,
 	       (ecc_block_base + ALTR_A10_ECC_ERRINTENR_OFST));
 	ecc_clear_bits(ecc_ctrl_en_mask,
 		       (ecc_block_base + ALTR_A10_ECC_CTRL_OFST));
-	/* Ensure all writes complete */
+	 
 	wmb();
-	/* Use HW initialization block to initialize memory for ECC */
+	 
 	ret = altr_init_memory_port(ecc_block_base, 0);
 	if (ret) {
 		edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -1015,16 +976,16 @@ altr_init_a10_ecc_block(struct device_node *np, u32 irq_mask,
 		}
 	}
 
-	/* Interrupt mode set to every SBERR */
+	 
 	regmap_write(ecc_mgr_map, ALTR_A10_ECC_INTMODE_OFST,
 		     ALTR_A10_ECC_INTMODE);
-	/* Enable ECC */
+	 
 	ecc_set_bits(ecc_ctrl_en_mask, (ecc_block_base +
 					ALTR_A10_ECC_CTRL_OFST));
 	writel(ALTR_A10_ECC_SERRINTEN,
 	       (ecc_block_base + ALTR_A10_ECC_ERRINTENS_OFST));
 	regmap_write(ecc_mgr_map, A10_SYSMGR_ECC_INTMASK_CLR_OFST, irq_mask);
-	/* Ensure all writes complete */
+	 
 	wmb();
 out:
 	iounmap(ecc_block_base);
@@ -1061,12 +1022,12 @@ static int __init __maybe_unused altr_init_a10_ecc_device_type(char *compat)
 		if (irq < 0)
 			continue;
 
-		/* Get matching node and check for valid result */
+		 
 		pdev_id = of_match_node(altr_edac_a10_device_of_match, child);
 		if (IS_ERR_OR_NULL(pdev_id))
 			continue;
 
-		/* Validate private data pointer before dereferencing */
+		 
 		prv = pdev_id->data;
 		if (!prv)
 			continue;
@@ -1079,16 +1040,11 @@ static int __init __maybe_unused altr_init_a10_ecc_device_type(char *compat)
 	return 0;
 }
 
-/*********************** SDRAM EDAC Device Functions *********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_SDRAM
 
-/*
- * A legacy U-Boot bug only enabled memory mapped access to the ECC Enable
- * register if ECC is enabled. Linux checks the ECC Enable register to
- * determine ECC status.
- * Use an SMC call (which always works) to determine ECC enablement.
- */
+ 
 static int altr_s10_sdram_check_ecc_deps(struct altr_edac_device_dev *device)
 {
 	const struct edac_device_prv_data *prv = device->data;
@@ -1133,9 +1089,9 @@ static const struct edac_device_prv_data s10_sdramecc_data = {
 	.ecc_irq_handler = altr_edac_a10_ecc_irq,
 	.inject_fops = &altr_edac_a10_device_inject_fops,
 };
-#endif /* CONFIG_EDAC_ALTERA_SDRAM */
+#endif  
 
-/*********************** OCRAM EDAC Device Functions *********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_OCRAM
 
@@ -1159,10 +1115,10 @@ static void *ocram_alloc_mem(size_t size, void **other)
 		return NULL;
 
 	memset(sram_addr, 0, size);
-	/* Ensure data is written out */
+	 
 	wmb();
 
-	/* Remember this handle for freeing  later */
+	 
 	*other = gp;
 
 	return sram_addr;
@@ -1198,14 +1154,14 @@ altr_check_ocram_deps_init(struct altr_edac_device_dev *device)
 	if (ret)
 		return ret;
 
-	/* Verify OCRAM has been initialized */
+	 
 	if (!ecc_test_bits(ALTR_A10_ECC_INITCOMPLETEA,
 			   (base + ALTR_A10_ECC_INITSTAT_OFST)))
 		return -ENODEV;
 
-	/* Enable IRQ on Single Bit Error */
+	 
 	writel(ALTR_A10_ECC_SERRINTEN, (base + ALTR_A10_ECC_ERRINTENS_OFST));
-	/* Ensure all writes complete */
+	 
 	wmb();
 
 	return 0;
@@ -1223,17 +1179,13 @@ static const struct edac_device_prv_data a10_ocramecc_data = {
 	.set_err_ofst = ALTR_A10_ECC_INTTEST_OFST,
 	.ecc_irq_handler = altr_edac_a10_ecc_irq,
 	.inject_fops = &altr_edac_a10_device_inject2_fops,
-	/*
-	 * OCRAM panic on uncorrectable error because sleep/resume
-	 * functions and FPGA contents are stored in OCRAM. Prefer
-	 * a kernel panic over executing/loading corrupted data.
-	 */
+	 
 	.panic = true,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_OCRAM */
+#endif	 
 
-/********************* L2 Cache EDAC Device Functions ********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_L2C
 
@@ -1245,14 +1197,10 @@ static void *l2_alloc_mem(size_t size, void **other)
 	if (!ptemp)
 		return NULL;
 
-	/* Make sure everything is written out */
+	 
 	wmb();
 
-	/*
-	 * Clean all cache levels up to LoC (includes L2)
-	 * This ensures the corrupted data is written into
-	 * L2 cache for readback test (which causes ECC error).
-	 */
+	 
 	flush_cache_all();
 
 	return ptemp;
@@ -1266,14 +1214,7 @@ static void l2_free_mem(void *p, size_t size, void *other)
 		devm_kfree(dev, p);
 }
 
-/*
- * altr_l2_check_deps()
- *	Test for L2 cache ECC dependencies upon entry because
- *	platform specific startup should have initialized the L2
- *	memory and enabled the ECC.
- *	Bail if ECC is not enabled.
- *	Note that L2 Cache Enable is forced at build time.
- */
+ 
 static int altr_l2_check_deps(struct altr_edac_device_dev *device)
 {
 	void __iomem *base = device->base;
@@ -1344,9 +1285,9 @@ static const struct edac_device_prv_data a10_l2ecc_data = {
 	.inject_fops = &altr_edac_device_inject_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_L2C */
+#endif	 
 
-/********************* Ethernet Device Functions ********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_ETHERNET
 
@@ -1374,9 +1315,9 @@ static const struct edac_device_prv_data a10_enetecc_data = {
 	.inject_fops = &altr_edac_a10_device_inject2_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_ETHERNET */
+#endif	 
 
-/********************** NAND Device Functions **********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_NAND
 
@@ -1404,9 +1345,9 @@ static const struct edac_device_prv_data a10_nandecc_data = {
 	.inject_fops = &altr_edac_a10_device_inject_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_NAND */
+#endif	 
 
-/********************** DMA Device Functions **********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_DMA
 
@@ -1434,9 +1375,9 @@ static const struct edac_device_prv_data a10_dmaecc_data = {
 	.inject_fops = &altr_edac_a10_device_inject_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_DMA */
+#endif	 
 
-/********************** USB Device Functions **********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_USB
 
@@ -1464,9 +1405,9 @@ static const struct edac_device_prv_data a10_usbecc_data = {
 	.inject_fops = &altr_edac_a10_device_inject2_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_USB */
+#endif	 
 
-/********************** QSPI Device Functions **********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_QSPI
 
@@ -1494,9 +1435,9 @@ static const struct edac_device_prv_data a10_qspiecc_data = {
 	.inject_fops = &altr_edac_a10_device_inject_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_QSPI */
+#endif	 
 
-/********************* SDMMC Device Functions **********************/
+ 
 
 #ifdef CONFIG_EDAC_ALTERA_SDMMC
 
@@ -1520,7 +1461,7 @@ static int altr_portb_setup(struct altr_edac_device_dev *device)
 		return -ENODEV;
 	}
 
-	/* Create the PortB EDAC device */
+	 
 	edac_idx = edac_device_alloc_index();
 	dci = edac_device_alloc_ctl_info(sizeof(*altdev), ecc_name, 1,
 					 ecc_name, 1, 0, NULL, 0, edac_idx);
@@ -1531,14 +1472,14 @@ static int altr_portb_setup(struct altr_edac_device_dev *device)
 		return -ENOMEM;
 	}
 
-	/* Initialize the PortB EDAC device structure from PortA structure */
+	 
 	altdev = dci->pvt_info;
 	*altdev = *device;
 
 	if (!devres_open_group(&altdev->ddev, altr_portb_setup, GFP_KERNEL))
 		return -ENOMEM;
 
-	/* Update PortB specific values */
+	 
 	altdev->edac_dev_name = ecc_name;
 	altdev->edac_idx = edac_idx;
 	altdev->edac_dev = dci;
@@ -1548,12 +1489,7 @@ static int altr_portb_setup(struct altr_edac_device_dev *device)
 	dci->mod_name = ecc_name;
 	dci->dev_name = ecc_name;
 
-	/*
-	 * Update the PortB IRQs - A10 has 4, S10 has 2, Index accordingly
-	 *
-	 * FIXME: Instead of ifdefs with different architectures the driver
-	 *        should properly use compatibles.
-	 */
+	 
 #ifdef CONFIG_64BIT
 	altdev->sb_irq = irq_of_parse_and_map(np, 1);
 #else
@@ -1574,7 +1510,7 @@ static int altr_portb_setup(struct altr_edac_device_dev *device)
 	}
 
 #ifdef CONFIG_64BIT
-	/* Use IRQ to determine SError origin instead of assigning IRQ */
+	 
 	rc = of_property_read_u32_index(np, "interrupts", 1, &altdev->db_irq);
 	if (rc) {
 		edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -1636,13 +1572,13 @@ static int __init socfpga_init_sdmmc_ecc(struct altr_edac_device_dev *device)
 	if (validate_parent_available(child))
 		goto exit;
 
-	/* Init portB */
+	 
 	rc = altr_init_a10_ecc_block(child, ALTR_A10_SDMMC_IRQ_MASK,
 				     a10_sdmmceccb_data.ecc_enable_mask, 1);
 	if (rc)
 		goto exit;
 
-	/* Setup portB */
+	 
 	return altr_portb_setup(device);
 
 exit:
@@ -1699,9 +1635,9 @@ static const struct edac_device_prv_data a10_sdmmceccb_data = {
 	.inject_fops = &altr_edac_a10_device_inject_fops,
 };
 
-#endif	/* CONFIG_EDAC_ALTERA_SDMMC */
+#endif	 
 
-/********************* Arria10 EDAC Device Functions *************************/
+ 
 static const struct of_device_id altr_edac_a10_device_of_match[] = {
 #ifdef CONFIG_EDAC_ALTERA_L2C
 	{ .compatible = "altr,socfpga-a10-l2-ecc", .data = &a10_l2ecc_data },
@@ -1736,12 +1672,7 @@ static const struct of_device_id altr_edac_a10_device_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, altr_edac_a10_device_of_match);
 
-/*
- * The Arria10 EDAC Device Functions differ from the Cyclone5/Arria5
- * because 2 IRQs are shared among the all ECC peripherals. The ECC
- * manager manages the IRQs and the children.
- * Based on xgene_edac.c peripheral code.
- */
+ 
 
 static ssize_t __maybe_unused
 altr_edac_a10_device_trig(struct file *file, const char __user *user_buf,
@@ -1763,18 +1694,14 @@ altr_edac_a10_device_trig(struct file *file, const char __user *user_buf,
 	else
 		writel(priv->ce_set_mask, set_addr);
 
-	/* Ensure the interrupt test bits are set */
+	 
 	wmb();
 	local_irq_restore(flags);
 
 	return count;
 }
 
-/*
- * The Stratix10 EDAC Error Injection Functions differ from Arria10
- * slightly. A few Arria10 peripherals can use this injection function.
- * Inject the error into the memory and then readback to trigger the IRQ.
- */
+ 
 static ssize_t __maybe_unused
 altr_edac_a10_device_trig2(struct file *file, const char __user *user_buf,
 			   size_t count, loff_t *ppos)
@@ -1793,15 +1720,15 @@ altr_edac_a10_device_trig2(struct file *file, const char __user *user_buf,
 	if (trig_type == ALTR_UE_TRIGGER_CHAR) {
 		writel(priv->ue_set_mask, set_addr);
 	} else {
-		/* Setup read/write of 4 bytes */
+		 
 		writel(ECC_WORD_WRITE, drvdata->base + ECC_BLK_DBYTECTRL_OFST);
-		/* Setup Address to 0 */
+		 
 		writel(0, drvdata->base + ECC_BLK_ADDRESS_OFST);
-		/* Setup accctrl to read & ecc & data override */
+		 
 		writel(ECC_READ_EDOVR, drvdata->base + ECC_BLK_ACCCTRL_OFST);
-		/* Kick it. */
+		 
 		writel(ECC_XACT_KICK, drvdata->base + ECC_BLK_STARTACC_OFST);
-		/* Setup write for single bit change */
+		 
 		writel(readl(drvdata->base + ECC_BLK_RDATA0_OFST) ^ 0x1,
 		       drvdata->base + ECC_BLK_WDATA0_OFST);
 		writel(readl(drvdata->base + ECC_BLK_RDATA1_OFST),
@@ -1811,22 +1738,22 @@ altr_edac_a10_device_trig2(struct file *file, const char __user *user_buf,
 		writel(readl(drvdata->base + ECC_BLK_RDATA3_OFST),
 		       drvdata->base + ECC_BLK_WDATA3_OFST);
 
-		/* Copy Read ECC to Write ECC */
+		 
 		writel(readl(drvdata->base + ECC_BLK_RECC0_OFST),
 		       drvdata->base + ECC_BLK_WECC0_OFST);
 		writel(readl(drvdata->base + ECC_BLK_RECC1_OFST),
 		       drvdata->base + ECC_BLK_WECC1_OFST);
-		/* Setup accctrl to write & ecc override & data override */
+		 
 		writel(ECC_WRITE_EDOVR, drvdata->base + ECC_BLK_ACCCTRL_OFST);
-		/* Kick it. */
+		 
 		writel(ECC_XACT_KICK, drvdata->base + ECC_BLK_STARTACC_OFST);
-		/* Setup accctrl to read & ecc overwrite & data overwrite */
+		 
 		writel(ECC_READ_EDOVR, drvdata->base + ECC_BLK_ACCCTRL_OFST);
-		/* Kick it. */
+		 
 		writel(ECC_XACT_KICK, drvdata->base + ECC_BLK_STARTACC_OFST);
 	}
 
-	/* Ensure the interrupt test bits are set */
+	 
 	wmb();
 	local_irq_restore(flags);
 
@@ -1861,11 +1788,11 @@ static int validate_parent_available(struct device_node *np)
 	struct device_node *parent;
 	int ret = 0;
 
-	/* SDRAM must be present for Linux (implied parent) */
+	 
 	if (of_device_is_compatible(np, "altr,sdram-edac-s10"))
 		return 0;
 
-	/* Ensure parent device is enabled if parent node exists */
+	 
 	parent = of_parse_phandle(np, "altr,ecc-parent", 0);
 	if (parent && !of_device_is_available(parent))
 		ret = -ENODEV;
@@ -1900,13 +1827,13 @@ static int altr_edac_a10_device_add(struct altr_arria10_edac *edac,
 	int edac_idx;
 	int rc = 0;
 	const struct edac_device_prv_data *prv;
-	/* Get matching node and check for valid result */
+	 
 	const struct of_device_id *pdev_id =
 		of_match_node(altr_edac_a10_device_of_match, np);
 	if (IS_ERR_OR_NULL(pdev_id))
 		return -ENODEV;
 
-	/* Get driver specific data for this EDAC device */
+	 
 	prv = pdev_id->data;
 	if (IS_ERR_OR_NULL(prv))
 		return -ENODEV;
@@ -1959,7 +1886,7 @@ static int altr_edac_a10_device_add(struct altr_arria10_edac *edac,
 		goto err_release_group1;
 	}
 
-	/* Check specific dependencies for the module */
+	 
 	if (altdev->data->setup) {
 		rc = altdev->data->setup(altdev);
 		if (rc)
@@ -1981,7 +1908,7 @@ static int altr_edac_a10_device_add(struct altr_arria10_edac *edac,
 	}
 
 #ifdef CONFIG_64BIT
-	/* Use IRQ to determine SError origin instead of assigning IRQ */
+	 
 	rc = of_property_read_u32_index(np, "interrupts", 0, &altdev->db_irq);
 	if (rc) {
 		edac_printk(KERN_ERR, EDAC_DEVICE,
@@ -2062,17 +1989,14 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
 	.xlate = irq_domain_xlate_twocell,
 };
 
-/************** Stratix 10 EDAC Double Bit Error Handler ************/
+ 
 #define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
 
 #ifdef CONFIG_64BIT
-/* panic routine issues reboot on non-zero panic_timeout */
+ 
 extern int panic_timeout;
 
-/*
- * The double bit error is handled through SError which is fatal. This is
- * called as a panic notifier to printout ECC error info as part of the panic.
- */
+ 
 static int s10_edac_dberr_handler(struct notifier_block *this,
 				  unsigned long event, void *ptr)
 {
@@ -2087,7 +2011,7 @@ static int s10_edac_dberr_handler(struct notifier_block *this,
 		struct altr_edac_device_dev *ed;
 		struct arm_smccc_res result;
 
-		/* Find the matching DBE in the list of devices */
+		 
 		list_for_each(position, &edac->a10_ecc_devices) {
 			ed = list_entry(position, struct altr_edac_device_dev,
 					next);
@@ -2104,7 +2028,7 @@ static int s10_edac_dberr_handler(struct notifier_block *this,
 				    ed->edac_dev_name, err_addr);
 			break;
 		}
-		/* Notify the System through SMC. Reboot delay = 1 second */
+		 
 		panic_timeout = 1;
 		arm_smccc_smc(INTEL_SIP_SMC_ECC_DBE, dberror, 0, 0, 0, 0,
 			      0, 0, &result);
@@ -2114,7 +2038,7 @@ static int s10_edac_dberr_handler(struct notifier_block *this,
 }
 #endif
 
-/****************** Arria 10 EDAC Probe Function *********************/
+ 
 static int altr_edac_a10_probe(struct platform_device *pdev)
 {
 	struct altr_arria10_edac *edac;
@@ -2164,7 +2088,7 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
 		atomic_notifier_chain_register(&panic_notifier_list,
 					       &edac->panic_notifier);
 
-		/* Printout a message if uncorrectable error previously. */
+		 
 		regmap_read(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST,
 			    &dberror);
 		if (dberror) {
@@ -2173,7 +2097,7 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
 			edac_printk(KERN_ERR, EDAC_DEVICE,
 				    "Previous Boot UE detected[0x%X] @ 0x%X\n",
 				    dberror, err_addr);
-			/* Reset the sticky registers */
+			 
 			regmap_write(edac->ecc_mgr_map,
 				     S10_SYSMGR_UE_VAL_OFST, 0);
 			regmap_write(edac->ecc_mgr_map,

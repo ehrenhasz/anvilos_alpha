@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
+
+ 
+ 
 #include <linux/bitops.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
@@ -26,9 +19,7 @@
 
 static DEFINE_MUTEX(bnad_fwimg_mutex);
 
-/*
- * Module params
- */
+ 
 static uint bnad_msix_disable;
 module_param(bnad_msix_disable, uint, 0444);
 MODULE_PARM_DESC(bnad_msix_disable, "Disable MSIX mode");
@@ -42,17 +33,13 @@ module_param(bna_debugfs_enable, uint, 0644);
 MODULE_PARM_DESC(bna_debugfs_enable, "Enables debugfs feature, default=1,"
 		 " Range[false:0|true:1]");
 
-/*
- * Global variables
- */
+ 
 static u32 bnad_rxqs_per_cq = 2;
 static atomic_t bna_id;
 static const u8 bnad_bcast_addr[] __aligned(2) =
 	{ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
-/*
- * Local MACROS
- */
+ 
 #define BNAD_GET_MBOX_IRQ(_bnad)				\
 	(((_bnad)->cfg_flags & BNAD_CF_MSIX) ?			\
 	 ((_bnad)->msix_table[BNAD_MAILBOX_MSIX_INDEX].vector) : \
@@ -66,9 +53,7 @@ do {								\
 	(_res_info)->res_u.mem_info.len = (_size);		\
 } while (0)
 
-/*
- * Reinitialize completions in CQ, once Rx is taken down
- */
+ 
 static void
 bnad_cq_cleanup(struct bnad *bnad, struct bna_ccb *ccb)
 {
@@ -81,10 +66,10 @@ bnad_cq_cleanup(struct bnad *bnad, struct bna_ccb *ccb)
 	}
 }
 
-/* Tx Datapath functions */
+ 
 
 
-/* Caller should ensure that the entry at unmap_q[index] is valid */
+ 
 static u32
 bnad_tx_buff_unmap(struct bnad *bnad,
 			      struct bnad_tx_unmap *unmap_q,
@@ -128,11 +113,7 @@ bnad_tx_buff_unmap(struct bnad *bnad,
 	return index;
 }
 
-/*
- * Frees all pending Tx Bufs
- * At this point no activity is expected on the Q,
- * so DMA unmap & freeing is fine.
- */
+ 
 static void
 bnad_txq_cleanup(struct bnad *bnad, struct bna_tcb *tcb)
 {
@@ -150,11 +131,7 @@ bnad_txq_cleanup(struct bnad *bnad, struct bna_tcb *tcb)
 	}
 }
 
-/*
- * bnad_txcmpl_process : Frees the Tx bufs on Tx completion
- * Can be called in a) Interrupt context
- *		    b) Sending context
- */
+ 
 static u32
 bnad_txcmpl_process(struct bnad *bnad, struct bna_tcb *tcb)
 {
@@ -164,7 +141,7 @@ bnad_txcmpl_process(struct bnad *bnad, struct bna_tcb *tcb)
 	struct bnad_tx_unmap *unmap;
 	struct sk_buff *skb;
 
-	/* Just return if TX is stopped */
+	 
 	if (!test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))
 		return 0;
 
@@ -191,7 +168,7 @@ bnad_txcmpl_process(struct bnad *bnad, struct bna_tcb *tcb)
 		dev_kfree_skb_any(skb);
 	}
 
-	/* Update consumer pointers. */
+	 
 	tcb->consumer_index = hw_cons;
 
 	tcb->txq->tx_packets += sent_packets;
@@ -231,7 +208,7 @@ bnad_tx_complete(struct bnad *bnad, struct bna_tcb *tcb)
 	return sent;
 }
 
-/* MSIX Tx Completion Handler */
+ 
 static irqreturn_t
 bnad_msix_tx(int irq, void *data)
 {
@@ -254,7 +231,7 @@ bnad_rxq_alloc_uninit(struct bnad *bnad, struct bna_rcb *rcb)
 	unmap_q->type = BNAD_RXBUF_NONE;
 }
 
-/* Default is page-based allocation. Multi-buffer support - TBD */
+ 
 static int
 bnad_rxq_alloc_init(struct bnad *bnad, struct bna_rcb *rcb)
 {
@@ -533,7 +510,7 @@ bnad_cq_setup_skb_frags(struct bna_ccb *ccb, struct sk_buff *skb, u32 nvecs)
 	bnad = rcb->bnad;
 	ci = rcb->consumer_index;
 
-	/* prefetch header */
+	 
 	prefetch(page_address(unmap_q->unmap[ci].page) +
 		 unmap_q->unmap[ci].page_offset);
 
@@ -605,13 +582,7 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 		cmpl = &cq[ccb->producer_index];
 		if (!cmpl->valid)
 			break;
-		/* The 'valid' field is set by the adapter, only after writing
-		 * the other fields of completion entry. Hence, do not load
-		 * other fields of completion entry *before* the 'valid' is
-		 * loaded. Adding the rmb() here prevents the compiler and/or
-		 * CPU from reordering the reads which would potentially result
-		 * in reading stale values in completion entry.
-		 */
+		 
 		rmb();
 
 		BNA_UPDATE_PKT_CNT(pkt_rt, ntohs(cmpl->length));
@@ -623,7 +594,7 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 
 		unmap_q = rcb->unmap_q;
 
-		/* start of packet ci */
+		 
 		sop_ci = rcb->consumer_index;
 
 		if (BNAD_RXBUF_IS_SK_BUFF(unmap_q->type)) {
@@ -641,9 +612,7 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 		totlen = len;
 		nvecs = 1;
 
-		/* Check all the completions for this frame.
-		 * busy-wait doesn't help much, break here.
-		 */
+		 
 		if (BNAD_RXBUF_IS_MULTI_BUFF(unmap_q->type) &&
 		    (flags & BNA_CQ_EF_EOP) == 0) {
 			pi = ccb->producer_index;
@@ -653,15 +622,7 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 
 				if (!next_cmpl->valid)
 					break;
-				/* The 'valid' field is set by the adapter, only
-				 * after writing the other fields of completion
-				 * entry. Hence, do not load other fields of
-				 * completion entry *before* the 'valid' is
-				 * loaded. Adding the rmb() here prevents the
-				 * compiler and/or CPU from reordering the reads
-				 * which would potentially result in reading
-				 * stale values in completion entry.
-				 */
+				 
 				rmb();
 
 				len = ntohs(next_cmpl->length);
@@ -676,7 +637,7 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 		}
 		packets++;
 
-		/* TODO: BNA_CQ_EF_LOCAL ? */
+		 
 		if (unlikely(flags & (BNA_CQ_EF_MAC_ERROR |
 						BNA_CQ_EF_FCS_ERROR |
 						BNA_CQ_EF_TOO_LONG))) {
@@ -748,7 +709,7 @@ bnad_netif_rx_schedule_poll(struct bnad *bnad, struct bna_ccb *ccb)
 	}
 }
 
-/* MSIX Rx Path Handler */
+ 
 static irqreturn_t
 bnad_msix_rx(int irq, void *data)
 {
@@ -762,9 +723,9 @@ bnad_msix_rx(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* Interrupt handlers */
+ 
 
-/* Mbox Interrupt Handlers */
+ 
 static irqreturn_t
 bnad_msix_mbox_handler(int irq, void *data)
 {
@@ -820,8 +781,8 @@ bnad_isr(int irq, void *data)
 	if (!BNA_IS_INTX_DATA_INTR(intr_status))
 		return IRQ_HANDLED;
 
-	/* Process data interrupts */
-	/* Tx processing */
+	 
+	 
 	for (i = 0; i < bnad->num_tx; i++) {
 		for (j = 0; j < bnad->num_txq_per_tx; j++) {
 			tcb = bnad->tx_info[i].tcb[j];
@@ -829,7 +790,7 @@ bnad_isr(int irq, void *data)
 				bnad_tx_complete(bnad, bnad->tx_info[i].tcb[j]);
 		}
 	}
-	/* Rx processing */
+	 
 	for (i = 0; i < bnad->num_rx; i++) {
 		rx_info = &bnad->rx_info[i];
 		if (!rx_info->rx)
@@ -844,10 +805,7 @@ bnad_isr(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Called in interrupt / callback context
- * with bna_lock held, so cfg_flags access is OK
- */
+ 
 static void
 bnad_enable_mbox_irq(struct bnad *bnad)
 {
@@ -856,10 +814,7 @@ bnad_enable_mbox_irq(struct bnad *bnad)
 	BNAD_UPDATE_CTR(bnad, mbox_intr_enabled);
 }
 
-/*
- * Called with bnad->bna_lock held b'cos of
- * bnad->cfg_flags access.
- */
+ 
 static void
 bnad_disable_mbox_irq(struct bnad *bnad)
 {
@@ -878,9 +833,9 @@ bnad_set_netdev_perm_addr(struct bnad *bnad)
 		eth_hw_addr_set(netdev, bnad->perm_addr);
 }
 
-/* Control Path Handlers */
+ 
 
-/* Callbacks */
+ 
 void
 bnad_cb_mbox_intr_enable(struct bnad *bnad)
 {
@@ -960,9 +915,7 @@ bnad_cb_ethport_link_status(struct bnad *bnad,
 
 					if (test_bit(BNAD_TXQ_TX_STARTED,
 						     &tcb->flags)) {
-						/*
-						 * Force an immediate
-						 * Transmit Schedule */
+						 
 						netif_wake_subqueue(
 								bnad->netdev,
 								txq_id);
@@ -1076,20 +1029,14 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
 		}
 	}
 
-	/*
-	 * Workaround for first ioceth enable failure & we
-	 * get a 0 MAC address. We try to get the MAC address
-	 * again here.
-	 */
+	 
 	if (is_zero_ether_addr(bnad->perm_addr)) {
 		bna_enet_perm_mac_get(&bnad->bna.enet, bnad->perm_addr);
 		bnad_set_netdev_perm_addr(bnad);
 	}
 }
 
-/*
- * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
- */
+ 
 static void
 bnad_tx_cleanup(struct delayed_work *work)
 {
@@ -1166,9 +1113,7 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
 	}
 }
 
-/*
- * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
- */
+ 
 static void
 bnad_rx_cleanup(void *work)
 {
@@ -1187,10 +1132,7 @@ bnad_rx_cleanup(void *work)
 
 		bnad = rx_ctrl->ccb->bnad;
 
-		/*
-		 * Wait till the poll handler has exited
-		 * and nothing can be scheduled anymore
-		 */
+		 
 		napi_disable(&rx_ctrl->napi);
 
 		bnad_cq_cleanup(bnad, rx_ctrl->ccb);
@@ -1304,7 +1246,7 @@ bnad_cb_completion(void *arg, enum bfa_status status)
 	complete(&iocmd_comp->comp);
 }
 
-/* Resource allocation, free functions */
+ 
 
 static void
 bnad_mem_free(struct bnad *bnad,
@@ -1379,7 +1321,7 @@ err_return:
 	return -ENOMEM;
 }
 
-/* Free IRQ for Mailbox */
+ 
 static void
 bnad_mbox_irq_free(struct bnad *bnad)
 {
@@ -1394,11 +1336,7 @@ bnad_mbox_irq_free(struct bnad *bnad)
 	free_irq(irq, bnad);
 }
 
-/*
- * Allocates IRQ for Mailbox, but keep it disabled
- * This will be enabled once we get the mbox enable callback
- * from bna
- */
+ 
 static int
 bnad_mbox_irq_alloc(struct bnad *bnad)
 {
@@ -1421,10 +1359,7 @@ bnad_mbox_irq_alloc(struct bnad *bnad)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 	sprintf(bnad->mbox_irq_name, "%s", BNAD_NAME);
 
-	/*
-	 * Set the Mbox IRQ disable flag, so that the IRQ handler
-	 * called from request_irq() for SHARED IRQs do not execute
-	 */
+	 
 	set_bit(BNAD_RF_MBOX_IRQ_DISABLED, &bnad->run_flags);
 
 	BNAD_UPDATE_CTR(bnad, mbox_intr_disabled);
@@ -1442,7 +1377,7 @@ bnad_txrx_irq_free(struct bnad *bnad, struct bna_intr_info *intr_info)
 	intr_info->idl = NULL;
 }
 
-/* Allocates Interrupt Descriptor List for MSIX/INT-X vectors */
+ 
 static int
 bnad_txrx_irq_alloc(struct bnad *bnad, enum bnad_intr_source src,
 		    u32 txrx_id, struct bna_intr_info *intr_info)
@@ -1502,9 +1437,7 @@ bnad_txrx_irq_alloc(struct bnad *bnad, enum bnad_intr_source src,
 	return 0;
 }
 
-/* NOTE: Should be called for MSIX only
- * Unregisters Tx MSIX vector(s) from the kernel
- */
+ 
 static void
 bnad_tx_msix_unregister(struct bnad *bnad, struct bnad_tx_info *tx_info,
 			int num_txqs)
@@ -1521,9 +1454,7 @@ bnad_tx_msix_unregister(struct bnad *bnad, struct bnad_tx_info *tx_info,
 	}
 }
 
-/* NOTE: Should be called for MSIX only
- * Registers Tx MSIX vector(s) and ISR(s), cookie with the kernel
- */
+ 
 static int
 bnad_tx_msix_register(struct bnad *bnad, struct bnad_tx_info *tx_info,
 			u32 tx_id, int num_txqs)
@@ -1552,9 +1483,7 @@ err_return:
 	return -1;
 }
 
-/* NOTE: Should be called for MSIX only
- * Unregisters Rx MSIX vector(s) from the kernel
- */
+ 
 static void
 bnad_rx_msix_unregister(struct bnad *bnad, struct bnad_rx_info *rx_info,
 			int num_rxps)
@@ -1572,9 +1501,7 @@ bnad_rx_msix_unregister(struct bnad *bnad, struct bnad_rx_info *rx_info,
 	}
 }
 
-/* NOTE: Should be called for MSIX only
- * Registers Tx MSIX vector(s) and ISR(s), cookie with the kernel
- */
+ 
 static int
 bnad_rx_msix_register(struct bnad *bnad, struct bnad_rx_info *rx_info,
 			u32 rx_id, int num_rxps)
@@ -1604,7 +1531,7 @@ err_return:
 	return -1;
 }
 
-/* Free Tx object Resources */
+ 
 static void
 bnad_tx_res_free(struct bnad *bnad, struct bna_res_info *res_info)
 {
@@ -1618,7 +1545,7 @@ bnad_tx_res_free(struct bnad *bnad, struct bna_res_info *res_info)
 	}
 }
 
-/* Allocates memory and interrupt resources for Tx object */
+ 
 static int
 bnad_tx_res_alloc(struct bnad *bnad, struct bna_res_info *res_info,
 		  u32 tx_id)
@@ -1642,7 +1569,7 @@ err_return:
 	return err;
 }
 
-/* Free Rx object Resources */
+ 
 static void
 bnad_rx_res_free(struct bnad *bnad, struct bna_res_info *res_info)
 {
@@ -1656,14 +1583,14 @@ bnad_rx_res_free(struct bnad *bnad, struct bna_res_info *res_info)
 	}
 }
 
-/* Allocates memory and interrupt resources for Rx object */
+ 
 static int
 bnad_rx_res_alloc(struct bnad *bnad, struct bna_res_info *res_info,
 		  uint rx_id)
 {
 	int i, err = 0;
 
-	/* All memory needs to be allocated before setup_ccbs */
+	 
 	for (i = 0; i < BNA_RX_RES_T_MAX; i++) {
 		if (res_info[i].res_type == BNA_RES_T_MEM)
 			err = bnad_mem_alloc(bnad,
@@ -1681,8 +1608,8 @@ err_return:
 	return err;
 }
 
-/* Timer callbacks */
-/* a) IOC timer */
+ 
+ 
 static void
 bnad_ioc_timeout(struct timer_list *t)
 {
@@ -1727,17 +1654,9 @@ bnad_iocpf_sem_timeout(struct timer_list *t)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
-/*
- * All timer routines use bnad->bna_lock to protect against
- * the following race, which may occur in case of no locking:
- *	Time	CPU m	CPU n
- *	0       1 = test_bit
- *	1			clear_bit
- *	2			del_timer_sync
- *	3	mod_timer
- */
+ 
 
-/* b) Dynamic Interrupt Moderation Timer */
+ 
 static void
 bnad_dim_timeout(struct timer_list *t)
 {
@@ -1763,14 +1682,14 @@ bnad_dim_timeout(struct timer_list *t)
 		}
 	}
 
-	/* Check for BNAD_CF_DIM_ENABLED, does not eliminate a race */
+	 
 	if (test_bit(BNAD_RF_DIM_TIMER_RUNNING, &bnad->run_flags))
 		mod_timer(&bnad->dim_timer,
 			  jiffies + msecs_to_jiffies(BNAD_DIM_TIMER_FREQ));
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
-/* c)  Statistics Timer */
+ 
 static void
 bnad_stats_timeout(struct timer_list *t)
 {
@@ -1786,10 +1705,7 @@ bnad_stats_timeout(struct timer_list *t)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
-/*
- * Set up timer for DIM
- * Called with bnad->bna_lock held
- */
+ 
 void
 bnad_dim_timer_start(struct bnad *bnad)
 {
@@ -1802,10 +1718,7 @@ bnad_dim_timer_start(struct bnad *bnad)
 	}
 }
 
-/*
- * Set up timer for statistics
- * Called with mutex_lock(&bnad->conf_mutex) held
- */
+ 
 static void
 bnad_stats_timer_start(struct bnad *bnad)
 {
@@ -1820,10 +1733,7 @@ bnad_stats_timer_start(struct bnad *bnad)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
-/*
- * Stops the stats timer
- * Called with mutex_lock(&bnad->conf_mutex) held
- */
+ 
 static void
 bnad_stats_timer_stop(struct bnad *bnad)
 {
@@ -1838,12 +1748,12 @@ bnad_stats_timer_stop(struct bnad *bnad)
 		del_timer_sync(&bnad->stats_timer);
 }
 
-/* Utilities */
+ 
 
 static void
 bnad_netdev_mc_list_get(struct net_device *netdev, u8 *mc_list)
 {
-	int i = 1; /* Index 0 has broadcast address */
+	int i = 1;  
 	struct netdev_hw_addr *mc_addr;
 
 	netdev_for_each_mc_addr(mc_addr, netdev) {
@@ -1886,7 +1796,7 @@ bnad_napi_add(struct bnad *bnad, u32 rx_id)
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i;
 
-	/* Initialize & enable NAPI */
+	 
 	for (i = 0; i <	bnad->num_rxp_per_rx; i++) {
 		rx_ctrl = &bnad->rx_info[rx_id].rx_ctrl[i];
 		netif_napi_add(bnad->netdev, &rx_ctrl->napi,
@@ -1899,12 +1809,12 @@ bnad_napi_delete(struct bnad *bnad, u32 rx_id)
 {
 	int i;
 
-	/* First disable and then clean up */
+	 
 	for (i = 0; i < bnad->num_rxp_per_rx; i++)
 		netif_napi_del(&bnad->rx_info[rx_id].rx_ctrl[i].napi);
 }
 
-/* Should be held with conf_lock held */
+ 
 void
 bnad_destroy_tx(struct bnad *bnad, u32 tx_id)
 {
@@ -1935,7 +1845,7 @@ bnad_destroy_tx(struct bnad *bnad, u32 tx_id)
 	bnad_tx_res_free(bnad, res_info);
 }
 
-/* Should be held with conf_lock held */
+ 
 int
 bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 {
@@ -1958,29 +1868,29 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 
 	tx_info->tx_id = tx_id;
 
-	/* Initialize the Tx object configuration */
+	 
 	tx_config->num_txq = bnad->num_txq_per_tx;
 	tx_config->txq_depth = bnad->txq_depth;
 	tx_config->tx_type = BNA_TX_T_REGULAR;
 	tx_config->coalescing_timeo = bnad->tx_coalescing_timeo;
 
-	/* Get BNA's resource requirement for one tx object */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_tx_res_req(bnad->num_txq_per_tx,
 		bnad->txq_depth, res_info);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Fill Unmap Q memory requirements */
+	 
 	BNAD_FILL_UNMAPQ_MEM_REQ(&res_info[BNA_TX_RES_MEM_T_UNMAPQ],
 			bnad->num_txq_per_tx, (sizeof(struct bnad_tx_unmap) *
 			bnad->txq_depth));
 
-	/* Allocate resources */
+	 
 	err = bnad_tx_res_alloc(bnad, res_info, tx_id);
 	if (err)
 		return err;
 
-	/* Ask BNA to create one Tx object, supplying required resources */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	tx = bna_tx_create(&bnad->bna, bnad, tx_config, &tx_cbfn, res_info,
 			tx_info);
@@ -1994,7 +1904,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work,
 			(work_func_t)bnad_tx_cleanup);
 
-	/* Register ISR for the Tx object */
+	 
 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
 		err = bnad_tx_msix_register(bnad, tx_info,
 			tx_id, bnad->num_txq_per_tx);
@@ -2019,8 +1929,8 @@ err_return:
 	return err;
 }
 
-/* Setup the rx config for bna_rx_create */
-/* bnad decides the configuration */
+ 
+ 
 static void
 bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 {
@@ -2049,21 +1959,15 @@ bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 	rx_config->frame_size = BNAD_FRAME_SIZE(bnad->netdev->mtu);
 	rx_config->q0_multi_buf = BNA_STATUS_T_DISABLED;
 
-	/* BNA_RXP_SINGLE - one data-buffer queue
-	 * BNA_RXP_SLR - one small-buffer and one large-buffer queues
-	 * BNA_RXP_HDS - one header-buffer and one data-buffer queues
-	 */
-	/* TODO: configurable param for queue type */
+	 
+	 
 	rx_config->rxp_type = BNA_RXP_SLR;
 
 	if (BNAD_PCI_DEV_IS_CAT2(bnad) &&
 	    rx_config->frame_size > 4096) {
-		/* though size_routing_enable is set in SLR,
-		 * small packets may get routed to same rxq.
-		 * set buf_size to 2048 instead of PAGE_SIZE.
-		 */
+		 
 		rx_config->q0_buf_size = 2048;
-		/* this should be in multiples of 2 */
+		 
 		rx_config->q0_num_vecs = 4;
 		rx_config->q0_depth = bnad->rxq_depth * rx_config->q0_num_vecs;
 		rx_config->q0_multi_buf = BNA_STATUS_T_ENABLED;
@@ -2073,7 +1977,7 @@ bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 		rx_config->q0_depth = bnad->rxq_depth;
 	}
 
-	/* initialize for q1 for BNA_RXP_SLR/BNA_RXP_HDS */
+	 
 	if (rx_config->rxp_type == BNA_RXP_SLR) {
 		rx_config->q1_depth = bnad->rxq_depth;
 		rx_config->q1_buf_size = BFI_SMALL_RXBUF_SIZE;
@@ -2094,7 +1998,7 @@ bnad_rx_ctrl_init(struct bnad *bnad, u32 rx_id)
 		rx_info->rx_ctrl[i].bnad = bnad;
 }
 
-/* Called with mutex_lock(&bnad->conf_mutex) held */
+ 
 static u32
 bnad_reinit_rx(struct bnad *bnad)
 {
@@ -2103,7 +2007,7 @@ bnad_reinit_rx(struct bnad *bnad)
 	u32 rx_id = 0, count = 0;
 	unsigned long flags;
 
-	/* destroy and create new rx objects */
+	 
 	for (rx_id = 0; rx_id < bnad->num_rx; rx_id++) {
 		if (!bnad->rx_info[rx_id].rx)
 			continue;
@@ -2124,7 +2028,7 @@ bnad_reinit_rx(struct bnad *bnad)
 		}
 	}
 
-	/* restore rx configuration */
+	 
 	if (bnad->rx_info[0].rx && !err) {
 		bnad_restore_vlans(bnad, 0);
 		bnad_enable_default_bcast(bnad);
@@ -2137,7 +2041,7 @@ bnad_reinit_rx(struct bnad *bnad)
 	return count;
 }
 
-/* Called with bnad_conf_lock() held */
+ 
 void
 bnad_destroy_rx(struct bnad *bnad, u32 rx_id)
 {
@@ -2183,7 +2087,7 @@ bnad_destroy_rx(struct bnad *bnad, u32 rx_id)
 	bnad_rx_res_free(bnad, res_info);
 }
 
-/* Called with mutex_lock(&bnad->conf_mutex) held */
+ 
 int
 bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 {
@@ -2207,15 +2111,15 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 
 	rx_info->rx_id = rx_id;
 
-	/* Initialize the Rx object configuration */
+	 
 	bnad_init_rx_config(bnad, rx_config);
 
-	/* Get BNA's resource requirement for one Rx object */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_rx_res_req(rx_config, res_info);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Fill Unmap Q memory requirements */
+	 
 	BNAD_FILL_UNMAPQ_MEM_REQ(&res_info[BNA_RX_RES_MEM_T_UNMAPDQ],
 				 rx_config->num_paths,
 			(rx_config->q0_depth *
@@ -2229,14 +2133,14 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 				 sizeof(struct bnad_rx_unmap) +
 				 sizeof(struct bnad_rx_unmap_q)));
 	}
-	/* Allocate resource */
+	 
 	err = bnad_rx_res_alloc(bnad, res_info, rx_id);
 	if (err)
 		return err;
 
 	bnad_rx_ctrl_init(bnad, rx_id);
 
-	/* Ask BNA to create one Rx object, supplying required resources */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	rx = bna_rx_create(&bnad->bna, bnad, rx_config, &rx_cbfn, res_info,
 			rx_info);
@@ -2251,13 +2155,10 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 	INIT_WORK(&rx_info->rx_cleanup_work,
 			(work_func_t)(bnad_rx_cleanup));
 
-	/*
-	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
-	 * so that IRQ handler cannot schedule NAPI at this point.
-	 */
+	 
 	bnad_napi_add(bnad, rx_id);
 
-	/* Register ISR for the Rx object */
+	 
 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
 		err = bnad_rx_msix_register(bnad, rx_info, rx_id,
 						rx_config->num_paths);
@@ -2267,14 +2168,14 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	if (0 == rx_id) {
-		/* Set up Dynamic Interrupt Moderation Vector */
+		 
 		if (bnad->cfg_flags & BNAD_CF_DIM_ENABLED)
 			bna_rx_dim_reconfig(&bnad->bna, bna_napi_dim_vector);
 
-		/* Enable VLAN filtering only on the default Rx */
+		 
 		bna_rx_vlanfilter_enable(rx);
 
-		/* Start the DIM timer */
+		 
 		bnad_dim_timer_start(bnad);
 	}
 
@@ -2288,7 +2189,7 @@ err_return:
 	return err;
 }
 
-/* Called with conf_lock & bnad->bna_lock held */
+ 
 void
 bnad_tx_coalescing_timeo_set(struct bnad *bnad)
 {
@@ -2301,7 +2202,7 @@ bnad_tx_coalescing_timeo_set(struct bnad *bnad)
 	bna_tx_coalescing_timeo_set(tx_info->tx, bnad->tx_coalescing_timeo);
 }
 
-/* Called with conf_lock & bnad->bna_lock held */
+ 
 void
 bnad_rx_coalescing_timeo_set(struct bnad *bnad)
 {
@@ -2317,9 +2218,7 @@ bnad_rx_coalescing_timeo_set(struct bnad *bnad)
 	}
 }
 
-/*
- * Called with bnad->bna_lock held
- */
+ 
 int
 bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr)
 {
@@ -2328,7 +2227,7 @@ bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr)
 	if (!is_valid_ether_addr(mac_addr))
 		return -EADDRNOTAVAIL;
 
-	/* If datapath is down, pretend everything went through */
+	 
 	if (!bnad->rx_info[0].rx)
 		return 0;
 
@@ -2339,7 +2238,7 @@ bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr)
 	return 0;
 }
 
-/* Should be called with conf_lock held */
+ 
 int
 bnad_enable_default_bcast(struct bnad *bnad)
 {
@@ -2365,7 +2264,7 @@ bnad_enable_default_bcast(struct bnad *bnad)
 	return 0;
 }
 
-/* Called with mutex_lock(&bnad->conf_mutex) held */
+ 
 void
 bnad_restore_vlans(struct bnad *bnad, u32 rx_id)
 {
@@ -2379,7 +2278,7 @@ bnad_restore_vlans(struct bnad *bnad, u32 rx_id)
 	}
 }
 
-/* Statistics utilities */
+ 
 void
 bnad_netdev_qstats_fill(struct bnad *bnad, struct rtnl_link_stats64 *stats)
 {
@@ -2417,9 +2316,7 @@ bnad_netdev_qstats_fill(struct bnad *bnad, struct rtnl_link_stats64 *stats)
 	}
 }
 
-/*
- * Must be called with the bna_lock held.
- */
+ 
 void
 bnad_netdev_hwstats_fill(struct bnad *bnad, struct rtnl_link_stats64 *stats)
 {
@@ -2441,11 +2338,11 @@ bnad_netdev_hwstats_fill(struct bnad *bnad, struct rtnl_link_stats64 *stats)
 
 	stats->rx_length_errors = mac_stats->rx_frame_length_error;
 
-	/* receive ring buffer overflow  ?? */
+	 
 
 	stats->rx_crc_errors = mac_stats->rx_fcs_error;
 	stats->rx_frame_errors = mac_stats->rx_alignment_error;
-	/* recv'r fifo overrun */
+	 
 	bmap = bna_rx_rid_mask(&bnad->bna);
 	for (i = 0; bmap; i++) {
 		if (bmap & 1) {
@@ -2474,7 +2371,7 @@ bnad_mbox_irq_sync(struct bnad *bnad)
 	synchronize_irq(irq);
 }
 
-/* Utility used by bnad_start_xmit, for doing TSO */
+ 
 static int
 bnad_tso_prepare(struct bnad *bnad, struct sk_buff *skb)
 {
@@ -2486,14 +2383,11 @@ bnad_tso_prepare(struct bnad *bnad, struct sk_buff *skb)
 		return err;
 	}
 
-	/*
-	 * For TSO, the TCP checksum field is seeded with pseudo-header sum
-	 * excluding the length field.
-	 */
+	 
 	if (vlan_get_protocol(skb) == htons(ETH_P_IP)) {
 		struct iphdr *iph = ip_hdr(skb);
 
-		/* Do we really need these? */
+		 
 		iph->tot_len = 0;
 		iph->check = 0;
 
@@ -2509,11 +2403,7 @@ bnad_tso_prepare(struct bnad *bnad, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * Initialize Q numbers depending on Rx Paths
- * Called with bnad->bna_lock held, because of cfg_flags
- * access.
- */
+ 
 static void
 bnad_q_num_init(struct bnad *bnad)
 {
@@ -2523,7 +2413,7 @@ bnad_q_num_init(struct bnad *bnad)
 			(uint)(BNAD_MAX_RX * BNAD_MAX_RXP_PER_RX));
 
 	if (!(bnad->cfg_flags & BNAD_CF_MSIX))
-		rxps = 1;	/* INTx */
+		rxps = 1;	 
 
 	bnad->num_rx = 1;
 	bnad->num_tx = 1;
@@ -2531,12 +2421,7 @@ bnad_q_num_init(struct bnad *bnad)
 	bnad->num_txq_per_tx = BNAD_TXQ_NUM;
 }
 
-/*
- * Adjusts the Q numbers, given a number of msix vectors
- * Give preference to RSS as opposed to Tx priority Queues,
- * in such a case, just use 1 Tx Q
- * Called with bnad->bna_lock held b'cos of cfg_flags access
- */
+ 
 static void
 bnad_q_num_adjust(struct bnad *bnad, int msix_vectors, int temp)
 {
@@ -2551,7 +2436,7 @@ bnad_q_num_adjust(struct bnad *bnad, int msix_vectors, int temp)
 		bnad->num_rxp_per_rx = 1;
 }
 
-/* Enable / disable ioceth */
+ 
 static int
 bnad_ioceth_disable(struct bnad *bnad)
 {
@@ -2590,7 +2475,7 @@ bnad_ioceth_enable(struct bnad *bnad)
 	return err;
 }
 
-/* Free BNA resources */
+ 
 static void
 bnad_res_free(struct bnad *bnad, struct bna_res_info *res_info,
 		u32 res_val_max)
@@ -2601,7 +2486,7 @@ bnad_res_free(struct bnad *bnad, struct bna_res_info *res_info,
 		bnad_mem_free(bnad, &res_info[i].res_u.mem_info);
 }
 
-/* Allocates memory and interrupt resources for BNA */
+ 
 static int
 bnad_res_alloc(struct bnad *bnad, struct bna_res_info *res_info,
 		u32 res_val_max)
@@ -2620,7 +2505,7 @@ err_return:
 	return err;
 }
 
-/* Interrupt enable / disable */
+ 
 static void
 bnad_enable_msix(struct bnad *bnad)
 {
@@ -2656,7 +2541,7 @@ bnad_enable_msix(struct bnad *bnad)
 			 ret, bnad->msix_num);
 
 		spin_lock_irqsave(&bnad->bna_lock, flags);
-		/* ret = #of vectors that we got */
+		 
 		bnad_q_num_adjust(bnad, (ret - BNAD_MAILBOX_MSIX_VECTORS) / 2,
 			(ret - BNAD_MAILBOX_MSIX_VECTORS) / 2);
 		spin_unlock_irqrestore(&bnad->bna_lock, flags);
@@ -2706,7 +2591,7 @@ bnad_disable_msix(struct bnad *bnad)
 	}
 }
 
-/* Netdev entry points */
+ 
 static int
 bnad_open(struct net_device *netdev)
 {
@@ -2717,17 +2602,17 @@ bnad_open(struct net_device *netdev)
 
 	mutex_lock(&bnad->conf_mutex);
 
-	/* Tx */
+	 
 	err = bnad_setup_tx(bnad, 0);
 	if (err)
 		goto err_return;
 
-	/* Rx */
+	 
 	err = bnad_setup_rx(bnad, 0);
 	if (err)
 		goto cleanup_tx;
 
-	/* Port */
+	 
 	pause_config.tx_pause = 0;
 	pause_config.rx_pause = 0;
 
@@ -2738,18 +2623,18 @@ bnad_open(struct net_device *netdev)
 	bna_enet_enable(&bnad->bna.enet);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Enable broadcast */
+	 
 	bnad_enable_default_bcast(bnad);
 
-	/* Restore VLANs, if any */
+	 
 	bnad_restore_vlans(bnad, 0);
 
-	/* Set the UCAST address */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bnad_mac_addr_set_locked(bnad, netdev->dev_addr);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Start the stats timer */
+	 
 	bnad_stats_timer_start(bnad);
 
 	mutex_unlock(&bnad->conf_mutex);
@@ -2772,7 +2657,7 @@ bnad_stop(struct net_device *netdev)
 
 	mutex_lock(&bnad->conf_mutex);
 
-	/* Stop the stats timer */
+	 
 	bnad_stats_timer_stop(bnad);
 
 	init_completion(&bnad->bnad_completions.enet_comp);
@@ -2787,7 +2672,7 @@ bnad_stop(struct net_device *netdev)
 	bnad_destroy_tx(bnad, 0);
 	bnad_destroy_rx(bnad, 0);
 
-	/* Synchronize mailbox IRQ */
+	 
 	bnad_mbox_irq_sync(bnad);
 
 	mutex_unlock(&bnad->conf_mutex);
@@ -2795,8 +2680,8 @@ bnad_stop(struct net_device *netdev)
 	return 0;
 }
 
-/* TX */
-/* Returns 0 for success */
+ 
+ 
 static int
 bnad_txq_wi_prepare(struct bnad *bnad, struct bna_tcb *tcb,
 		    struct sk_buff *skb, struct bna_txq_entry *txqent)
@@ -2857,7 +2742,7 @@ bnad_txq_wi_prepare(struct bnad *bnad, struct bna_tcb *tcb,
 				proto = ip_hdr(skb)->protocol;
 #ifdef NETIF_F_IPV6_CSUM
 			else if (net_proto == htons(ETH_P_IPV6)) {
-				/* nexthdr may not be TCP immediately. */
+				 
 				proto = ipv6_hdr(skb)->nexthdr;
 			}
 #endif
@@ -2902,10 +2787,7 @@ bnad_txq_wi_prepare(struct bnad *bnad, struct bna_tcb *tcb,
 	return 0;
 }
 
-/*
- * bnad_start_xmit : Netdev entry point for Transmit
- *		     Called under lock held by net_device
- */
+ 
 static netdev_tx_t
 bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
@@ -2921,7 +2803,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 	len = skb_headlen(skb);
 
-	/* Sanity checks for the skb */
+	 
 
 	if (unlikely(skb->len <= ETH_HLEN)) {
 		dev_kfree_skb_any(skb);
@@ -2941,10 +2823,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 	tcb = bnad->tx_info[0].tcb[txq_id];
 
-	/*
-	 * Takes care of the Tx that is scheduled between clearing the flag
-	 * and the netif_tx_stop_all_queues() call.
-	 */
+	 
 	if (unlikely(!tcb || !test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))) {
 		dev_kfree_skb_any(skb);
 		BNAD_UPDATE_CTR(bnad, tx_skb_stopping);
@@ -2956,7 +2835,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	unmap_q = tcb->unmap_q;
 
 	vectors = 1 + skb_shinfo(skb)->nr_frags;
-	wis = BNA_TXQ_WI_NEEDED(vectors);	/* 4 vectors per work item */
+	wis = BNA_TXQ_WI_NEEDED(vectors);	 
 
 	if (unlikely(vectors > BFI_TX_MAX_VECTORS_PER_PKT)) {
 		dev_kfree_skb_any(skb);
@@ -2964,7 +2843,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		return NETDEV_TX_OK;
 	}
 
-	/* Check for available TxQ resources */
+	 
 	if (unlikely(wis > BNA_QE_FREE_CNT(tcb, q_depth))) {
 		if ((*tcb->hw_consumer_index != tcb->consumer_index) &&
 		    !test_and_set_bit(BNAD_TXQ_FREE_SENT, &tcb->flags)) {
@@ -2980,11 +2859,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		}
 
 		smp_mb();
-		/*
-		 * Check again to deal with race condition between
-		 * netif_stop_queue here, and netif_wake_queue in
-		 * interrupt handler which is not inside netif tx lock.
-		 */
+		 
 		if (likely(wis > BNA_QE_FREE_CNT(tcb, q_depth))) {
 			BNAD_UPDATE_CTR(bnad, netif_queue_stop);
 			return NETDEV_TX_BUSY;
@@ -2997,7 +2872,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	txqent = &((struct bna_txq_entry *)tcb->sw_q)[prod];
 	head_unmap = &unmap_q[prod];
 
-	/* Program the opcode, flags, frame_len, num_vectors in WI */
+	 
 	if (bnad_txq_wi_prepare(bnad, tcb, skb, txqent)) {
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
@@ -3008,7 +2883,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	head_unmap->skb = skb;
 	head_unmap->nvecs = 0;
 
-	/* Program the vectors */
+	 
 	unmap = head_unmap;
 	dma_addr = dma_map_single(&bnad->pcidev->dev, skb->data,
 				  len, DMA_TO_DEVICE);
@@ -3027,7 +2902,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		u32		size = skb_frag_size(frag);
 
 		if (unlikely(size == 0)) {
-			/* Undo the changes starting at tcb->producer_index */
+			 
 			bnad_tx_buff_unmap(bnad, unmap_q, q_depth,
 				tcb->producer_index);
 			dev_kfree_skb_any(skb);
@@ -3049,7 +2924,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		dma_addr = skb_frag_dma_map(&bnad->pcidev->dev, frag,
 					    0, size, DMA_TO_DEVICE);
 		if (dma_mapping_error(&bnad->pcidev->dev, dma_addr)) {
-			/* Undo the changes starting at tcb->producer_index */
+			 
 			bnad_tx_buff_unmap(bnad, unmap_q, q_depth,
 					   tcb->producer_index);
 			dev_kfree_skb_any(skb);
@@ -3066,7 +2941,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	if (unlikely(len != skb->len)) {
-		/* Undo the changes starting at tcb->producer_index */
+		 
 		bnad_tx_buff_unmap(bnad, unmap_q, q_depth, tcb->producer_index);
 		dev_kfree_skb_any(skb);
 		BNAD_UPDATE_CTR(bnad, tx_skb_len_mismatch);
@@ -3088,10 +2963,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	return NETDEV_TX_OK;
 }
 
-/*
- * Used spin_lock to synchronize reading of stats structures, which
- * is written by BNA under the same lock.
- */
+ 
 static void
 bnad_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
 {
@@ -3142,7 +3014,7 @@ bnad_set_rx_ucast_fltr(struct bnad *bnad)
 
 	return;
 
-	/* ucast packets not in UCAM are routed to default function */
+	 
 mode_default:
 	bnad->cfg_flags |= BNAD_CF_DEFAULT;
 	bna_rx_ucast_listset(bnad->rx_info[0].rx, 0, NULL);
@@ -3172,7 +3044,7 @@ bnad_set_rx_mcast_fltr(struct bnad *bnad)
 
 	ether_addr_copy(&mac_list[0], &bnad_bcast_addr[0]);
 
-	/* copy rest of the MCAST addresses */
+	 
 	bnad_netdev_mc_list_get(netdev, mac_list);
 	ret = bna_rx_mcast_listset(bnad->rx_info[0].rx, mc_count + 1, mac_list);
 	kfree(mac_list);
@@ -3201,7 +3073,7 @@ bnad_set_rx_mode(struct net_device *netdev)
 		return;
 	}
 
-	/* clear bnad flags to update it with new settings */
+	 
 	bnad->cfg_flags &= ~(BNAD_CF_PROMISC | BNAD_CF_DEFAULT |
 			BNAD_CF_ALLMULTI);
 
@@ -3228,11 +3100,7 @@ bnad_set_rx_mode(struct net_device *netdev)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
-/*
- * bna_lock is used to sync writes to netdev->addr
- * conf_lock cannot be used since this call may be made
- * in a non-blocking context.
- */
+ 
 static int
 bnad_set_mac_address(struct net_device *netdev, void *addr)
 {
@@ -3283,10 +3151,10 @@ bnad_change_mtu(struct net_device *netdev, int new_mtu)
 	frame = BNAD_FRAME_SIZE(mtu);
 	new_frame = BNAD_FRAME_SIZE(new_mtu);
 
-	/* check if multi-buffer needs to be enabled */
+	 
 	if (BNAD_PCI_DEV_IS_CAT2(bnad) &&
 	    netif_running(bnad->netdev)) {
-		/* only when transition is over 4K */
+		 
 		if ((frame <= 4096 && new_frame > 4096) ||
 		    (frame > 4096 && new_frame <= 4096))
 			bnad_reinit_rx(bnad);
@@ -3378,12 +3246,9 @@ bnad_netpoll(struct net_device *netdev)
 		bnad_isr(bnad->pcidev->irq, netdev);
 		bna_intx_enable(&bnad->bna, curr_mask);
 	} else {
-		/*
-		 * Tx processing may happen in sending context, so no need
-		 * to explicitly process completions here
-		 */
+		 
 
-		/* Rx processing */
+		 
 		for (i = 0; i < bnad->num_rx; i++) {
 			rx_info = &bnad->rx_info[i];
 			if (!rx_info->rx)
@@ -3436,7 +3301,7 @@ bnad_netdev_init(struct bnad *bnad)
 	netdev->mem_start = bnad->mmio_start;
 	netdev->mem_end = bnad->mmio_start + bnad->mmio_len - 1;
 
-	/* MTU range: 46 - 9000 */
+	 
 	netdev->min_mtu = ETH_ZLEN - ETH_HLEN;
 	netdev->max_mtu = BNAD_JUMBO_MTU;
 
@@ -3444,12 +3309,7 @@ bnad_netdev_init(struct bnad *bnad)
 	bnad_set_ethtool_ops(netdev);
 }
 
-/*
- * 1. Initialize the bnad structure
- * 2. Setup netdev pointer in pci_dev
- * 3. Initialize no. of TxQ & CQs & MSIX vectors
- * 4. Initialize work queue.
- */
+ 
 static int
 bnad_init(struct bnad *bnad,
 	  struct pci_dev *pdev, struct net_device *netdev)
@@ -3500,11 +3360,7 @@ bnad_init(struct bnad *bnad,
 	return 0;
 }
 
-/*
- * Must be called after bnad_pci_uninit()
- * so that iounmap() and pci_set_drvdata(NULL)
- * happens only after PCI uninitialization.
- */
+ 
 static void
 bnad_uninit(struct bnad *bnad)
 {
@@ -3517,12 +3373,7 @@ bnad_uninit(struct bnad *bnad)
 		iounmap(bnad->bar0);
 }
 
-/*
- * Initialize locks
-	a) Per ioceth mutes used for serializing configuration
-	   changes from OS interface
-	b) spin lock used to protect bna state machine
- */
+ 
 static void
 bnad_lock_init(struct bnad *bnad)
 {
@@ -3536,7 +3387,7 @@ bnad_lock_uninit(struct bnad *bnad)
 	mutex_destroy(&bnad->conf_mutex);
 }
 
-/* PCI Initialization */
+ 
 static int
 bnad_pci_init(struct bnad *bnad, struct pci_dev *pdev)
 {
@@ -3588,10 +3439,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 	}
 	mutex_unlock(&bnad_fwimg_mutex);
 
-	/*
-	 * Allocates sizeof(struct net_device + struct bnad)
-	 * bnad = netdev->priv
-	 */
+	 
 	netdev = alloc_etherdev(sizeof(struct bnad));
 	if (!netdev) {
 		err = -ENOMEM;
@@ -3602,42 +3450,39 @@ bnad_pci_probe(struct pci_dev *pdev,
 	bnad->id = atomic_inc_return(&bna_id) - 1;
 
 	mutex_lock(&bnad->conf_mutex);
-	/* PCI initialization */
+	 
 	err = bnad_pci_init(bnad, pdev);
 	if (err)
 		goto unlock_mutex;
 
-	/*
-	 * Initialize bnad structure
-	 * Setup relation between pci_dev & netdev
-	 */
+	 
 	err = bnad_init(bnad, pdev, netdev);
 	if (err)
 		goto pci_uninit;
 
-	/* Initialize netdev structure, set up ethtool ops */
+	 
 	bnad_netdev_init(bnad);
 
-	/* Set link to down state */
+	 
 	netif_carrier_off(netdev);
 
-	/* Setup the debugfs node for this bfad */
+	 
 	if (bna_debugfs_enable)
 		bnad_debugfs_init(bnad);
 
-	/* Get resource requirement form bna */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_res_req(&bnad->res_info[0]);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Allocate resources from bna */
+	 
 	err = bnad_res_alloc(bnad, &bnad->res_info[0], BNA_RES_T_MAX);
 	if (err)
 		goto drv_uninit;
 
 	bna = &bnad->bna;
 
-	/* Setup pcidev_info for bna_init() */
+	 
 	pcidev_info.pci_slot = PCI_SLOT(bnad->pcidev->devfn);
 	pcidev_info.pci_func = PCI_FUNC(bnad->pcidev->devfn);
 	pcidev_info.device_id = bnad->pcidev->device;
@@ -3654,18 +3499,14 @@ bnad_pci_probe(struct pci_dev *pdev,
 	if (err)
 		goto res_free;
 
-	/* Set up timers */
+	 
 	timer_setup(&bnad->bna.ioceth.ioc.ioc_timer, bnad_ioc_timeout, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.hb_timer, bnad_ioc_hb_check, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.iocpf_timer, bnad_iocpf_timeout, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.sem_timer, bnad_iocpf_sem_timeout,
 		    0);
 
-	/*
-	 * Start the chip
-	 * If the call back comes with error, we bail out.
-	 * This is a catastrophic error.
-	 */
+	 
 	err = bnad_ioceth_enable(bnad);
 	if (err) {
 		dev_err(&pdev->dev, "initialization failed err=%d\n", err);
@@ -3699,7 +3540,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 	bna_mod_init(&bnad->bna, &bnad->mod_res_info[0]);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-	/* Get the burnt-in mac */
+	 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_enet_perm_mac_get(&bna->enet, bnad->perm_addr);
 	bnad_set_netdev_perm_addr(bnad);
@@ -3707,7 +3548,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 
 	mutex_unlock(&bnad->conf_mutex);
 
-	/* Finally, reguister with net_device layer */
+	 
 	err = register_netdev(netdev);
 	if (err) {
 		dev_err(&pdev->dev, "registering net device failed\n");
@@ -3737,7 +3578,7 @@ disable_ioceth:
 res_free:
 	bnad_res_free(bnad, &bnad->res_info[0], BNA_RES_T_MAX);
 drv_uninit:
-	/* Remove the debugfs node for this bnad */
+	 
 	kfree(bnad->regdata);
 	bnad_debugfs_uninit(bnad);
 	bnad_uninit(bnad);
@@ -3783,7 +3624,7 @@ bnad_pci_remove(struct pci_dev *pdev)
 	bnad_pci_uninit(pdev);
 	mutex_unlock(&bnad->conf_mutex);
 	bnad_lock_uninit(bnad);
-	/* Remove the debugfs node for this bnad */
+	 
 	kfree(bnad->regdata);
 	bnad_debugfs_uninit(bnad);
 	bnad_uninit(bnad);

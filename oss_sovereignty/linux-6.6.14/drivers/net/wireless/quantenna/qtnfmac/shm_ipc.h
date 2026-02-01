@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_SHM_IPC_H_
 #define _QTN_FMAC_SHM_IPC_H_
@@ -62,4 +62,4 @@ static inline void qtnf_shm_ipc_irq_handler(struct qtnf_shm_ipc *ipc)
 	ipc->irq_handler(ipc);
 }
 
-#endif /* _QTN_FMAC_SHM_IPC_H_ */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Code to build software firmware node graph for atomisp2 connected sensors
- * from ACPI tables.
- *
- * Copyright (C) 2023 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on drivers/media/pci/intel/ipu3/cio2-bridge.c written by:
- * Dan Scally <djrscally@gmail.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -24,12 +16,7 @@
 
 #define PMC_CLK_RATE_19_2MHZ			19200000
 
-/*
- * 79234640-9e10-4fea-a5c1-b5aa8b19756f
- * This _DSM GUID returns information about the GPIO lines mapped to a sensor.
- * Function number 1 returns a count of the GPIO lines that are mapped.
- * Subsequent functions return 32 bit ints encoding information about the GPIO.
- */
+ 
 static const guid_t intel_sensor_gpio_info_guid =
 	GUID_INIT(0x79234640, 0x9e10, 0x4fea,
 		  0xa5, 0xc1, 0xb5, 0xaa, 0x8b, 0x19, 0x75, 0x6f);
@@ -48,28 +35,17 @@ static const guid_t intel_sensor_gpio_info_guid =
 #define INTEL_GPIO_DSM_SENSOR_ON_VAL(x) \
 	(((x) & INTEL_GPIO_DSM_SENSOR_ON_VAL_MASK) >> INTEL_GPIO_DSM_SENSOR_ON_VAL_SHIFT)
 
-/*
- * 822ace8f-2814-4174-a56b-5f029fe079ee
- * This _DSM GUID returns a string from the sensor device, which acts as a
- * module identifier.
- */
+ 
 static const guid_t intel_sensor_module_guid =
 	GUID_INIT(0x822ace8f, 0x2814, 0x4174,
 		  0xa5, 0x6b, 0x5f, 0x02, 0x9f, 0xe0, 0x79, 0xee);
 
-/*
- * dc2f6c4f-045b-4f1d-97b9-882a6860a4be
- * This _DSM GUID returns a package with n*2 strings, with each set of 2 strings
- * forming a key, value pair for settings like e.g. "CsiLanes" = "1".
- */
+ 
 static const guid_t atomisp_dsm_guid =
 	GUID_INIT(0xdc2f6c4f, 0x045b, 0x4f1d,
 		  0x97, 0xb9, 0x88, 0x2a, 0x68, 0x60, 0xa4, 0xbe);
 
-/*
- * 75c9a639-5c8a-4a00-9f48-a9c3b5da789f
- * This _DSM GUID returns a string giving the VCM type e.g. "AD5823".
- */
+ 
 static const guid_t vcm_dsm_guid =
 	GUID_INIT(0x75c9a639, 0x5c8a, 0x4a00,
 		  0x9f, 0x48, 0xa9, 0xc3, 0xb5, 0xda, 0x78, 0x9f);
@@ -88,12 +64,7 @@ struct atomisp_sensor_config {
 	})								\
 }
 
-/*
- * gmin_cfg parsing code. This is a cleaned up version of the gmin_cfg parsing
- * code from atomisp_gmin_platform.c.
- * Once all sensors are moved to v4l2-async probing atomisp_gmin_platform.c can
- * be removed and the duplication of this code goes away.
- */
+ 
 struct gmin_cfg_var {
 	const char *acpi_dev_name;
 	const char *key;
@@ -101,14 +72,14 @@ struct gmin_cfg_var {
 };
 
 static struct gmin_cfg_var lenovo_ideapad_miix_310_vars[] = {
-	/* _DSM contains the wrong CsiPort! */
+	 
 	{ "OVTI2680:01", "CsiPort", "0" },
 	{}
 };
 
 static const struct dmi_system_id gmin_cfg_dmi_overrides[] = {
 	{
-		/* Lenovo Ideapad Miix 310 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "MIIX 310-10"),
@@ -211,7 +182,7 @@ out_use_default:
 
 static int atomisp_csi2_get_pmc_clk_nr_from_acpi_pr0(struct acpi_device *adev)
 {
-	/* ACPI_PATH_SEGMENT_LENGTH is guaranteed to be big enough for name + 0 term. */
+	 
 	char name[ACPI_PATH_SEGMENT_LENGTH];
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
 	struct acpi_buffer b_name = { sizeof(name), name };
@@ -273,10 +244,7 @@ static int atomisp_csi2_set_pmc_clk_freq(struct acpi_device *adev, int clock_num
 		return ret;
 	}
 
-	/*
-	 * The firmware might enable the clock at boot, to change
-	 * the rate we must ensure the clock is disabled.
-	 */
+	 
 	ret = clk_prepare_enable(clk);
 	if (!ret)
 		clk_disable_unprepare(clk);
@@ -294,20 +262,17 @@ static int atomisp_csi2_get_port(struct acpi_device *adev, int clock_num)
 {
 	int port;
 
-	/*
-	 * Compare clock-number to the PMC-clock used for CsiPort 1
-	 * in the CHT/BYT reference designs.
-	 */
+	 
 	if (IS_ISP2401)
 		port = clock_num == 4 ? 1 : 0;
 	else
 		port = clock_num == 0 ? 1 : 0;
 
-	/* Intel DSM or DMI quirk overrides _PR0 CLK derived default */
+	 
 	return gmin_cfg_get_int(adev, "CsiPort", port);
 }
 
-/* Note this always returns 1 to continue looping so that res_count is accurate */
+ 
 static int atomisp_csi2_handle_acpi_gpio_res(struct acpi_resource *ares, void *_data)
 {
 	struct atomisp_csi2_acpi_gpio_parsing_data *data = _data;
@@ -319,7 +284,7 @@ static int atomisp_csi2_handle_acpi_gpio_res(struct acpi_resource *ares, void *_
 	u16 pin;
 
 	if (!acpi_gpio_get_io_resource(ares, &agpio))
-		return 1; /* Not a GPIO, continue the loop */
+		return 1;  
 
 	data->res_count++;
 
@@ -352,19 +317,14 @@ static int atomisp_csi2_handle_acpi_gpio_res(struct acpi_resource *ares, void *_
 		return 1;
 	}
 
-	/*
-	 * Both reset and power-down need to be logical false when the sensor
-	 * is on (sensor should not be in reset and not be powered-down). So
-	 * when the sensor-on-value (which is the physical pin value) is high,
-	 * then the signal is active-low.
-	 */
+	 
 	active_low = INTEL_GPIO_DSM_SENSOR_ON_VAL(settings);
 
 	i = data->map_count;
 	if (i == CSI2_MAX_ACPI_GPIOS)
 		return 1;
 
-	/* res_count is already incremented */
+	 
 	data->map->params[i].crs_entry_index = data->res_count - 1;
 	data->map->params[i].active_low = active_low;
 	data->map->mapping[i].name = name;
@@ -380,25 +340,7 @@ static int atomisp_csi2_handle_acpi_gpio_res(struct acpi_resource *ares, void *_
 	return 1;
 }
 
-/*
- * Helper function to create an ACPI GPIO lookup table for sensor reset and
- * powerdown signals on Intel Bay Trail (BYT) and Cherry Trail (CHT) devices,
- * including setting the correct polarity for the GPIO.
- *
- * This uses the "79234640-9e10-4fea-a5c1-b5aa8b19756f" DSM method directly
- * on the sensor device's ACPI node. This is different from later Intel
- * hardware which has a separate INT3472 acpi_device with this info.
- *
- * This function must be called before creating the sw-noded describing
- * the fwnode graph endpoint. And sensor drivers used on these devices
- * must return -EPROBE_DEFER when there is no endpoint description yet.
- * Together this guarantees that the GPIO lookups are in place before
- * the sensor driver tries to get GPIOs with gpiod_get().
- *
- * Note this code uses the same DSM GUID as the int3472_gpio_guid in
- * the INT3472 discrete.c code and there is some overlap, but there are
- * enough differences that it is difficult to share the code.
- */
+ 
 static int atomisp_csi2_add_gpio_mappings(struct acpi_device *adev)
 {
 	struct atomisp_csi2_acpi_gpio_parsing_data data = { };
@@ -415,12 +357,7 @@ static int atomisp_csi2_add_gpio_mappings(struct acpi_device *adev)
 		ACPI_FREE(obj);
 	}
 
-	/*
-	 * First get the GPIO-settings count and then get count GPIO-settings
-	 * values. Note the order of these may differ from the order in which
-	 * the GPIOs are listed on the ACPI resources! So we first store them all
-	 * and then enumerate the ACPI resources and match them up by pin number.
-	 */
+	 
 	obj = acpi_evaluate_dsm_typed(adev->handle,
 				      &intel_sensor_gpio_info_guid, 0x00, 1,
 				      NULL, ACPI_TYPE_INTEGER);
@@ -441,10 +378,7 @@ static int atomisp_csi2_add_gpio_mappings(struct acpi_device *adev)
 	}
 
 	for (i = 0; i < data.settings_count; i++) {
-		/*
-		 * i + 2 because the index of this _DSM function is 1-based
-		 * and the first function is just a count.
-		 */
+		 
 		obj = acpi_evaluate_dsm_typed(adev->handle,
 					      &intel_sensor_gpio_info_guid,
 					      0x00, i + 2,
@@ -459,7 +393,7 @@ static int atomisp_csi2_add_gpio_mappings(struct acpi_device *adev)
 		ACPI_FREE(obj);
 	}
 
-	/* Since we match up by pin-number the pin-numbers must be unique */
+	 
 	for (i = 0; i < data.settings_count; i++) {
 		for (j = i + 1; j < data.settings_count; j++) {
 			if (INTEL_GPIO_DSM_PIN(data.settings[i]) !=
@@ -477,7 +411,7 @@ static int atomisp_csi2_add_gpio_mappings(struct acpi_device *adev)
 	if (!data.map)
 		return -ENOMEM;
 
-	/* Now parse the ACPI resources and build the lookup table */
+	 
 	data.adev = adev;
 	ret = acpi_dev_get_resources(adev, &resource_list,
 				     atomisp_csi2_handle_acpi_gpio_res, &data);
@@ -521,7 +455,7 @@ static char *atomisp_csi2_get_vcm_type(struct acpi_device *adev)
 }
 
 static const struct acpi_device_id atomisp_sensor_configs[] = {
-	ATOMISP_SENSOR_CONFIG("INT33BE", 2, true),	/* OV5693 */
+	ATOMISP_SENSOR_CONFIG("INT33BE", 2, true),	 
 	{}
 };
 
@@ -542,12 +476,7 @@ static int atomisp_csi2_parse_sensor_fwnode(struct acpi_device *adev,
 		vcm = cfg->vcm;
 	}
 
-	/*
-	 * ACPI takes care of turning the PMC clock on and off, but on BYT
-	 * the clock defaults to 25 MHz instead of the expected 19.2 MHz.
-	 * Get the PMC-clock number from ACPI PR0 method and set it to 19.2 MHz.
-	 * The PMC-clock number is also used to determine the default CSI port.
-	 */
+	 
 	clock_num = atomisp_csi2_get_pmc_clk_nr_from_acpi_pr0(adev);
 
 	ret = atomisp_csi2_set_pmc_clk_freq(adev, clock_num);
@@ -588,12 +517,7 @@ int atomisp_csi2_bridge_init(struct atomisp_device *isp)
 	struct device *dev = isp->dev;
 	struct fwnode_handle *fwnode;
 
-	/*
-	 * This function is intended to run only once and then leave
-	 * the created nodes attached even after a rmmod, therefore:
-	 * 1. The bridge memory is leaked deliberately on success
-	 * 2. If a secondary fwnode is already set exit early.
-	 */
+	 
 	fwnode = dev_fwnode(dev);
 	if (fwnode && fwnode->secondary)
 		return 0;
@@ -601,7 +525,7 @@ int atomisp_csi2_bridge_init(struct atomisp_device *isp)
 	return ipu_bridge_init(dev, atomisp_csi2_parse_sensor_fwnode);
 }
 
-/******* V4L2 sub-device asynchronous registration callbacks***********/
+ 
 
 struct sensor_async_subdev {
 	struct v4l2_async_connection asd;
@@ -611,7 +535,7 @@ struct sensor_async_subdev {
 #define to_sensor_asd(a)	container_of(a, struct sensor_async_subdev, asd)
 #define notifier_to_atomisp(n)	container_of(n, struct atomisp_device, notifier)
 
-/* .bound() notifier callback when a match is found */
+ 
 static int atomisp_notifier_bound(struct v4l2_async_notifier *notifier,
 				  struct v4l2_subdev *sd,
 				  struct v4l2_async_connection *asd)
@@ -638,7 +562,7 @@ static int atomisp_notifier_bound(struct v4l2_async_notifier *notifier,
 	return 0;
 }
 
-/* The .unbind callback */
+ 
 static void atomisp_notifier_unbind(struct v4l2_async_notifier *notifier,
 				    struct v4l2_subdev *sd,
 				    struct v4l2_async_connection *asd)
@@ -649,7 +573,7 @@ static void atomisp_notifier_unbind(struct v4l2_async_notifier *notifier,
 	isp->sensor_subdevs[s_asd->port] = NULL;
 }
 
-/* .complete() is called after all subdevices have been located */
+ 
 static int atomisp_notifier_complete(struct v4l2_async_notifier *notifier)
 {
 	struct atomisp_device *isp = notifier_to_atomisp(notifier);

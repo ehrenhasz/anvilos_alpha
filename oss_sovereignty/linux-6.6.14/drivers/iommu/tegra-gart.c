@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOMMU API for Graphics Address Relocation Table on Tegra20
- *
- * Copyright (c) 2010-2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Hiroshi DOYU <hdoyu@nvidia.com>
- */
+
+ 
 
 #define dev_fmt(fmt)	"gart: " fmt
 
@@ -30,31 +24,27 @@
 #define GART_PAGE_SIZE		(1 << GART_PAGE_SHIFT)
 #define GART_PAGE_MASK		GENMASK(30, GART_PAGE_SHIFT)
 
-/* bitmap of the page sizes currently supported */
+ 
 #define GART_IOMMU_PGSIZES	(GART_PAGE_SIZE)
 
 struct gart_device {
 	void __iomem		*regs;
 	u32			*savedata;
-	unsigned long		iovmm_base;	/* offset to vmm_area start */
-	unsigned long		iovmm_end;	/* offset to vmm_area end */
-	spinlock_t		pte_lock;	/* for pagetable */
-	spinlock_t		dom_lock;	/* for active domain */
-	unsigned int		active_devices;	/* number of active devices */
-	struct iommu_domain	*active_domain;	/* current active domain */
-	struct iommu_device	iommu;		/* IOMMU Core handle */
+	unsigned long		iovmm_base;	 
+	unsigned long		iovmm_end;	 
+	spinlock_t		pte_lock;	 
+	spinlock_t		dom_lock;	 
+	unsigned int		active_devices;	 
+	struct iommu_domain	*active_domain;	 
+	struct iommu_device	iommu;		 
 	struct device		*dev;
 };
 
-static struct gart_device *gart_handle; /* unique for a system */
+static struct gart_device *gart_handle;  
 
 static bool gart_debug;
 
-/*
- * Any interaction between any block on PPSB and a block on APB or AHB
- * must have these read-back to ensure the APB/AHB bus transaction is
- * complete before initiating activity on the PPSB block.
- */
+ 
 #define FLUSH_GART_REGS(gart)	readl_relaxed((gart)->regs + GART_CONFIG)
 
 #define for_each_gart_pte(gart, iova)					\
@@ -289,11 +279,7 @@ int tegra_gart_suspend(struct gart_device *gart)
 	u32 *data = gart->savedata;
 	unsigned long iova;
 
-	/*
-	 * All GART users shall be suspended at this point. Disable
-	 * address translation to trap all GART accesses as invalid
-	 * memory accesses.
-	 */
+	 
 	writel_relaxed(0, gart->regs + GART_CONFIG);
 	FLUSH_GART_REGS(gart);
 
@@ -318,7 +304,7 @@ struct gart_device *tegra_gart_probe(struct device *dev, struct tegra_mc *mc)
 
 	BUILD_BUG_ON(PAGE_SHIFT != GART_PAGE_SHIFT);
 
-	/* the GART memory aperture is required */
+	 
 	res = platform_get_resource(to_platform_device(dev), IORESOURCE_MEM, 1);
 	if (!res) {
 		dev_err(dev, "Memory aperture resource unavailable\n");

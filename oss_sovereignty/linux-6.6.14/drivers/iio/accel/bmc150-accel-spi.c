@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * 3-axis accelerometer driver supporting SPI Bosch-Sensortec accelerometer chip
- * Copyright © 2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>

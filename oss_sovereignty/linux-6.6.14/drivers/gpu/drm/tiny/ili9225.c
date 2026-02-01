@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DRM driver for Ilitek ILI9225 panels
- *
- * Copyright 2017 David Lechner <david@lechnology.com>
- *
- * Some code copied from mipi-dbi.c
- * Copyright 2016 Noralf Trønnes
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-buf.h>
@@ -102,7 +95,7 @@ static void ili9225_fb_dirty(struct iosys_map *src, struct drm_framebuffer *fb,
 		if (ret)
 			goto err_msg;
 	} else {
-		tr = src->vaddr; /* TODO: Use mapping abstraction properly */
+		tr = src->vaddr;  
 	}
 
 	switch (dbidev->rotation) {
@@ -201,11 +194,7 @@ static void ili9225_pipe_enable(struct drm_simple_display_pipe *pipe,
 
 	mipi_dbi_hw_reset(dbi);
 
-	/*
-	 * There don't seem to be two example init sequences that match, so
-	 * using the one from the popular Arduino library for this display.
-	 * https://github.com/Nkawu/TFT_22_ILI9225/blob/master/src/TFT_22_ILI9225.cpp
-	 */
+	 
 
 	ret = ili9225_command(dbi, ILI9225_POWER_CONTROL_1, 0x0000);
 	if (ret) {
@@ -294,12 +283,7 @@ static void ili9225_pipe_disable(struct drm_simple_display_pipe *pipe)
 
 	DRM_DEBUG_KMS("\n");
 
-	/*
-	 * This callback is not protected by drm_dev_enter/exit since we want to
-	 * turn off the display on regular driver unload. It's highly unlikely
-	 * that the underlying SPI controller is gone should this be called after
-	 * unplug.
-	 */
+	 
 
 	ili9225_command(dbi, ILI9225_DISPLAY_CONTROL_1, 0x0000);
 	msleep(50);
@@ -409,7 +393,7 @@ static int ili9225_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* override the command function set in  mipi_dbi_spi_init() */
+	 
 	dbi->command = ili9225_dbi_command;
 
 	ret = mipi_dbi_dev_init(dbidev, &ili9225_pipe_funcs, &ili9225_mode, rotation);

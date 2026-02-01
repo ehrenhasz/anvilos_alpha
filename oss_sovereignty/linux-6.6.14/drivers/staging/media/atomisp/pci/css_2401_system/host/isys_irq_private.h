@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __ISYS_IRQ_PRIVATE_H__
 #define __ISYS_IRQ_PRIVATE_H__
@@ -21,14 +9,9 @@
 
 #if defined(ISP2401)
 
-/* -------------------------------------------------------+
- |             Native command interface (NCI)             |
- + -------------------------------------------------------*/
+ 
 
-/**
-* @brief Get the isys irq status.
-* Refer to "isys_irq.h" for details.
-*/
+ 
 void isys_irqc_state_get(
     const isys_irq_ID_t	isys_irqc_id,
     isys_irqc_state_t *state)
@@ -38,16 +21,10 @@ void isys_irqc_state_get(
 	state->status   = isys_irqc_reg_load(isys_irqc_id, ISYS_IRQ_STATUS_REG_IDX);
 	state->enable   = isys_irqc_reg_load(isys_irqc_id, ISYS_IRQ_ENABLE_REG_IDX);
 	state->level_no = isys_irqc_reg_load(isys_irqc_id, ISYS_IRQ_LEVEL_NO_REG_IDX);
-	/*
-	** Invalid to read/load from write-only register 'clear'
-	** state->clear = isys_irqc_reg_load(isys_irqc_id, ISYS_IRQ_CLEAR_REG_IDX);
-	*/
+	 
 }
 
-/**
-* @brief Dump the isys irq status.
-* Refer to "isys_irq.h" for details.
-*/
+ 
 void isys_irqc_state_dump(
     const isys_irq_ID_t	isys_irqc_id,
     const isys_irqc_state_t *state)
@@ -58,13 +35,11 @@ void isys_irqc_state_dump(
 			    state->status, state->edge, state->mask, state->enable, state->level_no);
 }
 
-/* end of NCI */
+ 
 
-/* -------------------------------------------------------+
- |              Device level interface (DLI)              |
- + -------------------------------------------------------*/
+ 
 
-/* Support functions */
+ 
 void isys_irqc_reg_store(
     const isys_irq_ID_t	isys_irqc_id,
     const unsigned int	reg_idx,
@@ -100,8 +75,8 @@ hrt_data isys_irqc_reg_load(
 	return value;
 }
 
-/* end of DLI */
+ 
 
-#endif /* defined(ISP2401) */
+#endif  
 
-#endif	/* __ISYS_IRQ_PRIVATE_H__ */
+#endif	 

@@ -1,22 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dlmfs.c
- *
- * Code which implements the kernel side of a minimal userspace
- * interface to our DLM. This file handles the virtual file system
- * used for communication with userspace. Credit should go to ramfs,
- * which was a template for the fs side of this module.
- *
- * Copyright (C) 2003, 2004 Oracle.  All rights reserved.
- */
 
-/* Simple VFS hooks based on: */
-/*
- * Resizable simple ram filesystem for Linux.
- *
- * Copyright (C) 2000 Linus Torvalds.
- *               2000 Transmeta Corp.
- */
+ 
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -49,27 +35,7 @@ struct workqueue_struct *user_dlm_worker;
 
 
 
-/*
- * These are the ABI capabilities of dlmfs.
- *
- * Over time, dlmfs has added some features that were not part of the
- * initial ABI.  Unfortunately, some of these features are not detectable
- * via standard usage.  For example, Linux's default poll always returns
- * EPOLLIN, so there is no way for a caller of poll(2) to know when dlmfs
- * added poll support.  Instead, we provide this list of new capabilities.
- *
- * Capabilities is a read-only attribute.  We do it as a module parameter
- * so we can discover it whether dlmfs is built in, loaded, or even not
- * loaded.
- *
- * The ABI features are local to this machine's dlmfs mount.  This is
- * distinct from the locking protocol, which is concerned with inter-node
- * interaction.
- *
- * Capabilities:
- * - bast	: EPOLLIN against the file descriptor of a held lock
- *		  signifies a bast fired on the lock.
- */
+ 
 #define DLMFS_CAPABILITIES "bast stackglue"
 static int param_set_dlmfs_capabilities(const char *val,
 					const struct kernel_param *kp)
@@ -88,15 +54,7 @@ module_param_call(capabilities, param_set_dlmfs_capabilities,
 MODULE_PARM_DESC(capabilities, DLMFS_CAPABILITIES);
 
 
-/*
- * decodes a set of open flags into a valid lock level and a set of flags.
- * returns < 0 if we have invalid flags
- * flags which mean something to us:
- * O_RDONLY -> PRMODE level
- * O_WRONLY -> EXMODE level
- *
- * O_NONBLOCK -> NOQUEUE
- */
+ 
 static int dlmfs_decode_open_flags(int open_flags,
 				   int *level,
 				   int *flags)
@@ -130,8 +88,7 @@ static int dlmfs_file_open(struct inode *inode,
 	if (status < 0)
 		goto bail;
 
-	/* We don't want to honor O_APPEND at read/write time as it
-	 * doesn't make sense for LVB writes. */
+	 
 	file->f_flags &= ~O_APPEND;
 
 	fp = kmalloc(sizeof(*fp), GFP_NOFS);
@@ -145,10 +102,7 @@ static int dlmfs_file_open(struct inode *inode,
 
 	status = user_dlm_cluster_lock(&ip->ip_lockres, level, flags);
 	if (status < 0) {
-		/* this is a strange error to return here but I want
-		 * to be able userspace to be able to distinguish a
-		 * valid lock request from one that simply couldn't be
-		 * granted. */
+		 
 		if (flags & DLM_LKF_NOQUEUE && status == -EAGAIN)
 			status = -ETXTBSY;
 		kfree(fp);
@@ -184,10 +138,7 @@ static int dlmfs_file_release(struct inode *inode,
 	return 0;
 }
 
-/*
- * We do ->setattr() just to override size changes.  Our size is the size
- * of the LVB and nothing else.
- */
+ 
 static int dlmfs_file_setattr(struct mnt_idmap *idmap,
 			      struct dentry *dentry, struct iattr *attr)
 {
@@ -248,7 +199,7 @@ static ssize_t dlmfs_file_write(struct file *filp,
 	if (*ppos >= DLM_LVB_LEN)
 		return -ENOSPC;
 
-	/* don't write past the lvb */
+	 
 	if (count > DLM_LVB_LEN - *ppos)
 		count = DLM_LVB_LEN - *ppos;
 
@@ -320,8 +271,7 @@ static void dlmfs_evict_inode(struct inode *inode)
 	}
 
 	mlog(0, "we're a directory, ip->ip_conn = 0x%p\n", ip->ip_conn);
-	/* we must be a directory. If required, lets unregister the
-	 * dlm context now. */
+	 
 	if (ip->ip_conn)
 		user_dlm_unregister(ip->ip_conn);
 clear_fields:
@@ -367,8 +317,7 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
 
 	switch (mode & S_IFMT) {
 	default:
-		/* for now we don't support anything other than
-		 * directories and regular files. */
+		 
 		BUG();
 		break;
 	case S_IFREG:
@@ -379,10 +328,7 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
 
 		user_dlm_lock_res_init(&ip->ip_lockres, dentry);
 
-		/* released at clear_inode time, this insures that we
-		 * get to drop the dlm reference on each lock *before*
-		 * we call the unregister code for releasing parent
-		 * directories. */
+		 
 		ip->ip_parent = igrab(parent);
 		BUG_ON(!ip->ip_parent);
 		break;
@@ -390,18 +336,15 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
 		inode->i_op = &dlmfs_dir_inode_operations;
 		inode->i_fop = &simple_dir_operations;
 
-		/* directory inodes start off with i_nlink ==
-		 * 2 (for "." entry) */
+		 
 		inc_nlink(inode);
 		break;
 	}
 	return inode;
 }
 
-/*
- * File creation. Allocate an inode, and we're done..
- */
-/* SMP-safe */
+ 
+ 
 static int dlmfs_mkdir(struct mnt_idmap * idmap,
 		       struct inode * dir,
 		       struct dentry * dentry,
@@ -415,7 +358,7 @@ static int dlmfs_mkdir(struct mnt_idmap * idmap,
 
 	mlog(0, "mkdir %.*s\n", domain->len, domain->name);
 
-	/* verify that we have a proper domain */
+	 
 	if (domain->len >= GROUP_NAME_MAX) {
 		status = -EINVAL;
 		mlog(ML_ERROR, "invalid domain name for directory.\n");
@@ -442,7 +385,7 @@ static int dlmfs_mkdir(struct mnt_idmap * idmap,
 
 	inc_nlink(dir);
 	d_instantiate(dentry, inode);
-	dget(dentry);	/* Extra count - pin the dentry in core */
+	dget(dentry);	 
 
 	status = 0;
 bail:
@@ -463,8 +406,7 @@ static int dlmfs_create(struct mnt_idmap *idmap,
 
 	mlog(0, "create %.*s\n", name->len, name->name);
 
-	/* verify name is valid and doesn't contain any dlm reserved
-	 * characters */
+	 
 	if (name->len >= USER_DLM_LOCK_ID_MAX_LEN ||
 	    name->name[0] == '$') {
 		status = -EINVAL;
@@ -481,7 +423,7 @@ static int dlmfs_create(struct mnt_idmap *idmap,
 	}
 
 	d_instantiate(dentry, inode);
-	dget(dentry);	/* Extra count - pin the dentry in core */
+	dget(dentry);	 
 bail:
 	return status;
 }
@@ -494,8 +436,7 @@ static int dlmfs_unlink(struct inode *dir,
 
 	mlog(0, "unlink inode %lu\n", inode->i_ino);
 
-	/* if there are no current holders, or none that are waiting
-	 * to acquire a lock, this basically destroys our lockres. */
+	 
 	status = user_dlm_destroy_lock(&DLMFS_I(inode)->ip_lockres);
 	if (status < 0) {
 		mlog(ML_ERROR, "unlink %pd, error %d from destroy\n",
@@ -537,7 +478,7 @@ static const struct inode_operations dlmfs_dir_inode_operations = {
 	.unlink		= dlmfs_unlink,
 };
 
-/* this way we can restrict mkdir to only the toplevel of the fs. */
+ 
 static const struct inode_operations dlmfs_root_inode_operations = {
 	.lookup		= simple_lookup,
 	.mkdir		= dlmfs_mkdir,
@@ -613,10 +554,7 @@ static void __exit exit_dlmfs_fs(void)
 
 	destroy_workqueue(user_dlm_worker);
 
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(dlmfs_inode_cache);
 

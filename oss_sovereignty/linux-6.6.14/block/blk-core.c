@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 1991, 1992 Linus Torvalds
- * Copyright (C) 1994,      Karl Keyte: Added support for disk statistics
- * Elevator latency, (C) 2000  Andrea Arcangeli <andrea@suse.de> SuSE
- * Queue request tables / lock, selectable elevator, Jens Axboe <axboe@suse.de>
- * kernel-doc documentation started by NeilBrown <neilb@cse.unsw.edu.au>
- *	-  July2000
- * bio rewrite, highmem i/o, etc, Jens Axboe <axboe@suse.de> - may 2001
- */
 
-/*
- * This handles all read/write requests to block devices
- */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/bio.h>
@@ -61,46 +51,27 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(block_rq_insert);
 
 static DEFINE_IDA(blk_queue_ida);
 
-/*
- * For queue allocation
- */
+ 
 static struct kmem_cache *blk_requestq_cachep;
 
-/*
- * Controlling structure to kblockd
- */
+ 
 static struct workqueue_struct *kblockd_workqueue;
 
-/**
- * blk_queue_flag_set - atomically set a queue flag
- * @flag: flag to be set
- * @q: request queue
- */
+ 
 void blk_queue_flag_set(unsigned int flag, struct request_queue *q)
 {
 	set_bit(flag, &q->queue_flags);
 }
 EXPORT_SYMBOL(blk_queue_flag_set);
 
-/**
- * blk_queue_flag_clear - atomically clear a queue flag
- * @flag: flag to be cleared
- * @q: request queue
- */
+ 
 void blk_queue_flag_clear(unsigned int flag, struct request_queue *q)
 {
 	clear_bit(flag, &q->queue_flags);
 }
 EXPORT_SYMBOL(blk_queue_flag_clear);
 
-/**
- * blk_queue_flag_test_and_set - atomically test and set a queue flag
- * @flag: flag to be set
- * @q: request queue
- *
- * Returns the previous value of @flag - 0 if the flag was not set and 1 if
- * the flag was already set.
- */
+ 
 bool blk_queue_flag_test_and_set(unsigned int flag, struct request_queue *q)
 {
 	return test_and_set_bit(flag, &q->queue_flags);
@@ -126,14 +97,7 @@ static const char *const blk_op_name[] = {
 };
 #undef REQ_OP_NAME
 
-/**
- * blk_op_str - Return string XXX in the REQ_OP_XXX.
- * @op: REQ_OP_XXX.
- *
- * Description: Centralize block layer function to convert REQ_OP_XXX into
- * string format. Useful in the debugging and tracing bio or request. For
- * invalid REQ_OP_XXX it returns string "UNKNOWN".
- */
+ 
 inline const char *blk_op_str(enum req_op op)
 {
 	const char *op_str = "UNKNOWN";
@@ -163,17 +127,17 @@ static const struct {
 	[BLK_STS_AGAIN]		= { -EAGAIN,	"nonblocking retry" },
 	[BLK_STS_OFFLINE]	= { -ENODEV,	"device offline" },
 
-	/* device mapper special case, should not leak out: */
+	 
 	[BLK_STS_DM_REQUEUE]	= { -EREMCHG, "dm internal retry" },
 
-	/* zone device specific errors */
+	 
 	[BLK_STS_ZONE_OPEN_RESOURCE]	= { -ETOOMANYREFS, "open zones exceeded" },
 	[BLK_STS_ZONE_ACTIVE_RESOURCE]	= { -EOVERFLOW, "active zones exceeded" },
 
-	/* Command duration limit device-side timeout */
+	 
 	[BLK_STS_DURATION_LIMIT]	= { -ETIME, "duration limit exceeded" },
 
-	/* everything else not covered above: */
+	 
 	[BLK_STS_IOERR]		= { -EIO,	"I/O" },
 };
 
@@ -210,24 +174,7 @@ const char *blk_status_to_str(blk_status_t status)
 }
 EXPORT_SYMBOL_GPL(blk_status_to_str);
 
-/**
- * blk_sync_queue - cancel any pending callbacks on a queue
- * @q: the queue
- *
- * Description:
- *     The block layer may perform asynchronous callback activity
- *     on a queue, such as calling the unplug function after a timeout.
- *     A block device may call blk_sync_queue to ensure that any
- *     such activity is cancelled, thus allowing it to release resources
- *     that the callbacks might use. The caller must already have made sure
- *     that its ->submit_bio will not re-add plugging prior to calling
- *     this function.
- *
- *     This function does not cancel any asynchronous activity arising
- *     out of elevator or throttling code. That would require elevator_exit()
- *     and blkcg_exit_queue() to be called with queue lock initialized.
- *
- */
+ 
 void blk_sync_queue(struct request_queue *q)
 {
 	del_timer_sync(&q->timeout);
@@ -235,10 +182,7 @@ void blk_sync_queue(struct request_queue *q)
 }
 EXPORT_SYMBOL(blk_sync_queue);
 
-/**
- * blk_set_pm_only - increment pm_only counter
- * @q: request queue pointer
- */
+ 
 void blk_set_pm_only(struct request_queue *q)
 {
 	atomic_inc(&q->pm_only);
@@ -275,13 +219,7 @@ static void blk_free_queue(struct request_queue *q)
 	call_rcu(&q->rcu_head, blk_free_queue_rcu);
 }
 
-/**
- * blk_put_queue - decrement the request_queue refcount
- * @q: the request_queue structure to decrement the refcount for
- *
- * Decrements the refcount of the request_queue and free it when the refcount
- * reaches 0.
- */
+ 
 void blk_put_queue(struct request_queue *q)
 {
 	if (refcount_dec_and_test(&q->refs))
@@ -291,23 +229,15 @@ EXPORT_SYMBOL(blk_put_queue);
 
 void blk_queue_start_drain(struct request_queue *q)
 {
-	/*
-	 * When queue DYING flag is set, we need to block new req
-	 * entering queue, so we call blk_freeze_queue_start() to
-	 * prevent I/O from crossing blk_queue_enter().
-	 */
+	 
 	blk_freeze_queue_start(q);
 	if (queue_is_mq(q))
 		blk_mq_wake_waiters(q);
-	/* Make blk_queue_enter() reexamine the DYING flag. */
+	 
 	wake_up_all(&q->mq_freeze_wq);
 }
 
-/**
- * blk_queue_enter() - try to increase q->q_usage_counter
- * @q: request queue pointer
- * @flags: BLK_MQ_REQ_NOWAIT and/or BLK_MQ_REQ_PM
- */
+ 
 int blk_queue_enter(struct request_queue *q, blk_mq_req_flags_t flags)
 {
 	const bool pm = flags & BLK_MQ_REQ_PM;
@@ -316,13 +246,7 @@ int blk_queue_enter(struct request_queue *q, blk_mq_req_flags_t flags)
 		if (flags & BLK_MQ_REQ_NOWAIT)
 			return -EAGAIN;
 
-		/*
-		 * read pair of barrier in blk_freeze_queue_start(), we need to
-		 * order reading __PERCPU_REF_DEAD flag of .q_usage_counter and
-		 * reading .mq_freeze_depth or queue dying flag, otherwise the
-		 * following wait may never return if the two reads are
-		 * reordered.
-		 */
+		 
 		smp_rmb();
 		wait_event(q->mq_freeze_wq,
 			   (!q->mq_freeze_depth &&
@@ -347,13 +271,7 @@ int __bio_queue_enter(struct request_queue *q, struct bio *bio)
 			return -EAGAIN;
 		}
 
-		/*
-		 * read pair of barrier in blk_freeze_queue_start(), we need to
-		 * order reading __PERCPU_REF_DEAD flag of .q_usage_counter and
-		 * reading .mq_freeze_depth or queue dying flag, otherwise the
-		 * following wait may never return if the two reads are
-		 * reordered.
-		 */
+		 
 		smp_rmb();
 		wait_event(q->mq_freeze_wq,
 			   (!q->mq_freeze_depth &&
@@ -430,10 +348,7 @@ struct request_queue *blk_alloc_queue(int node_id)
 	init_waitqueue_head(&q->mq_freeze_wq);
 	mutex_init(&q->mq_freeze_lock);
 
-	/*
-	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
-	 * See blk_register_queue() for details.
-	 */
+	 
 	if (percpu_ref_init(&q->q_usage_counter,
 				blk_queue_usage_counter_release,
 				PERCPU_REF_INIT_ATOMIC, GFP_KERNEL))
@@ -453,14 +368,7 @@ fail_q:
 	return NULL;
 }
 
-/**
- * blk_get_queue - increment the request_queue refcount
- * @q: the request_queue structure to increment the refcount for
- *
- * Increment the refcount of the request_queue kobject.
- *
- * Context: Any context.
- */
+ 
 bool blk_get_queue(struct request_queue *q)
 {
 	if (unlikely(blk_queue_dying(q)))
@@ -494,7 +402,7 @@ static int __init fail_make_request_debugfs(void)
 }
 
 late_initcall(fail_make_request_debugfs);
-#endif /* CONFIG_FAIL_MAKE_REQUEST */
+#endif  
 
 static inline void bio_check_ro(struct bio *bio)
 {
@@ -506,10 +414,7 @@ static inline void bio_check_ro(struct bio *bio)
 			return;
 
 		bio->bi_bdev->bd_ro_warned = true;
-		/*
-		 * Use ioctl to set underlying disk of raid/dm to read-only
-		 * will trigger this.
-		 */
+		 
 		pr_warn("Trying to write to read-only block-device %pg\n",
 			bio->bi_bdev);
 	}
@@ -523,11 +428,7 @@ static noinline int should_fail_bio(struct bio *bio)
 }
 ALLOW_ERROR_INJECTION(should_fail_bio, ERRNO);
 
-/*
- * Check whether this bio extends beyond the end of the device or partition.
- * This may well happen - the kernel calls bread() without checking the size of
- * the device, e.g., when mounting a file system.
- */
+ 
 static inline int bio_check_eod(struct bio *bio)
 {
 	sector_t maxsector = bdev_nr_sectors(bio->bi_bdev);
@@ -545,9 +446,7 @@ static inline int bio_check_eod(struct bio *bio)
 	return 0;
 }
 
-/*
- * Remap block n of partition p to block n+start(p) of the disk.
- */
+ 
 static int blk_partition_remap(struct bio *bio)
 {
 	struct block_device *p = bio->bi_bdev;
@@ -564,32 +463,26 @@ static int blk_partition_remap(struct bio *bio)
 	return 0;
 }
 
-/*
- * Check write append to a zoned block device.
- */
+ 
 static inline blk_status_t blk_check_zone_append(struct request_queue *q,
 						 struct bio *bio)
 {
 	int nr_sectors = bio_sectors(bio);
 
-	/* Only applicable to zoned block devices */
+	 
 	if (!bdev_is_zoned(bio->bi_bdev))
 		return BLK_STS_NOTSUPP;
 
-	/* The bio sector must point to the start of a sequential zone */
+	 
 	if (!bdev_is_zone_start(bio->bi_bdev, bio->bi_iter.bi_sector) ||
 	    !bio_zone_is_seq(bio))
 		return BLK_STS_IOERR;
 
-	/*
-	 * Not allowed to cross zone boundaries. Otherwise, the BIO will be
-	 * split and could result in non-contiguous sectors being written in
-	 * different zones.
-	 */
+	 
 	if (nr_sectors > q->limits.chunk_sectors)
 		return BLK_STS_IOERR;
 
-	/* Make sure the BIO is small enough and will not get split */
+	 
 	if (nr_sectors > q->limits.max_zone_append_sectors)
 		return BLK_STS_IOERR;
 
@@ -613,25 +506,7 @@ static void __submit_bio(struct bio *bio)
 	}
 }
 
-/*
- * The loop in this function may be a bit non-obvious, and so deserves some
- * explanation:
- *
- *  - Before entering the loop, bio->bi_next is NULL (as all callers ensure
- *    that), so we have a list with a single bio.
- *  - We pretend that we have just taken it off a longer list, so we assign
- *    bio_list to a pointer to the bio_list_on_stack, thus initialising the
- *    bio_list of new bios to be added.  ->submit_bio() may indeed add some more
- *    bios through a recursive call to submit_bio_noacct.  If it did, we find a
- *    non-NULL value in bio_list and re-enter the loop from the top.
- *  - In this case we really did just take the bio of the top of the list (no
- *    pretending) and so remove it from bio_list, and call into ->submit_bio()
- *    again.
- *
- * bio_list_on_stack[0] contains bios submitted by the current ->submit_bio.
- * bio_list_on_stack[1] contains bios that were submitted before the current
- *	->submit_bio, but that haven't been processed yet.
- */
+ 
 static void __submit_bio_noacct(struct bio *bio)
 {
 	struct bio_list bio_list_on_stack[2];
@@ -645,18 +520,13 @@ static void __submit_bio_noacct(struct bio *bio)
 		struct request_queue *q = bdev_get_queue(bio->bi_bdev);
 		struct bio_list lower, same;
 
-		/*
-		 * Create a fresh bio_list for all subordinate requests.
-		 */
+		 
 		bio_list_on_stack[1] = bio_list_on_stack[0];
 		bio_list_init(&bio_list_on_stack[0]);
 
 		__submit_bio(bio);
 
-		/*
-		 * Sort new bios into those for a lower level and those for the
-		 * same level.
-		 */
+		 
 		bio_list_init(&lower);
 		bio_list_init(&same);
 		while ((bio = bio_list_pop(&bio_list_on_stack[0])) != NULL)
@@ -665,9 +535,7 @@ static void __submit_bio_noacct(struct bio *bio)
 			else
 				bio_list_add(&lower, bio);
 
-		/*
-		 * Now assemble so we handle the lowest level first.
-		 */
+		 
 		bio_list_merge(&bio_list_on_stack[0], &lower);
 		bio_list_merge(&bio_list_on_stack[0], &same);
 		bio_list_merge(&bio_list_on_stack[0], &bio_list_on_stack[1]);
@@ -696,19 +564,11 @@ void submit_bio_noacct_nocheck(struct bio *bio)
 
 	if (!bio_flagged(bio, BIO_TRACE_COMPLETION)) {
 		trace_block_bio_queue(bio);
-		/*
-		 * Now that enqueuing has been traced, we need to trace
-		 * completion as well.
-		 */
+		 
 		bio_set_flag(bio, BIO_TRACE_COMPLETION);
 	}
 
-	/*
-	 * We only want one ->submit_bio to be active at a time, else stack
-	 * usage with stacked devices could be a problem.  Use current->bio_list
-	 * to collect a list of requests submited by a ->submit_bio method while
-	 * it is active, and then process them after it returned.
-	 */
+	 
 	if (current->bio_list)
 		bio_list_add(&current->bio_list[0], bio);
 	else if (!bio->bi_bdev->bd_has_submit_bio)
@@ -717,15 +577,7 @@ void submit_bio_noacct_nocheck(struct bio *bio)
 		__submit_bio_noacct(bio);
 }
 
-/**
- * submit_bio_noacct - re-submit a bio to the block device layer for I/O
- * @bio:  The bio describing the location in memory and on the device.
- *
- * This is a version of submit_bio() that shall only be used for I/O that is
- * resubmitted to lower level drivers by stacking block drivers.  All file
- * systems and other upper level users of the block layer should use
- * submit_bio() instead.
- */
+ 
 void submit_bio_noacct(struct bio *bio)
 {
 	struct block_device *bdev = bio->bi_bdev;
@@ -734,10 +586,7 @@ void submit_bio_noacct(struct bio *bio)
 
 	might_sleep();
 
-	/*
-	 * For a REQ_NOWAIT based request, return -EOPNOTSUPP
-	 * if queue does not support NOWAIT.
-	 */
+	 
 	if ((bio->bi_opf & REQ_NOWAIT) && !bdev_nowait(bdev))
 		goto not_supported;
 
@@ -751,10 +600,7 @@ void submit_bio_noacct(struct bio *bio)
 			goto end_io;
 	}
 
-	/*
-	 * Filter flush bio's early so that bio based drivers without flush
-	 * support don't have to worry about them.
-	 */
+	 
 	if (op_is_flush(bio->bi_opf)) {
 		if (WARN_ON_ONCE(bio_op(bio) != REQ_OP_WRITE &&
 				 bio_op(bio) != REQ_OP_ZONE_APPEND))
@@ -817,19 +663,7 @@ end_io:
 }
 EXPORT_SYMBOL(submit_bio_noacct);
 
-/**
- * submit_bio - submit a bio to the block device layer for I/O
- * @bio: The &struct bio which describes the I/O
- *
- * submit_bio() is used to submit I/O requests to block devices.  It is passed a
- * fully set up &struct bio that describes the I/O that needs to be done.  The
- * bio will be send to the device described by the bi_bdev field.
- *
- * The success/failure status of the request, along with notification of
- * completion, is delivered asynchronously through the ->bi_end_io() callback
- * in @bio.  The bio must NOT be touched by the caller until ->bi_end_io() has
- * been called.
- */
+ 
 void submit_bio(struct bio *bio)
 {
 	if (bio_op(bio) == REQ_OP_READ) {
@@ -843,18 +677,7 @@ void submit_bio(struct bio *bio)
 }
 EXPORT_SYMBOL(submit_bio);
 
-/**
- * bio_poll - poll for BIO completions
- * @bio: bio to poll for
- * @iob: batches of IO
- * @flags: BLK_POLL_* flags that control the behavior
- *
- * Poll for completions on queue associated with the bio. Returns number of
- * completed entries found.
- *
- * Note: the caller must either be the context that submitted @bio, or
- * be in a RCU critical section to prevent freeing of @bio.
- */
+ 
 int bio_poll(struct bio *bio, struct io_comp_batch *iob, unsigned int flags)
 {
 	blk_qc_t cookie = READ_ONCE(bio->bi_cookie);
@@ -871,23 +694,10 @@ int bio_poll(struct bio *bio, struct io_comp_batch *iob, unsigned int flags)
 	    !test_bit(QUEUE_FLAG_POLL, &q->queue_flags))
 		return 0;
 
-	/*
-	 * As the requests that require a zone lock are not plugged in the
-	 * first place, directly accessing the plug instead of using
-	 * blk_mq_plug() should not have any consequences during flushing for
-	 * zoned devices.
-	 */
+	 
 	blk_flush_plug(current->plug, false);
 
-	/*
-	 * We need to be able to enter a frozen queue, similar to how
-	 * timeouts also need to do that. If that is blocked, then we can
-	 * have pending IO when a queue freeze is started, and then the
-	 * wait for the freeze to finish will wait for polled requests to
-	 * timeout as the poller is preventer from entering the queue and
-	 * completing them. As long as we prevent new IO from being queued,
-	 * that should be all that matters.
-	 */
+	 
 	if (!percpu_ref_tryget(&q->q_usage_counter))
 		return 0;
 	if (queue_is_mq(q)) {
@@ -903,36 +713,14 @@ int bio_poll(struct bio *bio, struct io_comp_batch *iob, unsigned int flags)
 }
 EXPORT_SYMBOL_GPL(bio_poll);
 
-/*
- * Helper to implement file_operations.iopoll.  Requires the bio to be stored
- * in iocb->private, and cleared before freeing the bio.
- */
+ 
 int iocb_bio_iopoll(struct kiocb *kiocb, struct io_comp_batch *iob,
 		    unsigned int flags)
 {
 	struct bio *bio;
 	int ret = 0;
 
-	/*
-	 * Note: the bio cache only uses SLAB_TYPESAFE_BY_RCU, so bio can
-	 * point to a freshly allocated bio at this point.  If that happens
-	 * we have a few cases to consider:
-	 *
-	 *  1) the bio is beeing initialized and bi_bdev is NULL.  We can just
-	 *     simply nothing in this case
-	 *  2) the bio points to a not poll enabled device.  bio_poll will catch
-	 *     this and return 0
-	 *  3) the bio points to a poll capable device, including but not
-	 *     limited to the one that the original bio pointed to.  In this
-	 *     case we will call into the actual poll method and poll for I/O,
-	 *     even if we don't need to, but it won't cause harm either.
-	 *
-	 * For cases 2) and 3) above the RCU grace period ensures that bi_bdev
-	 * is still allocated. Because partitions hold a reference to the whole
-	 * device bdev and thus disk, the disk is also still valid.  Grabbing
-	 * a reference to the queue in bio_poll() ensures the hctxs and requests
-	 * are still valid as well.
-	 */
+	 
 	rcu_read_lock();
 	bio = READ_ONCE(kiocb->private);
 	if (bio)
@@ -970,12 +758,7 @@ unsigned long bdev_start_io_acct(struct block_device *bdev, enum req_op op,
 }
 EXPORT_SYMBOL(bdev_start_io_acct);
 
-/**
- * bio_start_io_acct - start I/O accounting for bio based drivers
- * @bio:	bio to start account for
- *
- * Returns the start time that should be passed back to bio_end_io_acct().
- */
+ 
 unsigned long bio_start_io_acct(struct bio *bio)
 {
 	return bdev_start_io_acct(bio->bi_bdev, bio_op(bio), jiffies);
@@ -1006,25 +789,7 @@ void bio_end_io_acct_remapped(struct bio *bio, unsigned long start_time,
 }
 EXPORT_SYMBOL_GPL(bio_end_io_acct_remapped);
 
-/**
- * blk_lld_busy - Check if underlying low-level drivers of a device are busy
- * @q : the queue of the device being checked
- *
- * Description:
- *    Check if underlying low-level drivers of a device are busy.
- *    If the drivers want to export their busy state, they must set own
- *    exporting function using blk_queue_lld_busy() first.
- *
- *    Basically, this function is used only by request stacking drivers
- *    to stop dispatching requests to underlying devices when underlying
- *    devices are busy.  This behavior helps more I/O merging on the queue
- *    of the request stacking driver and prevents I/O throughput regression
- *    on burst I/O load.
- *
- * Return:
- *    0 - Not busy (The request stacking driver should dispatch request)
- *    1 - Busy (The request stacking driver should stop dispatching request)
- */
+ 
 int blk_lld_busy(struct request_queue *q)
 {
 	if (queue_is_mq(q) && q->mq_ops->busy)
@@ -1051,9 +816,7 @@ void blk_start_plug_nr_ios(struct blk_plug *plug, unsigned short nr_ios)
 {
 	struct task_struct *tsk = current;
 
-	/*
-	 * If this is a nested plug, don't actually assign it.
-	 */
+	 
 	if (tsk->plug)
 		return;
 
@@ -1065,36 +828,11 @@ void blk_start_plug_nr_ios(struct blk_plug *plug, unsigned short nr_ios)
 	plug->has_elevator = false;
 	INIT_LIST_HEAD(&plug->cb_list);
 
-	/*
-	 * Store ordering should not be needed here, since a potential
-	 * preempt will imply a full memory barrier
-	 */
+	 
 	tsk->plug = plug;
 }
 
-/**
- * blk_start_plug - initialize blk_plug and track it inside the task_struct
- * @plug:	The &struct blk_plug that needs to be initialized
- *
- * Description:
- *   blk_start_plug() indicates to the block layer an intent by the caller
- *   to submit multiple I/O requests in a batch.  The block layer may use
- *   this hint to defer submitting I/Os from the caller until blk_finish_plug()
- *   is called.  However, the block layer may choose to submit requests
- *   before a call to blk_finish_plug() if the number of queued I/Os
- *   exceeds %BLK_MAX_REQUEST_COUNT, or if the size of the I/O is larger than
- *   %BLK_PLUG_FLUSH_SIZE.  The queued I/Os may also be submitted early if
- *   the task schedules (see below).
- *
- *   Tracking blk_plug inside the task_struct will help with auto-flushing the
- *   pending I/O should the task end up blocking between blk_start_plug() and
- *   blk_finish_plug(). This is important from a performance perspective, but
- *   also ensures that we don't deadlock. For instance, if the task is blocking
- *   for a memory allocation, memory reclaim could end up wanting to free a
- *   page belonging to that request that is currently residing in our private
- *   plug. By flushing the pending I/O when the process goes to sleep, we avoid
- *   this kind of deadlock.
- */
+ 
 void blk_start_plug(struct blk_plug *plug)
 {
 	blk_start_plug_nr_ios(plug, 1);
@@ -1131,7 +869,7 @@ struct blk_plug_cb *blk_check_plugged(blk_plug_cb_fn unplug, void *data,
 		if (cb->callback == unplug && cb->data == data)
 			return cb;
 
-	/* Not currently on the callback list */
+	 
 	BUG_ON(size < sizeof(*cb));
 	cb = kzalloc(size, GFP_ATOMIC);
 	if (cb) {
@@ -1148,26 +886,12 @@ void __blk_flush_plug(struct blk_plug *plug, bool from_schedule)
 	if (!list_empty(&plug->cb_list))
 		flush_plug_callbacks(plug, from_schedule);
 	blk_mq_flush_plug_list(plug, from_schedule);
-	/*
-	 * Unconditionally flush out cached requests, even if the unplug
-	 * event came from schedule. Since we know hold references to the
-	 * queue for cached requests, we don't want a blocked task holding
-	 * up a queue freeze/quiesce event.
-	 */
+	 
 	if (unlikely(!rq_list_empty(plug->cached_rq)))
 		blk_mq_free_plug_rqs(plug);
 }
 
-/**
- * blk_finish_plug - mark the end of a batch of submitted I/O
- * @plug:	The &struct blk_plug passed to blk_start_plug()
- *
- * Description:
- * Indicate that a batch of I/O submissions is complete.  This function
- * must be paired with an initial call to blk_start_plug().  The intent
- * is to allow the block layer to optimize I/O submission.  See the
- * documentation for blk_start_plug() for more information.
- */
+ 
 void blk_finish_plug(struct blk_plug *plug)
 {
 	if (plug == current->plug) {
@@ -1179,7 +903,7 @@ EXPORT_SYMBOL(blk_finish_plug);
 
 void blk_io_schedule(void)
 {
-	/* Prevent hang_check timer from firing at us during very long I/O */
+	 
 	unsigned long timeout = sysctl_hung_task_timeout_secs * HZ / 2;
 
 	if (timeout)
@@ -1197,7 +921,7 @@ int __init blk_dev_init(void)
 	BUILD_BUG_ON(REQ_OP_BITS + REQ_FLAG_BITS > 8 *
 			sizeof_field(struct bio, bi_opf));
 
-	/* used for unplugging and affects IO latency/throughput - HIGHPRI */
+	 
 	kblockd_workqueue = alloc_workqueue("kblockd",
 					    WQ_MEM_RECLAIM | WQ_HIGHPRI, 0);
 	if (!kblockd_workqueue)

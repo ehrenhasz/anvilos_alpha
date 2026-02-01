@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM6345 Reset Controller Driver
- *
- * Copyright (C) 2020 Álvaro Fernández Rojas <noltari@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -67,11 +63,7 @@ static int bcm6345_reset_reset(struct reset_controller_dev *rcdev,
 		     BCM6345_RESET_SLEEP_MAX_US);
 
 	bcm6345_reset_update(rcdev, id, false);
-	/*
-	 * Ensure component is taken out reset state by sleeping also after
-	 * deasserting the reset. Otherwise, the component may not be ready
-	 * for operation.
-	 */
+	 
 	usleep_range(BCM6345_RESET_SLEEP_MIN_US,
 		     BCM6345_RESET_SLEEP_MAX_US);
 
@@ -119,7 +111,7 @@ static int bcm6345_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm6345_reset_of_match[] = {
 	{ .compatible = "brcm,bcm6345-reset" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver bcm6345_reset_driver = {

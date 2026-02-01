@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2017-2018 Intel Corporation
- */
+
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/string_helpers.h>
@@ -59,7 +57,7 @@ retry:
 	return err;
 }
 
-/* Only half of seqno's are usable, see __intel_timeline_get_seqno() */
+ 
 #define CACHELINES_PER_PAGE (PAGE_SIZE / TIMELINE_SEQNO_BYTES / 2)
 
 struct mock_hwsp_freelist {
@@ -163,10 +161,7 @@ static int mock_hwsp_freelist(void *arg)
 
 	state.gt = to_gt(i915);
 
-	/*
-	 * Create a bunch of timelines and check that their HWSP do not overlap.
-	 * Free some, and try again.
-	 */
+	 
 
 	state.max = PAGE_SIZE / sizeof(*state.history);
 	state.count = 0;
@@ -295,11 +290,7 @@ static int bench_sync(void *arg)
 
 	mock_timeline_init(&tl, 0);
 
-	/* Lookups from cache are very fast and so the random number generation
-	 * and the loop itself becomes a significant factor in the per-iteration
-	 * timings. We try to compensate the results by measuring the overhead
-	 * of the prng and subtract it from the reported results.
-	 */
+	 
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
@@ -307,7 +298,7 @@ static int bench_sync(void *arg)
 	do {
 		u32 x;
 
-		/* Make sure the compiler doesn't optimise away the prng call */
+		 
 		WRITE_ONCE(x, prandom_u32_state(&prng));
 
 		count++;
@@ -317,7 +308,7 @@ static int bench_sync(void *arg)
 		 __func__, count, (long long)div64_ul(ktime_to_ns(kt), count));
 	prng32_1M = div64_ul(ktime_to_ns(kt) << 20, count);
 
-	/* Benchmark (only) setting random context ids */
+	 
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
@@ -333,7 +324,7 @@ static int bench_sync(void *arg)
 	pr_info("%s: %lu random insertions, %lluns/insert\n",
 		__func__, count, (long long)div64_ul(ktime_to_ns(kt), count));
 
-	/* Benchmark looking up the exact same context ids as we just set */
+	 
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	end_time = count;
 	kt = ktime_get();
@@ -356,7 +347,7 @@ static int bench_sync(void *arg)
 
 	mock_timeline_init(&tl, 0);
 
-	/* Benchmark setting the first N (in order) contexts */
+	 
 	count = 0;
 	kt = ktime_get();
 	end_time = jiffies + HZ/10;
@@ -367,7 +358,7 @@ static int bench_sync(void *arg)
 	pr_info("%s: %lu in-order insertions, %lluns/insert\n",
 		__func__, count, (long long)div64_ul(ktime_to_ns(kt), count));
 
-	/* Benchmark looking up the exact same context ids as we just set */
+	 
 	end_time = count;
 	kt = ktime_get();
 	while (end_time--) {
@@ -386,7 +377,7 @@ static int bench_sync(void *arg)
 
 	mock_timeline_init(&tl, 0);
 
-	/* Benchmark searching for a random context id and maybe changing it */
+	 
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
@@ -407,7 +398,7 @@ static int bench_sync(void *arg)
 	mock_timeline_fini(&tl);
 	cond_resched();
 
-	/* Benchmark searching for a known context id and changing the seqno */
+	 
 	for (last_order = 1, order = 1; order < 32;
 	     ({ int tmp = last_order; last_order = order; order += tmp; })) {
 		unsigned int mask = BIT(order) - 1;
@@ -418,10 +409,7 @@ static int bench_sync(void *arg)
 		kt = ktime_get();
 		end_time = jiffies + HZ/10;
 		do {
-			/* Without assuming too many details of the underlying
-			 * implementation, try to identify its phase-changes
-			 * (if any)!
-			 */
+			 
 			u64 id = (u64)(count & mask) << order;
 
 			__intel_timeline_sync_is_later(&tl, id, 0);
@@ -531,10 +519,7 @@ static int live_hwsp_engine(void *arg)
 	unsigned long count, n;
 	int err = 0;
 
-	/*
-	 * Create a bunch of timelines and check we can write
-	 * independently to each of their breadcrumb slots.
-	 */
+	 
 
 	timelines = kvmalloc_array(NUM_TIMELINES * I915_NUM_ENGINES,
 				   sizeof(*timelines),
@@ -605,11 +590,7 @@ static int live_hwsp_alternate(void *arg)
 	unsigned long count, n;
 	int err = 0;
 
-	/*
-	 * Create a bunch of timelines and check we can write
-	 * independently to each of their breadcrumb slots with adjacent
-	 * engines.
-	 */
+	 
 
 	timelines = kvmalloc_array(NUM_TIMELINES * I915_NUM_ENGINES,
 				   sizeof(*timelines),
@@ -675,10 +656,7 @@ static int live_hwsp_wrap(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Across a seqno wrap, we need to keep the old cacheline alive for
-	 * foreign GPU references.
-	 */
+	 
 
 	tl = intel_timeline_create(gt);
 	if (IS_ERR(tl))
@@ -741,7 +719,7 @@ static int live_hwsp_wrap(void *arg)
 		}
 		hwsp_seqno[1] = tl->hwsp_seqno;
 
-		/* With wrap should come a new hwsp */
+		 
 		GEM_BUG_ON(seqno[1] >= seqno[0]);
 		GEM_BUG_ON(hwsp_seqno[0] == hwsp_seqno[1]);
 
@@ -762,7 +740,7 @@ static int live_hwsp_wrap(void *arg)
 			goto out;
 		}
 
-		intel_gt_retire_requests(gt); /* recycle HWSP */
+		intel_gt_retire_requests(gt);  
 	}
 
 out:
@@ -835,7 +813,7 @@ static int setup_watcher(struct hwsp_watcher *w, struct intel_gt *gt,
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
 
-	/* keep the same cache settings as timeline */
+	 
 	i915_gem_object_set_pat_index(obj, tl->hwsp_ggtt->obj->pat_index);
 	w->map = i915_gem_object_pin_map_unlocked(obj,
 						  page_unmask_bits(tl->hwsp_ggtt->obj->mm.mapping));
@@ -857,7 +835,7 @@ static int setup_watcher(struct hwsp_watcher *w, struct intel_gt *gt,
 
 static void switch_tl_lock(struct i915_request *from, struct i915_request *to)
 {
-	/* some light mutex juggling required; think co-routines */
+	 
 
 	if (from) {
 		lockdep_unpin_lock(&from->context->timeline->mutex, from->cookie);
@@ -959,7 +937,7 @@ static struct i915_request *wrap_timeline(struct i915_request *rq)
 	struct intel_timeline *tl = ce->timeline;
 	u32 seqno = rq->fence.seqno;
 
-	while (tl->seqno >= seqno) { /* Cause a wrap */
+	while (tl->seqno >= seqno) {  
 		i915_request_put(rq);
 		rq = intel_context_create_request(ce);
 		if (IS_ERR(rq))
@@ -990,15 +968,9 @@ static int live_hwsp_read(void *arg)
 	int err = 0;
 	int i;
 
-	/*
-	 * If we take a reference to the HWSP for reading on the GPU, that
-	 * read may be arbitrarily delayed (either by foreign fence or
-	 * priority saturation) and a wrap can happen within 30 minutes.
-	 * When the GPU read is finally submitted it should be correct,
-	 * even across multiple wraps.
-	 */
+	 
 
-	if (GRAPHICS_VER(gt->i915) < 8) /* CS convenience [SRM/LRM] */
+	if (GRAPHICS_VER(gt->i915) < 8)  
 		return 0;
 
 	tl = intel_timeline_create(gt);
@@ -1021,7 +993,7 @@ static int live_hwsp_read(void *arg)
 		unsigned long count = 0;
 		IGT_TIMEOUT(end_time);
 
-		/* Create a request we can use for remote reading of the HWSP */
+		 
 		err = create_watcher(&watcher[1], engine, SZ_512K);
 		if (err)
 			goto out;
@@ -1049,17 +1021,14 @@ static int live_hwsp_read(void *arg)
 
 			ce->timeline = intel_timeline_get(tl);
 
-			/* Ensure timeline is mapped, done during first pin */
+			 
 			err = intel_context_pin(ce);
 			if (err) {
 				intel_context_put(ce);
 				goto out;
 			}
 
-			/*
-			 * Start at a new wrap, and set seqno right before another wrap,
-			 * saving 30 minutes of nops
-			 */
+			 
 			tl->seqno = -12u + 2 * (count & 3);
 			__intel_timeline_get_seqno(tl, &dummy);
 
@@ -1084,7 +1053,7 @@ static int live_hwsp_read(void *arg)
 			switch_tl_lock(rq, watcher[0].rq);
 			err = intel_timeline_read_hwsp(rq, watcher[0].rq, &hwsp);
 			if (err == 0)
-				err = emit_read_hwsp(watcher[0].rq, /* before */
+				err = emit_read_hwsp(watcher[0].rq,  
 						     rq->fence.seqno, hwsp,
 						     &watcher[0].addr);
 			switch_tl_lock(watcher[0].rq, rq);
@@ -1098,7 +1067,7 @@ static int live_hwsp_read(void *arg)
 			switch_tl_lock(rq, watcher[1].rq);
 			err = intel_timeline_read_hwsp(rq, watcher[1].rq, &hwsp);
 			if (err == 0)
-				err = emit_read_hwsp(watcher[1].rq, /* after */
+				err = emit_read_hwsp(watcher[1].rq,  
 						     rq->fence.seqno, hwsp,
 						     &watcher[1].addr);
 			switch_tl_lock(watcher[1].rq, rq);
@@ -1137,7 +1106,7 @@ static int live_hwsp_read(void *arg)
 			}
 			count++;
 
-			/* Flush the timeline before manually wrapping again */
+			 
 			if (i915_request_wait(rq,
 					      I915_WAIT_INTERRUPTIBLE,
 					      HZ) < 0) {
@@ -1148,7 +1117,7 @@ static int live_hwsp_read(void *arg)
 			retire_requests(tl);
 			i915_request_put(rq);
 
-			/* Single requests are limited to half a ring at most */
+			 
 			if (8 * watcher[1].rq->ring->emit >
 			    3 * watcher[1].rq->ring->size)
 				break;
@@ -1183,10 +1152,7 @@ static int live_hwsp_rollover_kernel(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Run the host for long enough, and even the kernel context will
-	 * see a seqno rollover.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		struct intel_context *ce = engine->kernel_context;
@@ -1223,7 +1189,7 @@ static int live_hwsp_rollover_kernel(void *arg)
 			i915_request_add(this);
 		}
 
-		/* We expected a wrap! */
+		 
 		GEM_BUG_ON(rq[2]->fence.seqno > rq[0]->fence.seqno);
 
 		if (i915_request_wait(rq[2], 0, HZ / 5) < 0) {
@@ -1261,10 +1227,7 @@ static int live_hwsp_rollover_user(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	/*
-	 * Simulate a long running user context, and force the seqno wrap
-	 * on the user's timeline.
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		struct i915_request *rq[3] = {};
@@ -1310,7 +1273,7 @@ static int live_hwsp_rollover_user(void *arg)
 			i915_request_add(this);
 		}
 
-		/* We expected a wrap! */
+		 
 		GEM_BUG_ON(rq[2]->fence.seqno > rq[0]->fence.seqno);
 
 		if (i915_request_wait(rq[2], 0, HZ / 5) < 0) {
@@ -1350,11 +1313,7 @@ static int live_hwsp_recycle(void *arg)
 	unsigned long count;
 	int err = 0;
 
-	/*
-	 * Check seqno writes into one timeline at a time. We expect to
-	 * recycle the breadcrumb slot between iterations and neither
-	 * want to confuse ourselves or the GPU.
-	 */
+	 
 
 	count = 0;
 	for_each_engine(engine, gt, id) {

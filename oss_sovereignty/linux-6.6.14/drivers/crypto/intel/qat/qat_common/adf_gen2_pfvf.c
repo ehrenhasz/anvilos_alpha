@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2021 Intel Corporation */
+
+ 
 #include <linux/delay.h>
 #include <linux/iopoll.h>
 #include <linux/mutex.h>
@@ -12,7 +12,7 @@
 #include "adf_pfvf_vf_proto.h"
 #include "adf_pfvf_utils.h"
 
- /* VF2PF interrupts */
+  
 #define ADF_GEN2_VF_MSK			0xFFFF
 #define ADF_GEN2_ERR_REG_VF2PF(vf_src)	(((vf_src) & 0x01FFFE00) >> 9)
 #define ADF_GEN2_ERR_MSK_VF2PF(vf_mask)	(((vf_mask) & ADF_GEN2_VF_MSK) << 9)
@@ -53,7 +53,7 @@ static u32 adf_gen2_vf_get_pfvf_offset(u32 i)
 
 static void adf_gen2_enable_vf2pf_interrupts(void __iomem *pmisc_addr, u32 vf_mask)
 {
-	/* Enable VF2PF Messaging Ints - VFs 0 through 15 per vf_mask[15:0] */
+	 
 	if (vf_mask & ADF_GEN2_VF_MSK) {
 		u32 val = ADF_CSR_RD(pmisc_addr, ADF_GEN2_ERRMSK3)
 			  & ~ADF_GEN2_ERR_MSK_VF2PF(vf_mask);
@@ -63,7 +63,7 @@ static void adf_gen2_enable_vf2pf_interrupts(void __iomem *pmisc_addr, u32 vf_ma
 
 static void adf_gen2_disable_all_vf2pf_interrupts(void __iomem *pmisc_addr)
 {
-	/* Disable VF2PF interrupts for VFs 0 through 15 per vf_mask[15:0] */
+	 
 	u32 val = ADF_CSR_RD(pmisc_addr, ADF_GEN2_ERRMSK3)
 		  | ADF_GEN2_ERR_MSK_VF2PF(ADF_GEN2_VF_MSK);
 	ADF_CSR_WR(pmisc_addr, ADF_GEN2_ERRMSK3, val);
@@ -74,14 +74,14 @@ static u32 adf_gen2_disable_pending_vf2pf_interrupts(void __iomem *pmisc_addr)
 	u32 sources, disabled, pending;
 	u32 errsou3, errmsk3;
 
-	/* Get the interrupt sources triggered by VFs */
+	 
 	errsou3 = ADF_CSR_RD(pmisc_addr, ADF_GEN2_ERRSOU3);
 	sources = ADF_GEN2_ERR_REG_VF2PF(errsou3);
 
 	if (!sources)
 		return 0;
 
-	/* Get the already disabled interrupts */
+	 
 	errmsk3 = ADF_CSR_RD(pmisc_addr, ADF_GEN2_ERRMSK3);
 	disabled = ADF_GEN2_ERR_REG_VF2PF(errmsk3);
 
@@ -89,21 +89,14 @@ static u32 adf_gen2_disable_pending_vf2pf_interrupts(void __iomem *pmisc_addr)
 	if (!pending)
 		return 0;
 
-	/* Due to HW limitations, when disabling the interrupts, we can't
-	 * just disable the requested sources, as this would lead to missed
-	 * interrupts if ERRSOU3 changes just before writing to ERRMSK3.
-	 * To work around it, disable all and re-enable only the sources that
-	 * are not in vf_mask and were not already disabled. Re-enabling will
-	 * trigger a new interrupt for the sources that have changed in the
-	 * meantime, if any.
-	 */
+	 
 	errmsk3 |= ADF_GEN2_ERR_MSK_VF2PF(ADF_GEN2_VF_MSK);
 	ADF_CSR_WR(pmisc_addr, ADF_GEN2_ERRMSK3, errmsk3);
 
 	errmsk3 &= ADF_GEN2_ERR_MSK_VF2PF(sources | disabled);
 	ADF_CSR_WR(pmisc_addr, ADF_GEN2_ERRMSK3, errmsk3);
 
-	/* Return the sources of the (new) interrupt(s) */
+	 
 	return pending;
 }
 
@@ -165,7 +158,7 @@ static bool is_vf2pf_notification(u8 msg_type)
 
 struct pfvf_gen2_params {
 	u32 pfvf_offset;
-	struct mutex *csr_lock; /* lock preventing concurrent access of CSR */
+	struct mutex *csr_lock;  
 	enum gen2_csr_pos local_offset;
 	enum gen2_csr_pos remote_offset;
 	bool (*is_notification_message)(u8 msg_type);
@@ -187,13 +180,7 @@ static int adf_gen2_pfvf_send(struct adf_accel_dev *accel_dev,
 	u32 csr_msg;
 	int ret;
 
-	/* Gen2 messages, both PF->VF and VF->PF, are all 16 bits long. This
-	 * allows us to build and read messages as if they where all 0 based.
-	 * However, send and receive are in a single shared 32 bits register,
-	 * so we need to shift and/or mask the message half before decoding
-	 * it and after encoding it. Which one to shift depends on the
-	 * direction.
-	 */
+	 
 
 	int_bit = gen2_csr_get_int_bit(local_offset);
 
@@ -201,16 +188,14 @@ static int adf_gen2_pfvf_send(struct adf_accel_dev *accel_dev,
 	if (unlikely(!csr_msg))
 		return -EINVAL;
 
-	/* Prepare for CSR format, shifting the wire message in place and
-	 * setting the in use pattern
-	 */
+	 
 	csr_msg = gen2_csr_msg_to_position(csr_msg, local_offset);
 	gen2_csr_set_in_use(&csr_msg, remote_offset);
 
 	mutex_lock(lock);
 
 start:
-	/* Check if the PFVF CSR is in use by remote function */
+	 
 	csr_val = ADF_CSR_RD(pmisc_addr, pfvf_offset);
 	if (gen2_csr_is_in_use(csr_val, local_offset)) {
 		dev_dbg(&GET_DEV(accel_dev),
@@ -218,10 +203,10 @@ start:
 		goto retry;
 	}
 
-	/* Attempt to get ownership of the PFVF CSR */
+	 
 	ADF_CSR_WR(pmisc_addr, pfvf_offset, csr_msg | int_bit);
 
-	/* Wait for confirmation from remote func it received the message */
+	 
 	ret = read_poll_timeout(ADF_CSR_RD, csr_val, !(csr_val & int_bit),
 				ADF_PFVF_MSG_ACK_DELAY_US,
 				ADF_PFVF_MSG_ACK_MAX_DELAY_US,
@@ -231,23 +216,15 @@ start:
 		csr_val &= ~int_bit;
 	}
 
-	/* For fire-and-forget notifications, the receiver does not clear
-	 * the in-use pattern. This is used to detect collisions.
-	 */
+	 
 	if (params->is_notification_message(msg.type) && csr_val != csr_msg) {
-		/* Collision must have overwritten the message */
+		 
 		dev_err(&GET_DEV(accel_dev),
 			"Collision on notification - PFVF CSR overwritten by remote function\n");
 		goto retry;
 	}
 
-	/* If the far side did not clear the in-use pattern it is either
-	 * 1) Notification - message left intact to detect collision
-	 * 2) Older protocol (compatibility version < 3) on the far side
-	 *    where the sender is responsible for clearing the in-use
-	 *    pattern after the received has acknowledged receipt.
-	 * In either case, clear the in-use pattern now.
-	 */
+	 
 	if (gen2_csr_is_in_use(csr_val, remote_offset)) {
 		gen2_csr_clear_in_use(&csr_val, remote_offset);
 		ADF_CSR_WR(pmisc_addr, pfvf_offset, csr_val);
@@ -281,7 +258,7 @@ static struct pfvf_message adf_gen2_pfvf_recv(struct adf_accel_dev *accel_dev,
 
 	int_bit = gen2_csr_get_int_bit(local_offset);
 
-	/* Read message */
+	 
 	csr_val = ADF_CSR_RD(pmisc_addr, pfvf_offset);
 	if (!(csr_val & int_bit)) {
 		dev_info(&GET_DEV(accel_dev),
@@ -289,30 +266,26 @@ static struct pfvf_message adf_gen2_pfvf_recv(struct adf_accel_dev *accel_dev,
 		return msg;
 	}
 
-	/* Extract the message from the CSR */
+	 
 	csr_msg = gen2_csr_msg_from_position(csr_val, local_offset);
 
-	/* Ignore legacy non-system (non-kernel) messages */
+	 
 	if (unlikely(is_legacy_user_pfvf_message(csr_msg))) {
 		dev_dbg(&GET_DEV(accel_dev),
 			"Ignored non-system message (0x%.8x);\n", csr_val);
-		/* Because this must be a legacy message, the far side
-		 * must clear the in-use pattern, so don't do it.
-		 */
+		 
 		return msg;
 	}
 
-	/* Return the pfvf_message format */
+	 
 	msg = adf_pfvf_message_of(accel_dev, csr_msg, &csr_gen2_fmt);
 
-	/* The in-use pattern is not cleared for notifications (so that
-	 * it can be used for collision detection) or older implementations
-	 */
+	 
 	if (params->compat_ver >= ADF_PFVF_COMPAT_FAST_ACK &&
 	    !params->is_notification_message(msg.type))
 		gen2_csr_clear_in_use(&csr_val, remote_offset);
 
-	/* To ACK, clear the INT bit */
+	 
 	csr_val &= ~int_bit;
 	ADF_CSR_WR(pmisc_addr, pfvf_offset, csr_val);
 

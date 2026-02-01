@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clk driver for NXP LPC18xx/LPC43xx Clock Control Unit (CCU)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -16,13 +12,13 @@
 
 #include <dt-bindings/clock/lpc18xx-ccu.h>
 
-/* Bit defines for CCU branch configuration register */
+ 
 #define LPC18XX_CCU_RUN		BIT(0)
 #define LPC18XX_CCU_AUTO	BIT(1)
 #define LPC18XX_CCU_DIV		BIT(5)
 #define LPC18XX_CCU_DIVSTAT	BIT(27)
 
-/* CCU branch feature bits */
+ 
 #define CCU_BRANCH_IS_BUS	BIT(0)
 #define CCU_BRANCH_HAVE_DIV2	BIT(1)
 
@@ -136,10 +132,7 @@ static int lpc18xx_ccu_gate_endisable(struct clk_hw *hw, bool enable)
 	struct clk_gate *gate = to_clk_gate(hw);
 	u32 val;
 
-	/*
-	 * Divider field is write only, so divider stat field must
-	 * be read so divider field can be set accordingly.
-	 */
+	 
 	val = readl(gate->reg);
 	if (val & LPC18XX_CCU_DIVSTAT)
 		val |= LPC18XX_CCU_DIV;
@@ -147,11 +140,7 @@ static int lpc18xx_ccu_gate_endisable(struct clk_hw *hw, bool enable)
 	if (enable) {
 		val |= LPC18XX_CCU_RUN;
 	} else {
-		/*
-		 * To safely disable a branch clock a squence of two separate
-		 * writes must be used. First write should set the AUTO bit
-		 * and the next write should clear the RUN bit.
-		 */
+		 
 		val |= LPC18XX_CCU_AUTO;
 		writel(val, gate->reg);
 
@@ -177,12 +166,7 @@ static int lpc18xx_ccu_gate_is_enabled(struct clk_hw *hw)
 {
 	const struct clk_hw *parent;
 
-	/*
-	 * The branch clock registers are only accessible
-	 * if the base (parent) clock is enabled. Register
-	 * access with a disabled base clock will hang the
-	 * system.
-	 */
+	 
 	parent = clk_hw_get_parent(hw);
 	if (!parent)
 		return 0;
@@ -234,7 +218,7 @@ static void lpc18xx_ccu_register_branch_gate_div(struct lpc18xx_clk_branch *bran
 		return;
 	}
 
-	/* Grab essential branch clocks for CPU and SDRAM */
+	 
 	switch (branch->offset) {
 	case CLK_CPU_EMC:
 	case CLK_CPU_CORE:

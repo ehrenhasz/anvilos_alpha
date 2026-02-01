@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Routine for IRQ handling from GF1/InterWave chip
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <sound/core.h>
 #include <sound/info.h>
@@ -26,7 +23,7 @@ __again:
 	if (status == 0)
 		return IRQ_RETVAL(handled);
 	handled = 1;
-	/* snd_printk(KERN_DEBUG "IRQ: status = 0x%x\n", status); */
+	 
 	if (status & 0x02) {
 		STAT_ADD(gus->gf1.interrupt_stat_midi_in);
 		if (gus->gf1.interrupt_handler_midi_in)
@@ -47,8 +44,8 @@ __again:
 			voice = voice_status & 0x1f;
 			_current_ = 1 << voice;
 			if (already & _current_)
-				continue;	/* multi request */
-			already |= _current_;	/* mark request */
+				continue;	 
+			already |= _current_;	 
 #if 0
 			printk(KERN_DEBUG "voice = %i, voice_status = 0x%x, "
 			       "voice_verify = %i\n",
@@ -56,11 +53,11 @@ __again:
 #endif
 			pvoice = &gus->gf1.voices[voice]; 
 			if (pvoice->use) {
-				if (!(voice_status & 0x80)) {	/* voice position IRQ */
+				if (!(voice_status & 0x80)) {	 
 					STAT_ADD(pvoice->interrupt_stat_wave);
 					pvoice->handler_wave(gus, pvoice);
 				}
-				if (!(voice_status & 0x40)) {	/* volume ramp IRQ */
+				if (!(voice_status & 0x40)) {	 
 					STAT_ADD(pvoice->interrupt_stat_volume);
 					pvoice->handler_volume(gus, pvoice);
 				}

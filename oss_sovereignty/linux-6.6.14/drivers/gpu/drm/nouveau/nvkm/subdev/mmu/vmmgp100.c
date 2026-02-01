@@ -1,24 +1,4 @@
-/*
- * Copyright 2017 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "vmm.h"
 
 #include <core/client.h>
@@ -86,10 +66,10 @@ gp100_vmm_pgt_pfn(struct nvkm_vmm *vmm, struct nvkm_mmu_pt *pt,
 			continue;
 
 		if (!(*map->pfn & NVKM_VMM_PFN_W))
-			data |= BIT_ULL(6); /* RO. */
+			data |= BIT_ULL(6);  
 
 		if (!(*map->pfn & NVKM_VMM_PFN_A))
-			data |= BIT_ULL(7); /* Atomic disable. */
+			data |= BIT_ULL(7);  
 
 		if (!(*map->pfn & NVKM_VMM_PFN_VRAM)) {
 			addr = *map->pfn >> NVKM_VMM_PFN_ADDR_SHIFT;
@@ -97,13 +77,13 @@ gp100_vmm_pgt_pfn(struct nvkm_vmm *vmm, struct nvkm_mmu_pt *pt,
 					    PAGE_SIZE, DMA_BIDIRECTIONAL);
 			if (!WARN_ON(dma_mapping_error(dev, addr))) {
 				data |= addr >> 4;
-				data |= 2ULL << 1; /* SYSTEM_COHERENT_MEMORY. */
-				data |= BIT_ULL(3); /* VOL. */
-				data |= BIT_ULL(0); /* VALID. */
+				data |= 2ULL << 1;  
+				data |= BIT_ULL(3);  
+				data |= BIT_ULL(0);  
 			}
 		} else {
 			data |= (*map->pfn & NVKM_VMM_PFN_ADDR) >> 4;
-			data |= BIT_ULL(0); /* VALID. */
+			data |= BIT_ULL(0);  
 		}
 
 		VMM_WO064(pt, vmm, ptei++ * 8, data);
@@ -162,8 +142,8 @@ static void
 gp100_vmm_pgt_sparse(struct nvkm_vmm *vmm,
 		     struct nvkm_mmu_pt *pt, u32 ptei, u32 ptes)
 {
-	/* VALID_FALSE + VOL tells the MMU to treat the PTE as sparse. */
-	VMM_FO064(pt, vmm, ptei * 8, BIT_ULL(3) /* VOL. */, ptes);
+	 
+	VMM_FO064(pt, vmm, ptei * 8, BIT_ULL(3)  , ptes);
 }
 
 static const struct nvkm_vmm_desc_func
@@ -182,8 +162,8 @@ static void
 gp100_vmm_lpt_invalid(struct nvkm_vmm *vmm,
 		      struct nvkm_mmu_pt *pt, u32 ptei, u32 ptes)
 {
-	/* VALID_FALSE + PRIV tells the MMU to ignore corresponding SPTEs. */
-	VMM_FO064(pt, vmm, ptei * 8, BIT_ULL(5) /* PRIV. */, ptes);
+	 
+	VMM_FO064(pt, vmm, ptei * 8, BIT_ULL(5)  , ptes);
 }
 
 static const struct nvkm_vmm_desc_func
@@ -221,7 +201,7 @@ gp100_vmm_pde(struct nvkm_mmu_pt *pt, u64 *data)
 	switch (nvkm_memory_target(pt->memory)) {
 	case NVKM_MEM_TARGET_VRAM: *data |= 1ULL << 1; break;
 	case NVKM_MEM_TARGET_HOST: *data |= 2ULL << 1;
-		*data |= BIT_ULL(3); /* VOL. */
+		*data |= BIT_ULL(3);  
 		break;
 	case NVKM_MEM_TARGET_NCOH: *data |= 3ULL << 1; break;
 	default:
@@ -253,8 +233,8 @@ static void
 gp100_vmm_pd0_sparse(struct nvkm_vmm *vmm,
 		     struct nvkm_mmu_pt *pt, u32 pdei, u32 pdes)
 {
-	/* VALID_FALSE + VOL_BIG tells the MMU to treat the PDE as sparse. */
-	VMM_FO128(pt, vmm, pdei * 0x10, BIT_ULL(3) /* VOL_BIG. */, 0ULL, pdes);
+	 
+	VMM_FO128(pt, vmm, pdei * 0x10, BIT_ULL(3)  , 0ULL, pdes);
 }
 
 static void
@@ -323,10 +303,10 @@ gp100_vmm_pd0_pfn(struct nvkm_vmm *vmm, struct nvkm_mmu_pt *pt,
 			continue;
 
 		if (!(*map->pfn & NVKM_VMM_PFN_W))
-			data |= BIT_ULL(6); /* RO. */
+			data |= BIT_ULL(6);  
 
 		if (!(*map->pfn & NVKM_VMM_PFN_A))
-			data |= BIT_ULL(7); /* Atomic disable. */
+			data |= BIT_ULL(7);  
 
 		if (!(*map->pfn & NVKM_VMM_PFN_VRAM)) {
 			addr = *map->pfn >> NVKM_VMM_PFN_ADDR_SHIFT;
@@ -334,13 +314,13 @@ gp100_vmm_pd0_pfn(struct nvkm_vmm *vmm, struct nvkm_mmu_pt *pt,
 					    1UL << 21, DMA_BIDIRECTIONAL);
 			if (!WARN_ON(dma_mapping_error(dev, addr))) {
 				data |= addr >> 4;
-				data |= 2ULL << 1; /* SYSTEM_COHERENT_MEMORY. */
-				data |= BIT_ULL(3); /* VOL. */
-				data |= BIT_ULL(0); /* VALID. */
+				data |= 2ULL << 1;  
+				data |= BIT_ULL(3);  
+				data |= BIT_ULL(0);  
 			}
 		} else {
 			data |= (*map->pfn & NVKM_VMM_PFN_ADDR) >> 4;
-			data |= BIT_ULL(0); /* VALID. */
+			data |= BIT_ULL(0);  
 		}
 
 		VMM_WO064(pt, vmm, ptei++ * 16, data);
@@ -495,9 +475,7 @@ gp100_vmm_fault_cancel(struct nvkm_vmm *vmm, void *argv, u32 argc)
 	if ((ret = nvif_unpack(ret, &argv, &argc, args->v0, 0, 0, false)))
 		return ret;
 
-	/* Translate MaxwellFaultBufferA instance pointer to the same
-	 * format as the NV_GR_FECS_CURRENT_CTX register.
-	 */
+	 
 	aper = (args->v0.inst >> 8) & 3;
 	args->v0.inst >>= 12;
 	args->v0.inst |= aper << 28;
@@ -506,7 +484,7 @@ gp100_vmm_fault_cancel(struct nvkm_vmm *vmm, void *argv, u32 argc)
 	if (!WARN_ON(nvkm_gr_ctxsw_pause(device))) {
 		if (nvkm_gr_ctxsw_inst(device) == args->v0.inst) {
 			gf100_vmm_invalidate(vmm, 0x0000001b
-					     /* CANCEL_TARGETED. */ |
+					       |
 					     (args->v0.hub    << 20) |
 					     (args->v0.gpc    << 15) |
 					     (args->v0.client << 9));
@@ -526,7 +504,7 @@ gp100_vmm_fault_replay(struct nvkm_vmm *vmm, void *argv, u32 argc)
 	int ret = -ENOSYS;
 
 	if (!(ret = nvif_unvers(ret, &argv, &argc, args->vn))) {
-		gf100_vmm_invalidate(vmm, 0x0000000b); /* REPLAY_GLOBAL. */
+		gf100_vmm_invalidate(vmm, 0x0000000b);  
 	}
 
 	return ret;
@@ -558,20 +536,20 @@ gp100_vmm_invalidate_pdb(struct nvkm_vmm *vmm, u64 addr)
 void
 gp100_vmm_flush(struct nvkm_vmm *vmm, int depth)
 {
-	u32 type = (5 /* CACHE_LEVEL_UP_TO_PDE3 */ - depth) << 24;
+	u32 type = (5   - depth) << 24;
 	if (atomic_read(&vmm->engref[NVKM_SUBDEV_BAR]))
-		type |= 0x00000004; /* HUB_ONLY */
-	type |= 0x00000001; /* PAGE_ALL */
+		type |= 0x00000004;  
+	type |= 0x00000001;  
 	gf100_vmm_invalidate(vmm, type);
 }
 
 int
 gp100_vmm_join(struct nvkm_vmm *vmm, struct nvkm_memory *inst)
 {
-	u64 base = BIT_ULL(10) /* VER2 */ | BIT_ULL(11) /* 64KiB */;
+	u64 base = BIT_ULL(10)   | BIT_ULL(11)  ;
 	if (vmm->replay) {
-		base |= BIT_ULL(4); /* FAULT_REPLAY_TEX */
-		base |= BIT_ULL(5); /* FAULT_REPLAY_GCC */
+		base |= BIT_ULL(4);  
+		base |= BIT_ULL(5);  
 	}
 	return gf100_vmm_join_(vmm, inst, base);
 }

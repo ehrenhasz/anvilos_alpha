@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * da7218.c - DA7218 ALSA SoC Codec Driver
- *
- * Copyright (c) 2015 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -29,11 +23,9 @@
 #include "da7218.h"
 
 
-/*
- * TLVs and Enums
- */
+ 
 
-/* Input TLVs */
+ 
 static const DECLARE_TLV_DB_SCALE(da7218_mic_gain_tlv, -600, 600, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_mixin_gain_tlv, -450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_in_dig_gain_tlv, -8325, 75, 0);
@@ -43,10 +35,10 @@ static const DECLARE_TLV_DB_SCALE(da7218_alc_threshold_tlv, -9450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_alc_gain_tlv, 0, 600, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_alc_ana_gain_tlv, 0, 600, 0);
 
-/* Input/Output TLVs */
+ 
 static const DECLARE_TLV_DB_SCALE(da7218_dmix_gain_tlv, -4200, 150, 0);
 
-/* Output TLVs */
+ 
 static const DECLARE_TLV_DB_SCALE(da7218_dgs_trigger_tlv, -9450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_dgs_anticlip_tlv, -4200, 600, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_dgs_signal_tlv, -9000, 600, 0);
@@ -56,7 +48,7 @@ static const DECLARE_TLV_DB_SCALE(da7218_dac_ng_threshold_tlv, -10200, 600, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_mixout_gain_tlv, -100, 50, 0);
 static const DECLARE_TLV_DB_SCALE(da7218_hp_gain_tlv, -5700, 150, 0);
 
-/* Input Enums */
+ 
 static const char * const da7218_alc_attack_rate_txt[] = {
 	"7.33/fs", "14.66/fs", "29.32/fs", "58.64/fs", "117.3/fs", "234.6/fs",
 	"469.1/fs", "938.2/fs", "1876/fs", "3753/fs", "7506/fs", "15012/fs",
@@ -108,7 +100,7 @@ static const struct soc_enum da7218_integ_release_rate =
 	SOC_ENUM_SINGLE(DA7218_ENV_TRACK_CTRL, DA7218_INTEG_RELEASE_SHIFT,
 			DA7218_INTEG_MAX, da7218_integ_rate_txt);
 
-/* Input/Output Enums */
+ 
 static const char * const da7218_gain_ramp_rate_txt[] = {
 	"Nominal Rate * 8", "Nominal Rate", "Nominal Rate / 8",
 	"Nominal Rate / 16",
@@ -205,7 +197,7 @@ static const struct soc_enum da7218_tonegen_swg_sel =
 	SOC_ENUM_SINGLE(DA7218_TONE_GEN_CFG2, DA7218_SWG_SEL_SHIFT,
 			DA7218_SWG_SEL_MAX, da7218_tonegen_swg_sel_txt);
 
-/* Output Enums */
+ 
 static const char * const da7218_dgs_rise_coeff_txt[] = {
 	"1/1", "1/16", "1/64", "1/256", "1/1024", "1/4096", "1/16384",
 };
@@ -282,11 +274,9 @@ static const struct soc_enum da7218_cp_tau_delay =
 	SOC_ENUM_SINGLE(DA7218_CP_DELAY, DA7218_CP_TAU_DELAY_SHIFT,
 			DA7218_CP_TAU_DELAY_MAX, da7218_cp_tau_delay_txt);
 
-/*
- * Control Functions
- */
+ 
 
-/* ALC */
+ 
 static void da7218_alc_calib(struct snd_soc_component *component)
 {
 	u8 mic_1_ctrl, mic_2_ctrl;
@@ -297,25 +287,25 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 	int i = 0;
 	bool calibrated = false;
 
-	/* Save current state of MIC control registers */
+	 
 	mic_1_ctrl = snd_soc_component_read(component, DA7218_MIC_1_CTRL);
 	mic_2_ctrl = snd_soc_component_read(component, DA7218_MIC_2_CTRL);
 
-	/* Save current state of input mixer control registers */
+	 
 	mixin_1_ctrl = snd_soc_component_read(component, DA7218_MIXIN_1_CTRL);
 	mixin_2_ctrl = snd_soc_component_read(component, DA7218_MIXIN_2_CTRL);
 
-	/* Save current state of input filter control registers */
+	 
 	in_1l_filt_ctrl = snd_soc_component_read(component, DA7218_IN_1L_FILTER_CTRL);
 	in_1r_filt_ctrl = snd_soc_component_read(component, DA7218_IN_1R_FILTER_CTRL);
 	in_2l_filt_ctrl = snd_soc_component_read(component, DA7218_IN_2L_FILTER_CTRL);
 	in_2r_filt_ctrl = snd_soc_component_read(component, DA7218_IN_2R_FILTER_CTRL);
 
-	/* Save current state of input HPF control registers */
+	 
 	in_1_hpf_ctrl = snd_soc_component_read(component, DA7218_IN_1_HPF_FILTER_CTRL);
 	in_2_hpf_ctrl = snd_soc_component_read(component, DA7218_IN_2_HPF_FILTER_CTRL);
 
-	/* Enable then Mute MIC PGAs */
+	 
 	snd_soc_component_update_bits(component, DA7218_MIC_1_CTRL, DA7218_MIC_1_AMP_EN_MASK,
 			    DA7218_MIC_1_AMP_EN_MASK);
 	snd_soc_component_update_bits(component, DA7218_MIC_2_CTRL, DA7218_MIC_2_AMP_EN_MASK,
@@ -327,7 +317,7 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 			    DA7218_MIC_2_AMP_MUTE_EN_MASK,
 			    DA7218_MIC_2_AMP_MUTE_EN_MASK);
 
-	/* Enable input mixers unmuted */
+	 
 	snd_soc_component_update_bits(component, DA7218_MIXIN_1_CTRL,
 			    DA7218_MIXIN_1_AMP_EN_MASK |
 			    DA7218_MIXIN_1_AMP_MUTE_EN_MASK,
@@ -337,7 +327,7 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 			    DA7218_MIXIN_2_AMP_MUTE_EN_MASK,
 			    DA7218_MIXIN_2_AMP_EN_MASK);
 
-	/* Enable input filters unmuted */
+	 
 	snd_soc_component_update_bits(component, DA7218_IN_1L_FILTER_CTRL,
 			    DA7218_IN_1L_FILTER_EN_MASK |
 			    DA7218_IN_1L_MUTE_EN_MASK,
@@ -355,17 +345,13 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 			    DA7218_IN_2R_MUTE_EN_MASK,
 			    DA7218_IN_2R_FILTER_EN_MASK);
 
-	/*
-	 * Make sure input HPFs voice mode is disabled, otherwise for sampling
-	 * rates above 32KHz the ADC signals will be stopped and will cause
-	 * calibration to lock up.
-	 */
+	 
 	snd_soc_component_update_bits(component, DA7218_IN_1_HPF_FILTER_CTRL,
 			    DA7218_IN_1_VOICE_EN_MASK, 0);
 	snd_soc_component_update_bits(component, DA7218_IN_2_HPF_FILTER_CTRL,
 			    DA7218_IN_2_VOICE_EN_MASK, 0);
 
-	/* Perform auto calibration */
+	 
 	snd_soc_component_update_bits(component, DA7218_CALIB_CTRL, DA7218_CALIB_AUTO_EN_MASK,
 			    DA7218_CALIB_AUTO_EN_MASK);
 	do {
@@ -380,7 +366,7 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 
 	} while ((i < DA7218_ALC_CALIB_MAX_TRIES) && (!calibrated));
 
-	/* If auto calibration fails, disable DC offset, hybrid ALC */
+	 
 	if ((!calibrated) || (calib_ctrl & DA7218_CALIB_OVERFLOW_MASK)) {
 		dev_warn(component->dev,
 			 "ALC auto calibration failed - %s\n",
@@ -391,33 +377,33 @@ static void da7218_alc_calib(struct snd_soc_component *component)
 				    DA7218_ALC_SYNC_MODE_MASK, 0);
 
 	} else {
-		/* Enable DC offset cancellation */
+		 
 		snd_soc_component_update_bits(component, DA7218_CALIB_CTRL,
 				    DA7218_CALIB_OFFSET_EN_MASK,
 				    DA7218_CALIB_OFFSET_EN_MASK);
 
-		/* Enable ALC hybrid mode */
+		 
 		snd_soc_component_update_bits(component, DA7218_ALC_CTRL1,
 				    DA7218_ALC_SYNC_MODE_MASK,
 				    DA7218_ALC_SYNC_MODE_CH1 |
 				    DA7218_ALC_SYNC_MODE_CH2);
 	}
 
-	/* Restore input HPF control registers to original states */
+	 
 	snd_soc_component_write(component, DA7218_IN_1_HPF_FILTER_CTRL, in_1_hpf_ctrl);
 	snd_soc_component_write(component, DA7218_IN_2_HPF_FILTER_CTRL, in_2_hpf_ctrl);
 
-	/* Restore input filter control registers to original states */
+	 
 	snd_soc_component_write(component, DA7218_IN_1L_FILTER_CTRL, in_1l_filt_ctrl);
 	snd_soc_component_write(component, DA7218_IN_1R_FILTER_CTRL, in_1r_filt_ctrl);
 	snd_soc_component_write(component, DA7218_IN_2L_FILTER_CTRL, in_2l_filt_ctrl);
 	snd_soc_component_write(component, DA7218_IN_2R_FILTER_CTRL, in_2r_filt_ctrl);
 
-	/* Restore input mixer control registers to original state */
+	 
 	snd_soc_component_write(component, DA7218_MIXIN_1_CTRL, mixin_1_ctrl);
 	snd_soc_component_write(component, DA7218_MIXIN_2_CTRL, mixin_2_ctrl);
 
-	/* Restore MIC control registers to original states */
+	 
 	snd_soc_component_write(component, DA7218_MIC_1_CTRL, mic_1_ctrl);
 	snd_soc_component_write(component, DA7218_MIC_2_CTRL, mic_2_ctrl);
 }
@@ -431,10 +417,7 @@ static int da7218_mixin_gain_put(struct snd_kcontrol *kcontrol,
 
 	ret = snd_soc_put_volsw(kcontrol, ucontrol);
 
-	/*
-	 * If ALC in operation and value of control has been updated,
-	 * make sure calibrated offsets are updated.
-	 */
+	 
 	if ((ret == 1) && (da7218->alc_en))
 		da7218_alc_calib(component);
 
@@ -454,18 +437,18 @@ static int da7218_alc_sw_put(struct snd_kcontrol *kcontrol,
 	unsigned int rshift = mc->rshift;
 	unsigned int mask = (mc->max << lshift) | (mc->max << rshift);
 
-	/* Force ALC offset calibration if enabling ALC */
+	 
 	if ((lvalue || rvalue) && (!da7218->alc_en))
 		da7218_alc_calib(component);
 
-	/* Update bits to detail which channels are enabled/disabled */
+	 
 	da7218->alc_en &= ~mask;
 	da7218->alc_en |= (lvalue << lshift) | (rvalue << rshift);
 
 	return snd_soc_put_volsw(kcontrol, ucontrol);
 }
 
-/* ToneGen */
+ 
 static int da7218_tonegen_freq_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
@@ -477,10 +460,7 @@ static int da7218_tonegen_freq_get(struct snd_kcontrol *kcontrol,
 	u16 val;
 	int ret;
 
-	/*
-	 * Frequency value spans two 8-bit registers, lower then upper byte.
-	 * Therefore we need to convert to host endianness here.
-	 */
+	 
 	ret = regmap_raw_read(da7218->regmap, reg, &val, 2);
 	if (ret)
 		return ret;
@@ -500,11 +480,7 @@ static int da7218_tonegen_freq_put(struct snd_kcontrol *kcontrol,
 	unsigned int reg = mixer_ctrl->reg;
 	u16 val;
 
-	/*
-	 * Frequency value spans two 8-bit registers, lower then upper byte.
-	 * Therefore we need to convert to little endian here to align with
-	 * HW registers.
-	 */
+	 
 	val = cpu_to_le16(ucontrol->value.integer.value[0]);
 
 	return regmap_raw_write(da7218->regmap, reg, &val, 2);
@@ -526,13 +502,7 @@ static int da7218_mic_lvl_det_sw_put(struct snd_kcontrol *kcontrol,
 	da7218->mic_lvl_det_en &= ~mask;
 	da7218->mic_lvl_det_en |= (lvalue << lshift) | (rvalue << rshift);
 
-	/*
-	 * Here we only enable the feature on paths which are already
-	 * powered. If a channel is enabled here for level detect, but that path
-	 * isn't powered, then the channel will actually be enabled when we do
-	 * power the path (IN_FILTER widget events). This handling avoids
-	 * unwanted level detect events.
-	 */
+	 
 	return snd_soc_component_write(component, mixer_ctrl->reg,
 			     (da7218->in_filt_en & da7218->mic_lvl_det_en));
 }
@@ -565,7 +535,7 @@ static int da7218_biquad_coeff_get(struct snd_kcontrol *kcontrol,
 	struct soc_bytes_ext *bytes_ext =
 		(struct soc_bytes_ext *) kcontrol->private_value;
 
-	/* Determine which BiQuads we're setting based on size of config data */
+	 
 	switch (bytes_ext->max) {
 	case DA7218_OUT_1_BIQ_5STAGE_CFG_SIZE:
 		memcpy(ucontrol->value.bytes.data, da7218->biq_5stage_coeff,
@@ -593,10 +563,7 @@ static int da7218_biquad_coeff_put(struct snd_kcontrol *kcontrol,
 	u8 cfg[DA7218_BIQ_CFG_SIZE];
 	int i;
 
-	/*
-	 * Determine which BiQuads we're setting based on size of config data,
-	 * and stored the data for use by get function.
-	 */
+	 
 	switch (bytes_ext->max) {
 	case DA7218_OUT_1_BIQ_5STAGE_CFG_SIZE:
 		reg = DA7218_OUT_1_BIQ_5STAGE_DATA;
@@ -612,7 +579,7 @@ static int da7218_biquad_coeff_put(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 	}
 
-	/* Make sure at least out filter1 enabled to allow programming */
+	 
 	out_filt1l = snd_soc_component_read(component, DA7218_OUT_1L_FILTER_CTRL);
 	snd_soc_component_write(component, DA7218_OUT_1L_FILTER_CTRL,
 		      out_filt1l | DA7218_OUT_1L_FILTER_EN_MASK);
@@ -623,19 +590,17 @@ static int da7218_biquad_coeff_put(struct snd_kcontrol *kcontrol,
 		regmap_raw_write(da7218->regmap, reg, cfg, DA7218_BIQ_CFG_SIZE);
 	}
 
-	/* Restore filter to previous setting */
+	 
 	snd_soc_component_write(component, DA7218_OUT_1L_FILTER_CTRL, out_filt1l);
 
 	return 0;
 }
 
 
-/*
- * KControls
- */
+ 
 
 static const struct snd_kcontrol_new da7218_snd_controls[] = {
-	/* Mics */
+	 
 	SOC_SINGLE_TLV("Mic1 Volume", DA7218_MIC_1_GAIN,
 		       DA7218_MIC_1_AMP_GAIN_SHIFT, DA7218_MIC_AMP_GAIN_MAX,
 		       DA7218_NO_INVERT, da7218_mic_gain_tlv),
@@ -649,7 +614,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_MIC_2_AMP_MUTE_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_INVERT),
 
-	/* Mixer Input */
+	 
 	SOC_SINGLE_EXT_TLV("Mixin1 Volume", DA7218_MIXIN_1_GAIN,
 			   DA7218_MIXIN_1_AMP_GAIN_SHIFT,
 			   DA7218_MIXIN_AMP_GAIN_MAX, DA7218_NO_INVERT,
@@ -679,7 +644,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_MIXIN_2_AMP_ZC_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
 
-	/* ADCs */
+	 
 	SOC_SINGLE("ADC1 AAF Switch", DA7218_ADC_1_CTRL,
 		   DA7218_ADC_1_AAF_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
@@ -690,7 +655,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_ADC_LP_MODE_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
 
-	/* Input Filters */
+	 
 	SOC_SINGLE_TLV("In Filter1L Volume", DA7218_IN_1L_GAIN,
 		       DA7218_IN_1L_DIGITAL_GAIN_SHIFT,
 		       DA7218_IN_DIGITAL_GAIN_MAX, DA7218_NO_INVERT,
@@ -732,7 +697,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_IN_2R_FILTER_CTRL, DA7218_IN_2R_RAMP_EN_SHIFT,
 		   DA7218_SWITCH_EN_MAX, DA7218_NO_INVERT),
 
-	/* AGS */
+	 
 	SOC_SINGLE_TLV("AGS Trigger", DA7218_AGS_TRIGGER,
 		       DA7218_AGS_TRIGGER_SHIFT, DA7218_AGS_TRIGGER_MAX,
 		       DA7218_INVERT, da7218_ags_trigger_tlv),
@@ -749,7 +714,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_AGS_ENABLE_CHAN2_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
 
-	/* ALC */
+	 
 	SOC_ENUM("ALC Attack Rate", da7218_alc_attack_rate),
 	SOC_ENUM("ALC Release Rate", da7218_alc_release_rate),
 	SOC_ENUM("ALC Hold Time", da7218_alc_hold_time),
@@ -789,11 +754,11 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		       DA7218_SWITCH_EN_MAX, DA7218_NO_INVERT,
 		       snd_soc_get_volsw, da7218_alc_sw_put),
 
-	/* Envelope Tracking */
+	 
 	SOC_ENUM("Envelope Tracking Attack Rate", da7218_integ_attack_rate),
 	SOC_ENUM("Envelope Tracking Release Rate", da7218_integ_release_rate),
 
-	/* Input High-Pass Filters */
+	 
 	SOC_ENUM("In Filter1 HPF Mode", da7218_in1_hpf_mode),
 	SOC_ENUM("In Filter1 HPF Corner Audio", da7218_in1_audio_hpf_corner),
 	SOC_ENUM("In Filter1 HPF Corner Voice", da7218_in1_voice_hpf_corner),
@@ -801,7 +766,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 	SOC_ENUM("In Filter2 HPF Corner Audio", da7218_in2_audio_hpf_corner),
 	SOC_ENUM("In Filter2 HPF Corner Voice", da7218_in2_voice_hpf_corner),
 
-	/* Mic Level Detect */
+	 
 	SOC_DOUBLE_EXT("Mic Level Detect Channel1 Switch", DA7218_LVL_DET_CTRL,
 		       DA7218_LVL_DET_EN_CHAN1L_SHIFT,
 		       DA7218_LVL_DET_EN_CHAN1R_SHIFT, DA7218_SWITCH_EN_MAX,
@@ -816,7 +781,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_LVL_DET_LEVEL_SHIFT, DA7218_LVL_DET_LEVEL_MAX,
 		   DA7218_NO_INVERT),
 
-	/* Digital Mixer (Input) */
+	 
 	SOC_SINGLE_TLV("DMix In Filter1L Out1 DAIL Volume",
 		       DA7218_DMIX_OUTDAI_1L_INFILT_1L_GAIN,
 		       DA7218_OUTDAI_1L_INFILT_1L_GAIN_SHIFT,
@@ -964,7 +929,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		       DA7218_DMIX_GAIN_MAX, DA7218_NO_INVERT,
 		       da7218_dmix_gain_tlv),
 
-	/* Digital Mixer (Output) */
+	 
 	SOC_SINGLE_TLV("DMix In Filter1L Out FilterL Volume",
 		       DA7218_DMIX_OUTFILT_1L_INFILT_1L_GAIN,
 		       DA7218_OUTFILT_1L_INFILT_1L_GAIN_SHIFT,
@@ -1042,7 +1007,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		       DA7218_DMIX_GAIN_MAX, DA7218_NO_INVERT,
 		       da7218_dmix_gain_tlv),
 
-	/* Sidetone Filter */
+	 
 	SND_SOC_BYTES_EXT("Sidetone BiQuad Coefficients",
 			  DA7218_SIDETONE_BIQ_3STAGE_CFG_SIZE,
 			  da7218_biquad_coeff_get, da7218_biquad_coeff_put),
@@ -1053,7 +1018,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_SIDETONE_MUTE_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_INVERT),
 
-	/* Tone Generator */
+	 
 	SOC_ENUM("ToneGen DTMF Key", da7218_tonegen_dtmf_key),
 	SOC_SINGLE("ToneGen DTMF Switch", DA7218_TONE_GEN_CFG1,
 		   DA7218_DTMF_EN_SHIFT, DA7218_SWITCH_EN_MAX,
@@ -1072,10 +1037,10 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_BEEP_OFF_PER_SHIFT, DA7218_BEEP_ON_OFF_MAX,
 		   DA7218_NO_INVERT),
 
-	/* Gain ramping */
+	 
 	SOC_ENUM("Gain Ramp Rate", da7218_gain_ramp_rate),
 
-	/* DGS */
+	 
 	SOC_SINGLE_TLV("DGS Trigger", DA7218_DGS_TRIGGER,
 		       DA7218_DGS_TRIGGER_LVL_SHIFT, DA7218_DGS_TRIGGER_MAX,
 		       DA7218_INVERT, da7218_dgs_trigger_tlv),
@@ -1110,12 +1075,12 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_DGS_ENABLE_R_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
 
-	/* Output High-Pass Filter */
+	 
 	SOC_ENUM("Out Filter HPF Mode", da7218_out1_hpf_mode),
 	SOC_ENUM("Out Filter HPF Corner Audio", da7218_out1_audio_hpf_corner),
 	SOC_ENUM("Out Filter HPF Corner Voice", da7218_out1_voice_hpf_corner),
 
-	/* 5-Band Equaliser */
+	 
 	SOC_SINGLE_TLV("Out EQ Band1 Volume", DA7218_OUT_1_EQ_12_FILTER_CTRL,
 		       DA7218_OUT_1_EQ_BAND1_SHIFT, DA7218_OUT_EQ_BAND_MAX,
 		       DA7218_NO_INVERT, da7218_out_eq_band_tlv),
@@ -1135,7 +1100,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_OUT_1_EQ_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_NO_INVERT),
 
-	/* BiQuad Filters */
+	 
 	SND_SOC_BYTES_EXT("BiQuad Coefficients",
 			  DA7218_OUT_1_BIQ_5STAGE_CFG_SIZE,
 			  da7218_biquad_coeff_get, da7218_biquad_coeff_put),
@@ -1143,7 +1108,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_OUT_1_BIQ_5STAGE_MUTE_EN_SHIFT, DA7218_SWITCH_EN_MAX,
 		   DA7218_INVERT),
 
-	/* Output Filters */
+	 
 	SOC_DOUBLE_R_RANGE_TLV("Out Filter Volume", DA7218_OUT_1L_GAIN,
 			       DA7218_OUT_1R_GAIN,
 			       DA7218_OUT_1L_DIGITAL_GAIN_SHIFT,
@@ -1161,7 +1126,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		     DA7218_OUT_1R_FILTER_CTRL, DA7218_OUT_1L_RAMP_EN_SHIFT,
 		     DA7218_SWITCH_EN_MAX, DA7218_NO_INVERT),
 
-	/* Mixer Output */
+	 
 	SOC_DOUBLE_R_RANGE_TLV("Mixout Volume", DA7218_MIXOUT_L_GAIN,
 			       DA7218_MIXOUT_R_GAIN,
 			       DA7218_MIXOUT_L_AMP_GAIN_SHIFT,
@@ -1169,7 +1134,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 			       DA7218_MIXOUT_AMP_GAIN_MAX, DA7218_NO_INVERT,
 			       da7218_mixout_gain_tlv),
 
-	/* DAC Noise Gate */
+	 
 	SOC_ENUM("DAC NG Setup Time", da7218_dac_ng_setup_time),
 	SOC_ENUM("DAC NG Rampup Rate", da7218_dac_ng_rampup_rate),
 	SOC_ENUM("DAC NG Rampdown Rate", da7218_dac_ng_rampdown_rate),
@@ -1184,7 +1149,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 	SOC_SINGLE("DAC NG Switch", DA7218_DAC_NG_CTRL, DA7218_DAC_NG_EN_SHIFT,
 		   DA7218_SWITCH_EN_MAX, DA7218_NO_INVERT),
 
-	/* CP */
+	 
 	SOC_ENUM("Charge Pump Track Mode", da7218_cp_mchange),
 	SOC_ENUM("Charge Pump Frequency", da7218_cp_fcontrol),
 	SOC_ENUM("Charge Pump Decay Rate", da7218_cp_tau_delay),
@@ -1192,7 +1157,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 		   DA7218_CP_THRESH_VDD2_SHIFT, DA7218_CP_THRESH_VDD2_MAX,
 		   DA7218_NO_INVERT),
 
-	/* Headphones */
+	 
 	SOC_DOUBLE_R_RANGE_TLV("Headphone Volume", DA7218_HP_L_GAIN,
 			       DA7218_HP_R_GAIN, DA7218_HP_L_AMP_GAIN_SHIFT,
 			       DA7218_HP_AMP_GAIN_MIN, DA7218_HP_AMP_GAIN_MAX,
@@ -1209,9 +1174,7 @@ static const struct snd_kcontrol_new da7218_snd_controls[] = {
 };
 
 
-/*
- * DAPM Mux Controls
- */
+ 
 
 static const char * const da7218_mic_sel_text[] = { "Analog", "Digital" };
 
@@ -1265,9 +1228,7 @@ static const struct snd_kcontrol_new da7218_out_filtr_biq_sel_mux =
 	SOC_DAPM_ENUM("Out FilterR BiQuad Mux", da7218_out_filtr_biq_sel);
 
 
-/*
- * DAPM Mixer Controls
- */
+ 
 
 #define DA7218_DMIX_CTRLS(reg)						\
 	SOC_DAPM_SINGLE("In Filter1L Switch", reg,			\
@@ -1334,14 +1295,9 @@ static const struct snd_kcontrol_new da7218_st_out_filtr_mix_controls[] = {
 };
 
 
-/*
- * DAPM Events
- */
+ 
 
-/*
- * We keep track of which input filters are enabled. This is used in the logic
- * for controlling the mic level detect feature.
- */
+ 
 static int da7218_in_filter_event(struct snd_soc_dapm_widget *w,
 				  struct snd_kcontrol *kcontrol, int event)
 {
@@ -1369,11 +1325,7 @@ static int da7218_in_filter_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		da7218->in_filt_en |= mask;
-		/*
-		 * If we're enabling path for mic level detect, wait for path
-		 * to settle before enabling feature to avoid incorrect and
-		 * unwanted detect events.
-		 */
+		 
 		if (mask & da7218->mic_lvl_det_en)
 			msleep(DA7218_MIC_LVL_DET_DELAY);
 		break;
@@ -1384,7 +1336,7 @@ static int da7218_in_filter_event(struct snd_soc_dapm_widget *w,
 		return -EINVAL;
 	}
 
-	/* Enable configured level detection paths */
+	 
 	snd_soc_component_write(component, DA7218_LVL_DET_CTRL,
 		      (da7218->in_filt_en & da7218->mic_lvl_det_en));
 
@@ -1403,19 +1355,19 @@ static int da7218_dai_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		if (da7218->master)
-			/* Enable DAI clks for master mode */
+			 
 			snd_soc_component_update_bits(component, DA7218_DAI_CLK_MODE,
 					    DA7218_DAI_CLK_EN_MASK,
 					    DA7218_DAI_CLK_EN_MASK);
 
-		/* Tune reference oscillator */
+		 
 		snd_soc_component_write(component, DA7218_PLL_REFOSC_CAL,
 			      DA7218_PLL_REFOSC_CAL_START_MASK);
 		snd_soc_component_write(component, DA7218_PLL_REFOSC_CAL,
 			      DA7218_PLL_REFOSC_CAL_START_MASK |
 			      DA7218_PLL_REFOSC_CAL_EN_MASK);
 
-		/* Check tuning complete */
+		 
 		i = 0;
 		success = false;
 		do {
@@ -1433,16 +1385,16 @@ static int da7218_dai_event(struct snd_soc_dapm_widget *w,
 			dev_warn(component->dev,
 				 "Reference oscillator failed calibration\n");
 
-		/* PC synchronised to DAI */
+		 
 		snd_soc_component_write(component, DA7218_PC_COUNT,
 			      DA7218_PC_RESYNC_AUTO_MASK);
 
-		/* If SRM not enabled, we don't need to check status */
+		 
 		pll_ctrl = snd_soc_component_read(component, DA7218_PLL_CTRL);
 		if ((pll_ctrl & DA7218_PLL_MODE_MASK) != DA7218_PLL_MODE_SRM)
 			return 0;
 
-		/* Check SRM has locked */
+		 
 		i = 0;
 		success = false;
 		do {
@@ -1460,11 +1412,11 @@ static int da7218_dai_event(struct snd_soc_dapm_widget *w,
 
 		return 0;
 	case SND_SOC_DAPM_POST_PMD:
-		/* PC free-running */
+		 
 		snd_soc_component_write(component, DA7218_PC_COUNT, DA7218_PC_FREERUN_MASK);
 
 		if (da7218->master)
-			/* Disable DAI clks for master mode */
+			 
 			snd_soc_component_update_bits(component, DA7218_DAI_CLK_MODE,
 					    DA7218_DAI_CLK_EN_MASK, 0);
 
@@ -1480,10 +1432,7 @@ static int da7218_cp_event(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct da7218_priv *da7218 = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * If this is DA7217 and we're using single supply for differential
-	 * output, we really don't want to touch the charge pump.
-	 */
+	 
 	if (da7218->hp_single_supply)
 		return 0;
 
@@ -1508,12 +1457,12 @@ static int da7218_hp_pga_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* Enable headphone output */
+		 
 		snd_soc_component_update_bits(component, w->reg, DA7218_HP_AMP_OE_MASK,
 				    DA7218_HP_AMP_OE_MASK);
 		return 0;
 	case SND_SOC_DAPM_PRE_PMD:
-		/* Headphone output high impedance */
+		 
 		snd_soc_component_update_bits(component, w->reg, DA7218_HP_AMP_OE_MASK, 0);
 		return 0;
 	default:
@@ -1522,12 +1471,10 @@ static int da7218_hp_pga_event(struct snd_soc_dapm_widget *w,
 }
 
 
-/*
- * DAPM Widgets
- */
+ 
 
 static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
-	/* Input Supplies */
+	 
 	SND_SOC_DAPM_SUPPLY("Mic Bias1", DA7218_MICBIAS_EN,
 			    DA7218_MICBIAS_1_EN_SHIFT, DA7218_NO_INVERT,
 			    NULL, 0),
@@ -1547,7 +1494,7 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			    DA7218_DMIC_2R_EN_SHIFT, DA7218_NO_INVERT,
 			    NULL, 0),
 
-	/* Inputs */
+	 
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("MIC2"),
 	SND_SOC_DAPM_INPUT("DMIC1L"),
@@ -1555,7 +1502,7 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("DMIC2L"),
 	SND_SOC_DAPM_INPUT("DMIC2R"),
 
-	/* Input Mixer Supplies */
+	 
 	SND_SOC_DAPM_SUPPLY("Mixin1 Supply", DA7218_MIXIN_1_CTRL,
 			    DA7218_MIXIN_1_MIX_SEL_SHIFT, DA7218_NO_INVERT,
 			    NULL, 0),
@@ -1563,7 +1510,7 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			    DA7218_MIXIN_2_MIX_SEL_SHIFT, DA7218_NO_INVERT,
 			    NULL, 0),
 
-	/* Input PGAs */
+	 
 	SND_SOC_DAPM_PGA("Mic1 PGA", DA7218_MIC_1_CTRL,
 			 DA7218_MIC_1_AMP_EN_SHIFT, DA7218_NO_INVERT,
 			 NULL, 0),
@@ -1577,11 +1524,11 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			 DA7218_MIXIN_2_AMP_EN_SHIFT, DA7218_NO_INVERT,
 			 NULL, 0),
 
-	/* Mic/DMic Muxes */
+	 
 	SND_SOC_DAPM_MUX("Mic1 Mux", SND_SOC_NOPM, 0, 0, &da7218_mic1_sel_mux),
 	SND_SOC_DAPM_MUX("Mic2 Mux", SND_SOC_NOPM, 0, 0, &da7218_mic2_sel_mux),
 
-	/* Input Filters */
+	 
 	SND_SOC_DAPM_ADC_E("In Filter1L", NULL, DA7218_IN_1L_FILTER_CTRL,
 			   DA7218_IN_1L_FILTER_EN_SHIFT, DA7218_NO_INVERT,
 			   da7218_in_filter_event,
@@ -1599,18 +1546,18 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			   da7218_in_filter_event,
 			   SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
 
-	/* Tone Generator */
+	 
 	SND_SOC_DAPM_SIGGEN("TONE"),
 	SND_SOC_DAPM_PGA("Tone Generator", DA7218_TONE_GEN_CFG1,
 			 DA7218_START_STOPN_SHIFT, DA7218_NO_INVERT, NULL, 0),
 
-	/* Sidetone Input */
+	 
 	SND_SOC_DAPM_MUX("Sidetone Mux", SND_SOC_NOPM, 0, 0,
 			 &da7218_sidetone_in_sel_mux),
 	SND_SOC_DAPM_ADC("Sidetone Filter", NULL, DA7218_SIDETONE_CTRL,
 			 DA7218_SIDETONE_FILTER_EN_SHIFT, DA7218_NO_INVERT),
 
-	/* Input Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Mixer DAI1L", SND_SOC_NOPM, 0, 0,
 			   da7218_out_dai1l_mix_controls,
 			   ARRAY_SIZE(da7218_out_dai1l_mix_controls)),
@@ -1624,17 +1571,17 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			   da7218_out_dai2r_mix_controls,
 			   ARRAY_SIZE(da7218_out_dai2r_mix_controls)),
 
-	/* DAI Supply */
+	 
 	SND_SOC_DAPM_SUPPLY("DAI", DA7218_DAI_CTRL, DA7218_DAI_EN_SHIFT,
 			    DA7218_NO_INVERT, da7218_dai_event,
 			    SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* DAI */
+	 
 	SND_SOC_DAPM_AIF_OUT("DAIOUT", "Capture", 0, DA7218_DAI_TDM_CTRL,
 			     DA7218_DAI_OE_SHIFT, DA7218_NO_INVERT),
 	SND_SOC_DAPM_AIF_IN("DAIIN", "Playback", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Mixer Out FilterL", SND_SOC_NOPM, 0, 0,
 			   da7218_out_filtl_mix_controls,
 			   ARRAY_SIZE(da7218_out_filtl_mix_controls)),
@@ -1642,7 +1589,7 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			   da7218_out_filtr_mix_controls,
 			   ARRAY_SIZE(da7218_out_filtr_mix_controls)),
 
-	/* BiQuad Filters */
+	 
 	SND_SOC_DAPM_MUX("Out FilterL BiQuad Mux", SND_SOC_NOPM, 0, 0,
 			 &da7218_out_filtl_biq_sel_mux),
 	SND_SOC_DAPM_MUX("Out FilterR BiQuad Mux", SND_SOC_NOPM, 0, 0,
@@ -1651,7 +1598,7 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			 DA7218_OUT_1_BIQ_5STAGE_FILTER_EN_SHIFT,
 			 DA7218_NO_INVERT),
 
-	/* Sidetone Mixers */
+	 
 	SND_SOC_DAPM_MIXER("ST Mixer Out FilterL", SND_SOC_NOPM, 0, 0,
 			   da7218_st_out_filtl_mix_controls,
 			   ARRAY_SIZE(da7218_st_out_filtl_mix_controls)),
@@ -1659,13 +1606,13 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			   da7218_st_out_filtr_mix_controls,
 			   ARRAY_SIZE(da7218_st_out_filtr_mix_controls)),
 
-	/* Output Filters */
+	 
 	SND_SOC_DAPM_DAC("Out FilterL", NULL, DA7218_OUT_1L_FILTER_CTRL,
 			 DA7218_OUT_1L_FILTER_EN_SHIFT, DA7218_NO_INVERT),
 	SND_SOC_DAPM_DAC("Out FilterR", NULL, DA7218_OUT_1R_FILTER_CTRL,
 			 DA7218_IN_1R_FILTER_EN_SHIFT, DA7218_NO_INVERT),
 
-	/* Output PGAs */
+	 
 	SND_SOC_DAPM_PGA("Mixout Left PGA", DA7218_MIXOUT_L_CTRL,
 			 DA7218_MIXOUT_L_AMP_EN_SHIFT, DA7218_NO_INVERT,
 			 NULL, 0),
@@ -1681,19 +1628,17 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 			   da7218_hp_pga_event,
 			   SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
 
-	/* Output Supplies */
+	 
 	SND_SOC_DAPM_SUPPLY("Charge Pump", SND_SOC_NOPM, 0, 0, da7218_cp_event,
 			    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_PRE_PMD),
 
-	/* Outputs */
+	 
 	SND_SOC_DAPM_OUTPUT("HPL"),
 	SND_SOC_DAPM_OUTPUT("HPR"),
 };
 
 
-/*
- * DAPM Mixer Routes
- */
+ 
 
 #define DA7218_DMIX_ROUTES(name)				\
 	{name, "In Filter1L Switch", "In Filter1L"},		\
@@ -1710,12 +1655,10 @@ static const struct snd_soc_dapm_widget da7218_dapm_widgets[] = {
 	{name, "Sidetone Switch", "Sidetone Filter"}
 
 
-/*
- * DAPM audio route definition
- */
+ 
 
 static const struct snd_soc_dapm_route da7218_audio_map[] = {
-	/* Input paths */
+	 
 	{"MIC1", NULL, "Mic Bias1"},
 	{"MIC2", NULL, "Mic Bias2"},
 	{"DMIC1L", NULL, "Mic Bias1"},
@@ -1768,7 +1711,7 @@ static const struct snd_soc_dapm_route da7218_audio_map[] = {
 
 	{"DAIOUT", NULL, "DAI"},
 
-	/* Output paths */
+	 
 	{"DAIIN", NULL, "DAI"},
 
 	DA7218_DMIX_ROUTES("Mixer Out FilterL"),
@@ -1802,9 +1745,7 @@ static const struct snd_soc_dapm_route da7218_audio_map[] = {
 };
 
 
-/*
- * DAI operations
- */
+ 
 
 static int da7218_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
@@ -1863,7 +1804,7 @@ static int da7218_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	u32 freq_ref;
 	u64 frac_div;
 
-	/* Verify 2MHz - 54MHz MCLK provided, and set input divider */
+	 
 	if (da7218->mclk_rate < 2000000) {
 		dev_err(component->dev, "PLL input clock %d below valid range\n",
 			da7218->mclk_rate);
@@ -1891,7 +1832,7 @@ static int da7218_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	freq_ref = (da7218->mclk_rate / indiv);
 	pll_ctrl = indiv_bits;
 
-	/* Configure PLL */
+	 
 	switch (source) {
 	case DA7218_SYSCLK_MCLK:
 		pll_ctrl |= DA7218_PLL_MODE_BYPASS;
@@ -1910,14 +1851,14 @@ static int da7218_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 		return -EINVAL;
 	}
 
-	/* Calculate dividers for PLL */
+	 
 	pll_integer = fout / freq_ref;
 	frac_div = (u64)(fout % freq_ref) * 8192ULL;
 	do_div(frac_div, freq_ref);
 	pll_frac_top = (frac_div >> DA7218_BYTE_SHIFT) & DA7218_BYTE_MASK;
 	pll_frac_bot = (frac_div) & DA7218_BYTE_MASK;
 
-	/* Write PLL config & dividers */
+	 
 	snd_soc_component_write(component, DA7218_PLL_FRAC_TOP, pll_frac_top);
 	snd_soc_component_write(component, DA7218_PLL_FRAC_BOT, pll_frac_bot);
 	snd_soc_component_write(component, DA7218_PLL_INTEGER, pll_integer);
@@ -2005,7 +1946,7 @@ static int da7218_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* By default 64 BCLKs per WCLK is supported */
+	 
 	dai_clk_mode |= DA7218_DAI_BCLKS_PER_WCLK_64;
 
 	snd_soc_component_write(component, DA7218_DAI_CLK_MODE, dai_clk_mode);
@@ -2023,7 +1964,7 @@ static int da7218_set_dai_tdm_slot(struct snd_soc_dai *dai,
 	u8 dai_bclks_per_wclk;
 	u32 frame_size;
 
-	/* No channels enabled so disable TDM, revert to 64-bit frames */
+	 
 	if (!tx_mask) {
 		snd_soc_component_update_bits(component, DA7218_DAI_TDM_CTRL,
 				    DA7218_DAI_TDM_CH_EN_MASK |
@@ -2034,21 +1975,21 @@ static int da7218_set_dai_tdm_slot(struct snd_soc_dai *dai,
 		return 0;
 	}
 
-	/* Check we have valid slots */
+	 
 	if (fls(tx_mask) > DA7218_DAI_TDM_MAX_SLOTS) {
 		dev_err(component->dev, "Invalid number of slots, max = %d\n",
 			DA7218_DAI_TDM_MAX_SLOTS);
 		return -EINVAL;
 	}
 
-	/* Check we have a valid offset given (first 2 bytes of rx_mask) */
+	 
 	if (rx_mask >> DA7218_2BYTE_SHIFT) {
 		dev_err(component->dev, "Invalid slot offset, max = %d\n",
 			DA7218_2BYTE_MASK);
 		return -EINVAL;
 	}
 
-	/* Calculate & validate frame size based on slot info provided. */
+	 
 	frame_size = slots * slot_width;
 	switch (frame_size) {
 	case 32:
@@ -2159,7 +2100,7 @@ static int da7218_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_component_update_bits(component, DA7218_DAI_CTRL,
 			    DA7218_DAI_WORD_LENGTH_MASK | DA7218_DAI_CH_NUM_MASK,
 			    dai_ctrl);
-	/* SRs tied for ADCs and DACs. */
+	 
 	snd_soc_component_write(component, DA7218_SR,
 		      (fs << DA7218_SR_DAC_SHIFT) | (fs << DA7218_SR_ADC_SHIFT));
 
@@ -2182,7 +2123,7 @@ static struct snd_soc_dai_driver da7218_dai = {
 	.playback = {
 		.stream_name = "Playback",
 		.channels_min = 1,
-		.channels_max = 4,	/* Only 2 channels of data */
+		.channels_max = 4,	 
 		.rates = SNDRV_PCM_RATE_8000_96000,
 		.formats = DA7218_FORMATS,
 	},
@@ -2200,9 +2141,7 @@ static struct snd_soc_dai_driver da7218_dai = {
 };
 
 
-/*
- * HP Detect
- */
+ 
 
 int da7218_hpldet(struct snd_soc_component *component, struct snd_soc_jack *jack)
 {
@@ -2246,37 +2185,33 @@ static void da7218_hpldet_irq(struct snd_soc_component *component)
 	snd_soc_jack_report(da7218->jack, report, SND_JACK_HEADPHONE);
 }
 
-/*
- * IRQ
- */
+ 
 
 static irqreturn_t da7218_irq_thread(int irq, void *data)
 {
 	struct snd_soc_component *component = data;
 	u8 status;
 
-	/* Read IRQ status reg */
+	 
 	status = snd_soc_component_read(component, DA7218_EVENT);
 	if (!status)
 		return IRQ_NONE;
 
-	/* Mic level detect */
+	 
 	if (status & DA7218_LVL_DET_EVENT_MASK)
 		da7218_micldet_irq(component);
 
-	/* HP detect */
+	 
 	if (status & DA7218_HPLDET_JACK_EVENT_MASK)
 		da7218_hpldet_irq(component);
 
-	/* Clear interrupts */
+	 
 	snd_soc_component_write(component, DA7218_EVENT, status);
 
 	return IRQ_HANDLED;
 }
 
-/*
- * DT
- */
+ 
 
 static const struct of_device_id da7218_of_match[] = {
 	{ .compatible = "dlg,da7217", .data = (void *) DA7217_DEV_ID },
@@ -2564,9 +2499,7 @@ static struct da7218_pdata *da7218_of_to_pdata(struct snd_soc_component *compone
 }
 
 
-/*
- * Codec driver functions
- */
+ 
 
 static int da7218_set_bias_level(struct snd_soc_component *component,
 				 enum snd_soc_bias_level level)
@@ -2578,7 +2511,7 @@ static int da7218_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_ON:
 		break;
 	case SND_SOC_BIAS_PREPARE:
-		/* Enable MCLK for transition to ON state */
+		 
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_STANDBY) {
 			if (da7218->mclk) {
 				ret = clk_prepare_enable(da7218->mclk);
@@ -2592,29 +2525,29 @@ static int da7218_set_bias_level(struct snd_soc_component *component,
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-			/* Master bias */
+			 
 			snd_soc_component_update_bits(component, DA7218_REFERENCES,
 					    DA7218_BIAS_EN_MASK,
 					    DA7218_BIAS_EN_MASK);
 
-			/* Internal LDO */
+			 
 			snd_soc_component_update_bits(component, DA7218_LDO_CTRL,
 					    DA7218_LDO_EN_MASK,
 					    DA7218_LDO_EN_MASK);
 		} else {
-			/* Remove MCLK */
+			 
 			if (da7218->mclk)
 				clk_disable_unprepare(da7218->mclk);
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* Only disable if jack detection disabled */
+		 
 		if (!da7218->jack) {
-			/* Internal LDO */
+			 
 			snd_soc_component_update_bits(component, DA7218_LDO_CTRL,
 					    DA7218_LDO_EN_MASK, 0);
 
-			/* Master bias */
+			 
 			snd_soc_component_update_bits(component, DA7218_REFERENCES,
 					    DA7218_BIAS_EN_MASK, 0);
 		}
@@ -2637,7 +2570,7 @@ static int da7218_handle_supplies(struct snd_soc_component *component)
 	u8 io_voltage_lvl = DA7218_IO_VOLTAGE_LEVEL_2_5V_3_6V;
 	int i, ret;
 
-	/* Get required supplies */
+	 
 	for (i = 0; i < DA7218_NUM_SUPPLIES; ++i)
 		da7218->supplies[i].supply = da7218_supply_names[i];
 
@@ -2648,7 +2581,7 @@ static int da7218_handle_supplies(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* Determine VDDIO voltage provided */
+	 
 	vddio = da7218->supplies[DA7218_SUPPLY_VDDIO].consumer;
 	ret = regulator_get_voltage(vddio);
 	if (ret < 1500000)
@@ -2656,17 +2589,17 @@ static int da7218_handle_supplies(struct snd_soc_component *component)
 	else if (ret < 2500000)
 		io_voltage_lvl = DA7218_IO_VOLTAGE_LEVEL_1_5V_2_5V;
 
-	/* Enable main supplies */
+	 
 	ret = regulator_bulk_enable(DA7218_NUM_SUPPLIES, da7218->supplies);
 	if (ret) {
 		dev_err(component->dev, "Failed to enable supplies\n");
 		return ret;
 	}
 
-	/* Ensure device in active mode */
+	 
 	snd_soc_component_write(component, DA7218_SYSTEM_ACTIVE, DA7218_SYSTEM_ACTIVE_MASK);
 
-	/* Update IO voltage level range */
+	 
 	snd_soc_component_write(component, DA7218_IO_CTRL, io_voltage_lvl);
 
 	return 0;
@@ -2680,7 +2613,7 @@ static void da7218_handle_pdata(struct snd_soc_component *component)
 	if (pdata) {
 		u8 micbias_lvl = 0, dmic_cfg = 0;
 
-		/* Mic Bias voltages */
+		 
 		switch (pdata->micbias1_lvl) {
 		case DA7218_MICBIAS_1_2V:
 			micbias_lvl |= DA7218_MICBIAS_1_LP_MODE_MASK;
@@ -2717,7 +2650,7 @@ static void da7218_handle_pdata(struct snd_soc_component *component)
 
 		snd_soc_component_write(component, DA7218_MICBIAS_CTRL, micbias_lvl);
 
-		/* Mic */
+		 
 		switch (pdata->mic1_amp_in_sel) {
 		case DA7218_MIC_AMP_IN_SEL_DIFF:
 		case DA7218_MIC_AMP_IN_SEL_SE_P:
@@ -2736,7 +2669,7 @@ static void da7218_handle_pdata(struct snd_soc_component *component)
 			break;
 		}
 
-		/* DMic */
+		 
 		switch (pdata->dmic1_data_sel) {
 		case DA7218_DMIC_DATA_LFALL_RRISE:
 		case DA7218_DMIC_DATA_LRISE_RFALL:
@@ -2796,7 +2729,7 @@ static void da7218_handle_pdata(struct snd_soc_component *component)
 				    DA7218_DMIC_2_SAMPLEPHASE_MASK |
 				    DA7218_DMIC_2_CLK_RATE_MASK, dmic_cfg);
 
-		/* DA7217 Specific */
+		 
 		if (da7218->dev_id == DA7217_DEV_ID) {
 			da7218->hp_single_supply =
 				pdata->hp_diff_single_supply;
@@ -2810,7 +2743,7 @@ static void da7218_handle_pdata(struct snd_soc_component *component)
 			}
 		}
 
-		/* DA7218 Specific */
+		 
 		if ((da7218->dev_id == DA7218_DEV_ID) &&
 		    (pdata->hpldet_pdata)) {
 			struct da7218_hpldet_pdata *hpldet_pdata =
@@ -2879,12 +2812,12 @@ static int da7218_probe(struct snd_soc_component *component)
 	struct da7218_priv *da7218 = snd_soc_component_get_drvdata(component);
 	int ret;
 
-	/* Regulator configuration */
+	 
 	ret = da7218_handle_supplies(component);
 	if (ret)
 		return ret;
 
-	/* Handle DT/Platform data */
+	 
 	if (component->dev->of_node)
 		da7218->pdata = da7218_of_to_pdata(component);
 	else
@@ -2892,28 +2825,25 @@ static int da7218_probe(struct snd_soc_component *component)
 
 	da7218_handle_pdata(component);
 
-	/* Check if MCLK provided, if not the clock is NULL */
+	 
 	da7218->mclk = devm_clk_get_optional(component->dev, "mclk");
 	if (IS_ERR(da7218->mclk)) {
 		ret = PTR_ERR(da7218->mclk);
 		goto err_disable_reg;
 	}
 
-	/* Default PC to free-running */
+	 
 	snd_soc_component_write(component, DA7218_PC_COUNT, DA7218_PC_FREERUN_MASK);
 
-	/*
-	 * Default Output Filter mixers to off otherwise DAPM will power
-	 * Mic to HP passthrough paths by default at startup.
-	 */
+	 
 	snd_soc_component_write(component, DA7218_DROUTING_OUTFILT_1L, 0);
 	snd_soc_component_write(component, DA7218_DROUTING_OUTFILT_1R, 0);
 
-	/* Default CP to normal load, power mode */
+	 
 	snd_soc_component_update_bits(component, DA7218_CP_CTRL,
 			    DA7218_CP_SMALL_SWITCH_FREQ_EN_MASK, 0);
 
-	/* Default gain ramping */
+	 
 	snd_soc_component_update_bits(component, DA7218_MIXIN_1_CTRL,
 			    DA7218_MIXIN_1_AMP_RAMP_EN_MASK,
 			    DA7218_MIXIN_1_AMP_RAMP_EN_MASK);
@@ -2947,16 +2877,16 @@ static int da7218_probe(struct snd_soc_component *component)
 			    DA7218_HP_R_AMP_RAMP_EN_MASK,
 			    DA7218_HP_R_AMP_RAMP_EN_MASK);
 
-	/* Default infinite tone gen, start/stop by Kcontrol */
+	 
 	snd_soc_component_write(component, DA7218_TONE_GEN_CYCLES, DA7218_BEEP_CYCLES_MASK);
 
-	/* DA7217 specific config */
+	 
 	if (da7218->dev_id == DA7217_DEV_ID) {
 		snd_soc_component_update_bits(component, DA7218_HP_DIFF_CTRL,
 				    DA7218_HP_AMP_DIFF_MODE_EN_MASK,
 				    DA7218_HP_AMP_DIFF_MODE_EN_MASK);
 
-		/* Only DA7218 supports HP detect, mask off for DA7217 */
+		 
 		snd_soc_component_write(component, DA7218_EVENT_MASK,
 			      DA7218_HPLDET_JACK_EVENT_IRQ_MSK_MASK);
 	}
@@ -2996,7 +2926,7 @@ static int da7218_suspend(struct snd_soc_component *component)
 
 	da7218_set_bias_level(component, SND_SOC_BIAS_OFF);
 
-	/* Put device into standby mode if jack detection disabled */
+	 
 	if (!da7218->jack)
 		snd_soc_component_write(component, DA7218_SYSTEM_ACTIVE, 0);
 
@@ -3007,7 +2937,7 @@ static int da7218_resume(struct snd_soc_component *component)
 {
 	struct da7218_priv *da7218 = snd_soc_component_get_drvdata(component);
 
-	/* Put device into active mode if previously moved to standby */
+	 
 	if (!da7218->jack)
 		snd_soc_component_write(component, DA7218_SYSTEM_ACTIVE,
 			      DA7218_SYSTEM_ACTIVE_MASK);
@@ -3039,9 +2969,7 @@ static const struct snd_soc_component_driver soc_component_dev_da7218 = {
 };
 
 
-/*
- * Regmap configs
- */
+ 
 
 static struct reg_default da7218_reg_defaults[] = {
 	{ DA7218_SYSTEM_ACTIVE, 0x00 },
@@ -3249,9 +3177,7 @@ static const struct regmap_config da7218_regmap_config = {
 };
 
 
-/*
- * I2C layer
- */
+ 
 
 static const struct i2c_device_id da7218_i2c_id[];
 

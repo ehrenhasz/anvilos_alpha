@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UART driver for the Greybus "generic" UART module.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- *
- * Heavily based on drivers/usb/class/cdc-acm.c and
- * drivers/usb/serial/usb-serial.c.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -32,11 +24,11 @@
 
 #include "gbphy.h"
 
-#define GB_NUM_MINORS	16	/* 16 is more than enough */
+#define GB_NUM_MINORS	16	 
 #define GB_NAME		"ttyGB"
 
 #define GB_UART_WRITE_FIFO_SIZE		PAGE_SIZE
-#define GB_UART_WRITE_ROOM_MARGIN	1	/* leave some space in fifo */
+#define GB_UART_WRITE_ROOM_MARGIN	1	 
 #define GB_UART_FIRMWARE_CREDITS	4096
 #define GB_UART_CREDIT_WAIT_TIMEOUT_MSEC	10000
 
@@ -56,8 +48,8 @@ struct gb_tty {
 	struct async_icount oldcount;
 	wait_queue_head_t wioctl;
 	struct mutex mutex;
-	u8 ctrlin;	/* input control lines */
-	u8 ctrlout;	/* output control lines */
+	u8 ctrlin;	 
+	u8 ctrlout;	 
 	struct gb_uart_set_line_coding_request line_coding;
 	struct work_struct tx_work;
 	struct kfifo write_fifo;
@@ -110,7 +102,7 @@ static int gb_uart_receive_data_handler(struct gb_operation *op)
 		else if (receive_data->flags & GB_UART_RECV_FLAG_FRAMING)
 			tty_flags = TTY_FRAME;
 
-		/* overrun is special, not associated with a char */
+		 
 		if (receive_data->flags & GB_UART_RECV_FLAG_OVERRUN)
 			tty_insert_flip_char(port, 0, TTY_OVERRUN);
 	}
@@ -185,9 +177,7 @@ static int gb_uart_receive_credits_handler(struct gb_operation *op)
 	if (!gb_tty->close_pending)
 		schedule_work(&gb_tty->tx_work);
 
-	/*
-	 * the port the tty layer may be waiting for credits
-	 */
+	 
 	tty_port_tty_wakeup(&gb_tty->port);
 
 	if (gb_tty->credits == GB_UART_FIRMWARE_CREDITS)
@@ -373,7 +363,7 @@ static void release_minor(struct gb_tty *gb_tty)
 {
 	int minor = gb_tty->minor;
 
-	gb_tty->minor = 0;	/* Maybe should use an invalid value instead */
+	gb_tty->minor = 0;	 
 	mutex_lock(&table_lock);
 	idr_remove(&tty_minors, minor);
 	mutex_unlock(&table_lock);
@@ -495,7 +485,7 @@ static void gb_tty_set_termios(struct tty_struct *tty,
 
 	newline.data_bits = tty_get_char_size(termios->c_cflag);
 
-	/* FIXME: needs to clear unsupported bits in the termios */
+	 
 	gb_tty->clocal = ((termios->c_cflag & CLOCAL) != 0);
 
 	if (C_BAUD(tty) == B0) {
@@ -879,7 +869,7 @@ static int gb_uart_probe(struct gbphy_device *gbphy_dev,
 
 	send_control(gb_tty, gb_tty->ctrlout);
 
-	/* initialize the uart to be 9600n81 */
+	 
 	gb_tty->line_coding.rate = cpu_to_le32(9600);
 	gb_tty->line_coding.format = GB_SERIAL_1_STOP_BITS;
 	gb_tty->line_coding.parity = GB_SERIAL_NO_PARITY;

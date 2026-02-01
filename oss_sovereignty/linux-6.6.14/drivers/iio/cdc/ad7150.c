@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AD7150 capacitive sensor driver supporting AD7150/1/6
- *
- * Copyright 2010-2011 Analog Devices Inc.
- * Copyright 2021 Jonathan Cameron <Jonathan.Cameron@huawei.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -59,24 +54,7 @@ enum {
 	AD7151,
 };
 
-/**
- * struct ad7150_chip_info - instance specific chip data
- * @client: i2c client for this device
- * @threshold: thresholds for simple capacitance value events
- * @thresh_sensitivity: threshold for simple capacitance offset
- *	from 'average' value.
- * @thresh_timeout: a timeout, in samples from the moment an
- *	adaptive threshold event occurs to when the average
- *	value jumps to current value.  Note made up of two fields,
- *      3:0 are for timeout receding - applies if below lower threshold
- *      7:4 are for timeout approaching - applies if above upper threshold
- * @state_lock: ensure consistent state of this structure wrt the
- *	hardware.
- * @interrupts: one or two interrupt numbers depending on device type.
- * @int_enabled: is a given interrupt currently enabled.
- * @type: threshold type
- * @dir: threshold direction
- */
+ 
 struct ad7150_chip_info {
 	struct i2c_client *client;
 	u16 threshold[2][2];
@@ -126,19 +104,15 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
 
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * Base units for capacitance are nano farads and the value
-		 * calculated from the datasheet formula is in picofarad
-		 * so multiply by 1000
-		 */
+		 
 		*val = 1000;
-		*val2 = 40944 >> 4; /* To match shift in _RAW */
+		*val2 = 40944 >> 4;  
 		return IIO_VAL_FRACTIONAL;
 	case IIO_CHAN_INFO_OFFSET:
-		*val = -(12288 >> 4); /* To match shift in _RAW */
+		*val = -(12288 >> 4);  
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SAMP_FREQ:
-		/* Strangely same for both 1 and 2 chan parts */
+		 
 		*val = 100;
 		return IIO_VAL_INT;
 	default:
@@ -162,7 +136,7 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
 
 	threshtype = FIELD_GET(AD7150_CFG_THRESHTYPE_MSK, ret);
 
-	/*check if threshold mode is fixed or adaptive*/
+	 
 	thrfixed = FIELD_GET(AD7150_CFG_FIX, ret);
 
 	switch (type) {
@@ -180,7 +154,7 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
 	return -EINVAL;
 }
 
-/* state_lock should be held to ensure consistent state */
+ 
 static int ad7150_write_event_params(struct iio_dev *indio_dev,
 				     unsigned int chan,
 				     enum iio_event_type type,
@@ -189,12 +163,12 @@ static int ad7150_write_event_params(struct iio_dev *indio_dev,
 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
 	int rising = (dir == IIO_EV_DIR_RISING);
 
-	/* Only update value live, if parameter is in use */
+	 
 	if ((type != chip->type) || (dir != chip->dir))
 		return 0;
 
 	switch (type) {
-		/* Note completely different from the adaptive versions */
+		 
 	case IIO_EV_TYPE_THRESH: {
 		u16 value = chip->threshold[rising][chan];
 		return i2c_smbus_write_word_swapped(chip->client,
@@ -212,10 +186,7 @@ static int ad7150_write_event_params(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/*
-		 * Single timeout register contains timeouts for both
-		 * directions.
-		 */
+		 
 		timeout = FIELD_PREP(AD7150_CH_TIMEOUT_APPROACHING,
 				     chip->thresh_timeout[1][chan]);
 		timeout |= FIELD_PREP(AD7150_CH_TIMEOUT_RECEDING,
@@ -237,14 +208,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
 	int ret = 0;
 
-	/*
-	 * There is only a single shared control and no on chip
-	 * interrupt disables for the two interrupt lines.
-	 * So, enabling will switch the events configured to enable
-	 * whatever was most recently requested and if necessary enable_irq()
-	 * the interrupt and any disable will disable_irq() for that
-	 * channels interrupt.
-	 */
+	 
 	if (!state) {
 		if ((chip->int_enabled[chan->channel]) &&
 		    (type == chip->type) && (dir == chip->dir)) {
@@ -259,13 +223,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
 		int rising = (dir == IIO_EV_DIR_RISING);
 		u8 thresh_type, cfg, fixed;
 
-		/*
-		 * Need to temporarily disable both interrupts if
-		 * enabled - this is to avoid races around changing
-		 * config and thresholds.
-		 * Note enable/disable_irq() are reference counted so
-		 * no need to check if already enabled.
-		 */
+		 
 		disable_irq(chip->interrupts[0]);
 		disable_irq(chip->interrupts[1]);
 
@@ -293,20 +251,16 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
 		if (ret < 0)
 			goto error_ret;
 
-		/*
-		 * There is a potential race condition here, but not easy
-		 * to close given we can't disable the interrupt at the
-		 * chip side of things. Rely on the status bit.
-		 */
+		 
 		chip->type = type;
 		chip->dir = dir;
 
-		/* update control attributes */
+		 
 		ret = ad7150_write_event_params(indio_dev, chan->channel, type,
 						dir);
 		if (ret)
 			goto error_ret;
-		/* reenable any irq's we disabled whilst changing mode */
+		 
 		enable_irq(chip->interrupts[0]);
 		enable_irq(chip->interrupts[1]);
 	}
@@ -331,7 +285,7 @@ static int ad7150_read_event_value(struct iio_dev *indio_dev,
 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
 	int rising = (dir == IIO_EV_DIR_RISING);
 
-	/* Complex register sharing going on here */
+	 
 	switch (info) {
 	case IIO_EV_INFO_VALUE:
 		switch (type) {
@@ -380,11 +334,7 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_EV_INFO_TIMEOUT: {
-		/*
-		 * Raw timeout is in cycles of 10 msecs as long as both
-		 * channels are enabled.
-		 * In terms of INT_PLUS_MICRO, that is in units of 10,000
-		 */
+		 
 		int timeout = val2 / 10000;
 
 		if (val != 0 || timeout < 0 || timeout > 15 || val2 % 10000) {
@@ -400,7 +350,7 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
 		goto error_ret;
 	}
 
-	/* write back if active */
+	 
 	ret = ad7150_write_event_params(indio_dev, chan->channel, type, dir);
 
 error_ret:

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2019, Michael Ellerman, IBM Corp.
-//
-// Test that out-of-bounds reads/writes behave as expected.
+
+
+
+
+
 
 #include <setjmp.h>
 #include <stdbool.h>
@@ -15,12 +15,12 @@
 
 #include "utils.h"
 
-// Old distros (Ubuntu 16.04 at least) don't define this
+
 #ifndef SEGV_BNDERR
 #define SEGV_BNDERR	3
 #endif
 
-// 64-bit kernel is always here
+
 #define PAGE_OFFSET	(0xcul << 60)
 
 static unsigned long kernel_virt_end;
@@ -53,9 +53,9 @@ int bad_access(char *p, bool write)
 		return 1;
 	}
 
-	// If we see MAPERR that means we took a page fault rather than an SLB
-	// miss. We only expect to take page faults for addresses within the
-	// valid kernel range.
+	
+	
+	
 	FAIL_IF(fault_code == SEGV_MAPERR && \
 		(fault_addr < PAGE_OFFSET || fault_addr >= kernel_virt_end));
 
@@ -88,12 +88,12 @@ static int test(void)
 	if (page_size == (64 * 1024) || !hash_mmu) {
 		region_shift = 52;
 
-		// We have 7 512T regions (4 kernel linear, vmalloc, io, vmemmap)
+		
 		kernel_virt_end = PAGE_OFFSET + (7 * (512ul << 40));
 	} else if (page_size == (4 * 1024) && hash_mmu) {
 		region_shift = 46;
 
-		// We have 7 64T regions (4 kernel linear, vmalloc, io, vmemmap)
+		
 		kernel_virt_end = PAGE_OFFSET + (7 * (64ul << 40));
 	} else
 		FAIL_IF(true);
@@ -103,19 +103,19 @@ static int test(void)
 	       (1 << page_shift) >> 10,
 	       1ul << region_shift);
 
-	// This generates access patterns like:
-	//   0x0010000000000000
-	//   0x0010000000010000
-	//   0x0010000000020000
-	//   ...
-	//   0x0014000000000000
-	//   0x0018000000000000
-	//   0x0020000000000000
-	//   0x0020000000010000
-	//   0x0020000000020000
-	//   ...
-	//   0xf400000000000000
-	//   0xf800000000000000
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	for (i = 1; i <= ((0xful << 60) >> region_shift); i++) {
 		for (j = page_shift - 1; j < 60; j++) {

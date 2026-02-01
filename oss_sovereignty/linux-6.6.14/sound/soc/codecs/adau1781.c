@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for ADAU1381/ADAU1781 codec
- *
- * Copyright 2011-2013 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -176,8 +171,7 @@ static int adau1781_dejitter_fixup(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct adau *adau = snd_soc_component_get_drvdata(component);
 
-	/* After any power changes have been made the dejitter circuit
-	 * has to be reinitialized. */
+	 
 	regmap_write(adau->regmap, ADAU1781_DEJITTER, 0);
 	if (!adau->master)
 		regmap_write(adau->regmap, ADAU1781_DEJITTER, 5);
@@ -328,7 +322,7 @@ static int adau1781_set_bias_level(struct snd_soc_component *component,
 			ADAU17X1_CLOCK_CONTROL_SYSCLK_EN,
 			ADAU17X1_CLOCK_CONTROL_SYSCLK_EN);
 
-		/* Precharge */
+		 
 		regmap_update_bits(adau->regmap, ADAU1781_DIG_PWDN1, 0x8, 0x8);
 		break;
 	case SND_SOC_BIAS_OFF:

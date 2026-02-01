@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __MLX5_EN_TXRX_H___
 #define __MLX5_EN_TXRX_H___
@@ -11,21 +11,15 @@
 
 #define INL_HDR_START_SZ (sizeof(((struct mlx5_wqe_eth_seg *)NULL)->inline_hdr.start))
 
-/* IPSEC inline data includes:
- * 1. ESP trailer: up to 255 bytes of padding, 1 byte for pad length, 1 byte for
- *    next header.
- * 2. ESP authentication data: 16 bytes for ICV.
- */
+ 
 #define MLX5E_MAX_TX_IPSEC_DS DIV_ROUND_UP(sizeof(struct mlx5_wqe_inline_seg) + \
 					   255 + 1 + 1 + 16, MLX5_SEND_WQE_DS)
 
-/* 366 should be big enough to cover all L2, L3 and L4 headers with possible
- * encapsulations.
- */
+ 
 #define MLX5E_MAX_TX_INLINE_DS DIV_ROUND_UP(366 - INL_HDR_START_SZ + VLAN_HLEN, \
 					    MLX5_SEND_WQE_DS)
 
-/* Sync the calculation with mlx5e_sq_calc_wqe_attr. */
+ 
 #define MLX5E_MAX_TX_WQEBBS DIV_ROUND_UP(MLX5E_TX_WQE_EMPTY_DS_COUNT + \
 					 MLX5E_MAX_TX_INLINE_DS + \
 					 MLX5E_MAX_TX_IPSEC_DS + \
@@ -52,7 +46,7 @@ enum mlx5e_icosq_wqe_type {
 #endif
 };
 
-/* General */
+ 
 static inline bool mlx5e_skb_is_multicast(struct sk_buff *skb)
 {
 	return skb->pkt_type == PACKET_MULTICAST || skb->pkt_type == PACKET_BROADCAST;
@@ -64,7 +58,7 @@ void mlx5e_cq_error_event(struct mlx5_core_cq *mcq, enum mlx5_event event);
 int mlx5e_napi_poll(struct napi_struct *napi, int budget);
 int mlx5e_poll_ico_cq(struct mlx5e_cq *cq);
 
-/* RX */
+ 
 INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq));
 INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq));
 int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget);
@@ -76,7 +70,7 @@ static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
 	return config->rx_filter == HWTSTAMP_FILTER_ALL;
 }
 
-/* TX */
+ 
 struct mlx5e_xmit_data {
 	dma_addr_t  dma_addr;
 	void       *data;
@@ -178,7 +172,7 @@ static inline u16 mlx5e_txqsq_get_next_pi(struct mlx5e_txqsq *sq, u16 size)
 		wi = &sq->db.wqe_info[pi];
 		edge_wi = wi + contig_wqebbs;
 
-		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
+		 
 		for (; wi < edge_wi; wi++) {
 			*wi = (struct mlx5e_tx_wqe_info) {
 				.num_wqebbs = 1,
@@ -208,7 +202,7 @@ struct mlx5e_icosq_wqe_info {
 	u8 wqe_type;
 	u8 num_wqebbs;
 
-	/* Auxiliary data for different wqe types. */
+	 
 	union {
 		struct {
 			struct mlx5e_rq *rq;
@@ -240,7 +234,7 @@ static inline u16 mlx5e_icosq_get_next_pi(struct mlx5e_icosq *sq, u16 size)
 		wi = &sq->db.wqe_info[pi];
 		edge_wi = wi + contig_wqebbs;
 
-		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
+		 
 		for (; wi < edge_wi; wi++) {
 			*wi = (struct mlx5e_icosq_wqe_info) {
 				.wqe_type   = MLX5E_ICOSQ_WQE_NOP,
@@ -260,14 +254,12 @@ mlx5e_notify_hw(struct mlx5_wq_cyc *wq, u16 pc, void __iomem *uar_map,
 		struct mlx5_wqe_ctrl_seg *ctrl)
 {
 	ctrl->fm_ce_se |= MLX5_WQE_CTRL_CQ_UPDATE;
-	/* ensure wqe is visible to device before updating doorbell record */
+	 
 	dma_wmb();
 
 	*wq->db = cpu_to_be32(pc);
 
-	/* ensure doorbell record is visible to device before ringing the
-	 * doorbell
-	 */
+	 
 	wmb();
 
 	mlx5_write64((__be32 *)ctrl, uar_map);
@@ -408,7 +400,7 @@ static inline u16 mlx5e_rqwq_get_wqe_counter(struct mlx5e_rq *rq)
 	}
 }
 
-/* SW parser related functions */
+ 
 
 struct mlx5e_swp_spec {
 	__be16 l3_proto;
@@ -420,7 +412,7 @@ struct mlx5e_swp_spec {
 
 static inline void mlx5e_eseg_swp_offsets_add_vlan(struct mlx5_wqe_eth_seg *eseg)
 {
-	/* SWP offsets are in 2-bytes words */
+	 
 	eseg->swp_outer_l3_offset += VLAN_HLEN / 2;
 	eseg->swp_outer_l4_offset += VLAN_HLEN / 2;
 	eseg->swp_inner_l3_offset += VLAN_HLEN / 2;
@@ -431,7 +423,7 @@ static inline void
 mlx5e_set_eseg_swp(struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg,
 		   struct mlx5e_swp_spec *swp_spec)
 {
-	/* SWP offsets are in 2-bytes words */
+	 
 	eseg->swp_outer_l3_offset = skb_network_offset(skb) / 2;
 	if (swp_spec->l3_proto == htons(ETH_P_IPV6))
 		eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L3_IPV6;
@@ -445,7 +437,7 @@ mlx5e_set_eseg_swp(struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg,
 		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
 		if (swp_spec->tun_l3_proto == htons(ETH_P_IPV6))
 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
-	} else { /* typically for ipsec when xfrm mode != XFRM_MODE_TUNNEL */
+	} else {  
 		eseg->swp_inner_l3_offset = skb_network_offset(skb) / 2;
 		if (swp_spec->l3_proto == htons(ETH_P_IPV6))
 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
@@ -466,14 +458,7 @@ static inline u16 mlx5e_stop_room_for_wqe(struct mlx5_core_dev *mdev, u16 wqe_si
 {
 	WARN_ON_ONCE(PAGE_SIZE / MLX5_SEND_WQE_BB < (u16)mlx5e_get_max_sq_wqebbs(mdev));
 
-	/* A WQE must not cross the page boundary, hence two conditions:
-	 * 1. Its size must not exceed the page size.
-	 * 2. If the WQE size is X, and the space remaining in a page is less
-	 *    than X, this space needs to be padded with NOPs. So, one WQE of
-	 *    size X may require up to X-1 WQEBBs of padding, which makes the
-	 *    stop room of X-1 + X.
-	 * WQE size is also limited by the hardware limit.
-	 */
+	 
 	WARN_ONCE(wqe_size > mlx5e_get_max_sq_wqebbs(mdev),
 		  "wqe_size %u is greater than max SQ WQEBBs %u",
 		  wqe_size, mlx5e_get_max_sq_wqebbs(mdev));

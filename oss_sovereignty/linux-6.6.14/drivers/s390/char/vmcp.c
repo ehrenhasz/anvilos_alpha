@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2004, 2010
- * Interface implementation for communication with the z/VM control program
- *
- * Author(s): Christian Borntraeger <borntraeger@de.ibm.com>
- *
- * z/VMs CP offers the possibility to issue commands via the diagnose code 8
- * this driver implements a character device that issues these commands and
- * returns the answer of CP.
- *
- * The idea of this driver is based on cpint from Neale Ferguson and #CP in CMS
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -64,11 +53,7 @@ static void vmcp_response_alloc(struct vmcp_session *session)
 
 	order = get_order(session->bufsize);
 	nr_pages = ALIGN(session->bufsize, PAGE_SIZE) >> PAGE_SHIFT;
-	/*
-	 * For anything below order 3 allocations rely on the buddy
-	 * allocator. If such low-order allocations can't be handled
-	 * anymore the system won't work anyway.
-	 */
+	 
 	if (order > 2)
 		page = cma_alloc(vmcp_cma, nr_pages, 0, false);
 	if (page) {
@@ -180,23 +165,12 @@ vmcp_write(struct file *file, const char __user *buff, size_t count,
 				   &session->resp_code);
 	mutex_unlock(&session->mutex);
 	kfree(cmd);
-	*ppos = 0;		/* reset the file pointer after a command */
+	*ppos = 0;		 
 	return count;
 }
 
 
-/*
- * These ioctls are available, as the semantics of the diagnose 8 call
- * does not fit very well into a Linux call. Diagnose X'08' is described in
- * CP Programming Services SC24-6084-00
- *
- * VMCP_GETCODE: gives the CP return code back to user space
- * VMCP_SETBUF: sets the response buffer for the next write call. diagnose 8
- * expects adjacent pages in real storage and to make matters worse, we
- * dont know the size of the response. Therefore we default to PAGESIZE and
- * let userspace to change the response size, if userspace expects a bigger
- * response
- */
+ 
 static long vmcp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct vmcp_session *session;

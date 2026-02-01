@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SSM4567 amplifier audio driver
- *
- * Copyright 2014 Google Chromium project.
- *  Author: Anatol Pomozov <anatol@chromium.org>
- *
- * Based on code copyright/by:
- *   Copyright 2013 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -47,7 +39,7 @@
 #define SSM4567_REG_BOOST_CTRL_2		0x16
 #define SSM4567_REG_SOFT_RESET		0xff
 
-/* POWER_CTRL */
+ 
 #define SSM4567_POWER_APWDN_EN		BIT(7)
 #define SSM4567_POWER_BSNS_PWDN		BIT(6)
 #define SSM4567_POWER_VSNS_PWDN		BIT(5)
@@ -57,7 +49,7 @@
 #define SSM4567_POWER_VBAT_ONLY		BIT(1)
 #define SSM4567_POWER_SPWDN			BIT(0)
 
-/* DAC_CTRL */
+ 
 #define SSM4567_DAC_HV			BIT(7)
 #define SSM4567_DAC_MUTE		BIT(6)
 #define SSM4567_DAC_HPF			BIT(5)
@@ -69,7 +61,7 @@
 #define SSM4567_DAC_FS_64000_96000	0x3
 #define SSM4567_DAC_FS_128000_192000	0x4
 
-/* SAI_CTRL_1 */
+ 
 #define SSM4567_SAI_CTRL_1_BCLK			BIT(6)
 #define SSM4567_SAI_CTRL_1_TDM_BLCKS_MASK	(0x3 << 4)
 #define SSM4567_SAI_CTRL_1_TDM_BLCKS_32		(0x0 << 4)
@@ -80,7 +72,7 @@
 #define SSM4567_SAI_CTRL_1_TDM			BIT(1)
 #define SSM4567_SAI_CTRL_1_PDM			BIT(0)
 
-/* SAI_CTRL_2 */
+ 
 #define SSM4567_SAI_CTRL_2_AUTO_SLOT		BIT(3)
 #define SSM4567_SAI_CTRL_2_TDM_SLOT_MASK	0x7
 #define SSM4567_SAI_CTRL_2_TDM_SLOT(x)		(x)
@@ -134,8 +126,7 @@ static bool ssm4567_writeable_reg(struct device *dev, unsigned int reg)
 	case SSM4567_REG_POWER_CTRL ... SSM4567_REG_SAI_PLACEMENT_6:
 	case SSM4567_REG_LIMITER_CTRL_1 ... SSM4567_REG_LIMITER_CTRL_3:
 	case SSM4567_REG_FAULT_CTRL ... SSM4567_REG_BOOST_CTRL_2:
-	/* The datasheet states that soft reset register is read-only,
-	 * but logically it is write-only. */
+	 
 	case SSM4567_REG_SOFT_RESET:
 		return true;
 	default:

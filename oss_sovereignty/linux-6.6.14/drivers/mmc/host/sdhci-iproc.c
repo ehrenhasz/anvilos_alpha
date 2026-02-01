@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
 
-/*
- * iProc SDHCI platform driver
- */
+
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -48,11 +46,11 @@ static u16 sdhci_iproc_readw(struct sdhci_host *host, int reg)
 	u16 word;
 
 	if ((reg == SDHCI_TRANSFER_MODE) && iproc_host->is_cmd_shadowed) {
-		/* Get the saved transfer mode */
+		 
 		val = iproc_host->shadow_cmd;
 	} else if ((reg == SDHCI_BLOCK_SIZE || reg == SDHCI_BLOCK_COUNT) &&
 		   iproc_host->is_blk_shadowed) {
-		/* Get the saved block info */
+		 
 		val = iproc_host->shadow_blk;
 	} else {
 		val = sdhci_iproc_readl(host, (reg & ~3));
@@ -76,7 +74,7 @@ static inline void sdhci_iproc_writel(struct sdhci_host *host, u32 val, int reg)
 	writel(val, host->ioaddr + reg);
 
 	if (host->clock <= 400000) {
-		/* Round up to micro-second four SD clock delay */
+		 
 		if (host->clock)
 			udelay((4 * 1000000 + host->clock - 1) / host->clock);
 		else
@@ -84,25 +82,7 @@ static inline void sdhci_iproc_writel(struct sdhci_host *host, u32 val, int reg)
 	}
 }
 
-/*
- * The Arasan has a bugette whereby it may lose the content of successive
- * writes to the same register that are within two SD-card clock cycles of
- * each other (a clock domain crossing problem). The data
- * register does not have this problem, which is just as well - otherwise we'd
- * have to nobble the DMA engine too.
- *
- * This wouldn't be a problem with the code except that we can only write the
- * controller with 32-bit writes.  So two different 16-bit registers are
- * written back to back creates the problem.
- *
- * In reality, this only happens when SDHCI_BLOCK_SIZE and SDHCI_BLOCK_COUNT
- * are written followed by SDHCI_TRANSFER_MODE and SDHCI_COMMAND.
- * The BLOCK_SIZE and BLOCK_COUNT are meaningless until a command issued so
- * the work around can be further optimized. We can keep shadow values of
- * BLOCK_SIZE, BLOCK_COUNT, and TRANSFER_MODE until a COMMAND is issued.
- * Then, write the BLOCK_SIZE+BLOCK_COUNT in a single 32-bit write followed
- * by the TRANSFER+COMMAND in another 32-bit write.
- */
+ 
 static void sdhci_iproc_writew(struct sdhci_host *host, u16 val, int reg)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
@@ -112,7 +92,7 @@ static void sdhci_iproc_writew(struct sdhci_host *host, u16 val, int reg)
 	u32 oldval, newval;
 
 	if (reg == SDHCI_COMMAND) {
-		/* Write the block now as we are issuing a command */
+		 
 		if (iproc_host->is_blk_shadowed) {
 			sdhci_iproc_writel(host, iproc_host->shadow_blk,
 				SDHCI_BLOCK_SIZE);
@@ -122,24 +102,24 @@ static void sdhci_iproc_writew(struct sdhci_host *host, u16 val, int reg)
 		iproc_host->is_cmd_shadowed = false;
 	} else if ((reg == SDHCI_BLOCK_SIZE || reg == SDHCI_BLOCK_COUNT) &&
 		   iproc_host->is_blk_shadowed) {
-		/* Block size and count are stored in shadow reg */
+		 
 		oldval = iproc_host->shadow_blk;
 	} else {
-		/* Read reg, all other registers are not shadowed */
+		 
 		oldval = sdhci_iproc_readl(host, (reg & ~3));
 	}
 	newval = (oldval & ~mask) | (val << word_shift);
 
 	if (reg == SDHCI_TRANSFER_MODE) {
-		/* Save the transfer mode until the command is issued */
+		 
 		iproc_host->shadow_cmd = newval;
 		iproc_host->is_cmd_shadowed = true;
 	} else if (reg == SDHCI_BLOCK_SIZE || reg == SDHCI_BLOCK_COUNT) {
-		/* Save the block info until the command is issued */
+		 
 		iproc_host->shadow_blk = newval;
 		iproc_host->is_blk_shadowed = true;
 	} else {
-		/* Command or other regular 32-bit write */
+		 
 		sdhci_iproc_writel(host, newval, reg & ~3);
 	}
 }
@@ -164,18 +144,7 @@ static unsigned int sdhci_iproc_get_max_clock(struct sdhci_host *host)
 		return pltfm_host->clock;
 }
 
-/*
- * There is a known bug on BCM2711's SDHCI core integration where the
- * controller will hang when the difference between the core clock and the bus
- * clock is too great. Specifically this can be reproduced under the following
- * conditions:
- *
- *  - No SD card plugged in, polling thread is running, probing cards at
- *    100 kHz.
- *  - BCM2711's core clock configured at 500MHz or more
- *
- * So we set 200kHz as the minimum clock frequency available for that SoC.
- */
+ 
 static unsigned int sdhci_iproc_bcm2711_get_min_clock(struct sdhci_host *host)
 {
 	return 200000;
@@ -329,10 +298,7 @@ static const struct of_device_id sdhci_iproc_of_match[] = {
 MODULE_DEVICE_TABLE(of, sdhci_iproc_of_match);
 
 #ifdef CONFIG_ACPI
-/*
- * This is a duplicate of bcm2835_(pltfrm_)data without caps quirks
- * which are provided by the ACPI table.
- */
+ 
 static const struct sdhci_pltfm_data sdhci_bcm_arasan_data = {
 	.quirks = SDHCI_QUIRK_BROKEN_CARD_DETECTION |
 		  SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK |
@@ -350,7 +316,7 @@ static const struct acpi_device_id sdhci_iproc_acpi_ids[] = {
 	{ .id = "BRCM5872", .driver_data = (kernel_ulong_t)&iproc_data },
 	{ .id = "BCM2847",  .driver_data = (kernel_ulong_t)&bcm_arasan_data },
 	{ .id = "BRCME88C", .driver_data = (kernel_ulong_t)&bcm2711_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, sdhci_iproc_acpi_ids);
 #endif

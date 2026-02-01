@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2002 ARM Limited, All Rights Reserved.
- *
- * Interrupt architecture for the GIC:
- *
- * o There is one Interrupt Distributor, which receives interrupts
- *   from system devices and sends them to the Interrupt Controllers.
- *
- * o There is one CPU Interface per CPU, which sends interrupts sent
- *   by the Distributor, and interrupts generated locally, to the
- *   associated CPU. The base address of the CPU interface is usually
- *   aliased so that the same address points to different chips depending
- *   on the CPU it is accessed from.
- *
- * Note that IRQs 0-31 are special - they are local to each CPU.
- * As such, the enable set/clear, pending set/clear and active bit
- * registers are banked per-cpu for these sources.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/kstrtox.h>
@@ -110,11 +93,7 @@ static DEFINE_RAW_SPINLOCK(cpu_map_lock);
 
 static DEFINE_STATIC_KEY_FALSE(needs_rmw_access);
 
-/*
- * The GIC mapping of CPU interfaces does not necessarily match
- * the logical CPU numbering.  Let's use a mapping as returned
- * by the GIC itself.
- */
+ 
 #define NR_GIC_CPU_IF 8
 static u8 gic_cpu_map[NR_GIC_CPU_IF] __read_mostly;
 
@@ -171,16 +150,11 @@ static inline bool cascading_gic_irq(struct irq_data *d)
 {
 	void *data = irq_data_get_irq_handler_data(d);
 
-	/*
-	 * If handler_data is set, this is a cascading interrupt, and
-	 * it cannot possibly be forwarded.
-	 */
+	 
 	return data != NULL;
 }
 
-/*
- * Routines to acknowledge, disable and enable interrupts
- */
+ 
 static void gic_poke_irq(struct irq_data *d, u32 offset)
 {
 	u32 mask = 1 << (gic_irq(d) % 32);
@@ -201,14 +175,7 @@ static void gic_mask_irq(struct irq_data *d)
 static void gic_eoimode1_mask_irq(struct irq_data *d)
 {
 	gic_mask_irq(d);
-	/*
-	 * When masking a forwarded interrupt, make sure it is
-	 * deactivated as well.
-	 *
-	 * This ensures that an interrupt that is getting
-	 * disabled/masked will not get "stuck", because there is
-	 * noone to deactivate it (guest is being terminated).
-	 */
+	 
 	if (irqd_is_forwarded_to_vcpu(d))
 		gic_poke_irq(d, GIC_DIST_ACTIVE_CLEAR);
 }
@@ -232,7 +199,7 @@ static void gic_eoimode1_eoi_irq(struct irq_data *d)
 {
 	u32 hwirq = gic_irq(d);
 
-	/* Do not deactivate an IRQ forwarded to a vcpu. */
+	 
 	if (irqd_is_forwarded_to_vcpu(d))
 		return;
 
@@ -297,18 +264,18 @@ static int gic_set_type(struct irq_data *d, unsigned int type)
 	unsigned int gicirq = gic_irq(d);
 	int ret;
 
-	/* Interrupt configuration for SGIs can't be changed */
+	 
 	if (gicirq < 16)
 		return type != IRQ_TYPE_EDGE_RISING ? -EINVAL : 0;
 
-	/* SPIs have restrictions on the supported types */
+	 
 	if (gicirq >= 32 && type != IRQ_TYPE_LEVEL_HIGH &&
 			    type != IRQ_TYPE_EDGE_RISING)
 		return -EINVAL;
 
 	ret = gic_configure_irq(gicirq, type, base + GIC_DIST_CONFIG, NULL);
 	if (ret && gicirq < 32) {
-		/* Misconfigured PPIs are usually not fatal */
+		 
 		pr_warn("GIC: PPI%d is secure or misconfigured\n", gicirq - 16);
 		ret = 0;
 	}
@@ -318,7 +285,7 @@ static int gic_set_type(struct irq_data *d, unsigned int type)
 
 static int gic_irq_set_vcpu_affinity(struct irq_data *d, void *vcpu)
 {
-	/* Only interrupts on the primary GIC can be forwarded to a vcpu. */
+	 
 	if (cascading_gic_irq(d) || gic_irq(d) < 16)
 		return -EINVAL;
 
@@ -351,22 +318,11 @@ static void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)
 			writel_relaxed(irqstat, cpu_base + GIC_CPU_EOI);
 		isb();
 
-		/*
-		 * Ensure any shared data written by the CPU sending the IPI
-		 * is read after we've read the ACK register on the GIC.
-		 *
-		 * Pairs with the write barrier in gic_ipi_send_mask
-		 */
+		 
 		if (irqnr <= 15) {
 			smp_rmb();
 
-			/*
-			 * The GIC encodes the source CPU in GICC_IAR,
-			 * leading to the deactivation to fail if not
-			 * written back as is to GICC_EOI.  Stash the INTID
-			 * away for gic_eoi_irq() to write back.  This only
-			 * works because we don't nest SGIs...
-			 */
+			 
 			this_cpu_write(sgi_intid, irqstat);
 		}
 
@@ -454,9 +410,7 @@ static void gic_cpu_if_up(struct gic_chip_data *gic)
 		for (i = 0; i < 4; i++)
 			writel_relaxed(0, cpu_base + GIC_CPU_ACTIVEPRIO + i * 4);
 
-	/*
-	* Preserve bypass disable bits to be written back later
-	*/
+	 
 	bypass = readl(cpu_base + GIC_CPU_CTRL);
 	bypass &= GICC_DIS_BYPASS_MASK;
 
@@ -473,9 +427,7 @@ static void gic_dist_init(struct gic_chip_data *gic)
 
 	writel_relaxed(GICD_DISABLE, base + GIC_DIST_CTRL);
 
-	/*
-	 * Set all global interrupts to this CPU only.
-	 */
+	 
 	cpumask = gic_get_cpumask(gic);
 	cpumask |= cpumask << 8;
 	cpumask |= cpumask << 16;
@@ -494,15 +446,9 @@ static int gic_cpu_init(struct gic_chip_data *gic)
 	unsigned int cpu_mask, cpu = smp_processor_id();
 	int i;
 
-	/*
-	 * Setting up the CPU map is only relevant for the primary GIC
-	 * because any nested/secondary GICs do not directly interface
-	 * with the CPU(s).
-	 */
+	 
 	if (gic == &gic_data[0]) {
-		/*
-		 * Get what the GIC says our CPU mask is.
-		 */
+		 
 		if (WARN_ON(cpu >= NR_GIC_CPU_IF))
 			return -EINVAL;
 
@@ -510,10 +456,7 @@ static int gic_cpu_init(struct gic_chip_data *gic)
 		cpu_mask = gic_get_cpumask(gic);
 		gic_cpu_map[cpu] = cpu_mask;
 
-		/*
-		 * Clear our mask from the other map entries in case they're
-		 * still undefined.
-		 */
+		 
 		for (i = 0; i < NR_GIC_CPU_IF; i++)
 			if (i != cpu)
 				gic_cpu_map[i] &= ~cpu_mask;
@@ -544,12 +487,7 @@ int gic_cpu_if_down(unsigned int gic_nr)
 }
 
 #if defined(CONFIG_CPU_PM) || defined(CONFIG_ARM_GIC_PM)
-/*
- * Saves the GIC distributor registers during suspend or idle.  Must be called
- * with interrupts disabled but before powering down the GIC.  After calling
- * this function, no interrupts will be delivered by the GIC, and another
- * platform-specific wakeup source must be enabled.
- */
+ 
 void gic_dist_save(struct gic_chip_data *gic)
 {
 	unsigned int gic_irqs;
@@ -582,13 +520,7 @@ void gic_dist_save(struct gic_chip_data *gic)
 			readl_relaxed(dist_base + GIC_DIST_ACTIVE_SET + i * 4);
 }
 
-/*
- * Restores the GIC distributor registers during resume or when coming out of
- * idle.  Must be called before enabling interrupts.  If a level interrupt
- * that occurred while the GIC was suspended is still present, it will be
- * handled normally, but any edge interrupts that occurred will not be seen by
- * the GIC and need to be handled by the platform-specific wakeup source.
- */
+ 
 void gic_dist_restore(struct gic_chip_data *gic)
 {
 	unsigned int gic_irqs;
@@ -826,7 +758,7 @@ static void gic_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
 	unsigned long flags, map = 0;
 
 	if (unlikely(nr_cpu_ids == 1)) {
-		/* Only one CPU? let's do a self-IPI... */
+		 
 		writel_relaxed(2 << 24 | d->hwirq,
 			       gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
 		return;
@@ -834,17 +766,14 @@ static void gic_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
 
 	gic_lock_irqsave(flags);
 
-	/* Convert our logical CPU mask into a physical one. */
+	 
 	for_each_cpu(cpu, mask)
 		map |= gic_cpu_map[cpu];
 
-	/*
-	 * Ensure that stores to Normal memory are visible to the
-	 * other CPUs before they observe us issuing the IPI.
-	 */
+	 
 	dmb(ishst);
 
-	/* this always happens on GIC0 */
+	 
 	writel_relaxed(map << 16 | d->hwirq, gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
 
 	gic_unlock_irqrestore(flags);
@@ -914,29 +843,16 @@ static const struct irq_chip gic_chip_mode1 = {
 };
 
 #ifdef CONFIG_BL_SWITCHER
-/*
- * gic_send_sgi - send a SGI directly to given CPU interface number
- *
- * cpu_id: the ID for the destination CPU interface
- * irq: the IPI number to send a SGI for
- */
+ 
 void gic_send_sgi(unsigned int cpu_id, unsigned int irq)
 {
 	BUG_ON(cpu_id >= NR_GIC_CPU_IF);
 	cpu_id = 1 << cpu_id;
-	/* this always happens on GIC0 */
+	 
 	writel_relaxed((cpu_id << 16) | irq, gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
 }
 
-/*
- * gic_get_cpu_id - get the CPU interface ID for the specified CPU
- *
- * @cpu: the logical CPU number to get the GIC ID for.
- *
- * Return the CPU interface ID for the given logical CPU number,
- * or -1 if the CPU number is too large or the interface ID is
- * unknown (more than one bit set).
- */
+ 
 int gic_get_cpu_id(unsigned int cpu)
 {
 	unsigned int cpu_bit;
@@ -949,16 +865,7 @@ int gic_get_cpu_id(unsigned int cpu)
 	return __ffs(cpu_bit);
 }
 
-/*
- * gic_migrate_target - migrate IRQs to another CPU interface
- *
- * @new_cpu_id: the CPU target ID to migrate IRQs to
- *
- * Migrate all peripheral interrupts with a target matching the current CPU
- * to the interface corresponding to @new_cpu_id.  The CPU interface mapping
- * is also updated.  Targets to other CPU interfaces are unchanged.
- * This must be called with IRQs locally disabled.
- */
+ 
 void gic_migrate_target(unsigned int new_cpu_id)
 {
 	unsigned int cur_cpu_id, gic_irqs, gic_nr = 0;
@@ -979,14 +886,10 @@ void gic_migrate_target(unsigned int new_cpu_id)
 
 	gic_lock();
 
-	/* Update the target interface for this logical CPU */
+	 
 	gic_cpu_map[cpu] = 1 << new_cpu_id;
 
-	/*
-	 * Find all the peripheral interrupts targeting the current
-	 * CPU interface and migrate them to the new CPU interface.
-	 * We skip DIST_TARGET 0 to 7 as they are read-only.
-	 */
+	 
 	for (i = 8; i < DIV_ROUND_UP(gic_irqs, 4); i++) {
 		val = readl_relaxed(dist_base + GIC_DIST_TARGET + i * 4);
 		active_mask = val & cur_target_mask;
@@ -999,16 +902,7 @@ void gic_migrate_target(unsigned int new_cpu_id)
 
 	gic_unlock();
 
-	/*
-	 * Now let's migrate and clear any potential SGIs that might be
-	 * pending for us (cur_cpu_id).  Since GIC_DIST_SGI_PENDING_SET
-	 * is a banked register, we can only forward the SGI using
-	 * GIC_DIST_SOFTINT.  The original SGI source is lost but Linux
-	 * doesn't use that information anyway.
-	 *
-	 * For the same reason we do not adjust SGI source information
-	 * for previously sent SGIs by us to other CPUs either.
-	 */
+	 
 	for (i = 0; i < 16; i += 4) {
 		int j;
 		val = readl_relaxed(dist_base + GIC_DIST_SGI_PENDING_SET + i);
@@ -1024,12 +918,7 @@ void gic_migrate_target(unsigned int new_cpu_id)
 	}
 }
 
-/*
- * gic_get_sgir_physaddr - get the physical address for the SGI register
- *
- * Return the physical address of the SGI register to be used
- * by some early assembly code when the kernel is not yet available.
- */
+ 
 static unsigned long gic_dist_physaddr;
 
 unsigned long gic_get_sgir_physaddr(void)
@@ -1076,7 +965,7 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
 		break;
 	}
 
-	/* Prevents SW retriggers which mess up the ACK/EOI ordering */
+	 
 	irqd_set_handle_enforce_irqctx(irqd);
 	return 0;
 }
@@ -1097,10 +986,10 @@ static int gic_irq_domain_translate(struct irq_domain *d,
 			return -EINVAL;
 
 		switch (fwspec->param[0]) {
-		case 0:			/* SPI */
+		case 0:			 
 			*hwirq = fwspec->param[1] + 32;
 			break;
-		case 1:			/* PPI */
+		case 1:			 
 			*hwirq = fwspec->param[1] + 16;
 			break;
 		default:
@@ -1109,7 +998,7 @@ static int gic_irq_domain_translate(struct irq_domain *d,
 
 		*type = fwspec->param[2] & IRQ_TYPE_SENSE_MASK;
 
-		/* Make it clear that broken DTs are... broken */
+		 
 		WARN(*type == IRQ_TYPE_NONE,
 		     "HW irq %ld has invalid type\n", *hwirq);
 		return 0;
@@ -1169,7 +1058,7 @@ static int gic_init_bases(struct gic_chip_data *gic,
 	int gic_irqs, ret;
 
 	if (IS_ENABLED(CONFIG_GIC_NON_BANKED) && gic->percpu_offset) {
-		/* Frankein-GIC without banked registers... */
+		 
 		unsigned int cpu;
 
 		gic->dist_base.percpu_base = alloc_percpu(void __iomem *);
@@ -1192,7 +1081,7 @@ static int gic_init_bases(struct gic_chip_data *gic,
 
 		enable_frankengic();
 	} else {
-		/* Normal, sane GIC... */
+		 
 		WARN(gic->percpu_offset,
 		     "GIC_NON_BANKED not enabled, ignoring %08x offset!",
 		     gic->percpu_offset);
@@ -1200,10 +1089,7 @@ static int gic_init_bases(struct gic_chip_data *gic,
 		gic->cpu_base.common_base = gic->raw_cpu_base;
 	}
 
-	/*
-	 * Find out how many interrupts are supported.
-	 * The GIC only supports up to 1020 interrupt sources.
-	 */
+	 
 	gic_irqs = readl_relaxed(gic_data_dist_base(gic) + GIC_DIST_CTR) & 0x1f;
 	gic_irqs = (gic_irqs + 1) * 32;
 	if (gic_irqs > 1020)
@@ -1247,11 +1133,7 @@ static int __init __gic_init_bases(struct gic_chip_data *gic,
 		return -EINVAL;
 
 	if (gic == &gic_data[0]) {
-		/*
-		 * Initialize the CPU interface map to all CPUs.
-		 * It will be refined as each CPU probes its ID.
-		 * This is only necessary for the primary GIC.
-		 */
+		 
 		for (i = 0; i < NR_GIC_CPU_IF; i++)
 			gic_cpu_map[i] = 0xff;
 
@@ -1297,10 +1179,7 @@ static bool gic_check_eoimode(struct device_node *node, void __iomem **base)
 		return false;
 	if (resource_size(&cpuif_res) < SZ_8K) {
 		void __iomem *alt;
-		/*
-		 * Check for a stupid firmware that only exposes the
-		 * first page of a GICv2.
-		 */
+		 
 		if (!gic_check_gicv2(*base))
 			return false;
 
@@ -1313,11 +1192,7 @@ static bool gic_check_eoimode(struct device_node *node, void __iomem **base)
 		if (!alt)
 			return false;
 		if (!gic_check_gicv2(alt + SZ_4K)) {
-			/*
-			 * The first page was that of a GICv2, and
-			 * the second was *something*. Let's trust it
-			 * to be a GICv2, and update the mapping.
-			 */
+			 
 			pr_warn("GIC: GICv2 at %pa, but range is too small (broken DT?), assuming 8kB\n",
 				&cpuif_res.start);
 			iounmap(*base);
@@ -1325,12 +1200,7 @@ static bool gic_check_eoimode(struct device_node *node, void __iomem **base)
 			return true;
 		}
 
-		/*
-		 * We detected *two* initial GICv2 pages in a
-		 * row. Could be a GICv2 aliased over two 64kB
-		 * pages. Update the resource, map the iospace, and
-		 * pray.
-		 */
+		 
 		iounmap(alt);
 		alt = ioremap(cpuif_res.start, SZ_128K);
 		if (!alt)
@@ -1342,20 +1212,12 @@ static bool gic_check_eoimode(struct device_node *node, void __iomem **base)
 		*base = alt;
 	}
 	if (resource_size(&cpuif_res) == SZ_128K) {
-		/*
-		 * Verify that we have the first 4kB of a GICv2
-		 * aliased over the first 64kB by checking the
-		 * GICC_IIDR register on both ends.
-		 */
+		 
 		if (!gic_check_gicv2(*base) ||
 		    !gic_check_gicv2(*base + 0xf000))
 			return false;
 
-		/*
-		 * Move the base up by 60kB, so that we have a 8kB
-		 * contiguous region, which allows us to use GICC_DIR
-		 * at its normal offset. Please pass me that bucket.
-		 */
+		 
 		*base += 0xf000;
 		cpuif_res.start += 0xf000;
 		pr_warn("GIC: Adjusting CPU interface base to %pa\n",
@@ -1367,11 +1229,7 @@ static bool gic_check_eoimode(struct device_node *node, void __iomem **base)
 
 static bool gic_enable_rmw_access(void *data)
 {
-	/*
-	 * The EMEV2 class of machines has a broken interconnect, and
-	 * locks up on accesses that are less than 32bit. So far, only
-	 * the affinity setting requires it.
-	 */
+	 
 	if (of_machine_is_compatible("renesas,emev2")) {
 		static_branch_enable(&needs_rmw_access);
 		return true;
@@ -1484,10 +1342,7 @@ gic_of_init(struct device_node *node, struct device_node *parent)
 	if (ret)
 		return ret;
 
-	/*
-	 * Disable split EOI/Deactivate if either HYP is not available
-	 * or the CPU interface is too small.
-	 */
+	 
 	if (gic_cnt == 0 && !gic_check_eoimode(node, &gic->raw_cpu_base))
 		static_branch_disable(&supports_deactivate_key);
 
@@ -1546,10 +1401,7 @@ gic_acpi_parse_madt_cpu(union acpi_subtable_headers *header,
 	if (BAD_MADT_GICC_ENTRY(processor, end))
 		return -EINVAL;
 
-	/*
-	 * There is no support for non-banked GICv1/2 register in ACPI spec.
-	 * All CPU interface addresses have to be the same.
-	 */
+	 
 	gic_cpu_base = processor->base_address;
 	if (cpu_base_assigned && gic_cpu_base != acpi_data.cpu_phys_base)
 		return -EINVAL;
@@ -1565,7 +1417,7 @@ gic_acpi_parse_madt_cpu(union acpi_subtable_headers *header,
 	return 0;
 }
 
-/* The things you have to do to just *count* something... */
+ 
 static int __init acpi_dummy_func(union acpi_subtable_headers *header,
 				  const unsigned long end)
 {
@@ -1641,7 +1493,7 @@ static int __init gic_v2_acpi_init(union acpi_subtable_headers *header,
 	struct gic_chip_data *gic = &gic_data[0];
 	int count, ret;
 
-	/* Collect CPU base addresses */
+	 
 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_INTERRUPT,
 				      gic_acpi_parse_madt_cpu, 0);
 	if (count <= 0) {
@@ -1664,17 +1516,11 @@ static int __init gic_v2_acpi_init(union acpi_subtable_headers *header,
 		return -ENOMEM;
 	}
 
-	/*
-	 * Disable split EOI/Deactivate if HYP is not available. ACPI
-	 * guarantees that we'll always have a GICv2, so the CPU
-	 * interface will always be the right size.
-	 */
+	 
 	if (!is_hyp_mode_available())
 		static_branch_disable(&supports_deactivate_key);
 
-	/*
-	 * Initialize GIC instance zero (no multi-GIC support).
-	 */
+	 
 	gsi_domain_handle = irq_domain_alloc_fwnode(&dist->base_address);
 	if (!gsi_domain_handle) {
 		pr_err("Unable to allocate domain handle\n");

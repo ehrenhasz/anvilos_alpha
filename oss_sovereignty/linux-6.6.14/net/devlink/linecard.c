@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -280,10 +277,7 @@ static int devlink_linecard_type_set(struct devlink_linecard *linecard,
 	    linecard->state != DEVLINK_LINECARD_STATE_PROVISIONING_FAILED) {
 		NL_SET_ERR_MSG(extack, "Line card already provisioned");
 		err = -EBUSY;
-		/* Check if the line card is provisioned in the same
-		 * way the user asks. In case it is, make the operation
-		 * to return success.
-		 */
+		 
 		if (ops->same_provision &&
 		    ops->same_provision(linecard, linecard->priv,
 					linecard_type->type,
@@ -299,9 +293,7 @@ static int devlink_linecard_type_set(struct devlink_linecard *linecard,
 	err = ops->provision(linecard, linecard->priv, linecard_type->type,
 			     linecard_type->priv, extack);
 	if (err) {
-		/* Provisioning failed. Assume the linecard is unprovisioned
-		 * for future operations.
-		 */
+		 
 		mutex_lock(&linecard->state_lock);
 		linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
 		linecard->type = NULL;
@@ -350,9 +342,7 @@ static int devlink_linecard_type_unset(struct devlink_linecard *linecard,
 	err = linecard->ops->unprovision(linecard, linecard->priv,
 					 extack);
 	if (err) {
-		/* Unprovisioning failed. Assume the linecard is unprovisioned
-		 * for future operations.
-		 */
+		 
 		mutex_lock(&linecard->state_lock);
 		linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
 		linecard->type = NULL;
@@ -423,19 +413,7 @@ static void devlink_linecard_types_fini(struct devlink_linecard *linecard)
 	kfree(linecard->types);
 }
 
-/**
- *	devl_linecard_create - Create devlink linecard
- *
- *	@devlink: devlink
- *	@linecard_index: driver-specific numerical identifier of the linecard
- *	@ops: linecards ops
- *	@priv: user priv pointer
- *
- *	Create devlink linecard instance with provided linecard index.
- *	Caller can use any indexing, even hw-related one.
- *
- *	Return: Line card structure or an ERR_PTR() encoded error code.
- */
+ 
 struct devlink_linecard *
 devl_linecard_create(struct devlink *devlink, unsigned int linecard_index,
 		     const struct devlink_linecard_ops *ops, void *priv)
@@ -474,11 +452,7 @@ devl_linecard_create(struct devlink *devlink, unsigned int linecard_index,
 }
 EXPORT_SYMBOL_GPL(devl_linecard_create);
 
-/**
- *	devl_linecard_destroy - Destroy devlink linecard
- *
- *	@linecard: devlink linecard
- */
+ 
 void devl_linecard_destroy(struct devlink_linecard *linecard)
 {
 	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_DEL);
@@ -489,15 +463,7 @@ void devl_linecard_destroy(struct devlink_linecard *linecard)
 }
 EXPORT_SYMBOL_GPL(devl_linecard_destroy);
 
-/**
- *	devlink_linecard_provision_set - Set provisioning on linecard
- *
- *	@linecard: devlink linecard
- *	@type: linecard type
- *
- *	This is either called directly from the provision() op call or
- *	as a result of the provision() op call asynchronously.
- */
+ 
 void devlink_linecard_provision_set(struct devlink_linecard *linecard,
 				    const char *type)
 {
@@ -510,14 +476,7 @@ void devlink_linecard_provision_set(struct devlink_linecard *linecard,
 }
 EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
 
-/**
- *	devlink_linecard_provision_clear - Clear provisioning on linecard
- *
- *	@linecard: devlink linecard
- *
- *	This is either called directly from the unprovision() op call or
- *	as a result of the unprovision() op call asynchronously.
- */
+ 
 void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
 {
 	mutex_lock(&linecard->state_lock);
@@ -529,14 +488,7 @@ void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
 }
 EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
 
-/**
- *	devlink_linecard_provision_fail - Fail provisioning on linecard
- *
- *	@linecard: devlink linecard
- *
- *	This is either called directly from the provision() op call or
- *	as a result of the provision() op call asynchronously.
- */
+ 
 void devlink_linecard_provision_fail(struct devlink_linecard *linecard)
 {
 	mutex_lock(&linecard->state_lock);
@@ -547,11 +499,7 @@ void devlink_linecard_provision_fail(struct devlink_linecard *linecard)
 }
 EXPORT_SYMBOL_GPL(devlink_linecard_provision_fail);
 
-/**
- *	devlink_linecard_activate - Set linecard active
- *
- *	@linecard: devlink linecard
- */
+ 
 void devlink_linecard_activate(struct devlink_linecard *linecard)
 {
 	mutex_lock(&linecard->state_lock);
@@ -562,11 +510,7 @@ void devlink_linecard_activate(struct devlink_linecard *linecard)
 }
 EXPORT_SYMBOL_GPL(devlink_linecard_activate);
 
-/**
- *	devlink_linecard_deactivate - Set linecard inactive
- *
- *	@linecard: devlink linecard
- */
+ 
 void devlink_linecard_deactivate(struct devlink_linecard *linecard)
 {
 	mutex_lock(&linecard->state_lock);
@@ -576,9 +520,7 @@ void devlink_linecard_deactivate(struct devlink_linecard *linecard)
 		devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
 		break;
 	case DEVLINK_LINECARD_STATE_UNPROVISIONING:
-		/* Line card is being deactivated as part
-		 * of unprovisioning flow.
-		 */
+		 
 		break;
 	default:
 		WARN_ON(1);
@@ -588,13 +530,7 @@ void devlink_linecard_deactivate(struct devlink_linecard *linecard)
 }
 EXPORT_SYMBOL_GPL(devlink_linecard_deactivate);
 
-/**
- *	devlink_linecard_nested_dl_set - Attach/detach nested devlink
- *					 instance to linecard.
- *
- *	@linecard: devlink linecard
- *	@nested_devlink: devlink instance to attach or NULL to detach
- */
+ 
 void devlink_linecard_nested_dl_set(struct devlink_linecard *linecard,
 				    struct devlink *nested_devlink)
 {

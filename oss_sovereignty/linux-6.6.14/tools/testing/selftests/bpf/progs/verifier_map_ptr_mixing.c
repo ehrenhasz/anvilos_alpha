@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/map_ptr_mixing.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -122,7 +122,7 @@ __success __retval(1)
 __naked void pointers_for_lookup_hash_array(void)
 {
 	asm volatile ("					\
-	/* main prog */					\
+	 					\
 	if r1 != 0 goto l0_%=;				\
 	call pointers_for_lookup_hash_array__1;		\
 	goto l1_%=;					\
@@ -172,7 +172,7 @@ __failure __msg("only read from bpf_array is supported")
 __naked void lookup_hash_map_in_map(void)
 {
 	asm volatile ("					\
-	/* main prog */					\
+	 					\
 	if r1 != 0 goto l0_%=;				\
 	call lookup_hash_map_in_map__1;			\
 	goto l1_%=;					\

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8960.c  --  WM8960 ALSA SoC Audio driver
- *
- * Copyright 2007-11 Wolfson Microelectronics, plc
- *
- * Author: Liam Girdwood
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -26,36 +20,32 @@
 
 #include "wm8960.h"
 
-/* R25 - Power 1 */
+ 
 #define WM8960_VMID_MASK 0x180
 #define WM8960_VREF      0x40
 
-/* R26 - Power 2 */
+ 
 #define WM8960_PWR2_LOUT1	0x40
 #define WM8960_PWR2_ROUT1	0x20
 #define WM8960_PWR2_OUT3	0x02
 
-/* R28 - Anti-pop 1 */
+ 
 #define WM8960_POBCTRL   0x80
 #define WM8960_BUFDCOPEN 0x10
 #define WM8960_BUFIOEN   0x08
 #define WM8960_SOFT_ST   0x04
 #define WM8960_HPSTBY    0x01
 
-/* R29 - Anti-pop 2 */
+ 
 #define WM8960_DISOP     0x40
 #define WM8960_DRES_MASK 0x30
 
-#define WM8960_DSCH_TOUT	600 /* discharge timeout, ms */
+#define WM8960_DSCH_TOUT	600  
 
 static bool is_pll_freq_available(unsigned int source, unsigned int target);
 static int wm8960_set_pll(struct snd_soc_component *component,
 		unsigned int freq_in, unsigned int freq_out);
-/*
- * wm8960 register cache
- * We can't read the WM8960 register space when we are
- * using 2 wire for device control, so we cache them instead.
- */
+ 
 static const struct reg_default wm8960_reg_defaults[] = {
 	{  0x0, 0x00a7 },
 	{  0x1, 0x00a7 },
@@ -151,7 +141,7 @@ struct wm8960_priv {
 
 #define wm8960_reset(c)	regmap_write(c, WM8960_RESET, 0)
 
-/* enumerated controls */
+ 
 static const char *wm8960_polarity[] = {"No Inversion", "Left Inverted",
 	"Right Inverted", "Stereo Inversion"};
 static const char *wm8960_3d_upper_cutoff[] = {"High", "Low"};
@@ -186,9 +176,7 @@ static int wm8960_set_deemph(struct snd_soc_component *component)
 	struct wm8960_priv *wm8960 = snd_soc_component_get_drvdata(component);
 	int val, i, best;
 
-	/* If we're using deemphasis select the nearest available sample
-	 * rate.
-	 */
+	 
 	if (wm8960->deemph) {
 		best = 1;
 		for (i = 2; i < ARRAY_SIZE(deemph_settings); i++) {
@@ -416,7 +404,7 @@ SND_SOC_DAPM_MIXER("Mono Output Mixer", WM8960_POWER2, 1, 0,
 	ARRAY_SIZE(wm8960_mono_out)),
 };
 
-/* Represent OUT3 as a PGA so that it gets turned on with LOUT1/ROUT1 */
+ 
 static const struct snd_soc_dapm_widget wm8960_dapm_widgets_capless[] = {
 SND_SOC_DAPM_PGA("OUT3 VMID", WM8960_POWER2, 1, 0, NULL, 0),
 };
@@ -427,7 +415,7 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Left Boost Mixer", "LINPUT3 Switch", "LINPUT3" },
 
 	{ "Left Input Mixer", "Boost Switch", "Left Boost Mixer" },
-	{ "Left Input Mixer", "Boost Switch", "LINPUT1" },  /* Really Boost Switch */
+	{ "Left Input Mixer", "Boost Switch", "LINPUT1" },   
 	{ "Left Input Mixer", NULL, "LINPUT2" },
 	{ "Left Input Mixer", NULL, "LINPUT3" },
 
@@ -436,7 +424,7 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Right Boost Mixer", "RINPUT3 Switch", "RINPUT3" },
 
 	{ "Right Input Mixer", "Boost Switch", "Right Boost Mixer" },
-	{ "Right Input Mixer", "Boost Switch", "RINPUT1" },  /* Really Boost Switch */
+	{ "Right Input Mixer", "Boost Switch", "RINPUT1" },   
 	{ "Right Input Mixer", NULL, "RINPUT2" },
 	{ "Right Input Mixer", NULL, "RINPUT3" },
 
@@ -496,9 +484,7 @@ static int wm8960_add_widgets(struct snd_soc_component *component)
 
 	snd_soc_dapm_add_routes(dapm, audio_paths, ARRAY_SIZE(audio_paths));
 
-	/* In capless mode OUT3 is used to provide VMID for the
-	 * headphone outputs, otherwise it is used as a mono mixer.
-	 */
+	 
 	if (pdata && pdata->capless) {
 		snd_soc_dapm_new_controls(dapm, wm8960_dapm_widgets_capless,
 					  ARRAY_SIZE(wm8960_dapm_widgets_capless));
@@ -513,11 +499,7 @@ static int wm8960_add_widgets(struct snd_soc_component *component)
 					ARRAY_SIZE(audio_paths_out3));
 	}
 
-	/* We need to power up the headphone output stage out of
-	 * sequence for capless mode.  To save scanning the widget
-	 * list each time to find the desired power state do so now
-	 * and save the result.
-	 */
+	 
 	list_for_each_entry(w, &component->card->widgets, list) {
 		if (w->dapm != dapm)
 			continue;
@@ -538,7 +520,7 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	u16 iface = 0;
 
-	/* set master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
 		iface |= 0x0040;
@@ -549,7 +531,7 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= 0x0002;
@@ -569,7 +551,7 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -586,7 +568,7 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* set iface */
+	 
 	snd_soc_component_write(component, WM8960_IFACE1, iface);
 	return 0;
 }
@@ -606,36 +588,19 @@ static struct {
 	{  8000, 5 },
 };
 
-/* -1 for reserved value */
+ 
 static const int sysclk_divs[] = { 1, -1, 2, -1 };
 
-/* Multiply 256 for internal 256 div */
+ 
 static const int dac_divs[] = { 256, 384, 512, 768, 1024, 1408, 1536 };
 
-/* Multiply 10 to eliminate decimials */
+ 
 static const int bclk_divs[] = {
 	10, 15, 20, 30, 40, 55, 60, 80, 110,
 	120, 160, 220, 240, 320, 320, 320
 };
 
-/**
- * wm8960_configure_sysclk - checks if there is a sysclk frequency available
- *	The sysclk must be chosen such that:
- *		- sysclk     = MCLK / sysclk_divs
- *		- lrclk      = sysclk / dac_divs
- *		- 10 * bclk  = sysclk / bclk_divs
- *
- * @wm8960: codec private data
- * @mclk: MCLK used to derive sysclk
- * @sysclk_idx: sysclk_divs index for found sysclk
- * @dac_idx: dac_divs index for found lrclk
- * @bclk_idx: bclk_divs index for found bclk
- *
- * Returns:
- *  -1, in case no sysclk frequency available found
- * >=0, in case we could derive bclk and lrclk from sysclk using
- *      (@sysclk_idx, @dac_idx, @bclk_idx) dividers
- */
+ 
 static
 int wm8960_configure_sysclk(struct wm8960_priv *wm8960, int mclk,
 			    int *sysclk_idx, int *dac_idx, int *bclk_idx)
@@ -644,13 +609,13 @@ int wm8960_configure_sysclk(struct wm8960_priv *wm8960, int mclk,
 	int i, j, k;
 	int diff;
 
-	/* marker for no match */
+	 
 	*bclk_idx = -1;
 
 	bclk = wm8960->bclk;
 	lrclk = wm8960->lrclk;
 
-	/* check if the sysclk frequency is available. */
+	 
 	for (i = 0; i < ARRAY_SIZE(sysclk_divs); ++i) {
 		if (sysclk_divs[i] == -1)
 			continue;
@@ -676,28 +641,7 @@ int wm8960_configure_sysclk(struct wm8960_priv *wm8960, int mclk,
 	return *bclk_idx;
 }
 
-/**
- * wm8960_configure_pll - checks if there is a PLL out frequency available
- *	The PLL out frequency must be chosen such that:
- *		- sysclk      = lrclk * dac_divs
- *		- freq_out    = sysclk * sysclk_divs
- *		- 10 * sysclk = bclk * bclk_divs
- *
- * 	If we cannot find an exact match for (sysclk, lrclk, bclk)
- * 	triplet, we relax the bclk such that bclk is chosen as the
- * 	closest available frequency greater than expected bclk.
- *
- * @component: component structure
- * @freq_in: input frequency used to derive freq out via PLL
- * @sysclk_idx: sysclk_divs index for found sysclk
- * @dac_idx: dac_divs index for found lrclk
- * @bclk_idx: bclk_divs index for found bclk
- *
- * Returns:
- * < 0, in case no PLL frequency out available was found
- * >=0, in case we could derive bclk, lrclk, sysclk from PLL out using
- *      (@sysclk_idx, @dac_idx, @bclk_idx) dividers
- */
+ 
 static
 int wm8960_configure_pll(struct snd_soc_component *component, int freq_in,
 			 int *sysclk_idx, int *dac_idx, int *bclk_idx)
@@ -714,12 +658,7 @@ int wm8960_configure_pll(struct snd_soc_component *component, int freq_in,
 	best_freq_out = -EINVAL;
 	*sysclk_idx = *dac_idx = *bclk_idx = -1;
 
-	/*
-	 * From Datasheet, the PLL performs best when f2 is between
-	 * 90MHz and 100MHz, the desired sysclk output is 11.2896MHz
-	 * or 12.288MHz, then sysclkdiv = 2 is the best choice.
-	 * So search sysclk_divs from 2 to 1 other than from 1 to 2.
-	 */
+	 
 	for (i = ARRAY_SIZE(sysclk_divs) - 1; i >= 0; --i) {
 		if (sysclk_divs[i] == -1)
 			continue;
@@ -759,13 +698,7 @@ static int wm8960_configure_clocking(struct snd_soc_component *component)
 	int i, j, k;
 	int ret;
 
-	/*
-	 * For Slave mode clocking should still be configured,
-	 * so this if statement should be removed, but some platform
-	 * may not work if the sysclk is not configured, to avoid such
-	 * compatible issue, just add '!wm8960->sysclk' condition in
-	 * this if statement.
-	 */
+	 
 	if (!(iface1 & (1 << 6)) && !wm8960->sysclk) {
 		dev_warn(component->dev,
 			 "slave mode, but proceeding with no clock configuration\n");
@@ -778,14 +711,9 @@ static int wm8960_configure_clocking(struct snd_soc_component *component)
 	}
 
 	freq_in = wm8960->freq_in;
-	/*
-	 * If it's sysclk auto mode, check if the MCLK can provide sysclk or
-	 * not. If MCLK can provide sysclk, using MCLK to provide sysclk
-	 * directly. Otherwise, auto select a available pll out frequency
-	 * and set PLL.
-	 */
+	 
 	if (wm8960->clk_id == WM8960_SYSCLK_AUTO) {
-		/* disable the PLL and using MCLK to provide sysclk */
+		 
 		wm8960_set_pll(component, 0, 0);
 		freq_out = freq_in;
 	} else if (wm8960->sysclk) {
@@ -813,14 +741,14 @@ static int wm8960_configure_clocking(struct snd_soc_component *component)
 	wm8960_set_pll(component, freq_in, freq_out);
 
 configure_clock:
-	/* configure sysclk clock */
+	 
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 3 << 1, i << 1);
 
-	/* configure frame clock */
+	 
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x7 << 3, j << 3);
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x7 << 6, j << 6);
 
-	/* configure bit clock */
+	 
 	snd_soc_component_update_bits(component, WM8960_CLOCK2, 0xf, k);
 
 	return 0;
@@ -840,7 +768,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 	if (params_channels(params) == 1)
 		wm8960->bclk *= 2;
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		break;
@@ -851,7 +779,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 		iface |= 0x0008;
 		break;
 	case 32:
-		/* right justify mode does not support 32 word length */
+		 
 		if ((iface & 0x3) != 0) {
 			iface |= 0x000c;
 			break;
@@ -864,7 +792,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	wm8960->lrclk = params_rate(params);
-	/* Update filters for the new rate */
+	 
 	if (tx) {
 		wm8960_set_deemph(component);
 	} else {
@@ -875,7 +803,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 						    alc_rates[i].val);
 	}
 
-	/* set iface */
+	 
 	snd_soc_component_write(component, WM8960_IFACE1, iface);
 
 	wm8960->is_stream_in_use[tx] = true;
@@ -938,15 +866,12 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 			if (ret)
 				return ret;
 
-			/* Set VMID to 2x50k */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1, 0x180, 0x80);
 			break;
 
 		case SND_SOC_BIAS_ON:
-			/*
-			 * If it's sysclk auto mode, and the pll is enabled,
-			 * disable the pll
-			 */
+			 
 			if (wm8960->clk_id == WM8960_SYSCLK_AUTO && (pm2 & 0x1))
 				wm8960_set_pll(component, 0, 0);
 
@@ -962,41 +887,41 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-			/* ensure discharge is complete */
+			 
 			tout = WM8960_DSCH_TOUT - ktime_ms_delta(ktime_get(), wm8960->dsch_start);
 			if (tout > 0)
 				msleep(tout);
 
 			regcache_sync(wm8960->regmap);
 
-			/* Enable anti-pop features */
+			 
 			snd_soc_component_write(component, WM8960_APOP1,
 				      WM8960_POBCTRL | WM8960_SOFT_ST |
 				      WM8960_BUFDCOPEN | WM8960_BUFIOEN);
 
-			/* Enable & ramp VMID at 2x50k */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1, 0x80, 0x80);
 			msleep(100);
 
-			/* Enable VREF */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1, WM8960_VREF,
 					    WM8960_VREF);
 
-			/* Disable anti-pop features */
+			 
 			snd_soc_component_write(component, WM8960_APOP1, WM8960_BUFIOEN);
 		}
 
-		/* Set VMID to 2x250k */
+		 
 		snd_soc_component_update_bits(component, WM8960_POWER1, 0x180, 0x100);
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		/* Enable anti-pop features */
+		 
 		snd_soc_component_write(component, WM8960_APOP1,
 			     WM8960_POBCTRL | WM8960_SOFT_ST |
 			     WM8960_BUFDCOPEN | WM8960_BUFIOEN);
 
-		/* Disable VMID and VREF, mark discharge */
+		 
 		snd_soc_component_write(component, WM8960_POWER1, 0);
 		wm8960->dsch_start = ktime_get();
 		break;
@@ -1019,14 +944,14 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		switch (snd_soc_component_get_bias_level(component)) {
 		case SND_SOC_BIAS_STANDBY:
-			/* Enable anti pop mode */
+			 
 			snd_soc_component_update_bits(component, WM8960_APOP1,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN);
 
-			/* Enable LOUT1, ROUT1 and OUT3 if they're enabled */
+			 
 			reg = 0;
 			if (wm8960->lout1 && wm8960->lout1->power)
 				reg |= WM8960_PWR2_LOUT1;
@@ -1039,14 +964,14 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 					    WM8960_PWR2_ROUT1 |
 					    WM8960_PWR2_OUT3, reg);
 
-			/* Enable VMID at 2*50k */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1,
 					    WM8960_VMID_MASK, 0x80);
 
-			/* Ramp */
+			 
 			msleep(100);
 
-			/* Enable VREF */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1,
 					    WM8960_VREF, WM8960_VREF);
 
@@ -1069,24 +994,21 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 			break;
 
 		case SND_SOC_BIAS_ON:
-			/*
-			 * If it's sysclk auto mode, and the pll is enabled,
-			 * disable the pll
-			 */
+			 
 			if (wm8960->clk_id == WM8960_SYSCLK_AUTO && (pm2 & 0x1))
 				wm8960_set_pll(component, 0, 0);
 
 			if (!IS_ERR(wm8960->mclk))
 				clk_disable_unprepare(wm8960->mclk);
 
-			/* Enable anti-pop mode */
+			 
 			snd_soc_component_update_bits(component, WM8960_APOP1,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN);
 
-			/* Disable VMID and VREF */
+			 
 			snd_soc_component_update_bits(component, WM8960_POWER1,
 					    WM8960_VREF | WM8960_VMID_MASK, 0);
 			break;
@@ -1102,12 +1024,12 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 	case SND_SOC_BIAS_STANDBY:
 		switch (snd_soc_component_get_bias_level(component)) {
 		case SND_SOC_BIAS_PREPARE:
-			/* Disable HP discharge */
+			 
 			snd_soc_component_update_bits(component, WM8960_APOP2,
 					    WM8960_DISOP | WM8960_DRES_MASK,
 					    0);
 
-			/* Disable anti-pop features */
+			 
 			snd_soc_component_update_bits(component, WM8960_APOP1,
 					    WM8960_POBCTRL | WM8960_SOFT_ST |
 					    WM8960_BUFDCOPEN,
@@ -1127,7 +1049,7 @@ static int wm8960_set_bias_level_capless(struct snd_soc_component *component,
 	return 0;
 }
 
-/* PLL divisors */
+ 
 struct _pll_div {
 	u32 pre_div:1;
 	u32 n:4;
@@ -1141,7 +1063,7 @@ static bool is_pll_freq_available(unsigned int source, unsigned int target)
 	if (source == 0 || target == 0)
 		return false;
 
-	/* Scale up target to PLL operating frequency */
+	 
 	target *= 4;
 	Ndiv = target / source;
 
@@ -1156,8 +1078,7 @@ static bool is_pll_freq_available(unsigned int source, unsigned int target)
 	return true;
 }
 
-/* The size in bits of the pll divide multiplied by 10
- * to allow rounding later */
+ 
 #define FIXED_PLL_SIZE ((1 << 24) * 10)
 
 static int pll_factors(unsigned int source, unsigned int target,
@@ -1168,7 +1089,7 @@ static int pll_factors(unsigned int source, unsigned int target,
 
 	pr_debug("WM8960 PLL: setting %dHz->%dHz\n", source, target);
 
-	/* Scale up target to PLL operating frequency */
+	 
 	target *= 4;
 
 	Ndiv = target / source;
@@ -1192,11 +1113,11 @@ static int pll_factors(unsigned int source, unsigned int target,
 
 	K = Kpart & 0xFFFFFFFF;
 
-	/* Check if we need to round */
+	 
 	if ((K % 10) >= 5)
 		K += 5;
 
-	/* Move down to proper range now rounding is done */
+	 
 	K /= 10;
 
 	pll_div->k = K;
@@ -1220,8 +1141,7 @@ static int wm8960_set_pll(struct snd_soc_component *component,
 			return ret;
 	}
 
-	/* Disable the PLL: even if we are changing the frequency the
-	 * PLL needs to be disabled while we do so. */
+	 
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x1, 0);
 	snd_soc_component_update_bits(component, WM8960_POWER2, 0x1, 0);
 
@@ -1241,7 +1161,7 @@ static int wm8960_set_pll(struct snd_soc_component *component,
 	}
 	snd_soc_component_write(component, WM8960_PLL1, reg);
 
-	/* Turn it on */
+	 
 	snd_soc_component_update_bits(component, WM8960_POWER2, 0x1, 0x1);
 	msleep(250);
 	snd_soc_component_update_bits(component, WM8960_CLOCK1, 0x1, 0x1);
@@ -1501,7 +1421,7 @@ static int wm8960_i2c_probe(struct i2c_client *i2c)
 		}
 	}
 
-	/* Latch the update bits */
+	 
 	regmap_update_bits(wm8960->regmap, WM8960_LINVOL, 0x100, 0x100);
 	regmap_update_bits(wm8960->regmap, WM8960_RINVOL, 0x100, 0x100);
 	regmap_update_bits(wm8960->regmap, WM8960_LADC, 0x100, 0x100);
@@ -1513,13 +1433,13 @@ static int wm8960_i2c_probe(struct i2c_client *i2c)
 	regmap_update_bits(wm8960->regmap, WM8960_LOUT2, 0x100, 0x100);
 	regmap_update_bits(wm8960->regmap, WM8960_ROUT2, 0x100, 0x100);
 
-	/* ADCLRC pin configured as GPIO. */
+	 
 	regmap_update_bits(wm8960->regmap, WM8960_IFACE2, 1 << 6,
 			   wm8960->pdata.gpio_cfg[0] << 6);
 	regmap_update_bits(wm8960->regmap, WM8960_ADDCTL4, 0xF << 4,
 			   wm8960->pdata.gpio_cfg[1] << 4);
 
-	/* Enable headphone jack detect */
+	 
 	regmap_update_bits(wm8960->regmap, WM8960_ADDCTL4, 3 << 2,
 			   wm8960->pdata.hp_cfg[0] << 2);
 	regmap_update_bits(wm8960->regmap, WM8960_ADDCTL2, 3 << 5,
@@ -1564,8 +1484,8 @@ MODULE_DEVICE_TABLE(of, wm8960_of_match);
 
 #if defined(CONFIG_ACPI)
 static const struct acpi_device_id wm8960_acpi_match[] = {
-	{ "1AEC8960", 0 }, /* Wolfson PCI ID + part ID */
-	{ "10138960", 0 }, /* Cirrus Logic PCI ID + part ID */
+	{ "1AEC8960", 0 },  
+	{ "10138960", 0 },  
 	{ },
 };
 MODULE_DEVICE_TABLE(acpi, wm8960_acpi_match);

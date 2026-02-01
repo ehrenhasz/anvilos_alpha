@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UFS PHY driver for Samsung SoC
- *
- * Copyright (C) 2020 Samsung Electronics Co., Ltd.
- * Author: Seungwon Jeon <essuuj@gmail.com>
- * Author: Alim Akhtar <alim.akhtar@samsung.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -32,7 +25,7 @@ static void samsung_ufs_phy_config(struct samsung_ufs_phy *phy,
 				   const struct samsung_ufs_phy_cfg *cfg,
 				   u8 lane)
 {
-	enum {LANE_0, LANE_1}; /* lane index */
+	enum {LANE_0, LANE_1};  
 
 	switch (lane) {
 	case LANE_0:
@@ -100,15 +93,7 @@ static int samsung_ufs_phy_calibrate(struct phy *phy)
 	if (ufs_phy->ufs_phy_state == CFG_POST_PWR_HS)
 		err = samsung_ufs_phy_wait_for_lock_acq(phy);
 
-	/**
-	 * In Samsung ufshci, PHY need to be calibrated at different
-	 * stages / state mainly before Linkstartup, after Linkstartup,
-	 * before power mode change and after power mode change.
-	 * Below state machine to make sure to calibrate PHY in each
-	 * state. Here after configuring PHY in a given state, will
-	 * change the state to next state so that next state phy
-	 * calibration value can be programed
-	 */
+	 
 out:
 	switch (ufs_phy->ufs_phy_state) {
 	case CFG_PRE_INIT:
@@ -121,7 +106,7 @@ out:
 		ufs_phy->ufs_phy_state = CFG_POST_PWR_HS;
 		break;
 	case CFG_POST_PWR_HS:
-		/* Change back to INIT state */
+		 
 		ufs_phy->ufs_phy_state = CFG_PRE_INIT;
 		break;
 	default:

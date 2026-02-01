@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #define _SDT_HAS_SEMAPHORES 1
 #include "sdt.h"
 

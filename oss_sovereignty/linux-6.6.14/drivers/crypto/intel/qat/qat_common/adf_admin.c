@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/types.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
@@ -106,7 +106,7 @@ struct adf_admin_comms {
 	void *virt_addr;
 	void *virt_tbl_addr;
 	void __iomem *mailbox_addr;
-	struct mutex lock;	/* protects adf_admin_comms struct */
+	struct mutex lock;	 
 };
 
 static int adf_put_admin_msg_sync(struct adf_accel_dev *accel_dev, u32 ae,
@@ -135,14 +135,12 @@ static int adf_put_admin_msg_sync(struct adf_accel_dev *accel_dev, u32 ae,
 				ADF_ADMIN_POLL_TIMEOUT_US, true,
 				mailbox, mb_offset);
 	if (ret < 0) {
-		/* Response timeout */
+		 
 		dev_err(&GET_DEV(accel_dev),
 			"Failed to send admin msg %d to accelerator %d\n",
 			request->cmd_id, ae);
 	} else {
-		/* Response received from admin message, we can now
-		 * make response data available in "out" parameter.
-		 */
+		 
 		memcpy(out, admin->virt_addr + offset +
 		       ADF_ADMINMSG_LEN, ADF_ADMINMSG_LEN);
 	}
@@ -234,7 +232,7 @@ static int adf_get_dc_capabilities(struct adf_accel_dev *accel_dev,
 	unsigned long ae;
 	int ret;
 
-	/* Target only service accelerator engines */
+	 
 	ae_mask = hw_device->ae_mask & ~hw_device->admin_ae_mask;
 
 	memset(&req, 0, sizeof(req));
@@ -309,14 +307,7 @@ static bool is_dcc_enabled(struct adf_accel_dev *accel_dev)
 	return !strcmp(services, "dcc");
 }
 
-/**
- * adf_send_admin_init() - Function sends init message to FW
- * @accel_dev: Pointer to acceleration device.
- *
- * Function sends admin init message to the FW
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_send_admin_init(struct adf_accel_dev *accel_dev)
 {
 	u32 dc_capabilities = 0;
@@ -343,24 +334,7 @@ int adf_send_admin_init(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_send_admin_init);
 
-/**
- * adf_init_admin_pm() - Function sends PM init message to FW
- * @accel_dev: Pointer to acceleration device.
- * @idle_delay: QAT HW idle time before power gating is initiated.
- *		000 - 64us
- *		001 - 128us
- *		010 - 256us
- *		011 - 512us
- *		100 - 1ms
- *		101 - 2ms
- *		110 - 4ms
- *		111 - 8ms
- *
- * Function sends to the FW the admin init message for the PM state
- * configuration.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_init_admin_pm(struct adf_accel_dev *accel_dev, u32 idle_delay)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;

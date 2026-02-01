@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson6/Meson8/Meson8b/Meson8m2 SDHC MMC host controller driver.
- *
- * Copyright (C) 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -160,28 +156,16 @@ static void meson_mx_sdhc_start_cmd(struct mmc_host *mmc,
 		if (cmd->data->flags & MMC_DATA_WRITE)
 			send |= MESON_SDHC_SEND_DATA_DIR;
 
-		/*
-		 * If command with no data, just wait response done
-		 * interrupt(int[0]), and if command with data transfer, just
-		 * wait dma done interrupt(int[11]), don't need care about
-		 * dat0 busy or not.
-		 */
+		 
 		if (host->platform->hardware_flush_all_cmds ||
 		    cmd->data->flags & MMC_DATA_WRITE)
-			/* hardware flush: */
+			 
 			ictl |= MESON_SDHC_ICTL_DMA_DONE;
 		else
-			/* software flush: */
+			 
 			ictl |= MESON_SDHC_ICTL_DATA_XFER_OK;
 
-		/*
-		 * Mimic the logic from the vendor driver where (only)
-		 * SD_IO_RW_EXTENDED commands with more than one block set the
-		 * MESON_SDHC_MISC_MANUAL_STOP bit. This fixes the firmware
-		 * download in the brcmfmac driver for a BCM43362/1 card.
-		 * Without this sdio_memcpy_toio() (with a size of 219557
-		 * bytes) times out if MESON_SDHC_MISC_MANUAL_STOP is not set.
-		 */
+		 
 		manual_stop = cmd->data->blocks > 1 &&
 			      cmd->opcode == SD_IO_RW_EXTENDED;
 	} else {
@@ -211,7 +195,7 @@ static void meson_mx_sdhc_start_cmd(struct mmc_host *mmc,
 	if (cmd->flags & MMC_RSP_BUSY)
 		send |= MESON_SDHC_SEND_R1B;
 
-	/* enable the new IRQs and mask all pending ones */
+	 
 	regmap_write(host->regmap, MESON_SDHC_ICTL, ictl);
 	regmap_write(host->regmap, MESON_SDHC_ISTA, MESON_SDHC_ISTA_ALL_IRQS);
 
@@ -289,10 +273,7 @@ static int meson_mx_sdhc_set_clk(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		mmc->actual_clock = clk_get_rate(host->sd_clk);
 
-		/*
-		 * Phase 90 should work in most cases. For data transmission,
-		 * meson_mx_sdhc_execute_tuning() will find a accurate value
-		 */
+		 
 		regmap_read(host->regmap, MESON_SDHC_CLKC, &val);
 		rx_clk_phase = FIELD_GET(MESON_SDHC_CLKC_CLK_DIV, val) / 4;
 		regmap_update_bits(host->regmap, MESON_SDHC_CLK2,
@@ -466,19 +447,19 @@ static int meson_mx_sdhc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 					best_start, best_start + best_len);
 			}
 
-			/* reset the current window */
+			 
 			len = 0;
 		}
 	}
 
 	if (len > best_len)
-		/* the last window is the best (or possibly only) window */
+		 
 		new_phase = start + (len / 2);
 	else if (best_len)
-		/* there was a better window than the last */
+		 
 		new_phase = best_start + (best_len / 2);
 	else
-		/* no window was found at all, reset to the original phase */
+		 
 		new_phase = old_phase;
 
 	regmap_update_bits(host->regmap, MESON_SDHC_CLK2,
@@ -509,7 +490,7 @@ static void meson_mx_sdhc_request_done(struct meson_mx_sdhc_host *host)
 	struct mmc_request *mrq = host->mrq;
 	struct mmc_host *mmc = host->mmc;
 
-	/* disable interrupts and mask all pending ones */
+	 
 	regmap_update_bits(host->regmap, MESON_SDHC_ICTL,
 			   MESON_SDHC_ICTL_ALL_IRQS, 0);
 	regmap_update_bits(host->regmap, MESON_SDHC_ISTA,
@@ -586,14 +567,7 @@ static irqreturn_t meson_mx_sdhc_irq_thread(int irq, void *irq_data)
 		    cmd->data->flags & MMC_DATA_READ) {
 			meson_mx_sdhc_wait_cmd_ready(host->mmc);
 
-			/*
-			 * If MESON_SDHC_PDMA_RXFIFO_MANUAL_FLUSH was
-			 * previously 0x1 then it has to be set to 0x3. If it
-			 * was 0x0 before then it has to be set to 0x2. Without
-			 * this reading SD cards sometimes transfers garbage,
-			 * which results in cards not being detected due to:
-			 *   unrecognised SCR structure version <random number>
-			 */
+			 
 			val = FIELD_PREP(MESON_SDHC_PDMA_RXFIFO_MANUAL_FLUSH,
 					 2);
 			regmap_update_bits(host->regmap, MESON_SDHC_PDMA, val,
@@ -620,12 +594,7 @@ static irqreturn_t meson_mx_sdhc_irq_thread(int irq, void *irq_data)
 	if (cmd->error == -EIO || cmd->error == -ETIMEDOUT)
 		meson_mx_sdhc_hw_reset(host->mmc);
 	else if (cmd->data)
-		/*
-		 * Clear the FIFOs after completing data transfers to prevent
-		 * corrupting data on write access. It's not clear why this is
-		 * needed (for reads and writes), but it mimics what the BSP
-		 * kernel did.
-		 */
+		 
 		meson_mx_sdhc_clear_fifo(host->mmc);
 
 	meson_mx_sdhc_request_done(host);
@@ -736,10 +705,7 @@ static void meson_mx_sdhc_init_hw(struct mmc_host *mmc)
 		     FIELD_PREP(MESON_SDHC_CTRL_RX_ENDIAN, 0x7) |
 		     FIELD_PREP(MESON_SDHC_CTRL_TX_ENDIAN, 0x7));
 
-	/*
-	 * start with a valid divider and enable the memory (un-setting
-	 * MESON_SDHC_CLKC_MEM_PWR_OFF).
-	 */
+	 
 	regmap_write(host->regmap, MESON_SDHC_CLKC, MESON_SDHC_CLKC_CLK_DIV);
 
 	regmap_write(host->regmap, MESON_SDHC_CLK2,
@@ -752,10 +718,10 @@ static void meson_mx_sdhc_init_hw(struct mmc_host *mmc)
 		     FIELD_PREP(MESON_SDHC_PDMA_RD_BURST, 15) |
 		     FIELD_PREP(MESON_SDHC_PDMA_RXFIFO_TH, 7));
 
-	/* some initialization bits depend on the SoC: */
+	 
 	host->platform->init_hw(mmc);
 
-	/* disable and mask all interrupts: */
+	 
 	regmap_write(host->regmap, MESON_SDHC_ICTL, 0);
 	regmap_write(host->regmap, MESON_SDHC_ISTA, MESON_SDHC_ISTA_ALL_IRQS);
 }
@@ -805,7 +771,7 @@ static int meson_mx_sdhc_probe(struct platform_device *pdev)
 	if (IS_ERR(host->pclk))
 		return PTR_ERR(host->pclk);
 
-	/* accessing any register requires the module clock to be enabled: */
+	 
 	ret = clk_prepare_enable(host->pclk);
 	if (ret) {
 		dev_err(dev, "Failed to enable 'pclk' clock\n");
@@ -820,7 +786,7 @@ static int meson_mx_sdhc_probe(struct platform_device *pdev)
 
 	host->sd_clk = host->bulk_clks[1].clk;
 
-	/* Get regulators and the supported OCR mask */
+	 
 	ret = mmc_regulator_get_supply(mmc);
 	if (ret)
 		goto err_disable_pclk;
@@ -901,7 +867,7 @@ static const struct of_device_id meson_mx_sdhc_of_match[] = {
 		.compatible = "amlogic,meson8m2-sdhc",
 		.data = &meson_mx_sdhc_data_meson8m2
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_mx_sdhc_of_match);
 

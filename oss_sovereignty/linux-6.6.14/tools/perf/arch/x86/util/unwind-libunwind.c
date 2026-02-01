@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <errno.h>
 #include "../../util/debug.h"
@@ -112,4 +112,4 @@ int LIBUNWIND__ARCH_REG_ID(int regnum)
 
 	return id;
 }
-#endif /* HAVE_ARCH_X86_64_SUPPORT */
+#endif  

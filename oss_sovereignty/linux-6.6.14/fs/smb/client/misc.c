@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2002,2008
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/ctype.h>
@@ -30,11 +25,7 @@
 extern mempool_t *cifs_sm_req_poolp;
 extern mempool_t *cifs_req_poolp;
 
-/* The xid serves as a useful identifier for each incoming vfs request,
-   in a similar way to the mid which is useful to track each sent smb,
-   and CurrentXid can also provide a running counter (although it
-   will eventually wrap past zero) of the total vfs operations handled
-   since the cifs fs was mounted */
+ 
 
 unsigned int
 _get_xid(void)
@@ -44,7 +35,7 @@ _get_xid(void)
 	spin_lock(&GlobalMid_Lock);
 	GlobalTotalActiveXid++;
 
-	/* keep high water mark for number of simultaneous ops in filesystem */
+	 
 	if (GlobalTotalActiveXid > GlobalMaxActiveXid)
 		GlobalMaxActiveXid = GlobalTotalActiveXid;
 	if (GlobalTotalActiveXid > 65000)
@@ -58,8 +49,7 @@ void
 _free_xid(unsigned int xid)
 {
 	spin_lock(&GlobalMid_Lock);
-	/* if (GlobalTotalActiveXid == 0)
-		BUG(); */
+	 
 	GlobalTotalActiveXid--;
 	spin_unlock(&GlobalMid_Lock);
 }
@@ -128,7 +118,7 @@ tcon_info_alloc(bool dir_leases_enabled)
 			return NULL;
 		}
 	}
-	/* else ret_buf->cfids is already set to NULL above */
+	 
 
 	atomic_inc(&tconInfoAllocCount);
 	ret_buf->status = TID_NEW;
@@ -169,27 +159,19 @@ struct smb_hdr *
 cifs_buf_get(void)
 {
 	struct smb_hdr *ret_buf = NULL;
-	/*
-	 * SMB2 header is bigger than CIFS one - no problems to clean some
-	 * more bytes for CIFS.
-	 */
+	 
 	size_t buf_size = sizeof(struct smb2_hdr);
 
-	/*
-	 * We could use negotiated size instead of max_msgsize -
-	 * but it may be more efficient to always alloc same size
-	 * albeit slightly larger than necessary and maxbuffersize
-	 * defaults to this and can not be bigger.
-	 */
+	 
 	ret_buf = mempool_alloc(cifs_req_poolp, GFP_NOFS);
 
-	/* clear the first few header bytes */
-	/* for most paths, more is cleared in header_assemble */
+	 
+	 
 	memset(ret_buf, 0, buf_size + 3);
 	atomic_inc(&buf_alloc_count);
 #ifdef CONFIG_CIFS_STATS2
 	atomic_inc(&total_buf_alloc_count);
-#endif /* CONFIG_CIFS_STATS2 */
+#endif  
 
 	return ret_buf;
 }
@@ -198,7 +180,7 @@ void
 cifs_buf_release(void *buf_to_free)
 {
 	if (buf_to_free == NULL) {
-		/* cifs_dbg(FYI, "Null buffer passed to cifs_buf_release\n");*/
+		 
 		return;
 	}
 	mempool_free(buf_to_free, cifs_req_poolp);
@@ -212,17 +194,14 @@ cifs_small_buf_get(void)
 {
 	struct smb_hdr *ret_buf = NULL;
 
-/* We could use negotiated size instead of max_msgsize -
-   but it may be more efficient to always alloc same size
-   albeit slightly larger than necessary and maxbuffersize
-   defaults to this and can not be bigger */
+ 
 	ret_buf = mempool_alloc(cifs_sm_req_poolp, GFP_NOFS);
-	/* No need to clear memory here, cleared in header assemble */
-	/*	memset(ret_buf, 0, sizeof(struct smb_hdr) + 27);*/
+	 
+	 
 	atomic_inc(&small_buf_alloc_count);
 #ifdef CONFIG_CIFS_STATS2
 	atomic_inc(&total_small_buf_alloc_count);
-#endif /* CONFIG_CIFS_STATS2 */
+#endif  
 
 	return ret_buf;
 }
@@ -250,28 +229,27 @@ free_rsp_buf(int resp_buftype, void *rsp)
 		cifs_buf_release(rsp);
 }
 
-/* NB: MID can not be set if treeCon not passed in, in that
-   case it is responsbility of caller to set the mid */
+ 
 void
-header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
+header_assemble(struct smb_hdr *buffer, char smb_command   ,
 		const struct cifs_tcon *treeCon, int word_count
-		/* length of fixed section (word count) in two byte units  */)
+		 )
 {
 	char *temp = (char *) buffer;
 
-	memset(temp, 0, 256); /* bigger than MAX_CIFS_HDR_SIZE */
+	memset(temp, 0, 256);  
 
 	buffer->smb_buf_length = cpu_to_be32(
 	    (2 * word_count) + sizeof(struct smb_hdr) -
-	    4 /*  RFC 1001 length field does not count */  +
-	    2 /* for bcc field itself */) ;
+	    4    +
+	    2  ) ;
 
 	buffer->Protocol[0] = 0xFF;
 	buffer->Protocol[1] = 'S';
 	buffer->Protocol[2] = 'M';
 	buffer->Protocol[3] = 'B';
 	buffer->Command = smb_command;
-	buffer->Flags = 0x00;	/* case sensitive */
+	buffer->Flags = 0x00;	 
 	buffer->Flags2 = SMBFLG2_KNOWS_LONG_NAMES;
 	buffer->Pid = cpu_to_le16((__u16)current->tgid);
 	buffer->PidHigh = cpu_to_le16((__u16)(current->tgid >> 16));
@@ -283,7 +261,7 @@ header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
 			if (treeCon->ses->capabilities & CAP_STATUS32)
 				buffer->Flags2 |= SMBFLG2_ERR_STATUS;
 
-			/* Uid is not converted */
+			 
 			buffer->Uid = treeCon->ses->Suid;
 			if (treeCon->ses->server)
 				buffer->Mid = get_next_mid(treeCon->ses->server);
@@ -297,7 +275,7 @@ header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
 				buffer->Flags2 |= SMBFLG2_SECURITY_SIGNATURE;
 	}
 
-/*  endian conversion of flags is now done just before sending */
+ 
 	buffer->WordCount = (char) word_count;
 	return;
 }
@@ -305,18 +283,18 @@ header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
 static int
 check_smb_hdr(struct smb_hdr *smb)
 {
-	/* does it have the right SMB "signature" ? */
+	 
 	if (*(__le32 *) smb->Protocol != cpu_to_le32(0x424d53ff)) {
 		cifs_dbg(VFS, "Bad protocol string signature header 0x%x\n",
 			 *(unsigned int *)smb->Protocol);
 		return 1;
 	}
 
-	/* if it's a response then accept */
+	 
 	if (smb->Flags & SMBFLG_RESPONSE)
 		return 0;
 
-	/* only one valid case where server sends us request */
+	 
 	if (smb->Command == SMB_COM_LOCKING_ANDX)
 		return 0;
 
@@ -330,31 +308,26 @@ checkSMB(char *buf, unsigned int total_read, struct TCP_Server_Info *server)
 {
 	struct smb_hdr *smb = (struct smb_hdr *)buf;
 	__u32 rfclen = be32_to_cpu(smb->smb_buf_length);
-	__u32 clc_len;  /* calculated length */
+	__u32 clc_len;   
 	cifs_dbg(FYI, "checkSMB Length: 0x%x, smb_buf_length: 0x%x\n",
 		 total_read, rfclen);
 
-	/* is this frame too small to even get to a BCC? */
+	 
 	if (total_read < 2 + sizeof(struct smb_hdr)) {
 		if ((total_read >= sizeof(struct smb_hdr) - 1)
 			    && (smb->Status.CifsError != 0)) {
-			/* it's an error return */
+			 
 			smb->WordCount = 0;
-			/* some error cases do not return wct and bcc */
+			 
 			return 0;
 		} else if ((total_read == sizeof(struct smb_hdr) + 1) &&
 				(smb->WordCount == 0)) {
 			char *tmp = (char *)smb;
-			/* Need to work around a bug in two servers here */
-			/* First, check if the part of bcc they sent was zero */
+			 
+			 
 			if (tmp[sizeof(struct smb_hdr)] == 0) {
-				/* some servers return only half of bcc
-				 * on simple responses (wct, bcc both zero)
-				 * in particular have seen this on
-				 * ulogoffX and FindClose. This leaves
-				 * one byte of bcc potentially unitialized
-				 */
-				/* zero rest of bcc */
+				 
+				 
 				tmp[sizeof(struct smb_hdr)+1] = 0;
 				return 0;
 			}
@@ -369,7 +342,7 @@ checkSMB(char *buf, unsigned int total_read, struct TCP_Server_Info *server)
 		return -EIO;
 	}
 
-	/* otherwise, there is enough to get to the BCC */
+	 
 	if (check_smb_hdr(smb))
 		return -EIO;
 	clc_len = smbCalcSize(smb);
@@ -382,11 +355,11 @@ checkSMB(char *buf, unsigned int total_read, struct TCP_Server_Info *server)
 
 	if (4 + rfclen != clc_len) {
 		__u16 mid = get_mid(smb);
-		/* check if bcc wrapped around for large read responses */
+		 
 		if ((rfclen > 64 * 1024) && (rfclen > clc_len)) {
-			/* check if lengths match mod 64K */
+			 
 			if (((4 + rfclen) & 0xFFFF) == (clc_len & 0xFFFF))
-				return 0; /* bcc wrapped */
+				return 0;  
 		}
 		cifs_dbg(FYI, "Calculated size %u vs length %u mismatch for mid=%u\n",
 			 clc_len, 4 + rfclen, mid);
@@ -396,15 +369,7 @@ checkSMB(char *buf, unsigned int total_read, struct TCP_Server_Info *server)
 				 rfclen, mid);
 			return -EIO;
 		} else if (rfclen > clc_len + 512) {
-			/*
-			 * Some servers (Windows XP in particular) send more
-			 * data than the lengths in the SMB packet would
-			 * indicate on certain calls (byte range locks and
-			 * trans2 find first calls in particular). While the
-			 * client can handle such a frame by ignoring the
-			 * trailing data, we choose limit the amount of extra
-			 * data to 512 bytes.
-			 */
+			 
 			cifs_dbg(VFS, "RFC1001 size %u more than 512 bytes larger than SMB for mid=%u\n",
 				 rfclen, mid);
 			return -EIO;
@@ -446,8 +411,7 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 				((char *)&pSMBr->hdr.Protocol + data_offset);
 			cifs_dbg(FYI, "dnotify on %s Action: 0x%x\n",
 				 pnotify->FileName, pnotify->Action);
-			/*   cifs_dump_mem("Rcvd notify Data: ",buf,
-				sizeof(struct smb_hdr)+60); */
+			 
 			return true;
 		}
 		if (pSMBr->hdr.Status.CifsError) {
@@ -460,10 +424,7 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 	if (pSMB->hdr.Command != SMB_COM_LOCKING_ANDX)
 		return false;
 	if (pSMB->hdr.Flags & SMBFLG_RESPONSE) {
-		/* no sense logging error on invalid handle on oplock
-		   break - harmless race between close request and oplock
-		   break response is expected from time to time writing out
-		   large dirty files cached on the client */
+		 
 		if ((NT_STATUS_INVALID_HANDLE) ==
 		   le32_to_cpu(pSMB->hdr.Status.CifsError)) {
 			cifs_dbg(FYI, "Invalid handle on oplock break\n");
@@ -472,7 +433,7 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 		   le16_to_cpu(pSMB->hdr.Status.DosError.Error)) {
 			return true;
 		} else {
-			return false; /* on valid oplock brk we get "request" */
+			return false;  
 		}
 	}
 	if (pSMB->hdr.WordCount != 8)
@@ -483,10 +444,10 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 	if (!(pSMB->LockType & LOCKING_ANDX_OPLOCK_RELEASE))
 		return false;
 
-	/* If server is a channel, select the primary channel */
+	 
 	pserver = SERVER_IS_CHAN(srv) ? srv->primary_server : srv;
 
-	/* look up tcon based on tid & uid */
+	 
 	spin_lock(&cifs_tcp_ses_lock);
 	list_for_each_entry(ses, &pserver->smb_ses_list, smb_ses_list) {
 		list_for_each_entry(tcon, &ses->tcon_list, tcon_list) {
@@ -570,10 +531,7 @@ void cifs_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock)
 		cinode->oplock = 0;
 }
 
-/*
- * We wait for oplock breaks to be processed before we attempt to perform
- * writes.
- */
+ 
 int cifs_get_writer(struct cifsInodeInfo *cinode)
 {
 	int rc;
@@ -588,7 +546,7 @@ start:
 	if (!cinode->writers)
 		set_bit(CIFS_INODE_PENDING_WRITERS, &cinode->flags);
 	cinode->writers++;
-	/* Check to see if we have started servicing an oplock break */
+	 
 	if (test_bit(CIFS_INODE_PENDING_OPLOCK_BREAK, &cinode->flags)) {
 		cinode->writers--;
 		if (cinode->writers == 0) {
@@ -613,24 +571,10 @@ void cifs_put_writer(struct cifsInodeInfo *cinode)
 	spin_unlock(&cinode->writers_lock);
 }
 
-/**
- * cifs_queue_oplock_break - queue the oplock break handler for cfile
- * @cfile: The file to break the oplock on
- *
- * This function is called from the demultiplex thread when it
- * receives an oplock break for @cfile.
- *
- * Assumes the tcon->open_file_lock is held.
- * Assumes cfile->file_info_lock is NOT held.
- */
+ 
 void cifs_queue_oplock_break(struct cifsFileInfo *cfile)
 {
-	/*
-	 * Bump the handle refcount now while we hold the
-	 * open_file_lock to enforce the validity of it for the oplock
-	 * break handler. The matching put is done at the end of the
-	 * handler.
-	 */
+	 
 	cifsFileInfo_get(cfile);
 
 	queue_work(cifsoplockd_wq, &cfile->oplock_break);
@@ -685,11 +629,7 @@ cifs_add_pending_open(struct cifs_fid *fid, struct tcon_link *tlink,
 	spin_unlock(&tlink_tcon(open->tlink)->open_file_lock);
 }
 
-/*
- * Critical section which runs after acquiring deferred_lock.
- * As there is no reference count on cifs_deferred_close, pdclose
- * should not be used outside deferred_lock.
- */
+ 
 bool
 cifs_is_deferred_close(struct cifsFileInfo *cfile, struct cifs_deferred_close **pdclose)
 {
@@ -706,9 +646,7 @@ cifs_is_deferred_close(struct cifsFileInfo *cfile, struct cifs_deferred_close **
 	return false;
 }
 
-/*
- * Critical section which runs after acquiring deferred_lock.
- */
+ 
 void
 cifs_add_deferred_close(struct cifsFileInfo *cfile, struct cifs_deferred_close *dclose)
 {
@@ -728,9 +666,7 @@ cifs_add_deferred_close(struct cifsFileInfo *cfile, struct cifs_deferred_close *
 	list_add_tail(&dclose->dlist, &CIFS_I(d_inode(cfile->dentry))->deferred_closes);
 }
 
-/*
- * Critical section which runs after acquiring deferred_lock.
- */
+ 
 void
 cifs_del_deferred_close(struct cifsFileInfo *cfile)
 {
@@ -852,12 +788,7 @@ cifs_close_deferred_file_under_dentry(struct cifs_tcon *tcon, const char *path)
 	free_dentry_path(page);
 }
 
-/* parses DFS referral V3 structure
- * caller is responsible for freeing target_nodes
- * returns:
- * - on success - 0
- * - on failure - errno
- */
+ 
 int
 parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
 		    unsigned int *num_of_nodes,
@@ -886,7 +817,7 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
 		goto parse_DFS_referrals_exit;
 	}
 
-	/* get the upper boundary of the resp buffer */
+	 
 	data_end = (char *)rsp + rsp_size;
 
 	cifs_dbg(FYI, "num_referrals: %d dfs flags: 0x%x ...\n",
@@ -899,7 +830,7 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
 		goto parse_DFS_referrals_exit;
 	}
 
-	/* collect necessary data from referrals */
+	 
 	for (i = 0; i < *num_of_nodes; i++) {
 		char *temp;
 		int max_len;
@@ -925,7 +856,7 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
 		node->server_type = le16_to_cpu(ref->ServerType);
 		node->ref_flag = le16_to_cpu(ref->ReferralEntryFlags);
 
-		/* copy DfsPath */
+		 
 		temp = (char *)ref + le16_to_cpu(ref->DfsPathOffset);
 		max_len = data_end - temp;
 		node->path_name = cifs_strndup_from_utf16(temp, max_len,
@@ -935,7 +866,7 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
 			goto parse_DFS_referrals_exit;
 		}
 
-		/* copy link target UNC */
+		 
 		temp = (char *)ref + le16_to_cpu(ref->NetworkAddressOffset);
 		max_len = data_end - temp;
 		node->node_name = cifs_strndup_from_utf16(temp, max_len,
@@ -964,11 +895,7 @@ cifs_aio_ctx_alloc(void)
 {
 	struct cifs_aio_ctx *ctx;
 
-	/*
-	 * Must use kzalloc to initialize ctx->bv to NULL and ctx->direct_io
-	 * to false so that we know when we have to unreference pages within
-	 * cifs_aio_ctx_release()
-	 */
+	 
 	ctx = kzalloc(sizeof(struct cifs_aio_ctx), GFP_KERNEL);
 	if (!ctx)
 		return NULL;
@@ -988,12 +915,7 @@ cifs_aio_ctx_release(struct kref *refcount)
 
 	cifsFileInfo_put(ctx->cfile);
 
-	/*
-	 * ctx->bv is only set if setup_aio_ctx_iter() was call successfuly
-	 * which means that iov_iter_extract_pages() was a success and thus
-	 * that we may have references or pins on pages that we need to
-	 * release.
-	 */
+	 
 	if (ctx->bv) {
 		if (ctx->should_dirty || ctx->bv_need_unpin) {
 			unsigned int i;
@@ -1013,14 +935,7 @@ cifs_aio_ctx_release(struct kref *refcount)
 	kfree(ctx);
 }
 
-/**
- * cifs_alloc_hash - allocate hash and hash context together
- * @name: The name of the crypto hash algo
- * @sdesc: SHASH descriptor where to put the pointer to the hash TFM
- *
- * The caller has to make sure @sdesc is initialized to either NULL or
- * a valid context. It can be freed via cifs_free_hash().
- */
+ 
 int
 cifs_alloc_hash(const char *name, struct shash_desc **sdesc)
 {
@@ -1049,12 +964,7 @@ cifs_alloc_hash(const char *name, struct shash_desc **sdesc)
 	return 0;
 }
 
-/**
- * cifs_free_hash - free hash and hash context together
- * @sdesc: Where to find the pointer to the hash TFM
- *
- * Freeing a NULL descriptor is safe.
- */
+ 
 void
 cifs_free_hash(struct shash_desc **sdesc)
 {
@@ -1074,7 +984,7 @@ void extract_unc_hostname(const char *unc, const char **h, size_t *len)
 {
 	const char *end;
 
-	/* skip initial slashes */
+	 
 	while (*unc && (*unc == '\\' || *unc == '/'))
 		unc++;
 
@@ -1087,26 +997,17 @@ void extract_unc_hostname(const char *unc, const char **h, size_t *len)
 	*len = end - unc;
 }
 
-/**
- * copy_path_name - copy src path to dst, possibly truncating
- * @dst: The destination buffer
- * @src: The source name
- *
- * returns number of bytes written (including trailing nul)
- */
+ 
 int copy_path_name(char *dst, const char *src)
 {
 	int name_len;
 
-	/*
-	 * PATH_MAX includes nul, so if strlen(src) >= PATH_MAX it
-	 * will truncate and strlen(dst) will be PATH_MAX-1
-	 */
+	 
 	name_len = strscpy(dst, src, PATH_MAX);
 	if (WARN_ON_ONCE(name_len < 0))
 		name_len = PATH_MAX-1;
 
-	/* we count the trailing nul */
+	 
 	name_len++;
 	return name_len;
 }
@@ -1151,11 +1052,7 @@ static struct super_block *__cifs_get_super(void (*f)(struct super_block *, void
 	for (; *fs_type; fs_type++) {
 		iterate_supers_type(*fs_type, f, &sd);
 		if (sd.sb) {
-			/*
-			 * Grab an active reference in order to prevent automounts (DFS links)
-			 * of expiring and then freeing up our cifs superblock pointer while
-			 * we're doing failover.
-			 */
+			 
 			cifs_sb_active(sd.sb);
 			return sd.sb;
 		}
@@ -1240,12 +1137,7 @@ int cifs_update_super_prepath(struct cifs_sb_info *cifs_sb, char *prefix)
 	return 0;
 }
 
-/*
- * Handle weird Windows SMB server behaviour. It responds with
- * STATUS_OBJECT_NAME_INVALID code to SMB2 QUERY_INFO request for
- * "\<server>\<dfsname>\<linkpath>" DFS reference, where <dfsname> contains
- * non-ASCII unicode symbols.
- */
+ 
 int cifs_inval_name_dfs_link_error(const unsigned int xid,
 				   struct cifs_tcon *tcon,
 				   struct cifs_sb_info *cifs_sb,
@@ -1259,10 +1151,7 @@ int cifs_inval_name_dfs_link_error(const unsigned int xid,
 
 	*islink = false;
 
-	/*
-	 * Fast path - skip check when @full_path doesn't have a prefix path to
-	 * look up or tcon is not DFS.
-	 */
+	 
 	if (strlen(full_path) < 2 || !cifs_sb ||
 	    (cifs_sb->mnt_cifs_flags & CIFS_MOUNT_NO_DFS) ||
 	    !is_tcon_dfs(tcon))
@@ -1275,10 +1164,7 @@ int cifs_inval_name_dfs_link_error(const unsigned int xid,
 	}
 	spin_unlock(&tcon->tc_lock);
 
-	/*
-	 * Slow path - tcon is DFS and @full_path has prefix path, so attempt
-	 * to get a referral to figure out whether it is an DFS link.
-	 */
+	 
 	len = strnlen(tcon->tree_name, MAX_TREE_SIZE + 1) + strlen(full_path) + 1;
 	path = kmalloc(len, GFP_KERNEL);
 	if (!path)
@@ -1296,12 +1182,7 @@ int cifs_inval_name_dfs_link_error(const unsigned int xid,
 		struct dfs_info3_param *refs = NULL;
 		int num_refs = 0;
 
-		/*
-		 * XXX: we are not using dfs_cache_find() here because we might
-		 * end up filling all the DFS cache and thus potentially
-		 * removing cached DFS targets that the client would eventually
-		 * need during failover.
-		 */
+		 
 		ses = CIFS_DFS_ROOT_SES(ses);
 		if (ses->server->ops->get_dfs_refer &&
 		    !ses->server->ops->get_dfs_refer(xid, ses, ref_path, &refs,
@@ -1328,14 +1209,7 @@ int cifs_wait_for_server_reconnect(struct TCP_Server_Info *server, bool retry)
 	timeout *= server->nr_targets;
 	spin_unlock(&server->srv_lock);
 
-	/*
-	 * Give demultiplex thread up to 10 seconds to each target available for
-	 * reconnect -- should be greater than cifs socket timeout which is 7
-	 * seconds.
-	 *
-	 * On "soft" mounts we wait once. Hard mounts keep retrying until
-	 * process is killed or server comes back on-line.
-	 */
+	 
 	do {
 		rc = wait_event_interruptible_timeout(server->response_q,
 						      (server->tcpStatus != CifsNeedReconnect),
@@ -1346,7 +1220,7 @@ int cifs_wait_for_server_reconnect(struct TCP_Server_Info *server, bool retry)
 			return -ERESTARTSYS;
 		}
 
-		/* are we still trying to reconnect? */
+		 
 		spin_lock(&server->srv_lock);
 		if (server->tcpStatus != CifsNeedReconnect) {
 			spin_unlock(&server->srv_lock);

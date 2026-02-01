@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for DA9063 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: Mariusz Wojtasik <mariusz.wojtasik@diasemi.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,11 +14,7 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-/*
- * Watchdog selector to timeout in seconds.
- *   0: WDT disabled;
- *   others: timeout = 2048 ms * 2^(TWDSCALE-1).
- */
+ 
 static const unsigned int wdt_timeout[] = { 0, 2, 4, 8, 16, 32, 65, 131 };
 static bool use_sw_pm;
 
@@ -49,10 +38,7 @@ static unsigned int da9063_wdt_timeout_to_sel(unsigned int secs)
 	return DA9063_TWDSCALE_MAX;
 }
 
-/*
- * Read the currently active timeout.
- * Zero means the watchdog is disabled.
- */
+ 
 static unsigned int da9063_wdt_read_timeout(struct da9063 *da9063)
 {
 	unsigned int val;
@@ -75,14 +61,7 @@ da9063_wdt_update_timeout(struct da9063 *da9063, unsigned int timeout)
 	unsigned int regval;
 	int ret;
 
-	/*
-	 * The watchdog triggers a reboot if a timeout value is already
-	 * programmed because the timeout value combines two functions
-	 * in one: indicating the counter limit and starting the watchdog.
-	 * The watchdog must be disabled to be able to change the timeout
-	 * value if the watchdog is already running. Then we can set the
-	 * new timeout value which enables the watchdog again.
-	 */
+	 
 	ret = da9063_wdt_disable_timer(da9063);
 	if (ret)
 		return ret;
@@ -125,10 +104,7 @@ static int da9063_wdt_ping(struct watchdog_device *wdd)
 	struct da9063 *da9063 = watchdog_get_drvdata(wdd);
 	int ret;
 
-	/*
-	 * Prevent pings from occurring late in system poweroff/reboot sequence
-	 * and possibly locking out restart handler from accessing i2c bus.
-	 */
+	 
 	if (system_state > SYSTEM_RUNNING)
 		return 0;
 
@@ -147,16 +123,7 @@ static int da9063_wdt_set_timeout(struct watchdog_device *wdd,
 	struct da9063 *da9063 = watchdog_get_drvdata(wdd);
 	int ret = 0;
 
-	/*
-	 * There are two cases when a set_timeout() will be called:
-	 * 1. The watchdog is off and someone wants to set the timeout for the
-	 *    further use.
-	 * 2. The watchdog is already running and a new timeout value should be
-	 *    set.
-	 *
-	 * The watchdog can't store a timeout value not equal zero without
-	 * enabling the watchdog, so the timeout must be buffered by the driver.
-	 */
+	 
 	if (watchdog_active(wdd))
 		ret = da9063_wdt_update_timeout(da9063, timeout);
 
@@ -177,12 +144,7 @@ static int da9063_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 	union i2c_smbus_data msg;
 	int ret;
 
-	/*
-	 * Don't use regmap because it is not atomic safe. Additionally, use
-	 * unlocked flavor of i2c_smbus_xfer to avoid scenario where i2c bus
-	 * might previously be locked by some process unable to release the
-	 * lock due to interrupts already being disabled at this late stage.
-	 */
+	 
 	msg.byte = DA9063_SHUTDOWN;
 	ret = __i2c_smbus_xfer(client->adapter, client->addr, client->flags,
 			I2C_SMBUS_WRITE, DA9063_REG_CONTROL_F,
@@ -192,7 +154,7 @@ static int da9063_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 		dev_alert(da9063->dev, "Failed to shutdown (err = %d)\n",
 			  ret);
 
-	/* wait for reset to assert... */
+	 
 	mdelay(500);
 
 	return ret;
@@ -246,16 +208,16 @@ static int da9063_wdt_probe(struct platform_device *pdev)
 
 	wdd->timeout = DA9063_WDG_TIMEOUT;
 
-	/* Use pre-configured timeout if watchdog is already running. */
+	 
 	timeout = da9063_wdt_read_timeout(da9063);
 	if (timeout)
 		wdd->timeout = timeout;
 
-	/* Set timeout, maybe override it with DT value, scale it */
+	 
 	watchdog_init_timeout(wdd, 0, dev);
 	da9063_wdt_set_timeout(wdd, wdd->timeout);
 
-	/* Update timeout if the watchdog is already running. */
+	 
 	if (timeout) {
 		da9063_wdt_update_timeout(da9063, wdd->timeout);
 		set_bit(WDOG_HW_RUNNING, &wdd->status);

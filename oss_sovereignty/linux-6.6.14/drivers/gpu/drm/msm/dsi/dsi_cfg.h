@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __MSM_DSI_CFG_H__
 #define __MSM_DSI_CFG_H__
@@ -33,7 +31,7 @@
 
 #define DSI_6G_REG_SHIFT	4
 
-/* Maximum number of configurations matched against the same hw revision */
+ 
 #define VARIANTS_MAX			2
 
 struct msm_dsi_config {
@@ -66,5 +64,5 @@ struct msm_dsi_cfg_handler {
 
 const struct msm_dsi_cfg_handler *msm_dsi_cfg_get(u32 major, u32 minor);
 
-#endif /* __MSM_DSI_CFG_H__ */
+#endif  
 

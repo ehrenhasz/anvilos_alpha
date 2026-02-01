@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* 32-bit compatibility syscall for 64-bit systems
- *
- * Copyright (C) 2004-5 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/syscalls.h>
 #include <linux/keyctl.h>
@@ -11,9 +7,7 @@
 #include <linux/slab.h>
 #include "internal.h"
 
-/*
- * The key control system call, 32-bit compatibility version for 64-bit archs
- */
+ 
 COMPAT_SYSCALL_DEFINE5(keyctl, u32, option,
 		       u32, arg2, u32, arg3, u32, arg4, u32, arg5)
 {

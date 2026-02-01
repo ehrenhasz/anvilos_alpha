@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2022, Kajol Jain, IBM Corp.
- */
+ 
+ 
 
 #include <ppc-asm.h>
 

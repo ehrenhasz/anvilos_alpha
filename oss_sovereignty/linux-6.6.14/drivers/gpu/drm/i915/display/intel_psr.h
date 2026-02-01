@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PSR_H__
 #define __INTEL_PSR_H__
@@ -65,4 +63,4 @@ void intel_psr_unlock(const struct intel_crtc_state *crtc_state);
 void intel_psr_connector_debugfs_add(struct intel_connector *connector);
 void intel_psr_debugfs_register(struct drm_i915_private *i915);
 
-#endif /* __INTEL_PSR_H__ */
+#endif  

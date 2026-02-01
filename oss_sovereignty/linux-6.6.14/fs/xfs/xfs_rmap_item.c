@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -43,13 +40,7 @@ xfs_rui_item_free(
 		kmem_cache_free(xfs_rui_cache, ruip);
 }
 
-/*
- * Freeing the RUI requires that we remove it from the AIL if it has already
- * been placed there. However, the RUI may not yet have been placed in the AIL
- * when called by xfs_rui_release() from RUD processing due to the ordering of
- * committed vs unpin operations in bulk insert operations. Hence the reference
- * count to ensure only the last caller frees the RUI.
- */
+ 
 STATIC void
 xfs_rui_release(
 	struct xfs_rui_log_item	*ruip)
@@ -74,13 +65,7 @@ xfs_rui_item_size(
 	*nbytes += xfs_rui_log_format_sizeof(ruip->rui_format.rui_nextents);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given rui log item. We use only 1 iovec, and we point that
- * at the rui_log_format structure embedded in the rui item.
- * It is at this point that we assert that all of the extent
- * slots in the rui item have been filled.
- */
+ 
 STATIC void
 xfs_rui_item_format(
 	struct xfs_log_item	*lip,
@@ -99,14 +84,7 @@ xfs_rui_item_format(
 			xfs_rui_log_format_sizeof(ruip->rui_format.rui_nextents));
 }
 
-/*
- * The unpin operation is the last place an RUI is manipulated in the log. It is
- * either inserted in the AIL or aborted in the event of a log I/O error. In
- * either case, the RUI transaction has been successfully committed to make it
- * this far. Therefore, we expect whoever committed the RUI to either construct
- * and commit the RUD or drop the RUD's reference in the event of error. Simply
- * drop the log's RUI reference now that the log is done with it.
- */
+ 
 STATIC void
 xfs_rui_item_unpin(
 	struct xfs_log_item	*lip,
@@ -117,11 +95,7 @@ xfs_rui_item_unpin(
 	xfs_rui_release(ruip);
 }
 
-/*
- * The RUI has been either committed or aborted if the transaction has been
- * cancelled. If the transaction was cancelled, an RUD isn't going to be
- * constructed and thus we free the RUI here directly.
- */
+ 
 STATIC void
 xfs_rui_item_release(
 	struct xfs_log_item	*lip)
@@ -129,9 +103,7 @@ xfs_rui_item_release(
 	xfs_rui_release(RUI_ITEM(lip));
 }
 
-/*
- * Allocate and initialize an rui item with the given number of extents.
- */
+ 
 STATIC struct xfs_rui_log_item *
 xfs_rui_init(
 	struct xfs_mount		*mp,
@@ -171,13 +143,7 @@ xfs_rud_item_size(
 	*nbytes += sizeof(struct xfs_rud_log_format);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given rud log item. We use only 1 iovec, and we point that
- * at the rud_log_format structure embedded in the rud item.
- * It is at this point that we assert that all of the extent
- * slots in the rud item have been filled.
- */
+ 
 STATIC void
 xfs_rud_item_format(
 	struct xfs_log_item	*lip,
@@ -193,11 +159,7 @@ xfs_rud_item_format(
 			sizeof(struct xfs_rud_log_format));
 }
 
-/*
- * The RUD is either committed or aborted if the transaction is cancelled. If
- * the transaction is cancelled, drop our reference to the RUI and free the
- * RUD.
- */
+ 
 STATIC void
 xfs_rud_item_release(
 	struct xfs_log_item	*lip)
@@ -242,7 +204,7 @@ xfs_trans_get_rud(
 	return rudp;
 }
 
-/* Set the map extent flags for this reverse mapping. */
+ 
 static void
 xfs_trans_set_rmap_flags(
 	struct xfs_map_extent		*map,
@@ -285,11 +247,7 @@ xfs_trans_set_rmap_flags(
 	}
 }
 
-/*
- * Finish an rmap update and log it to the RUD. Note that the transaction is
- * marked dirty regardless of whether the rmap update succeeds or fails to
- * support the RUI/RUD lifecycle rules.
- */
+ 
 static int
 xfs_trans_log_finish_rmap_update(
 	struct xfs_trans		*tp,
@@ -301,20 +259,14 @@ xfs_trans_log_finish_rmap_update(
 
 	error = xfs_rmap_finish_one(tp, ri, pcur);
 
-	/*
-	 * Mark the transaction dirty, even on error. This ensures the
-	 * transaction is aborted, which:
-	 *
-	 * 1.) releases the RUI and frees the RUD
-	 * 2.) shuts down the filesystem
-	 */
+	 
 	tp->t_flags |= XFS_TRANS_DIRTY | XFS_TRANS_HAS_INTENT_DONE;
 	set_bit(XFS_LI_DIRTY, &rudp->rud_item.li_flags);
 
 	return error;
 }
 
-/* Sort rmap intents by AG. */
+ 
 static int
 xfs_rmap_update_diff_items(
 	void				*priv,
@@ -330,7 +282,7 @@ xfs_rmap_update_diff_items(
 	return ra->ri_pag->pag_agno - rb->ri_pag->pag_agno;
 }
 
-/* Log rmap updates in the intent item. */
+ 
 STATIC void
 xfs_rmap_update_log_item(
 	struct xfs_trans		*tp,
@@ -343,11 +295,7 @@ xfs_rmap_update_log_item(
 	tp->t_flags |= XFS_TRANS_DIRTY;
 	set_bit(XFS_LI_DIRTY, &ruip->rui_item.li_flags);
 
-	/*
-	 * atomic_inc_return gives us the value after the increment;
-	 * we want to use it as an array index so we need to subtract 1 from
-	 * it.
-	 */
+	 
 	next_extent = atomic_inc_return(&ruip->rui_next_extent) - 1;
 	ASSERT(next_extent < ruip->rui_format.rui_nextents);
 	map = &ruip->rui_format.rui_extents[next_extent];
@@ -380,7 +328,7 @@ xfs_rmap_update_create_intent(
 	return &ruip->rui_item;
 }
 
-/* Get an RUD so we can process all the deferred rmap updates. */
+ 
 static struct xfs_log_item *
 xfs_rmap_update_create_done(
 	struct xfs_trans		*tp,
@@ -390,7 +338,7 @@ xfs_rmap_update_create_done(
 	return &xfs_trans_get_rud(tp, RUI_ITEM(intent))->rud_item;
 }
 
-/* Take a passive ref to the AG containing the space we're rmapping. */
+ 
 void
 xfs_rmap_update_get_group(
 	struct xfs_mount	*mp,
@@ -402,7 +350,7 @@ xfs_rmap_update_get_group(
 	ri->ri_pag = xfs_perag_intent_get(mp, agno);
 }
 
-/* Release a passive AG ref after finishing rmapping work. */
+ 
 static inline void
 xfs_rmap_update_put_group(
 	struct xfs_rmap_intent	*ri)
@@ -410,7 +358,7 @@ xfs_rmap_update_put_group(
 	xfs_perag_intent_put(ri->ri_pag);
 }
 
-/* Process a deferred rmap update. */
+ 
 STATIC int
 xfs_rmap_update_finish_item(
 	struct xfs_trans		*tp,
@@ -431,7 +379,7 @@ xfs_rmap_update_finish_item(
 	return error;
 }
 
-/* Abort all pending RUIs. */
+ 
 STATIC void
 xfs_rmap_update_abort_intent(
 	struct xfs_log_item	*intent)
@@ -439,7 +387,7 @@ xfs_rmap_update_abort_intent(
 	xfs_rui_release(RUI_ITEM(intent));
 }
 
-/* Cancel a deferred rmap update. */
+ 
 STATIC void
 xfs_rmap_update_cancel_item(
 	struct list_head		*item)
@@ -462,7 +410,7 @@ const struct xfs_defer_op_type xfs_rmap_update_defer_type = {
 	.cancel_item	= xfs_rmap_update_cancel_item,
 };
 
-/* Is this recovered RUI ok? */
+ 
 static inline bool
 xfs_rui_validate_map(
 	struct xfs_mount		*mp,
@@ -498,10 +446,7 @@ xfs_rui_validate_map(
 	return xfs_verify_fsbext(mp, map->me_startblock, map->me_len);
 }
 
-/*
- * Process an rmap update intent item that was recovered from the log.
- * We need to update the rmapbt.
- */
+ 
 STATIC int
 xfs_rui_item_recover(
 	struct xfs_log_item		*lip,
@@ -516,11 +461,7 @@ xfs_rui_item_recover(
 	int				i;
 	int				error = 0;
 
-	/*
-	 * First check the validity of the extents described by the
-	 * RUI.  If any are bad, then assume that all are bad and
-	 * just toss the RUI.
-	 */
+	 
 	for (i = 0; i < ruip->rui_format.rui_nextents; i++) {
 		if (!xfs_rui_validate_map(mp,
 					&ruip->rui_format.rui_extents[i])) {
@@ -614,7 +555,7 @@ xfs_rui_item_match(
 	return RUI_ITEM(lip)->rui_format.rui_id == intent_id;
 }
 
-/* Relog an intent item to push the log tail forward. */
+ 
 static struct xfs_log_item *
 xfs_rui_item_relog(
 	struct xfs_log_item		*intent,
@@ -665,13 +606,7 @@ xfs_rui_copy_format(
 				sizeof(struct xfs_map_extent));
 }
 
-/*
- * This routine is called to create an in-core extent rmap update
- * item from the rui format structure which was logged on disk.
- * It allocates an in-core rui, copies the extents from the format
- * structure into it, and adds the rui to the AIL with the given
- * LSN.
- */
+ 
 STATIC int
 xlog_recover_rui_commit_pass2(
 	struct xlog			*log,
@@ -702,10 +637,7 @@ xlog_recover_rui_commit_pass2(
 	ruip = xfs_rui_init(mp, rui_formatp->rui_nextents);
 	xfs_rui_copy_format(&ruip->rui_format, rui_formatp);
 	atomic_set(&ruip->rui_next_extent, rui_formatp->rui_nextents);
-	/*
-	 * Insert the intent into the AIL directly and drop one reference so
-	 * that finishing or canceling the work will drop the other.
-	 */
+	 
 	xfs_trans_ail_insert(log->l_ailp, &ruip->rui_item, lsn);
 	xfs_rui_release(ruip);
 	return 0;
@@ -716,13 +648,7 @@ const struct xlog_recover_item_ops xlog_rui_item_ops = {
 	.commit_pass2		= xlog_recover_rui_commit_pass2,
 };
 
-/*
- * This routine is called when an RUD format structure is found in a committed
- * transaction in the log. Its purpose is to cancel the corresponding RUI if it
- * was still in the log. To do this it searches the AIL for the RUI with an id
- * equal to that in the RUD format structure. If we find it we drop the RUD
- * reference, which removes the RUI from the AIL and frees it.
- */
+ 
 STATIC int
 xlog_recover_rud_commit_pass2(
 	struct xlog			*log,

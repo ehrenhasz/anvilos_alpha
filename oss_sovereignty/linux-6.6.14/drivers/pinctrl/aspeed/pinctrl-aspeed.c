@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 IBM Corp.
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/platform_device.h>
@@ -108,15 +106,7 @@ static int aspeed_sig_expr_disable(struct aspeed_pinmux_data *ctx,
 	return 0;
 }
 
-/**
- * aspeed_disable_sig() - Disable a signal on a pin by disabling all provided
- * signal expressions.
- *
- * @ctx: The pinmux context
- * @exprs: The list of signal expressions (from a priority level on a pin)
- *
- * Return: 0 if all expressions are disabled, otherwise a negative error code
- */
+ 
 static int aspeed_disable_sig(struct aspeed_pinmux_data *ctx,
 			      const struct aspeed_sig_expr **exprs)
 {
@@ -133,17 +123,7 @@ static int aspeed_disable_sig(struct aspeed_pinmux_data *ctx,
 	return ret;
 }
 
-/**
- * aspeed_find_expr_by_name - Search for the signal expression needed to
- * enable the pin's signal for the requested function.
- *
- * @exprs: List of signal expressions (haystack)
- * @name: The name of the requested function (needle)
- *
- * Return: A pointer to the signal expression whose function tag matches the
- * provided name, otherwise NULL.
- *
- */
+ 
 static const struct aspeed_sig_expr *aspeed_find_expr_by_name(
 		const struct aspeed_sig_expr **exprs, const char *name)
 {
@@ -247,7 +227,7 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
 		if (!prios)
 			continue;
 
-		/* Disable functions at a higher priority than that requested */
+		 
 		while ((funcs = *prios)) {
 			expr = aspeed_find_expr_by_name(funcs, pfunc->name);
 
@@ -287,75 +267,7 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
 
 static bool aspeed_expr_is_gpio(const struct aspeed_sig_expr *expr)
 {
-	/*
-	 * We need to differentiate between GPIO and non-GPIO signals to
-	 * implement the gpio_request_enable() interface. For better or worse
-	 * the ASPEED pinctrl driver uses the expression names to determine
-	 * whether an expression will mux a pin for GPIO.
-	 *
-	 * Generally we have the following - A GPIO such as B1 has:
-	 *
-	 *    - expr->signal set to "GPIOB1"
-	 *    - expr->function set to "GPIOB1"
-	 *
-	 * Using this fact we can determine whether the provided expression is
-	 * a GPIO expression by testing the signal name for the string prefix
-	 * "GPIO".
-	 *
-	 * However, some GPIOs are input-only, and the ASPEED datasheets name
-	 * them differently. An input-only GPIO such as T0 has:
-	 *
-	 *    - expr->signal set to "GPIT0"
-	 *    - expr->function set to "GPIT0"
-	 *
-	 * It's tempting to generalise the prefix test from "GPIO" to "GPI" to
-	 * account for both GPIOs and GPIs, but in doing so we run aground on
-	 * another feature:
-	 *
-	 * Some pins in the ASPEED BMC SoCs have a "pass-through" GPIO
-	 * function where the input state of one pin is replicated as the
-	 * output state of another (as if they were shorted together - a mux
-	 * configuration that is typically enabled by hardware strapping).
-	 * This feature allows the BMC to pass e.g. power button state through
-	 * to the host while the BMC is yet to boot, but take control of the
-	 * button state once the BMC has booted by muxing each pin as a
-	 * separate, pin-specific GPIO.
-	 *
-	 * Conceptually this pass-through mode is a form of GPIO and is named
-	 * as such in the datasheets, e.g. "GPID0". This naming similarity
-	 * trips us up with the simple GPI-prefixed-signal-name scheme
-	 * discussed above, as the pass-through configuration is not what we
-	 * want when muxing a pin as GPIO for the GPIO subsystem.
-	 *
-	 * On e.g. the AST2400, a pass-through function "GPID0" is grouped on
-	 * balls A18 and D16, where we have:
-	 *
-	 *    For ball A18:
-	 *    - expr->signal set to "GPID0IN"
-	 *    - expr->function set to "GPID0"
-	 *
-	 *    For ball D16:
-	 *    - expr->signal set to "GPID0OUT"
-	 *    - expr->function set to "GPID0"
-	 *
-	 * By contrast, the pin-specific GPIO expressions for the same pins are
-	 * as follows:
-	 *
-	 *    For ball A18:
-	 *    - expr->signal looks like "GPIOD0"
-	 *    - expr->function looks like "GPIOD0"
-	 *
-	 *    For ball D16:
-	 *    - expr->signal looks like "GPIOD1"
-	 *    - expr->function looks like "GPIOD1"
-	 *
-	 * Testing both the signal _and_ function names gives us the means
-	 * differentiate the pass-through GPIO pinmux configuration from the
-	 * pin-specific configuration that the GPIO subsystem is after: An
-	 * expression is a pin-specific (non-pass-through) GPIO configuration
-	 * if the signal prefix is "GPI" and the signal name matches the
-	 * function name.
-	 */
+	 
 	return !strncmp(expr->signal, "GPI", 3) &&
 			!strcmp(expr->signal, expr->function);
 }
@@ -393,7 +305,7 @@ int aspeed_gpio_request_enable(struct pinctrl_dev *pctldev,
 
 	pr_debug("Muxing pin %s for GPIO\n", pdesc->name);
 
-	/* Disable any functions of higher priority than GPIO */
+	 
 	while ((funcs = *prios)) {
 		if (aspeed_gpio_in_exprs(funcs))
 			break;
@@ -417,20 +329,13 @@ int aspeed_gpio_request_enable(struct pinctrl_dev *pctldev,
 
 	expr = *funcs;
 
-	/*
-	 * Disabling all higher-priority expressions is enough to enable the
-	 * lowest-priority signal type. As such it has no associated
-	 * expression.
-	 */
+	 
 	if (!expr) {
 		pr_debug("Muxed pin %s as GPIO\n", pdesc->name);
 		return 0;
 	}
 
-	/*
-	 * If GPIO is not the lowest priority signal type, assume there is only
-	 * one expression defined to enable the GPIO function
-	 */
+	 
 	ret = aspeed_sig_expr_enable(&pdata->pinmux, expr);
 	if (ret)
 		return ret;

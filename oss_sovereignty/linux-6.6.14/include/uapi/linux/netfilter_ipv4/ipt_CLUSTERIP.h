@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _IPT_CLUSTERIP_H_target
 #define _IPT_CLUSTERIP_H_target
 
@@ -23,7 +23,7 @@ struct ipt_clusterip_tgt_info {
 
 	__u32 flags;
 
-	/* only relevant for new ones */
+	 
 	__u8 clustermac[ETH_ALEN];
 	__u16 num_total_nodes;
 	__u16 num_local_nodes;
@@ -31,8 +31,8 @@ struct ipt_clusterip_tgt_info {
 	__u32 hash_mode;
 	__u32 hash_initval;
 
-	/* Used internally by the kernel */
+	 
 	struct clusterip_config *config;
 };
 
-#endif /*_IPT_CLUSTERIP_H_target*/
+#endif  

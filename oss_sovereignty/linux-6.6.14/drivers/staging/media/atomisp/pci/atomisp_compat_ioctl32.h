@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+ 
+ 
 #ifndef __ATOMISP_COMPAT_IOCTL32_H__
 #define __ATOMISP_COMPAT_IOCTL32_H__
 
@@ -29,17 +14,17 @@ struct atomisp_histogram32 {
 };
 
 struct atomisp_dvs2_stat_types32 {
-	compat_uptr_t odd_real; /** real part of the odd statistics*/
-	compat_uptr_t odd_imag; /** imaginary part of the odd statistics*/
-	compat_uptr_t even_real;/** real part of the even statistics*/
-	compat_uptr_t even_imag;/** imaginary part of the even statistics*/
+	compat_uptr_t odd_real;  
+	compat_uptr_t odd_imag;  
+	compat_uptr_t even_real; 
+	compat_uptr_t even_imag; 
 };
 
 struct atomisp_dvs2_coef_types32 {
-	compat_uptr_t odd_real; /** real part of the odd coefficients*/
-	compat_uptr_t odd_imag; /** imaginary part of the odd coefficients*/
-	compat_uptr_t even_real;/** real part of the even coefficients*/
-	compat_uptr_t even_imag;/** imaginary part of the even coefficients*/
+	compat_uptr_t odd_real;  
+	compat_uptr_t odd_imag;  
+	compat_uptr_t even_real; 
+	compat_uptr_t even_imag; 
 };
 
 struct atomisp_dvs2_statistics32 {
@@ -70,7 +55,7 @@ struct atomisp_3a_statistics32 {
 struct atomisp_morph_table32 {
 	unsigned int enabled;
 	unsigned int height;
-	unsigned int width;	/* number of valid elements per line */
+	unsigned int width;	 
 	compat_uptr_t coordinates_x[ATOMISP_MORPH_TABLE_NUM_PLANES];
 	compat_uptr_t coordinates_y[ATOMISP_MORPH_TABLE_NUM_PLANES];
 };
@@ -83,34 +68,29 @@ struct v4l2_framebuffer32 {
 };
 
 struct atomisp_overlay32 {
-	/* the frame containing the overlay data The overlay frame width should
-	 * be the multiples of 2*ISP_VEC_NELEMS. The overlay frame height
-	 * should be the multiples of 2.
-	 */
+	 
 	compat_uptr_t frame;
-	/* Y value of overlay background */
+	 
 	unsigned char bg_y;
-	/* U value of overlay background */
+	 
 	char bg_u;
-	/* V value of overlay background */
+	 
 	char bg_v;
-	/* the blending percent of input data for Y subpixels */
+	 
 	unsigned char blend_input_perc_y;
-	/* the blending percent of input data for U subpixels */
+	 
 	unsigned char blend_input_perc_u;
-	/* the blending percent of input data for V subpixels */
+	 
 	unsigned char blend_input_perc_v;
-	/* the blending percent of overlay data for Y subpixels */
+	 
 	unsigned char blend_overlay_perc_y;
-	/* the blending percent of overlay data for U subpixels */
+	 
 	unsigned char blend_overlay_perc_u;
-	/* the blending percent of overlay data for V subpixels */
+	 
 	unsigned char blend_overlay_perc_v;
-	/* the overlay start x pixel position on output frame It should be the
-	   multiples of 2*ISP_VEC_NELEMS. */
+	 
 	unsigned int overlay_start_x;
-	/* the overlay start y pixel position on output frame It should be the
-	   multiples of 2. */
+	 
 	unsigned int overlay_start_y;
 };
 
@@ -126,34 +106,32 @@ struct atomisp_shading_table32 {
 };
 
 struct atomisp_parameters32 {
-	compat_uptr_t wb_config;  /* White Balance config */
-	compat_uptr_t cc_config;  /* Color Correction config */
-	compat_uptr_t tnr_config; /* Temporal Noise Reduction */
-	compat_uptr_t ecd_config; /* Eigen Color Demosaicing */
-	compat_uptr_t ynr_config; /* Y(Luma) Noise Reduction */
-	compat_uptr_t fc_config;  /* Fringe Control */
-	compat_uptr_t formats_config;  /* Formats Control */
-	compat_uptr_t cnr_config; /* Chroma Noise Reduction */
-	compat_uptr_t macc_config;  /* MACC */
-	compat_uptr_t ctc_config; /* Chroma Tone Control */
-	compat_uptr_t aa_config;  /* Anti-Aliasing */
-	compat_uptr_t baa_config;  /* Anti-Aliasing */
+	compat_uptr_t wb_config;   
+	compat_uptr_t cc_config;   
+	compat_uptr_t tnr_config;  
+	compat_uptr_t ecd_config;  
+	compat_uptr_t ynr_config;  
+	compat_uptr_t fc_config;   
+	compat_uptr_t formats_config;   
+	compat_uptr_t cnr_config;  
+	compat_uptr_t macc_config;   
+	compat_uptr_t ctc_config;  
+	compat_uptr_t aa_config;   
+	compat_uptr_t baa_config;   
 	compat_uptr_t ce_config;
 	compat_uptr_t dvs_6axis_config;
-	compat_uptr_t ob_config;  /* Objective Black config */
-	compat_uptr_t dp_config;  /* Dead Pixel config */
-	compat_uptr_t nr_config;  /* Noise Reduction config */
-	compat_uptr_t ee_config;  /* Edge Enhancement config */
-	compat_uptr_t de_config;  /* Demosaic config */
-	compat_uptr_t gc_config;  /* Gamma Correction config */
-	compat_uptr_t anr_config; /* Advanced Noise Reduction */
-	compat_uptr_t a3a_config; /* 3A Statistics config */
-	compat_uptr_t xnr_config; /* eXtra Noise Reduction */
-	compat_uptr_t dz_config;  /* Digital Zoom */
-	compat_uptr_t yuv2rgb_cc_config; /* Color
-							Correction config */
-	compat_uptr_t rgb2yuv_cc_config; /* Color
-							Correction config */
+	compat_uptr_t ob_config;   
+	compat_uptr_t dp_config;   
+	compat_uptr_t nr_config;   
+	compat_uptr_t ee_config;   
+	compat_uptr_t de_config;   
+	compat_uptr_t gc_config;   
+	compat_uptr_t anr_config;  
+	compat_uptr_t a3a_config;  
+	compat_uptr_t xnr_config;  
+	compat_uptr_t dz_config;   
+	compat_uptr_t yuv2rgb_cc_config;  
+	compat_uptr_t rgb2yuv_cc_config;  
 	compat_uptr_t macc_table;
 	compat_uptr_t gamma_table;
 	compat_uptr_t ctc_table;
@@ -161,46 +139,40 @@ struct atomisp_parameters32 {
 	compat_uptr_t r_gamma_table;
 	compat_uptr_t g_gamma_table;
 	compat_uptr_t b_gamma_table;
-	compat_uptr_t motion_vector; /* For 2-axis DVS */
+	compat_uptr_t motion_vector;  
 	compat_uptr_t shading_table;
 	compat_uptr_t morph_table;
-	compat_uptr_t dvs_coefs; /* DVS 1.0 coefficients */
-	compat_uptr_t dvs2_coefs; /* DVS 2.0 coefficients */
+	compat_uptr_t dvs_coefs;  
+	compat_uptr_t dvs2_coefs;  
 	compat_uptr_t capture_config;
 	compat_uptr_t anr_thres;
 
-	compat_uptr_t	lin_2500_config;       /* Skylake: Linearization config */
-	compat_uptr_t	obgrid_2500_config;    /* Skylake: OBGRID config */
-	compat_uptr_t	bnr_2500_config;       /* Skylake: bayer denoise config */
-	compat_uptr_t	shd_2500_config;       /* Skylake: shading config */
-	compat_uptr_t	dm_2500_config;        /* Skylake: demosaic config */
-	compat_uptr_t	rgbpp_2500_config;     /* Skylake: RGBPP config */
-	compat_uptr_t	dvs_stat_2500_config;  /* Skylake: DVS STAT config */
-	compat_uptr_t	lace_stat_2500_config; /* Skylake: LACE STAT config */
-	compat_uptr_t	yuvp1_2500_config;     /* Skylake: yuvp1 config */
-	compat_uptr_t	yuvp2_2500_config;     /* Skylake: yuvp2 config */
-	compat_uptr_t	tnr_2500_config;       /* Skylake: TNR config */
-	compat_uptr_t	dpc_2500_config;       /* Skylake: DPC config */
-	compat_uptr_t	awb_2500_config;       /* Skylake: auto white balance config */
+	compat_uptr_t	lin_2500_config;        
+	compat_uptr_t	obgrid_2500_config;     
+	compat_uptr_t	bnr_2500_config;        
+	compat_uptr_t	shd_2500_config;        
+	compat_uptr_t	dm_2500_config;         
+	compat_uptr_t	rgbpp_2500_config;      
+	compat_uptr_t	dvs_stat_2500_config;   
+	compat_uptr_t	lace_stat_2500_config;  
+	compat_uptr_t	yuvp1_2500_config;      
+	compat_uptr_t	yuvp2_2500_config;      
+	compat_uptr_t	tnr_2500_config;        
+	compat_uptr_t	dpc_2500_config;        
+	compat_uptr_t	awb_2500_config;        
 	compat_uptr_t
-	awb_fr_2500_config;    /* Skylake: auto white balance filter response config */
-	compat_uptr_t	anr_2500_config;       /* Skylake: ANR config */
-	compat_uptr_t	af_2500_config;        /* Skylake: auto focus config */
-	compat_uptr_t	ae_2500_config;        /* Skylake: auto exposure config */
-	compat_uptr_t	bds_2500_config;       /* Skylake: bayer downscaler config */
+	awb_fr_2500_config;     
+	compat_uptr_t	anr_2500_config;        
+	compat_uptr_t	af_2500_config;         
+	compat_uptr_t	ae_2500_config;         
+	compat_uptr_t	bds_2500_config;        
 	compat_uptr_t
-	dvs_2500_config;       /* Skylake: digital video stabilization config */
+	dvs_2500_config;        
 	compat_uptr_t	res_mgr_2500_config;
 
-	/*
-	 * Output frame pointer the config is to be applied to (optional),
-	 * set to NULL to make this config is applied as global.
-	 */
+	 
 	compat_uptr_t	output_frame;
-	/*
-	 * Unique ID to track which config was actually applied to a particular
-	 * frame, driver will send this id back with output frame together.
-	 */
+	 
 	u32	isp_config_id;
 	u32	per_frame_setting;
 };
@@ -252,4 +224,4 @@ struct atomisp_dvs_6axis_config32 {
 #define ATOMISP_IOC_S_PARAMETERS32 \
 	_IOW('v', BASE_VIDIOC_PRIVATE + 32, struct atomisp_parameters32)
 
-#endif /* __ATOMISP_COMPAT_IOCTL32_H__ */
+#endif  

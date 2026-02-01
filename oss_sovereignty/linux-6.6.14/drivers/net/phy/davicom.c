@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/davicom.c
- *
- * Driver for Davicom PHYs
- *
- * Author: Andy Fleming
- *
- * Copyright (c) 2004 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -33,7 +25,7 @@
 #define MII_DM9161_SCR_INIT	0x0610
 #define MII_DM9161_SCR_RMII	0x0100
 
-/* DM9161 Interrupt Register */
+ 
 #define MII_DM9161_INTR	0x15
 #define MII_DM9161_INTR_PEND		0x8000
 #define MII_DM9161_INTR_DPLX_MASK	0x0800
@@ -52,7 +44,7 @@
 	 MII_DM9161_INTR_SPD_CHANGE | \
 	 MII_DM9161_INTR_LINK_CHANGE)
 
-/* DM9161 10BT Configuration/Status */
+ 
 #define MII_DM9161_10BTCSR	0x12
 #define MII_DM9161_10BTCSR_INIT	0x7800
 
@@ -119,13 +111,13 @@ static int dm9161_config_aneg(struct phy_device *phydev)
 {
 	int err;
 
-	/* Isolate the PHY */
+	 
 	err = phy_write(phydev, MII_BMCR, BMCR_ISOLATE);
 
 	if (err < 0)
 		return err;
 
-	/* Configure the new settings */
+	 
 	err = genphy_config_aneg(phydev);
 
 	if (err < 0)
@@ -138,7 +130,7 @@ static int dm9161_config_init(struct phy_device *phydev)
 {
 	int err, temp;
 
-	/* Isolate the PHY */
+	 
 	err = phy_write(phydev, MII_BMCR, BMCR_ISOLATE);
 
 	if (err < 0)
@@ -155,18 +147,18 @@ static int dm9161_config_init(struct phy_device *phydev)
 		return -EINVAL;
 	}
 
-	/* Do not bypass the scrambler/descrambler */
+	 
 	err = phy_write(phydev, MII_DM9161_SCR, temp);
 	if (err < 0)
 		return err;
 
-	/* Clear 10BTCSR to default */
+	 
 	err = phy_write(phydev, MII_DM9161_10BTCSR, MII_DM9161_10BTCSR_INIT);
 
 	if (err < 0)
 		return err;
 
-	/* Reconnect the PHY, and enable Autonegotiation */
+	 
 	return phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
 }
 
@@ -175,7 +167,7 @@ static struct phy_driver dm91xx_driver[] = {
 	.phy_id		= 0x0181b880,
 	.name		= "Davicom DM9161E",
 	.phy_id_mask	= 0x0ffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= dm9161_config_init,
 	.config_aneg	= dm9161_config_aneg,
 	.config_intr	= dm9161_config_intr,
@@ -184,7 +176,7 @@ static struct phy_driver dm91xx_driver[] = {
 	.phy_id		= 0x0181b8b0,
 	.name		= "Davicom DM9161B/C",
 	.phy_id_mask	= 0x0ffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= dm9161_config_init,
 	.config_aneg	= dm9161_config_aneg,
 	.config_intr	= dm9161_config_intr,
@@ -193,7 +185,7 @@ static struct phy_driver dm91xx_driver[] = {
 	.phy_id		= 0x0181b8a0,
 	.name		= "Davicom DM9161A",
 	.phy_id_mask	= 0x0ffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= dm9161_config_init,
 	.config_aneg	= dm9161_config_aneg,
 	.config_intr	= dm9161_config_intr,
@@ -202,7 +194,7 @@ static struct phy_driver dm91xx_driver[] = {
 	.phy_id		= 0x00181b80,
 	.name		= "Davicom DM9131",
 	.phy_id_mask	= 0x0ffffff0,
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_intr	= dm9161_config_intr,
 	.handle_interrupt = dm9161_handle_interrupt,
 } };

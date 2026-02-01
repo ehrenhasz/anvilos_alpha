@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *   S/390 common I/O routines -- low level i/o calls
- *
- *    Copyright IBM Corp. 1999, 2008
- *    Author(s): Ingo Adlung (adlung@de.ibm.com)
- *		 Cornelia Huck (cornelia.huck@de.ibm.com)
- *		 Arnd Bergmann (arndb@de.ibm.com)
- *		 Martin Schwidefsky (schwidefsky@de.ibm.com)
- */
+
+ 
 
 #define KMSG_COMPONENT "cio"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -50,13 +42,7 @@ debug_info_t *cio_debug_crw_id;
 DEFINE_PER_CPU_ALIGNED(struct irb, cio_irb);
 EXPORT_PER_CPU_SYMBOL(cio_irb);
 
-/*
- * Function: cio_debug_init
- * Initializes three debug logs for common I/O:
- * - cio_msg logs generic cio messages
- * - cio_trace logs the calling of different functions
- * - cio_crw logs machine check related cio messages
- */
+ 
 static int __init cio_debug_init(void)
 {
 	cio_debug_msg_id = debug_register("cio_msg", 16, 1, 11 * sizeof(long));
@@ -120,10 +106,10 @@ cio_start_handle_notoper(struct subchannel *sch, __u8 lpm)
 }
 
 int
-cio_start_key (struct subchannel *sch,	/* subchannel structure */
-	       struct ccw1 * cpa,	/* logical channel prog addr */
-	       __u8 lpm,		/* logical path mask */
-	       __u8 key)                /* storage key */
+cio_start_key (struct subchannel *sch,	 
+	       struct ccw1 * cpa,	 
+	       __u8 lpm,		 
+	       __u8 key)                 
 {
 	struct io_subchannel_private *priv = to_io_private(sch);
 	union orb *orb = &priv->orb;
@@ -133,7 +119,7 @@ cio_start_key (struct subchannel *sch,	/* subchannel structure */
 	CIO_TRACE_EVENT(5, dev_name(&sch->dev));
 
 	memset(orb, 0, sizeof(union orb));
-	/* sch is always under 2G. */
+	 
 	orb->cmd.intparm = (u32)virt_to_phys(sch);
 	orb->cmd.fmt = 1;
 
@@ -141,30 +127,26 @@ cio_start_key (struct subchannel *sch,	/* subchannel structure */
 	orb->cmd.spnd = priv->options.suspend;
 	orb->cmd.ssic = priv->options.suspend && priv->options.inter;
 	orb->cmd.lpm = (lpm != 0) ? lpm : sch->lpm;
-	/*
-	 * for 64 bit we always support 64 bit IDAWs with 4k page size only
-	 */
+	 
 	orb->cmd.c64 = 1;
 	orb->cmd.i2k = 0;
 	orb->cmd.key = key >> 4;
-	/* issue "Start Subchannel" */
+	 
 	orb->cmd.cpa = (u32)virt_to_phys(cpa);
 	ccode = ssch(sch->schid, orb);
 
-	/* process condition code */
+	 
 	CIO_HEX_EVENT(5, &ccode, sizeof(ccode));
 
 	switch (ccode) {
 	case 0:
-		/*
-		 * initialize device status information
-		 */
+		 
 		sch->schib.scsw.cmd.actl |= SCSW_ACTL_START_PEND;
 		return 0;
-	case 1:		/* status pending */
-	case 2:		/* busy */
+	case 1:		 
+	case 2:		 
 		return -EBUSY;
-	case 3:		/* device/path not operational */
+	case 3:		 
 		return cio_start_handle_notoper(sch, lpm);
 	default:
 		return ccode;
@@ -179,9 +161,7 @@ cio_start (struct subchannel *sch, struct ccw1 *cpa, __u8 lpm)
 }
 EXPORT_SYMBOL_GPL(cio_start);
 
-/*
- * resume suspended I/O operation
- */
+ 
 int
 cio_resume (struct subchannel *sch)
 {
@@ -203,18 +183,13 @@ cio_resume (struct subchannel *sch)
 	case 2:
 		return -EINVAL;
 	default:
-		/*
-		 * useless to wait for request completion
-		 *  as device is no longer operational !
-		 */
+		 
 		return -ENODEV;
 	}
 }
 EXPORT_SYMBOL_GPL(cio_resume);
 
-/*
- * halt I/O operation
- */
+ 
 int
 cio_halt(struct subchannel *sch)
 {
@@ -226,9 +201,7 @@ cio_halt(struct subchannel *sch)
 	CIO_TRACE_EVENT(2, "haltIO");
 	CIO_TRACE_EVENT(2, dev_name(&sch->dev));
 
-	/*
-	 * Issue "Halt subchannel" and process condition code
-	 */
+	 
 	ccode = hsch (sch->schid);
 
 	CIO_HEX_EVENT(2, &ccode, sizeof(ccode));
@@ -237,18 +210,16 @@ cio_halt(struct subchannel *sch)
 	case 0:
 		sch->schib.scsw.cmd.actl |= SCSW_ACTL_HALT_PEND;
 		return 0;
-	case 1:		/* status pending */
-	case 2:		/* busy */
+	case 1:		 
+	case 2:		 
 		return -EBUSY;
-	default:		/* device not operational */
+	default:		 
 		return -ENODEV;
 	}
 }
 EXPORT_SYMBOL_GPL(cio_halt);
 
-/*
- * Clear I/O operation
- */
+ 
 int
 cio_clear(struct subchannel *sch)
 {
@@ -260,9 +231,7 @@ cio_clear(struct subchannel *sch)
 	CIO_TRACE_EVENT(2, "clearIO");
 	CIO_TRACE_EVENT(2, dev_name(&sch->dev));
 
-	/*
-	 * Issue "Clear subchannel" and process condition code
-	 */
+	 
 	ccode = csch (sch->schid);
 
 	CIO_HEX_EVENT(2, &ccode, sizeof(ccode));
@@ -271,19 +240,13 @@ cio_clear(struct subchannel *sch)
 	case 0:
 		sch->schib.scsw.cmd.actl |= SCSW_ACTL_CLEAR_PEND;
 		return 0;
-	default:		/* device not operational */
+	default:		 
 		return -ENODEV;
 	}
 }
 EXPORT_SYMBOL_GPL(cio_clear);
 
-/*
- * Function: cio_cancel
- * Issues a "Cancel Subchannel" on the specified subchannel
- * Note: We don't need any fancy intparms and flags here
- *	 since xsch is executed synchronously.
- * Only for common I/O internal use as for now.
- */
+ 
 int
 cio_cancel (struct subchannel *sch)
 {
@@ -300,37 +263,22 @@ cio_cancel (struct subchannel *sch)
 	CIO_HEX_EVENT(2, &ccode, sizeof(ccode));
 
 	switch (ccode) {
-	case 0:		/* success */
-		/* Update information in scsw. */
+	case 0:		 
+		 
 		if (cio_update_schib(sch))
 			return -ENODEV;
 		return 0;
-	case 1:		/* status pending */
+	case 1:		 
 		return -EBUSY;
-	case 2:		/* not applicable */
+	case 2:		 
 		return -EINVAL;
-	default:	/* not oper */
+	default:	 
 		return -ENODEV;
 	}
 }
 EXPORT_SYMBOL_GPL(cio_cancel);
 
-/**
- * cio_cancel_halt_clear - Cancel running I/O by performing cancel, halt
- * and clear ordinally if subchannel is valid.
- * @sch: subchannel on which to perform the cancel_halt_clear operation
- * @iretry: the number of the times remained to retry the next operation
- *
- * This should be called repeatedly since halt/clear are asynchronous
- * operations. We do one try with cio_cancel, three tries with cio_halt,
- * 255 tries with cio_clear. The caller should initialize @iretry with
- * the value 255 for its first call to this, and keep using the same
- * @iretry in the subsequent calls until it gets a non -EBUSY return.
- *
- * Returns 0 if device now idle, -ENODEV for device not operational,
- * -EBUSY if an interrupt is expected (either from halt/clear or from a
- * status pending), and -EIO if out of retries.
- */
+ 
 int cio_cancel_halt_clear(struct subchannel *sch, int *iretry)
 {
 	int ret;
@@ -338,9 +286,9 @@ int cio_cancel_halt_clear(struct subchannel *sch, int *iretry)
 	if (cio_update_schib(sch))
 		return -ENODEV;
 	if (!sch->schib.pmcw.ena)
-		/* Not operational -> done. */
+		 
 		return 0;
-	/* Stage 1: cancel io. */
+	 
 	if (!(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_HALT_PEND) &&
 	    !(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_CLEAR_PEND)) {
 		if (!scsw_is_tm(&sch->schib.scsw)) {
@@ -348,13 +296,10 @@ int cio_cancel_halt_clear(struct subchannel *sch, int *iretry)
 			if (ret != -EINVAL)
 				return ret;
 		}
-		/*
-		 * Cancel io unsuccessful or not applicable (transport mode).
-		 * Continue with asynchronous instructions.
-		 */
-		*iretry = 3;	/* 3 halt retries. */
+		 
+		*iretry = 3;	 
 	}
-	/* Stage 2: halt io. */
+	 
 	if (!(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_CLEAR_PEND)) {
 		if (*iretry) {
 			*iretry -= 1;
@@ -362,16 +307,16 @@ int cio_cancel_halt_clear(struct subchannel *sch, int *iretry)
 			if (ret != -EBUSY)
 				return (ret == 0) ? -EBUSY : ret;
 		}
-		/* Halt io unsuccessful. */
-		*iretry = 255;	/* 255 clear retries. */
+		 
+		*iretry = 255;	 
 	}
-	/* Stage 3: clear io. */
+	 
 	if (*iretry) {
 		*iretry -= 1;
 		ret = cio_clear(sch);
 		return (ret == 0) ? -EBUSY : ret;
 	}
-	/* Function was unsuccessful */
+	 
 	return -EIO;
 }
 EXPORT_SYMBOL_GPL(cio_cancel_halt_clear);
@@ -403,9 +348,7 @@ static int cio_check_config(struct subchannel *sch, struct schib *schib)
 		(!sch->config.mbfc || (schib->mba == sch->config.mba));
 }
 
-/*
- * cio_commit_config - apply configuration to the subchannel
- */
+ 
 int cio_commit_config(struct subchannel *sch)
 {
 	int ccode, retry, ret = 0;
@@ -416,33 +359,33 @@ int cio_commit_config(struct subchannel *sch)
 		return -ENODEV;
 
 	for (retry = 0; retry < 5; retry++) {
-		/* copy desired changes to local schib */
+		 
 		cio_apply_config(sch, &schib);
 		ccode = msch(sch->schid, &schib);
-		if (ccode < 0) /* -EIO if msch gets a program check. */
+		if (ccode < 0)  
 			return ccode;
 		switch (ccode) {
-		case 0: /* successful */
+		case 0:  
 			if (stsch(sch->schid, &schib) ||
 			    !css_sch_is_valid(&schib))
 				return -ENODEV;
 			if (cio_check_config(sch, &schib)) {
-				/* commit changes from local schib */
+				 
 				memcpy(&sch->schib, &schib, sizeof(schib));
 				return 0;
 			}
 			ret = -EAGAIN;
 			break;
-		case 1: /* status pending */
+		case 1:  
 			ret = -EBUSY;
 			if (tsch(sch->schid, &irb))
 				return ret;
 			break;
-		case 2: /* busy */
-			udelay(100); /* allow for recovery */
+		case 2:  
+			udelay(100);  
 			ret = -EBUSY;
 			break;
-		case 3: /* not operational */
+		case 3:  
 			return -ENODEV;
 		}
 	}
@@ -450,11 +393,7 @@ int cio_commit_config(struct subchannel *sch)
 }
 EXPORT_SYMBOL_GPL(cio_commit_config);
 
-/**
- * cio_update_schib - Perform stsch and update schib if subchannel is valid.
- * @sch: subchannel on which to perform stsch
- * Return zero on success, -ENODEV otherwise.
- */
+ 
 int cio_update_schib(struct subchannel *sch)
 {
 	struct schib schib;
@@ -467,11 +406,7 @@ int cio_update_schib(struct subchannel *sch)
 }
 EXPORT_SYMBOL_GPL(cio_update_schib);
 
-/**
- * cio_enable_subchannel - enable a subchannel.
- * @sch: subchannel to be enabled
- * @intparm: interruption parameter to set
- */
+ 
 int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 {
 	int ret;
@@ -490,10 +425,7 @@ int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 
 	ret = cio_commit_config(sch);
 	if (ret == -EIO) {
-		/*
-		 * Got a program check in msch. Try without
-		 * the concurrent sense bit the next time.
-		 */
+		 
 		sch->config.csense = 0;
 		ret = cio_commit_config(sch);
 	}
@@ -502,10 +434,7 @@ int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 }
 EXPORT_SYMBOL_GPL(cio_enable_subchannel);
 
-/**
- * cio_disable_subchannel - disable a subchannel.
- * @sch: subchannel to disable
- */
+ 
 int cio_disable_subchannel(struct subchannel *sch)
 {
 	int ret;
@@ -526,9 +455,7 @@ int cio_disable_subchannel(struct subchannel *sch)
 }
 EXPORT_SYMBOL_GPL(cio_disable_subchannel);
 
-/*
- * do_cio_interrupt() handles all normal I/O device IRQ's
- */
+ 
 static irqreturn_t do_cio_interrupt(int irq, void *dummy)
 {
 	struct tpi_info *tpi_info;
@@ -540,18 +467,18 @@ static irqreturn_t do_cio_interrupt(int irq, void *dummy)
 	trace_s390_cio_interrupt(tpi_info);
 	irb = this_cpu_ptr(&cio_irb);
 	if (!tpi_info->intparm) {
-		/* Clear pending interrupt condition. */
+		 
 		inc_irq_stat(IRQIO_CIO);
 		tsch(tpi_info->schid, irb);
 		return IRQ_HANDLED;
 	}
 	sch = phys_to_virt(tpi_info->intparm);
 	spin_lock(sch->lock);
-	/* Store interrupt response block to lowcore. */
+	 
 	if (tsch(tpi_info->schid, irb) == 0) {
-		/* Keep subchannel information word up to date. */
+		 
 		memcpy (&sch->schib.scsw, &irb->scsw, sizeof (irb->scsw));
-		/* Call interrupt handler if there is one. */
+		 
 		if (sch->driver && sch->driver->irq)
 			sch->driver->irq(sch);
 		else
@@ -575,22 +502,19 @@ void __init init_cio_interrupts(void)
 static struct subchannel *console_sch;
 static struct lock_class_key console_sch_key;
 
-/*
- * Use cio_tsch to update the subchannel status and call the interrupt handler
- * if status had been pending. Called with the subchannel's lock held.
- */
+ 
 void cio_tsch(struct subchannel *sch)
 {
 	struct irb *irb;
 	int irq_context;
 
 	irb = this_cpu_ptr(&cio_irb);
-	/* Store interrupt response block to lowcore. */
+	 
 	if (tsch(sch->schid, irb) != 0)
-		/* Not status pending or not operational. */
+		 
 		return;
 	memcpy(&sch->schib.scsw, &irb->scsw, sizeof(union scsw));
-	/* Call interrupt handler with updated status. */
+	 
 	irq_context = in_interrupt();
 	if (!irq_context) {
 		local_bh_disable();
@@ -616,7 +540,7 @@ static int cio_test_for_console(struct subchannel_id schid, void *data)
 	if ((schib.pmcw.st == SUBCHANNEL_TYPE_IO) && schib.pmcw.dnv &&
 	    (schib.pmcw.dev == console_devno)) {
 		console_irq = schid.sch_no;
-		return 1; /* found */
+		return 1;  
 	}
 	return 0;
 }
@@ -628,14 +552,14 @@ static int cio_get_console_sch_no(void)
 
 	init_subchannel_id(&schid);
 	if (console_irq != -1) {
-		/* VM provided us with the irq number of the console. */
+		 
 		schid.sch_no = console_irq;
 		if (stsch(schid, &schib) != 0 ||
 		    (schib.pmcw.st != SUBCHANNEL_TYPE_IO) || !schib.pmcw.dnv)
 			return -1;
 		console_devno = schib.pmcw.dev;
 	} else if (console_devno != -1) {
-		/* At least the console device number is known. */
+		 
 		for_each_subchannel(cio_test_for_console, NULL);
 	}
 	return console_irq;
@@ -695,18 +619,9 @@ void cio_register_early_subchannels(void)
 	if (ret)
 		put_device(&console_sch->dev);
 }
-#endif /* CONFIG_CCW_CONSOLE */
+#endif  
 
-/**
- * cio_tm_start_key - perform start function
- * @sch: subchannel on which to perform the start function
- * @tcw: transport-command word to be started
- * @lpm: mask of paths to use
- * @key: storage key to use for storage access
- *
- * Start the tcw on the given subchannel. Return zero on success, non-zero
- * otherwise.
- */
+ 
 int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key)
 {
 	int cc;
@@ -731,13 +646,7 @@ int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key)
 }
 EXPORT_SYMBOL_GPL(cio_tm_start_key);
 
-/**
- * cio_tm_intrg - perform interrogate function
- * @sch: subchannel on which to perform the interrogate function
- *
- * If the specified subchannel is running in transport-mode, perform the
- * interrogate function. Return zero on success, non-zero otherwie.
- */
+ 
 int cio_tm_intrg(struct subchannel *sch)
 {
 	int cc;

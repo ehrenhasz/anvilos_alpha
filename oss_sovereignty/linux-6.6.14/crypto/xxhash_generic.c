@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <crypto/internal/hash.h>
 #include <linux/init.h>

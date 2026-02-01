@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * clkgen-mux.c: ST GEN-MUX Clock driver
- *
- * Copyright (C) 2014 STMicroelectronics (R&D) Limited
- *
- * Authors: Stephen Gallimore <stephen.gallimore@st.com>
- *	    Pankaj Dev <pankaj.dev@st.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -58,10 +51,7 @@ static void __init st_of_clkgen_mux_setup(struct device_node *np,
 	int num_parents = 0;
 	struct device_node *parent_np;
 
-	/*
-	 * First check for reg property within the node to keep backward
-	 * compatibility, then if reg doesn't exist look at the parent node
-	 */
+	 
 	reg = of_iomap(np, 0);
 	if (!reg) {
 		parent_np = of_get_parent(np);

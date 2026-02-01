@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cypress StreetFighter Touchkey Driver
- *
- * Copyright (c) 2021 Yassine Oudjana <y.oudjana@protonmail.com>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
@@ -96,7 +92,7 @@ static int cypress_sf_probe(struct i2c_client *client)
 							    "linux,keycodes",
 							    NULL, 0);
 	if (touchkey->num_keys < 0) {
-		/* Default key count */
+		 
 		touchkey->num_keys = 2;
 	}
 
@@ -116,7 +112,7 @@ static int cypress_sf_probe(struct i2c_client *client)
 			 "Failed to read keycodes: %d, using defaults\n",
 			 error);
 
-		/* Default keycodes */
+		 
 		touchkey->keycodes[0] = KEY_BACK;
 		touchkey->keycodes[1] = KEY_MENU;
 	}

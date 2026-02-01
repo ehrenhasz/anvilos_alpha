@@ -1,27 +1,5 @@
-/* $OpenBSD: ssh-keysign.c,v 1.71 2022/08/01 11:09:26 djm Exp $ */
-/*
- * Copyright (c) 2002 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -82,13 +60,13 @@ valid_request(struct passwd *pw, char *host, struct sshkey **ret, char **pkalgp,
 	if ((b = sshbuf_from(data, datalen)) == NULL)
 		fatal_f("sshbuf_from failed");
 
-	/* session id */
+	 
 	if ((r = sshbuf_get_string(b, NULL, &len)) != 0)
 		fatal_fr(r, "parse session ID");
-	if (len != 20 && /* SHA1 */
-	    len != 32 && /* SHA256 */
-	    len != 48 && /* SHA384 */
-	    len != 64)   /* SHA512 */
+	if (len != 20 &&  
+	    len != 32 &&  
+	    len != 48 &&  
+	    len != 64)    
 		fail++;
 
 	if ((r = sshbuf_get_u8(b, &type)) != 0)
@@ -96,25 +74,25 @@ valid_request(struct passwd *pw, char *host, struct sshkey **ret, char **pkalgp,
 	if (type != SSH2_MSG_USERAUTH_REQUEST)
 		fail++;
 
-	/* server user */
+	 
 	if ((r = sshbuf_skip_string(b)) != 0)
 		fatal_fr(r, "parse user");
 
-	/* service */
+	 
 	if ((r = sshbuf_get_cstring(b, &p, NULL)) != 0)
 		fatal_fr(r, "parse service");
 	if (strcmp("ssh-connection", p) != 0)
 		fail++;
 	free(p);
 
-	/* method */
+	 
 	if ((r = sshbuf_get_cstring(b, &p, NULL)) != 0)
 		fatal_fr(r, "parse method");
 	if (strcmp("hostbased", p) != 0)
 		fail++;
 	free(p);
 
-	/* pubkey */
+	 
 	if ((r = sshbuf_get_cstring(b, &pkalg, NULL)) != 0 ||
 	    (r = sshbuf_get_string(b, &pkblob, &blen)) != 0)
 		fatal_fr(r, "parse pk");
@@ -128,7 +106,7 @@ valid_request(struct passwd *pw, char *host, struct sshkey **ret, char **pkalgp,
 	} else if (key->type != pktype)
 		fail++;
 
-	/* client host name, handle trailing dot */
+	 
 	if ((r = sshbuf_get_cstring(b, &p, &len)) != 0)
 		fatal_fr(r, "parse hostname");
 	debug2_f("check expect chost %s got %s", host, p);
@@ -140,7 +118,7 @@ valid_request(struct passwd *pw, char *host, struct sshkey **ret, char **pkalgp,
 		fail++;
 	free(p);
 
-	/* local user */
+	 
 	if ((r = sshbuf_get_cstring(b, &luser, NULL)) != 0)
 		fatal_fr(r, "parse luser");
 
@@ -148,7 +126,7 @@ valid_request(struct passwd *pw, char *host, struct sshkey **ret, char **pkalgp,
 		fail++;
 	free(luser);
 
-	/* end of message */
+	 
 	if (sshbuf_len(b) != 0)
 		fail++;
 	sshbuf_free(b);
@@ -188,15 +166,15 @@ main(int argc, char **argv)
 	if (pledge("stdio rpath getpw dns id", NULL) != 0)
 		fatal("%s: pledge: %s", __progname, strerror(errno));
 
-	/* Ensure that stdin and stdout are connected */
+	 
 	if ((fd = open(_PATH_DEVNULL, O_RDWR)) < 2)
 		exit(1);
-	/* Leave /dev/null fd iff it is attached to stderr */
+	 
 	if (fd > 2)
 		close(fd);
 
 	i = 0;
-	/* XXX This really needs to read sshd_config for the paths */
+	 
 	key_fd[i++] = open(_PATH_HOST_DSA_KEY_FILE, O_RDONLY);
 	key_fd[i++] = open(_PATH_HOST_ECDSA_KEY_FILE, O_RDONLY);
 	key_fd[i++] = open(_PATH_HOST_ED25519_KEY_FILE, O_RDONLY);
@@ -215,7 +193,7 @@ main(int argc, char **argv)
 	log_init("ssh-keysign", SYSLOG_LEVEL_DEBUG3, SYSLOG_FACILITY_AUTH, 0);
 #endif
 
-	/* verify that ssh-keysign is enabled by the admin */
+	 
 	initialize_options(&options);
 	(void)read_config_file(_PATH_HOST_CONFIG_FILE, pw, "", "",
 	    &options, 0, NULL);
@@ -295,7 +273,7 @@ main(int argc, char **argv)
 		fatal_r(r, "%s: sshkey_sign failed", __progname);
 	free(data);
 
-	/* send reply */
+	 
 	sshbuf_reset(b);
 	if ((r = sshbuf_put_string(b, signature, slen)) != 0)
 		fatal_r(r, "%s: buffer error", __progname);

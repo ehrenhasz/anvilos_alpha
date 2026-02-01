@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * debugfs file to track time spent in suspend
- *
- * Copyright (c) 2011, Google, Inc.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -45,7 +41,7 @@ late_initcall(tk_debug_sleep_time_init);
 
 void tk_debug_account_sleep_time(const struct timespec64 *t)
 {
-	/* Cap bin index so we don't overflow the array */
+	 
 	int bin = min(fls(t->tv_sec), NUM_BINS-1);
 
 	sleep_time_bin[bin]++;

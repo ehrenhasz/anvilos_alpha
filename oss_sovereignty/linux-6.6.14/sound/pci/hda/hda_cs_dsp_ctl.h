@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * HDA DSP ALSA Control Driver
- *
- * Copyright 2022 Cirrus Logic, Inc.
- *
- * Author: Stefan Binding <sbinding@opensource.cirrus.com>
- */
+ 
 
 #ifndef __HDA_CS_DSP_CTL_H__
 #define __HDA_CS_DSP_CTL_H__
@@ -36,4 +29,4 @@ int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
 int hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,
 			unsigned int alg, void *buf, size_t len);
 
-#endif /*__HDA_CS_DSP_CTL_H__*/
+#endif  

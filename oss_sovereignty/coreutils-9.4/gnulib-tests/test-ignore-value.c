@@ -1,21 +1,4 @@
-/* Test the "ignore-value" module.
-
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake.  */
+ 
 
 #include <config.h>
 
@@ -66,9 +49,7 @@ doStruct (void)
 int
 main (void)
 {
-  /* If this test can compile with -Werror and the same warnings as
-     the rest of the project, then we are properly silencing warnings
-     about ignored return values.  */
+   
   ignore_value (doChar ());
   ignore_value (doInt ());
   ignore_value (doOff ());

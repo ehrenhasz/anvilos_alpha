@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO Greybus driver.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,11 +13,11 @@
 #include "gbphy.h"
 
 struct gb_gpio_line {
-	/* The following has to be an array of line_max entries */
-	/* --> make them just a flags field */
+	 
+	 
 	u8			active:    1,
-				direction: 1,	/* 0 = output, 1 = input */
-				value:     1;	/* 0 = low, 1 = high */
+				direction: 1,	 
+				value:     1;	 
 	u16			debounce_usec;
 
 	u8			irq_type;
@@ -34,7 +29,7 @@ struct gb_gpio_line {
 struct gb_gpio_controller {
 	struct gbphy_device	*gbphy_dev;
 	struct gb_connection	*connection;
-	u8			line_max;	/* max line number */
+	u8			line_max;	 
 	struct gb_gpio_line	*lines;
 
 	struct gpio_chip	chip;
@@ -489,7 +484,7 @@ static int gb_gpio_controller_setup(struct gb_gpio_controller *ggc)
 {
 	int ret;
 
-	/* Now find out how many lines there are */
+	 
 	ret = gb_gpio_line_count_operation(ggc);
 	if (ret)
 		return ret;
@@ -562,13 +557,13 @@ static int gb_gpio_probe(struct gbphy_device *gbphy_dev,
 	gpio->get = gb_gpio_get;
 	gpio->set = gb_gpio_set;
 	gpio->set_config = gb_gpio_set_config;
-	gpio->base = -1;		/* Allocate base dynamically */
+	gpio->base = -1;		 
 	gpio->ngpio = ggc->line_max + 1;
 	gpio->can_sleep = true;
 
 	girq = &gpio->irq;
 	girq->chip = irqc;
-	/* The event comes from the outside so no parent handler */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;

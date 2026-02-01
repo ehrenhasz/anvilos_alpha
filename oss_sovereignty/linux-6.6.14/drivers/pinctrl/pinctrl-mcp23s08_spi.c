@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* MCP23S08 SPI GPIO driver */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -11,12 +11,7 @@
 
 #define MCP_MAX_DEV_PER_CS	8
 
-/*
- * A given spi_device can represent up to eight mcp23sxx chips
- * sharing the same chipselect but using different addresses
- * (e.g. chips #0 and #3 might be populated, but not #1 or #2).
- * Driver data holds all the per-chip data.
- */
+ 
 struct mcp23s08_driver_data {
 	unsigned		ngpio;
 	struct mcp23s08		*mcp[8];
@@ -229,7 +224,7 @@ static const struct of_device_id mcp23s08_spi_of_match[] = {
 		.compatible = "microchip,mcp23s18",
 		.data = (void *) MCP_TYPE_S18,
 	},
-/* NOTE: The use of the mcp prefix is deprecated and will be removed. */
+ 
 	{
 		.compatible = "mcp,mcp23s08",
 		.data = (void *) MCP_TYPE_S08,
@@ -256,10 +251,7 @@ static int __init mcp23s08_spi_init(void)
 	return spi_register_driver(&mcp23s08_driver);
 }
 
-/*
- * Register after SPI postcore initcall and before
- * subsys initcalls that may rely on these GPIOs.
- */
+ 
 subsys_initcall(mcp23s08_spi_init);
 
 static void mcp23s08_spi_exit(void)

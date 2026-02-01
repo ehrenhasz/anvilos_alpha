@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -144,7 +140,7 @@ int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
 		mdev->mbase = mbox->hwbase + (devid * MBOX_SIZE);
 		mdev->hwbase = mdev->mbase;
 		spin_lock_init(&mdev->mbox_lock);
-		/* Init header to reset value */
+		 
 		otx2_mbox_reset(mbox, devid);
 	}
 
@@ -152,9 +148,7 @@ int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
 }
 EXPORT_SYMBOL(otx2_mbox_init);
 
-/* Initialize mailbox with the set of mailbox region addresses
- * in the array hwbase.
- */
+ 
 int otx2_mbox_regions_init(struct otx2_mbox *mbox, void **hwbase,
 			   struct pci_dev *pdev, void *reg_base,
 			   int direction, int ndevs, unsigned long *pf_bmap)
@@ -176,7 +170,7 @@ int otx2_mbox_regions_init(struct otx2_mbox *mbox, void **hwbase,
 		mdev->mbase = hwbase[devid];
 		mdev->hwbase = hwbase[devid];
 		spin_lock_init(&mdev->mbox_lock);
-		/* Init header to reset value */
+		 
 		otx2_mbox_reset(mbox, devid);
 	}
 
@@ -223,9 +217,7 @@ void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid)
 	tx_hdr = hw_mbase + mbox->tx_start;
 	rx_hdr = hw_mbase + mbox->rx_start;
 
-	/* If bounce buffer is implemented copy mbox messages from
-	 * bounce buffer to hw mbox memory.
-	 */
+	 
 	if (mdev->mbase != hw_mbase)
 		memcpy(hw_mbase + mbox->tx_start + msgs_offset,
 		       mdev->mbase + mbox->tx_start + msgs_offset,
@@ -235,18 +227,15 @@ void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid)
 
 	tx_hdr->msg_size = mdev->msg_size;
 
-	/* Reset header for next messages */
+	 
 	mdev->msg_size = 0;
 	mdev->rsp_size = 0;
 	mdev->msgs_acked = 0;
 
-	/* Sync mbox data into memory */
+	 
 	smp_wmb();
 
-	/* num_msgs != 0 signals to the peer that the buffer has a number of
-	 * messages.  So this should be written after writing all the messages
-	 * to the shared memory.
-	 */
+	 
 	tx_hdr->num_msgs = mdev->num_msgs;
 	rx_hdr->num_msgs = 0;
 
@@ -254,9 +243,7 @@ void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid)
 
 	spin_unlock(&mdev->mbox_lock);
 
-	/* The interrupt should be fired after num_msgs is written
-	 * to the shared memory
-	 */
+	 
 	writeq(1, (void __iomem *)mbox->reg_base +
 	       (mbox->trigger | (devid << mbox->tr_shift)));
 }
@@ -271,7 +258,7 @@ struct mbox_msghdr *otx2_mbox_alloc_msg_rsp(struct otx2_mbox *mbox, int devid,
 	spin_lock(&mdev->mbox_lock);
 	size = ALIGN(size, MBOX_MSG_ALIGN);
 	size_rsp = ALIGN(size_rsp, MBOX_MSG_ALIGN);
-	/* Check if there is space in mailbox */
+	 
 	if ((mdev->msg_size + size) > mbox->tx_size - msgs_offset)
 		goto exit;
 	if ((mdev->rsp_size + size_rsp) > mbox->rx_size - msgs_offset)
@@ -283,9 +270,9 @@ struct mbox_msghdr *otx2_mbox_alloc_msg_rsp(struct otx2_mbox *mbox, int devid,
 
 	msghdr = mdev->mbase + mbox->tx_start + msgs_offset + mdev->msg_size;
 
-	/* Clear the whole msg region */
+	 
 	memset(msghdr, 0, size);
-	/* Init message header with reset values */
+	 
 	msghdr->ver = OTX2_MBOX_VERSION;
 	mdev->msg_size += size;
 	mdev->rsp_size += size_rsp;

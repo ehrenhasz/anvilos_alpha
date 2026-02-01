@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Authors:
- *    Rafael Antognolli <rafael.antognolli@intel.com>
- *    Scott  Bauer      <scott.bauer@intel.com>
- */
+ 
+ 
 
 #ifndef LINUX_OPAL_H
 #define LINUX_OPAL_H
@@ -76,5 +70,5 @@ static inline bool opal_unlock_from_suspend(struct opal_dev *dev)
 	return false;
 }
 #define init_opal_dev(data, send_recv)		NULL
-#endif /* CONFIG_BLK_SED_OPAL */
-#endif /* LINUX_OPAL_H */
+#endif  
+#endif  

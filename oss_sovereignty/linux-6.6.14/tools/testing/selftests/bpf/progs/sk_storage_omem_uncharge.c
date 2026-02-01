@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Facebook */
+
+ 
 #include "vmlinux.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>

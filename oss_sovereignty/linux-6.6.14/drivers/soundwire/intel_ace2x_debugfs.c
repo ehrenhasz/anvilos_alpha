@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2023 Intel Corporation. All rights reserved.
+
+
 
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
@@ -14,9 +14,7 @@
 #include "cadence_master.h"
 #include "intel.h"
 
-/*
- * debugfs
- */
+ 
 #ifdef CONFIG_DEBUG_FS
 
 #define RD_BUF (2 * PAGE_SIZE)
@@ -91,7 +89,7 @@ static int intel_set_m_datamode(void *data, u64 value)
 	if (value > SDW_PORT_DATA_MODE_STATIC_1)
 		return -EINVAL;
 
-	/* Userspace changed the hardware state behind the kernel's back */
+	 
 	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 
 	bus->params.m_data_mode = value;
@@ -109,7 +107,7 @@ static int intel_set_s_datamode(void *data, u64 value)
 	if (value > SDW_PORT_DATA_MODE_STATIC_1)
 		return -EINVAL;
 
-	/* Userspace changed the hardware state behind the kernel's back */
+	 
 	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 
 	bus->params.s_data_mode = value;
@@ -144,4 +142,4 @@ void intel_ace2x_debugfs_exit(struct sdw_intel *sdw)
 {
 	debugfs_remove_recursive(sdw->debugfs);
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  

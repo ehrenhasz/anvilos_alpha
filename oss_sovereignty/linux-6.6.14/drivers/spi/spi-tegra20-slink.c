@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI driver for Nvidia's Tegra20/Tegra30 SLINK Controller.
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -217,7 +213,7 @@ static inline void tegra_slink_writel(struct tegra_slink_data *tspi,
 {
 	writel(val, tspi->base + reg);
 
-	/* Read back register to make sure that register writes completed */
+	 
 	if (reg != SLINK_TX_FIFO)
 		readl(tspi->base + SLINK_MAS_DATA);
 }
@@ -228,7 +224,7 @@ static void tegra_slink_clear_status(struct tegra_slink_data *tspi)
 
 	tegra_slink_readl(tspi, SLINK_STATUS);
 
-	/* Write 1 to clear status register */
+	 
 	val_write = SLINK_RDY | SLINK_FIFO_ERROR;
 	tegra_slink_writel(tspi, val_write, SLINK_STATUS);
 }
@@ -363,7 +359,7 @@ static unsigned int tegra_slink_read_rx_fifo_to_client_rxbuf(
 static void tegra_slink_copy_client_txbuf_to_spi_txbuf(
 		struct tegra_slink_data *tspi, struct spi_transfer *t)
 {
-	/* Make the dma buffer to read by cpu */
+	 
 	dma_sync_single_for_cpu(tspi->dev, tspi->tx_dma_phys,
 				tspi->dma_buf_size, DMA_TO_DEVICE);
 
@@ -386,7 +382,7 @@ static void tegra_slink_copy_client_txbuf_to_spi_txbuf(
 	}
 	tspi->cur_tx_pos += tspi->curr_dma_words * tspi->bytes_per_word;
 
-	/* Make the dma buffer to read by dma */
+	 
 	dma_sync_single_for_device(tspi->dev, tspi->tx_dma_phys,
 				tspi->dma_buf_size, DMA_TO_DEVICE);
 }
@@ -396,7 +392,7 @@ static void tegra_slink_copy_spi_rxbuf_to_client_rxbuf(
 {
 	unsigned len;
 
-	/* Make the dma buffer to read by cpu */
+	 
 	dma_sync_single_for_cpu(tspi->dev, tspi->rx_dma_phys,
 		tspi->dma_buf_size, DMA_FROM_DEVICE);
 
@@ -417,7 +413,7 @@ static void tegra_slink_copy_spi_rxbuf_to_client_rxbuf(
 	}
 	tspi->cur_rx_pos += tspi->curr_dma_words * tspi->bytes_per_word;
 
-	/* Make the dma buffer to read by dma */
+	 
 	dma_sync_single_for_device(tspi->dev, tspi->rx_dma_phys,
 		tspi->dma_buf_size, DMA_FROM_DEVICE);
 }
@@ -475,7 +471,7 @@ static int tegra_slink_start_dma_based_transfer(
 	int ret = 0;
 	u32 status;
 
-	/* Make sure that Rx and Tx fifo are empty */
+	 
 	status = tegra_slink_readl(tspi, SLINK_STATUS);
 	if ((status & SLINK_FIFO_EMPTY) != SLINK_FIFO_EMPTY) {
 		dev_err(tspi->dev, "Rx/Tx fifo are not empty status 0x%08x\n",
@@ -491,7 +487,7 @@ static int tegra_slink_start_dma_based_transfer(
 	else
 		len = tspi->curr_dma_words * 4;
 
-	/* Set attention level based on length of transfer */
+	 
 	if (len & 0xF)
 		val |= SLINK_TX_TRIG_1 | SLINK_RX_TRIG_1;
 	else if (((len) >> 4) & 0x1)
@@ -518,14 +514,14 @@ static int tegra_slink_start_dma_based_transfer(
 			return ret;
 		}
 
-		/* Wait for tx fifo to be fill before starting slink */
+		 
 		status = tegra_slink_readl(tspi, SLINK_STATUS);
 		while (!(status & SLINK_TX_FULL))
 			status = tegra_slink_readl(tspi, SLINK_STATUS);
 	}
 
 	if (tspi->cur_direction & DATA_DIR_RX) {
-		/* Make the dma buffer to read by dma */
+		 
 		dma_sync_single_for_device(tspi->dev, tspi->rx_dma_phys,
 				tspi->dma_buf_size, DMA_FROM_DEVICE);
 
@@ -542,7 +538,7 @@ static int tegra_slink_start_dma_based_transfer(
 	if (tspi->is_packed) {
 		val |= SLINK_PACKED;
 		tegra_slink_writel(tspi, val, SLINK_DMA_CTL);
-		/* HW need small delay after settign Packed mode */
+		 
 		udelay(1);
 	}
 	tspi->dma_control_reg = val;
@@ -710,11 +706,7 @@ static int tegra_slink_start_transfer_one(struct spi_device *spi,
 		tspi->cur_direction |= DATA_DIR_TX;
 	}
 
-	/*
-	 * Writing to the command2 register bevore the command register prevents
-	 * a spike in chip_select line 0. This selects the chip_select line
-	 * before changing the chip_select value.
-	 */
+	 
 	tegra_slink_writel(tspi, command2, SLINK_COMMAND2);
 	tspi->command2_reg = command2;
 
@@ -884,7 +876,7 @@ static irqreturn_t handle_dma_based_xfer(struct tegra_slink_data *tspi)
 	unsigned total_fifo_words;
 	unsigned long flags;
 
-	/* Abort dmas if any error */
+	 
 	if (tspi->cur_direction & DATA_DIR_TX) {
 		if (tspi->tx_status) {
 			dmaengine_terminate_all(tspi->tx_dma_chan);
@@ -943,7 +935,7 @@ static irqreturn_t handle_dma_based_xfer(struct tegra_slink_data *tspi)
 		goto exit;
 	}
 
-	/* Continue transfer in current message */
+	 
 	total_fifo_words = tegra_slink_calculate_curr_xfer_param(tspi->cur_spi,
 							tspi, t);
 	if (total_fifo_words > SLINK_FIFO_DEPTH)
@@ -1013,7 +1005,7 @@ static int tegra_slink_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* the spi->mode bits understood by this driver: */
+	 
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	master->setup = tegra_slink_setup;
 	master->prepare_message = tegra_slink_prepare_message;
@@ -1031,7 +1023,7 @@ static int tegra_slink_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(tspi->dev->of_node, "spi-max-frequency",
 				 &master->max_speed_hz))
-		master->max_speed_hz = 25000000; /* 25MHz */
+		master->max_speed_hz = 25000000;  
 
 	tspi->base = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
 	if (IS_ERR(tspi->base)) {
@@ -1040,7 +1032,7 @@ static int tegra_slink_probe(struct platform_device *pdev)
 	}
 	tspi->phys = r->start;
 
-	/* disabled clock may cause interrupt storm upon request */
+	 
 	tspi->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(tspi->clk)) {
 		ret = PTR_ERR(tspi->clk);
@@ -1181,7 +1173,7 @@ static int __maybe_unused tegra_slink_runtime_suspend(struct device *dev)
 	struct spi_master *master = dev_get_drvdata(dev);
 	struct tegra_slink_data *tspi = spi_master_get_devdata(master);
 
-	/* Flush all write which are in PPSB queue by reading back */
+	 
 	tegra_slink_readl(tspi, SLINK_MAS_DATA);
 
 	clk_disable_unprepare(tspi->clk);

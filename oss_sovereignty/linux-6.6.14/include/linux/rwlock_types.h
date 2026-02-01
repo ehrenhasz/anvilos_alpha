@@ -16,12 +16,7 @@
 #endif
 
 #ifndef CONFIG_PREEMPT_RT
-/*
- * generic rwlock type definitions and initializers
- *
- * portions Copyright 2005, Red Hat, Inc., Ingo Molnar
- * Released under the General Public License (GPL).
- */
+ 
 typedef struct {
 	arch_rwlock_t raw_lock;
 #ifdef CONFIG_DEBUG_SPINLOCK
@@ -50,7 +45,7 @@ typedef struct {
 
 #define DEFINE_RWLOCK(x)	rwlock_t x = __RW_LOCK_UNLOCKED(x)
 
-#else /* !CONFIG_PREEMPT_RT */
+#else  
 
 #include <linux/rwbase_rt.h>
 
@@ -73,6 +68,6 @@ typedef struct {
 #define DEFINE_RWLOCK(name)						\
 	rwlock_t name = __RW_LOCK_UNLOCKED(name)
 
-#endif /* CONFIG_PREEMPT_RT */
+#endif  
 
-#endif /* __LINUX_RWLOCK_TYPES_H */
+#endif  

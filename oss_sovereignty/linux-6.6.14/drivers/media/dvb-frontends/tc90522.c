@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Toshiba TC90522 Demodulator
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- */
 
-/*
- * NOTICE:
- * This driver is incomplete and lacks init/config of the chips,
- * as the necessary info is not disclosed.
- * It assumes that users of this driver (such as a PCI bridge of
- * DTV receiver cards) properly init and configure the chip
- * via I2C *before* calling this driver's init() function.
- *
- * Currently, PT3 driver is the only one that uses this driver,
- * and contains init/config code in its firmware.
- * Thus some part of the code might be dependent on PT3 specific config.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/math64.h>
@@ -119,7 +104,7 @@ static int tc90522t_set_layers(struct dvb_frontend *fe)
 	return reg_write(fe->demodulator_priv, &rv, 1);
 }
 
-/* frontend ops */
+ 
 
 static int tc90522s_read_status(struct dvb_frontend *fe, enum fe_status *status)
 {
@@ -133,11 +118,11 @@ static int tc90522s_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		return ret;
 
 	*status = 0;
-	if (reg & 0x80) /* input level under min ? */
+	if (reg & 0x80)  
 		return 0;
 	*status |= FE_HAS_SIGNAL;
 
-	if (reg & 0x60) /* carrier? */
+	if (reg & 0x60)  
 		return 0;
 	*status |= FE_HAS_CARRIER | FE_HAS_VITERBI | FE_HAS_SYNC;
 
@@ -186,10 +171,10 @@ static int tc90522t_read_status(struct dvb_frontend *fe, enum fe_status *status)
 }
 
 static const enum fe_code_rate fec_conv_sat[] = {
-	FEC_NONE, /* unused */
-	FEC_1_2, /* for BPSK */
-	FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_7_8, /* for QPSK */
-	FEC_2_3, /* for 8PSK. (trellis code) */
+	FEC_NONE,  
+	FEC_1_2,  
+	FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_7_8,  
+	FEC_2_3,  
 };
 
 static int tc90522s_get_frontend(struct dvb_frontend *fe,
@@ -213,34 +198,31 @@ static int tc90522s_get_frontend(struct dvb_frontend *fe,
 
 		c->stream_id = val[0] << 8 | val[1];
 
-		/* high/single layer */
+		 
 		v = (val[2] & 0x70) >> 4;
 		c->modulation = (v == 7) ? PSK_8 : QPSK;
 		c->fec_inner = fec_conv_sat[v];
 		c->layer[0].fec = c->fec_inner;
 		c->layer[0].modulation = c->modulation;
-		c->layer[0].segment_count = val[3] & 0x3f; /* slots */
+		c->layer[0].segment_count = val[3] & 0x3f;  
 
-		/* low layer */
+		 
 		v = (val[2] & 0x07);
 		c->layer[1].fec = fec_conv_sat[v];
-		if (v == 0)  /* no low layer */
+		if (v == 0)   
 			c->layer[1].segment_count = 0;
 		else
-			c->layer[1].segment_count = val[4] & 0x3f; /* slots */
-		/*
-		 * actually, BPSK if v==1, but not defined in
-		 * enum fe_modulation
-		 */
+			c->layer[1].segment_count = val[4] & 0x3f;  
+		 
 		c->layer[1].modulation = QPSK;
 		layers = (v > 0) ? 2 : 1;
 	}
 
-	/* statistics */
+	 
 
 	stats = &c->strength;
 	stats->len = 0;
-	/* let the connected tuner set RSSI property cache */
+	 
 	if (fe->ops.tuner_ops.get_rf_strength) {
 		u16 dummy;
 
@@ -258,14 +240,10 @@ static int tc90522s_get_frontend(struct dvb_frontend *fe,
 		u32 p, p4;
 		s64 cn;
 
-		cndat -= 3000;  /* cndat: 4.12 fixed point float */
-		/*
-		 * cnr[mdB] = -1634.6 * P^5 + 14341 * P^4 - 50259 * P^3
-		 *                 + 88977 * P^2 - 89565 * P + 58857
-		 *  (P = sqrt(cndat) / 64)
-		 */
-		/* p := sqrt(cndat) << 8 = P << 14, 2.14 fixed  point float */
-		/* cn = cnr << 3 */
+		cndat -= 3000;   
+		 
+		 
+		 
 		p = int_sqrt(cndat << 16);
 		p4 = cndat * cndat;
 		cn = div64_s64(-16346LL * p4 * p, 10) >> 35;
@@ -278,7 +256,7 @@ static int tc90522s_get_frontend(struct dvb_frontend *fe,
 		stats->stat[0].scale = FE_SCALE_DECIBEL;
 	}
 
-	/* per-layer post viterbi BER (or PER? config dependent?) */
+	 
 	stats = &c->post_bit_error;
 	memset(stats, 0, sizeof(*stats));
 	stats->len = layers;
@@ -356,7 +334,7 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 		c->isdbt_partial_reception = val[0] & 0x01;
 		c->isdbt_sb_mode = (val[0] & 0xc0) == 0x40;
 
-		/* layer A */
+		 
 		v = (val[2] & 0x78) >> 3;
 		if (v == 0x0f)
 			c->layer[0].segment_count = 0;
@@ -369,7 +347,7 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 			c->layer[0].interleaving = v;
 		}
 
-		/* layer B */
+		 
 		v = (val[3] & 0x03) << 2 | (val[4] & 0xc0) >> 6;
 		if (v == 0x0f)
 			c->layer[1].segment_count = 0;
@@ -381,7 +359,7 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 			c->layer[1].interleaving = (val[3] & 0x1c) >> 2;
 		}
 
-		/* layer C */
+		 
 		v = (val[5] & 0x1e) >> 1;
 		if (v == 0x0f)
 			c->layer[2].segment_count = 0;
@@ -394,11 +372,11 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 		}
 	}
 
-	/* statistics */
+	 
 
 	stats = &c->strength;
 	stats->len = 0;
-	/* let the connected tuner set RSSI property cache */
+	 
 	if (fe->ops.tuner_ops.get_rf_strength) {
 		u16 dummy;
 
@@ -416,12 +394,9 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 		u32 p, tmp;
 		s64 cn;
 
-		/*
-		 * cnr[mdB] = 0.024 P^4 - 1.6 P^3 + 39.8 P^2 + 549.1 P + 3096.5
-		 * (P = 10log10(5505024/cndat))
-		 */
-		/* cn = cnr << 3 (61.3 fixed point float */
-		/* p = 10log10(5505024/cndat) << 24  (8.24 fixed point float)*/
+		 
+		 
+		 
 		p = intlog10(5505024) - intlog10(cndat);
 		p *= 10;
 
@@ -438,7 +413,7 @@ static int tc90522t_get_frontend(struct dvb_frontend *fe,
 		stats->stat[0].scale = FE_SCALE_DECIBEL;
 	}
 
-	/* per-layer post viterbi BER (or PER? config dependent?) */
+	 
 	stats = &c->post_bit_error;
 	memset(stats, 0, sizeof(*stats));
 	stats->len = layers;
@@ -594,11 +569,7 @@ static int tc90522_init(struct dvb_frontend *fe)
 	struct tc90522_state *state;
 	int ret;
 
-	/*
-	 * Because the init sequence is not public,
-	 * the parent device/driver should have init'ed the device before.
-	 * just wake up the device here.
-	 */
+	 
 
 	state = fe->demodulator_priv;
 	if (fe->ops.delsys[0] == SYS_ISDBS)
@@ -619,16 +590,14 @@ static int tc90522_init(struct dvb_frontend *fe)
 		return ret;
 	}
 
-	/* prefer 'all-layers' to 'none' as a default */
+	 
 	if (fe->dtv_property_cache.isdbt_layer_enabled == 0)
 		fe->dtv_property_cache.isdbt_layer_enabled = 7;
 	return tc90522_set_if_agc(fe, true);
 }
 
 
-/*
- * tuner I2C adapter functions
- */
+ 
 
 static int
 tc90522_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
@@ -690,11 +659,7 @@ tc90522_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	} else if (!state->cfg.split_tuner_read_i2c || rd_num == 0) {
 		ret = i2c_transfer(state->i2c_client->adapter, new_msgs, j);
 	} else {
-		/*
-		 * Split transactions at each I2C_M_RD message.
-		 * Some of the parent device require this,
-		 * such as Friio (see. dvb-usb-gl861).
-		 */
+		 
 		int from, to;
 
 		ret = 0;
@@ -729,9 +694,7 @@ static const struct i2c_algorithm tc90522_tuner_i2c_algo = {
 };
 
 
-/*
- * I2C driver functions
- */
+ 
 
 static const struct dvb_frontend_ops tc90522_ops_sat = {
 	.delsys = { SYS_ISDBS },

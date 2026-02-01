@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CM3232 Ambient Light Sensor
- *
- * Copyright (C) 2014-2015 Capella Microsystems Inc.
- * Author: Kevin Tsai <ktsai@capellamicro.com>
- *
- * IIO driver for CM3232 (7-bit I2C slave address 0x10).
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -15,7 +8,7 @@
 #include <linux/iio/sysfs.h>
 #include <linux/init.h>
 
-/* Registers Address */
+ 
 #define CM3232_REG_ADDR_CMD		0x00
 #define CM3232_REG_ADDR_ALS		0x50
 #define CM3232_REG_ADDR_ID		0x53
@@ -43,12 +36,12 @@ static const struct {
 	int val2;
 	u8 it;
 } cm3232_als_it_scales[] = {
-	{0, 100000, 0},	/* 0.100000 */
-	{0, 200000, 1},	/* 0.200000 */
-	{0, 400000, 2},	/* 0.400000 */
-	{0, 800000, 3},	/* 0.800000 */
-	{1, 600000, 4},	/* 1.600000 */
-	{3, 200000, 5},	/* 3.200000 */
+	{0, 100000, 0},	 
+	{0, 200000, 1},	 
+	{0, 400000, 2},	 
+	{0, 800000, 3},	 
+	{1, 600000, 4},	 
+	{3, 200000, 5},	 
 };
 
 struct cm3232_als_info {
@@ -74,14 +67,7 @@ struct cm3232_chip {
 	u16 regs_als;
 };
 
-/**
- * cm3232_reg_init() - Initialize CM3232
- * @chip:	pointer of struct cm3232_chip.
- *
- * Check and initialize CM3232 ambient light sensor.
- *
- * Return: 0 for success; otherwise for error code.
- */
+ 
 static int cm3232_reg_init(struct cm3232_chip *chip)
 {
 	struct i2c_client *client = chip->client;
@@ -89,7 +75,7 @@ static int cm3232_reg_init(struct cm3232_chip *chip)
 
 	chip->als_info = &cm3232_als_info_default;
 
-	/* Identify device */
+	 
 	ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
 	if (ret < 0) {
 		dev_err(&chip->client->dev, "Error reading addr_id\n");
@@ -99,7 +85,7 @@ static int cm3232_reg_init(struct cm3232_chip *chip)
 	if ((ret & 0xFF) != chip->als_info->hw_id)
 		return -ENODEV;
 
-	/* Disable and reset device */
+	 
 	chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
 	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
 					chip->regs_cmd);
@@ -108,10 +94,10 @@ static int cm3232_reg_init(struct cm3232_chip *chip)
 		return ret;
 	}
 
-	/* Register default value */
+	 
 	chip->regs_cmd = chip->als_info->regs_cmd_default;
 
-	/* Configure register */
+	 
 	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
 					chip->regs_cmd);
 	if (ret < 0)
@@ -120,16 +106,7 @@ static int cm3232_reg_init(struct cm3232_chip *chip)
 	return ret;
 }
 
-/**
- *  cm3232_read_als_it() - Get sensor integration time
- *  @chip:	pointer of struct cm3232_chip
- *  @val:	pointer of int to load the integration (sec).
- *  @val2:	pointer of int to load the integration time (microsecond).
- *
- *  Report the current integration time.
- *
- *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
- */
+ 
 static int cm3232_read_als_it(struct cm3232_chip *chip, int *val, int *val2)
 {
 	u16 als_it;
@@ -149,16 +126,7 @@ static int cm3232_read_als_it(struct cm3232_chip *chip, int *val, int *val2)
 	return -EINVAL;
 }
 
-/**
- * cm3232_write_als_it() - Write sensor integration time
- * @chip:	pointer of struct cm3232_chip.
- * @val:	integration time in second.
- * @val2:	integration time in microsecond.
- *
- * Convert integration time to sensor value.
- *
- * Return: i2c_smbus_write_byte_data command return value.
- */
+ 
 static int cm3232_write_als_it(struct cm3232_chip *chip, int val, int val2)
 {
 	struct i2c_client *client = chip->client;
@@ -187,15 +155,7 @@ static int cm3232_write_als_it(struct cm3232_chip *chip, int val, int val2)
 	return -EINVAL;
 }
 
-/**
- * cm3232_get_lux() - report current lux value
- * @chip:	pointer of struct cm3232_chip.
- *
- * Convert sensor data to lux.  It depends on integration
- * time and calibscale variable.
- *
- * Return: Zero or positive value is lux, otherwise error code.
- */
+ 
 static int cm3232_get_lux(struct cm3232_chip *chip)
 {
 	struct i2c_client *client = chip->client;
@@ -205,7 +165,7 @@ static int cm3232_get_lux(struct cm3232_chip *chip)
 	int als_it;
 	u64 lux;
 
-	/* Calculate mlux per bit based on als_it */
+	 
 	ret = cm3232_read_als_it(chip, &val, &val2);
 	if (ret < 0)
 		return -EINVAL;
@@ -275,16 +235,7 @@ static int cm3232_write_raw(struct iio_dev *indio_dev,
 	return -EINVAL;
 }
 
-/**
- * cm3232_get_it_available() - Get available ALS IT value
- * @dev:	pointer of struct device.
- * @attr:	pointer of struct device_attribute.
- * @buf:	pointer of return string buffer.
- *
- * Display the available integration time in second.
- *
- * Return: string length.
- */
+ 
 static ssize_t cm3232_get_it_available(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {

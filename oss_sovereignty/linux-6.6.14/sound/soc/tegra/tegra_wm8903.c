@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra_wm8903.c - Tegra machine ASoC driver for boards using WM8903 codec.
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2010-2012 - NVIDIA, Inc.
- *
- * Based on code copyright/by:
- *
- * (c) 2009, 2010 Nvidia Graphics Pvt. Ltd.
- *
- * Copyright 2007 Wolfson Microelectronics PLC.
- * Author: Graeme Gregory
- *         graeme.gregory@wolfsonmicro.com or linux@wolfsonmicro.com
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/of.h>
@@ -45,7 +32,7 @@ static unsigned int tegra_wm8903_mclk_rate(unsigned int srate)
 		mclk = 256 * srate;
 		break;
 	}
-	/* FIXME: Codec only requires >= 3MHz if OSR==0 */
+	 
 	while (mclk < 6000000)
 		mclk *= 2;
 
@@ -58,12 +45,7 @@ static int tegra_wm8903_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_card *card = rtd->card;
 	int err;
 
-	/*
-	 * Older version of machine driver was ignoring GPIO polarity,
-	 * forcing it to active-low.  This means that all older device-trees
-	 * which set the polarity to active-high are wrong and we need to fix
-	 * them up.
-	 */
+	 
 	if (machine->asoc->hp_jack_gpio_active_low) {
 		bool active_low = gpiod_is_active_low(machine->gpiod_hp_det);
 
@@ -137,7 +119,7 @@ static struct snd_soc_card snd_soc_tegra_wm8903 = {
 	.fully_routed = true,
 };
 
-/* older device-trees used wrong polarity for the headphones-detection GPIO */
+ 
 static const struct tegra_asoc_data tegra_wm8903_data_legacy = {
 	.mclk_rate = tegra_wm8903_mclk_rate,
 	.card = &snd_soc_tegra_wm8903,

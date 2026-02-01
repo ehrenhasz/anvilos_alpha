@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// VF610 pinctrl driver based on imx pinmux and pinconf core
-//
-// Copyright 2013 Freescale Semiconductor, Inc.
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -151,7 +151,7 @@ enum vf610_pads {
 	VF610_PAD_PTA7 = 134,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc vf610_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(VF610_PAD_PTA6),
 	IMX_PINCTRL_PIN(VF610_PAD_PTA8),
@@ -302,7 +302,7 @@ static int vf610_pmx_gpio_set_direction(struct pinctrl_dev *pctldev,
 	if (pin_reg->mux_reg == -1)
 		return -EINVAL;
 
-	/* IBE always enabled allows us to read the value "on the wire" */
+	 
 	reg = readl(ipctl->base + pin_reg->mux_reg);
 	if (input)
 		reg &= ~0x2;
@@ -324,7 +324,7 @@ static const struct imx_pinctrl_soc_info vf610_pinctrl_info = {
 
 static const struct of_device_id vf610_pinctrl_of_match[] = {
 	{ .compatible = "fsl,vf610-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int vf610_pinctrl_probe(struct platform_device *pdev)

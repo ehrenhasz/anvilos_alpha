@@ -1,41 +1,6 @@
-/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published
-   by the Free Software Foundation, either version 3 of the License,
-   or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#if !_LIBC
-# include <config.h>
-# include <stdio.h>
-# include <unistd.h>
-# include "pathmax.h"
-#else
-# define HAVE_OPENAT 1
-# define D_INO_IN_DIRENT 1
-# define HAVE_MSVC_INVALID_PARAMETER_HANDLER 0
-# define HAVE_MINIMALLY_WORKING_GETCWD 0
-#endif
-
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stddef.h>
-
-#include <fcntl.h> /* For AT_FDCWD on Solaris 9.  */
-
-/* If this host provides the openat function or if we're using the
-   gnulib replacement function with a native fdopendir, then enable
-   code below to make getcwd more efficient and robust.  */
+ 
 #if defined HAVE_OPENAT || (defined GNULIB_OPENAT && defined HAVE_FDOPENDIR)
 # define HAVE_OPENAT_SUPPORT 1
 #else
@@ -71,8 +36,7 @@
 # define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-/* In this file, PATH_MAX only serves as a threshold for choosing among two
-   algorithms.  */
+ 
 #ifndef PATH_MAX
 # define PATH_MAX 8192
 #endif
@@ -108,12 +72,7 @@
 # include <not-cancel.h>
 #endif
 
-/* The results of opendir() in this file are not used with dirfd and fchdir,
-   and we do not leak fds to any single-threaded code that could use stdio,
-   therefore save some unnecessary recursion in fchdir.c.
-   FIXME - if the kernel ever adds support for multi-thread safety for
-   avoiding standard fds, then we should use opendir_safer and
-   openat_safer.  */
+ 
 #ifdef GNULIB_defined_DIR
 # undef DIR
 # undef opendir
@@ -157,20 +116,12 @@ getcwd_nothrow (char *buf, size_t size)
 # define getcwd_system getcwd
 #endif
 
-/* Get the name of the current working directory, and put it in SIZE
-   bytes of BUF.  Returns NULL with errno set if the directory couldn't be
-   determined or SIZE was too small.  If successful, returns BUF.  In GNU,
-   if BUF is NULL, an array is allocated with 'malloc'; the array is SIZE
-   bytes long, unless SIZE == 0, in which case it is as big as necessary.  */
+ 
 
 GETCWD_RETURN_TYPE
 __getcwd_generic (char *buf, size_t size)
 {
-  /* Lengths of big file name components and entire file names, and a
-     deep level of file name nesting.  These numbers are not upper
-     bounds; they are merely large values suitable for initial
-     allocations, designed to be large enough for most real-world
-     uses.  */
+   
   enum
     {
       BIG_FILE_NAME_COMPONENT_LENGTH = 255,
@@ -200,29 +151,14 @@ __getcwd_generic (char *buf, size_t size)
   size_t used;
 
 #if HAVE_MINIMALLY_WORKING_GETCWD
-  /* If AT_FDCWD is not defined, the algorithm below is O(N**2) and
-     this is much slower than the system getcwd (at least on
-     GNU/Linux).  So trust the system getcwd's results unless they
-     look suspicious.
-
-     Use the system getcwd even if we have openat support, since the
-     system getcwd works even when a parent is unreadable, while the
-     openat-based approach does not.
-
-     But on AIX 5.1..7.1, the system getcwd is not even minimally
-     working: If the current directory name is slightly longer than
-     PATH_MAX, it omits the first directory component and returns
-     this wrong result with errno = 0.  */
+   
 
 # undef getcwd
   dir = getcwd_system (buf, size);
   if (dir || (size && errno == ERANGE))
     return dir;
 
-  /* Solaris getcwd (NULL, 0) fails with errno == EINVAL, but it has
-     internal magic that lets it work even if an ancestor directory is
-     inaccessible, which is better in many cases.  So in this case try
-     again with a buffer that's almost always big enough.  */
+   
   if (errno == EINVAL && buf == NULL && size == 0)
     {
       char big_buffer[BIG_FILE_NAME_LENGTH + 1];
@@ -232,8 +168,7 @@ __getcwd_generic (char *buf, size_t size)
     }
 
 # if HAVE_PARTLY_WORKING_GETCWD
-  /* The system getcwd works, except it sometimes fails when it
-     shouldn't, setting errno to ERANGE, ENAMETOOLONG, or ENOENT.    */
+   
   if (errno != ERANGE && errno != ENAMETOOLONG && errno != ENOENT)
     return NULL;
 # endif
@@ -282,7 +217,7 @@ __getcwd_generic (char *buf, size_t size)
       size_t namlen;
       bool use_d_ino = true;
 
-      /* Look at the parent directory.  */
+       
 #if HAVE_OPENAT_SUPPORT
       fd = __openat64 (fd, "..", O_RDONLY);
       if (fd < 0)
@@ -304,12 +239,12 @@ __getcwd_generic (char *buf, size_t size)
           goto lose;
         }
 
-      /* Figure out if this directory is a mount point.  */
+       
       dotdev = st.st_dev;
       dotino = st.st_ino;
       mount_point = dotdev != thisdev;
 
-      /* Search for the last directory.  */
+       
 #if HAVE_OPENAT_SUPPORT
       dirstream = __fdopendir (fd);
       if (dirstream == NULL)
@@ -323,18 +258,11 @@ __getcwd_generic (char *buf, size_t size)
 #endif
       for (;;)
         {
-          /* Clear errno to distinguish EOF from error if readdir returns
-             NULL.  */
+           
           __set_errno (0);
           d = __readdir64 (dirstream);
 
-          /* When we've iterated through all directory entries without finding
-             one with a matching d_ino, rewind the stream and consider each
-             name again, but this time, using lstat.  This is necessary in a
-             chroot on at least one system (glibc-2.3.6 + linux 2.6.12), where
-             .., ../.., ../../.., etc. all had the same device number, yet the
-             d_ino values for entries in / did not match those obtained
-             via lstat.  */
+           
           if (d == NULL && errno == 0 && use_d_ino)
             {
               use_d_ino = false;
@@ -345,8 +273,7 @@ __getcwd_generic (char *buf, size_t size)
           if (d == NULL)
             {
               if (errno == 0)
-                /* EOF on dirstream, which can mean e.g., that the current
-                   directory has been removed.  */
+                 
                 __set_errno (ENOENT);
               goto lose;
             }
@@ -367,10 +294,7 @@ __getcwd_generic (char *buf, size_t size)
 #if HAVE_OPENAT_SUPPORT
             entry_status = __fstatat64 (fd, d->d_name, &st, AT_SYMLINK_NOFOLLOW);
 #else
-            /* Compute size needed for this file name, or for the file
-               name ".." in the same directory, whichever is larger.
-               Room for ".." might be needed the next time through
-               the outer loop.  */
+             
             size_t name_alloc = _D_ALLOC_NAMLEN (d);
             size_t filesize = dotlen + MAX (sizeof "..", name_alloc);
 
@@ -379,7 +303,7 @@ __getcwd_generic (char *buf, size_t size)
 
             if (dotsize < filesize)
               {
-                /* My, what a deep directory tree you have, Grandma.  */
+                 
                 size_t newsize = MAX (filesize, dotsize * 2);
                 size_t i;
                 if (newsize < dotsize)
@@ -404,11 +328,7 @@ __getcwd_generic (char *buf, size_t size)
             memcpy (dotlist + dotlen, d->d_name, _D_ALLOC_NAMLEN (d));
             entry_status = __lstat64 (dotlist, &st);
 #endif
-            /* We don't fail here if we cannot stat() a directory entry.
-               This can happen when (network) file systems fail.  If this
-               entry is in fact the one we are looking for we will find
-               out soon as we reach the end of the directory without
-               having found anything.  */
+             
             if (entry_status == 0 && S_ISDIR (st.st_mode)
                 && st.st_dev == thisdev && st.st_ino == thisino)
               break;
@@ -435,8 +355,7 @@ __getcwd_generic (char *buf, size_t size)
                   || ! (tmp = realloc (dir, allocated)))
                 goto memory_exhausted;
 
-              /* Move current contents up to the end of the buffer.
-                 This is guaranteed to be non-overlapping.  */
+               
               dirp = memcpy (tmp + allocated - (oldsize - dirroom),
                              tmp + dirroom,
                              oldsize - dirroom);
@@ -451,18 +370,9 @@ __getcwd_generic (char *buf, size_t size)
       thisino = dotino;
 
 #if HAVE_OPENAT_SUPPORT
-      /* On some platforms, a system call returns the directory that FD points
-         to.  This is useful if some of the ancestor directories of the
-         directory are unreadable, because in this situation the loop that
-         climbs up the ancestor hierarchy runs into an EACCES error.
-         For example, in some Android app, /data/data/com.termux is readable,
-         but /data/data and /data are not.  */
+       
 # if defined __linux__
-      /* On Linux, in particular, if /proc is mounted,
-           readlink ("/proc/self/fd/<fd>")
-         returns the directory, if its length is < 4096.  (If the length is
-         >= 4096, it fails with error ENAMETOOLONG, even if the buffer that we
-         pass to the readlink function would be large enough.)  */
+       
       if (!proc_fs_not_mounted)
         {
           char namebuf[14 + 10 + 1];
@@ -472,8 +382,7 @@ __getcwd_generic (char *buf, size_t size)
           if (linklen < 0)
             {
               if (errno != ENAMETOOLONG)
-                /* If this call was not successful, the next one will likely be
-                   not successful either.  */
+                 
                 proc_fs_not_mounted = true;
             }
           else
@@ -496,7 +405,7 @@ __getcwd_generic (char *buf, size_t size)
                           || ! (tmp = realloc (dir, allocated)))
                         goto memory_exhausted;
 
-                      /* Move current contents up to the end of the buffer.  */
+                       
                       dirp = memmove (tmp + dirroom + (allocated - oldsize),
                                       tmp + dirroom,
                                       oldsize - dirroom);
@@ -530,12 +439,11 @@ __getcwd_generic (char *buf, size_t size)
   memmove (dir, dirp, used);
 
   if (size == 0)
-    /* Ensure that the buffer is only as large as necessary.  */
+     
     buf = (used < allocated ? realloc (dir, used) : dir);
 
   if (buf == NULL)
-    /* Either buf was NULL all along, or 'realloc' failed but
-       we still have the original string.  */
+     
     buf = dir;
 
   return buf;

@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Handles the management command interface functions
- *
- * Author: Lyndon Chen
- *
- * Date: May 8, 2002
- *
- */
+ 
+ 
 
 #ifndef __WCMD_H__
 #define __WCMD_H__
 
 #include "device.h"
 
-/* Command code */
+ 
 enum vnt_cmd {
 	WLAN_CMD_INIT_MAC80211,
 	WLAN_CMD_SETPOWER,
@@ -27,7 +17,7 @@ enum vnt_cmd {
 
 #define CMD_Q_SIZE              32
 
-/* Command state */
+ 
 enum vnt_cmd_state {
 	WLAN_CMD_INIT_MAC80211_START,
 	WLAN_CMD_SETPOWER_START,
@@ -45,4 +35,4 @@ int vnt_schedule_command(struct vnt_private *priv, enum vnt_cmd);
 
 void vnt_run_command(struct work_struct *work);
 
-#endif /* __WCMD_H__ */
+#endif  

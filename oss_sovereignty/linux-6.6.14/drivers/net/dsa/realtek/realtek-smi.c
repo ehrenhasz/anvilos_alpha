@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Realtek Simple Management Interface (SMI) driver
- * It can be discussed how "simple" this interface is.
- *
- * The SMI protocol piggy-backs the MDIO MDC and MDIO signals levels
- * but the protocol is not MDIO at all. Instead it is a Realtek
- * pecularity that need to bit-bang the lines in a special way to
- * communicate with the switch.
- *
- * ASICs we intend to support with this driver:
- *
- * RTL8366   - The original version, apparently
- * RTL8369   - Similar enough to have the same datsheet as RTL8366
- * RTL8366RB - Probably reads out "RTL8366 revision B", has a quite
- *             different register layout from the other two
- * RTL8366S  - Is this "RTL8366 super"?
- * RTL8367   - Has an OpenWRT driver as well
- * RTL8368S  - Seems to be an alternative name for RTL8366RB
- * RTL8370   - Also uses SMI
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- * Copyright (C) 2010 Antti Seppälä <a.seppala@gmail.com>
- * Copyright (C) 2010 Roman Yeryomin <roman@advem.lv>
- * Copyright (C) 2011 Colin Leitner <colin.leitner@googlemail.com>
- * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -50,20 +26,18 @@ static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
 
 static void realtek_smi_start(struct realtek_priv *priv)
 {
-	/* Set GPIO pins to output mode, with initial state:
-	 * SCK = 0, SDA = 1
-	 */
+	 
 	gpiod_direction_output(priv->mdc, 0);
 	gpiod_direction_output(priv->mdio, 1);
 	realtek_smi_clk_delay(priv);
 
-	/* CLK 1: 0 -> 1, 1 -> 0 */
+	 
 	gpiod_set_value(priv->mdc, 1);
 	realtek_smi_clk_delay(priv);
 	gpiod_set_value(priv->mdc, 0);
 	realtek_smi_clk_delay(priv);
 
-	/* CLK 2: */
+	 
 	gpiod_set_value(priv->mdc, 1);
 	realtek_smi_clk_delay(priv);
 	gpiod_set_value(priv->mdio, 0);
@@ -87,13 +61,13 @@ static void realtek_smi_stop(struct realtek_priv *priv)
 	realtek_smi_clk_delay(priv);
 	gpiod_set_value(priv->mdc, 1);
 
-	/* Add a click */
+	 
 	realtek_smi_clk_delay(priv);
 	gpiod_set_value(priv->mdc, 0);
 	realtek_smi_clk_delay(priv);
 	gpiod_set_value(priv->mdc, 1);
 
-	/* Set GPIO pins to input mode */
+	 
 	gpiod_direction_input(priv->mdio);
 	gpiod_direction_input(priv->mdc);
 }
@@ -103,11 +77,11 @@ static void realtek_smi_write_bits(struct realtek_priv *priv, u32 data, u32 len)
 	for (; len > 0; len--) {
 		realtek_smi_clk_delay(priv);
 
-		/* Prepare data */
+		 
 		gpiod_set_value(priv->mdio, !!(data & (1 << (len - 1))));
 		realtek_smi_clk_delay(priv);
 
-		/* Clocking */
+		 
 		gpiod_set_value(priv->mdc, 1);
 		realtek_smi_clk_delay(priv);
 		gpiod_set_value(priv->mdc, 0);
@@ -123,7 +97,7 @@ static void realtek_smi_read_bits(struct realtek_priv *priv, u32 len, u32 *data)
 
 		realtek_smi_clk_delay(priv);
 
-		/* Clocking */
+		 
 		gpiod_set_value(priv->mdc, 1);
 		realtek_smi_clk_delay(priv);
 		u = !!gpiod_get_value(priv->mdio);
@@ -172,11 +146,11 @@ static int realtek_smi_read_byte0(struct realtek_priv *priv, u8 *data)
 {
 	u32 t;
 
-	/* Read data */
+	 
 	realtek_smi_read_bits(priv, 8, &t);
 	*data = (t & 0xff);
 
-	/* Send an ACK */
+	 
 	realtek_smi_write_bits(priv, 0x00, 1);
 
 	return 0;
@@ -186,11 +160,11 @@ static int realtek_smi_read_byte1(struct realtek_priv *priv, u8 *data)
 {
 	u32 t;
 
-	/* Read data */
+	 
 	realtek_smi_read_bits(priv, 8, &t);
 	*data = (t & 0xff);
 
-	/* Send an ACK */
+	 
 	realtek_smi_write_bits(priv, 0x01, 1);
 
 	return 0;
@@ -207,24 +181,24 @@ static int realtek_smi_read_reg(struct realtek_priv *priv, u32 addr, u32 *data)
 
 	realtek_smi_start(priv);
 
-	/* Send READ command */
+	 
 	ret = realtek_smi_write_byte(priv, priv->cmd_read);
 	if (ret)
 		goto out;
 
-	/* Set ADDR[7:0] */
+	 
 	ret = realtek_smi_write_byte(priv, addr & 0xff);
 	if (ret)
 		goto out;
 
-	/* Set ADDR[15:8] */
+	 
 	ret = realtek_smi_write_byte(priv, addr >> 8);
 	if (ret)
 		goto out;
 
-	/* Read DATA[7:0] */
+	 
 	realtek_smi_read_byte0(priv, &lo);
-	/* Read DATA[15:8] */
+	 
 	realtek_smi_read_byte1(priv, &hi);
 
 	*data = ((u32)lo) | (((u32)hi) << 8);
@@ -248,27 +222,27 @@ static int realtek_smi_write_reg(struct realtek_priv *priv,
 
 	realtek_smi_start(priv);
 
-	/* Send WRITE command */
+	 
 	ret = realtek_smi_write_byte(priv, priv->cmd_write);
 	if (ret)
 		goto out;
 
-	/* Set ADDR[7:0] */
+	 
 	ret = realtek_smi_write_byte(priv, addr & 0xff);
 	if (ret)
 		goto out;
 
-	/* Set ADDR[15:8] */
+	 
 	ret = realtek_smi_write_byte(priv, addr >> 8);
 	if (ret)
 		goto out;
 
-	/* Write DATA[7:0] */
+	 
 	ret = realtek_smi_write_byte(priv, data & 0xff);
 	if (ret)
 		goto out;
 
-	/* Write DATA[15:8] */
+	 
 	if (ack)
 		ret = realtek_smi_write_byte(priv, data >> 8);
 	else
@@ -285,16 +259,13 @@ static int realtek_smi_write_reg(struct realtek_priv *priv,
 	return ret;
 }
 
-/* There is one single case when we need to use this accessor and that
- * is when issueing soft reset. Since the device reset as soon as we write
- * that bit, no ACK will come back for natural reasons.
- */
+ 
 static int realtek_smi_write_reg_noack(void *ctx, u32 reg, u32 val)
 {
 	return realtek_smi_write_reg(ctx, reg, val, false);
 }
 
-/* Regmap accessors */
+ 
 
 static int realtek_smi_write(void *ctx, u32 reg, u32 val)
 {
@@ -325,10 +296,10 @@ static void realtek_smi_unlock(void *ctx)
 }
 
 static const struct regmap_config realtek_smi_regmap_config = {
-	.reg_bits = 10, /* A4..A0 R4..R0 */
+	.reg_bits = 10,  
 	.val_bits = 16,
 	.reg_stride = 1,
-	/* PHY regs are at 0x8000 */
+	 
 	.max_register = 0xffff,
 	.reg_format_endian = REGMAP_ENDIAN_BIG,
 	.reg_read = realtek_smi_read,
@@ -339,10 +310,10 @@ static const struct regmap_config realtek_smi_regmap_config = {
 };
 
 static const struct regmap_config realtek_smi_nolock_regmap_config = {
-	.reg_bits = 10, /* A4..A0 R4..R0 */
+	.reg_bits = 10,  
 	.val_bits = 16,
 	.reg_stride = 1,
-	/* PHY regs are at 0x8000 */
+	 
 	.max_register = 0xffff,
 	.reg_format_endian = REGMAP_ENDIAN_BIG,
 	.reg_read = realtek_smi_read,
@@ -444,7 +415,7 @@ static int realtek_smi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Link forward and backward */
+	 
 	priv->dev = dev;
 	priv->clk_delay = var->clk_delay;
 	priv->cmd_read = var->cmd_read;
@@ -457,7 +428,7 @@ static int realtek_smi_probe(struct platform_device *pdev)
 	dev_set_drvdata(dev, priv);
 	spin_lock_init(&priv->lock);
 
-	/* TODO: if power is software controlled, set up any regulators here */
+	 
 
 	priv->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(priv->reset)) {
@@ -473,7 +444,7 @@ static int realtek_smi_probe(struct platform_device *pdev)
 		dev_dbg(dev, "deasserted RESET\n");
 	}
 
-	/* Fetch MDIO pins */
+	 
 	priv->mdc = devm_gpiod_get_optional(dev, "mdc", GPIOD_OUT_LOW);
 	if (IS_ERR(priv->mdc))
 		return PTR_ERR(priv->mdc);
@@ -517,7 +488,7 @@ static int realtek_smi_remove(struct platform_device *pdev)
 	if (priv->slave_mii_bus)
 		of_node_put(priv->slave_mii_bus->dev.of_node);
 
-	/* leave the device reset asserted */
+	 
 	if (priv->reset)
 		gpiod_set_value(priv->reset, 1);
 
@@ -549,7 +520,7 @@ static const struct of_device_id realtek_smi_of_match[] = {
 		.data = &rtl8365mb_variant,
 	},
 #endif
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, realtek_smi_of_match);
 

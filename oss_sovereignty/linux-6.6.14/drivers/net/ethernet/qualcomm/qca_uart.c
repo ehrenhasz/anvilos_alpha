@@ -1,26 +1,6 @@
-/*
- *   Copyright (c) 2011, 2012, Qualcomm Atheros Communications Inc.
- *   Copyright (c) 2017, I2SE GmbH
- *
- *   Permission to use, copy, modify, and/or distribute this software
- *   for any purpose with or without fee is hereby granted, provided
- *   that the above copyright notice and this permission notice appear
- *   in all copies.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
- *   WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- *   THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
- *   CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
- *   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- *   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*   This module implements the Qualcomm Atheros UART protocol for
- *   kernel-based UART device; it is essentially an Ethernet-to-UART
- *   serial converter;
- */
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -46,15 +26,15 @@
 
 struct qcauart {
 	struct net_device *net_dev;
-	spinlock_t lock;			/* transmit lock */
-	struct work_struct tx_work;		/* Flushes transmit buffer   */
+	spinlock_t lock;			 
+	struct work_struct tx_work;		 
 
 	struct serdev_device *serdev;
 	struct qcafrm_handle frm_handle;
 	struct sk_buff *rx_skb;
 
-	unsigned char *tx_head;			/* pointer to next XMIT byte */
-	int tx_left;				/* bytes left in XMIT queue  */
+	unsigned char *tx_head;			 
+	int tx_left;				 
 	unsigned char *tx_buffer;
 };
 
@@ -122,7 +102,7 @@ qca_tty_receive(struct serdev_device *serdev, const unsigned char *data,
 	return i;
 }
 
-/* Write out any remaining transmit buffer. Scheduled when tty is writable */
+ 
 static void qcauart_transmit(struct work_struct *work)
 {
 	struct qcauart *qca = container_of(work, struct qcauart, tx_work);
@@ -131,16 +111,14 @@ static void qcauart_transmit(struct work_struct *work)
 
 	spin_lock_bh(&qca->lock);
 
-	/* First make sure we're connected. */
+	 
 	if (!netif_running(qca->net_dev)) {
 		spin_unlock_bh(&qca->lock);
 		return;
 	}
 
 	if (qca->tx_left <= 0)  {
-		/* Now serial buffer is almost free & we can start
-		 * transmission of another packet
-		 */
+		 
 		n_stats->tx_packets++;
 		spin_unlock_bh(&qca->lock);
 		netif_wake_queue(qca->net_dev);
@@ -156,9 +134,7 @@ static void qcauart_transmit(struct work_struct *work)
 	spin_unlock_bh(&qca->lock);
 }
 
-/* Called by the driver when there's room for more data.
- * Schedule the transmit.
- */
+ 
 static void qca_tty_wakeup(struct serdev_device *serdev)
 {
 	struct qcauart *qca = serdev_device_get_drvdata(serdev);
@@ -262,7 +238,7 @@ static int qcauart_netdev_init(struct net_device *dev)
 	struct qcauart *qca = netdev_priv(dev);
 	size_t len;
 
-	/* Finish setting up the device info. */
+	 
 	dev->mtu = QCAFRM_MAX_MTU;
 	dev->type = ARPHRD_ETHER;
 
@@ -305,7 +281,7 @@ static void qcauart_netdev_setup(struct net_device *dev)
 	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
 	dev->tx_queue_len = 100;
 
-	/* MTU range: 46 - 1500 */
+	 
 	dev->min_mtu = QCAFRM_MIN_MTU;
 	dev->max_mtu = QCAFRM_MAX_MTU;
 }
@@ -391,7 +367,7 @@ static void qca_uart_remove(struct serdev_device *serdev)
 
 	unregister_netdev(qca->net_dev);
 
-	/* Flush any pending characters in the driver. */
+	 
 	serdev_device_close(serdev);
 	cancel_work_sync(&qca->tx_work);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery charger driver for TI's tps65090
- *
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
 
- */
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/freezer.h>
@@ -24,7 +19,7 @@
 #define TPS65090_VACG		BIT(1)
 #define TPS65090_NOITERM	BIT(5)
 
-#define POLL_INTERVAL		(HZ * 2)	/* Used when no irq */
+#define POLL_INTERVAL		(HZ * 2)	 
 
 struct tps65090_charger {
 	struct	device	*dev;
@@ -101,7 +96,7 @@ static int tps65090_config_charger(struct tps65090_charger *charger)
 		}
 	}
 
-	/* Enable the VACG interrupt for AC power detect */
+	 
 	ret = tps65090_read(charger->dev->parent, TPS65090_REG_INTR_MASK,
 			    &intrmask);
 	if (ret < 0) {
@@ -167,7 +162,7 @@ static irqreturn_t tps65090_charger_isr(int irq, void *dev_id)
 		charger->ac_online = 0;
 	}
 
-	/* Clear interrupts. */
+	 
 	if (!charger->passive_mode) {
 		ret = tps65090_write(charger->dev->parent,
 				     TPS65090_REG_INTR_STS, 0x00);
@@ -280,7 +275,7 @@ static int tps65090_charger_probe(struct platform_device *pdev)
 		goto fail_unregister_supply;
 	}
 
-	/* Check for charger presence */
+	 
 	ret = tps65090_read(cdata->dev->parent, TPS65090_REG_CG_STATUS1,
 			&status1);
 	if (ret < 0) {
@@ -341,7 +336,7 @@ static int tps65090_charger_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_tps65090_charger_match[] = {
 	{ .compatible = "ti,tps65090-charger", },
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_tps65090_charger_match);
 

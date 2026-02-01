@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * A minimal header declaring types added by KMSAN to existing kernel structs.
- *
- * Copyright (C) 2017-2022 Google LLC
- * Author: Alexander Potapenko <glider@google.com>
- *
- */
+ 
+ 
 #ifndef _LINUX_KMSAN_TYPES_H
 #define _LINUX_KMSAN_TYPES_H
 
-/* These constants are defined in the MSan LLVM instrumentation pass. */
+ 
 #define KMSAN_RETVAL_SIZE 800
 #define KMSAN_PARAM_SIZE 800
 
@@ -32,4 +26,4 @@ struct kmsan_ctx {
 	bool allow_reporting;
 };
 
-#endif /* _LINUX_KMSAN_TYPES_H */
+#endif  

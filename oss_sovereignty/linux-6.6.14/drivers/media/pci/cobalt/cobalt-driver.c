@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cobalt driver initialization and card probing
- *
- *  Derived from cx18-driver.c
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -24,7 +17,7 @@
 #include "cobalt-alsa.h"
 #include "cobalt-omnitek.h"
 
-/* add your revision and whatnot here */
+ 
 static const struct pci_device_id cobalt_pci_tbl[] = {
 	{PCI_VENDOR_ID_CISCO, PCI_DEVICE_ID_COBALT,
 	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
@@ -110,13 +103,12 @@ static void cobalt_set_interrupt(struct cobalt *cobalt, bool enable)
 			irqs |= COBALT_SYSSTAT_VOHSMA_INT1_MSK |
 				COBALT_SYSSTAT_VOHSMA_LOST_DATA_MSK |
 				COBALT_SYSSTAT_AUD_OUT_LOST_DATA_MSK;
-		/* Clear any existing interrupts */
+		 
 		cobalt_write_bar1(cobalt, COBALT_SYS_STAT_EDGE, 0xffffffff);
-		/* PIO Core interrupt mask register.
-		   Enable ADV7604 INT1 interrupts */
+		 
 		cobalt_write_bar1(cobalt, COBALT_SYS_STAT_MASK, irqs);
 	} else {
-		/* Disable all ADV7604 interrupts */
+		 
 		cobalt_write_bar1(cobalt, COBALT_SYS_STAT_MASK, 0);
 	}
 }
@@ -193,7 +185,7 @@ void cobalt_pcie_status_show(struct cobalt *cobalt)
 	if (!pci_is_pcie(pci_dev) || !pci_is_pcie(pci_bus_dev))
 		return;
 
-	/* Device */
+	 
 	pcie_capability_read_dword(pci_dev, PCI_EXP_DEVCAP, &capa);
 	pcie_capability_read_word(pci_dev, PCI_EXP_DEVCTL, &ctrl);
 	pcie_capability_read_word(pci_dev, PCI_EXP_DEVSTA, &stat);
@@ -205,7 +197,7 @@ void cobalt_pcie_status_show(struct cobalt *cobalt)
 		    get_payload_size((ctrl & PCI_EXP_DEVCTL_READRQ) >> 12));
 	cobalt_info("PCIe device status 0x%04x\n", stat);
 
-	/* Link */
+	 
 	pcie_capability_read_dword(pci_dev, PCI_EXP_LNKCAP, &capa);
 	pcie_capability_read_word(pci_dev, PCI_EXP_LNKCTL, &ctrl);
 	pcie_capability_read_word(pci_dev, PCI_EXP_LNKSTA, &stat);
@@ -217,13 +209,13 @@ void cobalt_pcie_status_show(struct cobalt *cobalt)
 		    stat, get_link_speed(stat),
 		    FIELD_GET(PCI_EXP_LNKSTA_NLW, stat));
 
-	/* Bus */
+	 
 	pcie_capability_read_dword(pci_bus_dev, PCI_EXP_LNKCAP, &capa);
 	cobalt_info("PCIe bus link capability 0x%08x: %s per lane and %u lanes\n",
 			capa, get_link_speed(capa),
 			FIELD_GET(PCI_EXP_LNKCAP_MLW, capa));
 
-	/* Slot */
+	 
 	pcie_capability_read_dword(pci_dev, PCI_EXP_SLTCAP, &capa);
 	pcie_capability_read_word(pci_dev, PCI_EXP_SLTCTL, &ctrl);
 	pcie_capability_read_word(pci_dev, PCI_EXP_SLTSTA, &stat);
@@ -360,12 +352,11 @@ static int cobalt_setup_pci(struct cobalt *cobalt, struct pci_dev *pci_dev,
 		goto err_release;
 	}
 
-	/* Reset the video inputs before enabling any interrupts */
+	 
 	ctrl = cobalt_read_bar1(cobalt, COBALT_SYS_CTRL_BASE);
 	cobalt_write_bar1(cobalt, COBALT_SYS_CTRL_BASE, ctrl & ~0xf00);
 
-	/* Disable interrupts to prevent any spurious interrupts
-	   from being generated. */
+	 
 	cobalt_set_interrupt(cobalt, false);
 
 	if (pci_alloc_irq_vectors(pci_dev, 1, 1, PCI_IRQ_MSI) < 1) {
@@ -375,7 +366,7 @@ static int cobalt_setup_pci(struct cobalt *cobalt, struct pci_dev *pci_dev,
 	}
 	msi_config_show(cobalt, pci_dev);
 
-	/* Register IRQ */
+	 
 	if (request_irq(pci_dev->irq, cobalt_irq_handler, IRQF_SHARED,
 			cobalt->v4l2_dev.name, (void *)cobalt)) {
 		cobalt_err("Failed to register irq %d\n", pci_dev->irq);
@@ -425,10 +416,7 @@ static void cobalt_stream_struct_init(struct cobalt *cobalt)
 		s->is_output = false;
 		s->is_dummy = true;
 
-		/* The Memory DMA channels will always get a lower channel
-		 * number than the FIFO DMA. Video input should map to the
-		 * stream 0-3. The other can use stream struct from 4 and
-		 * higher */
+		 
 		if (i <= COBALT_HSMA_IN_NODE) {
 			s->dma_channel = i + cobalt->first_fifo_channel;
 			s->video_channel = i;
@@ -457,7 +445,7 @@ static void cobalt_stream_struct_init(struct cobalt *cobalt)
 			s->video_channel = 5;
 			s->dma_fifo_mask = COBALT_SYSSTAT_AUD_OUT_LOST_DATA_MSK;
 		} else {
-			/* FIXME: Memory DMA for debug purpose */
+			 
 			s->dma_channel = i - COBALT_NUM_NODES;
 		}
 		cobalt_info("stream #%d -> dma channel #%d <- video channel %d\n",
@@ -529,7 +517,7 @@ static int cobalt_subdevs_init(struct cobalt *cobalt)
 				&sd_fmt);
 		if (err)
 			return err;
-		/* Reset channel video module */
+		 
 		cobalt_s_bit_sysctrl(cobalt,
 				COBALT_SYS_CTRL_VIDEO_RX_RESETN_BIT(i), 0);
 		mdelay(2);
@@ -586,7 +574,7 @@ static int cobalt_subdevs_hsma_init(struct cobalt *cobalt)
 	};
 	static struct i2c_board_info adv7511_info = {
 		.type = "adv7511-v4l2",
-		.addr = 0x39, /* 0x39 or 0x3d */
+		.addr = 0x39,  
 		.platform_data = &adv7511_pdata,
 	};
 	struct v4l2_subdev_edid cobalt_edid = {
@@ -617,7 +605,7 @@ static int cobalt_subdevs_hsma_init(struct cobalt *cobalt)
 		s->pad_source = ADV7842_PAD_SOURCE;
 		s->is_dummy = false;
 		cobalt->streams[4 + COBALT_AUDIO_IN_STREAM].is_dummy = false;
-		/* Reset channel video module */
+		 
 		cobalt_s_bit_sysctrl(cobalt,
 				COBALT_SYS_CTRL_VIDEO_RX_RESETN_BIT(4), 0);
 		mdelay(2);
@@ -633,7 +621,7 @@ static int cobalt_subdevs_hsma_init(struct cobalt *cobalt)
 	s->sd = v4l2_i2c_new_subdev_board(&cobalt->v4l2_dev,
 			s->i2c_adap, &adv7511_info, NULL);
 	if (s->sd) {
-		/* A transmitter is hooked up, so we can set this bit */
+		 
 		cobalt_s_bit_sysctrl(cobalt,
 				COBALT_SYS_CTRL_HSMA_TX_ENABLE_BIT, 1);
 		cobalt_s_bit_sysctrl(cobalt,
@@ -660,7 +648,7 @@ static int cobalt_probe(struct pci_dev *pci_dev,
 	int retval = 0;
 	int i;
 
-	/* FIXME - module parameter arrays constrain max instances */
+	 
 	i = atomic_inc_return(&cobalt_instance) - 1;
 
 	cobalt = kzalloc(sizeof(struct cobalt), GFP_KERNEL);
@@ -692,12 +680,12 @@ static int cobalt_probe(struct pci_dev *pci_dev,
 
 	INIT_WORK(&cobalt->irq_work_queue, cobalt_irq_work_handler);
 
-	/* PCI Device Setup */
+	 
 	retval = cobalt_setup_pci(cobalt, pci_dev, pci_id);
 	if (retval != 0)
 		goto err_wq;
 
-	/* Show HDL version info */
+	 
 	if (cobalt_hdl_info_get(cobalt))
 		cobalt_info("Not able to read the HDL info\n");
 	else
@@ -787,7 +775,7 @@ static void cobalt_remove(struct pci_dev *pci_dev)
 	kfree(cobalt);
 }
 
-/* define a pci_driver for card detection */
+ 
 static struct pci_driver cobalt_pci_driver = {
 	.name =     "cobalt",
 	.id_table = cobalt_pci_tbl,

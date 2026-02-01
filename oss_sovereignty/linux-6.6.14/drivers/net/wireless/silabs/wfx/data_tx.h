@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Data transmitting implementation.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+ 
+ 
 #ifndef WFX_DATA_TX_H
 #define WFX_DATA_TX_H
 
@@ -27,7 +22,7 @@ struct wfx_tx_policy {
 
 struct wfx_tx_policy_cache {
 	struct wfx_tx_policy cache[HIF_TX_RETRY_POLICY_MAX];
-	/* FIXME: use a trees and drop hash from tx_policy */
+	 
 	struct list_head used;
 	struct list_head free;
 	spinlock_t lock;

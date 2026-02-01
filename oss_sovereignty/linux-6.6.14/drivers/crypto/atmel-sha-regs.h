@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ATMEL_SHA_REGS_H__
 #define __ATMEL_SHA_REGS_H__
 
@@ -73,4 +73,4 @@
 #define SHA_PTSR			0x124
 #define SHA_PTSR_TXTEN		(1 << 8)
 
-#endif /* __ATMEL_SHA_REGS_H__ */
+#endif  

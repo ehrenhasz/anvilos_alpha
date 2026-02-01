@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/delay.h>
 #include <linux/firmware.h>
 #include <linux/list.h>
@@ -23,9 +23,9 @@
 #define CNN55XX_UCD_BLOCK_SIZE 32768
 #define CNN55XX_MAX_UCODE_SIZE (CNN55XX_UCD_BLOCK_SIZE * 2)
 #define FW_DIR "cavium/"
-/* SE microcode */
+ 
 #define SE_FW	FW_DIR "cnn55xx_se.fw"
-/* AE microcode */
+ 
 #define AE_FW	FW_DIR "cnn55xx_ae.fw"
 
 static const char nitrox_driver_name[] = "CNN55XX";
@@ -34,12 +34,10 @@ static LIST_HEAD(ndevlist);
 static DEFINE_MUTEX(devlist_lock);
 static unsigned int num_devices;
 
-/*
- * nitrox_pci_tbl - PCI Device ID Table
- */
+ 
 static const struct pci_device_id nitrox_pci_tbl[] = {
 	{PCI_VDEVICE(CAVIUM, CNN55XX_DEV_ID), 0},
-	/* required last entry */
+	 
 	{0, }
 };
 MODULE_DEVICE_TABLE(pci, nitrox_pci_tbl);
@@ -48,14 +46,7 @@ static unsigned int qlen = DEFAULT_CMD_QLEN;
 module_param(qlen, uint, 0644);
 MODULE_PARM_DESC(qlen, "Command queue length - default 2048");
 
-/**
- * struct ucode - Firmware Header
- * @id: microcode ID
- * @version: firmware version
- * @code_size: code section size
- * @raz: alignment
- * @code: code section
- */
+ 
 struct ucode {
 	u8 id;
 	char version[VERSION_LEN - 1];
@@ -64,9 +55,7 @@ struct ucode {
 	u64 code[];
 };
 
-/*
- * write_to_ucd_unit - Write Firmware to NITROX UCD unit
- */
+ 
 static void write_to_ucd_unit(struct nitrox_device *ndev, u32 ucode_size,
 			      u64 *ucode_data, int block_num)
 {
@@ -74,29 +63,16 @@ static void write_to_ucd_unit(struct nitrox_device *ndev, u32 ucode_size,
 	u64 offset, data;
 	int i = 0;
 
-	/*
-	 * UCD structure
-	 *
-	 *  -------------
-	 *  |    BLK 7  |
-	 *  -------------
-	 *  |    BLK 6  |
-	 *  -------------
-	 *  |    ...    |
-	 *  -------------
-	 *  |    BLK 0  |
-	 *  -------------
-	 *  Total of 8 blocks, each size 32KB
-	 */
+	 
 
-	/* set the block number */
+	 
 	offset = UCD_UCODE_LOAD_BLOCK_NUM;
 	nitrox_write_csr(ndev, offset, block_num);
 
 	code_size = roundup(ucode_size, 16);
 	while (code_size) {
 		data = ucode_data[i];
-		/* write 8 bytes at a time */
+		 
 		offset = UCD_UCODE_LOAD_IDX_DATAX(i);
 		nitrox_write_csr(ndev, offset, data);
 		code_size -= 8;
@@ -139,24 +115,20 @@ static int nitrox_load_fw(struct nitrox_device *ndev)
 	}
 	ucode_data = ucode->code;
 
-	/* copy the firmware version */
+	 
 	memcpy(&ndev->hw.fw_name[0][0], ucode->version, (VERSION_LEN - 2));
 	ndev->hw.fw_name[0][VERSION_LEN - 1] = '\0';
 
-	/* Load SE Firmware on UCD Block 0 */
+	 
 	write_to_ucd_unit(ndev, ucode_size, ucode_data, 0);
 
 	release_firmware(fw);
 
-	/* put all SE cores in DEFAULT_SE_GROUP */
+	 
 	offset = POM_GRP_EXECMASKX(DEFAULT_SE_GROUP);
 	nitrox_write_csr(ndev, offset, (~0ULL));
 
-	/* write block number and firmware length
-	 * bit:<2:0> block number
-	 * bit:3 is set SE uses 32KB microcode
-	 * bit:3 is clear SE uses 64KB microcode
-	 */
+	 
 	core_2_eid_val.value = 0ULL;
 	core_2_eid_val.ucode_blk = 0;
 	if (ucode_size <= CNN55XX_UCD_BLOCK_SIZE)
@@ -190,16 +162,16 @@ static int nitrox_load_fw(struct nitrox_device *ndev)
 	}
 	ucode_data = ucode->code;
 
-	/* copy the firmware version */
+	 
 	memcpy(&ndev->hw.fw_name[1][0], ucode->version, (VERSION_LEN - 2));
 	ndev->hw.fw_name[1][VERSION_LEN - 1] = '\0';
 
-	/* Load AE Firmware on UCD Block 2 */
+	 
 	write_to_ucd_unit(ndev, ucode_size, ucode_data, 2);
 
 	release_firmware(fw);
 
-	/* put all AE cores in DEFAULT_AE_GROUP */
+	 
 	offset = AQM_GRP_EXECMSK_LOX(DEFAULT_AE_GROUP);
 	aqm_grp_execmask_lo.exec_0_to_39 = 0xFFFFFFFFFFULL;
 	nitrox_write_csr(ndev, offset, aqm_grp_execmask_lo.value);
@@ -207,11 +179,7 @@ static int nitrox_load_fw(struct nitrox_device *ndev)
 	aqm_grp_execmask_hi.exec_40_to_79 = 0xFFFFFFFFFFULL;
 	nitrox_write_csr(ndev, offset, aqm_grp_execmask_hi.value);
 
-	/* write block number and firmware length
-	 * bit:<2:0> block number
-	 * bit:3 is set AE uses 32KB microcode
-	 * bit:3 is clear AE uses 64KB microcode
-	 */
+	 
 	core_2_eid_val.value = 0ULL;
 	core_2_eid_val.ucode_blk = 2;
 	if (ucode_size <= CNN55XX_UCD_BLOCK_SIZE)
@@ -227,10 +195,7 @@ static int nitrox_load_fw(struct nitrox_device *ndev)
 	return 0;
 }
 
-/**
- * nitrox_add_to_devlist - add NITROX device to global device list
- * @ndev: NITROX device
- */
+ 
 static int nitrox_add_to_devlist(struct nitrox_device *ndev)
 {
 	struct nitrox_device *dev;
@@ -253,11 +218,7 @@ unlock:
 	return ret;
 }
 
-/**
- * nitrox_remove_from_devlist - remove NITROX device from
- *   global device list
- * @ndev: NITROX device
- */
+ 
 static void nitrox_remove_from_devlist(struct nitrox_device *ndev)
 {
 	mutex_lock(&devlist_lock);
@@ -282,7 +243,7 @@ struct nitrox_device *nitrox_get_first_device(void)
 		return NULL;
 
 	refcount_inc(&ndev->refcnt);
-	/* barrier to sync with other cpus */
+	 
 	smp_mb__after_atomic();
 	return ndev;
 }
@@ -293,7 +254,7 @@ void nitrox_put_device(struct nitrox_device *ndev)
 		return;
 
 	refcount_dec(&ndev->refcnt);
-	/* barrier to sync with other cpus */
+	 
 	smp_mb__after_atomic();
 }
 
@@ -335,10 +296,7 @@ static void nitrox_pf_sw_cleanup(struct nitrox_device *ndev)
 	nitrox_common_sw_cleanup(ndev);
 }
 
-/**
- * nitrox_bist_check - Check NITROX BIST registers status
- * @ndev: NITROX device
- */
+ 
 static int nitrox_bist_check(struct nitrox_device *ndev)
 {
 	u64 value = 0;
@@ -373,7 +331,7 @@ static int nitrox_pf_hw_init(struct nitrox_device *ndev)
 		dev_err(&ndev->pdev->dev, "BIST check failed\n");
 		return err;
 	}
-	/* get cores information */
+	 
 	nitrox_get_hwinfo(ndev);
 
 	nitrox_config_nps_core_unit(ndev);
@@ -381,14 +339,14 @@ static int nitrox_pf_hw_init(struct nitrox_device *ndev)
 	nitrox_config_nps_pkt_unit(ndev);
 	nitrox_config_pom_unit(ndev);
 	nitrox_config_efl_unit(ndev);
-	/* configure IO units */
+	 
 	nitrox_config_bmi_unit(ndev);
 	nitrox_config_bmo_unit(ndev);
-	/* configure Local Buffer Cache */
+	 
 	nitrox_config_lbc_unit(ndev);
 	nitrox_config_rand_unit(ndev);
 
-	/* load firmware on cores */
+	 
 	err = nitrox_load_fw(ndev);
 	if (err)
 		return err;
@@ -398,14 +356,7 @@ static int nitrox_pf_hw_init(struct nitrox_device *ndev)
 	return 0;
 }
 
-/**
- * nitrox_probe - NITROX Initialization function.
- * @pdev: PCI device information struct
- * @id: entry in nitrox_pci_tbl
- *
- * Return: 0, if the driver is bound to the device, or
- *         a negative error if there is failure.
- */
+ 
 static int nitrox_probe(struct pci_dev *pdev,
 			const struct pci_device_id *id)
 {
@@ -419,7 +370,7 @@ static int nitrox_probe(struct pci_dev *pdev,
 	if (err)
 		return err;
 
-	/* do FLR */
+	 
 	err = nitrox_device_flr(pdev);
 	if (err) {
 		dev_err(&pdev->dev, "FLR failed\n");
@@ -450,13 +401,13 @@ static int nitrox_probe(struct pci_dev *pdev,
 	pci_set_drvdata(pdev, ndev);
 	ndev->pdev = pdev;
 
-	/* add to device list */
+	 
 	nitrox_add_to_devlist(ndev);
 
 	ndev->hw.vendor_id = pdev->vendor;
 	ndev->hw.device_id = pdev->device;
 	ndev->hw.revision_id = pdev->revision;
-	/* command timeout in jiffies */
+	 
 	ndev->timeout = msecs_to_jiffies(CMD_TIMEOUT);
 	ndev->node = dev_to_node(&pdev->dev);
 	if (ndev->node == NUMA_NO_NODE)
@@ -468,7 +419,7 @@ static int nitrox_probe(struct pci_dev *pdev,
 		err = -EIO;
 		goto ioremap_err;
 	}
-	/* allocate command queus based on cpus, max queues are 64 */
+	 
 	ndev->nr_queues = min_t(u32, MAX_PF_QUEUES, num_online_cpus());
 	ndev->qlen = qlen;
 
@@ -482,13 +433,13 @@ static int nitrox_probe(struct pci_dev *pdev,
 
 	nitrox_debugfs_init(ndev);
 
-	/* clear the statistics */
+	 
 	atomic64_set(&ndev->stats.posted, 0);
 	atomic64_set(&ndev->stats.completed, 0);
 	atomic64_set(&ndev->stats.dropped, 0);
 
 	atomic_set(&ndev->state, __NDEV_READY);
-	/* barrier to sync with other cpus */
+	 
 	smp_mb__after_atomic();
 
 	err = nitrox_crypto_register();
@@ -500,7 +451,7 @@ static int nitrox_probe(struct pci_dev *pdev,
 crypto_fail:
 	nitrox_debugfs_exit(ndev);
 	atomic_set(&ndev->state, __NDEV_NOT_READY);
-	/* barrier to sync with other cpus */
+	 
 	smp_mb__after_atomic();
 pf_hw_fail:
 	nitrox_pf_sw_cleanup(ndev);
@@ -517,10 +468,7 @@ flr_fail:
 	return err;
 }
 
-/**
- * nitrox_remove - Unbind the driver from the device.
- * @pdev: PCI device information struct
- */
+ 
 static void nitrox_remove(struct pci_dev *pdev)
 {
 	struct nitrox_device *ndev = pci_get_drvdata(pdev);
@@ -538,12 +486,12 @@ static void nitrox_remove(struct pci_dev *pdev)
 		 ndev->hw.vendor_id, ndev->hw.device_id);
 
 	atomic_set(&ndev->state, __NDEV_NOT_READY);
-	/* barrier to sync with other cpus */
+	 
 	smp_mb__after_atomic();
 
 	nitrox_remove_from_devlist(ndev);
 
-	/* disable SR-IOV */
+	 
 	nitrox_sriov_configure(pdev, 0);
 	nitrox_crypto_unregister();
 	nitrox_debugfs_exit(ndev);

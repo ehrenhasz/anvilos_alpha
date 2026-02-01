@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2018 Paul Sokolovsky
- * Copyright (c) 2014-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 
@@ -53,22 +28,10 @@
 #include "extmod/vfs.h"
 #include <poll.h>
 
-/*
-  The idea of this module is to implement reasonable minimum of
-  socket-related functions to write typical clients and servers.
-  It's then possible to make a Python-level module more (or fully)
-  compatible with CPython "socket", e.g.:
-  ---- socket.py ----
-  from socket import *
-  from socket_more_funcs import *
-  from socket_more_funcs2 import *
-  -------------------
-  I.e. this module should stay lean, and more functions (if needed)
-  should be add to separate modules (C or Python level).
- */
+ 
 
-// This type must "inherit" from mp_obj_fdfile_t, i.e. matching subset of
-// fields should have the same layout.
+ 
+ 
 typedef struct _mp_obj_socket_t {
     mp_obj_base_t base;
     int fd;
@@ -77,7 +40,7 @@ typedef struct _mp_obj_socket_t {
 
 const mp_obj_type_t mp_type_socket;
 
-// Helper functions
+ 
 static inline mp_obj_t mp_obj_from_sockaddr(const struct sockaddr *addr, socklen_t len) {
     return mp_obj_new_bytes((const byte *)addr, len);
 }
@@ -100,8 +63,8 @@ static mp_uint_t socket_read(mp_obj_t o_in, void *buf, mp_uint_t size, int *errc
     mp_obj_socket_t *o = MP_OBJ_TO_PTR(o_in);
     ssize_t r;
     MP_HAL_RETRY_SYSCALL(r, read(o->fd, buf, size), {
-        // On blocking socket, we get EAGAIN in case SO_RCVTIMEO/SO_SNDTIMEO
-        // timed out, and need to convert that to ETIMEDOUT.
+         
+         
         if (err == EAGAIN && o->blocking) {
             err = MP_ETIMEDOUT;
         }
@@ -116,8 +79,8 @@ static mp_uint_t socket_write(mp_obj_t o_in, const void *buf, mp_uint_t size, in
     mp_obj_socket_t *o = MP_OBJ_TO_PTR(o_in);
     ssize_t r;
     MP_HAL_RETRY_SYSCALL(r, write(o->fd, buf, size), {
-        // On blocking socket, we get EAGAIN in case SO_RCVTIMEO/SO_SNDTIMEO
-        // timed out, and need to convert that to ETIMEDOUT.
+         
+         
         if (err == EAGAIN && o->blocking) {
             err = MP_ETIMEDOUT;
         }
@@ -133,13 +96,13 @@ static mp_uint_t socket_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg, i
     (void)arg;
     switch (request) {
         case MP_STREAM_CLOSE:
-            // There's a POSIX drama regarding return value of close in general,
-            // and EINTR error in particular. See e.g.
-            // http://lwn.net/Articles/576478/
-            // http://austingroupbugs.net/view.php?id=529
-            // The rationale MicroPython follows is that close() just releases
-            // file descriptor. If you're interested to catch I/O errors before
-            // closing fd, fsync() it.
+             
+            
+            
+            
+            
+            
+            
             MP_THREAD_GIL_EXIT();
             close(self->fd);
             MP_THREAD_GIL_ENTER();
@@ -197,8 +160,8 @@ static mp_obj_t socket_connect(mp_obj_t self_in, mp_obj_t addr_in) {
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(addr_in, &bufinfo, MP_BUFFER_READ);
 
-    // special case of PEP 475 to retry only if blocking so we can't use
-    // MP_HAL_RETRY_SYSCALL() here
+    
+    
     for (;;) {
         MP_THREAD_GIL_EXIT();
         int r = connect(self->fd, (const struct sockaddr *)bufinfo.buf, bufinfo.len);
@@ -210,7 +173,7 @@ static mp_obj_t socket_connect(mp_obj_t self_in, mp_obj_t addr_in) {
                     mp_handle_pending(true);
                     continue;
                 }
-                // EINPROGRESS on a blocking socket means the operation timed out
+                
                 if (err == EINPROGRESS) {
                     err = MP_ETIMEDOUT;
                 }
@@ -234,7 +197,7 @@ static mp_obj_t socket_bind(mp_obj_t self_in, mp_obj_t addr_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(socket_bind_obj, socket_bind);
 
-// method socket.listen([backlog])
+
 static mp_obj_t socket_listen(size_t n_args, const mp_obj_t *args) {
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(args[0]);
 
@@ -254,13 +217,13 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(socket_listen_obj, 1, 2, socket_liste
 
 static mp_obj_t socket_accept(mp_obj_t self_in) {
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(self_in);
-    // sockaddr_storage isn't stack-friendly (129 bytes or so)
-    // struct sockaddr_storage addr;
+    
+    
     byte addr[32];
     socklen_t addr_len = sizeof(addr);
     int fd;
     MP_HAL_RETRY_SYSCALL(fd, accept(self->fd, (struct sockaddr *)&addr, &addr_len), {
-        // EAGAIN on a blocking socket means the operation timed out
+        
         if (self->blocking && err == EAGAIN) {
             err = MP_ETIMEDOUT;
         }
@@ -275,9 +238,9 @@ static mp_obj_t socket_accept(mp_obj_t self_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(socket_accept_obj, socket_accept);
 
-// Note: besides flag param, this differs from read() in that
-// this does not swallow blocking errors (EAGAIN, EWOULDBLOCK) -
-// these would be thrown as exceptions.
+
+
+
 static mp_obj_t socket_recv(size_t n_args, const mp_obj_t *args) {
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(args[0]);
     int sz = MP_OBJ_SMALL_INT_VALUE(args[1]);
@@ -323,9 +286,9 @@ static mp_obj_t socket_recvfrom(size_t n_args, const mp_obj_t *args) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(socket_recvfrom_obj, 2, 3, socket_recvfrom);
 
-// Note: besides flag param, this differs from write() in that
-// this does not swallow blocking errors (EAGAIN, EWOULDBLOCK) -
-// these would be thrown as exceptions.
+
+
+
 static mp_obj_t socket_send(size_t n_args, const mp_obj_t *args) {
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(args[0]);
     int flags = 0;
@@ -364,7 +327,7 @@ static mp_obj_t socket_sendto(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(socket_sendto_obj, 3, 4, socket_sendto);
 
 static mp_obj_t socket_setsockopt(size_t n_args, const mp_obj_t *args) {
-    (void)n_args; // always 4
+    (void)n_args; 
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(args[0]);
     int level = MP_OBJ_SMALL_INT_VALUE(args[1]);
     int option = mp_obj_get_int(args[2]);
@@ -417,8 +380,8 @@ static mp_obj_t socket_settimeout(mp_obj_t self_in, mp_obj_t timeout_in) {
     struct timeval tv = {0, };
     bool new_blocking = true;
 
-    // Timeout of None means no timeout, which in POSIX is signified with 0 timeout,
-    // and that's how 'tv' is initialized above
+    
+    
     if (timeout_in != mp_const_none) {
         #if MICROPY_PY_BUILTINS_FLOAT
         mp_float_t val = mp_obj_get_float(timeout_in);
@@ -429,8 +392,8 @@ static mp_obj_t socket_settimeout(mp_obj_t self_in, mp_obj_t timeout_in) {
         tv.tv_sec = mp_obj_get_int(timeout_in);
         #endif
 
-        // For SO_RCVTIMEO/SO_SNDTIMEO, zero timeout means infinity, but
-        // for Python API it means non-blocking.
+        
+        
         if (tv.tv_sec == 0 && tv.tv_usec == 0) {
             new_blocking = false;
         }
@@ -458,9 +421,9 @@ static mp_obj_t socket_settimeout(mp_obj_t self_in, mp_obj_t timeout_in) {
 static MP_DEFINE_CONST_FUN_OBJ_2(socket_settimeout_obj, socket_settimeout);
 
 static mp_obj_t socket_makefile(size_t n_args, const mp_obj_t *args) {
-    // TODO: CPython explicitly says that closing returned object doesn't close
-    // the original socket (Python2 at all says that fd is dup()ed). But we
-    // save on the bloat.
+    
+    
+    
     mp_obj_socket_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_obj_t *new_args = alloca(n_args * sizeof(mp_obj_t));
     memcpy(new_args + 1, args + 1, (n_args - 1) * sizeof(mp_obj_t));
@@ -579,8 +542,8 @@ static mp_obj_t mod_socket_getaddrinfo(size_t n_args, const mp_obj_t *args) {
     struct addrinfo hints;
     char buf[6];
     memset(&hints, 0, sizeof(hints));
-    // getaddrinfo accepts port in string notation, so however
-    // it may seem stupid, we need to convert int to str
+    
+    
     if (mp_obj_is_small_int(args[1])) {
         unsigned port = (unsigned short)MP_OBJ_SMALL_INT_VALUE(args[1]);
         snprintf(buf, sizeof(buf), "%u", port);
@@ -588,15 +551,15 @@ static mp_obj_t mod_socket_getaddrinfo(size_t n_args, const mp_obj_t *args) {
         hints.ai_flags = AI_NUMERICSERV;
         #ifdef __UCLIBC_MAJOR__
         #if __UCLIBC_MAJOR__ == 0 && (__UCLIBC_MINOR__ < 9 || (__UCLIBC_MINOR__ == 9 && __UCLIBC_SUBLEVEL__ <= 32))
-// "warning" requires -Wno-cpp which is a relatively new gcc option, so we choose not to use it.
-// #warning Working around uClibc bug with numeric service name
-        // Older versions og uClibc have bugs when numeric ports in service
-        // arg require also hints.ai_socktype (or hints.ai_protocol) != 0
-        // This actually was fixed in 0.9.32.1, but uClibc doesn't allow to
-        // test for that.
-        // http://git.uclibc.org/uClibc/commit/libc/inet/getaddrinfo.c?id=bc3be18145e4d5
-        // Note that this is crude workaround, precluding UDP socket addresses
-        // to be returned. TODO: set only if not set by Python args.
+
+
+        
+        
+        
+        
+        
+        
+        
         hints.ai_socktype = SOCK_STREAM;
         #endif
         #endif
@@ -623,7 +586,7 @@ static mp_obj_t mod_socket_getaddrinfo(size_t n_args, const mp_obj_t *args) {
     MP_THREAD_GIL_ENTER();
 
     if (res != 0) {
-        // CPython: socket.gaierror
+        
         mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("[addrinfo error %d]"), res);
     }
     assert(addr_list);
@@ -634,8 +597,8 @@ static mp_obj_t mod_socket_getaddrinfo(size_t n_args, const mp_obj_t *args) {
         t->items[0] = MP_OBJ_NEW_SMALL_INT(addr->ai_family);
         t->items[1] = MP_OBJ_NEW_SMALL_INT(addr->ai_socktype);
         t->items[2] = MP_OBJ_NEW_SMALL_INT(addr->ai_protocol);
-        // "canonname will be a string representing the canonical name of the host
-        // if AI_CANONNAME is part of the flags argument; else canonname will be empty." ??
+        
+        
         if (addr->ai_canonname) {
             t->items[3] = MP_OBJ_NEW_QSTR(qstr_from_str(addr->ai_canonname));
         } else {
@@ -720,4 +683,4 @@ const mp_obj_module_t mp_module_socket = {
 
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_socket, mp_module_socket);
 
-#endif // MICROPY_PY_SOCKET
+#endif 

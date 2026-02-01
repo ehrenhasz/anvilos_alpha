@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+ 
+ 
 
 #ifndef __LIMA_SCHED_H__
 #define __LIMA_SCHED_H__
@@ -29,7 +29,7 @@ struct lima_sched_task {
 	bool recoverable;
 	struct lima_bo *heap;
 
-	/* pipe fence */
+	 
 	struct dma_fence *fence;
 };
 

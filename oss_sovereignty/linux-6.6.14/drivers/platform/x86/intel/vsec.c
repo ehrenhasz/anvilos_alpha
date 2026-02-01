@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Vendor Specific Extended Capabilities auxiliary bus driver
- *
- * Copyright (c) 2021, Intel Corporation.
- * All Rights Reserved.
- *
- * Author: David E. Box <david.e.box@linux.intel.com>
- *
- * This driver discovers and creates auxiliary devices for Intel defined PCIe
- * "Vendor Specific" and "Designated Vendor Specific" Extended Capabilities,
- * VSEC and DVSEC respectively. The driver supports features on specific PCIe
- * endpoints that exist primarily to expose them.
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bits.h>
@@ -24,7 +12,7 @@
 
 #include "vsec.h"
 
-/* Intel DVSEC offsets */
+ 
 #define INTEL_DVSEC_ENTRIES		0xA
 #define INTEL_DVSEC_SIZE		0xB
 #define INTEL_DVSEC_TABLE		0xC
@@ -39,16 +27,7 @@ static DEFINE_IDA(intel_vsec_ida);
 static DEFINE_IDA(intel_vsec_sdsi_ida);
 static DEFINE_XARRAY_ALLOC(auxdev_array);
 
-/**
- * struct intel_vsec_header - Common fields of Intel VSEC and DVSEC registers.
- * @rev:         Revision ID of the VSEC/DVSEC register space
- * @length:      Length of the VSEC/DVSEC register space
- * @id:          ID of the feature
- * @num_entries: Number of instances of the feature
- * @entry_size:  Size of the discovery table for each feature
- * @tbir:        BAR containing the discovery tables
- * @offset:      BAR offset of start of the first discovery table
- */
+ 
 struct intel_vsec_header {
 	u8	rev;
 	u16	length;
@@ -218,11 +197,7 @@ static int intel_vsec_add_dev(struct pci_dev *pdev, struct intel_vsec_header *he
 	if (quirks & VSEC_QUIRK_TABLE_SHIFT)
 		header->offset >>= TABLE_OFFSET_SHIFT;
 
-	/*
-	 * The DVSEC/VSEC contains the starting offset and count for a block of
-	 * discovery tables. Create a resource array of these tables to the
-	 * auxiliary device driver.
-	 */
+	 
 	for (i = 0, tmp = res; i < header->num_entries; i++, tmp++) {
 		tmp->start = pdev->resource[header->tbir].start +
 			     header->offset + i * (header->entry_size * sizeof(u32));
@@ -284,7 +259,7 @@ static bool intel_vsec_walk_dvsec(struct pci_dev *pdev,
 		if (vid != PCI_VENDOR_ID_INTEL)
 			continue;
 
-		/* Support only revision 1 */
+		 
 		header.rev = PCI_DVSEC_HEADER1_REV(hdr);
 		if (header.rev != 1) {
 			dev_info(&pdev->dev, "Unsupported DVSEC revision %d\n", header.rev);
@@ -330,7 +305,7 @@ static bool intel_vsec_walk_vsec(struct pci_dev *pdev,
 
 		pci_read_config_dword(pdev, pos + PCI_VNDR_HEADER, &hdr);
 
-		/* Support only revision 1 */
+		 
 		header.rev = PCI_VNDR_HEADER_REV(hdr);
 		if (header.rev != 1) {
 			dev_info(&pdev->dev, "Unsupported VSEC revision %d\n", header.rev);
@@ -340,7 +315,7 @@ static bool intel_vsec_walk_vsec(struct pci_dev *pdev,
 		header.id = PCI_VNDR_HEADER_ID(hdr);
 		header.length = PCI_VNDR_HEADER_LEN(hdr);
 
-		/* entry, size, and table offset are the same as DVSEC */
+		 
 		pci_read_config_byte(pdev, pos + INTEL_DVSEC_ENTRIES, &header.num_entries);
 		pci_read_config_byte(pdev, pos + INTEL_DVSEC_SIZE, &header.entry_size);
 		pci_read_config_dword(pdev, pos + INTEL_DVSEC_TABLE, &table);
@@ -389,7 +364,7 @@ static int intel_vsec_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 	return 0;
 }
 
-/* DG1 info */
+ 
 static struct intel_vsec_header dg1_header = {
 	.length = 0x10,
 	.id = 2,
@@ -410,17 +385,17 @@ static const struct intel_vsec_platform_info dg1_info = {
 	.quirks = VSEC_QUIRK_NO_DVSEC | VSEC_QUIRK_EARLY_HW,
 };
 
-/* MTL info */
+ 
 static const struct intel_vsec_platform_info mtl_info = {
 	.caps = VSEC_CAP_TELEMETRY,
 };
 
-/* OOBMSM info */
+ 
 static const struct intel_vsec_platform_info oobmsm_info = {
 	.caps = VSEC_CAP_TELEMETRY | VSEC_CAP_SDSI | VSEC_CAP_TPMI,
 };
 
-/* TGL info */
+ 
 static const struct intel_vsec_platform_info tgl_info = {
 	.caps = VSEC_CAP_TELEMETRY,
 	.quirks = VSEC_QUIRK_TABLE_SHIFT | VSEC_QUIRK_EARLY_HW,
@@ -479,7 +454,7 @@ static pci_ers_result_t intel_vsec_pci_slot_reset(struct pci_dev *pdev)
 	status = PCI_ERS_RESULT_RECOVERED;
 
 	xa_for_each(&auxdev_array, index, intel_vsec_dev) {
-		/* check if pdev doesn't match */
+		 
 		if (pdev != intel_vsec_dev->pcidev)
 			continue;
 		devm_release_action(&pdev->dev, intel_vsec_remove_aux,

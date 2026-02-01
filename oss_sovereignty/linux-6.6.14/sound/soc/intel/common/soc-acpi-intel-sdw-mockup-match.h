@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * soc-acpi-intel-sdw-mockup-match.h - tables and support for SoundWire
- * mockup device ACPI enumeration.
- *
- * Copyright (c) 2021, Intel Corporation.
- *
- */
+ 
+ 
 
 #ifndef _SND_SOC_ACPI_INTEL_SDW_MOCKUP_MATCH
 #define _SND_SOC_ACPI_INTEL_SDW_MOCKUP_MATCH

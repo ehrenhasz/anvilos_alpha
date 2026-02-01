@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics LSM9DS0 IMU driver
- *
- * Copyright (C) 2021, Intel Corporation
- *
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -76,19 +70,19 @@ int st_lsm9ds0_probe(struct st_lsm9ds0 *lsm9ds0, struct regmap *regmap)
 	static const char * const regulator_names[] = { "vdd", "vddio" };
 	int ret;
 
-	/* Regulators not mandatory, but if requested we should enable them. */
+	 
 	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(regulator_names),
 					     regulator_names);
 	if (ret)
 		return dev_err_probe(dev, ret,
 				     "unable to enable Vdd supply\n");
 
-	/* Setup accelerometer device */
+	 
 	ret = st_lsm9ds0_probe_accel(lsm9ds0, regmap);
 	if (ret)
 		return ret;
 
-	/* Setup magnetometer device */
+	 
 	return st_lsm9ds0_probe_magn(lsm9ds0, regmap);
 }
 EXPORT_SYMBOL_NS_GPL(st_lsm9ds0_probe, IIO_ST_SENSORS);

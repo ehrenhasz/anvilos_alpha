@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2010 LG Electronics
- * Chan Jeong <chan.jeong@lge.com>
- *
- * lzo_wrapper.c
- */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/bio.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Topcliff PCH DMA controller driver
- * Copyright (c) 2010 Intel Corporation
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- */
+
+ 
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -224,7 +220,7 @@ static void pdc_set_dir(struct dma_chan *chan)
 		val |= mask_ctl;
 		dma_writel(pd, CTL0, val);
 	} else {
-		int ch = chan->chan_id - 8; /* ch8-->0 ch9-->1 ... ch11->3 */
+		int ch = chan->chan_id - 8;  
 		val = dma_readl(pd, CTL3);
 
 		mask_mode = DMA_CTL0_MODE_MASK_BITS <<
@@ -264,7 +260,7 @@ static void pdc_set_mode(struct dma_chan *chan, u32 mode)
 		val |= mask_ctl;
 		dma_writel(pd, CTL0, val);
 	} else {
-		int ch = chan->chan_id - 8; /* ch8-->0 ch9-->1 ... ch11->3 */
+		int ch = chan->chan_id - 8;  
 		mask_ctl = DMA_MASK_CTL2_MODE & ~(DMA_CTL0_MODE_MASK_BITS <<
 						 (DMA_CTL0_BITS_PER_CH * ch));
 		mask_dir = 1 << (DMA_CTL0_BITS_PER_CH * ch +\
@@ -726,7 +722,7 @@ static irqreturn_t pd_irq(int irq, void *devid)
 		}
 	}
 
-	/* clear interrupt bits in status register */
+	 
 	if (ret0)
 		dma_writel(pd, STS0, sts0);
 	if (ret2)
@@ -946,7 +942,7 @@ static void pch_dma_remove(struct pci_dev *pdev)
 	}
 }
 
-/* PCI Device ID of DMA device */
+ 
 #define PCI_DEVICE_ID_EG20T_PCH_DMA_8CH        0x8810
 #define PCI_DEVICE_ID_EG20T_PCH_DMA_4CH        0x8815
 #define PCI_DEVICE_ID_ML7213_DMA1_8CH	0x8026
@@ -963,16 +959,16 @@ static void pch_dma_remove(struct pci_dev *pdev)
 static const struct pci_device_id pch_dma_id_table[] = {
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_8CH), 8 },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_4CH), 4 },
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA1_8CH), 8}, /* UART Video */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA2_8CH), 8}, /* PCMIF SPI */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA3_4CH), 4}, /* FPGA */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA4_12CH), 12}, /* I2S */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA1_4CH), 4}, /* UART */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA2_4CH), 4}, /* Video SPI */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA3_4CH), 4}, /* Security */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA4_4CH), 4}, /* FPGA */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_DMA1_8CH), 8}, /* UART */
-	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_DMA2_4CH), 4}, /* SPI */
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA1_8CH), 8},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA2_8CH), 8},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA3_4CH), 4},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA4_12CH), 12},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA1_4CH), 4},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA2_4CH), 4},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA3_4CH), 4},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_DMA4_4CH), 4},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_DMA1_8CH), 8},  
+	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_DMA2_4CH), 4},  
 	{ 0, },
 };
 

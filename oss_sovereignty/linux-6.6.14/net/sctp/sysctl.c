@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * (C) Copyright IBM Corp. 2002, 2004
- * Copyright (c) 2002 Intel Corp.
- *
- * This file is part of the SCTP kernel implementation
- *
- * Sysctl related interfaces for SCTP.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Mingqin Liu           <liuming@us.ibm.com>
- *    Jon Grimm             <jgrimm@us.ibm.com>
- *    Ardelle Fan           <ardelle.fan@intel.com>
- *    Ryan Layer            <rmlayer@us.ibm.com>
- *    Sridhar Samudrala     <sri@us.ibm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +7,7 @@
 #include <net/sctp/sctp.h>
 #include <linux/sysctl.h>
 
-static int timer_max = 86400000; /* ms in one day */
+static int timer_max = 86400000;  
 static int sack_timer_min = 1;
 static int sack_timer_max = 500;
 static int addr_scope_max = SCTP_SCOPE_POLICY_MAX;
@@ -81,14 +63,10 @@ static struct ctl_table sctp_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 
-	{ /* sentinel */ }
+	{   }
 };
 
-/* The following index defines are used in sctp_sysctl_net_register().
- * If you add new items to the sctp_net_table, please ensure that
- * the index values of these defines hold the same meaning indicated by
- * their macro names when they appear in sctp_net_table.
- */
+ 
 #define SCTP_RTO_MIN_IDX       0
 #define SCTP_RTO_MAX_IDX       1
 #define SCTP_PF_RETRANS_IDX    2
@@ -385,7 +363,7 @@ static struct ctl_table sctp_net_table[] = {
 		.extra2		= &pf_expose_max,
 	},
 
-	{ /* sentinel */ }
+	{   }
 };
 
 static int proc_sctp_do_hmac_alg(struct ctl_table *ctl, int write,
@@ -519,7 +497,7 @@ static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
 		struct sock *sk = net->sctp.ctl_sock;
 
 		net->sctp.auth_enable = new_value;
-		/* Update the value in the control socket */
+		 
 		lock_sock(sk);
 		sctp_sk(sk)->ep->auth_enable = new_value;
 		release_sock(sk);
@@ -560,7 +538,7 @@ static int proc_sctp_do_udp_port(struct ctl_table *ctl, int write,
 				net->sctp.udp_port = 0;
 		}
 
-		/* Update the value in the control socket */
+		 
 		lock_sock(sk);
 		sctp_sk(sk)->udp_port = htons(net->sctp.udp_port);
 		release_sock(sk);
@@ -633,13 +611,13 @@ void sctp_sysctl_net_unregister(struct net *net)
 
 static struct ctl_table_header *sctp_sysctl_header;
 
-/* Sysctl registration.  */
+ 
 void sctp_sysctl_register(void)
 {
 	sctp_sysctl_header = register_net_sysctl(&init_net, "net/sctp", sctp_table);
 }
 
-/* Sysctl deregistration.  */
+ 
 void sctp_sysctl_unregister(void)
 {
 	unregister_net_sysctl_table(sctp_sysctl_header);

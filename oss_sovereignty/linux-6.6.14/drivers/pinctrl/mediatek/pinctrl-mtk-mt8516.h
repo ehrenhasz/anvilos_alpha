@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- */
+ 
+ 
 #ifndef __PINCTRL_MTK_MT8516_H
 #define __PINCTRL_MTK_MT8516_H
 
@@ -1061,7 +1059,7 @@ static const struct mtk_desc_pin mtk_pins_mt8516[] = {
 		MTK_EINT_FUNCTION(0, 109),
 		MTK_FUNCTION(0, "GPIO109"),
 		MTK_FUNCTION(1, "MSDC1_DAT3"),
-		MTK_FUNCTION(4, "SQICK"), /* WIP */
+		MTK_FUNCTION(4, "SQICK"),  
 		MTK_FUNCTION(7, "DBG_MON_B[30]")
 	),
 	MTK_PIN(
@@ -1179,4 +1177,4 @@ static const struct mtk_desc_pin mtk_pins_mt8516[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT8516_H */
+#endif  

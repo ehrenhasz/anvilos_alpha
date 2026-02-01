@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-meta-out.h - meta output support functions.
- */
+ 
+ 
 #ifndef _VIVID_META_OUT_H_
 #define _VIVID_META_OUT_H_
 

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Fifo-attached Serial Interface (FSI) support for SH7724
-//
-// Copyright (C) 2009 Renesas Solutions Corp.
-// Kuninori Morimoto <morimoto.kuninori@renesas.com>
-//
-// Based on ssi.c
-// Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
+
+
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -23,7 +23,7 @@
 #include <sound/pcm_params.h>
 #include <sound/sh_fsi.h>
 
-/* PortA/PortB register */
+ 
 #define REG_DO_FMT	0x0000
 #define REG_DOFF_CTL	0x0004
 #define REG_DOFF_ST	0x0008
@@ -39,12 +39,12 @@
 #define REG_OUT_SEL	0x0030
 #define REG_IN_DMAC	0x0038
 
-/* master register */
+ 
 #define MST_CLK_RST	0x0210
 #define MST_SOFT_RST	0x0214
 #define MST_FIFO_SZ	0x0218
 
-/* core register (depend on FSI version) */
+ 
 #define A_MST_CTLR	0x0180
 #define B_MST_CTLR	0x01A0
 #define CPU_INT_ST	0x01F4
@@ -54,16 +54,16 @@
 #define IEMSK		0x0204
 #define IMSK		0x0208
 
-/* DO_FMT */
-/* DI_FMT */
-#define CR_BWS_MASK	(0x3 << 20) /* FSI2 */
-#define CR_BWS_24	(0x0 << 20) /* FSI2 */
-#define CR_BWS_16	(0x1 << 20) /* FSI2 */
-#define CR_BWS_20	(0x2 << 20) /* FSI2 */
+ 
+ 
+#define CR_BWS_MASK	(0x3 << 20)  
+#define CR_BWS_24	(0x0 << 20)  
+#define CR_BWS_16	(0x1 << 20)  
+#define CR_BWS_20	(0x2 << 20)  
 
-#define CR_DTMD_PCM		(0x0 << 8) /* FSI2 */
-#define CR_DTMD_SPDIF_PCM	(0x1 << 8) /* FSI2 */
-#define CR_DTMD_SPDIF_STREAM	(0x2 << 8) /* FSI2 */
+#define CR_DTMD_PCM		(0x0 << 8)  
+#define CR_DTMD_SPDIF_PCM	(0x1 << 8)  
+#define CR_DTMD_SPDIF_STREAM	(0x2 << 8)  
 
 #define CR_MONO		(0x0 << 4)
 #define CR_MONO_D	(0x1 << 4)
@@ -72,71 +72,64 @@
 #define CR_TDM		(0x4 << 4)
 #define CR_TDM_D	(0x5 << 4)
 
-/* OUT_DMAC */
-/* IN_DMAC */
+ 
+ 
 #define VDMD_MASK	(0x3 << 4)
-#define VDMD_FRONT	(0x0 << 4) /* Package in front */
-#define VDMD_BACK	(0x1 << 4) /* Package in back */
-#define VDMD_STREAM	(0x2 << 4) /* Stream mode(16bit * 2) */
+#define VDMD_FRONT	(0x0 << 4)  
+#define VDMD_BACK	(0x1 << 4)  
+#define VDMD_STREAM	(0x2 << 4)  
 
 #define DMA_ON		(0x1 << 0)
 
-/* DOFF_CTL */
-/* DIFF_CTL */
+ 
+ 
 #define IRQ_HALF	0x00100000
 #define FIFO_CLR	0x00000001
 
-/* DOFF_ST */
+ 
 #define ERR_OVER	0x00000010
 #define ERR_UNDER	0x00000001
 #define ST_ERR		(ERR_OVER | ERR_UNDER)
 
-/* CKG1 */
+ 
 #define ACKMD_MASK	0x00007000
 #define BPFMD_MASK	0x00000700
 #define DIMD		(1 << 4)
 #define DOMD		(1 << 0)
 
-/* A/B MST_CTLR */
-#define BP	(1 << 4)	/* Fix the signal of Biphase output */
-#define SE	(1 << 0)	/* Fix the master clock */
+ 
+#define BP	(1 << 4)	 
+#define SE	(1 << 0)	 
 
-/* CLK_RST */
+ 
 #define CRB	(1 << 4)
 #define CRA	(1 << 0)
 
-/* IO SHIFT / MACRO */
+ 
 #define BI_SHIFT	12
 #define BO_SHIFT	8
 #define AI_SHIFT	4
 #define AO_SHIFT	0
 #define AB_IO(param, shift)	(param << shift)
 
-/* SOFT_RST */
-#define PBSR		(1 << 12) /* Port B Software Reset */
-#define PASR		(1 <<  8) /* Port A Software Reset */
-#define IR		(1 <<  4) /* Interrupt Reset */
-#define FSISR		(1 <<  0) /* Software Reset */
+ 
+#define PBSR		(1 << 12)  
+#define PASR		(1 <<  8)  
+#define IR		(1 <<  4)  
+#define FSISR		(1 <<  0)  
 
-/* OUT_SEL (FSI2) */
-#define DMMD		(1 << 4) /* SPDIF output timing 0: Biphase only */
-				 /*			1: Biphase and serial */
+ 
+#define DMMD		(1 << 4)  
+				  
 
-/* FIFO_SZ */
+ 
 #define FIFO_SZ_MASK	0x7
 
 #define FSI_RATES SNDRV_PCM_RATE_8000_96000
 
 #define FSI_FMTS (SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S16_LE)
 
-/*
- * bus options
- *
- * 0x000000BA
- *
- * A : sample widtht 16bit setting
- * B : sample widtht 24bit setting
- */
+ 
 
 #define SHIFT_16DATA		0
 #define SHIFT_24DATA		4
@@ -148,91 +141,44 @@
 #define BUSOP_SET(s, a)	((a) << SHIFT_ ## s ## DATA)
 #define BUSOP_GET(s, a)	(((a) >> SHIFT_ ## s ## DATA) & 0xF)
 
-/*
- * FSI driver use below type name for variable
- *
- * xxx_num	: number of data
- * xxx_pos	: position of data
- * xxx_capa	: capacity of data
- */
+ 
 
-/*
- *	period/frame/sample image
- *
- * ex) PCM (2ch)
- *
- * period pos					   period pos
- *   [n]					     [n + 1]
- *   |<-------------------- period--------------------->|
- * ==|============================================ ... =|==
- *   |							|
- *   ||<-----  frame ----->|<------ frame ----->|  ...	|
- *   |+--------------------+--------------------+- ...	|
- *   ||[ sample ][ sample ]|[ sample ][ sample ]|  ...	|
- *   |+--------------------+--------------------+- ...	|
- * ==|============================================ ... =|==
- */
+ 
 
-/*
- *	FSI FIFO image
- *
- *	|	     |
- *	|	     |
- *	| [ sample ] |
- *	| [ sample ] |
- *	| [ sample ] |
- *	| [ sample ] |
- *		--> go to codecs
- */
+ 
 
-/*
- *	FSI clock
- *
- * FSIxCLK [CPG] (ick) ------->	|
- *				|-> FSI_DIV (div)-> FSI2
- * FSIxCK [external] (xck) --->	|
- */
+ 
 
-/*
- *		struct
- */
+ 
 
 struct fsi_stream_handler;
 struct fsi_stream {
 
-	/*
-	 * these are initialized by fsi_stream_init()
-	 */
+	 
 	struct snd_pcm_substream *substream;
-	int fifo_sample_capa;	/* sample capacity of FSI FIFO */
-	int buff_sample_capa;	/* sample capacity of ALSA buffer */
-	int buff_sample_pos;	/* sample position of ALSA buffer */
-	int period_samples;	/* sample number / 1 period */
-	int period_pos;		/* current period position */
-	int sample_width;	/* sample width */
+	int fifo_sample_capa;	 
+	int buff_sample_capa;	 
+	int buff_sample_pos;	 
+	int period_samples;	 
+	int period_pos;		 
+	int sample_width;	 
 	int uerr_num;
 	int oerr_num;
 
-	/*
-	 * bus options
-	 */
+	 
 	u32 bus_option;
 
-	/*
-	 * these are initialized by fsi_handler_init()
-	 */
+	 
 	struct fsi_stream_handler *handler;
 	struct fsi_priv		*priv;
 
-	/*
-	 * these are for DMAEngine
-	 */
+	 
 	struct dma_chan		*chan;
 	int			dma_id;
 };
 
 struct fsi_clk {
-	/* see [FSI clock] */
+	 
 	struct clk *own;
 	struct clk *xck;
 	struct clk *ick;
@@ -304,13 +250,11 @@ static inline int fsi_stream_is_play(struct fsi_priv *fsi,
 }
 
 
-/*
- *		basic read write function
- */
+ 
 
 static void __fsi_reg_write(u32 __iomem *reg, u32 data)
 {
-	/* valid data area is 24bit */
+	 
 	data &= 0x00ffffff;
 
 	__raw_writel(data, reg);
@@ -366,9 +310,7 @@ static void _fsi_master_mask_set(struct fsi_master *master,
 	spin_unlock_irqrestore(&master->lock, flags);
 }
 
-/*
- *		basic function
- */
+ 
 static int fsi_version(struct fsi_master *master)
 {
 	return master->core->ver;
@@ -487,9 +429,7 @@ static void fsi_count_fifo_err(struct fsi_priv *fsi)
 	fsi_reg_write(fsi, DIFF_ST, 0);
 }
 
-/*
- *		fsi_stream_xx() function
- */
+ 
 static inline struct fsi_stream *fsi_stream_get(struct fsi_priv *fsi,
 					struct snd_pcm_substream *substream)
 {
@@ -531,8 +471,8 @@ static void fsi_stream_init(struct fsi_priv *fsi,
 	io->period_pos		= 0;
 	io->sample_width	= samples_to_bytes(runtime, 1);
 	io->bus_option		= 0;
-	io->oerr_num	= -1; /* ignore 1st err */
-	io->uerr_num	= -1; /* ignore 1st err */
+	io->oerr_num	= -1;  
+	io->uerr_num	= -1;  
 	fsi_stream_handler_call(io, init, fsi, io);
 	spin_unlock_irqrestore(&master->lock, flags);
 }
@@ -617,9 +557,7 @@ static int fsi_stream_remove(struct fsi_priv *fsi)
 	return 0;
 }
 
-/*
- *	format/bus/dma setting
- */
+ 
 static void fsi_format_bus_setup(struct fsi_priv *fsi, struct fsi_stream *io,
 				 u32 bus, struct device *dev)
 {
@@ -630,9 +568,7 @@ static void fsi_format_bus_setup(struct fsi_priv *fsi, struct fsi_stream *io,
 	if (fsi_version(master) >= 2) {
 		u32 dma = 0;
 
-		/*
-		 * FSI2 needs DMA/Bus setting
-		 */
+		 
 		switch (bus) {
 		case PACKAGE_24BITBUS_FRONT:
 			fmt |= CR_BWS_24;
@@ -664,9 +600,7 @@ static void fsi_format_bus_setup(struct fsi_priv *fsi, struct fsi_stream *io,
 		fsi_reg_write(fsi, DI_FMT, fmt);
 }
 
-/*
- *		irq function
- */
+ 
 
 static void fsi_irq_enable(struct fsi_priv *fsi, struct fsi_stream *io)
 {
@@ -699,15 +633,11 @@ static void fsi_irq_clear_status(struct fsi_priv *fsi)
 	data |= AB_IO(1, fsi_get_port_shift(fsi, &fsi->playback));
 	data |= AB_IO(1, fsi_get_port_shift(fsi, &fsi->capture));
 
-	/* clear interrupt factor */
+	 
 	fsi_core_mask_set(master, int_st, data, 0);
 }
 
-/*
- *		SPDIF master clock function
- *
- * These functions are used later FSI2
- */
+ 
 static void fsi_spdif_clk_ctrl(struct fsi_priv *fsi, int enable)
 {
 	struct fsi_master *master = fsi_get_master(fsi);
@@ -721,9 +651,7 @@ static void fsi_spdif_clk_ctrl(struct fsi_priv *fsi, int enable)
 		fsi_core_mask_set(master, b_mclk, mask, val);
 }
 
-/*
- *		clock function
- */
+ 
 static int fsi_clk_init(struct device *dev,
 			struct fsi_priv *fsi,
 			int xck,
@@ -746,7 +674,7 @@ static int fsi_clk_init(struct device *dev,
 	if (IS_ERR(clock->own))
 		return -EINVAL;
 
-	/* external clock */
+	 
 	if (xck) {
 		clock->xck = devm_clk_get(dev, is_porta ? "xcka" : "xckb");
 		if (IS_ERR(clock->xck)) {
@@ -759,7 +687,7 @@ static int fsi_clk_init(struct device *dev,
 		}
 	}
 
-	/* FSIACLK/FSIBCLK */
+	 
 	if (ick) {
 		clock->ick = devm_clk_get(dev,  is_porta ? "icka" : "ickb");
 		if (IS_ERR(clock->ick)) {
@@ -772,7 +700,7 @@ static int fsi_clk_init(struct device *dev,
 		}
 	}
 
-	/* FSI-DIV */
+	 
 	if (div) {
 		clock->div = devm_clk_get(dev,  is_porta ? "diva" : "divb");
 		if (IS_ERR(clock->div)) {
@@ -862,13 +790,13 @@ static int fsi_clk_set_ackbpf(struct device *dev,
 {
 	u32 data = 0;
 
-	/* check ackmd/bpfmd relationship */
+	 
 	if (bpfmd > ackmd) {
 		dev_err(dev, "unsupported rate (%d/%d)\n", ackmd, bpfmd);
 		return -EINVAL;
 	}
 
-	/*  ACKMD */
+	 
 	switch (ackmd) {
 	case 512:
 		data |= (0x0 << 12);
@@ -890,7 +818,7 @@ static int fsi_clk_set_ackbpf(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* BPFMD */
+	 
 	switch (bpfmd) {
 	case 32:
 		data |= (0x0 << 8);
@@ -933,7 +861,7 @@ static int fsi_clk_set_rate_external(struct device *dev,
 	int ackmd, bpfmd;
 	int ret = 0;
 
-	/* check clock rate */
+	 
 	xrate = clk_get_rate(xck);
 	if (xrate % rate) {
 		dev_err(dev, "unsupported clock rate\n");
@@ -961,7 +889,7 @@ static int fsi_clk_set_rate_cpg(struct device *dev,
 	struct clk *ick = fsi->clock.ick;
 	struct clk *div = fsi->clock.div;
 	unsigned long rate = fsi->clock.rate;
-	unsigned long target = 0; /* 12288000 or 11289600 */
+	unsigned long target = 0;  
 	unsigned long actual, cout;
 	unsigned long diff, min;
 	unsigned long best_cout, best_act;
@@ -986,35 +914,21 @@ static int fsi_clk_set_rate_cpg(struct device *dev,
 		return ret;
 	}
 
-	/*
-	 * The clock flow is
-	 *
-	 * [CPG] = cout => [FSI_DIV] = audio => [FSI] => [codec]
-	 *
-	 * But, it needs to find best match of CPG and FSI_DIV
-	 * combination, since it is difficult to generate correct
-	 * frequency of audio clock from ick clock only.
-	 * Because ick is created from its parent clock.
-	 *
-	 * target	= rate x [512/256/128/64]fs
-	 * cout		= round(target x adjustment)
-	 * actual	= cout / adjustment (by FSI-DIV) ~= target
-	 * audio	= actual
-	 */
+	 
 	min = ~0;
 	best_cout = 0;
 	best_act = 0;
 	for (adj = 1; adj < 0xffff; adj++) {
 
 		cout = target * adj;
-		if (cout > 100000000) /* max clock = 100MHz */
+		if (cout > 100000000)  
 			break;
 
-		/* cout/actual audio clock */
+		 
 		cout	= clk_round_rate(ick, cout);
 		actual	= cout / adj;
 
-		/* find best frequency */
+		 
 		diff = abs(actual - target);
 		if (diff < min) {
 			min		= diff;
@@ -1061,25 +975,19 @@ static void fsi_pointer_update(struct fsi_stream *io, int size)
 	}
 }
 
-/*
- *		pio data transfer handler
- */
+ 
 static void fsi_pio_push16(struct fsi_priv *fsi, u8 *_buf, int samples)
 {
 	int i;
 
 	if (fsi_is_enable_stream(fsi)) {
-		/*
-		 * stream mode
-		 * see
-		 *	fsi_pio_push_init()
-		 */
+		 
 		u32 *buf = (u32 *)_buf;
 
 		for (i = 0; i < samples / 2; i++)
 			fsi_reg_write(fsi, DODT, buf[i]);
 	} else {
-		/* normal mode */
+		 
 		u16 *buf = (u16 *)_buf;
 
 		for (i = 0; i < samples; i++)
@@ -1152,8 +1060,8 @@ static int fsi_pio_transfer(struct fsi_priv *fsi, struct fsi_stream *io,
 
 static int fsi_pio_pop(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-	int sample_residues;	/* samples in FSI fifo */
-	int sample_space;	/* ALSA free samples space */
+	int sample_residues;	 
+	int sample_space;	 
 	int samples;
 
 	sample_residues	= fsi_get_current_fifo_samples(fsi, io);
@@ -1169,8 +1077,8 @@ static int fsi_pio_pop(struct fsi_priv *fsi, struct fsi_stream *io)
 
 static int fsi_pio_push(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-	int sample_residues;	/* ALSA residue samples */
-	int sample_space;	/* FSI fifo free samples space */
+	int sample_residues;	 
+	int sample_space;	 
 	int samples;
 
 	sample_residues	= io->buff_sample_capa - io->buff_sample_pos;
@@ -1204,13 +1112,7 @@ static int fsi_pio_start_stop(struct fsi_priv *fsi, struct fsi_stream *io,
 
 static int fsi_pio_push_init(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-	/*
-	 * we can use 16bit stream mode
-	 * when "playback" and "16bit data"
-	 * and platform allows "stream mode"
-	 * see
-	 *	fsi_pio_push16()
-	 */
+	 
 	if (fsi_is_enable_stream(fsi))
 		io->bus_option = BUSOP_SET(24, PACKAGE_24BITBUS_BACK) |
 				 BUSOP_SET(16, PACKAGE_16BITBUS_STREAM);
@@ -1222,9 +1124,7 @@ static int fsi_pio_push_init(struct fsi_priv *fsi, struct fsi_stream *io)
 
 static int fsi_pio_pop_init(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-	/*
-	 * always 24bit bus, package back when "capture"
-	 */
+	 
 	io->bus_option = BUSOP_SET(24, PACKAGE_24BITBUS_BACK) |
 			 BUSOP_SET(16, PACKAGE_24BITBUS_BACK);
 	return 0;
@@ -1247,7 +1147,7 @@ static irqreturn_t fsi_interrupt(int irq, void *data)
 	struct fsi_master *master = data;
 	u32 int_st = fsi_irq_get_status(master);
 
-	/* clear irq status */
+	 
 	fsi_master_mask_set(master, SOFT_RST, IR, 0);
 	fsi_master_mask_set(master, SOFT_RST, IR, IR);
 
@@ -1269,15 +1169,10 @@ static irqreturn_t fsi_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- *		dma data transfer handler
- */
+ 
 static int fsi_dma_init(struct fsi_priv *fsi, struct fsi_stream *io)
 {
-	/*
-	 * 24bit data : 24bit bus / package in back
-	 * 16bit data : 16bit bus / stream mode
-	 */
+	 
 	io->bus_option = BUSOP_SET(24, PACKAGE_24BITBUS_BACK) |
 			 BUSOP_SET(16, PACKAGE_16BITBUS_STREAM);
 
@@ -1329,15 +1224,7 @@ static int fsi_dma_transfer(struct fsi_priv *fsi, struct fsi_stream *io)
 
 	dma_async_issue_pending(io->chan);
 
-	/*
-	 * FIXME
-	 *
-	 * In DMAEngine case, codec and FSI cannot be started simultaneously
-	 * since FSI is using the scheduler work queue.
-	 * Therefore, in capture case, probably FSI FIFO will have got
-	 * overflow error in this point.
-	 * in that case, DMA cannot start transfer until error was cleared.
-	 */
+	 
 	if (!is_play) {
 		if (ERR_OVER & fsi_reg_read(fsi, DIFF_ST)) {
 			fsi_reg_mask_set(fsi, DIFF_CTL, FIFO_CLR, FIFO_CLR);
@@ -1405,7 +1292,7 @@ static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io, struct dev
 
 	if (!io->chan) {
 
-		/* switch to PIO handler */
+		 
 		if (is_play)
 			fsi->playback.handler	= &fsi_pio_push_handler;
 		else
@@ -1413,7 +1300,7 @@ static int fsi_dma_probe(struct fsi_priv *fsi, struct fsi_stream *io, struct dev
 
 		dev_info(dev, "switch handler (dma => pio)\n");
 
-		/* probe again */
+		 
 		return fsi_stream_probe(fsi, dev);
 	}
 
@@ -1439,9 +1326,7 @@ static struct fsi_stream_handler fsi_dma_push_handler = {
 	.start_stop	= fsi_dma_push_start_stop,
 };
 
-/*
- *		dai ops
- */
+ 
 static void fsi_fifo_init(struct fsi_priv *fsi,
 			  struct fsi_stream *io,
 			  struct device *dev)
@@ -1451,32 +1336,14 @@ static void fsi_fifo_init(struct fsi_priv *fsi,
 	u32 shift, i;
 	int frame_capa;
 
-	/* get on-chip RAM capacity */
+	 
 	shift = fsi_master_read(master, FIFO_SZ);
 	shift >>= fsi_get_port_shift(fsi, io);
 	shift &= FIFO_SZ_MASK;
 	frame_capa = 256 << shift;
 	dev_dbg(dev, "fifo = %d words\n", frame_capa);
 
-	/*
-	 * The maximum number of sample data varies depending
-	 * on the number of channels selected for the format.
-	 *
-	 * FIFOs are used in 4-channel units in 3-channel mode
-	 * and in 8-channel units in 5- to 7-channel mode
-	 * meaning that more FIFOs than the required size of DPRAM
-	 * are used.
-	 *
-	 * ex) if 256 words of DP-RAM is connected
-	 * 1 channel:  256 (256 x 1 = 256)
-	 * 2 channels: 128 (128 x 2 = 256)
-	 * 3 channels:  64 ( 64 x 3 = 192)
-	 * 4 channels:  64 ( 64 x 4 = 256)
-	 * 5 channels:  32 ( 32 x 5 = 160)
-	 * 6 channels:  32 ( 32 x 6 = 192)
-	 * 7 channels:  32 ( 32 x 7 = 224)
-	 * 8 channels:  32 ( 32 x 8 = 256)
-	 */
+	 
 	for (i = 1; i < fsi->chan_num; i <<= 1)
 		frame_capa >>= 1;
 	dev_dbg(dev, "%d channel %d store\n",
@@ -1484,10 +1351,7 @@ static void fsi_fifo_init(struct fsi_priv *fsi,
 
 	io->fifo_sample_capa = fsi_frame2sample(fsi, frame_capa);
 
-	/*
-	 * set interrupt generation factor
-	 * clear FIFO
-	 */
+	 
 	if (is_play) {
 		fsi_reg_write(fsi,	DOFF_CTL, IRQ_HALF);
 		fsi_reg_mask_set(fsi,	DOFF_CTL, FIFO_CLR, FIFO_CLR);
@@ -1503,13 +1367,13 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 {
 	u32 data = 0;
 
-	/* clock setting */
+	 
 	if (fsi_is_clk_master(fsi))
 		data = DIMD | DOMD;
 
 	fsi_reg_mask_set(fsi, CKG1, (DIMD | DOMD), data);
 
-	/* clock inversion (CKG2) */
+	 
 	data = 0;
 	if (fsi->bit_clk_inv)
 		data |= (1 << 0);
@@ -1519,15 +1383,13 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 		data <<= 8;
 	fsi_reg_write(fsi, CKG2, data);
 
-	/* spdif ? */
+	 
 	if (fsi_is_spdif(fsi)) {
 		fsi_spdif_clk_ctrl(fsi, 1);
 		fsi_reg_mask_set(fsi, OUT_SEL, DMMD, DMMD);
 	}
 
-	/*
-	 * get bus settings
-	 */
+	 
 	data = 0;
 	switch (io->sample_width) {
 	case 2:
@@ -1539,14 +1401,14 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 	}
 	fsi_format_bus_setup(fsi, io, data, dev);
 
-	/* irq clear */
+	 
 	fsi_irq_disable(fsi, io);
 	fsi_irq_clear_status(fsi);
 
-	/* fifo init */
+	 
 	fsi_fifo_init(fsi, io, dev);
 
-	/* start master clock */
+	 
 	if (fsi_is_clk_master(fsi))
 		return fsi_clk_enable(dev, fsi);
 
@@ -1556,7 +1418,7 @@ static int fsi_hw_startup(struct fsi_priv *fsi,
 static int fsi_hw_shutdown(struct fsi_priv *fsi,
 			    struct device *dev)
 {
-	/* stop master clock */
+	 
 	if (fsi_is_clk_master(fsi))
 		return fsi_clk_disable(dev, fsi);
 
@@ -1645,18 +1507,18 @@ static int fsi_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct fsi_priv *fsi = fsi_get_priv_frm_dai(dai);
 	int ret;
 
-	/* set clock master audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 		break;
 	case SND_SOC_DAIFMT_BP_FP:
-		fsi->clk_master = 1; /* cpu is master */
+		fsi->clk_master = 1;  
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* set clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_IF:
 		fsi->bit_clk_inv = 0;
@@ -1686,7 +1548,7 @@ static int fsi_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 				     fsi_clk_set_rate_external);
 	}
 
-	/* set format */
+	 
 	if (fsi_is_spdif(fsi))
 		ret = fsi_set_fmt_spdif(fsi);
 	else
@@ -1707,11 +1569,7 @@ static int fsi_dai_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * Select below from Sound Card, not auto
- *	SND_SOC_DAIFMT_CBC_CFC
- *	SND_SOC_DAIFMT_CBP_CFP
- */
+ 
 static u64 fsi_dai_formats =
 	SND_SOC_POSSIBLE_DAIFMT_I2S	|
 	SND_SOC_POSSIBLE_DAIFMT_LEFT_J	|
@@ -1730,9 +1588,7 @@ static const struct snd_soc_dai_ops fsi_dai_ops = {
 	.num_auto_selectable_formats	= 1,
 };
 
-/*
- *		pcm ops
- */
+ 
 
 static const struct snd_pcm_hardware fsi_pcm_hardware = {
 	.info =		SNDRV_PCM_INFO_INTERLEAVED	|
@@ -1769,9 +1625,7 @@ static snd_pcm_uframes_t fsi_pointer(struct snd_soc_component *component,
 	return fsi_sample2frame(fsi, io->buff_sample_pos);
 }
 
-/*
- *		snd_soc_component
- */
+ 
 
 #define PREALLOC_BUFFER		(32 * 1024)
 #define PREALLOC_BUFFER_MAX	(32 * 1024)
@@ -1787,9 +1641,7 @@ static int fsi_pcm_new(struct snd_soc_component *component,
 	return 0;
 }
 
-/*
- *		alsa struct
- */
+ 
 
 static struct snd_soc_dai_driver fsi_soc_dai[] = {
 	{
@@ -1833,9 +1685,7 @@ static const struct snd_soc_component_driver fsi_soc_component = {
 	.pcm_construct	= fsi_pcm_new,
 };
 
-/*
- *		platform function
- */
+ 
 static void fsi_of_parse(char *name,
 			 struct device_node *np,
 			 struct sh_fsi_port_info *info,
@@ -1879,9 +1729,9 @@ static void fsi_port_info_init(struct fsi_priv *fsi,
 static void fsi_handler_init(struct fsi_priv *fsi,
 			     struct sh_fsi_port_info *info)
 {
-	fsi->playback.handler	= &fsi_pio_push_handler; /* default PIO */
+	fsi->playback.handler	= &fsi_pio_push_handler;  
 	fsi->playback.priv	= fsi;
-	fsi->capture.handler	= &fsi_pio_pop_handler;  /* default PIO */
+	fsi->capture.handler	= &fsi_pio_pop_handler;   
 	fsi->capture.priv	= fsi;
 
 	if (info->tx_id) {
@@ -1893,7 +1743,7 @@ static void fsi_handler_init(struct fsi_priv *fsi,
 static const struct fsi_core fsi1_core = {
 	.ver	= 1,
 
-	/* Interrupt */
+	 
 	.int_st	= INT_ST,
 	.iemsk	= IEMSK,
 	.imsk	= IMSK,
@@ -1902,7 +1752,7 @@ static const struct fsi_core fsi1_core = {
 static const struct fsi_core fsi2_core = {
 	.ver	= 2,
 
-	/* Interrupt */
+	 
 	.int_st	= CPU_INT_ST,
 	.iemsk	= CPU_IEMSK,
 	.imsk	= CPU_IMSK,
@@ -1972,11 +1822,11 @@ static int fsi_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* master setting */
+	 
 	master->core		= core;
 	spin_lock_init(&master->lock);
 
-	/* FSI A setting */
+	 
 	fsi		= &master->fsia;
 	fsi->base	= master->base;
 	fsi->phys	= res->start;
@@ -1989,7 +1839,7 @@ static int fsi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* FSI B setting */
+	 
 	fsi		= &master->fsib;
 	fsi->base	= master->base + 0x40;
 	fsi->phys	= res->start + 0x40;

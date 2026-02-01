@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// IDT821034 ALSA SoC driver
-//
-// Copyright 2022 CS GROUP France
-//
-// Author: Herve Codina <herve.codina@bootlin.com>
+
+
+
+
+
+
+
 
 #include <linux/bitrev.h>
 #include <linux/gpio/driver.h>
@@ -25,8 +25,8 @@ struct idt821034_amp {
 struct idt821034 {
 	struct spi_device *spi;
 	struct mutex mutex;
-	u8 spi_tx_buf; /* Cannot use stack area for SPI (dma-safe memory) */
-	u8 spi_rx_buf; /* Cannot use stack area for SPI (dma-safe memory) */
+	u8 spi_tx_buf;  
+	u8 spi_rx_buf;  
 	struct {
 		u8 codec_conf;
 		struct {
@@ -107,14 +107,14 @@ static int idt821034_8bit_read(struct idt821034 *idt821034, u8 valw, u8 *valr)
 	return 0;
 }
 
-/* Available mode for the programming sequence */
+ 
 #define IDT821034_MODE_CODEC(_ch) (0x80 | ((_ch) << 2))
 #define IDT821034_MODE_SLIC(_ch)  (0xD0 | ((_ch) << 2))
 #define IDT821034_MODE_GAIN(_ch)  (0xC0 | ((_ch) << 2))
 
-/* Power values that can be used in 'power' (can be ORed) */
-#define IDT821034_CONF_PWRUP_TX		BIT(1) /* from analog input to PCM */
-#define IDT821034_CONF_PWRUP_RX		BIT(0) /* from PCM to analog output */
+ 
+#define IDT821034_CONF_PWRUP_TX		BIT(1)  
+#define IDT821034_CONF_PWRUP_RX		BIT(0)  
 
 static int idt821034_set_channel_power(struct idt821034 *idt821034, u8 ch, u8 power)
 {
@@ -155,7 +155,7 @@ static u8 idt821034_get_channel_power(struct idt821034 *idt821034, u8 ch)
 	return idt821034->cache.ch[ch].power;
 }
 
-/* Codec configuration values that can be used in 'codec_conf' (can be ORed) */
+ 
 #define IDT821034_CONF_ALAW_MODE	BIT(5)
 #define IDT821034_CONF_DELAY_MODE	BIT(4)
 
@@ -167,16 +167,12 @@ static int idt821034_set_codec_conf(struct idt821034 *idt821034, u8 codec_conf)
 
 	dev_dbg(&idt821034->spi->dev, "set_codec_conf(0x%x)\n", codec_conf);
 
-	/* codec conf fields are common to all channel.
-	 * Arbitrary use of channel 0 for this configuration.
-	 */
+	 
 
-	/* Set Configuration Register */
+	 
 	conf = IDT821034_MODE_CODEC(0) | codec_conf;
 
-	/* Update conf value and timeslot register value according
-	 * to cache values
-	 */
+	 
 	if (idt821034->cache.ch[0].power & IDT821034_CONF_PWRUP_RX) {
 		conf |= IDT821034_CONF_PWRUP_RX;
 		ts = idt821034->cache.ch[0].rx_slot;
@@ -187,7 +183,7 @@ static int idt821034_set_codec_conf(struct idt821034 *idt821034, u8 codec_conf)
 		ts = 0x00;
 	}
 
-	/* Write configuration register and time-slot register */
+	 
 	ret = idt821034_2x8bit_write(idt821034, conf, ts);
 	if (ret)
 		return ret;
@@ -201,9 +197,9 @@ static u8 idt821034_get_codec_conf(struct idt821034 *idt821034)
 	return idt821034->cache.codec_conf;
 }
 
-/* Channel direction values that can be used in 'ch_dir' (can be ORed) */
-#define IDT821034_CH_RX		BIT(0) /* from PCM to analog output */
-#define IDT821034_CH_TX		BIT(1) /* from analog input to PCM */
+ 
+#define IDT821034_CH_RX		BIT(0)  
+#define IDT821034_CH_TX		BIT(1)  
 
 static int idt821034_set_channel_ts(struct idt821034 *idt821034, u8 ch, u8 ch_dir, u8 ts_num)
 {
@@ -238,7 +234,7 @@ static int idt821034_set_channel_ts(struct idt821034 *idt821034, u8 ch, u8 ch_di
 	return 0;
 }
 
-/* SLIC direction values that can be used in 'slic_dir' (can be ORed) */
+ 
 #define IDT821034_SLIC_IO1_IN       BIT(1)
 #define IDT821034_SLIC_IO0_IN       BIT(0)
 
@@ -271,14 +267,7 @@ static int idt821034_write_slic_raw(struct idt821034 *idt821034, u8 ch, u8 slic_
 
 	dev_dbg(&idt821034->spi->dev, "write_slic_raw(%u, 0x%x)\n", ch, slic_raw);
 
-	/*
-	 * On write, slic_raw is mapped as follow :
-	 *   b4: O_4
-	 *   b3: O_3
-	 *   b2: O_2
-	 *   b1: I/O_1
-	 *   b0: I/O_0
-	 */
+	 
 
 	conf = IDT821034_MODE_SLIC(ch) | idt821034->cache.ch[ch].slic_conf;
 	ret = idt821034_2x8bit_write(idt821034, conf, slic_raw);
@@ -299,17 +288,7 @@ static int idt821034_read_slic_raw(struct idt821034 *idt821034, u8 ch, u8 *slic_
 	u8 val;
 	int ret;
 
-	/*
-	 * On read, slic_raw is mapped as follow :
-	 *   b7: I/O_0
-	 *   b6: I/O_1
-	 *   b5: O_2
-	 *   b4: O_3
-	 *   b3: O_4
-	 *   b2: I/O1_0, I/O_0 from channel 1 (no matter ch value)
-	 *   b1: I/O2_0, I/O_0 from channel 2 (no matter ch value)
-	 *   b2: I/O3_0, I/O_0 from channel 3 (no matter ch value)
-	 */
+	 
 
 	val = IDT821034_MODE_SLIC(ch) | idt821034->cache.ch[ch].slic_conf;
 	ret = idt821034_8bit_write(idt821034, val);
@@ -325,9 +304,9 @@ static int idt821034_read_slic_raw(struct idt821034 *idt821034, u8 ch, u8 *slic_
 	return 0;
 }
 
-/* Gain type values that can be used in 'gain_type' (cannot be ORed) */
-#define IDT821034_GAIN_RX		(0 << 1) /* from PCM to analog output */
-#define IDT821034_GAIN_TX		(1 << 1) /* from analog input to PCM */
+ 
+#define IDT821034_GAIN_RX		(0 << 1)  
+#define IDT821034_GAIN_TX		(1 << 1)  
 
 static int idt821034_set_gain_channel(struct idt821034 *idt821034, u8 ch,
 				      u8 gain_type, u16 gain_val)
@@ -338,41 +317,7 @@ static int idt821034_set_gain_channel(struct idt821034 *idt821034, u8 ch,
 	dev_dbg(&idt821034->spi->dev, "set_gain_channel(%u, 0x%x, 0x%x-%d)\n",
 		ch, gain_type, gain_val, gain_val);
 
-	/*
-	 * The gain programming coefficients should be calculated as:
-	 *   Transmit : Coeff_X = round [ gain_X0dB × gain_X ]
-	 *   Receive: Coeff_R = round [ gain_R0dB × gain_R ]
-	 * where:
-	 *   gain_X0dB = 1820;
-	 *   gain_X is the target gain;
-	 *   Coeff_X should be in the range of 0 to 8192.
-	 *   gain_R0dB = 2506;
-	 *   gain_R is the target gain;
-	 *   Coeff_R should be in the range of 0 to 8192.
-	 *
-	 * A gain programming coefficient is 14-bit wide and in binary format.
-	 * The 7 Most Significant Bits of the coefficient is called
-	 * GA_MSB_Transmit for transmit path, or is called GA_MSB_Receive for
-	 * receive path; The 7 Least Significant Bits of the coefficient is
-	 * called GA_LSB_ Transmit for transmit path, or is called
-	 * GA_LSB_Receive for receive path.
-	 *
-	 * An example is given below to clarify the calculation of the
-	 * coefficient. To program a +3 dB gain in transmit path and a -3.5 dB
-	 * gain in receive path:
-	 *
-	 * Linear Code of +3dB = 10^(3/20)= 1.412537545
-	 * Coeff_X = round (1820 × 1.412537545) = 2571
-	 *                                      = 0b001010_00001011
-	 * GA_MSB_Transmit = 0b0010100
-	 * GA_LSB_Transmit = 0b0001011
-	 *
-	 * Linear Code of -3.5dB = 10^(-3.5/20) = 0.668343917
-	 * Coeff_R= round (2506 × 0.668343917) = 1675
-	 *                                     = 0b0001101_0001011
-	 * GA_MSB_Receive = 0b0001101
-	 * GA_LSB_Receive = 0b0001011
-	 */
+	 
 
 	conf = IDT821034_MODE_GAIN(ch) | gain_type;
 
@@ -387,7 +332,7 @@ static int idt821034_set_gain_channel(struct idt821034 *idt821034, u8 ch,
 	return 0;
 }
 
-/* Id helpers used in controls and dapm */
+ 
 #define IDT821034_DIR_OUT (1 << 3)
 #define IDT821034_DIR_IN  (0 << 3)
 #define IDT821034_ID(_ch, _dir) (((_ch) & 0x03) | (_dir))
@@ -478,7 +423,7 @@ static int idt821034_kctrl_gain_put(struct snd_kcontrol *kcontrol,
 	}
 
 	amp->gain = val;
-	ret = 1; /* The value changed */
+	ret = 1;  
 end:
 	mutex_unlock(&idt821034->mutex);
 	return ret;
@@ -542,24 +487,24 @@ static int idt821034_kctrl_mute_put(struct snd_kcontrol *kcontrol,
 		goto end;
 
 	amp->is_muted = is_mute;
-	ret = 1; /* The value changed */
+	ret = 1;  
 end:
 	mutex_unlock(&idt821034->mutex);
 	return ret;
 }
 
 static const DECLARE_TLV_DB_LINEAR(idt821034_gain_in, -6520, 1306);
-#define IDT821034_GAIN_IN_MIN_RAW	1 /* -65.20 dB -> 10^(-65.2/20.0) * 1820 = 1 */
-#define IDT821034_GAIN_IN_MAX_RAW	8191 /* 13.06 dB -> 10^(13.06/20.0) * 1820 = 8191 */
-#define IDT821034_GAIN_IN_INIT_RAW	1820 /* 0dB -> 10^(0/20) * 1820 = 1820 */
+#define IDT821034_GAIN_IN_MIN_RAW	1  
+#define IDT821034_GAIN_IN_MAX_RAW	8191  
+#define IDT821034_GAIN_IN_INIT_RAW	1820  
 
 static const DECLARE_TLV_DB_LINEAR(idt821034_gain_out, -6798, 1029);
-#define IDT821034_GAIN_OUT_MIN_RAW	1 /* -67.98 dB -> 10^(-67.98/20.0) * 2506 = 1*/
-#define IDT821034_GAIN_OUT_MAX_RAW	8191 /* 10.29 dB -> 10^(10.29/20.0) * 2506 = 8191 */
-#define IDT821034_GAIN_OUT_INIT_RAW	2506 /* 0dB -> 10^(0/20) * 2506 = 2506 */
+#define IDT821034_GAIN_OUT_MIN_RAW	1  
+#define IDT821034_GAIN_OUT_MAX_RAW	8191  
+#define IDT821034_GAIN_OUT_INIT_RAW	2506  
 
 static const struct snd_kcontrol_new idt821034_controls[] = {
-	/* DAC volume control */
+	 
 	SOC_SINGLE_RANGE_EXT_TLV("DAC0 Playback Volume", IDT821034_ID_OUT(0), 0,
 				 IDT821034_GAIN_OUT_MIN_RAW, IDT821034_GAIN_OUT_MAX_RAW,
 				 0, idt821034_kctrl_gain_get, idt821034_kctrl_gain_put,
@@ -577,7 +522,7 @@ static const struct snd_kcontrol_new idt821034_controls[] = {
 				 0, idt821034_kctrl_gain_get, idt821034_kctrl_gain_put,
 				 idt821034_gain_out),
 
-	/* DAC mute control */
+	 
 	SOC_SINGLE_BOOL_EXT("DAC0 Playback Switch", IDT821034_ID_OUT(0),
 			    idt821034_kctrl_mute_get, idt821034_kctrl_mute_put),
 	SOC_SINGLE_BOOL_EXT("DAC1 Playback Switch", IDT821034_ID_OUT(1),
@@ -587,7 +532,7 @@ static const struct snd_kcontrol_new idt821034_controls[] = {
 	SOC_SINGLE_BOOL_EXT("DAC3 Playback Switch", IDT821034_ID_OUT(3),
 			    idt821034_kctrl_mute_get, idt821034_kctrl_mute_put),
 
-	/* ADC volume control */
+	 
 	SOC_SINGLE_RANGE_EXT_TLV("ADC0 Capture Volume", IDT821034_ID_IN(0), 0,
 				 IDT821034_GAIN_IN_MIN_RAW, IDT821034_GAIN_IN_MAX_RAW,
 				 0, idt821034_kctrl_gain_get, idt821034_kctrl_gain_put,
@@ -605,7 +550,7 @@ static const struct snd_kcontrol_new idt821034_controls[] = {
 				 0, idt821034_kctrl_gain_get, idt821034_kctrl_gain_put,
 				 idt821034_gain_in),
 
-	/* ADC mute control */
+	 
 	SOC_SINGLE_BOOL_EXT("ADC0 Capture Switch", IDT821034_ID_IN(0),
 			    idt821034_kctrl_mute_get, idt821034_kctrl_mute_put),
 	SOC_SINGLE_BOOL_EXT("ADC1 Capture Switch", IDT821034_ID_IN(1),
@@ -704,7 +649,7 @@ static int idt821034_dai_set_tdm_slot(struct snd_soc_dai *dai,
 	u8 ch;
 
 	switch (width) {
-	case 0: /* Not set -> default 8 */
+	case 0:  
 	case 8:
 		break;
 	default:
@@ -842,11 +787,7 @@ static int idt821034_dai_startup(struct snd_pcm_substream *substream,
 	max_ch = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
 		idt821034->max_ch_playback : idt821034->max_ch_capture;
 
-	/*
-	 * Disable stream support (min = 0, max = 0) if no timeslots were
-	 * configured otherwise, limit the number of channels to those
-	 * configured.
-	 */
+	 
 	ret = snd_pcm_hw_constraint_minmax(substream->runtime, SNDRV_PCM_HW_PARAM_CHANNELS,
 					   max_ch ? 1 : 0, max_ch);
 	if (ret < 0)
@@ -935,7 +876,7 @@ static int idt821034_component_probe(struct snd_soc_component *component)
 	struct idt821034 *idt821034 = snd_soc_component_get_drvdata(component);
 	int ret;
 
-	/* reset idt821034 audio part*/
+	 
 	ret = idt821034_reset_audio(idt821034);
 	if (ret)
 		return ret;
@@ -998,11 +939,7 @@ static int idt821034_chip_gpio_get(struct gpio_chip *c, unsigned int offset)
 		return ret;
 	}
 
-	/*
-	 * SLIC IOs are read in reverse order compared to write.
-	 * Reverse the read value here in order to have IO0 at lsb (ie same
-	 * order as write)
-	 */
+	 
 	return !!(bitrev8(slic_raw) & mask);
 }
 
@@ -1028,7 +965,7 @@ static int idt821034_chip_direction_input(struct gpio_chip *c, unsigned int offs
 	u8 slic_conf;
 	int ret;
 
-	/* Only IO0 and IO1 can be set as input */
+	 
 	if (mask & ~(IDT821034_SLIC_IO1_IN | IDT821034_SLIC_IO0_IN))
 		return -EPERM;
 
@@ -1077,7 +1014,7 @@ static int idt821034_reset_gpio(struct idt821034 *idt821034)
 
 	mutex_lock(&idt821034->mutex);
 
-	/* IO0 and IO1 as input for all channels and output IO set to 0 */
+	 
 	for (i = 0; i < IDT821034_NB_CHANNEL; i++) {
 		ret = idt821034_set_slic_conf(idt821034, i,
 					      IDT821034_SLIC_IO1_IN | IDT821034_SLIC_IO0_IN);
@@ -1107,7 +1044,7 @@ static int idt821034_gpio_init(struct idt821034 *idt821034)
 	idt821034->gpio_chip.label = dev_name(&idt821034->spi->dev);
 	idt821034->gpio_chip.parent = &idt821034->spi->dev;
 	idt821034->gpio_chip.base = -1;
-	idt821034->gpio_chip.ngpio = 5 * 4; /* 5 GPIOs on 4 channels */
+	idt821034->gpio_chip.ngpio = 5 * 4;  
 	idt821034->gpio_chip.get_direction = idt821034_chip_get_direction;
 	idt821034->gpio_chip.direction_input = idt821034_chip_direction_input;
 	idt821034->gpio_chip.direction_output = idt821034_chip_direction_output;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 
 
 #include "xfs.h"
@@ -24,18 +21,11 @@ xfs_qm_scall_quotaoff(
 	xfs_mount_t		*mp,
 	uint			flags)
 {
-	/*
-	 * No file system can have quotas enabled on disk but not in core.
-	 * Note that quota utilities (like quotaoff) _expect_
-	 * errno == -EEXIST here.
-	 */
+	 
 	if ((mp->m_qflags & flags) == 0)
 		return -EEXIST;
 
-	/*
-	 * We do not support actually turning off quota accounting any more.
-	 * Just log a warning and ignore the accounting related flags.
-	 */
+	 
 	if (flags & XFS_ALL_QUOTA_ACCT)
 		xfs_info(mp, "disabling of quota accounting not supported.");
 
@@ -46,7 +36,7 @@ xfs_qm_scall_quotaoff(
 	spin_unlock(&mp->m_sb_lock);
 	mutex_unlock(&mp->m_quotainfo->qi_quotaofflock);
 
-	/* XXX what to do if error ? Revert back to old vals incore ? */
+	 
 	return xfs_sync_sb(mp, false);
 }
 
@@ -128,11 +118,7 @@ xfs_qm_scall_trunc_qfiles(
 	return error;
 }
 
-/*
- * Switch on (a given) quota enforcement for a filesystem.  This takes
- * effect immediately.
- * (Switching on quota accounting must be done at mount time.)
- */
+ 
 int
 xfs_qm_scall_quotaon(
 	xfs_mount_t	*mp,
@@ -141,10 +127,7 @@ xfs_qm_scall_quotaon(
 	int		error;
 	uint		qf;
 
-	/*
-	 * Switching on quota accounting must be done at mount time,
-	 * only consider quota enforcement stuff here.
-	 */
+	 
 	flags &= XFS_ALL_QUOTA_ENFD;
 
 	if (flags == 0) {
@@ -153,11 +136,7 @@ xfs_qm_scall_quotaon(
 		return -EINVAL;
 	}
 
-	/*
-	 * Can't enforce without accounting. We check the superblock
-	 * qflags here instead of m_qflags because rootfs can have
-	 * quota acct on ondisk without m_qflags' knowing.
-	 */
+	 
 	if (((mp->m_sb.sb_qflags & XFS_UQUOTA_ACCT) == 0 &&
 	     (flags & XFS_UQUOTA_ENFD)) ||
 	    ((mp->m_sb.sb_qflags & XFS_GQUOTA_ACCT) == 0 &&
@@ -169,33 +148,24 @@ xfs_qm_scall_quotaon(
 			__func__, flags, mp->m_sb.sb_qflags);
 		return -EINVAL;
 	}
-	/*
-	 * If everything's up to-date incore, then don't waste time.
-	 */
+	 
 	if ((mp->m_qflags & flags) == flags)
 		return -EEXIST;
 
-	/*
-	 * Change sb_qflags on disk but not incore mp->qflags
-	 * if this is the root filesystem.
-	 */
+	 
 	spin_lock(&mp->m_sb_lock);
 	qf = mp->m_sb.sb_qflags;
 	mp->m_sb.sb_qflags = qf | flags;
 	spin_unlock(&mp->m_sb_lock);
 
-	/*
-	 * There's nothing to change if it's the same.
-	 */
+	 
 	if ((qf & flags) == flags)
 		return -EEXIST;
 
 	error = xfs_sync_sb(mp, false);
 	if (error)
 		return error;
-	/*
-	 * If we aren't trying to switch on quota enforcement, we are done.
-	 */
+	 
 	if  (((mp->m_sb.sb_qflags & XFS_UQUOTA_ACCT) !=
 	     (mp->m_qflags & XFS_UQUOTA_ACCT)) ||
 	     ((mp->m_sb.sb_qflags & XFS_PQUOTA_ACCT) !=
@@ -207,9 +177,7 @@ xfs_qm_scall_quotaon(
 	if (!XFS_IS_QUOTA_ON(mp))
 		return -ESRCH;
 
-	/*
-	 * Switch on quota enforcement in core.
-	 */
+	 
 	mutex_lock(&mp->m_quotainfo->qi_quotaofflock);
 	mp->m_qflags |= (flags & XFS_ALL_QUOTA_ENFD);
 	mutex_unlock(&mp->m_quotainfo->qi_quotaofflock);
@@ -219,10 +187,7 @@ xfs_qm_scall_quotaon(
 
 #define XFS_QC_MASK (QC_LIMIT_MASK | QC_TIMER_MASK)
 
-/*
- * Adjust limits of this quota, and the defaults if passed in.  Returns true
- * if the new limits made sense and were applied, false otherwise.
- */
+ 
 static inline bool
 xfs_setqlim_limits(
 	struct xfs_mount	*mp,
@@ -232,7 +197,7 @@ xfs_setqlim_limits(
 	xfs_qcnt_t		soft,
 	const char		*tag)
 {
-	/* The hard limit can't be less than the soft limit. */
+	 
 	if (hard != 0 && hard < soft) {
 		xfs_debug(mp, "%shard %lld < %ssoft %lld", tag, hard, tag,
 				soft);
@@ -257,18 +222,16 @@ xfs_setqlim_timer(
 	s64			timer)
 {
 	if (qlim) {
-		/* Set the length of the default grace period. */
+		 
 		res->timer = xfs_dquot_set_grace_period(timer);
 		qlim->time = res->timer;
 	} else {
-		/* Set the grace period expiration on a quota. */
+		 
 		res->timer = xfs_dquot_set_timeout(mp, timer);
 	}
 }
 
-/*
- * Adjust quota limits, and start/stop timers accordingly.
- */
+ 
 int
 xfs_qm_scall_setqlim(
 	struct xfs_mount	*mp,
@@ -290,13 +253,7 @@ xfs_qm_scall_setqlim(
 	if ((newlim->d_fieldmask & XFS_QC_MASK) == 0)
 		return 0;
 
-	/*
-	 * Get the dquot (locked) before we start, as we need to do a
-	 * transaction to allocate it if it doesn't exist. Once we have the
-	 * dquot, unlock it so we can start the next transaction safely. We hold
-	 * a reference to the dquot, so it's safe to do this unlock/lock without
-	 * it being reclaimed in the mean time.
-	 */
+	 
 	error = xfs_qm_dqget(mp, id, type, true, &dqp);
 	if (error) {
 		ASSERT(error != -ENOENT);
@@ -313,24 +270,9 @@ xfs_qm_scall_setqlim(
 	xfs_dqlock(dqp);
 	xfs_trans_dqjoin(tp, dqp);
 
-	/*
-	 * Update quota limits, warnings, and timers, and the defaults
-	 * if we're touching id == 0.
-	 *
-	 * Make sure that hardlimits are >= soft limits before changing.
-	 *
-	 * Update warnings counter(s) if requested.
-	 *
-	 * Timelimits for the super user set the relative time the other users
-	 * can be over quota for this file system. If it is zero a default is
-	 * used.  Ditto for the default soft and hard limit values (already
-	 * done, above), and for warnings.
-	 *
-	 * For other IDs, userspace can bump out the grace period if over
-	 * the soft limit.
-	 */
+	 
 
-	/* Blocks on the data device. */
+	 
 	hard = (newlim->d_fieldmask & QC_SPC_HARD) ?
 		(xfs_qcnt_t) XFS_B_TO_FSB(mp, newlim->d_spc_hardlimit) :
 			dqp->q_blk.hardlimit;
@@ -345,7 +287,7 @@ xfs_qm_scall_setqlim(
 	if (newlim->d_fieldmask & QC_SPC_TIMER)
 		xfs_setqlim_timer(mp, res, qlim, newlim->d_spc_timer);
 
-	/* Blocks on the realtime device. */
+	 
 	hard = (newlim->d_fieldmask & QC_RT_SPC_HARD) ?
 		(xfs_qcnt_t) XFS_B_TO_FSB(mp, newlim->d_rt_spc_hardlimit) :
 			dqp->q_rtb.hardlimit;
@@ -359,7 +301,7 @@ xfs_qm_scall_setqlim(
 	if (newlim->d_fieldmask & QC_RT_SPC_TIMER)
 		xfs_setqlim_timer(mp, res, qlim, newlim->d_rt_spc_timer);
 
-	/* Inodes */
+	 
 	hard = (newlim->d_fieldmask & QC_INO_HARD) ?
 		(xfs_qcnt_t) newlim->d_ino_hardlimit :
 			dqp->q_ino.hardlimit;
@@ -374,13 +316,7 @@ xfs_qm_scall_setqlim(
 		xfs_setqlim_timer(mp, res, qlim, newlim->d_ino_timer);
 
 	if (id != 0) {
-		/*
-		 * If the user is now over quota, start the timelimit.
-		 * The user will not be 'warned'.
-		 * Note that we keep the timers ticking, whether enforcement
-		 * is on or off. We don't really want to bother with iterating
-		 * over all ondisk dquots and turning the timers on/off.
-		 */
+		 
 		xfs_qm_adjust_dqtimers(dqp);
 	}
 	dqp->q_flags |= XFS_DQFLAG_DIRTY;
@@ -393,7 +329,7 @@ out_rele:
 	return error;
 }
 
-/* Fill out the quota context. */
+ 
 static void
 xfs_qm_scall_getquota_fill_qc(
 	struct xfs_mount	*mp,
@@ -418,11 +354,7 @@ xfs_qm_scall_getquota_fill_qc(
 	dst->d_rt_spc_timer = dqp->q_rtb.timer;
 	dst->d_rt_spc_warns = 0;
 
-	/*
-	 * Internally, we don't reset all the timers when quota enforcement
-	 * gets turned off. No need to confuse the user level code,
-	 * so return zeroes in that case.
-	 */
+	 
 	if (!xfs_dquot_is_enforced(dqp)) {
 		dst->d_spc_timer = 0;
 		dst->d_ino_timer = 0;
@@ -443,7 +375,7 @@ xfs_qm_scall_getquota_fill_qc(
 #endif
 }
 
-/* Return the quota information for the dquot matching id. */
+ 
 int
 xfs_qm_scall_getquota(
 	struct xfs_mount	*mp,
@@ -454,25 +386,16 @@ xfs_qm_scall_getquota(
 	struct xfs_dquot	*dqp;
 	int			error;
 
-	/*
-	 * Expedite pending inodegc work at the start of a quota reporting
-	 * scan but don't block waiting for it to complete.
-	 */
+	 
 	if (id == 0)
 		xfs_inodegc_push(mp);
 
-	/*
-	 * Try to get the dquot. We don't want it allocated on disk, so don't
-	 * set doalloc. If it doesn't exist, we'll get ENOENT back.
-	 */
+	 
 	error = xfs_qm_dqget(mp, id, type, false, &dqp);
 	if (error)
 		return error;
 
-	/*
-	 * If everything's NULL, this dquot doesn't quite exist as far as
-	 * our utility programs are concerned.
-	 */
+	 
 	if (XFS_IS_DQUOT_UNINITIALIZED(dqp)) {
 		error = -ENOENT;
 		goto out_put;
@@ -485,10 +408,7 @@ out_put:
 	return error;
 }
 
-/*
- * Return the quota information for the first initialized dquot whose id
- * is at least as high as id.
- */
+ 
 int
 xfs_qm_scall_getquota_next(
 	struct xfs_mount	*mp,
@@ -499,7 +419,7 @@ xfs_qm_scall_getquota_next(
 	struct xfs_dquot	*dqp;
 	int			error;
 
-	/* Flush inodegc work at the start of a quota reporting scan. */
+	 
 	if (*id == 0)
 		xfs_inodegc_push(mp);
 
@@ -507,7 +427,7 @@ xfs_qm_scall_getquota_next(
 	if (error)
 		return error;
 
-	/* Fill in the ID we actually read from disk */
+	 
 	*id = dqp->q_id;
 
 	xfs_qm_scall_getquota_fill_qc(mp, type, dqp, dst);

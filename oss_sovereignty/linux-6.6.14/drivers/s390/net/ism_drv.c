@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ISM driver for s390.
- *
- * Copyright IBM Corp. 2018
- */
+
+ 
 #define KMSG_COMPONENT "ism"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
@@ -31,14 +27,14 @@ MODULE_DEVICE_TABLE(pci, ism_device_table);
 
 static debug_info_t *ism_debug_info;
 
-#define NO_CLIENT		0xff		/* must be >= MAX_CLIENTS */
-static struct ism_client *clients[MAX_CLIENTS];	/* use an array rather than */
-						/* a list for fast mapping  */
+#define NO_CLIENT		0xff		 
+static struct ism_client *clients[MAX_CLIENTS];	 
+						 
 static u8 max_client;
 static DEFINE_MUTEX(clients_lock);
 struct ism_dev_list {
 	struct list_head list;
-	struct mutex mutex; /* protects ism device list */
+	struct mutex mutex;  
 };
 
 static struct ism_dev_list ism_dev_list = {
@@ -75,7 +71,7 @@ int ism_register_client(struct ism_client *client)
 	mutex_unlock(&clients_lock);
 
 	if (i < MAX_CLIENTS) {
-		/* initialize with all devices that we got so far */
+		 
 		list_for_each_entry(ism, &ism_dev_list.list, list) {
 			ism->priv[i] = NULL;
 			client->add(ism);
@@ -97,7 +93,7 @@ int ism_unregister_client(struct ism_client *client)
 	mutex_lock(&ism_dev_list.mutex);
 	list_for_each_entry(ism, &ism_dev_list.list, list) {
 		spin_lock_irqsave(&ism->lock, flags);
-		/* Stop forwarding IRQs and events */
+		 
 		ism->subs[client->id] = NULL;
 		for (int i = 0; i < ISM_NR_DMBS; ++i) {
 			if (ism->sba_client_arr[i] == client->id) {
@@ -559,7 +555,7 @@ static int ism_dev_init(struct ism_dev *ism)
 		goto unreg_ieq;
 
 	if (!ism_add_vlan_id(ism, ISM_RESERVED_VLANID))
-		/* hardware is V2 capable */
+		 
 		ism_create_system_eid();
 
 	mutex_lock(&ism_dev_list.mutex);
@@ -724,7 +720,7 @@ static void __exit ism_exit(void)
 module_init(ism_init);
 module_exit(ism_exit);
 
-/*************************** SMC-D Implementation *****************************/
+ 
 
 #if IS_ENABLED(CONFIG_SMC)
 static int ism_query_rgid(struct ism_dev *ism, u64 rgid, u32 vid_valid,

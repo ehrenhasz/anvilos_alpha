@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2017-2019 Samuel Holland <samuel@sholland.org>
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -69,7 +69,7 @@ static irqreturn_t sun6i_msgbox_irq(int irq, void *dev_id)
 	uint32_t status;
 	int n;
 
-	/* Only examine channels that are currently enabled. */
+	 
 	status = readl(mbox->regs + LOCAL_IRQ_EN_REG) &
 		 readl(mbox->regs + LOCAL_IRQ_STAT_REG);
 
@@ -89,7 +89,7 @@ static irqreturn_t sun6i_msgbox_irq(int irq, void *dev_id)
 			mbox_chan_received_data(chan, &msg);
 		}
 
-		/* The IRQ can be cleared only once the FIFO is empty. */
+		 
 		writel(RX_IRQ(n), mbox->regs + LOCAL_IRQ_STAT_REG);
 	}
 
@@ -102,7 +102,7 @@ static int sun6i_msgbox_send_data(struct mbox_chan *chan, void *data)
 	int n = channel_number(chan);
 	uint32_t msg = *(uint32_t *)data;
 
-	/* Using a channel backwards gets the hardware into a bad state. */
+	 
 	if (WARN_ON_ONCE(!(readl(mbox->regs + CTRL_REG(n)) & CTRL_TX(n))))
 		return 0;
 
@@ -117,14 +117,14 @@ static int sun6i_msgbox_startup(struct mbox_chan *chan)
 	struct sun6i_msgbox *mbox = to_sun6i_msgbox(chan);
 	int n = channel_number(chan);
 
-	/* The coprocessor is responsible for setting channel directions. */
+	 
 	if (readl(mbox->regs + CTRL_REG(n)) & CTRL_RX(n)) {
-		/* Flush the receive FIFO. */
+		 
 		while (sun6i_msgbox_peek_data(chan))
 			readl(mbox->regs + MSG_DATA_REG(n));
 		writel(RX_IRQ(n), mbox->regs + LOCAL_IRQ_STAT_REG);
 
-		/* Enable the receive IRQ. */
+		 
 		spin_lock(&mbox->lock);
 		writel(readl(mbox->regs + LOCAL_IRQ_EN_REG) | RX_IRQ(n),
 		       mbox->regs + LOCAL_IRQ_EN_REG);
@@ -142,13 +142,13 @@ static void sun6i_msgbox_shutdown(struct mbox_chan *chan)
 	int n = channel_number(chan);
 
 	if (readl(mbox->regs + CTRL_REG(n)) & CTRL_RX(n)) {
-		/* Disable the receive IRQ. */
+		 
 		spin_lock(&mbox->lock);
 		writel(readl(mbox->regs + LOCAL_IRQ_EN_REG) & ~RX_IRQ(n),
 		       mbox->regs + LOCAL_IRQ_EN_REG);
 		spin_unlock(&mbox->lock);
 
-		/* Attempt to flush the FIFO until the IRQ is cleared. */
+		 
 		do {
 			while (sun6i_msgbox_peek_data(chan))
 				readl(mbox->regs + MSG_DATA_REG(n));
@@ -164,15 +164,7 @@ static bool sun6i_msgbox_last_tx_done(struct mbox_chan *chan)
 	struct sun6i_msgbox *mbox = to_sun6i_msgbox(chan);
 	int n = channel_number(chan);
 
-	/*
-	 * The hardware allows snooping on the remote user's IRQ statuses.
-	 * We consider a message to be acknowledged only once the receive IRQ
-	 * for that channel is cleared. Since the receive IRQ for a channel
-	 * cannot be cleared until the FIFO for that channel is empty, this
-	 * ensures that the message has actually been read. It also gives the
-	 * recipient an opportunity to perform minimal processing before
-	 * acknowledging the message.
-	 */
+	 
 	return !(readl(mbox->regs + REMOTE_IRQ_STAT_REG) & RX_IRQ(n));
 }
 
@@ -231,14 +223,7 @@ static int sun6i_msgbox_probe(struct platform_device *pdev)
 		goto err_disable_unprepare;
 	}
 
-	/*
-	 * NOTE: We rely on platform firmware to preconfigure the channel
-	 * directions, and we share this hardware block with other firmware
-	 * that runs concurrently with Linux (e.g. a trusted monitor).
-	 *
-	 * Therefore, we do *not* assert the reset line if probing fails or
-	 * when removing the device.
-	 */
+	 
 	ret = reset_control_deassert(reset);
 	if (ret) {
 		dev_err(dev, "Failed to deassert reset: %d\n", ret);
@@ -252,7 +237,7 @@ static int sun6i_msgbox_probe(struct platform_device *pdev)
 		goto err_disable_unprepare;
 	}
 
-	/* Disable all IRQs for this end of the msgbox. */
+	 
 	writel(0, mbox->regs + LOCAL_IRQ_EN_REG);
 
 	ret = devm_request_irq(dev, irq_of_parse_and_map(dev->of_node, 0),
@@ -292,7 +277,7 @@ static int sun6i_msgbox_remove(struct platform_device *pdev)
 	struct sun6i_msgbox *mbox = platform_get_drvdata(pdev);
 
 	mbox_controller_unregister(&mbox->controller);
-	/* See the comment in sun6i_msgbox_probe about the reset line. */
+	 
 	clk_disable_unprepare(mbox->clk);
 
 	return 0;

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright (C) 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/dma-fence.h>
 #include <linux/dma-fence-array.h>
@@ -326,12 +324,12 @@ static int unwrap_merge_complex(void *arg)
 	if (!f3)
 		goto error_put_f2;
 
-	/* The resulting array has the fences in reverse */
+	 
 	f4 = dma_fence_unwrap_merge(f2, f1);
 	if (!f4)
 		goto error_put_f3;
 
-	/* Signaled fences should be filtered, the two arrays merged. */
+	 
 	f5 = dma_fence_unwrap_merge(f3, f4, dma_fence_get_stub());
 	if (!f5)
 		goto error_put_f4;

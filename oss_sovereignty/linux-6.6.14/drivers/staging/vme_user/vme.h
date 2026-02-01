@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _VME_H_
 #define _VME_H_
 
 #include <linux/bitops.h>
 
-/* Resource Type */
+ 
 enum vme_resource_type {
 	VME_MASTER,
 	VME_SLAVE,
@@ -12,7 +12,7 @@ enum vme_resource_type {
 	VME_LM
 };
 
-/* VME Address Spaces */
+ 
 #define VME_A16		0x1
 #define VME_A24		0x2
 #define	VME_A32		0x4
@@ -29,7 +29,7 @@ enum vme_resource_type {
 #define VME_A64_MAX	0x10000000000000000ULL
 #define VME_CRCSR_MAX	0x1000000ULL
 
-/* VME Cycle Types */
+ 
 #define VME_SCT		0x1
 #define VME_BLT		0x2
 #define VME_MBLT	0x4
@@ -46,13 +46,13 @@ enum vme_resource_type {
 #define	VME_PROG	0x4000
 #define	VME_DATA	0x8000
 
-/* VME Data Widths */
+ 
 #define VME_D8		0x1
 #define VME_D16		0x2
 #define VME_D32		0x4
 #define VME_D64		0x8
 
-/* Arbitration Scheduling Modes */
+ 
 #define VME_R_ROBIN_MODE	0x1
 #define VME_PRIORITY_MODE	0x2
 
@@ -83,24 +83,17 @@ struct vme_resource {
 
 extern struct bus_type vme_bus_type;
 
-/* Number of VME interrupt vectors */
+ 
 #define VME_NUM_STATUSID	256
 
-/* VME_MAX_BRIDGES comes from the type of vme_bus_numbers */
+ 
 #define VME_MAX_BRIDGES		(sizeof(unsigned int)*8)
 #define VME_MAX_SLOTS		32
 
 #define VME_SLOT_CURRENT	-1
 #define VME_SLOT_ALL		-2
 
-/**
- * struct vme_dev - Structure representing a VME device
- * @num: The device number
- * @bridge: Pointer to the bridge device this device is on
- * @dev: Internal device structure
- * @drv_list: List of devices (per driver)
- * @bridge_list: List of devices (per bridge)
- */
+ 
 struct vme_dev {
 	int num;
 	struct vme_bridge *bridge;
@@ -109,16 +102,7 @@ struct vme_dev {
 	struct list_head bridge_list;
 };
 
-/**
- * struct vme_driver - Structure representing a VME driver
- * @name: Driver name, should be unique among VME drivers and usually the same
- *        as the module name.
- * @match: Callback used to determine whether probe should be run.
- * @probe: Callback for device binding, called when new device is detected.
- * @remove: Callback, called on device removal.
- * @driver: Underlying generic device driver structure.
- * @devices: List of VME devices (struct vme_dev) associated with this driver.
- */
+ 
 struct vme_driver {
 	const char *name;
 	int (*match)(struct vme_dev *);
@@ -186,5 +170,5 @@ int vme_bus_num(struct vme_dev *);
 int vme_register_driver(struct vme_driver *, unsigned int);
 void vme_unregister_driver(struct vme_driver *);
 
-#endif /* _VME_H_ */
+#endif  
 

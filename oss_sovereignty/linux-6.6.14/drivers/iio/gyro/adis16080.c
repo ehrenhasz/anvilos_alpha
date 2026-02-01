@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADIS16080/100 Yaw Rate Gyroscope with SPI driver
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/mutex.h>
 #include <linux/device.h>
@@ -16,15 +12,12 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-#define ADIS16080_DIN_GYRO   (0 << 10) /* Gyroscope output */
-#define ADIS16080_DIN_TEMP   (1 << 10) /* Temperature output */
+#define ADIS16080_DIN_GYRO   (0 << 10)  
+#define ADIS16080_DIN_TEMP   (1 << 10)  
 #define ADIS16080_DIN_AIN1   (2 << 10)
 #define ADIS16080_DIN_AIN2   (3 << 10)
 
-/*
- * 1: Write contents on DIN to control register.
- * 0: No changes to control register.
- */
+ 
 
 #define ADIS16080_DIN_WRITE  (1 << 15)
 
@@ -33,13 +26,7 @@ struct adis16080_chip_info {
 	int scale_val2;
 };
 
-/**
- * struct adis16080_state - device instance specific data
- * @us:			actual spi_device to write data
- * @info:		chip specific parameters
- * @buf:		transmit or receive buffer
- * @lock:		lock to protect buffer during reads
- **/
+ 
 struct adis16080_state {
 	struct spi_device		*us;
 	const struct adis16080_chip_info *info;
@@ -95,12 +82,12 @@ static int adis16080_read_raw(struct iio_dev *indio_dev,
 			*val2 = st->info->scale_val2;
 			return IIO_VAL_FRACTIONAL;
 		case IIO_VOLTAGE:
-			/* VREF = 5V, 12 bits */
+			 
 			*val = 5000;
 			*val2 = 12;
 			return IIO_VAL_FRACTIONAL_LOG2;
 		case IIO_TEMP:
-			/* 85 C = 585, 25 C = 0 */
+			 
 			*val = 85000 - 25000;
 			*val2 = 585;
 			return IIO_VAL_FRACTIONAL;
@@ -110,11 +97,11 @@ static int adis16080_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_OFFSET:
 		switch (chan->type) {
 		case IIO_VOLTAGE:
-			/* 2.5 V = 0 */
+			 
 			*val = 2048;
 			return IIO_VAL_INT;
 		case IIO_TEMP:
-			/* 85 C = 585, 25 C = 0 */
+			 
 			*val = DIV_ROUND_CLOSEST(25 * 585, 85 - 25);
 			return IIO_VAL_INT;
 		default:
@@ -173,12 +160,12 @@ enum {
 
 static const struct adis16080_chip_info adis16080_chip_info[] = {
 	[ID_ADIS16080] = {
-		/* 80 degree = 819, 819 rad = 46925 degree */
+		 
 		.scale_val = 80,
 		.scale_val2 = 46925,
 	},
 	[ID_ADIS16100] = {
-		/* 300 degree = 1230, 1230 rad = 70474 degree */
+		 
 		.scale_val = 300,
 		.scale_val2 = 70474,
 	},
@@ -190,7 +177,7 @@ static int adis16080_probe(struct spi_device *spi)
 	struct adis16080_state *st;
 	struct iio_dev *indio_dev;
 
-	/* setup the industrialio driver allocated elements */
+	 
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 	if (!indio_dev)
 		return -ENOMEM;
@@ -198,7 +185,7 @@ static int adis16080_probe(struct spi_device *spi)
 
 	mutex_init(&st->lock);
 
-	/* Allocate the comms buffers */
+	 
 	st->us = spi;
 	st->info = &adis16080_chip_info[id->driver_data];
 

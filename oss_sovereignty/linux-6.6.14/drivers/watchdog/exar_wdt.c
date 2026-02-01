@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	exar_wdt.c - Driver for the watchdog present in some
- *		     Exar/MaxLinear UART chips like the XR28V38x.
- *
- *	(c) Copyright 2022 D. Müller <d.mueller@elsoft.ch>.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,15 +29,15 @@ static const unsigned char sio_enter_keys[] = { 0x67, 0x77, 0x87, 0xA0 };
 #define EXAR_DEV_382	0x0382
 #define EXAR_DEV_384	0x0384
 
-/* WDT runtime registers */
+ 
 #define WDT_CTRL	0x00
 #define WDT_VAL		0x01
 
-#define WDT_UNITS_10MS	0x0	/* the 10 millisec unit of the HW is not used */
+#define WDT_UNITS_10MS	0x0	 
 #define WDT_UNITS_SEC	0x2
 #define WDT_UNITS_MIN	0x4
 
-/* default WDT control for WDTOUT signal activ / rearm by read */
+ 
 #define EXAR_WDT_DEF_CONF	0
 
 struct wdt_pdev_node {
@@ -53,7 +47,7 @@ struct wdt_pdev_node {
 };
 
 struct wdt_priv {
-	/* the lock for WDT io operations */
+	 
 	spinlock_t io_lock;
 	struct resource wdt_res;
 	struct watchdog_device wdt_dev;
@@ -84,7 +78,7 @@ static int exar_sio_enter(const unsigned short config_port,
 	if (!request_muxed_region(config_port, 2, DRV_NAME))
 		return -EBUSY;
 
-	/* write the ENTER-KEY twice */
+	 
 	outb(key, config_port);
 	outb(key, config_port);
 
@@ -131,7 +125,7 @@ static void exar_wdt_arm(const struct wdt_priv *priv)
 {
 	unsigned short rt_base = priv->wdt_res.start;
 
-	/* write timeout value twice to arm watchdog */
+	 
 	outb(priv->timeout, rt_base + WDT_VAL);
 	outb(priv->timeout, rt_base + WDT_VAL);
 }
@@ -140,12 +134,7 @@ static void exar_wdt_disarm(const struct wdt_priv *priv)
 {
 	unsigned short rt_base = priv->wdt_res.start;
 
-	/*
-	 * use two accesses with different values to make sure
-	 * that a combination of a previous single access and
-	 * the ones below with the same value are not falsely
-	 * interpreted as "arm watchdog"
-	 */
+	 
 	outb(0xFF, rt_base + WDT_VAL);
 	outb(0, rt_base + WDT_VAL);
 }
@@ -184,7 +173,7 @@ static int exar_wdt_keepalive(struct watchdog_device *wdog)
 
 	spin_lock(&priv->io_lock);
 
-	/* reading the WDT_VAL reg will feed the watchdog */
+	 
 	inb(rt_base + WDT_VAL);
 
 	spin_unlock(&priv->io_lock);
@@ -196,16 +185,13 @@ static int exar_wdt_set_timeout(struct watchdog_device *wdog, unsigned int t)
 	struct wdt_priv *priv = watchdog_get_drvdata(wdog);
 	bool unit_min = false;
 
-	/*
-	 * if new timeout is bigger then 255 seconds, change the
-	 * unit to minutes and round the timeout up to the next whole minute
-	 */
+	 
 	if (t > 255) {
 		unit_min = true;
 		t = DIV_ROUND_UP(t, 60);
 	}
 
-	/* save for later use in exar_wdt_start() */
+	 
 	priv->unit = unit_min ? WDT_UNITS_MIN : WDT_UNITS_SEC;
 	priv->timeout = t;
 
@@ -280,7 +266,7 @@ static int __init exar_wdt_probe(struct platform_device *pdev)
 		return ret;
 
 	exar_wdt_set_timeout(wdt_dev, timeout);
-	/* Make sure that the watchdog is not running */
+	 
 	exar_wdt_stop(wdt_dev);
 
 	ret = devm_watchdog_register_device(dev, wdt_dev);
@@ -308,12 +294,12 @@ static unsigned short __init exar_detect(const unsigned short config_port,
 	vid = exar_sio_read16(config_port, EXAR_VID);
 	did = exar_sio_read16(config_port, EXAR_DID);
 
-	/* check for the vendor and device IDs we currently know about */
+	 
 	if (vid == EXAR_VEN_ID &&
 	    (did == EXAR_DEV_382 ||
 	     did == EXAR_DEV_384)) {
 		exar_sio_select_wdt(config_port);
-		/* is device active? */
+		 
 		if (exar_sio_read(config_port, EXAR_ACT) == 0x01)
 			base = exar_sio_read16(config_port, EXAR_RTBASE);
 	}
@@ -381,7 +367,7 @@ static int __init exar_wdt_init(void)
 {
 	int ret, i, j, idx = 0;
 
-	/* search for active Exar watchdogs on all possible locations */
+	 
 	for (i = 0; i < ARRAY_SIZE(sio_config_ports); i++) {
 		for (j = 0; j < ARRAY_SIZE(sio_enter_keys); j++) {
 			unsigned short did, rt_base = 0;

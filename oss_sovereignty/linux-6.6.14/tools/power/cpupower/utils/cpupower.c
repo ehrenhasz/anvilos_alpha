@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Ideas taken over from the perf userspace tool (included in the Linus
- *  kernel git repo): subcommand builtins and param parsing.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,15 +19,11 @@
 
 static int cmd_help(int argc, const char **argv);
 
-/* Global cpu_info object available for all binaries
- * Info only retrieved from CPU 0
- *
- * Values will be zero/unknown on non X86 archs
- */
+ 
 struct cpupower_cpu_info cpupower_cpu_info;
 int run_as_root;
 int base_cpu;
-/* Affected cpus chosen by -c/--cpu param */
+ 
 struct bitmask *cpus_chosen;
 struct bitmask *online_cpus;
 struct bitmask *offline_cpus;
@@ -59,7 +50,7 @@ static struct cmd_struct commands[] = {
 	{ "info",		cmd_info,	0	},
 	{ "monitor",		cmd_monitor,	0	},
 	{ "help",		cmd_help,	0	},
-	/*	{ "bench",	cmd_bench,	1	}, */
+	 
 };
 
 static void print_help(void)
@@ -83,7 +74,7 @@ static int print_man_page(const char *subpage)
 	int len;
 	char *page;
 
-	len = 10; /* enough for "cpupower-" */
+	len = 10;  
 	if (subpage != NULL)
 		len += strlen(subpage);
 
@@ -99,14 +90,14 @@ static int print_man_page(const char *subpage)
 
 	execlp("man", "man", page, NULL);
 
-	/* should not be reached */
+	 
 	return -EINVAL;
 }
 
 static int cmd_help(int argc, const char **argv)
 {
 	if (argc > 1) {
-		print_man_page(argv[1]); /* exits within execlp() */
+		print_man_page(argv[1]);  
 		return EXIT_FAILURE;
 	}
 
@@ -149,7 +140,7 @@ static void handle_options(int *argc, const char ***argv)
 				}
 			}
 			x += 1;
-			/* Cut out param: cpupower -c 1 info -> cpupower info */
+			 
 			new_argc += 2;
 			continue;
 		} else if (!strcmp(param, "-v") ||
@@ -199,7 +190,7 @@ int main(int argc, const char *argv[])
 	setlocale(LC_ALL, "");
 	textdomain(PACKAGE);
 
-	/* Turn "perf cmd --help" into "perf help cmd" */
+	 
 	if (argc > 1 && !strcmp(argv[1], "--help")) {
 		argv[1] = argv[0];
 		argv[0] = cmd = "help";

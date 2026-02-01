@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	ICP Wafer 5823 Single Board Computer WDT driver
- *	http://www.icpamerica.com/wafer_5823.php
- *	May also work on other similar models
- *
- *	(c) Copyright 2002 Justin Cormack <justin@street-vision.com>
- *
- *	Release 0.02
- *
- *	Based on advantechwdt.c which is based on wdt.c.
- *	Original copyright messages:
- *
- *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
- *						All Rights Reserved.
- *
- *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
- *	warranty for any of this software. This material is provided
- *	"AS-IS" and at no charge.
- *
- *	(c) Copyright 1995    Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,25 +18,18 @@
 
 #define WATCHDOG_NAME "Wafer 5823 WDT"
 #define PFX WATCHDOG_NAME ": "
-#define WD_TIMO 60			/* 60 sec default timeout */
+#define WD_TIMO 60			 
 
 static unsigned long wafwdt_is_open;
 static char expect_close;
 static DEFINE_SPINLOCK(wafwdt_lock);
 
-/*
- *	You must set these - there is no sane way to probe for this board.
- *
- *	To enable, write the timeout value in seconds (1 to 255) to I/O
- *	port WDT_START, then read the port to start the watchdog. To pat
- *	the dog, read port WDT_STOP to stop the timer, then read WDT_START
- *	to restart it again.
- */
+ 
 
 static int wdt_stop = 0x843;
 static int wdt_start = 0x443;
 
-static int timeout = WD_TIMO;  /* in seconds */
+static int timeout = WD_TIMO;   
 module_param(timeout, int, 0);
 MODULE_PARM_DESC(timeout,
 		"Watchdog timeout in seconds. 1 <= timeout <= 255, default="
@@ -71,7 +43,7 @@ MODULE_PARM_DESC(nowayout,
 
 static void wafwdt_ping(void)
 {
-	/* pat watchdog */
+	 
 	spin_lock(&wafwdt_lock);
 	inb_p(wdt_stop);
 	inb_p(wdt_start);
@@ -80,30 +52,29 @@ static void wafwdt_ping(void)
 
 static void wafwdt_start(void)
 {
-	/* start up watchdog */
+	 
 	outb_p(timeout, wdt_start);
 	inb_p(wdt_start);
 }
 
 static void wafwdt_stop(void)
 {
-	/* stop watchdog */
+	 
 	inb_p(wdt_stop);
 }
 
 static ssize_t wafwdt_write(struct file *file, const char __user *buf,
 						size_t count, loff_t *ppos)
 {
-	/* See if we got the magic character 'V' and reload the timer */
+	 
 	if (count) {
 		if (!nowayout) {
 			size_t i;
 
-			/* In case it was set long ago */
+			 
 			expect_close = 0;
 
-			/* scan to see whether or not we got the magic
-			   character */
+			 
 			for (i = 0; i != count; i++) {
 				char c;
 				if (get_user(c, buf + i))
@@ -112,8 +83,7 @@ static ssize_t wafwdt_write(struct file *file, const char __user *buf,
 					expect_close = 42;
 			}
 		}
-		/* Well, anyhow someone wrote to us, we should
-		   return that favour */
+		 
 		wafwdt_ping();
 	}
 	return count;
@@ -189,9 +159,7 @@ static int wafwdt_open(struct inode *inode, struct file *file)
 	if (test_and_set_bit(0, &wafwdt_is_open))
 		return -EBUSY;
 
-	/*
-	 *      Activate
-	 */
+	 
 	wafwdt_start();
 	return stream_open(inode, file);
 }
@@ -209,9 +177,7 @@ static int wafwdt_close(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- *	Notifier for system down
- */
+ 
 
 static int wafwdt_notify_sys(struct notifier_block *this, unsigned long code,
 								void *unused)
@@ -221,9 +187,7 @@ static int wafwdt_notify_sys(struct notifier_block *this, unsigned long code,
 	return NOTIFY_DONE;
 }
 
-/*
- *	Kernel Interfaces
- */
+ 
 
 static const struct file_operations wafwdt_fops = {
 	.owner		= THIS_MODULE,
@@ -241,10 +205,7 @@ static struct miscdevice wafwdt_miscdev = {
 	.fops	= &wafwdt_fops,
 };
 
-/*
- *	The WDT needs to learn about soft shutdowns in order to
- *	turn the timebomb registers off.
- */
+ 
 
 static struct notifier_block wafwdt_notifier = {
 	.notifier_call = wafwdt_notify_sys,
@@ -320,4 +281,4 @@ MODULE_AUTHOR("Justin Cormack");
 MODULE_DESCRIPTION("ICP Wafer 5823 Single Board Computer WDT driver");
 MODULE_LICENSE("GPL");
 
-/* end of wafer5823wdt.c */
+ 

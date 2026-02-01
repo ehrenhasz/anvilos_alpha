@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * CEC driver for SECO X86 Boards
- *
- * Author:  Ettore Chimenti <ek5.chimenti@gmail.com>
- * Copyright (C) 2018, SECO SpA.
- * Copyright (C) 2018, Aidilab Srl.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -16,7 +10,7 @@
 #include <linux/pci.h>
 #include <linux/platform_device.h>
 
-/* CEC Framework */
+ 
 #include <media/cec-notifier.h>
 
 #include "seco-cec.h"
@@ -42,7 +36,7 @@ static int smb_word_op(u16 slave_addr, u8 cmd, u16 data,
 	unsigned int count;
 	int status = 0;
 
-	/* Active wait until ready */
+	 
 	for (count = 0; count <= SMBTIMEOUT; ++count) {
 		if (!(inb(HSTS) & BRA_INUSE_STS))
 			break;
@@ -50,7 +44,7 @@ static int smb_word_op(u16 slave_addr, u8 cmd, u16 data,
 	}
 
 	if (count > SMBTIMEOUT)
-		/* Reset the lock instead of failing */
+		 
 		outb(0xff, HSTS);
 
 	outb(0x00, HCNT);
@@ -97,7 +91,7 @@ static int secocec_adap_enable(struct cec_adapter *adap, bool enable)
 	int status;
 
 	if (enable) {
-		/* Clear the status register */
+		 
 		status = smb_rd16(SECOCEC_STATUS_REG_1, &val);
 		if (status)
 			goto err;
@@ -106,7 +100,7 @@ static int secocec_adap_enable(struct cec_adapter *adap, bool enable)
 		if (status)
 			goto err;
 
-		/* Enable the interrupts */
+		 
 		status = smb_rd16(SECOCEC_ENABLE_REG_1, &val);
 		if (status)
 			goto err;
@@ -118,11 +112,11 @@ static int secocec_adap_enable(struct cec_adapter *adap, bool enable)
 
 		dev_dbg(dev, "Device enabled\n");
 	} else {
-		/* Clear the status register */
+		 
 		status = smb_rd16(SECOCEC_STATUS_REG_1, &val);
 		status = smb_wr16(SECOCEC_STATUS_REG_1, val);
 
-		/* Disable the interrupts */
+		 
 		status = smb_rd16(SECOCEC_ENABLE_REG_1, &val);
 		status = smb_wr16(SECOCEC_ENABLE_REG_1, val &
 				  ~SECOCEC_ENABLE_REG_1_CEC &
@@ -141,7 +135,7 @@ static int secocec_adap_log_addr(struct cec_adapter *adap, u8 logical_addr)
 	u16 enable_val = 0;
 	int status;
 
-	/* Disable device */
+	 
 	status = smb_rd16(SECOCEC_ENABLE_REG_1, &enable_val);
 	if (status)
 		return status;
@@ -151,14 +145,12 @@ static int secocec_adap_log_addr(struct cec_adapter *adap, u8 logical_addr)
 	if (status)
 		return status;
 
-	/* Write logical address
-	 * NOTE: CEC_LOG_ADDR_INVALID is mapped to the 'Unregistered' LA
-	 */
+	 
 	status = smb_wr16(SECOCEC_DEVICE_LA, logical_addr & 0xf);
 	if (status)
 		return status;
 
-	/* Re-enable device */
+	 
 	status = smb_wr16(SECOCEC_ENABLE_REG_1,
 			  enable_val | SECOCEC_ENABLE_REG_1_CEC);
 	if (status)
@@ -175,32 +167,32 @@ static int secocec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	int status;
 	u8 i;
 
-	/* Device msg len already accounts for header */
+	 
 	payload_id_len = msg->len - 1;
 
-	/* Send data length */
+	 
 	status = smb_wr16(SECOCEC_WRITE_DATA_LENGTH, payload_id_len);
 	if (status)
 		goto err;
 
-	/* Send Operation ID if present */
+	 
 	if (payload_id_len > 0) {
 		status = smb_wr16(SECOCEC_WRITE_OPERATION_ID, msg->msg[1]);
 		if (status)
 			goto err;
 	}
-	/* Send data if present */
+	 
 	if (payload_id_len > 1) {
-		/* Only data; */
+		 
 		payload_len = msg->len - 2;
 		payload_msg = &msg->msg[2];
 
-		/* Copy message into registers */
+		 
 		for (i = 0; i < payload_len; i += 2) {
-			/* hi byte */
+			 
 			val = payload_msg[i + 1] << 8;
 
-			/* lo byte */
+			 
 			val |= payload_msg[i];
 
 			status = smb_wr16(SECOCEC_WRITE_DATA_00 + i / 2, val);
@@ -208,7 +200,7 @@ static int secocec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 				goto err;
 		}
 	}
-	/* Send msg source/destination and fire msg */
+	 
 	destination = msg->msg[0];
 	status = smb_wr16(SECOCEC_WRITE_BYTE0, destination);
 	if (status)
@@ -231,7 +223,7 @@ static void secocec_tx_done(struct cec_adapter *adap, u16 status_val)
 		cec_transmit_attempt_done(adap, CEC_TX_STATUS_OK);
 	}
 
-	/* Reset status reg */
+	 
 	status_val = SECOCEC_STATUS_TX_ERROR_MASK |
 		SECOCEC_STATUS_MSG_SENT_MASK |
 		SECOCEC_STATUS_TX_NACK_ERROR;
@@ -250,7 +242,7 @@ static void secocec_rx_done(struct cec_adapter *adap, u16 status_val)
 	int status;
 
 	if (status_val & SECOCEC_STATUS_RX_OVERFLOW_MASK) {
-		/* NOTE: Untested, it also might not be necessary */
+		 
 		dev_warn(dev, "Received more than 16 bytes. Discarding\n");
 		flag_overflow = true;
 	}
@@ -261,51 +253,51 @@ static void secocec_rx_done(struct cec_adapter *adap, u16 status_val)
 		goto rxerr;
 	}
 
-	/* Read message length */
+	 
 	status = smb_rd16(SECOCEC_READ_DATA_LENGTH, &val);
 	if (status)
 		return;
 
-	/* Device msg len already accounts for the header */
+	 
 	msg.len = min(val + 1, CEC_MAX_MSG_SIZE);
 
-	/* Read logical address */
+	 
 	status = smb_rd16(SECOCEC_READ_BYTE0, &val);
 	if (status)
 		return;
 
-	/* device stores source LA and destination */
+	 
 	msg.msg[0] = val;
 
-	/* Read operation ID */
+	 
 	status = smb_rd16(SECOCEC_READ_OPERATION_ID, &val);
 	if (status)
 		return;
 
 	msg.msg[1] = val;
 
-	/* Read data if present */
+	 
 	if (msg.len > 1) {
 		payload_len = msg.len - 2;
 		payload_msg = &msg.msg[2];
 
-		/* device stores 2 bytes in every 16-bit val */
+		 
 		for (i = 0; i < payload_len; i += 2) {
 			status = smb_rd16(SECOCEC_READ_DATA_00 + i / 2, &val);
 			if (status)
 				return;
 
-			/* low byte, skipping header */
+			 
 			payload_msg[i] = val & 0x00ff;
 
-			/* hi byte */
+			 
 			payload_msg[i + 1] = (val & 0xff00) >> 8;
 		}
 	}
 
 	cec_received_msg(cec->cec_adap, &msg);
 
-	/* Reset status reg */
+	 
 	status_val = SECOCEC_STATUS_MSG_RECEIVED_MASK;
 	if (flag_overflow)
 		status_val |= SECOCEC_STATUS_RX_OVERFLOW_MASK;
@@ -315,7 +307,7 @@ static void secocec_rx_done(struct cec_adapter *adap, u16 status_val)
 	return;
 
 rxerr:
-	/* Reset error reg */
+	 
 	status_val = SECOCEC_STATUS_MSG_RECEIVED_MASK |
 		SECOCEC_STATUS_RX_ERROR_MASK;
 	if (flag_overflow)
@@ -324,7 +316,7 @@ rxerr:
 }
 
 static const struct cec_adap_ops secocec_cec_adap_ops = {
-	/* Low-level callbacks */
+	 
 	.adap_enable = secocec_adap_enable,
 	.adap_log_addr = secocec_adap_log_addr,
 	.adap_transmit = secocec_adap_transmit,
@@ -338,7 +330,7 @@ static int secocec_ir_probe(void *priv)
 	int status;
 	u16 val;
 
-	/* Prepare the RC input device */
+	 
 	cec->ir = devm_rc_allocate_device(dev, RC_DRIVER_SCANCODE);
 	if (!cec->ir)
 		return -ENOMEM;
@@ -358,7 +350,7 @@ static int secocec_ir_probe(void *priv)
 	cec->ir->map_name = RC_MAP_HAUPPAUGE;
 	cec->ir->timeout = MS_TO_US(100);
 
-	/* Clear the status register */
+	 
 	status = smb_rd16(SECOCEC_STATUS_REG_1, &val);
 	if (status != 0)
 		goto err;
@@ -367,7 +359,7 @@ static int secocec_ir_probe(void *priv)
 	if (status != 0)
 		goto err;
 
-	/* Enable the interrupts */
+	 
 	status = smb_rd16(SECOCEC_ENABLE_REG_1, &val);
 	if (status != 0)
 		goto err;
@@ -445,13 +437,13 @@ static irqreturn_t secocec_irq_handler(int irq, void *priv)
 	u16 status_val, cec_val, val = 0;
 	int status;
 
-	/*  Read status register */
+	 
 	status = smb_rd16(SECOCEC_STATUS_REG_1, &status_val);
 	if (status)
 		goto err;
 
 	if (status_val & SECOCEC_STATUS_REG_1_CEC) {
-		/* Read CEC status register */
+		 
 		status = smb_rd16(SECOCEC_STATUS, &cec_val);
 		if (status)
 			goto err;
@@ -476,7 +468,7 @@ static irqreturn_t secocec_irq_handler(int irq, void *priv)
 		secocec_ir_rx(cec);
 	}
 
-	/*  Reset status register */
+	 
 	status = smb_wr16(SECOCEC_STATUS_REG_1, val);
 	if (status)
 		goto err;
@@ -486,7 +478,7 @@ static irqreturn_t secocec_irq_handler(int irq, void *priv)
 err:
 	dev_err_once(dev, "IRQ: R/W SMBus operation failed %d\n", status);
 
-	/*  Reset status register */
+	 
 	val = SECOCEC_STATUS_REG_1_CEC | SECOCEC_STATUS_REG_1_IR;
 	smb_wr16(SECOCEC_STATUS_REG_1, val);
 
@@ -501,7 +493,7 @@ struct cec_dmi_match {
 };
 
 static const struct cec_dmi_match secocec_dmi_match_table[] = {
-	/* UDOO X86 */
+	 
 	{ "SECO", "UDOO x86", "0000:00:02.0", "Port B" },
 };
 
@@ -517,7 +509,7 @@ static struct device *secocec_cec_find_hdmi_dev(struct device *dev,
 		    dmi_match(DMI_PRODUCT_NAME, m->product_name)) {
 			struct device *d;
 
-			/* Find the device, bail out if not yet registered */
+			 
 			d = bus_find_device_by_name(&pci_bus_type, NULL,
 						    m->devname);
 			if (!d)
@@ -575,7 +567,7 @@ static int secocec_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, secocec);
 
-	/* Request SMBus regions */
+	 
 	if (!request_muxed_region(BRA_SMB_BASE_ADDR, 7, "CEC00001")) {
 		dev_err(dev, "Request memory region failed\n");
 		return -ENXIO;
@@ -597,7 +589,7 @@ static int secocec_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Firmware version check */
+	 
 	ret = smb_rd16(SECOCEC_VERSION, &val);
 	if (ret) {
 		dev_err(dev, "Cannot check fw version\n");
@@ -623,7 +615,7 @@ static int secocec_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Allocate CEC adapter */
+	 
 	secocec->cec_adap = cec_allocate_adapter(&secocec_cec_adap_ops,
 						 secocec,
 						 dev_name(dev),
@@ -696,7 +688,7 @@ static int secocec_suspend(struct device *dev)
 
 	dev_dbg(dev, "Device going to suspend, disabling\n");
 
-	/* Clear the status register */
+	 
 	status = smb_rd16(SECOCEC_STATUS_REG_1, &val);
 	if (status)
 		goto err;
@@ -705,7 +697,7 @@ static int secocec_suspend(struct device *dev)
 	if (status)
 		goto err;
 
-	/* Disable the interrupts */
+	 
 	status = smb_rd16(SECOCEC_ENABLE_REG_1, &val);
 	if (status)
 		goto err;
@@ -729,7 +721,7 @@ static int secocec_resume(struct device *dev)
 
 	dev_dbg(dev, "Resuming device from suspend\n");
 
-	/* Clear the status register */
+	 
 	status = smb_rd16(SECOCEC_STATUS_REG_1, &val);
 	if (status)
 		goto err;
@@ -738,7 +730,7 @@ static int secocec_resume(struct device *dev)
 	if (status)
 		goto err;
 
-	/* Enable the interrupts */
+	 
 	status = smb_rd16(SECOCEC_ENABLE_REG_1, &val);
 	if (status)
 		goto err;

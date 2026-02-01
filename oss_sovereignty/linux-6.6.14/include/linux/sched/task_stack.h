@@ -1,21 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_SCHED_TASK_STACK_H
 #define _LINUX_SCHED_TASK_STACK_H
 
-/*
- * task->stack (kernel stack) handling interfaces:
- */
+ 
 
 #include <linux/sched.h>
 #include <linux/magic.h>
 
 #ifdef CONFIG_THREAD_INFO_IN_TASK
 
-/*
- * When accessing the stack of a non-current task that might exit, use
- * try_get_task_stack() instead.  task_stack_page will return a pointer
- * that could get freed out from under you.
- */
+ 
 static __always_inline void *task_stack_page(const struct task_struct *task)
 {
 	return task->stack;
@@ -42,15 +36,7 @@ static inline void setup_thread_stack(struct task_struct *p, struct task_struct 
 	task_thread_info(p)->task = p;
 }
 
-/*
- * Return the address of the last usable long on the stack.
- *
- * When the stack grows down, this is just above the thread
- * info struct. Going any lower will corrupt the threadinfo.
- *
- * When the stack grows up, this is the highest address.
- * Beyond that position, we corrupt data on the next page.
- */
+ 
 static inline unsigned long *end_of_stack(struct task_struct *p)
 {
 #ifdef CONFIG_STACK_GROWSUP
@@ -98,7 +84,7 @@ static inline unsigned long stack_not_used(struct task_struct *p)
 {
 	unsigned long *n = end_of_stack(p);
 
-	do { 	/* Skip over canary */
+	do { 	 
 # ifdef CONFIG_STACK_GROWSUP
 		n--;
 # else
@@ -118,11 +104,9 @@ extern void set_task_stack_end_magic(struct task_struct *tsk);
 #ifndef __HAVE_ARCH_KSTACK_END
 static inline int kstack_end(void *addr)
 {
-	/* Reliable end of stack detection:
-	 * Some APM bios versions misalign the stack
-	 */
+	 
 	return !(((unsigned long)addr+sizeof(void*)-1) & (THREAD_SIZE-sizeof(void*)));
 }
 #endif
 
-#endif /* _LINUX_SCHED_TASK_STACK_H */
+#endif  

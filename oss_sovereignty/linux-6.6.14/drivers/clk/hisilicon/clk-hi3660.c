@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016-2017 Linaro Ltd.
- * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/hi3660-clock.h>
 #include <linux/clk-provider.h>
@@ -28,7 +25,7 @@ static const struct hisi_fixed_rate_clock hi3660_fixed_rate_clks[] = {
 	{ HI3660_CLK_INV, "clk_inv", NULL, 0, 10000000, },
 };
 
-/* crgctrl */
+ 
 static const struct hisi_fixed_factor_clock hi3660_crg_fixed_factor_clks[] = {
 	{ HI3660_FACTOR_UART3, "clk_factor_uart3", "iomcu_peri0", 1, 16, 0, },
 	{ HI3660_CLK_FACTOR_MMC, "clk_factor_mmc", "clkin_sys", 1, 6, 0, },
@@ -159,10 +156,7 @@ static const struct hisi_gate_clock hi3660_crgctrl_gate_sep_clks[] = {
 	  "clk_isp_snclk_mux", CLK_SET_RATE_PARENT, 0x50, 17, 0, },
 	{ HI3660_CLK_GATE_ISP_SNCLK2, "clk_gate_isp_snclk2",
 	  "clk_isp_snclk_mux", CLK_SET_RATE_PARENT, 0x50, 18, 0, },
-	/*
-	 * clk_gate_ufs_subsys is a system bus clock, mark it as critical
-	 * clock and keep it on for system suspend and resume.
-	 */
+	 
 	{ HI3660_CLK_GATE_UFS_SUBSYS, "clk_gate_ufs_subsys", "clk_div_sysbus",
 	  CLK_SET_RATE_PARENT | CLK_IS_CRITICAL, 0x50, 21, 0, },
 	{ HI3660_PCLK_GATE_DSI0, "pclk_gate_dsi0", "clk_div_cfgbus",
@@ -378,14 +372,14 @@ static const struct hisi_divider_clock hi3660_crgctrl_divider_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x108, 11, 4, CLK_DIVIDER_HIWORD_MASK, },
 };
 
-/* clk_pmuctrl */
-/* pmu register need shift 2 bits */
+ 
+ 
 static const struct hisi_gate_clock hi3660_pmu_gate_clks[] = {
 	{ HI3660_GATE_ABB_192, "clk_gate_abb_192", "clkin_sys",
 	  CLK_SET_RATE_PARENT, (0x10a << 2), 3, 0, },
 };
 
-/* clk_pctrl */
+ 
 static const struct hisi_gate_clock hi3660_pctrl_gate_clks[] = {
 	{ HI3660_GATE_UFS_TCXO_EN, "clk_gate_ufs_tcxo_en",
 	  "clk_gate_abb_192", CLK_SET_RATE_PARENT, 0x10, 0,
@@ -394,7 +388,7 @@ static const struct hisi_gate_clock hi3660_pctrl_gate_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x10, 1, CLK_GATE_HIWORD_MASK, },
 };
 
-/* clk_sctrl */
+ 
 static const struct hisi_gate_clock hi3660_sctrl_gate_sep_clks[] = {
 	{ HI3660_PCLK_AO_GPIO0, "pclk_ao_gpio0", "clk_div_aobus",
 	  CLK_SET_RATE_PARENT, 0x160, 11, 0, },
@@ -455,7 +449,7 @@ static const struct hisi_divider_clock hi3660_sctrl_divider_clks[] = {
 	  CLK_SET_RATE_PARENT, 0x268, 12, 4, CLK_DIVIDER_HIWORD_MASK, },
 };
 
-/* clk_iomcu */
+ 
 static const struct hisi_gate_clock hi3660_iomcu_gate_sep_clks[] = {
 	{ HI3660_CLK_I2C0_IOMCU, "clk_i2c0_iomcu", "clk_fll_src",
 	  CLK_SET_RATE_PARENT, 0x10, 3, 0, },
@@ -565,7 +559,7 @@ static void hi3660_clk_crgctrl_init(struct device_node *np)
 	if (!clk_crgctrl_data)
 		hi3660_clk_crgctrl_early_init(np);
 
-	/* clk_crgctrl_data initialization failed */
+	 
 	if (!clk_crgctrl_data)
 		return;
 

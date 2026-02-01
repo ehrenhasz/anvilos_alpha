@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Linux driver for TerraTec DMX 6Fire USB
- *
- * Author:	Torsten Schenk <torsten.schenk@zoho.com>
- * Created:	Jan 01, 2011
- * Copyright:	(C) Torsten Schenk
- */
+ 
+ 
 
 #ifndef USB6FIRE_CONTROL_H
 #define USB6FIRE_CONTROL_H
@@ -49,5 +43,5 @@ struct control_runtime {
 int usb6fire_control_init(struct sfire_chip *chip);
 void usb6fire_control_abort(struct sfire_chip *chip);
 void usb6fire_control_destroy(struct sfire_chip *chip);
-#endif /* USB6FIRE_CONTROL_H */
+#endif  
 

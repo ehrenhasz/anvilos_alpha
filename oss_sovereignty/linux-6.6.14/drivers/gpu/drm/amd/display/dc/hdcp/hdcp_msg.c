@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -127,13 +104,13 @@ static bool hdmi_14_process_transaction(
 {
 	uint8_t *buff = NULL;
 	bool result;
-	const uint8_t hdcp_i2c_addr_link_primary = 0x3a; /* 0x74 >> 1*/
-	const uint8_t hdcp_i2c_addr_link_secondary = 0x3b; /* 0x76 >> 1*/
+	const uint8_t hdcp_i2c_addr_link_primary = 0x3a;  
+	const uint8_t hdcp_i2c_addr_link_secondary = 0x3b;  
 	struct i2c_command i2c_command;
 	uint8_t offset = hdcp_i2c_offsets[message_info->msg_id];
 	struct i2c_payload i2c_payloads[] = {
 		{ true, 0, 1, &offset },
-		/* actual hdcp payload, will be filled later, zeroed for now*/
+		 
 		{ 0 }
 	};
 
@@ -168,7 +145,7 @@ static bool hdmi_14_process_transaction(
 	}
 
 	i2c_command.payloads = i2c_payloads;
-	i2c_command.engine = I2C_COMMAND_ENGINE_HW;//only HW
+	i2c_command.engine = I2C_COMMAND_ENGINE_HW;
 	i2c_command.speed = link->ddc->ctx->dc->caps.i2c_speed_in_khz;
 
 	result = dm_helpers_submit_i2c(
@@ -232,7 +209,7 @@ static bool dpcd_access_helper(
 	uint32_t offset = 0;
 	uint32_t ksv_read_size = 0x6803b - 0x6802c;
 
-	/* Read KSV, need repeatedly handle */
+	 
 	if (dpcd_addr == 0x6802c) {
 		if (length % HDCP14_KSV_SIZE) {
 			DC_LOG_ERROR("%s: KsvFifo Size(%d) is not a multiple of HDCP14_KSV_SIZE(%d)\n",
@@ -354,11 +331,11 @@ static const struct protection_properties *get_protection_properties_by_signal(
 		case SIGNAL_TYPE_DVI_SINGLE_LINK:
 		case SIGNAL_TYPE_DVI_DUAL_LINK:
 		case SIGNAL_TYPE_HDMI_TYPE_A:
-			return &hdmi_14_protection; //todo version2.2
+			return &hdmi_14_protection; 
 		case SIGNAL_TYPE_DISPLAY_PORT:
 		case SIGNAL_TYPE_DISPLAY_PORT_MST:
 		case SIGNAL_TYPE_EDP:
-			return &dp_11_protection;  //todo version2.2
+			return &dp_11_protection;  
 		default:
 			return &non_supported_protection;
 		}

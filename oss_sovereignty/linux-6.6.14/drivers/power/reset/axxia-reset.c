@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Reset driver for Axxia devices
- *
- * Copyright (C) 2014 LSI
- */
+
+ 
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -31,13 +27,13 @@ static struct regmap *syscon;
 static int axxia_restart_handler(struct notifier_block *this,
 				 unsigned long mode, void *cmd)
 {
-	/* Access Key (0xab) */
+	 
 	regmap_write(syscon, SC_CRIT_WRITE_KEY, 0xab);
-	/* Select internal boot from 0xffff0000 */
+	 
 	regmap_write(syscon, SC_LATCH_ON_RESET, 0x00000040);
-	/* Assert ResetReadDone (to avoid hanging in boot ROM) */
+	 
 	regmap_write(syscon, SC_EFUSE_INT_STATUS, EFUSE_READ_DONE);
-	/* Assert chip reset */
+	 
 	regmap_update_bits(syscon, SC_RESET_CONTROL,
 			   RSTCTL_RST_CHIP, RSTCTL_RST_CHIP);
 

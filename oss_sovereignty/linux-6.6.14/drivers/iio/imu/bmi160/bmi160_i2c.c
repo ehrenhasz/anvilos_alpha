@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BMI160 - Bosch IMU, I2C bits
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * 7-bit I2C slave address is:
- *      - 0x68 if SDO is pulled to GND
- *      - 0x69 if SDO is pulled to VDDIO
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>

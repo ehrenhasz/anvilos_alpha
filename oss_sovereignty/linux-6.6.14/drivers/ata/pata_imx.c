@@ -1,17 +1,4 @@
-/*
- * Freescale iMX PATA driver
- *
- * Copyright (C) 2011 Arnaud Patard <arnaud.patard@rtp-net.org>
- *
- * Based on pata_platform - Copyright (C) 2006 - 2007  Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * TODO:
- * - dmaengine support
- */
+ 
 
 #include <linux/ata.h>
 #include <linux/clk.h>
@@ -47,7 +34,7 @@ static u32 pio_tA[] = { 35,  35,  35,  35,  35 };
 
 struct pata_imx_priv {
 	struct clk *clk;
-	/* timings/interrupt/control regs */
+	 
 	void __iomem *host_regs;
 	u32 ata_ctl;
 };
@@ -110,7 +97,7 @@ static struct ata_port_operations pata_imx_port_ops = {
 
 static void pata_imx_setup_port(struct ata_ioports *ioaddr)
 {
-	/* Fixup the port shift for platforms that need it */
+	 
 	ioaddr->data_addr	= ioaddr->cmd_addr + (ATA_REG_DATA    << 2);
 	ioaddr->error_addr	= ioaddr->cmd_addr + (ATA_REG_ERR     << 2);
 	ioaddr->feature_addr	= ioaddr->cmd_addr + (ATA_REG_FEATURE << 2);
@@ -173,15 +160,15 @@ static int pata_imx_probe(struct platform_device *pdev)
 		(unsigned long long)io_res->start + PATA_IMX_DRIVE_DATA,
 		(unsigned long long)io_res->start + PATA_IMX_DRIVE_CONTROL);
 
-	/* deassert resets */
+	 
 	__raw_writel(PATA_IMX_ATA_CTRL_FIFO_RST_B |
 			PATA_IMX_ATA_CTRL_ATA_RST_B,
 			priv->host_regs + PATA_IMX_ATA_CONTROL);
-	/* enable interrupts */
+	 
 	__raw_writel(PATA_IMX_ATA_INTR_ATA_INTRQ2,
 			priv->host_regs + PATA_IMX_ATA_INT_EN);
 
-	/* activate */
+	 
 	ret = ata_host_activate(host, irq, ata_sff_interrupt, 0,
 				&pata_imx_sht);
 
@@ -242,7 +229,7 @@ static const struct of_device_id imx_pata_dt_ids[] = {
 	{
 		.compatible = "fsl,imx27-pata",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, imx_pata_dt_ids);

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019-2020 Linaro Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -48,7 +46,7 @@ void ipa_gsi_channel_tx_completed(struct gsi *gsi, u32 channel_id, u32 count,
 		netdev_completed_queue(endpoint->netdev, count, byte_count);
 }
 
-/* Indicate whether an endpoint config data entry is "empty" */
+ 
 bool ipa_gsi_endpoint_data_empty(const struct ipa_gsi_endpoint_data *data)
 {
 	return data->ee_id == GSI_EE_AP && !data->channel.tlv_count;

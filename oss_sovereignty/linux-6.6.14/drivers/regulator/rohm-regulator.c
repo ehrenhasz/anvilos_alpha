@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ROHM Semiconductors
+
+
 
 #include <linux/errno.h>
 #include <linux/mfd/rohm-generic.h>
@@ -22,12 +22,12 @@ static int set_dvs_level(const struct regulator_desc *desc,
 			return ret;
 		return 0;
 	}
-	/* If voltage is set to 0 => disable */
+	 
 	if (uv == 0) {
 		if (omask)
 			return regmap_update_bits(regmap, oreg, omask, 0);
 	}
-	/* Some setups don't allow setting own voltage but do allow enabling */
+	 
 	if (!mask) {
 		if (omask)
 			return regmap_update_bits(regmap, oreg, omask, omask);
@@ -35,7 +35,7 @@ static int set_dvs_level(const struct regulator_desc *desc,
 		return -EINVAL;
 	}
 	for (i = 0; i < desc->n_voltages; i++) {
-		/* NOTE to next hacker - Does not support pickable ranges */
+		 
 		if (desc->linear_range_selectors_bitfield)
 			return -EINVAL;
 		if (desc->n_linear_ranges)
@@ -112,12 +112,7 @@ int rohm_regulator_set_dvs_levels(const struct rohm_dvs_config *dvs,
 }
 EXPORT_SYMBOL(rohm_regulator_set_dvs_levels);
 
-/*
- * Few ROHM PMIC ICs have constrains on voltage changing:
- * BD71837 - only buck 1-4 voltages can be changed when they are enabled.
- * Other bucks and all LDOs must be disabled when voltage is changed.
- * BD96801 - LDO voltage levels can be changed when LDOs are disabled.
- */
+ 
 int rohm_regulator_set_voltage_sel_restricted(struct regulator_dev *rdev,
 					      unsigned int sel)
 {

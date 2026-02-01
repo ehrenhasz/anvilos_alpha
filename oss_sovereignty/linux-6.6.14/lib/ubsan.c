@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UBSAN error reporting functions
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bug.h>
@@ -20,59 +15,37 @@
 #include "ubsan.h"
 
 #ifdef CONFIG_UBSAN_TRAP
-/*
- * Only include matches for UBSAN checks that are actually compiled in.
- * The mappings of struct SanitizerKind (the -fsanitize=xxx args) to
- * enum SanitizerHandler (the traps) in Clang is in clang/lib/CodeGen/.
- */
+ 
 const char *report_ubsan_failure(struct pt_regs *regs, u32 check_type)
 {
 	switch (check_type) {
 #ifdef CONFIG_UBSAN_BOUNDS
-	/*
-	 * SanitizerKind::ArrayBounds and SanitizerKind::LocalBounds
-	 * emit SanitizerHandler::OutOfBounds.
-	 */
+	 
 	case ubsan_out_of_bounds:
 		return "UBSAN: array index out of bounds";
 #endif
 #ifdef CONFIG_UBSAN_SHIFT
-	/*
-	 * SanitizerKind::ShiftBase and SanitizerKind::ShiftExponent
-	 * emit SanitizerHandler::ShiftOutOfBounds.
-	 */
+	 
 	case ubsan_shift_out_of_bounds:
 		return "UBSAN: shift out of bounds";
 #endif
 #ifdef CONFIG_UBSAN_DIV_ZERO
-	/*
-	 * SanitizerKind::IntegerDivideByZero emits
-	 * SanitizerHandler::DivremOverflow.
-	 */
+	 
 	case ubsan_divrem_overflow:
 		return "UBSAN: divide/remainder overflow";
 #endif
 #ifdef CONFIG_UBSAN_UNREACHABLE
-	/*
-	 * SanitizerKind::Unreachable emits
-	 * SanitizerHandler::BuiltinUnreachable.
-	 */
+	 
 	case ubsan_builtin_unreachable:
 		return "UBSAN: unreachable code";
 #endif
 #if defined(CONFIG_UBSAN_BOOL) || defined(CONFIG_UBSAN_ENUM)
-	/*
-	 * SanitizerKind::Bool and SanitizerKind::Enum emit
-	 * SanitizerHandler::LoadInvalidValue.
-	 */
+	 
 	case ubsan_load_invalid_value:
 		return "UBSAN: loading invalid value";
 #endif
 #ifdef CONFIG_UBSAN_ALIGNMENT
-	/*
-	 * SanitizerKind::Alignment emits SanitizerHandler::TypeMismatch
-	 * or SanitizerHandler::AlignmentAssumption.
-	 */
+	 
 	case ubsan_alignment_assumption:
 		return "UBSAN: alignment assumption";
 	case ubsan_type_mismatch:
@@ -451,4 +424,4 @@ void __ubsan_handle_alignment_assumption(void *_data, unsigned long ptr,
 }
 EXPORT_SYMBOL(__ubsan_handle_alignment_assumption);
 
-#endif /* !CONFIG_UBSAN_TRAP */
+#endif  

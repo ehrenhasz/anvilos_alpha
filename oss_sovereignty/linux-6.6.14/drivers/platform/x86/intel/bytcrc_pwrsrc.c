@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power-source driver for Bay Trail Crystal Cove PMIC
- *
- * Copyright (c) 2023 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on intel_crystalcove_pwrsrc.c from Android kernel sources, which is:
- * Copyright (C) 2013 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/mfd/intel_soc_pmic.h>
@@ -28,35 +21,35 @@ struct crc_pwrsrc_data {
 };
 
 static const char * const pwrsrc_pwrsrc_info[] = {
-	/* bit 0 */ "USB",
-	/* bit 1 */ "DC in",
-	/* bit 2 */ "Battery",
+	  "USB",
+	  "DC in",
+	  "Battery",
 	NULL,
 };
 
 static const char * const pwrsrc_resetsrc0_info[] = {
-	/* bit 0 */ "SOC reporting a thermal event",
-	/* bit 1 */ "critical PMIC temperature",
-	/* bit 2 */ "critical system temperature",
-	/* bit 3 */ "critical battery temperature",
-	/* bit 4 */ "VSYS under voltage",
-	/* bit 5 */ "VSYS over voltage",
-	/* bit 6 */ "battery removal",
+	  "SOC reporting a thermal event",
+	  "critical PMIC temperature",
+	  "critical system temperature",
+	  "critical battery temperature",
+	  "VSYS under voltage",
+	  "VSYS over voltage",
+	  "battery removal",
 	NULL,
 };
 
 static const char * const pwrsrc_resetsrc1_info[] = {
-	/* bit 0 */ "VCRIT threshold",
-	/* bit 1 */ "BATID reporting battery removal",
-	/* bit 2 */ "user pressing the power button",
+	  "VCRIT threshold",
+	  "BATID reporting battery removal",
+	  "user pressing the power button",
 	NULL,
 };
 
 static const char * const pwrsrc_wakesrc_info[] = {
-	/* bit 0 */ "user pressing the power button",
-	/* bit 1 */ "a battery insertion",
-	/* bit 2 */ "a USB charger insertion",
-	/* bit 3 */ "an adapter insertion",
+	  "user pressing the power button",
+	  "a battery insertion",
+	  "a USB charger insertion",
+	  "an adapter insertion",
 	NULL,
 };
 
@@ -130,13 +123,7 @@ static int crc_pwrsrc_probe(struct platform_device *pdev)
 
 	data->regmap = pmic->regmap;
 
-	/*
-	 * Read + clear resetsrc0/1 and wakesrc now, so that they get
-	 * cleared even if the debugfs interface is never used.
-	 *
-	 * Properly clearing the wakesrc is important, leaving bit 0 of it
-	 * set turns reboot into poweroff on some tablets.
-	 */
+	 
 	ret = crc_pwrsrc_read_and_clear(data, CRYSTALCOVE_RESETSRC0_REG, &data->resetsrc0);
 	if (ret)
 		return ret;

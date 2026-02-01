@@ -1,28 +1,4 @@
-/*
- * Copyright © 2006-2007 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- */
+ 
 
 #include <linux/dmi.h>
 #include <linux/i2c.h>
@@ -53,7 +29,7 @@
 #include "intel_pch_display.h"
 #include "intel_pch_refclk.h"
 
-/* Here's the desired hotplug mode */
+ 
 #define ADPA_HOTPLUG_BITS (ADPA_CRT_HOTPLUG_PERIOD_128 |		\
 			   ADPA_CRT_HOTPLUG_WARMUP_10MS |		\
 			   ADPA_CRT_HOTPLUG_SAMPLE_4S |			\
@@ -63,8 +39,7 @@
 
 struct intel_crt {
 	struct intel_encoder base;
-	/* DPMS state is stored in the connector, which we need in the
-	 * encoder's enable/disable callbacks */
+	 
 	struct intel_connector *connector;
 	bool force_hotplug_required;
 	i915_reg_t adpa_reg;
@@ -87,7 +62,7 @@ bool intel_crt_port_enabled(struct drm_i915_private *dev_priv,
 
 	val = intel_de_read(dev_priv, adpa_reg);
 
-	/* asserts want to know the pipe even if the port is disabled */
+	 
 	if (HAS_PCH_CPT(dev_priv))
 		*pipe = (val & ADPA_PIPE_SEL_MASK_CPT) >> ADPA_PIPE_SEL_SHIFT_CPT;
 	else
@@ -161,8 +136,7 @@ static void hsw_crt_get_config(struct intel_encoder *encoder,
 	pipe_config->hw.adjusted_mode.flags |= intel_crt_get_flags(encoder);
 }
 
-/* Note: The caller is required to filter out dpms modes not supported by the
- * platform. */
+ 
 static void intel_crt_set_dpms(struct intel_encoder *encoder,
 			       const struct intel_crtc_state *crtc_state,
 			       int mode)
@@ -183,9 +157,9 @@ static void intel_crt_set_dpms(struct intel_encoder *encoder,
 	if (adjusted_mode->flags & DRM_MODE_FLAG_PVSYNC)
 		adpa |= ADPA_VSYNC_ACTIVE_HIGH;
 
-	/* For CPT allow 3 pipe config, for others just use A or B */
+	 
 	if (HAS_PCH_LPT(dev_priv))
-		; /* Those bits don't exist here */
+		;  
 	else if (HAS_PCH_CPT(dev_priv))
 		adpa |= ADPA_PIPE_SEL_CPT(crtc->pipe);
 	else
@@ -364,10 +338,7 @@ intel_crt_mode_valid(struct drm_connector *connector,
 	if (HAS_PCH_LPT(dev_priv))
 		max_clock = 180000;
 	else if (IS_VALLEYVIEW(dev_priv))
-		/*
-		 * 270 MHz due to current DPLL limits,
-		 * DAC limit supposedly 355 MHz.
-		 */
+		 
 		max_clock = 270000;
 	else if (IS_DISPLAY_VER(dev_priv, 3, 4))
 		max_clock = 400000;
@@ -379,12 +350,12 @@ intel_crt_mode_valid(struct drm_connector *connector,
 	if (mode->clock > max_dotclk)
 		return MODE_CLOCK_HIGH;
 
-	/* The FDI receiver on LPT only supports 8bpc and only has 2 lanes. */
+	 
 	if (HAS_PCH_LPT(dev_priv) &&
 	    ilk_get_lanes_required(mode->clock, 270000, 24) > 2)
 		return MODE_CLOCK_HIGH;
 
-	/* HSW/BDW FDI limited to 4k */
+	 
 	if (mode->hdisplay > 4096)
 		return MODE_H_ILLEGAL;
 
@@ -434,7 +405,7 @@ static int hsw_crt_compute_config(struct intel_encoder *encoder,
 	if (adjusted_mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return -EINVAL;
 
-	/* HSW/BDW FDI limited to 4k */
+	 
 	if (adjusted_mode->crtc_hdisplay > 4096 ||
 	    adjusted_mode->crtc_hblank_start > 4096)
 		return -EINVAL;
@@ -442,7 +413,7 @@ static int hsw_crt_compute_config(struct intel_encoder *encoder,
 	pipe_config->has_pch_encoder = true;
 	pipe_config->output_format = INTEL_OUTPUT_FORMAT_RGB;
 
-	/* LPT FDI RX only supports 8bpc. */
+	 
 	if (HAS_PCH_LPT(dev_priv)) {
 		if (pipe_config->bw_constrained && pipe_config->pipe_bpp < 24) {
 			drm_dbg_kms(&dev_priv->drm,
@@ -453,7 +424,7 @@ static int hsw_crt_compute_config(struct intel_encoder *encoder,
 		pipe_config->pipe_bpp = 24;
 	}
 
-	/* FDI must always be 2.7 GHz */
+	 
 	pipe_config->port_clock = 135000 * 2;
 
 	pipe_config->enhanced_framing = true;
@@ -471,7 +442,7 @@ static bool ilk_crt_detect_hotplug(struct drm_connector *connector)
 	u32 adpa;
 	bool ret;
 
-	/* The first time through, trigger an explicit detection cycle */
+	 
 	if (crt->force_hotplug_required) {
 		bool turn_off_dac = HAS_PCH_SPLIT(dev_priv);
 		u32 save_adpa;
@@ -501,7 +472,7 @@ static bool ilk_crt_detect_hotplug(struct drm_connector *connector)
 		}
 	}
 
-	/* Check the status to see if both blue and green are on now */
+	 
 	adpa = intel_de_read(dev_priv, crt->adpa_reg);
 	if ((adpa & ADPA_CRT_HOTPLUG_MONITOR_MASK) != 0)
 		ret = true;
@@ -523,18 +494,7 @@ static bool valleyview_crt_detect_hotplug(struct drm_connector *connector)
 	bool ret;
 	u32 save_adpa;
 
-	/*
-	 * Doing a force trigger causes a hpd interrupt to get sent, which can
-	 * get us stuck in a loop if we're polling:
-	 *  - We enable power wells and reset the ADPA
-	 *  - output_poll_exec does force probe on VGA, triggering a hpd
-	 *  - HPD handler waits for poll to unlock dev->mode_config.mutex
-	 *  - output_poll_exec shuts off the ADPA, unlocks
-	 *    dev->mode_config.mutex
-	 *  - HPD handler runs, resets ADPA and brings us back to the start
-	 *
-	 * Just disable HPD interrupts here to prevent this
-	 */
+	 
 	reenable_hpd = intel_hpd_disable(dev_priv, crt->base.hpd_pin);
 
 	save_adpa = adpa = intel_de_read(dev_priv, crt->adpa_reg);
@@ -552,7 +512,7 @@ static bool valleyview_crt_detect_hotplug(struct drm_connector *connector)
 		intel_de_write(dev_priv, crt->adpa_reg, save_adpa);
 	}
 
-	/* Check the status to see if both blue and green are on now */
+	 
 	adpa = intel_de_read(dev_priv, crt->adpa_reg);
 	if ((adpa & ADPA_CRT_HOTPLUG_MONITOR_MASK) != 0)
 		ret = true;
@@ -582,10 +542,7 @@ static bool intel_crt_detect_hotplug(struct drm_connector *connector)
 	if (IS_VALLEYVIEW(dev_priv))
 		return valleyview_crt_detect_hotplug(connector);
 
-	/*
-	 * On 4 series desktop, CRT detect sequence need to be done twice
-	 * to get a reliable result.
-	 */
+	 
 
 	if (IS_G45(dev_priv))
 		tries = 2;
@@ -593,11 +550,11 @@ static bool intel_crt_detect_hotplug(struct drm_connector *connector)
 		tries = 1;
 
 	for (i = 0; i < tries ; i++) {
-		/* turn on the FORCE_DETECT */
+		 
 		i915_hotplug_interrupt_update(dev_priv,
 					      CRT_HOTPLUG_FORCE_DETECT,
 					      CRT_HOTPLUG_FORCE_DETECT);
-		/* wait for FORCE_DETECT to go off */
+		 
 		if (intel_de_wait_for_clear(dev_priv, PORT_HOTPLUG_EN,
 					    CRT_HOTPLUG_FORCE_DETECT, 1000))
 			drm_dbg_kms(&dev_priv->drm,
@@ -608,7 +565,7 @@ static bool intel_crt_detect_hotplug(struct drm_connector *connector)
 	if ((stat & CRT_HOTPLUG_MONITOR_MASK) != CRT_HOTPLUG_MONITOR_NONE)
 		ret = true;
 
-	/* clear the interrupt we just generated, if any */
+	 
 	intel_de_write(dev_priv, PORT_HOTPLUG_STAT, CRT_HOTPLUG_INT_STATUS);
 
 	i915_hotplug_interrupt_update(dev_priv, CRT_HOTPLUG_FORCE_DETECT, 0);
@@ -634,7 +591,7 @@ static const struct drm_edid *intel_crt_get_edid(struct drm_connector *connector
 	return drm_edid;
 }
 
-/* local version of intel_ddc_get_modes() to use intel_crt_get_edid() */
+ 
 static int intel_crt_ddc_get_modes(struct drm_connector *connector,
 				struct i2c_adapter *adapter)
 {
@@ -667,11 +624,7 @@ static bool intel_crt_detect_ddc(struct drm_connector *connector)
 		const struct edid *edid = drm_edid_raw(drm_edid);
 		bool is_digital = edid->input & DRM_EDID_INPUT_DIGITAL;
 
-		/*
-		 * This may be a DVI-I connector with a shared DDC
-		 * link between analog and digital outputs, so we
-		 * have to check the EDID input spec of the attached device.
-		 */
+		 
 		if (!is_digital) {
 			drm_dbg_kms(&dev_priv->drm,
 				    "CRT detected via DDC:0x50 [EDID]\n");
@@ -717,7 +670,7 @@ intel_crt_load_detect(struct intel_crt *crt, enum pipe pipe)
 	vblank_start = REG_FIELD_GET(VBLANK_START_MASK, vblank) + 1;
 	vblank_end = REG_FIELD_GET(VBLANK_END_MASK, vblank) + 1;
 
-	/* Set the border color to purple. */
+	 
 	intel_de_write(dev_priv, BCLRPAT(cpu_transcoder), 0x500050);
 
 	if (DISPLAY_VER(dev_priv) != 2) {
@@ -726,8 +679,7 @@ intel_crt_load_detect(struct intel_crt *crt, enum pipe pipe)
 		intel_de_write(dev_priv, TRANSCONF(cpu_transcoder),
 			       transconf | TRANSCONF_FORCE_BORDER);
 		intel_de_posting_read(dev_priv, TRANSCONF(cpu_transcoder));
-		/* Wait for next Vblank to substitue
-		 * border color for Color info */
+		 
 		intel_crtc_wait_for_next_vblank(intel_crtc_for_pipe(dev_priv, pipe));
 		st00 = intel_de_read8(dev_priv, _VGA_MSR_WRITE);
 		status = ((st00 & (1 << 4)) != 0) ?
@@ -739,10 +691,7 @@ intel_crt_load_detect(struct intel_crt *crt, enum pipe pipe)
 		bool restore_vblank = false;
 		int count, detect;
 
-		/*
-		* If there isn't any border, add some.
-		* Yes, this will flicker
-		*/
+		 
 		if (vblank_start <= vactive && vblank_end >= vtotal) {
 			u32 vsync = intel_de_read(dev_priv, TRANS_VSYNC(cpu_transcoder));
 			u32 vsync_start = REG_FIELD_GET(VSYNC_START_MASK, vsync) + 1;
@@ -753,47 +702,38 @@ intel_crt_load_detect(struct intel_crt *crt, enum pipe pipe)
 				       VBLANK_END(vblank_end - 1));
 			restore_vblank = true;
 		}
-		/* sample in the vertical border, selecting the larger one */
+		 
 		if (vblank_start - vactive >= vtotal - vblank_end)
 			vsample = (vblank_start + vactive) >> 1;
 		else
 			vsample = (vtotal + vblank_end) >> 1;
 
-		/*
-		 * Wait for the border to be displayed
-		 */
+		 
 		while (intel_de_read(dev_priv, PIPEDSL(pipe)) >= vactive)
 			;
 		while ((dsl = intel_de_read(dev_priv, PIPEDSL(pipe))) <= vsample)
 			;
-		/*
-		 * Watch ST00 for an entire scanline
-		 */
+		 
 		detect = 0;
 		count = 0;
 		do {
 			count++;
-			/* Read the ST00 VGA status register */
+			 
 			st00 = intel_de_read8(dev_priv, _VGA_MSR_WRITE);
 			if (st00 & (1 << 4))
 				detect++;
 		} while ((intel_de_read(dev_priv, PIPEDSL(pipe)) == dsl));
 
-		/* restore vblank if necessary */
+		 
 		if (restore_vblank)
 			intel_de_write(dev_priv, TRANS_VBLANK(cpu_transcoder), vblank);
-		/*
-		 * If more than 3/4 of the scanline detected a monitor,
-		 * then it is assumed to be present. This works even on i830,
-		 * where there isn't any way to force the border color across
-		 * the screen
-		 */
+		 
 		status = detect * 4 > count * 3 ?
 			 connector_status_connected :
 			 connector_status_disconnected;
 	}
 
-	/* Restore previous settings */
+	 
 	intel_de_write(dev_priv, BCLRPAT(cpu_transcoder), save_bclrpat);
 
 	return status;
@@ -850,7 +790,7 @@ intel_crt_detect(struct drm_connector *connector,
 		goto load_detect;
 	}
 
-	/* Skip machines without VGA that falsely report hotplug events */
+	 
 	if (dmi_check_system(intel_spurious_crt_detect))
 		return connector_status_disconnected;
 
@@ -858,10 +798,7 @@ intel_crt_detect(struct drm_connector *connector,
 					  intel_encoder->power_domain);
 
 	if (I915_HAS_HOTPLUG(dev_priv)) {
-		/* We can not rely on the HPD pin always being correctly wired
-		 * up, for example many KVM do not pass it through, and so
-		 * only trust an assertion that the monitor is connected.
-		 */
+		 
 		if (intel_crt_detect_hotplug(connector)) {
 			drm_dbg_kms(&dev_priv->drm,
 				    "CRT detected via hotplug\n");
@@ -877,10 +814,7 @@ intel_crt_detect(struct drm_connector *connector,
 		goto out;
 	}
 
-	/* Load detection is broken on HPD capable machines. Whoever wants a
-	 * broken monitor (without edid) to work behind a broken kvm (that fails
-	 * to have the right resistors for HP detection) needs to fix this up.
-	 * For now just bail out. */
+	 
 	if (I915_HAS_HOTPLUG(dev_priv)) {
 		status = connector_status_disconnected;
 		goto out;
@@ -892,7 +826,7 @@ load_detect:
 		goto out;
 	}
 
-	/* for pre-945g platforms use load detect */
+	 
 	state = intel_load_detect_get_pipe(connector, ctx);
 	if (IS_ERR(state)) {
 		status = PTR_ERR(state);
@@ -914,10 +848,7 @@ load_detect:
 out:
 	intel_display_power_put(dev_priv, intel_encoder->power_domain, wakeref);
 
-	/*
-	 * Make sure the refs for power wells enabled during detect are
-	 * dropped to avoid a new detect cycle triggered by HPD polling.
-	 */
+	 
 	intel_display_power_flush_work(dev_priv);
 
 	return status;
@@ -941,7 +872,7 @@ static int intel_crt_get_modes(struct drm_connector *connector)
 	if (ret || !IS_G4X(dev_priv))
 		goto out;
 
-	/* Try to probe digital port for output in DVI-I -> VGA mode. */
+	 
 	i2c = intel_gmbus_get_adapter(dev_priv, GMBUS_PIN_DPB);
 	ret = intel_crt_ddc_get_modes(connector, i2c);
 
@@ -971,9 +902,7 @@ void intel_crt_reset(struct drm_encoder *encoder)
 
 }
 
-/*
- * Routines for controlling stuff on the analog port
- */
+ 
 
 static const struct drm_connector_funcs intel_crt_connector_funcs = {
 	.fill_modes = drm_helper_probe_single_connector_modes,
@@ -1012,14 +941,7 @@ void intel_crt_init(struct drm_i915_private *dev_priv)
 
 	adpa = intel_de_read(dev_priv, adpa_reg);
 	if ((adpa & ADPA_DAC_ENABLE) == 0) {
-		/*
-		 * On some machines (some IVB at least) CRT can be
-		 * fused off, but there's no known fuse bit to
-		 * indicate that. On these machine the ADPA register
-		 * works normally, except the DAC enable bit won't
-		 * take. So the only way to tell is attempt to enable
-		 * it and see what happens.
-		 */
+		 
 		intel_de_write(dev_priv, adpa_reg,
 			       adpa | ADPA_DAC_ENABLE | ADPA_HSYNC_CNTL_DISABLE | ADPA_VSYNC_CNTL_DISABLE);
 		if ((intel_de_read(dev_priv, adpa_reg) & ADPA_DAC_ENABLE) == 0)
@@ -1105,11 +1027,7 @@ void intel_crt_init(struct drm_i915_private *dev_priv)
 
 	drm_connector_helper_add(connector, &intel_crt_connector_helper_funcs);
 
-	/*
-	 * TODO: find a proper way to discover whether we need to set the the
-	 * polarity and link reversal bits or not, instead of relying on the
-	 * BIOS.
-	 */
+	 
 	if (HAS_PCH_LPT(dev_priv)) {
 		u32 fdi_config = FDI_RX_POLARITY_REVERSED_LPT |
 				 FDI_RX_LINK_REVERSAL_OVERRIDE;

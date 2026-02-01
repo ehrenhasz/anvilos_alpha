@@ -1,24 +1,4 @@
-/*
- * Copyright 2011 Red Hat, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * on the rights to use, copy, modify, merge, publish, distribute, sub
- * license, and/or sell copies of the Software, and to permit persons to whom
- * the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/delay.h>
 
@@ -27,17 +7,12 @@
 #include "qxl_drv.h"
 #include "qxl_object.h"
 
-/*
- * drawable cmd cache - allocate a bunch of VRAM pages, suballocate
- * into 256 byte chunks for now - gives 16 cmds per page.
- *
- * use an ida to index into the chunks?
- */
-/* manage releaseables */
-/* stack them 16 high for now -drawable object is 191 */
+ 
+ 
+ 
 #define RELEASE_SIZE 256
 #define RELEASES_PER_BO (PAGE_SIZE / RELEASE_SIZE)
-/* put an alloc/dealloc surface cmd into one bo and round up to 128 */
+ 
 #define SURFACE_RELEASE_SIZE 128
 #define SURFACE_RELEASES_PER_BO (PAGE_SIZE / SURFACE_RELEASE_SIZE)
 
@@ -163,7 +138,7 @@ static int qxl_release_bo_alloc(struct qxl_device *qdev,
 				struct qxl_bo **bo,
 				u32 priority)
 {
-	/* pin releases bo's they are too messy to evict */
+	 
 	return qxl_bo_create(qdev, PAGE_SIZE, false, true,
 			     QXL_GEM_DOMAIN_VRAM, priority, NULL, bo);
 }
@@ -204,7 +179,7 @@ static int qxl_release_validate_bo(struct qxl_bo *bo)
 	if (ret)
 		return ret;
 
-	/* allocate a surface for reserved + validated buffers */
+	 
 	ret = qxl_bo_check_id(to_qxl(bo->tbo.base.dev), bo);
 	if (ret)
 		return ret;
@@ -216,8 +191,7 @@ int qxl_release_reserve_list(struct qxl_release *release, bool no_intr)
 	int ret;
 	struct qxl_bo_list *entry;
 
-	/* if only one object on the release its the release itself
-	   since these objects are pinned no need to reserve */
+	 
 	if (list_is_singular(&release->bos))
 		return 0;
 
@@ -240,8 +214,7 @@ int qxl_release_reserve_list(struct qxl_release *release, bool no_intr)
 
 void qxl_release_backoff_reserve_list(struct qxl_release *release)
 {
-	/* if only one object on the release its the release itself
-	   since these objects are pinned no need to reserve */
+	 
 	if (list_is_singular(&release->bos))
 		return;
 
@@ -258,7 +231,7 @@ int qxl_alloc_surface_release_reserved(struct qxl_device *qdev,
 		struct qxl_bo *bo;
 		union qxl_release_info *info;
 
-		/* stash the release after the create command */
+		 
 		idr_ret = qxl_release_alloc(qdev, QXL_RELEASE_SURFACE_CMD, release);
 		if (idr_ret < 0)
 			return idr_ret;
@@ -409,8 +382,7 @@ void qxl_release_fence_buffer_objects(struct qxl_release *release)
 	struct ttm_validate_buffer *entry;
 	struct qxl_device *qdev;
 
-	/* if only one object on the release its the release itself
-	   since these objects are pinned no need to reserve */
+	 
 	if (list_is_singular(&release->bos) || list_empty(&release->bos))
 		return;
 
@@ -418,10 +390,7 @@ void qxl_release_fence_buffer_objects(struct qxl_release *release)
 	bdev = bo->bdev;
 	qdev = container_of(bdev, struct qxl_device, mman.bdev);
 
-	/*
-	 * Since we never really allocated a context and we don't want to conflict,
-	 * set the highest bits. This will break if we really allow exporting of dma-bufs.
-	 */
+	 
 	dma_fence_init(&release->base, &qxl_fence_ops, &qdev->release_lock,
 		       release->id | 0xf0000000, release->base.seqno);
 	trace_dma_fence_emit(&release->base);

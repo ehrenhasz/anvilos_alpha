@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012 Linutronix GmbH
- * Copyright (c) 2014 sigma star gmbh
- * Author: Richard Weinberger <richard@nod.at>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/bitmap.h>
 #include "ubi.h"
 
-/**
- * init_seen - allocate memory for used for debugging.
- * @ubi: UBI device description object
- */
+ 
 static inline unsigned long *init_seen(struct ubi_device *ubi)
 {
 	unsigned long *ret;
@@ -27,21 +20,13 @@ static inline unsigned long *init_seen(struct ubi_device *ubi)
 	return ret;
 }
 
-/**
- * free_seen - free the seen logic integer array.
- * @seen: integer array of @ubi->peb_count size
- */
+ 
 static inline void free_seen(unsigned long *seen)
 {
 	bitmap_free(seen);
 }
 
-/**
- * set_seen - mark a PEB as seen.
- * @ubi: UBI device description object
- * @pnum: The PEB to be makred as seen
- * @seen: integer array of @ubi->peb_count size
- */
+ 
 static inline void set_seen(struct ubi_device *ubi, int pnum, unsigned long *seen)
 {
 	if (!ubi_dbg_chk_fastmap(ubi) || !seen)
@@ -50,11 +35,7 @@ static inline void set_seen(struct ubi_device *ubi, int pnum, unsigned long *see
 	set_bit(pnum, seen);
 }
 
-/**
- * self_check_seen - check whether all PEB have been seen by fastmap.
- * @ubi: UBI device description object
- * @seen: integer array of @ubi->peb_count size
- */
+ 
 static int self_check_seen(struct ubi_device *ubi, unsigned long *seen)
 {
 	int pnum, ret = 0;
@@ -72,10 +53,7 @@ static int self_check_seen(struct ubi_device *ubi, unsigned long *seen)
 	return ret;
 }
 
-/**
- * ubi_calc_fm_size - calculates the fastmap size in bytes for an UBI device.
- * @ubi: UBI device description object
- */
+ 
 size_t ubi_calc_fm_size(struct ubi_device *ubi)
 {
 	size_t size;
@@ -92,14 +70,7 @@ size_t ubi_calc_fm_size(struct ubi_device *ubi)
 }
 
 
-/**
- * new_fm_vbuf() - allocate a new volume header for fastmap usage.
- * @ubi: UBI device description object
- * @vol_id: the VID of the new header
- *
- * Returns a new struct ubi_vid_hdr on success.
- * NULL indicates out of memory.
- */
+ 
 static struct ubi_vid_io_buf *new_fm_vbuf(struct ubi_device *ubi, int vol_id)
 {
 	struct ubi_vid_io_buf *new;
@@ -113,25 +84,14 @@ static struct ubi_vid_io_buf *new_fm_vbuf(struct ubi_device *ubi, int vol_id)
 	vh->vol_type = UBI_VID_DYNAMIC;
 	vh->vol_id = cpu_to_be32(vol_id);
 
-	/* UBI implementations without fastmap support have to delete the
-	 * fastmap.
-	 */
+	 
 	vh->compat = UBI_COMPAT_DELETE;
 
 out:
 	return new;
 }
 
-/**
- * add_aeb - create and add a attach erase block to a given list.
- * @ai: UBI attach info object
- * @list: the target list
- * @pnum: PEB number of the new attach erase block
- * @ec: erease counter of the new LEB
- * @scrub: scrub this PEB after attaching
- *
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 static int add_aeb(struct ubi_attach_info *ai, struct list_head *list,
 		   int pnum, int ec, int scrub)
 {
@@ -159,18 +119,7 @@ static int add_aeb(struct ubi_attach_info *ai, struct list_head *list,
 	return 0;
 }
 
-/**
- * add_vol - create and add a new volume to ubi_attach_info.
- * @ai: ubi_attach_info object
- * @vol_id: VID of the new volume
- * @used_ebs: number of used EBS
- * @data_pad: data padding value of the new volume
- * @vol_type: volume type
- * @last_eb_bytes: number of bytes in the last LEB
- *
- * Returns the new struct ubi_ainf_volume on success.
- * NULL indicates an error.
- */
+ 
 static struct ubi_ainf_volume *add_vol(struct ubi_attach_info *ai, int vol_id,
 				       int used_ebs, int data_pad, u8 vol_type,
 				       int last_eb_bytes)
@@ -192,13 +141,7 @@ static struct ubi_ainf_volume *add_vol(struct ubi_attach_info *ai, int vol_id,
 	return av;
 }
 
-/**
- * assign_aeb_to_av - assigns a SEB to a given ainf_volume and removes it
- * from it's original list.
- * @ai: ubi_attach_info object
- * @aeb: the to be assigned SEB
- * @av: target scan volume
- */
+ 
 static void assign_aeb_to_av(struct ubi_attach_info *ai,
 			     struct ubi_ainf_peb *aeb,
 			     struct ubi_ainf_volume *av)
@@ -228,16 +171,7 @@ static void assign_aeb_to_av(struct ubi_attach_info *ai,
 	rb_insert_color(&aeb->u.rb, &av->root);
 }
 
-/**
- * update_vol - inserts or updates a LEB which was found a pool.
- * @ubi: the UBI device object
- * @ai: attach info object
- * @av: the volume this LEB belongs to
- * @new_vh: the volume header derived from new_aeb
- * @new_aeb: the AEB to be examined
- *
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		      struct ubi_ainf_volume *av, struct ubi_vid_hdr *new_vh,
 		      struct ubi_ainf_peb *new_aeb)
@@ -259,10 +193,7 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			continue;
 		}
 
-		/* This case can happen if the fastmap gets written
-		 * because of a volume change (creation, deletion, ..).
-		 * Then a PEB can be within the persistent EBA and the pool.
-		 */
+		 
 		if (aeb->pnum == new_aeb->pnum) {
 			ubi_assert(aeb->lnum == new_aeb->lnum);
 			ubi_free_aeb(ai, new_aeb);
@@ -274,7 +205,7 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		if (cmp_res < 0)
 			return cmp_res;
 
-		/* new_aeb is newer */
+		 
 		if (cmp_res & 1) {
 			victim = ubi_alloc_aeb(ai, aeb->pnum, aeb->ec);
 			if (!victim)
@@ -296,7 +227,7 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			aeb->sqnum = new_aeb->sqnum;
 			ubi_free_aeb(ai, new_aeb);
 
-		/* new_aeb is older */
+		 
 		} else {
 			dbg_bld("vol %i: AEB %i's PEB %i is old, dropping it",
 				av->vol_id, aeb->lnum, new_aeb->pnum);
@@ -305,7 +236,7 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 
 		return 0;
 	}
-	/* This LEB is new, let's add it to the volume */
+	 
 
 	if (av->highest_lnum <= be32_to_cpu(new_vh->lnum)) {
 		av->highest_lnum = be32_to_cpu(new_vh->lnum);
@@ -323,15 +254,7 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 	return 0;
 }
 
-/**
- * process_pool_aeb - we found a non-empty PEB in a pool.
- * @ubi: UBI device object
- * @ai: attach info object
- * @new_vh: the volume header derived from new_aeb
- * @new_aeb: the AEB to be examined
- *
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 static int process_pool_aeb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			    struct ubi_vid_hdr *new_vh,
 			    struct ubi_ainf_peb *new_aeb)
@@ -345,7 +268,7 @@ static int process_pool_aeb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		return 0;
 	}
 
-	/* Find the volume this SEB belongs to */
+	 
 	av = ubi_find_av(ai, vol_id);
 	if (!av) {
 		ubi_err(ubi, "orphaned volume in fastmap pool!");
@@ -358,14 +281,7 @@ static int process_pool_aeb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 	return update_vol(ubi, ai, av, new_vh, new_aeb);
 }
 
-/**
- * unmap_peb - unmap a PEB.
- * If fastmap detects a free PEB in the pool it has to check whether
- * this PEB has been unmapped after writing the fastmap.
- *
- * @ai: UBI attach info object
- * @pnum: The PEB to be unmapped
- */
+ 
 static void unmap_peb(struct ubi_attach_info *ai, int pnum)
 {
 	struct ubi_ainf_volume *av;
@@ -384,18 +300,7 @@ static void unmap_peb(struct ubi_attach_info *ai, int pnum)
 	}
 }
 
-/**
- * scan_pool - scans a pool for changed (no longer empty PEBs).
- * @ubi: UBI device object
- * @ai: attach info object
- * @pebs: an array of all PEB numbers in the to be scanned pool
- * @pool_size: size of the pool (number of entries in @pebs)
- * @max_sqnum: pointer to the maximal sequence number
- * @free: list of PEBs which are most likely free (and go into @ai->free)
- *
- * Returns 0 on success, if the pool is unusable UBI_BAD_FASTMAP is returned.
- * < 0 indicates an internal error.
- */
+ 
 static int scan_pool(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		     __be32 *pebs, int pool_size, unsigned long long *max_sqnum,
 		     struct list_head *free)
@@ -420,10 +325,7 @@ static int scan_pool(struct ubi_device *ubi, struct ubi_attach_info *ai,
 
 	dbg_bld("scanning fastmap pool: size = %i", pool_size);
 
-	/*
-	 * Now scan all PEBs in the pool to find changes which have been made
-	 * after the creation of the fastmap
-	 */
+	 
 	for (i = 0; i < pool_size; i++) {
 		int scrub = 0;
 		int image_seq;
@@ -445,10 +347,7 @@ static int scan_pool(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		} else if (err == UBI_IO_BITFLIPS)
 			scrub = 1;
 
-		/*
-		 * Older UBI implementations have image_seq set to zero, so
-		 * we shouldn't fail if image_seq == 0.
-		 */
+		 
 		image_seq = be32_to_cpu(ech->image_seq);
 
 		if (image_seq && (image_seq != ubi->image_seq)) {
@@ -497,7 +396,7 @@ static int scan_pool(struct ubi_device *ubi, struct ubi_attach_info *ai,
 				goto out;
 			}
 		} else {
-			/* We are paranoid and fall back to scanning mode */
+			 
 			ubi_err(ubi, "fastmap pool PEBs contains damaged PEBs!");
 			ret = err > 0 ? UBI_BAD_FASTMAP : err;
 			goto out;
@@ -511,10 +410,7 @@ out:
 	return ret;
 }
 
-/**
- * count_fastmap_pebs - Counts the PEBs found by fastmap.
- * @ai: The UBI attach info object
- */
+ 
 static int count_fastmap_pebs(struct ubi_attach_info *ai)
 {
 	struct ubi_ainf_peb *aeb;
@@ -535,15 +431,7 @@ static int count_fastmap_pebs(struct ubi_attach_info *ai)
 	return n;
 }
 
-/**
- * ubi_attach_fastmap - creates ubi_attach_info from a fastmap.
- * @ubi: UBI device object
- * @ai: UBI attach info object
- * @fm: the fastmap to be attached
- *
- * Returns 0 on success, UBI_BAD_FASTMAP if the found fastmap was unusable.
- * < 0 indicates an internal error.
- */
+ 
 static int ubi_attach_fastmap(struct ubi_device *ubi,
 			      struct ubi_attach_info *ai,
 			      struct ubi_fastmap_layout *fm)
@@ -632,7 +520,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 		goto fail_bad;
 	}
 
-	/* read EC values from free list */
+	 
 	for (i = 0; i < be32_to_cpu(fmhdr->free_peb_count); i++) {
 		fmec = (struct ubi_fm_ec *)(fm_raw + fm_pos);
 		fm_pos += sizeof(*fmec);
@@ -645,7 +533,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 			goto fail;
 	}
 
-	/* read EC values from used list */
+	 
 	for (i = 0; i < be32_to_cpu(fmhdr->used_peb_count); i++) {
 		fmec = (struct ubi_fm_ec *)(fm_raw + fm_pos);
 		fm_pos += sizeof(*fmec);
@@ -658,7 +546,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 			goto fail;
 	}
 
-	/* read EC values from scrub list */
+	 
 	for (i = 0; i < be32_to_cpu(fmhdr->scrub_peb_count); i++) {
 		fmec = (struct ubi_fm_ec *)(fm_raw + fm_pos);
 		fm_pos += sizeof(*fmec);
@@ -671,7 +559,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 			goto fail;
 	}
 
-	/* read EC values from erase list */
+	 
 	for (i = 0; i < be32_to_cpu(fmhdr->erase_peb_count); i++) {
 		fmec = (struct ubi_fm_ec *)(fm_raw + fm_pos);
 		fm_pos += sizeof(*fmec);
@@ -687,7 +575,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
 	ai->bad_peb_count = be32_to_cpu(fmhdr->bad_peb_count);
 
-	/* Iterate over all volumes and read their EBA table */
+	 
 	for (i = 0; i < be32_to_cpu(fmhdr->vol_count); i++) {
 		fmvhdr = (struct ubi_fm_volhdr *)(fm_raw + fm_pos);
 		fm_pos += sizeof(*fmvhdr);
@@ -780,12 +668,7 @@ static int ubi_attach_fastmap(struct ubi_device *ubi,
 
 	ubi_assert(list_empty(&free));
 
-	/*
-	 * If fastmap is leaking PEBs (must not happen), raise a
-	 * fat warning and fall back to scanning mode.
-	 * We do this here because in ubi_wl_init() it's too late
-	 * and we cannot fall back to scanning.
-	 */
+	 
 	if (WARN_ON(count_fastmap_pebs(ai) != ubi->peb_count -
 		    ai->bad_peb_count - fm->used_blocks))
 		goto fail_bad;
@@ -807,10 +690,7 @@ fail:
 	return ret;
 }
 
-/**
- * find_fm_anchor - find the most recent Fastmap superblock (anchor)
- * @ai: UBI attach info to be filled
- */
+ 
 static int find_fm_anchor(struct ubi_attach_info *ai)
 {
 	int ret = -1;
@@ -845,17 +725,7 @@ static struct ubi_ainf_peb *clone_aeb(struct ubi_attach_info *ai,
 	return new;
 }
 
-/**
- * ubi_scan_fastmap - scan the fastmap.
- * @ubi: UBI device object
- * @ai: UBI attach info to be filled
- * @scan_ai: UBI attach info from the first 64 PEBs,
- *           used to find the most recent Fastmap data structure
- *
- * Returns 0 on success, UBI_NO_FASTMAP if no fastmap was found,
- * UBI_BAD_FASTMAP if one was found but is not usable.
- * < 0 indicates an internal error.
- */
+ 
 int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		     struct ubi_attach_info *scan_ai)
 {
@@ -874,7 +744,7 @@ int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
 	if (fm_anchor < 0)
 		return UBI_NO_FASTMAP;
 
-	/* Copy all (possible) fastmap blocks into our new attach structure. */
+	 
 	list_for_each_entry(aeb, &scan_ai->fastmap, u.list) {
 		struct ubi_ainf_peb *new;
 
@@ -982,10 +852,7 @@ int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		if (!ubi->image_seq)
 			ubi->image_seq = image_seq;
 
-		/*
-		 * Older UBI implementations have image_seq set to zero, so
-		 * we shouldn't fail if image_seq == 0.
-		 */
+		 
 		if (image_seq && (image_seq != ubi->image_seq)) {
 			ubi_err(ubi, "wrong image seq:%d instead of %d",
 				be32_to_cpu(ech->image_seq), ubi->image_seq);
@@ -1119,13 +986,7 @@ void ubi_fastmap_destroy_checkmap(struct ubi_volume *vol)
 	bitmap_free(vol->checkmap);
 }
 
-/**
- * ubi_write_fastmap - writes a fastmap.
- * @ubi: UBI device object
- * @new_fm: the to be written fastmap
- *
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 static int ubi_write_fastmap(struct ubi_device *ubi,
 			     struct ubi_fastmap_layout *new_fm)
 {
@@ -1185,7 +1046,7 @@ static int ubi_write_fastmap(struct ubi_device *ubi,
 	fmsb->magic = cpu_to_be32(UBI_FM_SB_MAGIC);
 	fmsb->version = UBI_FM_FMT_VERSION;
 	fmsb->used_blocks = cpu_to_be32(new_fm->used_blocks);
-	/* the max sqnum will be filled in while *reading* the fastmap */
+	 
 	fmsb->sqnum = 0;
 
 	fmh->magic = cpu_to_be32(UBI_FM_HDR_MAGIC);
@@ -1389,13 +1250,7 @@ out:
 	return ret;
 }
 
-/**
- * erase_block - Manually erase a PEB.
- * @ubi: UBI device object
- * @pnum: PEB to be erased
- *
- * Returns the new EC value on success, < 0 indicates an internal error.
- */
+ 
 static int erase_block(struct ubi_device *ubi, int pnum)
 {
 	int ret;
@@ -1436,18 +1291,7 @@ out:
 	return ret;
 }
 
-/**
- * invalidate_fastmap - destroys a fastmap.
- * @ubi: UBI device object
- *
- * This function ensures that upon next UBI attach a full scan
- * is issued. We need this if UBI is about to write a new fastmap
- * but is unable to do so. In this case we have two options:
- * a) Make sure that the current fastmap will not be usued upon
- * attach time and contine or b) fall back to RO mode to have the
- * current fastmap in a valid state.
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 static int invalidate_fastmap(struct ubi_device *ubi)
 {
 	int ret;
@@ -1477,10 +1321,7 @@ static int invalidate_fastmap(struct ubi_device *ubi)
 	if (!e)
 		goto out_free_fm;
 
-	/*
-	 * Create fake fastmap such that UBI will fall back
-	 * to scanning mode.
-	 */
+	 
 	vh->sqnum = cpu_to_be64(ubi_next_sqnum(ubi));
 	ret = ubi_io_write_vid_hdr(ubi, e->pnum, vb);
 	if (ret < 0) {
@@ -1502,12 +1343,7 @@ out_free_fm:
 	goto out;
 }
 
-/**
- * return_fm_pebs - returns all PEBs used by a fastmap back to the
- * WL sub-system.
- * @ubi: UBI device object
- * @fm: fastmap layout object
- */
+ 
 static void return_fm_pebs(struct ubi_device *ubi,
 			   struct ubi_fastmap_layout *fm)
 {
@@ -1525,13 +1361,7 @@ static void return_fm_pebs(struct ubi_device *ubi,
 	}
 }
 
-/**
- * ubi_update_fastmap - will be called by UBI if a volume changes or
- * a fastmap pool becomes full.
- * @ubi: UBI device object
- *
- * Returns 0 on success, < 0 indicates an internal error.
- */
+ 
 int ubi_update_fastmap(struct ubi_device *ubi)
 {
 	int ret, i, j;
@@ -1611,7 +1441,7 @@ int ubi_update_fastmap(struct ubi_device *ubi)
 		}
 	}
 
-	/* Old fastmap is larger than the new one */
+	 
 	if (old_fm && new_fm->used_blocks < old_fm->used_blocks) {
 		for (i = new_fm->used_blocks; i < old_fm->used_blocks; i++) {
 			ubi_wl_put_fm_peb(ubi, old_fm->e[i], i,
@@ -1626,7 +1456,7 @@ int ubi_update_fastmap(struct ubi_device *ubi)
 	spin_unlock(&ubi->wl_lock);
 
 	if (old_fm) {
-		/* no fresh anchor PEB was found, reuse the old one */
+		 
 		if (!tmp_e) {
 			ret = erase_block(ubi, old_fm->e[0]->pnum);
 			if (ret < 0) {
@@ -1643,7 +1473,7 @@ int ubi_update_fastmap(struct ubi_device *ubi)
 			new_fm->e[0]->ec = ret;
 			old_fm->e[0] = NULL;
 		} else {
-			/* we've got a new anchor PEB, return the old one */
+			 
 			ubi_wl_put_fm_peb(ubi, old_fm->e[0], 0,
 					  old_fm->to_be_tortured[0]);
 			new_fm->e[0] = tmp_e;

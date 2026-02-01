@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2011 - 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * header file for Samsung EXYNOS5 SoC series G-Scaler driver
-
- */
+ 
+ 
 
 #ifndef GSC_CORE_H_
 #define GSC_CORE_H_
@@ -47,7 +41,7 @@
 #define	GSC_CTX_ABORT			(1 << 7)
 
 enum gsc_dev_flags {
-	/* for m2m node */
+	 
 	ST_M2M_OPEN,
 	ST_M2M_RUN,
 	ST_M2M_PEND,
@@ -60,12 +54,7 @@ enum gsc_irq {
 	GSC_IRQ_OVERRUN
 };
 
-/**
- * enum gsc_datapath - the path of data used for G-Scaler
- * @GSC_CAMERA: from camera
- * @GSC_DMA: from/to DMA
- * @GSC_WRITEBACK: from FIMD
- */
+ 
 enum gsc_datapath {
 	GSC_CAMERA = 0x1,
 	GSC_DMA,
@@ -97,18 +86,7 @@ enum gsc_yuv_fmt {
 
 #define ctrl_to_ctx(__ctrl) \
 	container_of((__ctrl)->handler, struct gsc_ctx, ctrl_handler)
-/**
- * struct gsc_fmt - the driver's internal color format data
- * @mbus_code: Media Bus pixel code, -1 if not applicable
- * @pixelformat: the fourcc code for this format, 0 if not applicable
- * @color: color encoding
- * @yorder: Y/C order
- * @corder: Chrominance order control
- * @num_planes: number of physically non-contiguous data planes
- * @num_comp: number of physically contiguous data planes
- * @depth: per plane driver's private 'number of bits per pixel'
- * @flags: flags indicating which operation mode format applies to
- */
+ 
 struct gsc_fmt {
 	u32 mbus_code;
 	u32	pixelformat;
@@ -121,36 +99,21 @@ struct gsc_fmt {
 	u32	flags;
 };
 
-/**
- * struct gsc_input_buf - the driver's video buffer
- * @vb:	videobuf2 buffer
- * @list : linked list structure for buffer queue
- * @idx : index of G-Scaler input buffer
- */
+ 
 struct gsc_input_buf {
 	struct vb2_v4l2_buffer vb;
 	struct list_head	list;
 	int			idx;
 };
 
-/**
- * struct gsc_addr - the G-Scaler physical address set
- * @y:	 luminance plane address
- * @cb:	 Cb plane address
- * @cr:	 Cr plane address
- */
+ 
 struct gsc_addr {
 	dma_addr_t y;
 	dma_addr_t cb;
 	dma_addr_t cr;
 };
 
-/* struct gsc_ctrls - the G-Scaler control set
- * @rotate: rotation degree
- * @hflip: horizontal flip
- * @vflip: vertical flip
- * @global_alpha: the alpha value of current frame
- */
+ 
 struct gsc_ctrls {
 	struct v4l2_ctrl *rotate;
 	struct v4l2_ctrl *hflip;
@@ -158,14 +121,7 @@ struct gsc_ctrls {
 	struct v4l2_ctrl *global_alpha;
 };
 
-/**
- * struct gsc_scaler - the configuration data for G-Scaler inetrnal scaler
- * @pre_shfactor:	pre sclaer shift factor
- * @pre_hratio:		horizontal ratio of the prescaler
- * @pre_vratio:		vertical ratio of the prescaler
- * @main_hratio:	the main scaler's horizontal ratio
- * @main_vratio:	the main scaler's vertical ratio
- */
+ 
 struct gsc_scaler {
 	u32 pre_shfactor;
 	u32 pre_hratio;
@@ -178,17 +134,7 @@ struct gsc_dev;
 
 struct gsc_ctx;
 
-/**
- * struct gsc_frame - source/target frame properties
- * @f_width:	SRC : SRCIMG_WIDTH, DST : OUTPUTDMA_WHOLE_IMG_WIDTH
- * @f_height:	SRC : SRCIMG_HEIGHT, DST : OUTPUTDMA_WHOLE_IMG_HEIGHT
- * @crop:	cropped(source)/scaled(destination) size
- * @payload:	image size in bytes (w x h x bpp)
- * @addr:	image frame buffer physical addresses
- * @fmt:	G-Scaler color format pointer
- * @colorspace: value indicating v4l2_colorspace
- * @alpha:	frame's alpha value
- */
+ 
 struct gsc_frame {
 	u32 f_width;
 	u32 f_height;
@@ -200,13 +146,7 @@ struct gsc_frame {
 	u8 alpha;
 };
 
-/**
- * struct gsc_m2m_device - v4l2 memory-to-memory device data
- * @vfd: the video device node for v4l2 m2m mode
- * @m2m_dev: v4l2 memory-to-memory device data
- * @ctx: hardware context data
- * @refcnt: the reference counter
- */
+ 
 struct gsc_m2m_device {
 	struct video_device	*vfd;
 	struct v4l2_m2m_dev	*m2m_dev;
@@ -214,22 +154,7 @@ struct gsc_m2m_device {
 	int			refcnt;
 };
 
-/**
- *  struct gsc_pix_max - image pixel size limits in various IP configurations
- *
- *  @org_scaler_bypass_w: max pixel width when the scaler is disabled
- *  @org_scaler_bypass_h: max pixel height when the scaler is disabled
- *  @org_scaler_input_w: max pixel width when the scaler is enabled
- *  @org_scaler_input_h: max pixel height when the scaler is enabled
- *  @real_rot_dis_w: max pixel src cropped height with the rotator is off
- *  @real_rot_dis_h: max pixel src cropped width with the rotator is off
- *  @real_rot_en_w: max pixel src cropped width with the rotator is on
- *  @real_rot_en_h: max pixel src cropped height with the rotator is on
- *  @target_rot_dis_w: max pixel dst scaled width with the rotator is off
- *  @target_rot_dis_h: max pixel dst scaled height with the rotator is off
- *  @target_rot_en_w: max pixel dst scaled width with the rotator is on
- *  @target_rot_en_h: max pixel dst scaled height with the rotator is on
- */
+ 
 struct gsc_pix_max {
 	u16 org_scaler_bypass_w;
 	u16 org_scaler_bypass_h;
@@ -245,18 +170,7 @@ struct gsc_pix_max {
 	u16 target_rot_en_h;
 };
 
-/**
- *  struct gsc_pix_min - image pixel size limits in various IP configurations
- *
- *  @org_w: minimum source pixel width
- *  @org_h: minimum source pixel height
- *  @real_w: minimum input crop pixel width
- *  @real_h: minimum input crop pixel height
- *  @target_rot_dis_w: minimum output scaled pixel height when rotator is off
- *  @target_rot_dis_h: minimum output scaled pixel height when rotator is off
- *  @target_rot_en_w: minimum output scaled pixel height when rotator is on
- *  @target_rot_en_h: minimum output scaled pixel height when rotator is on
- */
+ 
 struct gsc_pix_min {
 	u16 org_w;
 	u16 org_h;
@@ -278,9 +192,7 @@ struct gsc_pix_align {
 	u16 target_h;
 };
 
-/*
- * struct gsc_variant - G-Scaler variant information
- */
+ 
 struct gsc_variant {
 	struct gsc_pix_max *pix_max;
 	struct gsc_pix_min *pix_min;
@@ -294,15 +206,7 @@ struct gsc_variant {
 	u16		local_sc_down;
 };
 
-/**
- * struct gsc_driverdata - per device type driver data for init time.
- *
- * @variant: the variant information for this driver.
- * @num_entities: the number of g-scalers
- * @clk_names: clock names
- * @num_clocks: the number of clocks in @clk_names
- * @num_entities: the number of g-scalers
- */
+ 
 struct gsc_driverdata {
 	struct gsc_variant *variant[GSC_MAX_DEVS];
 	const char	*clk_names[GSC_MAX_CLOCKS];
@@ -310,22 +214,7 @@ struct gsc_driverdata {
 	int		num_entities;
 };
 
-/**
- * struct gsc_dev - abstraction for G-Scaler entity
- * @slock:	the spinlock protecting this data structure
- * @lock:	the mutex protecting this data structure
- * @pdev:	pointer to the G-Scaler platform device
- * @variant:	the IP variant information
- * @id:		G-Scaler device index (0..GSC_MAX_DEVS)
- * @num_clocks:	number of clocks required for G-Scaler operation
- * @clock:	clocks required for G-Scaler operation
- * @regs:	the mapped hardware registers
- * @irq_queue:	interrupt handler waitqueue
- * @m2m:	memory-to-memory V4L2 device information
- * @state:	flags used to synchronize m2m and capture mode operation
- * @vdev:	video device for G-Scaler instance
- * @v4l2_dev:	v4l2_device for G-Scaler instance
- */
+ 
 struct gsc_dev {
 	spinlock_t			slock;
 	struct mutex			lock;
@@ -342,26 +231,7 @@ struct gsc_dev {
 	struct v4l2_device		v4l2_dev;
 };
 
-/**
- * struct gsc_ctx - the device context data
- * @s_frame:		source frame properties
- * @d_frame:		destination frame properties
- * @in_path:		input mode (DMA or camera)
- * @out_path:		output mode (DMA or FIFO)
- * @scaler:		image scaler properties
- * @flags:		additional flags for image conversion
- * @state:		flags to keep track of user configuration
- * @rotation:		rotation
- * @hflip:		horizontal flip
- * @vflip:		vertical flip
- * @gsc_dev:		the G-Scaler device this context applies to
- * @m2m_ctx:		memory-to-memory device context
- * @fh:                 v4l2 file handle
- * @ctrl_handler:       v4l2 controls handler
- * @gsc_ctrls:		G-Scaler control set
- * @ctrls_rdy:          true if the control handler is initialized
- * @out_colorspace:     the colorspace of the OUTPUT queue
- */
+ 
 struct gsc_ctx {
 	struct gsc_frame	s_frame;
 	struct gsc_frame	d_frame;
@@ -518,4 +388,4 @@ void gsc_hw_set_rotation(struct gsc_ctx *ctx);
 void gsc_hw_set_global_alpha(struct gsc_ctx *ctx);
 void gsc_hw_set_sfr_update(struct gsc_ctx *ctx);
 
-#endif /* GSC_CORE_H_ */
+#endif  

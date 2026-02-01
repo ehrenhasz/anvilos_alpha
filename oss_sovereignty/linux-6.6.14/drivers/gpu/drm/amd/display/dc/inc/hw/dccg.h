@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_DCCG_H__
 #define __DAL_DCCG_H__
@@ -40,15 +17,15 @@ enum phyd32clk_clock_source {
 };
 
 enum physymclk_clock_source {
-	PHYSYMCLK_FORCE_SRC_SYMCLK,    // Select symclk as source of clock which is output to PHY through DCIO.
-	PHYSYMCLK_FORCE_SRC_PHYD18CLK, // Select phyd18clk as the source of clock which is output to PHY through DCIO.
-	PHYSYMCLK_FORCE_SRC_PHYD32CLK, // Select phyd32clk as the source of clock which is output to PHY through DCIO.
+	PHYSYMCLK_FORCE_SRC_SYMCLK,    
+	PHYSYMCLK_FORCE_SRC_PHYD18CLK, 
+	PHYSYMCLK_FORCE_SRC_PHYD32CLK, 
 };
 
 enum streamclk_source {
-	REFCLK,                   // Selects REFCLK as source for hdmistreamclk.
-	DTBCLK0,                  // Selects DTBCLK0 as source for hdmistreamclk.
-	DPREFCLK,                 // Selects DPREFCLK as source for hdmistreamclk
+	REFCLK,                   
+	DTBCLK0,                  
+	DPREFCLK,                 
 };
 
 enum dentist_dispclk_change_mode {
@@ -69,9 +46,9 @@ struct dccg {
 	int pipe_dppclk_khz[MAX_PIPES];
 	int ref_dppclk;
 	bool dpp_clock_gated[MAX_PIPES];
-	//int dtbclk_khz[MAX_PIPES];/* TODO needs to be removed */
-	//int audio_dtbclk_khz;/* TODO needs to be removed */
-	//int ref_dtbclk_khz;/* TODO needs to be removed */
+	
+	
+	
 };
 
 struct dtbclk_dto_params {
@@ -184,4 +161,4 @@ struct dccg_funcs {
 			uint32_t link_enc_inst);
 };
 
-#endif //__DAL_DCCG_H__
+#endif 

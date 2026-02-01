@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * The Virtual DVB test driver serves as a reference DVB driver and helps
- * validate the existing APIs in the media subsystem. It can also aid
- * developers working on userspace applications.
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- * Based on the example driver written by Emard <emard@softhome.net>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/i2c.h>
@@ -24,16 +17,16 @@
 
 #include "vidtv_demod.h"
 
-#define POLL_THRD_TIME 2000 /* ms */
+#define POLL_THRD_TIME 2000  
 
 static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_c_cnr_2_qual[] = {
-	/* from libdvbv5 source code, in milli db */
+	 
 	{ QAM_256, FEC_NONE,  34000, 38000},
 	{ QAM_64,  FEC_NONE,  30000, 34000},
 };
 
 static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_s_cnr_2_qual[] = {
-	/* from libdvbv5 source code, in milli db */
+	 
 	{ QPSK, FEC_1_2,  7000, 10000},
 	{ QPSK, FEC_2_3,  9000, 12000},
 	{ QPSK, FEC_3_4, 10000, 13000},
@@ -42,7 +35,7 @@ static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_s_cnr_2_qual[] = {
 };
 
 static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_s2_cnr_2_qual[] = {
-	/* from libdvbv5 source code, in milli db */
+	 
 	{ QPSK,  FEC_1_2,   9000,  12000},
 	{ QPSK,  FEC_2_3,  11000,  14000},
 	{ QPSK,  FEC_3_4,  12000,  15000},
@@ -56,7 +49,7 @@ static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_s2_cnr_2_qual[] = {
 };
 
 static const struct vidtv_demod_cnr_to_qual_s vidtv_demod_t_cnr_2_qual[] = {
-	/* from libdvbv5 source code, in milli db*/
+	 
 	{   QPSK, FEC_1_2,  4100,  5900},
 	{   QPSK, FEC_2_3,  6100,  9600},
 	{   QPSK, FEC_3_4,  7200, 12400},
@@ -119,26 +112,26 @@ static const struct vidtv_demod_cnr_to_qual_s *vidtv_match_cnr_s(struct dvb_fron
 		    cnr2qual[i].fec == c->fec_inner)
 			return &cnr2qual[i];
 
-	return NULL; /* not found */
+	return NULL;  
 }
 
 static void vidtv_clean_stats(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 
-	/* Fill the length of each status counter */
+	 
 
-	/* Signal is always available */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_DECIBEL;
 	c->strength.stat[0].svalue = 0;
 
-	/* Usually available only after Viterbi lock */
+	 
 	c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.stat[0].svalue = 0;
 	c->cnr.len = 1;
 
-	/* Those depends on full lock */
+	 
 	c->pre_bit_error.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->pre_bit_error.stat[0].uvalue = 0;
 	c->pre_bit_error.len = 1;
@@ -180,16 +173,10 @@ static void vidtv_demod_update_stats(struct dvb_frontend *fe)
 	c->block_error.stat[0].scale = scale;
 	c->block_count.stat[0].scale = scale;
 
-	/*
-	 * Add a 0.5% of randomness at the signal strength and CNR,
-	 * and make them different, as we want to have something closer
-	 * to a real case scenario.
-	 *
-	 * Also, usually, signal strength is a negative number in dBm.
-	 */
+	 
 	c->strength.stat[0].svalue = state->tuner_cnr;
 	c->strength.stat[0].svalue -= get_random_u32_below(state->tuner_cnr / 50);
-	c->strength.stat[0].svalue -= 68000; /* Adjust to a better range */
+	c->strength.stat[0].svalue -= 68000;  
 
 	c->cnr.stat[0].svalue = state->tuner_cnr;
 	c->cnr.stat[0].svalue -= get_random_u32_below(state->tuner_cnr / 50);
@@ -203,7 +190,7 @@ static int vidtv_demod_read_status(struct dvb_frontend *fe,
 	struct vidtv_demod_config *config = &state->config;
 	u16 snr = 0;
 
-	/* Simulate random lost of signal due to a bad-tuned channel */
+	 
 	cnr2qual = vidtv_match_cnr_s(&state->frontend);
 
 	if (cnr2qual && state->tuner_cnr < cnr2qual->cnr_good &&
@@ -212,11 +199,11 @@ static int vidtv_demod_read_status(struct dvb_frontend *fe,
 							      &snr);
 
 		if (snr < cnr2qual->cnr_ok) {
-			/* eventually lose the TS lock */
+			 
 			if (get_random_u32_below(100) < config->drop_tslock_prob_on_low_snr)
 				state->status = 0;
 		} else {
-			/* recover if the signal improves */
+			 
 			if (get_random_u32_below(100) <
 			    config->recover_tslock_prob_on_good_snr)
 				state->status = FE_HAS_SIGNAL  |
@@ -244,15 +231,7 @@ static int vidtv_demod_read_signal_strength(struct dvb_frontend *fe,
 	return 0;
 }
 
-/*
- * NOTE:
- * This is implemented here just to be used as an example for real
- * demod drivers.
- *
- * Should only be implemented if it actually reads something from the hardware.
- * Also, it should check for the locks, in order to avoid report wrong data
- * to userspace.
- */
+ 
 static int vidtv_demod_get_frontend(struct dvb_frontend *fe,
 				    struct dtv_frontend_properties *p)
 {
@@ -270,7 +249,7 @@ static int vidtv_demod_set_frontend(struct dvb_frontend *fe)
 
 	fe->ops.tuner_ops.set_params(fe);
 
-	/* store the CNR returned by the tuner */
+	 
 	ret = fe->ops.tuner_ops.get_rf_strength(fe, &state->tuner_cnr);
 	if (ret < 0)
 		return ret;
@@ -291,52 +270,28 @@ static int vidtv_demod_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
-/*
- * NOTE:
- * This is implemented here just to be used as an example for real
- * demod drivers.
- *
- * Should only be implemented if the demod has support for DVB-S or DVB-S2
- */
+ 
 static int vidtv_demod_set_tone(struct dvb_frontend *fe,
 				enum fe_sec_tone_mode tone)
 {
 	return 0;
 }
 
-/*
- * NOTE:
- * This is implemented here just to be used as an example for real
- * demod drivers.
- *
- * Should only be implemented if the demod has support for DVB-S or DVB-S2
- */
+ 
 static int vidtv_demod_set_voltage(struct dvb_frontend *fe,
 				   enum fe_sec_voltage voltage)
 {
 	return 0;
 }
 
-/*
- * NOTE:
- * This is implemented here just to be used as an example for real
- * demod drivers.
- *
- * Should only be implemented if the demod has support for DVB-S or DVB-S2
- */
+ 
 static int vidtv_send_diseqc_msg(struct dvb_frontend *fe,
 				 struct dvb_diseqc_master_cmd *cmd)
 {
 	return 0;
 }
 
-/*
- * NOTE:
- * This is implemented here just to be used as an example for real
- * demod drivers.
- *
- * Should only be implemented if the demod has support for DVB-S or DVB-S2
- */
+ 
 static int vidtv_diseqc_send_burst(struct dvb_frontend *fe,
 				   enum fe_sec_mini_cmd burst)
 {
@@ -398,7 +353,7 @@ static const struct dvb_frontend_ops vidtv_demod_ops = {
 	.read_status          = vidtv_demod_read_status,
 	.read_signal_strength = vidtv_demod_read_signal_strength,
 
-	/* For DVB-S/S2 */
+	 
 	.set_voltage		= vidtv_demod_set_voltage,
 	.set_tone		= vidtv_demod_set_tone,
 	.diseqc_send_master_cmd	= vidtv_send_diseqc_msg,
@@ -417,12 +372,12 @@ static int vidtv_demod_i2c_probe(struct i2c_client *client)
 	struct vidtv_tuner_config *config = client->dev.platform_data;
 	struct vidtv_demod_state *state;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(*state), GFP_KERNEL);
 	if (!state)
 		return -ENOMEM;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops,
 	       &vidtv_demod_ops,
 	       sizeof(struct dvb_frontend_ops));

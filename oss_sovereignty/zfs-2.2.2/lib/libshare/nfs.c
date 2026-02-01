@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 
 #include <sys/types.h>
@@ -32,11 +13,7 @@
 #include "nfs.h"
 
 
-/*
- * nfs_exports_[lock|unlock] are used to guard against conconcurrent
- * updates to the exports file. Each protocol is responsible for
- * providing the necessary locking to ensure consistency.
- */
+ 
 static int
 nfs_exports_lock(const char *name, int *nfs_lock_fd)
 {
@@ -76,10 +53,7 @@ nfs_exports_unlock(const char *name, int *nfs_lock_fd)
 }
 
 struct tmpfile {
-	/*
-	 * This only needs to be as wide as ZFS_EXPORTS_FILE and mktemp suffix,
-	 * 64 is more than enough.
-	 */
+	 
 	char name[64];
 	FILE *fp;
 };
@@ -91,7 +65,7 @@ nfs_init_tmpfile(const char *prefix, const char *mdir, struct tmpfile *tmpf)
 	    mkdir(mdir, 0755) < 0 &&
 	    errno != EEXIST) {
 		fprintf(stderr, "failed to create %s: %s\n",
-		// cppcheck-suppress uninitvar
+		
 		    mdir, strerror(errno));
 		return (B_FALSE);
 	}
@@ -230,10 +204,7 @@ nfs_copy_entries_cb(void *userdata, char *line, boolean_t found_mountpoint)
 	return (B_TRUE);
 }
 
-/*
- * Copy all entries from the exports file (if it exists) to newfp,
- * omitting any entries for the specified mountpoint.
- */
+ 
 static int
 nfs_copy_entries(FILE *newfp, const char *exports, const char *mountpoint)
 {

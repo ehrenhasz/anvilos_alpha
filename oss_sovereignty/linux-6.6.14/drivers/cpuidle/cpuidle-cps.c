@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014 Imagination Technologies
- * Author: Paul Burton <paul.burton@mips.com>
- */
+
+ 
 
 #include <linux/cpu_pm.h>
 #include <linux/cpuidle.h>
@@ -11,12 +8,12 @@
 #include <asm/idle.h>
 #include <asm/pm-cps.h>
 
-/* Enumeration of the various idle states this driver may enter */
+ 
 enum cps_idle_state {
-	STATE_WAIT = 0,		/* MIPS wait instruction, coherent */
-	STATE_NC_WAIT,		/* MIPS wait instruction, non-coherent */
-	STATE_CLOCK_GATED,	/* Core clock gated */
-	STATE_POWER_GATED,	/* Core power gated */
+	STATE_WAIT = 0,		 
+	STATE_NC_WAIT,		 
+	STATE_CLOCK_GATED,	 
+	STATE_POWER_GATED,	 
 	STATE_COUNT
 };
 
@@ -26,17 +23,11 @@ static int cps_nc_enter(struct cpuidle_device *dev,
 	enum cps_pm_state pm_state;
 	int err;
 
-	/*
-	 * At least one core must remain powered up & clocked in order for the
-	 * system to have any hope of functioning.
-	 *
-	 * TODO: don't treat core 0 specially, just prevent the final core
-	 * TODO: remap interrupt affinity temporarily
-	 */
+	 
 	if (cpus_are_siblings(0, dev->cpu) && (index > STATE_NC_WAIT))
 		index = STATE_NC_WAIT;
 
-	/* Select the appropriate cps_pm_state */
+	 
 	switch (index) {
 	case STATE_NC_WAIT:
 		pm_state = CPS_PM_NC_WAIT;
@@ -52,14 +43,14 @@ static int cps_nc_enter(struct cpuidle_device *dev,
 		return -EINVAL;
 	}
 
-	/* Notify listeners the CPU is about to power down */
+	 
 	if ((pm_state == CPS_PM_POWER_GATED) && cpu_pm_enter())
 		return -EINTR;
 
-	/* Enter that state */
+	 
 	err = cps_pm_enter_state(pm_state);
 
-	/* Notify listeners the CPU is back up */
+	 
 	if (pm_state == CPS_PM_POWER_GATED)
 		cpu_pm_exit();
 
@@ -117,7 +108,7 @@ static int __init cps_cpuidle_init(void)
 	int err, cpu, i;
 	struct cpuidle_device *device;
 
-	/* Detect supported states */
+	 
 	if (!cps_pm_support_state(CPS_PM_POWER_GATED))
 		cps_driver.state_count = STATE_CLOCK_GATED + 1;
 	if (!cps_pm_support_state(CPS_PM_CLOCK_GATED))
@@ -125,7 +116,7 @@ static int __init cps_cpuidle_init(void)
 	if (!cps_pm_support_state(CPS_PM_NC_WAIT))
 		cps_driver.state_count = STATE_WAIT + 1;
 
-	/* Inform the user if some states are unavailable */
+	 
 	if (cps_driver.state_count < STATE_COUNT) {
 		pr_info("cpuidle-cps: limited to ");
 		switch (cps_driver.state_count - 1) {
@@ -141,10 +132,7 @@ static int __init cps_cpuidle_init(void)
 		}
 	}
 
-	/*
-	 * Set the coupled flag on the appropriate states if this system
-	 * requires it.
-	 */
+	 
 	if (coupled_coherence)
 		for (i = STATE_NC_WAIT; i < cps_driver.state_count; i++)
 			cps_driver.states[i].flags |= CPUIDLE_FLAG_COUPLED;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/module.h>
@@ -36,7 +34,7 @@ struct freq_tbl *qcom_find_freq(const struct freq_tbl *f, unsigned long rate)
 		if (rate <= f->freq)
 			return f;
 
-	/* Default to our fastest rate */
+	 
 	return f - 1;
 }
 EXPORT_SYMBOL_GPL(qcom_find_freq);
@@ -101,17 +99,17 @@ qcom_pll_set_fsm_mode(struct regmap *map, u32 reg, u8 bias_count, u8 lock_count)
 	u32 val;
 	u32 mask;
 
-	/* De-assert reset to FSM */
+	 
 	regmap_update_bits(map, reg, PLL_VOTE_FSM_RESET, 0);
 
-	/* Program bias count and lock count */
+	 
 	val = bias_count << PLL_BIAS_COUNT_SHIFT |
 		lock_count << PLL_LOCK_COUNT_SHIFT;
 	mask = PLL_BIAS_COUNT_MASK << PLL_BIAS_COUNT_SHIFT;
 	mask |= PLL_LOCK_COUNT_MASK << PLL_LOCK_COUNT_SHIFT;
 	regmap_update_bits(map, reg, mask, val);
 
-	/* Enable PLL FSM voting */
+	 
 	regmap_update_bits(map, reg, PLL_VOTE_FSM_ENA, PLL_VOTE_FSM_ENA);
 }
 EXPORT_SYMBOL_GPL(qcom_pll_set_fsm_mode);
@@ -121,11 +119,7 @@ static void qcom_cc_gdsc_unregister(void *data)
 	gdsc_unregister(data);
 }
 
-/*
- * Backwards compatibility with old DTs. Register a pass-through factor 1/1
- * clock to translate 'path' clk into 'name' clk and register the 'path'
- * clk as a fixed rate clock if it isn't present.
- */
+ 
 static int _qcom_cc_register_board_clk(struct device *dev, const char *path,
 				       const char *name, unsigned long rate,
 				       bool add_factor)
@@ -187,11 +181,7 @@ int qcom_cc_register_board_clk(struct device *dev, const char *path,
 {
 	bool add_factor = true;
 
-	/*
-	 * TODO: The RPM clock driver currently does not support the xo clock.
-	 * When xo is added to the RPM clock driver, we should change this
-	 * function to skip registration of xo factor clocks.
-	 */
+	 
 
 	return _qcom_cc_register_board_clk(dev, path, name, rate, add_factor);
 }
@@ -204,7 +194,7 @@ int qcom_cc_register_sleep_clk(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(qcom_cc_register_sleep_clk);
 
-/* Drop 'protected-clocks' from the list of clocks to register */
+ 
 static void qcom_cc_drop_protected(struct device *dev, struct qcom_cc *cc)
 {
 	struct device_node *np = dev->of_node;

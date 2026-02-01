@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synopsys DesignWare I2C adapter driver (master only).
- *
- * Based on the TI DAVINCI I2C adapter driver.
- *
- * Copyright (C) 2006 Texas Instruments.
- * Copyright (C) 2007 MontaVista Software Inc.
- * Copyright (C) 2009 Provigent Ltd.
- * Copyright (C) 2011, 2015, 2016 Intel Corporation.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -39,13 +30,7 @@ enum dw_pci_ctl_id_t {
 	navi_amd,
 };
 
-/*
- * This is a legacy structure to describe the hardware counters
- * to configure signal timings on the bus. For Device Tree platforms
- * one should use the respective properties and for ACPI there is
- * a set of ACPI methods that provide these counters. No new
- * platform should use this structure.
- */
+ 
 struct dw_scl_sda_cfg {
 	u16 ss_hcnt;
 	u16 fs_hcnt;
@@ -62,7 +47,7 @@ struct dw_pci_controller {
 	u32 (*get_clk_rate_khz)(struct dw_i2c_dev *dev);
 };
 
-/* Merrifield HCNT/LCNT/SDA hold time */
+ 
 static struct dw_scl_sda_cfg mrfld_config = {
 	.ss_hcnt = 0x2f8,
 	.fs_hcnt = 0x87,
@@ -70,7 +55,7 @@ static struct dw_scl_sda_cfg mrfld_config = {
 	.fs_lcnt = 0x10a,
 };
 
-/* BayTrail HCNT/LCNT/SDA hold time */
+ 
 static struct dw_scl_sda_cfg byt_config = {
 	.ss_hcnt = 0x200,
 	.fs_hcnt = 0x55,
@@ -79,7 +64,7 @@ static struct dw_scl_sda_cfg byt_config = {
 	.sda_hold = 0x6,
 };
 
-/* Haswell HCNT/LCNT/SDA hold time */
+ 
 static struct dw_scl_sda_cfg hsw_config = {
 	.ss_hcnt = 0x01b0,
 	.fs_hcnt = 0x48,
@@ -88,7 +73,7 @@ static struct dw_scl_sda_cfg hsw_config = {
 	.sda_hold = 0x9,
 };
 
-/* NAVI-AMD HCNT/LCNT/SDA hold time */
+ 
 static struct dw_scl_sda_cfg navi_amd_config = {
 	.ss_hcnt = 0x1ae,
 	.ss_lcnt = 0x23a,
@@ -123,12 +108,7 @@ static int mfld_setup(struct pci_dev *pdev, struct dw_pci_controller *c)
 
 static int mrfld_setup(struct pci_dev *pdev, struct dw_pci_controller *c)
 {
-	/*
-	 * On Intel Merrifield the user visible i2c buses are enumerated
-	 * [1..7]. So, we add 1 to shift the default range. Besides that the
-	 * first PCI slot provides 4 functions, that's why we have to add 0 to
-	 * the first slot and 4 to the next one.
-	 */
+	 
 	switch (PCI_SLOT(pdev->devfn)) {
 	case 8:
 		c->bus_num = PCI_FUNC(pdev->devfn) + 0 + 1;
@@ -236,7 +216,7 @@ static const struct dev_pm_ops i2c_dw_pm_ops = {
 };
 
 static const struct property_entry dgpu_properties[] = {
-	/* USB-C doesn't power the system */
+	 
 	PROPERTY_ENTRY_U8("scope", POWER_SUPPLY_SCOPE_DEVICE),
 	{}
 };
@@ -364,17 +344,17 @@ static void i2c_dw_pci_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id i2_designware_pci_ids[] = {
-	/* Medfield */
+	 
 	{ PCI_VDEVICE(INTEL, 0x0817), medfield },
 	{ PCI_VDEVICE(INTEL, 0x0818), medfield },
 	{ PCI_VDEVICE(INTEL, 0x0819), medfield },
 	{ PCI_VDEVICE(INTEL, 0x082C), medfield },
 	{ PCI_VDEVICE(INTEL, 0x082D), medfield },
 	{ PCI_VDEVICE(INTEL, 0x082E), medfield },
-	/* Merrifield */
+	 
 	{ PCI_VDEVICE(INTEL, 0x1195), merrifield },
 	{ PCI_VDEVICE(INTEL, 0x1196), merrifield },
-	/* Baytrail */
+	 
 	{ PCI_VDEVICE(INTEL, 0x0F41), baytrail },
 	{ PCI_VDEVICE(INTEL, 0x0F42), baytrail },
 	{ PCI_VDEVICE(INTEL, 0x0F43), baytrail },
@@ -382,10 +362,10 @@ static const struct pci_device_id i2_designware_pci_ids[] = {
 	{ PCI_VDEVICE(INTEL, 0x0F45), baytrail },
 	{ PCI_VDEVICE(INTEL, 0x0F46), baytrail },
 	{ PCI_VDEVICE(INTEL, 0x0F47), baytrail },
-	/* Haswell */
+	 
 	{ PCI_VDEVICE(INTEL, 0x9c61), haswell },
 	{ PCI_VDEVICE(INTEL, 0x9c62), haswell },
-	/* Braswell / Cherrytrail */
+	 
 	{ PCI_VDEVICE(INTEL, 0x22C1), cherrytrail },
 	{ PCI_VDEVICE(INTEL, 0x22C2), cherrytrail },
 	{ PCI_VDEVICE(INTEL, 0x22C3), cherrytrail },
@@ -393,7 +373,7 @@ static const struct pci_device_id i2_designware_pci_ids[] = {
 	{ PCI_VDEVICE(INTEL, 0x22C5), cherrytrail },
 	{ PCI_VDEVICE(INTEL, 0x22C6), cherrytrail },
 	{ PCI_VDEVICE(INTEL, 0x22C7), cherrytrail },
-	/* Elkhart Lake (PSE I2C) */
+	 
 	{ PCI_VDEVICE(INTEL, 0x4bb9), elkhartlake },
 	{ PCI_VDEVICE(INTEL, 0x4bba), elkhartlake },
 	{ PCI_VDEVICE(INTEL, 0x4bbb), elkhartlake },
@@ -402,7 +382,7 @@ static const struct pci_device_id i2_designware_pci_ids[] = {
 	{ PCI_VDEVICE(INTEL, 0x4bbe), elkhartlake },
 	{ PCI_VDEVICE(INTEL, 0x4bbf), elkhartlake },
 	{ PCI_VDEVICE(INTEL, 0x4bc0), elkhartlake },
-	/* AMD NAVI */
+	 
 	{ PCI_VDEVICE(ATI,  0x7314), navi_amd },
 	{ PCI_VDEVICE(ATI,  0x73a4), navi_amd },
 	{ PCI_VDEVICE(ATI,  0x73e4), navi_amd },
@@ -424,7 +404,7 @@ static struct pci_driver dw_i2c_driver = {
 };
 module_pci_driver(dw_i2c_driver);
 
-/* Work with hotplug and coldplug */
+ 
 MODULE_ALIAS("i2c_designware-pci");
 MODULE_AUTHOR("Baruch Siach <baruch@tkos.co.il>");
 MODULE_DESCRIPTION("Synopsys DesignWare PCI I2C bus adapter");

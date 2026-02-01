@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tlv320aic32x4.h
- */
+ 
+ 
 
 
 #ifndef _TLV320AIC32X4_H
@@ -21,7 +19,7 @@ int aic32x4_probe(struct device *dev, struct regmap *regmap);
 void aic32x4_remove(struct device *dev);
 int aic32x4_register_clocks(struct device *dev, const char *mclk_name);
 
-/* tlv320aic32x4 register space (in decimal to match datasheet) */
+ 
 
 #define AIC32X4_REG(page, reg)	((page * 128) + reg)
 
@@ -108,9 +106,9 @@ int aic32x4_register_clocks(struct device *dev, const char *mclk_name);
 #define TAS2505_REFPOWERUP	AIC32X4_REG(1, 122)
 #define AIC32X4_REFPOWERUP	AIC32X4_REG(1, 123)
 
-/* Bits, masks, and shifts */
+ 
 
-/* AIC32X4_CLKMUX */
+ 
 #define AIC32X4_PLL_CLKIN_MASK		GENMASK(3, 2)
 #define AIC32X4_PLL_CLKIN_SHIFT		(2)
 #define AIC32X4_PLL_CLKIN_MCLK		(0x00)
@@ -124,33 +122,33 @@ int aic32x4_register_clocks(struct device *dev, const char *mclk_name);
 #define AIC32X4_CODEC_CLKIN_GPIO1	(0x02)
 #define AIC32X4_CODEC_CLKIN_PLL		(0x03)
 
-/* AIC32X4_PLLPR */
+ 
 #define AIC32X4_PLLEN			BIT(7)
 #define AIC32X4_PLL_P_MASK		GENMASK(6, 4)
 #define AIC32X4_PLL_P_SHIFT		(4)
 #define AIC32X4_PLL_R_MASK		GENMASK(3, 0)
 
-/* AIC32X4_NDAC */
+ 
 #define AIC32X4_NDACEN			BIT(7)
 #define AIC32X4_NDAC_MASK		GENMASK(6, 0)
 
-/* AIC32X4_MDAC */
+ 
 #define AIC32X4_MDACEN			BIT(7)
 #define AIC32X4_MDAC_MASK		GENMASK(6, 0)
 
-/* AIC32X4_NADC */
+ 
 #define AIC32X4_NADCEN			BIT(7)
 #define AIC32X4_NADC_MASK		GENMASK(6, 0)
 
-/* AIC32X4_MADC */
+ 
 #define AIC32X4_MADCEN			BIT(7)
 #define AIC32X4_MADC_MASK		GENMASK(6, 0)
 
-/* AIC32X4_BCLKN */
+ 
 #define AIC32X4_BCLKEN			BIT(7)
 #define AIC32X4_BCLK_MASK		GENMASK(6, 0)
 
-/* AIC32X4_IFACE1 */
+ 
 #define AIC32X4_IFACE1_DATATYPE_MASK	GENMASK(7, 6)
 #define AIC32X4_IFACE1_DATATYPE_SHIFT	(6)
 #define AIC32X4_I2S_MODE		(0x00)
@@ -167,10 +165,10 @@ int aic32x4_register_clocks(struct device *dev, const char *mclk_name);
 #define AIC32X4_BCLKMASTER		BIT(2)
 #define AIC32X4_WCLKMASTER		BIT(3)
 
-/* AIC32X4_IFACE2 */
+ 
 #define AIC32X4_DATA_OFFSET_MASK	GENMASK(7, 0)
 
-/* AIC32X4_IFACE3 */
+ 
 #define AIC32X4_BCLKINV_MASK		BIT(3)
 #define AIC32X4_BDIVCLK_MASK		GENMASK(1, 0)
 #define AIC32X4_BDIVCLK_SHIFT		(0)
@@ -179,58 +177,58 @@ int aic32x4_register_clocks(struct device *dev, const char *mclk_name);
 #define AIC32X4_ADC2BCLK		(0x02)
 #define AIC32X4_ADCMOD2BCLK		(0x03)
 
-/* AIC32X4_DACSETUP */
+ 
 #define AIC32X4_DAC_CHAN_MASK		GENMASK(5, 2)
 #define AIC32X4_LDAC2RCHN		BIT(5)
 #define AIC32X4_LDAC2LCHN		BIT(4)
 #define AIC32X4_RDAC2LCHN		BIT(3)
 #define AIC32X4_RDAC2RCHN		BIT(2)
 
-/* AIC32X4_DACMUTE */
+ 
 #define AIC32X4_MUTEON			0x0C
 
-/* AIC32X4_ADCSETUP */
+ 
 #define AIC32X4_LADC_EN			BIT(7)
 #define AIC32X4_RADC_EN			BIT(6)
 
-/* AIC32X4_PWRCFG */
+ 
 #define AIC32X4_AVDDWEAKDISABLE		BIT(3)
 
-/* AIC32X4_LDOCTL */
+ 
 #define AIC32X4_LDOCTLEN		BIT(0)
 
-/* AIC32X4_CMMODE */
+ 
 #define AIC32X4_LDOIN_18_36		BIT(0)
 #define AIC32X4_LDOIN2HP		BIT(1)
 
-/* AIC32X4_MICBIAS */
+ 
 #define AIC32X4_MICBIAS_LDOIN		BIT(3)
 #define AIC32X4_MICBIAS_2075V		0x60
 #define AIC32x4_MICBIAS_MASK            GENMASK(6, 3)
 
-/* AIC32X4_LMICPGANIN */
+ 
 #define AIC32X4_LMICPGANIN_IN2R_10K	0x10
 #define AIC32X4_LMICPGANIN_CM1L_10K	0x40
 
-/* AIC32X4_RMICPGANIN */
+ 
 #define AIC32X4_RMICPGANIN_IN1L_10K	0x10
 #define AIC32X4_RMICPGANIN_CM1R_10K	0x40
 
-/* AIC32X4_REFPOWERUP */
+ 
 #define AIC32X4_REFPOWERUP_SLOW		0x04
 #define AIC32X4_REFPOWERUP_40MS		0x05
 #define AIC32X4_REFPOWERUP_80MS		0x06
 #define AIC32X4_REFPOWERUP_120MS	0x07
 
-/* Common mask and enable for all of the dividers */
+ 
 #define AIC32X4_DIVEN			BIT(7)
 #define AIC32X4_DIV_MASK		GENMASK(6, 0)
 #define AIC32X4_DIV_MAX			128
 
-/* Clock Limits */
+ 
 #define AIC32X4_MAX_DOSR_FREQ		6200000
 #define AIC32X4_MIN_DOSR_FREQ		2800000
 #define AIC32X4_MAX_CODEC_CLKIN_FREQ    110000000
 #define AIC32X4_MAX_PLL_CLKIN		20000000
 
-#endif				/* _TLV320AIC32X4_H */
+#endif				 

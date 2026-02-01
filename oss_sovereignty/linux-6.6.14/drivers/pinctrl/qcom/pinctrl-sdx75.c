@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -37,7 +35,7 @@
 		.intr_detection_bit = 2,				\
 		.intr_detection_width = 2,				\
 		.funcs = (int[]){					\
-			msm_mux_gpio, /* gpio mode */			\
+			msm_mux_gpio,  			\
 			msm_mux_##f1,					\
 			msm_mux_##f2,					\
 			msm_mux_##f3,					\

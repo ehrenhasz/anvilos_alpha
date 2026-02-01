@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * handle transition of Linux booting another kernel
- * Copyright (C) 2002-2005 Eric Biederman  <ebiederm@xmission.com>
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/kexec.h>
@@ -117,21 +114,7 @@ static void machine_kexec_prepare_page_tables(struct kimage *image)
 		__pa(control_page), __pa(control_page));
 }
 
-/*
- * A architecture hook called to validate the
- * proposed image and prepare the control pages
- * as needed.  The pages for KEXEC_CONTROL_PAGE_SIZE
- * have been allocated, but the segments have yet
- * been copied into the kernel.
- *
- * Do what every setup is needed on image and the
- * reboot code buffer to allow us to avoid allocations
- * later.
- *
- * - Make control page executable.
- * - Allocate page tables
- * - Setup page tables
- */
+ 
 int machine_kexec_prepare(struct kimage *image)
 {
 	int error;
@@ -144,20 +127,14 @@ int machine_kexec_prepare(struct kimage *image)
 	return 0;
 }
 
-/*
- * Undo anything leftover by machine_kexec_prepare
- * when an image is freed.
- */
+ 
 void machine_kexec_cleanup(struct kimage *image)
 {
 	set_memory_nx((unsigned long)page_address(image->control_code_page), 1);
 	machine_kexec_free_page_tables(image);
 }
 
-/*
- * Do not allocate memory (or fail in any way) in machine_kexec().
- * We are past the point of no return, committed to rebooting now.
- */
+ 
 void machine_kexec(struct kimage *image)
 {
 	unsigned long page_list[PAGES_NR];
@@ -177,18 +154,13 @@ void machine_kexec(struct kimage *image)
 
 	save_ftrace_enabled = __ftrace_enabled_save();
 
-	/* Interrupts aren't acceptable while we reboot */
+	 
 	local_irq_disable();
 	hw_breakpoint_disable();
 
 	if (image->preserve_context) {
 #ifdef CONFIG_X86_IO_APIC
-		/*
-		 * We need to put APICs in legacy mode so that we can
-		 * get timer interrupts in second kernel. kexec/kdump
-		 * paths already have calls to restore_boot_irq_mode()
-		 * in one form or other. kexec jump path also need one.
-		 */
+		 
 		clear_IO_APIC();
 		restore_boot_irq_mode();
 #endif
@@ -206,25 +178,13 @@ void machine_kexec(struct kimage *image)
 		page_list[PA_SWAP_PAGE] = (page_to_pfn(image->swap_page)
 						<< PAGE_SHIFT);
 
-	/*
-	 * The segment registers are funny things, they have both a
-	 * visible and an invisible part.  Whenever the visible part is
-	 * set to a specific selector, the invisible part is loaded
-	 * with from a table in memory.  At no other time is the
-	 * descriptor table in memory accessed.
-	 *
-	 * I take advantage of this here by force loading the
-	 * segments, before I zap the gdt with an invalid value.
-	 */
+	 
 	load_segments();
-	/*
-	 * The gdt & idt are now invalid.
-	 * If you want to load them you must set up your own idt & gdt.
-	 */
+	 
 	native_idt_invalidate();
 	native_gdt_invalidate();
 
-	/* now call it */
+	 
 	image->start = relocate_kernel_ptr((unsigned long)image->head,
 					   (unsigned long)page_list,
 					   image->start,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Nicira, Inc.
- * Copyright (c) 2013 Cisco Systems, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
@@ -79,7 +76,7 @@ static struct vport *vxlan_tnl_create(const struct vport_parms *parms)
 	struct vxlan_config conf = {
 		.no_share = true,
 		.flags = VXLAN_F_COLLECT_METADATA | VXLAN_F_UDP_ZERO_CSUM6_RX,
-		/* Don't restrict the packets that can be sent by MTU */
+		 
 		.mtu = IP_MAX_MTU,
 	};
 
@@ -92,7 +89,7 @@ static struct vport *vxlan_tnl_create(const struct vport_parms *parms)
 	if (a && nla_len(a) == sizeof(u16)) {
 		conf.dst_port = htons(nla_get_u16(a));
 	} else {
-		/* Require destination port from userspace. */
+		 
 		err = -EINVAL;
 		goto error;
 	}

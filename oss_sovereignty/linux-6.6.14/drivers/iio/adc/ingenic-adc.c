@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADC driver for the Ingenic JZ47xx SoCs
- * Copyright (c) 2019 Artur Rojek <contact@artur-rojek.eu>
- *
- * based on drivers/mfd/jz4740-adc.c
- */
+
+ 
 
 #include <dt-bindings/iio/adc/ingenic,adc.h>
 #include <linux/clk.h>
@@ -117,17 +112,17 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
 
 	mutex_lock(&adc->lock);
 
-	/* Init ADCMD */
+	 
 	readl(adc->base + JZ_ADC_REG_ADCMD);
 
 	if (mask & 0x3) {
-		/* Second channel (INGENIC_ADC_TOUCH_YP): sample YP vs. GND */
+		 
 		writel(JZ_ADC_REG_ADCMD_XNGRU
 		       | JZ_ADC_REG_ADCMD_VREFNXN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_YPADC,
 		       adc->base + JZ_ADC_REG_ADCMD);
 
-		/* First channel (INGENIC_ADC_TOUCH_XP): sample XP vs. GND */
+		 
 		writel(JZ_ADC_REG_ADCMD_YNGRU
 		       | JZ_ADC_REG_ADCMD_VREFNYN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_XPADC,
@@ -135,13 +130,13 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
 	}
 
 	if (mask & 0xc) {
-		/* Fourth channel (INGENIC_ADC_TOUCH_YN): sample YN vs. GND */
+		 
 		writel(JZ_ADC_REG_ADCMD_XNGRU
 		       | JZ_ADC_REG_ADCMD_VREFNXN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_YNADC,
 		       adc->base + JZ_ADC_REG_ADCMD);
 
-		/* Third channel (INGENIC_ADC_TOUCH_XN): sample XN vs. GND */
+		 
 		writel(JZ_ADC_REG_ADCMD_YNGRU
 		       | JZ_ADC_REG_ADCMD_VREFNYN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_XNADC,
@@ -149,18 +144,18 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
 	}
 
 	if (mask & 0x30) {
-		/* Sixth channel (INGENIC_ADC_TOUCH_YD): sample YP vs. YN */
+		 
 		writel(JZ_ADC_REG_ADCMD_VREFNYN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_YPADC,
 		       adc->base + JZ_ADC_REG_ADCMD);
 
-		/* Fifth channel (INGENIC_ADC_TOUCH_XD): sample XP vs. XN */
+		 
 		writel(JZ_ADC_REG_ADCMD_VREFNXN | JZ_ADC_REG_ADCMD_VREFPVDD33
 		       | JZ_ADC_REG_ADCMD_XPADC,
 		       adc->base + JZ_ADC_REG_ADCMD);
 	}
 
-	/* We're done */
+	 
 	writel(0, adc->base + JZ_ADC_REG_ADCMD);
 
 	mutex_unlock(&adc->lock);
@@ -213,11 +208,7 @@ static int ingenic_adc_capture(struct ingenic_adc *adc,
 	u8 val;
 	int ret;
 
-	/*
-	 * Disable CMD_SEL temporarily, because it causes wrong VBAT readings,
-	 * probably due to the switch of VREF. We must keep the lock here to
-	 * avoid races with the buffer enable/disable functions.
-	 */
+	 
 	mutex_lock(&adc->lock);
 	cfg = readl(adc->base + JZ_ADC_REG_CFG);
 	writel(cfg & ~JZ_ADC_REG_CFG_CMD_SEL, adc->base + JZ_ADC_REG_CFG);
@@ -324,11 +315,7 @@ static int jz4725b_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
 	}
 	parent_rate = clk_get_rate(parent_clk);
 
-	/*
-	 * The JZ4725B ADC works at 500 kHz to 8 MHz.
-	 * We pick the highest rate possible.
-	 * In practice we typically get 6 MHz, half of the 12 MHz EXT clock.
-	 */
+	 
 	div_main = DIV_ROUND_UP(parent_rate, 8000000);
 	div_main = clamp(div_main, 1u, 64u);
 	rate = parent_rate / div_main;
@@ -337,7 +324,7 @@ static int jz4725b_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
 		return -EINVAL;
 	}
 
-	/* We also need a divider that produces a 10us clock. */
+	 
 	div_10us = DIV_ROUND_UP(rate, 100000);
 
 	writel(((div_10us - 1) << JZ4725B_ADC_REG_ADCLK_CLKDIV10US_LSB) |
@@ -360,10 +347,7 @@ static int jz4770_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
 	}
 	parent_rate = clk_get_rate(parent_clk);
 
-	/*
-	 * The JZ4770 ADC works at 20 kHz to 200 kHz.
-	 * We pick the highest rate possible.
-	 */
+	 
 	div_main = DIV_ROUND_UP(parent_rate, 200000);
 	div_main = clamp(div_main, 1u, 256u);
 	rate = parent_rate / div_main;
@@ -372,9 +356,9 @@ static int jz4770_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
 		return -EINVAL;
 	}
 
-	/* We also need a divider that produces a 10us clock. */
+	 
 	div_10us = DIV_ROUND_UP(rate, 10000);
-	/* And another, which produces a 1ms clock. */
+	 
 	div_ms = DIV_ROUND_UP(rate, 1000);
 
 	writel(((div_ms - 1) << JZ4770_ADC_REG_ADCLK_CLKDIVMS_LSB) |
@@ -572,7 +556,7 @@ static const struct ingenic_adc_soc_data jz4740_adc_soc_data = {
 	.has_aux_md = false,
 	.channels = jz4740_channels,
 	.num_channels = ARRAY_SIZE(jz4740_channels),
-	.init_clk_div = NULL, /* no ADCLK register on JZ4740 */
+	.init_clk_div = NULL,  
 };
 
 static const struct ingenic_adc_soc_data jz4760_adc_soc_data = {
@@ -642,7 +626,7 @@ static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
 		return ret;
 	}
 
-	/* We cannot sample the aux channels in parallel. */
+	 
 	mutex_lock(&adc->aux_lock);
 	if (adc->soc_data->has_aux_md && engine == 0) {
 		switch (chan->channel) {
@@ -753,7 +737,7 @@ static int ingenic_adc_buffer_enable(struct iio_dev *iio_dev)
 		return ret;
 	}
 
-	/* It takes significant time for the touchscreen hw to stabilize. */
+	 
 	msleep(50);
 	ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_TOUCH_OPS_MASK,
 			       JZ_ADC_REG_CFG_SAMPLE_NUM(4) |
@@ -865,7 +849,7 @@ static int ingenic_adc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Set clock dividers. */
+	 
 	if (soc_data->init_clk_div) {
 		ret = soc_data->init_clk_div(dev, adc);
 		if (ret) {
@@ -874,18 +858,18 @@ static int ingenic_adc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Put hardware in a known passive state. */
+	 
 	writeb(0x00, adc->base + JZ_ADC_REG_ENABLE);
 	writeb(0xff, adc->base + JZ_ADC_REG_CTRL);
 
-	/* JZ4760B specific */
+	 
 	if (device_property_present(dev, "ingenic,use-internal-divider"))
 		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_VBAT_SEL,
 					    JZ_ADC_REG_CFG_VBAT_SEL);
 	else
 		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_VBAT_SEL, 0);
 
-	usleep_range(2000, 3000); /* Must wait at least 2ms. */
+	usleep_range(2000, 3000);  
 	clk_disable(adc->clk);
 
 	iio_dev->name = "jz-adc";

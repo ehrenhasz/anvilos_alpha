@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI Hardware Error Device (PNP0C33) Driver
- *
- * Copyright (C) 2010, Intel Corp.
- *	Author: Huang Ying <ying.huang@intel.com>
- *
- * ACPI Hardware Error Device is used to report some hardware errors
- * notified via SCI, mainly the corrected errors.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,11 +29,7 @@ void unregister_acpi_hed_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(unregister_acpi_hed_notifier);
 
-/*
- * SCI to report hardware error is forwarded to the listeners of HED,
- * it is used by HEST Generic Hardware Error Source with notify type
- * SCI.
- */
+ 
 static void acpi_hed_notify(acpi_handle handle, u32 event, void *data)
 {
 	blocking_notifier_call_chain(&acpi_hed_notify_list, 0, NULL);
@@ -51,7 +39,7 @@ static int acpi_hed_add(struct acpi_device *device)
 {
 	int err;
 
-	/* Only one hardware error device */
+	 
 	if (hed_handle)
 		return -EINVAL;
 	hed_handle = device->handle;

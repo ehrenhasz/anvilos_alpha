@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lib80211 crypt: host-based TKIP encryption implementation for lib80211
- *
- * Copyright (c) 2003-2004, Jouni Malinen <j@w1.fi>
- * Copyright (c) 2008, John W. Linville <linville@tuxdriver.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -67,7 +62,7 @@ struct lib80211_tkip_data {
 	struct crypto_shash *rx_tfm_michael;
 	struct crypto_shash *tx_tfm_michael;
 
-	/* scratch buffers for virt_to_page() (crypto API) */
+	 
 	u8 rx_hdr[16], tx_hdr[16];
 
 	unsigned long flags;
@@ -217,7 +212,7 @@ static void tkip_mixing_phase1(u16 * TTAK, const u8 * TK, const u8 * TA,
 {
 	int i, j;
 
-	/* Initialize the 80-bit TTAK from TSC (IV32) and TA[0..5] */
+	 
 	TTAK[0] = Lo16(IV32);
 	TTAK[1] = Hi16(IV32);
 	TTAK[2] = Mk16(TA[1], TA[0]);
@@ -237,11 +232,10 @@ static void tkip_mixing_phase1(u16 * TTAK, const u8 * TK, const u8 * TA,
 static void tkip_mixing_phase2(u8 * WEPSeed, const u8 * TK, const u16 * TTAK,
 			       u16 IV16)
 {
-	/* Make temporary area overlap WEP seed so that the final copy can be
-	 * avoided on little endian hosts. */
+	 
 	u16 *PPK = (u16 *) & WEPSeed[4];
 
-	/* Step 1 - make copy of TTAK and bring in TSC */
+	 
 	PPK[0] = TTAK[0];
 	PPK[1] = TTAK[1];
 	PPK[2] = TTAK[2];
@@ -249,7 +243,7 @@ static void tkip_mixing_phase2(u8 * WEPSeed, const u8 * TK, const u16 * TTAK,
 	PPK[4] = TTAK[4];
 	PPK[5] = TTAK[4] + IV16;
 
-	/* Step 2 - 96-bit bijective mixing using S-box */
+	 
 	PPK[0] += _S_(PPK[5] ^ Mk16_le((__le16 *) & TK[0]));
 	PPK[1] += _S_(PPK[0] ^ Mk16_le((__le16 *) & TK[2]));
 	PPK[2] += _S_(PPK[1] ^ Mk16_le((__le16 *) & TK[4]));
@@ -264,8 +258,7 @@ static void tkip_mixing_phase2(u8 * WEPSeed, const u8 * TK, const u16 * TTAK,
 	PPK[4] += RotR1(PPK[3]);
 	PPK[5] += RotR1(PPK[4]);
 
-	/* Step 3 - bring in last of TK bits, assign 24-bit WEP IV value
-	 * WEPSeed[0..2] is transmitted as WEP IV */
+	 
 	WEPSeed[0] = Hi8(IV16);
 	WEPSeed[1] = (Hi8(IV16) | 0x20) & 0x7F;
 	WEPSeed[2] = Lo8(IV16);
@@ -309,7 +302,7 @@ static int lib80211_tkip_hdr(struct sk_buff *skb, int hdr_len,
 	*pos++ = *rc4key;
 	*pos++ = *(rc4key + 1);
 	*pos++ = *(rc4key + 2);
-	*pos++ = (tkey->key_idx << 6) | (1 << 5) /* Ext IV included */ ;
+	*pos++ = (tkey->key_idx << 6) | (1 << 5)   ;
 	*pos++ = tkey->tx_iv32 & 0xff;
 	*pos++ = (tkey->tx_iv32 >> 8) & 0xff;
 	*pos++ = (tkey->tx_iv32 >> 16) & 0xff;
@@ -360,10 +353,7 @@ static int lib80211_tkip_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	return 0;
 }
 
-/*
- * deal with seq counter wrapping correctly.
- * refer to timer_after() for jiffies wrapping handling
- */
+ 
 static inline int tkip_replay_check(u32 iv32_n, u16 iv16_n,
 				    u32 iv32_o, u16 iv16_o)
 {
@@ -446,8 +436,7 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	icv[3] = crc >> 24;
 	if (memcmp(icv, pos + plen, 4) != 0) {
 		if (iv32 != tkey->rx_iv32) {
-			/* Previously cached Phase1 result was already lost, so
-			 * it needs to be recalculated for the next packet. */
+			 
 			tkey->rx_phase1_done = 0;
 		}
 #ifdef CONFIG_LIB80211_DEBUG
@@ -458,12 +447,11 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 		return -5;
 	}
 
-	/* Update real counters only after Michael MIC verification has
-	 * completed */
+	 
 	tkey->rx_iv32_new = iv32;
 	tkey->rx_iv16_new = iv16;
 
-	/* Remove IV and ICV */
+	 
 	memmove(skb->data + TKIP_HDR_LEN, skb->data, hdr_len);
 	skb_pull(skb, TKIP_HDR_LEN);
 	skb_trim(skb, skb->len - 4);
@@ -512,20 +500,20 @@ static void michael_mic_hdr(struct sk_buff *skb, u8 * hdr)
 	switch (le16_to_cpu(hdr11->frame_control) &
 		(IEEE80211_FCTL_FROMDS | IEEE80211_FCTL_TODS)) {
 	case IEEE80211_FCTL_TODS:
-		memcpy(hdr, hdr11->addr3, ETH_ALEN);	/* DA */
-		memcpy(hdr + ETH_ALEN, hdr11->addr2, ETH_ALEN);	/* SA */
+		memcpy(hdr, hdr11->addr3, ETH_ALEN);	 
+		memcpy(hdr + ETH_ALEN, hdr11->addr2, ETH_ALEN);	 
 		break;
 	case IEEE80211_FCTL_FROMDS:
-		memcpy(hdr, hdr11->addr1, ETH_ALEN);	/* DA */
-		memcpy(hdr + ETH_ALEN, hdr11->addr3, ETH_ALEN);	/* SA */
+		memcpy(hdr, hdr11->addr1, ETH_ALEN);	 
+		memcpy(hdr + ETH_ALEN, hdr11->addr3, ETH_ALEN);	 
 		break;
 	case IEEE80211_FCTL_FROMDS | IEEE80211_FCTL_TODS:
-		memcpy(hdr, hdr11->addr3, ETH_ALEN);	/* DA */
-		memcpy(hdr + ETH_ALEN, hdr11->addr4, ETH_ALEN);	/* SA */
+		memcpy(hdr, hdr11->addr3, ETH_ALEN);	 
+		memcpy(hdr + ETH_ALEN, hdr11->addr4, ETH_ALEN);	 
 		break;
 	default:
-		memcpy(hdr, hdr11->addr1, ETH_ALEN);	/* DA */
-		memcpy(hdr + ETH_ALEN, hdr11->addr2, ETH_ALEN);	/* SA */
+		memcpy(hdr, hdr11->addr1, ETH_ALEN);	 
+		memcpy(hdr + ETH_ALEN, hdr11->addr2, ETH_ALEN);	 
 		break;
 	}
 
@@ -533,9 +521,9 @@ static void michael_mic_hdr(struct sk_buff *skb, u8 * hdr)
 		hdr[12] = le16_to_cpu(*((__le16 *)ieee80211_get_qos_ctl(hdr11)))
 			& IEEE80211_QOS_CTL_TID_MASK;
 	} else
-		hdr[12] = 0;		/* priority */
+		hdr[12] = 0;		 
 
-	hdr[13] = hdr[14] = hdr[15] = 0;	/* reserved */
+	hdr[13] = hdr[14] = hdr[15] = 0;	 
 }
 
 static int lib80211_michael_mic_add(struct sk_buff *skb, int hdr_len,
@@ -567,7 +555,7 @@ static void lib80211_michael_mic_failure(struct net_device *dev,
 	union iwreq_data wrqu;
 	struct iw_michaelmicfailure ev;
 
-	/* TODO: needed parameters: count, keyid, key type, TSC */
+	 
 	memset(&ev, 0, sizeof(ev));
 	ev.flags = keyidx & IW_MICFAILURE_KEY_ID;
 	if (hdr->addr1[0] & 0x01)
@@ -607,8 +595,7 @@ static int lib80211_michael_mic_verify(struct sk_buff *skb, int keyidx,
 		return -1;
 	}
 
-	/* Update TSC counters for RX now that the packet verification has
-	 * completed. */
+	 
 	tkey->rx_iv32 = tkey->rx_iv32_new;
 	tkey->rx_iv16 = tkey->rx_iv16_new;
 
@@ -636,7 +623,7 @@ static int lib80211_tkip_set_key(void *key, int len, u8 * seq, void *priv)
 	if (len == TKIP_KEY_LEN) {
 		memcpy(tkey->key, key, TKIP_KEY_LEN);
 		tkey->key_set = 1;
-		tkey->tx_iv16 = 1;	/* TSC is initialized to 1 */
+		tkey->tx_iv16 = 1;	 
 		if (seq) {
 			tkey->rx_iv32 = (seq[5] << 24) | (seq[4] << 16) |
 			    (seq[3] << 8) | seq[2];
@@ -662,7 +649,7 @@ static int lib80211_tkip_get_key(void *key, int len, u8 * seq, void *priv)
 	memcpy(key, tkey->key, TKIP_KEY_LEN);
 
 	if (seq) {
-		/* Return the sequence number of the last transmitted frame. */
+		 
 		u16 iv16 = tkey->tx_iv16;
 		u32 iv32 = tkey->tx_iv32;
 		if (iv16 == 0)
@@ -716,9 +703,9 @@ static struct lib80211_crypto_ops lib80211_crypt_tkip = {
 	.set_key = lib80211_tkip_set_key,
 	.get_key = lib80211_tkip_get_key,
 	.print_stats = lib80211_tkip_print_stats,
-	.extra_mpdu_prefix_len = 4 + 4,	/* IV + ExtIV */
-	.extra_mpdu_postfix_len = 4,	/* ICV */
-	.extra_msdu_postfix_len = 8,	/* MIC */
+	.extra_mpdu_prefix_len = 4 + 4,	 
+	.extra_mpdu_postfix_len = 4,	 
+	.extra_msdu_postfix_len = 8,	 
 	.get_flags = lib80211_tkip_get_flags,
 	.set_flags = lib80211_tkip_set_flags,
 	.owner = THIS_MODULE,

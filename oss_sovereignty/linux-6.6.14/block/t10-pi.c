@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * t10_pi.c - Functions for generating and verifying T10 Protection
- *	      Information.
- */
+
+ 
 
 #include <linux/t10-pi.h>
 #include <linux/blk-integrity.h>
@@ -24,11 +21,7 @@ static __be16 t10_pi_ip_fn(void *data, unsigned int len)
 	return (__force __be16)ip_compute_csum(data, len);
 }
 
-/*
- * Type 1 and Type 2 protection use the same format: 16 bit guard tag,
- * 16 bit app tag, 32 bit reference tag. Type 3 does not define the ref
- * tag.
- */
+ 
 static blk_status_t t10_pi_generate(struct blk_integrity_iter *iter,
 		csum_fn *fn, enum t10_dif_type type)
 {
@@ -122,16 +115,7 @@ static blk_status_t t10_pi_type1_verify_ip(struct blk_integrity_iter *iter)
 	return t10_pi_verify(iter, t10_pi_ip_fn, T10_PI_TYPE1_PROTECTION);
 }
 
-/**
- * t10_pi_type1_prepare - prepare PI prior submitting request to device
- * @rq:              request with PI that should be prepared
- *
- * For Type 1/Type 2, the virtual start sector is the one that was
- * originally submitted by the block layer for the ref_tag usage. Due to
- * partitioning, MD/DM cloning, etc. the actual physical start sector is
- * likely to be different. Remap protection information to match the
- * physical LBA.
- */
+ 
 static void t10_pi_type1_prepare(struct request *rq)
 {
 	const int tuple_sz = rq->q->integrity.tuple_size;
@@ -144,7 +128,7 @@ static void t10_pi_type1_prepare(struct request *rq)
 		struct bio_vec iv;
 		struct bvec_iter iter;
 
-		/* Already remapped? */
+		 
 		if (bip->bip_flags & BIP_MAPPED_INTEGRITY)
 			break;
 
@@ -169,18 +153,7 @@ static void t10_pi_type1_prepare(struct request *rq)
 	}
 }
 
-/**
- * t10_pi_type1_complete - prepare PI prior returning request to the blk layer
- * @rq:              request with PI that should be prepared
- * @nr_bytes:        total bytes to prepare
- *
- * For Type 1/Type 2, the virtual start sector is the one that was
- * originally submitted by the block layer for the ref_tag usage. Due to
- * partitioning, MD/DM cloning, etc. the actual physical start sector is
- * likely to be different. Since the physical start sector was submitted
- * to the device, we should remap it back to virtual values expected by the
- * block layer.
- */
+ 
 static void t10_pi_type1_complete(struct request *rq, unsigned int nr_bytes)
 {
 	unsigned intervals = nr_bytes >> rq->q->integrity.interval_exp;
@@ -234,12 +207,12 @@ static blk_status_t t10_pi_type3_verify_ip(struct blk_integrity_iter *iter)
 	return t10_pi_verify(iter, t10_pi_ip_fn, T10_PI_TYPE3_PROTECTION);
 }
 
-/* Type 3 does not have a reference tag so no remapping is required. */
+ 
 static void t10_pi_type3_prepare(struct request *rq)
 {
 }
 
-/* Type 3 does not have a reference tag so no remapping is required. */
+ 
 static void t10_pi_type3_complete(struct request *rq, unsigned int nr_bytes)
 {
 }
@@ -383,7 +356,7 @@ static void ext_pi_type1_prepare(struct request *rq)
 		struct bio_vec iv;
 		struct bvec_iter iter;
 
-		/* Already remapped? */
+		 
 		if (bip->bip_flags & BIP_MAPPED_INTEGRITY)
 			break;
 

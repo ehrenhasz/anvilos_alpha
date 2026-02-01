@@ -1,34 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 
-/*
- *   cx25840.h - definition for cx25840/1/2/3 inputs
- *
- *   Copyright (C) 2006 Hans Verkuil (hverkuil@xs4all.nl)
- */
+ 
 
 #ifndef _CX25840_H_
 #define _CX25840_H_
 
-/*
- * Note that the cx25840 driver requires that the bridge driver calls the
- * v4l2_subdev's load_fw operation in order to load the driver's firmware.
- * This will load the firmware on the first invocation (further ones are NOP).
- * Without this the audio standard detection will fail and you will
- * only get mono.
- * Alternatively, you can call the reset operation (this can be done
- * multiple times if needed, each invocation will fully reinitialize
- * the device).
- *
- * Since loading the firmware is often problematic when the driver is
- * compiled into the kernel I recommend postponing calling this function
- * until the first open of the video device. Another reason for
- * postponing it is that loading this firmware takes a long time (seconds)
- * due to the slow i2c bus speed. So it will speed up the boot process if
- * you can avoid loading the fw as long as the video device isn't used.
- */
+ 
 
 enum cx25840_video_input {
-	/* Composite video inputs In1-In8 */
+	 
 	CX25840_COMPOSITE1 = 1,
 	CX25840_COMPOSITE2,
 	CX25840_COMPOSITE3,
@@ -38,10 +18,7 @@ enum cx25840_video_input {
 	CX25840_COMPOSITE7,
 	CX25840_COMPOSITE8,
 
-	/*
-	 * S-Video inputs consist of one luma input (In1-In8) ORed with one
-	 * chroma input (In5-In8)
-	 */
+	 
 	CX25840_SVIDEO_LUMA1 = 0x10,
 	CX25840_SVIDEO_LUMA2 = 0x20,
 	CX25840_SVIDEO_LUMA3 = 0x30,
@@ -56,13 +33,13 @@ enum cx25840_video_input {
 	CX25840_SVIDEO_CHROMA7 = 0x700,
 	CX25840_SVIDEO_CHROMA8 = 0x800,
 
-	/* S-Video aliases for common luma/chroma combinations */
+	 
 	CX25840_SVIDEO1 = 0x510,
 	CX25840_SVIDEO2 = 0x620,
 	CX25840_SVIDEO3 = 0x730,
 	CX25840_SVIDEO4 = 0x840,
 
-	/* Allow frames to specify specific input configurations */
+	 
 	CX25840_VIN1_CH1  = 0x80000000,
 	CX25840_VIN2_CH1  = 0x80000001,
 	CX25840_VIN3_CH1  = 0x80000002,
@@ -84,18 +61,7 @@ enum cx25840_video_input {
 	CX25840_DIF_ON = 0x80000400,
 };
 
-/*
- * The defines below are used to set the chip video output settings
- * in the generic mode that can be enabled by calling the subdevice
- * init core op.
- *
- * The requested settings can be passed to the init core op as
- * @val parameter and to the s_routing video op as @config parameter.
- *
- * For details please refer to the section 3.7 Video Output Formatting and
- * to Video Out Control 1 to 4 registers in the section 5.6 Video Decoder Core
- * of the chip datasheet.
- */
+ 
 #define CX25840_VCONFIG_FMT_SHIFT 0
 #define CX25840_VCONFIG_FMT_MASK GENMASK(2, 0)
 #define CX25840_VCONFIG_FMT_BT601 BIT(0)
@@ -160,7 +126,7 @@ enum cx25840_video_input {
 #define CX25840_VCONFIG_VIPCLAMP_DISABLED BIT(24)
 
 enum cx25840_audio_input {
-	/* Audio inputs: serial or In4-In8 */
+	 
 	CX25840_AUDIO_SERIAL,
 	CX25840_AUDIO4 = 4,
 	CX25840_AUDIO5,
@@ -179,14 +145,14 @@ enum cx25840_io_pin {
 	CX25840_PIN_IR_RX_PRGM5,
 	CX25840_PIN_GPIO0_PRGM8,
 	CX25840_PIN_GPIO1_PRGM9,
-	CX25840_PIN_SA_SDIN,		/* Alternate GP Input only */
-	CX25840_PIN_SA_SDOUT,		/* Alternate GP Input only */
+	CX25840_PIN_SA_SDIN,		 
+	CX25840_PIN_SA_SDOUT,		 
 	CX25840_PIN_PLL_CLK_PRGM7,
-	CX25840_PIN_CHIP_SEL_VIPCLK,	/* Output only */
+	CX25840_PIN_CHIP_SEL_VIPCLK,	 
 };
 
 enum cx25840_io_pad {
-	/* Output pads, these must match the actual chip register values */
+	 
 	CX25840_PAD_DEFAULT = 0,
 	CX25840_PAD_ACTIVE,
 	CX25840_PAD_VACTIVE,
@@ -203,12 +169,12 @@ enum cx25840_io_pad {
 	CX25840_PAD_PLL_CLK,
 	CX25840_PAD_VRESET,
 	CX25840_PAD_RESERVED,
-	/* Pads for PLL_CLK output only */
+	 
 	CX25840_PAD_XTI_X5_DLL,
 	CX25840_PAD_AUX_PLL,
 	CX25840_PAD_VID_PLL,
 	CX25840_PAD_XTI,
-	/* Input Pads */
+	 
 	CX25840_PAD_GPI0,
 	CX25840_PAD_GPI1,
 	CX25840_PAD_GPI2,
@@ -245,16 +211,7 @@ enum cx23885_io_pad {
 	CX23885_PAD_GPIO16,
 };
 
-/*
- * pvr150_workaround activates a workaround for a hardware bug that is
- * present in Hauppauge PVR-150 (and possibly PVR-500) cards that have
- * certain NTSC tuners (tveeprom tuner model numbers 85, 99 and 112). The
- * audio autodetect fails on some channels for these models and the workaround
- * is to select the audio standard explicitly. Many thanks to Hauppauge for
- * providing this information.
- *
- * This platform data only needs to be supplied by the ivtv driver.
- */
+ 
 struct cx25840_platform_data {
 	int pvr150_workaround;
 };

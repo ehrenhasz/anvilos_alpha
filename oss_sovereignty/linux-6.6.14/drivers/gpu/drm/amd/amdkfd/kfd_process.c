@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/log2.h>
@@ -44,24 +24,16 @@ struct mm_struct;
 #include "kfd_smi_events.h"
 #include "kfd_debug.h"
 
-/*
- * List of struct kfd_process (field kfd_process).
- * Unique/indexed by mm_struct*
- */
+ 
 DEFINE_HASHTABLE(kfd_processes_table, KFD_PROCESS_TABLE_SIZE);
 DEFINE_MUTEX(kfd_processes_mutex);
 
 DEFINE_SRCU(kfd_processes_srcu);
 
-/* For process termination handling */
+ 
 static struct workqueue_struct *kfd_process_wq;
 
-/* Ordered, single-threaded workqueue for restoring evicted
- * processes. Restoring multiple processes concurrently under memory
- * pressure can lead to processes blocking each other from validating
- * their BOs and result in a live-lock situation where processes
- * remain evicted indefinitely.
- */
+ 
 static struct workqueue_struct *kfd_restore_wq;
 
 static struct kfd_process *find_process(const struct task_struct *thread,
@@ -80,9 +52,7 @@ struct kfd_procfs_tree {
 
 static struct kfd_procfs_tree procfs;
 
-/*
- * Structure for SDMA activity tracking
- */
+ 
 struct kfd_sdma_activity_handler_workarea {
 	struct work_struct sdma_activity_work;
 	struct kfd_process_device *pdd;
@@ -119,33 +89,10 @@ static void kfd_sdma_activity_worker(struct work_struct *work)
 	qpd = &pdd->qpd;
 	if (!dqm || !qpd)
 		return;
-	/*
-	 * Total SDMA activity is current SDMA activity + past SDMA activity
-	 * Past SDMA count is stored in pdd.
-	 * To get the current activity counters for all active SDMA queues,
-	 * we loop over all SDMA queues and get their counts from user-space.
-	 *
-	 * We cannot call get_user() with dqm_lock held as it can cause
-	 * a circular lock dependency situation. To read the SDMA stats,
-	 * we need to do the following:
-	 *
-	 * 1. Create a temporary list of SDMA queue nodes from the qpd->queues_list,
-	 *    with dqm_lock/dqm_unlock().
-	 * 2. Call get_user() for each node in temporary list without dqm_lock.
-	 *    Save the SDMA count for each node and also add the count to the total
-	 *    SDMA count counter.
-	 *    Its possible, during this step, a few SDMA queue nodes got deleted
-	 *    from the qpd->queues_list.
-	 * 3. Do a second pass over qpd->queues_list to check if any nodes got deleted.
-	 *    If any node got deleted, its SDMA count would be captured in the sdma
-	 *    past activity counter. So subtract the SDMA counter stored in step 2
-	 *    for this node from the total SDMA count.
-	 */
+	 
 	INIT_LIST_HEAD(&sdma_q_list.list);
 
-	/*
-	 * Create the temp list of all SDMA queues
-	 */
+	 
 	dqm_lock(dqm);
 
 	list_for_each_entry(q, &qpd->queues_list, list) {
@@ -165,11 +112,7 @@ static void kfd_sdma_activity_worker(struct work_struct *work)
 		list_add_tail(&sdma_q->list, &sdma_q_list.list);
 	}
 
-	/*
-	 * If the temp list is empty, then no SDMA queues nodes were found in
-	 * qpd->queues_list. Return the past activity count as the total sdma
-	 * count
-	 */
+	 
 	if (list_empty(&sdma_q_list.list)) {
 		workarea->sdma_activity_counter = pdd->sdma_past_activity_counter;
 		dqm_unlock(dqm);
@@ -178,9 +121,7 @@ static void kfd_sdma_activity_worker(struct work_struct *work)
 
 	dqm_unlock(dqm);
 
-	/*
-	 * Get the usage count for each SDMA queue in temp_list.
-	 */
+	 
 	mm = get_task_mm(pdd->process->lead_thread);
 	if (!mm)
 		goto cleanup;
@@ -202,10 +143,7 @@ static void kfd_sdma_activity_worker(struct work_struct *work)
 	kthread_unuse_mm(mm);
 	mmput(mm);
 
-	/*
-	 * Do a second iteration over qpd_queues_list to check if any SDMA
-	 * nodes got deleted while fetching SDMA counter.
-	 */
+	 
 	dqm_lock(dqm);
 
 	workarea->sdma_activity_counter += pdd->sdma_past_activity_counter;
@@ -230,11 +168,7 @@ static void kfd_sdma_activity_worker(struct work_struct *work)
 
 	dqm_unlock(dqm);
 
-	/*
-	 * If temp list is not empty, it implies some queues got deleted
-	 * from qpd->queues_list during SDMA usage read. Subtract the SDMA
-	 * count for each node from the total SDMA count.
-	 */
+	 
 	list_for_each_entry_safe(sdma_q, next, &sdma_q_list.list, list) {
 		workarea->sdma_activity_counter -= sdma_q->sdma_val;
 		list_del(&sdma_q->list);
@@ -250,18 +184,7 @@ cleanup:
 	}
 }
 
-/**
- * kfd_get_cu_occupancy - Collect number of waves in-flight on this device
- * by current process. Translates acquired wave count into number of compute units
- * that are occupied.
- *
- * @attr: Handle of attribute that allows reporting of wave count. The attribute
- * handle encapsulates GPU device it is associated with, thereby allowing collection
- * of waves in flight, etc
- * @buffer: Handle of user provided buffer updated with wave count
- *
- * Return: Number of bytes written to user buffer or an error value
- */
+ 
 static int kfd_get_cu_occupancy(struct attribute *attr, char *buffer)
 {
 	int cu_cnt;
@@ -284,13 +207,13 @@ static int kfd_get_cu_occupancy(struct attribute *attr, char *buffer)
 		return snprintf(buffer, PAGE_SIZE, "%d\n", cu_cnt);
 	}
 
-	/* Collect wave count from device if it supports */
+	 
 	wave_cnt = 0;
 	max_waves_per_cu = 0;
 	dev->kfd2kgd->get_cu_occupancy(dev->adev, proc->pasid, &wave_cnt,
 			&max_waves_per_cu, 0);
 
-	/* Translate wave count to number of compute units */
+	 
 	cu_cnt = (wave_cnt + (max_waves_per_cu - 1)) / max_waves_per_cu;
 	return snprintf(buffer, PAGE_SIZE, "%d\n", cu_cnt);
 }
@@ -359,7 +282,7 @@ void kfd_procfs_init(void)
 				   &kfd_device->kobj, "proc");
 	if (ret) {
 		pr_warn("Could not create procfs proc folder");
-		/* If we fail to create the procfs, clean up */
+		 
 		kfd_procfs_shutdown();
 	}
 }
@@ -407,7 +330,7 @@ static ssize_t kfd_procfs_stats_show(struct kobject *kobj,
 				"%llu\n",
 				jiffies64_to_msecs(evict_jiffies));
 
-	/* Sysfs handle that gets CU occupancy is per device */
+	 
 	} else if (strcmp(attr->name, "cu_occupancy") == 0) {
 		return kfd_get_cu_occupancy(attr, buffer);
 	} else {
@@ -499,7 +422,7 @@ int kfd_procfs_add_queue(struct queue *q)
 		return -EINVAL;
 	proc = q->process;
 
-	/* Create proc/<pid>/queues/<queue id> folder */
+	 
 	if (!proc->kobj_queues)
 		return -EFAULT;
 	ret = kobject_init_and_add(&q->kobj, &procfs_queue_type,
@@ -540,12 +463,7 @@ static void kfd_procfs_add_sysfs_stats(struct kfd_process *p)
 	if (!p || !p->kobj)
 		return;
 
-	/*
-	 * Create sysfs files for each GPU:
-	 * - proc/<pid>/stats_<gpuid>/
-	 * - proc/<pid>/stats_<gpuid>/evicted_ms
-	 * - proc/<pid>/stats_<gpuid>/cu_occupancy
-	 */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -570,7 +488,7 @@ static void kfd_procfs_add_sysfs_stats(struct kfd_process *p)
 
 		kfd_sysfs_create_file(pdd->kobj_stats, &pdd->attr_evict,
 				      "evicted_ms");
-		/* Add sysfs file to report compute unit occupancy */
+		 
 		if (pdd->dev->kfd2kgd->get_cu_occupancy)
 			kfd_sysfs_create_file(pdd->kobj_stats,
 					      &pdd->attr_cu_occupancy,
@@ -587,13 +505,7 @@ static void kfd_procfs_add_sysfs_counters(struct kfd_process *p)
 	if (!p || !p->kobj)
 		return;
 
-	/*
-	 * Create sysfs files for each GPU which supports SVM
-	 * - proc/<pid>/counters_<gpuid>/
-	 * - proc/<pid>/counters_<gpuid>/faults
-	 * - proc/<pid>/counters_<gpuid>/page_in
-	 * - proc/<pid>/counters_<gpuid>/page_out
-	 */
+	 
 	for_each_set_bit(i, p->svms.bitmap_supported, p->n_pdds) {
 		struct kfd_process_device *pdd = p->pdds[i];
 		struct kobject *kobj_counters;
@@ -630,11 +542,7 @@ static void kfd_procfs_add_sysfs_files(struct kfd_process *p)
 	if (!p || !p->kobj)
 		return;
 
-	/*
-	 * Create sysfs files for each GPU:
-	 * - proc/<pid>/vram_<gpuid>
-	 * - proc/<pid>/sdma_<gpuid>
-	 */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -701,12 +609,7 @@ static void kfd_process_free_gpuvm(struct kgd_mem *mem,
 					       NULL);
 }
 
-/* kfd_process_alloc_gpuvm - Allocate GPU VM for the KFD process
- *	This function should be only called right after the process
- *	is created and when kfd_processes_mutex is still being held
- *	to avoid concurrency. Because of that exclusiveness, we do
- *	not need to take p->mutex.
- */
+ 
 static int kfd_process_alloc_gpuvm(struct kfd_process_device *pdd,
 				   uint64_t gpu_va, uint32_t size,
 				   uint32_t flags, struct kgd_mem **mem, void **kptr)
@@ -754,12 +657,7 @@ err_alloc_mem:
 	return err;
 }
 
-/* kfd_process_device_reserve_ib_mem - Reserve memory inside the
- *	process for IB usage The memory reserved is for KFD to submit
- *	IB to AMDGPU from kernel.  If the memory is reserved
- *	successfully, ib_kaddr will have the CPU/kernel
- *	address. Check ib_kaddr before accessing the memory.
- */
+ 
 static int kfd_process_device_reserve_ib_mem(struct kfd_process_device *pdd)
 {
 	struct qcm_process_device *qpd = &pdd->qpd;
@@ -774,7 +672,7 @@ static int kfd_process_device_reserve_ib_mem(struct kfd_process_device *pdd)
 	if (qpd->ib_kaddr || !qpd->ib_base)
 		return 0;
 
-	/* ib_base is only set for dGPU */
+	 
 	ret = kfd_process_alloc_gpuvm(pdd, qpd->ib_base, PAGE_SIZE, flags,
 				      &mem, &kaddr);
 	if (ret)
@@ -804,17 +702,13 @@ struct kfd_process *kfd_create_process(struct task_struct *thread)
 	if (!(thread->mm && mmget_not_zero(thread->mm)))
 		return ERR_PTR(-EINVAL);
 
-	/* Only the pthreads threading model is supported. */
+	 
 	if (thread->group_leader->mm != thread->mm) {
 		mmput(thread->mm);
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * take kfd processes mutex before starting of process creation
-	 * so there won't be a case where two threads of the same process
-	 * create two kfd_process structures
-	 */
+	 
 	mutex_lock(&kfd_processes_mutex);
 
 	if (kfd_is_locked()) {
@@ -823,7 +717,7 @@ struct kfd_process *kfd_create_process(struct task_struct *thread)
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* A prior open of /dev/kfd could have already created the process. */
+	 
 	process = find_process(thread, false);
 	if (process) {
 		pr_debug("Process already found\n");
@@ -879,7 +773,7 @@ struct kfd_process *kfd_get_process(const struct task_struct *thread)
 	if (!thread->mm)
 		return ERR_PTR(-EINVAL);
 
-	/* Only the pthreads threading model is supported. */
+	 
 	if (thread->group_leader->mm != thread->mm)
 		return ERR_PTR(-EINVAL);
 
@@ -922,7 +816,7 @@ void kfd_unref_process(struct kfd_process *p)
 	kref_put(&p->ref, kfd_process_ref_release);
 }
 
-/* This increments the process->ref counter. */
+ 
 struct kfd_process *kfd_lookup_process_by_pid(struct pid *pid)
 {
 	struct task_struct *task = NULL;
@@ -950,10 +844,7 @@ static void kfd_process_device_free_bos(struct kfd_process_device *pdd)
 	int id;
 	int i;
 
-	/*
-	 * Remove all handles from idr and release appropriate
-	 * local memory object
-	 */
+	 
 	idr_for_each_entry(&pdd->alloc_idr, mem, id) {
 
 		for (i = 0; i < p->n_pdds; i++) {
@@ -971,10 +862,7 @@ static void kfd_process_device_free_bos(struct kfd_process_device *pdd)
 	}
 }
 
-/*
- * Just kunmap and unpin signal BO here. It will be freed in
- * kfd_process_free_outstanding_kfd_bos()
- */
+ 
 static void kfd_process_kunmap_signal_bo(struct kfd_process *p)
 {
 	struct kfd_process_device *pdd;
@@ -1040,10 +928,7 @@ static void kfd_process_destroy_pdds(struct kfd_process *p)
 		if (pdd->dev->kfd->shared_resources.enable_mes)
 			amdgpu_amdkfd_free_gtt_mem(pdd->dev->adev,
 						   pdd->proc_ctx_bo);
-		/*
-		 * before destroying pdd, make sure to report availability
-		 * for auto suspend
-		 */
+		 
 		if (pdd->runtime_inuse) {
 			pm_runtime_mark_last_busy(adev_to_drm(pdd->dev->adev)->dev);
 			pm_runtime_put_autosuspend(adev_to_drm(pdd->dev->adev)->dev);
@@ -1100,11 +985,7 @@ static void kfd_process_remove_sysfs(struct kfd_process *p)
 	p->kobj = NULL;
 }
 
-/* No process locking is needed in this function, because the process
- * is not findable any more. We must assume that no other thread is
- * using it any more, otherwise we couldn't safely free the process
- * structure in the end.
- */
+ 
 static void kfd_process_wq_release(struct work_struct *work)
 {
 	struct kfd_process *p = container_of(work, struct kfd_process,
@@ -1113,10 +994,7 @@ static void kfd_process_wq_release(struct work_struct *work)
 	kfd_process_dequeue_from_all_devices(p);
 	pqm_uninit(&p->pqm);
 
-	/* Signal the eviction fence after user mode queues are
-	 * destroyed. This allows any BOs to be freed without
-	 * triggering pointless evictions or waiting for fences.
-	 */
+	 
 	dma_fence_signal(p->ef);
 
 	kfd_process_remove_sysfs(p);
@@ -1171,12 +1049,12 @@ static void kfd_process_notifier_release_internal(struct kfd_process *p)
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
-		/* re-enable GFX OFF since runtime enable with ttmp setup disabled it. */
+		 
 		if (!kfd_dbg_is_rlc_restore_supported(pdd->dev) && p->runtime_info.ttmp_setup)
 			amdgpu_gfx_off_ctrl(pdd->dev->adev, true);
 	}
 
-	/* Indicate to other users that MM is no longer valid */
+	 
 	p->mm = NULL;
 	kfd_dbg_trap_disable(p);
 
@@ -1206,22 +1084,13 @@ static void kfd_process_notifier_release(struct mmu_notifier *mn,
 {
 	struct kfd_process *p;
 
-	/*
-	 * The kfd_process structure can not be free because the
-	 * mmu_notifier srcu is read locked
-	 */
+	 
 	p = container_of(mn, struct kfd_process, mmu_notifier);
 	if (WARN_ON(p->mm != mm))
 		return;
 
 	mutex_lock(&kfd_processes_mutex);
-	/*
-	 * Do early return if table is empty.
-	 *
-	 * This could potentially happen if this function is called concurrently
-	 * by mmu_notifier and by kfd_cleanup_pocesses.
-	 *
-	 */
+	 
 	if (hash_empty(kfd_processes_table)) {
 		mutex_unlock(&kfd_processes_mutex);
 		return;
@@ -1239,12 +1108,7 @@ static const struct mmu_notifier_ops kfd_process_mmu_notifier_ops = {
 	.free_notifier = kfd_process_free_notifier,
 };
 
-/*
- * This code handles the case when driver is being unloaded before all
- * mm_struct are released.  We need to safely free the kfd_process and
- * avoid race conditions with mmu_notifier that might try to free them.
- *
- */
+ 
 void kfd_cleanup_processes(void)
 {
 	struct kfd_process *p;
@@ -1252,12 +1116,7 @@ void kfd_cleanup_processes(void)
 	unsigned int temp;
 	HLIST_HEAD(cleanup_list);
 
-	/*
-	 * Move all remaining kfd_process from the process table to a
-	 * temp list for processing.   Once done, callback from mmu_notifier
-	 * release will not see the kfd_process in the table and do early return,
-	 * avoiding double free issues.
-	 */
+	 
 	mutex_lock(&kfd_processes_mutex);
 	hash_for_each_safe(kfd_processes_table, temp, p_temp, p, kfd_processes) {
 		hash_del_rcu(&p->kfd_processes);
@@ -1269,10 +1128,7 @@ void kfd_cleanup_processes(void)
 	hlist_for_each_entry_safe(p, p_temp, &cleanup_list, kfd_processes)
 		kfd_process_notifier_release_internal(p);
 
-	/*
-	 * Ensures that all outstanding free_notifier get called, triggering
-	 * the release of the kfd_process struct.
-	 */
+	 
 	mmu_notifier_synchronize();
 }
 
@@ -1333,7 +1189,7 @@ static int kfd_process_device_init_cwsr_dgpu(struct kfd_process_device *pdd)
 	if (!dev->kfd->cwsr_enabled || qpd->cwsr_kaddr || !qpd->cwsr_base)
 		return 0;
 
-	/* cwsr_base is only set for dGPU */
+	 
 	ret = kfd_process_alloc_gpuvm(pdd, qpd->cwsr_base,
 				      KFD_CWSR_TBA_TMA_SIZE, flags, &mem, &kaddr);
 	if (ret)
@@ -1371,15 +1227,13 @@ void kfd_process_set_trap_handler(struct qcm_process_device *qpd,
 				  uint64_t tma_addr)
 {
 	if (qpd->cwsr_kaddr) {
-		/* KFD trap handler is bound, record as second-level TBA/TMA
-		 * in first-level TMA. First-level trap will jump to second.
-		 */
+		 
 		uint64_t *tma =
 			(uint64_t *)(qpd->cwsr_kaddr + KFD_CWSR_TMA_OFFSET);
 		tma[0] = tba_addr;
 		tma[1] = tma_addr;
 	} else {
-		/* No trap handler bound, bind as first-level TBA/TMA. */
+		 
 		qpd->tba_addr = tba_addr;
 		qpd->tma_addr = tma_addr;
 	}
@@ -1389,41 +1243,18 @@ bool kfd_process_xnack_mode(struct kfd_process *p, bool supported)
 {
 	int i;
 
-	/* On most GFXv9 GPUs, the retry mode in the SQ must match the
-	 * boot time retry setting. Mixing processes with different
-	 * XNACK/retry settings can hang the GPU.
-	 *
-	 * Different GPUs can have different noretry settings depending
-	 * on HW bugs or limitations. We need to find at least one
-	 * XNACK mode for this process that's compatible with all GPUs.
-	 * Fortunately GPUs with retry enabled (noretry=0) can run code
-	 * built for XNACK-off. On GFXv9 it may perform slower.
-	 *
-	 * Therefore applications built for XNACK-off can always be
-	 * supported and will be our fallback if any GPU does not
-	 * support retry.
-	 */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_node *dev = p->pdds[i]->dev;
 
-		/* Only consider GFXv9 and higher GPUs. Older GPUs don't
-		 * support the SVM APIs and don't need to be considered
-		 * for the XNACK mode selection.
-		 */
+		 
 		if (!KFD_IS_SOC15(dev))
 			continue;
-		/* Aldebaran can always support XNACK because it can support
-		 * per-process XNACK mode selection. But let the dev->noretry
-		 * setting still influence the default XNACK mode.
-		 */
+		 
 		if (supported && KFD_SUPPORT_XNACK_PER_PROCESS(dev))
 			continue;
 
-		/* GFXv10 and later GPUs do not support shader preemption
-		 * during page faults. This can lead to poor QoS for queue
-		 * management and memory-manager-related preemptions or
-		 * even deadlocks.
-		 */
+		 
 		if (KFD_GC_VERSION(dev) >= IP_VERSION(10, 1, 1))
 			return false;
 
@@ -1444,10 +1275,7 @@ void kfd_process_set_trap_debug_flag(struct qcm_process_device *qpd,
 	}
 }
 
-/*
- * On return the kfd_process is fully operational and will be freed when the
- * mm is released
- */
+ 
 static struct kfd_process *create_process(const struct task_struct *thread)
 {
 	struct kfd_process *process;
@@ -1487,32 +1315,26 @@ static struct kfd_process *create_process(const struct task_struct *thread)
 	if (err != 0)
 		goto err_process_pqm_init;
 
-	/* init process apertures*/
+	 
 	err = kfd_init_apertures(process);
 	if (err != 0)
 		goto err_init_apertures;
 
-	/* Check XNACK support after PDDs are created in kfd_init_apertures */
+	 
 	process->xnack_enabled = kfd_process_xnack_mode(process, false);
 
 	err = svm_range_list_init(process);
 	if (err)
 		goto err_init_svm_range_list;
 
-	/* alloc_notifier needs to find the process in the hash table */
+	 
 	hash_add_rcu(kfd_processes_table, &process->kfd_processes,
 			(uintptr_t)process->mm);
 
-	/* Avoid free_notifier to start kfd_process_wq_release if
-	 * mmu_notifier_get failed because of pending signal.
-	 */
+	 
 	kref_get(&process->ref);
 
-	/* MMU notifier registration must be the last call that can fail
-	 * because after this point we cannot unwind the process creation.
-	 * After this point, mmu_notifier_put will trigger the cleanup by
-	 * dropping the last process reference in the free_notifier.
-	 */
+	 
 	mn = mmu_notifier_get(&kfd_process_mmu_notifier_ops, process->mm);
 	if (IS_ERR(mn)) {
 		err = PTR_ERR(mn);
@@ -1607,7 +1429,7 @@ struct kfd_process_device *kfd_create_process_device_data(struct kfd_node *dev,
 							false,
 							0);
 
-	/* Init idr used for memory handle translation */
+	 
 	idr_init(&pdd->alloc_idr);
 
 	return pdd;
@@ -1617,20 +1439,7 @@ err_free_pdd:
 	return NULL;
 }
 
-/**
- * kfd_process_device_init_vm - Initialize a VM for a process-device
- *
- * @pdd: The process-device
- * @drm_file: Optional pointer to a DRM file descriptor
- *
- * If @drm_file is specified, it will be used to acquire the VM from
- * that file descriptor. If successful, the @pdd takes ownership of
- * the file descriptor.
- *
- * If @drm_file is NULL, a new VM is created.
- *
- * Returns 0 on success, -errno on failure.
- */
+ 
 int kfd_process_device_init_vm(struct kfd_process_device *pdd,
 			       struct file *drm_file)
 {
@@ -1690,13 +1499,7 @@ err_reserve_ib_mem:
 	return ret;
 }
 
-/*
- * Direct the IOMMU to bind the process (specifically the pasid->mm)
- * to the device.
- * Unbinding occurs when the process dies or the device is removed.
- *
- * Assumes that the process lock is held.
- */
+ 
 struct kfd_process_device *kfd_bind_process_to_device(struct kfd_node *dev,
 							struct kfd_process *p)
 {
@@ -1712,11 +1515,7 @@ struct kfd_process_device *kfd_bind_process_to_device(struct kfd_node *dev,
 	if (!pdd->drm_priv)
 		return ERR_PTR(-ENODEV);
 
-	/*
-	 * signal runtime-pm system to auto resume and prevent
-	 * further runtime suspend once device pdd is created until
-	 * pdd is destroyed.
-	 */
+	 
 	if (!pdd->runtime_inuse) {
 		err = pm_runtime_get_sync(adev_to_drm(dev->adev)->dev);
 		if (err < 0) {
@@ -1725,27 +1524,20 @@ struct kfd_process_device *kfd_bind_process_to_device(struct kfd_node *dev,
 		}
 	}
 
-	/*
-	 * make sure that runtime_usage counter is incremented just once
-	 * per pdd
-	 */
+	 
 	pdd->runtime_inuse = true;
 
 	return pdd;
 }
 
-/* Create specific handle mapped to mem from process local memory idr
- * Assumes that the process lock is held.
- */
+ 
 int kfd_process_device_create_obj_handle(struct kfd_process_device *pdd,
 					void *mem)
 {
 	return idr_alloc(&pdd->alloc_idr, mem, 0, 0, GFP_KERNEL);
 }
 
-/* Translate specific handle from process local memory idr
- * Assumes that the process lock is held.
- */
+ 
 void *kfd_process_device_translate_handle(struct kfd_process_device *pdd,
 					int handle)
 {
@@ -1755,9 +1547,7 @@ void *kfd_process_device_translate_handle(struct kfd_process_device *pdd,
 	return idr_find(&pdd->alloc_idr, handle);
 }
 
-/* Remove specific handle from process local memory idr
- * Assumes that the process lock is held.
- */
+ 
 void kfd_process_device_remove_obj_handle(struct kfd_process_device *pdd,
 					int handle)
 {
@@ -1765,7 +1555,7 @@ void kfd_process_device_remove_obj_handle(struct kfd_process_device *pdd,
 		idr_remove(&pdd->alloc_idr, handle);
 }
 
-/* This increments the process->ref counter. */
+ 
 struct kfd_process *kfd_lookup_process_by_pasid(u32 pasid)
 {
 	struct kfd_process *p, *ret_p = NULL;
@@ -1786,7 +1576,7 @@ struct kfd_process *kfd_lookup_process_by_pasid(u32 pasid)
 	return ret_p;
 }
 
-/* This increments the process->ref counter. */
+ 
 struct kfd_process *kfd_lookup_process_by_mm(const struct mm_struct *mm)
 {
 	struct kfd_process *p;
@@ -1802,11 +1592,7 @@ struct kfd_process *kfd_lookup_process_by_mm(const struct mm_struct *mm)
 	return p;
 }
 
-/* kfd_process_evict_queues - Evict all user queues of a process
- *
- * Eviction is reference-counted per process-device. This means multiple
- * evictions from different sources can be nested safely.
- */
+ 
 int kfd_process_evict_queues(struct kfd_process *p, uint32_t trigger)
 {
 	int r = 0;
@@ -1821,10 +1607,7 @@ int kfd_process_evict_queues(struct kfd_process *p, uint32_t trigger)
 
 		r = pdd->dev->dqm->ops.evict_process_queues(pdd->dev->dqm,
 							    &pdd->qpd);
-		/* evict return -EIO if HWS is hang or asic is resetting, in this case
-		 * we would like to set all the queues to be in evicted state to prevent
-		 * them been add back since they actually not be saved right now.
-		 */
+		 
 		if (r && r != -EIO) {
 			pr_err("Failed to evict process queues\n");
 			goto fail;
@@ -1835,9 +1618,7 @@ int kfd_process_evict_queues(struct kfd_process *p, uint32_t trigger)
 	return r;
 
 fail:
-	/* To keep state consistent, roll back partial eviction by
-	 * restoring queues
-	 */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -1856,7 +1637,7 @@ fail:
 	return r;
 }
 
-/* kfd_process_restore_queues - Restore all user queues of a process */
+ 
 int kfd_process_restore_queues(struct kfd_process *p)
 {
 	int r, ret = 0;
@@ -1912,19 +1693,12 @@ static void evict_process_worker(struct work_struct *work)
 
 	dwork = to_delayed_work(work);
 
-	/* Process termination destroys this worker thread. So during the
-	 * lifetime of this thread, kfd_process p will be valid
-	 */
+	 
 	p = container_of(dwork, struct kfd_process, eviction_work);
 	WARN_ONCE(p->last_eviction_seqno != p->ef->seqno,
 		  "Eviction fence mismatch\n");
 
-	/* Narrow window of overlap between restore and evict work
-	 * item is possible. Once amdgpu_amdkfd_gpuvm_restore_process_bos
-	 * unreserves KFD BOs, it is possible to evicted again. But
-	 * restore has few more steps of finish. So lets wait for any
-	 * previous restore work to complete
-	 */
+	 
 	flush_delayed_work(&p->restore_work);
 
 	pr_debug("Started evicting pasid 0x%x\n", p->pasid);
@@ -1949,24 +1723,14 @@ static void restore_process_worker(struct work_struct *work)
 
 	dwork = to_delayed_work(work);
 
-	/* Process termination destroys this worker thread. So during the
-	 * lifetime of this thread, kfd_process p will be valid
-	 */
+	 
 	p = container_of(dwork, struct kfd_process, restore_work);
 	pr_debug("Started restoring pasid 0x%x\n", p->pasid);
 
-	/* Setting last_restore_timestamp before successful restoration.
-	 * Otherwise this would have to be set by KGD (restore_process_bos)
-	 * before KFD BOs are unreserved. If not, the process can be evicted
-	 * again before the timestamp is set.
-	 * If restore fails, the timestamp will be set again in the next
-	 * attempt. This would mean that the minimum GPU quanta would be
-	 * PROCESS_ACTIVE_TIME_MS - (time to execute the following two
-	 * functions)
-	 */
+	 
 
 	p->last_restore_timestamp = get_jiffies_64();
-	/* VMs may not have been acquired yet during debugging. */
+	 
 	if (p->kgd_process_info)
 		ret = amdgpu_amdkfd_gpuvm_restore_process_bos(p->kgd_process_info,
 							     &p->ef);
@@ -2048,7 +1812,7 @@ int kfd_reserved_mem_mmap(struct kfd_node *dev, struct kfd_process *process,
 
 	vm_flags_set(vma, VM_IO | VM_DONTCOPY | VM_DONTEXPAND
 		| VM_NORESERVE | VM_DONTDUMP | VM_PFNMAP);
-	/* Mapping pages to user process */
+	 
 	return remap_pfn_range(vma, vma->vm_start,
 			       PFN_DOWN(__pa(qpd->cwsr_kaddr)),
 			       KFD_CWSR_TBA_TMA_SIZE, vma->vm_page_prot);
@@ -2062,18 +1826,12 @@ void kfd_flush_tlb(struct kfd_process_device *pdd, enum TLB_FLUSH_TYPE type)
 	uint32_t xcc_mask = dev->xcc_mask;
 	int xcc = 0;
 
-	/*
-	 * It can be that we race and lose here, but that is extremely unlikely
-	 * and the worst thing which could happen is that we flush the changes
-	 * into the TLB once more which is harmless.
-	 */
+	 
 	if (atomic64_xchg(&pdd->tlb_seq, tlb_seq) == tlb_seq)
 		return;
 
 	if (dev->dqm->sched_policy == KFD_SCHED_POLICY_NO_HWS) {
-		/* Nothing to flush until a VMID is assigned, which
-		 * only happens when the first queue is created.
-		 */
+		 
 		if (pdd->qpd.vmid)
 			amdgpu_amdkfd_flush_gpu_tlb_vmid(dev->adev,
 							pdd->qpd.vmid);
@@ -2084,7 +1842,7 @@ void kfd_flush_tlb(struct kfd_process_device *pdd, enum TLB_FLUSH_TYPE type)
 	}
 }
 
-/* assumes caller holds process lock. */
+ 
 int kfd_process_drain_interrupts(struct kfd_process_device *pdd)
 {
 	uint32_t irq_drain_fence[8];
@@ -2101,15 +1859,13 @@ int kfd_process_drain_interrupts(struct kfd_process_device *pdd)
 							KFD_IRQ_FENCE_CLIENTID;
 	irq_drain_fence[3] = pdd->process->pasid;
 
-	/*
-	 * For GFX 9.4.3, send the NodeId also in IH cookie DW[3]
-	 */
+	 
 	if (KFD_GC_VERSION(pdd->dev->kfd) == IP_VERSION(9, 4, 3)) {
 		node_id = ffs(pdd->dev->interrupt_bitmap) - 1;
 		irq_drain_fence[3] |= node_id << 16;
 	}
 
-	/* ensure stale irqs scheduled KFD interrupts and send drain fence. */
+	 
 	if (amdgpu_amdkfd_send_close_event_drain_irq(pdd->dev->adev,
 						     irq_drain_fence)) {
 		pdd->process->irq_drain_is_open = false;

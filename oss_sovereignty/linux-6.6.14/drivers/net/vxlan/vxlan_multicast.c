@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	Vxlan multicast group handling
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
@@ -11,9 +8,7 @@
 
 #include "vxlan_private.h"
 
-/* Update multicast group membership when first VNI on
- * multicast address is brought up
- */
+ 
 int vxlan_igmp_join(struct vxlan_dev *vxlan, union vxlan_addr *rip,
 		    int rifindex)
 {
@@ -121,7 +116,7 @@ static bool vxlan_group_used_by_vnifilter(struct vxlan_dev *vxlan,
 	return false;
 }
 
-/* See if multicast group is already in use by other ID */
+ 
 bool vxlan_group_used(struct vxlan_net *vn, struct vxlan_dev *dev,
 		      __be32 vni, union vxlan_addr *rip, int rifindex)
 {
@@ -136,9 +131,7 @@ bool vxlan_group_used(struct vxlan_net *vn, struct vxlan_dev *dev,
 
 	sock4 = rtnl_dereference(dev->vn4_sock);
 
-	/* The vxlan_sock is only used by dev, leaving group has
-	 * no effect on other vxlan devices.
-	 */
+	 
 	if (family == AF_INET && sock4 && refcount_read(&sock4->refcnt) == 1)
 		return false;
 
@@ -185,7 +178,7 @@ static int vxlan_multicast_join_vnigrp(struct vxlan_dev *vxlan)
 	list_for_each_entry_safe(v, tmp, &vg->vni_list, vlist) {
 		if (!vxlan_addr_multicast(&v->remote_ip))
 			continue;
-		/* skip if address is same as default address */
+		 
 		if (vxlan_addr_equal(&v->remote_ip,
 				     &vxlan->default_dst.remote_ip))
 			continue;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -165,10 +162,10 @@ static const struct {
 
 enum {
 	QEDE_PRI_FLAG_CMT,
-	QEDE_PRI_FLAG_SMART_AN_SUPPORT, /* MFW supports SmartAN */
+	QEDE_PRI_FLAG_SMART_AN_SUPPORT,  
 	QEDE_PRI_FLAG_RECOVER_ON_ERROR,
-	QEDE_PRI_FLAG_ESL_SUPPORT, /* MFW supports Enhanced System Lockdown */
-	QEDE_PRI_FLAG_ESL_ACTIVE, /* Enhanced System Lockdown Active status */
+	QEDE_PRI_FLAG_ESL_SUPPORT,  
+	QEDE_PRI_FLAG_ESL_ACTIVE,  
 	QEDE_PRI_FLAG_LEN,
 };
 
@@ -199,7 +196,7 @@ static const char qede_tests_str_arr[QEDE_ETHTOOL_TEST_MAX][ETH_GSTRING_LEN] = {
 	"Nvram (online)\t\t",
 };
 
-/* Forced speed capabilities maps */
+ 
 
 struct qede_forced_speed_map {
 	u32		speed;
@@ -287,7 +284,7 @@ void __init qede_forced_speed_maps_init(void)
 	}
 }
 
-/* Ethtool callbacks */
+ 
 
 static void qede_get_strings_stats_txq(struct qede_dev *edev,
 				       struct qede_tx_queue *txq, u8 **buf)
@@ -330,7 +327,7 @@ static void qede_get_strings_stats(struct qede_dev *edev, u8 *buf)
 	struct qede_fastpath *fp;
 	int i;
 
-	/* Account for queue statistics */
+	 
 	for (i = 0; i < QEDE_QUEUE_CNT(edev); i++) {
 		fp = &edev->fp_array[i];
 
@@ -349,7 +346,7 @@ static void qede_get_strings_stats(struct qede_dev *edev, u8 *buf)
 		}
 	}
 
-	/* Account for non-queue statistics */
+	 
 	for (i = 0; i < QEDE_NUM_STATS; i++) {
 		if (qede_is_irrelevant_stat(edev, i))
 			continue;
@@ -409,7 +406,7 @@ static void qede_get_ethtool_stats(struct net_device *dev,
 
 	qede_fill_by_demand_stats(edev);
 
-	/* Need to protect the access to the fastpath array */
+	 
 	__qede_lock(edev);
 
 	for (i = 0; i < QEDE_QUEUE_CNT(edev); i++) {
@@ -456,14 +453,14 @@ static int qede_get_sset_count(struct net_device *dev, int stringset)
 			if (qede_is_irrelevant_stat(edev, i))
 				num_stats--;
 
-		/* Account for the Regular Tx statistics */
+		 
 		num_stats += QEDE_TSS_COUNT(edev) * QEDE_NUM_TQSTATS *
 				edev->dev_info.num_tc;
 
-		/* Account for the Regular Rx statistics */
+		 
 		num_stats += QEDE_RSS_COUNT(edev) * QEDE_NUM_RQSTATS;
 
-		/* Account for XDP statistics [if needed] */
+		 
 		if (edev->xdp_prog)
 			num_stats += QEDE_RSS_COUNT(edev) * QEDE_NUM_TQSTATS;
 		return num_stats;
@@ -514,7 +511,7 @@ static int qede_set_priv_flags(struct net_device *dev, u32 flags)
 	u32 cflags = qede_get_priv_flags(dev);
 	u32 dflags = flags ^ cflags;
 
-	/* can only change RECOVER_ON_ERROR flag */
+	 
 	if (dflags & ~BIT(QEDE_PRI_FLAG_RECOVER_ON_ERROR))
 		return -EINVAL;
 
@@ -591,7 +588,7 @@ static int qede_set_link_ksettings(struct net_device *dev,
 		params.forced_speed = 0;
 
 		linkmode_copy(params.adv_speeds, cmd->link_modes.advertising);
-	} else {		/* forced speed */
+	} else {		 
 		params.override_flags |= QED_LINK_OVERRIDE_SPEED_FORCED_SPEED;
 		params.autoneg = false;
 		params.forced_speed = base->speed;
@@ -693,7 +690,7 @@ static int qede_set_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)
 	if (wol_requested == edev->wol_enabled)
 		return 0;
 
-	/* Need to actually change configuration */
+	 
 	if (!edev->dev_info.common.wol_support) {
 		DP_INFO(edev, "Device doesn't support WoL\n");
 		return -EINVAL;
@@ -746,7 +743,7 @@ static int qede_nway_reset(struct net_device *dev)
 	if (!current_link.link_up)
 		return 0;
 
-	/* Toggle the link */
+	 
 	memset(&link_params, 0, sizeof(link_params));
 	link_params.link_up = false;
 	edev->ops->common->set_link(edev->cdev, &link_params);
@@ -812,10 +809,7 @@ static int qede_get_coalesce(struct net_device *dev,
 
 			fp = &edev->fp_array[i];
 
-			/* All TX queues of given fastpath uses same
-			 * coalescing value, so no need to iterate over
-			 * all TCs, TC0 txq should suffice.
-			 */
+			 
 			if (fp->type & QEDE_FASTPATH_TX) {
 				txq = QEDE_FP_TC0_TXQ(fp);
 				tx_handle = txq->handle;
@@ -895,10 +889,7 @@ int qede_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal,
 		if (edev->fp_array[i].type & QEDE_FASTPATH_TX) {
 			struct qede_tx_queue *txq;
 
-			/* All TX queues of given fastpath uses same
-			 * coalescing value, so no need to iterate over
-			 * all TCs, TC0 txq should suffice.
-			 */
+			 
 			txq = QEDE_FP_TC0_TXQ(fp);
 
 			rc = edev->ops->common->set_coalesce(edev->cdev,
@@ -941,7 +932,7 @@ static int qede_set_ringparam(struct net_device *dev,
 		   "Set ring params command parameters: rx_pending = %d, tx_pending = %d\n",
 		   ering->rx_pending, ering->tx_pending);
 
-	/* Validate legality of configuration */
+	 
 	if (ering->rx_pending > NUM_RX_BDS_MAX ||
 	    ering->rx_pending < NUM_RX_BDS_MIN ||
 	    ering->tx_pending > NUM_TX_BDS_MAX ||
@@ -953,7 +944,7 @@ static int qede_set_ringparam(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Change ring size and re-load */
+	 
 	edev->q_num_rx_buffers = ering->rx_pending;
 	edev->q_num_tx_buffers = ering->tx_pending;
 
@@ -1051,7 +1042,7 @@ static void qede_update_mtu(struct qede_dev *edev,
 	edev->ndev->mtu = args->u.mtu;
 }
 
-/* Netdevice NDOs */
+ 
 int qede_change_mtu(struct net_device *ndev, int new_mtu)
 {
 	struct qede_dev *edev = netdev_priv(ndev);
@@ -1063,7 +1054,7 @@ int qede_change_mtu(struct net_device *ndev, int new_mtu)
 	if (new_mtu > PAGE_SIZE)
 		ndev->features &= ~NETIF_F_GRO_HW;
 
-	/* Set the mtu field and re-start the interface if needed */
+	 
 	args.u.mtu = new_mtu;
 	args.func = &qede_update_mtu;
 	qede_reload(edev, &args, false);
@@ -1103,7 +1094,7 @@ static int qede_set_channels(struct net_device *dev,
 	count = channels->rx_count + channels->tx_count +
 			channels->combined_count;
 
-	/* We don't support `other' channels */
+	 
 	if (channels->other_count) {
 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
 			   "command parameters not supported\n");
@@ -1124,7 +1115,7 @@ static int qede_set_channels(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Check if there was a change in the active parameters */
+	 
 	if ((count == QEDE_QUEUE_CNT(edev)) &&
 	    (channels->tx_count == edev->fp_num_tx) &&
 	    (channels->rx_count == edev->fp_num_rx)) {
@@ -1133,7 +1124,7 @@ static int qede_set_channels(struct net_device *dev,
 		return 0;
 	}
 
-	/* We need the number of queues to be divisible between the hwfns */
+	 
 	if ((count % edev->dev_info.common.num_hwfns) ||
 	    (channels->tx_count % edev->dev_info.common.num_hwfns) ||
 	    (channels->rx_count % edev->dev_info.common.num_hwfns)) {
@@ -1143,11 +1134,11 @@ static int qede_set_channels(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Set number of queues and reload if necessary */
+	 
 	edev->req_queues = count;
 	edev->req_num_tx = channels->tx_count;
 	edev->req_num_rx = channels->rx_count;
-	/* Reset the indirection table if rx queue count is updated */
+	 
 	if ((edev->req_queues - edev->req_num_tx) != QEDE_RSS_COUNT(edev)) {
 		edev->rss_params_inited &= ~QEDE_RSS_INDIR_INITED;
 		memset(edev->rss_ind_table, 0, sizeof(edev->rss_ind_table));
@@ -1174,7 +1165,7 @@ static int qede_set_phys_id(struct net_device *dev,
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
-		return 1;	/* cycle on/off once per second */
+		return 1;	 
 
 	case ETHTOOL_ID_ON:
 		led_state = QED_LED_MODE_ON;
@@ -1266,7 +1257,7 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 	switch (info->flow_type) {
 	case TCP_V4_FLOW:
 	case TCP_V6_FLOW:
-		/* For TCP only 4-tuple hash is supported */
+		 
 		if (info->data ^ (RXH_IP_SRC | RXH_IP_DST |
 				  RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
 			DP_INFO(edev, "Command parameters not supported\n");
@@ -1274,7 +1265,7 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 		}
 		return 0;
 	case UDP_V4_FLOW:
-		/* For UDP either 2-tuple hash or 4-tuple hash is supported */
+		 
 		if (info->data == (RXH_IP_SRC | RXH_IP_DST |
 				   RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
 			set_caps = QED_RSS_IPV4_UDP;
@@ -1289,7 +1280,7 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 		}
 		break;
 	case UDP_V6_FLOW:
-		/* For UDP either 2-tuple hash or 4-tuple hash is supported */
+		 
 		if (info->data == (RXH_IP_SRC | RXH_IP_DST |
 				   RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
 			set_caps = QED_RSS_IPV6_UDP;
@@ -1305,7 +1296,7 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 		break;
 	case IPV4_FLOW:
 	case IPV6_FLOW:
-		/* For IP only 2-tuple hash is supported */
+		 
 		if (info->data ^ (RXH_IP_SRC | RXH_IP_DST)) {
 			DP_INFO(edev, "Command parameters not supported\n");
 			return -EINVAL;
@@ -1321,7 +1312,7 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 	case ESP_V6_FLOW:
 	case IP_USER_FLOW:
 	case ETHER_FLOW:
-		/* RSS is not supported for these protocols */
+		 
 		if (info->data) {
 			DP_INFO(edev, "Command parameters not supported\n");
 			return -EINVAL;
@@ -1331,15 +1322,15 @@ static int qede_set_rss_flags(struct qede_dev *edev, struct ethtool_rxnfc *info)
 		return -EINVAL;
 	}
 
-	/* No action is needed if there is no change in the rss capability */
+	 
 	if (edev->rss_caps == ((edev->rss_caps & ~clr_caps) | set_caps))
 		return 0;
 
-	/* Update internal configuration */
+	 
 	edev->rss_caps = ((edev->rss_caps & ~clr_caps) | set_caps);
 	edev->rss_params_inited |= QEDE_RSS_CAPS_INITED;
 
-	/* Re-configure if possible */
+	 
 	__qede_lock(edev);
 	if (edev->state == QEDE_STATE_OPEN) {
 		vport_update_params = vzalloc(sizeof(*vport_update_params));
@@ -1459,7 +1450,7 @@ static int qede_set_rxfh(struct net_device *dev, const u32 *indir,
 	return rc;
 }
 
-/* This function enables the interrupt generation and the NAPI on the device */
+ 
 static void qede_netif_start(struct qede_dev *edev)
 {
 	int i;
@@ -1468,20 +1459,20 @@ static void qede_netif_start(struct qede_dev *edev)
 		return;
 
 	for_each_queue(i) {
-		/* Update and reenable interrupts */
+		 
 		qed_sb_ack(edev->fp_array[i].sb_info, IGU_INT_ENABLE, 1);
 		napi_enable(&edev->fp_array[i].napi);
 	}
 }
 
-/* This function disables the NAPI and the interrupt generation on the device */
+ 
 static void qede_netif_stop(struct qede_dev *edev)
 {
 	int i;
 
 	for_each_queue(i) {
 		napi_disable(&edev->fp_array[i].napi);
-		/* Disable interrupts */
+		 
 		qed_sb_ack(edev->fp_array[i].sb_info, IGU_INT_DISABLE, 0);
 	}
 }
@@ -1509,7 +1500,7 @@ static int qede_selftest_transmit_traffic(struct qede_dev *edev,
 		return -1;
 	}
 
-	/* Fill the entry in the SW ring and the BDs in the FW ring */
+	 
 	idx = txq->sw_tx_prod;
 	txq->sw_tx_ring.skbs[idx].skb = skb;
 	first_bd = qed_chain_produce(&txq->tx_pbl);
@@ -1520,7 +1511,7 @@ static int qede_selftest_transmit_traffic(struct qede_dev *edev,
 	val = val << ETH_TX_DATA_1ST_BD_PKT_LEN_SHIFT;
 	first_bd->data.bitfields |= cpu_to_le16(val);
 
-	/* Map skb linear data for DMA and set in the first BD */
+	 
 	mapping = dma_map_single(&edev->pdev->dev, skb->data,
 				 skb_headlen(skb), DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(&edev->pdev->dev, mapping))) {
@@ -1529,16 +1520,14 @@ static int qede_selftest_transmit_traffic(struct qede_dev *edev,
 	}
 	BD_SET_UNMAP_ADDR_LEN(first_bd, mapping, skb_headlen(skb));
 
-	/* update the first BD with the actual num BDs */
+	 
 	first_bd->data.nbds = 1;
 	txq->sw_tx_prod = (txq->sw_tx_prod + 1) % txq->num_tx_buffers;
-	/* 'next page' entries are counted in the producer value */
+	 
 	val = qed_chain_get_prod_idx(&txq->tx_pbl);
 	txq->tx_db.data.bd_prod = cpu_to_le16(val);
 
-	/* wmb makes sure that the BDs data is updated before updating the
-	 * producer, otherwise FW may read old data from the BDs.
-	 */
+	 
 	wmb();
 	barrier();
 	writel(txq->tx_db.raw, txq->doorbell_addr);
@@ -1585,20 +1574,17 @@ static int qede_selftest_receive_traffic(struct qede_dev *edev)
 		return -1;
 	}
 
-	/* The packet is expected to receive on rx-queue 0 even though RSS is
-	 * enabled. This is because the queue 0 is configured as the default
-	 * queue and that the loopback traffic is not IP.
-	 */
+	 
 	for (iter = 0; iter < QEDE_SELFTEST_POLL_COUNT; iter++) {
 		if (!qede_has_rx_work(rxq)) {
 			usleep_range(100, 200);
 			continue;
 		}
 
-		/* Get the CQE from the completion ring */
+		 
 		cqe = (union eth_rx_cqe *)qed_chain_consume(&rxq->rx_comp_ring);
 
-		/* Get the data from the SW ring */
+		 
 		sw_rx_index = rxq->sw_rx_cons & NUM_RX_BDS_MAX;
 		sw_rx_data = &rxq->sw_rx_ring[sw_rx_index];
 		fp_cqe = &cqe->fast_path_regular;
@@ -1651,19 +1637,17 @@ static int qede_selftest_run_loopback(struct qede_dev *edev, u32 loopback_mode)
 
 	qede_netif_stop(edev);
 
-	/* Bring up the link in Loopback mode */
+	 
 	memset(&link_params, 0, sizeof(link_params));
 	link_params.link_up = true;
 	link_params.override_flags = QED_LINK_OVERRIDE_LOOPBACK_MODE;
 	link_params.loopback_mode = loopback_mode;
 	edev->ops->common->set_link(edev->cdev, &link_params);
 
-	/* Wait for loopback configuration to apply */
+	 
 	msleep_interruptible(500);
 
-	/* Setting max packet size to 1.5K to avoid data being split over
-	 * multiple BDs in cases where MTU > PAGE_SIZE.
-	 */
+	 
 	pkt_size = (((edev->ndev->mtu < ETH_DATA_LEN) ?
 		     edev->ndev->mtu : ETH_DATA_LEN) + ETH_HLEN);
 
@@ -1693,14 +1677,14 @@ static int qede_selftest_run_loopback(struct qede_dev *edev, u32 loopback_mode)
 test_loopback_exit:
 	dev_kfree_skb(skb);
 
-	/* Bring up the link in Normal mode */
+	 
 	memset(&link_params, 0, sizeof(link_params));
 	link_params.link_up = true;
 	link_params.override_flags = QED_LINK_OVERRIDE_LOOPBACK_MODE;
 	link_params.loopback_mode = QED_LINK_LOOPBACK_NONE;
 	edev->ops->common->set_link(edev->cdev, &link_params);
 
-	/* Wait for loopback configuration to apply */
+	 
 	msleep_interruptible(500);
 
 	qede_netif_start(edev);
@@ -1956,7 +1940,7 @@ static int qede_get_module_info(struct net_device *dev,
 	u8 buf[4];
 	int rc;
 
-	/* Read first 4 bytes to find the sfp type */
+	 
 	rc = edev->ops->common->read_module_eeprom(edev->cdev, buf,
 						   QED_I2C_DEV_ADDR_A0, 0, 4);
 	if (rc) {
@@ -1965,16 +1949,16 @@ static int qede_get_module_info(struct net_device *dev,
 	}
 
 	switch (buf[0]) {
-	case 0x3: /* SFP, SFP+, SFP-28 */
+	case 0x3:  
 		modinfo->type = ETH_MODULE_SFF_8472;
 		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
 		break;
-	case 0xc: /* QSFP */
-	case 0xd: /* QSFP+ */
+	case 0xc:  
+	case 0xd:  
 		modinfo->type = ETH_MODULE_SFF_8436;
 		modinfo->eeprom_len = ETH_MODULE_SFF_8436_LEN;
 		break;
-	case 0x11: /* QSFP-28 */
+	case 0x11:  
 		modinfo->type = ETH_MODULE_SFF_8636;
 		modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
 		break;
@@ -1994,9 +1978,9 @@ static int qede_get_module_eeprom(struct net_device *dev,
 	u8 *buf = data;
 	int rc = 0;
 
-	/* Read A0 section */
+	 
 	if (ee->offset < ETH_MODULE_SFF_8079_LEN) {
-		/* Limit transfer size to the A0 section boundary */
+		 
 		if (ee->offset + ee->len > ETH_MODULE_SFF_8079_LEN)
 			size = ETH_MODULE_SFF_8079_LEN - ee->offset;
 		else
@@ -2014,11 +1998,11 @@ static int qede_get_module_eeprom(struct net_device *dev,
 		start_addr += size;
 	}
 
-	/* Read A2 section */
+	 
 	if (start_addr >= ETH_MODULE_SFF_8079_LEN &&
 	    start_addr < ETH_MODULE_SFF_8472_LEN) {
 		size = ee->len - size;
-		/* Limit transfer size to the A2 section boundary */
+		 
 		if (start_addr + size > ETH_MODULE_SFF_8472_LEN)
 			size = ETH_MODULE_SFF_8472_LEN - start_addr;
 		start_addr -= ETH_MODULE_SFF_8079_LEN;

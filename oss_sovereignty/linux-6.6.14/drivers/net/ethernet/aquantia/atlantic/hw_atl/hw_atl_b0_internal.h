@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * aQuantia Corporation Network Driver
- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
- */
+ 
+ 
 
-/* File hw_atl_b0_internal.h: Definition of Atlantic B0 chip specific
- * constants.
- */
+ 
 
 #ifndef HW_ATL_B0_INTERNAL_H
 #define HW_ATL_B0_INTERNAL_H
@@ -27,11 +22,11 @@
 #define HW_ATL_B0_MAC_MIN  1U
 #define HW_ATL_B0_MAC_MAX  33U
 
-/* UCAST/MCAST filters */
+ 
 #define HW_ATL_B0_UCAST_FILTERS_MAX 38
 #define HW_ATL_B0_MCAST_FILTERS_MAX 8
 
-/* interrupts */
+ 
 #define HW_ATL_B0_ERR_INT 8U
 #define HW_ATL_B0_INT_MASK  (0xFFFFFFFFU)
 
@@ -81,10 +76,10 @@
 #define HW_ATL_B0_LRO_RXD_MAX 16U
 #define HW_ATL_B0_RS_SLIP_ENABLED  0U
 
-/* (256k -1(max pay_len) - 54(header)) */
+ 
 #define HAL_ATL_B0_LSO_MAX_SEGMENT_SIZE 262089U
 
-/* (256k -1(max pay_len) - 74(header)) */
+ 
 #define HAL_ATL_B0_LSO_IPV6_MAX_SEGMENT_SIZE 262069U
 
 #define HW_ATL_B0_CHIP_REVISION_B0      0xA0U
@@ -101,8 +96,8 @@
 #define HW_ATL_B0_TXC_CTL_CMD       (0x00F00000)
 #define HW_ATL_B0_TXC_CTL_L2LEN     (0x7F000000)
 
-#define HW_ATL_B0_TXC_CTL_L3LEN     (0x80000000)	/* L3LEN lsb */
-#define HW_ATL_B0_TXC_LEN2_L3LEN    (0x000000FF)	/* L3LE upper bits */
+#define HW_ATL_B0_TXC_CTL_L3LEN     (0x80000000)	 
+#define HW_ATL_B0_TXC_LEN2_L3LEN    (0x000000FF)	 
 #define HW_ATL_B0_TXC_LEN2_L4LEN    (0x0000FF00)
 #define HW_ATL_B0_TXC_LEN2_MSSLEN   (0xFFFF0000)
 
@@ -155,6 +150,6 @@
 #define HW_ATL_RSS_ENABLED_8TCS_2INDEX_BITS 0xA2222222U
 #define HW_ATL_RSS_ENABLED_4TCS_3INDEX_BITS 0x80003333U
 
-/* HW layer capabilities */
+ 
 
-#endif /* HW_ATL_B0_INTERNAL_H */
+#endif  

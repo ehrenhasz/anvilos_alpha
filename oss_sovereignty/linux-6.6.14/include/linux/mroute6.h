@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_MROUTE6_H
 #define __LINUX_MROUTE6_H
 
 
 #include <linux/pim.h>
-#include <linux/skbuff.h>	/* for struct sk_buff_head */
+#include <linux/skbuff.h>	 
 #include <net/net_namespace.h>
 #include <uapi/linux/mroute6.h>
 #include <linux/mroute_base.h>
@@ -91,7 +91,7 @@ struct mfc6_cache {
 	};
 };
 
-#define MFC_ASSERT_THRESH (3*HZ)		/* Maximal freq. of asserts */
+#define MFC_ASSERT_THRESH (3*HZ)		 
 
 struct rtmsg;
 extern int ip6mr_get_route(struct net *net, struct sk_buff *skb,
@@ -104,7 +104,7 @@ static inline int ip6mr_sk_ioctl(struct sock *sk, unsigned int cmd,
 				 void __user *arg)
 {
 	switch (cmd) {
-	/* These userspace buffers will be consumed by ip6mr_ioctl() */
+	 
 	case SIOCGETMIFCNT_IN6: {
 		struct sioc_mif_req6 buffer;
 

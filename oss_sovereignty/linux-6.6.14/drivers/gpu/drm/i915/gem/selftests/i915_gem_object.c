@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_selftest.h"
 
@@ -16,7 +12,7 @@ static int igt_gem_object(void *arg)
 	struct drm_i915_gem_object *obj;
 	int err;
 
-	/* Basic test to ensure we can create an object */
+	 
 
 	obj = i915_gem_object_create_shmem(i915, PAGE_SIZE);
 	if (IS_ERR(obj)) {
@@ -33,13 +29,13 @@ out:
 
 static int igt_gem_huge(void *arg)
 {
-	const unsigned long nreal = 509; /* just to be awkward */
+	const unsigned long nreal = 509;  
 	struct drm_i915_private *i915 = arg;
 	struct drm_i915_gem_object *obj;
 	unsigned long n;
 	int err;
 
-	/* Basic sanitycheck of our huge fake object allocation */
+	 
 
 	obj = huge_gem_object(i915,
 			      nreal * PAGE_SIZE,

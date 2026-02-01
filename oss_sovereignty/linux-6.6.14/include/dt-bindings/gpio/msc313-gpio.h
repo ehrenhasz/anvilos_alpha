@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * GPIO definitions for MStar/SigmaStar MSC313 and later SoCs
- *
- * Copyright (C) 2020 Daniel Palmer <daniel@thingy.jp>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_MSC313_GPIO_H
 #define _DT_BINDINGS_MSC313_GPIO_H
@@ -50,7 +46,7 @@
 #define MSC313_GPIO_SPI0_DI	(MSC313_GPIO_SPI0 + 2)
 #define MSC313_GPIO_SPI0_DO	(MSC313_GPIO_SPI0 + 3)
 
-/* SSD20x */
+ 
 #define SSD20XD_GPIO_FUART	0
 #define SSD20XD_GPIO_FUART_RX	(SSD20XD_GPIO_FUART + 0)
 #define SSD20XD_GPIO_FUART_TX	(SSD20XD_GPIO_FUART + 1)
@@ -121,4 +117,4 @@
 #define SSD20XD_GPIO_GPIO86	(SSD20XD_GPIO_GPIO + 14)
 #define SSD20XD_GPIO_GPIO90	(SSD20XD_GPIO_GPIO + 15)
 
-#endif /* _DT_BINDINGS_MSC313_GPIO_H */
+#endif  

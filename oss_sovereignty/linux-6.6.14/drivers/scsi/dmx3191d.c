@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    dmx3191d.c - driver for the Domex DMX3191D SCSI card.
-    Copyright (C) 2000 by Massimo Piccioni <dafastidio@libero.it>
-    Portions Copyright (C) 2004 by Christoph Hellwig <hch@lst.de>
 
-    Based on the generic NCR5380 driver by Drew Eckhardt et al.
-
-*/
+ 
 
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -18,9 +11,7 @@
 
 #include <scsi/scsi_host.h>
 
-/*
- * Definitions for the generic 5380 driver.
- */
+ 
 
 #define NCR5380_read(reg)		inb(hostdata->base + (reg))
 #define NCR5380_write(reg, value)	outb(value, hostdata->base + (reg))
@@ -30,7 +21,7 @@
 #define NCR5380_dma_send_setup		NCR5380_dma_setup_none
 #define NCR5380_dma_residual		NCR5380_dma_residual_none
 
-#define NCR5380_implementation_fields	/* none */
+#define NCR5380_implementation_fields	 
 
 #include "NCR5380.h"
 #include "NCR5380.c"
@@ -81,9 +72,7 @@ static int dmx3191d_probe_one(struct pci_dev *pdev,
 	hostdata = shost_priv(shost);
 	hostdata->base = io;
 
-	/* This card does not seem to raise an interrupt on pdev->irq.
-	 * Steam-powered SCSI controllers run without an IRQ anyway.
-	 */
+	 
 	shost->irq = NO_IRQ;
 
 	error = NCR5380_init(shost, 0);

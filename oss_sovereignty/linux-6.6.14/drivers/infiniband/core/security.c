@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/security.h>
 #include <linux/completion.h>
@@ -40,7 +10,7 @@
 #include "mad_priv.h"
 
 static LIST_HEAD(mad_agent_list);
-/* Lock to protect mad_agent_list */
+ 
 static DEFINE_SPINLOCK(mad_agent_list_lock);
 
 static struct pkey_index_qp_list *get_pkey_idx_qp_list(struct ib_port_pkey *pp)
@@ -100,14 +70,7 @@ static int enforce_qp_pkey_security(u16 pkey,
 	return 0;
 }
 
-/* The caller of this function must hold the QP security
- * mutex of the QP of the security structure in *pps.
- *
- * It takes separate ports_pkeys and security structure
- * because in some cases the pps will be for a new settings
- * or the pps will be for the real QP and security structure
- * will be for a shared QP.
- */
+ 
 static int check_qp_port_pkey_settings(struct ib_ports_pkeys *pps,
 				       struct ib_qp_security *sec)
 {
@@ -147,9 +110,7 @@ static int check_qp_port_pkey_settings(struct ib_ports_pkeys *pps,
 	return ret;
 }
 
-/* The caller of this function must hold the QP security
- * mutex.
- */
+ 
 static void qp_to_error(struct ib_qp_security *sec)
 {
 	struct ib_qp_security *shared_qp_sec;
@@ -160,10 +121,7 @@ static void qp_to_error(struct ib_qp_security *sec)
 		.event = IB_EVENT_QP_FATAL
 	};
 
-	/* If the QP is in the process of being destroyed
-	 * the qp pointer in the security structure is
-	 * undefined.  It cannot be modified now.
-	 */
+	 
 	if (sec->destroying)
 		return;
 
@@ -237,9 +195,7 @@ static inline void check_pkey_qps(struct pkey_index_qp_list *pkey,
 	}
 }
 
-/* The caller of this function must hold the QP security
- * mutex.
- */
+ 
 static int port_pkey_list_insert(struct ib_port_pkey *pp)
 {
 	struct pkey_index_qp_list *tmp_pkey;
@@ -263,9 +219,7 @@ static int port_pkey_list_insert(struct ib_port_pkey *pp)
 			return -ENOMEM;
 
 		spin_lock(&dev->port_data[port_num].pkey_list_lock);
-		/* Check for the PKey again.  A racing process may
-		 * have created it.
-		 */
+		 
 		list_for_each_entry(tmp_pkey,
 				    &dev->port_data[port_num].pkey_list,
 				    pkey_index_list) {
@@ -296,9 +250,7 @@ static int port_pkey_list_insert(struct ib_port_pkey *pp)
 	return ret;
 }
 
-/* The caller of this function must hold the QP security
- * mutex.
- */
+ 
 static void port_pkey_list_remove(struct ib_port_pkey *pp)
 {
 	struct pkey_index_qp_list *pkey;
@@ -312,9 +264,7 @@ static void port_pkey_list_remove(struct ib_port_pkey *pp)
 	list_del(&pp->qp_list);
 	spin_unlock(&pkey->qp_list_lock);
 
-	/* The setting may still be valid, i.e. after
-	 * a destroy has failed for example.
-	 */
+	 
 	pp->state = IB_PORT_PKEY_VALID;
 }
 
@@ -325,9 +275,7 @@ static void destroy_qp_security(struct ib_qp_security *sec)
 	kfree(sec);
 }
 
-/* The caller of this function must hold the QP security
- * mutex.
- */
+ 
 static struct ib_ports_pkeys *get_new_pps(const struct ib_qp *qp,
 					  const struct ib_qp_attr *qp_attr,
 					  int qp_attr_mask)
@@ -424,7 +372,7 @@ int ib_create_qp_security(struct ib_qp *qp, struct ib_device *dev)
 			break;
 	}
 
-	/* If this isn't an IB device don't create the security context */
+	 
 	if (!is_ib)
 		return 0;
 
@@ -450,29 +398,22 @@ EXPORT_SYMBOL(ib_create_qp_security);
 
 void ib_destroy_qp_security_begin(struct ib_qp_security *sec)
 {
-	/* Return if not IB */
+	 
 	if (!sec)
 		return;
 
 	mutex_lock(&sec->mutex);
 
-	/* Remove the QP from the lists so it won't get added to
-	 * a to_error_list during the destroy process.
-	 */
+	 
 	if (sec->ports_pkeys) {
 		port_pkey_list_remove(&sec->ports_pkeys->main);
 		port_pkey_list_remove(&sec->ports_pkeys->alt);
 	}
 
-	/* If the QP is already in one or more of those lists
-	 * the destroying flag will ensure the to error flow
-	 * doesn't operate on an undefined QP.
-	 */
+	 
 	sec->destroying = true;
 
-	/* Record the error list count to know how many completions
-	 * to wait for.
-	 */
+	 
 	sec->error_comps_pending = atomic_read(&sec->error_list_count);
 
 	mutex_unlock(&sec->mutex);
@@ -483,29 +424,18 @@ void ib_destroy_qp_security_abort(struct ib_qp_security *sec)
 	int ret;
 	int i;
 
-	/* Return if not IB */
+	 
 	if (!sec)
 		return;
 
-	/* If a concurrent cache update is in progress this
-	 * QP security could be marked for an error state
-	 * transition.  Wait for this to complete.
-	 */
+	 
 	for (i = 0; i < sec->error_comps_pending; i++)
 		wait_for_completion(&sec->error_complete);
 
 	mutex_lock(&sec->mutex);
 	sec->destroying = false;
 
-	/* Restore the position in the lists and verify
-	 * access is still allowed in case a cache update
-	 * occurred while attempting to destroy.
-	 *
-	 * Because these setting were listed already
-	 * and removed during ib_destroy_qp_security_begin
-	 * we know the pkey_index_qp_list for the PKey
-	 * already exists so port_pkey_list_insert won't fail.
-	 */
+	 
 	if (sec->ports_pkeys) {
 		port_pkey_list_insert(&sec->ports_pkeys->main);
 		port_pkey_list_insert(&sec->ports_pkeys->alt);
@@ -522,15 +452,11 @@ void ib_destroy_qp_security_end(struct ib_qp_security *sec)
 {
 	int i;
 
-	/* Return if not IB */
+	 
 	if (!sec)
 		return;
 
-	/* If a concurrent cache update is occurring we must
-	 * wait until this QP security structure is processed
-	 * in the QP to error flow before destroying it because
-	 * the to_error_list is in use.
-	 */
+	 
 	for (i = 0; i < sec->error_comps_pending; i++)
 		wait_for_completion(&sec->error_complete);
 
@@ -589,11 +515,7 @@ int ib_security_modify_qp(struct ib_qp *qp,
 		   "%s: QP security is not initialized for IB QP: %u\n",
 		   __func__, real_qp->qp_num);
 
-	/* The port/pkey settings are maintained only for the real QP. Open
-	 * handles on the real QP will be in the shared_qp_list. When
-	 * enforcing security on the real QP all the shared QPs will be
-	 * checked as well.
-	 */
+	 
 
 	if (pps_change && !special_qp && real_qp->qp_sec) {
 		mutex_lock(&real_qp->qp_sec->mutex);
@@ -604,13 +526,7 @@ int ib_security_modify_qp(struct ib_qp *qp,
 			mutex_unlock(&real_qp->qp_sec->mutex);
 			return -ENOMEM;
 		}
-		/* Add this QP to the lists for the new port
-		 * and pkey settings before checking for permission
-		 * in case there is a concurrent cache update
-		 * occurring.  Walking the list for a cache change
-		 * doesn't acquire the security mutex unless it's
-		 * sending the QP to error.
-		 */
+		 
 		ret = port_pkey_list_insert(&new_pps->main);
 
 		if (!ret)
@@ -628,9 +544,7 @@ int ib_security_modify_qp(struct ib_qp *qp,
 						     udata);
 
 	if (new_pps) {
-		/* Clean up the lists and free the appropriate
-		 * ports_pkeys structure.
-		 */
+		 
 		if (ret) {
 			tmp_pps = new_pps;
 		} else {

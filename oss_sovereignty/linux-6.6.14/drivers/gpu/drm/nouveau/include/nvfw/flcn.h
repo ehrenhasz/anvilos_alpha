@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVFW_FLCN_H__
 #define __NVFW_FLCN_H__
 #include <core/os.h>

@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017-2020 NXP
+
+
 
 #include <linux/module.h>
 #include <linux/rpmsg.h>
 #include "imx-pcm-rpmsg.h"
 
-/*
- * struct imx_audio_rpmsg: private data
- *
- * @rpmsg_pdev: pointer of platform device
- */
+ 
 struct imx_audio_rpmsg {
 	struct platform_device *rpmsg_pdev;
 };
@@ -33,7 +29,7 @@ static int imx_audio_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 
 	switch (r_msg->header.type) {
 	case MSG_TYPE_C:
-		/* TYPE C is notification from M core */
+		 
 		switch (r_msg->header.cmd) {
 		case TX_PERIOD_DONE:
 			spin_lock_irqsave(&info->lock[TX], flags);
@@ -59,7 +55,7 @@ static int imx_audio_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 		}
 		break;
 	case MSG_TYPE_B:
-		/* TYPE B is response msg */
+		 
 		memcpy(&info->r_msg, r_msg, sizeof(struct rpmsg_r_msg));
 		complete(&info->cmd_complete);
 		break;
@@ -85,7 +81,7 @@ static int imx_audio_rpmsg_probe(struct rpmsg_device *rpdev)
 
 	dev_set_drvdata(&rpdev->dev, data);
 
-	/* Register platform driver for rpmsg routine */
+	 
 	data->rpmsg_pdev = platform_device_register_data(&rpdev->dev,
 							 IMX_PCM_DRV_NAME,
 							 PLATFORM_DEVID_AUTO,

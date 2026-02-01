@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ACPI helpers for GPIO API
- *
- * Copyright (C) 2012,2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef GPIOLIB_ACPI_H
 #define GPIOLIB_ACPI_H
@@ -57,4 +53,4 @@ static inline int acpi_gpio_count(struct device *dev, const char *con_id)
 }
 #endif
 
-#endif /* GPIOLIB_ACPI_H */
+#endif  

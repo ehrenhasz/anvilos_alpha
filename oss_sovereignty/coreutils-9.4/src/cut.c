@@ -1,26 +1,6 @@
-/* cut - remove parts of lines of files
-   Copyright (C) 1997-2023 Free Software Foundation, Inc.
-   Copyright (C) 1984 David M. Ihnat
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David Ihnat.  */
-
-/* POSIX changes, bug fixes, long-named options, and cleanup
-   by David MacKenzie <djm@gnu.ai.mit.edu>.
-
-   Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -35,7 +15,7 @@
 
 #include "set-fields.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "cut"
 
 #define AUTHORS \
@@ -52,54 +32,40 @@
   while (0)
 
 
-/* Pointer inside RP.  When checking if a byte or field is selected
-   by a finite range, we check if it is between CURRENT_RP.LO
-   and CURRENT_RP.HI.  If the byte or field index is greater than
-   CURRENT_RP.HI then we make CURRENT_RP to point to the next range pair.  */
+ 
 static struct field_range_pair *current_rp;
 
-/* This buffer is used to support the semantics of the -s option
-   (or lack of same) when the specified field list includes (does
-   not include) the first field.  In both of those cases, the entire
-   first field must be read into this buffer to determine whether it
-   is followed by a delimiter or a newline before any of it may be
-   output.  Otherwise, cut_fields can do the job without using this
-   buffer.  */
+ 
 static char *field_1_buffer;
 
-/* The number of bytes allocated for FIELD_1_BUFFER.  */
+ 
 static size_t field_1_bufsize;
 
-/* If true, do not output lines containing no delimiter characters.
-   Otherwise, all such lines are printed.  This option is valid only
-   with field mode.  */
+ 
 static bool suppress_non_delimited;
 
-/* If true, print all bytes, characters, or fields _except_
-   those that were specified.  */
+ 
 static bool complement;
 
-/* The delimiter character for field mode.  */
+ 
 static unsigned char delim;
 
-/* The delimiter for each line/record.  */
+ 
 static unsigned char line_delim = '\n';
 
-/* The length of output_delimiter_string.  */
+ 
 static size_t output_delimiter_length;
 
-/* The output field separator string.  Defaults to the 1-character
-   string consisting of the input delimiter.  */
+ 
 static char *output_delimiter_string;
 
-/* The output delimiter string contents, if the default.  */
+ 
 static char output_delimiter_default[1];
 
-/* True if we have ever read standard input.  */
+ 
 static bool have_read_stdin;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   OUTPUT_DELIMITER_OPTION = CHAR_MAX + 1,

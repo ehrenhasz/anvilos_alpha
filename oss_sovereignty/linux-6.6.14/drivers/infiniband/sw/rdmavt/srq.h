@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_RVTSRQ_H
 #define DEF_RVTSRQ_H
@@ -16,4 +14,4 @@ int rvt_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 int rvt_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr);
 int rvt_destroy_srq(struct ib_srq *ibsrq, struct ib_udata *udata);
 
-#endif          /* DEF_RVTSRQ_H */
+#endif           

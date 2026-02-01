@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * phy-ti-pipe3 - PIPE3 PHY driver.
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -114,13 +109,9 @@
 #define MEM_CDR_LOS_SOURCE_MASK		GENMASK(10, 9)
 #define MEM_CDR_LOS_SOURCE_SHIFT	9
 
-/*
- * This is an Empirical value that works, need to confirm the actual
- * value required for the PIPE3PHY_PLL_CONFIGURATION2.PLL_IDLE status
- * to be correctly reflected in the PIPE3PHY_PLL_STATUS register.
- */
-#define PLL_IDLE_TIME	100	/* in milliseconds */
-#define PLL_LOCK_TIME	100	/* in milliseconds */
+ 
+#define PLL_IDLE_TIME	100	 
+#define PLL_LOCK_TIME	100	 
 
 enum pipe3_mode { PIPE3_MODE_PCIE = 1,
 		  PIPE3_MODE_SATA,
@@ -171,35 +162,35 @@ struct ti_pipe3 {
 	struct clk		*refclk;
 	struct clk		*div_clk;
 	struct pipe3_dpll_map	*dpll_map;
-	struct regmap		*phy_power_syscon; /* ctrl. reg. acces */
-	struct regmap		*pcs_syscon; /* ctrl. reg. acces */
-	struct regmap		*dpll_reset_syscon; /* ctrl. reg. acces */
-	unsigned int		dpll_reset_reg; /* reg. index within syscon */
-	unsigned int		power_reg; /* power reg. index within syscon */
-	unsigned int		pcie_pcs_reg; /* pcs reg. index in syscon */
+	struct regmap		*phy_power_syscon;  
+	struct regmap		*pcs_syscon;  
+	struct regmap		*dpll_reset_syscon;  
+	unsigned int		dpll_reset_reg;  
+	unsigned int		power_reg;  
+	unsigned int		pcie_pcs_reg;  
 	bool			sata_refclk_enabled;
 	enum pipe3_mode		mode;
 	struct pipe3_settings	settings;
 };
 
 static struct pipe3_dpll_map dpll_map_usb[] = {
-	{12000000, {1250, 5, 4, 20, 0} },	/* 12 MHz */
-	{16800000, {3125, 20, 4, 20, 0} },	/* 16.8 MHz */
-	{19200000, {1172, 8, 4, 20, 65537} },	/* 19.2 MHz */
-	{20000000, {1000, 7, 4, 10, 0} },	/* 20 MHz */
-	{26000000, {1250, 12, 4, 20, 0} },	/* 26 MHz */
-	{38400000, {3125, 47, 4, 20, 92843} },	/* 38.4 MHz */
-	{ },					/* Terminator */
+	{12000000, {1250, 5, 4, 20, 0} },	 
+	{16800000, {3125, 20, 4, 20, 0} },	 
+	{19200000, {1172, 8, 4, 20, 65537} },	 
+	{20000000, {1000, 7, 4, 10, 0} },	 
+	{26000000, {1250, 12, 4, 20, 0} },	 
+	{38400000, {3125, 47, 4, 20, 92843} },	 
+	{ },					 
 };
 
 static struct pipe3_dpll_map dpll_map_sata[] = {
-	{12000000, {625, 4, 4, 6, 0} },	/* 12 MHz */
-	{16800000, {625, 6, 4, 7, 0} },		/* 16.8 MHz */
-	{19200000, {625, 7, 4, 6, 0} },		/* 19.2 MHz */
-	{20000000, {750, 9, 4, 6, 0} },		/* 20 MHz */
-	{26000000, {750, 12, 4, 6, 0} },	/* 26 MHz */
-	{38400000, {625, 15, 4, 6, 0} },	/* 38.4 MHz */
-	{ },					/* Terminator */
+	{12000000, {625, 4, 4, 6, 0} },	 
+	{16800000, {625, 6, 4, 7, 0} },		 
+	{19200000, {625, 7, 4, 6, 0} },		 
+	{20000000, {750, 9, 4, 6, 0} },		 
+	{26000000, {750, 12, 4, 6, 0} },	 
+	{38400000, {625, 15, 4, 6, 0} },	 
+	{ },					 
 };
 
 struct pipe3_data {
@@ -212,7 +203,7 @@ static struct pipe3_data data_usb = {
 	.mode = PIPE3_MODE_USBSS,
 	.dpll_map = dpll_map_usb,
 	.settings = {
-	/* DRA75x TRM Table 26-17 Preferred USB3_PHY_RX SCP Register Settings */
+	 
 		.ana_interface = INTERFACE_MODE_USBSS,
 		.ana_losd = 0xa,
 		.dig_fastlock = 1,
@@ -238,7 +229,7 @@ static struct pipe3_data data_sata = {
 	.mode = PIPE3_MODE_SATA,
 	.dpll_map = dpll_map_sata,
 	.settings = {
-	/* DRA75x TRM Table 26-9 Preferred SATA_PHY_RX SCP Register Settings */
+	 
 		.ana_interface = INTERFACE_MODE_SATA_3P0,
 		.ana_losd = 0x5,
 		.dig_fastlock = 1,
@@ -248,10 +239,10 @@ static struct pipe3_data data_sata = {
 		.dig_thr = 1,
 		.dig_thr_mode = 1,
 		.dig_2ndo_sdm_mode = 0,
-		.dig_hs_rate = 0,	/* Not in TRM preferred settings */
-		.dig_ovrd_hs_rate = 0,	/* Not in TRM preferred settings */
+		.dig_hs_rate = 0,	 
+		.dig_ovrd_hs_rate = 0,	 
 		.dll_trim_sel = 0x1,
-		.dll_phint_rate = 0x2,	/* for 1.5 GHz DPLL clock */
+		.dll_phint_rate = 0x2,	 
 		.eq_lev = 0,
 		.eq_ftc = 0x1f,
 		.eq_ctl = 0,
@@ -263,7 +254,7 @@ static struct pipe3_data data_sata = {
 static struct pipe3_data data_pcie = {
 	.mode = PIPE3_MODE_PCIE,
 	.settings = {
-	/* DRA75x TRM Table 26-62 Preferred PCIe_PHY_RX SCP Register Settings */
+	 
 		.ana_interface = INTERFACE_MODE_PCIE,
 		.ana_losd = 0xa,
 		.dig_fastlock = 1,
@@ -356,10 +347,7 @@ static int ti_pipe3_power_on(struct phy *x)
 	val = rate << OMAP_CTRL_PIPE3_PHY_PWRCTL_CLK_FREQ_SHIFT;
 	regmap_update_bits(phy->phy_power_syscon, phy->power_reg,
 			   mask, val);
-	/*
-	 * For PCIe, TX and RX must be powered on simultaneously.
-	 * For USB and SATA, TX must be powered on before RX
-	 */
+	 
 	mask = OMAP_CTRL_PIPE3_PHY_PWRCTL_CLK_CMD_MASK;
 	if (phy->mode == PIPE3_MODE_SATA || phy->mode == PIPE3_MODE_USBSS) {
 		val = PIPE3_PHY_TX_POWERON;
@@ -500,11 +488,7 @@ static int ti_pipe3_init(struct phy *x)
 	int ret = 0;
 
 	ti_pipe3_enable_clocks(phy);
-	/*
-	 * Set pcie_pcs register to 0x96 for proper functioning of phy
-	 * as recommended in AM572x TRM SPRUHZ6, section 18.5.2.2, table
-	 * 18-1804.
-	 */
+	 
 	if (phy->mode == PIPE3_MODE_PCIE) {
 		if (!phy->pcs_syscon) {
 			omap_control_pcie_pcs(phy->control_dev, 0x96);
@@ -517,7 +501,7 @@ static int ti_pipe3_init(struct phy *x)
 		return ret;
 	}
 
-	/* Bring it out of IDLE if it is IDLE */
+	 
 	val = ti_pipe3_readl(phy->pll_ctrl_base, PLL_CONFIGURATION2);
 	if (val & PLL_IDLE) {
 		val &= ~PLL_IDLE;
@@ -525,12 +509,12 @@ static int ti_pipe3_init(struct phy *x)
 		ret = ti_pipe3_dpll_wait_lock(phy);
 	}
 
-	/* SATA has issues if re-programmed when locked */
+	 
 	val = ti_pipe3_readl(phy->pll_ctrl_base, PLL_STATUS);
 	if ((val & PLL_LOCK) && phy->mode == PIPE3_MODE_SATA)
 		return ret;
 
-	/* Program the DPLL */
+	 
 	ret = ti_pipe3_dpll_program(phy);
 	if (ret) {
 		ti_pipe3_disable_clocks(phy);
@@ -548,20 +532,18 @@ static int ti_pipe3_exit(struct phy *x)
 	u32 val;
 	unsigned long timeout;
 
-	/* If dpll_reset_syscon is not present we wont power down SATA DPLL
-	 * due to Errata i783
-	 */
+	 
 	if (phy->mode == PIPE3_MODE_SATA && !phy->dpll_reset_syscon)
 		return 0;
 
-	/* PCIe doesn't have internal DPLL */
+	 
 	if (phy->mode != PIPE3_MODE_PCIE) {
-		/* Put DPLL in IDLE mode */
+		 
 		val = ti_pipe3_readl(phy->pll_ctrl_base, PLL_CONFIGURATION2);
 		val |= PLL_IDLE;
 		ti_pipe3_writel(phy->pll_ctrl_base, PLL_CONFIGURATION2, val);
 
-		/* wait for LDO and Oscillator to power down */
+		 
 		timeout = jiffies + msecs_to_jiffies(PLL_IDLE_TIME);
 		do {
 			cpu_relax();
@@ -577,7 +559,7 @@ static int ti_pipe3_exit(struct phy *x)
 		}
 	}
 
-	/* i783: SATA needs control bit toggle after PLL unlock */
+	 
 	if (phy->mode == PIPE3_MODE_SATA) {
 		regmap_update_bits(phy->dpll_reset_syscon, phy->dpll_reset_reg,
 				   SATA_PLL_SOFT_RESET, SATA_PLL_SOFT_RESET);
@@ -607,9 +589,7 @@ static int ti_pipe3_get_clk(struct ti_pipe3 *phy)
 	phy->refclk = devm_clk_get(dev, "refclk");
 	if (IS_ERR(phy->refclk)) {
 		dev_err(dev, "unable to get refclk\n");
-		/* older DTBs have missing refclk in SATA PHY
-		 * so don't bail out in case of SATA PHY.
-		 */
+		 
 		if (phy->mode != PIPE3_MODE_SATA)
 			return PTR_ERR(phy->refclk);
 	}
@@ -819,9 +799,7 @@ static int ti_pipe3_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, phy);
 	pm_runtime_enable(dev);
 
-	/*
-	 * Prevent auto-disable of refclk for SATA PHY due to Errata i783
-	 */
+	 
 	if (phy->mode == PIPE3_MODE_SATA) {
 		if (!IS_ERR(phy->refclk)) {
 			clk_prepare_enable(phy->refclk);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "test_progs.h"
 #include "core_kern.lskel.h"
@@ -17,7 +17,7 @@ void test_core_kern_lskel(void)
 	if (!ASSERT_GT(link_fd, 0, "attach(core_relo_proto)"))
 		goto cleanup;
 
-	/* trigger tracepoints */
+	 
 	usleep(1);
 	ASSERT_TRUE(skel->bss->proto_out[0], "bpf_core_type_exists");
 	ASSERT_FALSE(skel->bss->proto_out[1], "!bpf_core_type_exists");

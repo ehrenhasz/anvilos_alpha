@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * Author: Alexander Duyck <alexander.h.duyck@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -257,7 +253,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
 		params_new->mark = *mark;
 	if (flags & SKBEDIT_F_PTYPE)
 		params_new->ptype = *ptype;
-	/* default behaviour is to use all the bits */
+	 
 	params_new->mask = 0xffffffff;
 	if (flags & SKBEDIT_F_MASK)
 		params_new->mask = *mask;
@@ -356,13 +352,13 @@ static void tcf_skbedit_cleanup(struct tc_action *a)
 static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
 {
 	return nla_total_size(sizeof(struct tc_skbedit))
-		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
-		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
-		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING_MAX */
-		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
-		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
-		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
-		+ nla_total_size_64bit(sizeof(u64)); /* TCA_SKBEDIT_FLAGS */
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size_64bit(sizeof(u64));  
 }
 
 static int tcf_skbedit_offload_act_setup(struct tc_action *act, void *entry_data,

@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-// ir-rcmm-decoder.c - A decoder for the RCMM IR protocol
-//
-// Copyright (C) 2018 by Patrick Lerda <patrick9876@free.fr>
+
+
+
+
 
 #include "rc-core-priv.h"
 #include <linux/module.h>
 
-#define RCMM_UNIT		166  /* microseconds */
-#define RCMM_PREFIX_PULSE	417  /* 166.666666666666*2.5 */
-#define RCMM_PULSE_0            278  /* 166.666666666666*(1+2/3) */
-#define RCMM_PULSE_1            444  /* 166.666666666666*(2+2/3) */
-#define RCMM_PULSE_2            611  /* 166.666666666666*(3+2/3) */
-#define RCMM_PULSE_3            778  /* 166.666666666666*(4+2/3) */
+#define RCMM_UNIT		166   
+#define RCMM_PREFIX_PULSE	417   
+#define RCMM_PULSE_0            278   
+#define RCMM_PULSE_1            444   
+#define RCMM_PULSE_2            611   
+#define RCMM_PULSE_3            778   
 
 enum rcmm_state {
 	STATE_INACTIVE,
@@ -49,13 +49,7 @@ static int rcmm_miscmode(struct rc_dev *dev, struct rcmm_dec *data)
 	return -1;
 }
 
-/**
- * ir_rcmm_decode() - Decode one RCMM pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_rcmm_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct rcmm_dec *data = &dev->raw->rcmm;

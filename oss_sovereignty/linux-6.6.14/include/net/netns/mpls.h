@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mpls in net namespaces
- */
+ 
+ 
 
 #ifndef __NETNS_MPLS_H__
 #define __NETNS_MPLS_H__
@@ -20,4 +18,4 @@ struct netns_mpls {
 	struct ctl_table_header *ctl;
 };
 
-#endif /* __NETNS_MPLS_H__ */
+#endif  

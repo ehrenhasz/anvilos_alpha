@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "string2.h"
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -15,11 +15,7 @@ const char *dots =
 	"....................................................................."
 	".....................................................................";
 
-/*
- * perf_atoll()
- * Parse (\d+)(b|B|kb|KB|mb|MB|gb|GB|tb|TB) (e.g. "256MB")
- * and return its numeric value
- */
+ 
 s64 perf_atoll(const char *str)
 {
 	s64 length;
@@ -40,7 +36,7 @@ s64 perf_atoll(const char *str)
 			return length;
 		default:
 			goto out_err;
-		/* two-letter suffices */
+		 
 		case 'k': case 'K':
 			length <<= 10;
 			break;
@@ -54,7 +50,7 @@ s64 perf_atoll(const char *str)
 			length <<= 40;
 			break;
 	}
-	/* we want the cases to match */
+	 
 	if (islower(c)) {
 		if (strcmp(p, "b") != 0)
 			goto out_err;
@@ -68,7 +64,7 @@ out_err:
 	return -1;
 }
 
-/* Character class matching */
+ 
 static bool __match_charclass(const char *pat, char c, const char **npat)
 {
 	bool complement = false, ret = true;
@@ -77,11 +73,11 @@ static bool __match_charclass(const char *pat, char c, const char **npat)
 		complement = true;
 		pat++;
 	}
-	if (*pat++ == c)	/* First character is special */
+	if (*pat++ == c)	 
 		goto end;
 
-	while (*pat && *pat != ']') {	/* Matching */
-		if (*pat == '-' && *(pat + 1) != ']') {	/* Range */
+	while (*pat && *pat != ']') {	 
+		if (*pat == '-' && *(pat + 1) != ']') {	 
 			if (*(pat - 1) <= c && c <= *(pat + 1))
 				goto end;
 			if (*(pat - 1) > *(pat + 1))
@@ -95,7 +91,7 @@ static bool __match_charclass(const char *pat, char c, const char **npat)
 	ret = false;
 
 end:
-	while (*pat && *pat != ']')	/* Searching closing */
+	while (*pat && *pat != ']')	 
 		pat++;
 	if (!*pat)
 		goto error;
@@ -106,13 +102,13 @@ error:
 	return false;
 }
 
-/* Glob/lazy pattern matching */
+ 
 static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 			bool case_ins)
 {
 	while (*str && *pat && *pat != '*') {
 		if (ignore_space) {
-			/* Ignore spaces for lazy matching */
+			 
 			if (isspace(*str)) {
 				str++;
 				continue;
@@ -122,17 +118,17 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 				continue;
 			}
 		}
-		if (*pat == '?') {	/* Matches any single character */
+		if (*pat == '?') {	 
 			str++;
 			pat++;
 			continue;
-		} else if (*pat == '[')	/* Character classes/Ranges */
+		} else if (*pat == '[')	 
 			if (__match_charclass(pat + 1, *str, &pat)) {
 				str++;
 				continue;
 			} else
 				return false;
-		else if (*pat == '\\') /* Escaped char match as normal char */
+		else if (*pat == '\\')  
 			pat++;
 		if (case_ins) {
 			if (tolower(*str) != tolower(*pat))
@@ -142,11 +138,11 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 		str++;
 		pat++;
 	}
-	/* Check wild card */
+	 
 	if (*pat == '*') {
 		while (*pat == '*')
 			pat++;
-		if (!*pat)	/* Tail wild card matches all */
+		if (!*pat)	 
 			return true;
 		while (*str)
 			if (__match_glob(str++, pat, ignore_space, case_ins))
@@ -155,18 +151,7 @@ static bool __match_glob(const char *str, const char *pat, bool ignore_space,
 	return !*str && !*pat;
 }
 
-/**
- * strglobmatch - glob expression pattern matching
- * @str: the target string to match
- * @pat: the pattern string to match
- *
- * This returns true if the @str matches @pat. @pat can includes wildcards
- * ('*','?') and character classes ([CHARS], complementation and ranges are
- * also supported). Also, this supports escape character ('\') to use special
- * characters as normal character.
- *
- * Note: if @pat syntax is broken, this always returns false.
- */
+ 
 bool strglobmatch(const char *str, const char *pat)
 {
 	return __match_glob(str, pat, false, false);
@@ -177,26 +162,13 @@ bool strglobmatch_nocase(const char *str, const char *pat)
 	return __match_glob(str, pat, false, true);
 }
 
-/**
- * strlazymatch - matching pattern strings lazily with glob pattern
- * @str: the target string to match
- * @pat: the pattern string to match
- *
- * This is similar to strglobmatch, except this ignores spaces in
- * the target string.
- */
+ 
 bool strlazymatch(const char *str, const char *pat)
 {
 	return __match_glob(str, pat, true, false);
 }
 
-/**
- * strtailcmp - Compare the tail of two strings
- * @s1: 1st string to be compared
- * @s2: 2nd string to be compared
- *
- * Return 0 if whole of either string is same as another's tail part.
- */
+ 
 int strtailcmp(const char *s1, const char *s2)
 {
 	int i1 = strlen(s1);
@@ -210,13 +182,8 @@ int strtailcmp(const char *s1, const char *s2)
 
 char *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints)
 {
-	/*
-	 * FIXME: replace this with an expression using log10() when we
-	 * find a suitable implementation, maybe the one in the dvb drivers...
-	 *
-	 * "%s == %d || " = log10(MAXINT) * 2 + 8 chars for the operators
-	 */
-	size_t size = nints * 28 + 1; /* \0 */
+	 
+	size_t size = nints * 28 + 1;  
 	size_t i, printed = 0;
 	char *expr = malloc(size);
 
@@ -247,7 +214,7 @@ out_err_overflow:
 	return NULL;
 }
 
-/* Like strpbrk(), but not break if it is right after a backslash (escaped) */
+ 
 char *strpbrk_esc(char *str, const char *stopset)
 {
 	char *ptr;
@@ -263,7 +230,7 @@ char *strpbrk_esc(char *str, const char *stopset)
 	return ptr;
 }
 
-/* Like strdup, but do not copy a single backslash */
+ 
 char *strdup_esc(const char *str)
 {
 	char *s, *d, *p, *ret = strdup(str);

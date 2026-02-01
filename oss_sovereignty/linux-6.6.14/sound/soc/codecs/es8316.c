@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * es8316.c -- es8316 ALSA SoC audio driver
- * Copyright Everest Semiconductor Co.,Ltd
- *
- * Authors: David Yang <yangxiaohua@everest-semi.com>,
- *          Daniel Drake <drake@endlessm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -23,10 +17,7 @@
 #include <sound/jack.h>
 #include "es8316.h"
 
-/* In slave mode at single speed, the codec is documented as accepting 5
- * MCLK/LRCK ratios, but we also add ratio 400, which is commonly used on
- * Intel Cherry Trail platforms (19.2MHz MCLK, 48kHz LRCK).
- */
+ 
 #define NR_SUPPORTED_MCLK_LRCK_RATIOS ARRAY_SIZE(supported_mclk_lrck_ratios)
 static const unsigned int supported_mclk_lrck_ratios[] = {
 	256, 384, 400, 500, 512, 768, 1024
@@ -45,9 +36,7 @@ struct es8316_priv {
 	bool jd_inverted;
 };
 
-/*
- * ES8316 controls
- */
+ 
 static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(dac_vol_tlv, -9600, 50, 1);
 static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(adc_vol_tlv, -9600, 50, 1);
 static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(alc_max_gain_tlv, -650, 150, 0);
@@ -132,7 +121,7 @@ static const struct snd_kcontrol_new es8316_snd_controls[] = {
 	SOC_ENUM("ALC Capture Noise Gate Type", ng_type),
 };
 
-/* Analog Input Mux */
+ 
 static const char * const es8316_analog_in_txt[] = {
 		"lin1-rin1",
 		"lin2-rin2",
@@ -162,7 +151,7 @@ static const struct soc_enum es8316_dmic_src_enum =
 static const struct snd_kcontrol_new es8316_dmic_src_controls =
 	SOC_DAPM_ENUM("Route", es8316_dmic_src_enum);
 
-/* hp mixer mux */
+ 
 static const char * const es8316_hpmux_texts[] = {
 	"lin1-rin1",
 	"lin2-rin2",
@@ -182,7 +171,7 @@ static SOC_ENUM_SINGLE_DECL(es8316_right_hpmux_enum, ES8316_HPMIX_SEL,
 static const struct snd_kcontrol_new es8316_right_hpmux_controls =
 	SOC_DAPM_ENUM("Route", es8316_right_hpmux_enum);
 
-/* headphone Output Mixer */
+ 
 static const struct snd_kcontrol_new es8316_out_left_mix[] = {
 	SOC_DAPM_SINGLE("LLIN Switch", ES8316_HPMIX_SWITCH, 6, 1, 0),
 	SOC_DAPM_SINGLE("Left DAC Switch", ES8316_HPMIX_SWITCH, 7, 1, 0),
@@ -192,7 +181,7 @@ static const struct snd_kcontrol_new es8316_out_right_mix[] = {
 	SOC_DAPM_SINGLE("Right DAC Switch", ES8316_HPMIX_SWITCH, 3, 1, 0),
 };
 
-/* DAC data source mux */
+ 
 static const char * const es8316_dacsrc_texts[] = {
 	"LDATA TO LDAC, RDATA TO RDAC",
 	"LDATA TO LDAC, LDATA TO RDAC",
@@ -215,7 +204,7 @@ static const struct snd_soc_dapm_widget es8316_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("MIC2"),
 
-	/* Input Mux */
+	 
 	SND_SOC_DAPM_MUX("Differential Mux", SND_SOC_NOPM, 0, 0,
 			 &es8316_analog_in_mux_controls),
 
@@ -228,7 +217,7 @@ static const struct snd_soc_dapm_widget es8316_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("Digital Mic Mux", SND_SOC_NOPM, 0, 0,
 			 &es8316_dmic_src_controls),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_AIF_OUT("I2S OUT", "I2S1 Capture",  1,
 			     ES8316_SERDATA_ADC, 6, 1),
 	SND_SOC_DAPM_AIF_IN("I2S IN", "I2S1 Playback", 0,
@@ -242,7 +231,7 @@ static const struct snd_soc_dapm_widget es8316_dapm_widgets[] = {
 	SND_SOC_DAPM_DAC("Right DAC", NULL, ES8316_DAC_PDN, 0, 1),
 	SND_SOC_DAPM_DAC("Left DAC", NULL, ES8316_DAC_PDN, 4, 1),
 
-	/* Headphone Output Side */
+	 
 	SND_SOC_DAPM_MUX("Left Headphone Mux", SND_SOC_NOPM, 0, 0,
 			 &es8316_left_hpmux_controls),
 	SND_SOC_DAPM_MUX("Right Headphone Mux", SND_SOC_NOPM, 0, 0,
@@ -273,9 +262,7 @@ static const struct snd_soc_dapm_widget es8316_dapm_widgets[] = {
 			     1, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Headphone Out", ES8316_CPHP_PDN1, 2, 1, NULL, 0),
 
-	/* pdn_Lical and pdn_Rical bits are documented as Reserved, but must
-	 * be explicitly unset in order to enable HP output
-	 */
+	 
 	SND_SOC_DAPM_SUPPLY("Left Headphone ical", ES8316_CPHP_ICAL_VOL,
 			    7, 1, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Right Headphone ical", ES8316_CPHP_ICAL_VOL,
@@ -286,7 +273,7 @@ static const struct snd_soc_dapm_widget es8316_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route es8316_dapm_routes[] = {
-	/* Recording */
+	 
 	{"MIC1", NULL, "Mic Bias"},
 	{"MIC2", NULL, "Mic Bias"},
 	{"MIC1", NULL, "Bias"},
@@ -303,16 +290,14 @@ static const struct snd_soc_dapm_route es8316_dapm_routes[] = {
 	{"Mono ADC", NULL, "ADC bias"},
 	{"Mono ADC", NULL, "Line input PGA"},
 
-	/* It's not clear why, but to avoid recording only silence,
-	 * the DAC clock must be running for the ADC to work.
-	 */
+	 
 	{"Mono ADC", NULL, "DAC Clock"},
 
 	{"Digital Mic Mux", "dmic disable", "Mono ADC"},
 
 	{"I2S OUT", NULL, "Digital Mic Mux"},
 
-	/* Playback */
+	 
 	{"DAC Source Mux", "LDATA TO LDAC, RDATA TO RDAC", "I2S IN"},
 
 	{"Left DAC", NULL, "DAC Clock"},
@@ -379,9 +364,7 @@ static int es8316_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	if (ret)
 		return ret;
 
-	/* Limit supported sample rates to ones that can be autodetected
-	 * by the codec running in slave mode.
-	 */
+	 
 	for (i = 0; i < NR_SUPPORTED_MCLK_LRCK_RATIOS; i++) {
 		const unsigned int ratio = supported_mclk_lrck_ratios[i];
 
@@ -414,7 +397,7 @@ static int es8316_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* Clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -439,7 +422,7 @@ static int es8316_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	snd_soc_component_update_bits(component, ES8316_SERDATA_ADC, mask, serdata2);
 	snd_soc_component_update_bits(component, ES8316_SERDATA_DAC, mask, serdata2);
 
-	/* Enable BCLK and MCLK inputs in slave mode */
+	 
 	clksw = ES8316_CLKMGR_CLKSW_MCLK_ON | ES8316_CLKMGR_CLKSW_BCLK_ON;
 	snd_soc_component_update_bits(component, ES8316_CLKMGR_CLKSW, clksw, clksw);
 
@@ -471,7 +454,7 @@ static int es8316_pcm_hw_params(struct snd_pcm_substream *substream,
 	u16 lrck_divider;
 	int i;
 
-	/* Validate supported sample rates that are autodetected from MCLK */
+	 
 	for (i = 0; i < NR_SUPPORTED_MCLK_LRCK_RATIOS; i++) {
 		const unsigned int ratio = supported_mclk_lrck_ratios[i];
 
@@ -595,9 +578,9 @@ static irqreturn_t es8316_irq(int irq, void *data)
 
 	regmap_read(es8316->regmap, ES8316_GPIO_FLAG, &flags);
 	if (flags == 0x00)
-		goto out; /* Powered-down / reset */
+		goto out;  
 
-	/* Catch spurious IRQ before set_jack is called */
+	 
 	if (!es8316->jack)
 		goto out;
 
@@ -606,7 +589,7 @@ static irqreturn_t es8316_irq(int irq, void *data)
 
 	dev_dbg(comp->dev, "gpio flags %#04x\n", flags);
 	if (flags & ES8316_GPIO_FLAG_HP_NOT_INSERTED) {
-		/* Jack removed, or spurious IRQ? */
+		 
 		if (es8316->jack->status & SND_JACK_MICROPHONE)
 			es8316_disable_micbias_for_mic_gnd_short_detect(comp);
 
@@ -616,36 +599,36 @@ static irqreturn_t es8316_irq(int irq, void *data)
 			dev_dbg(comp->dev, "jack unplugged\n");
 		}
 	} else if (!(es8316->jack->status & SND_JACK_HEADPHONE)) {
-		/* Jack inserted, determine type */
+		 
 		es8316_enable_micbias_for_mic_gnd_short_detect(comp);
 		regmap_read(es8316->regmap, ES8316_GPIO_FLAG, &flags);
 		if (es8316->jd_inverted)
 			flags ^= ES8316_GPIO_FLAG_HP_NOT_INSERTED;
 		dev_dbg(comp->dev, "gpio flags %#04x\n", flags);
 		if (flags & ES8316_GPIO_FLAG_HP_NOT_INSERTED) {
-			/* Jack unplugged underneath us */
+			 
 			es8316_disable_micbias_for_mic_gnd_short_detect(comp);
 		} else if (flags & ES8316_GPIO_FLAG_GM_NOT_SHORTED) {
-			/* Open, headset */
+			 
 			snd_soc_jack_report(es8316->jack,
 					    SND_JACK_HEADSET,
 					    SND_JACK_HEADSET);
-			/* Keep mic-gnd-short detection on for button press */
+			 
 		} else {
-			/* Shorted, headphones */
+			 
 			snd_soc_jack_report(es8316->jack,
 					    SND_JACK_HEADPHONE,
 					    SND_JACK_HEADSET);
-			/* No longer need mic-gnd-short detection */
+			 
 			es8316_disable_micbias_for_mic_gnd_short_detect(comp);
 		}
 	} else if (es8316->jack->status & SND_JACK_MICROPHONE) {
-		/* Interrupt while jack inserted, report button state */
+		 
 		if (flags & ES8316_GPIO_FLAG_GM_NOT_SHORTED) {
-			/* Open, button release */
+			 
 			snd_soc_jack_report(es8316->jack, 0, SND_JACK_BTN_0);
 		} else {
-			/* Short, button press */
+			 
 			snd_soc_jack_report(es8316->jack,
 					    SND_JACK_BTN_0,
 					    SND_JACK_BTN_0);
@@ -662,11 +645,7 @@ static void es8316_enable_jack_detect(struct snd_soc_component *component,
 {
 	struct es8316_priv *es8316 = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * Init es8316->jd_inverted here and not in the probe, as we cannot
-	 * guarantee that the bytchr-es8316 driver, which might set this
-	 * property, will probe before us.
-	 */
+	 
 	es8316->jd_inverted = device_property_read_bool(component->dev,
 							"everest,jack-detect-inverted");
 
@@ -683,7 +662,7 @@ static void es8316_enable_jack_detect(struct snd_soc_component *component,
 
 	mutex_unlock(&es8316->lock);
 
-	/* Enable irq and sync initial jack state */
+	 
 	enable_irq(es8316->irq);
 	es8316_irq(es8316->irq, es8316);
 }
@@ -693,7 +672,7 @@ static void es8316_disable_jack_detect(struct snd_soc_component *component)
 	struct es8316_priv *es8316 = snd_soc_component_get_drvdata(component);
 
 	if (!es8316->jack)
-		return; /* Already disabled (or never enabled) */
+		return;  
 
 	disable_irq(es8316->irq);
 
@@ -744,23 +723,16 @@ static int es8316_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* Reset codec and enable current state machine */
+	 
 	snd_soc_component_write(component, ES8316_RESET, 0x3f);
 	usleep_range(5000, 5500);
 	snd_soc_component_write(component, ES8316_RESET, ES8316_RESET_CSM_ON);
 	msleep(30);
 
-	/*
-	 * Documentation is unclear, but this value from the vendor driver is
-	 * needed otherwise audio output is silent.
-	 */
+	 
 	snd_soc_component_write(component, ES8316_SYS_VMIDSEL, 0xff);
 
-	/*
-	 * Documentation for this register is unclear and incomplete,
-	 * but here is a vendor-provided value that improves volume
-	 * and quality for Intel CHT platforms.
-	 */
+	 
 	snd_soc_component_write(component, ES8316_CLKMGR_ADCOSR, 0x32);
 
 	return 0;

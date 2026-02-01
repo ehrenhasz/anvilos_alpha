@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2007 Red Hat GmbH
- *
- * A target that delays reads and/or writes and can send
- * them to different devices.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -163,14 +156,7 @@ static int delay_class_ctr(struct dm_target *ti, struct delay_class *c, char **a
 	return 0;
 }
 
-/*
- * Mapping parameters:
- *    <device> <offset> <delay> [<write_device> <write_offset> <write_delay>]
- *
- * With separate write parameters, the first set is only used for reads.
- * Offsets are specified in sectors.
- * Delays are specified in milliseconds.
- */
+ 
 static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct delay_c *dc;

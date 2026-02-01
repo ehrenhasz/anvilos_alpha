@@ -1,19 +1,17 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Authors: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//	    Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//	    Rander Wang <rander.wang@intel.com>
-//          Keyon Jie <yang.jie@linux.intel.com>
-//
 
-/*
- * Hardware interface for generic Intel audio DSP HDA IP
- */
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 #include <sound/hdaudio_ext.h>
 #include <sound/hda_register.h>
@@ -42,7 +40,7 @@ static char *hda_hstream_dbg_get_stream_info_str(struct hdac_stream *hstream)
 	else if (hstream->cstream)
 		rtd = hstream->cstream->private_data;
 	else
-		/* Non audio DMA user, like dma-trace */
+		 
 		return kasprintf(GFP_KERNEL, "-- (%s, stream_tag: %u)",
 				 hda_hstream_direction_str(hstream),
 				 hstream->stream_tag);
@@ -52,9 +50,7 @@ static char *hda_hstream_dbg_get_stream_info_str(struct hdac_stream *hstream)
 			 hstream->stream_tag);
 }
 
-/*
- * set up one of BDL entries for a stream
- */
+ 
 static int hda_setup_bdle(struct snd_sof_dev *sdev,
 			  struct snd_dma_buffer *dmab,
 			  struct hdac_stream *hstream,
@@ -74,12 +70,12 @@ static int hda_setup_bdle(struct snd_sof_dev *sdev,
 		}
 
 		addr = snd_sgbuf_get_addr(dmab, offset);
-		/* program BDL addr */
+		 
 		bdl->addr_l = cpu_to_le32(lower_32_bits(addr));
 		bdl->addr_h = cpu_to_le32(upper_32_bits(addr));
-		/* program BDL size */
+		 
 		chunk = snd_sgbuf_get_chunk_size(dmab, offset, size);
-		/* one BDLE should not cross 4K boundary */
+		 
 		if (bus->align_bdle_4k) {
 			u32 remain = 0x1000 - (offset & 0xfff);
 
@@ -87,7 +83,7 @@ static int hda_setup_bdle(struct snd_sof_dev *sdev,
 				chunk = remain;
 		}
 		bdl->size = cpu_to_le32(chunk);
-		/* only program IOC when the whole segment is processed */
+		 
 		size -= chunk;
 		bdl->ioc = (size || !ioc) ? 0 : cpu_to_le32(0x01);
 		bdl++;
@@ -99,10 +95,7 @@ static int hda_setup_bdle(struct snd_sof_dev *sdev,
 	return offset;
 }
 
-/*
- * set up Buffer Descriptor List (BDL) for host memory transfer
- * BDL describes the location of the individual buffers and is little endian.
- */
+ 
 int hda_dsp_stream_setup_bdl(struct snd_sof_dev *sdev,
 			     struct snd_dma_buffer *dmab,
 			     struct hdac_stream *hstream)
@@ -125,21 +118,18 @@ int hda_dsp_stream_setup_bdl(struct snd_sof_dev *sdev,
 	if (remain)
 		periods++;
 
-	/* program the initial BDL entries */
+	 
 	bdl = (struct sof_intel_dsp_bdl *)hstream->bdl.area;
 	offset = 0;
 	hstream->frags = 0;
 
-	/*
-	 * set IOC if don't use position IPC
-	 * and period_wakeup needed.
-	 */
+	 
 	ioc = hda->no_ipc_position ?
 	      !hstream->no_period_wakeup : 0;
 
 	for (i = 0; i < periods; i++) {
 		if (i == (periods - 1) && remain)
-			/* set the last small entry */
+			 
 			offset = hda_setup_bdle(sdev, dmab,
 						hstream, &bdl, offset,
 						remain, 0);
@@ -166,18 +156,18 @@ int hda_dsp_stream_spib_config(struct snd_sof_dev *sdev,
 
 	mask = (1 << hstream->index);
 
-	/* enable/disable SPIB for the stream */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_SPIB_BAR,
 				SOF_HDA_ADSP_REG_CL_SPBFIFO_SPBFCCTL, mask,
 				enable << hstream->index);
 
-	/* set the SPIB value */
+	 
 	sof_io_write(sdev, hstream->spib_addr, size);
 
 	return 0;
 }
 
-/* get next unused stream */
+ 
 struct hdac_ext_stream *
 hda_dsp_stream_get(struct snd_sof_dev *sdev, int direction, u32 flags)
 {
@@ -190,14 +180,14 @@ hda_dsp_stream_get(struct snd_sof_dev *sdev, int direction, u32 flags)
 
 	spin_lock_irq(&bus->reg_lock);
 
-	/* get an unused stream */
+	 
 	list_for_each_entry(s, &bus->stream_list, list) {
 		if (s->direction == direction && !s->opened) {
 			hext_stream = stream_to_hdac_ext_stream(s);
 			hda_stream = container_of(hext_stream,
 						  struct sof_intel_hda_stream,
 						  hext_stream);
-			/* check if the host DMA channel is reserved */
+			 
 			if (hda_stream->host_reserved)
 				continue;
 
@@ -208,7 +198,7 @@ hda_dsp_stream_get(struct snd_sof_dev *sdev, int direction, u32 flags)
 
 	spin_unlock_irq(&bus->reg_lock);
 
-	/* stream found ? */
+	 
 	if (!hext_stream) {
 		dev_err(sdev->dev, "error: no free %s streams\n",
 			direction == SNDRV_PCM_STREAM_PLAYBACK ?
@@ -218,11 +208,7 @@ hda_dsp_stream_get(struct snd_sof_dev *sdev, int direction, u32 flags)
 
 	hda_stream->flags = flags;
 
-	/*
-	 * Prevent DMI Link L1 entry for streams that don't support it.
-	 * Workaround to address a known issue with host DMA that results
-	 * in xruns during pause/release in capture scenarios. This is not needed for the ACE IP.
-	 */
+	 
 	if (chip_info->hw_ip_version < SOF_INTEL_ACE_1_0 &&
 	    !(flags & SOF_HDA_STREAM_DMI_L1_COMPATIBLE)) {
 		snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR,
@@ -234,7 +220,7 @@ hda_dsp_stream_get(struct snd_sof_dev *sdev, int direction, u32 flags)
 	return hext_stream;
 }
 
-/* free a stream */
+ 
 int hda_dsp_stream_put(struct snd_sof_dev *sdev, int direction, int stream_tag)
 {
 	const struct sof_intel_dsp_desc *chip_info =  get_chip_info(sdev->pdata);
@@ -248,10 +234,7 @@ int hda_dsp_stream_put(struct snd_sof_dev *sdev, int direction, int stream_tag)
 
 	spin_lock_irq(&bus->reg_lock);
 
-	/*
-	 * close stream matching the stream tag and check if there are any open streams
-	 * that are DMI L1 incompatible.
-	 */
+	 
 	list_for_each_entry(s, &bus->stream_list, list) {
 		hext_stream = stream_to_hdac_ext_stream(s);
 		hda_stream = container_of(hext_stream, struct sof_intel_hda_stream, hext_stream);
@@ -269,7 +252,7 @@ int hda_dsp_stream_put(struct snd_sof_dev *sdev, int direction, int stream_tag)
 
 	spin_unlock_irq(&bus->reg_lock);
 
-	/* Enable DMI L1 if permitted */
+	 
 	if (chip_info->hw_ip_version < SOF_INTEL_ACE_1_0 && dmi_l1_enable) {
 		snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, HDA_VS_INTEL_EM2,
 					HDA_VS_INTEL_EM2_L1SEN, HDA_VS_INTEL_EM2_L1SEN);
@@ -291,7 +274,7 @@ static int hda_dsp_stream_reset(struct snd_sof_dev *sdev, struct hdac_stream *hs
 	int timeout = HDA_DSP_STREAM_RESET_TIMEOUT;
 	u32 val;
 
-	/* enter stream reset */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset, SOF_STREAM_SD_OFFSET_CRST,
 				SOF_STREAM_SD_OFFSET_CRST);
 	do {
@@ -306,10 +289,10 @@ static int hda_dsp_stream_reset(struct snd_sof_dev *sdev, struct hdac_stream *hs
 
 	timeout = HDA_DSP_STREAM_RESET_TIMEOUT;
 
-	/* exit stream reset and wait to read a zero before reading any other register */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset, SOF_STREAM_SD_OFFSET_CRST, 0x0);
 
-	/* wait for hardware to report that stream is out of reset */
+	 
 	udelay(3);
 	do {
 		val = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR, sd_offset);
@@ -333,7 +316,7 @@ int hda_dsp_stream_trigger(struct snd_sof_dev *sdev,
 	int ret = 0;
 	u32 run;
 
-	/* cmd must be for audio stream */
+	 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		if (!sdev->dspless_mode_selected)
@@ -410,7 +393,7 @@ int hda_dsp_stream_trigger(struct snd_sof_dev *sdev,
 	return ret;
 }
 
-/* minimal recommended programming for ICCMAX stream */
+ 
 int hda_dsp_iccmax_stream_hw_params(struct snd_sof_dev *sdev, struct hdac_ext_stream *hext_stream,
 				    struct snd_dma_buffer *dmab,
 				    struct snd_pcm_hw_params *params)
@@ -433,7 +416,7 @@ int hda_dsp_iccmax_stream_hw_params(struct snd_sof_dev *sdev, struct hdac_ext_st
 	if (hstream->posbuf)
 		*hstream->posbuf = 0;
 
-	/* reset BDL address */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPL,
 			  0x0);
@@ -449,7 +432,7 @@ int hda_dsp_iccmax_stream_hw_params(struct snd_sof_dev *sdev, struct hdac_ext_st
 		return ret;
 	}
 
-	/* program BDL address */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPL,
 			  (u32)hstream->bdl.addr);
@@ -457,35 +440,32 @@ int hda_dsp_iccmax_stream_hw_params(struct snd_sof_dev *sdev, struct hdac_ext_st
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPU,
 			  upper_32_bits(hstream->bdl.addr));
 
-	/* program cyclic buffer length */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_CBL,
 			  hstream->bufsize);
 
-	/* program last valid index */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR,
 				sd_offset + SOF_HDA_ADSP_REG_SD_LVI,
 				0xffff, (hstream->frags - 1));
 
-	/* decouple host and link DMA, enable DSP features */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_PP_BAR, SOF_HDA_REG_PP_PPCTL,
 				mask, mask);
 
-	/* Follow HW recommendation to set the guardband value to 95us during FW boot */
+	 
 	snd_sof_dsp_update8(sdev, HDA_DSP_HDA_BAR, HDA_VS_INTEL_LTRP,
 			    HDA_VS_INTEL_LTRP_GB_MASK, HDA_LTRP_GB_VALUE_US);
 
-	/* start DMA */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset,
 				SOF_HDA_SD_CTL_DMA_START, SOF_HDA_SD_CTL_DMA_START);
 
 	return 0;
 }
 
-/*
- * prepare for common hdac registers settings, for both code loader
- * and normal stream.
- */
+ 
 int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 			     struct hdac_ext_stream *hext_stream,
 			     struct snd_dma_buffer *dmab,
@@ -513,12 +493,12 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 	sd_offset = SOF_STREAM_SD_OFFSET(hstream);
 	mask = BIT(hstream->index);
 
-	/* decouple host and link DMA if the DSP is used */
+	 
 	if (!sdev->dspless_mode_selected)
 		snd_sof_dsp_update_bits(sdev, HDA_DSP_PP_BAR, SOF_HDA_REG_PP_PPCTL,
 					mask, mask);
 
-	/* clear stream status */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset,
 				SOF_HDA_CL_DMA_SD_INT_MASK |
 				SOF_HDA_SD_CTL_DMA_START, 0);
@@ -544,7 +524,7 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 				SOF_HDA_CL_DMA_SD_INT_MASK,
 				SOF_HDA_CL_DMA_SD_INT_MASK);
 
-	/* stream reset */
+	 
 	ret = hda_dsp_stream_reset(sdev, hstream);
 	if (ret < 0)
 		return ret;
@@ -552,7 +532,7 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 	if (hstream->posbuf)
 		*hstream->posbuf = 0;
 
-	/* reset BDL address */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPL,
 			  0x0);
@@ -560,7 +540,7 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPU,
 			  0x0);
 
-	/* clear stream status */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset,
 				SOF_HDA_CL_DMA_SD_INT_MASK |
 				SOF_HDA_SD_CTL_DMA_START, 0);
@@ -594,51 +574,41 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 		return ret;
 	}
 
-	/* program stream tag to set up stream descriptor for DMA */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset,
 				SOF_HDA_CL_SD_CTL_STREAM_TAG_MASK,
 				hstream->stream_tag <<
 				SOF_HDA_CL_SD_CTL_STREAM_TAG_SHIFT);
 
-	/* program cyclic buffer length */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_CBL,
 			  hstream->bufsize);
 
-	/*
-	 * Recommended hardware programming sequence for HDAudio DMA format
-	 * on earlier platforms - this is not needed on newer platforms
-	 *
-	 * 1. Put DMA into coupled mode by clearing PPCTL.PROCEN bit
-	 *    for corresponding stream index before the time of writing
-	 *    format to SDxFMT register.
-	 * 2. Write SDxFMT
-	 * 3. Set PPCTL.PROCEN bit for corresponding stream index to
-	 *    enable decoupled mode
-	 */
+	 
 
 	if (!sdev->dspless_mode_selected && (chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK))
-		/* couple host and link DMA, disable DSP features */
+		 
 		snd_sof_dsp_update_bits(sdev, HDA_DSP_PP_BAR, SOF_HDA_REG_PP_PPCTL,
 					mask, 0);
 
-	/* program stream format */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR,
 				sd_offset +
 				SOF_HDA_ADSP_REG_SD_FORMAT,
 				0xffff, hstream->format_val);
 
 	if (!sdev->dspless_mode_selected && (chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK))
-		/* decouple host and link DMA, enable DSP features */
+		 
 		snd_sof_dsp_update_bits(sdev, HDA_DSP_PP_BAR, SOF_HDA_REG_PP_PPCTL,
 					mask, mask);
 
-	/* program last valid index */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR,
 				sd_offset + SOF_HDA_ADSP_REG_SD_LVI,
 				0xffff, (hstream->frags - 1));
 
-	/* program BDL address */
+	 
 	snd_sof_dsp_write(sdev, HDA_DSP_HDA_BAR,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPL,
 			  (u32)hstream->bdl.addr);
@@ -646,7 +616,7 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 			  sd_offset + SOF_HDA_ADSP_REG_SD_BDLPU,
 			  upper_32_bits(hstream->bdl.addr));
 
-	/* enable position buffer, if needed */
+	 
 	if (bus->use_posbuf && bus->posbuf.addr &&
 	    !(snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR, SOF_HDA_ADSP_DPLBASE)
 	      & SOF_HDA_ADSP_DPLBASE_ENABLE)) {
@@ -657,12 +627,12 @@ int hda_dsp_stream_hw_params(struct snd_sof_dev *sdev,
 				  SOF_HDA_ADSP_DPLBASE_ENABLE);
 	}
 
-	/* set interrupt enable bits */
+	 
 	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR, sd_offset,
 				SOF_HDA_CL_DMA_SD_INT_MASK,
 				SOF_HDA_CL_DMA_SD_INT_MASK);
 
-	/* read FIFO size */
+	 
 	if (hstream->direction == SNDRV_PCM_STREAM_PLAYBACK) {
 		hstream->fifo_size =
 			snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR,
@@ -695,7 +665,7 @@ int hda_dsp_stream_hw_free(struct snd_sof_dev *sdev,
 		u32 mask = BIT(hstream->index);
 
 		spin_lock_irq(&bus->reg_lock);
-		/* couple host and link DMA if link DMA channel is idle */
+		 
 		if (!hext_stream->link_locked)
 			snd_sof_dsp_update_bits(sdev, HDA_DSP_PP_BAR,
 						SOF_HDA_REG_PP_PPCTL, mask, 0);
@@ -715,14 +685,14 @@ bool hda_dsp_check_stream_irq(struct snd_sof_dev *sdev)
 	bool ret = false;
 	u32 status;
 
-	/* The function can be called at irq thread, so use spin_lock_irq */
+	 
 	spin_lock_irq(&bus->reg_lock);
 
 	status = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR, SOF_HDA_INTSTS);
 
 	trace_sof_intel_hda_dsp_check_stream_irq(sdev, status);
 
-	/* if Register inaccessible, ignore it.*/
+	 
 	if (status != 0xffffffff)
 		ret = true;
 
@@ -769,7 +739,7 @@ static bool hda_dsp_stream_check(struct hdac_bus *bus, u32 status)
 			    (sd_status & SOF_HDA_CL_DMA_SD_INT_COMPLETE) == 0)
 				continue;
 
-			/* Inform ALSA only in case not do that with IPC */
+			 
 			if (s->substream && sof_hda->no_ipc_position) {
 				snd_sof_pcm_period_elapsed(s->substream);
 			} else if (s->cstream) {
@@ -790,19 +760,16 @@ irqreturn_t hda_dsp_stream_threaded_handler(int irq, void *context)
 	u32 status;
 	int i;
 
-	/*
-	 * Loop 10 times to handle missed interrupts caused by
-	 * unsolicited responses from the codec
-	 */
+	 
 	for (i = 0, active = true; i < 10 && active; i++) {
 		spin_lock_irq(&bus->reg_lock);
 
 		status = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR, SOF_HDA_INTSTS);
 
-		/* check streams */
+		 
 		active = hda_dsp_stream_check(bus, status);
 
-		/* check and clear RIRB interrupt */
+		 
 		if (status & AZX_INT_CTRL_EN) {
 			active |= hda_codec_check_rirb_status(sdev);
 		}
@@ -826,7 +793,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 	gcap = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR, SOF_HDA_GCAP);
 	dev_dbg(sdev->dev, "hda global caps = 0x%x\n", gcap);
 
-	/* get stream count from GCAP */
+	 
 	num_capture = (gcap >> 8) & 0x0f;
 	num_playback = (gcap >> 12) & 0x0f;
 	num_total = num_playback + num_capture;
@@ -846,10 +813,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * mem alloc for the position buffer
-	 * TODO: check position buffer update
-	 */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &pci->dev,
 				  SOF_HDA_DPIB_ENTRY_SIZE * num_total,
 				  &bus->posbuf);
@@ -858,10 +822,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 		return -ENOMEM;
 	}
 
-	/*
-	 * mem alloc for the CORB/RIRB ringbuffers - this will be used only for
-	 * HDAudio codecs
-	 */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &pci->dev,
 				  PAGE_SIZE, &bus->rb);
 	if (ret < 0) {
@@ -869,7 +830,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 		return -ENOMEM;
 	}
 
-	/* create capture and playback streams */
+	 
 	for (i = 0; i < num_total; i++) {
 		struct sof_intel_hda_stream *hda_stream;
 
@@ -893,7 +854,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 
 		hstream = &hext_stream->hstream;
 
-		/* do we support SPIB */
+		 
 		if (sdev->bar[HDA_DSP_SPIB_BAR]) {
 			hstream->spib_addr = sdev->bar[HDA_DSP_SPIB_BAR] +
 				SOF_HDA_SPIB_BASE + SOF_HDA_SPIB_INTERVAL * i +
@@ -920,7 +881,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 			hstream->direction = SNDRV_PCM_STREAM_PLAYBACK;
 		}
 
-		/* mem alloc for stream BDL */
+		 
 		ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &pci->dev,
 					  HDA_DSP_BDL_SIZE, &hstream->bdl);
 		if (ret < 0) {
@@ -934,7 +895,7 @@ int hda_dsp_stream_init(struct snd_sof_dev *sdev)
 		list_add_tail(&hstream->list, &bus->stream_list);
 	}
 
-	/* store total stream count (playback + capture) from GCAP */
+	 
 	sof_hda->stream_max = num_total;
 
 	return 0;
@@ -947,18 +908,18 @@ void hda_dsp_stream_free(struct snd_sof_dev *sdev)
 	struct hdac_ext_stream *hext_stream;
 	struct sof_intel_hda_stream *hda_stream;
 
-	/* free position buffer */
+	 
 	if (bus->posbuf.area)
 		snd_dma_free_pages(&bus->posbuf);
 
-	/* free CORB/RIRB buffer - only used for HDaudio codecs */
+	 
 	if (bus->rb.area)
 		snd_dma_free_pages(&bus->rb);
 
 	list_for_each_entry_safe(s, _s, &bus->stream_list, list) {
-		/* TODO: decouple */
+		 
 
-		/* free bdl buffer */
+		 
 		if (s->bdl.area)
 			snd_dma_free_pages(&s->bdl);
 		list_del(&s->list);
@@ -979,42 +940,16 @@ snd_pcm_uframes_t hda_dsp_stream_get_position(struct hdac_stream *hstream,
 
 	switch (sof_hda_position_quirk) {
 	case SOF_HDA_POSITION_QUIRK_USE_SKYLAKE_LEGACY:
-		/*
-		 * This legacy code, inherited from the Skylake driver,
-		 * mixes DPIB registers and DPIB DDR updates and
-		 * does not seem to follow any known hardware recommendations.
-		 * It's not clear e.g. why there is a different flow
-		 * for capture and playback, the only information that matters is
-		 * what traffic class is used, and on all SOF-enabled platforms
-		 * only VC0 is supported so the work-around was likely not necessary
-		 * and quite possibly wrong.
-		 */
+		 
 
-		/* DPIB/posbuf position mode:
-		 * For Playback, Use DPIB register from HDA space which
-		 * reflects the actual data transferred.
-		 * For Capture, Use the position buffer for pointer, as DPIB
-		 * is not accurate enough, its update may be completed
-		 * earlier than the data written to DDR.
-		 */
+		 
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
 			pos = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR,
 					       AZX_REG_VS_SDXDPIB_XBASE +
 					       (AZX_REG_VS_SDXDPIB_XINTERVAL *
 						hstream->index));
 		} else {
-			/*
-			 * For capture stream, we need more workaround to fix the
-			 * position incorrect issue:
-			 *
-			 * 1. Wait at least 20us before reading position buffer after
-			 * the interrupt generated(IOC), to make sure position update
-			 * happens on frame boundary i.e. 20.833uSec for 48KHz.
-			 * 2. Perform a dummy Read to DPIB register to flush DMA
-			 * position value.
-			 * 3. Read the DMA Position from posbuf. Now the readback
-			 * value should be >= period boundary.
-			 */
+			 
 			if (can_sleep)
 				usleep_range(20, 21);
 
@@ -1026,20 +961,14 @@ snd_pcm_uframes_t hda_dsp_stream_get_position(struct hdac_stream *hstream,
 		}
 		break;
 	case SOF_HDA_POSITION_QUIRK_USE_DPIB_REGISTERS:
-		/*
-		 * In case VC1 traffic is disabled this is the recommended option
-		 */
+		 
 		pos = snd_sof_dsp_read(sdev, HDA_DSP_HDA_BAR,
 				       AZX_REG_VS_SDXDPIB_XBASE +
 				       (AZX_REG_VS_SDXDPIB_XINTERVAL *
 					hstream->index));
 		break;
 	case SOF_HDA_POSITION_QUIRK_USE_DPIB_DDR_UPDATE:
-		/*
-		 * This is the recommended option when VC1 is enabled.
-		 * While this isn't needed for SOF platforms it's added for
-		 * consistency and debug.
-		 */
+		 
 		pos = snd_hdac_stream_get_pos_posbuf(hstream);
 		break;
 	default:

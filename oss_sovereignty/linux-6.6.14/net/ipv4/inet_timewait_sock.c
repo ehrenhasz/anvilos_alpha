@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Generic TIME_WAIT sockets functions
- *
- *		From code orinally in TCP
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -17,15 +9,7 @@
 #include <net/ip.h>
 
 
-/**
- *	inet_twsk_bind_unhash - unhash a timewait socket from bind hash
- *	@tw: timewait socket
- *	@hashinfo: hashinfo pointer
- *
- *	unhash a timewait socket from bind hash, if hashed.
- *	bind hash lock must be held by caller.
- *	Returns 1 if caller should call inet_twsk_put() after lock release.
- */
+ 
 void inet_twsk_bind_unhash(struct inet_timewait_sock *tw,
 			  struct inet_hashinfo *hashinfo)
 {
@@ -46,7 +30,7 @@ void inet_twsk_bind_unhash(struct inet_timewait_sock *tw,
 	__sock_put((struct sock *)tw);
 }
 
-/* Must be called with locally disabled BHs. */
+ 
 static void inet_twsk_kill(struct inet_timewait_sock *tw)
 {
 	struct inet_hashinfo *hashinfo = tw->tw_dr->hashinfo;
@@ -57,7 +41,7 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
 	sk_nulls_del_node_init_rcu((struct sock *)tw);
 	spin_unlock(lock);
 
-	/* Disassociate with bind bucket. */
+	 
 	bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), tw->tw_num,
 			hashinfo->bhash_size)];
 	bhead2 = inet_bhashfn_portaddr(hashinfo, (struct sock *)tw,
@@ -106,11 +90,7 @@ static void inet_twsk_add_bind2_node(struct inet_timewait_sock *tw,
 	hlist_add_head(&tw->tw_bind2_node, list);
 }
 
-/*
- * Enter the time wait state. This is called with locally disabled BH.
- * Essentially we whip up a timewait bucket, copy the relevant info into it
- * from the SK, and mess with hash chains and list linkage.
- */
+ 
 void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
 			   struct inet_hashinfo *hashinfo)
 {
@@ -120,10 +100,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
 	spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
 	struct inet_bind_hashbucket *bhead, *bhead2;
 
-	/* Step 1: Put TW into bind hash. Original socket stays there too.
-	   Note, that any socket with inet->num != 0 MUST be bound in
-	   binding cache, even if it is closed.
-	 */
+	 
 	bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), inet->inet_num,
 			hashinfo->bhash_size)];
 	bhead2 = inet_bhashfn_portaddr(hashinfo, sk, twsk_net(tw), inet->inet_num);
@@ -146,21 +123,13 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
 
 	inet_twsk_add_node_rcu(tw, &ehead->chain);
 
-	/* Step 3: Remove SK from hash chain */
+	 
 	if (__sk_nulls_del_node_init_rcu(sk))
 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
 
 	spin_unlock(lock);
 
-	/* tw_refcnt is set to 3 because we have :
-	 * - one reference for bhash chain.
-	 * - one reference for ehash chain.
-	 * - one reference for timer.
-	 * We can use atomic_set() because prior spin_lock()/spin_unlock()
-	 * committed into memory all tw fields.
-	 * Also note that after this point, we lost our implicit reference
-	 * so we are not allowed to use tw anymore.
-	 */
+	 
 	refcount_set(&tw->tw_refcnt, 3);
 }
 EXPORT_SYMBOL_GPL(inet_twsk_hashdance);
@@ -188,7 +157,7 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk,
 		const struct inet_sock *inet = inet_sk(sk);
 
 		tw->tw_dr	    = dr;
-		/* Give us an identity. */
+		 
 		tw->tw_daddr	    = inet->inet_daddr;
 		tw->tw_rcv_saddr    = inet->inet_rcv_saddr;
 		tw->tw_bound_dev_if = sk->sk_bound_dev_if;
@@ -208,11 +177,7 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk,
 		atomic64_set(&tw->tw_cookie, atomic64_read(&sk->sk_cookie));
 		twsk_net_set(tw, sock_net(sk));
 		timer_setup(&tw->tw_timer, tw_timer_handler, TIMER_PINNED);
-		/*
-		 * Because we use RCU lookups, we should not set tw_refcnt
-		 * to a non null value before everything is setup for this
-		 * timewait socket.
-		 */
+		 
 		refcount_set(&tw->tw_refcnt, 0);
 
 		__module_get(tw->tw_prot->owner);
@@ -222,14 +187,9 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(inet_twsk_alloc);
 
-/* These are always called from BH context.  See callers in
- * tcp_input.c to verify this.
- */
+ 
 
-/* This is for handling early-kills of TIME_WAIT sockets.
- * Warning : consume reference.
- * Caller should not access tw anymore.
- */
+ 
 void inet_twsk_deschedule_put(struct inet_timewait_sock *tw)
 {
 	if (del_timer_sync(&tw->tw_timer))
@@ -240,30 +200,7 @@ EXPORT_SYMBOL(inet_twsk_deschedule_put);
 
 void __inet_twsk_schedule(struct inet_timewait_sock *tw, int timeo, bool rearm)
 {
-	/* timeout := RTO * 3.5
-	 *
-	 * 3.5 = 1+2+0.5 to wait for two retransmits.
-	 *
-	 * RATIONALE: if FIN arrived and we entered TIME-WAIT state,
-	 * our ACK acking that FIN can be lost. If N subsequent retransmitted
-	 * FINs (or previous seqments) are lost (probability of such event
-	 * is p^(N+1), where p is probability to lose single packet and
-	 * time to detect the loss is about RTO*(2^N - 1) with exponential
-	 * backoff). Normal timewait length is calculated so, that we
-	 * waited at least for one retransmitted FIN (maximal RTO is 120sec).
-	 * [ BTW Linux. following BSD, violates this requirement waiting
-	 *   only for 60sec, we should wait at least for 240 secs.
-	 *   Well, 240 consumes too much of resources 8)
-	 * ]
-	 * This interval is not reduced to catch old duplicate and
-	 * responces to our wandering segments living for two MSLs.
-	 * However, if we use PAWS to detect
-	 * old duplicates, we can reduce the interval to bounds required
-	 * by RTO, rather than MSL. So, if peer understands PAWS, we
-	 * kill tw bucket after 3.5*RTO (it is important that this number
-	 * is greater than TS tick!) and detect old duplicates with help
-	 * of PAWS.
-	 */
+	 
 
 	if (!rearm) {
 		bool kill = timeo <= 4*HZ;
@@ -293,10 +230,7 @@ restart_rcu:
 restart:
 		sk_nulls_for_each_rcu(sk, node, &head->chain) {
 			if (sk->sk_state != TCP_TIME_WAIT) {
-				/* A kernel listener socket might not hold refcnt for net,
-				 * so reqsk_timer_handler() could be fired after net is
-				 * freed.  Userspace listener and reqsk never exist here.
-				 */
+				 
 				if (unlikely(sk->sk_state == TCP_NEW_SYN_RECV &&
 					     hashinfo->pernet)) {
 					struct request_sock *req = inet_reqsk(sk);
@@ -327,10 +261,7 @@ restart:
 			local_bh_enable();
 			goto restart_rcu;
 		}
-		/* If the nulls value we got at the end of this lookup is
-		 * not the expected one, we must restart lookup.
-		 * We probably met an item that was moved to another chain.
-		 */
+		 
 		if (get_nulls_value(node) != slot)
 			goto restart;
 		rcu_read_unlock();

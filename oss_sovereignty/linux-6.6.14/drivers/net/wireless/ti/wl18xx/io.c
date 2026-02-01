@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2011 Texas Instruments
- */
+
+ 
 
 #include "../wlcore/wlcore.h"
 #include "../wlcore/io.h"
@@ -47,7 +43,7 @@ int wl18xx_top_reg_read(struct wl1271 *wl, int addr, u16 *out)
 		return -EINVAL;
 
 	if ((addr % 4) == 0) {
-		/* address is 4-bytes aligned */
+		 
 		ret = wlcore_read32(wl, addr, &val);
 		if (ret >= 0 && out)
 			*out = val & 0xffff;

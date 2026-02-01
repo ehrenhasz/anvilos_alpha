@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <string.h>
 #include <stdbool.h>
 
@@ -32,7 +32,7 @@ int connect4(struct bpf_sock_addr *ctx)
 	struct sockaddr_in sa = {};
 	struct svc_addr *orig;
 
-	/* Force local address to 127.0.0.1:22222. */
+	 
 	sa.sin_family = AF_INET;
 	sa.sin_port = bpf_htons(22222);
 	sa.sin_addr.s_addr = bpf_htonl(0x7f000001);
@@ -40,7 +40,7 @@ int connect4(struct bpf_sock_addr *ctx)
 	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
 		return 0;
 
-	/* Rewire service 1.2.3.4:60000 to backend 127.0.0.1:60123. */
+	 
 	if (ctx->user_port == bpf_htons(60000)) {
 		orig = bpf_sk_storage_get(&service_mapping, ctx->sk, 0,
 					  BPF_SK_STORAGE_GET_F_CREATE);
@@ -62,7 +62,7 @@ int getsockname4(struct bpf_sock_addr *ctx)
 	if (!get_set_sk_priority(ctx))
 		return 1;
 
-	/* Expose local server as 1.2.3.4:60000 to client. */
+	 
 	if (ctx->user_port == bpf_htons(60123)) {
 		ctx->user_ip4 = bpf_htonl(0x01020304);
 		ctx->user_port = bpf_htons(60000);
@@ -78,7 +78,7 @@ int getpeername4(struct bpf_sock_addr *ctx)
 	if (!get_set_sk_priority(ctx))
 		return 1;
 
-	/* Expose service 1.2.3.4:60000 as peer instead of backend. */
+	 
 	if (ctx->user_port == bpf_htons(60123)) {
 		orig = bpf_sk_storage_get(&service_mapping, ctx->sk, 0, 0);
 		if (orig) {

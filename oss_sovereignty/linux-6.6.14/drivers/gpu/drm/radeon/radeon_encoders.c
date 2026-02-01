@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <linux/pci.h>
 
@@ -45,13 +21,13 @@ static uint32_t radeon_encoder_clones(struct drm_encoder *encoder)
 	uint32_t index_mask = 0;
 	int count;
 
-	/* DIG routing gets problematic */
+	 
 	if (rdev->family >= CHIP_R600)
 		return index_mask;
-	/* LVDS/TV are too wacky */
+	 
 	if (radeon_encoder->devices & ATOM_DEVICE_LCD_SUPPORT)
 		return index_mask;
-	/* DVO requires 2x ppll clocks depending on tmds chip */
+	 
 	if (radeon_encoder->devices & ATOM_DEVICE_DFP2_SUPPORT)
 		return index_mask;
 
@@ -95,7 +71,7 @@ radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device, uint8
 	case ATOM_DEVICE_CRT2_SUPPORT:
 	case ATOM_DEVICE_CV_SUPPORT:
 		switch (dac) {
-		case 1: /* dac a */
+		case 1:  
 			if ((rdev->family == CHIP_RS300) ||
 			    (rdev->family == CHIP_RS400) ||
 			    (rdev->family == CHIP_RS480))
@@ -105,18 +81,15 @@ radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device, uint8
 			else
 				ret = ENCODER_INTERNAL_DAC1_ENUM_ID1;
 			break;
-		case 2: /* dac b */
+		case 2:  
 			if (ASIC_IS_AVIVO(rdev))
 				ret = ENCODER_INTERNAL_KLDSCP_DAC2_ENUM_ID1;
 			else {
-				/* if (rdev->family == CHIP_R200)
-				 * ret = ENCODER_INTERNAL_DVO1_ENUM_ID1;
-				 * else
-				 */
+				 
 				ret = ENCODER_INTERNAL_DAC2_ENUM_ID1;
 			}
 			break;
-		case 3: /* external dac */
+		case 3:  
 			if (ASIC_IS_AVIVO(rdev))
 				ret = ENCODER_INTERNAL_KLDSCP_DVO1_ENUM_ID1;
 			else
@@ -174,15 +147,15 @@ static void radeon_encoder_add_backlight(struct radeon_encoder *radeon_encoder,
 	} else if (radeon_backlight == 1) {
 		use_bl = true;
 	} else if (radeon_backlight == -1) {
-		/* Quirks */
-		/* Amilo Xi 2550 only works with acpi bl */
+		 
+		 
 		if ((rdev->pdev->device == 0x9583) &&
 		    (rdev->pdev->subsystem_vendor == 0x1734) &&
 		    (rdev->pdev->subsystem_device == 0x1107))
 			use_bl = false;
-/* Older PPC macs use on-GPU backlight controller */
+ 
 #ifndef CONFIG_PPC_PMAC
-		/* disable native backlight control on older asics */
+		 
 		else if (rdev->family < CHIP_R600)
 			use_bl = false;
 #endif
@@ -197,10 +170,7 @@ static void radeon_encoder_add_backlight(struct radeon_encoder *radeon_encoder,
 			radeon_legacy_backlight_init(radeon_encoder, connector);
 	}
 
-	/*
-	 * If there is no native backlight device (which may happen even when
-	 * use_bl==true) try registering an ACPI video backlight device instead.
-	 */
+	 
 	if (!rdev->mode_info.bl_encoder)
 		acpi_video_register_backlight();
 }
@@ -213,7 +183,7 @@ radeon_link_encoder_connector(struct drm_device *dev)
 	struct drm_encoder *encoder;
 	struct radeon_encoder *radeon_encoder;
 
-	/* walk the list and link encoders to connectors */
+	 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		radeon_connector = to_radeon_connector(connector);
 		list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
@@ -373,9 +343,7 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	struct radeon_connector_atom_dig *dig_connector;
 
 	connector = radeon_get_connector_for_encoder(encoder);
-	/* if we don't have an active device yet, just use one of
-	 * the connectors tied to the encoder.
-	 */
+	 
 	if (!connector)
 		connector = radeon_get_connector_for_encoder_init(encoder);
 	radeon_connector = to_radeon_connector(connector);
@@ -384,7 +352,7 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	case DRM_MODE_CONNECTOR_DVII:
 	case DRM_MODE_CONNECTOR_HDMIB:
 		if (radeon_connector->use_digital) {
-			/* HDMI 1.3 supports up to 340 Mhz over single link */
+			 
 			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
 				if (pixel_clock > 340000)
 					return true;
@@ -406,7 +374,7 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 		    (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP))
 			return false;
 		else {
-			/* HDMI 1.3 supports up to 340 Mhz over single link */
+			 
 			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
 				if (pixel_clock > 340000)
 					return true;

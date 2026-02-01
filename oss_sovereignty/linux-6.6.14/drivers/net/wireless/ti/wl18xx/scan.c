@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include "scan.h"
@@ -21,7 +17,7 @@ static void wl18xx_adjust_channels(struct wl18xx_cmd_scan_params *cmd,
 	       sizeof(cmd->channels_2));
 	memcpy(cmd->channels_5, cmd_channels->channels_5,
 	       sizeof(cmd->channels_5));
-	/* channels_4 are not supported, so no need to copy them */
+	 
 }
 
 static int wl18xx_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
@@ -37,7 +33,7 @@ static int wl18xx_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		goto out;
 	}
 
-	/* scan on the dev role if the regular one is not started */
+	 
 	if (wlcore_is_p2p_mgmt(wlvif))
 		cmd->role_id = wlvif->dev_role_id;
 	else
@@ -64,7 +60,7 @@ static int wl18xx_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	cmd->n_probe_reqs = wl->conf.scan.num_probe_reqs;
 	cmd->terminate_after = 0;
 
-	/* configure channels */
+	 
 	WARN_ON(req->n_ssids > 1);
 
 	cmd_channels = kzalloc(sizeof(*cmd_channels), GFP_KERNEL);
@@ -78,10 +74,7 @@ static int wl18xx_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 				    SCAN_TYPE_SEARCH);
 	wl18xx_adjust_channels(cmd, cmd_channels);
 
-	/*
-	 * all the cycles params (except total cycles) should
-	 * remain 0 for normal scan
-	 */
+	 
 	cmd->total_cycles = 1;
 
 	if (req->no_cck)
@@ -94,7 +87,7 @@ static int wl18xx_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		memcpy(cmd->ssid, req->ssids[0].ssid, cmd->ssid_len);
 	}
 
-	/* TODO: per-band ies? */
+	 
 	if (cmd->active[0]) {
 		u8 band = NL80211_BAND_2GHZ;
 		ret = wl12xx_cmd_build_probe_req(wl, wlvif,
@@ -186,7 +179,7 @@ int wl18xx_scan_sched_scan_config(struct wl1271 *wl,
 	cmd->rssi_threshold = c->rssi_threshold;
 	cmd->snr_threshold = c->snr_threshold;
 
-	/* don't filter on BSS type */
+	 
 	cmd->bss_type = SCAN_BSS_TYPE_ANY;
 
 	cmd->ssid_from_list = 1;
@@ -198,7 +191,7 @@ int wl18xx_scan_sched_scan_config(struct wl1271 *wl,
 	cmd->protect = 0;
 
 	cmd->n_probe_reqs = c->num_probe_reqs;
-	/* don't stop scanning automatically when something is found */
+	 
 	cmd->terminate_after = 0;
 
 	cmd_channels = kzalloc(sizeof(*cmd_channels), GFP_KERNEL);
@@ -207,7 +200,7 @@ int wl18xx_scan_sched_scan_config(struct wl1271 *wl,
 		goto out;
 	}
 
-	/* configure channels */
+	 
 	wlcore_set_scan_chan_params(wl, cmd_channels, req->channels,
 				    req->n_channels, req->n_ssids,
 				    SCAN_TYPE_PERIODIC);
@@ -234,7 +227,7 @@ int wl18xx_scan_sched_scan_config(struct wl1271 *wl,
 
 	cmd->tag = WL1271_SCAN_DEFAULT_TAG;
 
-	/* create a PERIODIC_SCAN_REPORT_EVENT whenever we've got a match */
+	 
 	cmd->report_threshold = 1;
 	cmd->terminate_on_report = 0;
 

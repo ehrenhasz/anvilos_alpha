@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMFS (as used by RIO Karma) file operations.
- * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -39,12 +36,10 @@ int omfs_shrink_inode(struct inode *inode)
 	u32 max_extents;
 	int ret;
 
-	/* traverse extent table, freeing each entry that is greater
-	 * than inode->i_size;
-	 */
+	 
 	next = inode->i_ino;
 
-	/* only support truncate -> 0 for now */
+	 
 	ret = -EIO;
 	if (inode->i_size != 0)
 		goto out;
@@ -70,7 +65,7 @@ int omfs_shrink_inode(struct inode *inode)
 		next = be64_to_cpu(oe->e_next);
 		entry = oe->e_entry;
 
-		/* ignore last entry as it is the terminator */
+		 
 		for (; extent_count > 1; extent_count--) {
 			u64 start, count;
 			start = be64_to_cpu(entry->e_cluster);
@@ -109,10 +104,7 @@ static void omfs_truncate(struct inode *inode)
 	mark_inode_dirty(inode);
 }
 
-/*
- * Add new blocks to the current extent, or create new entries/continuations
- * as necessary.
- */
+ 
 static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 			u64 *ret_block)
 {
@@ -125,20 +117,15 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 	int new_count;
 	int ret = 0;
 
-	/* reached the end of the extent table with no blocks mapped.
-	 * there are three possibilities for adding: grow last extent,
-	 * add a new extent to the current extent table, and add a
-	 * continuation inode.  in last two cases need an allocator for
-	 * sbi->s_cluster_size
-	 */
+	 
 
-	/* TODO: handle holes */
+	 
 
-	/* should always have a terminator */
+	 
 	if (extent_count < 1)
 		return -EIO;
 
-	/* trivially grow current extent, if next block is not taken */
+	 
 	terminator = entry + extent_count - 1;
 	if (extent_count > 1) {
 		entry = terminator-1;
@@ -154,17 +141,17 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 	}
 	max_count = omfs_max_extents(sbi, OMFS_EXTENT_START);
 
-	/* TODO: add a continuation block here */
+	 
 	if (be32_to_cpu(oe->e_extent_count) > max_count-1)
 		return -EIO;
 
-	/* try to allocate a new cluster */
+	 
 	ret = omfs_allocate_range(inode->i_sb, 1, sbi->s_clustersize,
 		&new_block, &new_count);
 	if (ret)
 		goto out_fail;
 
-	/* copy terminator down an entry */
+	 
 	entry = terminator;
 	terminator++;
 	memcpy(terminator, entry, sizeof(struct omfs_extent_entry));
@@ -175,7 +162,7 @@ static int omfs_grow_extent(struct inode *inode, struct omfs_extent *oe,
 	terminator->e_blocks = ~(cpu_to_be64(
 		be64_to_cpu(~terminator->e_blocks) + (u64) new_count));
 
-	/* write in new entry */
+	 
 	be32_add_cpu(&oe->e_extent_count, 1);
 
 out:
@@ -184,14 +171,11 @@ out_fail:
 	return ret;
 }
 
-/*
- * Scans across the directory table for a given file block number.
- * If block not found, return 0.
- */
+ 
 static sector_t find_block(struct inode *inode, struct omfs_extent_entry *ent,
 			sector_t block, int count, int *left)
 {
-	/* count > 1 because of terminator */
+	 
 	sector_t searched = 0;
 	for (; count > 1; count--) {
 		int numblocks = clus_to_blk(OMFS_SB(inode->i_sb),
@@ -199,10 +183,7 @@ static sector_t find_block(struct inode *inode, struct omfs_extent_entry *ent,
 
 		if (block >= searched  &&
 		    block < searched + numblocks) {
-			/*
-			 * found it at cluster + (block - searched)
-			 * numblocks - (block - searched) is remainder
-			 */
+			 
 			*left = numblocks - (block - searched);
 			return clus_to_blk(OMFS_SB(inode->i_sb),
 				be64_to_cpu(ent->e_cluster)) +

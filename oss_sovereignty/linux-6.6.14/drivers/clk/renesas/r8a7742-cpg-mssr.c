@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7742 Clock Pulse Generator / Module Standby and Software Reset
- *
- * Copyright (C) 2020 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -16,30 +12,30 @@
 #include "rcar-gen2-cpg.h"
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R8A7742_CLK_OSC,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 	CLK_USB_EXTAL,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_PLL0,
 	CLK_PLL1,
 	CLK_PLL3,
 	CLK_PLL1_DIV2,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
 static const struct cpg_core_clk r8a7742_core_clks[] __initconst = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",	CLK_EXTAL),
 	DEF_INPUT("usb_extal",	CLK_USB_EXTAL),
 
-	/* Internal Core Clocks */
+	 
 	DEF_BASE(".main",	CLK_MAIN, CLK_TYPE_GEN2_MAIN, CLK_EXTAL),
 	DEF_BASE(".pll0",	CLK_PLL0, CLK_TYPE_GEN2_PLL0, CLK_MAIN),
 	DEF_BASE(".pll1",	CLK_PLL1, CLK_TYPE_GEN2_PLL1, CLK_MAIN),
@@ -47,7 +43,7 @@ static const struct cpg_core_clk r8a7742_core_clks[] __initconst = {
 
 	DEF_FIXED(".pll1_div2",	CLK_PLL1_DIV2, CLK_PLL1, 2, 1),
 
-	/* Core Clock Outputs */
+	 
 	DEF_BASE("z",    R8A7742_CLK_Z,    CLK_TYPE_GEN2_Z,	CLK_PLL0),
 	DEF_BASE("lb",   R8A7742_CLK_LB,   CLK_TYPE_GEN2_LB,	CLK_PLL1),
 	DEF_BASE("sdh",  R8A7742_CLK_SDH,  CLK_TYPE_GEN2_SDH,	CLK_PLL1),
@@ -200,35 +196,19 @@ static const struct mssr_mod_clk r8a7742_mod_clks[] __initconst = {
 };
 
 static const unsigned int r8a7742_crit_mod_clks[] __initconst = {
-	MOD_CLK_ID(402),	/* RWDT */
-	MOD_CLK_ID(408),	/* INTC-SYS (GIC) */
+	MOD_CLK_ID(402),	 
+	MOD_CLK_ID(408),	 
 };
 
-/*
- * CPG Clock Data
- */
+ 
 
-/*
- *    MD	EXTAL		PLL0	PLL1	PLL3
- * 14 13 19	(MHz)		*1	*1
- *---------------------------------------------------
- * 0  0  0	15		x172/2	x208/2	x106
- * 0  0  1	15		x172/2	x208/2	x88
- * 0  1  0	20		x130/2	x156/2	x80
- * 0  1  1	20		x130/2	x156/2	x66
- * 1  0  0	26 / 2		x200/2	x240/2	x122
- * 1  0  1	26 / 2		x200/2	x240/2	x102
- * 1  1  0	30 / 2		x172/2	x208/2	x106
- * 1  1  1	30 / 2		x172/2	x208/2	x88
- *
- * *1 :	Table 7.5a indicates VCO output (PLLx = VCO/2)
- */
+ 
 #define CPG_PLL_CONFIG_INDEX(md)	((((md) & BIT(14)) >> 12) | \
 					 (((md) & BIT(13)) >> 12) | \
 					 (((md) & BIT(19)) >> 19))
 
 static const struct rcar_gen2_cpg_pll_config cpg_pll_configs[8] __initconst = {
-	/* EXTAL div	PLL1 mult	PLL3 mult */
+	 
 	{ 1,		208,		106,	},
 	{ 1,		208,		88,	},
 	{ 1,		156,		80,	},
@@ -255,22 +235,22 @@ static int __init r8a7742_cpg_mssr_init(struct device *dev)
 }
 
 const struct cpg_mssr_info r8a7742_cpg_mssr_info __initconst = {
-	/* Core Clocks */
+	 
 	.core_clks = r8a7742_core_clks,
 	.num_core_clks = ARRAY_SIZE(r8a7742_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Module Clocks */
+	 
 	.mod_clks = r8a7742_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r8a7742_mod_clks),
 	.num_hw_mod_clks = 12 * 32,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks = r8a7742_crit_mod_clks,
 	.num_crit_mod_clks = ARRAY_SIZE(r8a7742_crit_mod_clks),
 
-	/* Callbacks */
+	 
 	.init = r8a7742_cpg_mssr_init,
 	.cpg_clk_register = rcar_gen2_cpg_clk_register,
 };

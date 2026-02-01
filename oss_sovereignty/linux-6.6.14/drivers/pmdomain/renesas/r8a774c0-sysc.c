@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2E System Controller
- * Copyright (C) 2018 Renesas Electronics Corp.
- *
- * Based on Renesas R-Car E3 System Controller
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -28,16 +23,16 @@ static struct rcar_sysc_area r8a774c0_areas[] __initdata = {
 	{ "3dg-b",	0x100, 1, R8A774C0_PD_3DG_B,	R8A774C0_PD_3DG_A },
 };
 
-/* Fixups for RZ/G2E ES1.0 revision */
+ 
 static const struct soc_device_attribute r8a774c0[] __initconst = {
 	{ .soc_id = "r8a774c0", .revision = "ES1.0" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init r8a774c0_sysc_init(void)
 {
 	if (soc_device_match(r8a774c0)) {
-		/* Fix incorrect 3DG hierarchy */
+		 
 		swap(r8a774c0_areas[6], r8a774c0_areas[7]);
 		r8a774c0_areas[6].parent = R8A774C0_PD_ALWAYS_ON;
 		r8a774c0_areas[7].parent = R8A774C0_PD_3DG_B;

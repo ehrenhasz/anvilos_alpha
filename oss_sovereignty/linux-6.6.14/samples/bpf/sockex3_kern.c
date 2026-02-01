@@ -1,9 +1,4 @@
-/* Copyright (c) 2015 PLUMgrid, http://plumgrid.com
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/in.h>
 #include <uapi/linux/if.h>
@@ -66,7 +61,7 @@ struct {
 	__uint(max_entries, 32);
 } percpu_map SEC(".maps");
 
-/* user poor man's per_cpu until native support is ready */
+ 
 static struct globals *this_cpu_globals(void)
 {
 	u32 key = bpf_get_smp_processor_id();
@@ -74,7 +69,7 @@ static struct globals *this_cpu_globals(void)
 	return bpf_map_lookup_elem(&percpu_map, &key);
 }
 
-/* some simple stats for user space consumption */
+ 
 struct pair {
 	__u64 packets;
 	__u64 bytes;
@@ -175,7 +170,7 @@ int bpf_func_ip(struct __sk_buff *skb)
 		g->flow.dst = load_word(skb, nhoff + offsetof(struct iphdr, daddr));
 	}
 
-	verlen = load_byte(skb, nhoff + 0/*offsetof(struct iphdr, ihl)*/);
+	verlen = load_byte(skb, nhoff + 0 );
 	nhoff += (verlen & 0xF) << 2;
 
 	skb->cb[0] = nhoff;
@@ -262,14 +257,7 @@ struct {
 	},
 };
 
-/* Protocol dispatch routine. It tail-calls next BPF program depending
- * on eth proto. Note, we could have used ...
- *
- *   bpf_tail_call(skb, &prog_array_init, proto);
- *
- * ... but it would need large prog_array and cannot be optimised given
- * the map key is not static.
- */
+ 
 static inline void parse_eth_proto(struct __sk_buff *skb, u32 proto)
 {
 	switch (proto) {

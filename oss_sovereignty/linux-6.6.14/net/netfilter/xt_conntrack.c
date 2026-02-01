@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	xt_conntrack - Netfilter module to match connection tracking
- *	information. (Superset of Rusty's minimalistic state match.)
- *
- *	(C) 2001  Marc Boucher (marc@mbsi.ca).
- *	(C) 2006-2012 Patrick McHardy <kaber@trash.net>
- *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -84,7 +77,7 @@ ct_proto_port_check(const struct xt_conntrack_mtinfo2 *info,
 	    !(info->invert_flags & XT_CONNTRACK_PROTO))
 		return false;
 
-	/* Shortcut to match all recognized protocols by using ->src.all. */
+	 
 	if ((info->match_flags & XT_CONNTRACK_ORIGSRC_PORT) &&
 	    (tuple->src.u.all == info->origsrc_port) ^
 	    !(info->invert_flags & XT_CONNTRACK_ORIGSRC_PORT))
@@ -128,7 +121,7 @@ ct_proto_port_check_v3(const struct xt_conntrack_mtinfo3 *info,
 	    !(info->invert_flags & XT_CONNTRACK_PROTO))
 		return false;
 
-	/* Shortcut to match all recognized protocols by using ->src.all. */
+	 
 	if ((info->match_flags & XT_CONNTRACK_ORIGSRC_PORT) &&
 	    !port_match(info->origsrc_port, info->origsrc_port_high,
 			ntohs(tuple->src.u.all),

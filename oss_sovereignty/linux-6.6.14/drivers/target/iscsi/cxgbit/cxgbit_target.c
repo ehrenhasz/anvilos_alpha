@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Chelsio Communications, Inc.
- */
+
+ 
 
 #include <linux/workqueue.h>
 #include <linux/kthread.h>
@@ -69,13 +67,7 @@ static struct sk_buff *cxgbit_alloc_skb(struct cxgbit_sock *csk, u32 len)
 	return __cxgbit_alloc_skb(csk, len, false);
 }
 
-/*
- * cxgbit_is_ofld_imm - check whether a packet can be sent as immediate data
- * @skb: the packet
- *
- * Returns true if a packet can be sent as an offload WR with immediate
- * data.  We currently use the same limit as for Ethernet packets.
- */
+ 
 static int cxgbit_is_ofld_imm(const struct sk_buff *skb)
 {
 	int length = skb->len;
@@ -89,26 +81,14 @@ static int cxgbit_is_ofld_imm(const struct sk_buff *skb)
 	return length <= MAX_IMM_OFLD_TX_DATA_WR_LEN;
 }
 
-/*
- * cxgbit_sgl_len - calculates the size of an SGL of the given capacity
- * @n: the number of SGL entries
- * Calculates the number of flits needed for a scatter/gather list that
- * can hold the given number of entries.
- */
+ 
 static inline unsigned int cxgbit_sgl_len(unsigned int n)
 {
 	n--;
 	return (3 * n) / 2 + (n & 1) + 2;
 }
 
-/*
- * cxgbit_calc_tx_flits_ofld - calculate # of flits for an offload packet
- * @skb: the packet
- *
- * Returns the number of flits needed for the given offload packet.
- * These packets are already fully constructed and no additional headers
- * will be added.
- */
+ 
 static unsigned int cxgbit_calc_tx_flits_ofld(const struct sk_buff *skb)
 {
 	unsigned int flits, cnt;
@@ -223,10 +203,7 @@ void cxgbit_push_tx_frames(struct cxgbit_sock *csk)
 		if (likely(cxgbit_skcb_flags(skb) & SKCBF_TX_NEED_HDR))
 			credits_needed += DIV_ROUND_UP(
 				sizeof(struct fw_ofld_tx_data_wr), 16);
-		/*
-		 * Assumes the initial credits is large enough to support
-		 * fw_flowc_wr plus largest possible first payload
-		 */
+		 
 
 		if (!test_and_set_bit(CSK_TX_DATA_SENT, &csk->com.flags)) {
 			flowclen16 = cxgbit_send_tx_flowc_wr(csk);
@@ -349,9 +326,7 @@ cxgbit_map_skb(struct iscsit_cmd *cmd, struct sk_buff *skb, u32 data_offset,
 	if (padding)
 		nr_frags--;
 
-	/*
-	 * We know each entry in t_data_sg contains a page.
-	 */
+	 
 	sg = &cmd->se_cmd.t_data_sg[data_offset / PAGE_SIZE];
 	page_off = (data_offset % PAGE_SIZE);
 
@@ -665,17 +640,7 @@ static int cxgbit_set_iso_npdu(struct cxgbit_sock *csk)
 	return 0;
 }
 
-/*
- * cxgbit_seq_pdu_inorder()
- * @csk: pointer to cxgbit socket structure
- *
- * This function checks whether data sequence and data
- * pdu are in order.
- *
- * Return: returns -1 on error, 0 if data sequence and
- * data pdu are in order, 1 if data sequence or data pdu
- * is not in order.
- */
+ 
 static int cxgbit_seq_pdu_inorder(struct cxgbit_sock *csk)
 {
 	struct iscsit_conn *conn = csk->conn;
@@ -915,9 +880,7 @@ cxgbit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
 {
 	struct iscsit_conn *conn = cmd->conn;
 	int cmdsn_ret = 0, immed_ret = IMMEDIATE_DATA_NORMAL_OPERATION;
-	/*
-	 * Special case for Unsupported SAM WRITE Opcodes and ImmediateData=Yes.
-	 */
+	 
 	if (dump_payload)
 		goto after_immediate_data;
 
@@ -925,11 +888,7 @@ cxgbit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
 						 cmd->first_burst_len);
 after_immediate_data:
 	if (immed_ret == IMMEDIATE_DATA_NORMAL_OPERATION) {
-		/*
-		 * A PDU/CmdSN carrying Immediate Data passed
-		 * DataCRC, check against ExpCmdSN/MaxCmdSN if
-		 * Immediate Bit is not set.
-		 */
+		 
 		cmdsn_ret = iscsit_sequence_cmd(conn, cmd,
 						(unsigned char *)hdr,
 						hdr->cmdsn);
@@ -944,20 +903,10 @@ after_immediate_data:
 		}
 
 	} else if (immed_ret == IMMEDIATE_DATA_ERL1_CRC_FAILURE) {
-		/*
-		 * Immediate Data failed DataCRC and ERL>=1,
-		 * silently drop this PDU and let the initiator
-		 * plug the CmdSN gap.
-		 *
-		 * FIXME: Send Unsolicited NOPIN with reserved
-		 * TTT here to help the initiator figure out
-		 * the missing CmdSN, although they should be
-		 * intelligent enough to determine the missing
-		 * CmdSN and issue a retry to plug the sequence.
-		 */
+		 
 		cmd->i_state = ISTATE_REMOVE;
 		iscsit_add_cmd_to_immediate_queue(cmd, conn, cmd->i_state);
-	} else /* immed_ret == IMMEDIATE_DATA_CANNOT_RECOVER */
+	} else  
 		return -1;
 
 	return 0;
@@ -1105,10 +1054,7 @@ static int cxgbit_handle_nop_out(struct cxgbit_sock *csk, struct iscsit_cmd *cmd
 			ret = -1;
 			goto out;
 		} else {
-			/*
-			 * drop this PDU and let the
-			 * initiator plug the CmdSN gap.
-			 */
+			 
 			pr_info("Dropping NOPOUT"
 				" Command CmdSN: 0x%08x due to"
 				" DataCRC error.\n", hdr->cmdsn);
@@ -1117,9 +1063,7 @@ static int cxgbit_handle_nop_out(struct cxgbit_sock *csk, struct iscsit_cmd *cmd
 		}
 	}
 
-	/*
-	 * Handle NOP-OUT payload for traditional iSCSI sockets
-	 */
+	 
 	if (payload_length && hdr->ttt == cpu_to_be32(0xFFFFFFFF)) {
 		ping_data = kzalloc(payload_length + 1, GFP_KERNEL);
 		if (!ping_data) {
@@ -1133,9 +1077,7 @@ static int cxgbit_handle_nop_out(struct cxgbit_sock *csk, struct iscsit_cmd *cmd
 			      ping_data, payload_length);
 
 		ping_data[payload_length] = '\0';
-		/*
-		 * Attach ping data to struct iscsit_cmd->buf_ptr.
-		 */
+		 
 		cmd->buf_ptr = ping_data;
 		cmd->buf_ptr_size = payload_length;
 
@@ -1172,10 +1114,7 @@ cxgbit_handle_text_cmd(struct cxgbit_sock *csk, struct iscsit_cmd *cmd)
 			       " ERL=0.\n");
 			goto reject;
 		} else {
-			/*
-			 * drop this PDU and let the
-			 * initiator plug the CmdSN gap.
-			 */
+			 
 			pr_info("Dropping Text"
 				" Command CmdSN: 0x%08x due to"
 				" DataCRC error.\n", hdr->cmdsn);
@@ -1333,10 +1272,7 @@ static int cxgbit_rx_login_pdu(struct cxgbit_sock *csk)
 		" CmdSN: 0x%08x, ExpStatSN: 0x%08x, CID: %hu, Length: %u\n",
 		login_req->flags, login_req->itt, login_req->cmdsn,
 		login_req->exp_statsn, login_req->cid, pdu_cb->dlen);
-	/*
-	 * Setup the initial iscsi_login values from the leading
-	 * login request PDU.
-	 */
+	 
 	if (login->first_request) {
 		login_req = (struct iscsi_login_req *)login->req;
 		login->leading_connection = (!login_req->tsih) ? 1 : 0;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies */
+
+ 
 
 #include "en/txrx.h"
 #include "en/params.h"
@@ -274,11 +274,7 @@ int mlx5e_handle_trap_event(struct mlx5e_priv *priv, struct mlx5_trap_ctx *trap_
 {
 	int err = 0;
 
-	/* Traps are unarmed when interface is down, no need to update
-	 * them. The configuration is saved in the core driver,
-	 * queried and applied upon interface up operation in
-	 * mlx5e_open_locked().
-	 */
+	 
 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
 		return 0;
 

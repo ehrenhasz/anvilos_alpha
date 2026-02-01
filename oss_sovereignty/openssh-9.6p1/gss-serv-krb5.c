@@ -1,28 +1,6 @@
-/* $OpenBSD: gss-serv-krb5.c,v 1.9 2018/07/09 21:37:55 markus Exp $ */
+ 
 
-/*
- * Copyright (c) 2001-2003 Simon Wilkinson. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR `AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -57,7 +35,7 @@ extern ServerOptions options;
 
 static krb5_context krb_context = NULL;
 
-/* Initialise the krb5 library, for the stuff that GSSAPI won't do */
+ 
 
 static int
 ssh_gssapi_krb5_init(void)
@@ -76,10 +54,7 @@ ssh_gssapi_krb5_init(void)
 	return 1;
 }
 
-/* Check if this user is OK to login. This only works with krb5 - other
- * GSSAPI mechanisms will need their own.
- * Returns true if the user is OK to log in, otherwise returns 0
- */
+ 
 
 static int
 ssh_gssapi_krb5_userok(ssh_gssapi_client *client, char *name)
@@ -110,8 +85,7 @@ ssh_gssapi_krb5_userok(ssh_gssapi_client *client, char *name)
 }
 
 
-/* This writes out any forwarded credentials from the structure populated
- * during userauth. Called after we have setuid to the user */
+ 
 
 static void
 ssh_gssapi_krb5_storecreds(ssh_gssapi_client *client)
@@ -152,7 +126,7 @@ ssh_gssapi_krb5_storecreds(ssh_gssapi_client *client)
 		krb5_free_error_message(krb_context, errmsg);
 		return;
 	}
-#endif	/* #ifdef HEIMDAL */
+#endif	 
 
 	if ((problem = krb5_parse_name(krb_context,
 	    client->exportedname.value, &princ))) {
@@ -206,6 +180,6 @@ ssh_gssapi_mech gssapi_kerberos_mech = {
 	&ssh_gssapi_krb5_storecreds
 };
 
-#endif /* KRB5 */
+#endif  
 
-#endif /* GSSAPI */
+#endif  

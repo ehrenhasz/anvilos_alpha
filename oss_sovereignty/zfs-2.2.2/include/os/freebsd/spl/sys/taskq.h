@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #ifndef	_SYS_TASKQ_H
 #define	_SYS_TASKQ_H
@@ -60,30 +38,25 @@ typedef struct taskq_ent {
 	volatile uint_t	 tqent_rc;
 } taskq_ent_t;
 
-/*
- * Public flags for taskq_create(): bit range 0-15
- */
-#define	TASKQ_PREPOPULATE	0x0001	/* Prepopulate with threads and data */
-#define	TASKQ_CPR_SAFE		0x0002	/* Use CPR safe protocol */
-#define	TASKQ_DYNAMIC		0x0004	/* Use dynamic thread scheduling */
-#define	TASKQ_THREADS_CPU_PCT	0x0008	/* number of threads as % of ncpu */
-#define	TASKQ_DC_BATCH		0x0010	/* Taskq uses SDC in batch mode */
+ 
+#define	TASKQ_PREPOPULATE	0x0001	 
+#define	TASKQ_CPR_SAFE		0x0002	 
+#define	TASKQ_DYNAMIC		0x0004	 
+#define	TASKQ_THREADS_CPU_PCT	0x0008	 
+#define	TASKQ_DC_BATCH		0x0010	 
 
-/*
- * Flags for taskq_dispatch. TQ_SLEEP/TQ_NOSLEEP should be same as
- * KM_SLEEP/KM_NOSLEEP.
- */
-#define	TQ_SLEEP	0x00	/* Can block for memory */
-#define	TQ_NOSLEEP	0x01	/* cannot block for memory; may fail */
-#define	TQ_NOQUEUE	0x02	/* Do not enqueue if can't dispatch */
-#define	TQ_NOALLOC	0x04	/* cannot allocate memory; may fail */
-#define	TQ_FRONT	0x08	/* Put task at the front of the queue */
+ 
+#define	TQ_SLEEP	0x00	 
+#define	TQ_NOSLEEP	0x01	 
+#define	TQ_NOQUEUE	0x02	 
+#define	TQ_NOALLOC	0x04	 
+#define	TQ_FRONT	0x08	 
 
 #define	TASKQID_INVALID		((taskqid_t)0)
 
 #define	taskq_init_ent(x)
 extern taskq_t *system_taskq;
-/* Global dynamic task queue for long delay */
+ 
 extern taskq_t *system_delay_taskq;
 
 extern taskqid_t taskq_dispatch(taskq_t *, task_func_t, void *, uint_t);
@@ -114,11 +87,11 @@ void	taskq_resume(taskq_t *);
 }
 #endif
 
-#endif /* _KERNEL */
+#endif  
 
 #ifdef _STANDALONE
 typedef int taskq_ent_t;
 #define	taskq_init_ent(x)
-#endif /* _STANDALONE */
+#endif  
 
-#endif	/* _SYS_TASKQ_H */
+#endif	 

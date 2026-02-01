@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for cypress touch screen controller
- *
- * Copyright (c) 2009 Aava Mobile
- *
- * Some cleanups by Alan Cox <alan@linux.intel.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/input.h>
@@ -18,14 +12,14 @@
 
 #define CY8CTMG110_DRIVER_NAME      "cy8ctmg110"
 
-/* Touch coordinates */
+ 
 #define CY8CTMG110_X_MIN		0
 #define CY8CTMG110_Y_MIN		0
 #define CY8CTMG110_X_MAX		759
 #define CY8CTMG110_Y_MAX		465
 
 
-/* cy8ctmg110 register definitions */
+ 
 #define CY8CTMG110_TOUCH_WAKEUP_TIME	0
 #define CY8CTMG110_TOUCH_SLEEP_TIME	2
 #define CY8CTMG110_TOUCH_X1		3
@@ -37,9 +31,7 @@
 #define CY8CTMG110_REG_MAX		13
 
 
-/*
- * The touch driver structure.
- */
+ 
 struct cy8ctmg110 {
 	struct input_dev *input;
 	char phys[32];
@@ -47,11 +39,7 @@ struct cy8ctmg110 {
 	struct gpio_desc *reset_gpio;
 };
 
-/*
- * cy8ctmg110_power is the routine that is called when touch hardware
- * is being powered off or on. When powering on this routine de-asserts
- * the RESET line, when powering off reset line is asserted.
- */
+ 
 static void cy8ctmg110_power(struct cy8ctmg110 *ts, bool poweron)
 {
 	if (ts->reset_gpio)
@@ -85,13 +73,13 @@ static int cy8ctmg110_read_regs(struct cy8ctmg110 *tsc,
 	struct i2c_client *client = tsc->client;
 	int ret;
 	struct i2c_msg msg[2] = {
-		/* first write slave position to i2c devices */
+		 
 		{
 			.addr = client->addr,
 			.len = 1,
 			.buf = &cmd
 		},
-		/* Second read data from position */
+		 
 		{
 			.addr = client->addr,
 			.flags = I2C_M_RD,
@@ -114,11 +102,11 @@ static int cy8ctmg110_touch_pos(struct cy8ctmg110 *tsc)
 
 	memset(reg_p, 0, CY8CTMG110_REG_MAX);
 
-	/* Reading coordinates */
+	 
 	if (cy8ctmg110_read_regs(tsc, reg_p, 9, CY8CTMG110_TOUCH_X1) != 0)
 		return -EIO;
 
-	/* Number of touch */
+	 
 	if (reg_p[8] == 0) {
 		input_report_key(input, BTN_TOUCH, 0);
 	} else  {
@@ -202,7 +190,7 @@ static int cy8ctmg110_probe(struct i2c_client *client)
 	input_set_abs_params(input_dev, ABS_Y,
 			CY8CTMG110_Y_MIN, CY8CTMG110_Y_MAX, 4, 0);
 
-	/* Request and assert reset line */
+	 
 	ts->reset_gpio = devm_gpiod_get_optional(&client->dev, NULL,
 						 GPIOD_OUT_HIGH);
 	if (IS_ERR(ts->reset_gpio)) {

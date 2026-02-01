@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Layerscape SFP driver
- *
- * Copyright (c) 2022 Michael Walle <michael@walle.cc>
- *
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>

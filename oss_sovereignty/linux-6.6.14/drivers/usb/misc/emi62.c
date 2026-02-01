@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* 
- * Emagic EMI 2|6 usb audio interface firmware loader.
- * Copyright (C) 2002
- * 	Tapio Laxström (tapio.laxstrom@iptime.fi)
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -13,11 +9,11 @@
 #include <linux/firmware.h>
 #include <linux/ihex.h>
 
-/* include firmware (variables)*/
+ 
 
-/* FIXME: This is quick and dirty solution! */
-#define SPDIF	/* if you want SPDIF comment next line */
-//#undef SPDIF	/* if you want MIDI uncomment this line */ 
+ 
+#define SPDIF	 
+
 
 #ifdef SPDIF
 #define FIRMWARE_FW "emi62/spdif.fw"
@@ -25,14 +21,14 @@
 #define FIRMWARE_FW "emi62/midi.fw"
 #endif
 
-#define EMI62_VENDOR_ID 		0x086a  /* Emagic Soft-und Hardware GmBH */
-#define EMI62_PRODUCT_ID		0x0110	/* EMI 6|2m without firmware */
+#define EMI62_VENDOR_ID 		0x086a   
+#define EMI62_PRODUCT_ID		0x0110	 
 
-#define ANCHOR_LOAD_INTERNAL	0xA0	/* Vendor specific request code for Anchor Upload/Download (This one is implemented in the core) */
-#define ANCHOR_LOAD_EXTERNAL	0xA3	/* This command is not implemented in the core. Requires firmware */
-#define ANCHOR_LOAD_FPGA	0xA5	/* This command is not implemented in the core. Requires firmware. Emagic extension */
-#define MAX_INTERNAL_ADDRESS	0x1B3F	/* This is the highest internal RAM address for the AN2131Q */
-#define CPUCS_REG		0x7F92  /* EZ-USB Control and Status Register.  Bit 0 controls 8051 reset */ 
+#define ANCHOR_LOAD_INTERNAL	0xA0	 
+#define ANCHOR_LOAD_EXTERNAL	0xA3	 
+#define ANCHOR_LOAD_FPGA	0xA5	 
+#define MAX_INTERNAL_ADDRESS	0x1B3F	 
+#define CPUCS_REG		0x7F92    
 #define INTERNAL_RAM(address)   (address <= MAX_INTERNAL_ADDRESS)
 
 static int emi62_writememory(struct usb_device *dev, int address,
@@ -43,7 +39,7 @@ static int emi62_load_firmware (struct usb_device *dev);
 static int emi62_probe(struct usb_interface *intf, const struct usb_device_id *id);
 static void emi62_disconnect(struct usb_interface *intf);
 
-/* thanks to drivers/usb/serial/keyspan_pda.c code */
+ 
 static int emi62_writememory(struct usb_device *dev, int address,
 			     const unsigned char *data, int length,
 			     __u8 request)
@@ -55,14 +51,13 @@ static int emi62_writememory(struct usb_device *dev, int address,
 		dev_err(&dev->dev, "kmalloc(%d) failed.\n", length);
 		return -ENOMEM;
 	}
-	/* Note: usb_control_msg returns negative value on error or length of the
-	 * 		 data that was written! */
+	 
 	result = usb_control_msg (dev, usb_sndctrlpipe(dev, 0), request, 0x40, address, 0, buffer, length, 300);
 	kfree (buffer);
 	return result;
 }
 
-/* thanks to drivers/usb/serial/keyspan_pda.c code */
+ 
 static int emi62_set_reset (struct usb_device *dev, unsigned char reset_bit)
 {
 	int response;
@@ -84,7 +79,7 @@ static int emi62_load_firmware (struct usb_device *dev)
 	const struct ihex_binrec *rec;
 	int err = -ENOMEM;
 	int i;
-	__u32 addr;	/* Address to write */
+	__u32 addr;	 
 	__u8 *buf;
 
 	dev_dbg(&dev->dev, "load_firmware\n");
@@ -107,14 +102,14 @@ static int emi62_load_firmware (struct usb_device *dev)
 		goto wraperr;
 	}
 
-	/* Assert reset (stop the CPU in the EMI) */
+	 
 	err = emi62_set_reset(dev,1);
 	if (err < 0)
 		goto wraperr;
 
 	rec = (const struct ihex_binrec *)loader_fw->data;
 
-	/* 1. We need to put the loader for the FPGA into the EZ-USB */
+	 
 	while (rec) {
 		err = emi62_writememory(dev, be32_to_cpu(rec->addr),
 					rec->data, be16_to_cpu(rec->len),
@@ -124,21 +119,19 @@ static int emi62_load_firmware (struct usb_device *dev)
 		rec = ihex_next_binrec(rec);
 	}
 
-	/* De-assert reset (let the CPU run) */
+	 
 	err = emi62_set_reset(dev,0);
 	if (err < 0)
 		goto wraperr;
-	msleep(250);	/* let device settle */
+	msleep(250);	 
 
-	/* 2. We upload the FPGA firmware into the EMI
-	 * Note: collect up to 1023 (yes!) bytes and send them with
-	 * a single request. This is _much_ faster! */
+	 
 	rec = (const struct ihex_binrec *)bitstream_fw->data;
 	do {
 		i = 0;
 		addr = be32_to_cpu(rec->addr);
 
-		/* intel hex records are terminated with type 0 element */
+		 
 		while (rec && (i + be16_to_cpu(rec->len) < FW_LOAD_SIZE)) {
 			memcpy(buf + i, rec->data, be16_to_cpu(rec->len));
 			i += be16_to_cpu(rec->len);
@@ -149,12 +142,12 @@ static int emi62_load_firmware (struct usb_device *dev)
 			goto wraperr;
 	} while (rec);
 
-	/* Assert reset (stop the CPU in the EMI) */
+	 
 	err = emi62_set_reset(dev,1);
 	if (err < 0)
 		goto wraperr;
 
-	/* 3. We need to put the loader for the firmware into the EZ-USB (again...) */
+	 
 	for (rec = (const struct ihex_binrec *)loader_fw->data;
 	     rec; rec = ihex_next_binrec(rec)) {
 		err = emi62_writememory(dev, be32_to_cpu(rec->addr),
@@ -164,13 +157,13 @@ static int emi62_load_firmware (struct usb_device *dev)
 			goto wraperr;
 	}
 
-	/* De-assert reset (let the CPU run) */
+	 
 	err = emi62_set_reset(dev,0);
 	if (err < 0)
 		goto wraperr;
-	msleep(250);	/* let device settle */
+	msleep(250);	 
 
-	/* 4. We put the part of the firmware that lies in the external RAM into the EZ-USB */
+	 
 
 	for (rec = (const struct ihex_binrec *)firmware_fw->data;
 	     rec; rec = ihex_next_binrec(rec)) {
@@ -183,7 +176,7 @@ static int emi62_load_firmware (struct usb_device *dev)
 		}
 	}
 
-	/* Assert reset (stop the CPU in the EMI) */
+	 
 	err = emi62_set_reset(dev,1);
 	if (err < 0)
 		goto wraperr;
@@ -199,11 +192,11 @@ static int emi62_load_firmware (struct usb_device *dev)
 		}
 	}
 
-	/* De-assert reset (let the CPU run) */
+	 
 	err = emi62_set_reset(dev,0);
 	if (err < 0)
 		goto wraperr;
-	msleep(250);	/* let device settle */
+	msleep(250);	 
 
 	release_firmware(loader_fw);
 	release_firmware(bitstream_fw);
@@ -211,8 +204,7 @@ static int emi62_load_firmware (struct usb_device *dev)
 
 	kfree(buf);
 
-	/* return 1 to fail the driver inialization
-	 * and give real driver change to load */
+	 
 	return 1;
 
 wraperr:
@@ -230,7 +222,7 @@ wraperr:
 
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(EMI62_VENDOR_ID, EMI62_PRODUCT_ID) },
-	{ }                                             /* Terminating entry */
+	{ }                                              
 };
 
 MODULE_DEVICE_TABLE (usb, id_table);
@@ -244,7 +236,7 @@ static int emi62_probe(struct usb_interface *intf, const struct usb_device_id *i
 
 	emi62_load_firmware(dev);
 
-	/* do not return the driver context, let real audio driver do that */
+	 
 	return -EIO;
 }
 
@@ -268,5 +260,4 @@ MODULE_LICENSE("GPL");
 MODULE_FIRMWARE("emi62/loader.fw");
 MODULE_FIRMWARE("emi62/bitstream.fw");
 MODULE_FIRMWARE(FIRMWARE_FW);
-/* vi:ai:syntax=c:sw=8:ts=8:tw=80
- */
+ 

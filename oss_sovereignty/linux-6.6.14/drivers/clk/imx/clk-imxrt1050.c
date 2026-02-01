@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright (C) 2021
- * Author(s):
- * Jesse Taube <Mr.Bossman075@gmail.com>
- * Giulio Benetti <giulio.benetti@benettiengineering.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -60,7 +55,7 @@ static int imxrt1050_clocks_probe(struct platform_device *pdev)
 		goto unregister_hws;
 	}
 
-	/* Anatop clocks */
+	 
 	hws[IMXRT1050_CLK_DUMMY] = imx_clk_hw_fixed("dummy", 0UL);
 
 	hws[IMXRT1050_CLK_PLL1_REF_SEL] = imx_clk_hw_mux("pll1_arm_ref_sel",
@@ -81,7 +76,7 @@ static int imxrt1050_clocks_probe(struct platform_device *pdev)
 	hws[IMXRT1050_CLK_PLL5_VIDEO] = imx_clk_hw_pllv3(IMX_PLLV3_AV, "pll5_video",
 		"pll5_video_ref_sel", pll_base + 0xa0, 0x7f);
 
-	/* PLL bypass out */
+	 
 	hws[IMXRT1050_CLK_PLL1_BYPASS] = imx_clk_hw_mux_flags("pll1_bypass", pll_base + 0x0, 16, 1,
 		pll1_bypass_sels, ARRAY_SIZE(pll1_bypass_sels), CLK_SET_RATE_PARENT);
 	hws[IMXRT1050_CLK_PLL2_BYPASS] = imx_clk_hw_mux_flags("pll2_bypass", pll_base + 0x30, 16, 1,
@@ -104,7 +99,7 @@ static int imxrt1050_clocks_probe(struct platform_device *pdev)
 	hws[IMXRT1050_CLK_PLL3_PFD1_664_62M] = imx_clk_hw_pfd("pll3_pfd1_664_62m", "pll3_usb_otg", pll_base + 0xf0, 1);
 	hws[IMXRT1050_CLK_PLL3_PFD3_454_74M] = imx_clk_hw_pfd("pll3_pfd3_454_74m", "pll3_usb_otg", pll_base + 0xf0, 3);
 
-	/* CCM clocks */
+	 
 	ccm_base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(ccm_base))) {
 		ret = PTR_ERR(ccm_base);
@@ -163,7 +158,7 @@ unregister_hws:
 }
 static const struct of_device_id imxrt1050_clk_of_match[] = {
 	{ .compatible = "fsl,imxrt1050-ccm" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imxrt1050_clk_of_match);
 

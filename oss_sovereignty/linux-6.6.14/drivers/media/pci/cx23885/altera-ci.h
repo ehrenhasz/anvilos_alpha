@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * altera-ci.c
- *
- *  CI driver in conjunction with NetUp Dual DVB-T/C RF CI card
- *
- * Copyright (C) 2010 NetUP Inc.
- * Copyright (C) 2010 Igor M. Liplianin <liplianin@netup.ru>
- */
+ 
+ 
 #ifndef __ALTERA_CI_H
 #define __ALTERA_CI_H
 
@@ -21,9 +14,9 @@
 #define ALT_CS		0x00000100
 
 struct altera_ci_config {
-	void *dev;/* main dev, for example cx23885_dev */
-	void *adapter;/* for CI to connect to */
-	struct dvb_demux *demux;/* for hardware PID filter to connect to */
+	void *dev; 
+	void *adapter; 
+	struct dvb_demux *demux; 
 	int (*fpga_rw) (void *dev, int ad_rg, int val, int rw);
 };
 
@@ -80,6 +73,6 @@ static inline int altera_pid_feed_control(void *dev, int filt_nr,
 	return 0;
 }
 
-#endif /* CONFIG_MEDIA_ALTERA_CI */
+#endif  
 
-#endif /* __ALTERA_CI_H */
+#endif  

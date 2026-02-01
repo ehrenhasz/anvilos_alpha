@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CAIF USB handler
- * Copyright (C) ST-Ericsson AB 2011
- * Author:	Sjur Brendeland
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
@@ -22,11 +18,11 @@
 
 MODULE_LICENSE("GPL");
 
-#define CFUSB_PAD_DESCR_SZ 1	/* Alignment descriptor length */
-#define CFUSB_ALIGNMENT 4	/* Number of bytes to align. */
+#define CFUSB_PAD_DESCR_SZ 1	 
+#define CFUSB_ALIGNMENT 4	 
 #define CFUSB_MAX_HEADLEN (CFUSB_PAD_DESCR_SZ + CFUSB_ALIGNMENT-1)
-#define STE_USB_VID 0x04cc	/* USB Product ID for ST-Ericsson */
-#define STE_USB_PID_CAIF 0x230f	/* Product id for CAIF Modems */
+#define STE_USB_VID 0x04cc	 
+#define STE_USB_PID_CAIF 0x230f	 
 
 struct cfusbl {
 	struct cflayer layer;
@@ -39,7 +35,7 @@ static int cfusbl_receive(struct cflayer *layr, struct cfpkt *pkt)
 {
 	u8 hpad;
 
-	/* Remove padding. */
+	 
 	cfpkt_extr_head(pkt, &hpad, 1);
 	cfpkt_extr_head(pkt, NULL, hpad);
 	return layr->up->receive(layr->up, pkt);
@@ -98,12 +94,7 @@ static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
 	snprintf(this->layer.name, CAIF_LAYER_NAME_SZ, "usb%d", phyid);
 	this->layer.id = phyid;
 
-	/*
-	 * Construct TX ethernet header:
-	 *	0-5	destination address
-	 *	5-11	source address
-	 *	12-13	protocol type
-	 */
+	 
 	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], braddr);
 	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], ethaddr);
 	this->tx_eth_hdr[12] = cpu_to_be16(ETH_P_802_EX1) & 0xff;
@@ -137,7 +128,7 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 	if (what == NETDEV_UNREGISTER && dev->reg_state >= NETREG_UNREGISTERED)
 		return 0;
 
-	/* Check whether we have a NCM device, and find its VID/PID. */
+	 
 	if (!(dev->dev.parent && dev->dev.parent->driver &&
 	      strcmp(dev->dev.parent->driver->name, "cdc_ncm") == 0))
 		return 0;
@@ -149,7 +140,7 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 		le16_to_cpu(usbdev->descriptor.idVendor),
 		le16_to_cpu(usbdev->descriptor.idProduct));
 
-	/* Check for VID/PID that supports CAIF */
+	 
 	if (!(le16_to_cpu(usbdev->descriptor.idVendor) == STE_USB_VID &&
 		le16_to_cpu(usbdev->descriptor.idProduct) == STE_USB_PID_CAIF))
 		return 0;

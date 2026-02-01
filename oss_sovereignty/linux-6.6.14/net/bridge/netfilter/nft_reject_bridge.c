@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -39,9 +37,7 @@ static void nft_reject_br_push_etherhdr(struct sk_buff *oldskb,
 	}
 }
 
-/* We cannot use oldskb->dev, it can be either bridge device (NF_BRIDGE INPUT)
- * or the bridge port (NF_BRIDGE PREROUTING).
- */
+ 
 static void nft_reject_br_send_v4_tcp_reset(struct net *net,
 					    struct sk_buff *oldskb,
 					    const struct net_device *dev,
@@ -162,7 +158,7 @@ static void nft_reject_bridge_eval(const struct nft_expr *expr,
 		}
 		break;
 	default:
-		/* No explicit way to reject this protocol, drop it. */
+		 
 		break;
 	}
 out:

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
+
+ 
 
 #include "fjes_hw.h"
 #include "fjes.h"
@@ -11,7 +8,7 @@
 static void fjes_hw_update_zone_task(struct work_struct *);
 static void fjes_hw_epstop_task(struct work_struct *);
 
-/* supported MTU list */
+ 
 const u32 fjes_support_mtu[] = {
 	FJES_MTU_DEFINE(8 * 1024),
 	FJES_MTU_DEFINE(16 * 1024),
@@ -149,7 +146,7 @@ void fjes_hw_setup_epbuf(struct epbuf_handler *epbh, const u8 *mac_addr,
 
 	memset(info, 0, sizeof(union ep_buffer_info));
 
-	info->v1i.version = 0;  /* version 0 */
+	info->v1i.version = 0;   
 
 	for (i = 0; i < ETH_ALEN; i++)
 		info->v1i.mac_addr[i] = mac_addr[i];
@@ -174,24 +171,24 @@ void
 fjes_hw_init_command_registers(struct fjes_hw *hw,
 			       struct fjes_device_command_param *param)
 {
-	/* Request Buffer length */
+	 
 	wr32(XSCT_REQBL, (__le32)(param->req_len));
-	/* Response Buffer Length */
+	 
 	wr32(XSCT_RESPBL, (__le32)(param->res_len));
 
-	/* Request Buffer Address */
+	 
 	wr32(XSCT_REQBAL,
 	     (__le32)(param->req_start & GENMASK_ULL(31, 0)));
 	wr32(XSCT_REQBAH,
 	     (__le32)((param->req_start & GENMASK_ULL(63, 32)) >> 32));
 
-	/* Response Buffer Address */
+	 
 	wr32(XSCT_RESPBAL,
 	     (__le32)(param->res_start & GENMASK_ULL(31, 0)));
 	wr32(XSCT_RESPBAH,
 	     (__le32)((param->res_start & GENMASK_ULL(63, 32)) >> 32));
 
-	/* Share status address */
+	 
 	wr32(XSCT_SHSTSAL,
 	     (__le32)(param->share_start & GENMASK_ULL(31, 0)));
 	wr32(XSCT_SHSTSAH,
@@ -342,7 +339,7 @@ void fjes_hw_exit(struct fjes_hw *hw)
 	if (hw->base) {
 
 		if (hw->debug_mode) {
-			/* disable debug mode */
+			 
 			mutex_lock(&hw->hw_info.lock);
 			fjes_hw_stop_debug(hw);
 			mutex_unlock(&hw->hw_info.lock);

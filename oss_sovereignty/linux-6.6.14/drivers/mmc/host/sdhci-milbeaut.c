@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 - 2015 Fujitsu Semiconductor, Ltd
- *              Vincent Yang <vincent.yang@tw.fujitsu.com>
- * Copyright (C) 2015 Linaro Ltd  Andy Green <andy.green@linaro.org>
- * Copyright (C) 2019 Socionext Inc.
- *              Takao Orito <orito.takao@socionext.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -19,7 +13,7 @@
 #include "sdhci-pltfm.h"
 #include "sdhci_f_sdh30.h"
 
-/* milbeaut bridge controller register */
+ 
 #define MLB_SOFT_RESET		0x0200
 #define  MLB_SOFT_RESET_RSTX		BIT(0)
 
@@ -145,7 +139,7 @@ static void sdhci_milbeaut_bridge_init(struct sdhci_host *host,
 {
 	u32 val, clk;
 
-	/* IO_SDIO_CR_SET should be set while reset */
+	 
 	val = sdhci_readl(host, MLB_CR_SET);
 	val &= ~(MLB_CR_SET_CR_TOCLKFREQ_MASK | MLB_CR_SET_CR_TOCLKUNIT |
 			MLB_CR_SET_CR_BCLKFREQ_MASK);
@@ -203,7 +197,7 @@ static const struct of_device_id mlb_dt_ids[] = {
 	{
 		.compatible = "socionext,milbeaut-m10v-sdhci-3.0",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mlb_dt_ids);
 

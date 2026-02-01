@@ -1,31 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
-/*
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>.
- */
+ 
 
 #include <libintl.h>
 #include <libuutil.h>
@@ -42,11 +18,7 @@
 
 #include "zpool_util.h"
 
-/*
- * Private interface for iterating over pools specified on the command line.
- * Most consumers will call for_each_pool, but in order to support iostat, we
- * allow fined grained control through the zpool_list_t interface.
- */
+ 
 
 typedef struct zpool_node {
 	zpool_handle_t	*zn_handle;
@@ -75,10 +47,7 @@ zpool_compare(const void *larg, const void *rarg, void *unused)
 	return (strcmp(lname, rname));
 }
 
-/*
- * Callback function for pool_list_get().  Adds the given pool to the AVL tree
- * of known pools.
- */
+ 
 static int
 add_pool(zpool_handle_t *zhp, void *data)
 {
@@ -106,12 +75,7 @@ add_pool(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * Create a list of pools based on the given arguments.  If we're given no
- * arguments, then iterate over all pools in the system and add them to the AVL
- * tree.  Otherwise, add only those pool explicitly specified on the command
- * line.
- */
+ 
 zpool_list_t *
 pool_list_get(int argc, char **argv, zprop_list_t **proplist, zfs_type_t type,
     boolean_t literal, int *err)
@@ -157,11 +121,7 @@ pool_list_get(int argc, char **argv, zprop_list_t **proplist, zfs_type_t type,
 	return (zlp);
 }
 
-/*
- * Search for any new pools, adding them to the list.  We only add pools when no
- * options were given on the command line.  Otherwise, we keep the list fixed as
- * those that were explicitly specified.
- */
+ 
 void
 pool_list_update(zpool_list_t *zlp)
 {
@@ -169,9 +129,7 @@ pool_list_update(zpool_list_t *zlp)
 		(void) zpool_iter(g_zfs, add_pool, zlp);
 }
 
-/*
- * Iterate over all pools in the list, executing the callback for each
- */
+ 
 int
 pool_list_iter(zpool_list_t *zlp, int unavail, zpool_iter_f func,
     void *data)
@@ -189,10 +147,7 @@ pool_list_iter(zpool_list_t *zlp, int unavail, zpool_iter_f func,
 	return (ret);
 }
 
-/*
- * Remove the given pool from the list.  When running iostat, we want to remove
- * those pools that no longer exist.
- */
+ 
 void
 pool_list_remove(zpool_list_t *zlp, zpool_handle_t *zhp)
 {
@@ -206,9 +161,7 @@ pool_list_remove(zpool_list_t *zlp, zpool_handle_t *zhp)
 	}
 }
 
-/*
- * Free all the handles associated with this list.
- */
+ 
 void
 pool_list_free(zpool_list_t *zlp)
 {
@@ -234,19 +187,14 @@ pool_list_free(zpool_list_t *zlp)
 	free(zlp);
 }
 
-/*
- * Returns the number of elements in the pool list.
- */
+ 
 int
 pool_list_count(zpool_list_t *zlp)
 {
 	return (uu_avl_numnodes(zlp->zl_avl));
 }
 
-/*
- * High level function which iterates over all pools given on the command line,
- * using the pool_list_* interfaces.
- */
+ 
 int
 for_each_pool(int argc, char **argv, boolean_t unavail,
     zprop_list_t **proplist, zfs_type_t type, boolean_t literal,
@@ -267,15 +215,7 @@ for_each_pool(int argc, char **argv, boolean_t unavail,
 	return (ret);
 }
 
-/*
- * This is the equivalent of for_each_pool() for vdevs.  It iterates thorough
- * all vdevs in the pool, ignoring root vdevs and holes, calling func() on
- * each one.
- *
- * @zhp:	Zpool handle
- * @func:	Function to call on each vdev
- * @data:	Custom data to pass to the function
- */
+ 
 int
 for_each_vdev(zpool_handle_t *zhp, pool_vdev_iter_f func, void *data)
 {
@@ -288,11 +228,7 @@ for_each_vdev(zpool_handle_t *zhp, pool_vdev_iter_f func, void *data)
 	return (for_each_vdev_cb((void *) zhp, nvroot, func, data));
 }
 
-/*
- * Process the vcdl->vdev_cmd_data[] array to figure out all the unique column
- * names and their widths.  When this function is done, vcdl->uniq_cols,
- * vcdl->uniq_cols_cnt, and vcdl->uniq_cols_width will be filled in.
- */
+ 
 static void
 process_unique_cmd_columns(vdev_cmd_data_list_t *vcdl)
 {
@@ -302,22 +238,22 @@ process_unique_cmd_columns(vdev_cmd_data_list_t *vcdl)
 	int cnt = 0;
 	int k;
 
-	/* For each vdev */
+	 
 	for (int i = 0; i < vcdl->count; i++) {
 		data = &vcdl->data[i];
-		/* For each column the vdev reported */
+		 
 		for (int j = 0; j < data->cols_cnt; j++) {
-			/* Is this column in our list of unique column names? */
+			 
 			for (k = 0; k < cnt; k++) {
 				if (strcmp(data->cols[j], uniq_cols[k]) == 0)
-					break; /* yes it is */
+					break;  
 			}
 			if (k == cnt) {
-				/* No entry for column, add to list */
+				 
 				tmp = realloc(uniq_cols, sizeof (*uniq_cols) *
 				    (cnt + 1));
 				if (tmp == NULL)
-					break; /* Nothing we can do... */
+					break;  
 				uniq_cols = tmp;
 				uniq_cols[cnt] = data->cols[j];
 				cnt++;
@@ -325,23 +261,19 @@ process_unique_cmd_columns(vdev_cmd_data_list_t *vcdl)
 		}
 	}
 
-	/*
-	 * We now have a list of all the unique column names.  Figure out the
-	 * max width of each column by looking at the column name and all its
-	 * values.
-	 */
+	 
 	uniq_cols_width = safe_malloc(sizeof (*uniq_cols_width) * cnt);
 	for (int i = 0; i < cnt; i++) {
-		/* Start off with the column title's width */
+		 
 		uniq_cols_width[i] = strlen(uniq_cols[i]);
-		/* For each vdev */
+		 
 		for (int j = 0; j < vcdl->count; j++) {
-			/* For each of the vdev's values in a column */
+			 
 			data = &vcdl->data[j];
 			for (k = 0; k < data->cols_cnt; k++) {
-				/* Does this vdev have a value for this col? */
+				 
 				if (strcmp(data->cols[k], uniq_cols[i]) == 0) {
-					/* Is the value width larger? */
+					 
 					uniq_cols_width[i] =
 					    MAX(uniq_cols_width[i],
 					    strlen(data->lines[k]));
@@ -356,25 +288,7 @@ process_unique_cmd_columns(vdev_cmd_data_list_t *vcdl)
 }
 
 
-/*
- * Process a line of command output
- *
- * When running 'zpool iostat|status -c' the lines of output can either be
- * in the form of:
- *
- *	column_name=value
- *
- * Or just:
- *
- *	value
- *
- * Process the column_name (if any) and value.
- *
- * Returns 0 if line was processed, and there are more lines can still be
- * processed.
- *
- * Returns 1 if this was the last line to process, or error.
- */
+ 
 static int
 vdev_process_cmd_output(vdev_cmd_data_t *data, char *line)
 {
@@ -388,10 +302,7 @@ vdev_process_cmd_output(vdev_cmd_data_t *data, char *line)
 
 	equals = strchr(line, '=');
 	if (equals != NULL) {
-		/*
-		 * We have a 'column=value' type line.  Split it into the
-		 * column and value strings by turning the '=' into a '\0'.
-		 */
+		 
 		*equals = '\0';
 		col = line;
 		val = equals + 1;
@@ -399,11 +310,11 @@ vdev_process_cmd_output(vdev_cmd_data_t *data, char *line)
 		val = line;
 	}
 
-	/* Do we already have a column by this name?  If so, skip it. */
+	 
 	if (col != NULL) {
 		for (int i = 0; i < data->cols_cnt; i++) {
 			if (strcmp(col, data->cols[i]) == 0)
-				return (0); /* Duplicate, skip */
+				return (0);  
 		}
 	}
 
@@ -435,9 +346,7 @@ vdev_process_cmd_output(vdev_cmd_data_t *data, char *line)
 	return (0);
 }
 
-/*
- * Run the cmd and store results in *data.
- */
+ 
 static void
 vdev_run_cmd(vdev_cmd_data_t *data, char *cmd)
 {
@@ -453,7 +362,7 @@ vdev_run_cmd(vdev_cmd_data_t *data, char *cmd)
 	if (env == NULL)
 		goto out;
 
-	/* Run the command */
+	 
 	rc = libzfs_run_process_get_stdout_nopath(cmd, argv, env, &lines,
 	    &lines_cnt);
 
@@ -462,7 +371,7 @@ vdev_run_cmd(vdev_cmd_data_t *data, char *cmd)
 	if (rc != 0)
 		goto out;
 
-	/* Process the output we got */
+	 
 	for (i = 0; i < lines_cnt; i++)
 		if (vdev_process_cmd_output(data, lines[i]) != 0)
 			break;
@@ -472,10 +381,7 @@ out:
 		libzfs_free_str_array(lines, lines_cnt);
 }
 
-/*
- * Generate the search path for zpool iostat/status -c scripts.
- * The string returned must be freed.
- */
+ 
 char *
 zpool_get_cmd_search_path(void)
 {
@@ -500,7 +406,7 @@ zpool_get_cmd_search_path(void)
 	return (NULL);
 }
 
-/* Thread function run for each vdev */
+ 
 static void
 vdev_run_cmd_thread(void *cb_cmd_data)
 {
@@ -539,7 +445,7 @@ vdev_run_cmd_thread(void *cb_cmd_data)
 	free(cmddup);
 }
 
-/* For each vdev in the pool run a command */
+ 
 static int
 for_each_vdev_run_cb(void *zhp_data, nvlist_t *nv, void *cb_vcdl)
 {
@@ -557,36 +463,34 @@ for_each_vdev_run_cb(void *zhp_data, nvlist_t *nv, void *cb_vcdl)
 	nvlist_lookup_string(nv, ZPOOL_CONFIG_VDEV_ENC_SYSFS_PATH,
 	    &vdev_enc_sysfs_path);
 
-	/* Spares show more than once if they're in use, so skip if exists */
+	 
 	for (i = 0; i < vcdl->count; i++) {
 		if ((strcmp(vcdl->data[i].path, path) == 0) &&
 		    (strcmp(vcdl->data[i].pool, zpool_get_name(zhp)) == 0)) {
-			/* vdev already exists, skip it */
+			 
 			return (0);
 		}
 	}
 
-	/* Check for selected vdevs here, if any */
+	 
 	for (i = 0; i < vcdl->vdev_names_count; i++) {
 		vname = zpool_vdev_name(g_zfs, zhp, nv, vcdl->cb_name_flags);
 		if (strcmp(vcdl->vdev_names[i], vname) == 0) {
 			free(vname);
 			match = 1;
-			break; /* match */
+			break;  
 		}
 		free(vname);
 	}
 
-	/* If we selected vdevs, and this isn't one of them, then bail out */
+	 
 	if (!match && vcdl->vdev_names_count)
 		return (0);
 
-	/*
-	 * Resize our array and add in the new element.
-	 */
+	 
 	if (!(vcdl->data = realloc(vcdl->data,
 	    sizeof (*vcdl->data) * (vcdl->count + 1))))
-		return (ENOMEM);	/* couldn't realloc */
+		return (ENOMEM);	 
 
 	data = &vcdl->data[vcdl->count];
 
@@ -606,17 +510,14 @@ for_each_vdev_run_cb(void *zhp_data, nvlist_t *nv, void *cb_vcdl)
 	return (0);
 }
 
-/* Get the names and count of the vdevs */
+ 
 static int
 all_pools_for_each_vdev_gather_cb(zpool_handle_t *zhp, void *cb_vcdl)
 {
 	return (for_each_vdev(zhp, for_each_vdev_run_cb, cb_vcdl));
 }
 
-/*
- * Now that vcdl is populated with our complete list of vdevs, spawn
- * off the commands.
- */
+ 
 static void
 all_pools_for_each_vdev_run_vcdl(vdev_cmd_data_list_t *vcdl)
 {
@@ -626,26 +527,18 @@ all_pools_for_each_vdev_run_vcdl(vdev_cmd_data_list_t *vcdl)
 	if (t == NULL)
 		return;
 
-	/* Spawn off the command for each vdev */
+	 
 	for (int i = 0; i < vcdl->count; i++) {
 		(void) tpool_dispatch(t, vdev_run_cmd_thread,
 		    (void *) &vcdl->data[i]);
 	}
 
-	/* Wait for threads to finish */
+	 
 	tpool_wait(t);
 	tpool_destroy(t);
 }
 
-/*
- * Run command 'cmd' on all vdevs in all pools in argv.  Saves the first line of
- * output from the command in vcdk->data[].line for all vdevs.  If you want
- * to run the command on only certain vdevs, fill in g_zfs, vdev_names,
- * vdev_names_count, and cb_name_flags.  Otherwise leave them as zero.
- *
- * Returns a vdev_cmd_data_list_t that must be freed with
- * free_vdev_cmd_data_list();
- */
+ 
 vdev_cmd_data_list_t *
 all_pools_for_each_vdev_run(int argc, char **argv, char *cmd,
     libzfs_handle_t *g_zfs, char **vdev_names, int vdev_names_count,
@@ -660,26 +553,20 @@ all_pools_for_each_vdev_run(int argc, char **argv, char *cmd,
 	vcdl->cb_name_flags = cb_name_flags;
 	vcdl->g_zfs = g_zfs;
 
-	/* Gather our list of all vdevs in all pools */
+	 
 	for_each_pool(argc, argv, B_TRUE, NULL, ZFS_TYPE_POOL,
 	    B_FALSE, all_pools_for_each_vdev_gather_cb, vcdl);
 
-	/* Run command on all vdevs in all pools */
+	 
 	all_pools_for_each_vdev_run_vcdl(vcdl);
 
-	/*
-	 * vcdl->data[] now contains all the column names and values for each
-	 * vdev.  We need to process that into a master list of unique column
-	 * names, and figure out the width of each column.
-	 */
+	 
 	process_unique_cmd_columns(vcdl);
 
 	return (vcdl);
 }
 
-/*
- * Free the vdev_cmd_data_list_t created by all_pools_for_each_vdev_run()
- */
+ 
 void
 free_vdev_cmd_data_list(vdev_cmd_data_list_t *vcdl)
 {

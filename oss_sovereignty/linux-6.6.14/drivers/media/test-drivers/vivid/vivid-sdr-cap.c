@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-sdr-cap.c - software defined radio support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -23,13 +19,13 @@
 #include "vivid-ctrls.h"
 #include "vivid-sdr-cap.h"
 
-/* stream formats */
+ 
 struct vivid_format {
 	u32	pixelformat;
 	u32	buffersize;
 };
 
-/* format descriptions for capture and preview */
+ 
 static const struct vivid_format formats[] = {
 	{
 		.pixelformat	= V4L2_SDR_FMT_CU8,
@@ -67,7 +63,7 @@ static const struct v4l2_frequency_band bands_adc[] = {
 	},
 };
 
-/* ADC band midpoints */
+ 
 #define BAND_ADC_0 ((bands_adc[0].rangehigh + bands_adc[1].rangelow) / 2)
 #define BAND_ADC_1 ((bands_adc[1].rangehigh + bands_adc[2].rangelow) / 2)
 
@@ -88,7 +84,7 @@ static void vivid_thread_sdr_cap_tick(struct vivid_dev *dev)
 
 	dprintk(dev, 1, "SDR Capture Thread Tick\n");
 
-	/* Drop a certain percentage of buffers. */
+	 
 	if (dev->perc_dropped_buffers &&
 	    get_random_u32_below(100) < dev->perc_dropped_buffers)
 		return;
@@ -130,7 +126,7 @@ static int vivid_thread_sdr_cap(void *data)
 
 	set_freezable();
 
-	/* Resets frame counters */
+	 
 	dev->sdr_cap_seq_offset = 0;
 	dev->sdr_cap_seq_count = 0;
 	dev->jiffies_sdr_cap = jiffies;
@@ -157,20 +153,15 @@ static int vivid_thread_sdr_cap(void *data)
 			dev->sdr_cap_seq_count = 0;
 			dev->sdr_cap_seq_resync = false;
 		}
-		/* Calculate the number of jiffies since we started streaming */
+		 
 		jiffies_since_start = cur_jiffies - dev->jiffies_sdr_cap;
-		/* Get the number of buffers streamed since the start */
+		 
 		buffers_since_start =
 			(u64)jiffies_since_start * dev->sdr_adc_freq +
 				      (HZ * SDR_CAP_SAMPLES_PER_BUF) / 2;
 		do_div(buffers_since_start, HZ * SDR_CAP_SAMPLES_PER_BUF);
 
-		/*
-		 * After more than 0xf0000000 (rounded down to a multiple of
-		 * 'jiffies-per-day' to ease jiffies_to_msecs calculation)
-		 * jiffies have passed since we started streaming reset the
-		 * counters and keep track of the sequence offset.
-		 */
+		 
 		if (jiffies_since_start > JIFFIES_RESYNC) {
 			dev->jiffies_sdr_cap = cur_jiffies;
 			dev->sdr_cap_seq_offset = buffers_since_start;
@@ -183,25 +174,19 @@ static int vivid_thread_sdr_cap(void *data)
 		vivid_thread_sdr_cap_tick(dev);
 		mutex_unlock(&dev->mutex);
 
-		/*
-		 * Calculate the number of samples streamed since we started,
-		 * not including the current buffer.
-		 */
+		 
 		samples_since_start = buffers_since_start * SDR_CAP_SAMPLES_PER_BUF;
 
-		/* And the number of jiffies since we started */
+		 
 		jiffies_since_start = jiffies - dev->jiffies_sdr_cap;
 
-		/* Increase by the number of samples in one buffer */
+		 
 		samples_since_start += SDR_CAP_SAMPLES_PER_BUF;
-		/*
-		 * Calculate when that next buffer is supposed to start
-		 * in jiffies since we started streaming.
-		 */
+		 
 		next_jiffies_since_start = samples_since_start * HZ +
 					   dev->sdr_adc_freq / 2;
 		do_div(next_jiffies_since_start, dev->sdr_adc_freq);
-		/* If it is in the past, then just schedule asap */
+		 
 		if (next_jiffies_since_start < jiffies_since_start)
 			next_jiffies_since_start = jiffies_since_start;
 
@@ -218,7 +203,7 @@ static int sdr_cap_queue_setup(struct vb2_queue *vq,
 		       unsigned *nbuffers, unsigned *nplanes,
 		       unsigned sizes[], struct device *alloc_devs[])
 {
-	/* 2 = max 16-bit sample returned */
+	 
 	sizes[0] = SDR_CAP_SAMPLES_PER_BUF * 2;
 	*nplanes = 1;
 	return 0;
@@ -232,10 +217,7 @@ static int sdr_cap_buf_prepare(struct vb2_buffer *vb)
 	dprintk(dev, 1, "%s\n", __func__);
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -294,7 +276,7 @@ static int sdr_cap_start_streaming(struct vb2_queue *vq, unsigned count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void sdr_cap_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);
@@ -313,7 +295,7 @@ static void sdr_cap_stop_streaming(struct vb2_queue *vq)
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 	}
 
-	/* shutdown control thread */
+	 
 	kthread_stop(dev->kthread_sdr_cap);
 	dev->kthread_sdr_cap = NULL;
 }
@@ -398,7 +380,7 @@ int vivid_sdr_s_frequency(struct file *file, void *fh,
 
 		if (vb2_is_streaming(&dev->vb_sdr_cap_q) &&
 		    freq != dev->sdr_adc_freq) {
-			/* resync the thread's timings */
+			 
 			dev->sdr_cap_seq_resync = true;
 		}
 		dev->sdr_adc_freq = freq;
@@ -518,8 +500,8 @@ void vivid_sdr_cap_process(struct vivid_dev *dev, struct vivid_buffer *buf)
 	s32 fixp_i;
 	s32 fixp_q;
 
-	/* calculate phase step */
-	#define BEEP_FREQ 1000 /* 1kHz beep */
+	 
+	#define BEEP_FREQ 1000  
 	src_phase_step = DIV_ROUND_CLOSEST(FIXP_2PI * BEEP_FREQ,
 					   dev->sdr_adc_freq);
 
@@ -531,11 +513,7 @@ void vivid_sdr_cap_process(struct vivid_dev *dev, struct vivid_buffer *buf)
 		s64tmp = (s64) mod_phase_step * dev->sdr_fm_deviation;
 		dev->sdr_fixp_mod_phase += div_s64(s64tmp, M_100000PI);
 
-		/*
-		 * Transfer phase angle to [0, 2xPI] in order to avoid variable
-		 * overflow and make it suitable for cosine implementation
-		 * used, which does not support negative angles.
-		 */
+		 
 		dev->sdr_fixp_src_phase %= FIXP_2PI;
 		dev->sdr_fixp_mod_phase %= FIXP_2PI;
 
@@ -545,23 +523,22 @@ void vivid_sdr_cap_process(struct vivid_dev *dev, struct vivid_buffer *buf)
 		fixp_i = fixp_cos32_rad(dev->sdr_fixp_mod_phase, FIXP_2PI);
 		fixp_q = fixp_sin32_rad(dev->sdr_fixp_mod_phase, FIXP_2PI);
 
-		/* Normalize fraction values represented with 32 bit precision
-		 * to fixed point representation with FIXP_N bits */
+		 
 		fixp_i >>= (31 - FIXP_N);
 		fixp_q >>= (31 - FIXP_N);
 
 		switch (dev->sdr_pixelformat) {
 		case V4L2_SDR_FMT_CU8:
-			/* convert 'fixp float' to u8 [0, +255] */
-			/* u8 = X * 127.5 + 127.5; X is float [-1.0, +1.0] */
+			 
+			 
 			fixp_i = fixp_i * 1275 + FIXP_FRAC * 1275;
 			fixp_q = fixp_q * 1275 + FIXP_FRAC * 1275;
 			*vbuf++ = DIV_ROUND_CLOSEST(fixp_i, FIXP_FRAC * 10);
 			*vbuf++ = DIV_ROUND_CLOSEST(fixp_q, FIXP_FRAC * 10);
 			break;
 		case V4L2_SDR_FMT_CS8:
-			/* convert 'fixp float' to s8 [-128, +127] */
-			/* s8 = X * 127.5 - 0.5; X is float [-1.0, +1.0] */
+			 
+			 
 			fixp_i = fixp_i * 1275 - FIXP_FRAC * 5;
 			fixp_q = fixp_q * 1275 - FIXP_FRAC * 5;
 			*vbuf++ = DIV_ROUND_CLOSEST(fixp_i, FIXP_FRAC * 10);

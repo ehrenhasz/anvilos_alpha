@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* SANE connection tracking helper
- * (SANE = Scanner Access Now Easy)
- * For documentation about the SANE network protocol see
- * http://www.sane-project.org/html/doc015.html
- */
 
-/* Copyright (C) 2007 Red Hat, Inc.
- * Author: Michal Schmidt <mschmidt@redhat.com>
- * Based on the FTP conntrack helper (net/netfilter/nf_conntrack_ftp.c):
- *  (C) 1999-2001 Paul `Rusty' Russell
- *  (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- *  (C) 2003,2004 USAGI/WIDE Project <http://www.linux-ipv6.org>
- *  (C) 2003 Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -41,7 +30,7 @@ module_param_array(ports, ushort, &ports_c, 0400);
 
 struct sane_request {
 	__be32 RPC_code;
-#define SANE_NET_START      7   /* RPC code */
+#define SANE_NET_START      7    
 
 	__be32 handle;
 };
@@ -52,7 +41,7 @@ struct sane_reply_net_start {
 
 	__be16 zero;
 	__be16 port;
-	/* other fields aren't interesting for conntrack */
+	 
 };
 
 static int help(struct sk_buff *skb,
@@ -74,17 +63,17 @@ static int help(struct sk_buff *skb,
 		struct sane_reply_net_start repl;
 	} buf;
 
-	/* Until there's been traffic both ways, don't look in packets. */
+	 
 	if (ctinfo != IP_CT_ESTABLISHED &&
 	    ctinfo != IP_CT_ESTABLISHED_REPLY)
 		return NF_ACCEPT;
 
-	/* Not a full tcp header? */
+	 
 	th = skb_header_pointer(skb, protoff, sizeof(_tcph), &_tcph);
 	if (th == NULL)
 		return NF_ACCEPT;
 
-	/* No data? */
+	 
 	dataoff = protoff + th->doff * 4;
 	if (dataoff >= skb->len)
 		return NF_ACCEPT;
@@ -101,23 +90,23 @@ static int help(struct sk_buff *skb,
 			return NF_ACCEPT;
 
 		if (req->RPC_code != htonl(SANE_NET_START)) {
-			/* Not an interesting command */
+			 
 			WRITE_ONCE(ct_sane_info->state, SANE_STATE_NORMAL);
 			return NF_ACCEPT;
 		}
 
-		/* We're interested in the next reply */
+		 
 		WRITE_ONCE(ct_sane_info->state, SANE_STATE_START_REQUESTED);
 		return NF_ACCEPT;
 	}
 
-	/* IP_CT_DIR_REPLY */
+	 
 
-	/* Is it a reply to an uninteresting command? */
+	 
 	if (READ_ONCE(ct_sane_info->state) != SANE_STATE_START_REQUESTED)
 		return NF_ACCEPT;
 
-	/* It's a reply to SANE_NET_START. */
+	 
 	WRITE_ONCE(ct_sane_info->state, SANE_STATE_NORMAL);
 
 	if (datalen < sizeof(struct sane_reply_net_start)) {
@@ -132,13 +121,13 @@ static int help(struct sk_buff *skb,
 		return NF_ACCEPT;
 
 	if (reply->status != htonl(SANE_STATUS_SUCCESS)) {
-		/* saned refused the command */
+		 
 		pr_debug("unsuccessful SANE_STATUS = %u\n",
 			 ntohl(reply->status));
 		return NF_ACCEPT;
 	}
 
-	/* Invalid saned reply? Ignore it. */
+	 
 	if (reply->zero != 0)
 		return NF_ACCEPT;
 
@@ -156,7 +145,7 @@ static int help(struct sk_buff *skb,
 	pr_debug("expect: ");
 	nf_ct_dump_tuple(&exp->tuple);
 
-	/* Can't expect this?  Best to drop packet now. */
+	 
 	if (nf_ct_expect_related(exp, 0) != 0) {
 		nf_ct_helper_log(skb, ct, "cannot add expectation");
 		ret = NF_DROP;
@@ -187,8 +176,7 @@ static int __init nf_conntrack_sane_init(void)
 	if (ports_c == 0)
 		ports[ports_c++] = SANE_PORT;
 
-	/* FIXME should be configurable whether IPv4 and IPv6 connections
-		 are tracked or not - YK */
+	 
 	for (i = 0; i < ports_c; i++) {
 		nf_ct_helper_init(&sane[2 * i], AF_INET, IPPROTO_TCP,
 				  HELPER_NAME, SANE_PORT, ports[i], ports[i],

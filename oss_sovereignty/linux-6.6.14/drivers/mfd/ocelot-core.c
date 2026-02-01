@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Core driver for the Ocelot chip family.
- *
- * The VSC7511, 7512, 7513, and 7514 can be controlled internally via an
- * on-chip MIPS processor, or externally via SPI, I2C, PCIe. This core driver is
- * intended to be the bus-agnostic glue between, for example, the SPI bus and
- * the child devices.
- *
- * Copyright 2021-2022 Innovative Advantage Inc.
- *
- * Author: Colin Foster <colin.foster@in-advantage.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -100,12 +89,7 @@ int ocelot_chip_reset(struct device *dev)
 	struct ocelot_ddata *ddata = dev_get_drvdata(dev);
 	int ret, val;
 
-	/*
-	 * Reset the entire chip here to put it into a completely known state.
-	 * Other drivers may want to reset their own subsystems. The register
-	 * self-clears, so one write is all that is needed and wait for it to
-	 * clear.
-	 */
+	 
 	ret = regmap_write(ddata->gcb_regmap, REG_GCB_SOFT_RST, BIT_SOFT_CHIP_RST);
 	if (ret)
 		return ret;

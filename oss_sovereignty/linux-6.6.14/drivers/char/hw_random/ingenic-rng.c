@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic Random Number Generator driver
- * Copyright (c) 2017 PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>
- * Copyright (c) 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -15,11 +11,11 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* RNG register offsets */
+ 
 #define RNG_REG_ERNG_OFFSET		0x0
 #define RNG_REG_RNG_OFFSET		0x4
 
-/* bits within the ERND register */
+ 
 #define ERNG_READY				BIT(31)
 #define ERNG_ENABLE				BIT(0)
 
@@ -28,7 +24,7 @@ enum ingenic_rng_version {
 	ID_X1000,
 };
 
-/* Device associated memory */
+ 
 struct ingenic_rng {
 	enum ingenic_rng_version version;
 
@@ -67,11 +63,7 @@ static int ingenic_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
 			return ret;
 		}
 	} else {
-		/*
-		 * A delay is required so that the current RNG data is not bit shifted
-		 * version of previous RNG data which could happen if random data is
-		 * read continuously from this device.
-		 */
+		 
 		udelay(20);
 	}
 
@@ -128,7 +120,7 @@ static int ingenic_rng_remove(struct platform_device *pdev)
 static const struct of_device_id ingenic_rng_of_match[] = {
 	{ .compatible = "ingenic,jz4780-rng", .data = (void *) ID_JZ4780 },
 	{ .compatible = "ingenic,x1000-rng", .data = (void *) ID_X1000 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ingenic_rng_of_match);
 

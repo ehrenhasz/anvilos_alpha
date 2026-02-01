@@ -1,31 +1,11 @@
-/* mpiutil.ac  -  Utility functions for MPI
- * Copyright (C) 1998, 1999 Free Software Foundation, Inc.
- *
- * This file is part of GnuPG.
- *
- * GnuPG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * GnuPG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- */
+ 
 
 #include "mpi-internal.h"
 
-/* Constants allocated right away at startup.  */
+ 
 static MPI constants[MPI_NUMBER_OF_CONSTANTS];
 
-/* Initialize the MPI subsystem.  This is called early and allows to
- * do some initialization without taking care of threading issues.
- */
+ 
 static int __init mpi_init(void)
 {
 	int idx;
@@ -63,10 +43,7 @@ static int __init mpi_init(void)
 }
 postcore_initcall(mpi_init);
 
-/* Return a constant MPI descripbed by NO which is one of the
- * MPI_C_xxx macros.  There is no need to copy this returned value; it
- * may be used directly.
- */
+ 
 MPI mpi_const(enum gcry_mpi_constants no)
 {
 	if ((int)no < 0 || no > MPI_NUMBER_OF_CONSTANTS)
@@ -77,13 +54,7 @@ MPI mpi_const(enum gcry_mpi_constants no)
 }
 EXPORT_SYMBOL_GPL(mpi_const);
 
-/****************
- * Note:  It was a bad idea to use the number of limbs to allocate
- *	  because on a alpha the limbs are large but we normally need
- *	  integers of n bits - So we should change this to bits (or bytes).
- *
- *	  But mpi_alloc is used in a lot of places :-)
- */
+ 
 MPI mpi_alloc(unsigned nlimbs)
 {
 	MPI a;
@@ -136,16 +107,13 @@ void mpi_assign_limb_space(MPI a, mpi_ptr_t ap, unsigned nlimbs)
 	a->alloced = nlimbs;
 }
 
-/****************
- * Resize the array of A to NLIMBS. the additional space is cleared
- * (set to 0) [done by m_realloc()]
- */
+ 
 int mpi_resize(MPI a, unsigned nlimbs)
 {
 	void *p;
 
 	if (nlimbs <= a->alloced)
-		return 0;	/* no need to do it */
+		return 0;	 
 
 	if (a->d) {
 		p = kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
@@ -188,10 +156,7 @@ void mpi_free(MPI a)
 }
 EXPORT_SYMBOL_GPL(mpi_free);
 
-/****************
- * Note: This copy function should not interpret the MPI
- *	 but copy it transparently.
- */
+ 
 MPI mpi_copy(MPI a)
 {
 	int i;
@@ -202,7 +167,7 @@ MPI mpi_copy(MPI a)
 		b->nlimbs = a->nlimbs;
 		b->sign = a->sign;
 		b->flags = a->flags;
-		b->flags &= ~(16|32); /* Reset the immutable and constant flags. */
+		b->flags &= ~(16|32);  
 		for (i = 0; i < b->nlimbs; i++)
 			b->d[i] = a->d[i];
 	} else
@@ -210,11 +175,7 @@ MPI mpi_copy(MPI a)
 	return b;
 }
 
-/****************
- * This function allocates an MPI which is optimized to hold
- * a value as large as the one given in the argument and allocates it
- * with the same flags as A.
- */
+ 
 MPI mpi_alloc_like(MPI a)
 {
 	MPI b;
@@ -231,7 +192,7 @@ MPI mpi_alloc_like(MPI a)
 }
 
 
-/* Set U into W and release U.  If W is NULL only U will be released. */
+ 
 void mpi_snatch(MPI w, MPI u)
 {
 	if (w) {
@@ -261,7 +222,7 @@ MPI mpi_set(MPI w, MPI u)
 	MPN_COPY(wp, up, usize);
 	w->nlimbs = usize;
 	w->flags = u->flags;
-	w->flags &= ~(16|32); /* Reset the immutable and constant flags.  */
+	w->flags &= ~(16|32);  
 	w->sign = usign;
 	return w;
 }
@@ -271,9 +232,7 @@ MPI mpi_set_ui(MPI w, unsigned long u)
 {
 	if (!w)
 		w = mpi_alloc(1);
-	/* FIXME: If U is 0 we have no need to resize and thus possible
-	 * allocating the limbs.
-	 */
+	 
 	RESIZE_IF_NEEDED(w, 1);
 	w->d[0] = u;
 	w->nlimbs = u ? 1 : 0;
@@ -292,11 +251,7 @@ MPI mpi_alloc_set_ui(unsigned long u)
 	return w;
 }
 
-/****************
- * Swap the value of A and B, when SWAP is 1.
- * Leave the value when SWAP is 0.
- * This implementation should be constant-time regardless of SWAP.
- */
+ 
 void mpi_swap_cond(MPI a, MPI b, unsigned long swap)
 {
 	mpi_size_t i;

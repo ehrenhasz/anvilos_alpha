@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2009,2018 Daniel Mack <daniel@zonque.org>
+
+
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -25,14 +25,7 @@ static int lt3593_led_set(struct led_classdev *led_cdev,
 		container_of(led_cdev, struct lt3593_led_data, cdev);
 	int pulses;
 
-	/*
-	 * The LT3593 resets its internal current level register to the maximum
-	 * level on the first falling edge on the control pin. Each following
-	 * falling edge decreases the current level by 625uA. Up to 32 pulses
-	 * can be sent, so the maximum power reduction is 20mA.
-	 * After a timeout of 128us, the value is taken from the register and
-	 * applied is to the output driver.
-	 */
+	 
 
 	if (value == 0) {
 		gpiod_set_value_cansleep(led_dat->gpiod, 0);

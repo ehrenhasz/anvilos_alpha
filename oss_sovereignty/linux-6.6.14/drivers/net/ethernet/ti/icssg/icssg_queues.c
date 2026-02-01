@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ICSSG Buffer queue helpers
- *
- * Copyright (C) 2021 Texas Instruments Incorporated - https://www.ti.com
- */
+
+ 
 
 #include <linux/regmap.h>
 #include "icssg_prueth.h"

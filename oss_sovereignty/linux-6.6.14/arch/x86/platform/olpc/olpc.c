@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for the OLPC DCON and OLPC EC access
- *
- * Copyright © 2006  Advanced Micro Devices, Inc.
- * Copyright © 2007-2008  Andres Salomon <dilinger@debian.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -26,10 +21,10 @@
 struct olpc_platform_t olpc_platform_info;
 EXPORT_SYMBOL_GPL(olpc_platform_info);
 
-/* what the timeout *should* be (in ms) */
+ 
 #define EC_BASE_TIMEOUT 20
 
-/* the timeout that bugs in the EC might force us to actually use */
+ 
 static int ec_timeout = EC_BASE_TIMEOUT;
 
 static int __init olpc_ec_timeout_set(char *str)
@@ -45,9 +40,7 @@ static int __init olpc_ec_timeout_set(char *str)
 }
 __setup("olpc_ec_timeout=", olpc_ec_timeout_set);
 
-/*
- * These {i,o}bf_status functions return whether the buffers are full or not.
- */
+ 
 
 static inline unsigned int ibf_status(unsigned int port)
 {
@@ -99,13 +92,7 @@ static int __wait_on_obf(unsigned int line, unsigned int port, int desired)
 	return !(state == desired);
 }
 
-/*
- * This allows the kernel to run Embedded Controller commands.  The EC is
- * documented at <http://wiki.laptop.org/go/Embedded_controller>, and the
- * available EC commands are here:
- * <http://wiki.laptop.org/go/Ec_specification>.  Unfortunately, while
- * OpenFirmware's source is available, the EC's is not.
- */
+ 
 static int olpc_xo1_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf,
 		size_t outlen, void *arg)
 {
@@ -113,7 +100,7 @@ static int olpc_xo1_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf,
 	int i;
 	int restarts = 0;
 
-	/* Clear OBF */
+	 
 	for (i = 0; i < 10 && (obf_status(0x6c) == 1); i++)
 		inb(0x68);
 	if (i == 10) {
@@ -129,15 +116,7 @@ static int olpc_xo1_ec_cmd(u8 cmd, u8 *inbuf, size_t inlen, u8 *outbuf,
 	}
 
 restart:
-	/*
-	 * Note that if we time out during any IBF checks, that's a failure;
-	 * we have to return.  There's no way for the kernel to clear that.
-	 *
-	 * If we time out during an OBF check, we can restart the command;
-	 * reissuing it will clear the OBF flag, and we should be alright.
-	 * The OBF flag will sometimes misbehave due to what we believe
-	 * is a hardware quirk..
-	 */
+	 
 	pr_devel("olpc-ec:  running cmd 0x%x\n", cmd);
 	outb(cmd, 0x6c);
 
@@ -148,7 +127,7 @@ restart:
 	}
 
 	if (inbuf && inlen) {
-		/* write data to EC */
+		 
 		for (i = 0; i < inlen; i++) {
 			pr_devel("olpc-ec:  sending cmd arg 0x%x\n", inbuf[i]);
 			outb(inbuf[i], 0x68);
@@ -160,7 +139,7 @@ restart:
 		}
 	}
 	if (outbuf && outlen) {
-		/* read data from EC */
+		 
 		for (i = 0; i < outlen; i++) {
 			if (wait_on_obf(0x6c, 1)) {
 				printk(KERN_ERR "olpc-ec:  timeout waiting for"
@@ -237,22 +216,16 @@ static int __init add_xo1_platform_devices(void)
 
 static int olpc_xo1_ec_suspend(struct platform_device *pdev)
 {
-	/*
-	 * Squelch SCIs while suspended.  This is a fix for
-	 * <http://dev.laptop.org/ticket/1835>.
-	 */
+	 
 	return olpc_ec_cmd(EC_SET_SCI_INHIBIT, NULL, 0, NULL, 0);
 }
 
 static int olpc_xo1_ec_resume(struct platform_device *pdev)
 {
-	/* Tell the EC to stop inhibiting SCIs */
+	 
 	olpc_ec_cmd(EC_SET_SCI_INHIBIT_RELEASE, NULL, 0, NULL, 0);
 
-	/*
-	 * Tell the wireless module to restart USB communication.
-	 * Must be done twice.
-	 */
+	 
 	olpc_ec_cmd(EC_WAKE_UP_WLAN, NULL, 0, NULL, 0);
 	olpc_ec_cmd(EC_WAKE_UP_WLAN, NULL, 0, NULL, 0);
 
@@ -264,10 +237,7 @@ static struct olpc_ec_driver ec_xo1_driver = {
 	.resume = olpc_xo1_ec_resume,
 	.ec_cmd = olpc_xo1_ec_cmd,
 #ifdef CONFIG_OLPC_XO1_SCI
-	/*
-	 * XO-1 EC wakeups are available when olpc-xo1-sci driver is
-	 * compiled in
-	 */
+	 
 	.wakeup_available = true,
 #endif
 };
@@ -275,10 +245,7 @@ static struct olpc_ec_driver ec_xo1_driver = {
 static struct olpc_ec_driver ec_xo1_5_driver = {
 	.ec_cmd = olpc_xo1_ec_cmd,
 #ifdef CONFIG_OLPC_XO15_SCI
-	/*
-	 * XO-1.5 EC wakeups are available when olpc-xo15-sci driver is
-	 * compiled in
-	 */
+	 
 	.wakeup_available = true,
 #endif
 };
@@ -290,26 +257,25 @@ static int __init olpc_init(void)
 	if (!olpc_ofw_present() || !platform_detect())
 		return 0;
 
-	/* register the XO-1 and 1.5-specific EC handler */
-	if (olpc_platform_info.boardrev < olpc_board_pre(0xd0))	/* XO-1 */
+	 
+	if (olpc_platform_info.boardrev < olpc_board_pre(0xd0))	 
 		olpc_ec_driver_register(&ec_xo1_driver, NULL);
 	else
 		olpc_ec_driver_register(&ec_xo1_5_driver, NULL);
 	platform_device_register_simple("olpc-ec", -1, NULL, 0);
 
-	/* assume B1 and above models always have a DCON */
+	 
 	if (olpc_board_at_least(olpc_board(0xb1)))
 		olpc_platform_info.flags |= OLPC_F_DCON;
 
 #ifdef CONFIG_PCI_OLPC
-	/* If the VSA exists let it emulate PCI, if not emulate in kernel.
-	 * XO-1 only. */
+	 
 	if (olpc_platform_info.boardrev < olpc_board_pre(0xd0) &&
 			!cs5535_has_vsa2())
 		x86_init.pci.arch_init = pci_olpc_init;
 #endif
 
-	if (olpc_platform_info.boardrev < olpc_board_pre(0xd0)) { /* XO-1 */
+	if (olpc_platform_info.boardrev < olpc_board_pre(0xd0)) {  
 		r = add_xo1_platform_devices();
 		if (r)
 			return r;

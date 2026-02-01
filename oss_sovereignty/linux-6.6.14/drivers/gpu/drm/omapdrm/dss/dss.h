@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+ 
+ 
 
 #ifndef __OMAP2_DSS_H
 #define __OMAP2_DSS_H
@@ -59,8 +53,7 @@ struct seq_file;
 	pr_warn("omapdss: " format, ##__VA_ARGS__)
 #endif
 
-/* OMAP TRM gives bitfields as start:end, where start is the higher bit
-   number. For example 7:0 */
+ 
 #define FLD_MASK(start, end)	(((1 << ((start) - (end) + 1)) - 1) << (end))
 #define FLD_VAL(val, start, end) (((val) << (end)) & FLD_MASK(start, end))
 #define FLD_GET(val, start, end) (((val) & FLD_MASK(start, end)) >> (end))
@@ -122,17 +115,14 @@ enum dss_pll_type {
 	DSS_PLL_TYPE_B,
 };
 
-/*
- * Type-A PLLs: clkout[]/mX[] refer to hsdiv outputs m4, m5, m6, m7.
- * Type-B PLLs: clkout[0] refers to m2.
- */
+ 
 struct dss_pll_clock_info {
-	/* rates that we get with dividers below */
+	 
 	unsigned long fint;
 	unsigned long clkdco;
 	unsigned long clkout[DSS_PLL_MAX_HSDIVS];
 
-	/* dividers */
+	 
 	u16 n;
 	u16 m;
 	u32 mf;
@@ -167,10 +157,10 @@ struct dss_pll_hw {
 	bool has_selfreqdco;
 	bool has_refsel;
 
-	/* DRA7 errata i886: use high N & M to avoid jitter */
+	 
 	bool errata_i886;
 
-	/* DRA7 errata i932: retry pll lock on failure */
+	 
 	bool errata_i932;
 };
 
@@ -191,17 +181,17 @@ struct dss_pll {
 	struct dss_pll_clock_info cinfo;
 };
 
-/* Defines a generic omap register field */
+ 
 struct dss_reg_field {
 	u8 start, end;
 };
 
 struct dispc_clock_info {
-	/* rates that we get with dividers below */
+	 
 	unsigned long lck;
 	unsigned long pck;
 
-	/* dividers */
+	 
 	u16 lck_div;
 	u16 pck_div;
 };
@@ -260,10 +250,10 @@ struct dss_device {
 	struct omap_drm_private *mgr_ops_priv;
 };
 
-/* core */
+ 
 static inline int dss_set_min_bus_tput(struct device *dev, unsigned long tput)
 {
-	/* To be implemented when the OMAP platform will provide this feature */
+	 
 	return 0;
 }
 
@@ -276,7 +266,7 @@ static inline bool dss_mgr_is_lcd(enum omap_channel id)
 		return false;
 }
 
-/* DSS */
+ 
 #if defined(CONFIG_OMAP2_DSS_DEBUGFS)
 struct dss_debugfs_entry *
 dss_debugfs_create_file(struct dss_device *dss, const char *name,
@@ -295,7 +285,7 @@ dss_debugfs_create_file(struct dss_device *dss, const char *name,
 static inline void dss_debugfs_remove_file(struct dss_debugfs_entry *entry)
 {
 }
-#endif /* CONFIG_OMAP2_DSS_DEBUGFS */
+#endif  
 
 struct dss_device *dss_get_device(struct device *dev);
 
@@ -310,7 +300,7 @@ void dss_select_hdmi_venc_clk_source(struct dss_device *dss,
 				     enum dss_hdmi_venc_clk_source_select src);
 const char *dss_get_clk_source_name(enum dss_clk_source clk_src);
 
-/* DSS VIDEO PLL */
+ 
 struct dss_pll *dss_video_pll_init(struct dss_device *dss,
 				   struct platform_device *pdev, int id,
 				   struct regulator *regulator);
@@ -342,7 +332,7 @@ typedef bool (*dss_div_calc_func)(unsigned long fck, void *data);
 bool dss_div_calc(struct dss_device *dss, unsigned long pck,
 		  unsigned long fck_min, dss_div_calc_func func, void *data);
 
-/* SDI */
+ 
 #ifdef CONFIG_OMAP2_DSS_SDI
 int sdi_init_port(struct dss_device *dss, struct platform_device *pdev,
 		  struct device_node *port);
@@ -359,7 +349,7 @@ static inline void sdi_uninit_port(struct device_node *port)
 }
 #endif
 
-/* DSI */
+ 
 
 #ifdef CONFIG_OMAP2_DSS_DSI
 
@@ -367,7 +357,7 @@ void dsi_irq_handler(void);
 
 #endif
 
-/* DPI */
+ 
 #ifdef CONFIG_OMAP2_DSS_DPI
 int dpi_init_port(struct dss_device *dss, struct platform_device *pdev,
 		  struct device_node *port, enum dss_model dss_model);
@@ -385,7 +375,7 @@ static inline void dpi_uninit_port(struct device_node *port)
 }
 #endif
 
-/* DISPC */
+ 
 void dispc_dump_clocks(struct dispc_device *dispc, struct seq_file *s);
 
 int dispc_runtime_get(struct dispc_device *dispc);
@@ -510,7 +500,7 @@ static inline void dss_collect_irq_stats(u32 irqstatus, unsigned int *irq_arr)
 }
 #endif
 
-/* PLL */
+ 
 typedef bool (*dss_pll_calc_func)(int n, int m, unsigned long fint,
 		unsigned long clkdco, void *data);
 typedef bool (*dss_hsdiv_calc_func)(int m_dispc, unsigned long dispc,

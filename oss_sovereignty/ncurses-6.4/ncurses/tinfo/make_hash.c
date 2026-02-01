@@ -1,41 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2019,2020 Thomas E. Dickey                                *
- * Copyright 2009-2013,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	make_hash.c --- build-time program for constructing comp_captab.c
- */
+ 
 
 #include <build.priv.h>
 
@@ -46,17 +13,10 @@
 
 MODULE_ID("$Id: make_hash.c,v 1.33 2020/02/02 23:34:34 tom Exp $")
 
-/*
- *	_nc_make_hash_table()
- *
- *	Takes the entries in table[] and hashes them into hash_table[]
- *	by name.  There are CAPTABSIZE entries in the predefined table[]
- *	and HASHTABSIZE slots in hash_table[].
- *
- */
+ 
 
 #undef MODULE_ID
-#define MODULE_ID(id)		/*nothing */
+#define MODULE_ID(id)		 
 #include <tinfo/doalloc.c>
 
 #define L_PAREN "("
@@ -85,15 +45,7 @@ strmalloc(char *s)
     return result;
 }
 
-/*
- *	int hash_function(string)
- *
- *	Computes the hashing function on the given string.
- *
- *	The current hash function is the sum of each consecutive pair
- *	of characters, taken as two-byte integers, mod HASHTABSIZE.
- *
- */
+ 
 
 static int
 hash_function(const char *string)
@@ -137,17 +89,9 @@ _nc_make_hash_table(struct user_table_entry *table,
     printf("/* %d collisions out of %d entries */\n", collisions, tablesize);
 }
 
-/*
- * This filter reads from standard input a list of tab-delimited columns,
- * (e.g., from Caps.filtered) computes the hash-value of a specified column and
- * writes the hashed tables to standard output.
- *
- * By compiling the hash table at build time, we're able to make the entire
- * set of terminfo and termcap tables readonly (and also provide some runtime
- * performance enhancement).
- */
+ 
 
-#define MAX_COLUMNS BUFSIZ	/* this _has_ to be worst-case */
+#define MAX_COLUMNS BUFSIZ	 
 
 static int
 count_columns(char **list)
@@ -183,13 +127,13 @@ parse_columns(char *buffer)
 	while (*buffer != '\0') {
 	    char *s;
 	    for (s = buffer; (*s != '\0') && !isspace(UChar(*s)); s++)
-		/*EMPTY */ ;
+		  ;
 	    if (s != buffer) {
 		char mark = *s;
 		*s = '\0';
 		if ((s - buffer) > 1
 		    && (*buffer == '"')
-		    && (s[-1] == '"')) {	/* strip the quotes */
+		    && (s[-1] == '"')) {	 
 		    assert(s > buffer + 1);
 		    s[-1] = '\0';
 		    buffer++;
@@ -199,7 +143,7 @@ parse_columns(char *buffer)
 		if (mark == '\0')
 		    break;
 		while (*++s && isspace(UChar(*s)))
-		    /*EMPTY */ ;
+		      ;
 		buffer = s;
 	    } else
 		break;
@@ -264,9 +208,7 @@ main(int argc, char **argv)
     short NumCount = 0;
     short StrCount = 0;
 
-    /* The first argument is the column-number (starting with 0).
-     * The second is the root name of the tables to generate.
-     */
+     
     if (argc <= 3
 	|| (column = atoi(argv[1])) <= 0
 	|| (column >= MAX_COLUMNS)
@@ -280,9 +222,7 @@ main(int argc, char **argv)
     is_user = (*root_name == 'u');
     table_name = (is_user ? "user" : "name");
 
-    /*
-     * Read the table into our arrays.
-     */
+     
     for (n = 0; (n < tablesize) && fgets(buffer, BUFSIZ, stdin);) {
 	char **list;
 	char *nlp = strchr(buffer, '\n');
@@ -291,7 +231,7 @@ main(int argc, char **argv)
 	else
 	    buffer[sizeof(buffer) - 2] = '\0';
 	list = parse_columns(buffer);
-	if (list == 0)		/* blank or comment */
+	if (list == 0)		 
 	    continue;
 	if (is_user) {
 	    if (strcmp(list[0], "userdef"))
@@ -317,7 +257,7 @@ main(int argc, char **argv)
 	    }
 	}
 	if (nn == tableused) {
-	    name_table[nn].ute_link = -1;	/* end-of-hash */
+	    name_table[nn].ute_link = -1;	 
 	    name_table[nn].ute_name = strmalloc(list[column]);
 	    ++tableused;
 	}
@@ -352,9 +292,7 @@ main(int argc, char **argv)
 	tablesize = tableused;
     _nc_make_hash_table(name_table, hash_table, tablesize);
 
-    /*
-     * Write the compiled tables to standard output
-     */
+     
     if (bigstring) {
 	int len = 0;
 	int nxt;

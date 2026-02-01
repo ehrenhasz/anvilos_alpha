@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/types.h>
 #include <media/v4l2-ctrls.h>
 
@@ -328,14 +325,7 @@ static int venc_op_s_ctrl(struct v4l2_ctrl *ctrl)
 		    ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
 			return -EINVAL;
 
-		/*
-		 * In video firmware, 8x8 transform is supported only for
-		 * high profile(HP) and constrained high profile(CHP).
-		 * If client wants to disable 8x8 transform for HP/CHP,
-		 * it is better to set profile as main profile(MP).
-		 * Because there is no difference between HP and MP
-		 * if we disable 8x8 transform for HP.
-		 */
+		 
 
 
 		ctr->h264_8x8_transform = ctrl->val;

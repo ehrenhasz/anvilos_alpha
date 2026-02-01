@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012-2013, NVIDIA Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/dma-mapping.h>
@@ -30,12 +27,7 @@ struct host1x_subdev {
 	struct list_head list;
 };
 
-/**
- * host1x_subdev_add() - add a new subdevice with an associated device node
- * @device: host1x device to add the subdevice to
- * @driver: host1x driver containing the subdevices
- * @np: device node
- */
+ 
 static int host1x_subdev_add(struct host1x_device *device,
 			     struct host1x_driver *driver,
 			     struct device_node *np)
@@ -55,13 +47,13 @@ static int host1x_subdev_add(struct host1x_device *device,
 	list_add_tail(&subdev->list, &device->subdevs);
 	mutex_unlock(&device->subdevs_lock);
 
-	/* recursively add children */
+	 
 	for_each_child_of_node(np, child) {
 		if (of_match_node(driver->subdevs, child) &&
 		    of_device_is_available(child)) {
 			err = host1x_subdev_add(device, driver, child);
 			if (err < 0) {
-				/* XXX cleanup? */
+				 
 				of_node_put(child);
 				return err;
 			}
@@ -71,10 +63,7 @@ static int host1x_subdev_add(struct host1x_device *device,
 	return 0;
 }
 
-/**
- * host1x_subdev_del() - remove subdevice
- * @subdev: subdevice to remove
- */
+ 
 static void host1x_subdev_del(struct host1x_subdev *subdev)
 {
 	list_del(&subdev->list);
@@ -82,11 +71,7 @@ static void host1x_subdev_del(struct host1x_subdev *subdev)
 	kfree(subdev);
 }
 
-/**
- * host1x_device_parse_dt() - scan device tree and add matching subdevices
- * @device: host1x logical device
- * @driver: host1x driver
- */
+ 
 static int host1x_device_parse_dt(struct host1x_device *device,
 				  struct host1x_driver *driver)
 {
@@ -113,11 +98,7 @@ static void host1x_subdev_register(struct host1x_device *device,
 {
 	int err;
 
-	/*
-	 * Move the subdevice to the list of active (registered) subdevices
-	 * and associate it with a client. At the same time, associate the
-	 * client with its parent device.
-	 */
+	 
 	mutex_lock(&device->subdevs_lock);
 	mutex_lock(&device->clients_lock);
 	list_move_tail(&client->list, &device->clients);
@@ -141,10 +122,7 @@ static void __host1x_subdev_unregister(struct host1x_device *device,
 {
 	struct host1x_client *client = subdev->client;
 
-	/*
-	 * If all subdevices have been activated, we're about to remove the
-	 * first active subdevice, so unload the driver first.
-	 */
+	 
 	if (list_empty(&device->subdevs)) {
 		if (device->registered) {
 			device->registered = false;
@@ -152,22 +130,12 @@ static void __host1x_subdev_unregister(struct host1x_device *device,
 		}
 	}
 
-	/*
-	 * Move the subdevice back to the list of idle subdevices and remove
-	 * it from list of clients.
-	 */
+	 
 	mutex_lock(&device->clients_lock);
 	subdev->client = NULL;
 	client->host = NULL;
 	list_move_tail(&subdev->list, &device->subdevs);
-	/*
-	 * XXX: Perhaps don't do this here, but rather explicitly remove it
-	 * when the device is about to be deleted.
-	 *
-	 * This is somewhat complicated by the fact that this function is
-	 * used to remove the subdevice when a client is unregistered but
-	 * also when the composite device is about to be removed.
-	 */
+	 
 	list_del_init(&client->list);
 	mutex_unlock(&device->clients_lock);
 }
@@ -180,16 +148,7 @@ static void host1x_subdev_unregister(struct host1x_device *device,
 	mutex_unlock(&device->subdevs_lock);
 }
 
-/**
- * host1x_device_init() - initialize a host1x logical device
- * @device: host1x logical device
- *
- * The driver for the host1x logical device can call this during execution of
- * its &host1x_driver.probe implementation to initialize each of its clients.
- * The client drivers access the subsystem specific driver data using the
- * &host1x_client.parent field and driver data associated with it (usually by
- * calling dev_get_drvdata()).
- */
+ 
 int host1x_device_init(struct host1x_device *device)
 {
 	struct host1x_client *client;
@@ -229,7 +188,7 @@ teardown:
 		if (client->ops->exit)
 			client->ops->exit(client);
 
-	/* reset client to end of list for late teardown */
+	 
 	client = list_entry(&device->clients, struct host1x_client, list);
 
 teardown_late:
@@ -242,15 +201,7 @@ teardown_late:
 }
 EXPORT_SYMBOL(host1x_device_init);
 
-/**
- * host1x_device_exit() - uninitialize host1x logical device
- * @device: host1x logical device
- *
- * When the driver for a host1x logical device is unloaded, it can call this
- * function to tear down each of its clients. Typically this is done after a
- * subsystem-specific data structure is removed and the functionality can no
- * longer be used.
- */
+ 
 int host1x_device_exit(struct host1x_device *device)
 {
 	struct host1x_client *client;
@@ -338,11 +289,7 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
 	return strcmp(dev_name(dev), drv->name) == 0;
 }
 
-/*
- * Note that this is really only needed for backwards compatibility
- * with libdrm, which parses this information from sysfs and will
- * fail if it can't find the OF_FULLNAME, specifically.
- */
+ 
 static int host1x_device_uevent(const struct device *dev,
 				struct kobj_uevent_env *env)
 {
@@ -380,34 +327,26 @@ static void __host1x_device_del(struct host1x_device *device)
 
 	mutex_lock(&device->subdevs_lock);
 
-	/* unregister subdevices */
+	 
 	list_for_each_entry_safe(subdev, sd, &device->active, list) {
-		/*
-		 * host1x_subdev_unregister() will remove the client from
-		 * any lists, so we'll need to manually add it back to the
-		 * list of idle clients.
-		 *
-		 * XXX: Alternatively, perhaps don't remove the client from
-		 * any lists in host1x_subdev_unregister() and instead do
-		 * that explicitly from host1x_unregister_client()?
-		 */
+		 
 		client = subdev->client;
 
 		__host1x_subdev_unregister(device, subdev);
 
-		/* add the client to the list of idle clients */
+		 
 		mutex_lock(&clients_lock);
 		list_add_tail(&client->list, &clients);
 		mutex_unlock(&clients_lock);
 	}
 
-	/* remove subdevices */
+	 
 	list_for_each_entry_safe(subdev, sd, &device->subdevs, list)
 		host1x_subdev_del(subdev);
 
 	mutex_unlock(&device->subdevs_lock);
 
-	/* move clients to idle list */
+	 
 	mutex_lock(&clients_lock);
 	mutex_lock(&device->clients_lock);
 
@@ -417,7 +356,7 @@ static void __host1x_device_del(struct host1x_device *device)
 	mutex_unlock(&device->clients_lock);
 	mutex_unlock(&clients_lock);
 
-	/* finally remove the device */
+	 
 	list_del_init(&device->list);
 }
 
@@ -487,12 +426,7 @@ static int host1x_device_add(struct host1x *host1x,
 	return 0;
 }
 
-/*
- * Removes a device by first unregistering any subdevices and then removing
- * itself from the list of devices.
- *
- * This function must be called with the host1x->devices_lock held.
- */
+ 
 static void host1x_device_del(struct host1x *host1x,
 			      struct host1x_device *device)
 {
@@ -570,14 +504,7 @@ static int host1x_devices_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(host1x_devices);
 
-/**
- * host1x_register() - register a host1x controller
- * @host1x: host1x controller
- *
- * The host1x controller driver uses this to register a host1x controller with
- * the infrastructure. Note that all Tegra SoC generations have only ever come
- * with a single host1x instance, so this function is somewhat academic.
- */
+ 
 int host1x_register(struct host1x *host1x)
 {
 	struct host1x_driver *driver;
@@ -599,13 +526,7 @@ int host1x_register(struct host1x *host1x)
 	return 0;
 }
 
-/**
- * host1x_unregister() - unregister a host1x controller
- * @host1x: host1x controller
- *
- * The host1x controller driver uses this to remove a host1x controller from
- * the infrastructure.
- */
+ 
 int host1x_unregister(struct host1x *host1x)
 {
 	struct host1x_driver *driver;
@@ -655,16 +576,7 @@ static void host1x_device_shutdown(struct device *dev)
 		driver->shutdown(device);
 }
 
-/**
- * host1x_driver_register_full() - register a host1x driver
- * @driver: host1x driver
- * @owner: owner module
- *
- * Drivers for host1x logical devices call this function to register a driver
- * with the infrastructure. Note that since these drive logical devices, the
- * registration of the driver actually triggers tho logical device creation.
- * A logical device will be created for each host1x instance.
- */
+ 
 int host1x_driver_register_full(struct host1x_driver *driver,
 				struct module *owner)
 {
@@ -693,13 +605,7 @@ int host1x_driver_register_full(struct host1x_driver *driver,
 }
 EXPORT_SYMBOL(host1x_driver_register_full);
 
-/**
- * host1x_driver_unregister() - unregister a host1x driver
- * @driver: host1x driver
- *
- * Unbinds the driver from each of the host1x logical devices that it is
- * bound to, effectively removing the subsystem devices that they represent.
- */
+ 
 void host1x_driver_unregister(struct host1x_driver *driver)
 {
 	struct host1x *host1x;
@@ -719,11 +625,7 @@ void host1x_driver_unregister(struct host1x_driver *driver)
 }
 EXPORT_SYMBOL(host1x_driver_unregister);
 
-/**
- * __host1x_client_init() - initialize a host1x client
- * @client: host1x client
- * @key: lock class key for the client-specific mutex
- */
+ 
 void __host1x_client_init(struct host1x_client *client, struct lock_class_key *key)
 {
 	host1x_bo_cache_init(&client->cache);
@@ -733,27 +635,14 @@ void __host1x_client_init(struct host1x_client *client, struct lock_class_key *k
 }
 EXPORT_SYMBOL(__host1x_client_init);
 
-/**
- * host1x_client_exit() - uninitialize a host1x client
- * @client: host1x client
- */
+ 
 void host1x_client_exit(struct host1x_client *client)
 {
 	mutex_destroy(&client->lock);
 }
 EXPORT_SYMBOL(host1x_client_exit);
 
-/**
- * __host1x_client_register() - register a host1x client
- * @client: host1x client
- *
- * Registers a host1x client with each host1x controller instance. Note that
- * each client will only match their parent host1x controller and will only be
- * associated with that instance. Once all clients have been registered with
- * their parent host1x controller, the infrastructure will set up the logical
- * device and call host1x_device_init(), which will in turn call each client's
- * &host1x_client_ops.init implementation.
- */
+ 
 int __host1x_client_register(struct host1x_client *client)
 {
 	struct host1x *host1x;
@@ -779,13 +668,7 @@ int __host1x_client_register(struct host1x_client *client)
 }
 EXPORT_SYMBOL(__host1x_client_register);
 
-/**
- * host1x_client_unregister() - unregister a host1x client
- * @client: host1x client
- *
- * Removes a host1x client from its host1x controller instance. If a logical
- * device has already been initialized, it will be torn down.
- */
+ 
 void host1x_client_unregister(struct host1x_client *client)
 {
 	struct host1x_client *c;
@@ -920,7 +803,7 @@ struct host1x_bo_mapping *host1x_bo_pin(struct device *dev, struct host1x_bo *bo
 
 		list_add_tail(&mapping->entry, &cache->mappings);
 
-		/* bump reference count to track the copy in the cache */
+		 
 		kref_get(&mapping->ref);
 	}
 
@@ -936,10 +819,7 @@ static void __host1x_bo_unpin(struct kref *ref)
 {
 	struct host1x_bo_mapping *mapping = to_host1x_bo_mapping(ref);
 
-	/*
-	 * When the last reference of the mapping goes away, make sure to remove the mapping from
-	 * the cache.
-	 */
+	 
 	if (mapping->cache)
 		list_del(&mapping->entry);
 

@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Rahul Sharma <rahul.sharma@samsung.com>
- *
- * Common Clock Framework support for Exynos5260 SoC.
- */
+ 
+ 
 
 #ifndef __CLK_EXYNOS5260_H
 #define __CLK_EXYNOS5260_H
 
-/*
-*Registers for CMU_AUD
-*/
+ 
 #define MUX_SEL_AUD				0x0200
 #define MUX_ENABLE_AUD				0x0300
 #define MUX_STAT_AUD				0x0400
@@ -25,9 +18,7 @@
 #define EN_SCLK_AUD				0x0a00
 #define EN_IP_AUD				0x0b00
 
-/*
-*Registers for CMU_DISP
-*/
+ 
 #define MUX_SEL_DISP0				0x0200
 #define MUX_SEL_DISP1				0x0204
 #define MUX_SEL_DISP2				0x0208
@@ -58,9 +49,7 @@
 #define EN_IP_DISP_BUS				0x0b04
 
 
-/*
-*Registers for CMU_EGL
-*/
+ 
 #define EGL_PLL_LOCK				0x0000
 #define EGL_DPLL_LOCK				0x0004
 #define EGL_PLL_CON0				0x0100
@@ -97,9 +86,7 @@
 #define CMU_EGL_SPARE3				0x200c
 #define CMU_EGL_SPARE4				0x2010
 
-/*
-*Registers for CMU_FSYS
-*/
+ 
 
 #define MUX_SEL_FSYS0				0x0200
 #define MUX_SEL_FSYS1				0x0204
@@ -118,9 +105,7 @@
 #define EN_IP_FSYS_SECURE_RTIC			0x0b04
 #define EN_IP_FSYS_SECURE_SMMU_RTIC		0x0b08
 
-/*
-*Registers for CMU_G2D
-*/
+ 
 
 #define MUX_SEL_G2D				0x0200
 #define MUX_ENABLE_G2D				0x0300
@@ -147,9 +132,7 @@
 #define EN_IP_G2D_SECURE_SMMU_MDMA		0x0b14
 #define EN_IP_G2D_SECURE_SMMU_G2D		0x0b18
 
-/*
-*Registers for CMU_G3D
-*/
+ 
 
 #define G3D_PLL_LOCK				0x0000
 #define G3D_PLL_CON0				0x0100
@@ -173,9 +156,7 @@
 #define G3D_EMA_CTRL				0x1008
 #define G3D_EMA_STATUS				0x100c
 
-/*
-*Registers for CMU_GSCL
-*/
+ 
 
 #define MUX_SEL_GSCL				0x0200
 #define MUX_EN_GSCL				0x0300
@@ -204,9 +185,7 @@
 #define EN_IP_GSCL_SECURE_SMMU_MSCL0		0x0b10
 #define EN_IP_GSCL_SECURE_SMMU_MSCL1		0x0b14
 
-/*
-*Registers for CMU_ISP
-*/
+ 
 #define MUX_SEL_ISP0				0x0200
 #define MUX_SEL_ISP1				0x0204
 #define MUX_ENABLE_ISP0				0x0300
@@ -225,9 +204,7 @@
 #define EN_IP_ISP0				0x0b00
 #define EN_IP_ISP1				0x0b04
 
-/*
-*Registers for CMU_KFC
-*/
+ 
 #define KFC_PLL_LOCK				0x0000
 #define KFC_PLL_CON0				0x0100
 #define KFC_PLL_CON1				0x0104
@@ -263,9 +240,7 @@
 #define CMU_KFC_SPARE3				0x200c
 #define CMU_KFC_SPARE4				0x2010
 
-/*
-*Registers for CMU_MFC
-*/
+ 
 #define MUX_SEL_MFC				0x0200
 #define MUX_ENABLE_MFC				0x0300
 #define MUX_STAT_MFC				0x0400
@@ -278,9 +253,7 @@
 #define EN_IP_MFC				0x0b00
 #define EN_IP_MFC_SECURE_SMMU2_MFC		0x0b04
 
-/*
-*Registers for CMU_MIF
-*/
+ 
 #define MEM_PLL_LOCK				0x0000
 #define BUS_PLL_LOCK				0x0004
 #define MEDIA_PLL_LOCK				0x0008
@@ -323,9 +296,7 @@
 #define DDRPHY_LOCK_CTRL			0x1008
 #define CLKOUT_CMU_MIF				0xcb00
 
-/*
-*Registers for CMU_PERI
-*/
+ 
 #define MUX_SEL_PERI				0x0200
 #define MUX_SEL_PERI1				0x0204
 #define MUX_ENABLE_PERI				0x0300
@@ -360,9 +331,7 @@
 #define EN_IP_PERI_SECURE_TOP_RTC		0x0b20
 #define EN_IP_PERI_SECURE_TZPC			0x0b24
 
-/*
-*Registers for CMU_TOP
-*/
+ 
 #define DISP_PLL_LOCK				0x0000
 #define AUD_PLL_LOCK				0x0004
 #define DISP_PLL_CON0				0x0100
@@ -452,5 +421,5 @@
 #define CLKOUT_CMU_TOP				0x0c00
 #define CLKOUT_CMU_TOP_DIV_STAT			0x0c04
 
-#endif /*__CLK_EXYNOS5260_H */
+#endif  
 

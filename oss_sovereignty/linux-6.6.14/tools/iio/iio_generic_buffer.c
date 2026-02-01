@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Industrialio buffer test code.
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * This program is primarily intended as an example application.
- * Reads the current buffer setup from sysfs and starts a short capture
- * from the specified device, pretty printing the result after appropriate
- * conversion.
- *
- * Command line parameters
- * generic_buffer -n <device_name> -t <trigger_name>
- * If trigger name is not specified the program assumes you want a dataready
- * trigger associated with the device and goes looking for it.
- */
+
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -34,23 +21,14 @@
 #include <linux/iio/buffer.h>
 #include "iio_utils.h"
 
-/**
- * enum autochan - state for the automatic channel enabling mechanism
- */
+ 
 enum autochan {
 	AUTOCHANNELS_DISABLED,
 	AUTOCHANNELS_ENABLED,
 	AUTOCHANNELS_ACTIVE,
 };
 
-/**
- * size_from_channelarray() - calculate the storage size of a scan
- * @channels:		the channel info array
- * @num_channels:	number of channels
- *
- * Has the side effect of filling the channels[i].location values used
- * in processing the buffer output.
- **/
+ 
 static unsigned int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
 {
 	unsigned int bytes = 0;
@@ -69,11 +47,7 @@ static unsigned int size_from_channelarray(struct iio_channel_info *channels, in
 		bytes = channels[i].location + channels[i].bytes;
 		i++;
 	}
-	/*
-	 * We want the data in next sample to also be properly aligned so
-	 * we'll add padding at the end if needed. Adding padding only
-	 * works for channel data which size is 2^n bytes.
-	 */
+	 
 	misalignment = bytes % max;
 	if (misalignment)
 		bytes += max - misalignment;
@@ -83,10 +57,7 @@ static unsigned int size_from_channelarray(struct iio_channel_info *channels, in
 
 static void print1byte(uint8_t input, struct iio_channel_info *info)
 {
-	/*
-	 * Shift before conversion to avoid sign extension
-	 * of left aligned data
-	 */
+	 
 	input >>= info->shift;
 	input &= info->mask;
 	if (info->is_signed) {
@@ -100,16 +71,13 @@ static void print1byte(uint8_t input, struct iio_channel_info *info)
 
 static void print2byte(uint16_t input, struct iio_channel_info *info)
 {
-	/* First swap if incorrect endian */
+	 
 	if (info->be)
 		input = be16toh(input);
 	else
 		input = le16toh(input);
 
-	/*
-	 * Shift before conversion to avoid sign extension
-	 * of left aligned data
-	 */
+	 
 	input >>= info->shift;
 	input &= info->mask;
 	if (info->is_signed) {
@@ -123,16 +91,13 @@ static void print2byte(uint16_t input, struct iio_channel_info *info)
 
 static void print4byte(uint32_t input, struct iio_channel_info *info)
 {
-	/* First swap if incorrect endian */
+	 
 	if (info->be)
 		input = be32toh(input);
 	else
 		input = le32toh(input);
 
-	/*
-	 * Shift before conversion to avoid sign extension
-	 * of left aligned data
-	 */
+	 
 	input >>= info->shift;
 	input &= info->mask;
 	if (info->is_signed) {
@@ -146,22 +111,19 @@ static void print4byte(uint32_t input, struct iio_channel_info *info)
 
 static void print8byte(uint64_t input, struct iio_channel_info *info)
 {
-	/* First swap if incorrect endian */
+	 
 	if (info->be)
 		input = be64toh(input);
 	else
 		input = le64toh(input);
 
-	/*
-	 * Shift before conversion to avoid sign extension
-	 * of left aligned data
-	 */
+	 
 	input >>= info->shift;
 	input &= info->mask;
 	if (info->is_signed) {
 		int64_t val = (int64_t)(input << (64 - info->bits_used)) >>
 			      (64 - info->bits_used);
-		/* special case for timestamp */
+		 
 		if (info->scale == 1.0f && info->offset == 0.0f)
 			printf("%" PRId64 " ", val);
 		else
@@ -172,14 +134,7 @@ static void print8byte(uint64_t input, struct iio_channel_info *info)
 	}
 }
 
-/**
- * process_scan() - print out the values in SI units
- * @data:		pointer to the start of the scan
- * @channels:		information about the channels.
- *			Note: size_from_channelarray must have been called first
- *			      to fill the location offsets.
- * @num_channels:	number of channels
- **/
+ 
 static void process_scan(char *data, struct iio_channel_info *channels,
 			 int num_channels)
 {
@@ -187,7 +142,7 @@ static void process_scan(char *data, struct iio_channel_info *channels,
 
 	for (k = 0; k < num_channels; k++)
 		switch (channels[k].bytes) {
-			/* only a few cases implemented so far */
+			 
 		case 1:
 			print1byte(*(uint8_t *)(data + channels[k].location),
 				   &channels[k]);
@@ -280,9 +235,9 @@ static void cleanup(void)
 {
 	int ret;
 
-	/* Disable trigger */
+	 
 	if (dev_dir_name && current_trigger_set) {
-		/* Disconnect the trigger - just write a dummy name. */
+		 
 		ret = write_sysfs_string("trigger/current_trigger",
 					 dev_dir_name, "NULL");
 		if (ret < 0)
@@ -291,7 +246,7 @@ static void cleanup(void)
 		current_trigger_set = false;
 	}
 
-	/* Disable buffer */
+	 
 	if (buf_dir_name) {
 		ret = write_sysfs_int("enable", buf_dir_name, 0);
 		if (ret < 0)
@@ -299,7 +254,7 @@ static void cleanup(void)
 				strerror(-ret));
 	}
 
-	/* Disable channels if auto-enabled */
+	 
 	if (dev_dir_name && autochannels == AUTOCHANNELS_ACTIVE) {
 		ret = enable_disable_all_channels(dev_dir_name, buffer_idx, 0);
 		if (ret)
@@ -451,7 +406,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Find the device requested */
+	 
 	if (dev_num < 0 && !device_name) {
 		fprintf(stderr, "Device not set\n");
 		print_usage();
@@ -475,7 +430,7 @@ int main(int argc, char **argv)
 	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
 	if (ret < 0)
 		return -ENOMEM;
-	/* Fetch device_name if specified by number */
+	 
 	if (!device_name) {
 		device_name = malloc(IIO_MAX_NAME_LENGTH);
 		if (!device_name) {
@@ -507,11 +462,7 @@ int main(int argc, char **argv)
 		printf("iio trigger number being used is %d\n", trig_num);
 	} else {
 		if (!trigger_name) {
-			/*
-			 * Build the trigger name. If it is device associated
-			 * its name is <device_name>_dev[n] where n matches
-			 * the device number found above.
-			 */
+			 
 			ret = asprintf(&trigger_name,
 				       "%s-dev%d", device_name, dev_num);
 			if (ret < 0) {
@@ -520,10 +471,10 @@ int main(int argc, char **argv)
 			}
 		}
 
-		/* Look for this "-devN" trigger */
+		 
 		trig_num = find_type_by_name(trigger_name, "trigger");
 		if (trig_num < 0) {
-			/* OK try the simpler "-trigger" suffix instead */
+			 
 			free(trigger_name);
 			ret = asprintf(&trigger_name,
 				       "%s-trigger", device_name);
@@ -544,10 +495,7 @@ int main(int argc, char **argv)
 		printf("iio trigger number being used is %d\n", trig_num);
 	}
 
-	/*
-	 * Parse the files in scan_elements to identify what channels are
-	 * present
-	 */
+	 
 	ret = build_channel_array(dev_dir_name, buffer_idx, &channels, &num_channels);
 	if (ret) {
 		fprintf(stderr, "Problem reading scan element information\n"
@@ -571,7 +519,7 @@ int main(int argc, char **argv)
 			goto error;
 		}
 
-		/* This flags that we need to disable the channels again */
+		 
 		autochannels = AUTOCHANNELS_ACTIVE;
 
 		ret = build_channel_array(dev_dir_name, buffer_idx, &channels,
@@ -600,11 +548,7 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/*
-	 * Construct the directory name for the associated buffer.
-	 * As we know that the lis3l02dq has only one buffer this may
-	 * be built rather than found.
-	 */
+	 
 	ret = asprintf(&buf_dir_name,
 		       "%siio:device%d/buffer%d", iio_dir, dev_num, buffer_idx);
 	if (ret < 0) {
@@ -627,10 +571,7 @@ int main(int argc, char **argv)
 
 	if (!notrigger) {
 		printf("%s %s\n", dev_dir_name, trigger_name);
-		/*
-		 * Set the device trigger to be the data ready trigger found
-		 * above
-		 */
+		 
 		ret = write_sysfs_string_and_verify("trigger/current_trigger",
 						    dev_dir_name,
 						    trigger_name);
@@ -647,15 +588,15 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/* Attempt to open non blocking the access dev */
+	 
 	fd = open(buffer_access, O_RDONLY | O_NONBLOCK);
-	if (fd == -1) { /* TODO: If it isn't there make the node */
+	if (fd == -1) {  
 		ret = -errno;
 		fprintf(stderr, "Failed to open %s\n", buffer_access);
 		goto error;
 	}
 
-	/* specify for which buffer index we want an FD */
+	 
 	buf_fd = buffer_idx;
 
 	ret = ioctl(fd, IIO_BUFFER_GET_FD_IOCTL, &buf_fd);
@@ -670,12 +611,12 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/* Setup ring buffer parameters */
+	 
 	ret = write_sysfs_int("length", buf_dir_name, buf_len);
 	if (ret < 0)
 		goto error;
 
-	/* Enable the buffer */
+	 
 	ret = write_sysfs_int("enable", buf_dir_name, 1);
 	if (ret < 0) {
 		fprintf(stderr,
@@ -700,11 +641,7 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/**
-	 * This check is being done here for sanity reasons, however it
-	 * should be omitted under normal operation.
-	 * If this is buffer0, we check that we get EBUSY after this point.
-	 */
+	 
 	if (buffer_idx == 0) {
 		errno = 0;
 		read_size = read(fd, data, 1);
@@ -715,7 +652,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* close now the main chardev FD and let the buffer FD work */
+	 
 	if (close(fd) == -1)
 		perror("Failed to close character device file");
 	fd = -1;

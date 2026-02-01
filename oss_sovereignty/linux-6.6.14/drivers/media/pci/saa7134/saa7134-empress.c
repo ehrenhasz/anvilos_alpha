@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * (c) 2004 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -16,7 +13,7 @@
 #include <media/v4l2-common.h>
 #include <media/v4l2-event.h>
 
-/* ------------------------------------------------------------------ */
+ 
 
 MODULE_AUTHOR("Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]");
 MODULE_LICENSE("GPL");
@@ -26,7 +23,7 @@ static unsigned int empress_nr[] = {[0 ... (SAA7134_MAXBOARDS - 1)] = UNSET };
 module_param_array(empress_nr, int, NULL, 0444);
 MODULE_PARM_DESC(empress_nr,"ts device number");
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int start_streaming(struct vb2_queue *vq, unsigned int count)
 {
@@ -39,8 +36,7 @@ static int start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (err)
 		return err;
 
-	/* If more cards start to need this, then this
-	   should probably be added to the card definitions. */
+	 
 	switch (dev->board) {
 	case SAA7134_BOARD_BEHOLD_M6:
 	case SAA7134_BOARD_BEHOLD_M63:
@@ -49,7 +45,7 @@ static int start_streaming(struct vb2_queue *vq, unsigned int count)
 		break;
 	}
 	saa_call_all(dev, core, init, leading_null_bytes);
-	/* Unmute audio */
+	 
 	saa_writeb(SAA7134_AUDIO_MUTE_CTRL,
 			saa_readb(SAA7134_AUDIO_MUTE_CTRL) & ~(1 << 6));
 	dev->empress_started = 1;
@@ -66,7 +62,7 @@ static void stop_streaming(struct vb2_queue *vq)
 	msleep(20);
 	saa_writeb(SAA7134_SPECIAL_MODE, 0x01);
 	msleep(100);
-	/* Mute audio */
+	 
 	saa_writeb(SAA7134_AUDIO_MUTE_CTRL,
 			saa_readb(SAA7134_AUDIO_MUTE_CTRL) | (1 << 6));
 	dev->empress_started = 0;
@@ -83,7 +79,7 @@ static const struct vb2_ops saa7134_empress_qops = {
 	.stop_streaming = stop_streaming,
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int empress_enum_fmt_vid_cap(struct file *file, void  *priv,
 					struct v4l2_fmtdesc *f)
@@ -195,7 +191,7 @@ static const struct v4l2_ioctl_ops ts_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* ----------------------------------------------------------- */
+ 
 
 static const struct video_device saa7134_empress_template = {
 	.name          = "saa7134-empress",
@@ -270,11 +266,7 @@ static int empress_init(struct saa7134_dev *dev)
 
 	q = &dev->empress_vbq;
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	/*
-	 * Do not add VB2_USERPTR: the saa7134 DMA engine cannot handle
-	 * transfers that do not start at the beginning of a page. A USERPTR
-	 * can start anywhere in a page, so USERPTR support is a no-go.
-	 */
+	 
 	q->io_modes = VB2_MMAP | VB2_DMABUF | VB2_READ;
 	q->drv_priv = &dev->ts_q;
 	q->ops = &saa7134_empress_qops;

@@ -1,24 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Freescale QuadSPI driver.
- *
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- * Copyright (C) 2018 Bootlin
- * Copyright (C) 2018 exceet electronics GmbH
- * Copyright (C) 2018 Kontron Electronics GmbH
- *
- * Transition to SPI MEM interface:
- * Authors:
- *     Boris Brezillon <bbrezillon@kernel.org>
- *     Frieder Schrempf <frieder.schrempf@kontron.de>
- *     Yogesh Gaur <yogeshnarayan.gaur@nxp.com>
- *     Suresh Gupta <suresh.gupta@nxp.com>
- *
- * Based on the original fsl-quadspi.c SPI NOR driver:
- * Author: Freescale Semiconductor, Inc.
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -41,14 +23,10 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi-mem.h>
 
-/*
- * The driver only uses one single LUT entry, that is updated on
- * each call of exec_op(). Index 0 is preset at boot with a basic
- * read operation, so let's use the last entry (15).
- */
+ 
 #define	SEQID_LUT			15
 
-/* Registers used by the driver */
+ 
 #define QUADSPI_MCR			0x00
 #define QUADSPI_MCR_RESERVED_MASK	GENMASK(19, 16)
 #define QUADSPI_MCR_MDIS_MASK		BIT(14)
@@ -129,7 +107,7 @@
 #define QUADSPI_LUT_REG(idx) \
 	(QUADSPI_LUT_BASE + QUADSPI_LUT_OFFSET + (idx) * 4)
 
-/* Instruction set for the LUT register */
+ 
 #define LUT_STOP		0
 #define LUT_CMD			1
 #define LUT_ADDR		2
@@ -148,52 +126,29 @@
 #define LUT_FSL_WRITE_DDR	15
 #define LUT_DATA_LEARN		16
 
-/*
- * The PAD definitions for LUT register.
- *
- * The pad stands for the number of IO lines [0:3].
- * For example, the quad read needs four IO lines,
- * so you should use LUT_PAD(4).
- */
+ 
 #define LUT_PAD(x) (fls(x) - 1)
 
-/*
- * Macro for constructing the LUT entries with the following
- * register layout:
- *
- *  ---------------------------------------------------
- *  | INSTR1 | PAD1 | OPRND1 | INSTR0 | PAD0 | OPRND0 |
- *  ---------------------------------------------------
- */
+ 
 #define LUT_DEF(idx, ins, pad, opr)					\
 	((((ins) << 10) | ((pad) << 8) | (opr)) << (((idx) % 2) * 16))
 
-/* Controller needs driver to swap endianness */
+ 
 #define QUADSPI_QUIRK_SWAP_ENDIAN	BIT(0)
 
-/* Controller needs 4x internal clock */
+ 
 #define QUADSPI_QUIRK_4X_INT_CLK	BIT(1)
 
-/*
- * TKT253890, the controller needs the driver to fill the txfifo with
- * 16 bytes at least to trigger a data transfer, even though the extra
- * data won't be transferred.
- */
+ 
 #define QUADSPI_QUIRK_TKT253890		BIT(2)
 
-/* TKT245618, the controller cannot wake up from wait mode */
+ 
 #define QUADSPI_QUIRK_TKT245618		BIT(3)
 
-/*
- * Controller adds QSPI_AMBA_BASE (base address of the mapped memory)
- * internally. No need to add it when setting SFXXAD and SFAR registers
- */
+ 
 #define QUADSPI_QUIRK_BASE_INTERNAL	BIT(4)
 
-/*
- * Controller uses TDH bits in register QUADSPI_FLSHCR.
- * They need to be set in accordance with the DDR/SDR mode.
- */
+ 
 #define QUADSPI_QUIRK_USE_TDH_SETTING	BIT(5)
 
 struct fsl_qspi_devtype_data {
@@ -304,22 +259,13 @@ static inline int needs_tdh_setting(struct fsl_qspi *q)
 	return q->devtype_data->quirks & QUADSPI_QUIRK_USE_TDH_SETTING;
 }
 
-/*
- * An IC bug makes it necessary to rearrange the 32-bit data.
- * Later chips, such as IMX6SLX, have fixed this bug.
- */
+ 
 static inline u32 fsl_qspi_endian_xchg(struct fsl_qspi *q, u32 a)
 {
 	return needs_swap_endian(q) ? __swab32(a) : a;
 }
 
-/*
- * R/W functions for big- or little-endian registers:
- * The QSPI controller's endianness is independent of
- * the CPU core's endianness. So far, although the CPU
- * core is little-endian the QSPI controller can use
- * big-endian or little-endian.
- */
+ 
 static void qspi_writel(struct fsl_qspi *q, u32 val, void __iomem *addr)
 {
 	if (q->devtype_data->little_endian)
@@ -341,7 +287,7 @@ static irqreturn_t fsl_qspi_irq_handler(int irq, void *dev_id)
 	struct fsl_qspi *q = dev_id;
 	u32 reg;
 
-	/* clear interrupt */
+	 
 	reg = qspi_readl(q, q->iobase + QUADSPI_FR);
 	qspi_writel(q, reg, q->iobase + QUADSPI_FR);
 
@@ -384,21 +330,18 @@ static bool fsl_qspi_supports_op(struct spi_mem *mem,
 	if (ret)
 		return false;
 
-	/*
-	 * The number of instructions needed for the op, needs
-	 * to fit into a single LUT entry.
-	 */
+	 
 	if (op->addr.nbytes +
 	   (op->dummy.nbytes ? 1:0) +
 	   (op->data.nbytes ? 1:0) > 6)
 		return false;
 
-	/* Max 64 dummy clock cycles supported */
+	 
 	if (op->dummy.nbytes &&
 	    (op->dummy.nbytes * 8 / op->dummy.buswidth > 64))
 		return false;
 
-	/* Max data length, check controller limits and alignment */
+	 
 	if (op->data.dir == SPI_MEM_DATA_IN &&
 	    (op->data.nbytes > q->devtype_data->ahb_buf_size ||
 	     (op->data.nbytes > q->devtype_data->rxfifo - 4 &&
@@ -422,11 +365,7 @@ static void fsl_qspi_prepare_lut(struct fsl_qspi *q,
 	lutval[0] |= LUT_DEF(0, LUT_CMD, LUT_PAD(op->cmd.buswidth),
 			     op->cmd.opcode);
 
-	/*
-	 * For some unknown reason, using LUT_ADDR doesn't work in some
-	 * cases (at least with only one byte long addresses), so
-	 * let's use LUT_MODE to write the address bytes one by one
-	 */
+	 
 	for (i = 0; i < op->addr.nbytes; i++) {
 		u8 addrbyte = op->addr.val >> (8 * (op->addr.nbytes - i - 1));
 
@@ -455,15 +394,15 @@ static void fsl_qspi_prepare_lut(struct fsl_qspi *q,
 
 	lutval[lutidx / 2] |= LUT_DEF(lutidx, LUT_STOP, 0, 0);
 
-	/* unlock LUT */
+	 
 	qspi_writel(q, QUADSPI_LUTKEY_VALUE, q->iobase + QUADSPI_LUTKEY);
 	qspi_writel(q, QUADSPI_LCKER_UNLOCK, q->iobase + QUADSPI_LCKCR);
 
-	/* fill LUT */
+	 
 	for (i = 0; i < ARRAY_SIZE(lutval); i++)
 		qspi_writel(q, lutval[i], base + QUADSPI_LUT_REG(i));
 
-	/* lock LUT */
+	 
 	qspi_writel(q, QUADSPI_LUTKEY_VALUE, q->iobase + QUADSPI_LUTKEY);
 	qspi_writel(q, QUADSPI_LCKER_LOCK, q->iobase + QUADSPI_LCKCR);
 }
@@ -497,13 +436,7 @@ static void fsl_qspi_clk_disable_unprep(struct fsl_qspi *q)
 	clk_disable_unprepare(q->clk_en);
 }
 
-/*
- * If we have changed the content of the flash by writing or erasing, or if we
- * read from flash with a different offset into the page buffer, we need to
- * invalidate the AHB buffer. If we do not do so, we may read out the wrong
- * data. The spec tells us reset the AHB domain and Serial Flash domain at
- * the same time.
- */
+ 
 static void fsl_qspi_invalidate(struct fsl_qspi *q)
 {
 	u32 reg;
@@ -512,10 +445,7 @@ static void fsl_qspi_invalidate(struct fsl_qspi *q)
 	reg |= QUADSPI_MCR_SWRSTHD_MASK | QUADSPI_MCR_SWRSTSD_MASK;
 	qspi_writel(q, reg, q->iobase + QUADSPI_MCR);
 
-	/*
-	 * The minimum delay : 1 AHB + 2 SFCK clocks.
-	 * Delay 1 us is enough.
-	 */
+	 
 	udelay(1);
 
 	reg &= ~(QUADSPI_MCR_SWRSTHD_MASK | QUADSPI_MCR_SWRSTSD_MASK);
@@ -608,15 +538,11 @@ static int fsl_qspi_do_op(struct fsl_qspi *q, const struct spi_mem_op *op)
 
 	init_completion(&q->c);
 
-	/*
-	 * Always start the sequence at the same index since we update
-	 * the LUT at each exec_op() call. And also specify the DATA
-	 * length, since it's has not been specified in the LUT.
-	 */
+	 
 	qspi_writel(q, op->data.nbytes | QUADSPI_IPCR_SEQID(SEQID_LUT),
 		    base + QUADSPI_IPCR);
 
-	/* Wait for the interrupt. */
+	 
 	if (!wait_for_completion_timeout(&q->c, msecs_to_jiffies(1000)))
 		err = -ETIMEDOUT;
 
@@ -648,7 +574,7 @@ static int fsl_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 
 	mutex_lock(&q->lock);
 
-	/* wait for the controller being ready */
+	 
 	fsl_qspi_readl_poll_tout(q, base + QUADSPI_SR, (QUADSPI_SR_IP_ACC_MASK |
 				 QUADSPI_SR_AHB_ACC_MASK), 10, 1000);
 
@@ -674,11 +600,7 @@ static int fsl_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 
 	fsl_qspi_prepare_lut(q, op);
 
-	/*
-	 * If we have large chunks of data, we read them through the AHB bus
-	 * by accessing the mapped memory. In all other cases we use
-	 * IP commands to access the flash.
-	 */
+	 
 	if (op->data.nbytes > (q->devtype_data->rxfifo - 4) &&
 	    op->data.dir == SPI_MEM_DATA_IN) {
 		fsl_qspi_read_ahb(q, op);
@@ -692,7 +614,7 @@ static int fsl_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 		err = fsl_qspi_do_op(q, op);
 	}
 
-	/* Invalidate the data in the AHB buffer. */
+	 
 	fsl_qspi_invalidate(q);
 
 	mutex_unlock(&q->lock);
@@ -723,10 +645,10 @@ static int fsl_qspi_default_setup(struct fsl_qspi *q)
 	u32 reg, addr_offset = 0;
 	int ret;
 
-	/* disable and unprepare clock to avoid glitch pass to controller */
+	 
 	fsl_qspi_clk_disable_unprep(q);
 
-	/* the default frequency, we will change it later if necessary. */
+	 
 	ret = clk_set_rate(q->clk, 66000000);
 	if (ret)
 		return ret;
@@ -735,20 +657,16 @@ static int fsl_qspi_default_setup(struct fsl_qspi *q)
 	if (ret)
 		return ret;
 
-	/* Reset the module */
+	 
 	qspi_writel(q, QUADSPI_MCR_SWRSTSD_MASK | QUADSPI_MCR_SWRSTHD_MASK,
 		    base + QUADSPI_MCR);
 	udelay(1);
 
-	/* Disable the module */
+	 
 	qspi_writel(q, QUADSPI_MCR_MDIS_MASK | QUADSPI_MCR_RESERVED_MASK,
 		    base + QUADSPI_MCR);
 
-	/*
-	 * Previous boot stages (BootROM, bootloader) might have used DDR
-	 * mode and did not clear the TDH bits. As we currently use SDR mode
-	 * only, clear the TDH bits if necessary.
-	 */
+	 
 	if (needs_tdh_setting(q))
 		qspi_writel(q, qspi_readl(q, base + QUADSPI_FLSHCR) &
 			    ~QUADSPI_FLSHCR_TDH_MASK,
@@ -760,7 +678,7 @@ static int fsl_qspi_default_setup(struct fsl_qspi *q)
 			| QUADSPI_SMPR_HSENA_MASK
 			| QUADSPI_SMPR_DDRSMP_MASK), base + QUADSPI_SMPR);
 
-	/* We only use the buffer3 for AHB read */
+	 
 	qspi_writel(q, 0, base + QUADSPI_BUF0IND);
 	qspi_writel(q, 0, base + QUADSPI_BUF1IND);
 	qspi_writel(q, 0, base + QUADSPI_BUF2IND);
@@ -775,13 +693,7 @@ static int fsl_qspi_default_setup(struct fsl_qspi *q)
 	if (needs_amba_base_offset(q))
 		addr_offset = q->memmap_phy;
 
-	/*
-	 * In HW there can be a maximum of four chips on two buses with
-	 * two chip selects on each bus. We use four chip selects in SW
-	 * to differentiate between the four chips.
-	 * We use ahb_buf_size for each chip and set SFA1AD, SFA2AD, SFB1AD,
-	 * SFB2AD accordingly.
-	 */
+	 
 	qspi_writel(q, q->devtype_data->ahb_buf_size + addr_offset,
 		    base + QUADSPI_SFA1AD);
 	qspi_writel(q, q->devtype_data->ahb_buf_size * 2 + addr_offset,
@@ -793,14 +705,14 @@ static int fsl_qspi_default_setup(struct fsl_qspi *q)
 
 	q->selected = -1;
 
-	/* Enable the module */
+	 
 	qspi_writel(q, QUADSPI_MCR_RESERVED_MASK | QUADSPI_MCR_END_CFG_MASK,
 		    base + QUADSPI_MCR);
 
-	/* clear all interrupt status */
+	 
 	qspi_writel(q, 0xffffffff, q->iobase + QUADSPI_FR);
 
-	/* enable the interrupt */
+	 
 	qspi_writel(q, QUADSPI_RSER_TFIE, q->iobase + QUADSPI_RSER);
 
 	return 0;
@@ -812,11 +724,7 @@ static const char *fsl_qspi_get_name(struct spi_mem *mem)
 	struct device *dev = &mem->spi->dev;
 	const char *name;
 
-	/*
-	 * In order to keep mtdparts compatible with the old MTD driver at
-	 * mtd/spi-nor/fsl-quadspi.c, we set a custom name derived from the
-	 * platform_device of the controller.
-	 */
+	 
 	if (of_get_available_child_count(q->dev->of_node) == 1)
 		return dev_name(q->dev);
 
@@ -865,7 +773,7 @@ static int fsl_qspi_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, q);
 
-	/* find the resources */
+	 
 	q->iobase = devm_platform_ioremap_resource_byname(pdev, "QuadSPI");
 	if (IS_ERR(q->iobase)) {
 		ret = PTR_ERR(q->iobase);
@@ -879,7 +787,7 @@ static int fsl_qspi_probe(struct platform_device *pdev)
 		goto err_put_ctrl;
 	}
 	q->memmap_phy = res->start;
-	/* Since there are 4 cs, map size required is 4 times ahb_buf_size */
+	 
 	q->ahb_addr = devm_ioremap(dev, q->memmap_phy,
 				   (q->devtype_data->ahb_buf_size * 4));
 	if (!q->ahb_addr) {
@@ -887,7 +795,7 @@ static int fsl_qspi_probe(struct platform_device *pdev)
 		goto err_put_ctrl;
 	}
 
-	/* find the clocks */
+	 
 	q->clk_en = devm_clk_get(dev, "qspi_en");
 	if (IS_ERR(q->clk_en)) {
 		ret = PTR_ERR(q->clk_en);
@@ -906,7 +814,7 @@ static int fsl_qspi_probe(struct platform_device *pdev)
 		goto err_put_ctrl;
 	}
 
-	/* find the irq */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto err_disable_clk;
@@ -951,7 +859,7 @@ static void fsl_qspi_remove(struct platform_device *pdev)
 {
 	struct fsl_qspi *q = platform_get_drvdata(pdev);
 
-	/* disable the hardware */
+	 
 	qspi_writel(q, QUADSPI_MCR_MDIS_MASK, q->iobase + QUADSPI_MCR);
 	qspi_writel(q, 0x0, q->iobase + QUADSPI_RSER);
 
@@ -981,7 +889,7 @@ static const struct of_device_id fsl_qspi_dt_ids[] = {
 	{ .compatible = "fsl,imx6ul-qspi", .data = &imx6ul_data, },
 	{ .compatible = "fsl,ls1021a-qspi", .data = &ls1021a_data, },
 	{ .compatible = "fsl,ls2080a-qspi", .data = &ls2080a_data, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_qspi_dt_ids);
 

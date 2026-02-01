@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
- *	      http://www.samsung.com/
- *
- * Samsung Exynos 5422 SoC Adaptive Supply Voltage support
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/errno.h>
@@ -21,20 +16,11 @@
 #define ASV_KFC_DVFS_NUM	14
 #define ASV_KFC_BIN2_DVFS_NUM	12
 
-/*
- * This array is a set of 4 ASV data tables, first column of each ASV table
- * contains frequency value in MHz and subsequent columns contain the CPU
- * cluster's supply voltage values in uV.
- * In order to create a set of OPPs for specific SoC revision one of the voltage
- * columns (1...14) from one of the tables (0...3) is selected during
- * initialization. There are separate ASV tables for the big (ARM) and little
- * (KFC) CPU cluster. Only OPPs which are already defined in devicetree
- * will be updated.
- */
+ 
 
 static const u32 asv_arm_table[][ASV_ARM_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 {
-	/* ARM 0, 1 */
+	 
 	{ 2100,    1362500, 1362500, 1350000, 1337500, 1325000, 1312500, 1300000,
 	  1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000 },
 	{ 2000,    1312500, 1312500, 1300000, 1287500, 1275000, 1262500, 1250000,
@@ -76,7 +62,7 @@ static const u32 asv_arm_table[][ASV_ARM_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200,     900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* ARM 2 */
+	 
 	{ 2100,    1362500, 1362500, 1350000, 1337500, 1325000, 1312500, 1300000,
 	  1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000 },
 	{ 2000,    1312500, 1312500, 1312500, 1300000, 1275000, 1262500, 1250000,
@@ -118,7 +104,7 @@ static const u32 asv_arm_table[][ASV_ARM_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200,     900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* ARM 3 */
+	 
 	{ 2100,    1362500, 1362500, 1350000, 1337500, 1325000, 1312500, 1300000,
 	  1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000 },
 	{ 2000,    1312500, 1312500, 1300000, 1287500, 1275000, 1262500, 1250000,
@@ -160,7 +146,7 @@ static const u32 asv_arm_table[][ASV_ARM_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200,     900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* ARM bin 2 */
+	 
 	{ 1800,    1237500, 1225000, 1212500, 1200000, 1187500, 1175000, 1162500,
 	  1150000, 1137500, 1150000, 1137500, 1125000, 1112500, 1100000 },
 	{ 1700,    1200000, 1187500, 1175000, 1162500, 1150000, 1137500, 1125000,
@@ -200,7 +186,7 @@ static const u32 asv_arm_table[][ASV_ARM_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 
 static const u32 asv_kfc_table[][ASV_KFC_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 {
-	/* KFC 0, 1 */
+	 
 	{ 1500000, 1300000, 1300000, 1300000, 1287500, 1287500, 1287500, 1275000,
 	  1262500, 1250000, 1237500, 1225000, 1212500, 1200000, 1187500 },
 	{ 1400000, 1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000,
@@ -230,7 +216,7 @@ static const u32 asv_kfc_table[][ASV_KFC_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200000,  900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* KFC 2 */
+	 
 	{ 1500,    1300000, 1300000, 1300000, 1287500, 1287500, 1287500, 1275000,
 	  1262500, 1250000, 1237500, 1225000, 1212500, 1200000, 1187500 },
 	{ 1400,    1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000,
@@ -260,7 +246,7 @@ static const u32 asv_kfc_table[][ASV_KFC_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200,     900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* KFC 3 */
+	 
 	{ 1500,    1300000, 1300000, 1300000, 1287500, 1287500, 1287500, 1275000,
 	  1262500, 1250000, 1237500, 1225000, 1212500, 1200000, 1187500 },
 	{ 1400,    1275000, 1262500, 1250000, 1237500, 1225000, 1212500, 1200000,
@@ -290,7 +276,7 @@ static const u32 asv_kfc_table[][ASV_KFC_DVFS_NUM][ASV_GROUPS_NUM + 1] = {
 	{ 200,     900000,  900000,  900000,  900000,  900000,  900000,  900000,
 	  900000,  900000,  900000,  900000,  900000,  900000,  900000 },
 }, {
-	/* KFC bin 2 */
+	 
 	{ 1300,    1250000, 1237500, 1225000, 1212500, 1200000, 1187500, 1175000,
 	  1162500, 1150000, 1137500, 1125000, 1112500, 1100000, 1087500 },
 	{ 1200,    1200000, 1187500, 1175000, 1162500, 1150000, 1137500, 1125000,
@@ -393,7 +379,7 @@ static void exynos5422_asv_offset_voltage_setup(struct exynos_asv *asv)
 
 	regmap_read(asv->chipid_regmap, EXYNOS_CHIPID_REG_AUX_INFO, &reg);
 
-	/* ARM offset voltage setup */
+	 
 	subsys = &asv->subsys[EXYNOS_ASV_SUBSYS_ID_ARM];
 
 	subsys->base_volt = 1000000;
@@ -404,7 +390,7 @@ static void exynos5422_asv_offset_voltage_setup(struct exynos_asv *asv)
 	value = (reg >> EXYNOS5422_ARM_DN_OFFSET) & EXYNOS5422_ARM_DN_MASK;
 	subsys->offset_volt_l = __asv_offset_voltage(value);
 
-	/* KFC offset voltage setup */
+	 
 	subsys = &asv->subsys[EXYNOS_ASV_SUBSYS_ID_KFC];
 
 	subsys->base_volt = 1000000;

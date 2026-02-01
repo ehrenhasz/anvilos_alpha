@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/export.h>
 #include <linux/mm.h>
@@ -38,13 +38,7 @@ pgprot_t vm_get_page_prot(unsigned long vm_flags)
 				      (VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
 
 #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
-	/*
-	 * Take the 4 protection key bits out of the vma->vm_flags value and
-	 * turn them in to the bits that we can put in to a pte.
-	 *
-	 * Only override these if Protection Keys are available (which is only
-	 * on 64-bit).
-	 */
+	 
 	if (vm_flags & VM_PKEY_BIT0)
 		val |= _PAGE_PKEY_BIT0;
 	if (vm_flags & VM_PKEY_BIT1)

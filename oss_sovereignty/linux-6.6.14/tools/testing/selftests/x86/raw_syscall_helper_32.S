@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 .global sys32_helper
 sys32_helper:
-	/* Args: syscall_args_32*, function pointer */
+	 
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	movl	5*4(%esp), %eax	/* pointer to args struct */
+	movl	5*4(%esp), %eax	 
 
 	movl	1*4(%eax), %ebx
 	movl	2*4(%eax), %ecx
@@ -16,9 +16,9 @@ sys32_helper:
 	movl	6*4(%eax), %ebp
 	movl	0*4(%eax), %eax
 
-	call	*(6*4)(%esp)	/* Do the syscall */
+	call	*(6*4)(%esp)	 
 
-	/* Now we need to recover without losing any reg values */
+	 
 	pushl	%eax
 	movl	6*4(%esp), %eax
 	popl	0*4(%eax)

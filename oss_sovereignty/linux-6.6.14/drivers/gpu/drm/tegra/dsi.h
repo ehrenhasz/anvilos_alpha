@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef DRM_TEGRA_DSI_H
 #define DRM_TEGRA_DSI_H
@@ -130,9 +128,7 @@
 #define DSI_INIT_SEQ_DATA_14		0x5e
 #define DSI_INIT_SEQ_DATA_15		0x5f
 
-/*
- * pixel format as used in the DSI_CONTROL_FORMAT field
- */
+ 
 enum tegra_dsi_format {
 	TEGRA_DSI_FORMAT_16P,
 	TEGRA_DSI_FORMAT_18NP,

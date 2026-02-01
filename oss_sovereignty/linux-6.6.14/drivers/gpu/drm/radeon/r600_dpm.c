@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include "radeon.h"
 #include "radeon_asic.h"
@@ -159,7 +137,7 @@ u32 r600_dpm_get_vblank_time(struct radeon_device *rdev)
 	struct drm_crtc *crtc;
 	struct radeon_crtc *radeon_crtc;
 	u32 vblank_in_pixels;
-	u32 vblank_time_us = 0xffffffff; /* if the displays are off, vblank time is max */
+	u32 vblank_time_us = 0xffffffff;  
 
 	if (rdev->num_crtc && rdev->mode_info.mode_config_initialized) {
 		list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
@@ -775,7 +753,7 @@ bool r600_is_internal_thermal_sensor(enum radeon_int_thermal_type sensor)
 		return true;
 	case THERMAL_TYPE_ADT7473_WITH_INTERNAL:
 	case THERMAL_TYPE_EMC2103_WITH_INTERNAL:
-		return false; /* need special handling */
+		return false;  
 	case THERMAL_TYPE_NONE:
 	case THERMAL_TYPE_EXTERNAL:
 	case THERMAL_TYPE_EXTERNAL_GPIO:
@@ -862,7 +840,7 @@ int r600_get_platform_caps(struct radeon_device *rdev)
 	return 0;
 }
 
-/* sizeof(ATOM_PPLIB_EXTENDEDHEADER) */
+ 
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V2 12
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V3 14
 #define SIZE_OF_ATOM_PPLIB_EXTENDEDHEADER_V4 16
@@ -886,7 +864,7 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 		return -EINVAL;
 	power_info = (union power_info *)(mode_info->atom_context->bios + data_offset);
 
-	/* fan table */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE3)) {
 		if (power_info->pplib3.usFanTableOffset) {
@@ -916,7 +894,7 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 		}
 	}
 
-	/* clock dependancy tables, shedding tables */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE4)) {
 		if (power_info->pplib4.usVddcDependencyOnSCLKOffset) {
@@ -1014,7 +992,7 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 		}
 	}
 
-	/* cac data */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE5)) {
 		rdev->pm.dpm.tdp_limit = le32_to_cpu(power_info->pplib5.ulTDPLimit);
@@ -1063,7 +1041,7 @@ int r600_parse_extended_power_table(struct radeon_device *rdev)
 		}
 	}
 
-	/* ext tables */
+	 
 	if (le16_to_cpu(power_info->pplib.usTableSize) >=
 	    sizeof(struct _ATOM_PPLIB_POWERPLAYTABLE3)) {
 		ATOM_PPLIB_EXTENDEDHEADER *ext_hdr = (ATOM_PPLIB_EXTENDEDHEADER *)

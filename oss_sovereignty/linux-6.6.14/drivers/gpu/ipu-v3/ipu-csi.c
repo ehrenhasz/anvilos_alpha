@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2014 Mentor Graphics Inc.
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,13 +20,13 @@ struct ipu_csi {
 	void __iomem *base;
 	int id;
 	u32 module;
-	struct clk *clk_ipu;	/* IPU bus clock */
+	struct clk *clk_ipu;	 
 	spinlock_t lock;
 	bool inuse;
 	struct ipu_soc *ipu;
 };
 
-/* CSI Register Offsets */
+ 
 #define CSI_SENS_CONF		0x0000
 #define CSI_SENS_FRM_SIZE	0x0004
 #define CSI_ACT_FRM_SIZE	0x0008
@@ -52,7 +49,7 @@ struct ipu_csi {
 #define CSI_CPD_OFFSET1		0x00ec
 #define CSI_CPD_OFFSET2		0x00f0
 
-/* CSI Register Fields */
+ 
 #define CSI_SENS_CONF_DATA_FMT_SHIFT		8
 #define CSI_SENS_CONF_DATA_FMT_MASK		0x00000700
 #define CSI_SENS_CONF_DATA_FMT_RGB_YUV444	0L
@@ -113,10 +110,10 @@ struct ipu_csi {
 #define CSI_COLOR_FIRST_ROW_MASK		0x00000002
 #define CSI_COLOR_FIRST_COMP_MASK		0x00000001
 
-/* MIPI CSI-2 data types */
-#define MIPI_DT_YUV420		0x18 /* YYY.../UYVY.... */
-#define MIPI_DT_YUV420_LEGACY	0x1a /* UYY.../VYY...   */
-#define MIPI_DT_YUV422		0x1e /* UYVY...         */
+ 
+#define MIPI_DT_YUV420		0x18  
+#define MIPI_DT_YUV420_LEGACY	0x1a  
+#define MIPI_DT_YUV422		0x1e  
 #define MIPI_DT_RGB444		0x20
 #define MIPI_DT_RGB555		0x21
 #define MIPI_DT_RGB565		0x22
@@ -129,9 +126,7 @@ struct ipu_csi {
 #define MIPI_DT_RAW12		0x2c
 #define MIPI_DT_RAW14		0x2d
 
-/*
- * Bitfield of CSI bus signal polarities and modes.
- */
+ 
 struct ipu_csi_bus_config {
 	unsigned data_width:4;
 	unsigned clk_mode:3;
@@ -149,9 +144,7 @@ struct ipu_csi_bus_config {
 	unsigned mipi_dt;
 };
 
-/*
- * Enumeration of CSI data bus widths.
- */
+ 
 enum ipu_csi_data_width {
 	IPU_CSI_DATA_WIDTH_4   = 0,
 	IPU_CSI_DATA_WIDTH_8   = 1,
@@ -160,9 +153,7 @@ enum ipu_csi_data_width {
 	IPU_CSI_DATA_WIDTH_16  = 9,
 };
 
-/*
- * Enumeration of CSI clock modes.
- */
+ 
 enum ipu_csi_clk_mode {
 	IPU_CSI_CLK_MODE_GATED_CLK,
 	IPU_CSI_CLK_MODE_NONGATED_CLK,
@@ -185,10 +176,7 @@ static inline void ipu_csi_write(struct ipu_csi *csi, u32 value,
 	writel(value, csi->base + offset);
 }
 
-/*
- * Set mclk division ratio for generating test mode mclk. Only used
- * for test generator.
- */
+ 
 static int ipu_csi_set_testgen_mclk(struct ipu_csi *csi, u32 pixel_clk,
 					u32 ipu_clk)
 {
@@ -211,10 +199,7 @@ static int ipu_csi_set_testgen_mclk(struct ipu_csi *csi, u32 pixel_clk,
 	return 0;
 }
 
-/*
- * Find the CSI data format and data width for the given V4L2 media
- * bus pixel format code.
- */
+ 
 static int mbus_code_to_bus_cfg(struct ipu_csi_bus_config *cfg, u32 mbus_code,
 				enum v4l2_mbus_type mbus_type)
 {
@@ -318,7 +303,7 @@ static int mbus_code_to_bus_cfg(struct ipu_csi_bus_config *cfg, u32 mbus_code,
 		cfg->data_width = IPU_CSI_DATA_WIDTH_12;
 		break;
 	case MEDIA_BUS_FMT_JPEG_1X8:
-		/* TODO */
+		 
 		cfg->data_fmt = CSI_SENS_CONF_DATA_FMT_JPEG;
 		cfg->mipi_dt = MIPI_DT_RAW8;
 		cfg->data_width = IPU_CSI_DATA_WIDTH_8;
@@ -330,7 +315,7 @@ static int mbus_code_to_bus_cfg(struct ipu_csi_bus_config *cfg, u32 mbus_code,
 	return 0;
 }
 
-/* translate alternate field mode based on given standard */
+ 
 static inline enum v4l2_field
 ipu_csi_translate_field(enum v4l2_field field, v4l2_std_id std)
 {
@@ -339,9 +324,7 @@ ipu_csi_translate_field(enum v4l2_field field, v4l2_std_id std)
 		 V4L2_FIELD_SEQ_BT : V4L2_FIELD_SEQ_TB);
 }
 
-/*
- * Fill a CSI bus config struct from mbus_config and mbus_framefmt.
- */
+ 
 static int fill_csi_bus_cfg(struct ipu_csi_bus_config *csicfg,
 			    const struct v4l2_mbus_config *mbus_cfg,
 			    const struct v4l2_mbus_framefmt *mbus_fmt)
@@ -367,7 +350,7 @@ static int fill_csi_bus_cfg(struct ipu_csi_bus_config *csicfg,
 		break;
 	case V4L2_MBUS_BT656:
 		csicfg->ext_vsync = 0;
-		/* UYVY10_1X20 etc. should be supported as well */
+		 
 		is_bt1120 = mbus_fmt->code == MEDIA_BUS_FMT_UYVY8_1X16 ||
 			    mbus_fmt->code == MEDIA_BUS_FMT_YUYV8_1X16;
 		if (V4L2_FIELD_HAS_BOTH(mbus_fmt->field) ||
@@ -381,14 +364,11 @@ static int fill_csi_bus_cfg(struct ipu_csi_bus_config *csicfg,
 				IPU_CSI_CLK_MODE_CCIR656_PROGRESSIVE;
 		break;
 	case V4L2_MBUS_CSI2_DPHY:
-		/*
-		 * MIPI CSI-2 requires non gated clock mode, all other
-		 * parameters are not applicable for MIPI CSI-2 bus.
-		 */
+		 
 		csicfg->clk_mode = IPU_CSI_CLK_MODE_NONGATED_CLK;
 		break;
 	default:
-		/* will never get here, keep compiler quiet */
+		 
 		break;
 	}
 
@@ -404,36 +384,24 @@ ipu_csi_set_bt_interlaced_codes(struct ipu_csi *csi,
 	enum v4l2_field infield, outfield;
 	bool swap_fields;
 
-	/* get translated field type of input and output */
+	 
 	infield = ipu_csi_translate_field(infmt->field, std);
 	outfield = ipu_csi_translate_field(outfmt->field, std);
 
-	/*
-	 * Write the H-V-F codes the CSI will match against the
-	 * incoming data for start/end of active and blanking
-	 * field intervals. If input and output field types are
-	 * sequential but not the same (one is SEQ_BT and the other
-	 * is SEQ_TB), swap the F-bit so that the CSI will capture
-	 * field 1 lines before field 0 lines.
-	 */
+	 
 	swap_fields = (V4L2_FIELD_IS_SEQUENTIAL(infield) &&
 		       V4L2_FIELD_IS_SEQUENTIAL(outfield) &&
 		       infield != outfield);
 
 	if (!swap_fields) {
-		/*
-		 * Field0BlankEnd  = 110, Field0BlankStart  = 010
-		 * Field0ActiveEnd = 100, Field0ActiveStart = 000
-		 * Field1BlankEnd  = 111, Field1BlankStart  = 011
-		 * Field1ActiveEnd = 101, Field1ActiveStart = 001
-		 */
+		 
 		ipu_csi_write(csi, 0x40596 | CSI_CCIR_ERR_DET_EN,
 			      CSI_CCIR_CODE_1);
 		ipu_csi_write(csi, 0xD07DF, CSI_CCIR_CODE_2);
 	} else {
 		dev_dbg(csi->ipu->dev, "capture field swap\n");
 
-		/* same as above but with F-bit inverted */
+		 
 		ipu_csi_write(csi, 0xD07DF | CSI_CCIR_ERR_DET_EN,
 			      CSI_CCIR_CODE_1);
 		ipu_csi_write(csi, 0x40596, CSI_CCIR_CODE_2);
@@ -460,13 +428,13 @@ int ipu_csi_init_interface(struct ipu_csi *csi,
 	if (ret < 0)
 		return ret;
 
-	/* set default sensor frame width and height */
+	 
 	width = infmt->width;
 	height = infmt->height;
 	if (infmt->field == V4L2_FIELD_ALTERNATE)
 		height *= 2;
 
-	/* Set the CSI_SENS_CONF register remaining fields */
+	 
 	data |= cfg.data_width << CSI_SENS_CONF_DATA_WIDTH_SHIFT |
 		cfg.data_fmt << CSI_SENS_CONF_DATA_FMT_SHIFT |
 		cfg.data_pol << CSI_SENS_CONF_DATA_POL_SHIFT |
@@ -483,7 +451,7 @@ int ipu_csi_init_interface(struct ipu_csi *csi,
 
 	ipu_csi_write(csi, data, CSI_SENS_CONF);
 
-	/* Set CCIR registers */
+	 
 
 	switch (cfg.clk_mode) {
 	case IPU_CSI_CLK_MODE_CCIR656_PROGRESSIVE:
@@ -522,7 +490,7 @@ int ipu_csi_init_interface(struct ipu_csi *csi,
 		break;
 	}
 
-	/* Setup sensor frame size */
+	 
 	ipu_csi_write(csi, (width - 1) | ((height - 1) << 16),
 		      CSI_SENS_FRM_SIZE);
 
@@ -640,7 +608,7 @@ void ipu_csi_set_test_generator(struct ipu_csi *csi, bool active,
 		temp &= ~CSI_TEST_GEN_MODE_EN;
 		ipu_csi_write(csi, temp, CSI_TST_CTRL);
 	} else {
-		/* Set sensb_mclk div_ratio */
+		 
 		ipu_csi_set_testgen_mclk(csi, pix_clk, ipu_clk);
 
 		temp &= ~(CSI_TEST_GEN_R_MASK | CSI_TEST_GEN_G_MASK |
@@ -717,7 +685,7 @@ int ipu_csi_set_dest(struct ipu_csi *csi, enum ipu_csi_dest csi_dest)
 	if (csi_dest == IPU_CSI_DEST_IDMAC)
 		dest = CSI_DATA_DEST_IDMAC;
 	else
-		dest = CSI_DATA_DEST_IC; /* IC or VDIC */
+		dest = CSI_DATA_DEST_IC;  
 
 	spin_lock_irqsave(&csi->lock, flags);
 

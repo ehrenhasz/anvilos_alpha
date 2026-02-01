@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- *    Zheng Yang <zhengyang@rock-chips.com>
- */
+
+ 
 
 #include <drm/drm_edid.h>
 #include <drm/drm_of.h>
@@ -22,7 +19,7 @@
 #define DEFAULT_PLLA_RATE 30000000
 
 struct hdmi_data_info {
-	int vic; /* The CEA Video ID (VIC) of the current drm display mode. */
+	int vic;  
 	unsigned int enc_out_format;
 	unsigned int colorimetry;
 };
@@ -34,7 +31,7 @@ struct rk3066_hdmi_i2c {
 	u8 segment_addr;
 	u8 stat;
 
-	struct mutex i2c_lock; /* For i2c operation. */
+	struct mutex i2c_lock;  
 	struct completion cmpltn;
 };
 
@@ -98,7 +95,7 @@ static void rk3066_hdmi_i2c_init(struct rk3066_hdmi *hdmi)
 	hdmi_writeb(hdmi, HDMI_DDC_BUS_FREQ_L, ddc_bus_freq & 0xFF);
 	hdmi_writeb(hdmi, HDMI_DDC_BUS_FREQ_H, (ddc_bus_freq >> 8) & 0xFF);
 
-	/* Clear the EDID interrupt flag and mute the interrupt. */
+	 
 	hdmi_modb(hdmi, HDMI_INTR_MASK1, HDMI_INTR_EDID_MASK, 0);
 	hdmi_writeb(hdmi, HDMI_INTR_STATUS1, HDMI_INTR_EDID_MASK);
 }
@@ -152,12 +149,7 @@ static void rk3066_hdmi_set_power_mode(struct rk3066_hdmi *hdmi, int mode)
 		i = i + 1;
 	} while ((next_mode != mode) && (i < 5));
 
-	/*
-	 * When the IP controller isn't configured with accurate video timing,
-	 * DDC_CLK should be equal to the PLLA frequency, which is 30MHz,
-	 * so we need to init the TMDS rate to the PCLK rate and reconfigure
-	 * the DDC clock.
-	 */
+	 
 	if (mode < HDMI_SYS_POWER_MODE_D)
 		hdmi->tmdsclk = DEFAULT_PLLA_RATE;
 }
@@ -220,7 +212,7 @@ static int rk3066_hdmi_config_video_timing(struct rk3066_hdmi *hdmi,
 {
 	int value, vsync_offset;
 
-	/* Set the details for the external polarity and interlace mode. */
+	 
 	value = HDMI_EXT_VIDEO_SET_EN;
 	value |= mode->flags & DRM_MODE_FLAG_PHSYNC ?
 		 HDMI_VIDEO_HSYNC_ACTIVE_HIGH : HDMI_VIDEO_HSYNC_ACTIVE_LOW;
@@ -237,7 +229,7 @@ static int rk3066_hdmi_config_video_timing(struct rk3066_hdmi *hdmi,
 	value |= vsync_offset << HDMI_VIDEO_VSYNC_OFFSET_SHIFT;
 	hdmi_writeb(hdmi, HDMI_EXT_VIDEO_PARA, value);
 
-	/* Set the details for the external video timing. */
+	 
 	value = mode->htotal;
 	hdmi_writeb(hdmi, HDMI_EXT_HTOTAL_L, value & 0xFF);
 	hdmi_writeb(hdmi, HDMI_EXT_HTOTAL_H, (value >> 8) & 0xFF);
@@ -283,14 +275,10 @@ rk3066_hdmi_phy_write(struct rk3066_hdmi *hdmi, u16 offset, u8 value)
 
 static void rk3066_hdmi_config_phy(struct rk3066_hdmi *hdmi)
 {
-	/* TMDS uses the same frequency as dclk. */
+	 
 	hdmi_writeb(hdmi, HDMI_DEEP_COLOR_MODE, 0x22);
 
-	/*
-	 * The semi-public documentation does not describe the hdmi registers
-	 * used by the function rk3066_hdmi_phy_write(), so we keep using
-	 * these magic values for now.
-	 */
+	 
 	if (hdmi->tmdsclk > 100000000) {
 		rk3066_hdmi_phy_write(hdmi, 0x158, 0x0E);
 		rk3066_hdmi_phy_write(hdmi, 0x15c, 0x00);
@@ -342,15 +330,15 @@ static int rk3066_hdmi_setup(struct rk3066_hdmi *hdmi,
 
 	hdmi->tmdsclk = mode->clock * 1000;
 
-	/* Mute video and audio output. */
+	 
 	hdmi_modb(hdmi, HDMI_VIDEO_CTRL2, HDMI_VIDEO_AUDIO_DISABLE_MASK,
 		  HDMI_AUDIO_DISABLE | HDMI_VIDEO_DISABLE);
 
-	/* Set power state to mode B. */
+	 
 	if (rk3066_hdmi_get_power_mode(hdmi) != HDMI_SYS_POWER_MODE_B)
 		rk3066_hdmi_set_power_mode(hdmi, HDMI_SYS_POWER_MODE_B);
 
-	/* Input video mode is RGB 24 bit. Use external data enable signal. */
+	 
 	hdmi_modb(hdmi, HDMI_AV_CTRL1,
 		  HDMI_VIDEO_DE_MASK, HDMI_VIDEO_EXTERNAL_DE);
 	hdmi_writeb(hdmi, HDMI_VIDEO_CTRL1,
@@ -373,15 +361,10 @@ static int rk3066_hdmi_setup(struct rk3066_hdmi *hdmi,
 
 	rk3066_hdmi_set_power_mode(hdmi, HDMI_SYS_POWER_MODE_E);
 
-	/*
-	 * When the IP controller is configured with accurate video
-	 * timing, the TMDS clock source should be switched to
-	 * DCLK_LCDC, so we need to init the TMDS rate to the pixel mode
-	 * clock rate and reconfigure the DDC clock.
-	 */
+	 
 	rk3066_hdmi_i2c_init(hdmi);
 
-	/* Unmute video output. */
+	 
 	hdmi_modb(hdmi, HDMI_VIDEO_CTRL2,
 		  HDMI_VIDEO_AUDIO_DISABLE_MASK, HDMI_AUDIO_DISABLE);
 	return 0;
@@ -394,7 +377,7 @@ rk3066_hdmi_encoder_mode_set(struct drm_encoder *encoder,
 {
 	struct rk3066_hdmi *hdmi = encoder_to_rk3066_hdmi(encoder);
 
-	/* Store the display mode for plugin/DPMS poweron events. */
+	 
 	drm_mode_copy(&hdmi->previous_mode, adj_mode);
 }
 
@@ -555,12 +538,7 @@ rk3066_hdmi_register(struct drm_device *drm, struct rk3066_hdmi *hdmi)
 	encoder->possible_crtcs =
 		drm_of_find_possible_crtcs(drm, dev->of_node);
 
-	/*
-	 * If we failed to find the CRTC(s) which this encoder is
-	 * supposed to be connected to, it's because the CRTC has
-	 * not been registered yet.  Defer probing, and hope that
-	 * the required CRTC is added later.
-	 */
+	 
 	if (encoder->possible_crtcs == 0)
 		return -EPROBE_DEFER;
 
@@ -632,11 +610,7 @@ static int rk3066_hdmi_i2c_read(struct rk3066_hdmi *hdmi, struct i2c_msg *msgs)
 
 static int rk3066_hdmi_i2c_write(struct rk3066_hdmi *hdmi, struct i2c_msg *msgs)
 {
-	/*
-	 * The DDC module only supports read EDID message, so
-	 * we assume that each word write to this i2c adapter
-	 * should be the offset of the EDID word address.
-	 */
+	 
 	if (msgs->len != 1 ||
 	    (msgs->addr != DDC_ADDR && msgs->addr != DDC_SEGMENT_ADDR))
 		return -EINVAL;
@@ -648,13 +622,13 @@ static int rk3066_hdmi_i2c_write(struct rk3066_hdmi *hdmi, struct i2c_msg *msgs)
 	if (msgs->addr == DDC_ADDR)
 		hdmi->i2c->ddc_addr = msgs->buf[0];
 
-	/* Set edid fifo first address. */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_FIFO_ADDR, 0x00);
 
-	/* Set edid word address 0x00/0x80. */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_WORD_ADDR, hdmi->i2c->ddc_addr);
 
-	/* Set edid segment pointer. */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_SEGMENT_POINTER, hdmi->i2c->segment_addr);
 
 	return 0;
@@ -671,7 +645,7 @@ static int rk3066_hdmi_i2c_xfer(struct i2c_adapter *adap,
 
 	rk3066_hdmi_i2c_init(hdmi);
 
-	/* Unmute HDMI EDID interrupt. */
+	 
 	hdmi_modb(hdmi, HDMI_INTR_MASK1,
 		  HDMI_INTR_EDID_MASK, HDMI_INTR_EDID_MASK);
 	i2c->stat = 0;
@@ -693,7 +667,7 @@ static int rk3066_hdmi_i2c_xfer(struct i2c_adapter *adap,
 	if (!ret)
 		ret = num;
 
-	/* Mute HDMI EDID interrupt. */
+	 
 	hdmi_modb(hdmi, HDMI_INTR_MASK1, HDMI_INTR_EDID_MASK, 0);
 
 	mutex_unlock(&i2c->i2c_lock);
@@ -791,7 +765,7 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 		goto err_disable_hclk;
 	}
 
-	/* internal hclk = hdmi_hclk / 25 */
+	 
 	hdmi_writeb(hdmi, HDMI_INTERNAL_CLK_DIVIDER, 25);
 
 	hdmi->ddc = rk3066_hdmi_i2c_adapter(hdmi);
@@ -865,7 +839,7 @@ static void rk3066_hdmi_remove(struct platform_device *pdev)
 
 static const struct of_device_id rk3066_hdmi_dt_ids[] = {
 	{ .compatible = "rockchip,rk3066-hdmi" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rk3066_hdmi_dt_ids);
 

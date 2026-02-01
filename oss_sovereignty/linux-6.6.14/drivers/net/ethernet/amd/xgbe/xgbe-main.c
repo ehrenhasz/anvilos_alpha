@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -210,13 +96,13 @@ void xgbe_free_pdata(struct xgbe_prv_data *pdata)
 
 void xgbe_set_counts(struct xgbe_prv_data *pdata)
 {
-	/* Set all the function pointers */
+	 
 	xgbe_init_all_fptrs(pdata);
 
-	/* Populate the hardware features */
+	 
 	xgbe_get_all_hw_features(pdata);
 
-	/* Set default max values if not provided */
+	 
 	if (!pdata->tx_max_channel_count)
 		pdata->tx_max_channel_count = pdata->hw_feat.tx_ch_cnt;
 	if (!pdata->rx_max_channel_count)
@@ -227,13 +113,7 @@ void xgbe_set_counts(struct xgbe_prv_data *pdata)
 	if (!pdata->rx_max_q_count)
 		pdata->rx_max_q_count = pdata->hw_feat.rx_q_cnt;
 
-	/* Calculate the number of Tx and Rx rings to be created
-	 *  -Tx (DMA) Channels map 1-to-1 to Tx Queues so set
-	 *   the number of Tx queues to the number of Tx channels
-	 *   enabled
-	 *  -Rx (DMA) Channels do not map 1-to-1 so use the actual
-	 *   number of Rx queues or maximum allowed
-	 */
+	 
 	pdata->tx_ring_count = min_t(unsigned int, num_online_cpus(),
 				     pdata->hw_feat.tx_ch_cnt);
 	pdata->tx_ring_count = min_t(unsigned int, pdata->tx_ring_count,
@@ -269,7 +149,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
 	netdev->base_addr = (unsigned long)pdata->xgmac_regs;
 	eth_hw_addr_set(netdev, pdata->mac_addr);
 
-	/* Initialize ECC timestamps */
+	 
 	pdata->tx_sec_period = jiffies;
 	pdata->tx_ded_period = jiffies;
 	pdata->rx_sec_period = jiffies;
@@ -277,17 +157,17 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
 	pdata->desc_sec_period = jiffies;
 	pdata->desc_ded_period = jiffies;
 
-	/* Issue software reset to device */
+	 
 	ret = pdata->hw_if.exit(pdata);
 	if (ret) {
 		dev_err(dev, "software reset failed\n");
 		return ret;
 	}
 
-	/* Set default configuration data */
+	 
 	xgbe_default_config(pdata);
 
-	/* Set the DMA mask */
+	 
 	ret = dma_set_mask_and_coherent(dev,
 					DMA_BIT_MASK(pdata->hw_feat.dma_width));
 	if (ret) {
@@ -295,20 +175,20 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
 		return ret;
 	}
 
-	/* Set default max values if not provided */
+	 
 	if (!pdata->tx_max_fifo_size)
 		pdata->tx_max_fifo_size = pdata->hw_feat.tx_fifo_size;
 	if (!pdata->rx_max_fifo_size)
 		pdata->rx_max_fifo_size = pdata->hw_feat.rx_fifo_size;
 
-	/* Set and validate the number of descriptors for a ring */
+	 
 	BUILD_BUG_ON_NOT_POWER_OF_2(XGBE_TX_DESC_CNT);
 	pdata->tx_desc_count = XGBE_TX_DESC_CNT;
 
 	BUILD_BUG_ON_NOT_POWER_OF_2(XGBE_RX_DESC_CNT);
 	pdata->rx_desc_count = XGBE_RX_DESC_CNT;
 
-	/* Adjust the number of queues based on interrupts assigned */
+	 
 	if (pdata->channel_irq_count) {
 		pdata->tx_ring_count = min_t(unsigned int, pdata->tx_ring_count,
 					     pdata->channel_irq_count);
@@ -321,27 +201,27 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
 				pdata->tx_ring_count, pdata->rx_ring_count);
 	}
 
-	/* Initialize RSS hash key */
+	 
 	netdev_rss_key_fill(pdata->rss_key, sizeof(pdata->rss_key));
 
 	XGMAC_SET_BITS(pdata->rss_options, MAC_RSSCR, IP2TE, 1);
 	XGMAC_SET_BITS(pdata->rss_options, MAC_RSSCR, TCP4TE, 1);
 	XGMAC_SET_BITS(pdata->rss_options, MAC_RSSCR, UDP4TE, 1);
 
-	/* Call MDIO/PHY initialization routine */
+	 
 	pdata->debugfs_an_cdr_workaround = pdata->vdata->an_cdr_workaround;
 	ret = pdata->phy_if.phy_init(pdata);
 	if (ret)
 		return ret;
 
-	/* Set device operations */
+	 
 	netdev->netdev_ops = xgbe_get_netdev_ops();
 	netdev->ethtool_ops = xgbe_get_ethtool_ops();
 #ifdef CONFIG_AMD_XGBE_DCB
 	netdev->dcbnl_ops = xgbe_get_dcbnl_ops();
 #endif
 
-	/* Set device features */
+	 
 	netdev->hw_features = NETIF_F_SG |
 			      NETIF_F_IP_CSUM |
 			      NETIF_F_IPV6_CSUM |
@@ -386,7 +266,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
 	netdev->min_mtu = 0;
 	netdev->max_mtu = XGMAC_JUMBO_PACKET_MTU;
 
-	/* Use default watchdog timeout */
+	 
 	netdev->watchdog_timeo = 0;
 
 	xgbe_init_rx_coalesce(pdata);

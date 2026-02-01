@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 #include "list.h"
 #include "elfconfig.h"
 
-/* On BSD-alike OSes elf.h defines these according to host's word size */
+ 
 #undef ELF_ST_BIND
 #undef ELF_ST_TYPE
 #undef ELF_R_SYM
@@ -66,7 +66,7 @@ static inline void __endian(const void *src, void *dest, unsigned int size)
 	__x;							\
 })
 
-#else /* endianness matches */
+#else  
 
 #define TO_NATIVE(x) (x)
 
@@ -95,16 +95,16 @@ struct module {
 	struct list_head exported_symbols;
 	struct list_head unresolved_symbols;
 	bool is_gpl_compatible;
-	bool from_dump;		/* true if module was loaded from *.symvers */
+	bool from_dump;		 
 	bool is_vmlinux;
 	bool seen;
 	bool has_init;
 	bool has_cleanup;
 	struct buffer dev_table_buf;
 	char	     srcversion[25];
-	// Missing namespace dependencies
+	
 	struct list_head missing_namespaces;
-	// Actual imported namespaces
+	
 	struct list_head imported_namespaces;
 	char name[];
 };
@@ -115,54 +115,46 @@ struct elf_info {
 	Elf_Shdr     *sechdrs;
 	Elf_Sym      *symtab_start;
 	Elf_Sym      *symtab_stop;
-	unsigned int export_symbol_secndx;	/* .export_symbol section */
+	unsigned int export_symbol_secndx;	 
 	char         *strtab;
 	char	     *modinfo;
 	unsigned int modinfo_len;
 
-	/* support for 32bit section numbers */
+	 
 
-	unsigned int num_sections; /* max_secindex + 1 */
+	unsigned int num_sections;  
 	unsigned int secindex_strings;
-	/* if Nth symbol table entry has .st_shndx = SHN_XINDEX,
-	 * take shndx from symtab_shndx_start[N] instead */
+	 
 	Elf32_Word   *symtab_shndx_start;
 	Elf32_Word   *symtab_shndx_stop;
 };
 
-/* Accessor for sym->st_shndx, hides ugliness of "64k sections" */
+ 
 static inline unsigned int get_secindex(const struct elf_info *info,
 					const Elf_Sym *sym)
 {
 	unsigned int index = sym->st_shndx;
 
-	/*
-	 * Elf{32,64}_Sym::st_shndx is 2 byte. Big section numbers are available
-	 * in the .symtab_shndx section.
-	 */
+	 
 	if (index == SHN_XINDEX)
 		return info->symtab_shndx_start[sym - info->symtab_start];
 
-	/*
-	 * Move reserved section indices SHN_LORESERVE..SHN_HIRESERVE out of
-	 * the way to UINT_MAX-255..UINT_MAX, to avoid conflicting with real
-	 * section indices.
-	 */
+	 
 	if (index >= SHN_LORESERVE && index <= SHN_HIRESERVE)
 		return index - SHN_HIRESERVE - 1;
 
 	return index;
 }
 
-/* file2alias.c */
+ 
 void handle_moddevtable(struct module *mod, struct elf_info *info,
 			Elf_Sym *sym, const char *symname);
 void add_moddevtable(struct buffer *buf, struct module *mod);
 
-/* sumversion.c */
+ 
 void get_src_version(const char *modname, char sum[], unsigned sumlen);
 
-/* from modpost.c */
+ 
 char *read_text_file(const char *filename);
 char *get_line(char **stringp);
 void *sym_get_data(const struct elf_info *info, const Elf_Sym *sym);
@@ -175,19 +167,7 @@ enum loglevel {
 
 void modpost_log(enum loglevel loglevel, const char *fmt, ...);
 
-/*
- * warn - show the given message, then let modpost continue running, still
- *        allowing modpost to exit successfully. This should be used when
- *        we still allow to generate vmlinux and modules.
- *
- * error - show the given message, then let modpost continue running, but fail
- *         in the end. This should be used when we should stop building vmlinux
- *         or modules, but we can continue running modpost to catch as many
- *         issues as possible.
- *
- * fatal - show the given message, and bail out immediately. This should be
- *         used when there is no point to continue running modpost.
- */
+ 
 #define warn(fmt, args...)	modpost_log(LOG_WARN, fmt, ##args)
 #define error(fmt, args...)	modpost_log(LOG_ERROR, fmt, ##args)
 #define fatal(fmt, args...)	modpost_log(LOG_FATAL, fmt, ##args)

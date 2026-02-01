@@ -1,24 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2008 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2018 - 2020, 2023 Intel Corporation
- *****************************************************************************/
+
+ 
 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "iwl-agn-hw.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL1000_UCODE_API_MAX 5
 #define IWL100_UCODE_API_MAX 5
 
-/* Lowest firmware API version supported */
+ 
 #define IWL1000_UCODE_API_MIN 1
 #define IWL100_UCODE_API_MIN 5
 
-/* EEPROM version */
+ 
 #define EEPROM_1000_TX_POWER_VERSION	(4)
 #define EEPROM_1000_EEPROM_VERSION	(0x15C)
 
@@ -44,7 +40,7 @@ static const struct iwl_base_params iwl1000_base_params = {
 
 static const struct iwl_ht_params iwl1000_ht_params = {
 	.ht_greenfield_support = true,
-	.use_rts_for_aggregation = true, /* use rts/cts protection */
+	.use_rts_for_aggregation = true,  
 	.ht40_bands = BIT(NL80211_BAND_2GHZ),
 };
 

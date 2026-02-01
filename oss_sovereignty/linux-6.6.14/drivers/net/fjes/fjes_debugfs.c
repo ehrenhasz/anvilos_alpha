@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015-2016 FUJITSU LIMITED
- */
 
-/* debugfs support for fjes driver */
+ 
+
+ 
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -76,4 +73,4 @@ void fjes_dbg_exit(void)
 	fjes_debug_root = NULL;
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2014 Raspberry Pi (Trading) Ltd. All rights reserved.
- * Copyright (c) 2010-2012 Broadcom. All rights reserved.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include "vchiq_core.h"
@@ -18,11 +15,11 @@
 #define VCHIQ_LOG_INFO_STR    "info"
 #define VCHIQ_LOG_TRACE_STR   "trace"
 
-/* Global 'vchiq' debugfs and clients entry used by all instances */
+ 
 static struct dentry *vchiq_dbg_dir;
 static struct dentry *vchiq_dbg_clients;
 
-/* Log category debugfs entries */
+ 
 struct vchiq_debugfs_log_entry {
 	const char *name;
 	void *plevel;
@@ -177,7 +174,7 @@ static const struct file_operations debugfs_trace_fops = {
 	.release	= single_release,
 };
 
-/* add an instance (process) to the debugfs entries */
+ 
 void vchiq_debugfs_add_instance(struct vchiq_instance *instance)
 {
 	char pidstr[16];
@@ -211,7 +208,7 @@ void vchiq_debugfs_init(void)
 	vchiq_dbg_dir = debugfs_create_dir("vchiq", NULL);
 	vchiq_dbg_clients = debugfs_create_dir("clients", vchiq_dbg_dir);
 
-	/* create an entry under <debugfs>/vchiq/log for each log category */
+	 
 	dir = debugfs_create_dir("log", vchiq_dbg_dir);
 
 	for (i = 0; i < ARRAY_SIZE(vchiq_debugfs_log_entries); i++)
@@ -220,13 +217,13 @@ void vchiq_debugfs_init(void)
 				    &debugfs_log_fops);
 }
 
-/* remove all the debugfs entries */
+ 
 void vchiq_debugfs_deinit(void)
 {
 	debugfs_remove_recursive(vchiq_dbg_dir);
 }
 
-#else /* CONFIG_DEBUG_FS */
+#else  
 
 void vchiq_debugfs_init(void)
 {
@@ -244,4 +241,4 @@ void vchiq_debugfs_remove_instance(struct vchiq_instance *instance)
 {
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

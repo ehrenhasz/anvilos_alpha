@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX20751
- *
- * Copyright (c) 2015 Guenter Roeck
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

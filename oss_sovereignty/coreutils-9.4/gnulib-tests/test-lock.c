@@ -1,20 +1,4 @@
-/* Test of locking in multithreaded situations.
-   Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.  */
+ 
 
 #include <config.h>
 
@@ -33,32 +17,25 @@
 # define TEST_WINDOWS_THREADS 1
 #endif
 
-/* Whether to enable locking.
-   Uncomment this to get a test program without locking, to verify that
-   it crashes.  */
+ 
 #define ENABLE_LOCKING 1
 
-/* Which tests to perform.
-   Uncomment some of these, to verify that all tests crash if no locking
-   is enabled.  */
+ 
 #define DO_TEST_LOCK 1
 #define DO_TEST_RWLOCK 1
 #define DO_TEST_RECURSIVE_LOCK 1
 #define DO_TEST_ONCE 1
 
-/* Whether to help the scheduler through explicit yield().
-   Uncomment this to see if the operating system has a fair scheduler.  */
+ 
 #define EXPLICIT_YIELD 1
 
-/* Whether to print debugging messages.  */
+ 
 #define ENABLE_DEBUGGING 0
 
-/* Number of simultaneous threads.  */
+ 
 #define THREAD_COUNT 10
 
-/* Number of operations performed in each thread.
-   This is quite high, because with a smaller count, say 5000, we often get
-   an "OK" result even without ENABLE_LOCKING (on Linux/x86).  */
+ 
 #define REPEAT_COUNT 50000
 
 #include <stdint.h>
@@ -134,11 +111,9 @@ check_accounts (void)
 }
 
 
-/* ------------------- Test normal (non-recursive) locks ------------------- */
+ 
 
-/* Test normal locks by having several bank accounts and several threads
-   which shuffle around money between the accounts and another thread
-   checking that all the money is still there.  */
+ 
 
 gl_lock_define_initialized(static, my_lock)
 
@@ -205,18 +180,18 @@ test_lock (void)
   gl_thread_t checkerthread;
   gl_thread_t threads[THREAD_COUNT];
 
-  /* Initialization.  */
+   
   for (i = 0; i < ACCOUNT_COUNT; i++)
     account[i] = 1000;
   init_atomic_int (&lock_checker_done);
   set_atomic_int_value (&lock_checker_done, 0);
 
-  /* Spawn the threads.  */
+   
   checkerthread = gl_thread_create (lock_checker_thread, NULL);
   for (i = 0; i < THREAD_COUNT; i++)
     threads[i] = gl_thread_create (lock_mutator_thread, NULL);
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     gl_thread_join (threads[i], NULL);
   set_atomic_int_value (&lock_checker_done, 1);
@@ -225,11 +200,9 @@ test_lock (void)
 }
 
 
-/* ----------------- Test read-write (non-recursive) locks ----------------- */
+ 
 
-/* Test read-write locks by having several bank accounts and several threads
-   which shuffle around money between the accounts and several other threads
-   that check that all the money is still there.  */
+ 
 
 gl_rwlock_define_initialized(static, my_rwlock)
 
@@ -290,19 +263,19 @@ test_rwlock (void)
   gl_thread_t checkerthreads[THREAD_COUNT];
   gl_thread_t threads[THREAD_COUNT];
 
-  /* Initialization.  */
+   
   for (i = 0; i < ACCOUNT_COUNT; i++)
     account[i] = 1000;
   init_atomic_int (&rwlock_checker_done);
   set_atomic_int_value (&rwlock_checker_done, 0);
 
-  /* Spawn the threads.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     checkerthreads[i] = gl_thread_create (rwlock_checker_thread, NULL);
   for (i = 0; i < THREAD_COUNT; i++)
     threads[i] = gl_thread_create (rwlock_mutator_thread, NULL);
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     gl_thread_join (threads[i], NULL);
   set_atomic_int_value (&rwlock_checker_done, 1);
@@ -312,11 +285,9 @@ test_rwlock (void)
 }
 
 
-/* -------------------------- Test recursive locks -------------------------- */
+ 
 
-/* Test recursive locks by having several bank accounts and several threads
-   which shuffle around money between the accounts (recursively) and another
-   thread checking that all the money is still there.  */
+ 
 
 gl_recursive_lock_define_initialized(static, my_reclock)
 
@@ -335,7 +306,7 @@ recshuffle (void)
   account[i1] += value;
   account[i2] -= value;
 
-  /* Recursive with probability 0.5.  */
+   
   if (((unsigned int) rand () >> 3) % 2)
     recshuffle ();
 
@@ -393,18 +364,18 @@ test_recursive_lock (void)
   gl_thread_t checkerthread;
   gl_thread_t threads[THREAD_COUNT];
 
-  /* Initialization.  */
+   
   for (i = 0; i < ACCOUNT_COUNT; i++)
     account[i] = 1000;
   init_atomic_int (&reclock_checker_done);
   set_atomic_int_value (&reclock_checker_done, 0);
 
-  /* Spawn the threads.  */
+   
   checkerthread = gl_thread_create (reclock_checker_thread, NULL);
   for (i = 0; i < THREAD_COUNT; i++)
     threads[i] = gl_thread_create (reclock_mutator_thread, NULL);
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     gl_thread_join (threads[i], NULL);
   set_atomic_int_value (&reclock_checker_done, 1);
@@ -413,10 +384,9 @@ test_recursive_lock (void)
 }
 
 
-/* ------------------------ Test once-only execution ------------------------ */
+ 
 
-/* Test once-only execution by having several threads attempt to grab a
-   once-only task simultaneously (triggered by releasing a read-write lock).  */
+ 
 
 gl_once_define(static, fresh_once)
 static int ready[THREAD_COUNT];
@@ -446,7 +416,7 @@ once_contender_thread (void *arg)
 
   for (repeat = 0; repeat <= REPEAT_COUNT; repeat++)
     {
-      /* Tell the main thread that we're ready.  */
+       
       gl_lock_lock (ready_lock[id]);
       ready[id] = 1;
       gl_lock_unlock (ready_lock[id]);
@@ -457,19 +427,19 @@ once_contender_thread (void *arg)
       dbgprintf ("Contender %p waiting for signal for round %d\n",
                  gl_thread_self_pointer (), repeat);
 #if ENABLE_LOCKING
-      /* Wait for the signal to go.  */
+       
       gl_rwlock_rdlock (fire_signal[repeat]);
-      /* And don't hinder the others (if the scheduler is unfair).  */
+       
       gl_rwlock_unlock (fire_signal[repeat]);
 #else
-      /* Wait for the signal to go.  */
+       
       while (fire_signal_state <= repeat)
         yield ();
 #endif
       dbgprintf ("Contender %p got the     signal for round %d\n",
                  gl_thread_self_pointer (), repeat);
 
-      /* Contend for execution.  */
+       
       gl_once (once_control, once_execute);
     }
 
@@ -482,7 +452,7 @@ test_once (void)
   int i, repeat;
   gl_thread_t threads[THREAD_COUNT];
 
-  /* Initialize all variables.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     {
       ready[i] = 0;
@@ -496,19 +466,19 @@ test_once (void)
 #endif
 
 #if ENABLE_LOCKING
-  /* Block all fire_signals.  */
+   
   for (i = REPEAT_COUNT-1; i >= 0; i--)
     gl_rwlock_wrlock (fire_signal[i]);
 #endif
 
-  /* Spawn the threads.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     threads[i] =
       gl_thread_create (once_contender_thread, (void *) (intptr_t) i);
 
   for (repeat = 0; repeat <= REPEAT_COUNT; repeat++)
     {
-      /* Wait until every thread is ready.  */
+       
       dbgprintf ("Main thread before synchronizing for round %d\n", repeat);
       for (;;)
         {
@@ -527,8 +497,7 @@ test_once (void)
 
       if (repeat > 0)
         {
-          /* Check that exactly one thread executed the once_execute()
-             function.  */
+           
           if (performed != 1)
             abort ();
         }
@@ -536,13 +505,13 @@ test_once (void)
       if (repeat == REPEAT_COUNT)
         break;
 
-      /* Preparation for the next round: Initialize once_control.  */
+       
       memcpy (&once_control, &fresh_once, sizeof (gl_once_t));
 
-      /* Preparation for the next round: Reset the performed counter.  */
+       
       performed = 0;
 
-      /* Preparation for the next round: Reset the ready flags.  */
+       
       for (i = 0; i < THREAD_COUNT; i++)
         {
           gl_lock_lock (ready_lock[i]);
@@ -550,7 +519,7 @@ test_once (void)
           gl_lock_unlock (ready_lock[i]);
         }
 
-      /* Signal all threads simultaneously.  */
+       
       dbgprintf ("Main thread giving signal for round %d\n", repeat);
 #if ENABLE_LOCKING
       gl_rwlock_unlock (fire_signal[repeat]);
@@ -559,20 +528,19 @@ test_once (void)
 #endif
     }
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     gl_thread_join (threads[i], NULL);
 }
 
 
-/* -------------------------------------------------------------------------- */
+ 
 
 int
 main ()
 {
 #if HAVE_DECL_ALARM
-  /* Declare failure if test takes too long, by using default abort
-     caused by SIGALRM.  */
+   
   int alarm_value = 600;
   signal (SIGALRM, SIG_DFL);
   alarm (alarm_value);
@@ -604,7 +572,7 @@ main ()
 
 #else
 
-/* No multithreading available.  */
+ 
 
 #include <stdio.h>
 

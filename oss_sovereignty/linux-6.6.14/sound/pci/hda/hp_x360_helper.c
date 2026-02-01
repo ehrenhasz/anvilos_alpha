@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Fixes for HP X360 laptops with top B&O speakers
- * to be included from codec driver
- */
+
+ 
 
 static void alc295_fixup_hp_top_speakers(struct hda_codec *codec,
 		const struct hda_fixup *fix, int action)

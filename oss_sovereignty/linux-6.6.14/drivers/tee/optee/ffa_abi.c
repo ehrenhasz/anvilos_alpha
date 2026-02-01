@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Linaro Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,26 +15,9 @@
 #include "optee_ffa.h"
 #include "optee_rpc_cmd.h"
 
-/*
- * This file implement the FF-A ABI used when communicating with secure world
- * OP-TEE OS via FF-A.
- * This file is divided into the following sections:
- * 1. Maintain a hash table for lookup of a global FF-A memory handle
- * 2. Convert between struct tee_param and struct optee_msg_param
- * 3. Low level support functions to register shared memory in secure world
- * 4. Dynamic shared memory pool based on alloc_pages()
- * 5. Do a normal scheduled call into secure world
- * 6. Driver initialization.
- */
+ 
 
-/*
- * 1. Maintain a hash table for lookup of a global FF-A memory handle
- *
- * FF-A assigns a global memory handle for each piece shared memory.
- * This handle is then used when communicating with secure world.
- *
- * Main functions are optee_shm_add_ffa_handle() and optee_shm_rem_ffa_handle()
- */
+ 
 struct shm_rhash {
 	struct tee_shm *shm;
 	u64 global_id;
@@ -113,12 +94,7 @@ static int optee_shm_rem_ffa_handle(struct optee *optee, u64 global_id)
 	return rc;
 }
 
-/*
- * 2. Convert between struct tee_param and struct optee_msg_param
- *
- * optee_ffa_from_msg_param() and optee_ffa_to_msg_param() are the main
- * functions.
- */
+ 
 
 static void from_msg_param_ffa_mem(struct optee *optee, struct tee_param *p,
 				   u32 attr, const struct optee_msg_param *mp)
@@ -142,16 +118,7 @@ static void from_msg_param_ffa_mem(struct optee *optee, struct tee_param *p,
 	p->u.memref.shm_offs = offs_low | offs_high << 32;
 }
 
-/**
- * optee_ffa_from_msg_param() - convert from OPTEE_MSG parameters to
- *				struct tee_param
- * @optee:	main service struct
- * @params:	subsystem internal parameter representation
- * @num_params:	number of elements in the parameter arrays
- * @msg_params:	OPTEE_MSG parameters
- *
- * Returns 0 on success or <0 on failure
- */
+ 
 static int optee_ffa_from_msg_param(struct optee *optee,
 				    struct tee_param *params, size_t num_params,
 				    const struct optee_msg_param *msg_params)
@@ -201,7 +168,7 @@ static int to_msg_param_ffa_mem(struct optee_msg_param *mp,
 
 		mp->u.fmem.offs_low = shm_offs;
 		mp->u.fmem.offs_high = shm_offs >> 32;
-		/* Check that the entire offset could be stored. */
+		 
 		if (mp->u.fmem.offs_high != shm_offs >> 32)
 			return -EINVAL;
 
@@ -215,15 +182,7 @@ static int to_msg_param_ffa_mem(struct optee_msg_param *mp,
 	return 0;
 }
 
-/**
- * optee_ffa_to_msg_param() - convert from struct tee_params to OPTEE_MSG
- *			      parameters
- * @optee:	main service struct
- * @msg_params:	OPTEE_MSG parameters
- * @num_params:	number of elements in the parameter arrays
- * @params:	subsystem itnernal parameter representation
- * Returns 0 on success or <0 on failure
- */
+ 
 static int optee_ffa_to_msg_param(struct optee *optee,
 				  struct optee_msg_param *msg_params,
 				  size_t num_params,
@@ -259,12 +218,7 @@ static int optee_ffa_to_msg_param(struct optee *optee,
 	return 0;
 }
 
-/*
- * 3. Low level support functions to register shared memory in secure world
- *
- * Functions to register and unregister shared memory both for normal
- * clients and for tee-supplicant.
- */
+ 
 
 static int optee_ffa_shm_register(struct tee_context *ctx, struct tee_shm *shm,
 				  struct page **pages, size_t num_pages,
@@ -347,11 +301,7 @@ static int optee_ffa_shm_unregister_supp(struct tee_context *ctx,
 	u64 global_handle = shm->sec_world_id;
 	int rc;
 
-	/*
-	 * We're skipping the OPTEE_FFA_YIELDING_CALL_UNREGISTER_SHM call
-	 * since this is OP-TEE freeing via RPC so it has already retired
-	 * this ID.
-	 */
+	 
 
 	optee_shm_rem_ffa_handle(optee, global_handle);
 	mem_ops = optee->ffa.ffa_dev->ops->mem_ops;
@@ -364,12 +314,7 @@ static int optee_ffa_shm_unregister_supp(struct tee_context *ctx,
 	return rc;
 }
 
-/*
- * 4. Dynamic shared memory pool based on alloc_pages()
- *
- * Implements an OP-TEE specific shared memory pool.
- * The main function is optee_ffa_shm_pool_alloc_pages().
- */
+ 
 
 static int pool_ffa_op_alloc(struct tee_shm_pool *pool,
 			     struct tee_shm *shm, size_t size, size_t align)
@@ -395,12 +340,7 @@ static const struct tee_shm_pool_ops pool_ffa_ops = {
 	.destroy_pool = pool_ffa_op_destroy_pool,
 };
 
-/**
- * optee_ffa_shm_pool_alloc_pages() - create page-based allocator pool
- *
- * This pool is used with OP-TEE over FF-A. In this case command buffers
- * and such are allocated from kernel's own memory.
- */
+ 
 static struct tee_shm_pool *optee_ffa_shm_pool_alloc_pages(void)
 {
 	struct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);
@@ -413,15 +353,7 @@ static struct tee_shm_pool *optee_ffa_shm_pool_alloc_pages(void)
 	return pool;
 }
 
-/*
- * 5. Do a normal scheduled call into secure world
- *
- * The function optee_ffa_do_call_with_arg() performs a normal scheduled
- * call into secure world. During this call may normal world request help
- * from normal world using RPCs, Remote Procedure Calls. This includes
- * delivery of non-secure interrupts to for instance allow rescheduling of
- * the current task.
- */
+ 
 
 static void handle_ffa_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
 					      struct optee *optee,
@@ -518,7 +450,7 @@ static void optee_handle_ffa_rpc(struct tee_context *ctx, struct optee *optee,
 		handle_ffa_rpc_func_cmd(ctx, optee, arg);
 		break;
 	case OPTEE_FFA_YIELDING_CALL_RETURN_INTERRUPT:
-		/* Interrupt delivered by now */
+		 
 		break;
 	default:
 		pr_warn("Unknown RPC func 0x%x\n", cmd);
@@ -540,7 +472,7 @@ static int optee_ffa_yielding_call(struct tee_context *ctx,
 	u32 w6 = data->data3;
 	int rc;
 
-	/* Initialize waiter */
+	 
 	optee_cq_wait_init(&optee->call_queue, &w);
 	while (true) {
 		rc = msg_ops->sync_send_receive(ffa_dev, data);
@@ -556,10 +488,7 @@ static int optee_ffa_yielding_call(struct tee_context *ctx,
 				goto done;
 			}
 
-			/*
-			 * Out of threads in secure world, wait for a thread
-			 * become available.
-			 */
+			 
 			optee_cq_wait_for_completion(&optee->call_queue, &w);
 			data->data0 = cmd;
 			data->data1 = w4;
@@ -574,13 +503,7 @@ static int optee_ffa_yielding_call(struct tee_context *ctx,
 		if (data->data1 == OPTEE_FFA_YIELDING_CALL_RETURN_DONE)
 			goto done;
 
-		/*
-		 * OP-TEE has returned with a RPC request.
-		 *
-		 * Note that data->data4 (passed in register w7) is already
-		 * filled in by ffa_mem_ops->sync_send_receive() returning
-		 * above.
-		 */
+		 
 		cond_resched();
 		optee_handle_ffa_rpc(ctx, optee, data->data1, rpc_arg);
 		cmd = OPTEE_FFA_YIELDING_CALL_RESUME;
@@ -590,26 +513,13 @@ static int optee_ffa_yielding_call(struct tee_context *ctx,
 		data->data3 = 0;
 	}
 done:
-	/*
-	 * We're done with our thread in secure world, if there's any
-	 * thread waiters wake up one.
-	 */
+	 
 	optee_cq_wait_final(&optee->call_queue, &w);
 
 	return rc;
 }
 
-/**
- * optee_ffa_do_call_with_arg() - Do a FF-A call to enter OP-TEE in secure world
- * @ctx:	calling context
- * @shm:	shared memory holding the message to pass to secure world
- * @offs:	offset of the message in @shm
- *
- * Does a FF-A call to OP-TEE in secure world and handles eventual resulting
- * Remote Procedure Calls (RPC) from OP-TEE.
- *
- * Returns return code from FF-A, 0 is OK
- */
+ 
 
 static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
 				      struct tee_shm *shm, u_int offs)
@@ -624,12 +534,7 @@ static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
 	unsigned int rpc_arg_offs;
 	struct optee_msg_arg *rpc_arg;
 
-	/*
-	 * The shared memory object has to start on a page when passed as
-	 * an argument struct. This is also what the shm pool allocator
-	 * returns, but check this before calling secure world to catch
-	 * eventual errors early in case something changes.
-	 */
+	 
 	if (shm->offset)
 		return -EINVAL;
 
@@ -645,13 +550,7 @@ static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
 	return optee_ffa_yielding_call(ctx, &data, rpc_arg);
 }
 
-/*
- * 6. Driver initialization
- *
- * During driver inititialization is the OP-TEE Secure Partition is probed
- * to find out which features it supports so the driver can be initialized
- * with a matching configuration.
- */
+ 
 
 static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
 					const struct ffa_ops *ops)
@@ -755,7 +654,7 @@ static const struct tee_driver_ops optee_ffa_supp_ops = {
 	.release = optee_release_supp,
 	.supp_recv = optee_supp_recv,
 	.supp_send = optee_supp_send,
-	.shm_register = optee_ffa_shm_register, /* same as for clnt ops */
+	.shm_register = optee_ffa_shm_register,  
 	.shm_unregister = optee_ffa_shm_unregister_supp,
 };
 
@@ -894,7 +793,7 @@ err_free_optee:
 }
 
 static const struct ffa_device_id optee_ffa_device_id[] = {
-	/* 486178e0-e7f8-11e3-bc5e0002a5d5c51b */
+	 
 	{ UUID_INIT(0x486178e0, 0xe7f8, 0x11e3,
 		    0xbc, 0x5e, 0x00, 0x02, 0xa5, 0xd5, 0xc5, 0x1b) },
 	{}

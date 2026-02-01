@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Teranetics PHY
- *
- * Author: Shaohui Xie <Shaohui.Xie@freescale.com>
- *
- * Copyright 2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,9 +27,7 @@ MODULE_LICENSE("GPL v2");
 
 static int teranetics_aneg_done(struct phy_device *phydev)
 {
-	/* auto negotiation state can only be checked when using copper
-	 * port, if using fiber port, just lie it's done.
-	 */
+	 
 	if (!phy_read_mmd(phydev, MDIO_MMD_VEND1, 93))
 		return genphy_c45_aneg_done(phydev);
 

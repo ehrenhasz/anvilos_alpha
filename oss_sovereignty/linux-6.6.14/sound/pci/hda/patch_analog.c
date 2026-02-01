@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HD audio interface patch for AD1882, AD1884, AD1981HD, AD1983, AD1984,
- *   AD1986A, AD1988
- *
- * Copyright (c) 2005-2007 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -22,28 +17,28 @@
 struct ad198x_spec {
 	struct hda_gen_spec gen;
 
-	/* for auto parser */
+	 
 	int smux_paths[4];
 	unsigned int cur_smux;
 	hda_nid_t eapd_nid;
 
-	unsigned int beep_amp;	/* beep amp value, set via set_beep_amp() */
+	unsigned int beep_amp;	 
 	int num_smux_conns;
 };
 
 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP
-/* additional beep mixers; the actual parameters are overwritten at build */
+ 
 static const struct snd_kcontrol_new ad_beep_mixer[] = {
 	HDA_CODEC_VOLUME("Beep Playback Volume", 0, 0, HDA_OUTPUT),
 	HDA_CODEC_MUTE_BEEP("Beep Playback Switch", 0, 0, HDA_OUTPUT),
-	{ } /* end */
+	{ }  
 };
 
 #define set_beep_amp(spec, nid, idx, dir) \
-	((spec)->beep_amp = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir)) /* mono */
+	((spec)->beep_amp = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir))  
 #else
-#define set_beep_amp(spec, nid, idx, dir) /* NOP */
+#define set_beep_amp(spec, nid, idx, dir)  
 #endif
 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP
@@ -86,7 +81,7 @@ static void ad198x_power_eapd_write(struct hda_codec *codec, hda_nid_t front,
 
 static void ad198x_power_eapd(struct hda_codec *codec)
 {
-	/* We currently only handle front, HP */
+	 
 	switch (codec->core.vendor_id) {
 	case 0x11d41882:
 	case 0x11d4882a:
@@ -120,7 +115,7 @@ static int ad198x_suspend(struct hda_codec *codec)
 }
 #endif
 
-/* follow EAPD via vmaster hook */
+ 
 static void ad_vmaster_eapd_hook(void *private_data, int enabled)
 {
 	struct hda_codec *codec = private_data;
@@ -135,9 +130,7 @@ static void ad_vmaster_eapd_hook(void *private_data, int enabled)
 				   enabled ? 0x02 : 0x00);
 }
 
-/*
- * Automatic parse of I/O pins from the BIOS configuration
- */
+ 
 
 static int ad198x_auto_build_controls(struct hda_codec *codec)
 {
@@ -189,9 +182,7 @@ static int ad198x_parse_auto_config(struct hda_codec *codec, bool indep_hp)
 	return 0;
 }
 
-/*
- * AD1986A specific
- */
+ 
 
 static int alloc_ad_spec(struct hda_codec *codec)
 {
@@ -206,11 +197,9 @@ static int alloc_ad_spec(struct hda_codec *codec)
 	return 0;
 }
 
-/*
- * AD1986A fixup codes
- */
+ 
 
-/* Lenovo N100 seems to report the reversed bit for HP jack-sensing */
+ 
 static void ad_fixup_inv_jack_detect(struct hda_codec *codec,
 				     const struct hda_fixup *fix, int action)
 {
@@ -224,7 +213,7 @@ static void ad_fixup_inv_jack_detect(struct hda_codec *codec,
 	}
 }
 
-/* Toshiba Satellite L40 implements EAPD in a standard way unlike others */
+ 
 static void ad1986a_fixup_eapd(struct hda_codec *codec,
 			       const struct hda_fixup *fix, int action)
 {
@@ -237,7 +226,7 @@ static void ad1986a_fixup_eapd(struct hda_codec *codec,
 	}
 }
 
-/* enable stereo-mix input for avoiding regression on KDE (bko#88251) */
+ 
 static void ad1986a_fixup_eapd_mix_in(struct hda_codec *codec,
 				      const struct hda_fixup *fix, int action)
 {
@@ -269,51 +258,51 @@ static const struct hda_fixup ad1986a_fixups[] = {
 	[AD1986A_FIXUP_ULTRA] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1b, 0x90170110 }, /* speaker */
-			{ 0x1d, 0x90a7013e }, /* int mic */
+			{ 0x1b, 0x90170110 },  
+			{ 0x1d, 0x90a7013e },  
 			{}
 		},
 	},
 	[AD1986A_FIXUP_SAMSUNG] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1b, 0x90170110 }, /* speaker */
-			{ 0x1d, 0x90a7013e }, /* int mic */
-			{ 0x20, 0x411111f0 }, /* N/A */
-			{ 0x24, 0x411111f0 }, /* N/A */
+			{ 0x1b, 0x90170110 },  
+			{ 0x1d, 0x90a7013e },  
+			{ 0x20, 0x411111f0 },  
+			{ 0x24, 0x411111f0 },  
 			{}
 		},
 	},
 	[AD1986A_FIXUP_3STACK] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1a, 0x02214021 }, /* headphone */
-			{ 0x1b, 0x01014011 }, /* front */
-			{ 0x1c, 0x01813030 }, /* line-in */
-			{ 0x1d, 0x01a19020 }, /* rear mic */
-			{ 0x1e, 0x411111f0 }, /* N/A */
-			{ 0x1f, 0x02a190f0 }, /* mic */
-			{ 0x20, 0x411111f0 }, /* N/A */
+			{ 0x1a, 0x02214021 },  
+			{ 0x1b, 0x01014011 },  
+			{ 0x1c, 0x01813030 },  
+			{ 0x1d, 0x01a19020 },  
+			{ 0x1e, 0x411111f0 },  
+			{ 0x1f, 0x02a190f0 },  
+			{ 0x20, 0x411111f0 },  
 			{}
 		},
 	},
 	[AD1986A_FIXUP_LAPTOP] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1a, 0x02214021 }, /* headphone */
-			{ 0x1b, 0x90170110 }, /* speaker */
-			{ 0x1c, 0x411111f0 }, /* N/A */
-			{ 0x1d, 0x411111f0 }, /* N/A */
-			{ 0x1e, 0x411111f0 }, /* N/A */
-			{ 0x1f, 0x02a191f0 }, /* mic */
-			{ 0x20, 0x411111f0 }, /* N/A */
+			{ 0x1a, 0x02214021 },  
+			{ 0x1b, 0x90170110 },  
+			{ 0x1c, 0x411111f0 },  
+			{ 0x1d, 0x411111f0 },  
+			{ 0x1e, 0x411111f0 },  
+			{ 0x1f, 0x02a191f0 },  
+			{ 0x20, 0x411111f0 },  
 			{}
 		},
 	},
 	[AD1986A_FIXUP_LAPTOP_IMIC] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1d, 0x90a7013e }, /* int mic */
+			{ 0x1d, 0x90a7013e },  
 			{}
 		},
 		.chained_before = 1,
@@ -330,18 +319,18 @@ static const struct hda_fixup ad1986a_fixups[] = {
 	[AD1986A_FIXUP_EASYNOTE] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x1a, 0x0421402f }, /* headphone */
-			{ 0x1b, 0x90170110 }, /* speaker */
-			{ 0x1c, 0x411111f0 }, /* N/A */
-			{ 0x1d, 0x90a70130 }, /* int mic */
-			{ 0x1e, 0x411111f0 }, /* N/A */
-			{ 0x1f, 0x04a19040 }, /* mic */
-			{ 0x20, 0x411111f0 }, /* N/A */
-			{ 0x21, 0x411111f0 }, /* N/A */
-			{ 0x22, 0x411111f0 }, /* N/A */
-			{ 0x23, 0x411111f0 }, /* N/A */
-			{ 0x24, 0x411111f0 }, /* N/A */
-			{ 0x25, 0x411111f0 }, /* N/A */
+			{ 0x1a, 0x0421402f },  
+			{ 0x1b, 0x90170110 },  
+			{ 0x1c, 0x411111f0 },  
+			{ 0x1d, 0x90a70130 },  
+			{ 0x1e, 0x411111f0 },  
+			{ 0x1f, 0x04a19040 },  
+			{ 0x20, 0x411111f0 },  
+			{ 0x21, 0x411111f0 },  
+			{ 0x22, 0x411111f0 },  
+			{ 0x23, 0x411111f0 },  
+			{ 0x24, 0x411111f0 },  
+			{ 0x25, 0x411111f0 },  
 			{}
 		},
 		.chained = true,
@@ -372,13 +361,12 @@ static const struct hda_model_fixup ad1986a_fixup_models[] = {
 	{ .id = AD1986A_FIXUP_3STACK, .name = "3stack" },
 	{ .id = AD1986A_FIXUP_LAPTOP, .name = "laptop" },
 	{ .id = AD1986A_FIXUP_LAPTOP_IMIC, .name = "laptop-imic" },
-	{ .id = AD1986A_FIXUP_LAPTOP_IMIC, .name = "laptop-eapd" }, /* alias */
+	{ .id = AD1986A_FIXUP_LAPTOP_IMIC, .name = "laptop-eapd" },  
 	{ .id = AD1986A_FIXUP_EAPD, .name = "eapd" },
 	{}
 };
 
-/*
- */
+ 
 static int patch_ad1986a(struct hda_codec *codec)
 {
 	int err;
@@ -397,24 +385,19 @@ static int patch_ad1986a(struct hda_codec *codec)
 		return err;
 	spec = codec->spec;
 
-	/* AD1986A has the inverted EAPD implementation */
+	 
 	codec->inv_eapd = 1;
 
 	spec->gen.mixer_nid = 0x07;
 	spec->gen.beep_nid = 0x19;
 	set_beep_amp(spec, 0x18, 0, HDA_OUTPUT);
 
-	/* AD1986A has a hardware problem that it can't share a stream
-	 * with multiple output pins.  The copy of front to surrounds
-	 * causes noisy or silent outputs at a certain timing, e.g.
-	 * changing the volume.
-	 * So, let's disable the shared stream.
-	 */
+	 
 	spec->gen.multiout.no_share_stream = 1;
-	/* give fixed DAC/pin pairs */
+	 
 	spec->gen.preferred_dacs = preferred_pairs;
 
-	/* AD1986A can't manage the dynamic pin on/off smoothly */
+	 
 	spec->gen.auto_mute_via_amp = 1;
 
 	snd_hda_pick_fixup(codec, ad1986a_fixup_models, ad1986a_fixup_tbl,
@@ -433,13 +416,9 @@ static int patch_ad1986a(struct hda_codec *codec)
 }
 
 
-/*
- * AD1983 specific
- */
+ 
 
-/*
- * SPDIF mux control for AD1983 auto-parser
- */
+ 
 static int ad1983_auto_smux_enum_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
@@ -527,7 +506,7 @@ static int patch_ad1983(struct hda_codec *codec)
 	spec->gen.beep_nid = 0x10;
 	set_beep_amp(spec, 0x10, 0, HDA_OUTPUT);
 
-	/* limit the loopback routes not to confuse the parser */
+	 
 	snd_hda_override_conn_list(codec, 0x0c, ARRAY_SIZE(conn_0c), conn_0c);
 	snd_hda_override_conn_list(codec, 0x0d, ARRAY_SIZE(conn_0d), conn_0d);
 
@@ -545,9 +524,7 @@ static int patch_ad1983(struct hda_codec *codec)
 }
 
 
-/*
- * AD1981 HD specific
- */
+ 
 
 static void ad1981_fixup_hp_eapd(struct hda_codec *codec,
 				 const struct hda_fixup *fix, int action)
@@ -560,9 +537,7 @@ static void ad1981_fixup_hp_eapd(struct hda_codec *codec,
 	}
 }
 
-/* set the upper-limit for mixer amp to 0dB for avoiding the possible
- * damage by overloading
- */
+ 
 static void ad1981_fixup_amp_override(struct hda_codec *codec,
 				      const struct hda_fixup *fix, int action)
 {
@@ -596,7 +571,7 @@ static const struct snd_pci_quirk ad1981_fixup_tbl[] = {
 	SND_PCI_QUIRK_VENDOR(0x1014, "Lenovo", AD1981_FIXUP_AMP_OVERRIDE),
 	SND_PCI_QUIRK_VENDOR(0x103c, "HP", AD1981_FIXUP_HP_EAPD),
 	SND_PCI_QUIRK_VENDOR(0x17aa, "Lenovo", AD1981_FIXUP_AMP_OVERRIDE),
-	/* HP nx6320 (reversed SSID, H/W bug) */
+	 
 	SND_PCI_QUIRK(0x30b0, 0x103c, "HP nx6320", AD1981_FIXUP_HP_EAPD),
 	{}
 };
@@ -635,90 +610,7 @@ static int patch_ad1981(struct hda_codec *codec)
 }
 
 
-/*
- * AD1988
- *
- * Output pins and routes
- *
- *        Pin               Mix     Sel     DAC (*)
- * port-A 0x11 (mute/hp) <- 0x22 <- 0x37 <- 03/04/06
- * port-B 0x14 (mute/hp) <- 0x2b <- 0x30 <- 03/04/06
- * port-C 0x15 (mute)    <- 0x2c <- 0x31 <- 05/0a
- * port-D 0x12 (mute/hp) <- 0x29         <- 04
- * port-E 0x17 (mute/hp) <- 0x26 <- 0x32 <- 05/0a
- * port-F 0x16 (mute)    <- 0x2a         <- 06
- * port-G 0x24 (mute)    <- 0x27         <- 05
- * port-H 0x25 (mute)    <- 0x28         <- 0a
- * mono   0x13 (mute/amp)<- 0x1e <- 0x36 <- 03/04/06
- *
- * DAC0 = 03h, DAC1 = 04h, DAC2 = 05h, DAC3 = 06h, DAC4 = 0ah
- * (*) DAC2/3/4 are swapped to DAC3/4/2 on AD198A rev.2 due to a h/w bug.
- *
- * Input pins and routes
- *
- *        pin     boost   mix input # / adc input #
- * port-A 0x11 -> 0x38 -> mix 2, ADC 0
- * port-B 0x14 -> 0x39 -> mix 0, ADC 1
- * port-C 0x15 -> 0x3a -> 33:0 - mix 1, ADC 2
- * port-D 0x12 -> 0x3d -> mix 3, ADC 8
- * port-E 0x17 -> 0x3c -> 34:0 - mix 4, ADC 4
- * port-F 0x16 -> 0x3b -> mix 5, ADC 3
- * port-G 0x24 -> N/A  -> 33:1 - mix 1, 34:1 - mix 4, ADC 6
- * port-H 0x25 -> N/A  -> 33:2 - mix 1, 34:2 - mix 4, ADC 7
- *
- *
- * DAC assignment
- *   6stack - front/surr/CLFE/side/opt DACs - 04/06/05/0a/03
- *   3stack - front/surr/CLFE/opt DACs - 04/05/0a/03
- *
- * Inputs of Analog Mix (0x20)
- *   0:Port-B (front mic)
- *   1:Port-C/G/H (line-in)
- *   2:Port-A
- *   3:Port-D (line-in/2)
- *   4:Port-E/G/H (mic-in)
- *   5:Port-F (mic2-in)
- *   6:CD
- *   7:Beep
- *
- * ADC selection
- *   0:Port-A
- *   1:Port-B (front mic-in)
- *   2:Port-C (line-in)
- *   3:Port-F (mic2-in)
- *   4:Port-E (mic-in)
- *   5:CD
- *   6:Port-G
- *   7:Port-H
- *   8:Port-D (line-in/2)
- *   9:Mix
- *
- * Proposed pin assignments by the datasheet
- *
- * 6-stack
- * Port-A front headphone
- *      B front mic-in
- *      C rear line-in
- *      D rear front-out
- *      E rear mic-in
- *      F rear surround
- *      G rear CLFE
- *      H rear side
- *
- * 3-stack
- * Port-A front headphone
- *      B front mic
- *      C rear line-in/surround
- *      D rear front-out
- *      E rear mic-in/CLFE
- *
- * laptop
- * Port-A headphone
- *      B mic-in
- *      C docking station
- *      D internal speaker (with EAPD)
- *      E/F quad mic array
- */
+ 
 
 static int ad1988_auto_smux_enum_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
@@ -805,9 +697,7 @@ static int ad1988_add_spdif_mux_ctl(struct hda_codec *codec)
 {
 	struct ad198x_spec *spec = codec->spec;
 	int i, num_conns;
-	/* we create four static faked paths, since AD codecs have odd
-	 * widget connections regarding the SPDIF out source
-	 */
+	 
 	static const struct nid_path fake_paths[4] = {
 		{
 			.depth = 3,
@@ -835,7 +725,7 @@ static int ad1988_add_spdif_mux_ctl(struct hda_codec *codec)
 		},
 	};
 
-	/* SPDIF source mux appears to be present only on AD1988A */
+	 
 	if (!spec->gen.autocfg.dig_outs ||
 	    get_wcaps_type(get_wcaps(codec, 0x1d)) != AC_WID_AUD_MIX)
 		return 0;
@@ -863,8 +753,7 @@ static int ad1988_add_spdif_mux_ctl(struct hda_codec *codec)
 	return 0;
 }
 
-/*
- */
+ 
 
 enum {
 	AD1988_FIXUP_6STACK_DIG,
@@ -874,15 +763,15 @@ static const struct hda_fixup ad1988_fixups[] = {
 	[AD1988_FIXUP_6STACK_DIG] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			{ 0x11, 0x02214130 }, /* front-hp */
-			{ 0x12, 0x01014010 }, /* line-out */
-			{ 0x14, 0x02a19122 }, /* front-mic */
-			{ 0x15, 0x01813021 }, /* line-in */
-			{ 0x16, 0x01011012 }, /* line-out */
-			{ 0x17, 0x01a19020 }, /* mic */
-			{ 0x1b, 0x0145f1f0 }, /* SPDIF */
-			{ 0x24, 0x01016011 }, /* line-out */
-			{ 0x25, 0x01012013 }, /* line-out */
+			{ 0x11, 0x02214130 },  
+			{ 0x12, 0x01014010 },  
+			{ 0x14, 0x02a19122 },  
+			{ 0x15, 0x01813021 },  
+			{ 0x16, 0x01011012 },  
+			{ 0x17, 0x01a19020 },  
+			{ 0x1b, 0x0145f1f0 },  
+			{ 0x24, 0x01016011 },  
+			{ 0x25, 0x01012013 },  
 			{ }
 		}
 	},
@@ -928,35 +817,9 @@ static int patch_ad1988(struct hda_codec *codec)
 }
 
 
-/*
- * AD1884 / AD1984
- *
- * port-B - front line/mic-in
- * port-E - aux in/out
- * port-F - aux in/out
- * port-C - rear line/mic-in
- * port-D - rear line/hp-out
- * port-A - front line/hp-out
- *
- * AD1984 = AD1884 + two digital mic-ins
- *
- * AD1883 / AD1884A / AD1984A / AD1984B
- *
- * port-B (0x14) - front mic-in
- * port-E (0x1c) - rear mic-in
- * port-F (0x16) - CD / ext out
- * port-C (0x15) - rear line-in
- * port-D (0x12) - rear line-out
- * port-A (0x11) - front hp-out
- *
- * AD1984A = AD1884A + digital-mic
- * AD1883 = equivalent with AD1984A
- * AD1984B = AD1984A + extra SPDIF-out
- */
+ 
 
-/* set the upper-limit for mixer amp to 0dB for avoiding the possible
- * damage by overloading
- */
+ 
 static void ad1884_fixup_amp_override(struct hda_codec *codec,
 				      const struct hda_fixup *fix, int action)
 {
@@ -968,7 +831,7 @@ static void ad1884_fixup_amp_override(struct hda_codec *codec,
 					  (1 << AC_AMPCAP_MUTE_SHIFT));
 }
 
-/* toggle GPIO1 according to the mute state */
+ 
 static void ad1884_vmaster_hp_gpio_hook(void *private_data, int enabled)
 {
 	struct hda_codec *codec = private_data;
@@ -1015,13 +878,13 @@ static void ad1884_fixup_thinkpad(struct hda_codec *codec,
 		spec->gen.keep_eapd_on = 1;
 		spec->gen.vmaster_mute.hook = ad_vmaster_eapd_hook;
 		spec->eapd_nid = 0x12;
-		/* Analog PC Beeper - allow firmware/ACPI beeps */
+		 
 		spec->beep_amp = HDA_COMPOSE_AMP_VAL(0x20, 3, 3, HDA_INPUT);
-		spec->gen.beep_nid = 0; /* no digital beep */
+		spec->gen.beep_nid = 0;  
 	}
 }
 
-/* set magic COEFs for dmic */
+ 
 static const struct hda_verb ad1884_dmic_init_verbs[] = {
 	{0x01, AC_VERB_SET_COEF_INDEX, 0x13f7},
 	{0x01, AC_VERB_SET_PROC_COEF, 0x08},
@@ -1107,17 +970,7 @@ static int patch_ad1884(struct hda_codec *codec)
 	return err;
 }
 
-/*
- * AD1882 / AD1882A
- *
- * port-A - front hp-out
- * port-B - front mic-in
- * port-C - rear line-in, shared surr-out (3stack)
- * port-D - rear line-out
- * port-E - rear mic-in, shared clfe-out (3stack)
- * port-F - rear surr-out (6stack)
- * port-G - rear clfe-out (6stack)
- */
+ 
 
 static int patch_ad1882(struct hda_codec *codec)
 {
@@ -1147,9 +1000,7 @@ static int patch_ad1882(struct hda_codec *codec)
 }
 
 
-/*
- * patch entries
- */
+ 
 static const struct hda_device_id snd_hda_id_analog[] = {
 	HDA_CODEC_ENTRY(0x11d4184a, "AD1884A", patch_ad1884),
 	HDA_CODEC_ENTRY(0x11d41882, "AD1882", patch_ad1882),
@@ -1166,7 +1017,7 @@ static const struct hda_device_id snd_hda_id_analog[] = {
 	HDA_CODEC_ENTRY(0x11d4882a, "AD1882A", patch_ad1882),
 	HDA_CODEC_ENTRY(0x11d4989a, "AD1989A", patch_ad1988),
 	HDA_CODEC_ENTRY(0x11d4989b, "AD1989B", patch_ad1988),
-	{} /* terminator */
+	{}  
 };
 MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_analog);
 

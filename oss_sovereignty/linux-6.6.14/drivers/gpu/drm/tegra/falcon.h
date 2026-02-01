@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef _FALCON_H_
 #define _FALCON_H_
@@ -55,9 +53,9 @@
 #define FALCON_DMATRFFBOFFS			0x0000111c
 
 struct falcon_fw_bin_header_v1 {
-	u32 magic;		/* 0x10de */
-	u32 version;		/* version of bin format (1) */
-	u32 size;		/* entire image size including this header */
+	u32 magic;		 
+	u32 version;		 
+	u32 size;		 
 	u32 os_header_offset;
 	u32 os_data_offset;
 	u32 os_size;
@@ -81,23 +79,23 @@ struct falcon_firmware_section {
 };
 
 struct falcon_firmware {
-	/* Firmware after it is read but not loaded */
+	 
 	const struct firmware *firmware;
 
-	/* Raw firmware data */
+	 
 	dma_addr_t iova;
 	dma_addr_t phys;
 	void *virt;
 	size_t size;
 
-	/* Parsed firmware information */
+	 
 	struct falcon_firmware_section bin_data;
 	struct falcon_firmware_section data;
 	struct falcon_firmware_section code;
 };
 
 struct falcon {
-	/* Set by falcon client */
+	 
 	struct device *dev;
 	void __iomem *regs;
 
@@ -112,4 +110,4 @@ int falcon_boot(struct falcon *falcon);
 void falcon_execute_method(struct falcon *falcon, u32 method, u32 data);
 int falcon_wait_idle(struct falcon *falcon);
 
-#endif /* _FALCON_H_ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Raspberry Pi
- */
+
+ 
 
 #include "v3d_drv.h"
 #include "v3d_regs.h"
@@ -127,12 +125,12 @@ int v3d_perfmon_create_ioctl(struct drm_device *dev, void *data,
 	unsigned int i;
 	int ret;
 
-	/* Number of monitored counters cannot exceed HW limits. */
+	 
 	if (req->ncounters > DRM_V3D_MAX_PERF_COUNTERS ||
 	    !req->ncounters)
 		return -EINVAL;
 
-	/* Make sure all counters are valid. */
+	 
 	for (i = 0; i < req->ncounters; i++) {
 		if (req->counters[i] >= V3D_PERFCNT_NUM)
 			return -EINVAL;

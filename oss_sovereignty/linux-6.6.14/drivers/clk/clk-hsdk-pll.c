@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys HSDK SDP Generic PLL clock driver
- *
- * Copyright (C) 2017 Synopsys
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -15,10 +11,10 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-#define CGU_PLL_CTRL	0x000 /* ARC PLL control register */
-#define CGU_PLL_STATUS	0x004 /* ARC PLL status register */
-#define CGU_PLL_FMEAS	0x008 /* ARC PLL frequency measurement register */
-#define CGU_PLL_MON	0x00C /* ARC PLL monitor register */
+#define CGU_PLL_CTRL	0x000  
+#define CGU_PLL_STATUS	0x004  
+#define CGU_PLL_FMEAS	0x008  
+#define CGU_PLL_MON	0x00C  
 
 #define CGU_PLL_CTRL_ODIV_SHIFT		2
 #define CGU_PLL_CTRL_IDIV_SHIFT		4
@@ -35,7 +31,7 @@
 #define CGU_PLL_STATUS_LOCK		BIT(0)
 #define CGU_PLL_STATUS_ERR		BIT(1)
 
-#define HSDK_PLL_MAX_LOCK_TIME		100 /* 100 us */
+#define HSDK_PLL_MAX_LOCK_TIME		100  
 
 #define CGU_PLL_SOURCE_MAX		1
 
@@ -137,7 +133,7 @@ static inline void hsdk_pll_set_cfg(struct hsdk_pll_clk *clk,
 		val = hsdk_pll_read(clk, CGU_PLL_CTRL);
 		val |= CGU_PLL_CTRL_BYPASS;
 	} else {
-		/* Powerdown and Bypass bits should be cleared */
+		 
 		val |= cfg->idiv << CGU_PLL_CTRL_IDIV_SHIFT;
 		val |= cfg->fbdiv << CGU_PLL_CTRL_FBDIV_SHIFT;
 		val |= cfg->odiv << CGU_PLL_CTRL_ODIV_SHIFT;
@@ -176,19 +172,19 @@ static unsigned long hsdk_pll_recalc_rate(struct clk_hw *hw,
 
 	dev_dbg(clk->dev, "current configuration: %#x\n", val);
 
-	/* Check if PLL is bypassed */
+	 
 	if (val & CGU_PLL_CTRL_BYPASS)
 		return parent_rate;
 
-	/* Check if PLL is disabled */
+	 
 	if (val & CGU_PLL_CTRL_PD)
 		return 0;
 
-	/* input divider = reg.idiv + 1 */
+	 
 	idiv = 1 + ((val & CGU_PLL_CTRL_IDIV_MASK) >> CGU_PLL_CTRL_IDIV_SHIFT);
-	/* fb divider = 2*(reg.fbdiv + 1) */
+	 
 	fbdiv = 2 * (1 + ((val & CGU_PLL_CTRL_FBDIV_MASK) >> CGU_PLL_CTRL_FBDIV_SHIFT));
-	/* output divider = 2^(reg.odiv) */
+	 
 	odiv = 1 << ((val & CGU_PLL_CTRL_ODIV_MASK) >> CGU_PLL_CTRL_ODIV_SHIFT);
 
 	rate = (u64)parent_rate * fbdiv;
@@ -226,10 +222,7 @@ static int hsdk_pll_comm_update_rate(struct hsdk_pll_clk *clk,
 {
 	hsdk_pll_set_cfg(clk, cfg);
 
-	/*
-	 * Wait until CGU relocks and check error status.
-	 * If after timeout CGU is unlocked yet return error.
-	 */
+	 
 	udelay(HSDK_PLL_MAX_LOCK_TIME);
 	if (!hsdk_pll_is_locked(clk))
 		return -ETIMEDOUT;
@@ -244,19 +237,13 @@ static int hsdk_pll_core_update_rate(struct hsdk_pll_clk *clk,
 				     unsigned long rate,
 				     const struct hsdk_pll_cfg *cfg)
 {
-	/*
-	 * When core clock exceeds 500MHz, the divider for the interface
-	 * clock must be programmed to div-by-2.
-	 */
+	 
 	if (rate > CORE_IF_CLK_THRESHOLD_HZ)
 		iowrite32(CREG_CORE_IF_CLK_DIV_2, clk->spec_regs);
 
 	hsdk_pll_set_cfg(clk, cfg);
 
-	/*
-	 * Wait until CGU relocks and check error status.
-	 * If after timeout CGU is unlocked yet return error.
-	 */
+	 
 	udelay(HSDK_PLL_MAX_LOCK_TIME);
 	if (!hsdk_pll_is_locked(clk))
 		return -ETIMEDOUT;
@@ -264,10 +251,7 @@ static int hsdk_pll_core_update_rate(struct hsdk_pll_clk *clk,
 	if (hsdk_pll_is_err(clk))
 		return -EINVAL;
 
-	/*
-	 * Program divider to div-by-1 if we succesfuly set core clock below
-	 * 500MHz threshold.
-	 */
+	 
 	if (rate <= CORE_IF_CLK_THRESHOLD_HZ)
 		iowrite32(CREG_CORE_IF_CLK_DIV_1, clk->spec_regs);
 
@@ -407,7 +391,7 @@ err_free_pll_clk:
 	kfree(pll_clk);
 }
 
-/* Core PLL needed early for ARC cpus timers */
+ 
 CLK_OF_DECLARE(hsdk_pll_clock, "snps,hsdk-core-pll-clock",
 of_hsdk_pll_clk_setup);
 

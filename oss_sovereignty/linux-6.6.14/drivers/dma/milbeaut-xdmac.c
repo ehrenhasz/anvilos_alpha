@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2019 Linaro Ltd.
-// Copyright (C) 2019 Socionext Inc.
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/dma-mapping.h>
@@ -18,10 +18,10 @@
 
 #include "virt-dma.h"
 
-/* global register */
+ 
 #define M10V_XDACS 0x00
 
-/* channel local register */
+ 
 #define M10V_XDTBC 0x10
 #define M10V_XDSSA 0x14
 #define M10V_XDDSA 0x18
@@ -89,7 +89,7 @@ to_milbeaut_xdmac_desc(struct virt_dma_desc *vd)
 	return container_of(vd, struct milbeaut_xdmac_desc, vd);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static struct milbeaut_xdmac_desc *
 milbeaut_xdmac_next_desc(struct milbeaut_xdmac_chan *mc)
 {
@@ -108,13 +108,13 @@ milbeaut_xdmac_next_desc(struct milbeaut_xdmac_chan *mc)
 	return mc->md;
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void milbeaut_chan_start(struct milbeaut_xdmac_chan *mc,
 				struct milbeaut_xdmac_desc *md)
 {
 	u32 val;
 
-	/* Setup the channel */
+	 
 	val = md->len - 1;
 	writel_relaxed(val, mc->reg_ch_base + M10V_XDTBC);
 
@@ -136,7 +136,7 @@ static void milbeaut_chan_start(struct milbeaut_xdmac_chan *mc,
 		FIELD_PREP(M10V_XDDAC_DBL, M10V_DEFBL);
 	writel_relaxed(val, mc->reg_ch_base + M10V_XDDAC);
 
-	/* Start the channel */
+	 
 	val = readl_relaxed(mc->reg_ch_base + M10V_XDDES);
 	val &= ~(M10V_XDDES_CE | M10V_XDDES_SE | M10V_XDDES_TF |
 		 M10V_XDDES_EI | M10V_XDDES_TI);
@@ -146,7 +146,7 @@ static void milbeaut_chan_start(struct milbeaut_xdmac_chan *mc,
 	writel_relaxed(val, mc->reg_ch_base + M10V_XDDES);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void milbeaut_xdmac_start(struct milbeaut_xdmac_chan *mc)
 {
 	struct milbeaut_xdmac_desc *md;
@@ -164,7 +164,7 @@ static irqreturn_t milbeaut_xdmac_interrupt(int irq, void *dev_id)
 
 	spin_lock(&mc->vc.lock);
 
-	/* Ack and Stop */
+	 
 	val = FIELD_PREP(M10V_XDDSD_IS_MASK, 0x0);
 	writel_relaxed(val, mc->reg_ch_base + M10V_XDDSD);
 
@@ -214,7 +214,7 @@ static int milbeaut_xdmac_terminate_all(struct dma_chan *chan)
 
 	spin_lock_irqsave(&vc->lock, flags);
 
-	/* Halt the channel */
+	 
 	val = readl(mc->reg_ch_base + M10V_XDDES);
 	val &= ~M10V_XDDES_CE;
 	val |= FIELD_PREP(M10V_XDDES_CE, 0);
@@ -374,13 +374,7 @@ static int milbeaut_xdmac_remove(struct platform_device *pdev)
 	struct dma_chan *chan;
 	int ret;
 
-	/*
-	 * Before reaching here, almost all descriptors have been freed by the
-	 * ->device_free_chan_resources() hook. However, each channel might
-	 * be still holding one descriptor that was on-flight at that moment.
-	 * Terminate it to make sure this hardware is no longer running. Then,
-	 * free the channel resources once again to avoid memory leak.
-	 */
+	 
 	list_for_each_entry(chan, &mdev->ddev.channels, device_node) {
 		ret = dmaengine_terminate_sync(chan);
 		if (ret)
@@ -398,7 +392,7 @@ static int milbeaut_xdmac_remove(struct platform_device *pdev)
 
 static const struct of_device_id milbeaut_xdmac_match[] = {
 	{ .compatible = "socionext,milbeaut-m10v-xdmac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, milbeaut_xdmac_match);
 

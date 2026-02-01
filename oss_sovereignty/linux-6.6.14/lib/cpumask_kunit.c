@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KUnit tests for cpumask.
- *
- * Author: Sander Vanheule <sander@svanheule.net>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/cpu.h>
@@ -118,7 +114,7 @@ static void test_cpumask_iterators_builtin(struct kunit *test)
 {
 	EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, possible);
 
-	/* Ensure the dynamic masks are stable while running the tests */
+	 
 	cpu_hotplug_disable();
 
 	EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, online);

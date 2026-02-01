@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SMBus driver for ACPI SMBus CMI
- *
- * Copyright (C) 2009 Crane Cai <crane.cai@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -34,7 +30,7 @@ static const struct smbus_methods_t smbus_methods = {
 	.mt_sbw  = "_SBW",
 };
 
-/* Some IBM BIOSes omit the leading underscore */
+ 
 static const struct smbus_methods_t ibm_smbus_methods = {
 	.mt_info = "SBI_",
 	.mt_sbr  = "SBR_",

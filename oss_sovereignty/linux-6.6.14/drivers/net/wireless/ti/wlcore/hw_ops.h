@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+ 
+ 
 
 #ifndef __WLCORE_HW_OPS_H__
 #define __WLCORE_HW_OPS_H__

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+ 
 
 #include "ixgbe.h"
 #include <linux/dcbnl.h>
@@ -7,16 +7,16 @@
 #include "ixgbe_dcb_82599.h"
 #include "ixgbe_sriov.h"
 
-/* Callbacks for DCB netlink in the kernel */
+ 
 #define BIT_PFC		0x02
 #define BIT_PG_RX	0x04
 #define BIT_PG_TX	0x08
 #define BIT_APP_UPCHG	0x10
 
-/* Responses for the DCB_C_SET_ALL command */
-#define DCB_HW_CHG_RST  0  /* DCB configuration changed with reset */
-#define DCB_NO_HW_CHG   1  /* DCB configuration did not change */
-#define DCB_HW_CHG      2  /* DCB configuration changed, no reset */
+ 
+#define DCB_HW_CHG_RST  0   
+#define DCB_NO_HW_CHG   1   
+#define DCB_HW_CHG      2   
 
 static int ixgbe_copy_dcb_cfg(struct ixgbe_adapter *adapter, int tc_max)
 {
@@ -127,11 +127,11 @@ static u8 ixgbe_dcbnl_set_state(struct net_device *netdev, u8 state)
 {
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
 
-	/* Fail command if not in CEE mode */
+	 
 	if (!(adapter->dcbx_cap & DCB_CAP_DCBX_VER_CEE))
 		return 1;
 
-	/* verify there is something to do, if not then exit */
+	 
 	if (!state == !(adapter->flags & IXGBE_FLAG_DCB_ENABLED))
 		return 0;
 
@@ -300,7 +300,7 @@ static u8 ixgbe_dcbnl_set_all(struct net_device *netdev)
 	int ret = DCB_NO_HW_CHG;
 	int i;
 
-	/* Fail command if not in CEE mode */
+	 
 	if (!(adapter->dcbx_cap & DCB_CAP_DCBX_VER_CEE))
 		return DCB_NO_HW_CHG;
 
@@ -312,7 +312,7 @@ static u8 ixgbe_dcbnl_set_all(struct net_device *netdev)
 	if (adapter->dcb_set_bitmap & (BIT_PG_TX|BIT_PG_RX)) {
 		u16 refill[MAX_TRAFFIC_CLASS], max[MAX_TRAFFIC_CLASS];
 		u8 bwg_id[MAX_TRAFFIC_CLASS], prio_type[MAX_TRAFFIC_CLASS];
-		/* Priority to TC mapping in CEE case default to 1:1 */
+		 
 		u8 prio_tc[MAX_USER_PRIORITY];
 		int max_frame = adapter->netdev->mtu + ETH_HLEN + ETH_FCS_LEN;
 
@@ -359,10 +359,7 @@ static u8 ixgbe_dcbnl_set_all(struct net_device *netdev)
 	}
 
 #ifdef IXGBE_FCOE
-	/* Reprogram FCoE hardware offloads when the traffic class
-	 * FCoE is using changes. This happens if the APP info
-	 * changes or the up2tc mapping is updated.
-	 */
+	 
 	if (adapter->dcb_set_bitmap & BIT_APP_UPCHG) {
 		struct dcb_app app = {
 				      .selector = DCB_APP_IDTYPE_ETHTYPE,
@@ -458,16 +455,7 @@ static void ixgbe_dcbnl_setpfcstate(struct net_device *netdev, u8 state)
 	adapter->temp_dcb_cfg.pfc_mode_enable = state;
 }
 
-/**
- * ixgbe_dcbnl_getapp - retrieve the DCBX application user priority
- * @netdev : the corresponding netdev
- * @idtype : identifies the id as ether type or TCP/UDP port number
- * @id: id is either ether type or TCP/UDP port number
- *
- * Returns : on success, returns a non-zero 802.1p user priority bitmap
- * otherwise returns -EINVAL as the invalid user priority bitmap to indicate an
- * error.
- */
+ 
 static int ixgbe_dcbnl_getapp(struct net_device *netdev, u8 idtype, u16 id)
 {
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
@@ -490,7 +478,7 @@ static int ixgbe_dcbnl_ieee_getets(struct net_device *dev,
 
 	ets->ets_cap = adapter->dcb_cfg.num_tcs.pg_tcs;
 
-	/* No IEEE PFC settings available */
+	 
 	if (!my_ets)
 		return 0;
 
@@ -520,11 +508,11 @@ static int ixgbe_dcbnl_ieee_setets(struct net_device *dev,
 		if (!adapter->ixgbe_ieee_ets)
 			return -ENOMEM;
 
-		/* initialize UP2TC mappings to invalid value */
+		 
 		for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
 			adapter->ixgbe_ieee_ets->prio_tc[i] =
 				IEEE_8021QAZ_MAX_TCS;
-		/* if possible update UP2TC mappings from HW */
+		 
 		ixgbe_dcb_read_rtrup2tc(&adapter->hw,
 					adapter->ixgbe_ieee_ets->prio_tc);
 	}
@@ -564,7 +552,7 @@ static int ixgbe_dcbnl_ieee_getpfc(struct net_device *dev,
 
 	pfc->pfc_cap = adapter->dcb_cfg.num_tcs.pfc_tcs;
 
-	/* No IEEE PFC settings available */
+	 
 	if (!my_pfc)
 		return 0;
 
@@ -601,7 +589,7 @@ static int ixgbe_dcbnl_ieee_setpfc(struct net_device *dev,
 	prio_tc = adapter->ixgbe_ieee_ets->prio_tc;
 	memcpy(adapter->ixgbe_ieee_pfc, pfc, sizeof(*adapter->ixgbe_ieee_pfc));
 
-	/* Enable link flow control parameters if PFC is disabled */
+	 
 	if (pfc->pfc_en)
 		err = ixgbe_dcb_hw_pfc_config(hw, pfc->pfc_en, prio_tc);
 	else
@@ -638,7 +626,7 @@ static int ixgbe_dcbnl_ieee_setapp(struct net_device *dev,
 	}
 #endif
 
-	/* VF devices should use default UP when available */
+	 
 	if (app->selector == IEEE_8021QAZ_APP_SEL_ETHERTYPE &&
 	    app->protocol == 0) {
 		int vf;
@@ -681,7 +669,7 @@ static int ixgbe_dcbnl_ieee_delapp(struct net_device *dev,
 		ixgbe_dcbnl_devreset(dev);
 	}
 #endif
-	/* IF default priority is being removed clear VF default UP */
+	 
 	if (app->selector == IEEE_8021QAZ_APP_SEL_ETHERTYPE &&
 	    app->protocol == 0 && adapter->default_up == app->priority) {
 		int vf;
@@ -715,7 +703,7 @@ static u8 ixgbe_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 	struct ieee_pfc pfc = {0};
 	int err = 0;
 
-	/* no support for LLD_MANAGED modes or CEE+IEEE */
+	 
 	if ((mode & DCB_CAP_DCBX_LLD_MANAGED) ||
 	    ((mode & DCB_CAP_DCBX_VER_IEEE) && (mode & DCB_CAP_DCBX_VER_CEE)) ||
 	    !(mode & DCB_CAP_DCBX_HOST))
@@ -726,7 +714,7 @@ static u8 ixgbe_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 
 	adapter->dcbx_cap = mode;
 
-	/* ETS and PFC defaults */
+	 
 	ets.ets_cap = 8;
 	pfc.pfc_cap = 8;
 
@@ -739,9 +727,7 @@ static u8 ixgbe_dcbnl_setdcbx(struct net_device *dev, u8 mode)
 		adapter->dcb_set_bitmap |= mask;
 		ixgbe_dcbnl_set_all(dev);
 	} else {
-		/* Drop into single TC mode strict priority as this
-		 * indicates CEE and IEEE versions are disabled
-		 */
+		 
 		ixgbe_dcbnl_ieee_setets(dev, &ets);
 		ixgbe_dcbnl_ieee_setpfc(dev, &pfc);
 		err = ixgbe_setup_tc(dev, 0);

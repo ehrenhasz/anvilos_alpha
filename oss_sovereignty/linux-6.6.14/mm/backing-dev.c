@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/blkdev.h>
 #include <linux/wait.h>
@@ -23,16 +23,13 @@ EXPORT_SYMBOL_GPL(noop_backing_dev_info);
 
 static const char *bdi_unknown_name = "(unknown)";
 
-/*
- * bdi_lock protects bdi_tree and updates to bdi_list. bdi_list has RCU
- * reader side locking.
- */
+ 
 DEFINE_SPINLOCK(bdi_lock);
 static u64 bdi_id_cursor;
 static struct rb_root bdi_tree = RB_ROOT;
 LIST_HEAD(bdi_list);
 
-/* bdi_wq serves all asynchronous writeback tasks */
+ 
 struct workqueue_struct *bdi_wq;
 
 #ifdef CONFIG_DEBUG_FS
@@ -372,20 +369,7 @@ static int __init default_bdi_init(void)
 }
 subsys_initcall(default_bdi_init);
 
-/*
- * This function is used when the first inode for this wb is marked dirty. It
- * wakes-up the corresponding bdi thread which should then take care of the
- * periodic background write-out of dirty inodes. Since the write-out would
- * starts only 'dirty_writeback_interval' centisecs from now anyway, we just
- * set up a timer which wakes the bdi thread up later.
- *
- * Note, we wouldn't bother setting up the timer, but this function is on the
- * fast-path (used by '__mark_inode_dirty()'), so we save few context switches
- * by delaying the wake-up.
- *
- * We have to be careful not to postpone flush work if it is scheduled for
- * earlier. Thus we use queue_delayed_work().
- */
+ 
 void wb_wakeup_delayed(struct bdi_writeback *wb)
 {
 	unsigned long timeout;
@@ -405,9 +389,7 @@ static void wb_update_bandwidth_workfn(struct work_struct *work)
 	wb_update_bandwidth(wb);
 }
 
-/*
- * Initial write bandwidth: 100 MB/s
- */
+ 
 #define INIT_BW		(100 << (20 - PAGE_SHIFT))
 
 static int wb_init(struct bdi_writeback *wb, struct backing_dev_info *bdi,
@@ -459,12 +441,10 @@ out_destroy_stat:
 
 static void cgwb_remove_from_bdi_list(struct bdi_writeback *wb);
 
-/*
- * Remove bdi from the global list and shutdown any threads we have running
- */
+ 
 static void wb_shutdown(struct bdi_writeback *wb)
 {
-	/* Make sure nobody queues further work */
+	 
 	spin_lock_irq(&wb->work_lock);
 	if (!test_and_clear_bit(WB_registered, &wb->state)) {
 		spin_unlock_irq(&wb->work_lock);
@@ -473,11 +453,7 @@ static void wb_shutdown(struct bdi_writeback *wb)
 	spin_unlock_irq(&wb->work_lock);
 
 	cgwb_remove_from_bdi_list(wb);
-	/*
-	 * Drain work list and shutdown the delayed_work.  !WB_registered
-	 * tells wb_workfn() that @wb is dying and its work_list needs to
-	 * be drained no matter what.
-	 */
+	 
 	mod_delayed_work(bdi_wq, &wb->dwork, 0);
 	flush_delayed_work(&wb->dwork);
 	WARN_ON(!list_empty(&wb->work_list));
@@ -500,10 +476,7 @@ static void wb_exit(struct bdi_writeback *wb)
 
 #include <linux/memcontrol.h>
 
-/*
- * cgwb_lock protects bdi->cgwb_tree, blkcg->cgwb_list, offline_cgwbs and
- * memcg->cgwb_list.  bdi->cgwb_tree is also RCU protected.
- */
+ 
 static DEFINE_SPINLOCK(cgwb_lock);
 static struct workqueue_struct *cgwb_release_wq;
 
@@ -533,7 +506,7 @@ static void cgwb_release_workfn(struct work_struct *work)
 	css_put(wb->blkcg_css);
 	mutex_unlock(&wb->bdi->cgwb_release_mutex);
 
-	/* triggers blkg destruction if no online users left */
+	 
 	blkcg_unpin_online(wb->blkcg_css);
 
 	fprop_local_destroy_percpu(&wb->memcg_completions);
@@ -588,7 +561,7 @@ static int cgwb_create(struct backing_dev_info *bdi,
 	memcg_cgwb_list = &memcg->cgwb_list;
 	blkcg_cgwb_list = blkcg_get_cgwb_list(blkcg_css);
 
-	/* look up again under lock and discard on blkcg mismatch */
+	 
 	spin_lock_irqsave(&cgwb_lock, flags);
 	wb = radix_tree_lookup(&bdi->cgwb_tree, memcg_css->id);
 	if (wb && wb->blkcg_css != blkcg_css) {
@@ -599,7 +572,7 @@ static int cgwb_create(struct backing_dev_info *bdi,
 	if (wb)
 		goto out_put;
 
-	/* need to create a new one */
+	 
 	wb = kmalloc(sizeof(*wb), gfp);
 	if (!wb) {
 		ret = -ENOMEM;
@@ -625,17 +598,12 @@ static int cgwb_create(struct backing_dev_info *bdi,
 	set_bit(WB_registered, &wb->state);
 	bdi_get(bdi);
 
-	/*
-	 * The root wb determines the registered state of the whole bdi and
-	 * memcg_cgwb_list and blkcg_cgwb_list's next pointers indicate
-	 * whether they're still online.  Don't link @wb if any is dead.
-	 * See wb_memcg_offline() and wb_blkcg_offline().
-	 */
+	 
 	ret = -ENODEV;
 	spin_lock_irqsave(&cgwb_lock, flags);
 	if (test_bit(WB_registered, &bdi->wb.state) &&
 	    blkcg_cgwb_list->next && memcg_cgwb_list->next) {
-		/* we might have raced another instance of this function */
+		 
 		ret = radix_tree_insert(&bdi->cgwb_tree, memcg_css->id, wb);
 		if (!ret) {
 			list_add_tail_rcu(&wb->bdi_node, &bdi->wb_list);
@@ -668,29 +636,7 @@ out_put:
 	return ret;
 }
 
-/**
- * wb_get_lookup - get wb for a given memcg
- * @bdi: target bdi
- * @memcg_css: cgroup_subsys_state of the target memcg (must have positive ref)
- *
- * Try to get the wb for @memcg_css on @bdi.  The returned wb has its
- * refcount incremented.
- *
- * This function uses css_get() on @memcg_css and thus expects its refcnt
- * to be positive on invocation.  IOW, rcu_read_lock() protection on
- * @memcg_css isn't enough.  try_get it before calling this function.
- *
- * A wb is keyed by its associated memcg.  As blkcg implicitly enables
- * memcg on the default hierarchy, memcg association is guaranteed to be
- * more specific (equal or descendant to the associated blkcg) and thus can
- * identify both the memcg and blkcg associations.
- *
- * Because the blkcg associated with a memcg may change as blkcg is enabled
- * and disabled closer to root in the hierarchy, each wb keeps track of
- * both the memcg and blkcg associated with it and verifies the blkcg on
- * each lookup.  On mismatch, the existing wb is discarded and a new one is
- * created.
- */
+ 
 struct bdi_writeback *wb_get_lookup(struct backing_dev_info *bdi,
 				    struct cgroup_subsys_state *memcg_css)
 {
@@ -704,7 +650,7 @@ struct bdi_writeback *wb_get_lookup(struct backing_dev_info *bdi,
 	if (wb) {
 		struct cgroup_subsys_state *blkcg_css;
 
-		/* see whether the blkcg association has changed */
+		 
 		blkcg_css = cgroup_get_e_css(memcg_css->cgroup, &io_cgrp_subsys);
 		if (unlikely(wb->blkcg_css != blkcg_css || !wb_tryget(wb)))
 			wb = NULL;
@@ -715,15 +661,7 @@ struct bdi_writeback *wb_get_lookup(struct backing_dev_info *bdi,
 	return wb;
 }
 
-/**
- * wb_get_create - get wb for a given memcg, create if necessary
- * @bdi: target bdi
- * @memcg_css: cgroup_subsys_state of the target memcg (must have positive ref)
- * @gfp: allocation mask to use
- *
- * Try to get the wb for @memcg_css on @bdi.  If it doesn't exist, try to
- * create one.  See wb_get_lookup() for more details.
- */
+ 
 struct bdi_writeback *wb_get_create(struct backing_dev_info *bdi,
 				    struct cgroup_subsys_state *memcg_css,
 				    gfp_t gfp)
@@ -781,13 +719,7 @@ static void cgwb_bdi_unregister(struct backing_dev_info *bdi)
 	mutex_unlock(&bdi->cgwb_release_mutex);
 }
 
-/*
- * cleanup_offline_cgwbs_workfn - try to release dying cgwbs
- *
- * Try to release dying cgwbs by switching attached inodes to the nearest
- * living ancestor's writeback. Processed wbs are placed at the end
- * of the list to guarantee the forward progress.
- */
+ 
 static void cleanup_offline_cgwbs_workfn(struct work_struct *work)
 {
 	struct bdi_writeback *wb;
@@ -800,15 +732,7 @@ static void cleanup_offline_cgwbs_workfn(struct work_struct *work)
 				      offline_node);
 		list_move(&wb->offline_node, &processed);
 
-		/*
-		 * If wb is dirty, cleaning up the writeback by switching
-		 * attached inodes will result in an effective removal of any
-		 * bandwidth restrictions, which isn't the goal.  Instead,
-		 * it can be postponed until the next time, when all io
-		 * will be likely completed.  If in the meantime some inodes
-		 * will get re-dirtied, they should be eventually switched to
-		 * a new cgwb.
-		 */
+		 
 		if (wb_has_dirty_io(wb))
 			continue;
 
@@ -829,12 +753,7 @@ static void cleanup_offline_cgwbs_workfn(struct work_struct *work)
 	spin_unlock_irq(&cgwb_lock);
 }
 
-/**
- * wb_memcg_offline - kill all wb's associated with a memcg being offlined
- * @memcg: memcg being offlined
- *
- * Also prevents creation of any new wb's associated with @memcg.
- */
+ 
 void wb_memcg_offline(struct mem_cgroup *memcg)
 {
 	struct list_head *memcg_cgwb_list = &memcg->cgwb_list;
@@ -843,18 +762,13 @@ void wb_memcg_offline(struct mem_cgroup *memcg)
 	spin_lock_irq(&cgwb_lock);
 	list_for_each_entry_safe(wb, next, memcg_cgwb_list, memcg_node)
 		cgwb_kill(wb);
-	memcg_cgwb_list->next = NULL;	/* prevent new wb's */
+	memcg_cgwb_list->next = NULL;	 
 	spin_unlock_irq(&cgwb_lock);
 
 	queue_work(system_unbound_wq, &cleanup_offline_cgwbs_work);
 }
 
-/**
- * wb_blkcg_offline - kill all wb's associated with a blkcg being offlined
- * @css: blkcg being offlined
- *
- * Also prevents creation of any new wb's associated with @blkcg.
- */
+ 
 void wb_blkcg_offline(struct cgroup_subsys_state *css)
 {
 	struct bdi_writeback *wb, *next;
@@ -863,7 +777,7 @@ void wb_blkcg_offline(struct cgroup_subsys_state *css)
 	spin_lock_irq(&cgwb_lock);
 	list_for_each_entry_safe(wb, next, list, blkcg_node)
 		cgwb_kill(wb);
-	list->next = NULL;	/* prevent new wb's */
+	list->next = NULL;	 
 	spin_unlock_irq(&cgwb_lock);
 }
 
@@ -876,11 +790,7 @@ static void cgwb_bdi_register(struct backing_dev_info *bdi)
 
 static int __init cgwb_init(void)
 {
-	/*
-	 * There can be many concurrent release work items overwhelming
-	 * system_wq.  Put them in a separate wq and limit concurrency.
-	 * There's no point in executing many of these in parallel.
-	 */
+	 
 	cgwb_release_wq = alloc_workqueue("cgwb_release", 0, 1);
 	if (!cgwb_release_wq)
 		return -ENOMEM;
@@ -889,7 +799,7 @@ static int __init cgwb_init(void)
 }
 subsys_initcall(cgwb_init);
 
-#else	/* CONFIG_CGROUP_WRITEBACK */
+#else	 
 
 static int cgwb_bdi_init(struct backing_dev_info *bdi)
 {
@@ -908,7 +818,7 @@ static void cgwb_remove_from_bdi_list(struct bdi_writeback *wb)
 	list_del_rcu(&wb->bdi_node);
 }
 
-#endif	/* CONFIG_CGROUP_WRITEBACK */
+#endif	 
 
 int bdi_init(struct backing_dev_info *bdi)
 {
@@ -970,13 +880,7 @@ static struct rb_node **bdi_lookup_rb_node(u64 id, struct rb_node **parentp)
 	return p;
 }
 
-/**
- * bdi_get_by_id - lookup and get bdi from its id
- * @id: bdi id to lookup
- *
- * Find bdi matching @id and get it.  Returns NULL if the matching bdi
- * doesn't exist or is already unregistered.
- */
+ 
 struct backing_dev_info *bdi_get_by_id(u64 id)
 {
 	struct backing_dev_info *bdi = NULL;
@@ -998,7 +902,7 @@ int bdi_register_va(struct backing_dev_info *bdi, const char *fmt, va_list args)
 	struct device *dev;
 	struct rb_node *parent, **p;
 
-	if (bdi->dev)	/* The driver needs to use separate queues per device */
+	if (bdi->dev)	 
 		return 0;
 
 	vsnprintf(bdi->dev_name, sizeof(bdi->dev_name), fmt, args);
@@ -1047,9 +951,7 @@ void bdi_set_owner(struct backing_dev_info *bdi, struct device *owner)
 	get_device(owner);
 }
 
-/*
- * Remove bdi from bdi_list, and ensure that it is no longer visible
- */
+ 
 static void bdi_remove_from_list(struct backing_dev_info *bdi)
 {
 	spin_lock_bh(&bdi_lock);
@@ -1064,15 +966,12 @@ void bdi_unregister(struct backing_dev_info *bdi)
 {
 	del_timer_sync(&bdi->laptop_mode_wb_timer);
 
-	/* make sure nobody finds us on the bdi_list anymore */
+	 
 	bdi_remove_from_list(bdi);
 	wb_shutdown(&bdi->wb);
 	cgwb_bdi_unregister(bdi);
 
-	/*
-	 * If this BDI's min ratio has been set, use bdi_set_min_ratio() to
-	 * update the global bdi_min_ratio.
-	 */
+	 
 	if (bdi->min_ratio)
 		bdi_set_min_ratio(bdi, 0);
 

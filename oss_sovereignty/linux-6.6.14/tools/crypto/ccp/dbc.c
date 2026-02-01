@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Secure Processor Dynamic Boost Control sample library
- *
- * Copyright (C) 2023 Advanced Micro Devices, Inc.
- *
- * Author: Mario Limonciello <mario.limonciello@amd.com>
- */
+
+ 
 
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/ioctl.h>
 
-/* if uapi header isn't installed, this might not yet exist */
+ 
 #ifndef __packed
 #define __packed __attribute__((packed))
 #endif

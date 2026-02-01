@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2016 Allwinnertech Co., Ltd.
- * Copyright (C) 2017-2018 Bootlin
- *
- * Maxime Ripard <maxime.ripard@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -437,7 +432,7 @@ static void sun6i_dsi_setup_burst(struct sun6i_dsi *dsi,
 
 		val = SUN6I_DSI_TCON_DRQ_ENABLE_MODE;
 	} else if ((mode->hsync_start - mode->hdisplay) > 20) {
-		/* Maaaaaagic */
+		 
 		u16 drq = (mode->hsync_start - mode->hdisplay) - 20;
 
 		drq *= mipi_dsi_pixel_format_to_bpp(device->format);
@@ -483,10 +478,7 @@ static void sun6i_dsi_setup_format(struct sun6i_dsi *dsi,
 	u8 dt, fmt;
 	u16 wc;
 
-	/*
-	 * TODO: The format defines are only valid in video mode and
-	 * change in command mode.
-	 */
+	 
 	switch (device->format) {
 	case MIPI_DSI_FMT_RGB888:
 		dt = MIPI_DSI_PACKED_PIXEL_STREAM_24;
@@ -537,7 +529,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
 	size_t bytes;
 	u8 *buffer;
 
-	/* Do all timing calculations up front to allocate buffer space */
+	 
 
 	if (device->mode_flags & MIPI_DSI_MODE_VIDEO_BURST) {
 		hblk = mode->hdisplay * Bpp;
@@ -549,54 +541,32 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
 			basic_ctl |= SUN6I_DSI_BASIC_CTL_TRAIL_FILL |
 				     SUN6I_DSI_BASIC_CTL_TRAIL_INV(0xc);
 	} else {
-		/*
-		 * A sync period is composed of a blanking packet (4
-		 * bytes + payload + 2 bytes) and a sync event packet
-		 * (4 bytes). Its minimal size is therefore 10 bytes
-		 */
+		 
 #define HSA_PACKET_OVERHEAD	10
 		hsa = max(HSA_PACKET_OVERHEAD,
 			  (mode->hsync_end - mode->hsync_start) * Bpp - HSA_PACKET_OVERHEAD);
 
-		/*
-		 * The backporch is set using a blanking packet (4
-		 * bytes + payload + 2 bytes). Its minimal size is
-		 * therefore 6 bytes
-		 */
+		 
 #define HBP_PACKET_OVERHEAD	6
 		hbp = max(HBP_PACKET_OVERHEAD,
 			  (mode->htotal - mode->hsync_end) * Bpp - HBP_PACKET_OVERHEAD);
 
-		/*
-		 * The frontporch is set using a sync event (4 bytes)
-		 * and two blanking packets (each one is 4 bytes +
-		 * payload + 2 bytes). Its minimal size is therefore
-		 * 16 bytes
-		 */
+		 
 #define HFP_PACKET_OVERHEAD	16
 		hfp = max(HFP_PACKET_OVERHEAD,
 			  (mode->hsync_start - mode->hdisplay) * Bpp - HFP_PACKET_OVERHEAD);
 
-		/*
-		 * The blanking is set using a sync event (4 bytes)
-		 * and a blanking packet (4 bytes + payload + 2
-		 * bytes). Its minimal size is therefore 10 bytes.
-		 */
+		 
 #define HBLK_PACKET_OVERHEAD	10
 		hblk = max(HBLK_PACKET_OVERHEAD,
 			   (mode->htotal - (mode->hsync_end - mode->hsync_start)) * Bpp -
 			   HBLK_PACKET_OVERHEAD);
 
-		/*
-		 * And I'm not entirely sure what vblk is about. The driver in
-		 * Allwinner BSP is using a rather convoluted calculation
-		 * there only for 4 lanes. However, using 0 (the !4 lanes
-		 * case) even with a 4 lanes screen seems to work...
-		 */
+		 
 		vblk = 0;
 	}
 
-	/* How many bytes do we need to send all payloads? */
+	 
 	bytes = max_t(size_t, max(max(hfp, hblk), max(hsa, hbp)), vblk);
 	buffer = kmalloc(bytes, GFP_KERNEL);
 	if (WARN_ON(!buffer))
@@ -634,31 +604,31 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
 		     SUN6I_DSI_BASIC_SIZE1_VACT(mode->vdisplay) |
 		     SUN6I_DSI_BASIC_SIZE1_VT(mode->vtotal));
 
-	/* sync */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HSA0_REG,
 		     sun6i_dsi_build_blk0_pkt(device->channel, hsa));
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HSA1_REG,
 		     sun6i_dsi_build_blk1_pkt(0, buffer, hsa));
 
-	/* backporch */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HBP0_REG,
 		     sun6i_dsi_build_blk0_pkt(device->channel, hbp));
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HBP1_REG,
 		     sun6i_dsi_build_blk1_pkt(0, buffer, hbp));
 
-	/* frontporch */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HFP0_REG,
 		     sun6i_dsi_build_blk0_pkt(device->channel, hfp));
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HFP1_REG,
 		     sun6i_dsi_build_blk1_pkt(0, buffer, hfp));
 
-	/* hblk */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HBLK0_REG,
 		     sun6i_dsi_build_blk0_pkt(device->channel, hblk));
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_HBLK1_REG,
 		     sun6i_dsi_build_blk1_pkt(0, buffer, hblk));
 
-	/* vblk */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_VBLK0_REG,
 		     sun6i_dsi_build_blk0_pkt(device->channel, vblk));
 	regmap_write(dsi->regs, SUN6I_DSI_BLK_VBLK1_REG,
@@ -732,9 +702,7 @@ static void sun6i_dsi_encoder_enable(struct drm_encoder *encoder)
 	reset_control_deassert(dsi->reset);
 	clk_prepare_enable(dsi->mod_clk);
 
-	/*
-	 * Enable the DSI block.
-	 */
+	 
 	regmap_write(dsi->regs, SUN6I_DSI_CTL_REG, SUN6I_DSI_CTL_EN);
 
 	regmap_write(dsi->regs, SUN6I_DSI_BASIC_CTL0_REG,
@@ -772,18 +740,7 @@ static void sun6i_dsi_encoder_enable(struct drm_encoder *encoder)
 	if (dsi->panel)
 		drm_panel_prepare(dsi->panel);
 
-	/*
-	 * FIXME: This should be moved after the switch to HS mode.
-	 *
-	 * Unfortunately, once in HS mode, it seems like we're not
-	 * able to send DCS commands anymore, which would prevent any
-	 * panel to send any DCS command as part as their enable
-	 * method, which is quite common.
-	 *
-	 * I haven't seen any artifact due to that sub-optimal
-	 * ordering on the panels I've tested it with, so I guess this
-	 * will do for now, until that IP is better understood.
-	 */
+	 
 	if (dsi->panel)
 		drm_panel_enable(dsi->panel);
 
@@ -912,11 +869,7 @@ static int sun6i_dsi_dcs_write_long(struct sun6i_dsi *dsi,
 		return ret;
 	}
 
-	/*
-	 * TODO: There's some bits (reg 0x200, bits 8/9) that
-	 * apparently can be used to check whether the data have been
-	 * sent, but I couldn't get it to work reliably.
-	 */
+	 
 	return msg->tx_len;
 }
 
@@ -940,11 +893,7 @@ static int sun6i_dsi_dcs_read(struct sun6i_dsi *dsi,
 		return ret;
 	}
 
-	/*
-	 * TODO: There's some bits (reg 0x200, bits 24/25) that
-	 * apparently can be used to check whether the data have been
-	 * received, but I couldn't get it to work reliably.
-	 */
+	 
 	regmap_read(dsi->regs, SUN6I_DSI_CMD_CTL_REG, &val);
 	if (val & SUN6I_DSI_CMD_CTL_RX_OVERFLOW)
 		return -EIO;
@@ -1160,10 +1109,7 @@ static int sun6i_dsi_probe(struct platform_device *pdev)
 			goto err_attach_clk;
 		}
 
-		/*
-		 * In order to operate properly, the module clock on the
-		 * A31 variant always seems to be set to 297MHz.
-		 */
+		 
 		if (variant->set_mod_clk)
 			clk_set_rate_exclusive(dsi->mod_clk, 297000000);
 	}

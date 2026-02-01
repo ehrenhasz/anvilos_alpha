@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_fw.c	Classifier mapping ipchains' fwmark to traffic class.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- * Changes:
- * Karlis Peisenieks <karlis@mt.lv> : 990415 : fw_walk off by one
- * Karlis Peisenieks <karlis@mt.lv> : 990415 : fw_delete killed all the filter (and kernel).
- * Alex <alex@pilotsoft.com> : 2004xxyy: Added Action extension
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -76,7 +67,7 @@ TC_INDIRECT_SCOPE int fw_classify(struct sk_buff *skb,
 	} else {
 		struct Qdisc *q = tcf_block_q(tp->chain->block);
 
-		/* Old method: classify the packet using its skb mark. */
+		 
 		if (id && (TC_H_MAJ(id) == 0 ||
 			   !(TC_H_MAJ(id ^ q->handle)))) {
 			res->classid = id;
@@ -106,9 +97,7 @@ static void *fw_get(struct tcf_proto *tp, u32 handle)
 
 static int fw_init(struct tcf_proto *tp)
 {
-	/* We don't allocate fw_head here, because in the old method
-	 * we don't need it at all.
-	 */
+	 
 	return 0;
 }
 
@@ -248,7 +237,7 @@ static int fw_change(struct net *net, struct sk_buff *in_skb,
 	int err;
 
 	if (!opt)
-		return handle ? -EINVAL : 0; /* Succeed if it is old method. */
+		return handle ? -EINVAL : 0;  
 
 	err = nla_parse_nested_deprecated(tb, TCA_FW_MAX, opt, fw_policy,
 					  NULL);

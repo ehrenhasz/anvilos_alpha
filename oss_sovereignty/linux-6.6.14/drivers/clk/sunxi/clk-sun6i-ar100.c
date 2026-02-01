@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * Allwinner A31 AR100 clock driver
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -16,18 +10,13 @@
 
 #include "clk-factors.h"
 
-/*
- * sun6i_get_ar100_factors - Calculates factors p, m for AR100
- *
- * AR100 rate is calculated as follows
- * rate = (parent_rate >> p) / (m + 1);
- */
+ 
 static void sun6i_get_ar100_factors(struct factors_request *req)
 {
 	unsigned long div;
 	int shift;
 
-	/* clock only divides */
+	 
 	if (req->rate > req->parent_rate)
 		req->rate = req->parent_rate;
 
@@ -90,7 +79,7 @@ static int sun6i_a31_ar100_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id sun6i_a31_ar100_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun6i-a31-ar100-clk" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun6i_a31_ar100_clk_driver = {

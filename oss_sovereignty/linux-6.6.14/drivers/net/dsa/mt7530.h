@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MT7530_H
 #define __MT7530_H
@@ -25,14 +23,14 @@ enum mt753x_id {
 
 #define TRGMII_BASE(x)			(0x10000 + (x))
 
-/* Registers to ethsys access */
+ 
 #define ETHSYS_CLKCFG0			0x2c
 #define  ETHSYS_TRGMII_CLK_SEL362_5	BIT(11)
 
 #define SYSC_REG_RSTCTRL		0x34
 #define  RESET_MCM			BIT(2)
 
-/* Registers to mac forward control for unknown frames */
+ 
 #define MT7530_MFC			0x10
 #define  BC_FFP(x)			(((x) & 0xff) << 24)
 #define  BC_FFP_MASK			BC_FFP(~0)
@@ -47,7 +45,7 @@ enum mt753x_id {
 #define  MIRROR_PORT(x)			((x) & 0x7)
 #define  MIRROR_MASK			0x7
 
-/* Registers for CPU forward control */
+ 
 #define MT7531_CFC			0x4
 #define  MT7531_MIRROR_EN		BIT(19)
 #define  MT7531_MIRROR_MASK		(MIRROR_MASK << 16)
@@ -63,13 +61,13 @@ enum mt753x_id {
 #define MT753X_MIRROR_MASK(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
 					 MT7531_MIRROR_MASK : MIRROR_MASK)
 
-/* Registers for BPDU and PAE frame control*/
+ 
 #define MT753X_BPC			0x24
 #define  MT753X_BPDU_PORT_FW_MASK	GENMASK(2, 0)
 #define  MT753X_PAE_PORT_FW_MASK	GENMASK(18, 16)
 #define  MT753X_PAE_PORT_FW(x)		FIELD_PREP(MT753X_PAE_PORT_FW_MASK, x)
 
-/* Register for :03 and :0E MAC DA frame control */
+ 
 #define MT753X_RGAC2			0x2c
 #define  MT753X_R0E_PORT_FW_MASK	GENMASK(18, 16)
 #define  MT753X_R0E_PORT_FW(x)		FIELD_PREP(MT753X_R0E_PORT_FW_MASK, x)
@@ -82,7 +80,7 @@ enum mt753x_bpdu_port_fw {
 	MT753X_BPDU_DROP = 7,
 };
 
-/* Registers for address table access */
+ 
 #define MT7530_ATA1			0x74
 #define  STATIC_EMP			0
 #define  STATIC_ENT			3
@@ -90,10 +88,10 @@ enum mt753x_bpdu_port_fw {
 #define  ATA2_IVL			BIT(15)
 #define  ATA2_FID(x)			(((x) & 0x7) << 12)
 
-/* Register for address table write data */
+ 
 #define MT7530_ATWD			0x7c
 
-/* Register for address table control */
+ 
 #define MT7530_ATC			0x80
 #define  ATC_HASH			(((x) & 0xfff) << 16)
 #define  ATC_BUSY			BIT(15)
@@ -111,7 +109,7 @@ enum mt7530_fdb_cmd {
 	MT7530_FDB_NEXT = 5,
 };
 
-/* Registers for table search read address */
+ 
 #define MT7530_TSRA1			0x84
 #define  MAC_BYTE_0			24
 #define  MAC_BYTE_1			16
@@ -133,7 +131,7 @@ enum mt7530_fdb_cmd {
 #define  ENT_STATUS			2
 #define  ENT_STATUS_MASK		0x3
 
-/* Register for vlan table control */
+ 
 #define MT7530_VTCR			0x90
 #define  VTCR_BUSY			BIT(31)
 #define  VTCR_INVALID			BIT(16)
@@ -141,27 +139,25 @@ enum mt7530_fdb_cmd {
 #define  VTCR_VID			((x) & 0xfff)
 
 enum mt7530_vlan_cmd {
-	/* Read/Write the specified VID entry from VAWD register based
-	 * on VID.
-	 */
+	 
 	MT7530_VTCR_RD_VID = 0,
 	MT7530_VTCR_WR_VID = 1,
 };
 
-/* Register for setup vlan and acl write data */
+ 
 #define MT7530_VAWD1			0x94
 #define  PORT_STAG			BIT(31)
-/* Independent VLAN Learning */
+ 
 #define  IVL_MAC			BIT(30)
-/* Egress Tag Consistent */
+ 
 #define  EG_CON				BIT(29)
-/* Per VLAN Egress Tag Control */
+ 
 #define  VTAG_EN			BIT(28)
-/* VLAN Member Control */
+ 
 #define  PORT_MEM(x)			(((x) & 0xff) << 16)
-/* Filter ID */
+ 
 #define  FID(x)				(((x) & 0x7) << 1)
-/* VLAN Entry Valid */
+ 
 #define  VLAN_VALID			BIT(0)
 #define  PORT_MEM_SHFT			16
 #define  PORT_MEM_MASK			0xff
@@ -172,7 +168,7 @@ enum mt7530_fid {
 };
 
 #define MT7530_VAWD2			0x98
-/* Egress Tag Control */
+ 
 #define  ETAG_CTRL_P(p, x)		(((x) & 0x3) << ((p) << 1))
 #define  ETAG_CTRL_P_MASK(p)		ETAG_CTRL_P(p, 3)
 
@@ -182,20 +178,20 @@ enum mt7530_vlan_egress_attr {
 	MT7530_VLAN_EGRESS_STACK = 3,
 };
 
-/* Register for address age control */
+ 
 #define MT7530_AAC			0xa0
-/* Disable ageing */
+ 
 #define  AGE_DIS			BIT(20)
-/* Age count */
+ 
 #define  AGE_CNT_MASK			GENMASK(19, 12)
 #define  AGE_CNT_MAX			0xff
 #define  AGE_CNT(x)			(AGE_CNT_MASK & ((x) << 12))
-/* Age unit */
+ 
 #define  AGE_UNIT_MASK			GENMASK(11, 0)
 #define  AGE_UNIT_MAX			0xfff
 #define  AGE_UNIT(x)			(AGE_UNIT_MASK & (x))
 
-/* Register for port STP state control */
+ 
 #define MT7530_SSP_P(x)			(0x2000 + ((x) * 0x100))
 #define  FID_PST(fid, state)		(((state) & 0x3) << ((fid) * 2))
 #define  FID_PST_MASK(fid)		FID_PST(fid, 0x3)
@@ -208,25 +204,20 @@ enum mt7530_stp_state {
 	MT7530_STP_FORWARDING  = 3
 };
 
-/* Register for port control */
+ 
 #define MT7530_PCR_P(x)			(0x2004 + ((x) * 0x100))
 #define  PORT_TX_MIR			BIT(9)
 #define  PORT_RX_MIR			BIT(8)
 #define  PORT_VLAN(x)			((x) & 0x3)
 
 enum mt7530_port_mode {
-	/* Port Matrix Mode: Frames are forwarded by the PCR_MATRIX members. */
+	 
 	MT7530_PORT_MATRIX_MODE = PORT_VLAN(0),
 
-	/* Fallback Mode: Forward received frames with ingress ports that do
-	 * not belong to the VLAN member. Frames whose VID is not listed on
-	 * the VLAN table are forwarded by the PCR_MATRIX members.
-	 */
+	 
 	MT7530_PORT_FALLBACK_MODE = PORT_VLAN(1),
 
-	/* Security Mode: Discard any frame due to ingress membership
-	 * violation or VID missed on the VLAN table.
-	 */
+	 
 	MT7530_PORT_SECURITY_MODE = PORT_VLAN(3),
 };
 
@@ -237,11 +228,11 @@ enum mt7530_port_mode {
 #define  PCR_MATRIX_CLR			PCR_MATRIX(0)
 #define  PCR_PORT_VLAN_MASK		PORT_VLAN(3)
 
-/* Register for port security control */
+ 
 #define MT7530_PSC_P(x)			(0x200c + ((x) * 0x100))
 #define  SA_DIS				BIT(4)
 
-/* Register for port vlan control */
+ 
 #define MT7530_PVC_P(x)			(0x2010 + ((x) * 0x100))
 #define  PORT_SPEC_TAG			BIT(5)
 #define  PVC_EG_TAG(x)			(((x) & 0x7) << 8)
@@ -268,13 +259,13 @@ enum mt7530_vlan_port_acc_frm {
 
 #define  STAG_VPID			(((x) & 0xffff) << 16)
 
-/* Register for port port-and-protocol based vlan 1 control */
+ 
 #define MT7530_PPBV1_P(x)		(0x2014 + ((x) * 0x100))
 #define  G0_PORT_VID(x)			(((x) & 0xfff) << 0)
 #define  G0_PORT_VID_MASK		G0_PORT_VID(0xfff)
 #define  G0_PORT_VID_DEF		G0_PORT_VID(0)
 
-/* Register for port MAC control register */
+ 
 #define MT7530_PMCR_P(x)		(0x3000 + ((x) * 0x100))
 #define  PMCR_IFG_XMIT(x)		(((x) & 0x3) << 18)
 #define  PMCR_EXT_PHY			BIT(17)
@@ -340,7 +331,7 @@ enum mt7530_vlan_port_acc_frm {
 #define  PMSR_DPX			BIT(1)
 #define  PMSR_LINK			BIT(0)
 
-/* Register for port debug count */
+ 
 #define MT7531_DBG_CNT(x)		(0x3018 + (x) * 0x100)
 #define  MT7531_DIS_CLR			BIT(31)
 
@@ -353,7 +344,7 @@ enum mt7530_vlan_port_acc_frm {
 #define  MAX_RX_PKT_LEN_1552		0x2
 #define  MAX_RX_PKT_LEN_JUMBO		0x3
 
-/* Register for MIB */
+ 
 #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
 #define MT7530_MIB_CCR			0x4fe0
 #define  CCR_MIB_ENABLE			BIT(31)
@@ -371,23 +362,23 @@ enum mt7530_vlan_port_acc_frm {
 					 CCR_TX_OCT_CNT_GOOD | \
 					 CCR_TX_OCT_CNT_BAD)
 
-/* MT7531 SGMII register group */
+ 
 #define MT7531_SGMII_REG_BASE(p)	(0x5000 + ((p) - 5) * 0x1000)
 #define MT7531_PHYA_CTRL_SIGNAL3	0x128
 
-/* Register for system reset */
+ 
 #define MT7530_SYS_CTRL			0x7000
 #define  SYS_CTRL_PHY_RST		BIT(2)
 #define  SYS_CTRL_SW_RST		BIT(1)
 #define  SYS_CTRL_REG_RST		BIT(0)
 
-/* Register for system interrupt */
+ 
 #define MT7530_SYS_INT_EN		0x7008
 
-/* Register for system interrupt status */
+ 
 #define MT7530_SYS_INT_STS		0x700c
 
-/* Register for PHY Indirect Access Control */
+ 
 #define MT7531_PHY_IAC			0x701C
 #define  MT7531_PHY_ACS_ST		BIT(31)
 #define  MT7531_MDIO_REG_ADDR_MASK	(0x1f << 25)
@@ -408,7 +399,7 @@ enum mt7531_phy_iac_cmd {
 	MT7531_MDIO_READ_CL45 = 3,
 };
 
-/* MDIO_ST: MDIO start field */
+ 
 enum mt7531_mdio_st {
 	MT7531_MDIO_ST_CL45 = 0,
 	MT7531_MDIO_ST_CL22 = 1,
@@ -425,7 +416,7 @@ enum mt7531_mdio_st {
 #define  MT7531_MDIO_CL45_WRITE		(MT7531_MDIO_ST(MT7531_MDIO_ST_CL45) | \
 					 MT7531_MDIO_CMD(MT7531_MDIO_WRITE))
 
-/* Register for RGMII clock phase */
+ 
 #define MT7531_CLKGEN_CTRL		0x7500
 #define  CLK_SKEW_OUT(x)		(((x) & 0x3) << 8)
 #define  CLK_SKEW_OUT_MASK		GENMASK(9, 8)
@@ -450,7 +441,7 @@ enum mt7531_clk_skew {
 	MT7531_CLK_SKEW_REVERSE = 3,
 };
 
-/* Register for hw trap status */
+ 
 #define MT7530_HWTRAP			0x7800
 #define  HWTRAP_XTAL_MASK		(BIT(10) | BIT(9))
 #define  HWTRAP_XTAL_25MHZ		(BIT(10) | BIT(9))
@@ -461,13 +452,13 @@ enum mt7531_clk_skew {
 #define  HWTRAP_XTAL_FSEL_MASK		BIT(7)
 #define  HWTRAP_XTAL_FSEL_25MHZ		BIT(7)
 #define  HWTRAP_XTAL_FSEL_40MHZ		0
-/* Unique fields of (M)HWSTRAP for MT7531 */
+ 
 #define  XTAL_FSEL_S			7
 #define  XTAL_FSEL_M			BIT(7)
 #define  PHY_EN				BIT(6)
 #define  CHG_STRAP			BIT(8)
 
-/* Register for hw trap modification */
+ 
 #define MT7530_MHWTRAP			0x7804
 #define  MHWTRAP_PHY0_SEL		BIT(20)
 #define  MHWTRAP_MANUAL			BIT(16)
@@ -477,7 +468,7 @@ enum mt7531_clk_skew {
 #define  MHWTRAP_P5_DIS			BIT(6)
 #define  MHWTRAP_PHY_ACCESS		BIT(5)
 
-/* Register for TOP signal control */
+ 
 #define MT7530_TOP_SIG_CTRL		0x7808
 #define  TOP_SIG_CTRL_NORMAL		(BIT(17) | BIT(16))
 
@@ -508,11 +499,11 @@ enum mt7531_clk_skew {
 #define  RG_COREPLL_SDM_PCW_M		0x3ffffe
 #define  RG_COREPLL_SDM_PCW_CHG		BIT(0)
 
-/* Registers for RGMII and SGMII PLL clock */
+ 
 #define MT7531_ANA_PLLGP_CR2		0x78b0
 #define MT7531_ANA_PLLGP_CR5		0x78bc
 
-/* Registers for TRGMII on the both side */
+ 
 #define MT7530_TRGMII_RCK_CTRL		0x7a00
 #define  RX_RST				BIT(31)
 #define  RXC_DQSISEL			BIT(30)
@@ -550,7 +541,7 @@ enum mt7531_clk_skew {
 #define MT7530_P5RGMIITXCR		0x7b04
 #define  CSR_RGMII_TXC_CFG(x)		((x) & 0x1f)
 
-/* Registers for GPIO mode */
+ 
 #define MT7531_GPIO_MODE0		0x7c0c
 #define  MT7531_GPIO0_MASK		GENMASK(3, 0)
 #define  MT7531_GPIO0_INTERRUPT		1
@@ -561,24 +552,17 @@ enum mt7531_clk_skew {
 #define  MT7531_GPIO12_RG_RXD3_MASK	GENMASK(19, 16)
 #define  MT7531_EXT_P_MDIO_12		(2 << 16)
 
-/* Registers for LED GPIO control (MT7530 only)
- * All registers follow this pattern:
- * [ 2: 0]  port 0
- * [ 6: 4]  port 1
- * [10: 8]  port 2
- * [14:12]  port 3
- * [18:16]  port 4
- */
+ 
 
-/* LED enable, 0: Disable, 1: Enable (Default) */
+ 
 #define MT7530_LED_EN			0x7d00
-/* LED mode, 0: GPIO mode, 1: PHY mode (Default) */
+ 
 #define MT7530_LED_IO_MODE		0x7d04
-/* GPIO direction, 0: Input, 1: Output */
+ 
 #define MT7530_LED_GPIO_DIR		0x7d10
-/* GPIO output enable, 0: Disable, 1: Enable */
+ 
 #define MT7530_LED_GPIO_OE		0x7d14
-/* GPIO value, 0: Low, 1: High */
+ 
 #define MT7530_LED_GPIO_DATA		0x7d18
 
 #define MT7530_CREV			0x7ffc
@@ -589,7 +573,7 @@ enum mt7531_clk_skew {
 #define  CHIP_REV_M			0x0f
 #define  MT7531_ID			0x7531
 
-/* Registers for core PLL access through mmd indirect */
+ 
 #define CORE_PLL_GROUP2			0x401
 #define  RG_SYSPLL_EN_NORMAL		BIT(15)
 #define  RG_SYSPLL_VODEN		BIT(14)
@@ -666,14 +650,7 @@ struct mt7530_fdb {
 	bool noarp;
 };
 
-/* struct mt7530_port -	This is the main data structure for holding the state
- *			of the port.
- * @enable:	The status used for show port is enabled or not.
- * @pm:		The matrix used to show all connections with the port.
- * @pvid:	The VLAN specified is to be considered a PVID at ingress.  Any
- *		untagged frames will be assigned to the related VLAN.
- * @sgmii_pcs:	Pointer to PCS instance for SerDes ports
- */
+ 
 struct mt7530_port {
 	bool enable;
 	u32 pm;
@@ -681,7 +658,7 @@ struct mt7530_port {
 	struct phylink_pcs *sgmii_pcs;
 };
 
-/* Port 5 interface select definitions */
+ 
 enum p5_interface_select {
 	P5_DISABLED = 0,
 	P5_INTF_SEL_PHY_P0,
@@ -698,22 +675,7 @@ struct mt753x_pcs {
 	int port;
 };
 
-/* struct mt753x_info -	This is the main data structure for holding the specific
- *			part for each supported device
- * @sw_setup:		Holding the handler to a device initialization
- * @phy_read_c22:	Holding the way reading PHY port using C22
- * @phy_write_c22:	Holding the way writing PHY port using C22
- * @phy_read_c45:	Holding the way reading PHY port using C45
- * @phy_write_c45:	Holding the way writing PHY port using C45
- * @pad_setup:		Holding the way setting up the bus pad for a certain
- *			MAC port
- * @phy_mode_supported:	Check if the PHY type is being supported on a certain
- *			port
- * @mac_port_validate:	Holding the way to set addition validate type for a
- *			certan MAC port
- * @mac_port_config:	Holding the way setting up the PHY attribute to a
- *			certain MAC port
- */
+ 
 struct mt753x_info {
 	enum mt753x_id id;
 
@@ -739,28 +701,7 @@ struct mt753x_info {
 			       phy_interface_t interface);
 };
 
-/* struct mt7530_priv -	This is the main data structure for holding the state
- *			of the driver
- * @dev:		The device pointer
- * @ds:			The pointer to the dsa core structure
- * @bus:		The bus used for the device and built-in PHY
- * @regmap:		The regmap instance representing all switch registers
- * @rstc:		The pointer to reset control used by MCM
- * @core_pwr:		The power supplied into the core
- * @io_pwr:		The power supplied into the I/O
- * @reset:		The descriptor for GPIO line tied to its reset pin
- * @mcm:		Flag for distinguishing if standalone IC or module
- *			coupling
- * @ports:		Holding the state among ports
- * @reg_mutex:		The lock for protecting among process accessing
- *			registers
- * @p6_interface	Holding the current port 6 interface
- * @p5_intf_sel:	Holding the current port 5 interface select
- * @irq:		IRQ number of the switch
- * @irq_domain:		IRQ domain of the switch irq_chip
- * @irq_enable:		IRQ enable bits, synced to SYS_INT_EN
- * @create_sgmii:	Pointer to function creating SGMII PCS instance(s)
- */
+ 
 struct mt7530_priv {
 	struct device		*dev;
 	struct dsa_switch	*ds;
@@ -780,7 +721,7 @@ struct mt7530_priv {
 	u8			mirror_tx;
 	struct mt7530_port	ports[MT7530_NUM_PORTS];
 	struct mt753x_pcs	pcs[MT7530_NUM_PORTS];
-	/* protect among processes for registers access*/
+	 
 	struct mutex reg_mutex;
 	int irq;
 	struct irq_domain *irq_domain;
@@ -828,4 +769,4 @@ void mt7530_remove_common(struct mt7530_priv *priv);
 extern const struct dsa_switch_ops mt7530_switch_ops;
 extern const struct mt753x_info mt753x_table[];
 
-#endif /* __MT7530_H */
+#endif  

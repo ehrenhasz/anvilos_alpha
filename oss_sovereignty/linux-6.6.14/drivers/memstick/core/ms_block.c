@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ms_block.c - Sony MemoryStick (legacy) storage support
 
- *  Copyright (C) 2013 Maxim Levitsky <maximlevitsky@gmail.com>
- *
- * Minor portions of the driver were copied from mspro_block.c which is
- * Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
- */
+ 
 #define DRIVER_NAME "ms_block"
 #define pr_fmt(fmt) DRIVER_NAME ": " fmt
 
@@ -29,10 +22,7 @@ static int debug;
 static int cache_flush_timeout = 1000;
 static bool verify_writes;
 
-/*
- * Copies section of 'sg_from' starting from offset 'offset' and with length
- * 'len' To another scatterlist of to_nents enties
- */
+ 
 static size_t msb_sg_copy(struct scatterlist *sg_from,
 	struct scatterlist *sg_to, int to_nents, size_t offset, size_t len)
 {
@@ -86,11 +76,7 @@ out:
 	return copied;
 }
 
-/*
- * Compares section of 'sg' starting from offset 'offset' and with length 'len'
- * to linear buffer of length 'len' at address 'buffer'
- * Returns 0 if equal and  -1 otherwice
- */
+ 
 static int msb_sg_compare_to_buffer(struct scatterlist *sg,
 					size_t offset, u8 *buffer, size_t len)
 {
@@ -124,12 +110,7 @@ static int msb_sg_compare_to_buffer(struct scatterlist *sg,
 }
 
 
-/* Get zone at which block with logical address 'lba' lives
- * Flash is broken into zones.
- * Each zone consists of 512 eraseblocks, out of which in first
- * zone 494 are used and 496 are for all following zones.
- * Therefore zone #0 hosts blocks 0-493, zone #1 blocks 494-988, etc...
- */
+ 
 static int msb_get_zone_from_lba(int lba)
 {
 	if (lba < 494)
@@ -137,13 +118,13 @@ static int msb_get_zone_from_lba(int lba)
 	return ((lba - 494) / 496) + 1;
 }
 
-/* Get zone of physical block. Trivial */
+ 
 static int msb_get_zone_from_pba(int pba)
 {
 	return pba / MS_BLOCKS_IN_ZONE;
 }
 
-/* Debug test to validate free block counts */
+ 
 static int msb_validate_used_block_bitmap(struct msb_data *msb)
 {
 	int total_free_blocks = 0;
@@ -164,7 +145,7 @@ static int msb_validate_used_block_bitmap(struct msb_data *msb)
 	return -EINVAL;
 }
 
-/* Mark physical block as used */
+ 
 static void msb_mark_block_used(struct msb_data *msb, int pba)
 {
 	int zone = msb_get_zone_from_pba(pba);
@@ -179,12 +160,12 @@ static void msb_mark_block_used(struct msb_data *msb, int pba)
 	if (msb_validate_used_block_bitmap(msb))
 		return;
 
-	/* No races because all IO is single threaded */
+	 
 	__set_bit(pba, msb->used_blocks_bitmap);
 	msb->free_block_count[zone]--;
 }
 
-/* Mark physical block as free */
+ 
 static void msb_mark_block_unused(struct msb_data *msb, int pba)
 {
 	int zone = msb_get_zone_from_pba(pba);
@@ -198,12 +179,12 @@ static void msb_mark_block_unused(struct msb_data *msb, int pba)
 	if (msb_validate_used_block_bitmap(msb))
 		return;
 
-	/* No races because all IO is single threaded */
+	 
 	__clear_bit(pba, msb->used_blocks_bitmap);
 	msb->free_block_count[zone]++;
 }
 
-/* Invalidate current register window */
+ 
 static void msb_invalidate_reg_window(struct msb_data *msb)
 {
 	msb->reg_addr.w_offset = offsetof(struct ms_register, id);
@@ -213,7 +194,7 @@ static void msb_invalidate_reg_window(struct msb_data *msb)
 	msb->addr_valid = false;
 }
 
-/* Start a state machine */
+ 
 static int msb_run_state_machine(struct msb_data *msb, int   (*state_func)
 		(struct memstick_dev *card, struct memstick_request **req))
 {
@@ -234,7 +215,7 @@ static int msb_run_state_machine(struct msb_data *msb, int   (*state_func)
 	return msb->exit_error;
 }
 
-/* State machines call that to exit */
+ 
 static int msb_exit_state_machine(struct msb_data *msb, int error)
 {
 	WARN_ON(msb->state == -1);
@@ -243,7 +224,7 @@ static int msb_exit_state_machine(struct msb_data *msb, int error)
 	msb->exit_error = error;
 	msb->card->next_request = h_msb_default_bad;
 
-	/* Invalidate reg window on errors */
+	 
 	if (error)
 		msb_invalidate_reg_window(msb);
 
@@ -251,7 +232,7 @@ static int msb_exit_state_machine(struct msb_data *msb, int error)
 	return -ENXIO;
 }
 
-/* read INT register */
+ 
 static int msb_read_int_reg(struct msb_data *msb, long timeout)
 {
 	struct memstick_request *mrq = &msb->card->current_mrq;
@@ -278,7 +259,7 @@ static int msb_read_int_reg(struct msb_data *msb, long timeout)
 	}
 }
 
-/* Read a register */
+ 
 static int msb_read_regs(struct msb_data *msb, int offset, int len)
 {
 	struct memstick_request *req = &msb->card->current_mrq;
@@ -299,7 +280,7 @@ static int msb_read_regs(struct msb_data *msb, int offset, int len)
 	return 1;
 }
 
-/* Write a card register */
+ 
 static int msb_write_regs(struct msb_data *msb, int offset, int len, void *buf)
 {
 	struct memstick_request *req = &msb->card->current_mrq;
@@ -320,18 +301,14 @@ static int msb_write_regs(struct msb_data *msb, int offset, int len, void *buf)
 	return 1;
 }
 
-/* Handler for absence of IO */
+ 
 static int h_msb_default_bad(struct memstick_dev *card,
 						struct memstick_request **mrq)
 {
 	return -ENXIO;
 }
 
-/*
- * This function is a handler for reads of one page from device.
- * Writes output to msb->current_sg, takes sector address from msb->reg.param
- * Can also be used to read extra data only. Set params accordintly.
- */
+ 
 static int h_msb_read_page(struct memstick_dev *card,
 					struct memstick_request **out_mrq)
 {
@@ -347,10 +324,7 @@ static int h_msb_read_page(struct memstick_dev *card,
 again:
 	switch (msb->state) {
 	case MSB_RP_SEND_BLOCK_ADDRESS:
-		/* msb_write_regs sometimes "fails" because it needs to update
-		 * the reg window, and thus it returns request for that.
-		 * Then we stay in this state and retry
-		 */
+		 
 		if (!msb_write_regs(msb,
 			offsetof(struct ms_register, param),
 			sizeof(struct ms_param_register),
@@ -368,9 +342,7 @@ again:
 
 	case MSB_RP_SEND_INT_REQ:
 		msb->state = MSB_RP_RECEIVE_INT_REQ_RESULT;
-		/* If dont actually need to send the int read request (only in
-		 * serial mode), then just fall through
-		 */
+		 
 		if (msb_read_int_reg(msb, -1))
 			return 0;
 		fallthrough;
@@ -393,7 +365,7 @@ again:
 		goto again;
 
 	case MSB_RP_SEND_READ_STATUS_REG:
-		 /* read the status register to understand source of the INT_ERR */
+		  
 		if (!msb_read_regs(msb,
 			offsetof(struct ms_register, status),
 			sizeof(struct ms_status_register)))
@@ -423,7 +395,7 @@ again:
 		fallthrough;
 
 	case MSB_RP_SEND_READ_DATA:
-		/* Skip that state if we only read the oob */
+		 
 		if (msb->regs.param.cp == MEMSTICK_CP_EXTRA) {
 			msb->state = MSB_RP_RECEIVE_READ_DATA;
 			goto again;
@@ -462,14 +434,7 @@ again:
 	BUG();
 }
 
-/*
- * Handler of writes of exactly one block.
- * Takes address from msb->regs.param.
- * Writes same extra data to blocks, also taken
- * from msb->regs.extra
- * Returns -EBADMSG if write fails due to uncorrectable error, or -EIO if
- * device refuses to take the command or something else
- */
+ 
 static int h_msb_write_block(struct memstick_dev *card,
 					struct memstick_request **out_mrq)
 {
@@ -484,11 +449,7 @@ static int h_msb_write_block(struct memstick_dev *card,
 again:
 	switch (msb->state) {
 
-	/* HACK: Jmicon handling of TPCs between 8 and
-	 *	sizeof(memstick_request.data) is broken due to hardware
-	 *	bug in PIO mode that is used for these TPCs
-	 *	Therefore split the write
-	 */
+	 
 
 	case MSB_WB_SEND_WRITE_PARAMS:
 		if (!msb_write_regs(msb,
@@ -526,7 +487,7 @@ again:
 		intreg = mrq->data[0];
 		msb->regs.status.interrupt = intreg;
 
-		/* errors mean out of here, and fast... */
+		 
 		if (intreg & (MEMSTICK_INT_CMDNAK))
 			return msb_exit_state_machine(msb, -EIO);
 
@@ -534,7 +495,7 @@ again:
 			return msb_exit_state_machine(msb, -EBADMSG);
 
 
-		/* for last page we need to poll CED */
+		 
 		if (msb->current_page == msb->pages_in_block) {
 			if (intreg & MEMSTICK_INT_CED)
 				return msb_exit_state_machine(msb, 0);
@@ -543,7 +504,7 @@ again:
 
 		}
 
-		/* for non-last page we need BREQ before writing next chunk */
+		 
 		if (!(intreg & MEMSTICK_INT_BREQ)) {
 			msb->state = MSB_WB_SEND_INT_REQ;
 			goto again;
@@ -578,10 +539,7 @@ again:
 	return 0;
 }
 
-/*
- * This function is used to send simple IO requests to device that consist
- * of register write + command
- */
+ 
 static int h_msb_send_command(struct memstick_dev *card,
 					struct memstick_request **out_mrq)
 {
@@ -596,8 +554,8 @@ static int h_msb_send_command(struct memstick_dev *card,
 again:
 	switch (msb->state) {
 
-	/* HACK: see h_msb_write_block */
-	case MSB_SC_SEND_WRITE_PARAMS: /* write param register*/
+	 
+	case MSB_SC_SEND_WRITE_PARAMS:  
 		if (!msb_write_regs(msb,
 			offsetof(struct ms_register, param),
 			sizeof(struct ms_param_register),
@@ -651,7 +609,7 @@ again:
 	BUG();
 }
 
-/* Small handler for card reset */
+ 
 static int h_msb_reset(struct memstick_dev *card,
 					struct memstick_request **out_mrq)
 {
@@ -674,7 +632,7 @@ static int h_msb_reset(struct memstick_dev *card,
 	BUG();
 }
 
-/* This handler is used to do serial->parallel switch */
+ 
 static int h_msb_parallel_switch(struct memstick_dev *card,
 					struct memstick_request **out_mrq)
 {
@@ -690,7 +648,7 @@ static int h_msb_parallel_switch(struct memstick_dev *card,
 
 	switch (msb->state) {
 	case MSB_PS_SEND_SWITCH_COMMAND:
-		/* Set the parallel interface on memstick side */
+		 
 		msb->regs.param.system |= MEMSTICK_SYS_PAM;
 
 		if (!msb_write_regs(msb,
@@ -703,9 +661,7 @@ static int h_msb_parallel_switch(struct memstick_dev *card,
 		return 0;
 
 	case MSB_PS_SWICH_HOST:
-		 /* Set parallel interface on our side + send a dummy request
-		  * to see if card responds
-		  */
+		  
 		host->set_param(host, MEMSTICK_INTERFACE, MEMSTICK_PAR4);
 		memstick_init_req(mrq, MS_TPC_GET_INT, NULL, 1);
 		msb->state = MSB_PS_CONFIRM;
@@ -720,7 +676,7 @@ static int h_msb_parallel_switch(struct memstick_dev *card,
 
 static int msb_switch_to_parallel(struct msb_data *msb);
 
-/* Reset the card, to guard against hw errors beeing treated as bad blocks */
+ 
 static int msb_reset(struct msb_data *msb, bool full)
 {
 
@@ -729,7 +685,7 @@ static int msb_reset(struct msb_data *msb, bool full)
 	struct memstick_host *host = card->host;
 	int error;
 
-	/* Reset the card */
+	 
 	msb->regs.param.system = MEMSTICK_SYS_BAMD;
 
 	if (full) {
@@ -762,13 +718,13 @@ out_error:
 		return -ENODEV;
 	}
 
-	/* Set parallel mode */
+	 
 	if (was_parallel)
 		msb_switch_to_parallel(msb);
 	return 0;
 }
 
-/* Attempts to switch interface to parallel mode */
+ 
 static int msb_switch_to_parallel(struct msb_data *msb)
 {
 	int error;
@@ -785,7 +741,7 @@ static int msb_switch_to_parallel(struct msb_data *msb)
 	return 0;
 }
 
-/* Changes overwrite flag on a page */
+ 
 static int msb_set_overwrite_flag(struct msb_data *msb,
 						u16 pba, u8 page, u8 flag)
 {
@@ -820,7 +776,7 @@ static int msb_mark_page_bad(struct msb_data *msb, int pba, int page)
 		pba, page, ~MEMSTICK_OVERWRITE_PGST0);
 }
 
-/* Erases one physical block */
+ 
 static int msb_erase_block(struct msb_data *msb, u16 pba)
 {
 	int error, try;
@@ -854,7 +810,7 @@ static int msb_erase_block(struct msb_data *msb, u16 pba)
 	return error;
 }
 
-/* Reads one page from device */
+ 
 static int msb_read_page(struct msb_data *msb,
 	u16 pba, u8 page, struct ms_extra_data_register *extra,
 					struct scatterlist *sg,  int offset)
@@ -927,7 +883,7 @@ static int msb_read_page(struct msb_data *msb,
 
 	}
 
-	/* Mark bad pages */
+	 
 	if (error == -EBADMSG) {
 		pr_err("uncorrectable error on read of pba %d, page %d",
 			pba, page);
@@ -944,7 +900,7 @@ static int msb_read_page(struct msb_data *msb,
 	return error;
 }
 
-/* Reads oob of page only */
+ 
 static int msb_read_oob(struct msb_data *msb, u16 pba, u16 page,
 	struct ms_extra_data_register *extra)
 {
@@ -972,7 +928,7 @@ static int msb_read_oob(struct msb_data *msb, u16 pba, u16 page,
 	return error;
 }
 
-/* Reads a block and compares it with data contained in scatterlist orig_sg */
+ 
 static int msb_verify_block(struct msb_data *msb, u16 pba,
 				struct scatterlist *orig_sg,  int offset)
 {
@@ -996,7 +952,7 @@ static int msb_verify_block(struct msb_data *msb, u16 pba,
 	return 0;
 }
 
-/* Writes exectly one block + oob */
+ 
 static int msb_write_block(struct msb_data *msb,
 			u16 pba, u32 lba, struct scatterlist *sg, int offset)
 {
@@ -1049,13 +1005,7 @@ static int msb_write_block(struct msb_data *msb,
 
 		error = msb_run_state_machine(msb, h_msb_write_block);
 
-		/* Sector we just wrote to is assumed erased since its pba
-		 * was erased. If it wasn't erased, write will succeed
-		 * and will just clear the bits that were set in the block
-		 * thus test that what we have written,
-		 * matches what we expect.
-		 * We do trust the blocks that we erased
-		 */
+		 
 		if (!error && (verify_writes ||
 				!test_bit(pba, msb->erased_blocks_bitmap)))
 			error = msb_verify_block(msb, pba, sg, offset);
@@ -1076,7 +1026,7 @@ static int msb_write_block(struct msb_data *msb,
 	return error;
 }
 
-/* Finds a free block for write replacement */
+ 
 static u16 msb_get_free_block(struct msb_data *msb, int zone)
 {
 	u16 pos;
@@ -1162,7 +1112,7 @@ out:
 	return error;
 }
 
-/* Converts endiannes in the boot block for easy use */
+ 
 static void msb_fix_boot_page_endianness(struct ms_boot_page *p)
 {
 	p->header.block_id = be16_to_cpu(p->header.block_id);
@@ -1288,7 +1238,7 @@ static int msb_read_bad_block_table(struct msb_data *msb, int block_nr)
 	if (!buffer)
 		return -ENOMEM;
 
-	/* Read the buffer */
+	 
 	sg_init_one(&sg, buffer, size_to_read);
 
 	while (offset < size_to_read) {
@@ -1306,7 +1256,7 @@ static int msb_read_bad_block_table(struct msb_data *msb, int block_nr)
 		}
 	}
 
-	/* Process the bad block table */
+	 
 	for (i = page_offset; i < data_size / sizeof(u16); i++) {
 
 		u16 bad_block = be16_to_cpu(buffer[i]);
@@ -1397,7 +1347,7 @@ static int msb_ftl_scan(struct msb_data *msb)
 		memset(&extra, 0, sizeof(extra));
 		error = msb_read_oob(msb, pba, 0, &extra);
 
-		/* can't trust the page if we can't read the oob */
+		 
 		if (error == -EBADMSG) {
 			pr_notice(
 			"oob of pba %d damaged, will try to erase it", pba);
@@ -1417,14 +1367,14 @@ static int msb_ftl_scan(struct msb_data *msb)
 		overwrite_flag = extra.overwrite_flag;
 		overwrite_flags[pba] = overwrite_flag;
 
-		/* Skip bad blocks */
+		 
 		if (!(overwrite_flag & MEMSTICK_OVERWRITE_BKST)) {
 			dbg("pba %05d -> [BAD]", pba);
 			msb_mark_block_used(msb, pba);
 			continue;
 		}
 
-		/* Skip system/drm blocks */
+		 
 		if ((management_flag & MEMSTICK_MANAGEMENT_FLAG_NORMAL) !=
 			MEMSTICK_MANAGEMENT_FLAG_NORMAL) {
 			dbg("pba %05d -> [reserved management flag %02x]",
@@ -1433,7 +1383,7 @@ static int msb_ftl_scan(struct msb_data *msb)
 			continue;
 		}
 
-		/* Erase temporary tables */
+		 
 		if (!(management_flag & MEMSTICK_MANAGEMENT_ATFLG)) {
 			dbg("pba %05d -> [temp table] - will erase", pba);
 
@@ -1449,7 +1399,7 @@ static int msb_ftl_scan(struct msb_data *msb)
 
 		msb_mark_block_used(msb, pba);
 
-		/* Block has LBA not according to zoning*/
+		 
 		if (msb_get_zone_from_lba(lba) != msb_get_zone_from_pba(pba)) {
 			pr_notice("pba %05d -> [bad lba %05d] - will erase",
 								pba, lba);
@@ -1457,7 +1407,7 @@ static int msb_ftl_scan(struct msb_data *msb)
 			continue;
 		}
 
-		/* No collisions - great */
+		 
 		if (msb->lba_to_pba_table[lba] == MS_BLOCK_INVALID) {
 			dbg_verbose("pba %05d -> [lba %05d]", pba, lba);
 			msb->lba_to_pba_table[lba] = pba;
@@ -1551,7 +1501,7 @@ static int msb_cache_flush(struct msb_data *msb)
 
 	sg_init_one(&sg, msb->cache , msb->block_size);
 
-	/* Read all missing pages in cache */
+	 
 	for (page = 0; page < msb->pages_in_block; page++) {
 
 		if (test_bit(page, &msb->valid_cache_bitmap))
@@ -1563,7 +1513,7 @@ static int msb_cache_flush(struct msb_data *msb)
 			page, lba);
 		error = msb_read_page(msb, pba, page, &extra, &sg, offset);
 
-		/* Bad pages are copied with 00 page status */
+		 
 		if (error == -EBADMSG) {
 			pr_err("read error on sector %d, contents probably damaged", page);
 			continue;
@@ -1581,11 +1531,11 @@ static int msb_cache_flush(struct msb_data *msb)
 		set_bit(page, &msb->valid_cache_bitmap);
 	}
 
-	/* Write the cache now */
+	 
 	error = msb_update_block(msb, msb->cache_block_lba, &sg, 0);
 	pba = msb->lba_to_pba_table[msb->cache_block_lba];
 
-	/* Mark invalid pages */
+	 
 	if (!error) {
 		for (page = 0; page < msb->pages_in_block; page++) {
 
@@ -1617,7 +1567,7 @@ static int msb_cache_write(struct msb_data *msb, int lba,
 		if (add_to_cache_only)
 			return 0;
 
-	/* If we need to write different block */
+	 
 	if (msb->cache_block_lba != MS_BLOCK_INVALID &&
 						lba != msb->cache_block_lba) {
 		dbg_verbose("first flush the cache");
@@ -1676,15 +1626,10 @@ static int msb_cache_read(struct msb_data *msb, int lba,
 	return error;
 }
 
-/* Emulated geometry table
- * This table content isn't that importaint,
- * One could put here different values, providing that they still
- * cover whole disk.
- * 64 MB entry is what windows reports for my 64M memstick
- */
+ 
 
 static const struct chs_entry chs_table[] = {
-/*        size sectors cylynders  heads */
+ 
 	{ 4,    16,    247,       2  },
 	{ 8,    16,    495,       2  },
 	{ 16,   16,    495,       4  },
@@ -1694,7 +1639,7 @@ static const struct chs_entry chs_table[] = {
 	{ 0 }
 };
 
-/* Load information about the card */
+ 
 static int msb_init_card(struct memstick_dev *card)
 {
 	struct msb_data *msb = memstick_get_drvdata(card);
@@ -1713,23 +1658,20 @@ static int msb_init_card(struct memstick_dev *card)
 	if (error)
 		return error;
 
-	/* Due to a bug in Jmicron driver written by Alex Dubov,
-	 * its serial mode barely works,
-	 * so we switch to parallel mode right away
-	 */
+	 
 	if (host->caps & MEMSTICK_CAP_PAR4)
 		msb_switch_to_parallel(msb);
 
 	msb->page_size = sizeof(struct ms_boot_page);
 
-	/* Read the boot page */
+	 
 	error = msb_read_boot_blocks(msb);
 	if (error)
 		return -EIO;
 
 	boot_block = &msb->boot_page[0];
 
-	/* Save intersting attributes from boot page */
+	 
 	msb->block_count = boot_block->attr.number_of_blocks;
 	msb->page_size = boot_block->attr.page_size;
 
@@ -1737,7 +1679,7 @@ static int msb_init_card(struct memstick_dev *card)
 	msb->block_size = msb->page_size * msb->pages_in_block;
 
 	if ((size_t)msb->page_size > PAGE_SIZE) {
-		/* this isn't supported by linux at all, anyway*/
+		 
 		dbg("device page %d size isn't supported", msb->page_size);
 		return -EINVAL;
 	}
@@ -1772,7 +1714,7 @@ static int msb_init_card(struct memstick_dev *card)
 	dbg("Read only: %d", msb->read_only);
 
 #if 0
-	/* Now we can switch the interface */
+	 
 	if (host->caps & msb->caps & MEMSTICK_CAP_PAR4)
 		msb_switch_to_parallel(msb);
 #endif
@@ -1786,7 +1728,7 @@ static int msb_init_card(struct memstick_dev *card)
 		return error;
 
 
-	/* Read the bad block table */
+	 
 	error = msb_read_bad_block_table(msb, 0);
 
 	if (error && error != -ENOMEM) {
@@ -1797,7 +1739,7 @@ static int msb_init_card(struct memstick_dev *card)
 	if (error)
 		return error;
 
-	/* *drum roll* Scan the media */
+	 
 	error = msb_ftl_scan(msb);
 	if (error) {
 		pr_err("Scan of media failed");
@@ -1902,7 +1844,7 @@ static void msb_io_work(struct work_struct *work)
 
 		spin_unlock_irq(&msb->q_lock);
 
-		/* process the request */
+		 
 		dbg_verbose("IO: processing new request");
 		blk_rq_map_sg(msb->queue, req, sg);
 
@@ -1940,8 +1882,8 @@ static void msb_io_work(struct work_struct *work)
 	}
 }
 
-static DEFINE_IDR(msb_disk_idr); /*set of used disk numbers */
-static DEFINE_MUTEX(msb_disk_lock); /* protects against races in open/release */
+static DEFINE_IDR(msb_disk_idr);  
+static DEFINE_MUTEX(msb_disk_lock);  
 
 static void msb_data_clear(struct msb_data *msb)
 {
@@ -2054,7 +1996,7 @@ static void msb_start(struct memstick_dev *card)
 	}
 	spin_unlock_irqrestore(&msb->q_lock, flags);
 
-	/* Kick cache flush anyway, its harmless */
+	 
 	msb->need_flush_cache = true;
 	msb->io_queue_stopped = false;
 
@@ -2074,7 +2016,7 @@ static const struct blk_mq_ops msb_mq_ops = {
 	.queue_rq	= msb_queue_rq,
 };
 
-/* Registers the block device */
+ 
 static int msb_init_disk(struct memstick_dev *card)
 {
 	struct msb_data *msb = memstick_get_drvdata(card);
@@ -2187,13 +2129,13 @@ static void msb_remove(struct memstick_dev *card)
 
 	dbg("Removing the disk device");
 
-	/* Take care of unhandled + new requests from now on */
+	 
 	spin_lock_irqsave(&msb->q_lock, flags);
 	msb->card_dead = true;
 	spin_unlock_irqrestore(&msb->q_lock, flags);
 	blk_mq_start_hw_queues(msb->queue);
 
-	/* Remove the disk */
+	 
 	del_gendisk(msb->disk);
 	blk_mq_free_tag_set(&msb->tag_set);
 	msb->queue = NULL;
@@ -2277,7 +2219,7 @@ out:
 #define msb_suspend NULL
 #define msb_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static struct memstick_device_id msb_id_tbl[] = {
 	{MEMSTICK_MATCH_ALL, MEMSTICK_TYPE_LEGACY, MEMSTICK_CATEGORY_STORAGE,

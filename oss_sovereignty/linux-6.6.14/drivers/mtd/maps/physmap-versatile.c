@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Versatile OF physmap driver add-on
- *
- * Copyright (c) 2016, Linaro Limited
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/export.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -61,16 +56,14 @@ static const struct of_device_id syscon_match[] = {
 	{},
 };
 
-/*
- * Flash protection handling for the Integrator/AP
- */
+ 
 #define INTEGRATOR_SC_CTRLS_OFFSET	0x08
 #define INTEGRATOR_SC_CTRLC_OFFSET	0x0C
 #define INTEGRATOR_SC_CTRL_FLVPPEN	BIT(1)
 #define INTEGRATOR_SC_CTRL_FLWP		BIT(2)
 
 #define INTEGRATOR_EBI_CSR1_OFFSET	0x04
-/* The manual says bit 2, the code says bit 3, trust the code */
+ 
 #define INTEGRATOR_EBI_WRITE_ENABLE	BIT(3)
 #define INTEGRATOR_EBI_LOCK_OFFSET	0x20
 #define INTEGRATOR_EBI_LOCK_VAL		0xA05F
@@ -87,7 +80,7 @@ static int ap_flash_init(struct platform_device *pdev)
 	u32 val;
 	int ret;
 
-	/* Look up the EBI */
+	 
 	ebi = of_find_matching_node(NULL, ebi_match);
 	if (!ebi) {
 		return -ENODEV;
@@ -97,22 +90,22 @@ static int ap_flash_init(struct platform_device *pdev)
 	if (!ebi_base)
 		return -ENODEV;
 
-	/* Clear VPP and write protection bits */
+	 
 	ret = regmap_write(syscon_regmap,
 		INTEGRATOR_SC_CTRLC_OFFSET,
 		INTEGRATOR_SC_CTRL_FLVPPEN | INTEGRATOR_SC_CTRL_FLWP);
 	if (ret)
 		dev_err(&pdev->dev, "error clearing Integrator VPP/WP\n");
 
-	/* Unlock the EBI */
+	 
 	writel(INTEGRATOR_EBI_LOCK_VAL, ebi_base + INTEGRATOR_EBI_LOCK_OFFSET);
 
-	/* Enable write cycles on the EBI, CSR1 (flash) */
+	 
 	val = readl(ebi_base + INTEGRATOR_EBI_CSR1_OFFSET);
 	val |= INTEGRATOR_EBI_WRITE_ENABLE;
 	writel(val, ebi_base + INTEGRATOR_EBI_CSR1_OFFSET);
 
-	/* Lock the EBI again */
+	 
 	writel(0, ebi_base + INTEGRATOR_EBI_LOCK_OFFSET);
 	iounmap(ebi_base);
 
@@ -138,9 +131,7 @@ static void ap_flash_set_vpp(struct map_info *map, int on)
 	}
 }
 
-/*
- * Flash protection handling for the Integrator/CP
- */
+ 
 
 #define INTCP_FLASHPROG_OFFSET		0x04
 #define CINTEGRATOR_FLVPPEN		BIT(0)
@@ -168,9 +159,7 @@ static void cp_flash_set_vpp(struct map_info *map, int on)
 	}
 }
 
-/*
- * Flash protection handling for the Versatiles and RealViews
- */
+ 
 
 #define VERSATILE_SYS_FLASH_OFFSET            0x4C
 
@@ -194,11 +183,11 @@ int of_flash_probe_versatile(struct platform_device *pdev,
 	static enum versatile_flashprot versatile_flashprot;
 	int ret;
 
-	/* Not all flash chips use this protection line */
+	 
 	if (!of_device_is_compatible(np, "arm,versatile-flash"))
 		return 0;
 
-	/* For first chip probed, look up the syscon regmap */
+	 
 	if (!syscon_regmap) {
 		sysnp = of_find_matching_node_and_match(NULL,
 							syscon_match,

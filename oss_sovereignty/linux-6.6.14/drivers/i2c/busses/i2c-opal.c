@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IBM OPAL I2C driver
- * Copyright (C) 2014 IBM
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/i2c.h>
@@ -77,9 +74,7 @@ static int i2c_opal_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	struct opal_i2c_request req;
 	int rc, i;
 
-	/* We only support fairly simple combinations here of one
-	 * or two messages
-	 */
+	 
 	memset(&req, 0, sizeof(req));
 	switch(num) {
 	case 1:
@@ -184,10 +179,7 @@ static const struct i2c_algorithm i2c_opal_algo = {
 	.functionality	= i2c_opal_func,
 };
 
-/*
- * For two messages, we basically support simple smbus transactions of a
- * write-then-anything.
- */
+ 
 static const struct i2c_adapter_quirks i2c_opal_quirks = {
 	.flags = I2C_AQ_COMB | I2C_AQ_COMB_WRITE_FIRST | I2C_AQ_COMB_SAME_ADDR,
 	.max_comb_1st_msg_len = 4,

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * page_fault_test.c - Test stage 2 faults.
- *
- * This test tries different combinations of guest accesses (e.g., write,
- * S1PTW), backing source type (e.g., anon) and types of faults (e.g., read on
- * hugetlbfs with a hole). It checks that the expected handling method is
- * called (e.g., uffd faults with the right address and write/read flag).
- */
+
+ 
 #define _GNU_SOURCE
 #include <linux/bitmap.h>
 #include <fcntl.h>
@@ -18,7 +11,7 @@
 #include "guest_modes.h"
 #include "userfaultfd_util.h"
 
-/* Guest virtual addresses that point to the test page and its PTE. */
+ 
 #define TEST_GVA				0xc0000000
 #define TEST_EXEC_GVA				(TEST_GVA + 0x8)
 #define TEST_PTE_GVA				0xb0000000
@@ -43,14 +36,14 @@ static struct event_cnt {
 	int mmio_exits;
 	int fail_vcpu_runs;
 	int uffd_faults;
-	/* uffd_faults is incremented from multiple threads. */
+	 
 	pthread_mutex_t uffd_faults_mutex;
 } events;
 
 struct test_desc {
 	const char *name;
 	uint64_t mem_mark_cmd;
-	/* Skip the test if any prepare function returns false */
+	 
 	bool (*guest_prepare[PREPARE_FN_NR])(void);
 	void (*guest_test)(void);
 	void (*guest_test_check[CHECK_FN_NR])(void);
@@ -90,7 +83,7 @@ static void guest_write64(void)
 	GUEST_ASSERT_EQ(val, TEST_DATA);
 }
 
-/* Check the system for atomic instructions. */
+ 
 static bool guest_check_lse(void)
 {
 	uint64_t isar0 = read_sysreg(id_aa64isar0_el1);
@@ -108,7 +101,7 @@ static bool guest_check_dc_zva(void)
 	return dzp == 0;
 }
 
-/* Compare and swap instruction. */
+ 
 static void guest_cas(void)
 {
 	uint64_t val;
@@ -129,7 +122,7 @@ static void guest_read64(void)
 	GUEST_ASSERT_EQ(val, 0);
 }
 
-/* Address translation instruction */
+ 
 static void guest_at(void)
 {
 	uint64_t par;
@@ -138,15 +131,11 @@ static void guest_at(void)
 	par = read_sysreg(par_el1);
 	isb();
 
-	/* Bit 1 indicates whether the AT was successful */
+	 
 	GUEST_ASSERT_EQ(par & 1, 0);
 }
 
-/*
- * The size of the block written by "dc zva" is guaranteed to be between (2 <<
- * 0) and (2 << 9), which is safe in our case as we need the write to happen
- * for at least a word, and not more than a page.
- */
+ 
 static void guest_dc_zva(void)
 {
 	uint16_t val;
@@ -157,21 +146,13 @@ static void guest_dc_zva(void)
 	GUEST_ASSERT_EQ(val, 0);
 }
 
-/*
- * Pre-indexing loads and stores don't have a valid syndrome (ESR_EL2.ISV==0).
- * And that's special because KVM must take special care with those: they
- * should still count as accesses for dirty logging or user-faulting, but
- * should be handled differently on mmio.
- */
+ 
 static void guest_ld_preidx(void)
 {
 	uint64_t val;
 	uint64_t addr = TEST_GVA - 8;
 
-	/*
-	 * This ends up accessing "TEST_GVA + 8 - 8", where "TEST_GVA - 8" is
-	 * in a gap between memslots not backing by anything.
-	 */
+	 
 	asm volatile("ldr %0, [%1, #8]!"
 		     : "=r" (val), "+r" (addr));
 	GUEST_ASSERT_EQ(val, 0);
@@ -195,7 +176,7 @@ static bool guest_set_ha(void)
 	uint64_t mmfr1 = read_sysreg(id_aa64mmfr1_el1);
 	uint64_t hadbs, tcr;
 
-	/* Skip if HA is not supported. */
+	 
 	hadbs = FIELD_GET(ARM64_FEATURE_MASK(ID_AA64MMFR1_HADBS), mmfr1);
 	if (hadbs == 0)
 		return false;
@@ -306,7 +287,7 @@ static struct uffd_args {
 	uint64_t paging_size;
 } pt_args, data_args;
 
-/* Returns true to continue the test, and false if it should be skipped. */
+ 
 static int uffd_generic_handler(int uffd_mode, int uffd, struct uffd_msg *msg,
 				struct uffd_args *args)
 {
@@ -403,7 +384,7 @@ static int uffd_no_handler(int mode, int uffd, struct uffd_msg *msg)
 	return -1;
 }
 
-/* Returns false if the test should be skipped. */
+ 
 static bool punch_hole_in_backing_store(struct kvm_vm *vm,
 					struct userspace_mem_region *region)
 {
@@ -456,7 +437,7 @@ static bool check_write_in_dirty_log(struct kvm_vm *vm,
 	bool first_page_dirty;
 	uint64_t size = region->region.memory_size;
 
-	/* getpage_size() is not always equal to vm->page_size */
+	 
 	bmap = bitmap_zalloc(size / getpagesize());
 	kvm_vm_get_dirty_log(vm, region->region.slot, bmap);
 	first_page_dirty = test_bit(host_pg_nr, bmap);
@@ -464,7 +445,7 @@ static bool check_write_in_dirty_log(struct kvm_vm *vm,
 	return first_page_dirty;
 }
 
-/* Returns true to continue the test, and false if it should be skipped. */
+ 
 static bool handle_cmd(struct kvm_vm *vm, int cmd)
 {
 	struct userspace_mem_region *data_region, *pt_region;
@@ -520,10 +501,7 @@ noinline void __return_0x77(void)
 		     "ret\n");
 }
 
-/*
- * Note that this function runs on the host before the test VM starts: there's
- * no need to sync the D$ and I$ caches.
- */
+ 
 static void load_exec_code_for_test(struct kvm_vm *vm)
 {
 	uint64_t *code;
@@ -556,9 +534,9 @@ static void setup_gva_maps(struct kvm_vm *vm)
 	uint64_t pte_gpa;
 
 	region = vm_get_mem_region(vm, MEM_REGION_TEST_DATA);
-	/* Map TEST_GVA first. This will install a new PTE. */
+	 
 	virt_pg_map(vm, TEST_GVA, region->region.guest_phys_addr);
-	/* Then map TEST_PTE_GVA to the above PTE. */
+	 
 	pte_gpa = addr_hva2gpa(vm, virt_get_pte_hva(vm, TEST_GVA));
 	virt_pg_map(vm, TEST_PTE_GVA, pte_gpa);
 }
@@ -569,28 +547,20 @@ enum pf_test_memslots {
 	TEST_DATA_MEMSLOT,
 };
 
-/*
- * Create a memslot for code and data at pfn=0, and test-data and PT ones
- * at max_gfn.
- */
+ 
 static void setup_memslots(struct kvm_vm *vm, struct test_params *p)
 {
 	uint64_t backing_src_pagesz = get_backing_src_pagesz(p->src_type);
 	uint64_t guest_page_size = vm->page_size;
 	uint64_t max_gfn = vm_compute_max_gfn(vm);
-	/* Enough for 2M of code when using 4K guest pages. */
+	 
 	uint64_t code_npages = 512;
 	uint64_t pt_size, data_size, data_gpa;
 
-	/*
-	 * This test requires 1 pgd, 2 pud, 4 pmd, and 6 pte pages when using
-	 * VM_MODE_P48V48_4K. Note that the .text takes ~1.6MBs.  That's 13
-	 * pages. VM_MODE_P48V48_4K is the mode with most PT pages; let's use
-	 * twice that just in case.
-	 */
+	 
 	pt_size = 26 * guest_page_size;
 
-	/* memslot sizes and gpa's must be aligned to the backing page size */
+	 
 	pt_size = align_up(pt_size, backing_src_pagesz);
 	data_size = align_up(guest_page_size, backing_src_pagesz);
 	data_gpa = (max_gfn * guest_page_size) - data_size;
@@ -650,10 +620,7 @@ static void reset_event_counts(void)
 	memset(&events, 0, sizeof(events));
 }
 
-/*
- * This function either succeeds, skips the test (after setting test->skip), or
- * fails with a TEST_FAIL that aborts all tests.
- */
+ 
 static void vcpu_run_loop(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
 			  struct test_desc *test)
 {
@@ -715,12 +682,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 
 	reset_event_counts();
 
-	/*
-	 * Set some code in the data memslot for the guest to execute (only
-	 * applicable to the EXEC tests). This has to be done before
-	 * setup_uffd() as that function copies the memslot data for the uffd
-	 * handler.
-	 */
+	 
 	load_exec_code_for_test(vm);
 	setup_uffd(vm, p, &pt_uffd, &data_uffd);
 	setup_abort_handlers(vm, vcpu, test);
@@ -732,10 +694,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	kvm_vm_free(vm);
 	free_uffd(test, pt_uffd, data_uffd);
 
-	/*
-	 * Make sure we check the events after the uffd threads have exited,
-	 * which means they updated their respective event counters.
-	 */
+	 
 	if (!test->skip)
 		check_event_counts(test);
 }
@@ -766,13 +725,13 @@ static void help(char *name)
 #define _PREPARE_guest_dc_zva		guest_check_dc_zva
 #define _PREPARE_guest_cas		guest_check_lse
 
-/* With or without access flag checks */
+ 
 #define _PREPARE_with_af		guest_set_ha, guest_clear_pte_af
 #define _PREPARE_no_af			NULL
 #define _CHECK_with_af			guest_check_pte_af
 #define _CHECK_no_af			NULL
 
-/* Performs an access and checks that no faults were triggered. */
+ 
 #define TEST_ACCESS(_access, _with_af, _mark_cmd)				\
 {										\
 	.name			= SCAT3(_access, _with_af, #_mark_cmd),		\
@@ -904,7 +863,7 @@ static void help(char *name)
 
 static struct test_desc tests[] = {
 
-	/* Check that HW is setting the Access Flag (AF) (sanity checks). */
+	 
 	TEST_ACCESS(guest_read64, with_af, CMD_NONE),
 	TEST_ACCESS(guest_ld_preidx, with_af, CMD_NONE),
 	TEST_ACCESS(guest_cas, with_af, CMD_NONE),
@@ -913,15 +872,7 @@ static struct test_desc tests[] = {
 	TEST_ACCESS(guest_dc_zva, with_af, CMD_NONE),
 	TEST_ACCESS(guest_exec, with_af, CMD_NONE),
 
-	/*
-	 * Punch a hole in the data backing store, and then try multiple
-	 * accesses: reads should rturn zeroes, and writes should
-	 * re-populate the page. Moreover, the test also check that no
-	 * exception was generated in the guest.  Note that this
-	 * reading/writing behavior is the same as reading/writing a
-	 * punched page (with fallocate(FALLOC_FL_PUNCH_HOLE)) from
-	 * userspace.
-	 */
+	 
 	TEST_ACCESS(guest_read64, no_af, CMD_HOLE_DATA),
 	TEST_ACCESS(guest_cas, no_af, CMD_HOLE_DATA),
 	TEST_ACCESS(guest_ld_preidx, no_af, CMD_HOLE_DATA),
@@ -930,22 +881,14 @@ static struct test_desc tests[] = {
 	TEST_ACCESS(guest_at, no_af, CMD_HOLE_DATA),
 	TEST_ACCESS(guest_dc_zva, no_af, CMD_HOLE_DATA),
 
-	/*
-	 * Punch holes in the data and PT backing stores and mark them for
-	 * userfaultfd handling. This should result in 2 faults: the access
-	 * on the data backing store, and its respective S1 page table walk
-	 * (S1PTW).
-	 */
+	 
 	TEST_UFFD(guest_read64, with_af, CMD_HOLE_DATA | CMD_HOLE_PT,
 		  uffd_data_handler, uffd_pt_handler, 2),
 	TEST_UFFD(guest_read64, no_af, CMD_HOLE_DATA | CMD_HOLE_PT,
 		  uffd_data_handler, uffd_pt_handler, 2),
 	TEST_UFFD(guest_cas, with_af, CMD_HOLE_DATA | CMD_HOLE_PT,
 		  uffd_data_handler, uffd_pt_handler, 2),
-	/*
-	 * Can't test guest_at with_af as it's IMPDEF whether the AF is set.
-	 * The S1PTW fault should still be marked as a write.
-	 */
+	 
 	TEST_UFFD(guest_at, no_af, CMD_HOLE_DATA | CMD_HOLE_PT,
 		  uffd_no_handler, uffd_pt_handler, 1),
 	TEST_UFFD(guest_ld_preidx, with_af, CMD_HOLE_DATA | CMD_HOLE_PT,
@@ -959,10 +902,7 @@ static struct test_desc tests[] = {
 	TEST_UFFD(guest_exec, with_af, CMD_HOLE_DATA | CMD_HOLE_PT,
 		  uffd_data_handler, uffd_pt_handler, 2),
 
-	/*
-	 * Try accesses when the data and PT memory regions are both
-	 * tracked for dirty logging.
-	 */
+	 
 	TEST_DIRTY_LOG(guest_read64, with_af, guest_check_no_write_in_dirty_log,
 		       guest_check_s1ptw_wr_in_dirty_log),
 	TEST_DIRTY_LOG(guest_read64, no_af, guest_check_no_write_in_dirty_log,
@@ -983,14 +923,7 @@ static struct test_desc tests[] = {
 	TEST_DIRTY_LOG(guest_st_preidx, with_af, guest_check_write_in_dirty_log,
 		       guest_check_s1ptw_wr_in_dirty_log),
 
-	/*
-	 * Access when the data and PT memory regions are both marked for
-	 * dirty logging and UFFD at the same time. The expected result is
-	 * that writes should mark the dirty log and trigger a userfaultfd
-	 * write fault.  Reads/execs should result in a read userfaultfd
-	 * fault, and nothing in the dirty log.  Any S1PTW should result in
-	 * a write in the dirty log and a userfaultfd write.
-	 */
+	 
 	TEST_UFFD_AND_DIRTY_LOG(guest_read64, with_af,
 				uffd_data_handler, 2,
 				guest_check_no_write_in_dirty_log,
@@ -1026,13 +959,7 @@ static struct test_desc tests[] = {
 				uffd_data_handler, 2,
 				guest_check_write_in_dirty_log,
 				guest_check_s1ptw_wr_in_dirty_log),
-	/*
-	 * Access when both the PT and data regions are marked read-only
-	 * (with KVM_MEM_READONLY). Writes with a syndrome result in an
-	 * MMIO exit, writes with no syndrome (e.g., CAS) result in a
-	 * failed vcpu run, and reads/execs with and without syndroms do
-	 * not fault.
-	 */
+	 
 	TEST_RO_MEMSLOT(guest_read64, 0, 0),
 	TEST_RO_MEMSLOT(guest_ld_preidx, 0, 0),
 	TEST_RO_MEMSLOT(guest_at, 0, 0),
@@ -1042,14 +969,7 @@ static struct test_desc tests[] = {
 	TEST_RO_MEMSLOT_NO_SYNDROME(guest_cas),
 	TEST_RO_MEMSLOT_NO_SYNDROME(guest_st_preidx),
 
-	/*
-	 * The PT and data regions are both read-only and marked
-	 * for dirty logging at the same time. The expected result is that
-	 * for writes there should be no write in the dirty log. The
-	 * readonly handling is the same as if the memslot was not marked
-	 * for dirty logging: writes with a syndrome result in an MMIO
-	 * exit, and writes with no syndrome result in a failed vcpu run.
-	 */
+	 
 	TEST_RO_MEMSLOT_AND_DIRTY_LOG(guest_read64, 0, 0,
 				      guest_check_no_write_in_dirty_log),
 	TEST_RO_MEMSLOT_AND_DIRTY_LOG(guest_ld_preidx, 0, 0,
@@ -1067,15 +987,7 @@ static struct test_desc tests[] = {
 	TEST_RO_MEMSLOT_NO_SYNDROME_AND_DIRTY_LOG(guest_st_preidx,
 						  guest_check_no_write_in_dirty_log),
 
-	/*
-	 * The PT and data regions are both read-only and punched with
-	 * holes tracked with userfaultfd.  The expected result is the
-	 * union of both userfaultfd and read-only behaviors. For example,
-	 * write accesses result in a userfaultfd write fault and an MMIO
-	 * exit.  Writes with no syndrome result in a failed vcpu run and
-	 * no userfaultfd write fault. Reads result in userfaultfd getting
-	 * triggered.
-	 */
+	 
 	TEST_RO_MEMSLOT_AND_UFFD(guest_read64, 0, 0, uffd_data_handler, 2),
 	TEST_RO_MEMSLOT_AND_UFFD(guest_ld_preidx, 0, 0, uffd_data_handler, 2),
 	TEST_RO_MEMSLOT_AND_UFFD(guest_at, 0, 0, uffd_no_handler, 1),

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Linaro Ltd.
- *
- * This device driver implements MMIO TPM on SynQuacer Platform.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -13,11 +9,7 @@
 #include "tpm.h"
 #include "tpm_tis_core.h"
 
-/*
- * irq > 0 means: use irq $irq;
- * irq = 0 means: autoprobe for an irq;
- * irq = -1 means: no irq support
- */
+ 
 struct tpm_tis_synquacer_info {
 	struct resource res;
 	int irq;
@@ -71,10 +63,7 @@ static int tpm_tis_synquacer_write_bytes(struct tpm_tis_data *data, u32 addr,
 	case TPM_TIS_PHYS_16:
 		return -EINVAL;
 	case TPM_TIS_PHYS_32:
-		/*
-		 * Due to the limitation of SPI controller on SynQuacer,
-		 * 16/32 bits access must be done in byte-wise and descending order.
-		 */
+		 
 		iowrite8(value[3], phy->iobase + addr + 3);
 		iowrite8(value[2], phy->iobase + addr + 2);
 		iowrite8(value[1], phy->iobase + addr + 1);

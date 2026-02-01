@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2017, 2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Linaro Limited.
- *  Author: Caleb Connolly <caleb.connolly@linaro.org>
- *
- * This driver is for the Round Robin ADC found in the pmi8998 and pm660 PMICs.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -158,7 +152,7 @@
 #define RR_ADC_CHAN_MSB (1 << RR_ADC_BITS)
 #define RR_ADC_FS_VOLTAGE_MV 2500
 
-/* BATT_THERM 0.25K/LSB */
+ 
 #define RR_ADC_BATT_THERM_LSB_K 4
 
 #define RR_ADC_TEMP_FS_VOLTAGE_NUM 5000000
@@ -215,17 +209,7 @@ enum rradc_channel_id {
 
 struct rradc_chip;
 
-/**
- * struct rradc_channel - rradc channel data
- * @label:		channel label
- * @lsb:		Channel least significant byte
- * @status:		Channel status address
- * @size:		number of bytes to read
- * @trigger_addr:	Trigger address, trigger is only used on some channels
- * @trigger_mask:	Trigger mask
- * @scale_fn:		Post process callback for channels which can't be exposed
- *			as offset + scale.
- */
+ 
 struct rradc_channel {
 	const char *label;
 	u8 lsb;
@@ -239,10 +223,7 @@ struct rradc_channel {
 struct rradc_chip {
 	struct device *dev;
 	const struct qcom_spmi_pmic *pmic;
-	/*
-	 * Lock held while doing channel conversion
-	 * involving multiple register read/writes
-	 */
+	 
 	struct mutex conversion_lock;
 	struct regmap *regmap;
 	u32 base;
@@ -335,10 +316,7 @@ static int rradc_get_fab_coeff(struct rradc_chip *chip, int64_t *offset,
 	return -EINVAL;
 }
 
-/*
- * These functions explicitly cast int64_t to int.
- * They will never overflow, as the values are small enough.
- */
+ 
 static int rradc_post_process_batt_id(struct rradc_chip *chip, u16 adc_code,
 				      int *result_ohms)
 {
@@ -357,7 +335,7 @@ static int rradc_enable_continuous_mode(struct rradc_chip *chip)
 {
 	int ret;
 
-	/* Clear channel log */
+	 
 	ret = regmap_update_bits(chip->regmap, chip->base + RR_ADC_LOG,
 				 RR_ADC_LOG_CLR_CTRL, RR_ADC_LOG_CLR_CTRL);
 	if (ret < 0) {
@@ -373,7 +351,7 @@ static int rradc_enable_continuous_mode(struct rradc_chip *chip)
 		return ret;
 	}
 
-	/* Switch to continuous mode */
+	 
 	ret = regmap_update_bits(chip->regmap, chip->base + RR_ADC_CTL,
 				 RR_ADC_CTL_CONTINUOUS_SEL,
 				 RR_ADC_CTL_CONTINUOUS_SEL);
@@ -388,7 +366,7 @@ static int rradc_disable_continuous_mode(struct rradc_chip *chip)
 {
 	int ret;
 
-	/* Switch to non continuous mode */
+	 
 	ret = regmap_update_bits(chip->regmap, chip->base + RR_ADC_CTL,
 				 RR_ADC_CTL_CONTINUOUS_SEL, 0);
 	if (ret < 0)
@@ -405,7 +383,7 @@ static bool rradc_is_ready(struct rradc_chip *chip,
 	int ret;
 	unsigned int status, mask;
 
-	/* BATT_ID STS bit does not get set initially */
+	 
 	switch (chan_address) {
 	case RR_ADC_BATT_ID:
 		mask = RR_ADC_STS_CHANNEL_STS;
@@ -449,11 +427,7 @@ static int rradc_read_status_in_cont_mode(struct rradc_chip *chip,
 		goto disable_trigger;
 	}
 
-	/*
-	 * The wait/sleep values were found through trial and error,
-	 * this is mostly for the battery ID channel which takes some
-	 * time to settle.
-	 */
+	 
 	for (i = 0; i < 5; i++) {
 		if (rradc_is_ready(chip, chan_address))
 			break;
@@ -499,7 +473,7 @@ static int rradc_prepare_batt_id_conversion(struct rradc_chip *chip,
 
 	ret = rradc_read_status_in_cont_mode(chip, chan_address);
 
-	/* Reset registers back to default values */
+	 
 	regmap_update_bits(chip->regmap, chip->base + RR_ADC_BATT_ID_TRIGGER,
 			   RR_ADC_TRIGGER_CTL, 0);
 
@@ -541,11 +515,7 @@ static int rradc_do_conversion(struct rradc_chip *chip,
 		break;
 	default:
 		if (!rradc_is_ready(chip, chan_address)) {
-			/*
-			 * Usually this means the channel isn't attached, for example
-			 * the in_voltage_usbin_v_input channel will not be ready if
-			 * no USB cable is attached
-			 */
+			 
 			dev_dbg(chip->dev, "channel '%s' is not ready\n",
 				iio_chan->extend_name);
 			ret = -ENODATA;
@@ -560,10 +530,7 @@ static int rradc_do_conversion(struct rradc_chip *chip,
 		goto unlock_out;
 	}
 
-	/*
-	 * For the battery ID we read the register for every ID ADC and then
-	 * see which one is actually connected.
-	 */
+	 
 	if (chan_address == RR_ADC_BATT_ID) {
 		u16 batt_id_150 = le16_to_cpu(buf[2]);
 		u16 batt_id_15 = le16_to_cpu(buf[1]);
@@ -587,10 +554,7 @@ static int rradc_do_conversion(struct rradc_chip *chip,
 			chip->batt_id_data = 5;
 		}
 	} else {
-		/*
-		 * All of the other channels are either 1 or 2 bytes.
-		 * We can rely on the second byte being 0 for 1-byte channels.
-		 */
+		 
 		*data = le16_to_cpu(buf[0]);
 	}
 
@@ -636,10 +600,7 @@ static int rradc_read_scale(struct rradc_chip *chip, int chan_address, int *val,
 		*val2 = RR_ADC_CHAN_MSB;
 		return IIO_VAL_FRACTIONAL;
 	case RR_ADC_CHG_TEMP:
-		/*
-		 * We divide val2 by MILLI instead of multiplying val
-		 * to avoid an integer overflow.
-		 */
+		 
 		*val = -RR_ADC_TEMP_FS_VOLTAGE_NUM;
 		*val2 = div64_s64(RR_ADC_TEMP_FS_VOLTAGE_DEN * RR_ADC_CHAN_MSB *
 					  fab_slope,
@@ -665,11 +626,7 @@ static int rradc_read_offset(struct rradc_chip *chip, int chan_address, int *val
 
 	switch (chan_address) {
 	case RR_ADC_SKIN_TEMP:
-		/*
-		 * Offset from kelvin to degC, divided by the
-		 * scale factor (250). We lose some precision here.
-		 * 273150 / 250 = 1092.6
-		 */
+		 
 		*val = div64_s64(ABSOLUTE_ZERO_MILLICELSIUS,
 				 (MILLI / RR_ADC_BATT_THERM_LSB_K));
 		return IIO_VAL_INT;
@@ -693,12 +650,7 @@ static int rradc_read_offset(struct rradc_chip *chip, int chan_address, int *val
 		offset2 = div64_s64(
 			offset2, ((int64_t)MILLI * RR_ADC_TEMP_FS_VOLTAGE_NUM));
 
-		/*
-		 * The -1 is to compensate for lost precision.
-		 * It should actually be -0.7906976744186046.
-		 * This works out to every value being off
-		 * by about +0.091 degrees C after applying offset and scale.
-		 */
+		 
 		*val = (int)(offset1 - offset2 - 1);
 		return IIO_VAL_INT;
 	case RR_ADC_DIE_TEMP:
@@ -713,11 +665,7 @@ static int rradc_read_offset(struct rradc_chip *chip, int chan_address, int *val
 		offset2 = div64_s64(offset2,
 				    ((int64_t)RR_ADC_TEMP_FS_VOLTAGE_NUM));
 
-		/*
-		 * The result is -339, it should be -338.69789, this results
-		 * in the calculated die temp being off by
-		 * -0.004 - -0.0175 degrees C
-		 */
+		 
 		*val = (int)(offset1 - offset2);
 		return IIO_VAL_INT;
 	default:
@@ -975,7 +923,7 @@ static int rradc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Get the PMIC revision, we need it to handle some varying coefficients */
+	 
 	chip->pmic = qcom_pmic_get(chip->dev);
 	if (IS_ERR(chip->pmic)) {
 		dev_err(chip->dev, "Unable to get reference to PMIC device\n");

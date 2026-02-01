@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sun4i-ss.h - hardware cryptographic accelerator for Allwinner A20 SoC
- *
- * Copyright (C) 2013-2015 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * Support AES cipher with 128,192,256 bits keysize.
- * Support MD5 and SHA1 hash algorithms.
- * Support DES and 3DES
- *
- * You could find the datasheet in Documentation/arch/arm/sunxi.rst
- */
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/crypto.h>
@@ -60,35 +50,35 @@
 #define SS_RXFIFO         0x200
 #define SS_TXFIFO         0x204
 
-/* SS_CTL configuration values */
+ 
 
-/* PRNG generator mode - bit 15 */
+ 
 #define SS_PRNG_ONESHOT		(0 << 15)
 #define SS_PRNG_CONTINUE	(1 << 15)
 
-/* IV mode for hash */
+ 
 #define SS_IV_ARBITRARY		(1 << 14)
 
-/* SS operation mode - bits 12-13 */
+ 
 #define SS_ECB			(0 << 12)
 #define SS_CBC			(1 << 12)
 #define SS_CTS			(3 << 12)
 
-/* Counter width for CNT mode - bits 10-11 */
+ 
 #define SS_CNT_16BITS		(0 << 10)
 #define SS_CNT_32BITS		(1 << 10)
 #define SS_CNT_64BITS		(2 << 10)
 
-/* Key size for AES - bits 8-9 */
+ 
 #define SS_AES_128BITS		(0 << 8)
 #define SS_AES_192BITS		(1 << 8)
 #define SS_AES_256BITS		(2 << 8)
 
-/* Operation direction - bit 7 */
+ 
 #define SS_ENCRYPTION		(0 << 7)
 #define SS_DECRYPTION		(1 << 7)
 
-/* SS Method - bits 4-6 */
+ 
 #define SS_OP_AES		(0 << 4)
 #define SS_OP_DES		(1 << 4)
 #define SS_OP_3DES		(2 << 4)
@@ -96,27 +86,27 @@
 #define SS_OP_MD5		(4 << 4)
 #define SS_OP_PRNG		(5 << 4)
 
-/* Data end bit - bit 2 */
+ 
 #define SS_DATA_END		(1 << 2)
 
-/* PRNG start bit - bit 1 */
+ 
 #define SS_PRNG_START		(1 << 1)
 
-/* SS Enable bit - bit 0 */
+ 
 #define SS_DISABLED		(0 << 0)
 #define SS_ENABLED		(1 << 0)
 
-/* SS_FCSR configuration values */
-/* RX FIFO status - bit 30 */
+ 
+ 
 #define SS_RXFIFO_FREE		(1 << 30)
 
-/* RX FIFO empty spaces - bits 24-29 */
+ 
 #define SS_RXFIFO_SPACES(val)	(((val) >> 24) & 0x3f)
 
-/* TX FIFO status - bit 22 */
+ 
 #define SS_TXFIFO_AVAILABLE	(1 << 22)
 
-/* TX FIFO available spaces - bits 16-21 */
+ 
 #define SS_TXFIFO_SPACES(val)	(((val) >> 16) & 0x3f)
 
 #define SS_RX_MAX	32
@@ -131,10 +121,7 @@
 #define SS_SEED_LEN 192
 #define SS_DATA_LEN 160
 
-/*
- * struct ss_variant - Describe SS hardware variant
- * @sha1_in_be:		The SHA1 digest is given by SS in BE, and so need to be inverted.
- */
+ 
 struct ss_variant {
 	bool sha1_in_be;
 };
@@ -148,9 +135,9 @@ struct sun4i_ss_ctx {
 	struct reset_control *reset;
 	struct device *dev;
 	struct resource *res;
-	char buf[4 * SS_RX_MAX];/* buffer for linearize SG src */
-	char bufo[4 * SS_TX_MAX]; /* buffer for linearize SG dst */
-	spinlock_t slock; /* control the use of the device */
+	char buf[4 * SS_RX_MAX]; 
+	char bufo[4 * SS_TX_MAX];  
+	spinlock_t slock;  
 #ifdef CONFIG_CRYPTO_DEV_SUN4I_SS_PRNG
 	u32 seed[SS_SEED_LEN / BITS_PER_LONG];
 #endif
@@ -174,7 +161,7 @@ struct sun4i_ss_alg_template {
 };
 
 struct sun4i_tfm_ctx {
-	u32 key[AES_MAX_KEY_SIZE / 4];/* divided by sizeof(u32) */
+	u32 key[AES_MAX_KEY_SIZE / 4]; 
 	u32 keylen;
 	u32 keymode;
 	struct sun4i_ss_ctx *ss;
@@ -184,13 +171,13 @@ struct sun4i_tfm_ctx {
 struct sun4i_cipher_req_ctx {
 	u32 mode;
 	u8 backup_iv[AES_BLOCK_SIZE];
-	struct skcipher_request fallback_req;   // keep at the end
+	struct skcipher_request fallback_req;   
 };
 
 struct sun4i_req_ctx {
 	u32 mode;
-	u64 byte_count; /* number of bytes "uploaded" to the device */
-	u32 hash[5]; /* for storing SS_IVx register */
+	u64 byte_count;  
+	u32 hash[5];  
 	char buf[64];
 	unsigned int len;
 	int flags;

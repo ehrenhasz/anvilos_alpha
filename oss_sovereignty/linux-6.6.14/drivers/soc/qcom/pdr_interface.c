@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -40,13 +38,13 @@ struct pdr_handle {
 	struct list_head lookups;
 	struct list_head indack_list;
 
-	/* control access to pdr lookup/indack lists */
+	 
 	struct mutex list_lock;
 
-	/* serialize pd status invocation */
+	 
 	struct mutex status_lock;
 
-	/* control access to the locator state */
+	 
 	struct mutex lock;
 
 	bool locator_init_complete;
@@ -76,7 +74,7 @@ static int pdr_locator_new_server(struct qmi_handle *qmi,
 					      locator_hdl);
 	struct pdr_service *pds;
 
-	/* Create a local client port for QMI communication */
+	 
 	pdr->locator_addr.sq_family = AF_QIPCRTR;
 	pdr->locator_addr.sq_node = svc->node;
 	pdr->locator_addr.sq_port = svc->port;
@@ -85,7 +83,7 @@ static int pdr_locator_new_server(struct qmi_handle *qmi,
 	pdr->locator_init_complete = true;
 	mutex_unlock(&pdr->lock);
 
-	/* Service pending lookup requests */
+	 
 	mutex_lock(&pdr->list_lock);
 	list_for_each_entry(pds, &pdr->lookups, node) {
 		if (pds->need_locator_lookup)
@@ -265,7 +263,7 @@ static int pdr_send_indack_msg(struct pdr_handle *pdr, struct pdr_service *pds,
 			       servreg_set_ack_req_ei,
 			       &req);
 
-	/* Skip waiting for response */
+	 
 	qmi_txn_cancel(&txn);
 	return ret;
 }
@@ -285,7 +283,7 @@ static void pdr_indack_work(struct work_struct *work)
 		pdr->status(pds->state, pds->service_path, pdr->priv);
 		mutex_unlock(&pdr->status_lock);
 
-		/* Ack the indication after clients release the PD resources */
+		 
 		pdr_send_indack_msg(pdr, pds, ind->transaction_id);
 
 		mutex_lock(&pdr->list_lock);
@@ -404,7 +402,7 @@ static int pdr_locate_service(struct pdr_handle *pdr, struct pdr_service *pds)
 	if (!resp)
 		return -ENOMEM;
 
-	/* Prepare req message */
+	 
 	strscpy(req.service_name, pds->service_name, sizeof(req.service_name));
 	req.domain_offset_valid = true;
 	req.domain_offset = 0;
@@ -429,10 +427,10 @@ static int pdr_locate_service(struct pdr_handle *pdr, struct pdr_service *pds)
 			}
 		}
 
-		/* Update ret to indicate that the service is not yet found */
+		 
 		ret = -ENXIO;
 
-		/* Always read total_domains from the response msg */
+		 
 		if (resp->domain_list_len > resp->total_domains)
 			resp->domain_list_len = resp->total_domains;
 
@@ -468,7 +466,7 @@ static void pdr_locator_work(struct work_struct *work)
 	struct pdr_service *pds, *tmp;
 	int ret = 0;
 
-	/* Bail out early if the SERVREG LOCATOR QMI service is not up */
+	 
 	mutex_lock(&pdr->lock);
 	if (!pdr->locator_init_complete) {
 		mutex_unlock(&pdr->lock);
@@ -500,17 +498,7 @@ static void pdr_locator_work(struct work_struct *work)
 	mutex_unlock(&pdr->list_lock);
 }
 
-/**
- * pdr_add_lookup() - register a tracking request for a PD
- * @pdr:		PDR client handle
- * @service_name:	service name of the tracking request
- * @service_path:	service path of the tracking request
- *
- * Registering a pdr lookup allows for tracking the life cycle of the PD.
- *
- * Return: pdr_service object on success, ERR_PTR on failure. -EALREADY is
- * returned if a lookup is already in progress for the given service path.
- */
+ 
 struct pdr_service *pdr_add_lookup(struct pdr_handle *pdr,
 				   const char *service_name,
 				   const char *service_path)
@@ -556,15 +544,7 @@ err:
 }
 EXPORT_SYMBOL(pdr_add_lookup);
 
-/**
- * pdr_restart_pd() - restart PD
- * @pdr:	PDR client handle
- * @pds:	PD service handle
- *
- * Restarts the PD tracked by the PDR client handle for a given service path.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds)
 {
 	struct servreg_restart_pd_resp resp;
@@ -585,7 +565,7 @@ int pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds)
 		if (!pds->service_connected)
 			break;
 
-		/* Prepare req message */
+		 
 		strscpy(req.service_path, pds->service_path, sizeof(req.service_path));
 		addr = pds->addr;
 		break;
@@ -617,7 +597,7 @@ int pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds)
 		return ret;
 	}
 
-	/* Check response if PDR is disabled */
+	 
 	if (resp.resp.result == QMI_RESULT_FAILURE_V01 &&
 	    resp.resp.error == QMI_ERR_DISABLED_V01) {
 		pr_err("PDR: %s PD restart is disabled: 0x%x\n",
@@ -625,7 +605,7 @@ int pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds)
 		return -EOPNOTSUPP;
 	}
 
-	/* Check the response for other error case*/
+	 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
 		pr_err("PDR: %s request for PD restart failed: 0x%x\n",
 		       req.service_path, resp.resp.error);
@@ -636,15 +616,7 @@ int pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds)
 }
 EXPORT_SYMBOL(pdr_restart_pd);
 
-/**
- * pdr_handle_alloc() - initialize the PDR client handle
- * @status:	function to be called on PD state change
- * @priv:	handle for client's use
- *
- * Initializes the PDR client handle to allow for tracking/restart of PDs.
- *
- * Return: pdr_handle object on success, ERR_PTR on failure.
- */
+ 
 struct pdr_handle *pdr_handle_alloc(void (*status)(int state,
 						   char *service_path,
 						   void *priv), void *priv)
@@ -717,12 +689,7 @@ free_pdr_handle:
 }
 EXPORT_SYMBOL(pdr_handle_alloc);
 
-/**
- * pdr_handle_release() - release the PDR client handle
- * @pdr:	PDR client handle
- *
- * Cleans up pending tracking requests and releases the underlying qmi handles.
- */
+ 
 void pdr_handle_release(struct pdr_handle *pdr)
 {
 	struct pdr_service *pds, *tmp;

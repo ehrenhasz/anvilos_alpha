@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/freezer.h>
 
@@ -104,15 +101,7 @@ static void free_transport(struct tcp_transport *t)
 	kfree(t);
 }
 
-/**
- * kvec_array_init() - initialize a IO vector segment
- * @new:	IO vector to be initialized
- * @iov:	base IO vector
- * @nr_segs:	number of segments in base iov
- * @bytes:	total iovec length so far for read
- *
- * Return:	Number of IO segments
- */
+ 
 static unsigned int kvec_array_init(struct kvec *new, struct kvec *iov,
 				    unsigned int nr_segs, size_t bytes)
 {
@@ -136,13 +125,7 @@ static unsigned int kvec_array_init(struct kvec *new, struct kvec *iov,
 	return nr_segs;
 }
 
-/**
- * get_conn_iovec() - get connection iovec for reading from socket
- * @t:		TCP transport instance
- * @nr_segs:	number of segments in iov
- *
- * Return:	return existing or newly allocate iovec
- */
+ 
 static struct kvec *get_conn_iovec(struct tcp_transport *t, unsigned int nr_segs)
 {
 	struct kvec *new_iov;
@@ -150,7 +133,7 @@ static struct kvec *get_conn_iovec(struct tcp_transport *t, unsigned int nr_segs
 	if (t->iov && nr_segs <= t->nr_iov)
 		return t->iov;
 
-	/* not big enough -- allocate a new one and release the old */
+	 
 	new_iov = kmalloc_array(nr_segs, sizeof(*new_iov), GFP_KERNEL);
 	if (new_iov) {
 		kfree(t->iov);
@@ -171,15 +154,7 @@ static unsigned short ksmbd_tcp_get_port(const struct sockaddr *sa)
 	return 0;
 }
 
-/**
- * ksmbd_tcp_new_connection() - create a new tcp session on mount
- * @client_sk:	socket associated with new connection
- *
- * whenever a new connection is requested, create a conn thread
- * (session thread) to handle new incoming smb requests from the connection
- *
- * Return:	0 on success, otherwise error
- */
+ 
 static int ksmbd_tcp_new_connection(struct socket *client_sk)
 {
 	struct sockaddr *csin;
@@ -216,12 +191,7 @@ out_error:
 	return rc;
 }
 
-/**
- * ksmbd_kthread_fn() - listen to new SMB connections and callback server
- * @p:		arguments to forker thread
- *
- * Return:	0 on success, error number otherwise
- */
+ 
 static int ksmbd_kthread_fn(void *p)
 {
 	struct socket *client_sk = NULL;
@@ -239,7 +209,7 @@ static int ksmbd_kthread_fn(void *p)
 		mutex_unlock(&iface->sock_release_lock);
 		if (ret) {
 			if (ret == -EAGAIN)
-				/* check for new connections every 100 msecs */
+				 
 				schedule_timeout_interruptible(HZ / 10);
 			continue;
 		}
@@ -264,16 +234,7 @@ static int ksmbd_kthread_fn(void *p)
 	return 0;
 }
 
-/**
- * ksmbd_tcp_run_kthread() - start forker thread
- * @iface: pointer to struct interface
- *
- * start forker thread(ksmbd/0) at module init time to listen
- * on port 445 for new SMB connection requests. It creates per connection
- * server threads(ksmbd/x)
- *
- * Return:	0 on success or error number
- */
+ 
 static int ksmbd_tcp_run_kthread(struct interface *iface)
 {
 	int rc;
@@ -290,17 +251,7 @@ static int ksmbd_tcp_run_kthread(struct interface *iface)
 	return 0;
 }
 
-/**
- * ksmbd_tcp_readv() - read data from socket in given iovec
- * @t:			TCP transport instance
- * @iov_orig:		base IO vector
- * @nr_segs:		number of segments in base iov
- * @to_read:		number of bytes to read from socket
- * @max_retries:	maximum retry count
- *
- * Return:	on success return number of bytes read from socket,
- *		otherwise return error number
- */
+ 
 static int ksmbd_tcp_readv(struct tcp_transport *t, struct kvec *iov_orig,
 			   unsigned int nr_segs, unsigned int to_read,
 			   int max_retries)
@@ -338,10 +289,7 @@ static int ksmbd_tcp_readv(struct tcp_transport *t, struct kvec *iov_orig,
 			total_read = -EAGAIN;
 			break;
 		} else if (length == -ERESTARTSYS || length == -EAGAIN) {
-			/*
-			 * If max_retries is negative, Allow unlimited
-			 * retries to keep connection with inactive sessions.
-			 */
+			 
 			if (max_retries == 0) {
 				total_read = length;
 				break;
@@ -360,15 +308,7 @@ static int ksmbd_tcp_readv(struct tcp_transport *t, struct kvec *iov_orig,
 	return total_read;
 }
 
-/**
- * ksmbd_tcp_read() - read data from socket in given buffer
- * @t:		TCP transport instance
- * @buf:	buffer to store read data from socket
- * @to_read:	number of bytes to read from socket
- *
- * Return:	on success return number of bytes read from socket,
- *		otherwise return error number
- */
+ 
 static int ksmbd_tcp_read(struct ksmbd_transport *t, char *buf,
 			  unsigned int to_read, int max_retries)
 {
@@ -404,7 +344,7 @@ static void tcp_destroy_socket(struct socket *ksmbd_socket)
 	if (!ksmbd_socket)
 		return;
 
-	/* set zero to timeout */
+	 
 	ksmbd_tcp_rcv_timeout(ksmbd_socket, 0);
 	ksmbd_tcp_snd_timeout(ksmbd_socket, 0);
 
@@ -414,11 +354,7 @@ static void tcp_destroy_socket(struct socket *ksmbd_socket)
 	sock_release(ksmbd_socket);
 }
 
-/**
- * create_socket - create socket for ksmbd/0
- *
- * Return:	0 on success, error number otherwise
- */
+ 
 static int create_socket(struct interface *iface)
 {
 	int ret;

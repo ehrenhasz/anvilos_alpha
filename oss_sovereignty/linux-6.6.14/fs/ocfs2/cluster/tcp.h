@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * tcp.h
- *
- * Function prototypes
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef O2CLUSTER_TCP_H
 #define O2CLUSTER_TCP_H
@@ -40,7 +34,7 @@ typedef void (o2net_post_msg_handler_func)(int status, void *data,
 
 #define O2NET_MAX_PAYLOAD_BYTES  (4096 - sizeof(struct o2net_msg))
 
-/* same as hb delay, we're waiting for another node to recognize our hb */
+ 
 #define O2NET_RECONNECT_DELAY_MS_DEFAULT	2000
 
 #define O2NET_KEEPALIVE_DELAY_MS_DEFAULT	2000
@@ -48,7 +42,7 @@ typedef void (o2net_post_msg_handler_func)(int status, void *data,
 
 #define O2NET_TCP_USER_TIMEOUT			0x7fffffff
 
-/* TODO: figure this out.... */
+ 
 static inline int o2net_link_down(int err, struct socket *sock)
 {
 	if (sock) {
@@ -60,11 +54,10 @@ static inline int o2net_link_down(int err, struct socket *sock)
 	if (err >= 0)
 		return 0;
 	switch (err) {
-		/* ????????????????????????? */
+		 
 		case -ERESTARTSYS:
 		case -EBADF:
-		/* When the server has died, an ICMP port unreachable
-		 * message prompts ECONNREFUSED. */
+		 
 		case -ECONNREFUSED:
 		case -ENOTCONN:
 		case -ECONNRESET:
@@ -132,6 +125,6 @@ static inline void o2net_debug_add_sc(struct o2net_sock_container *sc)
 static inline void o2net_debug_del_sc(struct o2net_sock_container *sc)
 {
 }
-#endif	/* CONFIG_DEBUG_FS */
+#endif	 
 
-#endif /* O2CLUSTER_TCP_H */
+#endif  

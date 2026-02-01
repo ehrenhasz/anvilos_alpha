@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SMI PCIe driver for DVBSky cards.
- *
- * Copyright (C) 2014 Max nibble <nibble.max@gmail.com>
- */
+
+ 
 
 #include "smipcie.h"
 #include "m88ds3103.h"
@@ -18,7 +14,7 @@ static int smi_hw_init(struct smi_dev *dev)
 {
 	u32 port_mux, port_ctrl, int_stat;
 
-	/* set port mux.*/
+	 
 	port_mux = smi_read(MUX_MODE_CTRL);
 	port_mux &= ~(rbPaMSMask);
 	port_mux |= rbPaMSDtvNoGpio;
@@ -28,8 +24,8 @@ static int smi_hw_init(struct smi_dev *dev)
 	port_mux |= 0x50000;
 	smi_write(MUX_MODE_CTRL, port_mux);
 
-	/* set DTV register.*/
-	/* Port A */
+	 
+	 
 	port_ctrl = smi_read(VIDEO_CTRL_STATUS_A);
 	port_ctrl &= ~0x01;
 	smi_write(VIDEO_CTRL_STATUS_A, port_ctrl);
@@ -37,7 +33,7 @@ static int smi_hw_init(struct smi_dev *dev)
 	port_ctrl &= ~0x40;
 	port_ctrl |= 0x80;
 	smi_write(MPEG2_CTRL_A, port_ctrl);
-	/* Port B */
+	 
 	port_ctrl = smi_read(VIDEO_CTRL_STATUS_B);
 	port_ctrl &= ~0x01;
 	smi_write(VIDEO_CTRL_STATUS_B, port_ctrl);
@@ -46,26 +42,26 @@ static int smi_hw_init(struct smi_dev *dev)
 	port_ctrl |= 0x80;
 	smi_write(MPEG2_CTRL_B, port_ctrl);
 
-	/* disable and clear interrupt.*/
+	 
 	smi_write(MSI_INT_ENA_CLR, ALL_INT);
 	int_stat = smi_read(MSI_INT_STATUS);
 	smi_write(MSI_INT_STATUS_CLR, int_stat);
 
-	/* reset demod.*/
+	 
 	smi_clear(PERIPHERAL_CTRL, 0x0303);
 	msleep(50);
 	smi_set(PERIPHERAL_CTRL, 0x0101);
 	return 0;
 }
 
-/* i2c bit bus.*/
+ 
 static void smi_i2c_cfg(struct smi_dev *dev, u32 sw_ctl)
 {
 	u32 dwCtrl;
 
 	dwCtrl = smi_read(sw_ctl);
-	dwCtrl &= ~0x18; /* disable output.*/
-	dwCtrl |= 0x21; /* reset and software mode.*/
+	dwCtrl &= ~0x18;  
+	dwCtrl |= 0x21;  
 	dwCtrl &= ~0xff00;
 	dwCtrl |= 0x6400;
 	smi_write(sw_ctl, dwCtrl);
@@ -78,11 +74,11 @@ static void smi_i2c_cfg(struct smi_dev *dev, u32 sw_ctl)
 static void smi_i2c_setsda(struct smi_dev *dev, int state, u32 sw_ctl)
 {
 	if (state) {
-		/* set as input.*/
+		 
 		smi_clear(sw_ctl, SW_I2C_MSK_DAT_EN);
 	} else {
 		smi_clear(sw_ctl, SW_I2C_MSK_DAT_OUT);
-		/* set as output.*/
+		 
 		smi_set(sw_ctl, SW_I2C_MSK_DAT_EN);
 	}
 }
@@ -92,11 +88,11 @@ static void smi_i2c_setscl(void *data, int state, u32 sw_ctl)
 	struct smi_dev *dev = data;
 
 	if (state) {
-		/* set as input.*/
+		 
 		smi_clear(sw_ctl, SW_I2C_MSK_CLK_EN);
 	} else {
 		smi_clear(sw_ctl, SW_I2C_MSK_CLK_OUT);
-		/* set as output.*/
+		 
 		smi_set(sw_ctl, SW_I2C_MSK_CLK_EN);
 	}
 }
@@ -104,7 +100,7 @@ static void smi_i2c_setscl(void *data, int state, u32 sw_ctl)
 static int smi_i2c_getsda(void *data, u32 sw_ctl)
 {
 	struct smi_dev *dev = data;
-	/* set as input.*/
+	 
 	smi_clear(sw_ctl, SW_I2C_MSK_DAT_EN);
 	udelay(1);
 	return (smi_read(sw_ctl) & SW_I2C_MSK_DAT_IN) ? 1 : 0;
@@ -113,12 +109,12 @@ static int smi_i2c_getsda(void *data, u32 sw_ctl)
 static int smi_i2c_getscl(void *data, u32 sw_ctl)
 {
 	struct smi_dev *dev = data;
-	/* set as input.*/
+	 
 	smi_clear(sw_ctl, SW_I2C_MSK_CLK_EN);
 	udelay(1);
 	return (smi_read(sw_ctl) & SW_I2C_MSK_CLK_IN) ? 1 : 0;
 }
-/* i2c 0.*/
+ 
 static void smi_i2c0_setsda(void *data, int state)
 {
 	struct smi_dev *dev = data;
@@ -146,7 +142,7 @@ static int smi_i2c0_getscl(void *data)
 
 	return	smi_i2c_getscl(dev, I2C_A_SW_CTL);
 }
-/* i2c 1.*/
+ 
 static void smi_i2c1_setsda(void *data, int state)
 {
 	struct smi_dev *dev = data;
@@ -179,7 +175,7 @@ static int smi_i2c_init(struct smi_dev *dev)
 {
 	int ret;
 
-	/* i2c bus 0 */
+	 
 	smi_i2c_cfg(dev, I2C_A_SW_CTL);
 	i2c_set_adapdata(&dev->i2c_bus[0], dev);
 	strscpy(dev->i2c_bus[0].name, "SMI-I2C0", sizeof(dev->i2c_bus[0].name));
@@ -193,7 +189,7 @@ static int smi_i2c_init(struct smi_dev *dev)
 	dev->i2c_bit[0].getscl = smi_i2c0_getscl;
 	dev->i2c_bit[0].udelay = 12;
 	dev->i2c_bit[0].timeout = 10;
-	/* Raise SCL and SDA */
+	 
 	smi_i2c0_setsda(dev, 1);
 	smi_i2c0_setscl(dev, 1);
 
@@ -201,7 +197,7 @@ static int smi_i2c_init(struct smi_dev *dev)
 	if (ret < 0)
 		return ret;
 
-	/* i2c bus 1 */
+	 
 	smi_i2c_cfg(dev, I2C_B_SW_CTL);
 	i2c_set_adapdata(&dev->i2c_bus[1], dev);
 	strscpy(dev->i2c_bus[1].name, "SMI-I2C1", sizeof(dev->i2c_bus[1].name));
@@ -215,7 +211,7 @@ static int smi_i2c_init(struct smi_dev *dev)
 	dev->i2c_bit[1].getscl = smi_i2c1_getscl;
 	dev->i2c_bit[1].udelay = 12;
 	dev->i2c_bit[1].timeout = 10;
-	/* Raise SCL and SDA */
+	 
 	smi_i2c1_setsda(dev, 1);
 	smi_i2c1_setscl(dev, 1);
 
@@ -254,7 +250,7 @@ static int smi_read_eeprom(struct i2c_adapter *i2c, u16 reg, u8 *data, u16 size)
 	return ret;
 }
 
-/* ts port interrupt operations */
+ 
 static void smi_port_disableInterrupt(struct smi_port *port)
 {
 	struct smi_dev *dev = port->dev;
@@ -279,7 +275,7 @@ static void smi_port_clearInterrupt(struct smi_port *port)
 		(port->_dmaInterruptCH0 | port->_dmaInterruptCH1));
 }
 
-/* tasklet handler: DMA data to dmx.*/
+ 
 static void smi_dma_xfer(struct tasklet_struct *t)
 {
 	struct smi_port *port = from_tasklet(port, t, tasklet);
@@ -292,17 +288,14 @@ static void smi_dma_xfer(struct tasklet_struct *t)
 	dmaChan0State = (u8)((dmaManagement & 0x00000030) >> 4);
 	dmaChan1State = (u8)((dmaManagement & 0x00300000) >> 20);
 
-	/* CH-0 DMA interrupt.*/
+	 
 	if ((intr_status & port->_dmaInterruptCH0) && (dmaChan0State == 0x01)) {
 		dev_dbg(&dev->pci_dev->dev,
 			"Port[%d]-DMA CH0 engine complete successful !\n",
 			port->idx);
 		finishedData = smi_read(port->DMA_CHAN0_TRANS_STATE);
 		finishedData &= 0x003FFFFF;
-		/* value of DMA_PORT0_CHAN0_TRANS_STATE register [21:0]
-		 * indicate dma total transfer length and
-		 * zero of [21:0] indicate dma total transfer length
-		 * equal to 0x400000 (4MB)*/
+		 
 		if (finishedData == 0)
 			finishedData = 0x00400000;
 		if (finishedData != SMI_TS_DMA_BUF_SIZE) {
@@ -312,20 +305,16 @@ static void smi_dma_xfer(struct tasklet_struct *t)
 		}
 		dvb_dmx_swfilter_packets(&port->demux,
 			port->cpu_addr[0], (finishedData / 188));
-		/*dvb_dmx_swfilter(&port->demux,
-			port->cpu_addr[0], finishedData);*/
+		 
 	}
-	/* CH-1 DMA interrupt.*/
+	 
 	if ((intr_status & port->_dmaInterruptCH1) && (dmaChan1State == 0x01)) {
 		dev_dbg(&dev->pci_dev->dev,
 			"Port[%d]-DMA CH1 engine complete successful !\n",
 			port->idx);
 		finishedData = smi_read(port->DMA_CHAN1_TRANS_STATE);
 		finishedData &= 0x003FFFFF;
-		/* value of DMA_PORT0_CHAN0_TRANS_STATE register [21:0]
-		 * indicate dma total transfer length and
-		 * zero of [21:0] indicate dma total transfer length
-		 * equal to 0x400000 (4MB)*/
+		 
 		if (finishedData == 0)
 			finishedData = 0x00400000;
 		if (finishedData != SMI_TS_DMA_BUF_SIZE) {
@@ -335,16 +324,15 @@ static void smi_dma_xfer(struct tasklet_struct *t)
 		}
 		dvb_dmx_swfilter_packets(&port->demux,
 			port->cpu_addr[1], (finishedData / 188));
-		/*dvb_dmx_swfilter(&port->demux,
-			port->cpu_addr[1], finishedData);*/
+		 
 	}
-	/* restart DMA.*/
+	 
 	if (intr_status & port->_dmaInterruptCH0)
 		dmaManagement |= 0x00000002;
 	if (intr_status & port->_dmaInterruptCH1)
 		dmaManagement |= 0x00020000;
 	smi_write(port->DMA_MANAGEMENT, dmaManagement);
-	/* Re-enable interrupts */
+	 
 	smi_port_enableInterrupt(port);
 }
 
@@ -370,7 +358,7 @@ static int smi_port_init(struct smi_port *port, int dmaChanUsed)
 		"%s, port %d, dmaused %d\n", __func__, port->idx, dmaChanUsed);
 	port->enable = 0;
 	if (port->idx == 0) {
-		/* Port A */
+		 
 		port->_dmaInterruptCH0 = dmaChanUsed & 0x01;
 		port->_dmaInterruptCH1 = dmaChanUsed & 0x02;
 
@@ -384,7 +372,7 @@ static int smi_port_init(struct smi_port *port, int dmaChanUsed)
 		port->DMA_CHAN1_CONTROL		= DMA_PORTA_CHAN1_CONTROL;
 		port->DMA_MANAGEMENT		= DMA_PORTA_MANAGEMENT;
 	} else {
-		/* Port B */
+		 
 		port->_dmaInterruptCH0 = (dmaChanUsed << 2) & 0x04;
 		port->_dmaInterruptCH1 = (dmaChanUsed << 2) & 0x08;
 
@@ -468,15 +456,15 @@ static irqreturn_t smi_irq_handler(int irq, void *dev_id)
 
 	u32 intr_status = smi_read(MSI_INT_STATUS);
 
-	/* ts0 interrupt.*/
+	 
 	if (dev->info->ts_0)
 		handled += smi_port_irq(port0, intr_status);
 
-	/* ts1 interrupt.*/
+	 
 	if (dev->info->ts_1)
 		handled += smi_port_irq(port1, intr_status);
 
-	/* ir interrupt.*/
+	 
 	handled += smi_ir_irq(ir, intr_status);
 
 	return IRQ_RETVAL(handled);
@@ -527,7 +515,7 @@ static int smi_dvbsky_m88ds3103_fe_attach(struct smi_port *port)
 	int ret = 0;
 	struct smi_dev *dev = port->dev;
 	struct i2c_adapter *i2c;
-	/* tuner I2C module */
+	 
 	struct i2c_adapter *tuner_i2c_adapter;
 	struct i2c_client *tuner_client;
 	struct i2c_board_info tuner_info;
@@ -535,14 +523,14 @@ static int smi_dvbsky_m88ds3103_fe_attach(struct smi_port *port)
 	memset(&tuner_info, 0, sizeof(struct i2c_board_info));
 	i2c = (port->idx == 0) ? &dev->i2c_bus[0] : &dev->i2c_bus[1];
 
-	/* attach demod */
+	 
 	port->fe = dvb_attach(m88ds3103_attach,
 			&smi_dvbsky_m88ds3103_cfg, i2c, &tuner_i2c_adapter);
 	if (!port->fe) {
 		ret = -ENODEV;
 		return ret;
 	}
-	/* attach tuner */
+	 
 	ts2020_config.fe = port->fe;
 	strscpy(tuner_info.type, "ts2020", I2C_NAME_SIZE);
 	tuner_info.addr = 0x60;
@@ -553,7 +541,7 @@ static int smi_dvbsky_m88ds3103_fe_attach(struct smi_port *port)
 		goto err_tuner_i2c_device;
 	}
 
-	/* delegate signal strength measurement to tuner */
+	 
 	port->fe->ops.read_signal_strength =
 			port->fe->ops.tuner_ops.get_rf_strength;
 
@@ -582,7 +570,7 @@ static int smi_dvbsky_m88rs6000_fe_attach(struct smi_port *port)
 	int ret = 0;
 	struct smi_dev *dev = port->dev;
 	struct i2c_adapter *i2c;
-	/* tuner I2C module */
+	 
 	struct i2c_adapter *tuner_i2c_adapter;
 	struct i2c_client *tuner_client;
 	struct i2c_board_info tuner_info;
@@ -591,14 +579,14 @@ static int smi_dvbsky_m88rs6000_fe_attach(struct smi_port *port)
 	memset(&tuner_info, 0, sizeof(struct i2c_board_info));
 	i2c = (port->idx == 0) ? &dev->i2c_bus[0] : &dev->i2c_bus[1];
 
-	/* attach demod */
+	 
 	port->fe = dvb_attach(m88ds3103_attach,
 			&smi_dvbsky_m88rs6000_cfg, i2c, &tuner_i2c_adapter);
 	if (!port->fe) {
 		ret = -ENODEV;
 		return ret;
 	}
-	/* attach tuner */
+	 
 	m88rs6000t_config.fe = port->fe;
 	strscpy(tuner_info.type, "m88rs6000t", I2C_NAME_SIZE);
 	tuner_info.addr = 0x21;
@@ -609,7 +597,7 @@ static int smi_dvbsky_m88rs6000_fe_attach(struct smi_port *port)
 		goto err_tuner_i2c_device;
 	}
 
-	/* delegate signal strength measurement to tuner */
+	 
 	port->fe->ops.read_signal_strength =
 			port->fe->ops.tuner_ops.get_rf_strength;
 
@@ -632,10 +620,10 @@ static int smi_dvbsky_sit2_fe_attach(struct smi_port *port)
 	struct si2168_config si2168_config;
 	struct si2157_config si2157_config;
 
-	/* select i2c bus */
+	 
 	i2c = (port->idx == 0) ? &dev->i2c_bus[0] : &dev->i2c_bus[1];
 
-	/* attach demod */
+	 
 	memset(&si2168_config, 0, sizeof(si2168_config));
 	si2168_config.i2c_adapter = &tuner_i2c_adapter;
 	si2168_config.fe = &port->fe;
@@ -653,7 +641,7 @@ static int smi_dvbsky_sit2_fe_attach(struct smi_port *port)
 	}
 	port->i2c_client_demod = client_demod;
 
-	/* attach tuner */
+	 
 	memset(&si2157_config, 0, sizeof(si2157_config));
 	si2157_config.fe = port->fe;
 	si2157_config.if_port = 1;
@@ -698,7 +686,7 @@ static int smi_fe_init(struct smi_port *port)
 	if (ret < 0)
 		return ret;
 
-	/* register dvb frontend */
+	 
 	ret = dvb_register_frontend(adap, port->fe);
 	if (ret < 0) {
 		if (port->i2c_client_tuner)
@@ -708,7 +696,7 @@ static int smi_fe_init(struct smi_port *port)
 		dvb_frontend_detach(port->fe);
 		return ret;
 	}
-	/* init MAC.*/
+	 
 	ret = smi_read_eeprom(&dev->i2c_bus[0], 0xc0, mac_ee, 16);
 	dev_info(&port->dev->pci_dev->dev,
 		"%s port %d MAC: %pM\n", dev->info->name,
@@ -720,7 +708,7 @@ static int smi_fe_init(struct smi_port *port)
 static void smi_fe_exit(struct smi_port *port)
 {
 	dvb_unregister_frontend(port->fe);
-	/* remove I2C demod and tuner */
+	 
 	if (port->i2c_client_tuner)
 		smi_del_i2c_client(port->i2c_client_tuner);
 	if (port->i2c_client_demod)
@@ -778,7 +766,7 @@ static u32 smi_config_DMA(struct smi_port *port)
 	u64 mem;
 
 	dmaManagement = smi_read(port->DMA_MANAGEMENT);
-	/* Setup Channel-0 */
+	 
 	if (port->_dmaInterruptCH0) {
 		totalLength = SMI_TS_DMA_BUF_SIZE;
 		mem = port->dma_addr[0];
@@ -788,12 +776,12 @@ static u32 smi_config_DMA(struct smi_port *port)
 			| (tlpTd << 28) | (tlpEp << 29) | (tlpAttr << 30);
 		dmaManagement |= dmaChanEnable | (dmaTransStart << 1)
 			| (chanLatencyTimer << 8);
-		/* write DMA register, start DMA engine */
+		 
 		smi_write(port->DMA_CHAN0_ADDR_LOW, dmaMemPtrLow);
 		smi_write(port->DMA_CHAN0_ADDR_HI, dmaMemPtrHi);
 		smi_write(port->DMA_CHAN0_CONTROL, dmaCtlReg);
 	}
-	/* Setup Channel-1 */
+	 
 	if (port->_dmaInterruptCH1) {
 		totalLength = SMI_TS_DMA_BUF_SIZE;
 		mem = port->dma_addr[1];
@@ -803,7 +791,7 @@ static u32 smi_config_DMA(struct smi_port *port)
 			| (tlpTd << 28) | (tlpEp << 29) | (tlpAttr << 30);
 		dmaManagement |= (dmaChanEnable << 16) | (dmaTransStart << 17)
 			| (chanLatencyTimer << 24);
-		/* write DMA register, start DMA engine */
+		 
 		smi_write(port->DMA_CHAN1_ADDR_LOW, dmaMemPtrLow);
 		smi_write(port->DMA_CHAN1_ADDR_HI, dmaMemPtrHi);
 		smi_write(port->DMA_CHAN1_CONTROL, dmaCtlReg);
@@ -911,15 +899,15 @@ static int smi_port_attach(struct smi_dev *dev,
 	port->idx = index;
 	port->fe_type = (index == 0) ? dev->info->fe_0 : dev->info->fe_1;
 	dmachs = (index == 0) ? dev->info->ts_0 : dev->info->ts_1;
-	/* port init.*/
+	 
 	ret = smi_port_init(port, dmachs);
 	if (ret < 0)
 		return ret;
-	/* dvb init.*/
+	 
 	ret = smi_dvb_init(port);
 	if (ret < 0)
 		goto err_del_port_init;
-	/* fe init.*/
+	 
 	ret = smi_fe_init(port);
 	if (ret < 0)
 		goto err_del_dvb_init;
@@ -966,7 +954,7 @@ static int smi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_kfree;
 	}
 
-	/* should we set to 32bit DMA? */
+	 
 	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret < 0)
 		goto err_pci_iounmap;
@@ -997,7 +985,7 @@ static int smi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret < 0)
 		goto err_del_port1_attach;
 
-#ifdef CONFIG_PCI_MSI /* to do msi interrupt.???*/
+#ifdef CONFIG_PCI_MSI  
 	if (pci_msi_enabled())
 		ret = pci_enable_msi(dev->pci_dev);
 	if (ret)
@@ -1054,7 +1042,7 @@ static void smi_remove(struct pci_dev *pdev)
 	kfree(dev);
 }
 
-/* DVBSky cards */
+ 
 static const struct smi_cfg_info dvbsky_s950_cfg = {
 	.type = SMI_DVBSKY_S950,
 	.name = "DVBSky S950 V3",
@@ -1095,7 +1083,7 @@ static const struct smi_cfg_info technotrend_s2_4200_cfg = {
 	.rc_map = RC_MAP_TT_1500,
 };
 
-/* PCI IDs */
+ 
 #define SMI_ID(_subvend, _subdev, _driverdata) {	\
 	.vendor      = SMI_VID,    .device    = SMI_PID, \
 	.subvendor   = _subvend, .subdevice = _subdev, \

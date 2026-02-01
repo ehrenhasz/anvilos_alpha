@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000-2001 Vojtech Pavlik <vojtech@ucw.cz>
- *  Copyright (c) 2001, 2007 Johann Deneux <johann.deneux@gmail.com>
- *
- *  USB/RS232 I-Force joysticks and wheels.
- */
+
+ 
 
 #include <linux/serio.h>
 #include "iforce.h"
@@ -101,13 +96,13 @@ static int iforce_serio_get_id(struct iforce *iforce, u8 id,
 
 static int iforce_serio_start_io(struct iforce *iforce)
 {
-	/* No special handling required */
+	 
 	return 0;
 }
 
 static void iforce_serio_stop_io(struct iforce *iforce)
 {
-	//TODO: Wait for the last packets to be sent
+	
 }
 
 static const struct iforce_xport_ops iforce_serio_xport_ops = {
@@ -161,14 +156,14 @@ static irqreturn_t iforce_serio_irq(struct serio *serio,
 	}
 
 	if (iforce_serio->idx == iforce_serio->len) {
-		/* Handle command completion */
+		 
 		if (iforce_serio->expect_packet == iforce_serio->id) {
 			iforce_serio->expect_packet = 0;
 			memcpy(iforce_serio->cmd_response,
 			       iforce_serio->data_in, IFORCE_MAX_LENGTH);
 			iforce_serio->cmd_response_len = iforce_serio->len;
 
-			/* Signal that command is done */
+			 
 			wake_up_all(&iforce->wait);
 		} else if (likely(iforce->type)) {
 			iforce_process_packet(iforce, iforce_serio->id,

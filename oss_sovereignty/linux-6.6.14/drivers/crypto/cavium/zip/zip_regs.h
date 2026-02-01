@@ -1,103 +1,49 @@
-/***********************license start************************************
- * Copyright (c) 2003-2017 Cavium, Inc.
- * All rights reserved.
- *
- * License: one of 'Cavium License' or 'GNU General Public License Version 2'
- *
- * This file is provided under the terms of the Cavium License (see below)
- * or under the terms of GNU General Public License, Version 2, as
- * published by the Free Software Foundation. When using or redistributing
- * this file, you may do so under either license.
- *
- * Cavium License:  Redistribution and use in source and binary forms, with
- * or without modification, are permitted provided that the following
- * conditions are met:
- *
- *  * Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *  * Redistributions in binary form must reproduce the above
- *    copyright notice, this list of conditions and the following
- *    disclaimer in the documentation and/or other materials provided
- *    with the distribution.
- *
- *  * Neither the name of Cavium Inc. nor the names of its contributors may be
- *    used to endorse or promote products derived from this software without
- *    specific prior written permission.
- *
- * This Software, including technical data, may be subject to U.S. export
- * control laws, including the U.S. Export Administration Act and its
- * associated regulations, and may be subject to export or import
- * regulations in other countries.
- *
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
- * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS
- * OR WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH
- * RESPECT TO THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY
- * REPRESENTATION OR DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT
- * DEFECTS, AND CAVIUM SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY)
- * WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
- * PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS, QUIET
- * ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. THE
- * ENTIRE  RISK ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES
- * WITH YOU.
- ***********************license end**************************************/
+ 
 
 #ifndef __ZIP_REGS_H__
 #define __ZIP_REGS_H__
 
-/*
- * Configuration and status register (CSR) address and type definitions for
- * Cavium ZIP.
- */
+ 
 
 #include <linux/kern_levels.h>
 
-/* ZIP invocation result completion status codes */
+ 
 #define ZIP_CMD_NOTDONE        0x0
 
-/* Successful completion. */
+ 
 #define ZIP_CMD_SUCCESS        0x1
 
-/* Output truncated */
+ 
 #define ZIP_CMD_DTRUNC         0x2
 
-/* Dynamic Stop */
+ 
 #define ZIP_CMD_DYNAMIC_STOP   0x3
 
-/* Uncompress ran out of input data when IWORD0[EF] was set */
+ 
 #define ZIP_CMD_ITRUNC         0x4
 
-/* Uncompress found the reserved block type 3 */
+ 
 #define ZIP_CMD_RBLOCK         0x5
 
-/*
- * Uncompress found LEN != ZIP_CMD_NLEN in an uncompressed block in the input.
- */
+ 
 #define ZIP_CMD_NLEN           0x6
 
-/* Uncompress found a bad code in the main Huffman codes. */
+ 
 #define ZIP_CMD_BADCODE        0x7
 
-/* Uncompress found a bad code in the 19 Huffman codes encoding lengths. */
+ 
 #define ZIP_CMD_BADCODE2       0x8
 
-/* Compress found a zero-length input. */
+ 
 #define ZIP_CMD_ZERO_LEN       0x9
 
-/* The compress or decompress encountered an internal parity error. */
+ 
 #define ZIP_CMD_PARITY         0xA
 
-/*
- * Uncompress found a string identifier that precedes the uncompressed data and
- * decompression history.
- */
+ 
 #define ZIP_CMD_FATAL          0xB
 
-/**
- * enum zip_int_vec_e - ZIP MSI-X Vector Enumeration, enumerates the MSI-X
- * interrupt vectors.
- */
+ 
 enum zip_int_vec_e {
 	ZIP_INT_VEC_E_ECCE = 0x10,
 	ZIP_INT_VEC_E_FIFE = 0x11,
@@ -120,11 +66,7 @@ enum zip_int_vec_e {
 	ZIP_INT_VEC_E_ENUM_LAST = 0x12,
 };
 
-/**
- * union zip_zptr_addr_s - ZIP Generic Pointer Structure for ADDR.
- *
- * It is the generic format of pointers in ZIP_INST_S.
- */
+ 
 union zip_zptr_addr_s {
 	u64 u_reg64;
 	struct {
@@ -139,11 +81,7 @@ union zip_zptr_addr_s {
 
 };
 
-/**
- * union zip_zptr_ctl_s - ZIP Generic Pointer Structure for CTL.
- *
- * It is the generic format of pointers in ZIP_INST_S.
- */
+ 
 union zip_zptr_ctl_s {
 	u64 u_reg64;
 	struct {
@@ -165,11 +103,7 @@ union zip_zptr_ctl_s {
 	} s;
 };
 
-/**
- * union zip_inst_s - ZIP Instruction Structure.
- * Each ZIP instruction has 16 words (they are called IWORD0 to IWORD15 within
- * the structure).
- */
+ 
 union zip_inst_s {
 	u64 u_reg64[16];
 	struct {
@@ -264,14 +198,7 @@ union zip_inst_s {
 	} s;
 };
 
-/**
- * union zip_nptr_s - ZIP Instruction Next-Chunk-Buffer Pointer (NPTR)
- * Structure
- *
- * ZIP_NPTR structure is used to chain all the zip instruction buffers
- * together. ZIP instruction buffers are managed (allocated and released) by
- * the software.
- */
+ 
 union zip_nptr_s {
 	u64 u_reg64;
 	struct {
@@ -285,11 +212,7 @@ union zip_nptr_s {
 	} s;
 };
 
-/**
- * union zip_zptr_s - ZIP Generic Pointer Structure.
- *
- * It is the generic format of pointers in ZIP_INST_S.
- */
+ 
 union zip_zptr_s {
 	u64 u_reg64[2];
 	struct {
@@ -318,13 +241,7 @@ union zip_zptr_s {
 	} s;
 };
 
-/**
- * union zip_zres_s - ZIP Result Structure
- *
- * The ZIP coprocessor writes the result structure after it completes the
- * invocation. The result structure is exactly 24 bytes, and each invocation of
- * the ZIP coprocessor produces exactly one result structure.
- */
+ 
 union zip_zres_s {
 	u64 u_reg64[3];
 	struct {
@@ -368,10 +285,7 @@ union zip_zres_s {
 	} s;
 };
 
-/**
- * union zip_cmd_ctl - Structure representing the register that controls
- * clock and reset.
- */
+ 
 union zip_cmd_ctl {
 	u64 u_reg64;
 	struct zip_cmd_ctl_s {
@@ -389,11 +303,7 @@ union zip_cmd_ctl {
 
 #define ZIP_CMD_CTL 0x0ull
 
-/**
- * union zip_constants - Data structure representing the register that contains
- * all of the current implementation-related parameters of the zip core in this
- * chip.
- */
+ 
 union zip_constants {
 	u64 u_reg64;
 	struct zip_constants_s {
@@ -421,13 +331,7 @@ union zip_constants {
 
 #define ZIP_CONSTANTS 0x00A0ull
 
-/**
- * union zip_corex_bist_status - Represents registers which have the BIST
- * status of memories in zip cores.
- *
- * Each bit is the BIST result of an individual memory
- * (per bit, 0 = pass and 1 = fail).
- */
+ 
 union zip_corex_bist_status {
 	u64 u_reg64;
 	struct zip_corex_bist_status_s {
@@ -449,14 +353,7 @@ static inline u64 ZIP_COREX_BIST_STATUS(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_ctl_bist_status - Represents register that has the BIST status of
- * memories in ZIP_CTL (instruction buffer, G/S pointer FIFO, input data
- * buffer, output data buffers).
- *
- * Each bit is the BIST result of an individual memory
- * (per bit, 0 = pass and 1 = fail).
- */
+ 
 union zip_ctl_bist_status {
 	u64 u_reg64;
 	struct zip_ctl_bist_status_s {
@@ -472,13 +369,7 @@ union zip_ctl_bist_status {
 
 #define ZIP_CTL_BIST_STATUS 0x0510ull
 
-/**
- * union zip_ctl_cfg - Represents the register that controls the behavior of
- * the ZIP DMA engines.
- *
- * It is recommended to keep default values for normal operation. Changing the
- * values of the fields may be useful for diagnostics.
- */
+ 
 union zip_ctl_cfg {
 	u64 u_reg64;
 	struct zip_ctl_cfg_s {
@@ -512,12 +403,7 @@ union zip_ctl_cfg {
 
 #define ZIP_CTL_CFG 0x0560ull
 
-/**
- * union zip_dbg_corex_inst - Represents the registers that reflect the status
- * of the current instruction that the ZIP core is executing or has executed.
- *
- * These registers are only for debug use.
- */
+ 
 union zip_dbg_corex_inst {
 	u64 u_reg64;
 	struct zip_dbg_corex_inst_s {
@@ -543,12 +429,7 @@ static inline u64 ZIP_DBG_COREX_INST(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_dbg_corex_sta - Represents registers that reflect the status of
- * the zip cores.
- *
- * They are for debug use only.
- */
+ 
 union zip_dbg_corex_sta {
 	u64 u_reg64;
 	struct zip_dbg_corex_sta_s {
@@ -574,12 +455,7 @@ static inline u64 ZIP_DBG_COREX_STA(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_dbg_quex_sta - Represets registers that reflect status of the zip
- * instruction queues.
- *
- * They are for debug use only.
- */
+ 
 union zip_dbg_quex_sta {
 	u64 u_reg64;
 	struct zip_dbg_quex_sta_s {
@@ -605,12 +481,7 @@ static inline u64 ZIP_DBG_QUEX_STA(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_ecc_ctl - Represents the register that enables ECC for each
- * individual internal memory that requires ECC.
- *
- * For debug purpose, it can also flip one or two bits in the ECC data.
- */
+ 
 union zip_ecc_ctl {
 	u64 u_reg64;
 	struct zip_ecc_ctl_s {
@@ -652,7 +523,7 @@ union zip_ecc_ctl {
 
 #define ZIP_ECC_CTL 0x0568ull
 
-/* NCB - zip_ecce_ena_w1c */
+ 
 union zip_ecce_ena_w1c {
 	u64 u_reg64;
 	struct zip_ecce_ena_w1c_s {
@@ -672,7 +543,7 @@ union zip_ecce_ena_w1c {
 
 #define ZIP_ECCE_ENA_W1C 0x0598ull
 
-/* NCB - zip_ecce_ena_w1s */
+ 
 union zip_ecce_ena_w1s {
 	u64 u_reg64;
 	struct zip_ecce_ena_w1s_s {
@@ -692,10 +563,7 @@ union zip_ecce_ena_w1s {
 
 #define ZIP_ECCE_ENA_W1S 0x0590ull
 
-/**
- * union zip_ecce_int - Represents the register that contains the status of the
- * ECC interrupt sources.
- */
+ 
 union zip_ecce_int {
 	u64 u_reg64;
 	struct zip_ecce_int_s {
@@ -715,7 +583,7 @@ union zip_ecce_int {
 
 #define ZIP_ECCE_INT 0x0580ull
 
-/* NCB - zip_ecce_int_w1s */
+ 
 union zip_ecce_int_w1s {
 	u64 u_reg64;
 	struct zip_ecce_int_w1s_s {
@@ -735,7 +603,7 @@ union zip_ecce_int_w1s {
 
 #define ZIP_ECCE_INT_W1S 0x0588ull
 
-/* NCB - zip_fife_ena_w1c */
+ 
 union zip_fife_ena_w1c {
 	u64 u_reg64;
 	struct zip_fife_ena_w1c_s {
@@ -751,7 +619,7 @@ union zip_fife_ena_w1c {
 
 #define ZIP_FIFE_ENA_W1C 0x0090ull
 
-/* NCB - zip_fife_ena_w1s */
+ 
 union zip_fife_ena_w1s {
 	u64 u_reg64;
 	struct zip_fife_ena_w1s_s {
@@ -767,7 +635,7 @@ union zip_fife_ena_w1s {
 
 #define ZIP_FIFE_ENA_W1S 0x0088ull
 
-/* NCB - zip_fife_int */
+ 
 union zip_fife_int {
 	u64 u_reg64;
 	struct zip_fife_int_s {
@@ -783,7 +651,7 @@ union zip_fife_int {
 
 #define ZIP_FIFE_INT 0x0078ull
 
-/* NCB - zip_fife_int_w1s */
+ 
 union zip_fife_int_w1s {
 	u64 u_reg64;
 	struct zip_fife_int_w1s_s {
@@ -799,11 +667,7 @@ union zip_fife_int_w1s {
 
 #define ZIP_FIFE_INT_W1S 0x0080ull
 
-/**
- * union zip_msix_pbax - Represents the register that is the MSI-X PBA table
- *
- * The bit number is indexed by the ZIP_INT_VEC_E enumeration.
- */
+ 
 union zip_msix_pbax {
 	u64 u_reg64;
 	struct zip_msix_pbax_s {
@@ -823,10 +687,7 @@ static inline u64 ZIP_MSIX_PBAX(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_msix_vecx_addr - Represents the register that is the MSI-X vector
- * table, indexed by the ZIP_INT_VEC_E enumeration.
- */
+ 
 union zip_msix_vecx_addr {
 	u64 u_reg64;
 	struct zip_msix_vecx_addr_s {
@@ -852,10 +713,7 @@ static inline u64 ZIP_MSIX_VECX_ADDR(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_msix_vecx_ctl - Represents the register that is the MSI-X vector
- * table, indexed by the ZIP_INT_VEC_E enumeration.
- */
+ 
 union zip_msix_vecx_ctl {
 	u64 u_reg64;
 	struct zip_msix_vecx_ctl_s {
@@ -881,10 +739,7 @@ static inline u64 ZIP_MSIX_VECX_CTL(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_done - Represents the registers that contain the per-queue
- * instruction done count.
- */
+ 
 union zip_quex_done {
 	u64 u_reg64;
 	struct zip_quex_done_s {
@@ -906,10 +761,7 @@ static inline u64 ZIP_QUEX_DONE(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_done_ack - Represents the registers on write to which will
- * decrement the per-queue instructiona done count.
- */
+ 
 union zip_quex_done_ack {
 	u64 u_reg64;
 	struct zip_quex_done_ack_s {
@@ -931,10 +783,7 @@ static inline u64 ZIP_QUEX_DONE_ACK(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_done_ena_w1c - Represents the register which when written
- * 1 to will disable the DONEINT interrupt for the queue.
- */
+ 
 union zip_quex_done_ena_w1c {
 	u64 u_reg64;
 	struct zip_quex_done_ena_w1c_s {
@@ -956,10 +805,7 @@ static inline u64 ZIP_QUEX_DONE_ENA_W1C(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_done_ena_w1s - Represents the register that when written 1 to
- * will enable the DONEINT interrupt for the queue.
- */
+ 
 union zip_quex_done_ena_w1s {
 	u64 u_reg64;
 	struct zip_quex_done_ena_w1s_s {
@@ -981,10 +827,7 @@ static inline u64 ZIP_QUEX_DONE_ENA_W1S(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_done_wait - Represents the register that specifies the per
- * queue interrupt coalescing settings.
- */
+ 
 union zip_quex_done_wait {
 	u64 u_reg64;
 	struct zip_quex_done_wait_s {
@@ -1010,10 +853,7 @@ static inline u64 ZIP_QUEX_DONE_WAIT(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_doorbell - Represents doorbell registers for the ZIP
- * instruction queues.
- */
+ 
 union zip_quex_doorbell {
 	u64 u_reg64;
 	struct zip_quex_doorbell_s {
@@ -1093,10 +933,7 @@ static inline u64 ZIP_QUEX_ERR_ENA_W1S(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_err_int - Represents registers that contain the per-queue
- * error interrupts.
- */
+ 
 union zip_quex_err_int {
 	u64 u_reg64;
 	struct zip_quex_err_int_s {
@@ -1126,7 +963,7 @@ static inline u64 ZIP_QUEX_ERR_INT(u64 param1)
 	return 0;
 }
 
-/* NCB - zip_que#_err_int_w1s */
+ 
 union zip_quex_err_int_w1s {
 	u64 u_reg64;
 	struct zip_quex_err_int_w1s_s {
@@ -1156,10 +993,7 @@ static inline u64 ZIP_QUEX_ERR_INT_W1S(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_gcfg - Represents the registers that reflect status of the
- * zip instruction queues,debug use only.
- */
+ 
 union zip_quex_gcfg {
 	u64 u_reg64;
 	struct zip_quex_gcfg_s {
@@ -1185,10 +1019,7 @@ static inline u64 ZIP_QUEX_GCFG(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_map - Represents the registers that control how each
- * instruction queue maps to zip cores.
- */
+ 
 union zip_quex_map {
 	u64 u_reg64;
 	struct zip_quex_map_s {
@@ -1210,15 +1041,7 @@ static inline u64 ZIP_QUEX_MAP(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_sbuf_addr - Represents the registers that set the buffer
- * parameters for the instruction queues.
- *
- * When quiescent (i.e. outstanding doorbell count is 0), it is safe to rewrite
- * this register to effectively reset the command buffer state machine.
- * These registers must be programmed after SW programs the corresponding
- * ZIP_QUE(0..7)_SBUF_CTL.
- */
+ 
 union zip_quex_sbuf_addr {
 	u64 u_reg64;
 	struct zip_quex_sbuf_addr_s {
@@ -1242,15 +1065,7 @@ static inline u64 ZIP_QUEX_SBUF_ADDR(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_quex_sbuf_ctl - Represents the registers that set the buffer
- * parameters for the instruction queues.
- *
- * When quiescent (i.e. outstanding doorbell count is 0), it is safe to rewrite
- * this register to effectively reset the command buffer state machine.
- * These registers must be programmed before SW programs the corresponding
- * ZIP_QUE(0..7)_SBUF_ADDR.
- */
+ 
 union zip_quex_sbuf_ctl {
 	u64 u_reg64;
 	struct zip_quex_sbuf_ctl_s {
@@ -1282,11 +1097,7 @@ static inline u64 ZIP_QUEX_SBUF_CTL(u64 param1)
 	return 0;
 }
 
-/**
- * union zip_que_ena - Represents queue enable register
- *
- * If a queue is disabled, ZIP_CTL stops fetching instructions from the queue.
- */
+ 
 union zip_que_ena {
 	u64 u_reg64;
 	struct zip_que_ena_s {
@@ -1302,10 +1113,7 @@ union zip_que_ena {
 
 #define ZIP_QUE_ENA 0x0500ull
 
-/**
- * union zip_que_pri - Represents the register that defines the priority
- * between instruction queues.
- */
+ 
 union zip_que_pri {
 	u64 u_reg64;
 	struct zip_que_pri_s {
@@ -1321,14 +1129,7 @@ union zip_que_pri {
 
 #define ZIP_QUE_PRI 0x0508ull
 
-/**
- * union zip_throttle - Represents the register that controls the maximum
- * number of in-flight X2I data fetch transactions.
- *
- * Writing 0 to this register causes the ZIP module to temporarily suspend NCB
- * accesses; it is not recommended for normal operation, but may be useful for
- * diagnostics.
- */
+ 
 union zip_throttle {
 	u64 u_reg64;
 	struct zip_throttle_s {
@@ -1344,4 +1145,4 @@ union zip_throttle {
 
 #define ZIP_THROTTLE 0x0010ull
 
-#endif /* _CSRS_ZIP__ */
+#endif  

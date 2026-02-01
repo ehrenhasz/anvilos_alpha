@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 2019 Alexey Dobriyan <adobriyan@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-/*
- * Fork and exec tiny 1 page executable which precisely controls its VM.
- * Test /proc/$PID/maps
- * Test /proc/$PID/smaps
- * Test /proc/$PID/smaps_rollup
- * Test /proc/$PID/statm
- *
- * FIXME require CONFIG_TMPFS which can be disabled
- * FIXME test other values from "smaps"
- * FIXME support other archs
- */
+ 
+ 
 #undef NDEBUG
 #include <assert.h>
 #include <errno.h>
@@ -125,26 +101,26 @@ struct elf64_phdr {
 	0xb8, (x)&0xff, ((x)>>8)&0xff, ((x)>>16)&0xff, ((x)>>24)&0xff
 
 static const uint8_t payload[] = {
-	/* Casually unmap stack, vDSO and everything else. */
-	/* munmap */
+	 
+	 
 	mov_rdi(VADDR + 4096),
 	mov_rsi((1ULL << 47) - 4096 - VADDR - 4096),
 	mov_eax(11),
 	syscall,
 
-	/* Ping parent. */
-	/* write(0, &c, 1); */
-	0x31, 0xff,					/* xor edi, edi */
-	0x48, 0x8d, 0x35, 0x00, 0x00, 0x00, 0x00,	/* lea rsi, [rip] */
-	0xba, 0x01, 0x00, 0x00, 0x00,			/* mov edx, 1 */
+	 
+	 
+	0x31, 0xff,					 
+	0x48, 0x8d, 0x35, 0x00, 0x00, 0x00, 0x00,	 
+	0xba, 0x01, 0x00, 0x00, 0x00,			 
 	mov_eax(1),
 	syscall,
 
-	/* 1: pause(); */
+	 
 	mov_eax(34),
 	syscall,
 
-	0xeb, 0xf7,	/* jmp 1b */
+	0xeb, 0xf7,	 
 };
 
 static int make_exe(const uint8_t *payload, size_t len)
@@ -202,7 +178,7 @@ static int make_exe(const uint8_t *payload, size_t len)
 		exit(1);
 	}
 
-	/* Avoid ETXTBSY on exec. */
+	 
 	snprintf(buf, sizeof(buf), "/proc/self/fd/%u", fd);
 	fd1 = open(buf, O_RDONLY|O_CLOEXEC);
 	close(fd);
@@ -211,11 +187,7 @@ static int make_exe(const uint8_t *payload, size_t len)
 }
 #endif
 
-/*
- * 0: vsyscall VMA doesn't exist	vsyscall=none
- * 1: vsyscall VMA is --xp		vsyscall=xonly
- * 2: vsyscall VMA is r-xp		vsyscall=emulate
- */
+ 
 static volatile int g_vsyscall;
 static const char *str_vsyscall;
 
@@ -231,9 +203,7 @@ static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
 	_exit(g_vsyscall);
 }
 
-/*
- * vsyscall page can't be unmapped, probe it directly.
- */
+ 
 static void vsyscall(void)
 {
 	pid_t pid;
@@ -248,7 +218,7 @@ static void vsyscall(void)
 		struct rlimit rlim = {0, 0};
 		(void)setrlimit(RLIMIT_CORE, &rlim);
 
-		/* Hide "segfault at ffffffffff600000" messages. */
+		 
 		struct sigaction act;
 		memset(&act, 0, sizeof(struct sigaction));
 		act.sa_flags = SA_SIGINFO;
@@ -256,7 +226,7 @@ static void vsyscall(void)
 		(void)sigaction(SIGSEGV, &act, NULL);
 
 		g_vsyscall = 0;
-		/* gettimeofday(NULL, NULL); */
+		 
 		uint64_t rax = 0xffffffffff600000;
 		asm volatile (
 			"call *%[rax]"
@@ -304,7 +274,7 @@ int main(void)
 
 	make_private_tmp();
 
-	/* Reserve fd 0 for 1-byte pipe ping from child. */
+	 
 	close(0);
 	if (open("/", O_RDONLY|O_DIRECTORY|O_PATH) != 0) {
 		return 1;
@@ -338,7 +308,7 @@ int main(void)
 		return 1;
 	}
 
-	/* Generate "head -n1 /proc/$PID/maps" */
+	 
 	char buf0[256];
 	memset(buf0, ' ', sizeof(buf0));
 	int len = snprintf(buf0, sizeof(buf0),
@@ -350,7 +320,7 @@ int main(void)
 	snprintf(buf0 + MAPS_OFFSET, sizeof(buf0) - MAPS_OFFSET,
 		 "/tmp/#%llu (deleted)\n", (unsigned long long)st.st_ino);
 
-	/* Test /proc/$PID/maps */
+	 
 	{
 		const size_t len = strlen(buf0) + strlen(str_vsyscall);
 		char buf[256];
@@ -370,7 +340,7 @@ int main(void)
 		}
 	}
 
-	/* Test /proc/$PID/smaps */
+	 
 	{
 		char buf[4096];
 		ssize_t rv;
@@ -417,7 +387,7 @@ int main(void)
 		}
 	}
 
-	/* Test /proc/$PID/smaps_rollup */
+	 
 	{
 		char bufr[256];
 		memset(bufr, ' ', sizeof(bufr));
@@ -462,7 +432,7 @@ int main(void)
 		}
 	}
 
-	/* Test /proc/$PID/statm */
+	 
 	{
 		char buf[64];
 		ssize_t rv;
@@ -476,17 +446,17 @@ int main(void)
 		rv = read(fd, buf, sizeof(buf));
 		assert(rv == 7 * 2);
 
-		assert(buf[0] == '1');	/* ->total_vm */
+		assert(buf[0] == '1');	 
 		assert(buf[1] == ' ');
-		assert(buf[2] == '0' || buf[2] == '1');	/* rss */
+		assert(buf[2] == '0' || buf[2] == '1');	 
 		assert(buf[3] == ' ');
-		assert(buf[4] == '0' || buf[2] == '1');	/* file rss */
+		assert(buf[4] == '0' || buf[2] == '1');	 
 		assert(buf[5] == ' ');
-		assert(buf[6] == '1');	/* ELF executable segments */
+		assert(buf[6] == '1');	 
 		assert(buf[7] == ' ');
 		assert(buf[8] == '0');
 		assert(buf[9] == ' ');
-		assert(buf[10] == '0');	/* ->data_vm + ->stack_vm */
+		assert(buf[10] == '0');	 
 		assert(buf[11] == ' ');
 		assert(buf[12] == '0');
 		assert(buf[13] == '\n');

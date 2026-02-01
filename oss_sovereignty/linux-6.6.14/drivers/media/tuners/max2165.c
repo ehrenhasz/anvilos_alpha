@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Maxim MAX2165 silicon tuner
- *
- *  Copyright (c) 2009 David T. L. Wong <davidtlwong@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -118,7 +114,7 @@ static int max2165_read_rom_table(struct max2165_priv *priv)
 	return 0;
 }
 
-static int max2165_set_osc(struct max2165_priv *priv, u8 osc /*MHz*/)
+static int max2165_set_osc(struct max2165_priv *priv, u8 osc  )
 {
 	u8 v;
 
@@ -182,13 +178,13 @@ static int max2165_set_rf(struct max2165_priv *priv, u32 freq)
 	u32 quotient, fraction;
 	int ret;
 
-	/* Set PLL divider according to RF frequency */
+	 
 	ret = fixpt_div32(freq / 1000, priv->config->osc_clk * 1000,
 			 &quotient, &fraction);
 	if (ret != 0)
 		return ret;
 
-	/* 20-bit fraction */
+	 
 	fraction >>= 12;
 
 	max2165_write_reg(priv, REG_NDIV_INT, quotient);
@@ -196,11 +192,11 @@ static int max2165_set_rf(struct max2165_priv *priv, u32 freq)
 	max2165_write_reg(priv, REG_NDIV_FRAC1, fraction >> 8);
 	max2165_write_reg(priv, REG_NDIV_FRAC0, fraction);
 
-	/* Norch Filter */
+	 
 	tf_ntch = (freq < 725000000) ?
 		priv->tf_ntch_low_cfg : priv->tf_ntch_hi_cfg;
 
-	/* Tracking filter balun */
+	 
 	t = priv->tf_balun_low_ref;
 	t += (priv->tf_balun_hi_ref - priv->tf_balun_low_ref)
 		* (freq / 1000 - 470000) / (780000 - 470000);
@@ -330,10 +326,10 @@ static int max2165_init(struct dvb_frontend *fe)
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 
-	/* Setup initial values */
-	/* Fractional Mode on */
+	 
+	 
 	max2165_write_reg(priv, REG_NDIV_FRAC2, 0x18);
-	/* LNA on */
+	 
 	max2165_write_reg(priv, REG_LNA, 0x01);
 	max2165_write_reg(priv, REG_PLL_CFG, 0x7A);
 	max2165_write_reg(priv, REG_TEST, 0x08);

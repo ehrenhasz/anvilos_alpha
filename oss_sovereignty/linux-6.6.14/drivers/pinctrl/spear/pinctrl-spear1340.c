@@ -1,13 +1,4 @@
-/*
- * Driver for the ST Microelectronics SPEAr1340 pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -17,7 +8,7 @@
 
 #define DRIVER_NAME "spear1340-pinmux"
 
-/* pins */
+ 
 static const struct pinctrl_pin_desc spear1340_pins[] = {
 	SPEAR_PIN_0_TO_101,
 	SPEAR_PIN_102_TO_245,
@@ -29,8 +20,8 @@ static const struct pinctrl_pin_desc spear1340_pins[] = {
 	PINCTRL_PIN(251, "PLGPIO251"),
 };
 
-/* In SPEAr1340 there are two levels of pad muxing */
-/* - pads as gpio OR peripherals */
+ 
+ 
 #define PAD_FUNCTION_EN_1			0x668
 #define PAD_FUNCTION_EN_2			0x66C
 #define PAD_FUNCTION_EN_3			0x670
@@ -40,21 +31,17 @@ static const struct pinctrl_pin_desc spear1340_pins[] = {
 #define PAD_FUNCTION_EN_7			0x698
 #define PAD_FUNCTION_EN_8			0x69C
 
-/* - If peripherals, then primary OR alternate peripheral */
+ 
 #define PAD_SHARED_IP_EN_1			0x6A0
 #define PAD_SHARED_IP_EN_2			0x6A4
 
-/*
- * Macro's for first level of pmx - pads as gpio OR peripherals. There are 8
- * registers with 32 bits each for handling gpio pads, register 8 has only 26
- * relevant bits.
- */
-/* macro's for making pads as gpio's */
+ 
+ 
 #define PADS_AS_GPIO_REG0_MASK			0xFFFFFFFE
 #define PADS_AS_GPIO_REGS_MASK			0xFFFFFFFF
 #define PADS_AS_GPIO_REG7_MASK			0x07FFFFFF
 
-/* macro's for making pads as peripherals */
+ 
 #define FSMC_16_BIT_AND_KBD_ROW_COL_REG0_MASK	0x00000FFE
 #define UART0_ENH_AND_GPT_REG0_MASK		0x0003F000
 #define PWM1_AND_KBD_COL5_REG0_MASK		0x00040000
@@ -96,9 +83,9 @@ static const struct pinctrl_pin_desc spear1340_pins[] = {
 #define MCIF_REG7_MASK				0x000043FF
 #define FSMC_8BIT_REG7_MASK			0x07FFBC00
 
-/* other registers */
+ 
 #define PERIP_CFG				0x42C
-	/* PERIP_CFG register masks */
+	 
 	#define SSP_CS_CTL_HW			0
 	#define SSP_CS_CTL_SW			1
 	#define SSP_CS_CTL_MASK			1
@@ -146,7 +133,7 @@ static const struct pinctrl_pin_desc spear1340_pins[] = {
 	#define GMAC_PHY_INPUT_CLK_SHIFT	0
 
 #define PCIE_SATA_CFG				0x424
-	/* PCIE CFG MASks */
+	 
 	#define PCIE_CFG_DEVICE_PRESENT		(1 << 11)
 	#define PCIE_CFG_POWERUP_RESET		(1 << 10)
 	#define PCIE_CFG_CORE_CLK_EN		(1 << 9)
@@ -165,53 +152,50 @@ static const struct pinctrl_pin_desc spear1340_pins[] = {
 				SATA_CFG_POWERUP_RESET | SATA_CFG_RX_CLK_EN | \
 				SATA_CFG_TX_CLK_EN)
 
-/* Macro's for second level of pmx - pads as primary OR alternate peripheral */
-/* Write 0 to enable FSMC_16_BIT */
+ 
+ 
 #define KBD_ROW_COL_MASK			(1 << 0)
 
-/* Write 0 to enable UART0_ENH */
-#define GPT_MASK				(1 << 1) /* Only clk & cpt */
+ 
+#define GPT_MASK				(1 << 1)  
 
-/* Write 0 to enable PWM1 */
+ 
 #define KBD_COL5_MASK				(1 << 2)
 
-/* Write 0 to enable PWM2 */
-#define GPT0_TMR0_CPT_MASK			(1 << 3) /* Only clk & cpt */
+ 
+#define GPT0_TMR0_CPT_MASK			(1 << 3)  
 
-/* Write 0 to enable PWM3 */
-#define GPT0_TMR1_CLK_MASK			(1 << 4) /* Only clk & cpt */
+ 
+#define GPT0_TMR1_CLK_MASK			(1 << 4)  
 
-/* Write 0 to enable PWM0 */
+ 
 #define SSP0_CS1_MASK				(1 << 5)
 
-/* Write 0 to enable VIP */
+ 
 #define CAM3_MASK				(1 << 6)
 
-/* Write 0 to enable VIP */
+ 
 #define CAM2_MASK				(1 << 7)
 
-/* Write 0 to enable VIP */
+ 
 #define CAM1_MASK				(1 << 8)
 
-/* Write 0 to enable VIP */
+ 
 #define CAM0_MASK				(1 << 9)
 
-/* Write 0 to enable TS */
+ 
 #define SSP0_CS2_MASK				(1 << 10)
 
-/* Write 0 to enable FSMC PNOR */
+ 
 #define MCIF_MASK				(1 << 11)
 
-/* Write 0 to enable CLCD */
+ 
 #define ARM_TRACE_MASK				(1 << 12)
 
-/* Write 0 to enable I2S, SSP0_CS2, CEC0, 1, SPDIF out, CLCD */
+ 
 #define MIPHY_DBG_MASK				(1 << 13)
 
-/*
- * Pad multiplexing for making all pads as gpio's. This is done to override the
- * values passed from bootloader and start from scratch.
- */
+ 
 static const unsigned pads_as_gpio_pins[] = { 12, 88, 89, 251 };
 static struct spear_muxreg pads_as_gpio_muxreg[] = {
 	{
@@ -271,7 +255,7 @@ static struct spear_function pads_as_gpio_function = {
 	.ngroups = ARRAY_SIZE(pads_as_gpio_grps),
 };
 
-/* Pad multiplexing for fsmc_8bit device */
+ 
 static const unsigned fsmc_8bit_pins[] = { 233, 234, 235, 236, 238, 239, 240,
 	241, 242, 243, 244, 245, 246, 247, 248, 249 };
 static struct spear_muxreg fsmc_8bit_muxreg[] = {
@@ -297,7 +281,7 @@ static struct spear_pingroup fsmc_8bit_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(fsmc_8bit_modemux),
 };
 
-/* Pad multiplexing for fsmc_16bit device */
+ 
 static const unsigned fsmc_16bit_pins[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 static struct spear_muxreg fsmc_16bit_muxreg[] = {
 	{
@@ -326,7 +310,7 @@ static struct spear_pingroup fsmc_16bit_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(fsmc_16bit_modemux),
 };
 
-/* pad multiplexing for fsmc_pnor device */
+ 
 static const unsigned fsmc_pnor_pins[] = { 192, 193, 194, 195, 196, 197, 198,
 	199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
 	215, 216, 217 };
@@ -365,7 +349,7 @@ static struct spear_function fsmc_function = {
 	.ngroups = ARRAY_SIZE(fsmc_grps),
 };
 
-/* pad multiplexing for keyboard rows-cols device */
+ 
 static const unsigned keyboard_row_col_pins[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
 	10 };
 static struct spear_muxreg keyboard_row_col_muxreg[] = {
@@ -395,7 +379,7 @@ static struct spear_pingroup keyboard_row_col_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(keyboard_row_col_modemux),
 };
 
-/* pad multiplexing for keyboard col5 device */
+ 
 static const unsigned keyboard_col5_pins[] = { 17 };
 static struct spear_muxreg keyboard_col5_muxreg[] = {
 	{
@@ -432,7 +416,7 @@ static struct spear_function keyboard_function = {
 	.ngroups = ARRAY_SIZE(keyboard_grps),
 };
 
-/* pad multiplexing for spdif_in device */
+ 
 static const unsigned spdif_in_pins[] = { 19 };
 static struct spear_muxreg spdif_in_muxreg[] = {
 	{
@@ -464,7 +448,7 @@ static struct spear_function spdif_in_function = {
 	.ngroups = ARRAY_SIZE(spdif_in_grps),
 };
 
-/* pad multiplexing for spdif_out device */
+ 
 static const unsigned spdif_out_pins[] = { 137 };
 static struct spear_muxreg spdif_out_muxreg[] = {
 	{
@@ -500,7 +484,7 @@ static struct spear_function spdif_out_function = {
 	.ngroups = ARRAY_SIZE(spdif_out_grps),
 };
 
-/* pad multiplexing for gpt_0_1 device */
+ 
 static const unsigned gpt_0_1_pins[] = { 11, 12, 13, 14, 15, 16, 21, 22 };
 static struct spear_muxreg gpt_0_1_muxreg[] = {
 	{
@@ -540,7 +524,7 @@ static struct spear_function gpt_0_1_function = {
 	.ngroups = ARRAY_SIZE(gpt_0_1_grps),
 };
 
-/* pad multiplexing for pwm0 device */
+ 
 static const unsigned pwm0_pins[] = { 24 };
 static struct spear_muxreg pwm0_muxreg[] = {
 	{
@@ -569,7 +553,7 @@ static struct spear_pingroup pwm0_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(pwm0_modemux),
 };
 
-/* pad multiplexing for pwm1 device */
+ 
 static const unsigned pwm1_pins[] = { 17 };
 static struct spear_muxreg pwm1_muxreg[] = {
 	{
@@ -598,7 +582,7 @@ static struct spear_pingroup pwm1_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(pwm1_modemux),
 };
 
-/* pad multiplexing for pwm2 device */
+ 
 static const unsigned pwm2_pins[] = { 21 };
 static struct spear_muxreg pwm2_muxreg[] = {
 	{
@@ -627,7 +611,7 @@ static struct spear_pingroup pwm2_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(pwm2_modemux),
 };
 
-/* pad multiplexing for pwm3 device */
+ 
 static const unsigned pwm3_pins[] = { 22 };
 static struct spear_muxreg pwm3_muxreg[] = {
 	{
@@ -664,7 +648,7 @@ static struct spear_function pwm_function = {
 	.ngroups = ARRAY_SIZE(pwm_grps),
 };
 
-/* pad multiplexing for vip_mux device */
+ 
 static const unsigned vip_mux_pins[] = { 35, 36, 37, 38, 40, 41, 42, 43 };
 static struct spear_muxreg vip_mux_muxreg[] = {
 	{
@@ -689,7 +673,7 @@ static struct spear_pingroup vip_mux_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(vip_mux_modemux),
 };
 
-/* pad multiplexing for vip_mux_cam0 (disables cam0) device */
+ 
 static const unsigned vip_mux_cam0_pins[] = { 65, 66, 67, 68, 69, 70, 71, 72,
 	73, 74, 75 };
 static struct spear_muxreg vip_mux_cam0_muxreg[] = {
@@ -719,7 +703,7 @@ static struct spear_pingroup vip_mux_cam0_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(vip_mux_cam0_modemux),
 };
 
-/* pad multiplexing for vip_mux_cam1 (disables cam1) device */
+ 
 static const unsigned vip_mux_cam1_pins[] = { 54, 55, 56, 57, 58, 59, 60, 61,
 	62, 63, 64 };
 static struct spear_muxreg vip_mux_cam1_muxreg[] = {
@@ -753,7 +737,7 @@ static struct spear_pingroup vip_mux_cam1_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(vip_mux_cam1_modemux),
 };
 
-/* pad multiplexing for vip_mux_cam2 (disables cam2) device */
+ 
 static const unsigned vip_mux_cam2_pins[] = { 39, 44, 45, 46, 47, 48, 49, 50,
 	51, 52, 53 };
 static struct spear_muxreg vip_mux_cam2_muxreg[] = {
@@ -783,7 +767,7 @@ static struct spear_pingroup vip_mux_cam2_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(vip_mux_cam2_modemux),
 };
 
-/* pad multiplexing for vip_mux_cam3 (disables cam3) device */
+ 
 static const unsigned vip_mux_cam3_pins[] = { 20, 25, 26, 27, 28, 29, 30, 31,
 	32, 33, 34 };
 static struct spear_muxreg vip_mux_cam3_muxreg[] = {
@@ -825,7 +809,7 @@ static struct spear_function vip_function = {
 	.ngroups = ARRAY_SIZE(vip_grps),
 };
 
-/* pad multiplexing for cam0 device */
+ 
 static const unsigned cam0_pins[] = { 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75
 };
 static struct spear_muxreg cam0_muxreg[] = {
@@ -862,7 +846,7 @@ static struct spear_function cam0_function = {
 	.ngroups = ARRAY_SIZE(cam0_grps),
 };
 
-/* pad multiplexing for cam1 device */
+ 
 static const unsigned cam1_pins[] = { 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
 };
 static struct spear_muxreg cam1_muxreg[] = {
@@ -903,7 +887,7 @@ static struct spear_function cam1_function = {
 	.ngroups = ARRAY_SIZE(cam1_grps),
 };
 
-/* pad multiplexing for cam2 device */
+ 
 static const unsigned cam2_pins[] = { 39, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
 };
 static struct spear_muxreg cam2_muxreg[] = {
@@ -940,7 +924,7 @@ static struct spear_function cam2_function = {
 	.ngroups = ARRAY_SIZE(cam2_grps),
 };
 
-/* pad multiplexing for cam3 device */
+ 
 static const unsigned cam3_pins[] = { 20, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
 };
 static struct spear_muxreg cam3_muxreg[] = {
@@ -981,7 +965,7 @@ static struct spear_function cam3_function = {
 	.ngroups = ARRAY_SIZE(cam3_grps),
 };
 
-/* pad multiplexing for smi device */
+ 
 static const unsigned smi_pins[] = { 76, 77, 78, 79, 84 };
 static struct spear_muxreg smi_muxreg[] = {
 	{
@@ -1013,7 +997,7 @@ static struct spear_function smi_function = {
 	.ngroups = ARRAY_SIZE(smi_grps),
 };
 
-/* pad multiplexing for ssp0 device */
+ 
 static const unsigned ssp0_pins[] = { 80, 81, 82, 83 };
 static struct spear_muxreg ssp0_muxreg[] = {
 	{
@@ -1038,7 +1022,7 @@ static struct spear_pingroup ssp0_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(ssp0_modemux),
 };
 
-/* pad multiplexing for ssp0_cs1 device */
+ 
 static const unsigned ssp0_cs1_pins[] = { 24 };
 static struct spear_muxreg ssp0_cs1_muxreg[] = {
 	{
@@ -1067,7 +1051,7 @@ static struct spear_pingroup ssp0_cs1_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(ssp0_cs1_modemux),
 };
 
-/* pad multiplexing for ssp0_cs2 device */
+ 
 static const unsigned ssp0_cs2_pins[] = { 85 };
 static struct spear_muxreg ssp0_cs2_muxreg[] = {
 	{
@@ -1096,7 +1080,7 @@ static struct spear_pingroup ssp0_cs2_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(ssp0_cs2_modemux),
 };
 
-/* pad multiplexing for ssp0_cs3 device */
+ 
 static const unsigned ssp0_cs3_pins[] = { 132 };
 static struct spear_muxreg ssp0_cs3_muxreg[] = {
 	{
@@ -1129,7 +1113,7 @@ static struct spear_function ssp0_function = {
 	.ngroups = ARRAY_SIZE(ssp0_grps),
 };
 
-/* pad multiplexing for uart0 device */
+ 
 static const unsigned uart0_pins[] = { 86, 87 };
 static struct spear_muxreg uart0_muxreg[] = {
 	{
@@ -1154,7 +1138,7 @@ static struct spear_pingroup uart0_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(uart0_modemux),
 };
 
-/* pad multiplexing for uart0_enh device */
+ 
 static const unsigned uart0_enh_pins[] = { 11, 12, 13, 14, 15, 16 };
 static struct spear_muxreg uart0_enh_muxreg[] = {
 	{
@@ -1190,7 +1174,7 @@ static struct spear_function uart0_function = {
 	.ngroups = ARRAY_SIZE(uart0_grps),
 };
 
-/* pad multiplexing for uart1 device */
+ 
 static const unsigned uart1_pins[] = { 88, 89 };
 static struct spear_muxreg uart1_muxreg[] = {
 	{
@@ -1222,7 +1206,7 @@ static struct spear_function uart1_function = {
 	.ngroups = ARRAY_SIZE(uart1_grps),
 };
 
-/* pad multiplexing for i2s_in device */
+ 
 static const unsigned i2s_in_pins[] = { 90, 91, 92, 93, 94, 99 };
 static struct spear_muxreg i2s_in_muxreg[] = {
 	{
@@ -1251,7 +1235,7 @@ static struct spear_pingroup i2s_in_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(i2s_in_modemux),
 };
 
-/* pad multiplexing for i2s_out device */
+ 
 static const unsigned i2s_out_pins[] = { 95, 96, 97, 98, 100, 101, 102, 103 };
 static struct spear_muxreg i2s_out_muxreg[] = {
 	{
@@ -1283,7 +1267,7 @@ static struct spear_function i2s_function = {
 	.ngroups = ARRAY_SIZE(i2s_grps),
 };
 
-/* pad multiplexing for gmac device */
+ 
 static const unsigned gmac_pins[] = { 104, 105, 106, 107, 108, 109, 110, 111,
 	112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125,
 	126, 127, 128, 129, 130, 131 };
@@ -1298,7 +1282,7 @@ static const unsigned gmac_pins[] = { 104, 105, 106, 107, 108, 109, 110, 111,
 		.val = GMAC_REG4_MASK,		\
 	}
 
-/* pad multiplexing for gmii device */
+ 
 static struct spear_muxreg gmii_muxreg[] = {
 	GMAC_MUXREG,
 	{
@@ -1323,7 +1307,7 @@ static struct spear_pingroup gmii_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(gmii_modemux),
 };
 
-/* pad multiplexing for rgmii device */
+ 
 static struct spear_muxreg rgmii_muxreg[] = {
 	GMAC_MUXREG,
 	{
@@ -1348,7 +1332,7 @@ static struct spear_pingroup rgmii_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(rgmii_modemux),
 };
 
-/* pad multiplexing for rmii device */
+ 
 static struct spear_muxreg rmii_muxreg[] = {
 	GMAC_MUXREG,
 	{
@@ -1373,7 +1357,7 @@ static struct spear_pingroup rmii_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(rmii_modemux),
 };
 
-/* pad multiplexing for sgmii device */
+ 
 static struct spear_muxreg sgmii_muxreg[] = {
 	GMAC_MUXREG,
 	{
@@ -1406,7 +1390,7 @@ static struct spear_function gmac_function = {
 	.ngroups = ARRAY_SIZE(gmac_grps),
 };
 
-/* pad multiplexing for i2c0 device */
+ 
 static const unsigned i2c0_pins[] = { 133, 134 };
 static struct spear_muxreg i2c0_muxreg[] = {
 	{
@@ -1438,7 +1422,7 @@ static struct spear_function i2c0_function = {
 	.ngroups = ARRAY_SIZE(i2c0_grps),
 };
 
-/* pad multiplexing for i2c1 device */
+ 
 static const unsigned i2c1_pins[] = { 18, 23 };
 static struct spear_muxreg i2c1_muxreg[] = {
 	{
@@ -1470,7 +1454,7 @@ static struct spear_function i2c1_function = {
 	.ngroups = ARRAY_SIZE(i2c1_grps),
 };
 
-/* pad multiplexing for cec0 device */
+ 
 static const unsigned cec0_pins[] = { 135 };
 static struct spear_muxreg cec0_muxreg[] = {
 	{
@@ -1502,7 +1486,7 @@ static struct spear_function cec0_function = {
 	.ngroups = ARRAY_SIZE(cec0_grps),
 };
 
-/* pad multiplexing for cec1 device */
+ 
 static const unsigned cec1_pins[] = { 136 };
 static struct spear_muxreg cec1_muxreg[] = {
 	{
@@ -1534,7 +1518,7 @@ static struct spear_function cec1_function = {
 	.ngroups = ARRAY_SIZE(cec1_grps),
 };
 
-/* pad multiplexing for mcif devices */
+ 
 static const unsigned mcif_pins[] = { 193, 194, 195, 196, 197, 198, 199, 200,
 	201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214,
 	215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228,
@@ -1554,7 +1538,7 @@ static const unsigned mcif_pins[] = { 193, 194, 195, 196, 197, 198, 199, 200,
 		.val = MCIF_REG7_MASK,					\
 	}
 
-/* Pad multiplexing for sdhci device */
+ 
 static struct spear_muxreg sdhci_muxreg[] = {
 	MCIF_MUXREG,
 	{
@@ -1586,7 +1570,7 @@ static struct spear_function sdhci_function = {
 	.ngroups = ARRAY_SIZE(sdhci_grps),
 };
 
-/* Pad multiplexing for cf device */
+ 
 static struct spear_muxreg cf_muxreg[] = {
 	MCIF_MUXREG,
 	{
@@ -1618,7 +1602,7 @@ static struct spear_function cf_function = {
 	.ngroups = ARRAY_SIZE(cf_grps),
 };
 
-/* Pad multiplexing for xd device */
+ 
 static struct spear_muxreg xd_muxreg[] = {
 	MCIF_MUXREG,
 	{
@@ -1650,7 +1634,7 @@ static struct spear_function xd_function = {
 	.ngroups = ARRAY_SIZE(xd_grps),
 };
 
-/* pad multiplexing for clcd device */
+ 
 static const unsigned clcd_pins[] = { 138, 139, 140, 141, 142, 143, 144, 145,
 	146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
 	160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
@@ -1691,7 +1675,7 @@ static struct spear_pingroup clcd_pingroup = {
 	.nmodemuxs = ARRAY_SIZE(clcd_modemux),
 };
 
-/* Disable cld runtime to save panel damage */
+ 
 static struct spear_muxreg clcd_sleep_muxreg[] = {
 	{
 		.reg = PAD_SHARED_IP_EN_1,
@@ -1734,7 +1718,7 @@ static struct spear_function clcd_function = {
 	.ngroups = ARRAY_SIZE(clcd_grps),
 };
 
-/* pad multiplexing for arm_trace device */
+ 
 static const unsigned arm_trace_pins[] = { 158, 159, 160, 161, 162, 163, 164,
 	165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178,
 	179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192,
@@ -1781,7 +1765,7 @@ static struct spear_function arm_trace_function = {
 	.ngroups = ARRAY_SIZE(arm_trace_grps),
 };
 
-/* pad multiplexing for miphy_dbg device */
+ 
 static const unsigned miphy_dbg_pins[] = { 96, 97, 98, 99, 100, 101, 102, 103,
 	132, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
 	148, 149, 150, 151, 152, 153, 154, 155, 156, 157 };
@@ -1819,7 +1803,7 @@ static struct spear_function miphy_dbg_function = {
 	.ngroups = ARRAY_SIZE(miphy_dbg_grps),
 };
 
-/* pad multiplexing for pcie device */
+ 
 static const unsigned pcie_pins[] = { 250 };
 static struct spear_muxreg pcie_muxreg[] = {
 	{
@@ -1851,7 +1835,7 @@ static struct spear_function pcie_function = {
 	.ngroups = ARRAY_SIZE(pcie_grps),
 };
 
-/* pad multiplexing for sata device */
+ 
 static const unsigned sata_pins[] = { 250 };
 static struct spear_muxreg sata_muxreg[] = {
 	{
@@ -1883,7 +1867,7 @@ static struct spear_function sata_function = {
 	.ngroups = ARRAY_SIZE(sata_grps),
 };
 
-/* pingroups */
+ 
 static struct spear_pingroup *spear1340_pingroups[] = {
 	&pads_as_gpio_pingroup,
 	&fsmc_8bit_pingroup,
@@ -1936,7 +1920,7 @@ static struct spear_pingroup *spear1340_pingroups[] = {
 	&sata_pingroup,
 };
 
-/* functions */
+ 
 static struct spear_function *spear1340_functions[] = {
 	&pads_as_gpio_function,
 	&fsmc_function,
@@ -1976,7 +1960,7 @@ static void gpio_request_endisable(struct spear_pmx *pmx, int pin,
 	unsigned int regoffset, regindex, bitoffset;
 	unsigned int val;
 
-	/* pin++ as gpio configuration starts from 2nd bit of base register */
+	 
 	pin++;
 
 	regindex = pin / 32;

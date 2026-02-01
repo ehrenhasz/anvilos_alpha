@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/pm_qos.h>
@@ -70,7 +48,7 @@ static int igt_add_request(void *arg)
 	struct drm_i915_private *i915 = arg;
 	struct i915_request *request;
 
-	/* Basic preliminary test to create a request and let it loose! */
+	 
 
 	request = mock_request(rcs0(i915)->kernel_context, HZ / 10);
 	if (!request)
@@ -88,7 +66,7 @@ static int igt_wait_request(void *arg)
 	struct i915_request *request;
 	int err = -EINVAL;
 
-	/* Submit a request, then wait upon it */
+	 
 
 	request = mock_request(rcs0(i915)->kernel_context, T);
 	if (!request)
@@ -157,7 +135,7 @@ static int igt_fence_wait(void *arg)
 	struct i915_request *request;
 	int err = -EINVAL;
 
-	/* Submit a request, treat it as a fence and wait upon it */
+	 
 
 	request = mock_request(rcs0(i915)->kernel_context, T);
 	if (!request)
@@ -242,7 +220,7 @@ static int igt_request_rewind(void *arg)
 		goto err_context_1;
 	}
 
-	/* Simulate preemption by manual reordering */
+	 
 	if (!mock_cancel_request(request)) {
 		pr_err("failed to cancel request (already executed)!\n");
 		i915_request_add(vip);
@@ -319,14 +297,7 @@ static void __igt_breadcrumbs_smoketest(struct kthread_work *work)
 	unsigned int *order;
 	int err = 0;
 
-	/*
-	 * A very simple test to catch the most egregious of list handling bugs.
-	 *
-	 * At its heart, we simply create oodles of requests running across
-	 * multiple kthreads and enable signaling on them, for the sole purpose
-	 * of stressing our breadcrumb handling. The only inspection we do is
-	 * that the fences were marked as signaled.
-	 */
+	 
 
 	requests = kcalloc(total, sizeof(*requests), GFP_KERNEL);
 	if (!requests) {
@@ -465,11 +436,7 @@ static int mock_breadcrumbs_smoketest(void *arg)
 	unsigned int n;
 	int ret = 0;
 
-	/*
-	 * Smoketest our breadcrumb/signal handling for requests across multiple
-	 * threads. A very simple test to only catch the most egregious of bugs.
-	 * See __igt_breadcrumbs_smoketest();
-	 */
+	 
 
 	threads = kcalloc(ncpus, sizeof(*threads), GFP_KERNEL);
 	if (!threads)
@@ -571,11 +538,7 @@ static int live_nop_request(void *arg)
 	struct igt_live_test t;
 	int err = -ENODEV;
 
-	/*
-	 * Submit various sized batches of empty requests, to each engine
-	 * (individually), and wait for the batch to complete. We can check
-	 * the overhead of submitting requests to the hardware.
-	 */
+	 
 
 	for_each_uabi_engine(engine, i915) {
 		unsigned long n, prime;
@@ -598,19 +561,7 @@ static int live_nop_request(void *arg)
 				if (IS_ERR(request))
 					return PTR_ERR(request);
 
-				/*
-				 * This space is left intentionally blank.
-				 *
-				 * We do not actually want to perform any
-				 * action with this request, we just want
-				 * to measure the latency in allocation
-				 * and submission of our breadcrumbs -
-				 * ensuring that the bare request is sufficient
-				 * for the system to work (i.e. proper HEAD
-				 * tracking of the rings, interrupt handling,
-				 * etc). It also gives us the lowest bounds
-				 * for latency.
-				 */
+				 
 
 				i915_request_get(request);
 				i915_request_add(request);
@@ -803,17 +754,7 @@ out_spin:
 	return err;
 }
 
-/*
- * Test to prove a non-preemptable request can be cancelled and a subsequent
- * request on the same context can successfully complete after cancellation.
- *
- * Testing methodology is to create a non-preemptible request and submit it,
- * wait for spinner to start, create a NOP request and submit it, cancel the
- * spinner, wait for spinner to complete and verify it failed with an error,
- * finally wait for NOP request to complete verify it succeeded without an
- * error. Preemption timeout also reduced / restored so test runs in a timely
- * maner.
- */
+ 
 static int __cancel_reset(struct drm_i915_private *i915,
 			  struct intel_engine_cs *engine)
 {
@@ -917,10 +858,7 @@ static int live_cancel_request(void *arg)
 	struct drm_i915_private *i915 = arg;
 	struct intel_engine_cs *engine;
 
-	/*
-	 * Check cancellation of requests. We expect to be able to immediately
-	 * cancel active requests, even if they are currently on the GPU.
-	 */
+	 
 
 	for_each_uabi_engine(engine, i915) {
 		struct igt_live_test t;
@@ -945,7 +883,7 @@ static int live_cancel_request(void *arg)
 		if (err2)
 			return err2;
 
-		/* Expects reset so call outside of igt_live_test_* */
+		 
 		err = __cancel_reset(i915, engine);
 		if (err)
 			return err;
@@ -991,7 +929,7 @@ static struct i915_vma *empty_batch(struct intel_gt *gt)
 	if (err)
 		goto err;
 
-	/* Force the wait now to avoid including it in the benchmark */
+	 
 	err = i915_vma_sync(vma);
 	if (err)
 		goto err_pin;
@@ -1041,11 +979,7 @@ static int live_empty_request(void *arg)
 	struct igt_live_test t;
 	int err;
 
-	/*
-	 * Submit various sized batches of empty requests, to each engine
-	 * (individually), and wait for the batch to complete. We can check
-	 * the overhead of submitting requests to the hardware.
-	 */
+	 
 
 	for_each_uabi_engine(engine, i915) {
 		IGT_TIMEOUT(end_time);
@@ -1064,7 +998,7 @@ static int live_empty_request(void *arg)
 
 		intel_engine_pm_get(engine);
 
-		/* Warmup / preload */
+		 
 		request = empty_request(engine, batch);
 		if (IS_ERR(request)) {
 			err = PTR_ERR(request);
@@ -1154,7 +1088,7 @@ static struct i915_vma *recursive_batch(struct intel_gt *gt)
 		*cmd++ = MI_BATCH_BUFFER_START | MI_BATCH_GTT;
 		*cmd++ = lower_32_bits(i915_vma_offset(vma));
 	}
-	*cmd++ = MI_BATCH_BUFFER_END; /* terminate early in case of error */
+	*cmd++ = MI_BATCH_BUFFER_END;  
 
 	__i915_gem_object_flush_map(obj, 0, 64);
 	i915_gem_object_unpin_map(obj);
@@ -1196,11 +1130,7 @@ static int live_all_engines(void *arg)
 	unsigned int idx;
 	int err;
 
-	/*
-	 * Check we can submit requests to all engines simultaneously. We
-	 * send a recursive batch to each engine - checking that we don't
-	 * block doing so, and that they don't complete too soon.
-	 */
+	 
 
 	request = kcalloc(nengines, sizeof(*request), GFP_KERNEL);
 	if (!request)
@@ -1325,12 +1255,7 @@ static int live_sequential_engines(void *arg)
 	unsigned int idx;
 	int err;
 
-	/*
-	 * Check we can submit requests to all engines sequentially, such
-	 * that each successive request waits for the earlier ones. This
-	 * tests that we don't execute requests out of order, even though
-	 * they are running on independent engines.
-	 */
+	 
 
 	request = kcalloc(nengines, sizeof(*request), GFP_KERNEL);
 	if (!request)
@@ -1560,11 +1485,7 @@ static void __live_parallel_spin(struct kthread_work *work)
 	struct i915_request *rq;
 	int err = 0;
 
-	/*
-	 * Create a spinner running for eternity on each engine. If a second
-	 * spinner is incorrectly placed on the same engine, it will not be
-	 * able to start in time.
-	 */
+	 
 
 	if (igt_spinner_init(&spin, engine->gt)) {
 		wake_all(engine->i915);
@@ -1575,7 +1496,7 @@ static void __live_parallel_spin(struct kthread_work *work)
 	intel_engine_pm_get(engine);
 	rq = igt_spinner_create_request(&spin,
 					engine->kernel_context,
-					MI_NOOP); /* no preemption */
+					MI_NOOP);  
 	intel_engine_pm_put(engine);
 	if (IS_ERR(rq)) {
 		err = PTR_ERR(rq);
@@ -1588,7 +1509,7 @@ static void __live_parallel_spin(struct kthread_work *work)
 	i915_request_get(rq);
 	i915_request_add(rq);
 	if (igt_wait_for_spinner(&spin, rq)) {
-		/* Occupy this engine for the whole test */
+		 
 		err = wait_for_all(engine->i915);
 	} else {
 		pr_err("Failed to start spinner on %s\n", engine->name);
@@ -1620,10 +1541,7 @@ static int live_parallel_engines(void *arg)
 	void (* const *fn)(struct kthread_work *);
 	int err = 0;
 
-	/*
-	 * Check we can submit requests to all engines concurrently. This
-	 * tests that we load up the system maximally.
-	 */
+	 
 
 	threads = kcalloc(nengines, sizeof(*threads), GFP_KERNEL);
 	if (!threads)
@@ -1690,15 +1608,7 @@ max_batches(struct i915_gem_context *ctx, struct intel_engine_cs *engine)
 	struct i915_request *rq;
 	int ret;
 
-	/*
-	 * Before execlists, all contexts share the same ringbuffer. With
-	 * execlists, each context/engine has a separate ringbuffer and
-	 * for the purposes of this test, inexhaustible.
-	 *
-	 * For the global ringbuffer though, we have to be very careful
-	 * that we do not wrap while preventing the execution of requests
-	 * with a unsignaled fence.
-	 */
+	 
 	if (HAS_EXECLISTS(ctx->i915))
 		return INT_MAX;
 
@@ -1715,7 +1625,7 @@ max_batches(struct i915_gem_context *ctx, struct intel_engine_cs *engine)
 		if (sz < 0)
 			sz += rq->ring->size;
 		ret /= sz;
-		ret /= 2; /* leave half spare, in case of emergency! */
+		ret /= 2;  
 	}
 
 	return ret;
@@ -1725,7 +1635,7 @@ static int live_breadcrumbs_smoketest(void *arg)
 {
 	struct drm_i915_private *i915 = arg;
 	const unsigned int nengines = num_uabi_engines(i915);
-	const unsigned int ncpus = /* saturate with nengines * ncpus */
+	const unsigned int ncpus =  
 		max_t(int, 2, DIV_ROUND_UP(num_online_cpus(), nengines));
 	unsigned long num_waits, num_fences;
 	struct intel_engine_cs *engine;
@@ -1737,13 +1647,7 @@ static int live_breadcrumbs_smoketest(void *arg)
 	struct file *file;
 	int ret = 0;
 
-	/*
-	 * Smoketest our breadcrumb/signal handling for requests across multiple
-	 * threads. A very simple test to only catch the most egregious of bugs.
-	 * See __igt_breadcrumbs_smoketest();
-	 *
-	 * On real hardware this time.
-	 */
+	 
 
 	wakeref = intel_runtime_pm_get(&i915->runtime_pm);
 
@@ -1797,7 +1701,7 @@ static int live_breadcrumbs_smoketest(void *arg)
 			ret = smoke[idx].max_batch;
 			goto out_flush;
 		}
-		/* One ring interleaved between requests from all cpus */
+		 
 		smoke[idx].max_batch /= ncpus + 1;
 		pr_debug("Limiting batches to %d requests on %s\n",
 			 smoke[idx].max_batch, engine->name);
@@ -1998,7 +1902,7 @@ static u32 *emit_semaphore_poll_until(u32 *cs, u32 offset, u32 value)
 static void semaphore_set(u32 *sema, u32 value)
 {
 	WRITE_ONCE(*sema, value);
-	wmb(); /* flush the update to the cache, and beyond */
+	wmb();  
 }
 
 static u32 *hwsp_scratch(const struct intel_context *ce)
@@ -2022,16 +1926,7 @@ static int measure_semaphore_response(struct intel_context *ce)
 	int err;
 	int i;
 
-	/*
-	 * Measure how many cycles it takes for the HW to detect the change
-	 * in a semaphore value.
-	 *
-	 *    A: read CS_TIMESTAMP from CPU
-	 *    poke semaphore
-	 *    B: read CS_TIMESTAMP on GPU
-	 *
-	 * Semaphore latency: B - A
-	 */
+	 
 
 	semaphore_set(sema, -1);
 
@@ -2096,16 +1991,7 @@ static int measure_idle_dispatch(struct intel_context *ce)
 	int err;
 	int i;
 
-	/*
-	 * Measure how long it takes for us to submit a request while the
-	 * engine is idle, but is resting in our context.
-	 *
-	 *    A: read CS_TIMESTAMP from CPU
-	 *    submit request
-	 *    B: read CS_TIMESTAMP on GPU
-	 *
-	 * Submission latency: B - A
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(elapsed); i++) {
 		struct i915_request *rq;
@@ -2167,17 +2053,7 @@ static int measure_busy_dispatch(struct intel_context *ce)
 	int err;
 	int i;
 
-	/*
-	 * Measure how long it takes for us to submit a request while the
-	 * engine is busy, polling on a semaphore in our context. With
-	 * direct submission, this will include the cost of a lite restore.
-	 *
-	 *    A: read CS_TIMESTAMP from CPU
-	 *    submit request
-	 *    B: read CS_TIMESTAMP on GPU
-	 *
-	 * Submission latency: B - A
-	 */
+	 
 
 	for (i = 1; i <= ARRAY_SIZE(elapsed); i++) {
 		struct i915_request *rq;
@@ -2269,19 +2145,7 @@ static int measure_inter_request(struct intel_context *ce)
 	struct i915_sw_fence *submit;
 	int i, err;
 
-	/*
-	 * Measure how long it takes to advance from one request into the
-	 * next. Between each request we flush the GPU caches to memory,
-	 * update the breadcrumbs, and then invalidate those caches.
-	 * We queue up all the requests to be submitted in one batch so
-	 * it should be one set of contiguous measurements.
-	 *
-	 *    A: read CS_TIMESTAMP on GPU
-	 *    advance request
-	 *    B: read CS_TIMESTAMP on GPU
-	 *
-	 * Request latency: B - A
-	 */
+	 
 
 	err = plug(ce->engine, sema, MI_SEMAPHORE_SAD_NEQ_SDD, 0);
 	if (err)
@@ -2361,18 +2225,7 @@ static int measure_context_switch(struct intel_context *ce)
 	int i, j, err;
 	u32 *cs;
 
-	/*
-	 * Measure how long it takes to advance from one request in one
-	 * context to a request in another context. This allows us to
-	 * measure how long the context save/restore take, along with all
-	 * the inter-context setup we require.
-	 *
-	 *    A: read CS_TIMESTAMP on GPU
-	 *    switch context
-	 *    B: read CS_TIMESTAMP on GPU
-	 *
-	 * Context switch latency: B - A
-	 */
+	 
 
 	err = plug(ce->engine, sema, MI_SEMAPHORE_SAD_NEQ_SDD, 0);
 	if (err)
@@ -2455,21 +2308,7 @@ static int measure_preemption(struct intel_context *ce)
 	int err;
 	int i;
 
-	/*
-	 * We measure two latencies while triggering preemption. The first
-	 * latency is how long it takes for us to submit a preempting request.
-	 * The second latency is how it takes for us to return from the
-	 * preemption back to the original context.
-	 *
-	 *    A: read CS_TIMESTAMP from CPU
-	 *    submit preemption
-	 *    B: read CS_TIMESTAMP on GPU (in preempting context)
-	 *    context switch
-	 *    C: read CS_TIMESTAMP on GPU (in original context)
-	 *
-	 * Preemption dispatch latency: B - A
-	 * Preemption switch latency: C - B
-	 */
+	 
 
 	if (!intel_engine_has_preemption(ce->engine))
 		return 0;
@@ -2563,7 +2402,7 @@ static void signal_cb(struct dma_fence *fence, struct dma_fence_cb *cb)
 {
 	struct signal_cb *s = container_of(cb, typeof(*s), base);
 
-	smp_store_mb(s->seen, true); /* be safe, be strong */
+	smp_store_mb(s->seen, true);  
 }
 
 static int measure_completion(struct intel_context *ce)
@@ -2575,16 +2414,7 @@ static int measure_completion(struct intel_context *ce)
 	int err;
 	int i;
 
-	/*
-	 * Measure how long it takes for the signal (interrupt) to be
-	 * sent from the GPU to be processed by the CPU.
-	 *
-	 *    A: read CS_TIMESTAMP on GPU
-	 *    signal
-	 *    B: read CS_TIMESTAMP from CPU
-	 *
-	 * Completion latency: B - A
-	 */
+	 
 
 	for (i = 1; i <= ARRAY_SIZE(elapsed); i++) {
 		struct signal_cb cb = { .seen = false };
@@ -2650,7 +2480,7 @@ err:
 
 static void rps_pin(struct intel_gt *gt)
 {
-	/* Pin the frequency to max */
+	 
 	atomic_inc(&gt->rps.num_waiters);
 	intel_uncore_forcewake_get(gt->uncore, FORCEWAKE_ALL);
 
@@ -2672,10 +2502,10 @@ static int perf_request_latency(void *arg)
 	struct pm_qos_request qos;
 	int err = 0;
 
-	if (GRAPHICS_VER(i915) < 8) /* per-engine CS timestamp, semaphores */
+	if (GRAPHICS_VER(i915) < 8)  
 		return 0;
 
-	cpu_latency_qos_add_request(&qos, 0); /* disable cstates */
+	cpu_latency_qos_add_request(&qos, 0);  
 
 	for_each_uabi_engine(engine, i915) {
 		struct intel_context *ce;
@@ -2847,7 +2677,7 @@ static int perf_series_engines(void *arg)
 		return -ENOMEM;
 	}
 
-	cpu_latency_qos_add_request(&qos, 0); /* disable cstates */
+	cpu_latency_qos_add_request(&qos, 0);  
 
 	ps->i915 = i915;
 	ps->nengines = nengines;

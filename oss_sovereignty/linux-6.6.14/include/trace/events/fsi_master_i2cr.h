@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fsi_master_i2cr

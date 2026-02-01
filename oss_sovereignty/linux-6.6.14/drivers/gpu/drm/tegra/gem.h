@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra host1x GEM implementation
- *
- * Copyright (c) 2012-2013, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef __HOST1X_GEM_H
 #define __HOST1X_GEM_H
@@ -43,7 +39,7 @@ struct tegra_bo {
 	struct drm_mm_node *mm;
 	unsigned long num_pages;
 	struct page **pages;
-	/* size of IOMMU mapping */
+	 
 	size_t size;
 
 	struct tegra_bo_tiling tiling;

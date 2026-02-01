@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for gaming keys on Razer Blackwidow gaming keyboards
- *  Macro Key Keycodes: M1 = 191, M2 = 192, M3 = 193, M4 = 194, M5 = 195
- *
- *  Copyright (c) 2021 Jelle van der Waa <jvanderwaa@redhat.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -82,10 +77,7 @@ static int razer_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	if (ret)
 		return ret;
 
-	/*
-	 * Only send the enable macro keys command for the third device
-	 * identified as mouse input.
-	 */
+	 
 	if (hdev->type == HID_TYPE_USBMOUSE) {
 		buf = kmemdup(blackwidow_init, RAZER_BLACKWIDOW_TRANSFER_BUF_SIZE, GFP_KERNEL);
 		if (buf == NULL)

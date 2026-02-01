@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC Hardware event counters support
- *
- * Copyright (C) 2017 HiSilicon Limited
- * Author: Anurup M <anurup.m@huawei.com>
- *         Shaokun Zhang <zhangshaokun@hisilicon.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
 #include <linux/bug.h>
@@ -22,9 +14,7 @@
 
 #define HISI_MAX_PERIOD(nr) (GENMASK_ULL((nr) - 1, 0))
 
-/*
- * PMU format attributes
- */
+ 
 ssize_t hisi_format_sysfs_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -36,9 +26,7 @@ ssize_t hisi_format_sysfs_show(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(hisi_format_sysfs_show);
 
-/*
- * PMU event attributes
- */
+ 
 ssize_t hisi_event_sysfs_show(struct device *dev,
 			      struct device_attribute *attr, char *page)
 {
@@ -50,9 +38,7 @@ ssize_t hisi_event_sysfs_show(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(hisi_event_sysfs_show);
 
-/*
- * sysfs cpumask attributes. For uncore PMU, we only have a single CPU to show
- */
+ 
 ssize_t hisi_cpumask_sysfs_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -66,18 +52,15 @@ static bool hisi_validate_event_group(struct perf_event *event)
 {
 	struct perf_event *sibling, *leader = event->group_leader;
 	struct hisi_pmu *hisi_pmu = to_hisi_pmu(event->pmu);
-	/* Include count for the event */
+	 
 	int counters = 1;
 
 	if (!is_software_event(leader)) {
-		/*
-		 * We must NOT create groups containing mixed PMUs, although
-		 * software events are acceptable
-		 */
+		 
 		if (leader->pmu != event->pmu)
 			return false;
 
-		/* Increment counter for the leader */
+		 
 		if (leader != event)
 			counters++;
 	}
@@ -87,11 +70,11 @@ static bool hisi_validate_event_group(struct perf_event *event)
 			continue;
 		if (sibling->pmu != event->pmu)
 			return false;
-		/* Increment counter for each sibling */
+		 
 		counters++;
 	}
 
-	/* The group can not count events more than the counters in the HW */
+	 
 	return counters <= hisi_pmu->num_counters;
 }
 
@@ -138,14 +121,11 @@ static irqreturn_t hisi_uncore_pmu_isr(int irq, void *data)
 	if (!overflown)
 		return IRQ_NONE;
 
-	/*
-	 * Find the counter index which overflowed if the bit was set
-	 * and handle it.
-	 */
+	 
 	for_each_set_bit(idx, &overflown, hisi_pmu->num_counters) {
-		/* Write 1 to clear the IRQ status flag */
+		 
 		hisi_pmu->ops->clear_int_status(hisi_pmu, idx);
-		/* Get the corresponding event struct */
+		 
 		event = hisi_pmu->pmu_events.hw_events[idx];
 		if (!event)
 			continue;
@@ -189,25 +169,15 @@ int hisi_uncore_pmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * We do not support sampling as the counters are all
-	 * shared by all CPU cores in a CPU die(SCCL). Also we
-	 * do not support attach to a task(per-process mode)
-	 */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EOPNOTSUPP;
 
-	/*
-	 *  The uncore counters not specific to any CPU, so cannot
-	 *  support per-task
-	 */
+	 
 	if (event->cpu < 0)
 		return -EINVAL;
 
-	/*
-	 * Validate if the events in group does not exceed the
-	 * available counters in hardware.
-	 */
+	 
 	if (!hisi_validate_event_group(event))
 		return -EINVAL;
 
@@ -217,28 +187,21 @@ int hisi_uncore_pmu_event_init(struct perf_event *event)
 
 	if (hisi_pmu->on_cpu == -1)
 		return -EINVAL;
-	/*
-	 * We don't assign an index until we actually place the event onto
-	 * hardware. Use -1 to signify that we haven't decided where to put it
-	 * yet.
-	 */
+	 
 	hwc->idx		= -1;
 	hwc->config_base	= event->attr.config;
 
 	if (hisi_pmu->ops->check_filter && hisi_pmu->ops->check_filter(event))
 		return -EINVAL;
 
-	/* Enforce to use the same CPU for all events in this PMU */
+	 
 	event->cpu = hisi_pmu->on_cpu;
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(hisi_uncore_pmu_event_init);
 
-/*
- * Set the counter to count the event that we're interested in,
- * and enable interrupt and counter.
- */
+ 
 static void hisi_uncore_pmu_enable_event(struct perf_event *event)
 {
 	struct hisi_pmu *hisi_pmu = to_hisi_pmu(event->pmu);
@@ -254,9 +217,7 @@ static void hisi_uncore_pmu_enable_event(struct perf_event *event)
 	hisi_pmu->ops->enable_counter(hisi_pmu, hwc);
 }
 
-/*
- * Disable counter and interrupt.
- */
+ 
 static void hisi_uncore_pmu_disable_event(struct perf_event *event)
 {
 	struct hisi_pmu *hisi_pmu = to_hisi_pmu(event->pmu);
@@ -274,17 +235,11 @@ void hisi_uncore_pmu_set_event_period(struct perf_event *event)
 	struct hisi_pmu *hisi_pmu = to_hisi_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/*
-	 * The HiSilicon PMU counters support 32 bits or 48 bits, depending on
-	 * the PMU. We reduce it to 2^(counter_bits - 1) to account for the
-	 * extreme interrupt latency. So we could hopefully handle the overflow
-	 * interrupt before another 2^(counter_bits - 1) events occur and the
-	 * counter overtakes its previous value.
-	 */
+	 
 	u64 val = BIT_ULL(hisi_pmu->counter_bits - 1);
 
 	local64_set(&hwc->prev_count, val);
-	/* Write start value to the hardware event counter */
+	 
 	hisi_pmu->ops->write_counter(hisi_pmu, hwc, val);
 }
 EXPORT_SYMBOL_GPL(hisi_uncore_pmu_set_event_period);
@@ -296,14 +251,12 @@ void hisi_uncore_pmu_event_update(struct perf_event *event)
 	u64 delta, prev_raw_count, new_raw_count;
 
 	do {
-		/* Read the count from the counter register */
+		 
 		new_raw_count = hisi_pmu->ops->read_counter(hisi_pmu, hwc);
 		prev_raw_count = local64_read(&hwc->prev_count);
 	} while (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
 				 new_raw_count) != prev_raw_count);
-	/*
-	 * compute the delta
-	 */
+	 
 	delta = (new_raw_count - prev_raw_count) &
 		HISI_MAX_PERIOD(hisi_pmu->counter_bits);
 	local64_add(delta, &event->count);
@@ -344,7 +297,7 @@ void hisi_uncore_pmu_stop(struct perf_event *event, int flags)
 	if (hwc->state & PERF_HES_UPTODATE)
 		return;
 
-	/* Read hardware counter and update the perf counter statistics */
+	 
 	hisi_uncore_pmu_event_update(event);
 	hwc->state |= PERF_HES_UPTODATE;
 }
@@ -358,7 +311,7 @@ int hisi_uncore_pmu_add(struct perf_event *event, int flags)
 
 	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 
-	/* Get an available counter index for counting */
+	 
 	idx = hisi_pmu->ops->get_event_idx(event);
 	if (idx < 0)
 		return idx;
@@ -387,7 +340,7 @@ EXPORT_SYMBOL_GPL(hisi_uncore_pmu_del);
 
 void hisi_uncore_pmu_read(struct perf_event *event)
 {
-	/* Read hardware counter and update the perf counter statistics */
+	 
 	hisi_uncore_pmu_event_update(event);
 }
 EXPORT_SYMBOL_GPL(hisi_uncore_pmu_read);
@@ -414,19 +367,7 @@ void hisi_uncore_pmu_disable(struct pmu *pmu)
 EXPORT_SYMBOL_GPL(hisi_uncore_pmu_disable);
 
 
-/*
- * The Super CPU Cluster (SCCL) and CPU Cluster (CCL) IDs can be
- * determined from the MPIDR_EL1, but the encoding varies by CPU:
- *
- * - For MT variants of TSV110:
- *   SCCL is Aff2[7:3], CCL is Aff2[2:0]
- *
- * - For other MT parts:
- *   SCCL is Aff3[7:0], CCL is Aff2[7:0]
- *
- * - For non-MT parts:
- *   SCCL is Aff2[7:0], CCL is Aff1[7:0]
- */
+ 
 static void hisi_read_sccl_and_ccl_id(int *scclp, int *cclp)
 {
 	u64 mpidr = read_cpuid_mpidr();
@@ -453,19 +394,17 @@ static void hisi_read_sccl_and_ccl_id(int *scclp, int *cclp)
 		*cclp = ccl;
 }
 
-/*
- * Check whether the CPU is associated with this uncore PMU
- */
+ 
 static bool hisi_pmu_cpu_is_associated_pmu(struct hisi_pmu *hisi_pmu)
 {
 	int sccl_id, ccl_id;
 
-	/* If SCCL_ID is -1, the PMU is in a SICL and has no CPU affinity */
+	 
 	if (hisi_pmu->sccl_id == -1)
 		return true;
 
 	if (hisi_pmu->ccl_id == -1) {
-		/* If CCL_ID is -1, the PMU only shares the same SCCL */
+		 
 		hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
 
 		return sccl_id == hisi_pmu->sccl_id;
@@ -486,14 +425,14 @@ int hisi_uncore_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 
 	cpumask_set_cpu(cpu, &hisi_pmu->associated_cpus);
 
-	/* If another CPU is already managing this PMU, simply return. */
+	 
 	if (hisi_pmu->on_cpu != -1)
 		return 0;
 
-	/* Use this CPU in cpumask for event counting */
+	 
 	hisi_pmu->on_cpu = cpu;
 
-	/* Overflow interrupt also should use the same CPU */
+	 
 	WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(cpu)));
 
 	return 0;
@@ -510,14 +449,14 @@ int hisi_uncore_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	if (!cpumask_test_and_clear_cpu(cpu, &hisi_pmu->associated_cpus))
 		return 0;
 
-	/* Nothing to do if this CPU doesn't own the PMU */
+	 
 	if (hisi_pmu->on_cpu != cpu)
 		return 0;
 
-	/* Give up ownership of the PMU */
+	 
 	hisi_pmu->on_cpu = -1;
 
-	/* Choose a new CPU to migrate ownership of the PMU to */
+	 
 	cpumask_and(&pmu_online_cpus, &hisi_pmu->associated_cpus,
 		    cpu_online_mask);
 	target = cpumask_any_but(&pmu_online_cpus, cpu);
@@ -525,7 +464,7 @@ int hisi_uncore_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 		return 0;
 
 	perf_pmu_migrate_context(&hisi_pmu->pmu, cpu, target);
-	/* Use this CPU for event counting */
+	 
 	hisi_pmu->on_cpu = target;
 	WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(target)));
 

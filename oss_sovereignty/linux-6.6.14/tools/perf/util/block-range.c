@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "block-range.h"
 #include "annotate.h"
 #include <assert.h>
@@ -13,13 +13,13 @@ static void block_range__debug(void)
 {
 #ifndef NDEBUG
 	struct rb_node *rb;
-	u64 old = 0; /* NULL isn't executable */
+	u64 old = 0;  
 
 	for (rb = rb_first(&block_ranges.root); rb; rb = rb_next(rb)) {
 		struct block_range *entry = rb_entry(rb, struct block_range, node);
 
 		assert(old < entry->start);
-		assert(entry->start <= entry->end); /* single instruction block; jump to a jump */
+		assert(entry->start <= entry->end);  
 
 		old = entry->end;
 	}
@@ -67,13 +67,7 @@ static inline void rb_link_right_of_node(struct rb_node *right, struct rb_node *
 	rb_link_node(right, node, p);
 }
 
-/**
- * block_range__create
- * @start: branch target starting this basic block
- * @end:   branch ending this basic block
- *
- * Create all the required block ranges to precisely span the given range.
- */
+ 
 struct block_range_iter block_range__create(u64 start, u64 end)
 {
 	struct rb_node **p = &block_ranges.root.rb_node;
@@ -93,17 +87,12 @@ struct block_range_iter block_range__create(u64 start, u64 end)
 			break;
 	}
 
-	/*
-	 * Didn't find anything.. there's a hole at @start, however @end might
-	 * be inside/behind the next range.
-	 */
+	 
 	if (!*p) {
-		if (!entry) /* tree empty */
+		if (!entry)  
 			goto do_whole;
 
-		/*
-		 * If the last node is before, advance one to find the next.
-		 */
+		 
 		n = parent;
 		if (entry->end < start) {
 			n = rb_next(n);
@@ -112,7 +101,7 @@ struct block_range_iter block_range__create(u64 start, u64 end)
 		}
 		next = rb_entry(n, struct block_range, node);
 
-		if (next->start <= end) { /* add head: [start...][n->start...] */
+		if (next->start <= end) {  
 			struct block_range *head = malloc(sizeof(struct block_range));
 			if (!head)
 				return iter;
@@ -133,9 +122,7 @@ struct block_range_iter block_range__create(u64 start, u64 end)
 		}
 
 do_whole:
-		/*
-		 * The whole [start..end] range is non-overlapping.
-		 */
+		 
 		entry = malloc(sizeof(struct block_range));
 		if (!entry)
 			return iter;
@@ -156,10 +143,8 @@ do_whole:
 		goto done;
 	}
 
-	/*
-	 * We found a range that overlapped with ours, split if needed.
-	 */
-	if (entry->start < start) { /* split: [e->start...][start...] */
+	 
+	if (entry->start < start) {  
 		struct block_range *head = malloc(sizeof(struct block_range));
 		if (!head)
 			return iter;
@@ -188,16 +173,11 @@ do_whole:
 	iter.start = entry;
 
 do_tail:
-	/*
-	 * At this point we've got: @iter.start = [@start...] but @end can still be
-	 * inside or beyond it.
-	 */
+	 
 	entry = iter.start;
 	for (;;) {
-		/*
-		 * If @end is inside @entry, split.
-		 */
-		if (end < entry->end) { /* split: [...end][...e->end] */
+		 
+		if (end < entry->end) {  
 			struct block_range *tail = malloc(sizeof(struct block_range));
 			if (!tail)
 				return iter;
@@ -226,9 +206,7 @@ do_tail:
 			goto done;
 		}
 
-		/*
-		 * If @end matches @entry, done
-		 */
+		 
 		if (end == entry->end) {
 			entry->is_branch = 1;
 			iter.end = entry;
@@ -239,10 +217,8 @@ do_tail:
 		if (!next)
 			goto add_tail;
 
-		/*
-		 * If @end is in beyond @entry but not inside @next, add tail.
-		 */
-		if (end < next->start) { /* add tail: [...e->end][...end] */
+		 
+		if (end < next->start) {  
 			struct block_range *tail;
 add_tail:
 			tail = malloc(sizeof(struct block_range));
@@ -264,9 +240,7 @@ add_tail:
 			goto done;
 		}
 
-		/*
-		 * If there is a hole between @entry and @next, fill it.
-		 */
+		 
 		if (entry->end + 1 != next->start) {
 			struct block_range *hole = malloc(sizeof(struct block_range));
 			if (!hole)
@@ -297,17 +271,7 @@ done:
 }
 
 
-/*
- * Compute coverage as:
- *
- *    br->coverage / br->sym->max_coverage
- *
- * This ensures each symbol has a 100% spot, to reflect that each symbol has a
- * most covered section.
- *
- * Returns [0-1] for coverage and -1 if we had no data what so ever or the
- * symbol does not exist.
- */
+ 
 double block_range__coverage(struct block_range *br)
 {
 	struct symbol *sym;

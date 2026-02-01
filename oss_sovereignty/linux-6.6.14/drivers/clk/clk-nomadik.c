@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Nomadik clock implementation
- * Copyright (C) 2013 ST-Ericsson AB
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "Nomadik SRC clocks: " fmt
 
@@ -19,11 +15,7 @@
 #include <linux/spinlock.h>
 #include <linux/reboot.h>
 
-/*
- * The Nomadik clock tree is described in the STN8815A12 DB V4.2
- * reference manual for the chip, page 94 ff.
- * Clock IDs are in the STn8815 Reference Manual table 3, page 27.
- */
+ 
 
 #define SRC_CR			0x00U
 #define SRC_CR_T0_ENSEL		BIT(15)
@@ -56,9 +48,9 @@
 #define SRC_PCKENSR1		0x3CU
 #define SRC_PCKSR1		0x40U
 
-/* Lock protecting the SRC_CR register */
+ 
 static DEFINE_SPINLOCK(src_lock);
-/* Base address of the SRC */
+ 
 static void __iomem *src_base;
 
 static int nomadik_clk_reboot_handler(struct notifier_block *this,
@@ -67,7 +59,7 @@ static int nomadik_clk_reboot_handler(struct notifier_block *this,
 {
 	u32 val;
 
-	/* The main chrystal need to be enabled for reboot to work */
+	 
 	val = readl(src_base + SRC_XTALCR);
 	val &= ~SRC_XTALCR_MXTALOVER;
 	val |= SRC_XTALCR_MXTALEN;
@@ -82,7 +74,7 @@ static struct notifier_block nomadik_clk_reboot_notifier = {
 
 static const struct of_device_id nomadik_src_match[] __initconst = {
 	{ .compatible = "stericsson,nomadik-src" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static void __init nomadik_src_init(void)
@@ -102,7 +94,7 @@ static void __init nomadik_src_init(void)
 		goto out_put;
 	}
 
-	/* Set all timers to use the 2.4 MHz TIMCLK */
+	 
 	val = readl(src_base + SRC_CR);
 	val |= SRC_CR_T0_ENSEL;
 	val |= SRC_CR_T1_ENSEL;
@@ -120,12 +112,12 @@ static void __init nomadik_src_init(void)
 	pr_info("MXTAL is %s\n",
 		(val & SRC_XTALCR_MXTALSTAT) ? "enabled" : "disabled");
 	if (of_property_read_bool(np, "disable-sxtalo")) {
-		/* The machine uses an external oscillator circuit */
+		 
 		val |= SRC_XTALCR_SXTALDIS;
 		pr_info("disabling SXTALO\n");
 	}
 	if (of_property_read_bool(np, "disable-mxtalo")) {
-		/* Disable this too: also run by external oscillator */
+		 
 		val |= SRC_XTALCR_MXTALOVER;
 		val &= ~SRC_XTALCR_MXTALEN;
 		pr_info("disabling MXTALO\n");
@@ -137,23 +129,13 @@ out_put:
 	of_node_put(np);
 }
 
-/**
- * struct clk_pll - Nomadik PLL clock
- * @hw: corresponding clock hardware entry
- * @id: PLL instance: 1 or 2
- */
+ 
 struct clk_pll {
 	struct clk_hw hw;
 	int id;
 };
 
-/**
- * struct clk_src - Nomadik src clock
- * @hw: corresponding clock hardware entry
- * @id: the clock ID
- * @group1: true if the clock is in group1, else it is in group0
- * @clkbit: bit 0...31 corresponding to the clock in each clock register
- */
+ 
 struct clk_src {
 	struct clk_hw hw;
 	int id;
@@ -244,7 +226,7 @@ static unsigned long pll_clk_recalc_rate(struct clk_hw *hw,
 		return (parent_rate * mul);
 	}
 
-	/* Unknown PLL */
+	 
 	return 0;
 }
 
@@ -291,14 +273,7 @@ pll_clk_register(struct device *dev, const char *name,
 	return &pll->hw;
 }
 
-/*
- * The Nomadik SRC clocks are gated, but not in the sense that
- * you read-modify-write a register. Instead there are separate
- * clock enable and clock disable registers. Writing a '1' bit in
- * the enable register for a certain clock ungates that clock without
- * affecting the other clocks. The disable register works the opposite
- * way.
- */
+ 
 
 static int src_clk_enable(struct clk_hw *hw)
 {
@@ -307,7 +282,7 @@ static int src_clk_enable(struct clk_hw *hw)
 	u32 sreg = sclk->group1 ? SRC_PCKSR1 : SRC_PCKSR0;
 
 	writel(sclk->clkbit, src_base + enreg);
-	/* spin until enabled */
+	 
 	while (!(readl(src_base + sreg) & sclk->clkbit))
 		cpu_relax();
 	return 0;
@@ -320,7 +295,7 @@ static void src_clk_disable(struct clk_hw *hw)
 	u32 sreg = sclk->group1 ? SRC_PCKSR1 : SRC_PCKSR0;
 
 	writel(sclk->clkbit, src_base + disreg);
-	/* spin until disabled */
+	 
 	while (readl(src_base + sreg) & sclk->clkbit)
 		cpu_relax();
 }
@@ -362,7 +337,7 @@ src_clk_register(struct device *dev, const char *name,
 
 	init.name = name;
 	init.ops = &src_clk_ops;
-	/* Do not force-disable the static SDRAM controller */
+	 
 	if (id == 2)
 		init.flags = CLK_IGNORE_UNUSED;
 	else
@@ -486,7 +461,7 @@ DEFINE_SHOW_ATTRIBUTE(nomadik_src_clk_debugfs);
 
 static int __init nomadik_src_clk_init_debugfs(void)
 {
-	/* Vital for multiplatform */
+	 
 	if (!src_base)
 		return -ENODEV;
 	src_pcksr0_boot = readl(src_base + SRC_PCKSR0);
@@ -532,9 +507,7 @@ static void __init of_nomadik_hclk_setup(struct device_node *np)
 		nomadik_src_init();
 
 	parent_name = of_clk_get_parent_name(np, 0);
-	/*
-	 * The HCLK divides PLL1 with 1 (passthru), 2, 3 or 4.
-	 */
+	 
 	hw = clk_hw_register_divider(NULL, clk_name, parent_name,
 			   0, src_base + SRC_CR,
 			   13, 2,

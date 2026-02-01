@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -57,8 +57,7 @@ struct qtnf_wmac *qtnf_core_get_mac(const struct qtnf_bus *bus, u8 macid)
 	return mac;
 }
 
-/* Netdev handler for open.
- */
+ 
 static int qtnf_netdev_open(struct net_device *ndev)
 {
 	netif_carrier_off(ndev);
@@ -66,8 +65,7 @@ static int qtnf_netdev_open(struct net_device *ndev)
 	return 0;
 }
 
-/* Netdev handler for close.
- */
+ 
 static int qtnf_netdev_close(struct net_device *ndev)
 {
 	netif_carrier_off(ndev);
@@ -84,8 +82,7 @@ static void qtnf_packet_send_hi_pri(struct sk_buff *skb)
 	queue_work(vif->mac->bus->hprio_workqueue, &vif->high_pri_tx_work);
 }
 
-/* Netdev handler for data transmission.
- */
+ 
 static netdev_tx_t
 qtnf_netdev_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
@@ -121,7 +118,7 @@ qtnf_netdev_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		return 0;
 	}
 
-	/* tx path is enabled: reset vif timeout */
+	 
 	vif->cons_tx_timeout_cnt = 0;
 
 	if (unlikely(skb->protocol == htons(ETH_P_PAE))) {
@@ -133,8 +130,7 @@ qtnf_netdev_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	return qtnf_bus_data_tx(mac->bus, skb, mac->macid, vif->vifid);
 }
 
-/* Netdev handler for transmission timeout.
- */
+ 
 static void qtnf_netdev_tx_timeout(struct net_device *ndev, unsigned int txqueue)
 {
 	struct qtnf_vif *vif = qtnf_netdev_get_priv(ndev);
@@ -208,7 +204,7 @@ static void qtnf_netdev_free_pcpu_stats(struct net_device *dev)
 	free_percpu(dev->tstats);
 }
 
-/* Network device ops handlers */
+ 
 const struct net_device_ops qtnf_netdev_ops = {
 	.ndo_init = qtnf_netdev_alloc_pcpu_stats,
 	.ndo_uninit = qtnf_netdev_free_pcpu_stats,
@@ -336,7 +332,7 @@ static void qtnf_vif_reset_handler(struct work_struct *work)
 		return;
 	}
 
-	/* stop tx completely */
+	 
 	netif_tx_stop_all_queues(vif->netdev);
 	if (netif_carrier_ok(vif->netdev))
 		netif_carrier_off(vif->netdev);
@@ -592,7 +588,7 @@ static int qtnf_core_mac_attach(struct qtnf_bus *bus, unsigned int macid)
 		goto error_del_vif;
 	}
 
-	/* Use MAC address of the first active radio as a unique device ID */
+	 
 	if (is_zero_ether_addr(mac->bus->hw_id))
 		ether_addr_copy(mac->bus->hw_id, mac->macaddr);
 
@@ -882,7 +878,7 @@ struct net_device *qtnf_classify_skb(struct qtnf_bus *bus, struct sk_buff *skb)
 	}
 
 	__skb_trim(skb, skb->len - sizeof(*meta));
-	/* Firmware always handles packets that require flooding */
+	 
 	qtnfmac_switch_mark_skb_flooded(skb);
 
 out:

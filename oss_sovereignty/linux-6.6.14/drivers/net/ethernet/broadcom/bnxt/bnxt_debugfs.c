@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2017-2018 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -79,7 +72,7 @@ void bnxt_debug_dev_init(struct bnxt *bp)
 	bp->debugfs_pdev = debugfs_create_dir(pname, bnxt_debug_mnt);
 	dir = debugfs_create_dir("dim", bp->debugfs_pdev);
 
-	/* create files for each rx ring */
+	 
 	for (i = 0; i < bp->cp_nr_rings; i++) {
 		struct bnxt_cp_ring_info *cpr = &bp->bnapi[i]->cp_ring;
 

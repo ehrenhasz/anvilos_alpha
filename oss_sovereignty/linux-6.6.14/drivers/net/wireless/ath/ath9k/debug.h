@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef DEBUG_H
 #define DEBUG_H
@@ -58,36 +44,7 @@ enum ath_reset_type {
 
 #ifdef CONFIG_ATH9K_DEBUGFS
 
-/**
- * struct ath_interrupt_stats - Contains statistics about interrupts
- * @total: Total no. of interrupts generated so far
- * @rxok: RX with no errors
- * @rxlp: RX with low priority RX
- * @rxhp: RX with high priority, uapsd only
- * @rxeol: RX with no more RXDESC available
- * @rxorn: RX FIFO overrun
- * @txok: TX completed at the requested rate
- * @txurn: TX FIFO underrun
- * @mib: MIB regs reaching its threshold
- * @rxphyerr: RX with phy errors
- * @rx_keycache_miss: RX with key cache misses
- * @swba: Software Beacon Alert
- * @bmiss: Beacon Miss
- * @bnr: Beacon Not Ready
- * @cst: Carrier Sense TImeout
- * @gtt: Global TX Timeout
- * @tim: RX beacon TIM occurrence
- * @cabend: RX End of CAB traffic
- * @dtimsync: DTIM sync lossage
- * @dtim: RX Beacon with DTIM
- * @bb_watchdog: Baseband watchdog
- * @tsfoor: TSF out of range, indicates that the corrected TSF received
- * from a beacon differs from the PCU's internal TSF by more than a
- * (programmable) threshold
- * @local_timeout: Internal bus timeout.
- * @mci: MCI interrupt, specific to MCI based BTCOEX chipsets
- * @gen_timer: Generic hardware timer interrupt
- */
+ 
 struct ath_interrupt_stats {
 	u32 total;
 	u32 rxok;
@@ -115,7 +72,7 @@ struct ath_interrupt_stats {
 	u32 mci;
 	u32 gen_timer;
 
-	/* Sync-cause stats */
+	 
 	u32 sync_cause_all;
 	u32 sync_rtc_irq;
 	u32 sync_mac_irq;
@@ -138,34 +95,7 @@ struct ath_interrupt_stats {
 };
 
 
-/**
- * struct ath_tx_stats - Statistics about TX
- * @tx_pkts_all:  No. of total frames transmitted, including ones that
-	may have had errors.
- * @tx_bytes_all:  No. of total bytes transmitted, including ones that
-	may have had errors.
- * @queued: Total MPDUs (non-aggr) queued
- * @completed: Total MPDUs (non-aggr) completed
- * @a_aggr: Total no. of aggregates queued
- * @a_queued_hw: Total AMPDUs queued to hardware
- * @a_completed: Total AMPDUs completed
- * @a_retries: No. of AMPDUs retried (SW)
- * @a_xretries: No. of AMPDUs dropped due to xretries
- * @txerr_filtered: No. of frames with TXERR_FILT flag set.
- * @fifo_underrun: FIFO underrun occurrences
-	Valid only for:
-		- non-aggregate condition.
-		- first packet of aggregate.
- * @xtxop: No. of frames filtered because of TXOP limit
- * @timer_exp: Transmit timer expiry
- * @desc_cfg_err: Descriptor configuration errors
- * @data_urn: TX data underrun errors
- * @delim_urn: TX delimiter underrun errors
- * @puttxbuf: Number of times hardware was given txbuf to write.
- * @txstart:  Number of times hardware was told to start tx.
- * @txprocdesc:  Number of times tx descriptor was processed
- * @txfailed:  Out-of-memory or other errors in xmit path.
- */
+ 
 struct ath_tx_stats {
 	u32 tx_pkts_all;
 	u32 tx_bytes_all;
@@ -190,9 +120,7 @@ struct ath_tx_stats {
 	u32 txfailed;
 };
 
-/*
- * Various utility macros to print TX/Queue counters.
- */
+ 
 #define PR_QNUM(_n) sc->tx.txq_map[_n]->axq_qnum
 #define TXSTATS sc->debug.stats.txstats
 #define PR(str, elem)							\
@@ -314,7 +242,7 @@ ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause)
 {
 }
 
-#endif /* CONFIG_ATH9K_DEBUGFS */
+#endif  
 
 #ifdef CONFIG_ATH9K_STATION_STATISTICS
 void ath_debug_rate_stats(struct ath_softc *sc,
@@ -326,6 +254,6 @@ static inline void ath_debug_rate_stats(struct ath_softc *sc,
 					struct sk_buff *skb)
 {
 }
-#endif /* CONFIG_ATH9K_STATION_STATISTICS */
+#endif  
 
-#endif /* DEBUG_H */
+#endif  

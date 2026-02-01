@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Toradex AG
- *
- * Stefan Agner <stefan@agner.ch>
- *
- * Freescale TCON device driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -62,7 +56,7 @@ struct fsl_tcon *fsl_tcon_init(struct device *dev)
 	struct device_node *np;
 	int ret;
 
-	/* TCON node is not mandatory, some devices do not provide TCON */
+	 
 	np = of_parse_phandle(dev->of_node, "fsl,tcon", 0);
 	if (!np)
 		return NULL;

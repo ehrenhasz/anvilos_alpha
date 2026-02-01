@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2018 ROHM Semiconductors
+
+
 
 #include <linux/gpio/driver.h>
 #include <linux/mfd/rohm-bd71828.h>
@@ -23,10 +23,7 @@ static void bd71828_gpio_set(struct gpio_chip *chip, unsigned int offset,
 	struct bd71828_gpio *bdgpio = gpiochip_get_data(chip);
 	u8 val = (value) ? BD71828_GPIO_OUT_HI : BD71828_GPIO_OUT_LO;
 
-	/*
-	 * The HALL input pin can only be used as input. If this is the pin
-	 * we are dealing with - then we are done
-	 */
+	 
 	if (offset == HALL_GPIO_OFFSET)
 		return;
 
@@ -81,14 +78,7 @@ static int bd71828_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
 
 static int bd71828_get_direction(struct gpio_chip *chip, unsigned int offset)
 {
-	/*
-	 * Pin usage is selected by OTP data. We can't read it runtime. Hence
-	 * we trust that if the pin is not excluded by "gpio-reserved-ranges"
-	 * the OTP configuration is set to OUT. (Other pins but HALL input pin
-	 * on BD71828 can't really be used for general purpose input - input
-	 * states are used for specific cases like regulator control or
-	 * PMIC_ON_REQ.
-	 */
+	 
 	if (offset == HALL_GPIO_OFFSET)
 		return GPIO_LINE_DIRECTION_IN;
 
@@ -115,11 +105,7 @@ static int bd71828_probe(struct platform_device *pdev)
 	bdgpio->gpio.set = bd71828_gpio_set;
 	bdgpio->gpio.base = -1;
 
-	/*
-	 * See if we need some implementation to mark some PINs as
-	 * not controllable based on DT info or if core can handle
-	 * "gpio-reserved-ranges" and exclude them from control
-	 */
+	 
 	bdgpio->gpio.ngpio = 4;
 	bdgpio->regmap = dev_get_regmap(dev->parent, NULL);
 	if (!bdgpio->regmap)

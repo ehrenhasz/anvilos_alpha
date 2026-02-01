@@ -1,30 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * Simple command-line parser for early boot.
- */
+ 
+
+ 
 
 #include "boot.h"
 
 static inline int myisspace(u8 c)
 {
-	return c <= ' ';	/* Close enough approximation */
+	return c <= ' ';	 
 }
 
-/*
- * Find a non-boolean option, that is, "option=argument".  In accordance
- * with standard Linux practice, if this option is repeated, this returns
- * the last instance on the command line.
- *
- * Returns the length of the argument (regardless of if it was
- * truncated to fit in the buffer), or -1 on not found.
- */
+ 
 int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *buffer, int bufsize)
 {
 	addr_t cptr;
@@ -33,14 +19,14 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
 	const char *opptr = NULL;
 	char *bufptr = buffer;
 	enum {
-		st_wordstart,	/* Start of word/after whitespace */
-		st_wordcmp,	/* Comparing this word */
-		st_wordskip,	/* Miscompare, skip */
-		st_bufcpy	/* Copying this to buffer */
+		st_wordstart,	 
+		st_wordcmp,	 
+		st_wordskip,	 
+		st_bufcpy	 
 	} state = st_wordstart;
 
 	if (!cmdline_ptr)
-		return -1;      /* No command line */
+		return -1;       
 
 	cptr = cmdline_ptr & 0xf;
 	set_fs(cmdline_ptr >> 4);
@@ -51,7 +37,7 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
 			if (myisspace(c))
 				break;
 
-			/* else */
+			 
 			state = st_wordcmp;
 			opptr = option;
 			fallthrough;
@@ -91,12 +77,7 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
 	return len;
 }
 
-/*
- * Find a boolean option (like quiet,noapic,nosmp....)
- *
- * Returns the position of that option (starts counting with 1)
- * or 0 on not found
- */
+ 
 int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
 {
 	addr_t cptr;
@@ -104,13 +85,13 @@ int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
 	int pos = 0, wstart = 0;
 	const char *opptr = NULL;
 	enum {
-		st_wordstart,	/* Start of word/after whitespace */
-		st_wordcmp,	/* Comparing this word */
-		st_wordskip,	/* Miscompare, skip */
+		st_wordstart,	 
+		st_wordcmp,	 
+		st_wordskip,	 
 	} state = st_wordstart;
 
 	if (!cmdline_ptr)
-		return -1;      /* No command line */
+		return -1;       
 
 	cptr = cmdline_ptr & 0xf;
 	set_fs(cmdline_ptr >> 4);
@@ -152,5 +133,5 @@ int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
 		}
 	}
 
-	return 0;	/* Buffer overrun */
+	return 0;	 
 }

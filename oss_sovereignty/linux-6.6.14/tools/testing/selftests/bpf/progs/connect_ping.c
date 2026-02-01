@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2022 Google LLC.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -10,7 +8,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-/* 2001:db8::1 */
+ 
 #define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }
 
 __u32 do_bind = 0;

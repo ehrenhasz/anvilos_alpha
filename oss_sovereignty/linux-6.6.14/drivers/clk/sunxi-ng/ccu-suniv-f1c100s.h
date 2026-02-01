@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2017 Icenowy Zheng <icenowy@aosc.io>
- *
- */
+ 
+ 
 
 #ifndef _CCU_SUNIV_F1C100S_H_
 #define _CCU_SUNIV_F1C100S_H_
@@ -22,13 +19,13 @@
 #define CLK_PLL_DDR0		9
 #define CLK_PLL_PERIPH		10
 
-/* CPU clock is exported */
+ 
 
 #define CLK_AHB			12
 #define CLK_APB			13
 
-/* All bus gates, DRAM gates and mod clocks are exported */
+ 
 
 #define CLK_NUMBER		(CLK_IR + 1)
 
-#endif /* _CCU_SUNIV_F1C100S_H_ */
+#endif  

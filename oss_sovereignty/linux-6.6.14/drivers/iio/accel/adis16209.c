@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -16,31 +12,28 @@
 #define ADIS16209_STARTUP_DELAY_MS	220
 #define ADIS16209_FLASH_CNT_REG		0x00
 
-/* Data Output Register Definitions */
+ 
 #define ADIS16209_SUPPLY_OUT_REG	0x02
 #define ADIS16209_XACCL_OUT_REG		0x04
 #define ADIS16209_YACCL_OUT_REG		0x06
-/* Output, auxiliary ADC input */
+ 
 #define ADIS16209_AUX_ADC_REG		0x08
-/* Output, temperature */
+ 
 #define ADIS16209_TEMP_OUT_REG		0x0A
-/* Output, +/- 90 degrees X-axis inclination */
+ 
 #define ADIS16209_XINCL_OUT_REG		0x0C
 #define ADIS16209_YINCL_OUT_REG		0x0E
-/* Output, +/-180 vertical rotational position */
+ 
 #define ADIS16209_ROT_OUT_REG		0x10
 
-/*
- * Calibration Register Definitions.
- * Acceleration, inclination or rotation offset null.
- */
+ 
 #define ADIS16209_XACCL_NULL_REG	0x12
 #define ADIS16209_YACCL_NULL_REG	0x14
 #define ADIS16209_XINCL_NULL_REG	0x16
 #define ADIS16209_YINCL_NULL_REG	0x18
 #define ADIS16209_ROT_NULL_REG		0x1A
 
-/* Alarm Register Definitions */
+ 
 #define ADIS16209_ALM_MAG1_REG		0x20
 #define ADIS16209_ALM_MAG2_REG		0x22
 #define ADIS16209_ALM_SMPL1_REG		0x24
@@ -57,7 +50,7 @@
 #define  ADIS16209_MSC_CTRL_PWRUP_SELF_TEST	BIT(10)
 #define  ADIS16209_MSC_CTRL_SELF_TEST_EN	BIT(8)
 #define  ADIS16209_MSC_CTRL_DATA_RDY_EN		BIT(2)
-/* Data-ready polarity: 1 = active high, 0 = active low */
+ 
 #define  ADIS16209_MSC_CTRL_ACTIVE_HIGH		BIT(1)
 #define  ADIS16209_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
 
@@ -67,9 +60,9 @@
 #define  ADIS16209_STAT_SELFTEST_FAIL_BIT	5
 #define  ADIS16209_STAT_SPI_FAIL_BIT		3
 #define  ADIS16209_STAT_FLASH_UPT_FAIL_BIT	2
-/* Power supply above 3.625 V */
+ 
 #define  ADIS16209_STAT_POWER_HIGH_BIT		1
-/* Power supply below 2.975 V */
+ 
 #define  ADIS16209_STAT_POWER_LOW_BIT		0
 
 #define ADIS16209_CMD_REG			0x3E
@@ -147,10 +140,10 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
 			*val = 0;
 			switch (chan->channel) {
 			case 0:
-				*val2 = 305180; /* 0.30518 mV */
+				*val2 = 305180;  
 				break;
 			case 1:
-				*val2 = 610500; /* 0.6105 mV */
+				*val2 = 610500;  
 				break;
 			default:
 				return -EINVAL;
@@ -161,20 +154,13 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
 			*val2 = 0;
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_ACCEL:
-			/*
-			 * IIO base unit for sensitivity of accelerometer
-			 * is milli g.
-			 * 1 LSB represents 0.244 mg.
-			 */
+			 
 			*val = 0;
 			*val2 = IIO_G_TO_M_S_2(244140);
 			return IIO_VAL_INT_PLUS_NANO;
 		case IIO_INCLI:
 		case IIO_ROT:
-			/*
-			 * IIO base units for rotation are degrees.
-			 * 1 LSB represents 0.025 milli degrees.
-			 */
+			 
 			*val = 0;
 			*val2 = 25000;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -183,11 +169,7 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_CHAN_INFO_OFFSET:
-		/*
-		 * The raw ADC value is 0x4FE when the temperature
-		 * is 45 degrees and the scale factor per milli
-		 * degree celcius is -470.
-		 */
+		 
 		*val = 25000 / -470 - 0x4FE;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_CALIBBIAS:

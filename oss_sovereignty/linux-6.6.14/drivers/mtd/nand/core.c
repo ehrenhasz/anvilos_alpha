@@ -1,24 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017 Free Electrons
- *
- * Authors:
- *	Boris Brezillon <boris.brezillon@free-electrons.com>
- *	Peter Pan <peterpandong@micron.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"nand: " fmt
 
 #include <linux/module.h>
 #include <linux/mtd/nand.h>
 
-/**
- * nanddev_isbad() - Check if a block is bad
- * @nand: NAND device
- * @pos: position pointing to the block we want to check
- *
- * Return: true if the block is bad, false otherwise.
- */
+ 
 bool nanddev_isbad(struct nand_device *nand, const struct nand_pos *pos)
 {
 	if (mtd_check_expert_analysis_mode())
@@ -30,7 +18,7 @@ bool nanddev_isbad(struct nand_device *nand, const struct nand_pos *pos)
 
 		entry = nanddev_bbt_pos_to_entry(nand, pos);
 		status = nanddev_bbt_get_block_status(nand, entry);
-		/* Lazy block status retrieval */
+		 
 		if (status == NAND_BBT_BLOCK_STATUS_UNKNOWN) {
 			if (nand->ops->isbad(nand, pos))
 				status = NAND_BBT_BLOCK_FACTORY_BAD;
@@ -51,16 +39,7 @@ bool nanddev_isbad(struct nand_device *nand, const struct nand_pos *pos)
 }
 EXPORT_SYMBOL_GPL(nanddev_isbad);
 
-/**
- * nanddev_markbad() - Mark a block as bad
- * @nand: NAND device
- * @pos: position of the block to mark bad
- *
- * Mark a block bad. This function is updating the BBT if available and
- * calls the low-level markbad hook (nand->ops->markbad()).
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 int nanddev_markbad(struct nand_device *nand, const struct nand_pos *pos)
 {
 	struct mtd_info *mtd = nanddev_to_mtd(nand);
@@ -93,15 +72,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(nanddev_markbad);
 
-/**
- * nanddev_isreserved() - Check whether an eraseblock is reserved or not
- * @nand: NAND device
- * @pos: NAND position to test
- *
- * Checks whether the eraseblock pointed by @pos is reserved or not.
- *
- * Return: true if the eraseblock is reserved, false otherwise.
- */
+ 
 bool nanddev_isreserved(struct nand_device *nand, const struct nand_pos *pos)
 {
 	unsigned int entry;
@@ -110,22 +81,14 @@ bool nanddev_isreserved(struct nand_device *nand, const struct nand_pos *pos)
 	if (!nanddev_bbt_is_initialized(nand))
 		return false;
 
-	/* Return info from the table */
+	 
 	entry = nanddev_bbt_pos_to_entry(nand, pos);
 	status = nanddev_bbt_get_block_status(nand, entry);
 	return status == NAND_BBT_BLOCK_RESERVED;
 }
 EXPORT_SYMBOL_GPL(nanddev_isreserved);
 
-/**
- * nanddev_erase() - Erase a NAND portion
- * @nand: NAND device
- * @pos: position of the block to erase
- *
- * Erases the block if it's not bad.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 static int nanddev_erase(struct nand_device *nand, const struct nand_pos *pos)
 {
 	if (nanddev_isbad(nand, pos) || nanddev_isreserved(nand, pos)) {
@@ -137,21 +100,7 @@ static int nanddev_erase(struct nand_device *nand, const struct nand_pos *pos)
 	return nand->ops->erase(nand, pos);
 }
 
-/**
- * nanddev_mtd_erase() - Generic mtd->_erase() implementation for NAND devices
- * @mtd: MTD device
- * @einfo: erase request
- *
- * This is a simple mtd->_erase() implementation iterating over all blocks
- * concerned by @einfo and calling nand->ops->erase() on each of them.
- *
- * Note that mtd->_erase should not be directly assigned to this helper,
- * because there's no locking here. NAND specialized layers should instead
- * implement there own wrapper around nanddev_mtd_erase() taking the
- * appropriate lock before calling nanddev_mtd_erase().
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 int nanddev_mtd_erase(struct mtd_info *mtd, struct erase_info *einfo)
 {
 	struct nand_device *nand = mtd_to_nanddev(mtd);
@@ -175,19 +124,7 @@ int nanddev_mtd_erase(struct mtd_info *mtd, struct erase_info *einfo)
 }
 EXPORT_SYMBOL_GPL(nanddev_mtd_erase);
 
-/**
- * nanddev_mtd_max_bad_blocks() - Get the maximum number of bad eraseblock on
- *				  a specific region of the NAND device
- * @mtd: MTD device
- * @offs: offset of the NAND region
- * @len: length of the NAND region
- *
- * Default implementation for mtd->_max_bad_blocks(). Only works if
- * nand->memorg.max_bad_eraseblocks_per_lun is > 0.
- *
- * Return: a positive number encoding the maximum number of eraseblocks on a
- * portion of memory, a negative error code otherwise.
- */
+ 
 int nanddev_mtd_max_bad_blocks(struct mtd_info *mtd, loff_t offs, size_t len)
 {
 	struct nand_device *nand = mtd_to_nanddev(mtd);
@@ -209,15 +146,12 @@ int nanddev_mtd_max_bad_blocks(struct mtd_info *mtd, loff_t offs, size_t len)
 }
 EXPORT_SYMBOL_GPL(nanddev_mtd_max_bad_blocks);
 
-/**
- * nanddev_get_ecc_engine() - Find and get a suitable ECC engine
- * @nand: NAND device
- */
+ 
 static int nanddev_get_ecc_engine(struct nand_device *nand)
 {
 	int engine_type;
 
-	/* Read the user desires in terms of ECC engine/configuration */
+	 
 	of_get_nand_ecc_user_config(nand);
 
 	engine_type = nand->ecc.user_conf.engine_type;
@@ -248,10 +182,7 @@ static int nanddev_get_ecc_engine(struct nand_device *nand)
 	return 0;
 }
 
-/**
- * nanddev_put_ecc_engine() - Dettach and put the in-use ECC engine
- * @nand: NAND device
- */
+ 
 static int nanddev_put_ecc_engine(struct nand_device *nand)
 {
 	switch (nand->ecc.ctx.conf.engine_type) {
@@ -268,10 +199,7 @@ static int nanddev_put_ecc_engine(struct nand_device *nand)
 	return 0;
 }
 
-/**
- * nanddev_find_ecc_configuration() - Find a suitable ECC configuration
- * @nand: NAND device
- */
+ 
 static int nanddev_find_ecc_configuration(struct nand_device *nand)
 {
 	int ret;
@@ -290,15 +218,12 @@ static int nanddev_find_ecc_configuration(struct nand_device *nand)
 	return 0;
 }
 
-/**
- * nanddev_ecc_engine_init() - Initialize an ECC engine for the chip
- * @nand: NAND device
- */
+ 
 int nanddev_ecc_engine_init(struct nand_device *nand)
 {
 	int ret;
 
-	/* Look for the ECC engine to use */
+	 
 	ret = nanddev_get_ecc_engine(nand);
 	if (ret) {
 		if (ret != -EPROBE_DEFER)
@@ -307,11 +232,11 @@ int nanddev_ecc_engine_init(struct nand_device *nand)
 		return ret;
 	}
 
-	/* No ECC engine requested */
+	 
 	if (!nand->ecc.engine)
 		return 0;
 
-	/* Configure the engine: balance user input and chip requirements */
+	 
 	ret = nanddev_find_ecc_configuration(nand);
 	if (ret) {
 		pr_err("No suitable ECC configuration\n");
@@ -324,10 +249,7 @@ int nanddev_ecc_engine_init(struct nand_device *nand)
 }
 EXPORT_SYMBOL_GPL(nanddev_ecc_engine_init);
 
-/**
- * nanddev_ecc_engine_cleanup() - Cleanup ECC engine initializations
- * @nand: NAND device
- */
+ 
 void nanddev_ecc_engine_cleanup(struct nand_device *nand)
 {
 	if (nand->ecc.engine)
@@ -337,17 +259,7 @@ void nanddev_ecc_engine_cleanup(struct nand_device *nand)
 }
 EXPORT_SYMBOL_GPL(nanddev_ecc_engine_cleanup);
 
-/**
- * nanddev_init() - Initialize a NAND device
- * @nand: NAND device
- * @ops: NAND device operations
- * @owner: NAND device owner
- *
- * Initializes a NAND device object. Consistency checks are done on @ops and
- * @nand->memorg. Also takes care of initializing the BBT.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 int nanddev_init(struct nand_device *nand, const struct nand_ops *ops,
 		 struct module *owner)
 {
@@ -387,12 +299,7 @@ int nanddev_init(struct nand_device *nand, const struct nand_ops *ops,
 }
 EXPORT_SYMBOL_GPL(nanddev_init);
 
-/**
- * nanddev_cleanup() - Release resources allocated in nanddev_init()
- * @nand: NAND device
- *
- * Basically undoes what has been done in nanddev_init().
- */
+ 
 void nanddev_cleanup(struct nand_device *nand)
 {
 	if (nanddev_bbt_is_initialized(nand))

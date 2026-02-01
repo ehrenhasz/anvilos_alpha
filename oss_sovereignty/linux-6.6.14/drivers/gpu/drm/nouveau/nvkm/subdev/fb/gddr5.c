@@ -1,34 +1,7 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "ram.h"
 
-/* binary driver only executes this path if the condition (a) is true
- * for any configuration (combination of rammap+ramcfg+timing) that
- * can be reached on a given card.  for now, we will execute the branch
- * unconditionally in the hope that a "false everywhere" in the bios
- * tables doesn't actually mean "don't touch this".
- */
+ 
 #define NOTE00(a) 1
 
 int
@@ -36,7 +9,7 @@ nvkm_gddr5_calc(struct nvkm_ram *ram, bool nuts)
 {
 	int pd, lf, xd, vh, vr, vo, l3;
 	int WL, CL, WR, at[2], dt, ds;
-	int rq = ram->freq < 1000000; /* XXX */
+	int rq = ram->freq < 1000000;  
 
 	xd = !ram->next->bios.ramcfg_DLLoff;
 
@@ -83,9 +56,7 @@ nvkm_gddr5_calc(struct nvkm_ram *ram, bool nuts)
 	ram->mr[1] |= (dt & 0x03) << 2;
 	ram->mr[1] |= (ds & 0x03) << 0;
 
-	/* this seems wrong, alternate field used for the broadcast
-	 * on nuts vs non-nuts configs..  meh, it matches for now.
-	 */
+	 
 	ram->mr1_nuts = ram->mr[1];
 	if (nuts) {
 		ram->mr[1] &= ~0x030;
@@ -101,7 +72,7 @@ nvkm_gddr5_calc(struct nvkm_ram *ram, bool nuts)
 	if (!vo)
 		vo = (ram->mr[6] & 0xff0) >> 4;
 	if (ram->mr[6] & 0x001)
-		pd = 1; /* binary driver does this.. bug? */
+		pd = 1;  
 	ram->mr[6] &= ~0xff1;
 	ram->mr[6] |= (vo & 0xff) << 4;
 	ram->mr[6] |= (pd & 0x01) << 0;

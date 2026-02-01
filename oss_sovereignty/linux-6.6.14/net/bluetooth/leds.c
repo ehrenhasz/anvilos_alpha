@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015, Heiner Kallweit <hkallweit1@gmail.com>
- */
+
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -85,7 +83,7 @@ err_alloc:
 
 void hci_leds_init(struct hci_dev *hdev)
 {
-	/* initialize power_led */
+	 
 	hdev->power_led = led_allocate_basic(hdev, power_activate, "power");
 }
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Realtek USB Memstick Card Interface driver
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/highmem.h>
@@ -63,22 +57,22 @@ static void ms_print_debug_regs(struct rtsx_usb_ms *host)
 	u16 i;
 	u8 *ptr;
 
-	/* Print MS host internal registers */
+	 
 	rtsx_usb_init_cmd(ucr);
 
-	/* MS_CFG to MS_INT_REG */
+	 
 	for (i = 0xFD40; i <= 0xFD44; i++)
 		rtsx_usb_add_cmd(ucr, READ_REG_CMD, i, 0, 0);
 
-	/* CARD_SHARE_MODE to CARD_GPIO */
+	 
 	for (i = 0xFD51; i <= 0xFD56; i++)
 		rtsx_usb_add_cmd(ucr, READ_REG_CMD, i, 0, 0);
 
-	/* CARD_PULL_CTLx */
+	 
 	for (i = 0xFD60; i <= 0xFD65; i++)
 		rtsx_usb_add_cmd(ucr, READ_REG_CMD, i, 0, 0);
 
-	/* CARD_DATA_SOURCE, CARD_SELECT, CARD_CLK_EN, CARD_PWR_CTL */
+	 
 	rtsx_usb_add_cmd(ucr, READ_REG_CMD, CARD_DATA_SOURCE, 0, 0);
 	rtsx_usb_add_cmd(ucr, READ_REG_CMD, CARD_SELECT, 0, 0);
 	rtsx_usb_add_cmd(ucr, READ_REG_CMD, CARD_CLK_EN, 0, 0);
@@ -628,7 +622,7 @@ out:
 	mutex_unlock(&ucr->dev_mutex);
 	pm_runtime_put_sync(ms_dev(host));
 
-	/* power-on delay */
+	 
 	if (param == MEMSTICK_POWER && value == MEMSTICK_POWER_ON) {
 		usleep_range(10000, 12000);
 
@@ -646,20 +640,7 @@ static int rtsx_usb_ms_suspend(struct device *dev)
 	struct rtsx_usb_ms *host = dev_get_drvdata(dev);
 	struct memstick_host *msh = host->msh;
 
-	/* Since we use rtsx_usb's resume callback to runtime resume its
-	 * children to implement remote wakeup signaling, this causes
-	 * rtsx_usb_ms' runtime resume callback runs after its suspend
-	 * callback:
-	 * rtsx_usb_ms_suspend()
-	 * rtsx_usb_resume()
-	 *   -> rtsx_usb_ms_runtime_resume()
-	 *     -> memstick_detect_change()
-	 *
-	 * rtsx_usb_suspend()
-	 *
-	 * To avoid this, skip runtime resume/suspend if system suspend is
-	 * underway.
-	 */
+	 
 
 	host->system_suspending = true;
 	memstick_suspend_host(msh);
@@ -677,7 +658,7 @@ static int rtsx_usb_ms_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int rtsx_usb_ms_runtime_suspend(struct device *dev)
@@ -705,7 +686,7 @@ static int rtsx_usb_ms_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops rtsx_usb_ms_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(rtsx_usb_ms_suspend, rtsx_usb_ms_resume)
@@ -727,14 +708,14 @@ static void rtsx_usb_ms_poll_card(struct work_struct *work)
 	pm_runtime_get_sync(ms_dev(host));
 	mutex_lock(&ucr->dev_mutex);
 
-	/* Check pending MS card changes */
+	 
 	err = rtsx_usb_read_register(ucr, CARD_INT_PEND, &val);
 	if (err) {
 		mutex_unlock(&ucr->dev_mutex);
 		goto poll_again;
 	}
 
-	/* Clear the pending */
+	 
 	rtsx_usb_write_register(ucr, CARD_INT_PEND,
 			XD_INT | MS_INT | SD_INT,
 			XD_INT | MS_INT | SD_INT);
@@ -828,9 +809,7 @@ static int rtsx_usb_ms_drv_remove(struct platform_device *pdev)
 	}
 	mutex_unlock(&host->host_mutex);
 
-	/* Balance possible unbalanced usage count
-	 * e.g. unconditional module removal
-	 */
+	 
 	if (pm_runtime_active(ms_dev(host)))
 		pm_runtime_put(ms_dev(host));
 
@@ -848,7 +827,7 @@ static struct platform_device_id rtsx_usb_ms_ids[] = {
 	{
 		.name = "rtsx_usb_ms",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, rtsx_usb_ms_ids);

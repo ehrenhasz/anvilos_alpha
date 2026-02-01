@@ -1,67 +1,6 @@
-/*
- * This program was written by Richard Verhoeven (NL:5482ZX35)
- * at the Eindhoven University of Technology. Email: rcb5@win.tue.nl
- *
- * Permission is granted to distribute, modify and use this program as long
- * as this comment is not removed or changed.
- *
- * THIS IS A MODIFIED VERSION.  IT WAS MODIFIED BY chet@po.cwru.edu FOR
- * USE BY BASH.
- */
+ 
 
-/*
- * man2html will add links to the converted manpages. The function add_links
- * is used for that. At the moment it will add links as follows, where
- *     indicates what should match to start with:
- * ^^^
- * Recognition           Item            Link
- * ----------------------------------------------------------
- * name(*)               Manpage         ../man?/name.*
- *     ^
- * name@hostname         Email address   mailto:name@hostname
- *     ^
- * method://string       URL             method://string
- *       ^^^
- * www.host.name         WWW server      http://www.host.name
- * ^^^^
- * ftp.host.name         FTP server      ftp://ftp.host.name
- * ^^^^
- * <file.h>              Include file    file:/usr/include/file.h
- *      ^^^
- *
- * Since man2html does not check if manpages, hosts or email addresses exist,
- * some links might not work. For manpages, some extra checks are performed
- * to make sure not every () pair creates a link. Also out of date pages
- * might point to incorrect places.
- *
- * The program will not allow users to get system specific files, such as
- * /etc/passwd. It will check that "man" is part of the specified file and
- * that  "/../" isn't. Even if someone manages to get such file, man2html will
- * handle it like a manpage and will usually not produce any output (or crash).
- *
- * If you find any bugs when normal manpages are converted, please report
- * them to me (rcb5@win.tue.nl) after you have checked that man(1) can handle
- * the manpage correct.
- *
- * Known bugs and missing features:
- *
- *  * Equations are not converted at all.
- *  * Tables are converted but some features are not possible in html.
- *  * The tabbing environment is converted by counting characters and adding
- *    spaces. This might go wrong (outside <PRE>)
- *  * Some pages look better if man2html works in troff mode, especially pages
- *    with tables. You can decide at compile time which made you want to use.
- *
- *    -DNROFF=0     troff mode
- *    -DNROFF=1     nroff mode   (default)
- *
- *    if you install both modes, you should compile with the correct CGIBASE.
- *  * Some manpages rely on the fact that troff/nroff is used to convert
- *    them and use features which are not descripted in the man manpages.
- *    (definitions, calculations, conditionals, requests). I can't guarantee
- *    that all these features work on all manpages. (I didn't have the
- *    time to look through all the available manpages.)
- */
+ 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -87,8 +26,8 @@
 #define SMALL_STR_MAX 100
 #define TINY_STR_MAX  10
 
-#define MAX_MAN_PATHS 100	/* Max number of directories */
-#define MAX_ZCATS     10	/* Max number of zcat style programs */
+#define MAX_MAN_PATHS 100	 
+#define MAX_ZCATS     10	 
 #define MAX_WORDLIST  100
 
 #ifndef EXIT_SUCCESS
@@ -109,17 +48,17 @@ static char th_version[128] = { '\0' };
 
 char   *signature = "<HR>\nThis document was created by man2html from %s.<BR>\nTime: %s\n";
 
-/* timeformat for signature */
+ 
 #define TIMEFORMAT "%d %B %Y %T %Z"
 
 char *manpage;
 
-/* BSD mandoc Bl/El lists to HTML list types */
+ 
 #define BL_DESC_LIST   1
 #define BL_BULLET_LIST 2
 #define BL_ENUM_LIST   4
 
-/* BSD mandoc Bd/Ed example(?) blocks */
+ 
 #define BD_LITERAL  1
 #define BD_INDENT   2
 
@@ -136,13 +75,13 @@ strerror(int e)
 	if (e > 0 && e < sys_nerr)
 		return (sys_errlist[e]);
 	else
-#endif				/* HAVE_SYS_ERRLIST */
+#endif				 
 	{
 		sprintf(emsg, "Unknown system error %d", e);
 		return (&emsg[0]);
 	}
 }
-#endif				/* !HAVE_STRERROR */
+#endif				 
 
 static char *
 strgrow(char *old, int len)
@@ -159,7 +98,7 @@ strgrow(char *old, int len)
 static char *
 stralloc(int len)
 {
-	/* allocate enough for len + NULL */
+	 
 	char   *new = malloc((len + 1) * sizeof(char));
 
 	if (!new) {
@@ -182,10 +121,7 @@ xmalloc (size_t size)
 	return ret;
 }
 
-/*
- * Some systems don't have strdup so lets use our own - which can also
- * check for out of memory.
- */
+ 
 static char *
 strduplicate(char *from)
 {
@@ -195,7 +131,7 @@ strduplicate(char *from)
 	return new;
 }
 
-/* Assumes space for n plus a null */
+ 
 static char *
 strmaxcpy(char *to, char *from, int n)
 {
@@ -221,7 +157,7 @@ strmaxcat(char *to, char *from, int n)
 	return to;
 }
 
-/* Assumes space for limit plus a null */
+ 
 static char *
 strlimitcpy(char *to, char *from, int n, int limit)
 {
@@ -232,10 +168,7 @@ strlimitcpy(char *to, char *from, int n, int limit)
 	return to;
 }
 
-/*
- * takes string and escapes all metacharacters.  should be used before
- * including string in system() or similar call.
- */
+ 
 static char *
 escape_input(char *str)
 {
@@ -270,10 +203,7 @@ usage(void)
 
 
 
-/*
- * below this you should not change anything unless you know a lot
- * about this program or about troff.
- */
+ 
 
 typedef struct STRDEF STRDEF;
 struct STRDEF {
@@ -312,7 +242,7 @@ static INTDEF standardint[] = {
 	{V('.', '$'), 0, 0, NULL},
 	{V('.', 'A'), NROFF, 0, NULL},
 	{V('.', 'T'), 1 - NROFF, 0, NULL},
-	{V('.', 'V'), 1, 0, NULL},	/* the me package tests for this */
+	{V('.', 'V'), 1, 0, NULL},	 
 {0, 0, 0, NULL}};
 
 static STRDEF standardstring[] = {
@@ -422,7 +352,7 @@ static STRDEF standardchar[] = {
 	{0, 0, NULL, NULL}
 };
 
-/* default: print code */
+ 
 
 
 static char eqndelimopen = 0, eqndelimclose = 0;
@@ -476,7 +406,7 @@ expand_char(int nr)
 	charb[0] = nr / 256;
 	charb[1] = nr % 256;
 	charb[2] = '\0';
-	if (charb[0] == '<') {	/* Fix up <= */
+	if (charb[0] == '<') {	 
 		charb[4] = charb[1];
 		strncpy(charb, "&lt;", 4);
 		charb[5] = '\0';
@@ -538,32 +468,16 @@ static int newline_for_fun = 0;
 static int output_possible = 0;
 static int out_length = 0;
 
-/*
- * Add the links to the output. At the moment the following are
- * recognized:
- * 
-#if 0
- *	name(*)                 -> ../man?/name.*
-#endif
- *	method://string         -> method://string
- *	www.host.name		-> http://www.host.name
- *	ftp.host.name           -> ftp://ftp.host.name
- *	name@host               -> mailto:name@host
- *	<name.h>                -> file:/usr/include/name.h   (guess)
- * 
- * Other possible links to add in the future:
- * 
- * /dir/dir/file  -> file:/dir/dir/file
- */
+ 
 static void
 add_links(char *c)
 {
 	int     i, j, nr;
 	char   *f, *g, *h;
-	char   *idtest[6];	/* url, mailto, www, ftp, manpage */
+	char   *idtest[6];	 
 
 	out_length += strlen(c);
-	/* search for (section) */
+	 
 	nr = 0;
 	idtest[0] = strstr(c + 1, "://");
 	idtest[1] = strchr(c + 1, '@');
@@ -583,7 +497,7 @@ add_links(char *c)
 			if (idtest[i] && (j < 0 || idtest[i] < idtest[j]))
 				j = i;
 		switch (j) {
-		case 5:	/* <name.h> */
+		case 5:	 
 			f = idtest[5];
 			h = f + 2;
 			g = f;
@@ -606,18 +520,18 @@ add_links(char *c)
 				c = f + 5;
 			}
 			break;
-		case 4:	/* manpage */
+		case 4:	 
 #if 0
 			f = idtest[j];
-			/* check section */
+			 
 			g = strchr(f, ')');
 			if (g && f - g < 6 && (isalnum(f[-1]) || f[-1] == '>') &&
 			    ((isdigit(f[1]) && f[1] != '0' &&
 			      (f[2] == ')' || (isalpha(f[2]) && f[3] == ')') || f[2] == 'X')) ||
 			   (f[2] == ')' && (f[1] == 'n' || f[1] == 'l')))) {
-				/* this might be a link */
+				 
 				h = f - 1;
-				/* skip html makeup */
+				 
 				while (h > c && *h == '>') {
 					while (h != c && *h != '<')
 						h--;
@@ -661,9 +575,9 @@ add_links(char *c)
 			idtest[4] = f - 1;
 			c = f;
 #endif
-			break;	/* manpage */
-		case 3:	/* ftp */
-		case 2:	/* www */
+			break;	 
+		case 3:	 
+		case 2:	 
 			g = f = idtest[j];
 			while (*g && (isalnum(*g) || *g == '_' || *g == '-' || *g == '+' ||
 				      *g == '.'))
@@ -690,7 +604,7 @@ add_links(char *c)
 				f[3] = '.';
 			}
 			break;
-		case 1:	/* mailto */
+		case 1:	 
 			g = f = idtest[1];
 			while (g > c && (isalnum(g[-1]) || g[-1] == '_' || g[-1] == '-' ||
 			      g[-1] == '+' || g[-1] == '.' || g[-1] == '%'))
@@ -721,7 +635,7 @@ add_links(char *c)
 				c = f;
 			}
 			break;
-		case 0:	/* url */
+		case 0:	 
 			g = f = idtest[0];
 			while (g > c && isalpha(g[-1]) && islower(g[-1]))
 				g--;
@@ -1460,7 +1374,7 @@ scan_table(char *c)
 	while (*h && *h != '\n')
 		h++;
 	if (h[-1] == ';') {
-		/* scan table options */
+		 
 		while (c < h) {
 			while (isspace(*c))
 				c++;
@@ -1502,14 +1416,14 @@ scan_table(char *c)
 		}
 		c = h + 1;
 	}
-	/* scan layout */
+	 
 	c = scan_format(c, &layout, &maxcol);
 	currow = layout;
 	next_row(currow);
 	curfield = layout->first;
 	i = 0;
 	while (!finished) {
-		/* search item */
+		 
 		h = c;
 		if ((*c == '_' || *c == '=') && (c[1] == itemsep || c[1] == '\n')) {
 			if (c[-1] == '\n' && c[1] == '\n') {
@@ -1585,10 +1499,7 @@ scan_table(char *c)
 			currow->prev = NULL;
 			clear_table(currow);
 		} else if (*c == '.' && c[-1] == '\n' && !isdigit(c[1])) {
-			/*
-			 * skip troff request inside table (usually only .sp
-			 * )
-			 */
+			 
 			while (*c++ != '\n');
 		} else {
 			h = c;
@@ -1630,7 +1541,7 @@ scan_table(char *c)
 			}
 		}
 	}
-	/* calculate colspan and rowspan */
+	 
 	currow = layout;
 	while (currow->next)
 		currow = currow->next;
@@ -1668,7 +1579,7 @@ scan_table(char *c)
 		}
 		currow = currow->prev;
 	}
-	/* produce html output */
+	 
 	if (center)
 		out_html("<CENTER>");
 	if (box == 2)
@@ -1784,9 +1695,7 @@ scan_expression(char *c, int *result)
 		c++;
 		value = 1 - NROFF;
 	} else if (*c == '\'' || *c == '"' || *c < ' ' || (*c == '\\' && c[1] == '(')) {
-		/*
-		 * ?string1?string2? test if string1 equals string2.
-		 */
+		 
 		char   *st1 = NULL, *st2 = NULL, *h;
 		char   *tcmp = NULL;
 		char    sep;
@@ -1858,9 +1767,9 @@ scan_expression(char *c, int *result)
 						}
 					}
 					if (isalpha(*c)) {
-						/* scale indicator */
+						 
 						switch (*c) {
-						case 'i':	/* inch -> 10pt */
+						case 'i':	 
 							value2 = value2 * 10 + (num * 10 + denum / 2) / denum;
 							num = 0;
 							break;
@@ -1878,7 +1787,7 @@ scan_expression(char *c, int *result)
 				c = scan_escape(c + 1);
 				value2 = intresult * sign;
 				if (isalpha(*c))
-					c++;	/* scale indicator */
+					c++;	 
 				opex = 1;
 				break;
 			case '-':
@@ -1982,7 +1891,7 @@ trans_char(char *c, char s, char t)
 	}
 }
 
-/* Remove \a from C in place.  Return modified C. */
+ 
 static char *
 unescape (char *c)
 {
@@ -2019,7 +1928,7 @@ fill_words(char *c, char *words[], int *n)
 				*sl = '\a';
 				skipspace = !skipspace;
 			} else if (*sl == '\a') {
-				/* handle already-translated " */
+				 
 				skipspace = !skipspace;
 			} else if (*sl == escapesym)
 				slash = 1;
@@ -2192,11 +2101,10 @@ static int ifelseval = 0;
 static char *
 scan_request(char *c)
 {
-	/* BSD Mandoc stuff */
-	static int mandoc_synopsis = 0;	/* True if we are in the synopsis
-					 * section */
-	static int mandoc_command = 0;	/* True if this is mandoc page */
-	static int mandoc_bd_options;	/* Only copes with non-nested Bd's */
+	 
+	static int mandoc_synopsis = 0;	 
+	static int mandoc_command = 0;	 
+	static int mandoc_bd_options;	 
 
 	int     i, j, mode = 0;
 	char   *h;
@@ -2216,8 +2124,8 @@ scan_request(char *c)
 	while (c[j] == ' ' || c[j] == '\t')
 		j++;
 	if (c[0] == escapesym) {
-		/* some pages use .\" .\$1 .\} */
-		/* .\$1 is too difficult/stupid */
+		 
+		 
 		if (c[1] == '$')
 			c = skip_till_newline(c);
 		else
@@ -2234,7 +2142,7 @@ scan_request(char *c)
 				buffer[buffpos] = '\0';
 				puts(buffer);
 			}
-			/* fprintf(stderr, "%s\n", c+2); */
+			 
 			exit(0);
 			break;
 		case V('d', 'i'):
@@ -2374,7 +2282,7 @@ scan_request(char *c)
 				}
 			}
 			c = skip_till_newline(c);
-			/* center next i lines */
+			 
 			if (i > 0) {
 				out_html("<CENTER>\n");
 				while (i && *c) {
@@ -2445,7 +2353,7 @@ scan_request(char *c)
 			c = skip_till_newline(c);
 			break;
 		case V('e', 'l'):
-			/* .el anything : else part of if else */
+			 
 			if (ifelseval) {
 				c = c + j;
 				c[-1] = '\n';
@@ -2454,13 +2362,9 @@ scan_request(char *c)
 				c = skip_till_newline(c + j);
 			break;
 		case V('i', 'e'):
-			/* .ie c anything : then part of if else */
+			 
 		case V('i', 'f'):
-			/*
-			 * .if c anything .if !c anything .if N anything .if
-			 * !N anything .if 'string1'string2' anything .if
-			 * !'string1'string2' anything
-			 */
+			 
 			c = c + j;
 			c = scan_expression(c, &i);
 			ifelseval = !i;
@@ -2582,10 +2486,7 @@ scan_request(char *c)
 				} else
 #endif
 				{
-					/*
-					 * this works alright, except for
-					 * section 3
-					 */
+					 
 					buf = read_man_page(h);
 					if (!buf) {
 
@@ -2622,11 +2523,7 @@ scan_request(char *c)
 			curpos = 0;
 			break;
 		case V('t', 'i'):
-			/*
-			 * while (itemdepth || dl_set[itemdepth]) {
-			 * out_html("</DL>\n"); if (dl_set[itemdepth])
-			 * dl_set[itemdepth]=0; else itemdepth--; }
-			 */
+			 
 			out_html("<BR>\n");
 			c = c + j;
 			c = scan_expression(c, &j);
@@ -2641,14 +2538,14 @@ scan_request(char *c)
 			while (*c != '\n')
 				c++;
 			*c = '\0';
-			/* fprintf(stderr,"%s\n", h); */
+			 
 			*c = '\n';
 			break;
 		case V('B', ' '):
 		case V('B', '\n'):
 		case V('I', ' '):
 		case V('I', '\n'):
-			/* parse one line in a certain font */
+			 
 			out_html(change_to_font(*c));
 			trans_char(c, '"', '\a');
 			c = c + j;
@@ -2662,9 +2559,8 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('O', 'P'):	/* groff manpages use this
-					 * construction */
-			/* .OP a b : [ <B>a</B> <I>b</I> ] */
+		case V('O', 'P'):	 
+			 
 			mode = 1;
 			c[0] = 'B';
 			c[1] = 'I';
@@ -2687,10 +2583,7 @@ scan_request(char *c)
 					c++;
 				sl = fill_words(c, wordlist, &words);
 				c = sl + 1;
-				/*
-				 * .BR name (section) indicates a link. It
-				 * will be added in the output routine.
-				 */
+				 
 				for (i = 0; i < words; i++) {
 					if (mode) {
 						out_html(" ");
@@ -2739,7 +2632,7 @@ scan_request(char *c)
 			}
 			out_html("<DT>");
 			c = skip_till_newline(c);
-			/* somewhere a definition ends with '.TP' */
+			 
 			if (!*c)
 				still_dd = 1;
 			else {
@@ -2749,7 +2642,7 @@ scan_request(char *c)
 			curpos = 0;
 			break;
 		case V('I', 'X'):
-			/* general index */
+			 
 			sl = fill_words(c + j, wordlist, &words);
 			c = sl + 1;
 			j = 4;
@@ -2768,11 +2661,7 @@ scan_request(char *c)
 #endif
 			out_html("<A NAME=\"");
 			out_html(idxlabel);
-			/*
-			 * this will not work in mosaic (due to a bug).
-			 * Adding '&nbsp;' between '>' and '<' solves it, but
-			 * creates some space. A normal space does not work.
-			 */
+			 
 			out_html("\"></A>");
 			break;
 		case V('L', 'P'):
@@ -2803,7 +2692,7 @@ scan_request(char *c)
 		case V('P', 'D'):
 			c = skip_till_newline(c);
 			break;
-		case V('R', 's'):	/* BSD mandoc */
+		case V('R', 's'):	 
 		case V('R', 'S'):
 			sl = fill_words(c + j, wordlist, &words);
 			j = 1;
@@ -2817,7 +2706,7 @@ scan_request(char *c)
 				curpos = 0;
 				break;
 			}
-		case V('R', 'e'):	/* BSD mandoc */
+		case V('R', 'e'):	 
 		case V('R', 'E'):
 			if (itemdepth > 0) {
 				if (dl_set[itemdepth])
@@ -2844,12 +2733,12 @@ scan_request(char *c)
 			c = scan_troff(c, 1, NULL);
 			out_html(change_to_size('0'));
 			break;
-		case V('S', 's'):	/* BSD mandoc */
+		case V('S', 's'):	 
 			mandoc_command = 1;
 		case V('S', 'S'):
 			mode = 1;
-		case V('S', 'h'):	/* BSD mandoc */
-			/* hack for fallthru from above */
+		case V('S', 'h'):	 
+			 
 			mandoc_command = !mode || mandoc_command;
 		case V('S', 'H'):
 			c = c + j;
@@ -2872,7 +2761,7 @@ scan_request(char *c)
 			add_to_index(mode, c);
 			out_html("<A NAME=\"");
 			out_html(label);
-			/* &nbsp; for mosaic users */
+			 
 			if (mode)
 				out_html("\">&nbsp;</A>\n<H4>");
 			else
@@ -2888,7 +2777,7 @@ scan_request(char *c)
 		case V('T', 'S'):
 			c = scan_table(c);
 			break;
-		case V('D', 't'):	/* BSD mandoc */
+		case V('D', 't'):	 
 			mandoc_command = 1;
 		case V('T', 'H'):
 			if (!output_possible) {
@@ -2946,12 +2835,9 @@ scan_request(char *c)
 			c = sl + 1;
 			break;
 		case V('r', 'm'):
-			/* .rm xx : Remove request, macro or string */
+			 
 		case V('r', 'n'):
-			/*
-			 * .rn xx yy : Rename request, macro or string xx to
-			 * yy
-			 */
+			 
 			{
 				STRDEF *de;
 
@@ -2980,16 +2866,13 @@ scan_request(char *c)
 				break;
 			}
 		case V('n', 'x'):
-			/* .nx filename : next file. */
+			 
 		case V('i', 'n'):
-			/* .in +-N : Indent */
+			 
 			c = skip_till_newline(c);
 			break;
 		case V('n', 'r'):
-			/*
-			 * .nr R +-N M: define and set number register R by
-			 * +-N; auto-increment by M
-			 */
+			 
 			{
 				INTDEF *intd;
 
@@ -3019,15 +2902,12 @@ scan_request(char *c)
 				break;
 			}
 		case V('a', 'm'):
-			/* .am xx yy : append to a macro. */
-			/* define or handle as .ig yy */
+			 
+			 
 			mode = 1;
 		case V('d', 'e'):
-			/*
-			 * .de xx yy : define or redefine macro xx; end at
-			 * .yy (..)
-			 */
-			/* define or handle as .ig yy */
+			 
+			 
 			{
 				STRDEF *de;
 				int     olen = 0;
@@ -3083,26 +2963,25 @@ scan_request(char *c)
 			}
 			c = skip_till_newline(c);
 			break;
-		case V('B', 'l'):	/* BSD mandoc */
+		case V('B', 'l'):	 
 			{
 				char    list_options[NULL_TERMINATED(MED_STR_MAX)];
 				char   *nl = strchr(c, '\n');
 
 				c = c + j;
-				if (dl_set[itemdepth]) {	/* These things can
-								 * nest. */
+				if (dl_set[itemdepth]) {	 
 					itemdepth++;
 				}
-				if (nl) {	/* Parse list options */
+				if (nl) {	 
 					strlimitcpy(list_options, c, nl - c, MED_STR_MAX);
 				}
-				if (strstr(list_options, "-bullet")) {	/* HTML Unnumbered List */
+				if (strstr(list_options, "-bullet")) {	 
 					dl_set[itemdepth] = BL_BULLET_LIST;
 					out_html("<UL>\n");
-				} else if (strstr(list_options, "-enum")) {	/* HTML Ordered List */
+				} else if (strstr(list_options, "-enum")) {	 
 					dl_set[itemdepth] = BL_ENUM_LIST;
 					out_html("<OL>\n");
-				} else {	/* HTML Descriptive List */
+				} else {	 
 					dl_set[itemdepth] = BL_DESC_LIST;
 					out_html("<DL COMPACT>\n");
 				}
@@ -3116,7 +2995,7 @@ scan_request(char *c)
 				c = skip_till_newline(c);
 				break;
 			}
-		case V('E', 'l'):	/* BSD mandoc */
+		case V('E', 'l'):	 
 			c = c + j;
 			if (dl_set[itemdepth] & BL_DESC_LIST) {
 				out_html("</DL>\n");
@@ -3137,7 +3016,7 @@ scan_request(char *c)
 			curpos = 0;
 			c = skip_till_newline(c);
 			break;
-		case V('I', 't'):	/* BSD mandoc */
+		case V('I', 't'):	 
 			c = c + j;
 			if (strncmp(c, "Xo", 2) == 0 && isspace(*(c + 2))) {
 				c = skip_till_newline(c);
@@ -3145,12 +3024,10 @@ scan_request(char *c)
 			if (dl_set[itemdepth] & BL_DESC_LIST) {
 				out_html("<DT>");
 				out_html(change_to_font('B'));
-				if (*c == '\n') {	/* Don't allow embedded
-							 * comms after a newline */
+				if (*c == '\n') {	 
 					c++;
 					c = scan_troff(c, 1, NULL);
-				} else {	/* Do allow embedded comms on
-						 * the same line. */
+				} else {	 
 					c = scan_troff_mandoc(c, 1, NULL);
 				}
 				out_html(change_to_font('R'));
@@ -3166,10 +3043,10 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('B', 'k'):	/* BSD mandoc */
-		case V('E', 'k'):	/* BSD mandoc */
-		case V('D', 'd'):	/* BSD mandoc */
-		case V('O', 's'):	/* BSD mandoc */
+		case V('B', 'k'):	 
+		case V('E', 'k'):	 
+		case V('D', 'd'):	 
+		case V('O', 's'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3181,7 +3058,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('B', 't'):	/* BSD mandoc */
+		case V('B', 't'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			out_html(" is currently in beta test.");
@@ -3190,7 +3067,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('B', 'x'):	/* BSD mandoc */
+		case V('B', 'x'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3202,7 +3079,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('D', 'l'):	/* BSD mandoc */
+		case V('D', 'l'):	 
 			c = c + j;
 			out_html(NEWLINE);
 			out_html("<BLOCKQUOTE>");
@@ -3217,8 +3094,8 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('B', 'd'):	/* BSD mandoc */
-			{	/* Seems like a kind of example/literal mode */
+		case V('B', 'd'):	 
+			{	 
 				char    bd_options[NULL_TERMINATED(MED_STR_MAX)];
 				char   *nl = strchr(c, '\n');
 
@@ -3227,8 +3104,7 @@ scan_request(char *c)
 					strlimitcpy(bd_options, c, nl - c, MED_STR_MAX);
 				}
 				out_html(NEWLINE);
-				mandoc_bd_options = 0;	/* Remember options for
-							 * terminating Bl */
+				mandoc_bd_options = 0;	 
 				if (strstr(bd_options, "-offset indent")) {
 					mandoc_bd_options |= BD_INDENT;
 					out_html("<BLOCKQUOTE>\n");
@@ -3247,7 +3123,7 @@ scan_request(char *c)
 				c = skip_till_newline(c);
 				break;
 			}
-		case V('E', 'd'):	/* BSD mandoc */
+		case V('E', 'd'):	 
 			if (mandoc_bd_options & BD_LITERAL) {
 				if (!fillout) {
 					out_html(change_to_font(0));
@@ -3261,7 +3137,7 @@ scan_request(char *c)
 			fillout = 1;
 			c = skip_till_newline(c);
 			break;
-		case V('B', 'e'):	/* BSD mandoc */
+		case V('B', 'e'):	 
 			c = c + j;
 			if (fillout)
 				out_html("<P>");
@@ -3272,13 +3148,9 @@ scan_request(char *c)
 			curpos = 0;
 			c = skip_till_newline(c);
 			break;
-		case V('X', 'r'):	/* BSD mandoc */
+		case V('X', 'r'):	 
 			{
-				/*
-				 * Translate xyz 1 to xyz(1) Allow for
-				 * multiple spaces.  Allow the section to be
-				 * missing.
-				 */
+				 
 				char    buff[NULL_TERMINATED(MED_STR_MAX)];
 				char   *bufptr;
 
@@ -3286,10 +3158,10 @@ scan_request(char *c)
 				bufptr = buff;
 				c = c + j;
 				if (*c == '\n')
-					c++;	/* Skip spaces */
+					c++;	 
 				while (isspace(*c) && *c != '\n')
 					c++;
-				while (isalnum(*c)) {	/* Copy the xyz part */
+				while (isalnum(*c)) {	 
 					*bufptr = *c;
 					bufptr++;
 					if (bufptr >= buff + MED_STR_MAX)
@@ -3297,9 +3169,8 @@ scan_request(char *c)
 					c++;
 				}
 				while (isspace(*c) && *c != '\n')
-					c++;	/* Skip spaces */
-				if (isdigit(*c)) {	/* Convert the number if
-							 * there is one */
+					c++;	 
+				if (isdigit(*c)) {	 
 					*bufptr = '(';
 					bufptr++;
 					if (bufptr < buff + MED_STR_MAX) {
@@ -3316,7 +3187,7 @@ scan_request(char *c)
 						}
 					}
 				}
-				while (*c != '\n') {	/* Copy the remainder */
+				while (*c != '\n') {	 
 					if (!isspace(*c)) {
 						*bufptr = *c;
 						bufptr++;
@@ -3335,7 +3206,7 @@ scan_request(char *c)
 					curpos = 0;
 			}
 			break;
-		case V('F', 'l'):	/* BSD mandoc */
+		case V('F', 'l'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			out_html("-");
@@ -3350,8 +3221,8 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('P', 'a'):	/* BSD mandoc */
-		case V('P', 'f'):	/* BSD mandoc */
+		case V('P', 'a'):	 
+		case V('P', 'f'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3363,7 +3234,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('P', 'p'):	/* BSD mandoc */
+		case V('P', 'p'):	 
 			if (fillout)
 				out_html("<P>\n");
 			else {
@@ -3373,7 +3244,7 @@ scan_request(char *c)
 			curpos = 0;
 			c = skip_till_newline(c);
 			break;
-		case V('D', 'q'):	/* BSD mandoc */
+		case V('D', 'q'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3387,7 +3258,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('O', 'p'):	/* BSD mandoc */
+		case V('O', 'p'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3403,7 +3274,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('O', 'o'):	/* BSD mandoc */
+		case V('O', 'o'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3416,7 +3287,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('O', 'c'):	/* BSD mandoc */
+		case V('O', 'c'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			c = scan_troff_mandoc(c, 1, NULL);
@@ -3427,7 +3298,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('P', 'q'):	/* BSD mandoc */
+		case V('P', 'q'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3441,8 +3312,8 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('Q', 'l'):	/* BSD mandoc */
-			{	/* Single quote first word in the line */
+		case V('Q', 'l'):	 
+			{	 
 				char   *sp;
 
 				trans_char(c, '"', '\a');
@@ -3450,22 +3321,17 @@ scan_request(char *c)
 				if (*c == '\n')
 					c++;
 				sp = c;
-				do {	/* Find first whitespace after the
-					 * first word that isn't a mandoc
-					 * macro */
+				do {	 
 					while (*sp && isspace(*sp))
 						sp++;
 					while (*sp && !isspace(*sp))
 						sp++;
 				} while (*sp && isupper(*(sp - 2)) && islower(*(sp - 1)));
 
-				/*
-				 * Use a newline to mark the end of text to
-				 * be quoted
-				 */
+				 
 				if (*sp)
 					*sp = '\n';
-				out_html("`");	/* Quote the text */
+				out_html("`");	 
 				c = scan_troff_mandoc(c, 1, NULL);
 				out_html("'");
 				out_html(NEWLINE);
@@ -3475,7 +3341,7 @@ scan_request(char *c)
 					curpos = 0;
 				break;
 			}
-		case V('S', 'q'):	/* BSD mandoc */
+		case V('S', 'q'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3489,13 +3355,12 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('A', 'r'):	/* BSD mandoc */
-			/* parse one line in italics */
+		case V('A', 'r'):	 
+			 
 			out_html(change_to_font('I'));
 			trans_char(c, '"', '\a');
 			c = c + j;
-			if (*c == '\n') {	/* An empty Ar means "file
-						 * ..." */
+			if (*c == '\n') {	 
 				out_html("file ...");
 			} else {
 				c = scan_troff_mandoc(c, 1, NULL);
@@ -3507,11 +3372,11 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('A', 'd'):	/* BSD mandoc */
-		case V('E', 'm'):	/* BSD mandoc */
-		case V('V', 'a'):	/* BSD mandoc */
-		case V('X', 'c'):	/* BSD mandoc */
-			/* parse one line in italics */
+		case V('A', 'd'):	 
+		case V('E', 'm'):	 
+		case V('V', 'a'):	 
+		case V('X', 'c'):	 
+			 
 			out_html(change_to_font('I'));
 			trans_char(c, '"', '\a');
 			c = c + j;
@@ -3525,7 +3390,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('N', 'd'):	/* BSD mandoc */
+		case V('N', 'd'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3538,28 +3403,21 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('N', 'm'):	/* BSD mandoc */
+		case V('N', 'm'):	 
 			{
 				static char mandoc_name[NULL_TERMINATED(SMALL_STR_MAX)] = "";
 
 				trans_char(c, '"', '\a');
 				c = c + j;
-				if (mandoc_synopsis) {	/* Break lines only in
-							 * the Synopsis. The
-							 * Synopsis section
-							 * seems to be treated
-							 * as a special case -
-							 * Bummer! */
-					static int count = 0;	/* Don't break on the
-								 * first Nm */
+				if (mandoc_synopsis) {	 
+					static int count = 0;	 
 
 					if (count) {
 						out_html("<BR>");
 					} else {
 						char   *end = strchr(c, '\n');
 
-						if (end) {	/* Remember the name for
-								 * later. */
+						if (end) {	 
 							strlimitcpy(mandoc_name, c, end - c, SMALL_STR_MAX);
 						}
 					}
@@ -3568,14 +3426,7 @@ scan_request(char *c)
 				out_html(change_to_font('B'));
 				while (*c == ' ' || *c == '\t')
 					c++;
-				if (*c == '\n') {	/* If Nm has no
-							 * argument, use one
-							 * from an earlier Nm
-							 * command that did have
-							 * one.  Hope there
-							 * aren't too many
-							 * commands that do
-							 * this. */
+				if (*c == '\n') {	 
 					out_html(mandoc_name);
 				} else {
 					c = scan_troff_mandoc(c, 1, NULL);
@@ -3588,13 +3439,13 @@ scan_request(char *c)
 					curpos = 0;
 				break;
 			}
-		case V('C', 'd'):	/* BSD mandoc */
-		case V('C', 'm'):	/* BSD mandoc */
-		case V('I', 'c'):	/* BSD mandoc */
-		case V('M', 's'):	/* BSD mandoc */
-		case V('O', 'r'):	/* BSD mandoc */
-		case V('S', 'y'):	/* BSD mandoc */
-			/* parse one line in bold */
+		case V('C', 'd'):	 
+		case V('C', 'm'):	 
+		case V('I', 'c'):	 
+		case V('M', 's'):	 
+		case V('O', 'r'):	 
+		case V('S', 'y'):	 
+			 
 			out_html(change_to_font('B'));
 			trans_char(c, '"', '\a');
 			c = c + j;
@@ -3608,14 +3459,14 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('D', 'v'):	/* BSD mandoc */
-		case V('E', 'v'):	/* BSD mandoc */
-		case V('F', 'r'):	/* BSD mandoc */
-		case V('L', 'i'):	/* BSD mandoc */
-		case V('N', 'o'):	/* BSD mandoc */
-		case V('N', 's'):	/* BSD mandoc */
-		case V('T', 'n'):	/* BSD mandoc */
-		case V('n', 'N'):	/* BSD mandoc */
+		case V('D', 'v'):	 
+		case V('E', 'v'):	 
+		case V('F', 'r'):	 
+		case V('L', 'i'):	 
+		case V('N', 'o'):	 
+		case V('N', 's'):	 
+		case V('T', 'n'):	 
+		case V('n', 'N'):	 
 			trans_char(c, '"', '\a');
 			c = c + j;
 			if (*c == '\n')
@@ -3629,7 +3480,7 @@ scan_request(char *c)
 			else
 				curpos = 0;
 			break;
-		case V('%', 'A'):	/* BSD mandoc biblio stuff */
+		case V('%', 'A'):	 
 		case V('%', 'D'):
 		case V('%', 'N'):
 		case V('%', 'O'):
@@ -3639,8 +3490,7 @@ scan_request(char *c)
 			c = c + j;
 			if (*c == '\n')
 				c++;
-			c = scan_troff(c, 1, NULL);	/* Don't allow embedded
-							 * mandoc coms */
+			c = scan_troff(c, 1, NULL);	 
 			if (fillout)
 				curpos++;
 			else
@@ -3654,8 +3504,7 @@ scan_request(char *c)
 			out_html(change_to_font('I'));
 			if (*c == '\n')
 				c++;
-			c = scan_troff(c, 1, NULL);	/* Don't allow embedded
-							 * mandoc coms */
+			c = scan_troff(c, 1, NULL);	 
 			out_html(change_to_font('R'));
 			if (fillout)
 				curpos++;
@@ -3663,7 +3512,7 @@ scan_request(char *c)
 				curpos = 0;
 			break;
 		default:
-			/* search macro database of self-defined macros */
+			 
 			owndef = defdef;
 			while (owndef && owndef->nr != i)
 				owndef = owndef->next;
@@ -3708,17 +3557,13 @@ scan_request(char *c)
 			} else if (mandoc_command &&
 				   ((isupper(*c) && islower(*(c + 1)))
 				    || (islower(*c) && isupper(*(c + 1))))
-				) {	/* Let through any BSD mandoc
-					 * commands that haven't been delt
-					 * with. I don't want to miss
-					 * anything out of the text. */
+				) {	 
 				char    buf[4];
 
 				strncpy(buf, c, 2);
 				buf[2] = ' ';
 				buf[3] = '\0';
-				out_html(buf);	/* Print the command (it
-						 * might just be text). */
+				out_html(buf);	 
 				c = c + j;
 				trans_char(c, '"', '\a');
 				if (*c == '\n')
@@ -3750,10 +3595,9 @@ flush(void)
 }
 
 static int contained_tab = 0;
-static int mandoc_line = 0;	/* Signals whether to look for embedded
-				 * mandoc commands. */
+static int mandoc_line = 0;	 
 
-/* san : stop at newline */
+ 
 static char *
 scan_troff(char *c, int san, char **result)
 {
@@ -3786,7 +3630,7 @@ scan_troff(char *c, int san, char **result)
 		scaninbuff = 1;
 	}
 	h = c;
-	/* start scanning */
+	 
 
 	while (*h && (!san || newline_for_fun || *h != '\n')) {
 
@@ -3804,10 +3648,7 @@ scan_troff(char *c, int san, char **result)
 			   && *(h) && isupper(*(h))
 			   && *(h + 1) && islower(*(h + 1))
 			   && *(h + 2) && isspace(*(h + 2))) {
-			/*
-			 * BSD embedded command eg ".It Fl Ar arg1 Fl Ar
-			 * arg2"
-			 */
+			 
 			FLUSHIBP;
 			h = scan_request(h);
 			if (san && h[-1] == '\n')
@@ -3822,10 +3663,7 @@ scan_troff(char *c, int san, char **result)
 			int     mx;
 
 			if (h[-1] == '\n' && still_dd && isalnum(*h)) {
-				/*
-				 * sometimes a .HP request is not followed by
-				 * a .br request
-				 */
+				 
 				FLUSHIBP;
 				out_html("<DD>");
 				curpos = 0;
@@ -3886,7 +3724,7 @@ scan_troff(char *c, int san, char **result)
 
 					contained_tab = 1;
 					FLUSHIBP;
-					/* like a typewriter, not like TeX */
+					 
 					tabstops[19] = curpos + 1;
 					while (curtab < maxtstop && tabstops[curtab] <= curpos)
 						curtab++;
@@ -3971,10 +3809,7 @@ scan_troff_mandoc(char *c, int san, char **result)
 	if (end > c + 2
 	    && ispunct(*(end - 1))
 	    && isspace(*(end - 2)) && *(end - 2) != '\n') {
-		/*
-		 * Don't format lonely punctuation E.g. in "xyz ," format the
-		 * xyz and then append the comma removing the space.
-		 */
+		 
 		*(end - 2) = '\n';
 		ret = scan_troff(c, san, result);
 		*(end - 2) = *(end - 1);
@@ -4069,7 +3904,7 @@ main(int argc, char **argv)
 
 	if (output_possible) {
 		outputPageFooter(th_version, th_datestr, th_page_and_sec);
-		/* &nbsp; for mosaic users */
+		 
 		fputs("<HR>\n<A NAME=\"index\">&nbsp;</A><H2>Index</H2>\n<DL>\n", stdout);
 		manidx[mip] = 0;
 		fputs(manidx, stdout);

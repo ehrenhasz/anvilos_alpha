@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8195-afe-clk.c  --  Mediatek 8195 afe clock ctrl
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -15,9 +9,9 @@
 #include "mt8195-audsys-clk.h"
 
 static const char *aud_clks[MT8195_CLK_NUM] = {
-	/* xtal */
+	 
 	[MT8195_CLK_XTAL_26M] = "clk26m",
-	/* divider */
+	 
 	[MT8195_CLK_TOP_APLL1] = "apll1_ck",
 	[MT8195_CLK_TOP_APLL2] = "apll2_ck",
 	[MT8195_CLK_TOP_APLL12_DIV0] = "apll12_div0",
@@ -25,7 +19,7 @@ static const char *aud_clks[MT8195_CLK_NUM] = {
 	[MT8195_CLK_TOP_APLL12_DIV2] = "apll12_div2",
 	[MT8195_CLK_TOP_APLL12_DIV3] = "apll12_div3",
 	[MT8195_CLK_TOP_APLL12_DIV9] = "apll12_div9",
-	/* mux */
+	 
 	[MT8195_CLK_TOP_A1SYS_HP_SEL] = "a1sys_hp_sel",
 	[MT8195_CLK_TOP_AUD_INTBUS_SEL] = "aud_intbus_sel",
 	[MT8195_CLK_TOP_AUDIO_H_SEL] = "audio_h_sel",
@@ -35,10 +29,10 @@ static const char *aud_clks[MT8195_CLK_NUM] = {
 	[MT8195_CLK_TOP_I2SO2_M_SEL] = "i2so2_m_sel",
 	[MT8195_CLK_TOP_I2SI1_M_SEL] = "i2si1_m_sel",
 	[MT8195_CLK_TOP_I2SI2_M_SEL] = "i2si2_m_sel",
-	/* clock gate */
+	 
 	[MT8195_CLK_INFRA_AO_AUDIO_26M_B] = "infra_ao_audio_26m_b",
 	[MT8195_CLK_SCP_ADSP_AUDIODSP] = "scp_adsp_audiodsp",
-	/* afe clock gate */
+	 
 	[MT8195_CLK_AUD_AFE] = "aud_afe",
 	[MT8195_CLK_AUD_APLL1_TUNER] = "aud_apll1_tuner",
 	[MT8195_CLK_AUD_APLL2_TUNER] = "aud_apll2_tuner",
@@ -96,7 +90,7 @@ struct mt8195_afe_tuner_cfg {
 	unsigned int upper_bound_shift;
 	unsigned int upper_bound_maskbit;
 	unsigned int upper_bound_default;
-	spinlock_t ctrl_lock; /* lock for apll tuner ctrl*/
+	spinlock_t ctrl_lock;  
 	int ref_cnt;
 };
 
@@ -397,7 +391,7 @@ int mt8195_afe_init_clock(struct mtk_base_afe *afe)
 		}
 	}
 
-	/* initial tuner */
+	 
 	for (i = 0; i < MT8195_AUD_PLL_NUM; i++) {
 		ret = mt8195_afe_init_apll_tuner(i);
 		if (ret) {
@@ -596,14 +590,14 @@ int mt8195_afe_enable_reg_rw_clk(struct mtk_base_afe *afe)
 	struct mt8195_afe_private *afe_priv = afe->platform_priv;
 	int i;
 	static const unsigned int clk_array[] = {
-		MT8195_CLK_SCP_ADSP_AUDIODSP, /* bus clock for infra */
-		MT8195_CLK_TOP_AUDIO_H_SEL, /* clock for ADSP bus */
-		MT8195_CLK_TOP_AUDIO_LOCAL_BUS_SEL, /* bus clock for DRAM access */
-		MT8195_CLK_TOP_AUD_INTBUS_SEL, /* bus clock for AFE SRAM access */
-		MT8195_CLK_INFRA_AO_AUDIO_26M_B, /* audio 26M clock */
-		MT8195_CLK_AUD_AFE, /* AFE HW master switch */
-		MT8195_CLK_AUD_A1SYS_HP, /* AFE HW clock*/
-		MT8195_CLK_AUD_A1SYS, /* AFE HW clock */
+		MT8195_CLK_SCP_ADSP_AUDIODSP,  
+		MT8195_CLK_TOP_AUDIO_H_SEL,  
+		MT8195_CLK_TOP_AUDIO_LOCAL_BUS_SEL,  
+		MT8195_CLK_TOP_AUD_INTBUS_SEL,  
+		MT8195_CLK_INFRA_AO_AUDIO_26M_B,  
+		MT8195_CLK_AUD_AFE,  
+		MT8195_CLK_AUD_A1SYS_HP,  
+		MT8195_CLK_AUD_A1SYS,  
 	};
 
 	for (i = 0; i < ARRAY_SIZE(clk_array); i++)

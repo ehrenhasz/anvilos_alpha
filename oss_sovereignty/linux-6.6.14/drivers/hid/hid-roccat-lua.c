@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Lua driver for Linux
- *
- * Copyright (c) 2012 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat Lua is a gamer mouse which cpi, button and light settings can be
- * configured.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>

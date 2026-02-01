@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 static int is_branch_cond(const char *cond)
 {

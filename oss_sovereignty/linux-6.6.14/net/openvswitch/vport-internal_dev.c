@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2012 Nicira, Inc.
- */
+
+ 
 
 #include <linux/if_vlan.h>
 #include <linux/kernel.h>
@@ -29,13 +27,13 @@ static struct internal_dev *internal_dev_priv(struct net_device *netdev)
 	return netdev_priv(netdev);
 }
 
-/* Called with rcu_read_lock_bh. */
+ 
 static netdev_tx_t
 internal_dev_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	int len, err;
 
-	/* store len value because skb can be freed inside ovs_vport_receive() */
+	 
 	len = skb->len;
 
 	rcu_read_lock();
@@ -151,7 +149,7 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
 	internal_dev = internal_dev_priv(vport->dev);
 	internal_dev->vport = vport;
 
-	/* Restrict bridge port to current netns. */
+	 
 	if (vport->port_no == OVSP_LOCAL)
 		vport->dev->features |= NETIF_F_NETNS_LOCAL;
 
@@ -184,7 +182,7 @@ static void internal_dev_destroy(struct vport *vport)
 	rtnl_lock();
 	dev_set_promiscuity(vport->dev, -1);
 
-	/* unregister_netdevice() waits for an RCU grace period. */
+	 
 	unregister_netdevice(vport->dev);
 	free_percpu(vport->dev->tstats);
 	rtnl_unlock();

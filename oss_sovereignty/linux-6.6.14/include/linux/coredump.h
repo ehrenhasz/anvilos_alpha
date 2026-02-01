@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_COREDUMP_H
 #define _LINUX_COREDUMP_H
 
@@ -30,10 +30,7 @@ struct coredump_params {
 	struct core_vma_metadata *vma_meta;
 };
 
-/*
- * These are the only things you should do on a core-file: use only these
- * functions to write out all the necessary info.
- */
+ 
 extern void dump_skip_to(struct coredump_params *cprm, unsigned long to);
 extern void dump_skip(struct coredump_params *cprm, size_t nr);
 extern int dump_emit(struct coredump_params *cprm, const void *addr, int nr);
@@ -51,4 +48,4 @@ extern void validate_coredump_safety(void);
 static inline void validate_coredump_safety(void) {}
 #endif
 
-#endif /* _LINUX_COREDUMP_H */
+#endif  

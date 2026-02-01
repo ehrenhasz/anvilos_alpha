@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * fam15h_power.c - AMD Family 15h processor power monitoring
- *
- * Copyright (c) 2011-2016 Advanced Micro Devices, Inc.
- * Author: Andreas Herrmann <herrmann.der.user@googlemail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -24,13 +19,13 @@ MODULE_DESCRIPTION("AMD Family 15h CPU processor power monitor");
 MODULE_AUTHOR("Andreas Herrmann <herrmann.der.user@googlemail.com>");
 MODULE_LICENSE("GPL");
 
-/* D18F3 */
+ 
 #define REG_NORTHBRIDGE_CAP		0xe8
 
-/* D18F4 */
+ 
 #define REG_PROCESSOR_TDP		0x1b8
 
-/* D18F5 */
+ 
 #define REG_TDP_RUNNING_AVERAGE		0xe0
 #define REG_TDP_LIMIT3			0xe8
 
@@ -38,7 +33,7 @@ MODULE_LICENSE("GPL");
 #define FAM15H_NUM_GROUPS		2
 #define MAX_CUS				8
 
-/* set maximum interval as 1 second */
+ 
 #define MAX_INTERVAL			1000
 
 #define PCI_DEVICE_ID_AMD_15H_M70H_NB_F4 0x15b4
@@ -51,13 +46,13 @@ struct fam15h_power_data {
 	unsigned int cpu_pwr_sample_ratio;
 	const struct attribute_group *groups[FAM15H_NUM_GROUPS];
 	struct attribute_group group;
-	/* maximum accumulated power of a compute unit */
+	 
 	u64 max_cu_acc_power;
-	/* accumulated power of the compute units */
+	 
 	u64 cu_acc_power[MAX_CUS];
-	/* performance timestamp counter */
+	 
 	u64 cpu_sw_pwr_ptsc[MAX_CUS];
-	/* online/offline status of current compute unit */
+	 
 	int cu_on[MAX_CUS];
 	unsigned long power_period;
 };
@@ -79,10 +74,7 @@ static ssize_t power1_input_show(struct device *dev,
 	pci_bus_read_config_dword(f4->bus, PCI_DEVFN(PCI_SLOT(f4->devfn), 5),
 				  REG_TDP_RUNNING_AVERAGE, &val);
 
-	/*
-	 * On Carrizo and later platforms, TdpRunAvgAccCap bit field
-	 * is extended to 4:31 from 4:25.
-	 */
+	 
 	if (is_carrizo_or_later()) {
 		running_avg_capture = val >> 4;
 		running_avg_capture = sign_extend32(running_avg_capture, 27);
@@ -96,10 +88,7 @@ static ssize_t power1_input_show(struct device *dev,
 	pci_bus_read_config_dword(f4->bus, PCI_DEVFN(PCI_SLOT(f4->devfn), 5),
 				  REG_TDP_LIMIT3, &val);
 
-	/*
-	 * On Carrizo and later platforms, ApmTdpLimit bit field
-	 * is extended to 16:31 from 16:28.
-	 */
+	 
 	if (is_carrizo_or_later())
 		tdp_limit = val >> 16;
 	else
@@ -110,13 +99,7 @@ static ssize_t power1_input_show(struct device *dev,
 	curr_pwr_watts -= running_avg_capture;
 	curr_pwr_watts *= data->tdp_to_watts;
 
-	/*
-	 * Convert to microWatt
-	 *
-	 * power is in Watt provided as fixed point integer with
-	 * scaling factor 1/(2^16).  For conversion we use
-	 * (10^6)/(2^16) = 15625/(2^10)
-	 */
+	 
 	curr_pwr_watts = (curr_pwr_watts * 15625) >> (10 + running_avg_range);
 	return sprintf(buf, "%u\n", (unsigned int) curr_pwr_watts);
 }
@@ -138,10 +121,7 @@ static void do_read_registers_on_cu(void *_data)
 
 	cpu = smp_processor_id();
 
-	/*
-	 * With the new x86 topology modelling, cpu core id actually
-	 * is compute unit id.
-	 */
+	 
 	cu = cpu_data(cpu).cpu_core_id;
 
 	rdmsrl_safe(MSR_F15H_CU_PWR_ACCUMULATOR, &data->cu_acc_power[cu]);
@@ -150,10 +130,7 @@ static void do_read_registers_on_cu(void *_data)
 	data->cu_on[cu] = 1;
 }
 
-/*
- * This function is only able to be called when CPUID
- * Fn8000_0007:EDX[12] is set.
- */
+ 
 static int read_registers(struct fam15h_power_data *data)
 {
 	int core, this_core;
@@ -168,12 +145,7 @@ static int read_registers(struct fam15h_power_data *data)
 
 	cpus_read_lock();
 
-	/*
-	 * Choose the first online core of each compute unit, and then
-	 * read their MSR value of power and ptsc in a single IPI,
-	 * because the MSR value of CPU core represent the compute
-	 * unit's.
-	 */
+	 
 	core = -1;
 
 	for_each_online_cpu(cpu) {
@@ -184,7 +156,7 @@ static int read_registers(struct fam15h_power_data *data)
 
 		core = this_core;
 
-		/* get any CPU on this compute unit */
+		 
 		cpumask_set_cpu(cpumask_any(topology_sibling_cpumask(cpu)), mask);
 	}
 
@@ -206,10 +178,7 @@ static ssize_t power1_average_show(struct device *dev,
 	int cu, cu_num, ret;
 	signed long leftover;
 
-	/*
-	 * With the new x86 topology modelling, x86_max_cores is the
-	 * compute unit number.
-	 */
+	 
 	cu_num = boot_cpu_data.x86_max_cores;
 
 	ret = read_registers(data);
@@ -230,7 +199,7 @@ static ssize_t power1_average_show(struct device *dev,
 		return 0;
 
 	for (cu = 0, avg_acc = 0; cu < cu_num; cu++) {
-		/* check if current compute unit is online */
+		 
 		if (data->cu_on[cu] == 0)
 			continue;
 
@@ -244,7 +213,7 @@ static ssize_t power1_average_show(struct device *dev,
 		jdelta[cu] *= data->cpu_pwr_sample_ratio * 1000;
 		do_div(jdelta[cu], tdelta);
 
-		/* the unit is microWatt */
+		 
 		avg_acc += jdelta[cu];
 	}
 
@@ -276,7 +245,7 @@ static ssize_t power1_average_interval_store(struct device *dev,
 	if (temp > MAX_INTERVAL)
 		return -EINVAL;
 
-	/* the interval value should be greater than 0 */
+	 
 	if (temp <= 0)
 		return -EINVAL;
 
@@ -298,7 +267,7 @@ static int fam15h_power_init_attrs(struct pci_dev *pdev,
 	     (c->x86_model >= 0x60 && c->x86_model <= 0x7f)))
 		n += 1;
 
-	/* check if processor supports accumulated power */
+	 
 	if (boot_cpu_has(X86_FEATURE_ACC_POWER))
 		n += 2;
 
@@ -338,12 +307,7 @@ static bool should_load_on_this_node(struct pci_dev *f4)
 	return true;
 }
 
-/*
- * Newer BKDG versions have an updated recommendation on how to properly
- * initialize the running average range (was: 0xE, now: 0x9). This avoids
- * counter saturations resulting in bogus power readings.
- * We correct this value ourselves to cope with older BIOSes.
- */
+ 
 static const struct pci_device_id affected_device[] = {
 	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) },
 	{ 0 }
@@ -353,10 +317,7 @@ static void tweak_runavg_range(struct pci_dev *pdev)
 {
 	u32 val;
 
-	/*
-	 * let this quirk apply only to the current version of the
-	 * northbridge, since future versions may change the behavior
-	 */
+	 
 	if (!pci_match_id(affected_device, pdev))
 		return;
 
@@ -400,13 +361,13 @@ static int fam15h_power_init_data(struct pci_dev *f4,
 	data->tdp_to_watts = ((val & 0x3ff) << 6) | ((val >> 10) & 0x3f);
 	tmp *= data->tdp_to_watts;
 
-	/* result not allowed to be >= 256W */
+	 
 	if ((tmp >> 16) >= 256)
 		dev_warn(&f4->dev,
 			 "Bogus value for ProcessorPwrWatts (processor_pwr_watts>=%u)\n",
 			 (unsigned int) (tmp >> 16));
 
-	/* convert to microWatt */
+	 
 	data->processor_pwr_watts = (tmp * 15625) >> 10;
 
 	ret = fam15h_power_init_attrs(f4, data);
@@ -414,15 +375,11 @@ static int fam15h_power_init_data(struct pci_dev *f4,
 		return ret;
 
 
-	/* CPUID Fn8000_0007:EDX[12] indicates to support accumulated power */
+	 
 	if (!boot_cpu_has(X86_FEATURE_ACC_POWER))
 		return 0;
 
-	/*
-	 * determine the ratio of the compute unit power accumulator
-	 * sample period to the PTSC counter period by executing CPUID
-	 * Fn8000_0007:ECX
-	 */
+	 
 	data->cpu_pwr_sample_ratio = cpuid_ecx(0x80000007);
 
 	if (rdmsrl_safe(MSR_F15H_CU_MAX_PWR_ACCUMULATOR, &tmp)) {
@@ -432,12 +389,7 @@ static int fam15h_power_init_data(struct pci_dev *f4,
 
 	data->max_cu_acc_power = tmp;
 
-	/*
-	 * Milliseconds are a reasonable interval for the measurement.
-	 * But it shouldn't set too long here, because several seconds
-	 * would cause the read function to hang. So set default
-	 * interval as 10 ms.
-	 */
+	 
 	data->power_period = 10;
 
 	return read_registers(data);
@@ -451,11 +403,7 @@ static int fam15h_power_probe(struct pci_dev *pdev,
 	struct device *hwmon_dev;
 	int ret;
 
-	/*
-	 * though we ignore every other northbridge, we still have to
-	 * do the tweaking on _each_ node in MCM processors as the counters
-	 * are working hand-in-hand
-	 */
+	 
 	tweak_runavg_range(pdev);
 
 	if (!should_load_on_this_node(pdev))

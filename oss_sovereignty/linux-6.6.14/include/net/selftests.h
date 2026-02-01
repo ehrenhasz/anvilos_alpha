@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_SELFTESTS
 #define _NET_SELFTESTS
 
@@ -28,4 +28,4 @@ static inline void net_selftest_get_strings(u8 *data)
 }
 
 #endif
-#endif /* _NET_SELFTESTS */
+#endif  

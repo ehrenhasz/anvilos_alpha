@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -27,7 +27,7 @@
 static size_t page_size;
 static int sizes[] = {
 	1, 537, 989, 1269, MT_GRANULE_SIZE - 1, MT_GRANULE_SIZE,
-	/* page size - 1*/ 0, /* page_size */ 0, /* page size + 1 */ 0
+	  0,   0,   0
 };
 
 static int check_mte_memory(char *ptr, int size, int mode, int tag_check)
@@ -72,7 +72,7 @@ static int check_anonymous_memory_mapping(int mem_type, int mode, int mapping, i
 
 		ptr = map_ptr + UNDERFLOW;
 		mte_initialize_current_context(mode, (uintptr_t)ptr, sizes[run]);
-		/* Only mte enabled memory will allow tag insertion */
+		 
 		ptr = mte_insert_tags((void *)ptr, sizes[run]);
 		if (!ptr || cur_mte_cxt.fault_valid == true) {
 			ksft_print_msg("FAIL: Insert tags on anonymous mmap memory\n");
@@ -109,7 +109,7 @@ static int check_file_memory_mapping(int mem_type, int mode, int mapping, int ta
 		}
 		ptr = map_ptr + UNDERFLOW;
 		mte_initialize_current_context(mode, (uintptr_t)ptr, sizes[run]);
-		/* Only mte enabled memory will allow tag insertion */
+		 
 		ptr = mte_insert_tags((void *)ptr, sizes[run]);
 		if (!ptr || cur_mte_cxt.fault_valid == true) {
 			ksft_print_msg("FAIL: Insert tags on file based memory\n");
@@ -143,7 +143,7 @@ static int check_clear_prot_mte_flag(int mem_type, int mode, int mapping)
 						 UNDERFLOW, OVERFLOW) != KSFT_PASS)
 			return KSFT_FAIL;
 		map_ptr = ptr - UNDERFLOW;
-		/* Try to clear PROT_MTE property and verify it by tag checking */
+		 
 		if (mprotect(map_ptr, map_size, prot_flag)) {
 			mte_free_memory_tag_range((void *)ptr, sizes[run], mem_type,
 						  UNDERFLOW, OVERFLOW);
@@ -166,7 +166,7 @@ static int check_clear_prot_mte_flag(int mem_type, int mode, int mapping)
 			return KSFT_FAIL;
 		}
 		map_ptr = ptr - UNDERFLOW;
-		/* Try to clear PROT_MTE property and verify it by tag checking */
+		 
 		if (mprotect(map_ptr, map_size, prot_flag)) {
 			ksft_print_msg("FAIL: mprotect not ignoring clear PROT_MTE property\n");
 			mte_free_memory_tag_range((void *)ptr, sizes[run], mem_type,
@@ -200,11 +200,11 @@ int main(int argc, char *argv[])
 	sizes[item - 2] = page_size;
 	sizes[item - 1] = page_size + 1;
 
-	/* Register signal handlers */
+	 
 	mte_register_signal(SIGBUS, mte_default_handler);
 	mte_register_signal(SIGSEGV, mte_default_handler);
 
-	/* Set test plan */
+	 
 	ksft_set_plan(22);
 
 	mte_enable_pstate_tco();

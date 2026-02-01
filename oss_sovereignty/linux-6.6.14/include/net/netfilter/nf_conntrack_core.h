@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header is used to share core functionality between the
- * standalone connection tracking module, and the compatibility layer's use
- * of connection tracking.
- *
- * 16 Dec 2003: Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
- *	- generalize L3 protocol dependent part.
- *
- * Derived from include/linux/netfiter_ipv4/ip_conntrack_core.h
- */
+ 
+ 
 
 #ifndef _NF_CONNTRACK_CORE_H
 #define _NF_CONNTRACK_CORE_H
@@ -18,9 +9,7 @@
 #include <net/netfilter/nf_conntrack_ecache.h>
 #include <net/netfilter/nf_conntrack_l4proto.h>
 
-/* This header is used to share core functionality between the
-   standalone connection tracking module, and the compatibility layer's use
-   of connection tracking. */
+ 
 
 unsigned int nf_conntrack_in(struct sk_buff *skb,
 			     const struct nf_hook_state *state);
@@ -43,7 +32,7 @@ void nf_conntrack_cleanup_end(void);
 bool nf_ct_invert_tuple(struct nf_conntrack_tuple *inverse,
 			const struct nf_conntrack_tuple *orig);
 
-/* Find a connection corresponding to a tuple. */
+ 
 struct nf_conntrack_tuple_hash *
 nf_conntrack_find_get(struct net *net,
 		      const struct nf_conntrack_zone *zone,
@@ -51,7 +40,7 @@ nf_conntrack_find_get(struct net *net,
 
 int __nf_conntrack_confirm(struct sk_buff *skb);
 
-/* Confirm a connection: returns NF_DROP if packet must be dropped. */
+ 
 static inline int nf_conntrack_confirm(struct sk_buff *skb)
 {
 	struct nf_conn *ct = (struct nf_conn *)skb_nfct(skb);
@@ -83,7 +72,7 @@ void nf_conntrack_lock(spinlock_t *lock);
 
 extern spinlock_t nf_conntrack_expect_lock;
 
-/* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
+ 
 
 static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
 {
@@ -100,4 +89,4 @@ int __nf_ct_change_timeout(struct nf_conn *ct, u64 cta_timeout);
 void __nf_ct_change_status(struct nf_conn *ct, unsigned long on, unsigned long off);
 int nf_ct_change_status_common(struct nf_conn *ct, unsigned int status);
 
-#endif /* _NF_CONNTRACK_CORE_H */
+#endif  

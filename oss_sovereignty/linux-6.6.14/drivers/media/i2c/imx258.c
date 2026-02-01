@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -19,50 +19,50 @@
 #define IMX258_MODE_STANDBY		0x00
 #define IMX258_MODE_STREAMING		0x01
 
-/* Chip ID */
+ 
 #define IMX258_REG_CHIP_ID		0x0016
 #define IMX258_CHIP_ID			0x0258
 
-/* V_TIMING internal */
+ 
 #define IMX258_VTS_30FPS		0x0c50
 #define IMX258_VTS_30FPS_2K		0x0638
 #define IMX258_VTS_30FPS_VGA		0x034c
 #define IMX258_VTS_MAX			0xffff
 
-/*Frame Length Line*/
+ 
 #define IMX258_FLL_MIN			0x08a6
 #define IMX258_FLL_MAX			0xffff
 #define IMX258_FLL_STEP			1
 #define IMX258_FLL_DEFAULT		0x0c98
 
-/* HBLANK control - read only */
+ 
 #define IMX258_PPL_DEFAULT		5352
 
-/* Exposure control */
+ 
 #define IMX258_REG_EXPOSURE		0x0202
 #define IMX258_EXPOSURE_MIN		4
 #define IMX258_EXPOSURE_STEP		1
 #define IMX258_EXPOSURE_DEFAULT		0x640
 #define IMX258_EXPOSURE_MAX		65535
 
-/* Analog gain control */
+ 
 #define IMX258_REG_ANALOG_GAIN		0x0204
 #define IMX258_ANA_GAIN_MIN		0
 #define IMX258_ANA_GAIN_MAX		480
 #define IMX258_ANA_GAIN_STEP		1
 #define IMX258_ANA_GAIN_DEFAULT		0x0
 
-/* Digital gain control */
+ 
 #define IMX258_REG_GR_DIGITAL_GAIN	0x020e
 #define IMX258_REG_R_DIGITAL_GAIN	0x0210
 #define IMX258_REG_B_DIGITAL_GAIN	0x0212
 #define IMX258_REG_GB_DIGITAL_GAIN	0x0214
 #define IMX258_DGTL_GAIN_MIN		0
-#define IMX258_DGTL_GAIN_MAX		4096	/* Max = 0xFFF */
+#define IMX258_DGTL_GAIN_MAX		4096	 
 #define IMX258_DGTL_GAIN_DEFAULT	1024
 #define IMX258_DGTL_GAIN_STEP		1
 
-/* HDR control */
+ 
 #define IMX258_REG_HDR			0x0220
 #define IMX258_HDR_ON			BIT(0)
 #define IMX258_REG_HDR_RATIO		0x0222
@@ -71,15 +71,15 @@
 #define IMX258_HDR_RATIO_STEP		1
 #define IMX258_HDR_RATIO_DEFAULT	0x0
 
-/* Test Pattern Control */
+ 
 #define IMX258_REG_TEST_PATTERN		0x0600
 
-/* Orientation */
+ 
 #define REG_MIRROR_FLIP_CONTROL		0x0101
 #define REG_CONFIG_MIRROR_FLIP		0x03
 #define REG_CONFIG_FLIP_TEST_PATTERN	0x02
 
-/* Input clock frequency in Hz */
+ 
 #define IMX258_INPUT_CLOCK_FREQ		19200000
 
 struct imx258_reg {
@@ -92,32 +92,32 @@ struct imx258_reg_list {
 	const struct imx258_reg *regs;
 };
 
-/* Link frequency config */
+ 
 struct imx258_link_freq_config {
 	u32 pixels_per_line;
 
-	/* PLL registers for this link frequency */
+	 
 	struct imx258_reg_list reg_list;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct imx258_mode {
-	/* Frame width */
+	 
 	u32 width;
-	/* Frame height */
+	 
 	u32 height;
 
-	/* V-timing */
+	 
 	u32 vts_def;
 	u32 vts_min;
 
-	/* Index of Link frequency config to be used */
+	 
 	u32 link_freq_index;
-	/* Default register values */
+	 
 	struct imx258_reg_list reg_list;
 };
 
-/* 4208x3118 needs 1267Mbps/lane, 4 lanes */
+ 
 static const struct imx258_reg mipi_data_rate_1267mbps[] = {
 	{ 0x0301, 0x05 },
 	{ 0x0303, 0x02 },
@@ -519,7 +519,7 @@ static const char * const imx258_test_pattern_menu[] = {
 	"Pseudorandom Sequence (PN9)",
 };
 
-/* Configurations for supported link frequencies */
+ 
 #define IMX258_LINK_FREQ_634MHZ	633600000ULL
 #define IMX258_LINK_FREQ_320MHZ	320000000ULL
 
@@ -528,10 +528,7 @@ enum {
 	IMX258_LINK_FREQ_640MBPS,
 };
 
-/*
- * pixel_rate = link_freq * data-rate * nr_of_lanes / bits_per_sample
- * data rate => double data rate; number of lanes => 4; bits per pixel => 10
- */
+ 
 static u64 link_freq_to_pixel_rate(u64 f)
 {
 	f *= 2 * 4;
@@ -540,13 +537,13 @@ static u64 link_freq_to_pixel_rate(u64 f)
 	return f;
 }
 
-/* Menu items for LINK_FREQ V4L2 control */
+ 
 static const s64 link_freq_menu_items[] = {
 	IMX258_LINK_FREQ_634MHZ,
 	IMX258_LINK_FREQ_320MHZ,
 };
 
-/* Link frequency configs */
+ 
 static const struct imx258_link_freq_config link_freq_configs[] = {
 	[IMX258_LINK_FREQ_1267MBPS] = {
 		.pixels_per_line = IMX258_PPL_DEFAULT,
@@ -564,7 +561,7 @@ static const struct imx258_link_freq_config link_freq_configs[] = {
 	},
 };
 
-/* Mode configs */
+ 
 static const struct imx258_mode supported_modes[] = {
 	{
 		.width = 4208,
@@ -606,23 +603,20 @@ struct imx258 {
 	struct media_pad pad;
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct imx258_mode *cur_mode;
 
-	/*
-	 * Mutex for serialized access:
-	 * Protect sensor module set pad format and start/stop streaming safely.
-	 */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
 	struct clk *clk;
@@ -633,7 +627,7 @@ static inline struct imx258 *to_imx258(struct v4l2_subdev *_sd)
 	return container_of(_sd, struct imx258, sd);
 }
 
-/* Read registers up to 2 at a time */
+ 
 static int imx258_read_reg(struct imx258 *imx258, u16 reg, u32 len, u32 *val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
@@ -645,13 +639,13 @@ static int imx258_read_reg(struct imx258 *imx258, u16 reg, u32 len, u32 *val)
 	if (len > 4)
 		return -EINVAL;
 
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = ARRAY_SIZE(addr_buf);
 	msgs[0].buf = addr_buf;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -666,7 +660,7 @@ static int imx258_read_reg(struct imx258 *imx258, u16 reg, u32 len, u32 *val)
 	return 0;
 }
 
-/* Write registers up to 2 at a time */
+ 
 static int imx258_write_reg(struct imx258 *imx258, u16 reg, u32 len, u32 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
@@ -683,7 +677,7 @@ static int imx258_write_reg(struct imx258 *imx258, u16 reg, u32 len, u32 val)
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int imx258_write_regs(struct imx258 *imx258,
 			     const struct imx258_reg *regs, u32 len)
 {
@@ -707,13 +701,13 @@ static int imx258_write_regs(struct imx258 *imx258,
 	return 0;
 }
 
-/* Open sub-device */
+ 
 static int imx258_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *try_fmt =
 		v4l2_subdev_get_try_format(sd, fh->state, 0);
 
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = supported_modes[0].width;
 	try_fmt->height = supported_modes[0].height;
 	try_fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
@@ -756,10 +750,7 @@ static int imx258_set_ctrl(struct v4l2_ctrl *ctrl)
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
 	int ret = 0;
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (pm_runtime_get_if_in_use(&client->dev) == 0)
 		return 0;
 
@@ -824,7 +815,7 @@ static int imx258_enum_mbus_code(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only one bayer order(GRBG) is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -903,7 +894,7 @@ static int imx258_set_pad_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&imx258->mutex);
 
-	/* Only one raw bayer(GBRG) order is supported */
+	 
 	fmt->format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
 	mode = v4l2_find_nearest_size(supported_modes,
@@ -920,7 +911,7 @@ static int imx258_set_pad_format(struct v4l2_subdev *sd,
 		link_freq = link_freq_menu_items[mode->link_freq_index];
 		pixel_rate = link_freq_to_pixel_rate(link_freq);
 		__v4l2_ctrl_s_ctrl_int64(imx258->pixel_rate, pixel_rate);
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = imx258->cur_mode->vts_def -
 			     imx258->cur_mode->height;
 		vblank_min = imx258->cur_mode->vts_min -
@@ -942,14 +933,14 @@ static int imx258_set_pad_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Start streaming */
+ 
 static int imx258_start_streaming(struct imx258 *imx258)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
 	const struct imx258_reg_list *reg_list;
 	int ret, link_freq_index;
 
-	/* Setup PLL */
+	 
 	link_freq_index = imx258->cur_mode->link_freq_index;
 	reg_list = &link_freq_configs[link_freq_index].reg_list;
 	ret = imx258_write_regs(imx258, reg_list->regs, reg_list->num_of_regs);
@@ -958,7 +949,7 @@ static int imx258_start_streaming(struct imx258 *imx258)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &imx258->cur_mode->reg_list;
 	ret = imx258_write_regs(imx258, reg_list->regs, reg_list->num_of_regs);
 	if (ret) {
@@ -966,7 +957,7 @@ static int imx258_start_streaming(struct imx258 *imx258)
 		return ret;
 	}
 
-	/* Set Orientation be 180 degree */
+	 
 	ret = imx258_write_reg(imx258, REG_MIRROR_FLIP_CONTROL,
 			       IMX258_REG_VALUE_08BIT, REG_CONFIG_MIRROR_FLIP);
 	if (ret) {
@@ -975,33 +966,30 @@ static int imx258_start_streaming(struct imx258 *imx258)
 		return ret;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(imx258->sd.ctrl_handler);
 	if (ret)
 		return ret;
 
-	/* set stream on register */
+	 
 	return imx258_write_reg(imx258, IMX258_REG_MODE_SELECT,
 				IMX258_REG_VALUE_08BIT,
 				IMX258_MODE_STREAMING);
 }
 
-/* Stop streaming */
+ 
 static int imx258_stop_streaming(struct imx258 *imx258)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
 	int ret;
 
-	/* set stream off register */
+	 
 	ret = imx258_write_reg(imx258, IMX258_REG_MODE_SELECT,
 		IMX258_REG_VALUE_08BIT, IMX258_MODE_STANDBY);
 	if (ret)
 		dev_err(&client->dev, "%s failed to set stream\n", __func__);
 
-	/*
-	 * Return success even if it was an error, as there is nothing the
-	 * caller can do about it.
-	 */
+	 
 	return 0;
 }
 
@@ -1045,10 +1033,7 @@ static int imx258_set_stream(struct v4l2_subdev *sd, int enable)
 		if (ret < 0)
 			goto err_unlock;
 
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = imx258_start_streaming(imx258);
 		if (ret)
 			goto err_rpm_put;
@@ -1101,7 +1086,7 @@ error:
 	return ret;
 }
 
-/* Verify chip ID */
+ 
 static int imx258_identify_module(struct imx258 *imx258)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
@@ -1145,7 +1130,7 @@ static const struct v4l2_subdev_internal_ops imx258_internal_ops = {
 	.open = imx258_open,
 };
 
-/* Initialize control handlers */
+ 
 static int imx258_init_controls(struct imx258 *imx258)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx258->sd);
@@ -1175,7 +1160,7 @@ static int imx258_init_controls(struct imx258 *imx258)
 	if (imx258->link_freq)
 		imx258->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* The driver only supports one bayer order and flips by default. */
+	 
 	hflip = v4l2_ctrl_new_std(ctrl_hdlr, &imx258_ctrl_ops,
 				  V4L2_CID_HFLIP, 1, 1, 1, 1);
 	if (hflip)
@@ -1188,7 +1173,7 @@ static int imx258_init_controls(struct imx258 *imx258)
 
 	pixel_rate_max = link_freq_to_pixel_rate(link_freq_menu_items[0]);
 	pixel_rate_min = link_freq_to_pixel_rate(link_freq_menu_items[1]);
-	/* By default, PIXEL_RATE is read only */
+	 
 	imx258->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &imx258_ctrl_ops,
 				V4L2_CID_PIXEL_RATE,
 				pixel_rate_min, pixel_rate_max,
@@ -1299,32 +1284,32 @@ static int imx258_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&imx258->sd, client, &imx258_subdev_ops);
 
-	/* Will be powered off via pm_runtime_idle */
+	 
 	ret = imx258_power_on(&client->dev);
 	if (ret)
 		return ret;
 
-	/* Check module identity */
+	 
 	ret = imx258_identify_module(imx258);
 	if (ret)
 		goto error_identify;
 
-	/* Set default mode to max resolution */
+	 
 	imx258->cur_mode = &supported_modes[0];
 
 	ret = imx258_init_controls(imx258);
 	if (ret)
 		goto error_identify;
 
-	/* Initialize subdev */
+	 
 	imx258->sd.internal_ops = &imx258_internal_ops;
 	imx258->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	imx258->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	imx258->pad.flags = MEDIA_PAD_FL_SOURCE;
 
 	ret = media_entity_pads_init(&imx258->sd.entity, 1, &imx258->pad);
@@ -1376,7 +1361,7 @@ static const struct dev_pm_ops imx258_pm_ops = {
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id imx258_acpi_ids[] = {
 	{ "SONY258A" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, imx258_acpi_ids);
@@ -1384,7 +1369,7 @@ MODULE_DEVICE_TABLE(acpi, imx258_acpi_ids);
 
 static const struct of_device_id imx258_dt_ids[] = {
 	{ .compatible = "sony,imx258" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx258_dt_ids);
 

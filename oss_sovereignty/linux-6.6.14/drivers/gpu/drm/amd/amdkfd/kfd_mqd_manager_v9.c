@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2016-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/printk.h>
 #include <linux/slab.h>
@@ -113,22 +92,7 @@ static struct kfd_mem_obj *allocate_mqd(struct kfd_node *node,
 	int retval;
 	struct kfd_mem_obj *mqd_mem_obj = NULL;
 
-	/* For V9 only, due to a HW bug, the control stack of a user mode
-	 * compute queue needs to be allocated just behind the page boundary
-	 * of its regular MQD buffer. So we allocate an enlarged MQD buffer:
-	 * the first page of the buffer serves as the regular MQD buffer
-	 * purpose and the remaining is for control stack. Although the two
-	 * parts are in the same buffer object, they need different memory
-	 * types: MQD part needs UC (uncached) as usual, while control stack
-	 * needs NC (non coherent), which is different from the UC type which
-	 * is used when control stack is allocated in user space.
-	 *
-	 * Because of all those, we use the gtt allocation function instead
-	 * of sub-allocation function for this enlarged MQD buffer. Moreover,
-	 * in order to achieve two memory types in a single buffer object, we
-	 * pass a special bo flag AMDGPU_GEM_CREATE_CP_MQD_GFX9 to instruct
-	 * amdgpu memory functions to do so.
-	 */
+	 
 	if (node->kfd->cwsr_enabled && (q->type == KFD_QUEUE_TYPE_COMPUTE)) {
 		mqd_mem_obj = kzalloc(sizeof(struct kfd_mem_obj), GFP_KERNEL);
 		if (!mqd_mem_obj)
@@ -190,9 +154,7 @@ static void init_mqd(struct mqd_manager *mm, void **mqd,
 			1 << CP_HQD_QUANTUM__QUANTUM_SCALE__SHIFT |
 			1 << CP_HQD_QUANTUM__QUANTUM_DURATION__SHIFT;
 
-	/* Set cp_hqd_hq_scheduler0 bit 14 to 1 to have the CP set up the
-	 * DISPATCH_PTR.  This is required for the kfd debugger
-	 */
+	 
 	m->cp_hqd_hq_status0 = 1 << 14;
 
 	if (q->format == KFD_QUEUE_FORMAT_AQL)
@@ -227,7 +189,7 @@ static int load_mqd(struct mqd_manager *mm, void *mqd,
 			uint32_t pipe_id, uint32_t queue_id,
 			struct queue_properties *p, struct mm_struct *mms)
 {
-	/* AQL write pointer counts in 64B packets, PM4/CP counts in dwords. */
+	 
 	uint32_t wptr_shift = (p->format == KFD_QUEUE_FORMAT_AQL ? 4 : 0);
 
 	return mm->dev->kfd2kgd->hqd_load(mm->dev->adev, mqd, pipe_id, queue_id,
@@ -265,17 +227,7 @@ static void update_mqd(struct mqd_manager *mm, void *mqd,
 		3 << CP_HQD_IB_CONTROL__MIN_IB_AVAIL_SIZE__SHIFT |
 		1 << CP_HQD_IB_CONTROL__IB_EXE_DISABLE__SHIFT;
 
-	/*
-	 * HW does not clamp this field correctly. Maximum EOP queue size
-	 * is constrained by per-SE EOP done signal count, which is 8-bit.
-	 * Limit is 0xFF EOP entries (= 0x7F8 dwords). CP will not submit
-	 * more than (EOP entry count - 1) so a queue size of 0x800 dwords
-	 * is safe, giving a maximum field value of 0xA.
-	 *
-	 * Also, do calculation only if EOP is used (size > 0), otherwise
-	 * the order_base_2 calculation provides incorrect result.
-	 *
-	 */
+	 
 	m->cp_hqd_eop_control = q->eop_ring_buffer_size ?
 		min(0xA, order_base_2(q->eop_ring_buffer_size / 4) - 1) : 0;
 
@@ -323,7 +275,7 @@ static int get_wave_state(struct mqd_manager *mm, void *mqd,
 	struct v9_mqd *m;
 	struct kfd_context_save_area_header header;
 
-	/* Control stack is located one page after MQD. */
+	 
 	void *mqd_ctl_stack = (void *)((uintptr_t)mqd + PAGE_SIZE);
 
 	m = get_mqd(mqd);
@@ -360,7 +312,7 @@ static void get_checkpoint_info(struct mqd_manager *mm, void *mqd, u32 *ctl_stac
 static void checkpoint_mqd(struct mqd_manager *mm, void *mqd, void *mqd_dst, void *ctl_stack_dst)
 {
 	struct v9_mqd *m;
-	/* Control stack is located one page after MQD. */
+	 
 	void *ctl_stack = (void *)((uintptr_t)mqd + PAGE_SIZE);
 
 	m = get_mqd(mqd);
@@ -388,7 +340,7 @@ static void restore_mqd(struct mqd_manager *mm, void **mqd,
 	if (gart_addr)
 		*gart_addr = addr;
 
-	/* Control stack is located one page after MQD. */
+	 
 	ctl_stack = (void *)((uintptr_t)*mqd + PAGE_SIZE);
 	memcpy(ctl_stack, ctl_stack_src, ctl_stack_size);
 
@@ -537,10 +489,10 @@ static void init_mqd_hiq_v9_4_3(struct mqd_manager *mm, void **mqd,
 					1 << CP_HQD_PQ_CONTROL__KMD_QUEUE__SHIFT;
 		m->cp_mqd_stride_size = kfd_hiq_mqd_stride(mm->dev);
 		if (xcc == 0) {
-			/* Set no_update_rptr = 0 in Master XCC */
+			 
 			m->cp_hqd_pq_control &= ~CP_HQD_PQ_CONTROL__NO_UPDATE_RPTR_MASK;
 
-			/* Set the MQD pointer and gart address to XCC0 MQD */
+			 
 			*mqd = m;
 			*gart_addr = xcc_gart_addr;
 		}
@@ -629,10 +581,7 @@ static void init_mqd_v9_4_3(struct mqd_manager *mm, void **mqd,
 
 		m->cp_mqd_stride_size = offset;
 
-		/*
-		 * Update the CWSR address for each XCC if CWSR is enabled
-		 * and CWSR area is allocated in thunk
-		 */
+		 
 		if (mm->dev->kfd->cwsr_enabled &&
 		    q->ctx_save_restore_area_address) {
 			xcc_ctx_save_restore_area_address =
@@ -653,7 +602,7 @@ static void init_mqd_v9_4_3(struct mqd_manager *mm, void **mqd,
 
 			switch (xcc) {
 			case 0:
-				/* Master XCC */
+				 
 				m->cp_hqd_pq_control &=
 					~CP_HQD_PQ_CONTROL__NO_UPDATE_RPTR_MASK;
 				break;
@@ -661,14 +610,14 @@ static void init_mqd_v9_4_3(struct mqd_manager *mm, void **mqd,
 				break;
 			}
 		} else {
-			/* PM4 Queue */
+			 
 			m->compute_current_logic_xcc_id = 0;
 			m->compute_tg_chunk_size = 0;
 			m->pm4_target_xcc_in_xcp = q->pm4_target_xcc;
 		}
 
 		if (xcc == 0) {
-			/* Set the MQD pointer and gart address to XCC0 MQD */
+			 
 			*mqd = m;
 			*gart_addr = xcc_gart_addr;
 		}
@@ -691,7 +640,7 @@ static void update_mqd_v9_4_3(struct mqd_manager *mm, void *mqd,
 		if (q->format == KFD_QUEUE_FORMAT_AQL) {
 			switch (xcc) {
 			case 0:
-				/* Master XCC */
+				 
 				m->cp_hqd_pq_control &=
 					~CP_HQD_PQ_CONTROL__NO_UPDATE_RPTR_MASK;
 				break;
@@ -700,7 +649,7 @@ static void update_mqd_v9_4_3(struct mqd_manager *mm, void *mqd,
 			}
 			m->compute_tg_chunk_size = 1;
 		} else {
-			/* PM4 Queue */
+			 
 			m->compute_current_logic_xcc_id = 0;
 			m->compute_tg_chunk_size = 0;
 			m->pm4_target_xcc_in_xcp = q->pm4_target_xcc;
@@ -740,7 +689,7 @@ static int load_mqd_v9_4_3(struct mqd_manager *mm, void *mqd,
 			uint32_t pipe_id, uint32_t queue_id,
 			struct queue_properties *p, struct mm_struct *mms)
 {
-	/* AQL write pointer counts in 64B packets, PM4/CP counts in dwords. */
+	 
 	uint32_t wptr_shift = (p->format == KFD_QUEUE_FORMAT_AQL ? 4 : 0);
 	uint32_t xcc_mask = mm->dev->xcc_mask;
 	int xcc_id, err, inst = 0;
@@ -786,14 +735,7 @@ static int get_wave_state_v9_4_3(struct mqd_manager *mm, void *mqd,
 		if (err)
 			break;
 
-		/*
-		 * Set the ctl_stack_used_size and save_area_used_size to
-		 * ctl_stack_used_size and save_area_used_size of XCC 0 when
-		 * passing the info the user-space.
-		 * For multi XCC, user-space would have to look at the header
-		 * info of each Control stack area to determine the control
-		 * stack size and save area used.
-		 */
+		 
 		if (xcc == 0) {
 			*ctl_stack_used_size = tmp_ctl_stack_used_size;
 			*save_area_used_size = tmp_save_area_used_size;

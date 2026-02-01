@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RomFS storage access routines
- *
- * Copyright © 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mtd/super.h>
@@ -17,9 +13,7 @@
 #ifdef CONFIG_ROMFS_ON_MTD
 #define ROMFS_MTD_READ(sb, ...) mtd_read((sb)->s_mtd, ##__VA_ARGS__)
 
-/*
- * read data from an romfs image on an MTD device
- */
+ 
 static int romfs_mtd_read(struct super_block *sb, unsigned long pos,
 			  void *buf, size_t buflen)
 {
@@ -30,9 +24,7 @@ static int romfs_mtd_read(struct super_block *sb, unsigned long pos,
 	return (ret < 0 || rlen != buflen) ? -EIO : 0;
 }
 
-/*
- * determine the length of a string in a romfs image on an MTD device
- */
+ 
 static ssize_t romfs_mtd_strnlen(struct super_block *sb,
 				 unsigned long pos, size_t maxlen)
 {
@@ -42,7 +34,7 @@ static ssize_t romfs_mtd_strnlen(struct super_block *sb,
 	size_t len;
 	int ret;
 
-	/* scan the string up to 16 bytes at a time */
+	 
 	while (maxlen > 0) {
 		segment = min_t(size_t, maxlen, 16);
 		ret = ROMFS_MTD_READ(sb, pos, segment, &len, buf);
@@ -59,10 +51,7 @@ static ssize_t romfs_mtd_strnlen(struct super_block *sb,
 	return n;
 }
 
-/*
- * compare a string to one in a romfs image on MTD
- * - return 1 if matched, 0 if differ, -ve if error
- */
+ 
 static int romfs_mtd_strcmp(struct super_block *sb, unsigned long pos,
 			    const char *str, size_t size)
 {
@@ -70,8 +59,7 @@ static int romfs_mtd_strcmp(struct super_block *sb, unsigned long pos,
 	size_t len, segment;
 	int ret;
 
-	/* scan the string up to 16 bytes at a time, and attempt to grab the
-	 * trailing NUL whilst we're at it */
+	 
 	buf[0] = 0xff;
 
 	while (size > 0) {
@@ -88,18 +76,16 @@ static int romfs_mtd_strcmp(struct super_block *sb, unsigned long pos,
 		str += len;
 	}
 
-	/* check the trailing NUL was */
+	 
 	if (buf[0])
 		return 0;
 
 	return 1;
 }
-#endif /* CONFIG_ROMFS_ON_MTD */
+#endif  
 
 #ifdef CONFIG_ROMFS_ON_BLOCK
-/*
- * read data from an romfs image on a block device
- */
+ 
 static int romfs_blk_read(struct super_block *sb, unsigned long pos,
 			  void *buf, size_t buflen)
 {
@@ -107,7 +93,7 @@ static int romfs_blk_read(struct super_block *sb, unsigned long pos,
 	unsigned long offset;
 	size_t segment;
 
-	/* copy the string up to blocksize bytes at a time */
+	 
 	while (buflen > 0) {
 		offset = pos & (ROMBSIZE - 1);
 		segment = min_t(size_t, buflen, ROMBSIZE - offset);
@@ -124,9 +110,7 @@ static int romfs_blk_read(struct super_block *sb, unsigned long pos,
 	return 0;
 }
 
-/*
- * determine the length of a string in romfs on a block device
- */
+ 
 static ssize_t romfs_blk_strnlen(struct super_block *sb,
 				 unsigned long pos, size_t limit)
 {
@@ -136,7 +120,7 @@ static ssize_t romfs_blk_strnlen(struct super_block *sb,
 	size_t segment;
 	u_char *buf, *p;
 
-	/* scan the string up to blocksize bytes at a time */
+	 
 	while (limit > 0) {
 		offset = pos & (ROMBSIZE - 1);
 		segment = min_t(size_t, limit, ROMBSIZE - offset);
@@ -156,10 +140,7 @@ static ssize_t romfs_blk_strnlen(struct super_block *sb,
 	return n;
 }
 
-/*
- * compare a string to one in a romfs image on a block device
- * - return 1 if matched, 0 if differ, -ve if error
- */
+ 
 static int romfs_blk_strcmp(struct super_block *sb, unsigned long pos,
 			    const char *str, size_t size)
 {
@@ -168,7 +149,7 @@ static int romfs_blk_strcmp(struct super_block *sb, unsigned long pos,
 	size_t segment;
 	bool matched, terminated = false;
 
-	/* compare string up to a block at a time */
+	 
 	while (size > 0) {
 		offset = pos & (ROMBSIZE - 1);
 		segment = min_t(size_t, size, ROMBSIZE - offset);
@@ -192,8 +173,7 @@ static int romfs_blk_strcmp(struct super_block *sb, unsigned long pos,
 	}
 
 	if (!terminated) {
-		/* the terminating NUL must be on the first byte of the next
-		 * block */
+		 
 		BUG_ON((pos & (ROMBSIZE - 1)) != 0);
 		bh = sb_bread(sb, pos >> ROMBSBITS);
 		if (!bh)
@@ -206,11 +186,9 @@ static int romfs_blk_strcmp(struct super_block *sb, unsigned long pos,
 
 	return 1;
 }
-#endif /* CONFIG_ROMFS_ON_BLOCK */
+#endif  
 
-/*
- * read data from the romfs image
- */
+ 
 int romfs_dev_read(struct super_block *sb, unsigned long pos,
 		   void *buf, size_t buflen)
 {
@@ -231,9 +209,7 @@ int romfs_dev_read(struct super_block *sb, unsigned long pos,
 	return -EIO;
 }
 
-/*
- * determine the length of a string in romfs
- */
+ 
 ssize_t romfs_dev_strnlen(struct super_block *sb,
 			  unsigned long pos, size_t maxlen)
 {
@@ -256,12 +232,7 @@ ssize_t romfs_dev_strnlen(struct super_block *sb,
 	return -EIO;
 }
 
-/*
- * compare a string to one in romfs
- * - the string to be compared to, str, may not be NUL-terminated; instead the
- *   string is of the specified size
- * - return 1 if matched, 0 if differ, -ve if error
- */
+ 
 int romfs_dev_strcmp(struct super_block *sb, unsigned long pos,
 		     const char *str, size_t size)
 {

@@ -1,20 +1,4 @@
-/* readlink -- display value of a symbolic link.
-   Copyright (C) 2002-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Dmitry V. Levin */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -25,15 +9,15 @@
 #include "canonicalize.h"
 #include "areadlink.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "readlink"
 
 #define AUTHORS proper_name ("Dmitry V. Levin")
 
-/* If true, do not output the trailing newline.  */
+ 
 static bool no_newline;
 
-/* If true, report error messages.  */
+ 
 static bool verbose;
 
 static struct option const longopts[] =

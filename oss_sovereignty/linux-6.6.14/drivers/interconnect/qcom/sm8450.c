@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Limited
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect.h>
@@ -1038,7 +1035,7 @@ static struct qcom_icc_node qns_ddrss_cfg = {
 	.channels = 1,
 	.buswidth = 4,
 	.num_links = 1,
-	//FIXME where is link
+	
 };
 
 static struct qcom_icc_node qns_mnoc_cfg = {

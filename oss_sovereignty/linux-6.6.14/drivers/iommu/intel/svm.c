@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2015 Intel Corporation.
- *
- * Authors: David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/mmu_notifier.h>
 #include <linux/sched.h>
@@ -237,7 +233,7 @@ static void intel_flush_svm_all(struct intel_svm *svm)
 	rcu_read_unlock();
 }
 
-/* Pages have been freed at this point */
+ 
 static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
 					struct mm_struct *mm,
 					unsigned long start, unsigned long end)
@@ -258,18 +254,7 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
 	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
 	struct intel_svm_dev *sdev;
 
-	/* This might end up being called from exit_mmap(), *before* the page
-	 * tables are cleared. And __mmu_notifier_release() will delete us from
-	 * the list of notifiers so that our invalidate_range() callback doesn't
-	 * get called when the page tables are cleared. So we need to protect
-	 * against hardware accessing those page tables.
-	 *
-	 * We do it by clearing the entry in the PASID table and then flushing
-	 * the IOTLB and the PASID table caches. This might upset hardware;
-	 * perhaps we'll want to point the PASID to a dummy PGD (like the zero
-	 * page) so that we end up taking a fault that the hardware really
-	 * *has* to handle gracefully without affecting other processes.
-	 */
+	 
 	rcu_read_lock();
 	list_for_each_entry_rcu(sdev, &svm->devs, list)
 		intel_pasid_tear_down_entry(sdev->iommu, sdev->dev,
@@ -300,10 +285,7 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
 	if (!svm)
 		goto out;
 
-	/*
-	 * If we found svm for the PASID, there must be at least one device
-	 * bond.
-	 */
+	 
 	if (WARN_ON(list_empty(&svm->devs)))
 		return -EINVAL;
 	sdev = svm_lookup_device_by_dev(svm, dev);
@@ -366,7 +348,7 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
 			sdev->qdep = 0;
 	}
 
-	/* Setup the pasid table: */
+	 
 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
 	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
 					    FLPT_DEFAULT_DID, sflags);
@@ -412,19 +394,14 @@ void intel_svm_remove_dev_pasid(struct device *dev, u32 pasid)
 			if (svm->notifier.ops)
 				mmu_notifier_unregister(&svm->notifier, mm);
 			pasid_private_remove(svm->pasid);
-			/*
-			 * We mandate that no page faults may be outstanding
-			 * for the PASID when intel_svm_unbind_mm() is called.
-			 * If that is not obeyed, subtle errors will happen.
-			 * Let's make them less subtle...
-			 */
+			 
 			memset(svm, 0x6b, sizeof(*svm));
 			kfree(svm);
 		}
 	}
 }
 
-/* Page request queue descriptor */
+ 
 struct page_req_dsc {
 	union {
 		struct {
@@ -461,21 +438,7 @@ static bool is_canonical_address(u64 addr)
 	return (((saddr << shift) >> shift) == saddr);
 }
 
-/**
- * intel_drain_pasid_prq - Drain page requests and responses for a pasid
- * @dev: target device
- * @pasid: pasid for draining
- *
- * Drain all pending page requests and responses related to @pasid in both
- * software and hardware. This is supposed to be called after the device
- * driver has stopped DMA, the pasid entry has been cleared, and both IOTLB
- * and DevTLB have been invalidated.
- *
- * It waits until all pending page requests for @pasid in the page fault
- * queue are completed by the prq handling thread. Then follow the steps
- * described in VT-d spec CH7.10 to drain all page requests and page
- * responses pending in the hardware.
- */
+ 
 void intel_drain_pasid_prq(struct device *dev, u32 pasid)
 {
 	struct device_domain_info *info;
@@ -501,10 +464,7 @@ void intel_drain_pasid_prq(struct device *dev, u32 pasid)
 	did = domain_id_iommu(domain, iommu);
 	qdep = pci_ats_queue_depth(pdev);
 
-	/*
-	 * Check and wait until all pending page requests in the queue are
-	 * handled by the prq handling thread.
-	 */
+	 
 prq_retry:
 	reinit_completion(&iommu->prq_complete);
 	tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
@@ -524,10 +484,7 @@ prq_retry:
 
 	iopf_queue_flush_dev(dev);
 
-	/*
-	 * Perform steps described in VT-d spec CH7.10 to drain page
-	 * requests and responses in hardware.
-	 */
+	 
 	memset(desc, 0, sizeof(desc));
 	desc[0].qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
 			QI_IWD_FENCE |
@@ -574,7 +531,7 @@ static int intel_svm_prq_report(struct intel_iommu *iommu, struct device *dev,
 	if (!dev || !dev_is_pci(dev))
 		return -ENODEV;
 
-	/* Fill in event data for device specific processing */
+	 
 	memset(&event, 0, sizeof(struct iommu_fault_event));
 	event.fault.type = IOMMU_FAULT_PAGE_REQ;
 	event.fault.prm.addr = (u64)desc->addr << VTD_PAGE_SHIFT;
@@ -589,21 +546,13 @@ static int intel_svm_prq_report(struct intel_iommu *iommu, struct device *dev,
 		event.fault.prm.flags |= IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
 	}
 	if (desc->priv_data_present) {
-		/*
-		 * Set last page in group bit if private data is present,
-		 * page response is required as it does for LPIG.
-		 * iommu_report_device_fault() doesn't understand this vendor
-		 * specific requirement thus we set last_page as a workaround.
-		 */
+		 
 		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
 		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
 		event.fault.prm.private_data[0] = desc->priv_data[0];
 		event.fault.prm.private_data[1] = desc->priv_data[1];
 	} else if (dmar_latency_enabled(iommu, DMAR_LATENCY_PRQ)) {
-		/*
-		 * If the private data fields are not used by hardware, use it
-		 * to monitor the prq handle latency.
-		 */
+		 
 		event.fault.prm.private_data[0] = ktime_to_ns(ktime_get());
 	}
 
@@ -619,13 +568,7 @@ static void handle_bad_prq_event(struct intel_iommu *iommu,
 	       iommu->name, ((unsigned long long *)req)[0],
 	       ((unsigned long long *)req)[1]);
 
-	/*
-	 * Per VT-d spec. v3.0 ch7.7, system software must
-	 * respond with page group response if private data
-	 * is present (PDP) or last page in group (LPIG) bit
-	 * is set. This is an additional VT-d feature beyond
-	 * PCI ATS spec.
-	 */
+	 
 	if (!req->lpig && !req->priv_data_present)
 		return;
 
@@ -657,10 +600,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
 	struct pci_dev *pdev;
 	u64 address;
 
-	/*
-	 * Clear PPR bit before reading head/tail registers, to ensure that
-	 * we get a new interrupt if needed.
-	 */
+	 
 	writel(DMA_PRS_PPR, iommu->reg + DMAR_PRS_REG);
 
 	tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
@@ -696,17 +636,14 @@ bad_req:
 			goto bad_req;
 		}
 
-		/* Drop Stop Marker message. No need for a response. */
+		 
 		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
 			goto prq_advance;
 
 		pdev = pci_get_domain_bus_and_slot(iommu->segment,
 						   PCI_BUS_NUM(req->rid),
 						   req->rid & 0xff);
-		/*
-		 * If prq is to be handled outside iommu driver via receiver of
-		 * the fault notifiers, we skip the page response here.
-		 */
+		 
 		if (!pdev)
 			goto bad_req;
 
@@ -723,10 +660,7 @@ prq_advance:
 
 	dmar_writeq(iommu->reg + DMAR_PQH_REG, tail);
 
-	/*
-	 * Clear the page request overflow bit and wake up all threads that
-	 * are waiting for the completion of this handling.
-	 */
+	 
 	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO) {
 		pr_info_ratelimited("IOMMU: %s: PRQ overflow detected\n",
 				    iommu->name);
@@ -785,12 +719,7 @@ int intel_svm_page_response(struct device *dev,
 		goto out;
 	}
 
-	/*
-	 * Per VT-d spec. v3.0 ch7.7, system software must respond
-	 * with page group response if private data is present (PDP)
-	 * or last page in group (LPIG) bit is set. This is an
-	 * additional VT-d requirement beyond PCI ATS spec.
-	 */
+	 
 	if (last_page || private_present) {
 		struct qi_desc desc;
 

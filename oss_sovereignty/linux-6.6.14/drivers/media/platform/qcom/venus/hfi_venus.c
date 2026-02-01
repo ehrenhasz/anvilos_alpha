@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -95,8 +92,8 @@ struct hfi_queue_header {
 				      ALIGNED_QDSS_SIZE, SZ_1M)
 
 struct mem_desc {
-	dma_addr_t da;	/* device address */
-	void *kva;	/* kernel virtual address */
+	dma_addr_t da;	 
+	void *kva;	 
 	u32 size;
 	unsigned long attrs;
 };
@@ -118,7 +115,7 @@ struct venus_hfi_device {
 	bool power_enabled;
 	bool suspended;
 	enum venus_state state;
-	/* serialize read / write to the shared memory */
+	 
 	struct mutex lock;
 	struct completion pwr_collapse_prep;
 	struct completion release_resource;
@@ -184,7 +181,7 @@ static int venus_write_queue(struct venus_hfi_device *hdev,
 	rd_idx = qhdr->read_idx;
 	wr_idx = qhdr->write_idx;
 	qsize = qhdr->q_size;
-	/* ensure rd/wr indices's are read from memory */
+	 
 	rmb();
 
 	if (wr_idx >= rd_idx)
@@ -194,13 +191,13 @@ static int venus_write_queue(struct venus_hfi_device *hdev,
 
 	if (empty_space <= dwords) {
 		qhdr->tx_req = 1;
-		/* ensure tx_req is updated in memory */
+		 
 		wmb();
 		return -ENOSPC;
 	}
 
 	qhdr->tx_req = 0;
-	/* ensure tx_req is updated in memory */
+	 
 	wmb();
 
 	new_wr_idx = wr_idx + dwords;
@@ -221,13 +218,13 @@ static int venus_write_queue(struct venus_hfi_device *hdev,
 		memcpy(queue->qmem.kva, packet + len, new_wr_idx << 2);
 	}
 
-	/* make sure packet is written before updating the write index */
+	 
 	wmb();
 
 	qhdr->write_idx = new_wr_idx;
 	*rx_req = qhdr->rx_req ? 1 : 0;
 
-	/* make sure write index is updated before an interrupt is raised */
+	 
 	mb();
 
 	return 0;
@@ -255,23 +252,17 @@ static int venus_read_queue(struct venus_hfi_device *hdev,
 	wr_idx = qhdr->write_idx;
 	qsize = qhdr->q_size;
 
-	/* make sure data is valid before using it */
+	 
 	rmb();
 
-	/*
-	 * Do not set receive request for debug queue, if set, Venus generates
-	 * interrupt for debug messages even when there is no response message
-	 * available. In general debug queue will not become full as it is being
-	 * emptied out for every interrupt from Venus. Venus will anyway
-	 * generates interrupt if it is full.
-	 */
+	 
 	if (type & HFI_CTRL_TO_HOST_MSG_Q)
 		recv_request = 1;
 
 	if (rd_idx == wr_idx) {
 		qhdr->rx_req = recv_request;
 		*tx_req = 0;
-		/* update rx_req field in memory */
+		 
 		wmb();
 		return -ENODATA;
 	}
@@ -299,21 +290,21 @@ static int venus_read_queue(struct venus_hfi_device *hdev,
 			memcpy(pkt + len, queue->qmem.kva, new_rd_idx << 2);
 		}
 	} else {
-		/* bad packet received, dropping */
+		 
 		new_rd_idx = qhdr->write_idx;
 		ret = -EBADMSG;
 	}
 
-	/* ensure the packet is read before updating read index */
+	 
 	rmb();
 
 	qhdr->read_idx = new_rd_idx;
-	/* ensure updating read index */
+	 
 	wmb();
 
 	rd_idx = qhdr->read_idx;
 	wr_idx = qhdr->write_idx;
-	/* ensure rd/wr indices are read from memory */
+	 
 	rmb();
 
 	if (rd_idx != wr_idx)
@@ -323,7 +314,7 @@ static int venus_read_queue(struct venus_hfi_device *hdev,
 
 	*tx_req = qhdr->tx_req ? 1 : 0;
 
-	/* ensure rx_req is stored to memory and tx_req is loaded from memory */
+	 
 	mb();
 
 	venus_dump_packet(hdev, pkt);
@@ -402,13 +393,10 @@ static int venus_iface_cmdq_write_nolock(struct venus_hfi_device *hdev,
 	}
 
 	if (sync) {
-		/*
-		 * Inform video hardware to raise interrupt for synchronous
-		 * commands
-		 */
+		 
 		queue = &hdev->queues[IFACEQ_MSG_IDX];
 		queue->qhdr->rx_req = 1;
-		/* ensure rx_req is updated in memory */
+		 
 		wmb();
 	}
 
@@ -524,10 +512,7 @@ static int venus_run(struct venus_hfi_device *hdev)
 	void __iomem *cpu_cs_base = hdev->core->cpu_cs_base;
 	int ret;
 
-	/*
-	 * Re-program all of the registers that get reset as a result of
-	 * regulator_disable() and _enable()
-	 */
+	 
 	venus_set_registers(hdev);
 
 	writel(hdev->ifaceq_table.da, cpu_cs_base + UC_REGION_ADDR);
@@ -610,12 +595,12 @@ skip_aon_mvp_noc:
 		return 0;
 	}
 
-	/* Halt AXI and AXI IMEM VBIF Access */
+	 
 	val = readl(vbif_base + VBIF_AXI_HALT_CTRL0);
 	val |= VBIF_AXI_HALT_CTRL0_HALT_REQ;
 	writel(val, vbif_base + VBIF_AXI_HALT_CTRL0);
 
-	/* Request for AXI bus port halt */
+	 
 	ret = readl_poll_timeout(vbif_base + VBIF_AXI_HALT_CTRL1, val,
 				 val & VBIF_AXI_HALT_CTRL1_HALT_ACK,
 				 POLL_INTERVAL_US,
@@ -820,10 +805,7 @@ static int venus_interface_queues_init(struct venus_hfi_device *hdev)
 	tbl_hdr->num_q = IFACEQ_NUM;
 	tbl_hdr->num_active_q = IFACEQ_NUM;
 
-	/*
-	 * Set receive request to zero on debug queue as there is no
-	 * need of interrupt from video hardware for debug messages
-	 */
+	 
 	queue = &hdev->queues[IFACEQ_DBG_IDX];
 	queue->qhdr->rx_req = 0;
 
@@ -836,7 +818,7 @@ static int venus_interface_queues_init(struct venus_hfi_device *hdev)
 		sfr->buf_size = ALIGNED_SFR_SIZE;
 	}
 
-	/* ensure table and queue header structs are settled in memory */
+	 
 	wmb();
 
 	return 0;
@@ -938,7 +920,7 @@ static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
 	if (ret)
 		dev_warn(dev, "setting fw debug msg ON failed (%d)\n", ret);
 
-	/* HFI_PROPERTY_SYS_IDLE_INDICATOR is not supported beyond 8916 (HFI V1) */
+	 
 	if (IS_V1(hdev->core)) {
 		ret = venus_sys_set_idle_message(hdev, false);
 		if (ret)
@@ -950,7 +932,7 @@ static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
 		dev_warn(dev, "setting hw power collapse ON failed (%d)\n",
 			 ret);
 
-	/* For specific venus core, it is mandatory to set the UBWC configuration */
+	 
 	if (res->ubwc_conf) {
 		ret = venus_sys_set_ubwc_config(hdev);
 		if (ret)
@@ -1041,10 +1023,7 @@ static void venus_sfr_print(struct venus_hfi_device *hdev)
 		return;
 
 	p = memchr(sfr->data, '\0', sfr->buf_size);
-	/*
-	 * SFR isn't guaranteed to be NULL terminated since SYS_ERROR indicates
-	 * that Venus is in the process of crashing.
-	 */
+	 
 	if (!p)
 		sfr->data[sfr->buf_size - 1] = '\0';
 
@@ -1585,14 +1564,7 @@ static int venus_suspend_3xx(struct venus_core *core)
 	if (ctrl_status & CPU_CS_SCIACMDARG0_PC_READY)
 		goto power_off;
 
-	/*
-	 * Power collapse sequence for Venus 3xx and 4xx versions:
-	 * 1. Check for ARM9 and video core to be idle by checking WFI bit
-	 *    (bit 0) in CPU status register and by checking Idle (bit 30) in
-	 *    Control status register for video core.
-	 * 2. Send a command to prepare for power collapse.
-	 * 3. Check for WFI and PC_READY bits.
-	 */
+	 
 	ret = readx_poll_timeout(venus_cpu_and_video_core_idle, hdev, val, val,
 				 1500, 100 * 1500);
 	if (ret) {
@@ -1742,17 +1714,14 @@ void venus_hfi_queues_reinit(struct venus_core *core)
 	tbl_hdr->num_q = IFACEQ_NUM;
 	tbl_hdr->num_active_q = IFACEQ_NUM;
 
-	/*
-	 * Set receive request to zero on debug queue as there is no
-	 * need of interrupt from video hardware for debug messages
-	 */
+	 
 	queue = &hdev->queues[IFACEQ_DBG_IDX];
 	queue->qhdr->rx_req = 0;
 
 	sfr = hdev->sfr.kva;
 	sfr->buf_size = ALIGNED_SFR_SIZE;
 
-	/* ensure table and queue header structs are settled in memory */
+	 
 	wmb();
 
 	mutex_unlock(&hdev->lock);

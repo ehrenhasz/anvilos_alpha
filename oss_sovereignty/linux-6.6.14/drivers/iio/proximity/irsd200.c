@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Murata IRS-D200 PIR sensor.
- *
- * Copyright (C) 2023 Axis Communications AB
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -22,79 +18,72 @@
 
 #define IRS_DRV_NAME "irsd200"
 
-/* Registers. */
-#define IRS_REG_OP		0x00	/* Operation mode. */
-#define IRS_REG_DATA_LO		0x02	/* Sensor data LSB. */
-#define IRS_REG_DATA_HI		0x03	/* Sensor data MSB. */
-#define IRS_REG_STATUS		0x04	/* Interrupt status. */
-#define IRS_REG_COUNT		0x05	/* Count of exceeding threshold. */
-#define IRS_REG_DATA_RATE	0x06	/* Output data rate. */
-#define IRS_REG_FILTER		0x07	/* High-pass and low-pass filter. */
-#define IRS_REG_INTR		0x09	/* Interrupt mode. */
-#define IRS_REG_NR_COUNT	0x0a	/* Number of counts before interrupt. */
-#define IRS_REG_THR_HI		0x0b	/* Upper threshold. */
-#define IRS_REG_THR_LO		0x0c	/* Lower threshold. */
-#define IRS_REG_TIMER_LO	0x0d	/* Timer setting LSB. */
-#define IRS_REG_TIMER_HI	0x0e	/* Timer setting MSB. */
+ 
+#define IRS_REG_OP		0x00	 
+#define IRS_REG_DATA_LO		0x02	 
+#define IRS_REG_DATA_HI		0x03	 
+#define IRS_REG_STATUS		0x04	 
+#define IRS_REG_COUNT		0x05	 
+#define IRS_REG_DATA_RATE	0x06	 
+#define IRS_REG_FILTER		0x07	 
+#define IRS_REG_INTR		0x09	 
+#define IRS_REG_NR_COUNT	0x0a	 
+#define IRS_REG_THR_HI		0x0b	 
+#define IRS_REG_THR_LO		0x0c	 
+#define IRS_REG_TIMER_LO	0x0d	 
+#define IRS_REG_TIMER_HI	0x0e	 
 
-/* Interrupt status bits. */
-#define IRS_INTR_DATA		0	/* Data update. */
-#define IRS_INTR_TIMER		1	/* Timer expiration. */
-#define IRS_INTR_COUNT_THR_AND	2	/* Count "AND" threshold. */
-#define IRS_INTR_COUNT_THR_OR	3	/* Count "OR" threshold. */
+ 
+#define IRS_INTR_DATA		0	 
+#define IRS_INTR_TIMER		1	 
+#define IRS_INTR_COUNT_THR_AND	2	 
+#define IRS_INTR_COUNT_THR_OR	3	 
 
-/* Operation states. */
+ 
 #define IRS_OP_ACTIVE		0x00
 #define IRS_OP_SLEEP		0x01
 
-/*
- * Quantization scale value for threshold. Used for conversion from/to register
- * value.
- */
+ 
 #define IRS_THR_QUANT_SCALE	128
 
 #define IRS_UPPER_COUNT(count)	FIELD_GET(GENMASK(7, 4), count)
 #define IRS_LOWER_COUNT(count)	FIELD_GET(GENMASK(3, 0), count)
 
-/* Index corresponds to the value of IRS_REG_DATA_RATE register. */
+ 
 static const int irsd200_data_rates[] = {
 	50,
 	100,
 };
 
-/* Index corresponds to the (field) value of IRS_REG_FILTER register. */
+ 
 static const unsigned int irsd200_lp_filter_freq[] = {
 	10,
 	7,
 };
 
-/*
- * Index corresponds to the (field) value of IRS_REG_FILTER register. Note that
- * this represents a fractional value (e.g the first value corresponds to 3 / 10
- * = 0.3 Hz).
- */
+ 
 static const unsigned int irsd200_hp_filter_freq[][2] = {
 	{ 3, 10 },
 	{ 5, 10 },
 };
 
-/* Register fields. */
+ 
 enum irsd200_regfield {
-	/* Data interrupt. */
+	 
 	IRS_REGF_INTR_DATA,
-	/* Timer interrupt. */
+	 
 	IRS_REGF_INTR_TIMER,
-	/* AND count threshold interrupt. */
+	 
 	IRS_REGF_INTR_COUNT_THR_AND,
-	/* OR count threshold interrupt. */
+	 
 	IRS_REGF_INTR_COUNT_THR_OR,
 
-	/* Low-pass filter frequency. */
+	 
 	IRS_REGF_LP_FILTER,
-	/* High-pass filter frequency. */
+	 
 	IRS_REGF_HP_FILTER,
 
-	/* Sentinel value. */
+	 
 	IRS_REGF_MAX
 };
 
@@ -129,7 +118,7 @@ static int irsd200_setup(struct irsd200_data *data)
 	unsigned int val;
 	int ret;
 
-	/* Disable all interrupt sources. */
+	 
 	ret = regmap_write(data->regmap, IRS_REG_INTR, 0);
 	if (ret) {
 		dev_err(data->dev, "Could not set interrupt sources (%d)\n",
@@ -137,14 +126,14 @@ static int irsd200_setup(struct irsd200_data *data)
 		return ret;
 	}
 
-	/* Set operation to active. */
+	 
 	ret = regmap_write(data->regmap, IRS_REG_OP, IRS_OP_ACTIVE);
 	if (ret) {
 		dev_err(data->dev, "Could not set operation mode (%d)\n", ret);
 		return ret;
 	}
 
-	/* Clear threshold count. */
+	 
 	ret = regmap_read(data->regmap, IRS_REG_COUNT, &val);
 	if (ret) {
 		dev_err(data->dev, "Could not clear threshold count (%d)\n",
@@ -152,7 +141,7 @@ static int irsd200_setup(struct irsd200_data *data)
 		return ret;
 	}
 
-	/* Clear status. */
+	 
 	ret = regmap_write(data->regmap, IRS_REG_STATUS, 0x0f);
 	if (ret) {
 		dev_err(data->dev, "Could not clear status (%d)\n", ret);
@@ -170,7 +159,7 @@ static int irsd200_read_threshold(struct irsd200_data *data,
 	int scale;
 	int ret;
 
-	/* Set quantization scale. */
+	 
 	if (dir == IIO_EV_DIR_RISING) {
 		scale = IRS_THR_QUANT_SCALE;
 		reg = IRS_REG_THR_HI;
@@ -200,7 +189,7 @@ static int irsd200_write_threshold(struct irsd200_data *data,
 	int scale;
 	int ret;
 
-	/* Set quantization scale. */
+	 
 	if (dir == IIO_EV_DIR_RISING) {
 		if (val < 0)
 			return -ERANGE;
@@ -286,11 +275,7 @@ static int irsd200_write_data_rate(struct irsd200_data *data, int val)
 		return ret;
 	}
 
-	/*
-	 * Data sheet says the device needs 3 seconds of settling time. The
-	 * device operates normally during this period though. This is more of a
-	 * "guarantee" than trying to prevent other user space reads/writes.
-	 */
+	 
 	ssleep(3);
 
 	return 0;
@@ -331,10 +316,10 @@ static int irsd200_write_timer(struct irsd200_data *data, int val, int val2)
 	if (ret)
 		return ret;
 
-	/* Quantize from seconds. */
+	 
 	regval = val * data_rate + (val2 * data_rate) / 1000000;
 
-	/* Value is 10 bits. */
+	 
 	if (regval >= BIT(10))
 		return -ERANGE;
 
@@ -371,17 +356,14 @@ static int irsd200_write_nr_count(struct irsd200_data *data, int val)
 	unsigned int regval;
 	int ret;
 
-	/* A value of zero means that IRS_REG_STATUS is never set. */
+	 
 	if (val <= 0 || val >= 8)
 		return -ERANGE;
 
 	regval = val;
 
 	if (regval >= 2) {
-		/*
-		 * According to the data sheet, timer must be also set in this
-		 * case (i.e. be non-zero). Check and enforce that.
-		 */
+		 
 		ret = irsd200_read_timer(data, &val, &val);
 		if (ret)
 			return ret;
@@ -467,7 +449,7 @@ static int irsd200_write_hp_filter(struct irsd200_data *data, int val, int val2)
 	size_t idx;
 	int ret;
 
-	/* Truncate fractional part to one digit. */
+	 
 	val2 /= 100000;
 
 	for (idx = 0; idx < ARRAY_SIZE(irsd200_hp_filter_freq); ++idx) {
@@ -657,7 +639,7 @@ static int irsd200_write_event_config(struct iio_dev *indio_dev,
 
 	switch (type) {
 	case IIO_EV_TYPE_THRESH:
-		/* Clear the count register (by reading from it). */
+		 
 		ret = regmap_read(data->regmap, IRS_REG_COUNT, &tmp);
 		if (ret)
 			return ret;
@@ -703,11 +685,7 @@ static irqreturn_t irsd200_irq_thread(int irq, void *dev_id)
 
 	if (status & BIT(IRS_INTR_COUNT_THR_OR) &&
 	    source & BIT(IRS_INTR_COUNT_THR_OR)) {
-		/*
-		 * The register value resets to zero after reading. We therefore
-		 * need to read once and manually extract the lower and upper
-		 * count register fields.
-		 */
+		 
 		ret = regmap_read(data->regmap, IRS_REG_COUNT, &count);
 		if (ret)
 			dev_err(data->dev, "Could not read count (%d)\n", ret);
@@ -715,12 +693,7 @@ static irqreturn_t irsd200_irq_thread(int irq, void *dev_id)
 		upper_count = IRS_UPPER_COUNT(count);
 		lower_count = IRS_LOWER_COUNT(count);
 
-		/*
-		 * We only check the OR mode to be able to push events for
-		 * rising and falling thresholds. AND mode is covered when both
-		 * upper and lower count is non-zero, and is signaled with
-		 * IIO_EV_DIR_EITHER.
-		 */
+		 
 		if (upper_count && !lower_count)
 			dir = IIO_EV_DIR_RISING;
 		else if (!upper_count && lower_count)
@@ -733,13 +706,7 @@ static irqreturn_t irsd200_irq_thread(int irq, void *dev_id)
 						    IIO_EV_TYPE_THRESH, dir),
 			       iio_get_time_ns(indio_dev));
 
-		/*
-		 * The OR mode will always trigger when the AND mode does, but
-		 * not vice versa. However, it seems like the AND bit needs to
-		 * be cleared if data capture _and_ threshold count interrupts
-		 * are desirable, even though it hasn't explicitly been selected
-		 * (with IRS_REG_INTR). Either way, it doesn't hurt...
-		 */
+		 
 		clear |= BIT(IRS_INTR_COUNT_THR_OR) |
 			 BIT(IRS_INTR_COUNT_THR_AND);
 	}

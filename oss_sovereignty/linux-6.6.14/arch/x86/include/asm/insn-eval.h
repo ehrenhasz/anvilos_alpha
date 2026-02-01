@@ -1,10 +1,6 @@
 #ifndef _ASM_X86_INSN_EVAL_H
 #define _ASM_X86_INSN_EVAL_H
-/*
- * A collection of utility functions for x86 instruction analysis to be
- * used in a kernel context. Useful when, for instance, making sense
- * of the registers indicated by operands.
- */
+ 
 
 #include <linux/compiler.h>
 #include <linux/bug.h>
@@ -44,4 +40,4 @@ enum insn_mmio_type {
 
 enum insn_mmio_type insn_decode_mmio(struct insn *insn, int *bytes);
 
-#endif /* _ASM_X86_INSN_EVAL_H */
+#endif  

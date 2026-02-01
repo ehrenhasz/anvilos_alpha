@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -247,10 +243,7 @@ nft_rbtree_gc_elem(const struct nft_set *__set, struct nft_rbtree *priv,
 	if (!gc)
 		return ERR_PTR(-ENOMEM);
 
-	/* search for end interval coming before this element.
-	 * end intervals don't carry a timeout extension, they
-	 * are coupled with the interval start element.
-	 */
+	 
 	while (prev) {
 		rbe_prev = rb_entry(prev, struct nft_rbtree_elem, node);
 		if (nft_rbtree_interval_end(rbe_prev) &&
@@ -265,11 +258,7 @@ nft_rbtree_gc_elem(const struct nft_set *__set, struct nft_rbtree *priv,
 		rbe_prev = rb_entry(prev, struct nft_rbtree_elem, node);
 		nft_rbtree_gc_remove(net, set, priv, rbe_prev);
 
-		/* There is always room in this trans gc for this element,
-		 * memory allocation never actually happens, hence, the warning
-		 * splat in such case. No need to set NFT_SET_ELEM_DEAD_BIT,
-		 * this is synchronous gc which never fails.
-		 */
+		 
 		gc = nft_trans_gc_queue_sync(gc, GFP_ATOMIC);
 		if (WARN_ON_ONCE(!gc))
 			return ERR_PTR(-ENOMEM);
@@ -296,9 +285,7 @@ static bool nft_rbtree_update_first(const struct nft_set *set,
 	struct nft_rbtree_elem *first_elem;
 
 	first_elem = rb_entry(first, struct nft_rbtree_elem, node);
-	/* this element is closest to where the new element is to be inserted:
-	 * update the first element for the node list path.
-	 */
+	 
 	if (nft_rbtree_cmp(set, rbe, first_elem) < 0)
 		return true;
 
@@ -316,10 +303,7 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
 	u8 genmask = nft_genmask_next(net);
 	int d;
 
-	/* Descend the tree to search for an existing element greater than the
-	 * key value to insert that is greater than the new element. This is the
-	 * first element to walk the ordered elements to find possible overlap.
-	 */
+	 
 	parent = NULL;
 	p = &priv->root.rb_node;
 	while (*p != NULL) {
@@ -346,10 +330,7 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
 	if (!first)
 		first = rb_first(&priv->root);
 
-	/* Detect overlap by going through the list of valid tree nodes.
-	 * Values stored in the tree are in reversed order, starting from
-	 * highest to lowest value.
-	 */
+	 
 	for (node = first; node != NULL; node = next) {
 		next = rb_next(node);
 
@@ -358,9 +339,7 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
 		if (!nft_set_elem_active(&rbe->ext, genmask))
 			continue;
 
-		/* perform garbage collection to avoid bogus overlap reports
-		 * but skip new elements in this transaction.
-		 */
+		 
 		if (nft_set_elem_expired(&rbe->ext) &&
 		    nft_set_elem_active(&rbe->ext, cur_genmask)) {
 			const struct nft_rbtree_elem *removed_end;
@@ -377,30 +356,25 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
 
 		d = nft_rbtree_cmp(set, rbe, new);
 		if (d == 0) {
-			/* Matching end element: no need to look for an
-			 * overlapping greater or equal element.
-			 */
+			 
 			if (nft_rbtree_interval_end(rbe)) {
 				rbe_le = rbe;
 				break;
 			}
 
-			/* first element that is greater or equal to key value. */
+			 
 			if (!rbe_ge) {
 				rbe_ge = rbe;
 				continue;
 			}
 
-			/* this is a closer more or equal element, update it. */
+			 
 			if (nft_rbtree_cmp(set, rbe_ge, new) != 0) {
 				rbe_ge = rbe;
 				continue;
 			}
 
-			/* element is equal to key value, make sure flags are
-			 * the same, an existing more or equal start element
-			 * must not be replaced by more or equal end element.
-			 */
+			 
 			if ((nft_rbtree_interval_start(new) &&
 			     nft_rbtree_interval_start(rbe_ge)) ||
 			    (nft_rbtree_interval_end(new) &&
@@ -409,58 +383,46 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
 				continue;
 			}
 		} else if (d > 0) {
-			/* annotate element greater than the new element. */
+			 
 			rbe_ge = rbe;
 			continue;
 		} else if (d < 0) {
-			/* annotate element less than the new element. */
+			 
 			rbe_le = rbe;
 			break;
 		}
 	}
 
-	/* - new start element matching existing start element: full overlap
-	 *   reported as -EEXIST, cleared by caller if NLM_F_EXCL is not given.
-	 */
+	 
 	if (rbe_ge && !nft_rbtree_cmp(set, new, rbe_ge) &&
 	    nft_rbtree_interval_start(rbe_ge) == nft_rbtree_interval_start(new)) {
 		*ext = &rbe_ge->ext;
 		return -EEXIST;
 	}
 
-	/* - new end element matching existing end element: full overlap
-	 *   reported as -EEXIST, cleared by caller if NLM_F_EXCL is not given.
-	 */
+	 
 	if (rbe_le && !nft_rbtree_cmp(set, new, rbe_le) &&
 	    nft_rbtree_interval_end(rbe_le) == nft_rbtree_interval_end(new)) {
 		*ext = &rbe_le->ext;
 		return -EEXIST;
 	}
 
-	/* - new start element with existing closest, less or equal key value
-	 *   being a start element: partial overlap, reported as -ENOTEMPTY.
-	 *   Anonymous sets allow for two consecutive start element since they
-	 *   are constant, skip them to avoid bogus overlap reports.
-	 */
+	 
 	if (!nft_set_is_anonymous(set) && rbe_le &&
 	    nft_rbtree_interval_start(rbe_le) && nft_rbtree_interval_start(new))
 		return -ENOTEMPTY;
 
-	/* - new end element with existing closest, less or equal key value
-	 *   being a end element: partial overlap, reported as -ENOTEMPTY.
-	 */
+	 
 	if (rbe_le &&
 	    nft_rbtree_interval_end(rbe_le) && nft_rbtree_interval_end(new))
 		return -ENOTEMPTY;
 
-	/* - new end element with existing closest, greater or equal key value
-	 *   being an end element: partial overlap, reported as -ENOTEMPTY
-	 */
+	 
 	if (rbe_ge &&
 	    nft_rbtree_interval_end(rbe_ge) && nft_rbtree_interval_end(new))
 		return -ENOTEMPTY;
 
-	/* Accepted element: pick insertion point depending on key value */
+	 
 	parent = NULL;
 	p = &priv->root.rb_node;
 	while (*p != NULL) {
@@ -639,7 +601,7 @@ static void nft_rbtree_gc(struct work_struct *work)
 	read_lock_bh(&priv->lock);
 	for (node = rb_first(&priv->root); node != NULL; node = rb_next(node)) {
 
-		/* Ruleset has been updated, try later. */
+		 
 		if (READ_ONCE(nft_net->gc_seq) != gc_seq) {
 			nft_trans_gc_destroy(gc);
 			gc = NULL;
@@ -651,10 +613,7 @@ static void nft_rbtree_gc(struct work_struct *work)
 		if (nft_set_elem_is_dead(&rbe->ext))
 			goto dead_elem;
 
-		/* elements are reversed in the rbtree for historical reasons,
-		 * from highest to lowest value, that is why end element is
-		 * always visited before the start element.
-		 */
+		 
 		if (nft_rbtree_interval_end(rbe)) {
 			rbe_end = rbe;
 			continue;

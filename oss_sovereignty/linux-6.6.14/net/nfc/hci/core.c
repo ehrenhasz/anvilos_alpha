@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "hci: %s: " fmt, __func__
 
@@ -16,7 +14,7 @@
 
 #include "hci.h"
 
-/* Largest headroom needed for outgoing HCI commands */
+ 
 #define HCI_CMDS_HEADROOM 1
 
 int nfc_hci_result_to_errno(u8 result)
@@ -209,11 +207,7 @@ void nfc_hci_cmd_received(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 			goto exit;
 		}
 
-		/* Save the new created pipe and bind with local gate,
-		 * the description for skb->data[3] is destination gate id
-		 * but since we received this cmd from host controller, we
-		 * are the destination and it is our local gate
-		 */
+		 
 		hdev->gate2pipe[create_info->dest_gate] = create_info->pipe;
 		hdev->pipes[create_info->pipe].gate = create_info->dest_gate;
 		hdev->pipes[create_info->pipe].dest_host =
@@ -362,7 +356,7 @@ int nfc_hci_target_discovered(struct nfc_hci_dev *hdev, u8 gate)
 		break;
 	}
 
-	/* if driver set the new gate, we will skip the old one */
+	 
 	if (targets->hci_reader_gate == 0x00)
 		targets->hci_reader_gate = gate;
 
@@ -403,19 +397,13 @@ void nfc_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe, u8 event,
 
 	switch (event) {
 	case NFC_HCI_EVT_TARGET_DISCOVERED:
-		if (skb->len < 1) {	/* no status data? */
+		if (skb->len < 1) {	 
 			r = -EPROTO;
 			goto exit;
 		}
 
 		if (skb->data[0] == 3) {
-			/* TODO: Multiple targets in field, none activated
-			 * poll is supposedly stopped, but there is no
-			 * single target to activate, so nothing to report
-			 * up.
-			 * if we need to restart poll, we must save the
-			 * protocols from the initial poll and reuse here.
-			 */
+			 
 		}
 
 		if (skb->data[0] != 0) {
@@ -483,7 +471,7 @@ static int hci_dev_session_init(struct nfc_hci_dev *hdev)
 	if (skb->len && skb->len == strlen(hdev->init_data.session_id) &&
 		(memcmp(hdev->init_data.session_id, skb->data,
 			   skb->len) == 0) && hdev->ops->load_session) {
-		/* Restore gate<->pipe table from some proprietary location. */
+		 
 
 		r = hdev->ops->load_session(hdev);
 
@@ -702,13 +690,9 @@ static void hci_transceive_cb(void *context, struct sk_buff *skb, int err)
 
 	switch (hdev->async_cb_type) {
 	case HCI_CB_TYPE_TRANSCEIVE:
-		/*
-		 * TODO: Check RF Error indicator to make sure data is valid.
-		 * It seems that HCI cmd can complete without error, but data
-		 * can be invalid if an RF error occurred? Ignore for now.
-		 */
+		 
 		if (err == 0)
-			skb_trim(skb, skb->len - 1); /* RF Err ind */
+			skb_trim(skb, skb->len - 1);  
 
 		hdev->async_cb(hdev->async_cb_context, skb, err);
 		break;
@@ -734,11 +718,11 @@ static int hci_transceive(struct nfc_dev *nfc_dev, struct nfc_target *target,
 		if (hdev->ops->im_transceive) {
 			r = hdev->ops->im_transceive(hdev, target, skb, cb,
 						     cb_context);
-			if (r <= 0)	/* handled */
+			if (r <= 0)	 
 				break;
 		}
 
-		*(u8 *)skb_push(skb, 1) = 0;	/* CTR, see spec:10.2.2.1 */
+		*(u8 *)skb_push(skb, 1) = 0;	 
 
 		hdev->async_cb_type = HCI_CB_TYPE_TRANSCEIVE;
 		hdev->async_cb = cb;
@@ -867,7 +851,7 @@ static void nfc_hci_recv_from_llc(struct nfc_hci_dev *hdev, struct sk_buff *skb)
 		return;
 	}
 
-	/* it's the last fragment. Does it need re-aggregation? */
+	 
 	if (skb_queue_len(&hdev->rx_hcp_frags)) {
 		pipe = packet->header & NFC_HCI_FRAGMENT;
 		skb_queue_tail(&hdev->rx_hcp_frags, skb);
@@ -900,10 +884,7 @@ static void nfc_hci_recv_from_llc(struct nfc_hci_dev *hdev, struct sk_buff *skb)
 		hcp_skb = skb;
 	}
 
-	/* if this is a response, dispatch immediately to
-	 * unblock waiting cmd context. Otherwise, enqueue to dispatch
-	 * in separate context where handler can also execute command.
-	 */
+	 
 	packet = (struct hcp_packet *)hcp_skb->data;
 	type = HCP_MSG_GET_TYPE(packet->message.header);
 	if (type == NFC_HCI_HCP_RESPONSE) {

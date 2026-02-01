@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/linkage.h>
 #include <asm/unistd_32.h>
 #include <asm/asm-offsets.h>
@@ -10,11 +10,11 @@
 	.text
 	.globl __kernel_sigreturn
 	.type __kernel_sigreturn,@function
-	nop /* this guy is needed for .LSTARTFDEDLSI1 below (watch for HACK) */
+	nop  
 	ALIGN
 __kernel_sigreturn:
 .LSTART_sigreturn:
-	popl %eax		/* XXX does this mean it needs unwind info? */
+	popl %eax		 
 	movl $__NR_sigreturn, %eax
 	SYSCALL_ENTER_KERNEL
 .LEND_sigreturn:
@@ -39,53 +39,40 @@ SYM_INNER_LABEL(vdso32_rt_sigreturn_landing_pad, SYM_L_GLOBAL)
 .LSTARTFRAMEDLSI1:
 	.long .LENDCIEDLSI1-.LSTARTCIEDLSI1
 .LSTARTCIEDLSI1:
-	.long 0			/* CIE ID */
-	.byte 1			/* Version number */
-	.string "zRS"		/* NUL-terminated augmentation string */
-	.uleb128 1		/* Code alignment factor */
-	.sleb128 -4		/* Data alignment factor */
-	.byte 8			/* Return address register column */
-	.uleb128 1		/* Augmentation value length */
-	.byte 0x1b		/* DW_EH_PE_pcrel|DW_EH_PE_sdata4. */
-	.byte 0			/* DW_CFA_nop */
+	.long 0			 
+	.byte 1			 
+	.string "zRS"		 
+	.uleb128 1		 
+	.sleb128 -4		 
+	.byte 8			 
+	.uleb128 1		 
+	.byte 0x1b		 
+	.byte 0			 
 	.align 4
 .LENDCIEDLSI1:
-	.long .LENDFDEDLSI1-.LSTARTFDEDLSI1 /* Length FDE */
+	.long .LENDFDEDLSI1-.LSTARTFDEDLSI1  
 .LSTARTFDEDLSI1:
-	.long .LSTARTFDEDLSI1-.LSTARTFRAMEDLSI1 /* CIE pointer */
-	/* HACK: The dwarf2 unwind routines will subtract 1 from the
-	   return address to get an address in the middle of the
-	   presumed call instruction.  Since we didn't get here via
-	   a call, we need to include the nop before the real start
-	   to make up for it.  */
-	.long .LSTART_sigreturn-1-.	/* PC-relative start address */
+	.long .LSTARTFDEDLSI1-.LSTARTFRAMEDLSI1  
+	 
+	.long .LSTART_sigreturn-1-.	 
 	.long .LEND_sigreturn-.LSTART_sigreturn+1
-	.uleb128 0			/* Augmentation */
-	/* What follows are the instructions for the table generation.
-	   We record the locations of each register saved.  This is
-	   complicated by the fact that the "CFA" is always assumed to
-	   be the value of the stack pointer in the caller.  This means
-	   that we must define the CFA of this body of code to be the
-	   saved value of the stack pointer in the sigcontext.  Which
-	   also means that there is no fixed relation to the other
-	   saved registers, which means that we must use DW_CFA_expression
-	   to compute their addresses.  It also means that when we
-	   adjust the stack with the popl, we have to do it all over again.  */
+	.uleb128 0			 
+	 
 
 #define do_cfa_expr(offset)						\
-	.byte 0x0f;			/* DW_CFA_def_cfa_expression */	\
-	.uleb128 1f-0f;			/*   length */			\
-0:	.byte 0x74;			/*     DW_OP_breg4 */		\
-	.sleb128 offset;		/*      offset */		\
-	.byte 0x06;			/*     DW_OP_deref */		\
+	.byte 0x0f;			 	\
+	.uleb128 1f-0f;			 			\
+0:	.byte 0x74;			 		\
+	.sleb128 offset;		 		\
+	.byte 0x06;			 		\
 1:
 
 #define do_expr(regno, offset)						\
-	.byte 0x10;			/* DW_CFA_expression */		\
-	.uleb128 regno;			/*   regno */			\
-	.uleb128 1f-0f;			/*   length */			\
-0:	.byte 0x74;			/*     DW_OP_breg4 */		\
-	.sleb128 offset;		/*       offset */		\
+	.byte 0x10;			 		\
+	.uleb128 regno;			 			\
+	.uleb128 1f-0f;			 			\
+0:	.byte 0x74;			 		\
+	.sleb128 offset;		 		\
 1:
 
 	do_cfa_expr(IA32_SIGCONTEXT_sp+4)
@@ -98,7 +85,7 @@ SYM_INNER_LABEL(vdso32_rt_sigreturn_landing_pad, SYM_L_GLOBAL)
 	do_expr(7, IA32_SIGCONTEXT_di+4)
 	do_expr(8, IA32_SIGCONTEXT_ip+4)
 
-	.byte 0x42	/* DW_CFA_advance_loc 2 -- nop; popl eax. */
+	.byte 0x42	 
 
 	do_cfa_expr(IA32_SIGCONTEXT_sp)
 	do_expr(0, IA32_SIGCONTEXT_ax)
@@ -113,17 +100,14 @@ SYM_INNER_LABEL(vdso32_rt_sigreturn_landing_pad, SYM_L_GLOBAL)
 	.align 4
 .LENDFDEDLSI1:
 
-	.long .LENDFDEDLSI2-.LSTARTFDEDLSI2 /* Length FDE */
+	.long .LENDFDEDLSI2-.LSTARTFDEDLSI2  
 .LSTARTFDEDLSI2:
-	.long .LSTARTFDEDLSI2-.LSTARTFRAMEDLSI1 /* CIE pointer */
-	/* HACK: See above wrt unwind library assumptions.  */
-	.long .LSTART_rt_sigreturn-1-.	/* PC-relative start address */
+	.long .LSTARTFDEDLSI2-.LSTARTFRAMEDLSI1  
+	 
+	.long .LSTART_rt_sigreturn-1-.	 
 	.long .LEND_rt_sigreturn-.LSTART_rt_sigreturn+1
-	.uleb128 0			/* Augmentation */
-	/* What follows are the instructions for the table generation.
-	   We record the locations of each register saved.  This is
-	   slightly less complicated than the above, since we don't
-	   modify the stack pointer in the process.  */
+	.uleb128 0			 
+	 
 
 	do_cfa_expr(IA32_RT_SIGFRAME_sigcontext-4 + IA32_SIGCONTEXT_sp)
 	do_expr(0, IA32_RT_SIGFRAME_sigcontext-4 + IA32_SIGCONTEXT_ax)

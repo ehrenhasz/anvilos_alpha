@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/etherdevice.h>
@@ -578,7 +575,7 @@ static int qedi_iscsi_offload_conn(struct qedi_endpoint *qedi_ep)
 		  "Default cq index [%d], mss [%d]\n",
 		  conn_info->default_cq, conn_info->mss);
 
-	/* Prepare the doorbell parameters */
+	 
 	qedi_ep->db_data.agg_flags = 0;
 	qedi_ep->db_data.params = 0;
 	SET_FIELD(qedi_ep->db_data.params, ISCSI_DB_DATA_DEST, DB_DEST_XCM);
@@ -588,7 +585,7 @@ static int qedi_iscsi_offload_conn(struct qedi_endpoint *qedi_ep)
 		  DQ_XCM_ISCSI_SQ_PROD_CMD);
 	SET_FIELD(qedi_ep->db_data.params, ISCSI_DB_DATA_BYPASS_EN, 1);
 
-	/* Register doorbell with doorbell recovery mechanism */
+	 
 	rval = qedi_ops->common->db_recovery_add(qedi->cdev,
 						 qedi_ep->p_doorbell,
 						 &qedi_ep->db_data,
@@ -601,7 +598,7 @@ static int qedi_iscsi_offload_conn(struct qedi_endpoint *qedi_ep)
 
 	rval = qedi_ops->offload_conn(qedi->cdev, qedi_ep->handle, conn_info);
 	if (rval) {
-		/* delete doorbell from doorbell recovery mechanism */
+		 
 		rval = qedi_ops->common->db_recovery_del(qedi->cdev,
 							 qedi_ep->p_doorbell,
 							 &qedi_ep->db_data);
@@ -835,7 +832,7 @@ static int qedi_task_xmit(struct iscsi_task *task)
 	struct qedi_cmd *cmd = task->dd_data;
 	struct scsi_cmnd *sc = task->sc;
 
-	/* Clear now so in cleanup_task we know it didn't make it */
+	 
 	cmd->scsi_cmd = NULL;
 	cmd->task_id = U16_MAX;
 
@@ -1168,7 +1165,7 @@ static void qedi_ep_disconnect(struct iscsi_endpoint *ep)
 	    test_bit(QEDI_IN_RECOVERY, &qedi->flags))
 		goto ep_release_conn;
 
-	/* Delete doorbell from doorbell recovery mechanism */
+	 
 	ret = qedi_ops->common->db_recovery_del(qedi->cdev,
 					       qedi_ep->p_doorbell,
 					       &qedi_ep->db_data);

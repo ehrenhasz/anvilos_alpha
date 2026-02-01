@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight emulation LED trigger
- *
- * Copyright 2008 (C) Rodolfo Giometti <giometti@linux.it>
- * Copyright 2008 (C) Eurotech S.p.A. <info@eurotech.it>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -35,7 +30,7 @@ static int fb_notifier_callback(struct notifier_block *p,
 	int *blank;
 	int new_status;
 
-	/* If we aren't interested in this event, skip it immediately ... */
+	 
 	if (event != FB_EVENT_BLANK)
 		return 0;
 
@@ -82,7 +77,7 @@ static ssize_t bl_trig_invert_store(struct device *dev,
 
 	n->invert = invert;
 
-	/* After inverting, we need to update the LED. */
+	 
 	if ((n->old_status == BLANK) ^ n->invert)
 		led_set_brightness_nosleep(led, LED_OFF);
 	else

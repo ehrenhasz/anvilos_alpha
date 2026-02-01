@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright 2018-2023 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-resv.h>
@@ -1261,10 +1259,7 @@ err:
 	return NULL;
 }
 
-/*
- * create a chunk list of physical pages dma addresses from the supplied
- * scatter gather list
- */
+ 
 static int pbl_chunk_list_create(struct efa_dev *dev, struct pbl_context *pbl)
 {
 	struct pbl_chunk_list *chunk_list = &pbl->phys.indirect.chunk_list;
@@ -1278,7 +1273,7 @@ static int pbl_chunk_list_create(struct efa_dev *dev, struct pbl_context *pbl)
 	dma_addr_t dma_addr;
 	int i;
 
-	/* allocate a chunk list that consists of 4KB chunks */
+	 
 	chunk_list_size = DIV_ROUND_UP(page_cnt, EFA_PTRS_PER_CHUNK);
 
 	chunk_list->size = chunk_list_size;
@@ -1292,7 +1287,7 @@ static int pbl_chunk_list_create(struct efa_dev *dev, struct pbl_context *pbl)
 		  "chunk_list_size[%u] - pages[%u]\n", chunk_list_size,
 		  page_cnt);
 
-	/* allocate chunk buffers: */
+	 
 	for (i = 0; i < chunk_list_size; i++) {
 		chunk_list->chunks[i].buf = kzalloc(EFA_CHUNK_SIZE, GFP_KERNEL);
 		if (!chunk_list->chunks[i].buf)
@@ -1304,7 +1299,7 @@ static int pbl_chunk_list_create(struct efa_dev *dev, struct pbl_context *pbl)
 		((page_cnt % EFA_PTRS_PER_CHUNK) * EFA_CHUNK_PAYLOAD_PTR_SIZE) +
 			EFA_CHUNK_PTR_SIZE;
 
-	/* fill the dma addresses of sg list pages to chunks: */
+	 
 	chunk_idx = 0;
 	payload_idx = 0;
 	cur_chunk_buf = chunk_list->chunks[0].buf;
@@ -1320,7 +1315,7 @@ static int pbl_chunk_list_create(struct efa_dev *dev, struct pbl_context *pbl)
 		}
 	}
 
-	/* map chunks to dma and fill chunks next ptrs */
+	 
 	for (i = chunk_list_size - 1; i >= 0; i--) {
 		dma_addr = dma_map_single(&dev->pdev->dev,
 					  chunk_list->chunks[i].buf,
@@ -1379,7 +1374,7 @@ static void pbl_chunk_list_destroy(struct efa_dev *dev, struct pbl_context *pbl)
 	kfree(chunk_list->chunks);
 }
 
-/* initialize pbl continuous mode: map pbl buffer to a dma address. */
+ 
 static int pbl_continuous_initialize(struct efa_dev *dev,
 				     struct pbl_context *pbl)
 {
@@ -1400,11 +1395,7 @@ static int pbl_continuous_initialize(struct efa_dev *dev,
 	return 0;
 }
 
-/*
- * initialize pbl indirect mode:
- * create a chunk list out of the dma addresses of the physical pages of
- * pbl buffer.
- */
+ 
 static int pbl_indirect_initialize(struct efa_dev *dev, struct pbl_context *pbl)
 {
 	u32 size_in_pages = DIV_ROUND_UP(pbl->pbl_buf_size_in_bytes, EFA_CHUNK_PAYLOAD_SIZE);
@@ -1454,7 +1445,7 @@ static void pbl_indirect_terminate(struct efa_dev *dev, struct pbl_context *pbl)
 	kfree(pbl->phys.indirect.sgl);
 }
 
-/* create a page buffer list from a mapped user memory region */
+ 
 static int pbl_create(struct efa_dev *dev,
 		      struct pbl_context *pbl,
 		      struct ib_umem *umem,
@@ -1818,10 +1809,7 @@ int efa_alloc_ucontext(struct ib_ucontext *ibucontext, struct ib_udata *udata)
 	struct efa_com_alloc_uar_result result;
 	int err;
 
-	/*
-	 * it's fine if the driver does not know all request fields,
-	 * we will ack input fields in our response.
-	 */
+	 
 
 	err = ib_copy_from_udata(&cmd, udata,
 				 min(sizeof(cmd), udata->inlen));

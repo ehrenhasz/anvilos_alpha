@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
@@ -84,10 +82,7 @@ static int imx_gpcv2_irq_set_wake(struct irq_data *d, unsigned int on)
 	cd->wakeup_sources[idx] = on ? (val & ~mask) : (val | mask);
 	raw_spin_unlock_irqrestore(&cd->rlock, flags);
 
-	/*
-	 * Do *not* call into the parent, as the GIC doesn't have any
-	 * wake-up facility...
-	 */
+	 
 
 	return 0;
 }
@@ -146,7 +141,7 @@ static int imx_gpcv2_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
@@ -196,7 +191,7 @@ static const struct irq_domain_ops gpcv2_irqchip_data_domain_ops = {
 static const struct of_device_id gpcv2_of_match[] = {
 	{ .compatible = "fsl,imx7d-gpc",  .data = (const void *) 2 },
 	{ .compatible = "fsl,imx8mq-gpc", .data = (const void *) 4 },
-	{ /* END */ }
+	{   }
 };
 
 static int __init imx_gpcv2_irqchip_init(struct device_node *node,
@@ -249,7 +244,7 @@ static int __init imx_gpcv2_irqchip_init(struct device_node *node,
 	}
 	irq_set_default_host(domain);
 
-	/* Initially mask all interrupts */
+	 
 	for (i = 0; i < IMR_NUM; i++) {
 		void __iomem *reg = cd->gpc_base + i * 4;
 
@@ -265,23 +260,16 @@ static int __init imx_gpcv2_irqchip_init(struct device_node *node,
 		cd->wakeup_sources[i] = ~0;
 	}
 
-	/* Let CORE0 as the default CPU to wake up by GPC */
+	 
 	cd->cpu2wakeup = GPC_IMR1_CORE0;
 
-	/*
-	 * Due to hardware design failure, need to make sure GPR
-	 * interrupt(#32) is unmasked during RUN mode to avoid entering
-	 * DSM by mistake.
-	 */
+	 
 	writel_relaxed(~0x1, cd->gpc_base + cd->cpu2wakeup);
 
 	imx_gpcv2_instance = cd;
 	register_syscore_ops(&imx_gpcv2_syscore_ops);
 
-	/*
-	 * Clear the OF_POPULATED flag set in of_irq_init so that
-	 * later the GPC power domain driver will not be skipped.
-	 */
+	 
 	of_node_clear_flag(node, OF_POPULATED);
 	fwnode_dev_initialized(domain->fwnode, false);
 	return 0;

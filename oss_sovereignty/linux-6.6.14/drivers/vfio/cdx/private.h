@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+ 
+ 
 
 #ifndef VFIO_CDX_PRIVATE_H
 #define VFIO_CDX_PRIVATE_H
@@ -25,4 +23,4 @@ struct vfio_cdx_device {
 	struct vfio_cdx_region	*regions;
 };
 
-#endif /* VFIO_CDX_PRIVATE_H */
+#endif  

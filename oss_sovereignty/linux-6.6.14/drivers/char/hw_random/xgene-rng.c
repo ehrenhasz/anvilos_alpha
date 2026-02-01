@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM X-Gene SoC RNG Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Rameshwar Prasad Sahu <rsahu@apm.com>
- *	   Shamal Winchurkar <swinchurkar@apm.com>
- *	   Feng Kan <fkan@apm.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -25,7 +18,7 @@
 #define XGENE_RNG_RETRY_COUNT		20
 #define XGENE_RNG_RETRY_INTERVAL	10
 
-/* RNG  Registers */
+ 
 #define RNG_INOUT_0			0x00
 #define RNG_INTR_STS_ACK		0x10
 #define RNG_CONTROL			0x14
@@ -80,8 +73,8 @@ struct xgene_rng_dev {
 	void  __iomem *csr_base;
 	u32 revision;
 	u32 datum_size;
-	u32 failure_cnt;	/* Failure count last minute */
-	unsigned long failure_ts;/* First failure timestamp */
+	u32 failure_cnt;	 
+	unsigned long failure_ts; 
 	struct timer_list failure_timer;
 	struct device *dev;
 };
@@ -90,7 +83,7 @@ static void xgene_rng_expired_timer(struct timer_list *t)
 {
 	struct xgene_rng_dev *ctx = from_timer(ctx, t, failure_timer);
 
-	/* Clear failure counter as timer expired */
+	 
 	disable_irq(ctx->irq);
 	ctx->failure_cnt = 0;
 	del_timer(&ctx->failure_timer);
@@ -103,9 +96,7 @@ static void xgene_rng_start_timer(struct xgene_rng_dev *ctx)
 	add_timer(&ctx->failure_timer);
 }
 
-/*
- * Initialize or reinit free running oscillators (FROs)
- */
+ 
 static void xgene_rng_init_fro(struct xgene_rng_dev *ctx, u32 fro_val)
 {
 	writel(fro_val, ctx->csr_base + RNG_FRODETUNE);
@@ -120,80 +111,54 @@ static void xgene_rng_chk_overflow(struct xgene_rng_dev *ctx)
 
 	val = readl(ctx->csr_base + RNG_INTR_STS_ACK);
 	if (val & MONOBIT_FAIL_MASK)
-		/*
-		 * LFSR detected an out-of-bounds number of 1s after
-		 * checking 20,000 bits (test T1 as specified in the
-		 * AIS-31 standard)
-		 */
+		 
 		dev_err(ctx->dev, "test monobit failure error 0x%08X\n", val);
 	if (val & POKER_FAIL_MASK)
-		/*
-		 * LFSR detected an out-of-bounds value in at least one
-		 * of the 16 poker_count_X counters or an out of bounds sum
-		 * of squares value after checking 20,000 bits (test T2 as
-		 * specified in the AIS-31 standard)
-		 */
+		 
 		dev_err(ctx->dev, "test poker failure error 0x%08X\n", val);
 	if (val & LONG_RUN_FAIL_MASK)
-		/*
-		 * LFSR detected a sequence of 34 identical bits
-		 * (test T4 as specified in the AIS-31 standard)
-		 */
+		 
 		dev_err(ctx->dev, "test long run failure error 0x%08X\n", val);
 	if (val & RUN_FAIL_MASK)
-		/*
-		 * LFSR detected an outof-bounds value for at least one
-		 * of the running counters after checking 20,000 bits
-		 * (test T3 as specified in the AIS-31 standard)
-		 */
+		 
 		dev_err(ctx->dev, "test run failure error 0x%08X\n", val);
 	if (val & NOISE_FAIL_MASK)
-		/* LFSR detected a sequence of 48 identical bits */
+		 
 		dev_err(ctx->dev, "noise failure error 0x%08X\n", val);
 	if (val & STUCK_OUT_MASK)
-		/*
-		 * Detected output data registers generated same value twice
-		 * in a row
-		 */
+		 
 		dev_err(ctx->dev, "stuck out failure error 0x%08X\n", val);
 
 	if (val & SHUTDOWN_OFLO_MASK) {
 		u32 frostopped;
 
-		/* FROs shut down after a second error event. Try recover. */
+		 
 		if (++ctx->failure_cnt == 1) {
-			/* 1st time, just recover */
+			 
 			ctx->failure_ts = jiffies;
 			frostopped = readl(ctx->csr_base + RNG_ALARMSTOP);
 			xgene_rng_init_fro(ctx, frostopped);
 
-			/*
-			 * We must start a timer to clear out this error
-			 * in case the system timer wrap around
-			 */
+			 
 			xgene_rng_start_timer(ctx);
 		} else {
-			/* 2nd time failure in lesser than 1 minute? */
+			 
 			if (time_after(ctx->failure_ts + 60 * HZ, jiffies)) {
 				dev_err(ctx->dev,
 					"FRO shutdown failure error 0x%08X\n",
 					val);
 			} else {
-				/* 2nd time failure after 1 minutes, recover */
+				 
 				ctx->failure_ts = jiffies;
 				ctx->failure_cnt = 1;
-				/*
-				 * We must start a timer to clear out this
-				 * error in case the system timer wrap
-				 * around
-				 */
+				 
 				xgene_rng_start_timer(ctx);
 			}
 			frostopped = readl(ctx->csr_base + RNG_ALARMSTOP);
 			xgene_rng_init_fro(ctx, frostopped);
 		}
 	}
-	/* Clear them all */
+	 
 	writel(val, ctx->csr_base + RNG_INTR_STS_ACK);
 }
 
@@ -201,7 +166,7 @@ static irqreturn_t xgene_rng_irq_handler(int irq, void *id)
 {
 	struct xgene_rng_dev *ctx = id;
 
-	/* RNG Alarm Counter overflow */
+	 
 	xgene_rng_chk_overflow(ctx);
 
 	return IRQ_HANDLED;
@@ -230,7 +195,7 @@ static int xgene_rng_data_read(struct hwrng *rng, u32 *data)
 	for (i = 0; i < ctx->datum_size; i++)
 		data[i] = readl(ctx->csr_base + RNG_INOUT_0 + i * 4);
 
-	/* Clear ready bit to start next transaction */
+	 
 	writel(READY_MASK, ctx->csr_base + RNG_INTR_STS_ACK);
 
 	return ctx->datum_size << 2;
@@ -340,7 +305,7 @@ static int xgene_rng_probe(struct platform_device *pdev)
 	if (rc)
 		return dev_err_probe(&pdev->dev, rc, "Could not request RNG alarm IRQ\n");
 
-	/* Enable IP clock */
+	 
 	clk = devm_clk_get_optional_enabled(&pdev->dev, NULL);
 	if (IS_ERR(clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(clk), "Couldn't get the clock for RNG\n");

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <net/macsec.h>
 #include "netdevsim.h"

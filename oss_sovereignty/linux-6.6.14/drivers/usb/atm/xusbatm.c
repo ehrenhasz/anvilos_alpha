@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-/******************************************************************************
- *  xusbatm.c -	dumb usbatm-based driver for modems initialized in userspace
- *
- *  Copyright (C) 2005 Duncan Sands, Roman Kagan (rkagan % mail ! ru)
- ******************************************************************************/
+
+ 
 
 #include <linux/module.h>
-#include <linux/etherdevice.h>		/* for eth_random_addr() */
+#include <linux/etherdevice.h>		 
 
 #include "usbatm.h"
 
@@ -150,7 +146,7 @@ static int xusbatm_atm_start(struct usbatm_data *usbatm,
 {
 	atm_dbg(usbatm, "%s entered\n", __func__);
 
-	/* use random MAC as we've no way to get it from the device */
+	 
 	eth_random_addr(atm_dev->esi);
 
 	return 0;

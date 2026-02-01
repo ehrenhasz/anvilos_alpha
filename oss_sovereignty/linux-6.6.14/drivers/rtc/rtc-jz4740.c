@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
- *  Copyright (C) 2010, Paul Cercueil <paul@crapouillou.net>
- *	 JZ4740 SoC RTC driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -30,7 +26,7 @@
 #define JZ_REG_RTC_SCRATCHPAD	0x34
 #define JZ_REG_RTC_CKPCR	0x40
 
-/* The following are present on the jz4780 */
+ 
 #define JZ_REG_RTC_WENR	0x3C
 #define JZ_RTC_WENR_WEN	BIT(31)
 
@@ -42,7 +38,7 @@
 #define JZ_RTC_CTRL_AE		BIT(2)
 #define JZ_RTC_CTRL_ENABLE	BIT(0)
 
-/* Magic value to enable writes on jz4780 */
+ 
 #define JZ_RTC_WENR_MAGIC	0xA55A
 
 #define JZ_RTC_WAKEUP_FILTER_MASK	0x0000FFE0
@@ -124,7 +120,7 @@ static int jz4740_rtc_ctrl_set_bits(struct jz4740_rtc *rtc, uint32_t mask,
 
 	ctrl = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_CTRL);
 
-	/* Don't clear interrupt flags by accident */
+	 
 	ctrl |= JZ_RTC_CTRL_1HZ | JZ_RTC_CTRL_AF;
 
 	if (set)
@@ -148,10 +144,7 @@ static int jz4740_rtc_read_time(struct device *dev, struct rtc_time *time)
 	if (jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD) != 0x12345678)
 		return -EINVAL;
 
-	/* If the seconds register is read while it is updated, it can contain a
-	 * bogus value. This can be avoided by making sure that two consecutive
-	 * reads have the same value.
-	 */
+	 
 	secs = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SEC);
 	secs2 = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SEC);
 
@@ -273,18 +266,15 @@ static void jz4740_rtc_set_wakeup_params(struct jz4740_rtc *rtc,
 					 unsigned long rate)
 {
 	unsigned long wakeup_ticks, reset_ticks;
-	unsigned int min_wakeup_pin_assert_time = 60; /* Default: 60ms */
-	unsigned int reset_pin_assert_time = 100; /* Default: 100ms */
+	unsigned int min_wakeup_pin_assert_time = 60;  
+	unsigned int reset_pin_assert_time = 100;  
 
 	of_property_read_u32(np, "ingenic,reset-pin-assert-time-ms",
 			     &reset_pin_assert_time);
 	of_property_read_u32(np, "ingenic,min-wakeup-pin-assert-time-ms",
 			     &min_wakeup_pin_assert_time);
 
-	/*
-	 * Set minimum wakeup pin assertion time: 100 ms.
-	 * Range is 0 to 2 sec if RTC is clocked at 32 kHz.
-	 */
+	 
 	wakeup_ticks = (min_wakeup_pin_assert_time * rate) / 1000;
 	if (wakeup_ticks < JZ_RTC_WAKEUP_FILTER_MASK)
 		wakeup_ticks &= JZ_RTC_WAKEUP_FILTER_MASK;
@@ -292,10 +282,7 @@ static void jz4740_rtc_set_wakeup_params(struct jz4740_rtc *rtc,
 		wakeup_ticks = JZ_RTC_WAKEUP_FILTER_MASK;
 	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_WAKEUP_FILTER, wakeup_ticks);
 
-	/*
-	 * Set reset pin low-level assertion time after wakeup: 60 ms.
-	 * Range is 0 to 125 ms if RTC is clocked at 32 kHz.
-	 */
+	 
 	reset_ticks = (reset_pin_assert_time * rate) / 1000;
 	if (reset_ticks < JZ_RTC_RESET_COUNTER_MASK)
 		reset_ticks &= JZ_RTC_RESET_COUNTER_MASK;
@@ -384,7 +371,7 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 	rate = clk_get_rate(clk);
 	jz4740_rtc_set_wakeup_params(rtc, np, rate);
 
-	/* Each 1 Hz pulse should happen after (rate) ticks */
+	 
 	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_REGULATOR, rate - 1);
 
 	ret = devm_rtc_register_device(rtc->rtc);

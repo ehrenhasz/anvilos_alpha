@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/libnvdimm.h>
 #include <linux/ndctl.h>
 #include <linux/acpi.h>
@@ -73,11 +73,7 @@ static unsigned long intel_security_flags(struct nvdimm *nvdimm,
 	if (!test_bit(NVDIMM_INTEL_GET_SECURITY_STATE, &nfit_mem->dsm_mask))
 		return 0;
 
-	/*
-	 * Short circuit the state retrieval while we are doing overwrite.
-	 * The DSM spec states that the security state is indeterminate
-	 * until the overwrite DSM completes.
-	 */
+	 
 	if (nvdimm_in_overwrite(nvdimm) && ptype == NVDIMM_USER)
 		return BIT(NVDIMM_SECURITY_OVERWRITE);
 
@@ -88,7 +84,7 @@ static unsigned long intel_security_flags(struct nvdimm *nvdimm,
 		return 0;
 	}
 
-	/* check and see if security is enabled and locked */
+	 
 	if (ptype == NVDIMM_MASTER) {
 		if (nd_cmd.cmd.extended_state & ND_INTEL_SEC_ESTATE_ENABLED)
 			set_bit(NVDIMM_SECURITY_UNLOCKED, &security_flags);
@@ -428,7 +424,7 @@ static int intel_bus_fwa_businfo(struct nvdimm_bus_descriptor *nd_desc,
 	return rc;
 }
 
-/* The fw_ops expect to be called with the nvdimm_bus_lock() held */
+ 
 static enum nvdimm_fwa_state intel_bus_fwa_state(
 		struct nvdimm_bus_descriptor *nd_desc)
 {
@@ -438,23 +434,19 @@ static enum nvdimm_fwa_state intel_bus_fwa_state(
 	enum nvdimm_fwa_state state;
 	int rc;
 
-	/*
-	 * It should not be possible for platform firmware to return
-	 * busy because activate is a synchronous operation. Treat it
-	 * similar to invalid, i.e. always refresh / poll the status.
-	 */
+	 
 	switch (acpi_desc->fwa_state) {
 	case NVDIMM_FWA_INVALID:
 	case NVDIMM_FWA_BUSY:
 		break;
 	default:
-		/* check if capability needs to be refreshed */
+		 
 		if (acpi_desc->fwa_cap == NVDIMM_FWA_CAP_INVALID)
 			break;
 		return acpi_desc->fwa_state;
 	}
 
-	/* Refresh with platform firmware */
+	 
 	rc = intel_bus_fwa_businfo(nd_desc, &info);
 	if (rc)
 		return NVDIMM_FWA_INVALID;
@@ -478,19 +470,12 @@ static enum nvdimm_fwa_state intel_bus_fwa_state(
 		return NVDIMM_FWA_INVALID;
 	}
 
-	/*
-	 * Capability data is available in the same payload as state. It
-	 * is expected to be static.
-	 */
+	 
 	if (acpi_desc->fwa_cap == NVDIMM_FWA_CAP_INVALID) {
 		if (info.capability & ND_INTEL_BUS_FWA_CAP_FWQUIESCE)
 			acpi_desc->fwa_cap = NVDIMM_FWA_CAP_QUIESCE;
 		else if (info.capability & ND_INTEL_BUS_FWA_CAP_OSQUIESCE) {
-			/*
-			 * Skip hibernate cycle by default if platform
-			 * indicates that it does not need devices to be
-			 * quiesced.
-			 */
+			 
 			acpi_desc->fwa_cap = NVDIMM_FWA_CAP_LIVE;
 		} else
 			acpi_desc->fwa_cap = NVDIMM_FWA_CAP_NONE;
@@ -531,12 +516,7 @@ static int intel_bus_fwa_activate(struct nvdimm_bus_descriptor *nd_desc)
 			.nd_fw_size =
 				sizeof(struct nd_intel_bus_fw_activate),
 		},
-		/*
-		 * Even though activate is run from a suspended context,
-		 * for safety, still ask platform firmware to force
-		 * quiesce devices by default. Let a module
-		 * parameter override that policy.
-		 */
+		 
 		.cmd = {
 			.iodev_state = acpi_desc->fwa_noidle
 				? ND_INTEL_BUS_FWA_IODEV_OS_IDLE
@@ -556,13 +536,7 @@ static int intel_bus_fwa_activate(struct nvdimm_bus_descriptor *nd_desc)
 	rc = nd_desc->ndctl(nd_desc, NULL, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd),
 			NULL);
 
-	/*
-	 * Whether the command succeeded, or failed, the agent checking
-	 * for the result needs to query the DIMMs individually.
-	 * Increment the activation count to invalidate all the DIMM
-	 * states at once (it's otherwise not possible to take
-	 * acpi_desc->init_mutex in this context)
-	 */
+	 
 	acpi_desc->fwa_state = NVDIMM_FWA_INVALID;
 	acpi_desc->fwa_count++;
 
@@ -609,16 +583,13 @@ static enum nvdimm_fwa_state intel_fwa_state(struct nvdimm *nvdimm)
 	struct nd_intel_fw_activate_dimminfo info;
 	int rc;
 
-	/*
-	 * Similar to the bus state, since activate is synchronous the
-	 * busy state should resolve within the context of 'activate'.
-	 */
+	 
 	switch (nfit_mem->fwa_state) {
 	case NVDIMM_FWA_INVALID:
 	case NVDIMM_FWA_BUSY:
 		break;
 	default:
-		/* If no activations occurred the old state is still valid */
+		 
 		if (nfit_mem->fwa_count == acpi_desc->fwa_count)
 			return nfit_mem->fwa_state;
 	}
@@ -726,10 +697,7 @@ static int intel_fwa_arm(struct nvdimm *nvdimm, enum nvdimm_fwa_trigger arm)
 		return -ENXIO;
 	}
 
-	/*
-	 * Invalidate the bus-level state, now that we're committed to
-	 * changing the 'arm' state.
-	 */
+	 
 	acpi_desc->fwa_state = NVDIMM_FWA_INVALID;
 	nfit_mem->fwa_state = NVDIMM_FWA_INVALID;
 

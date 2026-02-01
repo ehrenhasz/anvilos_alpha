@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs extent cache support
- *
- * Copyright (c) 2015 Motorola Mobility
- * Copyright (c) 2015 Samsung Electronics
- * Authors: Jaegeuk Kim <jaegeuk@kernel.org>
- *          Chao Yu <chao2.yu@samsung.com>
- *
- * block_age-based extent cache added by:
- * Copyright (c) 2022 xiaomi Co., Ltd.
- *             http://www.xiaomi.com/
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -33,7 +22,7 @@ bool sanity_check_extent_cache(struct inode *inode)
 	if (!ei->len)
 		return true;
 
-	/* Let's drop, if checkpoint got corrupted. */
+	 
 	if (is_set_ckpt_flags(sbi, CP_ERROR_FLAG)) {
 		ei->len = 0;
 		et->largest_updated = true;
@@ -87,10 +76,7 @@ static bool __init_may_extent_tree(struct inode *inode, enum extent_type type)
 
 static bool __may_extent_tree(struct inode *inode, enum extent_type type)
 {
-	/*
-	 * for recovered files during mount do not create extents
-	 * if shrinker is not registered.
-	 */
+	 
 	if (list_empty(&F2FS_I_SB(inode)->s_list))
 		return false;
 
@@ -163,12 +149,12 @@ static struct extent_node *__lookup_extent_node(struct rb_root_cached *root,
 	struct rb_node *node = root->rb_root.rb_node;
 	struct extent_node *en;
 
-	/* check a cached entry */
+	 
 	if (cached_en && cached_en->ei.fofs <= fofs &&
 			cached_en->ei.fofs + cached_en->ei.len > fofs)
 		return cached_en;
 
-	/* check rb_tree */
+	 
 	while (node) {
 		en = rb_entry(node, struct extent_node, rb_node);
 
@@ -182,15 +168,7 @@ static struct extent_node *__lookup_extent_node(struct rb_root_cached *root,
 	return NULL;
 }
 
-/*
- * lookup rb entry in position of @fofs in rb-tree,
- * if hit, return the entry, otherwise, return NULL
- * @prev_ex: extent before fofs
- * @next_ex: extent after fofs
- * @insert_p: insert point for new extent at fofs
- * in order to simplify the insertion after.
- * tree must stay unchanged between lookup and insertion.
- */
+ 
 static struct extent_node *__lookup_extent_node_ret(struct rb_root_cached *root,
 				struct extent_node *cached_en,
 				unsigned int fofs,
@@ -248,13 +226,13 @@ static struct extent_node *__lookup_extent_node_ret(struct rb_root_cached *root,
 
 lookup_neighbors:
 	if (fofs == en->ei.fofs) {
-		/* lookup prev node for merging backward later */
+		 
 		tmp_node = rb_prev(&en->rb_node);
 		*prev_entry = rb_entry_safe(tmp_node,
 					struct extent_node, rb_node);
 	}
 	if (fofs == en->ei.fofs + en->ei.len - 1) {
-		/* lookup next node for merging frontward later */
+		 
 		tmp_node = rb_next(&en->rb_node);
 		*next_entry = rb_entry_safe(tmp_node,
 					struct extent_node, rb_node);
@@ -302,12 +280,7 @@ static void __detach_extent_node(struct f2fs_sb_info *sbi,
 	kmem_cache_free(extent_node_slab, en);
 }
 
-/*
- * Flow to release an extent_node:
- * 1. list_del_init
- * 2. __detach_extent_node
- * 3. kmem_cache_free.
- */
+ 
 static void __release_extent_node(struct f2fs_sb_info *sbi,
 			struct extent_tree *et, struct extent_node *en)
 {
@@ -350,7 +323,7 @@ static struct extent_tree *__grab_extent_tree(struct inode *inode,
 	}
 	mutex_unlock(&eti->extent_tree_lock);
 
-	/* never died until evict_inode */
+	 
 	F2FS_I(inode)->extent_tree[type] = et;
 
 	return et;
@@ -394,7 +367,7 @@ void f2fs_init_read_extent_tree(struct inode *inode, struct page *ipage)
 	struct extent_info ei;
 
 	if (!__may_extent_tree(inode, EX_READ)) {
-		/* drop largest read extent */
+		 
 		if (i_ext && i_ext->len) {
 			f2fs_wait_on_page_writeback(ipage, NODE, true, true);
 			i_ext->len = 0;
@@ -440,11 +413,11 @@ void f2fs_init_age_extent_tree(struct inode *inode)
 
 void f2fs_init_extent_tree(struct inode *inode)
 {
-	/* initialize read cache */
+	 
 	if (__init_may_extent_tree(inode, EX_READ))
 		__grab_extent_tree(inode, EX_READ);
 
-	/* initialize block age cache */
+	 
 	if (__init_may_extent_tree(inode, EX_BLOCK_AGE))
 		__grab_extent_tree(inode, EX_BLOCK_AGE);
 }
@@ -560,7 +533,7 @@ static struct extent_node *__insert_extent_tree(struct f2fs_sb_info *sbi,
 
 	leftmost = true;
 
-	/* look up extent_node in the rb tree */
+	 
 	while (*p) {
 		parent = *p;
 		en = rb_entry(parent, struct extent_node, rb_node);
@@ -582,7 +555,7 @@ do_insert:
 
 	__try_update_largest_extent(et, en);
 
-	/* update in global extent list */
+	 
 	spin_lock(&eti->extent_lock);
 	list_add_tail(&en->list, &eti->extent_list);
 	et->cached_en = en;
@@ -625,14 +598,11 @@ static void __update_extent_tree_range(struct inode *inode,
 		prev = et->largest;
 		dei.len = 0;
 
-		/*
-		 * drop largest extent before lookup, in case it's already
-		 * been shrunk from extent tree
-		 */
+		 
 		__drop_largest_extent(et, fofs, len);
 	}
 
-	/* 1. lookup first extent node in range [fofs, fofs + len - 1] */
+	 
 	en = __lookup_extent_node_ret(&et->root,
 					et->cached_en, fofs,
 					&prev_en, &next_en,
@@ -641,10 +611,10 @@ static void __update_extent_tree_range(struct inode *inode,
 	if (!en)
 		en = next_en;
 
-	/* 2. invalidate all extent nodes in range [fofs, fofs + len - 1] */
+	 
 	while (en && en->ei.fofs < end) {
 		unsigned int org_end;
-		int parts = 0;	/* # of parts current extent split into */
+		int parts = 0;	 
 
 		next_en = en1 = NULL;
 
@@ -693,11 +663,7 @@ static void __update_extent_tree_range(struct inode *inode,
 		else
 			__release_extent_node(sbi, et, en);
 
-		/*
-		 * if original extent is split into zero or two parts, extent
-		 * tree has been altered by deletion or insertion, therefore
-		 * invalidate pointers regard to tree.
-		 */
+		 
 		if (parts != 1) {
 			insert_p = NULL;
 			insert_parent = NULL;
@@ -708,7 +674,7 @@ static void __update_extent_tree_range(struct inode *inode,
 	if (type == EX_BLOCK_AGE)
 		goto update_age_extent_cache;
 
-	/* 3. update extent in read extent cache */
+	 
 	BUG_ON(type != EX_READ);
 
 	if (tei->blk) {
@@ -718,7 +684,7 @@ static void __update_extent_tree_range(struct inode *inode,
 			__insert_extent_tree(sbi, et, &ei,
 					insert_p, insert_parent, leftmost);
 
-		/* give up extent_cache, if split and small updates happen */
+		 
 		if (dei.len >= 1 &&
 				prev.len < F2FS_MIN_EXTENT_LEN &&
 				et->largest.len < F2FS_MIN_EXTENT_LEN) {
@@ -768,7 +734,7 @@ void f2fs_update_read_extent_tree_range_compressed(struct inode *inode,
 	trace_f2fs_update_read_extent_tree_range(inode, fofs, llen,
 						blkaddr, c_len);
 
-	/* it is safe here to check FI_NO_EXTENT w/o et->lock in ro image */
+	 
 	if (is_inode_flag_set(inode, FI_NO_EXTENT))
 		return;
 
@@ -812,7 +778,7 @@ static unsigned long long __calculate_block_age(struct f2fs_sb_info *sbi,
 	return res;
 }
 
-/* This returns a new age and allocated blocks in ei */
+ 
 static int __get_new_block_age(struct inode *inode, struct extent_info *ei,
 						block_t blkaddr)
 {
@@ -820,13 +786,9 @@ static int __get_new_block_age(struct inode *inode, struct extent_info *ei,
 	loff_t f_size = i_size_read(inode);
 	unsigned long long cur_blocks =
 				atomic64_read(&sbi->allocated_data_blocks);
-	struct extent_info tei = *ei;	/* only fofs and len are valid */
+	struct extent_info tei = *ei;	 
 
-	/*
-	 * When I/O is not aligned to a PAGE_SIZE, update will happen to the last
-	 * file block even in seq write. So don't record age for newly last file
-	 * block here.
-	 */
+	 
 	if ((f_size >> PAGE_SHIFT) == ei->fofs && f_size & (PAGE_SIZE - 1) &&
 			blkaddr == NEW_ADDR)
 		return -EINVAL;
@@ -837,7 +799,7 @@ static int __get_new_block_age(struct inode *inode, struct extent_info *ei,
 		if (cur_blocks >= tei.last_blocks)
 			cur_age = cur_blocks - tei.last_blocks;
 		else
-			/* allocated_data_blocks overflow */
+			 
 			cur_age = ULLONG_MAX - tei.last_blocks + cur_blocks;
 
 		if (tei.age)
@@ -851,7 +813,7 @@ static int __get_new_block_age(struct inode *inode, struct extent_info *ei,
 
 	f2fs_bug_on(sbi, blkaddr == NULL_ADDR);
 
-	/* the data block was allocated for the first time */
+	 
 	if (blkaddr == NEW_ADDR)
 		goto out;
 
@@ -861,10 +823,7 @@ static int __get_new_block_age(struct inode *inode, struct extent_info *ei,
 		return -EINVAL;
 	}
 out:
-	/*
-	 * init block age with zero, this can happen when the block age extent
-	 * was reclaimed due to memory constraint or system reboot
-	 */
+	 
 	ei->age = 0;
 	ei->last_blocks = cur_blocks;
 	return 0;
@@ -908,7 +867,7 @@ static unsigned int __shrink_extent_tree(struct f2fs_sb_info *sbi, int nr_shrink
 	if (!mutex_trylock(&eti->extent_tree_lock))
 		goto out;
 
-	/* 1. remove unreferenced extent tree */
+	 
 	list_for_each_entry_safe(et, next, &eti->zombie_list, list) {
 		if (atomic_read(&et->node_cnt)) {
 			write_lock(&et->lock);
@@ -930,7 +889,7 @@ static unsigned int __shrink_extent_tree(struct f2fs_sb_info *sbi, int nr_shrink
 	mutex_unlock(&eti->extent_tree_lock);
 
 free_node:
-	/* 2. remove LRU extent entries */
+	 
 	if (!mutex_trylock(&eti->extent_tree_lock))
 		goto out;
 
@@ -944,7 +903,7 @@ free_node:
 					struct extent_node, list);
 		et = en->et;
 		if (!write_trylock(&et->lock)) {
-			/* refresh this extent node's position in extent list */
+			 
 			list_move_tail(&en->list, &eti->extent_list);
 			continue;
 		}
@@ -968,7 +927,7 @@ out:
 	return node_cnt + tree_cnt;
 }
 
-/* read extent cache operations */
+ 
 bool f2fs_lookup_read_extent_cache(struct inode *inode, pgoff_t pgofs,
 				struct extent_info *ei)
 {
@@ -1017,7 +976,7 @@ unsigned int f2fs_shrink_read_extent_tree(struct f2fs_sb_info *sbi, int nr_shrin
 	return __shrink_extent_tree(sbi, nr_shrink, EX_READ);
 }
 
-/* block age extent cache operations */
+ 
 bool f2fs_lookup_age_extent_cache(struct inode *inode, pgoff_t pgofs,
 				struct extent_info *ei)
 {
@@ -1125,10 +1084,10 @@ static void __destroy_extent_tree(struct inode *inode, enum extent_type type)
 		return;
 	}
 
-	/* free all extent info belong to this extent tree */
+	 
 	node_cnt = __destroy_extent_node(inode, type);
 
-	/* delete extent tree entry in radix tree */
+	 
 	mutex_lock(&eti->extent_tree_lock);
 	f2fs_bug_on(sbi, atomic_read(&et->node_cnt));
 	radix_tree_delete(&eti->extent_tree_root, inode->i_ino);
@@ -1164,7 +1123,7 @@ void f2fs_init_extent_cache_info(struct f2fs_sb_info *sbi)
 	__init_extent_tree_info(&sbi->extent_tree[EX_READ]);
 	__init_extent_tree_info(&sbi->extent_tree[EX_BLOCK_AGE]);
 
-	/* initialize for block age extents */
+	 
 	atomic64_set(&sbi->allocated_data_blocks, 0);
 	sbi->hot_data_age_threshold = DEF_HOT_DATA_AGE_THRESHOLD;
 	sbi->warm_data_age_threshold = DEF_WARM_DATA_AGE_THRESHOLD;

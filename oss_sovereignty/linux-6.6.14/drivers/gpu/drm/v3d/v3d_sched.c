@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2018 Broadcom */
 
-/**
- * DOC: Broadcom V3D scheduling
- *
- * The shared DRM GPU scheduler is used to coordinate submitting jobs
- * to the hardware.  Each DRM fd (roughly a client process) gets its
- * own scheduler entity, which will process jobs in order.  The GPU
- * scheduler will round-robin between clients to submit the next job.
- *
- * For simplicity, and in order to keep latency low for interactive
- * jobs when bulk background jobs are queued up, we submit a new job
- * to the HW only when it has completed the last one, instead of
- * filling up the CT[01]Q FIFOs with jobs.  Similarly, we use
- * drm_sched_job_add_dependency() to manage the dependency between bin and
- * render, instead of having the clients submit jobs using the HW's
- * semaphores to interlock between them.
- */
+ 
+
+ 
 
 #include <linux/kthread.h>
 
@@ -83,14 +68,10 @@ static struct dma_fence *v3d_bin_job_run(struct drm_sched_job *sched_job)
 	if (unlikely(job->base.base.s_fence->finished.error))
 		return NULL;
 
-	/* Lock required around bin_job update vs
-	 * v3d_overflow_mem_work().
-	 */
+	 
 	spin_lock_irqsave(&v3d->job_lock, irqflags);
 	v3d->bin_job = job;
-	/* Clear out the overflow allocation, so we don't
-	 * reuse the overflow attached to a previous job.
-	 */
+	 
 	V3D_CORE_WRITE(0, V3D_PTB_BPOS, 0);
 	spin_unlock_irqrestore(&v3d->job_lock, irqflags);
 
@@ -109,9 +90,7 @@ static struct dma_fence *v3d_bin_job_run(struct drm_sched_job *sched_job)
 
 	v3d_switch_perfmon(v3d, &job->base);
 
-	/* Set the current and end address of the control list.
-	 * Writing the end register is what starts the job.
-	 */
+	 
 	if (job->qma) {
 		V3D_CORE_WRITE(0, V3D_CLE_CT0QMA, job->qma);
 		V3D_CORE_WRITE(0, V3D_CLE_CT0QMS, job->qms);
@@ -139,12 +118,7 @@ static struct dma_fence *v3d_render_job_run(struct drm_sched_job *sched_job)
 
 	v3d->render_job = job;
 
-	/* Can we avoid this flush?  We need to be careful of
-	 * scheduling, though -- imagine job0 rendering to texture and
-	 * job1 reading, and them being executed as bin0, bin1,
-	 * render0, render1, so that render1's flush at bin time
-	 * wasn't enough.
-	 */
+	 
 	v3d_invalidate_caches(v3d);
 
 	fence = v3d_fence_create(v3d, V3D_RENDER);
@@ -160,11 +134,9 @@ static struct dma_fence *v3d_render_job_run(struct drm_sched_job *sched_job)
 
 	v3d_switch_perfmon(v3d, &job->base);
 
-	/* XXX: Set the QCFG */
+	 
 
-	/* Set the current and end address of the control list.
-	 * Writing the end register is what starts the job.
-	 */
+	 
 	V3D_CORE_WRITE(0, V3D_CLE_CT1QBA, job->start);
 	V3D_CORE_WRITE(0, V3D_CLE_CT1QEA, job->end);
 
@@ -202,7 +174,7 @@ v3d_tfu_job_run(struct drm_sched_job *sched_job)
 		V3D_WRITE(V3D_TFU_COEF2, job->args.coef[2]);
 		V3D_WRITE(V3D_TFU_COEF3, job->args.coef[3]);
 	}
-	/* ICFG kicks off the job. */
+	 
 	V3D_WRITE(V3D_TFU_ICFG, job->args.icfg | V3D_TFU_ICFG_IOC);
 
 	return fence;
@@ -235,7 +207,7 @@ v3d_csd_job_run(struct drm_sched_job *sched_job)
 
 	for (i = 1; i <= 6; i++)
 		V3D_CORE_WRITE(0, V3D_CSD_QUEUED_CFG0 + 4 * i, job->args.cfg[i]);
-	/* CFG0 write kicks off the job. */
+	 
 	V3D_CORE_WRITE(0, V3D_CSD_QUEUED_CFG0, job->args.cfg[0]);
 
 	return fence;
@@ -259,20 +231,20 @@ v3d_gpu_reset_for_timeout(struct v3d_dev *v3d, struct drm_sched_job *sched_job)
 
 	mutex_lock(&v3d->reset_lock);
 
-	/* block scheduler */
+	 
 	for (q = 0; q < V3D_MAX_QUEUES; q++)
 		drm_sched_stop(&v3d->queue[q].sched, sched_job);
 
 	if (sched_job)
 		drm_sched_increase_karma(sched_job);
 
-	/* get the GPU back into the init state */
+	 
 	v3d_reset(v3d);
 
 	for (q = 0; q < V3D_MAX_QUEUES; q++)
 		drm_sched_resubmit_jobs(&v3d->queue[q].sched);
 
-	/* Unblock schedulers and restart their jobs. */
+	 
 	for (q = 0; q < V3D_MAX_QUEUES; q++) {
 		drm_sched_start(&v3d->queue[q].sched, true);
 	}
@@ -282,11 +254,7 @@ v3d_gpu_reset_for_timeout(struct v3d_dev *v3d, struct drm_sched_job *sched_job)
 	return DRM_GPU_SCHED_STAT_NOMINAL;
 }
 
-/* If the current address or return address have changed, then the GPU
- * has probably made progress and we should delay the reset.  This
- * could fail if the GPU got in an infinite loop in the CL, but that
- * is pretty unlikely outside of an i-g-t testcase.
- */
+ 
 static enum drm_gpu_sched_stat
 v3d_cl_job_timedout(struct drm_sched_job *sched_job, enum v3d_queue q,
 		    u32 *timedout_ctca, u32 *timedout_ctra)
@@ -338,9 +306,7 @@ v3d_csd_job_timedout(struct drm_sched_job *sched_job)
 	struct v3d_dev *v3d = job->base.v3d;
 	u32 batches = V3D_CORE_READ(0, V3D_CSD_CURRENT_CFG4);
 
-	/* If we've made progress, skip reset and let the timer get
-	 * rearmed.
-	 */
+	 
 	if (job->timedout_batches != batches) {
 		job->timedout_batches = batches;
 		return DRM_GPU_SCHED_STAT_NOMINAL;

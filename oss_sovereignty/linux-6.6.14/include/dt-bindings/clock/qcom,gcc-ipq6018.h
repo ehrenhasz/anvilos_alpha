@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_IPQ_GCC_6018_H
 #define _DT_BINDINGS_CLOCK_IPQ_GCC_6018_H

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/if_ether.h>
@@ -28,20 +26,9 @@
 #include "bcdc.h"
 #include "common.h"
 
-/**
- * DOC: Firmware Signalling
- *
- * Firmware can send signals to host and vice versa, which are passed in the
- * data packets using TLV based header. This signalling layer is on top of the
- * BDC bus protocol layer.
- */
+ 
 
-/*
- * single definition for firmware-driver flow control tlv's.
- *
- * each tlv is specified by BRCMF_FWS_TLV_DEF(name, ID, length).
- * A length value 0 indicates variable length tlv.
- */
+ 
 #define BRCMF_FWS_TLV_DEFLIST \
 	BRCMF_FWS_TLV_DEF(MAC_OPEN, 1, 1) \
 	BRCMF_FWS_TLV_DEF(MAC_CLOSE, 2, 1) \
@@ -61,9 +48,7 @@
 	BRCMF_FWS_TLV_DEF(COMP_TXSTATUS, 19, 1) \
 	BRCMF_FWS_TLV_DEF(FILLER, 255, 0)
 
-/*
- * enum brcmf_fws_tlv_type - definition of tlv identifiers.
- */
+ 
 #define BRCMF_FWS_TLV_DEF(name, id, len) \
 	BRCMF_FWS_TYPE_ ## name =  id,
 enum brcmf_fws_tlv_type {
@@ -72,9 +57,7 @@ enum brcmf_fws_tlv_type {
 };
 #undef BRCMF_FWS_TLV_DEF
 
-/*
- * enum brcmf_fws_tlv_len - definition of tlv lengths.
- */
+ 
 #define BRCMF_FWS_TLV_DEF(name, id, len) \
 	BRCMF_FWS_TYPE_ ## name ## _LEN = (len),
 enum brcmf_fws_tlv_len {
@@ -82,7 +65,7 @@ enum brcmf_fws_tlv_len {
 };
 #undef BRCMF_FWS_TLV_DEF
 
-/* AMPDU rx reordering definitions */
+ 
 #define BRCMF_RXREORDER_FLOWID_OFFSET		0
 #define BRCMF_RXREORDER_MAXIDX_OFFSET		2
 #define BRCMF_RXREORDER_FLAGS_OFFSET		4
@@ -96,9 +79,7 @@ enum brcmf_fws_tlv_len {
 #define BRCMF_RXREORDER_NEW_HOLE		0x10
 
 #ifdef DEBUG
-/*
- * brcmf_fws_tlv_names - array of tlv names.
- */
+ 
 #define BRCMF_FWS_TLV_DEF(name, id, len) \
 	{ id, #name },
 static struct {
@@ -125,17 +106,12 @@ static const char *brcmf_fws_get_tlv_name(enum brcmf_fws_tlv_type id)
 {
 	return "NODEBUG";
 }
-#endif /* DEBUG */
+#endif  
 
-/*
- * The PKTTAG tlv has additional bytes when firmware-signalling
- * mode has REUSESEQ flag set.
- */
+ 
 #define BRCMF_FWS_TYPE_SEQ_LEN				2
 
-/*
- * flags used to enable tlv signalling from firmware.
- */
+ 
 #define BRCMF_FWS_FLAGS_RSSI_SIGNALS			0x0001
 #define BRCMF_FWS_FLAGS_XONXOFF_SIGNALS			0x0002
 #define BRCMF_FWS_FLAGS_CREDIT_STATUS_SIGNALS		0x0004
@@ -161,21 +137,14 @@ static const char *brcmf_fws_get_tlv_name(enum brcmf_fws_tlv_type id)
 #define BRCMF_FWS_RET_OK_NOSCHEDULE			0
 #define BRCMF_FWS_RET_OK_SCHEDULE			1
 
-#define BRCMF_FWS_MODE_REUSESEQ_SHIFT			3	/* seq reuse */
+#define BRCMF_FWS_MODE_REUSESEQ_SHIFT			3	 
 #define BRCMF_FWS_MODE_SET_REUSESEQ(x, val)	((x) = \
 		((x) & ~(1 << BRCMF_FWS_MODE_REUSESEQ_SHIFT)) | \
 		(((val) & 1) << BRCMF_FWS_MODE_REUSESEQ_SHIFT))
 #define BRCMF_FWS_MODE_GET_REUSESEQ(x)	\
 		(((x) >> BRCMF_FWS_MODE_REUSESEQ_SHIFT) & 1)
 
-/**
- * enum brcmf_fws_skb_state - indicates processing state of skb.
- *
- * @BRCMF_FWS_SKBSTATE_NEW: sk_buff is newly arrived in the driver.
- * @BRCMF_FWS_SKBSTATE_DELAYED: sk_buff had to wait on queue.
- * @BRCMF_FWS_SKBSTATE_SUPPRESSED: sk_buff has been suppressed by firmware.
- * @BRCMF_FWS_SKBSTATE_TIM: allocated for TIM update info.
- */
+ 
 enum brcmf_fws_skb_state {
 	BRCMF_FWS_SKBSTATE_NEW,
 	BRCMF_FWS_SKBSTATE_DELAYED,
@@ -183,19 +152,7 @@ enum brcmf_fws_skb_state {
 	BRCMF_FWS_SKBSTATE_TIM
 };
 
-/**
- * struct brcmf_skbuff_cb - control buffer associated with skbuff.
- *
- * @bus_flags: 2 bytes reserved for bus specific parameters
- * @if_flags: holds interface index and packet related flags.
- * @htod: host to device packet identifier (used in PKTTAG tlv).
- * @htod_seq: this 16-bit is original seq number for every suppress packet.
- * @state: transmit state of the packet.
- * @mac: descriptor related to destination for this packet.
- *
- * This information is stored in control buffer struct sk_buff::cb, which
- * provides 48 bytes of storage so this structure should not exceed that.
- */
+ 
 struct brcmf_skbuff_cb {
 	u16 bus_flags;
 	u16 if_flags;
@@ -205,21 +162,10 @@ struct brcmf_skbuff_cb {
 	struct brcmf_fws_mac_descriptor *mac;
 };
 
-/*
- * macro casting skbuff control buffer to struct brcmf_skbuff_cb.
- */
+ 
 #define brcmf_skbcb(skb)	((struct brcmf_skbuff_cb *)((skb)->cb))
 
-/*
- * sk_buff control if flags
- *
- *	b[11]  - packet sent upon firmware request.
- *	b[10]  - packet only contains signalling data.
- *	b[9]   - packet is a tx packet.
- *	b[8]   - packet used requested credit
- *	b[7]   - interface in AP mode.
- *	b[3:0] - interface index.
- */
+ 
 #define BRCMF_SKB_IF_FLAGS_REQUESTED_MASK	0x0800
 #define BRCMF_SKB_IF_FLAGS_REQUESTED_SHIFT	11
 #define BRCMF_SKB_IF_FLAGS_SIGNAL_ONLY_MASK	0x0400
@@ -242,21 +188,7 @@ struct brcmf_skbuff_cb {
 			BRCMF_SKB_IF_FLAGS_ ## field ## _MASK, \
 			BRCMF_SKB_IF_FLAGS_ ## field ## _SHIFT)
 
-/*
- * sk_buff control packet identifier
- *
- * 32-bit packet identifier used in PKTTAG tlv from host to dongle.
- *
- * - Generated at the host (e.g. dhd)
- * - Seen as a generic sequence number by firmware except for the flags field.
- *
- * Generation	: b[31]	=> generation number for this packet [host->fw]
- *			   OR, current generation number [fw->host]
- * Flags	: b[30:27] => command, status flags
- * FIFO-AC	: b[26:24] => AC-FIFO id
- * h-slot	: b[23:8] => hanger-slot
- * freerun	: b[7:0] => A free running counter
- */
+ 
 #define BRCMF_SKB_HTOD_TAG_GENERATION_MASK		0x80000000
 #define BRCMF_SKB_HTOD_TAG_GENERATION_SHIFT		31
 #define BRCMF_SKB_HTOD_TAG_FLAGS_MASK			0x78000000
@@ -308,28 +240,11 @@ struct brcmf_skbuff_cb {
 	brcmu_maskget32(txs, BRCMF_FWS_TXSTAT_ ## field ## _MASK, \
 			BRCMF_FWS_TXSTAT_ ## field ## _SHIFT)
 
-/* How long to defer borrowing in jiffies */
+ 
 #define BRCMF_FWS_BORROW_DEFER_PERIOD		(HZ / 10)
 
 
-/**
- * enum brcmf_fws_txstatus - txstatus flag values.
- *
- * @BRCMF_FWS_TXSTATUS_DISCARD:
- *	host is free to discard the packet.
- * @BRCMF_FWS_TXSTATUS_CORE_SUPPRESS:
- *	802.11 core suppressed the packet.
- * @BRCMF_FWS_TXSTATUS_FW_PS_SUPPRESS:
- *	firmware suppress the packet as device is already in PS mode.
- * @BRCMF_FWS_TXSTATUS_FW_TOSSED:
- *	firmware tossed the packet.
- * @BRCMF_FWS_TXSTATUS_FW_DISCARD_NOACK:
- *	firmware tossed the packet after retries.
- * @BRCMF_FWS_TXSTATUS_FW_SUPPRESS_ACKED:
- *	firmware wrongly reported suppressed previously, now fixing to acked.
- * @BRCMF_FWS_TXSTATUS_HOST_TOSSED:
- *	host tossed the packet.
- */
+ 
 enum brcmf_fws_txstatus {
 	BRCMF_FWS_TXSTATUS_DISCARD,
 	BRCMF_FWS_TXSTATUS_CORE_SUPPRESS,
@@ -351,28 +266,7 @@ enum brcmf_fws_mac_desc_state {
 	BRCMF_FWS_STATE_CLOSE
 };
 
-/**
- * struct brcmf_fws_mac_descriptor - firmware signalling data per node/interface
- *
- * @name: name of the descriptor.
- * @occupied: slot is in use.
- * @mac_handle: handle for mac entry determined by firmware.
- * @interface_id: interface index.
- * @state: current state.
- * @suppressed: mac entry is suppressed.
- * @generation: generation bit.
- * @ac_bitmap: ac queue bitmap.
- * @requested_credit: credits requested by firmware.
- * @requested_packet: packet requested by firmware.
- * @ea: ethernet address.
- * @seq: per-node free-running sequence.
- * @psq: power-save queue.
- * @transit_count: packet in transit to firmware.
- * @suppr_transit_count: suppressed packet in transit to firmware.
- * @send_tim_signal: if set tim signal will be sent.
- * @traffic_pending_bmp: traffic pending bitmap.
- * @traffic_lastreported_bmp: traffic last reported bitmap.
- */
+ 
 struct brcmf_fws_mac_descriptor {
 	char name[16];
 	u8 occupied;
@@ -397,13 +291,7 @@ struct brcmf_fws_mac_descriptor {
 #define BRCMF_FWS_HANGER_MAXITEMS	3072
 #define BRCMF_BORROW_RATIO			3
 
-/**
- * enum brcmf_fws_hanger_item_state - state of hanger item.
- *
- * @BRCMF_FWS_HANGER_ITEM_STATE_FREE: item is free for use.
- * @BRCMF_FWS_HANGER_ITEM_STATE_INUSE: item is in use.
- * @BRCMF_FWS_HANGER_ITEM_STATE_INUSE_SUPPRESSED: item was suppressed.
- */
+ 
 enum brcmf_fws_hanger_item_state {
 	BRCMF_FWS_HANGER_ITEM_STATE_FREE = 1,
 	BRCMF_FWS_HANGER_ITEM_STATE_INUSE,
@@ -411,28 +299,13 @@ enum brcmf_fws_hanger_item_state {
 };
 
 
-/**
- * struct brcmf_fws_hanger_item - single entry for tx pending packet.
- *
- * @state: entry is either free or occupied.
- * @pkt: packet itself.
- */
+ 
 struct brcmf_fws_hanger_item {
 	enum brcmf_fws_hanger_item_state state;
 	struct sk_buff *pkt;
 };
 
-/**
- * struct brcmf_fws_hanger - holds packets awaiting firmware txstatus.
- *
- * @pushed: packets pushed to await txstatus.
- * @popped: packets popped upon handling txstatus.
- * @failed_to_push: packets that could not be pushed.
- * @failed_to_pop: packets that could not be popped.
- * @failed_slotfind: packets for which failed to find an entry.
- * @slot_pos: last returned item index for a free entry.
- * @items: array of hanger items.
- */
+ 
 struct brcmf_fws_hanger {
 	u32 pushed;
 	u32 popped;
@@ -508,14 +381,7 @@ struct brcmf_fws_info {
 	case BRCMF_FWS_TYPE_ ## name: \
 		return len;
 
-/**
- * brcmf_fws_get_tlv_len() - returns defined length for given tlv id.
- *
- * @fws: firmware-signalling information.
- * @id: identifier of the TLV.
- *
- * Return: the specified length for the given TLV; Otherwise -EINVAL.
- */
+ 
 static int brcmf_fws_get_tlv_len(struct brcmf_fws_info *fws,
 				 enum brcmf_fws_tlv_type id)
 {
@@ -674,7 +540,7 @@ static void brcmf_fws_hanger_cleanup(struct brcmf_fws_info *fws,
 		    s == BRCMF_FWS_HANGER_ITEM_STATE_INUSE_SUPPRESSED) {
 			skb = h->items[i].pkt;
 			if (fn == NULL || fn(skb, &ifidx)) {
-				/* suppress packets freed from psq */
+				 
 				if (s == BRCMF_FWS_HANGER_ITEM_STATE_INUSE)
 					brcmu_pkt_buf_free_skb(skb);
 				h->items[i].state =
@@ -706,9 +572,9 @@ static void brcmf_fws_macdesc_init(struct brcmf_fws_mac_descriptor *desc,
 	desc->state = BRCMF_FWS_STATE_OPEN;
 	desc->requested_credit = 0;
 	desc->requested_packet = 0;
-	/* depending on use may need ifp->bsscfgidx instead */
+	 
 	desc->interface_id = ifidx;
-	desc->ac_bitmap = 0xff; /* update this when handling APSD */
+	desc->ac_bitmap = 0xff;  
 	if (addr)
 		memcpy(&desc->ea[0], addr, ETH_ALEN);
 }
@@ -751,10 +617,7 @@ brcmf_fws_macdesc_find(struct brcmf_fws_info *fws, struct brcmf_if *ifp, u8 *da)
 
 	multicast = is_multicast_ether_addr(da);
 
-	/* Multicast destination, STA and P2P clients get the interface entry.
-	 * STA/GC gets the Mac Entry for TDLS destinations, TDLS destinations
-	 * have their own entry.
-	 */
+	 
 	if (multicast && ifp->fws_desc) {
 		entry = ifp->fws_desc;
 		goto done;
@@ -775,21 +638,17 @@ static bool brcmf_fws_macdesc_closed(struct brcmf_fws_info *fws,
 	struct brcmf_fws_mac_descriptor *if_entry;
 	bool closed;
 
-	/* for unique destination entries the related interface
-	 * may be closed.
-	 */
+	 
 	if (entry->mac_handle) {
 		if_entry = &fws->desc.iface[entry->interface_id];
 		if (if_entry->state == BRCMF_FWS_STATE_CLOSE)
 			return true;
 	}
-	/* an entry is closed when the state is closed and
-	 * the firmware did not request anything.
-	 */
+	 
 	closed = entry->state == BRCMF_FWS_STATE_CLOSE &&
 		 !entry->requested_credit && !entry->requested_packet;
 
-	/* Or firmware does not allow traffic for given fifo */
+	 
 	return closed || !(entry->ac_bitmap & BIT(fifo));
 }
 
@@ -844,7 +703,7 @@ static void brcmf_fws_cleanup(struct brcmf_fws_info *fws, int ifidx)
 	if (ifidx != -1)
 		matchfn = brcmf_fws_ifidx_match;
 
-	/* cleanup individual nodes */
+	 
 	table = &fws->desc.nodes[0];
 	for (i = 0; i < ARRAY_SIZE(fws->desc.nodes); i++)
 		brcmf_fws_macdesc_cleanup(fws, &table[i], ifidx);
@@ -871,7 +730,7 @@ static u8 brcmf_fws_hdrpush(struct brcmf_fws_info *fws, struct sk_buff *skb)
 		data_offset += 2 + BRCMF_FWS_TYPE_PENDING_TRAFFIC_BMP_LEN;
 	if (BRCMF_FWS_MODE_GET_REUSESEQ(fws->mode))
 		data_offset += BRCMF_FWS_TYPE_SEQ_LEN;
-	/* +2 is for Type[1] and Len[1] in TLV, plus TIM signal */
+	 
 	data_offset += 2 + BRCMF_FWS_TYPE_PKTTAG_LEN;
 	fillers = round_up(data_offset, 4) - data_offset;
 	data_offset += fillers;
@@ -917,7 +776,7 @@ static bool brcmf_fws_tim_update(struct brcmf_fws_info *fws,
 	u8 data_offset;
 	int ifidx;
 
-	/* check delayedQ and suppressQ in one call using bitmap */
+	 
 	if (brcmu_pktq_mlen(&entry->psq, 3 << (fifo * 2)) == 0)
 		entry->traffic_pending_bmp &= ~NBITVAL(fifo);
 	else
@@ -928,8 +787,8 @@ static bool brcmf_fws_tim_update(struct brcmf_fws_info *fws,
 		entry->send_tim_signal = true;
 	if (send_immediately && entry->send_tim_signal &&
 	    entry->state == BRCMF_FWS_STATE_CLOSE) {
-		/* create a dummy packet and sent that. The traffic          */
-		/* bitmap info will automatically be attached to that packet */
+		 
+		 
 		len = BRCMF_FWS_TYPE_PKTTAG_LEN + 2 +
 		      BRCMF_FWS_TYPE_SEQ_LEN +
 		      BRCMF_FWS_TYPE_PENDING_TRAFFIC_BMP_LEN + 2 +
@@ -1037,7 +896,7 @@ int brcmf_fws_macdesc_indicate(struct brcmf_fws_info *fws, u8 type, u8 *data)
 		} else {
 			brcmf_dbg(TRACE, "use existing\n");
 			WARN_ON(entry->mac_handle != mac_handle);
-			/* TODO: what should we do here: continue, reinit, .. */
+			 
 		}
 	}
 	return 0;
@@ -1057,7 +916,7 @@ static int brcmf_fws_macdesc_state_indicate(struct brcmf_fws_info *fws,
 		return -ESRCH;
 	}
 	brcmf_fws_lock(fws);
-	/* a state update should wipe old credits */
+	 
 	entry->requested_credit = 0;
 	entry->requested_packet = 0;
 	if (type == BRCMF_FWS_TYPE_MAC_OPEN) {
@@ -1223,7 +1082,7 @@ static void brcmf_fws_return_credits(struct brcmf_fws_info *fws,
 
 static void brcmf_fws_schedule_deq(struct brcmf_fws_info *fws)
 {
-	/* only schedule dequeue when there are credits for delayed traffic */
+	 
 	if ((fws->fifo_credit_map & fws->fifo_delay_map) ||
 	    (!brcmf_fws_fc_active(fws) && fws->fifo_delay_map))
 		queue_work(fws->fws_wq, &fws->fws_dequeue_work);
@@ -1255,8 +1114,8 @@ static int brcmf_fws_enq(struct brcmf_fws_info *fws,
 		prec += 1;
 		qfull_stat = &fws->stats.supprq_full_error;
 
-		/* Fix out of order delivery of frames. Dont assume frame    */
-		/* can be inserted at the end, but look for correct position */
+		 
+		 
 		pq = &entry->psq;
 		if (pktq_full(pq) || pktq_pfull(pq, prec)) {
 			*qfull_stat += 1;
@@ -1271,7 +1130,7 @@ static int brcmf_fws_enq(struct brcmf_fws_info *fws,
 		while (p_head != p_tail) {
 			fr_compare = brcmf_skb_htod_tag_get_field(p_tail,
 								  FREERUN);
-			/* be sure to handle wrap of 256 */
+			 
 			if (((fr_new > fr_compare) &&
 			     ((fr_new - fr_compare) < 128)) ||
 			    ((fr_new < fr_compare) &&
@@ -1279,9 +1138,9 @@ static int brcmf_fws_enq(struct brcmf_fws_info *fws,
 				break;
 			p_tail = skb_queue_prev(queue, p_tail);
 		}
-		/* Position found. Determine what to do */
+		 
 		if (p_tail == NULL) {
-			/* empty list */
+			 
 			__skb_queue_tail(queue, p);
 		} else {
 			fr_compare = brcmf_skb_htod_tag_get_field(p_tail,
@@ -1290,15 +1149,15 @@ static int brcmf_fws_enq(struct brcmf_fws_info *fws,
 			     ((fr_new - fr_compare) < 128)) ||
 			    ((fr_new < fr_compare) &&
 			     ((fr_compare - fr_new) > 128))) {
-				/* After tail */
+				 
 				__skb_queue_after(queue, p_tail, p);
 			} else {
-				/* Before tail */
+				 
 				__skb_insert(p, p_tail->prev, p_tail, queue);
 			}
 		}
 
-		/* Complete the counters and statistics */
+		 
 		pq->len++;
 		if (pq->hi_prec < prec)
 			pq->hi_prec = (u8) prec;
@@ -1307,17 +1166,14 @@ static int brcmf_fws_enq(struct brcmf_fws_info *fws,
 		return -ENFILE;
 	}
 
-	/* increment total enqueued packet count */
+	 
 	fws->fifo_delay_map |= 1 << fifo;
 	fws->fifo_enqpkt[fifo]++;
 
-	/* update the sk_buff state */
+	 
 	brcmf_skbcb(p)->state = state;
 
-	/*
-	 * A packet has been pushed so update traffic
-	 * availability bitmap, if applicable
-	 */
+	 
 	brcmf_fws_tim_update(fws, entry, fifo, true);
 	brcmf_fws_flow_control_check(fws, &entry->psq,
 				     brcmf_skb_if_flags_get_field(p, INDEX));
@@ -1364,22 +1220,16 @@ static struct sk_buff *brcmf_fws_deq(struct brcmf_fws_info *fws, int fifo)
 
 		brcmf_fws_macdesc_use_req_credit(entry, p);
 
-		/* move dequeue position to ensure fair round-robin */
+		 
 		fws->deq_node_pos[fifo] = (node_pos + i + 1) % num_nodes;
 		brcmf_fws_flow_control_check(fws, &entry->psq,
 					     brcmf_skb_if_flags_get_field(p,
 									  INDEX)
 					     );
-		/*
-		 * A packet has been picked up, update traffic
-		 * availability bitmap, if applicable
-		 */
+		 
 		brcmf_fws_tim_update(fws, entry, fifo, false);
 
-		/*
-		 * decrement total enqueued fifo packets and
-		 * clear delay bitmap if done.
-		 */
+		 
 		fws->fifo_enqpkt[fifo]--;
 		if (fws->fifo_enqpkt[fifo] == 0)
 			fws->fifo_delay_map &= ~(1 << fifo);
@@ -1401,7 +1251,7 @@ static int brcmf_fws_txstatus_suppressed(struct brcmf_fws_info *fws, int fifo,
 
 	hslot = brcmf_skb_htod_tag_get_field(skb, HSLOT);
 
-	/* this packet was suppressed */
+	 
 	if (!entry->suppressed) {
 		entry->suppressed = true;
 		entry->suppr_transit_count = entry->transit_count;
@@ -1422,10 +1272,10 @@ static int brcmf_fws_txstatus_suppressed(struct brcmf_fws_info *fws, int fifo,
 	ret = brcmf_fws_enq(fws, BRCMF_FWS_SKBSTATE_SUPPRESSED, fifo, skb);
 
 	if (ret != 0) {
-		/* suppress q is full drop this packet */
+		 
 		brcmf_fws_hanger_poppkt(&fws->hanger, hslot, &skb, true);
 	} else {
-		/* Mark suppressed to avoid a double free during wlfc cleanup */
+		 
 		brcmf_fws_hanger_mark_suppressed(&fws->hanger, hslot);
 	}
 
@@ -1489,7 +1339,7 @@ brcmf_fws_txs_process(struct brcmf_fws_info *fws, u8 flags, u32 hslot,
 		brcmf_dbg(DATA, "%s flags %d htod %X seq %X\n", entry->name,
 			  flags, skcb->htod, seq);
 
-		/* pick up the implicit credit from this packet */
+		 
 		fifo = brcmf_skb_htod_tag_get_field(skb, FIFO);
 		if (fws->fcmode == BRCMF_FWS_FCMODE_IMPLIED_CREDIT ||
 		    (brcmf_skb_if_flags_get_field(skb, REQ_CREDIT)) ||
@@ -1644,7 +1494,7 @@ static void brcmf_rxreorder_get_skb_list(struct brcmf_ampdu_rx_reorder *rfi,
 					 u8 start, u8 end,
 					 struct sk_buff_head *skb_list)
 {
-	/* initialize return list */
+	 
 	__skb_queue_head_init(skb_list);
 
 	if (rfi->pend_pkts == 0) {
@@ -1679,7 +1529,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 	flow_id = reorder_data[BRCMF_RXREORDER_FLOWID_OFFSET];
 	flags = reorder_data[BRCMF_RXREORDER_FLAGS_OFFSET];
 
-	/* validate flags and flow id */
+	 
 	if (flags == 0xFF) {
 		bphy_err(drvr, "invalid flags...so ignore this packet\n");
 		brcmf_netif_rx(ifp, pkt);
@@ -1700,20 +1550,20 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 
 		brcmf_rxreorder_get_skb_list(rfi, rfi->exp_idx, rfi->exp_idx,
 					     &reorder_list);
-		/* add the last packet */
+		 
 		__skb_queue_tail(&reorder_list, pkt);
 		kfree(rfi);
 		ifp->drvr->reorder_flows[flow_id] = NULL;
 		goto netif_rx;
 	}
-	/* from here on we need a flow reorder instance */
+	 
 	if (rfi == NULL) {
 		buf_size = sizeof(*rfi);
 		max_idx = reorder_data[BRCMF_RXREORDER_MAXIDX_OFFSET];
 
 		buf_size += (max_idx + 1) * sizeof(pkt);
 
-		/* allocate space for flow reorder info */
+		 
 		brcmf_dbg(INFO, "flow-%d: start, maxidx %d\n",
 			  flow_id, max_idx);
 		rfi = kzalloc(buf_size, GFP_ATOMIC);
@@ -1748,8 +1598,8 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 		exp_idx = reorder_data[BRCMF_RXREORDER_EXPIDX_OFFSET];
 
 		if ((exp_idx == rfi->exp_idx) && (cur_idx != rfi->exp_idx)) {
-			/* still in the current hole */
-			/* enqueue the current on the buffer chain */
+			 
+			 
 			if (rfi->pktslots[cur_idx] != NULL) {
 				brcmf_dbg(INFO, "HOLE: ERROR buffer pending..free it\n");
 				brcmu_pkt_buf_free_skb(rfi->pktslots[cur_idx]);
@@ -1761,9 +1611,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 			brcmf_dbg(DATA, "flow-%d: store pkt %d (%d), pending %d\n",
 				  flow_id, cur_idx, exp_idx, rfi->pend_pkts);
 
-			/* can return now as there is no reorder
-			 * list to process.
-			 */
+			 
 			return;
 		}
 		if (rfi->exp_idx == cur_idx) {
@@ -1775,9 +1623,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 			rfi->pktslots[cur_idx] = pkt;
 			rfi->pend_pkts++;
 
-			/* got the expected one. flush from current to expected
-			 * and update expected
-			 */
+			 
 			brcmf_dbg(DATA, "flow-%d: expected %d (%d), pending %d\n",
 				  flow_id, cur_idx, exp_idx, rfi->pend_pkts);
 
@@ -1800,7 +1646,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 			else
 				end_idx = exp_idx;
 
-			/* flush pkts first */
+			 
 			brcmf_rxreorder_get_skb_list(rfi, rfi->exp_idx, end_idx,
 						     &reorder_list);
 
@@ -1814,7 +1660,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 			rfi->cur_idx = cur_idx;
 		}
 	} else {
-		/* explicity window move updating the expected index */
+		 
 		exp_idx = reorder_data[BRCMF_RXREORDER_EXPIDX_OFFSET];
 
 		brcmf_dbg(DATA, "flow-%d (0x%x): change expected: %d -> %d\n",
@@ -1827,7 +1673,7 @@ void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *pkt)
 		brcmf_rxreorder_get_skb_list(rfi, rfi->exp_idx, end_idx,
 					     &reorder_list);
 		__skb_queue_tail(&reorder_list, pkt);
-		/* set the new expected idx */
+		 
 		rfi->exp_idx = exp_idx;
 	}
 netif_rx:
@@ -1859,7 +1705,7 @@ void brcmf_fws_hdrpull(struct brcmf_if *ifp, s16 siglen, struct sk_buff *skb)
 
 	if (!siglen)
 		return;
-	/* if flow control disabled, skip to packet data and leave */
+	 
 	if ((!fws) || (!fws->fw_signals)) {
 		skb_pull(skb, siglen);
 		return;
@@ -1871,12 +1717,10 @@ void brcmf_fws_hdrpull(struct brcmf_if *ifp, s16 siglen, struct sk_buff *skb)
 
 	status = BRCMF_FWS_RET_OK_NOSCHEDULE;
 	while (data_len > 0) {
-		/* extract tlv info */
+		 
 		type = signal_data[0];
 
-		/* FILLER type is actually not a TLV, but
-		 * a single byte that can be skipped.
-		 */
+		 
 		if (type == BRCMF_FWS_TYPE_FILLER) {
 			signal_data += 1;
 			data_len -= 1;
@@ -1889,7 +1733,7 @@ void brcmf_fws_hdrpull(struct brcmf_if *ifp, s16 siglen, struct sk_buff *skb)
 			  brcmf_fws_get_tlv_name(type), type, len,
 			  brcmf_fws_get_tlv_len(fws, type));
 
-		/* abort parsing when length invalid */
+		 
 		if (data_len < len + 2)
 			break;
 
@@ -1950,13 +1794,10 @@ void brcmf_fws_hdrpull(struct brcmf_if *ifp, s16 siglen, struct sk_buff *skb)
 	if (status == BRCMF_FWS_RET_OK_SCHEDULE)
 		brcmf_fws_schedule_deq(fws);
 
-	/* signalling processing result does
-	 * not affect the actual ethernet packet.
-	 */
+	 
 	skb_pull(skb, siglen);
 
-	/* this may be a signal-only packet
-	 */
+	 
 	if (skb->len == 0)
 		fws->stats.header_only_pkt++;
 }
@@ -1972,10 +1813,7 @@ static u8 brcmf_fws_precommit_skb(struct brcmf_fws_info *fws, int fifo,
 		brcmf_skb_htod_tag_set_field(p, GENERATION, entry->generation);
 	flags = BRCMF_FWS_HTOD_FLAG_PKTFROMHOST;
 	if (brcmf_skb_if_flags_get_field(p, REQUESTED)) {
-		/*
-		 * Indicate that this packet is being sent in response to an
-		 * explicit request from the firmware side.
-		 */
+		 
 		flags |= BRCMF_FWS_HTOD_FLAG_PKT_REQUESTED;
 	}
 	brcmf_skb_htod_tag_set_field(p, FLAGS, flags);
@@ -2122,12 +1960,12 @@ int brcmf_fws_process_skb(struct brcmf_if *ifp, struct sk_buff *skb)
 
 	brcmf_dbg(DATA, "tx proto=0x%X\n", ntohs(eh->h_proto));
 
-	/* set control buffer information */
+	 
 	skcb->if_flags = 0;
 	skcb->state = BRCMF_FWS_SKBSTATE_NEW;
 	brcmf_skb_if_flags_set_field(skb, INDEX, ifp->ifidx);
 
-	/* mapping from 802.1d priority to firmware fifo index */
+	 
 	if (!multicast)
 		fifo = brcmf_map_prio_to_aci(drvr->config, skb->priority);
 
@@ -2221,7 +2059,7 @@ static void brcmf_fws_dequeue_worker(struct work_struct *worker)
 							&skb, true);
 				ifidx = brcmf_skb_if_flags_get_field(skb,
 								     INDEX);
-				/* Use proto layer to send data frame */
+				 
 				brcmf_fws_unlock(fws);
 				ret = brcmf_proto_txdata(drvr, ifidx, 0, skb);
 				brcmf_fws_lock(fws);
@@ -2355,7 +2193,7 @@ struct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr)
 
 	spin_lock_init(&fws->spinlock);
 
-	/* store drvr reference */
+	 
 	fws->drvr = drvr;
 	fws->fcmode = drvr->settings->fcmode;
 
@@ -2374,7 +2212,7 @@ struct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr)
 	}
 	INIT_WORK(&fws->fws_dequeue_work, brcmf_fws_dequeue_worker);
 
-	/* enable firmware signalling if fcmode active */
+	 
 	if (fws->fcmode != BRCMF_FWS_FCMODE_NONE)
 		tlv |= BRCMF_FWS_FLAGS_XONXOFF_SIGNALS |
 		       BRCMF_FWS_FLAGS_CREDIT_STATUS_SIGNALS |
@@ -2395,10 +2233,7 @@ struct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr)
 		goto fail;
 	}
 
-	/* Setting the iovar may fail if feature is unsupported
-	 * so leave the rc as is so driver initialization can
-	 * continue. Set mode back to none indicating not enabled.
-	 */
+	 
 	fws->fw_signals = true;
 	ifp = brcmf_get_ifp(drvr, 0);
 	if (brcmf_fil_iovar_int_set(ifp, "tlv", tlv)) {
@@ -2410,7 +2245,7 @@ struct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr)
 	if (brcmf_fil_iovar_int_set(ifp, "ampdu_hostreorder", 1))
 		brcmf_dbg(INFO, "enabling AMPDU host-reorder failed\n");
 
-	/* Enable seq number reuse, if supported */
+	 
 	if (brcmf_fil_iovar_int_get(ifp, "wlfc_mode", &mode) == 0) {
 		if (BRCMF_FWS_MODE_GET_REUSESEQ(mode)) {
 			mode = 0;
@@ -2446,18 +2281,18 @@ void brcmf_fws_detach(struct brcmf_fws_info *fws)
 	if (fws->fws_wq)
 		destroy_workqueue(fws->fws_wq);
 
-	/* cleanup */
+	 
 	brcmf_fws_lock(fws);
 	brcmf_fws_cleanup(fws, -1);
 	brcmf_fws_unlock(fws);
 
-	/* free top structure */
+	 
 	kfree(fws);
 }
 
 void brcmf_fws_debugfs_create(struct brcmf_pub *drvr)
 {
-	/* create debugfs file for statistics */
+	 
 	brcmf_debugfs_add_entry(drvr, "fws_stats",
 				brcmf_debugfs_fws_stats_read);
 }

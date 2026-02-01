@@ -1,23 +1,4 @@
-/*
- * trace-event-perl.  Feed perf script events to an embedded Perl interpreter.
- *
- * Copyright (C) 2009 Tom Zanussi <tzanussi@gmail.com>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
+ 
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -30,7 +11,7 @@
 #include <traceevent/event-parse.h>
 
 #include <stdbool.h>
-/* perl needs the following define, right after including stdbool.h */
+ 
 #define HAS_BOOL
 #include <EXTERN.h>
 #include <perl.h>
@@ -248,7 +229,7 @@ static void define_event_symbols(struct tep_event *event,
 	case TEP_PRINT_FUNC:
 	default:
 		pr_err("Unsupported print arg type\n");
-		/* we should warn... */
+		 
 		return;
 	}
 
@@ -390,7 +371,7 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 	XPUSHs(sv_2mortal(newSVpv(comm, 0)));
 	XPUSHs(sv_2mortal(perl_process_callchain(sample, evsel, al)));
 
-	/* common fields other than pid can be accessed via xsub fns */
+	 
 
 	for (field = event->format.fields; field; field = field->next) {
 		if (field->flags & TEP_FIELD_IS_STRING) {
@@ -403,7 +384,7 @@ static void perl_process_tracepoint(struct perf_sample *sample,
 			} else
 				offset = field->offset;
 			XPUSHs(sv_2mortal(newSVpv((char *)data + offset, 0)));
-		} else { /* FIELD_IS_NUMERIC */
+		} else {  
 			val = read_size(event, data + field->offset,
 					field->size);
 			if (field->flags & TEP_FIELD_IS_SIGNED) {
@@ -471,16 +452,14 @@ static void perl_process_event(union perf_event *event,
 
 static void run_start_sub(void)
 {
-	dSP; /* access to Perl stack */
+	dSP;  
 	PUSHMARK(SP);
 
 	if (get_cv("main::trace_begin", 0))
 		call_pv("main::trace_begin", G_DISCARD | G_NOARGS);
 }
 
-/*
- * Start trace script
- */
+ 
 static int perl_start_script(const char *script, int argc, const char **argv,
 			     struct perf_session *session)
 {
@@ -530,12 +509,10 @@ static int perl_flush_script(void)
 	return 0;
 }
 
-/*
- * Stop trace script
- */
+ 
 static int perl_stop_script(void)
 {
-	dSP; /* access to Perl stack */
+	dSP;  
 	PUSHMARK(SP);
 
 	if (get_cv("main::trace_end", 0))

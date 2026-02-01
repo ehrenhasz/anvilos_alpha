@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Core driver for the S32 CC (Common Chassis) pin controller
- *
- * Copyright 2017-2022 NXP
- * Copyright (C) 2022 SUSE LLC
- * Copyright 2015-2016 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -61,34 +55,19 @@ struct s32_pinctrl_mem_region {
 	char name[8];
 };
 
-/*
- * Holds pin configuration for GPIO's.
- * @pin_id: Pin ID for this GPIO
- * @config: Pin settings
- * @list: Linked list entry for each gpio pin
- */
+ 
 struct gpio_pin_config {
 	unsigned int pin_id;
 	unsigned int config;
 	struct list_head list;
 };
 
-/*
- * Pad config save/restore for power suspend/resume.
- */
+ 
 struct s32_pinctrl_context {
 	unsigned int *pads;
 };
 
-/*
- * @dev: a pointer back to containing device
- * @pctl: a pointer to the pinctrl device structure
- * @regions: reserved memory regions with start/end pin
- * @info: structure containing information about the pin
- * @gpio_configs: Saved configurations for GPIO pins
- * @gpiop_configs_lock: lock for the `gpio_configs` list
- * @s32_pinctrl_context: Configuration saved over system sleep
- */
+ 
 struct s32_pinctrl {
 	struct device *dev;
 	struct pinctrl_dev *pctl;
@@ -309,16 +288,13 @@ static int s32_pmx_set(struct pinctrl_dev *pctldev, unsigned int selector,
 	int i, ret;
 	struct s32_pin_group *grp;
 
-	/*
-	 * Configure the mux mode for each pin in the group for a specific
-	 * function.
-	 */
+	 
 	grp = &info->groups[group];
 
 	dev_dbg(ipctl->dev, "set mux for function %s group %s\n",
 		info->functions[selector].name, grp->data.name);
 
-	/* Check beforehand so we don't have a partial config. */
+	 
 	for (i = 0; i < grp->data.npins; i++) {
 		if (s32_check_pin(pctldev, grp->data.pins[i]) != 0) {
 			dev_err(info->dev, "invalid pin: %u in group: %u\n",
@@ -385,7 +361,7 @@ static int s32_pmx_gpio_request_enable(struct pinctrl_dev *pctldev,
 	if (ret)
 		return ret;
 
-	/* Save current configuration */
+	 
 	gpio_pin = kmalloc(sizeof(*gpio_pin), GFP_KERNEL);
 	if (!gpio_pin)
 		return -ENOMEM;
@@ -397,7 +373,7 @@ static int s32_pmx_gpio_request_enable(struct pinctrl_dev *pctldev,
 	list_add(&gpio_pin->list, &ipctl->gpio_configs);
 	spin_unlock_irqrestore(&ipctl->gpio_configs_lock, flags);
 
-	/* GPIO pin means SSS = 0 */
+	 
 	config &= ~S32_MSCR_SSS_MASK;
 
 	return s32_regmap_write(pctldev, offset, config);
@@ -440,10 +416,10 @@ static int s32_pmx_gpio_set_direction(struct pinctrl_dev *pctldev,
 	unsigned int mask = S32_MSCR_IBE | S32_MSCR_OBE;
 
 	if (input) {
-		/* Disable output buffer and enable input buffer */
+		 
 		config = S32_MSCR_IBE;
 	} else {
-		/* Disable input buffer and enable output buffer */
+		 
 		config = S32_MSCR_OBE;
 	}
 
@@ -460,14 +436,14 @@ static const struct pinmux_ops s32_pmx_ops = {
 	.gpio_set_direction = s32_pmx_gpio_set_direction,
 };
 
-/* Set the reserved elements as -1 */
+ 
 static const int support_slew[] = {208, -1, -1, -1, 166, 150, 133, 83};
 
 static int s32_get_slew_regval(int arg)
 {
 	unsigned int i;
 
-	/* Translate a real slew rate (MHz) to a register value */
+	 
 	for (i = 0; i < ARRAY_SIZE(support_slew); i++) {
 		if (arg == support_slew[i])
 			return i;
@@ -509,7 +485,7 @@ static int s32_parse_pincfg(unsigned long pincfg, unsigned int *mask,
 	arg = pinconf_to_config_argument(pincfg);
 
 	switch (param) {
-	/* All pins are persistent over suspend */
+	 
 	case PIN_CONFIG_PERSIST_STATE:
 		return 0;
 	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
@@ -669,10 +645,7 @@ static bool s32_pinctrl_should_save(struct s32_pinctrl *ipctl,
 	if (!pd)
 		return false;
 
-	/*
-	 * Only restore the pin if it is actually in use by the kernel (or
-	 * by userspace).
-	 */
+	 
 	if (pd->mux_owner || pd->gpio_owner)
 		return true;
 
@@ -746,7 +719,7 @@ static int s32_pinctrl_parse_groups(struct device_node *np,
 
 	dev_dbg(dev, "group: %pOFn\n", np);
 
-	/* Initialise group */
+	 
 	grp->data.name = np->name;
 
 	npins = of_property_count_elems_of_size(np, "pinmux", sizeof(u32));
@@ -797,7 +770,7 @@ static int s32_pinctrl_parse_functions(struct device_node *np,
 
 	func = &info->functions[index];
 
-	/* Initialise function */
+	 
 	func->name = np->name;
 	func->ngroups = of_get_child_count(np);
 	if (func->ngroups == 0) {
@@ -932,7 +905,7 @@ int s32_pinctrl_probe(struct platform_device *pdev,
 	info->soc_data = soc_data;
 	info->dev = &pdev->dev;
 
-	/* Create state holders etc for this driver */
+	 
 	ipctl = devm_kzalloc(&pdev->dev, sizeof(*ipctl), GFP_KERNEL);
 	if (!ipctl)
 		return -ENOMEM;

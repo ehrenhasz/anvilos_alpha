@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Meson G12A USB2 PHY driver
- *
- * Copyright (C) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- * Copyright (C) 2017 Amlogic, Inc. All rights reserved
- * Copyright (C) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -184,11 +177,11 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 
 	udelay(RESET_COMPLETE_TIME);
 
-	/* usb2_otg_aca_en == 0 */
+	 
 	regmap_update_bits(priv->regmap, PHY_CTRL_R21,
 			   PHY_CTRL_R21_USB2_OTG_ACA_EN, 0);
 
-	/* PLL Setup : 24MHz * 20 / 1 = 480MHz */
+	 
 	regmap_write(priv->regmap, PHY_CTRL_R16,
 		     FIELD_PREP(PHY_CTRL_R16_MPLL_M, 20) |
 		     FIELD_PREP(PHY_CTRL_R16_MPLL_N, 1) |
@@ -224,7 +217,7 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 
 	udelay(PLL_RESET_COMPLETE_TIME);
 
-	/* UnReset PLL */
+	 
 	regmap_write(priv->regmap, PHY_CTRL_R16,
 		     FIELD_PREP(PHY_CTRL_R16_MPLL_M, 20) |
 		     FIELD_PREP(PHY_CTRL_R16_MPLL_N, 1) |
@@ -233,7 +226,7 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 		     PHY_CTRL_R16_MPLL_FAST_LOCK |
 		     PHY_CTRL_R16_MPLL_EN);
 
-	/* PHY Tuning */
+	 
 	regmap_write(priv->regmap, PHY_CTRL_R20,
 		     FIELD_PREP(PHY_CTRL_R20_USB2_OTG_VBUS_TRIM_2_0, 4) |
 		     PHY_CTRL_R20_USB2_OTG_VBUSDET_EN |
@@ -258,19 +251,19 @@ static int phy_meson_g12a_usb2_init(struct phy *phy)
 			     PHY_CTRL_R21_USB2_TX_STRG_PD |
 			     FIELD_PREP(PHY_CTRL_R21_USB2_OTG_ACA_TRIM_1_0, 2));
 
-		/* Analog Settings */
+		 
 		regmap_write(priv->regmap, PHY_CTRL_R13,
 			     FIELD_PREP(PHY_CTRL_R13_MIN_COUNT_FOR_SYNC_DET, 7));
 	}
 
-	/* Tuning Disconnect Threshold */
+	 
 	regmap_write(priv->regmap, PHY_CTRL_R3,
 		     FIELD_PREP(PHY_CTRL_R3_SQUELCH_REF, 0) |
 		     FIELD_PREP(PHY_CTRL_R3_HSDIC_REF, 1) |
 		     FIELD_PREP(PHY_CTRL_R3_DISC_THRESH, 3));
 
 	if (priv->soc_id == MESON_SOC_G12A) {
-		/* Analog Settings */
+		 
 		regmap_write(priv->regmap, PHY_CTRL_R14, 0);
 		regmap_write(priv->regmap, PHY_CTRL_R13,
 			     PHY_CTRL_R13_UPDATE_PMA_SIGNALS |
@@ -292,7 +285,7 @@ static int phy_meson_g12a_usb2_exit(struct phy *phy)
 	return ret;
 }
 
-/* set_mode is not needed, mode setting is handled via the UTMI bus */
+ 
 static const struct phy_ops phy_meson_g12a_usb2_ops = {
 	.init		= phy_meson_g12a_usb2_init,
 	.exit		= phy_meson_g12a_usb2_exit,
@@ -364,7 +357,7 @@ static const struct of_device_id phy_meson_g12a_usb2_of_match[] = {
 		.compatible = "amlogic,a1-usb2-phy",
 		.data = (void *)MESON_SOC_A1,
 	},
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, phy_meson_g12a_usb2_of_match);
 

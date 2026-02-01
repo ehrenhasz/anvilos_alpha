@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/drm_fourcc.h>
 #include <drm/drm_modeset_helper.h>
@@ -228,7 +207,7 @@ static void dce_v11_0_pageflip_interrupt_init(struct amdgpu_device *adev)
 {
 	unsigned i;
 
-	/* Enable pflip interrupts */
+	 
 	for (i = 0; i < adev->mode_info.num_crtc; i++)
 		amdgpu_irq_get(adev, &adev->pageflip_irq, i);
 }
@@ -237,22 +216,12 @@ static void dce_v11_0_pageflip_interrupt_fini(struct amdgpu_device *adev)
 {
 	unsigned i;
 
-	/* Disable pflip interrupts */
+	 
 	for (i = 0; i < adev->mode_info.num_crtc; i++)
 		amdgpu_irq_put(adev, &adev->pageflip_irq, i);
 }
 
-/**
- * dce_v11_0_page_flip - pageflip callback.
- *
- * @adev: amdgpu_device pointer
- * @crtc_id: crtc to cleanup pageflip on
- * @crtc_base: new address of the crtc (GPU MC address)
- * @async: asynchronous flip
- *
- * Triggers the actual pageflip by updating the primary
- * surface base address.
- */
+ 
 static void dce_v11_0_page_flip(struct amdgpu_device *adev,
 				int crtc_id, u64 crtc_base, bool async)
 {
@@ -260,21 +229,21 @@ static void dce_v11_0_page_flip(struct amdgpu_device *adev,
 	struct drm_framebuffer *fb = amdgpu_crtc->base.primary->fb;
 	u32 tmp;
 
-	/* flip immediate for async, default is vsync */
+	 
 	tmp = RREG32(mmGRPH_FLIP_CONTROL + amdgpu_crtc->crtc_offset);
 	tmp = REG_SET_FIELD(tmp, GRPH_FLIP_CONTROL,
 			    GRPH_SURFACE_UPDATE_IMMEDIATE_EN, async ? 1 : 0);
 	WREG32(mmGRPH_FLIP_CONTROL + amdgpu_crtc->crtc_offset, tmp);
-	/* update pitch */
+	 
 	WREG32(mmGRPH_PITCH + amdgpu_crtc->crtc_offset,
 	       fb->pitches[0] / fb->format->cpp[0]);
-	/* update the scanout addresses */
+	 
 	WREG32(mmGRPH_PRIMARY_SURFACE_ADDRESS_HIGH + amdgpu_crtc->crtc_offset,
 	       upper_32_bits(crtc_base));
-	/* writing to the low address triggers the update */
+	 
 	WREG32(mmGRPH_PRIMARY_SURFACE_ADDRESS + amdgpu_crtc->crtc_offset,
 	       lower_32_bits(crtc_base));
-	/* post the write */
+	 
 	RREG32(mmGRPH_PRIMARY_SURFACE_ADDRESS + amdgpu_crtc->crtc_offset);
 }
 
@@ -290,15 +259,7 @@ static int dce_v11_0_crtc_get_scanoutpos(struct amdgpu_device *adev, int crtc,
 	return 0;
 }
 
-/**
- * dce_v11_0_hpd_sense - hpd sense callback.
- *
- * @adev: amdgpu_device pointer
- * @hpd: hpd (hotplug detect) pin
- *
- * Checks if a digital monitor is connected (evergreen+).
- * Returns true if connected, false if not connected.
- */
+ 
 static bool dce_v11_0_hpd_sense(struct amdgpu_device *adev,
 			       enum amdgpu_hpd_id hpd)
 {
@@ -314,14 +275,7 @@ static bool dce_v11_0_hpd_sense(struct amdgpu_device *adev,
 	return connected;
 }
 
-/**
- * dce_v11_0_hpd_set_polarity - hpd set polarity callback.
- *
- * @adev: amdgpu_device pointer
- * @hpd: hpd (hotplug detect) pin
- *
- * Set the polarity of the hpd pin (evergreen+).
- */
+ 
 static void dce_v11_0_hpd_set_polarity(struct amdgpu_device *adev,
 				      enum amdgpu_hpd_id hpd)
 {
@@ -339,14 +293,7 @@ static void dce_v11_0_hpd_set_polarity(struct amdgpu_device *adev,
 	WREG32(mmDC_HPD_INT_CONTROL + hpd_offsets[hpd], tmp);
 }
 
-/**
- * dce_v11_0_hpd_init - hpd setup callback.
- *
- * @adev: amdgpu_device pointer
- *
- * Setup the hpd pins used by the card (evergreen+).
- * Enable the pin, set the polarity, and enable the hpd interrupts.
- */
+ 
 static void dce_v11_0_hpd_init(struct amdgpu_device *adev)
 {
 	struct drm_device *dev = adev_to_drm(adev);
@@ -363,11 +310,7 @@ static void dce_v11_0_hpd_init(struct amdgpu_device *adev)
 
 		if (connector->connector_type == DRM_MODE_CONNECTOR_eDP ||
 		    connector->connector_type == DRM_MODE_CONNECTOR_LVDS) {
-			/* don't try to enable hpd on eDP or LVDS avoid breaking the
-			 * aux dp channel on imac and help (but not completely fix)
-			 * https://bugzilla.redhat.com/show_bug.cgi?id=726143
-			 * also avoid interrupt storms during dpms.
-			 */
+			 
 			tmp = RREG32(mmDC_HPD_INT_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd]);
 			tmp = REG_SET_FIELD(tmp, DC_HPD_INT_CONTROL, DC_HPD_INT_EN, 0);
 			WREG32(mmDC_HPD_INT_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd], tmp);
@@ -393,14 +336,7 @@ static void dce_v11_0_hpd_init(struct amdgpu_device *adev)
 	drm_connector_list_iter_end(&iter);
 }
 
-/**
- * dce_v11_0_hpd_fini - hpd tear down callback.
- *
- * @adev: amdgpu_device pointer
- *
- * Tear down the hpd pins used by the card (evergreen+).
- * Disable the hpd interrupts.
- */
+ 
 static void dce_v11_0_hpd_fini(struct amdgpu_device *adev)
 {
 	struct drm_device *dev = adev_to_drm(adev);
@@ -464,7 +400,7 @@ static void dce_v11_0_set_vga_render_state(struct amdgpu_device *adev,
 {
 	u32 tmp;
 
-	/* Lockout access through VGA aperture*/
+	 
 	tmp = RREG32(mmVGA_HDP_CONTROL);
 	if (render)
 		tmp = REG_SET_FIELD(tmp, VGA_HDP_CONTROL, VGA_MEMORY_DISABLE, 0);
@@ -472,7 +408,7 @@ static void dce_v11_0_set_vga_render_state(struct amdgpu_device *adev,
 		tmp = REG_SET_FIELD(tmp, VGA_HDP_CONTROL, VGA_MEMORY_DISABLE, 1);
 	WREG32(mmVGA_HDP_CONTROL, tmp);
 
-	/* disable VGA render */
+	 
 	tmp = RREG32(mmVGA_RENDER_CONTROL);
 	if (render)
 		tmp = REG_SET_FIELD(tmp, VGA_RENDER_CONTROL, VGA_VSTATUS_CNTL, 1);
@@ -508,14 +444,14 @@ static int dce_v11_0_get_num_crtc (struct amdgpu_device *adev)
 
 void dce_v11_0_disable_dce(struct amdgpu_device *adev)
 {
-	/*Disable VGA render and enabled crtc, if has DCE engine*/
+	 
 	if (amdgpu_atombios_has_dce_engine_info(adev)) {
 		u32 tmp;
 		int crtc_enabled, i;
 
 		dce_v11_0_set_vga_render_state(adev, false);
 
-		/*Disable crtc*/
+		 
 		for (i = 0; i < dce_v11_0_get_num_crtc(adev); i++) {
 			crtc_enabled = REG_GET_FIELD(RREG32(mmCRTC_CONTROL + crtc_offsets[i]),
 									 CRTC_CONTROL, CRTC_MASTER_EN);
@@ -547,11 +483,11 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 		dither = amdgpu_connector->dither;
 	}
 
-	/* LVDS/eDP FMT is set up by atom */
+	 
 	if (amdgpu_encoder->devices & ATOM_DEVICE_LCD_SUPPORT)
 		return;
 
-	/* not needed for analog */
+	 
 	if ((amdgpu_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DAC1) ||
 	    (amdgpu_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DAC2))
 		return;
@@ -562,7 +498,7 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 	switch (bpc) {
 	case 6:
 		if (dither == AMDGPU_FMT_DITHER_ENABLE) {
-			/* XXX sort out optimal dither settings */
+			 
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_FRAME_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_HIGHPASS_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_SPATIAL_DITHER_EN, 1);
@@ -574,7 +510,7 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 		break;
 	case 8:
 		if (dither == AMDGPU_FMT_DITHER_ENABLE) {
-			/* XXX sort out optimal dither settings */
+			 
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_FRAME_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_HIGHPASS_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_RGB_RANDOM_ENABLE, 1);
@@ -587,7 +523,7 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 		break;
 	case 10:
 		if (dither == AMDGPU_FMT_DITHER_ENABLE) {
-			/* XXX sort out optimal dither settings */
+			 
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_FRAME_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_HIGHPASS_RANDOM_ENABLE, 1);
 			tmp = REG_SET_FIELD(tmp, FMT_BIT_DEPTH_CONTROL, FMT_RGB_RANDOM_ENABLE, 1);
@@ -599,7 +535,7 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 		}
 		break;
 	default:
-		/* not needed */
+		 
 		break;
 	}
 
@@ -607,33 +543,15 @@ static void dce_v11_0_program_fmt(struct drm_encoder *encoder)
 }
 
 
-/* display watermark setup */
-/**
- * dce_v11_0_line_buffer_adjust - Set up the line buffer
- *
- * @adev: amdgpu_device pointer
- * @amdgpu_crtc: the selected display controller
- * @mode: the current display mode on the selected display
- * controller
- *
- * Setup up the line buffer allocation for
- * the selected display controller (CIK).
- * Returns the line buffer size in pixels.
- */
+ 
+ 
 static u32 dce_v11_0_line_buffer_adjust(struct amdgpu_device *adev,
 				       struct amdgpu_crtc *amdgpu_crtc,
 				       struct drm_display_mode *mode)
 {
 	u32 tmp, buffer_alloc, i, mem_cfg;
 	u32 pipe_offset = amdgpu_crtc->crtc_id;
-	/*
-	 * Line Buffer Setup
-	 * There are 6 line buffers, one for each display controllers.
-	 * There are 3 partitions per LB. Select the number of partitions
-	 * to enable based on the display width.  For display widths larger
-	 * than 4096, you need use to use 2 display controllers and combine
-	 * them using the stereo blender.
-	 */
+	 
 	if (amdgpu_crtc->base.enabled && mode) {
 		if (mode->crtc_hdisplay < 1920) {
 			mem_cfg = 1;
@@ -681,19 +599,11 @@ static u32 dce_v11_0_line_buffer_adjust(struct amdgpu_device *adev,
 		}
 	}
 
-	/* controller not enabled, so no lb used */
+	 
 	return 0;
 }
 
-/**
- * cik_get_number_of_dram_channels - get the number of dram channels
- *
- * @adev: amdgpu_device pointer
- *
- * Look up the number of video ram channels (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the number of dram channels
- */
+ 
 static u32 cik_get_number_of_dram_channels(struct amdgpu_device *adev)
 {
 	u32 tmp = RREG32(mmMC_SHARED_CHMAP);
@@ -722,34 +632,26 @@ static u32 cik_get_number_of_dram_channels(struct amdgpu_device *adev)
 }
 
 struct dce10_wm_params {
-	u32 dram_channels; /* number of dram channels */
-	u32 yclk;          /* bandwidth per dram data pin in kHz */
-	u32 sclk;          /* engine clock in kHz */
-	u32 disp_clk;      /* display clock in kHz */
-	u32 src_width;     /* viewport width */
-	u32 active_time;   /* active display time in ns */
-	u32 blank_time;    /* blank time in ns */
-	bool interlaced;    /* mode is interlaced */
-	fixed20_12 vsc;    /* vertical scale ratio */
-	u32 num_heads;     /* number of active crtcs */
-	u32 bytes_per_pixel; /* bytes per pixel display + overlay */
-	u32 lb_size;       /* line buffer allocated to pipe */
-	u32 vtaps;         /* vertical scaler taps */
+	u32 dram_channels;  
+	u32 yclk;           
+	u32 sclk;           
+	u32 disp_clk;       
+	u32 src_width;      
+	u32 active_time;    
+	u32 blank_time;     
+	bool interlaced;     
+	fixed20_12 vsc;     
+	u32 num_heads;      
+	u32 bytes_per_pixel;  
+	u32 lb_size;        
+	u32 vtaps;          
 };
 
-/**
- * dce_v11_0_dram_bandwidth - get the dram bandwidth
- *
- * @wm: watermark calculation data
- *
- * Calculate the raw dram bandwidth (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the dram bandwidth in MBytes/s
- */
+ 
 static u32 dce_v11_0_dram_bandwidth(struct dce10_wm_params *wm)
 {
-	/* Calculate raw DRAM Bandwidth */
-	fixed20_12 dram_efficiency; /* 0.7 */
+	 
+	fixed20_12 dram_efficiency;  
 	fixed20_12 yclk, dram_channels, bandwidth;
 	fixed20_12 a;
 
@@ -766,19 +668,11 @@ static u32 dce_v11_0_dram_bandwidth(struct dce10_wm_params *wm)
 	return dfixed_trunc(bandwidth);
 }
 
-/**
- * dce_v11_0_dram_bandwidth_for_display - get the dram bandwidth for display
- *
- * @wm: watermark calculation data
- *
- * Calculate the dram bandwidth used for display (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the dram bandwidth for display in MBytes/s
- */
+ 
 static u32 dce_v11_0_dram_bandwidth_for_display(struct dce10_wm_params *wm)
 {
-	/* Calculate DRAM Bandwidth and the part allocated to display. */
-	fixed20_12 disp_dram_allocation; /* 0.3 to 0.7 */
+	 
+	fixed20_12 disp_dram_allocation;  
 	fixed20_12 yclk, dram_channels, bandwidth;
 	fixed20_12 a;
 
@@ -787,7 +681,7 @@ static u32 dce_v11_0_dram_bandwidth_for_display(struct dce10_wm_params *wm)
 	yclk.full = dfixed_div(yclk, a);
 	dram_channels.full = dfixed_const(wm->dram_channels * 4);
 	a.full = dfixed_const(10);
-	disp_dram_allocation.full = dfixed_const(3); /* XXX worse case value 0.3 */
+	disp_dram_allocation.full = dfixed_const(3);  
 	disp_dram_allocation.full = dfixed_div(disp_dram_allocation, a);
 	bandwidth.full = dfixed_mul(dram_channels, yclk);
 	bandwidth.full = dfixed_mul(bandwidth, disp_dram_allocation);
@@ -795,19 +689,11 @@ static u32 dce_v11_0_dram_bandwidth_for_display(struct dce10_wm_params *wm)
 	return dfixed_trunc(bandwidth);
 }
 
-/**
- * dce_v11_0_data_return_bandwidth - get the data return bandwidth
- *
- * @wm: watermark calculation data
- *
- * Calculate the data return bandwidth used for display (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the data return bandwidth in MBytes/s
- */
+ 
 static u32 dce_v11_0_data_return_bandwidth(struct dce10_wm_params *wm)
 {
-	/* Calculate the display Data return Bandwidth */
-	fixed20_12 return_efficiency; /* 0.8 */
+	 
+	fixed20_12 return_efficiency;  
 	fixed20_12 sclk, bandwidth;
 	fixed20_12 a;
 
@@ -824,19 +710,11 @@ static u32 dce_v11_0_data_return_bandwidth(struct dce10_wm_params *wm)
 	return dfixed_trunc(bandwidth);
 }
 
-/**
- * dce_v11_0_dmif_request_bandwidth - get the dmif bandwidth
- *
- * @wm: watermark calculation data
- *
- * Calculate the dmif bandwidth used for display (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the dmif bandwidth in MBytes/s
- */
+ 
 static u32 dce_v11_0_dmif_request_bandwidth(struct dce10_wm_params *wm)
 {
-	/* Calculate the DMIF Request Bandwidth */
-	fixed20_12 disp_clk_request_efficiency; /* 0.8 */
+	 
+	fixed20_12 disp_clk_request_efficiency;  
 	fixed20_12 disp_clk, bandwidth;
 	fixed20_12 a, b;
 
@@ -855,18 +733,10 @@ static u32 dce_v11_0_dmif_request_bandwidth(struct dce10_wm_params *wm)
 	return dfixed_trunc(bandwidth);
 }
 
-/**
- * dce_v11_0_available_bandwidth - get the min available bandwidth
- *
- * @wm: watermark calculation data
- *
- * Calculate the min available bandwidth used for display (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the min available bandwidth in MBytes/s
- */
+ 
 static u32 dce_v11_0_available_bandwidth(struct dce10_wm_params *wm)
 {
-	/* Calculate the Available bandwidth. Display can use this temporarily but not in average. */
+	 
 	u32 dram_bandwidth = dce_v11_0_dram_bandwidth(wm);
 	u32 data_return_bandwidth = dce_v11_0_data_return_bandwidth(wm);
 	u32 dmif_req_bandwidth = dce_v11_0_dmif_request_bandwidth(wm);
@@ -874,21 +744,10 @@ static u32 dce_v11_0_available_bandwidth(struct dce10_wm_params *wm)
 	return min(dram_bandwidth, min(data_return_bandwidth, dmif_req_bandwidth));
 }
 
-/**
- * dce_v11_0_average_bandwidth - get the average available bandwidth
- *
- * @wm: watermark calculation data
- *
- * Calculate the average available bandwidth used for display (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the average available bandwidth in MBytes/s
- */
+ 
 static u32 dce_v11_0_average_bandwidth(struct dce10_wm_params *wm)
 {
-	/* Calculate the display mode Average Bandwidth
-	 * DisplayMode should contain the source and destination dimensions,
-	 * timing, etc.
-	 */
+	 
 	fixed20_12 bpp;
 	fixed20_12 line_time;
 	fixed20_12 src_width;
@@ -907,23 +766,15 @@ static u32 dce_v11_0_average_bandwidth(struct dce10_wm_params *wm)
 	return dfixed_trunc(bandwidth);
 }
 
-/**
- * dce_v11_0_latency_watermark - get the latency watermark
- *
- * @wm: watermark calculation data
- *
- * Calculate the latency watermark (CIK).
- * Used for display watermark bandwidth calculations
- * Returns the latency watermark in ns
- */
+ 
 static u32 dce_v11_0_latency_watermark(struct dce10_wm_params *wm)
 {
-	/* First calculate the latency in ns */
-	u32 mc_latency = 2000; /* 2000 ns. */
+	 
+	u32 mc_latency = 2000;  
 	u32 available_bandwidth = dce_v11_0_available_bandwidth(wm);
 	u32 worst_chunk_return_time = (512 * 8 * 1000) / available_bandwidth;
 	u32 cursor_line_pair_return_time = (128 * 4 * 1000) / available_bandwidth;
-	u32 dc_latency = 40000000 / wm->disp_clk; /* dc pipe latency */
+	u32 dc_latency = 40000000 / wm->disp_clk;  
 	u32 other_heads_data_return_time = ((wm->num_heads + 1) * worst_chunk_return_time) +
 		(wm->num_heads * cursor_line_pair_return_time);
 	u32 latency = mc_latency + other_heads_data_return_time + dc_latency;
@@ -966,17 +817,7 @@ static u32 dce_v11_0_latency_watermark(struct dce10_wm_params *wm)
 
 }
 
-/**
- * dce_v11_0_average_bandwidth_vs_dram_bandwidth_for_display - check
- * average and available dram bandwidth
- *
- * @wm: watermark calculation data
- *
- * Check if the display average bandwidth fits in the display
- * dram bandwidth (CIK).
- * Used for display watermark bandwidth calculations
- * Returns true if the display fits, false if not.
- */
+ 
 static bool dce_v11_0_average_bandwidth_vs_dram_bandwidth_for_display(struct dce10_wm_params *wm)
 {
 	if (dce_v11_0_average_bandwidth(wm) <=
@@ -986,17 +827,7 @@ static bool dce_v11_0_average_bandwidth_vs_dram_bandwidth_for_display(struct dce
 		return false;
 }
 
-/**
- * dce_v11_0_average_bandwidth_vs_available_bandwidth - check
- * average and available bandwidth
- *
- * @wm: watermark calculation data
- *
- * Check if the display average bandwidth fits in the display
- * available bandwidth (CIK).
- * Used for display watermark bandwidth calculations
- * Returns true if the display fits, false if not.
- */
+ 
 static bool dce_v11_0_average_bandwidth_vs_available_bandwidth(struct dce10_wm_params *wm)
 {
 	if (dce_v11_0_average_bandwidth(wm) <=
@@ -1006,15 +837,7 @@ static bool dce_v11_0_average_bandwidth_vs_available_bandwidth(struct dce10_wm_p
 		return false;
 }
 
-/**
- * dce_v11_0_check_latency_hiding - check latency hiding
- *
- * @wm: watermark calculation data
- *
- * Check latency hiding (CIK).
- * Used for display watermark bandwidth calculations
- * Returns true if the display fits, false if not.
- */
+ 
 static bool dce_v11_0_check_latency_hiding(struct dce10_wm_params *wm)
 {
 	u32 lb_partitions = wm->lb_size / wm->src_width;
@@ -1041,17 +864,7 @@ static bool dce_v11_0_check_latency_hiding(struct dce10_wm_params *wm)
 		return false;
 }
 
-/**
- * dce_v11_0_program_watermarks - program display watermarks
- *
- * @adev: amdgpu_device pointer
- * @amdgpu_crtc: the selected display controller
- * @lb_size: line buffer size
- * @num_heads: number of display controllers in use
- *
- * Calculate and program the display watermarks for the
- * selected display controller (CIK).
- */
+ 
 static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 					struct amdgpu_crtc *amdgpu_crtc,
 					u32 lb_size, u32 num_heads)
@@ -1070,7 +883,7 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 					  (u32)mode->clock);
 		line_time = min(line_time, (u32)65535);
 
-		/* watermark for high clocks */
+		 
 		if (adev->pm.dpm_enabled) {
 			wm_high.yclk =
 				amdgpu_dpm_get_mclk(adev, false) * 10;
@@ -1092,16 +905,16 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 		wm_high.vtaps = 1;
 		if (amdgpu_crtc->rmx_type != RMX_OFF)
 			wm_high.vtaps = 2;
-		wm_high.bytes_per_pixel = 4; /* XXX: get this from fb config */
+		wm_high.bytes_per_pixel = 4;  
 		wm_high.lb_size = lb_size;
 		wm_high.dram_channels = cik_get_number_of_dram_channels(adev);
 		wm_high.num_heads = num_heads;
 
-		/* set for high clocks */
+		 
 		latency_watermark_a = min(dce_v11_0_latency_watermark(&wm_high), (u32)65535);
 
-		/* possibly force display priority to high */
-		/* should really do this at mode validation time... */
+		 
+		 
 		if (!dce_v11_0_average_bandwidth_vs_dram_bandwidth_for_display(&wm_high) ||
 		    !dce_v11_0_average_bandwidth_vs_available_bandwidth(&wm_high) ||
 		    !dce_v11_0_check_latency_hiding(&wm_high) ||
@@ -1109,7 +922,7 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 			DRM_DEBUG_KMS("force priority to high\n");
 		}
 
-		/* watermark for low clocks */
+		 
 		if (adev->pm.dpm_enabled) {
 			wm_low.yclk =
 				amdgpu_dpm_get_mclk(adev, true) * 10;
@@ -1131,16 +944,16 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 		wm_low.vtaps = 1;
 		if (amdgpu_crtc->rmx_type != RMX_OFF)
 			wm_low.vtaps = 2;
-		wm_low.bytes_per_pixel = 4; /* XXX: get this from fb config */
+		wm_low.bytes_per_pixel = 4;  
 		wm_low.lb_size = lb_size;
 		wm_low.dram_channels = cik_get_number_of_dram_channels(adev);
 		wm_low.num_heads = num_heads;
 
-		/* set for low clocks */
+		 
 		latency_watermark_b = min(dce_v11_0_latency_watermark(&wm_low), (u32)65535);
 
-		/* possibly force display priority to high */
-		/* should really do this at mode validation time... */
+		 
+		 
 		if (!dce_v11_0_average_bandwidth_vs_dram_bandwidth_for_display(&wm_low) ||
 		    !dce_v11_0_average_bandwidth_vs_available_bandwidth(&wm_low) ||
 		    !dce_v11_0_check_latency_hiding(&wm_low) ||
@@ -1150,7 +963,7 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 		lb_vblank_lead_lines = DIV_ROUND_UP(lb_size, mode->crtc_hdisplay);
 	}
 
-	/* select wm A */
+	 
 	wm_mask = RREG32(mmDPG_WATERMARK_MASK_CONTROL + amdgpu_crtc->crtc_offset);
 	tmp = REG_SET_FIELD(wm_mask, DPG_WATERMARK_MASK_CONTROL, URGENCY_WATERMARK_MASK, 1);
 	WREG32(mmDPG_WATERMARK_MASK_CONTROL + amdgpu_crtc->crtc_offset, tmp);
@@ -1158,32 +971,25 @@ static void dce_v11_0_program_watermarks(struct amdgpu_device *adev,
 	tmp = REG_SET_FIELD(tmp, DPG_PIPE_URGENCY_CONTROL, URGENCY_LOW_WATERMARK, latency_watermark_a);
 	tmp = REG_SET_FIELD(tmp, DPG_PIPE_URGENCY_CONTROL, URGENCY_HIGH_WATERMARK, line_time);
 	WREG32(mmDPG_PIPE_URGENCY_CONTROL + amdgpu_crtc->crtc_offset, tmp);
-	/* select wm B */
+	 
 	tmp = REG_SET_FIELD(wm_mask, DPG_WATERMARK_MASK_CONTROL, URGENCY_WATERMARK_MASK, 2);
 	WREG32(mmDPG_WATERMARK_MASK_CONTROL + amdgpu_crtc->crtc_offset, tmp);
 	tmp = RREG32(mmDPG_PIPE_URGENCY_CONTROL + amdgpu_crtc->crtc_offset);
 	tmp = REG_SET_FIELD(tmp, DPG_PIPE_URGENCY_CONTROL, URGENCY_LOW_WATERMARK, latency_watermark_b);
 	tmp = REG_SET_FIELD(tmp, DPG_PIPE_URGENCY_CONTROL, URGENCY_HIGH_WATERMARK, line_time);
 	WREG32(mmDPG_PIPE_URGENCY_CONTROL + amdgpu_crtc->crtc_offset, tmp);
-	/* restore original selection */
+	 
 	WREG32(mmDPG_WATERMARK_MASK_CONTROL + amdgpu_crtc->crtc_offset, wm_mask);
 
-	/* save values for DPM */
+	 
 	amdgpu_crtc->line_time = line_time;
 	amdgpu_crtc->wm_high = latency_watermark_a;
 	amdgpu_crtc->wm_low = latency_watermark_b;
-	/* Save number of lines the linebuffer leads before the scanout */
+	 
 	amdgpu_crtc->lb_vblank_lead_lines = lb_vblank_lead_lines;
 }
 
-/**
- * dce_v11_0_bandwidth_update - program display watermarks
- *
- * @adev: amdgpu_device pointer
- *
- * Calculate and program the display watermarks and line
- * buffer allocation (CIK).
- */
+ 
 static void dce_v11_0_bandwidth_update(struct amdgpu_device *adev)
 {
 	struct drm_display_mode *mode = NULL;
@@ -1334,12 +1140,12 @@ static void dce_v11_0_audio_write_speaker_allocation(struct drm_encoder *encoder
 		sad_count = 0;
 	}
 
-	/* program the speaker allocation */
+	 
 	tmp = RREG32_AUDIO_ENDPT(dig->afmt->pin->offset,
 				 ixAZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER);
 	tmp = REG_SET_FIELD(tmp, AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
 			    DP_CONNECTION, 0);
-	/* set HDMI mode */
+	 
 	tmp = REG_SET_FIELD(tmp, AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
 			    HDMI_CONNECTION, 1);
 	if (sad_count)
@@ -1347,7 +1153,7 @@ static void dce_v11_0_audio_write_speaker_allocation(struct drm_encoder *encoder
 				    SPEAKER_ALLOCATION, sadb[0]);
 	else
 		tmp = REG_SET_FIELD(tmp, AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER,
-				    SPEAKER_ALLOCATION, 5); /* stereo */
+				    SPEAKER_ALLOCATION, 5);  
 	WREG32_AUDIO_ENDPT(dig->afmt->pin->offset,
 			   ixAZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER, tmp);
 
@@ -1498,8 +1304,8 @@ static int dce_v11_0_audio_init(struct amdgpu_device *adev)
 		adev->mode_info.audio.pin[i].connected = false;
 		adev->mode_info.audio.pin[i].offset = pin_offsets[i];
 		adev->mode_info.audio.pin[i].id = i;
-		/* disable audio.  it will be set up later */
-		/* XXX remove once we switch to ip funcs */
+		 
+		 
 		dce_v11_0_audio_enable(adev, &adev->mode_info.audio.pin[i], false);
 	}
 
@@ -1522,9 +1328,7 @@ static void dce_v11_0_audio_fini(struct amdgpu_device *adev)
 	adev->mode_info.audio.enabled = false;
 }
 
-/*
- * update the N and CTS parameters for a given pixel clock rate
- */
+ 
 static void dce_v11_0_afmt_update_ACR(struct drm_encoder *encoder, uint32_t clock)
 {
 	struct drm_device *dev = encoder->dev;
@@ -1557,9 +1361,7 @@ static void dce_v11_0_afmt_update_ACR(struct drm_encoder *encoder, uint32_t cloc
 
 }
 
-/*
- * build a HDMI Video Info Frame
- */
+ 
 static void dce_v11_0_afmt_update_avi_infoframe(struct drm_encoder *encoder,
 					       void *buffer, size_t size)
 {
@@ -1594,11 +1396,8 @@ static void dce_v11_0_audio_set_dto(struct drm_encoder *encoder, u32 clock)
 	if (!dig || !dig->afmt)
 		return;
 
-	/* XXX two dtos; generally use dto0 for hdmi */
-	/* Express [24MHz / target pixel clock] as an exact rational
-	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
-	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
-	 */
+	 
+	 
 	tmp = RREG32(mmDCCG_AUDIO_DTO_SOURCE);
 	tmp = REG_SET_FIELD(tmp, DCCG_AUDIO_DTO_SOURCE, DCCG_AUDIO_DTO0_SOURCE_SEL,
 			    amdgpu_crtc->crtc_id);
@@ -1607,9 +1406,7 @@ static void dce_v11_0_audio_set_dto(struct drm_encoder *encoder, u32 clock)
 	WREG32(mmDCCG_AUDIO_DTO0_MODULE, dto_modulo);
 }
 
-/*
- * update the info frames with the data from the current display mode
- */
+ 
 static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 				  struct drm_display_mode *mode)
 {
@@ -1627,17 +1424,17 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 	if (!dig || !dig->afmt)
 		return;
 
-	/* Silent, r600_hdmi_enable will raise WARN for us */
+	 
 	if (!dig->afmt->enabled)
 		return;
 
-	/* hdmi deep color mode general control packets setup, if bpc > 8 */
+	 
 	if (encoder->crtc) {
 		struct amdgpu_crtc *amdgpu_crtc = to_amdgpu_crtc(encoder->crtc);
 		bpc = amdgpu_crtc->bpc;
 	}
 
-	/* disable audio prior to setting up hw */
+	 
 	dig->afmt->pin = dce_v11_0_audio_get_pin(adev);
 	dce_v11_0_audio_enable(adev, dig->afmt->pin, false);
 
@@ -1645,7 +1442,7 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 
 	tmp = RREG32(mmHDMI_VBI_PACKET_CONTROL + dig->afmt->offset);
 	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_NULL_SEND, 1);
-	WREG32(mmHDMI_VBI_PACKET_CONTROL + dig->afmt->offset, tmp); /* send null packets when required */
+	WREG32(mmHDMI_VBI_PACKET_CONTROL + dig->afmt->offset, tmp);  
 
 	WREG32(mmAFMT_AUDIO_CRC_CONTROL + dig->afmt->offset, 0x1000);
 
@@ -1677,50 +1474,50 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 	WREG32(mmHDMI_CONTROL + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmHDMI_VBI_PACKET_CONTROL + dig->afmt->offset);
-	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_NULL_SEND, 1); /* send null packets when required */
-	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_GC_SEND, 1); /* send general control packets */
-	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_GC_CONT, 1); /* send general control packets every frame */
+	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_NULL_SEND, 1);  
+	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_GC_SEND, 1);  
+	tmp = REG_SET_FIELD(tmp, HDMI_VBI_PACKET_CONTROL, HDMI_GC_CONT, 1);  
 	WREG32(mmHDMI_VBI_PACKET_CONTROL + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmHDMI_INFOFRAME_CONTROL0 + dig->afmt->offset);
-	/* enable audio info frames (frames won't be set until audio is enabled) */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_INFOFRAME_CONTROL0, HDMI_AUDIO_INFO_SEND, 1);
-	/* required for audio info values to be updated */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_INFOFRAME_CONTROL0, HDMI_AUDIO_INFO_CONT, 1);
 	WREG32(mmHDMI_INFOFRAME_CONTROL0 + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmAFMT_INFOFRAME_CONTROL0 + dig->afmt->offset);
-	/* required for audio info values to be updated */
+	 
 	tmp = REG_SET_FIELD(tmp, AFMT_INFOFRAME_CONTROL0, AFMT_AUDIO_INFO_UPDATE, 1);
 	WREG32(mmAFMT_INFOFRAME_CONTROL0 + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmHDMI_INFOFRAME_CONTROL1 + dig->afmt->offset);
-	/* anything other than 0 */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_INFOFRAME_CONTROL1, HDMI_AUDIO_INFO_LINE, 2);
 	WREG32(mmHDMI_INFOFRAME_CONTROL1 + dig->afmt->offset, tmp);
 
-	WREG32(mmHDMI_GC + dig->afmt->offset, 0); /* unset HDMI_GC_AVMUTE */
+	WREG32(mmHDMI_GC + dig->afmt->offset, 0);  
 
 	tmp = RREG32(mmHDMI_AUDIO_PACKET_CONTROL + dig->afmt->offset);
-	/* set the default audio delay */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_AUDIO_PACKET_CONTROL, HDMI_AUDIO_DELAY_EN, 1);
-	/* should be suffient for all audio modes and small enough for all hblanks */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_AUDIO_PACKET_CONTROL, HDMI_AUDIO_PACKETS_PER_LINE, 3);
 	WREG32(mmHDMI_AUDIO_PACKET_CONTROL + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmAFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset);
-	/* allow 60958 channel status fields to be updated */
+	 
 	tmp = REG_SET_FIELD(tmp, AFMT_AUDIO_PACKET_CONTROL, AFMT_60958_CS_UPDATE, 1);
 	WREG32(mmAFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmHDMI_ACR_PACKET_CONTROL + dig->afmt->offset);
 	if (bpc > 8)
-		/* clear SW CTS value */
+		 
 		tmp = REG_SET_FIELD(tmp, HDMI_ACR_PACKET_CONTROL, HDMI_ACR_SOURCE, 0);
 	else
-		/* select SW CTS value */
+		 
 		tmp = REG_SET_FIELD(tmp, HDMI_ACR_PACKET_CONTROL, HDMI_ACR_SOURCE, 1);
-	/* allow hw to sent ACR packets when required */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_ACR_PACKET_CONTROL, HDMI_ACR_AUTO_SEND, 1);
 	WREG32(mmHDMI_ACR_PACKET_CONTROL + dig->afmt->offset, tmp);
 
@@ -1767,9 +1564,9 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 	dce_v11_0_afmt_update_avi_infoframe(encoder, buffer, sizeof(buffer));
 
 	tmp = RREG32(mmHDMI_INFOFRAME_CONTROL0 + dig->afmt->offset);
-	/* enable AVI info frames */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_INFOFRAME_CONTROL0, HDMI_AVI_INFO_SEND, 1);
-	/* required for audio info values to be updated */
+	 
 	tmp = REG_SET_FIELD(tmp, HDMI_INFOFRAME_CONTROL0, HDMI_AVI_INFO_CONT, 1);
 	WREG32(mmHDMI_INFOFRAME_CONTROL0 + dig->afmt->offset, tmp);
 
@@ -1778,7 +1575,7 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 	WREG32(mmHDMI_INFOFRAME_CONTROL1 + dig->afmt->offset, tmp);
 
 	tmp = RREG32(mmAFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset);
-	/* send audio packets */
+	 
 	tmp = REG_SET_FIELD(tmp, AFMT_AUDIO_PACKET_CONTROL, AFMT_AUDIO_SAMPLE_SEND, 1);
 	WREG32(mmAFMT_AUDIO_PACKET_CONTROL + dig->afmt->offset, tmp);
 
@@ -1787,7 +1584,7 @@ static void dce_v11_0_afmt_setmode(struct drm_encoder *encoder,
 	WREG32(mmAFMT_RAMP_CONTROL2 + dig->afmt->offset, 0x00000001);
 	WREG32(mmAFMT_RAMP_CONTROL3 + dig->afmt->offset, 0x00000001);
 
-	/* enable audio after to setting up hw */
+	 
 	dce_v11_0_audio_enable(adev, dig->afmt->pin, true);
 }
 
@@ -1801,7 +1598,7 @@ static void dce_v11_0_afmt_enable(struct drm_encoder *encoder, bool enable)
 	if (!dig || !dig->afmt)
 		return;
 
-	/* Silent, r600_hdmi_enable will raise WARN for us */
+	 
 	if (enable && dig->afmt->enabled)
 		return;
 	if (!enable && !dig->afmt->enabled)
@@ -1825,7 +1622,7 @@ static int dce_v11_0_afmt_init(struct amdgpu_device *adev)
 	for (i = 0; i < adev->mode_info.num_dig; i++)
 		adev->mode_info.afmt[i] = NULL;
 
-	/* DCE11 has audio blocks tied to DIG encoders */
+	 
 	for (i = 0; i < adev->mode_info.num_dig; i++) {
 		adev->mode_info.afmt[i] = kzalloc(sizeof(struct amdgpu_afmt), GFP_KERNEL);
 		if (adev->mode_info.afmt[i]) {
@@ -1907,7 +1704,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 	int r;
 	bool bypass_lut = false;
 
-	/* no fb bound */
+	 
 	if (!atomic && !crtc->primary->fb) {
 		DRM_DEBUG_KMS("No FB bound\n");
 		return 0;
@@ -1918,9 +1715,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 	else
 		target_fb = crtc->primary->fb;
 
-	/* If atomic, assume fb object is pinned & idle & fenced and
-	 * just update base pointers
-	 */
+	 
 	obj = target_fb->obj[0];
 	abo = gem_to_amdgpu_bo(obj);
 	r = amdgpu_bo_reserve(abo, false);
@@ -1998,7 +1793,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 		fb_swap = REG_SET_FIELD(fb_swap, GRPH_SWAP_CNTL, GRPH_ENDIAN_SWAP,
 					ENDIAN_8IN32);
 #endif
-		/* Greater 8 bpc fb needs to bypass hw-lut to retain precision */
+		 
 		bypass_lut = true;
 		break;
 	case DRM_FORMAT_BGRX1010102:
@@ -2009,7 +1804,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 		fb_swap = REG_SET_FIELD(fb_swap, GRPH_SWAP_CNTL, GRPH_ENDIAN_SWAP,
 					ENDIAN_8IN32);
 #endif
-		/* Greater 8 bpc fb needs to bypass hw-lut to retain precision */
+		 
 		bypass_lut = true;
 		break;
 	case DRM_FORMAT_XBGR8888:
@@ -2059,9 +1854,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 
 	dce_v11_0_vga_enable(crtc, false);
 
-	/* Make sure surface address is updated at vertical blank rather than
-	 * horizontal blank
-	 */
+	 
 	tmp = RREG32(mmGRPH_FLIP_CONTROL + amdgpu_crtc->crtc_offset);
 	tmp = REG_SET_FIELD(tmp, GRPH_FLIP_CONTROL,
 			    GRPH_SURFACE_UPDATE_H_RETRACE_EN, 0);
@@ -2078,11 +1871,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 	WREG32(mmGRPH_CONTROL + amdgpu_crtc->crtc_offset, fb_format);
 	WREG32(mmGRPH_SWAP_CNTL + amdgpu_crtc->crtc_offset, fb_swap);
 
-	/*
-	 * The LUT only has 256 slots for indexing by a 8 bpc fb. Bypass the LUT
-	 * for > 8 bpc scanout to avoid truncation of fb indices to 8 msb's, to
-	 * retain the full precision throughout the pipeline.
-	 */
+	 
 	tmp = RREG32(mmGRPH_LUT_10BIT_BYPASS + amdgpu_crtc->crtc_offset);
 	if (bypass_lut)
 		tmp = REG_SET_FIELD(tmp, GRPH_LUT_10BIT_BYPASS, GRPH_LUT_10BIT_BYPASS_EN, 1);
@@ -2117,7 +1906,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 	WREG32(mmVIEWPORT_SIZE + amdgpu_crtc->crtc_offset,
 	       (viewport_w << 16) | viewport_h);
 
-	/* set pageflip to happen anywhere in vblank interval */
+	 
 	WREG32(mmCRTC_MASTER_UPDATE_MODE + amdgpu_crtc->crtc_offset, 0);
 
 	if (!atomic && fb && fb != crtc->primary->fb) {
@@ -2129,7 +1918,7 @@ static int dce_v11_0_crtc_do_set_base(struct drm_crtc *crtc,
 		amdgpu_bo_unreserve(abo);
 	}
 
-	/* Bytes per pixel may have changed */
+	 
 	dce_v11_0_bandwidth_update(adev);
 
 	return 0;
@@ -2216,11 +2005,9 @@ static void dce_v11_0_crtc_load_lut(struct drm_crtc *crtc)
 	tmp = REG_SET_FIELD(tmp, OUTPUT_CSC_CONTROL, OUTPUT_CSC_GRPH_MODE, 0);
 	WREG32(mmOUTPUT_CSC_CONTROL + amdgpu_crtc->crtc_offset, tmp);
 
-	/* XXX match this to the depth of the crtc fmt block, move to modeset? */
+	 
 	WREG32(mmDENORM_CONTROL + amdgpu_crtc->crtc_offset, 0);
-	/* XXX this only needs to be programmed once per crtc at startup,
-	 * not sure where the best place for it is
-	 */
+	 
 	tmp = RREG32(mmALPHA_CONTROL + amdgpu_crtc->crtc_offset);
 	tmp = REG_SET_FIELD(tmp, ALPHA_CONTROL, CURSOR_ALPHA_BLND_ENA, 1);
 	WREG32(mmALPHA_CONTROL + amdgpu_crtc->crtc_offset, tmp);
@@ -2255,28 +2042,7 @@ static int dce_v11_0_pick_dig_encoder(struct drm_encoder *encoder)
 	}
 }
 
-/**
- * dce_v11_0_pick_pll - Allocate a PPLL for use by the crtc.
- *
- * @crtc: drm crtc
- *
- * Returns the PPLL (Pixel PLL) to be used by the crtc.  For DP monitors
- * a single PPLL can be used for all DP crtcs/encoders.  For non-DP
- * monitors a dedicated PPLL must be used.  If a particular board has
- * an external DP PLL, return ATOM_PPLL_INVALID to skip PLL programming
- * as there is no need to program the PLL itself.  If we are not able to
- * allocate a PLL, return ATOM_PPLL_INVALID to skip PLL programming to
- * avoid messing up an existing monitor.
- *
- * Asic specific PLL information
- *
- * DCE 10.x
- * Tonga
- * - PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP)
- * CI
- * - PPLL0, PPLL1, PPLL2 are available for all UNIPHY (both DP and non-DP) and DAC
- *
- */
+ 
 static u32 dce_v11_0_pick_pll(struct drm_crtc *crtc)
 {
 	struct amdgpu_crtc *amdgpu_crtc = to_amdgpu_crtc(crtc);
@@ -2320,22 +2086,22 @@ static u32 dce_v11_0_pick_pll(struct drm_crtc *crtc)
 
 	if (ENCODER_MODE_IS_DP(amdgpu_atombios_encoder_get_encoder_mode(amdgpu_crtc->encoder))) {
 		if (adev->clock.dp_extclk)
-			/* skip PPLL programming if using ext clock */
+			 
 			return ATOM_PPLL_INVALID;
 		else {
-			/* use the same PPLL for all DP monitors */
+			 
 			pll = amdgpu_pll_get_shared_dp_ppll(crtc);
 			if (pll != ATOM_PPLL_INVALID)
 				return pll;
 		}
 	} else {
-		/* use the same PPLL for all monitors with the same clock */
+		 
 		pll = amdgpu_pll_get_shared_nondp_ppll(crtc);
 		if (pll != ATOM_PPLL_INVALID)
 			return pll;
 	}
 
-	/* XXX need to determine what plls are available on each DCE11 part */
+	 
 	pll_in_use = amdgpu_pll_get_use_mask(crtc);
 	if (adev->flags & AMD_IS_APU) {
 		if (!(pll_in_use & (1 << ATOM_PPLL1)))
@@ -2409,7 +2175,7 @@ static int dce_v11_0_cursor_move_locked(struct drm_crtc *crtc,
 	amdgpu_crtc->cursor_x = x;
 	amdgpu_crtc->cursor_y = y;
 
-	/* avivo cursor are offset into the total surface */
+	 
 	x += crtc->x;
 	y += crtc->y;
 	DRM_DEBUG("x %d y %d c->x %d c->y %d\n", x, y, crtc->x, crtc->y);
@@ -2457,7 +2223,7 @@ static int dce_v11_0_crtc_cursor_set2(struct drm_crtc *crtc,
 	int ret;
 
 	if (!handle) {
-		/* turn off cursor */
+		 
 		dce_v11_0_hide_cursor(crtc);
 		obj = NULL;
 		goto unpin;
@@ -2588,7 +2354,7 @@ static void dce_v11_0_crtc_dpms(struct drm_crtc *crtc, int mode)
 		dce_v11_0_vga_enable(crtc, true);
 		amdgpu_atombios_crtc_blank(crtc, ATOM_DISABLE);
 		dce_v11_0_vga_enable(crtc, false);
-		/* Make sure VBLANK and PFLIP interrupts are still enabled */
+		 
 		type = amdgpu_display_crtc_idx_to_irq_type(adev,
 						amdgpu_crtc->crtc_id);
 		amdgpu_irq_update(adev, &adev->crtc_irq, type);
@@ -2609,13 +2375,13 @@ static void dce_v11_0_crtc_dpms(struct drm_crtc *crtc, int mode)
 		amdgpu_crtc->enabled = false;
 		break;
 	}
-	/* adjust pm to dpms */
+	 
 	amdgpu_dpm_compute_clocks(adev);
 }
 
 static void dce_v11_0_crtc_prepare(struct drm_crtc *crtc)
 {
-	/* disable crtc pair power gating before programming */
+	 
 	amdgpu_atombios_crtc_powergate(crtc, ATOM_DISABLE);
 	amdgpu_atombios_crtc_lock(crtc, ATOM_ENABLE);
 	dce_v11_0_crtc_dpms(crtc, DRM_MODE_DPMS_OFF);
@@ -2649,7 +2415,7 @@ static void dce_v11_0_crtc_disable(struct drm_crtc *crtc)
 			amdgpu_bo_unreserve(abo);
 		}
 	}
-	/* disable the GRPH */
+	 
 	dce_v11_0_grph_enable(crtc, false);
 
 	amdgpu_atombios_crtc_powergate(crtc, ATOM_ENABLE);
@@ -2659,9 +2425,7 @@ static void dce_v11_0_crtc_disable(struct drm_crtc *crtc)
 		    adev->mode_info.crtcs[i]->enabled &&
 		    i != amdgpu_crtc->crtc_id &&
 		    amdgpu_crtc->pll_id == adev->mode_info.crtcs[i]->pll_id) {
-			/* one other crtc is using this pll don't turn
-			 * off the pll
-			 */
+			 
 			goto done;
 		}
 	}
@@ -2670,7 +2434,7 @@ static void dce_v11_0_crtc_disable(struct drm_crtc *crtc)
 	case ATOM_PPLL0:
 	case ATOM_PPLL1:
 	case ATOM_PPLL2:
-		/* disable the ppll */
+		 
 		amdgpu_atombios_crtc_program_pll(crtc, amdgpu_crtc->crtc_id, amdgpu_crtc->pll_id,
 						 0, 0, ATOM_DISABLE, 0, 0, 0, 0, 0, false, &ss);
 		break;
@@ -2680,7 +2444,7 @@ static void dce_v11_0_crtc_disable(struct drm_crtc *crtc)
 	case ATOM_COMBOPHY_PLL3:
 	case ATOM_COMBOPHY_PLL4:
 	case ATOM_COMBOPHY_PLL5:
-		/* disable the ppll */
+		 
 		amdgpu_atombios_crtc_program_pll(crtc, ATOM_CRTC_INVALID, amdgpu_crtc->pll_id,
 						 0, 0, ATOM_DISABLE, 0, 0, 0, 0, 0, false, &ss);
 		break;
@@ -2715,7 +2479,7 @@ static int dce_v11_0_crtc_mode_set(struct drm_crtc *crtc,
 		int encoder_mode =
 			amdgpu_atombios_encoder_get_encoder_mode(amdgpu_crtc->encoder);
 
-		/* SetPixelClock calculates the plls and ss values now */
+		 
 		amdgpu_atombios_crtc_program_pll(crtc, amdgpu_crtc->crtc_id,
 						 amdgpu_crtc->pll_id,
 						 encoder_mode, amdgpu_encoder->encoder_id,
@@ -2729,7 +2493,7 @@ static int dce_v11_0_crtc_mode_set(struct drm_crtc *crtc,
 	amdgpu_atombios_crtc_overscan_setup(crtc, mode, adjusted_mode);
 	amdgpu_atombios_crtc_scaler_setup(crtc);
 	dce_v11_0_cursor_reset(crtc);
-	/* update the hw version fpr dpm */
+	 
 	amdgpu_crtc->hw_mode = *adjusted_mode;
 
 	return 0;
@@ -2743,7 +2507,7 @@ static bool dce_v11_0_crtc_mode_fixup(struct drm_crtc *crtc,
 	struct drm_device *dev = crtc->dev;
 	struct drm_encoder *encoder;
 
-	/* assign the encoder to the amdgpu crtc to avoid repeated lookups later */
+	 
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 		if (encoder->crtc == crtc) {
 			amdgpu_crtc->encoder = encoder;
@@ -2760,9 +2524,9 @@ static bool dce_v11_0_crtc_mode_fixup(struct drm_crtc *crtc,
 		return false;
 	if (amdgpu_atombios_crtc_prepare_pll(crtc, adjusted_mode))
 		return false;
-	/* pick pll */
+	 
 	amdgpu_crtc->pll_id = dce_v11_0_pick_pll(crtc);
-	/* if we can't get a PPLL for a non-DP encoder, fail */
+	 
 	if ((amdgpu_crtc->pll_id == ATOM_PPLL_INVALID) &&
 	    !ENCODER_MODE_IS_DP(amdgpu_atombios_encoder_get_encoder_mode(amdgpu_crtc->encoder)))
 		return false;
@@ -2877,7 +2641,7 @@ static int dce_v11_0_early_init(void *handle)
 		adev->mode_info.num_dig = 5;
 		break;
 	default:
-		/* FIXME: not supported yet */
+		 
 		return -EINVAL;
 	}
 
@@ -2903,7 +2667,7 @@ static int dce_v11_0_sw_init(void *handle)
 			return r;
 	}
 
-	/* HPD hotplug */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_HOTPLUG_DETECT_A, &adev->hpd_irq);
 	if (r)
 		return r;
@@ -2928,7 +2692,7 @@ static int dce_v11_0_sw_init(void *handle)
 	adev_to_drm(adev)->mode_config.max_height = 16384;
 
 
-	/* allocate crtcs */
+	 
 	for (i = 0; i < adev->mode_info.num_crtc; i++) {
 		r = dce_v11_0_crtc_init(adev, i);
 		if (r)
@@ -2940,7 +2704,7 @@ static int dce_v11_0_sw_init(void *handle)
 	else
 		return -EINVAL;
 
-	/* setup afmt */
+	 
 	r = dce_v11_0_afmt_init(adev);
 	if (r)
 		return r;
@@ -2949,8 +2713,8 @@ static int dce_v11_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* Disable vblank IRQs aggressively for power-saving */
-	/* XXX: can this be enabled for DC? */
+	 
+	 
 	adev_to_drm(adev)->vblank_disable_immediate = true;
 
 	r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
@@ -2991,9 +2755,9 @@ static int dce_v11_0_hw_init(void *handle)
 
 	dce_v11_0_init_golden_registers(adev);
 
-	/* disable vga render */
+	 
 	dce_v11_0_set_vga_render_state(adev, false);
-	/* init dig PHYs, disp eng pll */
+	 
 	amdgpu_atombios_crtc_powergate_init(adev);
 	amdgpu_atombios_encoder_init_dig(adev);
 	if ((adev->asic_type == CHIP_POLARIS10) ||
@@ -3008,7 +2772,7 @@ static int dce_v11_0_hw_init(void *handle)
 		amdgpu_atombios_crtc_set_disp_eng_pll(adev, adev->clock.default_dispclk);
 	}
 
-	/* initialize hpd */
+	 
 	dce_v11_0_hpd_init(adev);
 
 	for (i = 0; i < adev->mode_info.audio.num_pins; i++) {
@@ -3063,7 +2827,7 @@ static int dce_v11_0_resume(void *handle)
 
 	ret = dce_v11_0_hw_init(handle);
 
-	/* turn on the BL */
+	 
 	if (adev->mode_info.bl_encoder) {
 		u8 bl_level = amdgpu_display_backlight_get_level(adev,
 								  adev->mode_info.bl_encoder);
@@ -3107,7 +2871,7 @@ static int dce_v11_0_soft_reset(void *handle)
 		WREG32(mmSRBM_SOFT_RESET, tmp);
 		tmp = RREG32(mmSRBM_SOFT_RESET);
 
-		/* Wait a little for things to settle down */
+		 
 		udelay(50);
 	}
 	return 0;
@@ -3294,7 +3058,7 @@ static int dce_v11_0_pageflip_irq(struct amdgpu_device *adev,
 		WREG32(mmGRPH_INTERRUPT_STATUS + crtc_offsets[crtc_id],
 		       GRPH_INTERRUPT_STATUS__GRPH_PFLIP_INT_CLEAR_MASK);
 
-	/* IRQ could occur when in initial stage */
+	 
 	if(amdgpu_crtc == NULL)
 		return 0;
 
@@ -3309,11 +3073,11 @@ static int dce_v11_0_pageflip_irq(struct amdgpu_device *adev,
 		return 0;
 	}
 
-	/* page flip completed. clean up */
+	 
 	amdgpu_crtc->pflip_status = AMDGPU_FLIP_NONE;
 	amdgpu_crtc->pflip_works = NULL;
 
-	/* wakeup usersapce */
+	 
 	if(works->event)
 		drm_crtc_send_vblank_event(&amdgpu_crtc->base, works->event);
 
@@ -3380,7 +3144,7 @@ static int dce_v11_0_crtc_irq(struct amdgpu_device *adev,
 								    crtc);
 
 	switch (entry->src_data[0]) {
-	case 0: /* vblank */
+	case 0:  
 		if (disp_int & interrupt_status_offsets[crtc].vblank)
 			dce_v11_0_crtc_vblank_int_ack(adev, crtc);
 		else
@@ -3392,7 +3156,7 @@ static int dce_v11_0_crtc_irq(struct amdgpu_device *adev,
 		DRM_DEBUG("IH: D%d vblank\n", crtc + 1);
 
 		break;
-	case 1: /* vline */
+	case 1:  
 		if (disp_int & interrupt_status_offsets[crtc].vline)
 			dce_v11_0_crtc_vline_int_ack(adev, crtc);
 		else
@@ -3472,10 +3236,10 @@ dce_v11_0_encoder_mode_set(struct drm_encoder *encoder,
 
 	amdgpu_encoder->pixel_clock = adjusted_mode->clock;
 
-	/* need to call this here rather than in prepare() since we need some crtc info */
+	 
 	amdgpu_atombios_encoder_dpms(encoder, DRM_MODE_DPMS_OFF);
 
-	/* set scaler clears this on some chips */
+	 
 	dce_v11_0_set_interleave(encoder->crtc, mode);
 
 	if (amdgpu_atombios_encoder_get_encoder_mode(encoder) == ATOM_ENCODER_MODE_HDMI) {
@@ -3507,19 +3271,19 @@ static void dce_v11_0_encoder_prepare(struct drm_encoder *encoder)
 	if (connector) {
 		struct amdgpu_connector *amdgpu_connector = to_amdgpu_connector(connector);
 
-		/* select the clock/data port if it uses a router */
+		 
 		if (amdgpu_connector->router.cd_valid)
 			amdgpu_i2c_router_select_cd_port(amdgpu_connector);
 
-		/* turn eDP panel on for mode set */
+		 
 		if (connector->connector_type == DRM_MODE_CONNECTOR_eDP)
 			amdgpu_atombios_encoder_set_edp_panel_power(connector,
 							     ATOM_TRANSMITTER_ACTION_POWER_ON);
 	}
 
-	/* this is needed for the pll/ss setup to work correctly in some cases */
+	 
 	amdgpu_atombios_encoder_set_crtc_source(encoder);
-	/* set up the FMT blocks */
+	 
 	dce_v11_0_program_fmt(encoder);
 }
 
@@ -3528,7 +3292,7 @@ static void dce_v11_0_encoder_commit(struct drm_encoder *encoder)
 	struct drm_device *dev = encoder->dev;
 	struct amdgpu_device *adev = drm_to_adev(dev);
 
-	/* need to call this here as we need the crtc set up */
+	 
 	amdgpu_atombios_encoder_dpms(encoder, DRM_MODE_DPMS_ON);
 	amdgpu_atombios_scratch_regs_lock(adev, false);
 }
@@ -3549,7 +3313,7 @@ static void dce_v11_0_encoder_disable(struct drm_encoder *encoder)
 	amdgpu_encoder->active_device = 0;
 }
 
-/* these are handled by the primary encoders */
+ 
 static void dce_v11_0_ext_prepare(struct drm_encoder *encoder)
 {
 
@@ -3585,7 +3349,7 @@ static const struct drm_encoder_helper_funcs dce_v11_0_ext_helper_funcs = {
 	.mode_set = dce_v11_0_ext_mode_set,
 	.commit = dce_v11_0_ext_commit,
 	.disable = dce_v11_0_ext_disable,
-	/* no detect for TMDS/LVDS yet */
+	 
 };
 
 static const struct drm_encoder_helper_funcs dce_v11_0_dig_helper_funcs = {
@@ -3630,7 +3394,7 @@ static void dce_v11_0_encoder_add(struct amdgpu_device *adev,
 	struct drm_encoder *encoder;
 	struct amdgpu_encoder *amdgpu_encoder;
 
-	/* see if we already added it */
+	 
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 		amdgpu_encoder = to_amdgpu_encoder(encoder);
 		if (amdgpu_encoder->encoder_enum == encoder_enum) {
@@ -3640,7 +3404,7 @@ static void dce_v11_0_encoder_add(struct amdgpu_device *adev,
 
 	}
 
-	/* add a new one */
+	 
 	amdgpu_encoder = kzalloc(sizeof(struct amdgpu_encoder), GFP_KERNEL);
 	if (!amdgpu_encoder)
 		return;
@@ -3715,7 +3479,7 @@ static void dce_v11_0_encoder_add(struct amdgpu_device *adev,
 	case ENCODER_OBJECT_ID_HDMI_SI1930:
 	case ENCODER_OBJECT_ID_TRAVIS:
 	case ENCODER_OBJECT_ID_NUTMEG:
-		/* these are handled by the primary encoders */
+		 
 		amdgpu_encoder->is_ext_encoder = true;
 		if (amdgpu_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
 			drm_encoder_init(dev, encoder, &dce_v11_0_encoder_funcs,

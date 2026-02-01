@@ -1,24 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
 #include "ia_css_pipeline.h"
 #include "ia_css_isp_param.h"
 
-/* Set functions for parameter memory descriptors */
+ 
 
 void
 ia_css_isp_param_set_mem_init(
@@ -53,7 +41,7 @@ ia_css_isp_param_set_isp_mem_init(
 	mem_init->params[pclass][mem].size = (uint32_t)size;
 }
 
-/* Get functions for parameter memory descriptors */
+ 
 const struct ia_css_host_data *
 ia_css_isp_param_get_mem_init(
     const struct ia_css_isp_param_host_segments *mem_init,
@@ -206,8 +194,7 @@ void
 ia_css_isp_param_enable_pipeline(
     const struct ia_css_isp_param_host_segments *mem_params)
 {
-	/* By protocol b0 of the mandatory uint32_t first field of the
-	   input parameter is a disable bit*/
+	 
 	short dmem_offset = 0;
 
 	if (mem_params->params[IA_CSS_PARAM_CLASS_PARAM][IA_CSS_ISP_DMEM0].size == 0)

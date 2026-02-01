@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2016-2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -40,7 +33,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
 		num_frags = sinfo->nr_frags;
 	}
 
-	/* fill up the first buffer */
+	 
 	prod = txr->tx_prod;
 	tx_buf = &txr->tx_buf_ring[prod];
 	tx_buf->nr_frags = num_frags;
@@ -55,7 +48,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
 	txbd->tx_bd_opaque = prod;
 	txbd->tx_bd_haddr = cpu_to_le64(mapping);
 
-	/* now let us fill up the frags into the next buffers */
+	 
 	for (i = 0; i < num_frags ; i++) {
 		skb_frag_t *frag = &sinfo->frags[i];
 		struct bnxt_sw_tx_bd *frag_tx_buf;
@@ -65,7 +58,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
 		prod = NEXT_TX(prod);
 		WRITE_ONCE(txr->tx_prod, prod);
 
-		/* first fill up the first buffer */
+		 
 		frag_tx_buf = &txr->tx_buf_ring[prod];
 		frag_tx_buf->page = skb_frag_page(frag);
 
@@ -84,7 +77,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
 	flags &= ~TX_BD_LEN;
 	txbd->tx_bd_len_flags_type = cpu_to_le32(((len) << TX_BD_LEN_SHIFT) | flags |
 			TX_BD_FLAGS_PACKET_END);
-	/* Sync TX BD */
+	 
 	wmb();
 	prod = NEXT_TX(prod);
 	WRITE_ONCE(txr->tx_prod, prod);
@@ -217,10 +210,7 @@ void bnxt_xdp_buff_frags_free(struct bnxt_rx_ring_info *rxr,
 	shinfo->nr_frags = 0;
 }
 
-/* returns the following:
- * true    - packet consumed by XDP and new buffer is allocated.
- * false   - packet should be passed to the stack.
- */
+ 
 bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
 		 struct xdp_buff xdp, struct page *page, u8 **data_ptr,
 		 unsigned int *len, u8 *event)
@@ -243,15 +233,13 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
 	offset = bp->rx_offset;
 
 	txr = rxr->bnapi->tx_ring;
-	/* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
+	 
 	orig_data = xdp.data;
 
 	act = bpf_prog_run_xdp(xdp_prog, &xdp);
 
 	tx_avail = bnxt_tx_avail(bp, txr);
-	/* If the tx ring is not full, we must not update the rx producer yet
-	 * because we may still be transmitting on some BDs.
-	 */
+	 
 	if (tx_avail != bp->tx_ring_size)
 		*event &= ~BNXT_RX_EVENT;
 
@@ -293,17 +281,14 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
 		bnxt_reuse_rx_data(rxr, cons, page);
 		return true;
 	case XDP_REDIRECT:
-		/* if we are calling this here then we know that the
-		 * redirect is coming from a frame received by the
-		 * bnxt_en driver.
-		 */
+		 
 		rx_buf = &rxr->rx_buf_ring[cons];
 		mapping = rx_buf->mapping - bp->rx_dma_offset;
 		dma_unmap_page_attrs(&pdev->dev, mapping,
 				     BNXT_RX_PAGE_SIZE, bp->rx_dir,
 				     DMA_ATTR_WEAK_ORDERING);
 
-		/* if we are unable to allocate a new buffer, abort and reuse */
+		 
 		if (bnxt_alloc_rx_data(bp, rxr, rxr->rx_prod, GFP_ATOMIC)) {
 			trace_xdp_exception(bp->dev, xdp_prog, act);
 			bnxt_xdp_buff_frags_free(rxr, &xdp);
@@ -376,7 +361,7 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
 	}
 
 	if (flags & XDP_XMIT_FLUSH) {
-		/* Sync BD data before updating doorbell */
+		 
 		wmb();
 		bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
 	}
@@ -387,7 +372,7 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
 	return nxmit;
 }
 
-/* Under rtnl_lock */
+ 
 static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
 {
 	struct net_device *dev = bp->dev;

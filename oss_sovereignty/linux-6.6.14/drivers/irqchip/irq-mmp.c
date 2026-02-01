@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/arch/arm/mach-mmp/irq.c
- *
- *  Generic IRQ handling, GPIO IRQ demultiplexing, etc.
- *  Copyright (C) 2008 - 2012 Marvell Technology Group Ltd.
- *
- *  Author:	Bin Yang <bin.yang@marvell.com>
- *              Haojian Zhuang <haojian.zhuang@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -28,7 +20,7 @@
 #define PJ1_INT_SEL		0x10c
 #define PJ4_INT_SEL		0x104
 
-/* bit fields in PJ1_INT_SEL and PJ4_INT_SEL */
+ 
 #define SEL_INT_PENDING		(1 << 6)
 #define SEL_INT_NUM_MASK	0x3f
 
@@ -103,10 +95,7 @@ static void icu_mask_irq(struct irq_data *d)
 		writel_relaxed(r, mmp_icu_base + (hwirq << 2));
 
 		if (data->conf2_mask) {
-			/*
-			 * ICU1 (above) only controls PJ4 MP1; if using SMP,
-			 * we need to also mask the MP2 and MM cores via ICU2.
-			 */
+			 
 			r = readl_relaxed(mmp_icu2_base + (hwirq << 2));
 			r &= ~data->conf2_mask;
 			writel_relaxed(r, mmp_icu2_base + (hwirq << 2));
@@ -344,7 +333,7 @@ static int __init mmp3_of_init(struct device_node *node,
 	icu_data[0].conf2_mask = mmp3_conf.conf2_mask;
 
 	if (!parent) {
-		/* This is the main interrupt controller. */
+		 
 		set_handle_irq(mmp2_handle_irq);
 	}
 
@@ -371,12 +360,7 @@ static int __init mmp2_mux_of_init(struct device_node *node,
 		return -EINVAL;
 	}
 
-	/*
-	 * For historical reasons, the "regs" property of the
-	 * mrvl,mmp2-mux-intc is not a regular "regs" property containing
-	 * addresses on the parent bus, but offsets from the intc's base.
-	 * That is why we can't use of_address_to_resource() here.
-	 */
+	 
 	ret = of_property_read_variable_u32_array(node, "reg", reg,
 						  ARRAY_SIZE(reg),
 						  ARRAY_SIZE(reg));

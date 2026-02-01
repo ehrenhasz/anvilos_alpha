@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2018 Quantenna Communications */
+ 
+ 
 
 #ifndef _QTN_FMAC_PCIE_IPC_H_
 #define _QTN_FMAC_PCIE_IPC_H_
@@ -8,7 +8,7 @@
 
 #include "shm_ipc_defs.h"
 
-/* EP/RC status and flags */
+ 
 #define QTN_BDA_PCIE_INIT		0x01
 #define QTN_BDA_PCIE_RDY		0x02
 #define QTN_BDA_FW_LOAD_RDY		0x03
@@ -45,7 +45,7 @@
 #define QTN_BDA_VER(x)			(((x) >> 4) & 0xFF)
 #define QTN_BDA_ERROR_MASK		0xFF00
 
-/* registers and shmem address macros */
+ 
 #if BITS_PER_LONG == 64
 #define QTN_HOST_HI32(a)	((u32)(((u64)a) >> 32))
 #define QTN_HOST_LO32(a)	((u32)(((u64)a) & 0xffffffffUL))
@@ -91,4 +91,4 @@
 #define NBLOCKS(size, blksize)		\
 	((size) / (blksize) + (((size) % (blksize) > 0) ? 1 : 0))
 
-#endif /* _QTN_FMAC_PCIE_IPC_H_ */
+#endif  

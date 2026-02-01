@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ad2s90.c simple support for the ADI Resolver to Digital Converters: AD2S90
- *
- * Copyright (c) 2010-2010 Analog Devices Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/mutex.h>
 #include <linux/device.h>
@@ -15,14 +11,11 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/*
- * Although chip's max frequency is 2Mhz, it needs 600ns between CS and the
- * first falling edge of SCLK, so frequency should be at most 1 / (2 * 6e-7)
- */
+ 
 #define AD2S90_MAX_SPI_FREQ_HZ  830000
 
 struct ad2s90_state {
-	struct mutex lock; /* lock to protect rx buffer */
+	struct mutex lock;  
 	struct spi_device *sdev;
 	u8 rx[2] __aligned(IIO_DMA_MINALIGN);
 };
@@ -41,8 +34,8 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_SCALE:
-		/* 2 * Pi / 2^12 */
-		*val = 6283; /* mV */
+		 
+		*val = 6283;  
 		*val2 = 12;
 		return IIO_VAL_FRACTIONAL_LOG2;
 	case IIO_CHAN_INFO_RAW:

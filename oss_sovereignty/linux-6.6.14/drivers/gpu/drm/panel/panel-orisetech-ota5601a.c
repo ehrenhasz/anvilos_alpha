@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Orisetech OTA5601A TFT LCD panel driver
- *
- * Copyright (C) 2021, Christophe Branchereau <cbranchereau@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -45,30 +41,30 @@ static inline struct ota5601a *to_ota5601a(struct drm_panel *panel)
 }
 
 static const struct reg_sequence ota5601a_panel_regs[] = {
-	{ 0xfd, 0x00 }, /* Page Shift */
-	{ 0x02, 0x00 }, /* Reset */
+	{ 0xfd, 0x00 },  
+	{ 0x02, 0x00 },  
 
-	{ 0x18, 0x00 }, /* Interface Sel: RGB 24 Bits */
-	{ 0x34, 0x20 }, /* Undocumented */
+	{ 0x18, 0x00 },  
+	{ 0x34, 0x20 },  
 
-	{ 0x0c, 0x01 }, /* Contrast set by CMD1 == within page 0x00 */
-	{ 0x0d, 0x48 }, /* R Brightness */
-	{ 0x0e, 0x48 }, /* G Brightness */
-	{ 0x0f, 0x48 }, /* B Brightness */
-	{ 0x07, 0x40 }, /* R Contrast */
-	{ 0x08, 0x33 }, /* G Contrast */
-	{ 0x09, 0x3a }, /* B Contrast */
+	{ 0x0c, 0x01 },  
+	{ 0x0d, 0x48 },  
+	{ 0x0e, 0x48 },  
+	{ 0x0f, 0x48 },  
+	{ 0x07, 0x40 },  
+	{ 0x08, 0x33 },  
+	{ 0x09, 0x3a },  
 
-	{ 0x16, 0x01 }, /* NTSC Sel */
-	{ 0x19, 0x8d }, /* VBLK */
-	{ 0x1a, 0x28 }, /* HBLK */
-	{ 0x1c, 0x00 }, /* Scan Shift Dir. */
+	{ 0x16, 0x01 },  
+	{ 0x19, 0x8d },  
+	{ 0x1a, 0x28 },  
+	{ 0x1c, 0x00 },  
 
-	{ 0xfd, 0xc5 }, /* Page Shift */
-	{ 0x82, 0x0c }, /* PWR_CTRL Pump */
-	{ 0xa2, 0xb4 }, /* PWR_CTRL VGH/VGL */
+	{ 0xfd, 0xc5 },  
+	{ 0x82, 0x0c },  
+	{ 0xa2, 0xb4 },  
 
-	{ 0xfd, 0xc4 }, /* Page Shift - What follows is listed as "RGB 24bit Timing Set" */
+	{ 0xfd, 0xc4 },  
 	{ 0x82, 0x45 },
 
 	{ 0xfd, 0xc1 },
@@ -100,7 +96,7 @@ static const struct reg_sequence ota5601a_panel_regs[] = {
 	{ 0x9b, 0x38 },
 	{ 0x9c, 0x02 },
 
-	{ 0xfd, 0x00 }, /* Page Shift */
+	{ 0xfd, 0x00 },  
 };
 
 static const struct regmap_config ota5601a_regmap_config = {
@@ -119,13 +115,13 @@ static int ota5601a_prepare(struct drm_panel *drm_panel)
 		return err;
 	}
 
-	/* Reset to be held low for 10us min according to the doc, 10ms before sending commands */
+	 
 	gpiod_set_value_cansleep(panel->reset_gpio, 1);
 	usleep_range(10, 30);
 	gpiod_set_value_cansleep(panel->reset_gpio, 0);
 	usleep_range(10000, 20000);
 
-	/* Init all registers. */
+	 
 	err = regmap_multi_reg_write(panel->map, ota5601a_panel_regs,
 				     ARRAY_SIZE(ota5601a_panel_regs));
 	if (err) {
@@ -166,7 +162,7 @@ static int ota5601a_enable(struct drm_panel *drm_panel)
 	}
 
 	if (drm_panel->backlight) {
-		/* Wait for the picture to be ready before enabling backlight */
+		 
 		msleep(120);
 	}
 
@@ -299,7 +295,7 @@ static void ota5601a_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode gpt3_display_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 27000,
 		.hdisplay = 640,
 		.hsync_start = 640 + 220,
@@ -312,7 +308,7 @@ static const struct drm_display_mode gpt3_display_modes[] = {
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
 
-	{ /* 50 Hz */
+	{  
 		.clock = 24000,
 		.hdisplay = 640,
 		.hsync_start = 640 + 280,
@@ -337,13 +333,13 @@ static const struct ota5601a_panel_info gpt3_info = {
 
 static const struct spi_device_id gpt3_id[] = {
 	{ "gpt3", (kernel_ulong_t)&gpt3_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, gpt3_id);
 
 static const struct of_device_id ota5601a_of_match[] = {
 	{ .compatible = "focaltech,gpt3" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ota5601a_of_match);
 

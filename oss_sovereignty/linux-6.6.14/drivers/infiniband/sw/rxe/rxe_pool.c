@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include "rxe.h"
 
@@ -130,10 +127,7 @@ int __rxe_add_to_pool(struct rxe_pool *pool, struct rxe_pool_elem *elem,
 	kref_init(&elem->ref_cnt);
 	init_completion(&elem->complete);
 
-	/* AH objects are unique in that the create_ah verb
-	 * can be called in atomic context. If the create_ah
-	 * call is not sleepable use GFP_ATOMIC.
-	 */
+	 
 	gfp_flags = sleepable ? GFP_KERNEL : GFP_ATOMIC;
 
 	if (sleepable)
@@ -185,42 +179,27 @@ int __rxe_cleanup(struct rxe_pool_elem *elem, bool sleepable)
 	if (sleepable)
 		might_sleep();
 
-	/* erase xarray entry to prevent looking up
-	 * the pool elem from its index
-	 */
+	 
 	xa_ret = xa_erase(xa, elem->index);
 	WARN_ON(xa_err(xa_ret));
 
-	/* if this is the last call to rxe_put complete the
-	 * object. It is safe to touch obj->elem after this since
-	 * it is freed below
-	 */
+	 
 	__rxe_put(elem);
 
-	/* wait until all references to the object have been
-	 * dropped before final object specific cleanup and
-	 * return to rdma-core
-	 */
+	 
 	if (sleepable) {
 		if (!completion_done(&elem->complete) && timeout) {
 			ret = wait_for_completion_timeout(&elem->complete,
 					timeout);
 
-			/* Shouldn't happen. There are still references to
-			 * the object but, rather than deadlock, free the
-			 * object or pass back to rdma-core.
-			 */
+			 
 			if (WARN_ON(!ret))
 				err = -EINVAL;
 		}
 	} else {
 		unsigned long until = jiffies + timeout;
 
-		/* AH objects are unique in that the destroy_ah verb
-		 * can be called in atomic context. This delay
-		 * replaces the wait_for_completion call above
-		 * when the destroy_ah call is not sleepable
-		 */
+		 
 		while (!completion_done(&elem->complete) &&
 				time_before(jiffies, until))
 			mdelay(1);

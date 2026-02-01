@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2023, Linaro Limited
+
+
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -331,7 +331,7 @@ static void visionox_vtdr6130_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id visionox_vtdr6130_of_match[] = {
 	{ .compatible = "visionox,vtdr6130" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, visionox_vtdr6130_of_match);
 

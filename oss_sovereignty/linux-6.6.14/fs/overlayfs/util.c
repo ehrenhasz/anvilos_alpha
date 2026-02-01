@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Novell Inc.
- * Copyright (C) 2016 Red Hat, Inc.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -42,14 +39,7 @@ const struct cred *ovl_override_creds(struct super_block *sb)
 	return override_creds(ofs->creator_cred);
 }
 
-/*
- * Check if underlying fs supports file handles and try to determine encoding
- * type, in order to deduce maximum inode number used by fs.
- *
- * Return 0 if file handles are not supported.
- * Return 1 (FILEID_INO32_GEN) if fs uses the default 32bit inode encoding.
- * Return -1 if fs uses a non default encoding with unknown inode size.
- */
+ 
 int ovl_can_decode_fh(struct super_block *sb)
 {
 	if (!capable(CAP_DAC_READ_SEARCH))
@@ -68,7 +58,7 @@ struct dentry *ovl_indexdir(struct super_block *sb)
 	return ofs->indexdir;
 }
 
-/* Index all files on copy up. For now only enabled for NFS export */
+ 
 bool ovl_index_all(struct super_block *sb)
 {
 	struct ovl_fs *ofs = OVL_FS(sb);
@@ -76,7 +66,7 @@ bool ovl_index_all(struct super_block *sb)
 	return ofs->config.nfs_export && ofs->config.index;
 }
 
-/* Verify lower origin on lookup. For now only enabled for NFS export */
+ 
 bool ovl_verify_lower(struct super_block *sb)
 {
 	struct ovl_fs *ofs = OVL_FS(sb);
@@ -185,9 +175,7 @@ enum ovl_path_type ovl_path_type(struct dentry *dentry)
 	if (ovl_dentry_upper(dentry)) {
 		type = __OVL_PATH_UPPER;
 
-		/*
-		 * Non-dir dentry can hold lower dentry of its copy up origin.
-		 */
+		 
 		if (ovl_numlower(oe)) {
 			if (ovl_test_flag(OVL_CONST_INO, d_inode(dentry)))
 				type |= __OVL_PATH_ORIGIN;
@@ -231,11 +219,7 @@ void ovl_path_lowerdata(struct dentry *dentry, struct path *path)
 
 	if (lowerdata_dentry) {
 		path->dentry = lowerdata_dentry;
-		/*
-		 * Pairs with smp_wmb() in ovl_dentry_set_lowerdata().
-		 * Make sure that if lowerdata->dentry is visible, then
-		 * datapath->layer is visible as well.
-		 */
+		 
 		smp_rmb();
 		path->mnt = READ_ONCE(lowerdata->layer)->mnt;
 	} else {
@@ -288,12 +272,7 @@ const struct ovl_layer *ovl_layer_lower(struct dentry *dentry)
 	return ovl_numlower(oe) ? ovl_lowerstack(oe)->layer : NULL;
 }
 
-/*
- * ovl_dentry_lower() could return either a data dentry or metacopy dentry
- * depending on what is stored in lowerstack[0]. At times we need to find
- * lower dentry which has data (and not metacopy dentry). This helper
- * returns the lower data dentry.
- */
+ 
 struct dentry *ovl_dentry_lowerdata(struct dentry *dentry)
 {
 	return ovl_lowerdata_dentry(OVL_E(dentry));
@@ -309,11 +288,7 @@ int ovl_dentry_set_lowerdata(struct dentry *dentry, struct ovl_path *datapath)
 		return -EIO;
 
 	WRITE_ONCE(lowerdata->layer, datapath->layer);
-	/*
-	 * Pairs with smp_rmb() in ovl_path_lowerdata().
-	 * Make sure that if lowerdata->dentry is visible, then
-	 * lowerdata->layer is visible as well.
-	 */
+	 
 	smp_wmb();
 	WRITE_ONCE(lowerdata->dentry, dget(datadentry));
 
@@ -366,7 +341,7 @@ struct inode *ovl_inode_real(struct inode *inode)
 	return ovl_inode_upper(inode) ?: ovl_inode_lower(inode);
 }
 
-/* Return inode which contains lower data. Do not return metacopy */
+ 
 struct inode *ovl_inode_lowerdata(struct inode *inode)
 {
 	struct dentry *lowerdata = ovl_lowerdata_dentry(OVL_I_E(inode));
@@ -377,7 +352,7 @@ struct inode *ovl_inode_lowerdata(struct inode *inode)
 	return lowerdata ? d_inode(lowerdata) : NULL;
 }
 
-/* Return real inode which contains data. Does not return metacopy inode */
+ 
 struct inode *ovl_inode_realdata(struct inode *inode)
 {
 	struct inode *upperinode;
@@ -435,12 +410,7 @@ void ovl_dentry_set_opaque(struct dentry *dentry)
 	ovl_dentry_set_flag(OVL_E_OPAQUE, dentry);
 }
 
-/*
- * For hard links and decoded file handles, it's possible for ovl_dentry_upper()
- * to return positive, while there's no actual upper alias for the inode.
- * Copy up code needs to know about the existence of the upper alias, so it
- * can't use ovl_dentry_upper().
- */
+ 
 bool ovl_dentry_has_upper_alias(struct dentry *dentry)
 {
 	return ovl_dentry_test_flag(OVL_E_UPPER_ALIAS, dentry);
@@ -469,28 +439,19 @@ bool ovl_has_upperdata(struct inode *inode)
 
 	if (!ovl_test_flag(OVL_UPPERDATA, inode))
 		return false;
-	/*
-	 * Pairs with smp_wmb() in ovl_set_upperdata(). Main user of
-	 * ovl_has_upperdata() is ovl_copy_up_meta_inode_data(). Make sure
-	 * if setting of OVL_UPPERDATA is visible, then effects of writes
-	 * before that are visible too.
-	 */
+	 
 	smp_rmb();
 	return true;
 }
 
 void ovl_set_upperdata(struct inode *inode)
 {
-	/*
-	 * Pairs with smp_rmb() in ovl_has_upperdata(). Make sure
-	 * if OVL_UPPERDATA flag is visible, then effects of write operations
-	 * before it are visible as well.
-	 */
+	 
 	smp_wmb();
 	ovl_set_flag(OVL_UPPERDATA, inode);
 }
 
-/* Caller should hold ovl_inode->lock */
+ 
 bool ovl_dentry_needs_data_copy_up_locked(struct dentry *dentry, int flags)
 {
 	if (!ovl_open_flags_need_copy_up(flags))
@@ -526,9 +487,7 @@ void ovl_inode_update(struct inode *inode, struct dentry *upperdentry)
 
 	WARN_ON(OVL_I(inode)->__upperdentry);
 
-	/*
-	 * Make sure upperdentry is consistent before making it visible
-	 */
+	 
 	smp_wmb();
 	OVL_I(inode)->__upperdentry = upperdentry;
 	if (inode_unhashed(inode)) {
@@ -543,20 +502,14 @@ static void ovl_dir_version_inc(struct dentry *dentry, bool impurity)
 
 	WARN_ON(!inode_is_locked(inode));
 	WARN_ON(!d_is_dir(dentry));
-	/*
-	 * Version is used by readdir code to keep cache consistent.
-	 * For merge dirs (or dirs with origin) all changes need to be noted.
-	 * For non-merge dirs, cache contains only impure entries (i.e. ones
-	 * which have been copied up and have origins), so only need to note
-	 * changes to impure entries.
-	 */
+	 
 	if (!ovl_dir_is_real(inode) || impurity)
 		OVL_I(inode)->version++;
 }
 
 void ovl_dir_modified(struct dentry *dentry, bool impurity)
 {
-	/* Copy mtime/ctime */
+	 
 	ovl_copyattr(d_inode(dentry));
 
 	ovl_dir_version_inc(dentry, impurity);
@@ -599,14 +552,14 @@ struct file *ovl_path_open(const struct path *path, int flags)
 	if (err)
 		return ERR_PTR(err);
 
-	/* O_NOATIME is an optimization, don't fail if not permitted */
+	 
 	if (inode_owner_or_capable(real_idmap, inode))
 		flags |= O_NOATIME;
 
 	return dentry_open(path, flags, current_cred());
 }
 
-/* Caller should hold ovl_inode->lock */
+ 
 static bool ovl_already_copied_up_locked(struct dentry *dentry, int flags)
 {
 	bool disconnected = dentry->d_flags & DCACHE_DISCONNECTED;
@@ -623,19 +576,7 @@ bool ovl_already_copied_up(struct dentry *dentry, int flags)
 {
 	bool disconnected = dentry->d_flags & DCACHE_DISCONNECTED;
 
-	/*
-	 * Check if copy-up has happened as well as for upper alias (in
-	 * case of hard links) is there.
-	 *
-	 * Both checks are lockless:
-	 *  - false negatives: will recheck under oi->lock
-	 *  - false positives:
-	 *    + ovl_dentry_upper() uses memory barriers to ensure the
-	 *      upper dentry is up-to-date
-	 *    + ovl_dentry_has_upper_alias() relies on locking of
-	 *      upper parent i_rwsem to prevent reordering copy-up
-	 *      with rename.
-	 */
+	 
 	if (ovl_dentry_upper(dentry) &&
 	    (ovl_dentry_has_upper_alias(dentry) || disconnected) &&
 	    !ovl_dentry_needs_data_copy_up(dentry, flags))
@@ -651,7 +592,7 @@ int ovl_copy_up_start(struct dentry *dentry, int flags)
 
 	err = ovl_inode_lock_interruptible(inode);
 	if (!err && ovl_already_copied_up_locked(dentry, flags)) {
-		err = 1; /* Already copied up */
+		err = 1;  
 		ovl_inode_unlock(inode);
 	}
 
@@ -669,24 +610,21 @@ bool ovl_path_check_origin_xattr(struct ovl_fs *ofs, const struct path *path)
 
 	res = ovl_path_getxattr(ofs, path, OVL_XATTR_ORIGIN, NULL, 0);
 
-	/* Zero size value means "copied up but origin unknown" */
+	 
 	if (res >= 0)
 		return true;
 
 	return false;
 }
 
-/*
- * Load persistent uuid from xattr into s_uuid if found, or store a new
- * random generated value in s_uuid and in xattr.
- */
+ 
 bool ovl_init_uuid_xattr(struct super_block *sb, struct ovl_fs *ofs,
 			 const struct path *upperpath)
 {
 	bool set = false;
 	int res;
 
-	/* Try to load existing persistent uuid */
+	 
 	res = ovl_path_getxattr(ofs, upperpath, OVL_XATTR_UUID, sb->s_uuid.b,
 				UUID_SIZE);
 	if (res == UUID_SIZE)
@@ -695,21 +633,16 @@ bool ovl_init_uuid_xattr(struct super_block *sb, struct ovl_fs *ofs,
 	if (res != -ENODATA)
 		goto fail;
 
-	/*
-	 * With uuid=auto, if uuid xattr is found, it will be used.
-	 * If uuid xattrs is not found, generate a persistent uuid only on mount
-	 * of new overlays where upper root dir is not yet marked as impure.
-	 * An upper dir is marked as impure on copy up or lookup of its subdirs.
-	 */
+	 
 	if (ofs->config.uuid == OVL_UUID_AUTO) {
 		res = ovl_path_getxattr(ofs, upperpath, OVL_XATTR_IMPURE, NULL,
 					0);
 		if (res > 0) {
-			/* Any mount of old overlay - downgrade to uuid=null */
+			 
 			ofs->config.uuid = OVL_UUID_NULL;
 			return true;
 		} else if (res == -ENODATA) {
-			/* First mount of new overlay - upgrade to uuid=on */
+			 
 			ofs->config.uuid = OVL_UUID_ON;
 		} else if (res < 0) {
 			goto fail;
@@ -717,10 +650,10 @@ bool ovl_init_uuid_xattr(struct super_block *sb, struct ovl_fs *ofs,
 
 	}
 
-	/* Generate overlay instance uuid */
+	 
 	uuid_gen(&sb->s_uuid);
 
-	/* Try to store persistent uuid */
+	 
 	set = true;
 	res = ovl_setxattr(ofs, upperpath->dentry, OVL_XATTR_UUID, sb->s_uuid.b,
 			   UUID_SIZE);
@@ -805,10 +738,7 @@ int ovl_set_impure(struct dentry *dentry, struct dentry *upperdentry)
 	if (ovl_test_flag(OVL_IMPURE, d_inode(dentry)))
 		return 0;
 
-	/*
-	 * Do not fail when upper doesn't support xattrs.
-	 * Upper inodes won't have origin nor redirect xattr anyway.
-	 */
+	 
 	err = ovl_check_setxattr(ofs, upperdentry, OVL_XATTR_IMPURE, "y", 1, 0);
 	if (!err)
 		ovl_set_flag(OVL_IMPURE, d_inode(dentry));
@@ -817,7 +747,7 @@ int ovl_set_impure(struct dentry *dentry, struct dentry *upperdentry)
 }
 
 
-#define OVL_PROTATTR_MAX 32 /* Reserved for future flags */
+#define OVL_PROTATTR_MAX 32  
 
 void ovl_check_protattr(struct inode *inode, struct dentry *upper)
 {
@@ -831,12 +761,7 @@ void ovl_check_protattr(struct inode *inode, struct dentry *upper)
 	if (res < 0)
 		return;
 
-	/*
-	 * Initialize inode flags from overlay.protattr xattr and upper inode
-	 * flags.  If upper inode has those fileattr flags set (i.e. from old
-	 * kernel), we do not clear them on ovl_get_inode(), but we will clear
-	 * them on next fileattr_set().
-	 */
+	 
 	for (n = 0; n < res; n++) {
 		if (buf[n] == 'a')
 			iflags |= S_APPEND;
@@ -873,11 +798,7 @@ int ovl_set_protattr(struct inode *inode, struct dentry *upper,
 		iflags |= S_IMMUTABLE;
 	}
 
-	/*
-	 * Do not allow to set protection flags when upper doesn't support
-	 * xattrs, because we do not set those fileattr flags on upper inode.
-	 * Remove xattr if it exist and all protection flags are cleared.
-	 */
+	 
 	if (len) {
 		err = ovl_check_setxattr(ofs, upper, OVL_XATTR_PROTATTR,
 					 buf, len, -EPERM);
@@ -891,17 +812,14 @@ int ovl_set_protattr(struct inode *inode, struct dentry *upper,
 
 	inode_set_flags(inode, iflags, OVL_PROT_I_FLAGS_MASK);
 
-	/* Mask out the fileattr flags that should not be set in upper inode */
+	 
 	fa->flags &= ~OVL_PROT_FS_FLAGS_MASK;
 	fa->fsx_xflags &= ~OVL_PROT_FSX_FLAGS_MASK;
 
 	return 0;
 }
 
-/**
- * Caller must hold a reference to inode to prevent it from being freed while
- * it is marked inuse.
- */
+ 
 bool ovl_inuse_trylock(struct dentry *dentry)
 {
 	struct inode *inode = d_inode(dentry);
@@ -941,9 +859,7 @@ bool ovl_is_inuse(struct dentry *dentry)
 	return inuse;
 }
 
-/*
- * Does this overlay dentry need to be indexed on copy up?
- */
+ 
 bool ovl_need_index(struct dentry *dentry)
 {
 	struct dentry *lower = ovl_dentry_lower(dentry);
@@ -951,18 +867,18 @@ bool ovl_need_index(struct dentry *dentry)
 	if (!lower || !ovl_indexdir(dentry->d_sb))
 		return false;
 
-	/* Index all files for NFS export and consistency verification */
+	 
 	if (ovl_index_all(dentry->d_sb))
 		return true;
 
-	/* Index only lower hardlinks on copy up */
+	 
 	if (!d_is_dir(lower) && d_inode(lower)->i_nlink > 1)
 		return true;
 
 	return false;
 }
 
-/* Caller must hold OVL_I(inode)->lock */
+ 
 static void ovl_cleanup_index(struct dentry *dentry)
 {
 	struct ovl_fs *ofs = OVL_FS(dentry->d_sb);
@@ -983,15 +899,7 @@ static void ovl_cleanup_index(struct dentry *dentry)
 	if (!S_ISDIR(inode->i_mode) && inode->i_nlink != 1) {
 		pr_warn_ratelimited("cleanup linked index (%pd2, ino=%lu, nlink=%u)\n",
 				    upperdentry, inode->i_ino, inode->i_nlink);
-		/*
-		 * We either have a bug with persistent union nlink or a lower
-		 * hardlink was added while overlay is mounted. Adding a lower
-		 * hardlink and then unlinking all overlay hardlinks would drop
-		 * overlay nlink to zero before all upper inodes are unlinked.
-		 * As a safety measure, when that situation is detected, set
-		 * the overlay nlink to the index inode nlink minus one for the
-		 * index entry itself.
-		 */
+		 
 		set_nlink(d_inode(dentry), inode->i_nlink - 1);
 		ovl_set_nlink_upper(dentry);
 		goto out;
@@ -1003,11 +911,11 @@ static void ovl_cleanup_index(struct dentry *dentry)
 	if (IS_ERR(index)) {
 		index = NULL;
 	} else if (ovl_index_all(dentry->d_sb)) {
-		/* Whiteout orphan index to block future open by handle */
+		 
 		err = ovl_cleanup_and_whiteout(OVL_FS(dentry->d_sb),
 					       dir, index);
 	} else {
-		/* Cleanup orphan index entries */
+		 
 		err = ovl_cleanup(ofs, dir, index);
 	}
 
@@ -1025,10 +933,7 @@ fail:
 	goto out;
 }
 
-/*
- * Operations that change overlay inode and upper inode nlink need to be
- * synchronized with copy up for persistent nlink accounting.
- */
+ 
 int ovl_nlink_start(struct dentry *dentry)
 {
 	struct inode *inode = d_inode(dentry);
@@ -1038,20 +943,7 @@ int ovl_nlink_start(struct dentry *dentry)
 	if (WARN_ON(!inode))
 		return -ENOENT;
 
-	/*
-	 * With inodes index is enabled, we store the union overlay nlink
-	 * in an xattr on the index inode. When whiting out an indexed lower,
-	 * we need to decrement the overlay persistent nlink, but before the
-	 * first copy up, we have no upper index inode to store the xattr.
-	 *
-	 * As a workaround, before whiteout/rename over an indexed lower,
-	 * copy up to create the upper index. Creating the upper index will
-	 * initialize the overlay nlink, so it could be dropped if unlink
-	 * or rename succeeds.
-	 *
-	 * TODO: implement metadata only index copy up when called with
-	 *       ovl_copy_up_flags(dentry, O_PATH).
-	 */
+	 
 	if (ovl_need_index(dentry) && !ovl_dentry_has_upper_alias(dentry)) {
 		err = ovl_copy_up(dentry);
 		if (err)
@@ -1066,12 +958,7 @@ int ovl_nlink_start(struct dentry *dentry)
 		goto out;
 
 	old_cred = ovl_override_creds(dentry->d_sb);
-	/*
-	 * The overlay inode nlink should be incremented/decremented IFF the
-	 * upper operation succeeds, along with nlink change of upper inode.
-	 * Therefore, before link/unlink/rename, we store the union nlink
-	 * value relative to the upper inode nlink in an upper inode xattr.
-	 */
+	 
 	err = ovl_set_nlink_upper(dentry);
 	revert_creds(old_cred);
 
@@ -1099,11 +986,11 @@ void ovl_nlink_end(struct dentry *dentry)
 
 int ovl_lock_rename_workdir(struct dentry *workdir, struct dentry *upperdir)
 {
-	/* Workdir should not be the same as upperdir */
+	 
 	if (workdir == upperdir)
 		goto err;
 
-	/* Workdir should not be subdir of upperdir and vice versa */
+	 
 	if (lock_rename(workdir, upperdir) != NULL)
 		goto err_unlock;
 
@@ -1116,16 +1003,13 @@ err:
 	return -EIO;
 }
 
-/*
- * err < 0, 0 if no metacopy xattr, metacopy data size if xattr found.
- * an empty xattr returns OVL_METACOPY_MIN_SIZE to distinguish from no xattr value.
- */
+ 
 int ovl_check_metacopy_xattr(struct ovl_fs *ofs, const struct path *path,
 			     struct ovl_metacopy *data)
 {
 	int res;
 
-	/* Only regular files can have metacopy xattr */
+	 
 	if (!S_ISREG(d_inode(path->dentry)->i_mode))
 		return 0;
 
@@ -1134,18 +1018,14 @@ int ovl_check_metacopy_xattr(struct ovl_fs *ofs, const struct path *path,
 	if (res < 0) {
 		if (res == -ENODATA || res == -EOPNOTSUPP)
 			return 0;
-		/*
-		 * getxattr on user.* may fail with EACCES in case there's no
-		 * read permission on the inode.  Not much we can do, other than
-		 * tell the caller that this is not a metacopy inode.
-		 */
+		 
 		if (ofs->config.userxattr && res == -EACCES)
 			return 0;
 		goto out;
 	}
 
 	if (res == 0) {
-		/* Emulate empty data for zero size metacopy xattr */
+		 
 		res = OVL_METACOPY_MIN_SIZE;
 		if (data) {
 			memset(data, 0, res);
@@ -1178,7 +1058,7 @@ int ovl_set_metacopy_xattr(struct ovl_fs *ofs, struct dentry *d, struct ovl_meta
 {
 	size_t len = metacopy->len;
 
-	/* If no flags or digest fall back to empty metacopy file */
+	 
 	if (metacopy->version == 0 && metacopy->flags == 0 && metacopy->digest_algo == 0)
 		len = 0;
 
@@ -1248,17 +1128,14 @@ err_free:
 	return ERR_PTR(res);
 }
 
-/* Call with mounter creds as it may open the file */
+ 
 int ovl_ensure_verity_loaded(struct path *datapath)
 {
 	struct inode *inode = d_inode(datapath->dentry);
 	struct file *filp;
 
 	if (!fsverity_active(inode) && IS_VERITY(inode)) {
-		/*
-		 * If this inode was not yet opened, the verity info hasn't been
-		 * loaded yet, so we need to do that here to force it into memory.
-		 */
+		 
 		filp = kernel_file_open(datapath, O_RDONLY, inode, current_cred());
 		if (IS_ERR(filp))
 			return PTR_ERR(filp);
@@ -1279,7 +1156,7 @@ int ovl_validate_verity(struct ovl_fs *ofs,
 	u8 verity_algo;
 
 	if (!ofs->config.verity_mode ||
-	    /* Verity only works on regular files */
+	     
 	    !S_ISREG(d_inode(metapath->dentry)->i_mode))
 		return 0;
 
@@ -1354,18 +1231,7 @@ int ovl_get_verity_digest(struct ovl_fs *ofs, struct path *src,
 	return 0;
 }
 
-/*
- * ovl_sync_status() - Check fs sync status for volatile mounts
- *
- * Returns 1 if this is not a volatile mount and a real sync is required.
- *
- * Returns 0 if syncing can be skipped because mount is volatile, and no errors
- * have occurred on the upperdir since the mount.
- *
- * Returns -errno if it is a volatile mount, and the error that occurred since
- * the last mount. If the error code changes, it'll return the latest error
- * code.
- */
+ 
 
 int ovl_sync_status(struct ovl_fs *ofs)
 {
@@ -1381,17 +1247,7 @@ int ovl_sync_status(struct ovl_fs *ofs)
 	return errseq_check(&mnt->mnt_sb->s_wb_err, ofs->errseq);
 }
 
-/*
- * ovl_copyattr() - copy inode attributes from layer to ovl inode
- *
- * When overlay copies inode information from an upper or lower layer to the
- * relevant overlay inode it will apply the idmapping of the upper or lower
- * layer when doing so ensuring that the ovl inode ownership will correctly
- * reflect the ownership of the idmapped upper or lower layer. For example, an
- * idmapped upper or lower layer mapping id 1001 to id 1000 will take care to
- * map any lower or upper inode owned by id 1001 to id 1000. These mapping
- * helpers are nops when the relevant layer isn't idmapped.
- */
+ 
 void ovl_copyattr(struct inode *inode)
 {
 	struct path realpath;

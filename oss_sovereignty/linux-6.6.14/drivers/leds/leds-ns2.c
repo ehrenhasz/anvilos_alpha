@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * leds-ns2.c - Driver for the Network Space v2 (and parents) dual-GPIO LED
- *
- * Copyright (C) 2010 LaCie
- *
- * Author: Simon Guinot <sguinot@lacie.com>
- *
- * Based on leds-gpio.c by Raphael Assenat <raph@8d.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -24,31 +16,22 @@ enum ns2_led_modes {
 	NS_V2_LED_SATA,
 };
 
-/*
- * If the size of this structure or types of its members is changed,
- * the filling of array modval in function ns2_led_register must be changed
- * accordingly.
- */
+ 
 struct ns2_led_modval {
 	u32			mode;
 	u32			cmd_level;
 	u32			slow_level;
 } __packed;
 
-/*
- * The Network Space v2 dual-GPIO LED is wired to a CPLD. Three different LED
- * modes are available: off, on and SATA activity blinking. The LED modes are
- * controlled through two GPIOs (command and slow): each combination of values
- * for the command/slow GPIOs corresponds to a LED mode.
- */
+ 
 
 struct ns2_led {
 	struct led_classdev	cdev;
 	struct gpio_desc	*cmd;
 	struct gpio_desc	*slow;
 	bool			can_sleep;
-	unsigned char		sata; /* True when SATA mode active. */
-	rwlock_t		rw_lock; /* Lock GPIOs. */
+	unsigned char		sata;  
+	rwlock_t		rw_lock;  
 	int			num_modes;
 	struct ns2_led_modval	*modval;
 };
@@ -222,7 +205,7 @@ static int ns2_led_register(struct device *dev, struct fwnode_handle *node,
 	if (ret < 0)
 		return ret;
 
-	/* Set LED initial state. */
+	 
 	led->sata = (mode == NS_V2_LED_SATA) ? 1 : 0;
 	led->cdev.brightness = (mode == NS_V2_LED_OFF) ? LED_OFF : LED_FULL;
 

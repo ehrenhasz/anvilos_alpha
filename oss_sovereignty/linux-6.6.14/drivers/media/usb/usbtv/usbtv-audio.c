@@ -1,40 +1,5 @@
-/*
- * Copyright (c) 2013 Federico Simoncelli
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-/*
- * Fushicai USBTV007 Audio-Video Grabber Driver
- *
- * Product web site:
- * http://www.fushicai.com/products_detail/&productId=d05449ee-b690-42f9-a661-aa7353894bed.html
- *
- * No physical hardware was harmed running Windows during the
- * reverse-engineering activity
- */
+ 
+ 
 
 #include <sound/core.h>
 #include <sound/initval.h>
@@ -59,7 +24,7 @@ static const struct snd_pcm_hardware snd_usbtv_digital_hw = {
 	.period_bytes_max = 13516,
 	.periods_min = 2,
 	.periods_max = 98,
-	.buffer_bytes_max = 62720 * 8, /* value in usbaudio.c */
+	.buffer_bytes_max = 62720 * 8,  
 };
 
 static int snd_usbtv_pcm_open(struct snd_pcm_substream *substream)
@@ -173,7 +138,7 @@ static int usbtv_audio_start(struct usbtv *chip)
 {
 	unsigned int pipe;
 	static const u16 setup[][2] = {
-		/* These seem to enable the device. */
+		 
 		{ USBTV_BASE + 0x0008, 0x0001 },
 		{ USBTV_BASE + 0x01d0, 0x00ff },
 		{ USBTV_BASE + 0x01d9, 0x0002 },
@@ -193,7 +158,7 @@ static int usbtv_audio_start(struct usbtv *chip)
 		{ USBTV_BASE + 0x0283, 0x0040 },
 		{ 0xf891, 0x0010 },
 
-		/* this sets the input from composite */
+		 
 		{ USBTV_BASE + 0x0284, 0x00aa },
 	};
 
@@ -212,7 +177,7 @@ static int usbtv_audio_start(struct usbtv *chip)
 		chip->snd_bulk_urb->transfer_buffer, USBTV_AUDIO_URBSIZE,
 		usbtv_audio_urb_received, chip);
 
-	/* starting the stream */
+	 
 	usbtv_set_regs(chip, setup, ARRAY_SIZE(setup));
 
 	usb_clear_halt(chip->udev, pipe);
@@ -231,11 +196,7 @@ err_alloc_urb:
 static int usbtv_audio_stop(struct usbtv *chip)
 {
 	static const u16 setup[][2] = {
-	/* The original windows driver sometimes sends also:
-	 *   { USBTV_BASE + 0x00a2, 0x0013 }
-	 * but it seems useless and its real effects are untested at
-	 * the moment.
-	 */
+	 
 		{ USBTV_BASE + 0x027d, 0x0000 },
 		{ USBTV_BASE + 0x0280, 0x0010 },
 		{ USBTV_BASE + 0x0282, 0x0010 },

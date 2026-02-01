@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MELFAS MIP4 Touchscreen
- *
- * Copyright (C) 2016 MELFAS Inc.
- *
- * Author : Sangwon Jee <jeesw@melfas.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -22,12 +16,9 @@
 
 #define MIP4_DEVICE_NAME	"mip4_ts"
 
-/*****************************************************************
- * Protocol
- * Version : MIP 4.0 Rev 5.4
- *****************************************************************/
+ 
 
-/* Address */
+ 
 #define MIP4_R0_BOOT				0x00
 #define MIP4_R1_BOOT_MODE			0x01
 #define MIP4_R1_BOOT_BUF_ADDR			0x10
@@ -103,7 +94,7 @@
 #define MIP4_R1_CTRL_PALM_EVENT			0x22
 #define MIP4_R1_CTRL_PROXIMITY_SENSING		0x23
 
-/* Value */
+ 
 #define MIP4_BOOT_MODE_BOOT			0x01
 #define MIP4_BOOT_MODE_APP			0x02
 
@@ -121,7 +112,7 @@
 #define MIP4_EVENT_INPUT_TYPE_SCREEN		1
 #define MIP4_EVENT_INPUT_TYPE_PROXIMITY		2
 
-#define I2C_RETRY_COUNT				3	/* 2~ */
+#define I2C_RETRY_COUNT				3	 
 
 #define MIP4_BUF_SIZE				128
 #define MIP4_MAX_FINGERS			10
@@ -135,7 +126,7 @@
 #define MIP4_PRESSURE_MAX			255
 
 #define MIP4_FW_NAME			"melfas_mip4.fw"
-#define MIP4_FW_UPDATE_DEBUG		0	/* 0 (default) or 1 */
+#define MIP4_FW_UPDATE_DEBUG		0	 
 
 struct mip4_fw_version {
 	u16 boot;
@@ -219,9 +210,7 @@ static void mip4_parse_fw_version(const u8 *buf, struct mip4_fw_version *v)
 	v->param = get_unaligned_le16(buf + 6);
 }
 
-/*
- * Read chip firmware version
- */
+ 
 static int mip4_get_fw_version(struct mip4_ts *ts)
 {
 	u8 cmd[] = { MIP4_R0_INFO, MIP4_R1_INFO_VERSION_BOOT };
@@ -239,9 +228,7 @@ static int mip4_get_fw_version(struct mip4_ts *ts)
 	return 0;
 }
 
-/*
- * Fetch device characteristics
- */
+ 
 static int mip4_query_device(struct mip4_ts *ts)
 {
 	union i2c_smbus_data dummy;
@@ -249,17 +236,14 @@ static int mip4_query_device(struct mip4_ts *ts)
 	u8 cmd[2];
 	u8 buf[14];
 
-	/*
-	 * Make sure there is something at this address as we do not
-	 * consider subsequent failures as fatal.
-	 */
+	 
 	if (i2c_smbus_xfer(ts->client->adapter, ts->client->addr,
 			   0, I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &dummy) < 0) {
 		dev_err(&ts->client->dev, "nothing at this address\n");
 		return -ENXIO;
 	}
 
-	/* Product name */
+	 
 	cmd[0] = MIP4_R0_INFO;
 	cmd[1] = MIP4_R1_INFO_PRODUCT_NAME;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd),
@@ -271,7 +255,7 @@ static int mip4_query_device(struct mip4_ts *ts)
 		dev_dbg(&ts->client->dev, "product name: %.*s\n",
 			(int)sizeof(ts->product_name), ts->product_name);
 
-	/* Product ID */
+	 
 	cmd[0] = MIP4_R0_INFO;
 	cmd[1] = MIP4_R1_INFO_PID;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd), buf, 2);
@@ -283,12 +267,12 @@ static int mip4_query_device(struct mip4_ts *ts)
 		dev_dbg(&ts->client->dev, "product id: %04X\n", ts->product_id);
 	}
 
-	/* Firmware name */
+	 
 	snprintf(ts->fw_name, sizeof(ts->fw_name),
 		"melfas_mip4_%04X.fw", ts->product_id);
 	dev_dbg(&ts->client->dev, "firmware name: %s\n", ts->fw_name);
 
-	/* IC name */
+	 
 	cmd[0] = MIP4_R0_INFO;
 	cmd[1] = MIP4_R1_INFO_IC_NAME;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd),
@@ -300,7 +284,7 @@ static int mip4_query_device(struct mip4_ts *ts)
 		dev_dbg(&ts->client->dev, "IC name: %.*s\n",
 			(int)sizeof(ts->ic_name), ts->ic_name);
 
-	/* Firmware version */
+	 
 	error = mip4_get_fw_version(ts);
 	if (error)
 		dev_warn(&ts->client->dev,
@@ -310,7 +294,7 @@ static int mip4_query_device(struct mip4_ts *ts)
 			 ts->fw_version.boot, ts->fw_version.core,
 			 ts->fw_version.app, ts->fw_version.param);
 
-	/* Resolution */
+	 
 	cmd[0] = MIP4_R0_INFO;
 	cmd[1] = MIP4_R1_INFO_RESOLUTION_X;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd), buf, 14);
@@ -336,12 +320,12 @@ static int mip4_query_device(struct mip4_ts *ts)
 		dev_dbg(&ts->client->dev, "ppm_x: %d, ppm_y: %d\n",
 			ts->ppm_x, ts->ppm_y);
 
-		/* Key ts */
+		 
 		if (ts->node_key > 0)
 			ts->key_num = ts->node_key;
 	}
 
-	/* Protocol */
+	 
 	cmd[0] = MIP4_R0_EVENT;
 	cmd[1] = MIP4_R1_EVENT_SUPPORTED_FUNC;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd), buf, 7);
@@ -368,7 +352,7 @@ static int mip4_power_on(struct mip4_ts *ts)
 	if (ts->gpio_ce) {
 		gpiod_set_value_cansleep(ts->gpio_ce, 1);
 
-		/* Booting delay : 200~300ms */
+		 
 		usleep_range(200 * 1000, 300 * 1000);
 	}
 
@@ -381,20 +365,18 @@ static void mip4_power_off(struct mip4_ts *ts)
 		gpiod_set_value_cansleep(ts->gpio_ce, 0);
 }
 
-/*
- * Clear touch input event status
- */
+ 
 static void mip4_clear_input(struct mip4_ts *ts)
 {
 	int i;
 
-	/* Screen */
+	 
 	for (i = 0; i < MIP4_MAX_FINGERS; i++) {
 		input_mt_slot(ts->input, i);
 		input_mt_report_slot_inactive(ts->input);
 	}
 
-	/* Keys */
+	 
 	for (i = 0; i < ts->key_num; i++)
 		input_report_key(ts->input, ts->key_code[i], 0);
 
@@ -423,9 +405,7 @@ static void mip4_disable(struct mip4_ts *ts)
 	mip4_clear_input(ts);
 }
 
-/*****************************************************************
- * Input handling
- *****************************************************************/
+ 
 
 static void mip4_report_keys(struct mip4_ts *ts, u8 *packet)
 {
@@ -446,7 +426,7 @@ static void mip4_report_keys(struct mip4_ts *ts, u8 *packet)
 		break;
 	}
 
-	/* Report key event */
+	 
 	if (key >= 1 && key <= ts->key_num) {
 		unsigned short keycode = ts->key_code[key - 1];
 
@@ -478,7 +458,7 @@ static void mip4_report_touch(struct mip4_ts *ts, u8 *packet)
 	switch (ts->event_format) {
 	case 0:
 	case 1:
-		/* Touch only */
+		 
 		state = packet[0] & BIT(7);
 		hover = packet[0] & BIT(5);
 		palm = packet[0] & BIT(4);
@@ -499,7 +479,7 @@ static void mip4_report_touch(struct mip4_ts *ts, u8 *packet)
 
 	case 3:
 	default:
-		/* Touch + Force(Pressure) */
+		 
 		id = (packet[0] & 0x0F) - 1;
 		hover = packet[1] & BIT(2);
 		palm = packet[1] & BIT(1);
@@ -555,13 +535,13 @@ static int mip4_handle_packet(struct mip4_ts *ts, u8 *packet)
 		break;
 
 	default:
-		/* Should not happen unless we have corrupted firmware */
+		 
 		return -EINVAL;
 	}
 
 	dev_dbg(&ts->client->dev, "Type: %d\n", type);
 
-	/* Report input event */
+	 
 	switch (type) {
 	case MIP4_EVENT_INPUT_TYPE_KEY:
 		mip4_report_keys(ts, packet);
@@ -589,7 +569,7 @@ static irqreturn_t mip4_interrupt(int irq, void *dev_id)
 	u8 size;
 	bool alert;
 
-	/* Read packet info */
+	 
 	cmd[0] = MIP4_R0_EVENT;
 	cmd[1] = MIP4_R1_EVENT_PACKET_INFO;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd), ts->buf, 1);
@@ -603,13 +583,13 @@ static irqreturn_t mip4_interrupt(int irq, void *dev_id)
 	alert = ts->buf[0] & BIT(7);
 	dev_dbg(&client->dev, "packet size: %d, alert: %d\n", size, alert);
 
-	/* Check size */
+	 
 	if (!size) {
 		dev_err(&client->dev, "Empty packet\n");
 		goto out;
 	}
 
-	/* Read packet data */
+	 
 	cmd[0] = MIP4_R0_EVENT;
 	cmd[1] = MIP4_R1_EVENT_PACKET_DATA;
 	error = mip4_i2c_xfer(ts, cmd, sizeof(cmd), ts->buf, size);
@@ -649,17 +629,13 @@ static void mip4_input_close(struct input_dev *dev)
 	mip4_disable(ts);
 }
 
-/*****************************************************************
- * Firmware update
- *****************************************************************/
+ 
 
-/* Firmware Info */
-#define MIP4_BL_PAGE_SIZE		512	/* 512 */
-#define MIP4_BL_PACKET_SIZE		512	/* 512, 256, 128, 64, ... */
+ 
+#define MIP4_BL_PAGE_SIZE		512	 
+#define MIP4_BL_PACKET_SIZE		512	 
 
-/*
- * Firmware binary tail info
- */
+ 
 
 struct mip4_bin_tail {
 	u8 tail_mark[4];
@@ -700,9 +676,7 @@ struct mip4_bin_tail {
 #define MIP4_BIN_TAIL_MARK	"MBT\001"
 #define MIP4_BIN_TAIL_SIZE	(sizeof(struct mip4_bin_tail))
 
-/*
-* Bootloader - Read status
-*/
+ 
 static int mip4_bl_read_status(struct mip4_ts *ts)
 {
 	u8 cmd[] = { MIP4_R0_BOOT, MIP4_R1_BOOT_STATUS };
@@ -762,9 +736,7 @@ static int mip4_bl_read_status(struct mip4_ts *ts)
 	return error;
 }
 
-/*
-* Bootloader - Change mode
-*/
+ 
 static int mip4_bl_change_mode(struct mip4_ts *ts, u8 mode)
 {
 	u8 mode_chg_cmd[] = { MIP4_R0_BOOT, MIP4_R1_BOOT_MODE, mode };
@@ -788,7 +760,7 @@ static int mip4_bl_change_mode(struct mip4_ts *ts, u8 mode)
 	int error;
 
 	do {
-		/* Send mode change command */
+		 
 		ret = i2c_master_send(ts->client,
 				      mode_chg_cmd, sizeof(mode_chg_cmd));
 		if (ret != sizeof(mode_chg_cmd)) {
@@ -802,10 +774,10 @@ static int mip4_bl_change_mode(struct mip4_ts *ts, u8 mode)
 		dev_dbg(&ts->client->dev,
 			"Sent mode change request (mode: %d)\n", mode);
 
-		/* Wait */
+		 
 		msleep(1000);
 
-		/* Verify target mode */
+		 
 		ret = i2c_transfer(ts->client->adapter, msg, ARRAY_SIZE(msg));
 		if (ret != ARRAY_SIZE(msg)) {
 			error = ret < 0 ? ret : -EIO;
@@ -825,17 +797,13 @@ static int mip4_bl_change_mode(struct mip4_ts *ts, u8 mode)
 	return -EIO;
 }
 
-/*
- * Bootloader - Start bootloader mode
- */
+ 
 static int mip4_bl_enter(struct mip4_ts *ts)
 {
 	return mip4_bl_change_mode(ts, MIP4_BOOT_MODE_BOOT);
 }
 
-/*
- * Bootloader - Exit bootloader mode
- */
+ 
 static int mip4_bl_exit(struct mip4_ts *ts)
 {
 	return mip4_bl_change_mode(ts, MIP4_BOOT_MODE_APP);
@@ -899,7 +867,7 @@ static int mip4_bl_program_page(struct mip4_ts *ts, int offset,
 	if (!data_buf)
 		return -ENOMEM;
 
-	/* Addr */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_TARGET_ADDR;
 	put_unaligned_le32(offset, &cmd[2]);
@@ -911,7 +879,7 @@ static int mip4_bl_program_page(struct mip4_ts *ts, int offset,
 		goto out;
 	}
 
-	/* Size */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_SIZE;
 	put_unaligned_le32(length, &cmd[2]);
@@ -923,7 +891,7 @@ static int mip4_bl_program_page(struct mip4_ts *ts, int offset,
 		goto out;
 	}
 
-	/* Data */
+	 
 	for (buf_offset = 0;
 	     buf_offset < length;
 	     buf_offset += MIP4_BL_PACKET_SIZE) {
@@ -943,7 +911,7 @@ static int mip4_bl_program_page(struct mip4_ts *ts, int offset,
 		}
 	}
 
-	/* Command */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_CMD;
 	cmd[2] = MIP4_BOOT_CMD_PROGRAM;
@@ -955,7 +923,7 @@ static int mip4_bl_program_page(struct mip4_ts *ts, int offset,
 		goto out;
 	}
 
-	/* Status */
+	 
 	error = mip4_bl_read_status(ts);
 
 out:
@@ -987,7 +955,7 @@ static int mip4_bl_verify_page(struct mip4_ts *ts, int offset,
 	dev_dbg(&ts->client->dev, "Validating page @%#06x (%d)\n",
 		offset, length);
 
-	/* Addr */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_TARGET_ADDR;
 	put_unaligned_le32(offset, &cmd[2]);
@@ -999,7 +967,7 @@ static int mip4_bl_verify_page(struct mip4_ts *ts, int offset,
 		return error;
 	}
 
-	/* Size */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_SIZE;
 	put_unaligned_le32(length, &cmd[2]);
@@ -1011,7 +979,7 @@ static int mip4_bl_verify_page(struct mip4_ts *ts, int offset,
 		return error;
 	}
 
-	/* Command */
+	 
 	cmd[0] = MIP4_R0_BOOT;
 	cmd[1] = MIP4_R1_BOOT_CMD;
 	cmd[2] = MIP4_BOOT_CMD_READ;
@@ -1023,12 +991,12 @@ static int mip4_bl_verify_page(struct mip4_ts *ts, int offset,
 		return error;
 	}
 
-	/* Status */
+	 
 	error = mip4_bl_read_status(ts);
 	if (error)
 		return error;
 
-	/* Read */
+	 
 	msg[1].buf = read_buf = kmalloc(MIP4_BL_PACKET_SIZE, GFP_KERNEL);
 	if (!read_buf)
 		return -ENOMEM;
@@ -1073,9 +1041,7 @@ static int mip4_bl_verify_page(struct mip4_ts *ts, int offset,
 	return error ? error : 0;
 }
 
-/*
- * Flash chip firmware
- */
+ 
 static int mip4_flash_fw(struct mip4_ts *ts,
 			 const u8 *fw_data, u32 fw_size, u32 fw_offset)
 {
@@ -1084,7 +1050,7 @@ static int mip4_flash_fw(struct mip4_ts *ts,
 	u16 buf_addr;
 	int error, error2;
 
-	/* Enter bootloader mode */
+	 
 	dev_dbg(&client->dev, "Entering bootloader mode\n");
 
 	error = mip4_bl_enter(ts);
@@ -1095,12 +1061,12 @@ static int mip4_flash_fw(struct mip4_ts *ts,
 		return error;
 	}
 
-	/* Read info */
+	 
 	error = mip4_bl_get_address(ts, &buf_addr);
 	if (error)
 		goto exit_bl;
 
-	/* Program & Verify */
+	 
 	dev_dbg(&client->dev,
 		"Program & Verify, page size: %d, packet size: %d\n",
 		MIP4_BL_PAGE_SIZE, MIP4_BL_PACKET_SIZE);
@@ -1108,13 +1074,13 @@ static int mip4_flash_fw(struct mip4_ts *ts,
 	for (offset = fw_offset;
 	     offset < fw_offset + fw_size;
 	     offset += MIP4_BL_PAGE_SIZE) {
-		/* Program */
+		 
 		error = mip4_bl_program_page(ts, offset, fw_data + offset,
 					     MIP4_BL_PAGE_SIZE, buf_addr);
 		if (error)
 			break;
 
-		/* Verify */
+		 
 		error = mip4_bl_verify_page(ts, offset, fw_data + offset,
 					    MIP4_BL_PAGE_SIZE, buf_addr);
 		if (error)
@@ -1122,7 +1088,7 @@ static int mip4_flash_fw(struct mip4_ts *ts,
 	}
 
 exit_bl:
-	/* Exit bootloader mode */
+	 
 	dev_dbg(&client->dev, "Exiting bootloader mode\n");
 
 	error2 = mip4_bl_exit(ts);
@@ -1133,13 +1099,13 @@ exit_bl:
 			error = error2;
 	}
 
-	/* Reset chip */
+	 
 	mip4_power_off(ts);
 	mip4_power_on(ts);
 
 	mip4_query_device(ts);
 
-	/* Refresh device parameters */
+	 
 	input_set_abs_params(ts->input, ABS_MT_POSITION_X, 0, ts->max_x, 0, 0);
 	input_set_abs_params(ts->input, ABS_MT_POSITION_Y, 0, ts->max_y, 0, 0);
 	input_set_abs_params(ts->input, ABS_X, 0, ts->max_x, 0, 0);
@@ -1182,7 +1148,7 @@ static int mip4_parse_firmware(struct mip4_ts *ts, const struct firmware *fw,
 		return -EINVAL;
 	}
 
-	/* Check bin format */
+	 
 	if (memcmp(fw_info->tail_mark, MIP4_BIN_TAIL_MARK,
 		   sizeof(fw_info->tail_mark))) {
 		dev_err(&ts->client->dev,
@@ -1224,7 +1190,7 @@ static int mip4_parse_firmware(struct mip4_ts *ts, const struct firmware *fw,
 		 ts->fw_version.boot, ts->fw_version.core,
 		 ts->fw_version.app, ts->fw_version.param);
 
-	/* Check F/W type */
+	 
 	if (fw_version.boot != 0xEEEE && fw_version.boot != 0xFFFF &&
 	    fw_version.core == 0xEEEE &&
 	    fw_version.app == 0xEEEE &&
@@ -1264,7 +1230,7 @@ static int mip4_execute_fw_update(struct mip4_ts *ts, const struct firmware *fw)
 			return error;
 	}
 
-	/* Update firmware */
+	 
 	do {
 		error = mip4_flash_fw(ts, fw->data, fw_size, fw_start_offset);
 		if (!error)
@@ -1275,7 +1241,7 @@ static int mip4_execute_fw_update(struct mip4_ts *ts, const struct firmware *fw)
 		dev_err(&ts->client->dev,
 			"Failed to flash firmware: %d\n", error);
 
-	/* Enable IRQ */
+	 
 	if (input_device_enabled(ts->input))
 		enable_irq(ts->client->irq);
 	else
@@ -1301,11 +1267,7 @@ static ssize_t mip4_sysfs_fw_update(struct device *dev,
 		return error;
 	}
 
-	/*
-	 * Take input mutex to prevent racing with itself and also with
-	 * userspace opening and closing the device and also suspend/resume
-	 * transitions.
-	 */
+	 
 	mutex_lock(&ts->input->mutex);
 
 	error = mip4_execute_fw_update(ts, fw);
@@ -1333,7 +1295,7 @@ static ssize_t mip4_sysfs_read_fw_version(struct device *dev,
 	struct mip4_ts *ts = i2c_get_clientdata(client);
 	size_t count;
 
-	/* Take lock to prevent racing with firmware update */
+	 
 	mutex_lock(&ts->input->mutex);
 
 	count = snprintf(buf, PAGE_SIZE, "%04X %04X %04X %04X\n",
@@ -1355,13 +1317,10 @@ static ssize_t mip4_sysfs_read_hw_version(struct device *dev,
 	struct mip4_ts *ts = i2c_get_clientdata(client);
 	size_t count;
 
-	/* Take lock to prevent racing with firmware update */
+	 
 	mutex_lock(&ts->input->mutex);
 
-	/*
-	 * product_name shows the name or version of the hardware
-	 * paired with current firmware in the chip.
-	 */
+	 
 	count = snprintf(buf, PAGE_SIZE, "%.*s\n",
 			 (int)sizeof(ts->product_name), ts->product_name);
 

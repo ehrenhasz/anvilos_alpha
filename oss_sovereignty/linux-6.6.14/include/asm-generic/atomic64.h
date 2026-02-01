@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Generic implementation of 64-bit atomics using spinlocks,
- * useful on processors that don't have 64-bit atomic instructions.
- *
- * Copyright © 2009 Paul Mackerras, IBM Corp. <paulus@au1.ibm.com>
- */
+ 
+ 
 #ifndef _ASM_GENERIC_ATOMIC64_H
 #define _ASM_GENERIC_ATOMIC64_H
 #include <linux/types.h>
@@ -72,4 +67,4 @@ extern s64 generic_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u);
 #define arch_atomic64_xchg		generic_atomic64_xchg
 #define arch_atomic64_fetch_add_unless	generic_atomic64_fetch_add_unless
 
-#endif  /*  _ASM_GENERIC_ATOMIC64_H  */
+#endif   

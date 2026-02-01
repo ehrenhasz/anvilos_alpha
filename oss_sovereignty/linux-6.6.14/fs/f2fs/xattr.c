@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/xattr.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- *
- * Portions of this code from linux/fs/ext2/xattr.c
- *
- * Copyright (C) 2001-2003 Andreas Gruenbacher <agruen@suse.de>
- *
- * Fix by Harrison Xing <harrison@mountainviewdata.com>.
- * Extended attributes for symlinks and special files added per
- *  suggestion of Luka Renko <luka.renko@hermes.si>.
- * xattr consolidation Copyright (c) 2004 James Morris <jmorris@redhat.com>,
- *  Red Hat Inc.
- */
+
+ 
 #include <linux/rwsem.h>
 #include <linux/f2fs_fs.h>
 #include <linux/security.h>
@@ -262,7 +247,7 @@ static struct f2fs_xattr_entry *__find_inline_xattr(struct inode *inode,
 	if (!entry)
 		return NULL;
 
-	/* inline xattr header or entry across max inline xattr size */
+	 
 	if (IS_XATTR_LAST_ENTRY(entry) &&
 		(void *)entry + sizeof(__u32) > max_addr) {
 		*last_addr = entry;
@@ -302,7 +287,7 @@ static int read_xattr_block(struct inode *inode, void *txattr_addr)
 	struct page *xpage;
 	void *xattr_addr;
 
-	/* The inode already has an extended attribute block. */
+	 
 	xpage = f2fs_get_node_page(sbi, xnid);
 	if (IS_ERR(xpage))
 		return PTR_ERR(xpage);
@@ -336,7 +321,7 @@ static int lookup_all_xattrs(struct inode *inode, struct page *ipage,
 
 	last_txattr_addr = (void *)txattr_addr + XATTR_SIZE(inode);
 
-	/* read from inline xattr */
+	 
 	if (inline_size) {
 		err = read_inline_xattr(inode, ipage, txattr_addr);
 		if (err)
@@ -350,7 +335,7 @@ static int lookup_all_xattrs(struct inode *inode, struct page *ipage,
 		}
 	}
 
-	/* read from xattr node block */
+	 
 	if (xnid) {
 		err = read_xattr_block(inode, txattr_addr);
 		if (err)
@@ -400,14 +385,14 @@ static int read_all_xattrs(struct inode *inode, struct page *ipage,
 	if (!txattr_addr)
 		return -ENOMEM;
 
-	/* read from inline xattr */
+	 
 	if (inline_size) {
 		err = read_inline_xattr(inode, ipage, txattr_addr);
 		if (err)
 			goto fail;
 	}
 
-	/* read from xattr node block */
+	 
 	if (xnid) {
 		err = read_xattr_block(inode, txattr_addr);
 		if (err)
@@ -416,7 +401,7 @@ static int read_all_xattrs(struct inode *inode, struct page *ipage,
 
 	header = XATTR_HDR(txattr_addr);
 
-	/* never been allocated xattrs */
+	 
 	if (le32_to_cpu(header->h_magic) != F2FS_XATTR_MAGIC) {
 		header->h_magic = cpu_to_le32(F2FS_XATTR_MAGIC);
 		header->h_refcount = cpu_to_le32(1);
@@ -444,7 +429,7 @@ static inline int write_all_xattrs(struct inode *inode, __u32 hsize,
 		if (!f2fs_alloc_nid(sbi, &new_nid))
 			return -ENOSPC;
 
-	/* write to inline xattr */
+	 
 	if (inline_size) {
 		if (ipage) {
 			inline_addr = inline_xattr_addr(inode, ipage);
@@ -459,7 +444,7 @@ static inline int write_all_xattrs(struct inode *inode, __u32 hsize,
 
 		f2fs_wait_on_page_writeback(ipage ? ipage : in_page,
 							NODE, true, true);
-		/* no need to use xattr node block */
+		 
 		if (hsize <= inline_size) {
 			err = f2fs_truncate_xattr_node(inode);
 			f2fs_alloc_nid_failed(sbi, new_nid);
@@ -473,7 +458,7 @@ static inline int write_all_xattrs(struct inode *inode, __u32 hsize,
 		}
 	}
 
-	/* write to xattr node block */
+	 
 	if (F2FS_I(inode)->i_xattr_nid) {
 		xpage = f2fs_get_node_page(sbi, F2FS_I(inode)->i_xattr_nid);
 		if (IS_ERR(xpage)) {
@@ -656,7 +641,7 @@ retry:
 
 	last_base_addr = (void *)base_addr + XATTR_SIZE(inode);
 
-	/* find entry with wanted name. */
+	 
 	here = __find_xattr(base_addr, last_base_addr, NULL, index, len, name);
 	if (!here) {
 		if (!F2FS_I(inode)->i_xattr_nid) {
@@ -710,13 +695,10 @@ retry:
 
 	newsize = XATTR_ALIGN(sizeof(struct f2fs_xattr_entry) + len + size);
 
-	/* 1. Check space */
+	 
 	if (value) {
 		int free;
-		/*
-		 * If value is NULL, it is remove operation.
-		 * In case of update operation, we calculate free.
-		 */
+		 
 		free = MIN_OFFSET(inode) - ((char *)last - (char *)base_addr);
 		if (found)
 			free = free + ENTRY_SIZE(here);
@@ -727,12 +709,9 @@ retry:
 		}
 	}
 
-	/* 2. Remove old entry */
+	 
 	if (found) {
-		/*
-		 * If entry is found, remove old entry.
-		 * If not found, remove operation is not needed.
-		 */
+		 
 		struct f2fs_xattr_entry *next = XATTR_NEXT_ENTRY(here);
 		int oldsize = ENTRY_SIZE(here);
 
@@ -743,13 +722,10 @@ retry:
 
 	new_hsize = (char *)last - (char *)base_addr;
 
-	/* 3. Write new entry */
+	 
 	if (value) {
 		char *pval;
-		/*
-		 * Before we come here, old entry is removed.
-		 * We just write new entry.
-		 */
+		 
 		last->e_name_index = index;
 		last->e_name_len = len;
 		memcpy(last->e_name, name, len);
@@ -757,11 +733,7 @@ retry:
 		memcpy(pval, value, size);
 		last->e_value_size = cpu_to_le16(size);
 		new_hsize += newsize;
-		/*
-		 * Explicitly add the null terminator.  The unused xattr space
-		 * is supposed to always be zeroed, which would make this
-		 * unnecessary, but don't depend on that.
-		 */
+		 
 		*(u32 *)((u8 *)last + newsize) = 0;
 	}
 
@@ -804,7 +776,7 @@ int f2fs_setxattr(struct inode *inode, int index, const char *name,
 	if (err)
 		return err;
 
-	/* this case is only from f2fs_init_inode_metadata */
+	 
 	if (ipage)
 		return __f2fs_setxattr(inode, index, name, value,
 						size, ipage, flags);

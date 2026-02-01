@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- *
- * HDMI support for G4x,ILK,SNB,IVB,VLV,CHV (HSW+ handled by the DDI code).
- */
+
+ 
 
 #include "g4x_hdmi.h"
 #include "i915_reg.h"
@@ -96,12 +92,7 @@ static bool g4x_compute_has_hdmi_sink(struct intel_atomic_state *state,
 	struct drm_connector *connector;
 	int i;
 
-	/*
-	 * On g4x only one HDMI port can transmit infoframes/audio at
-	 * any given time. Select the first suitable port for this duty.
-	 *
-	 * See also g4x_hdmi_connector_atomic_check().
-	 */
+	 
 	for_each_new_connector_in_state(&state->base, connector, conn_state, i) {
 		struct intel_encoder *encoder = to_intel_encoder(conn_state->best_encoder);
 		const struct intel_crtc_state *crtc_state;
@@ -261,32 +252,20 @@ static void ibx_enable_hdmi(struct intel_atomic_state *state,
 	if (pipe_config->has_audio)
 		temp |= HDMI_AUDIO_ENABLE;
 
-	/*
-	 * HW workaround, need to write this twice for issue
-	 * that may result in first write getting masked.
-	 */
+	 
 	intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
 	intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 	intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
 	intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 
-	/*
-	 * HW workaround, need to toggle enable bit off and on
-	 * for 12bpc with pixel repeat.
-	 *
-	 * FIXME: BSpec says this should be done at the end of
-	 * the modeset sequence, so not sure if this isn't too soon.
-	 */
+	 
 	if (pipe_config->pipe_bpp > 24 &&
 	    pipe_config->pixel_multiplier > 1) {
 		intel_de_write(dev_priv, intel_hdmi->hdmi_reg,
 			       temp & ~SDVO_ENABLE);
 		intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 
-		/*
-		 * HW workaround, need to write this twice for issue
-		 * that may result in first write getting masked.
-		 */
+		 
 		intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
 		intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 		intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
@@ -316,15 +295,7 @@ static void cpt_enable_hdmi(struct intel_atomic_state *state,
 	if (pipe_config->has_audio)
 		temp |= HDMI_AUDIO_ENABLE;
 
-	/*
-	 * WaEnableHDMI8bpcBefore12bpc:snb,ivb
-	 *
-	 * The procedure for 12bpc is as follows:
-	 * 1. disable HDMI clock gating
-	 * 2. enable HDMI with 8bpc
-	 * 3. enable HDMI with 12bpc
-	 * 4. enable HDMI clock gating
-	 */
+	 
 
 	if (pipe_config->pipe_bpp > 24) {
 		intel_de_rmw(dev_priv, TRANS_CHICKEN1(pipe),
@@ -384,25 +355,15 @@ static void intel_disable_hdmi(struct intel_atomic_state *state,
 	intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
 	intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 
-	/*
-	 * HW workaround for IBX, we need to move the port
-	 * to transcoder A after disabling it to allow the
-	 * matching DP port to be enabled on transcoder A.
-	 */
+	 
 	if (HAS_PCH_IBX(dev_priv) && crtc->pipe == PIPE_B) {
-		/*
-		 * We get CPU/PCH FIFO underruns on the other pipe when
-		 * doing the workaround. Sweep them under the rug.
-		 */
+		 
 		intel_set_cpu_fifo_underrun_reporting(dev_priv, PIPE_A, false);
 		intel_set_pch_fifo_underrun_reporting(dev_priv, PIPE_A, false);
 
 		temp &= ~SDVO_PIPE_SEL_MASK;
 		temp |= SDVO_ENABLE | SDVO_PIPE_SEL(PIPE_A);
-		/*
-		 * HW workaround, need to write this twice for issue
-		 * that may result in first write getting masked.
-		 */
+		 
 		intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
 		intel_de_posting_read(dev_priv, intel_hdmi->hdmi_reg);
 		intel_de_write(dev_priv, intel_hdmi->hdmi_reg, temp);
@@ -475,7 +436,7 @@ static void vlv_hdmi_pre_enable(struct intel_atomic_state *state,
 
 	vlv_phy_pre_encoder_enable(encoder, pipe_config);
 
-	/* HDMI 1.0V-2dB */
+	 
 	vlv_set_phy_signal_level(encoder, pipe_config,
 				 0x2b245f5f, 0x00002000,
 				 0x5578b83a, 0x2b247878);
@@ -522,7 +483,7 @@ static void vlv_hdmi_post_disable(struct intel_atomic_state *state,
 				  const struct intel_crtc_state *old_crtc_state,
 				  const struct drm_connector_state *old_conn_state)
 {
-	/* Reset lanes to avoid HDMI flicker (VLV w/a) */
+	 
 	vlv_phy_reset_lanes(encoder, old_crtc_state);
 }
 
@@ -536,7 +497,7 @@ static void chv_hdmi_post_disable(struct intel_atomic_state *state,
 
 	vlv_dpio_get(dev_priv);
 
-	/* Assert data lane reset */
+	 
 	chv_data_lane_soft_reset(encoder, old_crtc_state, true);
 
 	vlv_dpio_put(dev_priv);
@@ -553,8 +514,8 @@ static void chv_hdmi_pre_enable(struct intel_atomic_state *state,
 
 	chv_phy_pre_encoder_enable(encoder, pipe_config);
 
-	/* FIXME: Program the support xxx V-dB */
-	/* Use 800mV-0dB */
+	 
+	 
 	chv_set_phy_signal_level(encoder, pipe_config, 128, 102, false);
 
 	dig_port->set_infoframes(encoder,
@@ -565,7 +526,7 @@ static void chv_hdmi_pre_enable(struct intel_atomic_state *state,
 
 	vlv_wait_port_ready(dev_priv, dig_port, 0x0);
 
-	/* Second common lane will stay alive on its own now */
+	 
 	chv_phy_release_cl2_override(encoder);
 }
 
@@ -581,18 +542,7 @@ intel_hdmi_hotplug(struct intel_encoder *encoder,
 
 	state = intel_encoder_hotplug(encoder, connector);
 
-	/*
-	 * On many platforms the HDMI live state signal is known to be
-	 * unreliable, so we can't use it to detect if a sink is connected or
-	 * not. Instead we detect if it's connected based on whether we can
-	 * read the EDID or not. That in turn has a problem during disconnect,
-	 * since the HPD interrupt may be raised before the DDC lines get
-	 * disconnected (due to how the required length of DDC vs. HPD
-	 * connector pins are specified) and so we'll still be able to get a
-	 * valid EDID. To solve this schedule another detection cycle if this
-	 * time around we didn't detect any change in the sink's connection
-	 * status.
-	 */
+	 
 	if (state == INTEL_HOTPLUG_UNCHANGED && !connector->hotplug_retries)
 		state = INTEL_HOTPLUG_RETRY;
 
@@ -617,14 +567,7 @@ int g4x_hdmi_connector_atomic_check(struct drm_connector *connector,
 	if (!intel_connector_needs_modeset(to_intel_atomic_state(state), connector))
 		return 0;
 
-	/*
-	 * On g4x only one HDMI port can transmit infoframes/audio
-	 * at any given time. Make sure all enabled HDMI ports are
-	 * included in the state so that it's possible to select
-	 * one of them for this duty.
-	 *
-	 * See also g4x_compute_has_hdmi_sink().
-	 */
+	 
 	drm_connector_list_iter_begin(&i915->drm, &conn_iter);
 	drm_for_each_connector_iter(conn, &conn_iter) {
 		struct drm_connector_state *conn_state;
@@ -689,7 +632,7 @@ void g4x_hdmi_init(struct drm_i915_private *dev_priv,
 
 	devdata = intel_bios_encoder_data_lookup(dev_priv, port);
 
-	/* FIXME bail? */
+	 
 	if (!devdata)
 		drm_dbg_kms(&dev_priv->drm, "No VBT child device for HDMI-%c\n",
 			    port_name(port));
@@ -761,11 +704,7 @@ void g4x_hdmi_init(struct drm_i915_private *dev_priv,
 	}
 	intel_encoder->cloneable = BIT(INTEL_OUTPUT_ANALOG);
 	intel_encoder->hpd_pin = intel_hpd_pin_default(dev_priv, port);
-	/*
-	 * BSpec is unclear about HDMI+HDMI cloning on g4x, but it seems
-	 * to work on real hardware. And since g4x can send infoframes to
-	 * only one port anyway, nothing is lost by allowing it.
-	 */
+	 
 	if (IS_G4X(dev_priv))
 		intel_encoder->cloneable |= BIT(INTEL_OUTPUT_HDMI);
 

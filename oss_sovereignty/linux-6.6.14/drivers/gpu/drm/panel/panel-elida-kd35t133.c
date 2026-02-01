@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Elida kd35t133 5.5" MIPI-DSI panel driver
- * Copyright (C) 2020 Theobroma Systems Design und Consulting GmbH
- *
- * based on
- *
- * Rockteck jh057n00900 5.5" MIPI-DSI panel driver
- * Copyright (C) Purism SPC 2019
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -23,7 +15,7 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-/* Manufacturer specific Commands send via DSI */
+ 
 #define KD35T133_CMD_INTERFACEMODECTRL		0xb0
 #define KD35T133_CMD_FRAMERATECTRL		0xb1
 #define KD35T133_CMD_DISPLAYINVERSIONCTRL	0xb4
@@ -56,10 +48,7 @@ static int kd35t133_init_sequence(struct kd35t133 *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	struct device *dev = ctx->dev;
 
-	/*
-	 * Init sequence was supplied by the panel vendor with minimal
-	 * documentation.
-	 */
+	 
 	mipi_dsi_dcs_write_seq(dsi, KD35T133_CMD_POSITIVEGAMMA,
 			       0x00, 0x13, 0x18, 0x04, 0x0f, 0x06, 0x3a, 0x56,
 			       0x4d, 0x03, 0x0a, 0x06, 0x30, 0x3e, 0x0f);
@@ -211,10 +200,7 @@ static int kd35t133_get_modes(struct drm_panel *panel,
 	connector->display_info.width_mm = mode->width_mm;
 	connector->display_info.height_mm = mode->height_mm;
 	drm_mode_probed_add(connector, mode);
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, ctx->orientation);
 
 	return 1;
@@ -331,7 +317,7 @@ static void kd35t133_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id kd35t133_of_match[] = {
 	{ .compatible = "elida,kd35t133" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, kd35t133_of_match);
 

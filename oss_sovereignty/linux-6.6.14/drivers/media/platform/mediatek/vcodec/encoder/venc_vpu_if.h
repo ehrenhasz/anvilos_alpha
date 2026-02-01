@@ -1,29 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PoChun Lin <pochun.lin@mediatek.com>
- */
+ 
+ 
 
 #ifndef _VENC_VPU_IF_H_
 #define _VENC_VPU_IF_H_
 
 #include "venc_drv_if.h"
 
-/*
- * struct venc_vpu_inst - encoder VPU driver instance
- * @wq_hd: wait queue used for vpu cmd trigger then wait vpu interrupt done
- * @signaled: flag used for checking vpu interrupt done
- * @failure: flag to show vpu cmd succeeds or not
- * @state: enum venc_ipi_msg_enc_state
- * @bs_size: bitstream size for skip frame case usage
- * @is_key_frm: key frame flag
- * @inst_addr: VPU instance addr
- * @vsi: driver structure allocated by VPU side and shared to AP side for
- *	 control and info share
- * @id: the id of inter-processor interrupt
- * @ctx: context for v4l2 layer integration
- * @dev: device for v4l2 layer integration
- */
+ 
 struct venc_vpu_inst {
 	wait_queue_head_t wq_hd;
 	int signaled;

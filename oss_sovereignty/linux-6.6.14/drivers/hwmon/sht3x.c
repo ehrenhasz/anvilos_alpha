@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Sensirion SHT3x-DIS humidity and temperature sensor driver.
- * The SHT3x comes in many different versions, this driver is for the
- * I2C version only.
- *
- * Copyright (C) 2016 Sensirion AG, Switzerland
- * Author: David Frey <david.frey@sensirion.com>
- * Author: Pascal Sachs <pascal.sachs@sensirion.com>
- */
+
+ 
 
 #include <asm/page.h>
 #include <linux/crc8.h>
@@ -21,28 +14,28 @@
 #include <linux/slab.h>
 #include <linux/jiffies.h>
 
-/* commands (high repeatability mode) */
+ 
 static const unsigned char sht3x_cmd_measure_single_hpm[] = { 0x24, 0x00 };
 
-/* commands (medium repeatability mode) */
+ 
 static const unsigned char sht3x_cmd_measure_single_mpm[] = { 0x24, 0x0b };
 
-/* commands (low repeatability mode) */
+ 
 static const unsigned char sht3x_cmd_measure_single_lpm[] = { 0x24, 0x16 };
 
-/* commands for periodic mode */
+ 
 static const unsigned char sht3x_cmd_measure_periodic_mode[]   = { 0xe0, 0x00 };
 static const unsigned char sht3x_cmd_break[]                   = { 0x30, 0x93 };
 
-/* commands for heater control */
+ 
 static const unsigned char sht3x_cmd_heater_on[]               = { 0x30, 0x6d };
 static const unsigned char sht3x_cmd_heater_off[]              = { 0x30, 0x66 };
 
-/* other commands */
+ 
 static const unsigned char sht3x_cmd_read_status_reg[]         = { 0xf3, 0x2d };
 static const unsigned char sht3x_cmd_clear_status_reg[]        = { 0x30, 0x41 };
 
-/* delays for single-shot mode i2c commands, both in us */
+ 
 #define SHT3X_SINGLE_WAIT_TIME_HPM  15000
 #define SHT3X_SINGLE_WAIT_TIME_MPM   6000
 #define SHT3X_SINGLE_WAIT_TIME_LPM   4000
@@ -78,45 +71,45 @@ enum sht3x_repeatability {
 
 DECLARE_CRC8_TABLE(sht3x_crc8_table);
 
-/* periodic measure commands (high repeatability mode) */
+ 
 static const char periodic_measure_commands_hpm[][SHT3X_CMD_LENGTH] = {
-	/* 0.5 measurements per second */
+	 
 	{0x20, 0x32},
-	/* 1 measurements per second */
+	 
 	{0x21, 0x30},
-	/* 2 measurements per second */
+	 
 	{0x22, 0x36},
-	/* 4 measurements per second */
+	 
 	{0x23, 0x34},
-	/* 10 measurements per second */
+	 
 	{0x27, 0x37},
 };
 
-/* periodic measure commands (medium repeatability) */
+ 
 static const char periodic_measure_commands_mpm[][SHT3X_CMD_LENGTH] = {
-	/* 0.5 measurements per second */
+	 
 	{0x20, 0x24},
-	/* 1 measurements per second */
+	 
 	{0x21, 0x26},
-	/* 2 measurements per second */
+	 
 	{0x22, 0x20},
-	/* 4 measurements per second */
+	 
 	{0x23, 0x22},
-	/* 10 measurements per second */
+	 
 	{0x27, 0x21},
 };
 
-/* periodic measure commands (low repeatability mode) */
+ 
 static const char periodic_measure_commands_lpm[][SHT3X_CMD_LENGTH] = {
-	/* 0.5 measurements per second */
+	 
 	{0x20, 0x2f},
-	/* 1 measurements per second */
+	 
 	{0x21, 0x2d},
-	/* 2 measurements per second */
+	 
 	{0x22, 0x2b},
-	/* 4 measurements per second */
+	 
 	{0x23, 0x29},
-	/* 10 measurements per second */
+	 
 	{0x27, 0x2a},
 };
 
@@ -126,13 +119,13 @@ struct sht3x_limit_commands {
 };
 
 static const struct sht3x_limit_commands limit_commands[] = {
-	/* temp1_max, humidity1_max */
+	 
 	[limit_max] = { {0xe1, 0x1f}, {0x61, 0x1d} },
-	/* temp_1_max_hyst, humidity1_max_hyst */
+	 
 	[limit_max_hyst] = { {0xe1, 0x14}, {0x61, 0x16} },
-	/* temp1_min, humidity1_min */
+	 
 	[limit_min] = { {0xe1, 0x02}, {0x61, 0x00} },
-	/* temp_1_min_hyst, humidity1_min_hyst */
+	 
 	[limit_min_hyst] = { {0xe1, 0x09}, {0x61, 0x0B} },
 };
 
@@ -161,20 +154,16 @@ static const struct hwmon_channel_info * const sht3x_channel_info[] = {
 struct sht3x_data {
 	struct i2c_client *client;
 	enum sht3x_chips chip_id;
-	struct mutex i2c_lock; /* lock for sending i2c commands */
-	struct mutex data_lock; /* lock for updating driver data */
+	struct mutex i2c_lock;  
+	struct mutex data_lock;  
 
 	u8 mode;
 	const unsigned char *command;
-	u32 wait_time;			/* in us*/
-	unsigned long last_update;	/* last update in periodic mode*/
+	u32 wait_time;			 
+	unsigned long last_update;	 
 	enum sht3x_repeatability repeatability;
 
-	/*
-	 * cached values for temperature and humidity and limits
-	 * the limits arrays have the following order:
-	 * max, max_hyst, min, min_hyst
-	 */
+	 
 	int temperature;
 	int temperature_limits[SHT3X_NUM_LIMIT_CMD];
 	u32 humidity;
@@ -189,7 +178,7 @@ static u8 get_mode_from_update_interval(u16 value)
 	if (value == 0)
 		return 0;
 
-	/* find next faster update interval */
+	 
 	for (index = 1; index < number_of_modes; index++) {
 		if (mode_to_update_interval[index] <= value)
 			return index;
@@ -230,21 +219,13 @@ out:
 
 static int sht3x_extract_temperature(u16 raw)
 {
-	/*
-	 * From datasheet:
-	 * T = -45 + 175 * ST / 2^16
-	 * Adapted for integer fixed point (3 digit) arithmetic.
-	 */
+	 
 	return ((21875 * (int)raw) >> 13) - 45000;
 }
 
 static u32 sht3x_extract_humidity(u16 raw)
 {
-	/*
-	 * From datasheet:
-	 * RH = 100 * SRH / 2^16
-	 * Adapted for integer fixed point (3 digit) arithmetic.
-	 */
+	 
 	return (12500 * (u32)raw) >> 13;
 }
 
@@ -259,14 +240,7 @@ static struct sht3x_data *sht3x_update_client(struct device *dev)
 	int ret = 0;
 
 	mutex_lock(&data->data_lock);
-	/*
-	 * Only update cached readings once per update interval in periodic
-	 * mode. In single shot mode the sensor measures values on demand, so
-	 * every time the sysfs interface is called, a measurement is triggered.
-	 * In periodic mode however, the measurement process is handled
-	 * internally by the sensor and reading out sensor values only makes
-	 * sense if a new reading is available.
-	 */
+	 
 	if (time_after(jiffies, data->last_update + interval_jiffies)) {
 		ret = sht3x_read_from_command(client, data, data->command, buf,
 					      sizeof(buf), data->wait_time);
@@ -308,9 +282,7 @@ static int humidity1_input_read(struct device *dev)
 	return data->humidity;
 }
 
-/*
- * limits_update must only be called from probe or with data_lock held
- */
+ 
 static int limits_update(struct sht3x_data *data)
 {
 	int ret;
@@ -355,9 +327,7 @@ static int humidity1_limit_read(struct device *dev, int index)
 	return data->humidity_limits[index];
 }
 
-/*
- * limit_write must only be called with data_lock held
- */
+ 
 static size_t limit_write(struct device *dev,
 			  u8 index,
 			  int temperature,
@@ -375,12 +345,7 @@ static size_t limit_write(struct device *dev,
 
 	memcpy(position, commands->write_command, SHT3X_CMD_LENGTH);
 	position += SHT3X_CMD_LENGTH;
-	/*
-	 * ST = (T + 45) / 175 * 2^16
-	 * SRH = RH / 100 * 2^16
-	 * adapted for fixed point arithmetic and packed the same as
-	 * in limit_read()
-	 */
+	 
 	raw = ((u32)(temperature + 45000) * 24543) >> (16 + 7);
 	raw |= ((humidity * 42950) >> 16) & 0xfe00;
 
@@ -437,10 +402,7 @@ static int humidity1_limit_write(struct device *dev, int index, int val)
 
 static void sht3x_select_command(struct sht3x_data *data)
 {
-	/*
-	 * For single-shot mode, only non blocking mode is support,
-	 * we have to wait ourselves for result.
-	 */
+	 
 	if (data->mode > 0) {
 		data->command = sht3x_cmd_measure_periodic_mode;
 		data->wait_time = 0;
@@ -558,19 +520,14 @@ static int update_interval_write(struct device *dev, int val)
 	mode = get_mode_from_update_interval(val);
 
 	mutex_lock(&data->data_lock);
-	/* mode did not change */
+	 
 	if (mode == data->mode) {
 		mutex_unlock(&data->data_lock);
 		return 0;
 	}
 
 	mutex_lock(&data->i2c_lock);
-	/*
-	 * Abort periodic measure mode.
-	 * To do any changes to the configuration while in periodic mode, we
-	 * have to send a break command to the sensor, which then falls back
-	 * to single shot (mode = 0).
-	 */
+	 
 	if (data->mode > 0) {
 		ret = i2c_master_send(client, sht3x_cmd_break,
 				      SHT3X_CMD_LENGTH);
@@ -587,13 +544,13 @@ static int update_interval_write(struct device *dev, int val)
 		else
 			command = periodic_measure_commands_lpm[mode - 1];
 
-		/* select mode */
+		 
 		ret = i2c_master_send(client, command, SHT3X_CMD_LENGTH);
 		if (ret != SHT3X_CMD_LENGTH)
 			goto out;
 	}
 
-	/* select mode and command */
+	 
 	data->mode = mode;
 	sht3x_select_command(data);
 
@@ -842,7 +799,7 @@ static const struct hwmon_chip_info sht3x_chip_info = {
 	.info = sht3x_channel_info,
 };
 
-/* device ID table */
+ 
 static const struct i2c_device_id sht3x_ids[] = {
 	{"sht3x", sht3x},
 	{"sts3x", sts3x},
@@ -859,11 +816,7 @@ static int sht3x_probe(struct i2c_client *client)
 	struct i2c_adapter *adap = client->adapter;
 	struct device *dev = &client->dev;
 
-	/*
-	 * we require full i2c support since the sht3x uses multi-byte read and
-	 * writes as well as multi-byte commands which are not supported by
-	 * the smbus protocol
-	 */
+	 
 	if (!i2c_check_functionality(adap, I2C_FUNC_I2C))
 		return -ENODEV;
 
@@ -888,11 +841,7 @@ static int sht3x_probe(struct i2c_client *client)
 	mutex_init(&data->i2c_lock);
 	mutex_init(&data->data_lock);
 
-	/*
-	 * An attempt to read limits register too early
-	 * causes a NACK response from the chip.
-	 * Waiting for an empirical delay of 500 us solves the issue.
-	 */
+	 
 	usleep_range(500, 600);
 
 	ret = limits_update(data);

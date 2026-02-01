@@ -1,23 +1,4 @@
-/*
- * Marvell 88PM80x ONKEY driver
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Haojian Zhuang <haojian.zhuang@marvell.com>
- * Qiao Zhou <zhouqiao@marvell.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,7 +8,7 @@
 #include <linux/slab.h>
 
 #define PM800_LONG_ONKEY_EN		(1 << 0)
-#define PM800_LONG_KEY_DELAY		(8)	/* 1 .. 16 seconds */
+#define PM800_LONG_KEY_DELAY		(8)	 
 #define PM800_LONKEY_PRESS_TIME		((PM800_LONG_KEY_DELAY-1) << 4)
 #define PM800_LONKEY_PRESS_TIME_MASK	(0xF0)
 #define PM800_SW_PDOWN			(1 << 5)
@@ -39,7 +20,7 @@ struct pm80x_onkey_info {
 	int irq;
 };
 
-/* 88PM80x gives us an interrupt when ONKEY is held */
+ 
 static irqreturn_t pm80x_onkey_handler(int irq, void *data)
 {
 	struct pm80x_onkey_info *info = data;
@@ -118,10 +99,10 @@ static int pm80x_onkey_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, info);
 
-	/* Enable long onkey detection */
+	 
 	regmap_update_bits(info->map, PM800_RTC_MISC4, PM800_LONG_ONKEY_EN,
 			   PM800_LONG_ONKEY_EN);
-	/* Set 8-second interval */
+	 
 	regmap_update_bits(info->map, PM800_RTC_MISC3,
 			   PM800_LONKEY_PRESS_TIME_MASK,
 			   PM800_LONKEY_PRESS_TIME);

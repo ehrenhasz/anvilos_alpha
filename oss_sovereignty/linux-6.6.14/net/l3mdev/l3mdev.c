@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/l3mdev/l3mdev.c - L3 master device implementation
- * Copyright (c) 2015 Cumulus Networks
- * Copyright (c) 2015 David Ahern <dsa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <net/fib_rules.h>
@@ -102,10 +98,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(l3mdev_ifindex_lookup_by_table_id);
 
-/**
- *	l3mdev_master_ifindex_rcu - get index of L3 master device
- *	@dev: targeted interface
- */
+ 
 
 int l3mdev_master_ifindex_rcu(const struct net_device *dev)
 {
@@ -120,12 +113,7 @@ int l3mdev_master_ifindex_rcu(const struct net_device *dev)
 		struct net_device *master;
 		struct net_device *_dev = (struct net_device *)dev;
 
-		/* netdev_master_upper_dev_get_rcu calls
-		 * list_first_or_null_rcu to walk the upper dev list.
-		 * list_first_or_null_rcu does not handle a const arg. We aren't
-		 * making changes, just want the master device from that list so
-		 * typecast to remove the const
-		 */
+		 
 		master = netdev_master_upper_dev_get_rcu(_dev);
 		if (master)
 			ifindex = master->ifindex;
@@ -135,12 +123,7 @@ int l3mdev_master_ifindex_rcu(const struct net_device *dev)
 }
 EXPORT_SYMBOL_GPL(l3mdev_master_ifindex_rcu);
 
-/**
- *	l3mdev_master_upper_ifindex_by_index_rcu - get index of upper l3 master
- *					       device
- *	@net: network namespace for device index lookup
- *	@ifindex: targeted interface
- */
+ 
 int l3mdev_master_upper_ifindex_by_index_rcu(struct net *net, int ifindex)
 {
 	struct net_device *dev;
@@ -153,11 +136,7 @@ int l3mdev_master_upper_ifindex_by_index_rcu(struct net *net, int ifindex)
 }
 EXPORT_SYMBOL_GPL(l3mdev_master_upper_ifindex_by_index_rcu);
 
-/**
- *	l3mdev_fib_table_rcu - get FIB table id associated with an L3
- *                             master interface
- *	@dev: targeted interface
- */
+ 
 
 u32 l3mdev_fib_table_rcu(const struct net_device *dev)
 {
@@ -170,9 +149,7 @@ u32 l3mdev_fib_table_rcu(const struct net_device *dev)
 		if (dev->l3mdev_ops->l3mdev_fib_table)
 			tb_id = dev->l3mdev_ops->l3mdev_fib_table(dev);
 	} else if (netif_is_l3_slave(dev)) {
-		/* Users of netdev_master_upper_dev_get_rcu need non-const,
-		 * but current inet_*type functions take a const
-		 */
+		 
 		struct net_device *_dev = (struct net_device *) dev;
 		const struct net_device *master;
 
@@ -206,14 +183,7 @@ u32 l3mdev_fib_table_by_index(struct net *net, int ifindex)
 }
 EXPORT_SYMBOL_GPL(l3mdev_fib_table_by_index);
 
-/**
- *	l3mdev_link_scope_lookup - IPv6 route lookup based on flow for link
- *			     local and multicast addresses
- *	@net: network namespace for device index lookup
- *	@fl6: IPv6 flow struct for lookup
- *	This function does not hold refcnt on the returned dst.
- *	Caller must hold rcu_read_lock().
- */
+ 
 
 struct dst_entry *l3mdev_link_scope_lookup(struct net *net,
 					   struct flowi6 *fl6)
@@ -236,13 +206,7 @@ struct dst_entry *l3mdev_link_scope_lookup(struct net *net,
 }
 EXPORT_SYMBOL_GPL(l3mdev_link_scope_lookup);
 
-/**
- *	l3mdev_fib_rule_match - Determine if flowi references an
- *				L3 master device
- *	@net: network namespace for device index lookup
- *	@fl:  flow struct
- *	@arg: store the table the rule matched with here
- */
+ 
 
 int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
 			  struct fib_lookup_arg *arg)
@@ -250,7 +214,7 @@ int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
 	struct net_device *dev;
 	int rc = 0;
 
-	/* update flow ensures flowi_l3mdev is set when relevant */
+	 
 	if (!fl->flowi_l3mdev)
 		return 0;
 
@@ -280,9 +244,7 @@ void l3mdev_update_flow(struct net *net, struct flowi *fl)
 			if (!fl->flowi_l3mdev)
 				fl->flowi_l3mdev = l3mdev_master_ifindex_rcu(dev);
 
-			/* oif set to L3mdev directs lookup to its table;
-			 * reset to avoid oif match in fib_lookup
-			 */
+			 
 			if (netif_is_l3_master(dev))
 				fl->flowi_oif = 0;
 			goto out;

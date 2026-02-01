@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-twl4030.c  --  SoC audio for TI SoC based boards with twl4030 codec
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com
- * All rights reserved.
- *
- * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- *
- * This driver replaces the following machine drivers:
- * omap3beagle (Author: Steve Sakoman <steve@sakoman.com>)
- * omap3evm (Author: Anuj Aggarwal <anuj.aggarwal@ti.com>)
- * overo (Author: Steve Sakoman <steve@sakoman.com>)
- * igep0020 (Author: Enric Balletbo i Serra <eballetbo@iseebcn.com>)
- * zoom2 (Author: Misael Lopez Cruz <misael.lopez@ti.com>)
- * sdp3430 (Author: Misael Lopez Cruz <misael.lopez@ti.com>)
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/platform_data/omap-twl4030.h>
@@ -31,7 +16,7 @@
 #include "omap-mcbsp.h"
 
 struct omap_twl4030 {
-	int jack_detect;	/* board can detect jack events */
+	int jack_detect;	 
 	struct snd_soc_jack hs_jack;
 };
 
@@ -42,12 +27,12 @@ static int omap_twl4030_hw_params(struct snd_pcm_substream *substream,
 	unsigned int fmt;
 
 	switch (params_channels(params)) {
-	case 2: /* Stereo I2S mode */
+	case 2:  
 		fmt =	SND_SOC_DAIFMT_I2S |
 			SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBM_CFM;
 		break;
-	case 4: /* Four channel TDM mode */
+	case 4:  
 		fmt =	SND_SOC_DAIFMT_DSP_A |
 			SND_SOC_DAIFMT_IB_NF |
 			SND_SOC_DAIFMT_CBM_CFM;
@@ -80,42 +65,42 @@ static const struct snd_soc_dapm_widget dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route audio_map[] = {
-	/* Headset Stereophone:  HSOL, HSOR */
+	 
 	{"Headset Stereophone", NULL, "HSOL"},
 	{"Headset Stereophone", NULL, "HSOR"},
-	/* External Speakers: HFL, HFR */
+	 
 	{"Handsfree Spk", NULL, "HFL"},
 	{"Handsfree Spk", NULL, "HFR"},
-	/* External Speakers: PredrivL, PredrivR */
+	 
 	{"Ext Spk", NULL, "PREDRIVEL"},
 	{"Ext Spk", NULL, "PREDRIVER"},
-	/* Carkit speakers:  CARKITL, CARKITR */
+	 
 	{"Carkit Spk", NULL, "CARKITL"},
 	{"Carkit Spk", NULL, "CARKITR"},
-	/* Earpiece */
+	 
 	{"Earpiece Spk", NULL, "EARPIECE"},
 
-	/* External Mics: MAINMIC, SUBMIC with bias */
+	 
 	{"MAINMIC", NULL, "Main Mic"},
 	{"Main Mic", NULL, "Mic Bias 1"},
 	{"SUBMIC", NULL, "Sub Mic"},
 	{"Sub Mic", NULL, "Mic Bias 2"},
-	/* Headset Mic: HSMIC with bias */
+	 
 	{"HSMIC", NULL, "Headset Mic"},
 	{"Headset Mic", NULL, "Headset Mic Bias"},
-	/* Digital Mics: DIGIMIC0, DIGIMIC1 with bias */
+	 
 	{"DIGIMIC0", NULL, "Digital0 Mic"},
 	{"Digital0 Mic", NULL, "Mic Bias 1"},
 	{"DIGIMIC1", NULL, "Digital1 Mic"},
 	{"Digital1 Mic", NULL, "Mic Bias 2"},
-	/* Carkit In: CARKITMIC */
+	 
 	{"CARKITMIC", NULL, "Carkit Mic"},
-	/* Aux In: AUXL, AUXR */
+	 
 	{"AUXL", NULL, "Line In"},
 	{"AUXR", NULL, "Line In"},
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin hs_jack_pins[] = {
 	{
 		.pin = "Headset Mic",
@@ -127,7 +112,7 @@ static struct snd_soc_jack_pin hs_jack_pins[] = {
 	},
 };
 
-/* Headset jack detection gpios */
+ 
 static struct snd_soc_jack_gpio hs_jack_gpios[] = {
 	{
 		.name = "hsdet-gpio",
@@ -151,7 +136,7 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 	struct omap_twl4030 *priv = snd_soc_card_get_drvdata(card);
 	int ret = 0;
 
-	/* Headset jack detection only if it is supported */
+	 
 	if (priv->jack_detect > 0) {
 		hs_jack_gpios[0].gpio = priv->jack_detect;
 
@@ -169,14 +154,11 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 			return ret;
 	}
 
-	/*
-	 * NULL pdata means we booted with DT. In this case the routing is
-	 * provided and the card is fully routed, no need to mark pins.
-	 */
+	 
 	if (!pdata || !pdata->custom_routing)
 		return ret;
 
-	/* Disable not connected paths if not used */
+	 
 	twl4030_disconnect_pin(dapm, pdata->has_ear, "Earpiece Spk");
 	twl4030_disconnect_pin(dapm, pdata->has_hf, "Handsfree Spk");
 	twl4030_disconnect_pin(dapm, pdata->has_hs, "Headset Stereophone");
@@ -194,7 +176,7 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
-/* Digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(hifi,
 	DAILINK_COMP_ARRAY(COMP_CPU("omap-mcbsp.2")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("twl4030-codec", "twl4030-hifi")),
@@ -222,7 +204,7 @@ static struct snd_soc_dai_link omap_twl4030_dai_links[] = {
 	},
 };
 
-/* Audio machine driver */
+ 
 static struct snd_soc_card omap_twl4030_card = {
 	.owner = THIS_MODULE,
 	.dai_link = omap_twl4030_dai_links,
@@ -282,7 +264,7 @@ static int omap_twl4030_probe(struct platform_device *pdev)
 		priv->jack_detect = of_get_named_gpio(node,
 						      "ti,jack-det-gpio", 0);
 
-		/* Optional: audio routing can be provided */
+		 
 		prop = of_find_property(node, "ti,audio-routing", NULL);
 		if (prop) {
 			ret = snd_soc_of_parse_audio_routing(card,

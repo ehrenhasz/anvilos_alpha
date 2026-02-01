@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2016-2018, 2020, The Linux Foundation. All rights reserved. */
+ 
+ 
 
 #include <linux/debugfs.h>
 #include <linux/kernel.h>
@@ -18,15 +18,7 @@
 #define SLAVE_ID_MASK		0x7
 #define SLAVE_ID_SHIFT		16
 
-/**
- * struct entry_header: header for each entry in cmddb
- *
- * @id: resource's identifier
- * @priority: unused
- * @addr: the address of the resource
- * @len: length of the data
- * @offset: offset from :@data_offset, start of the data
- */
+ 
 struct entry_header {
 	u8 id[8];
 	__le32 priority[NUM_PRIORITY];
@@ -35,16 +27,7 @@ struct entry_header {
 	__le16 offset;
 };
 
-/**
- * struct rsc_hdr: resource header information
- *
- * @slv_id: id for the resource
- * @header_offset: entry's header at offset from the end of the cmd_db_header
- * @data_offset: entry's data at offset from the end of the cmd_db_header
- * @cnt: number of entries for HW type
- * @version: MSB is major, LSB is minor
- * @reserved: reserved for future use.
- */
+ 
 struct rsc_hdr {
 	__le16 slv_id;
 	__le16 header_offset;
@@ -54,16 +37,7 @@ struct rsc_hdr {
 	__le16 reserved[3];
 };
 
-/**
- * struct cmd_db_header: The DB header information
- *
- * @version: The cmd db version
- * @magic: constant expected in the database
- * @header: array of resources
- * @checksum: checksum for the header. Unused.
- * @reserved: reserved memory
- * @data: driver specific data
- */
+ 
 struct cmd_db_header {
 	__le32 version;
 	u8 magic[4];
@@ -73,24 +47,7 @@ struct cmd_db_header {
 	u8 data[];
 };
 
-/**
- * DOC: Description of the Command DB database.
- *
- * At the start of the command DB memory is the cmd_db_header structure.
- * The cmd_db_header holds the version, checksum, magic key as well as an
- * array for header for each slave (depicted by the rsc_header). Each h/w
- * based accelerator is a 'slave' (shared resource) and has slave id indicating
- * the type of accelerator. The rsc_header is the header for such individual
- * slaves of a given type. The entries for each of these slaves begin at the
- * rsc_hdr.header_offset. In addition each slave could have auxiliary data
- * that may be needed by the driver. The data for the slave starts at the
- * entry_header.offset to the location pointed to by the rsc_hdr.data_offset.
- *
- * Drivers have a stringified key to a slave/resource. They can query the slave
- * information and get the slave id and the auxiliary data and the length of the
- * data. Using this information, they can format the request to be sent to the
- * h/w accelerator and request a resource state.
- */
+ 
 
 static const u8 CMD_DB_MAGIC[] = { 0xdb, 0x30, 0x03, 0x0c };
 
@@ -119,11 +76,7 @@ rsc_offset(const struct rsc_hdr *hdr, const struct entry_header *ent)
 	return cmd_db_header->data + offset + loffset;
 }
 
-/**
- * cmd_db_ready - Indicates if command DB is available
- *
- * Return: 0 on success, errno otherwise
- */
+ 
 int cmd_db_ready(void)
 {
 	if (cmd_db_header == NULL)
@@ -147,11 +100,7 @@ static int cmd_db_get_header(const char *id, const struct entry_header **eh,
 	if (ret)
 		return ret;
 
-	/*
-	 * Pad out query string to same length as in DB. NOTE: the output
-	 * query string is not necessarily '\0' terminated if it bumps up
-	 * against the max size. That's OK and expected.
-	 */
+	 
 	strncpy(query, id, sizeof(query));
 
 	for (i = 0; i < MAX_SLV_ID; i++) {
@@ -174,16 +123,7 @@ static int cmd_db_get_header(const char *id, const struct entry_header **eh,
 	return -ENODEV;
 }
 
-/**
- * cmd_db_read_addr() - Query command db for resource id address.
- *
- * @id: resource id to query for address
- *
- * Return: resource address on success, 0 on error
- *
- * This is used to retrieve resource address based on resource
- * id.
- */
+ 
 u32 cmd_db_read_addr(const char *id)
 {
 	int ret;
@@ -195,14 +135,7 @@ u32 cmd_db_read_addr(const char *id)
 }
 EXPORT_SYMBOL(cmd_db_read_addr);
 
-/**
- * cmd_db_read_aux_data() - Query command db for aux data.
- *
- *  @id: Resource to retrieve AUX Data on
- *  @len: size of data buffer returned
- *
- *  Return: pointer to data on success, error pointer otherwise
- */
+ 
 const void *cmd_db_read_aux_data(const char *id, size_t *len)
 {
 	int ret;
@@ -220,13 +153,7 @@ const void *cmd_db_read_aux_data(const char *id, size_t *len)
 }
 EXPORT_SYMBOL(cmd_db_read_aux_data);
 
-/**
- * cmd_db_read_slave_id - Get the slave ID for a given resource address
- *
- * @id: Resource id to query the DB for version
- *
- * Return: cmd_db_hw_type enum on success, CMD_DB_HW_INVALID on error
- */
+ 
 enum cmd_db_hw_type cmd_db_read_slave_id(const char *id)
 {
 	int ret;

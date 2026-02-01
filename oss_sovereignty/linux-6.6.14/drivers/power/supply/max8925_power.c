@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery driver for Maxim MAX8925
- *
- * Copyright (c) 2009-2010 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -16,24 +11,24 @@
 #include <linux/power_supply.h>
 #include <linux/mfd/max8925.h>
 
-/* registers in GPM */
+ 
 #define MAX8925_OUT5VEN			0x54
 #define MAX8925_OUT3VEN			0x58
 #define MAX8925_CHG_CNTL1		0x7c
 
-/* bits definition */
+ 
 #define MAX8925_CHG_STAT_VSYSLOW	(1 << 0)
 #define MAX8925_CHG_STAT_MODE_MASK	(3 << 2)
 #define MAX8925_CHG_STAT_EN_MASK	(1 << 4)
 #define MAX8925_CHG_MBDET		(1 << 1)
 #define MAX8925_CHG_AC_RANGE_MASK	(3 << 6)
 
-/* registers in ADC */
+ 
 #define MAX8925_ADC_RES_CNFG1		0x06
 #define MAX8925_ADC_AVG_CNFG1		0x07
 #define MAX8925_ADC_ACQ_CNFG1		0x08
 #define MAX8925_ADC_ACQ_CNFG2		0x09
-/* 2 bytes registers in below. MSB is 1st, LSB is 2nd. */
+ 
 #define MAX8925_ADC_AUX2		0x62
 #define MAX8925_ADC_VCHG		0x64
 #define MAX8925_ADC_VBBATT		0x66
@@ -73,7 +68,7 @@ struct max8925_power_info {
 	unsigned		usb_online:1;
 	unsigned		bat_online:1;
 	unsigned		chg_mode:2;
-	unsigned		batt_detect:1;	/* detecing MB by ID pin */
+	unsigned		batt_detect:1;	 
 	unsigned		topoff_threshold:2;
 	unsigned		fast_charge:3;
 	unsigned		no_temp_support:1;
@@ -86,13 +81,13 @@ static int __set_charger(struct max8925_power_info *info, int enable)
 {
 	struct max8925_chip *chip = info->chip;
 	if (enable) {
-		/* enable charger in platform */
+		 
 		if (info->set_charger)
 			info->set_charger(1);
-		/* enable charger */
+		 
 		max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 1 << 7, 0);
 	} else {
-		/* disable charge */
+		 
 		max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 1 << 7, 1 << 7);
 		if (info->set_charger)
 			info->set_charger(0);
@@ -119,7 +114,7 @@ static irqreturn_t max8925_charger_handler(int irq, void *data)
 		dev_dbg(chip->dev, "Adapter removed\n");
 		break;
 	case MAX8925_IRQ_VCHG_THM_OK_F:
-		/* Battery is not ready yet */
+		 
 		dev_dbg(chip->dev, "Battery temperature is out of range\n");
 		fallthrough;
 	case MAX8925_IRQ_VCHG_DC_OVP:
@@ -127,11 +122,11 @@ static irqreturn_t max8925_charger_handler(int irq, void *data)
 		__set_charger(info, 0);
 		break;
 	case MAX8925_IRQ_VCHG_THM_OK_R:
-		/* Battery is ready now */
+		 
 		dev_dbg(chip->dev, "Battery temperature is in range\n");
 		break;
 	case MAX8925_IRQ_VCHG_SYSLOW_R:
-		/* VSYS is low */
+		 
 		dev_info(chip->dev, "Sys power is too low\n");
 		break;
 	case MAX8925_IRQ_VCHG_SYSLOW_F:
@@ -205,7 +200,7 @@ static int max8925_ac_get_prop(struct power_supply *psy,
 		if (info->ac_online) {
 			ret = start_measure(info, MEASURE_VCHG);
 			if (ret >= 0) {
-				val->intval = ret * 2000;	/* unit is uV */
+				val->intval = ret * 2000;	 
 				goto out;
 			}
 		}
@@ -239,7 +234,7 @@ static int max8925_usb_get_prop(struct power_supply *psy,
 		if (info->usb_online) {
 			ret = start_measure(info, MEASURE_VCHG);
 			if (ret >= 0) {
-				val->intval = ret * 2000;	/* unit is uV */
+				val->intval = ret * 2000;	 
 				goto out;
 			}
 		}
@@ -273,7 +268,7 @@ static int max8925_bat_get_prop(struct power_supply *psy,
 		if (info->bat_online) {
 			ret = start_measure(info, MEASURE_VMBATT);
 			if (ret >= 0) {
-				val->intval = ret * 2000;	/* unit is uV */
+				val->intval = ret * 2000;	 
 				ret = 0;
 				break;
 			}
@@ -284,11 +279,11 @@ static int max8925_bat_get_prop(struct power_supply *psy,
 		if (info->bat_online) {
 			ret = start_measure(info, MEASURE_ISNS);
 			if (ret >= 0) {
-				/* assume r_sns is 0.02 */
-				ret = ((ret * 6250) - 3125) /* uA */;
+				 
+				ret = ((ret * 6250) - 3125)  ;
 				val->intval = 0;
 				if (ret > 0)
-					val->intval = ret; /* unit is mA */
+					val->intval = ret;  
 				ret = 0;
 				break;
 			}
@@ -403,7 +398,7 @@ static int max8925_init_charger(struct max8925_chip *chip,
 	info->usb_online = 0;
 	info->bat_online = 0;
 
-	/* check for power - can miss interrupt at boot time */
+	 
 	if (start_measure(info, MEASURE_VCHG) * 2000 > 500000)
 		info->ac_online = 1;
 	else
@@ -411,12 +406,7 @@ static int max8925_init_charger(struct max8925_chip *chip,
 
 	ret = max8925_reg_read(info->gpm, MAX8925_CHG_STATUS);
 	if (ret >= 0) {
-		/*
-		 * If battery detection is enabled, ID pin of battery is
-		 * connected to MBDET pin of MAX8925. It could be used to
-		 * detect battery presence.
-		 * Otherwise, we have to assume that battery is always on.
-		 */
+		 
 		if (info->batt_detect)
 			info->bat_online = (ret & MAX8925_CHG_MBDET) ? 0 : 1;
 		else
@@ -426,12 +416,12 @@ static int max8925_init_charger(struct max8925_chip *chip,
 		else
 			info->ac_online = 0;
 	}
-	/* disable charge */
+	 
 	max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 1 << 7, 1 << 7);
-	/* set charging current in charge topoff mode */
+	 
 	max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 3 << 5,
 			 info->topoff_threshold << 5);
-	/* set charing current in fast charge mode */
+	 
 	max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 7, info->fast_charge);
 
 	return 0;
@@ -504,7 +494,7 @@ max8925_power_dt_init(struct platform_device *pdev)
 static int max8925_power_probe(struct platform_device *pdev)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct power_supply_config psy_cfg = {}; /* Only for ac and usb */
+	struct power_supply_config psy_cfg = {};  
 	struct max8925_power_pdata *pdata = NULL;
 	struct max8925_power_info *info;
 	int ret;

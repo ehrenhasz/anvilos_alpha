@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (C) 2019 ASPEED Technology Inc. */
-/* Copyright (C) 2019 IBM Corp. */
+
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -31,9 +31,9 @@
 #define   ASPEED_SDC_S0_PHASE_OUT_EN	GENMASK(1, 0)
 #define   ASPEED_SDC_PHASE_MAX		31
 
-/* SDIO{10,20} */
+ 
 #define ASPEED_SDC_CAP1_1_8V           (0 * 32 + 26)
-/* SDIO{14,24} */
+ 
 #define ASPEED_SDC_CAP2_SDR104         (1 * 32 + 1)
 
 struct aspeed_sdc {
@@ -77,17 +77,7 @@ struct aspeed_sdhci {
 	const struct aspeed_sdhci_phase_desc *phase_desc;
 };
 
-/*
- * The function sets the mirror register for updating
- * capbilities of the current slot.
- *
- *   slot | capability  | caps_reg | mirror_reg
- *   -----|-------------|----------|------------
- *     0  | CAP1_1_8V   | SDIO140  |   SDIO10
- *     0  | CAP2_SDR104 | SDIO144  |   SDIO14
- *     1  | CAP1_1_8V   | SDIO240  |   SDIO20
- *     1  | CAP2_SDR104 | SDIO244  |   SDIO24
- */
+ 
 static void aspeed_sdc_set_slot_capability(struct sdhci_host *host, struct aspeed_sdc *sdc,
 					   int capability, bool enable, u8 slot)
 {
@@ -114,7 +104,7 @@ static void aspeed_sdc_configure_8bit_mode(struct aspeed_sdc *sdc,
 {
 	u32 info;
 
-	/* Set/clear 8 bit mode */
+	 
 	spin_lock(&sdc->lock);
 	info = readl(sdc->regs + ASPEED_SDC_INFO);
 	if (bus8)
@@ -157,7 +147,7 @@ aspeed_sdc_set_phase_taps(struct aspeed_sdc *sdc,
 
 #define PICOSECONDS_PER_SECOND		1000000000000ULL
 #define ASPEED_SDHCI_NR_TAPS		15
-/* Measured value with *handwave* environmentals and static loading */
+ 
 #define ASPEED_SDHCI_MAX_TAP_DELAY_PS	1253
 static int aspeed_sdhci_phase_to_tap(struct device *dev, unsigned long rate_hz,
 				     int phase_deg)
@@ -254,22 +244,7 @@ static void aspeed_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
 	if (WARN_ON(clock > host->max_clk))
 		clock = host->max_clk;
 
-	/*
-	 * Regarding the AST2600:
-	 *
-	 * If (EMMC12C[7:6], EMMC12C[15:8] == 0) then
-	 *   period of SDCLK = period of SDMCLK.
-	 *
-	 * If (EMMC12C[7:6], EMMC12C[15:8] != 0) then
-	 *   period of SDCLK = period of SDMCLK * 2 * (EMMC12C[7:6], EMMC[15:8])
-	 *
-	 * If you keep EMMC12C[7:6] = 0 and EMMC12C[15:8] as one-hot,
-	 * 0x1/0x2/0x4/etc, you will find it is compatible to AST2400 or AST2500
-	 *
-	 * Keep the one-hot behaviour for backwards compatibility except for
-	 * supporting the value 0 in (EMMC12C[7:6], EMMC12C[15:8]), and capture
-	 * the 0-value capability in clk_div_start.
-	 */
+	 
 	for (div = sdhci->pdata->clk_div_start; div < 256; div *= 2) {
 		bus = parent / div;
 		if (bus <= clock)
@@ -304,11 +279,11 @@ static void aspeed_sdhci_set_bus_width(struct sdhci_host *host, int width)
 	aspeed_sdhci = sdhci_pltfm_priv(pltfm_priv);
 	aspeed_sdc = aspeed_sdhci->parent;
 
-	/* Set/clear 8-bit mode */
+	 
 	aspeed_sdc_configure_8bit_mode(aspeed_sdc, aspeed_sdhci,
 				       width == MMC_BUS_WIDTH_8);
 
-	/* Set/clear 1 or 4 bit mode */
+	 
 	ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
 	if (width == MMC_BUS_WIDTH_4)
 		ctrl |= SDHCI_CTRL_4BITBUS;
@@ -470,7 +445,7 @@ static const struct aspeed_sdhci_pdata ast2400_sdhci_pdata = {
 };
 
 static const struct aspeed_sdhci_phase_desc ast2600_sdhci_phase[] = {
-	/* SDHCI/Slot 0 */
+	 
 	[0] = {
 		.in = {
 			.tap_mask = ASPEED_SDC_S0_PHASE_IN,
@@ -483,7 +458,7 @@ static const struct aspeed_sdhci_phase_desc ast2600_sdhci_phase[] = {
 			.enable_value = 3,
 		},
 	},
-	/* SDHCI/Slot 1 */
+	 
 	[1] = {
 		.in = {
 			.tap_mask = ASPEED_SDC_S1_PHASE_IN,

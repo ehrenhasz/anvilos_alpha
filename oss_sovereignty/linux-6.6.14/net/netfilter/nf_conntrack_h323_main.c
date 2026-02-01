@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * H.323 connection tracking helper
- *
- * Copyright (c) 2006 Jing Min Zhao <zhaojingmin@users.sourceforge.net>
- * Copyright (c) 2006-2012 Patrick McHardy <kaber@trash.net>
- *
- * Based on the 'brute force' H.323 connection tracking module by
- * Jozsef Kadlecsik <kadlec@netfilter.org>
- *
- * For more information, please see http://nath323.sourceforge.net/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -36,7 +26,7 @@
 
 #define H323_MAX_SIZE 65535
 
-/* Parameters */
+ 
 static unsigned int default_rrq_ttl __read_mostly = 300;
 module_param(default_rrq_ttl, uint, 0600);
 MODULE_PARM_DESC(default_rrq_ttl, "use this TTL if it's missing in RRQ");
@@ -75,73 +65,72 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 	int tpktlen;
 	int tpktoff;
 
-	/* Get TCP header */
+	 
 	th = skb_header_pointer(skb, protoff, sizeof(_tcph), &_tcph);
 	if (th == NULL)
 		return 0;
 
-	/* Get TCP data offset */
+	 
 	tcpdataoff = protoff + th->doff * 4;
 
-	/* Get TCP data length */
+	 
 	tcpdatalen = skb->len - tcpdataoff;
-	if (tcpdatalen <= 0)	/* No TCP data */
+	if (tcpdatalen <= 0)	 
 		goto clear_out;
 
 	if (tcpdatalen > H323_MAX_SIZE)
 		tcpdatalen = H323_MAX_SIZE;
 
-	if (*data == NULL) {	/* first TPKT */
-		/* Get first TPKT pointer */
+	if (*data == NULL) {	 
+		 
 		tpkt = skb_header_pointer(skb, tcpdataoff, tcpdatalen,
 					  h323_buffer);
 		if (!tpkt)
 			goto clear_out;
 
-		/* Validate TPKT identifier */
+		 
 		if (tcpdatalen < 4 || tpkt[0] != 0x03 || tpkt[1] != 0) {
-			/* Netmeeting sends TPKT header and data separately */
+			 
 			if (info->tpkt_len[dir] > 0) {
 				pr_debug("nf_ct_h323: previous packet "
 					 "indicated separate TPKT data of %hu "
 					 "bytes\n", info->tpkt_len[dir]);
 				if (info->tpkt_len[dir] <= tcpdatalen) {
-					/* Yes, there was a TPKT header
-					 * received */
+					 
 					*data = tpkt;
 					*datalen = info->tpkt_len[dir];
 					*dataoff = 0;
 					goto out;
 				}
 
-				/* Fragmented TPKT */
+				 
 				pr_debug("nf_ct_h323: fragmented TPKT\n");
 				goto clear_out;
 			}
 
-			/* It is not even a TPKT */
+			 
 			return 0;
 		}
 		tpktoff = 0;
-	} else {		/* Next TPKT */
+	} else {		 
 		tpktoff = *dataoff + *datalen;
 		tcpdatalen -= tpktoff;
-		if (tcpdatalen <= 4)	/* No more TPKT */
+		if (tcpdatalen <= 4)	 
 			goto clear_out;
 		tpkt = *data + *datalen;
 
-		/* Validate TPKT identifier */
+		 
 		if (tpkt[0] != 0x03 || tpkt[1] != 0)
 			goto clear_out;
 	}
 
-	/* Validate TPKT length */
+	 
 	tpktlen = tpkt[2] * 256 + tpkt[3];
 	if (tpktlen < 4)
 		goto clear_out;
 	if (tpktlen > tcpdatalen) {
-		if (tcpdatalen == 4) {	/* Separate TPKT header */
-			/* Netmeeting sends TPKT header and data separately */
+		if (tcpdatalen == 4) {	 
+			 
 			pr_debug("nf_ct_h323: separate TPKT header indicates "
 				 "there will be TPKT data of %d bytes\n",
 				 tpktlen - 4);
@@ -153,13 +142,13 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 		goto clear_out;
 	}
 
-	/* This is the encapsulated data */
+	 
 	*data = tpkt + 4;
 	*datalen = tpktlen - 4;
 	*dataoff = tpktoff + 4;
 
       out:
-	/* Clear TPKT length */
+	 
 	info->tpkt_len[dir] = 0;
 	return 1;
 
@@ -217,17 +206,17 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	struct nf_conntrack_expect *rtp_exp;
 	struct nf_conntrack_expect *rtcp_exp;
 
-	/* Read RTP or RTCP address */
+	 
 	if (!get_h245_addr(ct, *data, taddr, &addr, &port) ||
 	    memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) ||
 	    port == 0)
 		return 0;
 
-	/* RTP port is even */
+	 
 	rtp_port = port & ~htons(1);
 	rtcp_port = port | htons(1);
 
-	/* Create expect for RTP */
+	 
 	if ((rtp_exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(rtp_exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -235,7 +224,7 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  IPPROTO_UDP, NULL, &rtp_port);
 
-	/* Create expect for RTCP */
+	 
 	if ((rtcp_exp = nf_ct_expect_alloc(ct)) == NULL) {
 		nf_ct_expect_put(rtp_exp);
 		return -1;
@@ -252,10 +241,10 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 		   nathook &&
 		   nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 		   ct->status & IPS_NAT_MASK) {
-		/* NAT needed */
+		 
 		ret = nathook->nat_rtp_rtcp(skb, ct, ctinfo, protoff, data, dataoff,
 					    taddr, port, rtp_port, rtp_exp, rtcp_exp);
-	} else {		/* Conntrack only */
+	} else {		 
 		if (nf_ct_expect_related(rtp_exp, 0) == 0) {
 			if (nf_ct_expect_related(rtcp_exp, 0) == 0) {
 				pr_debug("nf_ct_h323: expect RTP ");
@@ -290,20 +279,20 @@ static int expect_t120(struct sk_buff *skb,
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
 
-	/* Read T.120 address */
+	 
 	if (!get_h245_addr(ct, *data, taddr, &addr, &port) ||
 	    memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) ||
 	    port == 0)
 		return 0;
 
-	/* Create expect for T.120 connections */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
 			  &ct->tuplehash[!dir].tuple.src.u3,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  IPPROTO_TCP, NULL, &port);
-	exp->flags = NF_CT_EXPECT_PERMANENT;	/* Accept multiple channels */
+	exp->flags = NF_CT_EXPECT_PERMANENT;	 
 
 	nathook = rcu_dereference(nfct_h323_nat_hook);
 	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
@@ -312,10 +301,10 @@ static int expect_t120(struct sk_buff *skb,
 	    nathook &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
-		/* NAT needed */
+		 
 		ret = nathook->nat_t120(skb, ct, ctinfo, protoff, data,
 					dataoff, taddr, port, exp);
-	} else {		/* Conntrack only */
+	} else {		 
 		if (nf_ct_expect_related(exp, 0) == 0) {
 			pr_debug("nf_ct_h323: expect T.120 ");
 			nf_ct_dump_tuple(&exp->tuple);
@@ -338,7 +327,7 @@ static int process_h245_channel(struct sk_buff *skb,
 	int ret;
 
 	if (channel->options & eH2250LogicalChannelParameters_mediaChannel) {
-		/* RTP */
+		 
 		ret = expect_rtp_rtcp(skb, ct, ctinfo, protoff, data, dataoff,
 				      &channel->mediaChannel);
 		if (ret < 0)
@@ -347,7 +336,7 @@ static int process_h245_channel(struct sk_buff *skb,
 
 	if (channel->
 	    options & eH2250LogicalChannelParameters_mediaControlChannel) {
-		/* RTCP */
+		 
 		ret = expect_rtp_rtcp(skb, ct, ctinfo, protoff, data, dataoff,
 				      &channel->mediaControlChannel);
 		if (ret < 0)
@@ -455,7 +444,7 @@ static int process_olca(struct sk_buff *skb, struct nf_conn *ct,
 		    h2250LogicalChannelAckParameters;
 		if (ack->options &
 		    eH2250LogicalChannelAckParameters_mediaChannel) {
-			/* RTP */
+			 
 			ret = expect_rtp_rtcp(skb, ct, ctinfo,
 					      protoff, data, dataoff,
 					      &ack->mediaChannel);
@@ -465,7 +454,7 @@ static int process_olca(struct sk_buff *skb, struct nf_conn *ct,
 
 		if (ack->options &
 		    eH2250LogicalChannelAckParameters_mediaControlChannel) {
-			/* RTCP */
+			 
 			ret = expect_rtp_rtcp(skb, ct, ctinfo,
 					      protoff, data, dataoff,
 					      &ack->mediaControlChannel);
@@ -531,7 +520,7 @@ static int h245_help(struct sk_buff *skb, unsigned int protoff,
 	int dataoff;
 	int ret;
 
-	/* Until there's been traffic both ways, don't look in packets. */
+	 
 	if (ctinfo != IP_CT_ESTABLISHED && ctinfo != IP_CT_ESTABLISHED_REPLY)
 		return NF_ACCEPT;
 
@@ -539,24 +528,24 @@ static int h245_help(struct sk_buff *skb, unsigned int protoff,
 
 	spin_lock_bh(&nf_h323_lock);
 
-	/* Process each TPKT */
+	 
 	while (get_tpkt_data(skb, protoff, ct, ctinfo,
 			     &data, &datalen, &dataoff)) {
 		pr_debug("nf_ct_h245: TPKT len=%d ", datalen);
 		nf_ct_dump_tuple(&ct->tuplehash[CTINFO2DIR(ctinfo)].tuple);
 
-		/* Decode H.245 signal */
+		 
 		ret = DecodeMultimediaSystemControlMessage(data, datalen,
 							   &mscm);
 		if (ret < 0) {
 			pr_debug("nf_ct_h245: decoding error: %s\n",
 				 ret == H323_ERROR_BOUND ?
 				 "out of bound" : "out of range");
-			/* We don't drop when decoding error */
+			 
 			break;
 		}
 
-		/* Process H.245 signal */
+		 
 		if (process_h245(skb, ct, ctinfo, protoff,
 				 &data, dataoff, &mscm) < 0)
 			goto drop;
@@ -572,7 +561,7 @@ static int h245_help(struct sk_buff *skb, unsigned int protoff,
 }
 
 static const struct nf_conntrack_expect_policy h245_exp_policy = {
-	.max_expected	= H323_RTP_CHANNEL_MAX * 4 + 2 /* T.120 */,
+	.max_expected	= H323_RTP_CHANNEL_MAX * 4 + 2  ,
 	.timeout	= 240,
 };
 
@@ -629,13 +618,13 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
 
-	/* Read h245Address */
+	 
 	if (!get_h225_addr(ct, *data, taddr, &addr, &port) ||
 	    memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) ||
 	    port == 0)
 		return 0;
 
-	/* Create expect for h245 connection */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -651,10 +640,10 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 	    nathook &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
-		/* NAT needed */
+		 
 		ret = nathook->nat_h245(skb, ct, ctinfo, protoff, data,
 					dataoff, taddr, port, exp);
-	} else {		/* Conntrack only */
+	} else {		 
 		if (nf_ct_expect_related(exp, 0) == 0) {
 			pr_debug("nf_ct_q931: expect H.245 ");
 			nf_ct_dump_tuple(&exp->tuple);
@@ -667,9 +656,7 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
-/* If the calling party is on the same side of the forward-to party,
- * we don't need to track the second call
- */
+ 
 static int callforward_do_filter(struct net *net,
 				 const union nf_inet_addr *src,
 				 const union nf_inet_addr *dst,
@@ -746,13 +733,11 @@ static int expect_callforwarding(struct sk_buff *skb,
 	struct nf_conntrack_expect *exp;
 	struct net *net = nf_ct_net(ct);
 
-	/* Read alternativeAddress */
+	 
 	if (!get_h225_addr(ct, *data, taddr, &addr, &port) || port == 0)
 		return 0;
 
-	/* If the calling party is on the same side of the forward-to party,
-	 * we don't need to track the second call
-	 */
+	 
 	if (callforward_filter &&
 	    callforward_do_filter(net, &addr, &ct->tuplehash[!dir].tuple.src.u3,
 				  nf_ct_l3num(ct))) {
@@ -760,7 +745,7 @@ static int expect_callforwarding(struct sk_buff *skb,
 		return 0;
 	}
 
-	/* Create expect for the second call leg */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -775,11 +760,11 @@ static int expect_callforwarding(struct sk_buff *skb,
 	    nathook &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
-		/* Need NAT */
+		 
 		ret = nathook->nat_callforwarding(skb, ct, ctinfo,
 						  protoff, data, dataoff,
 						  taddr, port, exp);
-	} else {		/* Conntrack only */
+	} else {		 
 		if (nf_ct_expect_related(exp, 0) == 0) {
 			pr_debug("nf_ct_q931: expect Call Forwarding ");
 			nf_ct_dump_tuple(&exp->tuple);
@@ -1094,7 +1079,7 @@ static int q931_help(struct sk_buff *skb, unsigned int protoff,
 	int dataoff;
 	int ret;
 
-	/* Until there's been traffic both ways, don't look in packets. */
+	 
 	if (ctinfo != IP_CT_ESTABLISHED && ctinfo != IP_CT_ESTABLISHED_REPLY)
 		return NF_ACCEPT;
 
@@ -1102,23 +1087,23 @@ static int q931_help(struct sk_buff *skb, unsigned int protoff,
 
 	spin_lock_bh(&nf_h323_lock);
 
-	/* Process each TPKT */
+	 
 	while (get_tpkt_data(skb, protoff, ct, ctinfo,
 			     &data, &datalen, &dataoff)) {
 		pr_debug("nf_ct_q931: TPKT len=%d ", datalen);
 		nf_ct_dump_tuple(&ct->tuplehash[CTINFO2DIR(ctinfo)].tuple);
 
-		/* Decode Q.931 signal */
+		 
 		ret = DecodeQ931(data, datalen, &q931);
 		if (ret < 0) {
 			pr_debug("nf_ct_q931: decoding error: %s\n",
 				 ret == H323_ERROR_BOUND ?
 				 "out of bound" : "out of range");
-			/* We don't drop when decoding error */
+			 
 			break;
 		}
 
-		/* Process Q.931 signal */
+		 
 		if (process_q931(skb, ct, ctinfo, protoff,
 				 &data, dataoff, &q931) < 0)
 			goto drop;
@@ -1134,7 +1119,7 @@ static int q931_help(struct sk_buff *skb, unsigned int protoff,
 }
 
 static const struct nf_conntrack_expect_policy q931_exp_policy = {
-	/* T.120 and H.245 */
+	 
 	.max_expected		= H323_RTP_CHANNEL_MAX * 4 + 4,
 	.timeout		= 240,
 };
@@ -1214,7 +1199,7 @@ static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
 
-	/* Look for the first related address */
+	 
 	for (i = 0; i < count; i++) {
 		if (get_h225_addr(ct, *data, &taddr[i], &addr, &port) &&
 		    memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3,
@@ -1222,31 +1207,31 @@ static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 			break;
 	}
 
-	if (i >= count)		/* Not found */
+	if (i >= count)		 
 		return 0;
 
-	/* Create expect for Q.931 */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
-			  gkrouted_only ? /* only accept calls from GK? */
+			  gkrouted_only ?  
 				&ct->tuplehash[!dir].tuple.src.u3 : NULL,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  IPPROTO_TCP, NULL, &port);
 	exp->helper = nf_conntrack_helper_q931;
-	exp->flags = NF_CT_EXPECT_PERMANENT;	/* Accept multiple calls */
+	exp->flags = NF_CT_EXPECT_PERMANENT;	 
 
 	nathook = rcu_dereference(nfct_h323_nat_hook);
 	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
-	    ct->status & IPS_NAT_MASK) {	/* Need NAT */
+	    ct->status & IPS_NAT_MASK) {	 
 		ret = nathook->nat_q931(skb, ct, ctinfo, protoff, data,
 					taddr, i, port, exp);
-	} else {		/* Conntrack only */
+	} else {		 
 		if (nf_ct_expect_related(exp, 0) == 0) {
 			pr_debug("nf_ct_ras: expect Q.931 ");
 			nf_ct_dump_tuple(&exp->tuple);
 
-			/* Save port for looking up expect in processing RCF */
+			 
 			info->sig_port[dir] = port;
 		} else
 			ret = -1;
@@ -1268,7 +1253,7 @@ static int process_grq(struct sk_buff *skb, struct nf_conn *ct,
 
 	nathook = rcu_dereference(nfct_h323_nat_hook);
 	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
-	    ct->status & IPS_NAT_MASK)	/* NATed */
+	    ct->status & IPS_NAT_MASK)	 
 		return nathook->set_ras_addr(skb, ct, ctinfo, protoff, data,
 					     &grq->rasAddress, 1);
 	return 0;
@@ -1290,16 +1275,16 @@ static int process_gcf(struct sk_buff *skb, struct nf_conn *ct,
 	if (!get_h225_addr(ct, *data, &gcf->rasAddress, &addr, &port))
 		return 0;
 
-	/* Registration port is the same as discovery port */
+	 
 	if (!memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) &&
 	    port == ct->tuplehash[dir].tuple.src.u.udp.port)
 		return 0;
 
-	/* Avoid RAS expectation loops. A GCF is never expected. */
+	 
 	if (test_bit(IPS_EXPECTED_BIT, &ct->status))
 		return 0;
 
-	/* Need new expect */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -1387,7 +1372,7 @@ static int process_rcf(struct sk_buff *skb, struct nf_conn *ct,
 			 "%u seconds\n", info->timeout);
 		nf_ct_refresh(ct, skb, info->timeout * HZ);
 
-		/* Set expect timeout */
+		 
 		spin_lock_bh(&nf_conntrack_expect_lock);
 		exp = find_expect(ct, &ct->tuplehash[dir].tuple.dst.u3,
 				  info->sig_port[!dir]);
@@ -1427,12 +1412,12 @@ static int process_urq(struct sk_buff *skb, struct nf_conn *ct,
 			return -1;
 	}
 
-	/* Clear old expect */
+	 
 	nf_ct_remove_expectations(ct);
 	info->sig_port[dir] = 0;
 	info->sig_port[!dir] = 0;
 
-	/* Give it 30 seconds for UCF or URJ */
+	 
 	nf_ct_refresh(ct, skb, 30 * HZ);
 
 	return 0;
@@ -1462,7 +1447,7 @@ static int process_arq(struct sk_buff *skb, struct nf_conn *ct,
 	    port == info->sig_port[dir] &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
-		/* Answering ARQ */
+		 
 		return nathook->set_h225_addr(skb, protoff, data, 0,
 					      &arq->destCallSignalAddress,
 					      &ct->tuplehash[!dir].tuple.dst.u3,
@@ -1475,7 +1460,7 @@ static int process_arq(struct sk_buff *skb, struct nf_conn *ct,
 	    !memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
-		/* Calling ARQ */
+		 
 		return nathook->set_h225_addr(skb, protoff, data, 0,
 					      &arq->srcCallSignalAddress,
 					      &ct->tuplehash[!dir].tuple.dst.u3,
@@ -1505,7 +1490,7 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 	if (!memcmp(&addr, &ct->tuplehash[dir].tuple.dst.u3, sizeof(addr))) {
 		const struct nfct_h323_nat_hooks *nathook;
 
-		/* Answering ACF */
+		 
 		nathook = rcu_dereference(nfct_h323_nat_hook);
 		if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 		    ct->status & IPS_NAT_MASK)
@@ -1515,7 +1500,7 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 		return 0;
 	}
 
-	/* Need new expect */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -1569,7 +1554,7 @@ static int process_lcf(struct sk_buff *skb, struct nf_conn *ct,
 			   &addr, &port))
 		return 0;
 
-	/* Need new expect for call signal */
+	 
 	if ((exp = nf_ct_expect_alloc(ct)) == NULL)
 		return -1;
 	nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -1586,7 +1571,7 @@ static int process_lcf(struct sk_buff *skb, struct nf_conn *ct,
 
 	nf_ct_expect_put(exp);
 
-	/* Ignore rasAddress */
+	 
 
 	return ret;
 }
@@ -1675,14 +1660,14 @@ static int ras_help(struct sk_buff *skb, unsigned int protoff,
 
 	spin_lock_bh(&nf_h323_lock);
 
-	/* Get UDP data */
+	 
 	data = get_udp_data(skb, protoff, &datalen);
 	if (data == NULL)
 		goto accept;
 	pr_debug("nf_ct_ras: RAS message len=%d ", datalen);
 	nf_ct_dump_tuple(&ct->tuplehash[CTINFO2DIR(ctinfo)].tuple);
 
-	/* Decode RAS message */
+	 
 	ret = DecodeRasMessage(data, datalen, &ras);
 	if (ret < 0) {
 		pr_debug("nf_ct_ras: decoding error: %s\n",
@@ -1691,7 +1676,7 @@ static int ras_help(struct sk_buff *skb, unsigned int protoff,
 		goto accept;
 	}
 
-	/* Process RAS message */
+	 
 	if (process_ras(skb, ct, ctinfo, protoff, &data, &ras) < 0)
 		goto drop;
 

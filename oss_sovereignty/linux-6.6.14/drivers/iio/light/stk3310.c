@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sensortek STK3310/STK3311 Ambient Light and Proximity Sensor
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for STK3310/STK3311. 7-bit I2C address: 0x48.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -81,7 +75,7 @@ static const struct reg_field stk3310_reg_field_flag_psint =
 static const struct reg_field stk3310_reg_field_flag_nf =
 				REG_FIELD(STK3310_REG_FLAG, 0, 0);
 
-/* Estimate maximum proximity values with regard to measurement scale. */
+ 
 static const int stk3310_ps_max[4] = {
 	STK3310_PS_MAX_VAL / 640,
 	STK3310_PS_MAX_VAL / 160,
@@ -93,7 +87,7 @@ static const int stk3310_scale_table[][2] = {
 	{6, 400000}, {1, 600000}, {0, 400000}, {0, 100000}
 };
 
-/* Integration time in seconds, microseconds */
+ 
 static const int stk3310_it_table[][2] = {
 	{0, 185},	{0, 370},	{0, 741},	{0, 1480},
 	{0, 2960},	{0, 5920},	{0, 11840},	{0, 23680},
@@ -120,14 +114,14 @@ struct stk3310_data {
 };
 
 static const struct iio_event_spec stk3310_events[] = {
-	/* Proximity event */
+	 
 	{
 		.type = IIO_EV_TYPE_THRESH,
 		.dir = IIO_EV_DIR_RISING,
 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
 				 BIT(IIO_EV_INFO_ENABLE),
 	},
-	/* Out-of-proximity event */
+	 
 	{
 		.type = IIO_EV_TYPE_THRESH,
 		.dir = IIO_EV_DIR_FALLING,
@@ -152,7 +146,7 @@ static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
 		.shared = IIO_SEPARATE,
 		.read = stk3310_read_near_level,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct iio_chan_spec stk3310_channels[] = {
@@ -225,7 +219,7 @@ static int stk3310_read_event(struct iio_dev *indio_dev,
 	if (info != IIO_EV_INFO_VALUE)
 		return -EINVAL;
 
-	/* Only proximity interrupts are implemented at the moment. */
+	 
 	if (dir == IIO_EV_DIR_RISING)
 		reg = STK3310_REG_THDH_PS;
 	else if (dir == IIO_EV_DIR_FALLING)
@@ -310,7 +304,7 @@ static int stk3310_write_event_config(struct iio_dev *indio_dev,
 	if (state < 0 || state > 7)
 		return -EINVAL;
 
-	/* Set INT_PS value */
+	 
 	mutex_lock(&data->lock);
 	ret = regmap_field_write(data->reg_int_ps, state);
 	if (ret < 0)
@@ -443,7 +437,7 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
 	int ret;
 	struct i2c_client *client = data->client;
 
-	/* 3-bit state; 0b100 is not supported. */
+	 
 	if (state > 7 || state == 4)
 		return -EINVAL;
 
@@ -452,7 +446,7 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to change sensor state\n");
 	} else if (state != STK3310_STATE_STANDBY) {
-		/* Don't reset the 'enabled' flags if we're going in standby */
+		 
 		data->ps_enabled  = !!(state & STK3310_STATE_EN_PS);
 		data->als_enabled = !!(state & STK3310_STATE_EN_ALS);
 	}
@@ -488,7 +482,7 @@ static int stk3310_init(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* Enable PS interrupts */
+	 
 	ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
 	if (ret < 0)
 		dev_err(&client->dev, "failed to enable interrupts!\n");
@@ -563,7 +557,7 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
 	struct iio_dev *indio_dev = private;
 	struct stk3310_data *data = iio_priv(indio_dev);
 
-	/* Read FLAG_NF to figure out what threshold has been met. */
+	 
 	mutex_lock(&data->lock);
 	ret = regmap_field_read(data->reg_flag_nf, &dir);
 	if (ret < 0) {
@@ -576,7 +570,7 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
 					    IIO_EV_DIR_RISING));
 	iio_push_event(indio_dev, event, data->timestamp);
 
-	/* Reset the interrupt flag */
+	 
 	ret = regmap_field_write(data->reg_flag_psint, 0);
 	if (ret < 0)
 		dev_err(&data->client->dev, "failed to reset interrupts\n");

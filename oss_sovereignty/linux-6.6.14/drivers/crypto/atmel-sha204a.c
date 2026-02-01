@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip / Atmel SHA204A (I2C) driver.
- *
- * Copyright (c) 2019 Linaro, Ltd. <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -41,7 +37,7 @@ static int atmel_sha204a_rng_read_nonblocking(struct hwrng *rng, void *data,
 
 	i2c_priv = container_of(rng, struct atmel_i2c_client_priv, hwrng);
 
-	/* keep maximum 1 asynchronous read in flight at any time */
+	 
 	if (!atomic_add_unless(&i2c_priv->tfm_count, 1, 1))
 		return 0;
 
@@ -129,14 +125,14 @@ static void atmel_sha204a_remove(struct i2c_client *client)
 static const struct of_device_id atmel_sha204a_dt_ids[] __maybe_unused = {
 	{ .compatible = "atmel,atsha204", },
 	{ .compatible = "atmel,atsha204a", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_sha204a_dt_ids);
 
 static const struct i2c_device_id atmel_sha204a_id[] = {
 	{ "atsha204", 0 },
 	{ "atsha204a", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, atmel_sha204a_id);
 

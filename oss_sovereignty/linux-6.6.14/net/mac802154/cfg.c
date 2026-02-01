@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Authors:
- * Alexander Aring <aar@pengutronix.de>
- *
- * Based on: net/mac80211/cfg.c
- */
+
+ 
 
 #include <net/rtnetlink.h>
 #include <net/cfg802154.h>
@@ -49,7 +43,7 @@ static int ieee802154_suspend(struct wpan_phy *wpan_phy)
 	ieee802154_sync_and_hold_queue(local);
 	synchronize_net();
 
-	/* stop hardware - this must stop RX */
+	 
 	ieee802154_stop_device(local);
 
 suspend:
@@ -62,11 +56,11 @@ static int ieee802154_resume(struct wpan_phy *wpan_phy)
 	struct ieee802154_local *local = wpan_phy_priv(wpan_phy);
 	int ret;
 
-	/* nothing to do if HW shouldn't run */
+	 
 	if (!local->open_count)
 		goto wake_up;
 
-	/* restart hardware */
+	 
 	ret = drv_start(local, local->phy->filtering, &local->addr_filt);
 	if (ret)
 		return ret;
@@ -114,7 +108,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
 	    wpan_phy->current_channel == channel)
 		return 0;
 
-	/* Refuse to change channels during scanning or beaconing */
+	 
 	if (mac802154_is_scanning(local) || mac802154_is_beaconing(local))
 		return -EBUSY;
 
@@ -502,7 +496,7 @@ ieee802154_del_devkey(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,
 
 	return res;
 }
-#endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
+#endif  
 
 const struct cfg802154_ops mac802154_config_ops = {
 	.add_virtual_intf_deprecated = ieee802154_add_iface_deprecated,
@@ -530,7 +524,7 @@ const struct cfg802154_ops mac802154_config_ops = {
 	.get_llsec_table = ieee802154_get_llsec_table,
 	.lock_llsec_table = ieee802154_lock_llsec_table,
 	.unlock_llsec_table = ieee802154_unlock_llsec_table,
-	/* TODO above */
+	 
 	.set_llsec_params = ieee802154_set_llsec_params,
 	.get_llsec_params = ieee802154_get_llsec_params,
 	.add_llsec_key = ieee802154_add_llsec_key,
@@ -541,5 +535,5 @@ const struct cfg802154_ops mac802154_config_ops = {
 	.del_device = ieee802154_del_device,
 	.add_devkey = ieee802154_add_devkey,
 	.del_devkey = ieee802154_del_devkey,
-#endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
+#endif  
 };

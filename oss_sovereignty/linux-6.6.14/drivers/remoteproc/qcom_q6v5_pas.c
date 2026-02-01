@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm ADSP/SLPI Peripheral Image Loader for MSM8974 and MSM8996
- *
- * Copyright (C) 2016 Linaro Ltd
- * Copyright (C) 2014 Sony Mobile Communications AB
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -189,12 +183,7 @@ static int adsp_unprepare(struct rproc *rproc)
 {
 	struct qcom_adsp *adsp = rproc->priv;
 
-	/*
-	 * adsp_load() did pass pas_metadata to the SCM driver for storing
-	 * metadata context. It might have been released already if
-	 * auth_and_reset() was successful, but in other cases clean it up
-	 * here.
-	 */
+	 
 	qcom_scm_pas_metadata_release(&adsp->pas_metadata);
 	if (adsp->dtb_pas_id)
 		qcom_scm_pas_metadata_release(&adsp->dtb_pas_metadata);
@@ -207,7 +196,7 @@ static int adsp_load(struct rproc *rproc, const struct firmware *fw)
 	struct qcom_adsp *adsp = rproc->priv;
 	int ret;
 
-	/* Store firmware handle to be used in adsp_start() */
+	 
 	adsp->firmware = fw;
 
 	if (adsp->dtb_pas_id) {
@@ -316,7 +305,7 @@ static int adsp_start(struct rproc *rproc)
 	if (adsp->dtb_pas_id)
 		qcom_scm_pas_metadata_release(&adsp->dtb_pas_metadata);
 
-	/* Remove pointer to the loaded firmware, only valid in adsp_load() & adsp_start() */
+	 
 	adsp->firmware = NULL;
 
 	return 0;
@@ -340,7 +329,7 @@ disable_proxy_pds:
 disable_irqs:
 	qcom_q6v5_unprepare(&adsp->q6v5);
 
-	/* Remove pointer to the loaded firmware, only valid in adsp_load() & adsp_start() */
+	 
 	adsp->firmware = NULL;
 
 	return ret;
@@ -490,7 +479,7 @@ static int adsp_pds_attach(struct device *dev, struct device **devs,
 	if (!pd_names)
 		return 0;
 
-	/* Handle single power domain */
+	 
 	if (dev->pm_domain) {
 		devs[0] = dev;
 		pm_runtime_enable(dev);
@@ -523,7 +512,7 @@ static void adsp_pds_detach(struct qcom_adsp *adsp, struct device **pds,
 	struct device *dev = adsp->dev;
 	int i;
 
-	/* Handle single power domain */
+	 
 	if (dev->pm_domain && pd_count) {
 		pm_runtime_disable(dev);
 		return;

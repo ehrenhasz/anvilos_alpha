@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell PXA family clocks
- *
- * Copyright (C) 2014 Robert Jarzmik
- *
- * Common clock code for PXA clocks ("CKEN" type clocks + DT)
- */
+ 
+ 
 #ifndef _CLK_PXA_
 #define _CLK_PXA_
 
@@ -86,22 +80,7 @@
 			CLK_GET_RATE_NOCACHE | flags); \
 	}
 
-/*
- * CKEN clock type
- * This clock takes it source from 2 possible parents :
- *  - a low power parent
- *  - a normal parent
- *
- *  +------------+     +-----------+
- *  |  Low Power | --- | x mult_lp |
- *  |    Clock   |     | / div_lp  |\
- *  +------------+     +-----------+ \+-----+   +-----------+
- *                                    | Mux |---| CKEN gate |
- *  +------------+     +-----------+ /+-----+   +-----------+
- *  | High Power |     | x mult_hp |/
- *  |    Clock   | --- | / div_hp  |
- *  +------------+     +-----------+
- */
+ 
 struct desc_clk_cken {
 	struct clk_hw hw;
 	int ckid;

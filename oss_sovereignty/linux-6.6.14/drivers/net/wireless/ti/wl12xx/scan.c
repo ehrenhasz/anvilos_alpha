@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+
+ 
 
 #include <linux/ieee80211.h>
 #include "scan.h"
@@ -27,12 +23,7 @@ static int wl1271_get_scan_channels(struct wl1271 *wl,
 		if (!test_bit(i, wl->scan.scanned_ch) &&
 		    !(flags & IEEE80211_CHAN_DISABLED) &&
 		    (req->channels[i]->band == band) &&
-		    /*
-		     * In passive scans, we scan all remaining
-		     * channels, even if not marked as such.
-		     * In active scans, we only scan channels not
-		     * marked as passive.
-		     */
+		     
 		    (passive || !(flags & IEEE80211_CHAN_NO_IR))) {
 			wl1271_debug(DEBUG_SCAN, "band %d, center_freq %d ",
 				     req->channels[i]->band,
@@ -65,7 +56,7 @@ static int wl1271_get_scan_channels(struct wl1271 *wl,
 			memset(&channels[j].bssid_lsb, 0xff, 4);
 			memset(&channels[j].bssid_msb, 0xff, 2);
 
-			/* Mark the channels we already used */
+			 
 			set_bit(i, wl->scan.scanned_ch);
 
 			j++;
@@ -87,7 +78,7 @@ static int wl1271_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	int ret;
 	u16 scan_options = 0;
 
-	/* skip active scans if we don't have SSIDs */
+	 
 	if (!passive && wl->scan.req->n_ssids == 0)
 		return WL1271_NOTHING_TO_SCAN;
 
@@ -104,7 +95,7 @@ static int wl1271_scan_send(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	if (passive)
 		scan_options |= WL1271_SCAN_OPT_PASSIVE;
 
-	/* scan on the dev role if the regular one is not started */
+	 
 	if (wlcore_is_p2p_mgmt(wlvif))
 		cmd->params.role_id = wlvif->dev_role_id;
 	else
@@ -301,7 +292,7 @@ static void wl12xx_adjust_channels(struct wl1271_cmd_sched_scan_config *cmd,
 	       sizeof(cmd->channels_2));
 	memcpy(cmd->channels_5, cmd_channels->channels_5,
 	       sizeof(cmd->channels_5));
-	/* channels_4 are not supported, so no need to copy them */
+	 
 }
 
 int wl1271_scan_sched_scan_config(struct wl1271 *wl,
@@ -325,16 +316,16 @@ int wl1271_scan_sched_scan_config(struct wl1271 *wl,
 	cfg->rssi_threshold = c->rssi_threshold;
 	cfg->snr_threshold  = c->snr_threshold;
 	cfg->n_probe_reqs = c->num_probe_reqs;
-	/* cycles set to 0 it means infinite (until manually stopped) */
+	 
 	cfg->cycles = 0;
-	/* report APs when at least 1 is found */
+	 
 	cfg->report_after = 1;
-	/* don't stop scanning automatically when something is found */
+	 
 	cfg->terminate = 0;
 	cfg->tag = WL1271_SCAN_DEFAULT_TAG;
-	/* don't filter on BSS type */
+	 
 	cfg->bss_type = SCAN_BSS_TYPE_ANY;
-	/* currently NL80211 supports only a single interval */
+	 
 	for (i = 0; i < SCAN_MAX_CYCLE_INTERVALS; i++)
 		cfg->intervals[i] = cpu_to_le32(req->scan_plans[0].interval *
 						MSEC_PER_SEC);
@@ -464,7 +455,7 @@ void wl12xx_scan_sched_scan_stop(struct wl1271 *wl,  struct wl12xx_vif *wlvif)
 
 	wl1271_debug(DEBUG_CMD, "cmd periodic scan stop");
 
-	/* FIXME: what to do if alloc'ing to stop fails? */
+	 
 	stop = kzalloc(sizeof(*stop), GFP_KERNEL);
 	if (!stop) {
 		wl1271_error("failed to alloc memory to send sched scan stop");

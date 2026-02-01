@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_DEVICE_H__
 #define __NVIF_DEVICE_H__
 
@@ -23,7 +23,7 @@ int  nvif_device_ctor(struct nvif_object *, const char *name, u32 handle,
 void nvif_device_dtor(struct nvif_device *);
 u64  nvif_device_time(struct nvif_device *);
 
-/*XXX*/
+ 
 #include <subdev/bios.h>
 #include <subdev/fb.h>
 #include <subdev/bar.h>

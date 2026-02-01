@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1999-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey <dickey@clark.net> 1999-on                     *
- ****************************************************************************/
+ 
 
-/*
- * align_ttype.c --  functions for TERMTYPE
- *
- *	_nc_align_termtype()
- *	_nc_copy_termtype()
- *
- */
+ 
 
 #include <curses.priv.h>
 
@@ -46,10 +11,7 @@
 MODULE_ID("$Id: alloc_ttype.c,v 1.46 2022/09/17 21:44:35 tom Exp $")
 
 #if NCURSES_XNAMES
-/*
- * Merge the a/b lists into dst.  Both a/b are sorted (see _nc_extend_names()),
- * so we do not have to worry about order dependencies.
- */
+ 
 static int
 merge_names(char **dst, char **a, int na, char **b, int nb)
 {
@@ -177,9 +139,7 @@ realign_data(TERMTYPE2 *to, char **ext_Names,
     }
 }
 
-/*
- * Returns the first index in ext_Names[] for the given token-type
- */
+ 
 static unsigned
 _nc_first_ext_name(TERMTYPE2 *tp, int token_type)
 {
@@ -202,9 +162,7 @@ _nc_first_ext_name(TERMTYPE2 *tp, int token_type)
     return first;
 }
 
-/*
- * Returns the last index in ext_Names[] for the given token-type
- */
+ 
 static unsigned
 _nc_last_ext_name(TERMTYPE2 *tp, int token_type)
 {
@@ -225,9 +183,7 @@ _nc_last_ext_name(TERMTYPE2 *tp, int token_type)
     return last;
 }
 
-/*
- * Lookup an entry from extended-names, returning -1 if not found
- */
+ 
 static int
 _nc_find_ext_name(TERMTYPE2 *tp, char *name, int token_type)
 {
@@ -243,10 +199,7 @@ _nc_find_ext_name(TERMTYPE2 *tp, char *name, int token_type)
     return -1;
 }
 
-/*
- * Translate an index into ext_Names[] into the corresponding index into data
- * (e.g., Booleans[]).
- */
+ 
 static int
 _nc_ext_data_index(TERMTYPE2 *tp, int n, int token_type)
 {
@@ -266,10 +219,7 @@ _nc_ext_data_index(TERMTYPE2 *tp, int n, int token_type)
     return n;
 }
 
-/*
- * Adjust tables to remove (not free) an extended name and its corresponding
- * data.
- */
+ 
 static bool
 _nc_del_ext_name(TERMTYPE2 *tp, char *name, int token_type)
 {
@@ -311,10 +261,7 @@ _nc_del_ext_name(TERMTYPE2 *tp, char *name, int token_type)
     return FALSE;
 }
 
-/*
- * Adjust tables to insert an extended name, making room for new data.  The
- * index into the corresponding data array is returned.
- */
+ 
 static int
 _nc_ins_ext_name(TERMTYPE2 *tp, char *name, int token_type)
 {
@@ -326,7 +273,7 @@ _nc_ins_ext_name(TERMTYPE2 *tp, char *name, int token_type)
     for (j = first; j < last; j++) {
 	int cmp = strcmp(name, tp->ext_Names[j]);
 	if (cmp == 0)
-	    /* already present */
+	     
 	    return _nc_ext_data_index(tp, (int) j, token_type);
 	if (cmp < 0) {
 	    break;
@@ -365,11 +312,7 @@ _nc_ins_ext_name(TERMTYPE2 *tp, char *name, int token_type)
     return (int) j;
 }
 
-/*
- * Look for strings that are marked cancelled, which happen to be the same name
- * as a boolean or number.  We'll get this as a special case when we get a
- * cancellation of a name that is inherited from another entry.
- */
+ 
 static void
 adjust_cancels(TERMTYPE2 *to, TERMTYPE2 *from)
 {
@@ -437,7 +380,7 @@ _nc_align_termtype(TERMTYPE2 *to, TERMTYPE2 *from)
 	int ext_Booleans, ext_Numbers, ext_Strings;
 	bool used_ext_Names = FALSE;
 
-	if ((na == nb)		/* check if the arrays are equivalent */
+	if ((na == nb)		 
 	    &&(to->ext_Booleans == from->ext_Booleans)
 	    && (to->ext_Numbers == from->ext_Numbers)
 	    && (to->ext_Strings == from->ext_Strings)) {
@@ -455,12 +398,7 @@ _nc_align_termtype(TERMTYPE2 *to, TERMTYPE2 *from)
 		return;
 	    }
 	}
-	/*
-	 * This is where we pay for having a simple extension representation.
-	 * Allocate a new ext_Names array and merge the two ext_Names arrays
-	 * into it, updating to's counts for booleans, etc.  Fortunately we do
-	 * this only for the terminfo compiler (tic) and comparer (infocmp).
-	 */
+	 
 	TYPE_MALLOC(char *, (size_t)(na + nb), ext_Names);
 
 	if (to->ext_Strings && (from->ext_Booleans + from->ext_Numbers))
@@ -490,10 +428,7 @@ _nc_align_termtype(TERMTYPE2 *to, TERMTYPE2 *from)
 				  + from->ext_Booleans
 				  + from->ext_Numbers,
 				  from->ext_Strings);
-	/*
-	 * Now we must reallocate the Booleans, etc., to allow the data to be
-	 * overlaid.
-	 */
+	 
 	if (na != (ext_Booleans + ext_Numbers + ext_Strings)) {
 	    realign_data(to, ext_Names, ext_Booleans, ext_Numbers, ext_Strings);
 	    FreeIfNeeded(to->ext_Names);
@@ -520,10 +455,7 @@ _nc_align_termtype(TERMTYPE2 *to, TERMTYPE2 *from)
 #define srcINT 1
 #define dstINT 2
 
-/*
- * TERMTYPE and TERMTYPE2 differ only with regard to the values in Numbers.
- * Use 'mode' to decide which to use.
- */
+ 
 static void
 copy_termtype(TERMTYPE2 *dst, const TERMTYPE2 *src, int mode)
 {
@@ -537,7 +469,7 @@ copy_termtype(TERMTYPE2 *dst, const TERMTYPE2 *src, int mode)
 
     DEBUG(2, (T_CALLED("copy_termtype(dst=%p, src=%p, mode=%d)"), (void *)
 	      dst, (const void *) src, mode));
-    *dst = *src;		/* ...to copy the sizes and string-tables */
+    *dst = *src;		 
 
     TYPE_MALLOC(NCURSES_SBOOL, NUM_BOOLEANS(dst), dst->Booleans);
     TYPE_MALLOC(char *, NUM_STRINGS(dst), dst->Strings);
@@ -665,9 +597,7 @@ copy_termtype(TERMTYPE2 *dst, const TERMTYPE2 *src, int mode)
     DEBUG(2, (T_RETURN("")));
 }
 
-/*
- * This entrypoint is used by tack 1.07
- */
+ 
 NCURSES_EXPORT(void)
 _nc_copy_termtype(TERMTYPE *dst, const TERMTYPE *src)
 {
@@ -687,10 +617,7 @@ _nc_copy_termtype2(TERMTYPE2 *dst, const TERMTYPE2 *src)
     DEBUG(2, (T_RETURN("")));
 }
 
-/*
- * Use this for exporting the internal TERMTYPE2 to the legacy format used via
- * the CUR macro by applications.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_export_termtype2(TERMTYPE *dst, const TERMTYPE2 *src)
 {
@@ -699,4 +626,4 @@ _nc_export_termtype2(TERMTYPE *dst, const TERMTYPE2 *src)
     copy_termtype((TERMTYPE2 *) dst, src, srcINT);
     DEBUG(2, (T_RETURN("")));
 }
-#endif /* NCURSES_EXT_NUMBERS */
+#endif  

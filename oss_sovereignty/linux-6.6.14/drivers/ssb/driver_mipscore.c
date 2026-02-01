@@ -1,12 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * Broadcom MIPS core driver
- *
- * Copyright 2005, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -76,7 +68,7 @@ static inline u32 ssb_irqflag(struct ssb_device *dev)
 	if (tpsflag)
 		return ssb_read32(dev, SSB_TPSFLAG) & SSB_TPSFLAG_BPFLAG;
 	else
-		/* not irq supported */
+		 
 		return 0x3f;
 }
 
@@ -93,11 +85,7 @@ static struct ssb_device *find_device(struct ssb_device *rdev, int irqflag)
 	return NULL;
 }
 
-/* Get the MIPS IRQ assignment for a specified device.
- * If unassigned, 0 is returned.
- * If disabled, 5 is returned.
- * If not supported, 6 is returned.
- */
+ 
 unsigned int ssb_mips_irq(struct ssb_device *dev)
 {
 	struct ssb_bus *bus = dev->bus;
@@ -128,7 +116,7 @@ static void clear_irq(struct ssb_bus *bus, unsigned int irq)
 {
 	struct ssb_device *dev = bus->mipscore.dev;
 
-	/* Clear the IRQ in the MIPScore backplane registers */
+	 
 	if (irq == 0) {
 		ssb_write32(dev, SSB_INTVEC, 0);
 	} else {
@@ -149,13 +137,13 @@ static void set_irq(struct ssb_device *dev, unsigned int irq)
 
 	dev->irq = irq + 2;
 
-	/* clear the old irq */
+	 
 	if (oldirq == 0)
 		ssb_write32(mdev, SSB_INTVEC, (~(1 << irqflag) & ssb_read32(mdev, SSB_INTVEC)));
 	else if (oldirq != 5)
 		clear_irq(bus, oldirq);
 
-	/* assign the new one */
+	 
 	if (irq == 0) {
 		ssb_write32(mdev, SSB_INTVEC, ((1 << irqflag) | ssb_read32(mdev, SSB_INTVEC)));
 	} else {
@@ -217,7 +205,7 @@ static void ssb_mips_flash_detect(struct ssb_mipscore *mcore)
 	struct ssb_sflash *sflash = &mcore->sflash;
 	struct ssb_pflash *pflash = &mcore->pflash;
 
-	/* When there is no chipcommon on the bus there is 4MB flash */
+	 
 	if (!ssb_chipco_available(&bus->chipco)) {
 		pflash->present = true;
 		pflash->buswidth = 2;
@@ -226,7 +214,7 @@ static void ssb_mips_flash_detect(struct ssb_mipscore *mcore)
 		goto ssb_pflash;
 	}
 
-	/* There is ChipCommon, so use it to read info about flash */
+	 
 	switch (bus->chipco.capabilities & SSB_CHIPCO_CAP_FLASHT) {
 	case SSB_CHIPCO_FLASHT_STSER:
 	case SSB_CHIPCO_FLASHT_ATSER:
@@ -298,7 +286,7 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 	unsigned int irq, i;
 
 	if (!mcore->dev)
-		return; /* We don't have a MIPS core */
+		return;  
 
 	dev_dbg(mcore->dev->dev, "Initializing MIPS core...\n");
 
@@ -313,7 +301,7 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 	else if (ssb_chipco_available(&bus->chipco))
 		ssb_chipco_timing_init(&bus->chipco, ns);
 
-	/* Assign IRQs to all cores on the bus, start with irq line 2, because serial usually takes 1 */
+	 
 	for (irq = 2, i = 0; i < bus->nr_devices; i++) {
 		int mips_irq;
 		dev = &(bus->devices[i]);
@@ -326,8 +314,7 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 			continue;
 		switch (dev->id.coreid) {
 		case SSB_DEV_USB11_HOST:
-			/* shouldn't need a separate irq line for non-4710, most of them have a proper
-			 * external usb controller on the pci */
+			 
 			if ((bus->chip_id == 0x4710) && (irq <= 4)) {
 				set_irq(dev, irq++);
 			}
@@ -337,7 +324,7 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 		case SSB_DEV_ETHERNET_GBIT:
 		case SSB_DEV_80211:
 		case SSB_DEV_USB20_HOST:
-			/* These devices get their own IRQ line if available, the rest goes on IRQ0 */
+			 
 			if (irq <= 4) {
 				set_irq(dev, irq++);
 				break;

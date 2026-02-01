@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,27 +14,17 @@
 
 #include <lantiq_soc.h>
 
-/*
- * By attaching hardware latches to the EBU it is possible to create output
- * only gpios. This driver configures a special memory address, which when
- * written to outputs 16 bit to the latches.
- */
+ 
 
-#define LTQ_EBU_BUSCON	0x1e7ff		/* 16 bit access, slowest timing */
-#define LTQ_EBU_WP	0x80000000	/* write protect bit */
+#define LTQ_EBU_BUSCON	0x1e7ff		 
+#define LTQ_EBU_WP	0x80000000	 
 
 struct ltq_mm {
 	struct of_mm_gpio_chip mmchip;
-	u16 shadow;	/* shadow the latches state */
+	u16 shadow;	 
 };
 
-/**
- * ltq_mm_apply() - write the shadow value to the ebu address.
- * @chip:     Pointer to our private data structure.
- *
- * Write the shadow value to the EBU to set the gpios. We need to set the
- * global EBU lock to make sure that PCI/MTD don't break.
- */
+ 
 static void ltq_mm_apply(struct ltq_mm *chip)
 {
 	unsigned long flags;
@@ -49,14 +36,7 @@ static void ltq_mm_apply(struct ltq_mm *chip)
 	spin_unlock_irqrestore(&ebu_lock, flags);
 }
 
-/**
- * ltq_mm_set() - gpio_chip->set - set gpios.
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- * @val:    Value to be written to specified signal.
- *
- * Set the shadow value and call ltq_mm_apply.
- */
+ 
 static void ltq_mm_set(struct gpio_chip *gc, unsigned offset, int value)
 {
 	struct ltq_mm *chip = gpiochip_get_data(gc);
@@ -68,14 +48,7 @@ static void ltq_mm_set(struct gpio_chip *gc, unsigned offset, int value)
 	ltq_mm_apply(chip);
 }
 
-/**
- * ltq_mm_dir_out() - gpio_chip->dir_out - set gpio direction.
- * @gc:     Pointer to gpio_chip device structure.
- * @gpio:   GPIO signal number.
- * @val:    Value to be written to specified signal.
- *
- * Same as ltq_mm_set, always returns 0.
- */
+ 
 static int ltq_mm_dir_out(struct gpio_chip *gc, unsigned offset, int value)
 {
 	ltq_mm_set(gc, offset, value);
@@ -83,16 +56,13 @@ static int ltq_mm_dir_out(struct gpio_chip *gc, unsigned offset, int value)
 	return 0;
 }
 
-/**
- * ltq_mm_save_regs() - Set initial values of GPIO pins
- * @mm_gc: pointer to memory mapped GPIO chip structure
- */
+ 
 static void ltq_mm_save_regs(struct of_mm_gpio_chip *mm_gc)
 {
 	struct ltq_mm *chip =
 		container_of(mm_gc, struct ltq_mm, mmchip);
 
-	/* tell the ebu controller which memory address we will be using */
+	 
 	ltq_ebu_w32(CPHYSADDR(chip->mmchip.regs) | 0x1, LTQ_EBU_ADDRSEL1);
 
 	ltq_mm_apply(chip);
@@ -114,7 +84,7 @@ static int ltq_mm_probe(struct platform_device *pdev)
 	chip->mmchip.gc.set = ltq_mm_set;
 	chip->mmchip.save_regs = ltq_mm_save_regs;
 
-	/* store the shadow value if one was passed by the devicetree */
+	 
 	if (!of_property_read_u32(pdev->dev.of_node, "lantiq,shadow", &shadow))
 		chip->shadow = shadow;
 

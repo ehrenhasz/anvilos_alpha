@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_lmem.h"
 #include "gt/intel_engine_pm.h"
@@ -88,55 +86,7 @@ int intel_gsc_fw_get_binary_info(struct intel_uc_fw *gsc_fw, const void *data, s
 		return -ENODATA;
 	}
 
-	/*
-	 * The GSC binary starts with the pointer layout, which contains the
-	 * locations of the various partitions of the binary. The one we're
-	 * interested in to get the version is the boot1 partition, where we can
-	 * find a BPDT header followed by entries, one of which points to the
-	 * RBE sub-section of the partition. From here, we can parse the CPD
-	 * header and the following entries to find the manifest location
-	 * (entry identified by the "RBEP.man" name), from which we can finally
-	 * extract the version.
-	 *
-	 * --------------------------------------------------
-	 * [  intel_gsc_layout_pointers                     ]
-	 * [      ...                                       ]
-	 * [      boot1.offset  >---------------------------]------o
-	 * [      ...                                       ]      |
-	 * --------------------------------------------------      |
-	 *                                                         |
-	 * --------------------------------------------------      |
-	 * [  intel_gsc_bpdt_header                         ]<-----o
-	 * --------------------------------------------------
-	 * [  intel_gsc_bpdt_entry[]                        ]
-	 * [      entry1                                    ]
-	 * [      ...                                       ]
-	 * [      entryX                                    ]
-	 * [          type == GSC_RBE                       ]
-	 * [          offset  >-----------------------------]------o
-	 * [      ...                                       ]      |
-	 * --------------------------------------------------      |
-	 *                                                         |
-	 * --------------------------------------------------      |
-	 * [  intel_gsc_cpd_header_v2                       ]<-----o
-	 * --------------------------------------------------
-	 * [  intel_gsc_cpd_entry[]                         ]
-	 * [      entry1                                    ]
-	 * [      ...                                       ]
-	 * [      entryX                                    ]
-	 * [          "RBEP.man"                            ]
-	 * [           ...                                  ]
-	 * [           offset  >----------------------------]------o
-	 * [      ...                                       ]      |
-	 * --------------------------------------------------      |
-	 *                                                         |
-	 * --------------------------------------------------      |
-	 * [ intel_gsc_manifest_header                      ]<-----o
-	 * [  ...                                           ]
-	 * [  intel_gsc_version     fw_version              ]
-	 * [  ...                                           ]
-	 * --------------------------------------------------
-	 */
+	 
 
 	min_size = layout->boot1.offset + layout->boot1.size;
 	if (size < min_size) {
@@ -402,7 +352,7 @@ int intel_gsc_uc_fw_upload(struct intel_gsc_uc *gsc)
 	struct intel_uc_fw *gsc_fw = &gsc->fw;
 	int err;
 
-	/* check current fw status */
+	 
 	if (intel_gsc_uc_fw_init_done(gsc)) {
 		if (GEM_WARN_ON(!intel_uc_fw_is_loaded(gsc_fw)))
 			intel_uc_fw_change_status(gsc_fw, INTEL_UC_FIRMWARE_TRANSFERRED);
@@ -412,7 +362,7 @@ int intel_gsc_uc_fw_upload(struct intel_gsc_uc *gsc)
 	if (!intel_uc_fw_is_loadable(gsc_fw))
 		return -ENOEXEC;
 
-	/* FW blob is ok, so clean the status */
+	 
 	intel_uc_fw_sanitize(&gsc->fw);
 
 	if (!gsc_is_in_reset(gt->uncore))
@@ -422,27 +372,7 @@ int intel_gsc_uc_fw_upload(struct intel_gsc_uc *gsc)
 	if (err)
 		goto fail;
 
-	/*
-	 * GSC is only killed by an FLR, so we need to trigger one on unload to
-	 * make sure we stop it. This is because we assign a chunk of memory to
-	 * the GSC as part of the FW load , so we need to make sure it stops
-	 * using it when we release it to the system on driver unload. Note that
-	 * this is not a problem of the unload per-se, because the GSC will not
-	 * touch that memory unless there are requests for it coming from the
-	 * driver; therefore, no accesses will happen while i915 is not loaded,
-	 * but if we re-load the driver then the GSC might wake up and try to
-	 * access that old memory location again.
-	 * Given that an FLR is a very disruptive action (see the FLR function
-	 * for details), we want to do it as the last action before releasing
-	 * the access to the MMIO bar, which means we need to do it as part of
-	 * the primary uncore cleanup.
-	 * An alternative approach to the FLR would be to use a memory location
-	 * that survives driver unload, like e.g. stolen memory, and keep the
-	 * GSC loaded across reloads. However, this requires us to make sure we
-	 * preserve that memory location on unload and then determine and
-	 * reserve its offset on each subsequent load, which is not trivial, so
-	 * it is easier to just kill everything and start fresh.
-	 */
+	 
 	intel_uncore_set_flr_on_fini(&gt->i915->uncore);
 
 	err = gsc_fw_load(gsc);
@@ -457,12 +387,12 @@ int intel_gsc_uc_fw_upload(struct intel_gsc_uc *gsc)
 	if (err)
 		goto fail;
 
-	/* we only support compatibility version 1.0 at the moment */
+	 
 	err = intel_uc_check_file_version(gsc_fw, NULL);
 	if (err)
 		goto fail;
 
-	/* FW is not fully operational until we enable SW proxy */
+	 
 	intel_uc_fw_change_status(gsc_fw, INTEL_UC_FIRMWARE_TRANSFERRED);
 
 	gt_info(gt, "Loaded GSC firmware %s (cv%u.%u, r%u.%u.%u.%u, svn %u)\n",

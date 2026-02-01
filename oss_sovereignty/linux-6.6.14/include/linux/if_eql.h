@@ -1,20 +1,4 @@
-/*
- * Equalizer Load-balancer for serial network interfaces.
- *
- * (c) Copyright 1995 Simon "Guru Aleph-Null" Janes
- * NCM: Network and Communications Management, Inc.
- *
- *
- *	This software may be used and distributed according to the terms
- *	of the GNU General Public License, incorporated herein by reference.
- * 
- * The author may be reached as simon@ncm.com, or C/O
- *    NCM
- *    Attn: Simon Janes
- *    6803 Whittier Ave
- *    McLean VA 22101
- *    Phone: 1-703-847-0040 ext 103
- */
+ 
 #ifndef _LINUX_IF_EQL_H
 #define _LINUX_IF_EQL_H
 
@@ -48,4 +32,4 @@ typedef struct equalizer {
 	struct timer_list	timer;
 } equalizer_t;  
 
-#endif /* _LINUX_EQL_H */
+#endif  

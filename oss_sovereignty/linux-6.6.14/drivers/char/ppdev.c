@@ -1,56 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/char/ppdev.c
- *
- * This is the code behind /dev/parport* -- it allows a user-space
- * application to use the parport subsystem.
- *
- * Copyright (C) 1998-2000, 2002 Tim Waugh <tim@cyberelk.net>
- *
- * A /dev/parportx device node represents an arbitrary device
- * on port 'x'.  The following operations are possible:
- *
- * open		do nothing, set up default IEEE 1284 protocol to be COMPAT
- * close	release port and unregister device (if necessary)
- * ioctl
- *   EXCL	register device exclusively (may fail)
- *   CLAIM	(register device first time) parport_claim_or_block
- *   RELEASE	parport_release
- *   SETMODE	set the IEEE 1284 protocol to use for read/write
- *   SETPHASE	set the IEEE 1284 phase of a particular mode.  Not to be
- *              confused with ioctl(fd, SETPHASER, &stun). ;-)
- *   DATADIR	data_forward / data_reverse
- *   WDATA	write_data
- *   RDATA	read_data
- *   WCONTROL	write_control
- *   RCONTROL	read_control
- *   FCONTROL	frob_control
- *   RSTATUS	read_status
- *   NEGOT	parport_negotiate
- *   YIELD	parport_yield_blocking
- *   WCTLONIRQ	on interrupt, set control lines
- *   CLRIRQ	clear (and return) interrupt count
- *   SETTIME	sets device timeout (struct timeval)
- *   GETTIME	gets device timeout (struct timeval)
- *   GETMODES	gets hardware supported modes (unsigned int)
- *   GETMODE	gets the current IEEE1284 mode
- *   GETPHASE   gets the current IEEE1284 phase
- *   GETFLAGS   gets current (user-visible) flags
- *   SETFLAGS   sets current (user-visible) flags
- * read/write	read or write in current IEEE 1284 protocol
- * select	wait for interrupt (in readfds)
- *
- * Changes:
- * Added SETTIME/GETTIME ioctl, Fred Barnes, 1999.
- *
- * Arnaldo Carvalho de Melo <acme@conectiva.com.br> 2000/08/25
- * - On error, copy_from_user and copy_to_user do not return -EFAULT,
- *   They return the positive number of bytes *not* copied due to address
- *   space errors.
- *
- * Added GETMODES/GETMODE/GETPHASE ioctls, Fred Barnes <frmb2@ukc.ac.uk>, 03/01/2001.
- * Added GETFLAGS/SETFLAGS ioctls, Fred Barnes, 04/2001
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -83,23 +32,23 @@ struct pp_struct {
 	int index;
 };
 
-/* should we use PARDEVICE_MAX here? */
+ 
 static struct device *devices[PARPORT_MAX];
 
 static DEFINE_IDA(ida_index);
 
-/* pp_struct.flags bitfields */
+ 
 #define PP_CLAIMED    (1<<0)
 #define PP_EXCL       (1<<1)
 
-/* Other constants */
-#define PP_INTERRUPT_TIMEOUT (10 * HZ) /* 10s */
+ 
+#define PP_INTERRUPT_TIMEOUT (10 * HZ)  
 #define PP_BUFFER_SIZE 1024
 #define PARDEVICE_MAX 8
 
 static DEFINE_MUTEX(pp_do_mutex);
 
-/* define fixed sized ioctl cmd for y2038 migration */
+ 
 #define PPGETTIME32	_IOR(PP_IOCTL, 0x95, s32[2])
 #define PPSETTIME32	_IOW(PP_IOCTL, 0x96, s32[2])
 #define PPGETTIME64	_IOR(PP_IOCTL, 0x95, s64[2])
@@ -123,12 +72,12 @@ static ssize_t pp_read(struct file *file, char __user *buf, size_t count,
 	int mode;
 
 	if (!(pp->flags & PP_CLAIMED)) {
-		/* Don't have the port claimed */
+		 
 		pr_debug(CHRDEV "%x: claim the port first\n", minor);
 		return -EINVAL;
 	}
 
-	/* Trivial case. */
+	 
 	if (count == 0)
 		return 0;
 
@@ -147,7 +96,7 @@ static ssize_t pp_read(struct file *file, char __user *buf, size_t count,
 		ssize_t need = min_t(unsigned long, count, PP_BUFFER_SIZE);
 
 		if (mode == IEEE1284_MODE_EPP) {
-			/* various specials for EPP mode */
+			 
 			int flags = 0;
 			size_t (*fn)(struct parport *, void *, size_t, int);
 
@@ -202,7 +151,7 @@ static ssize_t pp_write(struct file *file, const char __user *buf,
 	struct parport *pport;
 
 	if (!(pp->flags & PP_CLAIMED)) {
-		/* Don't have the port claimed */
+		 
 		pr_debug(CHRDEV "%x: claim the port first\n", minor);
 		return -EINVAL;
 	}
@@ -228,7 +177,7 @@ static ssize_t pp_write(struct file *file, const char __user *buf,
 		}
 
 		if ((pp->flags & PP_FASTWRITE) && (mode == IEEE1284_MODE_EPP)) {
-			/* do a fast EPP write */
+			 
 			if (pport->ieee1284.mode & IEEE1284_ADDR) {
 				wrote = pport->ops->epp_write_addr(pport,
 					kbuffer, n, PARPORT_EPP_FAST);
@@ -364,7 +313,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct timespec64 ts;
 	int ret;
 
-	/* First handle the cases that don't take arguments. */
+	 
 	switch (cmd) {
 	case PPCLAIM:
 	    {
@@ -373,7 +322,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -EINVAL;
 		}
 
-		/* Deferred device registration. */
+		 
 		if (!pp->pdev) {
 			int err = register_device(minor, pp);
 
@@ -387,11 +336,10 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		pp->flags |= PP_CLAIMED;
 
-		/* For interrupt-reporting to work, we need to be
-		 * informed of each interrupt. */
+		 
 		pp_enable_irq(pp);
 
-		/* We may need to fix up the state machine. */
+		 
 		info = &pp->pdev->port->ieee1284;
 		pp->saved_state.mode = info->mode;
 		pp->saved_state.phase = info->phase;
@@ -407,14 +355,13 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			dev_dbg(&pp->pdev->dev,
 				"too late for PPEXCL; already registered\n");
 			if (pp->flags & PP_EXCL)
-				/* But it's not really an error. */
+				 
 				return 0;
-			/* There's no chance of making the driver happy. */
+			 
 			return -EINVAL;
 		}
 
-		/* Just remember to register the device exclusively
-		 * when we finally do the registration. */
+		 
 		pp->flags |= PP_EXCL;
 		return 0;
 	case PPSETMODE:
@@ -423,7 +370,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (copy_from_user(&mode, argp, sizeof(mode)))
 			return -EFAULT;
-		/* FIXME: validate mode */
+		 
 		pp->state.mode = mode;
 		pp->state.phase = init_phase(mode);
 
@@ -454,7 +401,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&phase, argp, sizeof(phase)))
 			return -EFAULT;
 
-		/* FIXME: validate phase */
+		 
 		pp->state.phase = phase;
 
 		if (pp->flags & PP_CLAIMED)
@@ -507,10 +454,9 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -EFAULT;
 		return 0;
 	    }
-	}	/* end switch() */
+	}	 
 
-	/* Everything else requires the port to be claimed, so check
-	 * that now. */
+	 
 	if ((pp->flags & PP_CLAIMED) == 0) {
 		pr_debug(CHRDEV "%x: claim the port first\n", minor);
 		return -EINVAL;
@@ -538,7 +484,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return 0;
 
 	case PPRELEASE:
-		/* Save the state machine's state. */
+		 
 		info = &pp->pdev->port->ieee1284;
 		pp->state.mode = info->mode;
 		pp->state.phase = info->phase;
@@ -584,10 +530,10 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -EFAULT;
 		switch ((ret = parport_negotiate(port, mode))) {
 		case 0: break;
-		case -1: /* handshake failed, peripheral not IEEE 1284 */
+		case -1:  
 			ret = -EIO;
 			break;
-		case 1:  /* handshake succeeded, peripheral rejected mode */
+		case 1:   
 			ret = -ENXIO;
 			break;
 		}
@@ -598,8 +544,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&reg, argp, sizeof(reg)))
 			return -EFAULT;
 
-		/* Remember what to set the control lines to, for next
-		 * time we get an interrupt. */
+		 
 		pp->irqctl = reg;
 		pp->irqresponse = 1;
 		return 0;
@@ -660,7 +605,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return -EINVAL;
 	}
 
-	/* Keep the compiler happy */
+	 
 	return 0;
 }
 
@@ -693,10 +638,7 @@ static int pp_open(struct inode *inode, struct file *file)
 	atomic_set(&pp->irqc, 0);
 	init_waitqueue_head(&pp->irq_wait);
 
-	/* Defer the actual device registration until the first claim.
-	 * That way, we know whether or not the driver wants to have
-	 * exclusive access to the port (PPEXCL).
-	 */
+	 
 	pp->pdev = NULL;
 	file->private_data = pp;
 
@@ -714,7 +656,7 @@ static int pp_release(struct inode *inode, struct file *file)
 	    (pp->state.mode != IEEE1284_MODE_COMPAT)) {
 		struct ieee1284_info *info;
 
-		/* parport released, but not in compatibility mode */
+		 
 		parport_claim_or_block(pp->pdev);
 		pp->flags |= PP_CLAIMED;
 		info = &pp->pdev->port->ieee1284;
@@ -760,7 +702,7 @@ static int pp_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/* No kernel lock held - fine */
+ 
 static __poll_t pp_poll(struct file *file, poll_table *wait)
 {
 	struct pp_struct *pp = file->private_data;
@@ -866,7 +808,7 @@ out:
 
 static void __exit ppdev_cleanup(void)
 {
-	/* Clean up all parport stuff */
+	 
 	parport_unregister_driver(&pp_driver);
 	class_unregister(&ppdev_class);
 	unregister_chrdev(PP_MAJOR, CHRDEV);

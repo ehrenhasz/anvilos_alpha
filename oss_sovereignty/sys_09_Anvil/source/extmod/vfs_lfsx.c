@@ -1,30 +1,6 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019-2020 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-// This file should be compiled when included from vfs_lfs.c.
+
 #if defined(LFS_BUILD_VERSION)
 
 #include <stdio.h>
@@ -82,9 +58,9 @@ static void MP_VFS_LFSx(init_config)(MP_OBJ_VFS_LFSx * self, mp_obj_t bdev, size
     config->erase = MP_VFS_LFSx(dev_erase);
     config->sync = MP_VFS_LFSx(dev_sync);
 
-    MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_INIT, 1, false); // initialise block device
-    int bs = MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_BLOCK_SIZE, 0, true); // get block size
-    int bc = MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_BLOCK_COUNT, 0, true); // get block count
+    MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_INIT, 1, false); 
+    int bs = MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_BLOCK_SIZE, 0, true); 
+    int bc = MP_VFS_LFSx(dev_ioctl)(config, MP_BLOCKDEV_IOCTL_BLOCK_COUNT, 0, true); 
     self->blockdev.block_size = bs;
 
     config->read_size = read_size;
@@ -156,7 +132,7 @@ static mp_obj_t MP_VFS_LFSx(mkfs)(size_t n_args, const mp_obj_t *pos_args, mp_ma
 static MP_DEFINE_CONST_FUN_OBJ_KW(MP_VFS_LFSx(mkfs_fun_obj), 0, MP_VFS_LFSx(mkfs));
 static MP_DEFINE_CONST_STATICMETHOD_OBJ(MP_VFS_LFSx(mkfs_obj), MP_ROM_PTR(&MP_VFS_LFSx(mkfs_fun_obj)));
 
-// Implementation of mp_vfs_lfs_file_open is provided in vfs_lfsx_file.c
+
 static MP_DEFINE_CONST_FUN_OBJ_3(MP_VFS_LFSx(open_obj), MP_VFS_LFSx(file_open));
 
 typedef struct MP_VFS_LFSx (_ilistdir_it_t) {
@@ -189,7 +165,7 @@ static mp_obj_t MP_VFS_LFSx(ilistdir_it_iternext)(mp_obj_t self_in) {
         }
     }
 
-    // make 4-tuple with info about this entry
+    
     mp_obj_tuple_t *t = MP_OBJ_TO_PTR(mp_obj_new_tuple(4, NULL));
     if (self->is_str) {
         t->items[0] = mp_obj_new_str(info.name, strlen(info.name));
@@ -197,7 +173,7 @@ static mp_obj_t MP_VFS_LFSx(ilistdir_it_iternext)(mp_obj_t self_in) {
         t->items[0] = mp_obj_new_bytes((const byte *)info.name, strlen(info.name));
     }
     t->items[1] = MP_OBJ_NEW_SMALL_INT(info.type == LFSx_MACRO(_TYPE_REG) ? MP_S_IFREG : MP_S_IFDIR);
-    t->items[2] = MP_OBJ_NEW_SMALL_INT(0); // no inode number
+    t->items[2] = MP_OBJ_NEW_SMALL_INT(0); 
     t->items[3] = MP_OBJ_NEW_SMALL_INT(info.size);
 
     return MP_OBJ_FROM_PTR(t);
@@ -293,10 +269,10 @@ static MP_DEFINE_CONST_FUN_OBJ_2(MP_VFS_LFSx(mkdir_obj), MP_VFS_LFSx(mkdir));
 static mp_obj_t MP_VFS_LFSx(chdir)(mp_obj_t self_in, mp_obj_t path_in) {
     MP_OBJ_VFS_LFSx *self = MP_OBJ_TO_PTR(self_in);
 
-    // Check path exists
+    
     const char *path = MP_VFS_LFSx(make_path)(self, path_in);
     if (path[1] != '\0') {
-        // Not at root, check it exists
+        
         struct LFSx_API (info) info;
         int ret = LFSx_API(stat)(&self->lfs, path, &info);
         if (ret < 0 || info.type != LFSx_MACRO(_TYPE_DIR)) {
@@ -304,7 +280,7 @@ static mp_obj_t MP_VFS_LFSx(chdir)(mp_obj_t self_in, mp_obj_t path_in) {
         }
     }
 
-    // Update cur_dir with new path
+    
     if (path == vstr_str(&self->cur_dir)) {
         self->cur_dir.len = strlen(path);
     } else {
@@ -312,8 +288,8 @@ static mp_obj_t MP_VFS_LFSx(chdir)(mp_obj_t self_in, mp_obj_t path_in) {
         vstr_add_str(&self->cur_dir, path);
     }
 
-    // If not at root add trailing / to make it easy to build paths
-    // and then normalise the path
+    
+    
     if (vstr_len(&self->cur_dir) != 1) {
         vstr_add_byte(&self->cur_dir, '/');
 
@@ -323,32 +299,32 @@ static mp_obj_t MP_VFS_LFSx(chdir)(mp_obj_t self_in, mp_obj_t path_in) {
         char *cwd = vstr_str(&self->cur_dir);
         while (from < CWD_LEN) {
             for (; from < CWD_LEN && cwd[from] == '/'; ++from) {
-                // Scan for the start
+                
             }
             if (from > to) {
-                // Found excessive slash chars, squeeze them out
+                
                 vstr_cut_out_bytes(&self->cur_dir, to, from - to);
                 from = to;
             }
             for (; from < CWD_LEN && cwd[from] != '/'; ++from) {
-                // Scan for the next /
+                
             }
             if ((from - to) == 1 && cwd[to] == '.') {
-                // './', ignore
+                
                 vstr_cut_out_bytes(&self->cur_dir, to, ++from - to);
                 from = to;
             } else if ((from - to) == 2 && cwd[to] == '.' && cwd[to + 1] == '.') {
-                // '../', skip back
+                
                 if (to > 1) {
-                    // Only skip back if not at the tip
+                    
                     for (--to; to > 1 && cwd[to - 1] != '/'; --to) {
-                        // Skip back
+                        
                     }
                 }
                 vstr_cut_out_bytes(&self->cur_dir, to, ++from - to);
                 from = to;
             } else {
-                // Normal element, keep it and just move the offset
+                
                 to = ++from;
             }
         }
@@ -363,7 +339,7 @@ static mp_obj_t MP_VFS_LFSx(getcwd)(mp_obj_t self_in) {
     if (vstr_len(&self->cur_dir) == 1) {
         return MP_OBJ_NEW_QSTR(MP_QSTR__slash_);
     } else {
-        // don't include trailing /
+        
         return mp_obj_new_str(self->cur_dir.buf, self->cur_dir.len - 1);
     }
 }
@@ -387,22 +363,22 @@ static mp_obj_t MP_VFS_LFSx(stat)(mp_obj_t self_in, mp_obj_t path_in) {
         for (size_t i = sizeof(mtime_buf); i > 0; --i) {
             ns = ns << 8 | mtime_buf[i - 1];
         }
-        // On-disk storage of timestamps uses 1970 as the Epoch, so convert to host's Epoch.
+        
         mtime = timeutils_seconds_since_epoch_from_nanoseconds_since_1970(ns);
     }
     #endif
 
     mp_obj_tuple_t *t = MP_OBJ_TO_PTR(mp_obj_new_tuple(10, NULL));
-    t->items[0] = MP_OBJ_NEW_SMALL_INT(info.type == LFSx_MACRO(_TYPE_REG) ? MP_S_IFREG : MP_S_IFDIR); // st_mode
-    t->items[1] = MP_OBJ_NEW_SMALL_INT(0); // st_ino
-    t->items[2] = MP_OBJ_NEW_SMALL_INT(0); // st_dev
-    t->items[3] = MP_OBJ_NEW_SMALL_INT(0); // st_nlink
-    t->items[4] = MP_OBJ_NEW_SMALL_INT(0); // st_uid
-    t->items[5] = MP_OBJ_NEW_SMALL_INT(0); // st_gid
-    t->items[6] = mp_obj_new_int_from_uint(info.size); // st_size
-    t->items[7] = mp_obj_new_int_from_uint(mtime); // st_atime
-    t->items[8] = mp_obj_new_int_from_uint(mtime); // st_mtime
-    t->items[9] = mp_obj_new_int_from_uint(mtime); // st_ctime
+    t->items[0] = MP_OBJ_NEW_SMALL_INT(info.type == LFSx_MACRO(_TYPE_REG) ? MP_S_IFREG : MP_S_IFDIR); 
+    t->items[1] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[2] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[3] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[4] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[5] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[6] = mp_obj_new_int_from_uint(info.size); 
+    t->items[7] = mp_obj_new_int_from_uint(mtime); 
+    t->items[8] = mp_obj_new_int_from_uint(mtime); 
+    t->items[9] = mp_obj_new_int_from_uint(mtime); 
 
     return MP_OBJ_FROM_PTR(t);
 }
@@ -429,16 +405,16 @@ static mp_obj_t MP_VFS_LFSx(statvfs)(mp_obj_t self_in, mp_obj_t path_in) {
     }
 
     mp_obj_tuple_t *t = MP_OBJ_TO_PTR(mp_obj_new_tuple(10, NULL));
-    t->items[0] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_size); // f_bsize
-    t->items[1] = t->items[0]; // f_frsize
-    t->items[2] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_count); // f_blocks
-    t->items[3] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_count - n_used_blocks); // f_bfree
-    t->items[4] = t->items[3]; // f_bavail
-    t->items[5] = MP_OBJ_NEW_SMALL_INT(0); // f_files
-    t->items[6] = MP_OBJ_NEW_SMALL_INT(0); // f_ffree
-    t->items[7] = MP_OBJ_NEW_SMALL_INT(0); // f_favail
-    t->items[8] = MP_OBJ_NEW_SMALL_INT(0); // f_flags
-    t->items[9] = MP_OBJ_NEW_SMALL_INT(LFSx_MACRO(_NAME_MAX)); // f_namemax
+    t->items[0] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_size); 
+    t->items[1] = t->items[0]; 
+    t->items[2] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_count); 
+    t->items[3] = MP_OBJ_NEW_SMALL_INT(self->lfs.cfg->block_count - n_used_blocks); 
+    t->items[4] = t->items[3]; 
+    t->items[5] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[6] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[7] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[8] = MP_OBJ_NEW_SMALL_INT(0); 
+    t->items[9] = MP_OBJ_NEW_SMALL_INT(LFSx_MACRO(_NAME_MAX)); 
 
     return MP_OBJ_FROM_PTR(t);
 }
@@ -448,12 +424,12 @@ static mp_obj_t MP_VFS_LFSx(mount)(mp_obj_t self_in, mp_obj_t readonly, mp_obj_t
     MP_OBJ_VFS_LFSx *self = MP_OBJ_TO_PTR(self_in);
     (void)mkfs;
 
-    // Make block device read-only if requested.
+    
     if (mp_obj_is_true(readonly)) {
         self->blockdev.writeblocks[0] = MP_OBJ_NULL;
     }
 
-    // Already called LFSx_API(mount) in MP_VFS_LFSx(make_new) so the filesystem is ready.
+    
 
     return mp_const_none;
 }
@@ -461,7 +437,7 @@ static MP_DEFINE_CONST_FUN_OBJ_3(MP_VFS_LFSx(mount_obj), MP_VFS_LFSx(mount));
 
 static mp_obj_t MP_VFS_LFSx(umount)(mp_obj_t self_in) {
     MP_OBJ_VFS_LFSx *self = MP_OBJ_TO_PTR(self_in);
-    // LFS unmount never fails
+    
     LFSx_API(unmount)(&self->lfs);
     return mp_const_none;
 }
@@ -521,4 +497,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
 
 #undef VFS_LFSx_QSTR
 
-#endif // defined(LFS_BUILD_VERSION)
+#endif 

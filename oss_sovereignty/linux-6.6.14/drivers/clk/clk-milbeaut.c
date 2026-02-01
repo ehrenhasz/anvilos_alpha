@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Socionext Inc.
- * Copyright (C) 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -391,7 +388,7 @@ static long m10v_clk_divider_round_rate(struct clk_hw *hw, unsigned long rate,
 {
 	struct m10v_clk_divider *divider = to_m10v_div(hw);
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		u32 val;
 
@@ -484,7 +481,7 @@ static struct clk_hw *m10v_clk_hw_register_divider(struct device *dev,
 	div->table = table;
 	div->write_valid_reg = write_valid_reg;
 
-	/* register the clock */
+	 
 	hw = &div->hw;
 	ret = clk_hw_register(dev, hw);
 	if (ret) {
@@ -502,10 +499,7 @@ static void m10v_reg_div_pre(const struct m10v_clk_div_factors *factors,
 	struct clk_hw *hw;
 	void __iomem *write_valid_reg;
 
-	/*
-	 * The registers on CLKSEL(9) or CLKSEL(10) need additional
-	 * writing to become valid.
-	 */
+	 
 	if ((factors->offset == CLKSEL(9)) || (factors->offset == CLKSEL(10)))
 		write_valid_reg = base + CLKSEL(11);
 	else
@@ -633,24 +627,16 @@ static void __init m10v_cc_init(struct device_node *np)
 		return;
 	}
 
-	/*
-	 * This way all clocks fetched before the platform device probes,
-	 * except those we assign here for early use, will be deferred.
-	 */
+	 
 	for (id = 0; id < M10V_NUM_CLKS; id++)
 		m10v_clk_data->hws[id] = ERR_PTR(-EPROBE_DEFER);
 
-	/*
-	 * PLLs are set by bootloader so this driver registers them as the
-	 * fixed factor.
-	 */
+	 
 	for (id = 0; id < ARRAY_SIZE(m10v_pll_fixed_data); ++id)
 		m10v_reg_fixed_pre(&m10v_pll_fixed_data[id],
 				   m10v_clk_data, parent_name);
 
-	/*
-	 * timer consumes "rclk" so it needs to register here.
-	 */
+	 
 	hw = m10v_clk_hw_register_divider(NULL, "rclk", M10V_PLL10DIV2, 0,
 					base + CLKSEL(1), 0, 3, 0, rclk_table,
 					&m10v_crglock, NULL);

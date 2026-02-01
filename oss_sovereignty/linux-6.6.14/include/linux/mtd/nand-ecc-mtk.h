@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * MTK SDG1 ECC controller
- *
- * Copyright (c) 2016 Mediatek
- * Authors:	Xiaolei Li		<xiaolei.li@mediatek.com>
- *		Jorge Ramirez-Ortiz	<jorge.ramirez-ortiz@linaro.org>
- */
+ 
+ 
 
 #ifndef __DRIVERS_MTD_NAND_MTK_ECC_H__
 #define __DRIVERS_MTD_NAND_MTK_ECC_H__

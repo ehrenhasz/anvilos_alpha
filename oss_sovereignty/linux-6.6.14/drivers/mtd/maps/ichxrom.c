@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ichxrom.c
- *
- * Normal mappings of chips in physical memory
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -25,7 +21,7 @@
 
 #define ADDRESS_NAME_LEN 18
 
-#define ROM_PROBE_STEP_SIZE (64*1024) /* 64KiB */
+#define ROM_PROBE_STEP_SIZE (64*1024)  
 
 #define BIOS_CNTL	0x4e
 #define FWH_DEC_EN1	0xE3
@@ -60,13 +56,13 @@ static void ichxrom_cleanup(struct ichxrom_window *window)
 	u16 word;
 	int ret;
 
-	/* Disable writes through the rom window */
+	 
 	ret = pci_read_config_word(window->pdev, BIOS_CNTL, &word);
 	if (!ret)
 		pci_write_config_word(window->pdev, BIOS_CNTL, word & ~1);
 	pci_dev_put(window->pdev);
 
-	/* Free all of the mtd devices */
+	 
 	list_for_each_entry_safe(map, scratch, &window->maps, list) {
 		if (map->rsrc.parent)
 			release_resource(&map->rsrc);
@@ -97,19 +93,10 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 	u8 byte;
 	u16 word;
 
-	/* For now I just handle the ichx and I assume there
-	 * are not a lot of resources up at the top of the address
-	 * space.  It is possible to handle other devices in the
-	 * top 16MB but it is very painful.  Also since
-	 * you can only really attach a FWH to an ICHX there
-	 * a number of simplifications you can make.
-	 *
-	 * Also you can page firmware hubs if an 8MB window isn't enough
-	 * but don't currently handle that case either.
-	 */
+	 
 	window->pdev = pdev;
 
-	/* Find a region continuous to the end of the ROM window  */
+	 
 	window->phys = 0;
 	pci_read_config_byte(pdev, FWH_DEC_EN1, &byte);
 	if (byte == 0xff) {
@@ -157,21 +144,16 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 	window->phys -= 0x400000UL;
 	window->size = (0xffffffffUL - window->phys) + 1UL;
 
-	/* Enable writes through the rom window */
+	 
 	pci_read_config_word(pdev, BIOS_CNTL, &word);
 	if (!(word & 1)  && (word & (1<<1))) {
-		/* The BIOS will generate an error if I enable
-		 * this device, so don't even try.
-		 */
+		 
 		printk(KERN_ERR MOD_NAME ": firmware access control, I can't enable writes\n");
 		goto out;
 	}
 	pci_write_config_word(pdev, BIOS_CNTL, word | 1);
 
-	/*
-	 * Try to reserve the window mem region.  If this fails then
-	 * it is likely due to the window being "reserved" by the BIOS.
-	 */
+	 
 	window->rsrc.name = MOD_NAME;
 	window->rsrc.start = window->phys;
 	window->rsrc.end   = window->phys + window->size - 1;
@@ -183,7 +165,7 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 		       __func__, &window->rsrc);
 	}
 
-	/* Map the firmware hub into my address space. */
+	 
 	window->virt = ioremap(window->phys, window->size);
 	if (!window->virt) {
 		printk(KERN_ERR MOD_NAME ": ioremap(%08lx, %08lx) failed\n",
@@ -191,21 +173,18 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 		goto out;
 	}
 
-	/* Get the first address to look for an rom chip at */
+	 
 	map_top = window->phys;
 	if ((window->phys & 0x3fffff) != 0) {
 		map_top = window->phys + 0x400000;
 	}
 #if 1
-	/* The probe sequence run over the firmware hub lock
-	 * registers sets them to 0x7 (no access).
-	 * Probe at most the last 4M of the address space.
-	 */
+	 
 	if (map_top < 0xffc00000) {
 		map_top = 0xffc00000;
 	}
 #endif
-	/* Loop through and look for rom chips */
+	 
 	while((map_top - 1) < 0xffffffffUL) {
 		struct cfi_private *cfi;
 		unsigned long offset;
@@ -224,26 +203,23 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 		map->map.virt = (void __iomem *)
 			(((unsigned long)(window->virt)) + offset);
 		map->map.size = 0xffffffffUL - map_top + 1UL;
-		/* Set the name of the map to the address I am trying */
+		 
 		sprintf(map->map_name, "%s @%08Lx",
 			MOD_NAME, (unsigned long long)map->map.phys);
 
-		/* Firmware hubs only use vpp when being programmed
-		 * in a factory setting.  So in-place programming
-		 * needs to use a different method.
-		 */
+		 
 		for(map->map.bankwidth = 32; map->map.bankwidth;
 			map->map.bankwidth >>= 1)
 		{
 			char **probe_type;
-			/* Skip bankwidths that are not supported */
+			 
 			if (!map_bankwidth_supported(map->map.bankwidth))
 				continue;
 
-			/* Setup the map methods */
+			 
 			simple_map_init(&map->map);
 
-			/* Try all of the probe methods */
+			 
 			probe_type = rom_probe_types;
 			for(; *probe_type; probe_type++) {
 				map->mtd = do_map_probe(*probe_type, &map->map);
@@ -254,7 +230,7 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 		map_top += ROM_PROBE_STEP_SIZE;
 		continue;
 	found:
-		/* Trim the size if we are larger than the map */
+		 
 		if (map->mtd->size > map->map.size) {
 			printk(KERN_WARNING MOD_NAME
 				" rom(%llu) larger than window(%lu). fixing...\n",
@@ -262,11 +238,7 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 			map->mtd->size = map->map.size;
 		}
 		if (window->rsrc.parent) {
-			/*
-			 * Registering the MTD device in iomem may not be possible
-			 * if there is a BIOS "reserved" and BUSY range.  If this
-			 * fails then continue anyway.
-			 */
+			 
 			map->rsrc.name  = map->map_name;
 			map->rsrc.start = map->map.phys;
 			map->rsrc.end   = map->map.phys + map->mtd->size - 1;
@@ -278,7 +250,7 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 			}
 		}
 
-		/* Make the whole region visible in the map */
+		 
 		map->map.virt = window->virt;
 		map->map.phys = window->phys;
 		cfi = map->map.fldrv_priv;
@@ -286,7 +258,7 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 			cfi->chips[i].start += offset;
 		}
 
-		/* Now that the mtd devices is complete claim and export it */
+		 
 		map->mtd->owner = THIS_MODULE;
 		if (mtd_device_register(map->mtd, NULL, 0)) {
 			map_destroy(map->mtd);
@@ -295,19 +267,19 @@ static int __init ichxrom_init_one(struct pci_dev *pdev,
 		}
 
 
-		/* Calculate the new value of map_top */
+		 
 		map_top += map->mtd->size;
 
-		/* File away the map structure */
+		 
 		list_add(&map->list, &window->maps);
 		map = NULL;
 	}
 
  out:
-	/* Free any left over map structures */
+	 
 	kfree(map);
 
-	/* See if I have any map structures */
+	 
 	if (list_empty(&window->maps)) {
 		ichxrom_cleanup(window);
 		return -ENODEV;

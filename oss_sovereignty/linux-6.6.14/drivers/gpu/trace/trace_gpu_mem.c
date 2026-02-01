@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPU memory trace points
- *
- * Copyright (C) 2020 Google, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 

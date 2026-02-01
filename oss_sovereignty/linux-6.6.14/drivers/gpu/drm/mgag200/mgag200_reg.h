@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MGA Millennium (MGA2064W) functions
- * MGA Mystique (MGA1064SG) functions
- *
- * Copyright 1996 The XFree86 Project, Inc.
- *
- * Authors
- *		Dirk Hohndel
- *			hohndel@XFree86.Org
- *		David Dawes
- *			dawes@XFree86.Org
- * Contributors:
- *		Guy DESBIEF, Aix-en-provence, France
- *			g.desbief@aix.pacwan.net
- *		MGA1064SG Mystique register file
- */
+ 
+ 
 
 #ifndef _MGA_REG_H_
 #define _MGA_REG_H_
@@ -23,7 +8,7 @@
 
 #define	MGAREG_DWGCTL		0x1c00
 #define	MGAREG_MACCESS		0x1c04
-/* the following is a mystique only register */
+ 
 #define MGAREG_MCTLWTST		0x1c08
 #define	MGAREG_ZORG		0x1c0c
 
@@ -43,7 +28,7 @@
 #define	MGAREG_XYEND		0x1c44
 
 #define	MGAREG_SHIFT		0x1c50
-/* the following is a mystique only register */
+ 
 #define MGAREG_DMAPAD		0x1c54
 #define	MGAREG_SGN		0x1c58
 #define	MGAREG_LEN		0x1c5c
@@ -96,8 +81,7 @@
 #define MGAREG_SRCORG		0x2cb4
 #define MGAREG_DSTORG		0x2cb8
 
-/* add or this to one of the previous "power registers" to start
-   the drawing engine */
+ 
 
 #define MGAREG_EXEC		0x0100
 
@@ -113,7 +97,7 @@
 
 #define	MGAREG_OPMODE		0x1e54
 
-/* Warp Registers */
+ 
 #define MGAREG_WIADDR           0x1dc0
 #define MGAREG_WIADDR2          0x1dd8
 #define MGAREG_WGETMSB          0x1dc8
@@ -123,35 +107,35 @@
 
 #define MGAREG_MEMCTL           0x2e08
 
-/* OPMODE register additives */
+ 
 
 #define MGAOPM_DMA_GENERAL	(0x00 << 2)
 #define MGAOPM_DMA_BLIT		(0x01 << 2)
 #define MGAOPM_DMA_VECTOR	(0x10 << 2)
 
-/* MACCESS register additives */
+ 
 #define MGAMAC_PW8               0x00
 #define MGAMAC_PW16              0x01
-#define MGAMAC_PW24              0x03 /* not a typo */
-#define MGAMAC_PW32              0x02 /* not a typo */
+#define MGAMAC_PW24              0x03  
+#define MGAMAC_PW32              0x02  
 #define MGAMAC_BYPASS332         0x10000000
 #define MGAMAC_NODITHER          0x40000000
 #define MGAMAC_DIT555            0x80000000
 
-/* DWGCTL register additives */
+ 
 
-/* Lines */
+ 
 
 #define MGADWG_LINE_OPEN	0x00
 #define MGADWG_AUTOLINE_OPEN	0x01
 #define MGADWG_LINE_CLOSE	0x02
 #define MGADWG_AUTOLINE_CLOSE	0x03
 
-/* Trapezoids */
+ 
 #define MGADWG_TRAP		0x04
 #define MGADWG_TEXTURE_TRAP	0x06
 
-/* BitBlts */
+ 
 
 #define MGADWG_BITBLT		0x08
 #define MGADWG_FBITBLT		0x0c
@@ -162,7 +146,7 @@
 #define MGADWG_ILOAD_HIQHV	0x0e
 #define MGADWG_IDUMP		0x0a
 
-/* atype access to WRAM */
+ 
 
 #define MGADWG_RPL		( 0x00 << 4 )
 #define MGADWG_RSTR		( 0x01 << 4 )
@@ -170,10 +154,10 @@
 #define MGADWG_BLK 		( 0x04 << 4 )
 #define MGADWG_I		( 0x07 << 4 )
 
-/* specifies whether bit blits are linear or xy */
+ 
 #define MGADWG_LINEAR		( 0x01 << 7 )
 
-/* z drawing mode. use MGADWG_NOZCMP for always */
+ 
 
 #define MGADWG_NOZCMP		( 0x00 << 8 )
 #define MGADWG_ZE		( 0x02 << 8 )
@@ -183,11 +167,11 @@
 #define MGADWG_GT		( 0x06 << 8 )
 #define MGADWG_GTE		( 0x07 << 8 )
 
-/* use this to force colour expansion circuitry to do its stuff */
+ 
 
 #define MGADWG_SOLID		( 0x01 << 11 )
 
-/* ar register at zero */
+ 
 
 #define MGADWG_ARZERO		( 0x01 << 12 )
 
@@ -195,16 +179,15 @@
 
 #define MGADWG_SHIFTZERO	( 0x01 << 14 )
 
-/* See table on 4-43 for bop ALU operations */
+ 
 
-/* See table on 4-44 for translucidity masks */
+ 
 
 #define MGADWG_BMONOLEF		( 0x00 << 25 )
 #define MGADWG_BMONOWF		( 0x04 << 25 )
 #define MGADWG_BPLAN		( 0x01 << 25 )
 
-/* note that if bfcol is specified and you're doing a bitblt, it causes
-   a fbitblt to be performed, so check that you obey the fbitblt rules */
+ 
 
 #define MGADWG_BFCOL   		( 0x02 << 25 )
 #define MGADWG_BUYUV		( 0x0e << 25 )
@@ -231,7 +214,7 @@
 #define MGAREG_MISC_HSYNCPOL		BIT(6)
 #define MGAREG_MISC_VSYNCPOL		BIT(7)
 
-/* MMIO VGA registers */
+ 
 #define MGAREG_SEQ_INDEX	0x1fc4
 #define MGAREG_SEQ_DATA		0x1fc5
 
@@ -259,13 +242,13 @@
 
 #define MGAREG_CRTCEXT3_MGAMODE		BIT(7)
 
-/* Cursor X and Y position */
+ 
 #define MGA_CURPOSXL 0x3c0c
 #define MGA_CURPOSXH 0x3c0d
 #define MGA_CURPOSYL 0x3c0e
 #define MGA_CURPOSYH 0x3c0f
 
-/* MGA bits for registers PCI_OPTION_REG */
+ 
 #define MGA1064_OPT_SYS_CLK_PCI   		( 0x00 << 0 )
 #define MGA1064_OPT_SYS_CLK_PLL   		( 0x01 << 0 )
 #define MGA1064_OPT_SYS_CLK_EXT   		( 0x02 << 0 )
@@ -278,7 +261,7 @@
 #define MGA1064_OPT_SYS_PLL_PDN   		( 0x01 << 5 )
 #define MGA1064_OPT_VGA_ION   		( 0x01 << 8 )
 
-/* MGA registers in PCI config space */
+ 
 #define PCI_MGA_INDEX		0x44
 #define PCI_MGA_DATA		0x48
 #define PCI_MGA_OPTION		0x40
@@ -289,7 +272,7 @@
 
 #define RAMDAC_OFFSET		0x3c00
 
-/* TVP3026 direct registers */
+ 
 
 #define TVP3026_INDEX		0x00
 #define TVP3026_WADR_PAL	0x00
@@ -305,7 +288,7 @@
 #define TVP3026_CUR_YLOW	0x0e
 #define TVP3026_CUR_YHI		0x0f
 
-/* TVP3026 indirect registers */
+ 
 
 #define TVP3026_SILICON_REV	0x01
 #define TVP3026_CURSOR_CTL	0x06
@@ -339,8 +322,8 @@
 #define TVP3026_RESET		0xff
 
 
-/* MGA1064 DAC Register file */
-/* MGA1064 direct registers */
+ 
+ 
 
 #define MGA1064_INDEX		0x00
 #define MGA1064_WADR_PAL	0x00
@@ -355,7 +338,7 @@
 #define MGA1064_CUR_YLOW	0x0e
 #define MGA1064_CUR_YHI		0x0f
 
-/* MGA1064 indirect registers */
+ 
 #define MGA1064_DVI_PIPE_CTL    0x03
 #define MGA1064_CURSOR_BASE_ADR_LOW	0x04
 #define MGA1064_CURSOR_BASE_ADR_HI	0x05
@@ -441,29 +424,29 @@
 
 #define MGA1064_PIX_PLL_STAT	0x4f
 
-/*Added for G450 dual head*/
+ 
 
 #define MGA1064_VID_PLL_STAT    0x8c
 #define MGA1064_VID_PLL_P       0x8D
 #define MGA1064_VID_PLL_M       0x8E
 #define MGA1064_VID_PLL_N       0x8F
 
-/* Modified PLL for G200 Winbond (G200WB) */
+ 
 #define MGA1064_WB_PIX_PLLC_M	0xb7
 #define MGA1064_WB_PIX_PLLC_N	0xb6
 #define MGA1064_WB_PIX_PLLC_P	0xb8
 
-/* Modified PLL for G200 Maxim (G200EV) */
+ 
 #define MGA1064_EV_PIX_PLLC_M	0xb6
 #define MGA1064_EV_PIX_PLLC_N	0xb7
 #define MGA1064_EV_PIX_PLLC_P	0xb8
 
-/* Modified PLL for G200 EH */
+ 
 #define MGA1064_EH_PIX_PLLC_M   0xb6
 #define MGA1064_EH_PIX_PLLC_N   0xb7
 #define MGA1064_EH_PIX_PLLC_P   0xb8
 
-/* Modified PLL for G200 Maxim (G200ER) */
+ 
 #define MGA1064_ER_PIX_PLLC_M	0xb7
 #define MGA1064_ER_PIX_PLLC_N	0xb6
 #define MGA1064_ER_PIX_PLLC_P	0xb8
@@ -494,7 +477,7 @@
 
 #define MGA1064_PAN_CTL         0xa2
 
-/* Using crtc2 */
+ 
 #define MGAREG2_C2CTL            0x10
 #define MGAREG2_C2HPARAM         0x14
 #define MGAREG2_C2HSYNC          0x18
@@ -538,7 +521,7 @@
 #define MGAREG_C2OFFSET         0x3c40
 #define MGAREG_C2DATACTL        0x3c4c
 
-/* video register */
+ 
 
 #define MGAREG_BESA1C3ORG	0x3d60
 #define MGAREG_BESA1CORG	0x3d10
@@ -557,7 +540,7 @@
 #define MGAREG_BESVCOORD	0x3d2c
 #define MGAREG_BESVISCAL	0x3d34
 
-/* texture engine registers */
+ 
 
 #define MGAREG_TMR0		0x2c00
 #define MGAREG_TMR1		0x2c04

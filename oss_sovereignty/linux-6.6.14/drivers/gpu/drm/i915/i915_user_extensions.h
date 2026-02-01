@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #ifndef I915_USER_EXTENSIONS_H
 #define I915_USER_EXTENSIONS_H
@@ -17,4 +13,4 @@ int i915_user_extensions(struct i915_user_extension __user *ext,
 			 unsigned int count,
 			 void *data);
 
-#endif /* I915_USER_EXTENSIONS_H */
+#endif  

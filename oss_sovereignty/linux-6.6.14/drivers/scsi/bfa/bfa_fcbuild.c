@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
-/*
- * fcbuild.c - FC link service frame building and parsing routines
- */
+
+ 
+ 
 
 #include "bfad_drv.h"
 #include "bfa_fcbuild.h"
 
-/*
- * static build functions
- */
+ 
 static void     fc_els_rsp_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
 				 __be16 ox_id);
 static void     fc_bls_rsp_build(struct fchs_s *fchs, u32 d_id, u32 s_id,
@@ -34,9 +23,7 @@ static struct fchs_s fcp_fchs_tmpl;
 void
 fcbuild_init(void)
 {
-	/*
-	 * fc_els_req_tmpl
-	 */
+	 
 	fc_els_req_tmpl.routing = FC_RTG_EXT_LINK;
 	fc_els_req_tmpl.cat_info = FC_CAT_LD_REQUEST;
 	fc_els_req_tmpl.type = FC_TYPE_ELS;
@@ -45,9 +32,7 @@ fcbuild_init(void)
 			      FCTL_SI_XFER);
 	fc_els_req_tmpl.rx_id = FC_RXID_ANY;
 
-	/*
-	 * fc_els_rsp_tmpl
-	 */
+	 
 	fc_els_rsp_tmpl.routing = FC_RTG_EXT_LINK;
 	fc_els_rsp_tmpl.cat_info = FC_CAT_LD_REPLY;
 	fc_els_rsp_tmpl.type = FC_TYPE_ELS;
@@ -56,17 +41,13 @@ fcbuild_init(void)
 			      FCTL_END_SEQ | FCTL_SI_XFER);
 	fc_els_rsp_tmpl.rx_id = FC_RXID_ANY;
 
-	/*
-	 * fc_bls_req_tmpl
-	 */
+	 
 	fc_bls_req_tmpl.routing = FC_RTG_BASIC_LINK;
 	fc_bls_req_tmpl.type = FC_TYPE_BLS;
 	fc_bls_req_tmpl.f_ctl = bfa_hton3b(FCTL_END_SEQ | FCTL_SI_XFER);
 	fc_bls_req_tmpl.rx_id = FC_RXID_ANY;
 
-	/*
-	 * fc_bls_rsp_tmpl
-	 */
+	 
 	fc_bls_rsp_tmpl.routing = FC_RTG_BASIC_LINK;
 	fc_bls_rsp_tmpl.cat_info = FC_CAT_BA_ACC;
 	fc_bls_rsp_tmpl.type = FC_TYPE_BLS;
@@ -75,16 +56,12 @@ fcbuild_init(void)
 			      FCTL_END_SEQ | FCTL_SI_XFER);
 	fc_bls_rsp_tmpl.rx_id = FC_RXID_ANY;
 
-	/*
-	 * ba_acc_tmpl
-	 */
+	 
 	ba_acc_tmpl.seq_id_valid = 0;
 	ba_acc_tmpl.low_seq_cnt = 0;
 	ba_acc_tmpl.high_seq_cnt = 0xFFFF;
 
-	/*
-	 * plogi_tmpl
-	 */
+	 
 	plogi_tmpl.csp.verhi = FC_PH_VER_PH_3;
 	plogi_tmpl.csp.verlo = FC_PH_VER_4_3;
 	plogi_tmpl.csp.ciro = 0x1;
@@ -99,9 +76,7 @@ fcbuild_init(void)
 	plogi_tmpl.class3.conseq = 0xFF;
 	plogi_tmpl.class3.ospx = 1;
 
-	/*
-	 * prli_tmpl
-	 */
+	 
 	prli_tmpl.command = FC_ELS_PRLI;
 	prli_tmpl.pglen = 0x10;
 	prli_tmpl.pagebytes = cpu_to_be16(0x0014);
@@ -109,14 +84,10 @@ fcbuild_init(void)
 	prli_tmpl.parampage.imagepair = 1;
 	prli_tmpl.parampage.servparams.rxrdisab = 1;
 
-	/*
-	 * rrq_tmpl
-	 */
+	 
 	rrq_tmpl.els_cmd.els_code = FC_ELS_RRQ;
 
-	/*
-	 * fcp_struct fchs_s mpl
-	 */
+	 
 	fcp_fchs_tmpl.routing = FC_RTG_FC4_DEV_DATA;
 	fcp_fchs_tmpl.cat_info = FC_CAT_UNSOLICIT_CMD;
 	fcp_fchs_tmpl.type = FC_TYPE_FCP;
@@ -142,10 +113,7 @@ fc_gs_fchdr_build(struct fchs_s *fchs, u32 d_id, u32 s_id, u32 ox_id)
 	fchs->s_id = (s_id);
 	fchs->ox_id = cpu_to_be16(ox_id);
 
-	/*
-	 * @todo no need to set ox_id for request
-	 *       no need to set rx_id for response
-	 */
+	 
 }
 
 static void
@@ -200,7 +168,7 @@ fc_plogi_x_build(struct fchs_s *fchs, void *pld, u32 d_id, u32 s_id,
 
 	memcpy(plogi, &plogi_tmpl, sizeof(struct fc_logi_s));
 
-	/* For FC AL bb_cr is 0 and altbbcred is 1 */
+	 
 	if (!bb_cr)
 		plogi->csp.altbbcred = 1;
 
@@ -236,22 +204,19 @@ fc_flogi_build(struct fchs_s *fchs, struct fc_logi_s *flogi, u32 s_id,
 	flogi->port_name = port_name;
 	flogi->node_name = node_name;
 
-	/*
-	 * Set the NPIV Capability Bit ( word 1, bit 31) of Common
-	 * Service Parameters.
-	 */
+	 
 	flogi->csp.ciro = set_npiv;
 
-	/* set AUTH capability */
+	 
 	flogi->csp.security = set_auth;
 
 	flogi->csp.bbcred = cpu_to_be16(local_bb_credits);
 
-	/* Set brcd token in VVL */
+	 
 	vvl_info = (u32 *)&flogi->vvl[0];
 
-	/* set the flag to indicate the presence of VVL */
-	flogi->csp.npiv_supp    = 1; /* @todo. field name is not correct */
+	 
+	flogi->csp.npiv_supp    = 1;  
 	vvl_info[0]	= cpu_to_be32(FLOGI_VVL_BRCD);
 
 	return sizeof(struct fc_logi_s);
@@ -270,7 +235,7 @@ fc_flogi_acc_build(struct fchs_s *fchs, struct fc_logi_s *flogi, u32 s_id,
 
 	flogi->els_cmd.els_code = FC_ELS_ACC;
 	flogi->class3.rxsz = cpu_to_be16(pdu_size);
-	flogi->csp.rxsz  = cpu_to_be16(bbscn_rxsz);	/* bb_scn/rxsz */
+	flogi->csp.rxsz  = cpu_to_be16(bbscn_rxsz);	 
 	flogi->port_name = port_name;
 	flogi->node_name = node_name;
 
@@ -573,9 +538,7 @@ fc_rrq_build(struct fchs_s *fchs, struct fc_rrq_s *rrq, u32 d_id, u32 s_id,
 {
 	fc_els_req_build(fchs, d_id, s_id, ox_id);
 
-	/*
-	 * build rrq payload
-	 */
+	 
 	memcpy(rrq, &rrq_tmpl, sizeof(struct fc_rrq_s));
 	rrq->s_id = (s_id);
 	rrq->ox_id = cpu_to_be16(rrq_oxid);
@@ -1070,7 +1033,7 @@ fc_rftid_build(struct fchs_s *fchs, void *pyld, u32 s_id, u16 ox_id,
 
 	rftid->dap = s_id;
 
-	/* By default, FCP FC4 Type is registered */
+	 
 	index = FC_TYPE_FCP >> 5;
 	type_value = 1 << (FC_TYPE_FCP % 32);
 	rftid->fc4_type[index] = cpu_to_be32(type_value);
@@ -1270,9 +1233,7 @@ fc_ganxt_build(struct fchs_s *fchs, void *pyld, u32 s_id, u32 port_id)
 	return sizeof(struct ct_hdr_s) + sizeof(struct fcgs_ganxt_req_s);
 }
 
-/*
- * Builds fc hdr and ct hdr for FDMI requests.
- */
+ 
 u16
 fc_fdmi_reqhdr_build(struct fchs_s *fchs, void *pyld, u32 s_id,
 		     u16 cmd_code)
@@ -1287,9 +1248,7 @@ fc_fdmi_reqhdr_build(struct fchs_s *fchs, void *pyld, u32 s_id,
 	return sizeof(struct ct_hdr_s);
 }
 
-/*
- * Given a FC4 Type, this function returns a fc4 type bitmask
- */
+ 
 void
 fc_get_fc4type_bitmask(u8 fc4_type, u8 *bit_mask)
 {
@@ -1297,9 +1256,7 @@ fc_get_fc4type_bitmask(u8 fc4_type, u8 *bit_mask)
 	__be32       *ptr = (__be32 *) bit_mask;
 	u32        type_value;
 
-	/*
-	 * @todo : Check for bitmask size
-	 */
+	 
 
 	index = fc4_type >> 5;
 	type_value = 1 << (fc4_type % 32);
@@ -1307,9 +1264,7 @@ fc_get_fc4type_bitmask(u8 fc4_type, u8 *bit_mask)
 
 }
 
-/*
- *	GMAL Request
- */
+ 
 u16
 fc_gmal_req_build(struct fchs_s *fchs, void *pyld, u32 s_id, wwn_t wwn)
 {
@@ -1327,9 +1282,7 @@ fc_gmal_req_build(struct fchs_s *fchs, void *pyld, u32 s_id, wwn_t wwn)
 	return sizeof(struct ct_hdr_s) + sizeof(fcgs_gmal_req_t);
 }
 
-/*
- * GFN (Get Fabric Name) Request
- */
+ 
 u16
 fc_gfn_req_build(struct fchs_s *fchs, void *pyld, u32 s_id, wwn_t wwn)
 {

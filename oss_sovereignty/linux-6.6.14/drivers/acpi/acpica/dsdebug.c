@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: dsdebug - Parser/Interpreter interface - debugging
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -20,22 +14,12 @@
 ACPI_MODULE_NAME("dsdebug")
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
-/* Local prototypes */
+ 
 static void
 acpi_ds_print_node_pathname(struct acpi_namespace_node *node,
 			    const char *message);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ds_print_node_pathname
- *
- * PARAMETERS:  node            - Object
- *              message         - Prefix message
- *
- * DESCRIPTION: Print an object's full namespace pathname
- *              Manages allocation/freeing of a pathname buffer
- *
- ******************************************************************************/
+ 
 
 static void
 acpi_ds_print_node_pathname(struct acpi_namespace_node *node,
@@ -51,7 +35,7 @@ acpi_ds_print_node_pathname(struct acpi_namespace_node *node,
 		return_VOID;
 	}
 
-	/* Convert handle to full pathname and print it (with supplied message) */
+	 
 
 	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
 
@@ -70,20 +54,7 @@ acpi_ds_print_node_pathname(struct acpi_namespace_node *node,
 	return_VOID;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ds_dump_method_stack
- *
- * PARAMETERS:  status          - Method execution status
- *              walk_state      - Current state of the parse tree walk
- *              op              - Executing parse op
- *
- * RETURN:      None
- *
- * DESCRIPTION: Called when a method has been aborted because of an error.
- *              Dumps the method execution stack.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ds_dump_method_stack(acpi_status status,
@@ -98,13 +69,13 @@ acpi_ds_dump_method_stack(acpi_status status,
 
 	ACPI_FUNCTION_TRACE(ds_dump_method_stack);
 
-	/* Ignore control codes, they are not errors */
+	 
 
 	if (ACPI_CNTL_EXCEPTION(status)) {
 		return_VOID;
 	}
 
-	/* We may be executing a deferred opcode */
+	 
 
 	if (walk_state->deferred_node) {
 		ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
@@ -112,17 +83,13 @@ acpi_ds_dump_method_stack(acpi_status status,
 		return_VOID;
 	}
 
-	/*
-	 * If there is no Thread, we are not actually executing a method.
-	 * This can happen when the iASL compiler calls the interpreter
-	 * to perform constant folding.
-	 */
+	 
 	thread = walk_state->thread;
 	if (!thread) {
 		return_VOID;
 	}
 
-	/* Display exception and method name */
+	 
 
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 			  "\n**** Exception %s during execution of method ",
@@ -130,13 +97,13 @@ acpi_ds_dump_method_stack(acpi_status status,
 
 	acpi_ds_print_node_pathname(walk_state->method_node, NULL);
 
-	/* Display stack of executing methods */
+	 
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_DISPATCH,
 			      "\n\nMethod Execution Stack:\n"));
 	next_walk_state = thread->walk_state_list;
 
-	/* Walk list of linked walk states */
+	 
 
 	while (next_walk_state) {
 		method_desc = next_walk_state->method_desc;
@@ -151,12 +118,12 @@ acpi_ds_dump_method_stack(acpi_status status,
 				  acpi_ut_get_node_name(next_walk_state->
 							method_node)));
 
-		/* First method is the currently executing method */
+		 
 
 		if (next_walk_state == walk_state) {
 			if (op) {
 
-				/* Display currently executing ASL statement */
+				 
 
 				next = op->common.next;
 				op->common.next = NULL;
@@ -165,7 +132,7 @@ acpi_ds_dump_method_stack(acpi_status status,
 				if (walk_state->method_node !=
 				    acpi_gbl_root_node) {
 
-					/* More verbose if not module-level code */
+					 
 
 					acpi_os_printf("Failed at ");
 					acpi_dm_disassemble(next_walk_state, op,
@@ -175,11 +142,7 @@ acpi_ds_dump_method_stack(acpi_status status,
 				op->common.next = next;
 			}
 		} else {
-			/*
-			 * This method has called another method
-			 * NOTE: the method call parse subtree is already deleted at
-			 * this point, so we cannot disassemble the method invocation.
-			 */
+			 
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_DISPATCH,
 					      "Call to method "));
 			acpi_ds_print_node_pathname(previous_method, NULL);

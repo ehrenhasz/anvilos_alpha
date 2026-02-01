@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * db-export.h: Support for exporting data suitable for import to a database
- * Copyright (c) 2014, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __PERF_DB_EXPORT_H
 #define __PERF_DB_EXPORT_H
@@ -31,10 +28,10 @@ struct export_sample {
 	u64			comm_db_id;
 	u64			dso_db_id;
 	u64			sym_db_id;
-	u64			offset; /* ip offset from symbol start */
+	u64			offset;  
 	u64			addr_dso_db_id;
 	u64			addr_sym_db_id;
-	u64			addr_offset; /* addr offset from symbol start */
+	u64			addr_offset;  
 	u64			call_path_id;
 };
 

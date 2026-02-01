@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Support for CX23885 analog audio capture
- *
- *    (c) 2008 Mijhail Moreyra <mijhail.moreyra@gmail.com>
- *    Adapted from cx88-alsa.c
- *    (c) 2009 Steven Toth <stoth@kernellabs.com>
- */
+
+ 
 
 #include "cx23885.h"
 #include "cx23885-reg.h"
@@ -37,9 +30,7 @@
 			chip->dev->name, ##arg); \
 } while(0)
 
-/****************************************************************************
-			Module global static vars
- ****************************************************************************/
+ 
 
 static unsigned int disable_analog_audio;
 module_param(disable_analog_audio, int, 0644);
@@ -49,15 +40,13 @@ static unsigned int audio_debug;
 module_param(audio_debug, int, 0644);
 MODULE_PARM_DESC(audio_debug, "enable debug messages [analog audio]");
 
-/****************************************************************************
-			Board specific functions
- ****************************************************************************/
+ 
 
-/* Constants taken from cx88-reg.h */
+ 
 #define AUD_INT_DN_RISCI1       (1 <<  0)
 #define AUD_INT_UP_RISCI1       (1 <<  1)
 #define AUD_INT_RDS_DN_RISCI1   (1 <<  2)
-#define AUD_INT_DN_RISCI2       (1 <<  4) /* yes, 3 is skipped */
+#define AUD_INT_DN_RISCI2       (1 <<  4)  
 #define AUD_INT_UP_RISCI2       (1 <<  5)
 #define AUD_INT_RDS_DN_RISCI2   (1 <<  6)
 #define AUD_INT_DN_SYNC         (1 << 12)
@@ -144,9 +133,7 @@ static int cx23885_alsa_dma_free(struct cx23885_audio_buffer *buf)
 	return 0;
 }
 
-/*
- * BOARD Specific: Sets audio DMA
- */
+ 
 
 static int cx23885_start_audio_dma(struct cx23885_audio_dev *chip)
 {
@@ -157,20 +144,20 @@ static int cx23885_start_audio_dma(struct cx23885_audio_dev *chip)
 
 	dprintk(1, "%s()\n", __func__);
 
-	/* Make sure RISC/FIFO are off before changing FIFO/RISC settings */
+	 
 	cx_clear(AUD_INT_DMA_CTL, 0x11);
 
-	/* setup fifo + format - out channel */
+	 
 	cx23885_sram_channel_setup(chip->dev, audio_ch, buf->bpl,
 		buf->risc.dma);
 
-	/* sets bpl size */
+	 
 	cx_write(AUD_INT_A_LNGTH, buf->bpl);
 
-	/* This is required to get good audio (1 seems to be ok) */
+	 
 	cx_write(AUD_INT_A_MODE, 1);
 
-	/* reset counter */
+	 
 	cx_write(AUD_INT_A_GPCNT_CTL, GP_COUNT_CONTROL_RESET);
 	atomic_set(&chip->count, 0);
 
@@ -178,38 +165,35 @@ static int cx23885_start_audio_dma(struct cx23885_audio_dev *chip)
 		buf->bpl, cx_read(audio_ch->cmds_start+12)>>1,
 		chip->num_periods, buf->bpl * chip->num_periods);
 
-	/* Enables corresponding bits at AUD_INT_STAT */
+	 
 	cx_write(AUDIO_INT_INT_MSK, AUD_INT_OPC_ERR | AUD_INT_DN_SYNC |
 				    AUD_INT_DN_RISCI1);
 
-	/* Clean any pending interrupt bits already set */
+	 
 	cx_write(AUDIO_INT_INT_STAT, ~0);
 
-	/* enable audio irqs */
+	 
 	cx_set(PCI_INT_MSK, chip->dev->pci_irqmask | PCI_MSK_AUD_INT);
 
-	/* start dma */
-	cx_set(DEV_CNTRL2, (1<<5)); /* Enables Risc Processor */
-	cx_set(AUD_INT_DMA_CTL, 0x11); /* audio downstream FIFO and
-					  RISC enable */
+	 
+	cx_set(DEV_CNTRL2, (1<<5));  
+	cx_set(AUD_INT_DMA_CTL, 0x11);  
 	if (audio_debug)
 		cx23885_sram_channel_dump(chip->dev, audio_ch);
 
 	return 0;
 }
 
-/*
- * BOARD Specific: Resets audio DMA
- */
+ 
 static int cx23885_stop_audio_dma(struct cx23885_audio_dev *chip)
 {
 	struct cx23885_dev *dev = chip->dev;
 	dprintk(1, "Stopping audio DMA\n");
 
-	/* stop dma */
+	 
 	cx_clear(AUD_INT_DMA_CTL, 0x11);
 
-	/* disable irqs */
+	 
 	cx_clear(PCI_INT_MSK, PCI_MSK_AUD_INT);
 	cx_clear(AUDIO_INT_INT_MSK, AUD_INT_OPC_ERR | AUD_INT_DN_SYNC |
 				    AUD_INT_DN_RISCI1);
@@ -221,9 +205,7 @@ static int cx23885_stop_audio_dma(struct cx23885_audio_dev *chip)
 	return 0;
 }
 
-/*
- * BOARD Specific: Handles audio IRQ
- */
+ 
 int cx23885_audio_irq(struct cx23885_dev *dev, u32 status, u32 mask)
 {
 	struct cx23885_audio_dev *chip = dev->audio_dev;
@@ -233,7 +215,7 @@ int cx23885_audio_irq(struct cx23885_dev *dev, u32 status, u32 mask)
 
 	cx_write(AUDIO_INT_INT_STAT, status);
 
-	/* risc op code error */
+	 
 	if (status & AUD_INT_OPC_ERR) {
 		pr_warn("%s/1: Audio risc op code error\n",
 			dev->name);
@@ -246,12 +228,12 @@ int cx23885_audio_irq(struct cx23885_dev *dev, u32 status, u32 mask)
 		cx_write(AUD_INT_A_GPCNT_CTL, GP_COUNT_CONTROL_RESET);
 		return 1;
 	}
-	/* risc1 downstream */
+	 
 	if (status & AUD_INT_DN_RISCI1) {
 		atomic_set(&chip->count, cx_read(AUD_INT_A_GPCNT));
 		snd_pcm_period_elapsed(chip->substream);
 	}
-	/* FIXME: Any other status should deserve a special handling? */
+	 
 
 	return 1;
 }
@@ -275,13 +257,9 @@ static int dsp_buffer_free(struct cx23885_audio_dev *chip)
 	return 0;
 }
 
-/****************************************************************************
-				ALSA PCM Interface
- ****************************************************************************/
+ 
 
-/*
- * Digital hardware definition
- */
+ 
 #define DEFAULT_FIFO_SIZE	4096
 
 static const struct snd_pcm_hardware snd_cx23885_digital_hw = {
@@ -296,8 +274,7 @@ static const struct snd_pcm_hardware snd_cx23885_digital_hw = {
 	.rate_max =		48000,
 	.channels_min = 2,
 	.channels_max = 2,
-	/* Analog audio output will be full of clicks and pops if there
-	   are not exactly four lines in the SRAM FIFO buffer.  */
+	 
 	.period_bytes_min = DEFAULT_FIFO_SIZE/4,
 	.period_bytes_max = DEFAULT_FIFO_SIZE/4,
 	.periods_min = 1,
@@ -305,9 +282,7 @@ static const struct snd_pcm_hardware snd_cx23885_digital_hw = {
 	.buffer_bytes_max = (1024*1024),
 };
 
-/*
- * audio pcm capture open callback
- */
+ 
 static int snd_cx23885_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct cx23885_audio_dev *chip = snd_pcm_substream_chip(substream);
@@ -332,7 +307,7 @@ static int snd_cx23885_pcm_open(struct snd_pcm_substream *substream)
 		DEFAULT_FIFO_SIZE) {
 		unsigned int bpl = chip->dev->
 			sram_channels[AUDIO_SRAM_CHANNEL].fifo_size / 4;
-		bpl &= ~7; /* must be multiple of 8 */
+		bpl &= ~7;  
 		runtime->hw.period_bytes_min = bpl;
 		runtime->hw.period_bytes_max = bpl;
 	}
@@ -343,18 +318,14 @@ _error:
 	return err;
 }
 
-/*
- * audio close callback
- */
+ 
 static int snd_cx23885_close(struct snd_pcm_substream *substream)
 {
 	return 0;
 }
 
 
-/*
- * hw_params callback
- */
+ 
 static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *hw_params)
 {
@@ -395,10 +366,10 @@ static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		goto error;
 
-	/* Loop back to start of program */
+	 
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP|RISC_IRQ1|RISC_CNT_INC);
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
-	buf->risc.jmp[2] = cpu_to_le32(0); /* bits 63-32 */
+	buf->risc.jmp[2] = cpu_to_le32(0);  
 
 	substream->runtime->dma_area = chip->buf->vaddr;
 	substream->runtime->dma_bytes = chip->dma_size;
@@ -412,9 +383,7 @@ error:
 	return ret;
 }
 
-/*
- * hw free callback
- */
+ 
 static int snd_cx23885_hw_free(struct snd_pcm_substream *substream)
 {
 
@@ -428,24 +397,20 @@ static int snd_cx23885_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/*
- * prepare callback
- */
+ 
 static int snd_cx23885_prepare(struct snd_pcm_substream *substream)
 {
 	return 0;
 }
 
-/*
- * trigger callback
- */
+ 
 static int snd_cx23885_card_trigger(struct snd_pcm_substream *substream,
 	int cmd)
 {
 	struct cx23885_audio_dev *chip = snd_pcm_substream_chip(substream);
 	int err;
 
-	/* Local interrupts are already disabled by ALSA */
+	 
 	spin_lock(&chip->lock);
 
 	switch (cmd) {
@@ -465,9 +430,7 @@ static int snd_cx23885_card_trigger(struct snd_pcm_substream *substream,
 	return err;
 }
 
-/*
- * pointer callback
- */
+ 
 static snd_pcm_uframes_t snd_cx23885_pointer(
 	struct snd_pcm_substream *substream)
 {
@@ -480,9 +443,7 @@ static snd_pcm_uframes_t snd_cx23885_pointer(
 	return runtime->period_size * (count & (runtime->periods-1));
 }
 
-/*
- * page callback (needed for mmap)
- */
+ 
 static struct page *snd_cx23885_page(struct snd_pcm_substream *substream,
 				unsigned long offset)
 {
@@ -490,9 +451,7 @@ static struct page *snd_cx23885_page(struct snd_pcm_substream *substream,
 	return vmalloc_to_page(pageptr);
 }
 
-/*
- * operators
- */
+ 
 static const struct snd_pcm_ops snd_cx23885_pcm_ops = {
 	.open = snd_cx23885_pcm_open,
 	.close = snd_cx23885_close,
@@ -504,9 +463,7 @@ static const struct snd_pcm_ops snd_cx23885_pcm_ops = {
 	.page = snd_cx23885_page,
 };
 
-/*
- * create a PCM device
- */
+ 
 static int snd_cx23885_pcm(struct cx23885_audio_dev *chip, int device,
 	char *name)
 {
@@ -523,13 +480,9 @@ static int snd_cx23885_pcm(struct cx23885_audio_dev *chip, int device,
 	return 0;
 }
 
-/****************************************************************************
-			Basic Flow for Sound Devices
- ****************************************************************************/
+ 
 
-/*
- * Alsa Constructor - Component probe
- */
+ 
 
 struct cx23885_audio_dev *cx23885_audio_register(struct cx23885_dev *dev)
 {
@@ -583,9 +536,7 @@ error_msg:
 	return NULL;
 }
 
-/*
- * ALSA destructor
- */
+ 
 void cx23885_audio_unregister(struct cx23885_dev *dev)
 {
 	struct cx23885_audio_dev *chip = dev->audio_dev;

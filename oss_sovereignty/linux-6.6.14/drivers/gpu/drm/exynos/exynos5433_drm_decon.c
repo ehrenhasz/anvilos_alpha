@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* drivers/gpu/drm/exynos5433_drm_decon.c
- *
- * Copyright (C) 2015 Samsung Electronics Co.Ltd
- * Authors:
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Hyungwon Hwang <human.hwang@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -131,15 +125,12 @@ static void decon_disable_vblank(struct exynos_drm_crtc *crtc)
 	writel(0, ctx->addr + DECON_VIDINTCON0);
 }
 
-/* return number of starts/ends of frame transmissions since reset */
+ 
 static u32 decon_get_frame_count(struct decon_context *ctx, bool end)
 {
 	u32 frm, pfrm, status, cnt = 2;
 
-	/* To get consistent result repeat read until frame id is stable.
-	 * Usually the loop will be executed once, in rare cases when the loop
-	 * is executed at frame change time 2nd pass will be needed.
-	 */
+	 
 	frm = readl(ctx->addr + DECON_CRFMID);
 	do {
 		status = readl(ctx->addr + DECON_VIDCON1);
@@ -147,9 +138,7 @@ static u32 decon_get_frame_count(struct decon_context *ctx, bool end)
 		frm = readl(ctx->addr + DECON_CRFMID);
 	} while (frm != pfrm && --cnt);
 
-	/* CRFMID is incremented on BPORCH in case of I80 and on VSYNC in case
-	 * of RGB, it should be taken into account.
-	 */
+	 
 	if (!frm)
 		return 0;
 
@@ -211,7 +200,7 @@ static void decon_commit(struct exynos_drm_crtc *crtc)
 
 	decon_setup_trigger(ctx);
 
-	/* lcd on and use command if */
+	 
 	val = VIDOUT_LCD_ON;
 	if (interlaced)
 		val |= VIDOUT_INTERLACE_EN_F;
@@ -255,7 +244,7 @@ static void decon_commit(struct exynos_drm_crtc *crtc)
 		writel(val, ctx->addr + DECON_VIDTCON11);
 	}
 
-	/* enable output and display signal */
+	 
 	decon_set_bits(ctx, DECON_VIDCON0, VIDCON0_ENVID | VIDCON0_ENVID_F, ~0);
 
 	decon_set_bits(ctx, DECON_UPDATE, STANDALONE_UPDATE_F, ~0);
@@ -360,13 +349,7 @@ static void decon_win_set_pixfmt(struct decon_context *ctx, unsigned int win,
 
 	DRM_DEV_DEBUG_KMS(ctx->dev, "cpp = %u\n", fb->format->cpp[0]);
 
-	/*
-	 * In case of exynos, setting dma-burst to 16Word causes permanent
-	 * tearing for very small buffers, e.g. cursor buffer. Burst Mode
-	 * switching which is based on plane size is not recommended as
-	 * plane size varies a lot towards the end of the screen and rapid
-	 * movement causes unstable DMA which results into iommu crash/tear.
-	 */
+	 
 
 	if (fb->width < MIN_FB_WIDTH_FOR_16WORD_BURST) {
 		val &= ~WINCONx_BURSTLEN_MASK;
@@ -450,7 +433,7 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 
 	decon_win_set_pixfmt(ctx, win, fb);
 
-	/* window enable */
+	 
 	decon_set_bits(ctx, DECON_WINCONx(win), WINCONx_ENWIN_F, ~0);
 }
 
@@ -539,11 +522,7 @@ static void decon_atomic_disable(struct exynos_drm_crtc *crtc)
 		synchronize_irq(ctx->te_irq);
 	synchronize_irq(ctx->irq);
 
-	/*
-	 * We need to make sure that all windows are disabled before we
-	 * suspend that connector. Otherwise we might try to scan from
-	 * a destroyed buffer later.
-	 */
+	 
 	for (i = ctx->first_win; i < WINDOWS_NR; i++)
 		decon_disable_plane(crtc, &ctx->planes[i]);
 
@@ -581,7 +560,7 @@ static void decon_clear_channels(struct exynos_drm_crtc *crtc)
 
 	decon_set_bits(ctx, DECON_UPDATE, STANDALONE_UPDATE_F, ~0);
 
-	/* TODO: wait for possible vsync */
+	 
 	msleep(50);
 
 err:
@@ -660,7 +639,7 @@ static void decon_unbind(struct device *dev, struct device *master, void *data)
 
 	decon_atomic_disable(ctx->crtc);
 
-	/* detach this sub driver from iommu mapping if supported. */
+	 
 	exynos_drm_unregister_dma(ctx->drm_dev, ctx->dev, &ctx->dma_priv);
 }
 
@@ -678,7 +657,7 @@ static void decon_handle_vblank(struct decon_context *ctx)
 	frm = decon_get_frame_count(ctx, true);
 
 	if (frm != ctx->frame_id) {
-		/* handle only if incremented, take care of wrap-around */
+		 
 		if ((s32)(frm - ctx->frame_id) > 0)
 			drm_crtc_handle_vblank(&ctx->crtc->base);
 		ctx->frame_id = frm;

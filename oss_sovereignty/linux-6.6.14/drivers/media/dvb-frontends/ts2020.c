@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Montage Technology TS2020 - Silicon Tuner driver
-    Copyright (C) 2009-2012 Konstantin Dimitrov <kosio.dimitrov@gmail.com>
 
-    Copyright (C) 2009-2012 TurboSight.com
-
- */
+ 
 
 #include <media/dvb_frontend.h>
 #include "ts2020.h"
 #include <linux/regmap.h>
 #include <linux/math64.h>
 
-#define TS2020_XTAL_FREQ   27000 /* in kHz */
+#define TS2020_XTAL_FREQ   27000  
 #define FREQ_OFFSET_LOW_SYM_RATE 3000
 
 struct ts2020_priv {
@@ -23,15 +17,15 @@ struct ts2020_priv {
 	struct dvb_frontend *fe;
 	struct delayed_work stat_work;
 	int (*get_agc_pwm)(struct dvb_frontend *fe, u8 *_agc_pwm);
-	/* i2c details */
+	 
 	struct i2c_adapter *i2c;
 	int i2c_address;
 	bool loop_through:1;
 	u8 clk_out:2;
 	u8 clk_out_div:5;
 	bool dont_poll:1;
-	u32 frequency_div; /* LO output divider switch frequency */
-	u32 frequency_khz; /* actual used LO frequency */
+	u32 frequency_div;  
+	u32 frequency_khz;  
 #define TS2020_M88TS2020 0
 #define TS2020_M88TS2022 1
 	u8 tuner;
@@ -61,7 +55,7 @@ static int ts2020_sleep(struct dvb_frontend *fe)
 	u8 u8tmp;
 
 	if (priv->tuner == TS2020_M88TS2020)
-		u8tmp = 0x0a; /* XXX: probably wrong */
+		u8tmp = 0x0a;  
 	else
 		u8tmp = 0x00;
 
@@ -69,7 +63,7 @@ static int ts2020_sleep(struct dvb_frontend *fe)
 	if (ret < 0)
 		return ret;
 
-	/* stop statistics polling */
+	 
 	if (!priv->dont_poll)
 		cancel_delayed_work_sync(&priv->stat_work);
 	return 0;
@@ -139,12 +133,12 @@ static int ts2020_init(struct dvb_frontend *fe)
 				     reg_vals[i].val);
 	}
 
-	/* Initialise v5 stats here */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_DECIBEL;
 	c->strength.stat[0].uvalue = 0;
 
-	/* Start statistics polling by invoking the work function */
+	 
 	ts2020_stat_work(&priv->stat_work.work);
 	return 0;
 }
@@ -197,14 +191,11 @@ static int ts2020_set_params(struct dvb_frontend *fe)
 	unsigned int f_ref_khz, f_vco_khz, div_ref, div_out, pll_n;
 	unsigned int frequency_khz = c->frequency;
 
-	/*
-	 * Integer-N PLL synthesizer
-	 * kHz is used for all calculations to keep calculations within 32-bit
-	 */
+	 
 	f_ref_khz = TS2020_XTAL_FREQ;
 	div_ref = DIV_ROUND_CLOSEST(f_ref_khz, 2000);
 
-	/* select LO output divider */
+	 
 	if (frequency_khz < priv->frequency_div) {
 		div_out = 4;
 		reg10 = 0x10;
@@ -248,7 +239,7 @@ static int ts2020_set_params(struct dvb_frontend *fe)
 
 	ret |= ts2020_tuner_gate_ctrl(fe, 0x08);
 
-	/* Tuner RF */
+	 
 	if (priv->tuner == TS2020_M88TS2020)
 		ret |= ts2020_set_tuner_rf(fe);
 
@@ -271,7 +262,7 @@ static int ts2020_set_params(struct dvb_frontend *fe)
 	value = utmp;
 
 	f3db = (c->bandwidth_hz / 1000 / 2) + 2000;
-	f3db += FREQ_OFFSET_LOW_SYM_RATE; /* FIXME: ~always too wide filter */
+	f3db += FREQ_OFFSET_LOW_SYM_RATE;  
 	f3db = clamp(f3db, 7000U, 40000U);
 
 	gdiv28 = gdiv28 * 207 / (value * 2 + 151);
@@ -321,18 +312,11 @@ static int ts2020_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 
 static int ts2020_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
-	*frequency = 0; /* Zero-IF */
+	*frequency = 0;  
 	return 0;
 }
 
-/*
- * Get the tuner gain.
- * @fe: The front end for which we're determining the gain
- * @v_agc: The voltage of the AGC from the demodulator (0-2600mV)
- * @_gain: Where to store the gain (in 0.001dB units)
- *
- * Returns 0 or a negative error code.
- */
+ 
 static int ts2020_read_tuner_gain(struct dvb_frontend *fe, unsigned v_agc,
 				  __s64 *_gain)
 {
@@ -341,13 +325,13 @@ static int ts2020_read_tuner_gain(struct dvb_frontend *fe, unsigned v_agc,
 	unsigned utmp;
 	int ret;
 
-	/* Read the RF gain */
+	 
 	ret = regmap_read(priv->regmap, 0x3d, &utmp);
 	if (ret < 0)
 		return ret;
 	gain1 = utmp & 0x1f;
 
-	/* Read the baseband gain */
+	 
 	ret = regmap_read(priv->regmap, 0x21, &utmp);
 	if (ret < 0)
 		return ret;
@@ -363,7 +347,7 @@ static int ts2020_read_tuner_gain(struct dvb_frontend *fe, unsigned v_agc,
 			   gain2 * 3500 +
 			   v_agc * 24 / 10 * 10 +
 			   10000);
-		/* gain in range -19600 to -116850 in units of 0.001dB */
+		 
 		break;
 
 	case TS2020_M88TS2022:
@@ -382,24 +366,21 @@ static int ts2020_read_tuner_gain(struct dvb_frontend *fe, unsigned v_agc,
 			   gain3 * 2850 +
 			   v_agc * 176 / 100 * 10 -
 			   30000);
-		/* gain in range -47320 to -158950 in units of 0.001dB */
+		 
 		break;
 	}
 
 	return 0;
 }
 
-/*
- * Get the AGC information from the demodulator and use that to calculate the
- * tuner gain.
- */
+ 
 static int ts2020_get_tuner_gain(struct dvb_frontend *fe, __s64 *_gain)
 {
 	struct ts2020_priv *priv = fe->tuner_priv;
 	int v_agc = 0, ret;
 	u8 agc_pwm;
 
-	/* Read the AGC PWM rate from the demodulator */
+	 
 	if (priv->get_agc_pwm) {
 		ret = priv->get_agc_pwm(fe, &agc_pwm);
 		if (ret < 0)
@@ -421,9 +402,7 @@ static int ts2020_get_tuner_gain(struct dvb_frontend *fe, __s64 *_gain)
 	return ts2020_read_tuner_gain(fe, v_agc, _gain);
 }
 
-/*
- * Gather statistics on a regular basis
- */
+ 
 static void ts2020_stat_work(struct work_struct *work)
 {
 	struct ts2020_priv *priv = container_of(work, struct ts2020_priv,
@@ -447,9 +426,7 @@ err:
 	dev_dbg(&client->dev, "failed=%d\n", ret);
 }
 
-/*
- * Read TS2020 signal strength in v3 format.
- */
+ 
 static int ts2020_read_signal_strength(struct dvb_frontend *fe,
 				       u16 *_signal_strength)
 {
@@ -468,18 +445,18 @@ static int ts2020_read_signal_strength(struct dvb_frontend *fe,
 
 	gain = c->strength.stat[0].svalue;
 
-	/* Calculate the signal strength based on the total gain of the tuner */
+	 
 	if (gain < -85000)
-		/* 0%: no signal or weak signal */
+		 
 		strength = 0;
 	else if (gain < -65000)
-		/* 0% - 60%: weak signal */
+		 
 		strength = 0 + div64_s64((85000 + gain) * 3, 1000);
 	else if (gain < -45000)
-		/* 60% - 90%: normal signal */
+		 
 		strength = 60 + div64_s64((65000 + gain) * 3, 2000);
 	else
-		/* 90% - 99%: strong signal */
+		 
 		strength = 90 + div64_s64((45000 + gain), 5000);
 
 	*_signal_strength = strength * 65535 / 100;
@@ -508,7 +485,7 @@ struct dvb_frontend *ts2020_attach(struct dvb_frontend *fe,
 	struct i2c_client *client;
 	struct i2c_board_info board_info;
 
-	/* This is only used by ts2020_probe() so can be on the stack */
+	 
 	struct ts2020_config pdata;
 
 	memcpy(&pdata, config, sizeof(pdata));
@@ -527,11 +504,7 @@ struct dvb_frontend *ts2020_attach(struct dvb_frontend *fe,
 }
 EXPORT_SYMBOL_GPL(ts2020_attach);
 
-/*
- * We implement own regmap locking due to legacy DVB attach which uses frontend
- * gate control callback to control I2C bus access. We can open / close gate and
- * serialize whole open / I2C-operation / close sequence at the same.
- */
+ 
 static void ts2020_regmap_lock(void *__dev)
 {
 	struct ts2020_priv *dev = __dev;
@@ -566,7 +539,7 @@ static int ts2020_probe(struct i2c_client *client)
 		goto err;
 	}
 
-	/* create regmap */
+	 
 	mutex_init(&dev->regmap_mutex);
 	dev->regmap_config.reg_bits = 8;
 	dev->regmap_config.val_bits = 8;
@@ -592,7 +565,7 @@ static int ts2020_probe(struct i2c_client *client)
 	dev->client = client;
 	INIT_DELAYED_WORK(&dev->stat_work, ts2020_stat_work);
 
-	/* check if the tuner is there */
+	 
 	ret = regmap_read(dev->regmap, 0x00, &utmp);
 	if (ret)
 		goto err_regmap_exit;
@@ -671,7 +644,7 @@ static int ts2020_probe(struct i2c_client *client)
 			goto err_regmap_exit;
 	}
 
-	/* sleep */
+	 
 	ret = regmap_write(dev->regmap, 0x00, 0x00);
 	if (ret)
 		goto err_regmap_exit;
@@ -701,7 +674,7 @@ static void ts2020_remove(struct i2c_client *client)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* stop statistics polling */
+	 
 	if (!dev->dont_poll)
 		cancel_delayed_work_sync(&dev->stat_work);
 

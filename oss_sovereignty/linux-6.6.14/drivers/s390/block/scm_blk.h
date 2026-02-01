@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SCM_BLK_H
 #define SCM_BLK_H
 
@@ -73,4 +73,4 @@ static inline void SCM_LOG_STATE(int level, struct scm_device *scmdev)
 	SCM_LOG_HEX(level, &data, sizeof(data));
 }
 
-#endif /* SCM_BLK_H */
+#endif  

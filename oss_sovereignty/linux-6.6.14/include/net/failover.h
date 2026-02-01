@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Intel Corporation. */
+ 
+ 
 
 #ifndef _FAILOVER_H
 #define _FAILOVER_H
@@ -34,4 +34,4 @@ struct failover *failover_register(struct net_device *dev,
 void failover_unregister(struct failover *failover);
 int failover_slave_unregister(struct net_device *slave_dev);
 
-#endif /* _FAILOVER_H */
+#endif  

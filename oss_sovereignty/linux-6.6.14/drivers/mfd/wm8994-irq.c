@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8994-irq.c  --  Interrupt controller support for Wolfson WM8994
- *
- * Copyright 2010 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -190,12 +184,12 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 		return 0;
 	}
 
-	/* select user or default irq flags */
+	 
 	irqflags = IRQF_TRIGGER_HIGH | IRQF_ONESHOT;
 	if (pdata->irq_flags)
 		irqflags = pdata->irq_flags;
 
-	/* use a GPIO for edge triggered controllers */
+	 
 	if (irqflags & (IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING)) {
 		if (gpio_to_irq(pdata->irq_gpio) != wm8994->irq) {
 			dev_warn(wm8994->dev, "IRQ %d is not GPIO %d (%d)\n",
@@ -245,7 +239,7 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 		return ret;
 	}
 
-	/* Enable top level interrupt if it was masked */
+	 
 	wm8994_reg_write(wm8994, WM8994_INTERRUPT_CONTROL, 0);
 
 	return 0;

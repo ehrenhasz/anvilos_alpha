@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -76,7 +54,7 @@ g84_chan_ramfc_write(struct nvkm_chan *chan, u64 offset, u64 length, u32 devm, b
 	nvkm_wo32(chan->ramfc, 0x78, 0x00000000);
 	nvkm_wo32(chan->ramfc, 0x7c, 0x30000000 | devm);
 	nvkm_wo32(chan->ramfc, 0x80, ((chan->ramht->bits - 9) << 27) |
-				     (4 << 24) /* SEARCH_FULL */ |
+				     (4 << 24)   |
 				     (chan->ramht->gpuobj->node->offset >> 4));
 	nvkm_wo32(chan->ramfc, 0x88, chan->cache->addr >> 10);
 	nvkm_wo32(chan->ramfc, 0x98, chan->inst->addr >> 12);

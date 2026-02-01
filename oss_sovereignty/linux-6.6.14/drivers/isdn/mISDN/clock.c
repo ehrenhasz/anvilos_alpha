@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008  by Andreas Eversberg <andreas@eversberg.eu>
- *
- * Quick API description:
- *
- * A clock source registers using mISDN_register_clock:
- *	name = text string to name clock source
- *	priority = value to priorize clock sources (0 = default)
- *	ctl = callback function to enable/disable clock source
- *	priv = private pointer of clock source
- *	return = pointer to clock source structure;
- *
- * Note: Callback 'ctl' can be called before mISDN_register_clock returns!
- *       Also it can be called during mISDN_unregister_clock.
- *
- * A clock source calls mISDN_clock_update with given samples elapsed, if
- * enabled. If function call is delayed, tv must be set with the timestamp
- * of the actual event.
- *
- * A clock source unregisters using mISDN_unregister_clock.
- *
- * To get current clock, call mISDN_clock_get. The signed short value
- * counts the number of samples since. Time since last clock event is added.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -36,9 +13,9 @@
 static u_int *debug;
 static LIST_HEAD(iclock_list);
 static DEFINE_RWLOCK(iclock_lock);
-static u16 iclock_count;		/* counter of last clock */
-static ktime_t iclock_timestamp;	/* time stamp of last clock */
-static int iclock_timestamp_valid;	/* already received one timestamp */
+static u16 iclock_count;		 
+static ktime_t iclock_timestamp;	 
+static int iclock_timestamp_valid;	 
 static struct mISDNclock *iclock_current;
 
 void
@@ -63,21 +40,21 @@ select_iclock(void)
 			lastclock = iclock;
 	}
 	if (lastclock && bestclock != lastclock) {
-		/* last used clock source still exists but changes, disable */
+		 
 		if (*debug & DEBUG_CLOCK)
 			printk(KERN_DEBUG "Old clock source '%s' disable.\n",
 			       lastclock->name);
 		lastclock->ctl(lastclock->priv, 0);
 	}
 	if (bestclock && bestclock != iclock_current) {
-		/* new clock source selected, enable */
+		 
 		if (*debug & DEBUG_CLOCK)
 			printk(KERN_DEBUG "New clock source '%s' enable.\n",
 			       bestclock->name);
 		bestclock->ctl(bestclock->priv, 1);
 	}
 	if (bestclock != iclock_current) {
-		/* no clock received yet */
+		 
 		iclock_timestamp_valid = 0;
 	}
 	iclock_current = bestclock;
@@ -148,23 +125,23 @@ mISDN_clock_update(struct mISDNclock *iclock, int samples, ktime_t *timestamp)
 		return;
 	}
 	if (iclock_timestamp_valid) {
-		/* increment sample counter by given samples */
+		 
 		iclock_count += samples;
-		if (timestamp) { /* timestamp must be set, if function call is delayed */
+		if (timestamp) {  
 			iclock_timestamp = *timestamp;
 		} else	{
 			iclock_timestamp = ktime_get();
 		}
 	} else {
-		/* calc elapsed time by system clock */
-		if (timestamp) { /* timestamp must be set, if function call is delayed */
+		 
+		if (timestamp) {  
 			timestamp_now = *timestamp;
 		} else {
 			timestamp_now = ktime_get();
 		}
 		delta = ktime_divns(ktime_sub(timestamp_now, iclock_timestamp),
 				(NSEC_PER_SEC / 8000));
-		/* add elapsed time to counter and set new timestamp */
+		 
 		iclock_count += delta;
 		iclock_timestamp = timestamp_now;
 		iclock_timestamp_valid = 1;
@@ -185,11 +162,11 @@ mISDN_clock_get(void)
 	u16		count;
 
 	read_lock_irqsave(&iclock_lock, flags);
-	/* calc elapsed time by system clock */
+	 
 	timestamp_now = ktime_get();
 	delta = ktime_divns(ktime_sub(timestamp_now, iclock_timestamp),
 			(NSEC_PER_SEC / 8000));
-	/* add elapsed time to counter */
+	 
 	count =	iclock_count + delta;
 	read_unlock_irqrestore(&iclock_lock, flags);
 	return count;

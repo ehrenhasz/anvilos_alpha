@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 #include <linux/in.h>
 
@@ -8,13 +8,9 @@
 #include <linux/ceph/striper.h>
 #include <linux/fscrypt.h>
 
-/*
- * ioctls
- */
+ 
 
-/*
- * get and set the file layout
- */
+ 
 static long ceph_ioctl_get_layout(struct file *file, void __user *arg)
 {
 	struct ceph_inode_info *ci = ceph_inode(file_inode(file));
@@ -40,14 +36,14 @@ static long __validate_layout(struct ceph_mds_client *mdsc,
 {
 	int i, err;
 
-	/* validate striping parameters */
+	 
 	if ((l->object_size & ~PAGE_MASK) ||
 	    (l->stripe_unit & ~PAGE_MASK) ||
 	    ((unsigned)l->stripe_unit != 0 &&
 	     ((unsigned)l->object_size % (unsigned)l->stripe_unit)))
 		return -EINVAL;
 
-	/* make sure it's a valid data pool */
+	 
 	mutex_lock(&mdsc->mutex);
 	err = -EINVAL;
 	for (i = 0; i < mdsc->mdsmap->m_num_data_pg_pools; i++)
@@ -75,7 +71,7 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	if (copy_from_user(&l, arg, sizeof(l)))
 		return -EFAULT;
 
-	/* validate changed params against current layout */
+	 
 	err = ceph_do_getattr(file_inode(file), CEPH_STAT_CAP_LAYOUT, false);
 	if (err)
 		return err;
@@ -98,7 +94,7 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	else
 		nl.data_pool = ci->i_layout.pool_id;
 
-	/* this is obsolete, and always -1 */
+	 
 	nl.preferred_osd = -1;
 
 	err = __validate_layout(mdsc, &nl);
@@ -128,12 +124,7 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
 	return err;
 }
 
-/*
- * Set a layout policy on a directory inode. All items in the tree
- * rooted at this inode will inherit this layout on creation,
- * (It doesn't apply retroactively )
- * unless a subdirectory has its own layout policy.
- */
+ 
 static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 {
 	struct inode *inode = file_inode(file);
@@ -142,7 +133,7 @@ static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 	int err;
 	struct ceph_mds_client *mdsc = ceph_sb_to_client(inode->i_sb)->mdsc;
 
-	/* copy and validate */
+	 
 	if (copy_from_user(&l, arg, sizeof(l)))
 		return -EFAULT;
 
@@ -173,10 +164,7 @@ static long ceph_ioctl_set_layout_policy (struct file *file, void __user *arg)
 	return err;
 }
 
-/*
- * Return object name, size/offset information, and location (OSD
- * number, network address) for a given file offset.
- */
+ 
 static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 {
 	struct ceph_ioctl_dataloc dl;
@@ -191,7 +179,7 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	struct ceph_pg pgid;
 	int r;
 
-	/* copy and validate */
+	 
 	if (copy_from_user(&dl, arg, sizeof(dl)))
 		return -EFAULT;
 
@@ -202,7 +190,7 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	dl.object_size = ci->i_layout.object_size;
 	dl.block_size = ci->i_layout.stripe_unit;
 
-	/* block_offset = object_offset % block_size */
+	 
 	tmp = dl.object_offset;
 	dl.block_offset = do_div(tmp, dl.block_size);
 
@@ -232,7 +220,7 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	}
 	up_read(&osdc->lock);
 
-	/* send result back to user */
+	 
 	if (copy_to_user(arg, &dl, sizeof(dl)))
 		return -EFAULT;
 
@@ -294,7 +282,7 @@ static long ceph_set_encryption_policy(struct file *file, unsigned long arg)
 	struct inode *inode = file_inode(file);
 	struct ceph_inode_info *ci = ceph_inode(inode);
 
-	/* encrypted directories can't have striped layout */
+	 
 	if (ci->i_layout.stripe_count > 1)
 		return -EINVAL;
 
@@ -302,10 +290,7 @@ static long ceph_set_encryption_policy(struct file *file, unsigned long arg)
 	if (ret)
 		return ret;
 
-	/*
-	 * Ensure we hold these caps so that we _know_ that the rstats check
-	 * in the empty_dir check is reliable.
-	 */
+	 
 	ret = ceph_get_caps(file, CEPH_CAP_FILE_SHARED, 0, -1, &got);
 	if (ret)
 		return ret;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "tests/basic_api.h"
 #include "tests/alloc_api.h"
 #include "tests/alloc_helpers_api.h"

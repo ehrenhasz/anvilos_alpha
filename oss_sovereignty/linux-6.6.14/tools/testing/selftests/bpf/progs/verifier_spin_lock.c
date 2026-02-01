@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/spin_lock.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -477,48 +477,42 @@ __naked void check_ids_similar_id_mappings(void)
 	asm volatile ("					\
 	r1 = 0;						\
 	*(u32*)(r10 - 4) = r1;				\
-	/* r9 = map_lookup_elem(...) */			\
+	 			\
 	r2 = r10;					\
 	r2 += -4;					\
 	r1 = %[map_spin_lock] ll;			\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l0_%=;				\
 	r9 = r0;					\
-	/* r8 = map_lookup_elem(...) */			\
+	 			\
 	r2 = r10;					\
 	r2 += -4;					\
 	r1 = %[map_spin_lock] ll;			\
 	call %[bpf_map_lookup_elem];			\
 	if r0 == 0 goto l1_%=;				\
 	r8 = r0;					\
-	/* r7 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r7 = r0;					\
-	/* r6 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r6 = r0;					\
-	/* if r6 > r7 goto +5      ; no new information about the state is derived from\
-	 *                         ; this check, thus produced verifier states differ\
-	 *                         ; only in 'insn_idx'	\
-	 * spin_lock(r8)				\
-	 * r9 = r8					\
-	 * goto unlock					\
-	 */						\
+	 						\
 	if r6 > r7 goto l2_%=;				\
 	r1 = r8;					\
 	r1 += 4;					\
 	call %[bpf_spin_lock];				\
 	r9 = r8;					\
 	goto l3_%=;					\
-l2_%=:	/* spin_lock(r9) */				\
+l2_%=:	 				\
 	r1 = r9;					\
 	r1 += 4;					\
 	call %[bpf_spin_lock];				\
-l3_%=:	/* spin_unlock(r9) */				\
+l3_%=:	 				\
 	r1 = r9;					\
 	r1 += 4;					\
 	call %[bpf_spin_unlock];			\
-l0_%=:	/* exit(0) */					\
+l0_%=:	 					\
 	r0 = 0;						\
 l1_%=:	exit;						\
 "	:

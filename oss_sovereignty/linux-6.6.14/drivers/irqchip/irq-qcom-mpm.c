@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Linaro Limited
- * Copyright (c) 2010-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -21,46 +18,7 @@
 #include <linux/soc/qcom/irq.h>
 #include <linux/spinlock.h>
 
-/*
- * This is the driver for Qualcomm MPM (MSM Power Manager) interrupt controller,
- * which is commonly found on Qualcomm SoCs built on the RPM architecture.
- * Sitting in always-on domain, MPM monitors the wakeup interrupts when SoC is
- * asleep, and wakes up the AP when one of those interrupts occurs.  This driver
- * doesn't directly access physical MPM registers though.  Instead, the access
- * is bridged via a piece of internal memory (SRAM) that is accessible to both
- * AP and RPM.  This piece of memory is called 'vMPM' in the driver.
- *
- * When SoC is awake, the vMPM is owned by AP and the register setup by this
- * driver all happens on vMPM.  When AP is about to get power collapsed, the
- * driver sends a mailbox notification to RPM, which will take over the vMPM
- * ownership and dump vMPM into physical MPM registers.  On wakeup, AP is woken
- * up by a MPM pin/interrupt, and RPM will copy STATUS registers into vMPM.
- * Then AP start owning vMPM again.
- *
- * vMPM register map:
- *
- *    31                              0
- *    +--------------------------------+
- *    |            TIMER0              | 0x00
- *    +--------------------------------+
- *    |            TIMER1              | 0x04
- *    +--------------------------------+
- *    |            ENABLE0             | 0x08
- *    +--------------------------------+
- *    |              ...               | ...
- *    +--------------------------------+
- *    |            ENABLEn             |
- *    +--------------------------------+
- *    |          FALLING_EDGE0         |
- *    +--------------------------------+
- *    |              ...               |
- *    +--------------------------------+
- *    |            STATUSn             |
- *    +--------------------------------+
- *
- *    n = DIV_ROUND_UP(pin_cnt, 32)
- *
- */
+ 
 
 #define MPM_REG_ENABLE		0
 #define MPM_REG_FALLING_EDGE	1
@@ -68,7 +26,7 @@
 #define MPM_REG_POLARITY	3
 #define MPM_REG_STATUS		4
 
-/* MPM pin map to GIC hwirq */
+ 
 struct mpm_gic_map {
 	int pin;
 	irq_hw_number_t hwirq;
@@ -101,7 +59,7 @@ static void qcom_mpm_write(struct qcom_mpm_priv *priv, unsigned int reg,
 
 	writel_relaxed(val, priv->base + offset);
 
-	/* Ensure the write is completed */
+	 
 	wmb();
 }
 
@@ -257,7 +215,7 @@ static const struct irq_domain_ops qcom_mpm_ops = {
 	.translate	= irq_domain_translate_twocell,
 };
 
-/* Triggered by RPM when system resumes from deep sleep */
+ 
 static irqreturn_t qcom_mpm_handler(int irq, void *dev_id)
 {
 	struct qcom_mpm_priv *priv = dev_id;
@@ -297,7 +255,7 @@ static int mpm_pd_power_off(struct generic_pm_domain *genpd)
 	for (i = 0; i < priv->reg_stride; i++)
 		qcom_mpm_write(priv, MPM_REG_STATUS, i, 0);
 
-	/* Notify RPM to write vMPM into HW */
+	 
 	ret = mbox_send_message(priv->mbox_chan, NULL);
 	if (ret < 0)
 		return ret;

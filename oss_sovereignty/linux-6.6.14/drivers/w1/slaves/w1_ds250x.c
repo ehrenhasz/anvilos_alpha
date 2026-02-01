@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * w1_ds250x.c - w1 family 09/0b/89/91 (DS250x) driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -52,7 +50,7 @@ static int w1_ds2502_read_page(struct w1_slave *sl, int pageno)
 	u8 crc8;
 
 	if (test_bit(pageno, data->page_present))
-		return 0; /* page already present */
+		return 0;  
 
 	mutex_lock(&sl->master->bus_mutex);
 
@@ -74,7 +72,7 @@ static int w1_ds2502_read_page(struct w1_slave *sl, int pageno)
 	if (w1_calc_crc8(&data->eprom[pgoff], W1_PAGE_SIZE) != crc8)
 		goto err;
 
-	set_bit(pageno, data->page_present); /* mark page present */
+	set_bit(pageno, data->page_present);  
 	ret = 0;
 err:
 	mutex_unlock(&sl->master->bus_mutex);
@@ -92,7 +90,7 @@ static int w1_ds2505_read_page(struct w1_slave *sl, int pageno)
 	u16 crc;
 
 	if (test_bit(pageno, data->page_present))
-		return 0; /* page already present */
+		return 0;  
 
 	epoff = pgoff = pageno * W1_PAGE_SIZE;
 	mutex_lock(&sl->master->bus_mutex);
@@ -105,7 +103,7 @@ retry:
 	buf[1] = pgoff & 0xff;
 	buf[2] = pgoff >> 8;
 	w1_write_block(sl->master, buf, 3);
-	w1_read_block(sl->master, buf + 3, 3); /* redir, crc16 */
+	w1_read_block(sl->master, buf + 3, 3);  
 	redir = buf[3];
 	crc = crc16(CRC16_INIT, buf, 6);
 
@@ -123,7 +121,7 @@ retry:
 	}
 
 	w1_read_block(sl->master, &data->eprom[epoff], W1_PAGE_SIZE);
-	w1_read_block(sl->master, buf, 2); /* crc16 */
+	w1_read_block(sl->master, buf, 2);  
 	crc = crc16(CRC16_INIT, &data->eprom[epoff], W1_PAGE_SIZE);
 	crc = crc16(crc, buf, 2);
 

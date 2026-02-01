@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IPV6 GSO/GRO offload support
- * Linux INET implementation
- *
- * Copyright (C) 2016 secunet Security Networks AG
- * Author: Steffen Klassert <steffen.klassert@secunet.com>
- *
- * ESP GRO support
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/init.h>
@@ -102,8 +94,7 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
 	XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
 	XFRM_SPI_SKB_CB(skb)->seq = seq;
 
-	/* We don't need to handle errors from xfrm_input, it does all
-	 * the error handling and frees the resources on error. */
+	 
 	xfrm_input(skb, IPPROTO_ESP, spi, -2);
 
 	return ERR_PTR(-EINPROGRESS);
@@ -311,13 +302,13 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
 
 	esp.proto = xo->proto;
 
-	/* skb is pure payload to encrypt */
+	 
 
 	aead = x->data;
 	alen = crypto_aead_authsize(aead);
 
 	esp.tfclen = 0;
-	/* XXX: Add support for tfc padding here. */
+	 
 
 	blksize = ALIGN(crypto_aead_blocksize(aead), 4);
 	esp.clen = ALIGN(skb->len + 2 + esp.tfclen, blksize);

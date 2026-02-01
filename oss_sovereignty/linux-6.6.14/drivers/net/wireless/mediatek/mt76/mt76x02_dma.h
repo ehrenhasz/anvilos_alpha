@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_DMA_H
 #define __MT76x02_DMA_H
@@ -29,7 +27,7 @@
 #define MT_RX_FCE_INFO_D_PORT		GENMASK(29, 27)
 #define MT_RX_FCE_INFO_TYPE		GENMASK(31, 30)
 
-/* MCU request message header  */
+ 
 #define MT_MCU_MSG_LEN			GENMASK(15, 0)
 #define MT_MCU_MSG_CMD_SEQ		GENMASK(19, 16)
 #define MT_MCU_MSG_CMD_TYPE		GENMASK(26, 20)
@@ -62,4 +60,4 @@ mt76x02_wait_for_wpdma(struct mt76_dev *dev, int timeout)
 int mt76x02_dma_init(struct mt76x02_dev *dev);
 void mt76x02_dma_disable(struct mt76x02_dev *dev);
 
-#endif /* __MT76x02_DMA_H */
+#endif  

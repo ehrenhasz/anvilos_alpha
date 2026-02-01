@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 
@@ -38,13 +38,13 @@ static int prog_load_cnt(int verdict, int val)
 
 	struct bpf_insn prog[] = {
 		BPF_MOV32_IMM(BPF_REG_0, 0),
-		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_0, -4), /* *(u32 *)(fp - 4) = r0 */
+		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_0, -4),  
 		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4), /* r2 = fp - 4 */
+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),  
 		BPF_LD_MAP_FD(BPF_REG_1, map_fd),
 		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
 		BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 2),
-		BPF_MOV64_IMM(BPF_REG_1, val), /* r1 = 1 */
+		BPF_MOV64_IMM(BPF_REG_1, val),  
 		BPF_ATOMIC_OP(BPF_DW, BPF_ADD, BPF_REG_0, BPF_REG_1, 0),
 
 		BPF_LD_MAP_FD(BPF_REG_1, cgroup_storage_fd),
@@ -60,7 +60,7 @@ static int prog_load_cnt(int verdict, int val)
 		BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 0x1),
 		BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_3, 0),
 
-		BPF_MOV64_IMM(BPF_REG_0, verdict), /* r0 = verdict */
+		BPF_MOV64_IMM(BPF_REG_0, verdict),  
 		BPF_EXIT_INSN(),
 	};
 	size_t insns_cnt = ARRAY_SIZE(prog);
@@ -151,18 +151,18 @@ void serial_test_cgroup_attach_multi(void)
 	CHECK_FAIL(bpf_map_lookup_elem(map_fd, &key, &value));
 	CHECK_FAIL(value != 1 + 2 + 8 + 32);
 
-	/* query the number of effective progs in cg5 */
+	 
 	CHECK_FAIL(bpf_prog_query(cg5, BPF_CGROUP_INET_EGRESS,
 				  BPF_F_QUERY_EFFECTIVE, NULL, NULL, &prog_cnt));
 	CHECK_FAIL(prog_cnt != 4);
-	/* retrieve prog_ids of effective progs in cg5 */
+	 
 	CHECK_FAIL(bpf_prog_query(cg5, BPF_CGROUP_INET_EGRESS,
 				  BPF_F_QUERY_EFFECTIVE, &attach_flags,
 				  prog_ids, &prog_cnt));
 	CHECK_FAIL(prog_cnt != 4);
 	CHECK_FAIL(attach_flags != 0);
 	saved_prog_id = prog_ids[0];
-	/* check enospc handling */
+	 
 	prog_ids[0] = 0;
 	prog_cnt = 2;
 	CHECK_FAIL(bpf_prog_query(cg5, BPF_CGROUP_INET_EGRESS,
@@ -170,16 +170,16 @@ void serial_test_cgroup_attach_multi(void)
 				  prog_ids, &prog_cnt) >= 0);
 	CHECK_FAIL(errno != ENOSPC);
 	CHECK_FAIL(prog_cnt != 4);
-	/* check that prog_ids are returned even when buffer is too small */
+	 
 	CHECK_FAIL(prog_ids[0] != saved_prog_id);
-	/* retrieve prog_id of single attached prog in cg5 */
+	 
 	prog_ids[0] = 0;
 	CHECK_FAIL(bpf_prog_query(cg5, BPF_CGROUP_INET_EGRESS, 0, NULL,
 				  prog_ids, &prog_cnt));
 	CHECK_FAIL(prog_cnt != 1);
 	CHECK_FAIL(prog_ids[0] != saved_prog_id);
 
-	/* detach bottom program and ping again */
+	 
 	if (CHECK(bpf_prog_detach2(-1, cg5, BPF_CGROUP_INET_EGRESS),
 		  "prog_detach_from_cg5", "errno=%d\n", errno))
 		goto err;
@@ -190,7 +190,7 @@ void serial_test_cgroup_attach_multi(void)
 	CHECK_FAIL(bpf_map_lookup_elem(map_fd, &key, &value));
 	CHECK_FAIL(value != 1 + 2 + 8 + 16);
 
-	/* test replace */
+	 
 
 	attach_opts.flags = BPF_F_ALLOW_OVERRIDE | BPF_F_REPLACE;
 	attach_opts.replace_prog_fd = allow_prog[0];
@@ -215,7 +215,7 @@ void serial_test_cgroup_attach_multi(void)
 		goto err;
 	CHECK_FAIL(errno != EBADF);
 
-	/* replacing a program that is not attached to cgroup should fail  */
+	 
 	attach_opts.replace_prog_fd = allow_prog[3];
 	if (CHECK(!bpf_prog_attach_opts(allow_prog[6], cg1,
 					 BPF_CGROUP_INET_EGRESS, &attach_opts),
@@ -223,14 +223,14 @@ void serial_test_cgroup_attach_multi(void)
 		goto err;
 	CHECK_FAIL(errno != ENOENT);
 
-	/* replace 1st from the top program */
+	 
 	attach_opts.replace_prog_fd = allow_prog[0];
 	if (CHECK(bpf_prog_attach_opts(allow_prog[6], cg1,
 					BPF_CGROUP_INET_EGRESS, &attach_opts),
 		  "prog_replace", "errno=%d\n", errno))
 		goto err;
 
-	/* replace program with itself */
+	 
 	attach_opts.replace_prog_fd = allow_prog[6];
 	if (CHECK(bpf_prog_attach_opts(allow_prog[6], cg1,
 					BPF_CGROUP_INET_EGRESS, &attach_opts),
@@ -243,7 +243,7 @@ void serial_test_cgroup_attach_multi(void)
 	CHECK_FAIL(bpf_map_lookup_elem(map_fd, &key, &value));
 	CHECK_FAIL(value != 64 + 2 + 8 + 16);
 
-	/* detach 3rd from bottom program and ping again */
+	 
 	if (CHECK(!bpf_prog_detach2(0, cg3, BPF_CGROUP_INET_EGRESS),
 		  "fail_prog_detach_from_cg3", "unexpected success\n"))
 		goto err;
@@ -258,7 +258,7 @@ void serial_test_cgroup_attach_multi(void)
 	CHECK_FAIL(bpf_map_lookup_elem(map_fd, &key, &value));
 	CHECK_FAIL(value != 64 + 2 + 16);
 
-	/* detach 2nd from bottom program and ping again */
+	 
 	if (CHECK(bpf_prog_detach2(-1, cg4, BPF_CGROUP_INET_EGRESS),
 		  "prog_detach_from_cg4", "errno=%d\n", errno))
 		goto err;

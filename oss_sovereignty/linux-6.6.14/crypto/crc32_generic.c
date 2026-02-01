@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Xyratex Technology Limited
- */
 
-/*
- * This is crypto api shash wrappers to crc32_le.
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/crc32.h>
@@ -18,7 +14,7 @@
 #define CHKSUM_BLOCK_SIZE	1
 #define CHKSUM_DIGEST_SIZE	4
 
-/** No default init with ~0 */
+ 
 static int crc32_cra_init(struct crypto_tfm *tfm)
 {
 	u32 *key = crypto_tfm_ctx(tfm);
@@ -28,11 +24,7 @@ static int crc32_cra_init(struct crypto_tfm *tfm)
 	return 0;
 }
 
-/*
- * Setting the seed allows arbitrary accumulators and flexible XOR policy
- * If your algorithm starts with ~0, then XOR with ~0 before you set
- * the seed.
- */
+ 
 static int crc32_setkey(struct crypto_shash *hash, const u8 *key,
 			unsigned int keylen)
 {
@@ -63,7 +55,7 @@ static int crc32_update(struct shash_desc *desc, const u8 *data,
 	return 0;
 }
 
-/* No final XOR 0xFFFFFFFF, like crc32_le */
+ 
 static int __crc32_finup(u32 *crcp, const u8 *data, unsigned int len,
 			 u8 *out)
 {

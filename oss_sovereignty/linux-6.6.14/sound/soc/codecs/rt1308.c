@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt1308.c  --  RT1308 ALSA SoC amplifier component driver
-//
-// Copyright 2019 Realtek Semiconductor Corp.
-// Author: Derek Fang <derek.fang@realtek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -332,7 +332,7 @@ static SOC_ENUM_SINGLE_DECL(rt1308_rx_data_ch_enum, RT1308_DATA_PATH, 24,
 
 static const struct snd_kcontrol_new rt1308_snd_controls[] = {
 
-	/* I2S Data Channel Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1308_rx_data_ch_enum),
 };
 
@@ -345,10 +345,10 @@ static const struct snd_kcontrol_new rt1308_sto_dac_r =
 		RT1308_DVOL_MUTE_R_EN_SFT, 1, 1);
 
 static const struct snd_soc_dapm_widget rt1308_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Supply Widgets */
+	 
 	SND_SOC_DAPM_SUPPLY("MBIAS20U", RT1308_POWER,
 		RT1308_POW_MBIAS20U_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("ALDO", RT1308_POWER,
@@ -384,14 +384,14 @@ static const struct snd_soc_dapm_widget rt1308_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("PLL2B2", RT1308_POWER,
 		RT1308_POW_PLL2B2_EN_BIT, 0, NULL, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("DAC Power", RT1308_POWER,
 		RT1308_POW_DAC1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_DAC("DAC", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_SWITCH("DAC L", SND_SOC_NOPM, 0, 0, &rt1308_sto_dac_l),
 	SND_SOC_DAPM_SWITCH("DAC R", SND_SOC_NOPM, 0, 0, &rt1308_sto_dac_r),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1308_classd_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -833,7 +833,7 @@ static int rt1308_i2c_probe(struct i2c_client *i2c)
 	}
 
 	regmap_read(rt1308->regmap, RT1308_VEN_DEV_ID, &val);
-	/* ignore last byte difference */
+	 
 	if ((val & 0xFFFFFF00) != RT1308_DEVICE_ID_NUM) {
 		dev_err(&i2c->dev,
 			"Device with ID register %x is not rt1308\n", val);

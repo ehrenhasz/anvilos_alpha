@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for Logitech Gaming Wheels
- *
- *  Including G27, G25, DFP, DFGT, FFEX, Momo, Momo2 &
- *  Speed Force Wireless (WiiWheel)
- *
- *  Copyright (c) 2010 Simon Wood <simon@mungewell.org>
- */
 
-/*
- */
+ 
+
+ 
 
 
 #include <linux/input.h>
@@ -80,7 +72,7 @@ struct lg4ff_wheel_data {
 };
 
 struct lg4ff_device_entry {
-	spinlock_t report_lock; /* Protect output HID report */
+	spinlock_t report_lock;  
 	struct hid_report *report;
 	struct lg4ff_wheel_data wdata;
 };
@@ -104,7 +96,7 @@ struct lg4ff_wheel {
 };
 
 struct lg4ff_compat_mode_switch {
-	const u8 cmd_count;	/* Number of commands to send */
+	const u8 cmd_count;	 
 	const u8 cmd[];
 };
 
@@ -170,7 +162,7 @@ static const struct lg4ff_alternate_mode lg4ff_alternate_modes[] = {
 	[LG4FF_MODE_G29_IDX] = {USB_DEVICE_ID_LOGITECH_G29_WHEEL, LG4FF_G29_TAG, LG4FF_G29_NAME},
 };
 
-/* Multimode wheel identificators */
+ 
 static const struct lg4ff_wheel_ident_info lg4ff_dfp_ident_info = {
 	LG4FF_MODE_DFP | LG4FF_MODE_DFEX,
 	0xf000,
@@ -213,7 +205,7 @@ static const struct lg4ff_wheel_ident_info lg4ff_g29_ident_info2 = {
 	USB_DEVICE_ID_LOGITECH_G29_WHEEL
 };
 
-/* Multimode wheel identification checklists */
+ 
 static const struct lg4ff_wheel_ident_info *lg4ff_main_checklist[] = {
 	&lg4ff_g29_ident_info,
 	&lg4ff_g29_ident_info2,
@@ -223,57 +215,57 @@ static const struct lg4ff_wheel_ident_info *lg4ff_main_checklist[] = {
 	&lg4ff_dfp_ident_info
 };
 
-/* Compatibility mode switching commands */
-/* EXT_CMD9 - Understood by G27 and DFGT */
+ 
+ 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_dfex = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x00, 0x01, 0x00, 0x00, 0x00}	/* Switch mode to DF-EX with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x00, 0x01, 0x00, 0x00, 0x00}	 
 };
 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_dfp = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x01, 0x01, 0x00, 0x00, 0x00}	/* Switch mode to DFP with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x01, 0x01, 0x00, 0x00, 0x00}	 
 };
 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_g25 = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x02, 0x01, 0x00, 0x00, 0x00}	/* Switch mode to G25 with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x02, 0x01, 0x00, 0x00, 0x00}	 
 };
 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_dfgt = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x03, 0x01, 0x00, 0x00, 0x00}	/* Switch mode to DFGT with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x03, 0x01, 0x00, 0x00, 0x00}	 
 };
 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_g27 = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x04, 0x01, 0x00, 0x00, 0x00}	/* Switch mode to G27 with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x04, 0x01, 0x00, 0x00, 0x00}	 
 };
 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_g29 = {
 	2,
-	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
-	 0xf8, 0x09, 0x05, 0x01, 0x01, 0x00, 0x00}	/* Switch mode to G29 with detach */
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	 
+	 0xf8, 0x09, 0x05, 0x01, 0x01, 0x00, 0x00}	 
 };
 
-/* EXT_CMD1 - Understood by DFP, G25, G27 and DFGT */
+ 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext01_dfp = {
 	1,
 	{0xf8, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00}
 };
 
-/* EXT_CMD16 - Understood by G25 and G27 */
+ 
 static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext16_g25 = {
 	1,
 	{0xf8, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00}
 };
 
-/* Recalculates X axis value accordingly to currently selected range */
+ 
 static s32 lg4ff_adjust_dfp_x_axis(s32 value, u16 range)
 {
 	u16 max_range;
@@ -332,7 +324,7 @@ int lg4ff_raw_event(struct hid_device *hdev, struct hid_report *report,
 	if (!entry)
 		return 0;
 
-	/* adjust HID report present combined pedals data */
+	 
 	if (entry->wdata.combine) {
 		switch (entry->wdata.product_id) {
 		case USB_DEVICE_ID_LOGITECH_WHEEL:
@@ -365,7 +357,7 @@ int lg4ff_raw_event(struct hid_device *hdev, struct hid_report *report,
 			return 0;
 		}
 
-		/* Compute a combined axis when wheel does not supply it */
+		 
 		rd[offset] = (0xFF + rd[offset] - rd[offset+1]) >> 1;
 		rd[offset+1] = 0x7F;
 		return 1;
@@ -429,12 +421,12 @@ static int lg4ff_play(struct input_dev *dev, void *data, struct ff_effect *effec
 
 	switch (effect->type) {
 	case FF_CONSTANT:
-		x = effect->u.ramp.start_level + 0x80;	/* 0x80 is no force */
+		x = effect->u.ramp.start_level + 0x80;	 
 		CLAMP(x);
 
 		spin_lock_irqsave(&entry->report_lock, flags);
 		if (x == 0x80) {
-			/* De-activate force in slot-1*/
+			 
 			value[0] = 0x13;
 			value[1] = 0x00;
 			value[2] = 0x00;
@@ -448,7 +440,7 @@ static int lg4ff_play(struct input_dev *dev, void *data, struct ff_effect *effec
 			return 0;
 		}
 
-		value[0] = 0x11;	/* Slot 1 */
+		value[0] = 0x11;	 
 		value[1] = 0x08;
 		value[2] = x;
 		value[3] = 0x80;
@@ -463,8 +455,7 @@ static int lg4ff_play(struct input_dev *dev, void *data, struct ff_effect *effec
 	return 0;
 }
 
-/* Sends default autocentering command compatible with
- * all wheels except Formula Force EX */
+ 
 static void lg4ff_set_autocenter_default(struct input_dev *dev, u16 magnitude)
 {
 	struct hid_device *hid = input_get_drvdata(dev);
@@ -487,7 +478,7 @@ static void lg4ff_set_autocenter_default(struct input_dev *dev, u16 magnitude)
 	}
 	value = entry->report->field[0]->value;
 
-	/* De-activate Auto-Center */
+	 
 	spin_lock_irqsave(&entry->report_lock, flags);
 	if (magnitude == 0) {
 		value[0] = 0xf5;
@@ -511,7 +502,7 @@ static void lg4ff_set_autocenter_default(struct input_dev *dev, u16 magnitude)
 		expand_b = (0x80 * 0xaaaa) + 0xff * (magnitude - 0xaaaa);
 	}
 
-	/* Adjust for non-MOMO wheels */
+	 
 	switch (entry->wdata.product_id) {
 	case USB_DEVICE_ID_LOGITECH_MOMO_WHEEL:
 	case USB_DEVICE_ID_LOGITECH_MOMO_WHEEL2:
@@ -531,7 +522,7 @@ static void lg4ff_set_autocenter_default(struct input_dev *dev, u16 magnitude)
 
 	hid_hw_request(hid, entry->report, HID_REQ_SET_REPORT);
 
-	/* Activate Auto-Center */
+	 
 	value[0] = 0x14;
 	value[1] = 0x00;
 	value[2] = 0x00;
@@ -544,7 +535,7 @@ static void lg4ff_set_autocenter_default(struct input_dev *dev, u16 magnitude)
 	spin_unlock_irqrestore(&entry->report_lock, flags);
 }
 
-/* Sends autocentering command compatible with Formula Force EX */
+ 
 static void lg4ff_set_autocenter_ffex(struct input_dev *dev, u16 magnitude)
 {
 	struct hid_device *hid = input_get_drvdata(dev);
@@ -580,7 +571,7 @@ static void lg4ff_set_autocenter_ffex(struct input_dev *dev, u16 magnitude)
 	spin_unlock_irqrestore(&entry->report_lock, flags);
 }
 
-/* Sends command to set range compatible with G25/G27/Driving Force GT */
+ 
 static void lg4ff_set_range_g25(struct hid_device *hid, u16 range)
 {
 	struct lg4ff_device_entry *entry;
@@ -615,7 +606,7 @@ static void lg4ff_set_range_g25(struct hid_device *hid, u16 range)
 	spin_unlock_irqrestore(&entry->report_lock, flags);
 }
 
-/* Sends commands to set range compatible with Driving Force Pro wheel */
+ 
 static void lg4ff_set_range_dfp(struct hid_device *hid, u16 range)
 {
 	struct lg4ff_device_entry *entry;
@@ -638,10 +629,10 @@ static void lg4ff_set_range_dfp(struct hid_device *hid, u16 range)
 	value = entry->report->field[0]->value;
 	dbg_hid("Driving Force Pro: setting range to %u\n", range);
 
-	/* Prepare "coarse" limit command */
+	 
 	spin_lock_irqsave(&entry->report_lock, flags);
 	value[0] = 0xf8;
-	value[1] = 0x00;	/* Set later */
+	value[1] = 0x00;	 
 	value[2] = 0x00;
 	value[3] = 0x00;
 	value[4] = 0x00;
@@ -657,7 +648,7 @@ static void lg4ff_set_range_dfp(struct hid_device *hid, u16 range)
 	}
 	hid_hw_request(hid, entry->report, HID_REQ_SET_REPORT);
 
-	/* Prepare "fine" limit command */
+	 
 	value[0] = 0x81;
 	value[1] = 0x0b;
 	value[2] = 0x00;
@@ -666,13 +657,13 @@ static void lg4ff_set_range_dfp(struct hid_device *hid, u16 range)
 	value[5] = 0x00;
 	value[6] = 0x00;
 
-	if (range == 200 || range == 900) {	/* Do not apply any fine limit */
+	if (range == 200 || range == 900) {	 
 		hid_hw_request(hid, entry->report, HID_REQ_SET_REPORT);
 		spin_unlock_irqrestore(&entry->report_lock, flags);
 		return;
 	}
 
-	/* Construct fine limit command */
+	 
 	start_left = (((full_range - range + 1) * 2047) / full_range);
 	start_right = 0xfff - start_left;
 
@@ -693,7 +684,7 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 		switch (target_product_id) {
 		case USB_DEVICE_ID_LOGITECH_DFP_WHEEL:
 			return &lg4ff_mode_switch_ext01_dfp;
-		/* DFP can only be switched to its native mode */
+		 
 		default:
 			return NULL;
 		}
@@ -704,7 +695,7 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 			return &lg4ff_mode_switch_ext01_dfp;
 		case USB_DEVICE_ID_LOGITECH_G25_WHEEL:
 			return &lg4ff_mode_switch_ext16_g25;
-		/* G25 can only be switched to DFP mode or its native mode */
+		 
 		default:
 			return NULL;
 		}
@@ -719,7 +710,7 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 			return &lg4ff_mode_switch_ext09_g25;
 		case USB_DEVICE_ID_LOGITECH_G27_WHEEL:
 			return &lg4ff_mode_switch_ext09_g27;
-		/* G27 can only be switched to DF-EX, DFP, G25 or its native mode */
+		 
 		default:
 			return NULL;
 		}
@@ -736,7 +727,7 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 			return &lg4ff_mode_switch_ext09_g27;
 		case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
 			return &lg4ff_mode_switch_ext09_g29;
-		/* G29 can only be switched to DF-EX, DFP, DFGT, G25, G27 or its native mode */
+		 
 		default:
 			return NULL;
 		}
@@ -749,12 +740,12 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 			return &lg4ff_mode_switch_ext09_dfp;
 		case USB_DEVICE_ID_LOGITECH_DFGT_WHEEL:
 			return &lg4ff_mode_switch_ext09_dfgt;
-		/* DFGT can only be switched to DF-EX, DFP or its native mode */
+		 
 		default:
 			return NULL;
 		}
 		break;
-	/* No other wheels have multiple modes */
+	 
 	default:
 		return NULL;
 	}
@@ -822,14 +813,14 @@ static ssize_t lg4ff_alternate_modes_show(struct device *dev, struct device_attr
 
 	for (i = 0; i < LG4FF_MODE_MAX_IDX; i++) {
 		if (entry->wdata.alternate_modes & BIT(i)) {
-			/* Print tag and full name */
+			 
 			count += scnprintf(buf + count, PAGE_SIZE - count, "%s: %s",
 					   lg4ff_alternate_modes[i].tag,
 					   !lg4ff_alternate_modes[i].product_id ? entry->wdata.real_name : lg4ff_alternate_modes[i].name);
 			if (count >= PAGE_SIZE - 1)
 				return count;
 
-			/* Mark the currently active mode with an asterisk */
+			 
 			if (lg4ff_alternate_modes[i].product_id == entry->wdata.product_id ||
 			    (lg4ff_alternate_modes[i].product_id == 0 && entry->wdata.product_id == entry->wdata.real_product_id))
 				count += scnprintf(buf + count, PAGE_SIZE - count, " *\n");
@@ -866,7 +857,7 @@ static ssize_t lg4ff_alternate_modes_store(struct device *dev, struct device_att
 		return -EINVAL;
 	}
 
-	/* Allow \n at the end of the input parameter */
+	 
 	lbuf = kasprintf(GFP_KERNEL, "%s", buf);
 	if (!lbuf)
 		return -ENOMEM;
@@ -906,19 +897,19 @@ static ssize_t lg4ff_alternate_modes_store(struct device *dev, struct device_att
 		kfree(lbuf);
 		return -EINVAL;
 	}
-	kfree(lbuf); /* Not needed anymore */
+	kfree(lbuf);  
 
-	if (target_product_id == entry->wdata.product_id) /* Nothing to do */
+	if (target_product_id == entry->wdata.product_id)  
 		return count;
 
-	/* Automatic switching has to be disabled for the switch to DF-EX mode to work correctly */
+	 
 	if (target_product_id == USB_DEVICE_ID_LOGITECH_WHEEL && !lg4ff_no_autoswitch) {
 		hid_info(hid, "\"%s\" cannot be switched to \"DF-EX\" mode. Load the \"hid_logitech\" module with \"lg4ff_no_autoswitch=1\" parameter set and try again\n",
 			 entry->wdata.real_name);
 		return -EINVAL;
 	}
 
-	/* Take care of hardware limitations */
+	 
 	if ((entry->wdata.real_product_id == USB_DEVICE_ID_LOGITECH_DFP_WHEEL || entry->wdata.real_product_id == USB_DEVICE_ID_LOGITECH_G25_WHEEL) &&
 	    entry->wdata.product_id > target_product_id) {
 		hid_info(hid, "\"%s\" cannot be switched back into \"%s\" mode\n", entry->wdata.real_name, lg4ff_alternate_modes[i].name);
@@ -988,7 +979,7 @@ static ssize_t lg4ff_combine_store(struct device *dev, struct device_attribute *
 }
 static DEVICE_ATTR(combine_pedals, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH, lg4ff_combine_show, lg4ff_combine_store);
 
-/* Export the currently set range of the wheel */
+ 
 static ssize_t lg4ff_range_show(struct device *dev, struct device_attribute *attr,
 				char *buf)
 {
@@ -1013,8 +1004,7 @@ static ssize_t lg4ff_range_show(struct device *dev, struct device_attribute *att
 	return count;
 }
 
-/* Set range to user specified value, call appropriate function
- * according to the type of the wheel */
+ 
 static ssize_t lg4ff_range_store(struct device *dev, struct device_attribute *attr,
 				 const char *buf, size_t count)
 {
@@ -1038,8 +1028,7 @@ static ssize_t lg4ff_range_store(struct device *dev, struct device_attribute *at
 	if (range == 0)
 		range = entry->wdata.max_range;
 
-	/* Check if the wheel supports range setting
-	 * and that the range is within limits for the wheel */
+	 
 	if (entry->wdata.set_range && range >= entry->wdata.min_range && range <= entry->wdata.max_range) {
 		entry->wdata.set_range(hid, range);
 		entry->wdata.range = range;
@@ -1079,7 +1068,7 @@ static ssize_t lg4ff_real_id_show(struct device *dev, struct device_attribute *a
 
 static ssize_t lg4ff_real_id_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
-	/* Real ID is a read-only value */
+	 
 	return -EPERM;
 }
 static DEVICE_ATTR(real_id, S_IRUGO, lg4ff_real_id_show, lg4ff_real_id_store);
@@ -1188,7 +1177,7 @@ static u16 lg4ff_identify_multimode_wheel(struct hid_device *hid, const u16 repo
 	u32 current_mode;
 	int i;
 
-	/* identify current mode from USB PID */
+	 
 	for (i = 1; i < ARRAY_SIZE(lg4ff_alternate_modes); i++) {
 		dbg_hid("Testing whether PID is %X\n", lg4ff_alternate_modes[i].product_id);
 		if (reported_product_id == lg4ff_alternate_modes[i].product_id)
@@ -1212,8 +1201,7 @@ static u16 lg4ff_identify_multimode_wheel(struct hid_device *hid, const u16 repo
 		}
 	}
 
-	/* No match found. This is either Driving Force or an unknown
-	 * wheel model, do not touch it */
+	 
 	dbg_hid("Wheel with bcdDevice %X was not recognized as multimode wheel, leaving in its current mode\n", bcdDevice);
 	return 0;
 }
@@ -1224,15 +1212,14 @@ static int lg4ff_handle_multimode_wheel(struct hid_device *hid, u16 *real_produc
 	int ret;
 
 	*real_product_id = lg4ff_identify_multimode_wheel(hid, reported_product_id, bcdDevice);
-	/* Probed wheel is not a multimode wheel */
+	 
 	if (!*real_product_id) {
 		*real_product_id = reported_product_id;
 		dbg_hid("Wheel is not a multimode wheel\n");
 		return LG4FF_MMODE_NOT_MULTIMODE;
 	}
 
-	/* Switch from "Driving Force" mode to native mode automatically.
-	 * Otherwise keep the wheel in its current mode */
+	 
 	if (reported_product_id == USB_DEVICE_ID_LOGITECH_WHEEL &&
 	    reported_product_id != *real_product_id &&
 	    !lg4ff_no_autoswitch) {
@@ -1245,8 +1232,7 @@ static int lg4ff_handle_multimode_wheel(struct hid_device *hid, u16 *real_produc
 
 		ret = lg4ff_switch_compatibility_mode(hid, s);
 		if (ret) {
-			/* Wheel could not have been switched to native mode,
-			 * leave it in "Driving Force" mode and continue */
+			 
 			hid_err(hid, "Unable to switch wheel mode, errno %d\n", ret);
 			return LG4FF_MMODE_IS_MULTIMODE;
 		}
@@ -1279,7 +1265,7 @@ int lg4ff_init(struct hid_device *hid)
 	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	dev = hidinput->input;
 
-	/* Check that the report looks ok */
+	 
 	if (!hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 7))
 		return -1;
 
@@ -1295,13 +1281,10 @@ int lg4ff_init(struct hid_device *hid)
 	entry->report = report;
 	drv_data->device_props = entry;
 
-	/* Check if a multimode wheel has been connected and
-	 * handle it appropriately */
+	 
 	mmode_ret = lg4ff_handle_multimode_wheel(hid, &real_product_id, bcdDevice);
 
-	/* Wheel has been told to switch to native mode. There is no point in going on
-	 * with the initialization as the wheel will do a USB reset when it switches mode
-	 */
+	 
 	if (mmode_ret == LG4FF_MMODE_SWITCHED)
 		return 0;
 	else if (mmode_ret < 0) {
@@ -1310,7 +1293,7 @@ int lg4ff_init(struct hid_device *hid)
 		goto err_init;
 	}
 
-	/* Check what wheel has been connected */
+	 
 	for (i = 0; i < ARRAY_SIZE(lg4ff_devices); i++) {
 		if (hid->product == lg4ff_devices[i].product_id) {
 			dbg_hid("Found compatible device, product ID %04X\n", lg4ff_devices[i].product_id);
@@ -1339,7 +1322,7 @@ int lg4ff_init(struct hid_device *hid)
 		}
 	}
 
-	/* Set supported force feedback capabilities */
+	 
 	for (j = 0; lg4ff_devices[i].ff_effects[j] >= 0; j++)
 		set_bit(lg4ff_devices[i].ff_effects[j], dev->ffbit);
 
@@ -1348,17 +1331,16 @@ int lg4ff_init(struct hid_device *hid)
 	if (error)
 		goto err_init;
 
-	/* Initialize device properties */
+	 
 	if (mmode_ret == LG4FF_MMODE_IS_MULTIMODE) {
 		BUG_ON(mmode_idx == -1);
 		mmode_wheel = &lg4ff_multimode_wheels[mmode_idx];
 	}
 	lg4ff_init_wheel_data(&entry->wdata, &lg4ff_devices[i], mmode_wheel, real_product_id);
 
-	/* Check if autocentering is available and
-	 * set the centering force to zero by default */
+	 
 	if (test_bit(FF_AUTOCENTER, dev->ffbit)) {
-		/* Formula Force EX expects different autocentering command */
+		 
 		if ((bcdDevice >> 8) == LG4FF_FFEX_REV_MAJ &&
 		    (bcdDevice & 0xff) == LG4FF_FFEX_REV_MIN)
 			dev->ff->set_autocenter = lg4ff_set_autocenter_ffex;
@@ -1368,7 +1350,7 @@ int lg4ff_init(struct hid_device *hid)
 		dev->ff->set_autocenter(dev, 0);
 	}
 
-	/* Create sysfs interface */
+	 
 	error = device_create_file(&hid->dev, &dev_attr_combine_pedals);
 	if (error)
 		hid_warn(hid, "Unable to create sysfs interface for \"combine\", errno %d\n", error);
@@ -1385,13 +1367,13 @@ int lg4ff_init(struct hid_device *hid)
 	}
 	dbg_hid("sysfs interface created\n");
 
-	/* Set the maximum range to start with */
+	 
 	entry->wdata.range = entry->wdata.max_range;
 	if (entry->wdata.set_range)
 		entry->wdata.set_range(hid, entry->wdata.range);
 
 #ifdef CONFIG_LEDS_CLASS
-	/* register led subsystem - G27/G29 only */
+	 
 	entry->wdata.led_state = 0;
 	for (j = 0; j < 5; j++)
 		entry->wdata.led[j] = NULL;
@@ -1427,7 +1409,7 @@ int lg4ff_init(struct hid_device *hid)
 			if (error) {
 				hid_err(hid, "failed to register LED %d. Aborting.\n", j);
 err_leds:
-				/* Deregister LEDs (if any) */
+				 
 				for (j = 0; j < 5; j++) {
 					led = entry->wdata.led[j];
 					entry->wdata.led[j] = NULL;
@@ -1436,7 +1418,7 @@ err_leds:
 					led_classdev_unregister(led);
 					kfree(led);
 				}
-				goto out;	/* Let the driver continue without LEDs */
+				goto out;	 
 			}
 		}
 	}
@@ -1463,9 +1445,9 @@ int lg4ff_deinit(struct hid_device *hid)
 	}
 	entry = drv_data->device_props;
 	if (!entry)
-		goto out; /* Nothing more to do */
+		goto out;  
 
-	/* Multimode devices will have at least the "MODE_NATIVE" bit set */
+	 
 	if (entry->wdata.alternate_modes) {
 		device_remove_file(&hid->dev, &dev_attr_real_id);
 		device_remove_file(&hid->dev, &dev_attr_alternate_modes);
@@ -1478,7 +1460,7 @@ int lg4ff_deinit(struct hid_device *hid)
 		int j;
 		struct led_classdev *led;
 
-		/* Deregister LEDs (if any) */
+		 
 		for (j = 0; j < 5; j++) {
 
 			led = entry->wdata.led[j];

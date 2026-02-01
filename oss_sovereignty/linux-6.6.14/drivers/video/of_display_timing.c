@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OF helpers for parsing display timings
- *
- * Copyright (c) 2012 Steffen Trumtrar <s.trumtrar@pengutronix.de>, Pengutronix
- *
- * based on of_videomode.c by Sascha Hauer <s.hauer@pengutronix.de>
- */
+
+ 
 #include <linux/export.h>
 #include <linux/of.h>
 #include <linux/slab.h>
 #include <video/display_timing.h>
 #include <video/of_display_timing.h>
 
-/**
- * parse_timing_property - parse timing_entry from device_node
- * @np: device_node with the property
- * @name: name of the property
- * @result: will be set to the return value
- *
- * DESCRIPTION:
- * Every display_timing can be specified with either just the typical value or
- * a range consisting of min/typ/max. This function helps handling this
- **/
+ 
 static int parse_timing_property(const struct device_node *np, const char *name,
 			  struct timing_entry *result)
 {
@@ -49,11 +34,7 @@ static int parse_timing_property(const struct device_node *np, const char *name,
 	return ret;
 }
 
-/**
- * of_parse_display_timing - parse display_timing entry from device_node
- * @np: device_node with the properties
- * @dt: display_timing that contains the result. I may be partially written in case of errors
- **/
+ 
 static int of_parse_display_timing(const struct device_node *np,
 		struct display_timing *dt)
 {
@@ -110,12 +91,7 @@ static int of_parse_display_timing(const struct device_node *np,
 	return 0;
 }
 
-/**
- * of_get_display_timing - parse a display_timing entry
- * @np: device_node with the timing subnode
- * @name: name of the timing node
- * @dt: display_timing struct to fill
- **/
+ 
 int of_get_display_timing(const struct device_node *np, const char *name,
 		struct display_timing *dt)
 {
@@ -137,10 +113,7 @@ int of_get_display_timing(const struct device_node *np, const char *name,
 }
 EXPORT_SYMBOL_GPL(of_get_display_timing);
 
-/**
- * of_get_display_timings - parse all display_timing entries from a device_node
- * @np: device_node with the subnodes
- **/
+ 
 struct display_timings *of_get_display_timings(const struct device_node *np)
 {
 	struct device_node *timings_np;
@@ -164,10 +137,10 @@ struct display_timings *of_get_display_timings(const struct device_node *np)
 	}
 
 	entry = of_parse_phandle(timings_np, "native-mode", 0);
-	/* assume first child as native mode if none provided */
+	 
 	if (!entry)
 		entry = of_get_next_child(timings_np, NULL);
-	/* if there is no child, it is useless to go on */
+	 
 	if (!entry) {
 		pr_err("%pOF: no timing specifications given\n", np);
 		goto entryfail;
@@ -179,7 +152,7 @@ struct display_timings *of_get_display_timings(const struct device_node *np)
 
 	disp->num_timings = of_get_child_count(timings_np);
 	if (disp->num_timings == 0) {
-		/* should never happen, as entry was already found above */
+		 
 		pr_err("%pOF: no timings specified\n", np);
 		goto entryfail;
 	}
@@ -208,10 +181,7 @@ struct display_timings *of_get_display_timings(const struct device_node *np)
 
 		r = of_parse_display_timing(entry, dt);
 		if (r) {
-			/*
-			 * to not encourage wrong devicetrees, fail in case of
-			 * an error
-			 */
+			 
 			pr_err("%pOF: error in timing %d\n",
 				np, disp->num_timings + 1);
 			kfree(dt);
@@ -225,10 +195,7 @@ struct display_timings *of_get_display_timings(const struct device_node *np)
 		disp->num_timings++;
 	}
 	of_node_put(timings_np);
-	/*
-	 * native_mode points to the device_node returned by of_parse_phandle
-	 * therefore call of_node_put on it
-	 */
+	 
 	of_node_put(native_mode);
 
 	pr_debug("%pOF: got %d timings. Using timing #%d as default\n",

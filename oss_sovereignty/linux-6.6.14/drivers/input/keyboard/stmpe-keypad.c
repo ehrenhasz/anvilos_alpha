@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -14,7 +10,7 @@
 #include <linux/input/matrix_keypad.h>
 #include <linux/mfd/stmpe.h>
 
-/* These are at the same addresses in all STMPE variants */
+ 
 #define STMPE_KPC_COL			0x60
 #define STMPE_KPC_ROW_MSB		0x61
 #define STMPE_KPC_ROW_LSB		0x62
@@ -54,21 +50,10 @@
 #define STMPE2401_NUM_DATA	3
 #define STMPE2403_NUM_DATA	5
 
-/* Make sure it covers all cases above */
+ 
 #define MAX_NUM_DATA		5
 
-/**
- * struct stmpe_keypad_variant - model-specific attributes
- * @auto_increment: whether the KPC_DATA_BYTE register address
- *		    auto-increments on multiple read
- * @set_pullup: whether the pins need to have their pull-ups set
- * @num_data: number of data bytes
- * @num_normal_data: number of normal keys' data bytes
- * @max_cols: maximum number of columns supported
- * @max_rows: maximum number of rows supported
- * @col_gpios: bitmask of gpios which can be used for columns
- * @row_gpios: bitmask of gpios which can be used for rows
- */
+ 
 struct stmpe_keypad_variant {
 	bool		auto_increment;
 	bool		set_pullup;
@@ -87,8 +72,8 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 		.num_normal_data	= 3,
 		.max_cols		= 8,
 		.max_rows		= 8,
-		.col_gpios		= 0x000ff,	/* GPIO 0 - 7 */
-		.row_gpios		= 0x0ff00,	/* GPIO 8 - 15 */
+		.col_gpios		= 0x000ff,	 
+		.row_gpios		= 0x0ff00,	 
 	},
 	[STMPE2401] = {
 		.auto_increment		= false,
@@ -97,8 +82,8 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 		.num_normal_data	= 2,
 		.max_cols		= 8,
 		.max_rows		= 12,
-		.col_gpios		= 0x0000ff,	/* GPIO 0 - 7*/
-		.row_gpios		= 0x1f7f00,	/* GPIO 8-14, 16-20 */
+		.col_gpios		= 0x0000ff,	 
+		.row_gpios		= 0x1f7f00,	 
 	},
 	[STMPE2403] = {
 		.auto_increment		= true,
@@ -107,25 +92,12 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
 		.num_normal_data	= 3,
 		.max_cols		= 8,
 		.max_rows		= 12,
-		.col_gpios		= 0x0000ff,	/* GPIO 0 - 7*/
-		.row_gpios		= 0x1fef00,	/* GPIO 8-14, 16-20 */
+		.col_gpios		= 0x0000ff,	 
+		.row_gpios		= 0x1fef00,	 
 	},
 };
 
-/**
- * struct stmpe_keypad - STMPE keypad state container
- * @stmpe: pointer to parent STMPE device
- * @input: spawned input device
- * @variant: STMPE variant
- * @debounce_ms: debounce interval, in ms.  Maximum is
- *		 %STMPE_KEYPAD_MAX_DEBOUNCE.
- * @scan_count: number of key scanning cycles to confirm key data.
- *		Maximum is %STMPE_KEYPAD_MAX_SCAN_COUNT.
- * @no_autorepeat: disable key autorepeat
- * @rows: bitmask for the rows
- * @cols: bitmask for the columns
- * @keymap: the keymap
- */
+ 
 struct stmpe_keypad {
 	struct stmpe *stmpe;
 	struct input_dev *input;
@@ -204,16 +176,7 @@ static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
 	int ret;
 	int i;
 
-	/*
-	 * Figure out which pins need to be set to the keypad alternate
-	 * function.
-	 *
-	 * {cols,rows}_gpios are bitmasks of which pins on the chip can be used
-	 * for the keypad.
-	 *
-	 * keypad->{cols,rows} are a bitmask of which pins (of the ones useable
-	 * for the keypad) are used on the board.
-	 */
+	 
 
 	for (i = 0; i < variant->max_cols; i++) {
 		int num = __ffs(col_gpios);
@@ -239,12 +202,7 @@ static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
 	if (ret)
 		return ret;
 
-	/*
-	 * On STMPE24xx, set pin bias to pull-up on all keypad input
-	 * pins (columns), this incidentally happen to be maximum 8 pins
-	 * and placed at GPIO0-7 so only the LSB of the pull up register
-	 * ever needs to be written.
-	 */
+	 
 	if (variant->set_pullup) {
 		u8 val;
 
@@ -252,7 +210,7 @@ static int stmpe_keypad_altfunc_init(struct stmpe_keypad *keypad)
 		if (ret)
 			return ret;
 
-		/* Do not touch unused pins, may be used for GPIO */
+		 
 		val = ret & ~pu_pins;
 		val |= pu_pins;
 

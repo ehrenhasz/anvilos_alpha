@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Kunit tests for ChromeOS Embedded Controller protocol.
- */
+
+ 
 
 #include <kunit/test.h>
 
@@ -180,12 +178,7 @@ static void cros_ec_proto_test_query_all_pretest(struct kunit *test)
 	struct cros_ec_proto_test_priv *priv = test->priv;
 	struct cros_ec_device *ec_dev = &priv->ec_dev;
 
-	/*
-	 * cros_ec_query_all() will free din and dout and allocate them again to fit the usage by
-	 * calling devm_kfree() and devm_kzalloc().  Set them to NULL as they aren't managed by
-	 * ec_dev->dev but allocated statically in struct cros_ec_proto_test_priv
-	 * (see cros_ec_proto_test_init()).
-	 */
+	 
 	ec_dev->din = NULL;
 	ec_dev->dout = NULL;
 }
@@ -197,7 +190,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
@@ -210,7 +203,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
@@ -221,7 +214,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		data->max_request_packet_size = 0xbf;
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_response_get_cmd_versions *data;
 
@@ -232,7 +225,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		data->version_mask = BIT(6) | BIT(5);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		struct ec_response_get_cmd_versions *data;
 
@@ -243,7 +236,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		data->version_mask = BIT(1);
 	}
 
-	/* For cros_ec_get_host_event_wake_mask(). */
+	 
 	{
 		struct ec_response_host_event_mask *data;
 
@@ -258,7 +251,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -276,7 +269,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, ec_dev->dout_size, 0xbe + EC_MAX_REQUEST_OVERHEAD);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -292,7 +285,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, ec_dev->max_passthru, 0xbf - sizeof(struct ec_host_request));
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_params_get_cmd_versions *data;
 
@@ -311,7 +304,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, ec_dev->mkbp_event_supported, 7);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		struct ec_params_get_cmd_versions *data;
 
@@ -330,7 +323,7 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
 		KUNIT_EXPECT_TRUE(test, ec_dev->host_sleep_v1);
 	}
 
-	/* For cros_ec_get_host_event_wake_mask(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -351,26 +344,23 @@ static void cros_ec_proto_test_query_all_no_pd_return_error(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->max_passthru = 0xbf;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -380,7 +370,7 @@ static void cros_ec_proto_test_query_all_no_pd_return_error(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -392,7 +382,7 @@ static void cros_ec_proto_test_query_all_no_pd_return_error(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -416,26 +406,23 @@ static void cros_ec_proto_test_query_all_no_pd_return0(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->max_passthru = 0xbf;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -445,7 +432,7 @@ static void cros_ec_proto_test_query_all_no_pd_return0(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -457,7 +444,7 @@ static void cros_ec_proto_test_query_all_no_pd_return0(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -481,13 +468,13 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		struct ec_response_hello *data;
 
@@ -502,7 +489,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -514,7 +501,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		struct ec_params_hello *data;
 
@@ -546,13 +533,13 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		struct ec_response_hello *data;
 
@@ -567,7 +554,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -579,7 +566,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		struct ec_params_hello *data;
 
@@ -611,13 +598,13 @@ static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, -EIO, EC_RES_SUCCESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -628,7 +615,7 @@ static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, ret, -EIO);
 	KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -640,7 +627,7 @@ static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -659,13 +646,13 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -676,7 +663,7 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, ret, -EOPNOTSUPP);
 	KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -688,7 +675,7 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -707,13 +694,13 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		struct ec_response_hello *data;
 
@@ -729,7 +716,7 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, ret, -EBADMSG);
 	KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -741,7 +728,7 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -760,13 +747,13 @@ static void cros_ec_proto_test_query_all_legacy_return0(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -777,7 +764,7 @@ static void cros_ec_proto_test_query_all_legacy_return0(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, ret, -EPROTO);
 	KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -789,7 +776,7 @@ static void cros_ec_proto_test_query_all_legacy_return0(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info_legacy(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -808,32 +795,29 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->mkbp_event_supported = 0xbf;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_response_get_cmd_versions *data;
 
@@ -848,7 +832,7 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -860,7 +844,7 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -874,7 +858,7 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_params_get_cmd_versions *data;
 
@@ -901,32 +885,29 @@ static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->mkbp_event_supported = 0xbf;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -936,7 +917,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -948,7 +929,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -962,7 +943,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_params_get_cmd_versions *data;
 
@@ -989,32 +970,29 @@ static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->mkbp_event_supported = 0xbf;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1024,7 +1002,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1036,7 +1014,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1050,7 +1028,7 @@ static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_params_get_cmd_versions *data;
 
@@ -1077,38 +1055,35 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->host_sleep_v1 = true;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		struct ec_response_get_cmd_versions *data;
 
@@ -1123,7 +1098,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1135,7 +1110,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1149,7 +1124,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1161,7 +1136,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1183,44 +1158,41 @@ static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *tes
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->host_sleep_v1 = true;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		struct ec_response_get_cmd_versions *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/* In order to pollute next cros_ec_get_host_command_version_mask(). */
+		 
 		data = (struct ec_response_get_cmd_versions *)mock->o_data;
 		data->version_mask = 0xbeef;
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1230,7 +1202,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *tes
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1242,7 +1214,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *tes
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1256,7 +1228,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *tes
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1268,7 +1240,7 @@ static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *tes
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1290,44 +1262,41 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->host_event_wake_mask = U32_MAX;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_event_wake_mask(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1337,7 +1306,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1349,7 +1318,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1363,7 +1332,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1375,7 +1344,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1387,7 +1356,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For cros_ec_get_host_event_wake_mask(). */
+	 
 	{
 		u32 mask;
 
@@ -1417,44 +1386,41 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 	struct ec_xfer_mock *mock;
 	int ret;
 
-	/* Set some garbage bytes. */
+	 
 	ec_dev->host_event_wake_mask = U32_MAX;
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		struct ec_response_get_protocol_info *data;
 
 		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 
-		/*
-		 * Although it doesn't check the value, provides valid sizes so that
-		 * cros_ec_query_all() allocates din and dout correctly.
-		 */
+		 
 		data = (struct ec_response_get_protocol_info *)mock->o_data;
 		data->max_request_packet_size = 0xbe;
 		data->max_response_packet_size = 0xef;
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For get_host_event_wake_mask(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1464,7 +1430,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 	ret = cros_ec_query_all(ec_dev);
 	KUNIT_EXPECT_EQ(test, ret, 0);
 
-	/* For cros_ec_get_proto_info() without passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1476,7 +1442,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_proto_info() with passthru. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1490,7 +1456,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for MKBP. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1502,7 +1468,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1514,7 +1480,7 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit 
 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
 	}
 
-	/* For get_host_event_wake_mask(). */
+	 
 	{
 		u32 mask;
 
@@ -1768,13 +1734,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_normal(struct kunit *test)
 
 	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS. */
+	 
 	{
 		struct ec_response_get_comms_status *data;
 
@@ -1790,13 +1756,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_normal(struct kunit *test)
 
 	KUNIT_EXPECT_EQ(test, msg.result, EC_RES_SUCCESS);
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -1823,19 +1789,19 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_retries_eagain(struct kunit 
 
 	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
+	 
 	cros_kunit_ec_xfer_mock_default_ret = -EAGAIN;
 
 	ret = cros_ec_cmd_xfer(ec_dev, &msg);
 	KUNIT_EXPECT_EQ(test, ret, -EAGAIN);
 
-	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
+	 
 	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 51);
 }
 
@@ -1851,13 +1817,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_retries_status_processing(st
 
 	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
+	 
 	{
 		struct ec_response_get_comms_status *data;
 		int i;
@@ -1874,7 +1840,7 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_retries_status_processing(st
 	ret = cros_ec_cmd_xfer(ec_dev, &msg);
 	KUNIT_EXPECT_EQ(test, ret, -EAGAIN);
 
-	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
+	 
 	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 51);
 }
 
@@ -1888,13 +1854,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_xfer_error(struct kunit *tes
 
 	memset(&msg, 0, sizeof(msg));
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, -EIO, EC_RES_SUCCESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1916,13 +1882,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_return_error(struct kunit *t
 
 	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1948,13 +1914,13 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_return0(struct kunit *test)
 
 	ec_dev->pkt_xfer = cros_kunit_ec_pkt_xfer_mock;
 
-	/* For the first host command to return EC_RES_IN_PROGRESS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_IN_PROGRESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 	}
 
-	/* For EC_CMD_GET_COMMS_STATUS. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1976,7 +1942,7 @@ static void cros_ec_proto_test_cmd_xfer_status_normal(struct kunit *test)
 
 	memset(&msg, 0, sizeof(msg));
 
-	/* For cros_ec_cmd_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -1996,7 +1962,7 @@ static void cros_ec_proto_test_cmd_xfer_status_xfer_error(struct kunit *test)
 
 	memset(&msg, 0, sizeof(msg));
 
-	/* For cros_ec_cmd_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, -EPROTO, EC_RES_SUCCESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -2022,12 +1988,7 @@ static void cros_ec_proto_test_cmd_xfer_status_return_error(struct kunit *test)
 		[EC_RES_INVALID_RESPONSE] = -EPROTO,
 		[EC_RES_INVALID_VERSION] = -ENOPROTOOPT,
 		[EC_RES_INVALID_CHECKSUM] = -EBADMSG,
-		/*
-		 * EC_RES_IN_PROGRESS is special because cros_ec_send_command() has extra logic to
-		 * handle it.  Note that default cros_kunit_ec_xfer_mock_default_ret == 0 thus
-		 * cros_ec_xfer_command() in cros_ec_wait_until_complete() returns 0.  As a result,
-		 * it returns -EPROTO without calling cros_ec_map_error().
-		 */
+		 
 		[EC_RES_IN_PROGRESS] = -EPROTO,
 		[EC_RES_UNAVAILABLE] = -ENODATA,
 		[EC_RES_TIMEOUT] = -ETIMEDOUT,
@@ -2066,11 +2027,11 @@ static void cros_ec_proto_test_get_next_event_no_mkbp_event(struct kunit *test)
 	ec_dev->max_response = 0xee;
 	ec_dev->mkbp_event_supported = 0;
 
-	/* Set some garbage bytes. */
+	 
 	wake_event = false;
 	more_events = true;
 
-	/* For get_keyboard_state_event(). */
+	 
 	{
 		union ec_response_get_next_data_v1 *data;
 
@@ -2090,7 +2051,7 @@ static void cros_ec_proto_test_get_next_event_no_mkbp_event(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, wake_event);
 	KUNIT_EXPECT_FALSE(test, more_events);
 
-	/* For get_keyboard_state_event(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2127,11 +2088,11 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_version0(struct kunit *
 	ec_dev->max_response = 0xee;
 	ec_dev->mkbp_event_supported = 1;
 
-	/* Set some garbage bytes. */
+	 
 	wake_event = true;
 	more_events = false;
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		struct ec_response_get_next_event *data;
 
@@ -2152,7 +2113,7 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_version0(struct kunit *
 	KUNIT_EXPECT_FALSE(test, wake_event);
 	KUNIT_EXPECT_TRUE(test, more_events);
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2176,11 +2137,11 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_version2(struct kunit *
 	ec_dev->max_response = 0xee;
 	ec_dev->mkbp_event_supported = 3;
 
-	/* Set some garbage bytes. */
+	 
 	wake_event = false;
 	more_events = true;
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		struct ec_response_get_next_event_v1 *data;
 
@@ -2201,7 +2162,7 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_version2(struct kunit *
 	KUNIT_EXPECT_TRUE(test, wake_event);
 	KUNIT_EXPECT_FALSE(test, more_events);
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2228,10 +2189,10 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_host_event_rtc(struct k
 	ec_dev->mkbp_event_supported = 3;
 	ec_dev->host_event_wake_mask = U32_MAX;
 
-	/* Set some garbage bytes. */
+	 
 	wake_event = true;
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test,
 						   sizeof(data->event_type) +
@@ -2250,7 +2211,7 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_host_event_rtc(struct k
 
 	KUNIT_EXPECT_FALSE(test, wake_event);
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2277,10 +2238,10 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_host_event_masked(struc
 	ec_dev->mkbp_event_supported = 3;
 	ec_dev->host_event_wake_mask = U32_MAX & ~EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED);
 
-	/* Set some garbage bytes. */
+	 
 	wake_event = true;
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_add(test,
 						   sizeof(data->event_type) +
@@ -2300,7 +2261,7 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_host_event_masked(struc
 
 	KUNIT_EXPECT_FALSE(test, wake_event);
 
-	/* For get_next_event_xfer(). */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2406,7 +2367,7 @@ static void cros_ec_proto_test_check_features_not_cached(struct kunit *test)
 	ec.features.flags[0] = -1;
 	ec.features.flags[1] = -1;
 
-	/* For EC_CMD_GET_FEATURES. */
+	 
 	{
 		struct ec_response_get_features *data;
 
@@ -2431,7 +2392,7 @@ static void cros_ec_proto_test_check_features_not_cached(struct kunit *test)
 		}
 	}
 
-	/* For EC_CMD_GET_FEATURES. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_next();
 		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
@@ -2457,7 +2418,7 @@ static void cros_ec_proto_test_get_sensor_count_normal(struct kunit *test)
 	ec.dev = ec_dev->dev;
 	ec.cmd_offset = 0;
 
-	/* For EC_CMD_MOTION_SENSE_CMD. */
+	 
 	{
 		struct ec_response_motion_sense *data;
 
@@ -2471,7 +2432,7 @@ static void cros_ec_proto_test_get_sensor_count_normal(struct kunit *test)
 	ret = cros_ec_get_sensor_count(&ec);
 	KUNIT_EXPECT_EQ(test, ret, 0xbf);
 
-	/* For EC_CMD_MOTION_SENSE_CMD. */
+	 
 	{
 		struct ec_params_motion_sense *data;
 
@@ -2502,7 +2463,7 @@ static void cros_ec_proto_test_get_sensor_count_xfer_error(struct kunit *test)
 	ec.dev = ec_dev->dev;
 	ec.cmd_offset = 0;
 
-	/* For EC_CMD_MOTION_SENSE_CMD. */
+	 
 	{
 		mock = cros_kunit_ec_xfer_mock_addx(test, -EPROTO, EC_RES_SUCCESS, 0);
 		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -2511,7 +2472,7 @@ static void cros_ec_proto_test_get_sensor_count_xfer_error(struct kunit *test)
 	ret = cros_ec_get_sensor_count(&ec);
 	KUNIT_EXPECT_EQ(test, ret, -EPROTO);
 
-	/* For EC_CMD_MOTION_SENSE_CMD. */
+	 
 	{
 		struct ec_params_motion_sense *data;
 
@@ -2551,13 +2512,13 @@ static void cros_ec_proto_test_get_sensor_count_legacy(struct kunit *test)
 	ec.cmd_offset = 0;
 
 	for (i = 0; i < ARRAY_SIZE(test_data); ++i) {
-		/* For EC_CMD_MOTION_SENSE_CMD. */
+		 
 		{
 			mock = cros_kunit_ec_xfer_mock_addx(test, -EPROTO, EC_RES_SUCCESS, 0);
 			KUNIT_ASSERT_PTR_NE(test, mock, NULL);
 		}
 
-		/* For readmem. */
+		 
 		{
 			cros_kunit_readmem_mock_data = kunit_kzalloc(test, 1, GFP_KERNEL);
 			KUNIT_ASSERT_PTR_NE(test, cros_kunit_readmem_mock_data, NULL);
@@ -2569,7 +2530,7 @@ static void cros_ec_proto_test_get_sensor_count_legacy(struct kunit *test)
 		ret = cros_ec_get_sensor_count(&ec);
 		KUNIT_EXPECT_EQ(test, ret, test_data[i].expected_result);
 
-		/* For EC_CMD_MOTION_SENSE_CMD. */
+		 
 		{
 			struct ec_params_motion_sense *data;
 
@@ -2586,7 +2547,7 @@ static void cros_ec_proto_test_get_sensor_count_legacy(struct kunit *test)
 			KUNIT_EXPECT_EQ(test, data->cmd, MOTIONSENSE_CMD_DUMP);
 		}
 
-		/* For readmem. */
+		 
 		{
 			KUNIT_EXPECT_EQ(test, cros_kunit_readmem_mock_offset, EC_MEMMAP_ACC_STATUS);
 		}

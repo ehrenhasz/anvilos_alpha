@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -26,7 +24,7 @@ static int mxs_sgtl5000_hw_params(struct snd_pcm_substream *substream,
 	u32 mclk;
 	int ret;
 
-	/* sgtl5000 does not support 512*rate when in 96000 fs */
+	 
 	switch (rate) {
 	case 96000:
 		mclk = 256 * rate;
@@ -36,7 +34,7 @@ static int mxs_sgtl5000_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
-	/* Set SGTL5000's SYSCLK (provided by SAIF MCLK) */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, SGTL5000_SYSCLK, mclk, 0);
 	if (ret) {
 		dev_err(codec_dai->dev, "Failed to set sysclk to %u.%03uMHz\n",
@@ -44,7 +42,7 @@ static int mxs_sgtl5000_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* The SAIF MCLK should be the same as SGTL5000_SYSCLK */
+	 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, MXS_SAIF_MCLK, mclk, 0);
 	if (ret) {
 		dev_err(cpu_dai->dev, "Failed to set sysclk to %u.%03uMHz\n",
@@ -137,11 +135,7 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
 	of_node_put(saif_np[0]);
 	of_node_put(saif_np[1]);
 
-	/*
-	 * Set an init clock(11.28Mhz) for sgtl5000 initialization(i2c r/w).
-	 * The Sgtl5000 sysclk is derived from saif0 mclk and it's range
-	 * should be >= 8MHz and <= 27M.
-	 */
+	 
 	ret = mxs_saif_get_mclk(0, 44100 * 256, 44100);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to get mclk\n");
@@ -176,7 +170,7 @@ static void mxs_sgtl5000_remove(struct platform_device *pdev)
 
 static const struct of_device_id mxs_sgtl5000_dt_ids[] = {
 	{ .compatible = "fsl,mxs-audio-sgtl5000", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_sgtl5000_dt_ids);
 

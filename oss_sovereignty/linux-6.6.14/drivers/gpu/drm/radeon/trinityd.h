@@ -1,36 +1,14 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 #ifndef _TRINITYD_H_
 #define _TRINITYD_H_
 
-/* pm registers */
+ 
 
-/* cg */
+ 
 #define CG_CGTT_LOCAL_0                                 0x0
 #define CG_CGTT_LOCAL_1                                 0x1
 
-/* smc */
+ 
 #define SMU_SCLK_DPM_STATE_0_CNTL_0                     0x1f000
 #       define STATE_VALID(x)                           ((x) << 0)
 #       define STATE_VALID_MASK                         (0xff << 0)
@@ -163,7 +141,7 @@
 
 #define SMU_SCRATCH0                                    0xe0003040
 
-/* mmio */
+ 
 #define SMC_INT_REQ                                     0x220
 
 #define SMC_MESSAGE_0                                   0x22c
@@ -219,7 +197,7 @@
 #define HW_REV   					0x5564
 #       define ATI_REV_ID_MASK                          (0xf << 28)
 #       define ATI_REV_ID_SHIFT                         28
-/* 0 = A0, 1 = A1, 2 = B0, 3 = C0, etc. */
+ 
 
 #define CGTS_SM_CTRL_REG                                0x9150
 

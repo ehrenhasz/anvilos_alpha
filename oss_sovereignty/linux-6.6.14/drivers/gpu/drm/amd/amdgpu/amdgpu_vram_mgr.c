@@ -1,26 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <drm/ttm/ttm_range_manager.h>
@@ -79,14 +57,7 @@ static inline bool amdgpu_is_vram_mgr_blocks_contiguous(struct list_head *head)
 
 
 
-/**
- * DOC: mem_info_vram_total
- *
- * The amdgpu driver provides a sysfs API for reporting current total VRAM
- * available on the device
- * The file mem_info_vram_total is used for this and returns the total
- * amount of VRAM in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_vram_total_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -96,14 +67,7 @@ static ssize_t amdgpu_mem_info_vram_total_show(struct device *dev,
 	return sysfs_emit(buf, "%llu\n", adev->gmc.real_vram_size);
 }
 
-/**
- * DOC: mem_info_vis_vram_total
- *
- * The amdgpu driver provides a sysfs API for reporting current total
- * visible VRAM available on the device
- * The file mem_info_vis_vram_total is used for this and returns the total
- * amount of visible VRAM in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_vis_vram_total_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -113,14 +77,7 @@ static ssize_t amdgpu_mem_info_vis_vram_total_show(struct device *dev,
 	return sysfs_emit(buf, "%llu\n", adev->gmc.visible_vram_size);
 }
 
-/**
- * DOC: mem_info_vram_used
- *
- * The amdgpu driver provides a sysfs API for reporting current total VRAM
- * available on the device
- * The file mem_info_vram_used is used for this and returns the total
- * amount of currently used VRAM in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_vram_used_show(struct device *dev,
 					      struct device_attribute *attr,
 					      char *buf)
@@ -132,14 +89,7 @@ static ssize_t amdgpu_mem_info_vram_used_show(struct device *dev,
 	return sysfs_emit(buf, "%llu\n", ttm_resource_manager_usage(man));
 }
 
-/**
- * DOC: mem_info_vis_vram_used
- *
- * The amdgpu driver provides a sysfs API for reporting current total of
- * used visible VRAM
- * The file mem_info_vis_vram_used is used for this and returns the total
- * amount of currently used visible VRAM in bytes
- */
+ 
 static ssize_t amdgpu_mem_info_vis_vram_used_show(struct device *dev,
 						  struct device_attribute *attr,
 						  char *buf)
@@ -151,14 +101,7 @@ static ssize_t amdgpu_mem_info_vis_vram_used_show(struct device *dev,
 			  amdgpu_vram_mgr_vis_usage(&adev->mman.vram_mgr));
 }
 
-/**
- * DOC: mem_info_vram_vendor
- *
- * The amdgpu driver provides a sysfs API for reporting the vendor of the
- * installed VRAM
- * The file mem_info_vram_vendor is used for this and returns the name of the
- * vendor.
- */
+ 
 static ssize_t amdgpu_mem_info_vram_vendor(struct device *dev,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -216,14 +159,7 @@ const struct attribute_group amdgpu_vram_mgr_attr_group = {
 	.attrs = amdgpu_vram_mgr_attributes
 };
 
-/**
- * amdgpu_vram_mgr_vis_size - Calculate visible block size
- *
- * @adev: amdgpu_device pointer
- * @block: DRM BUDDY block structure
- *
- * Calculate how many bytes of the DRM BUDDY block are inside visible VRAM
- */
+ 
 static u64 amdgpu_vram_mgr_vis_size(struct amdgpu_device *adev,
 				    struct drm_buddy_block *block)
 {
@@ -237,14 +173,7 @@ static u64 amdgpu_vram_mgr_vis_size(struct amdgpu_device *adev,
 		adev->gmc.visible_vram_size : end) - start;
 }
 
-/**
- * amdgpu_vram_mgr_bo_visible_size - CPU visible BO size
- *
- * @bo: &amdgpu_bo buffer object (must be in VRAM)
- *
- * Returns:
- * How much of the given &amdgpu_bo buffer object lies in CPU visible VRAM.
- */
+ 
 u64 amdgpu_vram_mgr_bo_visible_size(struct amdgpu_bo *bo)
 {
 	struct amdgpu_device *adev = amdgpu_ttm_adev(bo->tbo.bdev);
@@ -265,7 +194,7 @@ u64 amdgpu_vram_mgr_bo_visible_size(struct amdgpu_bo *bo)
 	return usage;
 }
 
-/* Commit the reservation of VRAM pages */
+ 
 static void amdgpu_vram_mgr_do_reserve(struct ttm_resource_manager *man)
 {
 	struct amdgpu_vram_mgr *mgr = to_vram_mgr(man);
@@ -297,15 +226,7 @@ static void amdgpu_vram_mgr_do_reserve(struct ttm_resource_manager *man)
 	}
 }
 
-/**
- * amdgpu_vram_mgr_reserve_range - Reserve a range from VRAM
- *
- * @mgr: amdgpu_vram_mgr pointer
- * @start: start address of the range in VRAM
- * @size: size of the range
- *
- * Reserve memory from start address with the specified size in VRAM
- */
+ 
 int amdgpu_vram_mgr_reserve_range(struct amdgpu_vram_mgr *mgr,
 				  uint64_t start, uint64_t size)
 {
@@ -329,17 +250,7 @@ int amdgpu_vram_mgr_reserve_range(struct amdgpu_vram_mgr *mgr,
 	return 0;
 }
 
-/**
- * amdgpu_vram_mgr_query_page_status - query the reservation status
- *
- * @mgr: amdgpu_vram_mgr pointer
- * @start: start address of a page in VRAM
- *
- * Returns:
- *	-EBUSY: the page is still hold and in pending list
- *	0: the page has been reserved
- *	-ENOENT: the input page is not a reservation
- */
+ 
 int amdgpu_vram_mgr_query_page_status(struct amdgpu_vram_mgr *mgr,
 				      uint64_t start)
 {
@@ -409,16 +320,7 @@ static int amdgpu_dummy_vram_mgr_new(struct ttm_resource_manager *man,
 	return -ENOSPC;
 }
 
-/**
- * amdgpu_vram_mgr_new - allocate new ranges
- *
- * @man: TTM memory type manager
- * @tbo: TTM BO we need this range for
- * @place: placement flags and restrictions
- * @res: the resulting mem object
- *
- * Allocate VRAM for the given BO.
- */
+ 
 static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 			       struct ttm_buffer_object *tbo,
 			       const struct ttm_place *place,
@@ -450,7 +352,7 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 		pages_per_block = HPAGE_PMD_NR;
 #else
-		/* default to 2MB */
+		 
 		pages_per_block = 2UL << (20UL - PAGE_SHIFT);
 #endif
 		pages_per_block = max_t(uint32_t, pages_per_block,
@@ -463,7 +365,7 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 
 	ttm_resource_init(tbo, place, &vres->base);
 
-	/* bail out quickly if there's likely not enough VRAM for this BO */
+	 
 	if (ttm_resource_manager_usage(man) > max_bytes) {
 		r = -ENOSPC;
 		goto error_fini;
@@ -475,7 +377,7 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 		vres->flags |= DRM_BUDDY_TOPDOWN_ALLOCATION;
 
 	if (fpfn || lpfn != mgr->mm.size)
-		/* Allocate blocks in desired range */
+		 
 		vres->flags |= DRM_BUDDY_RANGE_ALLOCATION;
 
 	remaining_size = (u64)vres->base.size;
@@ -489,7 +391,7 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 
 		BUG_ON(min_block_size < mm->chunk_size);
 
-		/* Limit maximum size to 2GiB due to SG table limitations */
+		 
 		size = min(remaining_size, 2ULL << 30);
 
 		if ((size >= (u64)pages_per_block << PAGE_SHIFT) &&
@@ -499,17 +401,11 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 		cur_size = size;
 
 		if (fpfn + size != (u64)place->lpfn << PAGE_SHIFT) {
-			/*
-			 * Except for actual range allocation, modify the size and
-			 * min_block_size conforming to continuous flag enablement
-			 */
+			 
 			if (place->flags & TTM_PL_FLAG_CONTIGUOUS) {
 				size = roundup_pow_of_two(size);
 				min_block_size = size;
-			/*
-			 * Modify the size value if size is not
-			 * aligned with min_block_size
-			 */
+			 
 			} else if (!IS_ALIGNED(size, min_block_size)) {
 				size = round_up(size, min_block_size);
 			}
@@ -540,18 +436,12 @@ static int amdgpu_vram_mgr_new(struct ttm_resource_manager *man,
 		trim_list = &vres->blocks;
 		original_size = (u64)vres->base.size;
 
-		/*
-		 * If size value is rounded up to min_block_size, trim the last
-		 * block to the required size
-		 */
+		 
 		if (!list_is_singular(&vres->blocks)) {
 			block = list_last_entry(&vres->blocks, typeof(*block), link);
 			list_move_tail(&block->link, &temp);
 			trim_list = &temp;
-			/*
-			 * Compute the original_size value by subtracting the
-			 * last block size with (aligned size - original size)
-			 */
+			 
 			original_size = amdgpu_vram_mgr_block_size(block) - (size - cur_size);
 		}
 
@@ -604,14 +494,7 @@ error_fini:
 	return r;
 }
 
-/**
- * amdgpu_vram_mgr_del - free ranges
- *
- * @man: TTM memory type manager
- * @res: TTM memory object
- *
- * Free the allocated VRAM again.
- */
+ 
 static void amdgpu_vram_mgr_del(struct ttm_resource_manager *man,
 				struct ttm_resource *res)
 {
@@ -637,19 +520,7 @@ static void amdgpu_vram_mgr_del(struct ttm_resource_manager *man,
 	kfree(vres);
 }
 
-/**
- * amdgpu_vram_mgr_alloc_sgt - allocate and fill a sg table
- *
- * @adev: amdgpu device pointer
- * @res: TTM memory object
- * @offset: byte offset from the base of VRAM BO
- * @length: number of bytes to export in sg_table
- * @dev: the other device
- * @dir: dma direction
- * @sgt: resulting sg table
- *
- * Allocate and fill a sg table from a VRAM allocation.
- */
+ 
 int amdgpu_vram_mgr_alloc_sgt(struct amdgpu_device *adev,
 			      struct ttm_resource *res,
 			      u64 offset, u64 length,
@@ -666,7 +537,7 @@ int amdgpu_vram_mgr_alloc_sgt(struct amdgpu_device *adev,
 	if (!*sgt)
 		return -ENOMEM;
 
-	/* Determine the number of DRM_BUDDY blocks to export */
+	 
 	amdgpu_res_first(res, offset, length, &cursor);
 	while (cursor.remaining) {
 		num_entries++;
@@ -677,16 +548,11 @@ int amdgpu_vram_mgr_alloc_sgt(struct amdgpu_device *adev,
 	if (r)
 		goto error_free;
 
-	/* Initialize scatterlist nodes of sg_table */
+	 
 	for_each_sgtable_sg((*sgt), sg, i)
 		sg->length = 0;
 
-	/*
-	 * Walk down DRM_BUDDY blocks to populate scatterlist nodes
-	 * @note: Use iterator api to get first the DRM_BUDDY block
-	 * and the number of bytes from it. Access the following
-	 * DRM_BUDDY block(s) if more buffer needs to exported
-	 */
+	 
 	amdgpu_res_first(res, offset, length, &cursor);
 	for_each_sgtable_sg((*sgt), sg, i) {
 		phys_addr_t phys = cursor.start + adev->gmc.aper_base;
@@ -724,15 +590,7 @@ error_free:
 	return r;
 }
 
-/**
- * amdgpu_vram_mgr_free_sgt - allocate and fill a sg table
- *
- * @dev: device pointer
- * @dir: data direction of resource to unmap
- * @sgt: sg table to free
- *
- * Free a previously allocate sg table.
- */
+ 
 void amdgpu_vram_mgr_free_sgt(struct device *dev,
 			      enum dma_data_direction dir,
 			      struct sg_table *sgt)
@@ -748,28 +606,13 @@ void amdgpu_vram_mgr_free_sgt(struct device *dev,
 	kfree(sgt);
 }
 
-/**
- * amdgpu_vram_mgr_vis_usage - how many bytes are used in the visible part
- *
- * @mgr: amdgpu_vram_mgr pointer
- *
- * Returns how many bytes are used in the visible part of VRAM
- */
+ 
 uint64_t amdgpu_vram_mgr_vis_usage(struct amdgpu_vram_mgr *mgr)
 {
 	return atomic64_read(&mgr->vis_usage);
 }
 
-/**
- * amdgpu_vram_mgr_intersects - test each drm buddy block for intersection
- *
- * @man: TTM memory type manager
- * @res: The resource to test
- * @place: The place to test against
- * @size: Size of the new allocation
- *
- * Test each drm buddy block for intersection for eviction decision.
- */
+ 
 static bool amdgpu_vram_mgr_intersects(struct ttm_resource_manager *man,
 				       struct ttm_resource *res,
 				       const struct ttm_place *place,
@@ -778,7 +621,7 @@ static bool amdgpu_vram_mgr_intersects(struct ttm_resource_manager *man,
 	struct amdgpu_vram_mgr_resource *mgr = to_amdgpu_vram_mgr_resource(res);
 	struct drm_buddy_block *block;
 
-	/* Check each drm buddy block individually */
+	 
 	list_for_each_entry(block, &mgr->blocks, link) {
 		unsigned long fpfn =
 			amdgpu_vram_mgr_block_start(block) >> PAGE_SHIFT;
@@ -793,16 +636,7 @@ static bool amdgpu_vram_mgr_intersects(struct ttm_resource_manager *man,
 	return false;
 }
 
-/**
- * amdgpu_vram_mgr_compatible - test each drm buddy block for compatibility
- *
- * @man: TTM memory type manager
- * @res: The resource to test
- * @place: The place to test against
- * @size: Size of the new allocation
- *
- * Test each drm buddy block for placement compatibility.
- */
+ 
 static bool amdgpu_vram_mgr_compatible(struct ttm_resource_manager *man,
 				       struct ttm_resource *res,
 				       const struct ttm_place *place,
@@ -811,7 +645,7 @@ static bool amdgpu_vram_mgr_compatible(struct ttm_resource_manager *man,
 	struct amdgpu_vram_mgr_resource *mgr = to_amdgpu_vram_mgr_resource(res);
 	struct drm_buddy_block *block;
 
-	/* Check each drm buddy block individually */
+	 
 	list_for_each_entry(block, &mgr->blocks, link) {
 		unsigned long fpfn =
 			amdgpu_vram_mgr_block_start(block) >> PAGE_SHIFT;
@@ -826,14 +660,7 @@ static bool amdgpu_vram_mgr_compatible(struct ttm_resource_manager *man,
 	return true;
 }
 
-/**
- * amdgpu_vram_mgr_debug - dump VRAM table
- *
- * @man: TTM memory type manager
- * @printer: DRM printer to use
- *
- * Dump the table content using printk.
- */
+ 
 static void amdgpu_vram_mgr_debug(struct ttm_resource_manager *man,
 				  struct drm_printer *printer)
 {
@@ -873,13 +700,7 @@ static const struct ttm_resource_manager_func amdgpu_vram_mgr_func = {
 	.debug	= amdgpu_vram_mgr_debug
 };
 
-/**
- * amdgpu_vram_mgr_init - init VRAM manager and DRM MM
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate and initialize the VRAM manager.
- */
+ 
 int amdgpu_vram_mgr_init(struct amdgpu_device *adev)
 {
 	struct amdgpu_vram_mgr *mgr = &adev->mman.vram_mgr;
@@ -910,14 +731,7 @@ int amdgpu_vram_mgr_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_vram_mgr_fini - free and destroy VRAM manager
- *
- * @adev: amdgpu_device pointer
- *
- * Destroy and free the VRAM manager, returns -EBUSY if ranges are still
- * allocated inside it.
- */
+ 
 void amdgpu_vram_mgr_fini(struct amdgpu_device *adev)
 {
 	struct amdgpu_vram_mgr *mgr = &adev->mman.vram_mgr;

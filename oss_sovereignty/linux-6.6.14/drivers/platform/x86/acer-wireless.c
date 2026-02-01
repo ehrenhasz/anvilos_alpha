@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Acer Wireless Radio Control Driver
- *
- * Copyright (C) 2017 Endless Mobile, Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/input.h>

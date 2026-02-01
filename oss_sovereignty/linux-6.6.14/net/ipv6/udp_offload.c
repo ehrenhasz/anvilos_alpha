@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV6 GSO/GRO offload support
- *	Linux INET6 implementation
- *
- *      UDPv6 GSO support
- */
+
+ 
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <linux/indirect_call_wrapper.h>
@@ -50,9 +45,7 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		if (unlikely(skb->len <= mss))
 			goto out;
 
-		/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
-		 * do checksum of UDP packets sent as multiple IP fragments.
-		 */
+		 
 
 		uh = udp_hdr(skb);
 		ipv6h = ipv6_hdr(skb);
@@ -66,23 +59,18 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 
-		/* If there is no outer header we can fake a checksum offload
-		 * due to the fact that we have already done the checksum in
-		 * software prior to segmenting the frame.
-		 */
+		 
 		if (!skb->encap_hdr_csum)
 			features |= NETIF_F_HW_CSUM;
 
-		/* Check if there is enough headroom to insert fragment header. */
+		 
 		tnl_hlen = skb_tnl_header_len(skb);
 		if (skb->mac_header < (tnl_hlen + frag_hdr_sz)) {
 			if (gso_pskb_expand_head(skb, tnl_hlen + frag_hdr_sz))
 				goto out;
 		}
 
-		/* Find the unfragmentable header and shift it left by frag_hdr_sz
-		 * bytes to insert fragment header.
-		 */
+		 
 		err = ip6_find_1stfragopt(skb, &prevhdr);
 		if (err < 0)
 			return ERR_PTR(err);
@@ -103,9 +91,7 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		fptr->reserved = 0;
 		fptr->identification = ipv6_proxy_select_ident(dev_net(skb->dev), skb);
 
-		/* Fragment the skb. ipv6 header and the remaining fields of the
-		 * fragment header are updated in ipv6_gso_segment()
-		 */
+		 
 		segs = skb_segment(skb, features);
 	}
 
@@ -137,7 +123,7 @@ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
 	if (unlikely(!uh))
 		goto flush;
 
-	/* Don't bother verifying checksum if we're going to flush anyway. */
+	 
 	if (NAPI_GRO_CB(skb)->flush)
 		goto skip;
 
@@ -167,7 +153,7 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
 
-	/* do fraglist only if there is no outer UDP encap (or we already processed it) */
+	 
 	if (NAPI_GRO_CB(skb)->is_flist && !NAPI_GRO_CB(skb)->encap_mark) {
 		uh->len = htons(skb->len - nhoff);
 

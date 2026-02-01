@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Compare and figure out the top N hottest streams
- * Copyright (c) 2020, Intel Corporation.
- * Author: Jin Yao
- */
+
+ 
 
 #include <inttypes.h>
 #include <stdlib.h>
@@ -64,9 +60,7 @@ err:
 	return NULL;
 }
 
-/*
- * The cnodes with high hit number are hot callchains.
- */
+ 
 static void evsel_streams__set_hot_cnode(struct evsel_streams *es,
 					 struct callchain_node *cnode)
 {
@@ -80,10 +74,7 @@ static void evsel_streams__set_hot_cnode(struct evsel_streams *es,
 		return;
 	}
 
-	/*
-	 * Considering a few number of hot streams, only use simple
-	 * way to find the cnode with smallest hit number and replace.
-	 */
+	 
 	hit = (es->streams[0].cnode)->hit;
 	for (i = 1; i < es->nr_streams; i++) {
 		if ((es->streams[i].cnode)->hit < hit) {

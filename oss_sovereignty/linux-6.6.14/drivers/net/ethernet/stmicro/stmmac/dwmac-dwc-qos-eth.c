@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys DWC Ethernet Quality-of-Service v4.10a linux driver
- *
- * Copyright (C) 2016 Joao Pinto <jpinto@synopsys.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -56,36 +52,24 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
 							      "snps,en-lpi");
 	if (device_property_read_u32(dev, "snps,write-requests",
 				     &plat_dat->axi->axi_wr_osr_lmt)) {
-		/**
-		 * Since the register has a reset value of 1, if property
-		 * is missing, default to 1.
-		 */
+		 
 		plat_dat->axi->axi_wr_osr_lmt = 1;
 	} else {
-		/**
-		 * If property exists, to keep the behavior from dwc_eth_qos,
-		 * subtract one after parsing.
-		 */
+		 
 		plat_dat->axi->axi_wr_osr_lmt--;
 	}
 
 	if (device_property_read_u32(dev, "snps,read-requests",
 				     &plat_dat->axi->axi_rd_osr_lmt)) {
-		/**
-		 * Since the register has a reset value of 1, if property
-		 * is missing, default to 1.
-		 */
+		 
 		plat_dat->axi->axi_rd_osr_lmt = 1;
 	} else {
-		/**
-		 * If property exists, to keep the behavior from dwc_eth_qos,
-		 * subtract one after parsing.
-		 */
+		 
 		plat_dat->axi->axi_rd_osr_lmt--;
 	}
 	device_property_read_u32(dev, "snps,burst-map", &burst_map);
 
-	/* converts burst-map bitmask to burst array */
+	 
 	for (bit_index = 0; bit_index < 7; bit_index++) {
 		if (burst_map & (1 << bit_index)) {
 			switch (bit_index) {
@@ -110,7 +94,7 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
 		}
 	}
 
-	/* dwc-qos needs GMAC4, AAL, TSO and PMT */
+	 
 	plat_dat->has_gmac4 = 1;
 	plat_dat->dma_cfg->aal = 1;
 	plat_dat->flags |= STMMAC_FLAG_TSO_EN;
@@ -207,7 +191,7 @@ static void tegra_eqos_fix_speed(void *priv, unsigned int speed, unsigned int mo
 	}
 
 	if (needs_calibration) {
-		/* calibrate */
+		 
 		value = readl(eqos->regs + SDMEMCOMPPADCTRL);
 		value |= SDMEMCOMPPADCTRL_PAD_E_INPUT_OR_E_PWRD;
 		writel(value, eqos->regs + SDMEMCOMPPADCTRL);
@@ -334,7 +318,7 @@ static int tegra_eqos_probe(struct platform_device *pdev,
 	usleep_range(2000, 4000);
 	gpiod_set_value(eqos->reset, 0);
 
-	/* MDIO bus was already reset just above */
+	 
 	data->mdio_bus_data->needs_reset = false;
 
 	eqos->rst = devm_reset_control_get(&pdev->dev, "eqos");
@@ -422,10 +406,7 @@ static int dwc_eth_dwmac_probe(struct platform_device *pdev)
 
 	memset(&stmmac_res, 0, sizeof(struct stmmac_resources));
 
-	/**
-	 * Since stmmac_platform supports name IRQ only, basic platform
-	 * resource initialization is done in the glue logic.
-	 */
+	 
 	stmmac_res.irq = platform_get_irq(pdev, 0);
 	if (stmmac_res.irq < 0)
 		return stmmac_res.irq;

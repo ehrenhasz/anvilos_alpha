@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2010 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "nv04.h"
 #include "fbmem.h"
 
@@ -45,7 +21,7 @@ nv10_devinit_meminit(struct nvkm_devinit *init)
 	else
 		mem_width_count = 2;
 
-	/* Map the framebuffer aperture */
+	 
 	fb = fbmem_init(device);
 	if (!fb) {
 		nvkm_error(subdev, "failed to map fb\n");
@@ -54,7 +30,7 @@ nv10_devinit_meminit(struct nvkm_devinit *init)
 
 	nvkm_wr32(device, NV10_PFB_REFCTRL, NV10_PFB_REFCTRL_VALID_1);
 
-	/* Probe memory bus width */
+	 
 	for (i = 0; i < mem_width_count; i++) {
 		nvkm_mask(device, NV04_PFB_CFG0, 0x30, mem_width[i]);
 
@@ -73,7 +49,7 @@ nv10_devinit_meminit(struct nvkm_devinit *init)
 mem_width_found:
 	patt <<= 1;
 
-	/* Probe amount of installed memory */
+	 
 	for (i = 0; i < 4; i++) {
 		int off = nvkm_rd32(device, 0x10020c) - 0x100000;
 
@@ -89,7 +65,7 @@ mem_width_found:
 			goto amount_found;
 	}
 
-	/* IC missing - disable the upper half memory space. */
+	 
 	nvkm_mask(device, NV04_PFB_CFG0, 0x1000, 0);
 
 amount_found:

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains the iSCSI Target DataIN value generation functions.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <scsi/iscsi_proto.h>
@@ -72,9 +65,7 @@ struct iscsi_datain_req *iscsit_get_datain_req(struct iscsit_cmd *cmd)
 				cmd_datain_node);
 }
 
-/*
- *	For Normal and Recovery DataSequenceInOrder=Yes and DataPDUInOrder=Yes.
- */
+ 
 static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_yes(
 	struct iscsit_cmd *cmd,
 	struct iscsi_datain *datain)
@@ -170,9 +161,7 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_yes(
 	return dr;
 }
 
-/*
- *	For Normal and Recovery DataSequenceInOrder=No and DataPDUInOrder=Yes.
- */
+ 
 static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
 	struct iscsit_cmd *cmd,
 	struct iscsi_datain *datain)
@@ -291,9 +280,7 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
 	return dr;
 }
 
-/*
- *	For Normal and Recovery DataSequenceInOrder=Yes and DataPDUInOrder=No.
- */
+ 
 static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
 	struct iscsit_cmd *cmd,
 	struct iscsi_datain *datain)
@@ -390,9 +377,7 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
 	return dr;
 }
 
-/*
- *	For Normal and Recovery DataSequenceInOrder=No and DataPDUInOrder=No.
- */
+ 
 static struct iscsi_datain_req *iscsit_set_datain_values_no_and_no(
 	struct iscsit_cmd *cmd,
 	struct iscsi_datain *datain)

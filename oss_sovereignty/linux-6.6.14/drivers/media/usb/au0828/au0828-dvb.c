@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Auvitek USB bridge
- *
- *  Copyright (c) 2008 Steven Toth <stoth@linuxtv.org>
- */
+
+ 
 
 #include "au0828.h"
 
@@ -29,9 +25,9 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 #define _BULKPIPESIZE 0xe522
 
 static u8 hauppauge_hvr950q_led_states[] = {
-	0x00, /* off */
-	0x02, /* yellow */
-	0x04, /* green */
+	0x00,  
+	0x02,  
+	0x04,  
 };
 
 static struct au8522_led_config hauppauge_hvr950q_led_cfg = {
@@ -43,9 +39,9 @@ static struct au8522_led_config hauppauge_hvr950q_led_cfg = {
 	.led_states  = hauppauge_hvr950q_led_states,
 	.num_led_states = sizeof(hauppauge_hvr950q_led_states),
 
-	.vsb8_strong   = 20 /* dB */ * 10,
-	.qam64_strong  = 25 /* dB */ * 10,
-	.qam256_strong = 32 /* dB */ * 10,
+	.vsb8_strong   = 20   * 10,
+	.qam64_strong  = 25   * 10,
+	.qam256_strong = 32   * 10,
 };
 
 static struct au8522_config hauppauge_hvr950q_config = {
@@ -104,7 +100,7 @@ static void au0828_bulk_timeout(struct timer_list *t)
 	schedule_work(&dev->restart_streaming);
 }
 
-/*-------------------------------------------------------------------*/
+ 
 static void urb_completion(struct urb *purb)
 {
 	struct au0828_dev *dev = purb->context;
@@ -129,8 +125,7 @@ static void urb_completion(struct urb *purb)
 		return;
 	}
 
-	/* See if the stream is corrupted (to work around a hardware
-	   bug where the stream gets misaligned */
+	 
 	ptr = purb->transfer_buffer;
 	if (purb->actual_length > 0 && ptr[0] != 0x47) {
 		dprintk(1, "Need to restart streaming %02x len=%d!\n",
@@ -138,22 +133,20 @@ static void urb_completion(struct urb *purb)
 		schedule_work(&dev->restart_streaming);
 		return;
 	} else if (dev->bulk_timeout_running == 1) {
-		/* The URB handler has fired, so cancel timer which would
-		 * restart endpoint if we hadn't
-		 */
+		 
 		dprintk(1, "%s cancelling bulk timeout\n", __func__);
 		dev->bulk_timeout_running = 0;
 		del_timer(&dev->bulk_timeout);
 	}
 
-	/* Feed the transport payload into the kernel demux */
+	 
 	dvb_dmx_swfilter_packets(&dev->dvb.demux,
 		purb->transfer_buffer, purb->actual_length / 188);
 
-	/* Clean the buffer before we requeue */
+	 
 	memset(purb->transfer_buffer, 0, URB_BUFSIZE);
 
-	/* Requeue URB */
+	 
 	usb_submit_urb(purb, GFP_ATOMIC);
 }
 
@@ -244,7 +237,7 @@ static int start_urb_transfer(struct au0828_dev *dev)
 
 	dev->urb_streaming = true;
 
-	/* If we don't valid data within 1 second, restart stream */
+	 
 	mod_timer(&dev->bulk_timeout, jiffies + (HZ));
 	dev->bulk_timeout_running = 1;
 
@@ -288,12 +281,12 @@ static int au0828_dvb_start_feed(struct dvb_demux_feed *feed)
 		dprintk(1, "%s(), start_count: %d, stop_count: %d\n", __func__,
 			dvb->start_count, dvb->stop_count);
 		if (dvb->feeding++ == 0) {
-			/* Start transport */
+			 
 			au0828_start_transport(dev);
 			ret = start_urb_transfer(dev);
 			if (ret < 0) {
 				au0828_stop_transport(dev, 0);
-				dvb->feeding--;	/* We ran out of memory... */
+				dvb->feeding--;	 
 			}
 		}
 		mutex_unlock(&dvb->lock);
@@ -321,7 +314,7 @@ static int au0828_dvb_stop_feed(struct dvb_demux_feed *feed)
 		if (dvb->feeding > 0) {
 			dvb->feeding--;
 			if (dvb->feeding == 0) {
-				/* Stop transport */
+				 
 				ret = stop_urb_transfer(dev);
 				au0828_stop_transport(dev, 0);
 			}
@@ -345,11 +338,11 @@ static void au0828_restart_dvb_streaming(struct work_struct *work)
 
 	mutex_lock(&dvb->lock);
 
-	/* Stop transport */
+	 
 	stop_urb_transfer(dev);
 	au0828_stop_transport(dev, 1);
 
-	/* Start transport */
+	 
 	au0828_start_transport(dev);
 	start_urb_transfer(dev);
 
@@ -367,10 +360,7 @@ static int au0828_set_frontend(struct dvb_frontend *fe)
 	if (was_streaming) {
 		au0828_stop_transport(dev, 1);
 
-		/*
-		 * We can't hold a mutex here, as the restart_streaming
-		 * kthread may also hold it.
-		 */
+		 
 		mutex_unlock(&dvb->lock);
 		cancel_work_sync(&dev->restart_streaming);
 		mutex_lock(&dvb->lock);
@@ -416,7 +406,7 @@ static int dvb_register(struct au0828_dev *dev)
 
 	INIT_WORK(&dev->restart_streaming, au0828_restart_dvb_streaming);
 
-	/* register adapter */
+	 
 	result = dvb_register_adapter(&dvb->adapter,
 				      KBUILD_MODNAME, THIS_MODULE,
 				      &dev->usbdev->dev, adapter_nr);
@@ -432,7 +422,7 @@ static int dvb_register(struct au0828_dev *dev)
 
 	dvb->adapter.priv = dev;
 
-	/* register frontend */
+	 
 	result = dvb_register_frontend(&dvb->adapter, dvb->frontend);
 	if (result < 0) {
 		pr_err("dvb_register_frontend failed (errno = %d)\n",
@@ -440,11 +430,11 @@ static int dvb_register(struct au0828_dev *dev)
 		goto fail_frontend;
 	}
 
-	/* Hook dvb frontend */
+	 
 	dvb->set_frontend = dvb->frontend->ops.set_frontend;
 	dvb->frontend->ops.set_frontend = au0828_set_frontend;
 
-	/* register demux stuff */
+	 
 	dvb->demux.dmx.capabilities =
 		DMX_TS_FILTERING | DMX_SECTION_FILTERING |
 		DMX_MEMORY_BASED_FILTERING;
@@ -490,7 +480,7 @@ static int dvb_register(struct au0828_dev *dev)
 		goto fail_fe_conn;
 	}
 
-	/* register network adapter */
+	 
 	dvb_net_init(&dvb->adapter, &dvb->net, &dvb->demux.dmx);
 
 	dvb->start_count = 0;
@@ -556,10 +546,7 @@ void au0828_dvb_unregister(struct au0828_dev *dev)
 	dvb->frontend = NULL;
 }
 
-/* All the DVB attach calls go here, this function gets modified
- * for each new card. No other function in this file needs
- * to change.
- */
+ 
 int au0828_dvb_register(struct au0828_dev *dev)
 {
 	struct au0828_dvb *dvb = &dev->dvb;
@@ -567,7 +554,7 @@ int au0828_dvb_register(struct au0828_dev *dev)
 
 	dprintk(1, "%s()\n", __func__);
 
-	/* init frontend */
+	 
 	switch (dev->boardnr) {
 	case AU0828_BOARD_HAUPPAUGE_HVR850:
 	case AU0828_BOARD_HAUPPAUGE_HVR950Q:
@@ -626,10 +613,10 @@ int au0828_dvb_register(struct au0828_dev *dev)
 		       __func__);
 		return -1;
 	}
-	/* define general-purpose callback pointer */
+	 
 	dvb->frontend->callback = au0828_tuner_callback;
 
-	/* register everything */
+	 
 	ret = dvb_register(dev);
 	if (ret < 0) {
 		if (dvb->frontend->ops.release)
@@ -651,14 +638,14 @@ void au0828_dvb_suspend(struct au0828_dev *dev)
 	if (dvb->frontend) {
 		if (dev->urb_streaming) {
 			cancel_work_sync(&dev->restart_streaming);
-			/* Stop transport */
+			 
 			mutex_lock(&dvb->lock);
 			stop_urb_transfer(dev);
 			au0828_stop_transport(dev, 1);
 			mutex_unlock(&dvb->lock);
 			dev->need_urb_start = true;
 		}
-		/* suspend frontend - does tuner and fe to sleep */
+		 
 		rc = dvb_frontend_suspend(dvb->frontend);
 		pr_info("au0828_dvb_suspend(): Suspending DVB fe %d\n", rc);
 	}
@@ -670,11 +657,11 @@ void au0828_dvb_resume(struct au0828_dev *dev)
 	int rc;
 
 	if (dvb->frontend) {
-		/* resume frontend - does fe and tuner init */
+		 
 		rc = dvb_frontend_resume(dvb->frontend);
 		pr_info("au0828_dvb_resume(): Resuming DVB fe %d\n", rc);
 		if (dev->need_urb_start) {
-			/* Start transport */
+			 
 			mutex_lock(&dvb->lock);
 			au0828_start_transport(dev);
 			start_urb_transfer(dev);

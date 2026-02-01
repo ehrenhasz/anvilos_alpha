@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for STM32 Independent Watchdog
- *
- * Copyright (C) STMicroelectronics 2017
- * Author: Yannick Fertre <yannick.fertre@st.com> for STMicroelectronics.
- *
- * This driver is based on tegra_wdt.c
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,32 +12,32 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/* IWDG registers */
-#define IWDG_KR		0x00 /* Key register */
-#define IWDG_PR		0x04 /* Prescaler Register */
-#define IWDG_RLR	0x08 /* ReLoad Register */
-#define IWDG_SR		0x0C /* Status Register */
-#define IWDG_WINR	0x10 /* Windows Register */
+ 
+#define IWDG_KR		0x00  
+#define IWDG_PR		0x04  
+#define IWDG_RLR	0x08  
+#define IWDG_SR		0x0C  
+#define IWDG_WINR	0x10  
 
-/* IWDG_KR register bit mask */
-#define KR_KEY_RELOAD	0xAAAA /* reload counter enable */
-#define KR_KEY_ENABLE	0xCCCC /* peripheral enable */
-#define KR_KEY_EWA	0x5555 /* write access enable */
-#define KR_KEY_DWA	0x0000 /* write access disable */
+ 
+#define KR_KEY_RELOAD	0xAAAA  
+#define KR_KEY_ENABLE	0xCCCC  
+#define KR_KEY_EWA	0x5555  
+#define KR_KEY_DWA	0x0000  
 
-/* IWDG_PR register */
+ 
 #define PR_SHIFT	2
 #define PR_MIN		BIT(PR_SHIFT)
 
-/* IWDG_RLR register values */
-#define RLR_MIN		0x2		/* min value recommended */
-#define RLR_MAX		GENMASK(11, 0)	/* max value of reload register */
+ 
+#define RLR_MIN		0x2		 
+#define RLR_MAX		GENMASK(11, 0)	 
 
-/* IWDG_SR register bit mask */
-#define SR_PVU	BIT(0) /* Watchdog prescaler value update */
-#define SR_RVU	BIT(1) /* Watchdog counter reload value update */
+ 
+#define SR_PVU	BIT(0)  
+#define SR_RVU	BIT(1)  
 
-/* set timeout to 100000 us */
+ 
 #define TIMEOUT_US	100000
 #define SLEEP_US	1000
 
@@ -96,20 +88,20 @@ static int stm32_iwdg_start(struct watchdog_device *wdd)
 
 	presc = DIV_ROUND_UP(tout * wdt->rate, RLR_MAX + 1);
 
-	/* The prescaler is align on power of 2 and start at 2 ^ PR_SHIFT. */
+	 
 	presc = roundup_pow_of_two(presc);
 	iwdg_pr = presc <= 1 << PR_SHIFT ? 0 : ilog2(presc) - PR_SHIFT;
 	iwdg_rlr = ((tout * wdt->rate) / presc) - 1;
 
-	/* enable write access */
+	 
 	reg_write(wdt->regs, IWDG_KR, KR_KEY_EWA);
 
-	/* set prescaler & reload registers */
+	 
 	reg_write(wdt->regs, IWDG_PR, iwdg_pr);
 	reg_write(wdt->regs, IWDG_RLR, iwdg_rlr);
 	reg_write(wdt->regs, IWDG_KR, KR_KEY_ENABLE);
 
-	/* wait for the registers to be updated (max 100ms) */
+	 
 	ret = readl_relaxed_poll_timeout(wdt->regs + IWDG_SR, iwdg_sr,
 					 !(iwdg_sr & (SR_PVU | SR_RVU)),
 					 SLEEP_US, TIMEOUT_US);
@@ -118,7 +110,7 @@ static int stm32_iwdg_start(struct watchdog_device *wdd)
 		return ret;
 	}
 
-	/* reload watchdog */
+	 
 	reg_write(wdt->regs, IWDG_KR, KR_KEY_RELOAD);
 
 	return 0;
@@ -130,7 +122,7 @@ static int stm32_iwdg_ping(struct watchdog_device *wdd)
 
 	dev_dbg(wdd->parent, "%s\n", __func__);
 
-	/* reload watchdog */
+	 
 	reg_write(wdt->regs, IWDG_KR, KR_KEY_RELOAD);
 
 	return 0;
@@ -164,7 +156,7 @@ static int stm32_iwdg_clk_init(struct platform_device *pdev,
 	if (IS_ERR(wdt->clk_lsi))
 		return dev_err_probe(dev, PTR_ERR(wdt->clk_lsi), "Unable to get lsi clock\n");
 
-	/* optional peripheral clock */
+	 
 	if (wdt->data->has_pclk) {
 		wdt->clk_pclk = devm_clk_get(dev, "pclk");
 		if (IS_ERR(wdt->clk_pclk))
@@ -215,7 +207,7 @@ static const struct watchdog_ops stm32_iwdg_ops = {
 static const struct of_device_id stm32_iwdg_of_match[] = {
 	{ .compatible = "st,stm32-iwdg", .data = &stm32_iwdg_data },
 	{ .compatible = "st,stm32mp1-iwdg", .data = &stm32mp1_iwdg_data },
-	{ /* end node */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, stm32_iwdg_of_match);
 
@@ -234,7 +226,7 @@ static int stm32_iwdg_probe(struct platform_device *pdev)
 	if (!wdt->data)
 		return -ENODEV;
 
-	/* This is the timer base. */
+	 
 	wdt->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(wdt->regs))
 		return PTR_ERR(wdt->regs);
@@ -243,7 +235,7 @@ static int stm32_iwdg_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Initialize struct watchdog_device. */
+	 
 	wdd = &wdt->wdd;
 	wdd->parent = dev;
 	wdd->info = &stm32_iwdg_info;
@@ -256,21 +248,13 @@ static int stm32_iwdg_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(wdd, WATCHDOG_NOWAYOUT);
 	watchdog_init_timeout(wdd, 0, dev);
 
-	/*
-	 * In case of CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED is set
-	 * (Means U-Boot/bootloaders leaves the watchdog running)
-	 * When we get here we should make a decision to prevent
-	 * any side effects before user space daemon will take care of it.
-	 * The best option, taking into consideration that there is no
-	 * way to read values back from hardware, is to enforce watchdog
-	 * being run with deterministic values.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED)) {
 		ret = stm32_iwdg_start(wdd);
 		if (ret)
 			return ret;
 
-		/* Make sure the watchdog is serviced */
+		 
 		set_bit(WDOG_HW_RUNNING, &wdd->status);
 	}
 

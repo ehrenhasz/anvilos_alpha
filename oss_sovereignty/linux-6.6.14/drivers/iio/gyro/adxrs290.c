@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADXRS290 SPI Gyroscope Driver
- *
- * Copyright (C) 2020 Nishant Malpani <nish.malpani25@gmail.com>
- * Copyright (C) 2020 Analog Devices, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -29,9 +24,9 @@
 #define ADXRS290_REG_MEMS_ID	0x01
 #define ADXRS290_REG_DEV_ID	0x02
 #define ADXRS290_REG_REV_ID	0x03
-#define ADXRS290_REG_SN0	0x04 /* Serial Number Registers, 4 bytes */
-#define ADXRS290_REG_DATAX0	0x08 /* Roll Rate o/p Data Regs, 2 bytes */
-#define ADXRS290_REG_DATAY0	0x0A /* Pitch Rate o/p Data Regs, 2 bytes */
+#define ADXRS290_REG_SN0	0x04  
+#define ADXRS290_REG_DATAX0	0x08  
+#define ADXRS290_REG_DATAY0	0x0A  
 #define ADXRS290_REG_TEMP0	0x0C
 #define ADXRS290_REG_POWER_CTL	0x10
 #define ADXRS290_REG_FILTER	0x11
@@ -66,23 +61,20 @@ enum adxrs290_scan_index {
 
 struct adxrs290_state {
 	struct spi_device	*spi;
-	/* Serialize reads and their subsequent processing */
+	 
 	struct mutex		lock;
 	enum adxrs290_mode	mode;
 	unsigned int		lpf_3db_freq_idx;
 	unsigned int		hpf_3db_freq_idx;
 	struct iio_trigger      *dready_trig;
-	/* Ensure correct alignment of timestamp when present */
+	 
 	struct {
 		s16 channels[3];
 		s64 ts __aligned(8);
 	} buffer;
 };
 
-/*
- * Available cut-off frequencies of the low pass filter in Hz.
- * The integer part and fractional part are represented separately.
- */
+ 
 static const int adxrs290_lpf_3db_freq_hz_table[][2] = {
 	[0] = {480, 0},
 	[1] = {320, 0},
@@ -94,10 +86,7 @@ static const int adxrs290_lpf_3db_freq_hz_table[][2] = {
 	[7] = {20, 0},
 };
 
-/*
- * Available cut-off frequencies of the high pass filter in Hz.
- * The integer part and fractional part are represented separately.
- */
+ 
 static const int adxrs290_hpf_3db_freq_hz_table[][2] = {
 	[0] = {0, 0},
 	[1] = {0, 11000},
@@ -146,7 +135,7 @@ static int adxrs290_get_temp_data(struct iio_dev *indio_dev, int *val)
 		goto err_unlock;
 	}
 
-	/* extract lower 12 bits temperature reading */
+	 
 	*val = sign_extend32(temp, 11);
 
 err_unlock:
@@ -246,7 +235,7 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
 		goto out_unlock;
 	}
 
-	/* update cached mode */
+	 
 	st->mode = mode;
 
 out_unlock:
@@ -321,12 +310,12 @@ static int adxrs290_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_ANGL_VEL:
-			/* 1 LSB = 0.005 degrees/sec */
+			 
 			*val = 0;
 			*val2 = 87266;
 			return IIO_VAL_INT_PLUS_NANO;
 		case IIO_TEMP:
-			/* 1 LSB = 0.1 degrees Celsius */
+			 
 			*val = 100;
 			return IIO_VAL_INT;
 		default:
@@ -380,9 +369,9 @@ static int adxrs290_write_raw(struct iio_dev *indio_dev,
 			break;
 		}
 
-		/* caching the updated state of the low-pass filter */
+		 
 		st->lpf_3db_freq_idx = lpf_idx;
-		/* retrieving the current state of the high-pass filter */
+		 
 		hpf_idx = st->hpf_3db_freq_idx;
 		ret = adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
 		break;
@@ -396,9 +385,9 @@ static int adxrs290_write_raw(struct iio_dev *indio_dev,
 			break;
 		}
 
-		/* caching the updated state of the high-pass filter */
+		 
 		st->hpf_3db_freq_idx = hpf_idx;
-		/* retrieving the current state of the low-pass filter */
+		 
 		lpf_idx = st->lpf_3db_freq_idx;
 		ret = adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
 		break;
@@ -421,14 +410,14 @@ static int adxrs290_read_avail(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
 		*vals = (const int *)adxrs290_lpf_3db_freq_hz_table;
 		*type = IIO_VAL_INT_PLUS_MICRO;
-		/* Values are stored in a 2D matrix */
+		 
 		*length = ARRAY_SIZE(adxrs290_lpf_3db_freq_hz_table) * 2;
 
 		return IIO_AVAIL_LIST;
 	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
 		*vals = (const int *)adxrs290_hpf_3db_freq_hz_table;
 		*type = IIO_VAL_INT_PLUS_MICRO;
-		/* Values are stored in a 2D matrix */
+		 
 		*length = ARRAY_SIZE(adxrs290_hpf_3db_freq_hz_table) * 2;
 
 		return IIO_AVAIL_LIST;
@@ -484,12 +473,7 @@ static void adxrs290_reset_trig(struct iio_trigger *trig)
 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 	int val;
 
-	/*
-	 * Data ready interrupt is reset after a read of the data registers.
-	 * Here, we only read the 16b DATAY registers as that marks the end of
-	 * a read of the data registers and initiates a reset for the interrupt
-	 * line.
-	 */
+	 
 	adxrs290_get_rate_data(indio_dev,
 			       ADXRS290_READ_REG(ADXRS290_REG_DATAY0), &val);
 }
@@ -510,7 +494,7 @@ static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
 
 	mutex_lock(&st->lock);
 
-	/* exercise a bulk data capture starting from reg DATAX0... */
+	 
 	ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
 				  sizeof(st->buffer.channels));
 	if (ret < 0)
@@ -656,15 +640,15 @@ static int adxrs290_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/* default mode the gyroscope starts in */
+	 
 	st->mode = ADXRS290_MODE_STANDBY;
 
-	/* switch to measurement mode and switch on the temperature sensor */
+	 
 	ret = adxrs290_initial_setup(indio_dev);
 	if (ret < 0)
 		return ret;
 
-	/* max transition time to measurement mode */
+	 
 	msleep(ADXRS290_MAX_TRANSITION_TIME_MS);
 
 	ret = adxrs290_get_3db_freq(indio_dev, &val, &val2);

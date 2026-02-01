@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test TM SPR registers
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "tm.h"
 
-/* Tracee and tracer shared data */
+ 
 struct shared {
 	int flag;
 	struct tm_spr_regs regs;
@@ -41,9 +37,9 @@ trans:
 	cptr1[0] = 0;
 	asm __volatile__(
 		"1: ;"
-		/* TM failover handler should follow "tbegin.;" */
+		 
 		"mflr 31;"
-		"bl 4f;"	/* $ = TFHAR - 12 */
+		"bl 4f;"	 
 		"4: ;"
 		"mflr %[tfhar];"
 		"mtlr 31;"
@@ -75,7 +71,7 @@ trans:
 		: "memory", "r0", "r8", "r31"
 		);
 
-	/* There are 2 32bit instructions before tbegin. */
+	 
 	tfhar += 12;
 
 	if (result) {

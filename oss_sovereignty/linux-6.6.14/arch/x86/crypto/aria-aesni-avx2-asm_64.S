@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ARIA Cipher 32-way parallel algorithm (AVX2)
- *
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- *
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
 #include <asm/asm-offsets.h>
 #include <linux/cfi_types.h>
 
-/* register macros */
+ 
 #define CTX %rdi
 
 #define ymm0_x xmm0
@@ -129,7 +124,7 @@
 	transpose_4x4(a3, b3, c3, d3, b0, b1);		\
 	vmovdqu st0, b0;				\
 	vmovdqu st1, b1;				\
-	/* does not adjust output bytes inside vectors */
+	 
 
 #define debyteslice_16x16b(a0, b0, c0, d0,		\
 			   a1, b1, c1, d1,		\
@@ -181,9 +176,9 @@
 	transpose_4x4(c3, d3, a3, b3, b0, b1);		\
 	vmovdqu st0, b0;				\
 	vmovdqu st1, b1;				\
-	/* does not adjust output bytes inside vectors */
+	 
 
-/* load blocks to registers and apply pre-whitening */
+ 
 #define inpack16_pre(x0, x1, x2, x3,			\
 		     x4, x5, x6, x7,			\
 		     y0, y1, y2, y3,			\
@@ -206,7 +201,7 @@
 	vmovdqu (14 * 32)(rio), y6;			\
 	vmovdqu (15 * 32)(rio), y7;
 
-/* byteslice pre-whitened blocks and store to temporary memory */
+ 
 #define inpack16_post(x0, x1, x2, x3,			\
 		      x4, x5, x6, x7,			\
 		      y0, y1, y2, y3,			\
@@ -284,7 +279,7 @@
 #define aria_ark_8way(x0, x1, x2, x3,			\
 		      x4, x5, x6, x7,			\
 		      t0, rk, idx, round)		\
-	/* AddRoundKey */                               \
+	                                \
 	vpbroadcastb ((round * 16) + idx + 3)(rk), t0;	\
 	vpxor t0, x0, x0;				\
 	vpbroadcastb ((round * 16) + idx + 2)(rk), t0;	\
@@ -325,7 +320,7 @@
 	vgf2p8affineinvqb $0, t2, x3, x3;		\
 	vgf2p8affineinvqb $0, t2, x7, x7
 
-#endif /* CONFIG_AS_GFNI */
+#endif  
 #define aria_sbox_8way(x0, x1, x2, x3,			\
 		       x4, x5, x6, x7,			\
 		       t0, t1, t2, t3,			\
@@ -371,7 +366,7 @@
 							\
 	vpbroadcastd .L0f0f0f0f(%rip), t6;		\
 							\
-	/* AES inverse shift rows */			\
+	 			\
 	vpshufb t0, x0, x0;				\
 	vpshufb t0, x4, x4;				\
 	vpshufb t0, x1, x1;				\
@@ -381,14 +376,14 @@
 	vpshufb t1, x2, x2;				\
 	vpshufb t1, x6, x6;				\
 							\
-	/* affine transformation for S2 */		\
+	 		\
 	filter_8bit(x1, t2, t3, t6, t0);		\
-	/* affine transformation for S2 */		\
+	 		\
 	filter_8bit(x5, t2, t3, t6, t0);		\
 							\
-	/* affine transformation for X2 */		\
+	 		\
 	filter_8bit(x3, t4, t5, t6, t0);		\
-	/* affine transformation for X2 */		\
+	 		\
 	filter_8bit(x7, t4, t5, t6, t0);		\
 							\
 	vpxor t6, t6, t6;				\
@@ -404,13 +399,13 @@
 
 #define aria_diff_m(x0, x1, x2, x3,			\
 		    t0, t1, t2, t3)			\
-	/* T = rotr32(X, 8); */				\
-	/* X ^= T */					\
+	 				\
+	 					\
 	vpxor x0, x3, t0;				\
 	vpxor x1, x0, t1;				\
 	vpxor x2, x1, t2;				\
 	vpxor x3, x2, t3;				\
-	/* X = T ^ rotr(X, 16); */			\
+	 			\
 	vpxor t2, x0, x0;				\
 	vpxor x1, t3, t3;				\
 	vpxor t0, x2, x2;				\
@@ -421,37 +416,37 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7)			\
-	/* t1 ^= t2; */					\
+	 					\
 	vpxor y0, x4, x4;				\
 	vpxor y1, x5, x5;				\
 	vpxor y2, x6, x6;				\
 	vpxor y3, x7, x7;				\
 							\
-	/* t2 ^= t3; */					\
+	 					\
 	vpxor y4, y0, y0;				\
 	vpxor y5, y1, y1;				\
 	vpxor y6, y2, y2;				\
 	vpxor y7, y3, y3;				\
 							\
-	/* t0 ^= t1; */					\
+	 					\
 	vpxor x4, x0, x0;				\
 	vpxor x5, x1, x1;				\
 	vpxor x6, x2, x2;				\
 	vpxor x7, x3, x3;				\
 							\
-	/* t3 ^= t1; */					\
+	 					\
 	vpxor x4, y4, y4;				\
 	vpxor x5, y5, y5;				\
 	vpxor x6, y6, y6;				\
 	vpxor x7, y7, y7;				\
 							\
-	/* t2 ^= t0; */					\
+	 					\
 	vpxor x0, y0, y0;				\
 	vpxor x1, y1, y1;				\
 	vpxor x2, y2, y2;				\
 	vpxor x3, y3, y3;				\
 							\
-	/* t1 ^= t2; */					\
+	 					\
 	vpxor y0, x4, x4;				\
 	vpxor y1, x5, x5;				\
 	vpxor y2, x6, x6;				\
@@ -495,14 +490,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T3 = ABCD -> BADC				\
-	 * T3 = y4, y5, y6, y7 -> y5, y4, y7, y6	\
-	 * T0 = ABCD -> CDAB				\
-	 * T0 = x0, x1, x2, x3 -> x2, x3, x0, x1	\
-	 * T1 = ABCD -> DCBA				\
-	 * T1 = x4, x5, x6, x7 -> x7, x6, x5, x4	\
-	 */						\
+	 						\
 	aria_diff_word(x2, x3, x0, x1,			\
 		       x7, x6, x5, x4,			\
 		       y0, y1, y2, y3,			\
@@ -549,14 +537,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T1 = ABCD -> BADC				\
-	 * T1 = x4, x5, x6, x7 -> x5, x4, x7, x6	\
-	 * T2 = ABCD -> CDAB				\
-	 * T2 = y0, y1, y2, y3, -> y2, y3, y0, y1	\
-	 * T3 = ABCD -> DCBA				\
-	 * T3 = y4, y5, y6, y7 -> y7, y6, y5, y4	\
-	 */						\
+	 						\
 	aria_diff_word(x0, x1, x2, x3,			\
 		       x5, x4, x7, x6,			\
 		       y2, y3, y0, y1,			\
@@ -641,14 +622,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T3 = ABCD -> BADC				\
-	 * T3 = y4, y5, y6, y7 -> y5, y4, y7, y6	\
-	 * T0 = ABCD -> CDAB				\
-	 * T0 = x0, x1, x2, x3 -> x2, x3, x0, x1	\
-	 * T1 = ABCD -> DCBA				\
-	 * T1 = x4, x5, x6, x7 -> x7, x6, x5, x4	\
-	 */						\
+	 						\
 	aria_diff_word(x2, x3, x0, x1,			\
 		       x7, x6, x5, x4,			\
 		       y0, y1, y2, y3,			\
@@ -699,14 +673,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T1 = ABCD -> BADC				\
-	 * T1 = x4, x5, x6, x7 -> x5, x4, x7, x6	\
-	 * T2 = ABCD -> CDAB				\
-	 * T2 = y0, y1, y2, y3, -> y2, y3, y0, y1	\
-	 * T3 = ABCD -> DCBA				\
-	 * T3 = y4, y5, y6, y7 -> y7, y6, y5, y4	\
-	 */						\
+	 						\
 	aria_diff_word(x0, x1, x2, x3,			\
 		       x5, x4, x7, x6,			\
 		       y2, y3, y0, y1,			\
@@ -752,7 +719,7 @@
 	aria_load_state_8way(y0, y1, y2, y3,		\
 			     y4, y5, y6, y7,		\
 			     mem_tmp, 8);
-#endif /* CONFIG_AS_GFNI */
+#endif  
 
 .section        .rodata.cst32.shufb_16x16b, "aM", @progbits, 32
 .align 32
@@ -764,43 +731,25 @@
 
 .section	.rodata.cst16, "aM", @progbits, 16
 .align 16
-/* For isolating SubBytes from AESENCLAST, inverse shift row */
+ 
 .Linv_shift_row:
 	.byte 0x00, 0x0d, 0x0a, 0x07, 0x04, 0x01, 0x0e, 0x0b
 	.byte 0x08, 0x05, 0x02, 0x0f, 0x0c, 0x09, 0x06, 0x03
 .Lshift_row:
 	.byte 0x00, 0x05, 0x0a, 0x0f, 0x04, 0x09, 0x0e, 0x03
 	.byte 0x08, 0x0d, 0x02, 0x07, 0x0c, 0x01, 0x06, 0x0b
-/* For CTR-mode IV byteswap */
+ 
 .Lbswap128_mask:
 	.byte 0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08
 	.byte 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
 
-/* AES inverse affine and S2 combined:
- *      1 1 0 0 0 0 0 1     x0     0
- *      0 1 0 0 1 0 0 0     x1     0
- *      1 1 0 0 1 1 1 1     x2     0
- *      0 1 1 0 1 0 0 1     x3     1
- *      0 1 0 0 1 1 0 0  *  x4  +  0
- *      0 1 0 1 1 0 0 0     x5     0
- *      0 0 0 0 0 1 0 1     x6     0
- *      1 1 1 0 0 1 1 1     x7     1
- */
+ 
 .Ltf_lo__inv_aff__and__s2:
 	.octa 0x92172DA81A9FA520B2370D883ABF8500
 .Ltf_hi__inv_aff__and__s2:
 	.octa 0x2B15FFC1AF917B45E6D8320C625CB688
 
-/* X2 and AES forward affine combined:
- *      1 0 1 1 0 0 0 1     x0     0
- *      0 1 1 1 1 0 1 1     x1     0
- *      0 0 0 1 1 0 1 0     x2     1
- *      0 1 0 0 0 1 0 0     x3     0
- *      0 0 1 1 1 0 1 1  *  x4  +  0
- *      0 1 0 0 1 0 0 0     x5     0
- *      1 1 0 1 0 0 1 1     x6     0
- *      0 1 0 0 1 0 1 0     x7     0
- */
+ 
 .Ltf_lo__x2__and__fwd_aff:
 	.octa 0xEFAE0544FCBD1657B8F95213ABEA4100
 .Ltf_hi__x2__and__fwd_aff:
@@ -809,7 +758,7 @@
 #ifdef CONFIG_AS_GFNI
 .section	.rodata.cst8, "aM", @progbits, 8
 .align 8
-/* AES affine: */
+ 
 #define tf_aff_const BV8(1, 1, 0, 0, 0, 1, 1, 0)
 .Ltf_aff_bitmatrix:
 	.quad BM8X8(BV8(1, 0, 0, 0, 1, 1, 1, 1),
@@ -821,7 +770,7 @@
 		    BV8(0, 0, 1, 1, 1, 1, 1, 0),
 		    BV8(0, 0, 0, 1, 1, 1, 1, 1))
 
-/* AES inverse affine: */
+ 
 #define tf_inv_const BV8(1, 0, 1, 0, 0, 0, 0, 0)
 .Ltf_inv_bitmatrix:
 	.quad BM8X8(BV8(0, 0, 1, 0, 0, 1, 0, 1),
@@ -833,7 +782,7 @@
 		    BV8(1, 0, 0, 1, 0, 1, 0, 0),
 		    BV8(0, 1, 0, 0, 1, 0, 1, 0))
 
-/* S2: */
+ 
 #define tf_s2_const BV8(0, 1, 0, 0, 0, 1, 1, 1)
 .Ltf_s2_bitmatrix:
 	.quad BM8X8(BV8(0, 1, 0, 1, 0, 1, 1, 1),
@@ -845,7 +794,7 @@
 		    BV8(0, 1, 1, 0, 0, 0, 1, 1),
 		    BV8(1, 1, 1, 1, 0, 1, 1, 0))
 
-/* X2: */
+ 
 #define tf_x2_const BV8(0, 0, 1, 1, 0, 1, 0, 0)
 .Ltf_x2_bitmatrix:
 	.quad BM8X8(BV8(0, 0, 0, 1, 1, 0, 0, 0),
@@ -857,7 +806,7 @@
 		    BV8(1, 0, 1, 1, 1, 1, 0, 1),
 		    BV8(1, 0, 0, 1, 0, 0, 1, 1))
 
-/* Identity matrix: */
+ 
 .Ltf_id_bitmatrix:
 	.quad BM8X8(BV8(1, 0, 0, 0, 0, 0, 0, 0),
 		    BV8(0, 1, 0, 0, 0, 0, 0, 0),
@@ -868,9 +817,9 @@
 		    BV8(0, 0, 0, 0, 0, 0, 1, 0),
 		    BV8(0, 0, 0, 0, 0, 0, 0, 1))
 
-#endif /* CONFIG_AS_GFNI */
+#endif  
 
-/* 4-bit mask */
+ 
 .section	.rodata.cst4.L0f0f0f0f, "aM", @progbits, 4
 .align 4
 .L0f0f0f0f:
@@ -879,12 +828,7 @@
 .text
 
 SYM_FUNC_START_LOCAL(__aria_aesni_avx2_crypt_32way)
-	/* input:
-	 *      %r9: rk
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %ymm0..%ymm15: byte-sliced blocks
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -968,11 +912,7 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_crypt_32way)
 SYM_FUNC_END(__aria_aesni_avx2_crypt_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_encrypt_32way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -993,11 +933,7 @@ SYM_TYPED_FUNC_START(aria_aesni_avx2_encrypt_32way)
 SYM_FUNC_END(aria_aesni_avx2_encrypt_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_decrypt_32way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -1018,13 +954,7 @@ SYM_TYPED_FUNC_START(aria_aesni_avx2_decrypt_32way)
 SYM_FUNC_END(aria_aesni_avx2_decrypt_32way)
 
 SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
-	/* input:
-	 *      %rdi: ctx
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %rcx: keystream
-	 *      %r8: iv (big endian, 128bit)
-	 */
+	 
 
 	FRAME_BEGIN
 	movq 8(%r8), %r11;
@@ -1032,35 +962,35 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
 
 	vbroadcasti128 .Lbswap128_mask (%rip), %ymm6;
 	vpcmpeqd %ymm0, %ymm0, %ymm0;
-	vpsrldq $8, %ymm0, %ymm0;   /* ab: -1:0 ; cd: -1:0 */
-	vpaddq %ymm0, %ymm0, %ymm5; /* ab: -2:0 ; cd: -2:0 */
+	vpsrldq $8, %ymm0, %ymm0;    
+	vpaddq %ymm0, %ymm0, %ymm5;  
 
-	/* load IV and byteswap */
+	 
 	vmovdqu (%r8), %xmm7;
 	vpshufb %xmm6, %xmm7, %xmm7;
 	vmovdqa %xmm7, %xmm3;
 	inc_le128(%xmm7, %xmm0, %xmm4);
 	vinserti128 $1, %xmm7, %ymm3, %ymm3;
-	vpshufb %ymm6, %ymm3, %ymm8; /* +1 ; +0 */
+	vpshufb %ymm6, %ymm3, %ymm8;  
 
-	/* check need for handling 64-bit overflow and carry */
+	 
 	cmpq $(0xffffffffffffffff - 32), %r11;
 	ja .Lhandle_ctr_carry;
 
-	/* construct IVs */
-	vpsubq %ymm5, %ymm3, %ymm3; /* +3 ; +2 */
+	 
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm9;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +5 ; +4 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm10;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +7 ; +6 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm11;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +9 ; +8 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm12;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +11 ; +10 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm13;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +13 ; +12 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm14;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +15 ; +14 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm15;
 	vmovdqu %ymm8, (0 * 32)(%rcx);
 	vmovdqu %ymm9, (1 * 32)(%rcx);
@@ -1071,23 +1001,23 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
 	vmovdqu %ymm14, (6 * 32)(%rcx);
 	vmovdqu %ymm15, (7 * 32)(%rcx);
 
-	vpsubq %ymm5, %ymm3, %ymm3; /* +17 ; +16 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm8;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +19 ; +18 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm9;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +21 ; +20 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm10;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +23 ; +22 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm11;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +25 ; +24 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm12;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +27 ; +26 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm13;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +29 ; +28 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm14;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +31 ; +30 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %ymm6, %ymm3, %ymm15;
-	vpsubq %ymm5, %ymm3, %ymm3; /* +32 */
+	vpsubq %ymm5, %ymm3, %ymm3;  
 	vpshufb %xmm6, %xmm3, %xmm3;
 	vmovdqu %xmm3, (%r8);
 	vmovdqu (0 * 32)(%rcx), %ymm0;
@@ -1101,28 +1031,28 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
 	jmp .Lctr_carry_done;
 
 	.Lhandle_ctr_carry:
-	/* construct IVs */
+	 
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm9; /* +3 ; +2 */
+	vpshufb %ymm6, %ymm3, %ymm9;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm10; /* +5 ; +4 */
+	vpshufb %ymm6, %ymm3, %ymm10;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm11; /* +7 ; +6 */
+	vpshufb %ymm6, %ymm3, %ymm11;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm12; /* +9 ; +8 */
+	vpshufb %ymm6, %ymm3, %ymm12;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm13; /* +11 ; +10 */
+	vpshufb %ymm6, %ymm3, %ymm13;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm14; /* +13 ; +12 */
+	vpshufb %ymm6, %ymm3, %ymm14;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm15; /* +15 ; +14 */
+	vpshufb %ymm6, %ymm3, %ymm15;  
 	vmovdqu %ymm8, (0 * 32)(%rcx);
 	vmovdqu %ymm9, (1 * 32)(%rcx);
 	vmovdqu %ymm10, (2 * 32)(%rcx);
@@ -1134,31 +1064,31 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
 
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm8; /* +17 ; +16 */
+	vpshufb %ymm6, %ymm3, %ymm8;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm9; /* +19 ; +18 */
+	vpshufb %ymm6, %ymm3, %ymm9;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm10; /* +21 ; +20 */
+	vpshufb %ymm6, %ymm3, %ymm10;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm11; /* +23 ; +22 */
+	vpshufb %ymm6, %ymm3, %ymm11;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm12; /* +25 ; +24 */
+	vpshufb %ymm6, %ymm3, %ymm12;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm13; /* +27 ; +26 */
+	vpshufb %ymm6, %ymm3, %ymm13;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm14; /* +29 ; +28 */
+	vpshufb %ymm6, %ymm3, %ymm14;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	inc_le128(%ymm3, %ymm0, %ymm4);
-	vpshufb %ymm6, %ymm3, %ymm15; /* +31 ; +30 */
+	vpshufb %ymm6, %ymm3, %ymm15;  
 	inc_le128(%ymm3, %ymm0, %ymm4);
 	vextracti128 $1, %ymm3, %xmm3;
-	vpshufb %xmm6, %xmm3, %xmm3; /* +32 */
+	vpshufb %xmm6, %xmm3, %xmm3;  
 	vmovdqu %xmm3, (%r8);
 	vmovdqu (0 * 32)(%rcx), %ymm0;
 	vmovdqu (1 * 32)(%rcx), %ymm1;
@@ -1176,13 +1106,7 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_ctr_gen_keystream_32way)
 SYM_FUNC_END(__aria_aesni_avx2_ctr_gen_keystream_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_ctr_crypt_32way)
-	/* input:
-	 *      %rdi: ctx
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %rcx: keystream
-	 *      %r8: iv (big endian, 128bit)
-	 */
+	 
 	FRAME_BEGIN
 
 	call __aria_aesni_avx2_ctr_gen_keystream_32way;
@@ -1221,12 +1145,7 @@ SYM_FUNC_END(aria_aesni_avx2_ctr_crypt_32way)
 
 #ifdef CONFIG_AS_GFNI
 SYM_FUNC_START_LOCAL(__aria_aesni_avx2_gfni_crypt_32way)
-	/* input:
-	 *      %r9: rk
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %ymm0..%ymm15: 16 byte-sliced blocks
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -1346,11 +1265,7 @@ SYM_FUNC_START_LOCAL(__aria_aesni_avx2_gfni_crypt_32way)
 SYM_FUNC_END(__aria_aesni_avx2_gfni_crypt_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_encrypt_32way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -1371,11 +1286,7 @@ SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_encrypt_32way)
 SYM_FUNC_END(aria_aesni_avx2_gfni_encrypt_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_decrypt_32way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	 
 
 	FRAME_BEGIN
 
@@ -1396,13 +1307,7 @@ SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_decrypt_32way)
 SYM_FUNC_END(aria_aesni_avx2_gfni_decrypt_32way)
 
 SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_ctr_crypt_32way)
-	/* input:
-	 *      %rdi: ctx
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %rcx: keystream
-	 *      %r8: iv (big endian, 128bit)
-	 */
+	 
 	FRAME_BEGIN
 
 	call __aria_aesni_avx2_ctr_gen_keystream_32way
@@ -1438,4 +1343,4 @@ SYM_TYPED_FUNC_START(aria_aesni_avx2_gfni_ctr_crypt_32way)
 	FRAME_END
 	RET;
 SYM_FUNC_END(aria_aesni_avx2_gfni_ctr_crypt_32way)
-#endif /* CONFIG_AS_GFNI */
+#endif  

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * dst-bt878.h: part of the DST driver for the TwinHan DST Frontend
- *
- * Copyright (C) 2003 Jamie Honan
- */
+ 
+ 
 
 struct dst_gpio_enable {
 	u32	mask;

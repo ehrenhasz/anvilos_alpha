@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited or its affiliates. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/debugfs.h>
@@ -13,17 +13,12 @@
 	.offset = CC_REG(_X)	\
 	}
 
-/*
- * This is a global var for the dentry of the
- * debugfs ccree/ dir. It is not tied down to
- * a specific instance of ccree, hence it is
- * global.
- */
+ 
 static struct dentry *cc_debugfs_dir;
 
 static struct debugfs_reg32 ver_sig_regs[] = {
-	{ .name = "SIGNATURE" }, /* Must be 0th */
-	{ .name = "VERSION" }, /* Must be 1st */
+	{ .name = "SIGNATURE" },  
+	{ .name = "VERSION" },  
 };
 
 static const struct debugfs_reg32 pid_cid_regs[] = {
@@ -81,7 +76,7 @@ int cc_debugfs_init(struct cc_drvdata *drvdata)
 	debugfs_create_bool("coherent", 0400, drvdata->dir, &drvdata->coherent);
 
 	verset = devm_kzalloc(dev, sizeof(*verset), GFP_KERNEL);
-	/* Failing here is not important enough to fail the module load */
+	 
 	if (!verset)
 		return 0;
 

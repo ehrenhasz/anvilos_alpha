@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob@ti.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
@@ -33,17 +30,9 @@
 #define DRIVER_MINOR		0
 #define DRIVER_PATCHLEVEL	0
 
-/*
- * mode config funcs
- */
+ 
 
-/* Notes about mapping DSS and DRM entities:
- *    CRTC:        overlay
- *    encoder:     manager.. with some extension to allow one primary CRTC
- *                 and zero or more video CRTC's to be mapped to one encoder?
- *    connector:   dssdev.. manager can be attached/detached from different
- *                 devices
- */
+ 
 
 static void omap_atomic_wait_for_completion(struct drm_device *dev,
 					    struct drm_atomic_state *old_state)
@@ -72,21 +61,11 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
 
 	dispc_runtime_get(priv->dispc);
 
-	/* Apply the atomic update. */
+	 
 	drm_atomic_helper_commit_modeset_disables(dev, old_state);
 
 	if (priv->omaprev != 0x3430) {
-		/* With the current dss dispc implementation we have to enable
-		 * the new modeset before we can commit planes. The dispc ovl
-		 * configuration relies on the video mode configuration been
-		 * written into the HW when the ovl configuration is
-		 * calculated.
-		 *
-		 * This approach is not ideal because after a mode change the
-		 * plane update is executed only after the first vblank
-		 * interrupt. The dispc implementation should be fixed so that
-		 * it is able use uncommitted drm state information.
-		 */
+		 
 		drm_atomic_helper_commit_modeset_enables(dev, old_state);
 		omap_atomic_wait_for_completion(dev, old_state);
 
@@ -94,11 +73,7 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
 
 		drm_atomic_helper_commit_hw_done(old_state);
 	} else {
-		/*
-		 * OMAP3 DSS seems to have issues with the work-around above,
-		 * resulting in endless sync losts if a crtc is enabled without
-		 * a plane. For now, skip the WA for OMAP3.
-		 */
+		 
 		drm_atomic_helper_commit_planes(dev, old_state, 0);
 
 		drm_atomic_helper_commit_modeset_enables(dev, old_state);
@@ -106,10 +81,7 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
 		drm_atomic_helper_commit_hw_done(old_state);
 	}
 
-	/*
-	 * Wait for completion of the page flips to ensure that old buffers
-	 * can't be touched by the hardware anymore before cleaning up planes.
-	 */
+	 
 	omap_atomic_wait_for_completion(dev, old_state);
 
 	drm_atomic_helper_cleanup_planes(dev, old_state);
@@ -128,13 +100,7 @@ static int drm_atomic_state_normalized_zpos_cmp(const void *a, const void *b)
 		return sa->plane->base.id - sb->plane->base.id;
 }
 
-/*
- * This replaces the drm_atomic_normalize_zpos to handle the dual overlay case.
- *
- * Since both halves need to be 'appear' side by side the zpos is
- * recalculated when dealing with dual overlay cases so that the other
- * planes zpos is consistent.
- */
+ 
 static int omap_atomic_update_normalize_zpos(struct drm_device *dev,
 					     struct drm_atomic_state *state)
 {
@@ -155,13 +121,10 @@ static int omap_atomic_update_normalize_zpos(struct drm_device *dev,
 		    !new_state->zpos_changed)
 			continue;
 
-		/* Reset plane increment and index value for every crtc */
+		 
 		n = 0;
 
-		/*
-		 * Normalization process might create new states for planes
-		 * which normalized_zpos has to be recalculated.
-		 */
+		 
 		drm_for_each_plane_mask(plane, dev, new_state->plane_mask) {
 			struct drm_plane_state *plane_state =
 				drm_atomic_get_plane_state(new_state->state,
@@ -223,23 +186,16 @@ static const struct drm_mode_config_funcs omap_mode_config_funcs = {
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
-/* Global/shared object state funcs */
+ 
 
-/*
- * This is a helper that returns the private state currently in operation.
- * Note that this would return the "old_state" if called in the atomic check
- * path, and the "new_state" after the atomic swap has been done.
- */
+ 
 struct omap_global_state *
 omap_get_existing_global_state(struct omap_drm_private *priv)
 {
 	return to_omap_global_state(priv->glob_obj.state);
 }
 
-/*
- * This acquires the modeset lock set aside for global state, creates
- * a new duplicated private object state.
- */
+ 
 struct omap_global_state *__must_check
 omap_get_global_state(struct drm_atomic_state *s)
 {
@@ -339,7 +295,7 @@ static int omap_connect_pipelines(struct drm_device *ddev)
 			pipe->output = omapdss_device_get(output);
 
 			if (priv->num_pipes == ARRAY_SIZE(priv->pipes)) {
-				/* To balance the 'for_each_dss_output' loop */
+				 
 				omapdss_device_put(output);
 				break;
 			}
@@ -406,14 +362,7 @@ static int omap_modeset_init(struct drm_device *dev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * This function creates exactly one connector, encoder, crtc,
-	 * and primary plane per each connected dss-device. Each
-	 * connector->encoder->crtc chain is expected to be separate
-	 * and each crtc is connect to a single dss-channel. If the
-	 * configuration does not match the expectations or exceeds
-	 * the available resources, the configuration is rejected.
-	 */
+	 
 	ret = omap_connect_pipelines(dev);
 	if (ret < 0)
 		return ret;
@@ -424,7 +373,7 @@ static int omap_modeset_init(struct drm_device *dev)
 		return -EINVAL;
 	}
 
-	/* Create all planes first. They can all be put to any CRTC. */
+	 
 	plane_crtc_mask = (1 << priv->num_pipes) - 1;
 
 	for (i = 0; i < num_ovls; i++) {
@@ -443,10 +392,7 @@ static int omap_modeset_init(struct drm_device *dev)
 		priv->planes[priv->num_planes++] = plane;
 	}
 
-	/*
-	 * Create the encoders, attach the bridges and get the pipeline alias
-	 * IDs.
-	 */
+	 
 	for (i = 0; i < priv->num_pipes; i++) {
 		struct omap_drm_pipeline *pipe = &priv->pipes[i];
 		int id;
@@ -467,14 +413,11 @@ static int omap_modeset_init(struct drm_device *dev)
 		pipe->alias_id = id >= 0 ? id : i;
 	}
 
-	/* Sort the pipelines by DT aliases. */
+	 
 	sort(priv->pipes, priv->num_pipes, sizeof(priv->pipes[0]),
 	     omap_compare_pipelines, NULL);
 
-	/*
-	 * Populate the pipeline lookup table by DISPC channel. Only one display
-	 * is allowed per channel.
-	 */
+	 
 	for (i = 0; i < priv->num_pipes; ++i) {
 		struct omap_drm_pipeline *pipe = &priv->pipes[i];
 		enum omap_channel channel = pipe->output->dispc_channel;
@@ -485,7 +428,7 @@ static int omap_modeset_init(struct drm_device *dev)
 		priv->channels[channel] = pipe;
 	}
 
-	/* Create the connectors and CRTCs. */
+	 
 	for (i = 0; i < priv->num_pipes; i++) {
 		struct omap_drm_pipeline *pipe = &priv->pipes[i];
 		struct drm_encoder *encoder = pipe->encoder;
@@ -515,16 +458,11 @@ static int omap_modeset_init(struct drm_device *dev)
 	dev->mode_config.min_width = 8;
 	dev->mode_config.min_height = 2;
 
-	/*
-	 * Note: these values are used for multiple independent things:
-	 * connector mode filtering, buffer sizes, crtc sizes...
-	 * Use big enough values here to cover all use cases, and do more
-	 * specific checking in the respective code paths.
-	 */
+	 
 	dev->mode_config.max_width = 8192;
 	dev->mode_config.max_height = 8192;
 
-	/* We want the zpos to be normalized */
+	 
 	dev->mode_config.normalize_zpos = true;
 
 	dev->mode_config.funcs = &omap_mode_config_funcs;
@@ -544,9 +482,7 @@ static void omap_modeset_fini(struct drm_device *ddev)
 	drm_mode_config_cleanup(ddev);
 }
 
-/*
- * drm ioctl funcs
- */
+ 
 
 
 static int ioctl_get_param(struct drm_device *dev, void *data,
@@ -569,7 +505,7 @@ static int ioctl_get_param(struct drm_device *dev, void *data,
 	return 0;
 }
 
-#define OMAP_BO_USER_MASK	0x00ffffff	/* flags settable by userspace */
+#define OMAP_BO_USER_MASK	0x00ffffff	 
 
 static int ioctl_gem_new(struct drm_device *dev, void *data,
 		struct drm_file *file_priv)
@@ -612,19 +548,17 @@ static const struct drm_ioctl_desc ioctls[DRM_COMMAND_END - DRM_COMMAND_BASE] = 
 			  DRM_AUTH | DRM_MASTER | DRM_ROOT_ONLY),
 	DRM_IOCTL_DEF_DRV(OMAP_GEM_NEW, ioctl_gem_new,
 			  DRM_RENDER_ALLOW),
-	/* Deprecated, to be removed. */
+	 
 	DRM_IOCTL_DEF_DRV(OMAP_GEM_CPU_PREP, drm_noop,
 			  DRM_RENDER_ALLOW),
-	/* Deprecated, to be removed. */
+	 
 	DRM_IOCTL_DEF_DRV(OMAP_GEM_CPU_FINI, drm_noop,
 			  DRM_RENDER_ALLOW),
 	DRM_IOCTL_DEF_DRV(OMAP_GEM_INFO, ioctl_gem_info,
 			  DRM_RENDER_ALLOW),
 };
 
-/*
- * drm driver funcs
- */
+ 
 
 static int dev_open(struct drm_device *dev, struct drm_file *file)
 {
@@ -663,7 +597,7 @@ static const struct soc_device_attribute omapdrm_soc_devices[] = {
 	{ .family = "OMAP4", .data = (void *)0x4430 },
 	{ .family = "OMAP5", .data = (void *)0x5430 },
 	{ .family = "DRA7",  .data = (void *)0x0752 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
@@ -678,7 +612,7 @@ static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
 	if (drm_firmware_drivers_only())
 		return -ENODEV;
 
-	/* Allocate and initialize the DRM device. */
+	 
 	ddev = drm_dev_alloc(&omap_drm_driver, dev);
 	if (IS_ERR(ddev))
 		return PTR_ERR(ddev);
@@ -699,7 +633,7 @@ static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
 	mutex_init(&priv->list_lock);
 	INIT_LIST_HEAD(&priv->obj_list);
 
-	/* Get memory bandwidth limits */
+	 
 	priv->max_bandwidth = dispc_get_memory_bandwidth_limit(priv->dispc);
 
 	omap_gem_init(ddev);
@@ -720,7 +654,7 @@ static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
 		goto err_free_overlays;
 	}
 
-	/* Initialize vblank handling, start with all CRTCs disabled. */
+	 
 	ret = drm_vblank_init(ddev, priv->num_pipes);
 	if (ret) {
 		dev_err(priv->dev, "could not init vblank\n");
@@ -729,10 +663,7 @@ static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
 
 	drm_kms_helper_poll_init(ddev);
 
-	/*
-	 * Register the DRM device with the core and the connectors with
-	 * sysfs.
-	 */
+	 
 	ret = drm_dev_register(ddev, 0);
 	if (ret)
 		goto err_cleanup_helpers;
@@ -794,7 +725,7 @@ static int pdev_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Allocate and initialize the driver private structure. */
+	 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

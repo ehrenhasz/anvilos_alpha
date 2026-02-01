@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Atmel SDMMC controller driver.
- *
- * Copyright (C) 2015 Atmel,
- *		 2015 Ludovic Desroches <ludovic.desroches@atmel.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -33,7 +28,7 @@
 #define		SDMMC_CALCR_EN		BIT(0)
 #define		SDMMC_CALCR_ALWYSON	BIT(4)
 
-#define SDHCI_AT91_PRESET_COMMON_CONF	0x400 /* drv type B, programmable clock mode */
+#define SDHCI_AT91_PRESET_COMMON_CONF	0x400  
 
 struct sdhci_at91_soc_data {
 	const struct sdhci_pltfm_data *pdata;
@@ -65,14 +60,7 @@ static void sdhci_at91_set_clock(struct sdhci_host *host, unsigned int clock)
 
 	host->mmc->actual_clock = 0;
 
-	/*
-	 * There is no requirement to disable the internal clock before
-	 * changing the SD clock configuration. Moreover, disabling the
-	 * internal clock, changing the configuration and re-enabling the
-	 * internal clock causes some bugs. It can prevent to get the internal
-	 * clock stable flag ready and an unexpected switch to the base clock
-	 * when using presets.
-	 */
+	 
 	clk = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
 	clk &= SDHCI_CLOCK_INT_EN;
 	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
@@ -85,7 +73,7 @@ static void sdhci_at91_set_clock(struct sdhci_host *host, unsigned int clock)
 	clk |= SDHCI_CLOCK_INT_EN;
 	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
 
-	/* Wait max 20 ms */
+	 
 	if (read_poll_timeout(sdhci_readw, clk, (clk & SDHCI_CLOCK_INT_STABLE),
 			      1000, 20000, false, host, SDHCI_CLOCK_CONTROL)) {
 		pr_err("%s: Internal clock never stabilised.\n",
@@ -191,22 +179,17 @@ static int sdhci_at91_set_clks_presets(struct device *dev)
 	caps0 |= FIELD_PREP(SDHCI_CLOCK_V3_BASE_MASK, clk_base);
 	caps1 &= ~SDHCI_CLOCK_MUL_MASK;
 	caps1 |= FIELD_PREP(SDHCI_CLOCK_MUL_MASK, clk_mul);
-	/* Set capabilities in r/w mode. */
+	 
 	writel(SDMMC_CACR_KEY | SDMMC_CACR_CAPWREN, host->ioaddr + SDMMC_CACR);
 	writel(caps0, host->ioaddr + SDHCI_CAPABILITIES);
 	writel(caps1, host->ioaddr + SDHCI_CAPABILITIES_1);
-	/* Set capabilities in ro mode. */
+	 
 	writel(0, host->ioaddr + SDMMC_CACR);
 
 	dev_dbg(dev, "update clk mul to %u as gck rate is %u Hz and clk base is %u Hz\n",
 		clk_mul, gck_rate, clk_base_rate);
 
-	/*
-	 * We have to set preset values because it depends on the clk_mul
-	 * value. Moreover, SDR104 is supported in a degraded mode since the
-	 * maximum sd clock value is 120 MHz instead of 208 MHz. For that
-	 * reason, we need to use presets to support SDR104.
-	 */
+	 
 	preset_div = DIV_ROUND_UP(gck_rate, 24000000) - 1;
 	writew(SDHCI_AT91_PRESET_COMMON_CONF | preset_div,
 	       host->ioaddr + SDHCI_PRESET_FOR_SDR12);
@@ -243,7 +226,7 @@ static int sdhci_at91_suspend(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int sdhci_at91_runtime_suspend(struct device *dev)
@@ -302,7 +285,7 @@ static int sdhci_at91_runtime_resume(struct device *dev)
 out:
 	return sdhci_runtime_resume_host(host, 0);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops sdhci_at91_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(sdhci_at91_suspend, pm_runtime_force_resume)
@@ -362,10 +345,7 @@ static int sdhci_at91_probe(struct platform_device *pdev)
 
 	priv->restore_needed = false;
 
-	/*
-	 * if SDCAL pin is wrongly connected, we must enable
-	 * the analog calibration cell permanently.
-	 */
+	 
 	priv->cal_always_on =
 		device_property_read_bool(&pdev->dev,
 					  "microchip,sdcal-inverted");
@@ -382,46 +362,21 @@ static int sdhci_at91_probe(struct platform_device *pdev)
 	pm_runtime_set_autosuspend_delay(&pdev->dev, 50);
 	pm_runtime_use_autosuspend(&pdev->dev);
 
-	/* HS200 is broken at this moment */
+	 
 	host->quirks2 |= SDHCI_QUIRK2_BROKEN_HS200;
 
 	ret = sdhci_add_host(host);
 	if (ret)
 		goto pm_runtime_disable;
 
-	/*
-	 * When calling sdhci_runtime_suspend_host(), the sdhci layer makes
-	 * the assumption that all the clocks of the controller are disabled.
-	 * It means we can't get irq from it when it is runtime suspended.
-	 * For that reason, it is not planned to wake-up on a card detect irq
-	 * from the controller.
-	 * If we want to use runtime PM and to be able to wake-up on card
-	 * insertion, we have to use a GPIO for the card detection or we can
-	 * use polling. Be aware that using polling will resume/suspend the
-	 * controller between each attempt.
-	 * Disable SDHCI_QUIRK_BROKEN_CARD_DETECTION to be sure nobody tries
-	 * to enable polling via device tree with broken-cd property.
-	 */
+	 
 	if (mmc_card_is_removable(host->mmc) &&
 	    mmc_gpio_get_cd(host->mmc) < 0) {
 		host->mmc->caps |= MMC_CAP_NEEDS_POLL;
 		host->quirks &= ~SDHCI_QUIRK_BROKEN_CARD_DETECTION;
 	}
 
-	/*
-	 * If the device attached to the MMC bus is not removable, it is safer
-	 * to set the Force Card Detect bit. People often don't connect the
-	 * card detect signal and use this pin for another purpose. If the card
-	 * detect pin is not muxed to SDHCI controller, a default value is
-	 * used. This value can be different from a SoC revision to another
-	 * one. Problems come when this default value is not card present. To
-	 * avoid this case, if the device is non removable then the card
-	 * detection procedure using the SDMCC_CD signal is bypassed.
-	 * This bit is reset when a software reset for all command is performed
-	 * so we need to implement our own reset function to set back this bit.
-	 *
-	 * WA: SAMA5D2 doesn't drive CMD if using CD GPIO line.
-	 */
+	 
 	if ((host->mmc->caps & MMC_CAP_NONREMOVABLE)
 	    || mmc_gpio_get_cd(host->mmc) >= 0)
 		sdhci_at91_set_force_card_detect(host);

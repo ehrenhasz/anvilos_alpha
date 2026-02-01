@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_BITOPS_LE_H_
 #define _ASM_GENERIC_BITOPS_LE_H_
 
@@ -61,4 +61,4 @@ static inline int __test_and_clear_bit_le(int nr, void *addr)
 	return __test_and_clear_bit(nr ^ BITOP_LE_SWIZZLE, addr);
 }
 
-#endif /* _ASM_GENERIC_BITOPS_LE_H_ */
+#endif  

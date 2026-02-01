@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * driver.c - device id matching, driver model, etc.
- *
- * Copyright 2002 Adam Belay <ambx1@neo.rr.com>
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/list.h>
@@ -17,7 +13,7 @@ static int compare_func(const char *ida, const char *idb)
 {
 	int i;
 
-	/* we only need to compare the last 4 chars */
+	 
 	for (i = 3; i < 7; i++) {
 		if (ida[i] != 'X' &&
 		    idb[i] != 'X' && toupper(ida[i]) != toupper(idb[i]))
@@ -182,7 +178,7 @@ static int __pnp_bus_suspend(struct device *dev, pm_message_t state)
 			return error;
 	}
 
-	/* can_write is necessary to be able to re-start the device on resume */
+	 
 	if (pnp_can_disable(pnp_dev) && pnp_can_write(pnp_dev)) {
 		error = pnp_stop_dev(pnp_dev);
 		if (error)
@@ -246,10 +242,10 @@ static int pnp_bus_resume(struct device *dev)
 }
 
 static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
-	/* Suspend callbacks */
+	 
 	.suspend = pnp_bus_suspend,
 	.resume = pnp_bus_resume,
-	/* Hibernate callbacks */
+	 
 	.freeze = pnp_bus_freeze,
 	.thaw = pnp_bus_resume,
 	.poweroff = pnp_bus_poweroff,
@@ -281,11 +277,7 @@ void pnp_unregister_driver(struct pnp_driver *drv)
 }
 EXPORT_SYMBOL(pnp_unregister_driver);
 
-/**
- * pnp_add_id - adds an EISA id to the specified device
- * @dev: pointer to the desired device
- * @id: pointer to an EISA id string
- */
+ 
 struct pnp_id *pnp_add_id(struct pnp_dev *dev, const char *id)
 {
 	struct pnp_id *dev_id, *ptr;

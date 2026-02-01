@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal Flash Storage Host controller PCI glue driver
- *
- * Copyright (C) 2011-2013 Samsung India Software Operations
- *
- * Authors:
- *	Santosh Yaraganavi <santosh.sy@samsung.com>
- *	Vinayak Holikatti <h.vinayak@samsung.com>
- */
+
+ 
 
 #include <ufs/ufshcd.h>
 #include <linux/delay.h>
@@ -97,7 +89,7 @@ static void intel_dsm_init(struct intel_host *intel_host, struct device *dev)
 static int ufs_intel_hce_enable_notify(struct ufs_hba *hba,
 				       enum ufs_notify_change_status status)
 {
-	/* Cannot enable ICE until after HC enable */
+	 
 	if (status == POST_CHANGE && hba->caps & UFSHCD_CAP_CRYPTO) {
 		u32 hce = ufshcd_readl(hba, REG_CONTROLLER_ENABLE);
 
@@ -238,11 +230,7 @@ static void intel_ltr_set(struct device *dev, s32 val)
 
 	pm_runtime_get_sync(dev);
 
-	/*
-	 * Program latency tolerance (LTR) accordingly what has been asked
-	 * by the PM QoS layer or disable it in case we were passed
-	 * negative value or PM_QOS_LATENCY_ANY.
-	 */
+	 
 	ltr = readl(hba->mmio_base + INTEL_ACTIVELTR);
 
 	if (val == PM_QOS_LATENCY_ANY || val < 0) {
@@ -268,7 +256,7 @@ static void intel_ltr_set(struct device *dev, s32 val)
 	writel(ltr, hba->mmio_base + INTEL_ACTIVELTR);
 	writel(ltr, hba->mmio_base + INTEL_IDLELTR);
 
-	/* Cache the values into intel_host structure */
+	 
 	intel_cache_ltr(hba);
 out:
 	pm_runtime_put(dev);
@@ -336,7 +324,7 @@ static int ufs_intel_device_reset(struct ufs_hba *hba)
 
 static struct gpio_desc *ufs_intel_get_reset_gpio(struct device *dev)
 {
-	/* GPIO in _DSD has active low setting */
+	 
 	return devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 }
 
@@ -388,10 +376,7 @@ static int ufs_intel_resume(struct ufs_hba *hba, enum ufs_pm_op op)
 		} else {
 			dev_err(hba->dev, "%s: hibern8 exit failed %d\n",
 				__func__, ret);
-			/*
-			 * Force reset and restore. Any other actions can lead
-			 * to an unrecoverable state.
-			 */
+			 
 			ufshcd_set_link_off(hba);
 		}
 	}
@@ -407,7 +392,7 @@ static int ufs_intel_ehl_init(struct ufs_hba *hba)
 
 static void ufs_intel_lkf_late_init(struct ufs_hba *hba)
 {
-	/* LKF always needs a full reset, so set PM accordingly */
+	 
 	if (hba->caps & UFSHCD_CAP_DEEPSLEEP) {
 		hba->spm_lvl = UFS_PM_LVL_6;
 		hba->rpm_lvl = UFS_PM_LVL_6;
@@ -497,18 +482,14 @@ static int ufshcd_pci_restore(struct device *dev)
 {
 	struct ufs_hba *hba = dev_get_drvdata(dev);
 
-	/* Force a full reset and restore */
+	 
 	ufshcd_set_link_off(hba);
 
 	return ufshcd_system_resume(dev);
 }
 #endif
 
-/**
- * ufshcd_pci_remove - de-allocate PCI/SCSI host and host memory space
- *		data structure memory
- * @pdev: pointer to PCI handle
- */
+ 
 static void ufshcd_pci_remove(struct pci_dev *pdev)
 {
 	struct ufs_hba *hba = pci_get_drvdata(pdev);
@@ -519,13 +500,7 @@ static void ufshcd_pci_remove(struct pci_dev *pdev)
 	ufshcd_dealloc_host(hba);
 }
 
-/**
- * ufshcd_pci_probe - probe routine of the driver
- * @pdev: pointer to PCI device handle
- * @id: PCI device id
- *
- * Return: 0 on success, non-zero value on failure.
- */
+ 
 static int
 ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
@@ -601,7 +576,7 @@ static const struct pci_device_id ufshcd_pci_tbl[] = {
 	{ PCI_VDEVICE(INTEL, 0x7E47), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
 	{ PCI_VDEVICE(INTEL, 0xA847), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
 	{ PCI_VDEVICE(INTEL, 0x7747), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
-	{ }	/* terminate list */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(pci, ufshcd_pci_tbl);

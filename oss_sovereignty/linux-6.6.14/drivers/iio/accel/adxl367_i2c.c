@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>

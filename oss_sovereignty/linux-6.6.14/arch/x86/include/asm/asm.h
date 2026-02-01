@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_ASM_H
 #define _ASM_X86_ASM_H
 
@@ -18,11 +18,11 @@
 #define _ASM_BYTES(x, ...)	__ASM_FORM(.byte x,##__VA_ARGS__ ;)
 
 #ifndef __x86_64__
-/* 32 bit */
+ 
 # define __ASM_SEL(a,b)		__ASM_FORM(a)
 # define __ASM_SEL_RAW(a,b)	__ASM_FORM_RAW(a)
 #else
-/* 64 bit */
+ 
 # define __ASM_SEL(a,b)		__ASM_FORM(b)
 # define __ASM_SEL_RAW(a,b)	__ASM_FORM_RAW(b)
 #endif
@@ -51,11 +51,11 @@
 #define _ASM_SI		__ASM_REG(si)
 #define _ASM_DI		__ASM_REG(di)
 
-/* Adds a (%rip) suffix on 64 bits only; for immediate memory references */
+ 
 #define _ASM_RIP(x)	__ASM_SEL_RAW(x, x (__ASM_REGPFX rip))
 
 #ifndef __x86_64__
-/* 32 bit */
+ 
 
 #define _ASM_ARG1	_ASM_AX
 #define _ASM_ARG2	_ASM_DX
@@ -74,7 +74,7 @@
 #define _ASM_ARG3B	cl
 
 #else
-/* 64 bit */
+ 
 
 #define _ASM_ARG1	_ASM_DI
 #define _ASM_ARG2	_ASM_SI
@@ -113,10 +113,7 @@
 
 #endif
 
-/*
- * Macros to generate condition code outputs from inline assembly,
- * The output operand must be type "bool".
- */
+ 
 #ifdef __GCC_ASM_FLAG_OUTPUTS__
 # define CC_SET(c) "\n\t/* output condition code " #c "*/\n"
 # define CC_OUT(c) "=@cc" #c
@@ -129,7 +126,7 @@
 
 # include <asm/extable_fixup_types.h>
 
-/* Exception table entry */
+ 
 #ifdef __ASSEMBLY__
 
 # define _ASM_EXTABLE_TYPE(from, to, type)			\
@@ -150,7 +147,7 @@
 #  define _ASM_NOKPROBE(entry)
 # endif
 
-#else /* ! __ASSEMBLY__ */
+#else  
 
 # define DEFINE_EXTABLE_TYPE_REG \
 	".macro extable_type_reg type:req reg:req\n"						\
@@ -197,17 +194,12 @@
 	UNDEFINE_EXTABLE_TYPE_REG						\
 	" .popsection\n"
 
-/* For C file, we already have NOKPROBE_SYMBOL macro */
+ 
 
-/*
- * This output constraint should be used for any inline asm which has a "call"
- * instruction.  Otherwise the asm may be inserted before the frame pointer
- * gets set up by the containing function.  If you forget to do this, objtool
- * may print a "call without frame pointer save/setup" warning.
- */
+ 
 register unsigned long current_stack_pointer asm(_ASM_SP);
 #define ASM_CALL_CONSTRAINT "+r" (current_stack_pointer)
-#endif /* __ASSEMBLY__ */
+#endif  
 
 #define _ASM_EXTABLE(from, to)					\
 	_ASM_EXTABLE_TYPE(from, to, EX_TYPE_DEFAULT)
@@ -221,5 +213,5 @@ register unsigned long current_stack_pointer asm(_ASM_SP);
 #define _ASM_EXTABLE_FAULT(from, to)				\
 	_ASM_EXTABLE_TYPE(from, to, EX_TYPE_FAULT)
 
-#endif /* __KERNEL__ */
-#endif /* _ASM_X86_ASM_H */
+#endif  
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -7,7 +7,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* shuffled layout for relocatable (CO-RE) reads */
+ 
 struct callback_head___shuffled {
 	void (*func)(struct callback_head___shuffled *head);
 	struct callback_head___shuffled *next;
@@ -35,9 +35,7 @@ int handler(void *ctx)
 	if (my_pid != pid)
 		return 0;
 
-	/* next pointers for kernel address space have to be initialized from
-	 * BPF side, user-space mmaped addresses are stil user-space addresses
-	 */
+	 
 	k_probe_in.next = &k_probe_in;
 	__builtin_preserve_access_index(({k_core_in.next = &k_core_in;}));
 

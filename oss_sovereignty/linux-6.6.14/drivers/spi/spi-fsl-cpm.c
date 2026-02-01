@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale SPI controller driver cpm functions.
- *
- * Maintainer: Kumar Gala
- *
- * Copyright (C) 2006 Polycom, Inc.
- * Copyright 2010 Freescale Semiconductor, Inc.
- *
- * CPM SPI and QE buffer descriptors mode support:
- * Copyright (c) 2009  MontaVista Software, Inc.
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 #include <asm/cpm.h>
 #include <soc/fsl/qe/qe.h>
 #include <linux/dma-mapping.h>
@@ -27,7 +16,7 @@
 #include "spi-fsl-lib.h"
 #include "spi-fsl-spi.h"
 
-/* CPM1 and CPM2 are mutually exclusive. */
+ 
 #ifdef CONFIG_CPM1
 #include <asm/cpm1.h>
 #define CPM_SPI_CMD mk_cr_cmd(CPM_CR_CH_SPI, 0)
@@ -36,11 +25,11 @@
 #define CPM_SPI_CMD mk_cr_cmd(CPM_CR_SPI_PAGE, CPM_CR_SPI_SBLOCK, 0, 0)
 #endif
 
-#define	SPIE_TXB	0x00000200	/* Last char is written to tx fifo */
-#define	SPIE_RXB	0x00000100	/* Last char is written to rx buf */
+#define	SPIE_TXB	0x00000200	 
+#define	SPIE_RXB	0x00000100	 
 
-/* SPCOM register values */
-#define	SPCOM_STR	(1 << 23)	/* Start transmit */
+ 
+#define	SPCOM_STR	(1 << 23)	 
 
 #define	SPI_PRAM_SIZE	0x100
 #define	SPI_MRBLR	((unsigned int)PAGE_SIZE)
@@ -94,7 +83,7 @@ static void fsl_spi_cpm_bufs_start(struct mpc8xxx_spi *mspi)
 	iowrite16be(BD_SC_READY | BD_SC_INTRPT | BD_SC_WRAP | BD_SC_LAST,
 		    &tx_bd->cbd_sc);
 
-	/* start transfer */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->command, SPCOM_STR);
 }
 
@@ -138,7 +127,7 @@ int fsl_spi_cpm_bufs(struct mpc8xxx_spi *mspi,
 	}
 
 	if (mspi->map_tx_dma) {
-		void *nonconst_tx = (void *)mspi->tx; /* shut up gcc */
+		void *nonconst_tx = (void *)mspi->tx;  
 
 		mspi->tx_dma = dma_map_single(dev, nonconst_tx, t->len,
 					      DMA_TO_DEVICE);
@@ -161,13 +150,13 @@ int fsl_spi_cpm_bufs(struct mpc8xxx_spi *mspi,
 		mspi->rx_dma = t->rx_dma;
 	}
 
-	/* enable rx ints */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->mask, SPIE_RXB);
 
 	mspi->xfer_in_progress = t;
 	mspi->count = t->len;
 
-	/* start CPM transfers */
+	 
 	fsl_spi_cpm_bufs_start(mspi);
 
 	return 0;
@@ -213,7 +202,7 @@ void fsl_spi_cpm_irq(struct mpc8xxx_spi *mspi, u32 events)
 		len = mspi->count;
 	}
 
-	/* Clear the events */
+	 
 	mpc8xxx_spi_write_reg(&reg_base->event, events);
 
 	mspi->count -= len;
@@ -267,14 +256,14 @@ static unsigned long fsl_spi_cpm_get_pram(struct mpc8xxx_spi *mspi)
 	void __iomem *spi_base;
 	unsigned long pram_ofs = -ENOMEM;
 
-	/* Can't use of_address_to_resource(), QE muram isn't at 0. */
+	 
 	iprop = of_get_property(np, "reg", &size);
 
-	/* QE with a fixed pram location? */
+	 
 	if (mspi->flags & SPI_QE && iprop && size == sizeof(*iprop) * 4)
 		return cpm_muram_alloc_fixed(iprop[2], SPI_PRAM_SIZE);
 
-	/* QE but with a dynamic pram location? */
+	 
 	if (mspi->flags & SPI_QE) {
 		pram_ofs = cpm_muram_alloc(SPI_PRAM_SIZE, 64);
 		qe_issue_cmd(QE_ASSIGN_PAGE_TO_DEVICE, mspi->subblock,
@@ -373,7 +362,7 @@ int fsl_spi_cpm_init(struct mpc8xxx_spi *mspi)
 	mspi->tx_bd = cpm_muram_addr(bds_ofs);
 	mspi->rx_bd = cpm_muram_addr(bds_ofs + sizeof(*mspi->tx_bd));
 
-	/* Initialize parameter ram. */
+	 
 	iowrite16be(cpm_muram_offset(mspi->tx_bd), &mspi->pram->tbase);
 	iowrite16be(cpm_muram_offset(mspi->rx_bd), &mspi->pram->rbase);
 	iowrite8(CPMFCR_EB | CPMFCR_GBL, &mspi->pram->tfcr);

@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * Core ops
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/export.h>
@@ -126,11 +121,7 @@ void bcma_core_pll_ctl(struct bcma_device *core, u32 req, u32 status, bool on)
 		if (i)
 			bcma_err(core->bus, "PLL enable timeout\n");
 	} else {
-		/*
-		 * Mask the PLL but don't wait for it to be disabled. PLL may be
-		 * shared between cores and will be still up if there is another
-		 * core using it.
-		 */
+		 
 		bcma_mask32(core, BCMA_CLKCTLST, ~req);
 		bcma_read32(core, BCMA_CLKCTLST);
 	}

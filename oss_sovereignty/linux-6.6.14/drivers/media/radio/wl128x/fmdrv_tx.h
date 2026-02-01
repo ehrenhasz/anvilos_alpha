@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FM Driver for Connectivity chip of Texas Instruments.
- *  FM TX module header.
- *
- *  Copyright (C) 2011 Texas Instruments
- */
+ 
+ 
 
 #ifndef _FMDRV_TX_H
 #define _FMDRV_TX_H

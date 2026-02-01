@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017 Oracle.  All rights reserved.
- */
+ 
+ 
 
-/*
- * enum ib_event_type, from include/rdma/ib_verbs.h
- */
+ 
 #define IB_EVENT_LIST				\
 	ib_event(CQ_ERR)			\
 	ib_event(QP_FATAL)			\
@@ -45,9 +41,7 @@ IB_EVENT_LIST
 #define rdma_show_ib_event(x) \
 		__print_symbolic(x, IB_EVENT_LIST)
 
-/*
- * enum ib_wc_status type, from include/rdma/ib_verbs.h
- */
+ 
 #define IB_WC_STATUS_LIST			\
 	ib_wc_status(SUCCESS)			\
 	ib_wc_status(LOC_LEN_ERR)		\
@@ -89,9 +83,7 @@ IB_WC_STATUS_LIST
 #define rdma_show_wc_status(x) \
 		__print_symbolic(x, IB_WC_STATUS_LIST)
 
-/*
- * enum ib_cm_event_type, from include/rdma/ib_cm.h
- */
+ 
 #define IB_CM_EVENT_LIST			\
 	ib_cm_event(REQ_ERROR)			\
 	ib_cm_event(REQ_RECEIVED)		\
@@ -129,9 +121,7 @@ IB_CM_EVENT_LIST
 #define rdma_show_ib_cm_event(x) \
 		__print_symbolic(x, IB_CM_EVENT_LIST)
 
-/*
- * enum rdma_cm_event_type, from include/rdma/rdma_cm.h
- */
+ 
 #define RDMA_CM_EVENT_LIST			\
 	rdma_cm_event(ADDR_RESOLVED)		\
 	rdma_cm_event(ADDR_ERROR)		\

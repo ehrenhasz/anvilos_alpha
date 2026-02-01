@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -15,16 +11,14 @@
 #include "pcm.h"
 #include "playback.h"
 
-/*
-	Software stereo volume control.
-*/
+ 
 static void change_volume(struct urb *urb_out, int volume[],
 			  int bytes_per_frame)
 {
 	int chn = 0;
 
 	if (volume[0] == 256 && volume[1] == 256)
-		return;		/* maximum volume - no change */
+		return;		 
 
 	if (bytes_per_frame == 4) {
 		__le16 *p, *buf_end;
@@ -59,9 +53,7 @@ static void change_volume(struct urb *urb_out, int volume[],
 	}
 }
 
-/*
-	Create signal for impulse response test.
-*/
+ 
 static void create_impulse_test_signal(struct snd_line6_pcm *line6pcm,
 				       struct urb *urb_out, int bytes_per_frame)
 {
@@ -102,14 +94,12 @@ static void create_impulse_test_signal(struct snd_line6_pcm *line6pcm,
 	}
 }
 
-/*
-	Add signal to buffer for software monitoring.
-*/
+ 
 static void add_monitor_signal(struct urb *urb_out, unsigned char *signal,
 			       int volume, int bytes_per_frame)
 {
 	if (volume == 0)
-		return;		/* zero volume - no change */
+		return;		 
 
 	if (bytes_per_frame == 4) {
 		__le16 *pi, *po, *buf_end;
@@ -127,16 +117,10 @@ static void add_monitor_signal(struct urb *urb_out, unsigned char *signal,
 		}
 	}
 
-	/*
-	   We don't need to handle devices with 6 bytes per frame here
-	   since they all support hardware monitoring.
-	 */
+	 
 }
 
-/*
-	Find a free URB, prepare audio data, and submit URB.
-	must be called in line6pcm->out.lock context
-*/
+ 
 static int submit_audio_out_urb(struct snd_line6_pcm *line6pcm)
 {
 	int index;
@@ -163,9 +147,9 @@ static int submit_audio_out_urb(struct snd_line6_pcm *line6pcm)
 	urb_out = line6pcm->out.urbs[index];
 	urb_size = 0;
 
-	/* TODO: this may not work for LINE6_ISO_PACKETS != 1 */
+	 
 	for (i = 0; i < LINE6_ISO_PACKETS; ++i) {
-		/* compute frame size for given sampling rate */
+		 
 		int fsize = 0;
 		struct usb_iso_packet_descriptor *fout =
 		    &urb_out->iso_frame_desc[i];
@@ -188,7 +172,7 @@ static int submit_audio_out_urb(struct snd_line6_pcm *line6pcm)
 	}
 
 	if (urb_size == 0) {
-		/* can't determine URB size */
+		 
 		dev_err(line6pcm->line6->ifcdev, "driver bug: urb_size = 0\n");
 		return -EINVAL;
 	}
@@ -206,10 +190,7 @@ static int submit_audio_out_urb(struct snd_line6_pcm *line6pcm)
 		    get_substream(line6pcm, SNDRV_PCM_STREAM_PLAYBACK)->runtime;
 
 		if (line6pcm->out.pos + urb_frames > runtime->buffer_size) {
-			/*
-			   The transferred area goes over buffer boundary,
-			   copy the data to the temp buffer.
-			 */
+			 
 			int len;
 
 			len = runtime->buffer_size - line6pcm->out.pos;
@@ -279,10 +260,7 @@ static int submit_audio_out_urb(struct snd_line6_pcm *line6pcm)
 	return 0;
 }
 
-/*
-	Submit all currently available playback URBs.
-	must be called in line6pcm->out.lock context
- */
+ 
 int line6_submit_audio_out_all_urbs(struct snd_line6_pcm *line6pcm)
 {
 	int ret = 0, i;
@@ -296,9 +274,7 @@ int line6_submit_audio_out_all_urbs(struct snd_line6_pcm *line6pcm)
 	return ret;
 }
 
-/*
-	Callback for completed playback URB.
-*/
+ 
 static void audio_out_callback(struct urb *urb)
 {
 	int i, index, length = 0, shutdown = 0;
@@ -316,13 +292,13 @@ static void audio_out_callback(struct urb *urb)
 
 	line6pcm->out.last_frame = urb->start_frame;
 
-	/* find index of URB */
+	 
 	for (index = 0; index < line6pcm->line6->iso_buffers; index++)
 		if (urb == line6pcm->out.urbs[index])
 			break;
 
 	if (index >= line6pcm->line6->iso_buffers)
-		return;		/* URB has been unlinked asynchronously */
+		return;		 
 
 	for (i = 0; i < LINE6_ISO_PACKETS; i++)
 		length += urb->iso_frame_desc[i].length;
@@ -366,7 +342,7 @@ static void audio_out_callback(struct urb *urb)
 	spin_unlock_irqrestore(&line6pcm->out.lock, flags);
 }
 
-/* open playback callback */
+ 
 static int snd_line6_playback_open(struct snd_pcm_substream *substream)
 {
 	int err;
@@ -382,13 +358,13 @@ static int snd_line6_playback_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close playback callback */
+ 
 static int snd_line6_playback_close(struct snd_pcm_substream *substream)
 {
 	return 0;
 }
 
-/* playback operators */
+ 
 const struct snd_pcm_ops snd_line6_playback_ops = {
 	.open = snd_line6_playback_open,
 	.close = snd_line6_playback_close,
@@ -409,11 +385,11 @@ int line6_create_audio_out_urbs(struct snd_line6_pcm *line6pcm)
 	if (line6pcm->out.urbs == NULL)
 		return -ENOMEM;
 
-	/* create audio URBs and fill in constant values: */
+	 
 	for (i = 0; i < line6->iso_buffers; ++i) {
 		struct urb *urb;
 
-		/* URB for audio out: */
+		 
 		urb = line6pcm->out.urbs[i] =
 		    usb_alloc_urb(LINE6_ISO_PACKETS, GFP_KERNEL);
 

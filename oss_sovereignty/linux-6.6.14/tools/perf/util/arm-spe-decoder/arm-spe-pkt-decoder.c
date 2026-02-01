@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arm Statistical Profiling Extensions (SPE) support
- * Copyright (c) 2017-2018, Arm Ltd.
- */
+
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -45,13 +42,7 @@ const char *arm_spe_pkt_name(enum arm_spe_pkt_type type)
 	return arm_spe_packet_name[type];
 }
 
-/*
- * Extracts the field "sz" from header bits and converts to bytes:
- *   00 : byte (1)
- *   01 : halfword (2)
- *   10 : word (4)
- *   11 : doubleword (8)
- */
+ 
 static unsigned int arm_spe_payload_len(unsigned char hdr)
 {
 	return 1U << ((hdr & GENMASK_ULL(5, 4)) >> 4);
@@ -115,11 +106,7 @@ static int arm_spe_get_events(const unsigned char *buf, size_t len,
 {
 	packet->type = ARM_SPE_EVENTS;
 
-	/* we use index to identify Events with a less number of
-	 * comparisons in arm_spe_pkt_desc(): E.g., the LLC-ACCESS,
-	 * LLC-REFILL, and REMOTE-ACCESS events are identified if
-	 * index > 1.
-	 */
+	 
 	packet->index = arm_spe_payload_len(buf[0]);
 
 	return arm_spe_get_payload(buf, len, 0, packet);
@@ -190,7 +177,7 @@ static int arm_spe_do_get_packet(const unsigned char *buf, size_t len,
 	if (hdr == SPE_HEADER0_PAD)
 		return arm_spe_get_pad(packet);
 
-	if (hdr == SPE_HEADER0_END) /* no timestamp at end of record */
+	if (hdr == SPE_HEADER0_END)  
 		return arm_spe_get_end(packet);
 
 	if (hdr == SPE_HEADER0_TIMESTAMP)
@@ -209,7 +196,7 @@ static int arm_spe_do_get_packet(const unsigned char *buf, size_t len,
 		return arm_spe_get_op_type(buf, len, packet);
 
 	if ((hdr & SPE_HEADER0_MASK2) == SPE_HEADER0_EXTENDED) {
-		/* 16-bit extended format header */
+		 
 		if (len == 1)
 			return ARM_SPE_BAD_PACKET;
 
@@ -219,12 +206,7 @@ static int arm_spe_do_get_packet(const unsigned char *buf, size_t len,
 			return arm_spe_get_alignment(buf, len, packet);
 	}
 
-	/*
-	 * The short format header's byte 0 or the extended format header's
-	 * byte 1 has been assigned to 'hdr', which uses the same encoding for
-	 * address packet and counter packet, so don't need to distinguish if
-	 * it's short format or extended format and handle in once.
-	 */
+	 
 	if ((hdr & SPE_HEADER0_MASK3) == SPE_HEADER0_ADDRESS)
 		return arm_spe_get_addr(buf, len, ext_hdr, packet);
 
@@ -240,9 +222,7 @@ int arm_spe_get_packet(const unsigned char *buf, size_t len,
 	int ret;
 
 	ret = arm_spe_do_get_packet(buf, len, packet);
-	/* put multiple consecutive PADs on the same line, up to
-	 * the fixed-width output format of 16 bytes per line.
-	 */
+	 
 	if (ret > 0 && packet->type == ARM_SPE_PAD) {
 		while (ret < 16 && len > (size_t)ret && !buf[ret])
 			ret += 1;
@@ -256,7 +236,7 @@ static int arm_spe_pkt_out_string(int *err, char **buf_p, size_t *blen,
 	va_list ap;
 	int ret;
 
-	/* Bail out if any error occurred */
+	 
 	if (err && *err)
 		return *err;
 
@@ -268,17 +248,11 @@ static int arm_spe_pkt_out_string(int *err, char **buf_p, size_t *blen,
 		if (err && !*err)
 			*err = ret;
 
-	/*
-	 * A return value of *blen or more means that the output was
-	 * truncated and the buffer is overrun.
-	 */
+	 
 	} else if ((size_t)ret >= *blen) {
 		(*buf_p)[*blen - 1] = '\0';
 
-		/*
-		 * Set *err to 'ret' to avoid overflow if tries to
-		 * fill this buffer sequentially.
-		 */
+		 
 		if (err && !*err)
 			*err = ret;
 	} else {
@@ -340,7 +314,7 @@ static int arm_spe_pkt_desc_op_type(const struct arm_spe_pkt *packet,
 		if (SPE_OP_PKT_IS_OTHER_SVE_OP(payload)) {
 			arm_spe_pkt_out_string(&err, &buf, &buf_len, "SVE-OTHER");
 
-			/* SVE effective vector length */
+			 
 			arm_spe_pkt_out_string(&err, &buf, &buf_len, " EVLEN %d",
 					       SPE_OP_PKG_SVE_EVL(payload));
 
@@ -395,7 +369,7 @@ static int arm_spe_pkt_desc_op_type(const struct arm_spe_pkt *packet,
 		}
 
 		if (SPE_OP_PKT_IS_LDST_SVE(payload)) {
-			/* SVE effective vector length */
+			 
 			arm_spe_pkt_out_string(&err, &buf, &buf_len, " EVLEN %d",
 					       SPE_OP_PKG_SVE_EVL(payload));
 
@@ -416,7 +390,7 @@ static int arm_spe_pkt_desc_op_type(const struct arm_spe_pkt *packet,
 
 		break;
 	default:
-		/* Unknown index */
+		 
 		err = -1;
 		break;
 	}
@@ -458,7 +432,7 @@ static int arm_spe_pkt_desc_addr(const struct arm_spe_pkt *packet,
 				       payload, ns, ch, pat);
 		break;
 	default:
-		/* Unknown index */
+		 
 		err = -1;
 		break;
 	}
@@ -530,12 +504,12 @@ int arm_spe_pkt_desc(const struct arm_spe_pkt *packet, char *buf,
 		err = arm_spe_pkt_desc_counter(packet, buf, buf_len);
 		break;
 	default:
-		/* Unknown packet type */
+		 
 		err = -1;
 		break;
 	}
 
-	/* Output raw data if detect any error */
+	 
 	if (err) {
 		err = 0;
 		arm_spe_pkt_out_string(&err, &buf_orig, &buf_len, "%s 0x%llx (%d)",

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2018 Chelsio Communications.  All rights reserved.
- */
+
+ 
 
 #include <linux/zlib.h>
 
@@ -33,7 +31,7 @@ int cudbg_compress_buff(struct cudbg_init *pdbg_init,
 	struct cudbg_compress_hdr *c_hdr;
 	int rc;
 
-	/* Write compression header to output buffer before compression */
+	 
 	rc = cudbg_get_compress_hdr(pout_buff, &temp_buff);
 	if (rc)
 		return rc;

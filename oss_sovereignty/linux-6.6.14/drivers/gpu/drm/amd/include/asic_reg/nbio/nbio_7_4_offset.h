@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2018  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _nbio_7_4_OFFSET_HEADER
 #define _nbio_7_4_OFFSET_HEADER
 
 
 
-// addressBlock: nbio_pcie0_pswuscfg0_cfgdecp
-// base address: 0x0
+
+
 #define cfgPSWUSCFG0_VENDOR_ID                                                                          0x0000
 #define cfgPSWUSCFG0_DEVICE_ID                                                                          0x0002
 #define cfgPSWUSCFG0_COMMAND                                                                            0x0004
@@ -233,8 +214,8 @@
 #define cfgPSWUSCFG0_LANE_15_MARGINING_LANE_STATUS                                                      0x0486
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF0_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF0_0_COMMAND                                                                  0x0004
@@ -587,8 +568,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVD1SCH_DW8                              0x0660
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf1_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF1_0_VENDOR_ID                                                                0x0000
 #define cfgBIF_CFG_DEV0_EPF1_0_DEVICE_ID                                                                0x0002
 #define cfgBIF_CFG_DEV0_EPF1_0_COMMAND                                                                  0x0004
@@ -941,8 +922,8 @@
 #define cfgBIF_CFG_DEV0_EPF1_0_PCIE_VENDOR_SPECIFIC_HDR_GPUIOV_UVD1SCH_DW8                              0x0660
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_swds_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_SWDS0_VENDOR_ID                                                                 0x0000
 #define cfgBIF_CFG_DEV0_SWDS0_DEVICE_ID                                                                 0x0002
 #define cfgBIF_CFG_DEV0_SWDS0_COMMAND                                                                   0x0004
@@ -1117,8 +1098,8 @@
 #define cfgBIF_CFG_DEV0_SWDS0_LANE_15_MARGINING_LANE_STATUS                                             0x0486
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf0_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_COMMAND                                                              0x0004
@@ -1200,8 +1181,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF0_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf1_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_COMMAND                                                              0x0004
@@ -1283,8 +1264,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF1_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf2_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_COMMAND                                                              0x0004
@@ -1366,8 +1347,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF2_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf3_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_COMMAND                                                              0x0004
@@ -1449,8 +1430,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF3_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf4_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_COMMAND                                                              0x0004
@@ -1532,8 +1513,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF4_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf5_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_COMMAND                                                              0x0004
@@ -1615,8 +1596,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF5_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf6_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_COMMAND                                                              0x0004
@@ -1698,8 +1679,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF6_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf7_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_COMMAND                                                              0x0004
@@ -1781,8 +1762,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF7_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf8_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_COMMAND                                                              0x0004
@@ -1864,8 +1845,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF8_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf9_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_VENDOR_ID                                                            0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_DEVICE_ID                                                            0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_COMMAND                                                              0x0004
@@ -1947,8 +1928,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF9_0_PCIE_ARI_CNTL                                                        0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf10_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_COMMAND                                                             0x0004
@@ -2030,8 +2011,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF10_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf11_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_COMMAND                                                             0x0004
@@ -2113,8 +2094,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF11_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf12_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_COMMAND                                                             0x0004
@@ -2196,8 +2177,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF12_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf13_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_COMMAND                                                             0x0004
@@ -2279,8 +2260,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF13_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf14_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_COMMAND                                                             0x0004
@@ -2362,8 +2343,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF14_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_cfg_dev0_epf0_vf15_bifcfgdecp
-// base address: 0x0
+
+
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_VENDOR_ID                                                           0x0000
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_DEVICE_ID                                                           0x0002
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_COMMAND                                                             0x0004
@@ -2445,8 +2426,8 @@
 #define cfgBIF_CFG_DEV0_EPF0_VF15_0_PCIE_ARI_CNTL                                                       0x032e
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmMM_INDEX                                                                                     0x0000
 #define mmMM_INDEX_BASE_IDX                                                                            0
 #define mmMM_DATA                                                                                      0x0001
@@ -2455,8 +2436,8 @@
 #define mmMM_INDEX_HI_BASE_IDX                                                                         0
 
 
-// addressBlock: nbio_nbif0_bif_bx_SYSDEC
-// base address: 0x0
+
+
 #define mmSYSHUB_INDEX_OVLP                                                                            0x0008
 #define mmSYSHUB_INDEX_OVLP_BASE_IDX                                                                   0
 #define mmSYSHUB_DATA_OVLP                                                                             0x0009
@@ -2557,24 +2538,24 @@
 #define mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL_BASE_IDX                                                    1
 
 
-// addressBlock: nbio_nbif0_syshub_mmreg_syshubdec
-// base address: 0x0
+
+
 #define mmSYSHUB_INDEX                                                                                 0x0008
 #define mmSYSHUB_INDEX_BASE_IDX                                                                        0
 #define mmSYSHUB_DATA                                                                                  0x0009
 #define mmSYSHUB_DATA_BASE_IDX                                                                         0
 
 
-// addressBlock: nbio_nbif0_rcc_strap_BIFDEC1
-// base address: 0x0
+
+
 #define mmRCC_BIF_STRAP0                                                                               0x0000
 #define mmRCC_BIF_STRAP0_BASE_IDX                                                                      2
 #define mmRCC_DEV0_EPF0_STRAP0                                                                         0x0011
 #define mmRCC_DEV0_EPF0_STRAP0_BASE_IDX                                                                2
 
 
-// addressBlock: nbio_nbif0_rcc_ep_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmEP_PCIE_SCRATCH                                                                              0x0025
 #define mmEP_PCIE_SCRATCH_BASE_IDX                                                                     2
 #define mmEP_PCIE_CNTL                                                                                 0x0027
@@ -2645,8 +2626,8 @@
 #define mmEP_PCIE_LC_SPEED_CNTL_BASE_IDX                                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dwn_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmDN_PCIE_RESERVED                                                                             0x0040
 #define mmDN_PCIE_RESERVED_BASE_IDX                                                                    2
 #define mmDN_PCIE_SCRATCH                                                                              0x0041
@@ -2663,8 +2644,8 @@
 #define mmDN_PCIE_CFG_CNTL_BASE_IDX                                                                    2
 
 
-// addressBlock: nbio_nbif0_rcc_dwnp_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmPCIE_ERR_CNTL                                                                                0x004f
 #define mmPCIE_ERR_CNTL_BASE_IDX                                                                       2
 #define mmPCIE_RX_CNTL                                                                                 0x0050
@@ -2677,8 +2658,8 @@
 #define mmLTR_MSG_INFO_FROM_EP_BASE_IDX                                                                2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_BIFPFVFDEC1[13440..14975]
-// base address: 0x3480
+
+
 #define mmRCC_ERR_LOG                                                                                  0x0085
 #define mmRCC_ERR_LOG_BASE_IDX                                                                         2
 #define mmRCC_DOORBELL_APER_EN                                                                         0x00c0
@@ -2693,8 +2674,8 @@
 #endif
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_BIFDEC1
-// base address: 0x0
+
+
 #define mmRCC_ERR_INT_CNTL                                                                             0x0086
 #define mmRCC_ERR_INT_CNTL_BASE_IDX                                                                    2
 #define mmRCC_BACO_CNTL_MISC                                                                           0x0087
@@ -2765,8 +2746,8 @@
 #define mmRCC_MH_ARB_CNTL_BASE_IDX                                                                     2
 
 
-// addressBlock: nbio_nbif0_bif_bx_BIFDEC1
-// base address: 0x0
+
+
 #define mmBIF_MM_INDACCESS_CNTL                                                                        0x00e6
 #define mmBIF_MM_INDACCESS_CNTL_BASE_IDX                                                               2
 #define mmBUS_CNTL                                                                                     0x00e7
@@ -2889,8 +2870,8 @@
 #define mmBIF_WAKEB_PAD_CNTL_BASE_IDX                                                                  2
 
 
-// addressBlock: nbio_nbif0_bif_bx_pf_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BME_STATUS                                                                               0x00eb
 #define mmBIF_BME_STATUS_BASE_IDX                                                                      2
 #define mmBIF_ATOMIC_ERR_LOG                                                                           0x00ec
@@ -2937,8 +2918,8 @@
 #define mmBIF_VMHV_MAILBOX_BASE_IDX                                                                    2
 
 
-// addressBlock: nbio_nbif0_gdc_GDCDEC
-// base address: 0x0
+
+
 #define mmNGDC_SDP_PORT_CTRL                                                                           0x01c2
 #define mmNGDC_SDP_PORT_CTRL_BASE_IDX                                                                  2
 #define mmSHUB_REGS_IF_CTL                                                                             0x01c3
@@ -2967,8 +2948,8 @@
 #define mmS2A_MISC_CNTL_BASE_IDX                                                                       2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_BIFDEC2
-// base address: 0x0
+
+
 #define mmGFXMSIX_VECT0_ADDR_LO                                                                        0x0400
 #define mmGFXMSIX_VECT0_ADDR_LO_BASE_IDX                                                               3
 #define mmGFXMSIX_VECT0_ADDR_HI                                                                        0x0401
@@ -2997,8 +2978,8 @@
 #define mmGFXMSIX_PBA_BASE_IDX                                                                         3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf0_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_DATA                                                                 0x0001
@@ -3007,8 +2988,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf0_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF0_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF0_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF0_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3021,8 +3002,8 @@
 #define mmRCC_DEV0_EPF0_VF0_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf0_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3069,8 +3050,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF0_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf0_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3099,8 +3080,8 @@
 #define mmRCC_DEV0_EPF0_VF0_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf1_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_DATA                                                                 0x0001
@@ -3109,8 +3090,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf1_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF1_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF1_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF1_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3123,8 +3104,8 @@
 #define mmRCC_DEV0_EPF0_VF1_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf1_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3171,8 +3152,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF1_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf1_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3201,8 +3182,8 @@
 #define mmRCC_DEV0_EPF0_VF1_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf2_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_DATA                                                                 0x0001
@@ -3211,8 +3192,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf2_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF2_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF2_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF2_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3225,8 +3206,8 @@
 #define mmRCC_DEV0_EPF0_VF2_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf2_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3273,8 +3254,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF2_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf2_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3303,8 +3284,8 @@
 #define mmRCC_DEV0_EPF0_VF2_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf3_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_DATA                                                                 0x0001
@@ -3313,8 +3294,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf3_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF3_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF3_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF3_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3327,8 +3308,8 @@
 #define mmRCC_DEV0_EPF0_VF3_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf3_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3375,8 +3356,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF3_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf3_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3405,8 +3386,8 @@
 #define mmRCC_DEV0_EPF0_VF3_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf4_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_DATA                                                                 0x0001
@@ -3415,8 +3396,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf4_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF4_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF4_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF4_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3429,8 +3410,8 @@
 #define mmRCC_DEV0_EPF0_VF4_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf4_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3477,8 +3458,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF4_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf4_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3507,8 +3488,8 @@
 #define mmRCC_DEV0_EPF0_VF4_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf5_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_DATA                                                                 0x0001
@@ -3517,8 +3498,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf5_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF5_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF5_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF5_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3531,8 +3512,8 @@
 #define mmRCC_DEV0_EPF0_VF5_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf5_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3579,8 +3560,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF5_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf5_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3609,8 +3590,8 @@
 #define mmRCC_DEV0_EPF0_VF5_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf6_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_DATA                                                                 0x0001
@@ -3619,8 +3600,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf6_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF6_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF6_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF6_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3633,8 +3614,8 @@
 #define mmRCC_DEV0_EPF0_VF6_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf6_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3681,8 +3662,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF6_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf6_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3711,8 +3692,8 @@
 #define mmRCC_DEV0_EPF0_VF6_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf7_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_DATA                                                                 0x0001
@@ -3721,8 +3702,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf7_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF7_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF7_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF7_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3735,8 +3716,8 @@
 #define mmRCC_DEV0_EPF0_VF7_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf7_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3783,8 +3764,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF7_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf7_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3813,8 +3794,8 @@
 #define mmRCC_DEV0_EPF0_VF7_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf8_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_DATA                                                                 0x0001
@@ -3823,8 +3804,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf8_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF8_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF8_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF8_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3837,8 +3818,8 @@
 #define mmRCC_DEV0_EPF0_VF8_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf8_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3885,8 +3866,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF8_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf8_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -3915,8 +3896,8 @@
 #define mmRCC_DEV0_EPF0_VF8_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf9_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX                                                                0x0000
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_BASE_IDX                                                       0
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_DATA                                                                 0x0001
@@ -3925,8 +3906,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_HI_BASE_IDX                                                    0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf9_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF9_RCC_ERR_LOG                                                                0x0085
 #define mmRCC_DEV0_EPF0_VF9_RCC_ERR_LOG_BASE_IDX                                                       2
 #define mmRCC_DEV0_EPF0_VF9_RCC_DOORBELL_APER_EN                                                       0x00c0
@@ -3939,8 +3920,8 @@
 #define mmRCC_DEV0_EPF0_VF9_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf9_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS                                                          0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS_BASE_IDX                                                 2
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_ATOMIC_ERR_LOG                                                      0x00ec
@@ -3987,8 +3968,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF9_BIF_VMHV_MAILBOX_BASE_IDX                                               2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf9_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_LO                                                      0x0400
 #define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
 #define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_HI                                                      0x0401
@@ -4017,8 +3998,8 @@
 #define mmRCC_DEV0_EPF0_VF9_GFXMSIX_PBA_BASE_IDX                                                       3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf10_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_DATA                                                                0x0001
@@ -4027,8 +4008,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf10_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF10_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF10_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF10_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4041,8 +4022,8 @@
 #define mmRCC_DEV0_EPF0_VF10_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf10_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4089,8 +4070,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF10_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf10_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_HI                                                     0x0401
@@ -4119,8 +4100,8 @@
 #define mmRCC_DEV0_EPF0_VF10_GFXMSIX_PBA_BASE_IDX                                                      3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf11_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_DATA                                                                0x0001
@@ -4129,8 +4110,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf11_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF11_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF11_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF11_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4143,8 +4124,8 @@
 #define mmRCC_DEV0_EPF0_VF11_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf11_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4191,8 +4172,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF11_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf11_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_HI                                                     0x0401
@@ -4221,8 +4202,8 @@
 #define mmRCC_DEV0_EPF0_VF11_GFXMSIX_PBA_BASE_IDX                                                      3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf12_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_DATA                                                                0x0001
@@ -4231,8 +4212,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf12_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF12_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF12_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF12_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4245,8 +4226,8 @@
 #define mmRCC_DEV0_EPF0_VF12_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf12_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4293,8 +4274,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF12_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf12_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_HI                                                     0x0401
@@ -4323,8 +4304,8 @@
 #define mmRCC_DEV0_EPF0_VF12_GFXMSIX_PBA_BASE_IDX                                                      3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf13_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_DATA                                                                0x0001
@@ -4333,8 +4314,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf13_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF13_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF13_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF13_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4347,8 +4328,8 @@
 #define mmRCC_DEV0_EPF0_VF13_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf13_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4395,8 +4376,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF13_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf13_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_HI                                                     0x0401
@@ -4425,8 +4406,8 @@
 #define mmRCC_DEV0_EPF0_VF13_GFXMSIX_PBA_BASE_IDX                                                      3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf14_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_DATA                                                                0x0001
@@ -4435,8 +4416,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf14_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF14_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF14_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF14_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4449,8 +4430,8 @@
 #define mmRCC_DEV0_EPF0_VF14_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf14_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4497,8 +4478,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF14_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf14_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_HI                                                     0x0401
@@ -4527,8 +4508,8 @@
 #define mmRCC_DEV0_EPF0_VF14_GFXMSIX_PBA_BASE_IDX                                                      3
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf15_SYSPFVFDEC
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX                                                               0x0000
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_BASE_IDX                                                      0
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_DATA                                                                0x0001
@@ -4537,8 +4518,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_HI_BASE_IDX                                                   0
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf15_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF15_RCC_ERR_LOG                                                               0x0085
 #define mmRCC_DEV0_EPF0_VF15_RCC_ERR_LOG_BASE_IDX                                                      2
 #define mmRCC_DEV0_EPF0_VF15_RCC_DOORBELL_APER_EN                                                      0x00c0
@@ -4551,8 +4532,8 @@
 #define mmRCC_DEV0_EPF0_VF15_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
 
 
-// addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf15_BIFPFVFDEC1
-// base address: 0x0
+
+
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS                                                         0x00eb
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS_BASE_IDX                                                2
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_ATOMIC_ERR_LOG                                                     0x00ec
@@ -4599,8 +4580,8 @@
 #define mmBIF_BX_DEV0_EPF0_VF15_BIF_VMHV_MAILBOX_BASE_IDX                                              2
 
 
-// addressBlock: nbio_nbif0_rcc_dev0_epf0_vf15_BIFDEC2
-// base address: 0x0
+
+
 #define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_LO                                                     0x0400
 #define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
 #define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_HI                                                     0x0401

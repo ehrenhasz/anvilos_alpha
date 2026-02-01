@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Helper functions for handling target threads/cpus
- *
- * Copyright (C) 2012, LG Electronics, Namhyung Kim <namhyung.kim@lge.com>
- */
+
+ 
 
 #include "target.h"
 
@@ -21,70 +17,70 @@ enum target_errno target__validate(struct target *target)
 	if (target->pid)
 		target->tid = target->pid;
 
-	/* CPU and PID are mutually exclusive */
+	 
 	if (target->tid && target->cpu_list) {
 		target->cpu_list = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__PID_OVERRIDE_CPU;
 	}
 
-	/* UID and PID are mutually exclusive */
+	 
 	if (target->tid && target->uid_str) {
 		target->uid_str = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__PID_OVERRIDE_UID;
 	}
 
-	/* UID and CPU are mutually exclusive */
+	 
 	if (target->uid_str && target->cpu_list) {
 		target->cpu_list = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__UID_OVERRIDE_CPU;
 	}
 
-	/* PID and SYSTEM are mutually exclusive */
+	 
 	if (target->tid && target->system_wide) {
 		target->system_wide = false;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__PID_OVERRIDE_SYSTEM;
 	}
 
-	/* UID and SYSTEM are mutually exclusive */
+	 
 	if (target->uid_str && target->system_wide) {
 		target->system_wide = false;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__UID_OVERRIDE_SYSTEM;
 	}
 
-	/* BPF and CPU are mutually exclusive */
+	 
 	if (target->bpf_str && target->cpu_list) {
 		target->cpu_list = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__BPF_OVERRIDE_CPU;
 	}
 
-	/* BPF and PID/TID are mutually exclusive */
+	 
 	if (target->bpf_str && target->tid) {
 		target->tid = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__BPF_OVERRIDE_PID;
 	}
 
-	/* BPF and UID are mutually exclusive */
+	 
 	if (target->bpf_str && target->uid_str) {
 		target->uid_str = NULL;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__BPF_OVERRIDE_UID;
 	}
 
-	/* BPF and THREADS are mutually exclusive */
+	 
 	if (target->bpf_str && target->per_thread) {
 		target->per_thread = false;
 		if (ret == TARGET_ERRNO__SUCCESS)
 			ret = TARGET_ERRNO__BPF_OVERRIDE_THREAD;
 	}
 
-	/* THREAD and SYSTEM/CPU are mutually exclusive */
+	 
 	if (target->per_thread && (target->system_wide || target->cpu_list)) {
 		target->per_thread = false;
 		if (ret == TARGET_ERRNO__SUCCESS)
@@ -104,13 +100,11 @@ enum target_errno target__parse_uid(struct target *target)
 	if (str == NULL)
 		return TARGET_ERRNO__SUCCESS;
 
-	/* Try user name first */
+	 
 	getpwnam_r(str, &pwd, buf, sizeof(buf), &result);
 
 	if (result == NULL) {
-		/*
-		 * The user name not found. Maybe it's a UID number.
-		 */
+		 
 		char *endptr;
 		int uid = strtol(str, &endptr, 10);
 
@@ -127,9 +121,7 @@ enum target_errno target__parse_uid(struct target *target)
 	return TARGET_ERRNO__SUCCESS;
 }
 
-/*
- * This must have a same ordering as the enum target_errno.
- */
+ 
 static const char *target__error_str[] = {
 	"PID/TID switch overriding CPU",
 	"PID/TID switch overriding UID",
@@ -176,7 +168,7 @@ int target__strerror(struct target *target, int errnum,
 		break;
 
 	default:
-		/* cannot reach here */
+		 
 		break;
 	}
 

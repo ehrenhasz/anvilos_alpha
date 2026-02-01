@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Linear Technology LTC4245 I2C Multiple Supply Hot Swap Controller
- *
- * Copyright (C) 2008 Ira W. Snyder <iws@ovro.caltech.edu>
- *
- * This driver is based on the ds1621 and ina209 drivers.
- *
- * Datasheet:
- * http://www.linear.com/pc/downloadDocument.do?navId=H0,C1,C1003,C1006,C1140,P19392,D13517
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,9 +13,9 @@
 #include <linux/jiffies.h>
 #include <linux/platform_data/ltc4245.h>
 
-/* Here are names of the chip's registers (a.k.a. commands) */
+ 
 enum ltc4245_cmd {
-	LTC4245_STATUS			= 0x00, /* readonly */
+	LTC4245_STATUS			= 0x00,  
 	LTC4245_ALERT			= 0x01,
 	LTC4245_CONTROL			= 0x02,
 	LTC4245_ON			= 0x03,
@@ -53,26 +44,20 @@ struct ltc4245_data {
 
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated; /* in jiffies */
+	unsigned long last_updated;  
 
-	/* Control registers */
+	 
 	u8 cregs[0x08];
 
-	/* Voltage registers */
+	 
 	u8 vregs[0x0d];
 
-	/* GPIO ADC registers */
+	 
 	bool use_extra_gpios;
 	int gpios[3];
 };
 
-/*
- * Update the readings from the GPIO pins. If the driver has been configured to
- * sample all GPIO's as analog voltages, a round-robin sampling method is used.
- * Otherwise, only the configured GPIO pin is sampled.
- *
- * LOCKING: must hold data->update_lock
- */
+ 
 static void ltc4245_update_gpios(struct device *dev)
 {
 	struct ltc4245_data *data = dev_get_drvdata(dev);
@@ -80,48 +65,36 @@ static void ltc4245_update_gpios(struct device *dev)
 	u8 gpio_curr, gpio_next, gpio_reg;
 	int i;
 
-	/* no extra gpio support, we're basically done */
+	 
 	if (!data->use_extra_gpios) {
 		data->gpios[0] = data->vregs[LTC4245_GPIOADC - 0x10];
 		return;
 	}
 
-	/*
-	 * If the last reading was too long ago, then we mark all old GPIO
-	 * readings as stale by setting them to -EAGAIN
-	 */
+	 
 	if (time_after(jiffies, data->last_updated + 5 * HZ)) {
 		for (i = 0; i < ARRAY_SIZE(data->gpios); i++)
 			data->gpios[i] = -EAGAIN;
 	}
 
-	/*
-	 * Get the current GPIO pin
-	 *
-	 * The datasheet calls these GPIO[1-3], but we'll calculate the zero
-	 * based array index instead, and call them GPIO[0-2]. This is much
-	 * easier to think about.
-	 */
+	 
 	gpio_curr = (data->cregs[LTC4245_GPIO] & 0xc0) >> 6;
 	if (gpio_curr > 0)
 		gpio_curr -= 1;
 
-	/* Read the GPIO voltage from the GPIOADC register */
+	 
 	data->gpios[gpio_curr] = data->vregs[LTC4245_GPIOADC - 0x10];
 
-	/* Find the next GPIO pin to read */
+	 
 	gpio_next = (gpio_curr + 1) % ARRAY_SIZE(data->gpios);
 
-	/*
-	 * Calculate the correct setting for the GPIO register so it will
-	 * sample the next GPIO pin
-	 */
+	 
 	gpio_reg = (data->cregs[LTC4245_GPIO] & 0x3f) | ((gpio_next + 1) << 6);
 
-	/* Update the GPIO register */
+	 
 	i2c_smbus_write_byte_data(client, LTC4245_GPIO, gpio_reg);
 
-	/* Update saved data */
+	 
 	data->cregs[LTC4245_GPIO] = gpio_reg;
 }
 
@@ -136,7 +109,7 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 
 	if (time_after(jiffies, data->last_updated + HZ) || !data->valid) {
 
-		/* Read control registers -- 0x00 to 0x07 */
+		 
 		for (i = 0; i < ARRAY_SIZE(data->cregs); i++) {
 			val = i2c_smbus_read_byte_data(client, i);
 			if (unlikely(val < 0))
@@ -145,7 +118,7 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 				data->cregs[i] = val;
 		}
 
-		/* Read voltage registers -- 0x10 to 0x1c */
+		 
 		for (i = 0; i < ARRAY_SIZE(data->vregs); i++) {
 			val = i2c_smbus_read_byte_data(client, i+0x10);
 			if (unlikely(val < 0))
@@ -154,7 +127,7 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 				data->vregs[i] = val;
 		}
 
-		/* Update GPIO readings */
+		 
 		ltc4245_update_gpios(dev);
 
 		data->last_updated = jiffies;
@@ -166,7 +139,7 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 	return data;
 }
 
-/* Return the voltage from the given register in millivolts */
+ 
 static int ltc4245_get_voltage(struct device *dev, u8 reg)
 {
 	struct ltc4245_data *data = ltc4245_update_device(dev);
@@ -194,7 +167,7 @@ static int ltc4245_get_voltage(struct device *dev, u8 reg)
 		voltage = regval * 10;
 		break;
 	default:
-		/* If we get here, the developer messed up */
+		 
 		WARN_ON_ONCE(1);
 		break;
 	}
@@ -202,7 +175,7 @@ static int ltc4245_get_voltage(struct device *dev, u8 reg)
 	return voltage;
 }
 
-/* Return the current in the given sense register in milliAmperes */
+ 
 static unsigned int ltc4245_get_current(struct device *dev, u8 reg)
 {
 	struct ltc4245_data *data = ltc4245_update_device(dev);
@@ -210,40 +183,27 @@ static unsigned int ltc4245_get_current(struct device *dev, u8 reg)
 	unsigned int voltage;
 	unsigned int curr;
 
-	/*
-	 * The strange looking conversions that follow are fixed-point
-	 * math, since we cannot do floating point in the kernel.
-	 *
-	 * Step 1: convert sense register to microVolts
-	 * Step 2: convert voltage to milliAmperes
-	 *
-	 * If you play around with the V=IR equation, you come up with
-	 * the following: X uV / Y mOhm == Z mA
-	 *
-	 * With the resistors that are fractions of a milliOhm, we multiply
-	 * the voltage and resistance by 10, to shift the decimal point.
-	 * Now we can use the normal division operator again.
-	 */
+	 
 
 	switch (reg) {
 	case LTC4245_12VSENSE:
-		voltage = regval * 250; /* voltage in uV */
-		curr = voltage / 50; /* sense resistor 50 mOhm */
+		voltage = regval * 250;  
+		curr = voltage / 50;  
 		break;
 	case LTC4245_5VSENSE:
-		voltage = regval * 125; /* voltage in uV */
-		curr = (voltage * 10) / 35; /* sense resistor 3.5 mOhm */
+		voltage = regval * 125;  
+		curr = (voltage * 10) / 35;  
 		break;
 	case LTC4245_3VSENSE:
-		voltage = regval * 125; /* voltage in uV */
-		curr = (voltage * 10) / 25; /* sense resistor 2.5 mOhm */
+		voltage = regval * 125;  
+		curr = (voltage * 10) / 25;  
 		break;
 	case LTC4245_VEESENSE:
-		voltage = regval * 250; /* voltage in uV */
-		curr = voltage / 100; /* sense resistor 100 mOhm */
+		voltage = regval * 250;  
+		curr = voltage / 100;  
 		break;
 	default:
-		/* If we get here, the developer messed up */
+		 
 		WARN_ON_ONCE(1);
 		curr = 0;
 		break;
@@ -252,14 +212,14 @@ static unsigned int ltc4245_get_current(struct device *dev, u8 reg)
 	return curr;
 }
 
-/* Map from voltage channel index to voltage register */
+ 
 
 static const s8 ltc4245_in_regs[] = {
 	LTC4245_12VIN, LTC4245_5VIN, LTC4245_3VIN, LTC4245_VEEIN,
 	LTC4245_12VOUT, LTC4245_5VOUT, LTC4245_3VOUT, LTC4245_VEEOUT,
 };
 
-/* Map from current channel index to current register */
+ 
 
 static const s8 ltc4245_curr_regs[] = {
 	LTC4245_12VSENSE, LTC4245_5VSENSE, LTC4245_3VSENSE, LTC4245_VEESENSE,
@@ -429,11 +389,11 @@ static bool ltc4245_use_extra_gpios(struct i2c_client *client)
 	struct ltc4245_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct device_node *np = client->dev.of_node;
 
-	/* prefer platform data */
+	 
 	if (pdata)
 		return pdata->use_extra_gpios;
 
-	/* fallback on OF */
+	 
 	if (of_property_read_bool(np, "ltc4245,use-extra-gpios"))
 		return true;
 
@@ -457,7 +417,7 @@ static int ltc4245_probe(struct i2c_client *client)
 	mutex_init(&data->update_lock);
 	data->use_extra_gpios = ltc4245_use_extra_gpios(client);
 
-	/* Initialize the LTC4245 chip */
+	 
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT1, 0x00);
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT2, 0x00);
 
@@ -474,7 +434,7 @@ static const struct i2c_device_id ltc4245_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ltc4245_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ltc4245_driver = {
 	.driver = {
 		.name	= "ltc4245",

@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_TPC0_EML_CFG_REGS_H_
 #define ASIC_REG_TPC0_EML_CFG_REGS_H_
 
-/*
- *****************************************
- *   TPC0_EML_CFG (Prototype: TPC_EML_CFG)
- *****************************************
- */
+ 
 
 #define mmTPC0_EML_CFG_DBG_CNT                                       0x3040000
 
@@ -309,4 +297,4 @@
 
 #define mmTPC0_EML_CFG_DBG_INST_INSERT_CTL                           0x3040334
 
-#endif /* ASIC_REG_TPC0_EML_CFG_REGS_H_ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the Intel integrated DMA 64-bit
- *
- * Copyright (C) 2015 Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -20,17 +15,17 @@
 
 #include "idma64.h"
 
-/* For now we support only two channels */
+ 
 #define IDMA64_NR_CHAN		2
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static struct device *chan2dev(struct dma_chan *chan)
 {
 	return &chan->dev->device;
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static void idma64_off(struct idma64 *idma64)
 {
@@ -54,30 +49,24 @@ static void idma64_on(struct idma64 *idma64)
 	dma_writel(idma64, CFG, IDMA64_CFG_DMA_EN);
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static void idma64_chan_init(struct idma64 *idma64, struct idma64_chan *idma64c)
 {
 	u32 cfghi = IDMA64C_CFGH_SRC_PER(1) | IDMA64C_CFGH_DST_PER(0);
 	u32 cfglo = 0;
 
-	/* Set default burst alignment */
+	 
 	cfglo |= IDMA64C_CFGL_DST_BURST_ALIGN | IDMA64C_CFGL_SRC_BURST_ALIGN;
 
 	channel_writel(idma64c, CFG_LO, cfglo);
 	channel_writel(idma64c, CFG_HI, cfghi);
 
-	/* Enable interrupts */
+	 
 	channel_set_bit(idma64, MASK(XFER), idma64c->mask);
 	channel_set_bit(idma64, MASK(ERROR), idma64c->mask);
 
-	/*
-	 * Enforce the controller to be turned on.
-	 *
-	 * The iDMA is turned off in ->probe() and looses context during system
-	 * suspend / resume cycle. That's why we have to enable it each time we
-	 * use it.
-	 */
+	 
 	idma64_on(idma64);
 }
 
@@ -114,7 +103,7 @@ static void idma64_start_transfer(struct idma64_chan *idma64c)
 	struct idma64 *idma64 = to_idma64(idma64c->vchan.chan.device);
 	struct virt_dma_desc *vdesc;
 
-	/* Get the next descriptor */
+	 
 	vdesc = vchan_next_desc(&idma64c->vchan);
 	if (!vdesc) {
 		idma64c->desc = NULL;
@@ -124,14 +113,14 @@ static void idma64_start_transfer(struct idma64_chan *idma64c)
 	list_del(&vdesc->node);
 	idma64c->desc = to_idma64_desc(vdesc);
 
-	/* Configure the channel */
+	 
 	idma64_chan_init(idma64, idma64c);
 
-	/* Start the channel with a new descriptor */
+	 
 	idma64_chan_start(idma64, idma64c);
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static void idma64_chan_irq(struct idma64 *idma64, unsigned short c,
 		u32 status_err, u32 status_xfer)
@@ -156,7 +145,7 @@ static void idma64_chan_irq(struct idma64 *idma64, unsigned short c,
 			idma64_start_transfer(idma64c);
 		}
 
-		/* idma64_start_transfer() updates idma64c->desc */
+		 
 		if (idma64c->desc == NULL || desc->status == DMA_ERROR)
 			idma64_stop_transfer(idma64c);
 	}
@@ -173,7 +162,7 @@ static irqreturn_t idma64_irq(int irq, void *dev)
 
 	dev_vdbg(idma64->dma.dev, "%s: status=%#x\n", __func__, status);
 
-	/* Check if we have any interrupt from the DMA controller */
+	 
 	if (!status)
 		return IRQ_NONE;
 
@@ -186,7 +175,7 @@ static irqreturn_t idma64_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static struct idma64_desc *idma64_alloc_desc(unsigned int ndesc)
 {
@@ -247,7 +236,7 @@ static void idma64_hw_desc_fill(struct idma64_hw_desc *hw,
 			 IDMA64C_CTLL_FC_M2P;
 		src_width = __ffs(sar | hw->len | 4);
 		dst_width = __ffs(config->dst_addr_width);
-	} else {	/* DMA_DEV_TO_MEM */
+	} else {	 
 		sar = config->src_addr;
 		dar = hw->phys;
 		ctllo |= IDMA64C_CTLL_DST_INC | IDMA64C_CTLL_SRC_FIX |
@@ -278,7 +267,7 @@ static void idma64_desc_fill(struct idma64_chan *idma64c,
 	struct idma64_lli *lli = hw->lli;
 	u64 llp = 0;
 
-	/* Fill the hardware descriptors and link them to a list */
+	 
 	do {
 		hw = &desc->hw[--i];
 		idma64_hw_desc_fill(hw, config, desc->direction, llp);
@@ -286,10 +275,10 @@ static void idma64_desc_fill(struct idma64_chan *idma64c,
 		desc->length += hw->len;
 	} while (i);
 
-	/* Trigger an interrupt after the last block is transfered */
+	 
 	lli->ctllo |= IDMA64C_CTLL_INT_EN;
 
-	/* Disable LLP transfer in the last block */
+	 
 	lli->ctllo &= ~(IDMA64C_CTLL_LLP_S_EN | IDMA64C_CTLL_LLP_D_EN);
 }
 
@@ -310,7 +299,7 @@ static struct dma_async_tx_descriptor *idma64_prep_slave_sg(
 	for_each_sg(sgl, sg, sg_len, i) {
 		struct idma64_hw_desc *hw = &desc->hw[i];
 
-		/* Allocate DMA capable memory for hardware descriptor */
+		 
 		hw->lli = dma_pool_alloc(idma64c->pool, GFP_NOWAIT, &hw->llp);
 		if (!hw->lli) {
 			desc->ndesc = i;
@@ -360,7 +349,7 @@ static size_t idma64_active_desc_size(struct idma64_chan *idma64c)
 	if (!i)
 		return bytes;
 
-	/* The current chunk is not fully transfered yet */
+	 
 	bytes += desc->hw[--i].len;
 
 	return bytes - IDMA64C_CTLH_BLOCK_TS(ctlhi);
@@ -502,7 +491,7 @@ static int idma64_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct idma64_chan *idma64c = to_idma64_chan(chan);
 
-	/* Create a pool of consistent memory blocks for hardware descriptors */
+	 
 	idma64c->pool = dma_pool_create(dev_name(chan2dev(chan)),
 					chan->device->dev,
 					sizeof(struct idma64_lli), 8, 0);
@@ -523,7 +512,7 @@ static void idma64_free_chan_resources(struct dma_chan *chan)
 	idma64c->pool = NULL;
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 #define IDMA64_BUSWIDTHS				\
 	BIT(DMA_SLAVE_BUSWIDTH_1_BYTE)		|	\
@@ -551,7 +540,7 @@ static int idma64_probe(struct idma64_chip *chip)
 
 	idma64->all_chan_mask = (1 << nr_chan) - 1;
 
-	/* Turn off iDMA controller */
+	 
 	idma64_off(idma64);
 
 	ret = devm_request_irq(chip->dev, chip->irq, idma64_irq, IRQF_SHARED,
@@ -611,10 +600,7 @@ static void idma64_remove(struct idma64_chip *chip)
 
 	dma_async_device_unregister(&idma64->dma);
 
-	/*
-	 * Explicitly call devm_request_irq() to avoid the side effects with
-	 * the scheduled tasklets.
-	 */
+	 
 	devm_free_irq(chip->dev, chip->irq, idma64);
 
 	for (i = 0; i < idma64->dma.chancnt; i++) {
@@ -624,7 +610,7 @@ static void idma64_remove(struct idma64_chip *chip)
 	}
 }
 
-/* ---------------------------------------------------------------------- */
+ 
 
 static int idma64_platform_probe(struct platform_device *pdev)
 {

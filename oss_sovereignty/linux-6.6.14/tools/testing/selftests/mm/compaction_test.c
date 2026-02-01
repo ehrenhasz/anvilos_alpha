@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * A test for the patch "Allow compaction of unevictable pages".
- * With this patch we should be able to allocate at least 1/4
- * of RAM in huge pages. Without the patch much less is
- * allocated.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,8 +82,7 @@ int check_compaction(unsigned long mem_free, unsigned int hugepage_size)
 	char initial_nr_hugepages[10] = {0};
 	char nr_hugepages[10] = {0};
 
-	/* We want to test with 80% of available memory. Else, OOM killer comes
-	   in to play */
+	 
 	mem_free = mem_free * 0.8;
 
 	fd = open("/proc/sys/vm/nr_hugepages", O_RDWR | O_NONBLOCK);
@@ -103,7 +96,7 @@ int check_compaction(unsigned long mem_free, unsigned int hugepage_size)
 		goto close_fd;
 	}
 
-	/* Start with the initial condition of 0 huge pages*/
+	 
 	if (write(fd, "0", sizeof(char)) != sizeof(char)) {
 		perror("Failed to write 0 to /proc/sys/vm/nr_hugepages\n");
 		goto close_fd;
@@ -111,8 +104,7 @@ int check_compaction(unsigned long mem_free, unsigned int hugepage_size)
 
 	lseek(fd, 0, SEEK_SET);
 
-	/* Request a large number of huge pages. The Kernel will allocate
-	   as much as it can */
+	 
 	if (write(fd, "100000", (6*sizeof(char))) != (6*sizeof(char))) {
 		perror("Failed to write 100000 to /proc/sys/vm/nr_hugepages\n");
 		goto close_fd;
@@ -125,8 +117,7 @@ int check_compaction(unsigned long mem_free, unsigned int hugepage_size)
 		goto close_fd;
 	}
 
-	/* We should have been able to request at least 1/3 rd of the memory in
-	   huge pages */
+	 
 	compaction_index = mem_free/(atoi(nr_hugepages) * hugepage_size);
 
 	if (compaction_index > 3) {
@@ -208,9 +199,7 @@ int main(int argc, char **argv)
 		entry->next = list;
 		list = entry;
 
-		/* Write something (in this case the address of the map) to
-		 * ensure that KSM can't merge the mapped pages
-		 */
+		 
 		for (i = 0; i < MAP_SIZE; i += page_size)
 			*(unsigned long *)(map + i) = (unsigned long)map + i;
 

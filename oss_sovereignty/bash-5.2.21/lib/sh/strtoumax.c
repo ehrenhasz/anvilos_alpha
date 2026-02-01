@@ -1,24 +1,8 @@
-/* strtoumax - convert string representation of a number into an uintmax_t value. */
+ 
 
-/* Copyright 1999-2020 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Written by Paul Eggert.  Modified by Chet Ramey for Bash. */
+ 
 
 #if HAVE_CONFIG_H
 #  include <config.h>
@@ -38,7 +22,7 @@
 
 #include <stdc.h>
 
-/* Verify a requirement at compile-time (unlike assert, which is runtime).  */
+ 
 #define verify(name, assertion) struct name { char a[(assertion) ? 1 : -1]; }
 
 #ifndef HAVE_DECL_STRTOUL

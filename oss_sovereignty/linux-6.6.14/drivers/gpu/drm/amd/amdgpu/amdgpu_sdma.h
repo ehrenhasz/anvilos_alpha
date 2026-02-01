@@ -1,31 +1,10 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_SDMA_H__
 #define __AMDGPU_SDMA_H__
 #include "amdgpu_ras.h"
 
-/* max number of IP instances */
+ 
 #define AMDGPU_MAX_SDMA_INSTANCES		16
 
 enum amdgpu_sdma_irq {
@@ -51,7 +30,7 @@ enum amdgpu_sdma_irq {
 #define NUM_SDMA(x) hweight32(x)
 
 struct amdgpu_sdma_instance {
-	/* SDMA firmware */
+	 
 	const struct firmware	*fw;
 	uint32_t		fw_version;
 	uint32_t		feature_version;
@@ -113,40 +92,37 @@ struct amdgpu_sdma {
 	struct amdgpu_sdma_ras	*ras;
 };
 
-/*
- * Provided by hw blocks that can move/clear data.  e.g., gfx or sdma
- * But currently, we use sdma to move data.
- */
+ 
 struct amdgpu_buffer_funcs {
-	/* maximum bytes in a single operation */
+	 
 	uint32_t	copy_max_bytes;
 
-	/* number of dw to reserve per operation */
+	 
 	unsigned	copy_num_dw;
 
-	/* used for buffer migration */
+	 
 	void (*emit_copy_buffer)(struct amdgpu_ib *ib,
-				 /* src addr in bytes */
+				  
 				 uint64_t src_offset,
-				 /* dst addr in bytes */
+				  
 				 uint64_t dst_offset,
-				 /* number of byte to transfer */
+				  
 				 uint32_t byte_count,
 				 bool tmz);
 
-	/* maximum bytes in a single operation */
+	 
 	uint32_t	fill_max_bytes;
 
-	/* number of dw to reserve per operation */
+	 
 	unsigned	fill_num_dw;
 
-	/* used for buffer clearing */
+	 
 	void (*emit_fill_buffer)(struct amdgpu_ib *ib,
-				 /* value to write to memory */
+				  
 				 uint32_t src_data,
-				 /* dst addr in bytes */
+				  
 				 uint64_t dst_offset,
-				 /* number of byte to fill */
+				  
 				 uint32_t byte_count);
 };
 

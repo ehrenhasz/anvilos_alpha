@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -98,8 +76,8 @@ gk104_chan_ramfc_write(struct nvkm_chan *chan, u64 offset, u64 length, u32 devm,
 	nvkm_wo32(chan->inst, 0xe4, priv ? 0x00000020 : 0x00000000);
 	nvkm_wo32(chan->inst, 0xe8, chan->id);
 	nvkm_wo32(chan->inst, 0xb8, 0xf8000000);
-	nvkm_wo32(chan->inst, 0xf8, 0x10003080); /* 0x002310 */
-	nvkm_wo32(chan->inst, 0xfc, 0x10000010); /* 0x002350 */
+	nvkm_wo32(chan->inst, 0xf8, 0x10003080);  
+	nvkm_wo32(chan->inst, 0xfc, 0x10000010);  
 	nvkm_done(chan->inst);
 	return 0;
 }
@@ -187,7 +165,7 @@ gk104_ectx_ctor(struct nvkm_engn *engn, struct nvkm_vctx *vctx)
 	return nvkm_memory_map(vctx->inst, 0, vctx->vmm, vctx->vma, &args, sizeof(args));
 }
 
-/*TODO: clean this up */
+ 
 struct gk104_engn_status {
 	bool busy;
 	bool faulted;
@@ -382,8 +360,8 @@ gk104_runq_init(struct nvkm_runq *runq)
 
 	gf100_runq_init(runq);
 
-	nvkm_wr32(device, 0x040148 + (runq->id * 0x2000), 0xffffffff); /* HCE.INTR */
-	nvkm_wr32(device, 0x04014c + (runq->id * 0x2000), 0xffffffff); /* HCE.INTREN */
+	nvkm_wr32(device, 0x040148 + (runq->id * 0x2000), 0xffffffff);  
+	nvkm_wr32(device, 0x04014c + (runq->id * 0x2000), 0xffffffff);  
 }
 
 static u32

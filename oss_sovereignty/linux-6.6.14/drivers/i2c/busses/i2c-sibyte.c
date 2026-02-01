@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2004 Steven J. Hill
- * Copyright (C) 2001,2002,2003 Broadcom Corporation
- * Copyright (C) 1995-2000 Simon G. Vogl
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -15,12 +11,12 @@
 
 
 struct i2c_algo_sibyte_data {
-	void *data;		/* private data */
-	int   bus;		/* which bus */
-	void *reg_base;		/* CSR base */
+	void *data;		 
+	int   bus;		 
+	void *reg_base;		 
 };
 
-/* ----- global defines ----------------------------------------------- */
+ 
 #define SMB_CSR(a,r) ((long)(a->reg_base + r))
 
 
@@ -89,7 +85,7 @@ static int smbus_xfer(struct i2c_adapter *i2c_adap, u16 addr,
 
 	error = csr_in32(SMB_CSR(adap, R_SMB_STATUS));
 	if (error & M_SMB_ERROR) {
-		/* Clear error bit by writing a 1 */
+		 
 		csr_out32(M_SMB_ERROR, SMB_CSR(adap, R_SMB_STATUS));
 		return (error & M_SMB_ERROR_TYPE) ? -EIO : -ENXIO;
 	}
@@ -109,24 +105,22 @@ static u32 bit_func(struct i2c_adapter *adap)
 }
 
 
-/* -----exported algorithm data: -------------------------------------	*/
+ 
 
 static const struct i2c_algorithm i2c_sibyte_algo = {
 	.smbus_xfer	= smbus_xfer,
 	.functionality	= bit_func,
 };
 
-/*
- * registering functions to load algorithms at runtime
- */
+ 
 static int __init i2c_sibyte_add_bus(struct i2c_adapter *i2c_adap, int speed)
 {
 	struct i2c_algo_sibyte_data *adap = i2c_adap->algo_data;
 
-	/* Register new adapter to i2c module... */
+	 
 	i2c_adap->algo = &i2c_sibyte_algo;
 
-	/* Set the requested frequency. */
+	 
 	csr_out32(speed, SMB_CSR(adap,R_SMB_FREQ));
 	csr_out32(0, SMB_CSR(adap,R_SMB_CONTROL));
 

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <sound/pcm_params.h>
@@ -42,7 +42,7 @@ static struct snd_pcm_hardware fifo_spdif_pcm = {
 	.periods_min = 2,
 	.periods_max = UINT_MAX,
 
-	/* No real justification for this */
+	 
 	.buffer_bytes_max = 1 * 1024 * 1024,
 };
 
@@ -137,14 +137,11 @@ static int fifo_spdif_hw_params(struct snd_pcm_substream *substream,
 				      AIU_MEM_IEC958_CONTROL_MODE_16BIT,
 				      val);
 
-	/* Number bytes read by the FIFO between each IRQ */
+	 
 	snd_soc_component_write(component, AIU_IEC958_BPF,
 				params_period_bytes(params));
 
-	/*
-	 * AUTO_DISABLE and SYNC_HEAD are enabled by default but
-	 * this should be disabled in PCM (uncompressed) mode
-	 */
+	 
 	snd_soc_component_update_bits(component, AIU_IEC958_DCU_FF_CTRL,
 				      AIU_IEC958_DCU_FF_CTRL_AUTO_DISABLE |
 				      AIU_IEC958_DCU_FF_CTRL_IRQ_MODE |

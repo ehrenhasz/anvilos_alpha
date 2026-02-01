@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -36,7 +36,7 @@ int get_cgroup_id(void *ctx)
 	if (task->pid != target_pid)
 		return 0;
 
-	/* simulate bpf_get_current_cgroup_id() helper */
+	 
 	bpf_rcu_read_lock();
 	cgroups = task->cgroups;
 	if (!cgroups)
@@ -59,7 +59,7 @@ int task_succ(void *ctx)
 		return 0;
 
 	bpf_rcu_read_lock();
-	/* region including helper using rcu ptr real_parent */
+	 
 	real_parent = task->real_parent;
 	if (!real_parent)
 		goto out;
@@ -81,7 +81,7 @@ int no_lock(void *ctx)
 {
 	struct task_struct *task, *real_parent;
 
-	/* old style ptr_to_btf_id is not allowed in sleepable */
+	 
 	task = bpf_get_current_task_btf();
 	real_parent = task->real_parent;
 	(void)bpf_task_storage_get(&map_a, real_parent, 0, 0);
@@ -93,7 +93,7 @@ int two_regions(void *ctx)
 {
 	struct task_struct *task, *real_parent;
 
-	/* two regions */
+	 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
 	bpf_rcu_read_unlock();
@@ -153,12 +153,12 @@ int task_acquire(void *ctx)
 	if (!real_parent)
 		goto out;
 
-	/* rcu_ptr->rcu_field */
+	 
 	gparent = real_parent->real_parent;
 	if (!gparent)
 		goto out;
 
-	/* acquire a reference which can be used outside rcu read lock region */
+	 
 	gparent = bpf_task_acquire(gparent);
 	if (!gparent)
 		goto out;
@@ -175,7 +175,7 @@ int miss_lock(void *ctx)
 {
 	struct task_struct *task;
 
-	/* missing bpf_rcu_read_lock() */
+	 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
 	(void)bpf_task_storage_get(&map_a, task, 0, 0);
@@ -189,7 +189,7 @@ int miss_unlock(void *ctx)
 {
 	struct task_struct *task;
 
-	/* missing bpf_rcu_read_unlock() */
+	 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
 	(void)bpf_task_storage_get(&map_a, task, 0, 0);
@@ -202,7 +202,7 @@ int non_sleepable_rcu_mismatch(void *ctx)
 	struct task_struct *task, *real_parent;
 
 	task = bpf_get_current_task_btf();
-	/* non-sleepable: missing bpf_rcu_read_unlock() in one path */
+	 
 	bpf_rcu_read_lock();
 	real_parent = task->real_parent;
 	if (!real_parent)
@@ -223,7 +223,7 @@ int inproper_sleepable_helper(void *ctx)
 	void *ptr;
 
 	task = bpf_get_current_task_btf();
-	/* sleepable helper in rcu read lock region */
+	 
 	bpf_rcu_read_lock();
 	real_parent = task->real_parent;
 	if (!real_parent)
@@ -246,7 +246,7 @@ int BPF_PROG(inproper_sleepable_kfunc, int cmd, union bpf_attr *attr, unsigned i
 {
 	struct bpf_key *bkey;
 
-	/* sleepable kfunc in rcu read lock region */
+	 
 	bpf_rcu_read_lock();
 	bkey = bpf_lookup_user_key(key_serial, flags);
 	bpf_rcu_read_unlock();
@@ -262,7 +262,7 @@ int nested_rcu_region(void *ctx)
 {
 	struct task_struct *task, *real_parent;
 
-	/* nested rcu read lock regions */
+	 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
 	bpf_rcu_read_lock();
@@ -283,7 +283,7 @@ int task_trusted_non_rcuptr(void *ctx)
 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
-	/* the pointer group_leader is explicitly marked as trusted */
+	 
 	group_leader = task->real_parent->group_leader;
 	(void)bpf_task_storage_get(&map_a, group_leader, 0, 0);
 	bpf_rcu_read_unlock();
@@ -299,7 +299,7 @@ int task_untrusted_rcuptr(void *ctx)
 	bpf_rcu_read_lock();
 	real_parent = task->real_parent;
 	bpf_rcu_read_unlock();
-	/* helper use of rcu ptr outside the rcu read lock region */
+	 
 	(void)bpf_task_storage_get(&map_a, real_parent, 0, 0);
 	return 0;
 }
@@ -309,7 +309,7 @@ int cross_rcu_region(void *ctx)
 {
 	struct task_struct *task, *real_parent;
 
-	/* rcu ptr define/use in different regions */
+	 
 	task = bpf_get_current_task_btf();
 	bpf_rcu_read_lock();
 	real_parent = task->real_parent;

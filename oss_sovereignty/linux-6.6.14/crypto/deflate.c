@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Deflate algorithm (RFC 1951), implemented here primarily for use
- * by IPCOMP (RFC 3173 & RFC 2394).
- *
- * Copyright (c) 2003 James Morris <jmorris@intercode.com.au>
- *
- * FIXME: deflate transforms will require up to a total of about 436k of kernel
- * memory on i386 (390k for compression, the rest for decompression), as the
- * current zlib kernel code uses a worst case pre-allocation system by default.
- * This needs to be fixed so that the amount of memory required is properly
- * related to the  winbits and memlevel parameters.
- *
- * The default winbits of 11 should suit most packets, and it may be something
- * to configure on a per-tfm basis in the future.
- *
- * Currently, compression history is not maintained between tfm calls, as
- * it is not needed for IPCOMP and keeps the code simpler.  It can be
- * implemented if someone wants it.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/crypto.h>
@@ -237,11 +217,7 @@ static int __deflate_decompress(const u8 *src, unsigned int slen,
 	stream->avail_out = *dlen;
 
 	ret = zlib_inflate(stream, Z_SYNC_FLUSH);
-	/*
-	 * Work around a bug in zlib, which sometimes wants to taste an extra
-	 * byte when being used in the (undocumented) raw deflate mode.
-	 * (From USAGI).
-	 */
+	 
 	if (ret == Z_OK && !stream->avail_in && stream->avail_out) {
 		u8 zerostuff = 0;
 		stream->next_in = &zerostuff;

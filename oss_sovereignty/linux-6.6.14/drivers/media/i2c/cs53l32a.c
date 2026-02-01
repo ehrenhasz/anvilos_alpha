@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cs53l32a (Adaptec AVC-2010 and AVC-2410) i2c ivtv driver.
- * Copyright (C) 2005  Martin Vaughan
- *
- * Audio source switching for Adaptec AVC-2410 added by Trev Jackson
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -43,7 +38,7 @@ static inline struct v4l2_subdev *to_sd(struct v4l2_ctrl *ctrl)
 	return &container_of(ctrl->handler, struct cs53l32a_state, hdl)->sd;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int cs53l32a_write(struct v4l2_subdev *sd, u8 reg, u8 value)
 {
@@ -62,10 +57,7 @@ static int cs53l32a_read(struct v4l2_subdev *sd, u8 reg)
 static int cs53l32a_s_routing(struct v4l2_subdev *sd,
 			      u32 input, u32 output, u32 config)
 {
-	/* There are 2 physical inputs, but the second input can be
-	   placed in two modes, the first mode bypasses the PGA (gain),
-	   the second goes through the PGA. Hence there are three
-	   possible inputs to choose from. */
+	 
 	if (input > 2) {
 		v4l2_err(sd, "Invalid input %d.\n", input);
 		return -EINVAL;
@@ -100,7 +92,7 @@ static int cs53l32a_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_ctrl_ops cs53l32a_ctrl_ops = {
 	.s_ctrl = cs53l32a_s_ctrl,
@@ -119,14 +111,11 @@ static const struct v4l2_subdev_ops cs53l32a_ops = {
 	.audio = &cs53l32a_audio_ops,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
-/* i2c implementation */
+ 
 
-/*
- * Generic i2c probe
- * concerning the addresses: i2c wants 7 bit (without the r/w bit), so '>>1'
- */
+ 
 
 static int cs53l32a_probe(struct i2c_client *client)
 {
@@ -135,7 +124,7 @@ static int cs53l32a_probe(struct i2c_client *client)
 	struct v4l2_subdev *sd;
 	int i;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -170,7 +159,7 @@ static int cs53l32a_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Set cs53l32a internal register for Adaptec 2010/2410 setup */
+	 
 
 	cs53l32a_write(sd, 0x01, 0x21);
 	cs53l32a_write(sd, 0x02, 0x29);
@@ -180,7 +169,7 @@ static int cs53l32a_probe(struct i2c_client *client)
 	cs53l32a_write(sd, 0x06, 0x00);
 	cs53l32a_write(sd, 0x07, 0x00);
 
-	/* Display results, should be 0x21,0x29,0x30,0x00,0x00,0x00,0x00 */
+	 
 
 	for (i = 1; i <= 7; i++) {
 		u8 v = cs53l32a_read(sd, i);

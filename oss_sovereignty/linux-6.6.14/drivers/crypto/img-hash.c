@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Imagination Technologies
- * Authors:  Will Thomas, James Hartley
- *
- *	Interface structure taken from omap-sham driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -90,9 +85,9 @@ struct img_hash_request_ctx {
 	dma_addr_t		dma_addr;
 	size_t			dma_ct;
 
-	/* sg root */
+	 
 	struct scatterlist	*sgfirst;
-	/* walk state */
+	 
 	struct scatterlist	*sg;
 	size_t			nents;
 	size_t			offset;
@@ -104,7 +99,7 @@ struct img_hash_request_ctx {
 	size_t			bufcnt;
 	struct ahash_request	fallback_req;
 
-	/* Zero length buffer must remain last member of struct */
+	 
 	u8 buffer[] __aligned(sizeof(u32));
 };
 
@@ -178,12 +173,7 @@ static void img_hash_start(struct img_hash_dev *hdev, bool dma)
 	dev_dbg(hdev->dev, "Starting hash process\n");
 	img_hash_write(hdev, CR_CONTROL, cr);
 
-	/*
-	 * The hardware block requires two cycles between writing the control
-	 * register and writing the first word of data in non DMA mode, to
-	 * ensure the first data write is not grouped in burst with the control
-	 * register write a read is issued to 'flush' the bus.
-	 */
+	 
 	if (!dma)
 		img_hash_read(hdev, CR_CONTROL);
 }
@@ -373,15 +363,7 @@ static void img_hash_dma_task(unsigned long d)
 	addr = sg_virt(ctx->sg);
 	nbytes = ctx->sg->length - ctx->offset;
 
-	/*
-	 * The hash accelerator does not support a data valid mask. This means
-	 * that if each dma (i.e. per page) is not a multiple of 4 bytes, the
-	 * padding bytes in the last word written by that dma would erroneously
-	 * be included in the hash. To avoid this we round down the transfer,
-	 * and add the excess to the start of the next dma. It does not matter
-	 * that the final dma may not be a multiple of 4 bytes as the hashing
-	 * block is programmed to accept the correct number of bytes.
-	 */
+	 
 
 	bleft = nbytes % 4;
 	wsend = (nbytes / 4);
@@ -542,7 +524,7 @@ static int img_hash_handle_queue(struct img_hash_dev *hdev,
 		err = img_hash_process_data(hdev);
 
 	if (err != -EINPROGRESS) {
-		/* done_task will not finish so do it here */
+		 
 		img_hash_finish_req(req, err);
 	}
 	return res;
@@ -958,14 +940,14 @@ static int img_hash_probe(struct platform_device *pdev)
 
 	crypto_init_queue(&hdev->queue, IMG_HASH_QUEUE_LENGTH);
 
-	/* Register bank */
+	 
 	hdev->io_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(hdev->io_base)) {
 		err = PTR_ERR(hdev->io_base);
 		goto res_err;
 	}
 
-	/* Write port (DMA or CPU) */
+	 
 	hdev->cpu_addr = devm_platform_get_and_ioremap_resource(pdev, 1, &hash_res);
 	if (IS_ERR(hdev->cpu_addr)) {
 		err = PTR_ERR(hdev->cpu_addr);
@@ -1093,7 +1075,7 @@ static int img_hash_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops img_hash_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(img_hash_suspend, img_hash_resume)

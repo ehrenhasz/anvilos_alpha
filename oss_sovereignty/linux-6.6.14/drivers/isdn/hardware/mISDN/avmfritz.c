@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * avm_fritz.c    low level stuff for AVM FRITZ!CARD PCI ISDN cards
- *                Thanks to AVM, Berlin for informations
- *
- * Author       Karsten Keil <keil@isdn4linux.de>
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -79,7 +72,7 @@ enum {
 #define HDLC_FIFO_SIZE_V1	32
 #define HDLC_FIFO_SIZE_V2	128
 
-/* Fritz PCI v2.0 */
+ 
 
 #define AVM_HDLC_FIFO_1		0x10
 #define AVM_HDLC_FIFO_2		0x18
@@ -90,7 +83,7 @@ enum {
 #define AVM_ISACX_INDEX		0x04
 #define AVM_ISACX_DATA		0x08
 
-/* data struct */
+ 
 #define LOG_SIZE		63
 
 struct hdlc_stat_reg {
@@ -124,7 +117,7 @@ struct fritzcard {
 	u16			irq;
 	u32			irqcnt;
 	u32			addr;
-	spinlock_t		lock; /* hw lock */
+	spinlock_t		lock;  
 	struct isac_hw		isac;
 	struct hdlc_hw		hdlc[2];
 	struct bchannel		bch[2];
@@ -132,7 +125,7 @@ struct fritzcard {
 };
 
 static LIST_HEAD(Cards);
-static DEFINE_RWLOCK(card_lock); /* protect Cards */
+static DEFINE_RWLOCK(card_lock);  
 
 static void
 _set_debug(struct fritzcard *card)
@@ -164,7 +157,7 @@ MODULE_VERSION(AVMFRITZ_REV);
 module_param_call(debug, set_debug, param_get_uint, &debug, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "avmfritz debug mask");
 
-/* Interface functions */
+ 
 
 static u8
 ReadISAC_V1(void *p, u8 offset)
@@ -314,7 +307,7 @@ read_status(struct fritzcard *fc, u32 channel)
 	case AVM_FRITZ_PCI:
 		return __read_status_pci(fc->addr, channel);
 	}
-	/* dummy */
+	 
 	return 0;
 }
 
@@ -346,7 +339,7 @@ modehdlc(struct bchannel *bch, int protocol)
 	mode = (fc->type == AVM_FRITZ_PCIV2) ? HDLC_FIFO_SIZE_128 : 0;
 
 	switch (protocol) {
-	case -1: /* used for init */
+	case -1:  
 		bch->state = -1;
 		fallthrough;
 	case ISDN_P_NONE:
@@ -484,7 +477,7 @@ hdlc_fill_fifo(struct bchannel *bch)
 	}
 	if (fillempty) {
 		while (cnt < count) {
-			/* all bytes the same - no worry about endian */
+			 
 			outl(*ptr, addr);
 			cnt += 4;
 		}
@@ -570,10 +563,7 @@ HDLC_irq(struct bchannel *bch, u32 stat)
 	}
 handle_tx:
 	if (stat & HDLC_INT_XDU) {
-		/* Here we lost an TX interrupt, so
-		 * restart transmitting the whole frame on HDLC
-		 * in transparent mode we send the next data
-		 */
+		 
 		pr_warn("%s: ch%d stat %x XDU %s\n", fc->name, bch->nr,
 			stat, bch->tx_skb ? "tx_skb" : "no tx_skb");
 		if (bch->tx_skb && bch->tx_skb->len) {
@@ -627,7 +617,7 @@ avm_fritz_interrupt(int intno, void *dev_id)
 	sval = inb(fc->addr + 2);
 	pr_debug("%s: irq stat0 %x\n", fc->name, sval);
 	if ((sval & AVM_STATUS0_IRQ_MASK) == AVM_STATUS0_IRQ_MASK) {
-		/* shared  IRQ from other HW */
+		 
 		spin_unlock(&fc->lock);
 		return IRQ_NONE;
 	}
@@ -654,7 +644,7 @@ avm_fritzv2_interrupt(int intno, void *dev_id)
 	sval = inb(fc->addr + 2);
 	pr_debug("%s: irq stat0 %x\n", fc->name, sval);
 	if (!(sval & AVM_STATUS0_IRQ_MASK)) {
-		/* shared  IRQ from other HW */
+		 
 		spin_unlock(&fc->lock);
 		return IRQ_NONE;
 	}
@@ -689,7 +679,7 @@ avm_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 	case PH_DATA_REQ:
 		spin_lock_irqsave(&fc->lock, flags);
 		ret = bchannel_senddata(bch, skb);
-		if (ret > 0) { /* direct TX */
+		if (ret > 0) {  
 			hdlc_fill_fifo(bch);
 			ret = 0;
 		}
@@ -777,7 +767,7 @@ init_card(struct fritzcard *fc)
 	int		ret, cnt = 3;
 	u_long		flags;
 
-	reset_avm(fc); /* disable IRQ */
+	reset_avm(fc);  
 	if (fc->type == AVM_FRITZ_PCIV2)
 		ret = request_irq(fc->irq, avm_fritzv2_interrupt,
 				  IRQF_SHARED, fc->name, fc);
@@ -801,7 +791,7 @@ init_card(struct fritzcard *fc)
 		clear_pending_hdlc_ints(fc);
 		inithdlc(fc);
 		enable_hwirq(fc);
-		/* RESET Receiver and Transmitter */
+		 
 		if (fc->type == AVM_FRITZ_PCIV2) {
 			WriteISAC_V2(fc, ISACX_MASK, 0);
 			WriteISAC_V2(fc, ISACX_CMDRD, 0x41);
@@ -810,7 +800,7 @@ init_card(struct fritzcard *fc)
 			WriteISAC_V1(fc, ISAC_CMDR, 0x41);
 		}
 		spin_unlock_irqrestore(&fc->lock, flags);
-		/* Timeout 10ms */
+		 
 		msleep_interruptible(10);
 		if (debug & DEBUG_HW)
 			pr_notice("%s: IRQ %d count %d\n", fc->name,
@@ -873,7 +863,7 @@ channel_ctrl(struct fritzcard  *fc, struct mISDN_ctrl_req *cq)
 		cq->op = MISDN_CTRL_LOOP | MISDN_CTRL_L1_TIMER3;
 		break;
 	case MISDN_CTRL_LOOP:
-		/* cq->channel: 0 disable, 1 B1 loop 2 B2 loop, 3 both */
+		 
 		if (cq->channel < 0 || cq->channel > 3) {
 			ret = -EINVAL;
 			break;
@@ -902,15 +892,13 @@ open_bchannel(struct fritzcard *fc, struct channel_req *rq)
 		return -EINVAL;
 	bch = &fc->bch[rq->adr.channel - 1];
 	if (test_and_set_bit(FLG_OPEN, &bch->Flags))
-		return -EBUSY; /* b-channel can be only open once */
+		return -EBUSY;  
 	bch->ch.protocol = rq->protocol;
 	rq->ch = &bch->ch;
 	return 0;
 }
 
-/*
- * device control function
- */
+ 
 static int
 avm_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_domain.h"
 #include "gem/i915_gem_internal.h"
@@ -65,10 +63,7 @@ static void dpt_insert_entries(struct i915_address_space *vm,
 	dma_addr_t addr;
 	int i;
 
-	/*
-	 * Note that we ignore PTE_READ_ONLY here. The caller must be careful
-	 * not to allow the user to override access to a read only page.
-	 */
+	 
 
 	i = vma_res->start / I915_GTT_PAGE_SIZE;
 	for_each_sgt_daddr(addr, sgt_iter, vma_res->bi.pages)
@@ -91,7 +86,7 @@ static void dpt_bind_vma(struct i915_address_space *vm,
 	if (vma_res->bound_flags)
 		return;
 
-	/* Applicable to VLV (gen8+ do not support RO in the GGTT) */
+	 
 	pte_flags = 0;
 	if (vm->has_read_only && vma_res->bi.readonly)
 		pte_flags |= PTE_READ_ONLY;
@@ -102,11 +97,7 @@ static void dpt_bind_vma(struct i915_address_space *vm,
 
 	vma_res->page_sizes_gtt = I915_GTT_PAGE_SIZE;
 
-	/*
-	 * Without aliasing PPGTT there's no difference between
-	 * GLOBAL/LOCAL_BIND, it's all the same ptes. Hence unconditionally
-	 * upgrade to both bound if we bind either to avoid double-binding.
-	 */
+	 
 	vma_res->bound_flags = I915_VMA_GLOBAL_BIND | I915_VMA_LOCAL_BIND;
 }
 
@@ -182,18 +173,7 @@ void intel_dpt_unpin(struct i915_address_space *vm)
 	i915_vma_put(dpt->vma);
 }
 
-/**
- * intel_dpt_resume - restore the memory mapping for all DPT FBs during system resume
- * @i915: device instance
- *
- * Restore the memory mapping during system resume for all framebuffers which
- * are mapped to HW via a GGTT->DPT page table. The content of these page
- * tables are not stored in the hibernation image during S4 and S3RST->S4
- * transitions, so here we reprogram the PTE entries in those tables.
- *
- * This function must be called after the mappings in GGTT have been restored calling
- * i915_ggtt_resume().
- */
+ 
 void intel_dpt_resume(struct drm_i915_private *i915)
 {
 	struct drm_framebuffer *drm_fb;
@@ -211,16 +191,7 @@ void intel_dpt_resume(struct drm_i915_private *i915)
 	mutex_unlock(&i915->drm.mode_config.fb_lock);
 }
 
-/**
- * intel_dpt_suspend - suspend the memory mapping for all DPT FBs during system suspend
- * @i915: device instance
- *
- * Suspend the memory mapping during system suspend for all framebuffers which
- * are mapped to HW via a GGTT->DPT page table.
- *
- * This function must be called before the mappings in GGTT are suspended calling
- * i915_ggtt_suspend().
- */
+ 
 void intel_dpt_suspend(struct drm_i915_private *i915)
 {
 	struct drm_framebuffer *drm_fb;

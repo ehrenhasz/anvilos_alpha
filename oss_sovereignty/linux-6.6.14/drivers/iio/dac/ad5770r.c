@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AD5770R Digital to analog converters driver
- *
- * Copyright 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -33,23 +29,23 @@
 #define ADI_SPI_IF_CONFIG_C		0x10
 #define ADI_SPI_IF_STATUS_A		0x11
 
-/* ADI_SPI_IF_CONFIG_A */
+ 
 #define ADI_SPI_IF_SW_RESET_MSK		(BIT(0) | BIT(7))
 #define ADI_SPI_IF_SW_RESET_SEL(x)	((x) & ADI_SPI_IF_SW_RESET_MSK)
 #define ADI_SPI_IF_ADDR_ASC_MSK		(BIT(2) | BIT(5))
 #define ADI_SPI_IF_ADDR_ASC_SEL(x)	(((x) << 2) & ADI_SPI_IF_ADDR_ASC_MSK)
 
-/* ADI_SPI_IF_CONFIG_B */
+ 
 #define ADI_SPI_IF_SINGLE_INS_MSK	BIT(7)
 #define ADI_SPI_IF_SINGLE_INS_SEL(x)	FIELD_PREP(ADI_SPI_IF_SINGLE_INS_MSK, x)
 #define ADI_SPI_IF_SHORT_INS_MSK	BIT(7)
 #define ADI_SPI_IF_SHORT_INS_SEL(x)	FIELD_PREP(ADI_SPI_IF_SINGLE_INS_MSK, x)
 
-/* ADI_SPI_IF_CONFIG_C */
+ 
 #define ADI_SPI_IF_STRICT_REG_MSK	BIT(5)
 #define ADI_SPI_IF_STRICT_REG_GET(x)	FIELD_GET(ADI_SPI_IF_STRICT_REG_MSK, x)
 
-/* AD5770R configuration registers */
+ 
 #define AD5770R_CHANNEL_CONFIG		0x14
 #define AD5770R_OUTPUT_RANGE(ch)	(0x15 + (ch))
 #define AD5770R_FILTER_RESISTOR(ch)	(0x1D + (ch))
@@ -59,19 +55,19 @@
 #define AD5770R_CH_SELECT		0x34
 #define AD5770R_CH_ENABLE		0x44
 
-/* AD5770R_CHANNEL_CONFIG */
+ 
 #define AD5770R_CFG_CH0_SINK_EN(x)		(((x) & 0x1) << 7)
 #define AD5770R_CFG_SHUTDOWN_B(x, ch)		(((x) & 0x1) << (ch))
 
-/* AD5770R_OUTPUT_RANGE */
+ 
 #define AD5770R_RANGE_OUTPUT_SCALING(x)		(((x) & GENMASK(5, 0)) << 2)
 #define AD5770R_RANGE_MODE(x)			((x) & GENMASK(1, 0))
 
-/* AD5770R_REFERENCE */
+ 
 #define AD5770R_REF_RESISTOR_SEL(x)		(((x) & 0x1) << 2)
 #define AD5770R_REF_SEL(x)			((x) & GENMASK(1, 0))
 
-/* AD5770R_CH_ENABLE */
+ 
 #define AD5770R_CH_SET(x, ch)		(((x) & 0x1) << (ch))
 
 #define AD5770R_MAX_CHANNELS	6
@@ -117,19 +113,7 @@ struct ad5770r_out_range {
 	u8	out_range_mode;
 };
 
-/**
- * struct ad5770r_state - driver instance specific data
- * @spi:		spi_device
- * @regmap:		regmap
- * @vref_reg:		fixed regulator for reference configuration
- * @gpio_reset:		gpio descriptor
- * @output_mode:	array contains channels output ranges
- * @vref:		reference value
- * @ch_pwr_down:	powerdown flags
- * @internal_ref:	internal reference flag
- * @external_res:	external 2.5k resistor flag
- * @transf_buf:		cache aligned buffer for spi read/write
- */
+ 
 struct ad5770r_state {
 	struct spi_device		*spi;
 	struct regmap			*regmap;
@@ -232,7 +216,7 @@ static int ad5770r_soft_reset(struct ad5770r_state *st)
 
 static int ad5770r_reset(struct ad5770r_state *st)
 {
-	/* Perform software reset if no GPIO provided */
+	 
 	if (!st->gpio_reset)
 		return ad5770r_soft_reset(st);
 
@@ -240,7 +224,7 @@ static int ad5770r_reset(struct ad5770r_state *st)
 	usleep_range(10, 20);
 	gpiod_set_value_cansleep(st->gpio_reset, 1);
 
-	/* data must not be written during reset timeframe */
+	 
 	usleep_range(100, 200);
 
 	return 0;
@@ -333,10 +317,7 @@ static int ad5770r_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 		*val = max - min;
-		/* There is no sign bit. (negative current is mapped from 0)
-		 * (sourced/sinked) current = raw * scale + offset
-		 * where offset in case of CH0 can be negative.
-		 */
+		 
 		*val2 = 14;
 		return IIO_VAL_FRACTIONAL_LOG2;
 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
@@ -559,12 +540,12 @@ static int ad5770r_init(struct ad5770r_state *st)
 	if (IS_ERR(st->gpio_reset))
 		return PTR_ERR(st->gpio_reset);
 
-	/* Perform a reset */
+	 
 	ret = ad5770r_reset(st);
 	if (ret)
 		return ret;
 
-	/* Set output range */
+	 
 	ret = ad5770r_channel_config(st);
 	if (ret)
 		return ret;
@@ -582,7 +563,7 @@ static int ad5770r_init(struct ad5770r_state *st)
 	if (ret)
 		return ret;
 
-	/* Set outputs off */
+	 
 	ret = regmap_write(st->regmap, AD5770R_CHANNEL_CONFIG, 0x00);
 	if (ret)
 		return ret;

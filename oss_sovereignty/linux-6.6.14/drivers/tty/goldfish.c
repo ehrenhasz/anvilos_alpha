@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Google, Inc.
- * Copyright (C) 2012 Intel, Inc.
- * Copyright (C) 2017 Imagination Technologies Ltd.
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/interrupt.h>
@@ -19,7 +15,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/serial_core.h>
 
-/* Goldfish tty register's offsets */
+ 
 #define	GOLDFISH_TTY_REG_BYTES_READY	0x04
 #define	GOLDFISH_TTY_REG_CMD		0x08
 #define	GOLDFISH_TTY_REG_DATA_PTR	0x10
@@ -27,7 +23,7 @@
 #define	GOLDFISH_TTY_REG_DATA_PTR_HIGH	0x18
 #define	GOLDFISH_TTY_REG_VERSION	0x20
 
-/* Goldfish tty commands */
+ 
 #define	GOLDFISH_TTY_CMD_INT_DISABLE	0
 #define	GOLDFISH_TTY_CMD_INT_ENABLE	1
 #define	GOLDFISH_TTY_CMD_WRITE_BUFFER	2
@@ -83,10 +79,7 @@ static void goldfish_tty_rw(struct goldfish_tty *qtty,
 
 	dma_dir = (is_write ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
 	if (qtty->version > 0) {
-		/*
-		 * Goldfish TTY for Ranchu platform uses
-		 * physical addresses and DMA for read/write operations
-		 */
+		 
 		unsigned long addr_end = addr + count;
 
 		while (addr < addr_end) {
@@ -95,10 +88,7 @@ static void goldfish_tty_rw(struct goldfish_tty *qtty,
 					pg_end < addr_end ? pg_end : addr_end;
 			unsigned long avail = next - addr;
 
-			/*
-			 * Map the buffer's virtual address to the DMA address
-			 * so the buffer can be accessed by the device.
-			 */
+			 
 			dma_handle = dma_map_single(qtty->dev, (void *)addr,
 						    avail, dma_dir);
 
@@ -108,19 +98,13 @@ static void goldfish_tty_rw(struct goldfish_tty *qtty,
 			}
 			do_rw_io(qtty, dma_handle, avail, is_write);
 
-			/*
-			 * Unmap the previously mapped region after
-			 * the completion of the read/write operation.
-			 */
+			 
 			dma_unmap_single(qtty->dev, dma_handle, avail, dma_dir);
 
 			addr += avail;
 		}
 	} else {
-		/*
-		 * Old style Goldfish TTY used on the Goldfish platform
-		 * uses virtual addresses.
-		 */
+		 
 		do_rw_io(qtty, addr, count, is_write);
 	}
 }
@@ -347,23 +331,12 @@ static int goldfish_tty_probe(struct platform_device *pdev)
 	qtty->irq = irq;
 	qtty->dev = &pdev->dev;
 
-	/*
-	 * Goldfish TTY device used by the Goldfish emulator
-	 * should identify itself with 0, forcing the driver
-	 * to use virtual addresses. Goldfish TTY device
-	 * on Ranchu emulator (qemu2) returns 1 here and
-	 * driver will use physical addresses.
-	 */
+	 
 	qtty->version = gf_ioread32(base + GOLDFISH_TTY_REG_VERSION);
 
-	/*
-	 * Goldfish TTY device on Ranchu emulator (qemu2)
-	 * will use DMA for read/write IO operations.
-	 */
+	 
 	if (qtty->version > 0) {
-		/*
-		 * Initialize dma_mask to 32-bits.
-		 */
+		 
 		if (!pdev->dev.dma_mask)
 			pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
 		ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));

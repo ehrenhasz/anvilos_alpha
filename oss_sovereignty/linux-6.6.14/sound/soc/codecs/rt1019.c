@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt1019.c  --  RT1019 ALSA SoC audio amplifier driver
-// Author: Jack Yu <jack.yu@realtek.com>
-//
-// Copyright(c) 2021 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/fs.h>
@@ -428,18 +428,14 @@ static int rt1019_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		return -EINVAL;
 	}
 
-	/* Rx slot configuration */
+	 
 	rx_slotnum = hweight_long(rx_mask);
 	if (rx_slotnum != 1) {
 		ret = -EINVAL;
 		dev_err(component->dev, "too many rx slots or zero slot\n");
 		goto _set_tdm_err_;
 	}
-	/* This is an assumption that the system sends stereo audio to the
-	 * amplifier typically. And the stereo audio is placed in slot 0/2/4/6
-	 * as the starting slot. The users could select the channel from
-	 * L/R/L+R by "Mono LR Select" control.
-	 */
+	 
 	first_bit = __ffs(rx_mask);
 	switch (first_bit) {
 	case 0:

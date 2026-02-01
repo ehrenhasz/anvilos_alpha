@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * SEED Cipher Algorithm.
- *
- * Documentation of SEED can be found in RFC 4269.
- * Copyright (C) 2007 Korea Information Security Agency (KISA).
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/module.h>
@@ -20,9 +13,7 @@
 #define SEED_BLOCK_SIZE		16
 #define SEED_KEYSCHED_LEN	32
 
-/*
- * #define byte(x, nr) ((unsigned char)((x) >> (nr*8)))
- */
+ 
 static inline u8
 byte(const u32 x, const unsigned n)
 {
@@ -359,7 +350,7 @@ static int seed_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 	return 0;
 }
 
-/* encrypt a block of text */
+ 
 
 static void seed_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 {
@@ -397,7 +388,7 @@ static void seed_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	dst[3] = cpu_to_be32(x2);
 }
 
-/* decrypt a block of text */
+ 
 
 static void seed_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 {

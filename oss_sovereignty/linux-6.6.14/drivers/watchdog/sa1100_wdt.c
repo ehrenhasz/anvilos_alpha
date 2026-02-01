@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	Watchdog driver for the SA11x0/PXA2xx
- *
- *	(c) Copyright 2000 Oleg Drokin <green@crimea.edu>
- *	    Based on SoftDog driver by Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- *	Neither Oleg Drokin nor iXcelerator.com admit liability nor provide
- *	warranty for any of this software. This material is provided
- *	"AS-IS" and at no charge.
- *
- *	(c) Copyright 2000           Oleg Drokin <green@crimea.edu>
- *
- *	27/11/2000 Initial release
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,26 +18,26 @@
 #include <linux/uaccess.h>
 #include <linux/timex.h>
 
-#define REG_OSMR0  	0x0000  /* OS timer Match Reg. 0 */
-#define REG_OSMR1  	0x0004  /* OS timer Match Reg. 1 */
-#define REG_OSMR2  	0x0008  /* OS timer Match Reg. 2 */
-#define REG_OSMR3  	0x000c  /* OS timer Match Reg. 3 */
-#define REG_OSCR   	0x0010  /* OS timer Counter Reg. */
-#define REG_OSSR   	0x0014  /* OS timer Status Reg. */
-#define REG_OWER   	0x0018  /* OS timer Watch-dog Enable Reg. */
-#define REG_OIER  	0x001C  /* OS timer Interrupt Enable Reg. */
+#define REG_OSMR0  	0x0000   
+#define REG_OSMR1  	0x0004   
+#define REG_OSMR2  	0x0008   
+#define REG_OSMR3  	0x000c   
+#define REG_OSCR   	0x0010   
+#define REG_OSSR   	0x0014   
+#define REG_OWER   	0x0018   
+#define REG_OIER  	0x001C   
 
-#define OSSR_M3		(1 << 3)	/* Match status channel 3 */
-#define OSSR_M2		(1 << 2)	/* Match status channel 2 */
-#define OSSR_M1		(1 << 1)	/* Match status channel 1 */
-#define OSSR_M0		(1 << 0)	/* Match status channel 0 */
+#define OSSR_M3		(1 << 3)	 
+#define OSSR_M2		(1 << 2)	 
+#define OSSR_M1		(1 << 1)	 
+#define OSSR_M0		(1 << 0)	 
 
-#define OWER_WME	(1 << 0)	/* Watchdog Match Enable */
+#define OWER_WME	(1 << 0)	 
 
-#define OIER_E3		(1 << 3)	/* Interrupt enable channel 3 */
-#define OIER_E2		(1 << 2)	/* Interrupt enable channel 2 */
-#define OIER_E1		(1 << 1)	/* Interrupt enable channel 1 */
-#define OIER_E0		(1 << 0)	/* Interrupt enable channel 0 */
+#define OIER_E3		(1 << 3)	 
+#define OIER_E2		(1 << 2)	 
+#define OIER_E1		(1 << 1)	 
+#define OIER_E0		(1 << 0)	 
 
 static unsigned long oscr_freq;
 static unsigned long sa1100wdt_users;
@@ -68,15 +55,13 @@ static inline u32 sa1100_rd(u32 offset)
 	return readl_relaxed(reg_base + offset);
 }
 
-/*
- *	Allow only one person to hold it open
- */
+ 
 static int sa1100dog_open(struct inode *inode, struct file *file)
 {
 	if (test_and_set_bit(1, &sa1100wdt_users))
 		return -EBUSY;
 
-	/* Activate SA1100 Watchdog timer */
+	 
 	sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
 	sa1100_wr(OSSR_M3, REG_OSSR);
 	sa1100_wr(OWER_WME, REG_OWER);
@@ -84,13 +69,7 @@ static int sa1100dog_open(struct inode *inode, struct file *file)
 	return stream_open(inode, file);
 }
 
-/*
- * The watchdog cannot be disabled.
- *
- * Previous comments suggested that turning off the interrupt by
- * clearing REG_OIER[E3] would prevent the watchdog timing out but this
- * does not appear to be true (at least on the PXA255).
- */
+ 
 static int sa1100dog_release(struct inode *inode, struct file *file)
 {
 	pr_crit("Device closed - timer will not stop\n");
@@ -102,7 +81,7 @@ static ssize_t sa1100dog_write(struct file *file, const char __user *data,
 						size_t len, loff_t *ppos)
 {
 	if (len)
-		/* Refresh OSMR3 timer. */
+		 
 		sa1100_wr(sa1100_rd(REG_OSCR) + pre_margin, REG_OSMR3);
 	return len;
 }
@@ -178,7 +157,7 @@ static struct miscdevice sa1100dog_miscdev = {
 	.fops		= &sa1100dog_fops,
 };
 
-static int margin = 60;		/* (secs) Default is 1 minute */
+static int margin = 60;		 
 static struct clk *clk;
 
 static int sa1100dog_probe(struct platform_device *pdev)

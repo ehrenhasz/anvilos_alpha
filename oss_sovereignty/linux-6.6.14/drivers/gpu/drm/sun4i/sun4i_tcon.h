@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Boris Brezillon <boris.brezillon@free-electrons.com>
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef __SUN4I_TCON_H__
 #define __SUN4I_TCON_H__
@@ -155,7 +149,7 @@
 #define SUN4I_TCON1_BASIC5_V_SYNC(height)		(((height) - 1) & 0x3ff)
 
 #define SUN4I_TCON1_IO_POL_REG			0xf0
-/* there is no documentation about this bit */
+ 
 #define SUN4I_TCON1_IO_POL_UNKNOWN			BIT(26)
 #define SUN4I_TCON1_IO_POL_HSYNC_POSITIVE		BIT(25)
 #define SUN4I_TCON1_IO_POL_VSYNC_POSITIVE		BIT(24)
@@ -236,18 +230,18 @@
 struct sun4i_tcon;
 
 struct sun4i_tcon_quirks {
-	bool	has_channel_0;	/* a83t does not have channel 0 on second TCON */
-	bool	has_channel_1;	/* a33 does not have channel 1 */
-	bool	has_lvds_alt;	/* Does the LVDS clock have a parent other than the TCON clock? */
-	bool	needs_de_be_mux; /* sun6i needs mux to select backend */
-	bool    needs_edp_reset; /* a80 edp reset needed for tcon0 access */
-	bool	supports_lvds;   /* Does the TCON support an LVDS output? */
-	bool	polarity_in_ch0; /* some tcon1 channels have polarity bits in tcon0 pol register */
-	u8	dclk_min_div;	/* minimum divider for TCON0 DCLK */
+	bool	has_channel_0;	 
+	bool	has_channel_1;	 
+	bool	has_lvds_alt;	 
+	bool	needs_de_be_mux;  
+	bool    needs_edp_reset;  
+	bool	supports_lvds;    
+	bool	polarity_in_ch0;  
+	u8	dclk_min_div;	 
 
-	/* callback to handle tcon muxing options */
+	 
 	int	(*set_mux)(struct sun4i_tcon *, const struct drm_encoder *);
-	/* handler for LVDS setup routine */
+	 
 	void	(*setup_lvds_phy)(struct sun4i_tcon *tcon,
 				  const struct drm_encoder *encoder);
 };
@@ -257,34 +251,34 @@ struct sun4i_tcon {
 	struct drm_device		*drm;
 	struct regmap			*regs;
 
-	/* Main bus clock */
+	 
 	struct clk			*clk;
 
-	/* Clocks for the TCON channels */
+	 
 	struct clk			*sclk0;
 	struct clk			*sclk1;
 
-	/* Possible mux for the LVDS clock */
+	 
 	struct clk			*lvds_pll;
 
-	/* Pixel clock */
+	 
 	struct clk			*dclk;
 	u8				dclk_max_div;
 	u8				dclk_min_div;
 
-	/* Reset control */
+	 
 	struct reset_control		*lcd_rst;
 	struct reset_control		*lvds_rst;
 
-	/* Platform adjustments */
+	 
 	const struct sun4i_tcon_quirks	*quirks;
 
-	/* Associated crtc */
+	 
 	struct sun4i_crtc		*crtc;
 
 	int				id;
 
-	/* TCON list management */
+	 
 	struct list_head		list;
 };
 
@@ -300,4 +294,4 @@ void sun4i_tcon_set_status(struct sun4i_tcon *crtc,
 
 extern const struct of_device_id sun4i_tcon_of_table[];
 
-#endif /* __SUN4I_TCON_H__ */
+#endif  

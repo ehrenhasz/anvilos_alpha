@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SOC_EP93XX_H
 #define _SOC_EP93XX_H
 

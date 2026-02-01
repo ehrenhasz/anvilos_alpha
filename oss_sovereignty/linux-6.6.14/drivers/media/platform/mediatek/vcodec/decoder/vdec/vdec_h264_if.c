@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PC Chen <pc.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -22,7 +19,7 @@
 
 #define MB_UNIT_LEN				16
 
-/* motion vector size (bytes) for every macro block */
+ 
 #define HW_MB_STORE_SZ				64
 
 #define H264_MAX_FB_NUM				17
@@ -31,14 +28,7 @@
 #define DEC_ERR_RET(ret)			((ret) >> 16)
 #define H264_ERR_NOT_VALID			3
 
-/**
- * struct h264_fb - h264 decode frame buffer information
- * @vdec_fb_va  : virtual address of struct vdec_fb
- * @y_fb_dma    : dma address of Y frame buffer (luma)
- * @c_fb_dma    : dma address of C frame buffer (chroma)
- * @poc         : picture order count of frame buffer
- * @reserved    : for 8 bytes alignment
- */
+ 
 struct h264_fb {
 	uint64_t vdec_fb_va;
 	uint64_t y_fb_dma;
@@ -47,14 +37,7 @@ struct h264_fb {
 	uint32_t reserved;
 };
 
-/**
- * struct h264_ring_fb_list - ring frame buffer list
- * @fb_list   : frame buffer array
- * @read_idx  : read index
- * @write_idx : write index
- * @count     : buffer count in list
- * @reserved  : for 8 bytes alignment
- */
+ 
 struct h264_ring_fb_list {
 	struct h264_fb fb_list[H264_MAX_FB_NUM];
 	unsigned int read_idx;
@@ -63,17 +46,7 @@ struct h264_ring_fb_list {
 	unsigned int reserved;
 };
 
-/**
- * struct vdec_h264_dec_info - decode information
- * @dpb_sz		: decoding picture buffer size
- * @resolution_changed  : resolution change happen
- * @realloc_mv_buf	: flag to notify driver to re-allocate mv buffer
- * @reserved		: for 8 bytes alignment
- * @bs_dma		: Input bit-stream buffer dma address
- * @y_fb_dma		: Y frame buffer dma address
- * @c_fb_dma		: C frame buffer dma address
- * @vdec_fb_va		: VDEC frame buffer struct virtual address
- */
+ 
 struct vdec_h264_dec_info {
 	uint32_t dpb_sz;
 	uint32_t resolution_changed;
@@ -85,23 +58,7 @@ struct vdec_h264_dec_info {
 	uint64_t vdec_fb_va;
 };
 
-/**
- * struct vdec_h264_vsi - shared memory for decode information exchange
- *                        between VPU and Host.
- *                        The memory is allocated by VPU then mapping to Host
- *                        in vpu_dec_init() and freed in vpu_dec_deinit()
- *                        by VPU.
- *                        AP-W/R : AP is writer/reader on this item
- *                        VPU-W/R: VPU is write/reader on this item
- * @hdr_buf      : Header parsing buffer (AP-W, VPU-R)
- * @pred_buf_dma : HW working predication buffer dma address (AP-W, VPU-R)
- * @mv_buf_dma   : HW working motion vector buffer dma address (AP-W, VPU-R)
- * @list_free    : free frame buffer ring list (AP-W/R, VPU-W)
- * @list_disp    : display frame buffer ring list (AP-R, VPU-W)
- * @dec          : decode information (AP-R, VPU-W)
- * @pic          : picture information (AP-R, VPU-W)
- * @crop         : crop information (AP-R, VPU-W)
- */
+ 
 struct vdec_h264_vsi {
 	unsigned char hdr_buf[HDR_PARSING_BUF_SZ];
 	uint64_t pred_buf_dma;
@@ -113,15 +70,7 @@ struct vdec_h264_vsi {
 	struct v4l2_rect crop;
 };
 
-/**
- * struct vdec_h264_inst - h264 decoder instance
- * @num_nalu : how many nalus be decoded
- * @ctx      : point to mtk_vcodec_dec_ctx
- * @pred_buf : HW working predication buffer
- * @mv_buf   : HW working motion vector buffer
- * @vpu      : VPU instance
- * @vsi      : VPU shared information
- */
+ 
 struct vdec_h264_inst {
 	unsigned int num_nalu;
 	struct mtk_vcodec_dec_ctx *ctx;
@@ -345,7 +294,7 @@ static int vdec_h264_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	mtk_vdec_debug(inst->ctx, "+ [%d] FB y_dma=%llx c_dma=%llx va=%p",
 		       ++inst->num_nalu, y_fb_dma, c_fb_dma, fb);
 
-	/* bs NULL means flush decoder */
+	 
 	if (bs == NULL)
 		return vpu_dec_reset(vpu);
 
@@ -403,7 +352,7 @@ static int vdec_h264_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	}
 
 	if (nal_type == NAL_NON_IDR_SLICE || nal_type == NAL_IDR_SLICE) {
-		/* wait decoder done interrupt */
+		 
 		err = mtk_vcodec_wait_for_done_ctx(inst->ctx,
 						   MTK_INST_IRQ_RECEIVED,
 						   WAIT_INTR_TIMEOUT_MS, 0);

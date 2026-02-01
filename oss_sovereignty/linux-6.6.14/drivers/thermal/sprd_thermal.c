@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 Spreadtrum Communications Inc.
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -31,18 +31,18 @@
 #define SPRD_THM_SEN_OVERHEAT_EN(id)	BIT((id) + 8)
 #define SPRD_THM_SEN_OVERHEAT_ALARM_EN(id)	BIT((id) + 0)
 
-/* bits definitions for register THM_CTL */
+ 
 #define SPRD_THM_SET_RDY_ST		BIT(13)
 #define SPRD_THM_SET_RDY		BIT(12)
 #define SPRD_THM_MON_EN			BIT(1)
 #define SPRD_THM_EN			BIT(0)
 
-/* bits definitions for register THM_INT_CTL */
+ 
 #define SPRD_THM_BIT_INT_EN		BIT(26)
 #define SPRD_THM_OVERHEAT_EN		BIT(25)
 #define SPRD_THM_OTP_TRIP_SHIFT		10
 
-/* bits definitions for register SPRD_THM_INTERNAL_STS1 */
+ 
 #define SPRD_THM_TEMPER_RDY		BIT(0)
 
 #define SPRD_THM_DET_PERIOD_DATA	0x800
@@ -54,7 +54,7 @@
 #define SPRD_THM_THRES_MASK		GENMASK(19, 0)
 #define SPRD_THM_INT_CLR_MASK		GENMASK(24, 0)
 
-/* thermal sensor calibration parameters */
+ 
 #define SPRD_THM_TEMP_LOW		-40000
 #define SPRD_THM_TEMP_HIGH		120000
 #define SPRD_THM_OTP_TEMP		120000
@@ -91,13 +91,7 @@ struct sprd_thermal_data {
 	int nr_sensors;
 };
 
-/*
- * The conversion between ADC and temperature is based on linear relationship,
- * and use idea_k to specify the slope and ideal_b to specify the offset.
- *
- * Since different Spreadtrum SoCs have different ideal_k and ideal_b,
- * we should save ideal_k and ideal_b in the device data structure.
- */
+ 
 struct sprd_thm_variant_data {
 	u32 ideal_k;
 	u32 ideal_b;
@@ -150,10 +144,7 @@ static int sprd_thm_sensor_calibration(struct device_node *np,
 				       struct sprd_thermal_sensor *sen)
 {
 	int ret;
-	/*
-	 * According to thermal datasheet, the default calibration offset is 64,
-	 * and the default ratio is 1000.
-	 */
+	 
 	int dt_offset = 64, ratio = 1000;
 
 	ret = sprd_thm_cal_read(np, "sen_delta_cal", &dt_offset);
@@ -162,13 +153,7 @@ static int sprd_thm_sensor_calibration(struct device_node *np,
 
 	ratio += thm->ratio_sign * thm->ratio_off;
 
-	/*
-	 * According to the ideal slope K and ideal offset B, combined with
-	 * calibration value of thermal from efuse, then calibrate the real
-	 * slope k and offset b:
-	 * k_cal = (k * ratio) / 1000.
-	 * b_cal = b + (dt_offset - 64) * 500.
-	 */
+	 
 	sen->cal_slope = (thm->var_data->ideal_k * ratio) / 1000;
 	sen->cal_offset = thm->var_data->ideal_b + (dt_offset - 128) * 250;
 
@@ -180,11 +165,7 @@ static int sprd_thm_rawdata_to_temp(struct sprd_thermal_sensor *sen,
 {
 	clamp(rawdata, (u32)SPRD_THM_RAW_DATA_LOW, (u32)SPRD_THM_RAW_DATA_HIGH);
 
-	/*
-	 * According to the thermal datasheet, the formula of converting
-	 * adc value to the temperature value should be:
-	 * T_final = k_cal * x - b_cal.
-	 */
+	 
 	return sen->cal_slope * rawdata - sen->cal_offset;
 }
 
@@ -194,11 +175,7 @@ static int sprd_thm_temp_to_rawdata(int temp, struct sprd_thermal_sensor *sen)
 
 	clamp(temp, (int)SPRD_THM_TEMP_LOW, (int)SPRD_THM_TEMP_HIGH);
 
-	/*
-	 * According to the thermal datasheet, the formula of converting
-	 * adc value to the temperature value should be:
-	 * T_final = k_cal * x - b_cal.
-	 */
+	 
 	val = (temp + sen->cal_offset) / sen->cal_slope;
 
 	return clamp(val, val, (u32)(SPRD_THM_RAW_DATA_HIGH - 1));
@@ -226,9 +203,7 @@ static int sprd_thm_poll_ready_status(struct sprd_thermal_data *thm)
 	u32 val;
 	int ret;
 
-	/*
-	 * Wait for thermal ready status before configuring thermal parameters.
-	 */
+	 
 	ret = readl_poll_timeout(thm->base + SPRD_THM_CTL, val,
 				 !(val & SPRD_THM_SET_RDY_ST),
 				 SPRD_THM_RDYST_POLLING_TIME,
@@ -247,7 +222,7 @@ static int sprd_thm_wait_temp_ready(struct sprd_thermal_data *thm)
 {
 	u32 val;
 
-	/* Wait for first temperature data ready before reading temperature */
+	 
 	return readl_poll_timeout(thm->base + SPRD_THM_INTERNAL_STS1, val,
 				  !(val & SPRD_THM_TEMPER_RDY),
 				  SPRD_THM_TEMP_READY_POLL_TIME,
@@ -262,15 +237,7 @@ static int sprd_thm_set_ready(struct sprd_thermal_data *thm)
 	if (ret)
 		return ret;
 
-	/*
-	 * Clear interrupt status, enable thermal interrupt and enable thermal.
-	 *
-	 * The SPRD thermal controller integrates a hardware interrupt signal,
-	 * which means if the temperature is overheat, it will generate an
-	 * interrupt and notify the event to PMIC automatically to shutdown the
-	 * system. So here we should enable the interrupt bits, though we have
-	 * not registered an irq handler.
-	 */
+	 
 	writel(SPRD_THM_INT_CLR_MASK, thm->base + SPRD_THM_INT_CLR);
 	sprd_thm_update_bits(thm->base + SPRD_THM_INT_EN,
 			     SPRD_THM_BIT_INT_EN, SPRD_THM_BIT_INT_EN);
@@ -287,33 +254,33 @@ static void sprd_thm_sensor_init(struct sprd_thermal_data *thm,
 	otp_rawdata = sprd_thm_temp_to_rawdata(SPRD_THM_OTP_TEMP, sen);
 	hot_rawdata = sprd_thm_temp_to_rawdata(SPRD_THM_HOT_TEMP, sen);
 
-	/* Enable the sensor' overheat temperature protection interrupt */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_INT_EN,
 			     SPRD_THM_SEN_OVERHEAT_ALARM_EN(sen->id),
 			     SPRD_THM_SEN_OVERHEAT_ALARM_EN(sen->id));
 
-	/* Set the sensor' overheat and hot threshold temperature */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_THRES(sen->id),
 			     SPRD_THM_THRES_MASK,
 			     (otp_rawdata << SPRD_THM_OTP_TRIP_SHIFT) |
 			     hot_rawdata);
 
-	/* Enable the corresponding sensor */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_CTL, SPRD_THM_SEN(sen->id),
 			     SPRD_THM_SEN(sen->id));
 }
 
 static void sprd_thm_para_config(struct sprd_thermal_data *thm)
 {
-	/* Set the period of two valid temperature detection action */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_DET_PERIOD,
 			     SPRD_THM_DET_PERIOD_MASK, SPRD_THM_DET_PERIOD);
 
-	/* Set the sensors' monitor mode */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_MON_CTL,
 			     SPRD_THM_MON_MODE_MASK, SPRD_THM_MON_MODE);
 
-	/* Set the sensors' monitor period */
+	 
 	sprd_thm_update_bits(thm->base + SPRD_THM_MON_PERIOD,
 			     SPRD_THM_MON_PERIOD_MASK, SPRD_THM_MON_PERIOD);
 }
@@ -421,7 +388,7 @@ static int sprd_thm_probe(struct platform_device *pdev)
 
 		thm->sensor[sen->id] = sen;
 	}
-	/* sen_child set to NULL at this point */
+	 
 
 	ret = sprd_thm_set_ready(thm);
 	if (ret)

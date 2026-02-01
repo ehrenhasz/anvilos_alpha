@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Intel Corporation.
+
+
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -29,12 +29,12 @@
 #define OV08D10_MODE_STANDBY		0x00
 #define OV08D10_MODE_STREAMING		0x01
 
-/* vertical-timings from sensor */
+ 
 #define OV08D10_REG_VTS_H		0x05
 #define OV08D10_REG_VTS_L		0x06
 #define OV08D10_VTS_MAX			0x7fff
 
-/* Exposure controls from sensor */
+ 
 #define OV08D10_REG_EXPOSURE_H		0x02
 #define OV08D10_REG_EXPOSURE_M		0x03
 #define OV08D10_REG_EXPOSURE_L		0x04
@@ -42,13 +42,13 @@
 #define OV08D10_EXPOSURE_MAX_MARGIN	6
 #define	OV08D10_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV08D10_REG_ANALOG_GAIN		0x24
 #define	OV08D10_ANAL_GAIN_MIN		128
 #define	OV08D10_ANAL_GAIN_MAX		2047
 #define	OV08D10_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OV08D10_REG_MWB_DGAIN_C		0x21
 #define OV08D10_REG_MWB_DGAIN_F		0x22
 #define OV08D10_DGTL_GAIN_MIN		0
@@ -56,12 +56,12 @@
 #define OV08D10_DGTL_GAIN_STEP		1
 #define OV08D10_DGTL_GAIN_DEFAULT	1024
 
-/* Test Pattern Control */
+ 
 #define OV08D10_REG_TEST_PATTERN		0x12
 #define OV08D10_TEST_PATTERN_ENABLE		0x01
 #define OV08D10_TEST_PATTERN_DISABLE		0x00
 
-/* Flip Mirror Controls from sensor */
+ 
 #define OV08D10_REG_FLIP_OPT			0x32
 #define OV08D10_REG_FLIP_MASK			0x3
 
@@ -82,32 +82,32 @@ struct ov08d10_link_freq_config {
 };
 
 struct ov08d10_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov08d10_reg_list reg_list;
 
-	/* Number of data lanes */
+	 
 	u8 data_lanes;
 };
 
-/* 3280x2460, 3264x2448 need 720Mbps/lane, 2 lanes */
+ 
 static const struct ov08d10_reg mipi_data_rate_720mbps[] = {
 	{0xfd, 0x00},
 	{0x11, 0x2a},
@@ -118,7 +118,7 @@ static const struct ov08d10_reg mipi_data_rate_720mbps[] = {
 	{0xb7, 0x02}
 };
 
-/* 1632x1224 needs 360Mbps/lane, 2 lanes */
+ 
 static const struct ov08d10_reg mipi_data_rate_360mbps[] = {
 	{0xfd, 0x00},
 	{0x1a, 0x04},
@@ -132,7 +132,7 @@ static const struct ov08d10_reg mipi_data_rate_360mbps[] = {
 };
 
 static const struct ov08d10_reg lane_2_mode_3280x2460[] = {
-	/* 3280x2460 resolution */
+	 
 	{0xfd, 0x01},
 	{0x12, 0x00},
 	{0x03, 0x12},
@@ -250,7 +250,7 @@ static const struct ov08d10_reg lane_2_mode_3280x2460[] = {
 };
 
 static const struct ov08d10_reg lane_2_mode_3264x2448[] = {
-	/* 3264x2448 resolution */
+	 
 	{0xfd, 0x01},
 	{0x12, 0x00},
 	{0x03, 0x12},
@@ -368,7 +368,7 @@ static const struct ov08d10_reg lane_2_mode_3264x2448[] = {
 };
 
 static const struct ov08d10_reg lane_2_mode_1632x1224[] = {
-	/* 1640x1232 resolution */
+	 
 	{0xfd, 0x01},
 	{0x1a, 0x0a},
 	{0x1b, 0x08},
@@ -521,7 +521,7 @@ struct ov08d10 {
 
 	struct clk		*xvclk;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
@@ -530,16 +530,16 @@ struct ov08d10 {
 	struct v4l2_ctrl *hflip;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov08d10_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* lanes index */
+	 
 	u8 nlanes;
 
 	const struct ov08d10_lane_cfg *priv_lane;
@@ -683,12 +683,12 @@ static int ov08d10_update_analog_gain(struct ov08d10 *ov08d10, u32 a_gain)
 	int ret;
 
 	val = ((a_gain >> 3) & 0xFF);
-	/* CIS control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
 
-	/* update AGAIN */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_ANALOG_GAIN, val);
 	if (ret < 0)
 		return ret;
@@ -704,13 +704,13 @@ static int ov08d10_update_digital_gain(struct ov08d10 *ov08d10, u32 d_gain)
 	int ret;
 
 	d_gain = (d_gain >> 1);
-	/* CIS control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
 
 	val = ((d_gain >> 8) & 0x3F);
-	/* update DGAIN */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_MWB_DGAIN_C, val);
 	if (ret < 0)
 		return ret;
@@ -742,12 +742,12 @@ static int ov08d10_set_exposure(struct ov08d10 *ov08d10, u32 exposure)
 	hts = ((hts_h << 8) | (hts_l));
 	exp_cal = 66 * OV08D10_ROWCLK / hts;
 	exposure = exposure * exp_cal / (cur_vts - OV08D10_EXPOSURE_MAX_MARGIN);
-	/* CIS control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
 
-	/* update exposure */
+	 
 	val = ((exposure >> 16) & 0xFF);
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_EXPOSURE_H, val);
 	if (ret < 0)
@@ -773,13 +773,13 @@ static int ov08d10_set_vblank(struct ov08d10 *ov08d10, u32 vblank)
 	u8 val;
 	int ret;
 
-	/* CIS control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
 
 	val = ((vblank >> 8) & 0xFF);
-	/* update vblank */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_VTS_H, val);
 	if (ret < 0)
 		return ret;
@@ -804,7 +804,7 @@ static int ov08d10_test_pattern(struct ov08d10 *ov08d10, u32 pattern)
 	else
 		val = OV08D10_TEST_PATTERN_DISABLE;
 
-	/* CIS control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
@@ -824,7 +824,7 @@ static int ov08d10_set_ctrl_flip(struct ov08d10 *ov08d10, u32 ctrl_val)
 	u8 val;
 	int ret;
 
-	/* System control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x01);
 	if (ret < 0)
 		return ret;
@@ -856,9 +856,9 @@ static int ov08d10_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = ov08d10->cur_mode->height + ctrl->val -
 			       OV08D10_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov08d10->exposure,
@@ -867,7 +867,7 @@ static int ov08d10_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -1025,7 +1025,7 @@ static int ov08d10_start_streaming(struct ov08d10 *ov08d10)
 	reg_list =
 	    &ov08d10->priv_lane->link_freq_configs[link_freq_index].reg_list;
 
-	/* soft reset */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x00);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to reset sensor");
@@ -1043,7 +1043,7 @@ static int ov08d10_start_streaming(struct ov08d10 *ov08d10)
 		return ret;
 	}
 
-	/* update sensor setting */
+	 
 	ret = ov08d10_write_reg_list(ov08d10, reg_list);
 	if (ret) {
 		dev_err(&client->dev, "failed to set plls");
@@ -1127,7 +1127,7 @@ static int ov08d10_set_stream(struct v4l2_subdev *sd, int enable)
 
 	ov08d10->streaming = enable;
 
-	/* vflip and hflip cannot change during streaming */
+	 
 	__v4l2_ctrl_grab(ov08d10->vflip, enable);
 	__v4l2_ctrl_grab(ov08d10->hflip, enable);
 
@@ -1202,7 +1202,7 @@ static int ov08d10_set_format(struct v4l2_subdev *sd,
 				     ov08d10->cur_mode->data_lanes);
 		__v4l2_ctrl_s_ctrl_int64(ov08d10->pixel_rate, pixel_rate);
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(ov08d10->vblank,
 					 mode->vts_min - mode->height,
@@ -1322,12 +1322,12 @@ static int ov08d10_identify_module(struct ov08d10 *ov08d10)
 	u16 chip_id;
 	int ret;
 
-	/* System control registers */
+	 
 	ret = i2c_smbus_write_byte_data(client, OV08D10_REG_PAGE, 0x00);
 	if (ret < 0)
 		return ret;
 
-	/* Validate the chip ID */
+	 
 	ret = i2c_smbus_read_byte_data(client, OV08D10_REG_CHIP_ID_0);
 	if (ret < 0)
 		return ret;
@@ -1380,7 +1380,7 @@ static int ov08d10_get_hwcfg(struct ov08d10 *ov08d10, struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Get number of data lanes */
+	 
 	if (bus_cfg.bus.mipi_csi2.num_data_lanes != 2) {
 		dev_err(dev, "number of CSI2 data lanes %d is not supported",
 			bus_cfg.bus.mipi_csi2.num_data_lanes);
@@ -1481,10 +1481,7 @@ static int ov08d10_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
 	pm_runtime_idle(&client->dev);
@@ -1508,7 +1505,7 @@ static const struct dev_pm_ops ov08d10_pm_ops = {
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id ov08d10_acpi_ids[] = {
 	{ "OVTI08D1" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, ov08d10_acpi_ids);

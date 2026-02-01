@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fault-inject.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -18,7 +18,7 @@ bool __should_failslab(struct kmem_cache *s, gfp_t gfpflags)
 {
 	int flags = 0;
 
-	/* No fault-injection for bootstrap cache */
+	 
 	if (unlikely(s == kmem_cache))
 		return false;
 
@@ -32,12 +32,7 @@ bool __should_failslab(struct kmem_cache *s, gfp_t gfpflags)
 	if (failslab.cache_filter && !(s->flags & SLAB_FAILSLAB))
 		return false;
 
-	/*
-	 * In some cases, it expects to specify __GFP_NOWARN
-	 * to avoid printing any information(not just a warning),
-	 * thus avoiding deadlocks. See commit 6b9dbedbe349 for
-	 * details.
-	 */
+	 
 	if (gfpflags & __GFP_NOWARN)
 		flags |= FAULT_NOWARN;
 
@@ -70,4 +65,4 @@ static int __init failslab_debugfs_init(void)
 
 late_initcall(failslab_debugfs_init);
 
-#endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#endif  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
+ 
 #ifndef _LINUX_FW_CFG_H
 #define _LINUX_FW_CFG_H
 
@@ -6,7 +6,7 @@
 
 #define FW_CFG_ACPI_DEVICE_ID	"QEMU0002"
 
-/* selector key values for "well-known" fw_cfg entries */
+ 
 #define FW_CFG_SIGNATURE	0x00
 #define FW_CFG_ID		0x01
 #define FW_CFG_UUID		0x02
@@ -43,20 +43,20 @@
 
 #define FW_CFG_INVALID		0xffff
 
-/* width in bytes of fw_cfg control register */
+ 
 #define FW_CFG_CTL_SIZE		0x02
 
-/* fw_cfg "file name" is up to 56 characters (including terminating nul) */
+ 
 #define FW_CFG_MAX_FILE_PATH	56
 
-/* size in bytes of fw_cfg signature */
+ 
 #define FW_CFG_SIG_SIZE 4
 
-/* FW_CFG_ID bits */
+ 
 #define FW_CFG_VERSION		0x01
 #define FW_CFG_VERSION_DMA	0x02
 
-/* fw_cfg file directory entry type */
+ 
 struct fw_cfg_file {
 	__be32 size;
 	__be16 select;
@@ -64,18 +64,16 @@ struct fw_cfg_file {
 	char name[FW_CFG_MAX_FILE_PATH];
 };
 
-/* FW_CFG_DMA_CONTROL bits */
+ 
 #define FW_CFG_DMA_CTL_ERROR	0x01
 #define FW_CFG_DMA_CTL_READ	0x02
 #define FW_CFG_DMA_CTL_SKIP	0x04
 #define FW_CFG_DMA_CTL_SELECT	0x08
 #define FW_CFG_DMA_CTL_WRITE	0x10
 
-#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "QEMU CFG" */
+#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL  
 
-/* Control as first field allows for different structures selected by this
- * field, which might be useful in the future
- */
+ 
 struct fw_cfg_dma_access {
 	__be32 control;
 	__be32 length;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2015 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "mdp5_kms.h"
 #include "mdp5_cfg.h"
@@ -11,7 +9,7 @@ struct mdp5_cfg_handler {
 	struct mdp5_cfg config;
 };
 
-/* mdp5_cfg must be exposed (used in mdp5.xml.h) */
+ 
 const struct mdp5_cfg_hw *mdp5_cfg = NULL;
 
 static const struct mdp5_cfg_hw msm8x74v1_config = {
@@ -289,9 +287,9 @@ static const struct mdp5_cfg_hw apq8084_config = {
 			[SSPP_RGB0] = 16, [SSPP_RGB1] = 17,
 			[SSPP_RGB2] = 18, [SSPP_RGB3] = 22,
 		},
-		.reserved_state[0] = GENMASK(7, 0),	/* first 8 MMBs */
+		.reserved_state[0] = GENMASK(7, 0),	 
 		.reserved = {
-			/* Two SMP blocks are statically tied to RGB pipes: */
+			 
 			[16] = 2, [17] = 2, [18] = 2, [22] = 2,
 		},
 	},
@@ -411,7 +409,7 @@ static const struct mdp5_cfg_hw msm8x16_config = {
 		.caps = MDP_PIPE_CAP_HFLIP | MDP_PIPE_CAP_VFLIP,
 	},
 	.lm = {
-		.count = 2, /* LM0 and LM3 */
+		.count = 2,  
 		.base = { 0x44000, 0x47000 },
 		.instances = {
 				{ .id = 0, .pp = 0, .dspp = 0,
@@ -541,7 +539,7 @@ static const struct mdp5_cfg_hw msm8x94_config = {
 			[SSPP_RGB0] = 16, [SSPP_RGB1] = 17,
 			[SSPP_RGB2] = 18, [SSPP_RGB3] = 22,
 		},
-		.reserved_state[0] = GENMASK(23, 0),	/* first 24 MMBs */
+		.reserved_state[0] = GENMASK(23, 0),	 
 		.reserved = {
 			 [1] = 1,  [4] = 1,  [7] = 1, [19] = 1,
 			[16] = 5, [17] = 5, [18] = 5, [22] = 5,
@@ -1047,7 +1045,7 @@ static const struct mdp5_cfg_hw msm8998_config = {
 			0,
 	},
 	.pipe_dma = {
-		.count = 2, /* driver supports max of 2 currently */
+		.count = 2,  
 		.base = { 0x24000, 0x26000, 0x28000, 0x2a000 },
 		.caps = MDP_PIPE_CAP_HFLIP	|
 			MDP_PIPE_CAP_VFLIP	|
@@ -1154,7 +1152,7 @@ static const struct mdp5_cfg_hw sdm630_config = {
 			0,
 	},
 	.pipe_dma = {
-		.count = 2, /* driver supports max of 2 currently */
+		.count = 2,  
 		.base = { 0x24000, 0x26000, 0x28000 },
 		.caps = MDP_PIPE_CAP_HFLIP	|
 			MDP_PIPE_CAP_VFLIP	|
@@ -1247,7 +1245,7 @@ static const struct mdp5_cfg_hw sdm660_config = {
 			0,
 	},
 	.pipe_dma = {
-		.count = 2, /* driver supports max of 2 currently */
+		.count = 2,  
 		.base = { 0x24000, 0x26000, 0x28000 },
 		.caps = MDP_PIPE_CAP_HFLIP	|
 			MDP_PIPE_CAP_VFLIP	|
@@ -1385,7 +1383,7 @@ struct mdp5_cfg_handler *mdp5_cfg_init(struct mdp5_kms *mdp5_kms,
 		goto fail;
 	}
 
-	/* only after mdp5_cfg global pointer's init can we access the hw */
+	 
 	for (i = 0; i < num_handlers; i++) {
 		if (cfg_handlers[i].revision != minor)
 			continue;

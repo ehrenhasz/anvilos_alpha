@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MESON_VDEC_HEVC_COMMON_H_
 #define __MESON_VDEC_HEVC_COMMON_H_
@@ -29,27 +26,27 @@ struct codec_hevc_common {
 	dma_addr_t mmu_map_paddr;
 };
 
-/* Returns 1 if we must use framebuffer compression */
+ 
 static inline int codec_hevc_use_fbc(u32 pixfmt, int is_10bit)
 {
-	/* TOFIX: Handle Amlogic Compressed buffer for 8bit also */
+	 
 	return is_10bit;
 }
 
-/* Returns 1 if we are decoding 10-bit but outputting 8-bit NV12 */
+ 
 static inline int codec_hevc_use_downsample(u32 pixfmt, int is_10bit)
 {
 	return is_10bit;
 }
 
-/* Returns 1 if we are decoding using the IOMMU */
+ 
 static inline int codec_hevc_use_mmu(u32 revision, u32 pixfmt, int is_10bit)
 {
 	return revision >= VDEC_REVISION_G12A &&
 	       codec_hevc_use_fbc(pixfmt, is_10bit);
 }
 
-/* Configure decode head read mode */
+ 
 void codec_hevc_setup_decode_head(struct amvdec_session *sess, int is_10bit);
 
 void codec_hevc_free_fbc_buffers(struct amvdec_session *sess,

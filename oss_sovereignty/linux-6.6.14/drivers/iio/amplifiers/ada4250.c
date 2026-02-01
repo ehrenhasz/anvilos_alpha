@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADA4250 driver
- *
- * Copyright 2022 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -16,7 +12,7 @@
 
 #include <asm/unaligned.h>
 
-/* ADA4250 Register Map */
+ 
 #define ADA4250_REG_GAIN_MUX        0x00
 #define ADA4250_REG_REFBUF_EN       0x01
 #define ADA4250_REG_RESET           0x02
@@ -25,28 +21,28 @@
 #define ADA4250_REG_DIE_REV         0x18
 #define ADA4250_REG_CHIP_ID         0x19
 
-/* ADA4250_REG_GAIN_MUX Map */
+ 
 #define ADA4250_GAIN_MUX_MSK        GENMASK(2, 0)
 
-/* ADA4250_REG_REFBUF Map */
+ 
 #define ADA4250_REFBUF_MSK          BIT(0)
 
-/* ADA4250_REG_RESET Map */
+ 
 #define ADA4250_RESET_MSK           BIT(0)
 
-/* ADA4250_REG_SNSR_CAL_VAL Map */
+ 
 #define ADA4250_CAL_CFG_BIAS_MSK    GENMASK(7, 0)
 
-/* ADA4250_REG_SNSR_CAL_CNFG Bit Definition */
+ 
 #define ADA4250_BIAS_SET_MSK        GENMASK(3, 2)
 #define ADA4250_RANGE_SET_MSK       GENMASK(1, 0)
 
-/* Miscellaneous definitions */
+ 
 #define ADA4250_CHIP_ID             0x4250
 #define ADA4250_RANGE1              0
 #define	ADA4250_RANGE4              3
 
-/* ADA4250 current bias set */
+ 
 enum ada4250_current_bias {
 	ADA4250_BIAS_DISABLED,
 	ADA4250_BIAS_BANDGAP,
@@ -57,7 +53,7 @@ struct ada4250_state {
 	struct spi_device	*spi;
 	struct regmap		*regmap;
 	struct regulator	*reg;
-	/* Protect against concurrent accesses to the device and data content */
+	 
 	struct mutex		lock;
 	u8			bias;
 	u8			gain;
@@ -65,10 +61,10 @@ struct ada4250_state {
 	bool			refbuf_en;
 };
 
-/* ADA4250 Current Bias Source Settings: Disabled, Bandgap Reference, AVDD */
+ 
 static const int calibbias_table[] = {0, 1, 2};
 
-/* ADA4250 Gain (V/V) values: 1, 2, 4, 8, 16, 32, 64, 128 */
+ 
 static const int hwgain_table[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 static const struct regmap_config ada4250_regmap_config = {
@@ -107,19 +103,7 @@ static int ada4250_set_offset_uv(struct iio_dev *indio_dev,
 	if (st->gain == 0)
 		return -EINVAL;
 
-	/*
-	 * Compute Range and Voltage per LSB for the Sensor Offset Calibration
-	 * Example of computation for Range 1 and Range 2 (Curren Bias Set = AVDD):
-	 *                     Range 1                            Range 2
-	 *   Gain   | Max Vos(mV) |   LSB(mV)        |  Max Vos(mV)  | LSB(mV) |
-	 *    2     |    X1*127   | X1=0.126(AVDD-1) |   X1*3*127    |  X1*3   |
-	 *    4     |    X2*127   | X2=X1/1.3333     |   X2*3*127    |  X2*3   |
-	 *    8     |    X3*127   | X3=X1/2.301      |   X3*3*127    |  X3*3   |
-	 *    16    |    X4*127   | X4=X1/4.283      |   X4*3*127    |  X4*3   |
-	 *    32    |    X5*127   | X5=X1/8.289      |   X5*3*127    |  X5*3   |
-	 *    64    |    X6*127   | X6=X1/16.311     |   X6*3*127    |  X6*3   |
-	 *    128   |    X7*127   | X7=X1/31.599     |   X7*3*127    |  X7*3   |
-	 */
+	 
 	for (i = ADA4250_RANGE1; i <= ADA4250_RANGE4; i++) {
 		max_vos = x[st->gain] *  127 * ((1 << (i + 1)) - 1);
 		min_vos = -1 * max_vos;
@@ -144,11 +128,7 @@ static int ada4250_set_offset_uv(struct iio_dev *indio_dev,
 
 	st->offset_uv = offset_raw * vlsb;
 
-	/*
-	 * To set the offset calibration value, use bits [6:0] and bit 7 as the
-	 * polarity bit (set to "0" for a negative offset and "1" for a positive
-	 * offset).
-	 */
+	 
 	if (offset_uv < 0) {
 		offset_raw |= BIT(7);
 		st->offset_uv *= (-1);

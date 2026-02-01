@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include <core/pci.h>
 #include "priv.h"
 
@@ -39,21 +17,21 @@ struct nvkm_device_pci_vendor {
 
 static const struct nvkm_device_pci_vendor
 nvkm_device_pci_10de_0189[] = {
-	/* Apple iMac G4 NV18 */
+	 
 	{ 0x10de, 0x0010, NULL, { .tv_gpio = 4 } },
 	{}
 };
 
 static const struct nvkm_device_pci_vendor
 nvkm_device_pci_10de_01f0[] = {
-	/* MSI nForce2 IGP */
+	 
 	{ 0x1462, 0x5710, NULL, { .tv_pin_mask = 0xc } },
 	{}
 };
 
 static const struct nvkm_device_pci_vendor
 nvkm_device_pci_10de_0322[] = {
-	/* Zotac FX5200 */
+	 
 	{ 0x19da, 0x1035, NULL, { .tv_pin_mask = 0xc } },
 	{ 0x19da, 0x2035, NULL, { .tv_pin_mask = 0xc } },
 	{}
@@ -1686,7 +1664,7 @@ nvkm_device_pci_new(struct pci_dev *pci_dev, const char *cfg, const char *dbg,
 	if (ret)
 		return ret;
 
-	/* Set DMA mask based on capabilities reported by the MMU subdev. */
+	 
 	if (pdev->device.mmu && !pdev->device.pci->agp.bridge)
 		bits = pdev->device.mmu->dma_bits;
 	else

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Type-C Connector System Software Interface driver
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/property.h>
@@ -17,23 +12,10 @@
 #include "ucsi.h"
 #include "trace.h"
 
-/*
- * UCSI_TIMEOUT_MS - PPM communication timeout
- *
- * Ideally we could use MIN_TIME_TO_RESPOND_WITH_BUSY (which is defined in UCSI
- * specification) here as reference, but unfortunately we can't. It is very
- * difficult to estimate the time it takes for the system to process the command
- * before it is actually passed to the PPM.
- */
+ 
 #define UCSI_TIMEOUT_MS		5000
 
-/*
- * UCSI_SWAP_TIMEOUT_MS - Timeout for role swap requests
- *
- * 5 seconds is close to the time it takes for CapsCounter to reach 0, so even
- * if the PPM does not generate Connector Change events before that with
- * partners that do not support USB Power Delivery, this should still work.
- */
+ 
 #define UCSI_SWAP_TIMEOUT_MS	5000
 
 static int ucsi_acknowledge_command(struct ucsi *ucsi)
@@ -63,7 +45,7 @@ static int ucsi_read_error(struct ucsi *ucsi)
 	u16 error;
 	int ret;
 
-	/* Acknowledge the command that failed */
+	 
 	ret = ucsi_acknowledge_command(ucsi);
 	if (ret)
 		return ret;
@@ -186,7 +168,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(ucsi_send_command);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 struct ucsi_work {
 	struct delayed_work work;
@@ -249,7 +231,7 @@ static int ucsi_partner_task(struct ucsi_connector *con,
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 void ucsi_altmode_update_active(struct ucsi_connector *con)
 {
@@ -423,7 +405,7 @@ ucsi_register_altmodes_nvidia(struct ucsi_connector *con, u8 recipient)
 	memset(orig, 0, sizeof(orig));
 	memset(updated, 0, sizeof(updated));
 
-	/* First get all the alternate modes */
+	 
 	for (i = 0; i < max_altmodes; i++) {
 		memset(&alt, 0, sizeof(alt));
 		command = UCSI_GET_ALTERNATE_MODES;
@@ -431,15 +413,11 @@ ucsi_register_altmodes_nvidia(struct ucsi_connector *con, u8 recipient)
 		command |= UCSI_GET_ALTMODE_CONNECTOR_NUMBER(con->num);
 		command |= UCSI_GET_ALTMODE_OFFSET(i);
 		len = ucsi_send_command(con->ucsi, command, &alt, sizeof(alt));
-		/*
-		 * We are collecting all altmodes first and then registering.
-		 * Some type-C device will return zero length data beyond last
-		 * alternate modes. We should not return if length is zero.
-		 */
+		 
 		if (len < 0)
 			return len;
 
-		/* We got all altmodes, now break out and register them */
+		 
 		if (!len || !alt.svid)
 			break;
 
@@ -447,14 +425,11 @@ ucsi_register_altmodes_nvidia(struct ucsi_connector *con, u8 recipient)
 		orig[k].svid = alt.svid;
 		k++;
 	}
-	/*
-	 * Update the original altmode table as some ppms may report
-	 * multiple DP altmodes.
-	 */
+	 
 	if (recipient == UCSI_RECIPIENT_CON)
 		multi_dp = ucsi->ops->update_altmodes(ucsi, orig, updated);
 
-	/* now register altmodes */
+	 
 	for (i = 0; i < max_altmodes; i++) {
 		memset(&desc, 0, sizeof(desc));
 		if (multi_dp && recipient == UCSI_RECIPIENT_CON) {
@@ -513,12 +488,7 @@ static int ucsi_register_altmodes(struct ucsi_connector *con, u8 recipient)
 		if (len <= 0)
 			return len;
 
-		/*
-		 * This code is requesting one alt mode at a time, but some PPMs
-		 * may still return two. If that happens both alt modes need be
-		 * registered and the offset for the next alt mode has to be
-		 * incremented.
-		 */
+		 
 		num = len / sizeof(alt[0]);
 		i += num;
 
@@ -597,16 +567,16 @@ static int ucsi_get_pdos(struct ucsi_connector *con, enum typec_role role,
 	u8 num_pdos;
 	int ret;
 
-	/* UCSI max payload means only getting at most 4 PDOs at a time */
+	 
 	ret = ucsi_read_pdos(con, role, is_partner, pdos, 0, UCSI_MAX_PDOS);
 	if (ret < 0)
 		return ret;
 
-	num_pdos = ret / sizeof(u32); /* number of bytes to 32-bit PDOs */
+	num_pdos = ret / sizeof(u32);  
 	if (num_pdos < UCSI_MAX_PDOS)
 		return num_pdos;
 
-	/* get the remaining PDOs, if any */
+	 
 	ret = ucsi_read_pdos(con, role, is_partner, pdos, UCSI_MAX_PDOS,
 			     PDO_MAX_OBJECTS - UCSI_MAX_PDOS);
 	if (ret < 0)
@@ -640,7 +610,7 @@ static int ucsi_check_altmodes(struct ucsi_connector *con)
 			"con%d: failed to register partner alt modes (%d)\n",
 			con->num, ret);
 
-	/* Ignoring the errors in this case. */
+	 
 	if (con->partner_altmode[0]) {
 		num_partner_am = ucsi_get_num_altmode(con->partner_altmode);
 		if (num_partner_am > 0)
@@ -830,7 +800,7 @@ static void ucsi_partner_change(struct ucsi_connector *con)
 		}
 	}
 
-	/* Only notify USB controller if partner supports USB data */
+	 
 	if (!(UCSI_CONSTAT_PARTNER_FLAGS(con->status.flags) & UCSI_CONSTAT_PARTNER_FLAG_USB))
 		u_role = USB_ROLE_NONE;
 
@@ -896,7 +866,7 @@ static void ucsi_handle_connector_change(struct work_struct *work)
 	if (con->status.change & UCSI_CONSTAT_POWER_DIR_CHANGE) {
 		typec_set_pwr_role(con->port, role);
 
-		/* Complete pending power role swap */
+		 
 		if (!completion_done(&con->complete))
 			complete(&con->complete);
 	}
@@ -925,7 +895,7 @@ static void ucsi_handle_connector_change(struct work_struct *work)
 	if (con->partner && con->status.change & UCSI_CONSTAT_PARTNER_CHANGE) {
 		ucsi_partner_change(con);
 
-		/* Complete pending data role swap */
+		 
 		if (!completion_done(&con->complete))
 			complete(&con->complete);
 	}
@@ -943,11 +913,7 @@ out_unlock:
 	mutex_unlock(&con->lock);
 }
 
-/**
- * ucsi_connector_change - Process Connector Change Event
- * @ucsi: UCSI Interface
- * @num: Connector number
- */
+ 
 void ucsi_connector_change(struct ucsi *ucsi, u8 num)
 {
 	struct ucsi_connector *con = &ucsi->connector[num - 1];
@@ -962,7 +928,7 @@ void ucsi_connector_change(struct ucsi *ucsi, u8 num)
 }
 EXPORT_SYMBOL_GPL(ucsi_connector_change);
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int ucsi_reset_connector(struct ucsi_connector *con, bool hard)
 {
@@ -1000,7 +966,7 @@ static int ucsi_reset_ppm(struct ucsi *ucsi)
 		if (ret)
 			goto out;
 
-		/* If the PPM is still doing something else, reset it again. */
+		 
 		if (cci & ~UCSI_CCI_RESET_COMPLETE) {
 			ret = ucsi->ops->async_write(ucsi, UCSI_CONTROL,
 						     &command,
@@ -1025,7 +991,7 @@ static int ucsi_role_cmd(struct ucsi_connector *con, u64 command)
 	if (ret == -ETIMEDOUT) {
 		u64 c;
 
-		/* PPM most likely stopped responding. Resetting everything. */
+		 
 		ucsi_reset_ppm(con->ucsi);
 
 		c = UCSI_SET_NOTIFICATION_ENABLE | con->ucsi->ntfy;
@@ -1117,7 +1083,7 @@ static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
 
 	mutex_lock(&con->lock);
 
-	/* Something has gone wrong while swapping the role */
+	 
 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
 	    UCSI_CONSTAT_PWR_OPMODE_PD) {
 		ucsi_reset_connector(con, true);
@@ -1135,7 +1101,7 @@ static const struct typec_operations ucsi_ops = {
 	.pr_set = ucsi_pr_swap
 };
 
-/* Caller must call fwnode_handle_put() after use */
+ 
 static struct fwnode_handle *ucsi_find_fwnode(struct ucsi_connector *con)
 {
 	struct fwnode_handle *fwnode;
@@ -1180,10 +1146,10 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		return dev_err_probe(ucsi->dev, PTR_ERR(con->usb_role_sw),
 			"con%d: failed to get usb role switch\n", con->num);
 
-	/* Delay other interactions with the con until registration is complete */
+	 
 	mutex_lock(&con->lock);
 
-	/* Get connector capability */
+	 
 	command = UCSI_GET_CONNECTOR_CAPABILITY;
 	command |= UCSI_CONNECTOR_NUMBER(con->num);
 	ret = ucsi_send_command(ucsi, command, &con->cap, sizeof(con->cap));
@@ -1222,7 +1188,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 	if (ret)
 		goto out;
 
-	/* Register the connector */
+	 
 	con->port = typec_register_port(ucsi->dev, cap);
 	if (IS_ERR(con->port)) {
 		ret = PTR_ERR(con->port);
@@ -1264,7 +1230,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		typec_port_set_usb_power_delivery(con->port, con->pd);
 	}
 
-	/* Alternate modes */
+	 
 	ret = ucsi_register_altmodes(con, UCSI_RECIPIENT_CON);
 	if (ret) {
 		dev_err(ucsi->dev, "con%d: failed to register alt modes\n",
@@ -1272,7 +1238,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		goto out;
 	}
 
-	/* Get the status */
+	 
 	command = UCSI_GET_CONNECTOR_STATUS | UCSI_CONNECTOR_NUMBER(con->num);
 	ret = ucsi_send_command(ucsi, command, &con->status, sizeof(con->status));
 	if (ret < 0) {
@@ -1280,7 +1246,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		ret = 0;
 		goto out;
 	}
-	ret = 0; /* ucsi_send_command() returns length on success */
+	ret = 0;  
 
 	switch (UCSI_CONSTAT_PARTNER_TYPE(con->status.flags)) {
 	case UCSI_CONSTAT_PARTNER_TYPE_UFP:
@@ -1298,7 +1264,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		break;
 	}
 
-	/* Check if there is already something connected */
+	 
 	if (con->status.flags & UCSI_CONSTAT_CONNECTED) {
 		typec_set_pwr_role(con->port,
 				  !!(con->status.flags & UCSI_CONSTAT_PWR_DIR));
@@ -1307,7 +1273,7 @@ static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
 		ucsi_port_psy_changed(con);
 	}
 
-	/* Only notify USB controller if partner supports USB data */
+	 
 	if (!(UCSI_CONSTAT_PARTNER_FLAGS(con->status.flags) & UCSI_CONSTAT_PARTNER_FLAG_USB))
 		u_role = USB_ROLE_NONE;
 
@@ -1340,12 +1306,7 @@ out_unlock:
 	return ret;
 }
 
-/**
- * ucsi_init - Initialize UCSI interface
- * @ucsi: UCSI to be initialized
- *
- * Registers all ports @ucsi has and enables all notification events.
- */
+ 
 static int ucsi_init(struct ucsi *ucsi)
 {
 	struct ucsi_connector *con, *connector;
@@ -1353,21 +1314,21 @@ static int ucsi_init(struct ucsi *ucsi)
 	int ret;
 	int i;
 
-	/* Reset the PPM */
+	 
 	ret = ucsi_reset_ppm(ucsi);
 	if (ret) {
 		dev_err(ucsi->dev, "failed to reset PPM!\n");
 		goto err;
 	}
 
-	/* Enable basic notifications */
+	 
 	ntfy = UCSI_ENABLE_NTFY_CMD_COMPLETE | UCSI_ENABLE_NTFY_ERROR;
 	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
 	ret = ucsi_send_command(ucsi, command, NULL, 0);
 	if (ret < 0)
 		goto err_reset;
 
-	/* Get PPM capabilities */
+	 
 	command = UCSI_GET_CAPABILITY;
 	ret = ucsi_send_command(ucsi, command, &ucsi->cap, sizeof(ucsi->cap));
 	if (ret < 0)
@@ -1378,14 +1339,14 @@ static int ucsi_init(struct ucsi *ucsi)
 		goto err_reset;
 	}
 
-	/* Allocate the connectors. Released in ucsi_unregister() */
+	 
 	connector = kcalloc(ucsi->cap.num_connectors + 1, sizeof(*connector), GFP_KERNEL);
 	if (!connector) {
 		ret = -ENOMEM;
 		goto err_reset;
 	}
 
-	/* Register all connectors */
+	 
 	for (i = 0; i < ucsi->cap.num_connectors; i++) {
 		connector[i].num = i + 1;
 		ret = ucsi_register_port(ucsi, &connector[i]);
@@ -1393,7 +1354,7 @@ static int ucsi_init(struct ucsi *ucsi)
 			goto err_unregister;
 	}
 
-	/* Enable all notifications */
+	 
 	ntfy = UCSI_ENABLE_NTFY_ALL;
 	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
 	ret = ucsi_send_command(ucsi, command, NULL, 0);
@@ -1436,7 +1397,7 @@ static void ucsi_resume_work(struct work_struct *work)
 	u64 command;
 	int ret;
 
-	/* Restore UCSI notification enable mask after system resume */
+	 
 	command = UCSI_SET_NOTIFICATION_ENABLE | ucsi->ntfy;
 	ret = ucsi_send_command(ucsi, command, NULL, 0);
 	if (ret < 0) {
@@ -1479,32 +1440,21 @@ static void ucsi_init_work(struct work_struct *work)
 	}
 }
 
-/**
- * ucsi_get_drvdata - Return private driver data pointer
- * @ucsi: UCSI interface
- */
+ 
 void *ucsi_get_drvdata(struct ucsi *ucsi)
 {
 	return ucsi->driver_data;
 }
 EXPORT_SYMBOL_GPL(ucsi_get_drvdata);
 
-/**
- * ucsi_set_drvdata - Assign private driver data pointer
- * @ucsi: UCSI interface
- * @data: Private data pointer
- */
+ 
 void ucsi_set_drvdata(struct ucsi *ucsi, void *data)
 {
 	ucsi->driver_data = data;
 }
 EXPORT_SYMBOL_GPL(ucsi_set_drvdata);
 
-/**
- * ucsi_create - Allocate UCSI instance
- * @dev: Device interface to the PPM (Platform Policy Manager)
- * @ops: I/O routines
- */
+ 
 struct ucsi *ucsi_create(struct device *dev, const struct ucsi_operations *ops)
 {
 	struct ucsi *ucsi;
@@ -1526,10 +1476,7 @@ struct ucsi *ucsi_create(struct device *dev, const struct ucsi_operations *ops)
 }
 EXPORT_SYMBOL_GPL(ucsi_create);
 
-/**
- * ucsi_destroy - Free UCSI instance
- * @ucsi: UCSI instance to be freed
- */
+ 
 void ucsi_destroy(struct ucsi *ucsi)
 {
 	ucsi_debugfs_unregister(ucsi);
@@ -1537,10 +1484,7 @@ void ucsi_destroy(struct ucsi *ucsi)
 }
 EXPORT_SYMBOL_GPL(ucsi_destroy);
 
-/**
- * ucsi_register - Register UCSI interface
- * @ucsi: UCSI instance
- */
+ 
 int ucsi_register(struct ucsi *ucsi)
 {
 	int ret;
@@ -1560,22 +1504,17 @@ int ucsi_register(struct ucsi *ucsi)
 }
 EXPORT_SYMBOL_GPL(ucsi_register);
 
-/**
- * ucsi_unregister - Unregister UCSI interface
- * @ucsi: UCSI interface to be unregistered
- *
- * Unregister UCSI interface that was created with ucsi_register().
- */
+ 
 void ucsi_unregister(struct ucsi *ucsi)
 {
 	u64 cmd = UCSI_SET_NOTIFICATION_ENABLE;
 	int i;
 
-	/* Make sure that we are not in the middle of driver initialization */
+	 
 	cancel_delayed_work_sync(&ucsi->work);
 	cancel_work_sync(&ucsi->resume_work);
 
-	/* Disable notifications */
+	 
 	ucsi->ops->async_write(ucsi, UCSI_CONTROL, &cmd, sizeof(cmd));
 
 	if (!ucsi->connector)
@@ -1592,10 +1531,7 @@ void ucsi_unregister(struct ucsi *ucsi)
 			struct ucsi_work *uwork;
 
 			mutex_lock(&ucsi->connector[i].lock);
-			/*
-			 * queue delayed items immediately so they can execute
-			 * and free themselves before the wq is destroyed
-			 */
+			 
 			list_for_each_entry(uwork, &ucsi->connector[i].partner_tasks, node)
 				mod_delayed_work(ucsi->connector[i].wq, &uwork->work, 0);
 			mutex_unlock(&ucsi->connector[i].lock);

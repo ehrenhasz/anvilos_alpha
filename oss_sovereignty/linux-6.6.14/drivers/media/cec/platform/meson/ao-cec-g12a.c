@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Amlogic Meson AO CEC G12A Controller
- *
- * Copyright (C) 2017 Amlogic, Inc. All rights reserved
- * Copyright (C) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -26,7 +20,7 @@
 #include <media/cec-notifier.h>
 #include <linux/clk-provider.h>
 
-/* CEC Registers */
+ 
 
 #define CECB_CLK_CNTL_REG0		0x00
 
@@ -42,22 +36,7 @@
 #define CECB_CLK_CNTL_M2		GENMASK(23, 12)
 #define CECB_CLK_CNTL_BYPASS_EN		BIT(24)
 
-/*
- * [14:12] Filter_del. For glitch-filtering CEC line, ignore signal
- *       change pulse width < filter_del * T(filter_tick) * 3.
- * [9:8] Filter_tick_sel: Select which periodical pulse for
- *       glitch-filtering CEC line signal.
- *  - 0=Use T(xtal)*3 = 125ns;
- *  - 1=Use once-per-1us pulse;
- *  - 2=Use once-per-10us pulse;
- *  - 3=Use once-per-100us pulse.
- * [3]   Sysclk_en. 0=Disable system clock; 1=Enable system clock.
- * [2:1] cntl_clk
- *  - 0 = Disable clk (Power-off mode)
- *  - 1 = Enable gated clock (Normal mode)
- *  - 2 = Enable free-run clk (Debug mode)
- * [0] SW_RESET 1=Apply reset; 0=No reset.
- */
+ 
 #define CECB_GEN_CNTL_REG		0x08
 
 #define CECB_GEN_CNTL_RESET		BIT(0)
@@ -73,14 +52,7 @@
 #define CECB_GEN_CNTL_FILTER_TICK_SEL	GENMASK(9, 8)
 #define CECB_GEN_CNTL_FILTER_DEL	GENMASK(14, 12)
 
-/*
- * [7:0] cec_reg_addr
- * [15:8] cec_reg_wrdata
- * [16] cec_reg_wr
- *  - 0 = Read
- *  - 1 = Write
- * [31:24] cec_reg_rddata
- */
+ 
 #define CECB_RW_REG			0x0c
 
 #define CECB_RW_ADDR			GENMASK(7, 0)
@@ -89,15 +61,7 @@
 #define CECB_RW_BUS_BUSY		BIT(23)
 #define CECB_RW_RD_DATA			GENMASK(31, 24)
 
-/*
- * [0] DONE Interrupt
- * [1] End Of Message Interrupt
- * [2] Not Acknowlegde Interrupt
- * [3] Arbitration Loss Interrupt
- * [4] Initiator Error Interrupt
- * [5] Follower Error Interrupt
- * [6] Wake-Up Interrupt
- */
+ 
 #define CECB_INTR_MASKN_REG		0x10
 #define CECB_INTR_CLR_REG		0x14
 #define CECB_INTR_STAT_REG		0x18
@@ -110,7 +74,7 @@
 #define CECB_INTR_FOLLOWER_ERR		BIT(5)
 #define CECB_INTR_WAKE_UP		BIT(6)
 
-/* CEC Commands */
+ 
 
 #define CECB_CTRL		0x00
 
@@ -169,7 +133,7 @@
 #define CECB_WAKEUPCTRL		0x31
 
 struct meson_ao_cec_g12a_data {
-	/* Setup the internal CECB_CTRL2 register */
+	 
 	bool				ctrl2_setup;
 };
 
@@ -193,23 +157,7 @@ static const struct regmap_config meson_ao_cec_g12a_regmap_conf = {
 	.max_register = CECB_INTR_STAT_REG,
 };
 
-/*
- * The AO-CECB embeds a dual/divider to generate a more precise
- * 32,768KHz clock for CEC core clock.
- *                      ______   ______
- *                     |      | |      |
- *         ______      | Div1 |-| Cnt1 |       ______
- *        |      |    /|______| |______|\     |      |
- * Xtal-->| Gate |---|  ______   ______  X-X--| Gate |-->
- *        |______| |  \|      | |      |/  |  |______|
- *                 |   | Div2 |-| Cnt2 |   |
- *                 |   |______| |______|   |
- *                 |_______________________|
- *
- * The dividing can be switched to single or dual, with a counter
- * for each divider to set when the switching is done.
- * The entire dividing mechanism can be also bypassed.
- */
+ 
 
 struct meson_ao_cec_g12a_dualdiv_clk {
 	struct clk_hw hw;
@@ -263,12 +211,12 @@ static int meson_ao_cec_g12a_dualdiv_clk_enable(struct clk_hw *hw)
 		hw_to_meson_ao_cec_g12a_dualdiv_clk(hw);
 
 
-	/* Disable Input & Output */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG0,
 			   CECB_CLK_CNTL_INPUT_EN | CECB_CLK_CNTL_OUTPUT_EN,
 			   0);
 
-	/* Set N1 & N2 */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG0,
 			   CECB_CLK_CNTL_N1,
 			   FIELD_PREP(CECB_CLK_CNTL_N1, 733 - 1));
@@ -277,7 +225,7 @@ static int meson_ao_cec_g12a_dualdiv_clk_enable(struct clk_hw *hw)
 			   CECB_CLK_CNTL_N2,
 			   FIELD_PREP(CECB_CLK_CNTL_N2, 732 - 1));
 
-	/* Set M1 & M2 */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG1,
 			   CECB_CLK_CNTL_M1,
 			   FIELD_PREP(CECB_CLK_CNTL_M1, 8 - 1));
@@ -286,15 +234,15 @@ static int meson_ao_cec_g12a_dualdiv_clk_enable(struct clk_hw *hw)
 			   CECB_CLK_CNTL_M2,
 			   FIELD_PREP(CECB_CLK_CNTL_M2, 11 - 1));
 
-	/* Enable Dual divisor */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG0,
 			   CECB_CLK_CNTL_DUAL_EN, CECB_CLK_CNTL_DUAL_EN);
 
-	/* Disable divisor bypass */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG1,
 			   CECB_CLK_CNTL_BYPASS_EN, 0);
 
-	/* Enable Input & Output */
+	 
 	regmap_update_bits(dualdiv_clk->regmap, CECB_CLK_CNTL_REG0,
 			   CECB_CLK_CNTL_INPUT_EN | CECB_CLK_CNTL_OUTPUT_EN,
 			   CECB_CLK_CNTL_INPUT_EN | CECB_CLK_CNTL_OUTPUT_EN);
@@ -485,11 +433,11 @@ static irqreturn_t meson_ao_cec_g12a_irq_thread(int irq, void *data)
 		cec_transmit_attempt_done(ao_cec->adap, CEC_TX_STATUS_ARB_LOST);
 	}
 
-	/* Initiator reports an error on the CEC bus */
+	 
 	if (stat & CECB_INTR_INITIATOR_ERR)
 		cec_transmit_attempt_done(ao_cec->adap, CEC_TX_STATUS_ERROR);
 
-	/* Follower reports a receive error, just reset RX buffer */
+	 
 	if (stat & CECB_INTR_FOLLOWER_ERR)
 		regmap_write(ao_cec->regmap_cec, CECB_LOCK_BUF, 0);
 
@@ -503,7 +451,7 @@ meson_ao_cec_g12a_set_log_addr(struct cec_adapter *adap, u8 logical_addr)
 	int ret = 0;
 
 	if (logical_addr == CEC_LOG_ADDR_INVALID) {
-		/* Assume this will allways succeed */
+		 
 		regmap_write(ao_cec->regmap_cec, CECB_LADD_LOW, 0);
 		regmap_write(ao_cec->regmap_cec, CECB_LADD_HIGH, 0);
 
@@ -518,7 +466,7 @@ meson_ao_cec_g12a_set_log_addr(struct cec_adapter *adap, u8 logical_addr)
 					 BIT(logical_addr - 8));
 	}
 
-	/* Always set Broadcast/Unregistered 15 address */
+	 
 	ret |= regmap_update_bits(ao_cec->regmap_cec, CECB_LADD_HIGH,
 				  BIT(CEC_LOG_ADDR_UNREGISTERED - 8),
 				  BIT(CEC_LOG_ADDR_UNREGISTERED - 8));
@@ -535,14 +483,14 @@ static int meson_ao_cec_g12a_transmit(struct cec_adapter *adap, u8 attempts,
 	u32 val;
 	int i;
 
-	/* Check if RX is in progress */
+	 
 	ret = regmap_read(ao_cec->regmap_cec, CECB_LOCK_BUF, &val);
 	if (ret)
 		return ret;
 	if (val & CECB_LOCK_BUF_EN)
 		return -EBUSY;
 
-	/* Check if TX Busy */
+	 
 	ret = regmap_read(ao_cec->regmap_cec, CECB_CTRL, &val);
 	if (ret)
 		return ret;
@@ -591,7 +539,7 @@ static int meson_ao_cec_g12a_adap_enable(struct cec_adapter *adap, bool enable)
 	if (!enable)
 		return 0;
 
-	/* Setup Filter */
+	 
 	regmap_update_bits(ao_cec->regmap, CECB_GEN_CNTL_REG,
 			   CECB_GEN_CNTL_FILTER_TICK_SEL |
 			   CECB_GEN_CNTL_FILTER_DEL,
@@ -599,18 +547,18 @@ static int meson_ao_cec_g12a_adap_enable(struct cec_adapter *adap, bool enable)
 				      CECB_GEN_CNTL_FILTER_TICK_1US) |
 			   FIELD_PREP(CECB_GEN_CNTL_FILTER_DEL, 7));
 
-	/* Enable System Clock */
+	 
 	regmap_update_bits(ao_cec->regmap, CECB_GEN_CNTL_REG,
 			   CECB_GEN_CNTL_SYS_CLK_EN,
 			   CECB_GEN_CNTL_SYS_CLK_EN);
 
-	/* Enable gated clock (Normal mode). */
+	 
 	regmap_update_bits(ao_cec->regmap, CECB_GEN_CNTL_REG,
 			   CECB_GEN_CNTL_CLK_CTRL_MASK,
 			    FIELD_PREP(CECB_GEN_CNTL_CLK_CTRL_MASK,
 				       CECB_GEN_CNTL_CLK_ENABLE));
 
-	/* Release Reset */
+	 
 	regmap_update_bits(ao_cec->regmap, CECB_GEN_CNTL_REG,
 			   CECB_GEN_CNTL_RESET, 0);
 
@@ -725,7 +673,7 @@ static int meson_ao_cec_g12a_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto out_probe_notify;
 
-	/* Setup Hardware */
+	 
 	regmap_write(ao_cec->regmap, CECB_GEN_CNTL_REG, CECB_GEN_CNTL_RESET);
 
 	return 0;
@@ -772,7 +720,7 @@ static const struct of_device_id meson_ao_cec_g12a_of_match[] = {
 		.compatible = "amlogic,meson-sm1-ao-cec",
 		.data = &ao_cec_sm1_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_ao_cec_g12a_of_match);
 

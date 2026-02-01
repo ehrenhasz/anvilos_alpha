@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+ 
+ 
 
 #ifndef RVU_H
 #define RVU_H
@@ -19,11 +15,11 @@
 #include "rvu_reg.h"
 #include "ptp.h"
 
-/* PCI device IDs */
+ 
 #define	PCI_DEVID_OCTEONTX2_RVU_AF		0xA065
 #define	PCI_DEVID_OCTEONTX2_LBK			0xA061
 
-/* Subsystem Device ID */
+ 
 #define PCI_SUBSYS_DEVID_98XX                  0xB100
 #define PCI_SUBSYS_DEVID_96XX                  0xB200
 #define PCI_SUBSYS_DEVID_CN10K_A	       0xB900
@@ -31,7 +27,7 @@
 #define PCI_SUBSYS_DEVID_CNF10K_B              0xBC00
 #define PCI_SUBSYS_DEVID_CN10K_B               0xBD00
 
-/* PCI BAR nos */
+ 
 #define	PCI_AF_REG_BAR_NUM			0
 #define	PCI_PF_REG_BAR_NUM			2
 #define	PCI_MBOX_BAR_NUM			4
@@ -40,7 +36,7 @@
 #define MAX_NIX_BLKS				2
 #define MAX_CPT_BLKS				2
 
-/* PF_FUNC */
+ 
 #define RVU_PFVF_PF_SHIFT	10
 #define RVU_PFVF_PF_MASK	0x3F
 #define RVU_PFVF_FUNC_SHIFT	0
@@ -90,18 +86,18 @@ struct rvu_work {
 };
 
 struct rsrc_bmap {
-	unsigned long *bmap;	/* Pointer to resource bitmap */
-	u16  max;		/* Max resource id or count */
+	unsigned long *bmap;	 
+	u16  max;		 
 };
 
 struct rvu_block {
 	struct rsrc_bmap	lf;
-	struct admin_queue	*aq; /* NIX/NPA AQ */
-	u16  *fn_map; /* LF to pcifunc mapping */
+	struct admin_queue	*aq;  
+	u16  *fn_map;  
 	bool multislot;
 	bool implemented;
-	u8   addr;  /* RVU_BLOCK_ADDR_E */
-	u8   type;  /* RVU_BLOCK_TYPE_E */
+	u8   addr;   
+	u8   type;   
 	u8   lfshift;
 	u64  lookup_reg;
 	u64  pf_lfcnt_reg;
@@ -120,7 +116,7 @@ struct nix_mcast {
 	struct qmem	*mcast_buf;
 	int		replay_pkind;
 	int		next_free_mce;
-	struct mutex	mce_lock; /* Serialize MCE updates */
+	struct mutex	mce_lock;  
 };
 
 struct nix_mce_list {
@@ -129,7 +125,7 @@ struct nix_mce_list {
 	int			max;
 };
 
-/* layer metadata to uniquely identify a packet header field */
+ 
 struct npc_layer_mdata {
 	u8 lid;
 	u8 ltype;
@@ -138,52 +134,41 @@ struct npc_layer_mdata {
 	u8 len;
 };
 
-/* Structure to represent a field present in the
- * generated key. A key field may present anywhere and can
- * be of any size in the generated key. Once this structure
- * is populated for fields of interest then field's presence
- * and location (if present) can be known.
- */
+ 
 struct npc_key_field {
-	/* Masks where all set bits indicate position
-	 * of a field in the key
-	 */
+	 
 	u64 kw_mask[NPC_MAX_KWS_IN_KEY];
-	/* Number of words in the key a field spans. If a field is
-	 * of 16 bytes and key offset is 4 then the field will use
-	 * 4 bytes in KW0, 8 bytes in KW1 and 4 bytes in KW2 and
-	 * nr_kws will be 3(KW0, KW1 and KW2).
-	 */
+	 
 	int nr_kws;
-	/* used by packet header fields */
+	 
 	struct npc_layer_mdata layer_mdata;
 };
 
 struct npc_mcam {
 	struct rsrc_bmap counters;
-	struct mutex	lock;	/* MCAM entries and counters update lock */
-	unsigned long	*bmap;		/* bitmap, 0 => bmap_entries */
-	unsigned long	*bmap_reverse;	/* Reverse bitmap, bmap_entries => 0 */
-	u16	bmap_entries;	/* Number of unreserved MCAM entries */
-	u16	bmap_fcnt;	/* MCAM entries free count */
+	struct mutex	lock;	 
+	unsigned long	*bmap;		 
+	unsigned long	*bmap_reverse;	 
+	u16	bmap_entries;	 
+	u16	bmap_fcnt;	 
 	u16	*entry2pfvf_map;
 	u16	*entry2cntr_map;
 	u16	*cntr2pfvf_map;
 	u16	*cntr_refcnt;
 	u16	*entry2target_pffunc;
-	u8	keysize;	/* MCAM keysize 112/224/448 bits */
-	u8	banks;		/* Number of MCAM banks */
-	u8	banks_per_entry;/* Number of keywords in key */
-	u16	banksize;	/* Number of MCAM entries in each bank */
-	u16	total_entries;	/* Total number of MCAM entries */
-	u16	nixlf_offset;	/* Offset of nixlf rsvd uncast entries */
-	u16	pf_offset;	/* Offset of PF's rsvd bcast, promisc entries */
+	u8	keysize;	 
+	u8	banks;		 
+	u8	banks_per_entry; 
+	u16	banksize;	 
+	u16	total_entries;	 
+	u16	nixlf_offset;	 
+	u16	pf_offset;	 
 	u16	lprio_count;
 	u16	lprio_start;
 	u16	hprio_count;
 	u16	hprio_end;
-	u16     rx_miss_act_cntr; /* Counter for RX MISS action */
-	/* fields present in the generated key */
+	u16     rx_miss_act_cntr;  
+	 
 	struct npc_key_field	tx_key_fields[NPC_KEY_FIELDS_MAX];
 	struct npc_key_field	rx_key_fields[NPC_KEY_FIELDS_MAX];
 	u64	tx_features;
@@ -191,10 +176,10 @@ struct npc_mcam {
 	struct list_head mcam_rules;
 };
 
-/* Structure for per RVU func info ie PF/VF */
+ 
 struct rvu_pfvf {
-	bool		npalf; /* Only one NPALF per RVU_FUNC */
-	bool		nixlf; /* Only one NIXLF per RVU_FUNC */
+	bool		npalf;  
+	bool		nixlf;  
 	u16		sso;
 	u16		ssow;
 	u16		cptlfs;
@@ -202,19 +187,19 @@ struct rvu_pfvf {
 	u16		cpt1_lfs;
 	u8		cgx_lmac;
 
-	/* Block LF's MSIX vector info */
-	struct rsrc_bmap msix;      /* Bitmap for MSIX vector alloc */
+	 
+	struct rsrc_bmap msix;       
 #define MSIX_BLKLF(blkaddr, lf) (((blkaddr) << 8) | ((lf) & 0xFF))
-	u16		 *msix_lfmap; /* Vector to block LF mapping */
+	u16		 *msix_lfmap;  
 
-	/* NPA contexts */
+	 
 	struct qmem	*aura_ctx;
 	struct qmem	*pool_ctx;
 	struct qmem	*npa_qints_ctx;
 	unsigned long	*aura_bmap;
 	unsigned long	*pool_bmap;
 
-	/* NIX contexts */
+	 
 	struct qmem	*rq_ctx;
 	struct qmem	*sq_ctx;
 	struct qmem	*cq_ctx;
@@ -227,16 +212,16 @@ struct rvu_pfvf {
 
 	u16		rx_chan_base;
 	u16		tx_chan_base;
-	u8              rx_chan_cnt; /* total number of RX channels */
-	u8              tx_chan_cnt; /* total number of TX channels */
+	u8              rx_chan_cnt;  
+	u8              tx_chan_cnt;  
 	u16		maxlen;
 	u16		minlen;
 
-	bool		hw_rx_tstamp_en; /* Is rx_tstamp enabled */
-	u8		mac_addr[ETH_ALEN]; /* MAC address of this PF/VF */
-	u8		default_mac[ETH_ALEN]; /* MAC address from FWdata */
+	bool		hw_rx_tstamp_en;  
+	u8		mac_addr[ETH_ALEN];  
+	u8		default_mac[ETH_ALEN];  
 
-	/* Broadcast/Multicast/Promisc pkt replication info */
+	 
 	u16			bcast_mce_idx;
 	u16			mcast_mce_idx;
 	u16			promisc_mce_idx;
@@ -247,16 +232,16 @@ struct rvu_pfvf {
 
 	struct rvu_npc_mcam_rule *def_ucast_rule;
 
-	bool	cgx_in_use; /* this PF/VF using CGX? */
-	int	cgx_users;  /* number of cgx users - used only by PFs */
+	bool	cgx_in_use;  
+	int	cgx_users;   
 
 	int     intf_mode;
-	u8	nix_blkaddr; /* BLKADDR_NIX0/1 assigned to this PF */
-	u8	nix_rx_intf; /* NIX0_RX/NIX1_RX interface to NPC */
-	u8	nix_tx_intf; /* NIX0_TX/NIX1_TX interface to NPC */
-	u8	lbkid;	     /* NIX0/1 lbk link ID */
-	u64     lmt_base_addr; /* Preseving the pcifunc's lmtst base addr*/
-	u64     lmt_map_ent_w1; /* Preseving the word1 of lmtst map table entry*/
+	u8	nix_blkaddr;  
+	u8	nix_rx_intf;  
+	u8	nix_tx_intf;  
+	u8	lbkid;	      
+	u64     lmt_base_addr;  
+	u64     lmt_map_ent_w1;  
 	unsigned long flags;
 	struct  sdp_node_info *sdp_info;
 };
@@ -288,7 +273,7 @@ struct nix_mark_format {
 	u32 *cfg;
 };
 
-/* smq(flush) to tl1 cir/pir info */
+ 
 struct nix_smq_tree_ctx {
 	u64 cir_off;
 	u64 cir_val;
@@ -296,7 +281,7 @@ struct nix_smq_tree_ctx {
 	u64 pir_val;
 };
 
-/* smq flush context */
+ 
 struct nix_smq_flush_ctx {
 	int smq;
 	u16 tl1_schq;
@@ -324,7 +309,7 @@ struct nix_txvlan {
 #define NIX_TX_VTAG_DEF_MAX 0x400
 	struct rsrc_bmap rsrc;
 	u16 *entry2pfvf_map;
-	struct mutex rsrc_lock; /* Serialize resource alloc/free */
+	struct mutex rsrc_lock;  
 };
 
 struct nix_ipolicer {
@@ -337,7 +322,7 @@ struct nix_ipolicer {
 struct nix_hw {
 	int blkaddr;
 	struct rvu *rvu;
-	struct nix_txsch txsch[NIX_TXSCH_LVL_CNT]; /* Tx schedulers */
+	struct nix_txsch txsch[NIX_TXSCH_LVL_CNT];  
 	struct nix_mcast mcast;
 	struct nix_flowkey flowkey;
 	struct nix_mark_format mark_format;
@@ -348,54 +333,52 @@ struct nix_hw {
 	u8	cc_mcs_cnt;
 };
 
-/* RVU block's capabilities or functionality,
- * which vary by silicon version/skew.
- */
+ 
 struct hw_cap {
-	/* Transmit side supported functionality */
-	u8	nix_tx_aggr_lvl; /* Tx link's traffic aggregation level */
-	u16	nix_txsch_per_cgx_lmac; /* Max Q's transmitting to CGX LMAC */
-	u16	nix_txsch_per_lbk_lmac; /* Max Q's transmitting to LBK LMAC */
-	u16	nix_txsch_per_sdp_lmac; /* Max Q's transmitting to SDP LMAC */
-	bool	nix_fixed_txschq_mapping; /* Schq mapping fixed or flexible */
-	bool	nix_shaping;		 /* Is shaping and coloring supported */
-	bool    nix_shaper_toggle_wait; /* Shaping toggle needs poll/wait */
-	bool	nix_tx_link_bp;		 /* Can link backpressure TL queues ? */
-	bool	nix_rx_multicast;	 /* Rx packet replication support */
-	bool	nix_common_dwrr_mtu;	 /* Common DWRR MTU for quantum config */
-	bool	per_pf_mbox_regs; /* PF mbox specified in per PF registers ? */
-	bool	programmable_chans; /* Channels programmable ? */
+	 
+	u8	nix_tx_aggr_lvl;  
+	u16	nix_txsch_per_cgx_lmac;  
+	u16	nix_txsch_per_lbk_lmac;  
+	u16	nix_txsch_per_sdp_lmac;  
+	bool	nix_fixed_txschq_mapping;  
+	bool	nix_shaping;		  
+	bool    nix_shaper_toggle_wait;  
+	bool	nix_tx_link_bp;		  
+	bool	nix_rx_multicast;	  
+	bool	nix_common_dwrr_mtu;	  
+	bool	per_pf_mbox_regs;  
+	bool	programmable_chans;  
 	bool	ipolicer;
-	bool	nix_multiple_dwrr_mtu;   /* Multiple DWRR_MTU to choose from */
-	bool	npc_hash_extract; /* Hash extract enabled ? */
-	bool	npc_exact_match_enabled; /* Exact match supported ? */
+	bool	nix_multiple_dwrr_mtu;    
+	bool	npc_hash_extract;  
+	bool	npc_exact_match_enabled;  
 };
 
 struct rvu_hwinfo {
-	u8	total_pfs;   /* MAX RVU PFs HW supports */
-	u16	total_vfs;   /* Max RVU VFs HW supports */
-	u16	max_vfs_per_pf; /* Max VFs that can be attached to a PF */
+	u8	total_pfs;    
+	u16	total_vfs;    
+	u16	max_vfs_per_pf;  
 	u8	cgx;
 	u8	lmac_per_cgx;
-	u16	cgx_chan_base;	/* CGX base channel number */
-	u16	lbk_chan_base;	/* LBK base channel number */
-	u16	sdp_chan_base;	/* SDP base channel number */
-	u16	cpt_chan_base;	/* CPT base channel number */
+	u16	cgx_chan_base;	 
+	u16	lbk_chan_base;	 
+	u16	sdp_chan_base;	 
+	u16	cpt_chan_base;	 
 	u8	cgx_links;
 	u8	lbk_links;
 	u8	sdp_links;
-	u8	cpt_links;	/* Number of CPT links */
-	u8	npc_kpus;          /* No of parser units */
-	u8	npc_pkinds;        /* No of port kinds */
-	u8	npc_intfs;         /* No of interfaces */
-	u8	npc_kpu_entries;   /* No of KPU entries */
-	u16	npc_counters;	   /* No of match stats counters */
-	u32	lbk_bufsize;	   /* FIFO size supported by LBK */
-	bool	npc_ext_set;	   /* Extended register set */
-	u64     npc_stat_ena;      /* Match stats enable bit */
+	u8	cpt_links;	 
+	u8	npc_kpus;           
+	u8	npc_pkinds;         
+	u8	npc_intfs;          
+	u8	npc_kpu_entries;    
+	u16	npc_counters;	    
+	u32	lbk_bufsize;	    
+	bool	npc_ext_set;	    
+	u64     npc_stat_ena;       
 
 	struct hw_cap    cap;
-	struct rvu_block block[BLK_COUNT]; /* Block info */
+	struct rvu_block block[BLK_COUNT];  
 	struct nix_hw    *nix;
 	struct rvu	 *rvu;
 	struct npc_pkind pkind;
@@ -414,12 +397,12 @@ struct mbox_wq_info {
 };
 
 struct rvu_fwdata {
-#define RVU_FWDATA_HEADER_MAGIC	0xCFDA	/* Custom Firmware Data*/
+#define RVU_FWDATA_HEADER_MAGIC	0xCFDA	 
 #define RVU_FWDATA_VERSION	0x0001
 	u32 header_magic;
-	u32 version;		/* version id */
+	u32 version;		 
 
-	/* MAC address */
+	 
 #define PF_MACNUM_MAX	32
 #define VF_MACNUM_MAX	256
 	u64 pf_macs[PF_MACNUM_MAX];
@@ -442,20 +425,18 @@ struct rvu_fwdata {
 		struct cgx_lmac_fwdata_s
 			cgx_fw_data_usx[CGX_MAX][CGX_LMACS_USX];
 	};
-	/* Do not add new fields below this line */
+	 
 };
 
 struct ptp;
 
-/* KPU profile adapter structure gathering all KPU configuration data and abstracting out the
- * source where it came from.
- */
+ 
 struct npc_kpu_profile_adapter {
 	const char			*name;
 	u64				version;
 	const struct npc_lt_def_cfg	*lt_def;
-	const struct npc_kpu_profile_action	*ikpu; /* array[pkinds] */
-	const struct npc_kpu_profile	*kpu; /* array[kpus] */
+	const struct npc_kpu_profile_action	*ikpu;  
+	const struct npc_kpu_profile	*kpu;  
 	struct npc_mcam_kex		*mkex;
 	struct npc_mcam_kex_hash	*mkex_hash;
 	bool				custom;
@@ -466,7 +447,7 @@ struct npc_kpu_profile_adapter {
 #define RVU_SWITCH_LBK_CHAN	63
 
 struct rvu_switch {
-	struct mutex switch_lock; /* Serialize flow installation */
+	struct mutex switch_lock;  
 	u32 used_entries;
 	u16 *entry2pcifunc;
 	u16 mode;
@@ -481,54 +462,52 @@ struct rvu {
 	struct rvu_hwinfo       *hw;
 	struct rvu_pfvf		*pf;
 	struct rvu_pfvf		*hwvf;
-	struct mutex		rsrc_lock; /* Serialize resource alloc/free */
-	struct mutex		alias_lock; /* Serialize bar2 alias access */
-	int			vfs; /* Number of VFs attached to RVU */
+	struct mutex		rsrc_lock;  
+	struct mutex		alias_lock;  
+	int			vfs;  
 	int			nix_blkaddr[MAX_NIX_BLKS];
 
-	/* Mbox */
+	 
 	struct mbox_wq_info	afpf_wq_info;
 	struct mbox_wq_info	afvf_wq_info;
 
-	/* PF FLR */
+	 
 	struct rvu_work		*flr_wrk;
 	struct workqueue_struct *flr_wq;
-	struct mutex		flr_lock; /* Serialize FLRs */
+	struct mutex		flr_lock;  
 
-	/* MSI-X */
+	 
 	u16			num_vec;
 	char			*irq_name;
 	bool			*irq_allocated;
 	dma_addr_t		msix_base_iova;
-	u64			msixtr_base_phy; /* Register reset value */
+	u64			msixtr_base_phy;  
 
-	/* CGX */
-#define PF_CGXMAP_BASE		1 /* PF 0 is reserved for RVU PF */
-	u16			cgx_mapped_vfs; /* maximum CGX mapped VFs */
+	 
+#define PF_CGXMAP_BASE		1  
+	u16			cgx_mapped_vfs;  
 	u8			cgx_mapped_pfs;
-	u8			cgx_cnt_max;	 /* CGX port count max */
-	u8			*pf2cgxlmac_map; /* pf to cgx_lmac map */
-	u64			*cgxlmac2pf_map; /* bitmap of mapped pfs for
-						  * every cgx lmac port
-						  */
-	unsigned long		pf_notify_bmap; /* Flags for PF notification */
-	void			**cgx_idmap; /* cgx id to cgx data map table */
+	u8			cgx_cnt_max;	  
+	u8			*pf2cgxlmac_map;  
+	u64			*cgxlmac2pf_map;  
+	unsigned long		pf_notify_bmap;  
+	void			**cgx_idmap;  
 	struct			work_struct cgx_evh_work;
 	struct			workqueue_struct *cgx_evh_wq;
-	spinlock_t		cgx_evq_lock; /* cgx event queue lock */
-	struct list_head	cgx_evq_head; /* cgx event queue head */
-	struct mutex		cgx_cfg_lock; /* serialize cgx configuration */
+	spinlock_t		cgx_evq_lock;  
+	struct list_head	cgx_evq_head;  
+	struct mutex		cgx_cfg_lock;  
 
-	char mkex_pfl_name[MKEX_NAME_LEN]; /* Configured MKEX profile name */
-	char kpu_pfl_name[KPU_NAME_LEN]; /* Configured KPU profile name */
+	char mkex_pfl_name[MKEX_NAME_LEN];  
+	char kpu_pfl_name[KPU_NAME_LEN];  
 
-	/* Firmware data */
+	 
 	struct rvu_fwdata	*fwdata;
 	void			*kpu_fwdata;
 	size_t			kpu_fwdata_sz;
 	void __iomem		*kpu_prfl_addr;
 
-	/* NPC KPU data */
+	 
 	struct npc_kpu_profile_adapter kpu;
 
 	struct ptp		*ptp;
@@ -541,15 +520,15 @@ struct rvu {
 #endif
 	struct rvu_devlink	*rvu_dl;
 
-	/* RVU switch implementation over NPC with DMAC rules */
+	 
 	struct rvu_switch	rswitch;
 
 	struct			work_struct mcs_intr_work;
 	struct			workqueue_struct *mcs_intr_wq;
 	struct list_head	mcs_intrq_head;
-	/* mcs interrupt queue lock */
+	 
 	spinlock_t		mcs_intrq_lock;
-	/* CPT interrupt lock */
+	 
 	spinlock_t		cpt_intr_lock;
 };
 
@@ -575,20 +554,18 @@ static inline u64 rvupf_read64(struct rvu *rvu, u64 offset)
 
 static inline void rvu_bar2_sel_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
 {
-	/* HW requires read back of RVU_AF_BAR2_SEL register to make sure completion of
-	 * write operation.
-	 */
+	 
 	rvu_write64(rvu, block, offset, val);
 	rvu_read64(rvu, block, offset);
-	/* Barrier to ensure read completes before accessing LF registers */
+	 
 	mb();
 }
 
-/* Silicon revisions */
+ 
 static inline bool is_rvu_pre_96xx_C0(struct rvu *rvu)
 {
 	struct pci_dev *pdev = rvu->pdev;
-	/* 96XX A0/B0, 95XX A0/A1/B0 chips */
+	 
 	return ((pdev->revision == 0x00) || (pdev->revision == 0x01) ||
 		(pdev->revision == 0x10) || (pdev->revision == 0x11) ||
 		(pdev->revision == 0x14));
@@ -615,10 +592,7 @@ static inline bool is_rvu_95xx_A0(struct rvu *rvu)
 	return (pdev->revision == 0x10) || (pdev->revision == 0x11);
 }
 
-/* REVID for PCIe devices.
- * Bits 0..1: minor pass, bit 3..2: major pass
- * bits 7..4: midr id
- */
+ 
 #define PCI_REVISION_ID_96XX		0x00
 #define PCI_REVISION_ID_95XX		0x10
 #define PCI_REVISION_ID_95XXN		0x20
@@ -710,9 +684,7 @@ static inline bool is_rvu_supports_nix1(struct rvu *rvu)
 	return false;
 }
 
-/* Function Prototypes
- * RVU
- */
+ 
 static inline bool is_afvf(u16 pcifunc)
 {
 	return !(pcifunc & ~RVU_PFVF_FUNC_MASK);
@@ -723,7 +695,7 @@ static inline bool is_vf(u16 pcifunc)
 	return !!(pcifunc & RVU_PFVF_FUNC_MASK);
 }
 
-/* check if PF_FUNC is AF */
+ 
 static inline bool is_pffunc_af(u16 pcifunc)
 {
 	return !pcifunc;
@@ -757,7 +729,7 @@ int rvu_get_num_lbk_chans(void);
 int rvu_get_blkaddr_from_slot(struct rvu *rvu, int blktype, u16 pcifunc,
 			      u16 global_slot, u16 *slot_in_block);
 
-/* RVU HW reg validation */
+ 
 enum regmap_block {
 	TXSCHQ_HWREGMAP = 0,
 	MAX_HWREGMAP,
@@ -765,18 +737,18 @@ enum regmap_block {
 
 bool rvu_check_valid_reg(int regmap, int regblk, u64 reg);
 
-/* NPA/NIX AQ APIs */
+ 
 int rvu_aq_alloc(struct rvu *rvu, struct admin_queue **ad_queue,
 		 int qsize, int inst_size, int res_size);
 void rvu_aq_free(struct rvu *rvu, struct admin_queue *aq);
 
-/* SDP APIs */
+ 
 int rvu_sdp_init(struct rvu *rvu);
 bool is_sdp_pfvf(u16 pcifunc);
 bool is_sdp_pf(u16 pcifunc);
 bool is_sdp_vf(u16 pcifunc);
 
-/* CGX APIs */
+ 
 static inline bool is_pf_cgxmapped(struct rvu *rvu, u8 pf)
 {
 	return (pf >= PF_CGXMAP_BASE && pf <= rvu->cgx_mapped_pfs) &&
@@ -810,14 +782,14 @@ int rvu_cgx_nix_cuml_stats(struct rvu *rvu, void *cgxd, int lmac_id, int index,
 			   int rxtxflag, u64 *stat);
 void rvu_cgx_disable_dmac_entries(struct rvu *rvu, u16 pcifunc);
 
-/* NPA APIs */
+ 
 int rvu_npa_init(struct rvu *rvu);
 void rvu_npa_freemem(struct rvu *rvu);
 void rvu_npa_lf_teardown(struct rvu *rvu, u16 pcifunc, int npalf);
 int rvu_npa_aq_enq_inst(struct rvu *rvu, struct npa_aq_enq_req *req,
 			struct npa_aq_enq_rsp *rsp);
 
-/* NIX APIs */
+ 
 bool is_nixlf_attached(struct rvu *rvu, u16 pcifunc);
 int rvu_nix_init(struct rvu *rvu);
 int rvu_nix_reserve_mark_format(struct rvu *rvu, struct nix_hw *nix_hw,
@@ -849,7 +821,7 @@ u32 convert_bytes_to_dwrr_mtu(u32 bytes);
 void rvu_nix_tx_tl2_cfg(struct rvu *rvu, int blkaddr, u16 pcifunc,
 			struct nix_txsch *txsch, bool enable);
 
-/* NPC APIs */
+ 
 void rvu_npc_freemem(struct rvu *rvu);
 int rvu_npc_get_pkind(struct rvu *rvu, u16 pf);
 void rvu_npc_set_pkind(struct rvu *rvu, int pkind, struct rvu_pfvf *pfvf);
@@ -922,7 +894,7 @@ int npc_install_mcam_drop_rule(struct rvu *rvu, int mcam_idx, u16 *counter_idx,
 void npc_mcam_rsrcs_reserve(struct rvu *rvu, int blkaddr, int entry_idx);
 bool npc_is_feature_supported(struct rvu *rvu, u64 features, u8 intf);
 
-/* CPT APIs */
+ 
 int rvu_cpt_register_interrupts(struct rvu *rvu);
 void rvu_cpt_unregister_interrupts(struct rvu *rvu);
 int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf,
@@ -933,14 +905,14 @@ int rvu_cpt_init(struct rvu *rvu);
 #define NDC_AF_BANK_MASK       GENMASK_ULL(7, 0)
 #define NDC_AF_BANK_LINE_MASK  GENMASK_ULL(31, 16)
 
-/* CN10K RVU */
+ 
 int rvu_set_channels_base(struct rvu *rvu);
 void rvu_program_channels(struct rvu *rvu);
 
-/* CN10K NIX */
+ 
 void rvu_nix_block_cn10k_init(struct rvu *rvu, struct nix_hw *nix_hw);
 
-/* CN10K RVU - LMT*/
+ 
 void rvu_reset_lmt_map_tbl(struct rvu *rvu, u16 pcifunc);
 
 #ifdef CONFIG_DEBUG_FS
@@ -953,7 +925,7 @@ static inline void rvu_dbg_exit(struct rvu *rvu) {}
 
 int rvu_ndc_fix_locked_cacheline(struct rvu *rvu, int blkaddr);
 
-/* RVU Switch */
+ 
 void rvu_switch_enable(struct rvu *rvu);
 void rvu_switch_disable(struct rvu *rvu);
 void rvu_switch_update_rules(struct rvu *rvu, u16 pcifunc);
@@ -963,10 +935,10 @@ int rvu_npc_set_parse_mode(struct rvu *rvu, u16 pcifunc, u64 mode, u8 dir,
 			   u8 shift_dir);
 int rvu_get_hwvf(struct rvu *rvu, int pcifunc);
 
-/* CN10K MCS */
+ 
 int rvu_mcs_init(struct rvu *rvu);
 int rvu_mcs_flr_handler(struct rvu *rvu, u16 pcifunc);
 void rvu_mcs_ptp_cfg(struct rvu *rvu, u8 rpm_id, u8 lmac_id, bool ena);
 void rvu_mcs_exit(struct rvu *rvu);
 
-#endif /* RVU_H */
+#endif  

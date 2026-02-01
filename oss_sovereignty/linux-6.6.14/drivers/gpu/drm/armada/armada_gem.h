@@ -1,22 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Russell King
- */
+ 
+ 
 #ifndef ARMADA_GEM_H
 #define ARMADA_GEM_H
 
 #include <drm/drm_gem.h>
 
-/* GEM */
+ 
 struct armada_gem_object {
 	struct drm_gem_object	obj;
 	void			*addr;
 	phys_addr_t		phys_addr;
 	resource_size_t		dev_addr;
 	bool			mapped;
-	struct drm_mm_node	*linear;	/* for linear backed */
-	struct page		*page;		/* for page backed */
-	struct sg_table		*sgt;		/* for imported */
+	struct drm_mm_node	*linear;	 
+	struct page		*page;		 
+	struct sg_table		*sgt;		 
 	void			(*update)(void *);
 	void			*update_data;
 };

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include "main.h"
@@ -75,7 +74,7 @@ static int rtw8822b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
 		rtw8822bs_efuse_parsing(efuse, map);
 		break;
 	default:
-		/* unsupported now */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -84,16 +83,16 @@ static int rtw8822b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
 
 static void rtw8822b_phy_rfe_init(struct rtw_dev *rtwdev)
 {
-	/* chip top mux */
+	 
 	rtw_write32_mask(rtwdev, 0x64, BIT(29) | BIT(28), 0x3);
 	rtw_write32_mask(rtwdev, 0x4c, BIT(26) | BIT(25), 0x0);
 	rtw_write32_mask(rtwdev, 0x40, BIT(2), 0x1);
 
-	/* from s0 or s1 */
+	 
 	rtw_write32_mask(rtwdev, 0x1990, 0x3f, 0x30);
 	rtw_write32_mask(rtwdev, 0x1990, (BIT(11) | BIT(10)), 0x3);
 
-	/* input or output */
+	 
 	rtw_write32_mask(rtwdev, 0x974, 0x3f, 0x3f);
 	rtw_write32_mask(rtwdev, 0x974, (BIT(11) | BIT(10)), 0x3);
 }
@@ -144,7 +143,7 @@ static void rtw8822b_pwrtrack_init(struct rtw_dev *rtwdev)
 static void rtw8822b_phy_bf_init(struct rtw_dev *rtwdev)
 {
 	rtw_bf_phy_init(rtwdev);
-	/* Grouping bitmap parameters */
+	 
 	rtw_write32(rtwdev, 0x1C94, 0xAFFFAFFF);
 }
 
@@ -154,14 +153,14 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
 	u8 crystal_cap;
 	bool is_tx2_path;
 
-	/* power on BB/RF domain */
+	 
 	rtw_write8_set(rtwdev, REG_SYS_FUNC_EN,
 		       BIT_FEN_BB_RSTB | BIT_FEN_BB_GLB_RST);
 	rtw_write8_set(rtwdev, REG_RF_CTRL,
 		       BIT_RF_EN | BIT_RF_RSTB | BIT_RF_SDM_RSTB);
 	rtw_write32_set(rtwdev, REG_WLRF1, BIT_WLRF1_BBRF_EN);
 
-	/* pre init before header files config */
+	 
 	rtw_write32_clr(rtwdev, REG_RXPSEL, BIT_RX_PSEL_RST);
 
 	rtw_phy_load_tables(rtwdev);
@@ -170,7 +169,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
 	rtw_write32_mask(rtwdev, 0x24, 0x7e000000, crystal_cap);
 	rtw_write32_mask(rtwdev, 0x28, 0x7e, crystal_cap);
 
-	/* post init after header files config */
+	 
 	rtw_write32_set(rtwdev, REG_RXPSEL, BIT_RX_PSEL_RST);
 
 	is_tx2_path = false;
@@ -190,14 +189,14 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
 #define WLAN_SIFS_OFDM_CONT_TX	0xE
 #define WLAN_SIFS_CCK_TRX	0x10
 #define WLAN_SIFS_OFDM_TRX	0x10
-#define WLAN_VO_TXOP_LIMIT	0x186 /* unit : 32us */
-#define WLAN_VI_TXOP_LIMIT	0x3BC /* unit : 32us */
+#define WLAN_VO_TXOP_LIMIT	0x186  
+#define WLAN_VI_TXOP_LIMIT	0x3BC  
 #define WLAN_RDG_NAV		0x05
 #define WLAN_TXOP_NAV		0x1B
 #define WLAN_CCK_RX_TSF		0x30
 #define WLAN_OFDM_RX_TSF	0x30
-#define WLAN_TBTT_PROHIBIT	0x04 /* unit : 32us */
-#define WLAN_TBTT_HOLD_TIME	0x064 /* unit : 32us */
+#define WLAN_TBTT_PROHIBIT	0x04  
+#define WLAN_TBTT_HOLD_TIME	0x064  
 #define WLAN_DRV_EARLY_INT	0x04
 #define WLAN_BCN_DMA_TIME	0x02
 
@@ -240,7 +239,7 @@ static int rtw8822b_mac_init(struct rtw_dev *rtwdev)
 {
 	u32 value32;
 
-	/* protocol configuration */
+	 
 	rtw_write8_clr(rtwdev, REG_SW_AMPDU_BURST_MODE_CTRL, BIT_PRE_TX_CMD);
 	rtw_write8(rtwdev, REG_AMPDU_MAX_TIME_V1, WLAN_AMPDU_MAX_TIME);
 	rtw_write8_set(rtwdev, REG_TX_HANG_CTRL, BIT_EN_EOF_V1);
@@ -254,7 +253,7 @@ static int rtw8822b_mac_init(struct rtw_dev *rtwdev)
 	rtw_write8(rtwdev, REG_FAST_EDCA_VOVI_SETTING + 2, FAST_EDCA_VI_TH);
 	rtw_write8(rtwdev, REG_FAST_EDCA_BEBK_SETTING, FAST_EDCA_BE_TH);
 	rtw_write8(rtwdev, REG_FAST_EDCA_BEBK_SETTING + 2, FAST_EDCA_BK_TH);
-	/* EDCA configuration */
+	 
 	rtw_write8_clr(rtwdev, REG_TIMER0_SRC_SEL, BIT_TSFT_SEL_TIMER0);
 	rtw_write16(rtwdev, REG_TXPAUSE, 0x0000);
 	rtw_write8(rtwdev, REG_SLOT, WLAN_SLOT_TIME);
@@ -264,14 +263,14 @@ static int rtw8822b_mac_init(struct rtw_dev *rtwdev)
 	rtw_write16(rtwdev, REG_EDCA_VI_PARAM + 2, WLAN_VI_TXOP_LIMIT);
 	rtw_write32(rtwdev, REG_RD_NAV_NXT, WLAN_NAV_CFG);
 	rtw_write16(rtwdev, REG_RXTSF_OFFSET_CCK, WLAN_RX_TSF_CFG);
-	/* Set beacon cotnrol - enable TSF and other related functions */
+	 
 	rtw_write8_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
-	/* Set send beacon related registers */
+	 
 	rtw_write32(rtwdev, REG_TBTT_PROHIBIT, WLAN_TBTT_TIME);
 	rtw_write8(rtwdev, REG_DRVERLYINT, WLAN_DRV_EARLY_INT);
 	rtw_write8(rtwdev, REG_BCNDMATIM, WLAN_BCN_DMA_TIME);
 	rtw_write8_clr(rtwdev, REG_TX_PTCL_CTRL + 1, BIT_SIFS_BK_EN >> 8);
-	/* WMAC configuration */
+	 
 	rtw_write32(rtwdev, REG_RXFLTMAP0, WLAN_RX_FILTER0);
 	rtw_write16(rtwdev, REG_RXFLTMAP2, WLAN_RX_FILTER2);
 	rtw_write32(rtwdev, REG_RCR, WLAN_RCR_CFG);
@@ -304,13 +303,13 @@ static void rtw8822b_set_channel_rfe_efem(struct rtw_dev *rtwdev, u8 channel)
 
 	if (hal->antenna_rx == BB_PATH_AB ||
 	    hal->antenna_tx == BB_PATH_AB) {
-		/* 2TX or 2RX */
+		 
 		rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa501);
 	} else if (hal->antenna_rx == hal->antenna_tx) {
-		/* TXA+RXA or TXB+RXB */
+		 
 		rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa500);
 	} else {
-		/* TXB+RXA or TXA+RXB */
+		 
 		rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa005);
 	}
 }
@@ -320,11 +319,11 @@ static void rtw8822b_set_channel_rfe_ifem(struct rtw_dev *rtwdev, u8 channel)
 	struct rtw_hal *hal = &rtwdev->hal;
 
 	if (IS_CH_2G_BAND(channel)) {
-		/* signal source */
+		 
 		rtw_write32s_mask(rtwdev, REG_RFESEL0, 0xffffff, 0x745774);
 		rtw_write32s_mask(rtwdev, REG_RFESEL8, MASKBYTE1, 0x57);
 	} else {
-		/* signal source */
+		 
 		rtw_write32s_mask(rtwdev, REG_RFESEL0, 0xffffff, 0x477547);
 		rtw_write32s_mask(rtwdev, REG_RFESEL8, MASKBYTE1, 0x75);
 	}
@@ -334,13 +333,13 @@ static void rtw8822b_set_channel_rfe_ifem(struct rtw_dev *rtwdev, u8 channel)
 	if (IS_CH_2G_BAND(channel)) {
 		if (hal->antenna_rx == BB_PATH_AB ||
 		    hal->antenna_tx == BB_PATH_AB) {
-			/* 2TX or 2RX */
+			 
 			rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa501);
 		} else if (hal->antenna_rx == hal->antenna_tx) {
-			/* TXA+RXA or TXB+RXB */
+			 
 			rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa500);
 		} else {
-			/* TXB+RXA or TXA+RXB */
+			 
 			rtw_write32s_mask(rtwdev, REG_TRSW, MASKLWORD, 0xa005);
 		}
 	} else {
@@ -363,21 +362,21 @@ struct cca_ccut {
 };
 
 static const struct cca_ccut cca_ifem_ccut = {
-	{0x75C97010, 0x75C97010, 0x75C97010, 0x75C97010}, /*Reg82C*/
-	{0x79a0eaaa, 0x79A0EAAC, 0x79a0eaaa, 0x79a0eaaa}, /*Reg830*/
-	{0x87765541, 0x87746341, 0x87765541, 0x87746341}, /*Reg838*/
+	{0x75C97010, 0x75C97010, 0x75C97010, 0x75C97010},  
+	{0x79a0eaaa, 0x79A0EAAC, 0x79a0eaaa, 0x79a0eaaa},  
+	{0x87765541, 0x87746341, 0x87765541, 0x87746341},  
 };
 
 static const struct cca_ccut cca_efem_ccut = {
-	{0x75B86010, 0x75B76010, 0x75B86010, 0x75B76010}, /*Reg82C*/
-	{0x79A0EAA8, 0x79A0EAAC, 0x79A0EAA8, 0x79a0eaaa}, /*Reg830*/
-	{0x87766451, 0x87766431, 0x87766451, 0x87766431}, /*Reg838*/
+	{0x75B86010, 0x75B76010, 0x75B86010, 0x75B76010},  
+	{0x79A0EAA8, 0x79A0EAAC, 0x79A0EAA8, 0x79a0eaaa},  
+	{0x87766451, 0x87766431, 0x87766451, 0x87766431},  
 };
 
 static const struct cca_ccut cca_ifem_ccut_ext = {
-	{0x75da8010, 0x75da8010, 0x75da8010, 0x75da8010}, /*Reg82C*/
-	{0x79a0eaaa, 0x97A0EAAC, 0x79a0eaaa, 0x79a0eaaa}, /*Reg830*/
-	{0x87765541, 0x86666341, 0x87765561, 0x86666361}, /*Reg838*/
+	{0x75da8010, 0x75da8010, 0x75da8010, 0x75da8010},  
+	{0x79a0eaaa, 0x97A0EAAC, 0x79a0eaaa, 0x79a0eaaa},  
+	{0x87765541, 0x86666341, 0x87765561, 0x86666361},  
 };
 
 static void rtw8822b_get_cca_val(const struct cca_ccut *cca_ccut, u8 col,
@@ -552,7 +551,7 @@ static void rtw8822b_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
 
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_MALSEL, RFBE_MASK, rf_reg_be);
 
-	/* need to set 0xdf[18]=1 before writing RF18 when channel 144 */
+	 
 	if (channel == 144)
 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(18), 0x1);
 	else
@@ -590,17 +589,17 @@ static void rtw8822b_toggle_igi(struct rtw_dev *rtwdev)
 static void rtw8822b_set_channel_rxdfir(struct rtw_dev *rtwdev, u8 bw)
 {
 	if (bw == RTW_CHANNEL_WIDTH_40) {
-		/* RX DFIR for BW40 */
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x1);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x0);
 		rtw_write32s_mask(rtwdev, REG_TXDFIR, BIT(31), 0x0);
 	} else if (bw == RTW_CHANNEL_WIDTH_80) {
-		/* RX DFIR for BW80 */
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x1);
 		rtw_write32s_mask(rtwdev, REG_TXDFIR, BIT(31), 0x0);
 	} else {
-		/* RX DFIR for BW20, BW10 and BW5*/
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x2);
 		rtw_write32s_mask(rtwdev, REG_TXDFIR, BIT(31), 0x1);
@@ -842,7 +841,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
 	s8 min_rx_power = -120;
 	u8 pwdb = GET_PHY_STAT_P0_PWDB(phy_status);
 
-	/* 8822B uses only 1 antenna to RX CCK rates */
+	 
 	pkt_stat->rx_power[RF_PATH_A] = pwdb - 110;
 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
 	pkt_stat->bw = RTW_CHANNEL_WIDTH_20;
@@ -957,10 +956,10 @@ static void rtw8822b_query_rx_desc(struct rtw_dev *rtwdev, u8 *rx_desc,
 	pkt_stat->ppdu_cnt = GET_RX_DESC_PPDU_CNT(rx_desc);
 	pkt_stat->tsf_low = GET_RX_DESC_TSFL(rx_desc);
 
-	/* drv_info_sz is in unit of 8-bytes */
+	 
 	pkt_stat->drv_info_sz *= 8;
 
-	/* c2h cmd pkt's rx/phy status is not interested */
+	 
 	if (pkt_stat->is_c2h)
 		return;
 
@@ -1136,25 +1135,25 @@ static void rtw8822b_phy_calibration(struct rtw_dev *rtwdev)
 
 static void rtw8822b_coex_cfg_init(struct rtw_dev *rtwdev)
 {
-	/* enable TBTT nterrupt */
+	 
 	rtw_write8_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
 
-	/* BT report packet sample rate */
-	/* 0x790[5:0]=0x5 */
+	 
+	 
 	rtw_write8_mask(rtwdev, REG_BT_TDMA_TIME, BIT_MASK_SAMPLE_RATE, 0x5);
 
-	/* enable BT counter statistics */
+	 
 	rtw_write8(rtwdev, REG_BT_STAT_CTRL, 0x1);
 
-	/* enable PTA (3-wire function form BT side) */
+	 
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_BT_PTA_EN);
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_PO_BT_PTA_PINS);
 
-	/* enable PTA (tx/rx signal form WiFi side) */
+	 
 	rtw_write8_set(rtwdev, REG_QUEUE_CTRL, BIT_PTA_WL_TX_EN);
-	/* wl tx signal to PTA not case EDCCA */
+	 
 	rtw_write8_clr(rtwdev, REG_QUEUE_CTRL, BIT_PTA_EDCCA_EN);
-	/* GNT_BT=1 while select both */
+	 
 	rtw_write16_set(rtwdev, REG_BT_COEX_V2, BIT_GNT_BT_POLARITY);
 }
 
@@ -1181,11 +1180,11 @@ static void rtw8822b_coex_cfg_ant_switch(struct rtw_dev *rtwdev,
 	switch (ctrl_type) {
 	default:
 	case COEX_SWITCH_CTRL_BY_BBSW:
-		/* 0x4c[23] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x0);
-		/* 0x4c[24] = 1 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 3, BIT_DPDT_WL_SEL >> 24, 0x1);
-		/* BB SW, DPDT use RFE_ctrl8 and RFE_ctrl9 as ctrl pin */
+		 
 		rtw_write8_mask(rtwdev, REG_RFE_CTRL8, BIT_MASK_RFE_SEL89, 0x77);
 
 		if (pos_type == COEX_SWITCH_TO_WLG_BT) {
@@ -1203,40 +1202,40 @@ static void rtw8822b_coex_cfg_ant_switch(struct rtw_dev *rtwdev,
 		rtw_write8_mask(rtwdev, REG_RFE_INV8, BIT_MASK_RFE_INV89, regval);
 		break;
 	case COEX_SWITCH_CTRL_BY_PTA:
-		/* 0x4c[23] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x0);
-		/* 0x4c[24] = 1 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 3, BIT_DPDT_WL_SEL >> 24, 0x1);
-		/* PTA,  DPDT use RFE_ctrl8 and RFE_ctrl9 as ctrl pin */
+		 
 		rtw_write8_mask(rtwdev, REG_RFE_CTRL8, BIT_MASK_RFE_SEL89, 0x66);
 
 		regval = (!polarity_inverse ? 0x2 : 0x1);
 		rtw_write8_mask(rtwdev, REG_RFE_INV8, BIT_MASK_RFE_INV89, regval);
 		break;
 	case COEX_SWITCH_CTRL_BY_ANTDIV:
-		/* 0x4c[23] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x0);
-		/* 0x4c[24] = 1 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 3, BIT_DPDT_WL_SEL >> 24, 0x1);
 		rtw_write8_mask(rtwdev, REG_RFE_CTRL8, BIT_MASK_RFE_SEL89, 0x88);
 		break;
 	case COEX_SWITCH_CTRL_BY_MAC:
-		/* 0x4c[23] = 1 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x1);
 
 		regval = (!polarity_inverse ? 0x0 : 0x1);
 		rtw_write8_mask(rtwdev, REG_PAD_CTRL1, BIT_SW_DPDT_SEL_DATA, regval);
 		break;
 	case COEX_SWITCH_CTRL_BY_FW:
-		/* 0x4c[23] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x0);
-		/* 0x4c[24] = 1 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 3, BIT_DPDT_WL_SEL >> 24, 0x1);
 		break;
 	case COEX_SWITCH_CTRL_BY_BT:
-		/* 0x4c[23] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 2, BIT_DPDT_SEL_EN >> 16, 0x0);
-		/* 0x4c[24] = 0 */
+		 
 		rtw_write8_mask(rtwdev, REG_LED_CFG + 3, BIT_DPDT_WL_SEL >> 24, 0x0);
 		break;
 	}
@@ -1288,18 +1287,18 @@ static void rtw8822b_coex_cfg_rfe_type(struct rtw_dev *rtwdev)
 	else
 		coex_rfe->ant_switch_with_bt = false;
 
-	/* Ext switch buffer mux */
+	 
 	rtw_write8(rtwdev, REG_RFE_CTRL_E, 0xff);
 	rtw_write8_mask(rtwdev, REG_RFESEL_CTRL + 1, 0x3, 0x0);
 	rtw_write8_mask(rtwdev, REG_RFE_INV16, BIT_RFE_BUF_EN, 0x0);
 
-	/* Disable LTE Coex Function in WiFi side */
+	 
 	rtw_coex_write_indirect_reg(rtwdev, LTE_COEX_CTRL, BIT_LTE_COEX_EN, 0);
 
-	/* BTC_CTT_WL_VS_LTE */
+	 
 	rtw_coex_write_indirect_reg(rtwdev, LTE_WL_TRX_CTRL, MASKLWORD, 0xffff);
 
-	/* BTC_CTT_BT_VS_LTE */
+	 
 	rtw_coex_write_indirect_reg(rtwdev, LTE_BT_TRX_CTRL, MASKLWORD, 0xffff);
 }
 
@@ -1329,7 +1328,7 @@ static void rtw8822b_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 {
 	struct rtw_coex *coex = &rtwdev->coex;
 	struct rtw_coex_dm *coex_dm = &coex->dm;
-	/* WL Rx Low gain on */
+	 
 	static const u32 wl_rx_low_gain_on[] = {
 		0xff000003, 0xbd120003, 0xbe100003, 0xbf080003, 0xbf060003,
 		0xbf050003, 0xbc140003, 0xbb160003, 0xba180003, 0xb91a0003,
@@ -1342,7 +1341,7 @@ static void rtw8822b_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 		0x007e0403
 	};
 
-	/* WL Rx Low gain off */
+	 
 	static const u32 wl_rx_low_gain_off[] = {
 		0xff000003, 0xf4120003, 0xf5100003, 0xf60e0003, 0xf70c0003,
 		0xf80a0003, 0xf3140003, 0xf2160003, 0xf1180003, 0xf01a0003,
@@ -1366,7 +1365,7 @@ static void rtw8822b_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 		for (i = 0; i < ARRAY_SIZE(wl_rx_low_gain_on); i++)
 			rtw_write32(rtwdev, REG_RX_GAIN_EN, wl_rx_low_gain_on[i]);
 
-		/* set Rx filter corner RCK offset */
+		 
 		rtw_write_rf(rtwdev, RF_PATH_A, RF_RCKD, 0x2, 0x1);
 		rtw_write_rf(rtwdev, RF_PATH_A, RF_RCK, 0x3f, 0x3f);
 		rtw_write_rf(rtwdev, RF_PATH_B, RF_RCKD, 0x2, 0x1);
@@ -1376,7 +1375,7 @@ static void rtw8822b_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 		for (i = 0; i < ARRAY_SIZE(wl_rx_low_gain_off); i++)
 			rtw_write32(rtwdev, 0x81c, wl_rx_low_gain_off[i]);
 
-		/* set Rx filter corner RCK offset */
+		 
 		rtw_write_rf(rtwdev, RF_PATH_A, RF_RCK, 0x3f, 0x4);
 		rtw_write_rf(rtwdev, RF_PATH_A, RF_RCKD, 0x2, 0x0);
 		rtw_write_rf(rtwdev, RF_PATH_B, RF_RCK, 0x3f, 0x4);
@@ -1479,14 +1478,14 @@ static void rtw8822b_phy_pwrtrack_path(struct rtw_dev *rtwdev,
 	u8 power_idx_cur, power_idx_last;
 	u8 delta;
 
-	/* 8822B only has one thermal meter at PATH A */
+	 
 	delta = rtw_phy_pwrtrack_get_delta(rtwdev, RF_PATH_A);
 
 	power_idx_last = dm_info->delta_power_index[path];
 	power_idx_cur = rtw_phy_pwrtrack_get_pwridx(rtwdev, swing_table,
 						    path, RF_PATH_A, delta);
 
-	/* if delta of power indexes are the same, just skip */
+	 
 	if (power_idx_cur == power_idx_last)
 		return;
 
@@ -1577,14 +1576,14 @@ static void rtw8822b_adaptivity_init(struct rtw_dev *rtwdev)
 {
 	rtw_phy_set_edcca_th(rtwdev, RTW8822B_EDCCA_MAX, RTW8822B_EDCCA_MAX);
 
-	/* mac edcca state setting */
+	 
 	rtw_write32_clr(rtwdev, REG_TX_PTCL_CTRL, BIT_DIS_EDCCA);
 	rtw_write32_set(rtwdev, REG_RD_CTRL, BIT_EDCCA_MSK_CNTDOWN_EN);
 	rtw_write32_mask(rtwdev, REG_EDCCA_SOURCE, BIT_SOURCE_OPTION,
 			 RTW8822B_EDCCA_SRC_DEF);
 	rtw_write32_mask(rtwdev, REG_EDCCA_POW_MA, BIT_MA_LEVEL, 0);
 
-	/* edcca decision opt */
+	 
 	rtw_write32_set(rtwdev, REG_EDCCA_DECISION, BIT_EDCCA_OPTION);
 }
 
@@ -1610,7 +1609,7 @@ static void rtw8822b_fill_txdesc_checksum(struct rtw_dev *rtwdev,
 					  struct rtw_tx_pkt_info *pkt_info,
 					  u8 *txdesc)
 {
-	size_t words = 32 / 2; /* calculate the first 32 bytes (16 words) */
+	size_t words = 32 / 2;  
 
 	fill_txdesc_checksum_common(txdesc, words);
 }
@@ -2201,137 +2200,137 @@ static struct rtw_chip_ops rtw8822b_ops = {
 	.coex_set_wl_rx_gain	= rtw8822b_coex_cfg_wl_rx_gain,
 };
 
-/* Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_sant_8822b[] = {
-	{0xffffffff, 0xffffffff}, /* case-0 */
+	{0xffffffff, 0xffffffff},  
 	{0x55555555, 0x55555555},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xfafafafa, 0xfafafafa}, /* case-5 */
+	{0xfafafafa, 0xfafafafa},  
 	{0x6a5a5555, 0xaaaaaaaa},
 	{0x6a5a56aa, 0x6a5a56aa},
 	{0x6a5a5a5a, 0x6a5a5a5a},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-10 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0xfafafafa},
 	{0x66555555, 0x5a5a5aaa},
 	{0x66555555, 0x6aaa5aaa},
 	{0x66555555, 0xaaaa5aaa},
-	{0x66555555, 0xaaaaaaaa}, /* case-15 */
+	{0x66555555, 0xaaaaaaaa},  
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x6afa5afa},
 	{0xaaffffaa, 0xfafafafa},
 	{0xaa5555aa, 0x5a5a5a5a},
-	{0xaa5555aa, 0x6a5a5a5a}, /* case-20 */
+	{0xaa5555aa, 0x6a5a5a5a},  
 	{0xaa5555aa, 0xaaaaaaaa},
 	{0xffffffff, 0x5a5a5a5a},
 	{0xffffffff, 0x5a5a5a5a},
 	{0xffffffff, 0x55555555},
-	{0xffffffff, 0x6a5a5aaa}, /* case-25 */
+	{0xffffffff, 0x6a5a5aaa},  
 	{0x55555555, 0x5a5a5a5a},
 	{0x55555555, 0xaaaaaaaa},
 	{0x55555555, 0x6a5a6a5a},
 	{0x66556655, 0x66556655},
-	{0x66556aaa, 0x6a5a6aaa}, /* case-30 */
+	{0x66556aaa, 0x6a5a6aaa},  
 	{0xffffffff, 0x5aaa5aaa},
 	{0x56555555, 0x5a5a5aaa},
 };
 
-/* Non-Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_nsant_8822b[] = {
-	{0xffffffff, 0xffffffff}, /* case-100 */
+	{0xffffffff, 0xffffffff},  
 	{0x55555555, 0x55555555},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xfafafafa, 0xfafafafa}, /* case-105 */
+	{0xfafafafa, 0xfafafafa},  
 	{0x5afa5afa, 0x5afa5afa},
 	{0x55555555, 0xfafafafa},
 	{0x66555555, 0xfafafafa},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-110 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0xaaaaaaaa},
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x5afa5afa},
 	{0xffff55ff, 0xaaaaaaaa},
-	{0xffff55ff, 0xffff55ff}, /* case-115 */
+	{0xffff55ff, 0xffff55ff},  
 	{0xaaffffaa, 0x5afa5afa},
 	{0xaaffffaa, 0xaaaaaaaa},
 	{0xffffffff, 0xfafafafa},
 	{0xffffffff, 0x5afa5afa},
-	{0xffffffff, 0xaaaaaaaa}, /* case-120 */
+	{0xffffffff, 0xaaaaaaaa},  
 	{0x55ff55ff, 0x5afa5afa},
 	{0x55ff55ff, 0xaaaaaaaa},
 	{0x55ff55ff, 0x55ff55ff}
 };
 
-/* Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_sant_8822b[] = {
-	{ {0x00, 0x00, 0x00, 0x00, 0x00} }, /* case-0 */
+	{ {0x00, 0x00, 0x00, 0x00, 0x00} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x11} }, /* case-5 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x3a, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-10 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x08, 0x03, 0x11, 0x14} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-15 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x20, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x50} }, /* case-20 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x4a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x0c, 0x03, 0x10, 0x54} },
 	{ {0x55, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x65, 0x10, 0x03, 0x11, 0x10} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x51} }, /* case-25 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x51} },  
 	{ {0x51, 0x08, 0x03, 0x10, 0x50} },
 	{ {0x61, 0x08, 0x03, 0x11, 0x11} }
 };
 
-/* Non-Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_nsant_8822b[] = {
-	{ {0x00, 0x00, 0x00, 0x00, 0x00} }, /* case-100 */
-	{ {0x61, 0x45, 0x03, 0x11, 0x11} }, /* case-101 */
+	{ {0x00, 0x00, 0x00, 0x00, 0x00} },  
+	{ {0x61, 0x45, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x11} }, /* case-105 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x3a, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-110 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x08, 0x03, 0x11, 0x14} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-115 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x20, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x50} }, /* case-120 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x08, 0x03, 0x10, 0x50} }
 };
 
-/* rssi in percentage % (dbm = % - 100) */
+ 
 static const u8 wl_rssi_step_8822b[] = {60, 50, 44, 30};
 static const u8 bt_rssi_step_8822b[] = {30, 30, 30, 30};
 
-/* wl_tx_dec_power, bt_tx_dec_power, wl_rx_gain, bt_rx_lna_constrain */
+ 
 static const struct coex_rf_para rf_para_tx_8822b[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 16, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 16, false, 7},  
 	{4, 0, true, 1},
 	{3, 6, true, 1},
 	{2, 9, true, 1},
@@ -2339,8 +2338,8 @@ static const struct coex_rf_para rf_para_tx_8822b[] = {
 };
 
 static const struct coex_rf_para rf_para_rx_8822b[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 16, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 16, false, 7},  
 	{4, 0, true, 1},
 	{3, 6, true, 1},
 	{2, 9, true, 1},

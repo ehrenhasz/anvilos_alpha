@@ -1,16 +1,4 @@
-/* Extract X.509 certificate in DER form from PKCS#11 or PEM.
- *
- * Copyright © 2014-2015 Red Hat, Inc. All Rights Reserved.
- * Copyright © 2015      Intel Corporation.
- *
- * Authors: David Howells <dhowells@redhat.com>
- *          David Woodhouse <dwmw2@infradead.org>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1
- * of the licence, or (at your option) any later version.
- */
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,11 +11,7 @@
 #include <openssl/err.h>
 #include <openssl/engine.h>
 
-/*
- * OpenSSL 3.0 deprecates the OpenSSL's ENGINE API.
- *
- * Remove this if/when that API is no longer used
- */
+ 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #define PKEY_ID_PKCS7 2
@@ -116,7 +100,7 @@ int main(int argc, char **argv)
 	cert_dst = argv[2];
 
 	if (!cert_src[0]) {
-		/* Invoked with no input; create empty file */
+		 
 		FILE *f = fopen(cert_dst, "wb");
 		ERR(!f, "%s", cert_dst);
 		fclose(f);

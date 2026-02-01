@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * Allwinner A31 APB0 clock gates driver
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -29,7 +23,7 @@ static const struct gates_data sun8i_a23_apb0_gates __initconst = {
 static const struct of_device_id sun6i_a31_apb0_gates_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun6i-a31-apb0-gates-clk", .data = &sun6i_a31_apb0_gates },
 	{ .compatible = "allwinner,sun8i-a23-apb0-gates-clk", .data = &sun8i_a23_apb0_gates },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int sun6i_a31_apb0_gates_clk_probe(struct platform_device *pdev)
@@ -64,7 +58,7 @@ static int sun6i_a31_apb0_gates_clk_probe(struct platform_device *pdev)
 	if (!clk_data)
 		return -ENOMEM;
 
-	/* Worst-case size approximation and memory allocation */
+	 
 	ngates = find_last_bit(data->mask, SUN6I_APB0_GATES_MAX_SIZE);
 	clk_data->clks = devm_kcalloc(&pdev->dev, (ngates + 1),
 				      sizeof(struct clk *), GFP_KERNEL);

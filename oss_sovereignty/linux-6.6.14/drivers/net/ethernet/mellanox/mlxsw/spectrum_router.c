@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -70,7 +70,7 @@ static const struct rhashtable_params mlxsw_sp_crif_ht_params = {
 };
 
 struct mlxsw_sp_rif {
-	struct mlxsw_sp_crif *crif; /* NULL for underlay RIF */
+	struct mlxsw_sp_crif *crif;  
 	netdevice_tracker dev_tracker;
 	struct list_head neigh_list;
 	struct mlxsw_sp_fid *fid;
@@ -121,8 +121,8 @@ struct mlxsw_sp_rif_subport {
 struct mlxsw_sp_rif_ipip_lb {
 	struct mlxsw_sp_rif common;
 	struct mlxsw_sp_rif_ipip_lb_config lb_config;
-	u16 ul_vr_id;	/* Spectrum-1. */
-	u16 ul_rif_id;	/* Spectrum-2+. */
+	u16 ul_vr_id;	 
+	u16 ul_rif_id;	 
 };
 
 struct mlxsw_sp_rif_params_ipip_lb {
@@ -445,12 +445,7 @@ enum mlxsw_sp_fib_entry_type {
 	MLXSW_SP_FIB_ENTRY_TYPE_BLACKHOLE,
 	MLXSW_SP_FIB_ENTRY_TYPE_UNREACHABLE,
 
-	/* This is a special case of local delivery, where a packet should be
-	 * decapsulated on reception. Note that there is no corresponding ENCAP,
-	 * because that's a type of next hop, not of FIB entry. (There can be
-	 * several next hops in a REMOTE entry, and some of them may be
-	 * encapsulating entries.)
-	 */
+	 
 	MLXSW_SP_FIB_ENTRY_TYPE_IPIP_DECAP,
 	MLXSW_SP_FIB_ENTRY_TYPE_NVE_DECAP,
 };
@@ -477,7 +472,7 @@ struct mlxsw_sp_fib_entry {
 	enum mlxsw_sp_fib_entry_type type;
 	struct list_head nexthop_group_node;
 	struct mlxsw_sp_nexthop_group *nh_group;
-	struct mlxsw_sp_fib_entry_decap decap; /* Valid for decap entries. */
+	struct mlxsw_sp_fib_entry_decap decap;  
 };
 
 struct mlxsw_sp_fib4_entry {
@@ -500,7 +495,7 @@ struct mlxsw_sp_rt6 {
 };
 
 struct mlxsw_sp_lpm_tree {
-	u8 id; /* tree ID */
+	u8 id;  
 	unsigned int ref_count;
 	enum mlxsw_sp_l3proto proto;
 	unsigned long prefix_ref_count[MLXSW_SP_PREFIX_COUNT];
@@ -516,8 +511,8 @@ struct mlxsw_sp_fib {
 };
 
 struct mlxsw_sp_vr {
-	u16 id; /* virtual router ID */
-	u32 tb_id; /* kernel fib table id */
+	u16 id;  
+	u32 tb_id;  
 	unsigned int rif_count;
 	struct mlxsw_sp_fib *fib4;
 	struct mlxsw_sp_fib *fib6;
@@ -701,7 +696,7 @@ static void mlxsw_sp_lpm_tree_put(struct mlxsw_sp *mlxsw_sp,
 		mlxsw_sp_lpm_tree_destroy(mlxsw_sp, lpm_tree);
 }
 
-#define MLXSW_SP_LPM_TREE_MIN 1 /* tree 0 is reserved */
+#define MLXSW_SP_LPM_TREE_MIN 1  
 
 static int mlxsw_sp_lpm_init(struct mlxsw_sp *mlxsw_sp)
 {
@@ -802,7 +797,7 @@ static int mlxsw_sp_vr_lpm_tree_unbind(struct mlxsw_sp *mlxsw_sp,
 {
 	char raltb_pl[MLXSW_REG_RALTB_LEN];
 
-	/* Bind to tree 0 which is default */
+	 
 	mlxsw_reg_raltb_pack(raltb_pl, fib->vr->id,
 			     (enum mlxsw_reg_ralxx_protocol) fib->proto, 0);
 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(raltb), raltb_pl);
@@ -810,7 +805,7 @@ static int mlxsw_sp_vr_lpm_tree_unbind(struct mlxsw_sp *mlxsw_sp,
 
 static u32 mlxsw_sp_fix_tb_id(u32 tb_id)
 {
-	/* For our purpose, squash main, default and local tables into one */
+	 
 	if (tb_id == RT_TABLE_LOCAL || tb_id == RT_TABLE_DEFAULT)
 		tb_id = RT_TABLE_MAIN;
 	return tb_id;
@@ -1053,13 +1048,7 @@ static void mlxsw_sp_router_fib_flush(struct mlxsw_sp *mlxsw_sp);
 
 static void mlxsw_sp_vrs_fini(struct mlxsw_sp *mlxsw_sp)
 {
-	/* At this stage we're guaranteed not to have new incoming
-	 * FIB notifications and the work queue is free from FIBs
-	 * sitting on top of mlxsw netdevs. However, we can still
-	 * have other FIBs queued. Flush the queue before flushing
-	 * the device's tables. No need for locks, as we're the only
-	 * writer.
-	 */
+	 
 	mlxsw_core_flush_owq();
 	mlxsw_sp_router_fib_flush(mlxsw_sp);
 	kfree(mlxsw_sp->router->vrs);
@@ -1243,9 +1232,7 @@ static int mlxsw_sp_ipip_decap_parsing_depth_inc(struct mlxsw_sp *mlxsw_sp,
 
 	ipip_ops = mlxsw_sp->router->ipip_ops_arr[ipipt];
 
-	/* Not all tunnels require to increase the default pasing depth
-	 * (96 bytes).
-	 */
+	 
 	if (ipip_ops->inc_parsing_depth)
 		return mlxsw_sp_parsing_depth_inc(mlxsw_sp);
 
@@ -1297,7 +1284,7 @@ static void mlxsw_sp_fib_entry_decap_fini(struct mlxsw_sp *mlxsw_sp,
 {
 	enum mlxsw_sp_ipip_type ipipt = fib_entry->decap.ipip_entry->ipipt;
 
-	/* Unlink this node from the IPIP entry that it's the decap entry of. */
+	 
 	fib_entry->decap.ipip_entry->decap_fib_entry = NULL;
 	fib_entry->decap.ipip_entry = NULL;
 	mlxsw_sp_ipip_decap_parsing_depth_dec(mlxsw_sp, ipipt);
@@ -1381,7 +1368,7 @@ mlxsw_sp_router_ip2me_fib_entry_find(struct mlxsw_sp *mlxsw_sp, u32 tb_id,
 	return fib_node->fib_entry;
 }
 
-/* Given an IPIP entry, find the corresponding decap route. */
+ 
 static struct mlxsw_sp_fib_entry *
 mlxsw_sp_ipip_entry_find_decap(struct mlxsw_sp *mlxsw_sp,
 			       struct mlxsw_sp_ipip_entry *ipip_entry)
@@ -1476,7 +1463,7 @@ mlxsw_sp_ipip_entry_matches_decap(struct mlxsw_sp *mlxsw_sp,
 						 ul_tb_id, ipip_entry);
 }
 
-/* Given decap parameters, find the corresponding IPIP entry. */
+ 
 static struct mlxsw_sp_ipip_entry *
 mlxsw_sp_ipip_entry_find_by_decap(struct mlxsw_sp *mlxsw_sp, int ul_dev_ifindex,
 				  enum mlxsw_sp_l3proto ul_proto,
@@ -1738,9 +1725,7 @@ static void mlxsw_sp_rif_migrate_destroy(struct mlxsw_sp *mlxsw_sp,
 	if (migrate_nhs)
 		mlxsw_sp_nexthop_rif_update(mlxsw_sp, new_rif);
 
-	/* Plant a mock CRIF so that destroying the old RIF doesn't unoffload
-	 * our nexthops and IPIP tunnels, and doesn't sever the crif->rif link.
-	 */
+	 
 	mlxsw_sp_crif_init(&mock_crif, crif->key.dev);
 	old_rif->crif = &mock_crif;
 	mock_crif.rif = old_rif;
@@ -1769,19 +1754,7 @@ mlxsw_sp_ipip_entry_ol_lb_update(struct mlxsw_sp *mlxsw_sp,
 	return 0;
 }
 
-/**
- * __mlxsw_sp_ipip_entry_update_tunnel - Update offload related to IPIP entry.
- * @mlxsw_sp: mlxsw_sp.
- * @ipip_entry: IPIP entry.
- * @recreate_loopback: Recreates the associated loopback RIF.
- * @keep_encap: Updates next hops that use the tunnel netdevice. This is only
- *              relevant when recreate_loopback is true.
- * @update_nexthops: Updates next hops, keeping the current loopback RIF. This
- *                   is only relevant when recreate_loopback is false.
- * @extack: extack.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int __mlxsw_sp_ipip_entry_update_tunnel(struct mlxsw_sp *mlxsw_sp,
 					struct mlxsw_sp_ipip_entry *ipip_entry,
 					bool recreate_loopback,
@@ -1791,12 +1764,7 @@ int __mlxsw_sp_ipip_entry_update_tunnel(struct mlxsw_sp *mlxsw_sp,
 {
 	int err;
 
-	/* RIFs can't be edited, so to update loopback, we need to destroy and
-	 * recreate it. That creates a window of opportunity where RALUE and
-	 * RATR registers end up referencing a RIF that's already gone. RATRs
-	 * are handled in mlxsw_sp_ipip_entry_ol_lb_update(), and to take care
-	 * of RALUE, demote the decap route back.
-	 */
+	 
 	if (ipip_entry->decap_fib_entry)
 		mlxsw_sp_ipip_entry_demote_decap(mlxsw_sp, ipip_entry);
 
@@ -1841,9 +1809,7 @@ mlxsw_sp_netdevice_ipip_ul_vrf_event(struct mlxsw_sp *mlxsw_sp,
 	enum mlxsw_sp_l3proto ul_proto;
 	union mlxsw_sp_l3addr saddr;
 
-	/* Moving underlay to a different VRF might cause local address
-	 * conflict, and the conflicting tunnels need to be demoted.
-	 */
+	 
 	ul_proto = mlxsw_sp->router->ipip_ops_arr[ipip_entry->ipipt]->ul_proto;
 	saddr = mlxsw_sp_ipip_netdev_saddr(ul_proto, ipip_entry->ol_dev);
 	if (mlxsw_sp_ipip_demote_tunnel_by_saddr(mlxsw_sp, ul_proto,
@@ -1871,10 +1837,7 @@ mlxsw_sp_netdevice_ipip_ul_down_event(struct mlxsw_sp *mlxsw_sp,
 				      struct mlxsw_sp_ipip_entry *ipip_entry,
 				      struct net_device *ul_dev)
 {
-	/* A down underlay device causes encapsulated packets to not be
-	 * forwarded, but decap still works. So refresh next hops without
-	 * touching anything else.
-	 */
+	 
 	return __mlxsw_sp_ipip_entry_update_tunnel(mlxsw_sp, ipip_entry,
 						   false, false, true, NULL);
 }
@@ -1890,13 +1853,10 @@ mlxsw_sp_netdevice_ipip_ol_change_event(struct mlxsw_sp *mlxsw_sp,
 
 	ipip_entry = mlxsw_sp_ipip_entry_find_by_ol_dev(mlxsw_sp, ol_dev);
 	if (!ipip_entry)
-		/* A change might make a tunnel eligible for offloading, but
-		 * that is currently not implemented. What falls to slow path
-		 * stays there.
-		 */
+		 
 		return 0;
 
-	/* A change might make a tunnel not eligible for offloading. */
+	 
 	if (!mlxsw_sp_netdevice_ipip_can_offload(mlxsw_sp, ol_dev,
 						 ipip_entry->ipipt)) {
 		mlxsw_sp_ipip_entry_demote_tunnel(mlxsw_sp, ipip_entry);
@@ -1918,12 +1878,7 @@ void mlxsw_sp_ipip_entry_demote_tunnel(struct mlxsw_sp *mlxsw_sp,
 	mlxsw_sp_ipip_entry_destroy(mlxsw_sp, ipip_entry);
 }
 
-/* The configuration where several tunnels have the same local address in the
- * same underlay table needs special treatment in the HW. That is currently not
- * implemented in the driver. This function finds and demotes the first tunnel
- * with a given source address, except the one passed in the argument
- * `except'.
- */
+ 
 bool
 mlxsw_sp_ipip_demote_tunnel_by_saddr(struct mlxsw_sp *mlxsw_sp,
 				     enum mlxsw_sp_l3proto ul_proto,
@@ -2069,9 +2024,7 @@ mlxsw_sp_netdevice_ipip_ul_event(struct mlxsw_sp *mlxsw_sp,
 					  &mlxsw_sp->router->ipip_list))
 				prev = NULL;
 			else
-				/* This can't be cached from previous iteration,
-				 * because that entry could be gone now.
-				 */
+				 
 				prev = list_prev_entry(ipip_entry,
 						       ipip_list_node);
 			mlxsw_sp_ipip_entry_demote_tunnel(mlxsw_sp, ipip_entry);
@@ -2105,9 +2058,7 @@ int mlxsw_sp_router_nve_promote_decap(struct mlxsw_sp *mlxsw_sp, u32 ul_tb_id,
 	router->nve_decap_config.ul_sip = *ul_sip;
 	router->nve_decap_config.valid = true;
 
-	/* It is valid to create a tunnel with a local IP and only later
-	 * assign this IP address to a local interface
-	 */
+	 
 	fib_entry = mlxsw_sp_router_ip2me_fib_entry_find(mlxsw_sp, ul_tb_id,
 							 ul_proto, ul_sip,
 							 type);
@@ -2183,9 +2134,7 @@ struct mlxsw_sp_neigh_entry {
 	u16 rif;
 	bool connected;
 	unsigned char ha[ETH_ALEN];
-	struct list_head nexthop_list; /* list of nexthops using
-					* this neigh entry
-					*/
+	struct list_head nexthop_list;  
 	struct list_head nexthop_neighs_list_node;
 	unsigned int counter_index;
 	bool counter_valid;
@@ -2481,10 +2430,10 @@ static void mlxsw_sp_router_neigh_rec_ipv4_process(struct mlxsw_sp *mlxsw_sp,
 
 	num_entries = mlxsw_reg_rauhtd_ipv4_rec_num_entries_get(rauhtd_pl,
 								rec_index);
-	/* Hardware starts counting at 0, so add 1. */
+	 
 	num_entries++;
 
-	/* Each record consists of several neighbour entries. */
+	 
 	for (i = 0; i < num_entries; i++) {
 		int ent_index;
 
@@ -2499,7 +2448,7 @@ static void mlxsw_sp_router_neigh_rec_ipv6_process(struct mlxsw_sp *mlxsw_sp,
 						   char *rauhtd_pl,
 						   int rec_index)
 {
-	/* One record contains one entry. */
+	 
 	mlxsw_sp_router_neigh_ent_ipv6_process(mlxsw_sp, rauhtd_pl,
 					       rec_index);
 }
@@ -2547,7 +2496,7 @@ __mlxsw_sp_router_neighs_update_rauhtd(struct mlxsw_sp *mlxsw_sp,
 	int i, num_rec;
 	int err;
 
-	/* Ensure the RIF we read from the device does not change mid-dump. */
+	 
 	mutex_lock(&mlxsw_sp->router->lock);
 	do {
 		mlxsw_reg_rauhtd_pack(rauhtd_pl, type);
@@ -2599,9 +2548,7 @@ static void mlxsw_sp_router_neighs_update_nh(struct mlxsw_sp *mlxsw_sp)
 	mutex_lock(&mlxsw_sp->router->lock);
 	list_for_each_entry(neigh_entry, &mlxsw_sp->router->nexthop_neighs_list,
 			    nexthop_neighs_list_node)
-		/* If this neigh have nexthops, make the kernel think this neigh
-		 * is active regardless of the traffic.
-		 */
+		 
 		neigh_event_send(neigh_entry->key.n, NULL);
 	mutex_unlock(&mlxsw_sp->router->lock);
 }
@@ -2638,12 +2585,7 @@ static void mlxsw_sp_router_probe_unresolved_nexthops(struct work_struct *work)
 
 	router = container_of(work, struct mlxsw_sp_router,
 			      nexthop_probe_dw.work);
-	/* Iterate over nexthop neighbours, find those who are unresolved and
-	 * send arp on them. This solves the chicken-egg problem when
-	 * the nexthop wouldn't get offloaded until the neighbor is resolved
-	 * but it wouldn't get resolved ever in case traffic is flowing in HW
-	 * using different nexthop.
-	 */
+	 
 	mutex_lock(&router->lock);
 	list_for_each_entry(neigh_entry, &router->nexthop_neighs_list,
 			    nexthop_neighs_list_node)
@@ -2704,10 +2646,7 @@ bool mlxsw_sp_neigh_ipv6_ignore(struct mlxsw_sp_neigh_entry *neigh_entry)
 {
 	struct neighbour *n = neigh_entry->key.n;
 
-	/* Packets with a link-local destination address are trapped
-	 * after LPM lookup and never reach the neighbour table, so
-	 * there is no need to program such neighbours to the device.
-	 */
+	 
 	if (ipv6_addr_type((struct in6_addr *) &n->primary_key) &
 	    IPV6_ADDR_LINKLOCAL)
 		return true;
@@ -2777,10 +2716,7 @@ static void mlxsw_sp_router_neigh_event_work(struct work_struct *work)
 	bool entry_connected;
 	u8 nud_state, dead;
 
-	/* If these parameters are changed after we release the lock,
-	 * then we are guaranteed to receive another event letting us
-	 * know about it.
-	 */
+	 
 	read_lock_bh(&n->lock);
 	memcpy(ha, n->ha, ETH_ALEN);
 	nud_state = n->nud_state;
@@ -2880,9 +2816,7 @@ static int mlxsw_sp_router_schedule_neigh_work(struct mlxsw_sp_router *router,
 
 	net = neigh_parms_net(n->parms);
 
-	/* Take a reference to ensure the neighbour won't be destructed until we
-	 * drop the reference in delayed work.
-	 */
+	 
 	neigh_clone(n);
 	return mlxsw_sp_router_schedule_work(net, router, n,
 					     mlxsw_sp_router_neigh_event_work);
@@ -2902,14 +2836,12 @@ static int mlxsw_sp_router_netevent_event(struct notifier_block *nb,
 	case NETEVENT_DELAY_PROBE_TIME_UPDATE:
 		p = ptr;
 
-		/* We don't care about changes in the default table. */
+		 
 		if (!p->dev || (p->tbl->family != AF_INET &&
 				p->tbl->family != AF_INET6))
 			return NOTIFY_DONE;
 
-		/* We are in atomic context and can't take RTNL mutex,
-		 * so use RCU variant to walk the device chain.
-		 */
+		 
 		if (!mlxsw_sp_dev_lower_is_port(p->dev))
 			return NOTIFY_DONE;
 
@@ -2949,12 +2881,10 @@ static int mlxsw_sp_neigh_init(struct mlxsw_sp *mlxsw_sp)
 	if (err)
 		return err;
 
-	/* Initialize the polling interval according to the default
-	 * table.
-	 */
+	 
 	mlxsw_sp_router_neighs_update_interval_init(mlxsw_sp);
 
-	/* Create the delayed works for the activity_update */
+	 
 	INIT_DELAYED_WORK(&mlxsw_sp->router->neighs_update.dw,
 			  mlxsw_sp_router_neighs_update_work);
 	INIT_DELAYED_WORK(&mlxsw_sp->router->nexthop_probe_dw,
@@ -3036,11 +2966,11 @@ enum mlxsw_sp_nexthop_type {
 };
 
 enum mlxsw_sp_nexthop_action {
-	/* Nexthop forwards packets to an egress RIF */
+	 
 	MLXSW_SP_NEXTHOP_ACTION_FORWARD,
-	/* Nexthop discards packets */
+	 
 	MLXSW_SP_NEXTHOP_ACTION_DISCARD,
-	/* Nexthop traps packets */
+	 
 	MLXSW_SP_NEXTHOP_ACTION_TRAP,
 };
 
@@ -3049,12 +2979,10 @@ struct mlxsw_sp_nexthop_key {
 };
 
 struct mlxsw_sp_nexthop {
-	struct list_head neigh_list_node; /* member of neigh entry list */
+	struct list_head neigh_list_node;  
 	struct list_head crif_list_node;
 	struct list_head router_list_node;
-	struct mlxsw_sp_nexthop_group_info *nhgi; /* pointer back to the group
-						   * this nexthop belongs to
-						   */
+	struct mlxsw_sp_nexthop_group_info *nhgi;  
 	struct rhash_head ht_node;
 	struct neigh_table *neigh_tbl;
 	struct mlxsw_sp_nexthop_key key;
@@ -3064,15 +2992,9 @@ struct mlxsw_sp_nexthop {
 	int norm_nh_weight;
 	int num_adj_entries;
 	struct mlxsw_sp_crif *crif;
-	u8 should_offload:1, /* set indicates this nexthop should be written
-			      * to the adjacency table.
-			      */
-	   offloaded:1, /* set indicates this nexthop was written to the
-			 * adjacency table.
-			 */
-	   update:1; /* set indicates this nexthop should be updated in the
-		      * adjacency table (f.e., its MAC changed).
-		      */
+	u8 should_offload:1,  
+	   offloaded:1,  
+	   update:1;  
 	enum mlxsw_sp_nexthop_action action;
 	enum mlxsw_sp_nexthop_type type;
 	union {
@@ -3104,9 +3026,9 @@ struct mlxsw_sp_nexthop_group_info {
 	u16 count;
 	int sum_norm_weight;
 	u8 adj_index_valid:1,
-	   gateway:1, /* routes using the group use a gateway */
+	   gateway:1,  
 	   is_resilient:1;
-	struct list_head list; /* member in nh_res_grp_list */
+	struct list_head list;  
 	struct mlxsw_sp_nexthop nexthops[];
 };
 
@@ -3126,15 +3048,15 @@ struct mlxsw_sp_nexthop_group_vr_key {
 };
 
 struct mlxsw_sp_nexthop_group_vr_entry {
-	struct list_head list; /* member in vr_list */
-	struct rhash_head ht_node; /* member in vr_ht */
+	struct list_head list;  
+	struct rhash_head ht_node;  
 	refcount_t ref_count;
 	struct mlxsw_sp_nexthop_group_vr_key key;
 };
 
 struct mlxsw_sp_nexthop_group {
 	struct rhash_head ht_node;
-	struct list_head fib_list; /* list of fib entries that use this group */
+	struct list_head fib_list;  
 	union {
 		struct {
 			struct fib_info *fi;
@@ -3716,9 +3638,7 @@ static int mlxsw_sp_nexthop_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
 				   struct mlxsw_sp_nexthop *nh, bool force,
 				   char *ratr_pl)
 {
-	/* When action is discard or trap, the nexthop must be
-	 * programmed as an Ethernet nexthop.
-	 */
+	 
 	if (nh->type == MLXSW_SP_NEXTHOP_TYPE_ETH ||
 	    nh->action == MLXSW_SP_NEXTHOP_ACTION_DISCARD ||
 	    nh->action == MLXSW_SP_NEXTHOP_ACTION_TRAP)
@@ -3735,7 +3655,7 @@ mlxsw_sp_nexthop_group_update(struct mlxsw_sp *mlxsw_sp,
 			      bool reallocate)
 {
 	char ratr_pl[MLXSW_REG_RATR_LEN];
-	u32 adj_index = nhgi->adj_index; /* base */
+	u32 adj_index = nhgi->adj_index;  
 	struct mlxsw_sp_nexthop *nh;
 	int i;
 
@@ -3778,11 +3698,11 @@ mlxsw_sp_nexthop_fib_entries_update(struct mlxsw_sp *mlxsw_sp,
 }
 
 struct mlxsw_sp_adj_grp_size_range {
-	u16 start; /* Inclusive */
-	u16 end; /* Inclusive */
+	u16 start;  
+	u16 end;  
 };
 
-/* Ordered by range start value */
+ 
 static const struct mlxsw_sp_adj_grp_size_range
 mlxsw_sp1_adj_grp_size_ranges[] = {
 	{ .start = 1, .end = 64 },
@@ -3792,7 +3712,7 @@ mlxsw_sp1_adj_grp_size_ranges[] = {
 	{ .start = 4096, .end = 4096 },
 };
 
-/* Ordered by range start value */
+ 
 static const struct mlxsw_sp_adj_grp_size_range
 mlxsw_sp2_adj_grp_size_ranges[] = {
 	{ .start = 1, .end = 128 },
@@ -3848,19 +3768,14 @@ static int mlxsw_sp_fix_adj_grp_size(struct mlxsw_sp *mlxsw_sp,
 	unsigned int alloc_size;
 	int err;
 
-	/* Round up the requested group size to the next size supported
-	 * by the device and make sure the request can be satisfied.
-	 */
+	 
 	mlxsw_sp_adj_grp_size_round_up(mlxsw_sp, p_adj_grp_size);
 	err = mlxsw_sp_kvdl_alloc_count_query(mlxsw_sp,
 					      MLXSW_SP_KVDL_ENTRY_TYPE_ADJ,
 					      *p_adj_grp_size, &alloc_size);
 	if (err)
 		return err;
-	/* It is possible the allocation results in more allocated
-	 * entries than requested. Try to use as much of them as
-	 * possible.
-	 */
+	 
 	mlxsw_sp_adj_grp_size_round_down(mlxsw_sp, p_adj_grp_size, alloc_size);
 
 	return 0;
@@ -3959,10 +3874,7 @@ mlxsw_sp_nexthop6_group_offload_refresh(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_fib6_entry *fib6_entry;
 
-	/* Unfortunately, in IPv6 the route and the nexthop are described by
-	 * the same struct, so we need to iterate over all the routes using the
-	 * nexthop group and set / clear the offload indication for them.
-	 */
+	 
 	list_for_each_entry(fib6_entry, &nh_grp->fib_list,
 			    common.nexthop_group_node)
 		__mlxsw_sp_nexthop6_group_offload_refresh(nh_grp, fib6_entry);
@@ -3992,23 +3904,14 @@ mlxsw_sp_nexthop_obj_group_offload_refresh(struct mlxsw_sp *mlxsw_sp,
 {
 	int i;
 
-	/* Do not update the flags if the nexthop group is being destroyed
-	 * since:
-	 * 1. The nexthop objects is being deleted, in which case the flags are
-	 * irrelevant.
-	 * 2. The nexthop group was replaced by a newer group, in which case
-	 * the flags of the nexthop object were already updated based on the
-	 * new group.
-	 */
+	 
 	if (nh_grp->can_destroy)
 		return;
 
 	nexthop_set_hw_flags(mlxsw_sp_net(mlxsw_sp), nh_grp->obj.id,
 			     nh_grp->nhgi->adj_index_valid, false);
 
-	/* Update flags of individual nexthop buckets in case of a resilient
-	 * nexthop group.
-	 */
+	 
 	if (!nh_grp->nhgi->is_resilient)
 		return;
 
@@ -4062,25 +3965,19 @@ mlxsw_sp_nexthop_group_refresh(struct mlxsw_sp *mlxsw_sp,
 		}
 	}
 	if (!offload_change) {
-		/* Nothing was added or removed, so no need to reallocate. Just
-		 * update MAC on existing adjacency indexes.
-		 */
+		 
 		err = mlxsw_sp_nexthop_group_update(mlxsw_sp, nhgi, false);
 		if (err) {
 			dev_warn(mlxsw_sp->bus_info->dev, "Failed to update neigh MAC in adjacency table.\n");
 			goto set_trap;
 		}
-		/* Flags of individual nexthop buckets might need to be
-		 * updated.
-		 */
+		 
 		mlxsw_sp_nexthop_group_offload_refresh(mlxsw_sp, nh_grp);
 		return 0;
 	}
 	mlxsw_sp_nexthop_group_normalize(nhgi);
 	if (!nhgi->sum_norm_weight) {
-		/* No neigh of this group is connected so we just set
-		 * the trap and let everthing flow through kernel.
-		 */
+		 
 		err = 0;
 		goto set_trap;
 	}
@@ -4088,15 +3985,13 @@ mlxsw_sp_nexthop_group_refresh(struct mlxsw_sp *mlxsw_sp,
 	ecmp_size = nhgi->sum_norm_weight;
 	err = mlxsw_sp_fix_adj_grp_size(mlxsw_sp, &ecmp_size);
 	if (err)
-		/* No valid allocation size available. */
+		 
 		goto set_trap;
 
 	err = mlxsw_sp_kvdl_alloc(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ,
 				  ecmp_size, &adj_index);
 	if (err) {
-		/* We ran out of KVD linear space, just set the
-		 * trap and let everything flow through kernel.
-		 */
+		 
 		dev_warn(mlxsw_sp->bus_info->dev, "Failed to allocate KVD linear area for nexthop group.\n");
 		goto set_trap;
 	}
@@ -4116,9 +4011,7 @@ mlxsw_sp_nexthop_group_refresh(struct mlxsw_sp *mlxsw_sp,
 	mlxsw_sp_nexthop_group_offload_refresh(mlxsw_sp, nh_grp);
 
 	if (!old_adj_index_valid) {
-		/* The trap was set for fib entries, so we have to call
-		 * fib entry update to unset it and use adjacency index.
-		 */
+		 
 		err = mlxsw_sp_nexthop_fib_entries_update(mlxsw_sp, nh_grp);
 		if (err) {
 			dev_warn(mlxsw_sp->bus_info->dev, "Failed to add adjacency index to fib entries.\n");
@@ -4286,11 +4179,7 @@ static int mlxsw_sp_nexthop_neigh_init(struct mlxsw_sp *mlxsw_sp,
 		return 0;
 	dev = mlxsw_sp_nexthop_dev(nh);
 
-	/* Take a reference of neigh here ensuring that neigh would
-	 * not be destructed before the nexthop entry is finished.
-	 * The reference is taken either in neigh_lookup() or
-	 * in neigh_create() in case n is not found.
-	 */
+	 
 	n = neigh_lookup(nh->neigh_tbl, &nh->gw_addr, dev);
 	if (!n) {
 		n = neigh_create(nh->neigh_tbl, &nh->gw_addr, dev);
@@ -4307,9 +4196,7 @@ static int mlxsw_sp_nexthop_neigh_init(struct mlxsw_sp *mlxsw_sp,
 		}
 	}
 
-	/* If that is the first nexthop connected to that neigh, add to
-	 * nexthop_neighs_list
-	 */
+	 
 	if (list_empty(&neigh_entry->nexthop_list))
 		list_add_tail(&neigh_entry->nexthop_neighs_list_node,
 			      &mlxsw_sp->router->nexthop_neighs_list);
@@ -4343,9 +4230,7 @@ static void mlxsw_sp_nexthop_neigh_fini(struct mlxsw_sp *mlxsw_sp,
 	list_del(&nh->neigh_list_node);
 	nh->neigh_entry = NULL;
 
-	/* If that is the last nexthop connected to that neigh, remove from
-	 * nexthop_neighs_list
-	 */
+	 
 	if (list_empty(&neigh_entry->nexthop_list))
 		list_del(&neigh_entry->nexthop_neighs_list_node);
 
@@ -4721,7 +4606,7 @@ out:
 	kfree(ratrad_pl);
 }
 
-#define MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL 1000 /* ms */
+#define MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL 1000  
 
 static void
 mlxsw_sp_nh_grp_activity_update(struct mlxsw_sp *mlxsw_sp,
@@ -4800,9 +4685,7 @@ mlxsw_sp_nexthop_obj_group_entry_validate(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		return err;
 
-	/* Device only nexthops with an IPIP device are programmed as
-	 * encapsulating adjacency entries.
-	 */
+	 
 	if (!nh->gw_family && !nh->is_reject &&
 	    !mlxsw_sp_netdev_ipip_type(mlxsw_sp, nh->dev, NULL)) {
 		NL_SET_ERR_MSG_MOD(extack, "Nexthop group entry does not have a gateway");
@@ -4954,7 +4837,7 @@ static bool mlxsw_sp_nexthop_obj_is_gateway(struct mlxsw_sp *mlxsw_sp,
 		       mlxsw_sp_netdev_ipip_type(mlxsw_sp, dev, NULL);
 	case NH_NOTIFIER_INFO_TYPE_GRP:
 	case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
-		/* Already validated earlier. */
+		 
 		return true;
 	default:
 		return false;
@@ -4966,10 +4849,7 @@ static void mlxsw_sp_nexthop_obj_blackhole_init(struct mlxsw_sp *mlxsw_sp,
 {
 	nh->action = MLXSW_SP_NEXTHOP_ACTION_DISCARD;
 	nh->should_offload = 1;
-	/* While nexthops that discard packets do not forward packets
-	 * via an egress RIF, they still need to be programmed using a
-	 * valid RIF, so use the loopback RIF created during init.
-	 */
+	 
 	nh->crif = mlxsw_sp->router->lb_crif;
 }
 
@@ -5016,10 +4896,7 @@ mlxsw_sp_nexthop_obj_init(struct mlxsw_sp *mlxsw_sp,
 	if (nh_obj->is_reject)
 		mlxsw_sp_nexthop_obj_blackhole_init(mlxsw_sp, nh);
 
-	/* In a resilient nexthop group, all the nexthops must be written to
-	 * the adjacency table. Even if they do not have a valid neighbour or
-	 * RIF.
-	 */
+	 
 	if (nh_grp->nhgi->is_resilient && !nh->should_offload) {
 		nh->action = MLXSW_SP_NEXTHOP_ACTION_TRAP;
 		nh->should_offload = 1;
@@ -5114,9 +4991,7 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
 		goto err_group_refresh;
 	}
 
-	/* Add resilient nexthop groups to a list so that the activity of their
-	 * nexthop buckets will be periodically queried and cleared.
-	 */
+	 
 	if (nhgi->is_resilient) {
 		if (list_empty(&mlxsw_sp->router->nh_res_grp_list))
 			mlxsw_sp_nh_grp_activity_work_schedule(mlxsw_sp);
@@ -5244,10 +5119,7 @@ mlxsw_sp_nexthop_obj_group_replace(struct mlxsw_sp *mlxsw_sp,
 	old_nhgi->nh_grp = nh_grp;
 
 	if (old_nhgi->adj_index_valid && new_nhgi->adj_index_valid) {
-		/* Both the old adjacency index and the new one are valid.
-		 * Routes are currently using the old one. Tell the device to
-		 * replace the old adjacency index with the new one.
-		 */
+		 
 		err = mlxsw_sp_adj_index_mass_update(mlxsw_sp, old_nh_grp,
 						     old_nhgi->adj_index,
 						     old_nhgi->ecmp_size);
@@ -5256,20 +5128,14 @@ mlxsw_sp_nexthop_obj_group_replace(struct mlxsw_sp *mlxsw_sp,
 			goto err_out;
 		}
 	} else if (old_nhgi->adj_index_valid && !new_nhgi->adj_index_valid) {
-		/* The old adjacency index is valid, while the new one is not.
-		 * Iterate over all the routes using the group and change them
-		 * to trap packets to the CPU.
-		 */
+		 
 		err = mlxsw_sp_nexthop_fib_entries_update(mlxsw_sp, old_nh_grp);
 		if (err) {
 			NL_SET_ERR_MSG_MOD(extack, "Failed to update routes to trap packets");
 			goto err_out;
 		}
 	} else if (!old_nhgi->adj_index_valid && new_nhgi->adj_index_valid) {
-		/* The old adjacency index is invalid, while the new one is.
-		 * Iterate over all the routes using the group and change them
-		 * to forward packets using the new valid index.
-		 */
+		 
 		err = mlxsw_sp_nexthop_fib_entries_update(mlxsw_sp, old_nh_grp);
 		if (err) {
 			NL_SET_ERR_MSG_MOD(extack, "Failed to update routes to forward packets");
@@ -5277,15 +5143,10 @@ mlxsw_sp_nexthop_obj_group_replace(struct mlxsw_sp *mlxsw_sp,
 		}
 	}
 
-	/* Make sure the flags are set / cleared based on the new nexthop group
-	 * information.
-	 */
+	 
 	mlxsw_sp_nexthop_obj_group_offload_refresh(mlxsw_sp, old_nh_grp);
 
-	/* At this point 'nh_grp' is just a shell that is not used by anyone
-	 * and its nexthop group info is the old info that was just replaced
-	 * with the new one. Remove it.
-	 */
+	 
 	nh_grp->can_destroy = true;
 	mlxsw_sp_nexthop_obj_group_destroy(mlxsw_sp, nh_grp);
 
@@ -5337,9 +5198,7 @@ static void mlxsw_sp_nexthop_obj_del(struct mlxsw_sp *mlxsw_sp,
 	nh_grp->can_destroy = true;
 	mlxsw_sp_nexthop_group_remove(mlxsw_sp, nh_grp);
 
-	/* If the group still has routes using it, then defer the delete
-	 * operation until the last route using it is deleted.
-	 */
+	 
 	if (!list_empty(&nh_grp->fib_list))
 		return;
 	mlxsw_sp_nexthop_obj_group_destroy(mlxsw_sp, nh_grp);
@@ -5358,17 +5217,13 @@ static int mlxsw_sp_nexthop_obj_bucket_query(struct mlxsw_sp *mlxsw_sp,
 
 static int mlxsw_sp_nexthop_obj_bucket_compare(char *ratr_pl, char *ratr_pl_new)
 {
-	/* Clear the opcode and activity on both the old and new payload as
-	 * they are irrelevant for the comparison.
-	 */
+	 
 	mlxsw_reg_ratr_op_set(ratr_pl, MLXSW_REG_RATR_OP_QUERY_READ);
 	mlxsw_reg_ratr_a_set(ratr_pl, 0);
 	mlxsw_reg_ratr_op_set(ratr_pl_new, MLXSW_REG_RATR_OP_QUERY_READ);
 	mlxsw_reg_ratr_a_set(ratr_pl_new, 0);
 
-	/* If the contents of the adjacency entry are consistent with the
-	 * replacement request, then replacement was successful.
-	 */
+	 
 	if (!memcmp(ratr_pl, ratr_pl_new, MLXSW_REG_RATR_LEN))
 		return 0;
 
@@ -5388,9 +5243,7 @@ mlxsw_sp_nexthop_obj_bucket_adj_update(struct mlxsw_sp *mlxsw_sp,
 	u32 adj_index;
 	int err;
 
-	/* No point in trying an atomic replacement if the idle timer interval
-	 * is smaller than the interval in which we query and clear activity.
-	 */
+	 
 	if (!force && info->nh_res_bucket->idle_timer_ms <
 	    MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL)
 		force = true;
@@ -5469,7 +5322,7 @@ err_nexthop_obj_bucket_adj_update:
 err_nexthop_obj_init:
 	nh_obj = &info->nh_res_bucket->old_nh;
 	mlxsw_sp_nexthop_obj_init(mlxsw_sp, nh_grp, nh, nh_obj, 1);
-	/* The old adjacency entry was not overwritten */
+	 
 	nh->update = 0;
 	nh->offloaded = 1;
 	return err;
@@ -5815,9 +5668,7 @@ mlxsw_sp_fib6_offload_failed_flag_set(struct mlxsw_sp *mlxsw_sp,
 {
 	int i;
 
-	/* In IPv6 a multipath route is represented using multiple routes, so
-	 * we need to set the flags on all of them.
-	 */
+	 
 	for (i = 0; i < nrt6; i++)
 		fib6_info_hw_flags_set(mlxsw_sp_net(mlxsw_sp), rt_arr[i],
 				       false, false, true);
@@ -5842,9 +5693,7 @@ mlxsw_sp_fib6_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
 
 	should_offload = mlxsw_sp_fib_entry_should_offload(fib_entry);
 
-	/* In IPv6 a multipath route is represented using multiple routes, so
-	 * we need to set the flags on all of them.
-	 */
+	 
 	fib6_entry = container_of(fib_entry, struct mlxsw_sp_fib6_entry,
 				  common);
 	list_for_each_entry(mlxsw_sp_rt6, &fib6_entry->rt6_list, list)
@@ -5964,10 +5813,7 @@ static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
 	u32 adjacency_index = 0;
 	u16 ecmp_size = 0;
 
-	/* In case the nexthop group adjacency index is valid, use it
-	 * with provided ECMP size. Otherwise, setup trap and pass
-	 * traffic to kernel.
-	 */
+	 
 	if (mlxsw_sp_fib_entry_should_offload(fib_entry)) {
 		trap_action = MLXSW_REG_RALUE_TRAP_ACTION_NOP;
 		adjacency_index = nhgi->adj_index;
@@ -6184,10 +6030,7 @@ mlxsw_sp_fib4_entry_type_set(struct mlxsw_sp *mlxsw_sp,
 		return 0;
 	case RTN_UNREACHABLE:
 	case RTN_PROHIBIT:
-		/* Packets hitting these routes need to be trapped, but
-		 * can do so with a lower priority than packets directed
-		 * at the host, so use action type local instead of trap.
-		 */
+		 
 		fib_entry->type = MLXSW_SP_FIB_ENTRY_TYPE_UNREACHABLE;
 		return 0;
 	case RTN_UNICAST:
@@ -6409,9 +6252,7 @@ static void mlxsw_sp_fib_lpm_tree_unlink(struct mlxsw_sp *mlxsw_sp,
 
 	if (--lpm_tree->prefix_ref_count[fib_node->key.prefix_len] != 0)
 		return;
-	/* Try to construct a new LPM tree from the current prefix usage
-	 * minus the unused one. If we fail, continue using the old one.
-	 */
+	 
 	mlxsw_sp_prefix_usage_cpy(&req_prefix_usage, &lpm_tree->prefix_usage);
 	mlxsw_sp_prefix_usage_clear(&req_prefix_usage,
 				    fib_node->key.prefix_len);
@@ -6601,7 +6442,7 @@ mlxsw_sp_router_fib4_replace(struct mlxsw_sp *mlxsw_sp,
 		goto err_fib_node_entry_link;
 	}
 
-	/* Nothing to replace */
+	 
 	if (!replaced)
 		return 0;
 
@@ -6638,13 +6479,11 @@ static void mlxsw_sp_router_fib4_del(struct mlxsw_sp *mlxsw_sp,
 
 static bool mlxsw_sp_fib6_rt_should_ignore(const struct fib6_info *rt)
 {
-	/* Multicast routes aren't supported, so ignore them. Neighbour
-	 * Discovery packets are specifically trapped.
-	 */
+	 
 	if (ipv6_addr_type(&rt->fib6_dst.addr) & IPV6_ADDR_MULTICAST)
 		return true;
 
-	/* Cloned routes are irrelevant in the forwarding path. */
+	 
 	if (rt->fib6_flags & RTF_CACHE)
 		return true;
 
@@ -6659,10 +6498,7 @@ static struct mlxsw_sp_rt6 *mlxsw_sp_rt6_create(struct fib6_info *rt)
 	if (!mlxsw_sp_rt6)
 		return ERR_PTR(-ENOMEM);
 
-	/* In case of route replace, replaced route is deleted with
-	 * no notification. Take reference to prevent accessing freed
-	 * memory.
-	 */
+	 
 	mlxsw_sp_rt6->rt = rt;
 	fib6_info_hold(rt);
 
@@ -6911,9 +6747,7 @@ static int mlxsw_sp_nexthop6_group_get(struct mlxsw_sp *mlxsw_sp,
 			return PTR_ERR(nh_grp);
 	}
 
-	/* The route and the nexthop are described by the same struct, so we
-	 * need to the update the nexthop offload indication for the new route.
-	 */
+	 
 	__mlxsw_sp_nexthop6_group_offload_refresh(nh_grp, fib6_entry);
 
 out:
@@ -6962,10 +6796,7 @@ mlxsw_sp_nexthop6_group_update(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		goto err_nexthop_group_vr_link;
 
-	/* In case this entry is offloaded, then the adjacency index
-	 * currently associated with it in the device's table is that
-	 * of the old group. Start using the new one instead.
-	 */
+	 
 	err = mlxsw_sp_fib_entry_update(mlxsw_sp, &fib6_entry->common);
 	if (err)
 		goto err_fib_entry_update;
@@ -7293,7 +7124,7 @@ static int mlxsw_sp_router_fib6_replace(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		goto err_fib_node_entry_link;
 
-	/* Nothing to replace */
+	 
 	if (!replaced)
 		return 0;
 
@@ -7365,18 +7196,12 @@ static void mlxsw_sp_router_fib6_del(struct mlxsw_sp *mlxsw_sp,
 	if (mlxsw_sp_fib6_rt_should_ignore(rt))
 		return;
 
-	/* Multipath routes are first added to the FIB trie and only then
-	 * notified. If we vetoed the addition, we will get a delete
-	 * notification for a route we do not have. Therefore, do not warn if
-	 * route was not found.
-	 */
+	 
 	fib6_entry = mlxsw_sp_fib6_entry_lookup(mlxsw_sp, rt);
 	if (!fib6_entry)
 		return;
 
-	/* If not all the nexthops are deleted, then only reduce the nexthop
-	 * group.
-	 */
+	 
 	if (nrt6 != fib6_entry->nrt6) {
 		mlxsw_sp_fib6_entry_nexthop_del(mlxsw_sp, fib6_entry, rt_arr,
 						nrt6);
@@ -7532,9 +7357,7 @@ static void mlxsw_sp_router_fib_flush(struct mlxsw_sp *mlxsw_sp)
 			mlxsw_sp_mr_table_flush(vr->mr_table[j]);
 		mlxsw_sp_vr_fib_flush(mlxsw_sp, vr, MLXSW_SP_L3_PROTO_IPV4);
 
-		/* If virtual router was only used for IPv4, then it's no
-		 * longer used.
-		 */
+		 
 		if (!mlxsw_sp_vr_is_used(vr))
 			continue;
 		mlxsw_sp_vr_fib_flush(mlxsw_sp, vr, MLXSW_SP_L3_PROTO_IPV6);
@@ -7747,9 +7570,7 @@ static void mlxsw_sp_router_fib4_event(struct mlxsw_sp_fib_event_work *fib_work,
 		fen_info = container_of(info, struct fib_entry_notifier_info,
 					info);
 		fib_work->fen_info = *fen_info;
-		/* Take reference on fib_info to prevent it from being
-		 * freed while work is queued. Release it afterwards.
-		 */
+		 
 		fib_info_hold(fib_work->fen_info.fi);
 		break;
 	case FIB_EVENT_NH_ADD:
@@ -7813,14 +7634,14 @@ static int mlxsw_sp_router_fib_rule_event(unsigned long event,
 	struct fib_rule *rule;
 	int err = 0;
 
-	/* nothing to do at the moment */
+	 
 	if (event == FIB_EVENT_RULE_DEL)
 		return 0;
 
 	fr_info = container_of(info, struct fib_rule_notifier_info, info);
 	rule = fr_info->rule;
 
-	/* Rule only affects locally generated traffic */
+	 
 	if (rule->iifindex == mlxsw_sp_net(mlxsw_sp)->loopback_dev->ifindex)
 		return 0;
 
@@ -7849,7 +7670,7 @@ static int mlxsw_sp_router_fib_rule_event(unsigned long event,
 	return err;
 }
 
-/* Called with rcu_read_lock() */
+ 
 static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
 				     unsigned long event, void *ptr)
 {
@@ -7956,9 +7777,7 @@ u16 mlxsw_sp_rif_vid(struct mlxsw_sp *mlxsw_sp, const struct net_device *dev)
 	if (!rif)
 		goto out;
 
-	/* We only return the VID for VLAN RIFs. Otherwise we return an
-	 * invalid value (0).
-	 */
+	 
 	if (rif->ops->type != MLXSW_SP_RIF_TYPE_VLAN)
 		goto out;
 
@@ -8006,7 +7825,7 @@ err_nexthop:
 static void mlxsw_sp_router_rif_gone_sync(struct mlxsw_sp *mlxsw_sp,
 					  struct mlxsw_sp_rif *rif)
 {
-	/* Signal to nexthop cleanup that the RIF is going away. */
+	 
 	rif->crif->rif = NULL;
 
 	mlxsw_sp_router_rif_disable(mlxsw_sp, rif->rif_index);
@@ -8053,19 +7872,14 @@ mlxsw_sp_rif_should_config(struct mlxsw_sp_rif *rif, struct net_device *dev,
 	case NETDEV_DOWN:
 		addr_list_empty = mlxsw_sp_dev_addr_list_empty(dev);
 
-		/* macvlans do not have a RIF, but rather piggy back on the
-		 * RIF of their lower device.
-		 */
+		 
 		if (netif_is_macvlan(dev) && addr_list_empty)
 			return true;
 
 		if (rif && addr_list_empty &&
 		    !netif_is_l3_slave(mlxsw_sp_rif_dev(rif)))
 			return true;
-		/* It is possible we already removed the RIF ourselves
-		 * if it was assigned to a netdev that is now a bridge
-		 * or LAG slave.
-		 */
+		 
 		return false;
 	}
 
@@ -8081,7 +7895,7 @@ mlxsw_sp_dev_rif_type(const struct mlxsw_sp *mlxsw_sp,
 	if (mlxsw_sp_netdev_ipip_type(mlxsw_sp, dev, NULL))
 		return MLXSW_SP_RIF_TYPE_IPIP_LB;
 
-	/* Otherwise RIF type is derived from the type of the underlying FID. */
+	 
 	if (is_vlan_dev(dev) && netif_is_bridge_master(vlan_dev_real_dev(dev)))
 		type = MLXSW_SP_FID_TYPE_8021Q;
 	else if (netif_is_bridge_master(dev) && br_vlan_enabled(dev))
@@ -8103,7 +7917,7 @@ static int mlxsw_sp_rif_index_alloc(struct mlxsw_sp *mlxsw_sp, u16 *p_rif_index,
 		return -ENOBUFS;
 	*p_rif_index -= MLXSW_SP_ROUTER_GENALLOC_OFFSET;
 
-	/* RIF indexes must be aligned to the allocation size. */
+	 
 	WARN_ON_ONCE(*p_rif_index % rif_entries);
 
 	return 0;
@@ -8203,7 +8017,7 @@ mlxsw_sp_router_port_l3_stats_enable(struct mlxsw_sp_rif *rif)
 	if (err)
 		return err;
 
-	/* Clear stale data. */
+	 
 	err = mlxsw_sp_rif_counter_fetch_clear(rif,
 					       MLXSW_SP_RIF_COUNTER_INGRESS,
 					       NULL);
@@ -8214,7 +8028,7 @@ mlxsw_sp_router_port_l3_stats_enable(struct mlxsw_sp_rif *rif)
 	if (err)
 		goto err_alloc_egress;
 
-	/* Clear stale data. */
+	 
 	err = mlxsw_sp_rif_counter_fetch_clear(rif,
 					       MLXSW_SP_RIF_COUNTER_EGRESS,
 					       NULL);
@@ -8330,11 +8144,7 @@ mlxsw_sp_router_hwstats_notify_schedule(struct net_device *dev)
 {
 	struct mlxsw_sp_router_hwstats_notify_work *hws_work;
 
-	/* To collect notification payload, the core ends up sending another
-	 * notifier block message, which would deadlock on the attempt to
-	 * acquire the router lock again. Just postpone the notification until
-	 * later.
-	 */
+	 
 
 	hws_work = kzalloc(sizeof(*hws_work), GFP_KERNEL);
 	if (!hws_work)
@@ -8509,7 +8319,7 @@ static void mlxsw_sp_rif_destroy(struct mlxsw_sp_rif *rif)
 		mlxsw_sp_mr_rif_del(vr->mr_table[i], rif);
 	ops->deconfigure(rif);
 	if (fid)
-		/* Loopback RIFs are not associated with a FID. */
+		 
 		mlxsw_sp_fid_put(fid);
 	mlxsw_sp->router->rifs[rif->rif_index] = NULL;
 	netdev_put(dev, &rif->dev_tracker);
@@ -8578,9 +8388,7 @@ int mlxsw_sp_router_bridge_vlan_add(struct mlxsw_sp *mlxsw_sp,
 	mutex_lock(&mlxsw_sp->router->lock);
 	old_rif = mlxsw_sp_rif_find_by_dev(mlxsw_sp, br_dev);
 	if (old_rif) {
-		/* If the RIF on the bridge is not a VLAN RIF, we shouldn't have
-		 * gotten a PVID notification.
-		 */
+		 
 		if (WARN_ON(old_rif->ops->type != MLXSW_SP_RIF_TYPE_VLAN))
 			old_rif = NULL;
 		else
@@ -8603,9 +8411,7 @@ int mlxsw_sp_router_bridge_vlan_add(struct mlxsw_sp *mlxsw_sp,
 			.vid = new_pvid,
 		};
 
-		/* If there is a VLAN upper with the same VID as the new PVID,
-		 * kill its RIF, if there is one.
-		 */
+		 
 		mlxsw_sp_rif_destroy_vlan_upper(mlxsw_sp, br_dev, new_pvid);
 
 		if (mlxsw_sp_dev_addr_list_empty(br_dev))
@@ -8910,7 +8716,7 @@ __mlxsw_sp_port_vlan_router_join(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan,
 	if (IS_ERR(rif))
 		return PTR_ERR(rif);
 
-	/* FID was already created, just take a reference */
+	 
 	fid = rif->ops->fid_get(rif, &params, extack);
 	err = mlxsw_sp_fid_port_vid_map(fid, mlxsw_sp_port, vid);
 	if (err)
@@ -9084,9 +8890,7 @@ static int mlxsw_sp_inetaddr_bridge_event(struct mlxsw_sp *mlxsw_sp,
 		} else if (is_vlan_dev(l3_dev)) {
 			params.vid = vlan_dev_vlan_id(l3_dev);
 
-			/* If the VID matches PVID of the bridge below, the
-			 * bridge owns the RIF for this VLAN. Don't do anything.
-			 */
+			 
 			if ((int)params.vid == lower_pvid)
 				return 0;
 		}
@@ -9198,9 +9002,7 @@ static int mlxsw_sp_rif_macvlan_add(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		goto err_rif_vrrp_add;
 
-	/* Make sure the bridge driver does not have this MAC pointing at
-	 * some other port.
-	 */
+	 
 	if (rif->ops->fdb_del)
 		rif->ops->fdb_del(rif, macvlan_dev->dev_addr);
 
@@ -9219,9 +9021,7 @@ static void __mlxsw_sp_rif_macvlan_del(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_rif *rif;
 
 	rif = mlxsw_sp_rif_find_by_dev(mlxsw_sp, vlan->lowerdev);
-	/* If we do not have a RIF, then we already took care of
-	 * removing the macvlan's MAC during RIF deletion.
-	 */
+	 
 	if (!rif)
 		return;
 	mlxsw_sp_rif_vrrp_op(mlxsw_sp, rif->rif_index, macvlan_dev->dev_addr,
@@ -9287,7 +9087,7 @@ static int mlxsw_sp_inetaddr_event(struct notifier_block *nb,
 	struct mlxsw_sp_rif *rif;
 	int err = 0;
 
-	/* NETDEV_UP event is handled by mlxsw_sp_inetaddr_valid_event */
+	 
 	if (event == NETDEV_UP)
 		return NOTIFY_DONE;
 
@@ -9361,7 +9161,7 @@ out:
 	kfree(inet6addr_work);
 }
 
-/* Called with rcu_read_lock() */
+ 
 static int mlxsw_sp_inet6addr_event(struct notifier_block *nb,
 				    unsigned long event, void *ptr)
 {
@@ -9370,7 +9170,7 @@ static int mlxsw_sp_inet6addr_event(struct notifier_block *nb,
 	struct net_device *dev = if6->idev->dev;
 	struct mlxsw_sp_router *router;
 
-	/* NETDEV_UP event is handled by mlxsw_sp_inet6addr_valid_event */
+	 
 	if (event == NETDEV_UP)
 		return NOTIFY_DONE;
 
@@ -9467,10 +9267,7 @@ mlxsw_sp_router_port_change_event(struct mlxsw_sp *mlxsw_sp,
 		struct mlxsw_sp_vr *vr;
 		int i;
 
-		/* The RIF is relevant only to its mr_table instance, as unlike
-		 * unicast routing, in multicast routing a RIF cannot be shared
-		 * between several multicast routing tables.
-		 */
+		 
 		vr = &mlxsw_sp->router->vrs[rif->vr_id];
 		for (i = 0; i < MLXSW_SP_L3_PROTO_MAX; i++)
 			mlxsw_sp_mr_rif_mtu_update(vr->mr_table[i],
@@ -9602,12 +9399,7 @@ static void mlxsw_sp_netdevice_unregister(struct mlxsw_sp_router *router,
 	if (!mlxsw_sp_router_netdevice_interesting(router->mlxsw_sp, dev))
 		return;
 
-	/* netdev_run_todo(), by way of netdev_wait_allrefs_any(), rebroadcasts
-	 * the NETDEV_UNREGISTER message, so we can get here twice. If that's
-	 * what happened, the netdevice state is NETREG_UNREGISTERED. In that
-	 * case, we expect to have collected the CRIF already, and warn if it
-	 * still exists. Otherwise we expect the CRIF to exist.
-	 */
+	 
 	crif = mlxsw_sp_crif_lookup(router, dev);
 	if (dev->reg_state == NETREG_UNREGISTERED) {
 		if (!WARN_ON(crif))
@@ -9723,9 +9515,7 @@ static int mlxsw_sp_port_vrf_join(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_rif *rif;
 
-	/* If netdev is already associated with a RIF, then we need to
-	 * destroy it and create a new one with the new virtual router ID.
-	 */
+	 
 	rif = mlxsw_sp_rif_find_by_dev(mlxsw_sp, l3_dev);
 	if (rif)
 		__mlxsw_sp_inetaddr_event(mlxsw_sp, l3_dev, NETDEV_DOWN, false,
@@ -9762,9 +9552,7 @@ mlxsw_sp_netdevice_vrf_event(struct net_device *l3_dev, unsigned long event,
 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_lower_get(l3_dev);
 	int err = 0;
 
-	/* We do not create a RIF for a macvlan, but only use it to
-	 * direct more MAC addresses to the router.
-	 */
+	 
 	if (!mlxsw_sp || netif_is_macvlan(l3_dev))
 		return 0;
 
@@ -9837,7 +9625,7 @@ static int mlxsw_sp_router_unreplay_inetaddr_up(struct net_device *dev,
 	if (!crif || !crif->rif)
 		return 0;
 
-	/* We are rolling back NETDEV_UP, so ask for that. */
+	 
 	if (!mlxsw_sp_rif_should_config(crif->rif, dev, NETDEV_UP))
 		return 0;
 
@@ -10029,9 +9817,7 @@ static int mlxsw_sp_router_netdevice_event(struct notifier_block *nb,
 	if (event == NETDEV_REGISTER) {
 		err = mlxsw_sp_netdevice_register(router, dev);
 		if (err)
-			/* No need to roll this back, UNREGISTER will collect it
-			 * anyhow.
-			 */
+			 
 			goto out;
 	}
 
@@ -10943,10 +10729,7 @@ static void mlxsw_sp_router_fib_dump_flush(struct notifier_block *nb)
 {
 	struct mlxsw_sp_router *router;
 
-	/* Flush pending FIB notifications and then flush the device's
-	 * table before requesting another dump. The FIB notification
-	 * block is unregistered, so no need to take RTNL.
-	 */
+	 
 	mlxsw_core_flush_owq();
 	router = container_of(nb, struct mlxsw_sp_router, fib_nb);
 	mlxsw_sp_router_fib_flush(router->mlxsw_sp);
@@ -10975,12 +10758,12 @@ static void mlxsw_sp_mp_hash_inner_l3(struct mlxsw_sp_mp_hash_config *config)
 	unsigned long *inner_headers = config->inner_headers;
 	unsigned long *inner_fields = config->inner_fields;
 
-	/* IPv4 inner */
+	 
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV4_EN_NOT_TCP_NOT_UDP);
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV4_EN_TCP_UDP);
 	MLXSW_SP_MP_HASH_FIELD_RANGE_SET(inner_fields, INNER_IPV4_SIP0, 4);
 	MLXSW_SP_MP_HASH_FIELD_RANGE_SET(inner_fields, INNER_IPV4_DIP0, 4);
-	/* IPv6 inner */
+	 
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV6_EN_NOT_TCP_NOT_UDP);
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV6_EN_TCP_UDP);
 	MLXSW_SP_MP_HASH_FIELD_SET(inner_fields, INNER_IPV6_SIP0_7);
@@ -11009,7 +10792,7 @@ mlxsw_sp_mp_hash_inner_custom(struct mlxsw_sp_mp_hash_config *config,
 	unsigned long *inner_headers = config->inner_headers;
 	unsigned long *inner_fields = config->inner_fields;
 
-	/* IPv4 Inner */
+	 
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV4_EN_NOT_TCP_NOT_UDP);
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV4_EN_TCP_UDP);
 	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
@@ -11018,7 +10801,7 @@ mlxsw_sp_mp_hash_inner_custom(struct mlxsw_sp_mp_hash_config *config,
 		MLXSW_SP_MP_HASH_FIELD_RANGE_SET(inner_fields, INNER_IPV4_DIP0, 4);
 	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO)
 		MLXSW_SP_MP_HASH_FIELD_SET(inner_fields, INNER_IPV4_PROTOCOL);
-	/* IPv6 inner */
+	 
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV6_EN_NOT_TCP_NOT_UDP);
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, IPV6_EN_TCP_UDP);
 	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP) {
@@ -11033,7 +10816,7 @@ mlxsw_sp_mp_hash_inner_custom(struct mlxsw_sp_mp_hash_config *config,
 		MLXSW_SP_MP_HASH_FIELD_SET(inner_fields, INNER_IPV6_NEXT_HEADER);
 	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL)
 		MLXSW_SP_MP_HASH_FIELD_SET(inner_fields, INNER_IPV6_FLOW_LABEL);
-	/* L4 inner */
+	 
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, TCP_UDP_EN_IPV4);
 	MLXSW_SP_MP_HASH_HEADER_SET(inner_headers, TCP_UDP_EN_IPV6);
 	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT)
@@ -11062,14 +10845,14 @@ static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp,
 		MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_DPORT);
 		break;
 	case 2:
-		/* Outer */
+		 
 		mlxsw_sp_mp4_hash_outer_addr(config);
-		/* Inner */
+		 
 		mlxsw_sp_mp_hash_inner_l3(config);
 		break;
 	case 3:
 		hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
-		/* Outer */
+		 
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_NOT_TCP_NOT_UDP);
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_TCP_UDP);
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, TCP_UDP_EN_IPV4);
@@ -11083,7 +10866,7 @@ static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp,
 			MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_SPORT);
 		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
 			MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_DPORT);
-		/* Inner */
+		 
 		mlxsw_sp_mp_hash_inner_custom(config, hash_fields);
 		break;
 	}
@@ -11123,16 +10906,16 @@ static void mlxsw_sp_mp6_hash_init(struct mlxsw_sp *mlxsw_sp,
 		MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_DPORT);
 		break;
 	case 2:
-		/* Outer */
+		 
 		mlxsw_sp_mp6_hash_outer_addr(config);
 		MLXSW_SP_MP_HASH_FIELD_SET(fields, IPV6_NEXT_HEADER);
 		MLXSW_SP_MP_HASH_FIELD_SET(fields, IPV6_FLOW_LABEL);
-		/* Inner */
+		 
 		mlxsw_sp_mp_hash_inner_l3(config);
 		config->inc_parsing_depth = true;
 		break;
 	case 3:
-		/* Outer */
+		 
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV6_EN_NOT_TCP_NOT_UDP);
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV6_EN_TCP_UDP);
 		MLXSW_SP_MP_HASH_HEADER_SET(headers, TCP_UDP_EN_IPV6);
@@ -11152,7 +10935,7 @@ static void mlxsw_sp_mp6_hash_init(struct mlxsw_sp *mlxsw_sp,
 			MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_SPORT);
 		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
 			MLXSW_SP_MP_HASH_FIELD_SET(fields, TCP_UDP_DPORT);
-		/* Inner */
+		 
 		mlxsw_sp_mp_hash_inner_custom(config, hash_fields);
 		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_MASK)
 			config->inc_parsing_depth = true;
@@ -11247,11 +11030,7 @@ static int mlxsw_sp_dscp_init(struct mlxsw_sp *mlxsw_sp)
 
 	MLXSW_REG_ZERO(rdpm, rdpm_pl);
 
-	/* HW is determining switch priority based on DSCP-bits, but the
-	 * kernel is still doing that based on the ToS. Since there's a
-	 * mismatch in bits we need to make sure to translate the right
-	 * value ToS would observe, skipping the 2 least-significant ECN bits.
-	 */
+	 
 	for (i = 0; i < MLXSW_REG_RDPM_DSCP_ENTRY_REC_MAX_COUNT; i++)
 		mlxsw_reg_rdpm_pack(rdpm_pl, i, rt_tos2priority(i << 2));
 
@@ -11295,12 +11074,7 @@ static int mlxsw_sp_lb_rif_init(struct mlxsw_sp *mlxsw_sp,
 	if (!router->lb_crif)
 		return -ENOMEM;
 
-	/* Create a generic loopback RIF associated with the main table
-	 * (default VRF). Any table can be used, but the main table exists
-	 * anyway, so we do not waste resources. Loopback RIFs are usually
-	 * created with a NULL CRIF, but this RIF is used as a fallback RIF
-	 * for blackhole nexthops, and nexthops expect to have a valid CRIF.
-	 */
+	 
 	lb_rif = mlxsw_sp_ul_rif_get(mlxsw_sp, RT_TABLE_MAIN, router->lb_crif,
 				     extack);
 	if (IS_ERR(lb_rif)) {

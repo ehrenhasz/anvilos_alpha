@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+
+ 
 
 #include <net/genetlink.h>
 #include "event.h"
@@ -28,7 +24,7 @@ int wl18xx_wait_for_event(struct wl1271 *wl, enum wlcore_wait_event event,
 		break;
 
 	default:
-		/* event not implemented */
+		 
 		return 0;
 	}
 	return wlcore_cmd_wait_for_event_or_timeout(wl, local_event, timeout);
@@ -176,10 +172,7 @@ int wl18xx_process_mailbox_events(struct wl1271 *wl)
 	if (vector & DUMMY_PACKET_EVENT_ID)
 		wlcore_event_dummy_packet(wl);
 
-	/*
-	 * "TX retries exceeded" has a different meaning according to mode.
-	 * In AP mode the offending station is disconnected.
-	 */
+	 
 	if (vector & MAX_TX_FAILURE_EVENT_ID)
 		wlcore_event_max_tx_failure(wl,
 				le16_to_cpu(mbox->tx_retry_exceeded_bitmap));
@@ -215,9 +208,7 @@ int wl18xx_process_mailbox_events(struct wl1271 *wl)
 		wlvif = wl->links[link_id].wlvif;
 		vif = wl12xx_wlvif_to_vif(wlvif);
 
-		/* Update RX aggregation window size and call
-		 * MAC routine to stop active RX aggregations for this link
-		 */
+		 
 		if (wlvif->bss_type != BSS_TYPE_AP_BSS)
 			addr = vif->bss_conf.bssid;
 		else

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2023 Hisilicon Limited.
+
+
 
 #include "hclgevf_main.h"
 #include "hclgevf_regs.h"
@@ -82,7 +82,7 @@ struct hclgevf_reg_header {
 #define HCLGEVF_REG_HEADER_SIZE		sizeof(struct hclgevf_reg_header)
 #define HCLGEVF_REG_TLV_SPACE		(sizeof(struct hclgevf_reg_tlv) / sizeof(u32))
 #define HCLGEVF_REG_HEADER_SPACE	(sizeof(struct hclgevf_reg_header) / sizeof(u32))
-#define HCLGEVF_REG_MAGIC_NUMBER	0x686e733372656773 /* meaning is hns3regs */
+#define HCLGEVF_REG_MAGIC_NUMBER	0x686e733372656773  
 
 static u32 hclgevf_reg_get_header(void *data)
 {
@@ -114,7 +114,7 @@ int hclgevf_get_regs_len(struct hnae3_handle *handle)
 	ring_len = HCLGEVF_REG_TLV_SIZE + sizeof(ring_reg_addr_list);
 	tqp_intr_len = HCLGEVF_REG_TLV_SIZE + sizeof(tqp_intr_reg_addr_list);
 
-	/* return the total length of all register values */
+	 
 	return HCLGEVF_REG_HEADER_SIZE + cmdq_len + common_len +
 	       tqp_intr_len * (hdev->num_msi_used - 1) +
 	       ring_len * hdev->num_tqps;
@@ -133,7 +133,7 @@ void hclgevf_get_regs(struct hnae3_handle *handle, u32 *version,
 	*version = hdev->fw_version;
 	reg += hclgevf_reg_get_header(reg);
 
-	/* fetching per-VF registers values from VF PCIe register space */
+	 
 	reg_um = sizeof(cmdq_reg_addr_list) / sizeof(u32);
 	reg += hclgevf_reg_get_tlv(HCLGEVF_REG_TAG_CMDQ, reg_um, reg);
 	for (i = 0; i < reg_um; i++)

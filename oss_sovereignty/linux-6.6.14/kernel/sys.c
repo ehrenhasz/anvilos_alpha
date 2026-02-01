@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/kernel/sys.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/mm.h>
@@ -68,7 +64,7 @@
 #include <linux/nospec.h>
 
 #include <linux/kmsg_dump.h>
-/* Move somewhere else to avoid recompiling? */
+ 
 #include <generated/utsrelease.h>
 
 #include <linux/uaccess.h>
@@ -147,10 +143,7 @@
 # define RISCV_V_GET_CONTROL()		(-EINVAL)
 #endif
 
-/*
- * this is where the system-wide overflow UID and GID are defined, for
- * architectures that now have 32-bit UID/GID but didn't in the past
- */
+ 
 
 int overflowuid = DEFAULT_OVERFLOWUID;
 int overflowgid = DEFAULT_OVERFLOWGID;
@@ -158,10 +151,7 @@ int overflowgid = DEFAULT_OVERFLOWGID;
 EXPORT_SYMBOL(overflowuid);
 EXPORT_SYMBOL(overflowgid);
 
-/*
- * the same as above, but for filesystems which can only store a 16-bit
- * UID and GID. as such, this is needed on all architectures
- */
+ 
 
 int fs_overflowuid = DEFAULT_FS_OVERFLOWUID;
 int fs_overflowgid = DEFAULT_FS_OVERFLOWGID;
@@ -169,12 +159,7 @@ int fs_overflowgid = DEFAULT_FS_OVERFLOWGID;
 EXPORT_SYMBOL(fs_overflowuid);
 EXPORT_SYMBOL(fs_overflowgid);
 
-/*
- * Returns true if current's euid is same as p's uid or euid,
- * or has CAP_SYS_NICE to p's user_ns.
- *
- * Called with rcu_read_lock, creds are safe
- */
+ 
 static bool set_one_prio_perm(struct task_struct *p)
 {
 	const struct cred *cred = current_cred(), *pcred = __task_cred(p);
@@ -187,10 +172,7 @@ static bool set_one_prio_perm(struct task_struct *p)
 	return false;
 }
 
-/*
- * set the priority of a task
- * - the caller must hold the RCU read lock
- */
+ 
 static int set_one_prio(struct task_struct *p, int niceval, int error)
 {
 	int no_nice;
@@ -227,7 +209,7 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
 	if (which > PRIO_USER || which < PRIO_PROCESS)
 		goto out;
 
-	/* normalize: avoid signed division (rounding problems) */
+	 
 	error = -ESRCH;
 	if (niceval < MIN_NICE)
 		niceval = MIN_NICE;
@@ -263,14 +245,14 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
 		else if (!uid_eq(uid, cred->uid)) {
 			user = find_user(uid);
 			if (!user)
-				goto out_unlock;	/* No processes for this user */
+				goto out_unlock;	 
 		}
 		for_each_process_thread(g, p) {
 			if (uid_eq(task_uid(p), uid) && task_pid_vnr(p))
 				error = set_one_prio(p, niceval, error);
 		}
 		if (!uid_eq(uid, cred->uid))
-			free_uid(user);		/* For find_user() */
+			free_uid(user);		 
 		break;
 	}
 out_unlock:
@@ -279,12 +261,7 @@ out:
 	return error;
 }
 
-/*
- * Ugh. To avoid negative return values, "getpriority()" will
- * not return the normal nice-value, but a negated value that
- * has been offset by 20 (ie it returns 40..1 instead of -20..19)
- * to stay compatible.
- */
+ 
 SYSCALL_DEFINE2(getpriority, int, which, int, who)
 {
 	struct task_struct *g, *p;
@@ -331,7 +308,7 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
 		else if (!uid_eq(uid, cred->uid)) {
 			user = find_user(uid);
 			if (!user)
-				goto out_unlock;	/* No processes for this user */
+				goto out_unlock;	 
 		}
 		for_each_process_thread(g, p) {
 			if (uid_eq(task_uid(p), uid) && task_pid_vnr(p)) {
@@ -341,7 +318,7 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
 			}
 		}
 		if (!uid_eq(uid, cred->uid))
-			free_uid(user);		/* for find_user() */
+			free_uid(user);		 
 		break;
 	}
 out_unlock:
@@ -350,24 +327,7 @@ out_unlock:
 	return retval;
 }
 
-/*
- * Unprivileged users may change the real gid to the effective gid
- * or vice versa.  (BSD-style)
- *
- * If you set the real gid at all, or set the effective gid to a value not
- * equal to the real gid, then the saved gid is set to the new effective gid.
- *
- * This makes it possible for a setgid program to completely drop its
- * privileges, which is often a useful assertion to make when you are doing
- * a security audit over a program.
- *
- * The general idea is that a program which uses just setregid() will be
- * 100% compatible with BSD.  A program which uses just setgid() will be
- * 100% compatible with POSIX with saved IDs.
- *
- * SMP: There are not races, the GIDs are checked only by filesystem
- *      operations (as far as semantic preservation is concerned).
- */
+ 
 #ifdef CONFIG_MULTIUSER
 long __sys_setregid(gid_t rgid, gid_t egid)
 {
@@ -430,11 +390,7 @@ SYSCALL_DEFINE2(setregid, gid_t, rgid, gid_t, egid)
 	return __sys_setregid(rgid, egid);
 }
 
-/*
- * setgid() is implemented like SysV w/ SAVED_IDS
- *
- * SMP: Same implicit races as above.
- */
+ 
 long __sys_setgid(gid_t gid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -476,9 +432,7 @@ SYSCALL_DEFINE1(setgid, gid_t, gid)
 	return __sys_setgid(gid);
 }
 
-/*
- * change the user struct in a credentials set to match the new UID
- */
+ 
 static int set_user(struct cred *new)
 {
 	struct user_struct *new_user;
@@ -497,13 +451,7 @@ static void flag_nproc_exceeded(struct cred *new)
 	if (new->ucounts == current_ucounts())
 		return;
 
-	/*
-	 * We don't fail in case of NPROC limit excess here because too many
-	 * poorly written programs don't check set*uid() return code, assuming
-	 * it never fails if called by root.  We may still enforce NPROC limit
-	 * for programs doing set*uid()+execve() by harmlessly deferring the
-	 * failure to the execve() stage.
-	 */
+	 
 	if (is_rlimit_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
 			new->user != INIT_USER)
 		current->flags |= PF_NPROC_EXCEEDED;
@@ -511,21 +459,7 @@ static void flag_nproc_exceeded(struct cred *new)
 		current->flags &= ~PF_NPROC_EXCEEDED;
 }
 
-/*
- * Unprivileged users may change the real uid to the effective uid
- * or vice versa.  (BSD-style)
- *
- * If you set the real uid at all, or set the effective uid to a value not
- * equal to the real uid, then the saved uid is set to the new effective uid.
- *
- * This makes it possible for a setuid program to completely drop its
- * privileges, which is often a useful assertion to make when you are doing
- * a security audit over a program.
- *
- * The general idea is that a program which uses just setreuid() will be
- * 100% compatible with BSD.  A program which uses just setuid() will be
- * 100% compatible with POSIX with saved IDs.
- */
+ 
 long __sys_setreuid(uid_t ruid, uid_t euid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -596,17 +530,7 @@ SYSCALL_DEFINE2(setreuid, uid_t, ruid, uid_t, euid)
 	return __sys_setreuid(ruid, euid);
 }
 
-/*
- * setuid() is implemented like SysV with SAVED_IDS
- *
- * Note that SAVED_ID's is deficient in that a setuid root program
- * like sendmail, for example, cannot set its uid to be a normal
- * user and then switch back, because if you're root, setuid() sets
- * the saved uid too.  If you don't like this, blame the bright people
- * in the POSIX committee and/or USG.  Note that the BSD-style setreuid()
- * will allow a root program to temporarily drop privileges and be able to
- * regain them by swapping the real and effective uid.
- */
+ 
 long __sys_setuid(uid_t uid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -660,10 +584,7 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 }
 
 
-/*
- * This function implements a generic ability to update ruid, euid,
- * and suid.  This allows you to implement the 4.4 compatible seteuid().
- */
+ 
 long __sys_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -688,7 +609,7 @@ long __sys_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 
 	old = current_cred();
 
-	/* check for no-op */
+	 
 	if ((ruid == (uid_t) -1 || uid_eq(kruid, old->uid)) &&
 	    (euid == (uid_t) -1 || (uid_eq(keuid, old->euid) &&
 				    uid_eq(keuid, old->fsuid))) &&
@@ -763,9 +684,7 @@ SYSCALL_DEFINE3(getresuid, uid_t __user *, ruidp, uid_t __user *, euidp, uid_t _
 	return retval;
 }
 
-/*
- * Same as above, but for rgid, egid, sgid.
- */
+ 
 long __sys_setresgid(gid_t rgid, gid_t egid, gid_t sgid)
 {
 	struct user_namespace *ns = current_user_ns();
@@ -788,7 +707,7 @@ long __sys_setresgid(gid_t rgid, gid_t egid, gid_t sgid)
 
 	old = current_cred();
 
-	/* check for no-op */
+	 
 	if ((rgid == (gid_t) -1 || gid_eq(krgid, old->gid)) &&
 	    (egid == (gid_t) -1 || (gid_eq(kegid, old->egid) &&
 				    gid_eq(kegid, old->fsgid))) &&
@@ -854,12 +773,7 @@ SYSCALL_DEFINE3(getresgid, gid_t __user *, rgidp, gid_t __user *, egidp, gid_t _
 }
 
 
-/*
- * "setfsuid()" sets the fsuid - the uid used for filesystem checks. This
- * is used for "access()" and for the NFS daemon (letting nfsd stay at
- * whatever uid it wants to). It normally shadows "euid", except when
- * explicitly set by setfsuid() or for access..
- */
+ 
 long __sys_setfsuid(uid_t uid)
 {
 	const struct cred *old;
@@ -901,9 +815,7 @@ SYSCALL_DEFINE1(setfsuid, uid_t, uid)
 	return __sys_setfsuid(uid);
 }
 
-/*
- * Samma på svenska..
- */
+ 
 long __sys_setfsgid(gid_t gid)
 {
 	const struct cred *old;
@@ -944,34 +856,21 @@ SYSCALL_DEFINE1(setfsgid, gid_t, gid)
 {
 	return __sys_setfsgid(gid);
 }
-#endif /* CONFIG_MULTIUSER */
+#endif  
 
-/**
- * sys_getpid - return the thread group id of the current process
- *
- * Note, despite the name, this returns the tgid not the pid.  The tgid and
- * the pid are identical unless CLONE_THREAD was specified on clone() in
- * which case the tgid is the same in all threads of the same group.
- *
- * This is SMP safe as current->tgid does not change.
- */
+ 
 SYSCALL_DEFINE0(getpid)
 {
 	return task_tgid_vnr(current);
 }
 
-/* Thread ID - the internal kernel "pid" */
+ 
 SYSCALL_DEFINE0(gettid)
 {
 	return task_pid_vnr(current);
 }
 
-/*
- * Accessing ->real_parent is not SMP-safe, it could
- * change from under us. However, we can use a stale
- * value of ->real_parent under rcu_read_lock(), see
- * release_task()->call_rcu(delayed_put_task_struct).
- */
+ 
 SYSCALL_DEFINE0(getppid)
 {
 	int pid;
@@ -985,25 +884,25 @@ SYSCALL_DEFINE0(getppid)
 
 SYSCALL_DEFINE0(getuid)
 {
-	/* Only we change this so SMP safe */
+	 
 	return from_kuid_munged(current_user_ns(), current_uid());
 }
 
 SYSCALL_DEFINE0(geteuid)
 {
-	/* Only we change this so SMP safe */
+	 
 	return from_kuid_munged(current_user_ns(), current_euid());
 }
 
 SYSCALL_DEFINE0(getgid)
 {
-	/* Only we change this so SMP safe */
+	 
 	return from_kgid_munged(current_user_ns(), current_gid());
 }
 
 SYSCALL_DEFINE0(getegid)
 {
-	/* Only we change this so SMP safe */
+	 
 	return from_kgid_munged(current_user_ns(), current_egid());
 }
 
@@ -1046,7 +945,7 @@ COMPAT_SYSCALL_DEFINE1(times, struct compat_tms __user *, tbuf)
 		struct compat_tms tmp;
 
 		do_sys_times(&tms);
-		/* Convert our struct tms to the compat version. */
+		 
 		tmp.tms_utime = clock_t_to_compat_clock_t(tms.tms_utime);
 		tmp.tms_stime = clock_t_to_compat_clock_t(tms.tms_stime);
 		tmp.tms_cutime = clock_t_to_compat_clock_t(tms.tms_cutime);
@@ -1059,17 +958,7 @@ COMPAT_SYSCALL_DEFINE1(times, struct compat_tms __user *, tbuf)
 }
 #endif
 
-/*
- * This needs some heavy checking ...
- * I just haven't the stomach for it. I also don't fully
- * understand sessions/pgrp etc. Let somebody who does explain it.
- *
- * OK, I think I have the protection semantics right.... this is really
- * only important on a multi-user system anyway, to make sure one user
- * can't send a signal to a process owned by another.  -TYT, 12/12/91
- *
- * !PF_FORKNOEXEC check to conform completely to POSIX.
- */
+ 
 SYSCALL_DEFINE2(setpgid, pid_t, pid, pid_t, pgid)
 {
 	struct task_struct *p;
@@ -1085,9 +974,7 @@ SYSCALL_DEFINE2(setpgid, pid_t, pid, pid_t, pgid)
 		return -EINVAL;
 	rcu_read_lock();
 
-	/* From this point forward we keep holding onto the tasklist lock
-	 * so that our parent does not change from under us. -DaveM
-	 */
+	 
 	write_lock_irq(&tasklist_lock);
 
 	err = -ESRCH;
@@ -1135,7 +1022,7 @@ SYSCALL_DEFINE2(setpgid, pid_t, pid, pid_t, pgid)
 
 	err = 0;
 out:
-	/* All paths lead to here, thus we are safe. -DaveM */
+	 
 	write_unlock_irq(&tasklist_lock);
 	rcu_read_unlock();
 	return err;
@@ -1230,13 +1117,11 @@ int ksys_setsid(void)
 	int err = -EPERM;
 
 	write_lock_irq(&tasklist_lock);
-	/* Fail if I am already a session leader */
+	 
 	if (group_leader->signal->leader)
 		goto out;
 
-	/* Fail if a process group id already exists that equals the
-	 * proposed session id.
-	 */
+	 
 	if (pid_task(sid, PIDTYPE_PGID))
 		goto out;
 
@@ -1271,12 +1156,7 @@ DECLARE_RWSEM(uts_sem);
 #define override_architecture(name)	0
 #endif
 
-/*
- * Work around broken programs that cannot handle "Linux 3.0".
- * Instead we map 3.x to 2.6.40+x, so e.g. 3.0 would be 2.6.40
- * And we map 4.x and later versions to 2.6.60+x, so 4.0/5.0/6.0/... would be
- * 2.6.60.
- */
+ 
 static int override_release(char __user *release, size_t len)
 {
 	int ret = 0;
@@ -1321,9 +1201,7 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 }
 
 #ifdef __ARCH_WANT_SYS_OLD_UNAME
-/*
- * Old cruft
- */
+ 
 SYSCALL_DEFINE1(uname, struct old_utsname __user *, name)
 {
 	struct old_utsname tmp;
@@ -1421,10 +1299,7 @@ SYSCALL_DEFINE2(gethostname, char __user *, name, int, len)
 
 #endif
 
-/*
- * Only setdomainname; getdomainname can be implemented by calling
- * uname()
- */
+ 
 SYSCALL_DEFINE2(setdomainname, char __user *, name, int, len)
 {
 	int errno;
@@ -1451,7 +1326,7 @@ SYSCALL_DEFINE2(setdomainname, char __user *, name, int, len)
 	return errno;
 }
 
-/* make sure you are allowed to change @tsk limits before calling this */
+ 
 static int do_prlimit(struct task_struct *tsk, unsigned int resource,
 		      struct rlimit *new_rlim, struct rlimit *old_rlim)
 {
@@ -1470,14 +1345,11 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
 			return -EPERM;
 	}
 
-	/* Holding a refcount on tsk protects tsk->signal from disappearing. */
+	 
 	rlim = tsk->signal->rlim + resource;
 	task_lock(tsk->group_leader);
 	if (new_rlim) {
-		/*
-		 * Keep the capable check against init_user_ns until cgroups can
-		 * contain all limits.
-		 */
+		 
 		if (new_rlim->rlim_max > rlim->rlim_max &&
 				!capable(CAP_SYS_RESOURCE))
 			retval = -EPERM;
@@ -1492,23 +1364,11 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
 	}
 	task_unlock(tsk->group_leader);
 
-	/*
-	 * RLIMIT_CPU handling. Arm the posix CPU timer if the limit is not
-	 * infinite. In case of RLIM_INFINITY the posix CPU timer code
-	 * ignores the rlimit.
-	 */
+	 
 	if (!retval && new_rlim && resource == RLIMIT_CPU &&
 	    new_rlim->rlim_cur != RLIM_INFINITY &&
 	    IS_ENABLED(CONFIG_POSIX_TIMERS)) {
-		/*
-		 * update_rlimit_cpu can fail if the task is exiting, but there
-		 * may be other tasks in the thread group that are not exiting,
-		 * and they need their cpu timers adjusted.
-		 *
-		 * The group_leader is the last task to be released, so if we
-		 * cannot update_rlimit_cpu on it, then the entire process is
-		 * exiting and we do not need to update at all.
-		 */
+		 
 		update_rlimit_cpu(tsk->group_leader, new_rlim->rlim_cur);
 	}
 
@@ -1577,9 +1437,7 @@ COMPAT_SYSCALL_DEFINE2(getrlimit, unsigned int, resource,
 
 #ifdef __ARCH_WANT_SYS_OLD_GETRLIMIT
 
-/*
- *	Back compatibility for getrlimit. Needed for some apps.
- */
+ 
 SYSCALL_DEFINE2(old_getrlimit, unsigned int, resource,
 		struct rlimit __user *, rlim)
 {
@@ -1658,7 +1516,7 @@ static void rlim64_to_rlim(const struct rlimit64 *rlim64, struct rlimit *rlim)
 		rlim->rlim_max = (unsigned long)rlim64->rlim_max;
 }
 
-/* rcu lock must be held */
+ 
 static int check_prlimit_permission(struct task_struct *task,
 				    unsigned int flags)
 {
@@ -1737,38 +1595,7 @@ SYSCALL_DEFINE2(setrlimit, unsigned int, resource, struct rlimit __user *, rlim)
 	return do_prlimit(current, resource, &new_rlim, NULL);
 }
 
-/*
- * It would make sense to put struct rusage in the task_struct,
- * except that would make the task_struct be *really big*.  After
- * task_struct gets moved into malloc'ed memory, it would
- * make sense to do this.  It will make moving the rest of the information
- * a lot simpler!  (Which we're not doing right now because we're not
- * measuring them yet).
- *
- * When sampling multiple threads for RUSAGE_SELF, under SMP we might have
- * races with threads incrementing their own counters.  But since word
- * reads are atomic, we either get new values or old values and we don't
- * care which for the sums.  We always take the siglock to protect reading
- * the c* fields from p->signal from races with exit.c updating those
- * fields when reaping, so a sample either gets all the additions of a
- * given child after it's reaped, or none so this sample is before reaping.
- *
- * Locking:
- * We need to take the siglock for CHILDEREN, SELF and BOTH
- * for  the cases current multithreaded, non-current single threaded
- * non-current multithreaded.  Thread traversal is now safe with
- * the siglock held.
- * Strictly speaking, we donot need to take the siglock if we are current and
- * single threaded,  as no one else can take our signal_struct away, no one
- * else can  reap the  children to update signal->c* counters, and no one else
- * can race with the signal-> fields. If we do not take any lock, the
- * signal-> fields could be read out of order while another thread was just
- * exiting. So we should  place a read memory barrier when we avoid the lock.
- * On the writer side,  write memory barrier is implied in  __exit_signal
- * as __exit_signal releases  the siglock spinlock after updating the signal->
- * fields. But we don't do this yet to keep things simple.
- *
- */
+ 
 
 static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
 {
@@ -1852,7 +1679,7 @@ out:
 			mmput(mm);
 		}
 	}
-	r->ru_maxrss = maxrss * (PAGE_SIZE / 1024); /* convert pages to KBs */
+	r->ru_maxrss = maxrss * (PAGE_SIZE / 1024);  
 }
 
 SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
@@ -1899,11 +1726,7 @@ static int prctl_set_mm_exe_file(struct mm_struct *mm, unsigned int fd)
 
 	inode = file_inode(exe.file);
 
-	/*
-	 * Because the original mm->exe_file points to executable file, make
-	 * sure that this one is executable as well, to avoid breaking an
-	 * overall picture.
-	 */
+	 
 	err = -EACCES;
 	if (!S_ISREG(inode->i_mode) || path_noexec(&exe.file->f_path))
 		goto exit;
@@ -1918,12 +1741,7 @@ exit:
 	return err;
 }
 
-/*
- * Check arithmetic relations of passed addresses.
- *
- * WARNING: we don't require any capability here so be very careful
- * in what is allowed for modification from userspace.
- */
+ 
 static int validate_prctl_map_addr(struct prctl_mm_map *prctl_map)
 {
 	unsigned long mmap_max_addr = TASK_SIZE;
@@ -1943,10 +1761,7 @@ static int validate_prctl_map_addr(struct prctl_mm_map *prctl_map)
 		offsetof(struct prctl_mm_map, env_end),
 	};
 
-	/*
-	 * Make sure the members are not somewhere outside
-	 * of allowed address space.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(offsets); i++) {
 		u64 val = *(u64 *)((char *)prctl_map + offsets[i]);
 
@@ -1955,9 +1770,7 @@ static int validate_prctl_map_addr(struct prctl_mm_map *prctl_map)
 			goto out;
 	}
 
-	/*
-	 * Make sure the pairs are ordered.
-	 */
+	 
 #define __prctl_check_order(__m1, __op, __m2)				\
 	((unsigned long)prctl_map->__m1 __op				\
 	 (unsigned long)prctl_map->__m2) ? 0 : -EINVAL
@@ -1972,9 +1785,7 @@ static int validate_prctl_map_addr(struct prctl_mm_map *prctl_map)
 
 	error = -EINVAL;
 
-	/*
-	 * Neither we should allow to override limits if they set.
-	 */
+	 
 	if (check_data_rlimit(rlimit(RLIMIT_DATA), prctl_map->brk,
 			      prctl_map->start_brk, prctl_map->end_data,
 			      prctl_map->start_data))
@@ -2011,9 +1822,7 @@ static int prctl_set_mm_map(int opt, const void __user *addr, unsigned long data
 		return error;
 
 	if (prctl_map.auxv_size) {
-		/*
-		 * Someone is trying to cheat the auxv vector.
-		 */
+		 
 		if (!prctl_map.auxv ||
 				prctl_map.auxv_size > sizeof(mm->saved_auxv))
 			return -EINVAL;
@@ -2024,20 +1833,13 @@ static int prctl_set_mm_map(int opt, const void __user *addr, unsigned long data
 				   prctl_map.auxv_size))
 			return -EFAULT;
 
-		/* Last entry must be AT_NULL as specification requires */
+		 
 		user_auxv[AT_VECTOR_SIZE - 2] = AT_NULL;
 		user_auxv[AT_VECTOR_SIZE - 1] = AT_NULL;
 	}
 
 	if (prctl_map.exe_fd != (u32)-1) {
-		/*
-		 * Check if the current user is checkpoint/restore capable.
-		 * At the time of this writing, it checks for CAP_SYS_ADMIN
-		 * or CAP_CHECKPOINT_RESTORE.
-		 * Note that a user with access to ptrace can masquerade an
-		 * arbitrary program as any executable, even setuid ones.
-		 * This may have implications in the tomoyo subsystem.
-		 */
+		 
 		if (!checkpoint_restore_ns_capable(current_user_ns()))
 			return -EPERM;
 
@@ -2046,23 +1848,10 @@ static int prctl_set_mm_map(int opt, const void __user *addr, unsigned long data
 			return error;
 	}
 
-	/*
-	 * arg_lock protects concurrent updates but we still need mmap_lock for
-	 * read to exclude races with sys_brk.
-	 */
+	 
 	mmap_read_lock(mm);
 
-	/*
-	 * We don't validate if these members are pointing to
-	 * real present VMAs because application may have correspond
-	 * VMAs already unmapped and kernel uses these members for statistics
-	 * output in procfs mostly, except
-	 *
-	 *  - @start_brk/@brk which are used in do_brk_flags but kernel lookups
-	 *    for VMAs when updating these members so anything wrong written
-	 *    here cause kernel to swear at userspace program but won't lead
-	 *    to any problem in kernel itself
-	 */
+	 
 
 	spin_lock(&mm->arg_lock);
 	mm->start_code	= prctl_map.start_code;
@@ -2078,31 +1867,19 @@ static int prctl_set_mm_map(int opt, const void __user *addr, unsigned long data
 	mm->env_end	= prctl_map.env_end;
 	spin_unlock(&mm->arg_lock);
 
-	/*
-	 * Note this update of @saved_auxv is lockless thus
-	 * if someone reads this member in procfs while we're
-	 * updating -- it may get partly updated results. It's
-	 * known and acceptable trade off: we leave it as is to
-	 * not introduce additional locks here making the kernel
-	 * more complex.
-	 */
+	 
 	if (prctl_map.auxv_size)
 		memcpy(mm->saved_auxv, user_auxv, sizeof(user_auxv));
 
 	mmap_read_unlock(mm);
 	return 0;
 }
-#endif /* CONFIG_CHECKPOINT_RESTORE */
+#endif  
 
 static int prctl_set_auxv(struct mm_struct *mm, unsigned long addr,
 			  unsigned long len)
 {
-	/*
-	 * This doesn't move the auxiliary vector itself since it's pinned to
-	 * mm_struct, but it permits filling the vector with new values.  It's
-	 * up to the caller to provide sane values here, otherwise userspace
-	 * tools which use this vector might be unhappy.
-	 */
+	 
 	unsigned long user_auxv[AT_VECTOR_SIZE] = {};
 
 	if (len > sizeof(user_auxv))
@@ -2111,7 +1888,7 @@ static int prctl_set_auxv(struct mm_struct *mm, unsigned long addr,
 	if (copy_from_user(user_auxv, (const void __user *)addr, len))
 		return -EFAULT;
 
-	/* Make sure the last entry is always AT_NULL */
+	 
 	user_auxv[AT_VECTOR_SIZE - 2] = 0;
 	user_auxv[AT_VECTOR_SIZE - 1] = 0;
 
@@ -2160,11 +1937,7 @@ static int prctl_set_mm(int opt, unsigned long addr,
 
 	error = -EINVAL;
 
-	/*
-	 * arg_lock protects concurrent updates of arg boundaries, we need
-	 * mmap_lock for a) concurrent sys_brk, b) finding VMA for addr
-	 * validation.
-	 */
+	 
 	mmap_read_lock(mm);
 	vma = find_vma(mm, addr);
 
@@ -2224,13 +1997,7 @@ static int prctl_set_mm(int opt, unsigned long addr,
 		goto out;
 
 	switch (opt) {
-	/*
-	 * If command line arguments and environment
-	 * are placed somewhere else on stack, we can
-	 * set them up here, ARG_START/END to setup
-	 * command line arguments and ENV_START/END
-	 * for environment.
-	 */
+	 
 	case PR_SET_MM_START_STACK:
 	case PR_SET_MM_ARG_START:
 	case PR_SET_MM_ARG_END:
@@ -2275,14 +2042,7 @@ static int prctl_get_tid_address(struct task_struct *me, int __user * __user *ti
 
 static int propagate_has_child_subreaper(struct task_struct *p, void *data)
 {
-	/*
-	 * If task has has_child_subreaper - all its descendants
-	 * already have these flag too and new descendants will
-	 * inherit it on fork, skip them.
-	 *
-	 * If we've found child_reaper - skip descendants in
-	 * it's subtree as they will never get out pidns.
-	 */
+	 
 	if (p->signal->has_child_subreaper ||
 	    is_child_reaper(task_pid(p)))
 		return 0;
@@ -2311,7 +2071,7 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
 
 static inline bool is_valid_name_char(char ch)
 {
-	/* printable ascii characters, excluding ANON_VMA_NAME_INVALID_CHARS */
+	 
 	return ch > 0x1f && ch < 0x7f &&
 		!strchr(ANON_VMA_NAME_INVALID_CHARS, ch);
 }
@@ -2340,7 +2100,7 @@ static int prctl_set_vma(unsigned long opt, unsigned long addr,
 					return -EINVAL;
 				}
 			}
-			/* anon_vma has its own copy */
+			 
 			anon_name = anon_vma_name_alloc(name);
 			kfree(name);
 			if (!anon_name)
@@ -2360,13 +2120,13 @@ static int prctl_set_vma(unsigned long opt, unsigned long addr,
 	return error;
 }
 
-#else /* CONFIG_ANON_VMA_NAME */
+#else  
 static int prctl_set_vma(unsigned long opt, unsigned long start,
 			 unsigned long size, unsigned long arg)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_ANON_VMA_NAME */
+#endif  
 
 static inline unsigned long get_current_mdwe(void)
 {
@@ -2391,17 +2151,17 @@ static inline int prctl_set_mdwe(unsigned long bits, unsigned long arg3,
 	if (bits & ~(PR_MDWE_REFUSE_EXEC_GAIN | PR_MDWE_NO_INHERIT))
 		return -EINVAL;
 
-	/* NO_INHERIT only makes sense with REFUSE_EXEC_GAIN */
+	 
 	if (bits & PR_MDWE_NO_INHERIT && !(bits & PR_MDWE_REFUSE_EXEC_GAIN))
 		return -EINVAL;
 
-	/* PARISC cannot allow mdwe as it needs writable stacks */
+	 
 	if (IS_ENABLED(CONFIG_PARISC))
 		return -EINVAL;
 
 	current_bits = get_current_mdwe();
 	if (current_bits && current_bits != bits)
-		return -EPERM; /* Cannot unset the flags */
+		return -EPERM;  
 
 	if (bits & PR_MDWE_NO_INHERIT)
 		set_bit(MMF_HAS_MDWE_NO_INHERIT, &current->mm->flags);
@@ -2617,7 +2377,7 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 		break;
 	case PR_MPX_ENABLE_MANAGEMENT:
 	case PR_MPX_DISABLE_MANAGEMENT:
-		/* No longer implemented: */
+		 
 		return -EINVAL;
 	case PR_SET_FP_MODE:
 		error = SET_FP_MODE(me, arg2);
@@ -2764,10 +2524,7 @@ SYSCALL_DEFINE3(getcpu, unsigned __user *, cpup, unsigned __user *, nodep,
 	return err ? -EFAULT : 0;
 }
 
-/**
- * do_sysinfo - fill in sysinfo struct
- * @info: pointer to buffer to fill
- */
+ 
 static int do_sysinfo(struct sysinfo *info)
 {
 	unsigned long mem_total, sav_total;
@@ -2787,14 +2544,7 @@ static int do_sysinfo(struct sysinfo *info)
 	si_meminfo(info);
 	si_swapinfo(info);
 
-	/*
-	 * If the sum of all the available memory (i.e. ram + swap)
-	 * is less than can be stored in a 32 bit unsigned long then
-	 * we can be binary compatible with 2.2.x kernels.  If not,
-	 * well, in that case 2.2.x was broken anyways...
-	 *
-	 *  -Erik Andersen <andersee@debian.org>
-	 */
+	 
 
 	mem_total = info->totalram + info->totalswap;
 	if (mem_total < info->totalram || mem_total < info->totalswap)
@@ -2810,12 +2560,7 @@ static int do_sysinfo(struct sysinfo *info)
 			goto out;
 	}
 
-	/*
-	 * If mem_total did not overflow, multiply all memory values by
-	 * info->mem_unit and set it to 1.  This leaves things compatible
-	 * with 2.2.x, and also retains compatibility with earlier 2.4.x
-	 * kernels...
-	 */
+	 
 
 	info->mem_unit = 1;
 	info->totalram <<= bitcount;
@@ -2868,9 +2613,7 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
 
 	do_sysinfo(&s);
 
-	/* Check to see if any memory value is too large for 32-bit and scale
-	 *  down if needed
-	 */
+	 
 	if (upper_32_bits(s.totalram) || upper_32_bits(s.totalswap)) {
 		int bitcount = 0;
 
@@ -2908,4 +2651,4 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
 		return -EFAULT;
 	return 0;
 }
-#endif /* CONFIG_COMPAT */
+#endif  

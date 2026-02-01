@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the MMC / SD / SDIO IP found in:
- *
- * TC6393XB, TC6391XB, TC6387XB, T7L66XB, ASIC3, SH-Mobile SoCs
- *
- * Copyright (C) 2015-19 Renesas Electronics Corporation
- * Copyright (C) 2016-19 Sang Engineering, Wolfram Sang
- * Copyright (C) 2017 Horms Solutions, Simon Horman
- * Copyright (C) 2011 Guennadi Liakhovetski
- * Copyright (C) 2007 Ian Molton
- * Copyright (C) 2004 Ian Molton
- *
- * This driver draws mainly on scattered spec sheets, Reverse engineering
- * of the toshiba e800  SD driver and some parts of the 2.4 ASIC3 driver (4 bit
- * support). (Further 4 bit support from a later datasheet).
- *
- * TODO:
- *   Investigate using a workqueue for PIO transfers
- *   Eliminate FIXMEs
- *   Better Power management
- *   Handle MMC errors better
- *   double buffer support
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -141,13 +118,13 @@ static void tmio_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 	if (enable && !host->sdio_irq_enabled) {
 		u16 sdio_status;
 
-		/* Keep device active while SDIO irq is enabled */
+		 
 		pm_runtime_get_sync(mmc_dev(mmc));
 
 		host->sdio_irq_enabled = true;
 		host->sdio_irq_mask = TMIO_SDIO_MASK_ALL & ~TMIO_SDIO_STAT_IOIRQ;
 
-		/* Clear obsolete interrupts before enabling */
+		 
 		sdio_status = sd_ctrl_read16(host, CTL_SDIO_STATUS) & ~TMIO_SDIO_MASK_ALL;
 		if (host->pdata->flags & TMIO_MMC_SDIO_STATUS_SETBITS)
 			sdio_status |= TMIO_SDIO_SETBITS_MASK;
@@ -170,7 +147,7 @@ static void tmio_mmc_set_bus_width(struct tmio_mmc_host *host,
 	u16 reg = sd_ctrl_read16(host, CTL_SD_MEM_CARD_OPT)
 				& ~(CARD_OPT_WIDTH | CARD_OPT_WIDTH8);
 
-	/* reg now applies to MMC_BUS_WIDTH_4 */
+	 
 	if (bus_width == MMC_BUS_WIDTH_1)
 		reg |= CARD_OPT_WIDTH;
 	else if (bus_width == MMC_BUS_WIDTH_8)
@@ -190,7 +167,7 @@ static void tmio_mmc_reset(struct tmio_mmc_host *host, bool preserve)
 			sdif_mode = sd_ctrl_read16(host, CTL_SDIF_MODE);
 	}
 
-	/* FIXME - should we set stop clock reg here */
+	 
 	sd_ctrl_write16(host, CTL_RESET_SD, 0x0000);
 	usleep_range(10000, 11000);
 	sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
@@ -236,11 +213,7 @@ static void tmio_mmc_reset_work(struct work_struct *work)
 	spin_lock_irqsave(&host->lock, flags);
 	mrq = host->mrq;
 
-	/*
-	 * is request already finished? Since we use a non-blocking
-	 * cancel_delayed_work(), it can happen, that a .set_ios() call preempts
-	 * us, so, have to check for IS_ERR(host->mrq)
-	 */
+	 
 	if (IS_ERR_OR_NULL(mrq) ||
 	    time_is_after_jiffies(host->last_req_ts +
 				  msecs_to_jiffies(CMDREQ_TIMEOUT))) {
@@ -266,13 +239,12 @@ static void tmio_mmc_reset_work(struct work_struct *work)
 
 	tmio_mmc_reset(host, true);
 
-	/* Ready for new calls */
+	 
 	host->mrq = NULL;
 	mmc_request_done(host->mmc, mrq);
 }
 
-/* These are the bitmasks the tmio chip requires to implement the MMC response
- * types. Note that R1 and R6 are the same in this scheme. */
+ 
 #define APP_CMD        0x0040
 #define RESP_NONE      0x0300
 #define RESP_R1        0x0400
@@ -283,7 +255,7 @@ static void tmio_mmc_reset_work(struct work_struct *work)
 #define TRANSFER_READ  0x1000
 #define TRANSFER_MULTI 0x2000
 #define SECURITY_CMD   0x4000
-#define NO_CMD12_ISSUE 0x4000 /* TMIO_MMC_HAVE_CMD12_CTRL */
+#define NO_CMD12_ISSUE 0x4000  
 
 static int tmio_mmc_start_command(struct tmio_mmc_host *host,
 				  struct mmc_command *cmd)
@@ -306,21 +278,14 @@ static int tmio_mmc_start_command(struct tmio_mmc_host *host,
 
 	host->cmd = cmd;
 
-/* FIXME - this seems to be ok commented out but the spec suggest this bit
- *         should be set when issuing app commands.
- *	if(cmd->flags & MMC_FLAG_ACMD)
- *		c |= APP_CMD;
- */
+ 
 	if (data) {
 		c |= DATA_PRESENT;
 		if (data->blocks > 1) {
 			sd_ctrl_write16(host, CTL_STOP_INTERNAL_ACTION, TMIO_STOP_SEC);
 			c |= TRANSFER_MULTI;
 
-			/*
-			 * Disable auto CMD12 at IO_RW_EXTENDED and
-			 * SET_BLOCK_COUNT when doing multiple block transfer
-			 */
+			 
 			if ((host->pdata->flags & TMIO_MMC_HAVE_CMD12_CTRL) &&
 			    (cmd->opcode == SD_IO_RW_EXTENDED || host->mrq->sbc))
 				c |= NO_CMD12_ISSUE;
@@ -331,7 +296,7 @@ static int tmio_mmc_start_command(struct tmio_mmc_host *host,
 
 	tmio_mmc_enable_mmc_irqs(host, TMIO_MASK_CMD);
 
-	/* Fire off the command */
+	 
 	sd_ctrl_write32_as_16_and_16(host, CTL_ARG_REG, cmd->arg);
 	sd_ctrl_write16(host, CTL_SD_CMD, c);
 
@@ -345,9 +310,7 @@ static void tmio_mmc_transfer_data(struct tmio_mmc_host *host,
 	int is_read = host->data->flags & MMC_DATA_READ;
 	u8  *buf8;
 
-	/*
-	 * Transfer the data
-	 */
+	 
 	if (host->pdata->flags & TMIO_MMC_32BIT_DATA_PORT) {
 		u32 data = 0;
 		u32 *buf32 = (u32 *)buf;
@@ -359,7 +322,7 @@ static void tmio_mmc_transfer_data(struct tmio_mmc_host *host,
 			sd_ctrl_write32_rep(host, CTL_SD_DATA_PORT, buf32,
 					    count >> 2);
 
-		/* if count was multiple of 4 */
+		 
 		if (!(count & 0x3))
 			return;
 
@@ -382,30 +345,21 @@ static void tmio_mmc_transfer_data(struct tmio_mmc_host *host,
 	else
 		sd_ctrl_write16_rep(host, CTL_SD_DATA_PORT, buf, count >> 1);
 
-	/* if count was even number */
+	 
 	if (!(count & 0x1))
 		return;
 
-	/* if count was odd number */
+	 
 	buf8 = (u8 *)(buf + (count >> 1));
 
-	/*
-	 * FIXME
-	 *
-	 * driver and this function are assuming that
-	 * it is used as little endian
-	 */
+	 
 	if (is_read)
 		*buf8 = sd_ctrl_read16(host, CTL_SD_DATA_PORT) & 0xff;
 	else
 		sd_ctrl_write16(host, CTL_SD_DATA_PORT, *buf8);
 }
 
-/*
- * This chip always returns (at least?) as much data as you ask for.
- * I'm unsure what happens if you ask for less than a block. This should be
- * looked into to ensure that a funny length read doesn't hose the controller.
- */
+ 
 static void tmio_mmc_pio_irq(struct tmio_mmc_host *host)
 {
 	struct mmc_data *data = host->data;
@@ -431,7 +385,7 @@ static void tmio_mmc_pio_irq(struct tmio_mmc_host *host)
 	pr_debug("count: %08x offset: %08x flags %08x\n",
 		 count, host->sg_off, data->flags);
 
-	/* Transfer the data */
+	 
 	tmio_mmc_transfer_data(host, buf, count);
 
 	host->sg_off += count;
@@ -453,7 +407,7 @@ static void tmio_mmc_check_bounce_buffer(struct tmio_mmc_host *host)
 	}
 }
 
-/* needs to be called with host->lock held */
+ 
 void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 {
 	struct mmc_data *data = host->data;
@@ -467,7 +421,7 @@ void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 	}
 	stop = data->stop;
 
-	/* FIXME - return correct transfer count on errors */
+	 
 	if (!data->error)
 		data->bytes_xfered = data->blocks * data->blksz;
 	else
@@ -475,14 +429,7 @@ void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 
 	pr_debug("Completed data request\n");
 
-	/*
-	 * FIXME: other drivers allow an optional stop command of any given type
-	 *        which we dont do, as the chip can auto generate them.
-	 *        Perhaps we can be smarter about when to use auto CMD12 and
-	 *        only issue the auto request when we know this is the desired
-	 *        stop command, allowing fallback to the stop command the
-	 *        upper layers expect. For now, we do what works.
-	 */
+	 
 
 	if (data->flags & MMC_DATA_READ) {
 		if (host->dma_on)
@@ -499,7 +446,7 @@ void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 			dev_err(&host->pdev->dev, "unsupported stop: CMD%u,0x%x. We did CMD12,0\n",
 				stop->opcode, stop->arg);
 
-		/* fill in response from auto CMD12 */
+		 
 		stop->resp[0] = sd_ctrl_read16_and_16_as_32(host, CTL_RESPONSE);
 
 		sd_ctrl_write16(host, CTL_STOP_INTERNAL_ACTION, 0);
@@ -528,14 +475,7 @@ static void tmio_mmc_data_irq(struct tmio_mmc_host *host, unsigned int stat)
 		u32 status = sd_ctrl_read16_and_16_as_32(host, CTL_STATUS);
 		bool done = false;
 
-		/*
-		 * Has all data been written out yet? Testing on SuperH showed,
-		 * that in most cases the first interrupt comes already with the
-		 * BUSY status bit clear, but on some operations, like mount or
-		 * in the beginning of a write / sync / umount, there is one
-		 * DATAEND interrupt with the BUSY bit set, in this cases
-		 * waiting for one more interrupt fixes the problem.
-		 */
+		 
 		if (host->pdata->flags & TMIO_MMC_HAS_IDLE_WAIT) {
 			if (status & TMIO_STAT_SCLKDIVEN)
 				done = true;
@@ -571,10 +511,7 @@ static void tmio_mmc_cmd_irq(struct tmio_mmc_host *host, unsigned int stat)
 		goto out;
 	}
 
-	/* This controller is sicker than the PXA one. Not only do we need to
-	 * drop the top 8 bits of the first response word, we also need to
-	 * modify the order of the response for short response command types.
-	 */
+	 
 
 	for (i = 3, addr = CTL_RESPONSE ; i >= 0 ; i--, addr += 4)
 		cmd->resp[i] = sd_ctrl_read16_and_16_as_32(host, addr);
@@ -595,10 +532,7 @@ static void tmio_mmc_cmd_irq(struct tmio_mmc_host *host, unsigned int stat)
 		 stat & TMIO_STAT_CMD_IDX_ERR)
 		cmd->error = -EILSEQ;
 
-	/* If there is data to handle we enable data IRQs here, and
-	 * we will ultimatley finish the request in the data_end handler.
-	 * If theres no data or we encountered an error, finish now.
-	 */
+	 
 	if (host->data && (!cmd->error || cmd->error == -EILSEQ)) {
 		if (host->data->flags & MMC_DATA_READ) {
 			if (!host->dma_on) {
@@ -630,7 +564,7 @@ static bool __tmio_mmc_card_detect_irq(struct tmio_mmc_host *host,
 {
 	struct mmc_host *mmc = host->mmc;
 
-	/* Card insert / remove attempts */
+	 
 	if (ireg & (TMIO_STAT_CARD_INSERT | TMIO_STAT_CARD_REMOVE)) {
 		tmio_mmc_ack_mmc_irqs(host, TMIO_STAT_CARD_INSERT |
 			TMIO_STAT_CARD_REMOVE);
@@ -647,7 +581,7 @@ static bool __tmio_mmc_card_detect_irq(struct tmio_mmc_host *host,
 static bool __tmio_mmc_sdcard_irq(struct tmio_mmc_host *host, int ireg,
 				  int status)
 {
-	/* Command completion */
+	 
 	if (ireg & (TMIO_STAT_CMDRESPEND | TMIO_STAT_CMDTIMEOUT)) {
 		tmio_mmc_ack_mmc_irqs(host, TMIO_STAT_CMDRESPEND |
 				      TMIO_STAT_CMDTIMEOUT);
@@ -655,14 +589,14 @@ static bool __tmio_mmc_sdcard_irq(struct tmio_mmc_host *host, int ireg,
 		return true;
 	}
 
-	/* Data transfer */
+	 
 	if (ireg & (TMIO_STAT_RXRDY | TMIO_STAT_TXRQ)) {
 		tmio_mmc_ack_mmc_irqs(host, TMIO_STAT_RXRDY | TMIO_STAT_TXRQ);
 		tmio_mmc_pio_irq(host);
 		return true;
 	}
 
-	/* Data transfer completion */
+	 
 	if (ireg & TMIO_STAT_DATAEND) {
 		tmio_mmc_ack_mmc_irqs(host, TMIO_STAT_DATAEND);
 		tmio_mmc_data_irq(host, status);
@@ -708,7 +642,7 @@ irqreturn_t tmio_mmc_irq(int irq, void *devid)
 	status = sd_ctrl_read16_and_16_as_32(host, CTL_STATUS);
 	ireg = status & TMIO_MASK_IRQ & ~host->sdcard_irq_mask;
 
-	/* Clear the status except the interrupt status */
+	 
 	sd_ctrl_write32_as_16_and_16(host, CTL_STATUS, TMIO_MASK_IRQ);
 
 	if (__tmio_mmc_card_detect_irq(host, ireg, status))
@@ -731,7 +665,7 @@ static int tmio_mmc_start_data(struct tmio_mmc_host *host,
 	pr_debug("setup data transfer: blocksize %08x  nr_blocks %d\n",
 		 data->blksz, data->blocks);
 
-	/* Some hardware cannot perform 2 byte requests in 4/8 bit mode */
+	 
 	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4 ||
 	    host->mmc->ios.bus_width == MMC_BUS_WIDTH_8) {
 		int blksz_2bytes = pdata->flags & TMIO_MMC_BLKSZ_2BYTES;
@@ -747,7 +681,7 @@ static int tmio_mmc_start_data(struct tmio_mmc_host *host,
 	host->data = data;
 	host->dma_on = false;
 
-	/* Set transfer length / blocksize */
+	 
 	sd_ctrl_write16(host, CTL_SD_XFER_LEN, data->blksz);
 	if (host->mmc->max_blk_count >= SZ_64K)
 		sd_ctrl_write32(host, CTL_XFER_BLK_COUNT, data->blocks);
@@ -790,7 +724,7 @@ fail:
 	mmc_request_done(host->mmc, mrq);
 }
 
-/* Process requests from the MMC layer */
+ 
 static void tmio_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct tmio_mmc_host *host = mmc_priv(mmc);
@@ -832,7 +766,7 @@ static void tmio_mmc_finish_request(struct tmio_mmc_host *host)
 		return;
 	}
 
-	/* If not SET_BLOCK_COUNT, clear old data */
+	 
 	if (host->cmd != mrq->sbc) {
 		host->cmd = NULL;
 		host->data = NULL;
@@ -844,15 +778,15 @@ static void tmio_mmc_finish_request(struct tmio_mmc_host *host)
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	if (mrq->cmd->error || (mrq->data && mrq->data->error)) {
-		tmio_mmc_ack_mmc_irqs(host, TMIO_MASK_IRQ); /* Clear all */
+		tmio_mmc_ack_mmc_irqs(host, TMIO_MASK_IRQ);  
 		tmio_mmc_abort_dma(host);
 	}
 
-	/* Error means retune, but executed command was still successful */
+	 
 	if (host->check_retune && host->check_retune(host, mrq))
 		mmc_retune_needed(host->mmc);
 
-	/* If SET_BLOCK_COUNT, continue with main command */
+	 
 	if (host->mrq && !mrq->cmd->error) {
 		tmio_process_mrq(host, mrq);
 		return;
@@ -876,25 +810,17 @@ static void tmio_mmc_power_on(struct tmio_mmc_host *host, unsigned short vdd)
 	struct mmc_host *mmc = host->mmc;
 	int ret = 0;
 
-	/* .set_ios() is returning void, so, no chance to report an error */
+	 
 
 	if (host->set_pwr)
 		host->set_pwr(host->pdev, 1);
 
 	if (!IS_ERR(mmc->supply.vmmc)) {
 		ret = mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, vdd);
-		/*
-		 * Attention: empiric value. With a b43 WiFi SDIO card this
-		 * delay proved necessary for reliable card-insertion probing.
-		 * 100us were not enough. Is this the same 140us delay, as in
-		 * tmio_mmc_set_ios()?
-		 */
+		 
 		usleep_range(200, 300);
 	}
-	/*
-	 * It seems, VccQ should be switched on after Vcc, this is also what the
-	 * omap_hsmmc.c driver does.
-	 */
+	 
 	if (!IS_ERR(mmc->supply.vqmmc) && !ret) {
 		ret = regulator_enable(mmc->supply.vqmmc);
 		usleep_range(200, 300);
@@ -935,12 +861,7 @@ static void tmio_mmc_max_busy_timeout(struct tmio_mmc_host *host)
 				      (clk_rate / MSEC_PER_SEC);
 }
 
-/* Set MMC clock / power.
- * Note: This controller uses a simple divider scheme therefore it cannot
- * run a MMC card at full speed (20MHz). The max clock is 24MHz on SD, but as
- * MMC wont run that fast, it has to be clocked at 12MHz which is the next
- * slowest setting.
- */
+ 
 static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct tmio_mmc_host *host = mmc_priv(mmc);
@@ -977,7 +898,7 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	switch (ios->power_mode) {
 	case MMC_POWER_OFF:
 		tmio_mmc_power_off(host);
-		/* For R-Car Gen2+, we need to reset SDHI specific SCC */
+		 
 		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2)
 			tmio_mmc_reset(host, false);
 
@@ -997,7 +918,7 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (host->pdata->flags & TMIO_MMC_USE_BUSY_TIMEOUT)
 		tmio_mmc_max_busy_timeout(host);
 
-	/* Let things settle. delay taken from winCE driver */
+	 
 	usleep_range(140, 200);
 	if (PTR_ERR(host->mrq) == -EINTR)
 		dev_dbg(&host->pdev->dev,
@@ -1057,14 +978,11 @@ static int tmio_mmc_init_ocr(struct tmio_mmc_host *host)
 	if (err)
 		return err;
 
-	/* use ocr_mask if no regulator */
+	 
 	if (!mmc->ocr_avail)
 		mmc->ocr_avail = pdata->ocr_mask;
 
-	/*
-	 * try again.
-	 * There is possibility that regulator has not been probed
-	 */
+	 
 	if (!mmc->ocr_avail)
 		return -EPROBE_DEFER;
 
@@ -1079,11 +997,7 @@ static void tmio_mmc_of_parse(struct platform_device *pdev,
 	if (!np)
 		return;
 
-	/*
-	 * DEPRECATED:
-	 * For new platforms, please use "disable-wp" instead of
-	 * "toshiba,mmc-wrprotect-disable"
-	 */
+	 
 	if (of_property_read_bool(np, "toshiba,mmc-wrprotect-disable"))
 		mmc->caps2 |= MMC_CAP2_NO_WRITE_PROTECT;
 }
@@ -1143,10 +1057,7 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
 	struct mmc_host *mmc = _host->mmc;
 	int ret;
 
-	/*
-	 * Check the sanity of mmc->f_min to prevent host->set_clock() from
-	 * looping forever...
-	 */
+	 
 	if (mmc->f_min == 0)
 		return -EINVAL;
 
@@ -1162,10 +1073,7 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Look for a card detect GPIO, if it fails with anything
-	 * else than a probe deferral, just live without it.
-	 */
+	 
 	ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
 	if (ret == -EPROBE_DEFER)
 		return ret;
@@ -1187,15 +1095,12 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
 	if (mmc_can_gpio_cd(mmc))
 		_host->ops.get_cd = mmc_gpio_get_cd;
 
-	/* must be set before tmio_mmc_reset() */
+	 
 	_host->native_hotplug = !(mmc_can_gpio_cd(mmc) ||
 				  mmc->caps & MMC_CAP_NEEDS_POLL ||
 				  !mmc_card_is_removable(mmc));
 
-	/*
-	 * While using internal tmio hardware logic for card detection, we need
-	 * to ensure it stays powered for it to work.
-	 */
+	 
 	if (_host->native_hotplug)
 		pm_runtime_get_noresume(&pdev->dev);
 
@@ -1212,11 +1117,11 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
 	spin_lock_init(&_host->lock);
 	mutex_init(&_host->ios_lock);
 
-	/* Init delayed work for request timeouts */
+	 
 	INIT_DELAYED_WORK(&_host->delayed_reset_work, tmio_mmc_reset_work);
 	INIT_WORK(&_host->done, tmio_mmc_done_work);
 
-	/* See if we also get DMA */
+	 
 	tmio_mmc_request_dma(_host, pdata);
 
 	pm_runtime_get_noresume(&pdev->dev);

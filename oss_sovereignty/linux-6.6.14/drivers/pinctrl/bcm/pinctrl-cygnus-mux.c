@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014-2017 Broadcom
 
-/*
- * Broadcom Cygnus IOMUX driver
- *
- * This file contains the Cygnus IOMUX driver that supports group based PINMUX
- * configuration. Although PINMUX configuration is mainly group based, the
- * Cygnus IOMUX controller allows certain pins to be individually muxed to GPIO
- * function, and therefore be controlled by the Cygnus ASIU GPIO controller
- */
+
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -30,39 +23,20 @@
 #define CYGNUS_NUM_IOMUX          (CYGNUS_NUM_IOMUX_REGS * \
 				   CYGNUS_NUM_MUX_PER_REG)
 
-/*
- * Cygnus IOMUX register description
- *
- * @offset: register offset for mux configuration of a group
- * @shift: bit shift for mux configuration of a group
- * @alt: alternate function to set to
- */
+ 
 struct cygnus_mux {
 	unsigned int offset;
 	unsigned int shift;
 	unsigned int alt;
 };
 
-/*
- * Keep track of Cygnus IOMUX configuration and prevent double configuration
- *
- * @cygnus_mux: Cygnus IOMUX register description
- * @is_configured: flag to indicate whether a mux setting has already been
- * configured
- */
+ 
 struct cygnus_mux_log {
 	struct cygnus_mux mux;
 	bool is_configured;
 };
 
-/*
- * Group based IOMUX configuration
- *
- * @name: name of the group
- * @pins: array of pins used by this group
- * @num_pins: total number of pins used by this group
- * @mux: Cygnus group based IOMUX configuration
- */
+ 
 struct cygnus_pin_group {
 	const char *name;
 	const unsigned *pins;
@@ -70,33 +44,14 @@ struct cygnus_pin_group {
 	struct cygnus_mux mux;
 };
 
-/*
- * Cygnus mux function and supported pin groups
- *
- * @name: name of the function
- * @groups: array of groups that can be supported by this function
- * @num_groups: total number of groups that can be supported by this function
- */
+ 
 struct cygnus_pin_function {
 	const char *name;
 	const char * const *groups;
 	unsigned num_groups;
 };
 
-/*
- * Cygnus IOMUX pinctrl core
- *
- * @pctl: pointer to pinctrl_dev
- * @dev: pointer to device
- * @base0: first I/O register base of the Cygnus IOMUX controller
- * @base1: second I/O register base
- * @groups: pointer to array of groups
- * @num_groups: total number of groups
- * @functions: pointer to array of functions
- * @num_functions: total number of functions
- * @mux_log: pointer to the array of mux logs
- * @lock: lock to protect register access
- */
+ 
 struct cygnus_pinctrl {
 	struct pinctrl_dev *pctl;
 	struct device *dev;
@@ -114,26 +69,14 @@ struct cygnus_pinctrl {
 	spinlock_t lock;
 };
 
-/*
- * Certain pins can be individually muxed to GPIO function
- *
- * @is_supported: flag to indicate GPIO mux is supported for this pin
- * @offset: register offset for GPIO mux override of a pin
- * @shift: bit shift for GPIO mux override of a pin
- */
+ 
 struct cygnus_gpio_mux {
 	int is_supported;
 	unsigned int offset;
 	unsigned int shift;
 };
 
-/*
- * Description of a pin in Cygnus
- *
- * @pin: pin number
- * @name: pin name
- * @gpio_mux: GPIO override related information
- */
+ 
 struct cygnus_pin {
 	unsigned pin;
 	char *name;
@@ -151,9 +94,7 @@ struct cygnus_pin {
 	},				\
 }
 
-/*
- * List of pins in Cygnus
- */
+ 
 static struct cygnus_pin cygnus_pins[] = {
 	CYGNUS_PIN_DESC(0, "ext_device_reset_n", 0, 0, 0),
 	CYGNUS_PIN_DESC(1, "chip_mode0", 0, 0, 0),
@@ -337,9 +278,7 @@ static struct cygnus_pin cygnus_pins[] = {
 	CYGNUS_PIN_DESC(179, "gpio3_3p3", 0, 0, 0),
 };
 
-/*
- * List of groups of pins
- */
+ 
 static const unsigned bsc1_pins[] = { 8, 9 };
 static const unsigned pcie_clkreq_pins[] = { 8, 9 };
 
@@ -486,9 +425,7 @@ static const unsigned usb2_oc_pins[] = { 178 };
 	}						\
 }
 
-/*
- * List of Cygnus pin groups
- */
+ 
 static const struct cygnus_pin_group cygnus_pin_groups[] = {
 	CYGNUS_PIN_GROUP(i2s2_0, 0x0, 0, 2),
 	CYGNUS_PIN_GROUP(i2s2_1, 0x0, 4, 2),
@@ -578,9 +515,7 @@ static const struct cygnus_pin_group cygnus_pin_groups[] = {
 	CYGNUS_PIN_GROUP(usb2_oc, 0x28, 8, 1),
 };
 
-/*
- * List of groups supported by functions
- */
+ 
 static const char * const i2s0_grps[] = { "i2s0_0_grp", "i2s0_1_grp" };
 static const char * const i2s1_grps[] = { "i2s1_0_grp", "i2s1_1_grp" };
 static const char * const i2s2_grps[] = { "i2s2_0_grp", "i2s2_1_grp",
@@ -646,9 +581,7 @@ static const char * const usb2_oc_grps[] = { "usb2_oc_grp" };
 	.num_groups = ARRAY_SIZE(func ## _grps),		\
 }
 
-/*
- * List of supported functions in Cygnus
- */
+ 
 static const struct cygnus_pin_function cygnus_pin_functions[] = {
 	CYGNUS_PIN_FUNCTION(i2s0),
 	CYGNUS_PIN_FUNCTION(i2s1),
@@ -780,16 +713,13 @@ static int cygnus_pinmux_set(struct cygnus_pinctrl *pinctrl,
 		    mux->shift != mux_log[i].mux.shift)
 			continue;
 
-		/* match found if we reach here */
+		 
 
-		/* if this is a new configuration, just do it! */
+		 
 		if (!mux_log[i].is_configured)
 			break;
 
-		/*
-		 * IOMUX has been configured previously and one is trying to
-		 * configure it to a different function
-		 */
+		 
 		if (mux_log[i].mux.alt != mux->alt) {
 			dev_err(pinctrl->dev,
 				"double configuration error detected!\n");
@@ -797,10 +727,7 @@ static int cygnus_pinmux_set(struct cygnus_pinctrl *pinctrl,
 				func->name, grp->name);
 			return -EINVAL;
 		} else {
-			/*
-			 * One tries to configure it to the same function.
-			 * Just quit and don't bother
-			 */
+			 
 			return 0;
 		}
 	}
@@ -846,7 +773,7 @@ static int cygnus_gpio_request_enable(struct pinctrl_dev *pctrl_dev,
 	u32 val;
 	unsigned long flags;
 
-	/* not all pins support GPIO pinmux override */
+	 
 	if (!mux->is_supported)
 		return -ENOTSUPP;
 

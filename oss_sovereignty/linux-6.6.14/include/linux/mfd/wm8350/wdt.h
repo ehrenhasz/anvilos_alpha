@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wdt.h  --  Watchdog Driver for Wolfson WM8350 PMIC
- *
- * Copyright 2007, 2008 Wolfson Microelectronics PLC
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_WM8350_WDT_H_
 #define __LINUX_MFD_WM8350_WDT_H_

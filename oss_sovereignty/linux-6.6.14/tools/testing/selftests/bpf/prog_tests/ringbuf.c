@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <linux/compiler.h>
 #include <asm/barrier.h>
@@ -54,7 +54,7 @@ static int process_sample(void *ctx, void *data, size_t len)
 		      777L, s->value);
 		return -EDONE;
 	default:
-		/* we don't care about the rest */
+		 
 		return 0;
 	}
 }
@@ -69,7 +69,7 @@ static void trigger_samples()
 	skel->bss->total = 0;
 	skel->bss->discarded = 0;
 
-	/* trigger exactly two samples */
+	 
 	skel->bss->value = 333;
 	syscall(__NR_getpgid);
 	skel->bss->value = 777;
@@ -103,7 +103,7 @@ static void ringbuf_subtest(void)
 		goto cleanup;
 
 	rb_fd = skel->maps.ringbuf.map_fd;
-	/* good read/write cons_pos */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, rb_fd, 0);
 	ASSERT_OK_PTR(mmap_ptr, "rw_cons_pos");
 	tmp_ptr = mremap(mmap_ptr, page_size, 2 * page_size, MREMAP_MAYMOVE);
@@ -112,13 +112,13 @@ static void ringbuf_subtest(void)
 	ASSERT_ERR(mprotect(mmap_ptr, page_size, PROT_EXEC), "exec_cons_pos_protect");
 	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_rw");
 
-	/* bad writeable prod_pos */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, page_size);
 	err = -errno;
 	ASSERT_ERR_PTR(mmap_ptr, "wr_prod_pos");
 	ASSERT_EQ(err, -EPERM, "wr_prod_pos_err");
 
-	/* bad writeable data pages */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, 2 * page_size);
 	err = -errno;
 	ASSERT_ERR_PTR(mmap_ptr, "wr_data_page_one");
@@ -128,7 +128,7 @@ static void ringbuf_subtest(void)
 	mmap_ptr = mmap(NULL, 2 * page_size, PROT_WRITE, MAP_SHARED, rb_fd, 2 * page_size);
 	ASSERT_ERR_PTR(mmap_ptr, "wr_data_page_all");
 
-	/* good read-only pages */
+	 
 	mmap_ptr = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED, rb_fd, 0);
 	if (!ASSERT_OK_PTR(mmap_ptr, "ro_prod_pos"))
 		goto cleanup;
@@ -138,7 +138,7 @@ static void ringbuf_subtest(void)
 	ASSERT_ERR_PTR(mremap(mmap_ptr, 0, 4 * page_size, MREMAP_MAYMOVE), "ro_remap");
 	ASSERT_OK(munmap(mmap_ptr, 4 * page_size), "unmap_ro");
 
-	/* good read-only pages with initial offset */
+	 
 	mmap_ptr = mmap(NULL, page_size, PROT_READ, MAP_SHARED, rb_fd, page_size);
 	if (!ASSERT_OK_PTR(mmap_ptr, "ro_prod_pos"))
 		goto cleanup;
@@ -148,7 +148,7 @@ static void ringbuf_subtest(void)
 	ASSERT_ERR_PTR(mremap(mmap_ptr, 0, 3 * page_size, MREMAP_MAYMOVE), "ro_remap");
 	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_ro");
 
-	/* only trigger BPF program for current process */
+	 
 	skel->bss->pid = getpid();
 
 	ringbuf = ring_buffer__new(skel->maps.ringbuf.map_fd,
@@ -162,7 +162,7 @@ static void ringbuf_subtest(void)
 
 	trigger_samples();
 
-	/* 2 submitted + 1 discarded records */
+	 
 	CHECK(skel->bss->avail_data != 3 * rec_sz,
 	      "err_avail_size", "exp %ld, got %ld\n",
 	      3L * rec_sz, skel->bss->avail_data);
@@ -176,16 +176,16 @@ static void ringbuf_subtest(void)
 	      "err_prod_pos", "exp %ld, got %ld\n",
 	      3L * rec_sz, skel->bss->prod_pos);
 
-	/* poll for samples */
+	 
 	err = ring_buffer__poll(ringbuf, -1);
 
-	/* -EDONE is used as an indicator that we are done */
+	 
 	if (CHECK(err != -EDONE, "err_done", "done err: %d\n", err))
 		goto cleanup;
 	cnt = atomic_xchg(&sample_cnt, 0);
 	CHECK(cnt != 2, "cnt", "exp %d samples, got %d\n", 2, cnt);
 
-	/* we expect extra polling to return nothing */
+	 
 	err = ring_buffer__poll(ringbuf, 0);
 	if (CHECK(err != 0, "extra_samples", "poll result: %d\n", err))
 		goto cleanup;
@@ -199,7 +199,7 @@ static void ringbuf_subtest(void)
 	CHECK(skel->bss->discarded != 1, "err_discarded", "exp %ld, got %ld\n",
 	      1L, skel->bss->discarded);
 
-	/* now validate consumer position is updated and returned */
+	 
 	trigger_samples();
 	CHECK(skel->bss->cons_pos != 3 * rec_sz,
 	      "err_cons_pos", "exp %ld, got %ld\n",
@@ -209,27 +209,25 @@ static void ringbuf_subtest(void)
 	cnt = atomic_xchg(&sample_cnt, 0);
 	CHECK(cnt != 2, "cnt", "exp %d samples, got %d\n", 2, cnt);
 
-	/* start poll in background w/ long timeout */
+	 
 	err = pthread_create(&thread, NULL, poll_thread, (void *)(long)10000);
 	if (CHECK(err, "bg_poll", "pthread_create failed: %d\n", err))
 		goto cleanup;
 
-	/* turn off notifications now */
+	 
 	skel->bss->flags = BPF_RB_NO_WAKEUP;
 
-	/* give background thread a bit of a time */
+	 
 	usleep(50000);
 	trigger_samples();
-	/* sleeping arbitrarily is bad, but no better way to know that
-	 * epoll_wait() **DID NOT** unblock in background thread
-	 */
+	 
 	usleep(50000);
-	/* background poll should still be blocked */
+	 
 	err = pthread_tryjoin_np(thread, (void **)&bg_ret);
 	if (CHECK(err != EBUSY, "try_join", "err %d\n", err))
 		goto cleanup;
 
-	/* BPF side did everything right */
+	 
 	CHECK(skel->bss->dropped != 0, "err_dropped", "exp %ld, got %ld\n",
 	      0L, skel->bss->dropped);
 	CHECK(skel->bss->total != 2, "err_total", "exp %ld, got %ld\n",
@@ -239,20 +237,18 @@ static void ringbuf_subtest(void)
 	cnt = atomic_xchg(&sample_cnt, 0);
 	CHECK(cnt != 0, "cnt", "exp %d samples, got %d\n", 0, cnt);
 
-	/* clear flags to return to "adaptive" notification mode */
+	 
 	skel->bss->flags = 0;
 
-	/* produce new samples, no notification should be triggered, because
-	 * consumer is now behind
-	 */
+	 
 	trigger_samples();
 
-	/* background poll should still be blocked */
+	 
 	err = pthread_tryjoin_np(thread, (void **)&bg_ret);
 	if (CHECK(err != EBUSY, "try_join", "err %d\n", err))
 		goto cleanup;
 
-	/* still no samples, because consumer is behind */
+	 
 	cnt = atomic_xchg(&sample_cnt, 0);
 	CHECK(cnt != 0, "cnt", "exp %d samples, got %d\n", 0, cnt);
 
@@ -262,12 +258,12 @@ static void ringbuf_subtest(void)
 
 	skel->bss->value = 333;
 	syscall(__NR_getpgid);
-	/* now force notifications */
+	 
 	skel->bss->flags = BPF_RB_FORCE_WAKEUP;
 	skel->bss->value = 777;
 	syscall(__NR_getpgid);
 
-	/* now we should get a pending notification */
+	 
 	usleep(50000);
 	err = pthread_tryjoin_np(thread, (void **)&bg_ret);
 	if (CHECK(err, "join_bg", "err %d\n", err))
@@ -276,17 +272,15 @@ static void ringbuf_subtest(void)
 	if (CHECK(bg_ret <= 0, "bg_ret", "epoll_wait result: %ld", bg_ret))
 		goto cleanup;
 
-	/* due to timing variations, there could still be non-notified
-	 * samples, so consume them here to collect all the samples
-	 */
+	 
 	err = ring_buffer__consume(ringbuf);
 	CHECK(err < 0, "rb_consume", "failed: %d\b", err);
 
-	/* 3 rounds, 2 samples each */
+	 
 	cnt = atomic_xchg(&sample_cnt, 0);
 	CHECK(cnt != 6, "cnt", "exp %d samples, got %d\n", 6, cnt);
 
-	/* BPF side did everything right */
+	 
 	CHECK(skel->bss->dropped != 0, "err_dropped", "exp %ld, got %ld\n",
 	      0L, skel->bss->dropped);
 	CHECK(skel->bss->total != 2, "err_total", "exp %ld, got %ld\n",

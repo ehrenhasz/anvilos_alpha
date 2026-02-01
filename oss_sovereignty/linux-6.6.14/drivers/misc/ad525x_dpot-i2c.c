@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Analog Devices digital potentiometers (I2C bus)
- *
- * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
 
 #include "ad525x_dpot.h"
 
-/* I2C bus functions */
+ 
 static int write_d8(void *client, u8 val)
 {
 	return i2c_smbus_write_byte(client, val);

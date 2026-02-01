@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Driver for Cadence QSPI Controller
-//
-// Copyright Altera Corporation (C) 2012-2014. All rights reserved.
-// Copyright Intel Corporation (C) 2019-2020. All rights reserved.
-// Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -33,7 +33,7 @@
 #define CQSPI_NAME			"cadence-qspi"
 #define CQSPI_MAX_CHIPSELECT		16
 
-/* Quirks */
+ 
 #define CQSPI_NEEDS_WR_DELAY		BIT(0)
 #define CQSPI_DISABLE_DAC_MODE		BIT(1)
 #define CQSPI_SUPPORT_EXTERNAL_DMA	BIT(2)
@@ -41,7 +41,7 @@
 #define CQSPI_SLOW_SRAM		BIT(4)
 #define CQSPI_NEEDS_APB_AHB_HAZARD_WAR	BIT(5)
 
-/* Capabilities */
+ 
 #define CQSPI_SUPPORTS_OCTAL		BIT(0)
 
 #define CQSPI_OP_WIDTH(part) ((part).nbytes ? ilog2((part).buswidth) : 0)
@@ -99,7 +99,7 @@ struct cqspi_st {
 	bool			slow_sram;
 	bool			apb_ahb_hazard;
 
-	bool			is_jh7110; /* Flag for StarFive JH7110 SoC */
+	bool			is_jh7110;  
 };
 
 struct cqspi_driver_platdata {
@@ -112,7 +112,7 @@ struct cqspi_driver_platdata {
 			       struct cqspi_st *cqspi);
 };
 
-/* Operation timeout value */
+ 
 #define CQSPI_TIMEOUT_MS			500
 #define CQSPI_READ_TIMEOUT_MS			10
 
@@ -122,7 +122,7 @@ struct cqspi_driver_platdata {
 
 #define CQSPI_STIG_DATA_LEN_MAX			8
 
-/* Register map */
+ 
 #define CQSPI_REG_CONFIG			0x00
 #define CQSPI_REG_CONFIG_ENABLE_MASK		BIT(0)
 #define CQSPI_REG_CONFIG_ENB_DIR_ACC_CTRL	BIT(7)
@@ -267,7 +267,7 @@ struct cqspi_driver_platdata {
 #define CQSPI_REG_VERSAL_DMA_DST_CTRL_VAL	0xF43FFA00
 #define CQSPI_REG_VERSAL_ADDRRANGE_WIDTH_VAL	0x6
 
-/* Interrupt status bits */
+ 
 #define CQSPI_REG_IRQ_MODE_ERR			BIT(0)
 #define CQSPI_REG_IRQ_UNDERFLOW			BIT(1)
 #define CQSPI_REG_IRQ_IND_COMP			BIT(2)
@@ -335,10 +335,10 @@ static irqreturn_t cqspi_irq_handler(int this_irq, void *dev)
 
 	ddata = of_device_get_match_data(device);
 
-	/* Read interrupt status */
+	 
 	irq_status = readl(cqspi->iobase + CQSPI_REG_IRQSTATUS);
 
-	/* Clear interrupt */
+	 
 	writel(irq_status, cqspi->iobase + CQSPI_REG_IRQSTATUS);
 
 	if (cqspi->use_dma_read && ddata && ddata->get_dma_status) {
@@ -392,11 +392,7 @@ static int cqspi_wait_idle(struct cqspi_st *cqspi)
 
 	timeout = jiffies + msecs_to_jiffies(CQSPI_TIMEOUT_MS);
 	while (1) {
-		/*
-		 * Read few times in succession to ensure the controller
-		 * is indeed idle, that is, the bit does not transition
-		 * low again.
-		 */
+		 
 		if (cqspi_is_idle(cqspi))
 			count++;
 		else
@@ -406,7 +402,7 @@ static int cqspi_wait_idle(struct cqspi_st *cqspi)
 			return 0;
 
 		if (time_after(jiffies, timeout)) {
-			/* Timeout, in busy mode. */
+			 
 			dev_err(&cqspi->pdev->dev,
 				"QSPI is still busy after %dms timeout.\n",
 				CQSPI_TIMEOUT_MS);
@@ -422,13 +418,13 @@ static int cqspi_exec_flash_cmd(struct cqspi_st *cqspi, unsigned int reg)
 	void __iomem *reg_base = cqspi->iobase;
 	int ret;
 
-	/* Write the CMDCTRL without start execution. */
+	 
 	writel(reg, reg_base + CQSPI_REG_CMDCTRL);
-	/* Start execute */
+	 
 	reg |= CQSPI_REG_CMDCTRL_EXECUTE_MASK;
 	writel(reg, reg_base + CQSPI_REG_CMDCTRL);
 
-	/* Polling for completion. */
+	 
 	ret = cqspi_wait_for_bit(reg_base + CQSPI_REG_CMDCTRL,
 				 CQSPI_REG_CMDCTRL_INPROGRESS_MASK, 1);
 	if (ret) {
@@ -437,7 +433,7 @@ static int cqspi_exec_flash_cmd(struct cqspi_st *cqspi, unsigned int reg)
 		return ret;
 	}
 
-	/* Polling QSPI idle status. */
+	 
 	return cqspi_wait_idle(cqspi);
 }
 
@@ -453,7 +449,7 @@ static int cqspi_setup_opcode_ext(struct cqspi_flash_pdata *f_pdata,
 	if (op->cmd.nbytes != 2)
 		return -EINVAL;
 
-	/* Opcode extension is the LSB. */
+	 
 	ext = op->cmd.opcode & 0xff;
 
 	reg = readl(reg_base + CQSPI_REG_OP_EXT_LOWER);
@@ -474,15 +470,12 @@ static int cqspi_enable_dtr(struct cqspi_flash_pdata *f_pdata,
 
 	reg = readl(reg_base + CQSPI_REG_CONFIG);
 
-	/*
-	 * We enable dual byte opcode here. The callers have to set up the
-	 * extension opcode based on which type of operation it is.
-	 */
+	 
 	if (op->cmd.dtr) {
 		reg |= CQSPI_REG_CONFIG_DTR_PROTO;
 		reg |= CQSPI_REG_CONFIG_DUAL_OPCODE;
 
-		/* Set up command opcode extension. */
+		 
 		ret = cqspi_setup_opcode_ext(f_pdata, op, shift);
 		if (ret)
 			return ret;
@@ -541,11 +534,11 @@ static int cqspi_command_read(struct cqspi_flash_pdata *f_pdata,
 
 	reg |= (0x1 << CQSPI_REG_CMDCTRL_RD_EN_LSB);
 
-	/* 0 means 1 byte. */
+	 
 	reg |= (((n_rx - 1) & CQSPI_REG_CMDCTRL_RD_BYTES_MASK)
 		<< CQSPI_REG_CMDCTRL_RD_BYTES_LSB);
 
-	/* setup ADDR BIT field */
+	 
 	if (op->addr.nbytes) {
 		reg |= (0x1 << CQSPI_REG_CMDCTRL_ADDR_EN_LSB);
 		reg |= ((op->addr.nbytes - 1) &
@@ -561,7 +554,7 @@ static int cqspi_command_read(struct cqspi_flash_pdata *f_pdata,
 
 	reg = readl(reg_base + CQSPI_REG_CMDREADDATALOWER);
 
-	/* Put the read value into rx_buf */
+	 
 	read_len = (n_rx > 4) ? 4 : n_rx;
 	memcpy(rxbuf, &reg, read_len);
 	rxbuf += read_len;
@@ -573,7 +566,7 @@ static int cqspi_command_read(struct cqspi_flash_pdata *f_pdata,
 		memcpy(rxbuf, &reg, read_len);
 	}
 
-	/* Reset CMD_CTRL Reg once command read completes */
+	 
 	writel(0, reg_base + CQSPI_REG_CMDCTRL);
 
 	return 0;
@@ -642,7 +635,7 @@ static int cqspi_command_write(struct cqspi_flash_pdata *f_pdata,
 
 	ret = cqspi_exec_flash_cmd(cqspi, reg);
 
-	/* Reset CMD_CTRL Reg once command write completes */
+	 
 	writel(0, reg_base + CQSPI_REG_CMDCTRL);
 
 	return ret;
@@ -670,7 +663,7 @@ static int cqspi_read_setup(struct cqspi_flash_pdata *f_pdata,
 	reg = opcode << CQSPI_REG_RD_INSTR_OPCODE_LSB;
 	reg |= cqspi_calc_rdreg(op);
 
-	/* Setup dummy clock cycles */
+	 
 	dummy_clk = cqspi_calc_dummy(op);
 
 	if (dummy_clk > CQSPI_DUMMY_CLKS_MAX)
@@ -682,7 +675,7 @@ static int cqspi_read_setup(struct cqspi_flash_pdata *f_pdata,
 
 	writel(reg, reg_base + CQSPI_REG_RD_INSTR);
 
-	/* Set address width */
+	 
 	reg = readl(reg_base + CQSPI_REG_SIZE);
 	reg &= ~CQSPI_REG_SIZE_ADDRESS_MASK;
 	reg |= (op->addr.nbytes - 1);
@@ -707,16 +700,10 @@ static int cqspi_indirect_read_execute(struct cqspi_flash_pdata *f_pdata,
 	writel(from_addr, reg_base + CQSPI_REG_INDIRECTRDSTARTADDR);
 	writel(remaining, reg_base + CQSPI_REG_INDIRECTRDBYTES);
 
-	/* Clear all interrupts. */
+	 
 	writel(CQSPI_IRQ_STATUS_MASK, reg_base + CQSPI_REG_IRQSTATUS);
 
-	/*
-	 * On SoCFPGA platform reading the SRAM is slow due to
-	 * hardware limitation and causing read interrupt storm to CPU,
-	 * so enabling only watermark interrupt to disable all read
-	 * interrupts later as we want to run "bytes to read" loop with
-	 * all the read interrupts disabled for max performance.
-	 */
+	 
 
 	if (!cqspi->slow_sram)
 		writel(CQSPI_IRQ_MASK_RD, reg_base + CQSPI_REG_IRQMASK);
@@ -732,10 +719,7 @@ static int cqspi_indirect_read_execute(struct cqspi_flash_pdata *f_pdata,
 						 msecs_to_jiffies(CQSPI_READ_TIMEOUT_MS)))
 			ret = -ETIMEDOUT;
 
-		/*
-		 * Disable all read interrupts until
-		 * we are out of "bytes to read"
-		 */
+		 
 		if (cqspi->slow_sram)
 			writel(0x0, reg_base + CQSPI_REG_IRQMASK);
 
@@ -753,7 +737,7 @@ static int cqspi_indirect_read_execute(struct cqspi_flash_pdata *f_pdata,
 			bytes_to_read = bytes_to_read > remaining ?
 					remaining : bytes_to_read;
 			bytes_to_read = round_down(bytes_to_read, 4);
-			/* Read 4 byte word chunks then single bytes */
+			 
 			if (bytes_to_read) {
 				ioread32_rep(ahb_base, rxbuf,
 					     (bytes_to_read / 4));
@@ -777,7 +761,7 @@ static int cqspi_indirect_read_execute(struct cqspi_flash_pdata *f_pdata,
 		}
 	}
 
-	/* Check indirect done status */
+	 
 	ret = cqspi_wait_for_bit(reg_base + CQSPI_REG_INDIRECTRD,
 				 CQSPI_REG_INDIRECTRD_DONE_MASK, 0);
 	if (ret) {
@@ -785,19 +769,19 @@ static int cqspi_indirect_read_execute(struct cqspi_flash_pdata *f_pdata,
 		goto failrd;
 	}
 
-	/* Disable interrupt */
+	 
 	writel(0, reg_base + CQSPI_REG_IRQMASK);
 
-	/* Clear indirect completion status */
+	 
 	writel(CQSPI_REG_INDIRECTRD_DONE_MASK, reg_base + CQSPI_REG_INDIRECTRD);
 
 	return 0;
 
 failrd:
-	/* Disable interrupt */
+	 
 	writel(0, reg_base + CQSPI_REG_IRQMASK);
 
-	/* Cancel the indirect read */
+	 
 	writel(CQSPI_REG_INDIRECTRD_CANCEL_MASK,
 	       reg_base + CQSPI_REG_INDIRECTRD);
 	return ret;
@@ -861,30 +845,30 @@ static int cqspi_versal_indirect_read_dma(struct cqspi_flash_pdata *f_pdata,
 	writel(CQSPI_REG_VERSAL_ADDRRANGE_WIDTH_VAL,
 	       reg_base + CQSPI_REG_INDTRIG_ADDRRANGE);
 
-	/* Clear all interrupts. */
+	 
 	writel(CQSPI_IRQ_STATUS_MASK, reg_base + CQSPI_REG_IRQSTATUS);
 
-	/* Enable DMA done interrupt */
+	 
 	writel(CQSPI_REG_VERSAL_DMA_DST_DONE_MASK,
 	       reg_base + CQSPI_REG_VERSAL_DMA_DST_I_EN);
 
-	/* Default DMA periph configuration */
+	 
 	writel(CQSPI_REG_VERSAL_DMA_VAL, reg_base + CQSPI_REG_DMA);
 
-	/* Configure DMA Dst address */
+	 
 	writel(lower_32_bits(dma_addr),
 	       reg_base + CQSPI_REG_VERSAL_DMA_DST_ADDR);
 	writel(upper_32_bits(dma_addr),
 	       reg_base + CQSPI_REG_VERSAL_DMA_DST_ADDR_MSB);
 
-	/* Configure DMA Src address */
+	 
 	writel(cqspi->trigger_address, reg_base +
 	       CQSPI_REG_VERSAL_DMA_SRC_ADDR);
 
-	/* Set DMA destination size */
+	 
 	writel(bytes_to_dma, reg_base + CQSPI_REG_VERSAL_DMA_DST_SIZE);
 
-	/* Set DMA destination control */
+	 
 	writel(CQSPI_REG_VERSAL_DMA_DST_CTRL_VAL,
 	       reg_base + CQSPI_REG_VERSAL_DMA_DST_CTRL);
 
@@ -899,10 +883,10 @@ static int cqspi_versal_indirect_read_dma(struct cqspi_flash_pdata *f_pdata,
 		goto failrd;
 	}
 
-	/* Disable DMA interrupt */
+	 
 	writel(0x0, cqspi->iobase + CQSPI_REG_VERSAL_DMA_DST_I_DIS);
 
-	/* Clear indirect completion status */
+	 
 	writel(CQSPI_REG_INDIRECTRD_DONE_MASK,
 	       cqspi->iobase + CQSPI_REG_INDIRECTRD);
 	dma_unmap_single(dev, dma_addr, bytes_to_dma, DMA_FROM_DEVICE);
@@ -933,10 +917,10 @@ nondmard:
 	return 0;
 
 failrd:
-	/* Disable DMA interrupt */
+	 
 	writel(0x0, reg_base + CQSPI_REG_VERSAL_DMA_DST_I_DIS);
 
-	/* Cancel the indirect read */
+	 
 	writel(CQSPI_REG_INDIRECTWR_CANCEL_MASK,
 	       reg_base + CQSPI_REG_INDIRECTRD);
 
@@ -969,7 +953,7 @@ static int cqspi_write_setup(struct cqspi_flash_pdata *f_pdata,
 	else
 		opcode = op->cmd.opcode;
 
-	/* Set opcode. */
+	 
 	reg = opcode << CQSPI_REG_WR_INSTR_OPCODE_LSB;
 	reg |= CQSPI_OP_WIDTH(op->data) << CQSPI_REG_WR_INSTR_TYPE_DATA_LSB;
 	reg |= CQSPI_OP_WIDTH(op->addr) << CQSPI_REG_WR_INSTR_TYPE_ADDR_LSB;
@@ -977,26 +961,12 @@ static int cqspi_write_setup(struct cqspi_flash_pdata *f_pdata,
 	reg = cqspi_calc_rdreg(op);
 	writel(reg, reg_base + CQSPI_REG_RD_INSTR);
 
-	/*
-	 * SPI NAND flashes require the address of the status register to be
-	 * passed in the Read SR command. Also, some SPI NOR flashes like the
-	 * cypress Semper flash expect a 4-byte dummy address in the Read SR
-	 * command in DTR mode.
-	 *
-	 * But this controller does not support address phase in the Read SR
-	 * command when doing auto-HW polling. So, disable write completion
-	 * polling on the controller's side. spinand and spi-nor will take
-	 * care of polling the status register.
-	 */
+	 
 	if (cqspi->wr_completion) {
 		reg = readl(reg_base + CQSPI_REG_WR_COMPLETION_CTRL);
 		reg |= CQSPI_REG_WR_DISABLE_AUTO_POLL;
 		writel(reg, reg_base + CQSPI_REG_WR_COMPLETION_CTRL);
-		/*
-		 * DAC mode require auto polling as flash needs to be polled
-		 * for write completion in case of bubble in SPI transaction
-		 * due to slow CPU/DMA master.
-		 */
+		 
 		cqspi->use_direct_mode_wr = false;
 	}
 
@@ -1021,7 +991,7 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 	writel(to_addr, reg_base + CQSPI_REG_INDIRECTWRSTARTADDR);
 	writel(remaining, reg_base + CQSPI_REG_INDIRECTWRBYTES);
 
-	/* Clear all interrupts. */
+	 
 	writel(CQSPI_IRQ_STATUS_MASK, reg_base + CQSPI_REG_IRQSTATUS);
 
 	writel(CQSPI_IRQ_MASK_WR, reg_base + CQSPI_REG_IRQMASK);
@@ -1029,20 +999,11 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 	reinit_completion(&cqspi->transfer_complete);
 	writel(CQSPI_REG_INDIRECTWR_START_MASK,
 	       reg_base + CQSPI_REG_INDIRECTWR);
-	/*
-	 * As per 66AK2G02 TRM SPRUHY8F section 11.15.5.3 Indirect Access
-	 * Controller programming sequence, couple of cycles of
-	 * QSPI_REF_CLK delay is required for the above bit to
-	 * be internally synchronized by the QSPI module. Provide 5
-	 * cycles of delay.
-	 */
+	 
 	if (cqspi->wr_delay)
 		ndelay(cqspi->wr_delay);
 
-	/*
-	 * If a hazard exists between the APB and AHB interfaces, perform a
-	 * dummy readback from the controller to ensure synchronization.
-	 */
+	 
 	if (cqspi->apb_ahb_hazard)
 		readl(reg_base + CQSPI_REG_INDIRECTWR);
 
@@ -1052,7 +1013,7 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 		write_bytes = remaining;
 		write_words = write_bytes / 4;
 		mod_bytes = write_bytes % 4;
-		/* Write 4 bytes at a time then single bytes. */
+		 
 		if (write_words) {
 			iowrite32_rep(cqspi->ahb_base, txbuf, write_words);
 			txbuf += (write_words * 4);
@@ -1078,7 +1039,7 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 			reinit_completion(&cqspi->transfer_complete);
 	}
 
-	/* Check indirect done status */
+	 
 	ret = cqspi_wait_for_bit(reg_base + CQSPI_REG_INDIRECTWR,
 				 CQSPI_REG_INDIRECTWR_DONE_MASK, 0);
 	if (ret) {
@@ -1086,10 +1047,10 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 		goto failwr;
 	}
 
-	/* Disable interrupt. */
+	 
 	writel(0, reg_base + CQSPI_REG_IRQMASK);
 
-	/* Clear indirect completion status */
+	 
 	writel(CQSPI_REG_INDIRECTWR_DONE_MASK, reg_base + CQSPI_REG_INDIRECTWR);
 
 	cqspi_wait_idle(cqspi);
@@ -1097,10 +1058,10 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
 	return 0;
 
 failwr:
-	/* Disable interrupt. */
+	 
 	writel(0, reg_base + CQSPI_REG_IRQMASK);
 
-	/* Cancel the indirect write */
+	 
 	writel(CQSPI_REG_INDIRECTWR_CANCEL_MASK,
 	       reg_base + CQSPI_REG_INDIRECTWR);
 	return ret;
@@ -1119,12 +1080,7 @@ static void cqspi_chipselect(struct cqspi_flash_pdata *f_pdata)
 	} else {
 		reg &= ~CQSPI_REG_CONFIG_DECODE_MASK;
 
-		/* Convert CS if without decoder.
-		 * CS0 to 4b'1110
-		 * CS1 to 4b'1101
-		 * CS2 to 4b'1011
-		 * CS3 to 4b'0111
-		 */
+		 
 		chip_select = 0xF & ~(1 << chip_select);
 	}
 
@@ -1140,7 +1096,7 @@ static unsigned int calculate_ticks_for_ns(const unsigned int ref_clk_hz,
 {
 	unsigned int ticks;
 
-	ticks = ref_clk_hz / 1000;	/* kHz */
+	ticks = ref_clk_hz / 1000;	 
 	ticks = DIV_ROUND_UP(ticks * ns_val, 1000000);
 
 	return ticks;
@@ -1155,11 +1111,11 @@ static void cqspi_delay(struct cqspi_flash_pdata *f_pdata)
 	unsigned int reg;
 	unsigned int tsclk;
 
-	/* calculate the number of ref ticks for one sclk tick */
+	 
 	tsclk = DIV_ROUND_UP(ref_clk_hz, cqspi->sclk);
 
 	tshsl = calculate_ticks_for_ns(ref_clk_hz, f_pdata->tshsl_ns);
-	/* this particular value must be at least one sclk */
+	 
 	if (tshsl < tsclk)
 		tshsl = tsclk;
 
@@ -1184,10 +1140,10 @@ static void cqspi_config_baudrate_div(struct cqspi_st *cqspi)
 	void __iomem *reg_base = cqspi->iobase;
 	u32 reg, div;
 
-	/* Recalculate the baudrate divisor based on QSPI specification. */
+	 
 	div = DIV_ROUND_UP(ref_clk_hz, 2 * cqspi->sclk) - 1;
 
-	/* Maximum baud divisor */
+	 
 	if (div > CQSPI_REG_CONFIG_BAUD_MASK) {
 		div = CQSPI_REG_CONFIG_BAUD_MASK;
 		dev_warn(&cqspi->pdev->dev,
@@ -1234,13 +1190,13 @@ static void cqspi_configure(struct cqspi_flash_pdata *f_pdata,
 	if (switch_cs || switch_ck)
 		cqspi_controller_enable(cqspi, 0);
 
-	/* Switch chip select. */
+	 
 	if (switch_cs) {
 		cqspi->current_cs = f_pdata->cs;
 		cqspi_chipselect(f_pdata);
 	}
 
-	/* Setup baudrate divisor and delays */
+	 
 	if (switch_ck) {
 		cqspi->sclk = sclk;
 		cqspi_config_baudrate_div(cqspi);
@@ -1266,14 +1222,7 @@ static ssize_t cqspi_write(struct cqspi_flash_pdata *f_pdata,
 	if (ret)
 		return ret;
 
-	/*
-	 * Some flashes like the Cypress Semper flash expect a dummy 4-byte
-	 * address (all 0s) with the read status register command in DTR mode.
-	 * But this controller does not support sending dummy address bytes to
-	 * the flash when it is polling the write completion register in DTR
-	 * mode. So, we can not use direct mode when in DTR mode for writing
-	 * data.
-	 */
+	 
 	if (!op->cmd.dtr && cqspi->use_direct_mode &&
 	    cqspi->use_direct_mode_wr && ((to + len) <= cqspi->ahb_size)) {
 		memcpy_toio(cqspi->ahb_base + to, buf, len);
@@ -1386,11 +1335,7 @@ static int cqspi_mem_process(struct spi_mem *mem, const struct spi_mem_op *op)
 	cqspi_configure(f_pdata, mem->spi->max_speed_hz);
 
 	if (op->data.dir == SPI_MEM_DATA_IN && op->data.buf.in) {
-	/*
-	 * Performing reads in DAC mode forces to read minimum 4 bytes
-	 * which is unsupported on some flash devices during register
-	 * reads, prefer STIG mode for such small reads.
-	 */
+	 
 		if (!op->addr.nbytes ||
 		    op->data.nbytes <= CQSPI_STIG_DATA_LEN_MAX)
 			return cqspi_command_read(f_pdata, op);
@@ -1420,10 +1365,7 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
 {
 	bool all_true, all_false;
 
-	/*
-	 * op->dummy.dtr is required for converting nbytes into ncycles.
-	 * Also, don't check the dtr field of the op phase having zero nbytes.
-	 */
+	 
 	all_true = op->cmd.dtr &&
 		   (!op->addr.nbytes || op->addr.dtr) &&
 		   (!op->dummy.nbytes || op->dummy.dtr) &&
@@ -1433,7 +1375,7 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
 		    !op->data.dtr;
 
 	if (all_true) {
-		/* Right now we only support 8-8-8 DTR mode. */
+		 
 		if (op->cmd.nbytes && op->cmd.buswidth != 8)
 			return false;
 		if (op->addr.nbytes && op->addr.buswidth != 8)
@@ -1441,7 +1383,7 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
 		if (op->data.nbytes && op->data.buswidth != 8)
 			return false;
 	} else if (!all_false) {
-		/* Mixed DTR modes are not supported. */
+		 
 		return false;
 	}
 
@@ -1527,34 +1469,34 @@ static void cqspi_controller_init(struct cqspi_st *cqspi)
 
 	cqspi_controller_enable(cqspi, 0);
 
-	/* Configure the remap address register, no remap */
+	 
 	writel(0, cqspi->iobase + CQSPI_REG_REMAP);
 
-	/* Disable all interrupts. */
+	 
 	writel(0, cqspi->iobase + CQSPI_REG_IRQMASK);
 
-	/* Configure the SRAM split to 1:1 . */
+	 
 	writel(cqspi->fifo_depth / 2, cqspi->iobase + CQSPI_REG_SRAMPARTITION);
 
-	/* Load indirect trigger address. */
+	 
 	writel(cqspi->trigger_address,
 	       cqspi->iobase + CQSPI_REG_INDIRECTTRIGGER);
 
-	/* Program read watermark -- 1/2 of the FIFO. */
+	 
 	writel(cqspi->fifo_depth * cqspi->fifo_width / 2,
 	       cqspi->iobase + CQSPI_REG_INDIRECTRDWATERMARK);
-	/* Program write watermark -- 1/8 of the FIFO. */
+	 
 	writel(cqspi->fifo_depth * cqspi->fifo_width / 8,
 	       cqspi->iobase + CQSPI_REG_INDIRECTWRWATERMARK);
 
-	/* Disable direct access controller */
+	 
 	if (!cqspi->use_direct_mode) {
 		reg = readl(cqspi->iobase + CQSPI_REG_CONFIG);
 		reg &= ~CQSPI_REG_CONFIG_ENB_DIR_ACC_CTRL;
 		writel(reg, cqspi->iobase + CQSPI_REG_CONFIG);
 	}
 
-	/* Enable DMA interface */
+	 
 	if (cqspi->use_dma_read) {
 		reg = readl(cqspi->iobase + CQSPI_REG_CONFIG);
 		reg |= CQSPI_REG_CONFIG_DMA_MASK;
@@ -1611,7 +1553,7 @@ static int cqspi_setup_flash(struct cqspi_st *cqspi)
 	unsigned int cs;
 	int ret;
 
-	/* Get flash device data */
+	 
 	for_each_available_child_of_node(dev->of_node, np) {
 		ret = of_property_read_u32(np, "reg", &cs);
 		if (ret) {
@@ -1713,14 +1655,14 @@ static int cqspi_probe(struct platform_device *pdev)
 	cqspi->is_jh7110 = false;
 	platform_set_drvdata(pdev, cqspi);
 
-	/* Obtain configuration from OF. */
+	 
 	ret = cqspi_of_get_pdata(cqspi);
 	if (ret) {
 		dev_err(dev, "Cannot get mandatory OF data.\n");
 		return -ENODEV;
 	}
 
-	/* Obtain QSPI clock. */
+	 
 	cqspi->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(cqspi->clk)) {
 		dev_err(dev, "Cannot claim QSPI clock.\n");
@@ -1728,7 +1670,7 @@ static int cqspi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Obtain and remap controller address. */
+	 
 	cqspi->iobase = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(cqspi->iobase)) {
 		dev_err(dev, "Cannot remap controller address.\n");
@@ -1736,7 +1678,7 @@ static int cqspi_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Obtain and remap AHB address. */
+	 
 	cqspi->ahb_base = devm_platform_get_and_ioremap_resource(pdev, 1, &res_ahb);
 	if (IS_ERR(cqspi->ahb_base)) {
 		dev_err(dev, "Cannot remap AHB address.\n");
@@ -1748,7 +1690,7 @@ static int cqspi_probe(struct platform_device *pdev)
 
 	init_completion(&cqspi->transfer_complete);
 
-	/* Obtain IRQ line. */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return -ENXIO;
@@ -1764,7 +1706,7 @@ static int cqspi_probe(struct platform_device *pdev)
 		goto probe_clk_failed;
 	}
 
-	/* Obtain QSPI reset control */
+	 
 	rstc = devm_reset_control_get_optional_exclusive(dev, "qspi");
 	if (IS_ERR(rstc)) {
 		ret = PTR_ERR(rstc);
@@ -1799,7 +1741,7 @@ static int cqspi_probe(struct platform_device *pdev)
 	cqspi->master_ref_clk_hz = clk_get_rate(cqspi->clk);
 	host->max_speed_hz = cqspi->master_ref_clk_hz;
 
-	/* write completion is supported by default */
+	 
 	cqspi->wr_completion = true;
 
 	ddata  = of_device_get_match_data(dev);
@@ -2004,7 +1946,7 @@ static const struct of_device_id cqspi_dt_ids[] = {
 		.compatible = "amd,pensando-elba-qspi",
 		.data = &pensando_cdns_qspi,
 	},
-	{ /* end of table */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, cqspi_dt_ids);

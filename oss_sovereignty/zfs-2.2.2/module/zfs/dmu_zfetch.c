@@ -1,31 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
-/*
- * Copyright (c) 2013, 2017 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/arc_impl.h>
@@ -37,33 +13,28 @@
 #include <sys/kstat.h>
 #include <sys/wmsum.h>
 
-/*
- * This tunable disables predictive prefetch.  Note that it leaves "prescient"
- * prefetch (e.g. prefetch for zfs send) intact.  Unlike predictive prefetch,
- * prescient prefetch never issues i/os that end up not being needed,
- * so it can't hurt performance.
- */
+ 
 
 static int zfs_prefetch_disable = B_FALSE;
 
-/* max # of streams per zfetch */
+ 
 static unsigned int	zfetch_max_streams = 8;
-/* min time before stream reclaim */
+ 
 static unsigned int	zfetch_min_sec_reap = 1;
-/* max time before stream delete */
+ 
 static unsigned int	zfetch_max_sec_reap = 2;
 #ifdef _ILP32
-/* min bytes to prefetch per stream (default 2MB) */
+ 
 static unsigned int	zfetch_min_distance = 2 * 1024 * 1024;
-/* max bytes to prefetch per stream (default 8MB) */
+ 
 unsigned int	zfetch_max_distance = 8 * 1024 * 1024;
 #else
-/* min bytes to prefetch per stream (default 4MB) */
+ 
 static unsigned int	zfetch_min_distance = 4 * 1024 * 1024;
-/* max bytes to prefetch per stream (default 64MB) */
+ 
 unsigned int	zfetch_max_distance = 64 * 1024 * 1024;
 #endif
-/* max bytes to prefetch indirects for per stream (default 64MB) */
+ 
 unsigned int	zfetch_max_idistance = 64 * 1024 * 1024;
 
 typedef struct zfetch_stats {
@@ -154,11 +125,7 @@ zfetch_fini(void)
 	aggsum_fini(&zfetch_sums.zfetchstat_io_active);
 }
 
-/*
- * This takes a pointer to a zfetch structure and a dnode.  It performs the
- * necessary setup for the zfetch structure, grokking data from the
- * associated dnode.
- */
+ 
 void
 dmu_zfetch_init(zfetch_t *zf, dnode_t *dno)
 {
@@ -193,10 +160,7 @@ dmu_zfetch_stream_remove(zfetch_t *zf, zstream_t *zs)
 		dmu_zfetch_stream_fini(zs);
 }
 
-/*
- * Clean-up state associated with a zfetch structure (e.g. destroy the
- * streams).  This doesn't free the zfetch_t itself, that's left to the caller.
- */
+ 
 void
 dmu_zfetch_fini(zfetch_t *zf)
 {
@@ -212,12 +176,7 @@ dmu_zfetch_fini(zfetch_t *zf)
 	zf->zf_dnode = NULL;
 }
 
-/*
- * If there aren't too many active streams already, create one more.
- * In process delete/reuse all streams without hits for zfetch_max_sec_reap.
- * If needed, reuse oldest stream without hits for zfetch_min_sec_reap or ever.
- * The "blkid" argument is the next block that we expect this stream to access.
- */
+ 
 static void
 dmu_zfetch_stream_create(zfetch_t *zf, uint64_t blkid)
 {
@@ -226,15 +185,11 @@ dmu_zfetch_stream_create(zfetch_t *zf, uint64_t blkid)
 
 	ASSERT(MUTEX_HELD(&zf->zf_lock));
 
-	/*
-	 * Delete too old streams, reusing the first found one.
-	 */
+	 
 	t = now - SEC2NSEC(zfetch_max_sec_reap);
 	for (zs = list_head(&zf->zf_stream); zs != NULL; zs = zs_next) {
 		zs_next = list_next(&zf->zf_stream, zs);
-		/*
-		 * Skip if still active.  1 -- zf_stream reference.
-		 */
+		 
 		if (zfs_refcount_count(&zs->zs_refs) != 1)
 			continue;
 		if (zs->zs_atime > t)
@@ -249,11 +204,7 @@ dmu_zfetch_stream_create(zfetch_t *zf, uint64_t blkid)
 		goto reuse;
 	}
 
-	/*
-	 * The maximum number of streams is normally zfetch_max_streams,
-	 * but for small files we lower it such that it's at least possible
-	 * for all the streams to be non-overlapping.
-	 */
+	 
 	uint32_t max_streams = MAX(1, MIN(zfetch_max_streams,
 	    zf->zf_dnode->dn_maxblkid * zf->zf_dnode->dn_datablksz /
 	    zfetch_max_distance));
@@ -280,7 +231,7 @@ dmu_zfetch_stream_create(zfetch_t *zf, uint64_t blkid)
 	zs->zs_fetch = zf;
 	zfs_refcount_create(&zs->zs_callers);
 	zfs_refcount_create(&zs->zs_refs);
-	/* One reference for zf_stream. */
+	 
 	zfs_refcount_add(&zs->zs_refs, NULL);
 	zf->zf_numstreams++;
 	list_insert_head(&zf->zf_stream, zs);
@@ -293,7 +244,7 @@ reuse:
 	zs->zs_ipf_dist = 0;
 	zs->zs_ipf_start = blkid;
 	zs->zs_ipf_end = blkid;
-	/* Allow immediate stream reuse until first hit. */
+	 
 	zs->zs_atime = now - SEC2NSEC(zfetch_min_sec_reap);
 	zs->zs_missed = B_FALSE;
 	zs->zs_more = B_FALSE;
@@ -311,18 +262,7 @@ dmu_zfetch_done(void *arg, uint64_t level, uint64_t blkid, boolean_t io_issued)
 	aggsum_add(&zfetch_sums.zfetchstat_io_active, -1);
 }
 
-/*
- * This is the predictive prefetch entry point.  dmu_zfetch_prepare()
- * associates dnode access specified with blkid and nblks arguments with
- * prefetch stream, predicts further accesses based on that stats and returns
- * the stream pointer on success.  That pointer must later be passed to
- * dmu_zfetch_run() to initiate the speculative prefetch for the stream and
- * release it.  dmu_zfetch() is a wrapper for simple cases when window between
- * prediction and prefetch initiation is not needed.
- * fetch_data argument specifies whether actual data blocks should be fetched:
- *   FALSE -- prefetch only indirect blocks for predicted data blocks;
- *   TRUE -- prefetch predicted data blocks plus following indirect blocks.
- */
+ 
 zstream_t *
 dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
     boolean_t fetch_data, boolean_t have_lock)
@@ -332,30 +272,18 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 
 	if (zfs_prefetch_disable)
 		return (NULL);
-	/*
-	 * If we haven't yet loaded the indirect vdevs' mappings, we
-	 * can only read from blocks that we carefully ensure are on
-	 * concrete vdevs (or previously-loaded indirect vdevs).  So we
-	 * can't allow the predictive prefetcher to attempt reads of other
-	 * blocks (e.g. of the MOS's dnode object).
-	 */
+	 
 	if (!spa_indirect_vdevs_loaded(spa))
 		return (NULL);
 
-	/*
-	 * As a fast path for small (single-block) files, ignore access
-	 * to the first block.
-	 */
+	 
 	if (!have_lock && blkid == 0)
 		return (NULL);
 
 	if (!have_lock)
 		rw_enter(&zf->zf_dnode->dn_struct_rwlock, RW_READER);
 
-	/*
-	 * A fast path for small files for which no prefetch will
-	 * happen.
-	 */
+	 
 	uint64_t maxblkid = zf->zf_dnode->dn_maxblkid;
 	if (maxblkid < 2) {
 		if (!have_lock)
@@ -364,11 +292,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 	}
 	mutex_enter(&zf->zf_lock);
 
-	/*
-	 * Find matching prefetch stream.  Depending on whether the accesses
-	 * are block-aligned, first block of the new access may either follow
-	 * the last block of the previous access, or be equal to it.
-	 */
+	 
 	for (zs = list_head(&zf->zf_stream); zs != NULL;
 	    zs = list_next(&zf->zf_stream, zs)) {
 		if (blkid == zs->zs_blkid) {
@@ -380,10 +304,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 		}
 	}
 
-	/*
-	 * If the file is ending, remove the matching stream if found.
-	 * If not found then it is too late to create a new one now.
-	 */
+	 
 	uint64_t end_of_access_blkid = blkid + nblks;
 	if (end_of_access_blkid >= maxblkid) {
 		if (zs != NULL)
@@ -394,7 +315,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 		return (NULL);
 	}
 
-	/* Exit if we already prefetched this block before. */
+	 
 	if (nblks == 0) {
 		mutex_exit(&zf->zf_lock);
 		if (!have_lock)
@@ -403,10 +324,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 	}
 
 	if (zs == NULL) {
-		/*
-		 * This access is not part of any existing stream.  Create
-		 * a new stream for it.
-		 */
+		 
 		dmu_zfetch_stream_create(zf, end_of_access_blkid);
 		mutex_exit(&zf->zf_lock);
 		if (!have_lock)
@@ -415,18 +333,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 		return (NULL);
 	}
 
-	/*
-	 * This access was to a block that we issued a prefetch for on
-	 * behalf of this stream.  Calculate further prefetch distances.
-	 *
-	 * Start prefetch from the demand access size (nblks).  Double the
-	 * distance every access up to zfetch_min_distance.  After that only
-	 * if needed increase the distance by 1/8 up to zfetch_max_distance.
-	 *
-	 * Don't double the distance beyond single block if we have more
-	 * than ~6% of ARC held by active prefetches.  It should help with
-	 * getting out of RAM on some badly mispredicted read patterns.
-	 */
+	 
 	unsigned int dbs = zf->zf_dnode->dn_datablkshift;
 	unsigned int nbytes = nblks << dbs;
 	unsigned int pf_nblks;
@@ -452,10 +359,7 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 	if (zs->zs_pf_end < end_of_access_blkid + pf_nblks)
 		zs->zs_pf_end = end_of_access_blkid + pf_nblks;
 
-	/*
-	 * Do the same for indirects, starting where we will stop reading
-	 * data blocks (and the indirects that point to them).
-	 */
+	 
 	if (unlikely(zs->zs_ipf_dist < nbytes))
 		zs->zs_ipf_dist = nbytes;
 	else
@@ -469,10 +373,10 @@ dmu_zfetch_prepare(zfetch_t *zf, uint64_t blkid, uint64_t nblks,
 		zs->zs_ipf_end = zs->zs_pf_end + pf_nblks;
 
 	zs->zs_blkid = end_of_access_blkid;
-	/* Protect the stream from reclamation. */
+	 
 	zs->zs_atime = gethrtime();
 	zfs_refcount_add(&zs->zs_refs, NULL);
-	/* Count concurrent callers. */
+	 
 	zfs_refcount_add(&zs->zs_callers, NULL);
 	mutex_exit(&zf->zf_lock);
 
@@ -493,13 +397,9 @@ dmu_zfetch_run(zstream_t *zs, boolean_t missed, boolean_t have_lock)
 	if (missed)
 		zs->zs_missed = missed;
 
-	/*
-	 * Postpone the prefetch if there are more concurrent callers.
-	 * It happens when multiple requests are waiting for the same
-	 * indirect block.  The last one will run the prefetch for all.
-	 */
+	 
 	if (zfs_refcount_remove(&zs->zs_callers, NULL) != 0) {
-		/* Drop reference taken in dmu_zfetch_prepare(). */
+		 
 		if (zfs_refcount_remove(&zs->zs_refs, NULL) == 0)
 			dmu_zfetch_stream_fini(zs);
 		return;
@@ -524,10 +424,10 @@ dmu_zfetch_run(zstream_t *zs, boolean_t missed, boolean_t have_lock)
 	ASSERT3S(ipf_start, <=, ipf_end);
 	issued = pf_end - pf_start + ipf_end - ipf_start;
 	if (issued > 1) {
-		/* More references on top of taken in dmu_zfetch_prepare(). */
+		 
 		zfs_refcount_add_few(&zs->zs_refs, issued - 1, NULL);
 	} else if (issued == 0) {
-		/* Some other thread has done our work, so drop the ref. */
+		 
 		if (zfs_refcount_remove(&zs->zs_refs, NULL) == 0)
 			dmu_zfetch_stream_fini(zs);
 		return;

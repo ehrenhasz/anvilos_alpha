@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_ICMPV6_H
 #define _UAPI_LINUX_ICMPV6_H
 
@@ -115,9 +115,7 @@ struct icmp6hdr {
 
 #define ICMPV6_MSG_MAX          255
 
-/*
- *	Codes for Destination Unreachable
- */
+ 
 #define ICMPV6_NOROUTE			0
 #define ICMPV6_ADM_PROHIBITED		1
 #define ICMPV6_NOT_NEIGHBOUR		2
@@ -126,32 +124,24 @@ struct icmp6hdr {
 #define ICMPV6_POLICY_FAIL		5
 #define ICMPV6_REJECT_ROUTE		6
 
-/*
- *	Codes for Time Exceeded
- */
+ 
 #define ICMPV6_EXC_HOPLIMIT		0
 #define ICMPV6_EXC_FRAGTIME		1
 
-/*
- *	Codes for Parameter Problem
- */
+ 
 #define ICMPV6_HDR_FIELD		0
 #define ICMPV6_UNK_NEXTHDR		1
 #define ICMPV6_UNK_OPTION		2
 #define ICMPV6_HDR_INCOMP		3
 
-/* Codes for EXT_ECHO (PROBE) */
+ 
 #define ICMPV6_EXT_ECHO_REQUEST		160
 #define ICMPV6_EXT_ECHO_REPLY		161
-/*
- *	constants for (set|get)sockopt
- */
+ 
 
 #define ICMPV6_FILTER			1
 
-/*
- *	ICMPV6 filter
- */
+ 
 
 #define ICMPV6_FILTER_BLOCK		1
 #define ICMPV6_FILTER_PASS		2
@@ -162,9 +152,7 @@ struct icmp6_filter {
 	__u32		data[8];
 };
 
-/*
- *	Definitions for MLDv2
- */
+ 
 #define MLD2_MODE_IS_INCLUDE	1
 #define MLD2_MODE_IS_EXCLUDE	2
 #define MLD2_CHANGE_TO_INCLUDE	3
@@ -175,4 +163,4 @@ struct icmp6_filter {
 #define MLD2_ALL_MCR_INIT { { { 0xff,0x02,0,0,0,0,0,0,0,0,0,0,0,0,0,0x16 } } }
 
 
-#endif /* _UAPI_LINUX_ICMPV6_H */
+#endif  

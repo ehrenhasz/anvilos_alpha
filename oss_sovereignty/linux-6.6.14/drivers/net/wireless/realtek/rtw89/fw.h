@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW89_FW_H__
 #define __RTW89_FW_H__
@@ -283,7 +282,7 @@ struct rtw89_pktofld_info {
 	struct list_head list;
 	u8 id;
 
-	/* Below fields are for 6 GHz RNR use only */
+	 
 	u8 ssid[IEEE80211_MAX_SSID_LEN];
 	u8 ssid_len;
 	u8 bssid[ETH_ALEN];
@@ -428,7 +427,7 @@ struct rtw89_fw_dynhdr_sec {
 struct rtw89_fw_dynhdr_hdr {
 	__le32 hdr_len;
 	__le32 setcion_count;
-	/* struct rtw89_fw_dynhdr_sec (nested flexible structures) */
+	 
 } __packed;
 
 struct rtw89_fw_hdr_section {
@@ -456,7 +455,7 @@ struct rtw89_fw_hdr {
 	__le32 w6;
 	__le32 w7;
 	struct rtw89_fw_hdr_section sections[];
-	/* struct rtw89_fw_dynhdr_hdr (optional) */
+	 
 } __packed;
 
 #define FW_HDR_W1_MAJOR_VERSION GENMASK(7, 0)
@@ -2137,7 +2136,7 @@ enum rtw89_btc_cxdrvinfo {
 	CXDRVINFO_RUN,
 	CXDRVINFO_CTRL,
 	CXDRVINFO_SCAN,
-	CXDRVINFO_TRX,  /* WL traffic to WL fw */
+	CXDRVINFO_TRX,   
 	CXDRVINFO_MAX,
 };
 
@@ -3243,12 +3242,7 @@ struct rtw89_c2h_ra_rpt {
 #define RTW89_C2H_RA_RPT_W3_MD_SEL_B2 BIT(15)
 #define RTW89_C2H_RA_RPT_W3_BW_B2 BIT(16)
 
-/* For WiFi 6 chips:
- *   VHT, HE, HT-old: [6:4]: NSS, [3:0]: MCS
- *   HT-new: [6:5]: NA, [4:0]: MCS
- * For WiFi 7 chips (V1):
- *   HT, VHT, HE, EHT: [7:5]: NSS, [4:0]: MCS
- */
+ 
 #define RTW89_RA_RATE_MASK_NSS GENMASK(6, 4)
 #define RTW89_RA_RATE_MASK_MCS GENMASK(3, 0)
 #define RTW89_RA_RATE_MASK_NSS_V1 GENMASK(7, 5)
@@ -3372,7 +3366,7 @@ struct rtw89_h2c_ofld {
 
 struct rtw89_mfw_info {
 	u8 cv;
-	u8 type; /* enum rtw89_fw_type */
+	u8 type;  
 	u8 mp;
 	u8 rsvd;
 	__le32 shift;
@@ -3381,7 +3375,7 @@ struct rtw89_mfw_info {
 } __packed;
 
 struct rtw89_mfw_hdr {
-	u8 sig;	/* RTW89_MFW_SIG */
+	u8 sig;	 
 	u8 fw_nr;
 	u8 rsvd0[2];
 	struct {
@@ -3417,8 +3411,8 @@ enum rtw89_fw_element_id {
 };
 
 struct rtw89_fw_element_hdr {
-	__le32 id; /* enum rtw89_fw_element_id */
-	__le32 size; /* exclude header size */
+	__le32 id;  
+	__le32 size;  
 	u8 ver[4];
 	__le32 rsvd0;
 	__le32 rsvd1;
@@ -3492,18 +3486,18 @@ struct rtw89_fw_h2c_rf_reg_info {
 
 #define H2C_CAT_TEST		0x0
 
-/* CLASS 5 - FW STATUS TEST */
+ 
 #define H2C_CL_FW_STATUS_TEST		0x5
 #define H2C_FUNC_CPU_EXCEPTION		0x1
 
 #define H2C_CAT_MAC		0x1
 
-/* CLASS 0 - FW INFO */
+ 
 #define H2C_CL_FW_INFO			0x0
 #define H2C_FUNC_LOG_CFG		0x0
 #define H2C_FUNC_MAC_GENERAL_PKT	0x1
 
-/* CLASS 1 - WOW */
+ 
 #define H2C_CL_MAC_WOW			0x1
 #define H2C_FUNC_KEEP_ALIVE		0x0
 #define H2C_FUNC_DISCONNECT_DETECT	0x1
@@ -3511,32 +3505,32 @@ struct rtw89_fw_h2c_rf_reg_info {
 #define H2C_FUNC_WAKEUP_CTRL		0x8
 #define H2C_FUNC_WOW_CAM_UPD		0xC
 
-/* CLASS 2 - PS */
+ 
 #define H2C_CL_MAC_PS			0x2
 #define H2C_FUNC_MAC_LPS_PARM		0x0
 #define H2C_FUNC_P2P_ACT		0x1
 
-/* CLASS 3 - FW download */
+ 
 #define H2C_CL_MAC_FWDL		0x3
 #define H2C_FUNC_MAC_FWHDR_DL		0x0
 
-/* CLASS 5 - Frame Exchange */
+ 
 #define H2C_CL_MAC_FR_EXCHG		0x5
 #define H2C_FUNC_MAC_CCTLINFO_UD	0x2
 #define H2C_FUNC_MAC_BCN_UPD		0x5
 #define H2C_FUNC_MAC_DCTLINFO_UD_V1	0x9
 #define H2C_FUNC_MAC_CCTLINFO_UD_V1	0xa
 
-/* CLASS 6 - Address CAM */
+ 
 #define H2C_CL_MAC_ADDR_CAM_UPDATE	0x6
 #define H2C_FUNC_MAC_ADDR_CAM_UPD	0x0
 
-/* CLASS 8 - Media Status Report */
+ 
 #define H2C_CL_MAC_MEDIA_RPT		0x8
 #define H2C_FUNC_MAC_JOININFO		0x0
 #define H2C_FUNC_MAC_FWROLE_MAINTAIN	0x4
 
-/* CLASS 9 - FW offload */
+ 
 #define H2C_CL_MAC_FW_OFLD		0x9
 enum rtw89_fw_ofld_h2c_func {
 	H2C_FUNC_PACKET_OFLD		= 0x1,
@@ -3561,15 +3555,15 @@ enum rtw89_fw_ofld_h2c_func {
 	RTW89_FW_OFLD_WAIT_COND(RTW89_PKT_OFLD_WAIT_TAG(pkt_id, pkt_op), \
 				H2C_FUNC_PACKET_OFLD)
 
-/* CLASS 10 - Security CAM */
+ 
 #define H2C_CL_MAC_SEC_CAM		0xa
 #define H2C_FUNC_MAC_SEC_UPD		0x1
 
-/* CLASS 12 - BA CAM */
+ 
 #define H2C_CL_BA_CAM			0xc
 #define H2C_FUNC_MAC_BA_CAM		0x0
 
-/* CLASS 14 - MCC */
+ 
 #define H2C_CL_MCC			0xe
 enum rtw89_mcc_h2c_func {
 	H2C_FUNC_ADD_MCC		= 0x0,
@@ -3615,7 +3609,7 @@ struct rtw89_fw_h2c_rf_get_mccch {
 #define RTW89_VALID_FW_BACKTRACE_SIZE(_size) \
 	((_size) % RTW89_FW_BACKTRACE_INFO_SIZE == 0)
 
-#define RTW89_FW_BACKTRACE_MAX_SIZE 512 /* 8 * 64 (entries) */
+#define RTW89_FW_BACKTRACE_MAX_SIZE 512  
 #define RTW89_FW_BACKTRACE_KEY 0xBACEBACE
 
 int rtw89_fw_check_rdy(struct rtw89_dev *rtwdev);

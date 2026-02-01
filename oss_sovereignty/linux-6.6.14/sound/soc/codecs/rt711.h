@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt711.h -- RT711 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT711_H__
 #define __RT711_H__
@@ -22,13 +18,13 @@ struct  rt711_priv {
 	struct delayed_work jack_detect_work;
 	struct delayed_work jack_btn_check_work;
 	struct work_struct calibration_work;
-	struct mutex calibrate_mutex; /* for headset calibration */
+	struct mutex calibrate_mutex;  
 	int jack_type, jd_src;
-	struct mutex disable_irq_lock; /* imp-def irq lock protection */
+	struct mutex disable_irq_lock;  
 	bool disable_irq;
 };
 
-/* NID */
+ 
 #define RT711_AUDIO_FUNCTION_GROUP			0x01
 #define RT711_DAC_OUT2					0x03
 #define RT711_ADC_IN1					0x09
@@ -47,7 +43,7 @@ struct  rt711_priv {
 #define RT711_VENDOR_CALI				0x58
 #define RT711_VENDOR_IMS_DRE			0x5b
 
-/* Index (NID:20h) */
+ 
 #define RT711_DAC_DC_CALI_CTL1				0x00
 #define RT711_JD_CTL1				0x08
 #define RT711_JD_CTL2				0x09
@@ -65,12 +61,12 @@ struct  rt711_priv {
 #define RT711_IRQ_FLAG_TABLE3				0x82
 #define RT711_TX_RX_MUX_CTL				0x91
 
-/* Index (NID:5bh) */
+ 
 #define RT711_IMS_DIGITAL_CTL1				0x00
 #define RT711_HP_IMS_RESULT_L				0x20
 #define RT711_HP_IMS_RESULT_R				0x21
 
-/* Verb */
+ 
 #define RT711_VERB_SET_CONNECT_SEL			0x3100
 #define RT711_VERB_SET_EAPD_BTLENABLE			0x3c00
 #define RT711_VERB_GET_CONNECT_SEL			0xb100
@@ -167,15 +163,15 @@ struct  rt711_priv {
 #define RT711_SET_GAIN_HP_H\
 	(RT711_SET_AMP_GAIN_MUTE_H | RT711_HP_OUT)
 
-/* DAC DC offset calibration control-1 (0x00)(NID:20h) */
+ 
 #define RT711_DAC_DC_CALI_TRIGGER (0x1 << 15)
 
-/* jack detect control 1 (0x08)(NID:20h) */
+ 
 #define RT711_JD2_DIGITAL_JD_MODE_SEL (0x1 << 1)
 #define RT711_JD2_1_JD_MODE (0x0 << 1)
 #define RT711_JD2_2_JD_MODE (0x1 << 1)
 
-/* jack detect control 2 (0x09)(NID:20h) */
+ 
 #define RT711_JD2_2PORT_200K_DECODE_HP (0x1 << 13)
 #define RT711_JD2_2PORT_100K_DECODE (0x1 << 12)
 #define RT711_JD2_2PORT_100K_DECODE_HP (0x0 << 12)
@@ -189,7 +185,7 @@ struct  rt711_priv {
 #define RT711_JD1_2PORT_JD_RESERVED (0x0 << 0)
 #define RT711_JD1_2PORT_JD_LINE1 (0x1 << 0)
 
-/* jack detect control 4 (0x0b)(NID:20h) */
+ 
 #define RT711_JD2_PAD_PULL_UP_MASK (0x1 << 3)
 #define RT711_JD2_PAD_NOT_PULL_UP (0x0 << 3)
 #define RT711_JD2_PAD_PULL_UP (0x1 << 3)
@@ -198,33 +194,33 @@ struct  rt711_priv {
 #define RT711_JD2_MODE1_3P3V_1PORT (0x1 << 0)
 #define RT711_JD2_MODE2_1P8V_1PORT (0x2 << 0)
 
-/* CC DET1 (0x11)(NID:20h) */
+ 
 #define RT711_HP_JD_FINAL_RESULT_CTL_JD12 (0x1 << 10)
 #define RT711_HP_JD_FINAL_RESULT_CTL_CCDET (0x0 << 10)
 
-/* Parameter & Verb control (0x1a)(NID:20h) */
+ 
 #define RT711_HIDDEN_REG_SW_RESET (0x1 << 14)
 
-/* combo jack auto switch control 2 (0x46)(NID:20h) */
+ 
 #define RT711_COMBOJACK_AUTO_DET_STATUS			(0x1 << 11)
 #define RT711_COMBOJACK_AUTO_DET_TRS			(0x1 << 10)
 #define RT711_COMBOJACK_AUTO_DET_CTIA			(0x1 << 9)
 #define RT711_COMBOJACK_AUTO_DET_OMTP			(0x1 << 8)
 
-/* FSM control (0x6f)(NID:20h) */
+ 
 #define RT711_CALI_CTL			(0x0 << 0)
 #define RT711_COMBOJACK_CTL			(0x1 << 0)
 #define RT711_IMS_CTL			(0x2 << 0)
 #define RT711_DEPOP_CTL			(0x3 << 0)
 
-/* Impedance Sense Digital Control 1 (0x00)(NID:5bh) */
+ 
 #define RT711_TRIGGER_IMS			(0x1 << 15)
 #define RT711_IMS_EN			(0x1 << 6)
 
 #define RT711_EAPD_HIGH					0x2
 #define RT711_EAPD_LOW					0x0
 #define RT711_MUTE_SFT					7
-/* set input/output mapping to payload[14][15] separately */
+ 
 #define RT711_DIR_IN_SFT				6
 #define RT711_DIR_OUT_SFT				7
 
@@ -248,4 +244,4 @@ int rt711_init(struct device *dev, struct regmap *sdw_regmap,
 
 int rt711_jack_detect(struct rt711_priv *rt711, bool *hp, bool *mic);
 int rt711_clock_config(struct device *dev);
-#endif /* __RT711_H__ */
+#endif  

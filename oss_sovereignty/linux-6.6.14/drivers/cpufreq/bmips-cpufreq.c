@@ -1,30 +1,17 @@
-/*
- * CPU frequency scaling for Broadcom BMIPS SoCs
- *
- * Copyright (c) 2017 Broadcom
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/of_address.h>
 #include <linux/slab.h>
 
-/* for mips_hpt_frequency */
+ 
 #include <asm/time.h>
 
 #define BMIPS_CPUFREQ_PREFIX	"bmips"
 #define BMIPS_CPUFREQ_NAME	BMIPS_CPUFREQ_PREFIX "-cpufreq"
 
-#define TRANSITION_LATENCY	(25 * 1000)	/* 25 us */
+#define TRANSITION_LATENCY	(25 * 1000)	 
 
 #define BMIPS5_CLK_DIV_SET_SHIFT	0x7
 #define BMIPS5_CLK_DIV_SHIFT		0x4
@@ -170,7 +157,7 @@ static int __init bmips_cpufreq_driver_init(void)
 		}
 	}
 
-	/* We hit the guard element of the array. No compatible CPU found. */
+	 
 	if (!cc->compatible)
 		return -ENODEV;
 

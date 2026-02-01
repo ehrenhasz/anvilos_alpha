@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Corporation. All rights reserved.
- * Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
- */
+
+ 
 
 #include <linux/firmware/mediatek/mtk-adsp-ipc.h>
 #include <linux/kernel.h>
@@ -13,16 +10,7 @@
 
 static const char * const adsp_mbox_ch_names[MTK_ADSP_MBOX_NUM] = { "rx", "tx" };
 
-/*
- * mtk_adsp_ipc_send - send ipc cmd to MTK ADSP
- *
- * @ipc: ADSP IPC handle
- * @idx: index of the mailbox channel
- * @msg: IPC cmd (reply or request)
- *
- * Returns zero for success from mbox_send_message
- * negative value for error
- */
+ 
 int mtk_adsp_ipc_send(struct mtk_adsp_ipc *ipc, unsigned int idx, uint32_t msg)
 {
 	struct mtk_adsp_chan *adsp_chan;
@@ -40,15 +28,7 @@ int mtk_adsp_ipc_send(struct mtk_adsp_ipc *ipc, unsigned int idx, uint32_t msg)
 }
 EXPORT_SYMBOL_GPL(mtk_adsp_ipc_send);
 
-/*
- * mtk_adsp_ipc_recv - recv callback used by MTK ADSP mailbox
- *
- * @c: mbox client
- * @msg: message received
- *
- * Users of ADSP IPC will need to privde handle_reply and handle_request
- * callbacks.
- */
+ 
 static void mtk_adsp_ipc_recv(struct mbox_client *c, void *msg)
 {
 	struct mtk_adsp_chan *chan = container_of(c, struct mtk_adsp_chan, cl);

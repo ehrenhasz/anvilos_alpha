@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -474,7 +471,7 @@ static int __mtk_clk_simple_probe(struct platform_device *pdev,
 
 	mcd = device_get_match_data(&pdev->dev);
 	if (!mcd) {
-		/* Clock driver wasn't registered from devicetree */
+		 
 		id = platform_get_device_id(pdev);
 		if (id)
 			mcd = (const struct mtk_clk_desc *)id->driver_data;
@@ -483,7 +480,7 @@ static int __mtk_clk_simple_probe(struct platform_device *pdev,
 			return -EINVAL;
 	}
 
-	/* Composite and divider clocks needs us to pass iomem pointer */
+	 
 	if (mcd->composite_clks || mcd->divider_clks) {
 		if (!mcd->shared_io)
 			base = devm_platform_ioremap_resource(pdev, 0);
@@ -494,7 +491,7 @@ static int __mtk_clk_simple_probe(struct platform_device *pdev,
 			return IS_ERR(base) ? PTR_ERR(base) : -ENOMEM;
 	}
 
-	/* Calculate how many clk_hw_onecell_data entries to allocate */
+	 
 	num_clks = mcd->num_clks + mcd->num_composite_clks;
 	num_clks += mcd->num_fixed_clks + mcd->num_factor_clks;
 	num_clks += mcd->num_mux_clks + mcd->num_divider_clks;
@@ -528,7 +525,7 @@ static int __mtk_clk_simple_probe(struct platform_device *pdev,
 	}
 
 	if (mcd->composite_clks) {
-		/* We don't check composite_lock because it's optional */
+		 
 		r = mtk_clk_register_composites(&pdev->dev,
 						mcd->composite_clks,
 						mcd->num_composite_clks,

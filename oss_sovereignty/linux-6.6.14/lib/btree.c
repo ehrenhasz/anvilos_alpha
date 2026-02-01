@@ -1,41 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lib/btree.c	- Simple In-memory B+Tree
- *
- * Copyright (c) 2007-2008 Joern Engel <joern@purestorage.com>
- * Bits and pieces stolen from Peter Zijlstra's code, which is
- * Copyright 2007, Red Hat Inc. Peter Zijlstra
- *
- * see http://programming.kicks-ass.net/kernel-patches/vma_lookup/btree.patch
- *
- * A relatively simple B+Tree implementation.  I have written it as a learning
- * exercise to understand how B+Trees work.  Turned out to be useful as well.
- *
- * B+Trees can be used similar to Linux radix trees (which don't have anything
- * in common with textbook radix trees, beware).  Prerequisite for them working
- * well is that access to a random tree node is much faster than a large number
- * of operations within each node.
- *
- * Disks have fulfilled the prerequisite for a long time.  More recently DRAM
- * has gained similar properties, as memory access times, when measured in cpu
- * cycles, have increased.  Cacheline sizes have increased as well, which also
- * helps B+Trees.
- *
- * Compared to radix trees, B+Trees are more efficient when dealing with a
- * sparsely populated address space.  Between 25% and 50% of the memory is
- * occupied with valid pointers.  When densely populated, radix trees contain
- * ~98% pointers - hard to beat.  Very sparse radix trees contain only ~2%
- * pointers.
- *
- * This particular implementation stores pointers identified by a long value.
- * Storing NULL pointers is illegal, lookup will return NULL when no entry
- * was found.
- *
- * A tricks was used that is not commonly found in textbooks.  The lowest
- * values are to the right, not to the left.  All used slots within a node
- * are on the left, all unused slots contain NUL values.  Most operations
- * simply loop once over all slots and terminate on the first NUL.
- */
+
+ 
 
 #include <linux/btree.h>
 #include <linux/cache.h>
@@ -296,14 +260,7 @@ int btree_update(struct btree_head *head, struct btree_geo *geo,
 }
 EXPORT_SYMBOL_GPL(btree_update);
 
-/*
- * Usually this function is quite similar to normal lookup.  But the key of
- * a parent node may be smaller than the smallest key of all its siblings.
- * In such a case we cannot just return NULL, as we have only proven that no
- * key smaller than __key, but larger than this parent key exists.
- * So we set __key to the parent key and retry.  We have to use the smallest
- * such parent key, which is the last parent key we encountered.
- */
+ 
 void *btree_get_prev(struct btree_head *head, struct btree_geo *geo,
 		     unsigned long *__key)
 {
@@ -378,9 +335,7 @@ static int getfill(struct btree_geo *geo, unsigned long *node, int start)
 	return i;
 }
 
-/*
- * locate the correct leaf node in the btree
- */
+ 
 static unsigned long *find_level(struct btree_head *head, struct btree_geo *geo,
 		unsigned long *key, int level)
 {
@@ -393,9 +348,8 @@ static unsigned long *find_level(struct btree_head *head, struct btree_geo *geo,
 				break;
 
 		if ((i == geo->no_pairs) || !bval(geo, node, i)) {
-			/* right-most key is too large, update it */
-			/* FIXME: If the right-most key on higher levels is
-			 * always zero, this wouldn't be necessary. */
+			 
+			 
 			i--;
 			setkey(geo, node, i, key);
 		}
@@ -459,11 +413,11 @@ retry:
 	node = find_level(head, geo, key, level);
 	pos = getpos(geo, node, key);
 	fill = getfill(geo, node, pos);
-	/* two identical keys are not allowed */
+	 
 	BUG_ON(pos < fill && keycmp(geo, node, pos, key) == 0);
 
 	if (fill == geo->no_pairs) {
-		/* need to split node */
+		 
 		unsigned long *new;
 
 		new = btree_node_alloc(head, gfp);
@@ -492,7 +446,7 @@ retry:
 	}
 	BUG_ON(fill >= geo->no_pairs);
 
-	/* shift and insert */
+	 
 	for (i = fill; i > pos; i--) {
 		setkey(geo, node, i, bkey(geo, node, i - 1));
 		setval(geo, node, i, bval(geo, node, i - 1));
@@ -521,14 +475,14 @@ static void merge(struct btree_head *head, struct btree_geo *geo, int level,
 	int i;
 
 	for (i = 0; i < rfill; i++) {
-		/* Move all keys to the left */
+		 
 		setkey(geo, left, lfill + i, bkey(geo, right, i));
 		setval(geo, left, lfill + i, bval(geo, right, i));
 	}
-	/* Exchange left and right child in parent */
+	 
 	setval(geo, parent, lpos, right);
 	setval(geo, parent, lpos + 1, left);
-	/* Remove left (formerly right) child from parent */
+	 
 	btree_remove_level(head, geo, bkey(geo, parent, lpos), level + 1);
 	mempool_free(right, head->mempool);
 }
@@ -540,10 +494,7 @@ static void rebalance(struct btree_head *head, struct btree_geo *geo,
 	int i, no_left, no_right;
 
 	if (fill == 0) {
-		/* Because we don't steal entries from a neighbour, this case
-		 * can happen.  Parent node contains a single child, this
-		 * node, so merging with a sibling never happens.
-		 */
+		 
 		btree_remove_level(head, geo, key, level + 1);
 		mempool_free(child, head->mempool);
 		return;
@@ -575,13 +526,7 @@ static void rebalance(struct btree_head *head, struct btree_geo *geo,
 			return;
 		}
 	}
-	/*
-	 * We could also try to steal one entry from the left or right
-	 * neighbor.  By not doing so we changed the invariant from
-	 * "all nodes are at least half full" to "no two neighboring
-	 * nodes can be merged".  Which means that the average fill of
-	 * all nodes is still half or better.
-	 */
+	 
 }
 
 static void *btree_remove_level(struct btree_head *head, struct btree_geo *geo,
@@ -592,7 +537,7 @@ static void *btree_remove_level(struct btree_head *head, struct btree_geo *geo,
 	void *ret;
 
 	if (level > head->height) {
-		/* we recursed all the way up */
+		 
 		head->height = 0;
 		head->node = NULL;
 		return NULL;
@@ -605,7 +550,7 @@ static void *btree_remove_level(struct btree_head *head, struct btree_geo *geo,
 		return NULL;
 	ret = bval(geo, node, pos);
 
-	/* remove and shift */
+	 
 	for (i = pos; i < fill - 1; i++) {
 		setkey(geo, node, i, bkey(geo, node, i + 1));
 		setval(geo, node, i, bval(geo, node, i + 1));
@@ -643,16 +588,14 @@ int btree_merge(struct btree_head *target, struct btree_head *victim,
 	BUG_ON(target == victim);
 
 	if (!(target->node)) {
-		/* target is empty, just copy fields over */
+		 
 		target->node = victim->node;
 		target->height = victim->height;
 		__btree_init(victim);
 		return 0;
 	}
 
-	/* TODO: This needs some optimizations.  Currently we do three tree
-	 * walks to remove a single object from the victim.
-	 */
+	 
 	for (;;) {
 		if (!btree_last(victim, geo, key))
 			break;
@@ -660,8 +603,7 @@ int btree_merge(struct btree_head *target, struct btree_head *victim,
 		err = btree_insert(target, geo, key, val, gfp);
 		if (err)
 			return err;
-		/* We must make a copy of the key, as the original will get
-		 * mangled inside btree_remove. */
+		 
 		longcpy(dup, key, geo->keylen);
 		btree_remove(victim, geo, dup);
 	}
@@ -788,7 +730,7 @@ static void __exit btree_module_exit(void)
 	kmem_cache_destroy(btree_cachep);
 }
 
-/* If core code starts using btree, initialization should happen even earlier */
+ 
 module_init(btree_module_init);
 module_exit(btree_module_exit);
 

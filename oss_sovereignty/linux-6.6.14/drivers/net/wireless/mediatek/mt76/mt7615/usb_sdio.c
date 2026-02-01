@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -115,7 +111,7 @@ static int mt7663_usb_sdio_set_rates(struct mt7615_dev *dev,
 	idx = idx > HW_BSSID_MAX ? HW_BSSID_0 : idx;
 	addr = idx > 1 ? MT_LPON_TCR2(idx): MT_LPON_TCR0(idx);
 
-	mt76_rmw(dev, addr, MT_LPON_TCR_MODE, MT_LPON_TCR_READ); /* TSF read */
+	mt76_rmw(dev, addr, MT_LPON_TCR_MODE, MT_LPON_TCR_READ);  
 	val = mt76_rr(dev, MT_LPON_UTTR0);
 	sta->rate_set_tsf = (val & ~BIT(0)) | rate->rateset;
 
@@ -196,7 +192,7 @@ int mt7663_usb_sdio_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 
 	if ((info->flags & IEEE80211_TX_CTL_RATE_CTRL_PROBE) &&
 	    msta && !msta->rate_probe) {
-		/* request to configure sampling rate */
+		 
 		spin_lock_bh(&dev->mt76.lock);
 		mt7615_mac_set_rates(&dev->phy, msta, &info->control.rates[0],
 				     msta->rates);
@@ -216,7 +212,7 @@ int mt7663_usb_sdio_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 
 	err = mt76_skb_adjust_pad(skb, pad);
 	if (err)
-		/* Release pktid in case of error. */
+		 
 		idr_remove(&wcid->pktid, pktid);
 
 	return err;
@@ -232,9 +228,7 @@ static int mt7663u_dma_sched_init(struct mt7615_dev *dev)
 		 FIELD_PREP(MT_DMASHDL_PKT_MAX_SIZE_PLE, 1) |
 		 FIELD_PREP(MT_DMASHDL_PKT_MAX_SIZE_PSE, 8));
 
-	/* disable refill group 5 - group 15 and raise group 2
-	 * and 3 as high priority.
-	 */
+	 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_REFILL), 0xffe00006);
 	mt76_clear(dev, MT_DMA_SHDL(MT_DMASHDL_PAGE), BIT(16));
 
@@ -248,9 +242,7 @@ static int mt7663u_dma_sched_init(struct mt7615_dev *dev)
 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_Q_MAP(2)), 0x4444);
 
-	/* group pririority from high to low:
-	 * 15 (cmd groups) > 4 > 3 > 2 > 1 > 0.
-	 */
+	 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_SCHED_SET0), 0x6501234f);
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_SCHED_SET1), 0xedcba987);
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_OPTIONAL), 0x7004801c);
@@ -259,9 +251,9 @@ static int mt7663u_dma_sched_init(struct mt7615_dev *dev)
 		FIELD_PREP(MT_WL_TX_TMOUT_LMT, 80000) |
 		FIELD_PREP(MT_WL_RX_AGG_PKT_LMT, 1));
 
-	/* setup UDMA Rx Flush */
+	 
 	mt76_clear(dev, MT_UDMA_WLCFG_0, MT_WL_RX_FLUSH);
-	/* hif reset */
+	 
 	mt76_set(dev, MT_HIF_RST, MT_HIF_LOGIC_RST_N);
 
 	mt76_set(dev, MT_UDMA_WLCFG_0,
@@ -291,7 +283,7 @@ static int mt7663_usb_sdio_init_hardware(struct mt7615_dev *dev)
 
 	set_bit(MT76_STATE_INITIALIZED, &dev->mphy.state);
 
-	/* Beacon and mgmt frames should occupy wcid 0 */
+	 
 	idx = mt76_wcid_alloc(dev->mt76.wcid_mask, MT7615_WTBL_STA - 1);
 	if (idx)
 		return -ENOSPC;
@@ -319,7 +311,7 @@ int mt7663_usb_sdio_register_device(struct mt7615_dev *dev)
 	hw->extra_tx_headroom += MT_USB_TXD_SIZE;
 	if (mt76_is_usb(&dev->mt76)) {
 		hw->extra_tx_headroom += MT_USB_HDR_SIZE;
-		/* check hw sg support in order to enable AMSDU */
+		 
 		if (dev->mt76.usb.sg_en)
 			hw->max_tx_fragments = MT_HW_TXP_MAX_BUF_NUM;
 		else
@@ -334,7 +326,7 @@ int mt7663_usb_sdio_register_device(struct mt7615_dev *dev)
 	if (!dev->mt76.usb.sg_en) {
 		struct ieee80211_sta_vht_cap *vht_cap;
 
-		/* decrease max A-MSDU size if SG is not supported */
+		 
 		vht_cap = &dev->mphy.sband_5g.sband.vht_cap;
 		vht_cap->cap &= ~IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454;
 	}

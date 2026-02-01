@@ -1,38 +1,17 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef PP_ATOMVOLTAGECTRL_H
 #define PP_ATOMVOLTAGECTRL_H
 
 #include "hwmgr.h"
 
-/* As returned from PowerConnectorDetectionTable. */
+ 
 #define PP_ATOM_POWER_BUDGET_DISABLE_OVERDRIVE  0x80
 #define PP_ATOM_POWER_BUDGET_SHOW_WARNING       0x40
 #define PP_ATOM_POWER_BUDGET_SHOW_WAIVER        0x20
 #define PP_ATOM_POWER_POWER_BUDGET_BEHAVIOUR    0x0F
 
-/* New functions for Evergreen and beyond. */
+ 
 #define PP_ATOMCTRL_MAX_VOLTAGE_ENTRIES 32
 
 struct pp_atomctrl_clock_dividers {
@@ -73,22 +52,22 @@ struct pp_atomctrl_clock_dividers_kong {
 typedef struct pp_atomctrl_clock_dividers_kong pp_atomctrl_clock_dividers_kong;
 
 struct pp_atomctrl_clock_dividers_ci {
-	uint32_t    pll_post_divider;               /* post divider value */
+	uint32_t    pll_post_divider;                
 	uint32_t    real_clock;
-	pp_atomctrl_tcipll_fb_divider   ul_fb_div;         /* Output Parameter: PLL FB divider */
-	uint8_t   uc_pll_ref_div;                      /* Output Parameter: PLL ref divider */
-	uint8_t   uc_pll_post_div;                      /* Output Parameter: PLL post divider */
-	uint8_t   uc_pll_cntl_flag;                    /*Output Flags: control flag */
+	pp_atomctrl_tcipll_fb_divider   ul_fb_div;          
+	uint8_t   uc_pll_ref_div;                       
+	uint8_t   uc_pll_post_div;                       
+	uint8_t   uc_pll_cntl_flag;                     
 };
 typedef struct pp_atomctrl_clock_dividers_ci pp_atomctrl_clock_dividers_ci;
 
 struct pp_atomctrl_clock_dividers_vi {
-	uint32_t    pll_post_divider;               /* post divider value */
+	uint32_t    pll_post_divider;                
 	uint32_t    real_clock;
-	pp_atomctrl_tcipll_fb_divider   ul_fb_div;         /*Output Parameter: PLL FB divider */
-	uint8_t   uc_pll_ref_div;                      /*Output Parameter: PLL ref divider */
-	uint8_t   uc_pll_post_div;                     /*Output Parameter: PLL post divider */
-	uint8_t   uc_pll_cntl_flag;                    /*Output Flags: control flag */
+	pp_atomctrl_tcipll_fb_divider   ul_fb_div;          
+	uint8_t   uc_pll_ref_div;                       
+	uint8_t   uc_pll_post_div;                      
+	uint8_t   uc_pll_cntl_flag;                     
 };
 typedef struct pp_atomctrl_clock_dividers_vi pp_atomctrl_clock_dividers_vi;
 
@@ -146,8 +125,8 @@ struct pp_atomctrl_memory_clock_param_ai {
 typedef struct pp_atomctrl_memory_clock_param_ai pp_atomctrl_memory_clock_param_ai;
 
 struct pp_atomctrl_internal_ss_info {
-	uint32_t speed_spectrum_percentage;                      /* in 1/100 percentage */
-	uint32_t speed_spectrum_rate;                            /* in KHz */
+	uint32_t speed_spectrum_percentage;                       
+	uint32_t speed_spectrum_rate;                             
 	pp_atomctrl_spread_spectrum_mode speed_spectrum_mode;
 };
 typedef struct pp_atomctrl_internal_ss_info pp_atomctrl_internal_ss_info;
@@ -161,14 +140,14 @@ typedef struct pp_atomctrl_internal_ss_info pp_atomctrl_internal_ss_info;
 #endif
 
 struct pp_atomctrl_kong_system_info {
-	uint32_t			ul_bootup_uma_clock;          /* in 10kHz unit */
-	uint16_t			us_max_nb_voltage;            /* high NB voltage, calculated using current VDDNB (D24F2xDC) and VDDNB offset fuse; */
-	uint16_t			us_min_nb_voltage;            /* low NB voltage, calculated using current VDDNB (D24F2xDC) and VDDNB offset fuse; */
-	uint16_t			us_bootup_nb_voltage;         /* boot up NB voltage */
-	uint8_t			uc_htc_tmp_lmt;               /* bit [22:16] of D24F3x64 Hardware Thermal Control (HTC) Register, may not be needed, TBD */
-	uint8_t			uc_tj_offset;                /* bit [28:22] of D24F3xE4 Thermtrip Status Register,may not be needed, TBD */
-	/* 0: default 1: uvd 2: fs-3d */
-	uint32_t          ul_csr_m3_srb_cntl[NUMBER_OF_M3ARB_PARAM_SETS][NUMBER_OF_M3ARB_PARAMS];/* arrays with values for CSR M3 arbiter for default */
+	uint32_t			ul_bootup_uma_clock;           
+	uint16_t			us_max_nb_voltage;             
+	uint16_t			us_min_nb_voltage;             
+	uint16_t			us_bootup_nb_voltage;          
+	uint8_t			uc_htc_tmp_lmt;                
+	uint8_t			uc_tj_offset;                 
+	 
+	uint32_t          ul_csr_m3_srb_cntl[NUMBER_OF_M3ARB_PARAM_SETS][NUMBER_OF_M3ARB_PARAMS]; 
 };
 typedef struct pp_atomctrl_kong_system_info pp_atomctrl_kong_system_info;
 
@@ -198,7 +177,7 @@ typedef struct pp_atomctrl_voltage_table_entry pp_atomctrl_voltage_table_entry;
 struct pp_atomctrl_voltage_table {
 	uint32_t count;
 	uint32_t mask_low;
-	uint32_t phase_delay;   /* Used for ATOM_GPIO_VOLTAGE_OBJECT_V3 and later */
+	uint32_t phase_delay;    
 	pp_atomctrl_voltage_table_entry entries[PP_ATOMCTRL_MAX_VOLTAGE_ENTRIES];
 };
 
@@ -236,8 +215,8 @@ struct pp_atom_ctrl_sclk_range_table{
 };
 
 struct pp_atomctrl_mc_reg_table {
-	uint8_t                         last;                    /* number of registers */
-	uint8_t                         num_entries;             /* number of AC timing entries */
+	uint8_t                         last;                     
+	uint8_t                         num_entries;              
 	pp_atomctrl_mc_reg_entry        mc_reg_table_entry[VBIOS_MAX_AC_TIMING_ENTRIES];
 	pp_atomctrl_mc_register_address mc_reg_address[VBIOS_MC_REGISTER_ARRAY_SIZE];
 };

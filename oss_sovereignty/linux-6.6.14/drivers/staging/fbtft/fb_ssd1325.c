@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the SSD1325 OLED Controller
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,18 +17,9 @@
 #define GAMMA_LEN   15
 #define DEFAULT_GAMMA "7 1 1 1 1 2 2 3 3 4 4 5 5 6 6"
 
-/*
- * write_reg() caveat:
- *
- *    This doesn't work because D/C has to be LOW for both values:
- *      write_reg(par, val1, val2);
- *
- *    Do it like this:
- *      write_reg(par, val1);
- *      write_reg(par, val2);
- */
+ 
 
-/* Init sequence taken from the Adafruit SSD1306 Arduino library */
+ 
 static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
@@ -96,15 +85,7 @@ static int blank(struct fbtft_par *par, bool on)
 	return 0;
 }
 
-/*
- * Grayscale Lookup Table
- * GS1 - GS15
- * The "Gamma curve" contains the relative values between the entries
- * in the Lookup table.
- *
- * 0 = Setting of GS1 < Setting of GS2 < Setting of GS3.....<
- * Setting of GS14 < Setting of GS15
- */
+ 
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {
 	int i;
@@ -155,7 +136,7 @@ static int write_vmem(struct fbtft_par *par, size_t offset, size_t len)
 
 	gpiod_set_value(par->gpio.dc, 1);
 
-	/* Write data */
+	 
 	ret = par->fbtftops.write(par, par->txbuf.buf,
 				par->info->var.xres * par->info->var.yres / 2);
 	if (ret < 0)

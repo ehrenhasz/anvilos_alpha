@@ -1,38 +1,14 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Yonatan Goldschmidt
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-#include "py/mpstate.h" // needed for NLR defs
+#include "py/mpstate.h" 
 
 #if MICROPY_NLR_AARCH64
 
-// AArch64 callee-saved registers are x19-x29.
-// https://en.wikipedia.org/wiki/Calling_convention#ARM_(A64)
 
-// Implemented purely as inline assembly; inside a function, we have to deal with undoing the prologue, restoring
-// SP and LR. This way, we don't.
+
+
+
+
 __asm(
     #if defined(__APPLE__) && defined(__MACH__)
     "_nlr_push:              \n"
@@ -42,7 +18,7 @@ __asm(
     ".global nlr_push        \n"
     #endif
     "mov x9, sp              \n"
-    "stp lr,  x9,  [x0,  #16]\n" // 16 == offsetof(nlr_buf_t, regs)
+    "stp lr,  x9,  [x0,  #16]\n" 
     "stp x19, x20, [x0,  #32]\n"
     "stp x21, x22, [x0,  #48]\n"
     "stp x23, x24, [x0,  #64]\n"
@@ -50,16 +26,16 @@ __asm(
     "stp x27, x28, [x0,  #96]\n"
     "str x29,      [x0, #112]\n"
     #if defined(__APPLE__) && defined(__MACH__)
-    "b _nlr_push_tail        \n" // do the rest in C
+    "b _nlr_push_tail        \n" 
     #else
-    "b nlr_push_tail         \n" // do the rest in C
+    "b nlr_push_tail         \n" 
     #endif
     );
 
 NORETURN void nlr_jump(void *val) {
     MP_NLR_JUMP_HEAD(val, top)
 
-    MP_STATIC_ASSERT(offsetof(nlr_buf_t, regs) == 16); // asm assumes it
+    MP_STATIC_ASSERT(offsetof(nlr_buf_t, regs) == 16); 
 
     __asm volatile (
         "mov x0, %0              \n"
@@ -69,9 +45,9 @@ NORETURN void nlr_jump(void *val) {
         "ldp x23, x24, [x0,  #64]\n"
         "ldp x21, x22, [x0,  #48]\n"
         "ldp x19, x20, [x0,  #32]\n"
-        "ldp lr,  x9,  [x0,  #16]\n" // 16 == offsetof(nlr_buf_t, regs)
+        "ldp lr,  x9,  [x0,  #16]\n" 
         "mov sp, x9              \n"
-        "mov x0, #1              \n"  // non-local return
+        "mov x0, #1              \n"  
         "ret                     \n"
         :
         : "r" (top)
@@ -81,4 +57,4 @@ NORETURN void nlr_jump(void *val) {
     MP_UNREACHABLE
 }
 
-#endif // MICROPY_NLR_AARCH64
+#endif 

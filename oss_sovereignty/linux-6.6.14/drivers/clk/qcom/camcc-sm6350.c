@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -36,7 +33,7 @@ static struct pll_vco fabia_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 600MHz configuration */
+ 
 static const struct alpha_pll_config camcc_pll0_config = {
 	.l = 0x1f,
 	.alpha = 0x4000,
@@ -88,7 +85,7 @@ static struct clk_alpha_pll_postdiv camcc_pll0_out_even = {
 	},
 };
 
-/* 808MHz configuration */
+ 
 static const struct alpha_pll_config camcc_pll1_config = {
 	.l = 0x2a,
 	.alpha = 0x1555,
@@ -140,7 +137,7 @@ static struct clk_alpha_pll_postdiv camcc_pll1_out_even = {
 	},
 };
 
-/* 1920MHz configuration */
+ 
 static const struct alpha_pll_config camcc_pll2_config = {
 	.l = 0x64,
 	.alpha = 0x0,
@@ -206,7 +203,7 @@ static struct clk_alpha_pll_postdiv camcc_pll2_out_main = {
 	},
 };
 
-/* 384MHz configuration */
+ 
 static const struct alpha_pll_config camcc_pll3_config = {
 	.l = 0x14,
 	.alpha = 0x0,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -42,7 +42,7 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 	bool is_cck = pstatus->is_cck;
 	u8 lan_idx, vga_idx;
 
-	/* Record it for next packet processing */
+	 
 	pstatus->packet_matchbssid = bpacket_match_bssid;
 	pstatus->packet_toself = bpacket_toself;
 	pstatus->packet_beacon = packet_beacon;
@@ -54,18 +54,16 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 
 		cck_agc_rpt = p_phystrpt->cck_agc_rpt_ofdm_cfosho_a;
 
-		/* (1)Hardware does not provide RSSI for CCK */
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
+		 
 		rtl_get_bbreg(hw, RFPGA0_XA_HSSIPARAMETER2, BIT(9));
 
 		lan_idx = ((cck_agc_rpt & 0xE0) >> 5);
 		vga_idx = (cck_agc_rpt & 0x1f);
 
 		switch (lan_idx) {
-		/* 46 53 73 95 201301231630 */
-		/* 46 53 77 99 201301241630 */
+		 
+		 
 		case 6:
 			rx_pwr_all = -34 - (2 * vga_idx);
 			break;
@@ -90,7 +88,7 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->bt_rx_rssi_percentage = pwdb_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3) Get Signal Quality (EVM) */
+		 
 		if (bpacket_match_bssid) {
 			u8 sq, sq_rpt;
 			if (pstatus->rx_pwdb_all > 40) {
@@ -109,9 +107,9 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 			pstatus->rx_mimo_signalquality[1] = -1;
 		}
 	} else {
-		/* (1)Get RSSI for HT rate */
+		 
 		for (i = RF90_PATH_A; i < RF6052_MAX_PATH; i++) {
-			/* we will judge RF RX path now. */
+			 
 			if (rtlpriv->dm.rfpath_rxenable[i])
 				rf_rx_num++;
 
@@ -119,16 +117,14 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 				    - 110;
 
 			pstatus->rx_pwr[i] = rx_pwr[i];
-			/* Translate DBM to percentage. */
+			 
 			rssi = rtl_query_rxpwrpercentage(rx_pwr[i]);
 			total_rssi += rssi;
 
 			pstatus->rx_mimo_signalstrength[i] = (u8)rssi;
 		}
 
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((p_phystrpt->cck_sig_qual_ofdm_pwdb_all >> 1) &
 			     0x7f) - 110;
 
@@ -139,7 +135,7 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rxpower = rx_pwr_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3)EVM of HT rate */
+		 
 		if (pstatus->rate >= DESC92C_RATEMCS8 &&
 		    pstatus->rate <= DESC92C_RATEMCS15)
 			max_spatial_stream = 2;
@@ -151,9 +147,7 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 						p_phystrpt->stream_rxevm[i]);
 
 			if (bpacket_match_bssid) {
-				/* Fill value in RFD, Get the first
-				 * spatial stream only
-				 */
+				 
 				if (i == 0)
 					pstatus->signalquality =
 							(u8)(evm & 0xff);
@@ -174,9 +168,7 @@ static void _rtl8723be_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* UI BSS List signal strength(in percentage),
-	 * make it good looking, from 0~100.
-	 */
+	 
 	if (is_cck)
 		pstatus->signalstrength = (u8)(rtl_signal_scale_mapping(hw,
 								pwdb_all));
@@ -219,11 +211,7 @@ static void _rtl8723be_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	packet_toself = packet_matchbssid &&
 	    (ether_addr_equal(praddr, rtlefuse->dev_addr));
 
-	/* YP: packet_beacon is not initialized,
-	 * this assignment is neccesary,
-	 * otherwise it counld be true in this case
-	 * the situation is much worse in Kernel 3.10
-	 */
+	 
 	if (ieee80211_is_beacon(hdr->frame_control))
 		packet_beacon = true;
 	else
@@ -358,14 +346,7 @@ bool rtl8723be_rx_query_desc(struct ieee80211_hw *hw,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set status->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame.
-	 * So hw will not decryption robust managment frame
-	 * for IEEE80211w but still set status->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it
-	 */
+	 
 	if (status->decrypted) {
 		if ((!_ieee80211_is_robust_mgmt_frame(hdr)) &&
 		    (ieee80211_has_protected(hdr->frame_control)))
@@ -374,10 +355,7 @@ bool rtl8723be_rx_query_desc(struct ieee80211_hw *hw,
 			rx_status->flag &= ~RX_FLAG_DECRYPTED;
 	}
 
-	/* rate_idx: index of data rate into band's
-	 * supported rates or MCS index if HT rates
-	 * are use (RX_FLAG_HT)
-	 */
+	 
 	rx_status->rate_idx = rtlwifi_rate_mapping(hw, status->is_ht,
 						   false, status->rate);
 
@@ -434,7 +412,7 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
 	}
 	seq_number = (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_SEQ) >> 4;
 	rtl_get_tcb_desc(hw, info, sta, skb, ptcb_desc);
-	/* reserve 8 byte for AMPDU early mode */
+	 
 	if (rtlhal->earlymode_enable) {
 		skb_push(skb, EM_HDR_LEN);
 		memset(skb->data, 0, EM_HDR_LEN);
@@ -468,7 +446,7 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
 		}
 
 
-		/* ptcb_desc->use_driver_rate = true; */
+		 
 		set_tx_desc_tx_rate(pdesc, ptcb_desc->hw_rate);
 		if (ptcb_desc->hw_rate > DESC92C_RATEMCS0)
 			short_gi = (ptcb_desc->use_shortgi) ? 1 : 0;
@@ -544,9 +522,9 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
 					      1 : 0);
 		set_tx_desc_use_rate(pdesc, ptcb_desc->use_driver_rate ? 1 : 0);
 
-		/* Set TxRate and RTSRate in TxDesc  */
-		/* This prevent Tx initial rate of new-coming packets */
-		/* from being overwritten by retried  packet rate.*/
+		 
+		 
+		 
 		if (ieee80211_is_data_qos(fc)) {
 			if (mac->rdg_en) {
 				rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
@@ -555,7 +533,7 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
 				set_tx_desc_htc(pdesc, 1);
 			}
 		}
-		/* tx report */
+		 
 		rtl_set_tx_report(ptcb_desc, pdesc8, hw, tx_info);
 	}
 
@@ -563,7 +541,7 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
 	set_tx_desc_last_seg(pdesc, (lastseg ? 1 : 0));
 	set_tx_desc_tx_buffer_size(pdesc, (u16)buf_len);
 	set_tx_desc_tx_buffer_address(pdesc, mapping);
-	/* if (rtlpriv->dm.useramask) { */
+	 
 	if (1) {
 		set_tx_desc_rate_id(pdesc, ptcb_desc->ratr_index);
 		set_tx_desc_macid(pdesc, ptcb_desc->mac_id);
@@ -723,10 +701,7 @@ bool rtl8723be_is_tx_desc_closed(struct ieee80211_hw *hw,
 	u8 *entry = (u8 *)(&ring->desc[ring->idx]);
 	u8 own = (u8)rtl8723be_get_desc(hw, entry, true, HW_DESC_OWN);
 
-	/*beacon packet will only use the first
-	 *descriptor defautly,and the own may not
-	 *be cleared by the hardware
-	 */
+	 
 	if (own)
 		return false;
 	return true;

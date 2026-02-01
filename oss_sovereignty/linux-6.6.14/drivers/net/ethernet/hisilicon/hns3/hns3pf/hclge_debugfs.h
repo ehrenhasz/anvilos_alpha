@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2018-2019 Hisilicon Limited. */
+ 
+ 
 
 #ifndef __HCLGE_DEBUGFS_H
 #define __HCLGE_DEBUGFS_H
@@ -18,7 +18,7 @@
 #define HCLGE_DBG_MNG_PF_ID	   0x0007
 #define HCLGE_DBG_MNG_VF_ID	   0x00FF
 
-/* Get DFX BD number offset */
+ 
 #define HCLGE_DBG_DFX_BIOS_OFFSET  1
 #define HCLGE_DBG_DFX_SSU_0_OFFSET 2
 #define HCLGE_DBG_DFX_SSU_1_OFFSET 3
@@ -751,7 +751,7 @@ static const struct hclge_dbg_dfx_message hclge_dbg_tqp_reg[] = {
 
 struct hclge_dbg_item {
 	char name[HCLGE_DBG_ITEM_NAME_LEN];
-	u16 interval; /* blank numbers after the item */
+	u16 interval;  
 };
 
 struct hclge_dbg_vlan_cfg {

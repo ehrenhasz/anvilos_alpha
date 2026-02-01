@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (C) 2020-2021 Samuel Holland <samuel@sholland.org>
-//
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
@@ -93,18 +93,14 @@ struct sun8i_a33_mbus {
 	unsigned long				freq_table[];
 };
 
-/*
- * The unit for this value is (MBUS clock cycles / MBUS_TMR_PERIOD). When
- * MBUS_TMR_PERIOD is programmed to match the MBUS clock frequency in MHz, as
- * it is during DRAM init and during probe, the resulting unit is microseconds.
- */
+ 
 static int pmu_period = 50000;
 module_param(pmu_period, int, 0644);
 MODULE_PARM_DESC(pmu_period, "Bandwidth measurement period (microseconds)");
 
 static u32 sun8i_a33_mbus_get_peak_bw(struct sun8i_a33_mbus *priv)
 {
-	/* Returns the peak transfer (in KiB) during any single PMU period. */
+	 
 	return readl_relaxed(priv->reg_mbus + MBUS_TOTAL_BWCR);
 }
 
@@ -112,7 +108,7 @@ static void sun8i_a33_mbus_restart_pmu_counters(struct sun8i_a33_mbus *priv)
 {
 	u32 pmu_cfg = MBUS_PMU_CFG_PERIOD(pmu_period) | MBUS_PMU_CFG_UNIT_KB;
 
-	/* All PMU counters are cleared on a disable->enable transition. */
+	 
 	writel_relaxed(pmu_cfg,
 		       priv->reg_mbus + MBUS_PMU_CFG);
 	writel_relaxed(pmu_cfg | MBUS_PMU_CFG_ENABLE,
@@ -123,32 +119,26 @@ static void sun8i_a33_mbus_restart_pmu_counters(struct sun8i_a33_mbus *priv)
 static void sun8i_a33_mbus_update_nominal_bw(struct sun8i_a33_mbus *priv,
 					     u32 ddr_freq_mhz)
 {
-	/*
-	 * Nominal bandwidth (KiB per PMU period):
-	 *
-	 *   DDR transfers   microseconds     KiB
-	 *   ------------- * ------------ * --------
-	 *    microsecond     PMU period    transfer
-	 */
+	 
 	priv->nominal_bw = ddr_freq_mhz * pmu_period * priv->data_width / 1024;
 }
 
 static int sun8i_a33_mbus_set_dram_freq(struct sun8i_a33_mbus *priv,
 					unsigned long freq)
 {
-	u32  ddr_freq_mhz = freq / USEC_PER_SEC; /* DDR */
-	u32 dram_freq_mhz =    ddr_freq_mhz / 2; /* SDR */
-	u32 mctl_freq_mhz =   dram_freq_mhz / 2; /* HDR */
+	u32  ddr_freq_mhz = freq / USEC_PER_SEC;  
+	u32 dram_freq_mhz =    ddr_freq_mhz / 2;  
+	u32 mctl_freq_mhz =   dram_freq_mhz / 2;  
 	u32 dxodt, mdfscr, pwrctl, vtfcr;
 	u32 i, tREFI_32ck, tRFC_ck;
 	int ret;
 
-	/* The rate change is not effective until the MDFS process runs. */
+	 
 	ret = clk_set_rate(priv->clk_dram, freq);
 	if (ret)
 		return ret;
 
-	/* Disable automatic self-refesh and VTF before starting MDFS. */
+	 
 	pwrctl = readl_relaxed(priv->reg_dram + DRAM_PWRCTL) &
 		 ~DRAM_PWRCTL_SELFREF_EN;
 	writel_relaxed(pwrctl, priv->reg_dram + DRAM_PWRCTL);
@@ -156,20 +146,20 @@ static int sun8i_a33_mbus_set_dram_freq(struct sun8i_a33_mbus *priv,
 	writel_relaxed(vtfcr & ~DRAM_VTFCR_VTF_ENABLE,
 		       priv->reg_dram + DRAM_VTFCR);
 
-	/* Set up MDFS and enable double buffering for timing registers. */
+	 
 	mdfscr = MBUS_MDFSCR_MODE_DFS |
 		 MBUS_MDFSCR_BYPASS |
 		 MBUS_MDFSCR_PAD_HOLD |
 		 MBUS_MDFSCR_BUFFER_TIMING;
 	writel(mdfscr, priv->reg_mbus + MBUS_MDFSCR);
 
-	/* Update the buffered copy of RFSHTMG. */
+	 
 	tREFI_32ck = priv->tREFI_ns * mctl_freq_mhz / 1000 / 32;
 	tRFC_ck = DIV_ROUND_UP(priv->tRFC_ns * mctl_freq_mhz, 1000);
 	writel(DRAM_RFSHTMG_TREFI(tREFI_32ck) | DRAM_RFSHTMG_TRFC(tRFC_ck),
 	       priv->reg_dram + DRAM_RFSHTMG);
 
-	/* Enable ODT if needed, or disable it to save power. */
+	 
 	if (priv->odtmap && dram_freq_mhz > priv->variant->odt_freq_mhz) {
 		dxodt = DRAM_DXnGCR0_DXODT_DYNAMIC;
 		writel(priv->odtmap, priv->reg_dram + DRAM_ODTMAP);
@@ -188,20 +178,20 @@ static int sun8i_a33_mbus_set_dram_freq(struct sun8i_a33_mbus *priv,
 		dram_freq_mhz, tREFI_32ck, tRFC_ck,
 		dxodt == DRAM_DXnGCR0_DXODT_DYNAMIC ? "dynamic" : "disabled");
 
-	/* Trigger hardware MDFS. */
+	 
 	writel(mdfscr | MBUS_MDFSCR_START, priv->reg_mbus + MBUS_MDFSCR);
 	ret = readl_poll_timeout_atomic(priv->reg_mbus + MBUS_MDFSCR, mdfscr,
 					!(mdfscr & MBUS_MDFSCR_START), 10, 1000);
 	if (ret)
 		return ret;
 
-	/* Disable double buffering. */
+	 
 	writel(0, priv->reg_mbus + MBUS_MDFSCR);
 
-	/* Restore VTF configuration. */
+	 
 	writel_relaxed(vtfcr, priv->reg_dram + DRAM_VTFCR);
 
-	/* Enable automatic self-refresh at the lowest frequency only. */
+	 
 	if (freq == priv->freq_table[0])
 		pwrctl |= DRAM_PWRCTL_SELFREF_EN;
 	writel_relaxed(pwrctl, priv->reg_dram + DRAM_PWRCTL);
@@ -263,7 +253,7 @@ static int sun8i_a33_mbus_hw_init(struct device *dev,
 {
 	u32 i, mbus_cr, mbus_freq_mhz;
 
-	/* Choose tREFI and tRFC to match the configured DRAM type. */
+	 
 	mbus_cr = readl_relaxed(priv->reg_mbus + MBUS_CR);
 	switch (MBUS_CR_GET_DRAM_TYPE(mbus_cr)) {
 	case MBUS_CR_DRAM_TYPE_DDR2:
@@ -281,10 +271,10 @@ static int sun8i_a33_mbus_hw_init(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* Save ODTMAP so it can be restored when raising the frequency. */
+	 
 	priv->odtmap = readl_relaxed(priv->reg_dram + DRAM_ODTMAP);
 
-	/* Compute the DRAM data bus width by counting enabled DATx8 blocks. */
+	 
 	for (i = 0; i < DRAM_DX_MAX; ++i) {
 		void __iomem *reg = priv->reg_dram + DRAM_DXnGCR0(i);
 
@@ -298,12 +288,12 @@ static int sun8i_a33_mbus_hw_init(struct device *dev,
 		MBUS_CR_GET_DRAM_TYPE(mbus_cr) > 4 ? "LP" : "",
 		priv->odtmap ? "" : "out");
 
-	/* Program MBUS_TMR such that the PMU period unit is microseconds. */
+	 
 	mbus_freq_mhz = clk_get_rate(priv->clk_mbus) / USEC_PER_SEC;
 	writel_relaxed(MBUS_TMR_PERIOD(mbus_freq_mhz),
 		       priv->reg_mbus + MBUS_TMR);
 
-	/* "Master Ready Mask Register" bits must be set or MDFS will block. */
+	 
 	writel_relaxed(0xffffffff, priv->reg_mbus + MBUS_MDFSMRMR);
 
 	sun8i_a33_mbus_restart_pmu_counters(priv);
@@ -380,14 +370,14 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, ret,
 				     "failed to enable bus clock\n");
 
-	/* Lock the DRAM clock rate to keep priv->nominal_bw in sync. */
+	 
 	ret = clk_rate_exclusive_get(priv->clk_dram);
 	if (ret) {
 		err = "failed to lock dram clock rate\n";
 		goto err_disable_bus;
 	}
 
-	/* Lock the MBUS clock rate to keep MBUS_TMR_PERIOD in sync. */
+	 
 	ret = clk_rate_exclusive_get(priv->clk_mbus);
 	if (ret) {
 		err = "failed to lock mbus clock rate\n";
@@ -438,10 +428,7 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
 		goto err_remove_opps;
 	}
 
-	/*
-	 * This must be set manually after registering the devfreq device,
-	 * because there is no way to select a dynamic OPP as the suspend OPP.
-	 */
+	 
 	priv->devfreq_dram->suspend_freq = priv->freq_table[0];
 
 	return 0;

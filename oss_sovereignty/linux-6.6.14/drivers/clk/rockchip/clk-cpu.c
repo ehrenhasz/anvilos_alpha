@@ -1,33 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * based on clk/samsung/clk-cpu.c
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- *
- * A CPU clock is defined as a clock supplied to a CPU or a group of CPUs.
- * The CPU clock is typically derived from a hierarchy of clock
- * blocks which includes mux and divider blocks. There are a number of other
- * auxiliary clocks supplied to the CPU domain such as the debug blocks and AXI
- * clock for CPU domain. The rates of these auxiliary clocks are related to the
- * CPU clock rate and this relation is usually specified in the hardware manual
- * of the SoC or supplied after the SoC characterization.
- *
- * The below implementation of the CPU clock allows the rate changes of the CPU
- * clock and the corresponding rate changes of the auxillary clocks of the CPU
- * domain. The platform clock driver provides a clock register configuration
- * for each configurable rate which is then used to program the clock hardware
- * registers to acheive a fast co-oridinated rate change for all the CPU domain
- * clocks.
- *
- * On a rate change request for the CPU clock, the rate change is propagated
- * upto the PLL supplying the clock to the CPU domain clock blocks. While the
- * CPU domain PLL is reconfigured, the CPU domain clocks are driven using an
- * alternate clock source. If required, the alternate clock source is divided
- * down in order to keep the output clock rate within the previous OPP limits.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/slab.h>
@@ -36,19 +8,7 @@
 #include <linux/clk-provider.h>
 #include "clk.h"
 
-/**
- * struct rockchip_cpuclk: information about clock supplied to a CPU core.
- * @hw:		handle between ccf and cpu clock.
- * @alt_parent:	alternate parent clock to use when switching the speed
- *		of the primary parent clock.
- * @reg_base:	base register for cpu-clock values.
- * @clk_nb:	clock notifier registered for changes in clock speed of the
- *		primary parent clock.
- * @rate_count:	number of rates in the rate_table
- * @rate_table:	pll-rates and their associated dividers
- * @reg_data:	cpu-specific register settings
- * @lock:	clock lock
- */
+ 
 struct rockchip_cpuclk {
 	struct clk_hw				hw;
 	struct clk				*alt_parent;
@@ -100,7 +60,7 @@ static void rockchip_cpuclk_set_dividers(struct rockchip_cpuclk *cpuclk,
 {
 	int i;
 
-	/* alternate parent is active now. set the dividers */
+	 
 	for (i = 0; i < ARRAY_SIZE(rate->divs); i++) {
 		const struct rockchip_cpuclk_clksel *clksel = &rate->divs[i];
 
@@ -118,7 +78,7 @@ static void rockchip_cpuclk_set_pre_muxs(struct rockchip_cpuclk *cpuclk,
 {
 	int i;
 
-	/* alternate parent is active now. set the pre_muxs */
+	 
 	for (i = 0; i < ARRAY_SIZE(rate->pre_muxs); i++) {
 		const struct rockchip_cpuclk_clksel *clksel = &rate->pre_muxs[i];
 
@@ -136,7 +96,7 @@ static void rockchip_cpuclk_set_post_muxs(struct rockchip_cpuclk *cpuclk,
 {
 	int i;
 
-	/* alternate parent is active now. set the muxs */
+	 
 	for (i = 0; i < ARRAY_SIZE(rate->post_muxs); i++) {
 		const struct rockchip_cpuclk_clksel *clksel = &rate->post_muxs[i];
 
@@ -158,7 +118,7 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
 	unsigned long flags;
 	int i = 0;
 
-	/* check validity of the new rate */
+	 
 	rate = rockchip_get_cpuclk_settings(cpuclk, ndata->new_rate);
 	if (!rate) {
 		pr_err("%s: Invalid rate : %lu for cpuclk\n",
@@ -170,14 +130,9 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
 
 	spin_lock_irqsave(cpuclk->lock, flags);
 
-	/*
-	 * If the old parent clock speed is less than the clock speed
-	 * of the alternate parent, then it should be ensured that at no point
-	 * the armclk speed is more than the old_rate until the dividers are
-	 * set.
-	 */
+	 
 	if (alt_prate > ndata->old_rate) {
-		/* calculate dividers */
+		 
 		alt_div =  DIV_ROUND_UP(alt_prate, ndata->old_rate) - 1;
 		if (alt_div > reg_data->div_core_mask[0]) {
 			pr_warn("%s: limiting alt-divider %lu to %d\n",
@@ -185,13 +140,7 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
 			alt_div = reg_data->div_core_mask[0];
 		}
 
-		/*
-		 * Change parents and add dividers in a single transaction.
-		 *
-		 * NOTE: we do this in a single transaction so we're never
-		 * dividing the primary parent by the extra dividers that were
-		 * needed for the alt.
-		 */
+		 
 		pr_debug("%s: setting div %lu as alt-rate %lu > old-rate %lu\n",
 			 __func__, alt_div, alt_prate, ndata->old_rate);
 
@@ -204,7 +153,7 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
 
 	rockchip_cpuclk_set_pre_muxs(cpuclk, rate);
 
-	/* select alternate parent */
+	 
 	if (reg_data->mux_core_reg)
 		writel(HIWORD_UPDATE(reg_data->mux_core_alt,
 				     reg_data->mux_core_mask,
@@ -240,12 +189,7 @@ static int rockchip_cpuclk_post_rate_change(struct rockchip_cpuclk *cpuclk,
 	if (ndata->old_rate < ndata->new_rate)
 		rockchip_cpuclk_set_dividers(cpuclk, rate);
 
-	/*
-	 * post-rate change event, re-mux to primary parent and remove dividers.
-	 *
-	 * NOTE: we do this in a single transaction so we're never dividing the
-	 * primary parent by the extra dividers that were needed for the alt.
-	 */
+	 
 
 	if (reg_data->mux_core_reg)
 		writel(HIWORD_UPDATE(reg_data->mux_core_main,
@@ -260,7 +204,7 @@ static int rockchip_cpuclk_post_rate_change(struct rockchip_cpuclk *cpuclk,
 
 	rockchip_cpuclk_set_post_muxs(cpuclk, rate);
 
-	/* remove dividers */
+	 
 	for (i = 0; i < reg_data->num_cores; i++) {
 		writel(HIWORD_UPDATE(0, reg_data->div_core_mask[i],
 				     reg_data->div_core_shift[i]),
@@ -274,12 +218,7 @@ static int rockchip_cpuclk_post_rate_change(struct rockchip_cpuclk *cpuclk,
 	return 0;
 }
 
-/*
- * This clock notifier is called when the frequency of the parent clock
- * of cpuclk is to be changed. This notifier handles the setting up all
- * the divider clocks, remux to temporary parent and handling the safe
- * frequency levels when using temporary parent.
- */
+ 
 static int rockchip_cpuclk_notifier_cb(struct notifier_block *nb,
 					unsigned long event, void *data)
 {
@@ -322,10 +261,10 @@ struct clk *rockchip_clk_register_cpuclk(const char *name,
 	init.num_parents = 1;
 	init.ops = &rockchip_cpuclk_ops;
 
-	/* only allow rate changes when we have a rate table */
+	 
 	init.flags = (nrates > 0) ? CLK_SET_RATE_PARENT : 0;
 
-	/* disallow automatic parent changes by ccf */
+	 
 	init.flags |= CLK_SET_RATE_NO_REPARENT;
 
 	init.flags |= CLK_GET_RATE_NOCACHE;

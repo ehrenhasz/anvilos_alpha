@@ -1,38 +1,4 @@
-/******************************************************************************
- *
- * Back-end of the driver for virtual block devices. This portion of the
- * driver exports a 'unified' block-device interface that can be accessed
- * by any operating system that implements a compatible front end. A
- * reference front-end implementation can be found in:
- *  drivers/block/xen-blkfront.c
- *
- * Copyright (c) 2003-2004, Keir Fraser & Steve Hand
- * Copyright (c) 2005, Christopher Clark
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen-blkback: " fmt
 
@@ -52,41 +18,21 @@
 #include <xen/grant_table.h>
 #include "common.h"
 
-/*
- * Maximum number of unused free pages to keep in the internal buffer.
- * Setting this to a value too low will reduce memory used in each backend,
- * but can have a performance penalty.
- *
- * A sane value is xen_blkif_reqs * BLKIF_MAX_SEGMENTS_PER_REQUEST, but can
- * be set to a lower value that might degrade performance on some intensive
- * IO workloads.
- */
+ 
 
 static int max_buffer_pages = 1024;
 module_param_named(max_buffer_pages, max_buffer_pages, int, 0644);
 MODULE_PARM_DESC(max_buffer_pages,
 "Maximum number of free pages to keep in each block backend buffer");
 
-/*
- * Maximum number of grants to map persistently in blkback. For maximum
- * performance this should be the total numbers of grants that can be used
- * to fill the ring, but since this might become too high, specially with
- * the use of indirect descriptors, we set it to a value that provides good
- * performance without using too much memory.
- *
- * When the list of persistent grants is full we clean it up using a LRU
- * algorithm.
- */
+ 
 
 static int max_pgrants = 1056;
 module_param_named(max_persistent_grants, max_pgrants, int, 0644);
 MODULE_PARM_DESC(max_persistent_grants,
                  "Maximum number of grants to map persistently");
 
-/*
- * How long a persistent grant is allowed to remain allocated without being in
- * use. The time is in seconds, 0 means indefinitely long.
- */
+ 
 
 static unsigned int pgrant_timeout = 60;
 module_param_named(persistent_grant_unused_seconds, pgrant_timeout,
@@ -95,38 +41,24 @@ MODULE_PARM_DESC(persistent_grant_unused_seconds,
 		 "Time in seconds an unused persistent grant is allowed to "
 		 "remain allocated. Default is 60, 0 means unlimited.");
 
-/*
- * Maximum number of rings/queues blkback supports, allow as many queues as there
- * are CPUs if user has not specified a value.
- */
+ 
 unsigned int xenblk_max_queues;
 module_param_named(max_queues, xenblk_max_queues, uint, 0644);
 MODULE_PARM_DESC(max_queues,
 		 "Maximum number of hardware queues per virtual disk." \
 		 "By default it is the number of online CPUs.");
 
-/*
- * Maximum order of pages to be used for the shared ring between front and
- * backend, 4KB page granularity is used.
- */
+ 
 unsigned int xen_blkif_max_ring_order = XENBUS_MAX_RING_GRANT_ORDER;
 module_param_named(max_ring_page_order, xen_blkif_max_ring_order, int, 0444);
 MODULE_PARM_DESC(max_ring_page_order, "Maximum order of pages to be used for the shared ring");
-/*
- * The LRU mechanism to clean the lists of persistent grants needs to
- * be executed periodically. The time interval between consecutive executions
- * of the purge mechanism is set in ms.
- */
+ 
 #define LRU_INTERVAL 100
 
-/*
- * When the persistent grants list is full we will remove unused grants
- * from the list. The percent number of grants to be removed at each LRU
- * execution.
- */
+ 
 #define LRU_PERCENT_CLEAN 5
 
-/* Run-time switchable: /sys/module/blkback/parameters/ */
+ 
 static unsigned int log_stats;
 module_param(log_stats, int, 0644);
 
@@ -155,16 +87,7 @@ static void make_response(struct xen_blkif_ring *ring, u64 id,
 	     (n) = (&(pos)->node != NULL) ? rb_next(&(pos)->node) : NULL)
 
 
-/*
- * We don't need locking around the persistent grant helpers
- * because blkback uses a single-thread for each backend, so we
- * can be sure that this functions will never be called recursively.
- *
- * The only exception to that is put_persistent_grant, that can be called
- * from interrupt context (by xen_blkbk_unmap), so we have to use atomic
- * bit operations to modify the flags of a persistent grant and to count
- * the number of used grants.
- */
+ 
 static int add_persistent_gnt(struct xen_blkif_ring *ring,
 			       struct persistent_gnt *persistent_gnt)
 {
@@ -177,7 +100,7 @@ static int add_persistent_gnt(struct xen_blkif_ring *ring,
 			blkif->vbd.overflow_max_grants = 1;
 		return -EBUSY;
 	}
-	/* Figure out where to put new node */
+	 
 	new = &ring->persistent_gnts.rb_node;
 	while (*new) {
 		this = container_of(*new, struct persistent_gnt, node);
@@ -194,7 +117,7 @@ static int add_persistent_gnt(struct xen_blkif_ring *ring,
 	}
 
 	persistent_gnt->active = true;
-	/* Add new node and rebalance tree. */
+	 
 	rb_link_node(&(persistent_gnt->node), parent, new);
 	rb_insert_color(&(persistent_gnt->node), &ring->persistent_gnts);
 	ring->persistent_gnt_c++;
@@ -354,14 +277,7 @@ static void purge_persistent_gnt(struct xen_blkif_ring *ring)
 			 num_clean);
 	}
 
-	/*
-	 * At this point, we can assure that there will be no calls
-         * to get_persistent_grant (because we are executing this code from
-         * xen_blkif_schedule), there can only be calls to put_persistent_gnt,
-         * which means that the number of currently used grants will go down,
-         * but never up, so we will always be able to remove the requested
-         * number of grants.
-	 */
+	 
 
 	total = 0;
 
@@ -384,11 +300,7 @@ purge_list:
 			 &ring->persistent_purge_list);
 		total++;
 	}
-	/*
-	 * Check whether we also need to start cleaning
-	 * grants that were used since last purge in order to cope
-	 * with the requested num
-	 */
+	 
 	if (!scan_used && total < num_clean) {
 		pr_debug("Still missing %u purged frames\n", num_clean - total);
 		scan_used = true;
@@ -399,7 +311,7 @@ purge_list:
 		ring->persistent_gnt_c -= total;
 		ring->blkif->vbd.overflow_max_grants = 0;
 
-		/* We can defer this work */
+		 
 		schedule_work(&ring->persistent_purge_work);
 		pr_debug("Purged %u/%u\n", num_clean, total);
 	}
@@ -408,9 +320,7 @@ out:
 	return;
 }
 
-/*
- * Retrieve from the 'pending_reqs' a free pending_req structure to be used.
- */
+ 
 static struct pending_req *alloc_req(struct xen_blkif_ring *ring)
 {
 	struct pending_req *req = NULL;
@@ -426,10 +336,7 @@ static struct pending_req *alloc_req(struct xen_blkif_ring *ring)
 	return req;
 }
 
-/*
- * Return the 'pending_req' structure back to the freepool. We also
- * wake up the thread if it was waiting for a free page.
- */
+ 
 static void free_req(struct xen_blkif_ring *ring, struct pending_req *req)
 {
 	unsigned long flags;
@@ -443,9 +350,7 @@ static void free_req(struct xen_blkif_ring *ring, struct pending_req *req)
 		wake_up(&ring->pending_free_wq);
 }
 
-/*
- * Routines for managing virtual block devices (vbds).
- */
+ 
 static int xen_vbd_translate(struct phys_req *req, struct xen_blkif *blkif,
 			     enum req_op operation)
 {
@@ -496,11 +401,7 @@ again:
 		pr_warn("Error writing new size\n");
 		goto abort;
 	}
-	/*
-	 * Write the current state; we will use this to synchronize
-	 * the front-end. If the current state is "connected" the
-	 * front-end will get the new size information online.
-	 */
+	 
 	err = xenbus_printf(xbt, dev->nodename, "state", "%d", dev->state);
 	if (err) {
 		pr_warn("Error writing the state\n");
@@ -517,9 +418,7 @@ abort:
 	xenbus_transaction_end(xbt, 1);
 }
 
-/*
- * Notification from the guest OS.
- */
+ 
 static void blkif_notify_work(struct xen_blkif_ring *ring)
 {
 	ring->waiting_reqs = 1;
@@ -532,9 +431,7 @@ irqreturn_t xen_blkif_be_int(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * SCHEDULER FUNCTIONS
- */
+ 
 
 static void print_stats(struct xen_blkif_ring *ring)
 {
@@ -587,7 +484,7 @@ int xen_blkif_schedule(void *arg)
 		do_eoi = ring->waiting_reqs;
 
 		ring->waiting_reqs = 0;
-		smp_mb(); /* clear flag *before* checking for work */
+		smp_mb();  
 
 		ret = do_block_io_op(ring, &eoi_flags);
 		if (ret > 0)
@@ -608,7 +505,7 @@ purge_gnt_list:
 			ring->next_lru = jiffies + msecs_to_jiffies(LRU_INTERVAL);
 		}
 
-		/* Shrink the free pages pool if it is too large. */
+		 
 		if (time_before(jiffies, blkif->buffer_squeeze_end))
 			gnttab_page_cache_shrink(&ring->free_pages, 0);
 		else
@@ -619,7 +516,7 @@ purge_gnt_list:
 			print_stats(ring);
 	}
 
-	/* Drain pending purge work */
+	 
 	flush_work(&ring->persistent_purge_work);
 
 	if (log_stats)
@@ -630,16 +527,14 @@ purge_gnt_list:
 	return 0;
 }
 
-/*
- * Remove persistent grants and empty the pool of free pages
- */
+ 
 void xen_blkbk_free_caches(struct xen_blkif_ring *ring)
 {
-	/* Free all persistent grant pages */
+	 
 	free_persistent_gnts(ring);
 
-	/* Since we are shutting down remove all pages from the buffer */
-	gnttab_page_cache_shrink(&ring->free_pages, 0 /* All */);
+	 
+	gnttab_page_cache_shrink(&ring->free_pages, 0  );
 }
 
 static unsigned int xen_blkbk_unmap_prepare(
@@ -674,26 +569,14 @@ static void xen_blkbk_unmap_and_respond_callback(int result, struct gntab_unmap_
 	struct xen_blkif_ring *ring = pending_req->ring;
 	struct xen_blkif *blkif = ring->blkif;
 
-	/* BUG_ON used to reproduce existing behaviour,
-	   but is this the best way to deal with this? */
+	 
 	BUG_ON(result);
 
 	gnttab_page_cache_put(&ring->free_pages, data->pages, data->count);
 	make_response(ring, pending_req->id,
 		      pending_req->operation, pending_req->status);
 	free_req(ring, pending_req);
-	/*
-	 * Make sure the request is freed before releasing blkif,
-	 * or there could be a race between free_req and the
-	 * cleanup done in xen_blkif_free during shutdown.
-	 *
-	 * NB: The fact that we might try to wake up pending_free_wq
-	 * before drain_complete (in case there's a drain going on)
-	 * it's not a problem with our current implementation
-	 * because we can assure there's no thread waiting on
-	 * pending_free_wq if there's a drain going on, but it has
-	 * to be taken into account if the current model is changed.
-	 */
+	 
 	if (atomic_dec_and_test(&ring->inflight) && atomic_read(&blkif->drain)) {
 		complete(&blkif->drain_complete);
 	}
@@ -721,13 +604,7 @@ static void xen_blkbk_unmap_and_respond(struct pending_req *req)
 }
 
 
-/*
- * Unmap the grant references.
- *
- * This could accumulate ops up to the batch size to reduce the number
- * of hypercalls, but since this is only used in error paths there's
- * no real need.
- */
+ 
 static void xen_blkbk_unmap(struct xen_blkif_ring *ring,
                             struct grant_page *pages[],
                             int num)
@@ -770,11 +647,7 @@ static int xen_blkbk_map(struct xen_blkif_ring *ring,
 
 	use_persistent_gnts = (blkif->vbd.feature_gnt_persistent);
 
-	/*
-	 * Fill out preq.nr_sects with proper amount of sectors, and setup
-	 * assign map[..] with the PFN of the page in our domain with the
-	 * corresponding grant reference for each page.
-	 */
+	 
 again:
 	for (i = map_until; i < num; i++) {
 		uint32_t flags;
@@ -786,10 +659,7 @@ again:
 		}
 
 		if (persistent_gnt) {
-			/*
-			 * We are using persistent grants and
-			 * the grant is already mapped
-			 */
+			 
 			pages[i]->page = persistent_gnt->page;
 			pages[i]->persistent_gnt = persistent_gnt;
 		} else {
@@ -819,14 +689,10 @@ again:
 	if (segs_to_map)
 		ret = gnttab_map_refs(map, NULL, pages_to_gnt, segs_to_map);
 
-	/*
-	 * Now swizzle the MFN in our domain with the MFN from the other domain
-	 * so that when we access vaddr(pending_req,i) it has the contents of
-	 * the page from the other domain.
-	 */
+	 
 	for (seg_idx = last_map, new_map_idx = 0; seg_idx < map_until; seg_idx++) {
 		if (!pages[seg_idx]->persistent_gnt) {
-			/* This is a newly mapped grant */
+			 
 			BUG_ON(new_map_idx >= segs_to_map);
 			if (unlikely(map[new_map_idx].status != 0)) {
 				pr_debug("invalid buffer -- could not remap it\n");
@@ -842,18 +708,11 @@ again:
 		}
 		if (use_persistent_gnts &&
 		    ring->persistent_gnt_c < max_pgrants) {
-			/*
-			 * We are using persistent grants, the grant is
-			 * not mapped but we might have room for it.
-			 */
+			 
 			persistent_gnt = kmalloc(sizeof(struct persistent_gnt),
 				                 GFP_KERNEL);
 			if (!persistent_gnt) {
-				/*
-				 * If we don't have enough memory to
-				 * allocate the persistent_gnt struct
-				 * map this grant non-persistenly
-				 */
+				 
 				goto next;
 			}
 			persistent_gnt->gnt = map[new_map_idx].ref;
@@ -876,10 +735,7 @@ again:
 			pr_debug("domain %u, device %#x is using maximum number of persistent grants\n",
 			         blkif->domid, blkif->vbd.handle);
 		}
-		/*
-		 * We could not map this grant persistently, so use it as
-		 * a non-persistent grant.
-		 */
+		 
 next:
 		new_map_idx++;
 	}
@@ -890,7 +746,7 @@ next:
 
 out:
 	for (i = last_map; i < num; i++) {
-		/* Don't zap current batch's valid persistent grants. */
+		 
 		if (i >= map_until)
 			pages[i]->persistent_gnt = NULL;
 		pages[i]->handle = BLKBACK_INVALID_HANDLE;
@@ -935,7 +791,7 @@ static int xen_blkbk_parse_indirect(struct blkif_request *req,
 		uint8_t first_sect, last_sect;
 
 		if ((n % SEGS_PER_INDIRECT_FRAME) == 0) {
-			/* Map indirect segments */
+			 
 			if (segments)
 				kunmap_atomic(segments);
 			segments = kmap_atomic(pages[n/SEGS_PER_INDIRECT_FRAME]->page);
@@ -1037,7 +893,7 @@ static void xen_blk_drain_io(struct xen_blkif_ring *ring)
 static void __end_block_io_op(struct pending_req *pending_req,
 		blk_status_t error)
 {
-	/* An error fails the entire request. */
+	 
 	if (pending_req->operation == BLKIF_OP_FLUSH_DISKCACHE &&
 	    error == BLK_STS_NOTSUPP) {
 		pr_debug("flush diskcache op failed, not supported\n");
@@ -1054,18 +910,12 @@ static void __end_block_io_op(struct pending_req *pending_req,
 		pending_req->status = BLKIF_RSP_ERROR;
 	}
 
-	/*
-	 * If all of the bio's have completed it is time to unmap
-	 * the grant references associated with 'request' and provide
-	 * the proper response on the ring.
-	 */
+	 
 	if (atomic_dec_and_test(&pending_req->pendcnt))
 		xen_blkbk_unmap_and_respond(pending_req);
 }
 
-/*
- * bio callback.
- */
+ 
 static void end_block_io_op(struct bio *bio)
 {
 	__end_block_io_op(bio->bi_private, bio->bi_status);
@@ -1116,10 +966,7 @@ static void blkif_get_x86_32_req(struct blkif_request *dst,
 		break;
 
 	default:
-		/*
-		 * Don't know how to translate this op. Only get the
-		 * ID so failure can be reported to the frontend.
-		 */
+		 
 		dst->u.other.id = src->u.other.id;
 		break;
 	}
@@ -1169,20 +1016,13 @@ static void blkif_get_x86_64_req(struct blkif_request *dst,
 		break;
 
 	default:
-		/*
-		 * Don't know how to translate this op. Only get the
-		 * ID so failure can be reported to the frontend.
-		 */
+		 
 		dst->u.other.id = src->u.other.id;
 		break;
 	}
 }
 
-/*
- * Function to copy the from the ring buffer the 'struct blkif_request'
- * (which has the sectors we want, number of them, grant references, etc),
- * and transmute  it to the block API to hand it over to the proper block disk.
- */
+ 
 static int
 __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 {
@@ -1194,7 +1034,7 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 
 	rc = blk_rings->common.req_cons;
 	rp = blk_rings->common.sring->req_prod;
-	rmb(); /* Ensure we see queued requests up to 'rp'. */
+	rmb();  
 
 	if (RING_REQUEST_PROD_OVERFLOW(&blk_rings->common, rp)) {
 		rc = blk_rings->common.rsp_prod_pvt;
@@ -1207,7 +1047,7 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 		if (RING_REQUEST_CONS_OVERFLOW(&blk_rings->common, rc))
 			break;
 
-		/* We've seen a request, so clear spurious eoi flag. */
+		 
 		*eoi_flags &= ~XEN_EOI_FLAG_SPURIOUS;
 
 		if (kthread_should_stop()) {
@@ -1235,9 +1075,9 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 		default:
 			BUG();
 		}
-		blk_rings->common.req_cons = ++rc; /* before make_response() */
+		blk_rings->common.req_cons = ++rc;  
 
-		/* Apply all sanity checks to /private copy/ of request. */
+		 
 		barrier();
 
 		switch (req.operation) {
@@ -1260,7 +1100,7 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 			break;
 		}
 
-		/* Yield point for this unbounded loop. */
+		 
 		cond_resched();
 	}
 done:
@@ -1283,10 +1123,7 @@ do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 
 	return more_to_do;
 }
-/*
- * Transmutation of the 'struct blkif_request' to a proper 'struct bio'
- * and call the 'submit_bio' to pass it to the underlying storage.
- */
+ 
 static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 				struct blkif_request *req,
 				struct pending_req *pending_req)
@@ -1333,12 +1170,12 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 		operation_flags = REQ_PREFLUSH;
 		break;
 	default:
-		operation = 0; /* make gcc happy */
+		operation = 0;  
 		goto fail_response;
 		break;
 	}
 
-	/* Check that the number of segments is sane. */
+	 
 	nseg = req->operation == BLKIF_OP_INDIRECT ?
 	       req->u.indirect.nr_segments : req->u.rw.nr_segments;
 
@@ -1348,7 +1185,7 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	    unlikely((req->operation == BLKIF_OP_INDIRECT) &&
 		     (nseg > MAX_INDIRECT_SEGMENTS))) {
 		pr_debug("Bad number of segments in request (%d)\n", nseg);
-		/* Haven't submitted any bio's yet. */
+		 
 		goto fail_response;
 	}
 
@@ -1390,10 +1227,7 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 		goto fail_response;
 	}
 
-	/*
-	 * This check _MUST_ be done after xen_vbd_translate as the preq.bdev
-	 * is set there.
-	 */
+	 
 	for (i = 0; i < nseg; i++) {
 		if (((int)preq.sector_number|(int)seg[i].nsec) &
 		    ((bdev_logical_block_size(preq.bdev) >> 9) - 1)) {
@@ -1403,25 +1237,15 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 		}
 	}
 
-	/* Wait on all outstanding I/O's and once that has been completed
-	 * issue the flush.
-	 */
+	 
 	if (drain)
 		xen_blk_drain_io(pending_req->ring);
 
-	/*
-	 * If we have failed at this point, we need to undo the M2P override,
-	 * set gnttab_set_unmap_op on all of the grant references and perform
-	 * the hypercall to unmap the grants - that is all done in
-	 * xen_blkbk_unmap.
-	 */
+	 
 	if (xen_blkbk_map_seg(pending_req))
 		goto fail_flush;
 
-	/*
-	 * This corresponding xen_blkif_put is done in __end_block_io_op, or
-	 * below (in "!bio") if we are handling a BLKIF_OP_DISCARD.
-	 */
+	 
 	xen_blkif_get(ring->blkif);
 	atomic_inc(&ring->inflight);
 
@@ -1443,7 +1267,7 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 		preq.sector_number += seg[i].nsec;
 	}
 
-	/* This will be hit if the operation was a flush or discard. */
+	 
 	if (!bio) {
 		BUG_ON(operation_flags != REQ_PREFLUSH);
 
@@ -1460,7 +1284,7 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	for (i = 0; i < nbio; i++)
 		submit_bio(biolist[i]);
 
-	/* Let the I/Os go.. */
+	 
 	blk_finish_plug(&plug);
 
 	if (operation == REQ_OP_READ)
@@ -1474,18 +1298,16 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	xen_blkbk_unmap(ring, pending_req->segments,
 	                pending_req->nr_segs);
  fail_response:
-	/* Haven't submitted any bio's yet. */
+	 
 	make_response(ring, req->u.rw.id, req_operation, BLKIF_RSP_ERROR);
 	free_req(ring, pending_req);
-	msleep(1); /* back off a bit */
+	msleep(1);  
 	return -EIO;
 }
 
 
 
-/*
- * Put a response on the ring on how the operation fared.
- */
+ 
 static void make_response(struct xen_blkif_ring *ring, u64 id,
 			  unsigned short op, int st)
 {
@@ -1496,7 +1318,7 @@ static void make_response(struct xen_blkif_ring *ring, u64 id,
 
 	spin_lock_irqsave(&ring->blk_ring_lock, flags);
 	blk_rings = &ring->blk_rings;
-	/* Place on the response ring for the relevant domain. */
+	 
 	switch (ring->blkif->blk_protocol) {
 	case BLKIF_PROTOCOL_NATIVE:
 		resp = RING_GET_RESPONSE(&blk_rings->native,

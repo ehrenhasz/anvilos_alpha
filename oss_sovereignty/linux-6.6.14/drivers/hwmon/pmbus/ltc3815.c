@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for LTC3815
- *
- * Copyright (c) 2015 Linear Technology
- * Copyright (c) 2015 Guenter Roeck
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -30,12 +25,7 @@ static int ltc3815_read_byte_data(struct i2c_client *client, int page, int reg)
 
 	switch (reg) {
 	case PMBUS_VOUT_MODE:
-		/*
-		 * The chip returns 0x3e, suggesting VID mode with manufacturer
-		 * specific VID codes. Since the output voltage is reported
-		 * with a LSB of 0.5mV, override and report direct mode with
-		 * appropriate coefficients.
-		 */
+		 
 		ret = 0x40;
 		break;
 	default:
@@ -51,10 +41,7 @@ static int ltc3815_write_byte(struct i2c_client *client, int page, u8 reg)
 
 	switch (reg) {
 	case PMBUS_CLEAR_FAULTS:
-		/*
-		 * LTC3815 does not support the CLEAR_FAULTS command.
-		 * Emulate it by clearing the status register.
-		 */
+		 
 		ret = pmbus_read_word_data(client, 0, 0xff, PMBUS_STATUS_WORD);
 		if (ret > 0) {
 			pmbus_write_word_data(client, 0, PMBUS_STATUS_WORD,

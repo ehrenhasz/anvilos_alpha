@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for LC Power Model RC1000MCE
- *
- *  Copyright (c) 2011 Chris Schlund 
- *  based on hid-topseed module
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>

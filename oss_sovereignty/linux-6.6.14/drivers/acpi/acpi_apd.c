@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD ACPI support for ACPI2platform device.
- *
- * Copyright (c) 2014,2015 AMD Corporation.
- * Authors: Ken Xue <Ken.Xue@amd.com>
- *	Wu, Jeff <Jeff.Wu@amd.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clkdev.h>
@@ -19,15 +13,7 @@
 
 struct apd_private_data;
 
-/**
- * struct apd_device_desc - a descriptor for apd device
- * @fixed_clk_rate: fixed rate input clock source for acpi device;
- *			0 means no fixed rate input clock source
- * @properties: build-in properties of the device such as UART
- * @setup: a hook routine to set device resource during create platform device
- *
- * Device description defined as acpi_device_id.driver_data
- */
+ 
 struct apd_device_desc {
 	unsigned int fixed_clk_rate;
 	struct property_entry *properties;
@@ -88,7 +74,7 @@ static int fch_misc_setup(struct apd_private_data *pdata)
 
 		strcpy(clk_data->name, obj->string.pointer);
 	} else {
-		/* Set default name to mclk if entry missing in firmware */
+		 
 		clk_data->name = "mclk";
 	}
 
@@ -134,7 +120,7 @@ static const struct apd_device_desc cz_uart_desc = {
 static const struct apd_device_desc fch_misc_desc = {
 	.setup = fch_misc_setup,
 };
-#endif /* CONFIG_X86_AMD_PLATFORM_DEVICE */
+#endif  
 
 #ifdef CONFIG_ARM64
 static const struct apd_device_desc xgene_i2c_desc = {
@@ -176,14 +162,11 @@ static const struct apd_device_desc hip08_spi_desc = {
 	.setup = acpi_apd_setup,
 	.fixed_clk_rate = 250000000,
 };
-#endif /* CONFIG_ARM64 */
+#endif  
 
 #endif
 
-/*
- * Create platform device during acpi scan attach handle.
- * Return value > 0 on success of creating device.
- */
+ 
 static int acpi_apd_create_device(struct acpi_device *adev,
 				   const struct acpi_device_id *id)
 {
@@ -224,7 +207,7 @@ static int acpi_apd_create_device(struct acpi_device *adev,
 }
 
 static const struct acpi_device_id acpi_apd_device_ids[] = {
-	/* Generic apd devices */
+	 
 #ifdef CONFIG_X86_AMD_PLATFORM_DEVICE
 	{ "AMD0010", APD_ADDR(cz_i2c_desc) },
 	{ "AMD0020", APD_ADDR(cz_uart_desc) },

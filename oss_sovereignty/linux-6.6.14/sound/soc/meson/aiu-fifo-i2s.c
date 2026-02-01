@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -40,7 +40,7 @@ static struct snd_pcm_hardware fifo_i2s_pcm = {
 	.periods_min = 2,
 	.periods_max = UINT_MAX,
 
-	/* No real justification for this */
+	 
 	.buffer_bytes_max = 1 * 1024 * 1024,
 };
 
@@ -117,18 +117,13 @@ static int aiu_fifo_i2s_hw_params(struct snd_pcm_substream *substream,
 				      AIU_MEM_I2S_CONTROL_MODE_16BIT,
 				      val);
 
-	/* Setup the irq periodicity */
+	 
 	val = params_period_bytes(params) / fifo->fifo_block;
 	val = FIELD_PREP(AIU_MEM_I2S_MASKS_IRQ_BLOCK, val);
 	snd_soc_component_update_bits(component, AIU_MEM_I2S_MASKS,
 				      AIU_MEM_I2S_MASKS_IRQ_BLOCK, val);
 
-	/*
-	 * Most (all?) supported SoCs have this bit set by default. The vendor
-	 * driver however sets it manually (depending on the version either
-	 * while un-setting AIU_I2S_MISC_HOLD_EN or right before that). Follow
-	 * the same approach for consistency with the vendor driver.
-	 */
+	 
 	snd_soc_component_update_bits(component, AIU_I2S_MISC,
 				      AIU_I2S_MISC_FORCE_LEFT_RIGHT,
 				      AIU_I2S_MISC_FORCE_LEFT_RIGHT);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
+
+ 
 #include <test_progs.h>
 #include "strncmp_test.skel.h"
 
@@ -17,10 +17,7 @@ static int trigger_strncmp(const struct strncmp_test *skel)
 	return 0;
 }
 
-/*
- * Compare str and target after making str[i] != target[i].
- * When exp is -1, make str[i] < target[i] and delta = -1.
- */
+ 
 static void strncmp_full_str_cmp(struct strncmp_test *skel, const char *name,
 				 int exp)
 {
@@ -62,17 +59,17 @@ static void test_strncmp_ret(void)
 
 	skel->bss->target_pid = getpid();
 
-	/* Empty str */
+	 
 	skel->bss->str[0] = '\0';
 	got = trigger_strncmp(skel);
 	ASSERT_EQ(got, -1, "strncmp: empty str");
 
-	/* Same string */
+	 
 	memcpy(skel->bss->str, skel->rodata->target, sizeof(skel->bss->str));
 	got = trigger_strncmp(skel);
 	ASSERT_EQ(got, 0, "strncmp: same str");
 
-	/* Not-null-termainted string  */
+	 
 	memcpy(skel->bss->str, skel->rodata->target, sizeof(skel->bss->str));
 	skel->bss->str[sizeof(skel->bss->str) - 1] = 'A';
 	got = trigger_strncmp(skel);

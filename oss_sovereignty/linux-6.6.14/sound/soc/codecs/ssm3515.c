@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-//
-// Analog Devices' SSM3515 audio amp driver
-//
-// Copyright (C) The Asahi Linux Contributors
+
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -98,9 +98,9 @@ struct ssm3515_data {
 	struct regmap *regmap;
 };
 
-// The specced range is -71.25...24.00 dB with step size of 0.375 dB,
-// and a mute item below that. This is represented by -71.62...24.00 dB
-// with the mute item mapped onto the low end.
+
+
+
 static DECLARE_TLV_DB_MINMAX_MUTE(ssm3515_dac_volume, -7162, 2400);
 
 static const char * const ssm3515_ana_gain_text[] = {
@@ -131,10 +131,7 @@ static void ssm3515_read_faults(struct snd_soc_component *component)
 
 	ret = snd_soc_component_read(component, SSM3515_STATUS);
 	if (ret <= 0) {
-		/*
-		 * If the read was erroneous, ASoC core has printed a message,
-		 * and that's all that's appropriate in handling the error here.
-		 */
+		 
 		return;
 	}
 
@@ -152,13 +149,13 @@ static int ssm3515_probe(struct snd_soc_component *component)
 {
 	int ret;
 
-	/* Start out muted */
+	 
 	ret = snd_soc_component_update_bits(component, SSM3515_DAC,
 			SSM3515_DAC_MUTE, SSM3515_DAC_MUTE);
 	if (ret < 0)
 		return ret;
 
-	/* Disable the 'master power-down' */
+	 
 	ret = snd_soc_component_update_bits(component, SSM3515_PWR,
 			SSM3515_PWR_SPWDN, 0);
 	if (ret < 0)
@@ -218,7 +215,7 @@ static int ssm3515_hw_params(struct snd_pcm_substream *substream,
 	case 128000 ... 192000:
 		rateval = 4;
 		break;
-	case 48001 ... 63999: /* this is ...72000 but overlaps */
+	case 48001 ... 63999:  
 		rateval = 5;
 		break;
 	default:
@@ -237,7 +234,7 @@ static int ssm3515_hw_params(struct snd_pcm_substream *substream,
 static int ssm3515_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
 	struct snd_soc_component *component = dai->component;
-	bool fpol_inv = false; /* non-inverted: frame starts with low-to-high FSYNC */
+	bool fpol_inv = false;  
 	int ret;
 	u8 sai1 = 0;
 
@@ -251,11 +248,11 @@ static int ssm3515_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		fpol_inv = 1;
-		sai1 &= ~SSM3515_SAI1_SDATA_FMT; /* 1 bit start delay */
+		sai1 &= ~SSM3515_SAI1_SDATA_FMT;  
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
 		fpol_inv = 0;
-		sai1 |= SSM3515_SAI1_SDATA_FMT; /* no start delay */
+		sai1 |= SSM3515_SAI1_SDATA_FMT;  
 		break;
 	default:
 		return -EINVAL;
@@ -268,19 +265,11 @@ static int ssm3515_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		break;
 	}
 
-	/* Set the serial input to 'TDM mode' */
+	 
 	sai1 |= SSM3515_SAI1_SAI_MODE;
 
 	if (fpol_inv) {
-		/*
-		 * We configure the codec in a 'TDM mode', in which the
-		 * FSYNC_MODE bit of SAI1 is supposed to select between
-		 * what the datasheet calls 'Pulsed FSYNC mode' and '50%
-		 * FSYNC mode'.
-		 *
-		 * Experiments suggest that this bit in fact simply selects
-		 * the FSYNC polarity, so go with that.
-		 */
+		 
 		sai1 |= SSM3515_SAI1_FSYNC_MODE;
 	}
 
@@ -347,11 +336,7 @@ static int ssm3515_set_tdm_slot(struct snd_soc_dai *dai,
 static int ssm3515_hw_free(struct snd_pcm_substream *substream,
 			   struct snd_soc_dai *dai)
 {
-	/*
-	 * We don't get live notification of faults, so at least at
-	 * this time, when playback is over, check if we have tripped
-	 * over anything and if so, log it.
-	 */
+	 
 	ssm3515_read_faults(dai->component);
 	return 0;
 }
@@ -415,7 +400,7 @@ static int ssm3515_i2c_probe(struct i2c_client *client)
 		return dev_err_probe(data->dev, PTR_ERR(data->regmap),
 				     "initializing register map\n");
 
-	/* Perform a reset */
+	 
 	ret = regmap_update_bits(data->regmap, SSM3515_PWR,
 			SSM3515_PWR_S_RST, SSM3515_PWR_S_RST);
 	if (ret < 0)

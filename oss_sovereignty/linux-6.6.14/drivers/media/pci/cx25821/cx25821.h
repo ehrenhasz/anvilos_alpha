@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for the Conexant CX25821 PCIe bridge
- *
- *  Copyright (C) 2009 Conexant Systems Inc.
- *  Authors  <shu.lin@conexant.com>, <hiep.huynh@conexant.com>
- *  Based on Steven Toth <stoth@linuxtv.org> cx23885 driver
- */
+ 
+ 
 
 #ifndef CX25821_H_
 #define CX25821_H_
@@ -37,13 +31,13 @@
 
 #define LINE_SIZE_D1    1440
 
-/* Number of decoders and encoders */
+ 
 #define MAX_DECODERS            8
 #define MAX_ENCODERS            2
 #define QUAD_DECODERS           4
 #define MAX_CAMERAS             16
 
-/* Max number of inputs by card */
+ 
 #define MAX_CX25821_INPUT     8
 #define RESOURCE_VIDEO0       1
 #define RESOURCE_VIDEO1       2
@@ -58,12 +52,12 @@
 #define RESOURCE_VIDEO10      1024
 #define RESOURCE_VIDEO11      2048
 
-#define BUFFER_TIMEOUT     (HZ)	/* 0.5 seconds */
+#define BUFFER_TIMEOUT     (HZ)	 
 
 #define UNKNOWN_BOARD        0
 #define CX25821_BOARD        1
 
-/* Currently supported by the driver */
+ 
 #define CX25821_NORMS (\
 	V4L2_STD_NTSC_M |  V4L2_STD_NTSC_M_JP | V4L2_STD_NTSC_M_KR | \
 	V4L2_STD_PAL_BG |  V4L2_STD_PAL_DK    |  V4L2_STD_PAL_I    | \
@@ -73,16 +67,13 @@
 #define CX25821_BOARD_CONEXANT_ATHENA10 1
 #define MAX_VID_CHANNEL_NUM     12
 
-/*
- * Maximum capture-only channels. This can go away once video/audio output
- * is fully supported in this driver.
- */
+ 
 #define MAX_VID_CAP_CHANNEL_NUM     10
 
 #define VID_CHANNEL_NUM 8
 
 struct cx25821_fmt {
-	u32 fourcc;		/* v4l2 format id */
+	u32 fourcc;		 
 	int depth;
 	int flags;
 	u32 cxformat;
@@ -107,13 +98,13 @@ struct cx25821_riscmem {
 	dma_addr_t     dma;
 };
 
-/* buffer for one video frame */
+ 
 struct cx25821_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head queue;
 
-	/* cx25821 specific */
+	 
 	unsigned int bpl;
 	struct cx25821_riscmem risc;
 	const struct cx25821_fmt *fmt;
@@ -139,12 +130,12 @@ struct cx25821_i2c {
 
 	int nr;
 
-	/* i2c i/o */
+	 
 	struct i2c_adapter i2c_adap;
 	struct i2c_client i2c_client;
 	u32 i2c_rc;
 
-	/* cx25821 registers used for raw address */
+	 
 	u32 i2c_period;
 	u32 reg_ctrl;
 	u32 reg_stat;
@@ -211,7 +202,7 @@ struct cx25821_channel {
 	int use_cif_resolution;
 	int cif_width;
 
-	/* video output data for the video output channel */
+	 
 	struct cx25821_video_out_data *out;
 };
 
@@ -220,7 +211,7 @@ struct snd_card;
 struct cx25821_dev {
 	struct v4l2_device v4l2_dev;
 
-	/* pci stuff */
+	 
 	struct pci_dev *pci;
 	unsigned char pci_rev, pci_lat;
 	int pci_bus, pci_slot;
@@ -229,12 +220,12 @@ struct cx25821_dev {
 	u8 __iomem *bmmio;
 	int pci_irqmask;
 	int hwrevision;
-	/* used by cx25821-alsa */
+	 
 	struct snd_card *card;
 
 	u32 clk_freq;
 
-	/* I2C adapters: Master 1 & 2 (External) & Master 3 (Internal only) */
+	 
 	struct cx25821_i2c i2c_bus[3];
 
 	int nr;
@@ -242,16 +233,16 @@ struct cx25821_dev {
 
 	struct cx25821_channel channels[MAX_VID_CHANNEL_NUM];
 
-	/* board details */
+	 
 	unsigned int board;
 	char name[32];
 
-	/* Analog video */
+	 
 	unsigned int input;
 	v4l2_std_id tvnorm;
 	unsigned short _max_num_decoders;
 
-	/* Analog Audio Upstream */
+	 
 	int _audio_is_running;
 	int _audiopixel_format;
 	int _is_first_audio_frame;
@@ -259,7 +250,7 @@ struct cx25821_dev {
 	int _audio_lines_count;
 	int _audioframe_count;
 	int _audio_upstream_channel;
-	int _last_index_irq;    /* The last interrupt index processed. */
+	int _last_index_irq;     
 
 	__le32 *_risc_audio_jmp_addr;
 	__le32 *_risc_virt_start_addr;
@@ -278,10 +269,10 @@ struct cx25821_dev {
 	struct work_struct _audio_work_entry;
 	char *input_audiofilename;
 
-	/* V4l */
+	 
 	spinlock_t slock;
 
-	/* Video Upstream */
+	 
 	struct cx25821_video_out_data vid_out_data[2];
 };
 
@@ -292,19 +283,19 @@ static inline struct cx25821_dev *get_cx25821(struct v4l2_device *v4l2_dev)
 
 extern struct cx25821_board cx25821_boards[];
 
-#define SRAM_CH00  0		/* Video A */
-#define SRAM_CH01  1		/* Video B */
-#define SRAM_CH02  2		/* Video C */
-#define SRAM_CH03  3		/* Video D */
-#define SRAM_CH04  4		/* Video E */
-#define SRAM_CH05  5		/* Video F */
-#define SRAM_CH06  6		/* Video G */
-#define SRAM_CH07  7		/* Video H */
+#define SRAM_CH00  0		 
+#define SRAM_CH01  1		 
+#define SRAM_CH02  2		 
+#define SRAM_CH03  3		 
+#define SRAM_CH04  4		 
+#define SRAM_CH05  5		 
+#define SRAM_CH06  6		 
+#define SRAM_CH07  7		 
 
-#define SRAM_CH08  8		/* Audio A */
-#define SRAM_CH09  9		/* Video Upstream I */
-#define SRAM_CH10  10		/* Video Upstream J */
-#define SRAM_CH11  11		/* Audio Upstream AUD_CHANNEL_B */
+#define SRAM_CH08  8		 
+#define SRAM_CH09  9		 
+#define SRAM_CH10  10		 
+#define SRAM_CH11  11		 
 
 #define VID_UPSTREAM_SRAM_CHANNEL_I     SRAM_CH09
 #define VID_UPSTREAM_SRAM_CHANNEL_J     SRAM_CH10
@@ -333,7 +324,7 @@ struct sram_channel {
 	u32 fld_aud_fifo_en;
 	u32 fld_aud_risc_en;
 
-	/* For Upstream Video */
+	 
 	u32 vid_fmt_ctl;
 	u32 vid_active_ctl1;
 	u32 vid_active_ctl2;

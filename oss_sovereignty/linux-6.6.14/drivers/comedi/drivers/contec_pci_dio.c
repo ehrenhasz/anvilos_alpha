@@ -1,28 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/contec_pci_dio.c
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: contec_pci_dio
- * Description: Contec PIO1616L digital I/O board
- * Devices: [Contec] PIO1616L (contec_pci_dio)
- * Author: Stefano Rivoir <s.rivoir@gts.it>
- * Updated: Wed, 27 Jun 2007 13:00:06 +0100
- * Status: works
- *
- * Configuration Options: not applicable, uses comedi PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * Register map
- */
+ 
 #define PIO1616L_DI_REG		0x00
 #define PIO1616L_DO_REG		0x02
 

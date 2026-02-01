@@ -1,23 +1,4 @@
-/* Copyright (C) 1992-2001, 2003-2007, 2009-2023 Free Software Foundation, Inc.
-
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _LIBC
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   warns for the null checks on 'prompt' below.  */
+ 
 # define _GL_ARG_NONNULL(params)
 # include <config.h>
 #endif
@@ -33,7 +14,7 @@
 #   include <stdio_ext.h>
 #  endif
 # else
-#  define __fsetlocking(stream, type)    /* empty */
+#  define __fsetlocking(stream, type)     
 # endif
 
 # if HAVE_TERMIOS_H
@@ -65,10 +46,7 @@
 #  endif
 # endif
 
-/* It is desirable to use this bit on systems that have it.
-   The only bit of terminal state we want to twiddle is echoing, which is
-   done in software; there is no need to change the state of the terminal
-   hardware.  */
+ 
 
 # ifndef TCSASOFT
 #  define TCSASOFT 0
@@ -94,8 +72,7 @@ getpass (const char *prompt)
   static size_t bufsize;
   ssize_t nread;
 
-  /* Try to write to and read from the terminal if we can.
-     If we can't open the terminal, use stderr and stdin.  */
+   
 
   tty = fopen ("/dev/tty", "w+e");
   if (tty == NULL)
@@ -105,7 +82,7 @@ getpass (const char *prompt)
     }
   else
     {
-      /* We do the locking ourselves.  */
+       
       __fsetlocking (tty, FSETLOCKING_BYCALLER);
 
       out = in = tty;
@@ -113,13 +90,13 @@ getpass (const char *prompt)
 
   flockfile (out);
 
-  /* Turn echoing off if it is on now.  */
+   
 # if HAVE_TCGETATTR
   if (tcgetattr (fileno (in), &t) == 0)
     {
-      /* Save the old one. */
+       
       s = t;
-      /* Tricky, tricky. */
+       
       t.c_lflag &= ~(ECHO | ISIG);
       tty_changed = (tcsetattr (fileno (in), TCSAFLUSH | TCSASOFT, &t) == 0);
     }
@@ -127,23 +104,15 @@ getpass (const char *prompt)
 
   if (prompt)
     {
-      /* Write the prompt.  */
+       
       fputs_unlocked (prompt, out);
       fflush_unlocked (out);
     }
 
-  /* Read the password.  */
+   
   nread = getline (&buf, &bufsize, in);
 
-  /* According to the C standard, input may not be followed by output
-     on the same stream without an intervening call to a file
-     positioning function.  Suppose in == out; then without this fseek
-     call, on Solaris, HP-UX, AIX, OSF/1, the previous input gets
-     echoed, whereas on IRIX, the following newline is not output as
-     it should be.  POSIX imposes similar restrictions if fileno (in)
-     == fileno (out).  The POSIX restrictions are tricky and change
-     from POSIX version to POSIX version, so play it safe and invoke
-     fseek even if in != out.  */
+   
   fseeko (out, 0, SEEK_CUR);
 
   if (buf != NULL)
@@ -152,17 +121,17 @@ getpass (const char *prompt)
         buf[0] = '\0';
       else if (buf[nread - 1] == '\n')
         {
-          /* Remove the newline.  */
+           
           buf[nread - 1] = '\0';
           if (tty_changed)
             {
-              /* Write the newline that was not echoed.  */
+               
               putc_unlocked ('\n', out);
             }
         }
     }
 
-  /* Restore the original setting.  */
+   
 # if HAVE_TCSETATTR
   if (tty_changed)
     tcsetattr (fileno (in), TCSAFLUSH | TCSASOFT, &s);
@@ -175,16 +144,15 @@ getpass (const char *prompt)
   return buf;
 }
 
-#else /* W32 native */
+#else  
 
-/* Windows implementation by Martin Lambers <marlam@marlam.de>,
-   improved by Simon Josefsson. */
+ 
 
-/* For PASS_MAX. */
+ 
 # include <limits.h>
-/* For _getch(). */
+ 
 # include <conio.h>
-/* For strdup(). */
+ 
 # include <string.h>
 
 # ifndef PASS_MAX

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <drm/drm_framebuffer.h>
@@ -80,12 +76,9 @@ static struct csc_cfg csc_convert[CSC_MAX] = {
 
 #define BPC0A 0
 
-/*
- * Note: Keep RGB formats 1st, followed by YUV formats to avoid breaking
- * mdp_get_rgb_formats()'s implementation.
- */
+ 
 static const struct mdp_format formats[] = {
-	/*  name      a  r  g  b   e0 e1 e2 e3  alpha   tight  cpp cnt ... */
+	 
 	FMT(ARGB8888, 8, 8, 8, 8,  1, 0, 2, 3,  true,   true,  4,  4,
 			MDP_PLANE_INTERLEAVED, CHROMA_FULL, false),
 	FMT(ABGR8888, 8, 8, 8, 8,  2, 0, 1, 3,  true,   true,  4,  4,
@@ -111,9 +104,9 @@ static const struct mdp_format formats[] = {
 	FMT(BGR565,   0, 5, 6, 5,  2, 0, 1, 0,  false,  true,  2,  3,
 			MDP_PLANE_INTERLEAVED, CHROMA_FULL, false),
 
-	/* --- RGB formats above / YUV formats below this line --- */
+	 
 
-	/* 2 plane YUV */
+	 
 	FMT(NV12,     0, 8, 8, 8,  1, 2, 0, 0,  false,  true,  2, 2,
 			MDP_PLANE_PSEUDO_PLANAR, CHROMA_420, true),
 	FMT(NV21,     0, 8, 8, 8,  2, 1, 0, 0,  false,  true,  2, 2,
@@ -122,7 +115,7 @@ static const struct mdp_format formats[] = {
 			MDP_PLANE_PSEUDO_PLANAR, CHROMA_H2V1, true),
 	FMT(NV61,     0, 8, 8, 8,  2, 1, 0, 0,  false,  true,  2, 2,
 			MDP_PLANE_PSEUDO_PLANAR, CHROMA_H2V1, true),
-	/* 1 plane YUV */
+	 
 	FMT(VYUY,     0, 8, 8, 8,  2, 0, 1, 0,  false,  true,  2, 4,
 			MDP_PLANE_INTERLEAVED, CHROMA_H2V1, true),
 	FMT(UYVY,     0, 8, 8, 8,  1, 0, 2, 0,  false,  true,  2, 4,
@@ -131,18 +124,14 @@ static const struct mdp_format formats[] = {
 			MDP_PLANE_INTERLEAVED, CHROMA_H2V1, true),
 	FMT(YVYU,     0, 8, 8, 8,  0, 2, 0, 1,  false,  true,  2, 4,
 			MDP_PLANE_INTERLEAVED, CHROMA_H2V1, true),
-	/* 3 plane YUV */
+	 
 	FMT(YUV420,   0, 8, 8, 8,  2, 1, 0, 0,  false,  true,  1, 1,
 			MDP_PLANE_PLANAR, CHROMA_420, true),
 	FMT(YVU420,   0, 8, 8, 8,  1, 2, 0, 0,  false,  true,  1, 1,
 			MDP_PLANE_PLANAR, CHROMA_420, true),
 };
 
-/*
- * Note:
- * @rgb_only must be set to true, when requesting
- * supported formats for RGB pipes.
- */
+ 
 uint32_t mdp_get_formats(uint32_t *pixel_formats, uint32_t max_formats,
 		bool rgb_only)
 {

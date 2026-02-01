@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2022, Analog Devices Inc.
+
+
 
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
@@ -126,7 +126,7 @@ static int max98363_read_prop(struct sdw_slave *slave)
 
 	prop->scp_int1_mask = SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY;
 
-	/* BITMAP: 00000010  Dataport 1 is active */
+	 
 	prop->sink_ports = BIT(1);
 	prop->paging_support = true;
 	prop->clk_stop_timeout = 20;
@@ -164,11 +164,9 @@ static int max98363_io_init(struct sdw_slave *slave)
 	if (max98363->first_hw_init)
 		regcache_cache_bypass(max98363->regmap, true);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!max98363->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(dev);
 
 	pm_runtime_get_noresume(dev);
@@ -304,13 +302,11 @@ static int max98363_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		max98363->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is SDW_SLAVE_ATTACHED
-	 */
+	 
 	if (max98363->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return max98363_io_init(slave);
 }
 
@@ -369,7 +365,7 @@ static const struct snd_soc_dapm_widget max98363_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route max98363_audio_map[] = {
-	/* Plabyack */
+	 
 	{"BE_OUT", NULL, "AIFIN"},
 };
 
@@ -390,7 +386,7 @@ static int max98363_init(struct sdw_slave *slave, struct regmap *regmap)
 	int ret;
 	struct device *dev = &slave->dev;
 
-	/*  Allocate and assign private driver data structure  */
+	 
 	max98363 = devm_kzalloc(dev, sizeof(*max98363), GFP_KERNEL);
 	if (!max98363)
 		return -ENOMEM;
@@ -404,7 +400,7 @@ static int max98363_init(struct sdw_slave *slave, struct regmap *regmap)
 	max98363->hw_init = false;
 	max98363->first_hw_init = false;
 
-	/* codec registration  */
+	 
 	ret = devm_snd_soc_register_component(dev, &soc_codec_dev_max98363,
 					      max98363_dai,
 					      ARRAY_SIZE(max98363_dai));
@@ -413,20 +409,16 @@ static int max98363_init(struct sdw_slave *slave, struct regmap *regmap)
 		return ret;
 	}
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 	return 0;
 }
 
@@ -435,7 +427,7 @@ static int max98363_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &max98363_sdw_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

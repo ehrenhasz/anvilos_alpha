@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/clk-provider.h>
@@ -147,7 +147,7 @@ static const struct en_clk_desc en7523_base_clks[] = {
 
 static const struct of_device_id of_match_clk_en7523[] = {
 	{ .compatible = "airoha,en7523-scu", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static unsigned int en7523_get_base_rate(void __iomem *base, unsigned int i)
@@ -200,18 +200,18 @@ static int en7523_pci_prepare(struct clk_hw *hw)
 	void __iomem *np_base = cg->base;
 	u32 val, mask;
 
-	/* Need to pull device low before reset */
+	 
 	val = readl(np_base + REG_PCI_CONTROL);
 	val &= ~(REG_PCI_CONTROL_PERSTOUT1 | REG_PCI_CONTROL_PERSTOUT);
 	writel(val, np_base + REG_PCI_CONTROL);
 	usleep_range(1000, 2000);
 
-	/* Enable PCIe port 1 */
+	 
 	val |= REG_PCI_CONTROL_REFCLK_EN1;
 	writel(val, np_base + REG_PCI_CONTROL);
 	usleep_range(1000, 2000);
 
-	/* Reset to default */
+	 
 	val = readl(np_base + REG_RESET_CONTROL);
 	mask = REG_RESET_CONTROL_PCIE1 | REG_RESET_CONTROL_PCIE2 |
 	       REG_RESET_CONTROL_PCIEHB;
@@ -222,7 +222,7 @@ static int en7523_pci_prepare(struct clk_hw *hw)
 	writel(val & ~mask, np_base + REG_RESET_CONTROL);
 	usleep_range(5000, 10000);
 
-	/* Release device */
+	 
 	mask = REG_PCI_CONTROL_PERSTOUT1 | REG_PCI_CONTROL_PERSTOUT;
 	val = readl(np_base + REG_PCI_CONTROL);
 	writel(val & ~mask, np_base + REG_PCI_CONTROL);

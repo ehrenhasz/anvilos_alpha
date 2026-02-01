@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD am53c974 driver.
- * Copyright (c) 2014 Hannes Reinecke, SUSE Linux GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -54,22 +51,17 @@ static bool am53c974_fenab = true;
 #define ESP_DMA_STAT_SCSIINT 0x10
 #define ESP_DMA_STAT_BCMPLT 0x20
 
-/* EEPROM is accessed with 16-bit values */
+ 
 #define DC390_EEPROM_READ 0x80
 #define DC390_EEPROM_LEN 0x40
 
-/*
- * DC390 EEPROM
- *
- * 8 * 4 bytes of per-device options
- * followed by HBA specific options
- */
+ 
 
-/* Per-device options */
+ 
 #define DC390_EE_MODE1 0x00
 #define DC390_EE_SPEED 0x01
 
-/* HBA-specific options */
+ 
 #define DC390_EE_ADAPT_SCSI_ID 0x40
 #define DC390_EE_MODE2 0x41
 #define DC390_EE_DELAY 0x42
@@ -133,7 +125,7 @@ static int pci_esp_irq_pending(struct esp *esp)
 
 static void pci_esp_reset_dma(struct esp *esp)
 {
-	/* Nothing to do ? */
+	 
 }
 
 static void pci_esp_dma_drain(struct esp *esp)
@@ -144,7 +136,7 @@ static void pci_esp_dma_drain(struct esp *esp)
 
 	if ((esp->sreg & ESP_STAT_PMASK) == ESP_DOP ||
 	    (esp->sreg & ESP_STAT_PMASK) == ESP_DIP)
-		/* Data-In or Data-Out, nothing to be done */
+		 
 		return;
 
 	while (--lim > 0) {
@@ -154,13 +146,7 @@ static void pci_esp_dma_drain(struct esp *esp)
 		cpu_relax();
 	}
 
-	/*
-	 * When there is a residual BCMPLT will never be set
-	 * (obviously). But we still have to issue the BLAST
-	 * command, otherwise the data will not being transferred.
-	 * But we'll never know when the BLAST operation is
-	 * finished. So check for some time and give up eventually.
-	 */
+	 
 	lim = 1000;
 	pci_esp_write8(esp, ESP_DMA_CMD_DIR | ESP_DMA_CMD_BLAST, ESP_DMA_CMD);
 	while (pci_esp_read8(esp, ESP_DMA_STATUS) & ESP_DMA_STAT_BCMPLT) {
@@ -170,7 +156,7 @@ static void pci_esp_dma_drain(struct esp *esp)
 	}
 	pci_esp_write8(esp, ESP_DMA_CMD_DIR | ESP_DMA_CMD_IDLE, ESP_DMA_CMD);
 	esp_dma_log("DMA blast done (%d tries, %d bytes left)\n", lim, resid);
-	/* BLAST residual handling is currently untested */
+	 
 	if (WARN_ON_ONCE(resid == 1)) {
 		struct esp_cmd_entry *ent = esp->active_cmd;
 
@@ -218,9 +204,9 @@ static void pci_esp_send_dma_cmd(struct esp *esp, u32 addr, u32 esp_count,
 
 	pep->dma_status = 0;
 
-	/* Set DMA engine to IDLE */
+	 
 	if (write)
-		/* DMA write direction logic is inverted */
+		 
 		val |= ESP_DMA_CMD_DIR;
 	pci_esp_write8(esp, ESP_DMA_CMD_IDLE | val, ESP_DMA_CMD);
 
@@ -236,7 +222,7 @@ static void pci_esp_send_dma_cmd(struct esp *esp, u32 addr, u32 esp_count,
 		    addr, esp_count, dma_count);
 
 	scsi_esp_cmd(esp, cmd);
-	/* Send DMA Start command */
+	 
 	pci_esp_write8(esp, ESP_DMA_CMD_START | val, ESP_DMA_CMD);
 }
 
@@ -245,19 +231,14 @@ static u32 pci_esp_dma_length_limit(struct esp *esp, u32 dma_addr, u32 dma_len)
 	int dma_limit = 16;
 	u32 base, end;
 
-	/*
-	 * If CONFIG2_FENAB is set we can
-	 * handle up to 24 bit addresses
-	 */
+	 
 	if (esp->config2 & ESP_CONFIG2_FENAB)
 		dma_limit = 24;
 
 	if (dma_len > (1U << dma_limit))
 		dma_len = (1U << dma_limit);
 
-	/*
-	 * Prevent crossing a 24-bit address boundary.
-	 */
+	 
 	base = dma_addr & ((1U << 24) - 1U);
 	end = base + dma_len;
 	if (end > (1U << 24))
@@ -279,9 +260,7 @@ static const struct esp_driver_ops pci_esp_ops = {
 	.dma_length_limit =	pci_esp_dma_length_limit,
 };
 
-/*
- * Read DC-390 eeprom
- */
+ 
 static void dc390_eeprom_prepare_read(struct pci_dev *pdev, u8 cmd)
 {
 	u8 carry_flag = 1, j = 0x80, bval;
@@ -356,7 +335,7 @@ static void dc390_check_eeprom(struct esp *esp)
 	for (i = 0; i < DC390_EEPROM_LEN; i++, ptr++)
 		wval += *ptr;
 
-	/* no Tekram EEprom found */
+	 
 	if (wval != 0x1234) {
 		dev_printk(KERN_INFO, &pdev->dev,
 			   "No valid Tekram EEprom found\n");
@@ -408,15 +387,9 @@ static int pci_esp_probe_one(struct pci_dev *pdev,
 	esp->host = shost;
 	esp->dev = &pdev->dev;
 	esp->ops = &pci_esp_ops;
-	/*
-	 * The am53c974 HBA has a design flaw of generating
-	 * spurious DMA completion interrupts when using
-	 * DMA for command submission.
-	 */
+	 
 	esp->flags |= ESP_FLAG_USE_FIFO;
-	/*
-	 * Enable CONFIG2_FENAB to allow for large DMA transfers
-	 */
+	 
 	if (am53c974_fenab)
 		esp->config2 |= ESP_CONFIG2_FENAB;
 
@@ -466,7 +439,7 @@ static int pci_esp_probe_one(struct pci_dev *pdev,
 	shost->n_io_port = pci_resource_len(pdev, 0);
 	shost->unique_id = shost->io_port;
 	esp->scsi_id_mask = (1 << esp->scsi_id);
-	/* Assume 40MHz clock */
+	 
 	esp->cfreq = 40000000;
 
 	err = scsi_esp_register(esp);

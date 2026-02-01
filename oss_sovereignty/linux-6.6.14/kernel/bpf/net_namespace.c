@@ -1,29 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bpf.h>
 #include <linux/bpf-netns.h>
 #include <linux/filter.h>
 #include <net/net_namespace.h>
 
-/*
- * Functions to manage BPF programs attached to netns
- */
+ 
 
 struct bpf_netns_link {
 	struct bpf_link	link;
 	enum bpf_attach_type type;
 	enum netns_bpf_attach_type netns_type;
 
-	/* We don't hold a ref to net in order to auto-detach the link
-	 * when netns is going away. Instead we rely on pernet
-	 * pre_exit callback to clear this pointer. Must be accessed
-	 * with netns_bpf_mutex held.
-	 */
+	 
 	struct net *net;
-	struct list_head node; /* node in list of links attached to net */
+	struct list_head node;  
 };
 
-/* Protects updates to netns_bpf */
+ 
 DEFINE_MUTEX(netns_bpf_mutex);
 
 static void netns_bpf_attach_type_unneed(enum netns_bpf_attach_type type)
@@ -52,7 +46,7 @@ static void netns_bpf_attach_type_need(enum netns_bpf_attach_type type)
 	}
 }
 
-/* Must be called with netns_bpf_mutex held. */
+ 
 static void netns_bpf_run_array_detach(struct net *net,
 				       enum netns_bpf_attach_type type)
 {
@@ -110,18 +104,15 @@ static void bpf_netns_link_release(struct bpf_link *link)
 
 	mutex_lock(&netns_bpf_mutex);
 
-	/* We can race with cleanup_net, but if we see a non-NULL
-	 * struct net pointer, pre_exit has not run yet and wait for
-	 * netns_bpf_mutex.
-	 */
+	 
 	net = net_link->net;
 	if (!net)
 		goto out_unlock;
 
-	/* Mark attach point as unused */
+	 
 	netns_bpf_attach_type_unneed(type);
 
-	/* Remember link position in case of safe delete */
+	 
 	idx = link_index(net, type, net_link);
 	list_del(&net_link->node);
 
@@ -181,7 +172,7 @@ static int bpf_netns_link_update_prog(struct bpf_link *link,
 
 	net = net_link->net;
 	if (!net || !check_net(net)) {
-		/* Link auto-detached or netns dying */
+		 
 		ret = -ENOLINK;
 		goto out_unlock;
 	}
@@ -242,7 +233,7 @@ static const struct bpf_link_ops bpf_netns_link_ops = {
 	.show_fdinfo = bpf_netns_link_show_fdinfo,
 };
 
-/* Must be called with netns_bpf_mutex held. */
+ 
 static int __netns_bpf_prog_query(const union bpf_attr *attr,
 				  union bpf_attr __user *uattr,
 				  struct net *net,
@@ -312,7 +303,7 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
 	net = current->nsproxy->net_ns;
 	mutex_lock(&netns_bpf_mutex);
 
-	/* Attaching prog directly is not compatible with links */
+	 
 	if (!list_empty(&net->bpf.links[type])) {
 		ret = -EEXIST;
 		goto out_unlock;
@@ -331,7 +322,7 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
 
 	attached = net->bpf.progs[type];
 	if (attached == prog) {
-		/* The same program cannot be attached twice */
+		 
 		ret = -EINVAL;
 		goto out_unlock;
 	}
@@ -360,14 +351,14 @@ out_unlock:
 	return ret;
 }
 
-/* Must be called with netns_bpf_mutex held. */
+ 
 static int __netns_bpf_prog_detach(struct net *net,
 				   enum netns_bpf_attach_type type,
 				   struct bpf_prog *old)
 {
 	struct bpf_prog *attached;
 
-	/* Progs attached via links cannot be detached */
+	 
 	if (!list_empty(&net->bpf.links[type]))
 		return -EINVAL;
 
@@ -433,7 +424,7 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
 		err = -E2BIG;
 		goto out_unlock;
 	}
-	/* Links are not compatible with attaching prog directly */
+	 
 	if (net->bpf.progs[type]) {
 		err = -EEXIST;
 		goto out_unlock;
@@ -444,7 +435,7 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
 		err = flow_dissector_bpf_prog_attach_check(net, link->prog);
 		break;
 	case NETNS_BPF_SK_LOOKUP:
-		err = 0; /* nothing to check */
+		err = 0;  
 		break;
 	default:
 		err = -EINVAL;
@@ -466,7 +457,7 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
 					lockdep_is_held(&netns_bpf_mutex));
 	bpf_prog_array_free(run_array);
 
-	/* Mark attach point as used */
+	 
 	netns_bpf_attach_type_need(type);
 
 out_unlock:
@@ -545,7 +536,7 @@ static void __net_exit netns_bpf_pernet_pre_exit(struct net *net)
 	for (type = 0; type < MAX_NETNS_BPF_ATTACH_TYPE; type++) {
 		netns_bpf_run_array_detach(net, type);
 		list_for_each_entry(net_link, &net->bpf.links[type], node) {
-			net_link->net = NULL; /* auto-detach link */
+			net_link->net = NULL;  
 			netns_bpf_attach_type_unneed(type);
 		}
 		if (net->bpf.progs[type])

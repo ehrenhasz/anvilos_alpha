@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 1998-2009 Texas Instruments. All rights reserved.
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+ 
+ 
 
 #ifndef __RX_H__
 #define __RX_H__
@@ -41,15 +34,7 @@
 #define	RX_DESC_MIC_FAIL	  0x2000
 #define	RX_DESC_DECRYPT_FAIL	  0x4000
 
-/*
- * RX Descriptor flags:
- *
- * Bits 0-1 - band
- * Bit  2   - STBC
- * Bit  3   - A-MPDU
- * Bit  4   - HT
- * Bits 5-7 - encryption
- */
+ 
 #define WL1271_RX_DESC_BAND_MASK    0x03
 #define WL1271_RX_DESC_ENCRYPT_MASK 0xE0
 
@@ -66,13 +51,7 @@
 #define WL1271_RX_DESC_ENCRYPT_AES  0x60
 #define WL1271_RX_DESC_ENCRYPT_GEM  0x80
 
-/*
- * RX Descriptor status
- *
- * Bits 0-2 - error code
- * Bits 3-5 - process_id tag (AP mode FW)
- * Bits 6-7 - reserved
- */
+ 
 #define WL1271_RX_DESC_STATUS_MASK      0x07
 
 #define WL1271_RX_DESC_SUCCESS          0x00
@@ -85,19 +64,16 @@
 #define ALIGNED_RX_BUF_SIZE_MASK     0xFFFF00
 #define ALIGNED_RX_BUF_SIZE_SHIFT    8
 
-/* If set, the start of IP payload is not 4 bytes aligned */
+ 
 #define RX_BUF_UNALIGNED_PAYLOAD     BIT(20)
 
-/* If set, the buffer was padded by the FW to be 4 bytes aligned */
+ 
 #define RX_BUF_PADDED_PAYLOAD        BIT(30)
 
-/*
- * Account for the padding inserted by the FW in case of RX_ALIGNMENT
- * or for fixing alignment in case the packet wasn't aligned.
- */
+ 
 #define RX_BUF_ALIGN                 2
 
-/* Describes the alignment state of a Rx buffer */
+ 
 enum wl_rx_buf_align {
 	WLCORE_RX_BUF_ALIGNED,
 	WLCORE_RX_BUF_UNALIGNED,

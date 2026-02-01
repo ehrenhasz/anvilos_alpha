@@ -1,51 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2015 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright 2015 RackTop Systems.
- * Copyright (c) 2016, Intel Corporation.
- * Copyright (c) 2021, Colm Buckley <colm@tuatha.org>
- */
+ 
+ 
 
-/*
- * Pool import support functions.
- *
- * Used by zpool, ztest, zdb, and zhack to locate importable configs. Since
- * these commands are expected to run in the global zone, we can assume
- * that the devices are all readable when called.
- *
- * To import a pool, we rely on reading the configuration information from the
- * ZFS label of each device.  If we successfully read the label, then we
- * organize the configuration information in the following hierarchy:
- *
- *	pool guid -> toplevel vdev guid -> label txg
- *
- * Duplicate entries matching this same tuple will be discarded.  Once we have
- * examined every device, we pick the best label txg config for each toplevel
- * vdev.  We then arrange these toplevel vdevs into a complete pool config, and
- * update any paths that have changed.  Finally, we attempt to import the pool
- * using our derived config, and record the results.
- */
+ 
 
 #ifdef HAVE_AIO_H
 #include <aio.h>
@@ -188,9 +144,7 @@ zutil_strndup(libpc_handle_t *hdl, const char *str, size_t n)
 	return (ret);
 }
 
-/*
- * Intermediate structures used to gather configuration information.
- */
+ 
 typedef struct config_entry {
 	uint64_t		ce_txg;
 	nvlist_t		*ce_config;
@@ -222,10 +176,7 @@ typedef struct pool_list {
 	name_entry_t		*names;
 } pool_list_t;
 
-/*
- * Go through and fix up any path and/or devid information for the given vdev
- * configuration.
- */
+ 
 static int
 fix_paths(libpc_handle_t *hdl, nvlist_t *nv, name_entry_t *names)
 {
@@ -243,18 +194,7 @@ fix_paths(libpc_handle_t *hdl, nvlist_t *nv, name_entry_t *names)
 		return (0);
 	}
 
-	/*
-	 * This is a leaf (file or disk) vdev.  In either case, go through
-	 * the name list and see if we find a matching guid.  If so, replace
-	 * the path and see if we can calculate a new devid.
-	 *
-	 * There may be multiple names associated with a particular guid, in
-	 * which case we have overlapping partitions or multiple paths to the
-	 * same disk.  In this case we prefer to use the path name which
-	 * matches the ZPOOL_CONFIG_PATH.  If no matching entry is found we
-	 * use the lowest order device which corresponds to the first match
-	 * while traversing the ZPOOL_IMPORT_PATH search path.
-	 */
+	 
 	verify(nvlist_lookup_uint64(nv, ZPOOL_CONFIG_GUID, &guid) == 0);
 	if (nvlist_lookup_string(nv, ZPOOL_CONFIG_PATH, &path) != 0)
 		path = NULL;
@@ -278,13 +218,13 @@ fix_paths(libpc_handle_t *hdl, nvlist_t *nv, name_entry_t *names)
 				continue;
 			}
 
-			/* Prefer paths with move vdev labels. */
+			 
 			if (ne->ne_num_labels > best->ne_num_labels) {
 				best = ne;
 				continue;
 			}
 
-			/* Prefer paths earlier in the search order. */
+			 
 			if (ne->ne_num_labels == best->ne_num_labels &&
 			    ne->ne_order < best->ne_order) {
 				best = ne;
@@ -304,9 +244,7 @@ fix_paths(libpc_handle_t *hdl, nvlist_t *nv, name_entry_t *names)
 	return (0);
 }
 
-/*
- * Add the given configuration to the list of known devices.
- */
+ 
 static int
 add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
     int order, int num_labels, nvlist_t *config)
@@ -317,11 +255,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 	config_entry_t *ce;
 	name_entry_t *ne;
 
-	/*
-	 * If this is a hot spare not currently in use or level 2 cache
-	 * device, add it to the list of names to translate, but don't do
-	 * anything else.
-	 */
+	 
 	if (nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_STATE,
 	    &state) == 0 &&
 	    (state == POOL_STATE_SPARE || state == POOL_STATE_L2CACHE) &&
@@ -342,14 +276,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 		return (0);
 	}
 
-	/*
-	 * If we have a valid config but cannot read any of these fields, then
-	 * it means we have a half-initialized label.  In vdev_label_init()
-	 * we write a label with txg == 0 so that we can identify the device
-	 * in case the user refers to the same disk later on.  If we fail to
-	 * create the pool, we'll be left with a label in this state
-	 * which should not be considered part of a valid pool.
-	 */
+	 
 	if (nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_GUID,
 	    &pool_guid) != 0 ||
 	    nvlist_lookup_uint64(config, ZPOOL_CONFIG_GUID,
@@ -361,10 +288,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 		return (0);
 	}
 
-	/*
-	 * First, see if we know about this pool.  If not, then add it to the
-	 * list of known pools.
-	 */
+	 
 	for (pe = pl->pools; pe != NULL; pe = pe->pe_next) {
 		if (pe->pe_guid == pool_guid)
 			break;
@@ -379,10 +303,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 		pl->pools = pe;
 	}
 
-	/*
-	 * Second, see if we know about this toplevel vdev.  Add it if its
-	 * missing.
-	 */
+	 
 	for (ve = pe->pe_vdevs; ve != NULL; ve = ve->ve_next) {
 		if (ve->ve_guid == top_guid)
 			break;
@@ -397,11 +318,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 		pe->pe_vdevs = ve;
 	}
 
-	/*
-	 * Third, see if we have a config with a matching transaction group.  If
-	 * so, then we do nothing.  Otherwise, add it to the list of known
-	 * configs.
-	 */
+	 
 	for (ce = ve->ve_configs; ce != NULL; ce = ce->ce_next) {
 		if (ce->ce_txg == txg)
 			break;
@@ -417,12 +334,7 @@ add_config(libpc_handle_t *hdl, pool_list_t *pl, const char *path,
 		ve->ve_configs = ce;
 	}
 
-	/*
-	 * At this point we've successfully added our config to the list of
-	 * known configs.  The last thing to do is add the vdev guid -> path
-	 * mappings so that we can fix up the configuration as necessary before
-	 * doing the import.
-	 */
+	 
 	if ((ne = zutil_alloc(hdl, sizeof (name_entry_t))) == NULL)
 		return (-1);
 
@@ -461,9 +373,7 @@ zutil_refresh_config(libpc_handle_t *hdl, nvlist_t *tryconfig)
 	    tryconfig));
 }
 
-/*
- * Determine if the vdev id is a hole in the namespace.
- */
+ 
 static boolean_t
 vdev_is_hole(uint64_t *hole_array, uint_t holes, uint_t id)
 {
@@ -471,20 +381,14 @@ vdev_is_hole(uint64_t *hole_array, uint_t holes, uint_t id)
 
 	for (c = 0; c < holes; c++) {
 
-		/* Top-level is a hole */
+		 
 		if (hole_array[c] == id)
 			return (B_TRUE);
 	}
 	return (B_FALSE);
 }
 
-/*
- * Convert our list of pools into the definitive set of configurations.  We
- * start by picking the best config for each toplevel vdev.  Once that's done,
- * we assemble the toplevel vdevs into a full config for the pool.  We make a
- * pass to fix up any incorrect paths, and then add it to the main list to
- * return to the user.
- */
+ 
 static nvlist_t *
 get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
     nvlist_t *policy)
@@ -518,18 +422,10 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			goto nomem;
 		config_seen = B_FALSE;
 
-		/*
-		 * Iterate over all toplevel vdevs.  Grab the pool configuration
-		 * from the first one we find, and then go through the rest and
-		 * add them as necessary to the 'vdevs' member of the config.
-		 */
+		 
 		for (ve = pe->pe_vdevs; ve != NULL; ve = ve->ve_next) {
 
-			/*
-			 * Determine the best configuration for this vdev by
-			 * selecting the config with the latest transaction
-			 * group.
-			 */
+			 
 			best_txg = 0;
 			for (ce = ve->ve_configs; ce != NULL;
 			    ce = ce->ce_next) {
@@ -540,11 +436,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 				}
 			}
 
-			/*
-			 * We rely on the fact that the max txg for the
-			 * pool will contain the most up-to-date information
-			 * about the valid top-levels in the vdev namespace.
-			 */
+			 
 			if (best_txg > max_txg) {
 				(void) nvlist_remove(config,
 				    ZPOOL_CONFIG_VDEV_CHILDREN,
@@ -577,19 +469,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			}
 
 			if (!config_seen) {
-				/*
-				 * Copy the relevant pieces of data to the pool
-				 * configuration:
-				 *
-				 *	version
-				 *	pool guid
-				 *	name
-				 *	comment (if available)
-				 *	compatibility features (if available)
-				 *	pool state
-				 *	hostid (if available)
-				 *	hostname (if available)
-				 */
+				 
 				uint64_t state, version;
 				const char *comment = NULL;
 				const char *compatibility = NULL;
@@ -638,9 +518,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 				config_seen = B_TRUE;
 			}
 
-			/*
-			 * Add this top-level vdev to the child array.
-			 */
+			 
 			verify(nvlist_lookup_nvlist(tmp,
 			    ZPOOL_CONFIG_VDEV_TREE, &nvtop) == 0);
 			verify(nvlist_lookup_uint64(nvtop, ZPOOL_CONFIG_ID,
@@ -666,13 +544,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 
 		}
 
-		/*
-		 * If we have information about all the top-levels then
-		 * clean up the nvlist which we've constructed. This
-		 * means removing any extraneous devices that are
-		 * beyond the valid range or adding devices to the end
-		 * of our array which appear to be missing.
-		 */
+		 
 		if (valid_top_config) {
 			if (max_id < children) {
 				for (c = max_id; c < children; c++)
@@ -698,11 +570,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 		verify(nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_GUID,
 		    &guid) == 0);
 
-		/*
-		 * The vdev namespace may contain holes as a result of
-		 * device removal. We must add them back into the vdev
-		 * tree before we process any missing devices.
-		 */
+		 
 		if (holes > 0) {
 			ASSERT(valid_top_config);
 
@@ -717,11 +585,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 				    0) != 0)
 					goto nomem;
 
-				/*
-				 * Holes in the namespace are treated as
-				 * "hole" top-level vdevs and have a
-				 * special flag set on them.
-				 */
+				 
 				if (nvlist_add_string(holey,
 				    ZPOOL_CONFIG_TYPE,
 				    VDEV_TYPE_HOLE) != 0 ||
@@ -736,13 +600,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			}
 		}
 
-		/*
-		 * Look for any missing top-level vdevs.  If this is the case,
-		 * create a faked up 'missing' vdev as a placeholder.  We cannot
-		 * simply compress the child array, because the kernel performs
-		 * certain checks to make sure the vdev IDs match their location
-		 * in the configuration.
-		 */
+		 
 		for (c = 0; c < children; c++) {
 			if (child[c] == NULL) {
 				nvlist_t *missing;
@@ -763,9 +621,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			}
 		}
 
-		/*
-		 * Put all of this pool's top-level vdevs into a root vdev.
-		 */
+		 
 		if (nvlist_alloc(&nvroot, NV_UNIQUE_NAME, 0) != 0)
 			goto nomem;
 		if (nvlist_add_string(nvroot, ZPOOL_CONFIG_TYPE,
@@ -784,18 +640,13 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 		children = 0;
 		child = NULL;
 
-		/*
-		 * Go through and fix up any paths and/or devids based on our
-		 * known list of vdev GUID -> path mappings.
-		 */
+		 
 		if (fix_paths(hdl, nvroot, pl->names) != 0) {
 			nvlist_free(nvroot);
 			goto nomem;
 		}
 
-		/*
-		 * Add the root vdev to this pool's configuration.
-		 */
+		 
 		if (nvlist_add_nvlist(config, ZPOOL_CONFIG_VDEV_TREE,
 		    nvroot) != 0) {
 			nvlist_free(nvroot);
@@ -803,17 +654,11 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 		}
 		nvlist_free(nvroot);
 
-		/*
-		 * zdb uses this path to report on active pools that were
-		 * imported or created using -R.
-		 */
+		 
 		if (active_ok)
 			goto add_pool;
 
-		/*
-		 * Determine if this pool is currently active, in which case we
-		 * can't actually import it.
-		 */
+		 
 		verify(nvlist_lookup_string(config, ZPOOL_CONFIG_POOL_NAME,
 		    &name) == 0);
 		verify(nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_GUID,
@@ -843,10 +688,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 		nvlist_free(config);
 		config = nvl;
 
-		/*
-		 * Go through and update the paths for spares, now that we have
-		 * them.
-		 */
+		 
 		verify(nvlist_lookup_nvlist(config, ZPOOL_CONFIG_VDEV_TREE,
 		    &nvroot) == 0);
 		if (nvlist_lookup_nvlist_array(nvroot, ZPOOL_CONFIG_SPARES,
@@ -857,9 +699,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			}
 		}
 
-		/*
-		 * Update the paths for l2cache devices.
-		 */
+		 
 		if (nvlist_lookup_nvlist_array(nvroot, ZPOOL_CONFIG_L2CACHE,
 		    &l2cache, &nl2cache) == 0) {
 			for (i = 0; i < nl2cache; i++) {
@@ -868,9 +708,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 			}
 		}
 
-		/*
-		 * Restore the original information read from the actual label.
-		 */
+		 
 		(void) nvlist_remove(config, ZPOOL_CONFIG_HOSTID,
 		    DATA_TYPE_UINT64);
 		(void) nvlist_remove(config, ZPOOL_CONFIG_HOSTNAME,
@@ -883,9 +721,7 @@ get_configs(libpc_handle_t *hdl, pool_list_t *pl, boolean_t active_ok,
 		}
 
 add_pool:
-		/*
-		 * Add this pool to the list of configs.
-		 */
+		 
 		verify(nvlist_lookup_string(config, ZPOOL_CONFIG_POOL_NAME,
 		    &name) == 0);
 
@@ -910,9 +746,7 @@ error:
 	return (NULL);
 }
 
-/*
- * Return the offset of the given label.
- */
+ 
 static uint64_t
 label_offset(uint64_t size, int l)
 {
@@ -921,11 +755,7 @@ label_offset(uint64_t size, int l)
 	    0 : size - VDEV_LABELS * sizeof (vdev_label_t)));
 }
 
-/*
- * The same description applies as to zpool_read_label below,
- * except here we do it without aio, presumably because an aio call
- * errored out in a way we think not using it could circumvent.
- */
+ 
 static int
 zpool_read_label_slow(int fd, nvlist_t **config, int *num_labels)
 {
@@ -998,11 +828,7 @@ zpool_read_label_slow(int fd, nvlist_t **config, int *num_labels)
 	return (0);
 }
 
-/*
- * Given a file descriptor, read the label information and return an nvlist
- * describing the configuration, if there is one.  The number of valid
- * labels found will be returned in num_labels when non-NULL.
- */
+ 
 int
 zpool_read_label(int fd, nvlist_t **config, int *num_labels)
 {
@@ -1046,18 +872,15 @@ zpool_read_label(int fd, nvlist_t **config, int *num_labels)
 		error = -1;
 
 		if (errno == EAGAIN || errno == EINTR || errno == EIO) {
-			/*
-			 * A portion of the requests may have been submitted.
-			 * Clean them up.
-			 */
+			 
 			for (l = 0; l < VDEV_LABELS; l++) {
 				errno = 0;
 				switch (aio_error(&aiocbs[l])) {
 				case EINVAL:
 					break;
 				case EINPROGRESS:
-					// This shouldn't be possible to
-					// encounter, die if we do.
+					
+					
 					ASSERT(B_FALSE);
 					zfs_fallthrough;
 				case EOPNOTSUPP:
@@ -1071,10 +894,7 @@ zpool_read_label(int fd, nvlist_t **config, int *num_labels)
 			}
 		}
 		if (do_slow) {
-			/*
-			 * At least some IO involved access unsafe-for-AIO
-			 * files. Let's try again, without AIO this time.
-			 */
+			 
 			error = zpool_read_label_slow(fd, config, num_labels);
 			saved_errno = errno;
 		}
@@ -1134,15 +954,7 @@ zpool_read_label(int fd, nvlist_t **config, int *num_labels)
 #endif
 }
 
-/*
- * Sorted by full path and then vdev guid to allow for multiple entries with
- * the same full path name.  This is required because it's possible to
- * have multiple block devices with labels that refer to the same
- * ZPOOL_CONFIG_PATH yet have different vdev guids.  In this case both
- * entries need to be added to the cache.  Scenarios where this can occur
- * include overwritten pool labels, devices which are visible from multiple
- * hosts and multipath devices.
- */
+ 
 int
 slice_cache_compare(const void *arg1, const void *arg2)
 {
@@ -1198,11 +1010,7 @@ label_paths_impl(libpc_handle_t *hdl, nvlist_t *nvroot, uint64_t pool_guid,
 	return (0);
 }
 
-/*
- * Given a disk label fetch the ZPOOL_CONFIG_PATH and ZPOOL_CONFIG_DEVID
- * and store these strings as config_path and devid_path respectively.
- * The returned pointers are only valid as long as label remains valid.
- */
+ 
 int
 label_paths(libpc_handle_t *hdl, nvlist_t *label, const char **path,
     const char **devid)
@@ -1317,13 +1125,7 @@ zpool_find_import_scan_path(libpc_handle_t *hdl, pthread_mutex_t *lock,
 	ssize_t dl;
 	const char *dpath, *name;
 
-	/*
-	 * Separate the directory and the basename.
-	 * We do this so that we can get the realpath of
-	 * the directory. We don't get the realpath on the
-	 * whole path because if it's a symlink, we want the
-	 * path of the symlink not where it points to.
-	 */
+	 
 	name = zfs_basename(dir);
 	if ((dl = zfs_dirnamelen(dir)) == -1)
 		dpath = ".";
@@ -1350,9 +1152,7 @@ out:
 	return (error);
 }
 
-/*
- * Scan a list of directories for zfs devices.
- */
+ 
 static int
 zpool_find_import_scan(libpc_handle_t *hdl, pthread_mutex_t *lock,
     avl_tree_t **slice_cache, const char * const *dir, size_t dirs)
@@ -1381,11 +1181,7 @@ zpool_find_import_scan(libpc_handle_t *hdl, pthread_mutex_t *lock,
 			goto error;
 		}
 
-		/*
-		 * If dir[i] is a directory, we walk through it and add all
-		 * the entries to the cache. If it's not a directory, we just
-		 * add it to the cache.
-		 */
+		 
 		if (S_ISDIR(sbuf.st_mode)) {
 			if ((error = zpool_find_import_scan_dir(hdl, lock,
 			    cache, dir[i], i)) != 0)
@@ -1411,13 +1207,7 @@ error:
 	return (error);
 }
 
-/*
- * Given a list of directories to search, find all pools stored on disk.  This
- * includes partial pools which are not available to import.  If no args are
- * given (argc is 0), then the default directory (/dev/dsk) is searched.
- * poolname or guid (but not both) are provided by the caller when trying
- * to import a specific pool.
- */
+ 
 static nvlist_t *
 zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
     pthread_mutex_t *lock, avl_tree_t *cache)
@@ -1435,11 +1225,7 @@ zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
 
 	verify(iarg->poolname == NULL || iarg->guid == 0);
 
-	/*
-	 * Create a thread pool to parallelize the process of reading and
-	 * validating labels, a large number of threads can be used due to
-	 * minimal contention.
-	 */
+	 
 	t = tpool_create(1, 2 * sysconf(_SC_NPROCESSORS_ONLN), 0, NULL);
 	for (slice = avl_first(cache); slice;
 	    (slice = avl_walk(cache, slice, AVL_AFTER)))
@@ -1448,10 +1234,7 @@ zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
 	tpool_wait(t);
 	tpool_destroy(t);
 
-	/*
-	 * Process the cache, filtering out any entries which are not
-	 * for the specified pool then adding matching label configs.
-	 */
+	 
 	cookie = NULL;
 	while ((slice = avl_destroy_nodes(cache, &cookie)) != NULL) {
 		if (slice->rn_config != NULL) {
@@ -1460,11 +1243,7 @@ zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
 			boolean_t aux = B_FALSE;
 			int fd;
 
-			/*
-			 * Check if it's a spare or l2cache device. If it is,
-			 * we need to skip the name and guid check since they
-			 * don't exist on aux device label.
-			 */
+			 
 			if (iarg->poolname != NULL || iarg->guid != 0) {
 				uint64_t state;
 				aux = nvlist_lookup_uint64(config,
@@ -1487,16 +1266,7 @@ zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
 				    iarg->guid == this_guid;
 			}
 			if (matched) {
-				/*
-				 * Verify all remaining entries can be opened
-				 * exclusively. This will prune all underlying
-				 * multipath devices which otherwise could
-				 * result in the vdev appearing as UNAVAIL.
-				 *
-				 * Under zdb, this step isn't required and
-				 * would prevent a zdb -e of active pools with
-				 * no cachefile.
-				 */
+				 
 				fd = open(slice->rn_name,
 				    O_RDONLY | O_EXCL | O_CLOEXEC);
 				if (fd >= 0 || iarg->can_be_active) {
@@ -1540,10 +1310,7 @@ zpool_find_import_impl(libpc_handle_t *hdl, importargs_t *iarg,
 	return (ret);
 }
 
-/*
- * Given a config, discover the paths for the devices which
- * exist in the config.
- */
+ 
 static int
 discover_cached_paths(libpc_handle_t *hdl, nvlist_t *nv,
     avl_tree_t *cache, pthread_mutex_t *lock)
@@ -1560,10 +1327,7 @@ discover_cached_paths(libpc_handle_t *hdl, nvlist_t *nv,
 		}
 	}
 
-	/*
-	 * Once we have the path, we need to add the directory to
-	 * our directory cache.
-	 */
+	 
 	if (nvlist_lookup_string(nv, ZPOOL_CONFIG_PATH, &path) == 0) {
 		int ret;
 		char c = '\0';
@@ -1584,11 +1348,7 @@ discover_cached_paths(libpc_handle_t *hdl, nvlist_t *nv,
 	return (0);
 }
 
-/*
- * Given a cache file, return the contents as a list of importable pools.
- * poolname or guid (but not both) are provided by the caller when trying
- * to import a specific pool.
- */
+ 
 static nvlist_t *
 zpool_find_import_cached(libpc_handle_t *hdl, importargs_t *iarg)
 {
@@ -1643,10 +1403,7 @@ zpool_find_import_cached(libpc_handle_t *hdl, importargs_t *iarg)
 
 	free(buf);
 
-	/*
-	 * Go through and get the current state of the pools and refresh their
-	 * state.
-	 */
+	 
 	if (nvlist_alloc(&pools, 0, 0) != 0) {
 		(void) zutil_no_memory(hdl);
 		nvlist_free(raw);
@@ -1679,12 +1436,7 @@ zpool_find_import_cached(libpc_handle_t *hdl, importargs_t *iarg)
 			const char *saved_poolname = iarg->poolname;
 			pthread_mutex_t lock;
 
-			/*
-			 * Create the device cache that will hold the
-			 * devices we will scan based on the cachefile.
-			 * This will get destroyed and freed by
-			 * zpool_find_import_impl.
-			 */
+			 
 			avl_tree_t *cache = zutil_alloc(hdl,
 			    sizeof (avl_tree_t));
 			avl_create(cache, slice_cache_compare,
@@ -1693,36 +1445,18 @@ zpool_find_import_cached(libpc_handle_t *hdl, importargs_t *iarg)
 			nvlist_t *nvroot = fnvlist_lookup_nvlist(src,
 			    ZPOOL_CONFIG_VDEV_TREE);
 
-			/*
-			 * We only want to find the pool with this_guid.
-			 * We will reset these values back later.
-			 */
+			 
 			iarg->guid = this_guid;
 			iarg->poolname = NULL;
 
-			/*
-			 * We need to build up a cache of devices that exists
-			 * in the paths pointed to by the cachefile. This allows
-			 * us to preserve the device namespace that was
-			 * originally specified by the user but also lets us
-			 * scan devices in those directories in case they had
-			 * been renamed.
-			 */
+			 
 			pthread_mutex_init(&lock, NULL);
 			discover_cached_paths(hdl, nvroot, cache, &lock);
 			nvlist_t *nv = zpool_find_import_impl(hdl, iarg,
 			    &lock, cache);
 			pthread_mutex_destroy(&lock);
 
-			/*
-			 * zpool_find_import_impl will return back
-			 * a list of pools that it found based on the
-			 * device cache. There should only be one pool
-			 * since we're looking for a specific guid.
-			 * We will use that pool to build up the final
-			 * pool nvlist which is returned back to the
-			 * caller.
-			 */
+			 
 			nvpair_t *pair = nvlist_next_nvpair(nv, NULL);
 			if (pair == NULL)
 				continue;
@@ -1775,12 +1509,7 @@ zpool_find_import(libpc_handle_t *hdl, importargs_t *iarg)
 	verify(iarg->poolname == NULL || iarg->guid == 0);
 	pthread_mutex_init(&lock, NULL);
 
-	/*
-	 * Locate pool member vdevs by blkid or by directory scanning.
-	 * On success a newly allocated AVL tree which is populated with an
-	 * entry for each discovered vdev will be returned in the cache.
-	 * It's the caller's responsibility to consume and destroy this tree.
-	 */
+	 
 	if (iarg->scan || iarg->paths != 0) {
 		size_t dirs = iarg->paths;
 		const char * const *dir = (const char * const *)iarg->path;
@@ -1871,7 +1600,7 @@ zpool_find_config(libpc_handle_t *hdl, const char *target, nvlist_t **configp,
 			if (pool_match(config, targetdup)) {
 				count++;
 				if (match != NULL) {
-					/* multiple matches found */
+					 
 					continue;
 				} else {
 					match = fnvlist_dup(config);
@@ -1898,16 +1627,7 @@ zpool_find_config(libpc_handle_t *hdl, const char *target, nvlist_t **configp,
 	return (0);
 }
 
-/*
- * Internal function for iterating over the vdevs.
- *
- * For each vdev, func() will be called and will be passed 'zhp' (which is
- * typically the zpool_handle_t cast as a void pointer), the vdev's nvlist, and
- * a user-defined data pointer).
- *
- * The return values from all the func() calls will be OR'd together and
- * returned.
- */
+ 
 int
 for_each_vdev_cb(void *zhp, nvlist_t *nv, pool_vdev_iter_f func,
     void *data)
@@ -1927,7 +1647,7 @@ for_each_vdev_cb(void *zhp, nvlist_t *nv, pool_vdev_iter_f func,
 	if (nvlist_lookup_string(nv, ZPOOL_CONFIG_TYPE, &type) != 0)
 		return (ret);
 
-	/* Don't run our function on indirect vdevs */
+	 
 	if (strcmp(type, VDEV_TYPE_INDIRECT) != 0) {
 		ret |= func(zhp, nv, data);
 	}
@@ -1953,11 +1673,7 @@ for_each_vdev_cb(void *zhp, nvlist_t *nv, pool_vdev_iter_f func,
 	return (ret);
 }
 
-/*
- * Given an ZPOOL_CONFIG_VDEV_TREE nvpair, iterate over all the vdevs, calling
- * func() for each one.  func() is passed the vdev's nvlist and an optional
- * user-defined 'data' pointer.
- */
+ 
 int
 for_each_vdev_in_nvlist(nvlist_t *nvroot, pool_vdev_iter_f func, void *data)
 {

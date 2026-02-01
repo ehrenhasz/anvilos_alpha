@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999 Jérôme de Vivie <devivie@info.enserb.u-bordeaux.fr>
- * (C) 1999 Hervé Eychenne <eychenne@info.enserb.u-bordeaux.fr>
- * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
@@ -24,32 +21,12 @@ MODULE_DESCRIPTION("Xtables: rate-limit match");
 MODULE_ALIAS("ipt_limit");
 MODULE_ALIAS("ip6t_limit");
 
-/* The algorithm used is the Simple Token Bucket Filter (TBF)
- * see net/sched/sch_tbf.c in the linux source tree
- */
+ 
 
-/* Rusty: This is my (non-mathematically-inclined) understanding of
-   this algorithm.  The `average rate' in jiffies becomes your initial
-   amount of credit `credit' and the most credit you can ever have
-   `credit_cap'.  The `peak rate' becomes the cost of passing the
-   test, `cost'.
-
-   `prev' tracks the last packet hit: you gain one credit per jiffy.
-   If you get credit balance more than this, the extra credit is
-   discarded.  Every time the match passes, you lose `cost' credits;
-   if you don't have that many, the test fails.
-
-   See Alexey's formal explanation in net/sched/sch_tbf.c.
-
-   To get the maximum range, we multiply by this factor (ie. you get N
-   credits per jiffy).  We want to allow a rate as low as 1 per day
-   (slowest userspace tool allows), which means
-   CREDITS_PER_JIFFY*HZ*60*60*24 < 2^32. ie. */
+ 
 #define MAX_CPJ (0xFFFFFFFF / (HZ*60*60*24))
 
-/* Repeated shift and or gives us all 1s, final shift and add 1 gives
- * us the power of 2 below the theoretical max, so GCC simply does a
- * shift. */
+ 
 #define _POW2_BELOW2(x) ((x)|((x)>>1))
 #define _POW2_BELOW4(x) (_POW2_BELOW2(x)|_POW2_BELOW2((x)>>2))
 #define _POW2_BELOW8(x) (_POW2_BELOW4(x)|_POW2_BELOW4((x)>>4))
@@ -68,7 +45,7 @@ limit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	u32 old_credit, new_credit, credit_increase = 0;
 	bool ret;
 
-	/* fastpath if there is nothing to update */
+	 
 	if ((READ_ONCE(priv->credit) < r->cost) && (READ_ONCE(priv->prev) == jiffies))
 		return false;
 
@@ -91,12 +68,12 @@ limit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	return ret;
 }
 
-/* Precision saver. */
+ 
 static u32 user2credits(u32 user)
 {
-	/* If multiplying would overflow... */
+	 
 	if (user > 0xFFFFFFFF / (HZ*CREDITS_PER_JIFFY))
-		/* Divide first. */
+		 
 		return (user / XT_LIMIT_SCALE) * HZ * CREDITS_PER_JIFFY;
 
 	return (user * HZ * CREDITS_PER_JIFFY) / XT_LIMIT_SCALE;
@@ -107,7 +84,7 @@ static int limit_mt_check(const struct xt_mtchk_param *par)
 	struct xt_rateinfo *r = par->matchinfo;
 	struct xt_limit_priv *priv;
 
-	/* Check for overflow. */
+	 
 	if (r->burst == 0
 	    || user2credits(r->avg * r->burst) < user2credits(r->avg)) {
 		pr_info_ratelimited("Overflow, try lower: %u/%u\n",
@@ -119,14 +96,13 @@ static int limit_mt_check(const struct xt_mtchk_param *par)
 	if (priv == NULL)
 		return -ENOMEM;
 
-	/* For SMP, we only want to use one set of state. */
+	 
 	r->master = priv;
-	/* User avg in seconds * XT_LIMIT_SCALE: convert to jiffies *
-	   128. */
+	 
 	priv->prev = jiffies;
-	priv->credit = user2credits(r->avg * r->burst); /* Credits full. */
+	priv->credit = user2credits(r->avg * r->burst);  
 	if (r->cost == 0) {
-		r->credit_cap = priv->credit; /* Credits full. */
+		r->credit_cap = priv->credit;  
 		r->cost = user2credits(r->avg);
 	}
 
@@ -152,8 +128,7 @@ struct compat_xt_rateinfo {
 	u_int32_t master;
 };
 
-/* To keep the full "prev" timestamp, the upper 32 bits are stored in the
- * master pointer, which does not need to be preserved. */
+ 
 static void limit_mt_compat_from_user(void *dst, const void *src)
 {
 	const struct compat_xt_rateinfo *cm = src;
@@ -182,7 +157,7 @@ static int limit_mt_compat_to_user(void __user *dst, const void *src)
 	};
 	return copy_to_user(dst, &cm, sizeof(cm)) ? -EFAULT : 0;
 }
-#endif /* CONFIG_NETFILTER_XTABLES_COMPAT */
+#endif  
 
 static struct xt_match limit_mt_reg __read_mostly = {
 	.name             = "limit",

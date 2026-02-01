@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis VP-2033 driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/signal.h>
 #include <linux/sched.h>
@@ -82,7 +77,7 @@ static int tda1002x_cu1216_tuner_set(struct dvb_frontend *fe)
 	if (i2c_transfer(adapter, &msg, 1) != 1)
 		return -EIO;
 
-	/* wait for the pll lock */
+	 
 	msg.flags = I2C_M_RD;
 	msg.len = 1;
 	for (i = 0; i < 20; i++) {
@@ -95,7 +90,7 @@ static int tda1002x_cu1216_tuner_set(struct dvb_frontend *fe)
 		msleep(10);
 	}
 
-	/* switch the charge pump to the lower current */
+	 
 	msg.flags = 0;
 	msg.len = 2;
 	msg.buf = &buf[2];

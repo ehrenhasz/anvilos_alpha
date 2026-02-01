@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2017 John Sperbeck
- *
- * Test that an access to a mapped but inaccessible area causes a SEGV and
- * reports si_code == SEGV_ACCERR.
- */
+
+ 
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -48,10 +43,7 @@ int test_segv_errors(void)
 	faulted = false;
 	si_code = 0;
 
-	/*
-	 * We just need a compiler barrier, but mb() works and has the nice
-	 * property of being easy to spot in the disassembly.
-	 */
+	 
 	mb();
 	c = *p;
 	mb();

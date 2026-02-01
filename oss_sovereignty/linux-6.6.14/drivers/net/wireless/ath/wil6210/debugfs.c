@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -15,12 +12,12 @@
 #include "txrx.h"
 #include "pmc.h"
 
-/* Nasty hack. Better have per device instances */
+ 
 static u32 mem_addr;
 static u32 dbg_txdesc_index;
-static u32 dbg_ring_index; /* 24+ for Rx, 0..23 for Tx */
+static u32 dbg_ring_index;  
 static u32 dbg_status_msg_index;
-/* 0..wil->num_rx_status_rings-1 for Rx, wil->tx_sring_idx for Tx */
+ 
 static u32 dbg_sring_index;
 
 enum dbg_off_type {
@@ -31,7 +28,7 @@ enum dbg_off_type {
 	doff_u8 = 4
 };
 
-/* offset to "wil" */
+ 
 struct dbg_off {
 	const char *name;
 	umode_t mode;
@@ -66,7 +63,7 @@ static void wil_print_desc_edma(struct seq_file *s, struct wil6210_priv *wil,
 		if (num_of_descs >= 1)
 			seq_printf(s, "%c", has_skb ? _h : _s);
 		else
-			/* num_of_descs == 0, it's a frag in a list of descs */
+			 
 			seq_printf(s, "%c", has_skb ? 'h' : _s);
 	}
 }
@@ -90,10 +87,7 @@ static void wil_print_ring(struct seq_file *s, struct wil6210_priv *wil,
 	if (wil->use_enhanced_dma_hw) {
 		int ring_id = ring->is_rx ?
 			WIL_RX_DESC_RING_ID : ring - wil->ring_tx;
-		/* SUBQ_CONS is a table of 32 entries, one for each Q pair.
-		 * lower 16bits are for even ring_id and upper 16bits are for
-		 * odd ring_id
-		 */
+		 
 		x = wmi_addr(wil, RGF_DMA_SCM_SUBQ_CONS + 4 * (ring_id / 2));
 		v = readl_relaxed(x);
 
@@ -150,7 +144,7 @@ static int ring_show(struct seq_file *s, void *data)
 			int avail = ring->size - used - 1;
 			char name[10];
 			char sidle[10];
-			/* performance monitoring */
+			 
 			cycles_t now = get_cycles();
 			uint64_t idle = txdata->idle * 100;
 			uint64_t total = now - txdata->begin;
@@ -205,10 +199,7 @@ static void wil_print_sring(struct seq_file *s, struct wil6210_priv *wil,
 	seq_printf(s, "  elem_size   = %zu\n", sring->elem_size);
 	seq_printf(s, "  swhead = %d\n", sring->swhead);
 	if (wil->use_enhanced_dma_hw) {
-		/* COMPQ_PROD is a table of 32 entries, one for each Q pair.
-		 * lower 16bits are for even ring_id and upper 16bits are for
-		 * odd ring_id
-		 */
+		 
 		x = wmi_addr(wil, RGF_DMA_SCM_COMPQ_PROD + 4 * (sring_idx / 2));
 		v = readl_relaxed(x);
 
@@ -284,10 +275,7 @@ static void wil_print_mbox_ring(struct seq_file *s, const char *prefix,
 
 	wil_memcpy_fromio_32(&r, off, sizeof(r));
 	wil_mbox_ring_le2cpus(&r);
-	/*
-	 * we just read memory block from NIC. This memory may be
-	 * garbage. Check validity before using it.
-	 */
+	 
 	rsize = r.size / sizeof(struct wil6210_mbox_ring_desc);
 
 	seq_printf(s, "ring %s = {\n", prefix);
@@ -333,11 +321,7 @@ static void wil_print_mbox_ring(struct seq_file *s, const char *prefix,
 				unsigned char databuf[MAX_MBOXITEM_SIZE];
 				void __iomem *src = wmi_buffer(wil, d.addr) +
 					sizeof(struct wil6210_mbox_hdr);
-				/*
-				 * No need to check @src for validity -
-				 * we already validated @d.addr while
-				 * reading header
-				 */
+				 
 				wil_memcpy_fromio_32(databuf, src, len);
 				wil_seq_hexdump(s, databuf, len, "      : ");
 			}
@@ -384,7 +368,7 @@ static int wil_debugfs_iomem_x32_set(void *data, u64 val)
 
 	writel_relaxed(val, (void __iomem *)d->offset);
 
-	wmb(); /* make sure write propagated to HW */
+	wmb();  
 
 	wil_pm_runtime_put(wil);
 
@@ -441,15 +425,7 @@ static int wil_debugfs_ulong_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(wil_fops_ulong, wil_debugfs_ulong_get,
 			 wil_debugfs_ulong_set, "0x%llx\n");
 
-/**
- * wil6210_debugfs_init_offset - create set of debugfs files
- * @wil: driver's context, used for printing
- * @dbg: directory on the debugfs, where files will be created
- * @base: base address used in address calculation
- * @tbl: table with file descriptions. Should be terminated with empty element.
- *
- * Creates files accordingly to the @tbl.
- */
+ 
 static void wil6210_debugfs_init_offset(struct wil6210_priv *wil,
 					struct dentry *dbg, void *base,
 					const struct dbg_off * const tbl)
@@ -634,7 +610,7 @@ static ssize_t wil_read_file_ioblob(struct file *file, char __user *user_buf,
 	if (count > max_count)
 		count = max_count;
 
-	/* set pos to 4 bytes aligned */
+	 
 	unaligned_bytes = pos % 4;
 	aligned_pos = pos - unaligned_bytes;
 	aligned_count = count + unaligned_bytes;
@@ -689,7 +665,7 @@ struct dentry *wil_debugfs_create_ioblob(const char *name,
 	return debugfs_create_file(name, mode, parent, wil_blob, &fops_ioblob);
 }
 
-/*---write channel 1..4 to rxon for it, 0 to rxoff---*/
+ 
 static ssize_t wil_write_file_rxon(struct file *file, const char __user *buf,
 				   size_t len, loff_t *ppos)
 {
@@ -744,9 +720,7 @@ static ssize_t wil_write_file_rbufcap(struct file *file,
 		wil_err(wil, "Invalid argument\n");
 		return rc;
 	}
-	/* input value: negative to disable, 0 to use system default,
-	 * 1..ring size to set descriptor threshold
-	 */
+	 
 	wil_info(wil, "%s RBUFCAP, descriptors threshold - %d\n",
 		 val < 0 ? "Disabling" : "Enabling", val);
 
@@ -769,11 +743,7 @@ static const struct file_operations fops_rbufcap = {
 	.open  = simple_open,
 };
 
-/* block ack control, write:
- * - "add <ringid> <agg_size> <timeout>" to trigger ADDBA
- * - "del_tx <ringid> <reason>" to trigger DELBA for Tx side
- * - "del_rx <CID> <TID> <reason>" to trigger DELBA for Rx side
- */
+ 
 static ssize_t wil_write_back(struct file *file, const char __user *buf,
 			      size_t len, loff_t *ppos)
 {
@@ -867,10 +837,7 @@ static const struct file_operations fops_back = {
 	.open  = simple_open,
 };
 
-/* pmc control, write:
- * - "alloc <num descriptors> <descriptor_size>" to allocate PMC
- * - "free" to release memory allocated for PMC
- */
+ 
 static ssize_t wil_write_pmccfg(struct file *file, const char __user *buf,
 				size_t len, loff_t *ppos)
 {
@@ -961,8 +928,8 @@ static const struct file_operations fops_pmcring = {
 	.llseek		= seq_lseek,
 };
 
-/*---tx_mgmt---*/
-/* Write mgmt frame to this file to send it */
+ 
+ 
 static ssize_t wil_write_file_txmgmt(struct file *file, const char __user *buf,
 				     size_t len, loff_t *ppos)
 {
@@ -998,9 +965,7 @@ static const struct file_operations fops_txmgmt = {
 	.open  = simple_open,
 };
 
-/* Write WMI command (w/o mbox header) to this file to send it
- * WMI starts from wil6210_mbox_hdr_wmi header
- */
+ 
 static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
 				  size_t len, loff_t *ppos)
 {
@@ -1058,7 +1023,7 @@ static void wil_seq_print_skb(struct seq_file *s, struct sk_buff *skb)
 	}
 }
 
-/*---------Tx/Rx descriptor------------*/
+ 
 static int txdesc_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -1071,14 +1036,14 @@ static int txdesc_show(struct seq_file *s, void *data)
 	struct sk_buff *skb;
 
 	if (wil->use_enhanced_dma_hw) {
-		/* RX ring index == 0 */
+		 
 		if (ring_idx >= WIL6210_MAX_TX_RINGS) {
 			seq_printf(s, "invalid ring index %d\n", ring_idx);
 			return 0;
 		}
-		tx = ring_idx > 0; /* desc ring 0 is reserved for RX */
+		tx = ring_idx > 0;  
 	} else {
-		/* RX ring index == WIL6210_MAX_TX_RINGS */
+		 
 		if (ring_idx > WIL6210_MAX_TX_RINGS) {
 			seq_printf(s, "invalid ring index %d\n", ring_idx);
 			return 0;
@@ -1106,9 +1071,7 @@ static int txdesc_show(struct seq_file *s, void *data)
 		return 0;
 	}
 
-	/* use struct vring_tx_desc for Rx as well,
-	 * only field used, .dma.length, is the same
-	 */
+	 
 	d = &ring->va[txdesc_idx].tx.legacy;
 	u = (volatile u32 *)d;
 	skb = NULL;
@@ -1153,7 +1116,7 @@ static int txdesc_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(txdesc);
 
-/*---------Tx/Rx status message------------*/
+ 
 static int status_msg_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -1229,7 +1192,7 @@ static int rx_buff_mgmt_show(struct seq_file *s, void *data)
 	seq_printf(s, "  free_list_empty_cnt = %lu\n",
 		   rbm->free_list_empty_cnt);
 
-	/* Print active list */
+	 
 	seq_puts(s, "  Active list:\n");
 	num_active = wil_print_rx_buff(s, &rbm->active);
 	seq_puts(s, "\n  Free list:\n");
@@ -1242,7 +1205,7 @@ static int rx_buff_mgmt_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(rx_buff_mgmt);
 
-/*---------beamforming------------*/
+ 
 static char *wil_bfstatus_str(u32 status)
 {
 	switch (status) {
@@ -1259,7 +1222,7 @@ static char *wil_bfstatus_str(u32 status)
 
 static bool is_all_zeros(void * const x_, size_t sz)
 {
-	/* if reply is all-0, ignore this CID */
+	 
 	u32 *x = x_;
 	int n;
 
@@ -1295,7 +1258,7 @@ static int bf_show(struct seq_file *s, void *data)
 			      &cmd, sizeof(cmd),
 			      WMI_NOTIFY_REQ_DONE_EVENTID, &reply,
 			      sizeof(reply), WIL_WMI_CALL_GENERAL_TO_MS);
-		/* if reply is all-0, ignore this CID */
+		 
 		if (rc || is_all_zeros(&reply.evt, sizeof(reply.evt)))
 			continue;
 
@@ -1328,7 +1291,7 @@ static int bf_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(bf);
 
-/*---------temp------------*/
+ 
 static void print_temp(struct seq_file *s, const char *prefix, s32 t)
 {
 	switch (t) {
@@ -1385,7 +1348,7 @@ static int temp_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(temp);
 
-/*---------link------------*/
+ 
 static int link_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -1442,7 +1405,7 @@ out:
 }
 DEFINE_SHOW_ATTRIBUTE(link);
 
-/*---------info------------*/
+ 
 static int info_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -1455,7 +1418,7 @@ static int info_show(struct seq_file *s, void *data)
 	ulong txf = ndev->stats.tx_packets;
 	unsigned int i;
 
-	/* >0 : AC; 0 : battery; <0 : error */
+	 
 	seq_printf(s, "AC powered : %d\n", is_ac);
 	seq_printf(s, "Rx irqs:packets : %8d : %8ld\n", rx, rxf - rxf_old);
 	seq_printf(s, "Tx irqs:packets : %8d : %8ld\n", tx, txf - txf_old);
@@ -1480,10 +1443,8 @@ static int info_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(info);
 
-/*---------recovery------------*/
-/* mode = [manual|auto]
- * state = [idle|pending|running]
- */
+ 
+ 
 static ssize_t wil_read_file_recovery(struct file *file, char __user *user_buf,
 				      size_t count, loff_t *ppos)
 {
@@ -1508,7 +1469,7 @@ static ssize_t wil_write_file_recovery(struct file *file,
 {
 	struct wil6210_priv *wil = file->private_data;
 	static const char run_command[] = "run";
-	char buf[sizeof(run_command) + 1]; /* to detect "runx" */
+	char buf[sizeof(run_command) + 1];  
 	ssize_t rc;
 
 	if (wil->recovery_state != fw_recovery_pending) {
@@ -1545,7 +1506,7 @@ static const struct file_operations fops_recovery = {
 	.open  = simple_open,
 };
 
-/*---------Station matrix------------*/
+ 
 static void wil_print_rxtid(struct seq_file *s, struct wil_tid_ampdu_rx *r)
 {
 	int i;
@@ -1627,7 +1588,7 @@ __acquires(&p->tid_rx_lock) __releases(&p->tid_rx_lock)
 			    p->status == wil_sta_connected)
 				sta_connected = true;
 		}
-		/* print roam counter only for connected stations */
+		 
 		if (sta_connected)
 			seq_printf(s, "[%d] %pM connected (roam counter %d) MID %d AID %d\n",
 				   i, p->addr, p->stats.ft_roams, mid, aid);
@@ -1780,7 +1741,7 @@ static ssize_t wil_tx_latency_write(struct file *file, const char __user *buf,
 		return rc;
 	}
 	if (val == 1)
-		/* default resolution */
+		 
 		val = 500;
 	if (val && (val < 50 || val > 1000)) {
 		wil_err(wil, "Invalid resolution %d\n", val);
@@ -1905,9 +1866,7 @@ static int wil_link_stats_debugfs_show(struct seq_file *s, void *data)
 	if (rc)
 		return rc;
 
-	/* iterate over all MIDs and show per-cid statistics. Then show the
-	 * global statistics
-	 */
+	 
 	for (i = 0; i < GET_MAX_VIFS(wil); i++) {
 		vif = wil->vifs[i];
 
@@ -1949,7 +1908,7 @@ static ssize_t wil_link_stats_write(struct file *file, const char __user *buf,
 	}
 
 	kbuf[len] = '\0';
-	/* specify cid (use -1 for all cids) and snapshot interval in ms */
+	 
 	rc = sscanf(kbuf, "%d %d", &cid, &interval);
 	kfree(kbuf);
 	if (rc < 0)
@@ -2017,7 +1976,7 @@ wil_link_stats_global_write(struct file *file, const char __user *buf,
 	int interval, rc;
 	struct wil6210_vif *vif = ndev_to_vif(wil->main_ndev);
 
-	/* specify snapshot interval in ms */
+	 
 	rc = kstrtoint_from_user(buf, len, 0, &interval);
 	if (rc || interval < 0) {
 		wil_err(wil, "Invalid argument\n");
@@ -2088,9 +2047,7 @@ static const struct file_operations fops_led_cfg = {
 	.open  = simple_open,
 };
 
-/* led_blink_time, write:
- * "<blink_on_slow> <blink_off_slow> <blink_on_med> <blink_off_med> <blink_on_fast> <blink_off_fast>
- */
+ 
 static ssize_t wil_write_led_blink_time(struct file *file,
 					const char __user *buf,
 					size_t len, loff_t *ppos)
@@ -2153,7 +2110,7 @@ static const struct file_operations fops_led_blink_time = {
 	.open  = simple_open,
 };
 
-/*---------FW capabilities------------*/
+ 
 static int fw_capabilities_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -2165,7 +2122,7 @@ static int fw_capabilities_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(fw_capabilities);
 
-/*---------FW version------------*/
+ 
 static int fw_version_show(struct seq_file *s, void *data)
 {
 	struct wil6210_priv *wil = s->private;
@@ -2179,7 +2136,7 @@ static int fw_version_show(struct seq_file *s, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(fw_version);
 
-/*---------suspend_stats---------*/
+ 
 static ssize_t wil_write_suspend_stats(struct file *file,
 				       const char __user *buf,
 				       size_t len, loff_t *ppos)
@@ -2239,7 +2196,7 @@ static const struct file_operations fops_suspend_stats = {
 	.open  = simple_open,
 };
 
-/*---------compressed_rx_status---------*/
+ 
 static ssize_t wil_compressed_rx_status_write(struct file *file,
 					      const char __user *buf,
 					      size_t len, loff_t *ppos)
@@ -2293,7 +2250,7 @@ static const struct file_operations fops_compressed_rx_status = {
 	.llseek	= seq_lseek,
 };
 
-/*----------------*/
+ 
 static void wil6210_debugfs_init_blobs(struct wil6210_priv *wil,
 				       struct dentry *dbg)
 {
@@ -2316,7 +2273,7 @@ static void wil6210_debugfs_init_blobs(struct wil6210_priv *wil,
 	}
 }
 
-/* misc files */
+ 
 static const struct {
 	const char *name;
 	umode_t mode;
@@ -2365,7 +2322,7 @@ static void wil6210_debugfs_init_files(struct wil6210_priv *wil,
 				    wil, dbg_files[i].fops);
 }
 
-/* interrupt control blocks */
+ 
 static const struct {
 	const char *name;
 	u32 icr_off;
@@ -2389,7 +2346,7 @@ static void wil6210_debugfs_init_isr(struct wil6210_priv *wil,
 #define WIL_FIELD(name, mode, type) { __stringify(name), mode, \
 	offsetof(struct wil6210_priv, name), type}
 
-/* fields in struct wil6210_priv */
+ 
 static const struct dbg_off dbg_wil_off[] = {
 	WIL_FIELD(status[0],	0644,	doff_ulong),
 	WIL_FIELD(hw_version,	0444,	doff_x32),
@@ -2415,7 +2372,7 @@ static const struct dbg_off dbg_wil_regs[] = {
 	{},
 };
 
-/* static parameters */
+ 
 static const struct dbg_off dbg_statics[] = {
 	{"desc_index",	0644, (ulong)&dbg_txdesc_index, doff_u32},
 	{"ring_index",	0644, (ulong)&dbg_ring_index, doff_u32},
@@ -2480,8 +2437,6 @@ void wil6210_debugfs_remove(struct wil6210_priv *wil)
 	for (i = 0; i < wil->max_assoc_sta; i++)
 		kfree(wil->sta[i].tx_latency_bins);
 
-	/* free pmc memory without sending command to fw, as it will
-	 * be reset on the way down anyway
-	 */
+	 
 	wil_pmc_free(wil, false);
 }

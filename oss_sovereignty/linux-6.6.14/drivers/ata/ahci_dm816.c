@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DaVinci DM816 AHCI SATA platform driver
- *
- * Copyright (C) 2017 BayLibre SAS
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -39,11 +35,7 @@ static int ahci_dm816_get_mpy_bits(unsigned long refclk_rate)
 	unsigned long pll_multiplier;
 	int i;
 
-	/*
-	 * We need to determine the value of the multiplier (MPY) bits.
-	 * In order to include the 8.25 multiplier we need to first divide
-	 * the refclk rate by 100.
-	 */
+	 
 	pll_multiplier = AHCI_DM816_PLL_OUT / (refclk_rate / 100);
 
 	for (i = 0; i < ARRAY_SIZE(pll_mpy_table); i++) {
@@ -51,10 +43,7 @@ static int ahci_dm816_get_mpy_bits(unsigned long refclk_rate)
 			return i;
 	}
 
-	/*
-	 * We should have divided evenly - if not, return an invalid
-	 * value.
-	 */
+	 
 	return -1;
 }
 
@@ -64,11 +53,7 @@ static int ahci_dm816_phy_init(struct ahci_host_priv *hpriv, struct device *dev)
 	int mpy;
 	u32 val;
 
-	/*
-	 * We should have been supplied two clocks: the functional and
-	 * keep-alive clock and the external reference clock. We need the
-	 * rate of the latter to calculate the correct value of MPY bits.
-	 */
+	 
 	if (hpriv->n_clks < 2) {
 		dev_err(dev, "reference clock not supplied\n");
 		return -EINVAL;
@@ -86,13 +71,13 @@ static int ahci_dm816_phy_init(struct ahci_host_priv *hpriv, struct device *dev)
 		return -EINVAL;
 	}
 
-	/* Enable the PHY and configure the first HBA port. */
+	 
 	val = AHCI_DM816_PHY_MPY(mpy) | AHCI_DM816_PHY_LOS(1) |
 	      AHCI_DM816_PHY_RXCDR(4) | AHCI_DM816_PHY_RXEQ(1) |
 	      AHCI_DM816_PHY_TXSWING(3) | AHCI_DM816_PHY_ENPLL(1);
 	writel(val, hpriv->mmio + AHCI_DM816_P0PHYCR_REG);
 
-	/* Configure the second HBA port. */
+	 
 	val = AHCI_DM816_PHY_LOS(1) | AHCI_DM816_PHY_RXCDR(4) |
 	      AHCI_DM816_PHY_RXEQ(1) | AHCI_DM816_PHY_TXSWING(3);
 	writel(val, hpriv->mmio + AHCI_DM816_P1PHYCR_REG);
@@ -107,13 +92,7 @@ static int ahci_dm816_softreset(struct ata_link *link,
 
 	pmp = sata_srst_pmp(link);
 
-	/*
-	 * There's an issue with the SATA controller on DM816 SoC: if we
-	 * enable Port Multiplier support, but the drive is connected directly
-	 * to the board, it can't be detected. As a workaround: if PMP is
-	 * enabled, we first call ahci_do_softreset() and pass it the result of
-	 * sata_srst_pmp(). If this call fails, we retry with pmp = 0.
-	 */
+	 
 	ret = ahci_do_softreset(link, class, pmp, deadline, ahci_check_ready);
 	if (pmp && ret == -EBUSY)
 		return ahci_do_softreset(link, class, 0,
@@ -176,7 +155,7 @@ static SIMPLE_DEV_PM_OPS(ahci_dm816_pm_ops,
 
 static const struct of_device_id ahci_dm816_of_match[] = {
 	{ .compatible = "ti,dm816-ahci", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_dm816_of_match);
 

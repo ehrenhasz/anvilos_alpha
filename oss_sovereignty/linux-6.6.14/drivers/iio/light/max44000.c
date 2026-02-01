@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX44000 Ambient and Infrared Proximity Sensor
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
- *
- * 7-bit I2C slave address 0x4a
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -23,7 +15,7 @@
 
 #define MAX44000_DRV_NAME		"max44000"
 
-/* Registers in datasheet order */
+ 
 #define MAX44000_REG_STATUS		0x00
 #define MAX44000_REG_CFG_MAIN		0x01
 #define MAX44000_REG_CFG_RX		0x02
@@ -41,7 +33,7 @@
 #define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
 #define MAX44000_REG_TRIM_GAIN_IR	0x10
 
-/* REG_CFG bits */
+ 
 #define MAX44000_CFG_ALSINTE            0x01
 #define MAX44000_CFG_PRXINTE            0x02
 #define MAX44000_CFG_MASK               0x1c
@@ -53,19 +45,16 @@
 #define MAX44000_CFG_MODE_PRX           0x14
 #define MAX44000_CFG_TRIM               0x20
 
-/*
- * Upper 4 bits are not documented but start as 1 on powerup
- * Setting them to 0 causes proximity to misbehave so set them to 1
- */
+ 
 #define MAX44000_REG_CFG_RX_DEFAULT 0xf0
 
-/* REG_RX bits */
+ 
 #define MAX44000_CFG_RX_ALSTIM_MASK	0x0c
 #define MAX44000_CFG_RX_ALSTIM_SHIFT	2
 #define MAX44000_CFG_RX_ALSPGA_MASK	0x03
 #define MAX44000_CFG_RX_ALSPGA_SHIFT	0
 
-/* REG_TX bits */
+ 
 #define MAX44000_LED_CURRENT_MASK	0xf
 #define MAX44000_LED_CURRENT_MAX	11
 #define MAX44000_LED_CURRENT_DEFAULT	6
@@ -75,35 +64,24 @@
 struct max44000_data {
 	struct mutex lock;
 	struct regmap *regmap;
-	/* Ensure naturally aligned timestamp */
+	 
 	struct {
 		u16 channels[2];
 		s64 ts __aligned(8);
 	} scan;
 };
 
-/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
+ 
 #define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
 
-/* Scale can be multiplied by up to 128x via ALSPGA for measurement gain */
+ 
 static const int max44000_alspga_shift[] = {0, 2, 4, 7};
 #define MAX44000_ALSPGA_MAX_SHIFT 7
 
-/*
- * Scale can be multiplied by up to 64x via ALSTIM because of lost resolution
- *
- * This scaling factor is hidden from userspace and instead accounted for when
- * reading raw values from the device.
- *
- * This makes it possible to cleanly expose ALSPGA as IIO_CHAN_INFO_SCALE and
- * ALSTIM as IIO_CHAN_INFO_INT_TIME without the values affecting each other.
- *
- * Handling this internally is also required for buffer support because the
- * channel's scan_type can't be modified dynamically.
- */
+ 
 #define MAX44000_ALSTIM_SHIFT(alstim) (2 * (alstim))
 
-/* Available integration times with pretty manual alignment: */
+ 
 static const int max44000_int_time_avail_ns_array[] = {
 	   100000000,
 	    25000000,
@@ -116,7 +94,7 @@ static const char max44000_int_time_avail_str[] =
 	"0.00625 "
 	"0.0015625";
 
-/* Available scales (internal to ulux) with pretty manual alignment: */
+ 
 static const int max44000_scale_avail_ulux_array[] = {
 	    31250,
 	   125000,
@@ -218,15 +196,7 @@ static int max44000_read_alsval(struct max44000_data *data)
 
 	regval = be16_to_cpu(val);
 
-	/*
-	 * Overflow is explained on datasheet page 17.
-	 *
-	 * It's a warning that either the G or IR channel has become saturated
-	 * and that the value in the register is likely incorrect.
-	 *
-	 * The recommendation is to change the scale (ALSPGA).
-	 * The driver just returns the max representable value.
-	 */
+	 
 	if (regval & MAX44000_ALSDATA_OVERFLOW)
 		return 0x3FFF;
 
@@ -235,7 +205,7 @@ static int max44000_read_alsval(struct max44000_data *data)
 
 static int max44000_write_led_current_raw(struct max44000_data *data, int val)
 {
-	/* Maybe we should clamp the value instead? */
+	 
 	if (val < 0 || val > MAX44000_LED_CURRENT_MAX)
 		return -ERANGE;
 	if (val >= 8)
@@ -304,7 +274,7 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_CURRENT:
-			/* Output register is in 10s of miliamps */
+			 
 			*val = 10;
 			return IIO_VAL_INT;
 
@@ -315,7 +285,7 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
 			if (ret < 0)
 				return ret;
 
-			/* Avoid negative shifts */
+			 
 			*val = (1 << MAX44000_ALSPGA_MAX_SHIFT);
 			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2
 					+ MAX44000_ALSPGA_MAX_SHIFT
@@ -545,15 +515,9 @@ static int max44000_probe(struct i2c_client *client)
 	indio_dev->channels = max44000_channels;
 	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
 
-	/*
-	 * The device doesn't have a reset function so we just clear some
-	 * important bits at probe time to ensure sane operation.
-	 *
-	 * Since we don't support interrupts/events the threshold values are
-	 * not important. We also don't touch trim values.
-	 */
+	 
 
-	/* Reset ALS scaling bits */
+	 
 	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX,
 			   MAX44000_REG_CFG_RX_DEFAULT);
 	if (ret < 0) {
@@ -562,17 +526,14 @@ static int max44000_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * By default the LED pulse used for the proximity sensor is disabled.
-	 * Set a middle value so that we get some sort of valid data by default.
-	 */
+	 
 	ret = max44000_write_led_current_raw(data, MAX44000_LED_CURRENT_DEFAULT);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 		return ret;
 	}
 
-	/* Reset CFG bits to ALS_PRX mode which allows easy reading of both values. */
+	 
 	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_PRX;
 	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
 	if (ret < 0) {
@@ -580,7 +541,7 @@ static int max44000_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Read status at least once to clear any stale interrupt bits. */
+	 
 	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to read init status: %d\n", ret);

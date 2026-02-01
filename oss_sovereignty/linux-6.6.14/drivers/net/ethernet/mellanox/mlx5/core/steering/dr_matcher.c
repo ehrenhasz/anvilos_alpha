@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include "dr_types.h"
 
@@ -321,7 +321,7 @@ static bool dr_mask_is_flex_parser_id_0_3_set(u32 flex_parser_id,
 	if (flex_parser_id)
 		return flex_parser_id <= DR_STE_MAX_FLEX_0_ID;
 
-	/* Using flex_parser 0 means that id is zero, thus value must be set. */
+	 
 	return flex_parser_value;
 }
 
@@ -417,7 +417,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 	sb = nic_matcher->ste_builder_arr[outer_ipv][inner_ipv];
 	rx = nic_dmn->type == DR_DOMAIN_NIC_TYPE_RX;
 
-	/* Create a temporary mask to track and clear used mask fields */
+	 
 	if (matcher->match_criteria & DR_MATCHER_CRITERIA_OUTER)
 		mask.outer = matcher->mask.outer;
 
@@ -444,9 +444,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 	if (ret)
 		return ret;
 
-	/* Optimize RX pipe by reducing source port match, since
-	 * the FDB RX part is connected only to the wire.
-	 */
+	 
 	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB &&
 	    rx && mask.misc.source_port) {
 		mask.misc.source_port = 0;
@@ -454,7 +452,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 		allow_empty_match = true;
 	}
 
-	/* Outer */
+	 
 	if (matcher->match_criteria & (DR_MATCHER_CRITERIA_OUTER |
 				       DR_MATCHER_CRITERIA_MISC |
 				       DR_MATCHER_CRITERIA_MISC2 |
@@ -578,7 +576,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 						 &mask, inner, rx);
 	}
 
-	/* Inner */
+	 
 	if (matcher->match_criteria & (DR_MATCHER_CRITERIA_INNER |
 				       DR_MATCHER_CRITERIA_MISC |
 				       DR_MATCHER_CRITERIA_MISC2 |
@@ -654,7 +652,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 						       &mask, false, rx);
 	}
 
-	/* Empty matcher, takes all */
+	 
 	if ((!idx && allow_empty_match) ||
 	    matcher->match_criteria == DR_MATCHER_CRITERIA_EMPTY)
 		mlx5dr_ste_build_empty_always_hit(&sb[idx++], rx);
@@ -664,7 +662,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
 		return -EINVAL;
 	}
 
-	/* Check that all mask fields were consumed */
+	 
 	for (i = 0; i < sizeof(struct mlx5dr_match_param); i++) {
 		if (((u8 *)&mask)[i] != 0) {
 			mlx5dr_dbg(dmn, "Mask contains unsupported parameters\n");
@@ -689,7 +687,7 @@ static int dr_nic_matcher_connect(struct mlx5dr_domain *dmn,
 	struct mlx5dr_ste_htbl *prev_htbl;
 	int ret;
 
-	/* Connect end anchor hash table to next_htbl or to the default address */
+	 
 	if (next_nic_matcher) {
 		info.type = CONNECT_HIT;
 		info.hit_next_htbl = next_nic_matcher->s_htbl;
@@ -703,7 +701,7 @@ static int dr_nic_matcher_connect(struct mlx5dr_domain *dmn,
 	if (ret)
 		return ret;
 
-	/* Connect start hash table to end anchor */
+	 
 	info.type = CONNECT_MISS;
 	info.miss_icm_addr = mlx5dr_icm_pool_get_chunk_icm_addr(curr_nic_matcher->e_anchor->chunk);
 	ret = mlx5dr_ste_htbl_init_and_postsend(dmn, nic_dmn,
@@ -712,7 +710,7 @@ static int dr_nic_matcher_connect(struct mlx5dr_domain *dmn,
 	if (ret)
 		return ret;
 
-	/* Connect previous hash table to matcher start hash table */
+	 
 	if (prev_nic_matcher)
 		prev_htbl = prev_nic_matcher->e_anchor;
 	else
@@ -725,7 +723,7 @@ static int dr_nic_matcher_connect(struct mlx5dr_domain *dmn,
 	if (ret)
 		return ret;
 
-	/* Update the pointing ste and next hash table */
+	 
 	curr_nic_matcher->s_htbl->pointing_ste = prev_htbl->chunk->ste_arr;
 	prev_htbl->chunk->ste_arr[0].next_htbl = curr_nic_matcher->s_htbl;
 
@@ -747,9 +745,7 @@ int mlx5dr_matcher_add_to_tbl_nic(struct mlx5dr_domain *dmn,
 	bool first = true;
 	int ret;
 
-	/* If the nic matcher is already on its parent nic table list,
-	 * then it is already connected to the chain of nic matchers.
-	 */
+	 
 	if (!list_empty(&nic_matcher->list_node))
 		return 0;
 
@@ -864,7 +860,7 @@ static int dr_matcher_init_nic(struct mlx5dr_matcher *matcher,
 		goto free_e_htbl;
 	}
 
-	/* make sure the tables exist while empty */
+	 
 	mlx5dr_htbl_get(nic_matcher->s_htbl);
 	mlx5dr_htbl_get(nic_matcher->e_anchor);
 
@@ -921,7 +917,7 @@ static int dr_matcher_copy_param(struct mlx5dr_matcher *matcher,
 		mlx5dr_ste_copy_param(matcher->match_criteria,
 				      &matcher->mask, &consumed_mask, true);
 
-		/* Check that all mask data was consumed */
+		 
 		for (i = 0; i < consumed_mask.match_sz; i++) {
 			if (!((u8 *)consumed_mask.match_buf)[i])
 				continue;
@@ -1041,7 +1037,7 @@ static int dr_matcher_disconnect_nic(struct mlx5dr_domain *dmn,
 	else
 		prev_anchor = nic_tbl->s_anchor;
 
-	/* Connect previous anchor hash table to next matcher or to the default address */
+	 
 	if (next_nic_matcher) {
 		info.type = CONNECT_HIT;
 		info.hit_next_htbl = next_nic_matcher->s_htbl;
@@ -1064,9 +1060,7 @@ int mlx5dr_matcher_remove_from_tbl_nic(struct mlx5dr_domain *dmn,
 	struct mlx5dr_table_rx_tx *nic_tbl = nic_matcher->nic_tbl;
 	int ret;
 
-	/* If the nic matcher is not on its parent nic table list,
-	 * then it is detached - no need to disconnect it.
-	 */
+	 
 	if (list_empty(&nic_matcher->list_node))
 		return 0;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * abstraction of the spi interface of HopeRf rf69 radio module
- *
- * Copyright (C) 2016 Wolf-Entwicklungen
- *	Marcus Wolf <linux@wolf-entwicklungen.de>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/spi/spi.h>
@@ -12,10 +7,10 @@
 #include "rf69.h"
 #include "rf69_registers.h"
 
-#define F_OSC	  32000000 /* in Hz */
-#define FIFO_SIZE 66	   /* in byte */
+#define F_OSC	  32000000  
+#define FIFO_SIZE 66	    
 
-/*-------------------------------------------------------------------------*/
+ 
 
 u8 rf69_read_reg(struct spi_device *spi, u8 addr)
 {
@@ -32,7 +27,7 @@ static int rf69_write_reg(struct spi_device *spi, u8 addr, u8 value)
 	return spi_write(spi, &buffer, ARRAY_SIZE(buffer));
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int rf69_set_bit(struct spi_device *spi, u8 reg, u8 mask)
 {
@@ -62,7 +57,7 @@ static inline int rf69_read_mod_write(struct spi_device *spi, u8 reg,
 	return rf69_write_reg(spi, reg, tmp);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 int rf69_get_version(struct spi_device *spi)
 {
@@ -87,13 +82,7 @@ int rf69_set_mode(struct spi_device *spi, enum mode mode)
 	return rf69_read_mod_write(spi, REG_OPMODE, MASK_OPMODE_MODE,
 				   mode_map[mode]);
 
-	/*
-	 * we are using packet mode, so this check is not really needed
-	 * but waiting for mode ready is necessary when going from sleep
-	 * because the FIFO may not be immediately available from previous mode
-	 * while (_mode == RF69_MODE_SLEEP && (READ_REG(REG_IRQFLAGS1) &
-		  RF_IRQFLAGS1_MODEREADY) == 0x00); // Wait for ModeReady
-	 */
+	 
 }
 
 int rf69_set_data_mode(struct spi_device *spi, u8 data_mode)
@@ -193,26 +182,26 @@ int rf69_set_bit_rate(struct spi_device *spi, u16 bit_rate)
 	u8 lsb;
 	enum modulation mod;
 
-	// check if modulation is configured
+	
 	mod = rf69_get_modulation(spi);
 	if (mod == UNDEF) {
 		dev_dbg(&spi->dev, "setBitRate: modulation is undefined\n");
 		return -EINVAL;
 	}
 
-	// check input value
+	
 	if (bit_rate < 1200 || (mod == OOK && bit_rate > 32768)) {
 		dev_dbg(&spi->dev, "setBitRate: illegal input param\n");
 		return -EINVAL;
 	}
 
-	// calculate reg settings
+	
 	bit_rate_reg = (F_OSC / bit_rate);
 
 	msb = (bit_rate_reg & 0xff00) >> 8;
 	lsb = (bit_rate_reg & 0xff);
 
-	// transmit to RF 69
+	
 	retval = rf69_write_reg(spi, REG_BITRATE_MSB, msb);
 	if (retval)
 		return retval;
@@ -232,42 +221,38 @@ int rf69_set_deviation(struct spi_device *spi, u32 deviation)
 	u32 bit_rate;
 	u8 msb;
 	u8 lsb;
-	u64 factor = 1000000; // to improve precision of calculation
+	u64 factor = 1000000; 
 
-	// calculate bit rate
+	
 	bit_rate_reg = rf69_read_reg(spi, REG_BITRATE_MSB) << 8;
 	bit_rate_reg |= rf69_read_reg(spi, REG_BITRATE_LSB);
 	bit_rate = F_OSC / bit_rate_reg;
 
-	/*
-	 * frequency deviation must exceed 600 Hz but not exceed
-	 * 500kHz when taking bitrate dependency into consideration
-	 * to ensure proper modulation
-	 */
+	 
 	if (deviation < 600 || (deviation + (bit_rate / 2)) > 500000) {
 		dev_dbg(&spi->dev,
 			"set_deviation: illegal input param: %u\n", deviation);
 		return -EINVAL;
 	}
 
-	// calculat f step
+	
 	f_step = F_OSC * factor;
-	do_div(f_step, 524288); //  524288 = 2^19
+	do_div(f_step, 524288); 
 
-	// calculate register settings
+	
 	f_reg = deviation * factor;
 	do_div(f_reg, f_step);
 
 	msb = (f_reg & 0xff00) >> 8;
 	lsb = (f_reg & 0xff);
 
-	// check msb
+	
 	if (msb & ~FDEVMASB_MASK) {
 		dev_dbg(&spi->dev, "set_deviation: err in calc of msb\n");
 		return -EINVAL;
 	}
 
-	// write to chip
+	
 	retval = rf69_write_reg(spi, REG_FDEV_MSB, msb);
 	if (retval)
 		return retval;
@@ -287,20 +272,20 @@ int rf69_set_frequency(struct spi_device *spi, u32 frequency)
 	u8 msb;
 	u8 mid;
 	u8 lsb;
-	u64 factor = 1000000; // to improve precision of calculation
+	u64 factor = 1000000; 
 
-	// calculat f step
+	
 	f_step = F_OSC * factor;
-	do_div(f_step, 524288); //  524288 = 2^19
+	do_div(f_step, 524288); 
 
-	// check input value
+	
 	f_max = div_u64(f_step * 8388608, factor);
 	if (frequency > f_max) {
 		dev_dbg(&spi->dev, "setFrequency: illegal input param\n");
 		return -EINVAL;
 	}
 
-	// calculate reg settings
+	
 	f_reg = frequency * factor;
 	do_div(f_reg, f_step);
 
@@ -308,7 +293,7 @@ int rf69_set_frequency(struct spi_device *spi, u32 frequency)
 	mid = (f_reg & 0xff00)   >>  8;
 	lsb = (f_reg & 0xff);
 
-	// write to chip
+	
 	retval = rf69_write_reg(spi, REG_FRF_MSB, msb);
 	if (retval)
 		return retval;
@@ -338,13 +323,13 @@ int rf69_set_output_power_level(struct spi_device *spi, u8 power_level)
 	bool pa0, pa1, pa2, high_power;
 	u8 min_power_level;
 
-	// check register pa_level
+	
 	pa_level = rf69_read_reg(spi, REG_PALEVEL);
 	pa0 = pa_level & MASK_PALEVEL_PA0;
 	pa1 = pa_level & MASK_PALEVEL_PA1;
 	pa2 = pa_level & MASK_PALEVEL_PA2;
 
-	// check high power mode
+	
 	ocp = rf69_read_reg(spi, REG_OCP);
 	test_pa1 = rf69_read_reg(spi, REG_TESTPA1);
 	test_pa2 = rf69_read_reg(spi, REG_TESTPA2);
@@ -366,14 +351,14 @@ int rf69_set_output_power_level(struct spi_device *spi, u8 power_level)
 		goto failed;
 	}
 
-	// check input value
+	
 	if (power_level > 0x1f)
 		goto failed;
 
 	if (power_level < min_power_level)
 		goto failed;
 
-	// write value
+	
 	return rf69_read_mod_write(spi, REG_PALEVEL, MASK_PALEVEL_OUTPUT_POWER,
 				   power_level);
 failed:
@@ -449,7 +434,7 @@ static int rf69_set_bandwidth_intern(struct spi_device *spi, u8 reg,
 {
 	u8 bandwidth;
 
-	// check value for mantisse and exponent
+	
 	if (exponent > 7) {
 		dev_dbg(&spi->dev, "set: illegal bandwidth exponent %u\n", exponent);
 		return -EINVAL;
@@ -462,13 +447,13 @@ static int rf69_set_bandwidth_intern(struct spi_device *spi, u8 reg,
 		return -EINVAL;
 	}
 
-	// read old value
+	
 	bandwidth = rf69_read_reg(spi, reg);
 
-	// "delete" mantisse and exponent = just keep the DCC setting
+	
 	bandwidth = bandwidth & MASK_BW_DCC_FREQ;
 
-	// add new mantisse
+	
 	switch (mantisse) {
 	case mantisse16:
 		bandwidth = bandwidth | BW_MANT_16;
@@ -481,10 +466,10 @@ static int rf69_set_bandwidth_intern(struct spi_device *spi, u8 reg,
 		break;
 	}
 
-	// add new exponent
+	
 	bandwidth = bandwidth | exponent;
 
-	// write back
+	
 	return rf69_write_reg(spi, reg, bandwidth);
 }
 
@@ -568,19 +553,19 @@ int rf69_set_dio_mapping(struct spi_device *spi, u8 dio_number, u8 value)
 		return -EINVAL;
 	}
 
-	// read reg
+	
 	dio_value = rf69_read_reg(spi, dio_addr);
-	// delete old value
+	
 	dio_value = dio_value & ~mask;
-	// add new value
+	
 	dio_value = dio_value | value << shift;
-	// write back
+	
 	return rf69_write_reg(spi, dio_addr, dio_value);
 }
 
 int rf69_set_rssi_threshold(struct spi_device *spi, u8 threshold)
 {
-	/* no value check needed - u8 exactly matches register size */
+	 
 
 	return rf69_write_reg(spi, REG_RSSITHRESH, threshold);
 }
@@ -590,13 +575,13 @@ int rf69_set_preamble_length(struct spi_device *spi, u16 preamble_length)
 	int retval;
 	u8 msb, lsb;
 
-	/* no value check needed - u16 exactly matches register size */
+	 
 
-	/* calculate reg settings */
+	 
 	msb = (preamble_length & 0xff00) >> 8;
 	lsb = (preamble_length & 0xff);
 
-	/* transmit to chip */
+	 
 	retval = rf69_write_reg(spi, REG_PREAMBLE_MSB, msb);
 	if (retval)
 		return retval;
@@ -631,13 +616,13 @@ int rf69_set_fifo_fill_condition(struct spi_device *spi,
 
 int rf69_set_sync_size(struct spi_device *spi, u8 sync_size)
 {
-	// check input value
+	
 	if (sync_size > 0x07) {
 		dev_dbg(&spi->dev, "set: illegal sync size %u\n", sync_size);
 		return -EINVAL;
 	}
 
-	// write value
+	
 	return rf69_read_mod_write(spi, REG_SYNC_CONFIG,
 				   MASK_SYNC_CONFIG_SYNC_SIZE,
 				   (sync_size << 3));
@@ -740,23 +725,20 @@ int rf69_set_fifo_threshold(struct spi_device *spi, u8 threshold)
 {
 	int retval;
 
-	/* check input value */
+	 
 	if (threshold & ~MASK_FIFO_THRESH_VALUE) {
 		dev_dbg(&spi->dev, "set: illegal fifo threshold %u\n", threshold);
 		return -EINVAL;
 	}
 
-	/* write value */
+	 
 	retval = rf69_read_mod_write(spi, REG_FIFO_THRESH,
 				     MASK_FIFO_THRESH_VALUE,
 				     threshold);
 	if (retval)
 		return retval;
 
-	/*
-	 * access the fifo to activate new threshold
-	 * retval (mis-) used as buffer here
-	 */
+	 
 	return rf69_read_fifo(spi, (u8 *)&retval, 1);
 }
 
@@ -776,7 +758,7 @@ int rf69_set_dagc(struct spi_device *spi, enum dagc dagc)
 	return rf69_write_reg(spi, REG_TESTDAGC, dagc_map[dagc]);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 int rf69_read_fifo(struct spi_device *spi, u8 *buffer, unsigned int size)
 {
@@ -791,7 +773,7 @@ int rf69_read_fifo(struct spi_device *spi, u8 *buffer, unsigned int size)
 		return -EMSGSIZE;
 	}
 
-	/* prepare a bidirectional transfer */
+	 
 	local_buffer[0] = REG_FIFO;
 	memset(&transfer, 0, sizeof(transfer));
 	transfer.tx_buf = local_buffer;
@@ -800,7 +782,7 @@ int rf69_read_fifo(struct spi_device *spi, u8 *buffer, unsigned int size)
 
 	retval = spi_sync_transfer(spi, &transfer, 1);
 
-	/* print content read from fifo for debugging purposes */
+	 
 	for (i = 0; i < size; i++)
 		dev_dbg(&spi->dev, "%d - 0x%x\n", i, local_buffer[i + 1]);
 
@@ -823,7 +805,7 @@ int rf69_write_fifo(struct spi_device *spi, u8 *buffer, unsigned int size)
 	local_buffer[0] = REG_FIFO | WRITE_BIT;
 	memcpy(&local_buffer[1], buffer, size);
 
-	/* print content written from fifo for debugging purposes */
+	 
 	for (i = 0; i < size; i++)
 		dev_dbg(&spi->dev, "%d - 0x%x\n", i, buffer[i]);
 

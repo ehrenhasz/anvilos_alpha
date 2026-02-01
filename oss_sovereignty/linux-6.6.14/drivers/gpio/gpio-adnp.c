@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011-2012 Avionic Design GmbH
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/i2c.h>
@@ -274,18 +272,18 @@ static irqreturn_t adnp_irq(int irq, void *data)
 
 		mutex_unlock(&adnp->i2c_lock);
 
-		/* determine pins that changed levels */
+		 
 		changed = level ^ adnp->irq_level[i];
 
-		/* compute edge-triggered interrupts */
+		 
 		pending = changed & ((adnp->irq_fall[i] & ~level) |
 				     (adnp->irq_rise[i] & level));
 
-		/* add in level-triggered interrupts */
+		 
 		pending |= (adnp->irq_high[i] & level) |
 			   (adnp->irq_low[i] & ~level);
 
-		/* mask out non-pending and disabled interrupts */
+		 
 		pending &= isr & ier;
 
 		for_each_set_bit(bit, &pending, 8) {
@@ -393,14 +391,7 @@ static int adnp_irq_setup(struct adnp *adnp)
 
 	mutex_init(&adnp->irq_lock);
 
-	/*
-	 * Allocate memory to keep track of the current level and trigger
-	 * modes of the interrupts. To avoid multiple allocations, a single
-	 * large buffer is allocated and pointers are setup to point at the
-	 * corresponding offsets. For consistency, the layout of the buffer
-	 * is chosen to match the register layout of the hardware in that
-	 * each segment contains the corresponding bits for all interrupts.
-	 */
+	 
 	adnp->irq_enable = devm_kcalloc(chip->parent, num_regs, 6,
 					GFP_KERNEL);
 	if (!adnp->irq_enable)
@@ -413,15 +404,12 @@ static int adnp_irq_setup(struct adnp *adnp)
 	adnp->irq_low = adnp->irq_enable + (num_regs * 5);
 
 	for (i = 0; i < num_regs; i++) {
-		/*
-		 * Read the initial level of all pins to allow the emulation
-		 * of edge triggered interrupts.
-		 */
+		 
 		err = adnp_read(adnp, GPIO_PLR(adnp) + i, &adnp->irq_level[i]);
 		if (err < 0)
 			return err;
 
-		/* disable all interrupts */
+		 
 		err = adnp_write(adnp, GPIO_IER(adnp) + i, 0);
 		if (err < 0)
 			return err;
@@ -475,7 +463,7 @@ static int adnp_gpio_setup(struct adnp *adnp, unsigned int num_gpios,
 		girq = &chip->irq;
 		gpio_irq_chip_set_chip(girq, &adnp_irq_chip);
 
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;

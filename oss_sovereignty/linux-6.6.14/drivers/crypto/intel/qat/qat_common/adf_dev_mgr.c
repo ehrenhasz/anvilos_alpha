@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/mutex.h>
 #include <linux/list.h>
 #include "adf_cfg.h"
@@ -58,13 +58,7 @@ static int adf_get_vf_real_id(u32 fake)
 	return -1;
 }
 
-/**
- * adf_clean_vf_map() - Cleans VF id mapings
- *
- * Function cleans internal ids for virtual functions.
- * @vf: flag indicating whether mappings is cleaned
- *	for vfs only or for vfs and pfs
- */
+ 
 void adf_clean_vf_map(bool vf)
 {
 	struct vf_id_map *map;
@@ -88,12 +82,7 @@ void adf_clean_vf_map(bool vf)
 }
 EXPORT_SYMBOL_GPL(adf_clean_vf_map);
 
-/**
- * adf_devmgr_update_class_index() - Update internal index
- * @hw_data:  Pointer to internal device data.
- *
- * Function updates internal dev index for VFs
- */
+ 
 void adf_devmgr_update_class_index(struct adf_hw_device_data *hw_data)
 {
 	struct adf_hw_device_class *class = hw_data->dev_class;
@@ -126,16 +115,7 @@ static unsigned int adf_find_free_id(void)
 	return ADF_MAX_DEVICES + 1;
 }
 
-/**
- * adf_devmgr_add_dev() - Add accel_dev to the acceleration framework
- * @accel_dev:  Pointer to acceleration device.
- * @pf:		Corresponding PF if the accel_dev is a VF
- *
- * Function adds acceleration device to the acceleration framework.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_devmgr_add_dev(struct adf_accel_dev *accel_dev,
 		       struct adf_accel_dev *pf)
 {
@@ -151,7 +131,7 @@ int adf_devmgr_add_dev(struct adf_accel_dev *accel_dev,
 	mutex_lock(&table_lock);
 	atomic_set(&accel_dev->ref_count, 0);
 
-	/* PF on host or VF on guest - optimized to remove redundant is_vf */
+	 
 	if (!accel_dev->is_vf || !pf) {
 		struct vf_id_map *map;
 
@@ -183,7 +163,7 @@ int adf_devmgr_add_dev(struct adf_accel_dev *accel_dev,
 		map->attached = true;
 		list_add_tail(&map->list, &vfs_table);
 	} else if (accel_dev->is_vf && pf) {
-		/* VF on host */
+		 
 		struct vf_id_map *map;
 
 		map = adf_find_vf(adf_get_vf_num(accel_dev));
@@ -235,21 +215,12 @@ struct list_head *adf_devmgr_get_head(void)
 	return &accel_table;
 }
 
-/**
- * adf_devmgr_rm_dev() - Remove accel_dev from the acceleration framework.
- * @accel_dev:  Pointer to acceleration device.
- * @pf:		Corresponding PF if the accel_dev is a VF
- *
- * Function removes acceleration device from the acceleration framework.
- * To be used by QAT device specific drivers.
- *
- * Return: void
- */
+ 
 void adf_devmgr_rm_dev(struct adf_accel_dev *accel_dev,
 		       struct adf_accel_dev *pf)
 {
 	mutex_lock(&table_lock);
-	/* PF on host or VF on guest - optimized to remove redundant is_vf */
+	 
 	if (!accel_dev->is_vf || !pf) {
 		id_map[accel_dev->accel_id] = 0;
 		num_devices--;
@@ -286,15 +257,7 @@ struct adf_accel_dev *adf_devmgr_get_first(void)
 	return dev;
 }
 
-/**
- * adf_devmgr_pci_to_accel_dev() - Get accel_dev associated with the pci_dev.
- * @pci_dev:  Pointer to PCI device.
- *
- * Function returns acceleration device associated with the given PCI device.
- * To be used by QAT device specific drivers.
- *
- * Return: pointer to accel_dev or NULL if not found.
- */
+ 
 struct adf_accel_dev *adf_devmgr_pci_to_accel_dev(struct pci_dev *pci_dev)
 {
 	struct list_head *itr;
@@ -371,31 +334,14 @@ void adf_devmgr_get_num_dev(u32 *num)
 	*num = num_devices - adf_get_num_dettached_vfs();
 }
 
-/**
- * adf_dev_in_use() - Check whether accel_dev is currently in use
- * @accel_dev: Pointer to acceleration device.
- *
- * To be used by QAT device specific drivers.
- *
- * Return: 1 when device is in use, 0 otherwise.
- */
+ 
 int adf_dev_in_use(struct adf_accel_dev *accel_dev)
 {
 	return atomic_read(&accel_dev->ref_count) != 0;
 }
 EXPORT_SYMBOL_GPL(adf_dev_in_use);
 
-/**
- * adf_dev_get() - Increment accel_dev reference count
- * @accel_dev: Pointer to acceleration device.
- *
- * Increment the accel_dev refcount and if this is the first time
- * incrementing it during this period the accel_dev is in use,
- * increment the module refcount too.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 when successful, EFAULT when fail to bump module refcount
- */
+ 
 int adf_dev_get(struct adf_accel_dev *accel_dev)
 {
 	if (atomic_add_return(1, &accel_dev->ref_count) == 1)
@@ -405,17 +351,7 @@ int adf_dev_get(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_dev_get);
 
-/**
- * adf_dev_put() - Decrement accel_dev reference count
- * @accel_dev: Pointer to acceleration device.
- *
- * Decrement the accel_dev refcount and if this is the last time
- * decrementing it during this period the accel_dev is in use,
- * decrement the module refcount too.
- * To be used by QAT device specific drivers.
- *
- * Return: void
- */
+ 
 void adf_dev_put(struct adf_accel_dev *accel_dev)
 {
 	if (atomic_sub_return(1, &accel_dev->ref_count) == 0)
@@ -423,28 +359,14 @@ void adf_dev_put(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_dev_put);
 
-/**
- * adf_devmgr_in_reset() - Check whether device is in reset
- * @accel_dev: Pointer to acceleration device.
- *
- * To be used by QAT device specific drivers.
- *
- * Return: 1 when the device is being reset, 0 otherwise.
- */
+ 
 int adf_devmgr_in_reset(struct adf_accel_dev *accel_dev)
 {
 	return test_bit(ADF_STATUS_RESTARTING, &accel_dev->status);
 }
 EXPORT_SYMBOL_GPL(adf_devmgr_in_reset);
 
-/**
- * adf_dev_started() - Check whether device has started
- * @accel_dev: Pointer to acceleration device.
- *
- * To be used by QAT device specific drivers.
- *
- * Return: 1 when the device has started, 0 otherwise
- */
+ 
 int adf_dev_started(struct adf_accel_dev *accel_dev)
 {
 	return test_bit(ADF_STATUS_STARTED, &accel_dev->status);

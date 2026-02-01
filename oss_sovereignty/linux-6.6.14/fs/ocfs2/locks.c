@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * locks.c
- *
- * Userspace file locking support
- *
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/filelock.h>
@@ -45,12 +39,7 @@ static int ocfs2_do_flock(struct file *file, struct inode *inode,
 		if (level == old_level)
 			goto out;
 
-		/*
-		 * Converting an existing lock is not guaranteed to be
-		 * atomic, so we can get away with simply unlocking
-		 * here and allowing the lock code to try at the new
-		 * level.
-		 */
+		 
 
 		locks_init_lock(&request);
 		request.fl_type = F_UNLCK;
@@ -92,9 +81,7 @@ static int ocfs2_do_funlock(struct file *file, int cmd, struct file_lock *fl)
 	return ret;
 }
 
-/*
- * Overall flow of ocfs2_flock() was influenced by gfs2_flock().
- */
+ 
 int ocfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 {
 	struct inode *inode = file->f_mapping->host;

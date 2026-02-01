@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include <stdio.h>
@@ -40,8 +16,8 @@
 #if MICROPY_LONGINT_IMPL == MICROPY_LONGINT_IMPL_MPZ
 
 #if MICROPY_PY_SYS_MAXSIZE
-// Export value for sys.maxsize
-// *FORMAT-OFF*
+
+
 #define DIG_MASK ((MPZ_LONG_1 << MPZ_DIG_SIZE) - 1)
 static const mpz_dig_t maxsize_dig[] = {
     #define NUM_DIG 1
@@ -65,7 +41,7 @@ static const mpz_dig_t maxsize_dig[] = {
      #endif
     #endif
 };
-// *FORMAT-ON*
+
 const mp_obj_int_t mp_sys_maxsize_obj = {
     {&mp_type_int},
     {.fixed_dig = 1, .len = NUM_DIG, .alloc = NUM_DIG, .dig = (mpz_dig_t *)maxsize_dig}
@@ -80,15 +56,15 @@ mp_obj_int_t *mp_obj_int_new_mpz(void) {
     return o;
 }
 
-// This routine expects you to pass in a buffer and size (in *buf and buf_size).
-// If, for some reason, this buffer is too small, then it will allocate a
-// buffer and return the allocated buffer and size in *buf and *buf_size. It
-// is the callers responsibility to free this allocated buffer.
-//
-// The resulting formatted string will be returned from this function and the
-// formatted size will be in *fmt_size.
-//
-// This particular routine should only be called for the mpz representation of the int.
+
+
+
+
+
+
+
+
+
 char *mp_obj_int_formatted_impl(char **buf, size_t *buf_size, size_t *fmt_size, mp_const_obj_t self_in,
     int base, const char *prefix, char base_char, char comma) {
     assert(mp_obj_is_exact_type(self_in, &mp_type_int));
@@ -168,7 +144,7 @@ mp_obj_t mp_obj_int_unary_op(mp_unary_op_t op, mp_obj_t o_in) {
         case MP_UNARY_OP_INT_MAYBE:
             return o_in;
         default:
-            return MP_OBJ_NULL;      // op not supported
+            return MP_OBJ_NULL;      
     }
 }
 
@@ -178,7 +154,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
     mpz_t z_int;
     mpz_dig_t z_int_dig[MPZ_NUM_DIG_FOR_INT];
 
-    // lhs could be a small int (eg small-int + mpz)
+    
     if (mp_obj_is_small_int(lhs_in)) {
         mpz_init_fixed_from_int(&z_int, z_int_dig, MPZ_NUM_DIG_FOR_INT, MP_OBJ_SMALL_INT_VALUE(lhs_in));
         zlhs = &z_int;
@@ -187,7 +163,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
         zlhs = &((mp_obj_int_t *)MP_OBJ_TO_PTR(lhs_in))->mpz;
     }
 
-    // if rhs is small int, then lhs was not (otherwise mp_binary_op handles it)
+    
     if (mp_obj_is_small_int(rhs_in)) {
         mpz_init_fixed_from_int(&z_int, z_int_dig, MPZ_NUM_DIG_FOR_INT, MP_OBJ_SMALL_INT_VALUE(rhs_in));
         zrhs = &z_int;
@@ -202,7 +178,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
         return mp_obj_complex_binary_op(op, mpz_as_float(zlhs), 0, rhs_in);
     #endif
     } else {
-        // delegate to generic function to check for extra cases
+        
         return mp_obj_int_binary_op_extra_cases(op, lhs_in, rhs_in);
     }
 
@@ -309,7 +285,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
             }
 
             default:
-                return MP_OBJ_NULL; // op not supported
+                return MP_OBJ_NULL; 
         }
 
         return MP_OBJ_FROM_PTR(res);
@@ -329,7 +305,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
                 return mp_obj_new_bool(cmp == 0);
 
             default:
-                return MP_OBJ_NULL; // op not supported
+                return MP_OBJ_NULL; 
         }
     }
 }
@@ -349,7 +325,7 @@ mp_obj_t mp_obj_int_pow3(mp_obj_t base, mp_obj_t exponent,  mp_obj_t modulus) {
     if (!mp_obj_is_int(base) || !mp_obj_is_int(exponent) || !mp_obj_is_int(modulus)) {
         mp_raise_TypeError(MP_ERROR_TEXT("pow() with 3 arguments requires integers"));
     } else {
-        mp_obj_t result = mp_obj_new_int_from_ull(0); // Use the _from_ull version as this forces an mpz int
+        mp_obj_t result = mp_obj_new_int_from_ull(0); 
         mp_obj_int_t *res_p = (mp_obj_int_t *)MP_OBJ_TO_PTR(result);
 
         mpz_t l_temp, r_temp, m_temp;
@@ -393,8 +369,8 @@ mp_obj_t mp_obj_new_int_from_ull(unsigned long long val) {
 }
 
 mp_obj_t mp_obj_new_int_from_uint(mp_uint_t value) {
-    // SMALL_INT accepts only signed numbers, so make sure the input
-    // value fits completely in the small-int positive range.
+    
+    
     if ((value & ~MP_SMALL_INT_POSITIVE_MASK) == 0) {
         return MP_OBJ_NEW_SMALL_INT(value);
     }
@@ -413,7 +389,7 @@ mp_int_t mp_obj_int_get_truncated(mp_const_obj_t self_in) {
         return MP_OBJ_SMALL_INT_VALUE(self_in);
     } else {
         const mp_obj_int_t *self = MP_OBJ_TO_PTR(self_in);
-        // hash returns actual int value if it fits in mp_int_t
+        
         return mpz_hash(&self->mpz);
     }
 }
@@ -427,7 +403,7 @@ mp_int_t mp_obj_int_get_checked(mp_const_obj_t self_in) {
         if (mpz_as_int_checked(&self->mpz, &value)) {
             return value;
         } else {
-            // overflow
+            
             mp_raise_msg(&mp_type_OverflowError, MP_ERROR_TEXT("overflow converting long int to machine word"));
         }
     }

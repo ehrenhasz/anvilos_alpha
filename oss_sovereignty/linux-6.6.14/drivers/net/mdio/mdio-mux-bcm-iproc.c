@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -59,15 +57,13 @@ static void mdio_mux_iproc_config(struct iproc_mdiomux_desc *md)
 	u32 divisor;
 	u32 val;
 
-	/* Disable external mdio master access */
+	 
 	val = readl(md->base + MDIO_SCAN_CTRL_OFFSET);
 	val |= BIT(MDIO_SCAN_CTRL_OVRIDE_EXT_MSTR);
 	writel(val, md->base + MDIO_SCAN_CTRL_OFFSET);
 
 	if (md->core_clk) {
-		/* use rate adjust regs to derive the mdio's operating
-		 * frequency from the specified core clock
-		 */
+		 
 		divisor = clk_get_rate(md->core_clk) / MDIO_OPERATING_FREQUENCY;
 		divisor = divisor / (MDIO_RATE_ADJ_DIVIDENT + 1);
 		val = divisor;
@@ -86,18 +82,7 @@ static int iproc_mdio_wait_for_idle(void __iomem *base, bool result)
 				  2000, 1000000);
 }
 
-/* start_miim_ops- Program and start MDIO transaction over mdio bus.
- * @base: Base address
- * @phyid: phyid of the selected bus.
- * @reg: register offset to be read/written.
- * @val :0 if read op else value to be written in @reg;
- * @op: Operation that need to be carried out.
- *      MDIO_CTRL_READ_OP: Read transaction.
- *      MDIO_CTRL_WRITE_OP: Write transaction.
- *
- * Return value: Successful Read operation returns read reg values and write
- *      operation returns 0. Failure operation returns negative error code.
- */
+ 
 static int start_miim_ops(void __iomem *base, bool c45,
 			  u16 phyid, u32 reg, u16 val, u32 op)
 {
@@ -163,7 +148,7 @@ static int iproc_mdiomux_write_c22(struct mii_bus *bus,
 	struct iproc_mdiomux_desc *md = bus->priv;
 	int ret;
 
-	/* Write val at reg offset */
+	 
 	ret = start_miim_ops(md->base, false, phyid, reg, val,
 			     MDIO_CTRL_WRITE_OP);
 	if (ret < 0)
@@ -178,7 +163,7 @@ static int iproc_mdiomux_write_c45(struct mii_bus *bus,
 	struct iproc_mdiomux_desc *md = bus->priv;
 	int ret;
 
-	/* Write val at reg offset */
+	 
 	ret = start_miim_ops(md->base, true, phyid, reg | devad << 16, val,
 			     MDIO_CTRL_WRITE_OP);
 	if (ret < 0)
@@ -194,7 +179,7 @@ static int mdio_mux_iproc_switch_fn(int current_child, int desired_child,
 	u32 param, bus_id;
 	bool bus_dir;
 
-	/* select bus and its properties */
+	 
 	bus_dir = (desired_child < EXT_BUS_START_ADDR);
 	bus_id = bus_dir ? desired_child : (desired_child - EXT_BUS_START_ADDR);
 
@@ -221,9 +206,7 @@ static int mdio_mux_iproc_probe(struct platform_device *pdev)
 	if (IS_ERR(md->base))
 		return PTR_ERR(md->base);
 	if (res->start & 0xfff) {
-		/* For backward compatibility in case the
-		 * base address is specified with an offset.
-		 */
+		 
 		dev_info(&pdev->dev, "fix base address in dt-blob\n");
 		res->start &= ~0xfff;
 		res->end = res->start + MDIO_REG_ADDR_SPACE_SIZE - 1;

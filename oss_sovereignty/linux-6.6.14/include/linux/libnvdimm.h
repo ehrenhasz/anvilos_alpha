@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * libnvdimm - Non-volatile-memory Devices Subsystem
- *
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+ 
+ 
 #ifndef __LIBNVDIMM_H__
 #define __LIBNVDIMM_H__
 #include <linux/kernel.h>
@@ -25,52 +21,42 @@ struct badrange {
 };
 
 enum {
-	/* unarmed memory devices may not persist writes */
+	 
 	NDD_UNARMED = 1,
-	/* locked memory devices should not be accessed */
+	 
 	NDD_LOCKED = 2,
-	/* memory under security wipes should not be accessed */
+	 
 	NDD_SECURITY_OVERWRITE = 3,
-	/*  tracking whether or not there is a pending device reference */
+	 
 	NDD_WORK_PENDING = 4,
-	/* dimm supports namespace labels */
+	 
 	NDD_LABELING = 6,
-	/*
-	 * dimm contents have changed requiring invalidation of CPU caches prior
-	 * to activation of a region that includes this device
-	 */
+	 
 	NDD_INCOHERENT = 7,
 
-	/* dimm provider wants synchronous registration by __nvdimm_create() */
+	 
 	NDD_REGISTER_SYNC = 8,
 
-	/* need to set a limit somewhere, but yes, this is likely overkill */
+	 
 	ND_IOCTL_MAX_BUFLEN = SZ_4M,
 	ND_CMD_MAX_ELEM = 5,
 	ND_CMD_MAX_ENVELOPE = 256,
 	ND_MAX_MAPPINGS = 32,
 
-	/* region flag indicating to direct-map persistent memory by default */
+	 
 	ND_REGION_PAGEMAP = 0,
-	/*
-	 * Platform ensures entire CPU store data path is flushed to pmem on
-	 * system power loss.
-	 */
+	 
 	ND_REGION_PERSIST_CACHE = 1,
-	/*
-	 * Platform provides mechanisms to automatically flush outstanding
-	 * write data from memory controler to pmem on system power loss.
-	 * (ADR)
-	 */
+	 
 	ND_REGION_PERSIST_MEMCTRL = 2,
 
-	/* Platform provides asynchronous flush mechanism */
+	 
 	ND_REGION_ASYNC = 3,
 
-	/* Region was created by CXL subsystem */
+	 
 	ND_REGION_CXL = 4,
 
-	/* mark newly adjusted resources as requiring a label update */
+	 
 	DPA_RESOURCE_ADJUSTED = 1 << 0,
 };
 
@@ -104,11 +90,11 @@ struct nd_cmd_desc {
 };
 
 struct nd_interleave_set {
-	/* v1.1 definition of the interleave-set-cookie algorithm */
+	 
 	u64 cookie1;
-	/* v1.2 definition of the interleave-set-cookie algorithm */
+	 
 	u64 cookie2;
-	/* compatibility with initial buggy Linux implementation */
+	 
 	u64 altcookie;
 
 	guid_t type_guid;
@@ -149,10 +135,7 @@ static inline void __iomem *devm_nvdimm_ioremap(struct device *dev,
 
 struct nvdimm_bus;
 
-/*
- * Note that separate bits for locked + unlocked are defined so that
- * 'flags == 0' corresponds to an error / not-supported state.
- */
+ 
 enum nvdimm_security_bits {
 	NVDIMM_SECURITY_DISABLED,
 	NVDIMM_SECURITY_UNLOCKED,
@@ -323,4 +306,4 @@ static inline void arch_invalidate_pmem(void *addr, size_t size)
 }
 #endif
 
-#endif /* __LIBNVDIMM_H__ */
+#endif  

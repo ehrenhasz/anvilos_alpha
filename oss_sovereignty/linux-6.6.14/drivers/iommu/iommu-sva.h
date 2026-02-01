@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * SVA library for IOMMU drivers
- */
+ 
+ 
 #ifndef _IOMMU_SVA_H
 #define _IOMMU_SVA_H
 
 #include <linux/mm_types.h>
 
-/* I/O Page fault */
+ 
 struct device;
 struct iommu_fault;
 struct iopf_queue;
@@ -25,7 +23,7 @@ int iopf_queue_discard_partial(struct iopf_queue *queue);
 enum iommu_page_response_code
 iommu_sva_handle_iopf(struct iommu_fault *fault, void *data);
 
-#else /* CONFIG_IOMMU_SVA */
+#else  
 static inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 {
 	return -ENODEV;
@@ -67,5 +65,5 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
 {
 	return IOMMU_PAGE_RESP_INVALID;
 }
-#endif /* CONFIG_IOMMU_SVA */
-#endif /* _IOMMU_SVA_H */
+#endif  
+#endif  

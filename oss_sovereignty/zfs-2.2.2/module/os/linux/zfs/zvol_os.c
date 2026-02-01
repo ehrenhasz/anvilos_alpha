@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/dataset_kstats.h>
 #include <sys/dbuf.h>
@@ -63,27 +42,16 @@ static unsigned int zvol_blk_mq_threads = 0;
 static unsigned int zvol_blk_mq_actual_threads;
 static boolean_t zvol_use_blk_mq = B_FALSE;
 
-/*
- * The maximum number of volblocksize blocks to process per thread.  Typically,
- * write heavy workloads preform better with higher values here, and read
- * heavy workloads preform better with lower values, but that's not a hard
- * and fast rule.  It's basically a knob to tune between "less overhead with
- * less parallelism" and "more overhead, but more parallelism".
- *
- * '8' was chosen as a reasonable, balanced, default based off of sequential
- * read and write tests to a zvol in an NVMe pool (with 16 CPUs).
- */
+ 
 static unsigned int zvol_blk_mq_blocks_per_thread = 8;
 #endif
 
 #ifndef	BLKDEV_DEFAULT_RQ
-/* BLKDEV_MAX_RQ was renamed to BLKDEV_DEFAULT_RQ in the 5.16 kernel */
+ 
 #define	BLKDEV_DEFAULT_RQ BLKDEV_MAX_RQ
 #endif
 
-/*
- * Finalize our BIO or request.
- */
+ 
 #ifdef	HAVE_BLK_MQ
 #define	END_IO(zv, bio, rq, error)  do { \
 	if (bio) { \
@@ -102,15 +70,15 @@ static unsigned int zvol_actual_blk_mq_queue_depth;
 #endif
 
 struct zvol_state_os {
-	struct gendisk		*zvo_disk;	/* generic disk */
-	struct request_queue	*zvo_queue;	/* request queue */
-	dev_t			zvo_dev;	/* device id */
+	struct gendisk		*zvo_disk;	 
+	struct request_queue	*zvo_queue;	 
+	dev_t			zvo_dev;	 
 
 #ifdef HAVE_BLK_MQ
 	struct blk_mq_tag_set tag_set;
 #endif
 
-	/* Set from the global 'zvol_use_blk_mq' at zvol load */
+	 
 	boolean_t use_blk_mq;
 };
 
@@ -151,28 +119,25 @@ zv_request_task_free(zv_request_task_t *task)
 
 #ifdef HAVE_BLK_MQ
 
-/*
- * This is called when a new block multiqueue request comes in.  A request
- * contains one or more BIOs.
- */
+ 
 static blk_status_t zvol_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
     const struct blk_mq_queue_data *bd)
 {
 	struct request *rq = bd->rq;
 	zvol_state_t *zv = rq->q->queuedata;
 
-	/* Tell the kernel that we are starting to process this request */
+	 
 	blk_mq_start_request(rq);
 
 	if (blk_rq_is_passthrough(rq)) {
-		/* Skip non filesystem request */
+		 
 		blk_mq_end_request(rq, BLK_STS_IOERR);
 		return (BLK_STS_IOERR);
 	}
 
 	zvol_request_impl(zv, NULL, rq, 0);
 
-	/* Acknowledge to the kernel that we got this request */
+	 
 	return (BLK_STS_OK);
 }
 
@@ -180,34 +145,29 @@ static struct blk_mq_ops zvol_blk_mq_queue_ops = {
 	.queue_rq = zvol_mq_queue_rq,
 };
 
-/* Initialize our blk-mq struct */
+ 
 static int zvol_blk_mq_alloc_tag_set(zvol_state_t *zv)
 {
 	struct zvol_state_os *zso = zv->zv_zso;
 
 	memset(&zso->tag_set, 0, sizeof (zso->tag_set));
 
-	/* Initialize tag set. */
+	 
 	zso->tag_set.ops = &zvol_blk_mq_queue_ops;
 	zso->tag_set.nr_hw_queues = zvol_blk_mq_actual_threads;
 	zso->tag_set.queue_depth = zvol_actual_blk_mq_queue_depth;
 	zso->tag_set.numa_node = NUMA_NO_NODE;
 	zso->tag_set.cmd_size = 0;
 
-	/*
-	 * We need BLK_MQ_F_BLOCKING here since we do blocking calls in
-	 * zvol_request_impl()
-	 */
+	 
 	zso->tag_set.flags = BLK_MQ_F_SHOULD_MERGE | BLK_MQ_F_BLOCKING;
 	zso->tag_set.driver_data = zv;
 
 	return (blk_mq_alloc_tag_set(&zso->tag_set));
 }
-#endif /* HAVE_BLK_MQ */
+#endif  
 
-/*
- * Given a path, return TRUE if path is a ZVOL.
- */
+ 
 boolean_t
 zvol_os_is_zvol(const char *path)
 {
@@ -242,11 +202,11 @@ zvol_write(zv_request_t *zvr)
 	q = zv->zv_zso->zvo_queue;
 	disk = zv->zv_zso->zvo_disk;
 
-	/* bio marked as FLUSH need to flush before write */
+	 
 	if (io_is_flush(bio, rq))
 		zil_commit(zv->zv_zilog, ZVOL_OBJ);
 
-	/* Some requests are just for flush and nothing else. */
+	 
 	if (io_size(bio, rq) == 0) {
 		rw_exit(&zv->zv_suspend_lock);
 		END_IO(zv, bio, rq, 0);
@@ -257,10 +217,7 @@ zvol_write(zv_request_t *zvr)
 
 	ssize_t start_resid = uio.uio_resid;
 
-	/*
-	 * With use_blk_mq, accounting is done by blk_mq_start_request()
-	 * and blk_mq_end_request(), so we can skip it here.
-	 */
+	 
 	if (bio) {
 		acct = blk_queue_io_stat(q);
 		if (acct) {
@@ -281,12 +238,12 @@ zvol_write(zv_request_t *zvr)
 		uint64_t off = uio.uio_loffset;
 		dmu_tx_t *tx = dmu_tx_create(zv->zv_objset);
 
-		if (bytes > volsize - off)	/* don't write past the end */
+		if (bytes > volsize - off)	 
 			bytes = volsize - off;
 
 		dmu_tx_hold_write_by_dnode(tx, zv->zv_dn, off, bytes);
 
-		/* This will only fail for ENOSPC */
+		 
 		error = dmu_tx_assign(tx, TXG_WAIT);
 		if (error) {
 			dmu_tx_abort(tx);
@@ -363,12 +320,7 @@ zvol_discard(zv_request_t *zvr)
 		goto unlock;
 	}
 
-	/*
-	 * Align the request to volume block boundaries when a secure erase is
-	 * not required.  This will prevent dnode_free_range() from zeroing out
-	 * the unaligned parts which is slow (read-modify-write) and useless
-	 * since we are not freeing any space by doing so.
-	 */
+	 
 	if (!io_is_secure_erase(bio, rq)) {
 		start = P2ROUNDUP(start, zv->zv_volblocksize);
 		end = P2ALIGN(end, zv->zv_volblocksize);
@@ -439,10 +391,7 @@ zvol_read(zv_request_t *zvr)
 
 	ssize_t start_resid = uio.uio_resid;
 
-	/*
-	 * When blk-mq is being used, accounting is done by
-	 * blk_mq_start_request() and blk_mq_end_request().
-	 */
+	 
 	if (bio) {
 		acct = blk_queue_io_stat(q);
 		if (acct)
@@ -458,13 +407,13 @@ zvol_read(zv_request_t *zvr)
 	while (uio.uio_resid > 0 && uio.uio_loffset < volsize) {
 		uint64_t bytes = MIN(uio.uio_resid, DMU_MAX_ACCESS >> 1);
 
-		/* don't read past the end */
+		 
 		if (bytes > volsize - uio.uio_loffset)
 			bytes = volsize - uio.uio_loffset;
 
 		error = dmu_read_uio_dnode(zv->zv_dn, &uio, bytes);
 		if (error) {
-			/* convert checksum errors into IO errors */
+			 
 			if (error == ECKSUM)
 				error = SET_ERROR(EIO);
 			break;
@@ -494,15 +443,7 @@ zvol_read_task(void *arg)
 }
 
 
-/*
- * Process a BIO or request
- *
- * Either 'bio' or 'rq' should be set depending on if we are processing a
- * bio or a request (both should not be set).
- *
- * force_sync:	Set to 0 to defer processing to a background taskq
- *			Set to 1 to process data synchronously
- */
+ 
 static void
 zvol_request_impl(zvol_state_t *zv, struct bio *bio, struct request *rq,
     boolean_t force_sync)
@@ -539,19 +480,10 @@ zvol_request_impl(zvol_state_t *zv, struct bio *bio, struct request *rq,
 			goto out;
 		}
 
-		/*
-		 * Prevents the zvol from being suspended, or the ZIL being
-		 * concurrently opened.  Will be released after the i/o
-		 * completes.
-		 */
+		 
 		rw_enter(&zv->zv_suspend_lock, RW_READER);
 
-		/*
-		 * Open a ZIL if this is the first time we have written to this
-		 * zvol. We protect zv->zv_zilog with zv_suspend_lock rather
-		 * than zv_state_lock so that we don't need to acquire an
-		 * additional lock in this path.
-		 */
+		 
 		if (zv->zv_zilog == NULL) {
 			rw_exit(&zv->zv_suspend_lock);
 			rw_enter(&zv->zv_suspend_lock, RW_WRITER);
@@ -559,43 +491,14 @@ zvol_request_impl(zvol_state_t *zv, struct bio *bio, struct request *rq,
 				zv->zv_zilog = zil_open(zv->zv_objset,
 				    zvol_get_data, &zv->zv_kstat.dk_zil_sums);
 				zv->zv_flags |= ZVOL_WRITTEN_TO;
-				/* replay / destroy done in zvol_create_minor */
+				 
 				VERIFY0((zv->zv_zilog->zl_header->zh_flags &
 				    ZIL_REPLAY_NEEDED));
 			}
 			rw_downgrade(&zv->zv_suspend_lock);
 		}
 
-		/*
-		 * We don't want this thread to be blocked waiting for i/o to
-		 * complete, so we instead wait from a taskq callback. The
-		 * i/o may be a ZIL write (via zil_commit()), or a read of an
-		 * indirect block, or a read of a data block (if this is a
-		 * partial-block write).  We will indicate that the i/o is
-		 * complete by calling END_IO() from the taskq callback.
-		 *
-		 * This design allows the calling thread to continue and
-		 * initiate more concurrent operations by calling
-		 * zvol_request() again. There are typically only a small
-		 * number of threads available to call zvol_request() (e.g.
-		 * one per iSCSI target), so keeping the latency of
-		 * zvol_request() low is important for performance.
-		 *
-		 * The zvol_request_sync module parameter allows this
-		 * behavior to be altered, for performance evaluation
-		 * purposes.  If the callback blocks, setting
-		 * zvol_request_sync=1 will result in much worse performance.
-		 *
-		 * We can have up to zvol_threads concurrent i/o's being
-		 * processed for all zvols on the system.  This is typically
-		 * a vast improvement over the zvol_request_sync=1 behavior
-		 * of one i/o at a time per zvol.  However, an even better
-		 * design would be for zvol_request() to initiate the zio
-		 * directly, and then be notified by the zio_done callback,
-		 * which would call END_IO().  Unfortunately, the DMU/ZIL
-		 * interfaces lack this functionality (they block waiting for
-		 * the i/o to complete).
-		 */
+		 
 		if (io_is_discard(bio, rq) || io_is_secure_erase(bio, rq)) {
 			if (force_sync) {
 				zvol_discard(&zvr);
@@ -614,11 +517,7 @@ zvol_request_impl(zvol_state_t *zv, struct bio *bio, struct request *rq,
 			}
 		}
 	} else {
-		/*
-		 * The SCST driver, and possibly others, may issue READ I/Os
-		 * with a length of zero bytes.  These empty I/Os contain no
-		 * data and require no additional handling.
-		 */
+		 
 		if (size == 0) {
 			END_IO(zv, bio, rq, 0);
 			goto out;
@@ -626,7 +525,7 @@ zvol_request_impl(zvol_state_t *zv, struct bio *bio, struct request *rq,
 
 		rw_enter(&zv->zv_suspend_lock, RW_READER);
 
-		/* See comment in WRITE case above. */
+		 
 		if (force_sync) {
 			zvol_read(&zvr);
 		} else {
@@ -687,12 +586,7 @@ zvol_open(struct block_device *bdev, fmode_t flag)
 retry:
 #endif
 	rw_enter(&zvol_state_lock, RW_READER);
-	/*
-	 * Obtain a copy of private_data under the zvol_state_lock to make
-	 * sure that either the result of zvol free code path setting
-	 * disk->private_data to NULL is observed, or zvol_os_free()
-	 * is not called on this zv because of the positive zv_open_count.
-	 */
+	 
 #ifdef HAVE_BLK_MODE_T
 	zv = disk->private_data;
 #else
@@ -704,17 +598,13 @@ retry:
 	}
 
 	mutex_enter(&zv->zv_state_lock);
-	/*
-	 * Make sure zvol is not suspended during first open
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock
-	 */
+	 
 	if (zv->zv_open_count == 0) {
 		if (!rw_tryenter(&zv->zv_suspend_lock, RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* check to see if zv_suspend_lock is needed */
+			 
 			if (zv->zv_open_count != 0) {
 				rw_exit(&zv->zv_suspend_lock);
 			} else {
@@ -733,30 +623,7 @@ retry:
 
 		ASSERT(RW_READ_HELD(&zv->zv_suspend_lock));
 
-		/*
-		 * In all other call paths the spa_namespace_lock is taken
-		 * before the bdev->bd_mutex lock.  However, on open(2)
-		 * the __blkdev_get() function calls fops->open() with the
-		 * bdev->bd_mutex lock held.  This can result in a deadlock
-		 * when zvols from one pool are used as vdevs in another.
-		 *
-		 * To prevent a lock inversion deadlock we preemptively
-		 * take the spa_namespace_lock.  Normally the lock will not
-		 * be contended and this is safe because spa_open_common()
-		 * handles the case where the caller already holds the
-		 * spa_namespace_lock.
-		 *
-		 * When the lock cannot be aquired after multiple retries
-		 * this must be the vdev on zvol deadlock case and we have
-		 * no choice but to return an error.  For 5.12 and older
-		 * kernels returning -ERESTARTSYS will result in the
-		 * bdev->bd_mutex being dropped, then reacquired, and
-		 * fops->open() being called again.  This process can be
-		 * repeated safely until both locks are acquired.  For 5.13
-		 * and newer the -ERESTARTSYS retry logic was removed from
-		 * the kernel so the only option is to return the error for
-		 * the caller to handle it.
-		 */
+		 
 		if (!mutex_owned(&spa_namespace_lock)) {
 			if (!mutex_tryenter(&spa_namespace_lock)) {
 				mutex_exit(&zv->zv_state_lock);
@@ -827,17 +694,13 @@ zvol_release(struct gendisk *disk, fmode_t unused)
 
 	mutex_enter(&zv->zv_state_lock);
 	ASSERT3U(zv->zv_open_count, >, 0);
-	/*
-	 * make sure zvol is not suspended during last close
-	 * (hold zv_suspend_lock) and respect proper lock acquisition
-	 * ordering - zv_suspend_lock before zv_state_lock
-	 */
+	 
 	if (zv->zv_open_count == 1) {
 		if (!rw_tryenter(&zv->zv_suspend_lock, RW_READER)) {
 			mutex_exit(&zv->zv_state_lock);
 			rw_enter(&zv->zv_suspend_lock, RW_READER);
 			mutex_enter(&zv->zv_state_lock);
-			/* check to see if zv_suspend_lock is needed */
+			 
 			if (zv->zv_open_count != 1) {
 				rw_exit(&zv->zv_suspend_lock);
 				drop_suspend = B_FALSE;
@@ -970,19 +833,11 @@ zvol_os_update_volsize(zvol_state_t *zv, uint64_t volsize)
 void
 zvol_os_clear_private(zvol_state_t *zv)
 {
-	/*
-	 * Cleared while holding zvol_state_lock as a writer
-	 * which will prevent zvol_open() from opening it.
-	 */
+	 
 	zv->zv_zso->zvo_disk->private_data = NULL;
 }
 
-/*
- * Provide a simple virtual geometry for legacy compatibility.  For devices
- * smaller than 1 MiB a small head and sector count is used to allow very
- * tiny devices.  For devices over 1 Mib a standard head and sector count
- * is used to keep the cylinders count reasonable.
- */
+ 
 static int
 zvol_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
@@ -1007,14 +862,7 @@ zvol_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return (0);
 }
 
-/*
- * Why have two separate block_device_operations structs?
- *
- * Normally we'd just have one, and assign 'submit_bio' as needed.  However,
- * it's possible the user's kernel is built with CONSTIFY_PLUGIN, meaning we
- * can't just change submit_bio dynamically at runtime.  So just create two
- * separate structs to get around this.
- */
+ 
 static const struct block_device_operations zvol_ops_blk_mq = {
 	.open			= zvol_open,
 	.release		= zvol_release,
@@ -1067,7 +915,7 @@ zvol_alloc_non_blk_mq(struct zvol_state_os *zso)
 	}
 
 	zso->zvo_disk->queue = zso->zvo_queue;
-#endif /* HAVE_BLK_ALLOC_DISK */
+#endif  
 #else
 	zso->zvo_queue = blk_generic_alloc_queue(zvol_request, NUMA_NO_NODE);
 	if (zso->zvo_queue == NULL)
@@ -1080,7 +928,7 @@ zvol_alloc_non_blk_mq(struct zvol_state_os *zso)
 	}
 
 	zso->zvo_disk->queue = zso->zvo_queue;
-#endif /* HAVE_SUBMIT_BIO_IN_BLOCK_DEVICE_OPERATIONS */
+#endif  
 	return (0);
 
 }
@@ -1091,7 +939,7 @@ zvol_alloc_blk_mq(zvol_state_t *zv)
 #ifdef HAVE_BLK_MQ
 	struct zvol_state_os *zso = zv->zv_zso;
 
-	/* Allocate our blk-mq tag_set */
+	 
 	if (zvol_blk_mq_alloc_tag_set(zv) != 0)
 		return (1);
 
@@ -1110,14 +958,14 @@ zvol_alloc_blk_mq(zvol_state_t *zv)
 		blk_mq_free_tag_set(&zso->tag_set);
 		return (1);
 	}
-	/* Allocate queue */
+	 
 	zso->zvo_queue = blk_mq_init_queue(&zso->tag_set);
 	if (IS_ERR(zso->zvo_queue)) {
 		blk_mq_free_tag_set(&zso->tag_set);
 		return (1);
 	}
 
-	/* Our queue is now created, assign it to our disk */
+	 
 	zso->zvo_disk->queue = zso->zvo_queue;
 
 #endif
@@ -1125,10 +973,7 @@ zvol_alloc_blk_mq(zvol_state_t *zv)
 	return (0);
 }
 
-/*
- * Allocate memory for a new zvol_state_t and setup the required
- * request queue and generic disk structures for the block device.
- */
+ 
 static zvol_state_t *
 zvol_alloc(dev_t dev, const char *name)
 {
@@ -1158,21 +1003,7 @@ zvol_alloc(dev_t dev, const char *name)
 	zv->zv_zso->use_blk_mq = zvol_use_blk_mq;
 #endif
 
-	/*
-	 * The block layer has 3 interfaces for getting BIOs:
-	 *
-	 * 1. blk-mq request queues (new)
-	 * 2. submit_bio() (oldest)
-	 * 3. regular request queues (old).
-	 *
-	 * Each of those interfaces has two permutations:
-	 *
-	 * a) We have blk_alloc_disk()/blk_mq_alloc_disk(), which allocates
-	 *    both the disk and its queue (5.14 kernel or newer)
-	 *
-	 * b) We don't have blk_*alloc_disk(), and have to allocate the
-	 *    disk and the queue separately. (5.13 kernel or older)
-	 */
+	 
 	if (zv->zv_zso->use_blk_mq) {
 		ret = zvol_alloc_blk_mq(zv);
 		zso->zvo_disk->fops = &zvol_ops_blk_mq;
@@ -1185,15 +1016,15 @@ zvol_alloc(dev_t dev, const char *name)
 
 	blk_queue_set_write_cache(zso->zvo_queue, B_TRUE, B_TRUE);
 
-	/* Limit read-ahead to a single page to prevent over-prefetching. */
+	 
 	blk_queue_set_read_ahead(zso->zvo_queue, 1);
 
 	if (!zv->zv_zso->use_blk_mq) {
-		/* Disable write merging in favor of the ZIO pipeline. */
+		 
 		blk_queue_flag_set(QUEUE_FLAG_NOMERGES, zso->zvo_queue);
 	}
 
-	/* Enable /proc/diskstats */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_IO_STAT, zso->zvo_queue);
 
 	zso->zvo_queue->queuedata = zv;
@@ -1207,11 +1038,7 @@ zvol_alloc(dev_t dev, const char *name)
 	zso->zvo_disk->major = zvol_major;
 	zso->zvo_disk->events = DISK_EVENT_MEDIA_CHANGE;
 
-	/*
-	 * Setting ZFS_VOLMODE_DEV disables partitioning on ZVOL devices.
-	 * This is accomplished by limiting the number of minors for the
-	 * device to one and explicitly disabling partition scanning.
-	 */
+	 
 	if (volmode == ZFS_VOLMODE_DEV) {
 		zso->zvo_disk->minors = 1;
 		zso->zvo_disk->flags &= ~ZFS_GENHD_FL_EXT_DEVT;
@@ -1231,17 +1058,7 @@ out_kmem:
 	return (NULL);
 }
 
-/*
- * Cleanup then free a zvol_state_t which was created by zvol_alloc().
- * At this time, the structure is not opened by anyone, is taken off
- * the zvol_state_list, and has its private data set to NULL.
- * The zvol_state_lock is dropped.
- *
- * This function may take many milliseconds to complete (e.g. we've seen
- * it take over 256ms), due to the calls to "blk_cleanup_queue" and
- * "del_gendisk". Thus, consumers need to be careful to account for this
- * latency when calling this function.
- */
+ 
 void
 zvol_os_free(zvol_state_t *zv)
 {
@@ -1287,11 +1104,7 @@ zvol_wait_close(zvol_state_t *zv)
 {
 }
 
-/*
- * Create a block device minor node and setup the linkage between it
- * and the specified volume.  Once this function returns the block
- * device is live and ready for use.
- */
+ 
 int
 zvol_os_create_minor(const char *name)
 {
@@ -1356,42 +1169,9 @@ zvol_os_create_minor(const char *name)
 	    (DMU_MAX_ACCESS / 4) >> 9);
 
 	if (zv->zv_zso->use_blk_mq) {
-		/*
-		 * IO requests can be really big (1MB).  When an IO request
-		 * comes in, it is passed off to zvol_read() or zvol_write()
-		 * in a new thread, where it is chunked up into 'volblocksize'
-		 * sized pieces and processed.  So for example, if the request
-		 * is a 1MB write and your volblocksize is 128k, one zvol_write
-		 * thread will take that request and sequentially do ten 128k
-		 * IOs.  This is due to the fact that the thread needs to lock
-		 * each volblocksize sized block.  So you might be wondering:
-		 * "instead of passing the whole 1MB request to one thread,
-		 * why not pass ten individual 128k chunks to ten threads and
-		 * process the whole write in parallel?"  The short answer is
-		 * that there's a sweet spot number of chunks that balances
-		 * the greater parallelism with the added overhead of more
-		 * threads. The sweet spot can be different depending on if you
-		 * have a read or write  heavy workload.  Writes typically want
-		 * high chunk counts while reads typically want lower ones.  On
-		 * a test pool with 6 NVMe drives in a 3x 2-disk mirror
-		 * configuration, with volblocksize=8k, the sweet spot for good
-		 * sequential reads and writes was at 8 chunks.
-		 */
+		 
 
-		/*
-		 * Below we tell the kernel how big we want our requests
-		 * to be.  You would think that blk_queue_io_opt() would be
-		 * used to do this since it is used to "set optimal request
-		 * size for the queue", but that doesn't seem to do
-		 * anything - the kernel still gives you huge requests
-		 * with tons of little PAGE_SIZE segments contained within it.
-		 *
-		 * Knowing that the kernel will just give you PAGE_SIZE segments
-		 * no matter what, you can say "ok, I want PAGE_SIZE byte
-		 * segments, and I want 'N' of them per request", where N is
-		 * the correct number of segments for the volblocksize and
-		 * number of chunks you want.
-		 */
+		 
 #ifdef HAVE_BLK_MQ
 		if (zvol_blk_mq_blocks_per_thread != 0) {
 			unsigned int chunks;
@@ -1402,10 +1182,7 @@ zvol_os_create_minor(const char *name)
 			blk_queue_max_segments(zv->zv_zso->zvo_queue,
 			    (zv->zv_volblocksize * chunks) / PAGE_SIZE);
 		} else {
-			/*
-			 * Special case: zvol_blk_mq_blocks_per_thread = 0
-			 * Max everything out.
-			 */
+			 
 			blk_queue_max_segments(zv->zv_zso->zvo_queue,
 			    UINT16_MAX);
 			blk_queue_max_segment_size(zv->zv_zso->zvo_queue,
@@ -1433,7 +1210,7 @@ zvol_os_create_minor(const char *name)
 #ifdef QUEUE_FLAG_ADD_RANDOM
 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, zv->zv_zso->zvo_queue);
 #endif
-	/* This flag was introduced in kernel version 4.12. */
+	 
 #ifdef QUEUE_FLAG_SCSI_PASSTHROUGH
 	blk_queue_flag_set(QUEUE_FLAG_SCSI_PASSTHROUGH, zv->zv_zso->zvo_queue);
 #endif
@@ -1454,12 +1231,7 @@ zvol_os_create_minor(const char *name)
 		zil_close(zv->zv_zilog);
 	zv->zv_zilog = NULL;
 
-	/*
-	 * When udev detects the addition of the device it will immediately
-	 * invoke blkid(8) to determine the type of content on the device.
-	 * Prefetching the blocks commonly scanned by blkid(8) will speed
-	 * up this process.
-	 */
+	 
 	len = MIN(zvol_prefetch_bytes, SPA_MAXBLOCKSIZE);
 	if (len > 0) {
 		dmu_prefetch(os, ZVOL_OBJ, 0, 0, len, ZIO_PRIORITY_SYNC_READ);
@@ -1473,13 +1245,7 @@ out_dmu_objset_disown:
 out_doi:
 	kmem_free(doi, sizeof (dmu_object_info_t));
 
-	/*
-	 * Keep in mind that once add_disk() is called, the zvol is
-	 * announced to the world, and zvol_open()/zvol_release() can
-	 * be called at any time. Incidentally, add_disk() itself calls
-	 * zvol_open()->zvol_first_open() and zvol_release()->zvol_last_close()
-	 * directly as well.
-	 */
+	 
 	if (error == 0) {
 		rw_enter(&zvol_state_lock, RW_WRITER);
 		zvol_insert(zv);
@@ -1506,19 +1272,12 @@ zvol_os_rename_minor(zvol_state_t *zv, const char *newname)
 
 	strlcpy(zv->zv_name, newname, sizeof (zv->zv_name));
 
-	/* move to new hashtable entry  */
+	 
 	zv->zv_hash = zvol_name_hash(zv->zv_name);
 	hlist_del(&zv->zv_hlink);
 	hlist_add_head(&zv->zv_hlink, ZVOL_HT_HEAD(zv->zv_hash));
 
-	/*
-	 * The block device's read-only state is briefly changed causing
-	 * a KOBJ_CHANGE uevent to be issued.  This ensures udev detects
-	 * the name change and fixes the symlinks.  This does not change
-	 * ZVOL_RDONLY in zv->zv_flags so the actual read-only state never
-	 * changes.  This would normally be done using kobject_uevent() but
-	 * that is a GPL-only symbol which is why we need this workaround.
-	 */
+	 
 	set_disk_ro(zv->zv_zso->zvo_disk, !readonly);
 	set_disk_ro(zv->zv_zso->zvo_disk, readonly);
 }
@@ -1542,20 +1301,11 @@ zvol_init(void)
 {
 	int error;
 
-	/*
-	 * zvol_threads is the module param the user passes in.
-	 *
-	 * zvol_actual_threads is what we use internally, since the user can
-	 * pass zvol_thread = 0 to mean "use all the CPUs" (the default).
-	 */
+	 
 	static unsigned int zvol_actual_threads;
 
 	if (zvol_threads == 0) {
-		/*
-		 * See dde9380a1 for why 32 was chosen here.  This should
-		 * probably be refined to be some multiple of the number
-		 * of CPUs.
-		 */
+		 
 		zvol_actual_threads = MAX(num_online_cpus(), 32);
 	} else {
 		zvol_actual_threads = MIN(MAX(zvol_threads, 1), 1024);
@@ -1603,7 +1353,7 @@ zvol_fini(void)
 	ida_destroy(&zvol_ida);
 }
 
-/* BEGIN CSTYLED */
+ 
 module_param(zvol_inhibit_dev, uint, 0644);
 MODULE_PARM_DESC(zvol_inhibit_dev, "Do not create zvol device nodes");
 
@@ -1643,4 +1393,4 @@ module_param(zvol_open_timeout_ms, uint, 0644);
 MODULE_PARM_DESC(zvol_open_timeout_ms, "Timeout for ZVOL open retries");
 #endif
 
-/* END CSTYLED */
+ 

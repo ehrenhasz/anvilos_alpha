@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright(c) 2021-2023 Intel Corporation
- */
+
+ 
 
 #include "iwl-drv.h"
 #include "pnvm.h"
@@ -35,7 +33,7 @@ static void *iwl_uefi_get_variable(efi_char16_t *name, efi_guid_t *guid,
 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
 		return ERR_PTR(-ENODEV);
 
-	/* first call with NULL data to get the exact entry size */
+	 
 	*data_size = 0;
 	status = efi.get_variable(name, guid, NULL, data_size, NULL);
 	if (status != EFI_BUFFER_TOO_SMALL || !*data_size)
@@ -332,9 +330,9 @@ static int iwl_uefi_sgom_parse(struct uefi_cnv_wlan_sgom_data *sgom_data,
 
 	for (i = 0; i < MCC_TO_SAR_OFFSET_TABLE_ROW_SIZE; i++) {
 		for (j = 0; j < MCC_TO_SAR_OFFSET_TABLE_COL_SIZE; j++) {
-			/* since each byte is composed of to values, */
-			/* one for each letter, */
-			/* extract and check each of them separately */
+			 
+			 
+			 
 			u8 value = fwrt->sgom_table.offset_map[i][j];
 			u8 low = value & 0xF;
 			u8 high = (value & 0xF0) >> 4;
@@ -388,4 +386,4 @@ void iwl_uefi_get_sgom_table(struct iwl_trans *trans,
 	kfree(data);
 }
 IWL_EXPORT_SYMBOL(iwl_uefi_get_sgom_table);
-#endif /* CONFIG_ACPI */
+#endif  

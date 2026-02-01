@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include "test_static_linked.skel.h"
@@ -24,7 +24,7 @@ void test_static_linked(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* trigger */
+	 
 	usleep(1);
 
 	ASSERT_EQ(skel->data->var1, 1 * 2 + 2 + 3, "var1");

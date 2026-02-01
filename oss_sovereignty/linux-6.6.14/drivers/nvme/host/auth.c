@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Hannes Reinecke, SUSE Linux
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/base64.h>
@@ -131,7 +129,7 @@ static int nvme_auth_set_dhchap_negotiate_data(struct nvme_ctrl *ctrl,
 	data->auth_type = NVME_AUTH_COMMON_MESSAGES;
 	data->auth_id = NVME_AUTH_DHCHAP_MESSAGE_NEGOTIATE;
 	data->t_id = cpu_to_le16(chap->transaction);
-	data->sc_c = 0; /* No secure channel concatenation */
+	data->sc_c = 0;  
 	data->napd = 1;
 	data->auth_protocol[0].dhchap.authid = NVME_AUTH_DHCHAP_AUTH_ID;
 	data->auth_protocol[0].dhchap.halen = 3;
@@ -181,7 +179,7 @@ static int nvme_auth_process_dhchap_challenge(struct nvme_ctrl *ctrl,
 		goto select_kpp;
 	}
 
-	/* Reset if hash cannot be reused */
+	 
 	if (chap->shash_tfm) {
 		crypto_free_shash(chap->shash_tfm);
 		chap->hash_id = 0;
@@ -220,7 +218,7 @@ select_kpp:
 			 "qid %d: invalid DH group id %d\n",
 			 chap->qid, data->dhgid);
 		chap->status = NVME_AUTH_DHCHAP_FAILURE_DHGROUP_UNUSABLE;
-		/* Leave previous dh_tfm intact */
+		 
 		return -EPROTO;
 	}
 
@@ -232,7 +230,7 @@ select_kpp:
 		goto skip_kpp;
 	}
 
-	/* Reset dh_tfm if it can't be reused */
+	 
 	if (chap->dh_tfm) {
 		crypto_free_kpp(chap->dh_tfm);
 		chap->dh_tfm = NULL;
@@ -357,7 +355,7 @@ static int nvme_auth_process_dhchap_success1(struct nvme_ctrl *ctrl,
 		return -EPROTO;
 	}
 
-	/* Just print out information for the admin queue */
+	 
 	if (chap->qid == 0)
 		dev_info(ctrl->device,
 			 "qid 0: authenticated with hash %s dhgroup %s\n",
@@ -367,7 +365,7 @@ static int nvme_auth_process_dhchap_success1(struct nvme_ctrl *ctrl,
 	if (!data->rvalid)
 		return 0;
 
-	/* Validate controller response */
+	 
 	if (memcmp(chap->response, data->rval, data->hl)) {
 		dev_dbg(ctrl->device, "%s: qid %d ctrl response %*ph\n",
 			__func__, chap->qid, (int)chap->hash_len, data->rval);
@@ -381,7 +379,7 @@ static int nvme_auth_process_dhchap_success1(struct nvme_ctrl *ctrl,
 		return -ECONNREFUSED;
 	}
 
-	/* Just print out information for the admin queue */
+	 
 	if (chap->qid == 0)
 		dev_info(ctrl->device,
 			 "qid 0: controller authenticated\n");
@@ -687,10 +685,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 	size_t tl;
 	int ret = 0;
 
-	/*
-	 * Allocate a large enough buffer for the entire negotiation:
-	 * 4k is enough to ffdhe8192.
-	 */
+	 
 	chap->buf = mempool_alloc(nvme_chap_buf_pool, GFP_KERNEL);
 	if (!chap->buf) {
 		chap->error = -ENOMEM;
@@ -699,7 +694,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 
 	chap->transaction = ctrl->transaction++;
 
-	/* DH-HMAC-CHAP Step 1: send negotiate */
+	 
 	dev_dbg(ctrl->device, "%s: qid %d send negotiate\n",
 		__func__, chap->qid);
 	ret = nvme_auth_set_dhchap_negotiate_data(ctrl, chap);
@@ -714,7 +709,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 		return;
 	}
 
-	/* DH-HMAC-CHAP Step 2: receive challenge */
+	 
 	dev_dbg(ctrl->device, "%s: qid %d receive challenge\n",
 		__func__, chap->qid);
 
@@ -738,7 +733,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 
 	ret = nvme_auth_process_dhchap_challenge(ctrl, chap);
 	if (ret) {
-		/* Invalid challenge parameters */
+		 
 		chap->error = ret;
 		goto fail2;
 	}
@@ -765,7 +760,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 	}
 	mutex_unlock(&ctrl->dhchap_auth_mutex);
 
-	/* DH-HMAC-CHAP Step 3: send reply */
+	 
 	dev_dbg(ctrl->device, "%s: qid %d send reply\n",
 		__func__, chap->qid);
 	ret = nvme_auth_set_dhchap_reply_data(ctrl, chap);
@@ -781,7 +776,7 @@ static void nvme_queue_auth_work(struct work_struct *work)
 		goto fail2;
 	}
 
-	/* DH-HMAC-CHAP Step 4: receive success1 */
+	 
 	dev_dbg(ctrl->device, "%s: qid %d receive success1\n",
 		__func__, chap->qid);
 
@@ -820,13 +815,13 @@ static void nvme_queue_auth_work(struct work_struct *work)
 
 	ret = nvme_auth_process_dhchap_success1(ctrl, chap);
 	if (ret) {
-		/* Controller authentication failed */
+		 
 		chap->error = -ECONNREFUSED;
 		goto fail2;
 	}
 
 	if (chap->s2) {
-		/* DH-HMAC-CHAP Step 5: send success2 */
+		 
 		dev_dbg(ctrl->device, "%s: qid %d send success2\n",
 			__func__, chap->qid);
 		tl = nvme_auth_set_dhchap_success2_data(ctrl, chap);
@@ -846,10 +841,7 @@ fail2:
 		__func__, chap->qid, chap->status);
 	tl = nvme_auth_set_dhchap_failure2_data(ctrl, chap);
 	ret = nvme_auth_submit(ctrl, chap->qid, chap->buf, tl, true);
-	/*
-	 * only update error if send failure2 failed and no other
-	 * error had been set during authentication.
-	 */
+	 
 	if (ret && !chap->error)
 		chap->error = ret;
 }
@@ -883,7 +875,7 @@ int nvme_auth_wait(struct nvme_ctrl *ctrl, int qid)
 	chap = &ctrl->dhchap_ctxs[qid];
 	flush_work(&chap->auth_work);
 	ret = chap->error;
-	/* clear sensitive info */
+	 
 	nvme_auth_reset_dhchap(chap);
 	return ret;
 }
@@ -895,14 +887,11 @@ static void nvme_ctrl_auth_work(struct work_struct *work)
 		container_of(work, struct nvme_ctrl, dhchap_auth_work);
 	int ret, q;
 
-	/*
-	 * If the ctrl is no connected, bail as reconnect will handle
-	 * authentication.
-	 */
+	 
 	if (ctrl->state != NVME_CTRL_LIVE)
 		return;
 
-	/* Authenticate admin queue first */
+	 
 	ret = nvme_auth_negotiate(ctrl, 0);
 	if (ret) {
 		dev_warn(ctrl->device,
@@ -926,10 +915,7 @@ static void nvme_ctrl_auth_work(struct work_struct *work)
 		}
 	}
 
-	/*
-	 * Failure is a soft-state; credentials remain valid until
-	 * the controller terminates the connection.
-	 */
+	 
 	for (q = 1; q < ctrl->queue_count; q++) {
 		ret = nvme_auth_wait(ctrl, q);
 		if (ret)

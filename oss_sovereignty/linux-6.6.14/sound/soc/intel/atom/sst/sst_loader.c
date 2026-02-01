@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_dsp.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14	Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This file contains all dsp controlling functions like firmware download,
- * setting/resetting dsp cores, etc
- */
+
+ 
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/fs.h>
@@ -31,26 +17,17 @@
 
 void memcpy32_toio(void __iomem *dst, const void *src, int count)
 {
-	/* __iowrite32_copy uses 32-bit count values so divide by 4 for
-	 * right count in words
-	 */
+	 
 	__iowrite32_copy(dst, src, count / 4);
 }
 
 void memcpy32_fromio(void *dst, const void __iomem *src, int count)
 {
-	/* __ioread32_copy uses 32-bit count values so divide by 4 for
-	 * right count in words
-	 */
+	 
 	__ioread32_copy(dst, src, count / 4);
 }
 
-/**
- * intel_sst_reset_dsp_mrfld - Resetting SST DSP
- * @sst_drv_ctx: intel_sst_drv context pointer
- *
- * This resets DSP in case of MRFLD platfroms
- */
+ 
 int intel_sst_reset_dsp_mrfld(struct intel_sst_drv *sst_drv_ctx)
 {
 	union config_status_reg_mrfld csr;
@@ -74,12 +51,7 @@ int intel_sst_reset_dsp_mrfld(struct intel_sst_drv *sst_drv_ctx)
 	return 0;
 }
 
-/**
- * sst_start_mrfld - Start the SST DSP processor
- * @sst_drv_ctx: intel_sst_drv context pointer
- *
- * This starts the DSP in MERRIFIELD platfroms
- */
+ 
 int sst_start_mrfld(struct intel_sst_drv *sst_drv_ctx)
 {
 	union config_status_reg_mrfld csr;
@@ -112,17 +84,17 @@ static int sst_validate_fw_image(struct intel_sst_drv *ctx, unsigned long size,
 
 	dev_dbg(ctx->dev, "Enter\n");
 
-	/* Read the header information from the data pointer */
+	 
 	header = (struct sst_fw_header *)sst_fw_in_mem;
 	dev_dbg(ctx->dev,
 		"header sign=%s size=%x modules=%x fmt=%x size=%zx\n",
 		header->signature, header->file_size, header->modules,
 		header->file_format, sizeof(*header));
 
-	/* verify FW */
+	 
 	if ((strncmp(header->signature, SST_FW_SIGN, 4) != 0) ||
 		(size != header->file_size + sizeof(*header))) {
-		/* Invalid FW signature */
+		 
 		dev_err(ctx->dev, "InvalidFW sign/filesize mismatch\n");
 		return -EINVAL;
 	}
@@ -132,17 +104,7 @@ static int sst_validate_fw_image(struct intel_sst_drv *ctx, unsigned long size,
 	return 0;
 }
 
-/*
- * sst_fill_memcpy_list - Fill the memcpy list
- *
- * @memcpy_list: List to be filled
- * @destn: Destination addr to be filled in the list
- * @src: Source addr to be filled in the list
- * @size: Size to be filled in the list
- *
- * Adds the node to the list after required fields
- * are populated in the node
- */
+ 
 static int sst_fill_memcpy_list(struct list_head *memcpy_list,
 			void *destn, const void *src, u32 size, bool is_io)
 {
@@ -160,15 +122,7 @@ static int sst_fill_memcpy_list(struct list_head *memcpy_list,
 	return 0;
 }
 
-/**
- * sst_parse_module_memcpy - Parse audio FW modules and populate the memcpy list
- *
- * @sst_drv_ctx		: driver context
- * @module		: FW module header
- * @memcpy_list	: Pointer to the list to be populated
- * Create the memcpy list as the number of block to be copied
- * returns error or 0 if module sizes are proper
- */
+ 
 static int sst_parse_module_memcpy(struct intel_sst_drv *sst_drv_ctx,
 		struct fw_module_header *module, struct list_head *memcpy_list)
 {
@@ -219,15 +173,7 @@ static int sst_parse_module_memcpy(struct intel_sst_drv *sst_drv_ctx,
 	return 0;
 }
 
-/**
- * sst_parse_fw_memcpy - parse the firmware image & populate the list for memcpy
- *
- * @ctx			: pointer to drv context
- * @size		: size of the firmware
- * @fw_list		: pointer to list_head to be populated
- * This function parses the FW image and saves the parsed image in the list
- * for memcpy
- */
+ 
 static int sst_parse_fw_memcpy(struct intel_sst_drv *ctx, unsigned long size,
 				struct list_head *fw_list)
 {
@@ -249,13 +195,7 @@ static int sst_parse_fw_memcpy(struct intel_sst_drv *ctx, unsigned long size,
 	return 0;
 }
 
-/**
- * sst_do_memcpy - function initiates the memcpy
- *
- * @memcpy_list: Pter to memcpy list on which the memcpy needs to be initiated
- *
- * Triggers the memcpy
- */
+ 
 static void sst_do_memcpy(struct list_head *memcpy_list)
 {
 	struct sst_memcpy_list *listnode;
@@ -273,7 +213,7 @@ void sst_memcpy_free_resources(struct intel_sst_drv *sst_drv_ctx)
 {
 	struct sst_memcpy_list *listnode, *tmplistnode;
 
-	/* Free the list */
+	 
 	list_for_each_entry_safe(listnode, tmplistnode,
 				 &sst_drv_ctx->memcpy_list, memcpylist) {
 		list_del(&listnode->memcpylist);
@@ -332,12 +272,7 @@ void sst_firmware_load_cb(const struct firmware *fw, void *context)
 	mutex_unlock(&ctx->sst_lock);
 }
 
-/*
- * sst_request_fw - requests audio fw from kernel and saves a copy
- *
- * This function requests the SST FW from the kernel, parses it and
- * saves a copy in the driver context
- */
+ 
 static int sst_request_fw(struct intel_sst_drv *sst)
 {
 	int retval = 0;
@@ -359,10 +294,7 @@ static int sst_request_fw(struct intel_sst_drv *sst)
 	return retval;
 }
 
-/*
- * Writing the DDR physical base to DCCM offset
- * so that FW can use it to setup TLB
- */
+ 
 static void sst_dccm_config_write(void __iomem *dram_base,
 		unsigned int ddr_base)
 {
@@ -383,12 +315,7 @@ void sst_post_download_mrfld(struct intel_sst_drv *ctx)
 	dev_dbg(ctx->dev, "config written to DCCM\n");
 }
 
-/**
- * sst_load_fw - function to load FW into DSP
- * @sst_drv_ctx: intel_sst_drv context pointer
- *
- * Transfers the FW to DSP using dma/memcpy
- */
+ 
 int sst_load_fw(struct intel_sst_drv *sst_drv_ctx)
 {
 	int ret_val = 0;
@@ -410,7 +337,7 @@ int sst_load_fw(struct intel_sst_drv *sst_drv_ctx)
 	if (block == NULL)
 		return -ENOMEM;
 
-	/* Prevent C-states beyond C6 */
+	 
 	cpu_latency_qos_update_request(sst_drv_ctx->qos, 0);
 
 	sst_drv_ctx->sst_state = SST_FW_LOADING;
@@ -421,11 +348,11 @@ int sst_load_fw(struct intel_sst_drv *sst_drv_ctx)
 
 	sst_do_memcpy(&sst_drv_ctx->memcpy_list);
 
-	/* Write the DRAM/DCCM config before enabling FW */
+	 
 	if (sst_drv_ctx->ops->post_download)
 		sst_drv_ctx->ops->post_download(sst_drv_ctx);
 
-	/* bring sst out of reset */
+	 
 	ret_val = sst_drv_ctx->ops->start(sst_drv_ctx);
 	if (ret_val)
 		goto restore;
@@ -433,14 +360,14 @@ int sst_load_fw(struct intel_sst_drv *sst_drv_ctx)
 	ret_val = sst_wait_timeout(sst_drv_ctx, block);
 	if (ret_val) {
 		dev_err(sst_drv_ctx->dev, "fw download failed %d\n" , ret_val);
-		/* FW download failed due to timeout */
+		 
 		ret_val = -EBUSY;
 
 	}
 
 
 restore:
-	/* Re-enable Deeper C-states beyond C6 */
+	 
 	cpu_latency_qos_update_request(sst_drv_ctx->qos, PM_QOS_DEFAULT_VALUE);
 	sst_free_block(sst_drv_ctx, block);
 	dev_dbg(sst_drv_ctx->dev, "fw load successful!!!\n");

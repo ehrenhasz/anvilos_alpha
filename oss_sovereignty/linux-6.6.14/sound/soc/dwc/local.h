@@ -1,10 +1,4 @@
-/*
- * Copyright (ST) 2012 Rajeev Kumar (rajeevkumar.linux@gmail.com)
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #ifndef __DESIGNWARE_LOCAL_H
 #define __DESIGNWARE_LOCAL_H
@@ -16,7 +10,7 @@
 #include <sound/pcm.h>
 #include <sound/designware_i2s.h>
 
-/* common register for all channel */
+ 
 #define IER		0x000
 #define IRER		0x004
 #define ITER		0x008
@@ -25,20 +19,20 @@
 #define RXFFR		0x014
 #define TXFFR		0x018
 
-/* Enable register fields */
+ 
 #define IER_TDM_SLOTS_SHIFT	8
 #define IER_FRAME_OFF_SHIFT	5
 #define IER_FRAME_OFF	BIT(5)
 #define IER_INTF_TYPE	BIT(1)
 #define IER_IEN		BIT(0)
 
-/* Interrupt status register fields */
+ 
 #define ISR_TXFO	BIT(5)
 #define ISR_TXFE	BIT(4)
 #define ISR_RXFO	BIT(1)
 #define ISR_RXDA	BIT(0)
 
-/* I2STxRxRegisters for all channels */
+ 
 #define LRBR_LTHR(x)	(0x40 * x + 0x020)
 #define RRBR_RTHR(x)	(0x40 * x + 0x024)
 #define RER(x)		(0x40 * x + 0x028)
@@ -55,15 +49,15 @@
 #define TFF(x)		(0x40 * x + 0x054)
 #define RSLOT_TSLOT(x)	(0x4 * (x) + 0x224)
 
-/* Receive enable register fields */
+ 
 #define RER_RXSLOT_SHIFT	8
 #define RER_RXCHEN	BIT(0)
 
-/* Transmit enable register fields */
+ 
 #define TER_TXSLOT_SHIFT	8
 #define TER_TXCHEN	BIT(0)
 
-/* I2SCOMPRegisters */
+ 
 #define I2S_COMP_PARAM_2	0x01F0
 #define I2S_COMP_PARAM_1	0x01F4
 #define I2S_COMP_VERSION	0x01F8
@@ -75,10 +69,7 @@
 #define I2S_DMAEN_RXBLOCK	(1 << 16)
 #define I2S_DMAEN_TXBLOCK	(1 << 17)
 
-/*
- * Component parameter register fields - define the I2S block's
- * configuration.
- */
+ 
 #define	COMP1_TX_WORDSIZE_3(r)	(((r) & GENMASK(27, 25)) >> 25)
 #define	COMP1_TX_WORDSIZE_2(r)	(((r) & GENMASK(24, 22)) >> 22)
 #define	COMP1_TX_WORDSIZE_1(r)	(((r) & GENMASK(21, 19)) >> 19)
@@ -96,7 +87,7 @@
 #define	COMP2_RX_WORDSIZE_1(r)	(((r) & GENMASK(5, 3)) >> 3)
 #define	COMP2_RX_WORDSIZE_0(r)	(((r) & GENMASK(2, 0)) >> 0)
 
-/* Number of entries in WORDSIZE and DATA_WIDTH parameter registers */
+ 
 #define	COMP_MAX_WORDSIZE	(1 << 3)
 #define	COMP_MAX_DATA_WIDTH	(1 << 2)
 
@@ -123,18 +114,18 @@ struct dw_i2s_dev {
 	u32 fifo_th;
 	u32 l_reg;
 	u32 r_reg;
-	bool is_jh7110; /* Flag for StarFive JH7110 SoC */
+	bool is_jh7110;  
 
-	/* data related to DMA transfers b/w i2s and DMAC */
+	 
 	union dw_i2s_snd_dma_data play_dma_data;
 	union dw_i2s_snd_dma_data capture_dma_data;
 	struct i2s_clk_config_data config;
 	int (*i2s_clk_cfg)(struct i2s_clk_config_data *config);
 
-	/* data related to PIO transfers */
+	 
 	bool use_pio;
 
-	/* data related to TDM mode */
+	 
 	u32 tdm_slots;
 	u32 tdm_mask;
 	u32 frame_offset;

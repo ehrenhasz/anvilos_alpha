@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2016-2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitops.h>
 
@@ -22,10 +22,7 @@ static bool nfp_ccm_all_tags_busy(struct nfp_ccm *ccm)
 
 static int nfp_ccm_alloc_tag(struct nfp_ccm *ccm)
 {
-	/* CCM is for FW communication which is request-reply.  To make sure
-	 * we don't reuse the message ID too early after timeout - limit the
-	 * number of requests in flight.
-	 */
+	 
 	if (unlikely(nfp_ccm_all_tags_busy(ccm))) {
 		ccm_warn(ccm->app, "all FW request contexts busy!\n");
 		return -EAGAIN;
@@ -105,9 +102,7 @@ nfp_ccm_wait_reply(struct nfp_ccm *ccm, struct nfp_app *app,
 					       skb = nfp_ccm_reply(ccm, app,
 								   tag),
 					       msecs_to_jiffies(5000));
-	/* We didn't get a response - try last time and atomically drop
-	 * the tag even if no response is matched.
-	 */
+	 
 	if (!skb)
 		skb = nfp_ccm_reply_drop_tag(ccm, app, tag);
 	if (err < 0) {
@@ -159,7 +154,7 @@ nfp_ccm_communicate(struct nfp_ccm *ccm, struct sk_buff *skb,
 			 reply_type, __NFP_CCM_REPLY(type));
 		goto err_free;
 	}
-	/* 0 reply_size means caller will do the validation */
+	 
 	if (reply_size && skb->len != reply_size) {
 		ccm_warn(app, "cmsg drop - type 0x%02x wrong size %d != %d!\n",
 			 type, skb->len, reply_size);

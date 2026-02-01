@@ -195,7 +195,7 @@ DEFINE_EVENT(irq_matrix_cpu, irq_matrix_free,
 );
 
 
-#endif /*  _TRACE_IRQ_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

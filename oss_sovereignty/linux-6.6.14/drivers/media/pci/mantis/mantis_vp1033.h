@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Mantis VP-1033 driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_VP1033_H
 #define __MANTIS_VP1033_H
@@ -15,4 +10,4 @@
 
 extern struct mantis_hwconfig vp1033_config;
 
-#endif /* __MANTIS_VP1033_H */
+#endif  

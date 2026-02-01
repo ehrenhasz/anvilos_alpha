@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PLL clock driver for Keystone devices
- *
- * Copyright (C) 2013 Texas Instruments Inc.
- *	Murali Karicheri <m-karicheri2@ti.com>
- *	Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -22,28 +16,7 @@
 #define CLKOD_MASK		0x780000
 #define CLKOD_SHIFT		19
 
-/**
- * struct clk_pll_data - pll data structure
- * @has_pllctrl: If set to non zero, lower 6 bits of multiplier is in pllm
- *	register of pll controller, else it is in the pll_ctrl0((bit 11-6)
- * @phy_pllm: Physical address of PLLM in pll controller. Used when
- *	has_pllctrl is non zero.
- * @phy_pll_ctl0: Physical address of PLL ctrl0. This could be that of
- *	Main PLL or any other PLLs in the device such as ARM PLL, DDR PLL
- *	or PA PLL available on keystone2. These PLLs are controlled by
- *	this register. Main PLL is controlled by a PLL controller.
- * @pllm: PLL register map address for multiplier bits
- * @pllod: PLL register map address for post divider bits
- * @pll_ctl0: PLL controller map address
- * @pllm_lower_mask: multiplier lower mask
- * @pllm_upper_mask: multiplier upper mask
- * @pllm_upper_shift: multiplier upper shift
- * @plld_mask: divider mask
- * @clkod_mask: output divider mask
- * @clkod_shift: output divider shift
- * @plld_mask: divider mask
- * @postdiv: Fixed post divider
- */
+ 
 struct clk_pll_data {
 	bool has_pllctrl;
 	u32 phy_pllm;
@@ -60,11 +33,7 @@ struct clk_pll_data {
 	u32 postdiv;
 };
 
-/**
- * struct clk_pll - Main pll clock
- * @hw: clk_hw for the pll
- * @pll_data: PLL driver specific data
- */
+ 
 struct clk_pll {
 	struct clk_hw hw;
 	struct clk_pll_data *pll_data;
@@ -80,23 +49,20 @@ static unsigned long clk_pllclk_recalc(struct clk_hw *hw,
 	unsigned long rate = parent_rate;
 	u32  mult = 0, prediv, postdiv, val;
 
-	/*
-	 * get bits 0-5 of multiplier from pllctrl PLLM register
-	 * if has_pllctrl is non zero
-	 */
+	 
 	if (pll_data->has_pllctrl) {
 		val = readl(pll_data->pllm);
 		mult = (val & pll_data->pllm_lower_mask);
 	}
 
-	/* bit6-12 of PLLM is in Main PLL control register */
+	 
 	val = readl(pll_data->pll_ctl0);
 	mult |= ((val & pll_data->pllm_upper_mask)
 			>> pll_data->pllm_upper_shift);
 	prediv = (val & pll_data->plld_mask);
 
 	if (!pll_data->has_pllctrl)
-		/* read post divider from od bits*/
+		 
 		postdiv = ((val & pll_data->clkod_mask) >>
 				 pll_data->clkod_shift) + 1;
 	else if (pll_data->pllod) {
@@ -149,12 +115,7 @@ out:
 	return NULL;
 }
 
-/**
- * _of_pll_clk_init - PLL initialisation via DT
- * @node: device tree node for this clock
- * @pllctrl: If true, lower 6 bits of multiplier is in pllm register of
- *		pll controller, else it is in the control register0(bit 11-6)
- */
+ 
 static void __init _of_pll_clk_init(struct device_node *node, bool pllctrl)
 {
 	struct clk_pll_data *pll_data;
@@ -170,14 +131,11 @@ static void __init _of_pll_clk_init(struct device_node *node, bool pllctrl)
 
 	parent_name = of_clk_get_parent_name(node, 0);
 	if (of_property_read_u32(node, "fixed-postdiv",	&pll_data->postdiv)) {
-		/* assume the PLL has output divider register bits */
+		 
 		pll_data->clkod_mask = CLKOD_MASK;
 		pll_data->clkod_shift = CLKOD_SHIFT;
 
-		/*
-		 * Check if there is an post-divider register. If not
-		 * assume od bits are part of control register.
-		 */
+		 
 		i = of_property_match_string(node, "reg-names",
 					     "post-divider");
 		pll_data->pllod = of_iomap(node, i);
@@ -219,10 +177,7 @@ out:
 	kfree(pll_data);
 }
 
-/**
- * of_keystone_pll_clk_init - PLL initialisation DT wrapper
- * @node: device tree node for this clock
- */
+ 
 static void __init of_keystone_pll_clk_init(struct device_node *node)
 {
 	_of_pll_clk_init(node, false);
@@ -230,10 +185,7 @@ static void __init of_keystone_pll_clk_init(struct device_node *node)
 CLK_OF_DECLARE(keystone_pll_clock, "ti,keystone,pll-clock",
 					of_keystone_pll_clk_init);
 
-/**
- * of_keystone_main_pll_clk_init - Main PLL initialisation DT wrapper
- * @node: device tree node for this clock
- */
+ 
 static void __init of_keystone_main_pll_clk_init(struct device_node *node)
 {
 	_of_pll_clk_init(node, true);
@@ -241,10 +193,7 @@ static void __init of_keystone_main_pll_clk_init(struct device_node *node)
 CLK_OF_DECLARE(keystone_main_pll_clock, "ti,keystone,main-pll-clock",
 						of_keystone_main_pll_clk_init);
 
-/**
- * of_pll_div_clk_init - PLL divider setup function
- * @node: device tree node for this clock
- */
+ 
 static void __init of_pll_div_clk_init(struct device_node *node)
 {
 	const char *parent_name;
@@ -291,10 +240,7 @@ static void __init of_pll_div_clk_init(struct device_node *node)
 }
 CLK_OF_DECLARE(pll_divider_clock, "ti,keystone,pll-divider-clock", of_pll_div_clk_init);
 
-/**
- * of_pll_mux_clk_init - PLL mux setup function
- * @node: device tree node for this clock
- */
+ 
 static void __init of_pll_mux_clk_init(struct device_node *node)
 {
 	void __iomem *reg;

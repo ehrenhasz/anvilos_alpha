@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Raspberry Pi 4 firmware reset driver
- *
- * Copyright (C) 2020 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/module.h>
@@ -31,30 +27,14 @@ static int rpi_reset_reset(struct reset_controller_dev *rcdev, unsigned long id)
 
 	switch (id) {
 	case RASPBERRYPI_FIRMWARE_RESET_ID_USB:
-		/*
-		 * The Raspberry Pi 4 gets its USB functionality from VL805, a
-		 * PCIe chip that implements xHCI. After a PCI reset, VL805's
-		 * firmware may either be loaded directly from an EEPROM or, if
-		 * not present, by the SoC's co-processor, VideoCore. rpi's
-		 * VideoCore OS contains both the non public firmware load
-		 * logic and the VL805 firmware blob. This triggers the
-		 * aforementioned process.
-		 *
-		 * The pci device address is expected is expected by the
-		 * firmware encoded like this:
-		 *
-		 *	PCI_BUS << 20 | PCI_SLOT << 15 | PCI_FUNC << 12
-		 *
-		 * But since rpi's PCIe is hardwired, we know the address in
-		 * advance.
-		 */
+		 
 		dev_addr = 0x100000;
 		ret = rpi_firmware_property(priv->fw, RPI_FIRMWARE_NOTIFY_XHCI_RESET,
 					    &dev_addr, sizeof(dev_addr));
 		if (ret)
 			return ret;
 
-		/* Wait for vl805 to startup */
+		 
 		usleep_range(200, 1000);
 		break;
 
@@ -104,7 +84,7 @@ static int rpi_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id rpi_reset_of_match[] = {
 	{ .compatible = "raspberrypi,firmware-reset" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rpi_reset_of_match);
 

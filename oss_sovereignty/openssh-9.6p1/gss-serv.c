@@ -1,28 +1,6 @@
-/* $OpenBSD: gss-serv.c,v 1.32 2020/03/13 03:17:07 djm Exp $ */
+ 
 
-/*
- * Copyright (c) 2001-2003 Simon Wilkinson. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR `AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -67,10 +45,7 @@ ssh_gssapi_mech* supported_mechs[]= {
 	&gssapi_null_mech,
 };
 
-/*
- * ssh_gssapi_supported_oids() can cause sandbox violations, so prepare the
- * list of supported mechanisms before privsep is set up.
- */
+ 
 static gss_OID_set supported_oids;
 
 void
@@ -87,13 +62,10 @@ ssh_gssapi_test_oid_supported(OM_uint32 *ms, gss_OID member, int *present)
 	return gss_test_oid_set_member(ms, member, supported_oids, present);
 }
 
-/*
- * Acquire credentials for a server running on the current host.
- * Requires that the context structure contains a valid OID
- */
+ 
 
-/* Returns a GSSAPI error code */
-/* Privileged (called from ssh_gssapi_server_ctx) */
+ 
+ 
 static OM_uint32
 ssh_gssapi_acquire_cred(Gssctxt *ctx)
 {
@@ -129,7 +101,7 @@ ssh_gssapi_acquire_cred(Gssctxt *ctx)
 	return GSS_S_COMPLETE;
 }
 
-/* Privileged */
+ 
 OM_uint32
 ssh_gssapi_server_ctx(Gssctxt **ctx, gss_OID oid)
 {
@@ -140,7 +112,7 @@ ssh_gssapi_server_ctx(Gssctxt **ctx, gss_OID oid)
 	return (ssh_gssapi_acquire_cred(*ctx));
 }
 
-/* Unprivileged */
+ 
 void
 ssh_gssapi_supported_oids(gss_OID_set *oidset)
 {
@@ -166,12 +138,8 @@ ssh_gssapi_supported_oids(gss_OID_set *oidset)
 }
 
 
-/* Wrapper around accept_sec_context
- * Requires that the context contains:
- *    oid
- *    credentials	(from ssh_gssapi_acquire_cred)
- */
-/* Privileged */
+ 
+ 
 OM_uint32
 ssh_gssapi_accept_ctx(Gssctxt *ctx, gss_buffer_desc *recv_tok,
     gss_buffer_desc *send_tok, OM_uint32 *flags)
@@ -194,9 +162,7 @@ ssh_gssapi_accept_ctx(Gssctxt *ctx, gss_buffer_desc *recv_tok,
 
 	status = ctx->major;
 
-	/* Now, if we're complete and we have the right flags, then
-	 * we flag the user as also having been authenticated
-	 */
+	 
 
 	if (((flags == NULL) || ((*flags & GSS_C_MUTUAL_FLAG) &&
 	    (*flags & GSS_C_INTEG_FLAG))) && (ctx->major == GSS_S_COMPLETE)) {
@@ -207,11 +173,7 @@ ssh_gssapi_accept_ctx(Gssctxt *ctx, gss_buffer_desc *recv_tok,
 	return (status);
 }
 
-/*
- * This parses an exported name, extracting the mechanism specific portion
- * to use for ACL checking. It verifies that the name belongs the mechanism
- * originally selected.
- */
+ 
 static OM_uint32
 ssh_gssapi_parse_ename(Gssctxt *ctx, gss_buffer_t ename, gss_buffer_t name)
 {
@@ -221,28 +183,17 @@ ssh_gssapi_parse_ename(Gssctxt *ctx, gss_buffer_t ename, gss_buffer_t name)
 
 	tok = ename->value;
 
-	/*
-	 * Check that ename is long enough for all of the fixed length
-	 * header, and that the initial ID bytes are correct
-	 */
+	 
 
 	if (ename->length < 6 || memcmp(tok, "\x04\x01", 2) != 0)
 		return GSS_S_FAILURE;
 
-	/*
-	 * Extract the OID, and check it. Here GSSAPI breaks with tradition
-	 * and does use the OID type and length bytes. To confuse things
-	 * there are two lengths - the first including these, and the
-	 * second without.
-	 */
+	 
 
-	oidl = get_u16(tok+2); /* length including next two bytes */
-	oidl = oidl-2; /* turn it into the _real_ length of the variable OID */
+	oidl = get_u16(tok+2);  
+	oidl = oidl-2;  
 
-	/*
-	 * Check the BER encoding for correct type and length, that the
-	 * string is long enough and that the OID matches that in our context
-	 */
+	 
 	if (tok[4] != 0x06 || tok[5] != oidl ||
 	    ename->length < oidl+6 ||
 	    !ssh_gssapi_check_oid(ctx, tok+6, oidl))
@@ -268,10 +219,9 @@ ssh_gssapi_parse_ename(Gssctxt *ctx, gss_buffer_t ename, gss_buffer_t name)
 	return GSS_S_COMPLETE;
 }
 
-/* Extract the client details from a given context. This can only reliably
- * be called once for a context */
+ 
 
-/* Privileged (called from accept_secure_ctx) */
+ 
 OM_uint32
 ssh_gssapi_getclient(Gssctxt *ctx, ssh_gssapi_client *client)
 {
@@ -309,25 +259,25 @@ ssh_gssapi_getclient(Gssctxt *ctx, ssh_gssapi_client *client)
 		return (ctx->major);
 	}
 
-	/* We can't copy this structure, so we just move the pointer to it */
+	 
 	client->creds = ctx->client_creds;
 	ctx->client_creds = GSS_C_NO_CREDENTIAL;
 	return (ctx->major);
 }
 
-/* As user - called on fatal/exit */
+ 
 void
 ssh_gssapi_cleanup_creds(void)
 {
 	if (gssapi_client.store.filename != NULL) {
-		/* Unlink probably isn't sufficient */
+		 
 		debug("removing gssapi cred file\"%s\"",
 		    gssapi_client.store.filename);
 		unlink(gssapi_client.store.filename);
 	}
 }
 
-/* As user */
+ 
 void
 ssh_gssapi_storecreds(void)
 {
@@ -337,10 +287,8 @@ ssh_gssapi_storecreds(void)
 		debug("ssh_gssapi_storecreds: Not a GSSAPI mechanism");
 }
 
-/* This allows GSSAPI methods to do things to the child's environment based
- * on the passed authentication process and credentials.
- */
-/* As user */
+ 
+ 
 void
 ssh_gssapi_do_child(char ***envp, u_int *envsizep)
 {
@@ -354,7 +302,7 @@ ssh_gssapi_do_child(char ***envp, u_int *envsizep)
 	}
 }
 
-/* Privileged */
+ 
 int
 ssh_gssapi_userok(char *user)
 {
@@ -369,7 +317,7 @@ ssh_gssapi_userok(char *user)
 		if ((*gssapi_client.mech->userok)(&gssapi_client, user))
 			return 1;
 		else {
-			/* Destroy delegated credentials if userok fails */
+			 
 			gss_release_buffer(&lmin, &gssapi_client.displayname);
 			gss_release_buffer(&lmin, &gssapi_client.exportedname);
 			gss_release_cred(&lmin, &gssapi_client.creds);
@@ -382,7 +330,7 @@ ssh_gssapi_userok(char *user)
 	return (0);
 }
 
-/* Privileged */
+ 
 OM_uint32
 ssh_gssapi_checkmic(Gssctxt *ctx, gss_buffer_t gssbuf, gss_buffer_t gssmic)
 {
@@ -392,7 +340,7 @@ ssh_gssapi_checkmic(Gssctxt *ctx, gss_buffer_t gssbuf, gss_buffer_t gssmic)
 	return (ctx->major);
 }
 
-/* Privileged */
+ 
 const char *ssh_gssapi_displayname(void)
 {
 	if (gssapi_client.displayname.length == 0 ||

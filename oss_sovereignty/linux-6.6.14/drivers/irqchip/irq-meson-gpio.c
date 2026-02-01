@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,17 +19,12 @@
 #define REG_PIN_47_SEL	0x08
 #define REG_FILTER_SEL	0x0c
 
-/* use for A1 like chips */
+ 
 #define REG_PIN_A1_SEL	0x04
-/* Used for s4 chips */
+ 
 #define REG_EDGE_POL_S4	0x1c
 
-/*
- * Note: The S905X3 datasheet reports that BOTH_EDGE is controlled by
- * bits 24 to 31. Tests on the actual HW show that these bits are
- * stuck at 0. Bits 8 to 15 are responsive and have the expected
- * effect.
- */
+ 
 #define REG_EDGE_POL_EDGE(params, x)	BIT((params)->edge_single_offset + (x))
 #define REG_EDGE_POL_LOW(params, x)	BIT((params)->pol_low_offset + (x))
 #define REG_BOTH_EDGE(params, x)	BIT((params)->edge_both_offset + (x))
@@ -225,7 +215,7 @@ static void meson_a1_gpio_irq_sel_pin(struct meson_gpio_irq_controller *ctl,
 				   hwirq << bit_offset);
 }
 
-/* For a1 or later chips like a1 there is a switch to enable/disable irq */
+ 
 static void meson_a1_gpio_irq_init(struct meson_gpio_irq_controller *ctl)
 {
 	meson_gpio_irq_update_bits(ctl, REG_EDGE_POL, BIT(31), BIT(31));
@@ -241,7 +231,7 @@ meson_gpio_irq_request_channel(struct meson_gpio_irq_controller *ctl,
 
 	spin_lock_irqsave(&ctl->lock, flags);
 
-	/* Find a free channel */
+	 
 	idx = find_first_zero_bit(ctl->channel_map, ctl->params->nr_channels);
 	if (idx >= ctl->params->nr_channels) {
 		spin_unlock_irqrestore(&ctl->lock, flags);
@@ -249,23 +239,15 @@ meson_gpio_irq_request_channel(struct meson_gpio_irq_controller *ctl,
 		return -ENOSPC;
 	}
 
-	/* Mark the channel as used */
+	 
 	set_bit(idx, ctl->channel_map);
 
 	spin_unlock_irqrestore(&ctl->lock, flags);
 
-	/*
-	 * Setup the mux of the channel to route the signal of the pad
-	 * to the appropriate input of the GIC
-	 */
+	 
 	ctl->params->ops.gpio_irq_sel_pin(ctl, idx, hwirq);
 
-	/*
-	 * Get the hwirq number assigned to this channel through
-	 * a pointer the channel_irq table. The added benefit of this
-	 * method is that we can also retrieve the channel index with
-	 * it, using the table base.
-	 */
+	 
 	*channel_hwirq = &(ctl->channel_irqs[idx]);
 
 	pr_debug("hwirq %lu assigned to channel %d - irq %u\n",
@@ -301,19 +283,10 @@ static int meson8_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
 	params = ctl->params;
 	idx = meson_gpio_irq_get_channel_idx(ctl, channel_hwirq);
 
-	/*
-	 * The controller has a filter block to operate in either LEVEL or
-	 * EDGE mode, then signal is sent to the GIC. To enable LEVEL_LOW and
-	 * EDGE_FALLING support (which the GIC does not support), the filter
-	 * block is also able to invert the input signal it gets before
-	 * providing it to the GIC.
-	 */
+	 
 	type &= IRQ_TYPE_SENSE_MASK;
 
-	/*
-	 * New controller support EDGE_BOTH trigger. This setting takes
-	 * precedence over the other edge/polarity settings
-	 */
+	 
 	if (type == IRQ_TYPE_EDGE_BOTH) {
 		if (!params->support_edge_both)
 			return -EINVAL;
@@ -333,21 +306,7 @@ static int meson8_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
 	return 0;
 }
 
-/*
- * gpio irq relative registers for s4
- * -PADCTRL_GPIO_IRQ_CTRL0
- * bit[31]:    enable/disable all the irq lines
- * bit[12-23]: single edge trigger
- * bit[0-11]:  polarity trigger
- *
- * -PADCTRL_GPIO_IRQ_CTRL[X]
- * bit[0-16]: 7 bits to choose gpio source for irq line 2*[X] - 2
- * bit[16-22]:7 bits to choose gpio source for irq line 2*[X] - 1
- * where X = 1-6
- *
- * -PADCTRL_GPIO_IRQ_CTRL[7]
- * bit[0-11]: both edge trigger
- */
+ 
 static int meson_s4_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
 				      unsigned int type, u32 *channel_hwirq)
 {
@@ -384,10 +343,7 @@ static unsigned int meson_gpio_irq_type_output(unsigned int type)
 
 	type &= ~IRQ_TYPE_SENSE_MASK;
 
-	/*
-	 * The polarity of the signal provided to the GIC should always
-	 * be high.
-	 */
+	 
 	if (sense & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW))
 		type |= IRQ_TYPE_LEVEL_HIGH;
 	else
@@ -446,7 +402,7 @@ static int meson_gpio_irq_allocate_gic_irq(struct irq_domain *domain,
 
 	fwspec.fwnode = domain->parent->fwnode;
 	fwspec.param_count = 3;
-	fwspec.param[0] = 0;	/* SPI */
+	fwspec.param[0] = 0;	 
 	fwspec.param[1] = hwirq;
 	fwspec.param[2] = meson_gpio_irq_type_output(type);
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Kernel Connection Multiplexor
- *
- * Copyright (c) 2016 Tom Herbert <tom@herbertland.com>
- */
+ 
+ 
 
 #ifndef __NET_KCM_H_
 #define __NET_KCM_H_
@@ -54,7 +50,7 @@ struct kcm_tx_msg {
 	struct sk_buff *last_skb;
 };
 
-/* Socket structure for KCM client sockets */
+ 
 struct kcm_sock {
 	struct sock sk;
 	struct kcm_mux *mux;
@@ -65,27 +61,27 @@ struct kcm_sock {
 
 	struct kcm_stats stats;
 
-	/* Transmit */
+	 
 	struct kcm_psock *tx_psock;
 	struct work_struct tx_work;
 	struct list_head wait_psock_list;
 	struct sk_buff *seq_skb;
 	u32 tx_stopped : 1;
 
-	/* Don't use bit fields here, these are set under different locks */
+	 
 	bool tx_wait;
 	bool tx_wait_more;
 
-	/* Receive */
+	 
 	struct kcm_psock *rx_psock;
-	struct list_head wait_rx_list; /* KCMs waiting for receiving */
+	struct list_head wait_rx_list;  
 	bool rx_wait;
 	u32 rx_disabled : 1;
 };
 
 struct bpf_prog;
 
-/* Structure for an attached lower socket */
+ 
 struct kcm_psock {
 	struct sock *sk;
 	struct strparser strp;
@@ -104,7 +100,7 @@ struct kcm_psock {
 
 	struct kcm_psock_stats stats;
 
-	/* Receive */
+	 
 	struct list_head psock_ready_list;
 	struct bpf_prog *bpf_prog;
 	struct kcm_sock *rx_kcm;
@@ -112,14 +108,14 @@ struct kcm_psock {
 	unsigned long long saved_rx_msgs;
 	struct sk_buff *ready_rx_msg;
 
-	/* Transmit */
+	 
 	struct kcm_sock *tx_kcm;
 	struct list_head psock_avail_list;
 	unsigned long long saved_tx_bytes;
 	unsigned long long saved_tx_msgs;
 };
 
-/* Per net MUX list */
+ 
 struct kcm_net {
 	struct mutex mutex;
 	struct kcm_psock_stats aggregate_psock_stats;
@@ -129,31 +125,31 @@ struct kcm_net {
 	int count;
 };
 
-/* Structure for a MUX */
+ 
 struct kcm_mux {
 	struct list_head kcm_mux_list;
 	struct rcu_head rcu;
 	struct kcm_net *knet;
 
-	struct list_head kcm_socks;	/* All KCM sockets on MUX */
-	int kcm_socks_cnt;		/* Total KCM socket count for MUX */
-	struct list_head psocks;	/* List of all psocks on MUX */
-	int psocks_cnt;		/* Total attached sockets */
+	struct list_head kcm_socks;	 
+	int kcm_socks_cnt;		 
+	struct list_head psocks;	 
+	int psocks_cnt;		 
 
 	struct kcm_mux_stats stats;
 	struct kcm_psock_stats aggregate_psock_stats;
 	struct strp_aggr_stats aggregate_strp_stats;
 
-	/* Receive */
+	 
 	spinlock_t rx_lock ____cacheline_aligned_in_smp;
-	struct list_head kcm_rx_waiters; /* KCMs waiting for receiving */
-	struct list_head psocks_ready;	/* List of psocks with a msg ready */
+	struct list_head kcm_rx_waiters;  
+	struct list_head psocks_ready;	 
 	struct sk_buff_head rx_hold_queue;
 
-	/* Transmit */
-	spinlock_t  lock ____cacheline_aligned_in_smp;	/* TX and mux locking */
-	struct list_head psocks_avail;	/* List of available psocks */
-	struct list_head kcm_tx_waiters; /* KCMs waiting for a TX psock */
+	 
+	spinlock_t  lock ____cacheline_aligned_in_smp;	 
+	struct list_head psocks_avail;	 
+	struct list_head kcm_tx_waiters;  
 };
 
 #ifdef CONFIG_PROC_FS
@@ -167,7 +163,7 @@ static inline void kcm_proc_exit(void) { }
 static inline void aggregate_psock_stats(struct kcm_psock_stats *stats,
 					 struct kcm_psock_stats *agg_stats)
 {
-	/* Save psock statistics in the mux when psock is being unattached. */
+	 
 
 #define SAVE_PSOCK_STATS(_stat) (agg_stats->_stat += stats->_stat)
 	SAVE_PSOCK_STATS(tx_msgs);
@@ -181,7 +177,7 @@ static inline void aggregate_psock_stats(struct kcm_psock_stats *stats,
 static inline void aggregate_mux_stats(struct kcm_mux_stats *stats,
 				       struct kcm_mux_stats *agg_stats)
 {
-	/* Save psock statistics in the mux when psock is being unattached. */
+	 
 
 #define SAVE_MUX_STATS(_stat) (agg_stats->_stat += stats->_stat)
 	SAVE_MUX_STATS(rx_msgs);
@@ -195,4 +191,4 @@ static inline void aggregate_mux_stats(struct kcm_mux_stats *stats,
 #undef SAVE_MUX_STATS
 }
 
-#endif /* __NET_KCM_H_ */
+#endif  

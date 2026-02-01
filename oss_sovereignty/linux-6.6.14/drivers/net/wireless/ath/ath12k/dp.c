@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <crypto/hash.h>
 #include "core.h"
@@ -25,7 +22,7 @@ void ath12k_dp_peer_cleanup(struct ath12k *ar, int vdev_id, const u8 *addr)
 	struct ath12k_base *ab = ar->ab;
 	struct ath12k_peer *peer;
 
-	/* TODO: Any other peer specific DP cleanup */
+	 
 
 	spin_lock_bh(&ab->base_lock);
 	peer = ath12k_peer_find(ab, vdev_id, addr);
@@ -49,7 +46,7 @@ int ath12k_dp_peer_setup(struct ath12k *ar, int vdev_id, const u8 *addr)
 	u32 reo_dest;
 	int ret = 0, tid;
 
-	/* NOTE: reo_dest ring id starts from 1 unlike mac_id which starts from 0 */
+	 
 	reo_dest = ar->dp.mac_id + 1;
 	ret = ath12k_wmi_set_peer_param(ar, addr, vdev_id,
 					WMI_PEER_SET_DEFAULT_ROUTING,
@@ -77,7 +74,7 @@ int ath12k_dp_peer_setup(struct ath12k *ar, int vdev_id, const u8 *addr)
 		goto peer_clean;
 	}
 
-	/* TODO: Setup other peer specific resource used in data path */
+	 
 
 	return 0;
 
@@ -274,7 +271,7 @@ int ath12k_dp_srng_setup(struct ath12k_base *ab, struct dp_srng *ring,
 					HAL_SRNG_INT_TIMER_THRESHOLD_TX;
 			break;
 		}
-		/* follow through when ring_num != HAL_WBM2SW_REL_ERR_RING_NUM */
+		 
 		fallthrough;
 	case HAL_REO_EXCEPTION:
 	case HAL_REO_REINJECT:
@@ -316,9 +313,7 @@ u32 ath12k_dp_tx_get_vdev_bank_config(struct ath12k_base *ab, struct ath12k_vif 
 {
 	u32 bank_config = 0;
 
-	/* Only valid for raw frames with HW crypto enabled.
-	 * With SW crypto, mac80211 sets key per packet
-	 */
+	 
 	if (arvif->tx_encap_type == HAL_TCL_ENCAP_TYPE_RAW &&
 	    test_bit(ATH12K_FLAG_HW_CRYPTO_DISABLED, &ab->dev_flags))
 		bank_config |=
@@ -331,7 +326,7 @@ u32 ath12k_dp_tx_get_vdev_bank_config(struct ath12k_base *ab, struct ath12k_vif 
 			u32_encode_bits(0, HAL_TX_BANK_CONFIG_LINK_META_SWAP) |
 			u32_encode_bits(0, HAL_TX_BANK_CONFIG_EPD);
 
-	/* only valid if idx_lookup_override is not set in tcl_data_cmd */
+	 
 	bank_config |= u32_encode_bits(0, HAL_TX_BANK_CONFIG_INDEX_LOOKUP_EN);
 
 	bank_config |= u32_encode_bits(arvif->hal_addr_search_flags & HAL_TX_ADDRX_EN,
@@ -358,11 +353,11 @@ static int ath12k_dp_tx_get_bank_profile(struct ath12k_base *ab, struct ath12k_v
 	u32 bank_config;
 	bool configure_register = false;
 
-	/* convert vdev params into hal_tx_bank_config */
+	 
 	bank_config = ath12k_dp_tx_get_vdev_bank_config(ab, arvif);
 
 	spin_lock_bh(&dp->tx_bank_lock);
-	/* TODO: implement using idr kernel framework*/
+	 
 	for (i = 0; i < dp->num_bank_profiles; i++) {
 		if (dp->bank_profiles[i].is_configured &&
 		    (dp->bank_profiles[i].bank_config ^ bank_config) == 0) {
@@ -552,12 +547,7 @@ static int ath12k_dp_srng_common_setup(struct ath12k_base *ab)
 		goto err;
 	}
 
-	/* When hash based routing of rx packet is enabled, 32 entries to map
-	 * the hash values to the ring will be configured. Each hash entry uses
-	 * four bits to map to a particular ring. The ring mapping will be
-	 * 0:TCL, 1:SW1, 2:SW2, 3:SW3, 4:SW4, 5:Release, 6:FW and 7:SW5
-	 * 8:SW6, 9:SW7, 10:SW8, 11:Not used.
-	 */
+	 
 	ring_hash_map = HAL_HASH_ROUTING_RING_SW1 |
 			HAL_HASH_ROUTING_RING_SW2 << 4 |
 			HAL_HASH_ROUTING_RING_SW3 << 8 |
@@ -812,11 +802,11 @@ int ath12k_dp_link_desc_setup(struct ath12k_base *ab,
 	if (ret)
 		return ret;
 
-	/* Setup link desc idle list for HW internal usage */
+	 
 	entry_sz = ath12k_hal_srng_get_entrysize(ab, ring_type);
 	tot_mem_sz = entry_sz * n_link_desc;
 
-	/* Setup scatter desc list when the total memory requirement is more */
+	 
 	if (tot_mem_sz > DP_LINK_DESC_ALLOC_SIZE_THRESH &&
 	    ring_type != HAL_RXDMA_MONITOR_DESC) {
 		ret = ath12k_dp_scatter_idle_link_desc_setup(ab, tot_mem_sz,
@@ -966,7 +956,7 @@ int ath12k_dp_service_srng(struct ath12k_base *ab,
 					    true);
 	}
 
-	/* TODO: Implement handler for other interrupts */
+	 
 
 done:
 	return tot_work_done;
@@ -995,7 +985,7 @@ void ath12k_dp_pdev_pre_alloc(struct ath12k_base *ab)
 		atomic_set(&dp->num_tx_pending, 0);
 		init_waitqueue_head(&dp->tx_empty_waitq);
 
-		/* TODO: Add any RXDMA setup required per pdev */
+		 
 	}
 }
 
@@ -1032,7 +1022,7 @@ int ath12k_dp_pdev_alloc(struct ath12k_base *ab)
 
 	ath12k_dp_mon_reap_timer_init(ab);
 
-	/* TODO: Per-pdev rx ring unlike tx ring which is mapped to different AC's */
+	 
 	for (i = 0; i < ab->num_radios; i++) {
 		ar = ab->pdevs[i].ar;
 		ret = ath12k_dp_rx_pdev_alloc(ab, i);
@@ -1064,7 +1054,7 @@ int ath12k_dp_htt_connect(struct ath12k_dp *dp)
 	conn_req.ep_ops.ep_tx_complete = ath12k_dp_htt_htc_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath12k_dp_htt_htc_t2h_msg_handler;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = ATH12K_HTC_SVC_ID_HTT_DATA_MSG;
 
 	status = ath12k_htc_connect_service(&dp->ab->htc, &conn_req,
@@ -1082,9 +1072,7 @@ static void ath12k_dp_update_vdev_search(struct ath12k_vif *arvif)
 {
 	switch (arvif->vdev_type) {
 	case WMI_VDEV_TYPE_STA:
-		/* TODO: Verify the search type and flags since ast hash
-		 * is not part of peer mapv3
-		 */
+		 
 		arvif->hal_addr_search_flags = HAL_TX_ADDRY_EN;
 		arvif->search_type = HAL_TX_ADDR_SEARCH_DEFAULT;
 		break;
@@ -1109,14 +1097,14 @@ void ath12k_dp_vdev_tx_attach(struct ath12k *ar, struct ath12k_vif *arvif)
 			       u32_encode_bits(ar->pdev->pdev_id,
 					       HTT_TCL_META_DATA_PDEV_ID);
 
-	/* set HTT extension valid bit to 0 by default */
+	 
 	arvif->tcl_metadata &= ~HTT_TCL_META_DATA_VALID_HTT;
 
 	ath12k_dp_update_vdev_search(arvif);
 	arvif->vdev_id_check_en = true;
 	arvif->bank_id = ath12k_dp_tx_get_bank_profile(ab, arvif, &ab->dp);
 
-	/* TODO: error path for bank id failure */
+	 
 	if (arvif->bank_id == DP_INVALID_BANK_ID) {
 		ath12k_err(ar->ab, "Failed to initialize DP TX Banks");
 		return;
@@ -1135,7 +1123,7 @@ static void ath12k_dp_cc_cleanup(struct ath12k_base *ab)
 	if (!dp->spt_info)
 		return;
 
-	/* RX Descriptor cleanup */
+	 
 	spin_lock_bh(&dp->rx_desc_lock);
 
 	list_for_each_entry_safe(desc_info, tmp, &dp->rx_desc_used_list, list) {
@@ -1160,7 +1148,7 @@ static void ath12k_dp_cc_cleanup(struct ath12k_base *ab)
 
 	spin_unlock_bh(&dp->rx_desc_lock);
 
-	/* TX Descriptor cleanup */
+	 
 	for (i = 0; i < ATH12K_HW_MAX_QUEUES; i++) {
 		spin_lock_bh(&dp->tx_desc_lock[i]);
 
@@ -1195,7 +1183,7 @@ static void ath12k_dp_cc_cleanup(struct ath12k_base *ab)
 		spin_unlock_bh(&dp->tx_desc_lock[pool_id]);
 	}
 
-	/* unmap SPT pages */
+	 
 	for (i = 0; i < dp->num_spt_pages; i++) {
 		if (!dp->spt_info[i].vaddr)
 			continue;
@@ -1245,7 +1233,7 @@ void ath12k_dp_free(struct ath12k_base *ab)
 		kfree(dp->tx_ring[i].tx_status);
 
 	ath12k_dp_rx_free(ab);
-	/* Deinit any SOC level resource */
+	 
 }
 
 void ath12k_dp_cc_config(struct ath12k_base *ab)
@@ -1269,7 +1257,7 @@ void ath12k_dp_cc_config(struct ath12k_base *ab)
 
 	ath12k_hif_write32(ab, reo_base + HAL_REO1_SW_COOKIE_CFG1(ab), val);
 
-	/* Enable HW CC for WBM */
+	 
 	ath12k_hif_write32(ab, wbm_base + HAL_WBM_SW_COOKIE_CFG0, cmem_base);
 
 	val = u32_encode_bits(ATH12K_CMEM_ADDR_MSB,
@@ -1282,7 +1270,7 @@ void ath12k_dp_cc_config(struct ath12k_base *ab)
 
 	ath12k_hif_write32(ab, wbm_base + HAL_WBM_SW_COOKIE_CFG1, val);
 
-	/* Enable conversion complete indication */
+	 
 	val = ath12k_hif_read32(ab, wbm_base + HAL_WBM_SW_COOKIE_CFG2);
 	val |= u32_encode_bits(1, HAL_WBM_SW_COOKIE_CFG_RELEASE_PATH_EN) |
 		u32_encode_bits(1, HAL_WBM_SW_COOKIE_CFG_ERR_PATH_EN) |
@@ -1290,7 +1278,7 @@ void ath12k_dp_cc_config(struct ath12k_base *ab)
 
 	ath12k_hif_write32(ab, wbm_base + HAL_WBM_SW_COOKIE_CFG2, val);
 
-	/* Enable Cookie conversion for WBM2SW Rings */
+	 
 	val = ath12k_hif_read32(ab, wbm_base + HAL_WBM_SW_COOKIE_CONVERT_CFG);
 	val |= u32_encode_bits(1, HAL_WBM_SW_COOKIE_CONV_CFG_GLOBAL_EN) |
 	       ab->hw_params->hal_params->wbm2sw_cc_enable;
@@ -1358,7 +1346,7 @@ static int ath12k_dp_cc_desc_init(struct ath12k_base *ab)
 
 	spin_lock_bh(&dp->rx_desc_lock);
 
-	/* First ATH12K_NUM_RX_SPT_PAGES of allocated SPT pages are used for RX */
+	 
 	for (i = 0; i < ATH12K_NUM_RX_SPT_PAGES; i++) {
 		rx_descs = kcalloc(ATH12K_MAX_SPT_ENTRIES, sizeof(*rx_descs),
 				   GFP_ATOMIC);
@@ -1375,7 +1363,7 @@ static int ath12k_dp_cc_desc_init(struct ath12k_base *ab)
 			rx_descs[j].magic = ATH12K_DP_RX_DESC_MAGIC;
 			list_add_tail(&rx_descs[j].list, &dp->rx_desc_free_list);
 
-			/* Update descriptor VA in SPT */
+			 
 			rx_desc_addr = ath12k_dp_cc_get_desc_addr_ptr(ab, i, j);
 			*rx_desc_addr = &rx_descs[j];
 		}
@@ -1391,7 +1379,7 @@ static int ath12k_dp_cc_desc_init(struct ath12k_base *ab)
 
 			if (!tx_descs) {
 				spin_unlock_bh(&dp->tx_desc_lock[pool_id]);
-				/* Caller takes care of TX pending and RX desc cleanup */
+				 
 				return -ENOMEM;
 			}
 
@@ -1405,7 +1393,7 @@ static int ath12k_dp_cc_desc_init(struct ath12k_base *ab)
 				list_add_tail(&tx_descs[j].list,
 					      &dp->tx_desc_free_list[pool_id]);
 
-				/* Update descriptor VA in SPT */
+				 
 				tx_desc_addr =
 					ath12k_dp_cc_get_desc_addr_ptr(ab, ppt_idx, j);
 				*tx_desc_addr = &tx_descs[j];
@@ -1463,7 +1451,7 @@ static int ath12k_dp_cc_init(struct ath12k_base *ab)
 			goto free;
 		}
 
-		/* Write to PPT in CMEM */
+		 
 		ath12k_hif_write32(ab, cmem_base + ATH12K_PPT_ADDR_OFFSET(i),
 				   dp->spt_info[i].paddr >> ATH12K_SPT_4K_ALIGN_OFFSET);
 	}
@@ -1565,9 +1553,7 @@ int ath12k_dp_alloc(struct ath12k_base *ab)
 		dp->tx_ring[i].tx_status = kmalloc(size, GFP_KERNEL);
 		if (!dp->tx_ring[i].tx_status) {
 			ret = -ENOMEM;
-			/* FIXME: The allocated tx status is not freed
-			 * properly here
-			 */
+			 
 			goto fail_cmn_reoq_cleanup;
 		}
 	}
@@ -1579,7 +1565,7 @@ int ath12k_dp_alloc(struct ath12k_base *ab)
 	if (ret)
 		goto fail_dp_rx_free;
 
-	/* Init any SOC level resource for DP */
+	 
 
 	return 0;
 

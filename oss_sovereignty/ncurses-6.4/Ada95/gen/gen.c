@@ -1,47 +1,9 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2014,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1996                                         *
- *      and:  Thomas E. Dickey, 1998                                        *
- *      and:  Nicolas Boulenguez, 2011                                      *
- ****************************************************************************/
+ 
 
-/*
-    Version Control
-    $Id: gen.c,v 1.78 2021/12/11 21:03:21 tom Exp $
-  --------------------------------------------------------------------------*/
-/*
-  This program prints on its standard output the source for the
-  Terminal_Interface.Curses_Constants Ada package specification. This pure
-  package only exports C constants to the Ada compiler.
- */
+ 
+ 
 
 #ifdef HAVE_CONFIG_H
 #include <ncurses_cfg.h>
@@ -63,7 +25,7 @@ typedef unsigned char UCHAR;
 typedef unsigned int UINT;
 typedef unsigned long ULONG;
 
-/* These global variables will be set by main () */
+ 
 static int little_endian;
 static const char *my_program_invocation_name = NULL;
 
@@ -107,10 +69,7 @@ print_comment(FILE * fp, const char *message)
   fprintf(fp, "\n   --  %s\n\n", message);
 }
 
-/*
- * Make sure that KEY_MIN and KEY_MAX are defined.
- * main () will protest if KEY_MIN == 256
- */
+ 
 #ifndef KEY_MAX
 #  define KEY_MAX 0777
 #endif
@@ -126,15 +85,15 @@ bit_is_set(const UCHAR * const data,
   UINT bit;
 
   if (little_endian)
-    bit = offset;		/* offset */
-  else				/* or */
-    bit = ~offset;		/* 7 - offset */
-  bit &= 7;			/* modulo 8 */
+    bit = offset;		 
+  else				 
+    bit = ~offset;		 
+  bit &= 7;			 
   return (UCHAR) (byte & (1 << bit));
 }
 
-/* Find lowest and highest used offset in a byte array. */
-/* Returns 0 if and only if all bits are unset. */
+ 
+ 
 static int
 find_pos(const UCHAR * const data,
 	 const UINT sizeof_data,
@@ -145,7 +104,7 @@ find_pos(const UCHAR * const data,
   UINT offset;
 
   for (offset = last; !bit_is_set(data, offset); offset--)
-    if (!offset)		/* All bits are 0. */
+    if (!offset)		 
       return 0;
   *high = offset;
 
@@ -182,9 +141,9 @@ find_pos(const UCHAR * const data,
     print_constant (fp, #record "_" #field "_Last", last);              \
   }
 
-/*--------------------*/
-/*  Start of main (). */
-/*--------------------*/
+ 
+ 
+ 
 
 int
 main(int argc, const char *argv[])
@@ -491,7 +450,7 @@ main(int argc, const char *argv[])
   PRINT_NAMED_BITMASK(Field_Options, O_NL_OVERLOAD);
   PRINT_NAMED_BITMASK(Field_Options, O_BS_OVERLOAD);
 
-  /*  Field_Options_Size is defined below */
+   
 
   print_comment(fp, "MEVENT structure from mouse(3NCURSES)");
   STRUCT_OFFSET(MEVENT, id);

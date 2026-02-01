@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <memory.h>
 #include "../../../util/evsel.h"
@@ -29,11 +29,7 @@ static void event_get_key(struct evsel *evsel,
 	key->key = evsel__intval(evsel, sample, kvm_exit_reason);
 	key->exit_reasons = arm64_exit_reasons;
 
-	/*
-	 * TRAP exceptions carry exception class info in esr_ec field
-	 * and, hence, we need to use a different exit_reasons table to
-	 * properly decode event's est_ec.
-	 */
+	 
 	if (key->key == ARM_EXCEPTION_TRAP) {
 		key->key = evsel__intval(evsel, sample, kvm_trap_exit_reason);
 		key->exit_reasons = arm64_trap_exit_reasons;

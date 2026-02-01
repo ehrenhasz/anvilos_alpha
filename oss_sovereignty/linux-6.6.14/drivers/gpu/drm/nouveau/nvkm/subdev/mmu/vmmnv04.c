@@ -1,24 +1,4 @@
-/*
- * Copyright 2017 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "vmm.h"
 
 #include <nvif/if000d.h>
@@ -28,7 +8,7 @@ static inline void
 nv04_vmm_pgt_pte(struct nvkm_vmm *vmm, struct nvkm_mmu_pt *pt,
 		 u32 ptei, u32 ptes, struct nvkm_vmm_map *map, u64 addr)
 {
-	u32 data = addr | 0x00000003; /* PRESENT, RW. */
+	u32 data = addr | 0x00000003;  
 	while (ptes--) {
 		VMM_WO032(pt, vmm, 8 + ptei++ * 4, data);
 		data += 0x00001000;
@@ -134,7 +114,7 @@ nv04_vmm_new(struct nvkm_mmu *mmu, bool managed, u64 addr, u64 size,
 
 	mem = vmm->pd->pt[0]->memory;
 	nvkm_kmap(mem);
-	nvkm_wo32(mem, 0x00000, 0x0002103d); /* PCI, RW, PT, !LN */
+	nvkm_wo32(mem, 0x00000, 0x0002103d);  
 	nvkm_wo32(mem, 0x00004, vmm->limit - 1);
 	nvkm_done(mem);
 	return 0;

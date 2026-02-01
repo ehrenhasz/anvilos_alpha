@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/sunrpc/auth.c
- *
- * Generic RPC client authentication API.
- *
- * Copyright (C) 1996, Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/sched.h>
@@ -42,10 +36,7 @@ static struct cred machine_cred = {
 	.usage = ATOMIC_INIT(1),
 };
 
-/*
- * Return the machine_cred pointer to be used whenever
- * the a generic machine credential is needed.
- */
+ 
 const struct cred *rpc_machine_cred(void)
 {
 	return &machine_cred;
@@ -164,15 +155,7 @@ rpcauth_put_authops(const struct rpc_authops *ops)
 	module_put(ops->owner);
 }
 
-/**
- * rpcauth_get_pseudoflavor - check if security flavor is supported
- * @flavor: a security flavor
- * @info: a GSS mech OID, quality of protection, and service value
- *
- * Verifies that an appropriate kernel module is available or already loaded.
- * Returns an equivalent pseudoflavor, or RPC_AUTH_MAXFLAVOR if "flavor" is
- * not supported locally.
- */
+ 
 rpc_authflavor_t
 rpcauth_get_pseudoflavor(rpc_authflavor_t flavor, struct rpcsec_gss_info *info)
 {
@@ -190,14 +173,7 @@ rpcauth_get_pseudoflavor(rpc_authflavor_t flavor, struct rpcsec_gss_info *info)
 }
 EXPORT_SYMBOL_GPL(rpcauth_get_pseudoflavor);
 
-/**
- * rpcauth_get_gssinfo - find GSS tuple matching a GSS pseudoflavor
- * @pseudoflavor: GSS pseudoflavor to match
- * @info: rpcsec_gss_info structure to fill in
- *
- * Returns zero and fills in "info" if pseudoflavor matches a
- * supported mechanism.
- */
+ 
 int
 rpcauth_get_gssinfo(rpc_authflavor_t pseudoflavor, struct rpcsec_gss_info *info)
 {
@@ -253,10 +229,7 @@ rpcauth_release(struct rpc_auth *auth)
 
 static DEFINE_SPINLOCK(rpc_credcache_lock);
 
-/*
- * On success, the caller is responsible for freeing the reference
- * held by the hashtable
- */
+ 
 static bool
 rpcauth_unhash_cred_locked(struct rpc_cred *cred)
 {
@@ -281,9 +254,7 @@ rpcauth_unhash_cred(struct rpc_cred *cred)
 	return ret;
 }
 
-/*
- * Initialize RPC credential cache
- */
+ 
 int
 rpcauth_init_credcache(struct rpc_auth *auth)
 {
@@ -317,9 +288,7 @@ rpcauth_stringify_acceptor(struct rpc_cred *cred)
 }
 EXPORT_SYMBOL_GPL(rpcauth_stringify_acceptor);
 
-/*
- * Destroy a list of credentials
- */
+ 
 static inline
 void rpcauth_destroy_credlist(struct list_head *head)
 {
@@ -370,10 +339,7 @@ rpcauth_lru_remove(struct rpc_cred *cred)
 	spin_unlock(&rpc_credcache_lock);
 }
 
-/*
- * Clear the RPC credential cache, and delete those credentials
- * that are not referenced.
- */
+ 
 void
 rpcauth_clear_credcache(struct rpc_cred_cache *cache)
 {
@@ -390,7 +356,7 @@ rpcauth_clear_credcache(struct rpc_cred_cache *cache)
 		while (!hlist_empty(head)) {
 			cred = hlist_entry(head->first, struct rpc_cred, cr_hash);
 			rpcauth_unhash_cred_locked(cred);
-			/* Note: We now hold a reference to cred */
+			 
 			rpcauth_lru_remove_locked(cred);
 			list_add_tail(&cred->cr_lru, &free);
 		}
@@ -400,9 +366,7 @@ rpcauth_clear_credcache(struct rpc_cred_cache *cache)
 	rpcauth_destroy_credlist(&free);
 }
 
-/*
- * Destroy the RPC credential cache
- */
+ 
 void
 rpcauth_destroy_credcache(struct rpc_auth *auth)
 {
@@ -420,9 +384,7 @@ EXPORT_SYMBOL_GPL(rpcauth_destroy_credcache);
 
 #define RPC_AUTH_EXPIRY_MORATORIUM (60 * HZ)
 
-/*
- * Remove stale credentials. Avoid sleeping inside the loop.
- */
+ 
 static long
 rpcauth_prune_expired(struct list_head *free, int nr_to_scan)
 {
@@ -438,10 +400,7 @@ rpcauth_prune_expired(struct list_head *free, int nr_to_scan)
 			rpcauth_lru_remove_locked(cred);
 			continue;
 		}
-		/*
-		 * Enforce a 60 second garbage collection moratorium
-		 * Note that the cred_unused list must be time-ordered.
-		 */
+		 
 		if (time_in_range(cred->cr_expire, expired, jiffies))
 			continue;
 		if (!rpcauth_unhash_cred(cred))
@@ -468,9 +427,7 @@ rpcauth_cache_do_shrink(int nr_to_scan)
 	return freed;
 }
 
-/*
- * Run memory cache shrinker.
- */
+ 
 static unsigned long
 rpcauth_cache_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
 
@@ -478,7 +435,7 @@ rpcauth_cache_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
 	if ((sc->gfp_mask & GFP_KERNEL) != GFP_KERNEL)
 		return SHRINK_STOP;
 
-	/* nothing left, don't come back */
+	 
 	if (list_empty(&cred_unused))
 		return SHRINK_STOP;
 
@@ -507,9 +464,7 @@ rpcauth_cache_enforce_limit(void)
 	rpcauth_cache_do_shrink(nr_to_scan);
 }
 
-/*
- * Look up a process' credentials in the authentication cache
- */
+ 
 struct rpc_cred *
 rpcauth_lookup_credcache(struct rpc_auth *auth, struct auth_cred * acred,
 		int flags, gfp_t gfp)
@@ -657,14 +612,14 @@ rpcauth_bindcred(struct rpc_task *task, const struct cred *cred, int flags)
 	if (flags & RPC_TASK_ASYNC)
 		lookupflags |= RPCAUTH_LOOKUP_NEW | RPCAUTH_LOOKUP_ASYNC;
 	if (task->tk_op_cred)
-		/* Task must use exactly this rpc_cred */
+		 
 		new = get_rpccred(task->tk_op_cred);
 	else if (cred != NULL && cred != &machine_cred)
 		new = auth->au_ops->lookup_cred(auth, &acred, lookupflags);
 	else if (cred == &machine_cred)
 		new = rpcauth_bind_machine_cred(task, lookupflags);
 
-	/* If machine cred couldn't be bound, try a root cred */
+	 
 	if (new)
 		;
 	else if (cred == &machine_cred)
@@ -694,7 +649,7 @@ put_rpccred(struct rpc_cred *cred)
 	if (test_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags) != 0) {
 		cred->cr_expire = jiffies;
 		rpcauth_lru_add(cred);
-		/* Race breaker */
+		 
 		if (unlikely(!test_bit(RPCAUTH_CRED_HASHED, &cred->cr_flags)))
 			rpcauth_lru_remove(cred);
 	} else if (rpcauth_unhash_cred(cred)) {
@@ -711,16 +666,7 @@ destroy:
 }
 EXPORT_SYMBOL_GPL(put_rpccred);
 
-/**
- * rpcauth_marshcred - Append RPC credential to end of @xdr
- * @task: controlling RPC task
- * @xdr: xdr_stream containing initial portion of RPC Call header
- *
- * On success, an appropriate verifier is added to @xdr, @xdr is
- * updated to point past the verifier, and zero is returned.
- * Otherwise, @xdr is in an undefined state and a negative errno
- * is returned.
- */
+ 
 int rpcauth_marshcred(struct rpc_task *task, struct xdr_stream *xdr)
 {
 	const struct rpc_credops *ops = task->tk_rqstp->rq_cred->cr_ops;
@@ -728,14 +674,7 @@ int rpcauth_marshcred(struct rpc_task *task, struct xdr_stream *xdr)
 	return ops->crmarshal(task, xdr);
 }
 
-/**
- * rpcauth_wrap_req_encode - XDR encode the RPC procedure
- * @task: controlling RPC task
- * @xdr: stream where on-the-wire bytes are to be marshalled
- *
- * On success, @xdr contains the encoded and wrapped message.
- * Otherwise, @xdr is in an undefined state.
- */
+ 
 int rpcauth_wrap_req_encode(struct rpc_task *task, struct xdr_stream *xdr)
 {
 	kxdreproc_t encode = task->tk_msg.rpc_proc->p_encode;
@@ -745,15 +684,7 @@ int rpcauth_wrap_req_encode(struct rpc_task *task, struct xdr_stream *xdr)
 }
 EXPORT_SYMBOL_GPL(rpcauth_wrap_req_encode);
 
-/**
- * rpcauth_wrap_req - XDR encode and wrap the RPC procedure
- * @task: controlling RPC task
- * @xdr: stream where on-the-wire bytes are to be marshalled
- *
- * On success, @xdr contains the encoded and wrapped message,
- * and zero is returned. Otherwise, @xdr is in an undefined
- * state and a negative errno is returned.
- */
+ 
 int rpcauth_wrap_req(struct rpc_task *task, struct xdr_stream *xdr)
 {
 	const struct rpc_credops *ops = task->tk_rqstp->rq_cred->cr_ops;
@@ -761,20 +692,7 @@ int rpcauth_wrap_req(struct rpc_task *task, struct xdr_stream *xdr)
 	return ops->crwrap_req(task, xdr);
 }
 
-/**
- * rpcauth_checkverf - Validate verifier in RPC Reply header
- * @task: controlling RPC task
- * @xdr: xdr_stream containing RPC Reply header
- *
- * Return values:
- *   %0: Verifier is valid. @xdr now points past the verifier.
- *   %-EIO: Verifier is corrupted or message ended early.
- *   %-EACCES: Verifier is intact but not valid.
- *   %-EPROTONOSUPPORT: Server does not support the requested auth type.
- *
- * When a negative errno is returned, @xdr is left in an undefined
- * state.
- */
+ 
 int
 rpcauth_checkverf(struct rpc_task *task, struct xdr_stream *xdr)
 {
@@ -783,13 +701,7 @@ rpcauth_checkverf(struct rpc_task *task, struct xdr_stream *xdr)
 	return ops->crvalidate(task, xdr);
 }
 
-/**
- * rpcauth_unwrap_resp_decode - Invoke XDR decode function
- * @task: controlling RPC task
- * @xdr: stream where the Reply message resides
- *
- * Returns zero on success; otherwise a negative errno is returned.
- */
+ 
 int
 rpcauth_unwrap_resp_decode(struct rpc_task *task, struct xdr_stream *xdr)
 {
@@ -799,13 +711,7 @@ rpcauth_unwrap_resp_decode(struct rpc_task *task, struct xdr_stream *xdr)
 }
 EXPORT_SYMBOL_GPL(rpcauth_unwrap_resp_decode);
 
-/**
- * rpcauth_unwrap_resp - Invoke unwrap and decode function for the cred
- * @task: controlling RPC task
- * @xdr: stream where the Reply message resides
- *
- * Returns zero on success; otherwise a negative errno is returned.
- */
+ 
 int
 rpcauth_unwrap_resp(struct rpc_task *task, struct xdr_stream *xdr)
 {

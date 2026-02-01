@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Generic Loongson processor based LAPTOP/ALL-IN-ONE driver
- *
- *  Jianmin Lv <lvjianmin@loongson.cn>
- *  Huacai Chen <chenhuacai@loongson.cn>
- *
- * Copyright (C) 2022 Loongson Technology Corporation Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,9 +16,9 @@
 #include <linux/types.h>
 #include <acpi/video.h>
 
-/* 1. Driver-wide structs and misc. variables */
+ 
 
-/* ACPI HIDs */
+ 
 #define LOONGSON_ACPI_EC_HID	"PNP0C09"
 #define LOONGSON_ACPI_HKEY_HID	"LOON0000"
 
@@ -60,7 +53,7 @@ int loongson_laptop_turn_on_backlight(void);
 int loongson_laptop_turn_off_backlight(void);
 static int loongson_laptop_backlight_update(struct backlight_device *bd);
 
-/* 2. ACPI Helpers and device model */
+ 
 
 static int acpi_evalf(acpi_handle handle, int *res, char *method, char *fmt, ...)
 {
@@ -93,11 +86,11 @@ static int acpi_evalf(acpi_handle handle, int *res, char *method, char *fmt, ...
 	while (*fmt) {
 		char c = *(fmt++);
 		switch (c) {
-		case 'd':	/* int */
+		case 'd':	 
 			in_objs[params.count].integer.value = va_arg(ap, int);
 			in_objs[params.count++].type = ACPI_TYPE_INTEGER;
 			break;
-			/* add more types as needed */
+			 
 		default:
 			pr_err("acpi_evalf() called with invalid format character '%c'\n", c);
 			va_end(ap);
@@ -116,15 +109,15 @@ static int acpi_evalf(acpi_handle handle, int *res, char *method, char *fmt, ...
 	status = acpi_evaluate_object(handle, method, &params, resultp);
 
 	switch (res_type) {
-	case 'd':		/* int */
+	case 'd':		 
 		success = (status == AE_OK && out_obj.type == ACPI_TYPE_INTEGER);
 		if (success && res)
 			*res = out_obj.integer.value;
 		break;
-	case 'v':		/* void */
+	case 'v':		 
 		success = status == AE_OK;
 		break;
-		/* add more types as needed */
+		 
 	default:
 		pr_err("acpi_evalf() called with invalid format character '%c'\n", res_type);
 		return 0;
@@ -206,27 +199,11 @@ static int loongson_hotkey_resume(struct device *dev)
 		pr_info("Loongson_backlight: resume brightness %d\n", bd->props.brightness);
 	}
 
-	/*
-	 * Only if the firmware supports SW_LID event model, we can handle the
-	 * event. This is for the consideration of development board without EC.
-	 */
+	 
 	if (test_bit(SW_LID, generic_inputdev->swbit)) {
 		if (hotkey_status_get(&status) < 0)
 			return -EIO;
-		/*
-		 * The input device sw element records the last lid status.
-		 * When the system is awakened by other wake-up sources,
-		 * the lid event will also be reported. The judgment of
-		 * adding SW_LID bit which in sw element can avoid this
-		 * case.
-		 *
-		 * Input system will drop lid event when current lid event
-		 * value and last lid status in the same. So laptop driver
-		 * doesn't report repeated events.
-		 *
-		 * Lid status is generally 0, but hardware exception is
-		 * considered. So add lid status confirmation.
-		 */
+		 
 		if (test_bit(SW_LID, generic_inputdev->sw) && !(status & (1 << SW_LID))) {
 			ke.type = KE_SW;
 			ke.sw.value = (u8)status;
@@ -453,10 +430,7 @@ static int __init event_init(struct generic_sub_driver *sub_driver)
 		return ret;
 	}
 
-	/*
-	 * This hotkey driver handle backlight event when
-	 * acpi_video_get_backlight_type() gets acpi_backlight_vendor
-	 */
+	 
 	if (acpi_video_get_backlight_type() == acpi_backlight_vendor)
 		hotkey_backlight_set(true);
 	else
@@ -488,7 +462,7 @@ static void event_notify(struct generic_sub_driver *sub_driver, u32 event)
 	}
 }
 
-/* 3. Infrastructure */
+ 
 
 static void generic_subdriver_exit(struct generic_sub_driver *sub_driver);
 
@@ -556,12 +530,12 @@ static int __init generic_acpi_laptop_init(void)
 	if (acpi_disabled)
 		return -ENODEV;
 
-	/* The EC device is required */
+	 
 	ec_found = acpi_dev_found(LOONGSON_ACPI_EC_HID);
 	if (!ec_found)
 		return -ENODEV;
 
-	/* Enable SCI for EC */
+	 
 	acpi_write_bit_register(ACPI_BITREG_SCI_ENABLE, 1);
 
 	generic_inputdev = input_allocate_device();
@@ -570,14 +544,14 @@ static int __init generic_acpi_laptop_init(void)
 		return -ENOMEM;
 	}
 
-	/* Prepare input device, but don't register */
+	 
 	generic_inputdev->name =
 		"Loongson Generic Laptop/All-in-One Extra Buttons";
 	generic_inputdev->phys = ACPI_LAPTOP_NAME "/input0";
 	generic_inputdev->id.bustype = BUS_HOST;
 	generic_inputdev->dev.parent = NULL;
 
-	/* Init subdrivers */
+	 
 	for (i = 0; i < ARRAY_SIZE(generic_sub_drivers); i++) {
 		ret = generic_subdriver_init(&generic_sub_drivers[i]);
 		if (ret < 0) {

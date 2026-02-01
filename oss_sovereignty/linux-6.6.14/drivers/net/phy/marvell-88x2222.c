@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Marvell 88x2222 dual-port multi-speed ethernet transceiver.
- *
- * Supports:
- *	XAUI on the host side.
- *	1000Base-X or 10GBase-R on the line side.
- *	SGMII over 1000Base-X.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/phy.h>
 #include <linux/gpio.h>
@@ -18,33 +11,33 @@
 #include <linux/sfp.h>
 #include <linux/netdevice.h>
 
-/* Port PCS Configuration */
+ 
 #define	MV_PCS_CONFIG		0xF002
 #define	MV_PCS_HOST_XAUI	0x73
 #define	MV_PCS_LINE_10GBR	(0x71 << 8)
 #define	MV_PCS_LINE_1GBX_AN	(0x7B << 8)
 #define	MV_PCS_LINE_SGMII_AN	(0x7F << 8)
 
-/* Port Reset and Power Down */
+ 
 #define	MV_PORT_RST	0xF003
 #define	MV_LINE_RST_SW	BIT(15)
 #define	MV_HOST_RST_SW	BIT(7)
 #define	MV_PORT_RST_SW	(MV_LINE_RST_SW | MV_HOST_RST_SW)
 
-/* PMD Receive Signal Detect */
+ 
 #define	MV_RX_SIGNAL_DETECT		0x000A
 #define	MV_RX_SIGNAL_DETECT_GLOBAL	BIT(0)
 
-/* 1000Base-X/SGMII Control Register */
+ 
 #define	MV_1GBX_CTRL		(0x2000 + MII_BMCR)
 
-/* 1000BASE-X/SGMII Status Register */
+ 
 #define	MV_1GBX_STAT		(0x2000 + MII_BMSR)
 
-/* 1000Base-X Auto-Negotiation Advertisement Register */
+ 
 #define	MV_1GBX_ADVERTISE	(0x2000 + MII_ADVERTISE)
 
-/* 1000Base-X PHY Specific Status Register */
+ 
 #define	MV_1GBX_PHY_STAT		0xA003
 #define	MV_1GBX_PHY_STAT_AN_RESOLVED	BIT(11)
 #define	MV_1GBX_PHY_STAT_DUPLEX		BIT(13)
@@ -59,14 +52,14 @@ struct mv2222_data {
 	bool sfp_link;
 };
 
-/* SFI PMA transmit enable */
+ 
 static int mv2222_tx_enable(struct phy_device *phydev)
 {
 	return phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_TXDIS,
 				  MDIO_PMD_TXDIS_GLOBAL);
 }
 
-/* SFI PMA transmit disable */
+ 
 static int mv2222_tx_disable(struct phy_device *phydev)
 {
 	return phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_TXDIS,
@@ -211,7 +204,7 @@ static int mv2222_config_line(struct phy_device *phydev)
 	}
 }
 
-/* Switch between 1G (1000Base-X/SGMII) and 10G (10GBase-R) modes */
+ 
 static int mv2222_swap_line_type(struct phy_device *phydev)
 {
 	struct mv2222_data *priv = phydev->priv;
@@ -280,7 +273,7 @@ static int mv2222_config_aneg(struct phy_device *phydev)
 	struct mv2222_data *priv = phydev->priv;
 	int ret, adv;
 
-	/* SFP is not present, do nothing */
+	 
 	if (priv->line_interface == PHY_INTERFACE_MODE_NA)
 		return 0;
 
@@ -321,7 +314,7 @@ static int mv2222_aneg_done(struct phy_device *phydev)
 	return (ret & BMSR_ANEGCOMPLETE);
 }
 
-/* Returns negative on error, 0 if link is down, 1 if link is up */
+ 
 static int mv2222_read_status_10g(struct phy_device *phydev)
 {
 	static int timeout;
@@ -334,7 +327,7 @@ static int mv2222_read_status_10g(struct phy_device *phydev)
 	if (val & MDIO_STAT1_LSTATUS) {
 		link = 1;
 
-		/* 10GBASE-R do not support auto-negotiation */
+		 
 		phydev->autoneg = AUTONEG_DISABLE;
 		phydev->speed = SPEED_10000;
 		phydev->duplex = DUPLEX_FULL;
@@ -357,7 +350,7 @@ static int mv2222_read_status_10g(struct phy_device *phydev)
 	return link;
 }
 
-/* Returns negative on error, 0 if link is down, 1 if link is up */
+ 
 static int mv2222_read_status_1g(struct phy_device *phydev)
 {
 	static int timeout;
@@ -462,7 +455,7 @@ static int mv2222_suspend(struct phy_device *phydev)
 
 static int mv2222_get_features(struct phy_device *phydev)
 {
-	/* All supported linkmodes are set at probe */
+	 
 
 	return 0;
 }

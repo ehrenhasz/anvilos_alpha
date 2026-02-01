@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2009 Intel Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -45,25 +43,25 @@ static bool mrst_sdvo_find_best_pll(const struct gma_limit_t *limit,
 				    int refclk, struct gma_clock_t *best_clock);
 
 static const struct gma_limit_t mrst_limits[] = {
-	{			/* MRST_LIMIT_LVDS_100L */
+	{			 
 	 .dot = {.min = MRST_DOT_MIN, .max = MRST_DOT_MAX},
 	 .m = {.min = MRST_M_MIN_100L, .max = MRST_M_MAX_100L},
 	 .p1 = {.min = MRST_P1_MIN, .max = MRST_P1_MAX_1},
 	 .find_pll = mrst_lvds_find_best_pll,
 	 },
-	{			/* MRST_LIMIT_LVDS_83L */
+	{			 
 	 .dot = {.min = MRST_DOT_MIN, .max = MRST_DOT_MAX},
 	 .m = {.min = MRST_M_MIN_83, .max = MRST_M_MAX_83},
 	 .p1 = {.min = MRST_P1_MIN, .max = MRST_P1_MAX_0},
 	 .find_pll = mrst_lvds_find_best_pll,
 	 },
-	{			/* MRST_LIMIT_LVDS_100 */
+	{			 
 	 .dot = {.min = MRST_DOT_MIN, .max = MRST_DOT_MAX},
 	 .m = {.min = MRST_M_MIN_100, .max = MRST_M_MAX_100},
 	 .p1 = {.min = MRST_P1_MIN, .max = MRST_P1_MAX_1},
 	 .find_pll = mrst_lvds_find_best_pll,
 	 },
-	{			/* MRST_LIMIT_SDVO */
+	{			 
 	 .vco = {.min = 1400000, .max = 2800000},
 	 .n = {.min = 3, .max = 7},
 	 .m = {.min = 80, .max = 137},
@@ -110,7 +108,7 @@ static const struct gma_limit_t *mrst_limit(struct drm_crtc *crtc,
 	return limit;
 }
 
-/** Derive the pixel clock for the given refclk and divisors for 8xx chips. */
+ 
 static void mrst_lvds_clock(int refclk, struct gma_clock_t *clock)
 {
 	clock->dot = (refclk * clock->m) / (14 * clock->p1);
@@ -139,11 +137,11 @@ static bool mrst_sdvo_find_best_pll(const struct gma_limit_t *limit,
 		     clock.n++) {
 			for (clock.p1 = limit->p1.min;
 			     clock.p1 <= limit->p1.max; clock.p1++) {
-				/* p2 value always stored in p2_slow on SDVO */
+				 
 				clock.p = clock.p1 * limit->p2.p2_slow;
 				target_vco = target * clock.p;
 
-				/* VCO will increase at this point so break */
+				 
 				if (target_vco > limit->vco.max)
 					break;
 
@@ -156,8 +154,7 @@ static bool mrst_sdvo_find_best_pll(const struct gma_limit_t *limit,
 					     ((target * 10000) / actual_freq);
 
 				if (freq_error < -min_error) {
-					/* freq_error will start to decrease at
-					   this point so break */
+					 
 					break;
 				}
 
@@ -177,10 +174,7 @@ static bool mrst_sdvo_find_best_pll(const struct gma_limit_t *limit,
 	return min_error == 0;
 }
 
-/*
- * Returns a set of divisors for the desired target clock with the given refclk,
- * or FALSE.  Divisor values are the actual divisors for
- */
+ 
 static bool mrst_lvds_find_best_pll(const struct gma_limit_t *limit,
 				    struct drm_crtc *crtc, int target,
 				    int refclk, struct gma_clock_t *best_clock)
@@ -208,12 +202,7 @@ static bool mrst_lvds_find_best_pll(const struct gma_limit_t *limit,
 	return err != target;
 }
 
-/*
- * Sets the power management mode of the pipe and plane.
- *
- * This code should probably grow support for turning the cursor off and back
- * on appropriately at the same time as we're turning the pipe off/on.
- */
+ 
 static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
 {
 	struct drm_device *dev = crtc->dev;
@@ -233,47 +222,45 @@ static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
 	if (!gma_power_begin(dev, true))
 		return;
 
-	/* XXX: When our outputs are all unaware of DPMS modes other than off
-	 * and on, we should map those modes to DRM_MODE_DPMS_OFF in the CRTC.
-	 */
+	 
 	switch (mode) {
 	case DRM_MODE_DPMS_ON:
 	case DRM_MODE_DPMS_STANDBY:
 	case DRM_MODE_DPMS_SUSPEND:
 		for (i = 0; i <= need_aux; i++) {
-			/* Enable the DPLL */
+			 
 			temp = REG_READ_WITH_AUX(map->dpll, i);
 			if ((temp & DPLL_VCO_ENABLE) == 0) {
 				REG_WRITE_WITH_AUX(map->dpll, temp, i);
 				REG_READ_WITH_AUX(map->dpll, i);
-				/* Wait for the clocks to stabilize. */
+				 
 				udelay(150);
 				REG_WRITE_WITH_AUX(map->dpll,
 						   temp | DPLL_VCO_ENABLE, i);
 				REG_READ_WITH_AUX(map->dpll, i);
-				/* Wait for the clocks to stabilize. */
+				 
 				udelay(150);
 				REG_WRITE_WITH_AUX(map->dpll,
 						   temp | DPLL_VCO_ENABLE, i);
 				REG_READ_WITH_AUX(map->dpll, i);
-				/* Wait for the clocks to stabilize. */
+				 
 				udelay(150);
 			}
 
-			/* Enable the pipe */
+			 
 			temp = REG_READ_WITH_AUX(map->conf, i);
 			if ((temp & PIPEACONF_ENABLE) == 0) {
 				REG_WRITE_WITH_AUX(map->conf,
 						   temp | PIPEACONF_ENABLE, i);
 			}
 
-			/* Enable the plane */
+			 
 			temp = REG_READ_WITH_AUX(map->cntr, i);
 			if ((temp & DISPLAY_PLANE_ENABLE) == 0) {
 				REG_WRITE_WITH_AUX(map->cntr,
 						   temp | DISPLAY_PLANE_ENABLE,
 						   i);
-				/* Flush the plane changes */
+				 
 				REG_WRITE_WITH_AUX(map->base,
 					REG_READ_WITH_AUX(map->base, i), i);
 			}
@@ -281,37 +268,35 @@ static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
 		}
 		gma_crtc_load_lut(crtc);
 
-		/* Give the overlay scaler a chance to enable
-		   if it's on this pipe */
-		/* psb_intel_crtc_dpms_video(crtc, true); TODO */
+		 
+		 
 		break;
 	case DRM_MODE_DPMS_OFF:
-		/* Give the overlay scaler a chance to disable
-		 * if it's on this pipe */
-		/* psb_intel_crtc_dpms_video(crtc, FALSE); TODO */
+		 
+		 
 
 		for (i = 0; i <= need_aux; i++) {
-			/* Disable the VGA plane that we never use */
+			 
 			REG_WRITE_WITH_AUX(VGACNTRL, VGA_DISP_DISABLE, i);
-			/* Disable display plane */
+			 
 			temp = REG_READ_WITH_AUX(map->cntr, i);
 			if ((temp & DISPLAY_PLANE_ENABLE) != 0) {
 				REG_WRITE_WITH_AUX(map->cntr,
 					temp & ~DISPLAY_PLANE_ENABLE, i);
-				/* Flush the plane changes */
+				 
 				REG_WRITE_WITH_AUX(map->base,
 						   REG_READ(map->base), i);
 				REG_READ_WITH_AUX(map->base, i);
 			}
 
-			/* Next, disable display pipes */
+			 
 			temp = REG_READ_WITH_AUX(map->conf, i);
 			if ((temp & PIPEACONF_ENABLE) != 0) {
 				REG_WRITE_WITH_AUX(map->conf,
 						   temp & ~PIPEACONF_ENABLE, i);
 				REG_READ_WITH_AUX(map->conf, i);
 			}
-			/* Wait for the pipe disable to take effect. */
+			 
 			gma_wait_for_vblank(dev);
 
 			temp = REG_READ_WITH_AUX(map->dpll, i);
@@ -321,13 +306,13 @@ static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
 				REG_READ_WITH_AUX(map->dpll, i);
 			}
 
-			/* Wait for the clocks to turn off. */
+			 
 			udelay(150);
 		}
 		break;
 	}
 
-	/* Set FIFO Watermarks (values taken from EMGD) */
+	 
 	REG_WRITE(DSPARB, 0x3f80);
 	REG_WRITE(DSPFW1, 0x3f8f0404);
 	REG_WRITE(DSPFW2, 0x04040f04);
@@ -340,17 +325,14 @@ static void oaktrail_crtc_dpms(struct drm_crtc *crtc, int mode)
 	gma_power_end(dev);
 }
 
-/*
- * Return the pipe currently connected to the panel fitter,
- * or -1 if the panel fitter is not present or not in use
- */
+ 
 static int oaktrail_panel_fitter_pipe(struct drm_device *dev)
 {
 	u32 pfit_control;
 
 	pfit_control = REG_READ(PFIT_CONTROL);
 
-	/* See if the panel fitter is in use */
+	 
 	if ((pfit_control & PFIT_ENABLE) == 0)
 		return -1;
 	return (pfit_control >> 29) & 3;
@@ -418,11 +400,11 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 
 	drm_connector_list_iter_end(&conn_iter);
 
-	/* Disable the VGA plane that we never use */
+	 
 	for (i = 0; i <= need_aux; i++)
 		REG_WRITE_WITH_AUX(VGACNTRL, VGA_DISP_DISABLE, i);
 
-	/* Disable the panel fitter if it was on our pipe */
+	 
 	if (oaktrail_panel_fitter_pipe(dev) == pipe)
 		REG_WRITE(PFIT_CONTROL, 0);
 
@@ -432,9 +414,7 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 	}
 
 	if (scalingType == DRM_MODE_SCALE_NO_SCALE) {
-		/* Moorestown doesn't have register support for centering so
-		 * we need to mess with the h/vblank and h/vsync start and
-		 * ends to get centering */
+		 
 		int offsetX = 0, offsetY = 0;
 
 		offsetX = (adjusted_mode->crtc_hdisplay -
@@ -477,17 +457,17 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 		}
 	}
 
-	/* Flush the plane changes */
+	 
 	{
 		const struct drm_crtc_helper_funcs *crtc_funcs =
 		    crtc->helper_private;
 		crtc_funcs->mode_set_base(crtc, x, y, old_fb);
 	}
 
-	/* setup pipeconf */
+	 
 	pipeconf = REG_READ(map->conf);
 
-	/* Set up the display plane register */
+	 
 	dspcntr = REG_READ(map->cntr);
 	dspcntr |= DISPPLANE_GAMMA_ENABLE;
 
@@ -500,7 +480,7 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 		goto oaktrail_crtc_mode_set_exit;
 
 
-	dpll = 0;		/*BIT16 = 0 for 100MHz reference */
+	dpll = 0;		 
 
 	refclk = is_sdvo ? 96000 : dev_priv->core_freq * 1000;
 	limit = mrst_limit(crtc, refclk);
@@ -508,7 +488,7 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 			     refclk, &clock);
 
 	if (is_sdvo) {
-		/* Convert calculated values to register values */
+		 
 		clock.p1 = (1L << (clock.p1 - 1));
 		clock.m -= 2;
 		clock.n = (1L << (clock.n - 1));
@@ -545,9 +525,9 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 	}
 
 
-	/* compute bitmask from p1 value */
+	 
 	if (is_sdvo)
-		dpll |= clock.p1 << 16; // dpll |= (1 << (clock.p1 - 1)) << 16;
+		dpll |= clock.p1 << 16; 
 	else
 		dpll |= (1 << (clock.p1 - 2)) << 17;
 
@@ -558,7 +538,7 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 			REG_WRITE_WITH_AUX(map->fp0, fp, i);
 			REG_WRITE_WITH_AUX(map->dpll, dpll & ~DPLL_VCO_ENABLE, i);
 			REG_READ_WITH_AUX(map->dpll, i);
-			/* Check the DPLLA lock bit PIPEACONF[29] */
+			 
 			udelay(150);
 		}
 	}
@@ -567,13 +547,13 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
 		REG_WRITE_WITH_AUX(map->fp0, fp, i);
 		REG_WRITE_WITH_AUX(map->dpll, dpll, i);
 		REG_READ_WITH_AUX(map->dpll, i);
-		/* Wait for the clocks to stabilize. */
+		 
 		udelay(150);
 
-		/* write it again -- the BIOS does, after all */
+		 
 		REG_WRITE_WITH_AUX(map->dpll, dpll, i);
 		REG_READ_WITH_AUX(map->dpll, i);
-		/* Wait for the clocks to stabilize. */
+		 
 		udelay(150);
 
 		REG_WRITE_WITH_AUX(map->conf, pipeconf, i);
@@ -603,7 +583,7 @@ static int oaktrail_pipe_set_base(struct drm_crtc *crtc,
 	u32 dspcntr;
 	int ret = 0;
 
-	/* no fb bound */
+	 
 	if (!fb) {
 		dev_dbg(dev->dev, "No FB bound\n");
 		return 0;
@@ -659,7 +639,7 @@ const struct drm_crtc_helper_funcs oaktrail_helper_funcs = {
 	.commit = gma_crtc_commit,
 };
 
-/* Not used yet */
+ 
 const struct gma_clock_funcs mrst_clock_funcs = {
 	.clock = mrst_lvds_clock,
 	.limit = mrst_limit,

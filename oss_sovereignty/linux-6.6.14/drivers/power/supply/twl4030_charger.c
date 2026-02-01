@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TWL4030/TPS65950 BCI (Battery Charger Interface) driver
- *
- * Copyright (C) 2010 Gražvydas Ignotas <notasas@gmail.com>
- *
- * based on twl4030_bci_battery.c by TI
- * Copyright (C) 2008 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -65,20 +58,20 @@
 #define TWL4030_BATSTSPCHG	BIT(2)
 #define TWL4030_BATSTSMCHG	BIT(6)
 
-/* BCI interrupts */
-#define TWL4030_WOVF		BIT(0) /* Watchdog overflow */
-#define TWL4030_TMOVF		BIT(1) /* Timer overflow */
-#define TWL4030_ICHGHIGH	BIT(2) /* Battery charge current high */
-#define TWL4030_ICHGLOW		BIT(3) /* Battery cc. low / FSM state change */
-#define TWL4030_ICHGEOC		BIT(4) /* Battery current end-of-charge */
-#define TWL4030_TBATOR2		BIT(5) /* Battery temperature out of range 2 */
-#define TWL4030_TBATOR1		BIT(6) /* Battery temperature out of range 1 */
-#define TWL4030_BATSTS		BIT(7) /* Battery status */
+ 
+#define TWL4030_WOVF		BIT(0)  
+#define TWL4030_TMOVF		BIT(1)  
+#define TWL4030_ICHGHIGH	BIT(2)  
+#define TWL4030_ICHGLOW		BIT(3)  
+#define TWL4030_ICHGEOC		BIT(4)  
+#define TWL4030_TBATOR2		BIT(5)  
+#define TWL4030_TBATOR1		BIT(6)  
+#define TWL4030_BATSTS		BIT(7)  
 
-#define TWL4030_VBATLVL		BIT(0) /* VBAT level */
-#define TWL4030_VBATOV		BIT(1) /* VBAT overvoltage */
-#define TWL4030_VBUSOV		BIT(2) /* VBUS overvoltage */
-#define TWL4030_ACCHGOV		BIT(3) /* Ac charger overvoltage */
+#define TWL4030_VBATLVL		BIT(0)  
+#define TWL4030_VBATOV		BIT(1)  
+#define TWL4030_VBUSOV		BIT(2)  
+#define TWL4030_ACCHGOV		BIT(3)  
 
 #define TWL4030_MSTATEC_USB		BIT(4)
 #define TWL4030_MSTATEC_AC		BIT(5)
@@ -88,10 +81,7 @@
 #define TWL4030_MSTATEC_COMPLETE1	0x0b
 #define TWL4030_MSTATEC_COMPLETE4	0x0e
 
-/*
- * If AC (Accessory Charger) voltage exceeds 4.5V (MADC 11)
- * then AC is available.
- */
+ 
 static inline int ac_available(struct iio_channel *channel_vac)
 {
 	int val, err;
@@ -120,41 +110,31 @@ struct twl4030_bci {
 	int			irq_bci;
 	int			usb_enabled;
 
-	/*
-	 * ichg_* and *_cur values in uA. If any are 'large', we set
-	 * CGAIN to '1' which doubles the range for half the
-	 * precision.
-	 */
+	 
 	unsigned int		ichg_eoc, ichg_lo, ichg_hi;
 	unsigned int		usb_cur, ac_cur;
 	struct iio_channel	*channel_vac;
 	bool			ac_is_active;
-	int			usb_mode, ac_mode; /* charging mode requested */
+	int			usb_mode, ac_mode;  
 #define	CHARGE_OFF	0
 #define	CHARGE_AUTO	1
 #define	CHARGE_LINEAR	2
 
-	/* When setting the USB current we slowly increase the
-	 * requested current until target is reached or the voltage
-	 * drops below 4.75V.  In the latter case we step back one
-	 * step.
-	 */
+	 
 	unsigned int		usb_cur_target;
 	struct delayed_work	current_worker;
-#define	USB_CUR_STEP	20000	/* 20mA at a time */
-#define	USB_MIN_VOLT	4750000	/* 4.75V */
+#define	USB_CUR_STEP	20000	 
+#define	USB_MIN_VOLT	4750000	 
 #define	USB_CUR_DELAY	msecs_to_jiffies(100)
-#define	USB_MAX_CURRENT	1700000 /* TWL4030 caps at 1.7A */
+#define	USB_MAX_CURRENT	1700000  
 
 	unsigned long		event;
 };
 
-/* strings for 'usb_mode' values */
+ 
 static const char *modes[] = { "off", "auto", "continuous" };
 
-/*
- * clear and set bits on an given register on a given module
- */
+ 
 static int twl4030_clear_set(u8 mod_no, u8 clear, u8 set, u8 reg)
 {
 	u8 val = 0;
@@ -187,14 +167,14 @@ static int twl4030bci_read_adc_val(u8 reg)
 	int ret, temp;
 	u8 val;
 
-	/* read MSB */
+	 
 	ret = twl4030_bci_read(reg + 1, &val);
 	if (ret)
 		return ret;
 
 	temp = (int)(val & 0x03) << 8;
 
-	/* read LSB */
+	 
 	ret = twl4030_bci_read(reg, &val);
 	if (ret)
 		return ret;
@@ -202,17 +182,8 @@ static int twl4030bci_read_adc_val(u8 reg)
 	return temp | val;
 }
 
-/*
- * TI provided formulas:
- * CGAIN == 0: ICHG = (BCIICHG * 1.7) / (2^10 - 1) - 0.85
- * CGAIN == 1: ICHG = (BCIICHG * 3.4) / (2^10 - 1) - 1.7
- * Here we use integer approximation of:
- * CGAIN == 0: val * 1.6618 - 0.85 * 1000
- * CGAIN == 1: (val * 1.6618 - 0.85 * 1000) * 2
- */
-/*
- * convert twl register value for currents into uA
- */
+ 
+ 
 static int regval2ua(int regval, bool cgain)
 {
 	if (cgain)
@@ -221,16 +192,14 @@ static int regval2ua(int regval, bool cgain)
 		return (regval * 16618 - 8500 * 1000) / 10;
 }
 
-/*
- * convert uA currents into twl register value
- */
+ 
 static int ua2regval(int ua, bool cgain)
 {
 	int ret;
 	if (cgain)
 		ua /= 2;
 	ret = (ua * 10 + 8500 * 1000) / 16618;
-	/* rounding problems */
+	 
 	if (ret < 512)
 		ret = 512;
 	return ret;
@@ -245,10 +214,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 	bool cgain = false;
 	u8 boot_bci;
 
-	/*
-	 * If AC (Accessory Charger) voltage exceeds 4.5V (MADC 11)
-	 * and AC is enabled, set current for 'ac'
-	 */
+	 
 	if (ac_available(bci->channel_vac)) {
 		cur = bci->ac_cur;
 		bci->ac_is_active = true;
@@ -263,7 +229,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 			schedule_delayed_work(&bci->current_worker, USB_CUR_DELAY);
 	}
 
-	/* First, check thresholds and see if cgain is needed */
+	 
 	if (bci->ichg_eoc >= 200000)
 		cgain = true;
 	if (bci->ichg_lo >= 400000)
@@ -282,17 +248,10 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 	boot_bci &= 7;
 
 	if ((!!cgain) != !!(bcictl1 & TWL4030_CGAIN))
-		/* Need to turn for charging while we change the
-		 * CGAIN bit.  Leave it off while everything is
-		 * updated.
-		 */
+		 
 		twl4030_clear_set_boot_bci(boot_bci, 0);
 
-	/*
-	 * For ichg_eoc, the hardware only supports reg values matching
-	 * 100XXXX000, and requires the XXXX be stored in the high nibble
-	 * of TWL4030_BCIMFTH8.
-	 */
+	 
 	reg = ua2regval(bci->ichg_eoc, cgain);
 	if (reg > 0x278)
 		reg = 0x278;
@@ -301,10 +260,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 	reg = (reg >> 3) & 0xf;
 	fullreg = reg << 4;
 
-	/*
-	 * For ichg_lo, reg value must match 10XXXX0000.
-	 * XXXX is stored in low nibble of TWL4030_BCIMFTH8.
-	 */
+	 
 	reg = ua2regval(bci->ichg_lo, cgain);
 	if (reg > 0x2F0)
 		reg = 0x2F0;
@@ -313,7 +269,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 	reg = (reg >> 4) & 0xf;
 	fullreg |= reg;
 
-	/* ichg_eoc and ichg_lo live in same register */
+	 
 	status = twl4030_bci_read(TWL4030_BCIMFTH8, &oldreg);
 	if (status < 0)
 		return status;
@@ -326,7 +282,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 				 fullreg, TWL4030_BCIMFTH8);
 	}
 
-	/* ichg_hi threshold must be 1XXXX01100 (I think) */
+	 
 	reg = ua2regval(bci->ichg_hi, cgain);
 	if (reg > 0x3E0)
 		reg = 0x3E0;
@@ -347,12 +303,9 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 				 fullreg, TWL4030_BCIMFTH9);
 	}
 
-	/*
-	 * And finally, set the current.  This is stored in
-	 * two registers.
-	 */
+	 
 	reg = ua2regval(cur, cgain);
-	/* we have only 10 bits */
+	 
 	if (reg > 0x3ff)
 		reg = 0x3ff;
 	status = twl4030_bci_read(TWL4030_BCIIREF1, &oldreg);
@@ -364,8 +317,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 		return status;
 	cur_reg |= oldreg << 8;
 	if (reg != oldreg) {
-		/* disable write protection for one write access for
-		 * BCIIREF */
+		 
 		status = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0xE7,
 					  TWL4030_BCIMFKEY);
 		if (status < 0)
@@ -375,8 +327,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 					  TWL4030_BCIIREF2);
 		if (status < 0)
 			return status;
-		/* disable write protection for one write access for
-		 * BCIIREF */
+		 
 		status = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0xE7,
 					  TWL4030_BCIMFKEY);
 		if (status < 0)
@@ -386,7 +337,7 @@ static int twl4030_charger_update_current(struct twl4030_bci *bci)
 					  TWL4030_BCIIREF1);
 	}
 	if ((!!cgain) != !!(bcictl1 & TWL4030_CGAIN)) {
-		/* Flip CGAIN and re-enable charging */
+		 
 		bcictl1 ^= TWL4030_CGAIN;
 		twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE,
 				 bcictl1, TWL4030_BCICTL1);
@@ -408,7 +359,7 @@ static void twl4030_current_worker(struct work_struct *data)
 	if (res < 0)
 		v = 0;
 	else
-		/* BCIVBUS uses ADCIN8, 7/1023 V/step */
+		 
 		v = res * 6843;
 	curr = twl4030_charger_get_current();
 
@@ -416,13 +367,13 @@ static void twl4030_current_worker(struct work_struct *data)
 		bci->usb_cur, bci->usb_cur_target);
 
 	if (v < USB_MIN_VOLT) {
-		/* Back up and stop adjusting. */
+		 
 		if (bci->usb_cur >= USB_CUR_STEP)
 			bci->usb_cur -= USB_CUR_STEP;
 		bci->usb_cur_target = bci->usb_cur;
 	} else if (bci->usb_cur >= bci->usb_cur_target ||
 		   bci->usb_cur + USB_CUR_STEP > USB_MAX_CURRENT) {
-		/* Reached target and voltage is OK - stop */
+		 
 		return;
 	} else {
 		bci->usb_cur += USB_CUR_STEP;
@@ -431,9 +382,7 @@ static void twl4030_current_worker(struct work_struct *data)
 	twl4030_charger_update_current(bci);
 }
 
-/*
- * Enable/Disable USB Charge functionality.
- */
+ 
 static int twl4030_charger_enable_usb(struct twl4030_bci *bci, bool enable)
 {
 	int ret;
@@ -445,14 +394,14 @@ static int twl4030_charger_enable_usb(struct twl4030_bci *bci, bool enable)
 
 		twl4030_charger_update_current(bci);
 
-		/* Need to keep phy powered */
+		 
 		if (!bci->usb_enabled) {
 			pm_runtime_get_sync(bci->transceiver->dev);
 			bci->usb_enabled = 1;
 		}
 
 		if (bci->usb_mode == CHARGE_AUTO) {
-			/* Enable interrupts now. */
+			 
 			reg = ~(u32)(TWL4030_ICHGLOW | TWL4030_ICHGEOC |
 					TWL4030_TBATOR2 | TWL4030_TBATOR1 |
 					TWL4030_BATSTS);
@@ -464,15 +413,15 @@ static int twl4030_charger_enable_usb(struct twl4030_bci *bci, bool enable)
 					ret);
 				return ret;
 			}
-			/* forcing the field BCIAUTOUSB (BOOT_BCI[1]) to 1 */
+			 
 			ret = twl4030_clear_set_boot_bci(0, TWL4030_BCIAUTOUSB);
 		}
 
-		/* forcing USBFASTMCHG(BCIMFSTS4[2]) to 1 */
+		 
 		ret = twl4030_clear_set(TWL_MODULE_MAIN_CHARGE, 0,
 			TWL4030_USBFASTMCHG, TWL4030_BCIMFSTS4);
 		if (bci->usb_mode == CHARGE_LINEAR) {
-			/* Enable interrupts now. */
+			 
 			reg = ~(u32)(TWL4030_ICHGLOW | TWL4030_TBATOR2 |
 					TWL4030_TBATOR1 | TWL4030_BATSTS);
 			ret = twl_i2c_write_u8(TWL4030_MODULE_INTERRUPTS, reg,
@@ -484,26 +433,22 @@ static int twl4030_charger_enable_usb(struct twl4030_bci *bci, bool enable)
 				return ret;
 			}
 			twl4030_clear_set_boot_bci(TWL4030_BCIAUTOAC|TWL4030_CVENAC, 0);
-			/* Watch dog key: WOVF acknowledge */
+			 
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0x33,
 					       TWL4030_BCIWDKEY);
-			/* 0x24 + EKEY6: off mode */
+			 
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0x2a,
 					       TWL4030_BCIMDKEY);
-			/* EKEY2: Linear charge: USB path */
+			 
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0x26,
 					       TWL4030_BCIMDKEY);
-			/* WDKEY5: stop watchdog count */
+			 
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0xf3,
 					       TWL4030_BCIWDKEY);
-			/* enable MFEN3 access */
+			 
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0x9c,
 					       TWL4030_BCIMFKEY);
-			 /* ICHGEOCEN - end-of-charge monitor (current < 80mA)
-			  *                      (charging continues)
-			  * ICHGLOWEN - current level monitor (charge continues)
-			  * don't monitor over-current or heat save
-			  */
+			  
 			ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE, 0xf0,
 					       TWL4030_BCIMFEN3);
 		}
@@ -522,9 +467,7 @@ static int twl4030_charger_enable_usb(struct twl4030_bci *bci, bool enable)
 	return ret;
 }
 
-/*
- * Enable/Disable AC Charge funtionality.
- */
+ 
 static int twl4030_charger_enable_ac(struct twl4030_bci *bci, bool enable)
 {
 	int ret;
@@ -540,9 +483,7 @@ static int twl4030_charger_enable_ac(struct twl4030_bci *bci, bool enable)
 	return ret;
 }
 
-/*
- * Enable/Disable charging of Backup Battery.
- */
+ 
 static int twl4030_charger_enable_backup(int uvolt, int uamp)
 {
 	int ret;
@@ -550,7 +491,7 @@ static int twl4030_charger_enable_backup(int uvolt, int uamp)
 
 	if (uvolt < 2500000 ||
 	    uamp < 25) {
-		/* disable charging of backup battery */
+		 
 		ret = twl4030_clear_set(TWL_MODULE_PM_RECEIVER,
 					TWL4030_BBCHEN, 0, TWL4030_BB_CFG);
 		return ret;
@@ -583,15 +524,13 @@ static int twl4030_charger_enable_backup(int uvolt, int uamp)
 	return ret;
 }
 
-/*
- * TWL4030 CHG_PRES (AC charger presence) events
- */
+ 
 static irqreturn_t twl4030_charger_interrupt(int irq, void *arg)
 {
 	struct twl4030_bci *bci = arg;
 
 	dev_dbg(bci->dev, "CHG_PRES irq\n");
-	/* reset current on each 'plug' event */
+	 
 	bci->ac_cur = 500000;
 	twl4030_charger_update_current(bci);
 	power_supply_changed(bci->ac);
@@ -600,9 +539,7 @@ static irqreturn_t twl4030_charger_interrupt(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/*
- * TWL4030 BCI monitoring events
- */
+ 
 static irqreturn_t twl4030_bci_interrupt(int irq, void *arg)
 {
 	struct twl4030_bci *bci = arg;
@@ -622,13 +559,13 @@ static irqreturn_t twl4030_bci_interrupt(int irq, void *arg)
 	dev_dbg(bci->dev, "BCI irq %02x %02x\n", irqs2, irqs1);
 
 	if (irqs1 & (TWL4030_ICHGLOW | TWL4030_ICHGEOC)) {
-		/* charger state change, inform the core */
+		 
 		power_supply_changed(bci->ac);
 		power_supply_changed(bci->usb);
 	}
 	twl4030_charger_update_current(bci);
 
-	/* various monitoring events, for now we just log them here */
+	 
 	if (irqs1 & (TWL4030_TBATOR2 | TWL4030_TBATOR1))
 		dev_warn(bci->dev, "battery temperature out of range\n");
 
@@ -669,7 +606,7 @@ static int twl4030_bci_usb_ncb(struct notifier_block *nb, unsigned long val,
 
 	dev_dbg(bci->dev, "OTG notify %lu\n", val);
 
-	/* reset current on each 'plug' event */
+	 
 	if (allow_usb)
 		bci->usb_cur_target = 500000;
 	else
@@ -681,9 +618,7 @@ static int twl4030_bci_usb_ncb(struct notifier_block *nb, unsigned long val,
 	return NOTIFY_OK;
 }
 
-/*
- * sysfs charger enabled store
- */
+ 
 static ssize_t
 twl4030_bci_mode_store(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t n)
@@ -710,9 +645,7 @@ twl4030_bci_mode_store(struct device *dev, struct device_attribute *attr,
 	return (status == 0) ? n : status;
 }
 
-/*
- * sysfs charger enabled show
- */
+ 
 static ssize_t
 twl4030_bci_mode_show(struct device *dev,
 			     struct device_attribute *attr, char *buf)
@@ -753,10 +686,7 @@ static int twl4030_charger_get_current(void)
 	return regval2ua(curr, bcictl1 & TWL4030_CGAIN);
 }
 
-/*
- * Returns the main charge FSM state
- * Or < 0 on failure.
- */
+ 
 static int twl4030bci_state(struct twl4030_bci *bci)
 {
 	int ret;
@@ -812,7 +742,7 @@ static int twl4030_bci_get_property(struct power_supply *psy,
 		else
 			is_charging = s & 2;
 		if (is_charging)
-			/* A little white lie */
+			 
 			state = TWL4030_MSTATEC_QUICK1;
 	}
 
@@ -824,27 +754,27 @@ static int twl4030_bci_get_property(struct power_supply *psy,
 			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		/* charging must be active for meaningful result */
+		 
 		if (!is_charging)
 			return -ENODATA;
 		if (psy->desc->type == POWER_SUPPLY_TYPE_USB) {
 			ret = twl4030bci_read_adc_val(TWL4030_BCIVBUS);
 			if (ret < 0)
 				return ret;
-			/* BCIVBUS uses ADCIN8, 7/1023 V/step */
+			 
 			val->intval = ret * 6843;
 		} else {
 			ret = twl4030bci_read_adc_val(TWL4030_BCIVAC);
 			if (ret < 0)
 				return ret;
-			/* BCIVAC uses ADCIN11, 10/1023 V/step */
+			 
 			val->intval = ret * 9775;
 		}
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		if (!is_charging)
 			return -ENODATA;
-		/* current measurement is shared between AC and USB */
+		 
 		ret = twl4030_charger_get_current();
 		if (ret < 0)
 			return ret;
@@ -986,14 +916,14 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 	if (!pdata)
 		pdata = twl4030_bci_parse_dt(&pdev->dev);
 
-	bci->ichg_eoc = 80100; /* Stop charging when current drops to here */
-	bci->ichg_lo = 241000; /* Low threshold */
-	bci->ichg_hi = 500000; /* High threshold */
-	bci->ac_cur = 500000; /* 500mA */
+	bci->ichg_eoc = 80100;  
+	bci->ichg_lo = 241000;  
+	bci->ichg_hi = 500000;  
+	bci->ac_cur = 500000;  
 	if (allow_usb)
-		bci->usb_cur_target = 500000;  /* 500mA */
+		bci->usb_cur_target = 500000;   
 	else
-		bci->usb_cur_target = 100000;  /* 100mA */
+		bci->usb_cur_target = 100000;   
 	bci->usb_mode = CHARGE_AUTO;
 	bci->ac_mode = CHARGE_AUTO;
 
@@ -1010,7 +940,7 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 	if (IS_ERR(bci->channel_vac)) {
 		ret = PTR_ERR(bci->channel_vac);
 		if (ret == -EPROBE_DEFER)
-			return ret;	/* iio not ready */
+			return ret;	 
 		dev_warn(&pdev->dev, "could not request vac iio channel (%d)",
 			ret);
 		bci->channel_vac = NULL;
@@ -1029,7 +959,7 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 			if (IS_ERR(bci->transceiver)) {
 				ret = PTR_ERR(bci->transceiver);
 				if (ret == -EPROBE_DEFER)
-					return ret;	/* phy not ready */
+					return ret;	 
 				dev_warn(&pdev->dev, "could not request transceiver (%d)",
 					ret);
 				bci->transceiver = NULL;
@@ -1070,7 +1000,7 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Enable interrupts now. */
+	 
 	reg = ~(u32)(TWL4030_ICHGLOW | TWL4030_ICHGEOC | TWL4030_TBATOR2 |
 		TWL4030_TBATOR1 | TWL4030_BATSTS);
 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTERRUPTS, reg,
@@ -1118,7 +1048,7 @@ static int twl4030_bci_remove(struct platform_device *pdev)
 
 	device_remove_file(&bci->usb->dev, &dev_attr_mode);
 	device_remove_file(&bci->ac->dev, &dev_attr_mode);
-	/* mask interrupts */
+	 
 	twl_i2c_write_u8(TWL4030_MODULE_INTERRUPTS, 0xff,
 			 TWL4030_INTERRUPTS_BCIIMR1A);
 	twl_i2c_write_u8(TWL4030_MODULE_INTERRUPTS, 0xff,

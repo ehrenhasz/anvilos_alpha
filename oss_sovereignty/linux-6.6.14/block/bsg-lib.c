@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  BSG helper library
- *
- *  Copyright (C) 2008   James Smart, Emulex Corporation
- *  Copyright (C) 2011   Red Hat, Inc.  All rights reserved.
- *  Copyright (C) 2011   Mike Christie
- */
+
+ 
 #include <linux/bsg.h>
 #include <linux/slab.h>
 #include <linux/blk-mq.h>
@@ -94,10 +88,7 @@ static int bsg_transport_sg_io_fn(struct request_queue *q, struct sg_io_v4 *hdr,
 	bio = rq->bio;
 	blk_execute_rq(rq, !(hdr->flags & BSG_FLAG_Q_AT_TAIL));
 
-	/*
-	 * The assignments below don't make much sense, but are kept for
-	 * bug by bug backwards compatibility:
-	 */
+	 
 	hdr->device_status = job->result & 0xff;
 	hdr->transport_status = host_byte(job->result);
 	hdr->driver_status = 0;
@@ -107,7 +98,7 @@ static int bsg_transport_sg_io_fn(struct request_queue *q, struct sg_io_v4 *hdr,
 	hdr->response_len = 0;
 
 	if (job->result < 0) {
-		/* we're only returning the result field in the reply */
+		 
 		job->reply_len = sizeof(u32);
 		ret = job->result;
 	}
@@ -121,7 +112,7 @@ static int bsg_transport_sg_io_fn(struct request_queue *q, struct sg_io_v4 *hdr,
 			hdr->response_len = len;
 	}
 
-	/* we assume all request payload was transferred, residual == 0 */
+	 
 	hdr->dout_resid = 0;
 
 	if (job->bidi_rq) {
@@ -149,16 +140,13 @@ out_free_rq:
 	return ret;
 }
 
-/**
- * bsg_teardown_job - routine to teardown a bsg job
- * @kref: kref inside bsg_job that is to be torn down
- */
+ 
 static void bsg_teardown_job(struct kref *kref)
 {
 	struct bsg_job *job = container_of(kref, struct bsg_job, kref);
 	struct request *rq = blk_mq_rq_from_pdu(job);
 
-	put_device(job->dev);	/* release reference for the request */
+	put_device(job->dev);	 
 
 	kfree(job->request_payload.sg_list);
 	kfree(job->reply_payload.sg_list);
@@ -178,14 +166,7 @@ int bsg_job_get(struct bsg_job *job)
 }
 EXPORT_SYMBOL_GPL(bsg_job_get);
 
-/**
- * bsg_job_done - completion routine for bsg requests
- * @job: bsg_job that is complete
- * @result: job reply result
- * @reply_payload_rcv_len: length of payload recvd
- *
- * The LLD should call this when the bsg job has completed.
- */
+ 
 void bsg_job_done(struct bsg_job *job, int result,
 		  unsigned int reply_payload_rcv_len)
 {
@@ -198,10 +179,7 @@ void bsg_job_done(struct bsg_job *job, int result,
 }
 EXPORT_SYMBOL_GPL(bsg_job_done);
 
-/**
- * bsg_complete - softirq done routine for destroying the bsg requests
- * @rq: BSG request that holds the job to be destroyed
- */
+ 
 static void bsg_complete(struct request *rq)
 {
 	struct bsg_job *job = blk_mq_rq_to_pdu(rq);
@@ -224,11 +202,7 @@ static int bsg_map_buffer(struct bsg_buffer *buf, struct request *req)
 	return 0;
 }
 
-/**
- * bsg_prepare_job - create the bsg_job structure for the bsg request
- * @dev: device that is being sent the bsg request
- * @req: BSG request that needs a job structure
- */
+ 
 static bool bsg_prepare_job(struct device *dev, struct request *req)
 {
 	struct bsg_job *job = blk_mq_rq_to_pdu(req);
@@ -247,7 +221,7 @@ static bool bsg_prepare_job(struct device *dev, struct request *req)
 			goto failjob_rls_rqst_payload;
 	}
 	job->dev = dev;
-	/* take a reference for the request */
+	 
 	get_device(job->dev);
 	kref_init(&job->kref);
 	return true;
@@ -259,16 +233,7 @@ failjob_rls_job:
 	return false;
 }
 
-/**
- * bsg_queue_rq - generic handler for bsg requests
- * @hctx: hardware queue
- * @bd: queue data
- *
- * On error the create_bsg_job function should return a -Exyz error value
- * that will be set to ->result.
- *
- * Drivers/subsys should pass this to the queue init function.
- */
+ 
 static blk_status_t bsg_queue_rq(struct blk_mq_hw_ctx *hctx,
 				 const struct blk_mq_queue_data *bd)
 {
@@ -297,7 +262,7 @@ out:
 	return sts;
 }
 
-/* called right after the request is allocated for the request_queue */
+ 
 static int bsg_init_rq(struct blk_mq_tag_set *set, struct request *req,
 		       unsigned int hctx_idx, unsigned int numa_node)
 {
@@ -350,14 +315,7 @@ static const struct blk_mq_ops bsg_mq_ops = {
 	.timeout		= bsg_timeout,
 };
 
-/**
- * bsg_setup_queue - Create and add the bsg hooks so we can receive requests
- * @dev: device to attach bsg device to
- * @name: device to give bsg device
- * @job_fn: bsg job handler
- * @timeout: timeout handler function pointer
- * @dd_job_size: size of LLD data needed for each job
- */
+ 
 struct request_queue *bsg_setup_queue(struct device *dev, const char *name,
 		bsg_job_fn *job_fn, bsg_timeout_fn *timeout, int dd_job_size)
 {

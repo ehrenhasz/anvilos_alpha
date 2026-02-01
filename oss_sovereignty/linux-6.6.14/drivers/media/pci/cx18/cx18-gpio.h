@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  cx18 gpio functions
- *
- *  Derived from ivtv-gpio.h
- *
- *  Copyright (C) 2007  Hans Verkuil <hverkuil@xs4all.nl>
- *  Copyright (C) 2008  Andy Walls <awalls@md.metrocast.net>
- */
+ 
+ 
 
 void cx18_gpio_init(struct cx18 *cx);
 int cx18_gpio_register(struct cx18 *cx, u32 hw);

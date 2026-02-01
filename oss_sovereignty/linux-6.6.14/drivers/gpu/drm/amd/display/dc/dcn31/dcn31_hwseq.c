@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dm_services.h"
@@ -71,20 +48,20 @@ static void enable_memory_low_power(struct dc *dc)
 	int i;
 
 	if (dc->debug.enable_mem_low_power.bits.dmcu) {
-		// Force ERAM to shutdown if DMCU is not enabled
+		
 		if (dc->debug.disable_dmcu || dc->config.disable_dmcu) {
 			REG_UPDATE(DMU_MEM_PWR_CNTL, DMCU_ERAM_MEM_PWR_FORCE, 3);
 		}
 	}
 
-	// Set default OPTC memory power states
+	
 	if (dc->debug.enable_mem_low_power.bits.optc) {
-		// Shutdown when unassigned and light sleep in VBLANK
+		
 		REG_SET_2(ODM_MEM_PWR_CTRL3, 0, ODM_MEM_UNASSIGNED_PWR_MODE, 3, ODM_MEM_VBLANK_PWR_MODE, 1);
 	}
 
 	if (dc->debug.enable_mem_low_power.bits.vga) {
-		// Power down VGA memory
+		
 		REG_UPDATE(MMHUBBUB_MEM_PWR_CNTL, VGA_MEM_PWR_FORCE, 1);
 	}
 
@@ -94,7 +71,7 @@ static void enable_memory_low_power(struct dc *dc)
 
 
 	if (dc->debug.enable_mem_low_power.bits.vpg && dc->res_pool->stream_enc[0]->vpg->funcs->vpg_powerdown) {
-		// Power down VPGs
+		
 		for (i = 0; i < dc->res_pool->stream_enc_count; i++)
 			dc->res_pool->stream_enc[i]->vpg->funcs->vpg_powerdown(dc->res_pool->stream_enc[i]->vpg);
 #if defined(CONFIG_DRM_AMD_DC_FP)
@@ -122,7 +99,7 @@ void dcn31_init_hw(struct dc *dc)
 		if (hws->funcs.disable_vga)
 			hws->funcs.disable_vga(dc->hwseq);
 	}
-	// Initialize the dccg
+	
 	if (res_pool->dccg->funcs->dccg_init)
 		res_pool->dccg->funcs->dccg_init(res_pool->dccg);
 
@@ -142,7 +119,7 @@ void dcn31_init_hw(struct dc *dc)
 					res_pool->ref_clocks.dccg_ref_clock_inKhz,
 					&res_pool->ref_clocks.dchub_ref_clock_inKhz);
 		} else {
-			// Not all ASICs have DCCG sw component
+			
 			res_pool->ref_clocks.dccg_ref_clock_inKhz =
 					res_pool->ref_clocks.xtalin_clock_inKhz;
 			res_pool->ref_clocks.dchub_ref_clock_inKhz =
@@ -152,10 +129,7 @@ void dcn31_init_hw(struct dc *dc)
 		ASSERT_CRITICAL(false);
 
 	for (i = 0; i < dc->link_count; i++) {
-		/* Power up AND update implementation according to the
-		 * required signal (which may be different from the
-		 * default signal on connector).
-		 */
+		 
 		struct dc_link *link = dc->links[i];
 
 		if (link->ep_type != DISPLAY_ENDPOINT_PHY)
@@ -163,7 +137,7 @@ void dcn31_init_hw(struct dc *dc)
 
 		link->link_enc->funcs->hw_init(link->link_enc);
 
-		/* Check for enabled DIG to identify enabled display */
+		 
 		if (link->link_enc->funcs->is_dig_enabled &&
 			link->link_enc->funcs->is_dig_enabled(link->link_enc)) {
 			link->link_status.link_active = true;
@@ -173,21 +147,16 @@ void dcn31_init_hw(struct dc *dc)
 		}
 	}
 
-	/* we want to turn off all dp displays before doing detection */
+	 
 	dc->link_srv->blank_all_dp_displays(dc);
 
 	if (hws->funcs.enable_power_gating_plane)
 		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
 
-	/* If taking control over from VBIOS, we may want to optimize our first
-	 * mode set, so we need to skip powering down pipes until we know which
-	 * pipes we want to use.
-	 * Otherwise, if taking control is not possible, we need to power
-	 * everything down.
-	 */
+	 
 	if (dcb->funcs->is_accelerated_mode(dcb) || !dc->config.seamless_boot_edp_requested) {
 
-		// we want to turn off edp displays if odm is enabled and no seamless boot
+		
 		if (!dc->caps.seamless_odm) {
 			for (i = 0; i < dc->res_pool->timing_generator_count; i++) {
 				struct timing_generator *tg = dc->res_pool->timing_generators[i];
@@ -232,10 +201,10 @@ void dcn31_init_hw(struct dc *dc)
 			abms[i]->funcs->abm_init(abms[i], backlight);
 	}
 
-	/* power AFMT HDMI memory TODO: may move to dis/en output save power*/
+	 
 	REG_WRITE(DIO_MEM_PWR_CTRL, 0);
 
-	// Set i2c to light sleep until engine is setup
+	
 	if (dc->debug.enable_mem_low_power.bits.i2c)
 		REG_UPDATE(DIO_MEM_PWR_CTRL, I2C_LIGHT_SLEEP_FORCE, 1);
 
@@ -243,7 +212,7 @@ void dcn31_init_hw(struct dc *dc)
 		hws->funcs.setup_hpo_hw_control(hws, false);
 
 	if (!dc->debug.disable_clock_gate) {
-		/* enable all DCN clock gating */
+		 
 		REG_WRITE(DCCG_GATE_DISABLE_CNTL, 0);
 
 		REG_WRITE(DCCG_GATE_DISABLE_CNTL2, 0);
@@ -268,7 +237,7 @@ void dcn31_init_hw(struct dc *dc)
 		dc->res_pool->hubbub->funcs->init_crb(dc->res_pool->hubbub);
 #endif
 
-	// Get DMCUB capabilities
+	
 	dc_dmub_srv_query_caps_cmd(dc->ctx->dmub_srv);
 	dc->caps.dmub_caps.psr = dc->ctx->dmub_srv->dmub->feature_caps.psr;
 	dc->caps.dmub_caps.mclk_sw = dc->ctx->dmub_srv->dmub->feature_caps.fw_assisted_mclk_switch;
@@ -297,7 +266,7 @@ void dcn31_dsc_pg_control(
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, 1);
 
 	switch (dsc_inst) {
-	case 0: /* DSC0 */
+	case 0:  
 		REG_UPDATE(DOMAIN16_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -305,7 +274,7 @@ void dcn31_dsc_pg_control(
 				DOMAIN_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 1: /* DSC1 */
+	case 1:  
 		REG_UPDATE(DOMAIN17_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -313,7 +282,7 @@ void dcn31_dsc_pg_control(
 				DOMAIN_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 2: /* DSC2 */
+	case 2:  
 		REG_UPDATE(DOMAIN18_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -342,7 +311,7 @@ void dcn31_enable_power_gating_plane(
 	struct dce_hwseq *hws,
 	bool enable)
 {
-	bool force_on = true; /* disable power gating */
+	bool force_on = true;  
 	uint32_t org_ip_request_cntl = 0;
 
 	if (enable && !hws->ctx->dc->debug.disable_hubp_power_gate)
@@ -351,18 +320,18 @@ void dcn31_enable_power_gating_plane(
 	REG_GET(DC_IP_REQUEST_CNTL, IP_REQUEST_EN, &org_ip_request_cntl);
 	if (org_ip_request_cntl == 0)
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, 1);
-	/* DCHUBP0/1/2/3/4/5 */
+	 
 	REG_UPDATE(DOMAIN0_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN2_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
-	/* DPP0/1/2/3/4/5 */
+	 
 	REG_UPDATE(DOMAIN1_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN3_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 
-	force_on = true; /* disable power gating */
+	force_on = true;  
 	if (enable && !hws->ctx->dc->debug.disable_dsc_power_gate)
 		force_on = false;
 
-	/* DCS0/1/2/3/4/5 */
+	 
 	REG_UPDATE(DOMAIN16_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN17_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN18_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
@@ -379,7 +348,7 @@ void dcn31_update_info_frame(struct pipe_ctx *pipe_ctx)
 	ASSERT(pipe_ctx->stream);
 
 	if (pipe_ctx->stream_res.stream_enc == NULL)
-		return;  /* this is not root pipe */
+		return;   
 
 	is_hdmi_tmds = dc_is_hdmi_tmds_signal(pipe_ctx->stream->signal);
 	is_dp = dc_is_dp_signal(pipe_ctx->stream->signal);
@@ -422,10 +391,7 @@ void dcn31_z10_restore(const struct dc *dc)
 {
 	union dmub_rb_cmd cmd;
 
-	/*
-	 * DMUB notifies whether restore is required.
-	 * Optimization to avoid sending commands when not required.
-	 */
+	 
 	if (!dc_dmub_srv_is_restore_required(dc->ctx->dmub_srv))
 		return;
 
@@ -489,7 +455,7 @@ int dcn31_init_sys_ctx(struct dce_hwseq *hws, struct dc *dc, struct dc_phy_addr_
 	config.gart_config.page_table_end_addr = pa_config->gart_config.page_table_end_addr;
 
 	if (pa_config->gart_config.base_addr_is_mc_addr) {
-		/* Convert from MC address to offset into FB */
+		 
 		config.gart_config.page_table_base_addr = pa_config->gart_config.page_table_base_addr -
 				pa_config->system_aperture.fb_base +
 				pa_config->system_aperture.fb_offset;
@@ -530,26 +496,22 @@ static void dcn31_reset_back_end_for_pipe(
 				pipe_ctx->stream_res.tg, NULL);
 
 	link = pipe_ctx->stream->link;
-	/* DPMS may already disable or */
-	/* dpms_off status is incorrect due to fastboot
-	 * feature. When system resume from S4 with second
-	 * screen only, the dpms_off would be true but
-	 * VBIOS lit up eDP, so check link status too.
-	 */
+	 
+	 
 	if (!pipe_ctx->stream->dpms_off || link->link_status.link_active)
 		dc->link_srv->set_dpms_off(pipe_ctx);
 	else if (pipe_ctx->stream_res.audio)
 		dc->hwss.disable_audio_stream(pipe_ctx);
 
-	/* free acquired resources */
+	 
 	if (pipe_ctx->stream_res.audio) {
-		/*disable az_endpoint*/
+		 
 		pipe_ctx->stream_res.audio->funcs->az_disable(pipe_ctx->stream_res.audio);
 
-		/*free audio*/
+		 
 		if (dc->caps.dynamic_audio == true) {
-			/*we have to dynamic arbitrate the audio endpoints*/
-			/*we free the resource, need reset is_audio_acquired*/
+			 
+			 
 			update_audio_usage(&dc->current_state->res_ctx, dc->res_pool,
 					pipe_ctx->stream_res.audio, false);
 			pipe_ctx->stream_res.audio = NULL;
@@ -568,7 +530,7 @@ void dcn31_reset_hw_ctx_wrap(
 	int i;
 	struct dce_hwseq *hws = dc->hwseq;
 
-	/* Reset Back End*/
+	 
 	for (i = dc->res_pool->pipe_count - 1; i >= 0 ; i--) {
 		struct pipe_ctx *pipe_ctx_old =
 			&dc->current_state->res_ctx.pipe_ctx[i];
@@ -592,7 +554,7 @@ void dcn31_reset_hw_ctx_wrap(
 		}
 	}
 
-	/* New dc_state in the process of being applied to hardware. */
+	 
 	link_enc_cfg_set_transient_mode(dc, dc->current_state, context);
 }
 

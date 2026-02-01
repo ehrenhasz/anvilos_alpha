@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -22,18 +20,18 @@
 
 #define PDC_MAX_GPIO_IRQS	256
 
-/* Valid only on HW version < 3.2 */
+ 
 #define IRQ_ENABLE_BANK		0x10
 #define IRQ_i_CFG		0x110
 
-/* Valid only on HW version >= 3.2 */
+ 
 #define IRQ_i_CFG_IRQ_ENABLE	3
 
 #define IRQ_i_CFG_TYPE_MASK	GENMASK(2, 0)
 
 #define PDC_VERSION_REG		0x1000
 
-/* Notable PDC versions */
+ 
 #define PDC_VERSION_3_2		0x30200
 
 struct pdc_pin_region {
@@ -101,21 +99,7 @@ static void qcom_pdc_gic_enable(struct irq_data *d)
 	irq_chip_enable_parent(d);
 }
 
-/*
- * GIC does not handle falling edge or active low. To allow falling edge and
- * active low interrupts to be handled at GIC, PDC has an inverter that inverts
- * falling edge into a rising edge and active low into an active high.
- * For the inverter to work, the polarity bit in the IRQ_CONFIG register has to
- * set as per the table below.
- * Level sensitive active low    LOW
- * Rising edge sensitive         NOT USED
- * Falling edge sensitive        LOW
- * Dual Edge sensitive           NOT USED
- * Level sensitive active High   HIGH
- * Falling Edge sensitive        NOT USED
- * Rising edge sensitive         HIGH
- * Dual Edge sensitive           HIGH
- */
+ 
 enum pdc_irq_config_bits {
 	PDC_LEVEL_LOW		= 0b000,
 	PDC_EDGE_FALLING	= 0b010,
@@ -124,17 +108,7 @@ enum pdc_irq_config_bits {
 	PDC_EDGE_DUAL		= 0b111,
 };
 
-/**
- * qcom_pdc_gic_set_type: Configure PDC for the interrupt
- *
- * @d: the interrupt data
- * @type: the interrupt type
- *
- * If @type is edge triggered, forward that as Rising edge as PDC
- * takes care of converting falling edge to rising edge signal
- * If @type is level, then forward that as level high as PDC
- * takes care of converting falling edge to rising edge signal
- */
+ 
 static int qcom_pdc_gic_set_type(struct irq_data *d, unsigned int type)
 {
 	enum pdc_irq_config_bits pdc_type;
@@ -173,15 +147,7 @@ static int qcom_pdc_gic_set_type(struct irq_data *d, unsigned int type)
 	if (ret)
 		return ret;
 
-	/*
-	 * When we change types the PDC can give a phantom interrupt.
-	 * Clear it.  Specifically the phantom shows up when reconfiguring
-	 * polarity of interrupt without changing the state of the signal
-	 * but let's be consistent and clear it always.
-	 *
-	 * Doing this works because we have IRQCHIP_SET_TYPE_MASKED so the
-	 * interrupt will be cleared before the rest of the system sees it.
-	 */
+	 
 	if (old_pdc_type != pdc_type)
 		irq_chip_set_parent_state(d, IRQCHIP_STATE_PENDING, false);
 
@@ -316,7 +282,7 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
 	struct resource res;
 	int ret;
 
-	/* compat with old sm8150 DT which had very small region for PDC */
+	 
 	if (of_address_to_resource(node, 0, &res))
 		return -EINVAL;
 

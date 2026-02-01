@@ -1,30 +1,4 @@
-/************************************************************************
-
-This file is part of Echo Digital Audio's generic driver library.
-Copyright Echo Digital Audio Corporation (c) 1998 - 2005
-All rights reserved
-www.echoaudio.com
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
-*************************************************************************
-
- Translation from C++ and adaptation for use in ALSA-Driver
- were made by Giuliano Pochini <pochini@shiny.it>
-
-*************************************************************************/
+ 
 
 static int set_sample_rate(struct echoaudio *chip, u32 rate)
 {
@@ -73,7 +47,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 
 
 
-/* This function routes the sound from a virtual channel to a real output */
+ 
 static int set_vmixer_gain(struct echoaudio *chip, u16 output, u16 pipe,
 			   int gain)
 {
@@ -97,7 +71,7 @@ static int set_vmixer_gain(struct echoaudio *chip, u16 output, u16 pipe,
 
 
 
-/* Tell the DSP to read and update virtual mixer levels in comm page. */
+ 
 static int update_vmixer_level(struct echoaudio *chip)
 {
 	if (wait_handshake(chip))
@@ -115,7 +89,7 @@ static u32 detect_input_clocks(const struct echoaudio *chip)
 
 
 
-/* The IndigoIO has no ASIC. Just do nothing */
+ 
 static int load_asic(struct echoaudio *chip)
 {
 	return 0;

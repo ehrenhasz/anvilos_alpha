@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm APCS clock controller driver
- *
- * Copyright (c) 2022, Linaro Limited
- * Author: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -38,25 +33,10 @@ static int qcom_apcs_msm8996_clk_probe(struct platform_device *pdev)
 	regmap_update_bits(regmap, APCS_AUX_OFFSET, APCS_AUX_DIV_MASK,
 			   FIELD_PREP(APCS_AUX_DIV_MASK, APCS_AUX_DIV_2));
 
-	/*
-	 * This clock is used during CPU cluster setup while setting up CPU PLLs.
-	 * Add hardware mandated delay to make sure that the sys_apcs_aux clock
-	 * is stable (after setting the divider) before continuing
-	 * bootstrapping to keep CPUs from ending up in a weird state.
-	 */
+	 
 	udelay(5);
 
-	/*
-	 * As this clocks is a parent of the CPU cluster clocks and is actually
-	 * used as a parent during CPU clocks setup, we want for it to register
-	 * as early as possible, without letting fw_devlink to delay probing of
-	 * either of the drivers.
-	 *
-	 * The sys_apcs_aux is a child (divider) of gpll0, but we register it
-	 * as a fixed rate clock instead to ease bootstrapping procedure. By
-	 * doing this we make sure that CPU cluster clocks are able to be setup
-	 * early during the boot process (as it is recommended by Qualcomm).
-	 */
+	 
 	hw = devm_clk_hw_register_fixed_rate(dev, "sys_apcs_aux", NULL, 0, 300000000);
 	if (IS_ERR(hw))
 		return PTR_ERR(hw);
@@ -71,7 +51,7 @@ static struct platform_driver qcom_apcs_msm8996_clk_driver = {
 	},
 };
 
-/* Register early enough to fix the clock to be used for other cores */
+ 
 static int __init qcom_apcs_msm8996_clk_init(void)
 {
 	return platform_driver_register(&qcom_apcs_msm8996_clk_driver);

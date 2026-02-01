@@ -1,15 +1,4 @@
-/*
- *  linux/drivers/video/fbcmap.c -- Colormap handling for frame buffer devices
- *
- *	Created 15 Jun 1997 by Geert Uytterhoeven
- *
- *	2001 - Documented with DocBook
- *	- Brad Douglas <brad@neruo.com>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -75,19 +64,7 @@ static const struct fb_cmap default_16_colors = {
 
 
 
-/**
- *	fb_alloc_cmap_gfp - allocate a colormap
- *	@cmap: frame buffer colormap structure
- *	@len: length of @cmap
- *	@transp: boolean, 1 if there is transparency, 0 otherwise
- *	@flags: flags for kmalloc memory allocation
- *
- *	Allocates memory for a colormap @cmap.  @len is the
- *	number of entries in the palette.
- *
- *	Returns negative errno on error, or zero on success.
- *
- */
+ 
 
 int fb_alloc_cmap_gfp(struct fb_cmap *cmap, int len, int transp, gfp_t flags)
 {
@@ -135,14 +112,7 @@ int fb_alloc_cmap(struct fb_cmap *cmap, int len, int transp)
 	return fb_alloc_cmap_gfp(cmap, len, transp, GFP_ATOMIC);
 }
 
-/**
- *      fb_dealloc_cmap - deallocate a colormap
- *      @cmap: frame buffer colormap structure
- *
- *      Deallocates a colormap that was previously allocated with
- *      fb_alloc_cmap().
- *
- */
+ 
 
 void fb_dealloc_cmap(struct fb_cmap *cmap)
 {
@@ -155,13 +125,7 @@ void fb_dealloc_cmap(struct fb_cmap *cmap)
 	cmap->len = 0;
 }
 
-/**
- *	fb_copy_cmap - copy a colormap
- *	@from: frame buffer colormap structure
- *	@to: frame buffer colormap structure
- *
- *	Copy contents of colormap from @from to @to.
- */
+ 
 
 int fb_copy_cmap(const struct fb_cmap *from, struct fb_cmap *to)
 {
@@ -217,16 +181,7 @@ int fb_cmap_to_user(const struct fb_cmap *from, struct fb_cmap_user *to)
 	return 0;
 }
 
-/**
- *	fb_set_cmap - set the colormap
- *	@cmap: frame buffer colormap structure
- *	@info: frame buffer info structure
- *
- *	Sets the colormap @cmap for a screen of device @info.
- *
- *	Returns negative errno on error, or zero on success.
- *
- */
+ 
 
 int fb_set_cmap(struct fb_cmap *cmap, struct fb_info *info)
 {
@@ -293,16 +248,7 @@ out:
 	return rc;
 }
 
-/**
- *	fb_default_cmap - get default colormap
- *	@len: size of palette for a depth
- *
- *	Gets the default colormap for a specific screen depth.  @len
- *	is the size of the palette for a particular screen depth.
- *
- *	Returns pointer to a frame buffer colormap structure.
- *
- */
+ 
 
 const struct fb_cmap *fb_default_cmap(int len)
 {
@@ -316,12 +262,7 @@ const struct fb_cmap *fb_default_cmap(int len)
 }
 
 
-/**
- *	fb_invert_cmaps - invert all defaults colormaps
- *
- *	Invert all default colormaps.
- *
- */
+ 
 
 void fb_invert_cmaps(void)
 {
@@ -350,9 +291,7 @@ void fb_invert_cmaps(void)
 }
 
 
-    /*
-     *  Visible symbols for modules
-     */
+     
 
 EXPORT_SYMBOL(fb_alloc_cmap);
 EXPORT_SYMBOL(fb_dealloc_cmap);

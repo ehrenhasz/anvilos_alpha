@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -25,7 +23,7 @@ static void perf_begin(struct intel_gt *gt)
 {
 	intel_gt_pm_get(gt);
 
-	/* Boost gpufreq to max [waitboost] and keep it fixed */
+	 
 	atomic_inc(&gt->rps.num_waiters);
 	queue_work(gt->i915->unordered_wq, &gt->rps.work);
 	flush_work(&gt->rps.work);
@@ -135,7 +133,7 @@ static int perf_mi_bb_start(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	if (GRAPHICS_VER(gt->i915) < 4) /* Any CS_TIMESTAMP? */
+	if (GRAPHICS_VER(gt->i915) < 4)  
 		return 0;
 
 	perf_begin(gt);
@@ -262,7 +260,7 @@ static int perf_mi_noop(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	if (GRAPHICS_VER(gt->i915) < 4) /* Any CS_TIMESTAMP? */
+	if (GRAPHICS_VER(gt->i915) < 4)  
 		return 0;
 
 	perf_begin(gt);

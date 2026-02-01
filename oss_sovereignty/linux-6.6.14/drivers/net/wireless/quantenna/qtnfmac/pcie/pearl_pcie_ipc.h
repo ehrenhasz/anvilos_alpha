@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications */
+ 
+ 
 
 #ifndef _QTN_FMAC_PCIE_IPC_H_
 #define _QTN_FMAC_PCIE_IPC_H_
@@ -8,7 +8,7 @@
 
 #include "shm_ipc_defs.h"
 
-/* bitmap for EP status and flags: updated by EP, read by RC */
+ 
 #define QTN_EP_HAS_UBOOT	BIT(0)
 #define QTN_EP_HAS_FIRMWARE	BIT(1)
 #define QTN_EP_REQ_UBOOT	BIT(2)
@@ -22,7 +22,7 @@
 #define QTN_EP_FW_QLINK_DONE	BIT(15)
 #define QTN_EP_FW_DONE		BIT(16)
 
-/* bitmap for RC status and flags: updated by RC, read by EP */
+ 
 #define QTN_RC_PCIE_LINK	BIT(0)
 #define QTN_RC_NET_LINK		BIT(1)
 #define QTN_RC_FW_FLASHBOOT	BIT(5)
@@ -79,4 +79,4 @@ enum qtnf_fw_loadtype {
 	QTN_FW_CTRL
 };
 
-#endif /* _QTN_FMAC_PCIE_IPC_H_ */
+#endif  

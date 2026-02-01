@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __MSM_DRV_H__
 #define __MSM_DRV_H__
@@ -74,25 +70,14 @@ enum msm_dsi_controller {
 #define MSM_GPU_MAX_RINGS 4
 #define MAX_H_TILES_PER_DISPLAY 2
 
-/**
- * enum msm_event_wait - type of HW events to wait for
- * @MSM_ENC_COMMIT_DONE - wait for the driver to flush the registers to HW
- * @MSM_ENC_TX_COMPLETE - wait for the HW to transfer the frame to panel
- * @MSM_ENC_VBLANK - wait for the HW VBLANK event (for driver-internal waiters)
- */
+ 
 enum msm_event_wait {
 	MSM_ENC_COMMIT_DONE = 0,
 	MSM_ENC_TX_COMPLETE,
 	MSM_ENC_VBLANK,
 };
 
-/**
- * struct msm_display_topology - defines a display topology pipeline
- * @num_lm:       number of layer mixers used
- * @num_intf:     number of interfaces the panel is mounted on
- * @num_dspp:     number of dspp blocks used
- * @num_dsc:      number of Display Stream Compression (DSC) blocks used
- */
+ 
 struct msm_display_topology {
 	u32 num_lm;
 	u32 num_intf;
@@ -100,7 +85,7 @@ struct msm_display_topology {
 	u32 num_dsc;
 };
 
-/* Commit/Event thread specific structure */
+ 
 struct msm_drm_thread {
 	struct drm_device *dev;
 	struct kthread_worker *worker;
@@ -113,90 +98,47 @@ struct msm_drm_private {
 	struct msm_kms *kms;
 	int (*kms_init)(struct drm_device *dev);
 
-	/* subordinate devices, if present: */
+	 
 	struct platform_device *gpu_pdev;
 
-	/* possibly this should be in the kms component, but it is
-	 * shared by both mdp4 and mdp5..
-	 */
+	 
 	struct hdmi *hdmi;
 
-	/* DSI is shared by mdp4 and mdp5 */
+	 
 	struct msm_dsi *dsi[MSM_DSI_CONTROLLER_COUNT];
 
 	struct msm_dp *dp[MSM_DP_CONTROLLER_COUNT];
 
-	/* when we have more than one 'msm_gpu' these need to be an array: */
+	 
 	struct msm_gpu *gpu;
 
-	/* gpu is only set on open(), but we need this info earlier */
+	 
 	bool is_a2xx;
 	bool has_cached_coherent;
 
-	struct msm_rd_state *rd;       /* debugfs to dump all submits */
-	struct msm_rd_state *hangrd;   /* debugfs to dump hanging submits */
+	struct msm_rd_state *rd;        
+	struct msm_rd_state *hangrd;    
 	struct msm_perf_state *perf;
 
-	/**
-	 * List of all GEM objects (mainly for debugfs, protected by obj_lock
-	 * (acquire before per GEM object lock)
-	 */
+	 
 	struct list_head objects;
 	struct mutex obj_lock;
 
-	/**
-	 * lru:
-	 *
-	 * The various LRU's that a GEM object is in at various stages of
-	 * it's lifetime.  Objects start out in the unbacked LRU.  When
-	 * pinned (for scannout or permanently mapped GPU buffers, like
-	 * ringbuffer, memptr, fw, etc) it moves to the pinned LRU.  When
-	 * unpinned, it moves into willneed or dontneed LRU depending on
-	 * madvise state.  When backing pages are evicted (willneed) or
-	 * purged (dontneed) it moves back into the unbacked LRU.
-	 *
-	 * The dontneed LRU is considered by the shrinker for objects
-	 * that are candidate for purging, and the willneed LRU is
-	 * considered for objects that could be evicted.
-	 */
+	 
 	struct {
-		/**
-		 * unbacked:
-		 *
-		 * The LRU for GEM objects without backing pages allocated.
-		 * This mostly exists so that objects are always is one
-		 * LRU.
-		 */
+		 
 		struct drm_gem_lru unbacked;
 
-		/**
-		 * pinned:
-		 *
-		 * The LRU for pinned GEM objects
-		 */
+		 
 		struct drm_gem_lru pinned;
 
-		/**
-		 * willneed:
-		 *
-		 * The LRU for unpinned GEM objects which are in madvise
-		 * WILLNEED state (ie. can be evicted)
-		 */
+		 
 		struct drm_gem_lru willneed;
 
-		/**
-		 * dontneed:
-		 *
-		 * The LRU for unpinned GEM objects which are in madvise
-		 * DONTNEED state (ie. can be purged)
-		 */
+		 
 		struct drm_gem_lru dontneed;
 
-		/**
-		 * lock:
-		 *
-		 * Protects manipulation of all of the LRUs.
-		 */
+		 
 		struct mutex lock;
 	} lru;
 
@@ -209,15 +151,13 @@ struct msm_drm_private {
 	unsigned int num_bridges;
 	struct drm_bridge *bridges[MAX_BRIDGES];
 
-	/* VRAM carveout, used when no IOMMU: */
+	 
 	struct {
 		unsigned long size;
 		dma_addr_t paddr;
-		/* NOTE: mm managed at the page level, size is in # of pages
-		 * and position mm_node->start is in # of pages:
-		 */
+		 
 		struct drm_mm mm;
-		spinlock_t lock; /* Protects drm_mm node allocation/removal */
+		spinlock_t lock;  
 	} vram;
 
 	struct notifier_block vmap_notifier;
@@ -225,30 +165,16 @@ struct msm_drm_private {
 
 	struct drm_atomic_state *pm_state;
 
-	/**
-	 * hangcheck_period: For hang detection, in ms
-	 *
-	 * Note that in practice, a submit/job will get at least two hangcheck
-	 * periods, due to checking for progress being implemented as simply
-	 * "have the CP position registers changed since last time?"
-	 */
+	 
 	unsigned int hangcheck_period;
 
-	/** gpu_devfreq_config: Devfreq tuning config for the GPU. */
+	 
 	struct devfreq_simple_ondemand_data gpu_devfreq_config;
 
-	/**
-	 * gpu_clamp_to_idle: Enable clamping to idle freq when inactive
-	 */
+	 
 	bool gpu_clamp_to_idle;
 
-	/**
-	 * disable_err_irq:
-	 *
-	 * Disable handling of GPU hw error interrupts, to force fallback to
-	 * sw hangcheck timer.  Written (via debugfs) by igt tests to test
-	 * the sw hangcheck mechanism.
-	 */
+	 
 	bool disable_err_irq;
 };
 
@@ -499,13 +425,7 @@ static inline void msm_rmw(void __iomem *addr, u32 mask, u32 or)
 	msm_writel(val | or, addr);
 }
 
-/**
- * struct msm_hrtimer_work - a helper to combine an hrtimer with kthread_work
- *
- * @timer: hrtimer to control when the kthread work is triggered
- * @work:  the kthread work
- * @worker: the kthread worker the work will be scheduled on
- */
+ 
 struct msm_hrtimer_work {
 	struct hrtimer timer;
 	struct kthread_work work;
@@ -527,11 +447,11 @@ void msm_hrtimer_work_init(struct msm_hrtimer_work *work,
 static inline int align_pitch(int width, int bpp)
 {
 	int bytespp = (bpp + 7) / 8;
-	/* adreno needs pitch aligned to 32 pixels: */
+	 
 	return bytespp * ALIGN(width, 32);
 }
 
-/* for the generated headers: */
+ 
 #define INVALID_IDX(idx) ({BUG(); 0;})
 #define fui(x)                ({BUG(); 0;})
 #define _mesa_float_to_half(x) ({BUG(); 0;})
@@ -539,7 +459,7 @@ static inline int align_pitch(int width, int bpp)
 
 #define FIELD(val, name) (((val) & name ## __MASK) >> name ## __SHIFT)
 
-/* for conditionally setting boolean flag(s): */
+ 
 #define COND(bool, val) ((bool) ? (val) : 0)
 
 static inline unsigned long timeout_to_jiffies(const ktime_t *timeout)
@@ -557,7 +477,7 @@ static inline unsigned long timeout_to_jiffies(const ktime_t *timeout)
 	return clamp(remaining_jiffies, 1LL, (s64)INT_MAX);
 }
 
-/* Driver helpers */
+ 
 
 extern const struct component_master_ops msm_drm_ops;
 
@@ -569,4 +489,4 @@ int msm_drv_probe(struct device *dev,
 void msm_drv_shutdown(struct platform_device *pdev);
 
 
-#endif /* __MSM_DRV_H__ */
+#endif  

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for Dell laptop extras
- *
- *  Copyright (c) Red Hat <mjg@redhat.com>
- *  Copyright (c) 2014 Gabriele Mazzotta <gabriele.mzt@gmail.com>
- *  Copyright (c) 2014 Pali Rohár <pali@kernel.org>
- *
- *  Based on documentation in the libsmbios package:
- *  Copyright (C) 2005-2014 Dell Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,10 +31,7 @@ struct quirk_entry {
 	bool kbd_missing_ac_tag;
 
 	bool needs_kbd_timeouts;
-	/*
-	 * Ordered list of timeouts expressed in seconds.
-	 * The list must end with -1
-	 */
+	 
 	int kbd_timeouts[];
 };
 
@@ -59,10 +47,7 @@ static int __init dmi_matched(const struct dmi_system_id *dmi)
 	return 1;
 }
 
-/*
- * These values come from Windows utility provided by Dell. If any other value
- * is used then BIOS silently set timeout to 0 without any error message.
- */
+ 
 static struct quirk_entry quirk_dell_xps13_9333 = {
 	.needs_kbd_timeouts = true,
 	.kbd_timeouts = { 0, 5, 15, 60, 5 * 60, 15 * 60, -1 },
@@ -113,31 +98,31 @@ static const struct dmi_system_id dell_device_table[] __initconst = {
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "9"), /*Laptop*/
+			DMI_MATCH(DMI_CHASSIS_TYPE, "9"),  
 		},
 	},
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "10"), /*Notebook*/
+			DMI_MATCH(DMI_CHASSIS_TYPE, "10"),  
 		},
 	},
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "30"), /*Tablet*/
+			DMI_MATCH(DMI_CHASSIS_TYPE, "30"),  
 		},
 	},
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /*Convertible*/
+			DMI_MATCH(DMI_CHASSIS_TYPE, "31"),  
 		},
 	},
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "32"), /*Detachable*/
+			DMI_MATCH(DMI_CHASSIS_TYPE, "32"),  
 		},
 	},
 	{
@@ -376,125 +361,7 @@ static int dell_send_request(struct calling_interface_buffer *buffer,
 	return dell_smbios_error(buffer->output[0]);
 }
 
-/*
- * Derived from information in smbios-wireless-ctl:
- *
- * cbSelect 17, Value 11
- *
- * Return Wireless Info
- * cbArg1, byte0 = 0x00
- *
- *     cbRes1 Standard return codes (0, -1, -2)
- *     cbRes2 Info bit flags:
- *
- *     0 Hardware switch supported (1)
- *     1 WiFi locator supported (1)
- *     2 WLAN supported (1)
- *     3 Bluetooth (BT) supported (1)
- *     4 WWAN supported (1)
- *     5 Wireless KBD supported (1)
- *     6 Uw b supported (1)
- *     7 WiGig supported (1)
- *     8 WLAN installed (1)
- *     9 BT installed (1)
- *     10 WWAN installed (1)
- *     11 Uw b installed (1)
- *     12 WiGig installed (1)
- *     13-15 Reserved (0)
- *     16 Hardware (HW) switch is On (1)
- *     17 WLAN disabled (1)
- *     18 BT disabled (1)
- *     19 WWAN disabled (1)
- *     20 Uw b disabled (1)
- *     21 WiGig disabled (1)
- *     20-31 Reserved (0)
- *
- *     cbRes3 NVRAM size in bytes
- *     cbRes4, byte 0 NVRAM format version number
- *
- *
- * Set QuickSet Radio Disable Flag
- *     cbArg1, byte0 = 0x01
- *     cbArg1, byte1
- *     Radio ID     value:
- *     0        Radio Status
- *     1        WLAN ID
- *     2        BT ID
- *     3        WWAN ID
- *     4        UWB ID
- *     5        WIGIG ID
- *     cbArg1, byte2    Flag bits:
- *             0 QuickSet disables radio (1)
- *             1-7 Reserved (0)
- *
- *     cbRes1    Standard return codes (0, -1, -2)
- *     cbRes2    QuickSet (QS) radio disable bit map:
- *     0 QS disables WLAN
- *     1 QS disables BT
- *     2 QS disables WWAN
- *     3 QS disables UWB
- *     4 QS disables WIGIG
- *     5-31 Reserved (0)
- *
- * Wireless Switch Configuration
- *     cbArg1, byte0 = 0x02
- *
- *     cbArg1, byte1
- *     Subcommand:
- *     0 Get config
- *     1 Set config
- *     2 Set WiFi locator enable/disable
- *     cbArg1,byte2
- *     Switch settings (if byte 1==1):
- *     0 WLAN sw itch control (1)
- *     1 BT sw itch control (1)
- *     2 WWAN sw itch control (1)
- *     3 UWB sw itch control (1)
- *     4 WiGig sw itch control (1)
- *     5-7 Reserved (0)
- *    cbArg1, byte2 Enable bits (if byte 1==2):
- *     0 Enable WiFi locator (1)
- *
- *    cbRes1     Standard return codes (0, -1, -2)
- *    cbRes2 QuickSet radio disable bit map:
- *     0 WLAN controlled by sw itch (1)
- *     1 BT controlled by sw itch (1)
- *     2 WWAN controlled by sw itch (1)
- *     3 UWB controlled by sw itch (1)
- *     4 WiGig controlled by sw itch (1)
- *     5-6 Reserved (0)
- *     7 Wireless sw itch config locked (1)
- *     8 WiFi locator enabled (1)
- *     9-14 Reserved (0)
- *     15 WiFi locator setting locked (1)
- *     16-31 Reserved (0)
- *
- * Read Local Config Data (LCD)
- *     cbArg1, byte0 = 0x10
- *     cbArg1, byte1 NVRAM index low byte
- *     cbArg1, byte2 NVRAM index high byte
- *     cbRes1 Standard return codes (0, -1, -2)
- *     cbRes2 4 bytes read from LCD[index]
- *     cbRes3 4 bytes read from LCD[index+4]
- *     cbRes4 4 bytes read from LCD[index+8]
- *
- * Write Local Config Data (LCD)
- *     cbArg1, byte0 = 0x11
- *     cbArg1, byte1 NVRAM index low byte
- *     cbArg1, byte2 NVRAM index high byte
- *     cbArg2 4 bytes to w rite at LCD[index]
- *     cbArg3 4 bytes to w rite at LCD[index+4]
- *     cbArg4 4 bytes to w rite at LCD[index+8]
- *     cbRes1 Standard return codes (0, -1, -2)
- *
- * Populate Local Config Data from NVRAM
- *     cbArg1, byte0 = 0x12
- *     cbRes1 Standard return codes (0, -1, -2)
- *
- * Commit Local Config Data to NVRAM
- *     cbArg1, byte0 = 0x13
- *     cbRes1 Standard return codes (0, -1, -2)
- */
+ 
 
 static int dell_rfkill_set(void *data, bool blocked)
 {
@@ -518,8 +385,7 @@ static int dell_rfkill_set(void *data, bool blocked)
 		return ret;
 	hwswitch = buffer.output[1];
 
-	/* If the hardware switch controls this radio, and the hardware
-	   switch is disabled, always disable the radio */
+	 
 	if (ret == 0 && (hwswitch & BIT(hwswitch_bit)) &&
 	    (status & BIT(0)) && !(status & BIT(16)))
 		disable = 1;
@@ -533,14 +399,14 @@ static void dell_rfkill_update_sw_state(struct rfkill *rfkill, int radio,
 					int status)
 {
 	if (status & BIT(0)) {
-		/* Has hw-switch, sync sw_state to BIOS */
+		 
 		struct calling_interface_buffer buffer;
 		int block = rfkill_blocked(rfkill);
 		dell_fill_request(&buffer,
 				   1 | (radio << 8) | (block << 16), 0, 0, 0);
 		dell_send_request(&buffer, CLASS_INFO, SELECT_RFKILL);
 	} else {
-		/* No hw-switch, sync BIOS state to sw_state */
+		 
 		rfkill_set_sw_state(rfkill, !!(status & BIT(radio + 16)));
 	}
 }
@@ -750,10 +616,7 @@ static int __init dell_setup_rfkill(void)
 	int status, ret, whitelisted;
 	const char *product;
 
-	/*
-	 * rfkill support causes trouble on various models, mostly Inspirons.
-	 * So we whitelist certain series, and don't support rfkill on others.
-	 */
+	 
 	whitelisted = 0;
 	product = dmi_get_system_info(DMI_PRODUCT_NAME);
 	if (product &&  (strncmp(product, "Latitude", 8) == 0 ||
@@ -766,11 +629,11 @@ static int __init dell_setup_rfkill(void)
 	ret = dell_send_request(&buffer, CLASS_INFO, SELECT_RFKILL);
 	status = buffer.output[1];
 
-	/* dell wireless info smbios call is not supported */
+	 
 	if (ret != 0)
 		return 0;
 
-	/* rfkill is only tested on laptops with a hwswitch */
+	 
 	if (!(status & BIT(0)) && !force_rfkill)
 		return 0;
 
@@ -815,24 +678,7 @@ static int __init dell_setup_rfkill(void)
 			goto err_wwan;
 	}
 
-	/*
-	 * Dell Airplane Mode Switch driver (dell-rbtn) supports ACPI devices
-	 * which can receive events from HW slider switch.
-	 *
-	 * Dell SMBIOS on whitelisted models supports controlling radio devices
-	 * but does not support receiving HW button switch events. We can use
-	 * i8042 filter hook function to receive keyboard data and handle
-	 * keycode for HW button.
-	 *
-	 * So if it is possible we will use Dell Airplane Mode Switch ACPI
-	 * driver for receiving HW events and Dell SMBIOS for setting rfkill
-	 * states. If ACPI driver or device is not available we will fallback to
-	 * i8042 filter hook function.
-	 *
-	 * To prevent duplicate rfkill devices which control and do same thing,
-	 * dell-rbtn driver will automatically remove its own rfkill devices
-	 * once function dell_rbtn_notifier_register() is called.
-	 */
+	 
 
 	dell_rbtn_notifier_register_func =
 		symbol_request(dell_rbtn_notifier_register);
@@ -1005,131 +851,7 @@ static void touchpad_led_exit(void)
 	led_classdev_unregister(&touchpad_led);
 }
 
-/*
- * Derived from information in smbios-keyboard-ctl:
- *
- * cbClass 4
- * cbSelect 11
- * Keyboard illumination
- * cbArg1 determines the function to be performed
- *
- * cbArg1 0x0 = Get Feature Information
- *  cbRES1         Standard return codes (0, -1, -2)
- *  cbRES2, word0  Bitmap of user-selectable modes
- *     bit 0     Always off (All systems)
- *     bit 1     Always on (Travis ATG, Siberia)
- *     bit 2     Auto: ALS-based On; ALS-based Off (Travis ATG)
- *     bit 3     Auto: ALS- and input-activity-based On; input-activity based Off
- *     bit 4     Auto: Input-activity-based On; input-activity based Off
- *     bit 5     Auto: Input-activity-based On (illumination level 25%); input-activity based Off
- *     bit 6     Auto: Input-activity-based On (illumination level 50%); input-activity based Off
- *     bit 7     Auto: Input-activity-based On (illumination level 75%); input-activity based Off
- *     bit 8     Auto: Input-activity-based On (illumination level 100%); input-activity based Off
- *     bits 9-15 Reserved for future use
- *  cbRES2, byte2  Reserved for future use
- *  cbRES2, byte3  Keyboard illumination type
- *     0         Reserved
- *     1         Tasklight
- *     2         Backlight
- *     3-255     Reserved for future use
- *  cbRES3, byte0  Supported auto keyboard illumination trigger bitmap.
- *     bit 0     Any keystroke
- *     bit 1     Touchpad activity
- *     bit 2     Pointing stick
- *     bit 3     Any mouse
- *     bits 4-7  Reserved for future use
- *  cbRES3, byte1  Supported timeout unit bitmap
- *     bit 0     Seconds
- *     bit 1     Minutes
- *     bit 2     Hours
- *     bit 3     Days
- *     bits 4-7  Reserved for future use
- *  cbRES3, byte2  Number of keyboard light brightness levels
- *  cbRES4, byte0  Maximum acceptable seconds value (0 if seconds not supported).
- *  cbRES4, byte1  Maximum acceptable minutes value (0 if minutes not supported).
- *  cbRES4, byte2  Maximum acceptable hours value (0 if hours not supported).
- *  cbRES4, byte3  Maximum acceptable days value (0 if days not supported)
- *
- * cbArg1 0x1 = Get Current State
- *  cbRES1         Standard return codes (0, -1, -2)
- *  cbRES2, word0  Bitmap of current mode state
- *     bit 0     Always off (All systems)
- *     bit 1     Always on (Travis ATG, Siberia)
- *     bit 2     Auto: ALS-based On; ALS-based Off (Travis ATG)
- *     bit 3     Auto: ALS- and input-activity-based On; input-activity based Off
- *     bit 4     Auto: Input-activity-based On; input-activity based Off
- *     bit 5     Auto: Input-activity-based On (illumination level 25%); input-activity based Off
- *     bit 6     Auto: Input-activity-based On (illumination level 50%); input-activity based Off
- *     bit 7     Auto: Input-activity-based On (illumination level 75%); input-activity based Off
- *     bit 8     Auto: Input-activity-based On (illumination level 100%); input-activity based Off
- *     bits 9-15 Reserved for future use
- *     Note: Only One bit can be set
- *  cbRES2, byte2  Currently active auto keyboard illumination triggers.
- *     bit 0     Any keystroke
- *     bit 1     Touchpad activity
- *     bit 2     Pointing stick
- *     bit 3     Any mouse
- *     bits 4-7  Reserved for future use
- *  cbRES2, byte3  Current Timeout on battery
- *     bits 7:6  Timeout units indicator:
- *     00b       Seconds
- *     01b       Minutes
- *     10b       Hours
- *     11b       Days
- *     bits 5:0  Timeout value (0-63) in sec/min/hr/day
- *     NOTE: A value of 0 means always on (no timeout) if any bits of RES3 byte
- *     are set upon return from the [Get feature information] call.
- *  cbRES3, byte0  Current setting of ALS value that turns the light on or off.
- *  cbRES3, byte1  Current ALS reading
- *  cbRES3, byte2  Current keyboard light level.
- *  cbRES3, byte3  Current timeout on AC Power
- *     bits 7:6  Timeout units indicator:
- *     00b       Seconds
- *     01b       Minutes
- *     10b       Hours
- *     11b       Days
- *     Bits 5:0  Timeout value (0-63) in sec/min/hr/day
- *     NOTE: A value of 0 means always on (no timeout) if any bits of RES3 byte2
- *     are set upon return from the upon return from the [Get Feature information] call.
- *
- * cbArg1 0x2 = Set New State
- *  cbRES1         Standard return codes (0, -1, -2)
- *  cbArg2, word0  Bitmap of current mode state
- *     bit 0     Always off (All systems)
- *     bit 1     Always on (Travis ATG, Siberia)
- *     bit 2     Auto: ALS-based On; ALS-based Off (Travis ATG)
- *     bit 3     Auto: ALS- and input-activity-based On; input-activity based Off
- *     bit 4     Auto: Input-activity-based On; input-activity based Off
- *     bit 5     Auto: Input-activity-based On (illumination level 25%); input-activity based Off
- *     bit 6     Auto: Input-activity-based On (illumination level 50%); input-activity based Off
- *     bit 7     Auto: Input-activity-based On (illumination level 75%); input-activity based Off
- *     bit 8     Auto: Input-activity-based On (illumination level 100%); input-activity based Off
- *     bits 9-15 Reserved for future use
- *     Note: Only One bit can be set
- *  cbArg2, byte2  Desired auto keyboard illumination triggers. Must remain inactive to allow
- *                 keyboard to turn off automatically.
- *     bit 0     Any keystroke
- *     bit 1     Touchpad activity
- *     bit 2     Pointing stick
- *     bit 3     Any mouse
- *     bits 4-7  Reserved for future use
- *  cbArg2, byte3  Desired Timeout on battery
- *     bits 7:6  Timeout units indicator:
- *     00b       Seconds
- *     01b       Minutes
- *     10b       Hours
- *     11b       Days
- *     bits 5:0  Timeout value (0-63) in sec/min/hr/day
- *  cbArg3, byte0  Desired setting of ALS value that turns the light on or off.
- *  cbArg3, byte2  Desired keyboard light level.
- *  cbArg3, byte3  Desired Timeout on AC power
- *     bits 7:6  Timeout units indicator:
- *     00b       Seconds
- *     01b       Minutes
- *     10b       Hours
- *     11b       Days
- *     bits 5:0  Timeout value (0-63) in sec/min/hr/day
- */
+ 
 
 
 enum kbd_timeout_unit {
@@ -1207,18 +929,7 @@ static bool kbd_led_present;
 static DEFINE_MUTEX(kbd_led_mutex);
 static enum led_brightness kbd_led_level;
 
-/*
- * NOTE: there are three ways to set the keyboard backlight level.
- * First, via kbd_state.mode_bit (assigning KBD_MODE_BIT_TRIGGER_* value).
- * Second, via kbd_state.level (assigning numerical value <= kbd_info.levels).
- * Third, via SMBIOS tokens (KBD_LED_* in kbd_tokens)
- *
- * There are laptops which support only one of these methods. If we want to
- * support as many machines as possible we need to implement all three methods.
- * The first two methods use the kbd_state structure. The third uses SMBIOS
- * tokens. If kbd_info.levels == 0, the machine does not support setting the
- * keyboard backlight level via kbd_state.level.
- */
+ 
 
 static int kbd_get_info(struct kbd_info *info)
 {
@@ -1363,11 +1074,7 @@ static int kbd_set_state_safe(struct kbd_state *state, struct kbd_state *old)
 	if (ret == 0)
 		return 0;
 
-	/*
-	 * When setting the new state fails,try to restore the previous one.
-	 * This is needed on some machines where BIOS sets a default state when
-	 * setting a new state fails. This default state could be all off.
-	 */
+	 
 
 	if (kbd_set_state(old))
 		pr_err("Setting old previous keyboard state failed\n");
@@ -1447,17 +1154,14 @@ static inline int kbd_init_info(void)
 	if (ret)
 		return ret;
 
-	/* NOTE: Old models without KBD_LED_AC_TOKEN token supports only one
-	 *       timeout value which is shared for both battery and AC power
-	 *       settings. So do not try to set AC values on old models.
-	 */
+	 
 	if ((quirks && quirks->kbd_missing_ac_tag) ||
 	    dell_smbios_find_token(KBD_LED_AC_TOKEN))
 		kbd_timeout_ac_supported = true;
 
 	kbd_get_state(&state);
 
-	/* NOTE: timeout value is stored in 6 bits so max value is 63 */
+	 
 	if (kbd_info.seconds > 63)
 		kbd_info.seconds = 63;
 	if (kbd_info.minutes > 63)
@@ -1467,9 +1171,7 @@ static inline int kbd_init_info(void)
 	if (kbd_info.days > 63)
 		kbd_info.days = 63;
 
-	/* NOTE: On tested machines ON mode did not work and caused
-	 *       problems (turned backlight off) so do not use it
-	 */
+	 
 	kbd_info.modes &= ~BIT(KBD_MODE_BIT_ON);
 
 	kbd_previous_level = kbd_get_level(&state);
@@ -1496,16 +1198,12 @@ static inline int kbd_init_info(void)
 	   ))
 		kbd_triggers_supported = true;
 
-	/* kbd_mode_levels[0] is reserved, see below */
+	 
 	for (i = 0; i < 16; ++i)
 		if (kbd_is_level_mode_bit(i) && (BIT(i) & kbd_info.modes))
 			kbd_mode_levels[1 + kbd_mode_levels_count++] = i;
 
-	/*
-	 * Find the first supported mode and assign to kbd_mode_levels[0].
-	 * This should be 0 (off), but we cannot depend on the BIOS to
-	 * support 0.
-	 */
+	 
 	if (kbd_mode_levels_count > 0) {
 		for (i = 0; i < 16; ++i) {
 			if (BIT(i) & kbd_info.modes) {
@@ -1539,9 +1237,7 @@ static void kbd_init(void)
 	ret = kbd_init_info();
 	kbd_init_tokens();
 
-	/*
-	 * Only supports keyboard backlight when it has at least two modes.
-	 */
+	 
 	if ((ret == 0 && (kbd_info.levels != 0 || kbd_mode_levels_count >= 2))
 	    || kbd_get_valid_token_counts() >= 2)
 		kbd_led_present = true;
@@ -1600,7 +1296,7 @@ static ssize_t kbd_led_timeout_store(struct device *dev,
 		convert = true;
 
 	if (convert) {
-		/* Convert value from current units to seconds */
+		 
 		switch (unit) {
 		case KBD_TIMEOUT_DAYS:
 			value *= 24;
@@ -1709,7 +1405,7 @@ static DEVICE_ATTR(stop_timeout, S_IRUGO | S_IWUSR,
 static const char * const kbd_led_triggers[] = {
 	"keyboard",
 	"touchpad",
-	/*"trackstick"*/ NULL, /* NOTE: trackstick is just alias for touchpad */
+	  NULL,  
 	"mouse",
 };
 
@@ -1773,11 +1469,7 @@ static ssize_t kbd_led_triggers_store(struct device *dev,
 		new_state.triggers |= BIT(trigger_bit);
 	else {
 		new_state.triggers &= ~BIT(trigger_bit);
-		/*
-		 * NOTE: trackstick bit (2) must be disabled when
-		 *       disabling touchpad bit (1), otherwise touchpad
-		 *       bit (1) will not be disabled
-		 */
+		 
 		if (trigger_bit == 1)
 			new_state.triggers &= ~BIT(2);
 	}
@@ -2021,7 +1713,7 @@ static enum led_brightness kbd_led_level_get(struct led_classdev *led_cdev)
 		if (ret < 0)
 			return 0;
 		for (num = kbd_token_bits; num != 0 && ret > 0; --ret)
-			num &= num - 1; /* clear the first bit set */
+			num &= num - 1;  
 		if (num == 0)
 			return 0;
 		return ffs(num) - 1;
@@ -2053,7 +1745,7 @@ static int kbd_led_level_set(struct led_classdev *led_cdev,
 		ret = kbd_set_state_safe(&new_state, &state);
 	} else if (kbd_get_valid_token_counts()) {
 		for (num = kbd_token_bits; num != 0 && value > 0; --value)
-			num &= num - 1; /* clear the first bit set */
+			num &= num - 1;  
 		if (num == 0)
 			ret = 0;
 		else
@@ -2107,7 +1799,7 @@ static int __init kbd_led_init(struct device *dev)
 static void brightness_set_exit(struct led_classdev *led_cdev,
 				enum led_brightness value)
 {
-	/* Don't change backlight level on exit */
+	 
 };
 
 static void kbd_led_exit(void)
@@ -2216,7 +1908,7 @@ static int __init dell_init(void)
 		return -ENODEV;
 
 	quirks = NULL;
-	/* find if this machine support other functions */
+	 
 	dmi_check_system(dell_quirks);
 
 	ret = platform_driver_register(&platform_driver);
@@ -2348,13 +2040,7 @@ static void __exit dell_exit(void)
 	}
 }
 
-/* dell-rbtn.c driver export functions which will not work correctly (and could
- * cause kernel crash) if they are called before dell-rbtn.c init code. This is
- * not problem when dell-rbtn.c is compiled as external module. When both files
- * (dell-rbtn.c and dell-laptop.c) are compiled statically into kernel, then we
- * need to ensure that dell_init() will be called after initializing dell-rbtn.
- * This can be achieved by late_initcall() instead module_init().
- */
+ 
 late_initcall(dell_init);
 module_exit(dell_exit);
 

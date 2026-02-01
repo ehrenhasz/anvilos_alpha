@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Architecture specific debugfs files
- *
- * Copyright (C) 2007, Intel Corp.
- *	Huang Ying <ying.huang@intel.com>
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/export.h>
@@ -46,7 +41,7 @@ static ssize_t setup_data_read(struct file *file, char __user *user_buf,
 
 	pa = node->paddr + pos;
 
-	/* Is it direct data or invalid indirect one? */
+	 
 	if (!(node->type & SETUP_INDIRECT) || node->type == SETUP_INDIRECT)
 		pa += sizeof(struct setup_data);
 
@@ -178,7 +173,7 @@ static int __init boot_params_kdebugfs_init(void)
 
 	return error;
 }
-#endif /* CONFIG_DEBUG_BOOT_PARAMS */
+#endif  
 
 static int __init arch_kdebugfs_init(void)
 {

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015, 2018, 2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 
 #ifndef __QCOM_CLK_ALPHA_PLL_H__
@@ -11,7 +8,7 @@
 #include <linux/clk-provider.h>
 #include "clk-regmap.h"
 
-/* Alpha PLL types */
+ 
 enum {
 	CLK_ALPHA_PLL_TYPE_DEFAULT,
 	CLK_ALPHA_PLL_TYPE_HUAYRA,
@@ -68,13 +65,7 @@ struct pll_vco {
 	.max_freq = c,\
 }
 
-/**
- * struct clk_alpha_pll - phase locked loop (PLL)
- * @offset: base address of registers
- * @vco_table: array of VCO settings
- * @regs: alpha pll register map (see @clk_alpha_pll_regs)
- * @clkr: regmap clock handle
- */
+ 
 struct clk_alpha_pll {
 	u32 offset;
 	const u8 *regs;
@@ -90,17 +81,7 @@ struct clk_alpha_pll {
 	struct clk_regmap clkr;
 };
 
-/**
- * struct clk_alpha_pll_postdiv - phase locked loop (PLL) post-divider
- * @offset: base address of registers
- * @regs: alpha pll register map (see @clk_alpha_pll_regs)
- * @width: width of post-divider
- * @post_div_shift: shift to differentiate between odd & even post-divider
- * @post_div_table: table with PLL odd and even post-divider settings
- * @num_post_div: Number of PLL post-divider settings
- *
- * @clkr: regmap clock handle
- */
+ 
 struct clk_alpha_pll_postdiv {
 	u32 offset;
 	u8 width;

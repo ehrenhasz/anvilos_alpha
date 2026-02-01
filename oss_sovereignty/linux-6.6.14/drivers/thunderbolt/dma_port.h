@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt DMA configuration based mailbox support
- *
- * Copyright (C) 2017, Intel Corporation
- * Authors: Michael Jamet <michael.jamet@intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+ 
+ 
 
 #ifndef DMA_PORT_H_
 #define DMA_PORT_H_

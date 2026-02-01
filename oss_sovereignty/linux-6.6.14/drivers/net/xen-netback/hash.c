@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2016 Citrix Systems Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Softare Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define XEN_NETIF_DEFINE_TOEPLITZ
 
@@ -53,7 +27,7 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
 	oldest = NULL;
 	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
 				lockdep_is_held(&vif->hash.cache.lock)) {
-		/* Make sure we don't add duplicate entries */
+		 
 		if (entry->len == len &&
 		    memcmp(entry->tag, tag, len) == 0)
 			found = true;
@@ -156,10 +130,7 @@ void xenvif_set_skb_hash(struct xenvif *vif, struct sk_buff *skb)
 	u32 flags = vif->hash.flags;
 	bool has_tcp_hdr;
 
-	/* Quick rejection test: If the network protocol doesn't
-	 * correspond to any enabled hash type then there's no point
-	 * in parsing the packet header.
-	 */
+	 
 	switch (skb->protocol) {
 	case htons(ETH_P_IP):
 		if (flags & (XEN_NETIF_CTRL_HASH_TYPE_IPV4_TCP |
@@ -311,7 +282,7 @@ u32 xenvif_set_hash_key(struct xenvif *vif, u32 gref, u32 len)
 			return XEN_NETIF_CTRL_STATUS_INVALID_PARAMETER;
 	}
 
-	/* Clear any remaining key octets */
+	 
 	if (len < XEN_NETBK_MAX_HASH_KEY_SIZE)
 		memset(key + len, 0, XEN_NETBK_MAX_HASH_KEY_SIZE - len);
 
@@ -449,7 +420,7 @@ void xenvif_dump_hash_info(struct xenvif *vif, struct seq_file *m)
 		}
 	}
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 void xenvif_init_hash(struct xenvif *vif)
 {

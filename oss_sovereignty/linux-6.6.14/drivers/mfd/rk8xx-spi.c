@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip RK806 Core (SPI) driver
- *
- * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
- * Copyright (c) 2023 Collabora Ltd.
- *
- * Author: Xu Shengfei <xsf@rock-chips.com>
- * Author: Sebastian Reichel <sebastian.reichel@collabora.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/mfd/core.h>
@@ -43,7 +35,7 @@ static int rk806_spi_bus_write(void *context, const void *vdata, size_t count)
 	struct device *dev = context;
 	struct spi_device *spi = to_spi_device(dev);
 	struct spi_transfer xfer[2] = { 0 };
-	/* data and thus count includes the register address */
+	 
 	size_t val_size = count - RK806_ADDR_SIZE;
 	char cmd;
 
@@ -71,7 +63,7 @@ static int rk806_spi_bus_read(void *context, const void *vreg, size_t reg_size,
 	    val_size < 1 || val_size > (RK806_CMD_LEN_MSK + 1))
 		return -EINVAL;
 
-	/* TX buffer contains command byte followed by two address bytes */
+	 
 	txbuf[0] = RK806_CMD_WITH_SIZE(READ, val_size);
 	memcpy(txbuf+1, vreg, reg_size);
 

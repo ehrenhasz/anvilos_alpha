@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for STMicroelectronics Multi-Function eXpander (STMFX) core
- *
- * Copyright (C) 2019 STMicroelectronics
- * Author(s): Amelie Delaunay <amelie.delaunay@st.com>.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -123,26 +118,21 @@ int stmfx_function_enable(struct stmfx *stmfx, u32 func)
 	if (ret)
 		return ret;
 
-	/*
-	 * IDD and TS have priority in STMFX FW, so if IDD and TS are enabled,
-	 * ALTGPIO function is disabled by STMFX FW. If IDD or TS is enabled,
-	 * the number of aGPIO available decreases. To avoid GPIO management
-	 * disturbance, abort IDD or TS function enable in this case.
-	 */
+	 
 	if (((func & STMFX_FUNC_IDD) || (func & STMFX_FUNC_TS)) &&
 	    (sys_ctrl & STMFX_REG_SYS_CTRL_ALTGPIO_EN)) {
 		dev_err(stmfx->dev, "ALTGPIO function already enabled\n");
 		return -EBUSY;
 	}
 
-	/* If TS is enabled, aGPIO[3:0] cannot be used */
+	 
 	if ((func & STMFX_FUNC_ALTGPIO_LOW) &&
 	    (sys_ctrl & STMFX_REG_SYS_CTRL_TS_EN)) {
 		dev_err(stmfx->dev, "TS in use, aGPIO[3:0] unavailable\n");
 		return -EBUSY;
 	}
 
-	/* If IDD is enabled, aGPIO[7:4] cannot be used */
+	 
 	if ((func & STMFX_FUNC_ALTGPIO_HIGH) &&
 	    (sys_ctrl & STMFX_REG_SYS_CTRL_IDD_EN)) {
 		dev_err(stmfx->dev, "IDD in use, aGPIO[7:4] unavailable\n");
@@ -212,10 +202,7 @@ static irqreturn_t stmfx_irq_handler(int irq, void *data)
 	if (ret)
 		return IRQ_NONE;
 
-	/*
-	 * There is no ACK for GPIO, MFX_REG_IRQ_PENDING_GPIO is a logical OR
-	 * of MFX_REG_IRQ_GPI _PENDING1/_PENDING2/_PENDING3
-	 */
+	 
 	ack = pending & ~BIT(STMFX_REG_IRQ_SRC_EN_GPIO);
 	if (ack) {
 		ret = regmap_write(stmfx->map, STMFX_REG_IRQ_ACK, ack);
@@ -349,17 +336,7 @@ static int stmfx_chip_init(struct i2c_client *client)
 		goto err;
 	}
 
-	/*
-	 * Check that ID is the complement of the I2C address:
-	 * STMFX I2C address follows the 7-bit format (MSB), that's why
-	 * client->addr is shifted.
-	 *
-	 * STMFX_I2C_ADDR|       STMFX         |        Linux
-	 *   input pin   | I2C device address  | I2C device address
-	 *---------------------------------------------------------
-	 *       0       | b: 1000 010x h:0x84 |       0x42
-	 *       1       | b: 1000 011x h:0x86 |       0x43
-	 */
+	 
 	if (FIELD_GET(STMFX_REG_CHIP_ID_MASK, ~id) != (client->addr << 1)) {
 		dev_err(&client->dev, "Unknown chip ID: %#x\n", id);
 		ret = -EINVAL;
@@ -510,7 +487,7 @@ static int stmfx_resume(struct device *dev)
 		}
 	}
 
-	/* Reset STMFX - supply has been stopped during suspend */
+	 
 	ret = stmfx_chip_reset(stmfx);
 	if (ret) {
 		dev_err(stmfx->dev, "Failed to reset chip: %d\n", ret);

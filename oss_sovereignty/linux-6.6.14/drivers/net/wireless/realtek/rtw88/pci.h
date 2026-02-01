@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTK_PCI_H_
 #define __RTK_PCI_H_
@@ -11,7 +10,7 @@
 #define RTK_BEQ_TX_DESC_NUM	256
 
 #define RTK_MAX_RX_DESC_NUM	512
-/* 11K + rx desc size */
+ 
 #define RTK_PCI_RX_BUF_SIZE	(11454 + 24)
 
 #define RTK_PCI_CTRL		0x300
@@ -54,7 +53,7 @@
 #define TRX_BD_IDX_MASK		GENMASK(11, 0)
 #define TRX_BD_HW_IDX_MASK	GENMASK(27, 16)
 
-/* BCNQ is specialized for rsvd page, does not need to specify a number */
+ 
 #define RTK_PCI_TXBD_NUM_H2CQ	0x1328
 #define RTK_PCI_TXBD_NUM_MGMTQ	0x380
 #define RTK_PCI_TXBD_NUM_BKQ	0x38A
@@ -86,7 +85,7 @@
 #define RTK_PCI_HISR2		0x10B4
 #define RTK_PCI_HIMR3		0x10B8
 #define RTK_PCI_HISR3		0x10BC
-/* IMR 0 */
+ 
 #define IMR_TIMER2		BIT(31)
 #define IMR_TIMER1		BIT(30)
 #define IMR_PSTIMEOUT		BIT(29)
@@ -112,7 +111,7 @@
 #define IMR_VODOK		BIT(2)
 #define IMR_RDU			BIT(1)
 #define IMR_ROK			BIT(0)
-/* IMR 1 */
+ 
 #define IMR_TXFIFO_TH_INT	BIT(30)
 #define IMR_BTON_STS_UPDATE	BIT(29)
 #define IMR_MCUERR		BIT(28)
@@ -141,7 +140,7 @@
 #define IMR_PS_TIMER_B		BIT(3)
 #define IMR_PS_TIMER_A		BIT(2)
 #define IMR_CPUMGQ_TX_TIMER	BIT(1)
-/* IMR 3 */
+ 
 #define IMR_H2CDOK		BIT(16)
 
 enum rtw_pci_flags {
@@ -150,7 +149,7 @@ enum rtw_pci_flags {
 	NUM_OF_RTW_PCI_FLAGS,
 };
 
-/* one element is reserved to know if the ring is closed */
+ 
 static inline int avail_desc(u32 wp, u32 rp, u32 len)
 {
 	if (rp > wp)
@@ -206,15 +205,15 @@ struct rtw_pci_rx_ring {
 struct rtw_pci {
 	struct pci_dev *pdev;
 
-	/* Used for PCI interrupt. */
+	 
 	spinlock_t hwirq_lock;
-	/* Used for PCI TX ring/queueing, and enable INT. */
+	 
 	spinlock_t irq_lock;
 	u32 irq_mask[4];
 	bool irq_enabled;
 	bool running;
 
-	/* napi structure */
+	 
 	struct net_device netdev;
 	struct napi_struct napi;
 

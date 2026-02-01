@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip External Interrupt Controller driver
- *
- * Copyright (C) 2021 Microchip Technology Inc. and its subsidiaries
- *
- * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -24,15 +18,7 @@
 
 #define MCHP_EIC_NIRQ			(2)
 
-/*
- * struct mchp_eic - EIC private data structure
- * @base: base address
- * @clk: peripheral clock
- * @domain: irq domain
- * @irqs: irqs b/w eic and gic
- * @scfg: backup for scfg registers (necessary for backup and self-refresh mode)
- * @wakeup_source: wakeup source mask
- */
+ 
 struct mchp_eic {
 	void __iomem *base;
 	struct clk *clk;
@@ -233,7 +219,7 @@ static int mchp_eic_init(struct device_node *node, struct device_node *parent)
 	for (i = 0; i < MCHP_EIC_NIRQ; i++) {
 		struct of_phandle_args irq;
 
-		/* Disable it, if any. */
+		 
 		writel_relaxed(0UL, eic->base + MCHP_EIC_SCFG(i));
 
 		ret = of_irq_parse_one(node, i, &irq);

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Universal/legacy driver for 8250/16550-type serial ports
- *
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- *
- *  Copyright (C) 2001 Russell King.
- *
- *  Supports: ISA-compatible 8250/16550 ports
- *	      PNP 8250/16550 ports
- *	      early_serial_setup() ports
- *	      userspace-configurable "phantom" ports
- *	      "serial8250" platform devices
- *	      serial8250_register_8250_port() ports
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -43,33 +30,25 @@
 
 #include "8250.h"
 
-/*
- * Configuration:
- *   share_irqs - whether we pass IRQF_SHARED to request_irq().  This option
- *                is unsafe when used on edge-triggered interrupts.
- */
+ 
 static unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
 
 static unsigned int nr_uarts = CONFIG_SERIAL_8250_RUNTIME_UARTS;
 
 static struct uart_driver serial8250_reg;
 
-static unsigned int skip_txen_test; /* force skip of txen test at init time */
+static unsigned int skip_txen_test;  
 
 #define PASS_LIMIT	512
 
 #include <asm/serial.h>
-/*
- * SERIAL_PORT_DFNS tells us about built-in ports that have no
- * standard enumeration mechanism.   Platforms that can find all
- * serial ports via mechanisms like ACPI or PCI need not supply it.
- */
+ 
 #ifndef SERIAL_PORT_DFNS
 #define SERIAL_PORT_DFNS
 #endif
 
 static const struct old_serial_port old_serial_port[] = {
-	SERIAL_PORT_DFNS /* defined in asm/serial.h */
+	SERIAL_PORT_DFNS  
 };
 
 #define UART_NR	CONFIG_SERIAL_8250_NR_UARTS
@@ -79,33 +58,20 @@ static const struct old_serial_port old_serial_port[] = {
 #define PORT_RSA_MAX 4
 static unsigned long probe_rsa[PORT_RSA_MAX];
 static unsigned int probe_rsa_count;
-#endif /* CONFIG_SERIAL_8250_RSA  */
+#endif  
 
 struct irq_info {
 	struct			hlist_node node;
 	int			irq;
-	spinlock_t		lock;	/* Protects list not the hash */
+	spinlock_t		lock;	 
 	struct list_head	*head;
 };
 
-#define NR_IRQ_HASH		32	/* Can be adjusted later */
+#define NR_IRQ_HASH		32	 
 static struct hlist_head irq_lists[NR_IRQ_HASH];
-static DEFINE_MUTEX(hash_mutex);	/* Used to walk the hash */
+static DEFINE_MUTEX(hash_mutex);	 
 
-/*
- * This is the serial driver's interrupt routine.
- *
- * Arjan thinks the old way was overly complex, so it got simplified.
- * Alan disagrees, saying that need the complexity to handle the weird
- * nature of ISA shared interrupts.  (This is a special exception.)
- *
- * In order to handle ISA shared interrupts properly, we need to check
- * that all ports have been serviced, and therefore the ISA interrupt
- * line has been de-asserted.
- *
- * This means we need to loop through all ports. checking that they
- * don't have an interrupt pending.
- */
+ 
 static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
 {
 	struct irq_info *i = dev_id;
@@ -143,13 +109,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
-/*
- * To support ISA shared interrupts, we need to have one interrupt
- * handler that ensures that the IRQ line has been deasserted
- * before returning.  Failing to do this will result in the IRQ
- * line being stuck active, and, since ISA irqs are edge triggered,
- * no more IRQs will be seen.
- */
+ 
 static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
 {
 	spin_lock_irq(&i->lock);
@@ -163,7 +123,7 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
 		i->head = NULL;
 	}
 	spin_unlock_irq(&i->lock);
-	/* List empty so throw away the hash node */
+	 
 	if (i->head == NULL) {
 		hlist_del(&i->node);
 		kfree(i);
@@ -239,12 +199,7 @@ static void serial_unlink_irq_chain(struct uart_8250_port *up)
 	mutex_unlock(&hash_mutex);
 }
 
-/*
- * This function is used to handle ports that do not have an
- * interrupt.  This doesn't work very well for 16450's, but gives
- * barely passable results for a 16550A.  (Although at the expense
- * of much CPU overhead).
- */
+ 
 static void serial8250_timeout(struct timer_list *t)
 {
 	struct uart_8250_port *up = from_timer(up, t, timer);
@@ -261,10 +216,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
 
 	spin_lock_irqsave(&up->port.lock, flags);
 
-	/*
-	 * Must disable interrupts or else we risk racing with the interrupt
-	 * based handler.
-	 */
+	 
 	if (up->port.irq) {
 		ier = serial_in(up, UART_IER);
 		serial_out(up, UART_IER, 0);
@@ -272,12 +224,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
 
 	iir = serial_in(up, UART_IIR);
 
-	/*
-	 * This should be a safe test for anyone who doesn't trust the
-	 * IIR bits on their UART, but it's specifically designed for
-	 * the "Diva" UART used on the management processor on many HP
-	 * ia64 and parisc boxes.
-	 */
+	 
 	lsr = serial_lsr_in(up);
 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
@@ -294,7 +241,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
 
 	spin_unlock_irqrestore(&up->port.lock, flags);
 
-	/* Standard timer interval plus 0.2s to keep the port running */
+	 
 	mod_timer(&up->timer,
 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
 }
@@ -303,10 +250,7 @@ static void univ8250_setup_timer(struct uart_8250_port *up)
 {
 	struct uart_port *port = &up->port;
 
-	/*
-	 * The above check will only give an accurate result the first time
-	 * the port is opened so this value needs to be preserved.
-	 */
+	 
 	if (up->bugs & UART_BUG_THRE) {
 		pr_debug("%s - using backup timer\n", port->name);
 
@@ -315,11 +259,7 @@ static void univ8250_setup_timer(struct uart_8250_port *up)
 			  uart_poll_timeout(port) + HZ / 5);
 	}
 
-	/*
-	 * If the "interrupt" for this port doesn't correspond with any
-	 * hardware interrupt, we use a timer-based system.  The original
-	 * driver used to do this with IRQ0.
-	 */
+	 
 	if (!port->irq)
 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
 }
@@ -392,18 +332,7 @@ static const struct uart_8250_ops univ8250_driver_ops = {
 
 static struct uart_8250_port serial8250_ports[UART_NR];
 
-/**
- * serial8250_get_port - retrieve struct uart_8250_port
- * @line: serial line number
- *
- * This function retrieves struct uart_8250_port for the specific line.
- * This struct *must* *not* be used to perform a 8250 or serial core operation
- * which is not accessible otherwise. Its only purpose is to make the struct
- * accessible to the runtime-pm callbacks for context suspend/restore.
- * The lock assumption made here is none because runtime-pm suspend/resume
- * callbacks should not be invoked if there is any operation performed on the
- * port.
- */
+ 
 struct uart_8250_port *serial8250_get_port(int line)
 {
 	return &serial8250_ports[line];
@@ -481,7 +410,7 @@ static void univ8250_rsa_support(struct uart_ops *ops)
 
 #else
 #define univ8250_rsa_support(x)		do { } while (0)
-#endif /* CONFIG_SERIAL_8250_RSA */
+#endif  
 
 static inline void serial8250_apply_quirks(struct uart_8250_port *up)
 {
@@ -530,15 +459,11 @@ static void __init serial8250_isa_init_ports(void)
 	if (nr_uarts > UART_NR)
 		nr_uarts = UART_NR;
 
-	/*
-	 * Set up initial isa ports based on nr_uart module param, or else
-	 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
-	 * need to increase nr_uarts when setting up the initial isa ports.
-	 */
+	 
 	for (i = 0; i < nr_uarts; i++)
 		serial8250_setup_port(i);
 
-	/* chain base port ops to support Remote Supervisor Adapter */
+	 
 	univ8250_port_ops = *base_ops;
 	univ8250_rsa_support(&univ8250_port_ops);
 
@@ -606,18 +531,11 @@ static int univ8250_console_setup(struct console *co, char *options)
 	struct uart_port *port;
 	int retval, i;
 
-	/*
-	 * Check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index >= UART_NR)
 		co->index = 0;
 
-	/*
-	 * If the console is past the initial isa ports, init more ports up to
-	 * co->index as needed and increment nr_uarts accordingly.
-	 */
+	 
 	for (i = nr_uarts; i <= co->index; i++) {
 		up = serial8250_setup_port(i);
 		if (!up)
@@ -626,7 +544,7 @@ static int univ8250_console_setup(struct console *co, char *options)
 	}
 
 	port = &serial8250_ports[co->index].port;
-	/* link port to console */
+	 
 	port->cons = co;
 
 	retval = serial8250_console_setup(port, options, false);
@@ -643,28 +561,11 @@ static int univ8250_console_exit(struct console *co)
 	return serial8250_console_exit(port);
 }
 
-/**
- *	univ8250_console_match - non-standard console matching
- *	@co:	  registering console
- *	@name:	  name from console command line
- *	@idx:	  index from console command line
- *	@options: ptr to option string from console command line
- *
- *	Only attempts to match console command lines of the form:
- *	    console=uart[8250],io|mmio|mmio16|mmio32,<addr>[,<options>]
- *	    console=uart[8250],0x<addr>[,<options>]
- *	This form is used to register an initial earlycon boot console and
- *	replace it with the serial8250_console at 8250 driver init.
- *
- *	Performs console setup for a match (as required by interface)
- *	If no <options> are specified, then assume the h/w is already setup.
- *
- *	Returns 0 if console matches; otherwise non-zero to use default matching
- */
+ 
 static int univ8250_console_match(struct console *co, char *name, int idx,
 				  char *options)
 {
-	char match[] = "uart";	/* 8250-specific earlycon name */
+	char match[] = "uart";	 
 	unsigned char iotype;
 	resource_size_t addr;
 	int i;
@@ -675,7 +576,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
 	if (uart_parse_earlycon(options, &iotype, &addr, &options))
 		return -ENODEV;
 
-	/* try to match the port specified on the command line */
+	 
 	for (i = 0; i < nr_uarts; i++) {
 		struct uart_port *port = &serial8250_ports[i].port;
 
@@ -733,12 +634,7 @@ static struct uart_driver serial8250_reg = {
 	.cons			= SERIAL8250_CONSOLE,
 };
 
-/*
- * early_serial_setup - early registration for 8250 ports
- *
- * Setup an 8250 port structure prior to console initialisation.  Use
- * after console initialisation will cause undefined behaviour.
- */
+ 
 int __init early_serial_setup(struct uart_port *port)
 {
 	struct uart_port *p;
@@ -775,12 +671,7 @@ int __init early_serial_setup(struct uart_port *port)
 	return 0;
 }
 
-/**
- *	serial8250_suspend_port - suspend one serial port
- *	@line:  serial line number
- *
- *	Suspend one serial port.
- */
+ 
 void serial8250_suspend_port(int line)
 {
 	struct uart_8250_port *up = &serial8250_ports[line];
@@ -799,12 +690,7 @@ void serial8250_suspend_port(int line)
 }
 EXPORT_SYMBOL(serial8250_suspend_port);
 
-/**
- *	serial8250_resume_port - resume one serial port
- *	@line:  serial line number
- *
- *	Resume one serial port.
- */
+ 
 void serial8250_resume_port(int line)
 {
 	struct uart_8250_port *up = &serial8250_ports[line];
@@ -813,7 +699,7 @@ void serial8250_resume_port(int line)
 	up->canary = 0;
 
 	if (up->capabilities & UART_NATSEMI) {
-		/* Ensure it's still in high speed mode */
+		 
 		serial_port_out(port, UART_LCR, 0xE0);
 
 		ns16550a_goto_highspeed(up);
@@ -825,11 +711,7 @@ void serial8250_resume_port(int line)
 }
 EXPORT_SYMBOL(serial8250_resume_port);
 
-/*
- * Register a set of serial devices attached to a platform device.  The
- * list is terminated with a zero flags entry, which means we expect
- * all entries to have at least UPF_BOOT_AUTOCONF set.
- */
+ 
 static int serial8250_probe(struct platform_device *dev)
 {
 	struct plat_serial8250_port *p = dev_get_platdata(&dev->dev);
@@ -880,9 +762,7 @@ static int serial8250_probe(struct platform_device *dev)
 	return 0;
 }
 
-/*
- * Remove serial ports registered against a platform device.
- */
+ 
 static int serial8250_remove(struct platform_device *dev)
 {
 	int i;
@@ -934,49 +814,33 @@ static struct platform_driver serial8250_isa_driver = {
 	},
 };
 
-/*
- * This "device" covers _all_ ISA 8250-compatible serial devices listed
- * in the table in include/asm/serial.h
- */
+ 
 static struct platform_device *serial8250_isa_devs;
 
-/*
- * serial8250_register_8250_port and serial8250_unregister_port allows for
- * 16x50 serial ports to be configured at run-time, to support PCMCIA
- * modems and PCI multiport cards.
- */
+ 
 static DEFINE_MUTEX(serial_mutex);
 
 static struct uart_8250_port *serial8250_find_match_or_unused(const struct uart_port *port)
 {
 	int i;
 
-	/*
-	 * First, find a port entry which matches.
-	 */
+	 
 	for (i = 0; i < nr_uarts; i++)
 		if (uart_match_port(&serial8250_ports[i].port, port))
 			return &serial8250_ports[i];
 
-	/* try line number first if still available */
+	 
 	i = port->line;
 	if (i < nr_uarts && serial8250_ports[i].port.type == PORT_UNKNOWN &&
 			serial8250_ports[i].port.iobase == 0)
 		return &serial8250_ports[i];
-	/*
-	 * We didn't find a matching entry, so look for the first
-	 * free entry.  We look for one which hasn't been previously
-	 * used (indicated by zero iobase).
-	 */
+	 
 	for (i = 0; i < nr_uarts; i++)
 		if (serial8250_ports[i].port.type == PORT_UNKNOWN &&
 		    serial8250_ports[i].port.iobase == 0)
 			return &serial8250_ports[i];
 
-	/*
-	 * That also failed.  Last resort is to find any entry which
-	 * doesn't have a real port associated with it.
-	 */
+	 
 	for (i = 0; i < nr_uarts; i++)
 		if (serial8250_ports[i].port.type == PORT_UNKNOWN)
 			return &serial8250_ports[i];
@@ -999,19 +863,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-/**
- *	serial8250_register_8250_port - register a serial port
- *	@up: serial port template
- *
- *	Configure the serial port specified by the request. If the
- *	port exists and is in use, it is hung up and unregistered
- *	first.
- *
- *	The port is then probed and if necessary the IRQ is autodetected
- *	If this fails an error is returned.
- *
- *	On success the port is ready to use and the line number is returned.
- */
+ 
 int serial8250_register_8250_port(const struct uart_8250_port *up)
 {
 	struct uart_8250_port *uart;
@@ -1024,10 +876,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 
 	uart = serial8250_find_match_or_unused(&up->port);
 	if (!uart) {
-		/*
-		 * If the port is past the initial isa ports, initialize a new
-		 * port and increment nr_uarts accordingly.
-		 */
+		 
 		uart = serial8250_setup_port(nr_uarts);
 		if (!uart)
 			goto unlock;
@@ -1067,7 +916,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		uart->lsr_save_mask	= up->lsr_save_mask;
 		uart->dma		= up->dma;
 
-		/* Take tx_loadsz from fifosize if it wasn't set separately */
+		 
 		if (uart->port.fifosize && !uart->tx_loadsz)
 			uart->tx_loadsz = uart->port.fifosize;
 
@@ -1081,10 +930,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		if (up->port.flags & UPF_FIXED_TYPE)
 			uart->port.type = up->port.type;
 
-		/*
-		 * Only call mctrl_gpio_init(), if the device has no ACPI
-		 * companion device
-		 */
+		 
 		if (!has_acpi_companion(uart->port.dev)) {
 			gpios = mctrl_gpio_init(&uart->port, 0);
 			if (IS_ERR(gpios)) {
@@ -1097,14 +943,14 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 
 		serial8250_set_defaults(uart);
 
-		/* Possibly override default I/O functions.  */
+		 
 		if (up->port.serial_in)
 			uart->port.serial_in = up->port.serial_in;
 		if (up->port.serial_out)
 			uart->port.serial_out = up->port.serial_out;
 		if (up->port.handle_irq)
 			uart->port.handle_irq = up->port.handle_irq;
-		/*  Possibly override set_termios call */
+		 
 		if (up->port.set_termios)
 			uart->port.set_termios = up->port.set_termios;
 		if (up->port.set_ldisc)
@@ -1153,9 +999,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		}
 
 		if (!uart->lsr_save_mask)
-			uart->lsr_save_mask = LSR_SAVE_FLAGS;	/* Use default LSR mask */
+			uart->lsr_save_mask = LSR_SAVE_FLAGS;	 
 
-		/* Initialise interrupt backoff work if required */
+		 
 		if (up->overrun_backoff_time_ms > 0) {
 			uart->overrun_backoff_time_ms =
 				up->overrun_backoff_time_ms;
@@ -1178,13 +1024,7 @@ err:
 }
 EXPORT_SYMBOL(serial8250_register_8250_port);
 
-/**
- *	serial8250_unregister_port - remove a 16x50 serial port at runtime
- *	@line: serial line number
- *
- *	Remove one serial port.  This may not be called from interrupt
- *	context.  We hand the port back to the our control.
- */
+ 
 void serial8250_unregister_port(int line)
 {
 	struct uart_8250_port *uart = &serial8250_ports[line];
@@ -1277,11 +1117,7 @@ static void __exit serial8250_exit(void)
 {
 	struct platform_device *isa_dev = serial8250_isa_devs;
 
-	/*
-	 * This tells serial8250_unregister_port() not to re-register
-	 * the ports (thereby making serial8250_isa_driver permanently
-	 * in use.)
-	 */
+	 
 	serial8250_isa_devs = NULL;
 
 	platform_driver_unregister(&serial8250_isa_driver);
@@ -1319,16 +1155,7 @@ MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
 
 #ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
 #ifndef MODULE
-/* This module was renamed to 8250_core in 3.7.  Keep the old "8250" name
- * working as well for the module options so we don't break people.  We
- * need to keep the names identical and the convenient macros will happily
- * refuse to let us do that by failing the build with redefinition errors
- * of global variables.  So we stick them inside a dummy function to avoid
- * those conflicts.  The options still get parsed, and the redefined
- * MODULE_PARAM_PREFIX lets us keep the "8250." syntax alive.
- *
- * This is hacky.  I'm sorry.
- */
+ 
 static void __used s8250_options(void)
 {
 #undef MODULE_PARAM_PREFIX

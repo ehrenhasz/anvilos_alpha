@@ -1,28 +1,4 @@
-/* instructions used to output a skb based software event, produced
- * from code snippet:
- * struct TMP {
- *  uint64_t tmp;
- * } tt;
- * tt.tmp = 5;
- * bpf_perf_event_output(skb, &connection_tracking_event_map, 0,
- *			 &tt, sizeof(tt));
- * return 1;
- *
- * the bpf assembly from llvm is:
- *        0:       b7 02 00 00 05 00 00 00         r2 = 5
- *        1:       7b 2a f8 ff 00 00 00 00         *(u64 *)(r10 - 8) = r2
- *        2:       bf a4 00 00 00 00 00 00         r4 = r10
- *        3:       07 04 00 00 f8 ff ff ff         r4 += -8
- *        4:       18 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00    r2 = 0ll
- *        6:       b7 03 00 00 00 00 00 00         r3 = 0
- *        7:       b7 05 00 00 08 00 00 00         r5 = 8
- *        8:       85 00 00 00 19 00 00 00         call 25
- *        9:       b7 00 00 00 01 00 00 00         r0 = 1
- *       10:       95 00 00 00 00 00 00 00         exit
- *
- *     The reason I put the code here instead of fill_helpers is that map fixup
- *     is against the insns, instead of filled prog.
- */
+ 
 
 #define __PERF_EVENT_INSNS__					\
 	BPF_MOV64_IMM(BPF_REG_2, 5),				\

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/**
- * Host side endpoint driver to implement Non-Transparent Bridge functionality
- *
- * Copyright (C) 2020 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -46,7 +41,7 @@
 #define NTB_EPF_MIN_DB_COUNT	3
 #define NTB_EPF_MAX_DB_COUNT	31
 
-#define NTB_EPF_COMMAND_TIMEOUT	1000 /* 1 Sec */
+#define NTB_EPF_COMMAND_TIMEOUT	1000  
 
 enum pci_barno {
 	BAR_0,
@@ -60,7 +55,7 @@ enum pci_barno {
 struct ntb_epf_dev {
 	struct ntb_dev ntb;
 	struct device *dev;
-	/* Mutex to protect providing commands to NTB EPF */
+	 
 	struct mutex cmd_lock;
 
 	enum pci_barno ctrl_reg_bar;
@@ -86,13 +81,13 @@ struct ntb_epf_dev {
 #define ntb_ndev(__ntb) container_of(__ntb, struct ntb_epf_dev, ntb)
 
 struct ntb_epf_data {
-	/* BAR that contains both control region and self spad region */
+	 
 	enum pci_barno ctrl_reg_bar;
-	/* BAR that contains peer spad region */
+	 
 	enum pci_barno peer_spad_reg_bar;
-	/* BAR that contains Doorbell region and Memory window '1' */
+	 
 	enum pci_barno db_reg_bar;
-	/* BAR that contains memory windows*/
+	 
 	enum pci_barno mw_bar;
 };
 
@@ -548,7 +543,7 @@ static int ntb_epf_init_dev(struct ntb_epf_dev *ndev)
 	struct device *dev = ndev->dev;
 	int ret;
 
-	/* One Link interrupt and rest doorbell interrupt */
+	 
 	ret = ntb_epf_init_isr(ndev, NTB_EPF_MIN_DB_COUNT + 1,
 			       NTB_EPF_MAX_DB_COUNT + 1);
 	if (ret) {

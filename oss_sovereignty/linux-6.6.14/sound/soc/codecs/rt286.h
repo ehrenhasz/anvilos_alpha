@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt286.h  --  RT286 ALSA SoC audio driver
- *
- * Copyright 2011 Realtek Microelectronics
- * Author: Johnny Hsu <johnnyhsu@realtek.com>
- */
+ 
+ 
 
 #ifndef __RT286_H__
 #define __RT286_H__
@@ -39,7 +34,7 @@
 
 #define RT286_MUTE_SFT					7
 
-/* Verb commands */
+ 
 #define RT286_GET_PARAM(NID, PARAM) VERB_CMD(AC_VERB_PARAMETERS, NID, PARAM)
 #define RT286_SET_POWER(NID) VERB_CMD(AC_VERB_SET_POWER_STATE, NID, 0)
 #define RT286_SET_AUDIO_POWER RT286_SET_POWER(RT286_AUDIO_FUNCTION_GROUP)
@@ -121,7 +116,7 @@
 #define RT286_SET_GPIO_DATA\
 	VERB_CMD(AC_VERB_SET_GPIO_DATA, RT286_AUDIO_FUNCTION_GROUP, 0)
 
-/* Index registers */
+ 
 #define RT286_A_BIAS_CTRL1	0x01
 #define RT286_A_BIAS_CTRL2	0x02
 #define RT286_POWER_CTRL1	0x03
@@ -145,38 +140,38 @@
 #define RT286_DEPOP_CTRL3	0x68
 #define RT286_DEPOP_CTRL4	0x69
 
-/* SPDIF (0x06) */
+ 
 #define RT286_SPDIF_SEL_SFT	0
 #define RT286_SPDIF_SEL_PCM0	0
 #define RT286_SPDIF_SEL_PCM1	1
 #define RT286_SPDIF_SEL_SPOUT	2
 #define RT286_SPDIF_SEL_PP	3
 
-/* RECMIX (0x0b) */
+ 
 #define RT286_M_REC_BEEP_SFT	0
 #define RT286_M_REC_LINE1_SFT	1
 #define RT286_M_REC_MIC1_SFT	2
 #define RT286_M_REC_I2S_SFT	3
 
-/* Front (0x0c) */
+ 
 #define RT286_M_FRONT_DAC_SFT	0
 #define RT286_M_FRONT_REC_SFT	1
 
-/* SPK-OUT (0x14) */
+ 
 #define RT286_M_SPK_MUX_SFT	14
 #define RT286_SPK_SEL_MASK	0x1
 #define RT286_SPK_SEL_SFT	0
 #define RT286_SPK_SEL_F		0
 #define RT286_SPK_SEL_S		1
 
-/* HP-OUT (0x21) */
+ 
 #define RT286_M_HP_MUX_SFT	14
 #define RT286_HP_SEL_MASK	0x1
 #define RT286_HP_SEL_SFT	0
 #define RT286_HP_SEL_F		0
 #define RT286_HP_SEL_S		1
 
-/* ADC (0x22) (0x23) */
+ 
 #define RT286_ADC_SEL_MASK	0x7
 #define RT286_ADC_SEL_SFT	0
 #define RT286_ADC_SEL_SURR	0
@@ -196,5 +191,5 @@ enum {
 	RT286_AIFS,
 };
 
-#endif /* __RT286_H__ */
+#endif  
 

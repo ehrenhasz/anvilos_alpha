@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs4349.c  --  CS4349 ALSA Soc Audio driver
- *
- * Copyright 2015 Cirrus Logic, Inc.
- *
- * Authors: Tim Howe <Tim.Howe@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -31,16 +25,16 @@
 
 
 static const struct reg_default cs4349_reg_defaults[] = {
-	{ 2, 0x00 },	/* r02	- Mode Control */
-	{ 3, 0x09 },	/* r03	- Volume, Mixing and Inversion Control */
-	{ 4, 0x81 },	/* r04	- Mute Control */
-	{ 5, 0x00 },	/* r05	- Channel A Volume Control */
-	{ 6, 0x00 },	/* r06	- Channel B Volume Control */
-	{ 7, 0xB1 },	/* r07	- Ramp and Filter Control */
-	{ 8, 0x1C },	/* r08	- Misc. Control */
+	{ 2, 0x00 },	 
+	{ 3, 0x09 },	 
+	{ 4, 0x81 },	 
+	{ 5, 0x00 },	 
+	{ 6, 0x00 },	 
+	{ 7, 0xB1 },	 
+	{ 8, 0x1C },	 
 };
 
-/* Private data for the CS4349 */
+ 
 struct  cs4349_private {
 	struct regmap			*regmap;
 	struct gpio_desc		*reset_gpio;
@@ -149,7 +143,7 @@ static const char * const chan_mix_texts[] = {
 	"Mute", "MuteA", "MuteA SwapB", "MuteA MonoB", "SwapA MuteB",
 	"BothR", "Swap", "SwapA MonoB", "MuteB", "Normal", "BothL",
 	"MonoB", "MonoA MuteB", "MonoA", "MonoA SwapB", "Mono",
-	/*Normal == Channel A = Left, Channel B = Right*/
+	 
 };
 
 static const char * const fm_texts[] = {
@@ -290,7 +284,7 @@ static int cs4349_i2c_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Reset the Device */
+	 
 	cs4349->reset_gpio = devm_gpiod_get_optional(&client->dev,
 		"reset", GPIOD_OUT_LOW);
 	if (IS_ERR(cs4349->reset_gpio))
@@ -309,7 +303,7 @@ static void cs4349_i2c_remove(struct i2c_client *client)
 {
 	struct cs4349_private *cs4349 = i2c_get_clientdata(client);
 
-	/* Hold down reset */
+	 
 	gpiod_set_value_cansleep(cs4349->reset_gpio, 0);
 }
 
@@ -325,7 +319,7 @@ static int cs4349_runtime_suspend(struct device *dev)
 
 	regcache_cache_only(cs4349->regmap, true);
 
-	/* Hold down reset */
+	 
 	gpiod_set_value_cansleep(cs4349->reset_gpio, 0);
 
 	return 0;

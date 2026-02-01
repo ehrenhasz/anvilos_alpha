@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2019-20 Sean Anderson <seanga2@gmail.com>
- * Copyright (c) 2019 Western Digital Corporation or its affiliates.
- */
+
+ 
 #define pr_fmt(fmt)     "k210-clk: " fmt
 
 #include <linux/io.h>
@@ -61,7 +58,7 @@ enum k210_clk_div_type {
 	.mux_bit = (_bit)
 
 static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
-	/* Gated clocks, no mux, no divider */
+	 
 	[K210_CLK_CPU] = {
 		.name = "cpu",
 		K210_GATE(K210_SYSCTL_EN_CENT, 0)
@@ -111,7 +108,7 @@ static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
 		K210_GATE(K210_SYSCTL_EN_PERI, 29)
 	},
 
-	/* Gated divider clocks */
+	 
 	[K210_CLK_SRAM0] = {
 		.name = "sram0",
 		K210_GATE(K210_SYSCTL_EN_CENT, 1),
@@ -208,7 +205,7 @@ static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
 		K210_DIV(K210_SYSCTL_THR4, 0, 16, K210_DIV_DOUBLE_ONE_BASED)
 	},
 
-	/* Divider clocks, no gate, no mux */
+	 
 	[K210_CLK_I2S0_M] = {
 		.name = "i2s0_m",
 		K210_DIV(K210_SYSCTL_THR4, 16, 8, K210_DIV_DOUBLE_ONE_BASED)
@@ -222,7 +219,7 @@ static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
 		K210_DIV(K210_SYSCTL_THR4, 0, 8, K210_DIV_DOUBLE_ONE_BASED)
 	},
 
-	/* Muxed gated divider clocks */
+	 
 	[K210_CLK_SPI3] = {
 		.name = "spi3",
 		K210_GATE(K210_SYSCTL_EN_PERI, 9),
@@ -249,9 +246,7 @@ static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
 	},
 };
 
-/*
- * PLL control register bits.
- */
+ 
 #define K210_PLL_CLKR		GENMASK(3, 0)
 #define K210_PLL_CLKF		GENMASK(9, 4)
 #define K210_PLL_CLKOD		GENMASK(13, 10)
@@ -262,24 +257,18 @@ static struct k210_clk_cfg k210_clk_cfgs[K210_NUM_CLKS] = {
 #define K210_PLL_BYPASS		(1 << 23)
 #define K210_PLL_TEST		(1 << 24)
 #define K210_PLL_EN		(1 << 25)
-#define K210_PLL_SEL		GENMASK(27, 26) /* PLL2 only */
+#define K210_PLL_SEL		GENMASK(27, 26)  
 
-/*
- * PLL lock register bits.
- */
+ 
 #define K210_PLL_LOCK		0
 #define K210_PLL_CLEAR_SLIP	2
 #define K210_PLL_TEST_OUT	3
 
-/*
- * Clock selector register bits.
- */
+ 
 #define K210_ACLK_SEL		BIT(0)
 #define K210_ACLK_DIV		GENMASK(2, 1)
 
-/*
- * PLLs.
- */
+ 
 enum k210_pll_id {
 	K210_PLL0, K210_PLL1, K210_PLL2, K210_PLL_NUM
 };
@@ -296,12 +285,7 @@ struct k210_pll {
 };
 #define to_k210_pll(_hw)	container_of(_hw, struct k210_pll, hw)
 
-/*
- * PLLs configuration: by default PLL0 runs at 780 MHz and PLL1 at 299 MHz.
- * The first 2 SRAM banks depend on ACLK/CPU clock which is by default PLL0
- * rate divided by 2. Set PLL1 to 390 MHz so that the third SRAM bank has the
- * same clock as the first 2.
- */
+ 
 struct k210_pll_cfg {
 	u32 reg;
 	u8 lock_shift;
@@ -313,19 +297,12 @@ struct k210_pll_cfg {
 };
 
 static struct k210_pll_cfg k210_plls_cfg[] = {
-	{ K210_SYSCTL_PLL0,  0, 2, 0, 59, 1, 59 }, /* 780 MHz */
-	{ K210_SYSCTL_PLL1,  8, 1, 0, 59, 3, 59 }, /* 390 MHz */
-	{ K210_SYSCTL_PLL2, 16, 1, 0, 22, 1, 22 }, /* 299 MHz */
+	{ K210_SYSCTL_PLL0,  0, 2, 0, 59, 1, 59 },  
+	{ K210_SYSCTL_PLL1,  8, 1, 0, 59, 3, 59 },  
+	{ K210_SYSCTL_PLL2, 16, 1, 0, 22, 1, 22 },  
 };
 
-/**
- * struct k210_sysclk - sysclk driver data
- * @regs: system controller registers start address
- * @clk_lock: clock setting spinlock
- * @plls: SoC PLLs descriptors
- * @aclk: ACLK clock
- * @clks: All other clocks
- */
+ 
 struct k210_sysclk {
 	void __iomem			*regs;
 	spinlock_t			clk_lock;
@@ -336,9 +313,7 @@ struct k210_sysclk {
 
 #define to_k210_sysclk(_hw)	container_of(_hw, struct k210_sysclk, aclk)
 
-/*
- * Set ACLK parent selector: 0 for IN0, 1 for PLL0.
- */
+ 
 static void k210_aclk_set_selector(void __iomem *regs, u8 sel)
 {
 	u32 reg = readl(regs + K210_SYSCTL_SEL0);
@@ -394,14 +369,11 @@ static void k210_pll_enable_hw(void __iomem *regs, struct k210_pll *pll)
 	if (k210_pll_hw_is_enabled(pll))
 		return;
 
-	/*
-	 * For PLL0, we need to re-parent ACLK to IN0 to keep the CPU cores and
-	 * SRAM running.
-	 */
+	 
 	if (pll->id == K210_PLL0)
 		k210_aclk_set_selector(regs, 0);
 
-	/* Set PLL factors */
+	 
 	reg = readl(pll->reg);
 	reg &= ~GENMASK(19, 0);
 	reg |= FIELD_PREP(K210_PLL_CLKR, pll_cfg->r);
@@ -411,10 +383,7 @@ static void k210_pll_enable_hw(void __iomem *regs, struct k210_pll *pll)
 	reg |= K210_PLL_PWRD;
 	writel(reg, pll->reg);
 
-	/*
-	 * Reset the PLL: ensure reset is low before asserting it.
-	 * The magic NOPs come from the Kendryte reference SDK.
-	 */
+	 
 	reg &= ~K210_PLL_RESET;
 	writel(reg, pll->reg);
 	reg |= K210_PLL_RESET;
@@ -456,11 +425,7 @@ static void k210_pll_disable(struct clk_hw *hw)
 	unsigned long flags;
 	u32 reg;
 
-	/*
-	 * Bypassing before powering off is important so child clocks do not
-	 * stop working. This is especially important for pll0, the indirect
-	 * parent of the cpu clock.
-	 */
+	 
 	spin_lock_irqsave(&ksc->clk_lock, flags);
 	reg = readl(pll->reg);
 	reg |= K210_PLL_BYPASS;
@@ -549,7 +514,7 @@ static int __init k210_register_pll(struct device_node *np,
 	struct k210_pll *pll = &ksc->plls[pllid];
 	struct clk_init_data init = {};
 	const struct clk_parent_data parent_data[] = {
-		{ /* .index = 0 for in0 */ },
+		{   },
 		{ .hw = &ksc->plls[K210_PLL0].hw },
 		{ .hw = &ksc->plls[K210_PLL1].hw },
 	};
@@ -573,7 +538,7 @@ static int __init k210_register_plls(struct device_node *np,
 	for (i = 0; i < K210_PLL_NUM; i++)
 		k210_init_pll(ksc->regs, i, &ksc->plls[i]);
 
-	/* PLL0 and PLL1 only have IN0 as parent */
+	 
 	ret = k210_register_pll(np, ksc, K210_PLL0, "pll0", 1, &k210_pll_ops);
 	if (ret) {
 		pr_err("%pOFP: register PLL0 failed\n", np);
@@ -585,7 +550,7 @@ static int __init k210_register_plls(struct device_node *np,
 		return ret;
 	}
 
-	/* PLL2 has IN0, PLL0 and PLL1 as parents */
+	 
 	ret = k210_register_pll(np, ksc, K210_PLL2, "pll2", 3, &k210_pll2_ops);
 	if (ret) {
 		pr_err("%pOFP: register PLL2 failed\n", np);
@@ -641,15 +606,13 @@ static const struct clk_ops k210_aclk_ops = {
 	.recalc_rate	= k210_aclk_get_rate,
 };
 
-/*
- * ACLK has IN0 and PLL0 as parents.
- */
+ 
 static int __init k210_register_aclk(struct device_node *np,
 				     struct k210_sysclk *ksc)
 {
 	struct clk_init_data init = {};
 	const struct clk_parent_data parent_data[] = {
-		{ /* .index = 0 for in0 */ },
+		{   },
 		{ .hw = &ksc->plls[K210_PLL0].hw },
 	};
 	int ret;
@@ -817,14 +780,12 @@ static void __init k210_register_clk(struct device_node *np,
 	}
 }
 
-/*
- * All muxed clocks have IN0 and PLL0 as parents.
- */
+ 
 static inline void __init k210_register_mux_clk(struct device_node *np,
 						struct k210_sysclk *ksc, int id)
 {
 	const struct clk_parent_data parent_data[2] = {
-		{ /* .index = 0 for in0 */ },
+		{   },
 		{ .hw = &ksc->plls[K210_PLL0].hw }
 	};
 
@@ -835,7 +796,7 @@ static inline void __init k210_register_in0_child(struct device_node *np,
 						struct k210_sysclk *ksc, int id)
 {
 	const struct clk_parent_data parent_data = {
-		/* .index = 0 for in0 */
+		 
 	};
 
 	k210_register_clk(np, ksc, id, &parent_data, 1, 0);
@@ -914,21 +875,14 @@ static void __init k210_clk_init(struct device_node *np)
 	if (ret)
 		return;
 
-	/*
-	 * Critical clocks: there are no consumers of the SRAM clocks,
-	 * including the AI clock for the third SRAM bank. The CPU clock
-	 * is only referenced by the uarths serial device and so would be
-	 * disabled if the serial console is disabled to switch to another
-	 * console. Mark all these clocks as critical so that they are never
-	 * disabled by the core clock management.
-	 */
+	 
 	k210_register_aclk_child(np, ksc, K210_CLK_CPU, CLK_IS_CRITICAL);
 	k210_register_aclk_child(np, ksc, K210_CLK_SRAM0, CLK_IS_CRITICAL);
 	k210_register_aclk_child(np, ksc, K210_CLK_SRAM1, CLK_IS_CRITICAL);
 	k210_register_pll_child(np, ksc, K210_CLK_AI, K210_PLL1,
 				CLK_IS_CRITICAL);
 
-	/* Clocks with aclk as source */
+	 
 	k210_register_aclk_child(np, ksc, K210_CLK_DMA, 0);
 	k210_register_aclk_child(np, ksc, K210_CLK_FFT, 0);
 	k210_register_aclk_child(np, ksc, K210_CLK_ROM, 0);
@@ -937,7 +891,7 @@ static void __init k210_clk_init(struct device_node *np)
 	k210_register_aclk_child(np, ksc, K210_CLK_APB1, 0);
 	k210_register_aclk_child(np, ksc, K210_CLK_APB2, 0);
 
-	/* Clocks with PLL0 as source */
+	 
 	k210_register_pll_child(np, ksc, K210_CLK_SPI0, K210_PLL0, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_SPI1, K210_PLL0, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_SPI2, K210_PLL0, 0);
@@ -945,7 +899,7 @@ static void __init k210_clk_init(struct device_node *np)
 	k210_register_pll_child(np, ksc, K210_CLK_I2C1, K210_PLL0, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_I2C2, K210_PLL0, 0);
 
-	/* Clocks with PLL2 as source */
+	 
 	k210_register_pll_child(np, ksc, K210_CLK_I2S0, K210_PLL2, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_I2S1, K210_PLL2, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_I2S2, K210_PLL2, 0);
@@ -953,12 +907,12 @@ static void __init k210_clk_init(struct device_node *np)
 	k210_register_pll_child(np, ksc, K210_CLK_I2S1_M, K210_PLL2, 0);
 	k210_register_pll_child(np, ksc, K210_CLK_I2S2_M, K210_PLL2, 0);
 
-	/* Clocks with IN0 as source */
+	 
 	k210_register_in0_child(np, ksc, K210_CLK_WDT0);
 	k210_register_in0_child(np, ksc, K210_CLK_WDT1);
 	k210_register_in0_child(np, ksc, K210_CLK_RTC);
 
-	/* Clocks with APB0 as source */
+	 
 	k210_register_clk_child(np, ksc, K210_CLK_GPIO, K210_CLK_APB0);
 	k210_register_clk_child(np, ksc, K210_CLK_UART1, K210_CLK_APB0);
 	k210_register_clk_child(np, ksc, K210_CLK_UART2, K210_CLK_APB0);
@@ -966,17 +920,17 @@ static void __init k210_clk_init(struct device_node *np)
 	k210_register_clk_child(np, ksc, K210_CLK_FPIOA, K210_CLK_APB0);
 	k210_register_clk_child(np, ksc, K210_CLK_SHA, K210_CLK_APB0);
 
-	/* Clocks with APB1 as source */
+	 
 	k210_register_clk_child(np, ksc, K210_CLK_AES, K210_CLK_APB1);
 	k210_register_clk_child(np, ksc, K210_CLK_OTP, K210_CLK_APB1);
 
-	/* Mux clocks with in0 or pll0 as source */
+	 
 	k210_register_mux_clk(np, ksc, K210_CLK_SPI3);
 	k210_register_mux_clk(np, ksc, K210_CLK_TIMER0);
 	k210_register_mux_clk(np, ksc, K210_CLK_TIMER1);
 	k210_register_mux_clk(np, ksc, K210_CLK_TIMER2);
 
-	/* Check for registration errors */
+	 
 	for (i = 0; i < K210_NUM_CLKS; i++) {
 		if (ksc->clks[i].id != i)
 			return;
@@ -994,17 +948,15 @@ static void __init k210_clk_init(struct device_node *np)
 
 CLK_OF_DECLARE(k210_clk, "canaan,k210-clk", k210_clk_init);
 
-/*
- * Enable PLL1 to be able to use the AI SRAM.
- */
+ 
 void __init k210_clk_early_init(void __iomem *regs)
 {
 	struct k210_pll pll1;
 
-	/* Make sure ACLK selector is set to PLL0 */
+	 
 	k210_aclk_set_selector(regs, 1);
 
-	/* Startup PLL1 to enable the aisram bank for general memory use */
+	 
 	k210_init_pll(regs, K210_PLL1, &pll1);
 	k210_pll_enable_hw(regs, &pll1);
 }

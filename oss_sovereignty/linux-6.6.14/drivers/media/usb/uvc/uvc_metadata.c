@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      uvc_metadata.c  --  USB Video Class driver - Metadata handling
- *
- *      Copyright (C) 2016
- *          Guennadi Liakhovetski (guennadi.liakhovetski@intel.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -18,9 +13,7 @@
 
 #include "uvcvideo.h"
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int uvc_meta_v4l2_querycap(struct file *file, void *fh,
 				  struct v4l2_capability *cap)
@@ -89,11 +82,7 @@ static int uvc_meta_v4l2_set_format(struct file *file, void *fh,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * We could in principle switch at any time, also during streaming.
-	 * Metadata buffers would still be perfectly parseable, but it's more
-	 * consistent and cleaner to disallow that.
-	 */
+	 
 	mutex_lock(&stream->mutex);
 
 	if (uvc_queue_allocated(&stream->queue))
@@ -143,9 +132,7 @@ static const struct v4l2_ioctl_ops uvc_meta_ioctl_ops = {
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 File Operations
- */
+ 
 
 static const struct v4l2_file_operations uvc_meta_fops = {
 	.owner = THIS_MODULE,
@@ -164,10 +151,7 @@ int uvc_meta_register(struct uvc_streaming *stream)
 
 	stream->meta.format = V4L2_META_FMT_UVC;
 
-	/*
-	 * The video interface queue uses manual locking and thus does not set
-	 * the queue pointer. Set it manually here.
-	 */
+	 
 	vdev->queue = &queue->queue;
 
 	return uvc_register_video_device(dev, stream, vdev, queue,

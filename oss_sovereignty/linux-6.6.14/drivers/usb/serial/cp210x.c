@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Silicon Laboratories CP210x USB to RS232 serial adaptor driver
- *
- * Copyright (C) 2005 Craig Shelley (craig@microtron.org.uk)
- * Copyright (C) 2010-2021 Johan Hovold (johan@kernel.org)
- *
- * Support to set flow control line levels using TIOCMGET and TIOCMSET
- * thanks to Karl Hiramoto karl@hiramoto.org. RTSCTS hardware flow
- * control thanks to Munir Nassar nassarmu@real-time.com
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -25,9 +15,7 @@
 
 #define DRIVER_DESC "Silicon Labs CP210x RS232 serial adaptor driver"
 
-/*
- * Function Prototypes
- */
+ 
 static int cp210x_open(struct tty_struct *tty, struct usb_serial_port *);
 static void cp210x_close(struct usb_serial_port *);
 static void cp210x_change_speed(struct tty_struct *, struct usb_serial_port *,
@@ -51,205 +39,205 @@ static void cp210x_enable_event_mode(struct usb_serial_port *port);
 static void cp210x_disable_event_mode(struct usb_serial_port *port);
 
 static const struct usb_device_id id_table[] = {
-	{ USB_DEVICE(0x0404, 0x034C) },	/* NCR Retail IO Box */
-	{ USB_DEVICE(0x045B, 0x0053) }, /* Renesas RX610 RX-Stick */
-	{ USB_DEVICE(0x0471, 0x066A) }, /* AKTAKOM ACE-1001 cable */
-	{ USB_DEVICE(0x0489, 0xE000) }, /* Pirelli Broadband S.p.A, DP-L10 SIP/GSM Mobile */
-	{ USB_DEVICE(0x0489, 0xE003) }, /* Pirelli Broadband S.p.A, DP-L10 SIP/GSM Mobile */
-	{ USB_DEVICE(0x0745, 0x1000) }, /* CipherLab USB CCD Barcode Scanner 1000 */
-	{ USB_DEVICE(0x0846, 0x1100) }, /* NetGear Managed Switch M4100 series, M5300 series, M7100 series */
-	{ USB_DEVICE(0x08e6, 0x5501) }, /* Gemalto Prox-PU/CU contactless smartcard reader */
-	{ USB_DEVICE(0x08FD, 0x000A) }, /* Digianswer A/S , ZigBee/802.15.4 MAC Device */
-	{ USB_DEVICE(0x0908, 0x0070) }, /* Siemens SCALANCE LPE-9000 USB Serial Console */
-	{ USB_DEVICE(0x0908, 0x01FF) }, /* Siemens RUGGEDCOM USB Serial Console */
-	{ USB_DEVICE(0x0988, 0x0578) }, /* Teraoka AD2000 */
-	{ USB_DEVICE(0x0B00, 0x3070) }, /* Ingenico 3070 */
-	{ USB_DEVICE(0x0BED, 0x1100) }, /* MEI (TM) Cashflow-SC Bill/Voucher Acceptor */
-	{ USB_DEVICE(0x0BED, 0x1101) }, /* MEI series 2000 Combo Acceptor */
-	{ USB_DEVICE(0x0FCF, 0x1003) }, /* Dynastream ANT development board */
-	{ USB_DEVICE(0x0FCF, 0x1004) }, /* Dynastream ANT2USB */
-	{ USB_DEVICE(0x0FCF, 0x1006) }, /* Dynastream ANT development board */
-	{ USB_DEVICE(0x0FDE, 0xCA05) }, /* OWL Wireless Electricity Monitor CM-160 */
-	{ USB_DEVICE(0x106F, 0x0003) },	/* CPI / Money Controls Bulk Coin Recycler */
-	{ USB_DEVICE(0x10A6, 0xAA26) }, /* Knock-off DCU-11 cable */
-	{ USB_DEVICE(0x10AB, 0x10C5) }, /* Siemens MC60 Cable */
-	{ USB_DEVICE(0x10B5, 0xAC70) }, /* Nokia CA-42 USB */
-	{ USB_DEVICE(0x10C4, 0x0F91) }, /* Vstabi */
-	{ USB_DEVICE(0x10C4, 0x1101) }, /* Arkham Technology DS101 Bus Monitor */
-	{ USB_DEVICE(0x10C4, 0x1601) }, /* Arkham Technology DS101 Adapter */
-	{ USB_DEVICE(0x10C4, 0x800A) }, /* SPORTident BSM7-D-USB main station */
-	{ USB_DEVICE(0x10C4, 0x803B) }, /* Pololu USB-serial converter */
-	{ USB_DEVICE(0x10C4, 0x8044) }, /* Cygnal Debug Adapter */
-	{ USB_DEVICE(0x10C4, 0x804E) }, /* Software Bisque Paramount ME build-in converter */
-	{ USB_DEVICE(0x10C4, 0x8053) }, /* Enfora EDG1228 */
-	{ USB_DEVICE(0x10C4, 0x8054) }, /* Enfora GSM2228 */
-	{ USB_DEVICE(0x10C4, 0x8056) }, /* Lorenz Messtechnik devices */
-	{ USB_DEVICE(0x10C4, 0x8066) }, /* Argussoft In-System Programmer */
-	{ USB_DEVICE(0x10C4, 0x806F) }, /* IMS USB to RS422 Converter Cable */
-	{ USB_DEVICE(0x10C4, 0x807A) }, /* Crumb128 board */
-	{ USB_DEVICE(0x10C4, 0x80C4) }, /* Cygnal Integrated Products, Inc., Optris infrared thermometer */
-	{ USB_DEVICE(0x10C4, 0x80CA) }, /* Degree Controls Inc */
-	{ USB_DEVICE(0x10C4, 0x80DD) }, /* Tracient RFID */
-	{ USB_DEVICE(0x10C4, 0x80F6) }, /* Suunto sports instrument */
-	{ USB_DEVICE(0x10C4, 0x8115) }, /* Arygon NFC/Mifare Reader */
-	{ USB_DEVICE(0x10C4, 0x813D) }, /* Burnside Telecom Deskmobile */
-	{ USB_DEVICE(0x10C4, 0x813F) }, /* Tams Master Easy Control */
-	{ USB_DEVICE(0x10C4, 0x814A) }, /* West Mountain Radio RIGblaster P&P */
-	{ USB_DEVICE(0x10C4, 0x814B) }, /* West Mountain Radio RIGtalk */
-	{ USB_DEVICE(0x2405, 0x0003) }, /* West Mountain Radio RIGblaster Advantage */
-	{ USB_DEVICE(0x10C4, 0x8156) }, /* B&G H3000 link cable */
-	{ USB_DEVICE(0x10C4, 0x815E) }, /* Helicomm IP-Link 1220-DVM */
-	{ USB_DEVICE(0x10C4, 0x815F) }, /* Timewave HamLinkUSB */
-	{ USB_DEVICE(0x10C4, 0x817C) }, /* CESINEL MEDCAL N Power Quality Monitor */
-	{ USB_DEVICE(0x10C4, 0x817D) }, /* CESINEL MEDCAL NT Power Quality Monitor */
-	{ USB_DEVICE(0x10C4, 0x817E) }, /* CESINEL MEDCAL S Power Quality Monitor */
-	{ USB_DEVICE(0x10C4, 0x818B) }, /* AVIT Research USB to TTL */
-	{ USB_DEVICE(0x10C4, 0x819F) }, /* MJS USB Toslink Switcher */
-	{ USB_DEVICE(0x10C4, 0x81A6) }, /* ThinkOptics WavIt */
-	{ USB_DEVICE(0x10C4, 0x81A9) }, /* Multiplex RC Interface */
-	{ USB_DEVICE(0x10C4, 0x81AC) }, /* MSD Dash Hawk */
-	{ USB_DEVICE(0x10C4, 0x81AD) }, /* INSYS USB Modem */
-	{ USB_DEVICE(0x10C4, 0x81C8) }, /* Lipowsky Industrie Elektronik GmbH, Baby-JTAG */
-	{ USB_DEVICE(0x10C4, 0x81D7) }, /* IAI Corp. RCB-CV-USB USB to RS485 Adaptor */
-	{ USB_DEVICE(0x10C4, 0x81E2) }, /* Lipowsky Industrie Elektronik GmbH, Baby-LIN */
-	{ USB_DEVICE(0x10C4, 0x81E7) }, /* Aerocomm Radio */
-	{ USB_DEVICE(0x10C4, 0x81E8) }, /* Zephyr Bioharness */
-	{ USB_DEVICE(0x10C4, 0x81F2) }, /* C1007 HF band RFID controller */
-	{ USB_DEVICE(0x10C4, 0x8218) }, /* Lipowsky Industrie Elektronik GmbH, HARP-1 */
-	{ USB_DEVICE(0x10C4, 0x822B) }, /* Modem EDGE(GSM) Comander 2 */
-	{ USB_DEVICE(0x10C4, 0x826B) }, /* Cygnal Integrated Products, Inc., Fasttrax GPS demonstration module */
-	{ USB_DEVICE(0x10C4, 0x8281) }, /* Nanotec Plug & Drive */
-	{ USB_DEVICE(0x10C4, 0x8293) }, /* Telegesis ETRX2USB */
-	{ USB_DEVICE(0x10C4, 0x82AA) }, /* Silicon Labs IFS-USB-DATACABLE used with Quint UPS */
-	{ USB_DEVICE(0x10C4, 0x82EF) }, /* CESINEL FALCO 6105 AC Power Supply */
-	{ USB_DEVICE(0x10C4, 0x82F1) }, /* CESINEL MEDCAL EFD Earth Fault Detector */
-	{ USB_DEVICE(0x10C4, 0x82F2) }, /* CESINEL MEDCAL ST Network Analyzer */
-	{ USB_DEVICE(0x10C4, 0x82F4) }, /* Starizona MicroTouch */
-	{ USB_DEVICE(0x10C4, 0x82F9) }, /* Procyon AVS */
-	{ USB_DEVICE(0x10C4, 0x8341) }, /* Siemens MC35PU GPRS Modem */
-	{ USB_DEVICE(0x10C4, 0x8382) }, /* Cygnal Integrated Products, Inc. */
-	{ USB_DEVICE(0x10C4, 0x83A8) }, /* Amber Wireless AMB2560 */
-	{ USB_DEVICE(0x10C4, 0x83AA) }, /* Mark-10 Digital Force Gauge */
-	{ USB_DEVICE(0x10C4, 0x83D8) }, /* DekTec DTA Plus VHF/UHF Booster/Attenuator */
-	{ USB_DEVICE(0x10C4, 0x8411) }, /* Kyocera GPS Module */
-	{ USB_DEVICE(0x10C4, 0x8414) }, /* Decagon USB Cable Adapter */
-	{ USB_DEVICE(0x10C4, 0x8418) }, /* IRZ Automation Teleport SG-10 GSM/GPRS Modem */
-	{ USB_DEVICE(0x10C4, 0x846E) }, /* BEI USB Sensor Interface (VCP) */
-	{ USB_DEVICE(0x10C4, 0x8470) }, /* Juniper Networks BX Series System Console */
-	{ USB_DEVICE(0x10C4, 0x8477) }, /* Balluff RFID */
-	{ USB_DEVICE(0x10C4, 0x84B6) }, /* Starizona Hyperion */
-	{ USB_DEVICE(0x10C4, 0x851E) }, /* CESINEL MEDCAL PT Network Analyzer */
-	{ USB_DEVICE(0x10C4, 0x85A7) }, /* LifeScan OneTouch Verio IQ */
-	{ USB_DEVICE(0x10C4, 0x85B8) }, /* CESINEL ReCon T Energy Logger */
-	{ USB_DEVICE(0x10C4, 0x85EA) }, /* AC-Services IBUS-IF */
-	{ USB_DEVICE(0x10C4, 0x85EB) }, /* AC-Services CIS-IBUS */
-	{ USB_DEVICE(0x10C4, 0x85F8) }, /* Virtenio Preon32 */
-	{ USB_DEVICE(0x10C4, 0x8664) }, /* AC-Services CAN-IF */
-	{ USB_DEVICE(0x10C4, 0x8665) }, /* AC-Services OBD-IF */
-	{ USB_DEVICE(0x10C4, 0x8856) },	/* CEL EM357 ZigBee USB Stick - LR */
-	{ USB_DEVICE(0x10C4, 0x8857) },	/* CEL EM357 ZigBee USB Stick */
-	{ USB_DEVICE(0x10C4, 0x88A4) }, /* MMB Networks ZigBee USB Device */
-	{ USB_DEVICE(0x10C4, 0x88A5) }, /* Planet Innovation Ingeni ZigBee USB Device */
-	{ USB_DEVICE(0x10C4, 0x88D8) }, /* Acuity Brands nLight Air Adapter */
-	{ USB_DEVICE(0x10C4, 0x88FB) }, /* CESINEL MEDCAL STII Network Analyzer */
-	{ USB_DEVICE(0x10C4, 0x8938) }, /* CESINEL MEDCAL S II Network Analyzer */
-	{ USB_DEVICE(0x10C4, 0x8946) }, /* Ketra N1 Wireless Interface */
-	{ USB_DEVICE(0x10C4, 0x8962) }, /* Brim Brothers charging dock */
-	{ USB_DEVICE(0x10C4, 0x8977) },	/* CEL MeshWorks DevKit Device */
-	{ USB_DEVICE(0x10C4, 0x8998) }, /* KCF Technologies PRN */
-	{ USB_DEVICE(0x10C4, 0x89A4) }, /* CESINEL FTBC Flexible Thyristor Bridge Controller */
-	{ USB_DEVICE(0x10C4, 0x89FB) }, /* Qivicon ZigBee USB Radio Stick */
-	{ USB_DEVICE(0x10C4, 0x8A2A) }, /* HubZ dual ZigBee and Z-Wave dongle */
-	{ USB_DEVICE(0x10C4, 0x8A5B) }, /* CEL EM3588 ZigBee USB Stick */
-	{ USB_DEVICE(0x10C4, 0x8A5E) }, /* CEL EM3588 ZigBee USB Stick Long Range */
-	{ USB_DEVICE(0x10C4, 0x8B34) }, /* Qivicon ZigBee USB Radio Stick */
-	{ USB_DEVICE(0x10C4, 0xEA60) }, /* Silicon Labs factory default */
-	{ USB_DEVICE(0x10C4, 0xEA61) }, /* Silicon Labs factory default */
-	{ USB_DEVICE(0x10C4, 0xEA63) }, /* Silicon Labs Windows Update (CP2101-4/CP2102N) */
-	{ USB_DEVICE(0x10C4, 0xEA70) }, /* Silicon Labs factory default */
-	{ USB_DEVICE(0x10C4, 0xEA71) }, /* Infinity GPS-MIC-1 Radio Monophone */
-	{ USB_DEVICE(0x10C4, 0xEA7A) }, /* Silicon Labs Windows Update (CP2105) */
-	{ USB_DEVICE(0x10C4, 0xEA7B) }, /* Silicon Labs Windows Update (CP2108) */
-	{ USB_DEVICE(0x10C4, 0xF001) }, /* Elan Digital Systems USBscope50 */
-	{ USB_DEVICE(0x10C4, 0xF002) }, /* Elan Digital Systems USBwave12 */
-	{ USB_DEVICE(0x10C4, 0xF003) }, /* Elan Digital Systems USBpulse100 */
-	{ USB_DEVICE(0x10C4, 0xF004) }, /* Elan Digital Systems USBcount50 */
-	{ USB_DEVICE(0x10C5, 0xEA61) }, /* Silicon Labs MobiData GPRS USB Modem */
-	{ USB_DEVICE(0x10CE, 0xEA6A) }, /* Silicon Labs MobiData GPRS USB Modem 100EU */
-	{ USB_DEVICE(0x12B8, 0xEC60) }, /* Link G4 ECU */
-	{ USB_DEVICE(0x12B8, 0xEC62) }, /* Link G4+ ECU */
-	{ USB_DEVICE(0x13AD, 0x9999) }, /* Baltech card reader */
-	{ USB_DEVICE(0x1555, 0x0004) }, /* Owen AC4 USB-RS485 Converter */
-	{ USB_DEVICE(0x155A, 0x1006) },	/* ELDAT Easywave RX09 */
-	{ USB_DEVICE(0x166A, 0x0201) }, /* Clipsal 5500PACA C-Bus Pascal Automation Controller */
-	{ USB_DEVICE(0x166A, 0x0301) }, /* Clipsal 5800PC C-Bus Wireless PC Interface */
-	{ USB_DEVICE(0x166A, 0x0303) }, /* Clipsal 5500PCU C-Bus USB interface */
-	{ USB_DEVICE(0x166A, 0x0304) }, /* Clipsal 5000CT2 C-Bus Black and White Touchscreen */
-	{ USB_DEVICE(0x166A, 0x0305) }, /* Clipsal C-5000CT2 C-Bus Spectrum Colour Touchscreen */
-	{ USB_DEVICE(0x166A, 0x0401) }, /* Clipsal L51xx C-Bus Architectural Dimmer */
-	{ USB_DEVICE(0x166A, 0x0101) }, /* Clipsal 5560884 C-Bus Multi-room Audio Matrix Switcher */
-	{ USB_DEVICE(0x16C0, 0x09B0) }, /* Lunatico Seletek */
-	{ USB_DEVICE(0x16C0, 0x09B1) }, /* Lunatico Seletek */
-	{ USB_DEVICE(0x16D6, 0x0001) }, /* Jablotron serial interface */
-	{ USB_DEVICE(0x16DC, 0x0010) }, /* W-IE-NE-R Plein & Baus GmbH PL512 Power Supply */
-	{ USB_DEVICE(0x16DC, 0x0011) }, /* W-IE-NE-R Plein & Baus GmbH RCM Remote Control for MARATON Power Supply */
-	{ USB_DEVICE(0x16DC, 0x0012) }, /* W-IE-NE-R Plein & Baus GmbH MPOD Multi Channel Power Supply */
-	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
-	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
-	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
-	{ USB_DEVICE(0x17A8, 0x0011) }, /* Kamstrup 444 MHz RF sniffer */
-	{ USB_DEVICE(0x17A8, 0x0013) }, /* Kamstrup 870 MHz RF sniffer */
-	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
-	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
-	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
-	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
-	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
-	{ USB_DEVICE(0x18EF, 0xE025) }, /* ELV Marble Sound Board 1 */
-	{ USB_DEVICE(0x18EF, 0xE030) }, /* ELV ALC 8xxx Battery Charger */
-	{ USB_DEVICE(0x18EF, 0xE032) }, /* ELV TFD500 Data Logger */
-	{ USB_DEVICE(0x1901, 0x0190) }, /* GE B850 CP2105 Recorder interface */
-	{ USB_DEVICE(0x1901, 0x0193) }, /* GE B650 CP2104 PMC interface */
-	{ USB_DEVICE(0x1901, 0x0194) },	/* GE Healthcare Remote Alarm Box */
-	{ USB_DEVICE(0x1901, 0x0195) },	/* GE B850/B650/B450 CP2104 DP UART interface */
-	{ USB_DEVICE(0x1901, 0x0196) },	/* GE B850 CP2105 DP UART interface */
-	{ USB_DEVICE(0x1901, 0x0197) }, /* GE CS1000 M.2 Key E serial interface */
-	{ USB_DEVICE(0x1901, 0x0198) }, /* GE CS1000 Display serial interface */
-	{ USB_DEVICE(0x199B, 0xBA30) }, /* LORD WSDA-200-USB */
-	{ USB_DEVICE(0x19CF, 0x3000) }, /* Parrot NMEA GPS Flight Recorder */
-	{ USB_DEVICE(0x1ADB, 0x0001) }, /* Schweitzer Engineering C662 Cable */
-	{ USB_DEVICE(0x1B1C, 0x1C00) }, /* Corsair USB Dongle */
-	{ USB_DEVICE(0x1BA4, 0x0002) },	/* Silicon Labs 358x factory default */
-	{ USB_DEVICE(0x1BE3, 0x07A6) }, /* WAGO 750-923 USB Service Cable */
-	{ USB_DEVICE(0x1D6F, 0x0010) }, /* Seluxit ApS RF Dongle */
-	{ USB_DEVICE(0x1E29, 0x0102) }, /* Festo CPX-USB */
-	{ USB_DEVICE(0x1E29, 0x0501) }, /* Festo CMSP */
-	{ USB_DEVICE(0x1FB9, 0x0100) }, /* Lake Shore Model 121 Current Source */
-	{ USB_DEVICE(0x1FB9, 0x0200) }, /* Lake Shore Model 218A Temperature Monitor */
-	{ USB_DEVICE(0x1FB9, 0x0201) }, /* Lake Shore Model 219 Temperature Monitor */
-	{ USB_DEVICE(0x1FB9, 0x0202) }, /* Lake Shore Model 233 Temperature Transmitter */
-	{ USB_DEVICE(0x1FB9, 0x0203) }, /* Lake Shore Model 235 Temperature Transmitter */
-	{ USB_DEVICE(0x1FB9, 0x0300) }, /* Lake Shore Model 335 Temperature Controller */
-	{ USB_DEVICE(0x1FB9, 0x0301) }, /* Lake Shore Model 336 Temperature Controller */
-	{ USB_DEVICE(0x1FB9, 0x0302) }, /* Lake Shore Model 350 Temperature Controller */
-	{ USB_DEVICE(0x1FB9, 0x0303) }, /* Lake Shore Model 371 AC Bridge */
-	{ USB_DEVICE(0x1FB9, 0x0400) }, /* Lake Shore Model 411 Handheld Gaussmeter */
-	{ USB_DEVICE(0x1FB9, 0x0401) }, /* Lake Shore Model 425 Gaussmeter */
-	{ USB_DEVICE(0x1FB9, 0x0402) }, /* Lake Shore Model 455A Gaussmeter */
-	{ USB_DEVICE(0x1FB9, 0x0403) }, /* Lake Shore Model 475A Gaussmeter */
-	{ USB_DEVICE(0x1FB9, 0x0404) }, /* Lake Shore Model 465 Three Axis Gaussmeter */
-	{ USB_DEVICE(0x1FB9, 0x0600) }, /* Lake Shore Model 625A Superconducting MPS */
-	{ USB_DEVICE(0x1FB9, 0x0601) }, /* Lake Shore Model 642A Magnet Power Supply */
-	{ USB_DEVICE(0x1FB9, 0x0602) }, /* Lake Shore Model 648 Magnet Power Supply */
-	{ USB_DEVICE(0x1FB9, 0x0700) }, /* Lake Shore Model 737 VSM Controller */
-	{ USB_DEVICE(0x1FB9, 0x0701) }, /* Lake Shore Model 776 Hall Matrix */
-	{ USB_DEVICE(0x2184, 0x0030) }, /* GW Instek GDM-834x Digital Multimeter */
-	{ USB_DEVICE(0x2626, 0xEA60) }, /* Aruba Networks 7xxx USB Serial Console */
-	{ USB_DEVICE(0x3195, 0xF190) }, /* Link Instruments MSO-19 */
-	{ USB_DEVICE(0x3195, 0xF280) }, /* Link Instruments MSO-28 */
-	{ USB_DEVICE(0x3195, 0xF281) }, /* Link Instruments MSO-28 */
-	{ USB_DEVICE(0x3923, 0x7A0B) }, /* National Instruments USB Serial Console */
-	{ USB_DEVICE(0x413C, 0x9500) }, /* DW700 GPS USB interface */
-	{ } /* Terminating Entry */
+	{ USB_DEVICE(0x0404, 0x034C) },	 
+	{ USB_DEVICE(0x045B, 0x0053) },  
+	{ USB_DEVICE(0x0471, 0x066A) },  
+	{ USB_DEVICE(0x0489, 0xE000) },  
+	{ USB_DEVICE(0x0489, 0xE003) },  
+	{ USB_DEVICE(0x0745, 0x1000) },  
+	{ USB_DEVICE(0x0846, 0x1100) },  
+	{ USB_DEVICE(0x08e6, 0x5501) },  
+	{ USB_DEVICE(0x08FD, 0x000A) },  
+	{ USB_DEVICE(0x0908, 0x0070) },  
+	{ USB_DEVICE(0x0908, 0x01FF) },  
+	{ USB_DEVICE(0x0988, 0x0578) },  
+	{ USB_DEVICE(0x0B00, 0x3070) },  
+	{ USB_DEVICE(0x0BED, 0x1100) },  
+	{ USB_DEVICE(0x0BED, 0x1101) },  
+	{ USB_DEVICE(0x0FCF, 0x1003) },  
+	{ USB_DEVICE(0x0FCF, 0x1004) },  
+	{ USB_DEVICE(0x0FCF, 0x1006) },  
+	{ USB_DEVICE(0x0FDE, 0xCA05) },  
+	{ USB_DEVICE(0x106F, 0x0003) },	 
+	{ USB_DEVICE(0x10A6, 0xAA26) },  
+	{ USB_DEVICE(0x10AB, 0x10C5) },  
+	{ USB_DEVICE(0x10B5, 0xAC70) },  
+	{ USB_DEVICE(0x10C4, 0x0F91) },  
+	{ USB_DEVICE(0x10C4, 0x1101) },  
+	{ USB_DEVICE(0x10C4, 0x1601) },  
+	{ USB_DEVICE(0x10C4, 0x800A) },  
+	{ USB_DEVICE(0x10C4, 0x803B) },  
+	{ USB_DEVICE(0x10C4, 0x8044) },  
+	{ USB_DEVICE(0x10C4, 0x804E) },  
+	{ USB_DEVICE(0x10C4, 0x8053) },  
+	{ USB_DEVICE(0x10C4, 0x8054) },  
+	{ USB_DEVICE(0x10C4, 0x8056) },  
+	{ USB_DEVICE(0x10C4, 0x8066) },  
+	{ USB_DEVICE(0x10C4, 0x806F) },  
+	{ USB_DEVICE(0x10C4, 0x807A) },  
+	{ USB_DEVICE(0x10C4, 0x80C4) },  
+	{ USB_DEVICE(0x10C4, 0x80CA) },  
+	{ USB_DEVICE(0x10C4, 0x80DD) },  
+	{ USB_DEVICE(0x10C4, 0x80F6) },  
+	{ USB_DEVICE(0x10C4, 0x8115) },  
+	{ USB_DEVICE(0x10C4, 0x813D) },  
+	{ USB_DEVICE(0x10C4, 0x813F) },  
+	{ USB_DEVICE(0x10C4, 0x814A) },  
+	{ USB_DEVICE(0x10C4, 0x814B) },  
+	{ USB_DEVICE(0x2405, 0x0003) },  
+	{ USB_DEVICE(0x10C4, 0x8156) },  
+	{ USB_DEVICE(0x10C4, 0x815E) },  
+	{ USB_DEVICE(0x10C4, 0x815F) },  
+	{ USB_DEVICE(0x10C4, 0x817C) },  
+	{ USB_DEVICE(0x10C4, 0x817D) },  
+	{ USB_DEVICE(0x10C4, 0x817E) },  
+	{ USB_DEVICE(0x10C4, 0x818B) },  
+	{ USB_DEVICE(0x10C4, 0x819F) },  
+	{ USB_DEVICE(0x10C4, 0x81A6) },  
+	{ USB_DEVICE(0x10C4, 0x81A9) },  
+	{ USB_DEVICE(0x10C4, 0x81AC) },  
+	{ USB_DEVICE(0x10C4, 0x81AD) },  
+	{ USB_DEVICE(0x10C4, 0x81C8) },  
+	{ USB_DEVICE(0x10C4, 0x81D7) },  
+	{ USB_DEVICE(0x10C4, 0x81E2) },  
+	{ USB_DEVICE(0x10C4, 0x81E7) },  
+	{ USB_DEVICE(0x10C4, 0x81E8) },  
+	{ USB_DEVICE(0x10C4, 0x81F2) },  
+	{ USB_DEVICE(0x10C4, 0x8218) },  
+	{ USB_DEVICE(0x10C4, 0x822B) },  
+	{ USB_DEVICE(0x10C4, 0x826B) },  
+	{ USB_DEVICE(0x10C4, 0x8281) },  
+	{ USB_DEVICE(0x10C4, 0x8293) },  
+	{ USB_DEVICE(0x10C4, 0x82AA) },  
+	{ USB_DEVICE(0x10C4, 0x82EF) },  
+	{ USB_DEVICE(0x10C4, 0x82F1) },  
+	{ USB_DEVICE(0x10C4, 0x82F2) },  
+	{ USB_DEVICE(0x10C4, 0x82F4) },  
+	{ USB_DEVICE(0x10C4, 0x82F9) },  
+	{ USB_DEVICE(0x10C4, 0x8341) },  
+	{ USB_DEVICE(0x10C4, 0x8382) },  
+	{ USB_DEVICE(0x10C4, 0x83A8) },  
+	{ USB_DEVICE(0x10C4, 0x83AA) },  
+	{ USB_DEVICE(0x10C4, 0x83D8) },  
+	{ USB_DEVICE(0x10C4, 0x8411) },  
+	{ USB_DEVICE(0x10C4, 0x8414) },  
+	{ USB_DEVICE(0x10C4, 0x8418) },  
+	{ USB_DEVICE(0x10C4, 0x846E) },  
+	{ USB_DEVICE(0x10C4, 0x8470) },  
+	{ USB_DEVICE(0x10C4, 0x8477) },  
+	{ USB_DEVICE(0x10C4, 0x84B6) },  
+	{ USB_DEVICE(0x10C4, 0x851E) },  
+	{ USB_DEVICE(0x10C4, 0x85A7) },  
+	{ USB_DEVICE(0x10C4, 0x85B8) },  
+	{ USB_DEVICE(0x10C4, 0x85EA) },  
+	{ USB_DEVICE(0x10C4, 0x85EB) },  
+	{ USB_DEVICE(0x10C4, 0x85F8) },  
+	{ USB_DEVICE(0x10C4, 0x8664) },  
+	{ USB_DEVICE(0x10C4, 0x8665) },  
+	{ USB_DEVICE(0x10C4, 0x8856) },	 
+	{ USB_DEVICE(0x10C4, 0x8857) },	 
+	{ USB_DEVICE(0x10C4, 0x88A4) },  
+	{ USB_DEVICE(0x10C4, 0x88A5) },  
+	{ USB_DEVICE(0x10C4, 0x88D8) },  
+	{ USB_DEVICE(0x10C4, 0x88FB) },  
+	{ USB_DEVICE(0x10C4, 0x8938) },  
+	{ USB_DEVICE(0x10C4, 0x8946) },  
+	{ USB_DEVICE(0x10C4, 0x8962) },  
+	{ USB_DEVICE(0x10C4, 0x8977) },	 
+	{ USB_DEVICE(0x10C4, 0x8998) },  
+	{ USB_DEVICE(0x10C4, 0x89A4) },  
+	{ USB_DEVICE(0x10C4, 0x89FB) },  
+	{ USB_DEVICE(0x10C4, 0x8A2A) },  
+	{ USB_DEVICE(0x10C4, 0x8A5B) },  
+	{ USB_DEVICE(0x10C4, 0x8A5E) },  
+	{ USB_DEVICE(0x10C4, 0x8B34) },  
+	{ USB_DEVICE(0x10C4, 0xEA60) },  
+	{ USB_DEVICE(0x10C4, 0xEA61) },  
+	{ USB_DEVICE(0x10C4, 0xEA63) },  
+	{ USB_DEVICE(0x10C4, 0xEA70) },  
+	{ USB_DEVICE(0x10C4, 0xEA71) },  
+	{ USB_DEVICE(0x10C4, 0xEA7A) },  
+	{ USB_DEVICE(0x10C4, 0xEA7B) },  
+	{ USB_DEVICE(0x10C4, 0xF001) },  
+	{ USB_DEVICE(0x10C4, 0xF002) },  
+	{ USB_DEVICE(0x10C4, 0xF003) },  
+	{ USB_DEVICE(0x10C4, 0xF004) },  
+	{ USB_DEVICE(0x10C5, 0xEA61) },  
+	{ USB_DEVICE(0x10CE, 0xEA6A) },  
+	{ USB_DEVICE(0x12B8, 0xEC60) },  
+	{ USB_DEVICE(0x12B8, 0xEC62) },  
+	{ USB_DEVICE(0x13AD, 0x9999) },  
+	{ USB_DEVICE(0x1555, 0x0004) },  
+	{ USB_DEVICE(0x155A, 0x1006) },	 
+	{ USB_DEVICE(0x166A, 0x0201) },  
+	{ USB_DEVICE(0x166A, 0x0301) },  
+	{ USB_DEVICE(0x166A, 0x0303) },  
+	{ USB_DEVICE(0x166A, 0x0304) },  
+	{ USB_DEVICE(0x166A, 0x0305) },  
+	{ USB_DEVICE(0x166A, 0x0401) },  
+	{ USB_DEVICE(0x166A, 0x0101) },  
+	{ USB_DEVICE(0x16C0, 0x09B0) },  
+	{ USB_DEVICE(0x16C0, 0x09B1) },  
+	{ USB_DEVICE(0x16D6, 0x0001) },  
+	{ USB_DEVICE(0x16DC, 0x0010) },  
+	{ USB_DEVICE(0x16DC, 0x0011) },  
+	{ USB_DEVICE(0x16DC, 0x0012) },  
+	{ USB_DEVICE(0x16DC, 0x0015) },  
+	{ USB_DEVICE(0x17A8, 0x0001) },  
+	{ USB_DEVICE(0x17A8, 0x0005) },  
+	{ USB_DEVICE(0x17A8, 0x0011) },  
+	{ USB_DEVICE(0x17A8, 0x0013) },  
+	{ USB_DEVICE(0x17A8, 0x0101) },  
+	{ USB_DEVICE(0x17A8, 0x0102) },  
+	{ USB_DEVICE(0x17F4, 0xAAAA) },  
+	{ USB_DEVICE(0x1843, 0x0200) },  
+	{ USB_DEVICE(0x18EF, 0xE00F) },  
+	{ USB_DEVICE(0x18EF, 0xE025) },  
+	{ USB_DEVICE(0x18EF, 0xE030) },  
+	{ USB_DEVICE(0x18EF, 0xE032) },  
+	{ USB_DEVICE(0x1901, 0x0190) },  
+	{ USB_DEVICE(0x1901, 0x0193) },  
+	{ USB_DEVICE(0x1901, 0x0194) },	 
+	{ USB_DEVICE(0x1901, 0x0195) },	 
+	{ USB_DEVICE(0x1901, 0x0196) },	 
+	{ USB_DEVICE(0x1901, 0x0197) },  
+	{ USB_DEVICE(0x1901, 0x0198) },  
+	{ USB_DEVICE(0x199B, 0xBA30) },  
+	{ USB_DEVICE(0x19CF, 0x3000) },  
+	{ USB_DEVICE(0x1ADB, 0x0001) },  
+	{ USB_DEVICE(0x1B1C, 0x1C00) },  
+	{ USB_DEVICE(0x1BA4, 0x0002) },	 
+	{ USB_DEVICE(0x1BE3, 0x07A6) },  
+	{ USB_DEVICE(0x1D6F, 0x0010) },  
+	{ USB_DEVICE(0x1E29, 0x0102) },  
+	{ USB_DEVICE(0x1E29, 0x0501) },  
+	{ USB_DEVICE(0x1FB9, 0x0100) },  
+	{ USB_DEVICE(0x1FB9, 0x0200) },  
+	{ USB_DEVICE(0x1FB9, 0x0201) },  
+	{ USB_DEVICE(0x1FB9, 0x0202) },  
+	{ USB_DEVICE(0x1FB9, 0x0203) },  
+	{ USB_DEVICE(0x1FB9, 0x0300) },  
+	{ USB_DEVICE(0x1FB9, 0x0301) },  
+	{ USB_DEVICE(0x1FB9, 0x0302) },  
+	{ USB_DEVICE(0x1FB9, 0x0303) },  
+	{ USB_DEVICE(0x1FB9, 0x0400) },  
+	{ USB_DEVICE(0x1FB9, 0x0401) },  
+	{ USB_DEVICE(0x1FB9, 0x0402) },  
+	{ USB_DEVICE(0x1FB9, 0x0403) },  
+	{ USB_DEVICE(0x1FB9, 0x0404) },  
+	{ USB_DEVICE(0x1FB9, 0x0600) },  
+	{ USB_DEVICE(0x1FB9, 0x0601) },  
+	{ USB_DEVICE(0x1FB9, 0x0602) },  
+	{ USB_DEVICE(0x1FB9, 0x0700) },  
+	{ USB_DEVICE(0x1FB9, 0x0701) },  
+	{ USB_DEVICE(0x2184, 0x0030) },  
+	{ USB_DEVICE(0x2626, 0xEA60) },  
+	{ USB_DEVICE(0x3195, 0xF190) },  
+	{ USB_DEVICE(0x3195, 0xF280) },  
+	{ USB_DEVICE(0x3195, 0xF281) },  
+	{ USB_DEVICE(0x3923, 0x7A0B) },  
+	{ USB_DEVICE(0x413C, 0x9500) },  
+	{ }  
 };
 
 MODULE_DEVICE_TABLE(usb, id_table);
@@ -324,13 +312,13 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&cp210x_device, NULL
 };
 
-/* Config request types */
+ 
 #define REQTYPE_HOST_TO_INTERFACE	0x41
 #define REQTYPE_INTERFACE_TO_HOST	0xc1
 #define REQTYPE_HOST_TO_DEVICE	0x40
 #define REQTYPE_DEVICE_TO_HOST	0xc0
 
-/* Config request codes */
+ 
 #define CP210X_IFC_ENABLE	0x00
 #define CP210X_SET_BAUDDIV	0x01
 #define CP210X_GET_BAUDDIV	0x02
@@ -359,14 +347,14 @@ static struct usb_serial_driver * const serial_drivers[] = {
 #define CP210X_SET_BAUDRATE	0x1E
 #define CP210X_VENDOR_SPECIFIC	0xFF
 
-/* CP210X_IFC_ENABLE */
+ 
 #define UART_ENABLE		0x0001
 #define UART_DISABLE		0x0000
 
-/* CP210X_(SET|GET)_BAUDDIV */
+ 
 #define BAUD_RATE_GEN_FREQ	0x384000
 
-/* CP210X_(SET|GET)_LINE_CTL */
+ 
 #define BITS_DATA_MASK		0X0f00
 #define BITS_DATA_5		0X0500
 #define BITS_DATA_6		0X0600
@@ -386,11 +374,11 @@ static struct usb_serial_driver * const serial_drivers[] = {
 #define BITS_STOP_1_5		0x0001
 #define BITS_STOP_2		0x0002
 
-/* CP210X_SET_BREAK */
+ 
 #define BREAK_ON		0x0001
 #define BREAK_OFF		0x0000
 
-/* CP210X_(SET_MHS|GET_MDMSTS) */
+ 
 #define CONTROL_DTR		0x0001
 #define CONTROL_RTS		0x0002
 #define CONTROL_CTS		0x0010
@@ -400,7 +388,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
 #define CONTROL_WRITE_DTR	0x0100
 #define CONTROL_WRITE_RTS	0x0200
 
-/* CP210X_(GET|SET)_CHARS */
+ 
 struct cp210x_special_chars {
 	u8	bEofChar;
 	u8	bErrorChar;
@@ -410,7 +398,7 @@ struct cp210x_special_chars {
 	u8	bXoffChar;
 };
 
-/* CP210X_VENDOR_SPECIFIC values */
+ 
 #define CP210X_GET_FW_VER	0x000E
 #define CP210X_READ_2NCONFIG	0x000E
 #define CP210X_GET_FW_VER_2N	0x0010
@@ -420,7 +408,7 @@ struct cp210x_special_chars {
 #define CP210X_GET_DEVICEMODE	0x3711
 #define CP210X_WRITE_LATCH	0x37E1
 
-/* Part number definitions */
+ 
 #define CP210X_PARTNUM_CP2101	0x01
 #define CP210X_PARTNUM_CP2102	0x02
 #define CP210X_PARTNUM_CP2103	0x03
@@ -432,7 +420,7 @@ struct cp210x_special_chars {
 #define CP210X_PARTNUM_CP2102N_QFN20	0x22
 #define CP210X_PARTNUM_UNKNOWN	0xFF
 
-/* CP210X_GET_COMM_STATUS returns these 0x13 bytes */
+ 
 struct cp210x_comm_status {
 	__le32   ulErrors;
 	__le32   ulHoldReasons;
@@ -443,15 +431,10 @@ struct cp210x_comm_status {
 	u8       bReserved;
 } __packed;
 
-/*
- * CP210X_PURGE - 16 bits passed in wValue of USB request.
- * SiLabs app note AN571 gives a strange description of the 4 bits:
- * bit 0 or bit 2 clears the transmit queue and 1 or 3 receive.
- * writing 1 to all, however, purges cp2108 well enough to avoid the hang.
- */
+ 
 #define PURGE_ALL		0x000f
 
-/* CP210X_EMBED_EVENTS */
+ 
 #define CP210X_ESCCHAR		0xec
 
 #define CP210X_LSR_OVERRUN	BIT(1)
@@ -460,7 +443,7 @@ struct cp210x_comm_status {
 #define CP210X_LSR_BREAK	BIT(4)
 
 
-/* CP210X_GET_FLOW/CP210X_SET_FLOW read/write these 0x10 bytes */
+ 
 struct cp210x_flow_ctl {
 	__le32	ulControlHandshake;
 	__le32	ulFlowReplace;
@@ -468,7 +451,7 @@ struct cp210x_flow_ctl {
 	__le32	ulXoffLimit;
 };
 
-/* cp210x_flow_ctl::ulControlHandshake */
+ 
 #define CP210X_SERIAL_DTR_MASK		GENMASK(1, 0)
 #define CP210X_SERIAL_DTR_INACTIVE	(0 << 0)
 #define CP210X_SERIAL_DTR_ACTIVE	(1 << 0)
@@ -478,7 +461,7 @@ struct cp210x_flow_ctl {
 #define CP210X_SERIAL_DCD_HANDSHAKE	BIT(5)
 #define CP210X_SERIAL_DSR_SENSITIVITY	BIT(6)
 
-/* cp210x_flow_ctl::ulFlowReplace */
+ 
 #define CP210X_SERIAL_AUTO_TRANSMIT	BIT(0)
 #define CP210X_SERIAL_AUTO_RECEIVE	BIT(1)
 #define CP210X_SERIAL_ERROR_CHAR	BIT(2)
@@ -490,7 +473,7 @@ struct cp210x_flow_ctl {
 #define CP210X_SERIAL_RTS_FLOW_CTL	(2 << 6)
 #define CP210X_SERIAL_XOFF_CONTINUE	BIT(31)
 
-/* CP210X_VENDOR_SPECIFIC, CP210X_GET_DEVICEMODE call reads these 0x2 bytes. */
+ 
 struct cp210x_pin_mode {
 	u8	eci;
 	u8	sci;
@@ -499,10 +482,7 @@ struct cp210x_pin_mode {
 #define CP210X_PIN_MODE_MODEM		0
 #define CP210X_PIN_MODE_GPIO		BIT(0)
 
-/*
- * CP210X_VENDOR_SPECIFIC, CP210X_GET_PORTCONFIG call reads these 0xf bytes
- * on a CP2105 chip. Structure needs padding due to unused/unspecified bytes.
- */
+ 
 struct cp210x_dual_port_config {
 	__le16	gpio_mode;
 	u8	__pad0[2];
@@ -514,10 +494,7 @@ struct cp210x_dual_port_config {
 	u8	device_cfg;
 } __packed;
 
-/*
- * CP210X_VENDOR_SPECIFIC, CP210X_GET_PORTCONFIG call reads these 0xd bytes
- * on a CP2104 chip. Structure needs padding due to unused/unspecified bytes.
- */
+ 
 struct cp210x_single_port_config {
 	__le16	gpio_mode;
 	u8	__pad0[2];
@@ -527,7 +504,7 @@ struct cp210x_single_port_config {
 	u8	device_cfg;
 } __packed;
 
-/* GPIO modes */
+ 
 #define CP210X_SCI_GPIO_MODE_OFFSET	9
 #define CP210X_SCI_GPIO_MODE_MASK	GENMASK(11, 9)
 
@@ -537,12 +514,12 @@ struct cp210x_single_port_config {
 #define CP210X_GPIO_MODE_OFFSET		8
 #define CP210X_GPIO_MODE_MASK		GENMASK(11, 8)
 
-/* CP2105 port configuration values */
+ 
 #define CP2105_GPIO0_TXLED_MODE		BIT(0)
 #define CP2105_GPIO1_RXLED_MODE		BIT(1)
 #define CP2105_GPIO1_RS485_MODE		BIT(2)
 
-/* CP2104 port configuration values */
+ 
 #define CP2104_GPIO0_TXLED_MODE		BIT(0)
 #define CP2104_GPIO1_RXLED_MODE		BIT(1)
 #define CP2104_GPIO2_RS485_MODE		BIT(2)
@@ -567,12 +544,7 @@ struct cp210x_quad_port_state {
 	__le16 gpio_latch_pb4;
 };
 
-/*
- * CP210X_VENDOR_SPECIFIC, CP210X_GET_PORTCONFIG call reads these 0x49 bytes
- * on a CP2108 chip.
- *
- * See https://www.silabs.com/documents/public/application-notes/an978-cp210x-usb-to-uart-api-specification.pdf
- */
+ 
 struct cp210x_quad_port_config {
 	struct cp210x_quad_port_state reset_state;
 	struct cp210x_quad_port_state suspend_state;
@@ -589,39 +561,31 @@ struct cp210x_quad_port_config {
 #define CP2108_EF_IFC_GPIO_CLOCK		0x10
 #define CP2108_EF_IFC_DYNAMIC_SUSPEND		0x40
 
-/* CP2102N configuration array indices */
+ 
 #define CP210X_2NCONFIG_CONFIG_VERSION_IDX	2
 #define CP210X_2NCONFIG_GPIO_MODE_IDX		581
 #define CP210X_2NCONFIG_GPIO_RSTLATCH_IDX	587
 #define CP210X_2NCONFIG_GPIO_CONTROL_IDX	600
 
-/* CP2102N QFN20 port configuration values */
+ 
 #define CP2102N_QFN20_GPIO2_TXLED_MODE		BIT(2)
 #define CP2102N_QFN20_GPIO3_RXLED_MODE		BIT(3)
 #define CP2102N_QFN20_GPIO1_RS485_MODE		BIT(4)
 #define CP2102N_QFN20_GPIO0_CLK_MODE		BIT(6)
 
-/*
- * CP210X_VENDOR_SPECIFIC, CP210X_WRITE_LATCH call writes these 0x02 bytes
- * for CP2102N, CP2103, CP2104 and CP2105.
- */
+ 
 struct cp210x_gpio_write {
 	u8	mask;
 	u8	state;
 };
 
-/*
- * CP210X_VENDOR_SPECIFIC, CP210X_WRITE_LATCH call writes these 0x04 bytes
- * for CP2108.
- */
+ 
 struct cp210x_gpio_write16 {
 	__le16	mask;
 	__le16	state;
 };
 
-/*
- * Helper to get interface number when we only have struct usb_serial.
- */
+ 
 static u8 cp210x_interface_num(struct usb_serial *serial)
 {
 	struct usb_host_interface *cur_altsetting;
@@ -631,10 +595,7 @@ static u8 cp210x_interface_num(struct usb_serial *serial)
 	return cur_altsetting->desc.bInterfaceNumber;
 }
 
-/*
- * Reads a variable-sized block of CP210X_ registers, identified by req.
- * Returns data into buf in native USB byte order.
- */
+ 
 static int cp210x_read_reg_block(struct usb_serial_port *port, u8 req,
 		void *buf, int bufsize)
 {
@@ -656,18 +617,13 @@ static int cp210x_read_reg_block(struct usb_serial_port *port, u8 req,
 	return 0;
 }
 
-/*
- * Reads any 8-bit CP210X_ register identified by req.
- */
+ 
 static int cp210x_read_u8_reg(struct usb_serial_port *port, u8 req, u8 *val)
 {
 	return cp210x_read_reg_block(port, req, val, sizeof(*val));
 }
 
-/*
- * Reads a variable-sized vendor block of CP210X_ registers, identified by val.
- * Returns data into buf in native USB byte order.
- */
+ 
 static int cp210x_read_vendor_block(struct usb_serial *serial, u8 type, u16 val,
 				    void *buf, int bufsize)
 {
@@ -686,10 +642,7 @@ static int cp210x_read_vendor_block(struct usb_serial *serial, u8 type, u16 val,
 	return 0;
 }
 
-/*
- * Writes any 16-bit CP210X_ register (req) whose value is passed
- * entirely in the wValue field of the USB request.
- */
+ 
 static int cp210x_write_u16_reg(struct usb_serial_port *port, u8 req, u16 val)
 {
 	struct usb_serial *serial = port->serial;
@@ -708,10 +661,7 @@ static int cp210x_write_u16_reg(struct usb_serial_port *port, u8 req, u16 val)
 	return result;
 }
 
-/*
- * Writes a variable-sized block of CP210X_ registers, identified by req.
- * Data in buf must be in native USB byte order.
- */
+ 
 static int cp210x_write_reg_block(struct usb_serial_port *port, u8 req,
 		void *buf, int bufsize)
 {
@@ -732,9 +682,7 @@ static int cp210x_write_reg_block(struct usb_serial_port *port, u8 req,
 	return 0;
 }
 
-/*
- * Writes any 32-bit CP210X_ register identified by req.
- */
+ 
 static int cp210x_write_u32_reg(struct usb_serial_port *port, u8 req, u32 val)
 {
 	__le32 le32_val;
@@ -745,10 +693,7 @@ static int cp210x_write_u32_reg(struct usb_serial_port *port, u8 req, u32 val)
 }
 
 #ifdef CONFIG_GPIOLIB
-/*
- * Writes a variable-sized vendor block of CP210X_ registers, identified by val.
- * Data in buf must be in native USB byte order.
- */
+ 
 static int cp210x_write_vendor_block(struct usb_serial *serial, u8 type,
 				     u16 val, void *buf, int bufsize)
 {
@@ -801,12 +746,12 @@ static void cp210x_close(struct usb_serial_port *port)
 
 	usb_serial_generic_close(port);
 
-	/* Clear both queues; cp2108 needs this to avoid an occasional hang */
+	 
 	cp210x_write_u16_reg(port, CP210X_PURGE, PURGE_ALL);
 
 	cp210x_write_u16_reg(port, CP210X_IFC_ENABLE, UART_DISABLE);
 
-	/* Disabling the interface disables event-insertion mode. */
+	 
 	port_priv->event_mode = false;
 }
 
@@ -880,7 +825,7 @@ static bool cp210x_process_char(struct usb_serial_port *port, unsigned char *ch,
 		break;
 	case ES_MSR:
 		dev_dbg(&port->dev, "%s - msr = 0x%02x\n", __func__, *ch);
-		/* unimplemented */
+		 
 		port_priv->event_state = ES_DATA;
 		break;
 	}
@@ -914,9 +859,7 @@ static void cp210x_process_read_urb(struct urb *urb)
 	tty_flip_buffer_push(&port->port);
 }
 
-/*
- * Read how many bytes are waiting in the TX queue.
- */
+ 
 static int cp210x_get_tx_queue_byte_count(struct usb_serial_port *port,
 		u32 *count)
 {
@@ -988,9 +931,7 @@ static const struct cp210x_rate cp210x_an205_table1[] = {
 	{ 921600, UINT_MAX }
 };
 
-/*
- * Quantises the baud rate as per AN205 Table 1
- */
+ 
 static speed_t cp210x_get_an205_rate(speed_t baud)
 {
 	int i;
@@ -1017,32 +958,7 @@ static speed_t cp210x_get_actual_rate(speed_t baud)
 	return baud;
 }
 
-/*
- * CP2101 supports the following baud rates:
- *
- *	300, 600, 1200, 1800, 2400, 4800, 7200, 9600, 14400, 19200, 28800,
- *	38400, 56000, 57600, 115200, 128000, 230400, 460800, 921600
- *
- * CP2102 and CP2103 support the following additional rates:
- *
- *	4000, 16000, 51200, 64000, 76800, 153600, 250000, 256000, 500000,
- *	576000
- *
- * The device will map a requested rate to a supported one, but the result
- * of requests for rates greater than 1053257 is undefined (see AN205).
- *
- * CP2104, CP2105 and CP2110 support most rates up to 2M, 921k and 1M baud,
- * respectively, with an error less than 1%. The actual rates are determined
- * by
- *
- *	div = round(freq / (2 x prescale x request))
- *	actual = freq / (2 x prescale x div)
- *
- * For CP2104 and CP2105 freq is 48Mhz and prescale is 4 for request <= 365bps
- * or 1 otherwise.
- * For CP2110 freq is 24Mhz and prescale is 4 for request <= 300bps or 1
- * otherwise.
- */
+ 
 static void cp210x_change_speed(struct tty_struct *tty,
 				struct usb_serial_port *port,
 				const struct ktermios *old_termios)
@@ -1054,10 +970,7 @@ static void cp210x_change_speed(struct tty_struct *tty,
 	if (tty->termios.c_ospeed == 0)
 		return;
 
-	/*
-	 * This maps the requested rate to the actual rate, a valid rate on
-	 * cp2102 or cp2103, or to an arbitrary rate in [1M, max_speed].
-	 */
+	 
 	baud = clamp(tty->termios.c_ospeed, priv->min_speed, priv->max_speed);
 
 	if (priv->use_actual_rate)
@@ -1140,10 +1053,7 @@ static void cp210x_set_flow_control(struct tty_struct *tty,
 	bool crtscts;
 	int ret;
 
-	/*
-	 * Some CP2102N interpret ulXonLimit as ulFlowReplace (erratum
-	 * CP2102N_E104). Report back that flow control is not supported.
-	 */
+	 
 	if (priv->no_flow_control) {
 		tty->termios.c_cflag &= ~CRTSCTS;
 		tty->termios.c_iflag &= ~(IXON | IXOFF);
@@ -1262,7 +1172,7 @@ static void cp210x_set_termios(struct tty_struct *tty,
 	if (!old_termios || tty->termios.c_ospeed != old_termios->c_ospeed)
 		cp210x_change_speed(tty, port, old_termios);
 
-	/* CP2101 only supports CS8, 1 stop bit and non-stick parity. */
+	 
 	if (priv->partnum == CP210X_PARTNUM_CP2101) {
 		tty->termios.c_cflag &= ~(CSIZE | CSTOPB | CMSPAR);
 		tty->termios.c_cflag |= CS8;
@@ -1311,10 +1221,7 @@ static void cp210x_set_termios(struct tty_struct *tty,
 
 	cp210x_set_flow_control(tty, port, old_termios);
 
-	/*
-	 * Enable event-insertion mode only if input parity checking is
-	 * enabled for now.
-	 */
+	 
 	if (I_INPCK(tty))
 		cp210x_enable_event_mode(port);
 	else
@@ -1360,10 +1267,7 @@ static int cp210x_tiocmset_port(struct usb_serial_port *port,
 		control |= CONTROL_WRITE_DTR;
 	}
 
-	/*
-	 * Use SET_FLOW to set DTR and enable/disable auto-RTS when hardware
-	 * flow control is enabled.
-	 */
+	 
 	if (port_priv->crtscts && control & CONTROL_WRITE_RTS) {
 		ret = cp210x_read_reg_block(port, CP210X_GET_FLOW, &flow_ctl,
 				sizeof(flow_ctl));
@@ -1571,15 +1475,15 @@ static int cp210x_gpio_direction_input(struct gpio_chip *gc, unsigned int gpio)
 	struct cp210x_serial_private *priv = usb_get_serial_data(serial);
 
 	if (priv->partnum == CP210X_PARTNUM_CP2105) {
-		/* hardware does not support an input mode */
+		 
 		return -ENOTSUPP;
 	}
 
-	/* push-pull pins cannot be changed to be inputs */
+	 
 	if (priv->gpio_pushpull & BIT(gpio))
 		return -EINVAL;
 
-	/* make sure to release pin if it is being driven low */
+	 
 	cp210x_gpio_set(gc, gpio, 1);
 
 	priv->gpio_input |= BIT(gpio);
@@ -1606,7 +1510,7 @@ static int cp210x_gpio_set_config(struct gpio_chip *gc, unsigned int gpio,
 	struct cp210x_serial_private *priv = usb_get_serial_data(serial);
 	enum pin_config_param param = pinconf_to_config_param(config);
 
-	/* Succeed only if in correct mode (this can't be set at runtime) */
+	 
 	if ((param == PIN_CONFIG_DRIVE_PUSH_PULL) &&
 	    (priv->gpio_pushpull & BIT(gpio)))
 		return 0;
@@ -1636,13 +1540,7 @@ static int cp210x_gpio_init_valid_mask(struct gpio_chip *gc,
 	return 0;
 }
 
-/*
- * This function is for configuring GPIO using shared pins, where other signals
- * are made unavailable by configuring the use of GPIO. This is believed to be
- * only applicable to the cp2105 at this point, the other devices supported by
- * this driver that provide GPIO do so in a way that does not impact other
- * signals and are thus expected to have very different initialisation.
- */
+ 
 static int cp2105_gpioconf_init(struct usb_serial *serial)
 {
 	struct cp210x_serial_private *priv = usb_get_serial_data(serial);
@@ -1664,12 +1562,12 @@ static int cp2105_gpioconf_init(struct usb_serial *serial)
 	if (result < 0)
 		return result;
 
-	/*  2 banks of GPIO - One for the pins taken from each serial port */
+	 
 	if (intf_num == 0) {
 		priv->gc.ngpio = 2;
 
 		if (mode.eci == CP210X_PIN_MODE_MODEM) {
-			/* mark all GPIOs of this interface as reserved */
+			 
 			priv->gpio_altfunc = 0xff;
 			return 0;
 		}
@@ -1682,7 +1580,7 @@ static int cp2105_gpioconf_init(struct usb_serial *serial)
 		priv->gc.ngpio = 3;
 
 		if (mode.sci == CP210X_PIN_MODE_MODEM) {
-			/* mark all GPIOs of this interface as reserved */
+			 
 			priv->gpio_altfunc = 0xff;
 			return 0;
 		}
@@ -1695,14 +1593,14 @@ static int cp2105_gpioconf_init(struct usb_serial *serial)
 		return -ENODEV;
 	}
 
-	/* mark all pins which are not in GPIO mode */
-	if (iface_config & CP2105_GPIO0_TXLED_MODE)	/* GPIO 0 */
+	 
+	if (iface_config & CP2105_GPIO0_TXLED_MODE)	 
 		priv->gpio_altfunc |= BIT(0);
-	if (iface_config & (CP2105_GPIO1_RXLED_MODE |	/* GPIO 1 */
+	if (iface_config & (CP2105_GPIO1_RXLED_MODE |	 
 			CP2105_GPIO1_RS485_MODE))
 		priv->gpio_altfunc |= BIT(1);
 
-	/* driver implementation for CP2105 only supports outputs */
+	 
 	priv->gpio_input = 0;
 
 	return 0;
@@ -1733,24 +1631,17 @@ static int cp2104_gpioconf_init(struct usb_serial *serial)
 					CP210X_GPIO_MODE_MASK) >>
 					CP210X_GPIO_MODE_OFFSET);
 
-	/* mark all pins which are not in GPIO mode */
-	if (iface_config & CP2104_GPIO0_TXLED_MODE)	/* GPIO 0 */
+	 
+	if (iface_config & CP2104_GPIO0_TXLED_MODE)	 
 		priv->gpio_altfunc |= BIT(0);
-	if (iface_config & CP2104_GPIO1_RXLED_MODE)	/* GPIO 1 */
+	if (iface_config & CP2104_GPIO1_RXLED_MODE)	 
 		priv->gpio_altfunc |= BIT(1);
-	if (iface_config & CP2104_GPIO2_RS485_MODE)	/* GPIO 2 */
+	if (iface_config & CP2104_GPIO2_RS485_MODE)	 
 		priv->gpio_altfunc |= BIT(2);
 
-	/*
-	 * Like CP2102N, CP2104 has also no strict input and output pin
-	 * modes.
-	 * Do the same input mode emulation as CP2102N.
-	 */
+	 
 	for (i = 0; i < priv->gc.ngpio; ++i) {
-		/*
-		 * Set direction to "input" iff pin is open-drain and reset
-		 * value is 1.
-		 */
+		 
 		if (!(priv->gpio_pushpull & BIT(i)) && (gpio_latch & BIT(i)))
 			priv->gpio_input |= BIT(i);
 	}
@@ -1776,16 +1667,7 @@ static int cp2108_gpio_init(struct usb_serial *serial)
 	priv->gpio_pushpull = le16_to_cpu(config.reset_state.gpio_mode_pb1);
 	gpio_latch = le16_to_cpu(config.reset_state.gpio_latch_pb1);
 
-	/*
-	 * Mark all pins which are not in GPIO mode.
-	 *
-	 * Refer to table 9.1 "GPIO Mode alternate Functions" in the datasheet:
-	 * https://www.silabs.com/documents/public/data-sheets/cp2108-datasheet.pdf
-	 *
-	 * Alternate functions of GPIO0 to GPIO3 are determine by enhancedfxn_ifc[0]
-	 * and the similarly for the other pins; enhancedfxn_ifc[1]: GPIO4 to GPIO7,
-	 * enhancedfxn_ifc[2]: GPIO8 to GPIO11, enhancedfxn_ifc[3]: GPIO12 to GPIO15.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		if (config.enhancedfxn_ifc[i] & CP2108_EF_IFC_GPIO_TXLED)
 			priv->gpio_altfunc |= BIT(i * 4);
@@ -1797,15 +1679,9 @@ static int cp2108_gpio_init(struct usb_serial *serial)
 			priv->gpio_altfunc |= BIT((i * 4) + 3);
 	}
 
-	/*
-	 * Like CP2102N, CP2108 has also no strict input and output pin
-	 * modes. Do the same input mode emulation as CP2102N.
-	 */
+	 
 	for (i = 0; i < priv->gc.ngpio; ++i) {
-		/*
-		 * Set direction to "input" iff pin is open-drain and reset
-		 * value is 1.
-		 */
+		 
 		if (!(priv->gpio_pushpull & BIT(i)) && (gpio_latch & BIT(i)))
 			priv->gpio_input |= BIT(i);
 	}
@@ -1826,13 +1702,7 @@ static int cp2102n_gpioconf_init(struct usb_serial *serial)
 	int result;
 	u8 i;
 
-	/*
-	 * Retrieve device configuration from the device.
-	 * The array received contains all customization settings done at the
-	 * factory/manufacturer. Format of the array is documented at the
-	 * time of writing at:
-	 * https://www.silabs.com/community/interface/knowledge-base.entry.html/2017/03/31/cp2102n_setconfig-xsfa
-	 */
+	 
 	config_buf = kmalloc(config_size, GFP_KERNEL);
 	if (!config_buf)
 		return -ENOMEM;
@@ -1854,62 +1724,43 @@ static int cp2102n_gpioconf_init(struct usb_serial *serial)
 
 	kfree(config_buf);
 
-	/* Make sure this is a config format we understand. */
+	 
 	if (config_version != 0x01)
 		return -ENOTSUPP;
 
 	priv->gc.ngpio = 4;
 
-	/*
-	 * Get default pin states after reset. Needed so we can determine
-	 * the direction of an open-drain pin.
-	 */
+	 
 	gpio_latch = (gpio_rst_latch >> 3) & 0x0f;
 
-	/* 0 indicates open-drain mode, 1 is push-pull */
+	 
 	priv->gpio_pushpull = (gpio_pushpull >> 3) & 0x0f;
 
-	/* 0 indicates GPIO mode, 1 is alternate function */
+	 
 	if (priv->partnum == CP210X_PARTNUM_CP2102N_QFN20) {
-		/* QFN20 is special... */
-		if (gpio_ctrl & CP2102N_QFN20_GPIO0_CLK_MODE)   /* GPIO 0 */
+		 
+		if (gpio_ctrl & CP2102N_QFN20_GPIO0_CLK_MODE)    
 			priv->gpio_altfunc |= BIT(0);
-		if (gpio_ctrl & CP2102N_QFN20_GPIO1_RS485_MODE) /* GPIO 1 */
+		if (gpio_ctrl & CP2102N_QFN20_GPIO1_RS485_MODE)  
 			priv->gpio_altfunc |= BIT(1);
-		if (gpio_ctrl & CP2102N_QFN20_GPIO2_TXLED_MODE) /* GPIO 2 */
+		if (gpio_ctrl & CP2102N_QFN20_GPIO2_TXLED_MODE)  
 			priv->gpio_altfunc |= BIT(2);
-		if (gpio_ctrl & CP2102N_QFN20_GPIO3_RXLED_MODE) /* GPIO 3 */
+		if (gpio_ctrl & CP2102N_QFN20_GPIO3_RXLED_MODE)  
 			priv->gpio_altfunc |= BIT(3);
 	} else {
 		priv->gpio_altfunc = (gpio_ctrl >> 2) & 0x0f;
 	}
 
 	if (priv->partnum == CP210X_PARTNUM_CP2102N_QFN28) {
-		/*
-		 * For the QFN28 package, GPIO4-6 are controlled by
-		 * the low three bits of the mode/latch fields.
-		 * Contrary to the document linked above, the bits for
-		 * the SUSPEND pins are elsewhere.  No alternate
-		 * function is available for these pins.
-		 */
+		 
 		priv->gc.ngpio = 7;
 		gpio_latch |= (gpio_rst_latch & 7) << 4;
 		priv->gpio_pushpull |= (gpio_pushpull & 7) << 4;
 	}
 
-	/*
-	 * The CP2102N does not strictly has input and output pin modes,
-	 * it only knows open-drain and push-pull modes which is set at
-	 * factory. An open-drain pin can function both as an
-	 * input or an output. We emulate input mode for open-drain pins
-	 * by making sure they are not driven low, and we do not allow
-	 * push-pull pins to be set as an input.
-	 */
+	 
 	for (i = 0; i < priv->gc.ngpio; ++i) {
-		/*
-		 * Set direction to "input" iff pin is open-drain and reset
-		 * value is 1.
-		 */
+		 
 		if (!(priv->gpio_pushpull & BIT(i)) && (gpio_latch & BIT(i)))
 			priv->gpio_input |= BIT(i);
 	}
@@ -1930,10 +1781,7 @@ static int cp210x_gpio_init(struct usb_serial *serial)
 		result = cp2105_gpioconf_init(serial);
 		break;
 	case CP210X_PARTNUM_CP2108:
-		/*
-		 * The GPIOs are not tied to any specific port so only register
-		 * once for interface 0.
-		 */
+		 
 		if (cp210x_interface_num(serial) != 0)
 			return 0;
 		result = cp2108_gpio_init(serial);
@@ -1989,7 +1837,7 @@ static int cp210x_gpio_init(struct usb_serial *serial)
 
 static void cp210x_gpio_remove(struct usb_serial *serial)
 {
-	/* Nothing to do */
+	 
 }
 
 #endif
@@ -2044,10 +1892,10 @@ static void cp210x_init_max_speed(struct usb_serial *serial)
 	case CP210X_PARTNUM_CP2105:
 		if (cp210x_interface_num(serial) == 0) {
 			use_actual_rate = true;
-			max = 2000000;	/* ECI */
+			max = 2000000;	 
 		} else {
 			min = 2400;
-			max = 921600;	/* SCI */
+			max = 921600;	 
 		}
 		break;
 	case CP210X_PARTNUM_CP2102N_QFN28:
@@ -2075,12 +1923,7 @@ static void cp2102_determine_quirks(struct usb_serial *serial)
 	buf = kmalloc(2, GFP_KERNEL);
 	if (!buf)
 		return;
-	/*
-	 * Some (possibly counterfeit) CP2102 do not support event-insertion
-	 * mode and respond differently to malformed vendor requests.
-	 * Specifically, they return one instead of two bytes when sent a
-	 * two-byte part-number request.
-	 */
+	 
 	ret = usb_control_msg(serial->dev, usb_rcvctrlpipe(serial->dev, 0),
 			CP210X_VENDOR_SPECIFIC, REQTYPE_DEVICE_TO_HOST,
 			CP210X_GET_PARTNUM, 0, buf, 2, USB_CTRL_GET_TIMEOUT);

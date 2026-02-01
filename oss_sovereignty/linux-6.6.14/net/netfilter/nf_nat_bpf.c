@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Unstable NAT Helpers for XDP and TC-BPF hook
- *
- * These are called from the XDP and SCHED_CLS BPF programs. Note that it is
- * allowed to break compatibility for these functions since the interface they
- * are exposed through to BPF programs is explicitly unstable.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/btf_ids.h>
@@ -16,20 +11,7 @@ __diag_push();
 __diag_ignore_all("-Wmissing-prototypes",
 		  "Global functions as their definitions will be in nf_nat BTF");
 
-/* bpf_ct_set_nat_info - Set source or destination nat address
- *
- * Set source or destination nat address of the newly allocated
- * nf_conn before insertion. This must be invoked for referenced
- * PTR_TO_BTF_ID to nf_conn___init.
- *
- * Parameters:
- * @nfct	- Pointer to referenced nf_conn object, obtained using
- *		  bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
- * @addr	- Nat source/destination address
- * @port	- Nat source/destination port. Non-positive values are
- *		  interpreted as select a random port.
- * @manip	- NF_NAT_MANIP_SRC or NF_NAT_MANIP_DST
- */
+ 
 __bpf_kfunc int bpf_ct_set_nat_info(struct nf_conn___init *nfct,
 				    union nf_inet_addr *addr, int port,
 				    enum nf_nat_manip_type manip)

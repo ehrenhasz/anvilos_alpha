@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PROTO_H
 #define _ASM_X86_PROTO_H
 
@@ -6,7 +6,7 @@
 
 struct task_struct;
 
-/* misc architecture specific prototypes */
+ 
 
 void syscall_init(void);
 
@@ -40,4 +40,4 @@ extern int reboot_force;
 
 long do_arch_prctl_common(int option, unsigned long arg2);
 
-#endif /* _ASM_X86_PROTO_H */
+#endif  

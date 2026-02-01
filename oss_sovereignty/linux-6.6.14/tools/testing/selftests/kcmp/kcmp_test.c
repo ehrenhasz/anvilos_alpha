@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 			ksft_exit_fail();
 		}
 
-		/* An example of output and arguments */
+		 
 		printf("pid1: %6d pid2: %6d FD: %2ld FILES: %2ld VM: %2ld "
 		       "FS: %2ld SIGHAND: %2ld IO: %2ld SYSVSEM: %2ld "
 		       "INV: %2ld\n",
@@ -110,10 +110,10 @@ int main(int argc, char **argv)
 		       sys_kcmp(pid1, pid2, KCMP_IO,		0, 0),
 		       sys_kcmp(pid1, pid2, KCMP_SYSVSEM,	0, 0),
 
-			/* This one should fail */
+			 
 		       sys_kcmp(pid1, pid2, KCMP_TYPES + 1,	0, 0));
 
-		/* This one should return same fd */
+		 
 		ret = sys_kcmp(pid1, pid2, KCMP_FILE, fd1, fd1);
 		if (ret) {
 			printf("FAIL: 0 expected but %d returned (%s)\n",
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 			ksft_inc_pass_cnt();
 		}
 
-		/* Compare with self */
+		 
 		ret = sys_kcmp(pid1, pid1, KCMP_VM, 0, 0);
 		if (ret) {
 			printf("FAIL: 0 expected but %d returned (%s)\n",
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 			ksft_inc_pass_cnt();
 		}
 
-		/* Compare epoll target */
+		 
 		epoll_slot = (struct kcmp_epoll_slot) {
 			.efd	= epollfd,
 			.tfd	= duped_num,

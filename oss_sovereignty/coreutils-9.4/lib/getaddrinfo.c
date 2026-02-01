@@ -1,22 +1,4 @@
-/* Get address information (partial implementation).
-   Copyright (C) 1997, 2001-2002, 2004-2023 Free Software Foundation, Inc.
-   Contributed by Simon Josefsson <simon@josefsson.org>.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   optimizes away the sa == NULL test below.  */
+ 
 #define _GL_ARG_NONNULL(params)
 
 #include <config.h>
@@ -27,34 +9,34 @@
 # include <netinet/in.h>
 #endif
 
-/* Get inet_ntop.  */
+ 
 #include <arpa/inet.h>
 
-/* Get calloc. */
+ 
 #include <stdlib.h>
 
-/* Get memcpy, strdup. */
+ 
 #include <string.h>
 
-/* Get snprintf. */
+ 
 #include <stdio.h>
 
 #include "gettext.h"
 #define _(String) gettext (String)
 #define N_(String) String
 
-/* BeOS has AF_INET, but not PF_INET.  */
+ 
 #ifndef PF_INET
 # define PF_INET AF_INET
 #endif
-/* BeOS also lacks PF_UNSPEC.  */
+ 
 #ifndef PF_UNSPEC
 # define PF_UNSPEC 0
 #endif
 
 #if HAVE_GETADDRINFO
 
-/* Override with cdecl calling convention.  */
+ 
 
 int
 getaddrinfo (const char *restrict nodename,
@@ -79,18 +61,18 @@ freeaddrinfo (struct addrinfo *ai)
 #  define WINDOWS_NATIVE
 # endif
 
-/* gl_sockets_startup */
+ 
 # include "sockets.h"
 
 # ifdef WINDOWS_NATIVE
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 #  undef GetModuleHandle
 #  define GetModuleHandle GetModuleHandleA
 
 #  if !(_WIN32_WINNT >= _WIN32_WINNT_WINXP)
 
-/* Avoid warnings from gcc -Wcast-function-type.  */
+ 
 #   define GetProcAddress \
      (void *) GetProcAddress
 
@@ -126,7 +108,7 @@ use_win32_p (void)
       getnameinfo_ptr = (getnameinfo_func) GetProcAddress (h, "getnameinfo");
     }
 
-  /* If either is missing, something is odd. */
+   
   if (!getaddrinfo_ptr || !freeaddrinfo_ptr || !getnameinfo_ptr)
     {
       getaddrinfo_ptr = NULL;
@@ -167,7 +149,7 @@ use_win32_p (void)
 static bool
 validate_family (int family)
 {
-  /* FIXME: Support more families. */
+   
 # if HAVE_IPV4
      if (family == PF_INET)
        return true;
@@ -181,8 +163,7 @@ validate_family (int family)
      return false;
 }
 
-/* Translate name of a service location and/or a service name to set of
-   socket addresses. */
+ 
 int
 getaddrinfo (const char *restrict nodename,
              const char *restrict servname,
@@ -214,7 +195,7 @@ getaddrinfo (const char *restrict nodename,
 # endif
 
   if (hints && (hints->ai_flags & ~(AI_CANONNAME|AI_PASSIVE)))
-    /* FIXME: Support more flags. */
+     
     return EAI_BADFLAGS;
 
   if (hints && !validate_family (hints->ai_family))
@@ -222,8 +203,8 @@ getaddrinfo (const char *restrict nodename,
 
   if (hints &&
       hints->ai_socktype != SOCK_STREAM && hints->ai_socktype != SOCK_DGRAM)
-    /* FIXME: Support other socktype. */
-    return EAI_SOCKTYPE; /* FIXME: Better return code? */
+     
+    return EAI_SOCKTYPE;  
 
   if (!nodename)
     {
@@ -244,7 +225,7 @@ getaddrinfo (const char *restrict nodename,
         (hints && hints->ai_socktype == SOCK_DGRAM) ? "udp" : "tcp";
 
       if (hints == NULL || !(hints->ai_flags & AI_NUMERICSERV))
-        /* FIXME: Use getservbyname_r if available. */
+         
         se = getservbyname (servname, proto);
 
       if (!se)
@@ -261,7 +242,7 @@ getaddrinfo (const char *restrict nodename,
         port = se->s_port;
     }
 
-  /* FIXME: Use gethostbyname_r if available. */
+   
   he = gethostbyname (nodename);
   if (!he || he->h_addr_list[0] == NULL)
     return EAI_NONAME;
@@ -303,7 +284,7 @@ getaddrinfo (const char *restrict nodename,
         if (he->h_length != sizeof (sinp->sin6_addr))
           {
             free (storage);
-            return EAI_SYSTEM; /* FIXME: Better return code?  Set errno? */
+            return EAI_SYSTEM;  
           }
 
         memcpy (&sinp->sin6_addr, he->h_addr_list[0], sizeof sinp->sin6_addr);
@@ -327,7 +308,7 @@ getaddrinfo (const char *restrict nodename,
         if (he->h_length != sizeof (sinp->sin_addr))
           {
             free (storage);
-            return EAI_SYSTEM; /* FIXME: Better return code?  Set errno? */
+            return EAI_SYSTEM;  
           }
 
         memcpy (&sinp->sin_addr, he->h_addr_list[0], sizeof sinp->sin_addr);
@@ -380,14 +361,14 @@ getaddrinfo (const char *restrict nodename,
     }
 # endif
 
-  /* FIXME: If more than one address, create linked list of addrinfo's. */
+   
 
   *res = tmp;
 
   return 0;
 }
 
-/* Free 'addrinfo' structure AI including associated storage.  */
+ 
 void
 freeaddrinfo (struct addrinfo *ai)
 #undef freeaddrinfo
@@ -425,7 +406,7 @@ getnameinfo (const struct sockaddr *restrict sa, socklen_t salen,
                             service, servicelen, flags);
 # endif
 
-  /* FIXME: Support other flags. */
+   
   if ((node && nodelen > 0 && !(flags & NI_NUMERICHOST)) ||
       (service && servicelen > 0 && !(flags & NI_NUMERICHOST)) ||
       (flags & ~(NI_NUMERICHOST|NI_NUMERICSERV)))

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <test_progs.h>
 #include "test_deny_namespace.skel.h"
@@ -25,10 +25,7 @@ again:
 	return WEXITSTATUS(status);
 }
 
-/* negative return value -> some internal error
- * positive return value -> userns creation failed
- * 0                     -> userns creation succeeded
- */
+ 
 static int create_user_ns(void)
 {
 	pid_t pid;

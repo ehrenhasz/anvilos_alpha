@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Intel HID event & 5 button array driver
- *
- *  Copyright (C) 2015 Alex Hung <alex.hung@canonical.com>
- *  Copyright (C) 2015 Andrew Lutomirski <luto@kernel.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -35,7 +30,7 @@ MODULE_PARM_DESC(enable_sw_tablet_mode,
 	"Enable SW_TABLET_MODE reporting -1:auto 0:off 1:at-first-event 2:at-probe. "
 	"If you need this please report this to: platform-driver-x86@vger.kernel.org");
 
-/* When NOT in tablet mode, VGBS returns with the flag 0x40 */
+ 
 #define TABLET_MODE_FLAG BIT(6)
 
 MODULE_LICENSE("GPL");
@@ -53,10 +48,10 @@ static const struct acpi_device_id intel_hid_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, intel_hid_ids);
 
-/* In theory, these are HID usages. */
+ 
 static const struct key_entry intel_hid_keymap[] = {
-	/* 1: LSuper (Page 0x07, usage 0xE3) -- unclear what to do */
-	/* 2: Toggle SW_ROTATE_LOCK -- easy to implement if seen in wild */
+	 
+	 
 	{ KE_KEY, 3, { KEY_NUMLOCK } },
 	{ KE_KEY, 4, { KEY_HOME } },
 	{ KE_KEY, 5, { KEY_END } },
@@ -65,7 +60,7 @@ static const struct key_entry intel_hid_keymap[] = {
 	{ KE_KEY, 8, { KEY_RFKILL } },
 	{ KE_KEY, 9, { KEY_POWER } },
 	{ KE_KEY, 11, { KEY_SLEEP } },
-	/* 13 has two different meanings in the spec -- ignore it. */
+	 
 	{ KE_KEY, 14, { KEY_STOPCD } },
 	{ KE_KEY, 15, { KEY_PLAYPAUSE } },
 	{ KE_KEY, 16, { KEY_MUTE } },
@@ -73,22 +68,22 @@ static const struct key_entry intel_hid_keymap[] = {
 	{ KE_KEY, 18, { KEY_VOLUMEDOWN } },
 	{ KE_KEY, 19, { KEY_BRIGHTNESSUP } },
 	{ KE_KEY, 20, { KEY_BRIGHTNESSDOWN } },
-	/* 27: wake -- needs special handling */
+	 
 	{ KE_END },
 };
 
-/* 5 button array notification value. */
+ 
 static const struct key_entry intel_array_keymap[] = {
-	{ KE_KEY,    0xC2, { KEY_LEFTMETA } },                /* Press */
-	{ KE_IGNORE, 0xC3, { KEY_LEFTMETA } },                /* Release */
-	{ KE_KEY,    0xC4, { KEY_VOLUMEUP } },                /* Press */
-	{ KE_IGNORE, 0xC5, { KEY_VOLUMEUP } },                /* Release */
-	{ KE_KEY,    0xC6, { KEY_VOLUMEDOWN } },              /* Press */
-	{ KE_IGNORE, 0xC7, { KEY_VOLUMEDOWN } },              /* Release */
-	{ KE_KEY,    0xC8, { KEY_ROTATE_LOCK_TOGGLE } },      /* Press */
-	{ KE_IGNORE, 0xC9, { KEY_ROTATE_LOCK_TOGGLE } },      /* Release */
-	{ KE_KEY,    0xCE, { KEY_POWER } },                   /* Press */
-	{ KE_IGNORE, 0xCF, { KEY_POWER } },                   /* Release */
+	{ KE_KEY,    0xC2, { KEY_LEFTMETA } },                 
+	{ KE_IGNORE, 0xC3, { KEY_LEFTMETA } },                 
+	{ KE_KEY,    0xC4, { KEY_VOLUMEUP } },                 
+	{ KE_IGNORE, 0xC5, { KEY_VOLUMEUP } },                 
+	{ KE_KEY,    0xC6, { KEY_VOLUMEDOWN } },               
+	{ KE_IGNORE, 0xC7, { KEY_VOLUMEDOWN } },               
+	{ KE_KEY,    0xC8, { KEY_ROTATE_LOCK_TOGGLE } },       
+	{ KE_IGNORE, 0xC9, { KEY_ROTATE_LOCK_TOGGLE } },       
+	{ KE_KEY,    0xCE, { KEY_POWER } },                    
+	{ KE_IGNORE, 0xCF, { KEY_POWER } },                    
 	{ KE_END },
 };
 
@@ -131,12 +126,7 @@ static const struct dmi_system_id button_array_table[] = {
 	{ }
 };
 
-/*
- * Some convertible use the intel-hid ACPI interface to report SW_TABLET_MODE,
- * these need to be compared via a DMI based authorization list because some
- * models have unreliable VGBS return which could cause incorrect
- * SW_TABLET_MODE report.
- */
+ 
 static const struct dmi_system_id dmi_vgbs_allow_list[] = {
 	{
 		.matches = {
@@ -159,22 +149,19 @@ static const struct dmi_system_id dmi_vgbs_allow_list[] = {
 	{ }
 };
 
-/*
- * Some devices, even non convertible ones, can send incorrect SW_TABLET_MODE
- * reports. Accept such reports only from devices in this list.
- */
+ 
 static const struct dmi_system_id dmi_auto_add_switch[] = {
 	{
 		.matches = {
-			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "31" /* Convertible */),
+			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "31"  ),
 		},
 	},
 	{
 		.matches = {
-			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "32" /* Detachable */),
+			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "32"  ),
 		},
 	},
-	{} /* Array terminator */
+	{}  
 };
 
 struct intel_hid_priv {
@@ -233,7 +220,7 @@ static bool intel_hid_execute_method(acpi_handle handle,
 	if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
 		goto skip_dsm_exec;
 
-	/* All methods expects a package with one integer element */
+	 
 	req.type = ACPI_TYPE_INTEGER;
 	req.integer.value = arg;
 
@@ -327,7 +314,7 @@ static int intel_hid_set_enable(struct device *device, bool enable)
 {
 	acpi_handle handle = ACPI_HANDLE(device);
 
-	/* Enable|disable features - power button is always enabled */
+	 
 	if (!intel_hid_execute_method(handle, INTEL_HID_DSM_HDSM_FN,
 				      enable)) {
 		dev_warn(device, "failed to %sable hotkeys\n",
@@ -348,14 +335,14 @@ static void intel_button_array_enable(struct device *device, bool enable)
 	if (!priv->array)
 		return;
 
-	/* Query supported platform features */
+	 
 	status = acpi_evaluate_integer(handle, "BTNC", NULL, &button_cap);
 	if (ACPI_FAILURE(status)) {
 		dev_warn(device, "failed to get button capability\n");
 		return;
 	}
 
-	/* Enable|disable features - power button is always enabled */
+	 
 	if (!intel_hid_execute_method(handle, INTEL_HID_DSM_BTNE_FN,
 				      enable ? button_cap : 1))
 		dev_warn(device, "failed to set button capability\n");
@@ -433,7 +420,7 @@ static int intel_button_array_input_setup(struct platform_device *device)
 	struct intel_hid_priv *priv = dev_get_drvdata(&device->dev);
 	int ret;
 
-	/* Setup input device for 5 button array */
+	 
 	priv->array = devm_input_allocate_device(&device->dev);
 	if (!priv->array)
 		return -ENOMEM;
@@ -452,7 +439,7 @@ static int intel_hid_switches_setup(struct platform_device *device)
 {
 	struct intel_hid_priv *priv = dev_get_drvdata(&device->dev);
 
-	/* Setup input device for switches */
+	 
 	priv->switches = devm_input_allocate_device(&device->dev);
 	if (!priv->switches)
 		return -ENOMEM;
@@ -506,11 +493,7 @@ static void notify_handler(acpi_handle handle, u32 event, void *context)
 	unsigned long long ev_index;
 	int err;
 
-	/*
-	 * Some convertible have unreliable VGBS return which could cause incorrect
-	 * SW_TABLET_MODE report, in these cases we enable support when receiving
-	 * the first event instead of during driver setup.
-	 */
+	 
 	if (!priv->switches && enable_sw_tablet_mode == TABLET_SW_AT_EVENT &&
 	    (event == 0xcc || event == 0xcd)) {
 		dev_info(&device->dev, "switch event received, enable switches supports\n");
@@ -520,28 +503,17 @@ static void notify_handler(acpi_handle handle, u32 event, void *context)
 	}
 
 	if (priv->wakeup_mode) {
-		/*
-		 * Needed for wakeup from suspend-to-idle to work on some
-		 * platforms that don't expose the 5-button array, but still
-		 * send notifies with the power button event code to this
-		 * device object on power button actions while suspended.
-		 */
+		 
 		if (event == 0xce)
 			goto wakeup;
 
-		/*
-		 * Some devices send (duplicate) tablet-mode events when moved
-		 * around even though the mode has not changed; and they do this
-		 * even when suspended.
-		 * Update the switch state in case it changed and then return
-		 * without waking up to avoid spurious wakeups.
-		 */
+		 
 		if (event == 0xcc || event == 0xcd) {
 			report_tablet_mode_event(priv->switches, event);
 			return;
 		}
 
-		/* Wake up on 5-button array events only. */
+		 
 		if (event == 0xc0 || !priv->array)
 			return;
 
@@ -556,13 +528,7 @@ wakeup:
 		return;
 	}
 
-	/*
-	 * Needed for suspend to work on some platforms that don't expose
-	 * the 5-button array, but still send notifies with power button
-	 * event code to this device object on power button actions.
-	 *
-	 * Report the power button press and release.
-	 */
+	 
 	if (!priv->array) {
 		if (event == 0xce) {
 			input_report_key(priv->input_dev, KEY_POWER, 1);
@@ -580,7 +546,7 @@ wakeup:
 	if (report_tablet_mode_event(priv->switches, event))
 		return;
 
-	/* 0xC0 is for HID events, other values are for 5 button array */
+	 
 	if (event != 0xc0) {
 		if (!priv->array ||
 		    !sparse_keymap_report_event(priv->array, event, 1, true))
@@ -606,7 +572,7 @@ static bool button_array_present(struct platform_device *device)
 
 	if (intel_hid_evaluate_method(handle, INTEL_HID_DSM_HEBC_V2_FN,
 				      &event_cap)) {
-		/* Check presence of 5 button array or v2 power button */
+		 
 		if (event_cap & 0x60000)
 			return true;
 	}
@@ -639,11 +605,7 @@ static int intel_hid_probe(struct platform_device *device)
 	}
 
 	if (mode != 0) {
-		/*
-		 * This driver only implements "simple" mode.  There appear
-		 * to be no other modes, but we should be paranoid and check
-		 * for compatibility.
-		 */
+		 
 		dev_info(&device->dev, "platform is not in simple mode\n");
 		return -ENODEV;
 	}
@@ -653,7 +615,7 @@ static int intel_hid_probe(struct platform_device *device)
 		return -ENOMEM;
 	dev_set_drvdata(&device->dev, priv);
 
-	/* See dual_accel_detect.h for more info on the dual_accel check. */
+	 
 	if (enable_sw_tablet_mode == TABLET_SW_AUTO) {
 		if (dmi_check_system(dmi_vgbs_allow_list))
 			enable_sw_tablet_mode = TABLET_SW_AT_PROBE;
@@ -669,7 +631,7 @@ static int intel_hid_probe(struct platform_device *device)
 		return err;
 	}
 
-	/* Setup 5 button array */
+	 
 	if (button_array_present(device)) {
 		dev_info(&device->dev, "platform supports 5 button array\n");
 		err = intel_button_array_input_setup(device);
@@ -677,7 +639,7 @@ static int intel_hid_probe(struct platform_device *device)
 			pr_err("Failed to setup Intel 5 button array hotkeys\n");
 	}
 
-	/* Setup switches for devices that we know VGBS return correctly */
+	 
 	if (enable_sw_tablet_mode == TABLET_SW_AT_PROBE) {
 		dev_info(&device->dev, "platform supports switches\n");
 		err = intel_hid_switches_setup(device);
@@ -700,20 +662,12 @@ static int intel_hid_probe(struct platform_device *device)
 
 	intel_button_array_enable(&device->dev, true);
 
-	/*
-	 * Call button load method to enable HID power button
-	 * Always do this since it activates events on some devices without
-	 * a button array too.
-	 */
+	 
 	if (!intel_hid_evaluate_method(handle, INTEL_HID_DSM_BTNL_FN, &dummy))
 		dev_warn(&device->dev, "failed to enable HID power button\n");
 
 	device_init_wakeup(&device->dev, true);
-	/*
-	 * In order for system wakeup to work, the EC GPE has to be marked as
-	 * a wakeup one, so do that here (this setting will persist, but it has
-	 * no effect until the wakeup mask is set for the EC GPE).
-	 */
+	 
 	acpi_ec_mark_gpe_for_wake();
 	return 0;
 
@@ -743,17 +697,7 @@ static struct platform_driver intel_hid_pl_driver = {
 	.remove_new = intel_hid_remove,
 };
 
-/*
- * Unfortunately, some laptops provide a _HID="INT33D5" device with
- * _CID="PNP0C02".  This causes the pnpacpi scan driver to claim the
- * ACPI node, so no platform device will be created.  The pnpacpi
- * driver rejects this device in subsequent processing, so no physical
- * node is created at all.
- *
- * As a workaround until the ACPI core figures out how to handle
- * this corner case, manually ask the ACPI platform device code to
- * claim the ACPI node.
- */
+ 
 static acpi_status __init
 check_acpi_dev(acpi_handle handle, u32 lvl, void *context, void **rv)
 {

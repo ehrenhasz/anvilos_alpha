@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i915
@@ -643,9 +641,9 @@ TRACE_EVENT(intel_frontbuffer_flush,
 		      __get_str(dev), __entry->frontbuffer_bits, __entry->origin)
 );
 
-#endif /* __INTEL_DISPLAY_TRACE_H__ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/i915/display

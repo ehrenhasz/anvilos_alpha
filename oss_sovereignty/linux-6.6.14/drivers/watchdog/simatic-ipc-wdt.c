@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC driver for Watchdogs
- *
- * Copyright (c) Siemens AG, 2020-2021
- *
- * Authors:
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -37,7 +30,7 @@
 #define TIMEOUT_DEF	64
 #define TIMEOUT_MAX	64
 
-#define GP_STATUS_REG_227E	0x404D	/* IO PORT for SAFE_EN_N on 227E */
+#define GP_STATUS_REG_227E	0x404D	 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0000);
@@ -55,7 +48,7 @@ static struct resource io_resource_trigger =
 	DEFINE_RES_IO_NAMED(WD_TRIGGER_IOADR, SZ_1,
 			    KBUILD_MODNAME " WD_TRIGGER_IOADR");
 
-/* the actual start will be discovered with p2sb, 0 is a placeholder */
+ 
 static struct resource mem_resource =
 	DEFINE_RES_MEM_NAMED(0, 0, "WD_RESET_BASE_ADR");
 
@@ -108,13 +101,13 @@ static void wd_secondary_enable(u32 wdtmode)
 {
 	u16 resetbit;
 
-	/* set safe_en_n so we are not just WDIOF_ALARMONLY */
+	 
 	if (wdtmode == SIMATIC_IPC_DEVICE_227E) {
-		/* enable SAFE_EN_N on GP_STATUS_REG_227E */
+		 
 		resetbit = inb(GP_STATUS_REG_227E);
 		outb(resetbit & ~SAFE_EN_N_227E, GP_STATUS_REG_227E);
 	} else {
-		/* enable SAFE_EN_N on PCH D1600 */
+		 
 		resetbit = ioread16(wd_reset_base_addr);
 		iowrite16(resetbit & ~SAFE_EN_N_427E, wd_reset_base_addr);
 	}
@@ -131,7 +124,7 @@ static int wd_setup(u32 wdtmode)
 	if (inb(WD_ENABLE_IOADR) & WD_TRIGGERED)
 		bootstatus |= WDIOF_CARDRESET;
 
-	/* reset alarm bit, set macro mode, and set timeout */
+	 
 	outb(WD_TRIGGERED | WD_MACROMODE | timeout_idx << 3, WD_ENABLE_IOADR);
 
 	wd_secondary_enable(wdtmode);
@@ -195,7 +188,7 @@ static int simatic_ipc_wdt_probe(struct platform_device *pdev)
 		if (ret)
 			return ret;
 
-		/* do the final address calculation */
+		 
 		res->start = res->start + (GPIO_COMMUNITY0_PORT_ID << 16) +
 			     PAD_CFG_DW0_GPP_A_23;
 		res->end = res->start + SZ_4 - 1;

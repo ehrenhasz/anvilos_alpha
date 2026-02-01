@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #ifndef	_SYS_ZFS_FILE_H
 #define	_SYS_ZFS_FILE_H
@@ -36,8 +17,8 @@ typedef struct file zfs_file_t;
 #endif
 
 typedef struct zfs_file_attr {
-	uint64_t	zfa_size;	/* file size */
-	mode_t		zfa_mode;	/* file type */
+	uint64_t	zfa_size;	 
+	mode_t		zfa_mode;	 
 } zfs_file_attr_t;
 
 int zfs_file_open(const char *path, int flags, int mode, zfs_file_t **fp);
@@ -61,4 +42,4 @@ zfs_file_t *zfs_file_get(int fd);
 void zfs_file_put(zfs_file_t *fp);
 void *zfs_file_private(zfs_file_t *fp);
 
-#endif /* _SYS_ZFS_FILE_H */
+#endif  

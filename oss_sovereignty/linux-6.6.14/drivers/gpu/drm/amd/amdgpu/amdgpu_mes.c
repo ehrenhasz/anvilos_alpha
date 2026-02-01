@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <drm/drm_exec.h>
@@ -59,7 +38,7 @@ static int amdgpu_mes_kernel_doorbell_get(struct amdgpu_device *adev,
 
 	set_bit(found, mes->doorbell_bitmap);
 
-	/* Get the absolute doorbell index on BAR */
+	 
 	*doorbell_index = mes->db_start_dw_offset + found * 2;
 	return 0;
 }
@@ -71,7 +50,7 @@ static void amdgpu_mes_kernel_doorbell_free(struct amdgpu_device *adev,
 	unsigned int old, rel_index;
 	struct amdgpu_mes *mes = &adev->mes;
 
-	/* Find the relative index of the doorbell in this object */
+	 
 	rel_index = (doorbell_index - mes->db_start_dw_offset) / 2;
 	old = test_and_clear_bit(rel_index, mes->doorbell_bitmap);
 	WARN_ON(!old);
@@ -82,7 +61,7 @@ static int amdgpu_mes_doorbell_init(struct amdgpu_device *adev)
 	int i;
 	struct amdgpu_mes *mes = &adev->mes;
 
-	/* Bitmap for dynamic allocation of kernel doorbells */
+	 
 	mes->doorbell_bitmap = bitmap_zalloc(PAGE_SIZE / sizeof(u32), GFP_KERNEL);
 	if (!mes->doorbell_bitmap) {
 		DRM_ERROR("Failed to allocate MES doorbell bitmap\n");
@@ -122,7 +101,7 @@ int amdgpu_mes_init(struct amdgpu_device *adev)
 	adev->mes.vmid_mask_gfxhub = 0xffffff00;
 
 	for (i = 0; i < AMDGPU_MES_MAX_COMPUTE_PIPES; i++) {
-		/* use only 1st MEC pipes */
+		 
 		if (i >= 4)
 			continue;
 		adev->mes.compute_hqd_mask[i] = 0xc;
@@ -134,7 +113,7 @@ int amdgpu_mes_init(struct amdgpu_device *adev)
 	for (i = 0; i < AMDGPU_MES_MAX_SDMA_PIPES; i++) {
 		if (adev->ip_versions[SDMA0_HWIP][0] < IP_VERSION(6, 0, 0))
 			adev->mes.sdma_hqd_mask[i] = i ? 0 : 0x3fc;
-		/* zero sdma_hqd_mask for non-existent engine */
+		 
 		else if (adev->sdma.num_instances == 1)
 			adev->mes.sdma_hqd_mask[i] = i ? 0 : 0xfc;
 		else
@@ -223,14 +202,14 @@ int amdgpu_mes_create_process(struct amdgpu_device *adev, int pasid,
 	struct amdgpu_mes_process *process;
 	int r;
 
-	/* allocate the mes process buffer */
+	 
 	process = kzalloc(sizeof(struct amdgpu_mes_process), GFP_KERNEL);
 	if (!process) {
 		DRM_ERROR("no more memory to create mes process\n");
 		return -ENOMEM;
 	}
 
-	/* allocate the process context bo and map it */
+	 
 	r = amdgpu_bo_create_kernel(adev, AMDGPU_MES_PROC_CTX_SIZE, PAGE_SIZE,
 				    AMDGPU_GEM_DOMAIN_GTT,
 				    &process->proc_ctx_bo,
@@ -242,13 +221,10 @@ int amdgpu_mes_create_process(struct amdgpu_device *adev, int pasid,
 	}
 	memset(process->proc_ctx_cpu_ptr, 0, AMDGPU_MES_PROC_CTX_SIZE);
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
-	/* add the mes process to idr list */
+	 
 	r = idr_alloc(&adev->mes.pasid_idr, process, pasid, pasid + 1,
 		      GFP_KERNEL);
 	if (r < 0) {
@@ -284,10 +260,7 @@ void amdgpu_mes_destroy_process(struct amdgpu_device *adev, int pasid)
 	unsigned long flags;
 	int r;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	process = idr_find(&adev->mes.pasid_idr, pasid);
@@ -297,7 +270,7 @@ void amdgpu_mes_destroy_process(struct amdgpu_device *adev, int pasid)
 		return;
 	}
 
-	/* Remove all queues from hardware */
+	 
 	list_for_each_entry_safe(gang, tmp1, &process->gang_list, list) {
 		list_for_each_entry_safe(queue, tmp2, &gang->queue_list, list) {
 			spin_lock_irqsave(&adev->mes.queue_id_lock, flags);
@@ -319,9 +292,9 @@ void amdgpu_mes_destroy_process(struct amdgpu_device *adev, int pasid)
 	idr_remove(&adev->mes.pasid_idr, pasid);
 	amdgpu_mes_unlock(&adev->mes);
 
-	/* free all memory allocated by the process */
+	 
 	list_for_each_entry_safe(gang, tmp1, &process->gang_list, list) {
-		/* free all queues in the gang */
+		 
 		list_for_each_entry_safe(queue, tmp2, &gang->queue_list, list) {
 			amdgpu_mes_queue_free_mqd(queue);
 			list_del(&queue->list);
@@ -348,13 +321,13 @@ int amdgpu_mes_add_gang(struct amdgpu_device *adev, int pasid,
 	struct amdgpu_mes_gang *gang;
 	int r;
 
-	/* allocate the mes gang buffer */
+	 
 	gang = kzalloc(sizeof(struct amdgpu_mes_gang), GFP_KERNEL);
 	if (!gang) {
 		return -ENOMEM;
 	}
 
-	/* allocate the gang context bo and map it to cpu space */
+	 
 	r = amdgpu_bo_create_kernel(adev, AMDGPU_MES_GANG_CTX_SIZE, PAGE_SIZE,
 				    AMDGPU_GEM_DOMAIN_GTT,
 				    &gang->gang_ctx_bo,
@@ -366,10 +339,7 @@ int amdgpu_mes_add_gang(struct amdgpu_device *adev, int pasid,
 	}
 	memset(gang->gang_ctx_cpu_ptr, 0, AMDGPU_MES_GANG_CTX_SIZE);
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	process = idr_find(&adev->mes.pasid_idr, pasid);
@@ -379,7 +349,7 @@ int amdgpu_mes_add_gang(struct amdgpu_device *adev, int pasid,
 		goto clean_up_ctx;
 	}
 
-	/* add the mes gang to idr list */
+	 
 	r = idr_alloc(&adev->mes.gang_id_idr, gang, 1, 0,
 		      GFP_KERNEL);
 	if (r < 0) {
@@ -416,10 +386,7 @@ int amdgpu_mes_remove_gang(struct amdgpu_device *adev, int gang_id)
 {
 	struct amdgpu_mes_gang *gang;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	gang = idr_find(&adev->mes.gang_id_idr, gang_id);
@@ -456,10 +423,7 @@ int amdgpu_mes_suspend(struct amdgpu_device *adev)
 	struct mes_suspend_gang_input input;
 	int r, pasid;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	idp = &adev->mes.pasid_idr;
@@ -485,10 +449,7 @@ int amdgpu_mes_resume(struct amdgpu_device *adev)
 	struct mes_resume_gang_input input;
 	int r, pasid;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	idp = &adev->mes.pasid_idr;
@@ -585,22 +546,19 @@ int amdgpu_mes_add_hw_queue(struct amdgpu_device *adev, int gang_id,
 
 	memset(&queue_input, 0, sizeof(struct mes_add_queue_input));
 
-	/* allocate the mes queue buffer */
+	 
 	queue = kzalloc(sizeof(struct amdgpu_mes_queue), GFP_KERNEL);
 	if (!queue) {
 		DRM_ERROR("Failed to allocate memory for queue\n");
 		return -ENOMEM;
 	}
 
-	/* Allocate the queue mqd */
+	 
 	r = amdgpu_mes_queue_alloc_mqd(adev, queue, qprops);
 	if (r)
 		goto clean_up_memory;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
 	gang = idr_find(&adev->mes.gang_id_idr, gang_id);
@@ -610,7 +568,7 @@ int amdgpu_mes_add_hw_queue(struct amdgpu_device *adev, int gang_id,
 		goto clean_up_mqd;
 	}
 
-	/* add the mes gang to idr list */
+	 
 	spin_lock_irqsave(&adev->mes.queue_id_lock, flags);
 	r = idr_alloc(&adev->mes.queue_id_idr, queue, 1, 0,
 		      GFP_ATOMIC);
@@ -621,17 +579,17 @@ int amdgpu_mes_add_hw_queue(struct amdgpu_device *adev, int gang_id,
 	spin_unlock_irqrestore(&adev->mes.queue_id_lock, flags);
 	*queue_id = queue->queue_id = r;
 
-	/* allocate a doorbell index for the queue */
+	 
 	r = amdgpu_mes_kernel_doorbell_get(adev, gang->process,
 					  qprops->queue_type,
 					  &qprops->doorbell_off);
 	if (r)
 		goto clean_up_queue_id;
 
-	/* initialize the queue mqd */
+	 
 	amdgpu_mes_queue_init_mqd(adev, queue, qprops);
 
-	/* add hw queue to mes */
+	 
 	queue_input.process_id = gang->process->pasid;
 
 	queue_input.page_table_base_addr =
@@ -702,13 +660,10 @@ int amdgpu_mes_remove_hw_queue(struct amdgpu_device *adev, int queue_id)
 	struct mes_remove_queue_input queue_input;
 	int r;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 
-	/* remove the mes gang from idr list */
+	 
 	spin_lock_irqsave(&adev->mes.queue_id_lock, flags);
 
 	queue = idr_find(&adev->mes.queue_id_idr, queue_id);
@@ -969,10 +924,7 @@ int amdgpu_mes_add_ring(struct amdgpu_device *adev, int gang_id,
 	struct amdgpu_mes_queue_properties qprops = {0};
 	int r, queue_id, pasid;
 
-	/*
-	 * Avoid taking any other locks under MES lock to avoid circular
-	 * lock dependencies.
-	 */
+	 
 	amdgpu_mes_lock(&adev->mes);
 	gang = idr_find(&adev->mes.gang_id_idr, gang_id);
 	if (!gang) {
@@ -1245,7 +1197,7 @@ static int amdgpu_mes_test_create_gang_and_queues(struct amdgpu_device *adev,
 	struct amdgpu_mes_gang_properties gprops = {0};
 	int r, j;
 
-	/* create a gang for the process */
+	 
 	gprops.priority = AMDGPU_MES_PRIORITY_LEVEL_NORMAL;
 	gprops.gang_quantum = adev->mes.default_gang_quantum;
 	gprops.inprocess_gang_priority = AMDGPU_MES_PRIORITY_LEVEL_NORMAL;
@@ -1258,7 +1210,7 @@ static int amdgpu_mes_test_create_gang_and_queues(struct amdgpu_device *adev,
 		return r;
 	}
 
-	/* create queues for the gang */
+	 
 	for (j = 0; j < num_queue; j++) {
 		r = amdgpu_mes_add_ring(adev, *gang_id, queue_type, j,
 					ctx_data, &ring);
@@ -1350,7 +1302,7 @@ int amdgpu_mes_self_test(struct amdgpu_device *adev)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(queue_types); i++) {
-		/* On GFX v10.3, fw hasn't supported to map sdma queue. */
+		 
 		if (adev->ip_versions[GC_HWIP][0] >= IP_VERSION(10, 3, 0) &&
 		    adev->ip_versions[GC_HWIP][0] < IP_VERSION(11, 0, 0) &&
 		    queue_types[i][0] == AMDGPU_RING_TYPE_SDMA)
@@ -1368,11 +1320,11 @@ int amdgpu_mes_self_test(struct amdgpu_device *adev)
 		k += queue_types[i][1];
 	}
 
-	/* start ring test and ib test for MES queues */
+	 
 	amdgpu_mes_test_queues(added_rings);
 
 error_queues:
-	/* remove all queues */
+	 
 	for (i = 0; i < ARRAY_SIZE(added_rings); i++) {
 		if (!added_rings[i])
 			continue;

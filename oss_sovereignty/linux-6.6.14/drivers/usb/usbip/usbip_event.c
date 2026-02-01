@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- * Copyright (C) 2015 Nobuo Iwata
- */
+
+ 
 
 #include <linux/kthread.h>
 #include <linux/export.h>
@@ -71,22 +68,19 @@ static void event_handler(struct work_struct *work)
 		usbip_dbg_eh("pending event %lx\n", ud->event);
 
 		mutex_lock(&ud->sysfs_lock);
-		/*
-		 * NOTE: shutdown must come first.
-		 * Shutdown the device.
-		 */
+		 
 		if (ud->event & USBIP_EH_SHUTDOWN) {
 			ud->eh_ops.shutdown(ud);
 			unset_event(ud, USBIP_EH_SHUTDOWN);
 		}
 
-		/* Reset the device. */
+		 
 		if (ud->event & USBIP_EH_RESET) {
 			ud->eh_ops.reset(ud);
 			unset_event(ud, USBIP_EH_RESET);
 		}
 
-		/* Mark the device as unusable. */
+		 
 		if (ud->event & USBIP_EH_UNUSABLE) {
 			ud->eh_ops.unusable(ud);
 			unset_event(ud, USBIP_EH_UNUSABLE);

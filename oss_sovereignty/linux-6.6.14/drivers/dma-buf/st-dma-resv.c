@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
-/*
-* Copyright © 2019 Intel Corporation
-* Copyright © 2021 Advanced Micro Devices, Inc.
-*/
+ 
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -221,10 +218,10 @@ static int test_for_each_unlocked(void *arg)
 			goto err_iter_end;
 		}
 
-		/* We use r as state here */
+		 
 		if (r == -ENOENT) {
 			r = -EINVAL;
-			/* That should trigger an restart */
+			 
 			cursor.fences = (void*)~0;
 		} else if (r == -EINVAL) {
 			r = 0;

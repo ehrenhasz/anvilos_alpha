@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef WMI_H
 #define WMI_H
@@ -41,11 +27,7 @@ struct wmi_event_swba {
 	u8 beacon_pending;
 } __packed;
 
-/*
- * 64 - HTC header - WMI header - 1 / txstatus
- * And some other hdr. space is also accounted for.
- * 12 seems to be the magic number.
- */
+ 
 #define HTC_MAX_TX_STATUS 12
 
 #define ATH9K_HTC_TXSTAT_ACK        BIT(0)
@@ -55,12 +37,7 @@ struct wmi_event_swba {
 #define ATH9K_HTC_TXSTAT_CW40       BIT(4)
 #define ATH9K_HTC_TXSTAT_SGI        BIT(5)
 
-/*
- * Legacy rates are indicated as indices.
- * HT rates are indicated as dot11 numbers.
- * This allows us to resrict the rate field
- * to 4 bits.
- */
+ 
 #define ATH9K_HTC_TXSTAT_RATE       0x0f
 #define ATH9K_HTC_TXSTAT_RATE_S     0
 
@@ -69,7 +46,7 @@ struct wmi_event_swba {
 
 struct __wmi_event_txstatus {
 	u8 cookie;
-	u8 ts_rate; /* Also holds EP ID */
+	u8 ts_rate;  
 	u8 ts_flags;
 };
 
@@ -82,7 +59,7 @@ enum wmi_cmd_id {
 	WMI_ECHO_CMDID = 0x0001,
 	WMI_ACCESS_MEMORY_CMDID,
 
-	/* Commands to Target */
+	 
 	WMI_GET_FW_VERSION,
 	WMI_DISABLE_INTR_CMDID,
 	WMI_ENABLE_INTR_CMDID,
@@ -164,13 +141,13 @@ struct wmi {
 
 	spinlock_t wmi_lock;
 
-	/* multi write section */
+	 
 	atomic_t mwrite_cnt;
 	struct register_write multi_write[MAX_CMD_NUMBER];
 	u32 multi_write_idx;
 	struct mutex multi_write_mutex;
 
-	/* multi rmw section */
+	 
 	atomic_t m_rmw_cnt;
 	struct register_rmw multi_rmw[MAX_RMW_CMD_NUMBER];
 	u32 multi_rmw_idx;
@@ -205,4 +182,4 @@ void ath9k_destroy_wmi(struct ath9k_htc_priv *priv);
 				    &cmd_rsp, sizeof(cmd_rsp), HZ*2);	\
 	} while (0)
 
-#endif /* WMI_H */
+#endif  

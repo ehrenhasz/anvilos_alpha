@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/drivers/video/omap2/dss/dispc.h
- *
- * Copyright (C) 2011 Texas Instruments
- * Author: Archit Taneja <archit@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAP2_DISPC_REG_H
 #define __OMAP2_DISPC_REG_H
 
-/* DISPC common registers */
+ 
 #define DISPC_REVISION			0x0000
 #define DISPC_SYSCONFIG			0x0010
 #define DISPC_SYSSTATUS			0x0014
@@ -30,7 +25,7 @@
 #define DISPC_MSTANDBY_CTRL		0x0858
 #define DISPC_GLOBAL_MFLAG_ATTRIBUTE	0x085C
 
-/* DISPC overlay registers */
+ 
 #define DISPC_OVL_BA0(n)		(DISPC_OVL_BASE(n) + \
 					DISPC_BA0_OFFSET(n))
 #define DISPC_OVL_BA1(n)		(DISPC_OVL_BASE(n) + \
@@ -91,7 +86,7 @@
 					DISPC_PRELOAD_OFFSET(n))
 #define DISPC_OVL_MFLAG_THRESHOLD(n)	DISPC_MFLAG_THRESHOLD_OFFSET(n)
 
-/* DISPC up/downsampling FIR filter coefficient structure */
+ 
 struct dispc_coef {
 	s8 hc4_vc22;
 	s8 hc3_vc2;
@@ -102,7 +97,7 @@ struct dispc_coef {
 
 const struct dispc_coef *dispc_ovl_get_scale_coef(int inc, int five_taps);
 
-/* DISPC manager/channel specific registers */
+ 
 static inline u16 DISPC_DEFAULT_COLOR(enum omap_channel channel)
 {
 	switch (channel) {
@@ -209,7 +204,7 @@ static inline u16 DISPC_DIVISORo(enum omap_channel channel)
 	}
 }
 
-/* Named as DISPC_SIZE_LCD, DISPC_SIZE_DIGIT and DISPC_SIZE_LCD2 in TRM */
+ 
 static inline u16 DISPC_SIZE_MGR(enum omap_channel channel)
 {
 	switch (channel) {
@@ -335,7 +330,7 @@ static inline u16 DISPC_CPR_COEF_B(enum omap_channel channel)
 	}
 }
 
-/* DISPC overlay register base addresses */
+ 
 static inline u16 DISPC_OVL_BASE(enum omap_plane plane)
 {
 	switch (plane) {
@@ -355,7 +350,7 @@ static inline u16 DISPC_OVL_BASE(enum omap_plane plane)
 	}
 }
 
-/* DISPC overlay register offsets */
+ 
 static inline u16 DISPC_BA0_OFFSET(enum omap_plane plane)
 {
 	switch (plane) {
@@ -729,7 +724,7 @@ static inline u16 DISPC_ACCU2_1_OFFSET(enum omap_plane plane)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_H_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -748,7 +743,7 @@ static inline u16 DISPC_FIR_COEF_H_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_H2_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -769,7 +764,7 @@ static inline u16 DISPC_FIR_COEF_H2_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_HV_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -788,7 +783,7 @@ static inline u16 DISPC_FIR_COEF_HV_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_HV2_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -809,7 +804,7 @@ static inline u16 DISPC_FIR_COEF_HV2_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4,} */
+ 
 static inline u16 DISPC_CONV_COEF_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -827,7 +822,7 @@ static inline u16 DISPC_CONV_COEF_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_V_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {
@@ -847,7 +842,7 @@ static inline u16 DISPC_FIR_COEF_V_OFFSET(enum omap_plane plane, u16 i)
 	}
 }
 
-/* coef index i = {0, 1, 2, 3, 4, 5, 6, 7} */
+ 
 static inline u16 DISPC_FIR_COEF_V2_OFFSET(enum omap_plane plane, u16 i)
 {
 	switch (plane) {

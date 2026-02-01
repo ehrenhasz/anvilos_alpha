@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Scalability test comparing RCU vs other mechanisms
-// for acquiring references on objects.
-//
-// Copyright (C) Google, 2020.
-//
-// Author: Joel Fernandes <joel@joelfernandes.org>
+
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) fmt
 
@@ -73,18 +73,18 @@ MODULE_PARM_DESC(scale_type, "Type of test (rcu, srcu, refcnt, rwsem, rwlock.");
 torture_param(int, verbose, 0, "Enable verbose debugging printk()s");
 torture_param(int, verbose_batched, 0, "Batch verbose debugging printk()s");
 
-// Wait until there are multiple CPUs before starting test.
+
 torture_param(int, holdoff, IS_BUILTIN(CONFIG_RCU_REF_SCALE_TEST) ? 10 : 0,
 	      "Holdoff time before test start (s)");
-// Number of typesafe_lookup structures, that is, the degree of concurrency.
+
 torture_param(long, lookup_instances, 0, "Number of typesafe_lookup structures.");
-// Number of loops per experiment, all readers execute operations concurrently.
+
 torture_param(long, loops, 10000, "Number of loops per experiment.");
-// Number of readers, with -1 defaulting to about 75% of the CPUs.
+
 torture_param(int, nreaders, -1, "Number of readers, -1 for 75% of CPUs.");
-// Number of runs.
+
 torture_param(int, nruns, 30, "Number of experiments to run.");
-// Reader delay in nanoseconds, 0 for no delay.
+
 torture_param(int, readdelay, 0, "Read-side delay in nanoseconds.");
 
 #ifdef MODULE
@@ -112,19 +112,19 @@ static int shutdown_start;
 
 static struct reader_task *reader_tasks;
 
-// Number of readers that are part of the current experiment.
+
 static atomic_t nreaders_exp;
 
-// Use to wait for all threads to start.
+
 static atomic_t n_init;
 static atomic_t n_started;
 static atomic_t n_warmedup;
 static atomic_t n_cooleddown;
 
-// Track which experiment is currently running.
+
 static int exp_idx;
 
-// Operations vector for selecting different types of tests.
+
 struct ref_scale_ops {
 	bool (*init)(void);
 	void (*cleanup)(void);
@@ -176,7 +176,7 @@ static struct ref_scale_ops rcu_ops = {
 	.name		= "rcu"
 };
 
-// Definitions for SRCU ref scale testing.
+
 DEFINE_STATIC_SRCU(srcu_refctl_scale);
 static struct srcu_struct *srcu_ctlp = &srcu_refctl_scale;
 
@@ -212,8 +212,8 @@ static struct ref_scale_ops srcu_ops = {
 
 #ifdef CONFIG_TASKS_RCU
 
-// Definitions for RCU Tasks ref scale testing: Empty read markers.
-// These definitions also work for RCU Rude readers.
+
+
 static void rcu_tasks_ref_scale_read_section(const int nloops)
 {
 	int i;
@@ -239,15 +239,15 @@ static struct ref_scale_ops rcu_tasks_ops = {
 
 #define RCU_TASKS_OPS &rcu_tasks_ops,
 
-#else // #ifdef CONFIG_TASKS_RCU
+#else 
 
 #define RCU_TASKS_OPS
 
-#endif // #else // #ifdef CONFIG_TASKS_RCU
+#endif 
 
 #ifdef CONFIG_TASKS_TRACE_RCU
 
-// Definitions for RCU Tasks Trace ref scale testing.
+
 static void rcu_trace_ref_scale_read_section(const int nloops)
 {
 	int i;
@@ -278,13 +278,13 @@ static struct ref_scale_ops rcu_trace_ops = {
 
 #define RCU_TRACE_OPS &rcu_trace_ops,
 
-#else // #ifdef CONFIG_TASKS_TRACE_RCU
+#else 
 
 #define RCU_TRACE_OPS
 
-#endif // #else // #ifdef CONFIG_TASKS_TRACE_RCU
+#endif 
 
-// Definitions for reference count
+
 static atomic_t refcnt;
 
 static void ref_refcnt_section(const int nloops)
@@ -315,7 +315,7 @@ static struct ref_scale_ops refcnt_ops = {
 	.name		= "refcnt"
 };
 
-// Definitions for rwlock
+
 static rwlock_t test_rwlock;
 
 static bool ref_rwlock_init(void)
@@ -352,7 +352,7 @@ static struct ref_scale_ops rwlock_ops = {
 	.name		= "rwlock"
 };
 
-// Definitions for rwsem
+
 static struct rw_semaphore test_rwsem;
 
 static bool ref_rwsem_init(void)
@@ -389,7 +389,7 @@ static struct ref_scale_ops rwsem_ops = {
 	.name		= "rwsem"
 };
 
-// Definitions for global spinlock
+
 static DEFINE_RAW_SPINLOCK(test_lock);
 
 static void ref_lock_section(const int nloops)
@@ -423,7 +423,7 @@ static struct ref_scale_ops lock_ops = {
 	.name		= "lock"
 };
 
-// Definitions for global irq-save spinlock
+
 
 static void ref_lock_irq_section(const int nloops)
 {
@@ -458,7 +458,7 @@ static struct ref_scale_ops lock_irq_ops = {
 	.name		= "lock-irq"
 };
 
-// Definitions acquire-release.
+
 static DEFINE_PER_CPU(unsigned long, test_acqrel);
 
 static void ref_acqrel_section(const int nloops)
@@ -560,14 +560,14 @@ static struct ref_scale_ops jiffies_ops = {
 	.name		= "jiffies"
 };
 
-////////////////////////////////////////////////////////////////////////
-//
-// Methods leveraging SLAB_TYPESAFE_BY_RCU.
-//
 
-// Item to look up in a typesafe manner.  Array of pointers to these.
+
+
+
+
+
 struct refscale_typesafe {
-	atomic_t rts_refctr;  // Used by all flavors
+	atomic_t rts_refctr;  
 	spinlock_t rts_lock;
 	seqlock_t rts_seqlock;
 	unsigned int a;
@@ -581,13 +581,13 @@ static DEFINE_TORTURE_RANDOM_PERCPU(refscale_rand);
 static bool (*rts_acquire)(struct refscale_typesafe *rtsp, unsigned int *start);
 static bool (*rts_release)(struct refscale_typesafe *rtsp, unsigned int start);
 
-// Conditionally acquire an explicit in-structure reference count.
+
 static bool typesafe_ref_acquire(struct refscale_typesafe *rtsp, unsigned int *start)
 {
 	return atomic_inc_not_zero(&rtsp->rts_refctr);
 }
 
-// Unconditionally release an explicit in-structure reference count.
+
 static bool typesafe_ref_release(struct refscale_typesafe *rtsp, unsigned int start)
 {
 	if (!atomic_dec_return(&rtsp->rts_refctr)) {
@@ -597,37 +597,37 @@ static bool typesafe_ref_release(struct refscale_typesafe *rtsp, unsigned int st
 	return true;
 }
 
-// Unconditionally acquire an explicit in-structure spinlock.
+
 static bool typesafe_lock_acquire(struct refscale_typesafe *rtsp, unsigned int *start)
 {
 	spin_lock(&rtsp->rts_lock);
 	return true;
 }
 
-// Unconditionally release an explicit in-structure spinlock.
+
 static bool typesafe_lock_release(struct refscale_typesafe *rtsp, unsigned int start)
 {
 	spin_unlock(&rtsp->rts_lock);
 	return true;
 }
 
-// Unconditionally acquire an explicit in-structure sequence lock.
+
 static bool typesafe_seqlock_acquire(struct refscale_typesafe *rtsp, unsigned int *start)
 {
 	*start = read_seqbegin(&rtsp->rts_seqlock);
 	return true;
 }
 
-// Conditionally release an explicit in-structure sequence lock.  Return
-// true if this release was successful, that is, if no retry is required.
+
+
 static bool typesafe_seqlock_release(struct refscale_typesafe *rtsp, unsigned int start)
 {
 	return !read_seqretry(&rtsp->rts_seqlock, start);
 }
 
-// Do a read-side critical section with the specified delay in
-// microseconds and nanoseconds inserted so as to increase probability
-// of failure.
+
+
+
 static void typesafe_delay_section(const int nloops, const int udl, const int ndl)
 {
 	unsigned int a;
@@ -655,7 +655,7 @@ retry:
 			goto retry;
 		}
 		un_delay(udl, ndl);
-		// Remember, seqlock read-side release can fail.
+		
 		if (!rts_release(rtsp, start)) {
 			rcu_read_unlock();
 			goto retry;
@@ -668,16 +668,16 @@ retry:
 	}
 }
 
-// Because the acquisition and release methods are expensive, there
-// is no point in optimizing away the un_delay() function's two checks.
-// Thus simply define typesafe_read_section() as a simple wrapper around
-// typesafe_delay_section().
+
+
+
+
 static void typesafe_read_section(const int nloops)
 {
 	typesafe_delay_section(nloops, 0, 0);
 }
 
-// Allocate and initialize one refscale_typesafe structure.
+
 static struct refscale_typesafe *typesafe_alloc_one(void)
 {
 	struct refscale_typesafe *rtsp;
@@ -691,8 +691,8 @@ static struct refscale_typesafe *typesafe_alloc_one(void)
 	return rtsp;
 }
 
-// Slab-allocator constructor for refscale_typesafe structures created
-// out of a new slab of system memory.
+
+
 static void refscale_typesafe_ctor(void *rtsp_in)
 {
 	struct refscale_typesafe *rtsp = rtsp_in;
@@ -708,7 +708,7 @@ static struct ref_scale_ops typesafe_ref_ops;
 static struct ref_scale_ops typesafe_lock_ops;
 static struct ref_scale_ops typesafe_seqlock_ops;
 
-// Initialize for a typesafe test.
+
 static bool typesafe_init(void)
 {
 	long idx;
@@ -748,7 +748,7 @@ static bool typesafe_init(void)
 	return true;
 }
 
-// Clean up after a typesafe test.
+
 static void typesafe_cleanup(void)
 {
 	long idx;
@@ -766,7 +766,7 @@ static void typesafe_cleanup(void)
 	rts_release = NULL;
 }
 
-// The typesafe_init() function distinguishes these structures by address.
+
 static struct ref_scale_ops typesafe_ref_ops = {
 	.init		= typesafe_init,
 	.cleanup	= typesafe_cleanup,
@@ -799,8 +799,8 @@ static void rcu_scale_one_reader(void)
 		cur_ops->delaysection(loops, readdelay / 1000, readdelay % 1000);
 }
 
-// Reader kthread.  Repeatedly does empty RCU read-side
-// critical section, minimizing update-side interference.
+
+
 static int
 ref_scale_reader(void *arg)
 {
@@ -819,14 +819,14 @@ ref_scale_reader(void *arg)
 repeat:
 	VERBOSE_SCALEOUT_BATCH("ref_scale_reader %ld: waiting to start next experiment on cpu %d", me, raw_smp_processor_id());
 
-	// Wait for signal that this reader can start.
+	
 	wait_event(rt->wq, (atomic_read(&nreaders_exp) && smp_load_acquire(&rt->start_reader)) ||
 			   torture_must_stop());
 
 	if (torture_must_stop())
 		goto end;
 
-	// Make sure that the CPU is affinitized appropriately during testing.
+	
 	WARN_ON_ONCE(raw_smp_processor_id() != me);
 
 	WRITE_ONCE(rt->start_reader, 0);
@@ -837,14 +837,14 @@ repeat:
 	VERBOSE_SCALEOUT_BATCH("ref_scale_reader %ld: experiment %d started", me, exp_idx);
 
 
-	// To reduce noise, do an initial cache-warming invocation, check
-	// in, and then keep warming until everyone has checked in.
+	
+	
 	rcu_scale_one_reader();
 	if (!atomic_dec_return(&n_warmedup))
 		while (atomic_read_acquire(&n_warmedup))
 			rcu_scale_one_reader();
-	// Also keep interrupts disabled.  This also has the effect
-	// of preventing entries into slow path for rcu_read_unlock().
+	
+	
 	local_irq_save(flags);
 	start = ktime_get_mono_fast_ns();
 
@@ -854,8 +854,8 @@ repeat:
 	local_irq_restore(flags);
 
 	rt->last_duration_ns = WARN_ON_ONCE(duration < 0) ? 0 : duration;
-	// To reduce runtime-skew noise, do maintain-load invocations until
-	// everyone is done.
+	
+	
 	if (!atomic_dec_return(&n_cooleddown))
 		while (atomic_read_acquire(&n_cooleddown))
 			rcu_scale_one_reader();
@@ -885,7 +885,7 @@ static void reset_readers(void)
 	}
 }
 
-// Print the results of each reader and return the sum of all their durations.
+
 static u64 process_durations(int n)
 {
 	int i;
@@ -921,12 +921,12 @@ static u64 process_durations(int n)
 	return sum;
 }
 
-// The main_func is the main orchestrator, it performs a bunch of
-// experiments.  For every experiment, it orders all the readers
-// involved to start and waits for them to finish the experiment. It
-// then reads their timestamps and starts the next experiment. Each
-// experiment progresses from 1 concurrent reader to N of them at which
-// point all the timestamps are printed.
+
+
+
+
+
+
 static int main_func(void *arg)
 {
 	int exp, r;
@@ -947,12 +947,12 @@ static int main_func(void *arg)
 	if (holdoff)
 		schedule_timeout_interruptible(holdoff * HZ);
 
-	// Wait for all threads to start.
+	
 	atomic_inc(&n_init);
 	while (atomic_read(&n_init) < nreaders + 1)
 		schedule_timeout_uninterruptible(1);
 
-	// Start exp readers up per experiment
+	
 	for (exp = 0; exp < nruns && !torture_must_stop(); exp++) {
 		if (torture_must_stop())
 			goto end;
@@ -984,7 +984,7 @@ static int main_func(void *arg)
 		result_avg[exp] = div_u64(1000 * process_durations(nreaders), nreaders * loops);
 	}
 
-	// Print the average of all experiments
+	
 	SCALEOUT("END OF TEST. Calculating average duration per loop (nanoseconds)...\n");
 
 	pr_alert("Runs\tTime(ns)\n");
@@ -1004,13 +1004,13 @@ static int main_func(void *arg)
 	pr_alert("%s", buf);
 
 oom_exit:
-	// This will shutdown everything including us.
+	
 	if (shutdown) {
 		shutdown_start = 1;
 		wake_up(&shutdown_wq);
 	}
 
-	// Wait for torture to stop us
+	
 	while (!torture_must_stop())
 		schedule_timeout_uninterruptible(1);
 
@@ -1052,20 +1052,20 @@ ref_scale_cleanup(void)
 	torture_stop_kthread("main_task", main_task);
 	kfree(main_task);
 
-	// Do scale-type-specific cleanup operations.
+	
 	if (cur_ops->cleanup != NULL)
 		cur_ops->cleanup();
 
 	torture_cleanup_end();
 }
 
-// Shutdown kthread.  Just waits to be awakened, then shuts down system.
+
 static int
 ref_scale_shutdown(void *arg)
 {
 	wait_event_idle(shutdown_wq, shutdown_start);
 
-	smp_mb(); // Wake before output.
+	smp_mb(); 
 	ref_scale_cleanup();
 	kernel_power_off();
 
@@ -1109,7 +1109,7 @@ ref_scale_init(void)
 
 	ref_scale_print_module_parms(cur_ops, "Start of test");
 
-	// Shutdown task
+	
 	if (shutdown) {
 		init_waitqueue_head(&shutdown_wq);
 		firsterr = torture_create_kthread(ref_scale_shutdown, NULL,
@@ -1119,7 +1119,7 @@ ref_scale_init(void)
 		schedule_timeout_uninterruptible(1);
 	}
 
-	// Reader tasks (default to ~75% of online CPUs).
+	
 	if (nreaders < 0)
 		nreaders = (num_online_cpus() >> 1) + (num_online_cpus() >> 2);
 	if (WARN_ONCE(loops <= 0, "%s: loops = %ld, adjusted to 1\n", __func__, loops))
@@ -1146,7 +1146,7 @@ ref_scale_init(void)
 			goto unwind;
 	}
 
-	// Main Task
+	
 	init_waitqueue_head(&main_wq);
 	firsterr = torture_create_kthread(main_func, NULL, main_task);
 	if (torture_init_error(firsterr))

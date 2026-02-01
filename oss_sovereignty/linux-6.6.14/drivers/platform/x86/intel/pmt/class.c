@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Platform Monitory Technology Telemetry driver
- *
- * Copyright (c) 2020, Intel Corporation.
- * All Rights Reserved.
- *
- * Author: "Alexander Duyck" <alexander.h.duyck@linux.intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -26,11 +19,7 @@ bool intel_pmt_is_early_client_hw(struct device *dev)
 {
 	struct intel_vsec_device *ivdev = dev_to_ivdev(dev);
 
-	/*
-	 * Early implementations of PMT on client platforms have some
-	 * differences from the server platforms (which use the Out Of Band
-	 * Management Services Module OOBMSM).
-	 */
+	 
 	return !!(ivdev->info->quirks & VSEC_QUIRK_EARLY_HW);
 }
 EXPORT_SYMBOL_NS_GPL(intel_pmt_is_early_client_hw, INTEL_PMT);
@@ -47,7 +36,7 @@ pmt_memcpy64_fromio(void *to, const u64 __iomem *from, size_t count)
 	for (i = 0; i < count/8; i++)
 		buf[i] = readq(&from[i]);
 
-	/* Copy any remaining bytes */
+	 
 	remain = count % 8;
 	if (remain) {
 		u64 tmp = readq(&from[i]);
@@ -58,9 +47,7 @@ pmt_memcpy64_fromio(void *to, const u64 __iomem *from, size_t count)
 	return count;
 }
 
-/*
- * sysfs
- */
+ 
 static ssize_t
 intel_pmt_read(struct file *filp, struct kobject *kobj,
 	       struct bin_attribute *attr, char *buf, loff_t off,
@@ -80,7 +67,7 @@ intel_pmt_read(struct file *filp, struct kobject *kobj,
 		count = entry->size - off;
 
 	if (entry->guid == GUID_SPR_PUNIT)
-		/* PUNIT on SPR only supports aligned 64-bit read */
+		 
 		count = pmt_memcpy64_fromio(buf, entry->base + off, count);
 	else
 		memcpy_fromio(buf, entry->base + off, count);
@@ -166,16 +153,10 @@ static int intel_pmt_populate_entry(struct intel_pmt_entry *entry,
 	struct pci_dev *pci_dev = to_pci_dev(dev->parent);
 	u8 bir;
 
-	/*
-	 * The base offset should always be 8 byte aligned.
-	 *
-	 * For non-local access types the lower 3 bits of base offset
-	 * contains the index of the base address register where the
-	 * telemetry can be found.
-	 */
+	 
 	bir = GET_BIR(header->base_offset);
 
-	/* Local access and BARID only for now */
+	 
 	switch (header->access_type) {
 	case ACCESS_LOCAL:
 		if (bir) {
@@ -184,20 +165,10 @@ static int intel_pmt_populate_entry(struct intel_pmt_entry *entry,
 				bir, header->access_type);
 			return -EINVAL;
 		}
-		/*
-		 * For access_type LOCAL, the base address is as follows:
-		 * base address = end of discovery region + base offset
-		 */
+		 
 		entry->base_addr = disc_res->end + 1 + header->base_offset;
 
-		/*
-		 * Some hardware use a different calculation for the base address
-		 * when access_type == ACCESS_LOCAL. On the these systems
-		 * ACCCESS_LOCAL refers to an address in the same BAR as the
-		 * header but at a fixed offset. But as the header address was
-		 * supplied to the driver, we don't know which BAR it was in.
-		 * So search for the bar whose range includes the header address.
-		 */
+		 
 		if (intel_pmt_is_early_client_hw(dev)) {
 			int i;
 
@@ -215,11 +186,7 @@ static int intel_pmt_populate_entry(struct intel_pmt_entry *entry,
 
 		break;
 	case ACCESS_BARID:
-		/*
-		 * If another BAR was specified then the base offset
-		 * represents the offset within that BAR. SO retrieve the
-		 * address from the parent PCI device and add offset.
-		 */
+		 
 		entry->base_addr = pci_resource_start(pci_dev, bir) +
 				   GET_ADDRESS(header->base_offset);
 		break;
@@ -265,7 +232,7 @@ static int intel_pmt_dev_register(struct intel_pmt_entry *entry,
 			goto fail_sysfs;
 	}
 
-	/* if size is 0 assume no data buffer, so no file needed */
+	 
 	if (!entry->size)
 		return 0;
 

@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- * Copyright FUJITSU LIMITED 2010
- * Copyright KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- * DESCRIPTION
- *      Wait on uninitialized heap. It shold be zero and FUTEX_WAIT should
- *      return immediately. This test is intent to test zero page handling in
- *      futex.
- *
- * AUTHOR
- *      KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- * HISTORY
- *      2010-Jan-6: Initial version by KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <pthread.h>
 #include <stdio.h>

@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Connection tracking protocol helper module for GRE.
- *
- * GRE is a generic encapsulation protocol, which is generally not very
- * suited for NAT, as it has no protocol-specific part as port numbers.
- *
- * It has an optional key field, which may help us distinguishing two
- * connections between the same two hosts.
- *
- * GRE is defined in RFC 1701 and RFC 1702, as well as RFC 2784
- *
- * PPTP is built on top of a modified version of GRE, and has a mandatory
- * field called "CallID", which serves us for the same purpose as the key
- * field in plain GRE.
- *
- * Documentation about PPTP can be found in RFC 2637
- *
- * (C) 2000-2005 by Harald Welte <laforge@gnumonks.org>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- *
- * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -47,7 +25,7 @@ static const unsigned int gre_timeouts[GRE_CT_MAX] = {
 	[GRE_CT_REPLIED]	= 180*HZ,
 };
 
-/* used when expectation is added */
+ 
 static DEFINE_SPINLOCK(keymap_lock);
 
 static inline struct nf_gre_net *gre_pernet(struct net *net)
@@ -65,7 +43,7 @@ static inline int gre_key_cmpfn(const struct nf_ct_gre_keymap *km,
 	       km->tuple.dst.u.all == t->dst.u.all;
 }
 
-/* look up the source key for a given tuple */
+ 
 static __be16 gre_keymap_lookup(struct net *net, struct nf_conntrack_tuple *t)
 {
 	struct nf_gre_net *net_gre = gre_pernet(net);
@@ -85,7 +63,7 @@ static __be16 gre_keymap_lookup(struct net *net, struct nf_conntrack_tuple *t)
 	return key;
 }
 
-/* add a single keymap entry, associate with specified master ct */
+ 
 int nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,
 			 struct nf_conntrack_tuple *t)
 {
@@ -96,7 +74,7 @@ int nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,
 
 	kmp = &ct_pptp_info->keymap[dir];
 	if (*kmp) {
-		/* check whether it's a retransmission */
+		 
 		list_for_each_entry_rcu(km, &net_gre->keymap_list, list) {
 			if (gre_key_cmpfn(km, t) && km == *kmp)
 				return 0;
@@ -123,7 +101,7 @@ int nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,
 }
 EXPORT_SYMBOL_GPL(nf_ct_gre_keymap_add);
 
-/* destroy the keymap entries associated with specified master ct */
+ 
 void nf_ct_gre_keymap_destroy(struct nf_conn *ct)
 {
 	struct nf_ct_pptp_master *ct_pptp_info = nfct_help_data(ct);
@@ -145,9 +123,9 @@ void nf_ct_gre_keymap_destroy(struct nf_conn *ct)
 }
 EXPORT_SYMBOL_GPL(nf_ct_gre_keymap_destroy);
 
-/* PUBLIC CONNTRACK PROTO HELPER FUNCTIONS */
+ 
 
-/* gre hdr info to tuple */
+ 
 bool gre_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
 		      struct net *net, struct nf_conntrack_tuple *tuple)
 {
@@ -157,16 +135,16 @@ bool gre_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
 	const struct gre_base_hdr *grehdr;
 	struct gre_base_hdr _grehdr;
 
-	/* first only delinearize old RFC1701 GRE header */
+	 
 	grehdr = skb_header_pointer(skb, dataoff, sizeof(_grehdr), &_grehdr);
 	if (!grehdr || (grehdr->flags & GRE_VERSION) != GRE_VERSION_1) {
-		/* try to behave like "nf_conntrack_proto_generic" */
+		 
 		tuple->src.u.all = 0;
 		tuple->dst.u.all = 0;
 		return true;
 	}
 
-	/* PPTP header is variable length, only need up to the call_id field */
+	 
 	pgrehdr = skb_header_pointer(skb, dataoff, 8, &_pgrehdr);
 	if (!pgrehdr)
 		return true;
@@ -184,7 +162,7 @@ bool gre_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
 }
 
 #ifdef CONFIG_NF_CONNTRACK_PROCFS
-/* print private data for conntrack */
+ 
 static void gre_print_conntrack(struct seq_file *s, struct nf_conn *ct)
 {
 	seq_printf(s, "timeout=%u, stream_timeout=%u ",
@@ -198,7 +176,7 @@ static unsigned int *gre_get_timeouts(struct net *net)
 	return gre_pernet(net)->timeouts;
 }
 
-/* Returns verdict for packet, and may modify conntrack */
+ 
 int nf_conntrack_gre_packet(struct nf_conn *ct,
 			    struct sk_buff *skb,
 			    unsigned int dataoff,
@@ -213,24 +191,22 @@ int nf_conntrack_gre_packet(struct nf_conn *ct,
 		if (!timeouts)
 			timeouts = gre_get_timeouts(nf_ct_net(ct));
 
-		/* initialize to sane value.  Ideally a conntrack helper
-		 * (e.g. in case of pptp) is increasing them */
+		 
 		ct->proto.gre.stream_timeout = timeouts[GRE_CT_REPLIED];
 		ct->proto.gre.timeout = timeouts[GRE_CT_UNREPLIED];
 	}
 
 	status = READ_ONCE(ct->status);
-	/* If we've seen traffic both ways, this is a GRE connection.
-	 * Extend timeout. */
+	 
 	if (status & IPS_SEEN_REPLY) {
 		nf_ct_refresh_acct(ct, ctinfo, skb,
 				   ct->proto.gre.stream_timeout);
 
-		/* never set ASSURED for IPS_NAT_CLASH, they time out soon */
+		 
 		if (unlikely((status & IPS_NAT_CLASH)))
 			return NF_ACCEPT;
 
-		/* Also, more likely to be important, and not a probe. */
+		 
 		if (!test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
 	} else
@@ -253,7 +229,7 @@ static int gre_timeout_nlattr_to_obj(struct nlattr *tb[],
 
 	if (!timeouts)
 		timeouts = gre_get_timeouts(net);
-	/* set default timeouts for GRE. */
+	 
 	timeouts[GRE_CT_UNREPLIED] = net_gre->timeouts[GRE_CT_UNREPLIED];
 	timeouts[GRE_CT_REPLIED] = net_gre->timeouts[GRE_CT_REPLIED];
 
@@ -289,7 +265,7 @@ gre_timeout_nla_policy[CTA_TIMEOUT_GRE_MAX+1] = {
 	[CTA_TIMEOUT_GRE_UNREPLIED]	= { .type = NLA_U32 },
 	[CTA_TIMEOUT_GRE_REPLIED]	= { .type = NLA_U32 },
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 void nf_conntrack_gre_init_net(struct net *net)
 {
@@ -301,7 +277,7 @@ void nf_conntrack_gre_init_net(struct net *net)
 		net_gre->timeouts[i] = gre_timeouts[i];
 }
 
-/* protocol helper struct */
+ 
 const struct nf_conntrack_l4proto nf_conntrack_l4proto_gre = {
 	.l4proto	 = IPPROTO_GRE,
 	.allow_clash	 = true,
@@ -322,5 +298,5 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_gre = {
 		.obj_size	= sizeof(unsigned int) * GRE_CT_MAX,
 		.nla_policy	= gre_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };

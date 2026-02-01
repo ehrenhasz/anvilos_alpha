@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2009 Samsung Electronics Co., Ltd.
-//      Jaswinder Singh <jassi.brar@samsung.com>
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -21,7 +21,7 @@
 #define S3C64XX_SPI_QUIRK_CS_AUTO	(1 << 1)
 #define AUTOSUSPEND_TIMEOUT	2000
 
-/* Registers and bit-fields */
+ 
 
 #define S3C64XX_SPI_CH_CFG		0x00
 #define S3C64XX_SPI_CLK_CFG		0x04
@@ -36,7 +36,7 @@
 #define S3C64XX_SPI_SWAP_CFG		0x28
 #define S3C64XX_SPI_FB_CLK		0x2C
 
-#define S3C64XX_SPI_CH_HS_EN		(1<<6)	/* High Speed Enable */
+#define S3C64XX_SPI_CH_HS_EN		(1<<6)	 
 #define S3C64XX_SPI_CH_SW_RST		(1<<5)
 #define S3C64XX_SPI_CH_SLAVE		(1<<4)
 #define S3C64XX_SPI_CPOL_L		(1<<3)
@@ -129,24 +129,7 @@ struct s3c64xx_spi_dma_data {
 	enum dma_transfer_direction direction;
 };
 
-/**
- * struct s3c64xx_spi_port_config - SPI Controller hardware info
- * @fifo_lvl_mask: Bit-mask for {TX|RX}_FIFO_LVL bits in SPI_STATUS register.
- * @rx_lvl_offset: Bit offset of RX_FIFO_LVL bits in SPI_STATUS regiter.
- * @tx_st_done: Bit offset of TX_DONE bit in SPI_STATUS regiter.
- * @clk_div: Internal clock divider
- * @quirks: Bitmask of known quirks
- * @high_speed: True, if the controller supports HIGH_SPEED_EN bit.
- * @clk_from_cmu: True, if the controller does not include a clock mux and
- *	prescaler unit.
- * @clk_ioclk: True if clock is present on this device
- * @has_loopback: True if loopback mode can be supported
- *
- * The Samsung s3c64xx SPI controller are used on various Samsung SoC's but
- * differ in some aspects such as the size of the fifo and spi bus clock
- * setup. Such differences are specified to the driver using this structure
- * which is provided as driver data to the driver.
- */
+ 
 struct s3c64xx_spi_port_config {
 	int	fifo_lvl_mask[MAX_SPI_PORTS];
 	int	rx_lvl_offset;
@@ -159,27 +142,7 @@ struct s3c64xx_spi_port_config {
 	bool	has_loopback;
 };
 
-/**
- * struct s3c64xx_spi_driver_data - Runtime info holder for SPI driver.
- * @clk: Pointer to the spi clock.
- * @src_clk: Pointer to the clock used to generate SPI signals.
- * @ioclk: Pointer to the i/o clock between host and target
- * @pdev: Pointer to device's platform device data
- * @host: Pointer to the SPI Protocol host.
- * @cntrlr_info: Platform specific data for the controller this driver manages.
- * @lock: Controller specific lock.
- * @state: Set of FLAGS to indicate status.
- * @sfr_start: BUS address of SPI controller regs.
- * @regs: Pointer to ioremap'ed controller registers.
- * @xfer_completion: To indicate completion of xfer task.
- * @cur_mode: Stores the active configuration of the controller.
- * @cur_bpw: Stores the active bits per word settings.
- * @cur_speed: Current clock speed
- * @rx_dma: Local receive DMA data (e.g. chan and direction)
- * @tx_dma: Local transmit DMA data (e.g. chan and direction)
- * @port_conf: Local SPI port configuartion data
- * @port_id: Port identification number
- */
+ 
 struct s3c64xx_spi_driver_data {
 	void __iomem                    *regs;
 	struct clk                      *clk;
@@ -217,7 +180,7 @@ static void s3c64xx_flush_fifo(struct s3c64xx_spi_driver_data *sdd)
 	val &= ~S3C64XX_SPI_CH_HS_EN;
 	writel(val, regs + S3C64XX_SPI_CH_CFG);
 
-	/* Flush TxFIFO*/
+	 
 	loops = msecs_to_loops(1);
 	do {
 		val = readl(regs + S3C64XX_SPI_STATUS);
@@ -226,7 +189,7 @@ static void s3c64xx_flush_fifo(struct s3c64xx_spi_driver_data *sdd)
 	if (loops == 0)
 		dev_warn(&sdd->pdev->dev, "Timed out flushing TX FIFO\n");
 
-	/* Flush RxFIFO*/
+	 
 	loops = msecs_to_loops(1);
 	do {
 		val = readl(regs + S3C64XX_SPI_STATUS);
@@ -358,7 +321,7 @@ static int s3c64xx_spi_prepare_transfer(struct spi_controller *spi)
 	if (is_polling(sdd))
 		return 0;
 
-	/* Requests DMA channels */
+	 
 	sdd->rx_dma.ch = dma_request_chan(&sdd->pdev->dev, "rx");
 	if (IS_ERR(sdd->rx_dma.ch)) {
 		dev_err(&sdd->pdev->dev, "Failed to get RX DMA channel\n");
@@ -388,7 +351,7 @@ static int s3c64xx_spi_unprepare_transfer(struct spi_controller *spi)
 	if (is_polling(sdd))
 		return 0;
 
-	/* Releases DMA channels if they are allocated */
+	 
 	if (sdd->rx_dma.ch && sdd->tx_dma.ch) {
 		dma_release_channel(sdd->rx_dma.ch);
 		dma_release_channel(sdd->tx_dma.ch);
@@ -429,10 +392,7 @@ static int s3c64xx_enable_datapath(struct s3c64xx_spi_driver_data *sdd,
 	if (dma_mode) {
 		chcfg &= ~S3C64XX_SPI_CH_RXCH_ON;
 	} else {
-		/* Always shift in data in FIFO, even if xfer is Tx only,
-		 * this helps setting PCKT_CNT value for generating clocks
-		 * as exactly needed.
-		 */
+		 
 		chcfg |= S3C64XX_SPI_CH_RXCH_ON;
 		writel(((xfer->len * 8 / sdd->cur_bpw) & 0xffff)
 					| S3C64XX_SPI_PACKET_CNT_EN,
@@ -496,7 +456,7 @@ static u32 s3c64xx_spi_wait_for_timeout(struct s3c64xx_spi_driver_data *sdd,
 	unsigned long val = 1;
 	u32 status;
 
-	/* max fifo depth available */
+	 
 	u32 max_fifo = (FIFO_LVL_MASK(sdd) >> 1) + 1;
 
 	if (timeout_ms)
@@ -506,7 +466,7 @@ static u32 s3c64xx_spi_wait_for_timeout(struct s3c64xx_spi_driver_data *sdd,
 		status = readl(regs + S3C64XX_SPI_STATUS);
 	} while (RX_FIFO_LVL(status, sdd) < max_fifo && --val);
 
-	/* return the actual received data length */
+	 
 	return RX_FIFO_LVL(status, sdd);
 }
 
@@ -518,23 +478,15 @@ static int s3c64xx_wait_for_dma(struct s3c64xx_spi_driver_data *sdd,
 	u32 status;
 	int ms;
 
-	/* millisecs to xfer 'len' bytes @ 'cur_speed' */
+	 
 	ms = xfer->len * 8 * 1000 / sdd->cur_speed;
-	ms += 30;               /* some tolerance */
-	ms = max(ms, 100);      /* minimum timeout */
+	ms += 30;                
+	ms = max(ms, 100);       
 
 	val = msecs_to_jiffies(ms) + 10;
 	val = wait_for_completion_timeout(&sdd->xfer_completion, val);
 
-	/*
-	 * If the previous xfer was completed within timeout, then
-	 * proceed further else return -EIO.
-	 * DmaTx returns after simply writing data in the FIFO,
-	 * w/o waiting for real transmission on the bus to finish.
-	 * DmaRx returns only after Dma read data from FIFO which
-	 * needs bus transmission to finish, so we don't worry if
-	 * Xfer involved Rx(with or without Tx).
-	 */
+	 
 	if (val && !xfer->rx_buf) {
 		val = msecs_to_loops(10);
 		status = readl(regs + S3C64XX_SPI_STATUS);
@@ -547,7 +499,7 @@ static int s3c64xx_wait_for_dma(struct s3c64xx_spi_driver_data *sdd,
 
 	}
 
-	/* If timed out while checking rx/tx status return error */
+	 
 	if (!val)
 		return -EIO;
 
@@ -566,12 +518,12 @@ static int s3c64xx_wait_for_pio(struct s3c64xx_spi_driver_data *sdd,
 	int ms;
 	unsigned long time_us;
 
-	/* microsecs to xfer 'len' bytes @ 'cur_speed' */
+	 
 	time_us = (xfer->len * 8 * 1000 * 1000) / sdd->cur_speed;
 	ms = (time_us / 1000);
-	ms += 10; /* some tolerance */
+	ms += 10;  
 
-	/* sleep during signal transfer time */
+	 
 	status = readl(regs + S3C64XX_SPI_STATUS);
 	if (RX_FIFO_LVL(status, sdd) < xfer->len)
 		usleep_range(time_us / 2, time_us);
@@ -590,24 +542,17 @@ static int s3c64xx_wait_for_pio(struct s3c64xx_spi_driver_data *sdd,
 	if (!val)
 		return -EIO;
 
-	/* If it was only Tx */
+	 
 	if (!xfer->rx_buf) {
 		sdd->state &= ~TXBUSY;
 		return 0;
 	}
 
-	/*
-	 * If the receive length is bigger than the controller fifo
-	 * size, calculate the loops and read the fifo as many times.
-	 * loops = length / max fifo size (calculated by using the
-	 * fifo mask).
-	 * For any size less than the fifo size the below code is
-	 * executed atleast once.
-	 */
+	 
 	loops = xfer->len / ((FIFO_LVL_MASK(sdd) >> 1) + 1);
 	buf = xfer->rx_buf;
 	do {
-		/* wait for data to be received in the fifo */
+		 
 		cpy_len = s3c64xx_spi_wait_for_timeout(sdd,
 						       (loops ? ms : 0));
 
@@ -640,14 +585,14 @@ static int s3c64xx_spi_config(struct s3c64xx_spi_driver_data *sdd)
 	u32 val;
 	int div = sdd->port_conf->clk_div;
 
-	/* Disable Clock */
+	 
 	if (!sdd->port_conf->clk_from_cmu) {
 		val = readl(regs + S3C64XX_SPI_CLK_CFG);
 		val &= ~S3C64XX_SPI_ENCLK_ENABLE;
 		writel(val, regs + S3C64XX_SPI_CLK_CFG);
 	}
 
-	/* Set Polarity and Phase */
+	 
 	val = readl(regs + S3C64XX_SPI_CH_CFG);
 	val &= ~(S3C64XX_SPI_CH_SLAVE |
 			S3C64XX_SPI_CPOL_L |
@@ -661,7 +606,7 @@ static int s3c64xx_spi_config(struct s3c64xx_spi_driver_data *sdd)
 
 	writel(val, regs + S3C64XX_SPI_CH_CFG);
 
-	/* Set Channel & DMA Mode */
+	 
 	val = readl(regs + S3C64XX_SPI_MODE_CFG);
 	val &= ~(S3C64XX_SPI_MODE_BUS_TSZ_MASK
 			| S3C64XX_SPI_MODE_CH_TSZ_MASK);
@@ -694,14 +639,14 @@ static int s3c64xx_spi_config(struct s3c64xx_spi_driver_data *sdd)
 			return ret;
 		sdd->cur_speed = clk_get_rate(sdd->src_clk) / div;
 	} else {
-		/* Configure Clock */
+		 
 		val = readl(regs + S3C64XX_SPI_CLK_CFG);
 		val &= ~S3C64XX_SPI_PSR_MASK;
 		val |= ((clk_get_rate(sdd->src_clk) / sdd->cur_speed / div - 1)
 				& S3C64XX_SPI_PSR_MASK);
 		writel(val, regs + S3C64XX_SPI_CLK_CFG);
 
-		/* Enable Clock */
+		 
 		val = readl(regs + S3C64XX_SPI_CLK_CFG);
 		val |= S3C64XX_SPI_ENCLK_ENABLE;
 		writel(val, regs + S3C64XX_SPI_CLK_CFG);
@@ -719,9 +664,9 @@ static int s3c64xx_spi_prepare_message(struct spi_controller *host,
 	struct spi_device *spi = msg->spi;
 	struct s3c64xx_spi_csinfo *cs = spi->controller_data;
 
-	/* Configure feedback delay */
+	 
 	if (!cs)
-		/* No delay if not defined */
+		 
 		writel(0, sdd->regs + S3C64XX_SPI_FB_CLK);
 	else
 		writel(cs->fb_delay & 0x3, sdd->regs + S3C64XX_SPI_FB_CLK);
@@ -756,7 +701,7 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 
 	reinit_completion(&sdd->xfer_completion);
 
-	/* Only BPW and Speed may change across transfers */
+	 
 	bpw = xfer->bits_per_word;
 	speed = xfer->speed_hz;
 
@@ -782,7 +727,7 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 	}
 
 	do {
-		/* transfer size is greater than 32, change to IRQ mode */
+		 
 		if (!use_dma && xfer->len > S3C64XX_SPI_POLLING_SIZE)
 			use_irq = true;
 
@@ -790,12 +735,7 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 			reinit_completion(&sdd->xfer_completion);
 
 			rdy_lv = xfer->len;
-			/* Setup RDY_FIFO trigger Level
-			 * RDY_LVL =
-			 * fifo_lvl up to 64 byte -> N bytes
-			 *               128 byte -> RDY_LVL * 2 bytes
-			 *               256 byte -> RDY_LVL * 4 bytes
-			 */
+			 
 			if (fifo_len == 128)
 				rdy_lv /= 2;
 			else if (fifo_len == 256)
@@ -806,7 +746,7 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 			val |= (rdy_lv << S3C64XX_SPI_MODE_RX_RDY_LVL_SHIFT);
 			writel(val, sdd->regs + S3C64XX_SPI_MODE_CFG);
 
-			/* Enable FIFO_RDY_EN IRQ */
+			 
 			val = readl(sdd->regs + S3C64XX_SPI_INT_EN);
 			writel((val | S3C64XX_SPI_INT_RX_FIFORDY_EN),
 					sdd->regs + S3C64XX_SPI_INT_EN);
@@ -815,11 +755,11 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 
 		spin_lock_irqsave(&sdd->lock, flags);
 
-		/* Pending only which is to be done */
+		 
 		sdd->state &= ~RXBUSY;
 		sdd->state &= ~TXBUSY;
 
-		/* Start the signals */
+		 
 		s3c64xx_spi_set_cs(spi, true);
 
 		status = s3c64xx_enable_datapath(sdd, xfer, use_dma);
@@ -881,7 +821,7 @@ static int s3c64xx_spi_transfer_one(struct spi_controller *host,
 	} while (target_len > 0);
 
 	if (origin_len) {
-		/* Restore original xfer buffers and length */
+		 
 		xfer->tx_buf = tx_buf;
 		xfer->rx_buf = rx_buf;
 		xfer->len = origin_len;
@@ -919,12 +859,7 @@ static struct s3c64xx_spi_csinfo *s3c64xx_get_target_ctrldata(
 	return cs;
 }
 
-/*
- * Here we only check the validity of requested configuration
- * and save the configuration in a local data-structure.
- * The controller is actually configured only just before we
- * get a message to transfer.
- */
+ 
 static int s3c64xx_spi_setup(struct spi_device *spi)
 {
 	struct s3c64xx_spi_csinfo *cs = spi->controller_data;
@@ -938,7 +873,7 @@ static int s3c64xx_spi_setup(struct spi_device *spi)
 		spi->controller_data = cs;
 	}
 
-	/* NULL is fine, we just avoid using the FB delay (=0) */
+	 
 	if (IS_ERR(cs)) {
 		dev_err(&spi->dev, "No CS for SPI(%d)\n", spi_get_chipselect(spi, 0));
 		return -ENODEV;
@@ -951,11 +886,11 @@ static int s3c64xx_spi_setup(struct spi_device *spi)
 
 	div = sdd->port_conf->clk_div;
 
-	/* Check if we can provide the requested rate */
+	 
 	if (!sdd->port_conf->clk_from_cmu) {
 		u32 psr, speed;
 
-		/* Max possible */
+		 
 		speed = clk_get_rate(sdd->src_clk) / div / (0 + 1);
 
 		if (spi->max_speed_hz > speed)
@@ -996,12 +931,12 @@ static int s3c64xx_spi_setup(struct spi_device *spi)
 setup_exit:
 	pm_runtime_mark_last_busy(&sdd->pdev->dev);
 	pm_runtime_put_autosuspend(&sdd->pdev->dev);
-	/* setup() returns with device de-selected */
+	 
 	s3c64xx_spi_set_cs(spi, false);
 
 	spi_set_ctldata(spi, NULL);
 
-	/* This was dynamically allocated on the DT path */
+	 
 	if (spi->dev.of_node)
 		kfree(cs);
 
@@ -1012,7 +947,7 @@ static void s3c64xx_spi_cleanup(struct spi_device *spi)
 {
 	struct s3c64xx_spi_csinfo *cs = spi_get_ctldata(spi);
 
-	/* This was dynamically allocated on the DT path */
+	 
 	if (spi->dev.of_node)
 		kfree(cs);
 
@@ -1046,13 +981,13 @@ static irqreturn_t s3c64xx_spi_irq(int irq, void *data)
 
 	if (val & S3C64XX_SPI_ST_RX_FIFORDY) {
 		complete(&sdd->xfer_completion);
-		/* No pending clear irq, turn-off INT_EN_RX_FIFO_RDY */
+		 
 		val = readl(sdd->regs + S3C64XX_SPI_INT_EN);
 		writel((val & ~S3C64XX_SPI_INT_RX_FIFORDY_EN),
 				sdd->regs + S3C64XX_SPI_INT_EN);
 	}
 
-	/* Clear the pending irq by setting and then clearing it */
+	 
 	writel(clr, sdd->regs + S3C64XX_SPI_PENDING_CLR);
 	writel(0, sdd->regs + S3C64XX_SPI_PENDING_CLR);
 
@@ -1072,7 +1007,7 @@ static void s3c64xx_spi_hwinit(struct s3c64xx_spi_driver_data *sdd)
 	else if (!(sdd->port_conf->quirks & S3C64XX_SPI_QUIRK_CS_AUTO))
 		writel(S3C64XX_SPI_CS_SIG_INACT, sdd->regs + S3C64XX_SPI_CS_REG);
 
-	/* Disable Interrupts - we use Polling if not DMA mode */
+	 
 	writel(0, regs + S3C64XX_SPI_INT_EN);
 
 	if (!sdd->port_conf->clk_from_cmu)
@@ -1081,7 +1016,7 @@ static void s3c64xx_spi_hwinit(struct s3c64xx_spi_driver_data *sdd)
 	writel(0, regs + S3C64XX_SPI_MODE_CFG);
 	writel(0, regs + S3C64XX_SPI_PACKET_CNT);
 
-	/* Clear any irq pending bits, should set and clear the bits */
+	 
 	val = S3C64XX_SPI_PND_RX_OVERRUN_CLR |
 		S3C64XX_SPI_PND_RX_UNDERRUN_CLR |
 		S3C64XX_SPI_PND_TX_OVERRUN_CLR |
@@ -1210,7 +1145,7 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 	host->dma_alignment = 8;
 	host->bits_per_word_mask = SPI_BPW_MASK(32) | SPI_BPW_MASK(16) |
 				   SPI_BPW_MASK(8);
-	/* the spi->mode bits understood by this driver: */
+	 
 	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	if (sdd->port_conf->has_loopback)
 		host->mode_bits |= SPI_LOOP;
@@ -1227,7 +1162,7 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, -EBUSY,
 				     "Unable to config gpio\n");
 
-	/* Setup clocks */
+	 
 	sdd->clk = devm_clk_get_enabled(&pdev->dev, "spi");
 	if (IS_ERR(sdd->clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(sdd->clk),
@@ -1253,7 +1188,7 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 
-	/* Setup Deufult Mode */
+	 
 	s3c64xx_spi_hwinit(sdd);
 
 	spin_lock_init(&sdd->lock);
@@ -1328,7 +1263,7 @@ static int s3c64xx_spi_suspend(struct device *dev)
 	if (ret < 0)
 		return ret;
 
-	sdd->cur_speed = 0; /* Output Clock is stopped */
+	sdd->cur_speed = 0;  
 
 	return 0;
 }
@@ -1349,7 +1284,7 @@ static int s3c64xx_spi_resume(struct device *dev)
 
 	return spi_controller_resume(host);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int s3c64xx_spi_runtime_suspend(struct device *dev)
@@ -1399,7 +1334,7 @@ err_disable_ioclk:
 
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops s3c64xx_spi_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(s3c64xx_spi_suspend, s3c64xx_spi_resume)

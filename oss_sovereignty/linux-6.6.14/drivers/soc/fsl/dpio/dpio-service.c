@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2016-2019 NXP
- *
- */
+
+ 
 #include <linux/types.h>
 #include <linux/fsl/mc.h>
 #include <soc/fsl/dpaa2-io.h>
@@ -23,16 +19,16 @@ struct dpaa2_io {
 	struct qbman_swp_desc swp_desc;
 	struct qbman_swp *swp;
 	struct list_head node;
-	/* protect against multiple management commands */
+	 
 	spinlock_t lock_mgmt_cmd;
-	/* protect notifications list */
+	 
 	spinlock_t lock_notifications;
 	struct list_head notifications;
 	struct device *dev;
 
-	/* Net DIM */
+	 
 	struct dim rx_dim;
-	/* protect against concurrent Net DIM updates */
+	 
 	spinlock_t dim_lock;
 	u16 event_ctr;
 	u64 bytes;
@@ -43,13 +39,13 @@ struct dpaa2_io_store {
 	unsigned int max;
 	dma_addr_t paddr;
 	struct dpaa2_dq *vaddr;
-	void *alloced_addr;    /* unaligned value from kmalloc() */
-	unsigned int idx;      /* position of the next-to-be-returned entry */
-	struct qbman_swp *swp; /* portal used to issue VDQCR */
-	struct device *dev;    /* device used for DMA mapping */
+	void *alloced_addr;     
+	unsigned int idx;       
+	struct qbman_swp *swp;  
+	struct device *dev;     
 };
 
-/* keep a per cpu array of DPIOs for fast access */
+ 
 static struct dpaa2_io *dpio_by_cpu[NR_CPUS];
 static struct list_head dpio_list = LIST_HEAD_INIT(dpio_list);
 static DEFINE_SPINLOCK(dpio_list_lock);
@@ -63,14 +59,11 @@ static inline struct dpaa2_io *service_select_by_cpu(struct dpaa2_io *d,
 	if (cpu != DPAA2_IO_ANY_CPU && cpu >= num_possible_cpus())
 		return NULL;
 
-	/*
-	 * If cpu == -1, choose the current cpu, with no guarantees about
-	 * potentially being migrated away.
-	 */
+	 
 	if (cpu < 0)
 		cpu = raw_smp_processor_id();
 
-	/* If a specific cpu was requested, pick it up immediately */
+	 
 	return dpio_by_cpu[cpu];
 }
 
@@ -92,14 +85,7 @@ static inline struct dpaa2_io *service_select(struct dpaa2_io *d)
 	return d;
 }
 
-/**
- * dpaa2_io_service_select() - return a dpaa2_io service affined to this cpu
- * @cpu: the cpu id
- *
- * Return the affine dpaa2_io service, or NULL if there is no service affined
- * to the specified cpu. If DPAA2_IO_ANY_CPU is used, return the next available
- * service.
- */
+ 
 struct dpaa2_io *dpaa2_io_service_select(int cpu)
 {
 	if (cpu == DPAA2_IO_ANY_CPU)
@@ -120,16 +106,7 @@ static void dpaa2_io_dim_work(struct work_struct *w)
 	dim->state = DIM_START_MEASURE;
 }
 
-/**
- * dpaa2_io_create() - create a dpaa2_io object.
- * @desc: the dpaa2_io descriptor
- * @dev: the actual DPIO device
- *
- * Activates a "struct dpaa2_io" corresponding to the given config of an actual
- * DPIO object.
- *
- * Return a valid dpaa2_io object for success, or NULL for failure.
- */
+ 
 struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
 				 struct device *dev)
 {
@@ -139,7 +116,7 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
 	if (!obj)
 		return NULL;
 
-	/* check if CPU is out of range (-1 means any cpu) */
+	 
 	if (desc->cpu != DPAA2_IO_ANY_CPU && desc->cpu >= num_possible_cpus()) {
 		kfree(obj);
 		return NULL;
@@ -151,10 +128,7 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
 	obj->swp_desc.qman_clk = obj->dpio_desc.qman_clk;
 	obj->swp_desc.qman_version = obj->dpio_desc.qman_version;
 
-	/* Compute how many 256 QBMAN cycles fit into one ns. This is because
-	 * the interrupt timeout period register needs to be specified in QBMAN
-	 * clock cycles in increments of 256.
-	 */
+	 
 	qman_256_cycles_per_ns = 256000 / (obj->swp_desc.qman_clk / 1000000);
 	obj->swp_desc.qman_256_cycles_per_ns = qman_256_cycles_per_ns;
 	obj->swp = qbman_swp_init(&obj->swp_desc);
@@ -170,7 +144,7 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
 	spin_lock_init(&obj->dim_lock);
 	INIT_LIST_HEAD(&obj->notifications);
 
-	/* For now only enable DQRR interrupts */
+	 
 	qbman_swp_interrupt_set_trigger(obj->swp,
 					QBMAN_SWP_INTERRUPT_DQRI);
 	qbman_swp_interrupt_clear_status(obj->swp, 0xffffffff);
@@ -194,15 +168,7 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
 	return obj;
 }
 
-/**
- * dpaa2_io_down() - release the dpaa2_io object.
- * @d: the dpaa2_io object to be released.
- *
- * The "struct dpaa2_io" type can represent an individual DPIO object (as
- * described by "struct dpaa2_io_desc") or an instance of a "DPIO service",
- * which can be used to group/encapsulate multiple DPIO objects. In all cases,
- * each handle obtained should be released using this function.
- */
+ 
 void dpaa2_io_down(struct dpaa2_io *d)
 {
 	spin_lock(&dpio_list_lock);
@@ -215,14 +181,7 @@ void dpaa2_io_down(struct dpaa2_io *d)
 
 #define DPAA_POLL_MAX 32
 
-/**
- * dpaa2_io_irq() - ISR for DPIO interrupts
- *
- * @obj: the given DPIO object.
- *
- * Return IRQ_HANDLED for success or IRQ_NONE if there
- * were no pending interrupts.
- */
+ 
 irqreturn_t dpaa2_io_irq(struct dpaa2_io *obj)
 {
 	const struct dpaa2_dq *dq;
@@ -261,38 +220,14 @@ done:
 	return IRQ_HANDLED;
 }
 
-/**
- * dpaa2_io_get_cpu() - get the cpu associated with a given DPIO object
- *
- * @d: the given DPIO object.
- *
- * Return the cpu associated with the DPIO object
- */
+ 
 int dpaa2_io_get_cpu(struct dpaa2_io *d)
 {
 	return d->dpio_desc.cpu;
 }
 EXPORT_SYMBOL(dpaa2_io_get_cpu);
 
-/**
- * dpaa2_io_service_register() - Prepare for servicing of FQDAN or CDAN
- *                               notifications on the given DPIO service.
- * @d:   the given DPIO service.
- * @ctx: the notification context.
- * @dev: the device that requests the register
- *
- * The caller should make the MC command to attach a DPAA2 object to
- * a DPIO after this function completes successfully.  In that way:
- *    (a) The DPIO service is "ready" to handle a notification arrival
- *        (which might happen before the "attach" command to MC has
- *        returned control of execution back to the caller)
- *    (b) The DPIO service can provide back to the caller the 'dpio_id' and
- *        'qman64' parameters that it should pass along in the MC command
- *        in order for the object to be configured to produce the right
- *        notification fields to the DPIO service.
- *
- * Return 0 for success, or -ENODEV for failure.
- */
+ 
 int dpaa2_io_service_register(struct dpaa2_io *d,
 			      struct dpaa2_io_notification_ctx *ctx,
 			      struct device *dev)
@@ -315,7 +250,7 @@ int dpaa2_io_service_register(struct dpaa2_io *d,
 	list_add(&ctx->node, &d->notifications);
 	spin_unlock_irqrestore(&d->lock_notifications, irqflags);
 
-	/* Enable the generation of CDAN notifications */
+	 
 	if (ctx->is_cdan)
 		return qbman_swp_CDAN_set_context_enable(d->swp,
 							 (u16)ctx->id,
@@ -324,15 +259,7 @@ int dpaa2_io_service_register(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_register);
 
-/**
- * dpaa2_io_service_deregister - The opposite of 'register'.
- * @service: the given DPIO service.
- * @ctx: the notification context.
- * @dev: the device that requests to be deregistered
- *
- * This function should be called only after sending the MC command to
- * to detach the notification-producing device from the DPIO.
- */
+ 
 void dpaa2_io_service_deregister(struct dpaa2_io *service,
 				 struct dpaa2_io_notification_ctx *ctx,
 				 struct device *dev)
@@ -350,19 +277,7 @@ void dpaa2_io_service_deregister(struct dpaa2_io *service,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_deregister);
 
-/**
- * dpaa2_io_service_rearm() - Rearm the notification for the given DPIO service.
- * @d: the given DPIO service.
- * @ctx: the notification context.
- *
- * Once a FQDAN/CDAN has been produced, the corresponding FQ/channel is
- * considered "disarmed". Ie. the user can issue pull dequeue operations on that
- * traffic source for as long as it likes. Eventually it may wish to "rearm"
- * that source to allow it to produce another FQDAN/CDAN, that's what this
- * function achieves.
- *
- * Return 0 for success.
- */
+ 
 int dpaa2_io_service_rearm(struct dpaa2_io *d,
 			   struct dpaa2_io_notification_ctx *ctx)
 {
@@ -384,14 +299,7 @@ int dpaa2_io_service_rearm(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_rearm);
 
-/**
- * dpaa2_io_service_pull_fq() - pull dequeue functions from a fq.
- * @d: the given DPIO service.
- * @fqid: the given frame queue id.
- * @s: the dpaa2_io_store object for the result.
- *
- * Return 0 for success, or error code for failure.
- */
+ 
 int dpaa2_io_service_pull_fq(struct dpaa2_io *d, u32 fqid,
 			     struct dpaa2_io_store *s)
 {
@@ -415,14 +323,7 @@ int dpaa2_io_service_pull_fq(struct dpaa2_io *d, u32 fqid,
 }
 EXPORT_SYMBOL(dpaa2_io_service_pull_fq);
 
-/**
- * dpaa2_io_service_pull_channel() - pull dequeue functions from a channel.
- * @d: the given DPIO service.
- * @channelid: the given channel id.
- * @s: the dpaa2_io_store object for the result.
- *
- * Return 0 for success, or error code for failure.
- */
+ 
 int dpaa2_io_service_pull_channel(struct dpaa2_io *d, u32 channelid,
 				  struct dpaa2_io_store *s)
 {
@@ -447,15 +348,7 @@ int dpaa2_io_service_pull_channel(struct dpaa2_io *d, u32 channelid,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_pull_channel);
 
-/**
- * dpaa2_io_service_enqueue_fq() - Enqueue a frame to a frame queue.
- * @d: the given DPIO service.
- * @fqid: the given frame queue id.
- * @fd: the frame descriptor which is enqueued.
- *
- * Return 0 for successful enqueue, -EBUSY if the enqueue ring is not ready,
- * or -ENODEV if there is no dpio service.
- */
+ 
 int dpaa2_io_service_enqueue_fq(struct dpaa2_io *d,
 				u32 fqid,
 				const struct dpaa2_fd *fd)
@@ -474,17 +367,7 @@ int dpaa2_io_service_enqueue_fq(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL(dpaa2_io_service_enqueue_fq);
 
-/**
- * dpaa2_io_service_enqueue_multiple_fq() - Enqueue multiple frames
- * to a frame queue using one fqid.
- * @d: the given DPIO service.
- * @fqid: the given frame queue id.
- * @fd: the frame descriptor which is enqueued.
- * @nb: number of frames to be enqueud
- *
- * Return 0 for successful enqueue, -EBUSY if the enqueue ring is not ready,
- * or -ENODEV if there is no dpio service.
- */
+ 
 int dpaa2_io_service_enqueue_multiple_fq(struct dpaa2_io *d,
 				u32 fqid,
 				const struct dpaa2_fd *fd,
@@ -504,17 +387,7 @@ int dpaa2_io_service_enqueue_multiple_fq(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL(dpaa2_io_service_enqueue_multiple_fq);
 
-/**
- * dpaa2_io_service_enqueue_multiple_desc_fq() - Enqueue multiple frames
- * to different frame queue using a list of fqids.
- * @d: the given DPIO service.
- * @fqid: the given list of frame queue ids.
- * @fd: the frame descriptor which is enqueued.
- * @nb: number of frames to be enqueud
- *
- * Return 0 for successful enqueue, -EBUSY if the enqueue ring is not ready,
- * or -ENODEV if there is no dpio service.
- */
+ 
 int dpaa2_io_service_enqueue_multiple_desc_fq(struct dpaa2_io *d,
 				u32 *fqid,
 				const struct dpaa2_fd *fd,
@@ -546,17 +419,7 @@ out:
 }
 EXPORT_SYMBOL(dpaa2_io_service_enqueue_multiple_desc_fq);
 
-/**
- * dpaa2_io_service_enqueue_qd() - Enqueue a frame to a QD.
- * @d: the given DPIO service.
- * @qdid: the given queuing destination id.
- * @prio: the given queuing priority.
- * @qdbin: the given queuing destination bin.
- * @fd: the frame descriptor which is enqueued.
- *
- * Return 0 for successful enqueue, or -EBUSY if the enqueue ring is not ready,
- * or -ENODEV if there is no dpio service.
- */
+ 
 int dpaa2_io_service_enqueue_qd(struct dpaa2_io *d,
 				u32 qdid, u8 prio, u16 qdbin,
 				const struct dpaa2_fd *fd)
@@ -575,15 +438,7 @@ int dpaa2_io_service_enqueue_qd(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_enqueue_qd);
 
-/**
- * dpaa2_io_service_release() - Release buffers to a buffer pool.
- * @d: the given DPIO object.
- * @bpid: the buffer pool id.
- * @buffers: the buffers to be released.
- * @num_buffers: the number of the buffers to be released.
- *
- * Return 0 for success, and negative error code for failure.
- */
+ 
 int dpaa2_io_service_release(struct dpaa2_io *d,
 			     u16 bpid,
 			     const u64 *buffers,
@@ -602,17 +457,7 @@ int dpaa2_io_service_release(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_release);
 
-/**
- * dpaa2_io_service_acquire() - Acquire buffers from a buffer pool.
- * @d: the given DPIO object.
- * @bpid: the buffer pool id.
- * @buffers: the buffer addresses for acquired buffers.
- * @num_buffers: the expected number of the buffers to acquire.
- *
- * Return a negative error code if the command failed, otherwise it returns
- * the number of buffers acquired, which may be less than the number requested.
- * Eg. if the buffer pool is empty, this will return zero.
- */
+ 
 int dpaa2_io_service_acquire(struct dpaa2_io *d,
 			     u16 bpid,
 			     u64 *buffers,
@@ -633,22 +478,9 @@ int dpaa2_io_service_acquire(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_service_acquire);
 
-/*
- * 'Stores' are reusable memory blocks for holding dequeue results, and to
- * assist with parsing those results.
- */
+ 
 
-/**
- * dpaa2_io_store_create() - Create the dma memory storage for dequeue result.
- * @max_frames: the maximum number of dequeued result for frames, must be <= 32.
- * @dev:        the device to allow mapping/unmapping the DMAable region.
- *
- * The size of the storage is "max_frames*sizeof(struct dpaa2_dq)".
- * The 'dpaa2_io_store' returned is a DPIO service managed object.
- *
- * Return pointer to dpaa2_io_store struct for successfully created storage
- * memory, or NULL on error.
- */
+ 
 struct dpaa2_io_store *dpaa2_io_store_create(unsigned int max_frames,
 					     struct device *dev)
 {
@@ -687,11 +519,7 @@ struct dpaa2_io_store *dpaa2_io_store_create(unsigned int max_frames,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_store_create);
 
-/**
- * dpaa2_io_store_destroy() - Frees the dma memory storage for dequeue
- *                            result.
- * @s: the storage memory to be destroyed.
- */
+ 
 void dpaa2_io_store_destroy(struct dpaa2_io_store *s)
 {
 	dma_unmap_single(s->dev, s->paddr, sizeof(struct dpaa2_dq) * s->max,
@@ -701,23 +529,7 @@ void dpaa2_io_store_destroy(struct dpaa2_io_store *s)
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_store_destroy);
 
-/**
- * dpaa2_io_store_next() - Determine when the next dequeue result is available.
- * @s: the dpaa2_io_store object.
- * @is_last: indicate whether this is the last frame in the pull command.
- *
- * When an object driver performs dequeues to a dpaa2_io_store, this function
- * can be used to determine when the next frame result is available. Once
- * this function returns non-NULL, a subsequent call to it will try to find
- * the next dequeue result.
- *
- * Note that if a pull-dequeue has a NULL result because the target FQ/channel
- * was empty, then this function will also return NULL (rather than expecting
- * the caller to always check for this. As such, "is_last" can be used to
- * differentiate between "end-of-empty-dequeue" and "still-waiting".
- *
- * Return dequeue result for a valid dequeue result, or NULL for empty dequeue.
- */
+ 
 struct dpaa2_dq *dpaa2_io_store_next(struct dpaa2_io_store *s, int *is_last)
 {
 	int match;
@@ -734,11 +546,7 @@ struct dpaa2_dq *dpaa2_io_store_next(struct dpaa2_io_store *s, int *is_last)
 	if (dpaa2_dq_is_pull_complete(ret)) {
 		*is_last = 1;
 		s->idx = 0;
-		/*
-		 * If we get an empty dequeue result to terminate a zero-results
-		 * vdqcr, return NULL to the caller rather than expecting him to
-		 * check non-NULL results every time.
-		 */
+		 
 		if (!(dpaa2_dq_flags(ret) & DPAA2_DQ_STAT_VALIDFRAME))
 			ret = NULL;
 	} else {
@@ -750,18 +558,7 @@ struct dpaa2_dq *dpaa2_io_store_next(struct dpaa2_io_store *s, int *is_last)
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_store_next);
 
-/**
- * dpaa2_io_query_fq_count() - Get the frame and byte count for a given fq.
- * @d: the given DPIO object.
- * @fqid: the id of frame queue to be queried.
- * @fcnt: the queried frame count.
- * @bcnt: the queried byte count.
- *
- * Knowing the FQ count at run-time can be useful in debugging situations.
- * The instantaneous frame- and byte-count are hereby returned.
- *
- * Return 0 for a successful query, and negative error code if query fails.
- */
+ 
 int dpaa2_io_query_fq_count(struct dpaa2_io *d, u32 fqid,
 			    u32 *fcnt, u32 *bcnt)
 {
@@ -787,15 +584,7 @@ int dpaa2_io_query_fq_count(struct dpaa2_io *d, u32 fqid,
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_query_fq_count);
 
-/**
- * dpaa2_io_query_bp_count() - Query the number of buffers currently in a
- * buffer pool.
- * @d: the given DPIO object.
- * @bpid: the index of buffer pool to be queried.
- * @num: the queried number of buffers in the buffer pool.
- *
- * Return 0 for a successful query, and negative error code if query fails.
- */
+ 
 int dpaa2_io_query_bp_count(struct dpaa2_io *d, u16 bpid, u32 *num)
 {
 	struct qbman_bp_query_rslt state;
@@ -818,13 +607,7 @@ int dpaa2_io_query_bp_count(struct dpaa2_io *d, u16 bpid, u32 *num)
 }
 EXPORT_SYMBOL_GPL(dpaa2_io_query_bp_count);
 
-/**
- * dpaa2_io_set_irq_coalescing() - Set new IRQ coalescing values
- * @d: the given DPIO object
- * @irq_holdoff: interrupt holdoff (timeout) period in us
- *
- * Return 0 for success, or negative error code on error.
- */
+ 
 int dpaa2_io_set_irq_coalescing(struct dpaa2_io *d, u32 irq_holdoff)
 {
 	struct qbman_swp *swp = d->swp;
@@ -834,11 +617,7 @@ int dpaa2_io_set_irq_coalescing(struct dpaa2_io *d, u32 irq_holdoff)
 }
 EXPORT_SYMBOL(dpaa2_io_set_irq_coalescing);
 
-/**
- * dpaa2_io_get_irq_coalescing() - Get the current IRQ coalescing parameters
- * @d: the given DPIO object
- * @irq_holdoff: interrupt holdoff (timeout) period in us
- */
+ 
 void dpaa2_io_get_irq_coalescing(struct dpaa2_io *d, u32 *irq_holdoff)
 {
 	struct qbman_swp *swp = d->swp;
@@ -847,11 +626,7 @@ void dpaa2_io_get_irq_coalescing(struct dpaa2_io *d, u32 *irq_holdoff)
 }
 EXPORT_SYMBOL(dpaa2_io_get_irq_coalescing);
 
-/**
- * dpaa2_io_set_adaptive_coalescing() - Enable/disable adaptive coalescing
- * @d: the given DPIO object
- * @use_adaptive_rx_coalesce: adaptive coalescing state
- */
+ 
 void dpaa2_io_set_adaptive_coalescing(struct dpaa2_io *d,
 				      int use_adaptive_rx_coalesce)
 {
@@ -859,25 +634,14 @@ void dpaa2_io_set_adaptive_coalescing(struct dpaa2_io *d,
 }
 EXPORT_SYMBOL(dpaa2_io_set_adaptive_coalescing);
 
-/**
- * dpaa2_io_get_adaptive_coalescing() - Query adaptive coalescing state
- * @d: the given DPIO object
- *
- * Return 1 when adaptive coalescing is enabled on the DPIO object and 0
- * otherwise.
- */
+ 
 int dpaa2_io_get_adaptive_coalescing(struct dpaa2_io *d)
 {
 	return d->swp->use_adaptive_rx_coalesce;
 }
 EXPORT_SYMBOL(dpaa2_io_get_adaptive_coalescing);
 
-/**
- * dpaa2_io_update_net_dim() - Update Net DIM
- * @d: the given DPIO object
- * @frames: how many frames have been dequeued by the user since the last call
- * @bytes: how many bytes have been dequeued by the user since the last call
- */
+ 
 void dpaa2_io_update_net_dim(struct dpaa2_io *d, __u64 frames, __u64 bytes)
 {
 	struct dim_sample dim_sample = {};

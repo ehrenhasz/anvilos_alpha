@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -101,7 +95,7 @@ static void netvsc_tx_enable(struct netvsc_device *nvscdev,
 			     struct net_device *ndev)
 {
 	nvscdev->tx_disable = false;
-	virt_wmb(); /* ensure queue wake up mechanism is on */
+	virt_wmb();  
 
 	netif_tx_wake_all_queues(ndev);
 }
@@ -116,7 +110,7 @@ static int netvsc_open(struct net_device *net)
 
 	netif_carrier_off(net);
 
-	/* Open up the device */
+	 
 	ret = rndis_filter_open(nvdev);
 	if (ret != 0) {
 		netdev_err(net, "unable to open device (ret %d).\n", ret);
@@ -130,10 +124,7 @@ static int netvsc_open(struct net_device *net)
 	}
 
 	if (vf_netdev) {
-		/* Setting synthetic device up transparently sets
-		 * slave as up. If open fails, then slave will be
-		 * still be offline (and not used).
-		 */
+		 
 		ret = dev_open(vf_netdev, NULL);
 		if (ret)
 			netdev_warn(net,
@@ -148,7 +139,7 @@ static int netvsc_wait_until_empty(struct netvsc_device *nvdev)
 	unsigned int retry = 0;
 	int i;
 
-	/* Ensure pending bytes in ring are read */
+	 
 	for (;;) {
 		u32 aread = 0;
 
@@ -159,7 +150,7 @@ static int netvsc_wait_until_empty(struct netvsc_device *nvdev)
 			if (!chn)
 				continue;
 
-			/* make sure receive not running now */
+			 
 			napi_synchronize(&nvdev->chan_table[i].napi);
 
 			aread = hv_get_bytes_to_read(&chn->inbound);
@@ -186,7 +177,7 @@ static void netvsc_tx_disable(struct netvsc_device *nvscdev,
 {
 	if (nvscdev) {
 		nvscdev->tx_disable = true;
-		virt_wmb(); /* ensure txq will not wake up after stop */
+		virt_wmb();  
 	}
 
 	netif_tx_disable(ndev);
@@ -202,7 +193,7 @@ static int netvsc_close(struct net_device *net)
 
 	netvsc_tx_disable(nvdev, net);
 
-	/* No need to close rndis filter if it is removed already */
+	 
 	if (!nvdev)
 		return 0;
 
@@ -252,7 +243,7 @@ static inline int netvsc_get_tx_queue(struct net_device *ndev,
 	q_idx = ndc->tx_table[netvsc_get_hash(skb, ndc) &
 			      (VRSS_SEND_TAB_SIZE - 1)];
 
-	/* If queue index changed record the new value */
+	 
 	if (q_idx != old_idx &&
 	    sk && sk_fullsock(sk) && rcu_access_pointer(sk->sk_dst_cache))
 		sk_tx_queue_set(sk, q_idx);
@@ -260,25 +251,13 @@ static inline int netvsc_get_tx_queue(struct net_device *ndev,
 	return q_idx;
 }
 
-/*
- * Select queue for transmit.
- *
- * If a valid queue has already been assigned, then use that.
- * Otherwise compute tx queue based on hash and the send table.
- *
- * This is basically similar to default (netdev_pick_tx) with the added step
- * of using the host send_table when no other queue has been assigned.
- *
- * TODO support XPS - but get_xps_queue not exported
- */
+ 
 static u16 netvsc_pick_tx(struct net_device *ndev, struct sk_buff *skb)
 {
 	int q_idx = sk_tx_queue_get(skb->sk);
 
 	if (q_idx < 0 || skb->ooo_okay || q_idx >= ndev->real_num_tx_queues) {
-		/* If forwarding a packet, we use the recorded queue when
-		 * available for better cache locality.
-		 */
+		 
 		if (skb_rx_queue_recorded(skb))
 			q_idx = skb_get_rx_queue(skb);
 		else
@@ -305,10 +284,7 @@ static u16 netvsc_select_queue(struct net_device *ndev, struct sk_buff *skb,
 		else
 			txq = netdev_pick_tx(vf_netdev, skb, NULL);
 
-		/* Record the queue selected by VF so that it can be
-		 * used for common case where VF has more queues than
-		 * the synthetic device.
-		 */
+		 
 		qdisc_skb_cb(skb)->slave_dev_queue_mapping = txq;
 	} else {
 		txq = netvsc_pick_tx(ndev, skb);
@@ -361,11 +337,7 @@ static u32 init_page_array(void *hdr, u32 len, struct sk_buff *skb,
 	int frags = skb_shinfo(skb)->nr_frags;
 	int i;
 
-	/* The packet is laid out thus:
-	 * 1. hdr: RNDIS header and PPI
-	 * 2. skb linear data
-	 * 3. skb fragment data
-	 */
+	 
 	slots_used += fill_pg_buf(virt_to_hvpfn(hdr),
 				  offset_in_hvpage(hdr),
 				  len,
@@ -400,7 +372,7 @@ static int count_skb_frag_slots(struct sk_buff *skb)
 		unsigned long size = skb_frag_size(frag);
 		unsigned long offset = skb_frag_off(frag);
 
-		/* Skip unused frames from start of page */
+		 
 		offset &= ~HV_HYP_PAGE_MASK;
 		pages += HVPFN_UP(offset + size);
 	}
@@ -441,7 +413,7 @@ static u32 net_checksum_info(struct sk_buff *skb)
 	return TRANSPORT_INFO_NOT_IP;
 }
 
-/* Send skb on the slave VF device. */
+ 
 static int netvsc_vf_xmit(struct net_device *net, struct net_device *vf_netdev,
 			  struct sk_buff *skb)
 {
@@ -480,21 +452,14 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 	u32 hash;
 	struct hv_page_buffer pb[MAX_PAGE_BUFFER_COUNT];
 
-	/* If VF is present and up then redirect packets to it.
-	 * Skip the VF if it is marked down or has no carrier.
-	 * If netpoll is in uses, then VF can not be used either.
-	 */
+	 
 	vf_netdev = rcu_dereference_bh(net_device_ctx->vf_netdev);
 	if (vf_netdev && netif_running(vf_netdev) &&
 	    netif_carrier_ok(vf_netdev) && !netpoll_tx_running(net) &&
 	    net_device_ctx->data_path_is_vf)
 		return netvsc_vf_xmit(net, vf_netdev, skb);
 
-	/* We will atmost need two pages to describe the rndis
-	 * header. We can only transmit MAX_PAGE_BUFFER_COUNT number
-	 * of pages in a single packet. If skb is scattered around
-	 * more pages we try linearizing it.
-	 */
+	 
 
 	num_data_pgs = netvsc_get_slots(skb) + 2;
 
@@ -511,16 +476,12 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 		}
 	}
 
-	/*
-	 * Place the rndis header in the skb head room and
-	 * the skb->cb will be used for hv_netvsc_packet
-	 * structure.
-	 */
+	 
 	ret = skb_cow_head(skb, RNDIS_AND_PPI_SIZE);
 	if (ret)
 		goto no_memory;
 
-	/* Use the skb control buffer for building up the packet */
+	 
 	BUILD_BUG_ON(sizeof(struct hv_netvsc_packet) >
 			sizeof_field(struct sk_buff, cb));
 	packet = (struct hv_netvsc_packet *)skb->cb;
@@ -533,7 +494,7 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 
 	rndis_msg = (struct rndis_message *)skb->head;
 
-	/* Add the rndis header */
+	 
 	rndis_msg->ndis_msg_type = RNDIS_MSG_PACKET;
 	rndis_msg->msg_len = packet->total_data_buflen;
 
@@ -555,10 +516,7 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 		*hash_info = hash;
 	}
 
-	/* When using AF_PACKET we need to drop VLAN header from
-	 * the frame and update the SKB to allow the HOST OS
-	 * to transmit the 802.1Q packet
-	 */
+	 
 	if (skb->protocol == htons(ETH_P_8021Q)) {
 		u16 vlan_tci;
 
@@ -570,7 +528,7 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 			}
 
 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-			/* Update the NDIS header pkt lengths */
+			 
 			packet->total_data_buflen -= VLAN_HLEN;
 			packet->total_bytes -= VLAN_HLEN;
 			rndis_msg->msg_len = packet->total_data_buflen;
@@ -642,19 +600,19 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
 					csum_info->transmit.udp_checksum = 1;
 			}
 		} else {
-			/* Can't do offload of this type of checksum */
+			 
 			if (skb_checksum_help(skb))
 				goto drop;
 		}
 	}
 
-	/* Start filling in the page buffers with the rndis hdr */
+	 
 	rndis_msg->msg_len += rndis_msg_size;
 	packet->total_data_buflen = rndis_msg->msg_len;
 	packet->page_buf_cnt = init_page_array(rndis_msg, rndis_msg_size,
 					       skb, packet, pb);
 
-	/* timestamp packet in software */
+	 
 	skb_tx_timestamp(skb);
 
 	ret = netvsc_send(net, packet, rndis_msg, pb, skb, xdp_tx);
@@ -686,9 +644,7 @@ static netdev_tx_t netvsc_start_xmit(struct sk_buff *skb,
 	return netvsc_xmit(skb, ndev, false);
 }
 
-/*
- * netvsc_linkstatus_callback - Link up/down notification
- */
+ 
 void netvsc_linkstatus_callback(struct net_device *net,
 				struct rndis_message *resp,
 				void *data, u32 data_buflen)
@@ -698,26 +654,21 @@ void netvsc_linkstatus_callback(struct net_device *net,
 	struct netvsc_reconfig *event;
 	unsigned long flags;
 
-	/* Ensure the packet is big enough to access its fields */
+	 
 	if (resp->msg_len - RNDIS_HEADER_SIZE < sizeof(struct rndis_indicate_status)) {
 		netdev_err(net, "invalid rndis_indicate_status packet, len: %u\n",
 			   resp->msg_len);
 		return;
 	}
 
-	/* Copy the RNDIS indicate status into nvchan->recv_buf */
+	 
 	memcpy(indicate, data + RNDIS_HEADER_SIZE, sizeof(*indicate));
 
-	/* Update the physical link speed when changing to another vSwitch */
+	 
 	if (indicate->status == RNDIS_STATUS_LINK_SPEED_CHANGE) {
 		u32 speed;
 
-		/* Validate status_buf_offset and status_buflen.
-		 *
-		 * Certain (pre-Fe) implementations of Hyper-V's vSwitch didn't account
-		 * for the status buffer field in resp->msg_len; perform the validation
-		 * using data_buflen (>= resp->msg_len).
-		 */
+		 
 		if (indicate->status_buflen < sizeof(speed) ||
 		    indicate->status_buf_offset < sizeof(*indicate) ||
 		    data_buflen - RNDIS_HEADER_SIZE < indicate->status_buf_offset ||
@@ -732,7 +683,7 @@ void netvsc_linkstatus_callback(struct net_device *net,
 		return;
 	}
 
-	/* Handle these link change statuses below */
+	 
 	if (indicate->status != RNDIS_STATUS_NETWORK_CHANGE &&
 	    indicate->status != RNDIS_STATUS_MEDIA_CONNECT &&
 	    indicate->status != RNDIS_STATUS_MEDIA_DISCONNECT)
@@ -753,7 +704,7 @@ void netvsc_linkstatus_callback(struct net_device *net,
 	schedule_delayed_work(&ndev_ctx->dwork, 0);
 }
 
-/* This function should only be called after skb_record_rx_queue() */
+ 
 void netvsc_xdp_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	int rc;
@@ -813,9 +764,7 @@ static struct sk_buff *netvsc_alloc_recv_skb(struct net_device *net,
 		if (!skb)
 			return NULL;
 
-		/* Copy to skb. This copy is needed here since the memory
-		 * pointed by hv_netvsc_packet cannot be deallocated.
-		 */
+		 
 		for (i = 0; i < nvchan->rsc.cnt; i++)
 			skb_put_data(skb, nvchan->rsc.data[i],
 				     nvchan->rsc.len[i]);
@@ -823,18 +772,14 @@ static struct sk_buff *netvsc_alloc_recv_skb(struct net_device *net,
 
 	skb->protocol = eth_type_trans(skb, net);
 
-	/* skb is already created with CHECKSUM_NONE */
+	 
 	skb_checksum_none_assert(skb);
 
-	/* Incoming packets may have IP header checksum verified by the host.
-	 * They may not have IP header checksum computed after coalescing.
-	 * We compute it here if the flags are set, because on Linux, the IP
-	 * checksum is always checked.
-	 */
+	 
 	if ((ppi_flags & NVSC_RSC_CSUM_INFO) && csum_info->receive.ip_checksum_value_invalid &&
 	    csum_info->receive.ip_checksum_succeeded &&
 	    skb->protocol == htons(ETH_P_IP)) {
-		/* Check that there is enough space to hold the IP header. */
+		 
 		if (skb_headlen(skb) < sizeof(struct iphdr)) {
 			kfree_skb(skb);
 			return NULL;
@@ -842,7 +787,7 @@ static struct sk_buff *netvsc_alloc_recv_skb(struct net_device *net,
 		netvsc_comp_ipcsum(skb);
 	}
 
-	/* Do L4 checksum offload if enabled and present. */
+	 
 	if ((ppi_flags & NVSC_RSC_CSUM_INFO) && (net->features & NETIF_F_RXCSUM)) {
 		if (csum_info->receive.tcp_checksum_succeeded ||
 		    csum_info->receive.udp_checksum_succeeded)
@@ -863,10 +808,7 @@ static struct sk_buff *netvsc_alloc_recv_skb(struct net_device *net,
 	return skb;
 }
 
-/*
- * netvsc_recv_callback -  Callback when we receive a packet from the
- * "wire" on the specified device.
- */
+ 
 int netvsc_recv_callback(struct net_device *net,
 			 struct netvsc_device *net_device,
 			 struct netvsc_channel *nvchan)
@@ -892,10 +834,10 @@ int netvsc_recv_callback(struct net_device *net,
 		rx_stats->xdp_drop++;
 		u64_stats_update_end(&rx_stats->syncp);
 
-		return NVSP_STAT_SUCCESS; /* consumed by XDP */
+		return NVSP_STAT_SUCCESS;  
 	}
 
-	/* Allocate a skb - TODO direct I/O to pages? */
+	 
 	skb = netvsc_alloc_recv_skb(net, nvchan, &xdp);
 
 	if (unlikely(!skb)) {
@@ -905,11 +847,7 @@ int netvsc_recv_callback(struct net_device *net,
 
 	skb_record_rx_queue(skb, q_idx);
 
-	/*
-	 * Even if injecting the packet, record the statistics
-	 * on the synthetic device because modifying the VF device
-	 * statistics will not work correctly.
-	 */
+	 
 	u64_stats_update_begin(&rx_stats->syncp);
 	if (act == XDP_TX)
 		rx_stats->xdp_tx++;
@@ -951,9 +889,7 @@ static void netvsc_get_channels(struct net_device *net,
 	}
 }
 
-/* Alloc struct netvsc_device_info, and initialize it from either existing
- * struct netvsc_device, or from default values.
- */
+ 
 static
 struct netvsc_device_info *netvsc_devinfo_get(struct netvsc_device *nvdev)
 {
@@ -993,7 +929,7 @@ struct netvsc_device_info *netvsc_devinfo_get(struct netvsc_device *nvdev)
 	return dev_info;
 }
 
-/* Free struct netvsc_device_info */
+ 
 static void netvsc_devinfo_put(struct netvsc_device_info *dev_info)
 {
 	if (dev_info->bprog) {
@@ -1011,13 +947,13 @@ static int netvsc_detach(struct net_device *ndev,
 	struct hv_device *hdev = ndev_ctx->device_ctx;
 	int ret;
 
-	/* Don't try continuing to try and setup sub channels */
+	 
 	if (cancel_work_sync(&nvdev->subchan_work))
 		nvdev->num_chn = 1;
 
 	netvsc_xdp_set(ndev, NULL, NULL, nvdev);
 
-	/* If device was up (receiving) then shutdown */
+	 
 	if (netif_running(ndev)) {
 		netvsc_tx_disable(nvdev, ndev);
 
@@ -1060,7 +996,7 @@ static int netvsc_attach(struct net_device *ndev,
 	if (nvdev->num_chn > 1) {
 		ret = rndis_set_subchannel(ndev, nvdev, dev_info);
 
-		/* if unavailable, just proceed with one queue */
+		 
 		if (ret) {
 			nvdev->max_chn = 1;
 			nvdev->num_chn = 1;
@@ -1077,11 +1013,11 @@ static int netvsc_attach(struct net_device *ndev,
 		}
 	}
 
-	/* In any case device is now ready */
+	 
 	nvdev->tx_disable = false;
 	netif_device_attach(ndev);
 
-	/* Note: enable and attach happen when sub-channels setup */
+	 
 	netif_carrier_off(ndev);
 
 	if (netif_running(ndev)) {
@@ -1114,7 +1050,7 @@ static int netvsc_set_channels(struct net_device *net,
 	struct netvsc_device_info *device_info;
 	int ret;
 
-	/* We do not support separate count for rx, tx, or other */
+	 
 	if (count == 0 ||
 	    channels->rx_count || channels->tx_count || channels->other_count)
 		return -EINVAL;
@@ -1218,7 +1154,7 @@ static int netvsc_change_mtu(struct net_device *ndev, int mtu)
 	if (!device_info)
 		return -ENOMEM;
 
-	/* Change MTU of underlying VF netdev first. */
+	 
 	if (vf_netdev) {
 		ret = dev_set_mtu(vf_netdev, mtu);
 		if (ret)
@@ -1235,7 +1171,7 @@ static int netvsc_change_mtu(struct net_device *ndev, int mtu)
 	if (!ret)
 		goto out;
 
-	/* Attempt rollback to original MTU */
+	 
 	ndev->mtu = orig_mtu;
 
 	if (netvsc_attach(ndev, device_info))
@@ -1286,7 +1222,7 @@ static void netvsc_get_pcpu_stats(struct net_device *net,
 	struct netvsc_device *nvdev = rcu_dereference_rtnl(ndev_ctx->nvdev);
 	int i;
 
-	/* fetch percpu stats of vf */
+	 
 	for_each_possible_cpu(i) {
 		const struct netvsc_vf_pcpu_stats *stats =
 			per_cpu_ptr(ndev_ctx->vf_stats, i);
@@ -1306,7 +1242,7 @@ static void netvsc_get_pcpu_stats(struct net_device *net,
 		this_tot->tx_bytes   = this_tot->vf_tx_bytes;
 	}
 
-	/* fetch percpu stats of netvsc */
+	 
 	for (i = 0; i < nvdev->num_chn; i++) {
 		const struct netvsc_channel *nvchan = &nvdev->chan_table[i];
 		const struct netvsc_stats_tx *tx_stats;
@@ -1419,7 +1355,7 @@ static int netvsc_set_mac_addr(struct net_device *ndev, void *p)
 	if (!err) {
 		eth_commit_mac_addr_change(ndev, p);
 	} else if (vf_netdev) {
-		/* rollback change on VF */
+		 
 		memcpy(addr->sa_data, ndev->dev_addr, ETH_ALEN);
 		dev_set_mac_address(vf_netdev, addr, NULL);
 	}
@@ -1470,10 +1406,10 @@ static const struct {
 #define NETVSC_GLOBAL_STATS_LEN	ARRAY_SIZE(netvsc_stats)
 #define NETVSC_VF_STATS_LEN	ARRAY_SIZE(vf_stats)
 
-/* statistics per queue (rx/tx packets/bytes) */
+ 
 #define NETVSC_PCPU_STATS_LEN (num_present_cpus() * ARRAY_SIZE(pcpu_stats))
 
-/* 8 statistics per queue (rx/tx packets/bytes, XDP actions) */
+ 
 #define NETVSC_QUEUE_STATS_LEN(dev) ((dev)->num_chn * 8)
 
 static int netvsc_get_sset_count(struct net_device *dev, int string_set)
@@ -1764,7 +1700,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
 		return -ENODEV;
 
 	if (hfunc)
-		*hfunc = ETH_RSS_HASH_TOP;	/* Toeplitz */
+		*hfunc = ETH_RSS_HASH_TOP;	 
 
 	rndis_dev = ndev->extension;
 	if (indir) {
@@ -1812,9 +1748,7 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
 	return rndis_filter_set_rss_param(rndis_dev, key);
 }
 
-/* Hyper-V RNDIS protocol does not have ring in the HW sense.
- * It does have pre-allocated receive area which is divided into sections.
- */
+ 
 static void __netvsc_get_ringparam(struct netvsc_device *nvdev,
 				   struct ethtool_ringparam *ring)
 {
@@ -1872,7 +1806,7 @@ static int netvsc_set_ringparam(struct net_device *ndev,
 
 	if (new_tx == orig.tx_pending &&
 	    new_rx == orig.rx_pending)
-		return 0;	 /* no change */
+		return 0;	  
 
 	device_info = netvsc_devinfo_get(nvdev);
 
@@ -1971,7 +1905,7 @@ static void netvsc_get_regs(struct net_device *netdev,
 	struct net_device_context *ndc = netdev_priv(netdev);
 	u32 *regs_buff = p;
 
-	/* increase the version, if buffer format is changed. */
+	 
 	regs->version = 1;
 
 	memcpy(regs_buff, ndc->tx_table, VRSS_SEND_TAB_SIZE * sizeof(u32));
@@ -2033,11 +1967,7 @@ static const struct net_device_ops device_ops = {
 	.ndo_xdp_xmit =			netvsc_ndoxdp_xmit,
 };
 
-/*
- * Handle link status changes. For RNDIS_STATUS_NETWORK_CHANGE emulate link
- * down/up sequence. In case of RNDIS_STATUS_MEDIA_CONNECT when carrier is
- * present send GARP packet to network peers with netif_notify_peers().
- */
+ 
 static void netvsc_link_change(struct work_struct *w)
 {
 	struct net_device_context *ndev_ctx =
@@ -2050,7 +1980,7 @@ static void netvsc_link_change(struct work_struct *w)
 	struct rndis_device *rdev;
 	bool reschedule = false;
 
-	/* if changes are happening, comeback later */
+	 
 	if (!rtnl_trylock()) {
 		schedule_delayed_work(&ndev_ctx->dwork, LINKCHANGE_INT);
 		return;
@@ -2064,10 +1994,7 @@ static void netvsc_link_change(struct work_struct *w)
 
 	next_reconfig = ndev_ctx->last_reconfig + LINKCHANGE_INT;
 	if (time_is_after_jiffies(next_reconfig)) {
-		/* link_watch only sends one notification with current state
-		 * per second, avoid doing reconfig more frequently. Handle
-		 * wrap around.
-		 */
+		 
 		delay = next_reconfig - jiffies;
 		delay = delay < LINKCHANGE_INT ? delay : LINKCHANGE_INT;
 		schedule_delayed_work(&ndev_ctx->dwork, delay);
@@ -2088,9 +2015,7 @@ static void netvsc_link_change(struct work_struct *w)
 		goto out_unlock;
 
 	switch (event->event) {
-		/* Only the following events are possible due to the check in
-		 * netvsc_linkstatus_callback()
-		 */
+		 
 	case RNDIS_STATUS_MEDIA_CONNECT:
 		if (rdev->link_state) {
 			rdev->link_state = false;
@@ -2110,7 +2035,7 @@ static void netvsc_link_change(struct work_struct *w)
 		kfree(event);
 		break;
 	case RNDIS_STATUS_NETWORK_CHANGE:
-		/* Only makes sense if carrier is present */
+		 
 		if (!rdev->link_state) {
 			rdev->link_state = true;
 			netif_carrier_off(net);
@@ -2126,9 +2051,7 @@ static void netvsc_link_change(struct work_struct *w)
 
 	rtnl_unlock();
 
-	/* link_watch only sends one notification with current state per
-	 * second, handle next reconfig event in 2 seconds.
-	 */
+	 
 	if (reschedule)
 		schedule_delayed_work(&ndev_ctx->dwork, LINKCHANGE_INT);
 
@@ -2145,19 +2068,16 @@ static struct net_device *get_netvsc_byref(struct net_device *vf_netdev)
 
 	dev = netdev_master_upper_dev_get(vf_netdev);
 	if (!dev || dev->netdev_ops != &device_ops)
-		return NULL;	/* not a netvsc device */
+		return NULL;	 
 
 	net_device_ctx = netdev_priv(dev);
 	if (!rtnl_dereference(net_device_ctx->nvdev))
-		return NULL;	/* device is removed */
+		return NULL;	 
 
 	return dev;
 }
 
-/* Called when VF is injecting data into network stack.
- * Change the associated network device from VF to netvsc.
- * note: already called with rcu_read_lock
- */
+ 
 static rx_handler_result_t netvsc_vf_handle_frame(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -2224,16 +2144,16 @@ static void __netvsc_vf_setup(struct net_device *ndev,
 {
 	int ret;
 
-	/* Align MTU of VF with master */
+	 
 	ret = dev_set_mtu(vf_netdev, ndev->mtu);
 	if (ret)
 		netdev_warn(vf_netdev,
 			    "unable to change mtu to %u\n", ndev->mtu);
 
-	/* set multicast etc flags on VF */
+	 
 	dev_change_flags(vf_netdev, ndev->flags | IFF_SLAVE, NULL);
 
-	/* sync address list from ndev to VF */
+	 
 	netif_addr_lock_bh(ndev);
 	dev_uc_sync(vf_netdev, ndev);
 	dev_mc_sync(vf_netdev, ndev);
@@ -2247,9 +2167,7 @@ static void __netvsc_vf_setup(struct net_device *ndev,
 	}
 }
 
-/* Setup VF as slave of the synthetic device.
- * Runs in workqueue to avoid recursion in netlink callbacks.
- */
+ 
 static void netvsc_vf_setup(struct work_struct *w)
 {
 	struct net_device_context *ndev_ctx
@@ -2269,9 +2187,7 @@ static void netvsc_vf_setup(struct work_struct *w)
 	rtnl_unlock();
 }
 
-/* Find netvsc by VF serial number.
- * The PCI hyperv controller records the serial number as the slot kobj name.
- */
+ 
 static struct net_device *get_netvsc_byslot(const struct net_device *vf_netdev)
 {
 	struct device *parent = vf_netdev->dev.parent;
@@ -2281,7 +2197,7 @@ static struct net_device *get_netvsc_byslot(const struct net_device *vf_netdev)
 	u32 serial;
 
 	if (!parent || !dev_is_pci(parent))
-		return NULL; /* not a PCI device */
+		return NULL;  
 
 	pdev = to_pci_dev(parent);
 	if (!pdev->slot) {
@@ -2312,13 +2228,7 @@ static struct net_device *get_netvsc_byslot(const struct net_device *vf_netdev)
 
 	}
 
-	/* Fallback path to check synthetic vf with help of mac addr.
-	 * Because this function can be called before vf_netdev is
-	 * initialized (NETDEV_POST_INIT) when its perm_addr has not been copied
-	 * from dev_addr, also try to match to its dev_addr.
-	 * Note: On Hyper-V and Azure, it's not possible to set a MAC address
-	 * on a VF that matches to the MAC of a unrelated NETVSC device.
-	 */
+	 
 	list_for_each_entry(ndev_ctx, &netvsc_dev_list, list) {
 		ndev = hv_get_drvdata(ndev_ctx->device_ctx);
 		if (ether_addr_equal(vf_netdev->perm_addr, ndev->perm_addr) ||
@@ -2339,7 +2249,7 @@ static int netvsc_prepare_bonding(struct net_device *vf_netdev)
 	if (!ndev)
 		return NOTIFY_DONE;
 
-	/* set slave flag before open to prevent IPv6 addrconf */
+	 
 	vf_netdev->flags |= IFF_SLAVE;
 	return NOTIFY_DONE;
 }
@@ -2364,10 +2274,7 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
 	if (!netvsc_dev || rtnl_dereference(net_device_ctx->vf_netdev))
 		return NOTIFY_DONE;
 
-	/* if synthetic interface is a different namespace,
-	 * then move the VF to that namespace; join will be
-	 * done again in that context.
-	 */
+	 
 	if (!net_eq(dev_net(ndev), dev_net(vf_netdev))) {
 		ret = dev_change_net_namespace(vf_netdev,
 					       dev_net(ndev), "eth%d");
@@ -2402,16 +2309,7 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
 	return NOTIFY_OK;
 }
 
-/* Change the data path when VF UP/DOWN/CHANGE are detected.
- *
- * Typically a UP or DOWN event is followed by a CHANGE event, so
- * net_device_ctx->data_path_is_vf is used to cache the current data path
- * to avoid the duplicate call of netvsc_switch_datapath() and the duplicate
- * message.
- *
- * During hibernation, if a VF NIC driver (e.g. mlx5) preserves the network
- * interface, there is only the CHANGE event and no UP or DOWN event.
- */
+ 
 static int netvsc_vf_changed(struct net_device *vf_netdev, unsigned long event)
 {
 	struct net_device_context *net_device_ctx;
@@ -2526,16 +2424,14 @@ static int netvsc_probe(struct hv_device *dev,
 	SET_NETDEV_DEV(net, &dev->device);
 	dma_set_min_align_mask(&dev->device, HV_HYP_PAGE_SIZE - 1);
 
-	/* We always need headroom for rndis header */
+	 
 	net->needed_headroom = RNDIS_AND_PPI_SIZE;
 
-	/* Initialize the number of queues to be 1, we may change it if more
-	 * channels are offered later.
-	 */
+	 
 	netif_set_real_num_tx_queues(net, 1);
 	netif_set_real_num_rx_queues(net, 1);
 
-	/* Notify the netvsc driver of the new device */
+	 
 	device_info = netvsc_devinfo_get(NULL);
 
 	if (!device_info) {
@@ -2543,19 +2439,7 @@ static int netvsc_probe(struct hv_device *dev,
 		goto devinfo_failed;
 	}
 
-	/* We must get rtnl lock before scheduling nvdev->subchan_work,
-	 * otherwise netvsc_subchan_work() can get rtnl lock first and wait
-	 * all subchannels to show up, but that may not happen because
-	 * netvsc_probe() can't get rtnl lock and as a result vmbus_onoffer()
-	 * -> ... -> device_add() -> ... -> __device_attach() can't get
-	 * the device lock, so all the subchannels can't be processed --
-	 * finally netvsc_subchan_work() hangs forever.
-	 *
-	 * The rtnl lock also needs to be held before rndis_filter_device_add()
-	 * which advertises nvsp_2_vsc_capability / sriov bit, and triggers
-	 * VF NIC offering and registering. If VF NIC finished register_netdev()
-	 * earlier it may cause name based config failure.
-	 */
+	 
 	rtnl_lock();
 
 	nvdev = rndis_filter_device_add(dev, device_info);
@@ -2570,7 +2454,7 @@ static int netvsc_probe(struct hv_device *dev,
 	if (nvdev->num_chn > 1)
 		schedule_work(&nvdev->subchan_work);
 
-	/* hw_features computed in rndis_netdev_set_hwcaps() */
+	 
 	net->features = net->hw_features |
 		NETIF_F_HIGHDMA | NETIF_F_HW_VLAN_CTAG_TX |
 		NETIF_F_HW_VLAN_CTAG_RX;
@@ -2581,7 +2465,7 @@ static int netvsc_probe(struct hv_device *dev,
 	net->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
 			    NETDEV_XDP_ACT_NDO_XMIT;
 
-	/* MTU range: 68 - 1500 or 65521 */
+	 
 	net->min_mtu = NETVSC_MTU_MIN;
 	if (nvdev->nvsp_version >= NVSP_PROTOCOL_VERSION_2)
 		net->max_mtu = NETVSC_MTU - ETH_HLEN;
@@ -2639,10 +2523,7 @@ static void netvsc_remove(struct hv_device *dev)
 		netvsc_xdp_set(net, NULL, NULL, nvdev);
 	}
 
-	/*
-	 * Call to the vsc driver to let it know that the device is being
-	 * removed. Also blocks mtu and channel changes.
-	 */
+	 
 	vf_netdev = rtnl_dereference(ndev_ctx->vf_netdev);
 	if (vf_netdev)
 		netvsc_unregister_vf(vf_netdev);
@@ -2681,7 +2562,7 @@ static int netvsc_suspend(struct hv_device *dev)
 		goto out;
 	}
 
-	/* Save the current config info */
+	 
 	ndev_ctx->saved_netvsc_dev_info = netvsc_devinfo_get(nvdev);
 	if (!ndev_ctx->saved_netvsc_dev_info) {
 		ret = -ENOMEM;
@@ -2705,10 +2586,7 @@ static int netvsc_resume(struct hv_device *dev)
 
 	net_device_ctx = netdev_priv(net);
 
-	/* Reset the data path to the netvsc NIC before re-opening the vmbus
-	 * channel. Later netvsc_netdev_event() will switch the data path to
-	 * the VF upon the UP or CHANGE event.
-	 */
+	 
 	net_device_ctx->data_path_is_vf = false;
 	device_info = net_device_ctx->saved_netvsc_dev_info;
 
@@ -2722,14 +2600,14 @@ static int netvsc_resume(struct hv_device *dev)
 	return ret;
 }
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Network guid */
+	 
 	{ HV_NIC_GUID, },
 	{ },
 };
 
 MODULE_DEVICE_TABLE(vmbus, id_table);
 
-/* The one and only one */
+ 
 static struct  hv_driver netvsc_drv = {
 	.name = KBUILD_MODNAME,
 	.id_table = id_table,
@@ -2742,30 +2620,25 @@ static struct  hv_driver netvsc_drv = {
 	},
 };
 
-/*
- * On Hyper-V, every VF interface is matched with a corresponding
- * synthetic interface. The synthetic interface is presented first
- * to the guest. When the corresponding VF instance is registered,
- * we will take care of switching the data path.
- */
+ 
 static int netvsc_netdev_event(struct notifier_block *this,
 			       unsigned long event, void *ptr)
 {
 	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
 
-	/* Skip our own events */
+	 
 	if (event_dev->netdev_ops == &device_ops)
 		return NOTIFY_DONE;
 
-	/* Avoid non-Ethernet type devices */
+	 
 	if (event_dev->type != ARPHRD_ETHER)
 		return NOTIFY_DONE;
 
-	/* Avoid Vlan dev with same MAC registering as VF */
+	 
 	if (is_vlan_dev(event_dev))
 		return NOTIFY_DONE;
 
-	/* Avoid Bonding master dev with same MAC registering as VF */
+	 
 	if (netif_is_bond_master(event_dev))
 		return NOTIFY_DONE;
 

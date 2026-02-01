@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* General filesystem local caching manager
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define FSCACHE_DEBUG_LEVEL CACHE
 #include <linux/module.h>
@@ -28,16 +24,7 @@ EXPORT_TRACEPOINT_SYMBOL(fscache_access);
 struct workqueue_struct *fscache_wq;
 EXPORT_SYMBOL(fscache_wq);
 
-/*
- * Mixing scores (in bits) for (7,20):
- * Input delta: 1-bit      2-bit
- * 1 round:     330.3     9201.6
- * 2 rounds:   1246.4    25475.4
- * 3 rounds:   1907.1    31295.1
- * 4 rounds:   2042.3    31718.6
- * Perfect:    2048      31744
- *            (32*64)   (32*31/2 * 64)
- */
+ 
 #define HASH_MIX(x, y, a)	\
 	(	x ^= (a),	\
 	y ^= x,	x = rol32(x, 7),\
@@ -46,16 +33,11 @@ EXPORT_SYMBOL(fscache_wq);
 
 static inline unsigned int fold_hash(unsigned long x, unsigned long y)
 {
-	/* Use arch-optimized multiply if one exists */
+	 
 	return __hash_32(y ^ __hash_32(x));
 }
 
-/*
- * Generate a hash.  This is derived from full_name_hash(), but we want to be
- * sure it is arch independent and that it doesn't change as bits of the
- * computed hash value might appear on disk.  The caller must guarantee that
- * the source data is a multiple of four bytes in size.
- */
+ 
 unsigned int fscache_hash(unsigned int salt, const void *data, size_t len)
 {
 	const __le32 *p = data;
@@ -68,9 +50,7 @@ unsigned int fscache_hash(unsigned int salt, const void *data, size_t len)
 	return fold_hash(x, y);
 }
 
-/*
- * initialise the fs caching module
- */
+ 
 static int __init fscache_init(void)
 {
 	int ret = -ENOMEM;
@@ -105,9 +85,7 @@ error_wq:
 
 fs_initcall(fscache_init);
 
-/*
- * clean up on module removal
- */
+ 
 static void __exit fscache_exit(void)
 {
 	_enter("");

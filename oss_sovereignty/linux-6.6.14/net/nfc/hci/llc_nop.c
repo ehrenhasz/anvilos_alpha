@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * nop (passthrough) Link Layer Control
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 

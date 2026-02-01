@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal Interface for Intel High Definition Audio Codec
- *
- * HD audio interface patch for SigmaTel STAC92xx
- *
- * Copyright (c) 2005 Embedded Alley Solutions, Inc.
- * Matt Porter <mporter@embeddedalley.com>
- *
- * Based on patch_cmedia.c and patch_realtek.c
- * Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -56,7 +46,7 @@ enum {
 };
 
 enum {
-	STAC_92HD73XX_NO_JD, /* no jack-detection */
+	STAC_92HD73XX_NO_JD,  
 	STAC_92HD73XX_REF,
 	STAC_92HD73XX_INTEL,
 	STAC_DELL_M6_AMIC,
@@ -146,7 +136,7 @@ enum {
 };
 
 enum {
-	STAC_D965_REF_NO_JD, /* no jack-detection */
+	STAC_D965_REF_NO_JD,  
 	STAC_D965_REF,
 	STAC_D965_3ST,
 	STAC_D965_5ST,
@@ -172,12 +162,12 @@ struct sigmatel_spec {
 
 	unsigned int eapd_switch: 1;
 	unsigned int linear_tone_beep:1;
-	unsigned int headset_jack:1; /* 4-pin headset jack (hp + mono mic) */
-	unsigned int volknob_init:1; /* special volume-knob initialization */
+	unsigned int headset_jack:1;  
+	unsigned int volknob_init:1;  
 	unsigned int powerdown_adcs:1;
 	unsigned int have_spdif_mux:1;
 
-	/* gpio lines */
+	 
 	unsigned int eapd_mask;
 	unsigned int gpio_mask;
 	unsigned int gpio_dir;
@@ -185,33 +175,33 @@ struct sigmatel_spec {
 	unsigned int gpio_mute;
 	unsigned int gpio_led;
 	unsigned int gpio_led_polarity;
-	unsigned int vref_mute_led_nid; /* pin NID for mute-LED vref control */
+	unsigned int vref_mute_led_nid;  
 	unsigned int vref_led;
 	int default_polarity;
 
-	unsigned int mic_mute_led_gpio; /* capture mute LED GPIO */
-	unsigned int mic_enabled; /* current mic mute state (bitmask) */
+	unsigned int mic_mute_led_gpio;  
+	unsigned int mic_enabled;  
 
-	/* stream */
+	 
 	unsigned int stream_delay;
 
-	/* analog loopback */
+	 
 	const struct snd_kcontrol_new *aloopback_ctl;
 	unsigned int aloopback;
 	unsigned char aloopback_mask;
 	unsigned char aloopback_shift;
 
-	/* power management */
+	 
 	unsigned int power_map_bits;
 	unsigned int num_pwrs;
 	const hda_nid_t *pwr_nids;
 	unsigned int active_adcs;
 
-	/* beep widgets */
+	 
 	hda_nid_t anabeep_nid;
 	bool beep_power_on;
 
-	/* SPDIF-out mux */
+	 
 	const char * const *spdif_labels;
 	struct hda_input_mux spdif_mux;
 	unsigned int cur_smux[2];
@@ -235,9 +225,7 @@ static const hda_nid_t stac92hd71bxx_pwr_nids[3] = {
 };
 
 
-/*
- * PCM hooks
- */
+ 
 static void stac_playback_pcm_hook(struct hda_pcm_stream *hinfo,
 				   struct hda_codec *codec,
 				   struct snd_pcm_substream *substream,
@@ -281,10 +269,7 @@ static void stac_capture_pcm_hook(struct hda_pcm_stream *hinfo,
 	}
 }
 
-/*
- * Early 2006 Intel Macintoshes with STAC9220X5 codecs seem to have a
- * funky external mute control using GPIO pins.
- */
+ 
 
 static void stac_gpio_set(struct hda_codec *codec, unsigned int mask,
 			  unsigned int dir_mask, unsigned int data)
@@ -306,21 +291,21 @@ static void stac_gpio_set(struct hda_codec *codec, unsigned int mask,
 				     AC_VERB_GET_GPIO_DIRECTION, 0);
 	gpiodir |= dir_mask;
 
-	/* Configure GPIOx as CMOS */
+	 
 	snd_hda_codec_write(codec, fg, 0, 0x7e7, 0);
 
 	snd_hda_codec_write(codec, fg, 0,
 			    AC_VERB_SET_GPIO_MASK, gpiomask);
 	snd_hda_codec_read(codec, fg, 0,
-			   AC_VERB_SET_GPIO_DIRECTION, gpiodir); /* sync */
+			   AC_VERB_SET_GPIO_DIRECTION, gpiodir);  
 
 	msleep(1);
 
 	snd_hda_codec_read(codec, fg, 0,
-			   AC_VERB_SET_GPIO_DATA, gpiostate); /* sync */
+			   AC_VERB_SET_GPIO_DATA, gpiostate);  
 }
 
-/* hook for controlling mic-mute LED GPIO */
+ 
 static int stac_capture_led_update(struct led_classdev *led_cdev,
 				   enum led_brightness brightness)
 {
@@ -358,8 +343,8 @@ static int stac_vrefout_set(struct hda_codec *codec,
 	return 1;
 }
 
-/* prevent codec AFG to D3 state when vref-out pin is used for mute LED */
-/* this hook is set in stac_setup_gpio() */
+ 
+ 
 static unsigned int stac_vref_led_power_filter(struct hda_codec *codec,
 					       hda_nid_t nid,
 					       unsigned int power_state)
@@ -369,7 +354,7 @@ static unsigned int stac_vref_led_power_filter(struct hda_codec *codec,
 	return snd_hda_gen_path_power_filter(codec, nid, power_state);
 }
 
-/* update mute-LED accoring to the master switch */
+ 
 static void stac_update_led_status(struct hda_codec *codec, bool muted)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -377,7 +362,7 @@ static void stac_update_led_status(struct hda_codec *codec, bool muted)
 	if (!spec->gpio_led)
 		return;
 
-	/* LED state is inverted on these systems */
+	 
 	if (spec->gpio_led_polarity)
 		muted = !muted;
 
@@ -395,7 +380,7 @@ static void stac_update_led_status(struct hda_codec *codec, bool muted)
 	}
 }
 
-/* vmaster hook to update mute LED */
+ 
 static int stac_vmaster_hook(struct led_classdev *led_cdev,
 			     enum led_brightness brightness)
 {
@@ -405,7 +390,7 @@ static int stac_vmaster_hook(struct led_classdev *led_cdev,
 	return 0;
 }
 
-/* automute hook to handle GPIO mute and EAPD updates */
+ 
 static void stac_update_outputs(struct hda_codec *codec)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -452,7 +437,7 @@ static void stac_toggle_power_map(struct hda_codec *codec, hda_nid_t nid,
 	else
 		val |= idx;
 
-	/* power down unused output ports */
+	 
 	if (val != spec->power_map_bits) {
 		spec->power_map_bits = val;
 		if (do_write)
@@ -461,7 +446,7 @@ static void stac_toggle_power_map(struct hda_codec *codec, hda_nid_t nid,
 	}
 }
 
-/* update power bit per jack plug/unplug */
+ 
 static void jack_update_power(struct hda_codec *codec,
 			      struct hda_jack_callback *jack)
 {
@@ -478,7 +463,7 @@ static void jack_update_power(struct hda_codec *codec,
 		return;
 	}
 
-	/* update all jacks */
+	 
 	for (i = 0; i < spec->num_pwrs; i++) {
 		hda_nid_t nid = spec->pwr_nids[i];
 		if (!snd_hda_jack_tbl_get(codec, nid))
@@ -500,14 +485,12 @@ static void stac_vref_event(struct hda_codec *codec,
 
 	data = snd_hda_codec_read(codec, codec->core.afg, 0,
 				  AC_VERB_GET_GPIO_DATA, 0);
-	/* toggle VREF state based on GPIOx status */
+	 
 	snd_hda_codec_write(codec, codec->core.afg, 0, 0x7e0,
 			    !!(data & (1 << event->private_data)));
 }
 
-/* initialize the power map and enable the power event to jacks that
- * haven't been assigned to automute
- */
+ 
 static void stac_init_power_map(struct hda_codec *codec)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -531,8 +514,7 @@ static void stac_init_power_map(struct hda_codec *codec)
 	}
 }
 
-/*
- */
+ 
 
 static inline bool get_int_hint(struct hda_codec *codec, const char *key,
 				int *valp)
@@ -540,7 +522,7 @@ static inline bool get_int_hint(struct hda_codec *codec, const char *key,
 	return !snd_hda_get_int_hint(codec, key, valp);
 }
 
-/* override some hints from the hwdep entry */
+ 
 static void stac_store_hints(struct hda_codec *codec)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -563,9 +545,7 @@ static void stac_store_hints(struct hda_codec *codec)
 		spec->eapd_switch = val;
 }
 
-/*
- * loopback controls
- */
+ 
 
 #define stac_aloopback_info snd_ctl_boolean_mono_info
 
@@ -600,9 +580,7 @@ static int stac_aloopback_put(struct snd_kcontrol *kcontrol,
 
 	spec->aloopback = val;
 
-	/* Only return the bits defined by the shift value of the
-	 * first two bytes of the mask
-	 */
+	 
 	dac_mode = snd_hda_codec_read(codec, codec->core.afg, 0,
 				      kcontrol->private_value & 0xFFFF, 0x0);
 	dac_mode >>= spec->aloopback_shift;
@@ -632,11 +610,9 @@ static int stac_aloopback_put(struct snd_kcontrol *kcontrol,
 		.private_value = verb_read | (verb_write << 16), \
 	}
 
-/*
- * Mute LED handling on HP laptops
- */
+ 
 
-/* check whether it's a HP laptop with a docking port */
+ 
 static bool hp_bnb2011_with_dock(struct hda_codec *codec)
 {
 	if (codec->core.vendor_id != 0x111d7605 &&
@@ -680,7 +656,7 @@ static bool hp_bnb2011_with_dock(struct hda_codec *codec)
 static bool hp_blike_system(u32 subsystem_id)
 {
 	switch (subsystem_id) {
-	case 0x103c1473: /* HP ProBook 6550b */
+	case 0x103c1473:  
 	case 0x103c1520:
 	case 0x103c1521:
 	case 0x103c1523:
@@ -718,31 +694,12 @@ static void set_hp_led_gpio(struct hda_codec *codec)
 	gpio = snd_hda_param_read(codec, codec->core.afg, AC_PAR_GPIO_CAP);
 	gpio &= AC_GPIO_IO_COUNT;
 	if (gpio > 3)
-		spec->gpio_led = 0x08; /* GPIO 3 */
+		spec->gpio_led = 0x08;  
 	else
-		spec->gpio_led = 0x01; /* GPIO 0 */
+		spec->gpio_led = 0x01;  
 }
 
-/*
- * This method searches for the mute LED GPIO configuration
- * provided as OEM string in SMBIOS. The format of that string
- * is HP_Mute_LED_P_G or HP_Mute_LED_P
- * where P can be 0 or 1 and defines mute LED GPIO control state (low/high)
- * that corresponds to the NOT muted state of the master volume
- * and G is the index of the GPIO to use as the mute LED control (0..9)
- * If _G portion is missing it is assigned based on the codec ID
- *
- * So, HP B-series like systems may have HP_Mute_LED_0 (current models)
- * or  HP_Mute_LED_0_3 (future models) OEM SMBIOS strings
- *
- *
- * The dv-series laptops don't seem to have the HP_Mute_LED* strings in
- * SMBIOS - at least the ones I have seen do not have them - which include
- * my own system (HP Pavilion dv6-1110ax) and my cousin's
- * HP Pavilion dv9500t CTO.
- * Need more information on whether it is true across the entire series.
- * -- kunal
- */
+ 
 static int find_mute_led_cfg(struct hda_codec *codec, int default_polarity)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -773,7 +730,7 @@ static int find_mute_led_cfg(struct hda_codec *codec, int default_polarity)
 			set_hp_led_gpio(codec);
 			return 1;
 		}
-		/* BIOS bug: unfilled OEM string */
+		 
 		if (strstr(dev->name, "HP_Mute_LED_P_G")) {
 			set_hp_led_gpio(codec);
 			if (default_polarity >= 0)
@@ -784,11 +741,7 @@ static int find_mute_led_cfg(struct hda_codec *codec, int default_polarity)
 		}
 	}
 
-	/*
-	 * Fallback case - if we don't find the DMI strings,
-	 * we statically set the GPIO - if not a B-series system
-	 * and default polarity is provided
-	 */
+	 
 	if (!hp_blike_system(codec->core.subsystem_id) &&
 	    (default_polarity == 0 || default_polarity == 1)) {
 		set_hp_led_gpio(codec);
@@ -798,7 +751,7 @@ static int find_mute_led_cfg(struct hda_codec *codec, int default_polarity)
 	return 0;
 }
 
-/* check whether a built-in speaker is included in parsed pins */
+ 
 static bool has_builtin_speaker(struct hda_codec *codec)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -821,11 +774,9 @@ static bool has_builtin_speaker(struct hda_codec *codec)
 	return false;
 }
 
-/*
- * PC beep controls
- */
+ 
 
-/* create PC beep volume controls */
+ 
 static int stac_auto_create_beep_ctls(struct hda_codec *codec,
 						hda_nid_t nid)
 {
@@ -839,7 +790,7 @@ static int stac_auto_create_beep_ctls(struct hda_codec *codec,
 	static const struct snd_kcontrol_new beep_vol_ctl =
 		HDA_CODEC_VOLUME(NULL, 0, 0, 0);
 
-	/* check for mute support for the amp */
+	 
 	if ((caps & AC_AMPCAP_MUTE) >> AC_AMPCAP_MUTE_SHIFT) {
 		const struct snd_kcontrol_new *temp;
 		if (spec->anabeep_nid == nid)
@@ -854,7 +805,7 @@ static int stac_auto_create_beep_ctls(struct hda_codec *codec,
 			HDA_COMPOSE_AMP_VAL(nid, 1, 0, HDA_OUTPUT);
 	}
 
-	/* check to see if there is volume support for the amp */
+	 
 	if ((caps & AC_AMPCAP_NUM_STEPS) >> AC_AMPCAP_NUM_STEPS_SHIFT) {
 		knew = snd_hda_gen_add_kctl(&spec->gen,
 					    "Beep Playback Volume",
@@ -903,9 +854,7 @@ static int stac_beep_switch_ctl(struct hda_codec *codec)
 }
 #endif
 
-/*
- * SPDIF-out mux controls
- */
+ 
 
 static int stac_smux_enum_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
@@ -941,7 +890,7 @@ static int stac_smux_enum_put(struct snd_kcontrol *kcontrol,
 static const struct snd_kcontrol_new stac_smux_mixer = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "IEC958 Playback Source",
-	/* count set later */
+	 
 	.info = stac_smux_enum_info,
 	.get = stac_smux_enum_get,
 	.put = stac_smux_enum_put,
@@ -983,27 +932,26 @@ static int stac_create_spdif_mux_ctls(struct hda_codec *codec)
 }
 
 static const struct hda_verb stac9200_eapd_init[] = {
-	/* set dac0mux for dac converter */
+	 
 	{0x07, AC_VERB_SET_CONNECT_SEL, 0x00},
 	{0x08, AC_VERB_SET_EAPD_BTLENABLE, 0x02},
 	{}
 };
 
 static const struct hda_verb dell_eq_core_init[] = {
-	/* set master volume to max value without distortion
-	 * and direct control */
+	 
 	{ 0x1f, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xec},
 	{}
 };
 
 static const struct hda_verb stac92hd73xx_core_init[] = {
-	/* set master volume and direct control */
+	 
 	{ 0x1f, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xff},
 	{}
 };
 
 static const struct hda_verb stac92hd83xxx_core_init[] = {
-	/* power state controls amps */
+	 
 	{ 0x01, AC_VERB_SET_EAPD, 1 << 2},
 	{}
 };
@@ -1016,68 +964,68 @@ static const struct hda_verb stac92hd83xxx_hp_zephyr_init[] = {
 };
 
 static const struct hda_verb stac92hd71bxx_core_init[] = {
-	/* set master volume and direct control */
+	 
 	{ 0x28, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xff},
 	{}
 };
 
 static const hda_nid_t stac92hd71bxx_unmute_nids[] = {
-	/* unmute right and left channels for nodes 0x0f, 0xa, 0x0d */
+	 
 	0x0f, 0x0a, 0x0d, 0
 };
 
 static const struct hda_verb stac925x_core_init[] = {
-	/* set dac0mux for dac converter */
+	 
 	{ 0x06, AC_VERB_SET_CONNECT_SEL, 0x00},
-	/* mute the master volume */
+	 
 	{ 0x0e, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_MUTE },
 	{}
 };
 
 static const struct hda_verb stac922x_core_init[] = {
-	/* set master volume and direct control */
+	 
 	{ 0x16, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xff},
 	{}
 };
 
 static const struct hda_verb d965_core_init[] = {
-	/* unmute node 0x1b */
+	 
 	{ 0x1b, AC_VERB_SET_AMP_GAIN_MUTE, 0xb000},
-	/* select node 0x03 as DAC */
+	 
 	{ 0x0b, AC_VERB_SET_CONNECT_SEL, 0x01},
 	{}
 };
 
 static const struct hda_verb dell_3st_core_init[] = {
-	/* don't set delta bit */
+	 
 	{0x24, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0x7f},
-	/* unmute node 0x1b */
+	 
 	{0x1b, AC_VERB_SET_AMP_GAIN_MUTE, 0xb000},
-	/* select node 0x03 as DAC */
+	 
 	{0x0b, AC_VERB_SET_CONNECT_SEL, 0x01},
 	{}
 };
 
 static const struct hda_verb stac927x_core_init[] = {
-	/* set master volume and direct control */
+	 
 	{ 0x24, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xff},
-	/* enable analog pc beep path */
+	 
 	{ 0x01, AC_VERB_SET_DIGI_CONVERT_2, 1 << 5},
 	{}
 };
 
 static const struct hda_verb stac927x_volknob_core_init[] = {
-	/* don't set delta bit */
+	 
 	{0x24, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0x7f},
-	/* enable analog pc beep path */
+	 
 	{0x01, AC_VERB_SET_DIGI_CONVERT_2, 1 << 5},
 	{}
 };
 
 static const struct hda_verb stac9205_core_init[] = {
-	/* set master volume and direct control */
+	 
 	{ 0x24, AC_VERB_SET_VOLUME_KNOB_CONTROL, 0xff},
-	/* enable analog pc beep path */
+	 
 	{ 0x01, AC_VERB_SET_DIGI_CONVERT_2, 1 << 5},
 	{}
 };
@@ -1136,12 +1084,7 @@ static const struct hda_pintbl gateway9200_m4_2_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200 pin configs for
-    102801A8
-    102801DE
-    102801E8
-*/
+ 
 static const struct hda_pintbl dell9200_d21_pin_configs[] = {
 	{ 0x08, 0x400001f0 },
 	{ 0x09, 0x400001f1 },
@@ -1154,11 +1097,7 @@ static const struct hda_pintbl dell9200_d21_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200 pin configs for
-    102801C0
-    102801C1
-*/
+ 
 static const struct hda_pintbl dell9200_d22_pin_configs[] = {
 	{ 0x08, 0x400001f0 },
 	{ 0x09, 0x400001f1 },
@@ -1171,15 +1110,7 @@ static const struct hda_pintbl dell9200_d22_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200 pin configs for
-    102801C4 (Dell Dimension E310)
-    102801C5
-    102801C7
-    102801D9
-    102801DA
-    102801E3
-*/
+ 
 static const struct hda_pintbl dell9200_d23_pin_configs[] = {
 	{ 0x08, 0x400001f0 },
 	{ 0x09, 0x400001f1 },
@@ -1193,11 +1124,7 @@ static const struct hda_pintbl dell9200_d23_pin_configs[] = {
 };
 
 
-/* 
-    STAC 9200-32 pin configs for
-    102801B5 (Dell Inspiron 630m)
-    102801D8 (Dell Inspiron 640m)
-*/
+ 
 static const struct hda_pintbl dell9200_m21_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x03441340 },
@@ -1210,14 +1137,7 @@ static const struct hda_pintbl dell9200_m21_pin_configs[] = {
 	{}
 };
 
-/* 
-    STAC 9200-32 pin configs for
-    102801C2 (Dell Latitude D620)
-    102801C8 
-    102801CC (Dell Latitude D820)
-    102801D4 
-    102801D6 
-*/
+ 
 static const struct hda_pintbl dell9200_m22_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x0144131f },
@@ -1230,11 +1150,7 @@ static const struct hda_pintbl dell9200_m22_pin_configs[] = {
 	{}
 };
 
-/* 
-    STAC 9200-32 pin configs for
-    102801CE (Dell XPS M1710)
-    102801CF (Dell Precision M90)
-*/
+ 
 static const struct hda_pintbl dell9200_m23_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x01441340 },
@@ -1247,13 +1163,7 @@ static const struct hda_pintbl dell9200_m23_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200-32 pin configs for 
-    102801C9
-    102801CA
-    102801CB (Dell Latitude 120L)
-    102801D3
-*/
+ 
 static const struct hda_pintbl dell9200_m24_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x404003fb },
@@ -1266,12 +1176,7 @@ static const struct hda_pintbl dell9200_m24_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200-32 pin configs for
-    102801BD (Dell Inspiron E1505n)
-    102801EE
-    102801EF
-*/
+ 
 static const struct hda_pintbl dell9200_m25_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x01441340 },
@@ -1284,11 +1189,7 @@ static const struct hda_pintbl dell9200_m25_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200-32 pin configs for
-    102801F5 (Dell Inspiron 1501)
-    102801F6
-*/
+ 
 static const struct hda_pintbl dell9200_m26_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x404003fb },
@@ -1301,10 +1202,7 @@ static const struct hda_pintbl dell9200_m26_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9200-32
-    102801CD (Dell Inspiron E1705/9400)
-*/
+ 
 static const struct hda_pintbl dell9200_m27_pin_configs[] = {
 	{ 0x08, 0x40c003fa },
 	{ 0x09, 0x01441340 },
@@ -1329,25 +1227,22 @@ static const struct hda_pintbl oqo9200_pin_configs[] = {
 	{}
 };
 
-/*
- *  STAC 92HD700
- *  18881000 Amigaone X1000
- */
+ 
 static const struct hda_pintbl nemo_pin_configs[] = {
-	{ 0x0a, 0x02214020 },	/* Front panel HP socket */
-	{ 0x0b, 0x02a19080 },	/* Front Mic */
-	{ 0x0c, 0x0181304e },	/* Line in */
-	{ 0x0d, 0x01014010 },	/* Line out */
-	{ 0x0e, 0x01a19040 },	/* Rear Mic */
-	{ 0x0f, 0x01011012 },	/* Rear speakers */
-	{ 0x10, 0x01016011 },	/* Center speaker */
-	{ 0x11, 0x01012014 },	/* Side speakers (7.1) */
-	{ 0x12, 0x103301f0 },	/* Motherboard CD line in connector */
-	{ 0x13, 0x411111f0 },	/* Unused */
-	{ 0x14, 0x411111f0 },	/* Unused */
-	{ 0x21, 0x01442170 },	/* S/PDIF line out */
-	{ 0x22, 0x411111f0 },	/* Unused */
-	{ 0x23, 0x411111f0 },	/* Unused */
+	{ 0x0a, 0x02214020 },	 
+	{ 0x0b, 0x02a19080 },	 
+	{ 0x0c, 0x0181304e },	 
+	{ 0x0d, 0x01014010 },	 
+	{ 0x0e, 0x01a19040 },	 
+	{ 0x0f, 0x01011012 },	 
+	{ 0x10, 0x01016011 },	 
+	{ 0x11, 0x01012014 },	 
+	{ 0x12, 0x103301f0 },	 
+	{ 0x13, 0x411111f0 },	 
+	{ 0x14, 0x411111f0 },	 
+	{ 0x21, 0x01442170 },	 
+	{ 0x22, 0x411111f0 },	 
+	{ 0x23, 0x411111f0 },	 
 	{}
 };
 
@@ -1359,9 +1254,7 @@ static void stac9200_fixup_panasonic(struct hda_codec *codec,
 	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
 		spec->gpio_mask = spec->gpio_dir = 0x09;
 		spec->gpio_data = 0x00;
-		/* CF-74 has no headphone detection, and the driver should *NOT*
-		 * do detection and HP/speaker toggle because the hardware does it.
-		 */
+		 
 		spec->gen.suppress_auto_mute = 1;
 	}
 }
@@ -1463,12 +1356,12 @@ static const struct hda_model_fixup stac9200_models[] = {
 };
 
 static const struct snd_pci_quirk stac9200_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
 		      "DFI LanParty", STAC_REF),
-	/* Dell laptops have BIOS problem */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01a8,
 		      "unknown Dell", STAC_9200_DELL_D21),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01b5,
@@ -1529,15 +1422,15 @@ static const struct snd_pci_quirk stac9200_fixup_tbl[] = {
 		      "unknown Dell", STAC_9200_DELL_M26),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x0201,
 		      "Dell Latitude D430", STAC_9200_DELL_M22),
-	/* Panasonic */
+	 
 	SND_PCI_QUIRK(0x10f7, 0x8338, "Panasonic CF-74", STAC_9200_PANASONIC),
-	/* Gateway machines needs EAPD to be set on resume */
+	 
 	SND_PCI_QUIRK(0x107b, 0x0205, "Gateway S-7110M", STAC_9200_M4),
 	SND_PCI_QUIRK(0x107b, 0x0317, "Gateway MT3423, MX341*", STAC_9200_M4_2),
 	SND_PCI_QUIRK(0x107b, 0x0318, "Gateway ML3019, MT3707", STAC_9200_M4_2),
-	/* OQO Mobile */
+	 
 	SND_PCI_QUIRK(0x1106, 0x3288, "OQO Model 2", STAC_9200_OQO),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref925x_pin_configs[] = {
@@ -1684,30 +1577,30 @@ static const struct hda_model_fixup stac925x_models[] = {
 };
 
 static const struct snd_pci_quirk stac925x_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668, "DFI LanParty", STAC_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101, "DFI LanParty", STAC_REF),
 	SND_PCI_QUIRK(0x8384, 0x7632, "Stac9202 Reference Board", STAC_REF),
 
-	/* Default table for unknown ID */
+	 
 	SND_PCI_QUIRK(0x1002, 0x437b, "Gateway mobile", STAC_M2_2),
 
-	/* gateway machines are checked via codec ssid */
+	 
 	SND_PCI_QUIRK(0x107b, 0x0316, "Gateway M255", STAC_M2),
 	SND_PCI_QUIRK(0x107b, 0x0366, "Gateway MP6954", STAC_M5),
 	SND_PCI_QUIRK(0x107b, 0x0461, "Gateway NX560XL", STAC_M1),
 	SND_PCI_QUIRK(0x107b, 0x0681, "Gateway NX860", STAC_M2),
 	SND_PCI_QUIRK(0x107b, 0x0367, "Gateway MX6453", STAC_M1_2),
-	/* Not sure about the brand name for those */
+	 
 	SND_PCI_QUIRK(0x107b, 0x0281, "Gateway mobile", STAC_M1),
 	SND_PCI_QUIRK(0x107b, 0x0507, "Gateway mobile", STAC_M3),
 	SND_PCI_QUIRK(0x107b, 0x0281, "Gateway mobile", STAC_M6),
 	SND_PCI_QUIRK(0x107b, 0x0685, "Gateway mobile", STAC_M2_2),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref92hd73xx_pin_configs[] = {
-	// Port A-H
+	
 	{ 0x0a, 0x02214030 },
 	{ 0x0b, 0x02a19040 },
 	{ 0x0c, 0x01a19020 },
@@ -1716,12 +1609,12 @@ static const struct hda_pintbl ref92hd73xx_pin_configs[] = {
 	{ 0x0f, 0x01014010 },
 	{ 0x10, 0x01014020 },
 	{ 0x11, 0x01014030 },
-	// CD in
+	
 	{ 0x12, 0x02319040 },
-	// Digial Mic ins
+	
 	{ 0x13, 0x90a000f0 },
 	{ 0x14, 0x90a000f0 },
-	// Digital outs
+	
 	{ 0x22, 0x01452050 },
 	{ 0x23, 0x01452050 },
 	{}
@@ -1762,7 +1655,7 @@ static const struct hda_pintbl alienware_m17x_pin_configs[] = {
 };
 
 static const struct hda_pintbl intel_dg45id_pin_configs[] = {
-	// Analog outputs
+	
 	{ 0x0a, 0x02214230 },
 	{ 0x0b, 0x02A19240 },
 	{ 0x0c, 0x01013214 },
@@ -1770,7 +1663,7 @@ static const struct hda_pintbl intel_dg45id_pin_configs[] = {
 	{ 0x0e, 0x01A19250 },
 	{ 0x0f, 0x01011212 },
 	{ 0x10, 0x01016211 },
-	// Digital output
+	
 	{ 0x22, 0x01451380 },
 	{ 0x23, 0x40f000f0 },
 	{}
@@ -1820,7 +1713,7 @@ static void stac92hd73xx_fixup_dell_eq(struct hda_codec *codec,
 	spec->volknob_init = 1;
 }
 
-/* Analog Mics */
+ 
 static void stac92hd73xx_fixup_dell_m6_amic(struct hda_codec *codec,
 				    const struct hda_fixup *fix, int action)
 {
@@ -1831,7 +1724,7 @@ static void stac92hd73xx_fixup_dell_m6_amic(struct hda_codec *codec,
 	snd_hda_codec_set_pincfg(codec, 0x0b, 0x90A70170);
 }
 
-/* Digital Mics */
+ 
 static void stac92hd73xx_fixup_dell_m6_dmic(struct hda_codec *codec,
 				    const struct hda_fixup *fix, int action)
 {
@@ -1842,7 +1735,7 @@ static void stac92hd73xx_fixup_dell_m6_dmic(struct hda_codec *codec,
 	snd_hda_codec_set_pincfg(codec, 0x13, 0x90A60160);
 }
 
-/* Both */
+ 
 static void stac92hd73xx_fixup_dell_m6_both(struct hda_codec *codec,
 				    const struct hda_fixup *fix, int action)
 {
@@ -1933,7 +1826,7 @@ static const struct hda_fixup stac92hd73xx_fixups[] = {
 	[STAC_92HD73XX_ASUS_MOBO] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			/* enable 5.1 and SPDIF out */
+			 
 			{ 0x0c, 0x01014411 },
 			{ 0x0d, 0x01014410 },
 			{ 0x0e, 0x01014412 },
@@ -1958,7 +1851,7 @@ static const struct hda_model_fixup stac92hd73xx_models[] = {
 };
 
 static const struct snd_pci_quirk stac92hd73xx_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 				"DFI LanParty", STAC_92HD73XX_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
@@ -1997,7 +1890,7 @@ static const struct snd_pci_quirk stac92hd73xx_fixup_tbl[] = {
 				"Dell Studio XPS 1645", STAC_DELL_M6_DMIC),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x0413,
 				"Dell Studio 1558", STAC_DELL_M6_DMIC),
-	/* codec SSID matching */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x02a1,
 		      "Alienware M17x", STAC_ALIENWARE_M17X),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x043a,
@@ -2012,7 +1905,7 @@ static const struct snd_pci_quirk stac92hd73xx_fixup_tbl[] = {
 				"unknown HP", STAC_92HD89XX_HP_FRONT_JACK),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_ASUSTEK, 0x83f8, "ASUS AT4NM10",
 		      STAC_92HD73XX_ASUS_MOBO),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref92hd83xxx_pin_configs[] = {
@@ -2115,7 +2008,7 @@ static void stac92hd83xxx_fixup_hp(struct hda_codec *codec,
 				spec->gpio_led,
 				spec->gpio_led_polarity);
 
-	/* allow auto-switching of dock line-in */
+	 
 	spec->gen.line_in_auto_switch = true;
 }
 
@@ -2153,9 +2046,9 @@ static void stac92hd83xxx_fixup_hp_mic_led(struct hda_codec *codec,
 	struct sigmatel_spec *spec = codec->spec;
 
 	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
-		spec->mic_mute_led_gpio = 0x08; /* GPIO3 */
+		spec->mic_mute_led_gpio = 0x08;  
 #ifdef CONFIG_PM
-		/* resetting controller clears GPIO, so we need to keep on */
+		 
 		codec->core.power_caps &= ~AC_PWRST_CLKSTOP;
 #endif
 	}
@@ -2167,7 +2060,7 @@ static void stac92hd83xxx_fixup_hp_led_gpio10(struct hda_codec *codec,
 	struct sigmatel_spec *spec = codec->spec;
 
 	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
-		spec->gpio_led = 0x10; /* GPIO4 */
+		spec->gpio_led = 0x10;  
 		spec->default_polarity = 0;
 	}
 }
@@ -2211,7 +2104,7 @@ static void hp_envy_ts_fixup_dac_bind(struct hda_codec *codec,
 }
 
 static const struct hda_verb hp_bnb13_eq_verbs[] = {
-	/* 44.1KHz base */
+	 
 	{ 0x22, 0x7A6, 0x3E },
 	{ 0x22, 0x7A7, 0x68 },
 	{ 0x22, 0x7A8, 0x17 },
@@ -2420,7 +2313,7 @@ static const struct hda_verb hp_bnb13_eq_verbs[] = {
 	{ 0x22, 0x7AB, 0x00 },
 	{ 0x22, 0x7AC, 0x19 },
 	{ 0x22, 0x7AD, 0x80 },
-	/* 48KHz base */
+	 
 	{ 0x22, 0x7A6, 0x3E },
 	{ 0x22, 0x7A7, 0x88 },
 	{ 0x22, 0x7A8, 0xDC },
@@ -2629,7 +2522,7 @@ static const struct hda_verb hp_bnb13_eq_verbs[] = {
 	{ 0x22, 0x7AB, 0x00 },
 	{ 0x22, 0x7AC, 0x33 },
 	{ 0x22, 0x7AD, 0x80 },
-	/* common */
+	 
 	{ 0x22, 0x782, 0xC1 },
 	{ 0x22, 0x771, 0x2C },
 	{ 0x22, 0x772, 0x2C },
@@ -2756,7 +2649,7 @@ static const struct hda_model_fixup stac92hd83xxx_models[] = {
 };
 
 static const struct snd_pci_quirk stac92hd83xxx_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_92HD83XXX_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
@@ -2942,13 +2835,13 @@ static const struct snd_pci_quirk stac92hd83xxx_fixup_tbl[] = {
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x148a,
 		      "HP Mini", STAC_92HD83XXX_HP_LED),
 	SND_PCI_QUIRK_VENDOR(PCI_VENDOR_ID_HP, "HP", STAC_92HD83XXX_HP),
-	/* match both for 0xfa91 and 0xfa93 */
+	 
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_TOSHIBA, 0xfffd, 0xfa91,
 		      "Toshiba Satellite S50D", STAC_92HD83XXX_GPIO10_EAPD),
-	{} /* terminator */
+	{}  
 };
 
-/* HP dv7 bass switch - GPIO5 */
+ 
 #define stac_hp_bass_gpio_info	snd_ctl_boolean_mono_info
 static int stac_hp_bass_gpio_get(struct snd_kcontrol *kcontrol,
 				 struct snd_ctl_elem_value *ucontrol)
@@ -3077,7 +2970,7 @@ static void stac92hd71bxx_fixup_hp_m4(struct hda_codec *codec,
 	if (action != HDA_FIXUP_ACT_PRE_PROBE)
 		return;
 
-	/* Enable VREF power saving on GPIO1 detect */
+	 
 	snd_hda_codec_write_cache(codec, codec->core.afg, 0,
 				  AC_VERB_SET_GPIO_UNSOLICITED_RSP_MASK, 0x02);
 	jack = snd_hda_jack_detect_enable_callback(codec, codec->core.afg,
@@ -3087,7 +2980,7 @@ static void stac92hd71bxx_fixup_hp_m4(struct hda_codec *codec,
 
 	spec->gpio_mask |= 0x02;
 
-	/* enable internal microphone */
+	 
 	snd_hda_codec_set_pincfg(codec, 0x0e, 0x01813040);
 }
 
@@ -3112,7 +3005,7 @@ static void stac92hd71bxx_fixup_hp_dv5(struct hda_codec *codec,
 		break;
 
 	case HDA_FIXUP_ACT_PROBE:
-		/* enable bass on HP dv7 */
+		 
 		cap = snd_hda_param_read(codec, 0x1, AC_PAR_GPIO_CAP);
 		cap &= AC_GPIO_IO_COUNT;
 		if (cap >= 6)
@@ -3135,7 +3028,7 @@ static bool is_hp_output(struct hda_codec *codec, hda_nid_t pin)
 {
 	unsigned int pin_cfg = snd_hda_codec_get_pincfg(codec, pin);
 
-	/* count line-out, too, as BIOS sets often so */
+	 
 	return get_defcfg_connect(pin_cfg) != AC_JACK_PORT_NONE &&
 		(get_defcfg_device(pin_cfg) == AC_JACK_LINE_OUT ||
 		 get_defcfg_device(pin_cfg) == AC_JACK_HP_OUT);
@@ -3145,9 +3038,7 @@ static void fixup_hp_headphone(struct hda_codec *codec, hda_nid_t pin)
 {
 	unsigned int pin_cfg = snd_hda_codec_get_pincfg(codec, pin);
 
-	/* It was changed in the BIOS to just satisfy MS DTM.
-	 * Lets turn it back into follower HP
-	 */
+	 
 	pin_cfg = (pin_cfg & (~AC_DEFCFG_DEVICE)) |
 		(AC_JACK_HP_OUT << AC_DEFCFG_DEVICE_SHIFT);
 	pin_cfg = (pin_cfg & (~(AC_DEFCFG_DEF_ASSOC | AC_DEFCFG_SEQUENCE))) |
@@ -3163,9 +3054,7 @@ static void stac92hd71bxx_fixup_hp(struct hda_codec *codec,
 	if (action != HDA_FIXUP_ACT_PRE_PROBE)
 		return;
 
-	/* when both output A and F are assigned, these are supposedly
-	 * dock and built-in headphones; fix both pin configs
-	 */
+	 
 	if (is_hp_output(codec, 0x0a) && is_hp_output(codec, 0x0f)) {
 		fixup_hp_headphone(codec, 0x0a);
 		fixup_hp_headphone(codec, 0x0f);
@@ -3239,7 +3128,7 @@ static const struct hda_model_fixup stac92hd71bxx_models[] = {
 };
 
 static const struct snd_pci_quirk stac92hd71bxx_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_92HD71BXX_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
@@ -3253,15 +3142,15 @@ static const struct snd_pci_quirk stac92hd71bxx_fixup_tbl[] = {
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_HP, 0xfff0, 0x3600,
 		      "HP dv4-7", STAC_HP_DV5),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x3610,
-		      "HP HDX", STAC_HP_HDX),  /* HDX18 */
+		      "HP HDX", STAC_HP_HDX),   
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x361a,
 		      "HP mini 1000", STAC_HP_M4),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x361b,
-		      "HP HDX", STAC_HP_HDX),  /* HDX16 */
+		      "HP HDX", STAC_HP_HDX),   
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_HP, 0xfff0, 0x3620,
 		      "HP dv6", STAC_HP_DV5),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x3061,
-		      "HP dv6", STAC_HP_DV5), /* HP dv6-1110ax */
+		      "HP dv6", STAC_HP_DV5),  
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x363e,
 		      "HP DV6", STAC_HP_DV5),
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_HP, 0xfff0, 0x7010,
@@ -3291,7 +3180,7 @@ static const struct snd_pci_quirk stac92hd71bxx_fixup_tbl[] = {
 				"unknown Dell", STAC_DELL_M4_2),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x02aa,
 				"unknown Dell", STAC_DELL_M4_3),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref922x_pin_configs[] = {
@@ -3308,14 +3197,7 @@ static const struct hda_pintbl ref922x_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 922X pin configs for
-    102801A7
-    102801AB
-    102801A9
-    102801D1
-    102801D2
-*/
+ 
 static const struct hda_pintbl dell_922x_d81_pin_configs[] = {
 	{ 0x0a, 0x02214030 },
 	{ 0x0b, 0x01a19021 },
@@ -3330,11 +3212,7 @@ static const struct hda_pintbl dell_922x_d81_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 922X pin configs for
-    102801AC
-    102801D0
-*/
+ 
 static const struct hda_pintbl dell_922x_d82_pin_configs[] = {
 	{ 0x0a, 0x02214030 },
 	{ 0x0b, 0x01a19021 },
@@ -3349,10 +3227,7 @@ static const struct hda_pintbl dell_922x_d82_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 922X pin configs for
-    102801BF
-*/
+ 
 static const struct hda_pintbl dell_922x_m81_pin_configs[] = {
 	{ 0x0a, 0x0321101f },
 	{ 0x0b, 0x01112024 },
@@ -3367,10 +3242,7 @@ static const struct hda_pintbl dell_922x_m81_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9221 A1 pin configs for
-    102801D7 (Dell XPS M1210)
-*/
+ 
 static const struct hda_pintbl dell_922x_m82_pin_configs[] = {
 	{ 0x0a, 0x02211211 },
 	{ 0x0b, 0x408103ff },
@@ -3497,7 +3369,7 @@ static const struct hda_pintbl ecs202_pin_configs[] = {
 	{}
 };
 
-/* codec SSIDs for Intel Mac sharing the same PCI SSID 8384:7680 */
+ 
 static const struct snd_pci_quirk stac922x_intel_mac_fixup_tbl[] = {
 	SND_PCI_QUIRK(0x0000, 0x0100, "Mac Mini", STAC_INTEL_MAC_V3),
 	SND_PCI_QUIRK(0x106b, 0x0800, "Mac", STAC_INTEL_MAC_V1),
@@ -3517,7 +3389,7 @@ static const struct snd_pci_quirk stac922x_intel_mac_fixup_tbl[] = {
 
 static const struct hda_fixup stac922x_fixups[];
 
-/* remap the fixup from codec SSID and apply it */
+ 
 static void stac922x_fixup_intel_mac_auto(struct hda_codec *codec,
 					  const struct hda_fixup *fix,
 					  int action)
@@ -3632,7 +3504,7 @@ static const struct hda_model_fixup stac922x_models[] = {
 	{ .id = STAC_922X_DELL_D82, .name = "dell-d82" },
 	{ .id = STAC_922X_DELL_M81, .name = "dell-m81" },
 	{ .id = STAC_922X_DELL_M82, .name = "dell-m82" },
-	/* for backward compatibility */
+	 
 	{ .id = STAC_INTEL_MAC_V3, .name = "macmini" },
 	{ .id = STAC_INTEL_MAC_V5, .name = "macbook" },
 	{ .id = STAC_INTEL_MAC_V3, .name = "macbook-pro-v1" },
@@ -3643,12 +3515,12 @@ static const struct hda_model_fixup stac922x_models[] = {
 };
 
 static const struct snd_pci_quirk stac922x_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_D945_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
 		      "DFI LanParty", STAC_D945_REF),
-	/* Intel 945G based systems */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0101,
 		      "Intel D945G", STAC_D945GTP3),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0202,
@@ -3679,7 +3551,7 @@ static const struct snd_pci_quirk stac922x_fixup_tbl[] = {
 		      "Intel D945G", STAC_D945GTP3),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0110,
 		      "Intel D945G", STAC_D945GTP3),
-	/* Intel D945G 5-stack systems */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0404,
 		      "Intel D945G", STAC_D945GTP5),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0303,
@@ -3688,7 +3560,7 @@ static const struct snd_pci_quirk stac922x_fixup_tbl[] = {
 		      "Intel D945G", STAC_D945GTP5),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0417,
 		      "Intel D945G", STAC_D945GTP5),
-	/* Intel 945P based systems */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0b0b,
 		      "Intel D945P", STAC_D945GTP3),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0112,
@@ -3701,15 +3573,15 @@ static const struct snd_pci_quirk stac922x_fixup_tbl[] = {
 		      "Intel D945P", STAC_D945GTP3),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0707,
 		      "Intel D945P", STAC_D945GTP5),
-	/* other intel */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x0204,
 		      "Intel D945", STAC_D945_REF),
-	/* other systems  */
+	 
 
-	/* Apple Intel Mac (Mac Mini, MacBook, MacBook Pro...) */
+	 
 	SND_PCI_QUIRK(0x8384, 0x7680, "Mac", STAC_INTEL_MAC_AUTO),
 
-	/* Dell systems  */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01a7,
 		      "unknown Dell", STAC_922X_DELL_D81),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01a9,
@@ -3728,10 +3600,10 @@ static const struct snd_pci_quirk stac922x_fixup_tbl[] = {
 		      "unknown Dell", STAC_922X_DELL_D81),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01d7,
 		      "Dell XPS M1210", STAC_922X_DELL_M82),
-	/* ECS/PC Chips boards */
+	 
 	SND_PCI_QUIRK_MASK(0x1019, 0xf000, 0x2000,
 		      "ECS/PC chips", STAC_ECS_202),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref927x_pin_configs[] = {
@@ -3827,7 +3699,7 @@ static const struct hda_pintbl dell_3st_pin_configs[] = {
 static void stac927x_fixup_ref_no_jd(struct hda_codec *codec,
 				     const struct hda_fixup *fix, int action)
 {
-	/* no jack detecion for ref-no-jd model */
+	 
 	if (action == HDA_FIXUP_ACT_PRE_PROBE)
 		codec->no_jack_detect = 1;
 }
@@ -3853,7 +3725,7 @@ static void stac927x_fixup_dell_dmic(struct hda_codec *codec,
 		return;
 
 	if (codec->core.subsystem_id != 0x1028022f) {
-		/* GPIO2 High = Enable EAPD */
+		 
 		spec->eapd_mask = spec->gpio_mask = 0x04;
 		spec->gpio_dir = spec->gpio_data = 0x04;
 	}
@@ -3917,9 +3789,9 @@ static const struct hda_fixup stac927x_fixups[] = {
 	[STAC_DELL_BIOS] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			/* correct the front output jack as a hp out */
+			 
 			{ 0x0f, 0x0221101f },
-			/* correct the front input jack as a mic */
+			 
 			{ 0x0e, 0x02a79130 },
 			{}
 		},
@@ -3929,7 +3801,7 @@ static const struct hda_fixup stac927x_fixups[] = {
 	[STAC_DELL_BIOS_AMIC] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			/* configure the analog microphone on some laptops */
+			 
 			{ 0x0c, 0x90a79130 },
 			{}
 		},
@@ -3939,7 +3811,7 @@ static const struct hda_fixup stac927x_fixups[] = {
 	[STAC_DELL_BIOS_SPDIF] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
-			/* correct the device field to SPDIF out */
+			 
 			{ 0x21, 0x01442070 },
 			{}
 		},
@@ -3971,24 +3843,24 @@ static const struct hda_model_fixup stac927x_models[] = {
 };
 
 static const struct snd_pci_quirk stac927x_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_D965_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
 		      "DFI LanParty", STAC_D965_REF),
-	 /* Intel 946 based systems */
+	  
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x3d01, "Intel D946", STAC_D965_3ST),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0xa301, "Intel D946", STAC_D965_3ST),
-	/* 965 based 3 stack systems */
+	 
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_INTEL, 0xff00, 0x2100,
 			   "Intel D965", STAC_D965_3ST),
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_INTEL, 0xff00, 0x2000,
 			   "Intel D965", STAC_D965_3ST),
-	/* Dell 3 stack systems */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x01dd, "Dell Dimension E520", STAC_DELL_3ST),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x01ed, "Dell     ", STAC_DELL_3ST),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x01f4, "Dell     ", STAC_DELL_3ST),
-	/* Dell 3 stack systems with verb table in BIOS */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x01f3, "Dell Inspiron 1420", STAC_DELL_BIOS),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x01f7, "Dell XPS M1730", STAC_DELL_BIOS),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x0227, "Dell Vostro 1400  ", STAC_DELL_BIOS),
@@ -3998,16 +3870,16 @@ static const struct snd_pci_quirk stac927x_fixup_tbl[] = {
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x0243, "Dell     ", STAC_DELL_BIOS),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x02ff, "Dell     ", STAC_DELL_BIOS),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL,  0x0209, "Dell XPS 1330", STAC_DELL_BIOS_SPDIF),
-	/* 965 based 5 stack systems */
+	 
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_INTEL, 0xff00, 0x2300,
 			   "Intel D965", STAC_D965_5ST),
 	SND_PCI_QUIRK_MASK(PCI_VENDOR_ID_INTEL, 0xff00, 0x2500,
 			   "Intel D965", STAC_D965_5ST),
-	/* Nemo */
+	 
 	SND_PCI_QUIRK(0x1888, 0x1000, "AmigaOne X1000", STAC_NEMO_DEFAULT),
-	/* volume-knob fixes */
+	 
 	SND_PCI_QUIRK_VENDOR(0x10cf, "FSC", STAC_927X_VOLKNOB),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_pintbl ref9205_pin_configs[] = {
@@ -4026,17 +3898,7 @@ static const struct hda_pintbl ref9205_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9205 pin configs for
-    102801F1
-    102801F2
-    102801FC
-    102801FD
-    10280204
-    1028021F
-    10280228 (Dell Vostro 1500)
-    10280229 (Dell Vostro 1700)
-*/
+ 
 static const struct hda_pintbl dell_9205_m42_pin_configs[] = {
 	{ 0x0a, 0x0321101F },
 	{ 0x0b, 0x03A11020 },
@@ -4053,16 +3915,7 @@ static const struct hda_pintbl dell_9205_m42_pin_configs[] = {
 	{}
 };
 
-/*
-    STAC 9205 pin configs for
-    102801F9
-    102801FA
-    102801FE
-    102801FF (Dell Precision M4300)
-    10280206
-    10280200
-    10280201
-*/
+ 
 static const struct hda_pintbl dell_9205_m43_pin_configs[] = {
 	{ 0x0a, 0x0321101f },
 	{ 0x0b, 0x03a11020 },
@@ -4076,7 +3929,7 @@ static const struct hda_pintbl dell_9205_m43_pin_configs[] = {
 	{ 0x18, 0x400000fc },
 	{ 0x21, 0x0144131f },
 	{ 0x22, 0x40c003f8 },
-	/* Enable SPDIF in/out */
+	 
 	{ 0x1f, 0x01441030 },
 	{ 0x20, 0x1c410030 },
 	{}
@@ -4105,7 +3958,7 @@ static void stac9205_fixup_ref(struct hda_codec *codec,
 
 	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
 		snd_hda_apply_pincfgs(codec, ref9205_pin_configs);
-		/* SPDIF-In enabled */
+		 
 		spec->eapd_mask = spec->gpio_mask = spec->gpio_dir = 0;
 	}
 }
@@ -4119,7 +3972,7 @@ static void stac9205_fixup_dell_m43(struct hda_codec *codec,
 	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
 		snd_hda_apply_pincfgs(codec, dell_9205_m43_pin_configs);
 
-		/* Enable unsol response for GPIO4/Dock HP connection */
+		 
 		snd_hda_codec_write_cache(codec, codec->core.afg, 0,
 			AC_VERB_SET_GPIO_UNSOLICITED_RSP_MASK, 0x10);
 		jack = snd_hda_jack_detect_enable_callback(codec, codec->core.afg,
@@ -4131,9 +3984,7 @@ static void stac9205_fixup_dell_m43(struct hda_codec *codec,
 		spec->eapd_mask = 0x01;
 		spec->gpio_mask = 0x1b;
 		spec->gpio_mute = 0x10;
-		/* GPIO0 High = EAPD, GPIO1 Low = Headphone Mute,
-		 * GPIO3 Low = DRM
-		 */
+		 
 		spec->gpio_data = 0x01;
 	}
 }
@@ -4181,14 +4032,14 @@ static const struct hda_model_fixup stac9205_models[] = {
 };
 
 static const struct snd_pci_quirk stac9205_fixup_tbl[] = {
-	/* SigmaTel reference board */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0x2668,
 		      "DFI LanParty", STAC_9205_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_INTEL, 0xfb30,
 		      "SigmaTel", STAC_9205_REF),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DFI, 0x3101,
 		      "DFI LanParty", STAC_9205_REF),
-	/* Dell */
+	 
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01f1,
 		      "unknown Dell", STAC_9205_DELL_M42),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x01f2,
@@ -4221,10 +4072,10 @@ static const struct snd_pci_quirk stac9205_fixup_tbl[] = {
 		      "Dell Vostro 1500", STAC_9205_DELL_M42),
 	SND_PCI_QUIRK(PCI_VENDOR_ID_DELL, 0x0229,
 		      "Dell Vostro 1700", STAC_9205_DELL_M42),
-	/* Gateway */
+	 
 	SND_PCI_QUIRK(0x107b, 0x0560, "Gateway T6834c", STAC_9205_EAPD),
 	SND_PCI_QUIRK(0x107b, 0x0565, "Gateway T1616", STAC_9205_EAPD),
-	{} /* terminator */
+	{}  
 };
 
 static void stac92hd95_fixup_hp_led(struct hda_codec *codec,
@@ -4249,7 +4100,7 @@ static const struct hda_fixup stac92hd95_fixups[] = {
 	[STAC_92HD95_HP_BASS] = {
 		.type = HDA_FIXUP_VERBS,
 		.v.verbs = (const struct hda_verb[]) {
-			{0x1a, 0x795, 0x00}, /* HPF to 100Hz */
+			{0x1a, 0x795, 0x00},  
 			{}
 		},
 		.chained = true,
@@ -4259,7 +4110,7 @@ static const struct hda_fixup stac92hd95_fixups[] = {
 
 static const struct snd_pci_quirk stac92hd95_fixup_tbl[] = {
 	SND_PCI_QUIRK(PCI_VENDOR_ID_HP, 0x1911, "HP Spectre 13", STAC_92HD95_HP_BASS),
-	{} /* terminator */
+	{}  
 };
 
 static const struct hda_model_fixup stac92hd95_models[] = {
@@ -4282,7 +4133,7 @@ static int stac_parse_auto_config(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
-	/* add hooks */
+	 
 	spec->gen.pcm_playback_hook = stac_playback_pcm_hook;
 	spec->gen.pcm_capture_hook = stac_capture_pcm_hook;
 
@@ -4301,7 +4152,7 @@ static int stac_parse_auto_config(struct hda_codec *codec)
 			return err;
 	}
 
-	/* setup analog beep controls */
+	 
 	if (spec->anabeep_nid > 0) {
 		err = stac_auto_create_beep_ctls(codec,
 						 spec->anabeep_nid);
@@ -4309,7 +4160,7 @@ static int stac_parse_auto_config(struct hda_codec *codec)
 			return err;
 	}
 
-	/* setup digital beep controls and input device */
+	 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP
 	if (spec->gen.beep_nid) {
 		hda_nid_t nid = spec->gen.beep_nid;
@@ -4319,11 +4170,11 @@ static int stac_parse_auto_config(struct hda_codec *codec)
 		if (err < 0)
 			return err;
 		if (codec->beep) {
-			/* IDT/STAC codecs have linear beep tone parameter */
+			 
 			codec->beep->linear_tone = spec->linear_tone_beep;
-			/* keep power up while beep is enabled */
+			 
 			codec->beep->keep_power_at_enable = 1;
-			/* if no beep switch is available, make its own one */
+			 
 			caps = query_amp_caps(codec, nid, HDA_OUTPUT);
 			if (!(caps & AC_AMPCAP_MUTE)) {
 				err = stac_beep_switch_ctl(codec);
@@ -4360,26 +4211,24 @@ static int stac_init(struct hda_codec *codec)
 	struct sigmatel_spec *spec = codec->spec;
 	int i;
 
-	/* override some hints */
+	 
 	stac_store_hints(codec);
 
-	/* set up GPIO */
-	/* turn on EAPD statically when spec->eapd_switch isn't set.
-	 * otherwise, unsol event will turn it on/off dynamically
-	 */
+	 
+	 
 	if (!spec->eapd_switch)
 		spec->gpio_data |= spec->eapd_mask;
 	stac_gpio_set(codec, spec->gpio_mask, spec->gpio_dir, spec->gpio_data);
 
 	snd_hda_gen_init(codec);
 
-	/* sync the power-map */
+	 
 	if (spec->num_pwrs)
 		snd_hda_codec_write(codec, codec->core.afg, 0,
 				    AC_VERB_IDT_SET_POWER_MAP,
 				    spec->power_map_bits);
 
-	/* power down inactive ADCs */
+	 
 	if (spec->powerdown_adcs) {
 		for (i = 0; i < spec->gen.num_all_adcs; i++) {
 			if (spec->active_adcs & (1 << i))
@@ -4413,7 +4262,7 @@ static void analog_loop_proc_hook(struct snd_info_buffer *buffer,
 		    snd_hda_codec_read(codec, codec->core.afg, 0, verb, 0));
 }
 
-/* stac92hd71bxx, stac92hd73xx */
+ 
 static void stac92hd7x_proc_hook(struct snd_info_buffer *buffer,
 				 struct hda_codec *codec, hda_nid_t nid)
 {
@@ -4458,7 +4307,7 @@ static int stac_suspend(struct hda_codec *codec)
 }
 #else
 #define stac_suspend		NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct hda_codec_ops stac_patch_ops = {
 	.build_controls = snd_hda_gen_build_controls,
@@ -4480,7 +4329,7 @@ static int alloc_stac_spec(struct hda_codec *codec)
 		return -ENOMEM;
 	snd_hda_gen_spec_init(&spec->gen);
 	codec->spec = spec;
-	codec->no_trigger_sense = 1; /* seems common with STAC/IDT codecs */
+	codec->no_trigger_sense = 1;  
 	spec->gen.dac_min_mute = true;
 	codec->patch_ops = stac_patch_ops;
 	return 0;
@@ -4559,9 +4408,7 @@ static int patch_stac92hd73xx(struct hda_codec *codec)
 		return err;
 
 	spec = codec->spec;
-	/* enable power_save_node only for new 92HD89xx chips, as it causes
-	 * click noises on old 92HD73xx chips.
-	 */
+	 
 	if ((codec->core.vendor_id & 0xfffffff0) != 0x111d7670)
 		codec->power_save_node = 1;
 	spec->linear_tone_beep = 0;
@@ -4576,13 +4423,13 @@ static int patch_stac92hd73xx(struct hda_codec *codec)
 	}
 
 	switch (num_dacs) {
-	case 0x3: /* 6 Channel */
+	case 0x3:  
 		spec->aloopback_ctl = &stac92hd73xx_6ch_loopback;
 		break;
-	case 0x4: /* 8 Channel */
+	case 0x4:  
 		spec->aloopback_ctl = &stac92hd73xx_8ch_loopback;
 		break;
-	case 0x5: /* 10 Channel */
+	case 0x5:  
 		spec->aloopback_ctl = &stac92hd73xx_10ch_loopback;
 		break;
 	}
@@ -4590,9 +4437,9 @@ static int patch_stac92hd73xx(struct hda_codec *codec)
 	spec->aloopback_mask = 0x01;
 	spec->aloopback_shift = 8;
 
-	spec->gen.beep_nid = 0x1c; /* digital beep */
+	spec->gen.beep_nid = 0x1c;  
 
-	/* GPIO0 High = Enable EAPD */
+	 
 	spec->eapd_mask = spec->gpio_mask = spec->gpio_dir = 0x1;
 	spec->gpio_data = 0x01;
 
@@ -4617,9 +4464,7 @@ static int patch_stac92hd73xx(struct hda_codec *codec)
 		return err;
 	}
 
-	/* Don't GPIO-mute speakers if there are no internal speakers, because
-	 * the GPIO might be necessary for Headphone
-	 */
+	 
 	if (spec->eapd_switch && !has_builtin_speaker(codec))
 		spec->eapd_switch = 0;
 
@@ -4663,7 +4508,7 @@ static int patch_stac92hd83xxx(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
-	/* longer delay needed for D3 */
+	 
 	codec->core.power_caps &= ~AC_PWRST_EPSS;
 
 	spec = codec->spec;
@@ -4673,10 +4518,10 @@ static int patch_stac92hd83xxx(struct hda_codec *codec)
 	spec->gen.power_down_unused = 1;
 	spec->gen.mixer_nid = 0x1b;
 
-	spec->gen.beep_nid = 0x21; /* digital beep */
+	spec->gen.beep_nid = 0x21;  
 	spec->pwr_nids = stac92hd83xxx_pwr_nids;
 	spec->num_pwrs = ARRAY_SIZE(stac92hd83xxx_pwr_nids);
-	spec->default_polarity = -1; /* no default cfg */
+	spec->default_polarity = -1;  
 
 	snd_hda_add_verbs(codec, stac92hd83xxx_core_init);
 
@@ -4712,7 +4557,7 @@ static int patch_stac92hd95(struct hda_codec *codec)
 	if (err < 0)
 		return err;
 
-	/* longer delay needed for D3 */
+	 
 	codec->core.power_caps &= ~AC_PWRST_EPSS;
 
 	spec = codec->spec;
@@ -4721,7 +4566,7 @@ static int patch_stac92hd95(struct hda_codec *codec)
 	spec->gen.own_eapd_ctl = 1;
 	spec->gen.power_down_unused = 1;
 
-	spec->gen.beep_nid = 0x19; /* digital beep */
+	spec->gen.beep_nid = 0x19;  
 	spec->pwr_nids = stac92hd95_pwr_nids;
 	spec->num_pwrs = ARRAY_SIZE(stac92hd95_pwr_nids);
 	spec->default_polarity = 0;
@@ -4756,37 +4601,37 @@ static int patch_stac92hd71bxx(struct hda_codec *codec)
 		return err;
 
 	spec = codec->spec;
-	/* disabled power_save_node since it causes noises on a Dell machine */
-	/* codec->power_save_node = 1; */
+	 
+	 
 	spec->linear_tone_beep = 0;
 	spec->gen.own_eapd_ctl = 1;
 	spec->gen.power_down_unused = 1;
 	spec->gen.mixer_nid = 0x17;
 	spec->have_spdif_mux = 1;
 
-	/* GPIO0 = EAPD */
+	 
 	spec->gpio_mask = 0x01;
 	spec->gpio_dir = 0x01;
 	spec->gpio_data = 0x01;
 
 	switch (codec->core.vendor_id) {
-	case 0x111d76b6: /* 4 Port without Analog Mixer */
+	case 0x111d76b6:  
 	case 0x111d76b7:
 		unmute_nids++;
 		break;
-	case 0x111d7608: /* 5 Port with Analog Mixer */
+	case 0x111d7608:  
 		if ((codec->core.revision_id & 0xf) == 0 ||
 		    (codec->core.revision_id & 0xf) == 1)
-			spec->stream_delay = 40; /* 40 milliseconds */
+			spec->stream_delay = 40;  
 
-		/* disable VSW */
+		 
 		unmute_nids++;
 		snd_hda_codec_set_pincfg(codec, 0x0f, 0x40f000f0);
 		snd_hda_codec_set_pincfg(codec, 0x19, 0x40f000f3);
 		break;
-	case 0x111d7603: /* 6 Port with Analog Mixer */
+	case 0x111d7603:  
 		if ((codec->core.revision_id & 0xf) == 1)
-			spec->stream_delay = 40; /* 40 milliseconds */
+			spec->stream_delay = 40;  
 
 		break;
 	}
@@ -4806,7 +4651,7 @@ static int patch_stac92hd71bxx(struct hda_codec *codec)
 	spec->aloopback_shift = 0;
 
 	spec->powerdown_adcs = 1;
-	spec->gen.beep_nid = 0x26; /* digital beep */
+	spec->gen.beep_nid = 0x26;  
 	spec->num_pwrs = ARRAY_SIZE(stac92hd71bxx_pwr_nids);
 	spec->pwr_nids = stac92hd71bxx_pwr_nids;
 
@@ -4844,7 +4689,7 @@ static int patch_stac922x(struct hda_codec *codec)
 
 	snd_hda_add_verbs(codec, stac922x_core_init);
 
-	/* Fix Mux capture level; max to 2 */
+	 
 	snd_hda_override_amp_caps(codec, 0x12, HDA_OUTPUT,
 				  (0 << AC_AMPCAP_OFFSET_SHIFT) |
 				  (2 << AC_AMPCAP_NUM_STEPS_SHIFT) |
@@ -4886,9 +4731,9 @@ static int patch_stac927x(struct hda_codec *codec)
 	spec->have_spdif_mux = 1;
 	spec->spdif_labels = stac927x_spdif_labels;
 
-	spec->gen.beep_nid = 0x23; /* digital beep */
+	spec->gen.beep_nid = 0x23;  
 
-	/* GPIO0 High = Enable EAPD */
+	 
 	spec->eapd_mask = spec->gpio_mask = 0x01;
 	spec->gpio_dir = spec->gpio_data = 0x01;
 
@@ -4912,16 +4757,7 @@ static int patch_stac927x(struct hda_codec *codec)
 
 	codec->proc_widget_hook = stac927x_proc_hook;
 
-	/*
-	 * !!FIXME!!
-	 * The STAC927x seem to require fairly long delays for certain
-	 * command sequences.  With too short delays (even if the answer
-	 * is set to RIRB properly), it results in the silence output
-	 * on some hardwares like Dell.
-	 *
-	 * The below flag enables the longer delay (see get_response
-	 * in hda_intel.c).
-	 */
+	 
 	codec->bus->core.needs_damn_long_delay = 1;
 
 	snd_hda_apply_fixup(codec, HDA_FIXUP_ACT_PROBE);
@@ -4943,7 +4779,7 @@ static int patch_stac9205(struct hda_codec *codec)
 	spec->gen.own_eapd_ctl = 1;
 	spec->have_spdif_mux = 1;
 
-	spec->gen.beep_nid = 0x23; /* digital beep */
+	spec->gen.beep_nid = 0x23;  
 
 	snd_hda_add_verbs(codec, stac9205_core_init);
 	spec->aloopback_ctl = &stac9205_loopback;
@@ -4951,11 +4787,11 @@ static int patch_stac9205(struct hda_codec *codec)
 	spec->aloopback_mask = 0x40;
 	spec->aloopback_shift = 0;
 	
-	/* GPIO0 High = EAPD */
+	 
 	spec->eapd_mask = spec->gpio_mask = spec->gpio_dir = 0x1;
 	spec->gpio_data = 0x01;
 
-	/* Turn on/off EAPD per HP plugging */
+	 
 	spec->eapd_switch = 1;
 
 	snd_hda_pick_fixup(codec, stac9205_models, stac9205_fixup_tbl,
@@ -4975,13 +4811,11 @@ static int patch_stac9205(struct hda_codec *codec)
 	return 0;
 }
 
-/*
- * STAC9872 hack
- */
+ 
 
 static const struct hda_verb stac9872_core_init[] = {
-	{0x15, AC_VERB_SET_CONNECT_SEL, 0x1}, /* mic-sel: 0a,0d,14,02 */
-	{0x15, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE}, /* Mic-in -> 0x9 */
+	{0x15, AC_VERB_SET_CONNECT_SEL, 0x1},  
+	{0x15, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},  
 	{}
 };
 
@@ -5013,7 +4847,7 @@ static const struct hda_fixup stac9872_fixups[] = {
 static const struct snd_pci_quirk stac9872_fixup_tbl[] = {
 	SND_PCI_QUIRK_MASK(0x104d, 0xfff0, 0x81e0,
 			   "Sony VAIO F/S", STAC_9872_VAIO),
-	{} /* terminator */
+	{}  
 };
 
 static int patch_stac9872(struct hda_codec *codec)
@@ -5047,9 +4881,7 @@ static int patch_stac9872(struct hda_codec *codec)
 }
 
 
-/*
- * patch entries
- */
+ 
 static const struct hda_device_id snd_hda_id_sigmatel[] = {
 	HDA_CODEC_ENTRY(0x83847690, "STAC9200", patch_stac9200),
 	HDA_CODEC_ENTRY(0x83847882, "STAC9220 A1", patch_stac922x),
@@ -5083,10 +4915,7 @@ static const struct hda_device_id snd_hda_id_sigmatel[] = {
 	HDA_CODEC_ENTRY(0x83847637, "STAC9250D", patch_stac925x),
 	HDA_CODEC_ENTRY(0x83847645, "92HD206X", patch_stac927x),
 	HDA_CODEC_ENTRY(0x83847646, "92HD206D", patch_stac927x),
-	/* The following does not take into account .id=0x83847661 when subsys =
-	 * 104D0C00 which is STAC9225s. Because of this, some SZ Notebooks are
-	 * currently not fully supported.
-	 */
+	 
 	HDA_CODEC_ENTRY(0x83847661, "CXD9872RD/K", patch_stac9872),
 	HDA_CODEC_ENTRY(0x83847662, "STAC9872AK", patch_stac9872),
 	HDA_CODEC_ENTRY(0x83847664, "CXD9872AKD", patch_stac9872),
@@ -5155,7 +4984,7 @@ static const struct hda_device_id snd_hda_id_sigmatel[] = {
 	HDA_CODEC_ENTRY(0x111d76f1, "92HD66C1X3", patch_stac92hd83xxx),
 	HDA_CODEC_ENTRY(0x111d76f2, "92HD66C2X3", patch_stac92hd83xxx),
 	HDA_CODEC_ENTRY(0x111d76f3, "92HD66C3/65", patch_stac92hd83xxx),
-	{} /* terminator */
+	{}  
 };
 MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_sigmatel);
 

@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2019, loli10K <ezomori.nozomu@gmail.com>. All rights reserved.
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_impl.h>
@@ -44,9 +21,9 @@
 
 
 typedef struct dmu_diffarg {
-	zfs_file_t *da_fp;		/* file to which we are reporting */
+	zfs_file_t *da_fp;		 
 	offset_t *da_offp;
-	int da_err;			/* error that stopped diff search */
+	int da_err;			 
 	dmu_diff_record_t da_ddr;
 } dmu_diffarg_t;
 
@@ -157,7 +134,7 @@ diff_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 		arc_buf_destroy(abuf, &abuf);
 		if (err)
 			return (err);
-		/* Don't care about the data blocks */
+		 
 		return (TRAVERSE_VISIT_NO_CHILDREN);
 	}
 	return (0);
@@ -214,14 +191,7 @@ dmu_diff(const char *tosnap_name, const char *fromsnap_name,
 	da.da_ddr.ddr_first = da.da_ddr.ddr_last = 0;
 	da.da_err = 0;
 
-	/*
-	 * Since zfs diff only looks at dnodes which are stored in plaintext
-	 * (other than bonus buffers), we don't technically need to decrypt
-	 * the dataset to perform this operation. However, the command line
-	 * utility will still fail if the keys are not loaded because the
-	 * dataset isn't mounted and because it will fail when it attempts to
-	 * call the ZFS_IOC_OBJ_TO_STATS ioctl.
-	 */
+	 
 	error = traverse_dataset(tosnap, fromtxg,
 	    TRAVERSE_PRE | TRAVERSE_PREFETCH_METADATA | TRAVERSE_NO_DECRYPT,
 	    diff_cb, &da);
@@ -229,7 +199,7 @@ dmu_diff(const char *tosnap_name, const char *fromsnap_name,
 	if (error != 0) {
 		da.da_err = error;
 	} else {
-		/* we set the da.da_err we return as side-effect */
+		 
 		(void) write_record(&da);
 	}
 

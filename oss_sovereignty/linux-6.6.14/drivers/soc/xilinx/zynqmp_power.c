@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Zynq MPSoC Power Management
- *
- *  Copyright (C) 2014-2019 Xilinx, Inc.
- *
- *  Davorin Mista <davorin.mista@aggios.com>
- *  Jolly Shah <jollys@xilinx.com>
- *  Rajan Vaja <rajan.vaja@xilinx.com>
- */
+
+ 
 
 #include <linux/mailbox_client.h>
 #include <linux/module.h>
@@ -20,11 +12,7 @@
 #include <linux/firmware/xlnx-event-manager.h>
 #include <linux/mailbox/zynqmp-ipi-message.h>
 
-/**
- * struct zynqmp_pm_work_struct - Wrapper for struct work_struct
- * @callback_work:	Work structure
- * @args:		Callback arguments
- */
+ 
 struct zynqmp_pm_work_struct {
 	struct work_struct callback_work;
 	u32 args[CB_ARG_CNT];
@@ -56,11 +44,11 @@ static void zynqmp_pm_get_callback_data(u32 *buf)
 
 static void suspend_event_callback(const u32 *payload, void *data)
 {
-	/* First element is callback API ID, others are callback arguments */
+	 
 	if (work_pending(&zynqmp_pm_init_suspend_work->callback_work))
 		return;
 
-	/* Copy callback arguments into work's structure */
+	 
 	memcpy(zynqmp_pm_init_suspend_work->args, &payload[1],
 	       sizeof(zynqmp_pm_init_suspend_work->args));
 
@@ -73,7 +61,7 @@ static irqreturn_t zynqmp_pm_isr(int irq, void *data)
 
 	zynqmp_pm_get_callback_data(payload);
 
-	/* First element is callback API ID, others are callback arguments */
+	 
 	if (payload[0] == PM_INIT_SUSPEND_CB) {
 		switch (payload[1]) {
 		case SUSPEND_SYSTEM_SHUTDOWN:
@@ -98,31 +86,26 @@ static void ipi_receive_callback(struct mbox_client *cl, void *data)
 	int ret;
 
 	memcpy(payload, msg->data, sizeof(msg->len));
-	/* First element is callback API ID, others are callback arguments */
+	 
 	if (payload[0] == PM_INIT_SUSPEND_CB) {
 		if (work_pending(&zynqmp_pm_init_suspend_work->callback_work))
 			return;
 
-		/* Copy callback arguments into work's structure */
+		 
 		memcpy(zynqmp_pm_init_suspend_work->args, &payload[1],
 		       sizeof(zynqmp_pm_init_suspend_work->args));
 
 		queue_work(system_unbound_wq,
 			   &zynqmp_pm_init_suspend_work->callback_work);
 
-		/* Send NULL message to mbox controller to ack the message */
+		 
 		ret = mbox_send_message(rx_chan, NULL);
 		if (ret)
 			pr_err("IPI ack failed. Error %d\n", ret);
 	}
 }
 
-/**
- * zynqmp_pm_init_suspend_work_fn - Initialize suspend
- * @work:	Pointer to work_struct
- *
- * Bottom-half of PM callback IRQ handler.
- */
+ 
 static void zynqmp_pm_init_suspend_work_fn(struct work_struct *work)
 {
 	struct zynqmp_pm_work_struct *pm_work =
@@ -152,7 +135,7 @@ static ssize_t suspend_mode_show(struct device *dev,
 				s += sprintf(s, "%s ", suspend_modes[md]);
 		}
 
-	/* Convert last space to newline */
+	 
 	if (s != buf)
 		*(s - 1) = '\n';
 	return (s - buf);
@@ -190,17 +173,11 @@ static int zynqmp_pm_probe(struct platform_device *pdev)
 
 	zynqmp_pm_get_api_version(&pm_api_version);
 
-	/* Check PM API version number */
+	 
 	if (pm_api_version < ZYNQMP_PM_VERSION)
 		return -ENODEV;
 
-	/*
-	 * First try to use Xilinx Event Manager by registering suspend_event_callback
-	 * for suspend/shutdown event.
-	 * If xlnx_register_event() returns -EACCES (Xilinx Event Manager
-	 * is not available to use) or -ENODEV(Xilinx Event Manager not compiled),
-	 * then use ipi-mailbox or interrupt method.
-	 */
+	 
 	ret = xlnx_register_event(PM_INIT_SUSPEND_CB, 0, 0, false,
 				  suspend_event_callback, NULL);
 	if (!ret) {
@@ -289,7 +266,7 @@ static int zynqmp_pm_remove(struct platform_device *pdev)
 
 static const struct of_device_id pm_of_match[] = {
 	{ .compatible = "xlnx,zynqmp-power", },
-	{ /* end of table */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, pm_of_match);
 

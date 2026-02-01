@@ -1,21 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved. */
+ 
+ 
 
-/*
- * This header provides constants for binding nvidia,tegra194-gpio*.
- *
- * The first cell in Tegra's GPIO specifier is the GPIO ID. The macros below
- * provide names for this.
- *
- * The second cell contains standard flag values specified in gpio.h.
- */
+ 
 
 #ifndef _DT_BINDINGS_GPIO_TEGRA194_GPIO_H
 #define _DT_BINDINGS_GPIO_TEGRA194_GPIO_H
 
 #include <dt-bindings/gpio/gpio.h>
 
-/* GPIOs implemented by main GPIO controller */
+ 
 #define TEGRA194_MAIN_GPIO_PORT_A 0
 #define TEGRA194_MAIN_GPIO_PORT_B 1
 #define TEGRA194_MAIN_GPIO_PORT_C 2
@@ -48,7 +41,7 @@
 #define TEGRA194_MAIN_GPIO(port, offset) \
 	((TEGRA194_MAIN_GPIO_PORT_##port * 8) + offset)
 
-/* GPIOs implemented by AON GPIO controller */
+ 
 #define TEGRA194_AON_GPIO_PORT_AA 0
 #define TEGRA194_AON_GPIO_PORT_BB 1
 #define TEGRA194_AON_GPIO_PORT_CC 2

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sdsi: Intel On Demand (formerly Software Defined Silicon) tool for
- * provisioning certificates and activation payloads on supported cpus.
- *
- * See https://github.com/intel/intel-sdsi/blob/master/os-interface.rst
- * for register descriptions.
- *
- * Copyright (C) 2022 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <dirent.h>
 #include <errno.h>
@@ -135,7 +127,7 @@ struct license_key_info {
 #define LICENSE_BLOB_SIZE(l)	(((l) & 0x7fffffff) * 4)
 #define LICENSE_VALID(l)	(!!((l) & 0x80000000))
 
-// License Group Types
+
 #define LBT_ONE_TIME_UPGRADE	1
 #define LBT_METERED_UPGRADE	2
 
@@ -214,7 +206,7 @@ static int sdsi_update_registers(struct sdsi_dev *s)
 
 	memset(&s->regs, 0, sizeof(s->regs));
 
-	/* Open the registers file */
+	 
 	ret = chdir(s->dev_path);
 	if (ret == -1) {
 		perror("chdir");
@@ -233,7 +225,7 @@ static int sdsi_update_registers(struct sdsi_dev *s)
 		return -1;
 	}
 
-	/* Update register info for this guid */
+	 
 	ret = fread(&s->regs, sizeof(uint8_t), sizeof(s->regs), regs_ptr);
 	if ((s->guid == GUID_V1 && ret != REGS_SIZE_GUID_V1) ||
 	    (s->guid == GUID_V2 && ret != REGS_SIZE_GUID_V2)) {
@@ -255,7 +247,7 @@ static int sdsi_read_reg(struct sdsi_dev *s)
 	if (ret)
 		return ret;
 
-	/* Print register info for this guid */
+	 
 	printf("\n");
 	printf("Socket information for device %s\n", s->dev_name);
 	printf("\n");
@@ -448,7 +440,7 @@ static int sdsi_state_cert_show(struct sdsi_dev *s)
 
 	sc = (struct state_certificate *)buf;
 
-	/* Print register info for this guid */
+	 
 	printf("\n");
 	printf("State certificate for device %s\n", s->dev_name);
 	printf("\n");
@@ -459,7 +451,7 @@ static int sdsi_state_cert_show(struct sdsi_dev *s)
 	printf("OEM Key Size:          %d\n", sc->key_size * 4);
 	printf("Number of Licenses:    %d\n", sc->num_licenses);
 
-	/* Skip over the license sizes 4 bytes per license) to get the license key info */
+	 
 	lki = (void *)sc + sizeof(*sc) + (4 * sc->num_licenses);
 
 	printf("License blob Info:\n");
@@ -474,11 +466,11 @@ static int sdsi_state_cert_show(struct sdsi_dev *s)
 		uint32_t blob_size = LICENSE_BLOB_SIZE(blob_size_field);
 		bool license_valid = LICENSE_VALID(blob_size_field);
 		struct license_blob_content *lbc =
-			(void *)(sc) +			// start of the state certificate
-			sizeof(*sc) +			// size of the state certificate
-			(4 * sc->num_licenses) +	// total size of the blob size blocks
-			sizeof(*lki) +			// size of the license key info
-			offset;				// offset to this blob content
+			(void *)(sc) +			
+			sizeof(*sc) +			
+			(4 * sc->num_licenses) +	
+			sizeof(*lki) +			
+			offset;				
 		struct bundle_encoding *bundle = (void *)(lbc) + sizeof(*lbc);
 		char feature[5];
 		uint32_t i;
@@ -523,7 +515,7 @@ static int sdsi_provision(struct sdsi_dev *s, char *bin_file, enum command comma
 		return -1;
 	}
 
-	/* Open the binary */
+	 
 	bin_fd = open(bin_file, O_RDONLY);
 	if (bin_fd == -1) {
 		fprintf(stderr, "Could not open file %s: %s\n", bin_file, strerror(errno));
@@ -539,7 +531,7 @@ static int sdsi_provision(struct sdsi_dev *s, char *bin_file, enum command comma
 		return ret;
 	}
 
-	/* Open the provision file */
+	 
 	prov_fd = open(prov_file, O_WRONLY);
 	if (prov_fd == -1) {
 		fprintf(stderr, "Could not open file %s: %s\n", prov_file, strerror(errno));
@@ -547,7 +539,7 @@ static int sdsi_provision(struct sdsi_dev *s, char *bin_file, enum command comma
 		return prov_fd;
 	}
 
-	/* Read the binary file into the buffer */
+	 
 	size = read(bin_fd, buf, STATE_CERT_MAX_SIZE);
 	if (size == -1) {
 		close(bin_fd);

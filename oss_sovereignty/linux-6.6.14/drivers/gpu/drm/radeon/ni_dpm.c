@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/math64.h>
 #include <linux/pci.h>
@@ -652,7 +631,7 @@ static const u32 cayman_mgcg_enable[] =
 
 static const u32 cayman_sysls_default[] =
 {
-	/* Register,   Value,     Mask bits */
+	 
 	0x000055e8, 0x00000000, 0xffffffff,
 	0x0000d0bc, 0x00000000, 0xffffffff,
 	0x0000d8bc, 0x00000000, 0xffffffff,
@@ -675,7 +654,7 @@ static const u32 cayman_sysls_default[] =
 
 static const u32 cayman_sysls_disable[] =
 {
-	/* Register,   Value,     Mask bits */
+	 
 	0x0000d0c0, 0x00000000, 0xffffffff,
 	0x0000d8c0, 0x00000000, 0xffffffff,
 	0x000055e8, 0x00000000, 0xffffffff,
@@ -700,7 +679,7 @@ static const u32 cayman_sysls_disable[] =
 
 static const u32 cayman_sysls_enable[] =
 {
-	/* Register,   Value,     Mask bits */
+	 
 	0x000055e8, 0x00000001, 0xffffffff,
 	0x0000d0bc, 0x00000100, 0xffffffff,
 	0x0000d8bc, 0x00000100, 0xffffffff,
@@ -772,7 +751,7 @@ bool ni_dpm_vblank_too_short(struct radeon_device *rdev)
 {
 	struct rv7xx_power_info *pi = rv770_get_pi(rdev);
 	u32 vblank_time = r600_dpm_get_vblank_time(rdev);
-	/* we never hit the non-gddr5 limit so disable it */
+	 
 	u32 switch_limit = pi->mem_gddr5 ? 450 : 0;
 
 	if (vblank_time < switch_limit)
@@ -816,9 +795,9 @@ static void ni_apply_state_adjust_rules(struct radeon_device *rdev,
 		}
 	}
 
-	/* XXX validate the min clocks required for display */
+	 
 
-	/* adjust low state */
+	 
 	if (disable_mclk_switching) {
 		ps->performance_levels[0].mclk =
 			ps->performance_levels[ps->performance_level_count - 1].mclk;
@@ -837,7 +816,7 @@ static void ni_apply_state_adjust_rules(struct radeon_device *rdev,
 			ps->performance_levels[i].vddc = ps->performance_levels[i - 1].vddc;
 	}
 
-	/* adjust remaining states */
+	 
 	if (disable_mclk_switching) {
 		mclk = ps->performance_levels[0].mclk;
 		vddci = ps->performance_levels[0].vddci;
@@ -1469,7 +1448,7 @@ static int ni_populate_smc_tdp_limits(struct radeon_device *rdev,
 		memset(smc_table, 0, sizeof(NISLANDS_SMC_STATETABLE));
 
 		ret = ni_calculate_adjusted_tdp_limits(rdev,
-						       false, /* ??? */
+						       false,  
 						       rdev->pm.dpm.tdp_adjustment,
 						       &tdp_limit,
 						       &near_tdp_limit);
@@ -2478,7 +2457,7 @@ static int ni_populate_power_containment_values(struct radeon_device *rdev,
 		return -EINVAL;
 
 	ret = ni_calculate_adjusted_tdp_limits(rdev,
-					       false, /* ??? */
+					       false,  
 					       rdev->pm.dpm.tdp_adjustment,
 					       &tdp_limit,
 					       &near_tdp_limit);
@@ -3847,7 +3826,7 @@ int ni_dpm_set_power_state(struct radeon_device *rdev)
 		return ret;
 	}
 
-	/* update tdp */
+	 
 	ret = ni_power_control_set_level(rdev);
 	if (ret) {
 		DRM_ERROR("ni_power_control_set_level failed\n");
@@ -3940,7 +3919,7 @@ static void ni_parse_pplib_clock_info(struct radeon_device *rdev,
 	pl->vddci = le16_to_cpu(clock_info->evergreen.usVDDCI);
 	pl->flags = le32_to_cpu(clock_info->evergreen.ulFlags);
 
-	/* patch up vddc if necessary */
+	 
 	if (pl->vddc == 0xff01) {
 		if (pi->max_vddc)
 			pl->vddc = pi->max_vddc;
@@ -3966,7 +3945,7 @@ static void ni_parse_pplib_clock_info(struct radeon_device *rdev,
 	if (pi->max_vddc_in_table < pl->vddc)
 		pi->max_vddc_in_table = pl->vddc;
 
-	/* patch up boot state */
+	 
 	if (rps->class & ATOM_PPLIB_CLASSIFICATION_BOOT) {
 		u16 vddc, vddci, mvdd;
 		radeon_atombios_get_default_voltages(rdev, &vddc, &vddci, &mvdd);
@@ -4260,7 +4239,7 @@ int ni_dpm_init(struct radeon_device *rdev)
 
 	ni_pi->use_power_boost_limit = true;
 
-	/* make sure dc limits are valid */
+	 
 	if ((rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.sclk == 0) ||
 	    (rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.mclk == 0))
 		rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc =

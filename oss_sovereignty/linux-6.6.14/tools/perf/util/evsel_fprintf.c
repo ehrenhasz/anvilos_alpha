@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -190,7 +190,7 @@ int sample__fprintf_callchain(struct perf_sample *sample, int left_alignment,
 			if (!print_oneline)
 				printed += fprintf(fp, "\n");
 
-			/* Add srccode here too? */
+			 
 			if (bt_stop_list && sym &&
 			    strlist__has_entry(bt_stop_list, sym->name)) {
 				break;
@@ -248,4 +248,4 @@ int sample__fprintf_sym(struct perf_sample *sample, struct addr_location *al,
 
 	return printed;
 }
-#endif /* PYTHON_PERF */
+#endif  

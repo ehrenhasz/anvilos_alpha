@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c) 2011-2013 QLogic Corporation
- */
+
+ 
 
 #include "ql4_def.h"
 #include "ql4_glbl.h"
@@ -155,7 +152,7 @@ qla4xxx_get_acb_state(struct bsg_job *bsg_job)
 	if (unlikely(pci_channel_offline(ha->pdev)))
 		goto leave;
 
-	/* Only 4022 and above adapters are supported */
+	 
 	if (is_qla4010(ha))
 		goto leave;
 
@@ -214,7 +211,7 @@ qla4xxx_read_nvram(struct bsg_job *bsg_job)
 	if (unlikely(pci_channel_offline(ha->pdev)))
 		goto leave;
 
-	/* Only 40xx adapters are supported */
+	 
 	if (!(is_qla4010(ha) || is_qla4022(ha) || is_qla4032(ha)))
 		goto leave;
 
@@ -228,7 +225,7 @@ qla4xxx_read_nvram(struct bsg_job *bsg_job)
 	len = bsg_job->reply_payload.payload_len;
 	total_len = offset + len;
 
-	/* total len should not be greater than max NVRAM size */
+	 
 	if ((is_qla4010(ha) && total_len > QL4010_NVRAM_SIZE) ||
 	    ((is_qla4022(ha) || is_qla4032(ha)) &&
 	     total_len > QL40X2_NVRAM_SIZE)) {
@@ -299,7 +296,7 @@ qla4xxx_update_nvram(struct bsg_job *bsg_job)
 	len = bsg_job->request_payload.payload_len;
 	total_len = offset + len;
 
-	/* total len should not be greater than max NVRAM size */
+	 
 	if ((is_qla4010(ha) && total_len > QL4010_NVRAM_SIZE) ||
 	    ((is_qla4022(ha) || is_qla4032(ha)) &&
 	     total_len > QL40X2_NVRAM_SIZE)) {
@@ -398,7 +395,7 @@ qla4xxx_bsg_get_acb(struct bsg_job *bsg_job)
 	if (unlikely(pci_channel_offline(ha->pdev)))
 		goto leave;
 
-	/* Only 4022 and above adapters are supported */
+	 
 	if (is_qla4010(ha))
 		goto leave;
 
@@ -489,7 +486,7 @@ static void ql4xxx_execute_diag_cmd(struct bsg_job *bsg_job)
 	else
 		bsg_reply->result = DID_ERROR << 16;
 
-	/* Send mbox_sts to application */
+	 
 	bsg_job->reply_len = sizeof(struct iscsi_bsg_reply) + sizeof(mbox_sts);
 	rsp_ptr = ((uint8_t *)bsg_reply) + sizeof(struct iscsi_bsg_reply);
 	memcpy(rsp_ptr, mbox_sts, sizeof(mbox_sts));
@@ -589,7 +586,7 @@ static int qla4_83xx_pre_loopback_config(struct scsi_qla_host *ha,
 	ha->notify_idc_comp = 1;
 	ha->notify_link_up_comp = 1;
 
-	/* get the link state */
+	 
 	qla4xxx_get_firmware_state(ha);
 
 	status = qla4_83xx_set_port_config(ha, &config);
@@ -717,7 +714,7 @@ static void qla4xxx_execute_diag_loopback_cmd(struct bsg_job *bsg_job)
 			  mbox_sts[3], mbox_sts[4], mbox_sts[5], mbox_sts[6],
 			  mbox_sts[7]));
 
-	/* Send mbox_sts to application */
+	 
 	bsg_job->reply_len = sizeof(struct iscsi_bsg_reply) + sizeof(mbox_sts);
 	rsp_ptr = ((uint8_t *)bsg_reply) + sizeof(struct iscsi_bsg_reply);
 	memcpy(rsp_ptr, mbox_sts, sizeof(mbox_sts));
@@ -729,8 +726,7 @@ restore:
 			goto exit_loopback_cmd;
 		}
 
-		/* for pre_loopback_config() wait for LINK UP only
-		 * if PHY LINK is UP */
+		 
 		if (!(ha->addl_fw_state & FW_ADDSTATE_LINK_UP))
 			wait_for_link = 0;
 
@@ -770,19 +766,17 @@ static int qla4xxx_execute_diag_test(struct bsg_job *bsg_job)
 		case QL_DIAG_CMD_TEST_DMA_XFER:
 		case QL_DIAG_CMD_SELF_DDR_RW:
 		case QL_DIAG_CMD_SELF_ONCHIP_MEM_RW:
-			/* Execute diag test for adapter RAM/FLASH */
+			 
 			ql4xxx_execute_diag_cmd(bsg_job);
-			/* Always return success as we want to sent bsg_reply
-			 * to Application */
+			 
 			rval = QLA_SUCCESS;
 			break;
 
 		case QL_DIAG_CMD_TEST_INT_LOOPBACK:
 		case QL_DIAG_CMD_TEST_EXT_LOOPBACK:
-			/* Execute diag test for Network */
+			 
 			qla4xxx_execute_diag_loopback_cmd(bsg_job);
-			/* Always return success as we want to sent bsg_reply
-			 * to Application */
+			 
 			rval = QLA_SUCCESS;
 			break;
 		default:
@@ -802,10 +796,7 @@ static int qla4xxx_execute_diag_test(struct bsg_job *bsg_job)
 	return rval;
 }
 
-/**
- * qla4xxx_process_vendor_specific - handle vendor specific bsg request
- * @bsg_job: iscsi_bsg_job to handle
- **/
+ 
 int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job)
 {
 	struct iscsi_bsg_reply *bsg_reply = bsg_job->reply;
@@ -849,10 +840,7 @@ int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job)
 	}
 }
 
-/**
- * qla4xxx_bsg_request - handle bsg request from ISCSI transport
- * @bsg_job: iscsi_bsg_job to handle
- */
+ 
 int qla4xxx_bsg_request(struct bsg_job *bsg_job)
 {
 	struct iscsi_bsg_request *bsg_req = bsg_job->request;

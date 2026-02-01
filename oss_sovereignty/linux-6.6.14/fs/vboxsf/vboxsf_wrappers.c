@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Wrapper functions for the shfl host calls.
- *
- * Copyright (C) 2006-2018 Oracle Corporation
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -28,7 +24,7 @@ int vboxsf_connect(void)
 
 	gdev = vbg_get_gdev();
 	if (IS_ERR(gdev))
-		return -ENODEV;	/* No guest-device */
+		return -ENODEV;	 
 
 	err = vbg_hgcm_connect(gdev, SHFL_REQUEST, &loc,
 			       &vboxsf_client_id, &vbox_status);
@@ -44,7 +40,7 @@ void vboxsf_disconnect(void)
 
 	gdev = vbg_get_gdev();
 	if (IS_ERR(gdev))
-		return;   /* guest-device is gone, already disconnected */
+		return;    
 
 	vbg_hgcm_disconnect(gdev, SHFL_REQUEST, vboxsf_client_id, &vbox_status);
 	vbg_put_gdev(gdev);
@@ -57,7 +53,7 @@ static int vboxsf_call(u32 function, void *parms, u32 parm_count, int *status)
 
 	gdev = vbg_get_gdev();
 	if (IS_ERR(gdev))
-		return -ESHUTDOWN; /* guest-dev removed underneath us */
+		return -ESHUTDOWN;  
 
 	err = vbg_hgcm_call(gdev, SHFL_REQUEST, vboxsf_client_id, function,
 			    U32_MAX, parms, parm_count, &vbox_status);
@@ -110,23 +106,7 @@ int vboxsf_unmap_folder(u32 root)
 			   SHFL_CPARMS_UNMAP_FOLDER, NULL);
 }
 
-/**
- * vboxsf_create - Create a new file or folder
- * @root:         Root of the shared folder in which to create the file
- * @parsed_path:  The path of the file or folder relative to the shared folder
- * @param:        create_parms Parameters for file/folder creation.
- *
- * Create a new file or folder or open an existing one in a shared folder.
- * Note this function always returns 0 / success unless an exceptional condition
- * occurs - out of memory, invalid arguments, etc. If the file or folder could
- * not be opened or created, create_parms->handle will be set to
- * SHFL_HANDLE_NIL on return.  In this case the value in create_parms->result
- * provides information as to why (e.g. SHFL_FILE_EXISTS), create_parms->result
- * is also set on success as additional information.
- *
- * Returns:
- * 0 or negative errno value.
- */
+ 
 int vboxsf_create(u32 root, struct shfl_string *parsed_path,
 		  struct shfl_createparms *create_parms)
 {
@@ -246,7 +226,7 @@ int vboxsf_write(u32 root, u64 handle, u64 offset, u32 *buf_len, u8 *buf)
 	return err;
 }
 
-/* Returns 0 on success, 1 on end-of-dir, negative errno otherwise */
+ 
 int vboxsf_dirinfo(u32 root, u64 handle,
 		   struct shfl_string *parsed_path, u32 flags, u32 index,
 		   u32 *buf_len, struct shfl_dirinfo *buf, u32 *file_count)
@@ -280,7 +260,7 @@ int vboxsf_dirinfo(u32 root, u64 handle,
 	parms.resume_point.type = VMMDEV_HGCM_PARM_TYPE_32BIT;
 	parms.resume_point.u.value32 = index;
 	parms.file_count.type = VMMDEV_HGCM_PARM_TYPE_32BIT;
-	parms.file_count.u.value32 = 0;	/* out parameter only */
+	parms.file_count.u.value32 = 0;	 
 
 	err = vboxsf_call(SHFL_FN_LIST, &parms, SHFL_CPARMS_LIST, &status);
 	if (err == -ENODATA && status == VERR_NO_MORE_FILES)

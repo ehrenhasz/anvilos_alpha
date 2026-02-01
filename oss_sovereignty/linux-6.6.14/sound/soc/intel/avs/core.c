@@ -1,18 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
-// Special thanks to:
-//    Krzysztof Hejmowski <krzysztof.hejmowski@intel.com>
-//    Michal Sienkiewicz <michal.sienkiewicz@intel.com>
-//    Filip Proborszcz
-//
-// for sharing Intel AudioDSP expertise and helping shape the very
-// foundation of this driver
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -97,15 +97,13 @@ static bool avs_hdac_bus_init_chip(struct hdac_bus *bus, bool full_reset)
 	avs_hdac_clock_gating_enable(bus, false);
 	ret = snd_hdac_bus_init_chip(bus, full_reset);
 
-	/* Reset stream-to-link mapping */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list)
 		writel(0, hlink->ml_addr + AZX_REG_ML_LOSIDV);
 
 	avs_hdac_clock_gating_enable(bus, true);
 
-	/* Set DUM bit to address incorrect position reporting for capture
-	 * streams. In order to do so, CTRL needs to be out of reset state
-	 */
+	 
 	snd_hdac_chip_updatel(bus, VS_EM2, AZX_VS_EM2_DUM, AZX_VS_EM2_DUM);
 
 	return ret;
@@ -133,14 +131,10 @@ static int probe_codec(struct hdac_bus *bus, int addr)
 		dev_err(bus->dev, "init codec failed: %ld\n", PTR_ERR(codec));
 		return PTR_ERR(codec);
 	}
-	/*
-	 * Allow avs_core suspend by forcing suspended state on all
-	 * of its codec child devices. Component interested in
-	 * dealing with hda codecs directly takes pm responsibilities
-	 */
+	 
 	pm_runtime_set_suspended(hda_codec_dev(codec));
 
-	/* configure effectively creates new ASoC component */
+	 
 	ret = snd_hda_codec_configure(codec);
 	if (ret < 0) {
 		dev_err(bus->dev, "failed to config codec %d\n", ret);
@@ -154,29 +148,19 @@ static void avs_hdac_bus_probe_codecs(struct hdac_bus *bus)
 {
 	int c;
 
-	/* First try to probe all given codec slots */
+	 
 	for (c = 0; c < HDA_MAX_CODECS; c++) {
 		if (!(bus->codec_mask & BIT(c)))
 			continue;
 
 		if (!probe_codec(bus, c))
-			/* success, continue probing */
+			 
 			continue;
 
-		/*
-		 * Some BIOSen give you wrong codec addresses
-		 * that don't exist
-		 */
+		 
 		dev_warn(bus->dev, "Codec #%d probe error; disabling it...\n", c);
 		bus->codec_mask &= ~BIT(c);
-		/*
-		 * More badly, accessing to a non-existing
-		 * codec often screws up the controller bus,
-		 * and disturbs the further communications.
-		 * Thus if an error occurs during probing,
-		 * better to reset the controller bus to get
-		 * back to the sanity state.
-		 */
+		 
 		snd_hdac_bus_stop_chip(bus);
 		avs_hdac_bus_init_chip(bus, true);
 	}
@@ -189,7 +173,7 @@ static void avs_hda_probe_work(struct work_struct *work)
 	struct hdac_ext_link *hlink;
 	int ret;
 
-	pm_runtime_set_active(bus->dev); /* clear runtime_error flag */
+	pm_runtime_set_active(bus->dev);  
 
 	ret = snd_hdac_i915_init(bus);
 	if (ret < 0)
@@ -200,7 +184,7 @@ static void avs_hda_probe_work(struct work_struct *work)
 	avs_hdac_bus_probe_codecs(bus);
 	snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 
-	/* with all codecs probed, links can be powered down */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list)
 		snd_hdac_ext_bus_link_put(bus, hlink);
 
@@ -218,7 +202,7 @@ static void avs_hda_probe_work(struct work_struct *work)
 
 	avs_register_all_boards(adev);
 
-	/* configure PM */
+	 
 	pm_runtime_set_autosuspend_delay(bus->dev, 2000);
 	pm_runtime_use_autosuspend(bus->dev);
 	pm_runtime_mark_last_busy(bus->dev);
@@ -241,7 +225,7 @@ static void hdac_stream_update_pos(struct hdac_stream *stream, u64 buffer_size)
 	stream->curr_pos += num_bytes;
 }
 
-/* called from IRQ */
+ 
 static void hdac_update_stream(struct hdac_bus *bus, struct hdac_stream *stream)
 {
 	if (stream->substream) {
@@ -272,7 +256,7 @@ static irqreturn_t hdac_bus_irq_handler(int irq, void *context)
 		return ret;
 	}
 
-	/* clear rirb int */
+	 
 	status = snd_hdac_chip_readb(bus, RIRBSTS);
 	if (status & RIRB_INT_MASK) {
 		if (status & RIRB_INT_RESPONSE)
@@ -285,7 +269,7 @@ static irqreturn_t hdac_bus_irq_handler(int irq, void *context)
 	status = snd_hdac_chip_readl(bus, INTSTS);
 	status &= mask;
 	if (status) {
-		/* Disable stream interrupts; Re-enable in bottom half */
+		 
 		int_enable = snd_hdac_chip_readl(bus, INTCTL);
 		snd_hdac_chip_writel(bus, INTCTL, (int_enable & (~mask)));
 		ret = IRQ_WAKE_THREAD;
@@ -309,7 +293,7 @@ static irqreturn_t hdac_bus_irq_thread(int irq, void *context)
 
 	snd_hdac_bus_handle_stream_irq(bus, status, hdac_update_stream);
 
-	/* Re-enable stream interrupts */
+	 
 	mask = (0x1 << bus->num_streams) - 1;
 	spin_lock_irqsave(&bus->reg_lock, flags);
 	int_enable = snd_hdac_chip_readl(bus, INTCTL);
@@ -325,7 +309,7 @@ static int avs_hdac_acquire_irq(struct avs_dev *adev)
 	struct pci_dev *pci = to_pci_dev(bus->dev);
 	int ret;
 
-	/* request one and check that we only got one interrupt */
+	 
 	ret = pci_alloc_irq_vectors(pci, 1, 1, PCI_IRQ_MSI | PCI_IRQ_LEGACY);
 	if (ret != 1) {
 		dev_err(adev->dev, "Failed to allocate IRQ vector: %d\n", ret);
@@ -526,20 +510,20 @@ static void avs_pci_remove(struct pci_dev *pci)
 	avs_dsp_op(adev, int_control, false);
 	snd_hdac_ext_bus_ppcap_int_enable(bus, false);
 
-	/* it is safe to remove all codecs from the system now */
+	 
 	list_for_each_entry_safe(hdev, save, &bus->codec_list, list)
 		snd_hda_codec_unregister(hdac_to_hda_codec(hdev));
 
 	snd_hdac_bus_free_stream_pages(bus);
 	snd_hdac_ext_stream_free_all(bus);
-	/* reverse ml_capabilities */
+	 
 	snd_hdac_ext_link_free_all(bus);
 	snd_hdac_ext_bus_exit(bus);
 
 	avs_dsp_core_disable(adev, GENMASK(adev->hw_cfg.dsp_cores - 1, 0));
 	snd_hdac_ext_bus_ppcap_enable(bus, false);
 
-	/* snd_hdac_stop_streams_and_chip does that already? */
+	 
 	snd_hdac_bus_stop_chip(bus);
 	snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 	if (bus->audio_component)
@@ -553,10 +537,10 @@ static void avs_pci_remove(struct pci_dev *pci)
 	iounmap(adev->dsp_ba);
 	pci_release_regions(pci);
 
-	/* Firmware is not needed anymore */
+	 
 	avs_release_firmwares(adev);
 
-	/* pm_runtime_forbid() can rpm_resume() which we do not want */
+	 
 	pm_runtime_disable(&pci->dev);
 	pm_runtime_forbid(&pci->dev);
 	pm_runtime_enable(&pci->dev);
@@ -591,10 +575,7 @@ static int __maybe_unused avs_suspend_common(struct avs_dev *adev, bool low_powe
 	snd_hdac_ext_bus_link_power_down_all(bus);
 
 	ret = avs_ipc_set_dx(adev, AVS_MAIN_CORE_MASK, false);
-	/*
-	 * pm_runtime is blocked on DSP failure but system-wide suspend is not.
-	 * Do not block entire system from suspending if that's the case.
-	 */
+	 
 	if (ret && ret != -EPERM) {
 		dev_err(adev->dev, "set dx failed: %d\n", ret);
 		return AVS_IPC_RET(ret);
@@ -611,10 +592,10 @@ static int __maybe_unused avs_suspend_common(struct avs_dev *adev, bool low_powe
 	}
 
 	snd_hdac_ext_bus_ppcap_enable(bus, false);
-	/* disable LP SRAM retention */
+	 
 	avs_hda_power_gating_enable(adev, false);
 	snd_hdac_bus_stop_chip(bus);
-	/* disable CG when putting controller to reset */
+	 
 	avs_hdac_clock_gating_enable(bus, false);
 	snd_hdac_bus_enter_link_reset(bus);
 	avs_hdac_clock_gating_enable(bus, true);

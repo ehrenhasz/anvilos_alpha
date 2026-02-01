@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_HUC_H_
 #define _INTEL_HUC_H_
@@ -30,10 +28,10 @@ enum intel_huc_authentication_type {
 };
 
 struct intel_huc {
-	/* Generic uC firmware management */
+	 
 	struct intel_uc_fw fw;
 
-	/* HuC-specific additions */
+	 
 	struct {
 		i915_reg_t reg;
 		u32 mask;
@@ -47,7 +45,7 @@ struct intel_huc {
 		enum intel_huc_delayed_load_status status;
 	} delayed_load;
 
-	/* for load via GSCCS */
+	 
 	struct i915_vma *heci_pkt;
 
 	bool loaded_via_gsc;

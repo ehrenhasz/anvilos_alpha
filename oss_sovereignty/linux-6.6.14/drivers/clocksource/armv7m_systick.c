@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Maxime Coquelin 2015
- * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clocksource.h>

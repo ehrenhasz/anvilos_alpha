@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Western Digital Corporation or its affiliates.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-zoned.h"
 
@@ -25,37 +21,25 @@ struct dmz_reclaim {
 
 	unsigned long		flags;
 
-	/* Last target access time */
+	 
 	unsigned long		atime;
 };
 
-/*
- * Reclaim state flags.
- */
+ 
 enum {
 	DMZ_RECLAIM_KCOPY,
 };
 
-/*
- * Number of seconds of target BIO inactivity to consider the target idle.
- */
+ 
 #define DMZ_IDLE_PERIOD			(10UL * HZ)
 
-/*
- * Percentage of unmapped (free) random zones below which reclaim starts
- * even if the target is busy.
- */
+ 
 #define DMZ_RECLAIM_LOW_UNMAP_ZONES	30
 
-/*
- * Percentage of unmapped (free) random zones above which reclaim will
- * stop if the target is busy.
- */
+ 
 #define DMZ_RECLAIM_HIGH_UNMAP_ZONES	50
 
-/*
- * Align a sequential zone write pointer to chunk_block.
- */
+ 
 static int dmz_reclaim_align_wp(struct dmz_reclaim *zrc, struct dm_zone *zone,
 				sector_t block)
 {
@@ -71,10 +55,7 @@ static int dmz_reclaim_align_wp(struct dmz_reclaim *zrc, struct dm_zone *zone,
 	if (wp_block > block)
 		return -EIO;
 
-	/*
-	 * Zeroout the space between the write
-	 * pointer and the requested position.
-	 */
+	 
 	nr_blocks = block - wp_block;
 	ret = blkdev_issue_zeroout(dev->bdev,
 				   dmz_start_sect(zmd, zone) + dmz_blk2sect(wp_block),
@@ -93,9 +74,7 @@ static int dmz_reclaim_align_wp(struct dmz_reclaim *zrc, struct dm_zone *zone,
 	return 0;
 }
 
-/*
- * dm_kcopyd_copy end notification.
- */
+ 
 static void dmz_reclaim_kcopy_end(int read_err, unsigned long write_err,
 				  void *context)
 {
@@ -111,9 +90,7 @@ static void dmz_reclaim_kcopy_end(int read_err, unsigned long write_err,
 	wake_up_bit(&zrc->flags, DMZ_RECLAIM_KCOPY);
 }
 
-/*
- * Copy valid blocks of src_zone into dst_zone.
- */
+ 
 static int dmz_reclaim_copy(struct dmz_reclaim *zrc,
 			    struct dm_zone *src_zone, struct dm_zone *dst_zone)
 {
@@ -145,17 +122,13 @@ static int dmz_reclaim_copy(struct dmz_reclaim *zrc,
 		if (dmz_reclaim_should_terminate(src_zone))
 			return -EINTR;
 
-		/* Get a valid region from the source zone */
+		 
 		ret = dmz_first_valid_block(zmd, src_zone, &block);
 		if (ret <= 0)
 			return ret;
 		nr_blocks = ret;
 
-		/*
-		 * If we are writing in a sequential zone, we must make sure
-		 * that writes are sequential. So Zeroout any eventual hole
-		 * between writes.
-		 */
+		 
 		if (dmz_is_seq(dst_zone)) {
 			ret = dmz_reclaim_align_wp(zrc, dst_zone, block);
 			if (ret)
@@ -170,12 +143,12 @@ static int dmz_reclaim_copy(struct dmz_reclaim *zrc,
 		dst.sector = dmz_blk2sect(dst_zone_block + block);
 		dst.count = src.count;
 
-		/* Copy the valid region */
+		 
 		set_bit(DMZ_RECLAIM_KCOPY, &zrc->flags);
 		dm_kcopyd_copy(zrc->kc, &src, 1, &dst, flags,
 			       dmz_reclaim_kcopy_end, zrc);
 
-		/* Wait for copy to complete */
+		 
 		wait_on_bit_io(&zrc->flags, DMZ_RECLAIM_KCOPY,
 			       TASK_UNINTERRUPTIBLE);
 		if (zrc->kc_err)
@@ -189,10 +162,7 @@ static int dmz_reclaim_copy(struct dmz_reclaim *zrc,
 	return 0;
 }
 
-/*
- * Move valid blocks of dzone buffer zone into dzone (after its write pointer)
- * and free the buffer zone.
- */
+ 
 static int dmz_reclaim_buf(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 {
 	struct dm_zone *bzone = dzone->bzone;
@@ -205,17 +175,17 @@ static int dmz_reclaim_buf(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 		dzone->chunk, bzone->id, dmz_weight(bzone),
 		dzone->id, dmz_weight(dzone));
 
-	/* Flush data zone into the buffer zone */
+	 
 	ret = dmz_reclaim_copy(zrc, bzone, dzone);
 	if (ret < 0)
 		return ret;
 
 	dmz_lock_flush(zmd);
 
-	/* Validate copied blocks */
+	 
 	ret = dmz_merge_valid_blocks(zmd, bzone, dzone, chunk_block);
 	if (ret == 0) {
-		/* Free the buffer zone */
+		 
 		dmz_invalidate_blocks(zmd, bzone, 0, dmz_zone_nr_blocks(zmd));
 		dmz_lock_map(zmd);
 		dmz_unmap_zone(zmd, bzone);
@@ -229,9 +199,7 @@ static int dmz_reclaim_buf(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 	return ret;
 }
 
-/*
- * Merge valid blocks of dzone into its buffer zone and free dzone.
- */
+ 
 static int dmz_reclaim_seq_data(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 {
 	unsigned int chunk = dzone->chunk;
@@ -244,20 +212,17 @@ static int dmz_reclaim_seq_data(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 		chunk, dzone->id, dmz_weight(dzone),
 		bzone->id, dmz_weight(bzone));
 
-	/* Flush data zone into the buffer zone */
+	 
 	ret = dmz_reclaim_copy(zrc, dzone, bzone);
 	if (ret < 0)
 		return ret;
 
 	dmz_lock_flush(zmd);
 
-	/* Validate copied blocks */
+	 
 	ret = dmz_merge_valid_blocks(zmd, dzone, bzone, 0);
 	if (ret == 0) {
-		/*
-		 * Free the data zone and remap the chunk to
-		 * the buffer zone.
-		 */
+		 
 		dmz_invalidate_blocks(zmd, dzone, 0, dmz_zone_nr_blocks(zmd));
 		dmz_lock_map(zmd);
 		dmz_unmap_zone(zmd, bzone);
@@ -273,10 +238,7 @@ static int dmz_reclaim_seq_data(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 	return ret;
 }
 
-/*
- * Move valid blocks of the random data zone dzone into a free sequential zone.
- * Once blocks are moved, remap the zone chunk to the sequential zone.
- */
+ 
 static int dmz_reclaim_rnd_data(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 {
 	unsigned int chunk = dzone->chunk;
@@ -285,7 +247,7 @@ static int dmz_reclaim_rnd_data(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 	int ret;
 	int alloc_flags = DMZ_ALLOC_SEQ;
 
-	/* Get a free random or sequential zone */
+	 
 	dmz_lock_map(zmd);
 again:
 	szone = dmz_alloc_zone(zmd, zrc->dev_idx,
@@ -304,22 +266,22 @@ again:
 		dzone->id, dmz_weight(dzone),
 		dmz_is_rnd(szone) ? "rnd" : "seq", szone->id);
 
-	/* Flush the random data zone into the sequential zone */
+	 
 	ret = dmz_reclaim_copy(zrc, dzone, szone);
 
 	dmz_lock_flush(zmd);
 
 	if (ret == 0) {
-		/* Validate copied blocks */
+		 
 		ret = dmz_copy_valid_blocks(zmd, dzone, szone);
 	}
 	if (ret) {
-		/* Free the sequential zone */
+		 
 		dmz_lock_map(zmd);
 		dmz_free_zone(zmd, szone);
 		dmz_unlock_map(zmd);
 	} else {
-		/* Free the data zone and remap the chunk */
+		 
 		dmz_invalidate_blocks(zmd, dzone, 0, dmz_zone_nr_blocks(zmd));
 		dmz_lock_map(zmd);
 		dmz_unmap_zone(zmd, dzone);
@@ -334,9 +296,7 @@ again:
 	return ret;
 }
 
-/*
- * Reclaim an empty zone.
- */
+ 
 static void dmz_reclaim_empty(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 {
 	struct dmz_metadata *zmd = zrc->metadata;
@@ -350,17 +310,13 @@ static void dmz_reclaim_empty(struct dmz_reclaim *zrc, struct dm_zone *dzone)
 	dmz_unlock_flush(zmd);
 }
 
-/*
- * Test if the target device is idle.
- */
+ 
 static inline int dmz_target_idle(struct dmz_reclaim *zrc)
 {
 	return time_is_before_jiffies(zrc->atime + DMZ_IDLE_PERIOD);
 }
 
-/*
- * Find a candidate zone for reclaim and process it.
- */
+ 
 static int dmz_do_reclaim(struct dmz_reclaim *zrc)
 {
 	struct dmz_metadata *zmd = zrc->metadata;
@@ -369,7 +325,7 @@ static int dmz_do_reclaim(struct dmz_reclaim *zrc)
 	unsigned long start;
 	int ret;
 
-	/* Get a data zone */
+	 
 	dzone = dmz_get_zone_for_reclaim(zmd, zrc->dev_idx,
 					 dmz_target_idle(zrc));
 	if (!dzone) {
@@ -382,14 +338,11 @@ static int dmz_do_reclaim(struct dmz_reclaim *zrc)
 	start = jiffies;
 	if (dmz_is_cache(dzone) || dmz_is_rnd(dzone)) {
 		if (!dmz_weight(dzone)) {
-			/* Empty zone */
+			 
 			dmz_reclaim_empty(zrc, dzone);
 			ret = 0;
 		} else {
-			/*
-			 * Reclaim the random data zone by moving its
-			 * valid data blocks to a free sequential zone.
-			 */
+			 
 			ret = dmz_reclaim_rnd_data(zrc, dzone);
 		}
 	} else {
@@ -401,18 +354,11 @@ static int dmz_do_reclaim(struct dmz_reclaim *zrc)
 			goto out;
 
 		if (ret == 0 || chunk_block >= dzone->wp_block) {
-			/*
-			 * The buffer zone is empty or its valid blocks are
-			 * after the data zone write pointer.
-			 */
+			 
 			ret = dmz_reclaim_buf(zrc, dzone);
 			rzone = bzone;
 		} else {
-			/*
-			 * Reclaim the data zone by merging it into the
-			 * buffer zone so that the buffer zone itself can
-			 * be later reclaimed.
-			 */
+			 
 			ret = dmz_reclaim_seq_data(zrc, dzone);
 		}
 	}
@@ -461,9 +407,7 @@ static unsigned int dmz_reclaim_percentage(struct dmz_reclaim *zrc)
 	return nr_unmap * 100 / nr_zones;
 }
 
-/*
- * Test if reclaim is necessary.
- */
+ 
 static bool dmz_should_reclaim(struct dmz_reclaim *zrc, unsigned int p_unmap)
 {
 	unsigned int nr_reclaim;
@@ -471,34 +415,25 @@ static bool dmz_should_reclaim(struct dmz_reclaim *zrc, unsigned int p_unmap)
 	nr_reclaim = dmz_nr_rnd_zones(zrc->metadata, zrc->dev_idx);
 
 	if (dmz_nr_cache_zones(zrc->metadata)) {
-		/*
-		 * The first device in a multi-device
-		 * setup only contains cache zones, so
-		 * never start reclaim there.
-		 */
+		 
 		if (zrc->dev_idx == 0)
 			return false;
 		nr_reclaim += dmz_nr_cache_zones(zrc->metadata);
 	}
 
-	/* Reclaim when idle */
+	 
 	if (dmz_target_idle(zrc) && nr_reclaim)
 		return true;
 
-	/* If there are still plenty of cache zones, do not reclaim */
+	 
 	if (p_unmap >= DMZ_RECLAIM_HIGH_UNMAP_ZONES)
 		return false;
 
-	/*
-	 * If the percentage of unmapped cache zones is low,
-	 * reclaim even if the target is busy.
-	 */
+	 
 	return p_unmap <= DMZ_RECLAIM_LOW_UNMAP_ZONES;
 }
 
-/*
- * Reclaim work function.
- */
+ 
 static void dmz_reclaim_work(struct work_struct *work)
 {
 	struct dmz_reclaim *zrc = container_of(work, struct dmz_reclaim, work.work);
@@ -515,17 +450,12 @@ static void dmz_reclaim_work(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * We need to start reclaiming random zones: set up zone copy
-	 * throttling to either go fast if we are very low on random zones
-	 * and slower if there are still some free random zones to avoid
-	 * as much as possible to negatively impact the user workload.
-	 */
+	 
 	if (dmz_target_idle(zrc) || p_unmap < DMZ_RECLAIM_LOW_UNMAP_ZONES / 2) {
-		/* Idle or very low percentage: go fast */
+		 
 		zrc->kc_throttle.throttle = 100;
 	} else {
-		/* Busy but we still have some random zone: throttle */
+		 
 		zrc->kc_throttle.throttle = min(75U, 100U - p_unmap / 2);
 	}
 
@@ -547,9 +477,7 @@ static void dmz_reclaim_work(struct work_struct *work)
 	dmz_schedule_reclaim(zrc);
 }
 
-/*
- * Initialize reclaim.
- */
+ 
 int dmz_ctr_reclaim(struct dmz_metadata *zmd,
 		    struct dmz_reclaim **reclaim, int idx)
 {
@@ -564,7 +492,7 @@ int dmz_ctr_reclaim(struct dmz_metadata *zmd,
 	zrc->atime = jiffies;
 	zrc->dev_idx = idx;
 
-	/* Reclaim kcopyd client */
+	 
 	zrc->kc = dm_kcopyd_client_create(&zrc->kc_throttle);
 	if (IS_ERR(zrc->kc)) {
 		ret = PTR_ERR(zrc->kc);
@@ -572,7 +500,7 @@ int dmz_ctr_reclaim(struct dmz_metadata *zmd,
 		goto err;
 	}
 
-	/* Reclaim work */
+	 
 	INIT_DELAYED_WORK(&zrc->work, dmz_reclaim_work);
 	zrc->wq = alloc_ordered_workqueue("dmz_rwq_%s_%d", WQ_MEM_RECLAIM,
 					  dmz_metadata_label(zmd), idx);
@@ -593,9 +521,7 @@ err:
 	return ret;
 }
 
-/*
- * Terminate reclaim.
- */
+ 
 void dmz_dtr_reclaim(struct dmz_reclaim *zrc)
 {
 	cancel_delayed_work_sync(&zrc->work);
@@ -604,33 +530,25 @@ void dmz_dtr_reclaim(struct dmz_reclaim *zrc)
 	kfree(zrc);
 }
 
-/*
- * Suspend reclaim.
- */
+ 
 void dmz_suspend_reclaim(struct dmz_reclaim *zrc)
 {
 	cancel_delayed_work_sync(&zrc->work);
 }
 
-/*
- * Resume reclaim.
- */
+ 
 void dmz_resume_reclaim(struct dmz_reclaim *zrc)
 {
 	queue_delayed_work(zrc->wq, &zrc->work, DMZ_IDLE_PERIOD);
 }
 
-/*
- * BIO accounting.
- */
+ 
 void dmz_reclaim_bio_acc(struct dmz_reclaim *zrc)
 {
 	zrc->atime = jiffies;
 }
 
-/*
- * Start reclaim if necessary.
- */
+ 
 void dmz_schedule_reclaim(struct dmz_reclaim *zrc)
 {
 	unsigned int p_unmap = dmz_reclaim_percentage(zrc);

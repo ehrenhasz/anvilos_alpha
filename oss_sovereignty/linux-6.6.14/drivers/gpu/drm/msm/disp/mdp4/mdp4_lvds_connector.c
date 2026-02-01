@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- * Author: Vinay Simha <vinaysimha@inforcecomputing.com>
- */
+
+ 
 
 #include "mdp4_kms.h"
 
@@ -90,7 +86,7 @@ static const struct drm_connector_helper_funcs mdp4_lvds_connector_helper_funcs 
 	.mode_valid = mdp4_lvds_connector_mode_valid,
 };
 
-/* initialize connector */
+ 
 struct drm_connector *mdp4_lvds_connector_init(struct drm_device *dev,
 		struct device_node *panel_node, struct drm_encoder *encoder)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Collabora Ltd.
- *
- * Benchmark and test syscall user dispatch
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -27,20 +23,12 @@
 #endif
 
 #ifdef __NR_syscalls
-# define MAGIC_SYSCALL_1 (__NR_syscalls + 1) /* Bad Linux syscall number */
+# define MAGIC_SYSCALL_1 (__NR_syscalls + 1)  
 #else
-# define MAGIC_SYSCALL_1 (0xff00)  /* Bad Linux syscall number */
+# define MAGIC_SYSCALL_1 (0xff00)   
 #endif
 
-/*
- * To test returning from a sigsys with selector blocked, the test
- * requires some per-architecture support (i.e. knowledge about the
- * signal trampoline address).  On i386, we know it is on the vdso, and
- * a small trampoline is open-coded for x86_64.  Other architectures
- * that have a trampoline in the vdso will support TEST_BLOCKED_RETURN
- * out of the box, but don't enable them until they support syscall user
- * dispatch.
- */
+ 
 #if defined(__x86_64__) || defined(__i386__)
 #define TEST_BLOCKED_RETURN
 #endif
@@ -108,7 +96,7 @@ static void handle_sigsys(int sig, siginfo_t *info, void *ucontext)
 
 	SYSCALL_UNBLOCK;
 
-	/* printf and friends are not signal-safe. */
+	 
 	len = snprintf(buf, 1024, "Caught sys_%x\n", info->si_syscall);
 	write(1, buf, len);
 
@@ -127,7 +115,7 @@ static void handle_sigsys(int sig, siginfo_t *info, void *ucontext)
 	__asm__ volatile("add $0x8, %rsp");
 	__asm__ volatile("syscall_dispatcher_start:");
 	__asm__ volatile("syscall");
-	__asm__ volatile("nop"); /* Landing pad within dispatcher area */
+	__asm__ volatile("nop");  
 	__asm__ volatile("syscall_dispatcher_end:");
 #endif
 

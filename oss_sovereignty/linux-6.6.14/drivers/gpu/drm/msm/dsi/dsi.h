@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DSI_CONNECTOR_H__
 #define __DSI_CONNECTOR_H__
@@ -35,27 +33,25 @@ struct msm_dsi {
 	struct drm_device *dev;
 	struct platform_device *pdev;
 
-	/* internal dsi bridge attached to MDP interface */
+	 
 	struct drm_bridge *bridge;
 
 	struct mipi_dsi_host *host;
 	struct msm_dsi_phy *phy;
 
-	/*
-	 * external_bridge connected to dsi bridge output
-	 */
+	 
 	struct drm_bridge *external_bridge;
 
 	struct device *phy_dev;
 	bool phy_enabled;
 
-	/* the encoder we are hooked to (outside of dsi block) */
+	 
 	struct drm_encoder *encoder;
 
 	int id;
 };
 
-/* dsi manager */
+ 
 struct drm_bridge *msm_dsi_manager_bridge_init(u8 id);
 void msm_dsi_manager_bridge_destroy(struct drm_bridge *bridge);
 int msm_dsi_manager_ext_bridge_init(u8 id);
@@ -65,13 +61,13 @@ int msm_dsi_manager_register(struct msm_dsi *msm_dsi);
 void msm_dsi_manager_unregister(struct msm_dsi *msm_dsi);
 void msm_dsi_manager_tpg_enable(void);
 
-/* msm dsi */
+ 
 static inline bool msm_dsi_device_connected(struct msm_dsi *msm_dsi)
 {
 	return msm_dsi->external_bridge;
 }
 
-/* dsi host */
+ 
 struct msm_dsi_host;
 int msm_dsi_host_xfer_prepare(struct mipi_dsi_host *host,
 					const struct mipi_dsi_msg *msg);
@@ -136,7 +132,7 @@ void msm_dsi_host_snapshot(struct msm_disp_state *disp_state, struct mipi_dsi_ho
 void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host);
 struct drm_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host);
 
-/* dsi phy */
+ 
 struct msm_dsi_phy;
 struct msm_dsi_phy_shared_timings {
 	u32 clk_post;
@@ -163,5 +159,5 @@ int msm_dsi_phy_pll_restore_state(struct msm_dsi_phy *phy);
 void msm_dsi_phy_snapshot(struct msm_disp_state *disp_state, struct msm_dsi_phy *phy);
 bool msm_dsi_phy_set_continuous_clock(struct msm_dsi_phy *phy, bool enable);
 
-#endif /* __DSI_CONNECTOR_H__ */
+#endif  
 

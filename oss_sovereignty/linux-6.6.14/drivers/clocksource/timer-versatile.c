@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2014 ARM Limited
- */
+
+ 
 
 #include <linux/clocksource.h>
 #include <linux/io.h>

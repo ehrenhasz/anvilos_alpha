@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include <linux/module.h>
 #include <linux/fdtable.h>
 #include <linux/uaccess.h>
@@ -279,10 +259,7 @@ int kgd_arcturus_hqd_sdma_destroy(struct amdgpu_device *adev, void *mqd,
 	return 0;
 }
 
-/*
- * Helper used to suspend/resume gfx pipe for image post process work to set
- * barrier behaviour.
- */
+ 
 static int suspend_resume_compute_scheduler(struct amdgpu_device *adev, bool suspend)
 {
 	int i, r = 0;
@@ -293,7 +270,7 @@ static int suspend_resume_compute_scheduler(struct amdgpu_device *adev, bool sus
 		if (!(ring && ring->sched.thread))
 			continue;
 
-		/* stop secheduler and drain ring. */
+		 
 		if (suspend) {
 			drm_sched_stop(&ring->sched, NULL);
 			r = amdgpu_fence_wait_empty(ring);
@@ -305,7 +282,7 @@ static int suspend_resume_compute_scheduler(struct amdgpu_device *adev, bool sus
 	}
 
 out:
-	/* return on resume or failure to drain rings. */
+	 
 	if (!suspend || r)
 		return r;
 
@@ -339,13 +316,7 @@ out:
 	up_read(&adev->reset_domain->sem);
 }
 
-/*
- * restore_dbg_registers is ignored here but is a general interface requirement
- * for devices that support GFXOFF and where the RLC save/restore list
- * does not support hw registers for debugging i.e. the driver has to manually
- * initialize the debug mode registers after it has disabled GFX off during the
- * debug session.
- */
+ 
 static uint32_t kgd_arcturus_enable_debug_trap(struct amdgpu_device *adev,
 				bool restore_dbg_registers,
 				uint32_t vmid)
@@ -365,12 +336,7 @@ static uint32_t kgd_arcturus_enable_debug_trap(struct amdgpu_device *adev,
 	return 0;
 }
 
-/*
- * keep_trap_enabled is ignored here but is a general interface requirement
- * for devices that support multi-process debugging where the performance
- * overhead from trap temporary setup needs to be bypassed when the debug
- * session has ended.
- */
+ 
 static uint32_t kgd_arcturus_disable_debug_trap(struct amdgpu_device *adev,
 					bool keep_trap_enabled,
 					uint32_t vmid)

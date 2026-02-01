@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Coredump functionality for Remoteproc framework.
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/devcoredump.h>
@@ -19,10 +15,7 @@ struct rproc_coredump_state {
 	struct completion dump_done;
 };
 
-/**
- * rproc_coredump_cleanup() - clean up dump_segments list
- * @rproc: the remote processor handle
- */
+ 
 void rproc_coredump_cleanup(struct rproc *rproc)
 {
 	struct rproc_dump_segment *entry, *tmp;
@@ -34,17 +27,7 @@ void rproc_coredump_cleanup(struct rproc *rproc)
 }
 EXPORT_SYMBOL_GPL(rproc_coredump_cleanup);
 
-/**
- * rproc_coredump_add_segment() - add segment of device memory to coredump
- * @rproc:	handle of a remote processor
- * @da:		device address
- * @size:	size of segment
- *
- * Add device memory to the list of segments to be included in a coredump for
- * the remoteproc.
- *
- * Return: 0 on success, negative errno on error.
- */
+ 
 int rproc_coredump_add_segment(struct rproc *rproc, dma_addr_t da, size_t size)
 {
 	struct rproc_dump_segment *segment;
@@ -62,20 +45,7 @@ int rproc_coredump_add_segment(struct rproc *rproc, dma_addr_t da, size_t size)
 }
 EXPORT_SYMBOL(rproc_coredump_add_segment);
 
-/**
- * rproc_coredump_add_custom_segment() - add custom coredump segment
- * @rproc:	handle of a remote processor
- * @da:		device address
- * @size:	size of segment
- * @dumpfn:	custom dump function called for each segment during coredump
- * @priv:	private data
- *
- * Add device memory to the list of segments to be included in the coredump
- * and associate the segment with the given custom dump function and private
- * data.
- *
- * Return: 0 on success, negative errno on error.
- */
+ 
 int rproc_coredump_add_custom_segment(struct rproc *rproc,
 				      dma_addr_t da, size_t size,
 				      void (*dumpfn)(struct rproc *rproc,
@@ -101,16 +71,7 @@ int rproc_coredump_add_custom_segment(struct rproc *rproc,
 }
 EXPORT_SYMBOL(rproc_coredump_add_custom_segment);
 
-/**
- * rproc_coredump_set_elf_info() - set coredump elf information
- * @rproc:	handle of a remote processor
- * @class:	elf class for coredump elf file
- * @machine:	elf machine for coredump elf file
- *
- * Set elf information which will be used for coredump elf file.
- *
- * Return: 0 on success, negative errno on error.
- */
+ 
 int rproc_coredump_set_elf_info(struct rproc *rproc, u8 class, u16 machine)
 {
 	if (class != ELFCLASS64 && class != ELFCLASS32)
@@ -184,7 +145,7 @@ static ssize_t rproc_coredump_read(char *buffer, loff_t offset, size_t count,
 	struct rproc *rproc = dump_state->rproc;
 	void *elfcore = dump_state->header;
 
-	/* Copy the vmalloc'ed header first. */
+	 
 	if (offset < header_sz) {
 		copy_sz = memory_read_from_buffer(buffer, count, &offset,
 						  elfcore, header_sz);
@@ -192,15 +153,12 @@ static ssize_t rproc_coredump_read(char *buffer, loff_t offset, size_t count,
 		return copy_sz;
 	}
 
-	/*
-	 * Find out the segment memory chunk to be copied based on offset.
-	 * Keep copying data until count bytes are read.
-	 */
+	 
 	while (bytes_left) {
 		seg = rproc_coredump_find_segment(offset - header_sz,
 						  &rproc->dump_segments,
 						  &seg_data);
-		/* EOF check */
+		 
 		if (!seg) {
 			dev_info(&rproc->dev, "Ramdump done, %lld bytes read",
 				 offset);
@@ -220,18 +178,7 @@ static ssize_t rproc_coredump_read(char *buffer, loff_t offset, size_t count,
 	return count - bytes_left;
 }
 
-/**
- * rproc_coredump() - perform coredump
- * @rproc:	rproc handle
- *
- * This function will generate an ELF header for the registered segments
- * and create a devcoredump device associated with rproc. Based on the
- * coredump configuration this function will directly copy the segments
- * from device memory to userspace or copy segments from device memory to
- * a separate buffer, which can then be read by userspace.
- * The first approach avoids using extra vmalloc memory. But it will stall
- * recovery flow until dump is read by userspace.
- */
+ 
 void rproc_coredump(struct rproc *rproc)
 {
 	struct rproc_dump_segment *segment;
@@ -256,11 +203,7 @@ void rproc_coredump(struct rproc *rproc)
 
 	data_size = elf_size_of_hdr(class);
 	list_for_each_entry(segment, &rproc->dump_segments, node) {
-		/*
-		 * For default configuration buffer includes headers & segments.
-		 * For inline dump buffer just includes headers as segments are
-		 * directly read from device memory.
-		 */
+		 
 		data_size += elf_size_of_phdr(class);
 		if (dump_conf == RPROC_COREDUMP_ENABLED)
 			data_size += segment->size;
@@ -275,7 +218,7 @@ void rproc_coredump(struct rproc *rproc)
 	ehdr = data;
 
 	memset(ehdr, 0, elf_size_of_hdr(class));
-	/* e_ident field is common for both elf32 and elf64 */
+	 
 	elf_hdr_init_ident(ehdr, class);
 
 	elf_hdr_set_e_type(class, ehdr, ET_CORE);
@@ -314,7 +257,7 @@ void rproc_coredump(struct rproc *rproc)
 		return;
 	}
 
-	/* Initialize the dump state struct to be used by rproc_coredump_read */
+	 
 	dump_state.rproc = rproc;
 	dump_state.header = data;
 	init_completion(&dump_state.dump_done);
@@ -322,26 +265,12 @@ void rproc_coredump(struct rproc *rproc)
 	dev_coredumpm(&rproc->dev, NULL, &dump_state, data_size, GFP_KERNEL,
 		      rproc_coredump_read, rproc_coredump_free);
 
-	/*
-	 * Wait until the dump is read and free is called. Data is freed
-	 * by devcoredump framework automatically after 5 minutes.
-	 */
+	 
 	wait_for_completion(&dump_state.dump_done);
 }
 EXPORT_SYMBOL_GPL(rproc_coredump);
 
-/**
- * rproc_coredump_using_sections() - perform coredump using section headers
- * @rproc:	rproc handle
- *
- * This function will generate an ELF header for the registered sections of
- * segments and create a devcoredump device associated with rproc. Based on
- * the coredump configuration this function will directly copy the segments
- * from device memory to userspace or copy segments from device memory to
- * a separate buffer, which can then be read by userspace.
- * The first approach avoids using extra vmalloc memory. But it will stall
- * recovery flow until dump is read by userspace.
- */
+ 
 void rproc_coredump_using_sections(struct rproc *rproc)
 {
 	struct rproc_dump_segment *segment;
@@ -367,15 +296,11 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 		return;
 	}
 
-	/*
-	 * We allocate two extra section headers. The first one is null.
-	 * Second section header is for the string table. Also space is
-	 * allocated for string table.
-	 */
+	 
 	data_size = elf_size_of_hdr(class) + 2 * elf_size_of_shdr(class);
 	shnum = 2;
 
-	/* the extra byte is for the null character at index 0 */
+	 
 	strtbl_size += strlen(str_tbl) + 2;
 
 	list_for_each_entry(segment, &rproc->dump_segments, node) {
@@ -394,7 +319,7 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 
 	ehdr = data;
 	memset(ehdr, 0, elf_size_of_hdr(class));
-	/* e_ident field is common for both elf32 and elf64 */
+	 
 	elf_hdr_init_ident(ehdr, class);
 
 	elf_hdr_set_e_type(class, ehdr, ET_CORE);
@@ -407,20 +332,17 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 	elf_hdr_set_e_shnum(class, ehdr, shnum);
 	elf_hdr_set_e_shstrndx(class, ehdr, 1);
 
-	/*
-	 * The zeroth index of the section header is reserved and is rarely used.
-	 * Set the section header as null (SHN_UNDEF) and move to the next one.
-	 */
+	 
 	shdr = data + elf_hdr_get_e_shoff(class, ehdr);
 	memset(shdr, 0, elf_size_of_shdr(class));
 	shdr += elf_size_of_shdr(class);
 
-	/* Initialize the string table. */
+	 
 	offset = elf_hdr_get_e_shoff(class, ehdr) +
 		 elf_size_of_shdr(class) * elf_hdr_get_e_shnum(class, ehdr);
 	memset(data + offset, 0, strtbl_size);
 
-	/* Fill in the string table section header. */
+	 
 	memset(shdr, 0, elf_size_of_shdr(class));
 	elf_shdr_set_sh_type(class, shdr, SHT_STRTAB);
 	elf_shdr_set_sh_offset(class, shdr, offset);
@@ -442,7 +364,7 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 		elf_shdr_set_sh_name(class, shdr,
 				     elf_strtbl_add(segment->priv, ehdr, class, &strtbl_index));
 
-		/* No need to copy segments for inline dumps */
+		 
 		if (dump_conf == RPROC_COREDUMP_ENABLED)
 			rproc_copy_segment(rproc, data + offset, segment, 0,
 					   segment->size);
@@ -455,7 +377,7 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 		return;
 	}
 
-	/* Initialize the dump state struct to be used by rproc_coredump_read */
+	 
 	dump_state.rproc = rproc;
 	dump_state.header = data;
 	init_completion(&dump_state.dump_done);
@@ -463,9 +385,7 @@ void rproc_coredump_using_sections(struct rproc *rproc)
 	dev_coredumpm(&rproc->dev, NULL, &dump_state, data_size, GFP_KERNEL,
 		      rproc_coredump_read, rproc_coredump_free);
 
-	/* Wait until the dump is read and free is called. Data is freed
-	 * by devcoredump framework automatically after 5 minutes.
-	 */
+	 
 	wait_for_completion(&dump_state.dump_done);
 }
 EXPORT_SYMBOL(rproc_coredump_using_sections);

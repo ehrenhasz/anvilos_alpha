@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_PEER_H
 #define ATH12K_PEER_H
@@ -29,13 +26,11 @@ struct ath12k_peer {
 	u8 pdev_idx;
 	u16 hw_peer_id;
 
-	/* protected by ab->data_lock */
+	 
 	struct ieee80211_key_conf *keys[WMI_MAX_KEY_INDEX + 1];
 	struct ath12k_dp_rx_tid rx_tid[IEEE80211_NUM_TIDS + 1];
 
-	/* Info used in MMIC verification of
-	 * RX fragments
-	 */
+	 
 	struct crypto_shash *tfm_mmic;
 	u8 mcast_keyidx;
 	u8 ucast_keyidx;
@@ -45,7 +40,7 @@ struct ath12k_peer {
 	bool delayba_flag;
 	bool is_authorized;
 
-	/* protected by ab->data_lock */
+	 
 	bool dp_setup_done;
 };
 
@@ -67,4 +62,4 @@ int ath12k_wait_for_peer_delete_done(struct ath12k *ar, u32 vdev_id,
 bool ath12k_peer_exist_by_vdev_id(struct ath12k_base *ab, int vdev_id);
 struct ath12k_peer *ath12k_peer_find_by_ast(struct ath12k_base *ab, int ast_hash);
 
-#endif /* _PEER_H_ */
+#endif  

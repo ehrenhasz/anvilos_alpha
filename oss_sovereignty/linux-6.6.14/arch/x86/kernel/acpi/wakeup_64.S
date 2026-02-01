@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 .text
 #include <linux/linkage.h>
 #include <linux/objtool.h>
@@ -13,16 +13,14 @@
 # Copyright 2003 Pavel Machek <pavel@suse.cz
 
 .code64
-	/*
-	 * Hooray, we are in Long 64-bit mode (but still running in low memory)
-	 */
+	 
 SYM_FUNC_START(wakeup_long64)
 	movq	saved_magic, %rax
 	movq	$0x123456789abcdef0, %rdx
 	cmpq	%rdx, %rax
 	je	2f
 
-	/* stop here on a saved_magic mismatch */
+	 
 	movq $0xbad6d61676963, %rcx
 1:
 	jmp 1b
@@ -82,12 +80,12 @@ SYM_FUNC_START(do_suspend_lowlevel)
 	movl	$3, %edi
 	xorl	%eax, %eax
 	call	x86_acpi_enter_sleep_state
-	/* in case something went wrong, restore the machine status and go on */
+	 
 	jmp	.Lresume_point
 
 	.align 4
 .Lresume_point:
-	/* We don't restore %rax, it must be 0 anyway */
+	 
 	movq	$saved_context, %rax
 	movq	saved_context_cr4(%rax), %rbx
 	movq	%rbx, %cr4
@@ -116,10 +114,7 @@ SYM_FUNC_START(do_suspend_lowlevel)
 	movq	pt_regs_r15(%rax), %r15
 
 #if defined(CONFIG_KASAN) && defined(CONFIG_KASAN_STACK)
-	/*
-	 * The suspend path may have poisoned some areas deeper in the stack,
-	 * which we now need to unpoison.
-	 */
+	 
 	movq	%rsp, %rdi
 	call	kasan_unpoison_task_stack_below
 #endif

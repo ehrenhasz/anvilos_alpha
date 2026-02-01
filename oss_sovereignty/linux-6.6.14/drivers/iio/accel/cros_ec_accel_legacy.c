@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for older Chrome OS EC accelerometer
- *
- * Copyright 2017 Google, Inc
- *
- * This driver uses the memory mapper cros-ec interface to communicate
- * with the Chrome OS EC about accelerometer data or older commands.
- * Accelerometer access is presented through iio sysfs.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -27,15 +19,10 @@
 #define DRV_NAME	"cros-ec-accel-legacy"
 
 #define CROS_EC_SENSOR_LEGACY_NUM 2
-/*
- * Sensor scale hard coded at 10 bits per g, computed as:
- * g / (2^10 - 1) = 0.009586168; with g = 9.80665 m.s^-2
- */
+ 
 #define ACCEL_LEGACY_NSCALE 9586168
 
-/*
- * Sensor frequency is hard-coded to 10Hz.
- */
+ 
 static const int cros_ec_legacy_sample_freq[] = { 10, 0 };
 
 static int cros_ec_accel_legacy_read_cmd(struct iio_dev *indio_dev,
@@ -46,10 +33,7 @@ static int cros_ec_accel_legacy_read_cmd(struct iio_dev *indio_dev,
 	unsigned int i;
 	u8 sensor_num;
 
-	/*
-	 * Read all sensor data through a command.
-	 * Save sensor_num, it is assumed to stay.
-	 */
+	 
 	sensor_num = st->param.info.sensor_num;
 	st->param.cmd = MOTIONSENSE_CMD_DUMP;
 	st->param.dump.max_sensor_count = CROS_EC_SENSOR_LEGACY_NUM;
@@ -97,7 +81,7 @@ static int cros_ec_accel_legacy_read(struct iio_dev *indio_dev,
 		ret = IIO_VAL_INT_PLUS_NANO;
 		break;
 	case IIO_CHAN_INFO_CALIBBIAS:
-		/* Calibration not supported. */
+		 
 		*val = 0;
 		ret = IIO_VAL_INT;
 		break;
@@ -120,27 +104,14 @@ static int cros_ec_accel_legacy_write(struct iio_dev *indio_dev,
 				      struct iio_chan_spec const *chan,
 				      int val, int val2, long mask)
 {
-	/*
-	 * Do nothing but don't return an error code to allow calibration
-	 * script to work.
-	 */
+	 
 	if (mask == IIO_CHAN_INFO_CALIBBIAS)
 		return 0;
 
 	return -EINVAL;
 }
 
-/**
- * cros_ec_accel_legacy_read_avail() - get available values
- * @indio_dev:		pointer to state information for device
- * @chan:	channel specification structure table
- * @vals:	list of available values
- * @type:	type of data returned
- * @length:	number of data returned in the array
- * @mask:	specifies which values to be requested
- *
- * Return:	an error code or IIO_AVAIL_LIST
- */
+ 
 static int cros_ec_accel_legacy_read_avail(struct iio_dev *indio_dev,
 					   struct iio_chan_spec const *chan,
 					   const int **vals,
@@ -165,10 +136,7 @@ static const struct iio_info cros_ec_accel_legacy_info = {
 	.read_avail = &cros_ec_accel_legacy_read_avail,
 };
 
-/*
- * Present the channel using HTML5 standard:
- * need to invert X and Y and invert some lid axis.
- */
+ 
 #define CROS_EC_ACCEL_ROTATE_AXIS(_axis)				\
 	((_axis) == CROS_EC_SENSOR_Z ? CROS_EC_SENSOR_Z :		\
 	 ((_axis) == CROS_EC_SENSOR_X ? CROS_EC_SENSOR_Y :		\
@@ -229,7 +197,7 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
 
 	indio_dev->channels = cros_ec_accel_legacy_channels;
 	indio_dev->num_channels = ARRAY_SIZE(cros_ec_accel_legacy_channels);
-	/* The lid sensor needs to be presented inverted. */
+	 
 	if (!strcmp(indio_dev->label, "accel-display")) {
 		state->sign[CROS_EC_SENSOR_X] = -1;
 		state->sign[CROS_EC_SENSOR_Z] = -1;

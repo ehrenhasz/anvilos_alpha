@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * DSA driver for:
- * Hirschmann Hellcreek TSN switch.
- *
- * Copyright (C) 2019,2020 Hochschule Offenburg
- * Copyright (C) 2019,2020 Linutronix GmbH
- * Authors: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
- *	    Kurt Kanzenbach <kurt@linutronix.de>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/ptp_clock_kernel.h>
@@ -26,21 +18,15 @@ void hellcreek_ptp_write(struct hellcreek *hellcreek, u16 data,
 	writew(data, hellcreek->ptp_base + offset);
 }
 
-/* Get nanoseconds from PTP clock */
+ 
 static u64 hellcreek_ptp_clock_read(struct hellcreek *hellcreek)
 {
 	u16 nsl, nsh;
 
-	/* Take a snapshot */
+	 
 	hellcreek_ptp_write(hellcreek, PR_COMMAND_C_SS, PR_COMMAND_C);
 
-	/* The time of the day is saved as 96 bits. However, due to hardware
-	 * limitations the seconds are not or only partly kept in the PTP
-	 * core. Currently only three bits for the seconds are available. That's
-	 * why only the nanoseconds are used and the seconds are tracked in
-	 * software. Anyway due to internal locking all five registers should be
-	 * read.
-	 */
+	 
 	nsh = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
 	nsh = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
 	nsh = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
@@ -63,11 +49,7 @@ static u64 __hellcreek_ptp_gettime(struct hellcreek *hellcreek)
 	return ns;
 }
 
-/* Retrieve the seconds parts in nanoseconds for a packet timestamped with @ns.
- * There has to be a check whether an overflow occurred between the packet
- * arrival and now. If so use the correct seconds (-1) for calculating the
- * packet arrival time.
- */
+ 
 u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns)
 {
 	u64 s;
@@ -108,11 +90,11 @@ static int hellcreek_ptp_settime(struct ptp_clock_info *ptp,
 
 	mutex_lock(&hellcreek->ptp_lock);
 
-	/* Update overflow data structure */
+	 
 	hellcreek->seconds = ts->tv_sec;
 	hellcreek->last_ts = ts->tv_nsec;
 
-	/* Set time in clock */
+	 
 	hellcreek_ptp_write(hellcreek, 0x00, PR_CLOCK_WRITE_C);
 	hellcreek_ptp_write(hellcreek, 0x00, PR_CLOCK_WRITE_C);
 	hellcreek_ptp_write(hellcreek, secl, PR_CLOCK_WRITE_C);
@@ -136,18 +118,7 @@ static int hellcreek_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		scaled_ppm = -scaled_ppm;
 	}
 
-	/* IP-Core adjusts the nominal frequency by adding or subtracting 1 ns
-	 * from the 8 ns (period of the oscillator) every time the accumulator
-	 * register overflows. The value stored in the addend register is added
-	 * to the accumulator register every 8 ns.
-	 *
-	 * addend value = (2^30 * accumulator_overflow_rate) /
-	 *                oscillator_frequency
-	 * where:
-	 *
-	 * oscillator_frequency = 125 MHz
-	 * accumulator_overflow_rate = 125 MHz * scaled_ppm * 2^-16 * 10^-6 * 8
-	 */
+	 
 	adj = scaled_ppm;
 	adj <<= 11;
 	addend = (u32)div_u64(adj, 15625);
@@ -159,7 +130,7 @@ static int hellcreek_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	mutex_lock(&hellcreek->ptp_lock);
 
-	/* Set drift register */
+	 
 	hellcreek_ptp_write(hellcreek, negative, PR_CLOCK_DRIFT_C);
 	hellcreek_ptp_write(hellcreek, 0x00, PR_CLOCK_DRIFT_C);
 	hellcreek_ptp_write(hellcreek, 0x00, PR_CLOCK_DRIFT_C);
@@ -177,10 +148,7 @@ static int hellcreek_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	u16 negative = 0, counth, countl;
 	u32 count_val;
 
-	/* If the offset is larger than IP-Core slow offset resources. Don't
-	 * consider slow adjustment. Rather, add the offset directly to the
-	 * current time
-	 */
+	 
 	if (abs(delta) > MAX_SLOW_OFFSET_ADJ) {
 		struct timespec64 now, then = ns_to_timespec64(delta);
 
@@ -196,7 +164,7 @@ static int hellcreek_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 		delta = -delta;
 	}
 
-	/* 'count_val' does not exceed the maximum register size (2^30) */
+	 
 	count_val = div_s64(delta, MAX_NS_PER_STEP);
 
 	counth = (count_val & 0xffff0000) >> 16;
@@ -206,7 +174,7 @@ static int hellcreek_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	mutex_lock(&hellcreek->ptp_lock);
 
-	/* Set offset write register */
+	 
 	hellcreek_ptp_write(hellcreek, negative, PR_CLOCK_OFFSET_C);
 	hellcreek_ptp_write(hellcreek, MAX_NS_PER_STEP, PR_CLOCK_OFFSET_C);
 	hellcreek_ptp_write(hellcreek, MIN_CLK_CYCLES_BETWEEN_STEPS,
@@ -291,10 +259,7 @@ static enum led_brightness hellcreek_led_is_gm_get(struct led_classdev *ldev)
 	return hellcreek_get_brightness(hellcreek, STATUS_OUT_IS_GM);
 }
 
-/* There two available LEDs internally called sync_good and is_gm. However, the
- * user might want to use a different label and specify the default state. Take
- * those properties from device tree.
- */
+ 
 static int hellcreek_led_setup(struct hellcreek *hellcreek)
 {
 	struct device_node *leds, *led = NULL;
@@ -364,13 +329,13 @@ static int hellcreek_led_setup(struct hellcreek *hellcreek)
 	hellcreek->led_is_gm.brightness_set = hellcreek_led_is_gm_set;
 	hellcreek->led_is_gm.brightness_get = hellcreek_led_is_gm_get;
 
-	/* Set initial state */
+	 
 	if (hellcreek->led_sync_good.brightness == 1)
 		hellcreek_set_brightness(hellcreek, STATUS_OUT_SYNC_GOOD, 1);
 	if (hellcreek->led_is_gm.brightness == 1)
 		hellcreek_set_brightness(hellcreek, STATUS_OUT_IS_GM, 1);
 
-	/* Register both leds */
+	 
 	led_classdev_register(hellcreek->dev, &hellcreek->led_sync_good);
 	led_classdev_register(hellcreek->dev, &hellcreek->led_is_gm);
 
@@ -387,20 +352,17 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
 	u16 status;
 	int ret;
 
-	/* Set up the overflow work */
+	 
 	INIT_DELAYED_WORK(&hellcreek->overflow_work,
 			  hellcreek_ptp_overflow_check);
 
-	/* Setup PTP clock */
+	 
 	hellcreek->ptp_clock_info.owner = THIS_MODULE;
 	snprintf(hellcreek->ptp_clock_info.name,
 		 sizeof(hellcreek->ptp_clock_info.name),
 		 dev_name(hellcreek->dev));
 
-	/* IP-Core can add up to 0.5 ns per 8 ns cycle, which means
-	 * accumulator_overflow_rate shall not exceed 62.5 MHz (which adjusts
-	 * the nominal frequency by 6.25%)
-	 */
+	 
 	hellcreek->ptp_clock_info.max_adj     = 62500000;
 	hellcreek->ptp_clock_info.n_alarm     = 0;
 	hellcreek->ptp_clock_info.n_pins      = 0;
@@ -419,20 +381,18 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
 	if (IS_ERR(hellcreek->ptp_clock))
 		return PTR_ERR(hellcreek->ptp_clock);
 
-	/* Enable the offset correction process, if no offset correction is
-	 * already taking place
-	 */
+	 
 	status = hellcreek_ptp_read(hellcreek, PR_CLOCK_STATUS_C);
 	if (!(status & PR_CLOCK_STATUS_C_OFS_ACT))
 		hellcreek_ptp_write(hellcreek,
 				    status | PR_CLOCK_STATUS_C_ENA_OFS,
 				    PR_CLOCK_STATUS_C);
 
-	/* Enable the drift correction process */
+	 
 	hellcreek_ptp_write(hellcreek, status | PR_CLOCK_STATUS_C_ENA_DRIFT,
 			    PR_CLOCK_STATUS_C);
 
-	/* LED setup */
+	 
 	ret = hellcreek_led_setup(hellcreek);
 	if (ret) {
 		if (hellcreek->ptp_clock)

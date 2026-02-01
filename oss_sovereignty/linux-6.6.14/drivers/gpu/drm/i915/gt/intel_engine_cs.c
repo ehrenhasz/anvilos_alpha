@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -33,13 +31,7 @@
 #include "intel_ring.h"
 #include "uc/intel_guc_submission.h"
 
-/* Haswell does have the CXT_SIZE register however it does not appear to be
- * valid. Now, docs explain in dwords what is in the context object. The full
- * size is 70720 bytes, however, the power context and execlist context will
- * never be saved (power context is stored elsewhere, and execlists don't work
- * on HSW) - so the final size, including the extra state required for the
- * Resource Streamer, is 66944 bytes, which rounds to 17 pages.
- */
+ 
 #define HSW_CXT_TOTAL_SIZE		(17 * PAGE_SIZE)
 
 #define DEFAULT_LR_CONTEXT_RENDER_SIZE	(22 * PAGE_SIZE)
@@ -53,7 +45,7 @@
 struct engine_info {
 	u8 class;
 	u8 instance;
-	/* mmio bases table *must* be sorted in reverse graphics_ver order */
+	 
 	struct engine_mmio_base {
 		u32 graphics_ver : 8;
 		u32 base : 24;
@@ -256,20 +248,7 @@ static const struct engine_info intel_engines[] = {
 	},
 };
 
-/**
- * intel_engine_context_size() - return the size of the context for an engine
- * @gt: the gt
- * @class: engine class
- *
- * Each engine class may require a different amount of space for a context
- * image.
- *
- * Return: size (in bytes) of an engine class specific context image
- *
- * Note: this size includes the HWSP, which is part of the context image
- * in LRC mode, but does not include the "shared data page" used with
- * GuC submission. The caller should account for this if using the GuC.
- */
+ 
 u32 intel_engine_context_size(struct intel_gt *gt, u8 class)
 {
 	struct intel_uncore *uncore = gt->uncore;
@@ -305,16 +284,7 @@ u32 intel_engine_context_size(struct intel_gt *gt, u8 class)
 					PAGE_SIZE);
 		case 5:
 		case 4:
-			/*
-			 * There is a discrepancy here between the size reported
-			 * by the register and the size of the context layout
-			 * in the docs. Both are described as authorative!
-			 *
-			 * The discrepancy is on the order of a few cachelines,
-			 * but the total is under one page (4k), which is our
-			 * minimum allocation anyway so it should all come
-			 * out in the wash.
-			 */
+			 
 			cxt_size = intel_uncore_read(uncore, CXT_SIZE) + 1;
 			drm_dbg(&gt->i915->drm,
 				"graphics_ver = %d CXT_SIZE = %d bytes [0x%08x]\n",
@@ -323,7 +293,7 @@ u32 intel_engine_context_size(struct intel_gt *gt, u8 class)
 			return round_up(cxt_size * 64, PAGE_SIZE);
 		case 3:
 		case 2:
-		/* For the special day when i810 gets merged. */
+		 
 		case 1:
 			return 0;
 		}
@@ -358,11 +328,7 @@ static u32 __engine_mmio_base(struct drm_i915_private *i915,
 
 static void __sprint_engine_name(struct intel_engine_cs *engine)
 {
-	/*
-	 * Before we know what the uABI name for this engine will be,
-	 * we still would like to keep track of this engine in the debug logs.
-	 * We throw in a ' here as a reminder that this isn't its final name.
-	 */
+	 
 	GEM_WARN_ON(snprintf(engine->name, sizeof(engine->name), "%s'%u",
 			     intel_engine_class_repr(engine->class),
 			     engine->instance) >= sizeof(engine->name));
@@ -370,10 +336,7 @@ static void __sprint_engine_name(struct intel_engine_cs *engine)
 
 void intel_engine_set_hwsp_writemask(struct intel_engine_cs *engine, u32 mask)
 {
-	/*
-	 * Though they added more rings on g4x/ilk, they did not add
-	 * per-engine HWSTAM until gen6.
-	 */
+	 
 	if (GRAPHICS_VER(engine->i915) < 6 && engine->class != RENDER_CLASS)
 		return;
 
@@ -385,7 +348,7 @@ void intel_engine_set_hwsp_writemask(struct intel_engine_cs *engine, u32 mask)
 
 static void intel_engine_sanitize_mmio(struct intel_engine_cs *engine)
 {
-	/* Mask off all writes into the unknown HWSP */
+	 
 	intel_engine_set_hwsp_writemask(engine, ~0u);
 }
 
@@ -503,7 +466,7 @@ static int intel_engine_setup(struct intel_gt *gt, enum intel_engine_id id,
 	     engine->class == RENDER_CLASS)
 		engine->flags |= I915_ENGINE_FIRST_RENDER_COMPUTE;
 
-	/* features common between engines sharing EUs */
+	 
 	if (engine->class == RENDER_CLASS || engine->class == COMPUTE_CLASS) {
 		engine->flags |= I915_ENGINE_HAS_RCS_REG_STATE;
 		engine->flags |= I915_ENGINE_HAS_EU_PRIORITY;
@@ -520,16 +483,11 @@ static int intel_engine_setup(struct intel_gt *gt, enum intel_engine_id id,
 	engine->props.timeslice_duration_ms =
 		CONFIG_DRM_I915_TIMESLICE_DURATION;
 
-	/*
-	 * Mid-thread pre-emption is not available in Gen12. Unfortunately,
-	 * some compute workloads run quite long threads. That means they get
-	 * reset due to not pre-empting in a timely manner. So, bump the
-	 * pre-emption timeout value to be much higher for compute engines.
-	 */
+	 
 	if (GRAPHICS_VER(i915) == 12 && (engine->flags & I915_ENGINE_HAS_RCS_REG_STATE))
 		engine->props.preempt_timeout_ms = CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE;
 
-	/* Cap properties according to any system limits */
+	 
 #define CLAMP_PROP(field) \
 	do { \
 		u64 clamp = intel_clamp_##field(engine, engine->props.field); \
@@ -549,7 +507,7 @@ static int intel_engine_setup(struct intel_gt *gt, enum intel_engine_id id,
 
 #undef CLAMP_PROP
 
-	engine->defaults = engine->props; /* never to change again */
+	engine->defaults = engine->props;  
 
 	engine->context_size = intel_engine_context_size(gt, engine->class);
 	if (WARN_ON(engine->context_size > BIT(20)))
@@ -561,7 +519,7 @@ static int intel_engine_setup(struct intel_gt *gt, enum intel_engine_id id,
 
 	ATOMIC_INIT_NOTIFIER_HEAD(&engine->context_status_notifier);
 
-	/* Scrub mmio state on takeover */
+	 
 	intel_engine_sanitize_mmio(engine);
 
 	gt->engine_class[info->class][info->instance] = engine;
@@ -586,10 +544,7 @@ u64 intel_clamp_max_busywait_duration_ns(struct intel_engine_cs *engine, u64 val
 
 u64 intel_clamp_preempt_timeout_ms(struct intel_engine_cs *engine, u64 value)
 {
-	/*
-	 * NB: The GuC API only supports 32bit values. However, the limit is further
-	 * reduced due to internal calculations which would otherwise overflow.
-	 */
+	 
 	if (intel_guc_submission_is_wanted(&engine->gt->uc.guc))
 		value = min_t(u64, value, guc_policy_max_preempt_timeout_ms());
 
@@ -607,10 +562,7 @@ u64 intel_clamp_stop_timeout_ms(struct intel_engine_cs *engine, u64 value)
 
 u64 intel_clamp_timeslice_duration_ms(struct intel_engine_cs *engine, u64 value)
 {
-	/*
-	 * NB: The GuC API only supports 32bit values. However, the limit is further
-	 * reduced due to internal calculations which would otherwise overflow.
-	 */
+	 
 	if (intel_guc_submission_is_wanted(&engine->gt->uc.guc))
 		value = min_t(u64, value, guc_policy_max_exec_quantum_ms());
 
@@ -624,19 +576,13 @@ static void __setup_engine_capabilities(struct intel_engine_cs *engine)
 	struct drm_i915_private *i915 = engine->i915;
 
 	if (engine->class == VIDEO_DECODE_CLASS) {
-		/*
-		 * HEVC support is present on first engine instance
-		 * before Gen11 and on all instances afterwards.
-		 */
+		 
 		if (GRAPHICS_VER(i915) >= 11 ||
 		    (GRAPHICS_VER(i915) >= 9 && engine->instance == 0))
 			engine->uabi_capabilities |=
 				I915_VIDEO_CLASS_CAPABILITY_HEVC;
 
-		/*
-		 * SFC block is present only on even logical engine
-		 * instances.
-		 */
+		 
 		if ((GRAPHICS_VER(i915) >= 11 &&
 		     (engine->gt->info.vdbox_sfc_access &
 		      BIT(engine->instance))) ||
@@ -660,29 +606,18 @@ static void intel_setup_engine_capabilities(struct intel_gt *gt)
 		__setup_engine_capabilities(engine);
 }
 
-/**
- * intel_engines_release() - free the resources allocated for Command Streamers
- * @gt: pointer to struct intel_gt
- */
+ 
 void intel_engines_release(struct intel_gt *gt)
 {
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * Before we release the resources held by engine, we must be certain
-	 * that the HW is no longer accessing them -- having the GPU scribble
-	 * to or read from a page being used for something else causes no end
-	 * of fun.
-	 *
-	 * The GPU should be reset by this point, but assume the worst just
-	 * in case we aborted before completely initialising the engines.
-	 */
+	 
 	GEM_BUG_ON(intel_gt_pm_is_awake(gt));
 	if (!INTEL_INFO(gt->i915)->gpu_reset_clobbers_display)
 		__intel_gt_reset(gt, ALL_ENGINES);
 
-	/* Decouple the backend; but keep the layout for late GPU resets */
+	 
 	for_each_engine(engine, gt, id) {
 		if (!engine->release)
 			continue;
@@ -710,7 +645,7 @@ void intel_engines_free(struct intel_gt *gt)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* Free the requests! dma-resv keeps fences around for an eternity */
+	 
 	rcu_barrier();
 
 	for_each_engine(engine, gt, id) {
@@ -727,16 +662,7 @@ bool gen11_vdbox_has_sfc(struct intel_gt *gt,
 {
 	struct drm_i915_private *i915 = gt->i915;
 
-	/*
-	 * In Gen11, only even numbered logical VDBOXes are hooked
-	 * up to an SFC (Scaler & Format Converter) unit.
-	 * In Gen12, Even numbered physical instance always are connected
-	 * to an SFC. Odd numbered physical instances have SFC only if
-	 * previous even instance is fused off.
-	 *
-	 * Starting with Xe_HP, there's also a dedicated SFC_ENABLE field
-	 * in the fuse register that tells us whether a specific SFC is present.
-	 */
+	 
 	if ((gt->info.sfc_mask & BIT(physical_vdbox / 2)) == 0)
 		return false;
 	else if (MEDIA_VER(i915) >= 12)
@@ -760,11 +686,7 @@ static void engine_mask_apply_media_fuses(struct intel_gt *gt)
 	if (MEDIA_VER(gt->i915) < 11)
 		return;
 
-	/*
-	 * On newer platforms the fusing register is called 'enable' and has
-	 * enable semantics, while on older platforms it is called 'disable'
-	 * and bits have disable semantices.
-	 */
+	 
 	media_fuse = intel_uncore_read(gt->uncore, GEN11_GT_VEBOX_VDBOX_DISABLE);
 	if (MEDIA_VER_FULL(i915) < IP_VER(12, 50))
 		media_fuse = ~media_fuse;
@@ -832,10 +754,7 @@ static void engine_mask_apply_compute_fuses(struct intel_gt *gt)
 
 	ccs_mask = intel_slicemask_from_xehp_dssmask(info->sseu.compute_subslice_mask,
 						     ss_per_ccs);
-	/*
-	 * If all DSS in a quadrant are fused off, the corresponding CCS
-	 * engine is not available for use.
-	 */
+	 
 	for_each_clear_bit(i, &ccs_mask, I915_MAX_CCS) {
 		info->engine_mask &= ~BIT(_CCS(i));
 		drm_dbg(&i915->drm, "ccs%u fused off\n", i);
@@ -856,10 +775,7 @@ static void engine_mask_apply_copy_fuses(struct intel_gt *gt)
 	meml3_mask = intel_uncore_read(gt->uncore, GEN10_MIRROR_FUSE3);
 	meml3_mask = REG_FIELD_GET(GEN12_MEML3_EN_MASK, meml3_mask);
 
-	/*
-	 * Link Copy engines may be fused off according to meml3_mask. Each
-	 * bit is a quad that houses 2 Link Copy and two Sub Copy engines.
-	 */
+	 
 	for_each_clear_bit(quad, &meml3_mask, GEN12_MAX_MSLICES) {
 		unsigned int instance = quad * 2 + 1;
 		intel_engine_mask_t mask = GENMASK(_BCS(instance + 1),
@@ -874,16 +790,7 @@ static void engine_mask_apply_copy_fuses(struct intel_gt *gt)
 	}
 }
 
-/*
- * Determine which engines are fused off in our particular hardware.
- * Note that we have a catch-22 situation where we need to be able to access
- * the blitter forcewake domain to read the engine fuses, but at the same time
- * we need to know which engines are available on the system to know which
- * forcewake domains are present. We solve this by intializing the forcewake
- * domains based on the full engine mask in the platform capabilities before
- * calling this function and pruning the domains for fused-off engines
- * afterwards.
- */
+ 
 static intel_engine_mask_t init_engine_mask(struct intel_gt *gt)
 {
 	struct intel_gt_info *info = &gt->info;
@@ -894,18 +801,7 @@ static intel_engine_mask_t init_engine_mask(struct intel_gt *gt)
 	engine_mask_apply_compute_fuses(gt);
 	engine_mask_apply_copy_fuses(gt);
 
-	/*
-	 * The only use of the GSC CS is to load and communicate with the GSC
-	 * FW, so we have no use for it if we don't have the FW.
-	 *
-	 * IMPORTANT: in cases where we don't have the GSC FW, we have a
-	 * catch-22 situation that breaks media C6 due to 2 requirements:
-	 * 1) once turned on, the GSC power well will not go to sleep unless the
-	 *    GSC FW is loaded.
-	 * 2) to enable idling (which is required for media C6) we need to
-	 *    initialize the IDLE_MSG register for the GSC CS and do at least 1
-	 *    submission, which will wake up the GSC power well.
-	 */
+	 
 	if (__HAS_ENGINE(info->engine_mask, GSC0) && !intel_uc_wants_gsc_uc(&gt->uc)) {
 		drm_notice(&gt->i915->drm,
 			   "No GSC FW selected, disabling GSC CS and media C6\n");
@@ -938,10 +834,7 @@ static void populate_logical_ids(struct intel_gt *gt, u8 *logical_ids,
 
 static void setup_logical_ids(struct intel_gt *gt, u8 *logical_ids, u8 class)
 {
-	/*
-	 * Logical to physical mapping is needed for proper support
-	 * to split-frame feature.
-	 */
+	 
 	if (MEDIA_VER(gt->i915) >= 11 && class == VIDEO_DECODE_CLASS) {
 		const u8 map[] = { 0, 2, 4, 6, 1, 3, 5, 7 };
 
@@ -958,12 +851,7 @@ static void setup_logical_ids(struct intel_gt *gt, u8 *logical_ids, u8 class)
 	}
 }
 
-/**
- * intel_engines_init_mmio() - allocate and prepare the Engine Command Streamers
- * @gt: pointer to struct intel_gt
- *
- * Return: non-zero if the initialization failed.
- */
+ 
 int intel_engines_init_mmio(struct intel_gt *gt)
 {
 	struct drm_i915_private *i915 = gt->i915;
@@ -999,11 +887,7 @@ int intel_engines_init_mmio(struct intel_gt *gt)
 		}
 	}
 
-	/*
-	 * Catch failures to update intel_engines table when the new engines
-	 * are added to the driver by a warning and disabling the forgotten
-	 * engines.
-	 */
+	 
 	if (drm_WARN_ON(&i915->drm, mask != engine_mask))
 		gt->info.engine_mask = mask;
 
@@ -1039,7 +923,7 @@ static void cleanup_status_page(struct intel_engine_cs *engine)
 {
 	struct i915_vma *vma;
 
-	/* Prevent writes into HWSP after returning the page to the system */
+	 
 	intel_engine_set_hwsp_writemask(engine, ~0u);
 
 	vma = fetch_and_zero(&engine->status_page.vma);
@@ -1060,17 +944,7 @@ static int pin_ggtt_status_page(struct intel_engine_cs *engine,
 	unsigned int flags;
 
 	if (!HAS_LLC(engine->i915) && i915_ggtt_has_aperture(engine->gt->ggtt))
-		/*
-		 * On g33, we cannot place HWS above 256MiB, so
-		 * restrict its pinning to the low mappable arena.
-		 * Though this restriction is not documented for
-		 * gen4, gen5, or byt, they also behave similarly
-		 * and hang if the HWS is placed at the top of the
-		 * GTT. To generalise, it appears that all !llc
-		 * platforms have issues with us placing the HWS
-		 * above the mappable region (even though we never
-		 * actually map it).
-		 */
+		 
 		flags = PIN_MAPPABLE;
 	else
 		flags = PIN_HIGH;
@@ -1088,13 +962,7 @@ static int init_status_page(struct intel_engine_cs *engine)
 
 	INIT_LIST_HEAD(&engine->status_page.timelines);
 
-	/*
-	 * Though the HWS register does support 36bit addresses, historically
-	 * we have had hangs and corruption reported due to wild writes if
-	 * the HWS is placed above 4G. We only allow objects to be allocated
-	 * in GFP_DMA32 for i965, and no earlier physical address users had
-	 * access to more than 4G.
-	 */
+	 
 	obj = i915_gem_object_create_internal(engine->i915, PAGE_SIZE);
 	if (IS_ERR(obj)) {
 		drm_err(&engine->i915->drm,
@@ -1147,7 +1015,7 @@ static int intel_engine_init_tlb_invalidation(struct intel_engine_cs *engine)
 {
 	static const union intel_engine_tlb_inv_reg gen8_regs[] = {
 		[RENDER_CLASS].reg		= GEN8_RTCR,
-		[VIDEO_DECODE_CLASS].reg	= GEN8_M1TCR, /* , GEN8_M2TCR */
+		[VIDEO_DECODE_CLASS].reg	= GEN8_M1TCR,  
 		[VIDEO_ENHANCEMENT_CLASS].reg	= GEN8_VTCR,
 		[COPY_ENGINE_CLASS].reg		= GEN8_BTCR,
 	};
@@ -1178,16 +1046,7 @@ static int intel_engine_init_tlb_invalidation(struct intel_engine_cs *engine)
 	unsigned int num = 0;
 	u32 val;
 
-	/*
-	 * New platforms should not be added with catch-all-newer (>=)
-	 * condition so that any later platform added triggers the below warning
-	 * and in turn mandates a human cross-check of whether the invalidation
-	 * flows have compatible semantics.
-	 *
-	 * For instance with the 11.00 -> 12.00 transition three out of five
-	 * respective engine registers were moved to masked type. Then after the
-	 * 12.00 -> 12.50 transition multi cast handling is required too.
-	 */
+	 
 
 	if (engine->gt->type == GT_MEDIA) {
 		if (MEDIA_VER_FULL(i915) == IP_VER(13, 0)) {
@@ -1226,10 +1085,7 @@ static int intel_engine_init_tlb_invalidation(struct intel_engine_cs *engine)
 	reg = regs[class];
 
 	if (regs == xelpmp_regs && class == OTHER_CLASS) {
-		/*
-		 * There's only a single GSC instance, but it uses register bit
-		 * 1 instead of either 0 or OTHER_GSC_INSTANCE.
-		 */
+		 
 		GEM_WARN_ON(instance != OTHER_GSC_INSTANCE);
 		val = 1;
 	} else if (regs == gen8_regs && class == VIDEO_DECODE_CLASS && instance == 1) {
@@ -1292,7 +1148,7 @@ static int engine_setup_common(struct intel_engine_cs *engine)
 	intel_engine_init__pm(engine);
 	intel_engine_init_retire(engine);
 
-	/* Use the whole device by default */
+	 
 	engine->sseu =
 		intel_sseu_from_device_info(&engine->gt->info.sseu);
 
@@ -1354,7 +1210,7 @@ static int measure_breadcrumb_dw(struct intel_context *ce)
 	spin_unlock_irq(&engine->sched_engine->lock);
 	mutex_unlock(&ce->timeline->mutex);
 
-	GEM_BUG_ON(dw & 1); /* RING_TAIL must be qword aligned */
+	GEM_BUG_ON(dw & 1);  
 
 	kfree(frame);
 	return dw;
@@ -1383,7 +1239,7 @@ intel_engine_create_pinned_context(struct intel_engine_cs *engine,
 	i915_vm_put(ce->vm);
 	ce->vm = i915_vm_get(vm);
 
-	err = intel_context_pin(ce); /* perma-pin so it is always available */
+	err = intel_context_pin(ce);  
 	if (err) {
 		intel_context_put(ce);
 		return ERR_PTR(err);
@@ -1391,12 +1247,7 @@ intel_engine_create_pinned_context(struct intel_engine_cs *engine,
 
 	list_add_tail(&ce->pinned_contexts_link, &engine->pinned_contexts_list);
 
-	/*
-	 * Give our perma-pinned kernel timelines a separate lockdep class,
-	 * so that we can use them from within the normal user timelines
-	 * should we need to inject GPU operations during their request
-	 * construction.
-	 */
+	 
 	lockdep_set_class_and_name(&ce->timeline->mutex, key, name);
 
 	return ce;
@@ -1428,17 +1279,7 @@ create_kernel_context(struct intel_engine_cs *engine)
 						  &kernel, "kernel_context");
 }
 
-/*
- * engine_init_common - initialize engine state which might require hw access
- * @engine: Engine to initialize.
- *
- * Initializes @engine@ structure members shared between legacy and execlists
- * submission modes which do require hardware access.
- *
- * Typcally done at later stages of submission mode specific engine setup.
- *
- * Returns zero on success or an error code on failure.
- */
+ 
 static int engine_init_common(struct intel_engine_cs *engine)
 {
 	struct intel_context *ce;
@@ -1446,14 +1287,7 @@ static int engine_init_common(struct intel_engine_cs *engine)
 
 	engine->set_default_submission(engine);
 
-	/*
-	 * We may need to do things with the shrinker which
-	 * require us to immediately switch back to the default
-	 * context. This can cause a problem as pinning the
-	 * default context also requires GTT space which may not
-	 * be available. To avoid this we always pin the default
-	 * context.
-	 */
+	 
 	ce = create_kernel_context(engine);
 	if (IS_ERR(ce))
 		return PTR_ERR(ce);
@@ -1501,7 +1335,7 @@ int intel_engines_init(struct intel_gt *gt)
 			return err;
 		}
 
-		/* The backend should now be responsible for cleanup */
+		 
 		GEM_BUG_ON(engine->release == NULL);
 
 		err = engine_init_common(engine);
@@ -1514,13 +1348,7 @@ int intel_engines_init(struct intel_gt *gt)
 	return 0;
 }
 
-/**
- * intel_engine_cleanup_common - cleans up the engine state created by
- *                                the common initiailizers.
- * @engine: Engine to cleanup.
- *
- * This cleans up everything created by the common helpers.
- */
+ 
 void intel_engine_cleanup_common(struct intel_engine_cs *engine)
 {
 	GEM_BUG_ON(!list_empty(&engine->sched_engine->requests));
@@ -1545,12 +1373,7 @@ void intel_engine_cleanup_common(struct intel_engine_cs *engine)
 	intel_wa_list_free(&engine->whitelist);
 }
 
-/**
- * intel_engine_resume - re-initializes the HW state of the engine
- * @engine: Engine to resume.
- *
- * Returns zero on success or an error code on failure.
- */
+ 
 int intel_engine_resume(struct intel_engine_cs *engine)
 {
 	intel_engine_apply_workarounds(engine);
@@ -1589,16 +1412,10 @@ u64 intel_engine_get_last_batch_head(const struct intel_engine_cs *engine)
 
 static unsigned long stop_timeout(const struct intel_engine_cs *engine)
 {
-	if (in_atomic() || irqs_disabled()) /* inside atomic preempt-reset? */
+	if (in_atomic() || irqs_disabled())  
 		return 0;
 
-	/*
-	 * If we are doing a normal GPU reset, we can take our time and allow
-	 * the engine to quiesce. We've stopped submission to the engine, and
-	 * if we wait long enough an innocent context should complete and
-	 * leave the engine idle. So they should not be caught unaware by
-	 * the forthcoming GPU reset (which usually follows the stop_cs)!
-	 */
+	 
 	return READ_ONCE(engine->props.stop_timeout_ms);
 }
 
@@ -1612,10 +1429,7 @@ static int __intel_engine_stop_cs(struct intel_engine_cs *engine,
 
 	intel_uncore_write_fw(uncore, mode, _MASKED_BIT_ENABLE(STOP_RING));
 
-	/*
-	 * Wa_22011802037: Prior to doing a reset, ensure CS is
-	 * stopped, set ring stop bit and prefetch disable bit to halt CS
-	 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(engine->i915, M, STEP_A0, STEP_B0) ||
 	    (GRAPHICS_VER(engine->i915) >= 11 &&
 	    GRAPHICS_VER_FULL(engine->i915) < IP_VER(12, 70)))
@@ -1628,7 +1442,7 @@ static int __intel_engine_stop_cs(struct intel_engine_cs *engine,
 					   slow_timeout_ms,
 					   NULL);
 
-	/* A final mmio read to let GPU writes be hopefully flushed to memory */
+	 
 	intel_uncore_posting_read_fw(uncore, mode);
 	return err;
 }
@@ -1641,29 +1455,14 @@ int intel_engine_stop_cs(struct intel_engine_cs *engine)
 		return -ENODEV;
 
 	ENGINE_TRACE(engine, "\n");
-	/*
-	 * TODO: Find out why occasionally stopping the CS times out. Seen
-	 * especially with gem_eio tests.
-	 *
-	 * Occasionally trying to stop the cs times out, but does not adversely
-	 * affect functionality. The timeout is set as a config parameter that
-	 * defaults to 100ms. In most cases the follow up operation is to wait
-	 * for pending MI_FORCE_WAKES. The assumption is that this timeout is
-	 * sufficient for any pending MI_FORCEWAKEs to complete. Once root
-	 * caused, the caller must check and handle the return from this
-	 * function.
-	 */
+	 
 	if (__intel_engine_stop_cs(engine, 1000, stop_timeout(engine))) {
 		ENGINE_TRACE(engine,
 			     "timed out on STOP_RING -> IDLE; HEAD:%04x, TAIL:%04x\n",
 			     ENGINE_READ_FW(engine, RING_HEAD) & HEAD_ADDR,
 			     ENGINE_READ_FW(engine, RING_TAIL) & TAIL_ADDR);
 
-		/*
-		 * Sometimes we observe that the idle flag is not
-		 * set even though the ring is empty. So double
-		 * check before giving up.
-		 */
+		 
 		if ((ENGINE_READ_FW(engine, RING_HEAD) & HEAD_ADDR) !=
 		    (ENGINE_READ_FW(engine, RING_TAIL) & TAIL_ADDR))
 			err = -ETIMEDOUT;
@@ -1708,7 +1507,7 @@ static u32 __cs_pending_mi_force_wakes(struct intel_engine_cs *engine)
 
 	val = intel_uncore_read(engine->uncore, _reg[engine->id]);
 
-	/* bits[29:25] & bits[13:9] >> shift */
+	 
 	return (val & (val >> 16) & MSG_IDLE_FW_MASK) >> MSG_IDLE_FW_SHIFT;
 }
 
@@ -1716,30 +1515,22 @@ static void __gpm_wait_for_fw_complete(struct intel_gt *gt, u32 fw_mask)
 {
 	int ret;
 
-	/* Ensure GPM receives fw up/down after CS is stopped */
+	 
 	udelay(1);
 
-	/* Wait for forcewake request to complete in GPM */
+	 
 	ret =  __intel_wait_for_register_fw(gt->uncore,
 					    GEN9_PWRGT_DOMAIN_STATUS,
 					    fw_mask, fw_mask, 5000, 0, NULL);
 
-	/* Ensure CS receives fw ack from GPM */
+	 
 	udelay(1);
 
 	if (ret)
 		GT_TRACE(gt, "Failed to complete pending forcewake %d\n", ret);
 }
 
-/*
- * Wa_22011802037:gen12: In addition to stopping the cs, we need to wait for any
- * pending MI_FORCE_WAKEUP requests that the CS has initiated to complete. The
- * pending status is indicated by bits[13:9] (masked by bits[29:25]) in the
- * MSG_IDLE register. There's one MSG_IDLE register per reset domain. Since we
- * are concerned only with the gt reset here, we use a logical OR of pending
- * forcewakeups from all reset domains and then wait for them to complete by
- * querying PWRGT_DOMAIN_STATUS.
- */
+ 
 void intel_engine_wait_for_pending_mi_fw(struct intel_engine_cs *engine)
 {
 	u32 fw_pending = __cs_pending_mi_force_wakes(engine);
@@ -1748,7 +1539,7 @@ void intel_engine_wait_for_pending_mi_fw(struct intel_engine_cs *engine)
 		__gpm_wait_for_fw_complete(engine->gt, fw_pending);
 }
 
-/* NB: please notice the memset */
+ 
 void intel_engine_get_instdone(const struct intel_engine_cs *engine,
 			       struct intel_instdone *instdone)
 {
@@ -1812,7 +1603,7 @@ void intel_engine_get_instdone(const struct intel_engine_cs *engine,
 		instdone->instdone =
 			intel_uncore_read(uncore, RING_INSTDONE(mmio_base));
 		if (engine->id == RCS0)
-			/* HACK: Using the wrong struct member */
+			 
 			instdone->slice_common =
 				intel_uncore_read(uncore, GEN4_INSTDONE1);
 	} else {
@@ -1830,12 +1621,12 @@ static bool ring_is_idle(struct intel_engine_cs *engine)
 	if (!intel_engine_pm_get_if_awake(engine))
 		return true;
 
-	/* First check that no commands are left in the ring */
+	 
 	if ((ENGINE_READ(engine, RING_HEAD) & HEAD_ADDR) !=
 	    (ENGINE_READ(engine, RING_TAIL) & TAIL_ADDR))
 		idle = false;
 
-	/* No bit for gen2, so assume the CS parser is idle */
+	 
 	if (GRAPHICS_VER(engine->i915) > 2 &&
 	    !(ENGINE_READ(engine, RING_MI_MODE) & MODE_IDLE))
 		idle = false;
@@ -1854,43 +1645,37 @@ void __intel_engine_flush_submission(struct intel_engine_cs *engine, bool sync)
 
 	local_bh_disable();
 	if (tasklet_trylock(t)) {
-		/* Must wait for any GPU reset in progress. */
+		 
 		if (__tasklet_is_enabled(t))
 			t->callback(t);
 		tasklet_unlock(t);
 	}
 	local_bh_enable();
 
-	/* Synchronise and wait for the tasklet on another CPU */
+	 
 	if (sync)
 		tasklet_unlock_wait(t);
 }
 
-/**
- * intel_engine_is_idle() - Report if the engine has finished process all work
- * @engine: the intel_engine_cs
- *
- * Return true if there are no requests pending, nothing left to be submitted
- * to hardware, and that the engine is idle.
- */
+ 
 bool intel_engine_is_idle(struct intel_engine_cs *engine)
 {
-	/* More white lies, if wedged, hw state is inconsistent */
+	 
 	if (intel_gt_is_wedged(engine->gt))
 		return true;
 
 	if (!intel_engine_pm_is_awake(engine))
 		return true;
 
-	/* Waiting to drain ELSP? */
+	 
 	intel_synchronize_hardirq(engine->i915);
 	intel_engine_flush_submission(engine);
 
-	/* ELSP is empty, but there are ready requests? E.g. after reset */
+	 
 	if (!i915_sched_engine_is_empty(engine->sched_engine))
 		return false;
 
-	/* Ring stopped? */
+	 
 	return ring_is_idle(engine);
 }
 
@@ -1899,14 +1684,11 @@ bool intel_engines_are_idle(struct intel_gt *gt)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * If the driver is wedged, HW state may be very inconsistent and
-	 * report that it is still busy, even though we have stopped using it.
-	 */
+	 
 	if (intel_gt_is_wedged(gt))
 		return true;
 
-	/* Already parked (and passed an idleness test); must still be idle */
+	 
 	if (!READ_ONCE(gt->awake))
 		return true;
 
@@ -1923,7 +1705,7 @@ bool intel_engine_irq_enable(struct intel_engine_cs *engine)
 	if (!engine->irq_enable)
 		return false;
 
-	/* Caller disables interrupts */
+	 
 	spin_lock(engine->gt->irq_lock);
 	engine->irq_enable(engine);
 	spin_unlock(engine->gt->irq_lock);
@@ -1936,7 +1718,7 @@ void intel_engine_irq_disable(struct intel_engine_cs *engine)
 	if (!engine->irq_disable)
 		return;
 
-	/* Caller disables interrupts */
+	 
 	spin_lock(engine->gt->irq_lock);
 	engine->irq_disable(engine);
 	spin_unlock(engine->gt->irq_lock);
@@ -1959,14 +1741,14 @@ bool intel_engine_can_store_dword(struct intel_engine_cs *engine)
 {
 	switch (GRAPHICS_VER(engine->i915)) {
 	case 2:
-		return false; /* uses physical not virtual addresses */
+		return false;  
 	case 3:
-		/* maybe only uses physical not virtual addresses */
+		 
 		return !(IS_I915G(engine->i915) || IS_I915GM(engine->i915));
 	case 4:
-		return !IS_I965G(engine->i915); /* who knows! */
+		return !IS_I965G(engine->i915);  
 	case 6:
-		return engine->class != VIDEO_DECODE_CLASS; /* b0rked */
+		return engine->class != VIDEO_DECODE_CLASS;  
 	default:
 		return true;
 	}
@@ -1976,14 +1758,7 @@ static struct intel_timeline *get_timeline(struct i915_request *rq)
 {
 	struct intel_timeline *tl;
 
-	/*
-	 * Even though we are holding the engine->sched_engine->lock here, there
-	 * is no control over the submission queue per-se and we are
-	 * inspecting the active state at a random point in time, with an
-	 * unknown queue. Play safe and make sure the timeline remains valid.
-	 * (Only being used for pretty printing, one extra kref shouldn't
-	 * cause a camel stampede!)
-	 */
+	 
 	rcu_read_lock();
 	tl = rcu_dereference(rq->timeline);
 	if (!kref_get_unless_zero(&tl->kref))
@@ -2327,13 +2102,7 @@ static void engine_dump_active_requests(struct intel_engine_cs *engine,
 	struct intel_context *hung_ce = NULL;
 	struct i915_request *hung_rq = NULL;
 
-	/*
-	 * No need for an engine->irq_seqno_barrier() before the seqno reads.
-	 * The GPU is still running so requests are still executing and any
-	 * hardware reads will be out of date by the time they are reported.
-	 * But the intention here is just to report an instantaneous snapshot
-	 * so that's fine.
-	 */
+	 
 	intel_engine_get_hung_entity(engine, &hung_ce, &hung_rq);
 
 	drm_printf(m, "\tRequests:\n");
@@ -2416,13 +2185,7 @@ void intel_engine_dump(struct intel_engine_cs *engine,
 	intel_engine_print_breadcrumbs(engine, m);
 }
 
-/**
- * intel_engine_get_busy_time() - Return current accumulated engine busyness
- * @engine: engine to report on
- * @now: monotonic timestamp of sampling
- *
- * Returns accumulated time @engine was busy since engine stats were enabled.
- */
+ 
 ktime_t intel_engine_get_busy_time(struct intel_engine_cs *engine, ktime_t *now)
 {
 	return engine->busyness(engine, now);
@@ -2446,24 +2209,10 @@ static struct i915_request *engine_execlist_find_hung_request(struct intel_engin
 {
 	struct i915_request *request, *active = NULL;
 
-	/*
-	 * This search does not work in GuC submission mode. However, the GuC
-	 * will report the hanging context directly to the driver itself. So
-	 * the driver should never get here when in GuC mode.
-	 */
+	 
 	GEM_BUG_ON(intel_uc_uses_guc_submission(&engine->gt->uc));
 
-	/*
-	 * We are called by the error capture, reset and to dump engine
-	 * state at random points in time. In particular, note that neither is
-	 * crucially ordered with an interrupt. After a hang, the GPU is dead
-	 * and we assume that no more writes can happen (we waited long enough
-	 * for all writes that were in transaction to be flushed) - adding an
-	 * extra delay for a recent interrupt is pointless. Hence, we do
-	 * not need an engine->irq_seqno_barrier() before the seqno reads.
-	 * At all other times, we must assume the GPU is still running, but
-	 * we only care about the snapshot of this moment.
-	 */
+	 
 	lockdep_assert_held(&engine->sched_engine->lock);
 
 	rcu_read_lock();
@@ -2507,10 +2256,7 @@ void intel_engine_get_hung_entity(struct intel_engine_cs *engine,
 		return;
 	}
 
-	/*
-	 * Getting here with GuC enabled means it is a forced error capture
-	 * with no actual hang. So, no need to attempt the execlist search.
-	 */
+	 
 	if (intel_uc_uses_guc_submission(&engine->gt->uc))
 		return;
 
@@ -2523,14 +2269,7 @@ void intel_engine_get_hung_entity(struct intel_engine_cs *engine,
 
 void xehp_enable_ccs_engines(struct intel_engine_cs *engine)
 {
-	/*
-	 * If there are any non-fused-off CCS engines, we need to enable CCS
-	 * support in the RCU_MODE register.  This only needs to be done once,
-	 * so for simplicity we'll take care of this in the RCS engine's
-	 * resume handler; since the RCS and all CCS engines belong to the
-	 * same reset domain and are reset together, this will also take care
-	 * of re-applying the setting after i915-triggered resets.
-	 */
+	 
 	if (!CCS_MASK(engine->gt))
 		return;
 

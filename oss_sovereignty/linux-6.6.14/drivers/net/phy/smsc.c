@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/smsc.c
- *
- * Driver for SMSC PHYs
- *
- * Author: Herbert Valerio Riedel
- *
- * Copyright (c) 2006 Herbert Valerio Riedel <hvr@gnu.org>
- *
- * Support added for SMSC LAN8187 and LAN8700 by steve.glendinning@shawell.net
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -24,19 +13,19 @@
 #include <linux/etherdevice.h>
 #include <linux/smscphy.h>
 
-/* Vendor-specific PHY Definitions */
-/* EDPD NLP / crossover time configuration */
+ 
+ 
 #define PHY_EDPD_CONFIG			16
 #define PHY_EDPD_CONFIG_EXT_CROSSOVER_	0x0001
 
-/* Control/Status Indication Register */
+ 
 #define SPECIAL_CTRL_STS		27
 #define SPECIAL_CTRL_STS_OVRRD_AMDIX_	0x8000
 #define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
 #define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
 
 #define EDPD_MAX_WAIT_DFLT_MS		640
-/* interval between phylib state machine runs in ms */
+ 
 #define PHY_STATE_MACH_MS		1000
 
 struct smsc_hw_stat {
@@ -126,7 +115,7 @@ int smsc_phy_config_init(struct phy_device *phydev)
 	if (!priv)
 		return 0;
 
-	/* don't use EDPD in irq mode except overridden by user */
+	 
 	if (!priv->edpd_mode_set_by_user && phydev->irq != PHY_POLL)
 		priv->edpd_enable = false;
 
@@ -140,16 +129,14 @@ static int smsc_phy_reset(struct phy_device *phydev)
 	if (rc < 0)
 		return rc;
 
-	/* If the SMSC PHY is in power down mode, then set it
-	 * in all capable mode before using it.
-	 */
+	 
 	if ((rc & MII_LAN83C185_MODE_MASK) == MII_LAN83C185_MODE_POWERDOWN) {
-		/* set "all capable" mode */
+		 
 		rc |= MII_LAN83C185_MODE_ALL;
 		phy_write(phydev, MII_LAN83C185_SPECIAL_MODES, rc);
 	}
 
-	/* reset the phy */
+	 
 	return genphy_soft_reset(phydev);
 }
 
@@ -189,8 +176,8 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
 
 static int lan95xx_config_aneg_ext(struct phy_device *phydev)
 {
-	if (phydev->phy_id == 0x0007c0f0) { /* LAN9500A or LAN9505A */
-		/* Extend Manual AutoMDIX timer */
+	if (phydev->phy_id == 0x0007c0f0) {  
+		 
 		int rc = phy_set_bits(phydev, PHY_EDPD_CONFIG,
 				      PHY_EDPD_CONFIG_EXT_CROSSOVER_);
 
@@ -201,17 +188,7 @@ static int lan95xx_config_aneg_ext(struct phy_device *phydev)
 	return lan87xx_config_aneg(phydev);
 }
 
-/*
- * The LAN87xx suffers from rare absence of the ENERGYON-bit when Ethernet cable
- * plugs in while LAN87xx is in Energy Detect Power-Down mode. This leads to
- * unstable detection of plugging in Ethernet cable.
- * This workaround disables Energy Detect Power-Down mode and waiting for
- * response on link pulses to detect presence of plugged Ethernet cable.
- * The Energy Detect Power-Down mode is enabled again in the end of procedure to
- * save approximately 220 mW of power if cable is unplugged.
- * The workaround is only applicable to poll mode. Energy Detect Power-Down may
- * not be used in interrupt mode lest link change detection becomes unreliable.
- */
+ 
 int lan87xx_read_status(struct phy_device *phydev)
 {
 	struct smsc_phy_priv *priv = phydev->priv;
@@ -226,7 +203,7 @@ int lan87xx_read_status(struct phy_device *phydev)
 		unsigned int max_wait = priv->edpd_max_wait_ms * 1000;
 		int rc;
 
-		/* Disable EDPD to wake up PHY */
+		 
 		rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
 		if (rc < 0)
 			return rc;
@@ -236,9 +213,7 @@ int lan87xx_read_status(struct phy_device *phydev)
 		if (rc < 0)
 			return rc;
 
-		/* Wait max 640 ms to detect energy and the timeout is not
-		 * an actual error.
-		 */
+		 
 		read_poll_timeout(phy_read, rc,
 				  rc & MII_LAN83C185_ENERGYON || rc < 0,
 				  10000, max_wait, true, phydev,
@@ -246,7 +221,7 @@ int lan87xx_read_status(struct phy_device *phydev)
 		if (rc < 0)
 			return rc;
 
-		/* Re-enable EDPD */
+		 
 		rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
 		if (rc < 0)
 			return rc;
@@ -266,23 +241,17 @@ static int lan874x_phy_config_init(struct phy_device *phydev)
 	u16 val;
 	int rc;
 
-	/* Setup LED2/nINT/nPME pin to function as nPME.  May need user option
-	 * to use LED1/nINT/nPME.
-	 */
+	 
 	val = MII_LAN874X_PHY_PME2_SET;
 
-	/* The bits MII_LAN874X_PHY_WOL_PFDA_FR, MII_LAN874X_PHY_WOL_WUFR,
-	 * MII_LAN874X_PHY_WOL_MPR, and MII_LAN874X_PHY_WOL_BCAST_FR need to
-	 * be cleared to de-assert PME signal after a WoL event happens, but
-	 * using PME auto clear gets around that.
-	 */
+	 
 	val |= MII_LAN874X_PHY_PME_SELF_CLEAR;
 	rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR,
 			   val);
 	if (rc < 0)
 		return rc;
 
-	/* set nPME self clear delay time */
+	 
 	rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_MCFGR,
 			   MII_LAN874X_PHY_PME_SELF_CLEAR_DELAY);
 	if (rc < 0)
@@ -334,22 +303,15 @@ static int lan874x_chk_wol_pattern(const u8 pattern[], const u16 *mask,
 	int ret = 0;
 	u16 bits;
 
-	/* Pattern filtering can match up to 128 bytes of frame data.  There
-	 * are 8 registers to program the 16-bit masks, where each bit means
-	 * the byte will be compared.  The frame data will then go through a
-	 * CRC16 calculation for hardware comparison.  This helper function
-	 * makes sure only relevant frame data are included in this
-	 * calculation.  It provides a warning when the masks and expected
-	 * data size do not match.
-	 */
+	 
 	i = 0;
 	k = 0;
 	while (len > 0) {
 		bits = *mask;
 		for (j = 0; j < 16; j++, i++, len--) {
-			/* No more pattern. */
+			 
 			if (!len) {
-				/* The rest of bitmap is not empty. */
+				 
 				if (bits)
 					ret = i + 1;
 				break;
@@ -371,7 +333,7 @@ static int lan874x_set_wol_pattern(struct phy_device *phydev, u16 val,
 	u16 crc, reg;
 	int rc;
 
-	/* Starting pattern offset is set before calling this function. */
+	 
 	val |= MII_LAN874X_PHY_WOL_FILTER_EN;
 	rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
 			   MII_LAN874X_PHY_MMD_WOL_WUF_CFGA, val);
@@ -395,7 +357,7 @@ static int lan874x_set_wol_pattern(struct phy_device *phydev, u16 val,
 		masklen -= 16;
 	}
 
-	/* Clear out the rest of mask registers. */
+	 
 	while (reg != MII_LAN874X_PHY_MMD_WOL_WUF_MASK0) {
 		phy_write_mmd(phydev, MDIO_MMD_PCS, reg, 0);
 		reg--;
@@ -413,7 +375,7 @@ static int lan874x_set_wol(struct phy_device *phydev,
 	u8 datalen;
 	int rc;
 
-	/* lan874x has only one WoL filter pattern */
+	 
 	if ((wol->wolopts & (WAKE_ARP | WAKE_MCAST)) ==
 	    (WAKE_ARP | WAKE_MCAST)) {
 		phydev_info(phydev,
@@ -442,7 +404,7 @@ static int lan874x_set_wol(struct phy_device *phydev,
 	else
 		val_wucsr &= ~MII_LAN874X_PHY_WOL_MPEN;
 
-	/* Need to use pattern matching */
+	 
 	if (wol->wolopts & (WAKE_ARP | WAKE_MCAST))
 		val_wucsr |= MII_LAN874X_PHY_WOL_WUEN;
 	else
@@ -457,9 +419,7 @@ static int lan874x_set_wol(struct phy_device *phydev,
 		if (rc)
 			phydev_dbg(phydev, "pattern not valid at %d\n", rc);
 
-		/* Need to match broadcast destination address and provided
-		 * data pattern at offset 12.
-		 */
+		 
 		val = 12 | MII_LAN874X_PHY_WOL_FILTER_BCSTEN;
 		rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
 					     2);
@@ -469,7 +429,7 @@ static int lan874x_set_wol(struct phy_device *phydev,
 	}
 
 	if (wol->wolopts & WAKE_MCAST) {
-		/* Need to match multicast destination address. */
+		 
 		val = MII_LAN874X_PHY_WOL_FILTER_MCASTTEN;
 		rc = lan874x_set_wol_pattern(phydev, val, data, 0, NULL, 0);
 		if (rc < 0)
@@ -628,7 +588,7 @@ int smsc_phy_probe(struct phy_device *phydev)
 
 	phydev->priv = priv;
 
-	/* Make clk optional to keep DTB backward compatibility. */
+	 
 	refclk = devm_clk_get_optional_enabled(dev, NULL);
 	if (IS_ERR(refclk))
 		return dev_err_probe(dev, PTR_ERR(refclk),
@@ -640,42 +600,42 @@ EXPORT_SYMBOL_GPL(smsc_phy_probe);
 
 static struct phy_driver smsc_phy_driver[] = {
 {
-	.phy_id		= 0x0007c0a0, /* OUI=0x00800f, Model#=0x0a */
+	.phy_id		= 0x0007c0a0,  
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN83C185",
 
-	/* PHY_BASIC_FEATURES */
+	 
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.config_init	= smsc_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
 }, {
-	.phy_id		= 0x0007c0b0, /* OUI=0x00800f, Model#=0x0b */
+	.phy_id		= 0x0007c0b0,  
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN8187",
 
-	/* PHY_BASIC_FEATURES */
+	 
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.config_init	= smsc_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
-	/* Statistics */
+	 
 	.get_sset_count = smsc_get_sset_count,
 	.get_strings	= smsc_get_strings,
 	.get_stats	= smsc_get_stats,
@@ -683,28 +643,26 @@ static struct phy_driver smsc_phy_driver[] = {
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
 }, {
-	/* This covers internal PHY (phy_id: 0x0007C0C3) for
-	 * LAN9500 (PID: 0x9500), LAN9514 (PID: 0xec00), LAN9505 (PID: 0x9505)
-	 */
-	.phy_id		= 0x0007c0c0, /* OUI=0x00800f, Model#=0x0c */
+	 
+	.phy_id		= 0x0007c0c0,  
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN8700",
 
-	/* PHY_BASIC_FEATURES */
+	 
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.read_status	= lan87xx_read_status,
 	.config_init	= smsc_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 	.config_aneg	= lan87xx_config_aneg,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
-	/* Statistics */
+	 
 	.get_sset_count = smsc_get_sset_count,
 	.get_strings	= smsc_get_strings,
 	.get_stats	= smsc_get_stats,
@@ -715,43 +673,41 @@ static struct phy_driver smsc_phy_driver[] = {
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
 }, {
-	.phy_id		= 0x0007c0d0, /* OUI=0x00800f, Model#=0x0d */
+	.phy_id		= 0x0007c0d0,  
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN911x Internal PHY",
 
-	/* PHY_BASIC_FEATURES */
+	 
 
 	.probe		= smsc_phy_probe,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
 }, {
-	/* This covers internal PHY (phy_id: 0x0007C0F0) for
-	 * LAN9500A (PID: 0x9E00), LAN9505A (PID: 0x9E01)
-	 */
-	.phy_id		= 0x0007c0f0, /* OUI=0x00800f, Model#=0x0f */
+	 
+	.phy_id		= 0x0007c0f0,  
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN8710/LAN8720",
 
-	/* PHY_BASIC_FEATURES */
+	 
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.read_status	= lan87xx_read_status,
 	.config_init	= smsc_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 	.config_aneg	= lan95xx_config_aneg_ext,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
-	/* Statistics */
+	 
 	.get_sset_count = smsc_get_sset_count,
 	.get_strings	= smsc_get_strings,
 	.get_stats	= smsc_get_stats,
@@ -766,21 +722,21 @@ static struct phy_driver smsc_phy_driver[] = {
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "SMSC LAN8740",
 
-	/* PHY_BASIC_FEATURES */
+	 
 	.flags		= PHY_RST_AFTER_CLK_EN,
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.read_status	= lan87xx_read_status,
 	.config_init	= lan874x_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
-	/* Statistics */
+	 
 	.get_sset_count = smsc_get_sset_count,
 	.get_strings	= smsc_get_strings,
 	.get_stats	= smsc_get_stats,
@@ -788,36 +744,33 @@ static struct phy_driver smsc_phy_driver[] = {
 	.get_tunable	= smsc_phy_get_tunable,
 	.set_tunable	= smsc_phy_set_tunable,
 
-	/* WoL */
+	 
 	.set_wol	= lan874x_set_wol,
 	.get_wol	= lan874x_get_wol,
 
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
 }, {
-	.phy_id		= 0x0007c130,	/* 0x0007c130 and 0x0007c131 */
-	/* This mask (0xfffffff2) is to differentiate from
-	 * LAN88xx (phy_id 0x0007c132)
-	 * and allows future phy_id revisions.
-	 */
+	.phy_id		= 0x0007c130,	 
+	 
 	.phy_id_mask	= 0xfffffff2,
 	.name		= "Microchip LAN8742",
 
-	/* PHY_BASIC_FEATURES */
+	 
 	.flags		= PHY_RST_AFTER_CLK_EN,
 
 	.probe		= smsc_phy_probe,
 
-	/* basic functions */
+	 
 	.read_status	= lan87xx_read_status,
 	.config_init	= lan874x_phy_config_init,
 	.soft_reset	= smsc_phy_reset,
 
-	/* IRQ related */
+	 
 	.config_intr	= smsc_phy_config_intr,
 	.handle_interrupt = smsc_phy_handle_interrupt,
 
-	/* Statistics */
+	 
 	.get_sset_count = smsc_get_sset_count,
 	.get_strings	= smsc_get_strings,
 	.get_stats	= smsc_get_stats,
@@ -825,7 +778,7 @@ static struct phy_driver smsc_phy_driver[] = {
 	.get_tunable	= smsc_phy_get_tunable,
 	.set_tunable	= smsc_phy_set_tunable,
 
-	/* WoL */
+	 
 	.set_wol	= lan874x_set_wol,
 	.get_wol	= lan874x_get_wol,
 

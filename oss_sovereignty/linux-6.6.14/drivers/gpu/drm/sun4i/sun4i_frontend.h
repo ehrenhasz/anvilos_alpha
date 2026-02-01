@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 Free Electrons
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #ifndef _SUN4I_FRONTEND_H_
 #define _SUN4I_FRONTEND_H_
@@ -37,16 +34,7 @@
 #define SUN4I_FRONTEND_LINESTRD1_REG		0x044
 #define SUN4I_FRONTEND_LINESTRD2_REG		0x048
 
-/*
- * In tiled mode, the stride is defined as the distance between the start of the
- * end line of the current tile and the start of the first line in the next
- * vertical tile.
- *
- * Tiles are represented in row-major order, thus the end line of current tile
- * starts at: 31 * 32 (31 lines of 32 cols), the next vertical tile starts at:
- * 32-bit-aligned-width * 32 and the distance is:
- * 32 * (32-bit-aligned-width - 31).
- */
+ 
 #define SUN4I_FRONTEND_LINESTRD_TILED(stride)		(((stride) - 31) * 32)
 
 #define SUN4I_FRONTEND_INPUT_FMT_REG		0x04c
@@ -148,4 +136,4 @@ int sun4i_frontend_update_formats(struct sun4i_frontend *frontend,
 				  struct drm_plane *plane, uint32_t out_fmt);
 bool sun4i_frontend_format_is_supported(uint32_t fmt, uint64_t modifier);
 
-#endif /* _SUN4I_FRONTEND_H_ */
+#endif  

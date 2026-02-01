@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ALSA SoC SPDIF Audio Layer
- *
- * Copyright 2015 Andrea Venturi <be17068@iperbole.bo.it>
- * Copyright 2015 Marcus Cooper <codekipper@gmail.com>
- *
- * Based on the Allwinner SDK driver, released under the GPL.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -28,7 +21,7 @@
 #include <sound/soc.h>
 
 #define	SUN4I_SPDIF_CTL		(0x00)
-	#define SUN4I_SPDIF_CTL_MCLKDIV(v)		((v) << 4) /* v even */
+	#define SUN4I_SPDIF_CTL_MCLKDIV(v)		((v) << 4)  
 	#define SUN4I_SPDIF_CTL_MCLKOUTEN		BIT(2)
 	#define SUN4I_SPDIF_CTL_GEN			BIT(1)
 	#define SUN4I_SPDIF_CTL_RESET			BIT(0)
@@ -153,7 +146,7 @@
 	#define SUN4I_SPDIF_RXCHSTA1_SAMWORDLEN(v)	((v) << 1)
 	#define SUN4I_SPDIF_RXCHSTA1_MAXWORDLEN		BIT(0)
 
-/* Defines for Sampling Frequency */
+ 
 #define SUN4I_SPDIF_SAMFREQ_44_1KHZ		0x0
 #define SUN4I_SPDIF_SAMFREQ_NOT_INDICATED	0x1
 #define SUN4I_SPDIF_SAMFREQ_48KHZ		0x2
@@ -166,13 +159,7 @@
 #define SUN4I_SPDIF_SAMFREQ_176_4KHZ		0xc
 #define SUN4I_SPDIF_SAMFREQ_192KHZ		0xe
 
-/**
- * struct sun4i_spdif_quirks - Differences between SoC variants.
- *
- * @reg_dac_txdata: TX FIFO offset for DMA config.
- * @has_reset: SoC needs reset deasserted.
- * @val_fctl_ftx: TX FIFO flush bitmask.
- */
+ 
 struct sun4i_spdif_quirks {
 	unsigned int reg_dac_txdata;
 	bool has_reset;
@@ -195,14 +182,14 @@ static void sun4i_spdif_configure(struct sun4i_spdif_dev *host)
 {
 	const struct sun4i_spdif_quirks *quirks = host->quirks;
 
-	/* soft reset SPDIF */
+	 
 	regmap_write(host->regmap, SUN4I_SPDIF_CTL, SUN4I_SPDIF_CTL_RESET);
 
-	/* flush TX FIFO */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_FCTL,
 			   quirks->val_fctl_ftx, quirks->val_fctl_ftx);
 
-	/* clear TX counter */
+	 
 	regmap_write(host->regmap, SUN4I_SPDIF_TXCNT, 0);
 }
 
@@ -214,15 +201,15 @@ static void sun4i_snd_txctrl_on(struct snd_pcm_substream *substream,
 				   SUN4I_SPDIF_TXCFG_SINGLEMOD,
 				   SUN4I_SPDIF_TXCFG_SINGLEMOD);
 
-	/* SPDIF TX ENABLE */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_TXCFG,
 			   SUN4I_SPDIF_TXCFG_TXEN, SUN4I_SPDIF_TXCFG_TXEN);
 
-	/* DRQ ENABLE */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_INT,
 			   SUN4I_SPDIF_INT_TXDRQEN, SUN4I_SPDIF_INT_TXDRQEN);
 
-	/* Global enable */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_CTL,
 			   SUN4I_SPDIF_CTL_GEN, SUN4I_SPDIF_CTL_GEN);
 }
@@ -230,15 +217,15 @@ static void sun4i_snd_txctrl_on(struct snd_pcm_substream *substream,
 static void sun4i_snd_txctrl_off(struct snd_pcm_substream *substream,
 				 struct sun4i_spdif_dev *host)
 {
-	/* SPDIF TX DISABLE */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_TXCFG,
 			   SUN4I_SPDIF_TXCFG_TXEN, 0);
 
-	/* DRQ DISABLE */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_INT,
 			   SUN4I_SPDIF_INT_TXDRQEN, 0);
 
-	/* Global disable */
+	 
 	regmap_update_bits(host->regmap, SUN4I_SPDIF_CTL,
 			   SUN4I_SPDIF_CTL_GEN, 0);
 }
@@ -270,13 +257,13 @@ static int sun4i_spdif_hw_params(struct snd_pcm_substream *substream,
 	struct sun4i_spdif_dev *host = snd_soc_dai_get_drvdata(cpu_dai);
 	struct platform_device *pdev = host->pdev;
 
-	/* Add the PCM and raw data select interface */
+	 
 	switch (params_channels(params)) {
-	case 1: /* PCM mode */
+	case 1:  
 	case 2:
 		fmt = 0;
 		break;
-	case 4: /* raw data mode */
+	case 4:  
 		fmt = SUN4I_SPDIF_TXCFG_NONAUDIO;
 		break;
 	default:
@@ -351,7 +338,7 @@ static int sun4i_spdif_hw_params(struct snd_pcm_substream *substream,
 
 	reg_val = 0;
 	reg_val |= SUN4I_SPDIF_TXCFG_ASS;
-	reg_val |= fmt; /* set non audio and bit depth */
+	reg_val |= fmt;  
 	reg_val |= SUN4I_SPDIF_TXCFG_CHSTMODE;
 	reg_val |= SUN4I_SPDIF_TXCFG_TXRATIO(mclk_div - 1);
 	regmap_write(host->regmap, SUN4I_SPDIF_TXCFG, reg_val);
@@ -578,7 +565,7 @@ static const struct of_device_id sun4i_spdif_of_match[] = {
 		.compatible = "allwinner,sun50i-h6-spdif",
 		.data = &sun50i_h6_spdif_quirks,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun4i_spdif_of_match);
 
@@ -629,11 +616,11 @@ static int sun4i_spdif_probe(struct platform_device *pdev)
 	host->pdev = pdev;
 	spin_lock_init(&host->lock);
 
-	/* Initialize this copy of the CPU DAI driver structure */
+	 
 	memcpy(&host->cpu_dai_drv, &sun4i_spdif_dai, sizeof(sun4i_spdif_dai));
 	host->cpu_dai_drv.name = dev_name(&pdev->dev);
 
-	/* Get the addresses */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -648,7 +635,7 @@ static int sun4i_spdif_probe(struct platform_device *pdev)
 	host->regmap = devm_regmap_init_mmio(&pdev->dev, base,
 						&sun4i_spdif_regmap_config);
 
-	/* Clocks */
+	 
 	host->apb_clk = devm_clk_get(&pdev->dev, "apb");
 	if (IS_ERR(host->apb_clk)) {
 		dev_err(&pdev->dev, "failed to get a apb clock.\n");

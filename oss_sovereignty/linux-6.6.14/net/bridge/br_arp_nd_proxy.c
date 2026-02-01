@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Handle bridge arp/nd proxy/suppress
- *
- *  Copyright (C) 2017 Cumulus Networks
- *  Copyright (c) 2017 Roopa Prabhu <roopa@cumulusnetworks.com>
- *
- *  Authors:
- *	Roopa Prabhu <roopa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -115,7 +107,7 @@ static bool br_is_local_ip(struct net_device *dev, __be32 ip)
 	if (br_chk_addr_ip(dev, &priv))
 		return true;
 
-	/* check if ip is configured on upper dev */
+	 
 	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip, &priv))
 		return true;
 
@@ -147,10 +139,10 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
 
 	arpptr = (u8 *)parp + sizeof(struct arphdr);
 	sha = arpptr;
-	arpptr += dev->addr_len;	/* sha */
+	arpptr += dev->addr_len;	 
 	memcpy(&sip, arpptr, sizeof(sip));
 	arpptr += sizeof(sip);
-	arpptr += dev->addr_len;	/* tha */
+	arpptr += dev->addr_len;	 
 	memcpy(&tip, arpptr, sizeof(tip));
 
 	if (ipv4_is_loopback(tip) ||
@@ -163,7 +155,7 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
 		if (parp->ar_op != htons(ARPOP_RREQUEST) &&
 		    parp->ar_op != htons(ARPOP_RREPLY) &&
 		    (ipv4_is_zeronet(sip) || sip == tip)) {
-			/* prevent flooding to neigh suppress ports */
+			 
 			BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
 			return;
 		}
@@ -181,9 +173,7 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
 
 	if (br_opt_get(br, BROPT_NEIGH_SUPPRESS_ENABLED) &&
 	    br_is_local_ip(vlandev, tip)) {
-		/* its our local ip, so don't proxy reply
-		 * and don't forward to neigh suppress ports
-		 */
+		 
 		BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
 		return;
 	}
@@ -215,9 +205,7 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
 				replied = true;
 			}
 
-			/* If we have replied or as long as we know the
-			 * mac, indicate to arp replied
-			 */
+			 
 			if (replied ||
 			    br_opt_get(br, BROPT_NEIGH_SUPPRESS_ENABLED))
 				BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
@@ -255,7 +243,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
 	struct sk_buff *reply;
 	struct nd_msg *na;
 	struct ipv6hdr *pip6;
-	int na_olen = 8; /* opt hdr + ETH_ALEN for target */
+	int na_olen = 8;  
 	int ns_olen;
 	int i, len;
 	u8 *daddr;
@@ -279,7 +267,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
 
 	daddr = eth_hdr(request)->h_source;
 
-	/* Do we need option processing ? */
+	 
 	ns_olen = request->len - (skb_network_offset(request) +
 				  sizeof(struct ipv6hdr)) - sizeof(*ns);
 	for (i = 0; i < ns_olen - 1; i += (ns->opt[i + 1] << 3)) {
@@ -293,7 +281,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
 		}
 	}
 
-	/* Ethernet header */
+	 
 	ether_addr_copy(eth_hdr(reply)->h_dest, daddr);
 	ether_addr_copy(eth_hdr(reply)->h_source, n->ha);
 	eth_hdr(reply)->h_proto = htons(ETH_P_IPV6);
@@ -303,7 +291,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
 	skb_set_network_header(reply, 0);
 	skb_put(reply, sizeof(struct ipv6hdr));
 
-	/* IPv6 header */
+	 
 	pip6 = ipv6_hdr(reply);
 	memset(pip6, 0, sizeof(struct ipv6hdr));
 	pip6->version = 6;
@@ -318,7 +306,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
 
 	na = (struct nd_msg *)skb_put(reply, sizeof(*na) + na_olen);
 
-	/* Neighbor Advertisement */
+	 
 	memset(na, 0, sizeof(*na) + na_olen);
 	na->icmph.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT;
 	na->icmph.icmp6_router = (n->flags & NTF_ROUTER) ? 1 : 0;
@@ -389,7 +377,7 @@ static bool br_is_local_ip6(struct net_device *dev, struct in6_addr *addr)
 	if (br_chk_addr_ip6(dev, &priv))
 		return true;
 
-	/* check if ip is configured on upper dev */
+	 
 	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip6, &priv))
 		return true;
 
@@ -412,7 +400,7 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
 
 	if (msg->icmph.icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT &&
 	    !msg->icmph.icmp6_solicited) {
-		/* prevent flooding to neigh suppress ports */
+		 
 		BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
 		return;
 	}
@@ -425,13 +413,13 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
 	daddr = &iphdr->daddr;
 
 	if (ipv6_addr_any(saddr) || !ipv6_addr_cmp(saddr, daddr)) {
-		/* prevent flooding to neigh suppress ports */
+		 
 		BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
 		return;
 	}
 
 	if (vid != 0) {
-		/* build neigh table lookup on the vlan device */
+		 
 		vlandev = __vlan_find_dev_deep_rcu(br->dev, skb->vlan_proto,
 						   vid);
 		if (!vlandev)
@@ -441,9 +429,7 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
 	}
 
 	if (br_is_local_ip6(vlandev, &msg->target)) {
-		/* its our own ip, so don't proxy reply
-		 * and don't forward to arp suppress ports
-		 */
+		 
 		BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
 		return;
 	}
@@ -471,10 +457,7 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
 				replied = true;
 			}
 
-			/* If we have replied or as long as we know the
-			 * mac, indicate to NEIGH_SUPPRESS ports that we
-			 * have replied
-			 */
+			 
 			if (replied ||
 			    br_opt_get(br, BROPT_NEIGH_SUPPRESS_ENABLED))
 				BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;

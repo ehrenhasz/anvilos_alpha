@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the ILI9340 LCD Controller
- *
- * Copyright (C) 2013 Noralf Tronnes
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -17,7 +13,7 @@
 #define WIDTH		240
 #define HEIGHT		320
 
-/* Init sequence taken from: Arduino Library for the Adafruit 2.2" display */
+ 
 static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
@@ -30,41 +26,41 @@ static int init_display(struct fbtft_par *par)
 	write_reg(par, 0xF7, 0x20);
 	write_reg(par, 0xEA, 0x00, 0x00);
 
-	/* Power Control 1 */
+	 
 	write_reg(par, 0xC0, 0x23);
 
-	/* Power Control 2 */
+	 
 	write_reg(par, 0xC1, 0x10);
 
-	/* VCOM Control 1 */
+	 
 	write_reg(par, 0xC5, 0x3e, 0x28);
 
-	/* VCOM Control 2 */
+	 
 	write_reg(par, 0xC7, 0x86);
 
-	/* COLMOD: Pixel Format Set */
-	/* 16 bits/pixel */
+	 
+	 
 	write_reg(par, MIPI_DCS_SET_PIXEL_FORMAT, 0x55);
 
-	/* Frame Rate Control */
-	/* Division ratio = fosc, Frame Rate = 79Hz */
+	 
+	 
 	write_reg(par, 0xB1, 0x00, 0x18);
 
-	/* Display Function Control */
+	 
 	write_reg(par, 0xB6, 0x08, 0x82, 0x27);
 
-	/* Gamma Function Disable */
+	 
 	write_reg(par, 0xF2, 0x00);
 
-	/* Gamma curve selection */
+	 
 	write_reg(par, MIPI_DCS_SET_GAMMA_CURVE, 0x01);
 
-	/* Positive Gamma Correction */
+	 
 	write_reg(par, 0xE0,
 		  0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1,
 		  0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00);
 
-	/* Negative Gamma Correction */
+	 
 	write_reg(par, 0xE1,
 		  0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1,
 		  0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F);
@@ -110,7 +106,7 @@ static int set_var(struct fbtft_par *par)
 		val = ILI9340_MADCTL_MX;
 		break;
 	}
-	/* Memory Access Control  */
+	 
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, val | (par->bgr << 3));
 
 	return 0;

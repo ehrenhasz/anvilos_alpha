@@ -1,38 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Battery monitor driver for the uPI uG3105 battery monitor
- *
- * Note the uG3105 is not a full-featured autonomous fuel-gauge. Instead it is
- * expected to be use in combination with some always on microcontroller reading
- * its coulomb-counter before it can wrap (must be read every 400 seconds!).
- *
- * Since Linux does not monitor coulomb-counter changes while the device
- * is off or suspended, the coulomb counter is not used atm.
- *
- * Possible improvements:
- * 1. Activate commented out total_coulomb_count code
- * 2. Reset total_coulomb_count val to 0 when the battery is as good as empty
- *    and remember that we did this (and clear the flag for this on susp/resume)
- * 3. When the battery is full check if the flag that we set total_coulomb_count
- *    to when the battery was empty is set. If so we now know the capacity,
- *    not the design, but actual capacity, of the battery
- * 4. Add some mechanism (needs userspace help, or maybe use efivar?) to remember
- *    the actual capacity of the battery over reboots
- * 5. When we know the actual capacity at probe time, add energy_now and
- *    energy_full attributes. Guess boot + resume energy_now value based on ocv
- *    and then use total_coulomb_count to report energy_now over time, resetting
- *    things to adjust for drift when empty/full. This should give more accurate
- *    readings, esp. in the 30-70% range and allow userspace to estimate time
- *    remaining till empty/full
- * 6. Maybe unregister + reregister the psy device when we learn the actual
- *    capacity during run-time ?
- *
- * The above will also require some sort of mwh_per_unit calculation. Testing
- * has shown that an estimated 7404mWh increase of the battery's energy results
- * in a total_coulomb_count increase of 3277 units with a 5 milli-ohm sense R.
- *
- * Copyright (C) 2021 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/module.h>
@@ -72,16 +39,16 @@ struct ug3105_chip {
 	struct power_supply_battery_info *info;
 	struct delayed_work work;
 	struct mutex lock;
-	int ocv[UG3105_MOV_AVG_WINDOW];		/* micro-volt */
-	int intern_res[UG3105_MOV_AVG_WINDOW];	/* milli-ohm */
+	int ocv[UG3105_MOV_AVG_WINDOW];		 
+	int intern_res[UG3105_MOV_AVG_WINDOW];	 
 	int poll_count;
 	int ocv_avg_index;
-	int ocv_avg;				/* micro-volt */
+	int ocv_avg;				 
 	int intern_res_poll_count;
 	int intern_res_avg_index;
-	int intern_res_avg;			/* milli-ohm */
-	int volt;				/* micro-volt */
-	int curr;				/* micro-ampere */
+	int intern_res_avg;			 
+	int volt;				 
+	int curr;				 
 	int total_coulomb_count;
 	int uv_per_unit;
 	int ua_per_unit;
@@ -119,11 +86,7 @@ static int ug3105_get_status(struct ug3105_chip *chip)
 
 static int ug3105_get_capacity(struct ug3105_chip *chip)
 {
-	/*
-	 * OCV voltages in uV for 0-110% in 5% increments, the 100-110% is
-	 * for LiPo HV (High-Voltage) bateries which can go up to 4.35V
-	 * instead of the usual 4.2V.
-	 */
+	 
 	static const int ocv_capacity_tbl[23] = {
 		3350000,
 		3610000,
@@ -163,7 +126,7 @@ static int ug3105_get_capacity(struct ug3105_chip *chip)
 
 		ocv_diff = ocv_capacity_tbl[i] - chip->ocv_avg;
 		ocv_step = ocv_capacity_tbl[i] - ocv_capacity_tbl[i - 1];
-		/* scale 0-110% down to 0-100% for LiPo HV */
+		 
 		if (chip->info->constant_charge_voltage_max_uv >= 4300000)
 			return (i * 500 - ocv_diff * 500 / ocv_step) / 110;
 		else
@@ -205,23 +168,7 @@ static void ug3105_work(struct work_struct *work)
 	chip->ocv_avg_index = (chip->ocv_avg_index + 1) % UG3105_MOV_AVG_WINDOW;
 	chip->poll_count++;
 
-	/*
-	 * See possible improvements comment above.
-	 *
-	 * Read + reset coulomb counter every 10 polls (every 300 seconds)
-	 * if ((chip->poll_count % 10) == 0) {
-	 *	val = ug3105_read_word(chip->client, UG3105_REG_COULOMB_CNT);
-	 *	if (val < 0)
-	 *		goto out;
-	 *
-	 *	i2c_smbus_write_byte_data(chip->client, UG3105_REG_CTRL1,
-	 *				  UG3105_CTRL1_RESET_COULOMB_CNT);
-	 *
-	 *	chip->total_coulomb_count += (s16)val;
-	 *	dev_dbg(&chip->client->dev, "coulomb count %d total %d\n",
-	 *		(s16)val, chip->total_coulomb_count);
-	 * }
-	 */
+	 
 
 	chip->ocv_avg = 0;
 	win_size = min(chip->poll_count, UG3105_MOV_AVG_WINDOW);
@@ -233,21 +180,13 @@ static void ug3105_work(struct work_struct *work)
 	chip->status = ug3105_get_status(chip);
 	chip->capacity = ug3105_get_capacity(chip);
 
-	/*
-	 * Skip internal resistance calc on charger [un]plug and
-	 * when the battery is almost empty (voltage low).
-	 */
+	 
 	if (chip->supplied != prev_supplied ||
 	    chip->volt < UG3105_LOW_BAT_UV ||
 	    chip->poll_count < 2)
 		goto out;
 
-	/*
-	 * Assuming that the OCV voltage does not change significantly
-	 * between 2 polls, then we can calculate the internal resistance
-	 * on a significant current change by attributing all voltage
-	 * change between the 2 readings to the internal resistance.
-	 */
+	 
 	curr_diff = abs(chip->curr - prev_curr);
 	if (curr_diff < UG3105_CURR_HYST_UA)
 		goto out;
@@ -417,17 +356,14 @@ static int ug3105_probe(struct i2c_client *client)
 
 	device_property_read_u32(dev, "upisemi,rsns-microohm", &curr_sense_res_uohm);
 
-	/*
-	 * DAC maximum is 4.5V divided by 65536 steps + an unknown factor of 10
-	 * coming from somewhere for some reason (verified with a volt-meter).
-	 */
+	 
 	chip->uv_per_unit = 45000000/65536;
-	/* Datasheet says 8.1 uV per unit for the current ADC */
+	 
 	chip->ua_per_unit = 8100000 / curr_sense_res_uohm;
 
-	/* Use provided internal resistance as start point (in milli-ohm) */
+	 
 	chip->intern_res_avg = chip->info->factory_internal_resistance_uohm / 1000;
-	/* Also add it to the internal resistance moving average window */
+	 
 	chip->intern_res[0] = chip->intern_res_avg;
 	chip->intern_res_avg_index = 1;
 	chip->intern_res_poll_count = 1;

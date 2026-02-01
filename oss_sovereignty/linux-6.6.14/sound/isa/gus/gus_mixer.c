@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of ICS 2101 chip and "mixer" in GF1 chip
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/wait.h>
@@ -10,9 +7,7 @@
 #include <sound/control.h>
 #include <sound/gus.h>
 
-/*
- *
- */
+ 
 
 #define GF1_SINGLE(xname, xindex, shift, invert) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \

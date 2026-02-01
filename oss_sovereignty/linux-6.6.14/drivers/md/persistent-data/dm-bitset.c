@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-bitset.h"
 #include "dm-transaction-manager.h"
@@ -14,7 +10,7 @@
 #define DM_MSG_PREFIX "bitset"
 #define BITS_PER_ARRAY_ENTRY 64
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct dm_btree_value_type bitset_bvt = {
 	.context = NULL,
@@ -24,7 +20,7 @@ static struct dm_btree_value_type bitset_bvt = {
 	.equal = NULL,
 };
 
-/*----------------------------------------------------------------*/
+ 
 
 void dm_disk_bitset_init(struct dm_transaction_manager *tm,
 			 struct dm_disk_bitset *info)
@@ -316,4 +312,4 @@ bool dm_bitset_cursor_get_value(struct dm_bitset_cursor *c)
 }
 EXPORT_SYMBOL_GPL(dm_bitset_cursor_get_value);
 
-/*----------------------------------------------------------------*/
+ 

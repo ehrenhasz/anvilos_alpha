@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rpm
@@ -11,10 +11,7 @@
 
 struct device;
 
-/*
- * The rpm_internal events are used for tracing some important
- * runtime pm internal functions.
- */
+ 
 DECLARE_EVENT_CLASS(rpm_internal,
 
 	TP_PROTO(struct device *dev, int flags),
@@ -101,7 +98,7 @@ TRACE_EVENT(rpm_return_int,
 		__entry->ret)
 );
 
-#endif /* _TRACE_RUNTIME_POWER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

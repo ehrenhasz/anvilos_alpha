@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005,2006,2007,2008 IBM Corporation
- *
- * Authors:
- * Serge Hallyn <serue@us.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Mimi Zohar <zohar@us.ibm.com>
- *
- * File: ima_queue.c
- *       Implements queues that store template measurements and
- *       maintains aggregate over the stored measurements
- *       in the pre-configured TPM PCR (if available).
- *       The measurement list is append-only. No entry is
- *       ever removed or changed during the boot-cycle.
- */
+
+ 
 
 #include <linux/rculist.h>
 #include <linux/slab.h>
@@ -21,30 +7,27 @@
 
 #define AUDIT_CAUSE_LEN_MAX 32
 
-/* pre-allocated array of tpm_digest structures to extend a PCR */
+ 
 static struct tpm_digest *digests;
 
-LIST_HEAD(ima_measurements);	/* list of all measurements */
+LIST_HEAD(ima_measurements);	 
 #ifdef CONFIG_IMA_KEXEC
 static unsigned long binary_runtime_size;
 #else
 static unsigned long binary_runtime_size = ULONG_MAX;
 #endif
 
-/* key: inode (before secure-hashing a file) */
+ 
 struct ima_h_table ima_htable = {
 	.len = ATOMIC_LONG_INIT(0),
 	.violations = ATOMIC_LONG_INIT(0),
 	.queue[0 ... IMA_MEASURE_HTABLE_SIZE - 1] = HLIST_HEAD_INIT
 };
 
-/* mutex protects atomicity of extending measurement list
- * and extending the TPM PCR aggregate. Since tpm_extend can take
- * long (and the tpm driver uses a mutex), we can't use the spinlock.
- */
+ 
 static DEFINE_MUTEX(ima_extend_list_mutex);
 
-/* lookup up the digest value in the hash table, and return the entry */
+ 
 static struct ima_queue_entry *ima_lookup_digest_entry(u8 *digest_value,
 						       int pcr)
 {
@@ -66,30 +49,21 @@ static struct ima_queue_entry *ima_lookup_digest_entry(u8 *digest_value,
 	return ret;
 }
 
-/*
- * Calculate the memory required for serializing a single
- * binary_runtime_measurement list entry, which contains a
- * couple of variable length fields (e.g template name and data).
- */
+ 
 static int get_binary_runtime_size(struct ima_template_entry *entry)
 {
 	int size = 0;
 
-	size += sizeof(u32);	/* pcr */
+	size += sizeof(u32);	 
 	size += TPM_DIGEST_SIZE;
-	size += sizeof(int);	/* template name size field */
+	size += sizeof(int);	 
 	size += strlen(entry->template_desc->name);
 	size += sizeof(entry->template_data_len);
 	size += entry->template_data_len;
 	return size;
 }
 
-/* ima_add_template_entry helper function:
- * - Add template entry to the measurement list and hash table, for
- *   all entries except those carried across kexec.
- *
- * (Called with ima_extend_list_mutex held.)
- */
+ 
 static int ima_add_digest_entry(struct ima_template_entry *entry,
 				bool update_htable)
 {
@@ -122,11 +96,7 @@ static int ima_add_digest_entry(struct ima_template_entry *entry,
 	return 0;
 }
 
-/*
- * Return the amount of memory required for serializing the
- * entire binary_runtime_measurement list, including the ima_kexec_hdr
- * structure.
- */
+ 
 unsigned long ima_get_binary_runtime_size(void)
 {
 	if (binary_runtime_size >= (ULONG_MAX - sizeof(struct ima_kexec_hdr)))
@@ -148,14 +118,7 @@ static int ima_pcr_extend(struct tpm_digest *digests_arg, int pcr)
 	return result;
 }
 
-/*
- * Add template entry to the measurement list and hash table, and
- * extend the pcr.
- *
- * On systems which support carrying the IMA measurement list across
- * kexec, maintain the total memory size required for serializing the
- * binary_runtime_measurements.
- */
+ 
 int ima_add_template_entry(struct ima_template_entry *entry, int violation,
 			   const char *op, struct inode *inode,
 			   const unsigned char *filename)
@@ -184,7 +147,7 @@ int ima_add_template_entry(struct ima_template_entry *entry, int violation,
 		goto out;
 	}
 
-	if (violation)		/* invalidate pcr */
+	if (violation)		 
 		digests_arg = digests;
 
 	tpmresult = ima_pcr_extend(digests_arg, entry->pcr);
@@ -230,7 +193,7 @@ int __init ima_init_digests(void)
 		digest_size = ima_tpm_chip->allocated_banks[i].digest_size;
 		crypto_id = ima_tpm_chip->allocated_banks[i].crypto_id;
 
-		/* for unmapped TPM algorithms digest is still a padded SHA1 */
+		 
 		if (crypto_id == HASH_ALGO__LAST)
 			digest_size = SHA1_DIGEST_SIZE;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI__LINUX_ATALK_H__
 #define _UAPI__LINUX_ATALK_H__
 
@@ -6,21 +6,16 @@
 #include <asm/byteorder.h>
 #include <linux/socket.h>
 
-/*
- * AppleTalk networking structures
- *
- * The following are directly referenced from the University Of Michigan
- * netatalk for compatibility reasons.
- */
+ 
 #define ATPORT_FIRST	1
 #define ATPORT_RESERVED	128
-#define ATPORT_LAST	254		/* 254 is only legal on localtalk */ 
+#define ATPORT_LAST	254		  
 #define ATADDR_ANYNET	(__u16)0
 #define ATADDR_ANYNODE	(__u8)0
 #define ATADDR_ANYPORT  (__u8)0
 #define ATADDR_BCAST	(__u8)255
 #define DDP_MAXSZ	587
-#define DDP_MAXHOPS     15		/* 4 bits of hop counter */
+#define DDP_MAXHOPS     15		 
 
 #define SIOCATALKDIFADDR       (SIOCPROTOPRIVATE + 0)
 
@@ -42,4 +37,4 @@ struct atalk_netrange {
 	__be16	nr_lastnet;
 };
 
-#endif /* _UAPI__LINUX_ATALK_H__ */
+#endif  

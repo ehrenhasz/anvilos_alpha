@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -19,7 +15,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -1488,12 +1484,7 @@ static const struct pinfunction sm8550_functions[] = {
 	MSM_PIN_FUNCTION(vsense_trigger_mirnat),
 };
 
-/*
- * Every pin is maintained as a single group, and missing or non-existing pin
- * would be maintained as dummy group to synchronize pin group index with
- * pin descriptor registered with pinctrl core.
- * Clients would not be able to request these dummy pin groups.
- */
+ 
 static const struct msm_pingroup sm8550_groups[] = {
 	[0] = PINGROUP(0, cci_i2c_sda, qup2_se0_l0_mirb, ibi_i3c, phase_flag, _, _, _, _, _),
 	[1] = PINGROUP(1, cci_i2c_scl, qup2_se0_l1_mirb, ibi_i3c, _, _, _, _, _, _),

@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2019-2020 Intel Corporation.
 
-/*
- * Intel SOF Machine Driver with Realtek rt5682 Codec
- * and speaker codec MAX98357A or RT1015.
- */
+
+
+ 
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/module.h>
@@ -51,7 +48,7 @@
 #define SOF_MAX98373_SPEAKER_AMP_PRESENT	BIT(17)
 #define SOF_MAX98360A_SPEAKER_AMP_PRESENT	BIT(18)
 
-/* BT audio offload: reserve 3 bits for future */
+ 
 #define SOF_BT_OFFLOAD_SSP_SHIFT		19
 #define SOF_BT_OFFLOAD_SSP_MASK		(GENMASK(21, 19))
 #define SOF_BT_OFFLOAD_SSP(quirk)	\
@@ -62,13 +59,13 @@
 #define SOF_RT1019_SPEAKER_AMP_PRESENT	BIT(26)
 #define SOF_RT5650_HEADPHONE_CODEC_PRESENT	BIT(27)
 
-/* HDMI capture*/
+ 
 #define SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT  27
 #define SOF_SSP_HDMI_CAPTURE_PRESENT_MASK (GENMASK(30, 27))
 #define SOF_HDMI_CAPTURE_SSP_MASK(quirk)   \
 	(((quirk) << SOF_NO_OF_HDMI_CAPTURE_SSP_SHIFT) & SOF_SSP_HDMI_CAPTURE_PRESENT_MASK)
 
-/* Default: MCLK on, MCLK 19.2M, SSP0  */
+ 
 static unsigned long sof_rt5682_quirk = SOF_RT5682_MCLK_EN |
 					SOF_RT5682_SSP_CODEC(0);
 
@@ -123,10 +120,7 @@ static const struct dmi_system_id sof_rt5682_quirk_table[] = {
 					SOF_RT5682_SSP_CODEC(1)),
 	},
 	{
-		/*
-		 * Dooly is hatch family but using rt1015 amp so it
-		 * requires a quirk before "Google_Hatch".
-		 */
+		 
 		.callback = sof_rt5682_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
@@ -269,7 +263,7 @@ static int sof_hdmi_init(struct snd_soc_pcm_runtime *rtd)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = rtd->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -297,7 +291,7 @@ static int sof_rt5682_codec_init(struct snd_soc_pcm_runtime *rtd)
 	int extra_jack_data;
 	int ret;
 
-	/* need to enable ASRC function for 24MHz mclk rate */
+	 
 	if ((sof_rt5682_quirk & SOF_RT5682_MCLK_EN) &&
 	    (sof_rt5682_quirk & SOF_RT5682_MCLK_24MHZ)) {
 		if (sof_rt5682_quirk & SOF_RT5682S_HEADPHONE_CODEC_PRESENT)
@@ -322,16 +316,7 @@ static int sof_rt5682_codec_init(struct snd_soc_pcm_runtime *rtd)
 	}
 
 	if (sof_rt5682_quirk & SOF_RT5682_MCLK_BYTCHT_EN) {
-		/*
-		 * The firmware might enable the clock at
-		 * boot (this information may or may not
-		 * be reflected in the enable clock register).
-		 * To change the rate we must disable the clock
-		 * first to cover these cases. Due to common
-		 * clock framework restrictions that do not allow
-		 * to disable a clock that has not been enabled,
-		 * we need to enable the clock first.
-		 */
+		 
 		ret = clk_prepare_enable(ctx->mclk);
 		if (!ret)
 			clk_disable_unprepare(ctx->mclk);
@@ -342,10 +327,7 @@ static int sof_rt5682_codec_init(struct snd_soc_pcm_runtime *rtd)
 			dev_err(rtd->dev, "unable to set MCLK rate\n");
 	}
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 |
 					 SND_JACK_BTN_1 | SND_JACK_BTN_2 |
@@ -411,16 +393,16 @@ static int sof_rt5682_hw_params(struct snd_pcm_substream *substream,
 		else
 			pll_source = RT5682_PLL1_S_MCLK;
 
-		/* get the tplg configured mclk. */
+		 
 		pll_in = sof_dai_get_mclk(rtd);
 
-		/* mclk from the quirk is the first choice */
+		 
 		if (sof_rt5682_quirk & SOF_RT5682_MCLK_24MHZ) {
 			if (pll_in != 24000000)
 				dev_warn(rtd->dev, "configure wrong mclk in tplg, please use 24MHz.\n");
 			pll_in = 24000000;
 		} else if (pll_in == 0) {
-			/* use default mclk if not specified correct in topology */
+			 
 			pll_in = 19200000;
 		} else if (pll_in < 0) {
 			return pll_in;
@@ -440,7 +422,7 @@ static int sof_rt5682_hw_params(struct snd_pcm_substream *substream,
 		pll_id = RT5682S_PLL2;
 		clk_id = RT5682S_SCLK_S_PLL2;
 	} else if (sof_rt5682_quirk & SOF_RT5650_HEADPHONE_CODEC_PRESENT) {
-		pll_id = 0; /* not used in codec driver */
+		pll_id = 0;  
 		clk_id = RT5645_SCLK_S_PLL1;
 	} else {
 		pll_id = RT5682_PLL1;
@@ -449,27 +431,24 @@ static int sof_rt5682_hw_params(struct snd_pcm_substream *substream,
 
 	pll_out = params_rate(params) * 512;
 
-	/* when MCLK is 512FS, no need to set PLL configuration additionally. */
+	 
 	if (pll_in == pll_out)
 		clk_id = RT5682S_SCLK_S_MCLK;
 	else {
-		/* Configure pll for codec */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, pll_id, pll_source, pll_in,
 					  pll_out);
 		if (ret < 0)
 			dev_err(rtd->dev, "snd_soc_dai_set_pll err = %d\n", ret);
 	}
 
-	/* Configure sysclk for codec */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, clk_id,
 				     pll_out, SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		dev_err(rtd->dev, "snd_soc_dai_set_sysclk err = %d\n", ret);
 
-	/*
-	 * slot_width should equal or large than data length, set them
-	 * be the same
-	 */
+	 
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x0, 0x0, 2,
 				       params_width(params));
 	if (ret < 0) {
@@ -486,7 +465,7 @@ static struct snd_soc_ops sof_rt5682_ops = {
 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
-		/* name might be overridden during probe */
+		 
 		.name = "0000:00:1f.3"
 	}
 };
@@ -501,7 +480,7 @@ static int sof_card_late_probe(struct snd_soc_card *card)
 	int err;
 
 	if (sof_rt5682_quirk & SOF_MAX98373_SPEAKER_AMP_PRESENT) {
-		/* Disable Left and Right Spk pin after boot */
+		 
 		snd_soc_dapm_disable_pin(dapm, "Left Spk");
 		snd_soc_dapm_disable_pin(dapm, "Right Spk");
 		err = snd_soc_dapm_sync(dapm);
@@ -509,7 +488,7 @@ static int sof_card_late_probe(struct snd_soc_card *card)
 			return err;
 	}
 
-	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
+	 
 	if (is_legacy_cpu || !ctx->idisp_codec)
 		return 0;
 
@@ -562,22 +541,22 @@ static const struct snd_soc_dapm_widget dmic_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sof_map[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 
-	/* other jacks */
+	 
 	{ "IN1P", NULL, "Headset Mic" },
 };
 
 static const struct snd_soc_dapm_route rt5650_spk_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "SPOL" },
 	{ "Right Spk", NULL, "SPOR" },
 };
 
 static const struct snd_soc_dapm_route dmic_map[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -603,7 +582,7 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(dmic_widgets));
 	if (ret) {
 		dev_err(card->dev, "DMic widget addition failed: %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -616,9 +595,9 @@ static int dmic_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
-/* sof audio machine driver for rt5682 codec */
+ 
 static struct snd_soc_card sof_audio_card_rt5682 = {
-	.name = "rt5682", /* the sof- prefix is added by the core */
+	.name = "rt5682",  
 	.owner = THIS_MODULE,
 	.controls = sof_controls,
 	.num_controls = ARRAY_SIZE(sof_controls),
@@ -684,7 +663,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	if (!links || !cpus)
 		goto devm_err;
 
-	/* codec SSP */
+	 
 	links[id].name = devm_kasprintf(dev, GFP_KERNEL,
 					"SSP%d-Codec", ssp_codec);
 	if (!links[id].name)
@@ -718,15 +697,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		if (!links[id].cpus->dai_name)
 			goto devm_err;
 	} else {
-		/*
-		 * Currently, On SKL+ platforms MCLK will be turned off in sof
-		 * runtime suspended, and it will go into runtime suspended
-		 * right after playback is stop. However, rt5682 will output
-		 * static noise if sysclk turns off during playback. Set
-		 * ignore_pmdown_time to power down rt5682 immediately and
-		 * avoid the noise.
-		 * It can be removed once we can control MCLK by driver.
-		 */
+		 
 		links[id].ignore_pmdown_time = 1;
 		links[id].cpus->dai_name = devm_kasprintf(dev, GFP_KERNEL,
 							  "SSP%d Pin",
@@ -736,15 +707,15 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 	}
 	id++;
 
-	/* dmic */
+	 
 	if (dmic_be_num > 0) {
-		/* at least we have dmic01 */
+		 
 		links[id].name = "dmic01";
 		links[id].cpus = &cpus[id];
 		links[id].cpus->dai_name = "DMIC01 Pin";
 		links[id].init = dmic_init;
 		if (dmic_be_num > 1) {
-			/* set up 2 BE links at most */
+			 
 			links[id + 1].name = "dmic16k";
 			links[id + 1].cpus = &cpus[id + 1];
 			links[id + 1].cpus->dai_name = "DMIC16k Pin";
@@ -765,7 +736,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* HDMI */
+	 
 	if (hdmi_num > 0) {
 		idisp_components = devm_kcalloc(dev,
 				   hdmi_num,
@@ -810,7 +781,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* speaker amp */
+	 
 	if (sof_rt5682_quirk & SOF_SPEAKER_AMP_PRESENT) {
 		links[id].name = devm_kasprintf(dev, GFP_KERNEL,
 						"SSP%d-Codec", ssp_amp);
@@ -850,7 +821,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		links[id].platforms = platform_component;
 		links[id].num_platforms = ARRAY_SIZE(platform_component);
 		links[id].dpcm_playback = 1;
-		/* feedback stream or firmware-generated echo reference */
+		 
 		links[id].dpcm_capture = 1;
 
 		links[id].no_pcm = 1;
@@ -873,7 +844,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		id++;
 	}
 
-	/* BT audio offload */
+	 
 	if (sof_rt5682_quirk & SOF_SSP_BT_OFFLOAD_PRESENT) {
 		int port = (sof_rt5682_quirk & SOF_BT_OFFLOAD_SSP_MASK) >>
 				SOF_BT_OFFLOAD_SSP_SHIFT;
@@ -897,7 +868,7 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
 		links[id].num_cpus = 1;
 	}
 
-	/* HDMI-In SSP */
+	 
 	if (sof_rt5682_quirk & SOF_SSP_HDMI_CAPTURE_PRESENT_MASK) {
 		unsigned long hdmi_in_ssp = (sof_rt5682_quirk &
 				SOF_SSP_HDMI_CAPTURE_PRESENT_MASK) >>
@@ -949,13 +920,11 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	mach = pdev->dev.platform_data;
 
-	/* A speaker amp might not be present when the quirk claims one is.
-	 * Detect this via whether the machine driver match includes quirk_data.
-	 */
+	 
 	if ((sof_rt5682_quirk & SOF_SPEAKER_AMP_PRESENT) && !mach->quirk_data)
 		sof_rt5682_quirk &= ~SOF_SPEAKER_AMP_PRESENT;
 
-	/* Detect the headset codec variant */
+	 
 	if (acpi_dev_present("RTL5682", NULL, -1))
 		sof_rt5682_quirk |= SOF_RT5682S_HEADPHONE_CODEC_PRESENT;
 	else if (acpi_dev_present("10EC5650", NULL, -1)) {
@@ -969,7 +938,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 		is_legacy_cpu = 1;
 		dmic_be_num = 0;
 		hdmi_num = 0;
-		/* default quirk for legacy cpu */
+		 
 		sof_rt5682_quirk = SOF_RT5682_MCLK_EN |
 						SOF_RT5682_MCLK_BYTCHT_EN |
 						SOF_RT5682_SSP_CODEC(2);
@@ -977,7 +946,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 		dmic_be_num = 2;
 		hdmi_num = (sof_rt5682_quirk & SOF_RT5682_NUM_HDMIDEV_MASK) >>
 			 SOF_RT5682_NUM_HDMIDEV_SHIFT;
-		/* default number of HDMI DAI's */
+		 
 		if (!hdmi_num)
 			hdmi_num = 3;
 
@@ -985,7 +954,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 			ctx->idisp_codec = true;
 	}
 
-	/* need to get main clock from pmc */
+	 
 	if (sof_rt5682_quirk & SOF_RT5682_MCLK_BYTCHT_EN) {
 		ctx->mclk = devm_clk_get(&pdev->dev, "pmc_plt_clk_3");
 		if (IS_ERR(ctx->mclk)) {
@@ -1012,7 +981,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	ssp_codec = sof_rt5682_quirk & SOF_RT5682_SSP_CODEC_MASK;
 
-	/* compute number of dai links */
+	 
 	sof_audio_card_rt5682.num_links = 1 + dmic_be_num + hdmi_num;
 
 	if (sof_rt5682_quirk & SOF_SPEAKER_AMP_PRESENT)
@@ -1050,7 +1019,7 @@ static int sof_audio_probe(struct platform_device *pdev)
 
 	sof_audio_card_rt5682.dev = &pdev->dev;
 
-	/* set platform name for each dailink */
+	 
 	ret = snd_soc_fixup_dai_links_platform_name(&sof_audio_card_rt5682,
 						    mach->mach_params.platform);
 	if (ret)
@@ -1207,7 +1176,7 @@ static const struct platform_device_id board_ids[] = {
 		.driver_data = (kernel_ulong_t)(SOF_RT5682_MCLK_EN |
 					SOF_RT5682_SSP_CODEC(1) |
 					SOF_RT5682_NUM_HDMIDEV(3) |
-					/* SSP 0 and SSP 2 are used for HDMI IN */
+					 
 					SOF_HDMI_CAPTURE_SSP_MASK(0x5)),
 	},
 	{
@@ -1290,7 +1259,7 @@ static struct platform_driver sof_audio = {
 };
 module_platform_driver(sof_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("SOF Audio Machine driver");
 MODULE_AUTHOR("Bard Liao <bard.liao@intel.com>");
 MODULE_AUTHOR("Sathya Prakash M R <sathya.prakash.m.r@intel.com>");

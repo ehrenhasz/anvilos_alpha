@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * atlas-sensor.c - Support for Atlas Scientific OEM SM sensors
- *
- * Copyright (C) 2015-2019 Konsulko Group
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -91,7 +86,7 @@ struct atlas_data {
 	struct regmap *regmap;
 	struct irq_work work;
 	unsigned int interrupt_enabled;
-	/* 96-bit data + 32-bit pad + 64-bit timestamp */
+	 
 	__be32 buffer[6] __aligned(8);
 };
 
@@ -542,19 +537,19 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
 			*val = 10;
 			return IIO_VAL_INT;
 		case IIO_PH:
-			*val = 1; /* 0.001 */
+			*val = 1;  
 			*val2 = 1000;
 			break;
 		case IIO_ELECTRICALCONDUCTIVITY:
-			*val = 1; /* 0.00001 */
+			*val = 1;  
 			*val2 = 100000;
 			break;
 		case IIO_CONCENTRATION:
-			*val = 0; /* 0.000000001 */
+			*val = 0;  
 			*val2 = 1000;
 			return IIO_VAL_INT_PLUS_NANO;
 		case IIO_VOLTAGE:
-			*val = 1; /* 0.1 */
+			*val = 1;  
 			*val2 = 10;
 			break;
 		default:
@@ -676,7 +671,7 @@ static int atlas_probe(struct i2c_client *client)
 	init_irq_work(&data->work, atlas_work_handler);
 
 	if (client->irq > 0) {
-		/* interrupt pin toggles on new conversion */
+		 
 		ret = devm_request_threaded_irq(&client->dev, client->irq,
 				NULL, atlas_interrupt_handler,
 				IRQF_TRIGGER_RISING |

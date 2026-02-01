@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PCM179X ASoC codec driver
- *
- * Copyright (c) Amarula Solutions B.V. 2013
- *
- *     Michael Trimarchi <michael@amarulasolutions.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>

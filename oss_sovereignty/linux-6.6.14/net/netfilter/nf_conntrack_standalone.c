@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <linux/slab.h>
@@ -291,7 +291,7 @@ seq_print_acct(struct seq_file *s, const struct nf_conn *ct, int dir)
 		   (unsigned long long)atomic64_read(&counter[dir].bytes));
 }
 
-/* return 0 on success, 1 in case of error */
+ 
 static int ct_seq_show(struct seq_file *s, void *v)
 {
 	struct nf_conntrack_tuple_hash *hash = v;
@@ -304,7 +304,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
 	if (unlikely(!refcount_inc_not_zero(&ct->ct_general.use)))
 		return 0;
 
-	/* load ->status after refcount increase */
+	 
 	smp_acquire__after_ctrl_dep();
 
 	if (nf_ct_should_gc(ct)) {
@@ -312,7 +312,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
 		goto release;
 	}
 
-	/* we only want to print DIR_ORIGINAL */
+	 
 	if (NF_CT_DIRECTION(hash))
 		goto release;
 
@@ -510,7 +510,7 @@ static int nf_conntrack_standalone_init_proc(struct net *net)
 static void nf_conntrack_standalone_fini_proc(struct net *net)
 {
 }
-#endif /* CONFIG_NF_CONNTRACK_PROCFS */
+#endif  
 
 u32 nf_conntrack_count(const struct net *net)
 {
@@ -520,10 +520,10 @@ u32 nf_conntrack_count(const struct net *net)
 }
 EXPORT_SYMBOL_GPL(nf_conntrack_count);
 
-/* Sysctl support */
+ 
 
 #ifdef CONFIG_SYSCTL
-/* size the user *wants to set */
+ 
 static unsigned int nf_conntrack_htable_size_user __read_mostly;
 
 static int
@@ -532,17 +532,17 @@ nf_conntrack_hash_sysctl(struct ctl_table *table, int write,
 {
 	int ret;
 
-	/* module_param hashsize could have changed value */
+	 
 	nf_conntrack_htable_size_user = nf_conntrack_htable_size;
 
 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
 	if (ret < 0 || !write)
 		return ret;
 
-	/* update ret, we might not be able to satisfy request */
+	 
 	ret = nf_conntrack_hash_resize(nf_conntrack_htable_size_user);
 
-	/* update it to the actual value used by conntrack */
+	 
 	nf_conntrack_htable_size_user = nf_conntrack_htable_size;
 	return ret;
 }
@@ -1099,7 +1099,7 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
 	nf_conntrack_standalone_init_dccp_sysctl(net, table);
 	nf_conntrack_standalone_init_gre_sysctl(net, table);
 
-	/* Don't allow non-init_net ns to alter global sysctls */
+	 
 	if (!net_eq(&init_net, net)) {
 		table[NF_SYSCTL_CT_MAX].mode = 0444;
 		table[NF_SYSCTL_CT_EXPECT_MAX].mode = 0444;
@@ -1137,7 +1137,7 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
 static void nf_conntrack_standalone_fini_sysctl(struct net *net)
 {
 }
-#endif /* CONFIG_SYSCTL */
+#endif  
 
 static void nf_conntrack_fini_net(struct net *net)
 {

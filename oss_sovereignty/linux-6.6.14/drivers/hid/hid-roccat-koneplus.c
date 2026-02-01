@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Kone[+] driver for Linux
- *
- * Copyright (c) 2010 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat Kone[+] is an updated/improved version of the Kone with more memory
- * and functionality and without the non-standard behaviours the Kone had.
- * KoneXTD has same capabilities but updated sensor.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -52,7 +43,7 @@ static int koneplus_send_control(struct usb_device *usb_dev, uint value,
 }
 
 
-/* retval is 0-4 on success, < 0 on error */
+ 
 static int koneplus_get_actual_profile(struct usb_device *usb_dev)
 {
 	struct koneplus_actual_profile buf;
@@ -551,7 +542,7 @@ static int __init koneplus_init(void)
 {
 	int retval;
 
-	/* class name has to be same as driver name */
+	 
 	retval = class_register(&koneplus_class);
 	if (retval)
 		return retval;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - battery charger driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/iio/consumer.h>
@@ -18,22 +12,22 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 
-/* register address */
+ 
 #define LP8788_CHG_STATUS		0x07
 #define LP8788_CHG_IDCIN		0x13
 #define LP8788_CHG_IBATT		0x14
 #define LP8788_CHG_VTERM		0x15
 #define LP8788_CHG_EOC			0x16
 
-/* mask/shift bits */
-#define LP8788_CHG_INPUT_STATE_M	0x03	/* Addr 07h */
+ 
+#define LP8788_CHG_INPUT_STATE_M	0x03	 
 #define LP8788_CHG_STATE_M		0x3C
 #define LP8788_CHG_STATE_S		2
 #define LP8788_NO_BATT_M		BIT(6)
 #define LP8788_BAD_BATT_M		BIT(7)
-#define LP8788_CHG_IBATT_M		0x1F	/* Addr 14h */
-#define LP8788_CHG_VTERM_M		0x0F	/* Addr 15h */
-#define LP8788_CHG_EOC_LEVEL_M		0x30	/* Addr 16h */
+#define LP8788_CHG_IBATT_M		0x1F	 
+#define LP8788_CHG_VTERM_M		0x0F	 
+#define LP8788_CHG_EOC_LEVEL_M		0x30	 
 #define LP8788_CHG_EOC_LEVEL_S		4
 #define LP8788_CHG_EOC_TIME_M		0x0E
 #define LP8788_CHG_EOC_TIME_S		1
@@ -77,28 +71,13 @@ enum lp8788_charger_input_state {
 	LP8788_FULL_FUNCTION,
 };
 
-/*
- * struct lp8788_chg_irq
- * @which        : lp8788 interrupt id
- * @virq         : Linux IRQ number from irq_domain
- */
+ 
 struct lp8788_chg_irq {
 	enum lp8788_int_id which;
 	int virq;
 };
 
-/*
- * struct lp8788_charger
- * @lp           : used for accessing the registers of mfd lp8788 device
- * @charger      : power supply driver for the battery charger
- * @battery      : power supply driver for the battery
- * @charger_work : work queue for charger input interrupts
- * @chan         : iio channels for getting adc values
- *                 eg) battery voltage, capacity and temperature
- * @irqs         : charger dedicated interrupts
- * @num_irqs     : total numbers of charger interrupts
- * @pdata        : charger platform specific data
- */
+ 
 struct lp8788_charger {
 	struct lp8788 *lp;
 	struct power_supply *charger;
@@ -298,7 +277,7 @@ static int lp8788_get_battery_temperature(struct lp8788_charger *pchg,
 	if (ret < 0)
 		return -EINVAL;
 
-	/* unit: 0.1 'C */
+	 
 	val->intval = result * 10;
 
 	return 0;
@@ -376,7 +355,7 @@ static int lp8788_update_charger_params(struct platform_device *pdev,
 		return 0;
 	}
 
-	/* setting charging parameters */
+	 
 	for (i = 0; i < pdata->num_chg_params; i++) {
 		param = pdata->chg_params + i;
 
@@ -460,7 +439,7 @@ static irqreturn_t lp8788_charger_irq_thread(int virq, void *ptr)
 		break;
 	}
 
-	/* report charger dectection event if used */
+	 
 	if (!pdata)
 		goto irq_handled;
 
@@ -483,7 +462,7 @@ static int lp8788_set_irqs(struct platform_device *pdev,
 	int i;
 	int ret;
 
-	/* no error even if no irq resource */
+	 
 	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ, name);
 	if (!r)
 		return 0;
@@ -571,11 +550,11 @@ static void lp8788_setup_adc_channel(struct device *dev,
 	if (!pdata)
 		return;
 
-	/* ADC channel for battery voltage */
+	 
 	chan = devm_iio_channel_get(dev, pdata->adc_vbatt);
 	pchg->chan[LP8788_VBATT] = IS_ERR(chan) ? NULL : chan;
 
-	/* ADC channel for battery temperature */
+	 
 	chan = devm_iio_channel_get(dev, pdata->adc_batt_temp);
 	pchg->chan[LP8788_BATT_TEMP] = IS_ERR(chan) ? NULL : chan;
 }

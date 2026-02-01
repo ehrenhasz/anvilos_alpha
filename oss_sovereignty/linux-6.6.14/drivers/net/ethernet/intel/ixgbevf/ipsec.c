@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Oracle and/or its affiliates. All rights reserved. */
+
+ 
 
 #include "ixgbevf.h"
 #include <net/xfrm.h>
@@ -8,13 +8,7 @@
 #define IXGBE_IPSEC_KEY_BITS  160
 static const char aes_gcm_name[] = "rfc4106(gcm(aes))";
 
-/**
- * ixgbevf_ipsec_set_pf_sa - ask the PF to set up an SA
- * @adapter: board private structure
- * @xs: xfrm info to be sent to the PF
- *
- * Returns: positive offload handle from the PF, or negative error code
- **/
+ 
 static int ixgbevf_ipsec_set_pf_sa(struct ixgbevf_adapter *adapter,
 				   struct xfrm_state *xs)
 {
@@ -23,7 +17,7 @@ static int ixgbevf_ipsec_set_pf_sa(struct ixgbevf_adapter *adapter,
 	struct sa_mbx_msg *sam;
 	int ret;
 
-	/* send the important bits to the PF */
+	 
 	sam = (struct sa_mbx_msg *)(&msgbuf[1]);
 	sam->dir = xs->xso.dir;
 	sam->spi = xs->id.spi;
@@ -58,13 +52,7 @@ out:
 	return ret;
 }
 
-/**
- * ixgbevf_ipsec_del_pf_sa - ask the PF to delete an SA
- * @adapter: board private structure
- * @pfsa: sa index returned from PF when created, -1 for all
- *
- * Returns: 0 on success, or negative error code
- **/
+ 
 static int ixgbevf_ipsec_del_pf_sa(struct ixgbevf_adapter *adapter, int pfsa)
 {
 	struct ixgbe_hw *hw = &adapter->hw;
@@ -90,14 +78,7 @@ out:
 	return err;
 }
 
-/**
- * ixgbevf_ipsec_restore - restore the IPsec HW settings after a reset
- * @adapter: board private structure
- *
- * Reload the HW tables from the SW tables after they've been bashed
- * by a chip reset.  While we're here, make sure any stale VF data is
- * removed, since we go through reset when num_vfs changes.
- **/
+ 
 void ixgbevf_ipsec_restore(struct ixgbevf_adapter *adapter)
 {
 	struct ixgbevf_ipsec *ipsec = adapter->ipsec;
@@ -107,7 +88,7 @@ void ixgbevf_ipsec_restore(struct ixgbevf_adapter *adapter)
 	if (!(adapter->netdev->features & NETIF_F_HW_ESP))
 		return;
 
-	/* reload the Rx and Tx keys */
+	 
 	for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT; i++) {
 		struct rx_sa *r = &ipsec->rx_tbl[i];
 		struct tx_sa *t = &ipsec->tx_tbl[i];
@@ -129,13 +110,7 @@ void ixgbevf_ipsec_restore(struct ixgbevf_adapter *adapter)
 	}
 }
 
-/**
- * ixgbevf_ipsec_find_empty_idx - find the first unused security parameter index
- * @ipsec: pointer to IPsec struct
- * @rxtable: true if we need to look in the Rx table
- *
- * Returns the first unused index in either the Rx or Tx SA table
- **/
+ 
 static
 int ixgbevf_ipsec_find_empty_idx(struct ixgbevf_ipsec *ipsec, bool rxtable)
 {
@@ -145,7 +120,7 @@ int ixgbevf_ipsec_find_empty_idx(struct ixgbevf_ipsec *ipsec, bool rxtable)
 		if (ipsec->num_rx_sa == IXGBE_IPSEC_MAX_SA_COUNT)
 			return -ENOSPC;
 
-		/* search rx sa table */
+		 
 		for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT; i++) {
 			if (!ipsec->rx_tbl[i].used)
 				return i;
@@ -154,7 +129,7 @@ int ixgbevf_ipsec_find_empty_idx(struct ixgbevf_ipsec *ipsec, bool rxtable)
 		if (ipsec->num_tx_sa == IXGBE_IPSEC_MAX_SA_COUNT)
 			return -ENOSPC;
 
-		/* search tx sa table */
+		 
 		for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT; i++) {
 			if (!ipsec->tx_tbl[i].used)
 				return i;
@@ -164,16 +139,7 @@ int ixgbevf_ipsec_find_empty_idx(struct ixgbevf_ipsec *ipsec, bool rxtable)
 	return -ENOSPC;
 }
 
-/**
- * ixgbevf_ipsec_find_rx_state - find the state that matches
- * @ipsec: pointer to IPsec struct
- * @daddr: inbound address to match
- * @proto: protocol to match
- * @spi: SPI to match
- * @ip4: true if using an IPv4 address
- *
- * Returns a pointer to the matching SA state information
- **/
+ 
 static
 struct xfrm_state *ixgbevf_ipsec_find_rx_state(struct ixgbevf_ipsec *ipsec,
 					       __be32 *daddr, u8 proto,
@@ -199,15 +165,7 @@ struct xfrm_state *ixgbevf_ipsec_find_rx_state(struct ixgbevf_ipsec *ipsec,
 	return ret;
 }
 
-/**
- * ixgbevf_ipsec_parse_proto_keys - find the key and salt based on the protocol
- * @xs: pointer to xfrm_state struct
- * @mykey: pointer to key array to populate
- * @mysalt: pointer to salt value to populate
- *
- * This copies the protocol keys and salt to our own data tables.  The
- * 82599 family only supports the one algorithm.
- **/
+ 
 static int ixgbevf_ipsec_parse_proto_keys(struct xfrm_state *xs,
 					  u32 *mykey, u32 *mysalt)
 {
@@ -237,10 +195,7 @@ static int ixgbevf_ipsec_parse_proto_keys(struct xfrm_state *xs,
 		return -EINVAL;
 	}
 
-	/* The key bytes come down in a big endian array of bytes, so
-	 * we don't need to do any byte swapping.
-	 * 160 accounts for 16 byte key and 4 byte salt
-	 */
+	 
 	if (key_len > IXGBE_IPSEC_KEY_BITS) {
 		*mysalt = ((u32 *)key_data)[4];
 	} else if (key_len == IXGBE_IPSEC_KEY_BITS) {
@@ -254,11 +209,7 @@ static int ixgbevf_ipsec_parse_proto_keys(struct xfrm_state *xs,
 	return 0;
 }
 
-/**
- * ixgbevf_ipsec_add_sa - program device with a security association
- * @xs: pointer to transformer state struct
- * @extack: extack point to fill failure reason
- **/
+ 
 static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 				struct netlink_ext_ack *extack)
 {
@@ -294,7 +245,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 			return -EINVAL;
 		}
 
-		/* find the first unused index */
+		 
 		ret = ixgbevf_ipsec_find_empty_idx(ipsec, true);
 		if (ret < 0) {
 			NL_SET_ERR_MSG_MOD(extack, "No space for SA in Rx table!");
@@ -309,14 +260,14 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 		if (rsa.xs->id.proto & IPPROTO_ESP)
 			rsa.decrypt = xs->ealg || xs->aead;
 
-		/* get the key and salt */
+		 
 		ret = ixgbevf_ipsec_parse_proto_keys(xs, rsa.key, &rsa.salt);
 		if (ret) {
 			NL_SET_ERR_MSG_MOD(extack, "Failed to get key data for Rx SA table");
 			return ret;
 		}
 
-		/* get ip for rx sa table */
+		 
 		if (xs->props.family == AF_INET6)
 			memcpy(rsa.ipaddr, &xs->id.daddr.a6, 16);
 		else
@@ -335,20 +286,20 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 			return ret;
 		rsa.pfsa = ret;
 
-		/* the preparations worked, so save the info */
+		 
 		memcpy(&ipsec->rx_tbl[sa_idx], &rsa, sizeof(rsa));
 
 		xs->xso.offload_handle = sa_idx + IXGBE_IPSEC_BASE_RX_INDEX;
 
 		ipsec->num_rx_sa++;
 
-		/* hash the new entry for faster search in Rx path */
+		 
 		hash_add_rcu(ipsec->rx_sa_list, &ipsec->rx_tbl[sa_idx].hlist,
 			     (__force u32)rsa.xs->id.spi);
 	} else {
 		struct tx_sa tsa;
 
-		/* find the first unused index */
+		 
 		ret = ixgbevf_ipsec_find_empty_idx(ipsec, false);
 		if (ret < 0) {
 			NL_SET_ERR_MSG_MOD(extack, "No space for SA in Tx table");
@@ -375,7 +326,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 			return ret;
 		tsa.pfsa = ret;
 
-		/* the preparations worked, so save the info */
+		 
 		memcpy(&ipsec->tx_tbl[sa_idx], &tsa, sizeof(tsa));
 
 		xs->xso.offload_handle = sa_idx + IXGBE_IPSEC_BASE_TX_INDEX;
@@ -386,10 +337,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs,
 	return 0;
 }
 
-/**
- * ixgbevf_ipsec_del_sa - clear out this specific SA
- * @xs: pointer to transformer state struct
- **/
+ 
 static void ixgbevf_ipsec_del_sa(struct xfrm_state *xs)
 {
 	struct net_device *dev = xs->xso.real_dev;
@@ -428,19 +376,15 @@ static void ixgbevf_ipsec_del_sa(struct xfrm_state *xs)
 	}
 }
 
-/**
- * ixgbevf_ipsec_offload_ok - can this packet use the xfrm hw offload
- * @skb: current data packet
- * @xs: pointer to transformer state struct
- **/
+ 
 static bool ixgbevf_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *xs)
 {
 	if (xs->props.family == AF_INET) {
-		/* Offload with IPv4 options is not supported yet */
+		 
 		if (ip_hdr(skb)->ihl != 5)
 			return false;
 	} else {
-		/* Offload with IPv6 extension headers is not support yet */
+		 
 		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
 			return false;
 	}
@@ -454,12 +398,7 @@ static const struct xfrmdev_ops ixgbevf_xfrmdev_ops = {
 	.xdo_dev_offload_ok = ixgbevf_ipsec_offload_ok,
 };
 
-/**
- * ixgbevf_ipsec_tx - setup Tx flags for IPsec offload
- * @tx_ring: outgoing context
- * @first: current data packet
- * @itd: ipsec Tx data for later use in building context descriptor
- **/
+ 
 int ixgbevf_ipsec_tx(struct ixgbevf_ring *tx_ring,
 		     struct ixgbevf_tx_buffer *first,
 		     struct ixgbevf_ipsec_tx_data *itd)
@@ -509,22 +448,9 @@ int ixgbevf_ipsec_tx(struct ixgbevf_ring *tx_ring,
 		if (first->protocol == htons(ETH_P_IP))
 			itd->flags |= IXGBE_ADVTXD_TUCMD_IPV4;
 
-		/* The actual trailer length is authlen (16 bytes) plus
-		 * 2 bytes for the proto and the padlen values, plus
-		 * padlen bytes of padding.  This ends up not the same
-		 * as the static value found in xs->props.trailer_len (21).
-		 *
-		 * ... but if we're doing GSO, don't bother as the stack
-		 * doesn't add a trailer for those.
-		 */
+		 
 		if (!skb_is_gso(first->skb)) {
-			/* The "correct" way to get the auth length would be
-			 * to use
-			 *    authlen = crypto_aead_authsize(xs->data);
-			 * but since we know we only have one size to worry
-			 * about * we can let the compiler use the constant
-			 * and save us a few CPU cycles.
-			 */
+			 
 			const int authlen = IXGBE_IPSEC_AUTH_BITS / 8;
 			struct sk_buff *skb = first->skb;
 			u8 padlen;
@@ -543,15 +469,7 @@ int ixgbevf_ipsec_tx(struct ixgbevf_ring *tx_ring,
 	return 1;
 }
 
-/**
- * ixgbevf_ipsec_rx - decode IPsec bits from Rx descriptor
- * @rx_ring: receiving ring
- * @rx_desc: receive data descriptor
- * @skb: current data packet
- *
- * Determine if there was an IPsec encapsulation noticed, and if so set up
- * the resulting status for later in the receive stack.
- **/
+ 
 void ixgbevf_ipsec_rx(struct ixgbevf_ring *rx_ring,
 		      union ixgbe_adv_rx_desc *rx_desc,
 		      struct sk_buff *skb)
@@ -571,11 +489,7 @@ void ixgbevf_ipsec_rx(struct ixgbevf_ring *rx_ring,
 	u8 *c_hdr;
 	u8 proto;
 
-	/* Find the IP and crypto headers in the data.
-	 * We can assume no VLAN header in the way, b/c the
-	 * hw won't recognize the IPsec packet and anyway the
-	 * currently VLAN device doesn't support xfrm offload.
-	 */
+	 
 	if (pkt_info & cpu_to_le16(IXGBE_RXDADV_PKTTYPE_IPV4)) {
 		ip4 = (struct iphdr *)(skb->data + ETH_HLEN);
 		daddr = &ip4->daddr;
@@ -618,10 +532,7 @@ void ixgbevf_ipsec_rx(struct ixgbevf_ring *rx_ring,
 	adapter->rx_ipsec++;
 }
 
-/**
- * ixgbevf_init_ipsec_offload - initialize registers for IPsec operation
- * @adapter: board private structure
- **/
+ 
 void ixgbevf_init_ipsec_offload(struct ixgbevf_adapter *adapter)
 {
 	struct ixgbevf_ipsec *ipsec;
@@ -674,10 +585,7 @@ err1:
 	netdev_err(adapter->netdev, "Unable to allocate memory for SA tables");
 }
 
-/**
- * ixgbevf_stop_ipsec_offload - tear down the IPsec offload
- * @adapter: board private structure
- **/
+ 
 void ixgbevf_stop_ipsec_offload(struct ixgbevf_adapter *adapter)
 {
 	struct ixgbevf_ipsec *ipsec = adapter->ipsec;

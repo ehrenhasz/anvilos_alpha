@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef __PINCTRL_MTK_MT8195_H
 #define __PINCTRL_MTK_MT8195_H
@@ -1666,4 +1661,4 @@ static const struct mtk_pin_desc mtk_pins_mt8195[] = {
 	)
 };
 
-#endif /* __PINCTRL_MTK_MT8195_H */
+#endif  

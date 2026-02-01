@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip Generic power domain support.
- *
- * Copyright (c) 2015 ROCKCHIP, Co. Ltd.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -93,7 +89,7 @@ struct rockchip_pmu {
 	struct device *dev;
 	struct regmap *regmap;
 	const struct rockchip_pmu_info *info;
-	struct mutex mutex; /* mutex lock for pmu */
+	struct mutex mutex;  
 	struct genpd_onecell_data genpd_data;
 	struct generic_pm_domain *domains[];
 };
@@ -173,22 +169,11 @@ struct rockchip_pmu {
 #define DOMAIN_RK3568(name, pwr, req, wakeup)		\
 	DOMAIN_M(name, pwr, pwr, req, req, req, wakeup)
 
-/*
- * Dynamic Memory Controller may need to coordinate with us -- see
- * rockchip_pmu_block().
- *
- * dmc_pmu_mutex protects registration-time races, so DMC driver doesn't try to
- * block() while we're initializing the PMU.
- */
+ 
 static DEFINE_MUTEX(dmc_pmu_mutex);
 static struct rockchip_pmu *dmc_pmu;
 
-/*
- * Block PMU transitions and make sure they don't interfere with ARM Trusted
- * Firmware operations. There are two conflicts, noted in the comments below.
- *
- * Caller must unblock PMU transitions via rockchip_pmu_unblock().
- */
+ 
 int rockchip_pmu_block(void)
 {
 	struct rockchip_pmu *pmu;
@@ -198,28 +183,15 @@ int rockchip_pmu_block(void)
 
 	mutex_lock(&dmc_pmu_mutex);
 
-	/* No PMU (yet)? Then we just block rockchip_pmu_probe(). */
+	 
 	if (!dmc_pmu)
 		return 0;
 	pmu = dmc_pmu;
 
-	/*
-	 * mutex blocks all idle transitions: we can't touch the
-	 * PMU_BUS_IDLE_REQ (our ".idle_offset") register while ARM Trusted
-	 * Firmware might be using it.
-	 */
+	 
 	mutex_lock(&pmu->mutex);
 
-	/*
-	 * Power domain clocks: Per Rockchip, we *must* keep certain clocks
-	 * enabled for the duration of power-domain transitions. Most
-	 * transitions are handled by this driver, but some cases (in
-	 * particular, DRAM DVFS / memory-controller idle) must be handled by
-	 * firmware. Firmware can handle most clock management via a special
-	 * "ungate" register (PMU_CRU_GATEDIS_CON0), but unfortunately, this
-	 * doesn't handle PLLs. We can assist this transition by doing the
-	 * clock management on behalf of firmware.
-	 */
+	 
 	for (i = 0; i < pmu->genpd_data.num_domains; i++) {
 		genpd = pmu->genpd_data.domains[i];
 		if (genpd) {
@@ -251,7 +223,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(rockchip_pmu_block);
 
-/* Unblock PMU transitions. */
+ 
 void rockchip_pmu_unblock(void)
 {
 	struct rockchip_pmu *pmu;
@@ -321,7 +293,7 @@ static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
 
 	wmb();
 
-	/* Wait util idle_ack = 1 */
+	 
 	target_ack = idle ? pd_info->ack_mask : 0;
 	ret = readx_poll_timeout_atomic(rockchip_pmu_read_ack, pmu, val,
 					(val & pd_info->ack_mask) == target_ack,
@@ -401,17 +373,17 @@ static bool rockchip_pmu_domain_is_on(struct rockchip_pm_domain *pd)
 
 	if (pd->info->repair_status_mask) {
 		regmap_read(pmu->regmap, pmu->info->repair_status_offset, &val);
-		/* 1'b1: power on, 1'b0: power off */
+		 
 		return val & pd->info->repair_status_mask;
 	}
 
-	/* check idle status for idle-only domains */
+	 
 	if (pd->info->status_mask == 0)
 		return !rockchip_pmu_domain_is_idle(pd);
 
 	regmap_read(pmu->regmap, pmu->info->status_offset, &val);
 
-	/* 1'b0: power on, 1'b1: power off */
+	 
 	return !(val & pd->info->status_mask);
 }
 
@@ -423,7 +395,7 @@ static bool rockchip_pmu_domain_is_mem_on(struct rockchip_pm_domain *pd)
 	regmap_read(pmu->regmap,
 		    pmu->info->mem_status_offset + pd->info->mem_offset, &val);
 
-	/* 1'b0: power on, 1'b1: power off */
+	 
 	return !(val & pd->info->mem_status_mask);
 }
 
@@ -435,7 +407,7 @@ static bool rockchip_pmu_domain_is_chain_on(struct rockchip_pm_domain *pd)
 	regmap_read(pmu->regmap,
 		    pmu->info->chain_status_offset + pd->info->mem_offset, &val);
 
-	/* 1'b1: power on, 1'b0: power off */
+	 
 	return val & pd->info->mem_status_mask;
 }
 
@@ -540,14 +512,14 @@ static int rockchip_pd_power(struct rockchip_pm_domain *pd, bool power_on)
 		if (!power_on) {
 			rockchip_pmu_save_qos(pd);
 
-			/* if powering down, idle request to NIU first */
+			 
 			rockchip_pmu_set_idle_request(pd, true);
 		}
 
 		rockchip_do_pmu_set_power_domain(pd, power_on);
 
 		if (power_on) {
-			/* if powering up, leave idle mode */
+			 
 			rockchip_pmu_set_idle_request(pd, false);
 
 			rockchip_pmu_restore_qos(pd);
@@ -635,7 +607,7 @@ static int rockchip_pm_add_one_domain(struct rockchip_pmu *pmu,
 			node, id);
 		return -EINVAL;
 	}
-	/* RK3588 has domains with two parents (RKVDEC0/RKVDEC1) */
+	 
 	if (pmu->genpd_data.domains[id])
 		return 0;
 
@@ -748,10 +720,7 @@ static void rockchip_pm_remove_one_domain(struct rockchip_pm_domain *pd)
 {
 	int ret;
 
-	/*
-	 * We're in the error cleanup already, so we only complain,
-	 * but won't emit another error on top of the original one.
-	 */
+	 
 	ret = pm_genpd_remove(&pd->genpd);
 	if (ret < 0)
 		dev_err(pd->pmu->dev, "failed to remove domain '%s' : %d - state may be inconsistent\n",
@@ -760,12 +729,12 @@ static void rockchip_pm_remove_one_domain(struct rockchip_pm_domain *pd)
 	clk_bulk_unprepare(pd->num_clks, pd->clks);
 	clk_bulk_put(pd->num_clks, pd->clks);
 
-	/* protect the zeroing of pm->num_clks */
+	 
 	mutex_lock(&pd->pmu->mutex);
 	pd->num_clks = 0;
 	mutex_unlock(&pd->pmu->mutex);
 
-	/* devm will free our memory */
+	 
 }
 
 static void rockchip_pm_domain_cleanup(struct rockchip_pmu *pmu)
@@ -782,16 +751,16 @@ static void rockchip_pm_domain_cleanup(struct rockchip_pmu *pmu)
 		}
 	}
 
-	/* devm will free our memory */
+	 
 }
 
 static void rockchip_configure_pd_cnt(struct rockchip_pmu *pmu,
 				      u32 domain_reg_offset,
 				      unsigned int count)
 {
-	/* First configure domain power down transition count ... */
+	 
 	regmap_write(pmu->regmap, domain_reg_offset, count);
-	/* ... and then power up count. */
+	 
 	regmap_write(pmu->regmap, domain_reg_offset + 4, count);
 }
 
@@ -900,10 +869,7 @@ static int rockchip_pm_domain_probe(struct platform_device *pdev)
 		return PTR_ERR(pmu->regmap);
 	}
 
-	/*
-	 * Configure power up and down transition delays for CORE
-	 * and GPU domains.
-	 */
+	 
 	if (pmu_info->core_power_transition_time)
 		rockchip_configure_pd_cnt(pmu, pmu_info->core_pwrcnt_offset,
 					pmu_info->core_power_transition_time);
@@ -913,10 +879,7 @@ static int rockchip_pm_domain_probe(struct platform_device *pdev)
 
 	error = -ENODEV;
 
-	/*
-	 * Prevent any rockchip_pmu_block() from racing with the remainder of
-	 * setup (clocks, register initialization).
-	 */
+	 
 	mutex_lock(&dmc_pmu_mutex);
 
 	for_each_available_child_of_node(np, node) {
@@ -948,7 +911,7 @@ static int rockchip_pm_domain_probe(struct platform_device *pdev)
 		goto err_out;
 	}
 
-	/* We only expect one PMU. */
+	 
 	if (!WARN_ON_ONCE(dmc_pmu))
 		dmc_pmu = pmu;
 
@@ -1166,7 +1129,7 @@ static const struct rockchip_pmu_info rk3036_pmu = {
 static const struct rockchip_pmu_info rk3066_pmu = {
 	.pwr_offset = 0x08,
 	.status_offset = 0x0c,
-	.req_offset = 0x38, /* PMU_MISC_CON1 */
+	.req_offset = 0x38,  
 	.idle_offset = 0x0c,
 	.ack_offset = 0x0c,
 
@@ -1188,7 +1151,7 @@ static const struct rockchip_pmu_info rk3128_pmu = {
 static const struct rockchip_pmu_info rk3188_pmu = {
 	.pwr_offset = 0x08,
 	.status_offset = 0x0c,
-	.req_offset = 0x38, /* PMU_MISC_CON1 */
+	.req_offset = 0x38,  
 	.idle_offset = 0x0c,
 	.ack_offset = 0x0c,
 
@@ -1215,8 +1178,8 @@ static const struct rockchip_pmu_info rk3288_pmu = {
 	.core_pwrcnt_offset = 0x34,
 	.gpu_pwrcnt_offset = 0x3c,
 
-	.core_power_transition_time = 24, /* 1us */
-	.gpu_power_transition_time = 24, /* 1us */
+	.core_power_transition_time = 24,  
+	.gpu_power_transition_time = 24,  
 
 	.num_domains = ARRAY_SIZE(rk3288_pm_domains),
 	.domain_info = rk3288_pm_domains,
@@ -1272,7 +1235,7 @@ static const struct rockchip_pmu_info rk3399_pmu = {
 	.idle_offset = 0x64,
 	.ack_offset = 0x68,
 
-	/* ARM Trusted Firmware manages power transition times */
+	 
 
 	.num_domains = ARRAY_SIZE(rk3399_pm_domains),
 	.domain_info = rk3399_pm_domains,
@@ -1372,7 +1335,7 @@ static const struct of_device_id rockchip_pm_domain_dt_match[] = {
 		.compatible = "rockchip,rv1126-power-controller",
 		.data = (void *)&rv1126_pmu,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver rockchip_pm_domain_driver = {
@@ -1380,11 +1343,7 @@ static struct platform_driver rockchip_pm_domain_driver = {
 	.driver = {
 		.name   = "rockchip-pm-domain",
 		.of_match_table = rockchip_pm_domain_dt_match,
-		/*
-		 * We can't forcibly eject devices from the power
-		 * domain, so we can't really remove power domains
-		 * once they were added.
-		 */
+		 
 		.suppress_bind_attrs = true,
 	},
 };

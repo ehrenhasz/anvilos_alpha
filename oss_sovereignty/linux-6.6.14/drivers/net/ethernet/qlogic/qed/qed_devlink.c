@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Marvell/Qlogic FastLinQ NIC driver
- *
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/qed/qed_if.h>
@@ -45,10 +42,7 @@ qed_fw_fatal_reporter_dump(struct devlink_health_reporter *reporter,
 	u8 *p_dbg_data_buf;
 	int err;
 
-	/* Having context means that was a dump request after fatal,
-	 * so we enable extra debugging while gathering the dump,
-	 * just in case
-	 */
+	 
 	cdev->print_dbg_data = fw_fatal_ctx ? true : false;
 
 	dbg_data_buf_size = qed_dbg_all_data_size(cdev);

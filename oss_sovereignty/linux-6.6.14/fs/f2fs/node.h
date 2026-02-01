@@ -1,71 +1,64 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fs/f2fs/node.h
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
-/* start node id of a node block dedicated to the given node id */
+ 
+ 
+ 
 #define	START_NID(nid) (((nid) / NAT_ENTRY_PER_BLOCK) * NAT_ENTRY_PER_BLOCK)
 
-/* node block offset on the NAT area dedicated to the given start node id */
+ 
 #define	NAT_BLOCK_OFFSET(start_nid) ((start_nid) / NAT_ENTRY_PER_BLOCK)
 
-/* # of pages to perform synchronous readahead before building free nids */
+ 
 #define FREE_NID_PAGES	8
 #define MAX_FREE_NIDS	(NAT_ENTRY_PER_BLOCK * FREE_NID_PAGES)
 
-/* size of free nid batch when shrinking */
+ 
 #define SHRINK_NID_BATCH_SIZE	8
 
-#define DEF_RA_NID_PAGES	0	/* # of nid pages to be readaheaded */
+#define DEF_RA_NID_PAGES	0	 
 
-/* maximum readahead size for node during getting data blocks */
+ 
 #define MAX_RA_NODE		128
 
-/* control the memory footprint threshold (10MB per 1GB ram) */
+ 
 #define DEF_RAM_THRESHOLD	1
 
-/* control dirty nats ratio threshold (default: 10% over max nid count) */
+ 
 #define DEF_DIRTY_NAT_RATIO_THRESHOLD		10
-/* control total # of nats */
+ 
 #define DEF_NAT_CACHE_THRESHOLD			100000
 
-/* control total # of node writes used for roll-fowrad recovery */
+ 
 #define DEF_RF_NODE_BLOCKS			0
 
-/* vector size for gang look-up from nat cache that consists of radix tree */
+ 
 #define NAT_VEC_SIZE	32
 
-/* return value for read_node_page */
+ 
 #define LOCKED_PAGE	1
 
-/* check pinned file's alignment status of physical blocks */
+ 
 #define FILE_NOT_ALIGNED	1
 
-/* For flag in struct node_info */
+ 
 enum {
-	IS_CHECKPOINTED,	/* is it checkpointed before? */
-	HAS_FSYNCED_INODE,	/* is the inode fsynced before? */
-	HAS_LAST_FSYNC,		/* has the latest node fsync mark? */
-	IS_DIRTY,		/* this nat entry is dirty? */
-	IS_PREALLOC,		/* nat entry is preallocated */
+	IS_CHECKPOINTED,	 
+	HAS_FSYNCED_INODE,	 
+	HAS_LAST_FSYNC,		 
+	IS_DIRTY,		 
+	IS_PREALLOC,		 
 };
 
-/*
- * For node information
- */
+ 
 struct node_info {
-	nid_t nid;		/* node id */
-	nid_t ino;		/* inode number of the node's owner */
-	block_t	blk_addr;	/* block address of the node */
-	unsigned char version;	/* version of the node */
-	unsigned char flag;	/* for node information bits */
+	nid_t nid;		 
+	nid_t ino;		 
+	block_t	blk_addr;	 
+	unsigned char version;	 
+	unsigned char flag;	 
 };
 
 struct nat_entry {
-	struct list_head list;	/* for clean or dirty nat list */
-	struct node_info ni;	/* in-memory node information */
+	struct list_head list;	 
+	struct node_info ni;	 
 };
 
 #define nat_get_nid(nat)		((nat)->ni.nid)
@@ -86,7 +79,7 @@ static inline void copy_node_info(struct node_info *dst,
 	dst->ino = src->ino;
 	dst->blk_addr = src->blk_addr;
 	dst->version = src->version;
-	/* should not copy flag here */
+	 
 }
 
 static inline void set_nat_flag(struct nat_entry *ne,
@@ -105,7 +98,7 @@ static inline bool get_nat_flag(struct nat_entry *ne, unsigned int type)
 
 static inline void nat_reset_flag(struct nat_entry *ne)
 {
-	/* these states can be set only after checkpoint was done */
+	 
 	set_nat_flag(ne, IS_CHECKPOINTED, true);
 	set_nat_flag(ne, HAS_FSYNCED_INODE, false);
 	set_nat_flag(ne, HAS_LAST_FSYNC, true);
@@ -139,28 +132,28 @@ static inline bool excess_cached_nats(struct f2fs_sb_info *sbi)
 }
 
 enum mem_type {
-	FREE_NIDS,	/* indicates the free nid list */
-	NAT_ENTRIES,	/* indicates the cached nat entry */
-	DIRTY_DENTS,	/* indicates dirty dentry pages */
-	INO_ENTRIES,	/* indicates inode entries */
-	READ_EXTENT_CACHE,	/* indicates read extent cache */
-	AGE_EXTENT_CACHE,	/* indicates age extent cache */
-	DISCARD_CACHE,	/* indicates memory of cached discard cmds */
-	COMPRESS_PAGE,	/* indicates memory of cached compressed pages */
-	BASE_CHECK,	/* check kernel status */
+	FREE_NIDS,	 
+	NAT_ENTRIES,	 
+	DIRTY_DENTS,	 
+	INO_ENTRIES,	 
+	READ_EXTENT_CACHE,	 
+	AGE_EXTENT_CACHE,	 
+	DISCARD_CACHE,	 
+	COMPRESS_PAGE,	 
+	BASE_CHECK,	 
 };
 
 struct nat_entry_set {
-	struct list_head set_list;	/* link with other nat sets */
-	struct list_head entry_list;	/* link with dirty nat entries */
-	nid_t set;			/* set number*/
-	unsigned int entry_cnt;		/* the # of nat entries in set */
+	struct list_head set_list;	 
+	struct list_head entry_list;	 
+	nid_t set;			 
+	unsigned int entry_cnt;		 
 };
 
 struct free_nid {
-	struct list_head list;	/* for free node id list */
-	nid_t nid;		/* node id */
-	int state;		/* in use or not: FREE_NID or PREALLOC_NID */
+	struct list_head list;	 
+	nid_t nid;		 
+	int state;		 
 };
 
 static inline void next_free_nid(struct f2fs_sb_info *sbi, nid_t *nid)
@@ -178,9 +171,7 @@ static inline void next_free_nid(struct f2fs_sb_info *sbi, nid_t *nid)
 	spin_unlock(&nm_i->nid_list_lock);
 }
 
-/*
- * inline functions
- */
+ 
 static inline void get_nat_bitmap(struct f2fs_sb_info *sbi, void *addr)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -199,11 +190,7 @@ static inline pgoff_t current_nat_addr(struct f2fs_sb_info *sbi, nid_t start)
 	pgoff_t block_off;
 	pgoff_t block_addr;
 
-	/*
-	 * block_off = segment_off * 512 + off_in_segment
-	 * OLD = (segment_off * 512) * 2 + off_in_segment
-	 * NEW = 2 * (segment_off * 512 + off_in_segment) - off_in_segment
-	 */
+	 
 	block_off = NAT_BLOCK_OFFSET(start);
 
 	block_addr = (pgoff_t)(nm_i->nat_blkaddr +
@@ -281,7 +268,7 @@ static inline void fill_node_footer(struct page *page, nid_t nid,
 	rn->footer.nid = cpu_to_le32(nid);
 	rn->footer.ino = cpu_to_le32(ino);
 
-	/* should remain old flag bits such as COLD_BIT_SHIFT */
+	 
 	rn->footer.flag = cpu_to_le32((ofs << OFFSET_BIT_SHIFT) |
 					(old_flag & OFFSET_BIT_MASK));
 }
@@ -311,7 +298,7 @@ static inline bool is_recoverable_dnode(struct page *page)
 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(F2FS_P_SB(page));
 	__u64 cp_ver = cur_cp_version(ckpt);
 
-	/* Don't care crc part, if fsck.f2fs sets it. */
+	 
 	if (__is_set_ckpt_flags(ckpt, CP_NOCRC_RECOVERY_FLAG))
 		return (cp_ver << 32) == (cpver_of_node(page) << 32);
 
@@ -321,27 +308,7 @@ static inline bool is_recoverable_dnode(struct page *page)
 	return cp_ver == cpver_of_node(page);
 }
 
-/*
- * f2fs assigns the following node offsets described as (num).
- * N = NIDS_PER_BLOCK
- *
- *  Inode block (0)
- *    |- direct node (1)
- *    |- direct node (2)
- *    |- indirect node (3)
- *    |            `- direct node (4 => 4 + N - 1)
- *    |- indirect node (4 + N)
- *    |            `- direct node (5 + N => 5 + 2N - 1)
- *    `- double indirect node (5 + 2N)
- *                 `- indirect node (6 + 2N)
- *                       `- direct node
- *                 ......
- *                 `- indirect node ((6 + 2N) + x(N + 1))
- *                       `- direct node
- *                 ......
- *                 `- indirect node ((6 + 2N) + (N - 1)(N + 1))
- *                       `- direct node
- */
+ 
 static inline bool IS_DNODE(struct page *node_page)
 {
 	unsigned int ofs = ofs_of_node(node_page);
@@ -382,12 +349,7 @@ static inline nid_t get_nid(struct page *p, int off, bool i)
 	return le32_to_cpu(rn->in.nid[off]);
 }
 
-/*
- * Coldness identification:
- *  - Mark cold files in f2fs_inode_info
- *  - Mark cold node blocks in their node footer
- *  - Mark cold data pages in page cache
- */
+ 
 
 static inline int is_node(struct page *page, int type)
 {

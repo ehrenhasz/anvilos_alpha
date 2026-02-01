@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_AUDIO_REGS_H__
 #define __INTEL_AUDIO_REGS_H__
@@ -99,7 +97,7 @@
 #define _HSW_AUD_DIP_ELD_CTRL_ST_B	0x651b4
 #define HSW_AUD_DIP_ELD_CTRL(trans)	_MMIO_TRANS(trans, _HSW_AUD_DIP_ELD_CTRL_ST_A, _HSW_AUD_DIP_ELD_CTRL_ST_B)
 
-/* Audio Digital Converter */
+ 
 #define _HSW_AUD_DIG_CNVT_1		0x65080
 #define _HSW_AUD_DIG_CNVT_2		0x65180
 #define AUD_DIG_CNVT(trans)		_MMIO_TRANS(trans, _HSW_AUD_DIG_CNVT_1, _HSW_AUD_DIG_CNVT_2)
@@ -132,7 +130,7 @@
 #define   AUD_TS_CDCLK_M_EN		REG_BIT(31)
 #define AUD_TS_CDCLK_N			_MMIO(0x65ea4)
 
-/* Display Audio Config Reg */
+ 
 #define AUD_CONFIG_BE			_MMIO(0x65ef0)
 #define HBLANK_EARLY_ENABLE_ICL(pipe)		(0x1 << (20 - (pipe)))
 #define HBLANK_EARLY_ENABLE_TGL(pipe)		(0x1 << (24 + (pipe)))
@@ -148,4 +146,4 @@
 #define HBLANK_START_COUNT_96	4
 #define HBLANK_START_COUNT_128	5
 
-#endif /* __INTEL_AUDIO_REGS_H__ */
+#endif  

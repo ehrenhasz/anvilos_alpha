@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+
- *
- * Copyright 2013 Ideas On Board SPRL
- * Copyright 2013, 2014 Horms Solutions Ltd.
- *
- * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- * Contact: Simon Horman <horms@verge.net.au>
- */
+ 
 
 #ifndef __LINUX_CLK_RENESAS_H_
 #define __LINUX_CLK_RENESAS_H_

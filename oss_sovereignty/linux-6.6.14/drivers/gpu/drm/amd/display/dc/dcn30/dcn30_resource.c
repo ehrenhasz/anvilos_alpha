@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dm_services.h"
@@ -103,11 +80,9 @@ enum dcn30_clk_src_array_id {
 	DCN30_CLK_SRC_TOTAL
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file
- */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
 #define BASE(seg) BASE_INNER(seg)
@@ -151,7 +126,7 @@ enum dcn30_clk_src_array_id {
 	.reg_name[id] = BASE(mm ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 					mm ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIO_BASE__INST0_SEG ## seg
 
@@ -162,7 +137,7 @@ enum dcn30_clk_src_array_id {
 		.reg_name = NBIO_BASE(mm ## reg_name ## _BASE_IDX) + \
 					mm ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -173,7 +148,7 @@ enum dcn30_clk_src_array_id {
 		.reg_name = MMHUB_BASE(mmMM ## reg_name ## _BASE_IDX) + \
 					mmMM ## reg_name
 
-/* CLOCK */
+ 
 #define CLK_BASE_INNER(seg) \
 	CLK_BASE__INST0_SEG ## seg
 
@@ -696,7 +671,7 @@ static const struct dc_plane_cap plane_cap = {
 			.fp16 = 16000
 	},
 
-	/* 6:1 downscaling ratio: 1000/6 = 166.666 */
+	 
 	.max_downscale_factor = {
 			.argb8888 = 167,
 			.nv12 = 167,
@@ -707,7 +682,7 @@ static const struct dc_plane_cap plane_cap = {
 };
 
 static const struct dc_debug_options debug_defaults_drv = {
-	.disable_dmcu = true, //No DMCU on DCN30
+	.disable_dmcu = true, 
 	.force_abm_enable = false,
 	.timing_trace = false,
 	.clock_trace = true,
@@ -717,12 +692,12 @@ static const struct dc_debug_options debug_defaults_drv = {
 	.disable_dcc = DCC_ENABLE,
 	.vsr_support = true,
 	.performance_trace = false,
-	.max_downscale_src_width = 7680,/*upto 8K*/
+	.max_downscale_src_width = 7680, 
 	.disable_pplib_wm_range = false,
 	.scl_reset_length10 = true,
 	.sanity_checks = false,
 	.underflow_assert_delay_us = 0xFFFFFFFF,
-	.dwb_fi_phase = -1, // -1 = disable,
+	.dwb_fi_phase = -1, 
 	.dmub_command_table = true,
 	.use_max_lb = true,
 	.exit_idle_opt_for_cursor_updates = true,
@@ -1015,7 +990,7 @@ static struct stream_encoder *dcn30_stream_encoder_create(enum engine_id eng_id,
 	int vpg_inst;
 	int afmt_inst;
 
-	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
+	 
 	if (eng_id <= ENGINE_ID_DIGF) {
 		vpg_inst = eng_id;
 		afmt_inst = eng_id;
@@ -1355,15 +1330,15 @@ unsigned int dcn30_calc_max_scaled_time(
 	unsigned int buf_lh_capability;
 	unsigned int max_scaled_time;
 
-	if (mode == PACKED_444) /* packed mode 32 bpp */
+	if (mode == PACKED_444)  
 		time_per_byte = time_per_pixel/4;
-	else if (mode == PACKED_444_FP16) /* packed mode 64 bpp */
+	else if (mode == PACKED_444_FP16)  
 		time_per_byte = time_per_pixel/8;
 
 	if (time_per_byte == 0)
 		time_per_byte = 1;
 
-	buf_lh_capability = (total_free_entry*time_per_byte*32) >> 6; /* time_per_byte is in u6.6*/
+	buf_lh_capability = (total_free_entry*time_per_byte*32) >> 6;  
 	max_scaled_time   = buf_lh_capability - urgent_watermark;
 	return max_scaled_time;
 }
@@ -1379,7 +1354,7 @@ void dcn30_set_mcif_arb_params(
 	struct mcif_arb_params *wb_arb_params;
 	int i, j, dwb_pipe;
 
-	/* Writeback MCIF_WB arbitration parameters */
+	 
 	dwb_pipe = 0;
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 
@@ -1392,7 +1367,7 @@ void dcn30_set_mcif_arb_params(
 			if (writeback_info->wb_enabled == false)
 				continue;
 
-			//wb_arb_params = &context->res_ctx.pipe_ctx[i].stream->writeback_info[j].mcif_arb_params;
+			
 			wb_arb_params = &context->bw_ctx.bw.dcn.bw_writeback.mcif_wb_arb[dwb_pipe];
 
 			if (writeback_info->dwb_params.cnv_params.fc_out_format == DWB_OUT_FORMAT_64BPP_ARGB ||
@@ -1404,12 +1379,12 @@ void dcn30_set_mcif_arb_params(
 			DC_FP_START();
 			dcn30_fpu_set_mcif_arb_params(wb_arb_params, dml, pipes, pipe_cnt, j);
 			DC_FP_END();
-			wb_arb_params->time_per_pixel = (1000000 << 6) / context->res_ctx.pipe_ctx[i].stream->phy_pix_clk; /* time_per_pixel should be in u6.6 format */
+			wb_arb_params->time_per_pixel = (1000000 << 6) / context->res_ctx.pipe_ctx[i].stream->phy_pix_clk;  
 			wb_arb_params->slice_lines = 32;
-			wb_arb_params->arbitration_slice = 2; /* irrelevant since there is no YUV output */
+			wb_arb_params->arbitration_slice = 2;  
 			wb_arb_params->max_scaled_time = dcn30_calc_max_scaled_time(wb_arb_params->time_per_pixel,
 					wbif_mode,
-					wb_arb_params->cli_watermark[0]); /* assume 4 watermark sets have the same value */
+					wb_arb_params->cli_watermark[0]);  
 
 			dwb_pipe++;
 
@@ -1605,11 +1580,7 @@ static struct pipe_ctx *dcn30_find_split_pipe(
 			}
 		}
 
-	/*
-	 * May need to fix pipes getting tossed from 1 opp to another on flip
-	 * Add for debugging transient underflow during topology updates:
-	 * ASSERT(pipe);
-	 */
+	 
 	if (!pipe)
 		for (i = dc->res_pool->pipe_count - 1; i >= 0; i--) {
 			if (context->res_ctx.pipe_ctx[i].stream == NULL) {
@@ -1657,28 +1628,18 @@ noinline bool dcn30_internal_validate_bw(
 	dml_log_pipe_params(&context->bw_ctx.dml, pipes, pipe_cnt);
 
 	if (!fast_validate || !allow_self_refresh_only) {
-		/*
-		 * DML favors voltage over p-state, but we're more interested in
-		 * supporting p-state over voltage. We can't support p-state in
-		 * prefetch mode > 0 so try capping the prefetch mode to start.
-		 */
+		 
 		context->bw_ctx.dml.soc.allow_dram_self_refresh_or_dram_clock_change_in_vblank =
 			dm_allow_self_refresh_and_mclk_switch;
 		vlevel = dml_get_voltage_level(&context->bw_ctx.dml, pipes, pipe_cnt);
-		/* This may adjust vlevel and maxMpcComb */
+		 
 		if (vlevel < context->bw_ctx.dml.soc.num_states)
 			vlevel = dcn20_validate_apply_pipe_split_flags(dc, context, vlevel, split, merge);
 	}
 	if (allow_self_refresh_only &&
 	    (fast_validate || vlevel == context->bw_ctx.dml.soc.num_states ||
 			vba->DRAMClockChangeSupport[vlevel][vba->maxMpcComb] == dm_dram_clock_change_unsupported)) {
-		/*
-		 * If mode is unsupported or there's still no p-state support
-		 * then fall back to favoring voltage.
-		 *
-		 * We don't actually support prefetch mode 2, so require that we
-		 * at least support prefetch mode 1.
-		 */
+		 
 		context->bw_ctx.dml.soc.allow_dram_self_refresh_or_dram_clock_change_in_vblank =
 			dm_allow_self_refresh;
 
@@ -1703,7 +1664,7 @@ noinline bool dcn30_internal_validate_bw(
 			if (!pipe->stream)
 				continue;
 
-			/* We only support full screen mpo with ODM */
+			 
 			if (vba->ODMCombineEnabled[vba->pipe_plane[pipe_idx]] != dm_odm_combine_mode_disabled
 					&& pipe->plane_state && mpo_pipe
 					&& memcmp(&mpo_pipe->plane_state->clip_rect,
@@ -1716,17 +1677,17 @@ noinline bool dcn30_internal_validate_bw(
 		}
 	}
 
-	/* merge pipes if necessary */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		struct pipe_ctx *pipe = &context->res_ctx.pipe_ctx[i];
 
-		/*skip pipes that don't need merging*/
+		 
 		if (!merge[i])
 			continue;
 
-		/* if ODM merge we ignore mpc tree, mpo pipes will have their own flags */
+		 
 		if (pipe->prev_odm_pipe) {
-			/*split off odm pipe*/
+			 
 			pipe->prev_odm_pipe->next_odm_pipe = pipe->next_odm_pipe;
 			if (pipe->next_odm_pipe)
 				pipe->next_odm_pipe->prev_odm_pipe = pipe->prev_odm_pipe;
@@ -1758,7 +1719,7 @@ noinline bool dcn30_internal_validate_bw(
 			memset(&pipe->stream_res, 0, sizeof(pipe->stream_res));
 			repopulate_pipes = true;
 		} else
-			ASSERT(0); /* Should never try to merge master pipe */
+			ASSERT(0);  
 
 	}
 
@@ -1857,7 +1818,7 @@ noinline bool dcn30_internal_validate_bw(
 		}
 	}
 
-	/* Actual dsc count per stream dsc validation*/
+	 
 	if (!dcn20_validate_dsc(dc, context)) {
 		vba->ValidationStatus[vba->soc.num_states] = DML_FAIL_DSC_VALIDATION_FAILURE;
 		goto validate_fail;
@@ -1888,7 +1849,7 @@ static int get_refresh_rate(struct dc_state *context)
 	if (context == NULL || context->streams[0] == NULL)
 		return 0;
 
-	/* check if refresh rate at least 120hz */
+	 
 	timing = &context->streams[0]->timing;
 	if (timing == NULL)
 		return 0;
@@ -1901,13 +1862,8 @@ static int get_refresh_rate(struct dc_state *context)
 	return refresh_rate;
 }
 
-#define MAX_STRETCHED_V_BLANK 500 // in micro-seconds
-/*
- * Scaling factor for v_blank stretch calculations considering timing in
- * micro-seconds and pixel clock in 100hz.
- * Note: the parenthesis are necessary to ensure the correct order of
- * operation where V_SCALE is used.
- */
+#define MAX_STRETCHED_V_BLANK 500 
+ 
 #define V_SCALE (10000 / MAX_STRETCHED_V_BLANK)
 
 static int get_frame_rate_at_max_stretch_100hz(struct dc_state *context)
@@ -1924,7 +1880,7 @@ static int get_frame_rate_at_max_stretch_100hz(struct dc_state *context)
 	if (context == NULL || context->streams[0] == NULL)
 		return 0;
 
-	/* check if refresh rate at least 120hz */
+	 
 	timing = &context->streams[0]->timing;
 	if (timing == NULL)
 		return 0;
@@ -1977,7 +1933,7 @@ bool dcn30_can_support_mclk_switch_using_fw_based_vblank_stretch(struct dc *dc, 
 	if (context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching_shut_down)
 		return false;
 
-	/* more then 1 monitor connected */
+	 
 	if (context->stream_count != 1)
 		return false;
 
@@ -1999,16 +1955,14 @@ bool dcn30_can_support_mclk_switch_using_fw_based_vblank_stretch(struct dc *dc, 
 	return true;
 }
 
-/*
- * set up FPO watermarks, pstate, dram latency
- */
+ 
 void dcn30_setup_mclk_switch_using_fw_based_vblank_stretch(struct dc *dc, struct dc_state *context)
 {
 	ASSERT(dc != NULL && context != NULL);
 	if (dc == NULL || context == NULL)
 		return;
 
-	/* Set wm_a.pstate so high natural MCLK switches are impossible: 4 seconds */
+	 
 	context->bw_ctx.bw.dcn.watermarks.a.cstate_pstate.pstate_change_ns = 4U * 1000U * 1000U * 1000U;
 }
 
@@ -2129,24 +2083,24 @@ void dcn30_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 		DC_FP_END();
 
 		if (dcn30_bb_max_clk.max_dcfclk_mhz > dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			// If max DCFCLK is greater than the max DCFCLK STA target, insert into the DCFCLK STA target array
+			
 			dcfclk_sta_targets[num_dcfclk_sta_targets] = dcn30_bb_max_clk.max_dcfclk_mhz;
 			num_dcfclk_sta_targets++;
 		} else if (dcn30_bb_max_clk.max_dcfclk_mhz < dcfclk_sta_targets[num_dcfclk_sta_targets-1]) {
-			// If max DCFCLK is less than the max DCFCLK STA target, cap values and remove duplicates
+			
 			for (i = 0; i < num_dcfclk_sta_targets; i++) {
 				if (dcfclk_sta_targets[i] > dcn30_bb_max_clk.max_dcfclk_mhz) {
 					dcfclk_sta_targets[i] = dcn30_bb_max_clk.max_dcfclk_mhz;
 					break;
 				}
 			}
-			// Update size of array since we "removed" duplicates
+			
 			num_dcfclk_sta_targets = i + 1;
 		}
 
 		num_uclk_states = bw_params->clk_table.num_entries;
 
-		// Calculate optimal dcfclk for each uclk
+		
 		for (i = 0; i < num_uclk_states; i++) {
 			DC_FP_START();
 			dcn30_fpu_get_optimal_dcfclk_fclk_for_uclk(bw_params->clk_table.entries[i].memclk_mhz * 16,
@@ -2157,7 +2111,7 @@ void dcn30_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 			}
 		}
 
-		// Calculate optimal uclk for each dcfclk sta target
+		
 		for (i = 0; i < num_dcfclk_sta_targets; i++) {
 			for (j = 0; j < num_uclk_states; j++) {
 				if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j]) {
@@ -2170,7 +2124,7 @@ void dcn30_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 
 		i = 0;
 		j = 0;
-		// create the final dcfclk and uclk table
+		
 		while (i < num_dcfclk_sta_targets && j < num_uclk_states && num_states < DC__VOLTAGE_STATES) {
 			if (dcfclk_sta_targets[i] < optimal_dcfclk_for_uclk[j] && i < num_dcfclk_sta_targets) {
 				dcfclk_mhz[num_states] = dcfclk_sta_targets[i];
@@ -2238,7 +2192,7 @@ static const struct resource_funcs dcn30_res_pool_funcs = {
 static uint32_t read_pipe_fuses(struct dc_context *ctx)
 {
 	uint32_t value = REG_READ(CC_DC_PIPE_DIS);
-	/* Support for max 6 pipes */
+	 
 	value = value & 0x3f;
 	return value;
 }
@@ -2258,7 +2212,7 @@ static bool dcn30_resource_construct(
 	if (!(pipe_fuses == 0 || pipe_fuses == 0x3e)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: Unexpected fuse recipe for navi2x !\n");
-		/* fault to single pipe */
+		 
 		pipe_fuses = 0x3e;
 	}
 
@@ -2270,20 +2224,18 @@ static bool dcn30_resource_construct(
 
 	pool->base.funcs = &dcn30_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 	pool->base.mpcc_count = pool->base.res_cap->num_timing_generator;
 	dc->caps.max_downscale_ratio = 600;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 100; /*1.4 w/a not applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 100;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
 	dc->caps.mall_size_per_mem_channel = 8;
-	/* total size = mall per channel * num channels * 1024 * 1024 */
+	 
 	dc->caps.mall_size_total = dc->caps.mall_size_per_mem_channel * dc->ctx->dc_bios->vram_info.num_chans * 1048576;
 	dc->caps.cursor_cache_size = dc->caps.max_cursor_size * dc->caps.max_cursor_size * 8;
 
@@ -2295,11 +2247,11 @@ static bool dcn30_resource_construct(
 	dc->caps.extended_aux_timeout_support = true;
 	dc->caps.dmcub_support = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
-	dc->caps.color.dpp.dgam_ram = 0; // must use gamma_corr
+	dc->caps.color.dpp.dgam_ram = 0; 
 	dc->caps.color.dpp.dgam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.dgam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.dgam_rom_caps.gamma2_2 = 1;
@@ -2311,7 +2263,7 @@ static bool dcn30_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN3
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -2320,7 +2272,7 @@ static bool dcn30_resource_construct(
 	dc->caps.color.dpp.ocsc = 0;
 
 	dc->caps.color.mpc.gamut_remap = 1;
-	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; //3
+	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; 
 	dc->caps.color.mpc.ogam_ram = 1;
 	dc->caps.color.mpc.ogam_rom_caps.srgb = 0;
 	dc->caps.color.mpc.ogam_rom_caps.bt2020 = 0;
@@ -2332,7 +2284,7 @@ static bool dcn30_resource_construct(
 	dc->caps.dp_hdmi21_pcon_support = true;
 	dc->caps.max_v_total = (1 << 15) - 1;
 
-	/* read VBIOS LTTPR caps */
+	 
 	{
 		if (ctx->dc_bios->funcs->get_lttpr_caps) {
 			enum bp_result bp_query_result;
@@ -2355,15 +2307,13 @@ static bool dcn30_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
-	/* Clock Sources for Pixel Clock*/
+	 
 	pool->base.clock_sources[DCN30_CLK_SRC_PLL0] =
 			dcn30_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_COMBO_PHY_PLL0,
@@ -2391,7 +2341,7 @@ static bool dcn30_resource_construct(
 
 	pool->base.clk_src_count = DCN30_CLK_SRC_TOTAL;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn30_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -2405,7 +2355,7 @@ static bool dcn30_resource_construct(
 		}
 	}
 
-	/* DCCG */
+	 
 	pool->base.dccg = dccg30_create(ctx, &dccg_regs, &dccg_shift, &dccg_mask);
 	if (pool->base.dccg == NULL) {
 		dm_error("DC: failed to create dccg!\n");
@@ -2413,7 +2363,7 @@ static bool dcn30_resource_construct(
 		goto create_fail;
 	}
 
-	/* PP Lib and SMU interfaces */
+	 
 	init_soc_bounding_box(dc, pool);
 
 	num_pipes = dcn3_0_ip.max_num_dpp;
@@ -2427,13 +2377,13 @@ static bool dcn30_resource_construct(
 
 	dml_init_instance(&dc->dml, &dcn3_0_soc, &dcn3_0_ip, DML_PROJECT_DCN30);
 
-	/* IRQ */
+	 
 	init_data.ctx = dc->ctx;
 	pool->base.irqs = dal_irq_service_dcn30_create(&init_data);
 	if (!pool->base.irqs)
 		goto create_fail;
 
-	/* HUBBUB */
+	 
 	pool->base.hubbub = dcn30_hubbub_create(ctx);
 	if (pool->base.hubbub == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2441,7 +2391,7 @@ static bool dcn30_resource_construct(
 		goto create_fail;
 	}
 
-	/* HUBPs, DPPs, OPPs and TGs */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
 		pool->base.hubps[i] = dcn30_hubp_create(ctx, i);
 		if (pool->base.hubps[i] == NULL) {
@@ -2480,7 +2430,7 @@ static bool dcn30_resource_construct(
 		}
 	}
 	pool->base.timing_generator_count = i;
-	/* PSR */
+	 
 	pool->base.psr = dmub_psr_create(ctx);
 
 	if (pool->base.psr == NULL) {
@@ -2489,7 +2439,7 @@ static bool dcn30_resource_construct(
 		goto create_fail;
 	}
 
-	/* ABM */
+	 
 	for (i = 0; i < pool->base.res_cap->num_timing_generator; i++) {
 		pool->base.multiple_abms[i] = dmub_abm_create(ctx,
 				&abm_regs[i],
@@ -2501,7 +2451,7 @@ static bool dcn30_resource_construct(
 			goto create_fail;
 		}
 	}
-	/* MPC and DSC */
+	 
 	pool->base.mpc = dcn30_mpc_create(ctx, pool->base.mpcc_count, pool->base.res_cap->num_mpc_3dlut);
 	if (pool->base.mpc == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2518,7 +2468,7 @@ static bool dcn30_resource_construct(
 		}
 	}
 
-	/* DWB and MMHUBBUB */
+	 
 	if (!dcn30_dwbc_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
@@ -2531,7 +2481,7 @@ static bool dcn30_resource_construct(
 		goto create_fail;
 	}
 
-	/* AUX and I2C */
+	 
 	for (i = 0; i < pool->base.res_cap->num_ddc; i++) {
 		pool->base.engines[i] = dcn30_aux_engine_create(ctx, i);
 		if (pool->base.engines[i] == NULL) {
@@ -2550,12 +2500,12 @@ static bool dcn30_resource_construct(
 		pool->base.sw_i2cs[i] = NULL;
 	}
 
-	/* Audio, Stream Encoders including DIG and virtual, MPC 3D LUTs */
+	 
 	if (!resource_construct(num_virtual_links, dc, &pool->base,
 			&res_create_funcs))
 		goto create_fail;
 
-	/* HW Sequencer and Plane caps */
+	 
 	dcn30_hw_sequencer_construct(dc);
 
 	dc->caps.max_planes =  pool->base.pipe_count;

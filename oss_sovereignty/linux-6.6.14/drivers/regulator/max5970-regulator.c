@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device driver for regulators in MAX5970 and MAX5978 IC
- *
- * Copyright (c) 2022 9elements GmbH
- *
- * Author: Patrick Rudolph <patrick.rudolph@9elements.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -36,12 +30,12 @@ static int max597x_uvp_ovp_check_mode(struct regulator_dev *rdev, int severity)
 {
 	int ret, reg;
 
-	/* Status1 register contains the soft strap values sampled at POR */
+	 
 	ret = regmap_read(rdev->regmap, MAX5970_REG_STATUS1, &reg);
 	if (ret)
 		return ret;
 
-	/* Check soft straps match requested mode */
+	 
 	if (severity == REGULATOR_SEVERITY_PROT) {
 		if (STATUS1_PROT(reg) != STATUS1_PROT_SHUTDOWN)
 			return -EOPNOTSUPP;
@@ -80,7 +74,7 @@ static int max597x_set_vp(struct regulator_dev *rdev, int lim_uV, int severity,
 	}
 
 	if (enable)
-		/* reg = ADC_MASK * (lim_uV / 1000000) / (data->mon_rng / 1000000) */
+		 
 		reg = ADC_MASK * lim_uV / data->mon_rng;
 	else
 		reg = 0;
@@ -101,10 +95,7 @@ static int max597x_set_uvp(struct regulator_dev *rdev, int lim_uV, int severity,
 {
 	int ret;
 
-	/*
-	 * MAX5970 has enable control as a special value in limit reg. Can't
-	 * set limit but keep feature disabled or enable W/O given limit.
-	 */
+	 
 	if ((lim_uV && !enable) || (!lim_uV && enable))
 		return -EINVAL;
 
@@ -120,10 +111,7 @@ static int max597x_set_ovp(struct regulator_dev *rdev, int lim_uV, int severity,
 {
 	int ret;
 
-	/*
-	 * MAX5970 has enable control as a special value in limit reg. Can't
-	 * set limit but keep feature disabled or enable W/O given limit.
-	 */
+	 
 	if ((lim_uV && !enable) || (!lim_uV && enable))
 		return -EINVAL;
 
@@ -142,11 +130,7 @@ static int max597x_set_ocp(struct regulator_dev *rdev, int lim_uA,
 
 	struct max5970_regulator *data = rdev_get_drvdata(rdev);
 	int rdev_id = rdev_get_id(rdev);
-	/*
-	 * MAX5970 doesn't has enable control for ocp.
-	 * If limit is specified but enable is not set then hold the value in
-	 * variable & later use it when ocp needs to be enabled.
-	 */
+	 
 	if (lim_uA != 0 && lim_uA != data->lim_uA)
 		data->lim_uA = lim_uA;
 
@@ -155,31 +139,25 @@ static int max597x_set_ocp(struct regulator_dev *rdev, int lim_uA,
 
 	if (enable) {
 
-		/* Calc Vtrip threshold in uV. */
+		 
 		vthst =
 		    div_u64(mul_u32_u32(data->shunt_micro_ohms, data->lim_uA),
 			    1000000);
 
-		/*
-		 * As recommended in datasheed, add 20% margin to avoid
-		 * spurious event & passive component tolerance.
-		 */
+		 
 		vthst = div_u64(mul_u32_u32(vthst, 120), 100);
 
-		/* Calc fast Vtrip threshold in uV */
+		 
 		vthfst = vthst * (MAX5970_FAST2SLOW_RATIO / 100);
 
 		if (vthfst > data->irng) {
 			dev_err(&rdev->dev, "Current limit out of range\n");
 			return -EINVAL;
 		}
-		/* Fast trip threshold to be programmed */
+		 
 		val = div_u64(mul_u32_u32(0xFF, vthfst), data->irng);
 	} else
-		/*
-		 * Since there is no option to disable ocp, set limit to max
-		 * value
-		 */
+		 
 		val = 0xFF;
 
 	reg = MAX5970_REG_DAC_FAST(rdev_id);
@@ -350,7 +328,7 @@ static int max597x_irq_handler(int irq, struct regulator_irq_data *rid,
 			stat->errors |=
 			    REGULATOR_ERROR_OVER_CURRENT | REGULATOR_ERROR_FAIL;
 
-			/* Clear the sub-IRQ status */
+			 
 			regulator_disable_regmap(stat->rdev);
 		}
 	}
@@ -363,25 +341,25 @@ static int max597x_adc_range(struct regmap *regmap, const int ch,
 	unsigned int reg;
 	int ret;
 
-	/* Decode current ADC range */
+	 
 	ret = regmap_read(regmap, MAX5970_REG_STATUS2, &reg);
 	if (ret)
 		return ret;
 	switch (MAX5970_IRNG(reg, ch)) {
 	case 0:
-		*irng = 100000;	/* 100 mV */
+		*irng = 100000;	 
 		break;
 	case 1:
-		*irng = 50000;	/* 50 mV */
+		*irng = 50000;	 
 		break;
 	case 2:
-		*irng = 25000;	/* 25 mV */
+		*irng = 25000;	 
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* Decode current voltage monitor range */
+	 
 	ret = regmap_read(regmap, MAX5970_REG_MON_RANGE, &reg);
 	if (ret)
 		return ret;
@@ -409,7 +387,7 @@ static int max597x_setup_irq(struct device *dev,
 	    REGULATOR_ERROR_OVER_CURRENT_WARN | REGULATOR_ERROR_FAIL;
 	void *irq_helper;
 
-	/* Register notifiers - can fail if IRQ is not given */
+	 
 	irq_helper = devm_regulator_irq_helper(dev, &max597x_notif,
 					       irq, 0, errs, NULL,
 					       &rdevs[0], num_switches);

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
-Support for Intel Camera Imaging ISP subsystem.
-Copyright (c) 2010 - 2015, Intel Corporation.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms and conditions of the GNU General Public License,
-version 2, as published by the Free Software Foundation.
-
-This program is distributed in the hope it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
-*/
+ 
+ 
 
 #ifndef _IA_CSS_BINARY_H_
 #define _IA_CSS_BINARY_H_
@@ -25,8 +13,7 @@ more details.
 #include "sh_css_metrics.h"
 #include "isp/kernels/fixedbds/fixedbds_1.0/ia_css_fixedbds_types.h"
 
-/* The binary mode is used in pre-processor expressions so we cannot
- * use an enum here. */
+ 
 #define IA_CSS_BINARY_MODE_COPY       0
 #define IA_CSS_BINARY_MODE_PREVIEW    1
 #define IA_CSS_BINARY_MODE_PRIMARY    2
@@ -47,21 +34,18 @@ more details.
 #define IA_CSS_BINARY_NUM_MODES       17
 
 #define MAX_NUM_PRIMARY_STAGES 6
-#define NUM_PRIMARY_HQ_STAGES  6  /* number of primary stages for ISP2.6.1 high quality pipe */
-#define NUM_PRIMARY_STAGES     1  /* number of primary satges for ISP1/ISP2.2 pipe */
+#define NUM_PRIMARY_HQ_STAGES  6   
+#define NUM_PRIMARY_STAGES     1   
 
-/* Indicate where binaries can read input from */
+ 
 #define IA_CSS_BINARY_INPUT_SENSOR   0
 #define IA_CSS_BINARY_INPUT_MEMORY   1
 #define IA_CSS_BINARY_INPUT_VARIABLE 2
 
-/* Should be included without the path.
-   However, that requires adding the path to numerous makefiles
-   that have nothing to do with isp parameters.
- */
+ 
 #include "runtime/isp_param/interface/ia_css_isp_param_types.h"
 
-/* now these ports only include output ports but not vf output ports */
+ 
 enum {
 	IA_CSS_BINARY_OUTPUT_PORT_0 = 0,
 	IA_CSS_BINARY_OUTPUT_PORT_1 = 1,
@@ -93,14 +77,13 @@ struct ia_css_binary_descr {
 	bool enable_fractional_ds;
 	bool enable_dpc;
 
-	/* ISP2401 */
+	 
 	bool enable_tnr;
 
 	bool enable_capture_pp_bli;
 	struct ia_css_resolution dvs_env;
 	enum atomisp_input_format stream_format;
-	struct ia_css_frame_info *in_info;		/* the info of the input-frame with the
-							   ISP required resolution. */
+	struct ia_css_frame_info *in_info;		 
 	struct ia_css_frame_info *bds_out_info;
 	struct ia_css_frame_info *out_info[IA_CSS_BINARY_MAX_OUTPUT_PORTS];
 	struct ia_css_frame_info *vf_info;
@@ -173,21 +156,7 @@ int
 ia_css_binary_find(struct ia_css_binary_descr *descr,
 		   struct ia_css_binary *binary);
 
-/* @brief Get the shading information of the specified shading correction type.
- *
- * @param[in] binary: The isp binary which has the shading correction.
- * @param[in] type: The shading correction type.
- * @param[in] required_bds_factor: The bayer downscaling factor required in the pipe.
- * @param[in] stream_config: The stream configuration.
- * @param[out] shading_info: The shading information.
- *		The shading information necessary as API is stored in the shading_info.
- *		The driver needs to get this information to generate
- *		the shading table directly required from ISP.
- * @param[out] pipe_config: The pipe configuration.
- *		The shading information related to ISP (but, not necessary as API) is stored in the pipe_config.
- * @return	0 or error code upon error.
- *
- */
+ 
 int
 ia_css_binary_get_shading_info(const struct ia_css_binary *binary,
 			       enum ia_css_shading_correction_type type,
@@ -222,4 +191,4 @@ void
 ia_css_binary_get_isp_binaries(struct ia_css_binary_xinfo **binaries,
 			       uint32_t *num_isp_binaries);
 
-#endif /* _IA_CSS_BINARY_H_ */
+#endif  

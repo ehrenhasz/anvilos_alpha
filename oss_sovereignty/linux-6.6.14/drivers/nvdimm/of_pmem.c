@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #define pr_fmt(fmt) "of_pmem: " fmt
 
@@ -55,10 +55,7 @@ static int of_pmem_region_probe(struct platform_device *pdev)
 		struct nd_region_desc ndr_desc;
 		struct nd_region *region;
 
-		/*
-		 * NB: libnvdimm copies the data from ndr_desc into it's own
-		 * structures so passing a stack pointer is fine.
-		 */
+		 
 		memset(&ndr_desc, 0, sizeof(ndr_desc));
 		ndr_desc.numa_node = dev_to_node(&pdev->dev);
 		ndr_desc.target_node = ndr_desc.numa_node;

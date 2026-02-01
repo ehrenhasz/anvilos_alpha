@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2014 Chelsio, Inc. All rights reserved.
- * Copyright (c) 2014 Intel Corporation. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "iwpm_util.h"
 
@@ -50,12 +19,7 @@ static DEFINE_SPINLOCK(iwpm_reminfo_lock);
 
 static struct iwpm_admin_data iwpm_admin;
 
-/**
- * iwpm_init - Allocate resources for the iwarp port mapper
- * @nl_client: The index of the netlink client
- *
- * Should be called when network interface goes up.
- */
+ 
 int iwpm_init(u8 nl_client)
 {
 	iwpm_hash_bucket = kcalloc(IWPM_MAPINFO_HASH_SIZE,
@@ -78,12 +42,7 @@ int iwpm_init(u8 nl_client)
 static void free_hash_bucket(void);
 static void free_reminfo_bucket(void);
 
-/**
- * iwpm_exit - Deallocate resources for the iwarp port mapper
- * @nl_client: The index of the netlink client
- *
- * Should be called when network interface goes down.
- */
+ 
 int iwpm_exit(u8 nl_client)
 {
 	free_hash_bucket();
@@ -96,14 +55,7 @@ int iwpm_exit(u8 nl_client)
 static struct hlist_head *get_mapinfo_hash_bucket(struct sockaddr_storage *,
 					       struct sockaddr_storage *);
 
-/**
- * iwpm_create_mapinfo - Store local and mapped IPv4/IPv6 address
- *                       info in a hash table
- * @local_sockaddr: Local ip/tcp address
- * @mapped_sockaddr: Mapped local ip/tcp address
- * @nl_client: The index of the netlink client
- * @map_flags: IWPM mapping flags
- */
+ 
 int iwpm_create_mapinfo(struct sockaddr_storage *local_sockaddr,
 			struct sockaddr_storage *mapped_sockaddr,
 			u8 nl_client, u32 map_flags)
@@ -141,15 +93,7 @@ int iwpm_create_mapinfo(struct sockaddr_storage *local_sockaddr,
 	return ret;
 }
 
-/**
- * iwpm_remove_mapinfo - Remove local and mapped IPv4/IPv6 address
- *                       info from the hash table
- * @local_sockaddr: Local ip/tcp address
- * @mapped_local_addr: Mapped local ip/tcp address
- *
- * Returns err code if mapping info is not found in the hash table,
- * otherwise returns 0
- */
+ 
 int iwpm_remove_mapinfo(struct sockaddr_storage *local_sockaddr,
 			struct sockaddr_storage *mapped_local_addr)
 {
@@ -192,7 +136,7 @@ static void free_hash_bucket(void)
 	unsigned long flags;
 	int i;
 
-	/* remove all the mapinfo data from the list */
+	 
 	spin_lock_irqsave(&iwpm_mapinfo_lock, flags);
 	for (i = 0; i < IWPM_MAPINFO_HASH_SIZE; i++) {
 		hlist_for_each_entry_safe(map_info, tmp_hlist_node,
@@ -202,7 +146,7 @@ static void free_hash_bucket(void)
 				kfree(map_info);
 			}
 	}
-	/* free the hash list */
+	 
 	kfree(iwpm_hash_bucket);
 	iwpm_hash_bucket = NULL;
 	spin_unlock_irqrestore(&iwpm_mapinfo_lock, flags);
@@ -215,7 +159,7 @@ static void free_reminfo_bucket(void)
 	unsigned long flags;
 	int i;
 
-	/* remove all the remote info from the list */
+	 
 	spin_lock_irqsave(&iwpm_reminfo_lock, flags);
 	for (i = 0; i < IWPM_REMINFO_HASH_SIZE; i++) {
 		hlist_for_each_entry_safe(rem_info, tmp_hlist_node,
@@ -225,7 +169,7 @@ static void free_reminfo_bucket(void)
 				kfree(rem_info);
 			}
 	}
-	/* free the hash list */
+	 
 	kfree(iwpm_reminfo_bucket);
 	iwpm_reminfo_bucket = NULL;
 	spin_unlock_irqrestore(&iwpm_reminfo_lock, flags);
@@ -250,17 +194,7 @@ void iwpm_add_remote_info(struct iwpm_remote_info *rem_info)
 	spin_unlock_irqrestore(&iwpm_reminfo_lock, flags);
 }
 
-/**
- * iwpm_get_remote_info - Get the remote connecting peer address info
- *
- * @mapped_loc_addr: Mapped local address of the listening peer
- * @mapped_rem_addr: Mapped remote address of the connecting peer
- * @remote_addr: To store the remote address of the connecting peer
- * @nl_client: The index of the netlink client
- *
- * The remote address info is retrieved and provided to the client in
- * the remote_addr. After that it is removed from the hash table
- */
+ 
 int iwpm_get_remote_info(struct sockaddr_storage *mapped_loc_addr,
 			 struct sockaddr_storage *mapped_rem_addr,
 			 struct sockaddr_storage *remote_addr,
@@ -386,19 +320,19 @@ int iwpm_get_nlmsg_seq(void)
 	return atomic_inc_return(&iwpm_admin.nlmsg_seq);
 }
 
-/* valid client */
+ 
 u32 iwpm_get_registration(u8 nl_client)
 {
 	return iwpm_admin.reg_list[nl_client];
 }
 
-/* valid client */
+ 
 void iwpm_set_registration(u8 nl_client, u32 reg)
 {
 	iwpm_admin.reg_list[nl_client] = reg;
 }
 
-/* valid client */
+ 
 u32 iwpm_check_registration(u8 nl_client, u32 reg)
 {
 	return (iwpm_get_registration(nl_client) & reg);
@@ -542,7 +476,7 @@ static int get_hash_bucket(struct sockaddr_storage *a_sockaddr,
 		return -EINVAL;
 	}
 
-	if (a_hash == b_hash) /* if port mapper isn't available */
+	if (a_hash == b_hash)  
 		*hash = a_hash;
 	else
 		*hash = jhash_2words(a_hash, b_hash, 0);
@@ -699,14 +633,14 @@ int iwpm_send_mapinfo(u8 nl_client, int iwpm_pid)
 			mapping_num++;
 			nlmsg_bytes += nlh->nlmsg_len;
 
-			/* check if all mappings can fit in one skb */
+			 
 			if (NLMSG_GOODSIZE - nlmsg_bytes < nlh->nlmsg_len * 2) {
-				/* and leave room for NLMSG_DONE */
+				 
 				nlmsg_bytes = 0;
 				skb_num++;
 				spin_unlock_irqrestore(&iwpm_mapinfo_lock,
 						       flags);
-				/* send the skb */
+				 
 				ret = send_nlmsg_done(skb, nl_client, iwpm_pid);
 				skb = NULL;
 				if (ret) {

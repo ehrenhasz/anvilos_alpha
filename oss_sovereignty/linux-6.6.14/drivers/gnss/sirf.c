@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SiRFstar GNSS receiver driver
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gnss.h>
@@ -25,14 +21,7 @@
 #define SIRF_ON_OFF_PULSE_TIME		100
 #define SIRF_ACTIVATE_TIMEOUT		200
 #define SIRF_HIBERNATE_TIMEOUT		200
-/*
- * If no data arrives for this time, we assume that the chip is off.
- * REVISIT: The report cycle is configurable and can be several minutes long,
- * so this will only work reliably if the report cycle is set to a reasonable
- * low value. Also power saving settings (like send data only on movement)
- * might things work even worse.
- * Workaround might be to parse shutdown or bootup messages.
- */
+ 
 #define SIRF_REPORT_CYCLE	2000
 
 struct sirf_data {
@@ -143,12 +132,12 @@ static int sirf_write_raw(struct gnss_device *gdev, const unsigned char *buf,
 	struct serdev_device *serdev = data->serdev;
 	int ret;
 
-	/* write is only buffered synchronously */
+	 
 	ret = serdev_device_write(serdev, buf, count, MAX_SCHEDULE_TIMEOUT);
 	if (ret < 0 || ret < count)
 		return ret;
 
-	/* FIXME: determine if interrupted? */
+	 
 	serdev_device_wait_until_sent(serdev, 0);
 
 	return count;
@@ -208,10 +197,10 @@ static int sirf_wait_for_power_state_nowakeup(struct sirf_data *data,
 {
 	int ret;
 
-	/* Wait for state change (including any shutdown messages). */
+	 
 	msleep(timeout);
 
-	/* Wait for data reception or timeout. */
+	 
 	data->active = false;
 	ret = wait_event_interruptible_timeout(data->power_wait,
 			data->active, msecs_to_jiffies(SIRF_REPORT_CYCLE));
@@ -456,7 +445,7 @@ static int sirf_probe(struct serdev_device *serdev)
 		if (ret)
 			goto err_put_device;
 
-		/* Wait for chip to boot into hibernate mode. */
+		 
 		msleep(SIRF_BOOT_DELAY);
 	}
 
@@ -490,7 +479,7 @@ static int sirf_probe(struct serdev_device *serdev)
 			sirf_serdev_close(data);
 		}
 
-		/* Force hibernate mode if already active. */
+		 
 		if (data->active) {
 			ret = sirf_set_active(data, false);
 			if (ret) {
@@ -502,7 +491,7 @@ static int sirf_probe(struct serdev_device *serdev)
 	}
 
 	if (IS_ENABLED(CONFIG_PM)) {
-		pm_runtime_set_suspended(dev);	/* clear runtime_error flag */
+		pm_runtime_set_suspended(dev);	 
 		pm_runtime_enable(dev);
 	} else {
 		ret = sirf_runtime_resume(dev);

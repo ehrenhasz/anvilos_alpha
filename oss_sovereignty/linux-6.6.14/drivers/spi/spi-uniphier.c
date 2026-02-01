@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// spi-uniphier.c - Socionext UniPhier SPI controller driver
-// Copyright 2012      Panasonic Corporation
-// Copyright 2016-2018 Socionext Inc.
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/bitfield.h>
@@ -130,36 +130,25 @@ static void uniphier_spi_set_mode(struct spi_device *spi)
 	struct uniphier_spi_priv *priv = spi_master_get_devdata(spi->master);
 	u32 val1, val2;
 
-	/*
-	 * clock setting
-	 * CKPHS    capture timing. 0:rising edge, 1:falling edge
-	 * CKINIT   clock initial level. 0:low, 1:high
-	 * CKDLY    clock delay. 0:no delay, 1:delay depending on FSTRT
-	 *          (FSTRT=0: 1 clock, FSTRT=1: 0.5 clock)
-	 *
-	 * frame setting
-	 * FSPOL    frame signal porarity. 0: low, 1: high
-	 * FSTRT    start frame timing
-	 *          0: rising edge of clock, 1: falling edge of clock
-	 */
+	 
 	switch (spi->mode & SPI_MODE_X_MASK) {
 	case SPI_MODE_0:
-		/* CKPHS=1, CKINIT=0, CKDLY=1, FSTRT=0 */
+		 
 		val1 = SSI_CKS_CKPHS | SSI_CKS_CKDLY;
 		val2 = 0;
 		break;
 	case SPI_MODE_1:
-		/* CKPHS=0, CKINIT=0, CKDLY=0, FSTRT=1 */
+		 
 		val1 = 0;
 		val2 = SSI_FPS_FSTRT;
 		break;
 	case SPI_MODE_2:
-		/* CKPHS=0, CKINIT=1, CKDLY=1, FSTRT=1 */
+		 
 		val1 = SSI_CKS_CKINIT | SSI_CKS_CKDLY;
 		val2 = SSI_FPS_FSTRT;
 		break;
 	case SPI_MODE_3:
-		/* CKPHS=1, CKINIT=1, CKDLY=0, FSTRT=0 */
+		 
 		val1 = SSI_CKS_CKPHS | SSI_CKS_CKINIT;
 		val2 = 0;
 		break;
@@ -201,10 +190,7 @@ static void uniphier_spi_set_baudrate(struct spi_device *spi,
 	struct uniphier_spi_priv *priv = spi_master_get_devdata(spi->master);
 	u32 val, ckdiv;
 
-	/*
-	 * the supported rates are even numbers from 4 to 254. (4,6,8...254)
-	 * round up as we look for equal or less speed
-	 */
+	 
 	ckdiv = DIV_ROUND_UP(clk_get_rate(priv->clk), speed);
 	ckdiv = round_up(ckdiv, 2);
 
@@ -243,7 +229,7 @@ static void uniphier_spi_setup_transfer(struct spi_device *spi,
 
 	priv->is_save_param = true;
 
-	/* reset FIFOs */
+	 
 	val = SSI_FC_TXFFL | SSI_FC_RXFFL;
 	writel(val, priv->base + SSI_FC);
 }
@@ -458,7 +444,7 @@ static int uniphier_spi_transfer_one_dma(struct spi_master *master,
 		dma_async_issue_pending(master->dma_tx);
 	}
 
-	/* signal that we need to wait for completion */
+	 
 	return (priv->tx_buf || priv->rx_buf);
 
 out_err_prep:
@@ -531,7 +517,7 @@ static int uniphier_spi_transfer_one(struct spi_master *master,
 	unsigned long threshold;
 	bool use_dma;
 
-	/* Terminate and return success for 0 byte length transfer */
+	 
 	if (!t->len)
 		return 0;
 
@@ -541,10 +527,7 @@ static int uniphier_spi_transfer_one(struct spi_master *master,
 	if (use_dma)
 		return uniphier_spi_transfer_one_dma(master, spi, t);
 
-	/*
-	 * If the transfer operation will take longer than
-	 * SSI_POLL_TIMEOUT_US, it should use irq.
-	 */
+	 
 	threshold = DIV_ROUND_UP(SSI_POLL_TIMEOUT_US * priv->speed_hz,
 					USEC_PER_SEC * BITS_PER_BYTE);
 	if (t->len > threshold)
@@ -577,10 +560,10 @@ static void uniphier_spi_handle_err(struct spi_master *master,
 	struct uniphier_spi_priv *priv = spi_master_get_devdata(master);
 	u32 val;
 
-	/* stop running spi transfer */
+	 
 	writel(0, priv->base + SSI_CTL);
 
-	/* reset FIFOs */
+	 
 	val = SSI_FC_TXFFL | SSI_FC_RXFFL;
 	writel(val, priv->base + SSI_FC);
 
@@ -606,13 +589,13 @@ static irqreturn_t uniphier_spi_handler(int irq, void *dev_id)
 	val = SSI_IC_TCIC | SSI_IC_RCIC | SSI_IC_RORIC;
 	writel(val, priv->base + SSI_IC);
 
-	/* rx fifo overrun */
+	 
 	if (stat & SSI_IS_RORID) {
 		priv->error = -EIO;
 		goto done;
 	}
 
-	/* rx complete */
+	 
 	if ((stat & SSI_IS_RCID) && (stat & SSI_IS_RXRS)) {
 		while ((readl(priv->base + SSI_SR) & SSI_SR_RNE) &&
 				(priv->rx_bytes - priv->tx_bytes) > 0)
@@ -625,7 +608,7 @@ static irqreturn_t uniphier_spi_handler(int irq, void *dev_id)
 		} else if (priv->rx_bytes == 0)
 			goto done;
 
-		/* next tx transfer */
+		 
 		uniphier_spi_fill_tx_fifo(priv);
 
 		return IRQ_HANDLED;
@@ -790,7 +773,7 @@ static void uniphier_spi_remove(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_spi_match[] = {
 	{ .compatible = "socionext,uniphier-scssi" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_spi_match);
 

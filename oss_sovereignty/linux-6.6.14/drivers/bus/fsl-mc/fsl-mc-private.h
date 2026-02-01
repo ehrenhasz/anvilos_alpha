@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Freescale Management Complex (MC) bus private declarations
- *
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- *
- */
+ 
+ 
 #ifndef _FSL_MC_PRIVATE_H_
 #define _FSL_MC_PRIVATE_H_
 
@@ -13,17 +8,15 @@
 #include <linux/ioctl.h>
 #include <linux/miscdevice.h>
 
-/*
- * Data Path Management Complex (DPMNG) General API
- */
+ 
 
-/* DPMNG command versioning */
+ 
 #define DPMNG_CMD_BASE_VERSION		1
 #define DPMNG_CMD_ID_OFFSET		4
 
 #define DPMNG_CMD(id)	(((id) << DPMNG_CMD_ID_OFFSET) | DPMNG_CMD_BASE_VERSION)
 
-/* DPMNG command IDs */
+ 
 #define DPMNG_CMDID_GET_VERSION		DPMNG_CMD(0x831)
 
 struct dpmng_rsp_get_version {
@@ -32,21 +25,19 @@ struct dpmng_rsp_get_version {
 	__le32 version_minor;
 };
 
-/*
- * Data Path Management Command Portal (DPMCP) API
- */
+ 
 
-/* Minimal supported DPMCP Version */
+ 
 #define DPMCP_MIN_VER_MAJOR		3
 #define DPMCP_MIN_VER_MINOR		0
 
-/* DPMCP command versioning */
+ 
 #define DPMCP_CMD_BASE_VERSION		1
 #define DPMCP_CMD_ID_OFFSET		4
 
 #define DPMCP_CMD(id)	(((id) << DPMCP_CMD_ID_OFFSET) | DPMCP_CMD_BASE_VERSION)
 
-/* DPMCP command IDs */
+ 
 #define DPMCP_CMDID_CLOSE		DPMCP_CMD(0x800)
 #define DPMCP_CMDID_RESET		DPMCP_CMD(0x005)
 
@@ -54,9 +45,7 @@ struct dpmcp_cmd_open {
 	__le32 dpmcp_id;
 };
 
-/*
- * Initialization and runtime control APIs for DPMCP
- */
+ 
 int dpmcp_open(struct fsl_mc_io *mc_io,
 	       u32 cmd_flags,
 	       int dpmcp_id,
@@ -70,15 +59,13 @@ int dpmcp_reset(struct fsl_mc_io *mc_io,
 		u32 cmd_flags,
 		u16 token);
 
-/*
- * Data Path Resource Container (DPRC) API
- */
+ 
 
-/* Minimal supported DPRC Version */
+ 
 #define DPRC_MIN_VER_MAJOR			6
 #define DPRC_MIN_VER_MINOR			0
 
-/* DPRC command versioning */
+ 
 #define DPRC_CMD_BASE_VERSION			1
 #define DPRC_CMD_2ND_VERSION			2
 #define DPRC_CMD_3RD_VERSION			3
@@ -88,7 +75,7 @@ int dpmcp_reset(struct fsl_mc_io *mc_io,
 #define DPRC_CMD_V2(id)	(((id) << DPRC_CMD_ID_OFFSET) | DPRC_CMD_2ND_VERSION)
 #define DPRC_CMD_V3(id)	(((id) << DPRC_CMD_ID_OFFSET) | DPRC_CMD_3RD_VERSION)
 
-/* DPRC command IDs */
+ 
 #define DPRC_CMDID_CLOSE                        DPRC_CMD(0x800)
 #define DPRC_CMDID_GET_API_VERSION              DPRC_CMD(0xa05)
 
@@ -122,13 +109,13 @@ struct dprc_cmd_reset_container {
 };
 
 struct dprc_cmd_set_irq {
-	/* cmd word 0 */
+	 
 	__le32 irq_val;
 	u8 irq_index;
 	u8 pad[3];
-	/* cmd word 1 */
+	 
 	__le64 irq_addr;
-	/* cmd word 2 */
+	 
 	__le32 irq_num;
 };
 
@@ -160,10 +147,10 @@ struct dprc_cmd_clear_irq_status {
 };
 
 struct dprc_rsp_get_attributes {
-	/* response word 0 */
+	 
 	__le32 container_id;
 	__le32 icid;
-	/* response word 1 */
+	 
 	__le32 options;
 	__le32 portal_id;
 };
@@ -178,65 +165,65 @@ struct dprc_cmd_get_obj {
 };
 
 struct dprc_rsp_get_obj {
-	/* response word 0 */
+	 
 	__le32 pad0;
 	__le32 id;
-	/* response word 1 */
+	 
 	__le16 vendor;
 	u8 irq_count;
 	u8 region_count;
 	__le32 state;
-	/* response word 2 */
+	 
 	__le16 version_major;
 	__le16 version_minor;
 	__le16 flags;
 	__le16 pad1;
-	/* response word 3-4 */
+	 
 	u8 type[16];
-	/* response word 5-6 */
+	 
 	u8 label[16];
 };
 
 struct dprc_cmd_get_obj_region {
-	/* cmd word 0 */
+	 
 	__le32 obj_id;
 	__le16 pad0;
 	u8 region_index;
 	u8 pad1;
-	/* cmd word 1-2 */
+	 
 	__le64 pad2[2];
-	/* cmd word 3-4 */
+	 
 	u8 obj_type[16];
 };
 
 struct dprc_rsp_get_obj_region {
-	/* response word 0 */
+	 
 	__le64 pad0;
-	/* response word 1 */
+	 
 	__le64 base_offset;
-	/* response word 2 */
+	 
 	__le32 size;
 	u8 type;
 	u8 pad2[3];
-	/* response word 3 */
+	 
 	__le32 flags;
 	__le32 pad3;
-	/* response word 4 */
-	/* base_addr may be zero if older MC firmware is used */
+	 
+	 
 	__le64 base_addr;
 };
 
 struct dprc_cmd_set_obj_irq {
-	/* cmd word 0 */
+	 
 	__le32 irq_val;
 	u8 irq_index;
 	u8 pad[3];
-	/* cmd word 1 */
+	 
 	__le64 irq_addr;
-	/* cmd word 2 */
+	 
 	__le32 irq_num;
 	__le32 obj_id;
-	/* cmd word 3-4 */
+	 
 	u8 obj_type[16];
 };
 
@@ -256,9 +243,7 @@ struct dprc_rsp_get_connection {
 	__le32 state;
 };
 
-/*
- * DPRC API for managing and querying DPAA resources
- */
+ 
 int dprc_open(struct fsl_mc_io *mc_io,
 	      u32 cmd_flags,
 	      int container_id,
@@ -268,33 +253,22 @@ int dprc_close(struct fsl_mc_io *mc_io,
 	       u32 cmd_flags,
 	       u16 token);
 
-/* DPRC IRQ events */
+ 
 
-/* IRQ event - Indicates that a new object added to the container */
+ 
 #define DPRC_IRQ_EVENT_OBJ_ADDED		0x00000001
-/* IRQ event - Indicates that an object was removed from the container */
+ 
 #define DPRC_IRQ_EVENT_OBJ_REMOVED		0x00000002
-/*
- * IRQ event - Indicates that one of the descendant containers that opened by
- * this container is destroyed
- */
+ 
 #define DPRC_IRQ_EVENT_CONTAINER_DESTROYED	0x00000010
 
-/*
- * IRQ event - Indicates that on one of the container's opened object is
- * destroyed
- */
+ 
 #define DPRC_IRQ_EVENT_OBJ_DESTROYED		0x00000020
 
-/* Irq event - Indicates that object is created at the container */
+ 
 #define DPRC_IRQ_EVENT_OBJ_CREATED		0x00000040
 
-/**
- * struct dprc_irq_cfg - IRQ configuration
- * @paddr:	Address that must be written to signal a message-based interrupt
- * @val:	Value to write into irq_addr address
- * @irq_num:	A user defined number associated with this IRQ
- */
+ 
 struct dprc_irq_cfg {
 	     phys_addr_t paddr;
 	     u32 val;
@@ -331,13 +305,7 @@ int dprc_clear_irq_status(struct fsl_mc_io *mc_io,
 			  u8 irq_index,
 			  u32 status);
 
-/**
- * struct dprc_attributes - Container attributes
- * @container_id: Container's ID
- * @icid: Container's ICID
- * @portal_id: Container's portal ID
- * @options: Container's options as set at container's creation
- */
+ 
 struct dprc_attributes {
 	int container_id;
 	u32 icid;
@@ -368,27 +336,14 @@ int dprc_set_obj_irq(struct fsl_mc_io *mc_io,
 		     int obj_id,
 		     u8 irq_index,
 		     struct dprc_irq_cfg *irq_cfg);
-/**
- * enum dprc_region_type - Region type
- * @DPRC_REGION_TYPE_MC_PORTAL: MC portal region
- * @DPRC_REGION_TYPE_QBMAN_PORTAL: Qbman portal region
- */
+ 
 enum dprc_region_type {
 	DPRC_REGION_TYPE_MC_PORTAL,
 	DPRC_REGION_TYPE_QBMAN_PORTAL,
 	DPRC_REGION_TYPE_QBMAN_MEM_BACKED_PORTAL
 };
 
-/**
- * struct dprc_region_desc - Mappable region descriptor
- * @base_offset: Region offset from region's base address.
- *	For DPMCP and DPRC objects, region base is offset from SoC MC portals
- *	base address; For DPIO, region base is offset from SoC QMan portals
- *	base address
- * @size: Region size (in bytes)
- * @flags: Region attributes
- * @type: Portal region type
- */
+ 
 struct dprc_region_desc {
 	u32 base_offset;
 	u32 size;
@@ -414,14 +369,7 @@ int dprc_get_container_id(struct fsl_mc_io *mc_io,
 			  u32 cmd_flags,
 			  int *container_id);
 
-/**
- * struct dprc_endpoint - Endpoint description for link connect/disconnect
- *			operations
- * @type:	Endpoint object type: NULL terminated string
- * @id:		Endpoint object ID
- * @if_id:	Interface ID; should be set for endpoints with multiple
- *		interfaces ("dpsw", "dpdmux"); for others, always set to 0
- */
+ 
 struct dprc_endpoint {
 	char type[16];
 	int id;
@@ -435,21 +383,19 @@ int dprc_get_connection(struct fsl_mc_io *mc_io,
 			struct dprc_endpoint *endpoint2,
 			int *state);
 
-/*
- * Data Path Buffer Pool (DPBP) API
- */
+ 
 
-/* DPBP Version */
+ 
 #define DPBP_VER_MAJOR				3
 #define DPBP_VER_MINOR				2
 
-/* Command versioning */
+ 
 #define DPBP_CMD_BASE_VERSION			1
 #define DPBP_CMD_ID_OFFSET			4
 
 #define DPBP_CMD(id)	(((id) << DPBP_CMD_ID_OFFSET) | DPBP_CMD_BASE_VERSION)
 
-/* Command IDs */
+ 
 #define DPBP_CMDID_CLOSE		DPBP_CMD(0x800)
 
 #define DPBP_CMDID_ENABLE		DPBP_CMD(0x002)
@@ -464,30 +410,28 @@ struct dpbp_cmd_open {
 #define DPBP_ENABLE			0x1
 
 struct dpbp_rsp_get_attributes {
-	/* response word 0 */
+	 
 	__le16 pad;
 	__le16 bpid;
 	__le32 id;
-	/* response word 1 */
+	 
 	__le16 version_major;
 	__le16 version_minor;
 };
 
-/*
- * Data Path Concentrator (DPCON) API
- */
+ 
 
-/* DPCON Version */
+ 
 #define DPCON_VER_MAJOR				3
 #define DPCON_VER_MINOR				2
 
-/* Command versioning */
+ 
 #define DPCON_CMD_BASE_VERSION			1
 #define DPCON_CMD_ID_OFFSET			4
 
 #define DPCON_CMD(id)	(((id) << DPCON_CMD_ID_OFFSET) | DPCON_CMD_BASE_VERSION)
 
-/* Command IDs */
+ 
 #define DPCON_CMDID_CLOSE			DPCON_CMD(0x800)
 
 #define DPCON_CMDID_ENABLE			DPCON_CMD(0x002)
@@ -504,7 +448,7 @@ struct dpcon_cmd_open {
 #define DPCON_ENABLE			1
 
 struct dpcon_rsp_get_attr {
-	/* response word 0 */
+	 
 	__le32 id;
 	__le16 qbman_ch_id;
 	u8 num_priorities;
@@ -512,25 +456,23 @@ struct dpcon_rsp_get_attr {
 };
 
 struct dpcon_cmd_set_notification {
-	/* cmd word 0 */
+	 
 	__le32 dpio_id;
 	u8 priority;
 	u8 pad[3];
-	/* cmd word 1 */
+	 
 	__le64 user_ctx;
 };
 
-/*
- * Generic FSL MC API
- */
+ 
 
-/* generic command versioning */
+ 
 #define OBJ_CMD_BASE_VERSION		1
 #define OBJ_CMD_ID_OFFSET		4
 
 #define OBJ_CMD(id)	(((id) << OBJ_CMD_ID_OFFSET) | OBJ_CMD_BASE_VERSION)
 
-/* open command codes */
+ 
 #define DPRTC_CMDID_OPEN		OBJ_CMD(0x810)
 #define DPNI_CMDID_OPEN		OBJ_CMD(0x801)
 #define DPSW_CMDID_OPEN		OBJ_CMD(0x802)
@@ -548,7 +490,7 @@ struct dpcon_cmd_set_notification {
 #define DPDMAI_CMDID_OPEN		OBJ_CMD(0x80e)
 #define DPDBG_CMDID_OPEN		OBJ_CMD(0x80f)
 
-/* Generic object command IDs */
+ 
 #define OBJ_CMDID_CLOSE		OBJ_CMD(0x800)
 #define OBJ_CMDID_RESET		OBJ_CMD(0x005)
 
@@ -556,57 +498,31 @@ struct fsl_mc_obj_cmd_open {
 	__le32 obj_id;
 };
 
-/**
- * struct fsl_mc_resource_pool - Pool of MC resources of a given
- * type
- * @type: type of resources in the pool
- * @max_count: maximum number of resources in the pool
- * @free_count: number of free resources in the pool
- * @mutex: mutex to serialize access to the pool's free list
- * @free_list: anchor node of list of free resources in the pool
- * @mc_bus: pointer to the MC bus that owns this resource pool
- */
+ 
 struct fsl_mc_resource_pool {
 	enum fsl_mc_pool_type type;
 	int max_count;
 	int free_count;
-	struct mutex mutex;	/* serializes access to free_list */
+	struct mutex mutex;	 
 	struct list_head free_list;
 	struct fsl_mc_bus *mc_bus;
 };
 
-/**
- * struct fsl_mc_uapi - information associated with a device file
- * @misc: struct miscdevice linked to the root dprc
- * @device: newly created device in /dev
- * @mutex: mutex lock to serialize the open/release operations
- * @local_instance_in_use: local MC I/O instance in use or not
- * @static_mc_io: pointer to the static MC I/O object
- */
+ 
 struct fsl_mc_uapi {
 	struct miscdevice misc;
 	struct device *device;
-	struct mutex mutex; /* serialize open/release operations */
+	struct mutex mutex;  
 	u32 local_instance_in_use;
 	struct fsl_mc_io *static_mc_io;
 };
 
-/**
- * struct fsl_mc_bus - logical bus that corresponds to a physical DPRC
- * @mc_dev: fsl-mc device for the bus device itself.
- * @resource_pools: array of resource pools (one pool per resource type)
- * for this MC bus. These resources represent allocatable entities
- * from the physical DPRC.
- * @irq_resources: Pointer to array of IRQ objects for the IRQ pool
- * @scan_mutex: Serializes bus scanning
- * @dprc_attr: DPRC attributes
- * @uapi_misc: struct that abstracts the interaction with userspace
- */
+ 
 struct fsl_mc_bus {
 	struct fsl_mc_device mc_dev;
 	struct fsl_mc_resource_pool resource_pools[FSL_MC_NUM_POOL_TYPES];
 	struct fsl_mc_device_irq *irq_resources;
-	struct mutex scan_mutex;    /* serializes bus scanning */
+	struct mutex scan_mutex;     
 	struct dprc_attributes dprc_attr;
 	struct fsl_mc_uapi uapi_misc;
 	int irq_enabled;
@@ -692,4 +608,4 @@ int disable_dprc_irq(struct fsl_mc_device *mc_dev);
 int enable_dprc_irq(struct fsl_mc_device *mc_dev);
 int get_dprc_irq_state(struct fsl_mc_device *mc_dev);
 
-#endif /* _FSL_MC_PRIVATE_H_ */
+#endif  

@@ -1,36 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Source Hashing scheduling module
- *
- * Authors:     Wensong Zhang <wensong@gnuchina.org>
- *
- * Changes:
- */
 
-/*
- * The sh algorithm is to select server by the hash key of source IP
- * address. The pseudo code is as follows:
- *
- *       n <- servernode[src_ip];
- *       if (n is dead) OR
- *          (n is overloaded) or (n.weight <= 0) then
- *                 return NULL;
- *
- *       return n;
- *
- * Notes that servernode is a 256-bucket hash table that maps the hash
- * index derived from packet source IP address to the current server
- * array. If the sh scheduler is used in cache cluster, it is good to
- * combine it with cache_bypass feature. When the statically assigned
- * server is dead or overloaded, the load balancer can bypass the cache
- * server and send requests to the original server directly.
- *
- * The weight destination attribute can be used to control the
- * distribution of connections to the destinations in servernode. The
- * greater the weight, the more connections the destination
- * will receive.
- *
- */
+ 
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -48,16 +19,12 @@
 #include <linux/sctp.h>
 
 
-/*
- *      IPVS SH bucket
- */
+ 
 struct ip_vs_sh_bucket {
-	struct ip_vs_dest __rcu	*dest;	/* real server (cache) */
+	struct ip_vs_dest __rcu	*dest;	 
 };
 
-/*
- *     for IPVS SH entry hash table
- */
+ 
 #ifndef CONFIG_IP_VS_SH_TAB_BITS
 #define CONFIG_IP_VS_SH_TAB_BITS        8
 #endif
@@ -70,16 +37,14 @@ struct ip_vs_sh_state {
 	struct ip_vs_sh_bucket		buckets[IP_VS_SH_TAB_SIZE];
 };
 
-/* Helper function to determine if server is unavailable */
+ 
 static inline bool is_unavailable(struct ip_vs_dest *dest)
 {
 	return atomic_read(&dest->weight) <= 0 ||
 	       dest->flags & IP_VS_DEST_F_OVERLOAD;
 }
 
-/*
- *	Returns hash value for IPVS SH entry
- */
+ 
 static inline unsigned int
 ip_vs_sh_hashkey(int af, const union nf_inet_addr *addr,
 		 __be16 port, unsigned int offset)
@@ -97,9 +62,7 @@ ip_vs_sh_hashkey(int af, const union nf_inet_addr *addr,
 }
 
 
-/*
- *      Get ip_vs_dest associated with supplied parameters.
- */
+ 
 static inline struct ip_vs_dest *
 ip_vs_sh_get(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 	     const union nf_inet_addr *addr, __be16 port)
@@ -111,12 +74,7 @@ ip_vs_sh_get(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 }
 
 
-/* As ip_vs_sh_get, but with fallback if selected server is unavailable
- *
- * The fallback strategy loops around the table starting from a "random"
- * point (in fact, it is chosen to be the original hash value to make the
- * algorithm deterministic) to find a new server.
- */
+ 
 static inline struct ip_vs_dest *
 ip_vs_sh_get_fallback(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 		      const union nf_inet_addr *addr, __be16 port)
@@ -125,7 +83,7 @@ ip_vs_sh_get_fallback(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 	unsigned int hash, ihash;
 	struct ip_vs_dest *dest;
 
-	/* first try the dest it's supposed to go to */
+	 
 	ihash = ip_vs_sh_hashkey(svc->af, addr, port, 0);
 	dest = rcu_dereference(s->buckets[ihash].dest);
 	if (!dest)
@@ -136,9 +94,7 @@ ip_vs_sh_get_fallback(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 	IP_VS_DBG_BUF(6, "SH: selected unavailable server %s:%d, reselecting",
 		      IP_VS_DBG_ADDR(dest->af, &dest->addr), ntohs(dest->port));
 
-	/* if the original dest is unavailable, loop around the table
-	 * starting from ihash to find a new dest
-	 */
+	 
 	for (offset = 0; offset < IP_VS_SH_TAB_SIZE; offset++) {
 		roffset = (offset + ihash) % IP_VS_SH_TAB_SIZE;
 		hash = ip_vs_sh_hashkey(svc->af, addr, port, roffset);
@@ -156,9 +112,7 @@ ip_vs_sh_get_fallback(struct ip_vs_service *svc, struct ip_vs_sh_state *s,
 	return NULL;
 }
 
-/*
- *      Assign all the hash buckets of the specified table with the service.
- */
+ 
 static int
 ip_vs_sh_reassign(struct ip_vs_sh_state *s, struct ip_vs_service *svc)
 {
@@ -191,7 +145,7 @@ ip_vs_sh_reassign(struct ip_vs_sh_state *s, struct ip_vs_service *svc)
 				      i, IP_VS_DBG_ADDR(dest->af, &dest->addr),
 				      atomic_read(&dest->weight));
 
-			/* Don't move to next dest until filling weight */
+			 
 			if (++d_count >= atomic_read(&dest->weight)) {
 				p = p->next;
 				d_count = 0;
@@ -204,9 +158,7 @@ ip_vs_sh_reassign(struct ip_vs_sh_state *s, struct ip_vs_service *svc)
 }
 
 
-/*
- *      Flush all the hash buckets of the specified table.
- */
+ 
 static void ip_vs_sh_flush(struct ip_vs_sh_state *s)
 {
 	int i;
@@ -229,7 +181,7 @@ static int ip_vs_sh_init_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_sh_state *s;
 
-	/* allocate the SH table for this service */
+	 
 	s = kzalloc(sizeof(struct ip_vs_sh_state), GFP_KERNEL);
 	if (s == NULL)
 		return -ENOMEM;
@@ -239,7 +191,7 @@ static int ip_vs_sh_init_svc(struct ip_vs_service *svc)
 		  "current service\n",
 		  sizeof(struct ip_vs_sh_bucket)*IP_VS_SH_TAB_SIZE);
 
-	/* assign the hash buckets with current dests */
+	 
 	ip_vs_sh_reassign(s, svc);
 
 	return 0;
@@ -250,10 +202,10 @@ static void ip_vs_sh_done_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_sh_state *s = svc->sched_data;
 
-	/* got to clean up hash buckets here */
+	 
 	ip_vs_sh_flush(s);
 
-	/* release the table itself */
+	 
 	kfree_rcu(s, rcu_head);
 	IP_VS_DBG(6, "SH hash table (memory=%zdbytes) released\n",
 		  sizeof(struct ip_vs_sh_bucket)*IP_VS_SH_TAB_SIZE);
@@ -265,24 +217,20 @@ static int ip_vs_sh_dest_changed(struct ip_vs_service *svc,
 {
 	struct ip_vs_sh_state *s = svc->sched_data;
 
-	/* assign the hash buckets with the updated service */
+	 
 	ip_vs_sh_reassign(s, svc);
 
 	return 0;
 }
 
 
-/* Helper function to get port number */
+ 
 static inline __be16
 ip_vs_sh_get_port(const struct sk_buff *skb, struct ip_vs_iphdr *iph)
 {
 	__be16 _ports[2], *ports;
 
-	/* At this point we know that we have a valid packet of some kind.
-	 * Because ICMP packets are only guaranteed to have the first 8
-	 * bytes, let's just grab the ports.  Fortunately they're in the
-	 * same position for all three of the protocols we care about.
-	 */
+	 
 	switch (iph->protocol) {
 	case IPPROTO_TCP:
 	case IPPROTO_UDP:
@@ -302,9 +250,7 @@ ip_vs_sh_get_port(const struct sk_buff *skb, struct ip_vs_iphdr *iph)
 }
 
 
-/*
- *      Source Hashing scheduling
- */
+ 
 static struct ip_vs_dest *
 ip_vs_sh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
@@ -342,9 +288,7 @@ ip_vs_sh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 }
 
 
-/*
- *      IPVS SH Scheduler structure
- */
+ 
 static struct ip_vs_scheduler ip_vs_sh_scheduler =
 {
 	.name =			"sh",

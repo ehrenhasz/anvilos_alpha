@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Microsemi/Microchip SoCs serial gpio driver
- *
- * Author: Lars Povlsen <lars.povlsen@microchip.com>
- *
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -29,7 +23,7 @@
 
 #define SGPIO_BITS_PER_WORD	32
 #define SGPIO_MAX_BITS		4
-#define SGPIO_SRC_BITS		3 /* 3 bit wide field per pin */
+#define SGPIO_SRC_BITS		3  
 
 enum {
 	REG_INPUT_DATA,
@@ -123,7 +117,7 @@ struct sgpio_priv {
 	struct regmap *regs;
 	const struct sgpio_properties *properties;
 	spinlock_t lock;
-	/* protects the config register and single shot mode */
+	 
 	struct mutex poll_lock;
 };
 
@@ -242,7 +236,7 @@ static int sgpio_single_shot(struct sgpio_priv *priv)
 
 	switch (priv->properties->arch) {
 	case SGPIO_ARCH_LUTON:
-		/* not supported for now */
+		 
 		return 0;
 	case SGPIO_ARCH_OCELOT:
 		single_shot = SGPIO_OCELOT_SINGLE_SHOT;
@@ -256,14 +250,7 @@ static int sgpio_single_shot(struct sgpio_priv *priv)
 		return -EINVAL;
 	}
 
-	/*
-	 * Trigger immediate burst. This only works when auto repeat is turned
-	 * off. Otherwise, the single shot bit will never be cleared by the
-	 * hardware. Measurements showed that an update might take as long as
-	 * the burst gap. On a LAN9668 this is about 50ms for the largest
-	 * setting.
-	 * After the manual burst, reenable the auto repeat mode again.
-	 */
+	 
 	mutex_lock(&priv->poll_lock);
 	ret = regmap_update_bits(priv->regs, addr, single_shot | auto_repeat,
 				 single_shot);
@@ -273,7 +260,7 @@ static int sgpio_single_shot(struct sgpio_priv *priv)
 	ret = regmap_read_poll_timeout(priv->regs, addr, ctrl,
 				       !(ctrl & single_shot), 100, 60000);
 
-	/* reenable auto repeat mode even if there was an error */
+	 
 	ret2 = regmap_update_bits(priv->regs, addr, auto_repeat, auto_repeat);
 out:
 	mutex_unlock(&priv->poll_lock);
@@ -528,7 +515,7 @@ static int microchip_sgpio_direction_input(struct gpio_chip *gc, unsigned int gp
 {
 	struct sgpio_bank *bank = gpiochip_get_data(gc);
 
-	/* Fixed-position function */
+	 
 	return bank->is_input ? 0 : -EINVAL;
 }
 
@@ -539,7 +526,7 @@ static int microchip_sgpio_direction_output(struct gpio_chip *gc,
 	struct sgpio_priv *priv = bank->priv;
 	struct sgpio_port_addr addr;
 
-	/* Fixed-position function */
+	 
 	if (bank->is_input)
 		return -EINVAL;
 
@@ -580,10 +567,7 @@ static int microchip_sgpio_of_xlate(struct gpio_chip *gc,
 	struct sgpio_priv *priv = bank->priv;
 	int pin;
 
-	/*
-	 * Note that the SGIO pin is defined by *2* numbers, a port
-	 * number between 0 and 31, and a bit index, 0 to 3.
-	 */
+	 
 	if (gpiospec->args[0] > SGPIO_BITS_PER_WORD ||
 	    gpiospec->args[1] > priv->bitcount)
 		return -EINVAL;
@@ -606,7 +590,7 @@ static int microchip_sgpio_get_ports(struct sgpio_priv *priv)
 	u32 range_params[64];
 	int i, nranges, ret;
 
-	/* Calculate port mask */
+	 
 	nranges = device_property_count_u32(dev, range_property_name);
 	if (nranges < 2 || nranges % 2 || nranges > ARRAY_SIZE(range_params)) {
 		dev_err(dev, "%s port range: '%s' property\n",
@@ -652,11 +636,11 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
 
 	spin_lock_irqsave(&bank->priv->lock, flags);
 
-	/* Disable interrupt while changing type */
+	 
 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
 
-	/* Type value spread over 2 registers sets: low, high bit */
+	 
 	sgpio_clrsetbits(bank->priv, REG_INT_TRIGGER, addr.bit,
 			 BIT(addr.port), (!!(type & 0x1)) << addr.port);
 	sgpio_clrsetbits(bank->priv, REG_INT_TRIGGER, SGPIO_MAX_BITS + addr.bit,
@@ -666,7 +650,7 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
 		sgpio_clrsetbits(bank->priv, REG_INT_POLARITY, addr.bit,
 				 BIT(addr.port), polarity << addr.port);
 
-	/* Possibly re-enable interrupts */
+	 
 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
 
 	spin_unlock_irqrestore(&bank->priv->lock, flags);
@@ -795,7 +779,7 @@ static int microchip_sgpio_register_bank(struct device *dev,
 	u32 ngpios;
 	int i, ret;
 
-	/* Get overall bank struct */
+	 
 	bank = (bankno == 0) ? &priv->in : &priv->out;
 	bank->priv = priv;
 
@@ -886,10 +870,10 @@ static int microchip_sgpio_register_bank(struct device *dev,
 			girq->default_type = IRQ_TYPE_NONE;
 			girq->handler = handle_bad_irq;
 
-			/* Disable all individual pins */
+			 
 			for (i = 0; i < SGPIO_MAX_BITS; i++)
 				sgpio_writel(priv, 0, REG_INT_ENABLE, i);
-			/* Master enable */
+			 
 			sgpio_clrsetbits(priv, REG_SIO_CONFIG, 0, 0, SGPIO_MASTER_INTR_ENA);
 		}
 	}
@@ -948,7 +932,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
 	priv->properties = device_get_match_data(dev);
 	priv->in.is_input = true;
 
-	/* Get rest of device properties */
+	 
 	ret = microchip_sgpio_get_ports(priv);
 	if (ret)
 		return ret;
@@ -996,7 +980,7 @@ static const struct of_device_id microchip_sgpio_gpio_of_match[] = {
 		.compatible = "mscc,ocelot-sgpio",
 		.data = &properties_ocelot,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, microchip_sgpio_gpio_of_match);

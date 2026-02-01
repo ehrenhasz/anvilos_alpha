@@ -1,16 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2015 Microchip Technology
- */
+ 
+ 
 #ifndef _LAN78XX_H
 #define _LAN78XX_H
 
-/* USB Vendor Requests */
+ 
 #define USB_VENDOR_REQUEST_WRITE_REGISTER	0xA0
 #define USB_VENDOR_REQUEST_READ_REGISTER	0xA1
 #define USB_VENDOR_REQUEST_GET_STATS		0xA2
 
-/* Interrupt Endpoint status word bitfields */
+ 
 #define INT_ENP_EEE_START_TX_LPI_INT		BIT(26)
 #define INT_ENP_EEE_STOP_TX_LPI_INT		BIT(25)
 #define INT_ENP_EEE_RX_LPI_INT			BIT(24)
@@ -28,7 +26,7 @@
 #define TX_PKT_ALIGNMENT			4
 #define RX_PKT_ALIGNMENT			4
 
-/* Tx Command A */
+ 
 #define TX_CMD_A_IGE_			(0x20000000)
 #define TX_CMD_A_ICE_			(0x10000000)
 #define TX_CMD_A_LSO_			(0x08000000)
@@ -39,7 +37,7 @@
 #define TX_CMD_A_FCS_			(0x00400000)
 #define TX_CMD_A_LEN_MASK_		(0x000FFFFF)
 
-/* Tx Command B */
+ 
 #define TX_CMD_B_MSS_SHIFT_		(16)
 #define TX_CMD_B_MSS_MASK_		(0x3FFF0000)
 #define TX_CMD_B_MSS_MIN_		((unsigned short)8)
@@ -48,7 +46,7 @@
 #define TX_CMD_B_VTAG_CFI_MASK_		(0x00001000)
 #define TX_CMD_B_VTAG_VID_MASK_		(0x00000FFF)
 
-/* Rx Command A */
+ 
 #define RX_CMD_A_ICE_			(0x80000000)
 #define RX_CMD_A_TCE_			(0x40000000)
 #define RX_CMD_A_CSE_MASK_		(0xC0000000)
@@ -74,7 +72,7 @@
 #define RX_CMD_A_ICSM_			(0x00004000)
 #define RX_CMD_A_LEN_MASK_		(0x00003FFF)
 
-/* Rx Command B */
+ 
 #define RX_CMD_B_CSUM_SHIFT_		(16)
 #define RX_CMD_B_CSUM_MASK_		(0xFFFF0000)
 #define RX_CMD_B_VTAG_MASK_		(0x0000FFFF)
@@ -82,13 +80,13 @@
 #define RX_CMD_B_VTAG_CFI_MASK_		(0x00001000)
 #define RX_CMD_B_VTAG_VID_MASK_		(0x00000FFF)
 
-/* Rx Command C */
+ 
 #define RX_CMD_C_WAKE_SHIFT_		(15)
 #define RX_CMD_C_WAKE_			(0x8000)
 #define RX_CMD_C_REF_FAIL_SHIFT_	(14)
 #define RX_CMD_C_REF_FAIL_		(0x4000)
 
-/* SCSRs */
+ 
 #define NUMBER_OF_REGS			(193)
 
 #define ID_REV				(0x00)
@@ -876,4 +874,4 @@
 #define OTP_TPVSR_VAL			(OTP_BASE_ADDR + 4 * 0x3A)
 #define OTP_TPVHR_VAL			(OTP_BASE_ADDR + 4 * 0x3B)
 #define OTP_TPVSA_VAL			(OTP_BASE_ADDR + 4 * 0x3C)
-#endif /* _LAN78XX_H */
+#endif  

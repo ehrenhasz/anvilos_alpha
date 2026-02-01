@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Realtek USB SD/MMC Card Interface driver
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -87,7 +81,7 @@ static void sd_print_debug_regs(struct rtsx_usb_sdmmc *host)
 }
 #else
 #define sd_print_debug_regs(host)
-#endif /* DEBUG */
+#endif  
 
 static int sd_read_data(struct rtsx_usb_sdmmc *host, struct mmc_command *cmd,
 	       u16 byte_cnt, u8 *buf, int buf_len, int timeout)
@@ -178,7 +172,7 @@ static int sd_read_data(struct rtsx_usb_sdmmc *host, struct mmc_command *cmd,
 	}
 
 	if (buf && buf_len) {
-		/* 2-byte aligned part */
+		 
 		err = rtsx_usb_read_ppbuf(ucr, buf, byte_cnt - (byte_cnt % 2));
 		if (err) {
 			dev_dbg(sdmmc_dev(host),
@@ -186,7 +180,7 @@ static int sd_read_data(struct rtsx_usb_sdmmc *host, struct mmc_command *cmd,
 			return err;
 		}
 
-		/* unaligned byte */
+		 
 		if (byte_cnt % 2)
 			return rtsx_usb_read_register(ucr,
 					PPBUF_BASE2 + byte_cnt,
@@ -299,13 +293,7 @@ static void sd_send_cmd_get_rsp(struct rtsx_usb_sdmmc *host,
 	dev_dbg(sdmmc_dev(host), "%s: SD/MMC CMD %d, arg = 0x%08x\n",
 			__func__, cmd_idx, arg);
 
-	/* Response type:
-	 * R0
-	 * R1, R5, R6, R7
-	 * R1b
-	 * R2
-	 * R3, R4
-	 */
+	 
 	switch (mmc_resp_type(cmd)) {
 	case MMC_RSP_NONE:
 		rsp_type = SD_RSP_TYPE_R0;
@@ -360,12 +348,12 @@ static void sd_send_cmd_get_rsp(struct rtsx_usb_sdmmc *host,
 		     SD_TRANSFER_END | SD_STAT_IDLE);
 
 	if (rsp_type == SD_RSP_TYPE_R2) {
-		/* Read data from ping-pong buffer */
+		 
 		for (i = PPBUF_BASE2; i < PPBUF_BASE2 + 16; i++)
 			rtsx_usb_add_cmd(ucr, READ_REG_CMD, (u16)i, 0, 0);
 		stat_idx = 16;
 	} else if (rsp_type != SD_RSP_TYPE_R0) {
-		/* Read data from SD_CMDx registers */
+		 
 		for (i = SD_CMD0; i <= SD_CMD4; i++)
 			rtsx_usb_add_cmd(ucr, READ_REG_CMD, (u16)i, 0, 0);
 		stat_idx = 5;
@@ -404,17 +392,17 @@ static void sd_send_cmd_get_rsp(struct rtsx_usb_sdmmc *host,
 		goto out;
 	}
 
-	/* Skip result of CHECK_REG_CMD */
+	 
 	ptr = ucr->rsp_buf + 1;
 
-	/* Check (Start,Transmission) bit of Response */
+	 
 	if ((ptr[0] & 0xC0) != 0) {
 		err = -EILSEQ;
 		dev_dbg(sdmmc_dev(host), "Invalid response bit\n");
 		goto out;
 	}
 
-	/* Check CRC7 */
+	 
 	if (!(rsp_type & SD_NO_CHECK_CRC7)) {
 		if (ptr[stat_idx] & SD_CRC7_ERR) {
 			err = -EILSEQ;
@@ -424,11 +412,7 @@ static void sd_send_cmd_get_rsp(struct rtsx_usb_sdmmc *host,
 	}
 
 	if (rsp_type == SD_RSP_TYPE_R2) {
-		/*
-		 * The controller offloads the last byte {CRC-7, end bit 1'b1}
-		 * of response type R2. Assign dummy CRC, 0, and end bit to the
-		 * byte(ptr[16], goes into the LSB of resp[3] later).
-		 */
+		 
 		ptr[16] = 1;
 
 		for (i = 0; i < 4; i++) {
@@ -674,7 +658,7 @@ static int sd_tuning_rx_cmd(struct rtsx_usb_sdmmc *host,
 	cmd.opcode = MMC_SEND_TUNING_BLOCK;
 	err = sd_read_data(host, &cmd, 0x40, NULL, 0, 100);
 	if (err) {
-		/* Wait till SD DATA IDLE */
+		 
 		sd_wait_data_idle(host);
 		sd_clear_error(host);
 		return err;
@@ -705,14 +689,14 @@ static int sd_tuning_rx(struct rtsx_usb_sdmmc *host, u8 opcode)
 	u16 raw_phase_map[RX_TUNING_CNT] = {0}, phase_map;
 	u8 final_phase;
 
-	/* setting fixed default TX phase */
+	 
 	err = sd_change_phase(host, 0x01, 1);
 	if (err) {
 		dev_dbg(sdmmc_dev(host), "TX phase setting failed\n");
 		return err;
 	}
 
-	/* tuning RX phase */
+	 
 	for (i = 0; i < RX_TUNING_CNT; i++) {
 		sd_tuning_phase(host, opcode, &(raw_phase_map[i]));
 
@@ -755,13 +739,13 @@ static int sdmmc_get_ro(struct mmc_host *mmc)
 
 	mutex_lock(&ucr->dev_mutex);
 
-	/* Check SD card detect */
+	 
 	err = rtsx_usb_get_card_status(ucr, &val);
 
 	mutex_unlock(&ucr->dev_mutex);
 
 
-	/* Treat failed detection as non-ro */
+	 
 	if (err)
 		return 0;
 
@@ -783,12 +767,12 @@ static int sdmmc_get_cd(struct mmc_host *mmc)
 
 	mutex_lock(&ucr->dev_mutex);
 
-	/* Check SD card detect */
+	 
 	err = rtsx_usb_get_card_status(ucr, &val);
 
 	mutex_unlock(&ucr->dev_mutex);
 
-	/* Treat failed detection as non-exist */
+	 
 	if (err)
 		goto no_card;
 
@@ -861,10 +845,7 @@ static void sdmmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 finish_detect_card:
 	if (cmd->error) {
-		/*
-		 * detect card when fail to update card existence state and
-		 * speed up card removal when retry
-		 */
+		 
 		sdmmc_get_cd(mmc);
 		dev_dbg(sdmmc_dev(host), "cmd->error = %d\n", cmd->error);
 	}
@@ -1163,9 +1144,7 @@ static int sdmmc_switch_voltage(struct mmc_host *mmc, struct mmc_ios *ios)
 		return err;
 	}
 
-	/* Let mmc core do the busy checking, simply stop the forced-toggle
-	 * clock(while issuing CMD11) and switch voltage.
-	 */
+	 
 	rtsx_usb_init_cmd(ucr);
 
 	if (ios->signal_voltage == MMC_SIGNAL_VOLTAGE_330) {
@@ -1222,7 +1201,7 @@ out:
 	if (err)
 		return err;
 
-	/* check if any pin between dat[0:3] is low */
+	 
 	if ((stat & mask) != mask)
 		return 1;
 	else
@@ -1446,7 +1425,7 @@ static const struct platform_device_id rtsx_usb_sdmmc_ids[] = {
 	{
 		.name = "rtsx_usb_sdmmc",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, rtsx_usb_sdmmc_ids);

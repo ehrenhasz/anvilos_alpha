@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013 STMicroelectronics Limited
- * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -19,8 +16,8 @@ struct st_rc_device {
 	int				irq;
 	int				irq_wake;
 	struct clk			*sys_clock;
-	void __iomem			*base;	/* Register base address */
-	void __iomem			*rx_base;/* RX Register base address */
+	void __iomem			*base;	 
+	void __iomem			*rx_base; 
 	struct rc_dev			*rdev;
 	bool				overclocking;
 	int				sample_mult;
@@ -29,31 +26,26 @@ struct st_rc_device {
 	struct	reset_control		*rstc;
 };
 
-/* Registers */
-#define IRB_SAMPLE_RATE_COMM	0x64	/* sample freq divisor*/
-#define IRB_CLOCK_SEL		0x70	/* clock select       */
-#define IRB_CLOCK_SEL_STATUS	0x74	/* clock status       */
-/* IRB IR/UHF receiver registers */
-#define IRB_RX_ON               0x40	/* pulse time capture */
-#define IRB_RX_SYS              0X44	/* sym period capture */
-#define IRB_RX_INT_EN           0x48	/* IRQ enable (R/W)   */
-#define IRB_RX_INT_STATUS       0x4c	/* IRQ status (R/W)   */
-#define IRB_RX_EN               0x50	/* Receive enable     */
-#define IRB_MAX_SYM_PERIOD      0x54	/* max sym value      */
-#define IRB_RX_INT_CLEAR        0x58	/* overrun status     */
-#define IRB_RX_STATUS           0x6c	/* receive status     */
-#define IRB_RX_NOISE_SUPPR      0x5c	/* noise suppression  */
-#define IRB_RX_POLARITY_INV     0x68	/* polarity inverter  */
+ 
+#define IRB_SAMPLE_RATE_COMM	0x64	 
+#define IRB_CLOCK_SEL		0x70	 
+#define IRB_CLOCK_SEL_STATUS	0x74	 
+ 
+#define IRB_RX_ON               0x40	 
+#define IRB_RX_SYS              0X44	 
+#define IRB_RX_INT_EN           0x48	 
+#define IRB_RX_INT_STATUS       0x4c	 
+#define IRB_RX_EN               0x50	 
+#define IRB_MAX_SYM_PERIOD      0x54	 
+#define IRB_RX_INT_CLEAR        0x58	 
+#define IRB_RX_STATUS           0x6c	 
+#define IRB_RX_NOISE_SUPPR      0x5c	 
+#define IRB_RX_POLARITY_INV     0x68	 
 
-/*
- * IRQ set: Enable full FIFO                 1  -> bit  3;
- *          Enable overrun IRQ               1  -> bit  2;
- *          Enable last symbol IRQ           1  -> bit  1:
- *          Enable RX interrupt              1  -> bit  0;
- */
+ 
 #define IRB_RX_INTS		0x0f
 #define IRB_RX_OVERRUN_INT	0x04
- /* maximum symbol period (microsecs),timeout to detect end of symbol train */
+  
 #define MAX_SYMB_TIME		0x5000
 #define IRB_SAMPLE_FREQ		10000000
 #define	IRB_FIFO_NOT_EMPTY	0xff00
@@ -67,27 +59,7 @@ static void st_rc_send_lirc_timeout(struct rc_dev *rdev)
 	ir_raw_event_store(rdev, &ev);
 }
 
-/*
- * RX graphical example to better understand the difference between ST IR block
- * output and standard definition used by LIRC (and most of the world!)
- *
- *           mark                                     mark
- *      |-IRB_RX_ON-|                            |-IRB_RX_ON-|
- *      ___  ___  ___                            ___  ___  ___             _
- *      | |  | |  | |                            | |  | |  | |             |
- *      | |  | |  | |         space 0            | |  | |  | |   space 1   |
- * _____| |__| |__| |____________________________| |__| |__| |_____________|
- *
- *      |--------------- IRB_RX_SYS -------------|------ IRB_RX_SYS -------|
- *
- *      |------------- encoding bit 0 -----------|---- encoding bit 1 -----|
- *
- * ST hardware returns mark (IRB_RX_ON) and total symbol time (IRB_RX_SYS), so
- * convert to standard mark/space we have to calculate space=(IRB_RX_SYS-mark)
- * The mark time represents the amount of time the carrier (usually 36-40kHz)
- * is detected.The above examples shows Pulse Width Modulation encoding where
- * bit 0 is represented by space>mark.
- */
+ 
 
 static irqreturn_t st_rc_rx_interrupt(int irq, void *data)
 {
@@ -101,7 +73,7 @@ static irqreturn_t st_rc_rx_interrupt(int irq, void *data)
 	if (dev->irq_wake)
 		pm_wakeup_event(dev->dev, 0);
 
-	/* FIXME: is 10ms good enough ? */
+	 
 	timeout = jiffies +  msecs_to_jiffies(10);
 	do {
 		status  = readl(dev->rx_base + IRB_RX_STATUS);
@@ -110,7 +82,7 @@ static irqreturn_t st_rc_rx_interrupt(int irq, void *data)
 
 		int_status = readl(dev->rx_base + IRB_RX_INT_STATUS);
 		if (unlikely(int_status & IRB_RX_OVERRUN_INT)) {
-			/* discard the entire collection in case of errors!  */
+			 
 			ir_raw_event_overflow(dev->rdev);
 			dev_info(dev->dev, "IR RX overrun\n");
 			writel(IRB_RX_OVERRUN_INT,
@@ -124,10 +96,10 @@ static irqreturn_t st_rc_rx_interrupt(int irq, void *data)
 		if (symbol == IRB_TIMEOUT)
 			last_symbol = 1;
 
-		 /* Ignore any noise */
+		  
 		if ((mark > 2) && (symbol > 1)) {
 			symbol -= mark;
-			if (dev->overclocking) { /* adjustments to timings */
+			if (dev->overclocking) {  
 				symbol *= dev->sample_mult;
 				symbol /= dev->sample_div;
 				mark *= dev->sample_mult;
@@ -152,7 +124,7 @@ static irqreturn_t st_rc_rx_interrupt(int irq, void *data)
 
 	writel(IRB_RX_INTS, dev->rx_base + IRB_RX_INT_CLEAR);
 
-	/* Empty software fifo */
+	 
 	ir_raw_event_handle(dev->rdev);
 	return IRQ_HANDLED;
 }
@@ -164,7 +136,7 @@ static int st_rc_hardware_init(struct st_rc_device *dev)
 	unsigned int rx_max_symbol_per = MAX_SYMB_TIME;
 	unsigned int rx_sampling_freq_div;
 
-	/* Enable the IP */
+	 
 	reset_control_deassert(dev->rstc);
 
 	ret = clk_prepare_enable(dev->sys_clock);
@@ -175,14 +147,14 @@ static int st_rc_hardware_init(struct st_rc_device *dev)
 
 	baseclock = clk_get_rate(dev->sys_clock);
 
-	/* IRB input pins are inverted internally from high to low. */
+	 
 	writel(1, dev->rx_base + IRB_RX_POLARITY_INV);
 
 	rx_sampling_freq_div = baseclock / IRB_SAMPLE_FREQ;
 	writel(rx_sampling_freq_div, dev->base + IRB_SAMPLE_RATE_COMM);
 
 	freqdiff = baseclock - (rx_sampling_freq_div * IRB_SAMPLE_FREQ);
-	if (freqdiff) { /* over clocking, workout the adjustment factors */
+	if (freqdiff) {  
 		dev->overclocking = true;
 		dev->sample_mult = 1000;
 		dev->sample_div = baseclock / (10000 * rx_sampling_freq_div);
@@ -209,7 +181,7 @@ static int st_rc_open(struct rc_dev *rdev)
 	struct st_rc_device *dev = rdev->priv;
 	unsigned long flags;
 	local_irq_save(flags);
-	/* enable interrupts and receiver */
+	 
 	writel(IRB_RX_INTS, dev->rx_base + IRB_RX_INT_EN);
 	writel(0x01, dev->rx_base + IRB_RX_EN);
 	local_irq_restore(flags);
@@ -220,7 +192,7 @@ static int st_rc_open(struct rc_dev *rdev)
 static void st_rc_close(struct rc_dev *rdev)
 {
 	struct st_rc_device *dev = rdev->priv;
-	/* disable interrupts and receiver */
+	 
 	writel(0x00, dev->rx_base + IRB_RX_EN);
 	writel(0x00, dev->rx_base + IRB_RX_INT_EN);
 }
@@ -296,7 +268,7 @@ static int st_rc_probe(struct platform_device *pdev)
 		goto err;
 
 	rdev->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
-	/* rx sampling rate is 10Mhz */
+	 
 	rdev->rx_resolution = 100;
 	rdev->timeout = MAX_SYMB_TIME;
 	rdev->priv = rc_dev;
@@ -318,14 +290,11 @@ static int st_rc_probe(struct platform_device *pdev)
 		goto rcerr;
 	}
 
-	/* enable wake via this device */
+	 
 	device_init_wakeup(dev, true);
 	dev_pm_set_wake_irq(dev, rc_dev->irq);
 
-	/*
-	 * for LIRC_MODE_MODE2 or LIRC_MODE_PULSE or LIRC_MODE_RAW
-	 * lircd expects a long space first before a signal train to sync.
-	 */
+	 
 	st_rc_send_lirc_timeout(rdev);
 
 	dev_info(dev, "setup in %s mode\n", rc_dev->rxuhfmode ? "UHF" : "IR");

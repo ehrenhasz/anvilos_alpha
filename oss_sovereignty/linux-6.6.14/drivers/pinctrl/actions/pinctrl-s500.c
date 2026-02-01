@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi S500 SoC Pinctrl driver
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Copyright (c) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -13,7 +8,7 @@
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-owl.h"
 
-/* Pinctrl registers offset */
+ 
 #define MFCTL0			(0x0040)
 #define MFCTL1			(0x0044)
 #define MFCTL2			(0x0048)
@@ -105,10 +100,10 @@
 #define SD0_D1			_GPIOC(11)
 #define SD0_D2			_GPIOC(12)
 #define SD0_D3			_GPIOC(13)
-#define SD1_D0			_GPIOC(14) /* SD0_D4 */
-#define SD1_D1			_GPIOC(15) /* SD0_D5 */
-#define SD1_D2			_GPIOC(16) /* SD0_D6 */
-#define SD1_D3			_GPIOC(17) /* SD0_D7 */
+#define SD1_D0			_GPIOC(14)  
+#define SD1_D1			_GPIOC(15)  
+#define SD1_D2			_GPIOC(16)  
+#define SD1_D3			_GPIOC(17)  
 #define SD0_CMD			_GPIOC(18)
 #define SD0_CLK			_GPIOC(19)
 #define SD1_CMD			_GPIOC(20)
@@ -357,7 +352,7 @@ enum s500_pinmux_functions {
 	S500_MUX_SD2,
 	S500_MUX_I2C0,
 	S500_MUX_I2C1,
-	/*S500_MUX_I2C2,*/
+	 
 	S500_MUX_I2C3,
 	S500_MUX_DSI,
 	S500_MUX_LVDS,
@@ -366,104 +361,104 @@ enum s500_pinmux_functions {
 	S500_MUX_MIPI_CSI,
 	S500_MUX_NAND,
 	S500_MUX_SPDIF,
-	/*S500_MUX_SIRQ0,*/
-	/*S500_MUX_SIRQ1,*/
-	/*S500_MUX_SIRQ2,*/
+	 
+	 
+	 
 	S500_MUX_TS,
 	S500_MUX_LCD0,
 	S500_MUX_RESERVED,
 };
 
-/* MFPCTL group data */
-/* mfp0_31_26 reserved */
-/* mfp0_25_23 */
+ 
+ 
+ 
 static unsigned int lcd0_d18_mfp_pads[]		= { LCD0_D18 };
 static unsigned int lcd0_d18_mfp_funcs[]	= { S500_MUX_NOR,
 						    S500_MUX_SENS1,
 						    S500_MUX_PWM2,
 						    S500_MUX_PWM4,
 						    S500_MUX_LCD0 };
-/* mfp0_22_20 */
+ 
 static unsigned int rmii_crs_dv_mfp_pads[]	= { ETH_CRS_DV };
 static unsigned int rmii_crs_dv_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_ETH_SMII,
 						    S500_MUX_SPI2,
 						    S500_MUX_UART4,
 						    S500_MUX_PWM4 };
-/* mfp0_18_16_eth_txd0 */
+ 
 static unsigned int rmii_txd0_mfp_pads[]	= { ETH_TXD0 };
 static unsigned int rmii_txd0_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_ETH_SMII,
 						    S500_MUX_SPI2,
 						    S500_MUX_UART6,
 						    S500_MUX_PWM4 };
-/* mfp0_18_16_eth_txd1 */
+ 
 static unsigned int rmii_txd1_mfp_pads[]	= { ETH_TXD1 };
 static unsigned int rmii_txd1_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_ETH_SMII,
 						    S500_MUX_SPI2,
 						    S500_MUX_UART6,
 						    S500_MUX_PWM5 };
-/* mfp0_15_13_rmii_txen */
+ 
 static unsigned int rmii_txen_mfp_pads[]	= { ETH_TXEN };
 static unsigned int rmii_txen_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI3,
 						    S500_MUX_PWM0 };
-/* mfp0_15_13_rmii_rxen */
+ 
 static unsigned int rmii_rxen_mfp_pads[]	= { ETH_RXER };
 static unsigned int rmii_rxen_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI3,
 						    S500_MUX_PWM1 };
-/* mfp0_12_11 reserved */
+ 
 
-/* mfp0_10_8_rmii_rxd1 */
+ 
 static unsigned int rmii_rxd1_mfp_pads[]	= { ETH_RXD1 };
 static unsigned int rmii_rxd1_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI3,
 						    S500_MUX_PWM2,
 						    S500_MUX_UART5 };
-/* mfp0_10_8_rmii_rxd0 */
+ 
 static unsigned int rmii_rxd0_mfp_pads[]	= { ETH_RXD0 };
 static unsigned int rmii_rxd0_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI3,
 						    S500_MUX_PWM3,
 						    S500_MUX_UART5 };
-/* mfp0_7_6 */
+ 
 static unsigned int rmii_ref_clk_mfp_pads[]	= { ETH_REF_CLK };
 static unsigned int rmii_ref_clk_mfp_funcs[]	= { S500_MUX_ETH_RMII,
 						    S500_MUX_UART4,
 						    S500_MUX_SPI2,
 						    S500_MUX_RESERVED,
 						    S500_MUX_ETH_SMII };
-/* mfp0_5 */
+ 
 static unsigned int i2s_d0_mfp_pads[]		= { I2S_D0 };
 static unsigned int i2s_d0_mfp_funcs[]		= { S500_MUX_I2S0,
 						    S500_MUX_NOR };
-/* mfp0_4_3 */
+ 
 static unsigned int i2s_pcm1_mfp_pads[]		= { I2S_LRCLK0, I2S_MCLK0 };
 static unsigned int i2s_pcm1_mfp_funcs[]	= { S500_MUX_I2S0,
 						    S500_MUX_NOR,
 						    S500_MUX_PCM1 };
-/* mfp0_2_1_i2s0 */
+ 
 static unsigned int i2s0_pcm0_mfp_pads[]	= { I2S_BCLK0 };
 static unsigned int i2s0_pcm0_mfp_funcs[]	= { S500_MUX_I2S0,
 						    S500_MUX_NOR,
 						    S500_MUX_PCM0 };
-/* mfp0_2_1_i2s1 */
+ 
 static unsigned int i2s1_pcm0_mfp_pads[]	= { I2S_BCLK1, I2S_LRCLK1,
 						    I2S_MCLK1 };
 static unsigned int i2s1_pcm0_mfp_funcs[]	= { S500_MUX_I2S1,
 						    S500_MUX_NOR,
 						    S500_MUX_PCM0 };
-/* mfp0_0 */
+ 
 static unsigned int i2s_d1_mfp_pads[]		= { I2S_D1 };
 static unsigned int i2s_d1_mfp_funcs[]		= { S500_MUX_I2S1,
 						    S500_MUX_NOR };
-/* mfp1_31_29_ks_in0 */
+ 
 static unsigned int ks_in0_mfp_pads[]		= { KS_IN0 };
 static unsigned int ks_in0_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_JTAG,
@@ -473,7 +468,7 @@ static unsigned int ks_in0_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_SENS1,
 						    S500_MUX_PWM4,
 						    S500_MUX_P0 };
-/* mfp1_31_29_ks_in1 */
+ 
 static unsigned int ks_in1_mfp_pads[]		= { KS_IN1 };
 static unsigned int ks_in1_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_JTAG,
@@ -483,7 +478,7 @@ static unsigned int ks_in1_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_SENS1,
 						    S500_MUX_PWM1,
 						    S500_MUX_USB30 };
-/* mfp1_31_29_ks_in2 */
+ 
 static unsigned int ks_in2_mfp_pads[]		= { KS_IN2 };
 static unsigned int ks_in2_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_JTAG,
@@ -493,7 +488,7 @@ static unsigned int ks_in2_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_SENS1,
 						    S500_MUX_PWM0,
 						    S500_MUX_P0 };
-/* mfp1_28_26_ks_in3 */
+ 
 static unsigned int ks_in3_mfp_pads[]		= { KS_IN3 };
 static unsigned int ks_in3_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_JTAG,
@@ -501,7 +496,7 @@ static unsigned int ks_in3_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_PWM1,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SENS1 };
-/* mfp1_28_26_ks_out0 */
+ 
 static unsigned int ks_out0_mfp_pads[]		= { KS_OUT0 };
 static unsigned int ks_out0_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_UART5,
@@ -510,7 +505,7 @@ static unsigned int ks_out0_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SENS1,
 						    S500_MUX_SD0 };
-/* mfp1_28_26_ks_out1 */
+ 
 static unsigned int ks_out1_mfp_pads[]		= { KS_OUT1 };
 static unsigned int ks_out1_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_JTAG,
@@ -519,7 +514,7 @@ static unsigned int ks_out1_mfp_funcs[]		= { S500_MUX_KS,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SENS1,
 						    S500_MUX_SD0 };
-/* mfp1_25_23 */
+ 
 static unsigned int ks_out2_mfp_pads[]		= { KS_OUT2 };
 static unsigned int ks_out2_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_KS,
@@ -527,7 +522,7 @@ static unsigned int ks_out2_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_PWM2,
 						    S500_MUX_UART5,
 						    S500_MUX_SENS1 };
-/* mfp1_22_21 */
+ 
 static unsigned int lvds_o_pn_mfp_pads[]	= { LVDS_OEP, LVDS_OEN,
 						    LVDS_ODP, LVDS_ODN,
 						    LVDS_OCP, LVDS_OCN,
@@ -536,69 +531,69 @@ static unsigned int lvds_o_pn_mfp_pads[]	= { LVDS_OEP, LVDS_OEN,
 static unsigned int lvds_o_pn_mfp_funcs[]	= { S500_MUX_LVDS,
 						    S500_MUX_TS,
 						    S500_MUX_LCD0 };
-/* mfp1_20_19 */
+ 
 static unsigned int dsi_dn0_mfp_pads[]		= { DSI_DN0 };
 static unsigned int dsi_dn0_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI0 };
-/* mfp1_18_17 */
+ 
 static unsigned int dsi_dp2_mfp_pads[]		= { DSI_DP2 };
 static unsigned int dsi_dp2_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI0,
 						    S500_MUX_SD1 };
-/* mfp1_16_14 */
+ 
 static unsigned int lcd0_d17_mfp_pads[]		= { LCD0_D17 };
 static unsigned int lcd0_d17_mfp_funcs[]	= { S500_MUX_NOR,
 						    S500_MUX_SD0,
 						    S500_MUX_SD1,
 						    S500_MUX_PWM3,
 						    S500_MUX_LCD0 };
-/* mfp1_13_12 */
+ 
 static unsigned int dsi_dp3_mfp_pads[]		= { DSI_DP3 };
 static unsigned int dsi_dp3_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_SD0,
 						    S500_MUX_SD1,
 						    S500_MUX_LCD0 };
-/* mfp1_11_10 */
+ 
 static unsigned int dsi_dn3_mfp_pads[]		= { DSI_DN3 };
 static unsigned int dsi_dn3_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SD1,
 						    S500_MUX_LCD0 };
-/* mfp1_9_7 */
+ 
 static unsigned int dsi_dp0_mfp_pads[]		= { DSI_DP0 };
 static unsigned int dsi_dp0_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SD0,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI0 };
-/* mfp1_6_5 */
+ 
 static unsigned int lvds_ee_pn_mfp_pads[]	= { LVDS_EEP, LVDS_EEN };
 static unsigned int lvds_ee_pn_mfp_funcs[]	= { S500_MUX_LVDS,
 						    S500_MUX_NOR,
 						    S500_MUX_TS,
 						    S500_MUX_LCD0 };
-/* mfp1_4_3 */
+ 
 static unsigned int spi0_i2c_pcm_mfp_pads[]	= { SPI0_SCLK, SPI0_MOSI };
 static unsigned int spi0_i2c_pcm_mfp_funcs[]	= { S500_MUX_SPI0,
 						    S500_MUX_NOR,
 						    S500_MUX_I2C3,
 						    S500_MUX_PCM0 };
-/* mfp1_2_0 */
+ 
 static unsigned int spi0_i2s_pcm_mfp_pads[]	= { SPI0_SS, SPI0_MISO };
 static unsigned int spi0_i2s_pcm_mfp_funcs[]	= { S500_MUX_SPI0,
 						    S500_MUX_NOR,
 						    S500_MUX_I2S1,
 						    S500_MUX_PCM1,
 						    S500_MUX_PCM0 };
-/* mfp2_31 reserved */
-/* mfp2_30_29 */
+ 
+ 
 static unsigned int dsi_dnp1_cp_mfp_pads[]	= { DSI_DP1, DSI_CP, DSI_CN };
 static unsigned int dsi_dnp1_cp_mfp_funcs[]	= { S500_MUX_DSI,
 						    S500_MUX_SD1,
 						    S500_MUX_LCD0 };
-/* mfp2_28_27 */
+ 
 static unsigned int lvds_e_pn_mfp_pads[]	= { LVDS_EDP, LVDS_EDN,
 						    LVDS_ECP, LVDS_ECN,
 						    LVDS_EBP, LVDS_EBN,
@@ -606,30 +601,30 @@ static unsigned int lvds_e_pn_mfp_pads[]	= { LVDS_EDP, LVDS_EDN,
 static unsigned int lvds_e_pn_mfp_funcs[]	= { S500_MUX_LVDS,
 						    S500_MUX_NOR,
 						    S500_MUX_LCD0 };
-/* mfp2_26_24 */
+ 
 static unsigned int dsi_dn2_mfp_pads[]		= { DSI_DN2 };
 static unsigned int dsi_dn2_mfp_funcs[]		= { S500_MUX_DSI,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SD1,
 						    S500_MUX_UART2,
 						    S500_MUX_SPI0 };
-/* mfp2_23 */
+ 
 static unsigned int uart2_rtsb_mfp_pads[]	= { UART2_RTSB };
 static unsigned int uart2_rtsb_mfp_funcs[]	= { S500_MUX_UART2,
 						    S500_MUX_UART0 };
-/* mfp2_22 */
+ 
 static unsigned int uart2_ctsb_mfp_pads[]	= { UART2_CTSB };
 static unsigned int uart2_ctsb_mfp_funcs[]	= { S500_MUX_UART2,
 						    S500_MUX_UART0 };
-/* mfp2_21 */
+ 
 static unsigned int uart3_rtsb_mfp_pads[]	= { UART3_RTSB };
 static unsigned int uart3_rtsb_mfp_funcs[]	= { S500_MUX_UART3,
 						    S500_MUX_UART5 };
-/* mfp2_20 */
+ 
 static unsigned int uart3_ctsb_mfp_pads[]	= { UART3_CTSB };
 static unsigned int uart3_ctsb_mfp_funcs[]	= { S500_MUX_UART3,
 						    S500_MUX_UART5 };
-/* mfp2_19_17 */
+ 
 static unsigned int sd0_d0_mfp_pads[]		= { SD0_D0 };
 static unsigned int sd0_d0_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_NOR,
@@ -637,7 +632,7 @@ static unsigned int sd0_d0_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_JTAG,
 						    S500_MUX_UART2,
 						    S500_MUX_UART5 };
-/* mfp2_16_14 */
+ 
 static unsigned int sd0_d1_mfp_pads[]		= { SD0_D1 };
 static unsigned int sd0_d1_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_NOR,
@@ -645,7 +640,7 @@ static unsigned int sd0_d1_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_RESERVED,
 						    S500_MUX_UART2,
 						    S500_MUX_UART5 };
-/* mfp2_13_11 */
+ 
 static unsigned int sd0_d2_d3_mfp_pads[]	= { SD0_D2, SD0_D3 };
 static unsigned int sd0_d2_d3_mfp_funcs[]	= { S500_MUX_SD0,
 						    S500_MUX_NOR,
@@ -653,29 +648,29 @@ static unsigned int sd0_d2_d3_mfp_funcs[]	= { S500_MUX_SD0,
 						    S500_MUX_JTAG,
 						    S500_MUX_UART2,
 						    S500_MUX_UART1 };
-/* mfp2_10_9 */
+ 
 static unsigned int sd1_d0_d3_mfp_pads[]	= { SD1_D0, SD1_D1,
 						    SD1_D2, SD1_D3 };
 static unsigned int sd1_d0_d3_mfp_funcs[]	= { S500_MUX_SD0,
 						    S500_MUX_NOR,
 						    S500_MUX_RESERVED,
 						    S500_MUX_SD1 };
-/* mfp2_8_7 */
+ 
 static unsigned int sd0_cmd_mfp_pads[]		= { SD0_CMD };
 static unsigned int sd0_cmd_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_NOR,
 						    S500_MUX_RESERVED,
 						    S500_MUX_JTAG };
-/* mfp2_6_5 */
+ 
 static unsigned int sd0_clk_mfp_pads[]		= { SD0_CLK };
 static unsigned int sd0_clk_mfp_funcs[]		= { S500_MUX_SD0,
 						    S500_MUX_RESERVED,
 						    S500_MUX_JTAG };
-/* mfp2_4_3 */
+ 
 static unsigned int sd1_cmd_mfp_pads[]		= { SD1_CMD };
 static unsigned int sd1_cmd_mfp_funcs[]		= { S500_MUX_SD1,
 						    S500_MUX_NOR };
-/* mfp2_2_0 */
+ 
 static unsigned int uart0_rx_mfp_pads[]		= { UART0_RX };
 static unsigned int uart0_rx_mfp_funcs[]	= { S500_MUX_UART0,
 						    S500_MUX_UART2,
@@ -683,23 +678,23 @@ static unsigned int uart0_rx_mfp_funcs[]	= { S500_MUX_UART0,
 						    S500_MUX_I2C0,
 						    S500_MUX_PCM1,
 						    S500_MUX_I2S1 };
-/* mfp3_31 reserved */
-/* mfp3_30 */
+ 
+ 
 static unsigned int clko_25m_mfp_pads[]		= { CLKO_25M };
 static unsigned int clko_25m_mfp_funcs[]	= { S500_MUX_RESERVED,
 						    S500_MUX_CLKO_25M };
-/* mfp3_29_28 */
+ 
 static unsigned int csi_cn_cp_mfp_pads[]	= { CSI_CN, CSI_CP };
 static unsigned int csi_cn_cp_mfp_funcs[]	= { S500_MUX_MIPI_CSI,
 						    S500_MUX_SENS0 };
-/* mfp3_27_24 reserved */
-/* mfp3_23_22 */
+ 
+ 
 static unsigned int sens0_ckout_mfp_pads[]	= { SENSOR0_CKOUT };
 static unsigned int sens0_ckout_mfp_funcs[]	= { S500_MUX_SENS0,
 						    S500_MUX_NOR,
 						    S500_MUX_SENS1,
 						    S500_MUX_PWM1 };
-/* mfp3_21_19 */
+ 
 static unsigned int uart0_tx_mfp_pads[]		= { UART0_TX };
 static unsigned int uart0_tx_mfp_funcs[]	= { S500_MUX_UART0,
 						    S500_MUX_UART2,
@@ -708,7 +703,7 @@ static unsigned int uart0_tx_mfp_funcs[]	= { S500_MUX_UART0,
 						    S500_MUX_SPDIF,
 						    S500_MUX_PCM1,
 						    S500_MUX_I2S1 };
-/* mfp3_18_16 */
+ 
 static unsigned int i2c0_mfp_pads[]		= { I2C0_SCLK,
 						    I2C0_SDATA };
 static unsigned int i2c0_mfp_funcs[]		= { S500_MUX_I2C0,
@@ -716,43 +711,43 @@ static unsigned int i2c0_mfp_funcs[]		= { S500_MUX_I2C0,
 						    S500_MUX_I2C1,
 						    S500_MUX_UART1,
 						    S500_MUX_SPI1 };
-/* mfp3_15_14 */
+ 
 static unsigned int csi_dn_dp_mfp_pads[]	= { CSI_DN0, CSI_DN1,
 						    CSI_DN2, CSI_DN3,
 						    CSI_DP0, CSI_DP1,
 						    CSI_DP2, CSI_DP3 };
 static unsigned int csi_dn_dp_mfp_funcs[]	= { S500_MUX_MIPI_CSI,
 						    S500_MUX_SENS0 };
-/* mfp3_13_12 */
+ 
 static unsigned int sen0_pclk_mfp_pads[]	= { SENSOR0_PCLK };
 static unsigned int sen0_pclk_mfp_funcs[]	= { S500_MUX_SENS0,
 						    S500_MUX_NOR,
 						    S500_MUX_PWM0 };
-/* mfp3_11_10 */
+ 
 static unsigned int pcm1_in_mfp_pads[]		= { PCM1_IN };
 static unsigned int pcm1_in_mfp_funcs[]		= { S500_MUX_PCM1,
 						    S500_MUX_SENS1,
 						    S500_MUX_UART4,
 						    S500_MUX_PWM4 };
-/* mfp3_9_8 */
+ 
 static unsigned int pcm1_clk_mfp_pads[]		= { PCM1_CLK };
 static unsigned int pcm1_clk_mfp_funcs[]	= { S500_MUX_PCM1,
 						    S500_MUX_SENS1,
 						    S500_MUX_UART4,
 						    S500_MUX_PWM5 };
-/* mfp3_7_6 */
+ 
 static unsigned int pcm1_sync_mfp_pads[]	= { PCM1_SYNC };
 static unsigned int pcm1_sync_mfp_funcs[]	= { S500_MUX_PCM1,
 						    S500_MUX_SENS1,
 						    S500_MUX_UART6,
 						    S500_MUX_I2C3 };
-/* mfp3_5_4 */
+ 
 static unsigned int pcm1_out_mfp_pads[]		= { PCM1_OUT };
 static unsigned int pcm1_out_mfp_funcs[]	= { S500_MUX_PCM1,
 						    S500_MUX_SENS1,
 						    S500_MUX_UART6,
 						    S500_MUX_I2C3 };
-/* mfp3_3 */
+ 
 static unsigned int dnand_data_wr_mfp_pads[]	= { DNAND_D0, DNAND_D1,
 						    DNAND_D2, DNAND_D3,
 						    DNAND_D4, DNAND_D5,
@@ -760,57 +755,57 @@ static unsigned int dnand_data_wr_mfp_pads[]	= { DNAND_D0, DNAND_D1,
 						    DNAND_RDB, DNAND_RDBN };
 static unsigned int dnand_data_wr_mfp_funcs[]	= { S500_MUX_NAND,
 						    S500_MUX_SD2 };
-/* mfp3_2 */
+ 
 static unsigned int dnand_acle_ce0_mfp_pads[]	= { DNAND_ALE,
 						    DNAND_CLE,
 						    DNAND_CEB0,
 						    DNAND_CEB1 };
 static unsigned int dnand_acle_ce0_mfp_funcs[]	= { S500_MUX_NAND,
 						    S500_MUX_SPI2 };
-/* mfp3_1_0_nand_ceb2 */
+ 
 static unsigned int nand_ceb2_mfp_pads[]	= { DNAND_CEB2 };
 static unsigned int nand_ceb2_mfp_funcs[]	= { S500_MUX_NAND,
 						    S500_MUX_PWM5 };
-/* mfp3_1_0_nand_ceb3 */
+ 
 static unsigned int nand_ceb3_mfp_pads[]	= { DNAND_CEB3 };
 static unsigned int nand_ceb3_mfp_funcs[]	= { S500_MUX_NAND,
 						    S500_MUX_PWM4 };
 
-/* PADDRV group data */
-/* paddrv0_29_28 */
+ 
+ 
 static unsigned int sirq_drv_pads[]		= { SIRQ0, SIRQ1, SIRQ2 };
-/* paddrv0_23_22 */
+ 
 static unsigned int rmii_txd01_txen_drv_pads[]	= { ETH_TXD0, ETH_TXD1,
 						    ETH_TXEN };
-/* paddrv0_21_20 */
+ 
 static unsigned int rmii_rxer_drv_pads[]	= { ETH_RXER };
-/* paddrv0_19_18 */
+ 
 static unsigned int rmii_crs_drv_pads[]		= { ETH_CRS_DV };
-/* paddrv0_17_16 */
+ 
 static unsigned int rmii_rxd10_drv_pads[]	= { ETH_RXD0, ETH_RXD1 };
-/* paddrv0_15_14 */
+ 
 static unsigned int rmii_ref_clk_drv_pads[]	= { ETH_REF_CLK };
-/* paddrv0_13_12 */
+ 
 static unsigned int smi_mdc_mdio_drv_pads[]	= { ETH_MDC, ETH_MDIO };
-/* paddrv0_11_10 */
+ 
 static unsigned int i2s_d0_drv_pads[]		= { I2S_D0 };
-/* paddrv0_9_8 */
+ 
 static unsigned int i2s_bclk0_drv_pads[]	= { I2S_BCLK0 };
-/* paddrv0_7_6 */
+ 
 static unsigned int i2s3_drv_pads[]		= { I2S_LRCLK0, I2S_MCLK0,
 						    I2S_D1 };
-/* paddrv0_5_4 */
+ 
 static unsigned int i2s13_drv_pads[]		= { I2S_BCLK1, I2S_LRCLK1,
 						    I2S_MCLK1 };
-/* paddrv0_3_2 */
+ 
 static unsigned int pcm1_drv_pads[]		= { PCM1_IN, PCM1_CLK,
 						    PCM1_SYNC, PCM1_OUT };
-/* paddrv0_1_0 */
+ 
 static unsigned int ks_in_drv_pads[]		= { KS_IN0, KS_IN1,
 						    KS_IN2, KS_IN3 };
-/* paddrv1_31_30 */
+ 
 static unsigned int ks_out_drv_pads[]		= { KS_OUT0, KS_OUT1, KS_OUT2 };
-/* paddrv1_29_28 */
+ 
 static unsigned int lvds_all_drv_pads[]		= { LVDS_OEP, LVDS_OEN,
 						    LVDS_ODP, LVDS_ODN,
 						    LVDS_OCP, LVDS_OCN,
@@ -821,50 +816,50 @@ static unsigned int lvds_all_drv_pads[]		= { LVDS_OEP, LVDS_OEN,
 						    LVDS_ECP, LVDS_ECN,
 						    LVDS_EBP, LVDS_EBN,
 						    LVDS_EAP, LVDS_EAN };
-/* paddrv1_27_26 */
+ 
 static unsigned int lcd_dsi_drv_pads[]		= { DSI_DP3, DSI_DN3, DSI_DP1,
 						    DSI_DN1, DSI_CP, DSI_CN };
-/* paddrv1_25_24 */
+ 
 static unsigned int dsi_drv_pads[]		= { DSI_DP0, DSI_DN0,
 						    DSI_DP2, DSI_DN2 };
-/* paddrv1_23_22 */
+ 
 static unsigned int sd0_d0_d3_drv_pads[]	= { SD0_D0, SD0_D1,
 						    SD0_D2, SD0_D3 };
-/* paddrv1_21_20 */
+ 
 static unsigned int sd1_d0_d3_drv_pads[]	= { SD1_D0, SD1_D1,
 						    SD1_D2, SD1_D3 };
-/* paddrv1_19_18 */
+ 
 static unsigned int sd0_cmd_drv_pads[]		= { SD0_CMD };
-/* paddrv1_17_16 */
+ 
 static unsigned int sd0_clk_drv_pads[]		= { SD0_CLK };
-/* paddrv1_15_14 */
+ 
 static unsigned int sd1_cmd_drv_pads[]		= { SD1_CMD };
-/* paddrv1_13_12 */
+ 
 static unsigned int sd1_clk_drv_pads[]		= { SD1_CLK };
-/* paddrv1_11_10 */
+ 
 static unsigned int spi0_all_drv_pads[]		= { SPI0_SCLK, SPI0_SS,
 						    SPI0_MISO, SPI0_MOSI };
-/* paddrv2_31_30 */
+ 
 static unsigned int uart0_rx_drv_pads[]		= { UART0_RX };
-/* paddrv2_29_28 */
+ 
 static unsigned int uart0_tx_drv_pads[]		= { UART0_TX };
-/* paddrv2_27_26 */
+ 
 static unsigned int uart2_all_drv_pads[]	= { UART2_RX, UART2_TX,
 						    UART2_RTSB, UART2_CTSB };
-/* paddrv2_24_23 */
+ 
 static unsigned int i2c0_all_drv_pads[]		= { I2C0_SCLK, I2C0_SDATA };
-/* paddrv2_22_21 */
+ 
 static unsigned int i2c12_all_drv_pads[]	= { I2C1_SCLK, I2C1_SDATA,
 						    I2C2_SCLK, I2C2_SDATA };
-/* paddrv2_19_18 */
+ 
 static unsigned int sens0_pclk_drv_pads[]	= { SENSOR0_PCLK };
-/* paddrv2_13_12 */
+ 
 static unsigned int sens0_ckout_drv_pads[]	= { SENSOR0_CKOUT };
-/* paddrv2_3_2 */
+ 
 static unsigned int uart3_all_drv_pads[]	= { UART3_RX, UART3_TX,
 						    UART3_RTSB, UART3_CTSB };
 
-/* Pinctrl groups */
+ 
 static const struct owl_pingroup s500_groups[] = {
 	MUX_PG(lcd0_d18_mfp, 0, 23, 3),
 	MUX_PG(rmii_crs_dv_mfp, 0, 20, 3),
@@ -1361,7 +1356,7 @@ static const struct owl_pinmux_func s500_functions[] = {
 	[S500_MUX_SD2] = FUNCTION(sd2),
 	[S500_MUX_I2C0] = FUNCTION(i2c0),
 	[S500_MUX_I2C1] = FUNCTION(i2c1),
-	/*[S500_MUX_I2C2] = FUNCTION(i2c2),*/
+	 
 	[S500_MUX_I2C3] = FUNCTION(i2c3),
 	[S500_MUX_DSI] = FUNCTION(dsi),
 	[S500_MUX_LVDS] = FUNCTION(lvds),
@@ -1370,14 +1365,14 @@ static const struct owl_pinmux_func s500_functions[] = {
 	[S500_MUX_MIPI_CSI] = FUNCTION(mipi_csi),
 	[S500_MUX_NAND] = FUNCTION(nand),
 	[S500_MUX_SPDIF] = FUNCTION(spdif),
-	/*[S500_MUX_SIRQ0] = FUNCTION(sirq0),*/
-	/*[S500_MUX_SIRQ1] = FUNCTION(sirq1),*/
-	/*[S500_MUX_SIRQ2] = FUNCTION(sirq2),*/
+	 
+	 
+	 
 	[S500_MUX_TS] = FUNCTION(ts),
 	[S500_MUX_LCD0] = FUNCTION(lcd0),
 };
 
-/* PAD_ST0 */
+ 
 static PAD_ST_CONF(I2C0_SDATA, 0, 30, 1);
 static PAD_ST_CONF(UART0_RX, 0, 29, 1);
 static PAD_ST_CONF(I2S_MCLK1, 0, 23, 1);
@@ -1397,7 +1392,7 @@ static PAD_ST_CONF(KS_OUT0, 0, 6, 1);
 static PAD_ST_CONF(KS_OUT1, 0, 5, 1);
 static PAD_ST_CONF(KS_OUT2, 0, 4, 1);
 
-/* PAD_ST1 */
+ 
 static PAD_ST_CONF(DSI_DP2, 1, 31, 1);
 static PAD_ST_CONF(DSI_DN2, 1, 30, 1);
 static PAD_ST_CONF(I2S_LRCLK0, 1, 29, 1);
@@ -1426,7 +1421,7 @@ static PAD_ST_CONF(SPI0_SS, 1, 2, 1);
 static PAD_ST_CONF(I2S_BCLK0, 1, 1, 1);
 static PAD_ST_CONF(I2S_MCLK0, 1, 0, 1);
 
-/* PAD_PULLCTL0 */
+ 
 static PAD_PULLCTL_CONF(PCM1_SYNC, 0, 30, 1);
 static PAD_PULLCTL_CONF(PCM1_OUT, 0, 29, 1);
 static PAD_PULLCTL_CONF(KS_OUT2, 0, 28, 1);
@@ -1446,7 +1441,7 @@ static PAD_PULLCTL_CONF(KS_OUT0, 0, 2, 1);
 static PAD_PULLCTL_CONF(KS_OUT1, 0, 1, 1);
 static PAD_PULLCTL_CONF(DSI_DP1, 0, 0, 1);
 
-/* PAD_PULLCTL1 */
+ 
 static PAD_PULLCTL_CONF(DSI_CP, 1, 31, 1);
 static PAD_PULLCTL_CONF(DSI_CN, 1, 30, 1);
 static PAD_PULLCTL_CONF(DSI_DN2, 1, 28, 1);
@@ -1466,7 +1461,7 @@ static PAD_PULLCTL_CONF(UART0_RX, 1, 2, 1);
 static PAD_PULLCTL_CONF(UART0_TX, 1, 1, 1);
 static PAD_PULLCTL_CONF(CLKO_25M, 1, 0, 1);
 
-/* PAD_PULLCTL2 */
+ 
 static PAD_PULLCTL_CONF(SPI0_SCLK, 2, 12, 1);
 static PAD_PULLCTL_CONF(SPI0_MOSI, 2, 11, 1);
 static PAD_PULLCTL_CONF(I2C1_SDATA, 2, 10, 1);
@@ -1484,7 +1479,7 @@ static PAD_PULLCTL_CONF(DNAND_D5, 2, 2, 1);
 static PAD_PULLCTL_CONF(DNAND_D6, 2, 2, 1);
 static PAD_PULLCTL_CONF(DNAND_D7, 2, 2, 1);
 
-/* Pad info table */
+ 
 static const struct owl_padinfo s500_padinfo[NUM_PADS] = {
 	[DNAND_DQS] = PAD_INFO_PULLCTL(DNAND_DQS),
 	[DNAND_DQSN] = PAD_INFO_PULLCTL(DNAND_DQSN),

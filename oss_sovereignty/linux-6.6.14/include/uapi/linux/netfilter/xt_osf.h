@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright (c) 2003+ Evgeniy Polyakov <johnpol@2ka.mxt.ru>
- */
+ 
+ 
 
 #ifndef _XT_OSF_H
 #define _XT_OSF_H
@@ -34,4 +32,4 @@
 #define xt_osf_attr_type	nf_osf_attr_type
 #define xt_osf_msg_types	nf_osf_msg_types
 
-#endif				/* _XT_OSF_H */
+#endif				 

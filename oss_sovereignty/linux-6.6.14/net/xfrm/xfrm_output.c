@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xfrm_output.c - Common IPsec encapsulation code.
- *
- * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -45,9 +41,7 @@ static int xfrm_skb_check_space(struct sk_buff *skb)
 	return pskb_expand_head(skb, nhead, ntail, GFP_ATOMIC);
 }
 
-/* Children define the path of the packet through the
- * Linux networking.  Thus, destinations are stackable.
- */
+ 
 
 static struct dst_entry *skb_dst_pop(struct sk_buff *skb)
 {
@@ -57,11 +51,7 @@ static struct dst_entry *skb_dst_pop(struct sk_buff *skb)
 	return child;
 }
 
-/* Add encapsulation header.
- *
- * The IP header will be moved forward to make space for the encapsulation
- * header.
- */
+ 
 static int xfrm4_transport_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct iphdr *iph = ip_hdr(skb);
@@ -106,10 +96,7 @@ static int mip6_rthdr_offset(struct sk_buff *skb, u8 **nexthdr, int type)
 			found_rhdr = 1;
 			break;
 		case NEXTHDR_DEST:
-			/* HAO MUST NOT appear more than once.
-			 * XXX: It is better to try to find by the end of
-			 * XXX: packet if HAO exists.
-			 */
+			 
 			if (ipv6_find_tlv(skb, offset, IPV6_TLV_HAO) >= 0) {
 				net_dbg_ratelimited("mip6: hao exists already, override\n");
 				return offset;
@@ -155,11 +142,7 @@ static int xfrm6_hdr_offset(struct xfrm_state *x, struct sk_buff *skb, u8 **prev
 }
 #endif
 
-/* Add encapsulation header.
- *
- * The IP header and mutable extension headers will be moved forward to make
- * space for the encapsulation header.
- */
+ 
 static int xfrm6_transport_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 #if IS_ENABLED(CONFIG_IPV6)
@@ -186,11 +169,7 @@ static int xfrm6_transport_output(struct xfrm_state *x, struct sk_buff *skb)
 #endif
 }
 
-/* Add route optimization header space.
- *
- * The IP header and mutable extension headers will be moved forward to make
- * space for the route optimization header.
- */
+ 
 static int xfrm6_ro_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 #if IS_ENABLED(CONFIG_IPV6)
@@ -217,10 +196,7 @@ static int xfrm6_ro_output(struct xfrm_state *x, struct sk_buff *skb)
 #endif
 }
 
-/* Add encapsulation header.
- *
- * The top IP header will be constructed per draft-nikander-esp-beet-mode-06.txt.
- */
+ 
 static int xfrm4_beet_encap_add(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct ip_beet_phdr *ph;
@@ -266,10 +242,7 @@ static int xfrm4_beet_encap_add(struct xfrm_state *x, struct sk_buff *skb)
 	return 0;
 }
 
-/* Add encapsulation header.
- *
- * The top IP header will be constructed per RFC 2401.
- */
+ 
 static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
 {
 	bool small_ipv6 = (skb->protocol == htons(ETH_P_IPV6)) && (skb->len <= IPV6_MIN_MTU);
@@ -291,7 +264,7 @@ static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
 
 	top_iph->protocol = xfrm_af2proto(skb_dst(skb)->ops->family);
 
-	/* DS disclosing depends on XFRM_SA_XFLAG_DONT_ENCAP_DSCP */
+	 
 	if (x->props.extra_flags & XFRM_SA_XFLAG_DONT_ENCAP_DSCP)
 		top_iph->tos = 0;
 	else
@@ -392,16 +365,7 @@ static int xfrm6_beet_encap_add(struct xfrm_state *x, struct sk_buff *skb)
 }
 #endif
 
-/* Add encapsulation header.
- *
- * On exit, the transport header will be set to the start of the
- * encapsulation header to be filled in by x->type->output and the mac
- * header will be set to the nextheader (protocol for IPv4) field of the
- * extension header directly preceding the encapsulation header, or in
- * its absence, that of the top IP header.
- * The value of the network header will always point to the top IP header
- * while skb->data will point to the payload.
- */
+ 
 static int xfrm4_prepare_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 	int err;
@@ -547,7 +511,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 		if (xfrm_offload(skb)) {
 			x->type_offload->encap(x, skb);
 		} else {
-			/* Inner headers are invalid now. */
+			 
 			skb->encapsulation = 0;
 
 			err = x->type->output(x, skb);
@@ -643,16 +607,7 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
 	return 0;
 }
 
-/* For partial checksum offload, the outer header checksum is calculated
- * by software and the inner header checksum is calculated by hardware.
- * This requires hardware to know the inner packet type to calculate
- * the inner header checksum. Save inner ip protocol here to avoid
- * traversing the packet in the vendor's xmit code.
- * For IPsec tunnel mode save the ip protocol from the IP header of the
- * plain text packet. Otherwise If the encap type is IPIP, just save
- * skb->inner_ipproto in any other case get the ip protocol from the IP
- * header.
- */
+ 
 static void xfrm_get_inner_ipproto(struct sk_buff *skb, struct xfrm_state *x)
 {
 	struct xfrm_offload *xo = xfrm_offload(skb);
@@ -676,7 +631,7 @@ static void xfrm_get_inner_ipproto(struct sk_buff *skb, struct xfrm_state *x)
 		return;
 	}
 
-	/* non-Tunnel Mode */
+	 
 	if (!skb->encapsulation)
 		return;
 

@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 
 #include <core/memory.h>
@@ -148,8 +126,7 @@ gf100_ltc_flush(struct nvkm_ltc *ltc)
 		nvkm_debug(&ltc->subdev, "LTC flush took %lld ns\n", taken);
 }
 
-/* TODO: Figure out tag memory details and drop the over-cautious allocation.
- */
+ 
 int
 gf100_ltc_oneinit_tag_ram(struct nvkm_ltc *ltc)
 {
@@ -160,29 +137,24 @@ gf100_ltc_oneinit_tag_ram(struct nvkm_ltc *ltc)
 	u32 tag_size, tag_margin, tag_align;
 	int ret;
 
-	/* No VRAM, no tags for now. */
+	 
 	if (!ram) {
 		ltc->num_tags = 0;
 		goto mm_init;
 	}
 
-	/* tags for 1/4 of VRAM should be enough (8192/4 per GiB of VRAM) */
+	 
 	ltc->num_tags = (ram->size >> 17) / 4;
 	if (ltc->num_tags > (1 << bits))
-		ltc->num_tags = 1 << bits; /* we have 16/17 bits in PTE */
-	ltc->num_tags = (ltc->num_tags + 63) & ~63; /* round up to 64 */
+		ltc->num_tags = 1 << bits;  
+	ltc->num_tags = (ltc->num_tags + 63) & ~63;  
 
 	tag_align = ltc->ltc_nr * 0x800;
 	tag_margin = (tag_align < 0x6000) ? 0x6000 : tag_align;
 
-	/* 4 part 4 sub: 0x2000 bytes for 56 tags */
-	/* 3 part 4 sub: 0x6000 bytes for 168 tags */
-	/*
-	 * About 147 bytes per tag. Let's be safe and allocate x2, which makes
-	 * 0x4980 bytes for 64 tags, and round up to 0x6000 bytes for 64 tags.
-	 *
-	 * For 4 GiB of memory we'll have 8192 tags which makes 3 MiB, < 0.1 %.
-	 */
+	 
+	 
+	 
 	tag_size  = (ltc->num_tags / 64) * 0x6000 + tag_margin;
 	tag_size += tag_align;
 
@@ -228,7 +200,7 @@ gf100_ltc_init(struct nvkm_ltc *ltc)
 	struct nvkm_device *device = ltc->subdev.device;
 	u32 lpg128 = !(nvkm_rd32(device, 0x100c80) & 0x00000001);
 
-	nvkm_mask(device, 0x17e820, 0x00100000, 0x00000000); /* INTR_EN &= ~0x10 */
+	nvkm_mask(device, 0x17e820, 0x00100000, 0x00000000);  
 	nvkm_wr32(device, 0x17e8d8, ltc->ltc_nr);
 	nvkm_wr32(device, 0x17e8d4, ltc->tag_base);
 	nvkm_mask(device, 0x17e8c0, 0x00000002, lpg128 ? 0x00000002 : 0x00000000);

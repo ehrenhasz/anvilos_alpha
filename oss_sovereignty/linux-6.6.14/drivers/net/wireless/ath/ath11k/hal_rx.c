@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "debug.h"
 #include "hal.h"
@@ -16,7 +14,7 @@ static void ath11k_hal_reo_set_desc_hdr(struct hal_desc_header *hdr,
 	hdr->info0 = FIELD_PREP(HAL_DESC_HDR_INFO0_OWNER, owner) |
 		     FIELD_PREP(HAL_DESC_HDR_INFO0_BUF_TYPE, buffer_type);
 
-	/* Magic pattern in reserved bits for debugging */
+	 
 	hdr->info0 |= FIELD_PREP(HAL_DESC_HDR_INFO0_DBG_RESERVED, magic);
 }
 
@@ -357,7 +355,7 @@ int ath11k_hal_wbm_desc_parse_err(struct ath11k_base *ab, void *desc,
 
 	type = FIELD_GET(HAL_WBM_RELEASE_INFO0_DESC_TYPE,
 			 wbm_desc->info0);
-	/* We expect only WBM_REL buffer type */
+	 
 	if (type != HAL_WBM_REL_DESC_TYPE_REL_MSDU) {
 		WARN_ON(1);
 		return -EINVAL;
@@ -739,9 +737,7 @@ void ath11k_hal_reo_qdesc_setup(void *vaddr, int tid, u32 ba_window_size,
 		break;
 	}
 
-	/* TODO: Set Ignore ampdu flags based on BA window size and/or
-	 * AMPDU capabilities
-	 */
+	 
 	qdesc->info0 |= FIELD_PREP(HAL_RX_REO_QUEUE_INFO0_IGNORE_AMPDU_FLG, 1);
 
 	qdesc->info1 |= FIELD_PREP(HAL_RX_REO_QUEUE_INFO1_SVLD, 0);
@@ -755,14 +751,7 @@ void ath11k_hal_reo_qdesc_setup(void *vaddr, int tid, u32 ba_window_size,
 
 	ext_desc = qdesc->ext_desc;
 
-	/* TODO: HW queue descriptors are currently allocated for max BA
-	 * window size for all QOS TIDs so that same descriptor can be used
-	 * later when ADDBA request is received. This should be changed to
-	 * allocate HW queue descriptors based on BA window size being
-	 * negotiated (0 for non BA cases), and reallocate when BA window
-	 * size changes and also send WMI message to FW to change the REO
-	 * queue descriptor in Rx peer entry as part of dp_rx_tid_update.
-	 */
+	 
 	memset(ext_desc, 0, sizeof(*ext_desc));
 	ath11k_hal_reo_set_desc_hdr(&ext_desc->desc_hdr, HAL_DESC_REO_OWNED,
 				    HAL_DESC_REO_QUEUE_EXT_DESC,
@@ -1135,12 +1124,12 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data3 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA3_STBC, he_stbc);
 
-		/* data4 */
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_SU_INFO_INFO0_SPATIAL_REUSE, info0);
 		ppdu_info->he_data4 =
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA4_SU_MU_SPTL_REUSE, value);
 
-		/* data5 */
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_SU_INFO_INFO0_TRANSMIT_BW, info0);
 		ppdu_info->bw = value;
 		ppdu_info->he_data5 =
@@ -1193,7 +1182,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data5 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA5_PE_DISAMBIG, value);
 
-		/* data6 */
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_SU_INFO_INFO0_NSTS, info0);
 		value++;
 		ppdu_info->nss = value;
@@ -1235,7 +1224,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 			IEEE80211_RADIOTAP_HE_DATA2_TXOP_KNOWN |
 			IEEE80211_RADIOTAP_HE_DATA2_MIDAMBLE_KNOWN;
 
-		/*data3*/
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_MU_DL_INFO_INFO0_BSS_COLOR, info0);
 		ppdu_info->he_data3 =
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA3_BSS_COLOR, value);
@@ -1253,12 +1242,12 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data3 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA3_STBC, value);
 
-		/*data4*/
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_MU_DL_INFO_INFO0_SPATIAL_REUSE, info0);
 		ppdu_info->he_data4 =
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA4_SU_MU_SPTL_REUSE, value);
 
-		/*data5*/
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_MU_DL_INFO_INFO0_TRANSMIT_BW, info0);
 		ppdu_info->bw = value;
 		ppdu_info->he_data5 =
@@ -1305,7 +1294,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data5 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA5_PE_DISAMBIG, value);
 
-		/*data6*/
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_A_MU_DL_INFO_INFO0_DOPPLER_INDICATION,
 				  info0);
 		ppdu_info->he_data6 |=
@@ -1315,8 +1304,8 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data6 |=
 				FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA6_TXOP, value);
 
-		/* HE-MU Flags */
-		/* HE-MU-flags1 */
+		 
+		 
 		ppdu_info->he_flags1 =
 			IEEE80211_RADIOTAP_HE_MU_FLAGS1_SIG_B_MCS_KNOWN |
 			IEEE80211_RADIOTAP_HE_MU_FLAGS1_SIG_B_DCM_KNOWN |
@@ -1333,7 +1322,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_MU_FLAGS1_SIG_B_DCM_KNOWN,
 				   value);
 
-		/* HE-MU-flags2 */
+		 
 		ppdu_info->he_flags2 =
 			IEEE80211_RADIOTAP_HE_MU_FLAGS2_BW_FROM_SIG_A_BW_KNOWN;
 
@@ -1408,7 +1397,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 			IEEE80211_RADIOTAP_HE_DATA1_DATA_DCM_KNOWN |
 			IEEE80211_RADIOTAP_HE_DATA1_CODING_KNOWN;
 
-		/* HE-data2 */
+		 
 		ppdu_info->he_data2 |= IEEE80211_RADIOTAP_HE_DATA2_TXBF_KNOWN;
 
 		ppdu_info->mcs =
@@ -1427,7 +1416,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		ppdu_info->he_data3 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA3_CODING, value);
 
-		/* HE-data4 */
+		 
 		value = FIELD_GET(HAL_RX_HE_SIG_B2_OFDMA_INFO_INFO0_STA_ID, info0);
 		ppdu_info->he_data4 |=
 			FIELD_PREP(IEEE80211_RADIOTAP_HE_DATA4_MU_STA_ID, value);
@@ -1447,10 +1436,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
 		struct hal_rx_phyrx_rssi_legacy_info *rssi =
 			(struct hal_rx_phyrx_rssi_legacy_info *)tlv_data;
 
-		/* TODO: Please note that the combined rssi will not be accurate
-		 * in MU case. Rssi in MU needs to be retrieved from
-		 * PHYRX_OTHER_RECEIVE_INFO TLV.
-		 */
+		 
 		ppdu_info->rssi_comb =
 			FIELD_GET(HAL_RX_PHYRX_RSSI_LEGACY_INFO_INFO0_RSSI_COMB,
 				  __le32_to_cpu(rssi->info0));
@@ -1516,11 +1502,7 @@ ath11k_hal_rx_parse_mon_status(struct ath11k_base *ab,
 		tlv_userid = FIELD_GET(HAL_TLV_USR_ID, tlv->tl);
 		ptr += sizeof(*tlv);
 
-		/* The actual length of PPDU_END is the combined length of many PHY
-		 * TLVs that follow. Skip the TLV header and
-		 * rx_rxpcu_classification_overview that follows the header to get to
-		 * next TLV.
-		 */
+		 
 		if (tlv_tag == HAL_RX_PPDU_END)
 			tlv_len = sizeof(struct hal_rx_rxpcu_classification_overview);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Universal MIDI Packet (UMP) support
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -91,30 +89,7 @@ static void snd_ump_endpoint_free(struct snd_rawmidi *rmidi)
 #endif
 }
 
-/**
- * snd_ump_endpoint_new - create a UMP Endpoint object
- * @card: the card instance
- * @id: the id string for rawmidi
- * @device: the device index for rawmidi
- * @output: 1 for enabling output
- * @input: 1 for enabling input
- * @ump_ret: the pointer to store the new UMP instance
- *
- * Creates a new UMP Endpoint object. A UMP Endpoint is tied with one rawmidi
- * instance with one input and/or one output rawmidi stream (either uni-
- * or bi-directional). A UMP Endpoint may contain one or multiple UMP Blocks
- * that consist of one or multiple UMP Groups.
- *
- * Use snd_rawmidi_set_ops() to set the operators to the new instance.
- * Unlike snd_rawmidi_new(), this function sets up the info_flags by itself
- * depending on the given @output and @input.
- *
- * The device has SNDRV_RAWMIDI_INFO_UMP flag set and a different device
- * file ("umpCxDx") than a standard MIDI 1.x device ("midiCxDx") is
- * created.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_ump_endpoint_new(struct snd_card *card, char *id, int device,
 			 int output, int input,
 			 struct snd_ump_endpoint **ump_ret)
@@ -165,10 +140,7 @@ int snd_ump_endpoint_new(struct snd_card *card, char *id, int device,
 }
 EXPORT_SYMBOL_GPL(snd_ump_endpoint_new);
 
-/*
- * Device register / unregister hooks;
- *  do nothing, placeholders for avoiding the default rawmidi handling
- */
+ 
 
 #if IS_ENABLED(CONFIG_SND_SEQUENCER)
 static void snd_ump_dev_seq_free(struct snd_seq_device *device)
@@ -213,9 +185,7 @@ snd_ump_get_block(struct snd_ump_endpoint *ump, unsigned char id)
 	return NULL;
 }
 
-/*
- * rawmidi ops for UMP endpoint
- */
+ 
 static int snd_ump_rawmidi_open(struct snd_rawmidi_substream *substream)
 {
 	struct snd_ump_endpoint *ump = rawmidi_to_ump(substream->rmidi);
@@ -258,20 +228,12 @@ static void snd_ump_rawmidi_drain(struct snd_rawmidi_substream *substream)
 		ump->ops->drain(ump, SNDRV_RAWMIDI_STREAM_OUTPUT);
 }
 
-/* number of 32bit words per message type */
+ 
 static unsigned char ump_packet_words[0x10] = {
 	1, 1, 1, 2, 2, 4, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4
 };
 
-/**
- * snd_ump_receive_ump_val - parse the UMP packet data
- * @ump: UMP endpoint
- * @val: UMP packet data
- *
- * The data is copied onto ump->input_buf[].
- * When a full packet is completed, returns the number of words (from 1 to 4).
- * OTOH, if the packet is incomplete, returns 0.
- */
+ 
 int snd_ump_receive_ump_val(struct snd_ump_endpoint *ump, u32 val)
 {
 	int words;
@@ -290,16 +252,7 @@ int snd_ump_receive_ump_val(struct snd_ump_endpoint *ump, u32 val)
 }
 EXPORT_SYMBOL_GPL(snd_ump_receive_ump_val);
 
-/**
- * snd_ump_receive - transfer UMP packets from the device
- * @ump: the UMP endpoint
- * @buffer: the buffer pointer to transfer
- * @count: byte size to transfer
- *
- * Called from the driver to submit the received UMP packets from the device
- * to user-space.  It's essentially a wrapper of rawmidi_receive().
- * The data to receive is in CPU-native endianness.
- */
+ 
 int snd_ump_receive(struct snd_ump_endpoint *ump, const u32 *buffer, int count)
 {
 	struct snd_rawmidi_substream *substream;
@@ -325,16 +278,7 @@ int snd_ump_receive(struct snd_ump_endpoint *ump, const u32 *buffer, int count)
 }
 EXPORT_SYMBOL_GPL(snd_ump_receive);
 
-/**
- * snd_ump_transmit - transmit UMP packets
- * @ump: the UMP endpoint
- * @buffer: the buffer pointer to transfer
- * @count: byte size to transfer
- *
- * Called from the driver to obtain the UMP packets from user-space to the
- * device.  It's essentially a wrapper of rawmidi_transmit().
- * The data to transmit is in CPU-native endianness.
- */
+ 
 int snd_ump_transmit(struct snd_ump_endpoint *ump, u32 *buffer, int count)
 {
 	struct snd_rawmidi_substream *substream =
@@ -344,22 +288,14 @@ int snd_ump_transmit(struct snd_ump_endpoint *ump, u32 *buffer, int count)
 	if (!substream)
 		return -ENODEV;
 	err = snd_rawmidi_transmit(substream, (char *)buffer, count);
-	/* received either data or an error? */
+	 
 	if (err)
 		return err;
 	return process_legacy_output(ump, buffer, count);
 }
 EXPORT_SYMBOL_GPL(snd_ump_transmit);
 
-/**
- * snd_ump_block_new - Create a UMP block
- * @ump: UMP object
- * @blk: block ID number to create
- * @direction: direction (in/out/bidirection)
- * @first_group: the first group ID (0-based)
- * @num_groups: the number of groups in this block
- * @blk_ret: the pointer to store the resultant block object
- */
+ 
 int snd_ump_block_new(struct snd_ump_endpoint *ump, unsigned int blk,
 		      unsigned int direction, unsigned int first_group,
 		      unsigned int num_groups, struct snd_ump_block **blk_ret)
@@ -386,11 +322,11 @@ int snd_ump_block_new(struct snd_ump_endpoint *ump, unsigned int blk,
 	fb->info.active = 1;
 	fb->info.first_group = first_group;
 	fb->info.num_groups = num_groups;
-	/* fill the default name, may be overwritten to a better name */
+	 
 	snprintf(fb->info.name, sizeof(fb->info.name), "Group %d-%d",
 		 first_group + 1, first_group + num_groups);
 
-	/* put the entry in the ordered list */
+	 
 	list_for_each_entry(p, &ump->block_list, list) {
 		if (p->info.block_id > blk) {
 			list_add_tail(&fb->list, &p->list);
@@ -422,9 +358,7 @@ static int snd_ump_ioctl_block(struct snd_ump_endpoint *ump,
 	return 0;
 }
 
-/*
- * Handle UMP-specific ioctls; called from snd_rawmidi_ioctl()
- */
+ 
 static long snd_ump_ioctl(struct snd_rawmidi *rmidi, unsigned int cmd,
 			  void __user *argp)
 {
@@ -471,7 +405,7 @@ static const char *ump_ui_hint_string(int dir)
 	}
 }
 
-/* Additional proc file output */
+ 
 static void snd_ump_proc_read(struct snd_info_entry *entry,
 			      struct snd_info_buffer *buffer)
 {
@@ -524,11 +458,9 @@ static void snd_ump_proc_read(struct snd_info_entry *entry,
 	}
 }
 
-/*
- * UMP endpoint and function block handling
- */
+ 
 
-/* open / close UMP streams for the internal stream msg communication */
+ 
 static int ump_request_open(struct snd_ump_endpoint *ump)
 {
 	return snd_rawmidi_kernel_open(&ump->core, 0,
@@ -541,10 +473,7 @@ static void ump_request_close(struct snd_ump_endpoint *ump)
 	snd_rawmidi_kernel_release(&ump->stream_rfile);
 }
 
-/* request a command and wait for the given response;
- * @req1 and @req2 are u32 commands
- * @reply is the expected UMP stream status
- */
+ 
 static int ump_req_msg(struct snd_ump_endpoint *ump, u32 req1, u32 req2,
 		       u32 reply)
 {
@@ -571,9 +500,7 @@ static int ump_req_msg(struct snd_ump_endpoint *ump, u32 req1, u32 req2,
 	return 0;
 }
 
-/* append the received letters via UMP packet to the given string buffer;
- * return 1 if the full string is received or 0 to continue
- */
+ 
 static int ump_append_string(struct snd_ump_endpoint *ump, char *dest,
 			     int maxsize, const u32 *buf, int offset)
 {
@@ -602,7 +529,7 @@ static int ump_append_string(struct snd_ump_endpoint *ump, char *dest,
 		format == UMP_STREAM_MSG_FORMAT_END);
 }
 
-/* handle EP info stream message; update the UMP attributes */
+ 
 static int ump_handle_ep_info_msg(struct snd_ump_endpoint *ump,
 				  const union snd_ump_stream_msg *buf)
 {
@@ -623,10 +550,10 @@ static int ump_handle_ep_info_msg(struct snd_ump_endpoint *ump,
 
 	ump_dbg(ump, "EP info: version=%x, num_blocks=%x, proto_caps=%x\n",
 		ump->info.version, ump->info.num_blocks, ump->info.protocol_caps);
-	return 1; /* finished */
+	return 1;  
 }
 
-/* handle EP device info stream message; update the UMP attributes */
+ 
 static int ump_handle_device_info_msg(struct snd_ump_endpoint *ump,
 				      const union snd_ump_stream_msg *buf)
 {
@@ -647,10 +574,10 @@ static int ump_handle_device_info_msg(struct snd_ump_endpoint *ump,
 		ump->info.sw_revision[1],
 		ump->info.sw_revision[2],
 		ump->info.sw_revision[3]);
-	return 1; /* finished */
+	return 1;  
 }
 
-/* handle EP name stream message; update the UMP name string */
+ 
 static int ump_handle_ep_name_msg(struct snd_ump_endpoint *ump,
 				  const union snd_ump_stream_msg *buf)
 {
@@ -658,7 +585,7 @@ static int ump_handle_ep_name_msg(struct snd_ump_endpoint *ump,
 				 buf->raw, 2);
 }
 
-/* handle EP product id stream message; update the UMP product_id string */
+ 
 static int ump_handle_product_id_msg(struct snd_ump_endpoint *ump,
 				     const union snd_ump_stream_msg *buf)
 {
@@ -667,22 +594,16 @@ static int ump_handle_product_id_msg(struct snd_ump_endpoint *ump,
 				 buf->raw, 2);
 }
 
-/* notify the protocol change to sequencer */
+ 
 static void seq_notify_protocol(struct snd_ump_endpoint *ump)
 {
 #if IS_ENABLED(CONFIG_SND_SEQUENCER)
 	if (ump->seq_ops && ump->seq_ops->switch_protocol)
 		ump->seq_ops->switch_protocol(ump);
-#endif /* CONFIG_SND_SEQUENCER */
+#endif  
 }
 
-/**
- * snd_ump_switch_protocol - switch MIDI protocol
- * @ump: UMP endpoint
- * @protocol: protocol to switch to
- *
- * Returns 1 if the protocol is actually switched, 0 if unchanged
- */
+ 
 int snd_ump_switch_protocol(struct snd_ump_endpoint *ump, unsigned int protocol)
 {
 	protocol &= ump->info.protocol_caps;
@@ -697,7 +618,7 @@ int snd_ump_switch_protocol(struct snd_ump_endpoint *ump, unsigned int protocol)
 }
 EXPORT_SYMBOL_GPL(snd_ump_switch_protocol);
 
-/* handle EP stream config message; update the UMP protocol */
+ 
 static int ump_handle_stream_cfg_msg(struct snd_ump_endpoint *ump,
 				     const union snd_ump_stream_msg *buf)
 {
@@ -705,10 +626,10 @@ static int ump_handle_stream_cfg_msg(struct snd_ump_endpoint *ump,
 		(buf->stream_cfg.protocol << 8) | buf->stream_cfg.jrts;
 
 	snd_ump_switch_protocol(ump, protocol);
-	return 1; /* finished */
+	return 1;  
 }
 
-/* Extract Function Block info from UMP packet */
+ 
 static void fill_fb_info(struct snd_ump_endpoint *ump,
 			 struct snd_ump_block_info *info,
 			 const union snd_ump_stream_msg *buf)
@@ -728,7 +649,7 @@ static void fill_fb_info(struct snd_ump_endpoint *ump,
 		info->sysex8_streams, info->flags);
 }
 
-/* check whether the FB info gets updated by the current message */
+ 
 static bool is_fb_info_updated(struct snd_ump_endpoint *ump,
 			       struct snd_ump_block *fb,
 			       const union snd_ump_stream_msg *buf)
@@ -746,7 +667,7 @@ static bool is_fb_info_updated(struct snd_ump_endpoint *ump,
 	return memcmp(&fb->info, tmpbuf, sizeof(tmpbuf)) != 0;
 }
 
-/* notify the FB info/name change to sequencer */
+ 
 static void seq_notify_fb_change(struct snd_ump_endpoint *ump,
 				 struct snd_ump_block *fb)
 {
@@ -756,7 +677,7 @@ static void seq_notify_fb_change(struct snd_ump_endpoint *ump,
 #endif
 }
 
-/* handle FB info message; update FB info if the block is present */
+ 
 static int ump_handle_fb_info_msg(struct snd_ump_endpoint *ump,
 				  const union snd_ump_stream_msg *buf)
 {
@@ -766,16 +687,16 @@ static int ump_handle_fb_info_msg(struct snd_ump_endpoint *ump,
 	blk = buf->fb_info.function_block_id;
 	fb = snd_ump_get_block(ump, blk);
 
-	/* complain only if updated after parsing */
+	 
 	if (!fb && ump->parsed) {
 		ump_info(ump, "Function Block Info Update for non-existing block %d\n",
 			 blk);
 		return -ENODEV;
 	}
 
-	/* When updated after the initial parse, check the FB info update */
+	 
 	if (ump->parsed && !is_fb_info_updated(ump, fb, buf))
-		return 1; /* no content change */
+		return 1;  
 
 	if (fb) {
 		fill_fb_info(ump, &fb->info, buf);
@@ -783,10 +704,10 @@ static int ump_handle_fb_info_msg(struct snd_ump_endpoint *ump,
 			seq_notify_fb_change(ump, fb);
 	}
 
-	return 1; /* finished */
+	return 1;  
 }
 
-/* handle FB name message; update the FB name string */
+ 
 static int ump_handle_fb_name_msg(struct snd_ump_endpoint *ump,
 				  const union snd_ump_stream_msg *buf)
 {
@@ -801,7 +722,7 @@ static int ump_handle_fb_name_msg(struct snd_ump_endpoint *ump,
 
 	ret = ump_append_string(ump, fb->info.name, sizeof(fb->info.name),
 				buf->raw, 3);
-	/* notify the FB name update to sequencer, too */
+	 
 	if (ret > 0 && ump->parsed)
 		seq_notify_fb_change(ump, fb);
 	return ret;
@@ -816,7 +737,7 @@ static int create_block_from_fb_info(struct snd_ump_endpoint *ump, int blk)
 	u32 msg;
 	int err;
 
-	/* query the FB info once */
+	 
 	msg = ump_stream_compose(UMP_STREAM_MSG_STATUS_FB_DISCOVERY, 0) |
 		(blk << 8) | UMP_STREAM_MSG_REQUEST_FB_INFO;
 	err = ump_req_msg(ump, msg, 0, UMP_STREAM_MSG_STATUS_FB_INFO);
@@ -825,7 +746,7 @@ static int create_block_from_fb_info(struct snd_ump_endpoint *ump, int blk)
 		return err;
 	}
 
-	/* the last input must be the FB info */
+	 
 	if (buf->fb_info.status != UMP_STREAM_MSG_STATUS_FB_INFO) {
 		ump_dbg(ump, "Inconsistent input: 0x%x\n", *buf->raw);
 		return -EINVAL;
@@ -851,7 +772,7 @@ static int create_block_from_fb_info(struct snd_ump_endpoint *ump, int blk)
 	return 0;
 }
 
-/* handle stream messages, called from snd_ump_receive() */
+ 
 static void ump_handle_stream_msg(struct snd_ump_endpoint *ump,
 				  const u32 *buf, int size)
 {
@@ -859,7 +780,7 @@ static void ump_handle_stream_msg(struct snd_ump_endpoint *ump,
 	unsigned int status;
 	int ret;
 
-	/* UMP stream message suppressed (for gadget UMP)? */
+	 
 	if (ump->no_process_stream)
 		return;
 
@@ -898,20 +819,14 @@ static void ump_handle_stream_msg(struct snd_ump_endpoint *ump,
 		return;
 	}
 
-	/* when the message has been processed fully, wake up */
+	 
 	if (ret > 0 && ump->stream_wait_for == status) {
 		WRITE_ONCE(ump->stream_finished, 1);
 		wake_up(&ump->stream_wait);
 	}
 }
 
-/**
- * snd_ump_parse_endpoint - parse endpoint and create function blocks
- * @ump: UMP object
- *
- * Returns 0 for successful parse, -ENODEV if device doesn't respond
- * (or the query is unsupported), or other error code for serious errors.
- */
+ 
 int snd_ump_parse_endpoint(struct snd_ump_endpoint *ump)
 {
 	int blk, err;
@@ -926,9 +841,9 @@ int snd_ump_parse_endpoint(struct snd_ump_endpoint *ump)
 		return err;
 	}
 
-	/* Check Endpoint Information */
+	 
 	msg = ump_stream_compose(UMP_STREAM_MSG_STATUS_EP_DISCOVERY, 0) |
-		0x0101; /* UMP version 1.1 */
+		0x0101;  
 	err = ump_req_msg(ump, msg, UMP_STREAM_MSG_REQUEST_EP_INFO,
 			  UMP_STREAM_MSG_STATUS_EP_INFO);
 	if (err < 0) {
@@ -936,31 +851,31 @@ int snd_ump_parse_endpoint(struct snd_ump_endpoint *ump)
 		goto error;
 	}
 
-	/* Request Endpoint Device Info */
+	 
 	err = ump_req_msg(ump, msg, UMP_STREAM_MSG_REQUEST_DEVICE_INFO,
 			  UMP_STREAM_MSG_STATUS_DEVICE_INFO);
 	if (err < 0)
 		ump_dbg(ump, "Unable to get UMP EP device info\n");
 
-	/* Request Endpoint Name */
+	 
 	err = ump_req_msg(ump, msg, UMP_STREAM_MSG_REQUEST_EP_NAME,
 			  UMP_STREAM_MSG_STATUS_EP_NAME);
 	if (err < 0)
 		ump_dbg(ump, "Unable to get UMP EP name string\n");
 
-	/* Request Endpoint Product ID */
+	 
 	err = ump_req_msg(ump, msg, UMP_STREAM_MSG_REQUEST_PRODUCT_ID,
 			  UMP_STREAM_MSG_STATUS_PRODUCT_ID);
 	if (err < 0)
 		ump_dbg(ump, "Unable to get UMP EP product ID string\n");
 
-	/* Get the current stream configuration */
+	 
 	err = ump_req_msg(ump, msg, UMP_STREAM_MSG_REQUEST_STREAM_CFG,
 			  UMP_STREAM_MSG_STATUS_STREAM_CFG);
 	if (err < 0)
 		ump_dbg(ump, "Unable to get UMP EP stream config\n");
 
-	/* Query and create blocks from Function Blocks */
+	 
 	for (blk = 0; blk < ump->info.num_blocks; blk++) {
 		err = create_block_from_fb_info(ump, blk);
 		if (err < 0)
@@ -977,9 +892,7 @@ int snd_ump_parse_endpoint(struct snd_ump_endpoint *ump)
 EXPORT_SYMBOL_GPL(snd_ump_parse_endpoint);
 
 #if IS_ENABLED(CONFIG_SND_UMP_LEGACY_RAWMIDI)
-/*
- * Legacy rawmidi support
- */
+ 
 static int snd_ump_legacy_open(struct snd_rawmidi_substream *substream)
 {
 	struct snd_ump_endpoint *ump = substream->rmidi->private_data;
@@ -1049,7 +962,7 @@ static void snd_ump_legacy_drain(struct snd_rawmidi_substream *substream)
 
 static int snd_ump_legacy_dev_register(struct snd_rawmidi *rmidi)
 {
-	/* dummy, just for avoiding create superfluous seq clients */
+	 
 	return 0;
 }
 
@@ -1123,7 +1036,7 @@ static void process_legacy_input(struct snd_ump_endpoint *ump, const u32 *src,
 	spin_unlock_irqrestore(&ump->legacy_locks[dir], flags);
 }
 
-/* Fill ump->legacy_mapping[] for groups to be used for legacy rawmidi */
+ 
 static int fill_legacy_mapping(struct snd_ump_endpoint *ump)
 {
 	struct snd_ump_block *fb;
@@ -1139,7 +1052,7 @@ static int fill_legacy_mapping(struct snd_ump_endpoint *ump)
 			ump_info(ump, "No UMP Group is found in FB\n");
 	}
 
-	/* use all groups for non-static case */
+	 
 	if (!group_maps)
 		group_maps = (1U << SNDRV_UMP_MAX_GROUPS) - 1;
 
@@ -1206,7 +1119,7 @@ int snd_ump_attach_legacy_rawmidi(struct snd_ump_endpoint *ump,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_ump_attach_legacy_rawmidi);
-#endif /* CONFIG_SND_UMP_LEGACY_RAWMIDI */
+#endif  
 
 MODULE_DESCRIPTION("Universal MIDI Packet (UMP) Core Driver");
 MODULE_LICENSE("GPL");

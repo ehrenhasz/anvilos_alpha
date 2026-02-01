@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2021 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -72,10 +68,7 @@ static int rt4831_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * Used to prevent the abnormal shutdown.
-	 * If SCL/SDA both keep low for one second to reset HW.
-	 */
+	 
 	ret = regmap_update_bits(regmap, RT4831_REG_I2CPROT, RT4831_I2CSAFETMR_MASK,
 				 RT4831_I2CSAFETMR_MASK);
 	if (ret) {
@@ -92,7 +85,7 @@ static void rt4831_remove(struct i2c_client *client)
 	struct regmap *regmap = dev_get_regmap(&client->dev, NULL);
 	int ret;
 
-	/* Disable WLED and DSV outputs */
+	 
 	ret = regmap_update_bits(regmap, RT4831_REG_ENABLE, RT4831_RESET_MASK, RT4831_RESET_MASK);
 	if (ret)
 		dev_warn(&client->dev, "Failed to disable outputs (%pe)\n", ERR_PTR(ret));

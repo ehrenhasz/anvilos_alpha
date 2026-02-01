@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 
@@ -15,7 +12,7 @@
 #include "tidss_irq.h"
 #include "tidss_plane.h"
 
-/* call with wait_lock and dispc runtime held */
+ 
 static void tidss_irq_update(struct tidss_device *tidss)
 {
 	assert_spin_locked(&tidss->wait_lock);

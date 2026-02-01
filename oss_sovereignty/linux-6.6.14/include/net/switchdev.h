@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/net/switchdev.h - Switch device API
- * Copyright (c) 2014-2015 Jiri Pirko <jiri@resnulli.us>
- * Copyright (c) 2014-2015 Scott Feldman <sfeldma@gmail.com>
- */
+ 
+ 
 #ifndef _LINUX_SWITCHDEV_H_
 #define _LINUX_SWITCHDEV_H_
 
@@ -55,17 +51,17 @@ struct switchdev_attr {
 	void *complete_priv;
 	void (*complete)(struct net_device *dev, int err, void *priv);
 	union {
-		u8 stp_state;				/* PORT_STP_STATE */
-		struct switchdev_mst_state mst_state;	/* PORT_MST_STATE */
-		struct switchdev_brport_flags brport_flags; /* PORT_BRIDGE_FLAGS */
-		bool mrouter;				/* PORT_MROUTER */
-		clock_t ageing_time;			/* BRIDGE_AGEING_TIME */
-		bool vlan_filtering;			/* BRIDGE_VLAN_FILTERING */
-		u16 vlan_protocol;			/* BRIDGE_VLAN_PROTOCOL */
-		bool mst;				/* BRIDGE_MST */
-		bool mc_disabled;			/* MC_DISABLED */
-		u8 mrp_port_role;			/* MRP_PORT_ROLE */
-		struct switchdev_vlan_msti vlan_msti;	/* VLAN_MSTI */
+		u8 stp_state;				 
+		struct switchdev_mst_state mst_state;	 
+		struct switchdev_brport_flags brport_flags;  
+		bool mrouter;				 
+		clock_t ageing_time;			 
+		bool vlan_filtering;			 
+		u16 vlan_protocol;			 
+		bool mst;				 
+		bool mc_disabled;			 
+		u8 mrp_port_role;			 
+		struct switchdev_vlan_msti vlan_msti;	 
 	} u;
 };
 
@@ -92,24 +88,19 @@ struct switchdev_obj {
 	void (*complete)(struct net_device *dev, int err, void *priv);
 };
 
-/* SWITCHDEV_OBJ_ID_PORT_VLAN */
+ 
 struct switchdev_obj_port_vlan {
 	struct switchdev_obj obj;
 	u16 flags;
 	u16 vid;
-	/* If set, the notifier signifies a change of one of the following
-	 * flags for a VLAN that already exists:
-	 * - BRIDGE_VLAN_INFO_PVID
-	 * - BRIDGE_VLAN_INFO_UNTAGGED
-	 * Entries with BRIDGE_VLAN_INFO_BRENTRY unset are not notified at all.
-	 */
+	 
 	bool changed;
 };
 
 #define SWITCHDEV_OBJ_PORT_VLAN(OBJ) \
 	container_of((OBJ), struct switchdev_obj_port_vlan, obj)
 
-/* SWITCHDEV_OBJ_ID_PORT_MDB */
+ 
 struct switchdev_obj_port_mdb {
 	struct switchdev_obj obj;
 	unsigned char addr[ETH_ALEN];
@@ -120,7 +111,7 @@ struct switchdev_obj_port_mdb {
 	container_of((OBJ), struct switchdev_obj_port_mdb, obj)
 
 
-/* SWITCHDEV_OBJ_ID_MRP */
+ 
 struct switchdev_obj_mrp {
 	struct switchdev_obj obj;
 	struct net_device *p_port;
@@ -132,10 +123,10 @@ struct switchdev_obj_mrp {
 #define SWITCHDEV_OBJ_MRP(OBJ) \
 	container_of((OBJ), struct switchdev_obj_mrp, obj)
 
-/* SWITCHDEV_OBJ_ID_RING_TEST_MRP */
+ 
 struct switchdev_obj_ring_test_mrp {
 	struct switchdev_obj obj;
-	/* The value is in us and a value of 0 represents to stop */
+	 
 	u32 interval;
 	u8 max_miss;
 	u32 ring_id;
@@ -146,7 +137,7 @@ struct switchdev_obj_ring_test_mrp {
 #define SWITCHDEV_OBJ_RING_TEST_MRP(OBJ) \
 	container_of((OBJ), struct switchdev_obj_ring_test_mrp, obj)
 
-/* SWICHDEV_OBJ_ID_RING_ROLE_MRP */
+ 
 struct switchdev_obj_ring_role_mrp {
 	struct switchdev_obj obj;
 	u8 ring_role;
@@ -166,10 +157,10 @@ struct switchdev_obj_ring_state_mrp {
 #define SWITCHDEV_OBJ_RING_STATE_MRP(OBJ) \
 	container_of((OBJ), struct switchdev_obj_ring_state_mrp, obj)
 
-/* SWITCHDEV_OBJ_ID_IN_TEST_MRP */
+ 
 struct switchdev_obj_in_test_mrp {
 	struct switchdev_obj obj;
-	/* The value is in us and a value of 0 represents to stop */
+	 
 	u32 interval;
 	u32 in_id;
 	u32 period;
@@ -179,7 +170,7 @@ struct switchdev_obj_in_test_mrp {
 #define SWITCHDEV_OBJ_IN_TEST_MRP(OBJ) \
 	container_of((OBJ), struct switchdev_obj_in_test_mrp, obj)
 
-/* SWICHDEV_OBJ_ID_IN_ROLE_MRP */
+ 
 struct switchdev_obj_in_role_mrp {
 	struct switchdev_obj obj;
 	struct net_device *i_port;
@@ -217,9 +208,9 @@ enum switchdev_notifier_type {
 	SWITCHDEV_FDB_OFFLOADED,
 	SWITCHDEV_FDB_FLUSH_TO_BRIDGE,
 
-	SWITCHDEV_PORT_OBJ_ADD, /* Blocking. */
-	SWITCHDEV_PORT_OBJ_DEL, /* Blocking. */
-	SWITCHDEV_PORT_ATTR_SET, /* May be blocking . */
+	SWITCHDEV_PORT_OBJ_ADD,  
+	SWITCHDEV_PORT_OBJ_DEL,  
+	SWITCHDEV_PORT_ATTR_SET,  
 
 	SWITCHDEV_VXLAN_FDB_ADD_TO_BRIDGE,
 	SWITCHDEV_VXLAN_FDB_DEL_TO_BRIDGE,
@@ -238,11 +229,9 @@ struct switchdev_notifier_info {
 	const void *ctx;
 };
 
-/* Remember to update br_switchdev_fdb_populate() when adding
- * new members to this structure
- */
+ 
 struct switchdev_notifier_fdb_info {
-	struct switchdev_notifier_info info; /* must be first */
+	struct switchdev_notifier_info info;  
 	const unsigned char *addr;
 	u16 vid;
 	u8 added_by_user:1,
@@ -252,19 +241,19 @@ struct switchdev_notifier_fdb_info {
 };
 
 struct switchdev_notifier_port_obj_info {
-	struct switchdev_notifier_info info; /* must be first */
+	struct switchdev_notifier_info info;  
 	const struct switchdev_obj *obj;
 	bool handled;
 };
 
 struct switchdev_notifier_port_attr_info {
-	struct switchdev_notifier_info info; /* must be first */
+	struct switchdev_notifier_info info;  
 	const struct switchdev_attr *attr;
 	bool handled;
 };
 
 struct switchdev_notifier_brport_info {
-	struct switchdev_notifier_info info; /* must be first */
+	struct switchdev_notifier_info info;  
 	const struct switchdev_brport brport;
 };
 
@@ -522,4 +511,4 @@ switchdev_handle_port_attr_set(struct net_device *dev,
 }
 #endif
 
-#endif /* _LINUX_SWITCHDEV_H_ */
+#endif  

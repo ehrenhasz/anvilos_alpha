@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 NXP.
- */
+ 
+ 
 
 #ifndef _DCSS_KMS_H_
 #define _DCSS_KMS_H_

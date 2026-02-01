@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <errno.h>
 #include <error.h>
@@ -79,7 +79,7 @@ static int nl_error(struct nlmsghdr *nh)
 	}
 
 	if (err->error) {
-		/* check messages from kernel */
+		 
 		struct rtattr *attrs = (struct rtattr *)NLMSG_DATA(nh);
 
 		fprintf(stderr, "netlink error %d (%s)\n",
@@ -204,7 +204,7 @@ static int capture_events(int fd, int event_group)
 	return 0;
 }
 
-/* do a netlink command and, if max > 0, fetch the reply ; nh's size >1024B */
+ 
 static int do_nl_req(int fd, struct nlmsghdr *nh, int len, int max)
 {
 	struct sockaddr_nl nladdr = { .nl_family = AF_NETLINK };
@@ -213,7 +213,7 @@ static int do_nl_req(int fd, struct nlmsghdr *nh, int len, int max)
 	int rem, ret;
 	int err = 0;
 
-	/* If no expected answer, ask for an ACK to look for errors if any */
+	 
 	if (max == 0) {
 		nh->nlmsg_flags |= NLM_F_ACK;
 		max = 1024;
@@ -229,7 +229,7 @@ static int do_nl_req(int fd, struct nlmsghdr *nh, int len, int max)
 	if (ret < 0)
 		error(1, errno, "recv netlink: %uB\n", ret);
 
-	/* Beware: the NLMSG_NEXT macro updates the 'rem' argument */
+	 
 	for (; NLMSG_OK(nh, rem); nh = NLMSG_NEXT(nh, rem)) {
 		if (nh->nlmsg_type == NLMSG_DONE)
 			break;
@@ -361,9 +361,7 @@ int dsf(int fd, int pm_family, int argc, char *argv[])
 	if (argc < 12)
 		syntax(argv);
 
-	/* Params recorded in this order:
-	 * <local-ip>, <local-port>, <remote-ip>, <remote-port>, <token>
-	 */
+	 
 	for (arg = 2; arg < argc; arg++) {
 		if (!strcmp(argv[arg], "lip")) {
 			if (++arg >= argc)
@@ -395,7 +393,7 @@ int dsf(int fd, int pm_family, int argc, char *argv[])
 	}
 
 	for (arg = 0; arg < 4; arg = arg + 2) {
-		/*  addr header */
+		 
 		addr_start = off;
 		addr = (void *)(data + off);
 		addr->rta_type = NLA_F_NESTED |
@@ -403,7 +401,7 @@ int dsf(int fd, int pm_family, int argc, char *argv[])
 		addr->rta_len = RTA_LENGTH(0);
 		off += NLMSG_ALIGN(addr->rta_len);
 
-		/*  addr data */
+		 
 		rta = (void *)(data + off);
 		if (inet_pton(AF_INET, params[arg], RTA_DATA(rta))) {
 			family = AF_INET;
@@ -417,14 +415,14 @@ int dsf(int fd, int pm_family, int argc, char *argv[])
 			error(1, errno, "can't parse ip %s", params[arg]);
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* family */
+		 
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 		rta->rta_len = RTA_LENGTH(2);
 		memcpy(RTA_DATA(rta), &family, 2);
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/*  port */
+		 
 		port = atoi(params[arg + 1]);
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
@@ -435,7 +433,7 @@ int dsf(int fd, int pm_family, int argc, char *argv[])
 		addr->rta_len = off - addr_start;
 	}
 
-	/* token */
+	 
 	token = strtoul(params[4], NULL, 10);
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ATTR_TOKEN;
@@ -475,9 +473,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 	if (argc < 12)
 		syntax(argv);
 
-	/* Params recorded in this order:
-	 * <local-ip>, <local-id>, <remote-ip>, <remote-port>, <token>
-	 */
+	 
 	for (arg = 2; arg < argc; arg++) {
 		if (!strcmp(argv[arg], "lip")) {
 			if (++arg >= argc)
@@ -509,7 +505,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 	}
 
 	for (arg = 0; arg < 4; arg = arg + 2) {
-		/*  addr header */
+		 
 		addr_start = off;
 		addr = (void *)(data + off);
 		addr->rta_type = NLA_F_NESTED |
@@ -517,7 +513,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 		addr->rta_len = RTA_LENGTH(0);
 		off += NLMSG_ALIGN(addr->rta_len);
 
-		/*  addr data */
+		 
 		rta = (void *)(data + off);
 		if (inet_pton(AF_INET, params[arg], RTA_DATA(rta))) {
 			family = AF_INET;
@@ -531,7 +527,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 			error(1, errno, "can't parse ip %s", params[arg]);
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* family */
+		 
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 		rta->rta_len = RTA_LENGTH(2);
@@ -539,7 +535,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 		off += NLMSG_ALIGN(rta->rta_len);
 
 		if (arg == 2) {
-			/*  port */
+			 
 			port = atoi(params[arg + 1]);
 			rta = (void *)(data + off);
 			rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
@@ -549,7 +545,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 		}
 
 		if (arg == 0) {
-			/* id */
+			 
 			id = atoi(params[arg + 1]);
 			rta = (void *)(data + off);
 			rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
@@ -561,7 +557,7 @@ int csf(int fd, int pm_family, int argc, char *argv[])
 		addr->rta_len = off - addr_start;
 	}
 
-	/* token */
+	 
 	token = strtoul(params[4], NULL, 10);
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ATTR_TOKEN;
@@ -646,15 +642,15 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 	if (argc < 7)
 		syntax(argv);
 
-	/* local-ip header */
+	 
 	addr_start = off;
 	addr = (void *)(data + off);
 	addr->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR;
 	addr->rta_len = RTA_LENGTH(0);
 	off += NLMSG_ALIGN(addr->rta_len);
 
-	/* local-ip data */
-	/* record addr type */
+	 
+	 
 	rta = (void *)(data + off);
 	if (inet_pton(AF_INET, argv[2], RTA_DATA(rta))) {
 		family = AF_INET;
@@ -668,7 +664,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 		error(1, errno, "can't parse ip %s", argv[2]);
 	off += NLMSG_ALIGN(rta->rta_len);
 
-	/* addr family */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 	rta->rta_len = RTA_LENGTH(2);
@@ -677,7 +673,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 
 	for (arg = 3; arg < argc; arg++) {
 		if (!strcmp(argv[arg], "id")) {
-			/* local-id */
+			 
 			if (++arg >= argc)
 				error(1, 0, " missing id value");
 
@@ -688,7 +684,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 			memcpy(RTA_DATA(rta), &id, 1);
 			off += NLMSG_ALIGN(rta->rta_len);
 		} else if (!strcmp(argv[arg], "dev")) {
-			/* for the if_index */
+			 
 			int32_t ifindex;
 
 			if (++arg >= argc)
@@ -704,7 +700,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 			memcpy(RTA_DATA(rta), &ifindex, 4);
 			off += NLMSG_ALIGN(rta->rta_len);
 		} else if (!strcmp(argv[arg], "port")) {
-			/* local-port (optional) */
+			 
 			u_int16_t port;
 
 			if (++arg >= argc)
@@ -717,7 +713,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 			memcpy(RTA_DATA(rta), &port, 2);
 			off += NLMSG_ALIGN(rta->rta_len);
 		} else if (!strcmp(argv[arg], "token")) {
-			/* MPTCP connection token */
+			 
 			if (++arg >= argc)
 				error(1, 0, " missing token value");
 
@@ -726,7 +722,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 			error(1, 0, "unknown keyword %s", argv[arg]);
 	}
 
-	/* addr flags */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ADDR_ATTR_FLAGS;
 	rta->rta_len = RTA_LENGTH(4);
@@ -738,7 +734,7 @@ int announce_addr(int fd, int pm_family, int argc, char *argv[])
 	if (id == UINT_MAX || token == UINT_MAX)
 		error(1, 0, " missing mandatory inputs");
 
-	/* token */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ATTR_TOKEN;
 	rta->rta_len = RTA_LENGTH(4);
@@ -778,7 +774,7 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
 	nest->rta_len = RTA_LENGTH(0);
 	off += NLMSG_ALIGN(nest->rta_len);
 
-	/* addr data */
+	 
 	rta = (void *)(data + off);
 	if (inet_pton(AF_INET, argv[2], RTA_DATA(rta))) {
 		family = AF_INET;
@@ -792,7 +788,7 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
 		error(1, errno, "can't parse ip %s", argv[2]);
 	off += NLMSG_ALIGN(rta->rta_len);
 
-	/* family */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 	rta->rta_len = RTA_LENGTH(2);
@@ -803,11 +799,11 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
 		if (!strcmp(argv[arg], "flags")) {
 			char *tok, *str;
 
-			/* flags */
+			 
 			if (++arg >= argc)
 				error(1, 0, " missing flags value");
 
-			/* do not support flag list yet */
+			 
 			for (str = argv[arg]; (tok = strtok(str, ","));
 			     str = NULL) {
 				if (!strcmp(tok, "subflow"))
@@ -898,12 +894,12 @@ int del_addr(int fd, int pm_family, int argc, char *argv[])
 	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_DEL_ADDR,
 			    MPTCP_PM_VER);
 
-	/* the only argument is the address id (nonzero) */
+	 
 	if (argc != 3 && argc != 4)
 		syntax(argv);
 
 	id = atoi(argv[2]);
-	/* zero id with the IP address */
+	 
 	if (!id && argc != 4)
 		syntax(argv);
 
@@ -913,7 +909,7 @@ int del_addr(int fd, int pm_family, int argc, char *argv[])
 	nest->rta_len =  RTA_LENGTH(0);
 	off += NLMSG_ALIGN(nest->rta_len);
 
-	/* build a dummy addr with only the ID set */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
 	rta->rta_len = RTA_LENGTH(1);
@@ -921,7 +917,7 @@ int del_addr(int fd, int pm_family, int argc, char *argv[])
 	off += NLMSG_ALIGN(rta->rta_len);
 
 	if (!id) {
-		/* addr data */
+		 
 		rta = (void *)(data + off);
 		if (inet_pton(AF_INET, argv[3], RTA_DATA(rta))) {
 			family = AF_INET;
@@ -936,7 +932,7 @@ int del_addr(int fd, int pm_family, int argc, char *argv[])
 		}
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* family */
+		 
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 		rta->rta_len = RTA_LENGTH(2);
@@ -1023,7 +1019,7 @@ static void print_addr(struct rtattr *attrs, int len)
 					printf(",");
 			}
 
-			/* bump unknown flags, if any */
+			 
 			if (flags)
 				printf("0x%x", flags);
 			printf(" ");
@@ -1088,7 +1084,7 @@ int get_addr(int fd, int pm_family, int argc, char *argv[])
 	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_GET_ADDR,
 			    MPTCP_PM_VER);
 
-	/* the only argument is the address id */
+	 
 	if (argc != 3)
 		syntax(argv);
 
@@ -1100,7 +1096,7 @@ int get_addr(int fd, int pm_family, int argc, char *argv[])
 	nest->rta_len =  RTA_LENGTH(0);
 	off += NLMSG_ALIGN(nest->rta_len);
 
-	/* build a dummy addr with only the ID set */
+	 
 	rta = (void *)(data + off);
 	rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
 	rta->rta_len = RTA_LENGTH(1);
@@ -1196,7 +1192,7 @@ int get_set_limits(int fd, int pm_family, int argc, char *argv[])
 	struct nlmsghdr *nh;
 	int off = 0;
 
-	/* limit */
+	 
 	if (argc == 4) {
 		rcv_addr = atoi(argv[2]);
 		subflows = atoi(argv[3]);
@@ -1209,7 +1205,7 @@ int get_set_limits(int fd, int pm_family, int argc, char *argv[])
 	nh = (void *)data;
 	off = init_genl_req(data, pm_family, cmd, MPTCP_PM_VER);
 
-	/* limit */
+	 
 	if (cmd == MPTCP_PM_CMD_SET_LIMITS) {
 		struct rtattr *rta = (void *)(data + off);
 
@@ -1224,7 +1220,7 @@ int get_set_limits(int fd, int pm_family, int argc, char *argv[])
 		memcpy(RTA_DATA(rta), &subflows, 4);
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* do not expect a reply */
+		 
 		len = 0;
 	}
 
@@ -1326,7 +1322,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 		memcpy(RTA_DATA(rta), &id, 1);
 		off += NLMSG_ALIGN(rta->rta_len);
 	} else {
-		/* addr data */
+		 
 		rta = (void *)(data + off);
 		if (inet_pton(AF_INET, argv[arg], RTA_DATA(rta))) {
 			family = AF_INET;
@@ -1341,7 +1337,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 		}
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* family */
+		 
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 		rta->rta_len = RTA_LENGTH(2);
@@ -1357,12 +1353,12 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 			if (++arg >= argc)
 				error(1, 0, " missing token value");
 
-			/* token */
+			 
 			token = strtoul(argv[arg], NULL, 10);
 		} else if (!strcmp(argv[arg], "flags")) {
 			char *tok, *str;
 
-			/* flags */
+			 
 			if (++arg >= argc)
 				error(1, 0, " missing flags value");
 
@@ -1414,7 +1410,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 	}
 	nest->rta_len = off - nest_start;
 
-	/* token */
+	 
 	if (token) {
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ATTR_TOKEN;
@@ -1423,7 +1419,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 		off += NLMSG_ALIGN(rta->rta_len);
 	}
 
-	/* remote addr/port */
+	 
 	if (rip) {
 		nest_start = off;
 		nest = (void *)(data + off);
@@ -1431,7 +1427,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 		nest->rta_len = RTA_LENGTH(0);
 		off += NLMSG_ALIGN(nest->rta_len);
 
-		/* addr data */
+		 
 		rta = (void *)(data + off);
 		if (inet_pton(AF_INET, rip, RTA_DATA(rta))) {
 			family = AF_INET;
@@ -1446,7 +1442,7 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
 		}
 		off += NLMSG_ALIGN(rta->rta_len);
 
-		/* family */
+		 
 		rta = (void *)(data + off);
 		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
 		rta->rta_len = RTA_LENGTH(2);

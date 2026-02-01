@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kvm.h>
 #include <linux/psp-sev.h>
 #include <stdio.h>
@@ -104,13 +104,13 @@ static void test_sev_migrate_from(bool es)
 	for (i = 0; i < NR_MIGRATE_TEST_VMS; ++i)
 		dst_vms[i] = aux_vm_create(true);
 
-	/* Initial migration from the src to the first dst. */
+	 
 	sev_migrate_from(dst_vms[0], src_vm);
 
 	for (i = 1; i < NR_MIGRATE_TEST_VMS; i++)
 		sev_migrate_from(dst_vms[i], dst_vms[i - 1]);
 
-	/* Migrate the guest back to the original VM. */
+	 
 	ret = __sev_migrate_from(src_vm, dst_vms[NR_MIGRATE_TEST_VMS - 1]);
 	TEST_ASSERT(ret == -1 && errno == EIO,
 		    "VM that was migrated from should be dead. ret %d, errno: %d\n", ret,
@@ -146,7 +146,7 @@ static void test_sev_migrate_locking(void)
 	int i;
 
 	for (i = 0; i < NR_LOCK_TESTING_THREADS; ++i) {
-		input[i].vm = sev_vm_create(/* es= */ false);
+		input[i].vm = sev_vm_create(  false);
 		input[0].source_vms[i] = input[i].vm;
 	}
 	for (i = 1; i < NR_LOCK_TESTING_THREADS; ++i)
@@ -178,8 +178,8 @@ static void test_sev_migrate_parameters(void)
 	if (!have_sev_es)
 		goto out;
 
-	sev_vm = sev_vm_create(/* es= */ false);
-	sev_es_vm = sev_vm_create(/* es= */ true);
+	sev_vm = sev_vm_create(  false);
+	sev_es_vm = sev_vm_create(  true);
 	sev_es_vm_no_vmsa = vm_create_barebones();
 	sev_ioctl(sev_es_vm_no_vmsa->fd, KVM_SEV_ES_INIT, NULL);
 	__vm_vcpu_add(sev_es_vm_no_vmsa, 1);
@@ -238,10 +238,7 @@ static void verify_mirror_allowed_cmds(int vm_fd)
 		int ret;
 		__u32 fw_error;
 
-		/*
-		 * These commands are allowed for mirror VMs, all others are
-		 * not.
-		 */
+		 
 		switch (cmd_id) {
 		case KVM_SEV_LAUNCH_UPDATE_VMSA:
 		case KVM_SEV_GUEST_STATUS:
@@ -252,10 +249,7 @@ static void verify_mirror_allowed_cmds(int vm_fd)
 			break;
 		}
 
-		/*
-		 * These commands should be disallowed before the data
-		 * parameter is examined so NULL is OK here.
-		 */
+		 
 		ret = __sev_ioctl(vm_fd, cmd_id, NULL, &fw_error);
 		TEST_ASSERT(
 			ret == -1 && errno == EINVAL,
@@ -276,7 +270,7 @@ static void test_sev_mirror(bool es)
 
 	sev_mirror_create(dst_vm, src_vm);
 
-	/* Check that we can complete creation of the mirror VM.  */
+	 
 	for (i = 0; i < NR_MIGRATE_TEST_VCPUS; ++i)
 		__vm_vcpu_add(dst_vm, i);
 
@@ -294,7 +288,7 @@ static void test_sev_mirror_parameters(void)
 	struct kvm_vm *sev_vm, *sev_es_vm, *vm_no_vcpu, *vm_with_vcpu;
 	int ret;
 
-	sev_vm = sev_vm_create(/* es= */ false);
+	sev_vm = sev_vm_create(  false);
 	vm_with_vcpu = aux_vm_create(true);
 	vm_no_vcpu = aux_vm_create(false);
 
@@ -318,7 +312,7 @@ static void test_sev_mirror_parameters(void)
 	if (!have_sev_es)
 		goto out;
 
-	sev_es_vm = sev_vm_create(/* es= */ true);
+	sev_es_vm = sev_vm_create(  true);
 	ret = __sev_mirror_create(sev_vm, sev_es_vm);
 	TEST_ASSERT(
 		ret == -1 && errno == EINVAL,
@@ -344,7 +338,7 @@ static void test_sev_move_copy(void)
 	struct kvm_vm *dst_vm, *dst2_vm, *dst3_vm, *sev_vm, *mirror_vm,
 		      *dst_mirror_vm, *dst2_mirror_vm, *dst3_mirror_vm;
 
-	sev_vm = sev_vm_create(/* es= */ false);
+	sev_vm = sev_vm_create(  false);
 	dst_vm = aux_vm_create(true);
 	dst2_vm = aux_vm_create(true);
 	dst3_vm = aux_vm_create(true);
@@ -373,11 +367,8 @@ static void test_sev_move_copy(void)
 	kvm_vm_free(dst2_mirror_vm);
 	kvm_vm_free(dst3_mirror_vm);
 
-	/*
-	 * Run similar test be destroy mirrors before mirrored VMs to ensure
-	 * destruction is done safely.
-	 */
-	sev_vm = sev_vm_create(/* es= */ false);
+	 
+	sev_vm = sev_vm_create(  false);
 	dst_vm = aux_vm_create(true);
 	mirror_vm = aux_vm_create(false);
 	dst_mirror_vm = aux_vm_create(false);
@@ -403,18 +394,18 @@ int main(int argc, char *argv[])
 	have_sev_es = kvm_cpu_has(X86_FEATURE_SEV_ES);
 
 	if (kvm_has_cap(KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM)) {
-		test_sev_migrate_from(/* es= */ false);
+		test_sev_migrate_from(  false);
 		if (have_sev_es)
-			test_sev_migrate_from(/* es= */ true);
+			test_sev_migrate_from(  true);
 		test_sev_migrate_locking();
 		test_sev_migrate_parameters();
 		if (kvm_has_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM))
 			test_sev_move_copy();
 	}
 	if (kvm_has_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM)) {
-		test_sev_mirror(/* es= */ false);
+		test_sev_mirror(  false);
 		if (have_sev_es)
-			test_sev_mirror(/* es= */ true);
+			test_sev_mirror(  true);
 		test_sev_mirror_parameters();
 	}
 	return 0;

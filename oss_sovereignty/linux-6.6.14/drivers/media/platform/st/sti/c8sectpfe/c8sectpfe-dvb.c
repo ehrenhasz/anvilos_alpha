@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  c8sectpfe-dvb.c - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- *  Author Peter Griffin <peter.griffin@linaro.org>
- *
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -144,13 +137,10 @@ int c8sectpfe_frontend_attach(struct dvb_frontend **fe,
 			return -ENODEV;
 		}
 
-		/*
-		 * init the demod so that i2c gate_ctrl
-		 * to the tuner works correctly
-		 */
+		 
 		(*fe)->ops.init(*fe);
 
-		/* Allocate the tda18212 structure */
+		 
 		tda18212 = devm_kzalloc(c8sectpfe->device,
 					sizeof(struct tda18212_config),
 					GFP_KERNEL);
@@ -167,7 +157,7 @@ int c8sectpfe_frontend_attach(struct dvb_frontend **fe,
 
 		tda18212_info.platform_data = tda18212;
 
-		/* attach tuner */
+		 
 		request_module("tda18212");
 		client = i2c_new_client_device(tsin->i2c_adapter,
 					       &tda18212_info);

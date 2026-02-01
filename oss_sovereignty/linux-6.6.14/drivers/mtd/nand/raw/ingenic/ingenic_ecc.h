@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DRIVERS_MTD_NAND_INGENIC_ECC_INTERNAL_H__
 #define __DRIVERS_MTD_NAND_INGENIC_ECC_INTERNAL_H__
 
@@ -13,12 +13,7 @@ struct device;
 struct ingenic_ecc;
 struct platform_device;
 
-/**
- * struct ingenic_ecc_params - ECC parameters
- * @size: data bytes per ECC step.
- * @bytes: ECC bytes per step.
- * @strength: number of correctable bits per ECC step.
- */
+ 
 struct ingenic_ecc_params {
 	int size;
 	int bytes;
@@ -35,7 +30,7 @@ int ingenic_ecc_correct(struct ingenic_ecc *ecc,
 
 void ingenic_ecc_release(struct ingenic_ecc *ecc);
 struct ingenic_ecc *of_ingenic_ecc_get(struct device_node *np);
-#else /* CONFIG_MTD_NAND_INGENIC_ECC */
+#else  
 static inline int ingenic_ecc_calculate(struct ingenic_ecc *ecc,
 			  struct ingenic_ecc_params *params,
 			  const u8 *buf, u8 *ecc_code)
@@ -58,7 +53,7 @@ static inline struct ingenic_ecc *of_ingenic_ecc_get(struct device_node *np)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif /* CONFIG_MTD_NAND_INGENIC_ECC */
+#endif  
 
 struct ingenic_ecc_ops {
 	void (*disable)(struct ingenic_ecc *ecc);
@@ -80,4 +75,4 @@ struct ingenic_ecc {
 
 int ingenic_ecc_probe(struct platform_device *pdev);
 
-#endif /* __DRIVERS_MTD_NAND_INGENIC_ECC_INTERNAL_H__ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018 The Linux Foundation. All rights reserved. */
+
+ 
 
 #include <linux/dma-mapping.h>
 
@@ -46,7 +46,7 @@ static int msm_gpummu_map(struct msm_mmu *mmu, uint64_t iova,
 			gpummu->table[idx++] = (addr + i) | prot_bits;
 	}
 
-	/* we can improve by deferring flush for multiple map() */
+	 
 	gpu_write(gpummu->gpu, REG_A2XX_MH_MMU_INVALIDATE,
 		A2XX_MH_MMU_INVALIDATE_INVALIDATE_ALL |
 		A2XX_MH_MMU_INVALIDATE_INVALIDATE_TC);
@@ -117,5 +117,5 @@ void msm_gpummu_params(struct msm_mmu *mmu, dma_addr_t *pt_base,
 	dma_addr_t base = to_msm_gpummu(mmu)->pt_base;
 
 	*pt_base = base;
-	*tran_error = base + TABLE_SIZE; /* 32-byte aligned */
+	*tran_error = base + TABLE_SIZE;  
 }

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lattice FPGA programming over slave SPI sysCONFIG interface.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/spi/spi.h>
@@ -41,10 +39,7 @@ static int sysconfig_spi_bitstream_burst_init(struct sysconfig_priv *priv)
 
 	spi_message_init_with_transfers(&msg, &xfer, 1);
 
-	/*
-	 * Lock SPI bus for exclusive usage until FPGA programming is done.
-	 * SPI bus will be released in sysconfig_spi_bitstream_burst_complete().
-	 */
+	 
 	spi_bus_lock(spi->controller);
 
 	ret = spi_sync_locked(spi, &msg);
@@ -76,10 +71,10 @@ static int sysconfig_spi_bitstream_burst_complete(struct sysconfig_priv *priv)
 {
 	struct spi_device *spi = to_spi_device(priv->dev);
 
-	/* Bitstream burst write is done, release SPI bus */
+	 
 	spi_bus_unlock(spi->controller);
 
-	/* Toggle CS to finish bitstream write */
+	 
 	return spi_write(spi, NULL, 0);
 }
 
@@ -137,7 +132,7 @@ static const struct of_device_id sysconfig_of_ids[] = {
 	}, {},
 };
 MODULE_DEVICE_TABLE(of, sysconfig_of_ids);
-#endif /* IS_ENABLED(CONFIG_OF) */
+#endif  
 
 static struct spi_driver lattice_sysconfig_driver = {
 	.probe = sysconfig_spi_probe,

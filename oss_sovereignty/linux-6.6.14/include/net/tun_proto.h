@@ -4,9 +4,7 @@
 #include <linux/if_ether.h>
 #include <linux/types.h>
 
-/* One byte protocol values as defined by VXLAN-GPE and NSH. These will
- * hopefully get a shared IANA registry.
- */
+ 
 #define TUN_P_IPV4      0x01
 #define TUN_P_IPV6      0x02
 #define TUN_P_ETHERNET  0x03

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Backlight code for via-pmu
- *
- * Copyright (C) 1998 Paul Mackerras and Fabio Riccardi.
- * Copyright (C) 2001-2002 Benjamin Herrenschmidt
- * Copyright (C) 2006      Michael Hanselmann <linux-kernel@hansmi.ch>
- *
- */
+
+ 
 
 #include <asm/ptrace.h>
 #include <linux/adb.h>
@@ -39,11 +32,11 @@ static int pmu_backlight_curve_lookup(int value)
 	int level = (FB_BACKLIGHT_LEVELS - 1);
 	int i, max = 0;
 
-	/* Look for biggest value */
+	 
 	for (i = 0; i < FB_BACKLIGHT_LEVELS; i++)
 		max = max((int)bl_curve[i], max);
 
-	/* Look for nearest value */
+	 
 	for (i = 0; i < FB_BACKLIGHT_LEVELS; i++) {
 		int diff = abs(bl_curve[i] - value);
 		if (diff < max) {
@@ -58,7 +51,7 @@ static int pmu_backlight_get_level_brightness(int level)
 {
 	int pmulevel;
 
-	/* Get and convert the value */
+	 
 	pmulevel = bl_curve[level] * FB_BACKLIGHT_MAX / MAX_PMU_LEVEL;
 	if (pmulevel < 0)
 		pmulevel = 0;
@@ -97,7 +90,7 @@ static int pmu_backlight_update_status(struct backlight_device *bd)
 	int rc = 0;
 
 	spin_lock_irqsave(&pmu_backlight_lock, flags);
-	/* Don't update brightness when sleeping */
+	 
 	if (!sleeping)
 		rc = __pmu_backlight_update_status(bd);
 	spin_unlock_irqrestore(&pmu_backlight_lock, flags);
@@ -129,7 +122,7 @@ void pmu_backlight_set_sleep(int sleep)
 	}
 	spin_unlock_irqrestore(&pmu_backlight_lock, flags);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 void __init pmu_backlight_init(void)
 {
@@ -138,7 +131,7 @@ void __init pmu_backlight_init(void)
 	char name[10];
 	int level, autosave;
 
-	/* Special case for the old PowerBook since I can't test on it */
+	 
 	autosave =
 		of_machine_is_compatible("AAPL,3400/2400") ||
 		of_machine_is_compatible("AAPL,3500");
@@ -166,7 +159,7 @@ void __init pmu_backlight_init(void)
 	level = bd->props.max_brightness;
 
 	if (autosave) {
-		/* read autosaved value if available */
+		 
 		struct adb_request req;
 		pmu_request(&req, NULL, 2, 0xd9, 0);
 		pmu_wait_complete(&req);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Media Controller Driver for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2016-2019 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -17,7 +13,7 @@ static inline struct imx_media_dev *notifier2dev(struct v4l2_async_notifier *n)
 	return container_of(n, struct imx_media_dev, notifier);
 }
 
-/* async subdev bound notifier */
+ 
 static int imx_media_subdev_bound(struct v4l2_async_notifier *notifier,
 				  struct v4l2_subdev *sd,
 				  struct v4l2_async_connection *asd)
@@ -26,7 +22,7 @@ static int imx_media_subdev_bound(struct v4l2_async_notifier *notifier,
 	int ret;
 
 	if (sd->grp_id & IMX_MEDIA_GRP_ID_IPU_CSI) {
-		/* register the IPU internal subdevs */
+		 
 		ret = imx_media_register_ipu_internal_subdevs(imxmd, sd);
 		if (ret)
 			return ret;
@@ -37,13 +33,13 @@ static int imx_media_subdev_bound(struct v4l2_async_notifier *notifier,
 	return 0;
 }
 
-/* async subdev complete notifier */
+ 
 static int imx6_media_probe_complete(struct v4l2_async_notifier *notifier)
 {
 	struct imx_media_dev *imxmd = notifier2dev(notifier);
 	int ret;
 
-	/* call the imx5/6/7 common probe completion handler */
+	 
 	ret = imx_media_probe_complete(notifier);
 	if (ret)
 		return ret;
@@ -63,7 +59,7 @@ unlock:
 	return ret;
 }
 
-/* async subdev complete notifier */
+ 
 static const struct v4l2_async_notifier_operations imx_media_notifier_ops = {
 	.bound = imx_media_subdev_bound,
 	.complete = imx6_media_probe_complete,
@@ -123,7 +119,7 @@ static void imx_media_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx_media_dt_ids[] = {
 	{ .compatible = "fsl,imx-capture-subsystem" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_media_dt_ids);
 

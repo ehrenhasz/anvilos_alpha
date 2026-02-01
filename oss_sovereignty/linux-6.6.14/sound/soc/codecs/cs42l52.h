@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cs42l52.h -- CS42L52 ALSA SoC audio driver
- *
- * Copyright 2012 CirrusLogic, Inc.
- *
- * Author: Georgi Vlaev <joe@nucleusys.com>
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
+ 
+ 
 
 #ifndef __CS42L52_H__
 #define __CS42L52_H__
@@ -182,14 +175,14 @@
 #define CS42L52_PGAA_CTL			0x12
 #define CS42L52_PGAB_CTL			0x13
 #define CS42L52_PGAX_CTL_VOL_12DB		24
-#define CS42L52_PGAX_CTL_VOL_6DB		12 /*step size 0.5db*/
+#define CS42L52_PGAX_CTL_VOL_6DB		12  
 
 #define CS42L52_PASSTHRUA_VOL			0x14
 #define CS42L52_PASSTHRUB_VOL			0x15
 
 #define CS42L52_ADCA_VOL			0x16
 #define CS42L52_ADCB_VOL			0x17
-#define CS42L52_ADCX_VOL_24DB			24 /*step size 1db*/
+#define CS42L52_ADCX_VOL_24DB			24  
 #define CS42L52_ADCX_VOL_12DB			12
 #define CS42L52_ADCX_VOL_6DB			6
 

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mcp3422.c - driver for the Microchip mcp3421/2/3/4/5/6/7/8 chip family
- *
- * Copyright (C) 2013, Angelo Compagnucci
- * Author: Angelo Compagnucci <angelo.compagnucci@gmail.com>
- *
- * Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/22088b.pdf
- *            https://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf
- *            https://ww1.microchip.com/downloads/en/DeviceDoc/22072b.pdf
- *
- * This driver exports the value of analog input voltage to sysfs, the
- * voltage unit is nV.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -24,7 +12,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* Masks */
+ 
 #define MCP3422_CHANNEL_MASK	0x60
 #define MCP3422_PGA_MASK	0x03
 #define MCP3422_SRATE_MASK	0x0C
@@ -62,28 +50,28 @@ static const int mcp3422_scales[4][4] = {
 	{ 62500,   31250,  15625,  7812   },
 	{ 15625,   7812,   3906,   1953   } };
 
-/* Constant msleep times for data acquisitions */
+ 
 static const int mcp3422_read_times[4] = {
 	[MCP3422_SRATE_240] = 1000 / 240,
 	[MCP3422_SRATE_60] = 1000 / 60,
 	[MCP3422_SRATE_15] = 1000 / 15,
 	[MCP3422_SRATE_3] = 1000 / 3 };
 
-/* sample rates to integer conversion table */
+ 
 static const int mcp3422_sample_rates[4] = {
 	[MCP3422_SRATE_240] = 240,
 	[MCP3422_SRATE_60] = 60,
 	[MCP3422_SRATE_15] = 15,
 	[MCP3422_SRATE_3] = 3 };
 
-/* sample rates to sign extension table */
+ 
 static const int mcp3422_sign_extend[4] = {
 	[MCP3422_SRATE_240] = 11,
 	[MCP3422_SRATE_60] = 13,
 	[MCP3422_SRATE_15] = 15,
 	[MCP3422_SRATE_3] = 17 };
 
-/* Client data (each client gets its own) */
+ 
 struct mcp3422 {
 	struct i2c_client *i2c;
 	u8 id;
@@ -375,7 +363,7 @@ static int mcp3422_probe(struct i2c_client *client)
 		break;
 	}
 
-	/* meaningful default configuration */
+	 
 	config = (MCP3422_CONT_SAMPLING
 		| MCP3422_CHANNEL_VALUE(0)
 		| MCP3422_PGA_VALUE(MCP3422_PGA_1)

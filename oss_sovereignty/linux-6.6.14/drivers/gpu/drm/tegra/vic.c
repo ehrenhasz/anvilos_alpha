@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -38,7 +36,7 @@ struct vic {
 
 	bool can_use_context;
 
-	/* Platform configuration */
+	 
 	const struct vic_config *config;
 };
 
@@ -65,21 +63,14 @@ static int vic_boot(struct vic *vic)
 			TRANSCFG_ATT(0, TRANSCFG_SID_HW);
 		vic_writel(vic, value, VIC_TFBIF_TRANSCFG);
 
-		/*
-		 * STREAMID0 is used for input/output buffers. Initialize it to SID_VIC in case
-		 * context isolation is not enabled, and SID_VIC is used for both firmware and
-		 * data buffers.
-		 *
-		 * If context isolation is enabled, it will be overridden by the SETSTREAMID
-		 * opcode as part of each job.
-		 */
+		 
 		vic_writel(vic, stream_id, VIC_THI_STREAMID0);
 
-		/* STREAMID1 is used for firmware loading. */
+		 
 		vic_writel(vic, stream_id, VIC_THI_STREAMID1);
 	}
 
-	/* setup clockgating registers */
+	 
 	vic_writel(vic, CG_IDLE_CG_DLY_CNT(4) |
 			CG_IDLE_CG_EN |
 			CG_WAKEUP_DLY_CNT(4),
@@ -92,7 +83,7 @@ static int vic_boot(struct vic *vic)
 	hdr = vic->falcon.firmware.virt;
 	fce_bin_data_offset = *(u32 *)(hdr + VIC_UCODE_FCE_DATA_OFFSET);
 
-	/* Old VIC firmware needs kernel help with setting up FCE microcode. */
+	 
 	if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 0xa5a5a5a5) {
 		hdr = vic->falcon.firmware.virt +
 			*(u32 *)(hdr + VIC_UCODE_FCE_HEADER_OFFSET);
@@ -145,10 +136,7 @@ static int vic_init(struct host1x_client *client)
 	if (err < 0)
 		goto free_syncpt;
 
-	/*
-	 * Inherit the DMA parameters (such as maximum segment size) from the
-	 * parent host1x device.
-	 */
+	 
 	client->dev->dma_parms = client->host->dma_parms;
 
 	return 0;
@@ -171,7 +159,7 @@ static int vic_exit(struct host1x_client *client)
 	struct vic *vic = to_vic(drm);
 	int err;
 
-	/* avoid a dangling pointer just in case this disappears */
+	 
 	client->dev->dma_parms = NULL;
 
 	err = tegra_drm_unregister_client(tegra, drm);
@@ -252,11 +240,7 @@ static int vic_load_firmware(struct vic *vic)
 	if (err < 0)
 		goto cleanup;
 
-	/*
-	 * In this case we have received an IOVA from the shared domain, so we
-	 * need to make sure to get the physical address so that the DMA API
-	 * knows what memory pages to flush the cache for.
-	 */
+	 
 	if (client->group) {
 		dma_addr_t phys;
 
@@ -269,19 +253,13 @@ static int vic_load_firmware(struct vic *vic)
 		vic->falcon.firmware.phys = phys;
 	}
 
-	/*
-	 * Check if firmware is new enough to not require mapping firmware
-	 * to data buffer domains.
-	 */
+	 
 	fce_bin_data_offset = *(u32 *)(virt + VIC_UCODE_FCE_DATA_OFFSET);
 
 	if (!vic->config->supports_sid) {
 		vic->can_use_context = false;
 	} else if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 0xa5a5a5a5) {
-		/*
-		 * Firmware will access FCE through STREAMID0, so context
-		 * isolation cannot be used.
-		 */
+		 
 		vic->can_use_context = false;
 		dev_warn_once(vic->dev, "context isolation disabled due to old firmware\n");
 	} else {
@@ -377,7 +355,7 @@ static int vic_can_use_memory_ctx(struct tegra_drm_client *client, bool *support
 	struct vic *vic = to_vic(client);
 	int err;
 
-	/* This doesn't access HW so it's safe to call without powering up. */
+	 
 	err = vic_load_firmware(vic);
 	if (err < 0)
 		return err;
@@ -452,7 +430,7 @@ static int vic_probe(struct platform_device *pdev)
 	struct vic *vic;
 	int err;
 
-	/* inherit DMA mask from host1x parent */
+	 
 	err = dma_coerce_mask_and_coherent(dev, *dev->parent->dma_mask);
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to set DMA mask: %d\n", err);

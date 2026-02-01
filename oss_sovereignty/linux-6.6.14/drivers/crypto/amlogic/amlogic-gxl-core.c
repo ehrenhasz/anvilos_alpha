@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * amlgoic-core.c - hardware cryptographic offloader for Amlogic GXL SoC
- *
- * Copyright (C) 2018-2019 Corentin Labbe <clabbe@baylibre.com>
- *
- * Core file which registers crypto algorithms supported by the hardware.
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/skcipher.h>
@@ -148,9 +142,7 @@ static void meson_free_chanlist(struct meson_dev *mc, int i)
 	}
 }
 
-/*
- * Allocate the channel list structure
- */
+ 
 static int meson_allocate_chanlist(struct meson_dev *mc)
 {
 	int i, err;

@@ -1,26 +1,6 @@
-/* Tests of stat.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
-
-/* This file is designed to test both stat(n,buf) and
-   fstatat(AT_FDCWD,n,buf,0).  FUNC is the function to test.  Assumes
-   that BASE and ASSERT are already defined, and that appropriate
-   headers are already included.  If PRINT, warn before skipping
-   symlink tests with status 77.  */
+ 
 
 static int
 test_stat_func (int (*func) (char const *, struct stat *), bool print)
@@ -61,13 +41,7 @@ test_stat_func (int (*func) (char const *, struct stat *), bool print)
   ASSERT (func (BASE "file/", &st1) == -1);
   ASSERT (errno == ENOTDIR);
 
-  /* Now for some symlink tests, where supported.  We set up:
-     link1 -> directory
-     link2 -> file
-     link3 -> dangling
-     link4 -> loop
-     then test behavior with trailing slash.
-  */
+   
   if (symlink (".", BASE "link1") != 0)
     {
       ASSERT (unlink (BASE "file") == 0);
@@ -95,7 +69,7 @@ test_stat_func (int (*func) (char const *, struct stat *), bool print)
   ASSERT (func (BASE "link4/", &st1) == -1);
   ASSERT (errno == ELOOP);
 
-  /* Cleanup.  */
+   
   ASSERT (unlink (BASE "file") == 0);
   ASSERT (unlink (BASE "link1") == 0);
   ASSERT (unlink (BASE "link2") == 0);

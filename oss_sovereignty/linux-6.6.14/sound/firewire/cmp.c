@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Connection Management Procedures (IEC 61883-1) helper functions
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firewire.h>
@@ -14,14 +10,14 @@
 #include "iso-resources.h"
 #include "cmp.h"
 
-/* MPR common fields */
+ 
 #define MPR_SPEED_MASK		0xc0000000
 #define MPR_SPEED_SHIFT		30
 #define MPR_XSPEED_MASK		0x00000060
 #define MPR_XSPEED_SHIFT	5
 #define MPR_PLUGS_MASK		0x0000001f
 
-/* PCR common fields */
+ 
 #define PCR_ONLINE		0x80000000
 #define PCR_BCAST_CONN		0x40000000
 #define PCR_P2P_CONN_MASK	0x3f000000
@@ -29,7 +25,7 @@
 #define PCR_CHANNEL_MASK	0x003f0000
 #define PCR_CHANNEL_SHIFT	16
 
-/* oPCR specific fields */
+ 
 #define OPCR_XSPEED_MASK	0x00C00000
 #define OPCR_XSPEED_SHIFT	22
 #define OPCR_SPEED_MASK		0x0000C000
@@ -95,7 +91,7 @@ static int pcr_modify(struct cmp_connection *c,
 			return err;
 		}
 
-		if (buffer[0] == old_arg) /* success? */
+		if (buffer[0] == old_arg)  
 			break;
 
 		if (check) {
@@ -110,13 +106,7 @@ static int pcr_modify(struct cmp_connection *c,
 }
 
 
-/**
- * cmp_connection_init - initializes a connection manager
- * @c: the connection manager to initialize
- * @unit: a unit of the target device
- * @direction: input or output
- * @pcr_index: the index of the iPCR/oPCR on the target device
- */
+ 
 int cmp_connection_init(struct cmp_connection *c,
 			struct fw_unit *unit,
 			enum cmp_direction direction,
@@ -152,11 +142,7 @@ int cmp_connection_init(struct cmp_connection *c,
 }
 EXPORT_SYMBOL(cmp_connection_init);
 
-/**
- * cmp_connection_check_used - check connection is already esablished or not
- * @c: the connection manager to be checked
- * @used: the pointer to store the result of checking the connection
- */
+ 
 int cmp_connection_check_used(struct cmp_connection *c, bool *used)
 {
 	__be32 pcr;
@@ -173,10 +159,7 @@ int cmp_connection_check_used(struct cmp_connection *c, bool *used)
 }
 EXPORT_SYMBOL(cmp_connection_check_used);
 
-/**
- * cmp_connection_destroy - free connection manager resources
- * @c: the connection manager
- */
+ 
 void cmp_connection_destroy(struct cmp_connection *c)
 {
 	WARN_ON(c->connected);
@@ -232,11 +215,7 @@ static int get_overhead_id(struct cmp_connection *c)
 {
 	int id;
 
-	/*
-	 * apply "oPCR overhead ID encoding"
-	 * the encoding table can convert up to 512.
-	 * here the value over 512 is converted as the same way as 512.
-	 */
+	 
 	for (id = 1; id < 16; id++) {
 		if (c->resources.bandwidth_overhead < (id << 5))
 			break;
@@ -251,7 +230,7 @@ static __be32 opcr_set_modify(struct cmp_connection *c, __be32 opcr)
 {
 	unsigned int spd, xspd;
 
-	/* generate speed and extended speed field value */
+	 
 	if (c->speed > SCODE_400) {
 		spd  = SCODE_800;
 		xspd = c->speed - SCODE_800;
@@ -290,16 +269,7 @@ static int pcr_set_check(struct cmp_connection *c, __be32 pcr)
 	return 0;
 }
 
-/**
- * cmp_connection_establish - establish a connection to the target
- * @c: the connection manager
- *
- * This function establishes a point-to-point connection from the local
- * computer to the target by allocating isochronous resources (channel and
- * bandwidth) and setting the target's input/output plug control register.
- * When this function succeeds, the caller is responsible for starting
- * transmitting packets.
- */
+ 
 int cmp_connection_establish(struct cmp_connection *c)
 {
 	int err;
@@ -333,16 +303,7 @@ retry_after_bus_reset:
 }
 EXPORT_SYMBOL(cmp_connection_establish);
 
-/**
- * cmp_connection_update - update the connection after a bus reset
- * @c: the connection manager
- *
- * This function must be called from the driver's .update handler to
- * reestablish any connection that might have been active.
- *
- * Returns zero on success, or a negative error code.  On an error, the
- * connection is broken and the caller must stop transmitting iso packets.
- */
+ 
 int cmp_connection_update(struct cmp_connection *c)
 {
 	int err;
@@ -385,14 +346,7 @@ static __be32 pcr_break_modify(struct cmp_connection *c, __be32 pcr)
 	return pcr & ~cpu_to_be32(PCR_BCAST_CONN | PCR_P2P_CONN_MASK);
 }
 
-/**
- * cmp_connection_break - break the connection to the target
- * @c: the connection manager
- *
- * This function deactives the connection in the target's input/output plug
- * control register, and frees the isochronous resources of the connection.
- * Before calling this function, the caller should cease transmitting packets.
- */
+ 
 void cmp_connection_break(struct cmp_connection *c)
 {
 	int err;

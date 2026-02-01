@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Altera TSE SGDMA and MSGDMA Linux driver
- * Copyright (C) 2014 Altera Corporation. All rights reserved
- */
+
+ 
 
 #include <linux/list.h>
 #include "altera_utils.h"
@@ -86,7 +84,7 @@ int sgdma_initialize(struct altera_tse_private *priv)
 		return -EINVAL;
 	}
 
-	/* Initialize descriptor memory to all 0's, sync memory to cache */
+	 
 	memset_io(priv->tx_dma_desc, 0, priv->txdescmem);
 	memset_io(priv->rx_dma_desc, 0, priv->rxdescmem);
 
@@ -110,12 +108,10 @@ void sgdma_uninitialize(struct altera_tse_private *priv)
 				 priv->txdescmem, DMA_TO_DEVICE);
 }
 
-/* This function resets the SGDMA controller and clears the
- * descriptor memory used for transmits and receives.
- */
+ 
 void sgdma_reset(struct altera_tse_private *priv)
 {
-	/* Initialize descriptor memory to 0 */
+	 
 	memset_io(priv->tx_dma_desc, 0, priv->txdescmem);
 	memset_io(priv->rx_dma_desc, 0, priv->rxdescmem);
 
@@ -126,10 +122,7 @@ void sgdma_reset(struct altera_tse_private *priv)
 	csrwr32(0, priv->rx_dma_csr, sgdma_csroffs(control));
 }
 
-/* For SGDMA, interrupts remain enabled after initially enabling,
- * so no need to provide implementations for abstract enable
- * and disable
- */
+ 
 
 void sgdma_enable_rxirq(struct altera_tse_private *priv)
 {
@@ -159,11 +152,7 @@ void sgdma_clear_txirq(struct altera_tse_private *priv)
 		    SGDMA_CTRLREG_CLRINT);
 }
 
-/* transmits buffer through SGDMA. Returns number of buffers
- * transmitted, 0 if not possible.
- *
- * tx_lock is held by the caller
- */
+ 
 int sgdma_tx_buffer(struct altera_tse_private *priv, struct tse_buffer *buffer)
 {
 	struct sgdma_descrip __iomem *descbase =
@@ -172,31 +161,30 @@ int sgdma_tx_buffer(struct altera_tse_private *priv, struct tse_buffer *buffer)
 	struct sgdma_descrip __iomem *cdesc = &descbase[0];
 	struct sgdma_descrip __iomem *ndesc = &descbase[1];
 
-	/* wait 'til the tx sgdma is ready for the next transmit request */
+	 
 	if (sgdma_txbusy(priv))
 		return 0;
 
-	sgdma_setup_descrip(cdesc,			/* current descriptor */
-			    ndesc,			/* next descriptor */
+	sgdma_setup_descrip(cdesc,			 
+			    ndesc,			 
 			    sgdma_txphysaddr(priv, ndesc),
-			    buffer->dma_addr,		/* address of packet to xmit */
-			    0,				/* write addr 0 for tx dma */
-			    buffer->len,		/* length of packet */
-			    SGDMA_CONTROL_EOP,		/* Generate EOP */
-			    0,				/* read fixed */
-			    SGDMA_CONTROL_WR_FIXED);	/* Generate SOP */
+			    buffer->dma_addr,		 
+			    0,				 
+			    buffer->len,		 
+			    SGDMA_CONTROL_EOP,		 
+			    0,				 
+			    SGDMA_CONTROL_WR_FIXED);	 
 
 	sgdma_async_write(priv, cdesc);
 
-	/* enqueue the request to the pending transmit queue */
+	 
 	queue_tx(priv, buffer);
 
 	return 1;
 }
 
 
-/* tx_lock held to protect access to queued tx list
- */
+ 
 u32 sgdma_tx_completions(struct altera_tse_private *priv)
 {
 	u32 ready = 0;
@@ -222,9 +210,7 @@ void sgdma_add_rx_desc(struct altera_tse_private *priv,
 	queue_rx(priv, rxbuffer);
 }
 
-/* status is returned on upper 16 bits,
- * length is returned in lower 16 bits
- */
+ 
 u32 sgdma_rx_status(struct altera_tse_private *priv)
 {
 	struct sgdma_descrip __iomem *base =
@@ -258,24 +244,16 @@ u32 sgdma_rx_status(struct altera_tse_private *priv)
 				netdev_info(priv->dev,
 					    "sgdma rx and rx queue empty!\n");
 
-			/* Clear control */
+			 
 			csrwr32(0, priv->rx_dma_csr, sgdma_csroffs(control));
-			/* clear status */
+			 
 			csrwr32(0xf, priv->rx_dma_csr, sgdma_csroffs(status));
 
-			/* kick the rx sgdma after reaping this descriptor */
+			 
 			sgdma_async_read(priv);
 
 		} else {
-			/* If the SGDMA indicated an end of packet on recv,
-			 * then it's expected that the rxstatus from the
-			 * descriptor is non-zero - meaning a valid packet
-			 * with a nonzero length, or an error has been
-			 * indicated. if not, then all we can do is signal
-			 * an error and return no packet received. Most likely
-			 * there is a system design error, or an error in the
-			 * underlying kernel (cache or cache management problem)
-			 */
+			 
 			netdev_err(priv->dev,
 				   "SGDMA RX Error Info: %x, %x, %x\n",
 				   sts, csrrd8(desc, sgdma_descroffs(status)),
@@ -289,7 +267,7 @@ u32 sgdma_rx_status(struct altera_tse_private *priv)
 }
 
 
-/* Private functions */
+ 
 static void sgdma_setup_descrip(struct sgdma_descrip __iomem *desc,
 				struct sgdma_descrip __iomem *ndesc,
 				dma_addr_t ndesc_phys,
@@ -300,7 +278,7 @@ static void sgdma_setup_descrip(struct sgdma_descrip __iomem *desc,
 				int rfixed,
 				int wfixed)
 {
-	/* Clear the next descriptor as not owned by hardware */
+	 
 
 	u32 ctrl = csrrd8(ndesc, sgdma_descroffs(control));
 	ctrl &= ~SGDMA_CONTROL_HW_OWNED;
@@ -311,7 +289,7 @@ static void sgdma_setup_descrip(struct sgdma_descrip __iomem *desc,
 	ctrl |= rfixed;
 	ctrl |= wfixed;
 
-	/* Channel is implicitly zero, initialized to 0 by default */
+	 
 	csrwr32(lower_32_bits(raddr), desc, sgdma_descroffs(raddr));
 	csrwr32(lower_32_bits(waddr), desc, sgdma_descroffs(waddr));
 
@@ -327,12 +305,7 @@ static void sgdma_setup_descrip(struct sgdma_descrip __iomem *desc,
 	csrwr16(0, desc, sgdma_descroffs(bytes_xferred));
 }
 
-/* If hardware is busy, don't restart async read.
- * if status register is 0 - meaning initial state, restart async read,
- * probably for the first time when populating a receive buffer.
- * If read status indicate not busy and a status, restart the async
- * DMA read.
- */
+ 
 static int sgdma_async_read(struct altera_tse_private *priv)
 {
 	struct sgdma_descrip __iomem *descbase =
@@ -349,15 +322,15 @@ static int sgdma_async_read(struct altera_tse_private *priv)
 			return 0;
 		}
 
-		sgdma_setup_descrip(cdesc,		/* current descriptor */
-				    ndesc,		/* next descriptor */
+		sgdma_setup_descrip(cdesc,		 
+				    ndesc,		 
 				    sgdma_rxphysaddr(priv, ndesc),
-				    0,			/* read addr 0 for rx dma */
-				    rxbuffer->dma_addr, /* write addr for rx dma */
-				    0,			/* read 'til EOP */
-				    0,			/* EOP: NA for rx dma */
-				    0,			/* read fixed: NA for rx dma */
-				    0);			/* SOP: NA for rx DMA */
+				    0,			 
+				    rxbuffer->dma_addr,  
+				    0,			 
+				    0,			 
+				    0,			 
+				    0);			 
 
 		dma_sync_single_for_device(priv->device,
 					   priv->rxdescphys,
@@ -384,7 +357,7 @@ static int sgdma_async_write(struct altera_tse_private *priv,
 	if (sgdma_txbusy(priv))
 		return 0;
 
-	/* clear control and status */
+	 
 	csrwr32(0, priv->tx_dma_csr, sgdma_csroffs(control));
 	csrwr32(0x1f, priv->tx_dma_csr, sgdma_csroffs(status));
 
@@ -437,10 +410,7 @@ sgdma_rxphysaddr(struct altera_tse_private *priv,
 		}							\
 	} while (0)
 
-/* adds a tse_buffer to the tail of a tx buffer list.
- * assumes the caller is managing and holding a mutual exclusion
- * primitive to avoid simultaneous pushes/pops to the list.
- */
+ 
 static void
 queue_tx(struct altera_tse_private *priv, struct tse_buffer *buffer)
 {
@@ -448,21 +418,14 @@ queue_tx(struct altera_tse_private *priv, struct tse_buffer *buffer)
 }
 
 
-/* adds a tse_buffer to the tail of a rx buffer list
- * assumes the caller is managing and holding a mutual exclusion
- * primitive to avoid simultaneous pushes/pops to the list.
- */
+ 
 static void
 queue_rx(struct altera_tse_private *priv, struct tse_buffer *buffer)
 {
 	list_add_tail(&buffer->lh, &priv->rxlisthd);
 }
 
-/* dequeues a tse_buffer from the transmit buffer list, otherwise
- * returns NULL if empty.
- * assumes the caller is managing and holding a mutual exclusion
- * primitive to avoid simultaneous pushes/pops to the list.
- */
+ 
 static struct tse_buffer *
 dequeue_tx(struct altera_tse_private *priv)
 {
@@ -471,11 +434,7 @@ dequeue_tx(struct altera_tse_private *priv)
 	return buffer;
 }
 
-/* dequeues a tse_buffer from the receive buffer list, otherwise
- * returns NULL if empty
- * assumes the caller is managing and holding a mutual exclusion
- * primitive to avoid simultaneous pushes/pops to the list.
- */
+ 
 static struct tse_buffer *
 dequeue_rx(struct altera_tse_private *priv)
 {
@@ -484,12 +443,7 @@ dequeue_rx(struct altera_tse_private *priv)
 	return buffer;
 }
 
-/* dequeues a tse_buffer from the receive buffer list, otherwise
- * returns NULL if empty
- * assumes the caller is managing and holding a mutual exclusion
- * primitive to avoid simultaneous pushes/pops to the list while the
- * head is being examined.
- */
+ 
 static struct tse_buffer *
 queue_rx_peekhead(struct altera_tse_private *priv)
 {
@@ -498,22 +452,19 @@ queue_rx_peekhead(struct altera_tse_private *priv)
 	return buffer;
 }
 
-/* check and return rx sgdma status without polling
- */
+ 
 static int sgdma_rxbusy(struct altera_tse_private *priv)
 {
 	return csrrd32(priv->rx_dma_csr, sgdma_csroffs(status))
 		       & SGDMA_STSREG_BUSY;
 }
 
-/* waits for the tx sgdma to finish it's current operation, returns 0
- * when it transitions to nonbusy, returns 1 if the operation times out
- */
+ 
 static int sgdma_txbusy(struct altera_tse_private *priv)
 {
 	int delay = 0;
 
-	/* if DMA is busy, wait for current transaction to finish */
+	 
 	while ((csrrd32(priv->tx_dma_csr, sgdma_csroffs(status))
 		& SGDMA_STSREG_BUSY) && (delay++ < 100))
 		udelay(1);

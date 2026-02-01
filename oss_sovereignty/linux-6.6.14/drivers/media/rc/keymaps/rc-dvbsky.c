@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rc-dvbsky.c - Keytable for DVBSky Remote Controllers
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010-2012 by Nibble Max <nibble.max@gmail.com>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
-/*
- * This table contains the complete RC5 code, instead of just the data part
- */
+ 
 
 static struct rc_map_table rc5_dvbsky[] = {
 	{ 0x0000, KEY_NUMERIC_0 },
@@ -27,12 +20,12 @@ static struct rc_map_table rc5_dvbsky[] = {
 	{ 0x000d, KEY_OK },
 	{ 0x000b, KEY_STOP },
 	{ 0x000c, KEY_EXIT },
-	{ 0x000e, KEY_CAMERA }, /*Snap shot*/
-	{ 0x000f, KEY_SUBTITLE }, /*PIP*/
+	{ 0x000e, KEY_CAMERA },  
+	{ 0x000f, KEY_SUBTITLE },  
 	{ 0x0010, KEY_VOLUMEUP },
 	{ 0x0011, KEY_VOLUMEDOWN },
 	{ 0x0012, KEY_FAVORITES },
-	{ 0x0013, KEY_LIST }, /*Info*/
+	{ 0x0013, KEY_LIST },  
 	{ 0x0016, KEY_PAUSE },
 	{ 0x0017, KEY_PLAY },
 	{ 0x001f, KEY_RECORD },

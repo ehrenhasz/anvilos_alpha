@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Remote processor messaging transport (OMAP platform-specific bits)
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Copyright (C) 2011 Google, Inc.
- *
- * Ohad Ben-Cohen <ohad@wizery.com>
- * Brian Swetland <swetland@google.com>
- */
+
+ 
 
 #include <linux/dma-direct.h>
 #include <linux/dma-map-ops.h>
@@ -61,7 +53,7 @@ static  struct rproc *vdev_to_rproc(struct virtio_device *vdev)
 	return rvdev->rproc;
 }
 
-/* kick the remote processor, and let it know which virtqueue to poke at */
+ 
 static bool rproc_virtio_notify(struct virtqueue *vq)
 {
 	struct rproc_vring *rvring = vq->priv;
@@ -74,18 +66,7 @@ static bool rproc_virtio_notify(struct virtqueue *vq)
 	return true;
 }
 
-/**
- * rproc_vq_interrupt() - tell remoteproc that a virtqueue is interrupted
- * @rproc: handle to the remote processor
- * @notifyid: index of the signalled virtqueue (unique per this @rproc)
- *
- * This function should be called by the platform-specific rproc driver,
- * when the remote processor signals that a specific virtqueue has pending
- * messages available.
- *
- * Return: IRQ_NONE if no message was found in the @notifyid virtqueue,
- * and otherwise returns IRQ_HANDLED.
- */
+ 
 irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int notifyid)
 {
 	struct rproc_vring *rvring;
@@ -115,14 +96,14 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
 	void *addr;
 	int num, size;
 
-	/* we're temporarily limited to two virtqueues per rvdev */
+	 
 	if (id >= ARRAY_SIZE(rvdev->vring))
 		return ERR_PTR(-EINVAL);
 
 	if (!name)
 		return NULL;
 
-	/* Search allocated memory region by name */
+	 
 	mem = rproc_find_carveout_by_name(rproc, "vdev%dvring%d", rvdev->index,
 					  id);
 	if (!mem || !mem->va)
@@ -132,17 +113,14 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
 	addr = mem->va;
 	num = rvring->num;
 
-	/* zero vring */
+	 
 	size = vring_size(num, rvring->align);
 	memset(addr, 0, size);
 
 	dev_dbg(dev, "vring%d: va %pK qsz %d notifyid %d\n",
 		id, addr, num, rvring->notifyid);
 
-	/*
-	 * Create the new vq, and tell virtio we're not interested in
-	 * the 'weak' smp barriers, since we're talking with a real device.
-	 */
+	 
 	vq = vring_new_virtqueue(id, num, rvring->align, vdev, false, ctx,
 				 addr, rproc_virtio_notify, callback, name);
 	if (!vq) {
@@ -156,7 +134,7 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
 	rvring->vq = vq;
 	vq->priv = rvring;
 
-	/* Update vring in resource table */
+	 
 	rsc = (void *)rproc->table_ptr + rvdev->rsc_offset;
 	rsc->vring[id].da = mem->da;
 
@@ -242,7 +220,7 @@ static void rproc_virtio_reset(struct virtio_device *vdev)
 	dev_dbg(&vdev->dev, "reset !\n");
 }
 
-/* provide the vdev features as retrieved from the firmware */
+ 
 static u64 rproc_virtio_get_features(struct virtio_device *vdev)
 {
 	struct rproc_vdev *rvdev = vdev_to_rvdev(vdev);
@@ -255,11 +233,7 @@ static u64 rproc_virtio_get_features(struct virtio_device *vdev)
 
 static void rproc_transport_features(struct virtio_device *vdev)
 {
-	/*
-	 * Packed ring isn't enabled on remoteproc for now,
-	 * because remoteproc uses vring_new_virtqueue() which
-	 * creates virtio rings on preallocated memory.
-	 */
+	 
 	__virtio_clear_bit(vdev, VIRTIO_F_RING_PACKED);
 }
 
@@ -270,19 +244,16 @@ static int rproc_virtio_finalize_features(struct virtio_device *vdev)
 
 	rsc = (void *)rvdev->rproc->table_ptr + rvdev->rsc_offset;
 
-	/* Give virtio_ring a chance to accept features */
+	 
 	vring_transport_features(vdev);
 
-	/* Give virtio_rproc a chance to accept features. */
+	 
 	rproc_transport_features(vdev);
 
-	/* Make sure we don't have any features > 32 bits! */
+	 
 	BUG_ON((u32)vdev->features != vdev->features);
 
-	/*
-	 * Remember the finalized features of our vdev, and provide it
-	 * to the remote processor once it is powered on.
-	 */
+	 
 	rsc->gfeatures = vdev->features;
 
 	return 0;
@@ -336,14 +307,7 @@ static const struct virtio_config_ops rproc_virtio_config_ops = {
 	.set		= rproc_virtio_set,
 };
 
-/*
- * This function is called whenever vdev is released, and is responsible
- * to decrement the remote processor's refcount which was taken when vdev was
- * added.
- *
- * Never call this function directly; it will be called by the driver
- * core when needed.
- */
+ 
 static void rproc_virtio_dev_release(struct device *dev)
 {
 	struct virtio_device *vdev = dev_to_virtio(dev);
@@ -354,16 +318,7 @@ static void rproc_virtio_dev_release(struct device *dev)
 	put_device(&rvdev->pdev->dev);
 }
 
-/**
- * rproc_add_virtio_dev() - register an rproc-induced virtio device
- * @rvdev: the remote vdev
- * @id: the device type identification (used to match it with a driver).
- *
- * This function registers a virtio device. This vdev's partent is
- * the rproc device.
- *
- * Return: 0 on success or an appropriate error value otherwise
- */
+ 
 static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 {
 	struct rproc *rproc = rvdev->rproc;
@@ -378,7 +333,7 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 		goto out;
 	}
 
-	/* Try to find dedicated vdev buffer carveout */
+	 
 	mem = rproc_find_carveout_by_name(rproc, "vdev%dbuffer", rvdev->index);
 	if (mem) {
 		phys_addr_t pa;
@@ -386,7 +341,7 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 		if (mem->of_resm_idx != -1) {
 			struct device_node *np = rproc->dev.parent->of_node;
 
-			/* Associate reserved memory to vdev device */
+			 
 			ret = of_reserved_mem_device_init_by_idx(dev, np,
 								 mem->of_resm_idx);
 			if (ret) {
@@ -399,11 +354,11 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 					 rvdev->index);
 				pa = rproc_va_to_pa(mem->va);
 			} else {
-				/* Use dma address as carveout no memmapped yet */
+				 
 				pa = (phys_addr_t)mem->dma;
 			}
 
-			/* Associate vdev buffer memory pool to vdev subdev */
+			 
 			ret = dma_declare_coherent_memory(dev, pa,
 							   mem->da,
 							   mem->len);
@@ -415,18 +370,11 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 	} else {
 		struct device_node *np = rproc->dev.parent->of_node;
 
-		/*
-		 * If we don't have dedicated buffer, just attempt to re-assign
-		 * the reserved memory from our parent. A default memory-region
-		 * at index 0 from the parent's memory-regions is assigned for
-		 * the rvdev dev to allocate from. Failure is non-critical and
-		 * the allocations will fall back to global pools, so don't
-		 * check return value either.
-		 */
+		 
 		of_reserved_mem_device_init_by_idx(dev, np, 0);
 	}
 
-	/* Allocate virtio device */
+	 
 	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
 	if (!vdev) {
 		ret = -ENOMEM;
@@ -437,7 +385,7 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
 	vdev->dev.parent = dev;
 	vdev->dev.release = rproc_virtio_dev_release;
 
-	/* Reference the vdev and vring allocations */
+	 
 	get_device(dev);
 
 	ret = register_virtio_device(vdev);
@@ -453,15 +401,7 @@ out:
 	return ret;
 }
 
-/**
- * rproc_remove_virtio_dev() - remove an rproc-induced virtio device
- * @dev: the virtio device
- * @data: must be null
- *
- * This function unregisters an existing virtio device.
- *
- * Return: 0
- */
+ 
 static int rproc_remove_virtio_dev(struct device *dev, void *data)
 {
 	struct virtio_device *vdev = dev_to_virtio(dev);
@@ -512,7 +452,7 @@ static int rproc_virtio_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Make device dma capable by inheriting from parent's capabilities */
+	 
 	set_dma_ops(dev, get_dma_ops(rproc->dev.parent));
 
 	ret = dma_coerce_mask_and_coherent(dev, dma_get_mask(rproc->dev.parent));
@@ -526,17 +466,17 @@ static int rproc_virtio_probe(struct platform_device *pdev)
 
 	rsc = rvdev_data->rsc;
 
-	/* parse the vrings */
+	 
 	for (i = 0; i < rsc->num_of_vrings; i++) {
 		ret = rproc_parse_vring(rvdev, rsc, i);
 		if (ret)
 			return ret;
 	}
 
-	/* remember the resource offset*/
+	 
 	rvdev->rsc_offset = rvdev_data->rsc_offset;
 
-	/* allocate the vring resources */
+	 
 	for (i = 0; i < rsc->num_of_vrings; i++) {
 		ret = rproc_alloc_vring(rvdev, i);
 		if (ret)
@@ -550,14 +490,7 @@ static int rproc_virtio_probe(struct platform_device *pdev)
 
 	rproc_add_subdev(rproc, &rvdev->subdev);
 
-	/*
-	 * We're indirectly making a non-temporary copy of the rproc pointer
-	 * here, because the platform device or the vdev device will indirectly
-	 * access the wrapping rproc.
-	 *
-	 * Therefore we must increment the rproc refcount here, and decrement
-	 * it _only_ on platform remove.
-	 */
+	 
 	get_device(&rproc->dev);
 
 	return 0;
@@ -590,7 +523,7 @@ static void rproc_virtio_remove(struct platform_device *pdev)
 	put_device(&rproc->dev);
 }
 
-/* Platform driver */
+ 
 static struct platform_driver rproc_virtio_driver = {
 	.probe		= rproc_virtio_probe,
 	.remove_new	= rproc_virtio_remove,

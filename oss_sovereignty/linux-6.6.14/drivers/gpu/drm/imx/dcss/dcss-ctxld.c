@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -41,21 +39,21 @@
 #define CTXLD_IRQ_COMPLETION		(DB_COMP | SB_HP_COMP | SB_LP_COMP)
 #define CTXLD_IRQ_ERROR			(RD_ERR | DB_PEND_SB_REC | AHB_ERR)
 
-/* The following sizes are in context loader entries, 8 bytes each. */
-#define CTXLD_DB_CTX_ENTRIES		1024	/* max 65536 */
-#define CTXLD_SB_LP_CTX_ENTRIES		10240	/* max 65536 */
-#define CTXLD_SB_HP_CTX_ENTRIES		20000	/* max 65536 */
+ 
+#define CTXLD_DB_CTX_ENTRIES		1024	 
+#define CTXLD_SB_LP_CTX_ENTRIES		10240	 
+#define CTXLD_SB_HP_CTX_ENTRIES		20000	 
 #define CTXLD_SB_CTX_ENTRIES		(CTXLD_SB_LP_CTX_ENTRIES + \
 					 CTXLD_SB_HP_CTX_ENTRIES)
 
-/* Sizes, in entries, of the DB, SB_HP and SB_LP context regions. */
+ 
 static u16 dcss_ctxld_ctx_size[3] = {
 	CTXLD_DB_CTX_ENTRIES,
 	CTXLD_SB_HP_CTX_ENTRIES,
 	CTXLD_SB_LP_CTX_ENTRIES
 };
 
-/* this represents an entry in the context loader map */
+ 
 struct dcss_ctxld_item {
 	u32 val;
 	u32 ofs;
@@ -76,13 +74,13 @@ struct dcss_ctxld {
 	dma_addr_t db_paddr[2];
 	dma_addr_t sb_paddr[2];
 
-	u16 ctx_size[2][3]; /* holds the sizes of DB, SB_HP and SB_LP ctx */
+	u16 ctx_size[2][3];  
 	u8 current_ctx;
 
 	bool in_use;
 	bool armed;
 
-	spinlock_t lock; /* protects concurent access to private data */
+	spinlock_t lock;  
 };
 
 static irqreturn_t dcss_ctxld_irq_handler(int irq, void *data)
@@ -100,10 +98,7 @@ static irqreturn_t dcss_ctxld_irq_handler(int irq, void *data)
 		if (dcss && dcss->disable_callback)
 			dcss->disable_callback(dcss);
 	} else if (irq_status & CTXLD_IRQ_ERROR) {
-		/*
-		 * Except for throwing an error message and clearing the status
-		 * register, there's not much we can do here.
-		 */
+		 
 		dev_err(ctxld->dev, "ctxld: error encountered: %08x\n",
 			irq_status);
 		dev_err(ctxld->dev, "ctxld: db=%d, sb_hp=%d, sb_lp=%d\n",
@@ -271,7 +266,7 @@ static int dcss_ctxld_enable_locked(struct dcss_ctxld *ctxld)
 	sb_lp_cnt = ctxld->ctx_size[curr_ctx][CTX_SB_LP];
 	db_cnt = ctxld->ctx_size[curr_ctx][CTX_DB];
 
-	/* make sure SB_LP context area comes after SB_HP */
+	 
 	if (sb_lp_cnt &&
 	    ctxld->sb_lp[curr_ctx] != ctxld->sb_hp[curr_ctx] + sb_hp_cnt) {
 		struct dcss_ctxld_item *sb_lp_adjusted;
@@ -298,15 +293,12 @@ static int dcss_ctxld_enable_locked(struct dcss_ctxld *ctxld)
 	dcss_writel(sb_base, ctxld->ctxld_reg + DCSS_CTXLD_SB_BASE_ADDR);
 	dcss_writel(sb_count, ctxld->ctxld_reg + DCSS_CTXLD_SB_COUNT);
 
-	/* enable the context loader */
+	 
 	dcss_set(CTXLD_ENABLE, ctxld->ctxld_reg + DCSS_CTXLD_CONTROL_STATUS);
 
 	ctxld->in_use = true;
 
-	/*
-	 * Toggle the current context to the alternate one so that any updates
-	 * in the modules' settings take place there.
-	 */
+	 
 	ctxld->current_ctx ^= 1;
 
 	ctxld->ctx_size[ctxld->current_ctx][CTX_DB] = 0;
@@ -407,7 +399,7 @@ int dcss_ctxld_suspend(struct dcss_ctxld *ctxld)
 		ctxld->irq_en = false;
 	}
 
-	/* reset context region and sizes */
+	 
 	ctxld->current_ctx = 0;
 	ctxld->ctx_size[0][CTX_DB] = 0;
 	ctxld->ctx_size[0][CTX_SB_HP] = 0;

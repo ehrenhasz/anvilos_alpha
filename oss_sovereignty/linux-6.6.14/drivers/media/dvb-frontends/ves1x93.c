@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Driver for VES1893 and VES1993 QPSK Demodulators
 
-    Copyright (C) 1999 Convergence Integrated Media GmbH <ralph@convergence.de>
-    Copyright (C) 2001 Ronny Strutz <3des@elitedvb.de>
-    Copyright (C) 2002 Dennis Noermann <dennis.noermann@noernet.de>
-    Copyright (C) 2002-2003 Andreas Oberritter <obi@linuxtv.org>
-
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,11 +14,11 @@
 
 struct ves1x93_state {
 	struct i2c_adapter* i2c;
-	/* configuration settings */
+	 
 	const struct ves1x93_config* config;
 	struct dvb_frontend frontend;
 
-	/* previous uncorrected block counter */
+	 
 	enum fe_spectral_inversion inversion;
 	u8 *init_1x93_tab;
 	u8 *init_1x93_wtab;
@@ -122,10 +113,7 @@ static int ves1x93_set_inversion(struct ves1x93_state *state,
 {
 	u8 val;
 
-	/*
-	 * inversion on/off are interchanged because i and q seem to
-	 * be swapped on the hardware
-	 */
+	 
 
 	switch (inversion) {
 	case INVERSION_OFF:
@@ -209,7 +197,7 @@ static int ves1x93_set_symbolrate (struct ves1x93_state* state, u32 srate)
 	} else {
 		ADCONF = 0x81;
 		FCONF  = 0x88 | (FNR >> 1) | ((FNR & 0x01) << 5);
-		/*FCONF	 = 0x80 | ((FNR & 0x01) << 5) | (((FNR > 1) & 0x03) << 3) | ((FNR >> 1) & 0x07);*/
+		 
 	}
 
 	BDR = (( (ratio << (FNR >> 1)) >> 4) + 1) >> 1;
@@ -242,7 +230,7 @@ static int ves1x93_set_symbolrate (struct ves1x93_state* state, u32 srate)
 
 	ves1x93_writereg (state, 0x05, AGCR);
 
-	/* ves1993 hates this, will lose lock */
+	 
 	if (state->demod_type != DEMOD_VES1993)
 		ves1x93_clr_bit (state);
 
@@ -261,7 +249,7 @@ static int ves1x93_init (struct dvb_frontend* fe)
 		if (state->init_1x93_wtab[i]) {
 			val = state->init_1x93_tab[i];
 
-			if (state->config->invert_pwm && (i == 0x05)) val |= 0x20; /* invert PWM */
+			if (state->config->invert_pwm && (i == 0x05)) val |= 0x20;  
 			ves1x93_writereg (state, i, val);
 		}
 	}
@@ -293,16 +281,8 @@ static int ves1x93_read_status(struct dvb_frontend *fe,
 
 	u8 sync = ves1x93_readreg (state, 0x0e);
 
-	/*
-	 * The ves1893 sometimes returns sync values that make no sense,
-	 * because, e.g., the SIGNAL bit is 0, while some of the higher
-	 * bits are 1 (and how can there be a CARRIER w/o a SIGNAL?).
-	 * Tests showed that the VITERBI and SYNC bits are returned
-	 * reliably, while the SIGNAL and CARRIER bits ar sometimes wrong.
-	 * If such a case occurs, we read the value again, until we get a
-	 * valid value.
-	 */
-	int maxtry = 10; /* just for safety - let's not get stuck here */
+	 
+	int maxtry = 10;  
 	while ((sync & 0x03) != 0x03 && (sync & 0x0c) && maxtry--) {
 		msleep(10);
 		sync = ves1x93_readreg (state, 0x0e);
@@ -367,10 +347,10 @@ static int ves1x93_read_ucblocks(struct dvb_frontend* fe, u32* ucblocks)
 	*ucblocks = ves1x93_readreg (state, 0x18) & 0x7f;
 
 	if (*ucblocks == 0x7f)
-		*ucblocks = 0xffffffff;   /* counter overflow... */
+		*ucblocks = 0xffffffff;    
 
-	ves1x93_writereg (state, 0x18, 0x00);  /* reset the counter */
-	ves1x93_writereg (state, 0x18, 0x80);  /* dto. */
+	ves1x93_writereg (state, 0x18, 0x00);   
+	ves1x93_writereg (state, 0x18, 0x80);   
 
 	return 0;
 }
@@ -404,15 +384,12 @@ static int ves1x93_get_frontend(struct dvb_frontend *fe,
 
 	p->frequency = state->frequency - afc;
 
-	/*
-	 * inversion indicator is only valid
-	 * if auto inversion was used
-	 */
+	 
 	if (state->inversion == INVERSION_AUTO)
 		p->inversion = (ves1x93_readreg (state, 0x0f) & 2) ?
 				INVERSION_OFF : INVERSION_ON;
 	p->fec_inner = ves1x93_get_fec(state);
-	/*  XXX FIXME: timing offset !! */
+	 
 
 	return 0;
 }
@@ -449,19 +426,19 @@ struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
 	struct ves1x93_state* state = NULL;
 	u8 identity;
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct ves1x93_state), GFP_KERNEL);
 	if (state == NULL) goto error;
 
-	/* setup the state */
+	 
 	state->config = config;
 	state->i2c = i2c;
 	state->inversion = INVERSION_OFF;
 
-	/* check if the demod is there + identify it */
+	 
 	identity = ves1x93_readreg(state, 0x1e);
 	switch (identity) {
-	case 0xdc: /* VES1893A rev1 */
+	case 0xdc:  
 		printk("ves1x93: Detected ves1893a rev1\n");
 		state->demod_type = DEMOD_VES1893;
 		state->init_1x93_tab = init_1893_tab;
@@ -469,7 +446,7 @@ struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
 		state->tab_size = sizeof(init_1893_tab);
 		break;
 
-	case 0xdd: /* VES1893A rev2 */
+	case 0xdd:  
 		printk("ves1x93: Detected ves1893a rev2\n");
 		state->demod_type = DEMOD_VES1893;
 		state->init_1x93_tab = init_1893_tab;
@@ -477,7 +454,7 @@ struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
 		state->tab_size = sizeof(init_1893_tab);
 		break;
 
-	case 0xde: /* VES1993 */
+	case 0xde:  
 		printk("ves1x93: Detected ves1993\n");
 		state->demod_type = DEMOD_VES1993;
 		state->init_1x93_tab = init_1993_tab;
@@ -489,7 +466,7 @@ struct dvb_frontend* ves1x93_attach(const struct ves1x93_config* config,
 		goto error;
 	}
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &ves1x93_ops, sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;
 	return &state->frontend;
@@ -509,7 +486,7 @@ static const struct dvb_frontend_ops ves1x93_ops = {
 		.frequency_tolerance_hz	= 29500 * kHz,
 		.symbol_rate_min	= 1000000,
 		.symbol_rate_max	= 45000000,
-	/*	.symbol_rate_tolerance	=	???,*/
+	 
 		.caps = FE_CAN_INVERSION_AUTO |
 			FE_CAN_FEC_1_2 | FE_CAN_FEC_2_3 | FE_CAN_FEC_3_4 |
 			FE_CAN_FEC_5_6 | FE_CAN_FEC_7_8 | FE_CAN_FEC_AUTO |

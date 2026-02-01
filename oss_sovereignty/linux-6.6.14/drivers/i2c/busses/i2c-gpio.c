@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Bitbanging I2C bus driver using the GPIO API
- *
- * Copyright (C) 2007 Atmel Corporation
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -26,17 +22,13 @@ struct i2c_gpio_private_data {
 	struct i2c_gpio_platform_data pdata;
 #ifdef CONFIG_I2C_GPIO_FAULT_INJECTOR
 	struct dentry *debug_dir;
-	/* these must be protected by bus lock */
+	 
 	struct completion scl_irq_completion;
 	u64 scl_irq_data;
 #endif
 };
 
-/*
- * Toggle SDA by changing the output value of the pin. This is only
- * valid for pins configured as open drain (i.e. setting the value
- * high effectively turns off the output driver.)
- */
+ 
 static void i2c_gpio_setsda_val(void *data, int state)
 {
 	struct i2c_gpio_private_data *priv = data;
@@ -44,12 +36,7 @@ static void i2c_gpio_setsda_val(void *data, int state)
 	gpiod_set_value_cansleep(priv->sda, state);
 }
 
-/*
- * Toggle SCL by changing the output value of the pin. This is used
- * for pins that are configured as open drain and for output-only
- * pins. The latter case will break the i2c protocol, but it will
- * often work in practice.
- */
+ 
 static void i2c_gpio_setscl_val(void *data, int state)
 {
 	struct i2c_gpio_private_data *priv = data;
@@ -111,11 +98,11 @@ static void i2c_gpio_incomplete_transfer(struct i2c_gpio_private_data *priv,
 
 	i2c_lock_bus(&priv->adap, I2C_LOCK_ROOT_ADAPTER);
 
-	/* START condition */
+	 
 	setsda(bit_data, 0);
 	udelay(bit_data->udelay);
 
-	/* Send pattern, request ACK, don't send STOP */
+	 
 	for (i = pattern_size - 1; i >= 0; i--) {
 		setscl(bit_data, 0);
 		udelay(bit_data->udelay / 2);
@@ -136,7 +123,7 @@ static int fops_incomplete_addr_phase_set(void *data, u64 addr)
 	if (addr > 0x7f)
 		return -EINVAL;
 
-	/* ADDR (7 bit) + RD (1 bit) + Client ACK, keep SDA hi (1 bit) */
+	 
 	pattern = (addr << 2) | 3;
 
 	i2c_gpio_incomplete_transfer(priv, pattern, 9);
@@ -153,9 +140,9 @@ static int fops_incomplete_write_byte_set(void *data, u64 addr)
 	if (addr > 0x7f)
 		return -EINVAL;
 
-	/* ADDR (7 bit) + WR (1 bit) + Client ACK (1 bit) */
+	 
 	pattern = (addr << 2) | 1;
-	/* 0x00 (8 bit) + Client ACK, keep SDA hi (1 bit) */
+	 
 	pattern = (pattern << 9) | 1;
 
 	i2c_gpio_incomplete_transfer(priv, pattern, 18);
@@ -217,13 +204,7 @@ static int fops_lose_arbitration_set(void *data, u64 duration)
 		return -EINVAL;
 
 	priv->scl_irq_data = duration;
-	/*
-	 * Interrupt on falling SCL. This ensures that the master under test has
-	 * really started the transfer. Interrupt on falling SDA did only
-	 * exercise 'bus busy' detection on some HW but not 'arbitration lost'.
-	 * Note that the interrupt latency may cause the first bits to be
-	 * transmitted correctly.
-	 */
+	 
 	return i2c_gpio_fi_act_on_scl_irq(priv, lose_arbitration_irq);
 }
 DEFINE_DEBUGFS_ATTRIBUTE(fops_lose_arbitration, NULL, fops_lose_arbitration_set, "%llu\n");
@@ -246,10 +227,7 @@ static int fops_inject_panic_set(void *data, u64 duration)
 		return -EINVAL;
 
 	priv->scl_irq_data = duration;
-	/*
-	 * Interrupt on falling SCL. This ensures that the master under test has
-	 * really started the transfer.
-	 */
+	 
 	return i2c_gpio_fi_act_on_scl_irq(priv, inject_panic_irq);
 }
 DEFINE_DEBUGFS_ATTRIBUTE(fops_inject_panic, NULL, fops_inject_panic_set, "%llu\n");
@@ -258,11 +236,7 @@ static void i2c_gpio_fault_injector_init(struct platform_device *pdev)
 {
 	struct i2c_gpio_private_data *priv = platform_get_drvdata(pdev);
 
-	/*
-	 * If there will be a debugfs-dir per i2c adapter somewhen, put the
-	 * 'fault-injector' dir there. Until then, we have a global dir with
-	 * all adapters as subdirs.
-	 */
+	 
 	if (!i2c_gpio_debug_dir) {
 		i2c_gpio_debug_dir = debugfs_create_dir("i2c-fault-injector", NULL);
 		if (!i2c_gpio_debug_dir)
@@ -298,9 +272,9 @@ static void i2c_gpio_fault_injector_exit(struct platform_device *pdev)
 #else
 static inline void i2c_gpio_fault_injector_init(struct platform_device *pdev) {}
 static inline void i2c_gpio_fault_injector_exit(struct platform_device *pdev) {}
-#endif /* CONFIG_I2C_GPIO_FAULT_INJECTOR*/
+#endif  
 
-/* Get i2c-gpio properties from DT or ACPI table */
+ 
 static void i2c_gpio_get_properties(struct device *dev,
 				    struct i2c_gpio_platform_data *pdata)
 {
@@ -347,11 +321,11 @@ static struct gpio_desc *i2c_gpio_get_desc(struct device *dev,
 
 	ret = PTR_ERR(retdesc);
 
-	/* FIXME: hack in the old code, is this really necessary? */
+	 
 	if (ret == -EINVAL)
 		retdesc = ERR_PTR(-EPROBE_DEFER);
 
-	/* This happens if the GPIO driver is not yet probed, let's defer */
+	 
 	if (ret == -ENOENT)
 		retdesc = ERR_PTR(-EPROBE_DEFER);
 
@@ -383,22 +357,12 @@ static int i2c_gpio_probe(struct platform_device *pdev)
 	if (fwnode) {
 		i2c_gpio_get_properties(dev, pdata);
 	} else {
-		/*
-		 * If all platform data settings are zero it is OK
-		 * to not provide any platform data from the board.
-		 */
+		 
 		if (dev_get_platdata(dev))
 			memcpy(pdata, dev_get_platdata(dev), sizeof(*pdata));
 	}
 
-	/*
-	 * First get the GPIO pins; if it fails, we'll defer the probe.
-	 * If the SCL/SDA lines are marked "open drain" by platform data or
-	 * device tree then this means that something outside of our control is
-	 * marking these lines to be handled as open drain, and we should just
-	 * handle them as we handle any other output. Else we enforce open
-	 * drain as this is required for an I2C bus.
-	 */
+	 
 	if (pdata->sda_is_open_drain || pdata->sda_has_no_pullup)
 		gflags = GPIOD_OUT_HIGH;
 	else
@@ -431,14 +395,14 @@ static int i2c_gpio_probe(struct platform_device *pdev)
 	if (pdata->udelay)
 		bit_data->udelay = pdata->udelay;
 	else if (pdata->scl_is_output_only)
-		bit_data->udelay = 50;			/* 10 kHz */
+		bit_data->udelay = 50;			 
 	else
-		bit_data->udelay = 5;			/* 100 kHz */
+		bit_data->udelay = 5;			 
 
 	if (pdata->timeout)
 		bit_data->timeout = pdata->timeout;
 	else
-		bit_data->timeout = HZ / 10;		/* 100 ms */
+		bit_data->timeout = HZ / 10;		 
 
 	bit_data->data = priv;
 
@@ -460,11 +424,7 @@ static int i2c_gpio_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/*
-	 * FIXME: using global GPIO numbers is not helpful. If/when we
-	 * get accessors to get the actual name of the GPIO line,
-	 * from the descriptor, then provide that instead.
-	 */
+	 
 	dev_info(dev, "using lines %u (SDA) and %u (SCL%s)\n",
 		 desc_to_gpio(priv->sda), desc_to_gpio(priv->scl),
 		 pdata->scl_is_output_only
@@ -490,13 +450,13 @@ static void i2c_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id i2c_gpio_dt_ids[] = {
 	{ .compatible = "i2c-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, i2c_gpio_dt_ids);
 
 static const struct acpi_device_id i2c_gpio_acpi_match[] = {
-	{ "LOON0005" }, /* LoongArch */
+	{ "LOON0005" },  
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, i2c_gpio_acpi_match);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IIO rescale driver
- *
- * Copyright (C) 2018 Axentia Technologies AB
- * Copyright (C) 2022 Liam Beguin <liambeguin@gmail.com>
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gcd.h>
@@ -36,11 +29,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
 		*val2 = rescale->denominator;
 		return IIO_VAL_FRACTIONAL;
 	case IIO_VAL_FRACTIONAL:
-		/*
-		 * When the product of both scales doesn't overflow, avoid
-		 * potential accuracy loss (for in kernel consumers) by
-		 * keeping a fractional representation.
-		 */
+		 
 		if (!check_mul_overflow(*val, rescale->numerator, &_val) &&
 		    !check_mul_overflow(*val2, rescale->denominator, &_val2)) {
 			*val = _val;
@@ -76,11 +65,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
 	case IIO_VAL_INT_PLUS_MICRO:
 		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? 1000000000L : 1000000L;
 
-		/*
-		 * For IIO_VAL_INT_PLUS_{MICRO,NANO} scale types if either *val
-		 * OR *val2 is negative the schan scale is negative, i.e.
-		 * *val = 1 and *val2 = -0.5 yields -1.5 not -0.5.
-		 */
+		 
 		neg = *val < 0 || *val2 < 0;
 
 		tmp = (s64)abs(*val) * abs(rescale->numerator);
@@ -91,10 +76,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
 
 		*val += div_s64_rem(tmp, mult, val2);
 
-		/*
-		 * If only one of the rescaler elements or the schan scale is
-		 * negative, the combined scale is negative.
-		 */
+		 
 		if (neg ^ ((rescale->numerator < 0) ^ (rescale->denominator < 0))) {
 			if (*val)
 				*val = -*val;
@@ -155,20 +137,14 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
 		if (rescale->chan_processed)
-			/*
-			 * When only processed channels are supported, we
-			 * read the processed data and scale it by 1/1
-			 * augmented with whatever the rescaler has calculated.
-			 */
+			 
 			return iio_read_channel_processed(rescale->source, val);
 		else
 			return iio_read_channel_raw(rescale->source, val);
 
 	case IIO_CHAN_INFO_SCALE:
 		if (rescale->chan_processed) {
-			/*
-			 * Processed channels are scaled 1-to-1
-			 */
+			 
 			*val = 1;
 			*val2 = 1;
 			ret = IIO_VAL_FRACTIONAL;
@@ -177,30 +153,7 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
 		}
 		return rescale_process_scale(rescale, ret, val, val2);
 	case IIO_CHAN_INFO_OFFSET:
-		/*
-		 * Processed channels are scaled 1-to-1 and source offset is
-		 * already taken into account.
-		 *
-		 * In other cases, real world measurement are expressed as:
-		 *
-		 *	schan_scale * (raw + schan_offset)
-		 *
-		 * Given that the rescaler parameters are applied recursively:
-		 *
-		 *	rescaler_scale * (schan_scale * (raw + schan_offset) +
-		 *		rescaler_offset)
-		 *
-		 * Or,
-		 *
-		 *	(rescaler_scale * schan_scale) * (raw +
-		 *		(schan_offset +	rescaler_offset / schan_scale)
-		 *
-		 * Thus, reusing the original expression the parameters exposed
-		 * to userspace are:
-		 *
-		 *	scale = schan_scale * rescaler_scale
-		 *	offset = schan_offset + rescaler_offset / schan_scale
-		 */
+		 
 		if (rescale->chan_processed) {
 			*val = rescale->offset;
 			return IIO_VAL_INT;
@@ -221,10 +174,7 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
 						      schan_off, val, val2);
 		}
 
-		/*
-		 * If we get here we have no scale so scale 1:1 but apply
-		 * rescaler and offset, if any.
-		 */
+		 
 		return rescale_process_offset(rescale, IIO_VAL_FRACTIONAL, 1, 1,
 					      schan_off, val, val2);
 	default:
@@ -307,11 +257,7 @@ static int rescale_configure_channel(struct device *dev,
 	if (rescale->offset)
 		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
 
-	/*
-	 * Using .read_avail() is fringe to begin with and makes no sense
-	 * whatsoever for processed channels, so we make sure that this cannot
-	 * be called on a processed channel.
-	 */
+	 
 	if (iio_channel_has_available(schan, IIO_CHAN_INFO_RAW) &&
 	    !rescale->chan_processed)
 		chan->info_mask_separate_available |= BIT(IIO_CHAN_INFO_RAW);
@@ -338,11 +284,7 @@ static int rescale_current_sense_amplifier_props(struct device *dev,
 	device_property_read_u32(dev, "sense-gain-mult", &gain_mult);
 	device_property_read_u32(dev, "sense-gain-div", &gain_div);
 
-	/*
-	 * Calculate the scaling factor, 1 / (gain * sense), or
-	 * gain_div / (gain_mult * sense), while trying to keep the
-	 * numerator/denominator from overflowing.
-	 */
+	 
 	factor = gcd(sense, 1000000);
 	rescale->numerator = 1000000 / factor;
 	rescale->denominator = sense / factor;
@@ -514,7 +456,7 @@ static const struct of_device_id rescale_match[] = {
 	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
 	{ .compatible = "temperature-transducer",
 	  .data = &rescale_cfg[TEMP_TRANSDUCER], },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rescale_match);
 
@@ -536,7 +478,7 @@ static int rescale_probe(struct platform_device *pdev)
 
 	sizeof_ext_info = iio_get_channel_ext_info_count(source);
 	if (sizeof_ext_info) {
-		sizeof_ext_info += 1; /* one extra entry for the sentinel */
+		sizeof_ext_info += 1;  
 		sizeof_ext_info *= sizeof(*rescale->ext_info);
 	}
 

@@ -1,48 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*-----------------------------------------------------------------
- *
- *	lib_doupdate.c
- *
- * 	The routine doupdate() and its dependents.
- * 	All physical output is concentrated here (except _nc_outch()
- *	in lib_tputs.c).
- *
- *-----------------------------------------------------------------*/
+ 
 
 #define NEW_PAIR_INTERNAL 1
 
@@ -87,15 +47,7 @@
 
 MODULE_ID("$Id: tty_update.c,v 1.314 2022/07/23 22:12:59 tom Exp $")
 
-/*
- * This define controls the line-breakout optimization.  Every once in a
- * while during screen refresh, we want to check for input and abort the
- * update if there's some waiting.  CHECK_INTERVAL controls the number of
- * changed lines to be emitted between input checks.
- *
- * Note: Input-check-and-abort is no longer done if the screen is being
- * updated from scratch.  This is a feature, not a bug.
- */
+ 
 #define CHECK_INTERVAL	5
 
 #define FILL_BCE(sp) (sp->_coloron && !sp->_default_color && !back_color_erase)
@@ -103,12 +55,8 @@ MODULE_ID("$Id: tty_update.c,v 1.314 2022/07/23 22:12:59 tom Exp $")
 static const NCURSES_CH_T blankchar = NewChar(BLANK_TEXT);
 static NCURSES_CH_T normal = NewChar(BLANK_TEXT);
 
-/*
- * Enable checking to see if doupdate and friends are tracking the true
- * cursor position correctly.  NOTE: this is a debugging hack which will
- * work ONLY on ANSI-compatible terminals!
- */
-/* #define POSITION_DEBUG */
+ 
+ 
 
 static NCURSES_INLINE NCURSES_CH_T ClrBlank(NCURSES_SP_DCLx WINDOW *win);
 
@@ -129,15 +77,11 @@ static void TransformLine(int const lineno);
 #endif
 
 #ifdef POSITION_DEBUG
-/****************************************************************************
- *
- * Debugging code.  Only works on ANSI-standard terminals.
- *
- ****************************************************************************/
+ 
 
 static void
 position_check(NCURSES_SP_DCLx int expected_y, int expected_x, const char *legend)
-/* check to see if the real cursor position matches the virtual */
+ 
 {
     char buf[20];
     char *s;
@@ -148,7 +92,7 @@ position_check(NCURSES_SP_DCLx int expected_y, int expected_x, const char *legen
 
     NCURSES_SP_NAME(_nc_flush) (NCURSES_SP_ARG);
     memset(buf, '\0', sizeof(buf));
-    NCURSES_PUTP2_FLUSH("cpr", "\033[6n");	/* only works on ANSI-compatibles */
+    NCURSES_PUTP2_FLUSH("cpr", "\033[6n");	 
     *(s = buf) = 0;
     do {
 	int ask = sizeof(buf) - 1 - (s - buf);
@@ -159,7 +103,7 @@ position_check(NCURSES_SP_DCLx int expected_y, int expected_x, const char *legen
     } while (strchr(buf, 'R') == 0);
     _tracef("probe returned %s", _nc_visbuf(buf));
 
-    /* try to interpret as a position report */
+     
     if (sscanf(buf, "\033[%d;%dR", &y, &x) != 2) {
 	_tracef("position probe failed in %s", legend);
     } else {
@@ -182,14 +126,10 @@ position_check(NCURSES_SP_DCLx int expected_y, int expected_x, const char *legen
     }
 }
 #else
-#define position_check(expected_y, expected_x, legend)	/* nothing */
-#endif /* POSITION_DEBUG */
+#define position_check(expected_y, expected_x, legend)	 
+#endif  
 
-/****************************************************************************
- *
- * Optimized update code
- *
- ****************************************************************************/
+ 
 
 static NCURSES_INLINE void
 GoTo(NCURSES_SP_DCLx int const row, int const col)
@@ -212,7 +152,7 @@ GoTo(NCURSES_SP_DCLx int const row, int const col)
 
 #if !NCURSES_WCWIDTH_GRAPHICS
 #define is_wacs_value(ch) (_nc_wacs_width(ch) == 1 && wcwidth(ch) > 1)
-#endif /* !NCURSES_WCWIDTH_GRAPHICS */
+#endif  
 
 static NCURSES_INLINE void
 PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
@@ -229,32 +169,16 @@ PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
 		       _tracech_t(ch),
 		       SP_PARM->_cursrow, SP_PARM->_curscol));
 #if USE_WIDEC_SUPPORT
-    /*
-     * If this is not a valid character, there is nothing more to do.
-     */
+     
     if (isWidecExt(CHDEREF(ch))) {
 	TR(TRACE_CHARPUT, ("...skip"));
 	return;
     }
-    /*
-     * Determine the number of character cells which the 'ch' value will use
-     * on the screen.  It should be at least one.
-     */
+     
     if ((chlen = _nc_wacs_width(CharOf(CHDEREF(ch)))) <= 0) {
 	static const NCURSES_CH_T blank = NewChar(BLANK_TEXT);
 
-	/*
-	 * If the character falls into any of these special cases, do
-	 * not force the result to a blank:
-	 *
-	 * a) it is printable (this works around a bug in wcwidth()).
-	 * b) use_legacy_coding() has been called to modify the treatment
-	 *    of codes 128-255.
-	 * c) the acs_map[] has been initialized to allow codes 0-31
-	 *    to be rendered.  This supports Linux console's "PC"
-	 *    characters.  Codes 128-255 are allowed though this is
-	 *    not checked.
-	 */
+	 
 	if (is8bits(CharOf(CHDEREF(ch)))
 	    && (isprint(CharOf(CHDEREF(ch)))
 		|| (SP_PARM->_legacy_coding > 0 && CharOf(CHDEREF(ch)) >= 160)
@@ -281,15 +205,10 @@ PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
 #endif
 	)) {
 	int c8;
-	my_ch = CHDEREF(ch);	/* work around const param */
+	my_ch = CHDEREF(ch);	 
 	c8 = CharOf(my_ch);
 #if USE_WIDEC_SUPPORT
-	/*
-	 * This is crude & ugly, but works most of the time.  It checks if the
-	 * acs_chars string specified that we have a mapping for this
-	 * character, and uses the wide-character mapping when we expect the
-	 * normal one to be broken (by mis-design ;-).
-	 */
+	 
 	if (SP_PARM->_screen_unicode
 	    && _nc_wacs[CharOf(my_ch)].chars[0]) {
 	    if (SP_PARM->_screen_acs_map[CharOf(my_ch)]) {
@@ -305,17 +224,11 @@ PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
 	    if (!(AttrOf(attr) & A_ALTCHARSET)) {
 		chlen = 1;
 	    }
-#endif /* !NCURSES_WCWIDTH_GRAPHICS */
+#endif  
 	} else
 #endif
 	if (!SP_PARM->_screen_acs_map[c8]) {
-	    /*
-	     * If we found no mapping for a given alternate-character set item
-	     * in the terminal description, attempt to use the ASCII fallback
-	     * code which is populated in the _acs_map[] array.  If that did
-	     * not correspond to a line-drawing, etc., graphics character, the
-	     * array entry would be empty.
-	     */
+	     
 	    chtype temp = UChar(SP_PARM->_acs_map[c8]);
 	    if (temp) {
 		RemAttr(attr, A_ALTCHARSET);
@@ -323,12 +236,7 @@ PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
 	    }
 	}
 
-	/*
-	 * If we (still) have alternate character set, it is the normal 8bit
-	 * flavor.  The _screen_acs_map[] array tells if the character was
-	 * really in acs_chars, needed because of the way wide/normal line
-	 * drawing flavors are integrated.
-	 */
+	 
 	if (AttrOf(attr) & A_ALTCHARSET) {
 	    int j = CharOfD(ch);
 	    chtype temp = UChar(SP_PARM->_acs_map[j]);
@@ -365,15 +273,11 @@ PutAttrChar(NCURSES_SP_DCLx CARG_CH_T ch)
 
 static bool
 check_pending(NCURSES_SP_DCL0)
-/* check for pending input */
+ 
 {
     bool have_pending = FALSE;
 
-    /*
-     * Only carry out this check when the flag is zero, otherwise we'll
-     * have the refreshing slow down drastically (or stop) if there's an
-     * unread character available.
-     */
+     
     if (SP_PARM->_fifohold != 0)
 	return FALSE;
 
@@ -386,15 +290,7 @@ check_pending(NCURSES_SP_DCL0)
 	    have_pending = TRUE;
 	}
 #elif defined(__BEOS__)
-	/*
-	 * BeOS's select() is declared in socket.h, so the configure script does
-	 * not see it.  That's just as well, since that function works only for
-	 * sockets.  This (using snooze and ioctl) was distilled from Be's patch
-	 * for ncurses which uses a separate thread to simulate select().
-	 *
-	 * FIXME: the return values from the ioctl aren't very clear if we get
-	 * interrupted.
-	 */
+	 
 	int n = 0;
 	int howmany = ioctl(0, 'ichr', &n);
 	if (howmany >= 0 && n > 0) {
@@ -421,16 +317,16 @@ check_pending(NCURSES_SP_DCL0)
     return FALSE;
 }
 
-/* put char at lower right corner */
+ 
 static void
 PutCharLR(NCURSES_SP_DCLx const ARG_CH_T ch)
 {
     if (!auto_right_margin) {
-	/* we can put the char directly */
+	 
 	PutAttrChar(NCURSES_SP_ARGx ch);
     } else if (enter_am_mode && exit_am_mode) {
 	int oldcol = SP_PARM->_curscol;
-	/* we can suppress automargin */
+	 
 	NCURSES_PUTP2("exit_am_mode", exit_am_mode);
 
 	PutAttrChar(NCURSES_SP_ARGx ch);
@@ -456,35 +352,18 @@ PutCharLR(NCURSES_SP_DCLx const ARG_CH_T ch)
     }
 }
 
-/*
- * Wrap the cursor position, i.e., advance to the beginning of the next line.
- */
+ 
 static void
 wrap_cursor(NCURSES_SP_DCL0)
 {
     if (eat_newline_glitch) {
-	/*
-	 * xenl can manifest two different ways.  The vt100 way is that, when
-	 * you'd expect the cursor to wrap, it stays hung at the right margin
-	 * (on top of the character just emitted) and doesn't wrap until the
-	 * *next* graphic char is emitted.  The c100 way is to ignore LF
-	 * received just after an am wrap.
-	 *
-	 * An aggressive way to handle this would be to emit CR/LF after the
-	 * char and then assume the wrap is done, you're on the first position
-	 * of the next line, and the terminal out of its weird state.  Here
-	 * it is safe to just tell the code that the cursor is in hyperspace and
-	 * let the next mvcur() call straighten things out.
-	 */
+	 
 	SP_PARM->_curscol = -1;
 	SP_PARM->_cursrow = -1;
     } else if (auto_right_margin) {
 	SP_PARM->_curscol = 0;
 	SP_PARM->_cursrow++;
-	/*
-	 * We've actually moved - but may have to work around problems with
-	 * video attributes not working.
-	 */
+	 
 	if (!move_standout_mode && AttrOf(SCREEN_ATTRS(SP_PARM))) {
 	    TR(TRACE_CHARPUT, ("turning off (%#lx) %s before wrapping",
 			       (unsigned long) AttrOf(SCREEN_ATTRS(SP_PARM)),
@@ -502,7 +381,7 @@ wrap_cursor(NCURSES_SP_DCL0)
 
 static NCURSES_INLINE void
 PutChar(NCURSES_SP_DCLx const ARG_CH_T ch)
-/* insert character, handling automargin stuff */
+ 
 {
     if (SP_PARM->_cursrow == screen_lines(SP_PARM) - 1 &&
 	SP_PARM->_curscol == screen_columns(SP_PARM) - 1) {
@@ -519,12 +398,7 @@ PutChar(NCURSES_SP_DCLx const ARG_CH_T ch)
 		   SP_PARM->_curscol, "PutChar");
 }
 
-/*
- * Check whether the given character can be output by clearing commands.  This
- * includes test for being a space and not including any 'bad' attributes, such
- * as A_REVERSE.  All attribute flags which don't affect appearance of a space
- * or can be output by clearing (A_COLOR in case of bce-terminal) are excluded.
- */
+ 
 static NCURSES_INLINE bool
 can_clear_with(NCURSES_SP_DCLx ARG_CH_T ch)
 {
@@ -555,18 +429,7 @@ can_clear_with(NCURSES_SP_DCLx ARG_CH_T ch)
 	    (AttrOfD(ch) & ~(NONBLANK_ATTR | A_COLOR)) == BLANK_ATTR);
 }
 
-/*
- * Issue a given span of characters from an array.
- * Must be functionally equivalent to:
- *	for (i = 0; i < num; i++)
- *	    PutChar(ntext[i]);
- * but can leave the cursor positioned at the middle of the interval.
- *
- * Returns: 0 - cursor is at the end of interval
- *	    1 - cursor is somewhere in the middle
- *
- * This code is optimized using ech and rep.
- */
+ 
 static int
 EmitRange(NCURSES_SP_DCLx const NCURSES_CH_T *ntext, int num)
 {
@@ -594,31 +457,20 @@ EmitRange(NCURSES_SP_DCLx const NCURSES_CH_T *ntext, int num)
 	    while (runcount < num && CharEq(ntext[runcount], ntext0))
 		runcount++;
 
-	    /*
-	     * The cost expression in the middle isn't exactly right.
-	     * _cup_ch_cost is an upper bound on the cost for moving to the
-	     * end of the erased area, but not the cost itself (which we
-	     * can't compute without emitting the move).  This may result
-	     * in erase_chars not getting used in some situations for
-	     * which it would be marginally advantageous.
-	     */
+	     
 	    if (erase_chars
 		&& runcount > SP_PARM->_ech_cost + SP_PARM->_cup_ch_cost
 		&& can_clear_with(NCURSES_SP_ARGx CHREF(ntext0))) {
 		UpdateAttrs(SP_PARM, ntext0);
 		NCURSES_PUTP2("erase_chars", TIPARM_1(erase_chars, runcount));
 
-		/*
-		 * If this is the last part of the given interval,
-		 * don't bother moving cursor, since it can be the
-		 * last update on the line.
-		 */
+		 
 		if (runcount < num) {
 		    GoTo(NCURSES_SP_ARGx
 			 SP_PARM->_cursrow,
 			 SP_PARM->_curscol + runcount);
 		} else {
-		    return 1;	/* cursor stays in the middle */
+		    return 1;	 
 		}
 	    } else if (repeat_char != 0 &&
 #if BSD_TPUTS
@@ -673,14 +525,7 @@ EmitRange(NCURSES_SP_DCLx const NCURSES_CH_T *ntext, int num)
     return 0;
 }
 
-/*
- * Output the line in the given range [first .. last]
- *
- * If there's a run of identical characters that's long enough to justify
- * cursor movement, use that also.
- *
- * Returns: same as EmitRange
- */
+ 
 static int
 PutRange(NCURSES_SP_DCLx
 	 const NCURSES_CH_T *otext,
@@ -714,10 +559,7 @@ PutRange(NCURSES_SP_DCLx
 	    }
 	}
 	i = EmitRange(NCURSES_SP_ARGx ntext + first, j - same - first);
-	/*
-	 * Always return 1 for the next GoTo() after a PutRange() if we found
-	 * identical characters at end of interval
-	 */
+	 
 	rc = (same == 0 ? i : 1);
     } else {
 	rc = EmitRange(NCURSES_SP_ARGx ntext + first, last - first + 1);
@@ -725,7 +567,7 @@ PutRange(NCURSES_SP_DCLx
     return rc;
 }
 
-/* leave unbracketed here so 'indent' works */
+ 
 #define MARK_NOCHANGE(win,row) \
 		win->_line[row].firstchar = _NOCHANGE; \
 		win->_line[row].lastchar = _NOCHANGE; \
@@ -738,7 +580,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
     int nonempty;
 #if USE_TRACE_TIMES
     struct tms before, after;
-#endif /* USE_TRACE_TIMES */
+#endif  
 
     T((T_CALLED("_nc_tinfo:doupdate(%p)"), (void *) SP_PARM));
 
@@ -749,14 +591,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	returnCode(ERR);
     }
 #if !USE_REENTRANT
-    /*
-     * It is "legal" but unlikely that an application could assign a new
-     * value to one of the standard windows.  Check for that possibility
-     * and try to recover.
-     *
-     * We do not allow applications to assign new values in the reentrant
-     * model.
-     */
+     
 #if NCURSES_SP_FUNCS
     if (SP_PARM == CURRENT_SCREEN) {
 #endif
@@ -770,7 +605,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 #if NCURSES_SP_FUNCS
     }
 #endif
-#endif /* !USE_REENTRANT */
+#endif  
 
     if (CurScreen(SP_PARM) == 0
 	|| NewScreen(SP_PARM) == 0
@@ -787,7 +622,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	_tracedump("newscr", NewScreen(SP_PARM));
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
 
     _nc_signal_handler(FALSE);
 
@@ -797,14 +632,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 #if USE_SIZECHANGE
     if ((SP_PARM->_endwin == ewSuspend)
 	|| _nc_handle_sigwinch(SP_PARM)) {
-	/*
-	 * This is a transparent extension:  XSI does not address it,
-	 * and applications need not know that ncurses can do it.
-	 *
-	 * Check if the terminal size has changed while curses was off
-	 * (this can happen in an xterm, for example), and resize the
-	 * ncurses data structures accordingly.
-	 */
+	 
 	_nc_update_screensize(SP_PARM);
     }
 #endif
@@ -821,22 +649,12 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	SP_PARM->_endwin = ewRunning;
     }
 #if USE_TRACE_TIMES
-    /* zero the metering machinery */
+     
     RESET_OUTCHARS();
     (void) times(&before);
-#endif /* USE_TRACE_TIMES */
+#endif  
 
-    /*
-     * This is the support for magic-cookie terminals.  The theory:  we scan
-     * the virtual screen looking for attribute turnons.  Where we find one,
-     * check to make sure it is realizable by seeing if the required number of
-     * un-attributed blanks are present before and after the attributed range;
-     * try to shift the range boundaries over blanks (not changing the screen
-     * display) so this becomes true.  If it is, shift the beginning attribute
-     * change appropriately (the end one, if we've gotten this far, is
-     * guaranteed room for its cookie).  If not, nuke the added attributes out
-     * of the span.
-     */
+     
 #if USE_XMC_SUPPORT
     if (magic_cookie_glitch > 0) {
 	int j, k;
@@ -849,7 +667,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 		attr_t thisattr = AttrOf(thisline[j]) & SP_PARM->_xmc_triggers;
 		attr_t turnon = thisattr & ~rattr;
 
-		/* is an attribute turned on here? */
+		 
 		if (turnon == 0) {
 		    rattr = thisattr;
 		    continue;
@@ -858,19 +676,14 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 		TR(TRACE_ATTRS, ("At (%d, %d): from %s...", i, j, _traceattr(rattr)));
 		TR(TRACE_ATTRS, ("...to %s", _traceattr(turnon)));
 
-		/*
-		 * If the attribute change location is a blank with a "safe"
-		 * attribute, undo the attribute turnon.  This may ensure
-		 * there's enough room to set the attribute before the first
-		 * non-blank in the run.
-		 */
+		 
 #define SAFE(scr,a)	(!((a) & (scr)->_xmc_triggers))
 		if (ISBLANK(thisline[j]) && SAFE(SP_PARM, turnon)) {
 		    RemAttr(thisline[j], turnon);
 		    continue;
 		}
 
-		/* check that there's enough room at start of span */
+		 
 		for (k = 1; k <= magic_cookie_glitch; k++) {
 		    if (j - k < 0
 			|| !ISBLANK(thisline[j - k])
@@ -891,7 +704,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 		    bool end_onscreen = FALSE;
 		    int m, n = j;
 
-		    /* find end of span, if it is onscreen */
+		     
 		    for (m = i; m < screen_lines(SP_PARM); m++) {
 			for (; n < screen_columns(SP_PARM); n++) {
 			    attr_t testattr =
@@ -915,18 +728,14 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 			NCURSES_CH_T *lastline =
 			NewScreen(SP_PARM)->_line[m].text;
 
-			/*
-			 * If there are safely-attributed blanks at the end of
-			 * the range, shorten the range.  This will help ensure
-			 * that there is enough room at end of span.
-			 */
+			 
 			while (n >= 0
 			       && ISBLANK(lastline[n])
 			       && SAFE(SP_PARM, AttrOf(lastline[n]))) {
 			    RemAttr(lastline[n--], turnon);
 			}
 
-			/* check that there's enough room at end of span */
+			 
 			for (k = 1; k <= magic_cookie_glitch; k++) {
 			    if (n + k >= screen_columns(SP_PARM)
 				|| !ISBLANK(lastline[n + k])
@@ -954,7 +763,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 		       ("Clearing %s beginning at (%d, %d)",
 			_traceattr(turnon), i, j));
 
-		    /* turn off new attributes over span */
+		     
 		    for (p = i; p < screen_lines(SP_PARM); p++) {
 			for (; q < screen_columns(SP_PARM); q++) {
 			    attr_t testattr = AttrOf(newscr->_line[p].text[q]);
@@ -970,10 +779,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 		       ("Cookie space for %s found before (%d, %d)",
 			_traceattr(turnon), i, j));
 
-		    /*
-		     * Back up the start of range so there's room for cookies
-		     * before the first nonblank character.
-		     */
+		     
 		    for (k = 1; k <= magic_cookie_glitch; k++)
 			AddAttr(thisline[j - k], turnon);
 		}
@@ -983,21 +789,21 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	}
 
 #ifdef TRACE
-	/* show altered highlights after magic-cookie check */
+	 
 	if (USE_TRACEF(TRACE_UPDATE)) {
 	    _tracef("After magic-cookie check...");
 	    _tracedump("newscr", NewScreen(SP_PARM));
 	    _nc_unlock_global(tracef);
 	}
-#endif /* TRACE */
+#endif  
     }
-#endif /* USE_XMC_SUPPORT */
+#endif  
 
     nonempty = 0;
-    if (CurScreen(SP_PARM)->_clear || NewScreen(SP_PARM)->_clear) {	/* force refresh ? */
+    if (CurScreen(SP_PARM)->_clear || NewScreen(SP_PARM)->_clear) {	 
 	ClrUpdate(NCURSES_SP_ARG);
-	CurScreen(SP_PARM)->_clear = FALSE;	/* reset flag */
-	NewScreen(SP_PARM)->_clear = FALSE;	/* reset flag */
+	CurScreen(SP_PARM)->_clear = FALSE;	 
+	NewScreen(SP_PARM)->_clear = FALSE;	 
     } else {
 	int changedlines = CHECK_INTERVAL;
 
@@ -1014,28 +820,21 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 
 	TR(TRACE_UPDATE, ("Transforming lines, nonempty %d", nonempty));
 	for (i = 0; i < nonempty; i++) {
-	    /*
-	     * Here is our line-breakout optimization.
-	     */
+	     
 	    if (changedlines == CHECK_INTERVAL) {
 		if (check_pending(NCURSES_SP_ARG))
 		    goto cleanup;
 		changedlines = 0;
 	    }
 
-	    /*
-	     * newscr->line[i].firstchar is normally set
-	     * by wnoutrefresh.  curscr->line[i].firstchar
-	     * is normally set by _nc_scroll_window in the
-	     * vertical-movement optimization code,
-	     */
+	     
 	    if (NewScreen(SP_PARM)->_line[i].firstchar != _NOCHANGE
 		|| CurScreen(SP_PARM)->_line[i].firstchar != _NOCHANGE) {
 		TransformLine(NCURSES_SP_ARGx i);
 		changedlines++;
 	    }
 
-	    /* mark line changed successfully */
+	     
 	    if (i <= NewScreen(SP_PARM)->_maxy) {
 		MARK_NOCHANGE(NewScreen(SP_PARM), i);
 	    }
@@ -1045,7 +844,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	}
     }
 
-    /* put everything back in sync */
+     
     for (i = nonempty; i <= NewScreen(SP_PARM)->_maxy; i++) {
 	MARK_NOCHANGE(NewScreen(SP_PARM), i);
     }
@@ -1061,12 +860,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
     }
 
   cleanup:
-    /*
-     * We would like to keep the physical screen in normal mode in case we get
-     * other processes writing to the screen.  This goal cannot be met for
-     * magic cookies since it interferes with attributes that may propagate
-     * past the current position.
-     */
+     
 #if USE_XMC_SUPPORT
     if (magic_cookie_glitch != 0)
 #endif
@@ -1082,7 +876,7 @@ TINFO_DOUPDATE(NCURSES_SP_DCL0)
 	_nc_outchars,
 	(long) (after.tms_stime - before.tms_stime),
 	(long) (after.tms_utime - before.tms_utime)));
-#endif /* USE_TRACE_TIMES */
+#endif  
 
     _nc_signal_handler(TRUE);
 
@@ -1098,16 +892,7 @@ doupdate(void)
 }
 #endif
 
-/*
- *	ClrBlank(win)
- *
- *	Returns the attributed character that corresponds to the "cleared"
- *	screen.  If the terminal has the back-color-erase feature, this will be
- *	colored according to the wbkgd() call.
- *
- *	We treat 'curscr' specially because it isn't supposed to be set directly
- *	in the wbkgd() call.  Assume 'stdscr' for this case.
- */
+ 
 #define BCE_ATTRS (A_NORMAL|A_COLOR)
 #define BCE_BKGD(sp,win) (((win) == CurScreen(sp) ? StdScreen(sp) : (win))->_nc_bkgd)
 
@@ -1120,12 +905,7 @@ ClrBlank(NCURSES_SP_DCLx WINDOW *win)
     return blank;
 }
 
-/*
-**	ClrUpdate()
-**
-**	Update by clearing and redrawing the entire screen.
-**
-*/
+ 
 
 static void
 ClrUpdate(NCURSES_SP_DCL0)
@@ -1149,11 +929,7 @@ ClrUpdate(NCURSES_SP_DCL0)
     TR(TRACE_UPDATE, (T_RETURN("")));
 }
 
-/*
-**	ClrToEOL(blank)
-**
-**	Clear to end of current line, starting at the cursor position
-*/
+ 
 
 static void
 ClrToEOL(NCURSES_SP_DCLx NCURSES_CH_T blank, int needclear)
@@ -1187,11 +963,7 @@ ClrToEOL(NCURSES_SP_DCLx NCURSES_CH_T blank, int needclear)
     }
 }
 
-/*
-**	ClrToEOS(blank)
-**
-**	Clear to end of screen, starting at the cursor position
-*/
+ 
 
 static void
 ClrToEOS(NCURSES_SP_DCLx NCURSES_CH_T blank)
@@ -1222,13 +994,7 @@ ClrToEOS(NCURSES_SP_DCLx NCURSES_CH_T blank)
     }
 }
 
-/*
- *	ClrBottom(total)
- *
- *	Test if clearing the end of the screen would satisfy part of the
- *	screen-update.  Do this by scanning backwards through the lines in the
- *	screen, checking if each is blank, and one or more are changed.
- */
+ 
 static int
 ClrBottom(NCURSES_SP_DCLx int total)
 {
@@ -1256,7 +1022,7 @@ ClrBottom(NCURSES_SP_DCLx int total)
 		top = row;
 	}
 
-	/* don't use clr_eos for just one line if clr_eol available */
+	 
 	if (top < total) {
 	    GoTo(NCURSES_SP_ARGx top, 0);
 	    ClrToEOS(NCURSES_SP_ARGx blank);
@@ -1280,25 +1046,9 @@ ClrBottom(NCURSES_SP_DCLx int total)
 
 #define xmc_new(sp,r,c) NewScreen(sp)->_line[r].text[c]
 #define xmc_turn_off(sp,a,b) xmc_turn_on(sp,b,a)
-#endif /* USE_XMC_SUPPORT */
+#endif  
 
-/*
-**	TransformLine(lineno)
-**
-**	Transform the given line in curscr to the one in newscr, using
-**	Insert/Delete Character if idcok && has_ic().
-**
-**		firstChar = position of first different character in line
-**		oLastChar = position of last different character in old line
-**		nLastChar = position of last different character in new line
-**
-**		move to firstChar
-**		overwrite chars up to min(oLastChar, nLastChar)
-**		if oLastChar < nLastChar
-**			insert newLine[oLastChar+1..nLastChar]
-**		else
-**			delete oLastChar - nLastChar spaces
-*/
+ 
 
 static void
 TransformLine(NCURSES_SP_DCLx int const lineno)
@@ -1311,16 +1061,11 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 
     TR(TRACE_UPDATE, (T_CALLED("TransformLine(%p, %d)"), (void *) SP_PARM, lineno));
 
-    /* copy new hash value to old one */
+     
     if (SP_PARM->oldhash && SP_PARM->newhash)
 	SP_PARM->oldhash[lineno] = SP_PARM->newhash[lineno];
 
-    /*
-     * If we have colors, there is the possibility of having two color pairs
-     * that display as the same colors.  For instance, Lynx does this.  Check
-     * for this case, and update the old line with the new line's colors when
-     * they are equivalent.
-     */
+     
     if (SP_PARM->_coloron) {
 	int oldPair;
 	int newPair;
@@ -1355,7 +1100,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 
     firstChar = 0;
 
-    if (attrchanged) {		/* we may have to disregard the whole line */
+    if (attrchanged) {		 
 	GoTo(NCURSES_SP_ARGx lineno, firstChar);
 	ClrToEOL(NCURSES_SP_ARGx
 		 ClrBlank(NCURSES_SP_ARGx
@@ -1365,26 +1110,13 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 		 screen_columns(SP_PARM) - 1);
 #if USE_XMC_SUPPORT
 
-	/*
-	 * This is a very simple loop to paint characters which may have the
-	 * magic cookie glitch embedded.  It doesn't know much about video
-	 * attributes which are continued from one line to the next.  It
-	 * assumes that we have filtered out requests for attribute changes
-	 * that do not get mapped to blank positions.
-	 *
-	 * FIXME: we are not keeping track of where we put the cookies, so this
-	 * will work properly only once, since we may overwrite a cookie in a
-	 * following operation.
-	 */
+	 
     } else if (magic_cookie_glitch > 0) {
 	GoTo(NCURSES_SP_ARGx lineno, firstChar);
 	for (n = 0; n < screen_columns(SP_PARM); n++) {
 	    int m = n + magic_cookie_glitch;
 
-	    /* check for turn-on:
-	     * If we are writing an attributed blank, where the
-	     * previous cell is not attributed.
-	     */
+	     
 	    if (ISBLANK(newLine[n])
 		&& ((n > 0
 		     && xmc_turn_on(SP_PARM, newLine[n - 1], newLine[n]))
@@ -1399,10 +1131,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 
 	    PutChar(NCURSES_SP_ARGx CHREF(newLine[n]));
 
-	    /* check for turn-off:
-	     * If we are writing an attributed non-blank, where the
-	     * next cell is blank, and not attributed.
-	     */
+	     
 	    if (!ISBLANK(newLine[n])
 		&& ((n + 1 < screen_columns(SP_PARM)
 		     && xmc_turn_off(SP_PARM, newLine[n], newLine[n + 1]))
@@ -1419,7 +1148,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
     } else {
 	NCURSES_CH_T blank;
 
-	/* it may be cheap to clear leading whitespace with clr_bol */
+	 
 	blank = newLine[0];
 	if (clr_bol && can_clear_with(NCURSES_SP_ARGx CHREF(blank))) {
 	    int oFirstChar, nFirstChar;
@@ -1437,13 +1166,13 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 
 	    if (nFirstChar == oFirstChar) {
 		firstChar = nFirstChar;
-		/* find the first differing character */
+		 
 		while (firstChar < screen_columns(SP_PARM)
 		       && CharEq(newLine[firstChar], oldLine[firstChar]))
 		    firstChar++;
 	    } else if (oFirstChar > nFirstChar) {
 		firstChar = nFirstChar;
-	    } else {		/* oFirstChar < nFirstChar */
+	    } else {		 
 		firstChar = oFirstChar;
 		if (SP_PARM->_el1_cost < nFirstChar - oFirstChar) {
 		    if (nFirstChar >= screen_columns(SP_PARM)
@@ -1462,12 +1191,12 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 		}
 	    }
 	} else {
-	    /* find the first differing character */
+	     
 	    while (firstChar < screen_columns(SP_PARM)
 		   && CharEq(newLine[firstChar], oldLine[firstChar]))
 		firstChar++;
 	}
-	/* if there wasn't one, we're done */
+	 
 	if (firstChar >= screen_columns(SP_PARM)) {
 	    TR(TRACE_UPDATE, (T_RETURN("")));
 	    return;
@@ -1476,7 +1205,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 	blank = newLine[screen_columns(SP_PARM) - 1];
 
 	if (!can_clear_with(NCURSES_SP_ARGx CHREF(blank))) {
-	    /* find the last differing character */
+	     
 	    nLastChar = screen_columns(SP_PARM) - 1;
 
 	    while (nLastChar > firstChar
@@ -1499,12 +1228,12 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 	    return;
 	}
 
-	/* find last non-blank character on old line */
+	 
 	oLastChar = screen_columns(SP_PARM) - 1;
 	while (oLastChar > firstChar && CharEq(oldLine[oLastChar], blank))
 	    oLastChar--;
 
-	/* find last non-blank character on new line */
+	 
 	nLastChar = screen_columns(SP_PARM) - 1;
 	while (nLastChar > firstChar && CharEq(newLine[nLastChar], blank))
 	    nLastChar--;
@@ -1543,10 +1272,10 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 	    int nLastNonblank = nLastChar;
 	    int oLastNonblank = oLastChar;
 
-	    /* find the last characters that really differ */
-	    /* can be -1 if no characters differ */
+	     
+	     
 	    while (CharEq(newLine[nLastChar], oldLine[oLastChar])) {
-		/* don't split a wide char */
+		 
 		if (isWidecExt(newLine[nLastChar]) &&
 		    !CharEq(newLine[nLastChar - 1], oldLine[oLastChar - 1]))
 		    break;
@@ -1573,13 +1302,13 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 		if (n) {
 		    while (isWidecExt(newLine[n + 1]) && n) {
 			--n;
-			--oLastChar;	/* increase cost */
+			--oLastChar;	 
 		    }
 		} else if (n >= firstChar &&
 			   isWidecBase(newLine[n])) {
 		    while (isWidecExt(newLine[n + 1])) {
 			++n;
-			++oLastChar;	/* decrease cost */
+			++oLastChar;	 
 		    }
 		}
 #endif
@@ -1605,14 +1334,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 		    }
 		    ClrToEOL(NCURSES_SP_ARGx blank, FALSE);
 		} else {
-		    /*
-		     * The delete-char sequence will
-		     * effectively shift in blanks from the
-		     * right margin of the screen.  Ensure
-		     * that they are the right color by
-		     * setting the video attributes from
-		     * the last character on the row.
-		     */
+		     
 		    UpdateAttrs(SP_PARM, blank);
 		    DelChar(NCURSES_SP_ARGx oLastChar - nLastChar);
 		}
@@ -1620,7 +1342,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
 	}
     }
 
-    /* update the code's internal representation */
+     
     if (screen_columns(SP_PARM) > firstChar)
 	memcpy(oldLine + firstChar,
 	       newLine + firstChar,
@@ -1629,12 +1351,7 @@ TransformLine(NCURSES_SP_DCLx int const lineno)
     return;
 }
 
-/*
-**	ClearScreen(blank)
-**
-**	Clear the physical screen and put cursor at home
-**
-*/
+ 
 
 static void
 ClearScreen(NCURSES_SP_DCLx NCURSES_CH_T blank)
@@ -1703,12 +1420,7 @@ ClearScreen(NCURSES_SP_DCLx NCURSES_CH_T blank)
     TR(TRACE_UPDATE, ("screen cleared"));
 }
 
-/*
-**	InsStr(line, count)
-**
-**	Insert the count characters pointed to by line.
-**
-*/
+ 
 
 static void
 InsStr(NCURSES_SP_DCLx NCURSES_CH_T *line, int count)
@@ -1717,9 +1429,8 @@ InsStr(NCURSES_SP_DCLx NCURSES_CH_T *line, int count)
 		      (void *) SP_PARM,
 		      (void *) line, count));
 
-    /* Prefer parm_ich as it has the smallest cost - no need to shift
-     * the whole line on each character. */
-    /* The order must match that of InsCharCost. */
+     
+     
     if (parm_ich) {
 	TPUTS_TRACE("parm_ich");
 	NCURSES_SP_NAME(tputs) (NCURSES_SP_ARGx
@@ -1758,12 +1469,7 @@ InsStr(NCURSES_SP_DCLx NCURSES_CH_T *line, int count)
 		   SP_PARM->_curscol, "InsStr");
 }
 
-/*
-**	DelChar(count)
-**
-**	Delete count characters at current position
-**
-*/
+ 
 
 static void
 DelChar(NCURSES_SP_DCLx int count)
@@ -1788,39 +1494,9 @@ DelChar(NCURSES_SP_DCLx int count)
     }
 }
 
-/*
- * Physical-scrolling support
- *
- * This code was adapted from Keith Bostic's hardware scrolling
- * support for 4.4BSD curses.  I (esr) translated it to use terminfo
- * capabilities, narrowed the call interface slightly, and cleaned
- * up some convoluted tests.  I also added support for the memory_above
- * memory_below, and non_dest_scroll_region capabilities.
- *
- * For this code to work, we must have either
- * change_scroll_region and scroll forward/reverse commands, or
- * insert and delete line capabilities.
- * When the scrolling region has been set, the cursor has to
- * be at the last line of the region to make the scroll up
- * happen, or on the first line of region to scroll down.
- *
- * This code makes one aesthetic decision in the opposite way from
- * BSD curses.  BSD curses preferred pairs of il/dl operations
- * over scrolls, allegedly because il/dl looked faster.  We, on
- * the other hand, prefer scrolls because (a) they're just as fast
- * on many terminals and (b) using them avoids bouncing an
- * unchanged bottom section of the screen up and down, which is
- * visually nasty.
- *
- * (lav): added more cases, used dl/il when bot==maxy and in csr case.
- *
- * I used assumption that capabilities il/il1/dl/dl1 work inside
- * changed scroll region not shifting screen contents outside of it.
- * If there are any terminals behaving different way, it would be
- * necessary to add some conditions to scroll_csr_forward/backward.
- */
+ 
 
-/* Try to scroll up assuming given csr (miny, maxy). Returns ERR on failure */
+ 
 static int
 scroll_csr_forward(NCURSES_SP_DCLx
 		   int n,
@@ -1884,8 +1560,8 @@ scroll_csr_forward(NCURSES_SP_DCLx
     return OK;
 }
 
-/* Try to scroll down assuming given csr (miny, maxy). Returns ERR on failure */
-/* n > 0 */
+ 
+ 
 static int
 scroll_csr_backward(NCURSES_SP_DCLx
 		    int n,
@@ -1949,8 +1625,8 @@ scroll_csr_backward(NCURSES_SP_DCLx
     return OK;
 }
 
-/* scroll by using delete_line at del and insert_line at ins */
-/* n > 0 */
+ 
+ 
 static int
 scroll_idl(NCURSES_SP_DCLx int n, int del, int ins, NCURSES_CH_T blank)
 {
@@ -1969,7 +1645,7 @@ scroll_idl(NCURSES_SP_DCLx int n, int del, int ins, NCURSES_CH_T blank)
 				TIPARM_1(parm_delete_line, n),
 				n,
 				NCURSES_SP_NAME(_nc_outch));
-    } else {			/* if (delete_line) */
+    } else {			 
 	for (i = 0; i < n; i++) {
 	    NCURSES_PUTP2("delete_line", delete_line);
 	}
@@ -1985,7 +1661,7 @@ scroll_idl(NCURSES_SP_DCLx int n, int del, int ins, NCURSES_CH_T blank)
 				TIPARM_1(parm_insert_line, n),
 				n,
 				NCURSES_SP_NAME(_nc_outch));
-    } else {			/* if (insert_line) */
+    } else {			 
 	for (i = 0; i < n; i++) {
 	    NCURSES_PUTP2("insert_line", insert_line);
 	}
@@ -1994,21 +1670,14 @@ scroll_idl(NCURSES_SP_DCLx int n, int del, int ins, NCURSES_CH_T blank)
     return OK;
 }
 
-/*
- * Note:  some terminals require the cursor to be within the scrolling margins
- * before setting them.  Generally, the cursor must be at the appropriate end
- * of the scrolling margins when issuing an indexing operation (it is not
- * apparent whether it must also be at the left margin; we do this just to be
- * safe).  To make the related cursor movement a little faster, we use the
- * save/restore cursor capabilities if the terminal has them.
- */
+ 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
 			      int n,
 			      int top,
 			      int bot,
 			      int maxy)
-/* scroll region from top to bot by n lines */
+ 
 {
     NCURSES_CH_T blank;
     int i;
@@ -2024,19 +1693,14 @@ NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
     blank = ClrBlank(NCURSES_SP_ARGx StdScreen(SP_PARM));
 
 #if USE_XMC_SUPPORT
-    /*
-     * If we scroll, we might remove a cookie.
-     */
+     
     if (magic_cookie_glitch > 0) {
 	return (ERR);
     }
 #endif
 
-    if (n > 0) {		/* scroll up (forward) */
-	/*
-	 * Explicitly clear if stuff pushed off top of region might
-	 * be saved by the terminal.
-	 */
+    if (n > 0) {		 
+	 
 	res = scroll_csr_forward(NCURSES_SP_ARGx n, top, bot, 0, maxy, blank);
 
 	if (res == ERR && change_scroll_region) {
@@ -2064,9 +1728,7 @@ NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
 	if (res == ERR && SP_PARM->_nc_sp_idlok)
 	    res = scroll_idl(NCURSES_SP_ARGx n, top, bot - n + 1, blank);
 
-	/*
-	 * Clear the newly shifted-in text.
-	 */
+	 
 	if (res != ERR
 	    && (non_dest_scroll_region || (memory_below && bot == maxy))) {
 	    static const NCURSES_CH_T blank2 = NewChar(BLANK_TEXT);
@@ -2081,7 +1743,7 @@ NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
 	    }
 	}
 
-    } else {			/* (n < 0) - scroll down (backward) */
+    } else {			 
 	res = scroll_csr_backward(NCURSES_SP_ARGx -n, top, bot, 0, maxy, blank);
 
 	if (res == ERR && change_scroll_region) {
@@ -2111,9 +1773,7 @@ NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
 	if (res == ERR && SP_PARM->_nc_sp_idlok)
 	    res = scroll_idl(NCURSES_SP_ARGx -n, bot + n + 1, top, blank);
 
-	/*
-	 * Clear the newly shifted-in text.
-	 */
+	 
 	if (res != ERR
 	    && (non_dest_scroll_region || (memory_above && top == 0))) {
 	    static const NCURSES_CH_T blank2 = NewChar(BLANK_TEXT);
@@ -2132,7 +1792,7 @@ NCURSES_SP_NAME(_nc_scrolln) (NCURSES_SP_DCLx
 		      (NCURSES_SIZE_T) bot,
 		      blank);
 
-    /* shift hash values too - they can be reused */
+     
     NCURSES_SP_NAME(_nc_scroll_oldhash) (NCURSES_SP_ARGx n, top, bot);
 
     return (OK);
@@ -2151,15 +1811,15 @@ NCURSES_SP_NAME(_nc_screen_resume) (NCURSES_SP_DCL0)
 {
     assert(SP_PARM);
 
-    /* make sure terminal is in a sane known state */
+     
     SetAttr(SCREEN_ATTRS(SP_PARM), A_NORMAL);
     NewScreen(SP_PARM)->_clear = TRUE;
 
-    /* reset color pairs and definitions */
+     
     if (SP_PARM->_coloron || SP_PARM->_color_defs)
 	NCURSES_SP_NAME(_nc_reset_colors) (NCURSES_SP_ARG);
 
-    /* restore user-defined colors, if any */
+     
     if (SP_PARM->_color_defs < 0 && !SP_PARM->_direct_color.value) {
 	int n;
 	SP_PARM->_color_defs = -(SP_PARM->_color_defs);
@@ -2177,7 +1837,7 @@ NCURSES_SP_NAME(_nc_screen_resume) (NCURSES_SP_DCL0)
     if (exit_attribute_mode)
 	NCURSES_PUTP2("exit_attribute_mode", exit_attribute_mode);
     else {
-	/* turn off attributes */
+	 
 	if (exit_alt_charset_mode)
 	    NCURSES_PUTP2("exit_alt_charset_mode", exit_alt_charset_mode);
 	if (exit_standout_mode)
@@ -2218,7 +1878,7 @@ _nc_screen_init(void)
 }
 #endif
 
-/* wrap up screen handling */
+ 
 NCURSES_EXPORT(void)
 NCURSES_SP_NAME(_nc_screen_wrap) (NCURSES_SP_DCL0)
 {
@@ -2288,4 +1948,4 @@ _nc_do_xmc_glitch(attr_t previous)
 }
 #endif
 
-#endif /* USE_XMC_SUPPORT */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fast Ethernet Controller (ENET) PTP driver for MX6x.
- *
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,7 +31,7 @@
 
 #include "fec.h"
 
-/* FEC 1588 register bits */
+ 
 #define FEC_T_CTRL_SLAVE                0x00002000
 #define FEC_T_CTRL_CAPTURE              0x00000800
 #define FEC_T_CTRL_RESTART              0x00000200
@@ -90,13 +86,7 @@
 #define FEC_PTP_MAX_NSEC_PERIOD		4000000000ULL
 #define FEC_PTP_MAX_NSEC_COUNTER	0x80000000ULL
 
-/**
- * fec_ptp_enable_pps
- * @fep: the fec_enet_private structure handle
- * @enable: enable the channel pps output
- *
- * This function enble the PPS ouput on the timer channel.
- */
+ 
 static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 {
 	unsigned long flags;
@@ -113,14 +103,10 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 	spin_lock_irqsave(&fep->tmreg_lock, flags);
 
 	if (enable) {
-		/* clear capture or output compare interrupt status if have.
-		 */
+		 
 		writel(FEC_T_TF_MASK, fep->hwp + FEC_TCSR(fep->pps_channel));
 
-		/* It is recommended to double check the TMODE field in the
-		 * TCSR register to be cleared before the first compare counter
-		 * is written into TCCR register. Just add a double check.
-		 */
+		 
 		val = readl(fep->hwp + FEC_TCSR(fep->pps_channel));
 		do {
 			val &= ~(FEC_T_TMODE_MASK);
@@ -128,56 +114,33 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 			val = readl(fep->hwp + FEC_TCSR(fep->pps_channel));
 		} while (val & FEC_T_TMODE_MASK);
 
-		/* Dummy read counter to update the counter */
+		 
 		timecounter_read(&fep->tc);
-		/* We want to find the first compare event in the next
-		 * second point. So we need to know what the ptp time
-		 * is now and how many nanoseconds is ahead to get next second.
-		 * The remaining nanosecond ahead before the next second would be
-		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
-		 * to current timer would be next second.
-		 */
+		 
 		tempval = fep->cc.read(&fep->cc);
-		/* Convert the ptp local counter to 1588 timestamp */
+		 
 		ns = timecounter_cyc2time(&fep->tc, tempval);
 		ts = ns_to_timespec64(ns);
 
-		/* The tempval is  less than 3 seconds, and  so val is less than
-		 * 4 seconds. No overflow for 32bit calculation.
-		 */
+		 
 		val = NSEC_PER_SEC - (u32)ts.tv_nsec + tempval;
 
-		/* Need to consider the situation that the current time is
-		 * very close to the second point, which means NSEC_PER_SEC
-		 * - ts.tv_nsec is close to be zero(For example 20ns); Since the timer
-		 * is still running when we calculate the first compare event, it is
-		 * possible that the remaining nanoseonds run out before the compare
-		 * counter is calculated and written into TCCR register. To avoid
-		 * this possibility, we will set the compare event to be the next
-		 * of next second. The current setting is 31-bit timer and wrap
-		 * around over 2 seconds. So it is okay to set the next of next
-		 * seond for the timer.
-		 */
+		 
 		val += NSEC_PER_SEC;
 
-		/* We add (2 * NSEC_PER_SEC - (u32)ts.tv_nsec) to current
-		 * ptp counter, which maybe cause 32-bit wrap. Since the
-		 * (NSEC_PER_SEC - (u32)ts.tv_nsec) is less than 2 second.
-		 * We can ensure the wrap will not cause issue. If the offset
-		 * is bigger than fep->cc.mask would be a error.
-		 */
+		 
 		val &= fep->cc.mask;
 		writel(val, fep->hwp + FEC_TCCR(fep->pps_channel));
 
-		/* Calculate the second the compare event timestamp */
+		 
 		fep->next_counter = (val + fep->reload_period) & fep->cc.mask;
 
-		/* * Enable compare event when overflow */
+		 
 		val = readl(fep->hwp + FEC_ATIME_CTRL);
 		val |= FEC_T_CTRL_PINPER;
 		writel(val, fep->hwp + FEC_ATIME_CTRL);
 
-		/* Compare channel setting. */
+		 
 		val = readl(fep->hwp + FEC_TCSR(fep->pps_channel));
 		val |= (1 << FEC_T_TF_OFFSET | 1 << FEC_T_TIE_OFFSET);
 		val &= ~(1 << FEC_T_TDRE_OFFSET);
@@ -185,9 +148,7 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
 		val |= (FEC_HIGH_PULSE << FEC_T_TMODE_OFFSET);
 		writel(val, fep->hwp + FEC_TCSR(fep->pps_channel));
 
-		/* Write the second compare event timestamp and calculate
-		 * the third timestamp. Refer the TCCR register detail in the spec.
-		 */
+		 
 		writel(fep->next_counter, fep->hwp + FEC_TCCR(fep->pps_channel));
 		fep->next_counter = (fep->next_counter + fep->reload_period) & fep->cc.mask;
 	} else {
@@ -208,10 +169,10 @@ static int fec_ptp_pps_perout(struct fec_enet_private *fep)
 
 	spin_lock_irqsave(&fep->tmreg_lock, flags);
 
-	/* Update time counter */
+	 
 	timecounter_read(&fep->tc);
 
-	/* Get the current ptp hardware time counter */
+	 
 	temp_val = readl(fep->hwp + FEC_ATIME_CTRL);
 	temp_val |= FEC_T_CTRL_CAPTURE;
 	writel(temp_val, fep->hwp + FEC_ATIME_CTRL);
@@ -220,13 +181,10 @@ static int fec_ptp_pps_perout(struct fec_enet_private *fep)
 
 	ptp_hc = readl(fep->hwp + FEC_ATIME);
 
-	/* Convert the ptp local counter to 1588 timestamp */
+	 
 	curr_time = timecounter_cyc2time(&fep->tc, ptp_hc);
 
-	/* If the pps start time less than current time add 100ms, just return.
-	 * Because the software might not able to set the comparison time into
-	 * the FEC_TCCR register in time and missed the start time.
-	 */
+	 
 	if (fep->perout_stime < curr_time + 100 * NSEC_PER_MSEC) {
 		dev_err(&fep->pdev->dev, "Current time is too close to the start time!\n");
 		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
@@ -239,12 +197,12 @@ static int fec_ptp_pps_perout(struct fec_enet_private *fep)
 	writel(compare_val, fep->hwp + FEC_TCCR(fep->pps_channel));
 	fep->next_counter = (compare_val + fep->reload_period) & fep->cc.mask;
 
-	/* Enable compare event when overflow */
+	 
 	temp_val = readl(fep->hwp + FEC_ATIME_CTRL);
 	temp_val |= FEC_T_CTRL_PINPER;
 	writel(temp_val, fep->hwp + FEC_ATIME_CTRL);
 
-	/* Compare channel setting. */
+	 
 	temp_val = readl(fep->hwp + FEC_TCSR(fep->pps_channel));
 	temp_val |= (1 << FEC_T_TF_OFFSET | 1 << FEC_T_TIE_OFFSET);
 	temp_val &= ~(1 << FEC_T_TDRE_OFFSET);
@@ -252,9 +210,7 @@ static int fec_ptp_pps_perout(struct fec_enet_private *fep)
 	temp_val |= (FEC_TMODE_TOGGLE << FEC_T_TMODE_OFFSET);
 	writel(temp_val, fep->hwp + FEC_TCSR(fep->pps_channel));
 
-	/* Write the second compare event timestamp and calculate
-	 * the third timestamp. Refer the TCCR register detail in the spec.
-	 */
+	 
 	writel(fep->next_counter, fep->hwp + FEC_TCCR(fep->pps_channel));
 	fep->next_counter = (fep->next_counter + fep->reload_period) & fep->cc.mask;
 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
@@ -272,14 +228,7 @@ static enum hrtimer_restart fec_ptp_pps_perout_handler(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-/**
- * fec_ptp_read - read raw cycle counter (to be used by time counter)
- * @cc: the cyclecounter structure
- *
- * this function reads the cyclecounter registers and is called by the
- * cyclecounter structure used to construct a ns counter from the
- * arbitrary fixed point registers
- */
+ 
 static u64 fec_ptp_read(const struct cyclecounter *cc)
 {
 	struct fec_enet_private *fep =
@@ -296,14 +245,7 @@ static u64 fec_ptp_read(const struct cyclecounter *cc)
 	return readl(fep->hwp + FEC_ATIME);
 }
 
-/**
- * fec_ptp_start_cyclecounter - create the cycle counter from hw
- * @ndev: network device
- *
- * this function initializes the timecounter and cyclecounter
- * structures for use in generated a ns counter from the arbitrary
- * fixed point cycles registers in the hardware.
- */
+ 
 void fec_ptp_start_cyclecounter(struct net_device *ndev)
 {
 	struct fec_enet_private *fep = netdev_priv(ndev);
@@ -312,13 +254,13 @@ void fec_ptp_start_cyclecounter(struct net_device *ndev)
 
 	inc = 1000000000 / fep->cycle_speed;
 
-	/* grab the ptp lock */
+	 
 	spin_lock_irqsave(&fep->tmreg_lock, flags);
 
-	/* 1ns counter */
+	 
 	writel(inc << FEC_T_INC_OFFSET, fep->hwp + FEC_ATIME_INC);
 
-	/* use 31-bit timer counter */
+	 
 	writel(FEC_COUNTER_PERIOD, fep->hwp + FEC_ATIME_EVT_PERIOD);
 
 	writel(FEC_T_CTRL_ENABLE | FEC_T_CTRL_PERIOD_RST,
@@ -330,25 +272,13 @@ void fec_ptp_start_cyclecounter(struct net_device *ndev)
 	fep->cc.shift = 31;
 	fep->cc.mult = FEC_CC_MULT;
 
-	/* reset the ns time counter */
+	 
 	timecounter_init(&fep->tc, &fep->cc, 0);
 
 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
 }
 
-/**
- * fec_ptp_adjfine - adjust ptp cycle frequency
- * @ptp: the ptp clock structure
- * @scaled_ppm: scaled parts per million adjustment from base
- *
- * Adjust the frequency of the ptp cycle counter by the
- * indicated amount from the base frequency.
- *
- * Scaled parts per million is ppm with a 16-bit binary fractional field.
- *
- * Because ENET hardware frequency adjust is complex,
- * using software method to do that.
- */
+ 
 static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
@@ -370,10 +300,7 @@ static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		neg_adj = 1;
 	}
 
-	/* In theory, corr_inc/corr_period = ppb/NSEC_PER_SEC;
-	 * Try to find the corr_inc  between 1 to fep->ptp_inc to
-	 * meet adjustment requirement.
-	 */
+	 
 	lhs = NSEC_PER_SEC;
 	rhs = (u64)ppb * (u64)fep->ptp_inc;
 	for (i = 1; i <= fep->ptp_inc; i++) {
@@ -384,9 +311,7 @@ static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		}
 		lhs += NSEC_PER_SEC;
 	}
-	/* Not found? Set it to high value - double speed
-	 * correct in every clock step.
-	 */
+	 
 	if (i > fep->ptp_inc) {
 		corr_inc = fep->ptp_inc;
 		corr_period = 1;
@@ -404,7 +329,7 @@ static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	writel(tmp, fep->hwp + FEC_ATIME_INC);
 	corr_period = corr_period > 1 ? corr_period - 1 : corr_period;
 	writel(corr_period, fep->hwp + FEC_ATIME_CORR);
-	/* dummy read to update the timer. */
+	 
 	timecounter_read(&fep->tc);
 
 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
@@ -412,13 +337,7 @@ static int fec_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	return 0;
 }
 
-/**
- * fec_ptp_adjtime
- * @ptp: the ptp clock structure
- * @delta: offset to adjust the cycle counter by
- *
- * adjust the timer by resetting the timecounter structure.
- */
+ 
 static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 {
 	struct fec_enet_private *fep =
@@ -432,14 +351,7 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return 0;
 }
 
-/**
- * fec_ptp_gettime
- * @ptp: the ptp clock structure
- * @ts: timespec structure to hold the current time value
- *
- * read the timecounter and return the correct value on ns,
- * after converting it into a struct timespec.
- */
+ 
 static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 {
 	struct fec_enet_private *fep =
@@ -448,7 +360,7 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 	unsigned long flags;
 
 	mutex_lock(&fep->ptp_clk_mutex);
-	/* Check the ptp clock */
+	 
 	if (!fep->ptp_clk_on) {
 		mutex_unlock(&fep->ptp_clk_mutex);
 		return -EINVAL;
@@ -463,14 +375,7 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
 	return 0;
 }
 
-/**
- * fec_ptp_settime
- * @ptp: the ptp clock structure
- * @ts: the timespec containing the new time for the cycle counter
- *
- * reset the timecounter to use a new base value instead of the kernel
- * wall timer value.
- */
+ 
 static int fec_ptp_settime(struct ptp_clock_info *ptp,
 			   const struct timespec64 *ts)
 {
@@ -482,16 +387,14 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
 	u32 counter;
 
 	mutex_lock(&fep->ptp_clk_mutex);
-	/* Check the ptp clock */
+	 
 	if (!fep->ptp_clk_on) {
 		mutex_unlock(&fep->ptp_clk_mutex);
 		return -EINVAL;
 	}
 
 	ns = timespec64_to_ns(ts);
-	/* Get the timer value based on timestamp.
-	 * Update the counter with the masked value.
-	 */
+	 
 	counter = ns & fep->cc.mask;
 
 	spin_lock_irqsave(&fep->tmreg_lock, flags);
@@ -513,13 +416,7 @@ static int fec_ptp_pps_disable(struct fec_enet_private *fep, uint channel)
 	return 0;
 }
 
-/**
- * fec_ptp_enable
- * @ptp: the ptp clock structure
- * @rq: the requested feature to change
- * @on: whether to enable or disable the feature
- *
- */
+ 
 static int fec_ptp_enable(struct ptp_clock_info *ptp,
 			  struct ptp_clock_request *rq, int on)
 {
@@ -536,7 +433,7 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
 
 		return ret;
 	} else if (rq->type == PTP_CLK_REQ_PEROUT) {
-		/* Reject requests with unsupported flags */
+		 
 		if (rq->perout.flags)
 			return -EOPNOTSUPP;
 
@@ -548,9 +445,7 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
 		period.tv_nsec = rq->perout.period.nsec;
 		period_ns = timespec64_to_ns(&period);
 
-		/* FEC PTP timer only has 31 bits, so if the period exceed
-		 * 4s is not supported.
-		 */
+		 
 		if (period_ns > FEC_PTP_MAX_NSEC_PERIOD) {
 			dev_err(&fep->pdev->dev, "The period must equal to or less than 4s!\n");
 			return -EOPNOTSUPP;
@@ -558,7 +453,7 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
 
 		fep->reload_period = div_u64(period_ns, 2);
 		if (on && fep->reload_period) {
-			/* Convert 1588 timestamp to ns*/
+			 
 			start_time.tv_sec = rq->perout.start.sec;
 			start_time.tv_nsec = rq->perout.start.nsec;
 			fep->perout_stime = timespec64_to_ns(&start_time);
@@ -570,12 +465,12 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
 				return -EOPNOTSUPP;
 			}
 			spin_lock_irqsave(&fep->tmreg_lock, flags);
-			/* Read current timestamp */
+			 
 			curr_time = timecounter_read(&fep->tc);
 			spin_unlock_irqrestore(&fep->tmreg_lock, flags);
 			mutex_unlock(&fep->ptp_clk_mutex);
 
-			/* Calculate time difference */
+			 
 			delta = fep->perout_stime - curr_time;
 
 			if (fep->perout_stime <= curr_time) {
@@ -583,12 +478,7 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
 				return -EINVAL;
 			}
 
-			/* Because the timer counter of FEC only has 31-bits, correspondingly,
-			 * the time comparison register FEC_TCCR also only low 31 bits can be
-			 * set. If the start time of pps signal exceeds current time more than
-			 * 0x80000000 ns, a software timer is used and the timer expires about
-			 * 1 second before the start time to be able to set FEC_TCCR.
-			 */
+			 
 			if (delta > FEC_PTP_MAX_NSEC_COUNTER) {
 				timeout = ns_to_ktime(delta - NSEC_PER_SEC);
 				hrtimer_start(&fep->perout_timer, timeout, HRTIMER_MODE_REL);
@@ -645,10 +535,7 @@ void fec_ptp_get(struct net_device *ndev, struct kernel_hwtstamp_config *config)
 			     HWTSTAMP_FILTER_ALL : HWTSTAMP_FILTER_NONE);
 }
 
-/*
- * fec_time_keep - call timecounter_read every second to avoid timer overrun
- *                 because ENET just support 32bit counter, will timeout in 4s
- */
+ 
 static void fec_time_keep(struct work_struct *work)
 {
 	struct delayed_work *dwork = to_delayed_work(work);
@@ -666,7 +553,7 @@ static void fec_time_keep(struct work_struct *work)
 	schedule_delayed_work(&fep->time_keep, HZ);
 }
 
-/* This function checks the pps event and reloads the timer compare counter. */
+ 
 static irqreturn_t fec_pps_interrupt(int irq, void *dev_id)
 {
 	struct net_device *ndev = dev_id;
@@ -677,15 +564,13 @@ static irqreturn_t fec_pps_interrupt(int irq, void *dev_id)
 
 	val = readl(fep->hwp + FEC_TCSR(channel));
 	if (val & FEC_T_TF_MASK) {
-		/* Write the next next compare(not the next according the spec)
-		 * value to the register
-		 */
+		 
 		writel(fep->next_counter, fep->hwp + FEC_TCCR(channel));
 		do {
 			writel(val, fep->hwp + FEC_TCSR(channel));
 		} while (readl(fep->hwp + FEC_TCSR(channel)) & FEC_T_TF_MASK);
 
-		/* Update the counter; */
+		 
 		fep->next_counter = (fep->next_counter + fep->reload_period) &
 				fep->cc.mask;
 
@@ -697,15 +582,7 @@ static irqreturn_t fec_pps_interrupt(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-/**
- * fec_ptp_init
- * @pdev: The FEC network adapter
- * @irq_idx: the interrupt index
- *
- * This function performs the required steps for enabling ptp
- * support. If ptp support has already been loaded it simply calls the
- * cyclecounter init routine and exits.
- */
+ 
 
 void fec_ptp_init(struct platform_device *pdev, int irq_idx)
 {
@@ -748,9 +625,7 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
 	irq = platform_get_irq_byname_optional(pdev, "pps");
 	if (irq < 0)
 		irq = platform_get_irq_optional(pdev, irq_idx);
-	/* Failure to get an irq is not fatal,
-	 * only the PTP_CLOCK_PPS clock events should stop
-	 */
+	 
 	if (irq >= 0) {
 		ret = devm_request_irq(&pdev->dev, irq, fec_pps_interrupt,
 				       0, pdev->name, ndev);

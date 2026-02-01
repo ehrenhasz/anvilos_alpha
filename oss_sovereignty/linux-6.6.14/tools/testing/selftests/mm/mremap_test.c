@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 Google LLC
- */
+
+ 
 #define _GNU_SOURCE
 
 #include <errno.h>
@@ -19,8 +17,8 @@
 #define NON_OVERLAPPING 0
 #define OVERLAPPING 1
 #define NS_PER_SEC 1000000000ULL
-#define VALIDATION_DEFAULT_THRESHOLD 4	/* 4MB */
-#define VALIDATION_NO_THRESHOLD 0	/* Verify the entire region */
+#define VALIDATION_DEFAULT_THRESHOLD 4	 
+#define VALIDATION_NO_THRESHOLD 0	 
 
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
@@ -38,7 +36,7 @@ struct test {
 };
 
 enum {
-	_1KB = 1ULL << 10,	/* 1KB -> not page aligned */
+	_1KB = 1ULL << 10,	 
 	_4KB = 4ULL << 10,
 	_8KB = 8ULL << 10,
 	_1MB = 1ULL << 20,
@@ -65,16 +63,13 @@ enum {
 	.expect_failure = should_fail				\
 }
 
-/*
- * Returns false if the requested remap region overlaps with an
- * existing mapping (e.g text, stack) else returns true.
- */
+ 
 static bool is_remap_region_valid(void *addr, unsigned long long size)
 {
 	void *remap_addr = NULL;
 	bool ret = true;
 
-	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
+	 
 	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
 					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
 					 -1, 0);
@@ -89,7 +84,7 @@ static bool is_remap_region_valid(void *addr, unsigned long long size)
 	return ret;
 }
 
-/* Returns mmap_min_addr sysctl tunable from procfs */
+ 
 static unsigned long long get_mmap_min_addr(void)
 {
 	FILE *fp;
@@ -118,10 +113,7 @@ static unsigned long long get_mmap_min_addr(void)
 	return addr;
 }
 
-/*
- * Using /proc/self/maps, assert that the specified address range is contained
- * within a single mapping.
- */
+ 
 static bool is_range_mapped(FILE *maps_fp, void *start, void *end)
 {
 	char *line = NULL;
@@ -145,13 +137,7 @@ static bool is_range_mapped(FILE *maps_fp, void *start, void *end)
 	return success;
 }
 
-/*
- * This test validates that merge is called when expanding a mapping.
- * Mapping containing three pages is created, middle page is unmapped
- * and then the mapping containing the first page is expanded so that
- * it fills the created hole. The two parts should merge creating
- * single mapping with three pages.
- */
+ 
 static void mremap_expand_merge(FILE *maps_fp, unsigned long page_size)
 {
 	char *test_name = "mremap expand merge";
@@ -185,11 +171,7 @@ out:
 		ksft_test_result_fail("%s\n", test_name);
 }
 
-/*
- * Similar to mremap_expand_merge() except instead of removing the middle page,
- * we remove the last then attempt to remap offset from the second page. This
- * should result in the mapping being restored to its former state.
- */
+ 
 static void mremap_expand_merge_offset(FILE *maps_fp, unsigned long page_size)
 {
 
@@ -205,7 +187,7 @@ static void mremap_expand_merge_offset(FILE *maps_fp, unsigned long page_size)
 		goto out;
 	}
 
-	/* Unmap final page to ensure we have space to expand. */
+	 
 	munmap(start + 2 * page_size, page_size);
 	remap = mremap(start + page_size, page_size, 2 * page_size, 0);
 	if (remap == MAP_FAILED) {
@@ -224,10 +206,7 @@ out:
 		ksft_test_result_fail("%s\n", test_name);
 }
 
-/*
- * Returns the start address of the mapping on success, else returns
- * NULL on failure.
- */
+ 
 static void *get_source_mapping(struct config c)
 {
 	unsigned long long addr = 0ULL;
@@ -249,14 +228,7 @@ retry:
 			goto retry;
 		goto error;
 	}
-	/*
-	 * Check that the address is aligned to the specified alignment.
-	 * Addresses which have alignments that are multiples of that
-	 * specified are not considered valid. For instance, 1GB address is
-	 * 2MB-aligned, however it will not be considered valid for a
-	 * requested alignment of 2MB. This is done to reduce coincidental
-	 * alignment in the tests.
-	 */
+	 
 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
 			!((unsigned long long) src_addr & c.src_alignment)) {
 		munmap(src_addr, c.region_size);
@@ -273,7 +245,7 @@ error:
 	return NULL;
 }
 
-/* Returns the time taken for the remap on success else returns -1. */
+ 
 static long long remap_region(struct config c, unsigned int threshold_mb,
 			      char pattern_seed)
 {
@@ -294,25 +266,25 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
 		goto out;
 	}
 
-	/* Set byte pattern */
+	 
 	srand(pattern_seed);
 	for (i = 0; i < threshold; i++)
 		memset((char *) src_addr + i, (char) rand(), 1);
 
-	/* Mask to zero out lower bits of address for alignment */
+	 
 	align_mask = ~(c.dest_alignment - 1);
-	/* Offset of destination address from the end of the source region */
+	 
 	offset = (c.overlapping) ? -c.dest_alignment : c.dest_alignment;
 	addr = (void *) (((unsigned long long) src_addr + c.region_size
 			  + offset) & align_mask);
 
-	/* See comment in get_source_mapping() */
+	 
 	if (!((unsigned long long) addr & c.dest_alignment))
 		addr = (void *) ((unsigned long long) addr | c.dest_alignment);
 
-	/* Don't destroy existing mappings unless expected to overlap */
+	 
 	while (!is_remap_region_valid(addr, c.region_size) && !c.overlapping) {
-		/* Check for unsigned overflow */
+		 
 		if (addr + c.dest_alignment < addr) {
 			ksft_print_msg("Couldn't find a valid region to remap to\n");
 			ret = -1;
@@ -332,7 +304,7 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
 		goto clean_up_src;
 	}
 
-	/* Verify byte pattern after remapping */
+	 
 	srand(pattern_seed);
 	for (i = 0; i < threshold; i++) {
 		char c = (char) rand();
@@ -351,12 +323,7 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
 	end_ns = t_end.tv_sec * NS_PER_SEC + t_end.tv_nsec;
 	ret = end_ns - start_ns;
 
-/*
- * Since the destination address is specified using MREMAP_FIXED, subsequent
- * mremap will unmap any previous mapping at the address range specified by
- * dest_addr and region_size. This significantly affects the remap time of
- * subsequent tests. So we clean up mappings after each test.
- */
+ 
 clean_up_dest:
 	munmap(dest_addr, c.region_size);
 clean_up_src:
@@ -381,10 +348,7 @@ static void run_mremap_test_case(struct test test_case, int *failures,
 			*failures += 1;
 		}
 	} else {
-		/*
-		 * Comparing mremap time is only applicable if entire region
-		 * was faulted in.
-		 */
+		 
 		if (threshold_mb == VALIDATION_NO_THRESHOLD ||
 		    test_case.config.region_size <= threshold_mb * _1MB)
 			ksft_test_result_pass("%s\n\tmremap time: %12lldns\n",
@@ -459,7 +423,7 @@ int main(int argc, char **argv)
 
 	page_size = sysconf(_SC_PAGESIZE);
 
-	/* Expected mremap failures */
+	 
 	test_cases[0] =	MAKE_TEST(page_size, page_size, page_size,
 				  OVERLAPPING, EXPECT_FAILURE,
 				  "mremap - Source and Destination Regions Overlapping");
@@ -471,18 +435,18 @@ int main(int argc, char **argv)
 				  NON_OVERLAPPING, EXPECT_FAILURE,
 				  "mremap - Source Address Misaligned (1KB-aligned)");
 
-	/* Src addr PTE aligned */
+	 
 	test_cases[3] = MAKE_TEST(PTE, PTE, PTE * 2,
 				  NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "8KB mremap - Source PTE-aligned, Destination PTE-aligned");
 
-	/* Src addr 1MB aligned */
+	 
 	test_cases[4] = MAKE_TEST(_1MB, PTE, _2MB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "2MB mremap - Source 1MB-aligned, Destination PTE-aligned");
 	test_cases[5] = MAKE_TEST(_1MB, _1MB, _2MB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "2MB mremap - Source 1MB-aligned, Destination 1MB-aligned");
 
-	/* Src addr PMD aligned */
+	 
 	test_cases[6] = MAKE_TEST(PMD, PTE, _4MB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "4MB mremap - Source PMD-aligned, Destination PTE-aligned");
 	test_cases[7] =	MAKE_TEST(PMD, _1MB, _4MB, NON_OVERLAPPING, EXPECT_SUCCESS,
@@ -490,7 +454,7 @@ int main(int argc, char **argv)
 	test_cases[8] = MAKE_TEST(PMD, PMD, _4MB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "4MB mremap - Source PMD-aligned, Destination PMD-aligned");
 
-	/* Src addr PUD aligned */
+	 
 	test_cases[9] = MAKE_TEST(PUD, PTE, _2GB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				  "2GB mremap - Source PUD-aligned, Destination PTE-aligned");
 	test_cases[10] = MAKE_TEST(PUD, _1MB, _2GB, NON_OVERLAPPING, EXPECT_SUCCESS,
@@ -502,10 +466,7 @@ int main(int argc, char **argv)
 
 	perf_test_cases[0] =  MAKE_TEST(page_size, page_size, _1GB, NON_OVERLAPPING, EXPECT_SUCCESS,
 					"1GB mremap - Source PTE-aligned, Destination PTE-aligned");
-	/*
-	 * mremap 1GB region - Page table level aligned time
-	 * comparison.
-	 */
+	 
 	perf_test_cases[1] = MAKE_TEST(PMD, PMD, _1GB, NON_OVERLAPPING, EXPECT_SUCCESS,
 				       "1GB mremap - Source PMD-aligned, Destination PMD-aligned");
 	perf_test_cases[2] = MAKE_TEST(PUD, PUD, _1GB, NON_OVERLAPPING, EXPECT_SUCCESS,

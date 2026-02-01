@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020, Google LLC.
- *
- * Tests for KVM paravirtual feature disablement
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <linux/kvm_para.h>
 #include <stdint.h>
@@ -21,10 +17,7 @@ struct msr_data {
 #define UCALL_PR_MSR 0xdeadbeef
 #define PR_MSR(msr) ucall(UCALL_PR_MSR, 1, msr)
 
-/*
- * KVM paravirtual msrs to test. Expect a #GP if any of these msrs are read or
- * written, as the KVM_CPUID_FEATURES leaf is cleared.
- */
+ 
 static struct msr_data msrs_to_test[] = {
 	TEST_MSR(MSR_KVM_SYSTEM_TIME),
 	TEST_MSR(MSR_KVM_SYSTEM_TIME_NEW),
@@ -61,10 +54,7 @@ struct hcall_data {
 #define UCALL_PR_HCALL 0xdeadc0de
 #define PR_HCALL(hc) ucall(UCALL_PR_HCALL, 1, hc)
 
-/*
- * KVM hypercalls to test. Expect -KVM_ENOSYS when called, as the corresponding
- * features have been cleared in KVM_CPUID_FEATURES.
- */
+ 
 static struct hcall_data hcalls_to_test[] = {
 	TEST_HCALL(KVM_HC_KICK_CPU),
 	TEST_HCALL(KVM_HC_SEND_IPI),

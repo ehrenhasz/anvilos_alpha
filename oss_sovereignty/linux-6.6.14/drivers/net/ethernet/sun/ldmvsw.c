@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ldmvsw.c: Sun4v LDOM Virtual Switch Driver.
- *
- * Copyright (C) 2016-2017 Oracle. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,15 +27,13 @@
 #include <asm/vio.h>
 #include <asm/ldc.h>
 
-/* This driver makes use of the common code in sunvnet_common.c */
+ 
 #include "sunvnet_common.h"
 
-/* Length of time before we decide the hardware is hung,
- * and dev->tx_timeout() should be called to fix the problem.
- */
+ 
 #define VSW_TX_TIMEOUT			(10 * HZ)
 
-/* Static HW Addr used for the network interfaces representing vsw ports */
+ 
 static u8 vsw_port_hwaddr[ETH_ALEN] = {0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 #define DRV_MODULE_NAME		"ldmvsw"
@@ -52,7 +47,7 @@ MODULE_DESCRIPTION("Sun4v LDOM Virtual Switch Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
-/* Ordered from largest major to lowest */
+ 
 static struct vio_version vsw_versions[] = {
 	{ .major = 1, .minor = 8 },
 	{ .major = 1, .minor = 7 },
@@ -91,7 +86,7 @@ static const struct ethtool_ops vsw_ethtool_ops = {
 static LIST_HEAD(vnet_list);
 static DEFINE_MUTEX(vnet_list_mutex);
 
-/* func arg to vnet_start_xmit_common() to get the proper tx port */
+ 
 static struct vnet_port *vsw_tx_port_find(struct sk_buff *skb,
 					  struct net_device *dev)
 {
@@ -111,7 +106,7 @@ static u16 vsw_select_queue(struct net_device *dev, struct sk_buff *skb,
 	return port->q_index;
 }
 
-/* Wrappers to common functions */
+ 
 static netdev_tx_t vsw_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	return sunvnet_start_xmit_common(skb, dev, vsw_tx_port_find);
@@ -129,7 +124,7 @@ static int ldmvsw_open(struct net_device *dev)
 	struct vnet_port *port = netdev_priv(dev);
 	struct vio_driver_state *vio = &port->vio;
 
-	/* reset the channel */
+	 
 	vio_link_state_change(vio, LDC_EVENT_RESET);
 	vnet_port_reset(port);
 	vio_port_up(vio);
@@ -173,7 +168,7 @@ static struct vnet *vsw_get_vnet(struct mdesc_handle *hp,
 	const u64 *cfghandle = NULL;
 	u64 a;
 
-	/* Get the parent virtual-network-switch macaddr and cfghandle */
+	 
 	mdesc_for_each_arc(a, hp, port_node, MDESC_ARC_TYPE_BACK) {
 		u64 target = mdesc_arc_target(hp, a);
 		const char *name;
@@ -191,7 +186,7 @@ static struct vnet *vsw_get_vnet(struct mdesc_handle *hp,
 	if (!local_mac || !cfghandle)
 		return ERR_PTR(-ENODEV);
 
-	/* find or create associated vnet */
+	 
 	vp = NULL;
 	mutex_lock(&vnet_list_mutex);
 	list_for_each_entry(iter, &vnet_list, list) {
@@ -248,7 +243,7 @@ static struct net_device *vsw_alloc_netdev(u8 hwaddr[],
 	dev->hw_features = NETIF_F_HW_CSUM | NETIF_F_SG;
 	dev->features = dev->hw_features;
 
-	/* MTU range: 68 - 65535 */
+	 
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = VNET_MAX_MTU;
 
@@ -305,7 +300,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 		return err;
 	}
 
-	/* Get (or create) the vnet associated with this port */
+	 
 	vp = vsw_get_vnet(hp, vdev->mp, &handle);
 	if (IS_ERR(vp)) {
 		err = PTR_ERR(vp);
@@ -333,15 +328,10 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	port->vp = vp;
 	port->dev = dev;
 	port->switch_port = 1;
-	port->tso = false; /* no tso in vsw, misbehaves in bridge */
+	port->tso = false;  
 	port->tsolen = 0;
 
-	/* Mark the port as belonging to ldmvsw which directs the
-	 * common code to use the net_device in the vnet_port
-	 * rather than the net_device in the vnet (which is used
-	 * by sunvnet). This bit is used by the VNET_PORT_TO_NET_DEVICE
-	 * macro.
-	 */
+	 
 	port->vsw = 1;
 
 	err = vio_driver_init(&port->vio, vdev, VDEV_NETWORK,
@@ -377,9 +367,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 	napi_enable(&port->napi);
 	vio_port_up(&port->vio);
 
-	/* assure no carrier until we receive an LDC_EVENT_UP,
-	 * even if the vsw config script tries to force us up
-	 */
+	 
 	netif_carrier_off(dev);
 
 	netdev_info(dev, "LDOM vsw-port %pM\n", dev->dev_addr);
@@ -434,12 +422,12 @@ static void vsw_cleanup(void)
 {
 	struct vnet *vp;
 
-	/* just need to free up the vnet list */
+	 
 	mutex_lock(&vnet_list_mutex);
 	while (!list_empty(&vnet_list)) {
 		vp = list_first_entry(&vnet_list, struct vnet, list);
 		list_del(&vp->list);
-		/* vio_unregister_driver() should have cleaned up port_list */
+		 
 		if (!list_empty(&vp->port_list))
 			pr_err("Ports not removed by VIO subsystem!\n");
 		kfree(vp);

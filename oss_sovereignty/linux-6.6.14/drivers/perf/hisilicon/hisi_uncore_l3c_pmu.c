@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC L3C uncore Hardware event counters support
- *
- * Copyright (C) 2017 HiSilicon Limited
- * Author: Anurup M <anurup.m@huawei.com>
- *         Shaokun Zhang <zhangshaokun@hisilicon.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bug.h>
 #include <linux/cpuhotplug.h>
@@ -18,7 +10,7 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* L3C register definition */
+ 
 #define L3C_PERF_CTRL		0x0408
 #define L3C_INT_MASK		0x0800
 #define L3C_INT_STATUS		0x0808
@@ -30,14 +22,10 @@
 #define L3C_EVENT_CTRL	        0x1c00
 #define L3C_VERSION		0x1cf0
 #define L3C_EVENT_TYPE0		0x1d00
-/*
- * If the HW version only supports a 48-bit counter, then
- * bits [63:48] are reserved, which are Read-As-Zero and
- * Writes-Ignored.
- */
+ 
 #define L3C_CNTR0_LOWER		0x1e00
 
-/* L3C has 8-counters */
+ 
 #define L3C_NR_COUNTERS		0x8
 
 #define L3C_PERF_CTRL_EN	0x10000
@@ -68,13 +56,13 @@ static void hisi_l3c_pmu_config_req_tracetag(struct perf_event *event)
 	if (tt_req) {
 		u32 val;
 
-		/* Set request-type for tracetag */
+		 
 		val = readl(l3c_pmu->base + L3C_TRACETAG_CTRL);
 		val |= tt_req << L3C_TRACETAG_REQ_SHIFT;
 		val |= L3C_TRACETAG_REQ_EN;
 		writel(val, l3c_pmu->base + L3C_TRACETAG_CTRL);
 
-		/* Enable request-tracetag statistics */
+		 
 		val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 		val |= L3C_TRACETAG_EN;
 		writel(val, l3c_pmu->base + L3C_PERF_CTRL);
@@ -89,13 +77,13 @@ static void hisi_l3c_pmu_clear_req_tracetag(struct perf_event *event)
 	if (tt_req) {
 		u32 val;
 
-		/* Clear request-type */
+		 
 		val = readl(l3c_pmu->base + L3C_TRACETAG_CTRL);
 		val &= ~(tt_req << L3C_TRACETAG_REQ_SHIFT);
 		val &= ~L3C_TRACETAG_REQ_EN;
 		writel(val, l3c_pmu->base + L3C_TRACETAG_CTRL);
 
-		/* Disable request-tracetag statistics */
+		 
 		val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 		val &= ~L3C_TRACETAG_EN;
 		writel(val, l3c_pmu->base + L3C_PERF_CTRL);
@@ -109,13 +97,7 @@ static void hisi_l3c_pmu_write_ds(struct perf_event *event, u32 ds_cfg)
 	u32 reg, reg_idx, shift, val;
 	int idx = hwc->idx;
 
-	/*
-	 * Select the appropriate datasource register(L3C_DATSRC_TYPE0/1).
-	 * There are 2 datasource ctrl register for the 8 hardware counters.
-	 * Datasrc is 8-bits and for the former 4 hardware counters,
-	 * L3C_DATSRC_TYPE0 is chosen. For the latter 4 hardware counters,
-	 * L3C_DATSRC_TYPE1 is chosen.
-	 */
+	 
 	reg = L3C_DATSRC_TYPE + (idx / 4) * 4;
 	reg_idx = idx % 4;
 	shift = 8 * reg_idx;
@@ -170,13 +152,13 @@ static void hisi_l3c_pmu_config_core_tracetag(struct perf_event *event)
 	if (core) {
 		u32 val;
 
-		/* Config and enable core information */
+		 
 		writel(core, l3c_pmu->base + L3C_CORE_CTRL);
 		val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 		val |= L3C_CORE_EN;
 		writel(val, l3c_pmu->base + L3C_PERF_CTRL);
 
-		/* Enable core-tracetag statistics */
+		 
 		val = readl(l3c_pmu->base + L3C_TRACETAG_CTRL);
 		val |= L3C_TRACETAG_CORE_EN;
 		writel(val, l3c_pmu->base + L3C_TRACETAG_CTRL);
@@ -191,13 +173,13 @@ static void hisi_l3c_pmu_clear_core_tracetag(struct perf_event *event)
 	if (core) {
 		u32 val;
 
-		/* Clear core information */
+		 
 		writel(L3C_COER_NONE, l3c_pmu->base + L3C_CORE_CTRL);
 		val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 		val &= ~L3C_CORE_EN;
 		writel(val, l3c_pmu->base + L3C_PERF_CTRL);
 
-		/* Disable core-tracetag statistics */
+		 
 		val = readl(l3c_pmu->base + L3C_TRACETAG_CTRL);
 		val &= ~L3C_TRACETAG_CORE_EN;
 		writel(val, l3c_pmu->base + L3C_TRACETAG_CTRL);
@@ -222,9 +204,7 @@ static void hisi_l3c_pmu_disable_filter(struct perf_event *event)
 	}
 }
 
-/*
- * Select the counter register offset using the counter index
- */
+ 
 static u32 hisi_l3c_pmu_get_counter_offset(int cntr_idx)
 {
 	return (L3C_CNTR0_LOWER + (cntr_idx * 8));
@@ -247,18 +227,12 @@ static void hisi_l3c_pmu_write_evtype(struct hisi_pmu *l3c_pmu, int idx,
 {
 	u32 reg, reg_idx, shift, val;
 
-	/*
-	 * Select the appropriate event select register(L3C_EVENT_TYPE0/1).
-	 * There are 2 event select registers for the 8 hardware counters.
-	 * Event code is 8-bits and for the former 4 hardware counters,
-	 * L3C_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
-	 * L3C_EVENT_TYPE1 is chosen.
-	 */
+	 
 	reg = L3C_EVENT_TYPE0 + (idx / 4) * 4;
 	reg_idx = idx % 4;
 	shift = 8 * reg_idx;
 
-	/* Write event code to L3C_EVENT_TYPEx Register */
+	 
 	val = readl(l3c_pmu->base + reg);
 	val &= ~(L3C_EVTYPE_NONE << shift);
 	val |= (type << shift);
@@ -269,10 +243,7 @@ static void hisi_l3c_pmu_start_counters(struct hisi_pmu *l3c_pmu)
 {
 	u32 val;
 
-	/*
-	 * Set perf_enable bit in L3C_PERF_CTRL register to start counting
-	 * for all enabled counters.
-	 */
+	 
 	val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 	val |= L3C_PERF_CTRL_EN;
 	writel(val, l3c_pmu->base + L3C_PERF_CTRL);
@@ -282,10 +253,7 @@ static void hisi_l3c_pmu_stop_counters(struct hisi_pmu *l3c_pmu)
 {
 	u32 val;
 
-	/*
-	 * Clear perf_enable bit in L3C_PERF_CTRL register to stop counting
-	 * for all enabled counters.
-	 */
+	 
 	val = readl(l3c_pmu->base + L3C_PERF_CTRL);
 	val &= ~(L3C_PERF_CTRL_EN);
 	writel(val, l3c_pmu->base + L3C_PERF_CTRL);
@@ -296,7 +264,7 @@ static void hisi_l3c_pmu_enable_counter(struct hisi_pmu *l3c_pmu,
 {
 	u32 val;
 
-	/* Enable counter index in L3C_EVENT_CTRL register */
+	 
 	val = readl(l3c_pmu->base + L3C_EVENT_CTRL);
 	val |= (1 << hwc->idx);
 	writel(val, l3c_pmu->base + L3C_EVENT_CTRL);
@@ -307,7 +275,7 @@ static void hisi_l3c_pmu_disable_counter(struct hisi_pmu *l3c_pmu,
 {
 	u32 val;
 
-	/* Clear counter index in L3C_EVENT_CTRL register */
+	 
 	val = readl(l3c_pmu->base + L3C_EVENT_CTRL);
 	val &= ~(1 << hwc->idx);
 	writel(val, l3c_pmu->base + L3C_EVENT_CTRL);
@@ -319,7 +287,7 @@ static void hisi_l3c_pmu_enable_counter_int(struct hisi_pmu *l3c_pmu,
 	u32 val;
 
 	val = readl(l3c_pmu->base + L3C_INT_MASK);
-	/* Write 0 to enable interrupt */
+	 
 	val &= ~(1 << hwc->idx);
 	writel(val, l3c_pmu->base + L3C_INT_MASK);
 }
@@ -330,7 +298,7 @@ static void hisi_l3c_pmu_disable_counter_int(struct hisi_pmu *l3c_pmu,
 	u32 val;
 
 	val = readl(l3c_pmu->base + L3C_INT_MASK);
-	/* Write 1 to mask interrupt */
+	 
 	val |= (1 << hwc->idx);
 	writel(val, l3c_pmu->base + L3C_INT_MASK);
 }
@@ -355,10 +323,7 @@ MODULE_DEVICE_TABLE(acpi, hisi_l3c_pmu_acpi_match);
 static int hisi_l3c_pmu_init_data(struct platform_device *pdev,
 				  struct hisi_pmu *l3c_pmu)
 {
-	/*
-	 * Use the SCCL_ID and CCL_ID to identify the L3C PMU, while
-	 * SCCL_ID is in MPIDR[aff2] and CCL_ID is in MPIDR[aff1].
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
 				     &l3c_pmu->sccl_id)) {
 		dev_err(&pdev->dev, "Can not read l3c sccl-id!\n");

@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *   Copyright 2009 Intel Corporation; author H. Peter Anvin
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * Very simple screen and serial I/O
- */
+ 
+
+ 
 
 #include "boot.h"
 
@@ -17,13 +9,10 @@ int early_serial_base;
 
 #define XMTRDY          0x20
 
-#define TXR             0       /*  Transmit register (WRITE) */
-#define LSR             5       /*  Line Status               */
+#define TXR             0        
+#define LSR             5        
 
-/*
- * These functions are in .inittext so they can be used to signal
- * error during initialization.
- */
+ 
 
 static void __section(".inittext") serial_putchar(int ch)
 {
@@ -50,7 +39,7 @@ static void __section(".inittext") bios_putchar(int ch)
 void __section(".inittext") putchar(int ch)
 {
 	if (ch == '\n')
-		putchar('\r');	/* \n -> \r\n */
+		putchar('\r');	 
 
 	bios_putchar(ch);
 
@@ -64,10 +53,7 @@ void __section(".inittext") puts(const char *str)
 		putchar(*str++);
 }
 
-/*
- * Read the CMOS clock through the BIOS, and return the
- * seconds in BCD.
- */
+ 
 
 static u8 gettime(void)
 {
@@ -80,15 +66,13 @@ static u8 gettime(void)
 	return oreg.dh;
 }
 
-/*
- * Read from the keyboard
- */
+ 
 int getchar(void)
 {
 	struct biosregs ireg, oreg;
 
 	initregs(&ireg);
-	/* ireg.ah = 0x00; */
+	 
 	intcall(0x16, &ireg, &oreg);
 
 	return oreg.al;
@@ -132,6 +116,6 @@ int getchar_timeout(void)
 		}
 	}
 
-	return 0;		/* Timeout! */
+	return 0;		 
 }
 

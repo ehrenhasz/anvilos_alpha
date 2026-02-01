@@ -1,40 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pegasus Mobile Notetaker Pen input tablet driver
- *
- * Copyright (c) 2016 Martin Kepplinger <martink@posteo.de>
- */
 
-/*
- * request packet (control endpoint):
- * |-------------------------------------|
- * | Report ID | Nr of bytes | command   |
- * | (1 byte)  | (1 byte)    | (n bytes) |
- * |-------------------------------------|
- * | 0x02      | n           |           |
- * |-------------------------------------|
- *
- * data packet after set xy mode command, 0x80 0xb5 0x02 0x01
- * and pen is in range:
- *
- * byte	byte name		value (bits)
- * --------------------------------------------
- * 0	status			0 1 0 0 0 0 X X
- * 1	color			0 0 0 0 H 0 S T
- * 2	X low
- * 3	X high
- * 4	Y low
- * 5	Y high
- *
- * X X	battery state:
- *	no state reported	0x00
- *	battery low		0x01
- *	battery good		0x02
- *
- * H	Hovering
- * S	Switch 1 (pen button)
- * T	Tip
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -44,14 +11,14 @@
 #include <linux/workqueue.h>
 #include <linux/mutex.h>
 
-/* USB HID defines */
+ 
 #define USB_REQ_GET_REPORT		0x01
 #define USB_REQ_SET_REPORT		0x09
 
 #define USB_VENDOR_ID_PEGASUSTECH	0x0e20
 #define USB_DEVICE_ID_PEGASUS_NOTETAKER_EN100	0x0101
 
-/* device specific defines */
+ 
 #define NOTETAKER_REPORT_ID		0x02
 #define NOTETAKER_SET_CMD		0x80
 #define NOTETAKER_SET_MODE		0xb5
@@ -63,7 +30,7 @@
 #define BUTTON_PRESSED			0xb5
 #define COMMAND_VERSION			0xa9
 
-/* in xy data packet */
+ 
 #define BATTERY_NO_REPORT		0x40
 #define BATTERY_LOW			0x41
 #define BATTERY_GOOD			0x42
@@ -79,7 +46,7 @@ struct pegasus {
 	struct usb_interface *intf;
 	struct urb *irq;
 
-	/* serialize access to open/suspend */
+	 
 	struct mutex pm_mutex;
 	bool is_open;
 
@@ -137,13 +104,13 @@ static void pegasus_parse_packet(struct pegasus *pegasus)
 
 	switch (data[0]) {
 	case SPECIAL_COMMAND:
-		/* device button pressed */
+		 
 		if (data[1] == BUTTON_PRESSED)
 			schedule_work(&pegasus->init);
 
 		break;
 
-	/* xy data */
+	 
 	case BATTERY_LOW:
 		dev_warn_once(&dev->dev, "Pen battery low\n");
 		fallthrough;
@@ -153,7 +120,7 @@ static void pegasus_parse_packet(struct pegasus *pegasus)
 		x = le16_to_cpup((__le16 *)&data[2]);
 		y = le16_to_cpup((__le16 *)&data[4]);
 
-		/* pen-up event */
+		 
 		if (x == 0 && y == 0)
 			break;
 
@@ -270,11 +237,11 @@ static int pegasus_probe(struct usb_interface *intf,
 	int error;
 	int pipe;
 
-	/* We control interface 0 */
+	 
 	if (intf->cur_altsetting->desc.bInterfaceNumber >= 1)
 		return -ENODEV;
 
-	/* Sanity check that the device has an endpoint */
+	 
 	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
 		dev_err(&intf->dev, "Invalid number of endpoints\n");
 		return -EINVAL;
@@ -296,7 +263,7 @@ static int pegasus_probe(struct usb_interface *intf,
 	pegasus->intf = intf;
 
 	pipe = usb_rcvintpipe(dev, endpoint->bEndpointAddress);
-	/* Sanity check that pipe's type matches endpoint's type */
+	 
 	if (usb_pipe_type_check(dev, pipe)) {
 		error = -EINVAL;
 		goto err_free_mem;

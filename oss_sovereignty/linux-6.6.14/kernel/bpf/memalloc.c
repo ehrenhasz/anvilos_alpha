@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include <linux/mm.h>
 #include <linux/llist.h>
 #include <linux/bpf.h>
@@ -8,59 +8,35 @@
 #include <linux/memcontrol.h>
 #include <asm/local.h>
 
-/* Any context (including NMI) BPF specific memory allocator.
- *
- * Tracing BPF programs can attach to kprobe and fentry. Hence they
- * run in unknown context where calling plain kmalloc() might not be safe.
- *
- * Front-end kmalloc() with per-cpu per-bucket cache of free elements.
- * Refill this cache asynchronously from irq_work.
- *
- * CPU_0 buckets
- * 16 32 64 96 128 196 256 512 1024 2048 4096
- * ...
- * CPU_N buckets
- * 16 32 64 96 128 196 256 512 1024 2048 4096
- *
- * The buckets are prefilled at the start.
- * BPF programs always run with migration disabled.
- * It's safe to allocate from cache of the current cpu with irqs disabled.
- * Free-ing is always done into bucket of the current cpu as well.
- * irq_work trims extra free elements from buckets with kfree
- * and refills them with kmalloc, so global kmalloc logic takes care
- * of freeing objects allocated by one cpu and freed on another.
- *
- * Every allocated objected is padded with extra 8 bytes that contains
- * struct llist_node.
- */
+ 
 #define LLIST_NODE_SZ sizeof(struct llist_node)
 
-/* similar to kmalloc, but sizeof == 8 bucket is gone */
+ 
 static u8 size_index[24] __ro_after_init = {
-	3,	/* 8 */
-	3,	/* 16 */
-	4,	/* 24 */
-	4,	/* 32 */
-	5,	/* 40 */
-	5,	/* 48 */
-	5,	/* 56 */
-	5,	/* 64 */
-	1,	/* 72 */
-	1,	/* 80 */
-	1,	/* 88 */
-	1,	/* 96 */
-	6,	/* 104 */
-	6,	/* 112 */
-	6,	/* 120 */
-	6,	/* 128 */
-	2,	/* 136 */
-	2,	/* 144 */
-	2,	/* 152 */
-	2,	/* 160 */
-	2,	/* 168 */
-	2,	/* 176 */
-	2,	/* 184 */
-	2	/* 192 */
+	3,	 
+	3,	 
+	4,	 
+	4,	 
+	5,	 
+	5,	 
+	5,	 
+	5,	 
+	1,	 
+	1,	 
+	1,	 
+	1,	 
+	6,	 
+	6,	 
+	6,	 
+	6,	 
+	2,	 
+	2,	 
+	2,	 
+	2,	 
+	2,	 
+	2,	 
+	2,	 
+	2	 
 };
 
 static int bpf_mem_cache_idx(size_t size)
@@ -77,31 +53,24 @@ static int bpf_mem_cache_idx(size_t size)
 #define NUM_CACHES 11
 
 struct bpf_mem_cache {
-	/* per-cpu list of free objects of size 'unit_size'.
-	 * All accesses are done with interrupts disabled and 'active' counter
-	 * protection with __llist_add() and __llist_del_first().
-	 */
+	 
 	struct llist_head free_llist;
 	local_t active;
 
-	/* Operations on the free_list from unit_alloc/unit_free/bpf_mem_refill
-	 * are sequenced by per-cpu 'active' counter. But unit_free() cannot
-	 * fail. When 'active' is busy the unit_free() will add an object to
-	 * free_llist_extra.
-	 */
+	 
 	struct llist_head free_llist_extra;
 
 	struct irq_work refill_work;
 	struct obj_cgroup *objcg;
 	int unit_size;
-	/* count of objects in free_llist */
+	 
 	int free_cnt;
 	int low_watermark, high_watermark, batch;
 	int percpu_size;
 	bool draining;
 	struct bpf_mem_cache *tgt;
 
-	/* list of objects to be freed after RCU GP */
+	 
 	struct llist_head free_by_rcu;
 	struct llist_node *free_by_rcu_tail;
 	struct llist_head waiting_for_gp;
@@ -110,7 +79,7 @@ struct bpf_mem_cache {
 	atomic_t call_rcu_in_progress;
 	struct llist_head free_llist_extra_rcu;
 
-	/* list of objects to be freed after RCU tasks trace GP */
+	 
 	struct llist_head free_by_rcu_ttrace;
 	struct llist_head waiting_for_gp_ttrace;
 	struct rcu_head rcu_ttrace;
@@ -168,18 +137,9 @@ static struct mem_cgroup *get_memcg(const struct bpf_mem_cache *c)
 static void inc_active(struct bpf_mem_cache *c, unsigned long *flags)
 {
 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-		/* In RT irq_work runs in per-cpu kthread, so disable
-		 * interrupts to avoid preemption and interrupts and
-		 * reduce the chance of bpf prog executing on this cpu
-		 * when active counter is busy.
-		 */
+		 
 		local_irq_save(*flags);
-	/* alloc_bulk runs from irq_work which will not preempt a bpf
-	 * program that does unit_alloc/unit_free since IRQs are
-	 * disabled there. There is no race to increment 'active'
-	 * counter. It protects free_llist from corruption in case NMI
-	 * bpf prog preempted this loop.
-	 */
+	 
 	WARN_ON_ONCE(local_inc_return(&c->active) != 1);
 }
 
@@ -200,7 +160,7 @@ static void add_obj_to_free_list(struct bpf_mem_cache *c, void *obj)
 	dec_active(c, &flags);
 }
 
-/* Mostly runs from irq_work except __init phase. */
+ 
 static void alloc_bulk(struct bpf_mem_cache *c, int cnt, int node, bool atomic)
 {
 	struct mem_cgroup *memcg = NULL, *old_memcg;
@@ -212,11 +172,7 @@ static void alloc_bulk(struct bpf_mem_cache *c, int cnt, int node, bool atomic)
 	gfp |= atomic ? GFP_NOWAIT : GFP_KERNEL;
 
 	for (i = 0; i < cnt; i++) {
-		/*
-		 * For every 'c' llist_del_first(&c->free_by_rcu_ttrace); is
-		 * done only by one CPU == current CPU. Other CPUs might
-		 * llist_add() and llist_del_all() in parallel.
-		 */
+		 
 		obj = llist_del_first(&c->free_by_rcu_ttrace);
 		if (!obj)
 			break;
@@ -237,11 +193,7 @@ static void alloc_bulk(struct bpf_mem_cache *c, int cnt, int node, bool atomic)
 	memcg = get_memcg(c);
 	old_memcg = set_active_memcg(memcg);
 	for (; i < cnt; i++) {
-		/* Allocate, but don't deplete atomic reserves that typical
-		 * GFP_ATOMIC would do. irq_work runs on this cpu and kmalloc
-		 * will allocate from the current numa node which is what we
-		 * want here.
-		 */
+		 
 		obj = __alloc(c, node, gfp);
 		if (!obj)
 			break;
@@ -284,9 +236,7 @@ static void __free_rcu(struct rcu_head *head)
 
 static void __free_rcu_tasks_trace(struct rcu_head *head)
 {
-	/* If RCU Tasks Trace grace period implies RCU grace period,
-	 * there is no need to invoke call_rcu().
-	 */
+	 
 	if (rcu_trace_implies_rcu_gp())
 		__free_rcu(head);
 	else
@@ -297,9 +247,7 @@ static void enque_to_free(struct bpf_mem_cache *c, void *obj)
 {
 	struct llist_node *llnode = obj;
 
-	/* bpf_mem_cache is a per-cpu object. Freeing happens in irq_work.
-	 * Nothing races to add to free_by_rcu_ttrace list.
-	 */
+	 
 	llist_add(llnode, &c->free_by_rcu_ttrace);
 }
 
@@ -324,11 +272,7 @@ static void do_call_rcu_ttrace(struct bpf_mem_cache *c)
 		return;
 	}
 
-	/* Use call_rcu_tasks_trace() to wait for sleepable progs to finish.
-	 * If RCU Tasks Trace grace period implies RCU grace period, free
-	 * these elements directly, else use call_rcu() to wait for normal
-	 * progs to finish and finally do free_one() on each element.
-	 */
+	 
 	call_rcu_tasks_trace(&c->rcu_ttrace, __free_rcu_tasks_trace);
 }
 
@@ -353,7 +297,7 @@ static void free_bulk(struct bpf_mem_cache *c)
 			enque_to_free(tgt, llnode);
 	} while (cnt > (c->high_watermark + c->low_watermark) / 2);
 
-	/* and drain free_llist_extra */
+	 
 	llist_for_each_safe(llnode, t, llist_del_all(&c->free_llist_extra))
 		enque_to_free(tgt, llnode);
 	do_call_rcu_ttrace(tgt);
@@ -371,7 +315,7 @@ static void __free_by_rcu(struct rcu_head *head)
 
 	llist_add_batch(llnode, c->waiting_for_gp_tail, &tgt->free_by_rcu_ttrace);
 
-	/* Objects went through regular RCU GP. Send them to RCU tasks trace */
+	 
 	do_call_rcu_ttrace(tgt);
 out:
 	atomic_set(&c->call_rcu_in_progress, 0);
@@ -382,7 +326,7 @@ static void check_free_by_rcu(struct bpf_mem_cache *c)
 	struct llist_node *llnode, *t;
 	unsigned long flags;
 
-	/* drain free_llist_extra_rcu */
+	 
 	if (unlikely(!llist_empty(&c->free_llist_extra_rcu))) {
 		inc_active(c, &flags);
 		llist_for_each_safe(llnode, t, llist_del_all(&c->free_llist_extra_rcu))
@@ -395,14 +339,7 @@ static void check_free_by_rcu(struct bpf_mem_cache *c)
 		return;
 
 	if (atomic_xchg(&c->call_rcu_in_progress, 1)) {
-		/*
-		 * Instead of kmalloc-ing new rcu_head and triggering 10k
-		 * call_rcu() to hit rcutree.qhimark and force RCU to notice
-		 * the overload just ask RCU to hurry up. There could be many
-		 * objects in free_by_rcu list.
-		 * This hint reduces memory consumption for an artificial
-		 * benchmark from 2 Gbyte to 150 Mbyte.
-		 */
+		 
 		rcu_request_urgent_qs_task(current);
 		return;
 	}
@@ -427,12 +364,10 @@ static void bpf_mem_refill(struct irq_work *work)
 	struct bpf_mem_cache *c = container_of(work, struct bpf_mem_cache, refill_work);
 	int cnt;
 
-	/* Racy access to free_cnt. It doesn't need to be 100% accurate */
+	 
 	cnt = c->free_cnt;
 	if (cnt < c->low_watermark)
-		/* irq_work runs on this cpu and kmalloc will allocate
-		 * from the current numa node which is what we want here.
-		 */
+		 
 		alloc_bulk(c, c->batch, NUMA_NO_NODE, true);
 	else if (cnt > c->high_watermark)
 		free_bulk(c);
@@ -445,20 +380,7 @@ static void notrace irq_work_raise(struct bpf_mem_cache *c)
 	irq_work_queue(&c->refill_work);
 }
 
-/* For typical bpf map case that uses bpf_mem_cache_alloc and single bucket
- * the freelist cache will be elem_size * 64 (or less) on each cpu.
- *
- * For bpf programs that don't have statically known allocation sizes and
- * assuming (low_mark + high_mark) / 2 as an average number of elements per
- * bucket and all buckets are used the total amount of memory in freelists
- * on each cpu will be:
- * 64*16 + 64*32 + 64*64 + 64*96 + 64*128 + 64*196 + 64*256 + 32*512 + 16*1024 + 8*2048 + 4*4096
- * == ~ 116 Kbyte using below heuristic.
- * Initialized, but unused bpf allocator (not bpf map specific one) will
- * consume ~ 11 Kbyte per cpu.
- * Typical case will be between 11K and 116K closer to 11K.
- * bpf progs can and should share bpf_mem_cache when possible.
- */
+ 
 static void init_refill_work(struct bpf_mem_cache *c)
 {
 	init_irq_work(&c->refill_work, bpf_mem_refill);
@@ -466,11 +388,7 @@ static void init_refill_work(struct bpf_mem_cache *c)
 		c->low_watermark = 32;
 		c->high_watermark = 96;
 	} else {
-		/* When page_size == 4k, order-0 cache will have low_mark == 2
-		 * and high_mark == 6 with batch alloc of 3 individual pages at
-		 * a time.
-		 * 8k allocs and above low == 1, high == 3, batch == 1.
-		 */
+		 
 		c->low_watermark = max(32 * 256 / c->unit_size, 1);
 		c->high_watermark = max(96 * 256 / c->unit_size, 3);
 	}
@@ -479,20 +397,11 @@ static void init_refill_work(struct bpf_mem_cache *c)
 
 static void prefill_mem_cache(struct bpf_mem_cache *c, int cpu)
 {
-	/* To avoid consuming memory assume that 1st run of bpf
-	 * prog won't be doing more than 4 map_update_elem from
-	 * irq disabled region
-	 */
+	 
 	alloc_bulk(c, c->unit_size <= 256 ? 4 : 1, cpu_to_node(cpu), false);
 }
 
-/* When size != 0 bpf_mem_cache for each cpu.
- * This is typical bpf hash map use case when all elements have equal size.
- *
- * When size == 0 allocate 11 bpf_mem_cache-s for each cpu, then rely on
- * kmalloc/kfree. Max allocation size is 4096 in this case.
- * This is bpf_dynptr and bpf_kptr use case.
- */
+ 
 int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu)
 {
 	static u16 sizes[NUM_CACHES] = {96, 192, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
@@ -509,10 +418,10 @@ int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu)
 			return -ENOMEM;
 
 		if (percpu)
-			/* room for llist_node and per-cpu pointer */
+			 
 			percpu_size = LLIST_NODE_SZ + sizeof(void *);
 		else
-			size += LLIST_NODE_SZ; /* room for llist_node */
+			size += LLIST_NODE_SZ;  
 		unit_size = size;
 
 #ifdef CONFIG_MEMCG_KMEM
@@ -532,7 +441,7 @@ int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu)
 		return 0;
 	}
 
-	/* size == 0 && percpu is an invalid combination */
+	 
 	if (WARN_ON_ONCE(percpu))
 		return -EINVAL;
 
@@ -563,13 +472,7 @@ static void drain_mem_cache(struct bpf_mem_cache *c)
 {
 	bool percpu = !!c->percpu_size;
 
-	/* No progs are using this bpf_mem_cache, but htab_map_free() called
-	 * bpf_mem_cache_free() for all remaining elements and they can be in
-	 * free_by_rcu_ttrace or in waiting_for_gp_ttrace lists, so drain those lists now.
-	 *
-	 * Except for waiting_for_gp_ttrace list, there are no concurrent operations
-	 * on these lists, so it is safe to use __llist_del_all().
-	 */
+	 
 	free_all(llist_del_all(&c->free_by_rcu_ttrace), percpu);
 	free_all(llist_del_all(&c->waiting_for_gp_ttrace), percpu);
 	free_all(__llist_del_all(&c->free_llist), percpu);
@@ -624,18 +527,9 @@ static void free_mem_alloc_no_barrier(struct bpf_mem_alloc *ma)
 
 static void free_mem_alloc(struct bpf_mem_alloc *ma)
 {
-	/* waiting_for_gp[_ttrace] lists were drained, but RCU callbacks
-	 * might still execute. Wait for them.
-	 *
-	 * rcu_barrier_tasks_trace() doesn't imply synchronize_rcu_tasks_trace(),
-	 * but rcu_barrier_tasks_trace() and rcu_barrier() below are only used
-	 * to wait for the pending __free_rcu_tasks_trace() and __free_rcu(),
-	 * so if call_rcu(head, __free_rcu) is skipped due to
-	 * rcu_trace_implies_rcu_gp(), it will be OK to skip rcu_barrier() by
-	 * using rcu_trace_implies_rcu_gp() as well.
-	 */
-	rcu_barrier(); /* wait for __free_by_rcu */
-	rcu_barrier_tasks_trace(); /* wait for __free_rcu */
+	 
+	rcu_barrier();  
+	rcu_barrier_tasks_trace();  
 	if (!rcu_trace_implies_rcu_gp())
 		rcu_barrier();
 	free_mem_alloc_no_barrier(ma);
@@ -654,21 +548,19 @@ static void destroy_mem_alloc(struct bpf_mem_alloc *ma, int rcu_in_progress)
 	struct bpf_mem_alloc *copy;
 
 	if (!rcu_in_progress) {
-		/* Fast path. No callbacks are pending, hence no need to do
-		 * rcu_barrier-s.
-		 */
+		 
 		free_mem_alloc_no_barrier(ma);
 		return;
 	}
 
 	copy = kmemdup(ma, sizeof(*ma), GFP_KERNEL);
 	if (!copy) {
-		/* Slow path with inline barrier-s */
+		 
 		free_mem_alloc(ma);
 		return;
 	}
 
-	/* Defer barriers into worker to let the rest of map memory to be freed */
+	 
 	memset(ma, 0, sizeof(*ma));
 	INIT_WORK(&copy->work, free_mem_alloc_deferred);
 	queue_work(system_unbound_wq, &copy->work);
@@ -690,7 +582,7 @@ void bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma)
 			rcu_in_progress += atomic_read(&c->call_rcu_ttrace_in_progress);
 			rcu_in_progress += atomic_read(&c->call_rcu_in_progress);
 		}
-		/* objcg is the same across cpus */
+		 
 		if (c->objcg)
 			obj_cgroup_put(c->objcg);
 		destroy_mem_alloc(ma, rcu_in_progress);
@@ -714,25 +606,14 @@ void bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma)
 	}
 }
 
-/* notrace is necessary here and in other functions to make sure
- * bpf programs cannot attach to them and cause llist corruptions.
- */
+ 
 static void notrace *unit_alloc(struct bpf_mem_cache *c)
 {
 	struct llist_node *llnode = NULL;
 	unsigned long flags;
 	int cnt = 0;
 
-	/* Disable irqs to prevent the following race for majority of prog types:
-	 * prog_A
-	 *   bpf_mem_alloc
-	 *      preemption or irq -> prog_B
-	 *        bpf_mem_alloc
-	 *
-	 * but prog_B could be a perf_event NMI prog.
-	 * Use per-cpu 'active' counter to order free_list access between
-	 * unit_alloc/unit_free/bpf_mem_refill.
-	 */
+	 
 	local_irq_save(flags);
 	if (local_inc_return(&c->active) == 1) {
 		llnode = __llist_del_first(&c->free_llist);
@@ -751,10 +632,7 @@ static void notrace *unit_alloc(struct bpf_mem_cache *c)
 	return llnode;
 }
 
-/* Though 'ptr' object could have been allocated on a different cpu
- * add it to the free_llist of the current cpu.
- * Let kfree() logic deal with it when it's later called from irq_work.
- */
+ 
 static void notrace unit_free(struct bpf_mem_cache *c, void *ptr)
 {
 	struct llist_node *llnode = ptr - LLIST_NODE_SZ;
@@ -763,10 +641,7 @@ static void notrace unit_free(struct bpf_mem_cache *c, void *ptr)
 
 	BUILD_BUG_ON(LLIST_NODE_SZ > 8);
 
-	/*
-	 * Remember bpf_mem_cache that allocated this object.
-	 * The hint is not accurate.
-	 */
+	 
 	c->tgt = *(struct bpf_mem_cache **)llnode;
 
 	local_irq_save(flags);
@@ -774,19 +649,14 @@ static void notrace unit_free(struct bpf_mem_cache *c, void *ptr)
 		__llist_add(llnode, &c->free_llist);
 		cnt = ++c->free_cnt;
 	} else {
-		/* unit_free() cannot fail. Therefore add an object to atomic
-		 * llist. free_bulk() will drain it. Though free_llist_extra is
-		 * a per-cpu list we have to use atomic llist_add here, since
-		 * it also can be interrupted by bpf nmi prog that does another
-		 * unit_free() into the same free_llist_extra.
-		 */
+		 
 		llist_add(llnode, &c->free_llist_extra);
 	}
 	local_dec(&c->active);
 	local_irq_restore(flags);
 
 	if (cnt > c->high_watermark)
-		/* free few objects from current cpu into global kmalloc pool */
+		 
 		irq_work_raise(c);
 }
 
@@ -811,9 +681,7 @@ static void notrace unit_free_rcu(struct bpf_mem_cache *c, void *ptr)
 		irq_work_raise(c);
 }
 
-/* Called from BPF program or from sys_bpf syscall.
- * In both cases migration is disabled.
- */
+ 
 void notrace *bpf_mem_alloc(struct bpf_mem_alloc *ma, size_t size)
 {
 	int idx;
@@ -886,16 +754,7 @@ void notrace bpf_mem_cache_free_rcu(struct bpf_mem_alloc *ma, void *ptr)
 	unit_free_rcu(this_cpu_ptr(ma->cache), ptr);
 }
 
-/* Directly does a kfree() without putting 'ptr' back to the free_llist
- * for reuse and without waiting for a rcu_tasks_trace gp.
- * The caller must first go through the rcu_tasks_trace gp for 'ptr'
- * before calling bpf_mem_cache_raw_free().
- * It could be used when the rcu_tasks_trace callback does not have
- * a hold on the original bpf_mem_alloc object that allocated the
- * 'ptr'. This should only be used in the uncommon code path.
- * Otherwise, the bpf_mem_alloc's free_llist cannot be refilled
- * and may affect performance.
- */
+ 
 void bpf_mem_cache_raw_free(void *ptr)
 {
 	if (!ptr)
@@ -904,10 +763,7 @@ void bpf_mem_cache_raw_free(void *ptr)
 	kfree(ptr - LLIST_NODE_SZ);
 }
 
-/* When flags == GFP_KERNEL, it signals that the caller will not cause
- * deadlock when using kmalloc. bpf_mem_cache_alloc_flags() will use
- * kmalloc if the free_llist is empty.
- */
+ 
 void notrace *bpf_mem_cache_alloc_flags(struct bpf_mem_alloc *ma, gfp_t flags)
 {
 	struct bpf_mem_cache *c;

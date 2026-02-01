@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic JZ4755 SoC CGU driver
- * Heavily based on JZ4725b CGU driver
- *
- * Copyright (C) 2022 Siarhei Volkau
- * Author: Siarhei Volkau <lis8215@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -16,7 +10,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_CPPCR		0x10
 #define CGU_REG_CLKGR		0x20
@@ -43,7 +37,7 @@ static const u8 jz4755_cgu_pll_half_div_table[] = {
 
 static const struct ingenic_cgu_clk_info jz4755_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4755_CLK_EXT] = { "ext", CGU_CLK_EXT },
 	[JZ4755_CLK_OSC32K] = { "osc32k", CGU_CLK_EXT },
@@ -71,7 +65,7 @@ static const struct ingenic_cgu_clk_info jz4755_cgu_clocks[] = {
 		},
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[JZ4755_CLK_PLL_HALF] = {
 		"pll half", CGU_CLK_DIV,
@@ -192,7 +186,7 @@ static const struct ingenic_cgu_clk_info jz4755_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR, 8 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4755_CLK_UART0] = {
 		"uart0", CGU_CLK_GATE,
@@ -298,13 +292,13 @@ static const struct ingenic_cgu_clk_info jz4755_cgu_clocks[] = {
 
 	[JZ4755_CLK_TSSI] = {
 		"tssi", CGU_CLK_GATE,
-		.parents = { JZ4755_CLK_EXT_HALF/* not sure */, },
+		.parents = { JZ4755_CLK_EXT_HALF , },
 		.gate = { CGU_REG_CLKGR, 17 },
 	},
 
 	[JZ4755_CLK_IPU] = {
 		"ipu", CGU_CLK_GATE,
-		.parents = { JZ4755_CLK_PLL_HALF/* not sure */, },
+		.parents = { JZ4755_CLK_PLL_HALF , },
 		.gate = { CGU_REG_CLKGR, 13 },
 	},
 
@@ -339,8 +333,5 @@ static void __init jz4755_cgu_init(struct device_node *np)
 
 	ingenic_cgu_register_syscore_ops(cgu);
 }
-/*
- * CGU has some children devices, this is useful for probing children devices
- * in the case where the device node is compatible with "simple-mfd".
- */
+ 
 CLK_OF_DECLARE_DRIVER(jz4755_cgu, "ingenic,jz4755-cgu", jz4755_cgu_init);

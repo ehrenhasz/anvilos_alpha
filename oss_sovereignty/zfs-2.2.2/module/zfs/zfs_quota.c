@@ -1,32 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011 Pawel Jakub Dawidek
- * Copyright (c) 2012, 2015, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2016 Nexenta Systems, Inc. All rights reserved.
- */
+ 
+ 
 
-/* Portions Copyright 2010 Robert Milkowski */
+ 
 
 #include <sys/avl.h>
 #include <sys/dmu_objset.h>
@@ -41,20 +16,13 @@ int
 zpl_get_file_info(dmu_object_type_t bonustype, const void *data,
     zfs_file_info_t *zoi)
 {
-	/*
-	 * Is it a valid type of object to track?
-	 */
+	 
 	if (bonustype != DMU_OT_ZNODE && bonustype != DMU_OT_SA)
 		return (SET_ERROR(ENOENT));
 
 	zoi->zfi_project = ZFS_DEFAULT_PROJID;
 
-	/*
-	 * If we have a NULL data pointer
-	 * then assume the id's aren't changing and
-	 * return EEXIST to the dmu to let it know to
-	 * use the same ids
-	 */
+	 
 	if (data == NULL)
 		return (SET_ERROR(EEXIST));
 
@@ -68,10 +36,7 @@ zpl_get_file_info(dmu_object_type_t bonustype, const void *data,
 
 	const sa_hdr_phys_t *sap = data;
 	if (sap->sa_magic == 0) {
-		/*
-		 * This should only happen for newly created files
-		 * that haven't had the znode data filled in yet.
-		 */
+		 
 		zoi->zfi_user = 0;
 		zoi->zfi_group = 0;
 		zoi->zfi_generation = 0;
@@ -203,10 +168,7 @@ zfs_userspace_many(zfsvfs_t *zfsvfs, zfs_userquota_prop_t type,
 		    *bufsizep)
 			break;
 
-		/*
-		 * skip object quota (with zap name prefix DMU_OBJACCT_PREFIX)
-		 * when dealing with block quota and vice versa.
-		 */
+		 
 		if ((offset > 0) != (strncmp(za.za_name, DMU_OBJACCT_PREFIX,
 		    DMU_OBJACCT_PREFIX_LEN) == 0))
 			continue;

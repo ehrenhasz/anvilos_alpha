@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * acl.h
- *
- * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef OCFS2_ACL_H
 #define OCFS2_ACL_H
@@ -25,4 +21,4 @@ extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
 			  struct ocfs2_alloc_context *,
 			  struct ocfs2_alloc_context *);
 
-#endif /* OCFS2_ACL_H */
+#endif  

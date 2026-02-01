@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CCU_GATE_H_
 #define _CCU_GATE_H_
@@ -52,10 +50,7 @@ struct ccu_gate {
 		}							\
 	}
 
-/*
- * The following macros allow the re-use of the data structure
- * holding the parent info.
- */
+ 
 #define SUNXI_CCU_GATE_HWS(_struct, _name, _parent, _reg, _gate, _flags) \
 	struct ccu_gate _struct = {					\
 		.enable	= _gate,					\
@@ -124,4 +119,4 @@ int ccu_gate_helper_is_enabled(struct ccu_common *common, u32 gate);
 
 extern const struct clk_ops ccu_gate_ops;
 
-#endif /* _CCU_GATE_H_ */
+#endif  

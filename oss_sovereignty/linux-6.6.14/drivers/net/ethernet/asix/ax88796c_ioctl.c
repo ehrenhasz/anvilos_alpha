@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010 ASIX Electronics Corporation
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
- *
- * ASIX AX88796C SPI Fast Ethernet Linux driver
- */
+
+ 
 
 #define pr_fmt(fmt)	"ax88796c: " fmt
 
@@ -23,7 +18,7 @@ static const char ax88796c_priv_flag_names[][ETH_GSTRING_LEN] = {
 static void
 ax88796c_get_drvinfo(struct net_device *ndev, struct ethtool_drvinfo *info)
 {
-	/* Inherit standard device info */
+	 
 	strncpy(info->driver, DRV_NAME, sizeof(info->driver));
 }
 
@@ -59,7 +54,7 @@ ax88796c_set_pauseparam(struct net_device *ndev, struct ethtool_pauseparam *paus
 	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
 	int fc;
 
-	/* The following logic comes from phylink_ethtool_set_pauseparam() */
+	 
 	fc = pause->tx_pause ? AX_FC_TX : 0;
 	fc |= pause->rx_pause ? AX_FC_RX : 0;
 	fc |= pause->autoneg ? AX_FC_ANEG : 0;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2006 Patrick McHardy <kaber@trash.net>
- * Copyright © CC Computer Consultants GmbH, 2007 - 2008
- *
- * This is a replacement of the old ipt_recent module, which carried the
- * following copyright notice:
- *
- * Author: Stephen Frost <sfrost@snowman.net>
- * Copyright 2002-2003, Stephen Frost, 2.5.x port by laforge@netfilter.org
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/init.h>
 #include <linux/ip.h>
@@ -56,7 +47,7 @@ MODULE_PARM_DESC(ip_list_perms, "permissions on /proc/net/xt_recent/* files");
 MODULE_PARM_DESC(ip_list_uid, "default owner of /proc/net/xt_recent/* files");
 MODULE_PARM_DESC(ip_list_gid, "default owning group of /proc/net/xt_recent/* files");
 
-/* retained for backwards compatibility */
+ 
 static unsigned int ip_pkt_list_tot __read_mostly;
 module_param(ip_pkt_list_tot, uint, 0400);
 MODULE_PARM_DESC(ip_pkt_list_tot, "number of packets per IP address to remember (max. 255)");
@@ -149,28 +140,20 @@ static void recent_entry_remove(struct recent_table *t, struct recent_entry *e)
 	t->entries--;
 }
 
-/*
- * Drop entries with timestamps older then 'time'.
- */
+ 
 static void recent_entry_reap(struct recent_table *t, unsigned long time,
 			      struct recent_entry *working, bool update)
 {
 	struct recent_entry *e;
 
-	/*
-	 * The head of the LRU list is always the oldest entry.
-	 */
+	 
 	e = list_entry(t->lru_list.next, struct recent_entry, lru_list);
 
-	/*
-	 * Do not reap the entry which are going to be updated.
-	 */
+	 
 	if (e == working && update)
 		return;
 
-	/*
-	 * The last time stamp is the most recent.
-	 */
+	 
 	if (time_after(time, e->stamps[e->index-1]))
 		recent_entry_remove(t, e);
 }
@@ -268,7 +251,7 @@ recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		ttl = iph->hop_limit;
 	}
 
-	/* use TTL as seen before forwarding */
+	 
 	if (xt_out(par) != NULL &&
 	    (!skb->sk || !net_eq(net, sock_net(skb->sk))))
 		ttl++;
@@ -308,7 +291,7 @@ recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			}
 		}
 
-		/* info->seconds must be non-zero */
+		 
 		if (info->check_set & XT_RECENT_REAP)
 			recent_entry_reap(t, time, e,
 				info->check_set & XT_RECENT_UPDATE && ret);
@@ -435,9 +418,9 @@ static int recent_mt_check_v0(const struct xt_mtchk_param *par)
 	const struct xt_recent_mtinfo_v0 *info_v0 = par->matchinfo;
 	struct xt_recent_mtinfo_v1 info_v1;
 
-	/* Copy revision 0 structure to revision 1 */
+	 
 	memcpy(&info_v1, info_v0, sizeof(struct xt_recent_mtinfo));
-	/* Set default mask to ensure backward compatible behaviour */
+	 
 	memset(info_v1.mask.all, 0xFF, sizeof(info_v1.mask.all));
 
 	return recent_mt_check(par, &info_v1);
@@ -574,19 +557,19 @@ recent_mt_proc_write(struct file *file, const char __user *input,
 	if (copy_from_user(buf, input, size) != 0)
 		return -EFAULT;
 
-	/* Strict protocol! */
+	 
 	if (*loff != 0)
 		return -ESPIPE;
 	switch (*c) {
-	case '/': /* flush table */
+	case '/':  
 		spin_lock_bh(&recent_lock);
 		recent_table_flush(t);
 		spin_unlock_bh(&recent_lock);
 		return size;
-	case '-': /* remove address */
+	case '-':  
 		add = false;
 		break;
-	case '+': /* add address */
+	case '+':  
 		add = true;
 		break;
 	default:
@@ -619,7 +602,7 @@ recent_mt_proc_write(struct file *file, const char __user *input,
 			recent_entry_remove(t, e);
 	}
 	spin_unlock_bh(&recent_lock);
-	/* Note we removed one above */
+	 
 	*loff += size + 1;
 	return size + 1;
 }
@@ -647,10 +630,7 @@ static void __net_exit recent_proc_net_exit(struct net *net)
 	struct recent_net *recent_net = recent_pernet(net);
 	struct recent_table *t;
 
-	/* recent_net_exit() is called before recent_mt_destroy(). Make sure
-	 * that the parent xt_recent proc entry is empty before trying to
-	 * remove it.
-	 */
+	 
 	spin_lock_bh(&recent_lock);
 	list_for_each_entry(t, &recent_net->tables, list)
 	        remove_proc_entry(t->name, recent_net->xt_recent);
@@ -669,7 +649,7 @@ static inline int recent_proc_net_init(struct net *net)
 static inline void recent_proc_net_exit(struct net *net)
 {
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 static int __net_init recent_net_init(struct net *net)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRM driver for Solomon SSD130x OLED displays (I2C bus)
- *
- * Copyright 2022 Red Hat Inc.
- * Author: Javier Martinez Canillas <javierm@redhat.com>
- *
- * Based on drivers/video/fbdev/ssd1307fb.c
- * Copyright 2012 Free Electrons
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/module.h>
 
@@ -74,7 +66,7 @@ static const struct of_device_id ssd130x_of_match[] = {
 		.compatible = "solomon,ssd1309",
 		.data = &ssd130x_variants[SSD1309_ID],
 	},
-	/* Deprecated but kept for backward compatibility */
+	 
 	{
 		.compatible = "solomon,ssd1305fb-i2c",
 		.data = &ssd130x_variants[SSD1305_ID],
@@ -91,7 +83,7 @@ static const struct of_device_id ssd130x_of_match[] = {
 		.compatible = "solomon,ssd1309fb-i2c",
 		.data = &ssd130x_variants[SSD1309_ID],
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ssd130x_of_match);
 

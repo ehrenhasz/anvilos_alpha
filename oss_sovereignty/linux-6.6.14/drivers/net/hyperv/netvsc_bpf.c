@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019, Microsoft Corporation.
- *
- * Author:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,13 +36,13 @@ u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
 	if (!prog)
 		goto out;
 
-	/* Ensure that the below memcpy() won't overflow the page buffer. */
+	 
 	if (len > ndev->mtu + ETH_HLEN) {
 		act = XDP_DROP;
 		goto out;
 	}
 
-	/* allocate page buffer for data */
+	 
 	page = alloc_page(GFP_ATOMIC);
 	if (!page) {
 		act = XDP_DROP;
@@ -255,15 +251,12 @@ int netvsc_ndoxdp_xmit(struct net_device *ndev, int n,
 	int i, count = 0;
 	u16 q_idx;
 
-	/* Don't transmit if netvsc_device is gone */
+	 
 	nvsc_dev = rcu_dereference_bh(ndev_ctx->nvdev);
 	if (unlikely(!nvsc_dev || nvsc_dev->destroy))
 		return 0;
 
-	/* If VF is present and up then redirect packets to it.
-	 * Skip the VF if it is marked down or has no carrier.
-	 * If netpoll is in uses, then VF can not be used either.
-	 */
+	 
 	vf_netdev = rcu_dereference_bh(ndev_ctx->vf_netdev);
 	if (vf_netdev && netif_running(vf_netdev) &&
 	    netif_carrier_ok(vf_netdev) && !netpoll_tx_running(ndev) &&

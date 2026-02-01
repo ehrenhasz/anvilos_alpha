@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_IMX27_H
 #define __DT_BINDINGS_CLOCK_IMX27_H

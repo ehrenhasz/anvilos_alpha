@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensirion SPS30 particulate matter sensor serial driver
- *
- * Copyright (c) 2021 Tomasz Duszynski <tomasz.duszynski@octakon.com>
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -145,7 +141,7 @@ static int sps30_serial_prep_frame(unsigned char *buf, unsigned char cmd,
 	for (i = 0; i < arg_size; i++)
 		num += sps30_serial_put_byte(buf + num, arg[i]);
 
-	/* SOF isn't checksummed */
+	 
 	chksum = sps30_serial_calc_chksum(buf + 1, num - 1);
 	num += sps30_serial_put_byte(buf + num, chksum);
 	buf[num++] = SPS30_SERIAL_SOF_EOF;
@@ -177,7 +173,7 @@ static bool sps30_serial_frame_valid(struct sps30_state *state, const unsigned c
 		return false;
 	}
 
-	/* SOF, checksum and EOF are not checksummed */
+	 
 	chksum = sps30_serial_calc_chksum(priv->buf + 1, priv->num - 3);
 	if (priv->buf[priv->num - 2] != chksum) {
 		dev_err(state->dev, "frame integrity check failed\n");
@@ -225,11 +221,11 @@ static int sps30_serial_receive_buf(struct serdev_device *serdev,
 	state = iio_priv(indio_dev);
 	priv = state->priv;
 
-	/* just in case device put some unexpected data on the bus */
+	 
 	if (priv->done)
 		return size;
 
-	/* wait for the start of frame */
+	 
 	if (!priv->num && size && buf[0] != SPS30_SERIAL_SOF_EOF)
 		return 1;
 
@@ -238,7 +234,7 @@ static int sps30_serial_receive_buf(struct serdev_device *serdev,
 
 	for (i = 0; i < size; i++) {
 		byte = buf[i];
-		/* remove stuffed bytes on-the-fly */
+		 
 		if (byte == SPS30_SERIAL_ESCAPE_CHAR) {
 			priv->escaped = true;
 			continue;
@@ -250,7 +246,7 @@ static int sps30_serial_receive_buf(struct serdev_device *serdev,
 
 		priv->buf[priv->num++] = byte;
 
-		/* EOF received */
+		 
 		if (!priv->escaped && byte == SPS30_SERIAL_SOF_EOF) {
 			if (priv->num < SPS30_SERIAL_FRAME_MIN_SIZE)
 				continue;
@@ -274,7 +270,7 @@ static const struct serdev_device_ops sps30_serial_device_ops = {
 
 static int sps30_serial_start_meas(struct sps30_state *state)
 {
-	/* request BE IEEE754 formatted data */
+	 
 	unsigned char buf[] = { 0x01, 0x03 };
 
 	return sps30_serial_command(state, SPS30_SERIAL_START_MEAS, buf, sizeof(buf), NULL, 0);
@@ -299,14 +295,14 @@ static int sps30_serial_read_meas(struct sps30_state *state, __be32 *meas, size_
 {
 	int ret;
 
-	/* measurements are ready within a second */
+	 
 	if (msleep_interruptible(1000))
 		return -EINTR;
 
 	ret = sps30_serial_command(state, SPS30_SERIAL_READ_MEAS, NULL, 0, meas, num * sizeof(num));
 	if (ret < 0)
 		return ret;
-	/* if measurements aren't ready sensor returns empty frame */
+	 
 	if (ret == SPS30_SERIAL_FRAME_MIN_SIZE)
 		return -ETIMEDOUT;
 	if (ret != num * sizeof(*meas))
@@ -346,10 +342,7 @@ static int sps30_serial_write_cleaning_period(struct sps30_state *state, __be32 
 
 static int sps30_serial_show_info(struct sps30_state *state)
 {
-	/*
-	 * tell device do return serial number and add extra nul byte just in case
-	 * serial number isn't a valid string
-	 */
+	 
 	unsigned char buf[32 + 1] = { 0x03 };
 	struct device *dev = state->dev;
 	int ret;

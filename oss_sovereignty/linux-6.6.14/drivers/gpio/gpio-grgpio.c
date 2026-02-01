@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Aeroflex Gaisler GRGPIO General Purpose I/O cores.
- *
- * 2013 (c) Aeroflex Gaisler AB
- *
- * This driver supports the GRGPIO GPIO core available in the GRLIB VHDL
- * IP core library.
- *
- * Full documentation of the GRGPIO core can be found here:
- * http://www.gaisler.com/products/grlib/grip.pdf
- *
- * See "Documentation/devicetree/bindings/gpio/gpio-grgpio.txt" for
- * information on open firmware properties.
- *
- * Contributors: Andreas Larsson <andreas@gaisler.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -42,19 +27,16 @@
 #define GRGPIO_BYPASS		0x18
 #define GRGPIO_IMAP_BASE	0x20
 
-/* Structure for an irq of the core - called an underlying irq */
+ 
 struct grgpio_uirq {
-	u8 refcnt; /* Reference counter to manage requesting/freeing of uirq */
-	u8 uirq; /* Underlying irq of the gpio driver */
+	u8 refcnt;  
+	u8 uirq;  
 };
 
-/*
- * Structure for an irq of a gpio line handed out by this driver. The index is
- * used to map to the corresponding underlying irq.
- */
+ 
 struct grgpio_lirq {
-	s8 index; /* Index into struct grgpio_priv's uirqs, or -1 */
-	u8 irq; /* irq for the gpio line */
+	s8 index;  
+	u8 irq;  
 };
 
 struct grgpio_priv {
@@ -62,28 +44,15 @@ struct grgpio_priv {
 	void __iomem *regs;
 	struct device *dev;
 
-	u32 imask; /* irq mask shadow register */
+	u32 imask;  
 
-	/*
-	 * The grgpio core can have multiple "underlying" irqs. The gpio lines
-	 * can be mapped to any one or none of these underlying irqs
-	 * independently of each other. This driver sets up an irq domain and
-	 * hands out separate irqs to each gpio line
-	 */
+	 
 	struct irq_domain *domain;
 
-	/*
-	 * This array contains information on each underlying irq, each
-	 * irq of the grgpio core itself.
-	 */
+	 
 	struct grgpio_uirq uirqs[GRGPIO_MAX_NGPIO];
 
-	/*
-	 * This array contains information for each gpio line on the irqs
-	 * obtains from this driver. An index value of -1 for a certain gpio
-	 * line indicates that the line has no irq. Otherwise the index connects
-	 * the irq to the underlying irq by pointing into the uirqs array.
-	 */
+	 
 	struct grgpio_lirq lirqs[GRGPIO_MAX_NGPIO];
 };
 
@@ -112,7 +81,7 @@ static int grgpio_to_irq(struct gpio_chip *gc, unsigned offset)
 	return irq_create_mapping(priv->domain, offset);
 }
 
-/* -------------------- IRQ chip functions -------------------- */
+ 
 
 static int grgpio_irq_set_type(struct irq_data *d, unsigned int type)
 {
@@ -201,10 +170,7 @@ static irqreturn_t grgpio_irq_handler(int irq, void *dev)
 
 	raw_spin_lock_irqsave(&priv->gc.bgpio_lock, flags);
 
-	/*
-	 * For each gpio line, call its interrupt handler if it its underlying
-	 * irq matches the current irq that is handled.
-	 */
+	 
 	for (i = 0; i < ngpio; i++) {
 		struct grgpio_lirq *lirq = &priv->lirqs[i];
 
@@ -223,10 +189,7 @@ static irqreturn_t grgpio_irq_handler(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * This function will be called as a consequence of the call to
- * irq_create_mapping in grgpio_to_irq
- */
+ 
 static int grgpio_irq_map(struct irq_domain *d, unsigned int irq,
 			  irq_hw_number_t hwirq)
 {
@@ -249,7 +212,7 @@ static int grgpio_irq_map(struct irq_domain *d, unsigned int irq,
 
 	raw_spin_lock_irqsave(&priv->gc.bgpio_lock, flags);
 
-	/* Request underlying irq if not already requested */
+	 
 	lirq->irq = irq;
 	uirq = &priv->uirqs[lirq->index];
 	if (uirq->refcnt == 0) {
@@ -268,7 +231,7 @@ static int grgpio_irq_map(struct irq_domain *d, unsigned int irq,
 
 	raw_spin_unlock_irqrestore(&priv->gc.bgpio_lock, flags);
 
-	/* Setup irq  */
+	 
 	irq_set_chip_data(irq, priv);
 	irq_set_chip_and_handler(irq, &grgpio_irq_chip,
 				 handle_simple_irq);
@@ -292,7 +255,7 @@ static void grgpio_irq_unmap(struct irq_domain *d, unsigned int irq)
 
 	raw_spin_lock_irqsave(&priv->gc.bgpio_lock, flags);
 
-	/* Free underlying irq if last user unmapped */
+	 
 	index = -1;
 	for (i = 0; i < ngpio; i++) {
 		lirq = &priv->lirqs[i];
@@ -323,7 +286,7 @@ static const struct irq_domain_ops grgpio_irq_domain_ops = {
 	.unmap	= grgpio_irq_unmap,
 };
 
-/* ------------------------------------------------------------ */
+ 
 
 static int grgpio_probe(struct platform_device *ofdev)
 {
@@ -372,10 +335,7 @@ static int grgpio_probe(struct platform_device *ofdev)
 		gc->ngpio = prop;
 	}
 
-	/*
-	 * The irqmap contains the index values indicating which underlying irq,
-	 * if anyone, is connected to that line
-	 */
+	 
 	irqmap = (s32 *)of_get_property(np, "irqmap", &size);
 	if (irqmap) {
 		if (size < gc->ngpio) {
@@ -405,10 +365,7 @@ static int grgpio_probe(struct platform_device *ofdev)
 
 			ret = platform_get_irq(ofdev, lirq->index);
 			if (ret <= 0) {
-				/*
-				 * Continue without irq functionality for that
-				 * gpio line
-				 */
+				 
 				continue;
 			}
 			priv->uirqs[lirq->index].uirq = ret;

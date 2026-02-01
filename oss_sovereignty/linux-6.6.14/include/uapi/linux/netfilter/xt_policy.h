@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_POLICY_H
 #define _XT_POLICY_H
 
@@ -70,4 +70,4 @@ struct xt_policy_info {
 	__u16 len;
 };
 
-#endif /* _XT_POLICY_H */
+#endif  

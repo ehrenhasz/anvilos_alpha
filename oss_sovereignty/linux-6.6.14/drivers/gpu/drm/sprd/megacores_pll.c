@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+
+ 
 
 #include <asm/div64.h>
 #include <linux/delay.h>
@@ -21,7 +19,7 @@
 
 #define AVERAGE(a, b) (min(a, b) + abs((b) - (a)) / 2)
 
-/* sharkle */
+ 
 #define VCO_BAND_LOW	750
 #define VCO_BAND_MID	1100
 #define VCO_BAND_HIGH	1500
@@ -51,9 +49,9 @@ static int dphy_calc_pll_param(struct dphy_pll *pll)
 		return -EINVAL;
 
 	if (pll->fvco >= VCO_BAND_LOW && pll->fvco <= VCO_BAND_MID) {
-		/* vco band control */
+		 
 		pll->vco_band = 0x0;
-		/* low pass filter control */
+		 
 		pll->lpf_sel = 1;
 	} else if (pll->fvco > VCO_BAND_MID && pll->fvco <= VCO_BAND_HIGH) {
 		pll->vco_band = 0x1;
@@ -69,9 +67,9 @@ static int dphy_calc_pll_param(struct dphy_pll *pll)
 	tmp *= BIT(20);
 	do_div(tmp, 100000000);
 	pll->kint = (u32)tmp;
-	pll->refin = 3; /* pre-divider bypass */
-	pll->sdm_en = true; /* use fraction N PLL */
-	pll->fdk_s = 0x1; /* fraction */
+	pll->refin = 3;  
+	pll->sdm_en = true;  
+	pll->fdk_s = 0x1;  
 	pll->cp_s = 0x0;
 	pll->det_delay = 0x1;
 
@@ -113,7 +111,7 @@ int dphy_pll_config(struct dsi_context *ctx)
 
 	pll->freq = dsi->slave->hs_rate;
 
-	/* FREQ = 26M * (NINT + KINT / 2^20) / out_sel */
+	 
 	ret = dphy_calc_pll_param(pll);
 	if (ret) {
 		drm_err(dsi->drm, "failed to calculate dphy pll parameters\n");
@@ -197,7 +195,7 @@ static void dphy_set_timing_reg(struct regmap *regmap, int type, u8 val[])
 		regmap_write(regmap, 0x94, val[CLK]);
 		break;
 
-	/* the following just use default value */
+	 
 	case SETTLE_TIME:
 		fallthrough;
 	case TA_GET:
@@ -222,24 +220,20 @@ void dphy_timing_config(struct dsi_context *ctx)
 	u8 val[2];
 	u32 tmp = 0;
 
-	/* t_ui: 1 ui, byteck: 8 ui, half byteck: 4 ui */
+	 
 	t_ui = 1000 * scale / (pll->freq / 1000);
 	t_byteck = t_ui << 3;
 	t_half_byteck = t_ui << 2;
 	constant = t_ui << 1;
 
-	/* REQUEST_TIME: HS T-LPX: LP-01
-	 * For T-LPX, mipi spec defined min value is 50ns,
-	 * but maybe it shouldn't be too small, because BTA,
-	 * LP-10, LP-00, LP-01, all of this is related to T-LPX.
-	 */
+	 
 	range[L] = 50 * scale;
 	range[H] = INFINITY;
 	val[CLK] = DIV_ROUND_UP(range[L] * (factor << 1), t_byteck) - 2;
 	val[DATA] = val[CLK];
 	dphy_set_timing_reg(regmap, REQUEST_TIME, val);
 
-	/* PREPARE_TIME: HS sequence: LP-00 */
+	 
 	range[L] = 38 * scale;
 	range[H] = 95 * scale;
 	tmp = AVERAGE(range[L], range[H]);
@@ -250,7 +244,7 @@ void dphy_timing_config(struct dsi_context *ctx)
 	val[DATA] = DIV_ROUND_UP(AVERAGE(range[L], range[H]), t_half_byteck) - 1;
 	dphy_set_timing_reg(regmap, PREPARE_TIME, val);
 
-	/* ZERO_TIME: HS-ZERO */
+	 
 	range[L] = 300 * scale;
 	range[H] = INFINITY;
 	val[CLK] = DIV_ROUND_UP(range[L] * factor + (tmp & 0xffff)
@@ -261,7 +255,7 @@ void dphy_timing_config(struct dsi_context *ctx)
 			t_byteck) - 2;
 	dphy_set_timing_reg(regmap, ZERO_TIME, val);
 
-	/* TRAIL_TIME: HS-TRAIL */
+	 
 	range[L] = 60 * scale;
 	range[H] = INFINITY;
 	val[CLK] = DIV_ROUND_UP(range[L] * factor - constant, t_half_byteck);
@@ -269,37 +263,25 @@ void dphy_timing_config(struct dsi_context *ctx)
 	val[DATA] = DIV_ROUND_UP(range[L] * 3 / 2 - constant, t_half_byteck) - 2;
 	dphy_set_timing_reg(regmap, TRAIL_TIME, val);
 
-	/* EXIT_TIME: */
+	 
 	range[L] = 100 * scale;
 	range[H] = INFINITY;
 	val[CLK] = DIV_ROUND_UP(range[L] * factor, t_byteck) - 2;
 	val[DATA] = val[CLK];
 	dphy_set_timing_reg(regmap, EXIT_TIME, val);
 
-	/* CLKPOST_TIME: */
+	 
 	range[L] = 60 * scale + 52 * t_ui;
 	range[H] = INFINITY;
 	val[CLK] = DIV_ROUND_UP(range[L] * factor, t_byteck) - 2;
 	val[DATA] = val[CLK];
 	dphy_set_timing_reg(regmap, CLKPOST_TIME, val);
 
-	/* SETTLE_TIME:
-	 * This time is used for receiver. So for transmitter,
-	 * it can be ignored.
-	 */
+	 
 
-	/* TA_GO:
-	 * transmitter drives bridge state(LP-00) before releasing control,
-	 * reg 0x1f default value: 0x04, which is good.
-	 */
+	 
 
-	/* TA_SURE:
-	 * After LP-10 state and before bridge state(LP-00),
-	 * reg 0x20 default value: 0x01, which is good.
-	 */
+	 
 
-	/* TA_GET:
-	 * receiver drives Bridge state(LP-00) before releasing control
-	 * reg 0x21 default value: 0x03, which is good.
-	 */
+	 
 }

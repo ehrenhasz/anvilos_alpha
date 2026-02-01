@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMFS (as used by RIO Karma) directory operations.
- * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/ctype.h>
@@ -17,10 +14,7 @@ static int omfs_hash(const char *name, int namelen, int mod)
 	return hash % mod;
 }
 
-/*
- * Finds the bucket for a given name and reads the containing block;
- * *ofs is set to the offset of the first list entry.
- */
+ 
 static struct buffer_head *omfs_get_bucket(struct inode *dir,
 		const char *name, int namelen, int *ofs)
 {
@@ -119,7 +113,7 @@ static int omfs_add_link(struct dentry *dentry, struct inode *inode)
 	__be64 *entry;
 	int ofs;
 
-	/* just prepend to head of queue in proper bucket */
+	 
 	bh = omfs_get_bucket(dir, name, namelen, &ofs);
 	if (!bh)
 		goto out;
@@ -130,7 +124,7 @@ static int omfs_add_link(struct dentry *dentry, struct inode *inode)
 	mark_buffer_dirty(bh);
 	brelse(bh);
 
-	/* now set the sibling and parent pointers on the new inode */
+	 
 	bh = omfs_bread(dir->i_sb, inode->i_ino);
 	if (!bh)
 		goto out;
@@ -145,7 +139,7 @@ static int omfs_add_link(struct dentry *dentry, struct inode *inode)
 
 	inode_set_ctime_current(dir);
 
-	/* mark affected inodes dirty to rebuild checksums */
+	 
 	mark_inode_dirty(dir);
 	mark_inode_dirty(inode);
 	return 0;
@@ -166,7 +160,7 @@ static int omfs_delete_entry(struct dentry *dentry)
 	int ofs;
 	int err = -ENOMEM;
 
-	/* delete the proper node in the bucket's linked list */
+	 
 	bh = omfs_get_bucket(dir, name, namelen, &ofs);
 	if (!bh)
 		goto out;
@@ -185,7 +179,7 @@ static int omfs_delete_entry(struct dentry *dentry)
 	brelse(bh2);
 
 	if (prev != ~0) {
-		/* found in middle of list, get list ptr */
+		 
 		brelse(bh);
 		bh = omfs_bread(dir->i_sb, prev);
 		if (!bh)
@@ -312,7 +306,7 @@ static struct dentry *omfs_lookup(struct inode *dir, struct dentry *dentry,
 	return d_splice_alias(inode, dentry);
 }
 
-/* sanity check block's self pointer */
+ 
 int omfs_is_bad(struct omfs_sb_info *sbi, struct omfs_header *header,
 	u64 fsblock)
 {
@@ -330,7 +324,7 @@ int omfs_is_bad(struct omfs_sb_info *sbi, struct omfs_header *header,
 static bool omfs_fill_chain(struct inode *dir, struct dir_context *ctx,
 		u64 fsblock, int hindex)
 {
-	/* follow chain in this bucket */
+	 
 	while (fsblock != ~0) {
 		struct buffer_head *bh = omfs_bread(dir->i_sb, fsblock);
 		struct omfs_inode *oi;
@@ -349,7 +343,7 @@ static bool omfs_fill_chain(struct inode *dir, struct dir_context *ctx,
 		self = fsblock;
 		fsblock = be64_to_cpu(oi->i_sibling);
 
-		/* skip visited nodes */
+		 
 		if (hindex) {
 			hindex--;
 			brelse(bh);
@@ -382,14 +376,13 @@ static int omfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		return -EINVAL;
 
 	if (new_inode) {
-		/* overwriting existing file/dir */
+		 
 		err = omfs_remove(new_dir, new_dentry);
 		if (err)
 			goto out;
 	}
 
-	/* since omfs locates files by name, we need to unlink _before_
-	 * adding the new link or we won't find the old one */
+	 
 	err = omfs_delete_entry(old_dentry);
 	if (err)
 		goto out;
@@ -424,7 +417,7 @@ static int omfs_readdir(struct file *file, struct dir_context *ctx)
 
 	nbuckets = (dir->i_size - OMFS_DIR_START) / 8;
 
-	/* high 12 bits store bucket + 1 and low 20 bits store hash index */
+	 
 	hchain = (ctx->pos >> 20) - 1;
 	hindex = ctx->pos & 0xfffff;
 

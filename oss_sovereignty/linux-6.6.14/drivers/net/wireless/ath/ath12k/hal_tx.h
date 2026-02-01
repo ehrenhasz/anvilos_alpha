@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_HAL_TX_H
 #define ATH12K_HAL_TX_H
@@ -16,9 +13,9 @@
 #define HAL_TX_ADDR_SEARCH_DEFAULT	0
 #define HAL_TX_ADDR_SEARCH_INDEX	1
 
-/* TODO: check all these data can be managed with struct ath12k_tx_desc_info for perf */
+ 
 struct hal_tx_info {
-	u16 meta_data_flags; /* %HAL_TCL_DATA_CMD_INFO0_META_ */
+	u16 meta_data_flags;  
 	u8 ring_id;
 	u8 rbm_id;
 	u32 desc_id;
@@ -28,13 +25,13 @@ struct hal_tx_info {
 	u32 data_len;
 	u32 pkt_offset;
 	enum hal_encrypt_type encrypt_type;
-	u32 flags0; /* %HAL_TCL_DATA_CMD_INFO1_ */
-	u32 flags1; /* %HAL_TCL_DATA_CMD_INFO2_ */
-	u16 addr_search_flags; /* %HAL_TCL_DATA_CMD_INFO0_ADDR(X/Y)_ */
+	u32 flags0;  
+	u32 flags1;  
+	u16 addr_search_flags;  
 	u16 bss_ast_hash;
 	u16 bss_ast_idx;
 	u8 tid;
-	u8 search_type; /* %HAL_TX_ADDR_SEARCH_ */
+	u8 search_type;  
 	u8 lmac_id;
 	u8 vdev_id;
 	u8 dscp_tid_tbl_idx;
@@ -42,7 +39,7 @@ struct hal_tx_info {
 	int bank_id;
 };
 
-/* TODO: Check if the actual desc macros can be used instead */
+ 
 #define HAL_TX_STATUS_FLAGS_FIRST_MSDU		BIT(0)
 #define HAL_TX_STATUS_FLAGS_LAST_MSDU		BIT(1)
 #define HAL_TX_STATUS_FLAGS_MSDU_IN_AMSDU	BIT(2)
@@ -53,12 +50,12 @@ struct hal_tx_info {
 
 #define HAL_TX_STATUS_DESC_LEN		sizeof(struct hal_wbm_release_ring)
 
-/* Tx status parsed from srng desc */
+ 
 struct hal_tx_status {
 	enum hal_wbm_rel_src_module buf_rel_source;
 	enum hal_wbm_tqm_rel_reason status;
 	u8 ack_rssi;
-	u32 flags; /* %HAL_TX_STATUS_FLAGS_ */
+	u32 flags;  
 	u32 ppdu_id;
 	u8 try_cnt;
 	u8 tid;
@@ -179,7 +176,7 @@ struct hal_tx_fes_status_end {
 #define HAL_TX_BANK_CONFIG_MESH_EN		GENMASK(13, 12)
 #define HAL_TX_BANK_CONFIG_VDEV_ID_CHECK_EN	BIT(14)
 #define HAL_TX_BANK_CONFIG_PMAC_ID		GENMASK(16, 15)
-/* STA mode will have MCAST_PKT_CTRL instead of DSCP_TID_MAP bitfield */
+ 
 #define HAL_TX_BANK_CONFIG_DSCP_TIP_MAP_ID	GENMASK(22, 17)
 
 void ath12k_hal_tx_cmd_desc_setup(struct ath12k_base *ab,

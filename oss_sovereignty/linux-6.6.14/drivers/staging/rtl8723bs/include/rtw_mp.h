@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef _RTW_MP_H_
 #define _RTW_MP_H_
 
@@ -36,8 +32,8 @@ struct mp_tx {
 	u32 count, sended;
 	u8 payload;
 	struct pkt_attrib attrib;
-	/* struct tx_desc desc; */
-	/* u8 resvdtx[7]; */
+	 
+	 
 	u8 desc[TXDESC_SIZE];
 	u8 *pallocated_buf;
 	u8 *buf;
@@ -50,86 +46,86 @@ struct mp_tx {
 
 typedef void (*MPT_WORK_ITEM_HANDLER)(void *Adapter);
 struct mpt_context {
-	/*  Indicate if we have started Mass Production Test. */
+	 
 	bool			bMassProdTest;
 
-	/*  Indicate if the driver is unloading or unloaded. */
+	 
 	bool			bMptDrvUnload;
 
 	struct timer_list			MPh2c_timeout_timer;
-/*  Event used to sync H2c for BT control */
+ 
 
 	bool		MptH2cRspEvent;
 	bool		MptBtC2hEvent;
 	bool		bMPh2c_timeout;
 
-	/* 8190 PCI does not support NDIS_WORK_ITEM. */
-	/*  Work Item for Mass Production Test. */
-	/* NDIS_WORK_ITEM	MptWorkItem; */
-/* 	RT_WORK_ITEM		MptWorkItem; */
-	/*  Event used to sync the case unloading driver and MptWorkItem is still in progress. */
-/* 	NDIS_EVENT		MptWorkItemEvent; */
-	/*  To protect the following variables. */
-/* 	NDIS_SPIN_LOCK		MptWorkItemSpinLock; */
-	/*  Indicate a MptWorkItem is scheduled and not yet finished. */
+	 
+	 
+	 
+ 
+	 
+ 
+	 
+ 
+	 
 	bool			bMptWorkItemInProgress;
-	/*  An instance which implements function and context of MptWorkItem. */
+	 
 	MPT_WORK_ITEM_HANDLER	CurrMptAct;
 
-	/*  1 =Start, 0 =Stop from UI. */
+	 
 	u32 		MptTestStart;
-	/*  _TEST_MODE, defined in MPT_Req2.h */
+	 
 	u32 		MptTestItem;
-	/*  Variable needed in each implementation of CurrMptAct. */
-	u32 		MptActType;	/*  Type of action performed in CurrMptAct. */
-	/*  The Offset of IO operation is depend of MptActType. */
+	 
+	u32 		MptActType;	 
+	 
 	u32 		MptIoOffset;
-	/*  The Value of IO operation is depend of MptActType. */
+	 
 	u32 		MptIoValue;
-	/*  The RfPath of IO operation is depend of MptActType. */
+	 
 	u32 		MptRfPath;
 
-	enum wireless_mode		MptWirelessModeToSw;	/*  Wireless mode to switch. */
-	u8 	MptChannelToSw;		/*  Channel to switch. */
-	u8 	MptInitGainToSet;	/*  Initial gain to set. */
-	u32 		MptBandWidth;		/*  bandwidth to switch. */
-	u32 		MptRateIndex;		/*  rate index. */
-	/*  Register value kept for Single Carrier Tx test. */
+	enum wireless_mode		MptWirelessModeToSw;	 
+	u8 	MptChannelToSw;		 
+	u8 	MptInitGainToSet;	 
+	u32 		MptBandWidth;		 
+	u32 		MptRateIndex;		 
+	 
 	u8 	btMpCckTxPower;
-	/*  Register value kept for Single Carrier Tx test. */
+	 
 	u8 	btMpOfdmTxPower;
-	/*  For MP Tx Power index */
-	u8 	TxPwrLevel[2];	/*  rf-A, rf-B */
+	 
+	u8 	TxPwrLevel[2];	 
 	u32 		RegTxPwrLimit;
-	/*  Content of RCR Register for Mass Production Test. */
+	 
 	u32 		MptRCR;
-	/*  true if we only receive packets with specific pattern. */
+	 
 	bool			bMptFilterPattern;
-	/*  Rx OK count, statistics used in Mass Production Test. */
+	 
 	u32 		MptRxOkCnt;
-	/*  Rx CRC32 error count, statistics used in Mass Production Test. */
+	 
 	u32 		MptRxCrcErrCnt;
 
-	bool			bCckContTx;	/*  true if we are in CCK Continuous Tx test. */
-	bool			bOfdmContTx;	/*  true if we are in OFDM Continuous Tx test. */
-	bool			bStartContTx;	/*  true if we have start Continuous Tx test. */
-	/*  true if we are in Single Carrier Tx test. */
+	bool			bCckContTx;	 
+	bool			bOfdmContTx;	 
+	bool			bStartContTx;	 
+	 
 	bool			bSingleCarrier;
-	/*  true if we are in Carrier Suppression Tx Test. */
+	 
 	bool			bCarrierSuppression;
-	/* true if we are in Single Tone Tx test. */
+	 
 	bool			bSingleTone;
 
-	/*  ACK counter asked by K.Y.. */
+	 
 	bool			bMptEnableAckCounter;
 	u32 		MptAckCounter;
 
-	/*  SD3 Willis For 8192S to save 1T/2T RF table for ACUT	Only fro ACUT delete later ~~~! */
-	/* s8		BufOfLines[2][MAX_LINES_HWCONFIG_TXT][MAX_BYTES_LINE_HWCONFIG_TXT]; */
-	/* s8			BufOfLines[2][MP_MAX_LINES][MP_MAX_LINES_BYTES]; */
-	/* s32			RfReadLine[2]; */
+	 
+	 
+	 
+	 
 
-	u8 APK_bound[2];	/* for APK	path A/path B */
+	u8 APK_bound[2];	 
 	bool		bMptIndexEven;
 
 	u8 backup0xc50;
@@ -149,15 +145,15 @@ struct mpt_context {
     u8          mptOutBuf[100];
 
 };
-/* endif */
+ 
 
-/* E-Fuse */
+ 
 #define EFUSE_MAP_SIZE		512
 
 #define EFUSE_MAX_SIZE		512
-/* end of E-Fuse */
+ 
 
-/* define RTPRIV_IOCTL_MP					(SIOCIWFIRSTPRIV + 0x17) */
+ 
 enum {
 	WRITE_REG = 1,
 	READ_REG,
@@ -196,22 +192,22 @@ enum {
 struct mp_priv {
 	struct adapter *papdater;
 
-	/* Testing Flag */
-	u32 mode;/* 0 for normal type packet, 1 for loopback packet (16bytes TXCMD) */
+	 
+	u32 mode; 
 
 	u32 prev_fw_state;
 
-	/* OID cmd handler */
+	 
 	struct mp_wiparam workparam;
-/* 	u8 act_in_progress; */
+ 
 
-	/* Tx Section */
+	 
 	u8 TID;
 	u32 tx_pktcount;
 	u32 pktInterval;
 	struct mp_tx tx;
 
-	/* Rx Section */
+	 
 	u32 rx_bssidpktcount;
 	u32 rx_pktcount;
 	u32 rx_pktcount_filter_out;
@@ -220,7 +216,7 @@ struct mp_priv {
 	bool  rx_bindicatePkt;
 	struct recv_stat rxstat;
 
-	/* RF/BB relative */
+	 
 	u8 channel;
 	u8 bandwidth;
 	u8 prime_channel_offset;
@@ -228,18 +224,18 @@ struct mp_priv {
 	u8 txpoweridx_b;
 	u8 rateidx;
 	u32 preamble;
-/* 	u8 modem; */
+ 
 	u32 CrystalCap;
-/* 	u32 curr_crystalcap; */
+ 
 
 	u16 antenna_tx;
 	u16 antenna_rx;
-/* 	u8 curr_rfpath; */
+ 
 
 	u8 check_mp_pkt;
 
 	u8 bSetTxPower;
-/* 	uint ForcedDataRate; */
+ 
 	u8 mp_dm;
 	u8 mac_filter[ETH_ALEN];
 	u8 bmac_filter;
@@ -262,14 +258,14 @@ struct mp_priv {
 #define LOWER	true
 #define RAISE	false
 
-/* Hardware Registers */
+ 
 #define BB_REG_BASE_ADDR		0x800
 
 #define MAX_RF_PATH_NUMS	RF_PATH_MAX
 
 extern u8 mpdatarate[NumRates];
 
-#define MAX_TX_PWR_INDEX_N_MODE 64	/*  0x3F */
+#define MAX_TX_PWR_INDEX_N_MODE 64	 
 
 #define RX_PKT_BROADCAST	1
 #define RX_PKT_DEST_ADDR	2
@@ -289,9 +285,9 @@ extern u8 mpdatarate[NumRates];
 #define		REG_RF_BB_GAIN_OFFSET	0x7f
 #define		RF_GAIN_OFFSET_MASK	0xfffff
 
-/*  */
-/* struct mp_xmit_frame *alloc_mp_xmitframe(struct mp_priv *pmp_priv); */
-/* int free_mp_xmitframe(struct xmit_priv *pxmitpriv, struct mp_xmit_frame *pmp_xmitframe); */
+ 
+ 
+ 
 
 s32 init_mp_priv(struct adapter *padapter);
 void free_mp_priv(struct mp_priv *pmp_priv);
@@ -371,4 +367,4 @@ u32 mpt_ProQueryCalTxPower(struct adapter *padapter, u8 RfPath);
 void MPT_PwrCtlDM(struct adapter *padapter, u32 bstart);
 u8 MptToMgntRate(u32 MptRateIdx);
 
-#endif /* _RTW_MP_H_ */
+#endif  

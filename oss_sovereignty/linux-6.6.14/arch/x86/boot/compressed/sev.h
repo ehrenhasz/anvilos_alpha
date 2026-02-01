@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * AMD SEV header for early boot related functions.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+ 
+ 
 
 #ifndef BOOT_COMPRESSED_SEV_H
 #define BOOT_COMPRESSED_SEV_H

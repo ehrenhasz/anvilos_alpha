@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
- * Author: Chao Xie <chao.xie@marvell.com>
- *        Neil Zhang <zhangwm@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,7 +15,7 @@
 
 #include "ehci.h"
 
-/* registers */
+ 
 #define U2x_CAPREGS_OFFSET       0x100
 
 #define CAPLENGTH_MASK         (0xff)
@@ -27,7 +23,7 @@
 #define hcd_to_ehci_hcd_mv(h) ((struct ehci_hcd_mv *)hcd_to_ehci(h)->priv)
 
 struct ehci_hcd_mv {
-	/* Which mode does this ehci running OTG/Host ? */
+	 
 	int mode;
 
 	void __iomem *base;
@@ -193,7 +189,7 @@ static int mv_ehci_probe(struct platform_device *pdev)
 			retval = -ENODEV;
 			goto err_disable_clk;
 		}
-		/* otg will enable clock before use as host */
+		 
 		mv_ehci_disable(ehci_mv);
 	} else {
 		if (ehci_mv->set_vbus)
@@ -210,7 +206,7 @@ static int mv_ehci_probe(struct platform_device *pdev)
 
 	if (of_usb_get_phy_mode(pdev->dev.of_node) == USBPHY_INTERFACE_MODE_HSIC) {
 		status = ehci_readl(ehci, &ehci->regs->port_status[0]);
-		/* These "reserved" bits actually enable HSIC mode. */
+		 
 		status |= BIT(25);
 		status &= ~GENMASK(31, 30);
 		ehci_writel(ehci, status, &ehci->regs->port_status[0]);

@@ -1,29 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- */
+ 
+ 
 
 #ifndef __MTD_NFTL_USER_H__
 #define __MTD_NFTL_USER_H__
 
 #include <linux/types.h>
 
-/* Block Control Information */
+ 
 
 struct nftl_bci {
 	unsigned char ECCSig[6];
@@ -31,7 +14,7 @@ struct nftl_bci {
 	__u8 Status1;
 }__attribute__((packed));
 
-/* Unit Control Information */
+ 
 
 struct nftl_uci0 {
 	__u16 VirtUnitNum;
@@ -63,7 +46,7 @@ struct nftl_oob {
 	union nftl_uci u;
 };
 
-/* NFTL Media Header */
+ 
 
 struct NFTLMediaHeader {
 	char DataOrgID[6];
@@ -88,4 +71,4 @@ struct NFTLMediaHeader {
 #define ZONE_BAD_MARKED 7
 
 
-#endif /* __MTD_NFTL_USER_H__ */
+#endif  

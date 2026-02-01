@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -66,7 +63,7 @@ struct pmic_glink_ucsi {
 	struct completion write_ack;
 	struct completion sync_ack;
 	bool sync_pending;
-	struct mutex lock;	/* protects concurrent access to PMIC Glink interface */
+	struct mutex lock;	 
 
 	int sync_val;
 
@@ -163,7 +160,7 @@ static int pmic_glink_ucsi_sync_write(struct ucsi *__ucsi, unsigned int offset,
 	unsigned long left;
 	int ret;
 
-	/* TOFIX: Downstream forces recipient to CON when UCSI_GET_ALTERNATE_MODES command */
+	 
 
 	mutex_lock(&ucsi->lock);
 	ucsi->sync_val = 0;
@@ -290,7 +287,7 @@ static void pmic_glink_ucsi_destroy(void *data)
 {
 	struct pmic_glink_ucsi *ucsi = data;
 
-	/* Protect to make sure we're not in a middle of a transaction from a glink callback */
+	 
 	mutex_lock(&ucsi->lock);
 	ucsi_destroy(ucsi->ucsi);
 	mutex_unlock(&ucsi->lock);
@@ -322,7 +319,7 @@ static int pmic_glink_ucsi_probe(struct auxiliary_device *adev,
 	if (IS_ERR(ucsi->ucsi))
 		return PTR_ERR(ucsi->ucsi);
 
-	/* Make sure we destroy *after* pmic_glink unregister */
+	 
 	ret = devm_add_action_or_reset(dev, pmic_glink_ucsi_destroy, ucsi);
 	if (ret)
 		return ret;
@@ -346,7 +343,7 @@ static int pmic_glink_ucsi_probe(struct auxiliary_device *adev,
 
 		desc = devm_gpiod_get_index_optional(&adev->dev, "orientation", port, GPIOD_IN);
 
-		/* If GPIO isn't found, continue */
+		 
 		if (!desc)
 			continue;
 
@@ -373,7 +370,7 @@ static void pmic_glink_ucsi_remove(struct auxiliary_device *adev)
 {
 	struct pmic_glink_ucsi *ucsi = dev_get_drvdata(&adev->dev);
 
-	/* Unregister first to stop having read & writes */
+	 
 	ucsi_unregister(ucsi->ucsi);
 }
 

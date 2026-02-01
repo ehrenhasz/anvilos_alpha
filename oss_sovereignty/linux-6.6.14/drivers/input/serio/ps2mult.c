@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TQC PS/2 Multiplexer driver
- *
- * Copyright (C) 2010 Dmitry Eremin-Solenikov
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -42,7 +38,7 @@ struct ps2mult {
 	bool escape;
 };
 
-/* First MUST come PS2MULT_NUM_PORTS selectors */
+ 
 static const unsigned char ps2mult_controls[] = {
 	PS2MULT_KB_SELECTOR, PS2MULT_MS_SELECTOR,
 	PS2MULT_ESCAPE, PS2MULT_BSYNC,
@@ -212,7 +208,7 @@ static void ps2mult_disconnect(struct serio *serio)
 {
 	struct ps2mult *psm = serio_get_drvdata(serio);
 
-	/* Note that serio core already take care of children ports */
+	 
 	serio_write(serio, PS2MULT_SESSION_END);
 	serio_close(serio);
 	kfree(psm);

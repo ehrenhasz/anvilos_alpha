@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic Syscon LEDs Driver
- *
- * Copyright (c) 2014, Linaro Limited
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/init.h>
 #include <linux/of.h>
@@ -15,14 +10,7 @@
 #include <linux/regmap.h>
 #include <linux/leds.h>
 
-/**
- * struct syscon_led - state container for syscon based LEDs
- * @cdev: LED class device for this LED
- * @map: regmap to access the syscon device backing this LED
- * @offset: the offset into the syscon regmap for the LED register
- * @mask: the bit in the register corresponding to the LED
- * @state: current state of the LED
- */
+ 
 struct syscon_led {
 	struct led_classdev cdev;
 	struct regmap *map;

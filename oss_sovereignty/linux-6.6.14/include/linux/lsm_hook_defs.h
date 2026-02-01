@@ -1,31 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/*
- * Linux Security Module Hook declarations.
- *
- * Copyright (C) 2001 WireX Communications, Inc <chris@wirex.com>
- * Copyright (C) 2001 Greg Kroah-Hartman <greg@kroah.com>
- * Copyright (C) 2001 Networks Associates Technology, Inc <ssmalley@nai.com>
- * Copyright (C) 2001 James Morris <jmorris@intercode.com.au>
- * Copyright (C) 2001 Silicon Graphics, Inc. (Trust Technology Group)
- * Copyright (C) 2015 Intel Corporation.
- * Copyright (C) 2015 Casey Schaufler <casey@schaufler-ca.com>
- * Copyright (C) 2016 Mellanox Techonologies
- * Copyright (C) 2020 Google LLC.
- */
+ 
 
-/*
- * The macro LSM_HOOK is used to define the data structures required by
- * the LSM framework using the pattern:
- *
- *	LSM_HOOK(<return_type>, <default_value>, <hook_name>, args...)
- *
- * struct security_hook_heads {
- *   #define LSM_HOOK(RET, DEFAULT, NAME, ...) struct hlist_head NAME;
- *   #include <linux/lsm_hook_defs.h>
- *   #undef LSM_HOOK
- * };
- */
+ 
 LSM_HOOK(int, 0, binder_set_context_mgr, const struct cred *mgr)
 LSM_HOOK(int, 0, binder_transaction, const struct cred *from,
 	 const struct cred *to)
@@ -105,9 +82,9 @@ LSM_HOOK(int, 0, path_rename, const struct path *old_dir,
 LSM_HOOK(int, 0, path_chmod, const struct path *path, umode_t mode)
 LSM_HOOK(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid)
 LSM_HOOK(int, 0, path_chroot, const struct path *path)
-#endif /* CONFIG_SECURITY_PATH */
+#endif  
 
-/* Needed for inode based security check */
+ 
 LSM_HOOK(int, 0, path_notify, const struct path *path, u64 mask,
 	 unsigned int obj_type)
 LSM_HOOK(int, 0, inode_alloc_security, struct inode *inode)
@@ -279,11 +256,11 @@ LSM_HOOK(int, -EOPNOTSUPP, inode_getsecctx, struct inode *inode, void **ctx,
 #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 LSM_HOOK(int, 0, post_notification, const struct cred *w_cred,
 	 const struct cred *cred, struct watch_notification *n)
-#endif /* CONFIG_SECURITY && CONFIG_WATCH_QUEUE */
+#endif  
 
 #if defined(CONFIG_SECURITY) && defined(CONFIG_KEY_NOTIFICATIONS)
 LSM_HOOK(int, 0, watch_key, struct key *key)
-#endif /* CONFIG_SECURITY && CONFIG_KEY_NOTIFICATIONS */
+#endif  
 
 #ifdef CONFIG_SECURITY_NETWORK
 LSM_HOOK(int, 0, unix_stream_connect, struct sock *sock, struct sock *other,
@@ -345,7 +322,7 @@ LSM_HOOK(void, LSM_RET_VOID, sctp_sk_clone, struct sctp_association *asoc,
 LSM_HOOK(int, 0, sctp_assoc_established, struct sctp_association *asoc,
 	 struct sk_buff *skb)
 LSM_HOOK(int, 0, mptcp_add_subflow, struct sock *sk, struct sock *ssk)
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif  
 
 #ifdef CONFIG_SECURITY_INFINIBAND
 LSM_HOOK(int, 0, ib_pkey_access, void *sec, u64 subnet_prefix, u16 pkey)
@@ -353,7 +330,7 @@ LSM_HOOK(int, 0, ib_endport_manage_subnet, void *sec, const char *dev_name,
 	 u8 port_num)
 LSM_HOOK(int, 0, ib_alloc_security, void **sec)
 LSM_HOOK(void, LSM_RET_VOID, ib_free_security, void *sec)
-#endif /* CONFIG_SECURITY_INFINIBAND */
+#endif  
 
 #ifdef CONFIG_SECURITY_NETWORK_XFRM
 LSM_HOOK(int, 0, xfrm_policy_alloc_security, struct xfrm_sec_ctx **ctxp,
@@ -374,9 +351,9 @@ LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
 	 struct xfrm_policy *xp, const struct flowi_common *flic)
 LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
 	 int ckall)
-#endif /* CONFIG_SECURITY_NETWORK_XFRM */
+#endif  
 
-/* key management security hooks */
+ 
 #ifdef CONFIG_KEYS
 LSM_HOOK(int, 0, key_alloc, struct key *key, const struct cred *cred,
 	 unsigned long flags)
@@ -384,7 +361,7 @@ LSM_HOOK(void, LSM_RET_VOID, key_free, struct key *key)
 LSM_HOOK(int, 0, key_permission, key_ref_t key_ref, const struct cred *cred,
 	 enum key_need_perm need_perm)
 LSM_HOOK(int, 0, key_getsecurity, struct key *key, char **buffer)
-#endif /* CONFIG_KEYS */
+#endif  
 
 #ifdef CONFIG_AUDIT
 LSM_HOOK(int, 0, audit_rule_init, u32 field, u32 op, char *rulestr,
@@ -392,7 +369,7 @@ LSM_HOOK(int, 0, audit_rule_init, u32 field, u32 op, char *rulestr,
 LSM_HOOK(int, 0, audit_rule_known, struct audit_krule *krule)
 LSM_HOOK(int, 0, audit_rule_match, u32 secid, u32 field, u32 op, void *lsmrule)
 LSM_HOOK(void, LSM_RET_VOID, audit_rule_free, void *lsmrule)
-#endif /* CONFIG_AUDIT */
+#endif  
 
 #ifdef CONFIG_BPF_SYSCALL
 LSM_HOOK(int, 0, bpf, int cmd, union bpf_attr *attr, unsigned int size)
@@ -402,7 +379,7 @@ LSM_HOOK(int, 0, bpf_map_alloc_security, struct bpf_map *map)
 LSM_HOOK(void, LSM_RET_VOID, bpf_map_free_security, struct bpf_map *map)
 LSM_HOOK(int, 0, bpf_prog_alloc_security, struct bpf_prog_aux *aux)
 LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
-#endif /* CONFIG_BPF_SYSCALL */
+#endif  
 
 LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
 
@@ -412,10 +389,10 @@ LSM_HOOK(int, 0, perf_event_alloc, struct perf_event *event)
 LSM_HOOK(void, LSM_RET_VOID, perf_event_free, struct perf_event *event)
 LSM_HOOK(int, 0, perf_event_read, struct perf_event *event)
 LSM_HOOK(int, 0, perf_event_write, struct perf_event *event)
-#endif /* CONFIG_PERF_EVENTS */
+#endif  
 
 #ifdef CONFIG_IO_URING
 LSM_HOOK(int, 0, uring_override_creds, const struct cred *new)
 LSM_HOOK(int, 0, uring_sqpoll, void)
 LSM_HOOK(int, 0, uring_cmd, struct io_uring_cmd *ioucmd)
-#endif /* CONFIG_IO_URING */
+#endif  

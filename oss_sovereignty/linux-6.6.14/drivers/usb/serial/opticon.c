@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Opticon USB barcode to serial driver
- *
- * Copyright (C) 2011 - 2012 Johan Hovold <jhovold@gmail.com>
- * Copyright (C) 2011 Martin Jansen <martin.jansen@opticon.com>
- * Copyright (C) 2008 - 2009 Greg Kroah-Hartman <gregkh@suse.de>
- * Copyright (C) 2008 - 2009 Novell Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/tty.h>
@@ -22,11 +15,10 @@
 #define CONTROL_RTS			0x02
 #define RESEND_CTS_STATE	0x03
 
-/* max number of write urbs in flight */
+ 
 #define URB_UPPER_LIMIT	8
 
-/* This driver works for the Opticon 1D barcode reader
- * an examples of 1D barcode types are EAN, UPC, Code39, IATA etc.. */
+ 
 #define DRIVER_DESC	"Opticon USB barcode to serial driver (1D)"
 
 static const struct usb_device_id id_table[] = {
@@ -35,9 +27,9 @@ static const struct usb_device_id id_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
-/* This structure holds all of the individual device information */
+ 
 struct opticon_private {
-	spinlock_t lock;	/* protects the following flags */
+	spinlock_t lock;	 
 	bool rts;
 	bool cts;
 	int outstanding_urbs;
@@ -80,15 +72,7 @@ static void opticon_process_read_urb(struct urb *urb)
 							urb->actual_length);
 		return;
 	}
-	/*
-	 * Data from the device comes with a 2 byte header:
-	 *
-	 * <0x00><0x00>data...
-	 *      This is real data to be sent to the tty layer
-	 * <0x00><0x01>level
-	 *      This is a CTS level change, the third byte is the CTS
-	 *      value (0 for low, 1 for high).
-	 */
+	 
 	if ((hdr[0] == 0x00) && (hdr[1] == 0x00)) {
 		opticon_process_data_packet(port, data, data_len);
 	} else if ((hdr[0] == 0x00) && (hdr[1] == 0x01)) {
@@ -111,8 +95,7 @@ static int send_control_msg(struct usb_serial_port *port, u8 requesttype,
 		return -ENOMEM;
 
 	buffer[0] = val;
-	/* Send the message to the vendor control endpoint
-	 * of the connected device */
+	 
 	retval = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 				requesttype,
 				USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
@@ -135,18 +118,17 @@ static int opticon_open(struct tty_struct *tty, struct usb_serial_port *port)
 	priv->rts = false;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	/* Clear RTS line */
+	 
 	send_control_msg(port, CONTROL_RTS, 0);
 
-	/* clear the halt status of the endpoint */
+	 
 	usb_clear_halt(port->serial->dev, port->read_urb->pipe);
 
 	res = usb_serial_generic_open(tty, port);
 	if (res)
 		return res;
 
-	/* Request CTS line state, sometimes during opening the current
-	 * CTS state can be missed. */
+	 
 	send_control_msg(port, RESEND_CTS_STATE, 1);
 
 	return res;
@@ -168,10 +150,10 @@ static void opticon_write_control_callback(struct urb *urb)
 	int status = urb->status;
 	unsigned long flags;
 
-	/* free up the transfer buffer, as usb_free_urb() does not do this */
+	 
 	kfree(urb->transfer_buffer);
 
-	/* setup packet may be set if we're using it for writing */
+	 
 	kfree(urb->setup_packet);
 
 	if (status)
@@ -218,8 +200,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 
 	usb_serial_debug_data(&port->dev, __func__, count, buffer);
 
-	/* The connected devices do not have a bulk write endpoint,
-	 * to transmit data to de barcode device the control endpoint is used */
+	 
 	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_ATOMIC);
 	if (!dr)
 		goto error_no_dr;
@@ -237,7 +218,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 
 	usb_anchor_urb(urb, &priv->anchor);
 
-	/* send it down the pipe */
+	 
 	ret = usb_submit_urb(urb, GFP_ATOMIC);
 	if (ret) {
 		dev_err(&port->dev, "failed to submit write urb: %d\n", ret);
@@ -245,8 +226,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 		goto error;
 	}
 
-	/* we are done with this urb, so let the host driver
-	 * really free it when it is finished with it */
+	 
 	usb_free_urb(urb);
 
 	return count;
@@ -271,11 +251,7 @@ static unsigned int opticon_write_room(struct tty_struct *tty)
 	struct opticon_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
 
-	/*
-	 * We really can take almost anything the user throws at us
-	 * but let's pick a nice big number to tell the tty
-	 * layer that we have lots of free space, unless we don't.
-	 */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	if (priv->outstanding_urbs > URB_UPPER_LIMIT * 2 / 3) {
 		spin_unlock_irqrestore(&priv->lock, flags);
@@ -329,7 +305,7 @@ static int opticon_tiocmset(struct tty_struct *tty,
 	bool changed = false;
 	int ret;
 
-	/* We only support RTS so we only handle that */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 
 	rts = priv->rts;

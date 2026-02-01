@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Authors: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+
+ 
 
 
 #include <drm/drm_atomic.h>
@@ -17,27 +14,7 @@
 #include "exynos_drm_gem.h"
 #include "exynos_drm_plane.h"
 
-/*
- * This function is to get X or Y size shown via screen. This needs length and
- * start position of CRTC.
- *
- *      <--- length --->
- * CRTC ----------------
- *      ^ start        ^ end
- *
- * There are six cases from a to f.
- *
- *             <----- SCREEN ----->
- *             0                 last
- *   ----------|------------------|----------
- * CRTCs
- * a -------
- *        b -------
- *        c --------------------------
- *                 d --------
- *                           e -------
- *                                  f -------
- */
+ 
 static int exynos_plane_get_size(int start, unsigned length, unsigned last)
 {
 	int end = start + length;
@@ -67,11 +44,7 @@ static void exynos_plane_mode_set(struct exynos_drm_plane_state *exynos_state)
 	unsigned int actual_w;
 	unsigned int actual_h;
 
-	/*
-	 * The original src/dest coordinates are stored in exynos_state->base,
-	 * but we want to keep another copy internal to our driver that we can
-	 * clip/modify ourselves.
-	 */
+	 
 
 	crtc_x = state->crtc_x;
 	crtc_y = state->crtc_y;
@@ -83,11 +56,11 @@ static void exynos_plane_mode_set(struct exynos_drm_plane_state *exynos_state)
 	src_w = state->src_w >> 16;
 	src_h = state->src_h >> 16;
 
-	/* set ratio */
+	 
 	exynos_state->h_ratio = (src_w << 16) / crtc_w;
 	exynos_state->v_ratio = (src_h << 16) / crtc_h;
 
-	/* clip to visible area */
+	 
 	actual_w = exynos_plane_get_size(crtc_x, crtc_w, mode->hdisplay);
 	actual_h = exynos_plane_get_size(crtc_y, crtc_h, mode->vdisplay);
 
@@ -103,13 +76,13 @@ static void exynos_plane_mode_set(struct exynos_drm_plane_state *exynos_state)
 		crtc_y = 0;
 	}
 
-	/* set drm framebuffer data. */
+	 
 	exynos_state->src.x = src_x;
 	exynos_state->src.y = src_y;
 	exynos_state->src.w = (actual_w * exynos_state->h_ratio) >> 16;
 	exynos_state->src.h = (actual_h * exynos_state->v_ratio) >> 16;
 
-	/* set plane range to be displayed. */
+	 
 	exynos_state->crtc.x = crtc_x;
 	exynos_state->crtc.y = crtc_y;
 	exynos_state->crtc.w = actual_w;
@@ -241,7 +214,7 @@ static int exynos_plane_atomic_check(struct drm_plane *plane,
 	if (!new_plane_state->crtc || !new_plane_state->fb)
 		return 0;
 
-	/* translate state into exynos_state */
+	 
 	exynos_plane_mode_set(exynos_state);
 
 	ret = exynos_drm_plane_check_format(exynos_plane->config, exynos_state);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+ 
+ 
 
 #ifndef __PINCTRL_MXS_H
 #define __PINCTRL_MXS_H
@@ -16,28 +14,14 @@
 #define MXS_PINCTRL_PIN(pin)	PINCTRL_PIN(pin, #pin)
 #define PINID(bank, pin)	((bank) * 32 + (pin))
 
-/*
- * pinmux-id bit field definitions
- *
- * bank:	15..12	(4)
- * pin:		11..4	(8)
- * muxsel:	3..0	(4)
- */
+ 
 #define MUXID_TO_PINID(m)	PINID((m) >> 12 & 0xf, (m) >> 4 & 0xff)
 #define MUXID_TO_MUXSEL(m)	((m) & 0xf)
 
 #define PINID_TO_BANK(p)	((p) >> 5)
 #define PINID_TO_PIN(p)		((p) % 32)
 
-/*
- * pin config bit field definitions
- *
- * pull-up:	6..5	(2)
- * voltage:	4..3	(2)
- * mA:		2..0	(3)
- *
- * MSB of each field is presence bit for the config.
- */
+ 
 #define PULL_PRESENT		(1 << 6)
 #define PULL_SHIFT		5
 #define VOL_PRESENT		(1 << 4)
@@ -81,4 +65,4 @@ struct mxs_pinctrl_soc_data {
 int mxs_pinctrl_probe(struct platform_device *pdev,
 		      struct mxs_pinctrl_soc_data *soc);
 
-#endif /* __PINCTRL_MXS_H */
+#endif  

@@ -1,31 +1,6 @@
-/*
- * array.c - functions to create, destroy, access, and manipulate arrays
- *	     of strings.
- *
- * Arrays are structs containing an array of elements and bookkeeping information.
- * An element's index is stored with it.
- *
- * Chet Ramey
- * chet@ins.cwru.edu
- */
+ 
 
-/* Copyright (C) 1997-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -60,7 +35,7 @@ arrayind_t n;
 	arrayind_t i;
 
 	if (a == 0)
-		return;	/* for now */
+		return;	 
 	a->elements = (ARRAY_ELEMENT **)xmalloc (n * sizeof (ARRAY_ELEMENT *));
 	for (i = 0; i < n; i++)
 		a->elements[i] = 0;
@@ -128,7 +103,7 @@ ARRAY	*a;
 	if (a == 0)
 		return;
 	if (array_empty(a)) {
-		a->max_index = a->first_index = -1;	/* paranoia */
+		a->max_index = a->first_index = -1;	 
 		return;
 	}
  	for (r = a->first_index; r <= a->max_index; r++)
@@ -198,10 +173,7 @@ ARRAY	*a;
 	return(a1);
 }
 
-/*
- * Make and return a new array composed of the elements in array A from
- * S to E, inclusive. The callers do the bounds checking.
- */
+ 
 ARRAY *
 array_slice(array, s, e)
 ARRAY		*array;
@@ -234,10 +206,7 @@ arrayind_t	s, e;
 	return a;
 }
 
-/*
- * Walk the array, calling FUNC once for each element, with the array
- * element as the argument.
- */
+ 
 void
 array_walk(a, func, udata)
 ARRAY	*a;
@@ -257,14 +226,7 @@ void	*udata;
 	}
 }
 
-/*
- * Shift the array A N elements to the left.  Delete the first N elements
- * and subtract N from the indices of the remaining elements.  If FLAGS
- * does not include AS_DISPOSE, this returns a null-terminated array of
- * elements so the caller can dispose of the chain.  If FLAGS includes
- * AS_DISPOSE, this function disposes of the shifted-out elements and
- * returns NULL.
- */
+ 
 ARRAY_ELEMENT **
 array_shift(a, n, flags)
 ARRAY	*a;
@@ -279,7 +241,7 @@ int	n, flags;
 
 	r = (ARRAY_ELEMENT **)xmalloc ((n + 1) * sizeof (ARRAY_ELEMENT *));
 
-	/* Easy case; shifting out all of the elements */
+	 
 	if (n >= a->num_elements) {
 		if (flags & AS_DISPOSE) {
 			array_flush (a);
@@ -297,8 +259,7 @@ int	n, flags;
 		return r;
 	}
 
-	/* Shift out the first N elements, return them in R. Handle sparse
-	   arrays by skipping over NULL array elements. */
+	 
 	for (i = a->first_index, ri = 0, j = 0; j < n; i++) {
 		if ((ae = a->elements[i]) == 0)
 			continue;
@@ -319,7 +280,7 @@ if (j < n)
 	itrace("array_shift: short count: j = %d n = %d", j, n);
 #endif
 
-	/* Now shift everything else, modifying the index in each element */
+	 
 	for (; i <= a->max_index; i++) {
 		ni = i + n;
 		a->elements[i] = (ni <= a->max_index) ? a->elements[ni] : (ARRAY_ELEMENT *)NULL;
@@ -327,7 +288,7 @@ if (j < n)
 			element_index(a->elements[i]) = i;
 	}
 
-	a->num_elements -= n;		/* modify bookkeeping information */
+	a->num_elements -= n;		 
 	if (a->num_elements == 0)
 		a->first_index = a->max_index == -1;
 	else {
@@ -348,11 +309,7 @@ if (j < n)
 	return r;
 }
 
-/*
- * Shift array A right N indices.  If S is non-null, it becomes the value of
- * the new element 0.  Returns the number of elements in the array after the
- * shift.
- */
+ 
 int
 array_rshift (a, n, s)
 ARRAY	*a;
@@ -370,7 +327,7 @@ char	*s;
 	if (n >= a->alloc_size)
 		array_expand(a, n);
 
-	/* Shift right, adjusting the element indexes as we go */
+	 
 	for (ni = a->max_index; ni >= 0; ni--) {
 		a->elements[ni+n] = a->elements[ni];
 		if (a->elements[ni+n])
@@ -380,7 +337,7 @@ char	*s;
 	a->max_index += n;
 
 #if 0
-	/* Null out all the old indexes we just copied from */
+	 
 	for (ni = a->first_index; ni >= 0 && ni < n; ni++)
 		a->elements[ni] = (ARRAY_ELEMENT *)NULL;
 #endif
@@ -391,7 +348,7 @@ char	*s;
 		a->elements[0] = new;
 		a->num_elements++;
 		a->first_index = 0;
-		if (array_num_elements(a) == 1)		/* array was empty */
+		if (array_num_elements(a) == 1)		 
 			a->max_index = 0;
 	}
 
@@ -516,11 +473,7 @@ ARRAY	*array;
 	return array;
 }
 
-/*
- * Return a string whose elements are the members of array A beginning at
- * index START and spanning NELEM members.  Null elements are counted.
- * Since arrays are sparse, unset array elements are not counted.
- */
+ 
 char *
 array_subrange (a, start, nelem, starsub, quoted, pflags)
 ARRAY	*a;
@@ -536,22 +489,16 @@ int	starsub, quoted, pflags;
 	if (array_empty (a) || start > array_max_index(a))
 		return ((char *)NULL);
 
-	/*
-	 * Find element with index START.  If START corresponds to an unset
-	 * element (arrays can be sparse), use the first element whose index
-	 * is >= START.  If START is < 0, we count START indices back from
-	 * the end of A (not elements, even with sparse arrays -- START is an
-	 * index).
-	 */
+	 
 	for (s = start; a->elements[s] == 0 && s <= a->max_index; s++)
 		;
 
 	if (s > a->max_index)
 		return ((char *)NULL);
 
-	/* Starting at S, take NELEM elements, inclusive. */
+	 
 	for (i = 0, e = s; e <= a->max_index && i < nelem; e++) {
-		if (a->elements[e])		/* arrays are sparse */
+		if (a->elements[e])		 
 			i++;
 	}
 
@@ -561,7 +508,7 @@ int	starsub, quoted, pflags;
 	array_dispose(a2);
 	if (wl == 0)
 		return (char *)NULL;
-	t = string_list_pos_params(starsub ? '*' : '@', wl, quoted, pflags);	/* XXX */
+	t = string_list_pos_params(starsub ? '*' : '@', wl, quoted, pflags);	 
 	dispose_words(wl);
 
 	return t;
@@ -634,10 +581,7 @@ int	mflags;
 	return t;
 }
 
-/*
- * Allocate and return a new array element with index INDEX and value
- * VALUE.
- */
+ 
 ARRAY_ELEMENT *
 array_create_element(indx, value)
 arrayind_t	indx;
@@ -669,9 +613,7 @@ ARRAY_ELEMENT	*ae;
 	}
 }
 
-/*
- * Add a new element with index I and value V to array A (a[i] = v).
- */
+ 
 int
 array_insert(a, i, v)
 ARRAY	*a;
@@ -691,7 +633,7 @@ char	*v;
 	if (array_first_index(a) < 0 || i < array_first_index(a))
 		a->first_index = i;
 
-	if (old) {	/* Replacing an existing element. */
+	if (old) {	 
 		free(element_value(old));
 		old->value = v ? savestring (v) : (char *)NULL;
 		old->ind = i;
@@ -701,13 +643,10 @@ char	*v;
 		a->num_elements++;
 	}
 
-	return (-1);		/* problem */
+	return (-1);		 
 }
 
-/*
- * Delete the element with index I from array A and return it so the
- * caller can dispose of it.
- */
+ 
 ARRAY_ELEMENT *
 array_remove(a, i)
 ARRAY	*a;
@@ -742,9 +681,7 @@ arrayind_t	i;
 	return (ae);
 }
 
-/*
- * Return the value of a[i].
- */
+ 
 char *
 array_reference(a, i)
 ARRAY	*a;
@@ -761,8 +698,7 @@ arrayind_t	i;
 	return(ae ? element_value(ae) : (char *)NULL);
 }
 
-/* Convenience routines for the shell to translate to and from the form used
-   by the rest of the code. */
+ 
 
 WORD_LIST *
 array_to_word_list(a)
@@ -897,22 +833,22 @@ int	count;
 		return a;
 	}
 
-	/* Fast case */
+	 
 	if (array_num_elements (a) == count && count == 1) {
 		t = vec[0] ? savestring (vec[0]) : 0;
 		ARRAY_VALUE_REPLACE(a, 0, t);
 	} else if (array_num_elements (a) <= count) {
-		/* modify in array_num_elements members in place, then add */
+		 
 		for (i = 0; i < array_num_elements (a); i++) {
 			t = vec[i] ? savestring (vec[i]) : 0;
 			ARRAY_VALUE_REPLACE(a, i, t);
 		}
 
-		/* add any more */
+		 
 		for ( ; i < count; i++)
 			array_insert(a, i, vec[i]);
 	} else {
-		/* deleting elements. replace the first COUNT, free the rest */
+		 
 		for (i = 0; i < count; i++) {
 			t = vec[i] ? savestring (vec[i]) : 0;
 			ARRAY_VALUE_REPLACE(a, i, t);
@@ -923,7 +859,7 @@ int	count;
 			a->elements[i] = (ARRAY_ELEMENT *)NULL;
 		}
 
-		/* bookkeeping usually taken care of by array_insert */
+		 
 		set_max_index(a, count - 1);
 		set_first_index(a, 0);
 		set_num_elements(a, count);
@@ -931,9 +867,7 @@ int	count;
 	return a;
 }
 
-/*
- * Return the next non-null array element after A[IND]
- */
+ 
 arrayind_t
 element_forw(a, ind)
 ARRAY	*a;
@@ -949,9 +883,7 @@ arrayind_t ind;
 	return (array_max_index(a));
 }
 
-/*
- * Return the previous non-null array element before A[IND]
- */
+ 
 arrayind_t
 element_back (a, ind)
 ARRAY	*a;
@@ -967,10 +899,7 @@ arrayind_t ind;
 	return (array_first_index(a));
 }
 
-/*
- * Return a string that is the concatenation of the elements in A from START
- * to END, separated by SEP.
- */
+ 
 static char *
 array_to_string_internal (a, start, end, sep, quoted)
 ARRAY	*a;
@@ -999,9 +928,7 @@ int	quoted;
 			rlen += reg;
 			if (quoted)
 				free(t);
-			/*
-			 * Add a separator only after non-null elements.
-			 */
+			 
 			if (element_forw(a, i) <= end) {
 				strcpy(result + rlen, sep);
 				rlen += slen;
@@ -1009,7 +936,7 @@ int	quoted;
 		}
 	}
 	if (result)
-		result[rlen] = '\0';	/* XXX */
+		result[rlen] = '\0';	 
 	return(result);
 }
 
@@ -1062,7 +989,7 @@ int	quoted;
 	result[rlen] = '\0';
 
 	if (quoted) {
-		/* This is not as efficient as it could be... */
+		 
 		valstr = sh_single_quote (result);
 		free (result);
 		result = valstr;
@@ -1119,7 +1046,7 @@ int	quoted;
 	result[rlen++] = ')';
 	result[rlen] = '\0';
 	if (quoted) {
-		/* This is not as efficient as it could be... */
+		 
 		valstr = sh_single_quote (result);
 		free (result);
 		result = valstr;
@@ -1141,9 +1068,7 @@ int	quoted;
 }
 
 #if defined (INCLUDE_UNUSED) || defined (TEST_ARRAY)
-/*
- * Return an array consisting of elements in S, separated by SEP
- */
+ 
 ARRAY *
 array_from_string(s, sep)
 char	*s, *sep;
@@ -1162,10 +1087,7 @@ char	*s, *sep;
 #endif
 
 #if defined (TEST_ARRAY)
-/*
- * To make a running version, compile -DTEST_ARRAY and link with:
- * 	xmalloc.o syntax.o lib/malloc/libmalloc.a lib/sh/libsh.a
- */
+ 
 int interrupt_immediately = 0;
 
 int
@@ -1370,5 +1292,5 @@ main()
 	array_dispose(new_a);
 }
 
-#endif /* TEST_ARRAY */
-#endif /* ARRAY_VARS */
+#endif  
+#endif  

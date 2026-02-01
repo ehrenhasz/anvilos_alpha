@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_FS_STRUCT_H
 #define _LINUX_FS_STRUCT_H
 
@@ -42,4 +42,4 @@ static inline void get_fs_pwd(struct fs_struct *fs, struct path *pwd)
 
 extern bool current_chrooted(void);
 
-#endif /* _LINUX_FS_STRUCT_H */
+#endif  

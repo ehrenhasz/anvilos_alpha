@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HighPoint RR3xxx/4xxx controller driver for Linux
- * Copyright (C) 2006-2015 HighPoint Technologies, Inc. All Rights Reserved.
- *
- * Please report bugs/comments/suggestions to linux@highpoint-tech.com
- *
- * For more information, visit http://www.highpoint-tech.com
- */
+
+ 
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/string.h>
@@ -567,12 +560,12 @@ static void hptiop_enable_intr_mvfrey(struct hptiop_hba *hba)
 
 static int hptiop_initialize_iop(struct hptiop_hba *hba)
 {
-	/* enable interrupts */
+	 
 	hba->ops->enable_intr(hba);
 
 	hba->initialized = 1;
 
-	/* start background tasks */
+	 
 	if (iop_send_sync_msg(hba,
 			IOPMU_INBOUND_MSG0_START_BACKGROUND_TASK, 5000)) {
 		printk(KERN_ERR "scsi%d: fail to start background task\n",
@@ -969,7 +962,7 @@ static int hptiop_reset_comm_mvfrey(struct hptiop_hba *hba)
 	if (iop_send_sync_msg(hba, IOPMU_INBOUND_MSG0_RESET_COMM, 3000))
 		return -1;
 
-	/* wait 100ms for MCU ready */
+	 
 	msleep(100);
 
 	writel(cpu_to_le32(hba->u.mvfrey.inlist_phy & 0xffffffff),
@@ -1032,7 +1025,7 @@ static int hptiop_queuecommand_lck(struct scsi_cmnd *scp)
 
 	req = _req->req_virt;
 
-	/* build S/G table */
+	 
 	sg_count = hptiop_buildsgl(scp, req->sg_list);
 	if (!sg_count)
 		HPT_SCP(scp)->mapped = 0;
@@ -1074,7 +1067,7 @@ static int hptiop_reset_hba(struct hptiop_hba *hba)
 			atomic_read(&hba->resetting) == 0, 60 * HZ);
 
 	if (atomic_read(&hba->resetting)) {
-		/* IOP is in unknown state, abort reset */
+		 
 		printk(KERN_ERR "scsi%d: reset failed\n", hba->host->host_no);
 		return -1;
 	}
@@ -1294,7 +1287,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 
 	pci_set_master(pcidev);
 
-	/* Enable 64bit DMA if possible */
+	 
 	iop_ops = (struct hptiop_adapter_ops *)id->driver_data;
 	rc = dma_set_mask(&pcidev->dev,
 			  DMA_BIT_MASK(iop_ops->hw_dma_bit_mask));
@@ -1419,7 +1412,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 		goto unmap_pci_bar;
 	}
 
-	/* Allocate request mem */
+	 
 
 	dprintk("req_size=%d, max_requests=%d\n", req_size, hba->max_requests);
 
@@ -1453,7 +1446,7 @@ static int hptiop_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
 		free_req(hba, &hba->reqs[i]);
 	}
 
-	/* Enable Interrupt and start background task */
+	 
 	if (hptiop_initialize_iop(hba))
 		goto free_request_mem;
 
@@ -1506,12 +1499,12 @@ static void hptiop_shutdown(struct pci_dev *pcidev)
 
 	dprintk("hptiop_shutdown(%p)\n", hba);
 
-	/* stop the iop */
+	 
 	if (iop_send_sync_msg(hba, IOPMU_INBOUND_MSG0_SHUTDOWN, 60000))
 		printk(KERN_ERR "scsi%d: shutdown the iop timeout\n",
 					hba->host->host_no);
 
-	/* disable all outbound interrupts */
+	 
 	hba->ops->disable_intr(hba);
 }
 

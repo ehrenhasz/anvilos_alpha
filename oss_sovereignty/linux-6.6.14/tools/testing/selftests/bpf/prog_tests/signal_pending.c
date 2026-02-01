@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -11,7 +11,7 @@ static void test_signal_pending_by_type(enum bpf_prog_type prog_type)
 {
 	struct bpf_insn prog[4096];
 	struct itimerval timeo = {
-		.it_value.tv_usec = 100000, /* 100ms */
+		.it_value.tv_usec = 100000,  
 	};
 	int prog_fd;
 	int err;
@@ -37,7 +37,7 @@ static void test_signal_pending_by_type(enum bpf_prog_type prog_type)
 	ASSERT_OK(err, "test-run-signal-timer");
 
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
-	ASSERT_LE(topts.duration, 500000000 /* 500ms */,
+	ASSERT_LE(topts.duration, 500000000  ,
 		  "test-run-signal-duration");
 
 	signal(SIGALRM, SIG_DFL);

@@ -1,22 +1,6 @@
-/* random.c -- Functions for managing 16-bit and 32-bit random numbers. */
+ 
 
-/* Copyright (C) 2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -47,33 +31,15 @@ static u_bits32_t brand32 PARAMS((void));
 static void sbrand32 PARAMS((u_bits32_t));
 static void perturb_rand32 PARAMS((void));
 
-/* The random number seed.  You can change this by setting RANDOM. */
+ 
 static u_bits32_t rseed = 1;
 
-/* Returns a 32-bit pseudo-random number. */
+ 
 static u_bits32_t
 intrand32 (last)
      u_bits32_t last;
 {
-  /* Minimal Standard generator from
-     "Random number generators: good ones are hard to find",
-     Park and Miller, Communications of the ACM, vol. 31, no. 10,
-     October 1988, p. 1195. Filtered through FreeBSD.
-
-     x(n+1) = 16807 * x(n) mod (m).
-
-     We split up the calculations to avoid overflow.
-
-     h = last / q; l = x - h * q; t = a * l - h * r
-     m = 2147483647, a = 16807, q = 127773, r = 2836
-
-     There are lots of other combinations of constants to use; look at
-     https://www.gnu.org/software/gsl/manual/html_node/Other-random-number-generators.html#Other-random-number-generators */
-
-  bits32_t h, l, t;
-  u_bits32_t ret;
-
-  /* Can't seed with 0. */
+   
   ret = (last == 0) ? 123459876 : last;
   h = ret / 127773;
   l = ret - (127773 * h);
@@ -90,14 +56,14 @@ genseed ()
   u_bits32_t iv;
 
   gettimeofday (&tv, NULL);
-  iv = (u_bits32_t)seedrand;		/* let the compiler truncate */
+  iv = (u_bits32_t)seedrand;		 
   iv = tv.tv_sec ^ tv.tv_usec ^ getpid () ^ getppid () ^ current_user.uid ^ iv;
   return (iv);
 }
 
-#define BASH_RAND_MAX	32767		/* 0x7fff - 16 bits */
+#define BASH_RAND_MAX	32767		 
 
-/* Returns a pseudo-random number between 0 and 32767. */
+ 
 int
 brand ()
 {
@@ -111,7 +77,7 @@ brand ()
   return (ret & BASH_RAND_MAX);
 }
 
-/* Set the random number generator seed to SEED. */
+ 
 void
 sbrand (seed)
      unsigned long seed;
@@ -134,9 +100,9 @@ static int last_rand32;
 
 static int urandfd = -1;
 
-#define BASH_RAND32_MAX	0x7fffffff	/* 32 bits */
+#define BASH_RAND32_MAX	0x7fffffff	 
 
-/* Returns a 32-bit pseudo-random number between 0 and 4294967295. */
+ 
 static u_bits32_t
 brand32 ()
 {
@@ -168,7 +134,7 @@ perturb_rand32 ()
   rseed32 ^= genseed ();
 }
 
-/* Force another attempt to open /dev/urandom on the next call to get_urandom32 */
+ 
 void
 urandom_close ()
 {
@@ -178,7 +144,7 @@ urandom_close ()
 }
 
 #if !defined (HAVE_GETRANDOM)
-/* Imperfect emulation of getrandom(2). */
+ 
 #ifndef GRND_NONBLOCK
 #  define GRND_NONBLOCK 1
 #  define GRND_RANDOM 2

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Tap functions for AF_VSOCK sockets.
- *
- * Code based on net/netlink/af_netlink.c tap functions.
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/sock.h>

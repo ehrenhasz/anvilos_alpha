@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -45,7 +45,7 @@ int __net_init tls_proc_init(struct net *net)
 	if (!proc_create_net_single("tls_stat", 0444, net->proc_net,
 				    tls_statistics_seq_show, NULL))
 		return -ENOMEM;
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 	return 0;
 }

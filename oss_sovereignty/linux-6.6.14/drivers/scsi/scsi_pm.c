@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	scsi_pm.c	Copyright (C) 2010 Alan Stern
- *
- *	SCSI dynamic Power Management
- *		Initial version: Alan Stern <stern@rowland.harvard.edu>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/export.h>
@@ -94,7 +89,7 @@ static int scsi_bus_resume_common(struct device *dev,
 static int scsi_bus_prepare(struct device *dev)
 {
 	if (scsi_is_host_device(dev)) {
-		/* Wait until async scanning is finished */
+		 
 		scsi_complete_async_scans();
 	}
 	return 0;
@@ -130,7 +125,7 @@ static int scsi_bus_restore(struct device *dev)
 	return scsi_bus_resume_common(dev, do_scsi_restore);
 }
 
-#else /* CONFIG_PM_SLEEP */
+#else  
 
 #define scsi_bus_prepare		NULL
 #define scsi_bus_suspend		NULL
@@ -140,7 +135,7 @@ static int scsi_bus_restore(struct device *dev)
 #define scsi_bus_poweroff		NULL
 #define scsi_bus_restore		NULL
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int sdev_runtime_suspend(struct device *dev)
 {
@@ -166,7 +161,7 @@ static int scsi_runtime_suspend(struct device *dev)
 	if (scsi_is_sdev_device(dev))
 		err = sdev_runtime_suspend(dev);
 
-	/* Insert hooks here for targets, hosts, and transport classes */
+	 
 
 	return err;
 }
@@ -193,7 +188,7 @@ static int scsi_runtime_resume(struct device *dev)
 	if (scsi_is_sdev_device(dev))
 		err = sdev_runtime_resume(dev);
 
-	/* Insert hooks here for targets, hosts, and transport classes */
+	 
 
 	return err;
 }
@@ -202,7 +197,7 @@ static int scsi_runtime_idle(struct device *dev)
 {
 	dev_dbg(dev, "scsi_runtime_idle\n");
 
-	/* Insert hooks here for targets, hosts, and transport classes */
+	 
 
 	if (scsi_is_sdev_device(dev)) {
 		pm_runtime_mark_last_busy(dev);

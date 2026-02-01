@@ -1,38 +1,15 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "transform.h"
 
-//=========================================
-// <num_taps>    = 2
-// <num_phases>  = 16
-// <scale_ratio> = 0.833333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = s1.10
-// <CoefOut>     = s1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_2tap_16p[18] = {
 		0x1000, 0x0000,
 		0x0FF0, 0x0010,
@@ -45,15 +22,15 @@ static const uint16_t filter_2tap_16p[18] = {
 		0x0800, 0x0800
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 16
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_16p_upscale[27] = {
 		0x0804, 0x07FC, 0x0000,
 		0x06AC, 0x0978, 0x3FDC,
@@ -66,15 +43,15 @@ static const uint16_t filter_3tap_16p_upscale[27] = {
 		0x0000, 0x1000, 0x0000
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 16
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_16p_116[27] = {
 		0x0804, 0x07FC, 0x0000,
 		0x0700, 0x0914, 0x3FEC,
@@ -87,15 +64,15 @@ static const uint16_t filter_3tap_16p_116[27] = {
 		0x0128, 0x0DB4, 0x0124
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 16
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_16p_149[27] = {
 		0x0804, 0x07FC, 0x0000,
 		0x0730, 0x08CC, 0x0004,
@@ -108,15 +85,15 @@ static const uint16_t filter_3tap_16p_149[27] = {
 		0x0200, 0x0C00, 0x0200
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 16
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_16p_183[27] = {
 		0x0804, 0x07FC, 0x0000,
 		0x0754, 0x0880, 0x002C,
@@ -129,15 +106,15 @@ static const uint16_t filter_3tap_16p_183[27] = {
 		0x02DC, 0x0A48, 0x02DC
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 16
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_16p_upscale[36] = {
 		0x0000, 0x1000, 0x0000, 0x0000,
 		0x3F74, 0x0FDC, 0x00B4, 0x3FFC,
@@ -150,15 +127,15 @@ static const uint16_t filter_4tap_16p_upscale[36] = {
 		0x3F00, 0x08FC, 0x0900, 0x3F04
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 16
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_16p_116[36] = {
 		0x01A8, 0x0CB4, 0x01A4, 0x0000,
 		0x0110, 0x0CB0, 0x0254, 0x3FEC,
@@ -171,15 +148,15 @@ static const uint16_t filter_4tap_16p_116[36] = {
 		0x3F54, 0x08AC, 0x08AC, 0x3F54
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 16
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_16p_149[36] = {
 		0x02B8, 0x0A90, 0x02B8, 0x0000,
 		0x0230, 0x0A90, 0x0350, 0x3FF0,
@@ -192,15 +169,15 @@ static const uint16_t filter_4tap_16p_149[36] = {
 		0x3FFC, 0x0804, 0x0804, 0x3FFC
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 16
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_16p_183[36] = {
 		0x03B0, 0x08A0, 0x03B0, 0x0000,
 		0x0348, 0x0898, 0x041C, 0x0004,
@@ -213,15 +190,15 @@ static const uint16_t filter_4tap_16p_183[36] = {
 		0x00F0, 0x0714, 0x0710, 0x00EC
 };
 
-//=========================================
-// <num_taps>    = 2
-// <num_phases>  = 64
-// <scale_ratio> = 0.833333 (input/output)
-// <sharpness>   = 0
-// <CoefType> = ModifiedLanczos
-// <CoefQuant> = s1.10
-// <CoefOut> = s1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_2tap_64p[66] = {
 		0x1000, 0x0000,
 		0x1000, 0x0000,
@@ -258,15 +235,15 @@ static const uint16_t filter_2tap_64p[66] = {
 		0x0800, 0x0800
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_64p_upscale[99] = {
 		0x0804, 0x07FC, 0x0000,
 		0x07A8, 0x0860, 0x3FF8,
@@ -303,15 +280,15 @@ static const uint16_t filter_3tap_64p_upscale[99] = {
 		0x0000, 0x1000, 0x0000
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_64p_116[99] = {
 		0x0804, 0x07FC, 0x0000,
 		0x07C0, 0x0844, 0x3FFC,
@@ -348,15 +325,15 @@ static const uint16_t filter_3tap_64p_116[99] = {
 		0x0128, 0x0DB4, 0x0124
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_64p_149[99] = {
 		0x0804, 0x07FC, 0x0000,
 		0x07CC, 0x0834, 0x0000,
@@ -393,15 +370,15 @@ static const uint16_t filter_3tap_64p_149[99] = {
 		0x0200, 0x0C00, 0x0200
 };
 
-//=========================================
-// <num_taps>    = 3
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_3tap_64p_183[99] = {
 		0x0804, 0x07FC, 0x0000,
 		0x07D4, 0x0824, 0x0008,
@@ -438,15 +415,15 @@ static const uint16_t filter_3tap_64p_183[99] = {
 		0x02DC, 0x0A48, 0x02DC
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_64p_upscale[132] = {
 		0x0000, 0x1000, 0x0000, 0x0000,
 		0x3FDC, 0x0FFC, 0x0028, 0x0000,
@@ -483,15 +460,15 @@ static const uint16_t filter_4tap_64p_upscale[132] = {
 		0x3F00, 0x08FC, 0x0900, 0x3F04
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_64p_116[132] = {
 		0x01A8, 0x0CB4, 0x01A4, 0x0000,
 		0x017C, 0x0CB8, 0x01D0, 0x3FFC,
@@ -528,15 +505,15 @@ static const uint16_t filter_4tap_64p_116[132] = {
 		0x3F54, 0x08AC, 0x08AC, 0x3F54
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_64p_149[132] = {
 		0x02B8, 0x0A90, 0x02B8, 0x0000,
 		0x0294, 0x0A94, 0x02DC, 0x3FFC,
@@ -573,15 +550,15 @@ static const uint16_t filter_4tap_64p_149[132] = {
 		0x3FFC, 0x0804, 0x0804, 0x3FFC
 };
 
-//=========================================
-// <num_taps>    = 4
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_4tap_64p_183[132] = {
 		0x03B0, 0x08A0, 0x03B0, 0x0000,
 		0x0394, 0x08A0, 0x03CC, 0x0000,
@@ -618,15 +595,15 @@ static const uint16_t filter_4tap_64p_183[132] = {
 		0x00F0, 0x0714, 0x0710, 0x00EC
 };
 
-//=========================================
-// <num_taps>    = 5
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_5tap_64p_upscale[165] = {
 		0x3E40, 0x09C0, 0x09C0, 0x3E40, 0x0000,
 		0x3E50, 0x0964, 0x0A18, 0x3E34, 0x0000,
@@ -663,15 +640,15 @@ static const uint16_t filter_5tap_64p_upscale[165] = {
 		0x0000, 0x0000, 0x1000, 0x0000, 0x0000
 };
 
-//=========================================
-// <num_taps>    = 5
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_5tap_64p_116[165] = {
 		0x3EDC, 0x0924, 0x0924, 0x3EDC, 0x0000,
 		0x3ED8, 0x08EC, 0x095C, 0x3EE0, 0x0000,
@@ -708,15 +685,15 @@ static const uint16_t filter_5tap_64p_116[165] = {
 		0x3F7C, 0x0200, 0x0D08, 0x0200, 0x3F7C
 };
 
-//=========================================
-// <num_taps>    = 5
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_5tap_64p_149[165] = {
 		0x3FF4, 0x080C, 0x080C, 0x3FF4, 0x0000,
 		0x3FE8, 0x07E8, 0x0830, 0x0000, 0x0000,
@@ -753,15 +730,15 @@ static const uint16_t filter_5tap_64p_149[165] = {
 		0x3F7C, 0x033C, 0x0A90, 0x033C, 0x3F7C
 };
 
-//=========================================
-// <num_taps>    = 5
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_5tap_64p_183[165] = {
 		0x0168, 0x069C, 0x0698, 0x0164, 0x0000,
 		0x0154, 0x068C, 0x06AC, 0x0174, 0x0000,
@@ -798,15 +775,15 @@ static const uint16_t filter_5tap_64p_183[165] = {
 		0x001C, 0x03FC, 0x07D4, 0x03F8, 0x001C
 };
 
-//=========================================
-// <num_taps>    = 6
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_6tap_64p_upscale[198] = {
 		0x0000, 0x0000, 0x1000, 0x0000, 0x0000, 0x0000,
 		0x000C, 0x3FD0, 0x0FFC, 0x0034, 0x3FF4, 0x0000,
@@ -843,15 +820,15 @@ static const uint16_t filter_6tap_64p_upscale[198] = {
 		0x0064, 0x3DD4, 0x09C8, 0x09C8, 0x3DD4, 0x0064
 };
 
-//=========================================
-// <num_taps>    = 6
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_6tap_64p_116[198] = {
 		0x3F0C, 0x0240, 0x0D68, 0x0240, 0x3F0C, 0x0000,
 		0x3F18, 0x0210, 0x0D64, 0x0274, 0x3F00, 0x0000,
@@ -888,15 +865,15 @@ static const uint16_t filter_6tap_64p_116[198] = {
 		0x0010, 0x3E90, 0x0964, 0x0960, 0x3E8C, 0x0010
 };
 
-//=========================================
-// <num_taps>    = 6
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_6tap_64p_149[198] = {
 		0x3F14, 0x0394, 0x0AB0, 0x0394, 0x3F14, 0x0000,
 		0x3F18, 0x036C, 0x0AB0, 0x03B8, 0x3F14, 0x0000,
@@ -933,15 +910,15 @@ static const uint16_t filter_6tap_64p_149[198] = {
 		0x3FB0, 0x3FF0, 0x0860, 0x0860, 0x3FF0, 0x3FB0
 };
 
-//=========================================
-// <num_taps>    = 6
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_6tap_64p_183[198] = {
 		0x002C, 0x0420, 0x076C, 0x041C, 0x002C, 0x0000,
 		0x0028, 0x040C, 0x0768, 0x0430, 0x0034, 0x0000,
@@ -978,15 +955,15 @@ static const uint16_t filter_6tap_64p_183[198] = {
 		0x3FCC, 0x01B8, 0x0680, 0x067C, 0x01B4, 0x3FCC
 };
 
-//=========================================
-// <num_taps>    = 7
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_7tap_64p_upscale[231] = {
 		0x00B0, 0x3D98, 0x09BC, 0x09B8, 0x3D94, 0x00B0, 0x0000,
 		0x00AC, 0x3DA0, 0x0968, 0x0A10, 0x3D88, 0x00B4, 0x0000,
@@ -1023,15 +1000,15 @@ static const uint16_t filter_7tap_64p_upscale[231] = {
 		0x0000, 0x0000, 0x0000, 0x1000, 0x0000, 0x0000, 0x0000
 };
 
-//=========================================
-// <num_taps>    = 7
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_7tap_64p_116[231] = {
 		0x0020, 0x3E58, 0x0988, 0x0988, 0x3E58, 0x0020, 0x0000,
 		0x0024, 0x3E4C, 0x0954, 0x09C0, 0x3E64, 0x0018, 0x0000,
@@ -1068,15 +1045,15 @@ static const uint16_t filter_7tap_64p_116[231] = {
 		0x0044, 0x3EC4, 0x0258, 0x0D40, 0x0258, 0x3EC4, 0x0044
 };
 
-//=========================================
-// <num_taps>    = 7
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_7tap_64p_149[231] = {
 		0x3F68, 0x3FEC, 0x08A8, 0x08AC, 0x3FF0, 0x3F68, 0x0000,
 		0x3F70, 0x3FDC, 0x0888, 0x08CC, 0x0000, 0x3F60, 0x0000,
@@ -1113,15 +1090,15 @@ static const uint16_t filter_7tap_64p_149[231] = {
 		0x0004, 0x3EC8, 0x03CC, 0x0AD0, 0x03CC, 0x3EC8, 0x0004
 };
 
-//=========================================
-// <num_taps>    = 7
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_7tap_64p_183[231] = {
 		0x3FA4, 0x01E8, 0x0674, 0x0674, 0x01E8, 0x3FA4, 0x0000,
 		0x3FA4, 0x01D4, 0x0668, 0x0684, 0x01F8, 0x3FA4, 0x0000,
@@ -1158,15 +1135,15 @@ static const uint16_t filter_7tap_64p_183[231] = {
 		0x3FC0, 0x003C, 0x0454, 0x0764, 0x0450, 0x003C, 0x3FC0
 };
 
-//=========================================
-// <num_taps>    = 8
-// <num_phases>  = 64
-// <scale_ratio> = 0.83333 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_8tap_64p_upscale[264] = {
 		0x0000, 0x0000, 0x0000, 0x1000, 0x0000, 0x0000, 0x0000, 0x0000,
 		0x3FFC, 0x0014, 0x3FC8, 0x1000, 0x0038, 0x3FEC, 0x0004, 0x0000,
@@ -1203,15 +1180,15 @@ static const uint16_t filter_8tap_64p_upscale[264] = {
 		0x3FD0, 0x00F4, 0x3D58, 0x09E0, 0x09E4, 0x3D5C, 0x00F4, 0x3FD0
 };
 
-//=========================================
-// <num_taps>    = 8
-// <num_phases>  = 64
-// <scale_ratio> = 1.16666 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_8tap_64p_116[264] = {
 		0x0080, 0x3E90, 0x0268, 0x0D14, 0x0264, 0x3E90, 0x0080, 0x0000,
 		0x007C, 0x3E9C, 0x0238, 0x0D14, 0x0298, 0x3E84, 0x0080, 0x0000,
@@ -1248,15 +1225,15 @@ static const uint16_t filter_8tap_64p_116[264] = {
 		0x0010, 0x002C, 0x3E3C, 0x098C, 0x0988, 0x3E38, 0x002C, 0x0010
 };
 
-//=========================================
-// <num_taps>    = 8
-// <num_phases>  = 64
-// <scale_ratio> = 1.49999 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_8tap_64p_149[264] = {
 		0x0008, 0x3E8C, 0x03F8, 0x0AE8, 0x03F8, 0x3E8C, 0x0008, 0x0000,
 		0x000C, 0x3E8C, 0x03D0, 0x0AE8, 0x0420, 0x3E90, 0x0000, 0x0000,
@@ -1293,15 +1270,15 @@ static const uint16_t filter_8tap_64p_149[264] = {
 		0x002C, 0x3F34, 0x3FEC, 0x08B4, 0x08B4, 0x3FEC, 0x3F34, 0x002C
 };
 
-//=========================================
-// <num_taps>    = 8
-// <num_phases>  = 64
-// <scale_ratio> = 1.83332 (input/output)
-// <sharpness>   = 0
-// <CoefType>    = ModifiedLanczos
-// <CoefQuant>   = 1.10
-// <CoefOut>     = 1.12
-//=========================================
+
+
+
+
+
+
+
+
+
 static const uint16_t filter_8tap_64p_183[264] = {
 		0x3F88, 0x0048, 0x047C, 0x0768, 0x047C, 0x0048, 0x3F88, 0x0000,
 		0x3F88, 0x003C, 0x0468, 0x076C, 0x0490, 0x0054, 0x3F84, 0x0000,

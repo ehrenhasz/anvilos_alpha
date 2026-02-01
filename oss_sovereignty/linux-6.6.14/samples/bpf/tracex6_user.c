@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <assert.h>
@@ -19,7 +19,7 @@
 
 #define SAMPLE_PERIOD  0x7fffffffffffffffULL
 
-/* counters, values, values2 */
+ 
 static int map_fd[3];
 
 static void check_on_cpu(int cpu, struct perf_event_attr *attr)
@@ -29,12 +29,12 @@ static void check_on_cpu(int cpu, struct perf_event_attr *attr)
 	cpu_set_t set;
 	__u64 value;
 
-	/* Move to target CPU */
+	 
 	CPU_ZERO(&set);
 	CPU_SET(cpu, &set);
 	assert(sched_setaffinity(0, sizeof(set), &set) == 0);
-	/* Open perf event and attach to the perf_event_array */
-	pmu_fd = sys_perf_event_open(attr, -1/*pid*/, cpu/*cpu*/, -1/*group_fd*/, 0);
+	 
+	pmu_fd = sys_perf_event_open(attr, -1 , cpu , -1 , 0);
 	if (pmu_fd < 0) {
 		fprintf(stderr, "sys_perf_event_open failed on CPU %d\n", cpu);
 		error = 1;
@@ -42,9 +42,9 @@ static void check_on_cpu(int cpu, struct perf_event_attr *attr)
 	}
 	assert(bpf_map_update_elem(map_fd[0], &cpu, &pmu_fd, BPF_ANY) == 0);
 	assert(ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0) == 0);
-	/* Trigger the kprobe */
+	 
 	bpf_map_get_next_key(map_fd[1], &cpu, NULL);
-	/* Check the value */
+	 
 	if (bpf_map_lookup_elem(map_fd[1], &cpu, &value)) {
 		fprintf(stderr, "Value missing for CPU %d\n", cpu);
 		error = 1;
@@ -52,7 +52,7 @@ static void check_on_cpu(int cpu, struct perf_event_attr *attr)
 	} else {
 		fprintf(stderr, "CPU %d: %llu\n", cpu, value);
 	}
-	/* The above bpf_map_lookup_elem should trigger the second kprobe */
+	 
 	if (bpf_map_lookup_elem(map_fd[2], &cpu, &value2)) {
 		fprintf(stderr, "Value2 missing for CPU %d\n", cpu);
 		error = 1;
@@ -124,7 +124,7 @@ static void test_bpf_perf_event(void)
 		.type = PERF_TYPE_RAW,
 		.read_format = 0,
 		.sample_type = 0,
-		/* Intel Instruction Retired */
+		 
 		.config = 0xc0,
 	};
 	struct perf_event_attr attr_l1d_load = {
@@ -155,7 +155,7 @@ static void test_bpf_perf_event(void)
 		.freq = 0,
 		.sample_period = 0,
 		.inherit = 0,
-		/* From /sys/bus/event_source/devices/msr/ */
+		 
 		.type = 7,
 		.read_format = 0,
 		.sample_type = 0,
@@ -167,7 +167,7 @@ static void test_bpf_perf_event(void)
 	test_perf_event_array(&attr_raw, "RAW-instruction-retired");
 	test_perf_event_array(&attr_l1d_load, "HW_CACHE-L1D-load");
 
-	/* below tests may fail in qemu */
+	 
 	test_perf_event_array(&attr_llc_miss, "HW_CACHE-LLC-miss");
 	test_perf_event_array(&attr_msr_tsc, "Dynamic-msr-tsc");
 }
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

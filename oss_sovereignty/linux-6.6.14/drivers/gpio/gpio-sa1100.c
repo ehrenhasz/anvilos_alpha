@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/arch/arm/mach-sa1100/gpio.c
- *
- * Generic SA-1100 GPIO handling
- */
+
+ 
 #include <linux/gpio/driver.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -106,11 +102,7 @@ static struct sa1100_gpio_chip sa1100_gpio_chip = {
 	.irqbase = IRQ_GPIO0,
 };
 
-/*
- * SA1100 GPIO edge detection for IRQs:
- * IRQs are generated on Falling-Edge, Rising-Edge, or both.
- * Use this instead of directly setting GRER/GFER.
- */
+ 
 static void sa1100_update_edge_regs(struct sa1100_gpio_chip *sgc)
 {
 	void *base = sgc->membase;
@@ -148,9 +140,7 @@ static int sa1100_gpio_type(struct irq_data *d, unsigned int type)
 	return 0;
 }
 
-/*
- * GPIO IRQs must be acknowledged.
- */
+ 
 static void sa1100_gpio_ack(struct irq_data *d)
 {
 	struct sa1100_gpio_chip *sgc = irq_data_get_irq_chip_data(d);
@@ -191,9 +181,7 @@ static int sa1100_gpio_wake(struct irq_data *d, unsigned int on)
 	return ret;
 }
 
-/*
- * This is for GPIO IRQs
- */
+ 
 static struct irq_chip sa1100_gpio_irq_chip = {
 	.name		= "GPIO",
 	.irq_ack	= sa1100_gpio_ack,
@@ -222,11 +210,7 @@ static const struct irq_domain_ops sa1100_gpio_irqdomain_ops = {
 
 static struct irq_domain *sa1100_gpio_irqdomain;
 
-/*
- * IRQ 0-11 (GPIO) handler.  We enter here with the
- * irq_controller_lock held, and IRQs disabled.  Decode the IRQ
- * and call the handler.
- */
+ 
 static void sa1100_gpio_handler(struct irq_desc *desc)
 {
 	struct sa1100_gpio_chip *sgc = irq_desc_get_handler_data(desc);
@@ -235,10 +219,7 @@ static void sa1100_gpio_handler(struct irq_desc *desc)
 
 	mask = readl_relaxed(gedr);
 	do {
-		/*
-		 * clear down all currently active IRQ sources.
-		 * We will be processing them all.
-		 */
+		 
 		writel_relaxed(mask, gedr);
 
 		irq = sgc->irqbase;
@@ -257,15 +238,11 @@ static int sa1100_gpio_suspend(void)
 {
 	struct sa1100_gpio_chip *sgc = &sa1100_gpio_chip;
 
-	/*
-	 * Set the appropriate edges for wakeup.
-	 */
+	 
 	writel_relaxed(sgc->irqwake & sgc->irqrising, sgc->membase + R_GRER);
 	writel_relaxed(sgc->irqwake & sgc->irqfalling, sgc->membase + R_GFER);
 
-	/*
-	 * Clear any pending GPIO interrupts.
-	 */
+	 
 	writel_relaxed(readl_relaxed(sgc->membase + R_GEDR),
 		       sgc->membase + R_GEDR);
 
@@ -291,7 +268,7 @@ static int __init sa1100_gpio_init_devicefs(void)
 device_initcall(sa1100_gpio_init_devicefs);
 
 static const int sa1100_gpio_irqs[] __initconst = {
-	/* Install handlers for GPIO 0-10 edge detect interrupts */
+	 
 	IRQ_GPIO0_SC,
 	IRQ_GPIO1_SC,
 	IRQ_GPIO2_SC,
@@ -303,7 +280,7 @@ static const int sa1100_gpio_irqs[] __initconst = {
 	IRQ_GPIO8_SC,
 	IRQ_GPIO9_SC,
 	IRQ_GPIO10_SC,
-	/* Install handler for GPIO 11-27 edge detect interrupts */
+	 
 	IRQ_GPIO11_27,
 };
 
@@ -312,7 +289,7 @@ void __init sa1100_init_gpio(void)
 	struct sa1100_gpio_chip *sgc = &sa1100_gpio_chip;
 	int i;
 
-	/* clear all GPIO edge detects */
+	 
 	writel_relaxed(0, sgc->membase + R_GFER);
 	writel_relaxed(0, sgc->membase + R_GRER);
 	writel_relaxed(-1, sgc->membase + R_GEDR);

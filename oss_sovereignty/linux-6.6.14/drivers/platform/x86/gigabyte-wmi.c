@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2021 Thomas Weißschuh <thomas@weissschuh.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/acpi.h>
@@ -75,7 +73,7 @@ static int gigabyte_wmi_temperature(struct wmi_device *wdev, u8 sensor, long *re
 	if (ret == 0) {
 		if (temp == 0)
 			return -ENODEV;
-		*res = (s8)temp * 1000; // value is a signed 8-bit integer
+		*res = (s8)temp * 1000; 
 	}
 	return ret;
 }

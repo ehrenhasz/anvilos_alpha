@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Header file for FPGA Accelerated Function Unit (AFU) Driver
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *     Wu Hao <hao.wu@intel.com>
- *     Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *     Joseph Grecco <joe.grecco@intel.com>
- *     Enno Luebbers <enno.luebbers@intel.com>
- *     Tim Whisonant <tim.whisonant@intel.com>
- *     Ananda Ravuri <ananda.ravuri@intel.com>
- *     Henry Mitchel <henry.mitchel@intel.com>
- */
+ 
+ 
 
 #ifndef __DFL_AFU_H
 #define __DFL_AFU_H
@@ -21,16 +8,7 @@
 
 #include "dfl.h"
 
-/**
- * struct dfl_afu_mmio_region - afu mmio region data structure
- *
- * @index: region index.
- * @flags: region flags (access permission).
- * @size: region size.
- * @offset: region offset from start of the device fd.
- * @phys: region's physical address.
- * @node: node to add to afu feature dev's region list.
- */
+ 
 struct dfl_afu_mmio_region {
 	u32 index;
 	u32 flags;
@@ -40,16 +18,7 @@ struct dfl_afu_mmio_region {
 	struct list_head node;
 };
 
-/**
- * struct dfl_afu_dma_region - afu DMA region data structure
- *
- * @user_addr: region userspace virtual address.
- * @length: region length.
- * @iova: region IO virtual address.
- * @pages: ptr to pages of this region.
- * @node: rb tree node.
- * @in_use: flag to indicate if this region is in_use.
- */
+ 
 struct dfl_afu_dma_region {
 	u64 user_addr;
 	u64 length;
@@ -59,16 +28,7 @@ struct dfl_afu_dma_region {
 	bool in_use;
 };
 
-/**
- * struct dfl_afu - afu device data structure
- *
- * @region_cur_offset: current region offset from start to the device fd.
- * @num_regions: num of mmio regions.
- * @regions: the mmio region linked list of this afu feature device.
- * @dma_regions: root of dma regions rb tree.
- * @num_umsgs: num of umsgs.
- * @pdata: afu platform device's pdata.
- */
+ 
 struct dfl_afu {
 	u64 region_cur_offset;
 	int num_regions;
@@ -79,7 +39,7 @@ struct dfl_afu {
 	struct dfl_feature_platform_data *pdata;
 };
 
-/* hold pdata->lock when call __afu_port_enable/disable */
+ 
 int __afu_port_enable(struct platform_device *pdev);
 int __afu_port_disable(struct platform_device *pdev);
 
@@ -106,4 +66,4 @@ extern const struct dfl_feature_ops port_err_ops;
 extern const struct dfl_feature_id port_err_id_table[];
 extern const struct attribute_group port_err_group;
 
-#endif /* __DFL_AFU_H */
+#endif  

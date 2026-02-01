@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 NVIDIA CORPORATION, All Rights Reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/of.h>
@@ -33,12 +31,7 @@ static int gic_runtime_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * On the very first resume, the pointer to chip_pm->chip_data
-	 * will be NULL and this is intentional, because we do not
-	 * want to restore the GIC on the very first resume. So if
-	 * the pointer is not valid just return.
-	 */
+	 
 	if (!gic)
 		return 0;
 

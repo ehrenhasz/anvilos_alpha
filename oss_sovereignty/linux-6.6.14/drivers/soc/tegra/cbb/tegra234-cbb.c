@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION. All rights reserved
- *
- * The driver handles Error's from Control Backbone(CBB) version 2.0.
- * generated due to illegal accesses. The driver prints debug information
- * about failed transaction on receiving interrupt from Error Notifier.
- * Error types supported by CBB2.0 are:
- *   UNSUPPORTED_ERR, PWRDOWN_ERR, TIMEOUT_ERR, FIREWALL_ERR, DECODE_ERR,
- *   SLAVE_ERR
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -70,7 +61,7 @@
 
 #define CCPLEX_MSTRID			0x1
 #define FIREWALL_APERTURE_SZ		0x10000
-/* Write firewall check enable */
+ 
 #define WEN				0x20000
 
 enum tegra234_cbb_fabric_ids {
@@ -114,7 +105,7 @@ struct tegra234_cbb {
 	int num_intr;
 	int sec_irq;
 
-	/* record */
+	 
 	void __iomem *mon;
 	unsigned int type;
 	u32 mask;
@@ -152,18 +143,11 @@ tegra234_cbb_write_access_allowed(struct platform_device *pdev, struct tegra234_
 	}
 
 	val = readl(cbb->regs + cbb->fabric->firewall_base + cbb->fabric->firewall_ctl);
-	/*
-	 * If the firewall check feature for allowing or blocking the
-	 * write accesses through the firewall of a fabric is disabled
-	 * then CCPLEX can write to the registers of that fabric.
-	 */
+	 
 	if (!(val & WEN))
 		return true;
 
-	/*
-	 * If the firewall check is enabled then check whether CCPLEX
-	 * has write access to the fabric's error notifier registers
-	 */
+	 
 	val = readl(cbb->regs + cbb->fabric->firewall_base + cbb->fabric->firewall_wr_ctl);
 	if (val & (BIT(CCPLEX_MSTRID)))
 		return true;
@@ -268,22 +252,7 @@ static void tegra234_lookup_slave_timeout(struct seq_file *file, struct tegra234
 	const struct tegra234_slave_lookup *map = cbb->fabric->slave_map;
 	void __iomem *addr;
 
-	/*
-	 * 1) Get slave node name and address mapping using slave_id.
-	 * 2) Check if the timed out slave node is APB or AXI.
-	 * 3) If AXI, then print timeout register and reset axi slave
-	 *    using <FABRIC>_SN_<>_SLV_TIMEOUT_STATUS_0_0 register.
-	 * 4) If APB, then perform an additional lookup to find the client
-	 *    which timed out.
-	 *	a) Get block number from the index of set bit in
-	 *	   <FABRIC>_SN_AXI2APB_<>_BLOCK_TMO_STATUS_0 register.
-	 *	b) Get address of register repective to block number i.e.
-	 *	   <FABRIC>_SN_AXI2APB_<>_BLOCK<index-set-bit>_TMO_0.
-	 *	c) Read the register in above step to get client_id which
-	 *	   timed out as per the set bits.
-	 *      d) Reset the timedout client and print details.
-	 *	e) Goto step-a till all bits are set.
-	 */
+	 
 
 	addr = cbb->regs + map[slave_id].offset;
 
@@ -362,10 +331,7 @@ static void print_errlog_err(struct seq_file *file, struct tegra234_cbb *cbb)
 	grpsec = FIELD_GET(FAB_EM_EL_GRPSEC, cbb->mn_user_bits);
 	falconsec = FIELD_GET(FAB_EM_EL_FALCONSEC, cbb->mn_user_bits);
 
-	/*
-	 * For SOC with multiple NUMA nodes, print cross socket access
-	 * errors only if initiator/master_id is CCPLEX, CPMU or GPU.
-	 */
+	 
 	if (is_numa) {
 		local_socket_id = numa_node_id();
 		requester_socket_id = FIELD_GET(REQ_SOCKET_ID, cbb->mn_attr2);
@@ -562,9 +528,7 @@ static int tegra234_cbb_debugfs_show(struct tegra_cbb *cbb, struct seq_file *fil
 }
 #endif
 
-/*
- * Handler for CBB errors
- */
+ 
 static irqreturn_t tegra234_cbb_isr(int irq, void *data)
 {
 	bool is_inband_err = false;
@@ -588,9 +552,7 @@ static irqreturn_t tegra234_cbb_isr(int irq, void *data)
 			if (err)
 				goto unlock;
 
-			/*
-			 * If illegal request is from CCPLEX(id:0x1) master then call WARN()
-			 */
+			 
 			if (priv->fabric->off_mask_erd) {
 				mstr_id =  FIELD_GET(USRBITS_MSTR_ID, priv->mn_user_bits);
 				if (mstr_id == CCPLEX_MSTRID)
@@ -605,9 +567,7 @@ unlock:
 	return IRQ_HANDLED;
 }
 
-/*
- * Register handler for CBB_SECURE interrupt for reporting errors
- */
+ 
 static int tegra234_cbb_interrupt_enable(struct tegra_cbb *cbb)
 {
 	struct tegra234_cbb *priv = to_tegra234_cbb(cbb);
@@ -876,19 +836,7 @@ static const char * const tegra241_master_id[] = {
 	[0xd ... 0x3f] = "RSVD"
 };
 
-/*
- * Possible causes for Slave and Timeout errors.
- * SLAVE_ERR:
- * Slave being accessed responded with an error. Slave could return
- * an error for various cases :
- *   Unsupported access, clamp setting when power gated, register
- *   level firewall(SCR), address hole within the slave, etc
- *
- * TIMEOUT_ERR:
- * No response returned by slave. Can be due to slave being clock
- * gated, under reset, powered down or slave inability to respond
- * for an internal slave issue
- */
+ 
 static const struct tegra_cbb_error tegra241_cbb_errors[] = {
 	{
 		.code = "SLAVE_ERR",
@@ -1075,7 +1023,7 @@ static const struct of_device_id tegra234_cbb_dt_ids[] = {
 	{ .compatible = "nvidia,tegra234-dce-fabric", .data = &tegra234_dce_fabric },
 	{ .compatible = "nvidia,tegra234-rce-fabric", .data = &tegra234_rce_fabric },
 	{ .compatible = "nvidia,tegra234-sce-fabric", .data = &tegra234_sce_fabric },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, tegra234_cbb_dt_ids);
 
@@ -1150,10 +1098,7 @@ static int tegra234_cbb_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, cbb);
 
-	/*
-	 * Don't enable error reporting for a Fabric if write to it's registers
-	 * is blocked by CBB firewall.
-	 */
+	 
 	if (!tegra234_cbb_write_access_allowed(pdev, cbb)) {
 		dev_info(&pdev->dev, "error reporting not enabled due to firewall\n");
 		return 0;
@@ -1163,7 +1108,7 @@ static int tegra234_cbb_probe(struct platform_device *pdev)
 	list_add(&cbb->base.node, &cbb_list);
 	spin_unlock_irqrestore(&cbb_lock, flags);
 
-	/* set ERD bit to mask SError and generate interrupt to report error */
+	 
 	if (cbb->fabric->off_mask_erd)
 		tegra234_cbb_mask_serror(cbb);
 

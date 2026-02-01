@@ -1,41 +1,8 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 2001-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                        1996-on                 *
- *     and: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- ****************************************************************************/
+ 
 
-/*
- *	visbuf.c - Tracing/Debugging support routines
- */
+ 
 
 #define NEED_NCURSES_CH_T
 #include <curses.priv.h>
@@ -61,7 +28,7 @@ static const char r_brace[] = StringOf(R_BRACE);
 #define LIMIT_ARG ,size_t limit
 #else
 #define VisChar(tp, chr, limit) _nc_vischar(tp, chr)
-#define LIMIT_ARG		/* nothing */
+#define LIMIT_ARG		 
 #endif
 
 static char *
@@ -252,7 +219,7 @@ _nc_viswbufn(const wchar_t *buf, int len)
     return _nc_viswbuf2n(0, buf, len);
 }
 
-/* this special case is used for wget_wstr() */
+ 
 NCURSES_EXPORT(const char *)
 _nc_viswibuf(const wint_t *buf)
 {
@@ -261,7 +228,7 @@ _nc_viswibuf(const wint_t *buf)
     unsigned n;
 
     for (n = 0; buf[n] != 0; ++n) {
-	;			/* empty */
+	;			 
     }
     if (mylen < ++n) {
 	mylen = n + 80;
@@ -279,9 +246,9 @@ _nc_viswibuf(const wint_t *buf)
 
     return _nc_viswbuf2(0, mybuf);
 }
-#endif /* USE_WIDEC_SUPPORT */
+#endif  
 
-/* use these functions for displaying parts of a line within a window */
+ 
 NCURSES_EXPORT(const char *)
 _nc_viscbuf2(int bufnum, const NCURSES_CH_T *buf, int len)
 {
@@ -293,11 +260,9 @@ _nc_viscbuf2(int bufnum, const NCURSES_CH_T *buf, int len)
 #if USE_WIDEC_SUPPORT
 	if (len < 0)
 	    len = _nc_wchstrlen(buf);
-#endif /* USE_WIDEC_SUPPORT */
+#endif  
 
-	/*
-	 * Display one or more strings followed by attributes.
-	 */
+	 
 	while (first < len) {
 	    attr_t attr = AttrOf(buf[first]);
 	    int last = len - 1;
@@ -356,7 +321,7 @@ _nc_viscbuf2(int bufnum, const NCURSES_CH_T *buf, int len)
 		    VisChar(temp, UChar(buf[j]), sizeof(temp));
 		    (void) _nc_trace_bufcat(bufnum, temp);
 		}
-#endif /* USE_WIDEC_SUPPORT */
+#endif  
 	    }
 	    (void) _nc_trace_bufcat(bufnum, d_quote);
 	    if (attr != A_NORMAL) {
@@ -375,4 +340,4 @@ _nc_viscbuf(const NCURSES_CH_T *buf, int len)
 {
     return _nc_viscbuf2(0, buf, len);
 }
-#endif /* TRACE */
+#endif  

@@ -1,4 +1,4 @@
-// Berkeley-db configuration.
+
 
 #define __DBINTERFACE_PRIVATE 1
 #define mpool_error printf

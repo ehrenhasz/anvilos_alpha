@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * w6692.c     mISDN driver for Winbond w6692 based cards
- *
- * Author      Karsten Keil <kkeil@suse.de>
- *             based on the w6692 I4L driver from Petr Novak <petr.novak@i.cz>
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -26,7 +19,7 @@ enum {
 	W6692_USR
 };
 
-/* private data in the PCI devices list */
+ 
 struct w6692map {
 	u_int	subtype;
 	char	*name;
@@ -55,9 +48,9 @@ struct w6692_hw {
 	u32			irq;
 	u32			irqcnt;
 	u32			addr;
-	u32			fmask;	/* feature mask - bit set per card nr */
+	u32			fmask;	 
 	int			subtype;
-	spinlock_t		lock;	/* hw lock */
+	spinlock_t		lock;	 
 	u8			imask;
 	u8			pctl;
 	u8			xaddr;
@@ -69,7 +62,7 @@ struct w6692_hw {
 };
 
 static LIST_HEAD(Cards);
-static DEFINE_RWLOCK(card_lock); /* protect Cards */
+static DEFINE_RWLOCK(card_lock);  
 
 static int w6692_cnt;
 static int debug;
@@ -164,10 +157,10 @@ w6692_led_handler(struct w6692_hw *card, int on)
 	if ((!(card->fmask & led)) || card->subtype == W6692_USR)
 		return;
 	if (on) {
-		card->xdata &= 0xfb;	/*  LED ON */
+		card->xdata &= 0xfb;	 
 		WriteW6692(card, W_XDATA, card->xdata);
 	} else {
-		card->xdata |= 0x04;	/*  LED OFF */
+		card->xdata |= 0x04;	 
 		WriteW6692(card, W_XDATA, card->xdata);
 	}
 }
@@ -316,10 +309,10 @@ d_retransmit(struct w6692_hw *card)
 		dchannel_sched_event(dch, D_CLEARBUSY);
 #endif
 	if (test_bit(FLG_TX_BUSY, &dch->Flags)) {
-		/* Restart frame */
+		 
 		dch->tx_idx = 0;
 		W6692_fill_Dfifo(card);
-	} else if (dch->tx_skb) { /* should not happen */
+	} else if (dch->tx_skb) {  
 		pr_info("%s: %s without TX_BUSY\n", card->name, __func__);
 		test_and_set_bit(FLG_TX_BUSY, &dch->Flags);
 		dch->tx_idx = 0;
@@ -391,25 +384,25 @@ handle_statusD(struct w6692_hw *card)
 
 	pr_debug("%s: D_EXIR %02x\n", card->name, exval);
 	if (exval & (W_D_EXI_XDUN | W_D_EXI_XCOL)) {
-		/* Transmit underrun/collision */
+		 
 		pr_debug("%s: D-channel underrun/collision\n", card->name);
 #ifdef ERROR_STATISTIC
 		dch->err_tx++;
 #endif
 		d_retransmit(card);
 	}
-	if (exval & W_D_EXI_RDOV) {	/* RDOV */
+	if (exval & W_D_EXI_RDOV) {	 
 		pr_debug("%s: D-channel RDOV\n", card->name);
 		WriteW6692(card, W_D_CMDR, W_D_CMDR_RRST);
 	}
-	if (exval & W_D_EXI_TIN2)	/* TIN2 - never */
+	if (exval & W_D_EXI_TIN2)	 
 		pr_debug("%s: spurious TIN2 interrupt\n", card->name);
-	if (exval & W_D_EXI_MOC) {	/* MOC - not supported */
+	if (exval & W_D_EXI_MOC) {	 
 		v1 = ReadW6692(card, W_MOSR);
 		pr_debug("%s: spurious MOC interrupt MOSR %02x\n",
 			 card->name, v1);
 	}
-	if (exval & W_D_EXI_ISC) {	/* ISC - Level1 change */
+	if (exval & W_D_EXI_ISC) {	 
 		cir = ReadW6692(card, W_CIR);
 		pr_debug("%s: ISC CIR %02X\n", card->name, cir);
 		if (cir & W_CIR_ICC) {
@@ -711,7 +704,7 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 		}
 	}
 	if (stat & W_B_EXI_RDOV) {
-		/* only if it is not handled yet */
+		 
 		if (!(star & W_B_STAR_RDOV)) {
 			pr_debug("%s: B%d RDOV IRQ proto=%x\n", card->name,
 				 wch->bch.nr, wch->bch.state);
@@ -736,7 +729,7 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 #endif
 			WriteW6692B(wch, W_B_CMDR, W_B_CMDR_XRST |
 				    W_B_CMDR_RACT);
-			/* resend */
+			 
 			if (wch->bch.tx_skb) {
 				if (!test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
 					wch->bch.tx_idx = 0;
@@ -744,7 +737,7 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 		}
 		send_next(wch);
 		if (star & W_B_STAR_XDOW)
-			return; /* handle XDOW only once */
+			return;  
 	}
 	if (stat & W_B_EXI_XDUN) {
 		pr_warn("%s: B%d XDUN proto=%x\n", card->name,
@@ -752,7 +745,7 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 #ifdef ERROR_STATISTIC
 		wch->bch.err_xdu++;
 #endif
-		/* resend - no XRST needed */
+		 
 		if (wch->bch.tx_skb) {
 			if (!test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
 				wch->bch.tx_idx = 0;
@@ -772,7 +765,7 @@ w6692_irq(int intno, void *dev_id)
 	spin_lock(&card->lock);
 	ista = ReadW6692(card, W_ISTA);
 	if ((ista | card->imask) == card->imask) {
-		/* possible a shared  IRQ reqest */
+		 
 		spin_unlock(&card->lock);
 		return IRQ_NONE;
 	}
@@ -791,9 +784,9 @@ w6692_irq(int intno, void *dev_id)
 		handle_txD(card);
 	if (ista & W_INT_D_EXI)
 		handle_statusD(card);
-	if (ista & (W_INT_XINT0 | W_INT_XINT1)) /* XINT0/1 - never */
+	if (ista & (W_INT_XINT0 | W_INT_XINT1))  
 		pr_debug("%s: W6692 spurious XINT!\n", card->name);
-/* End IRQ Handler */
+ 
 	spin_unlock(&card->lock);
 	return IRQ_HANDLED;
 }
@@ -812,17 +805,17 @@ dbusy_timer_handler(struct timer_list *t)
 		star = ReadW6692(card, W_D_STAR);
 		pr_debug("%s: D-Channel Busy RBCH %02x STAR %02x\n",
 			 card->name, rbch, star);
-		if (star & W_D_STAR_XBZ)	/* D-Channel Busy */
+		if (star & W_D_STAR_XBZ)	 
 			test_and_set_bit(FLG_L1_BUSY, &dch->Flags);
 		else {
-			/* discard frame; reset transceiver */
+			 
 			test_and_clear_bit(FLG_BUSY_TIMER, &dch->Flags);
 			if (dch->tx_idx)
 				dch->tx_idx = 0;
 			else
 				pr_info("%s: W6692 D-Channel Busy no tx_idx\n",
 					card->name);
-			/* Transmitter reset */
+			 
 			WriteW6692(card, W_D_CMDR, W_D_CMDR_XRST);
 		}
 		spin_unlock_irqrestore(&card->lock, flags);
@@ -844,22 +837,19 @@ static void initW6692(struct w6692_hw *card)
 	card->state = W_L1CMD_RST;
 	ph_command(card, W_L1CMD_RST);
 	ph_command(card, W_L1CMD_ECK);
-	/* enable all IRQ but extern */
+	 
 	card->imask = 0x18;
 	WriteW6692(card, W_D_EXIM, 0x00);
 	WriteW6692B(&card->bc[0], W_B_EXIM, 0);
 	WriteW6692B(&card->bc[1], W_B_EXIM, 0);
-	/* Reset D-chan receiver and transmitter */
+	 
 	WriteW6692(card, W_D_CMDR, W_D_CMDR_RRST | W_D_CMDR_XRST);
-	/* Reset B-chan receiver and transmitter */
+	 
 	WriteW6692B(&card->bc[0], W_B_CMDR, W_B_CMDR_RRST | W_B_CMDR_XRST);
 	WriteW6692B(&card->bc[1], W_B_CMDR, W_B_CMDR_RRST | W_B_CMDR_XRST);
-	/* enable peripheral */
+	 
 	if (card->subtype == W6692_USR) {
-		/* seems that USR implemented some power control features
-		 * Pin 79 is connected to the oscilator circuit so we
-		 * have to handle it here
-		 */
+		 
 		card->pctl = 0x80;
 		card->xdata = 0;
 		WriteW6692(card, W_PCTL, card->pctl);
@@ -867,11 +857,11 @@ static void initW6692(struct w6692_hw *card)
 	} else {
 		card->pctl = W_PCTL_OE5 | W_PCTL_OE4 | W_PCTL_OE2 |
 			W_PCTL_OE1 | W_PCTL_OE0;
-		card->xaddr = 0x00;/* all sw off */
+		card->xaddr = 0x00; 
 		if (card->fmask & pots)
-			card->xdata |= 0x06;	/*  POWER UP/ LED OFF / ALAW */
+			card->xdata |= 0x06;	 
 		if (card->fmask & led)
-			card->xdata |= 0x04;	/* LED OFF */
+			card->xdata |= 0x04;	 
 		if ((card->fmask & pots) || (card->fmask & led)) {
 			WriteW6692(card, W_PCTL, card->pctl);
 			WriteW6692(card, W_XADDR, card->xaddr);
@@ -911,7 +901,7 @@ init_card(struct w6692_hw *card)
 		initW6692(card);
 		enable_hwirq(card);
 		spin_unlock_irqrestore(&card->lock, flags);
-		/* Timeout 10ms */
+		 
 		msleep_interruptible(10);
 		if (debug & DEBUG_HW)
 			pr_notice("%s: IRQ %d count %d\n", card->name,
@@ -941,7 +931,7 @@ w6692_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 	case PH_DATA_REQ:
 		spin_lock_irqsave(&card->lock, flags);
 		ret = bchannel_senddata(bch, skb);
-		if (ret > 0) { /* direct TX */
+		if (ret > 0) {  
 			ret = 0;
 			W6692_fill_Bfifo(bc);
 		}
@@ -994,7 +984,7 @@ open_bchannel(struct w6692_hw *card, struct channel_req *rq)
 		return -EINVAL;
 	bch = &card->bc[rq->adr.channel - 1].bch;
 	if (test_and_set_bit(FLG_OPEN, &bch->Flags))
-		return -EBUSY; /* b-channel can be only open once */
+		return -EBUSY;  
 	bch->ch.protocol = rq->protocol;
 	rq->ch = &bch->ch;
 	return 0;
@@ -1068,8 +1058,8 @@ w6692_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
 	case PH_DATA_REQ:
 		spin_lock_irqsave(&card->lock, flags);
 		ret = dchannel_senddata(dch, skb);
-		if (ret > 0) { /* direct TX */
-			id = hh->id; /* skb can be freed */
+		if (ret > 0) {  
+			id = hh->id;  
 			W6692_fill_Dfifo(card);
 			ret = 0;
 			spin_unlock_irqrestore(&card->lock, flags);
@@ -1162,7 +1152,7 @@ open_dchannel(struct w6692_hw *card, struct channel_req *rq, void *caller)
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
-		/* E-Channel not supported */
+		 
 		return -EINVAL;
 	rq->ch = &card->dch.dev.D;
 	rq->ch->protocol = rq->protocol;
@@ -1250,7 +1240,7 @@ release_card(struct w6692_hw *card)
 	w6692_mode(&card->bc[0], ISDN_P_NONE);
 	w6692_mode(&card->bc[1], ISDN_P_NONE);
 	if ((card->fmask & led) || card->subtype == W6692_USR) {
-		card->xdata |= 0x04;	/*  LED OFF */
+		card->xdata |= 0x04;	 
 		WriteW6692(card, W_XDATA, card->xdata);
 	}
 	spin_unlock_irqrestore(&card->lock, flags);

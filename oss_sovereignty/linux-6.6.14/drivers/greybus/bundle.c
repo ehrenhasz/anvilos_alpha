@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus bundles
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/greybus.h>
 #include "greybus_trace.h"
@@ -48,7 +43,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 	if (!bundle->state)
 		return -ENOMEM;
 
-	/* Tell userspace that the file contents changed */
+	 
 	sysfs_notify(&bundle->dev.kobj, NULL, "state");
 
 	return size;
@@ -172,11 +167,7 @@ struct device_type greybus_bundle_type = {
 	.pm =		&gb_bundle_pm_ops,
 };
 
-/*
- * Create a gb_bundle structure to represent a discovered
- * bundle.  Returns a pointer to the new bundle or a null
- * pointer if a failure occurs due to memory exhaustion.
- */
+ 
 struct gb_bundle *gb_bundle_create(struct gb_interface *intf, u8 bundle_id,
 				   u8 class)
 {
@@ -187,11 +178,7 @@ struct gb_bundle *gb_bundle_create(struct gb_interface *intf, u8 bundle_id,
 		return NULL;
 	}
 
-	/*
-	 * Reject any attempt to reuse a bundle id.  We initialize
-	 * these serially, so there's no need to worry about keeping
-	 * the interface bundle list locked here.
-	 */
+	 
 	if (gb_bundle_find(intf, bundle_id)) {
 		dev_err(&intf->dev, "duplicate bundle id %u\n", bundle_id);
 		return NULL;
@@ -236,9 +223,7 @@ int gb_bundle_add(struct gb_bundle *bundle)
 	return 0;
 }
 
-/*
- * Tear down a previously set up bundle.
- */
+ 
 void gb_bundle_destroy(struct gb_bundle *bundle)
 {
 	trace_gb_bundle_destroy(bundle);

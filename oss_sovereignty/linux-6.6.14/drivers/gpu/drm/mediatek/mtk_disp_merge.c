@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -20,7 +18,7 @@
 #define DISP_REG_MERGE_CFG_1		0x014
 #define DISP_REG_MERGE_CFG_4		0x020
 #define DISP_REG_MERGE_CFG_10		0x038
-/* no swap */
+ 
 #define SWAP_MODE				0
 #define FLD_SWAP_MODE				GENMASK(4, 0)
 #define DISP_REG_MERGE_CFG_12		0x040
@@ -36,24 +34,21 @@
 #define ULTRA_EN				BIT(0)
 #define PREULTRA_EN				BIT(4)
 #define DISP_REG_MERGE_CFG_37		0x0a4
-/* 0: Off, 1: SRAM0, 2: SRAM1, 3: SRAM0 + SRAM1 */
+ 
 #define BUFFER_MODE				3
 #define FLD_BUFFER_MODE				GENMASK(1, 0)
-/*
- * For the ultra and preultra settings, 6us ~ 9us is experience value
- * and the maximum frequency of mmsys clock is 594MHz.
- */
+ 
 #define DISP_REG_MERGE_CFG_40		0x0b0
-/* 6 us, 594M pixel/sec */
+ 
 #define ULTRA_TH_LOW				(6 * 594)
-/* 8 us, 594M pixel/sec */
+ 
 #define ULTRA_TH_HIGH				(8 * 594)
 #define FLD_ULTRA_TH_LOW			GENMASK(15, 0)
 #define FLD_ULTRA_TH_HIGH			GENMASK(31, 16)
 #define DISP_REG_MERGE_CFG_41		0x0b4
-/* 8 us, 594M pixel/sec */
+ 
 #define PREULTRA_TH_LOW				(8 * 594)
-/* 9 us, 594M pixel/sec */
+ 
 #define PREULTRA_TH_HIGH			(9 * 594)
 #define FLD_PREULTRA_TH_LOW			GENMASK(15, 0)
 #define FLD_PREULTRA_TH_HIGH			GENMASK(31, 16)
@@ -159,14 +154,7 @@ void mtk_merge_advance_config(struct device *dev, unsigned int l_w, unsigned int
 		      DISP_REG_MERGE_CFG_1);
 	mtk_ddp_write(cmdq_pkt, h << 16 | (l_w + r_w), &priv->cmdq_reg, priv->regs,
 		      DISP_REG_MERGE_CFG_4);
-	/*
-	 * DISP_REG_MERGE_CFG_24 is merge SRAM0 w/h
-	 * DISP_REG_MERGE_CFG_25 is merge SRAM1 w/h.
-	 * If r_w > 0, the merge is in merge mode (input0 and input1 merge together),
-	 * the input0 goes to SRAM0, and input1 goes to SRAM1.
-	 * If r_w = 0, the merge is in buffer mode, the input goes through SRAM0 and
-	 * then to SRAM1. Both SRAM0 and SRAM1 are set to the same size.
-	 */
+	 
 	mtk_ddp_write(cmdq_pkt, h << 16 | l_w, &priv->cmdq_reg, priv->regs,
 		      DISP_REG_MERGE_CFG_24);
 	if (r_w)
@@ -176,10 +164,7 @@ void mtk_merge_advance_config(struct device *dev, unsigned int l_w, unsigned int
 		mtk_ddp_write(cmdq_pkt, h << 16 | l_w, &priv->cmdq_reg, priv->regs,
 			      DISP_REG_MERGE_CFG_25);
 
-	/*
-	 * DISP_REG_MERGE_CFG_26 and DISP_REG_MERGE_CFG_27 is only used in LR merge.
-	 * Only take effect when the merge is setting to merge mode.
-	 */
+	 
 	mtk_ddp_write(cmdq_pkt, h << 16 | l_w, &priv->cmdq_reg, priv->regs,
 		      DISP_REG_MERGE_CFG_26);
 	mtk_ddp_write(cmdq_pkt, h << 16 | r_w, &priv->cmdq_reg, priv->regs,
@@ -204,7 +189,7 @@ int mtk_merge_clk_enable(struct device *dev)
 
 	ret = clk_prepare_enable(priv->async_clk);
 	if (ret) {
-		/* should clean up the state of priv->clk */
+		 
 		clk_disable_unprepare(priv->clk);
 
 		dev_err(dev, "async clk prepare enable failed\n");

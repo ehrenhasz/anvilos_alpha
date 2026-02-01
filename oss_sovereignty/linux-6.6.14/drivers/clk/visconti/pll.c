@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Visconti PLL driver
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- * Copyright (c) 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -96,7 +89,7 @@ static unsigned long visconti_get_pll_rate_from_data(struct visconti_pll *pll,
 			sizeof(*rate) - sizeof(unsigned long)) == 0)
 			return rate_table[i].rate;
 
-	/* set default */
+	 
 	return rate_table[0].rate;
 }
 
@@ -107,12 +100,12 @@ static long visconti_pll_round_rate(struct clk_hw *hw,
 	const struct visconti_pll_rate_table *rate_table = pll->rate_table;
 	int i;
 
-	/* Assumming rate_table is in descending order */
+	 
 	for (i = 0; i < pll->rate_count; i++)
 		if (rate >= rate_table[i].rate)
 			return rate_table[i].rate;
 
-	/* return minimum supported value */
+	 
 	return rate_table[i - 1].rate;
 }
 

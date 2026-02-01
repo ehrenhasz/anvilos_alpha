@@ -1,34 +1,4 @@
-/******************************************************************************
- * xenbus_comms.c
- *
- * Low level code to talks to Xen Store: ringbuffer and event channel.
- *
- * Copyright (C) 2005 Rusty Russell, IBM Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,15 +13,15 @@
 #include <xen/page.h>
 #include "xenbus.h"
 
-/* A list of replies. Currently only one will ever be outstanding. */
+ 
 LIST_HEAD(xs_reply_list);
 
-/* A list of write requests. */
+ 
 LIST_HEAD(xb_write_list);
 DECLARE_WAIT_QUEUE_HEAD(xb_waitq);
 DEFINE_MUTEX(xb_write_mutex);
 
-/* Protect xenbus reader thread against save/restore. */
+ 
 DEFINE_MUTEX(xs_response_mutex);
 
 static int xenbus_irq;
@@ -96,13 +66,7 @@ static int xb_data_to_write(void)
 		!list_empty(&xb_write_list);
 }
 
-/**
- * xb_write - low level write
- * @data: buffer to send
- * @len: length of buffer
- *
- * Returns number of bytes written or -err.
- */
+ 
 static int xb_write(const void *data, unsigned int len)
 {
 	struct xenstore_domain_interface *intf = xen_store_interface;
@@ -113,7 +77,7 @@ static int xb_write(const void *data, unsigned int len)
 		void *dst;
 		unsigned int avail;
 
-		/* Read indexes, then verify. */
+		 
 		cons = intf->req_cons;
 		prod = intf->req_prod;
 		if (!check_indexes(cons, prod)) {
@@ -123,7 +87,7 @@ static int xb_write(const void *data, unsigned int len)
 		if (!xb_data_to_write())
 			return bytes;
 
-		/* Must write data /after/ reading the consumer index. */
+		 
 		virt_mb();
 
 		dst = get_output_chunk(cons, prod, intf->req, &avail);
@@ -137,11 +101,11 @@ static int xb_write(const void *data, unsigned int len)
 		len -= avail;
 		bytes += avail;
 
-		/* Other side must not see new producer until data is there. */
+		 
 		virt_wmb();
 		intf->req_prod += avail;
 
-		/* Implies mb(): other side will see the updated producer. */
+		 
 		if (prod <= intf->req_cons)
 			notify_remote_via_evtchn(xen_store_evtchn);
 	}
@@ -165,7 +129,7 @@ static int xb_read(void *data, unsigned int len)
 		unsigned int avail;
 		const char *src;
 
-		/* Read indexes, then verify. */
+		 
 		cons = intf->rsp_cons;
 		prod = intf->rsp_prod;
 		if (cons == prod)
@@ -182,7 +146,7 @@ static int xb_read(void *data, unsigned int len)
 		if (avail > len)
 			avail = len;
 
-		/* Must read data /after/ reading the producer index. */
+		 
 		virt_rmb();
 
 		memcpy(data, src, avail);
@@ -190,11 +154,11 @@ static int xb_read(void *data, unsigned int len)
 		len -= avail;
 		bytes += avail;
 
-		/* Other side must not see free space until we've copied out */
+		 
 		virt_mb();
 		intf->rsp_cons += avail;
 
-		/* Implies mb(): other side will see the updated consumer. */
+		 
 		if (intf->rsp_prod - cons >= XENSTORE_RING_SIZE)
 			notify_remote_via_evtchn(xen_store_evtchn);
 	}
@@ -224,18 +188,11 @@ static int process_msg(void)
 		state.in_hdr = true;
 		state.read = 0;
 
-		/*
-		 * We must disallow save/restore while reading a message.
-		 * A partial read across s/r leaves us out of sync with
-		 * xenstored.
-		 * xs_response_mutex is locked as long as we are processing one
-		 * message. state.in_msg will be true as long as we are holding
-		 * the lock here.
-		 */
+		 
 		mutex_lock(&xs_response_mutex);
 
 		if (!xb_data_to_read()) {
-			/* We raced with save/restore: pending data 'gone'. */
+			 
 			mutex_unlock(&xs_response_mutex);
 			state.in_msg = false;
 			return 0;
@@ -305,7 +262,7 @@ static int process_msg(void)
 			req->msg.type = state.msg.type;
 			req->msg.len = state.msg.len;
 			req->body = state.body;
-			/* write body, then update state */
+			 
 			virt_wmb();
 			req->state = xb_req_state_got_reply;
 			req->cb(req);
@@ -389,7 +346,7 @@ static int process_writes(void)
 	if (state.req->state == xb_req_state_aborted)
 		kfree(state.req);
 	else {
-		/* write err, then update state */
+		 
 		virt_wmb();
 		state.req->state = xb_req_state_got_reply;
 		wake_up(&state.req->wq);
@@ -432,9 +389,7 @@ static int xenbus_thread(void *unused)
 	return 0;
 }
 
-/**
- * xb_init_comms - Set up interrupt handler off store event channel.
- */
+ 
 int xb_init_comms(void)
 {
 	struct xenstore_domain_interface *intf = xen_store_interface;
@@ -446,13 +401,13 @@ int xb_init_comms(void)
 	if (intf->rsp_prod != intf->rsp_cons) {
 		pr_warn("response ring is not quiescent (%08x:%08x): fixing up\n",
 			intf->rsp_cons, intf->rsp_prod);
-		/* breaks kdump */
+		 
 		if (!reset_devices)
 			intf->rsp_cons = intf->rsp_prod;
 	}
 
 	if (xenbus_irq) {
-		/* Already have an irq; assume we're resuming */
+		 
 		rebind_evtchn_irq(xen_store_evtchn, xenbus_irq);
 	} else {
 		int err;

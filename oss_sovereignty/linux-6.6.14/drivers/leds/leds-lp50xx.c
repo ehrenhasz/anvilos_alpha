@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// TI LP50XX LED chip family driver
-// Copyright (C) 2018-20 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -22,7 +22,7 @@
 #define LP50XX_DEV_CFG1		0x01
 #define LP50XX_LED_CFG0		0x02
 
-/* LP5009 and LP5012 registers */
+ 
 #define LP5012_BNK_BRT		0x03
 #define LP5012_BNKA_CLR		0x04
 #define LP5012_BNKB_CLR		0x05
@@ -31,7 +31,7 @@
 #define LP5012_OUT0_CLR		0x0b
 #define LP5012_RESET		0x17
 
-/* LP5018 and LP5024 registers */
+ 
 #define LP5024_BNK_BRT		0x03
 #define LP5024_BNKA_CLR		0x04
 #define LP5024_BNKB_CLR		0x05
@@ -40,7 +40,7 @@
 #define LP5024_OUT0_CLR		0x0f
 #define LP5024_RESET		0x27
 
-/* LP5030 and LP5036 registers */
+ 
 #define LP5036_LED_CFG1		0x03
 #define LP5036_BNK_BRT		0x04
 #define LP5036_BNKA_CLR		0x05
@@ -53,7 +53,7 @@
 #define LP50XX_SW_RESET		0xff
 #define LP50XX_CHIP_EN		BIT(6)
 
-/* There are 3 LED outputs per bank */
+ 
 #define LP50XX_LEDS_PER_MODULE	3
 
 #define LP5009_MAX_LED_MODULES	2
@@ -72,10 +72,10 @@ static const struct reg_default lp5012_reg_defs[] = {
 	{LP5012_BNKB_CLR, 0x0f},
 	{LP5012_BNKC_CLR, 0x0f},
 	{LP5012_LED0_BRT, 0x0f},
-	/* LEDX_BRT registers are all 0xff for defaults */
+	 
 	{0x08, 0xff}, {0x09, 0xff}, {0x0a, 0xff},
 	{LP5012_OUT0_CLR, 0x0f},
-	/* OUTX_CLR registers are all 0x0 for defaults */
+	 
 	{0x0c, 0x00}, {0x0d, 0x00}, {0x0e, 0x00}, {0x0f, 0x00}, {0x10, 0x00},
 	{0x11, 0x00}, {0x12, 0x00}, {0x13, 0x00}, {0x14, 0x00},	{0x15, 0x00},
 	{0x16, 0x00},
@@ -91,11 +91,11 @@ static const struct reg_default lp5024_reg_defs[] = {
 	{LP5024_BNKB_CLR, 0x0f},
 	{LP5024_BNKC_CLR, 0x0f},
 	{LP5024_LED0_BRT, 0x0f},
-	/* LEDX_BRT registers are all 0xff for defaults */
+	 
 	{0x08, 0xff}, {0x09, 0xff}, {0x0a, 0xff}, {0x0b, 0xff}, {0x0c, 0xff},
 	{0x0d, 0xff}, {0x0e, 0xff},
 	{LP5024_OUT0_CLR, 0x0f},
-	/* OUTX_CLR registers are all 0x0 for defaults */
+	 
 	{0x10, 0x00}, {0x11, 0x00}, {0x12, 0x00}, {0x13, 0x00}, {0x14, 0x00},
 	{0x15, 0x00}, {0x16, 0x00}, {0x17, 0x00}, {0x18, 0x00}, {0x19, 0x00},
 	{0x1a, 0x00}, {0x1b, 0x00}, {0x1c, 0x00}, {0x1d, 0x00}, {0x1e, 0x00},
@@ -114,12 +114,12 @@ static const struct reg_default lp5036_reg_defs[] = {
 	{LP5036_BNKB_CLR, 0x0f},
 	{LP5036_BNKC_CLR, 0x0f},
 	{LP5036_LED0_BRT, 0x0f},
-	/* LEDX_BRT registers are all 0xff for defaults */
+	 
 	{0x08, 0xff}, {0x09, 0xff}, {0x0a, 0xff}, {0x0b, 0xff}, {0x0c, 0xff},
 	{0x0d, 0xff}, {0x0e, 0xff}, {0x0f, 0xff}, {0x10, 0xff}, {0x11, 0xff},
 	{0x12, 0xff}, {0x13, 0xff},
 	{LP5036_OUT0_CLR, 0x0f},
-	/* OUTX_CLR registers are all 0x0 for defaults */
+	 
 	{0x15, 0x00}, {0x16, 0x00}, {0x17, 0x00}, {0x18, 0x00}, {0x19, 0x00},
 	{0x1a, 0x00}, {0x1b, 0x00}, {0x1c, 0x00}, {0x1d, 0x00}, {0x1e, 0x00},
 	{0x1f, 0x00}, {0x20, 0x00}, {0x21, 0x00}, {0x22, 0x00}, {0x23, 0x00},
@@ -169,18 +169,7 @@ enum lp50xx_model {
 	LP5036,
 };
 
-/**
- * struct lp50xx_chip_info -
- * @lp50xx_regmap_config: regmap register configuration
- * @model_id: LED device model
- * @max_modules: total number of supported LED modules
- * @num_leds: number of LED outputs available on the device
- * @led_brightness0_reg: first brightness register of the device
- * @mix_out0_reg: first color mix register of the device
- * @bank_brt_reg: bank brightness register
- * @bank_mix_reg: color mix register
- * @reset_reg: device reset register
- */
+ 
 struct lp50xx_chip_info {
 	const struct regmap_config *lp50xx_regmap_config;
 	int model_id;
@@ -270,18 +259,7 @@ struct lp50xx_led {
 	int led_number;
 };
 
-/**
- * struct lp50xx -
- * @enable_gpio: hardware enable gpio
- * @regulator: LED supply regulator pointer
- * @client: pointer to the I2C client
- * @regmap: device register map
- * @dev: pointer to the devices device struct
- * @lock: lock for reading/writing the device
- * @chip_info: chip specific information (ie num_leds)
- * @num_of_banked_leds: holds the number of banked LEDs
- * @leds: array of LED strings
- */
+ 
 struct lp50xx {
 	struct gpio_desc *enable_gpio;
 	struct regulator *regulator;
@@ -292,7 +270,7 @@ struct lp50xx {
 	const struct lp50xx_chip_info *chip_info;
 	int num_of_banked_leds;
 
-	/* This needs to be at the end of the struct */
+	 
 	struct lp50xx_led leds[];
 };
 
@@ -474,10 +452,7 @@ static int lp50xx_probe_dt(struct lp50xx *priv)
 		init_data.fwnode = child;
 		num_colors = 0;
 
-		/*
-		 * There are only 3 LEDs per module otherwise they should be
-		 * banked which also is presented as 3 LEDs.
-		 */
+		 
 		mc_led_info = devm_kcalloc(priv->dev, LP50XX_LEDS_PER_MODULE,
 					   sizeof(*mc_led_info), GFP_KERNEL);
 		if (!mc_led_info) {

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Kirkwood SoC clocks
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -18,49 +9,7 @@
 #include <linux/of_address.h>
 #include "common.h"
 
-/*
- * Core Clocks
- *
- * Kirkwood PLL sample-at-reset configuration
- * (6180 has different SAR layout than other Kirkwood SoCs)
- *
- * SAR0[4:3,22,1] : CPU frequency (6281,6292,6282)
- *	4  =  600 MHz
- *	6  =  800 MHz
- *	7  = 1000 MHz
- *	9  = 1200 MHz
- *	12 = 1500 MHz
- *	13 = 1600 MHz
- *	14 = 1800 MHz
- *	15 = 2000 MHz
- *	others reserved.
- *
- * SAR0[19,10:9] : CPU to L2 Clock divider ratio (6281,6292,6282)
- *	1 = (1/2) * CPU
- *	3 = (1/3) * CPU
- *	5 = (1/4) * CPU
- *	others reserved.
- *
- * SAR0[8:5] : CPU to DDR DRAM Clock divider ratio (6281,6292,6282)
- *	2 = (1/2) * CPU
- *	4 = (1/3) * CPU
- *	6 = (1/4) * CPU
- *	7 = (2/9) * CPU
- *	8 = (1/5) * CPU
- *	9 = (1/6) * CPU
- *	others reserved.
- *
- * SAR0[4:2] : Kirkwood 6180 cpu/l2/ddr clock configuration (6180 only)
- *	5 = [CPU =  600 MHz, L2 = (1/2) * CPU, DDR = 200 MHz = (1/3) * CPU]
- *	6 = [CPU =  800 MHz, L2 = (1/2) * CPU, DDR = 200 MHz = (1/4) * CPU]
- *	7 = [CPU = 1000 MHz, L2 = (1/2) * CPU, DDR = 200 MHz = (1/5) * CPU]
- *	others reserved.
- *
- * SAR0[21] : TCLK frequency
- *	0 = 200 MHz
- *	1 = 166 MHz
- *	others reserved.
- */
+ 
 
 #define SAR_KIRKWOOD_CPU_FREQ(x)	\
 	(((x & (1 <<  1)) >>  1) |	\
@@ -169,7 +118,7 @@ static void __init mv88f6180_get_clk_ratio(
 	switch (id) {
 	case KIRKWOOD_CPU_TO_L2:
 	{
-		/* mv88f6180 has a fixed 1:2 CPU-to-L2 ratio */
+		 
 		*mult = 1;
 		*div = 2;
 		break;
@@ -214,9 +163,7 @@ static const struct coreclk_soc_desc mv98dx1135_coreclks = {
 	.num_ratios = ARRAY_SIZE(kirkwood_coreclk_ratios),
 };
 
-/*
- * Clock Gating Control
- */
+ 
 
 static const struct clk_gating_soc_desc kirkwood_gating_desc[] __initconst = {
 	{ "ge0", NULL, 0, 0 },
@@ -238,9 +185,7 @@ static const struct clk_gating_soc_desc kirkwood_gating_desc[] __initconst = {
 };
 
 
-/*
- * Clock Muxing Control
- */
+ 
 
 struct clk_muxing_soc_desc {
 	const char *name;
@@ -301,10 +246,10 @@ static void __init kirkwood_clk_muxing_setup(struct device_node *np,
 	if (WARN_ON(!ctrl))
 		goto ctrl_out;
 
-	/* lock must already be initialized */
+	 
 	ctrl->lock = &ctrl_gating_lock;
 
-	/* Count, allocate, and register clock muxes */
+	 
 	for (n = 0; desc[n].name;)
 		n++;
 

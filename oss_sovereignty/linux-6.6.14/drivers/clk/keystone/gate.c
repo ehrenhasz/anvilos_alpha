@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Clock driver for Keystone 2 based devices
- *
- * Copyright (C) 2013 Texas Instruments.
- *	Murali Karicheri <m-karicheri2@ti.com>
- *	Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -14,7 +8,7 @@
 #include <linux/of.h>
 #include <linux/module.h>
 
-/* PSC register offsets */
+ 
 #define PTCMD			0x120
 #define PTSTAT			0x128
 #define PDSTAT			0x200
@@ -22,7 +16,7 @@
 #define MDSTAT			0x800
 #define MDCTL			0xa00
 
-/* PSC module states */
+ 
 #define PSC_STATE_SWRSTDISABLE	0
 #define PSC_STATE_SYNCRST	1
 #define PSC_STATE_DISABLE	2
@@ -35,29 +29,19 @@
 #define MDCTL_LRESET		BIT(8)
 #define PDCTL_NEXT		BIT(0)
 
-/* Maximum timeout to bail out state transition for module */
+ 
 #define STATE_TRANS_MAX_COUNT	0xffff
 
 static void __iomem *domain_transition_base;
 
-/**
- * struct clk_psc_data - PSC data
- * @control_base: Base address for a PSC control
- * @domain_base: Base address for a PSC domain
- * @domain_id: PSC domain id number
- */
+ 
 struct clk_psc_data {
 	void __iomem *control_base;
 	void __iomem *domain_base;
 	u32 domain_id;
 };
 
-/**
- * struct clk_psc - PSC clock structure
- * @hw: clk_hw for the psc
- * @psc_data: PSC driver specific data
- * @lock: Spinlock used by the driver
- */
+ 
 struct clk_psc {
 	struct clk_hw hw;
 	struct clk_psc_data *psc_data;
@@ -77,7 +61,7 @@ static void psc_config(void __iomem *control_base, void __iomem *domain_base,
 	mdctl = readl(control_base + MDCTL);
 	mdctl &= ~MDSTAT_STATE_MASK;
 	mdctl |= next_state;
-	/* For disable, we always put the module in local reset */
+	 
 	if (next_state == PSC_STATE_DISABLE)
 		mdctl &= ~MDCTL_LRESET;
 	writel(mdctl, control_base + MDCTL);
@@ -150,14 +134,7 @@ static const struct clk_ops clk_psc_ops = {
 	.is_enabled = keystone_clk_is_enabled,
 };
 
-/**
- * clk_register_psc - register psc clock
- * @dev: device that is registering this clock
- * @name: name of this clock
- * @parent_name: name of clock's parent
- * @psc_data: platform data to configure this clock
- * @lock: spinlock used by this clock
- */
+ 
 static struct clk *clk_register_psc(struct device *dev,
 			const char *name,
 			const char *parent_name,
@@ -189,11 +166,7 @@ static struct clk *clk_register_psc(struct device *dev,
 	return clk;
 }
 
-/**
- * of_psc_clk_init - initialize psc clock through DT
- * @node: device tree node for this clock
- * @lock: spinlock used by this clock
- */
+ 
 static void __init of_psc_clk_init(struct device_node *node, spinlock_t *lock)
 {
 	const char *clk_name = node->name;
@@ -224,7 +197,7 @@ static void __init of_psc_clk_init(struct device_node *node, spinlock_t *lock)
 
 	of_property_read_u32(node, "domain-id", &data->domain_id);
 
-	/* Domain transition registers at fixed address space of domain_id 0 */
+	 
 	if (!domain_transition_base && !data->domain_id)
 		domain_transition_base = data->domain_base;
 
@@ -252,10 +225,7 @@ out:
 	return;
 }
 
-/**
- * of_keystone_psc_clk_init - initialize psc clock through DT
- * @node: device tree node for this clock
- */
+ 
 static void __init of_keystone_psc_clk_init(struct device_node *node)
 {
 	of_psc_clk_init(node, &psc_lock);

@@ -1,22 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TerraTec Cinergy T2/qanu USB2 DVB-T adapter.
- *
- * Copyright (C) 2007 Tomi Orava (tomimo@ncircle.nullnet.fi)
- *
- * Based on the dvb-usb-framework code and the
- * original Terratec Cinergy T2 driver by:
- *
- * Copyright (C) 2004 Daniel Mack <daniel@qanu.de> and
- *		    Holger Waechtler <holger@qanu.de>
- *
- *  Protocol Spec published on http://qanu.de/specs/terratec_cinergyT2.pdf
- */
+
+ 
 
 #include "cinergyT2.h"
 
 
-/* debug */
+ 
 int dvb_usb_cinergyt2_debug;
 
 module_param_named(debug, dvb_usb_cinergyt2_debug, int, 0644);
@@ -29,7 +17,7 @@ struct cinergyt2_state {
 	unsigned char data[64];
 };
 
-/* Forward declaration */
+ 
 static const struct dvb_usb_device_properties cinergyt2_properties;
 
 static int cinergyt2_streaming_ctrl(struct dvb_usb_adapter *adap, int enable)
@@ -125,7 +113,7 @@ static struct rc_map_table rc_map_cinergyt2_table[] = {
 	{ 0x045c, KEY_NEXT }
 };
 
-/* Number of keypresses to ignore before detect repeating */
+ 
 #define RC_REPEAT_DELAY 3
 
 static int repeatable_keys[] = {
@@ -154,7 +142,7 @@ static int cinergyt2_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 		goto ret;
 
 	if (st->data[4] == 0xff) {
-		/* key repeat */
+		 
 		st->rc_counter++;
 		if (st->rc_counter > RC_REPEAT_DELAY) {
 			for (i = 0; i < ARRAY_SIZE(repeatable_keys); i++) {
@@ -171,7 +159,7 @@ static int cinergyt2_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 		goto ret;
 	}
 
-	/* hack to pass checksum on the custom field */
+	 
 	st->data[2] = ~st->data[1];
 	dvb_usb_nec_rc_key_to_event(d, st->data, event, state);
 	if (st->data[0] != 0) {
@@ -214,7 +202,7 @@ static const struct dvb_usb_device_properties cinergyt2_properties = {
 			.streaming_ctrl   = cinergyt2_streaming_ctrl,
 			.frontend_attach  = cinergyt2_frontend_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = 5,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <bpf/btf.h>
@@ -46,25 +46,19 @@ static void obj_load_log_buf(void)
 
 	opts.kernel_log_buf = obj_log_buf;
 	opts.kernel_log_size = log_buf_sz;
-	opts.kernel_log_level = 4; /* for BTF this will turn into 1 */
+	opts.kernel_log_level = 4;  
 
-	/* In the first round every prog has its own log_buf, so libbpf logs
-	 * don't have program failure logs
-	 */
+	 
 	skel = test_log_buf__open_opts(&opts);
 	if (!ASSERT_OK_PTR(skel, "skel_open"))
 		goto cleanup;
 
-	/* set very verbose level for good_prog so we always get detailed logs */
+	 
 	bpf_program__set_log_buf(skel->progs.good_prog, good_log_buf, log_buf_sz);
 	bpf_program__set_log_level(skel->progs.good_prog, 2);
 
 	bpf_program__set_log_buf(skel->progs.bad_prog, bad_log_buf, log_buf_sz);
-	/* log_level 0 with custom log_buf means that verbose logs are not
-	 * requested if program load is successful, but libbpf should retry
-	 * with log_level 1 on error and put program's verbose load log into
-	 * custom log_buf
-	 */
+	 
 	bpf_program__set_log_level(skel->progs.bad_prog, 0);
 
 	err = test_log_buf__load(skel);
@@ -73,7 +67,7 @@ static void obj_load_log_buf(void)
 
 	ASSERT_FALSE(libbpf_log_error, "libbpf_log_error");
 
-	/* there should be no prog loading log because we specified per-prog log buf */
+	 
 	ASSERT_NULL(strstr(libbpf_log_buf, "-- BEGIN PROG LOAD LOG --"), "unexp_libbpf_log");
 	ASSERT_OK_PTR(strstr(libbpf_log_buf, "prog 'bad_prog': BPF program load failed"),
 		      "libbpf_log_not_empty");
@@ -90,15 +84,15 @@ static void obj_load_log_buf(void)
 		printf("BAD_PROG  LOG:\n=================\n%s=================\n", bad_log_buf);
 	}
 
-	/* reset everything */
+	 
 	test_log_buf__destroy(skel);
 	obj_log_buf[0] = good_log_buf[0] = bad_log_buf[0] = '\0';
 	libbpf_log_buf[0] = '\0';
 	libbpf_log_pos = 0;
 	libbpf_log_error = false;
 
-	/* In the second round we let bad_prog's failure be logged through print callback */
-	opts.kernel_log_buf = NULL; /* let everything through into print callback */
+	 
+	opts.kernel_log_buf = NULL;  
 	opts.kernel_log_size = 0;
 	opts.kernel_log_level = 1;
 
@@ -106,7 +100,7 @@ static void obj_load_log_buf(void)
 	if (!ASSERT_OK_PTR(skel, "skel_open"))
 		goto cleanup;
 
-	/* set normal verbose level for good_prog to check log_level is taken into account */
+	 
 	bpf_program__set_log_buf(skel->progs.good_prog, good_log_buf, log_buf_sz);
 	bpf_program__set_log_level(skel->progs.good_prog, 1);
 
@@ -116,7 +110,7 @@ static void obj_load_log_buf(void)
 
 	ASSERT_FALSE(libbpf_log_error, "libbpf_log_error");
 
-	/* this time prog loading error should be logged through print callback */
+	 
 	ASSERT_OK_PTR(strstr(libbpf_log_buf, "libbpf: prog 'bad_prog': -- BEGIN PROG LOAD LOG --"),
 		      "libbpf_log_correct");
 	ASSERT_STREQ(obj_log_buf, "", "obj_log__empty");
@@ -159,7 +153,7 @@ static void bpf_prog_load_log_buf(void)
 	opts.log_buf = log_buf;
 	opts.log_size = log_buf_sz;
 
-	/* with log_level == 0 log_buf shoud stay empty for good prog */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 0;
 	fd = bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER, "good_prog", "GPL",
@@ -170,7 +164,7 @@ static void bpf_prog_load_log_buf(void)
 		close(fd);
 	fd = -1;
 
-	/* log_level == 2 should always fill log_buf, even for good prog */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 2;
 	fd = bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER, "good_prog", "GPL",
@@ -181,7 +175,7 @@ static void bpf_prog_load_log_buf(void)
 		close(fd);
 	fd = -1;
 
-	/* log_level == 0 should fill log_buf for bad prog */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 0;
 	fd = bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER, "bad_prog", "GPL",
@@ -221,7 +215,7 @@ static void bpf_btf_load_log_buf(void)
 	opts.log_buf = log_buf;
 	opts.log_size = log_buf_sz;
 
-	/* with log_level == 0 log_buf shoud stay empty for good BTF */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 0;
 	fd = bpf_btf_load(raw_btf_data, raw_btf_size, &opts);
@@ -231,7 +225,7 @@ static void bpf_btf_load_log_buf(void)
 		close(fd);
 	fd = -1;
 
-	/* log_level == 2 should always fill log_buf, even for good BTF */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 2;
 	fd = bpf_btf_load(raw_btf_data, raw_btf_size, &opts);
@@ -242,14 +236,14 @@ static void bpf_btf_load_log_buf(void)
 		close(fd);
 	fd = -1;
 
-	/* make BTF bad, add pointer pointing to non-existing type */
+	 
 	ASSERT_GT(btf__add_ptr(btf, 100), 0, "bad_ptr_type");
 
 	raw_btf_data = btf__raw_data(btf, &raw_btf_size);
 	if (!ASSERT_OK_PTR(raw_btf_data, "raw_btf_data_bad"))
 		goto cleanup;
 
-	/* log_level == 0 should fill log_buf for bad BTF */
+	 
 	log_buf[0] = '\0';
 	opts.log_level = 0;
 	fd = bpf_btf_load(raw_btf_data, raw_btf_size, &opts);

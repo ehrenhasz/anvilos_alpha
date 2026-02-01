@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _INET_DIAG_H_
 #define _INET_DIAG_H_ 1
 
@@ -64,19 +64,19 @@ void inet_diag_msg_common_fill(struct inet_diag_msg *r, struct sock *sk);
 
 static inline size_t inet_diag_msg_attrs_size(void)
 {
-	return	  nla_total_size(1)  /* INET_DIAG_SHUTDOWN */
-		+ nla_total_size(1)  /* INET_DIAG_TOS */
+	return	  nla_total_size(1)   
+		+ nla_total_size(1)   
 #if IS_ENABLED(CONFIG_IPV6)
-		+ nla_total_size(1)  /* INET_DIAG_TCLASS */
-		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
+		+ nla_total_size(1)   
+		+ nla_total_size(1)   
 #endif
-		+ nla_total_size(4)  /* INET_DIAG_MARK */
-		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
+		+ nla_total_size(4)   
+		+ nla_total_size(4)   
 #ifdef CONFIG_SOCK_CGROUP_DATA
-		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_CGROUP_ID */
+		+ nla_total_size_64bit(sizeof(u64))   
 #endif
 		+ nla_total_size(sizeof(struct inet_diag_sockopt))
-						     /* INET_DIAG_SOCKOPT */
+						      
 		;
 }
 int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
@@ -85,4 +85,4 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
 
 extern int  inet_diag_register(const struct inet_diag_handler *handler);
 extern void inet_diag_unregister(const struct inet_diag_handler *handler);
-#endif /* _INET_DIAG_H_ */
+#endif  

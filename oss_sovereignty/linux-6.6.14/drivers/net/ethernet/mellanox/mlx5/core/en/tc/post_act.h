@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_POST_ACTION_H__
 #define __MLX5_POST_ACTION_H__
@@ -40,4 +40,4 @@ mlx5e_tc_post_act_set_handle(struct mlx5_core_dev *dev,
 			     struct mlx5e_post_act_handle *handle,
 			     struct mlx5e_tc_mod_hdr_acts *acts);
 
-#endif /* __MLX5_POST_ACTION_H__ */
+#endif  

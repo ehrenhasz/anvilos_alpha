@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "get_func_ip_test.skel.h"
 #include "get_func_ip_uprobe_test.skel.h"
@@ -73,9 +73,7 @@ static void test_function_body_kprobe(void)
 	if (!ASSERT_OK_PTR(skel, "get_func_ip_test__open"))
 		return;
 
-	/* test6 is x86_64 specific and is disabled by default,
-	 * enable it for body test.
-	 */
+	 
 	bpf_program__set_autoload(skel->progs.test6, true);
 
 	err = get_func_ip_test__load(skel);

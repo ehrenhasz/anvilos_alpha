@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      NetBIOS name service broadcast connection tracking helper
- *
- *      (c) 2005 Patrick McHardy <kaber@trash.net>
- */
-/*
- *      This helper tracks locally originating NetBIOS name service
- *      requests by issuing permanent expectations (valid until
- *      timing out) matching all reply connections from the
- *      destination network. The only NetBIOS specific thing is
- *      actually the port number.
- */
+
+ 
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>

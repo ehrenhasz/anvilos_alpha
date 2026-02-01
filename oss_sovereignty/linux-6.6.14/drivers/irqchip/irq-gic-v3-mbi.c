@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "GICv3: " fmt
 
@@ -46,18 +43,11 @@ static int mbi_irq_gic_domain_alloc(struct irq_domain *domain,
 	struct irq_data *d;
 	int err;
 
-	/*
-	 * Using ACPI? There is no MBI support in the spec, you
-	 * shouldn't even be here.
-	 */
+	 
 	if (!is_of_node(domain->parent->fwnode))
 		return -EINVAL;
 
-	/*
-	 * Let's default to edge. This is consistent with traditional
-	 * MSIs, and systems requiring level signaling will just
-	 * enforce the trigger on their own.
-	 */
+	 
 	fwspec.fwnode = domain->parent->fwnode;
 	fwspec.param_count = 3;
 	fwspec.param[0] = 0;
@@ -152,7 +142,7 @@ static void mbi_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 }
 
 #ifdef CONFIG_PCI_MSI
-/* PCI-specific irqchip */
+ 
 static void mbi_mask_msi_irq(struct irq_data *d)
 {
 	pci_msi_mask_irq(d);
@@ -210,7 +200,7 @@ static void mbi_compose_mbi_msg(struct irq_data *data, struct msi_msg *msg)
 	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), &msg[1]);
 }
 
-/* Platform-MSI specific irqchip */
+ 
 static struct irq_chip mbi_pmsi_irq_chip = {
 	.name			= "pMSI",
 	.irq_set_type		= irq_chip_set_type_parent,

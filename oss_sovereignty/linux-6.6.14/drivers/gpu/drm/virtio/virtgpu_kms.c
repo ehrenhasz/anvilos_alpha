@@ -1,27 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/virtio.h>
 #include <linux/virtio_config.h>
@@ -39,7 +16,7 @@ static void virtio_gpu_config_changed_work_func(struct work_struct *work)
 			     config_changed_work);
 	u32 events_read, events_clear = 0;
 
-	/* read the config space */
+	 
 	virtio_cread_le(vgdev->vdev, struct virtio_gpu_config,
 			events_read, &events_read);
 	if (events_read & VIRTIO_GPU_EVENT_DISPLAY) {
@@ -83,10 +60,7 @@ static void virtio_gpu_get_capsets(struct virtio_gpu_device *vgdev,
 		virtio_gpu_notify(vgdev);
 		ret = wait_event_timeout(vgdev->resp_wq,
 					 vgdev->capsets[i].id > 0, 5 * HZ);
-		/*
-		 * Capability ids are defined in the virtio-gpu spec and are
-		 * between 1 to 63, inclusive.
-		 */
+		 
 		if (!vgdev->capsets[i].id ||
 		    vgdev->capsets[i].id > MAX_CAPSET_ID)
 			invalid_capset_id = true;
@@ -122,7 +96,7 @@ int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev)
 	static const char * const names[] = { "control", "cursor" };
 
 	struct virtio_gpu_device *vgdev;
-	/* this will expand later */
+	 
 	struct virtqueue *vqs[2];
 	u32 num_scanouts, num_capsets;
 	int ret = 0;
@@ -220,7 +194,7 @@ int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev)
 		goto err_vbufs;
 	}
 
-	/* get display info */
+	 
 	virtio_cread_le(vgdev->vdev, struct virtio_gpu_config,
 			num_scanouts, &num_scanouts);
 	vgdev->num_scanouts = min_t(uint32_t, num_scanouts,
@@ -311,11 +285,11 @@ int virtio_gpu_driver_open(struct drm_device *dev, struct drm_file *file)
 	struct virtio_gpu_fpriv *vfpriv;
 	int handle;
 
-	/* can't create contexts without 3d renderer */
+	 
 	if (!vgdev->has_virgl_3d)
 		return 0;
 
-	/* allocate a virt GPU context for this opener */
+	 
 	vfpriv = kzalloc(sizeof(*vfpriv), GFP_KERNEL);
 	if (!vfpriv)
 		return -ENOMEM;

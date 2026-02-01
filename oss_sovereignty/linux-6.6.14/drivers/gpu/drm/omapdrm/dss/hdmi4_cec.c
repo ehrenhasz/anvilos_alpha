@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI CEC
- *
- * Based on the CEC code from hdmi_ti_4xxx_ip.c from Android.
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- * Authors: Yong Zhi
- *	Mythri pk <mythripk@ti.com>
- *
- * Heavily modified to use the linux CEC framework:
- *
- * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -24,11 +12,11 @@
 #include "hdmi4_core.h"
 #include "hdmi4_cec.h"
 
-/* HDMI CEC */
+ 
 #define HDMI_CEC_DEV_ID                         0x900
 #define HDMI_CEC_SPEC                           0x904
 
-/* Not really a debug register, more a low-level control register */
+ 
 #define HDMI_CEC_DBG_3                          0x91C
 #define HDMI_CEC_TX_INIT                        0x920
 #define HDMI_CEC_TX_DEST                        0x924
@@ -57,14 +45,14 @@ static void hdmi_cec_received_msg(struct hdmi_core_data *core)
 {
 	u32 cnt = hdmi_read_reg(core->base, HDMI_CEC_RX_COUNT) & 0xff;
 
-	/* While there are CEC frames in the FIFO */
+	 
 	while (cnt & 0x70) {
-		/* and the frame doesn't have an error */
+		 
 		if (!(cnt & 0x80)) {
 			struct cec_msg msg = {};
 			unsigned int i;
 
-			/* then read the message */
+			 
 			msg.len = cnt & 0xf;
 			if (msg.len > CEC_MAX_MSG_SIZE - 2)
 				msg.len = CEC_MAX_MSG_SIZE - 2;
@@ -81,15 +69,12 @@ static void hdmi_cec_received_msg(struct hdmi_core_data *core)
 			msg.len += 2;
 			cec_received_msg(core->adap, &msg);
 		}
-		/* Clear the current frame from the FIFO */
+		 
 		hdmi_write_reg(core->base, HDMI_CEC_RX_CONTROL, 1);
-		/* Wait until the current frame is cleared */
+		 
 		while (hdmi_read_reg(core->base, HDMI_CEC_RX_CONTROL) & 1)
 			udelay(1);
-		/*
-		 * Re-read the count register and loop to see if there are
-		 * more messages in the FIFO.
-		 */
+		 
 		cnt = hdmi_read_reg(core->base, HDMI_CEC_RX_COUNT) & 0xff;
 	}
 }
@@ -171,49 +156,39 @@ static int hdmi_cec_adap_enable(struct cec_adapter *adap, bool enable)
 	if (err)
 		return err;
 
-	/*
-	 * Initialize CEC clock divider: CEC needs 2MHz clock hence
-	 * set the divider to 24 to get 48/24=2MHz clock
-	 */
+	 
 	REG_FLD_MOD(core->wp->base, HDMI_WP_CLK, 0x18, 5, 0);
 
-	/* Clear TX FIFO */
+	 
 	if (!hdmi_cec_clear_tx_fifo(adap)) {
 		pr_err("cec-%s: could not clear TX FIFO\n", adap->name);
 		err = -EIO;
 		goto err_disable_clk;
 	}
 
-	/* Clear RX FIFO */
+	 
 	if (!hdmi_cec_clear_rx_fifo(adap)) {
 		pr_err("cec-%s: could not clear RX FIFO\n", adap->name);
 		err = -EIO;
 		goto err_disable_clk;
 	}
 
-	/* Clear CEC interrupts */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_INT_STATUS_1,
 		hdmi_read_reg(core->base, HDMI_CEC_INT_STATUS_1));
 	hdmi_write_reg(core->base, HDMI_CEC_INT_STATUS_0,
 		hdmi_read_reg(core->base, HDMI_CEC_INT_STATUS_0));
 
-	/* Enable HDMI core interrupts */
+	 
 	hdmi_wp_set_irqenable(core->wp, HDMI_IRQ_CORE);
-	/* Unmask CEC interrupt */
+	 
 	REG_FLD_MOD(core->base, HDMI_CORE_SYS_INTR_UNMASK4, 0x1, 3, 3);
-	/*
-	 * Enable CEC interrupts:
-	 * Transmit Buffer Full/Empty Change event
-	 * Receiver FIFO Not Empty event
-	 */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_INT_ENABLE_0, 0x22);
-	/*
-	 * Enable CEC interrupts:
-	 * Frame Retransmit Count Exceeded event
-	 */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_INT_ENABLE_1, 0x02);
 
-	/* cec calibration enable (self clearing) */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_SETUP, 0x03);
 	msleep(20);
 	hdmi_write_reg(core->base, HDMI_CEC_SETUP, 0x04);
@@ -223,11 +198,7 @@ static int hdmi_cec_adap_enable(struct cec_adapter *adap, bool enable)
 		temp = FLD_MOD(temp, 0, 4, 4);
 		hdmi_write_reg(core->base, HDMI_CEC_SETUP, temp);
 
-		/*
-		 * If we enabled CEC in middle of a CEC message on the bus,
-		 * we could have start bit irregularity and/or short
-		 * pulse event. Clear them now.
-		 */
+		 
 		temp = hdmi_read_reg(core->base, HDMI_CEC_INT_STATUS_1);
 		temp = FLD_MOD(0x0, 0x5, 2, 0);
 		hdmi_write_reg(core->base, HDMI_CEC_INT_STATUS_1, temp);
@@ -270,27 +241,27 @@ static int hdmi_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	int temp;
 	u32 i;
 
-	/* Clear TX FIFO */
+	 
 	if (!hdmi_cec_clear_tx_fifo(adap)) {
 		pr_err("cec-%s: could not clear TX FIFO for transmit\n",
 		       adap->name);
 		return -EIO;
 	}
 
-	/* Clear TX interrupts */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_INT_STATUS_0,
 		       HDMI_CEC_TX_FIFO_INT_MASK);
 
 	hdmi_write_reg(core->base, HDMI_CEC_INT_STATUS_1,
 		       HDMI_CEC_RETRANSMIT_CNT_INT_MASK);
 
-	/* Set the retry count */
+	 
 	REG_FLD_MOD(core->base, HDMI_CEC_DBG_3, attempts - 1, 6, 4);
 
-	/* Set the initiator addresses */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_TX_INIT, cec_msg_initiator(msg));
 
-	/* Set destination id */
+	 
 	temp = cec_msg_destination(msg);
 	if (msg->len == 1)
 		temp |= 0x80;
@@ -298,14 +269,14 @@ static int hdmi_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	if (msg->len == 1)
 		return 0;
 
-	/* Setup command and arguments for the command */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_TX_COMMAND, msg->msg[1]);
 
 	for (i = 0; i < msg->len - 2; i++)
 		hdmi_write_reg(core->base, HDMI_CEC_TX_OPERAND + i * 4,
 			       msg->msg[2 + i]);
 
-	/* Operand count */
+	 
 	hdmi_write_reg(core->base, HDMI_CEC_TRANSMIT_DATA,
 		       (msg->len - 2) | 0x10);
 	return 0;
@@ -336,7 +307,7 @@ int hdmi4_cec_init(struct platform_device *pdev, struct hdmi_core_data *core,
 		return ret;
 	core->wp = wp;
 
-	/* Disable clock initially, hdmi_cec_adap_enable() manages it */
+	 
 	REG_FLD_MOD(core->wp->base, HDMI_WP_CLK, 0, 5, 0);
 
 	ret = cec_register_adapter(core->adap, &pdev->dev);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_SWAP_CGROUP_H
 #define __LINUX_SWAP_CGROUP_H
 
@@ -42,4 +42,4 @@ static inline void swap_cgroup_swapoff(int type)
 
 #endif
 
-#endif /* __LINUX_SWAP_CGROUP_H */
+#endif  

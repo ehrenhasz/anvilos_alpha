@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/proc/kmsg.c
- *
- *  Copyright (C) 1992  by Linus Torvalds
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>

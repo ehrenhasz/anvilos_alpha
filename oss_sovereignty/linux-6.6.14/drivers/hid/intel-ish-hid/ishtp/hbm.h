@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ISHTP bus layer messages handling
- *
- * Copyright (c) 2003-2016, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _ISHTP_HBM_H_
 #define _ISHTP_HBM_H_
@@ -14,27 +10,21 @@ struct ishtp_device;
 struct ishtp_msg_hdr;
 struct ishtp_cl;
 
-/*
- * Timeouts in Seconds
- */
-#define ISHTP_INTEROP_TIMEOUT		7 /* Timeout on ready message */
+ 
+#define ISHTP_INTEROP_TIMEOUT		7  
 
-#define ISHTP_CL_CONNECT_TIMEOUT	15 /* HPS: Client Connect Timeout */
+#define ISHTP_CL_CONNECT_TIMEOUT	15  
 
-/*
- * ISHTP Version
- */
+ 
 #define HBM_MINOR_VERSION		0
 #define HBM_MAJOR_VERSION		1
 
-/* Host bus message command opcode */
+ 
 #define ISHTP_HBM_CMD_OP_MSK		0x7f
-/* Host bus message command RESPONSE */
+ 
 #define ISHTP_HBM_CMD_RES_MSK		0x80
 
-/*
- * ISHTP Bus Message Command IDs
- */
+ 
 #define HOST_START_REQ_CMD		0x01
 #define HOST_START_RES_CMD		0x81
 
@@ -63,15 +53,10 @@ struct ishtp_cl;
 #define DMA_XFER			0x12
 #define DMA_XFER_ACK			0x92
 
-/*
- * ISHTP Stop Reason
- * used by hbm_host_stop_request.reason
- */
+ 
 #define	DRIVER_STOP_REQUEST		0x00
 
-/*
- * ISHTP BUS Interface Section
- */
+ 
 struct ishtp_msg_hdr {
 	uint32_t fw_addr:8;
 	uint32_t host_addr:8;
@@ -85,15 +70,7 @@ struct ishtp_bus_message {
 	uint8_t data[];
 } __packed;
 
-/**
- * struct hbm_cl_cmd - client specific host bus command
- *	CONNECT, DISCONNECT, and FlOW CONTROL
- *
- * @hbm_cmd - bus message command header
- * @fw_addr - address of the fw client
- * @host_addr - address of the client in the driver
- * @data
- */
+ 
 struct ishtp_hbm_cl_cmd {
 	uint8_t hbm_cmd;
 	uint8_t fw_addr;
@@ -168,14 +145,7 @@ struct hbm_props_response {
 	struct ishtp_client_properties client_properties;
 } __packed;
 
-/**
- * struct hbm_client_connect_request - connect/disconnect request
- *
- * @hbm_cmd - bus message command header
- * @fw_addr - address of the fw client
- * @host_addr - address of the client in the driver
- * @reserved
- */
+ 
 struct hbm_client_connect_request {
 	uint8_t hbm_cmd;
 	uint8_t fw_addr;
@@ -183,14 +153,7 @@ struct hbm_client_connect_request {
 	uint8_t reserved;
 } __packed;
 
-/**
- * struct hbm_client_connect_response - connect/disconnect response
- *
- * @hbm_cmd - bus message command header
- * @fw_addr - address of the fw client
- * @host_addr - address of the client in the driver
- * @status - status of the request
- */
+ 
 struct hbm_client_connect_response {
 	uint8_t hbm_cmd;
 	uint8_t fw_addr;
@@ -214,7 +177,7 @@ struct dma_alloc_notify {
 	uint8_t reserved[2];
 	uint32_t buf_size;
 	uint64_t buf_address;
-	/* [...] May come more size/address pairs */
+	 
 } __packed;
 
 struct dma_xfer_hbm {
@@ -227,20 +190,20 @@ struct dma_xfer_hbm {
 	uint32_t reserved2;
 } __packed;
 
-/* System state */
+ 
 #define ISHTP_SYSTEM_STATE_CLIENT_ADDR		13
 
 #define SYSTEM_STATE_SUBSCRIBE			0x1
 #define SYSTEM_STATE_STATUS			0x2
 #define SYSTEM_STATE_QUERY_SUBSCRIBERS		0x3
 #define SYSTEM_STATE_STATE_CHANGE_REQ		0x4
-/*indicates suspend and resume states*/
+ 
 #define CONNECTED_STANDBY_STATE_BIT		(1<<0)
 #define SUSPEND_STATE_BIT			(1<<1)
 
 struct ish_system_states_header {
 	uint32_t cmd;
-	uint32_t cmd_status;	/*responses will have this set*/
+	uint32_t cmd_status;	 
 } __packed;
 
 struct ish_system_states_subscribe {
@@ -264,14 +227,7 @@ struct ish_system_states_state_change_req {
 	uint32_t states_status;
 } __packed;
 
-/**
- * enum ishtp_hbm_state - host bus message protocol state
- *
- * @ISHTP_HBM_IDLE : protocol not started
- * @ISHTP_HBM_START : start request message was sent
- * @ISHTP_HBM_ENUM_CLIENTS : enumeration request was sent
- * @ISHTP_HBM_CLIENT_PROPERTIES : acquiring clients properties
- */
+ 
 enum ishtp_hbm_state {
 	ISHTP_HBM_IDLE = 0,
 	ISHTP_HBM_START,
@@ -307,8 +263,8 @@ void ishtp_hbm_dispatch(struct ishtp_device *dev,
 
 void ishtp_query_subscribers(struct ishtp_device *dev);
 
-/* Exported I/F */
+ 
 void ishtp_send_suspend(struct ishtp_device *dev);
 void ishtp_send_resume(struct ishtp_device *dev);
 
-#endif /* _ISHTP_HBM_H_ */
+#endif  

@@ -2,17 +2,13 @@
 #include <linux/trace.h>
 
 #if defined(CONFIG_OSNOISE_TRACER) && defined(CONFIG_X86_LOCAL_APIC)
-/*
- * trace_intel_irq_entry - record intel specific IRQ entry
- */
+ 
 static void trace_intel_irq_entry(void *data, int vector)
 {
 	osnoise_trace_irq_entry(vector);
 }
 
-/*
- * trace_intel_irq_exit - record intel specific IRQ exit
- */
+ 
 static void trace_intel_irq_exit(void *data, int vector)
 {
 	char *vector_desc = (char *) data;
@@ -20,9 +16,7 @@ static void trace_intel_irq_exit(void *data, int vector)
 	osnoise_trace_irq_exit(vector, vector_desc);
 }
 
-/*
- * register_intel_irq_tp - Register intel specific IRQ entry tracepoints
- */
+ 
 int osnoise_arch_register(void)
 {
 	int ret;
@@ -43,7 +37,7 @@ int osnoise_arch_register(void)
 	ret = register_trace_thermal_apic_exit(trace_intel_irq_exit, "thermal_apic");
 	if (ret)
 		goto out_thermal_entry;
-#endif /* CONFIG_X86_THERMAL_VECTOR */
+#endif  
 
 #ifdef CONFIG_X86_MCE_AMD
 	ret = register_trace_deferred_error_apic_entry(trace_intel_irq_entry, NULL);
@@ -63,7 +57,7 @@ int osnoise_arch_register(void)
 	ret = register_trace_threshold_apic_exit(trace_intel_irq_exit, "threshold_apic");
 	if (ret)
 		goto out_threshold_entry;
-#endif /* CONFIG_X86_MCE_THRESHOLD */
+#endif  
 
 #ifdef CONFIG_SMP
 	ret = register_trace_call_function_single_entry(trace_intel_irq_entry, NULL);
@@ -90,7 +84,7 @@ int osnoise_arch_register(void)
 	ret = register_trace_reschedule_exit(trace_intel_irq_exit, "reschedule");
 	if (ret)
 		goto out_reschedule_entry;
-#endif /* CONFIG_SMP */
+#endif  
 
 #ifdef CONFIG_IRQ_WORK
 	ret = register_trace_irq_work_entry(trace_intel_irq_entry, NULL);
@@ -174,14 +168,14 @@ out_deferred_exit:
 out_deferred_entry:
 	unregister_trace_deferred_error_apic_entry(trace_intel_irq_entry, NULL);
 out_thermal_exit:
-#endif /* CONFIG_X86_MCE_AMD */
+#endif  
 
 #ifdef CONFIG_X86_THERMAL_VECTOR
 	unregister_trace_thermal_apic_exit(trace_intel_irq_exit, "thermal_apic");
 out_thermal_entry:
 	unregister_trace_thermal_apic_entry(trace_intel_irq_entry, NULL);
 out_timer_exit:
-#endif /* CONFIG_X86_THERMAL_VECTOR */
+#endif  
 
 	unregister_trace_local_timer_exit(trace_intel_irq_exit, "local_timer");
 out_timer_entry:
@@ -226,9 +220,9 @@ void osnoise_arch_unregister(void)
 #ifdef CONFIG_X86_THERMAL_VECTOR
 	unregister_trace_thermal_apic_exit(trace_intel_irq_exit, "thermal_apic");
 	unregister_trace_thermal_apic_entry(trace_intel_irq_entry, NULL);
-#endif /* CONFIG_X86_THERMAL_VECTOR */
+#endif  
 
 	unregister_trace_local_timer_exit(trace_intel_irq_exit, "local_timer");
 	unregister_trace_local_timer_entry(trace_intel_irq_entry, NULL);
 }
-#endif /* CONFIG_OSNOISE_TRACER && CONFIG_X86_LOCAL_APIC */
+#endif  

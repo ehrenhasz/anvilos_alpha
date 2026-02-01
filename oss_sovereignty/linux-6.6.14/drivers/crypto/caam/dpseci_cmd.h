@@ -1,20 +1,17 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2018 NXP
- */
+ 
+ 
 
 #ifndef _DPSECI_CMD_H_
 #define _DPSECI_CMD_H_
 
-/* DPSECI Version */
+ 
 #define DPSECI_VER_MAJOR				5
 #define DPSECI_VER_MINOR				3
 
 #define DPSECI_VER(maj, min)	(((maj) << 16) | (min))
 #define DPSECI_VERSION		DPSECI_VER(DPSECI_VER_MAJOR, DPSECI_VER_MINOR)
 
-/* Command versioning */
+ 
 #define DPSECI_CMD_BASE_VERSION		1
 #define DPSECI_CMD_BASE_VERSION_V2	2
 #define DPSECI_CMD_ID_OFFSET		4
@@ -25,7 +22,7 @@
 #define DPSECI_CMD_V2(id)	(((id) << DPSECI_CMD_ID_OFFSET) | \
 				 DPSECI_CMD_BASE_VERSION_V2)
 
-/* Command IDs */
+ 
 #define DPSECI_CMDID_CLOSE				DPSECI_CMD_V1(0x800)
 #define DPSECI_CMDID_OPEN				DPSECI_CMD_V1(0x809)
 #define DPSECI_CMDID_GET_API_VERSION			DPSECI_CMD_V1(0xa09)
@@ -43,7 +40,7 @@
 #define DPSECI_CMDID_SET_CONGESTION_NOTIFICATION	DPSECI_CMD_V1(0x170)
 #define DPSECI_CMDID_GET_CONGESTION_NOTIFICATION	DPSECI_CMD_V1(0x171)
 
-/* Macros for accessing command fields smaller than 1 byte */
+ 
 #define DPSECI_MASK(field)	\
 	GENMASK(DPSECI_##field##_SHIFT + DPSECI_##field##_SIZE - 1,	\
 		DPSECI_##field##_SHIFT)
@@ -147,4 +144,4 @@ struct dpseci_cmd_congestion_notification {
 	__le32 threshold_exit;
 };
 
-#endif /* _DPSECI_CMD_H_ */
+#endif  

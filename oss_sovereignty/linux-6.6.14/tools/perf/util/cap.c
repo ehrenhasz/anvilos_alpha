@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Capability utilities
- */
+
+ 
 
 #ifdef HAVE_LIBCAP_SUPPORT
 
@@ -26,4 +24,4 @@ bool perf_cap__capable(cap_value_t cap)
 	return val == CAP_SET;
 }
 
-#endif  /* HAVE_LIBCAP_SUPPORT */
+#endif   

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Motorola CPCAP PMIC RTC driver
- *
- * Based on cpcap-regulator.c from Motorola Linux kernel tree
- * Copyright (C) 2009 Motorola, Inc.
- *
- * Rewritten for mainline kernel
- *  - use DT
- *  - use regmap
- *  - use standard interrupt framework
- *  - use managed device resources
- *  - remove custom "secure clock daemon" helpers
- *
- * Copyright (C) 2017 Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -131,9 +117,7 @@ static int cpcap_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		disable_irq(rtc->update_irq);
 
 	if (rtc->vendor == CPCAP_VENDOR_ST) {
-		/* The TOD1 and TOD2 registers MUST be written in this order
-		 * for the change to properly set.
-		 */
+		 
 		ret |= regmap_update_bits(rtc->regmap, CPCAP_REG_TOD1,
 					  TOD1_MASK, cpcap_tm.tod1);
 		ret |= regmap_update_bits(rtc->regmap, CPCAP_REG_TOD2,
@@ -141,13 +125,7 @@ static int cpcap_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		ret |= regmap_update_bits(rtc->regmap, CPCAP_REG_DAY,
 					  DAY_MASK, cpcap_tm.day);
 	} else {
-		/* Clearing the upper lower 8 bits of the TOD guarantees that
-		 * the upper half of TOD (TOD2) will not increment for 0xFF RTC
-		 * ticks (255 seconds).  During this time we can safely write
-		 * to DAY, TOD2, then TOD1 (in that order) and expect RTC to be
-		 * synchronized to the exact time requested upon the final write
-		 * to TOD1.
-		 */
+		 
 		ret |= regmap_update_bits(rtc->regmap, CPCAP_REG_TOD1,
 					  TOD1_MASK, 0);
 		ret |= regmap_update_bits(rtc->regmap, CPCAP_REG_DAY,
@@ -278,12 +256,7 @@ static int cpcap_rtc_probe(struct platform_device *pdev)
 	}
 	disable_irq(rtc->alarm_irq);
 
-	/* Stock Android uses the 1 Hz interrupt for "secure clock daemon",
-	 * which is not supported by the mainline kernel. The mainline kernel
-	 * does not use the irq at the moment, but we explicitly request and
-	 * disable it, so that its masked and does not wake up the processor
-	 * every second.
-	 */
+	 
 	rtc->update_irq = platform_get_irq(pdev, 1);
 	err = devm_request_threaded_irq(dev, rtc->update_irq, NULL,
 					cpcap_rtc_update_irq,
@@ -298,7 +271,7 @@ static int cpcap_rtc_probe(struct platform_device *pdev)
 	err = device_init_wakeup(dev, 1);
 	if (err) {
 		dev_err(dev, "wakeup initialization failed (%d)\n", err);
-		/* ignore error and continue without wakeup support */
+		 
 	}
 
 	return devm_rtc_register_device(rtc->rtc_dev);

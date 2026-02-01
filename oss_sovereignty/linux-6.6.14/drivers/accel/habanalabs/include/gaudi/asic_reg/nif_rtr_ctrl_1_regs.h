@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_NIF_RTR_CTRL_1_REGS_H_
 #define ASIC_REG_NIF_RTR_CTRL_1_REGS_H_
 
-/*
- *****************************************
- *   NIF_RTR_CTRL_1 (Prototype: RTR_CTRL)
- *****************************************
- */
+ 
 
 #define mmNIF_RTR_CTRL_1_PERM_SEL                                    0x396108
 
@@ -893,4 +881,4 @@
 
 #define mmNIF_RTR_CTRL_1_NL_HBM_PC_SEL_3                             0x396CBC
 
-#endif /* ASIC_REG_NIF_RTR_CTRL_1_REGS_H_ */
+#endif  

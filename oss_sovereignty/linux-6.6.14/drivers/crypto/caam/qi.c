@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CAAM/SEC 4.x QI transport/backend driver
- * Queue Interface backend functionality
- *
- * Copyright 2013-2016 Freescale Semiconductor, Inc.
- * Copyright 2016-2017, 2019-2020 NXP
- */
+
+ 
 
 #include <linux/cpumask.h>
 #include <linux/device.h>
@@ -28,33 +22,20 @@
 #define PREHDR_RSLS_SHIFT	31
 #define PREHDR_ABS		BIT(25)
 
-/*
- * Use a reasonable backlog of frames (per CPU) as congestion threshold,
- * so that resources used by the in-flight buffers do not become a memory hog.
- */
+ 
 #define MAX_RSP_FQ_BACKLOG_PER_CPU	256
 
 #define CAAM_QI_ENQUEUE_RETRIES	10000
 
 #define CAAM_NAPI_WEIGHT	63
 
-/*
- * caam_napi - struct holding CAAM NAPI-related params
- * @irqtask: IRQ task for QI backend
- * @p: QMan portal
- */
+ 
 struct caam_napi {
 	struct napi_struct irqtask;
 	struct qman_portal *p;
 };
 
-/*
- * caam_qi_pcpu_priv - percpu private data structure to main list of pending
- *                     responses expected on each cpu.
- * @caam_napi: CAAM NAPI params
- * @net_dev: netdev used by NAPI
- * @rsp_fq: response FQ from CAAM
- */
+ 
 struct caam_qi_pcpu_priv {
 	struct caam_napi caam_napi;
 	struct net_device net_dev;
@@ -64,33 +45,18 @@ struct caam_qi_pcpu_priv {
 static DEFINE_PER_CPU(struct caam_qi_pcpu_priv, pcpu_qipriv);
 static DEFINE_PER_CPU(int, last_cpu);
 
-/*
- * caam_qi_priv - CAAM QI backend private params
- * @cgr: QMan congestion group
- */
+ 
 struct caam_qi_priv {
 	struct qman_cgr cgr;
 };
 
 static struct caam_qi_priv qipriv ____cacheline_aligned;
 
-/*
- * This is written by only one core - the one that initialized the CGR - and
- * read by multiple cores (all the others).
- */
+ 
 bool caam_congested __read_mostly;
 EXPORT_SYMBOL(caam_congested);
 
-/*
- * This is a cache of buffers, from which the users of CAAM QI driver
- * can allocate short (CAAM_QI_MEMCACHE_SIZE) buffers. It's faster than
- * doing malloc on the hotpath.
- * NOTE: A more elegant solution would be to have some headroom in the frames
- *       being processed. This could be added by the dpaa-ethernet driver.
- *       This would pose a problem for userspace application processing which
- *       cannot know of this limitation. So for now, this will work.
- * NOTE: The memcache is SMP-safe. No need to handle spinlocks in-here
- */
+ 
 static struct kmem_cache *qi_cache;
 
 static void *caam_iova_to_virt(struct iommu_domain *domain,
@@ -259,9 +225,9 @@ static int kill_fq(struct device *qidev, struct qman_fq *fq)
 	if (!ret)
 		goto empty_fq;
 
-	/* Async FQ retirement condition */
+	 
 	if (ret == 1) {
-		/* Retry till FQ gets in retired state */
+		 
 		do {
 			msleep(20);
 		} while (fq->state != qman_fq_state_retired);
@@ -296,7 +262,7 @@ static int empty_caam_fq(struct qman_fq *fq, struct caam_drv_ctx *drv_ctx)
 	int retries = 10;
 	struct qm_mcr_queryfq_np np;
 
-	/* Wait till the older CAAM FQ get empty */
+	 
 	do {
 		ret = qman_query_fq_np(fq, &np);
 		if (ret)
@@ -308,7 +274,7 @@ static int empty_caam_fq(struct qman_fq *fq, struct caam_drv_ctx *drv_ctx)
 		msleep(20);
 	} while (1);
 
-	/* Wait until pending jobs from this FQ are processed by CAAM */
+	 
 	do {
 		if (refcount_read(&drv_ctx->refcnt) == 1)
 			break;
@@ -336,10 +302,10 @@ int caam_drv_ctx_update(struct caam_drv_ctx *drv_ctx, u32 *sh_desc)
 		return -EINVAL;
 	}
 
-	/* Note down older req FQ */
+	 
 	old_fq = drv_ctx->req_fq;
 
-	/* Create a new req FQ in parked state */
+	 
 	new_fq = create_caam_req_fq(drv_ctx->qidev, drv_ctx->rsp_fq,
 				    drv_ctx->context_a, 0);
 	if (IS_ERR(new_fq)) {
@@ -347,15 +313,15 @@ int caam_drv_ctx_update(struct caam_drv_ctx *drv_ctx, u32 *sh_desc)
 		return PTR_ERR(new_fq);
 	}
 
-	/* Hook up new FQ to context so that new requests keep queuing */
+	 
 	drv_ctx->req_fq = new_fq;
 
-	/* Empty and remove the older FQ */
+	 
 	ret = empty_caam_fq(old_fq, drv_ctx);
 	if (ret) {
 		dev_err(qidev, "Old CAAM FQ empty failed: %d\n", ret);
 
-		/* We can revert to older FQ */
+		 
 		drv_ctx->req_fq = old_fq;
 
 		if (kill_fq(qidev, new_fq))
@@ -364,10 +330,7 @@ int caam_drv_ctx_update(struct caam_drv_ctx *drv_ctx, u32 *sh_desc)
 		return ret;
 	}
 
-	/*
-	 * Re-initialise pre-header. Set RSLS and SDLEN.
-	 * Update the shared descriptor for driver context.
-	 */
+	 
 	drv_ctx->prehdr[0] = cpu_to_caam32((1 << PREHDR_RSLS_SHIFT) |
 					   num_words);
 	drv_ctx->prehdr[1] = cpu_to_caam32(PREHDR_ABS);
@@ -377,15 +340,12 @@ int caam_drv_ctx_update(struct caam_drv_ctx *drv_ctx, u32 *sh_desc)
 				   sizeof(drv_ctx->prehdr),
 				   DMA_BIDIRECTIONAL);
 
-	/* Put the new FQ in scheduled state */
+	 
 	ret = qman_schedule_fq(new_fq);
 	if (ret) {
 		dev_err(qidev, "Fail to sched new CAAM FQ, ecode = %d\n", ret);
 
-		/*
-		 * We can kill new FQ and revert to old FQ.
-		 * Since the desc is already modified, it is success case
-		 */
+		 
 
 		drv_ctx->req_fq = old_fq;
 
@@ -420,10 +380,7 @@ struct caam_drv_ctx *caam_drv_ctx_init(struct device *qidev,
 	if (!drv_ctx)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Initialise pre-header - set RSLS and SDLEN - and shared descriptor
-	 * and dma-map them.
-	 */
+	 
 	drv_ctx->prehdr[0] = cpu_to_caam32((1 << PREHDR_RSLS_SHIFT) |
 					   num_words);
 	drv_ctx->prehdr[1] = cpu_to_caam32(PREHDR_ABS);
@@ -438,7 +395,7 @@ struct caam_drv_ctx *caam_drv_ctx_init(struct device *qidev,
 	}
 	drv_ctx->context_a = hwdesc;
 
-	/* If given CPU does not own the portal, choose another one that does */
+	 
 	if (!cpumask_test_cpu(*cpu, cpus)) {
 		int *pcpu = &get_cpu_var(last_cpu);
 
@@ -451,10 +408,10 @@ struct caam_drv_ctx *caam_drv_ctx_init(struct device *qidev,
 	}
 	drv_ctx->cpu = *cpu;
 
-	/* Find response FQ hooked with this CPU */
+	 
 	drv_ctx->rsp_fq = per_cpu(pcpu_qipriv.rsp_fq, drv_ctx->cpu);
 
-	/* Attach request FQ */
+	 
 	drv_ctx->req_fq = create_caam_req_fq(qidev, drv_ctx->rsp_fq, hwdesc,
 					     QMAN_INITFQ_FLAG_SCHED);
 	if (IS_ERR(drv_ctx->req_fq)) {
@@ -464,7 +421,7 @@ struct caam_drv_ctx *caam_drv_ctx_init(struct device *qidev,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* init reference counter used to track references to request FQ */
+	 
 	refcount_set(&drv_ctx->refcnt, 1);
 
 	drv_ctx->qidev = qidev;
@@ -503,7 +460,7 @@ void caam_drv_ctx_rel(struct caam_drv_ctx *drv_ctx)
 	if (IS_ERR_OR_NULL(drv_ctx))
 		return;
 
-	/* Remove request FQ */
+	 
 	if (kill_fq(drv_ctx->qidev, drv_ctx->req_fq))
 		dev_err(drv_ctx->qidev, "Crypto session req FQ kill failed\n");
 
@@ -556,7 +513,7 @@ static int caam_qi_napi_schedule(struct qman_portal *p, struct caam_napi *np,
 				 bool sched_napi)
 {
 	if (sched_napi) {
-		/* Disable QMan IRQ source and invoke NAPI */
+		 
 		qman_p_irqsource_remove(p, QM_PIRQ_DQRI);
 		np->p = p;
 		napi_schedule(&np->irqtask);
@@ -697,7 +654,7 @@ static int alloc_rsp_fqs(struct device *qidev)
 	int ret, i;
 	const cpumask_t *cpus = qman_affine_cpus();
 
-	/*Now create response FQs*/
+	 
 	for_each_cpu(i, cpus) {
 		ret = alloc_rsp_fq_cpu(qidev, i);
 		if (ret) {
@@ -728,14 +685,14 @@ int caam_qi_init(struct platform_device *caam_pdev)
 	ctrlpriv = dev_get_drvdata(ctrldev);
 	qidev = ctrldev;
 
-	/* Initialize the congestion detection */
+	 
 	err = init_cgr(qidev);
 	if (err) {
 		dev_err(qidev, "CGR initialization failed: %d\n", err);
 		return err;
 	}
 
-	/* Initialise response FQs */
+	 
 	err = alloc_rsp_fqs(qidev);
 	if (err) {
 		dev_err(qidev, "Can't allocate CAAM response FQs: %d\n", err);
@@ -743,10 +700,7 @@ int caam_qi_init(struct platform_device *caam_pdev)
 		return err;
 	}
 
-	/*
-	 * Enable the NAPI contexts on each of the core which has an affine
-	 * portal.
-	 */
+	 
 	for_each_cpu(i, cpus) {
 		struct caam_qi_pcpu_priv *priv = per_cpu_ptr(&pcpu_qipriv, i);
 		struct caam_napi *caam_napi = &priv->caam_napi;

@@ -1,13 +1,4 @@
-/*
- * Kernel CAPI 2.0 Module
- *
- * Copyright 1999 by Carsten Paeth <calle@calle.de>
- * Copyright 2002 by Kai Germaschewski <kai@germaschewski.name>
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- *
- */
+ 
 
 
 #include <linux/kernel.h>
@@ -20,7 +11,7 @@
 		printk(KERN_DEBUG "%s: " format "\n" , __func__ , ## arg); \
 	} while (0)
 #else
-#define DBG(format, arg...) /* */
+#define DBG(format, arg...)  
 #endif
 
 enum {
@@ -44,7 +35,7 @@ struct capi20_appl {
 	void (*recv_message)(struct capi20_appl *ap, struct sk_buff *skb);
 	void *private;
 
-	/* internal to kernelcapi.o */
+	 
 	unsigned long nrecvctlpkt;
 	unsigned long nrecvdatapkt;
 	unsigned long nsentctlpkt;
@@ -71,7 +62,7 @@ int capi20_manufacturer(unsigned long cmd, void __user *data);
 int kcapi_init(void);
 void kcapi_exit(void);
 
-/*----- basic-type definitions -----*/
+ 
 
 typedef __u8 *_cstruct;
 
@@ -80,22 +71,16 @@ typedef enum {
 	CAPI_DEFAULT
 } _cmstruct;
 
-/*
-   The _cmsg structure contains all possible CAPI 2.0 parameter.
-   All parameters are stored here first. The function CAPI_CMSG_2_MESSAGE
-   assembles the parameter and builds CAPI2.0 conform messages.
-   CAPI_MESSAGE_2_CMSG disassembles CAPI 2.0 messages and stores the
-   parameter in the _cmsg structure
- */
+ 
 
 typedef struct {
-	/* Header */
+	 
 	__u16 ApplId;
 	__u8 Command;
 	__u8 Subcommand;
 	__u16 Messagenumber;
 
-	/* Parameter */
+	 
 	union {
 		__u32 adrController;
 		__u32 adrPLCI;
@@ -147,21 +132,19 @@ typedef struct {
 	__u16 Reject;
 	_cstruct Useruserdata;
 
-	/* intern */
+	 
 	unsigned l, p;
 	unsigned char *par;
 	__u8 *m;
 
-	/* buffer to construct message */
+	 
 	__u8 buf[180];
 
 } _cmsg;
 
-/*-----------------------------------------------------------------------*/
+ 
 
-/*
- * Debugging / Tracing functions
- */
+ 
 
 char *capi_cmd2str(__u8 cmd, __u8 subcmd);
 

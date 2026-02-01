@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+
+ 
 
 #include <linux/gcd.h>
 #include <media/v4l2-mem2mem.h>
@@ -50,7 +47,7 @@ void amvdec_write_parser(struct amvdec_core *core, u32 reg, u32 val)
 }
 EXPORT_SYMBOL_GPL(amvdec_write_parser);
 
-/* 4 KiB per 64x32 block */
+ 
 u32 amvdec_am21c_body_size(u32 width, u32 height)
 {
 	u32 width_64 = ALIGN(width, 64) / 64;
@@ -60,7 +57,7 @@ u32 amvdec_am21c_body_size(u32 width, u32 height)
 }
 EXPORT_SYMBOL_GPL(amvdec_am21c_body_size);
 
-/* 32 bytes per 128x64 block */
+ 
 u32 amvdec_am21c_head_size(u32 width, u32 height)
 {
 	u32 width_128 = ALIGN(width, 128) / 128;
@@ -99,8 +96,8 @@ static int set_canvas_yuv420m(struct amvdec_session *sess,
 			      u32 height, u32 reg)
 {
 	struct amvdec_core *core = sess->core;
-	u8 canvas_id[NUM_CANVAS_YUV420]; /* Y U V */
-	dma_addr_t buf_paddr[NUM_CANVAS_YUV420]; /* Y U V */
+	u8 canvas_id[NUM_CANVAS_YUV420];  
+	dma_addr_t buf_paddr[NUM_CANVAS_YUV420];  
 	int ret, i;
 
 	for (i = 0; i < NUM_CANVAS_YUV420; ++i) {
@@ -112,19 +109,19 @@ static int set_canvas_yuv420m(struct amvdec_session *sess,
 		    vb2_dma_contig_plane_dma_addr(vb, i);
 	}
 
-	/* Y plane */
+	 
 	meson_canvas_config(core->canvas, canvas_id[0], buf_paddr[0],
 			    width, height, MESON_CANVAS_WRAP_NONE,
 			    MESON_CANVAS_BLKMODE_LINEAR,
 			    MESON_CANVAS_ENDIAN_SWAP64);
 
-	/* U plane */
+	 
 	meson_canvas_config(core->canvas, canvas_id[1], buf_paddr[1],
 			    width / 2, height / 2, MESON_CANVAS_WRAP_NONE,
 			    MESON_CANVAS_BLKMODE_LINEAR,
 			    MESON_CANVAS_ENDIAN_SWAP64);
 
-	/* V plane */
+	 
 	meson_canvas_config(core->canvas, canvas_id[2], buf_paddr[2],
 			    width / 2, height / 2, MESON_CANVAS_WRAP_NONE,
 			    MESON_CANVAS_BLKMODE_LINEAR,
@@ -143,8 +140,8 @@ static int set_canvas_nv12m(struct amvdec_session *sess,
 			    u32 height, u32 reg)
 {
 	struct amvdec_core *core = sess->core;
-	u8 canvas_id[NUM_CANVAS_NV12]; /* Y U/V */
-	dma_addr_t buf_paddr[NUM_CANVAS_NV12]; /* Y U/V */
+	u8 canvas_id[NUM_CANVAS_NV12];  
+	dma_addr_t buf_paddr[NUM_CANVAS_NV12];  
 	int ret, i;
 
 	for (i = 0; i < NUM_CANVAS_NV12; ++i) {
@@ -156,13 +153,13 @@ static int set_canvas_nv12m(struct amvdec_session *sess,
 		    vb2_dma_contig_plane_dma_addr(vb, i);
 	}
 
-	/* Y plane */
+	 
 	meson_canvas_config(core->canvas, canvas_id[0], buf_paddr[0],
 			    width, height, MESON_CANVAS_WRAP_NONE,
 			    MESON_CANVAS_BLKMODE_LINEAR,
 			    MESON_CANVAS_ENDIAN_SWAP64);
 
-	/* U/V plane */
+	 
 	meson_canvas_config(core->canvas, canvas_id[1], buf_paddr[1],
 			    width, height / 2, MESON_CANVAS_WRAP_NONE,
 			    MESON_CANVAS_BLKMODE_LINEAR,
@@ -304,7 +301,7 @@ static void dst_buf_done(struct amvdec_session *sess,
 		v4l2_event_queue_fh(&sess->fh, &ev);
 		vbuf->flags |= V4L2_BUF_FLAG_LAST;
 	} else if (sess->status == STATUS_NEEDS_RESUME) {
-		/* Mark LAST for drained show frames during a source change */
+		 
 		vbuf->flags |= V4L2_BUF_FLAG_LAST;
 		sess->sequence_cap = 0;
 	} else if (sess->should_stop)
@@ -316,7 +313,7 @@ static void dst_buf_done(struct amvdec_session *sess,
 	vbuf->field = field;
 	v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_DONE);
 
-	/* Buffer done probably means the vififo got freed */
+	 
 	schedule_work(&sess->esparser_queue_work);
 }
 
@@ -368,13 +365,10 @@ void amvdec_dst_buf_done_offset(struct amvdec_session *sess,
 
 	spin_lock_irqsave(&sess->ts_spinlock, flags);
 
-	/* Look for our vififo offset to get the corresponding timestamp. */
+	 
 	list_for_each_entry_safe(tmp, n, &sess->timestamps, list) {
 		if (tmp->offset > offset) {
-			/*
-			 * Delete any record that remained unused for 32 match
-			 * checks
-			 */
+			 
 			if (tmp->used_count++ >= 32) {
 				list_del(&tmp->list);
 				kfree(tmp);
@@ -448,10 +442,7 @@ void amvdec_src_change(struct amvdec_session *sess, u32 width,
 
 	v4l2_ctrl_s_ctrl(sess->ctrl_min_buf_capture, dpb_size);
 
-	/*
-	 * Check if the capture queue is already configured well for our
-	 * usecase. If so, keep decoding with it and do not send the event
-	 */
+	 
 	if (sess->streamon_cap &&
 	    sess->width == width &&
 	    sess->height == height &&

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC Audio DAI eTDM Control
- *
- * Copyright (c) 2023 MediaTek Inc.
- * Authors: Vic Wu <vic.wu@mediatek.com>
- *          Maso Huang <maso.huang@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -84,8 +78,8 @@ static int get_etdm_wlen(unsigned int bitwidth)
 	return bitwidth <= 16 ? 16 : 32;
 }
 
-/* dai component */
-/* interconnection */
+ 
+ 
 
 static const struct snd_kcontrol_new o124_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("I032_Switch", AFE_CONN124_1, 0, 1, 0),
@@ -97,10 +91,10 @@ static const struct snd_kcontrol_new o125_mix[] = {
 
 static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 
-	/* DL */
+	 
 	SND_SOC_DAPM_MIXER("I150", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I151", SND_SOC_NOPM, 0, 0, NULL, 0),
-	/* UL */
+	 
 	SND_SOC_DAPM_MIXER("O124", SND_SOC_NOPM, 0, 0, o124_mix, ARRAY_SIZE(o124_mix)),
 	SND_SOC_DAPM_MIXER("O125", SND_SOC_NOPM, 0, 0, o125_mix, ARRAY_SIZE(o125_mix)),
 };
@@ -114,7 +108,7 @@ static const struct snd_soc_dapm_route mtk_dai_etdm_routes[] = {
 	{"O125", "I033_Switch", "I033"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_etdm_startup(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
@@ -179,7 +173,7 @@ static int mtk_dai_etdm_config(struct mtk_base_afe *afe,
 	dev_dbg(afe->dev, "%s(), stream %d, rate %u, bitwidth %u\n",
 		 __func__, stream, rate, bit_width);
 
-	/* CON0 */
+	 
 	mask |= ETDM_BIT_LEN_MASK;
 	val |= FIELD_PREP(ETDM_BIT_LEN_MASK, bit_width - 1);
 	mask |= ETDM_WRD_LEN_MASK;
@@ -193,10 +187,10 @@ static int mtk_dai_etdm_config(struct mtk_base_afe *afe,
 
 	switch (stream) {
 	case SNDRV_PCM_STREAM_PLAYBACK:
-		/* set ETDM_OUT5_CON0 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_OUT5_CON0, mask, val);
 
-		/* set ETDM_OUT5_CON4 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_OUT5_CON4,
 				   OUT_RELATCH_MASK, OUT_RELATCH(afe_rate));
 		regmap_update_bits(afe->regmap, ETDM_OUT5_CON4,
@@ -204,25 +198,25 @@ static int mtk_dai_etdm_config(struct mtk_base_afe *afe,
 		regmap_update_bits(afe->regmap, ETDM_OUT5_CON4,
 				   OUT_SEL_FS_MASK, OUT_SEL_FS(etdm_rate));
 
-		/* set ETDM_OUT5_CON5 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_OUT5_CON5,
 				   ETDM_CLK_DIV_MASK, ETDM_CLK_DIV);
 		break;
 	case SNDRV_PCM_STREAM_CAPTURE:
-		/* set ETDM_IN5_CON0 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_IN5_CON0, mask, val);
 		regmap_update_bits(afe->regmap, ETDM_IN5_CON0,
 				   ETDM_SYNC_MASK, ETDM_SYNC);
 
-		/* set ETDM_IN5_CON2 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_IN5_CON2,
 				   IN_CLK_SRC_MASK, IN_CLK_SRC(APLL_CLK));
 
-		/* set ETDM_IN5_CON3 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_IN5_CON3,
 				   IN_SEL_FS_MASK, IN_SEL_FS(etdm_rate));
 
-		/* set ETDM_IN5_CON4 */
+		 
 		regmap_update_bits(afe->regmap, ETDM_IN5_CON4,
 				   IN_RELATCH_MASK, IN_RELATCH(afe_rate));
 		break;
@@ -354,7 +348,7 @@ static const struct snd_soc_dai_ops mtk_dai_etdm_ops = {
 	.set_fmt = mtk_dai_etdm_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_ETDM_RATES (SNDRV_PCM_RATE_8000_48000 |\
 			SNDRV_PCM_RATE_88200 |\
 			SNDRV_PCM_RATE_96000 |\

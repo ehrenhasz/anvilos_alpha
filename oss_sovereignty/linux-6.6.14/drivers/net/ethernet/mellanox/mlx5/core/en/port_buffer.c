@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include "port_buffer.h"
 
 int mlx5e_port_query_buffer(struct mlx5e_priv *priv,
@@ -133,18 +103,12 @@ enum {
 	MLX5_LOSSLESS_POOL = 1,
 };
 
-/* No limit on usage of shared buffer pool (max_buff=0) */
+ 
 #define MLX5_SB_POOL_NO_THRESHOLD  0
-/* Shared buffer pool usage threshold when calculated
- * dynamically in alpha units. alpha=13 is equivalent to
- * HW_alpha of  [(1/128) * 2 ^ (alpha-1)] = 32, where HW_alpha
- * equates to the following portion of the shared buffer pool:
- * [32 / (1 + n * 32)] While *n* is the number of buffers
- * that are using the shared buffer pool.
- */
+ 
 #define MLX5_SB_POOL_THRESHOLD 13
 
-/* Shared buffer class management parameters */
+ 
 struct mlx5_sbcm_params {
 	u8 pool_idx;
 	u8 max_buff;
@@ -175,22 +139,7 @@ static const struct mlx5_sbcm_params sbcm_lossless_no_threshold = {
 	.infi_size = 1,
 };
 
-/**
- * select_sbcm_params() - selects the shared buffer pool configuration
- *
- * @buffer: <input> port buffer to retrieve params of
- * @lossless_buff_count: <input> number of lossless buffers in total
- *
- * The selection is based on the following rules:
- * 1. If buffer size is 0, no shared buffer pool is used.
- * 2. If buffer is lossy, use lossy shared buffer pool.
- * 3. If there are more than 1 lossless buffers, use lossless shared buffer pool
- *    with threshold.
- * 4. If there is only 1 lossless buffer, use lossless shared buffer pool
- *    without threshold.
- *
- * @return const struct mlx5_sbcm_params* selected values
- */
+ 
 static const struct mlx5_sbcm_params *
 select_sbcm_params(struct mlx5e_bufferx_reg *buffer, u8 lossless_buff_count)
 {
@@ -269,9 +218,7 @@ static int port_update_shared_buffer(struct mlx5_core_dev *mdev,
 		return -EINVAL;
 	}
 
-	/* Total shared buffer size is split in a ratio of 3:1 between
-	 * lossy and lossless pools respectively.
-	 */
+	 
 	lossy_epool_size = (shared_buffer_size / 4) * 3;
 	lossless_ipool_size = shared_buffer_size / 4;
 
@@ -337,9 +284,7 @@ out:
 	return err;
 }
 
-/* xoff = ((301+2.16 * len [m]) * speed [Gbps] + 2.72 MTU [B])
- * minimum speed value is 40Gbps
- */
+ 
 static u32 calculate_xoff(struct mlx5e_priv *priv, unsigned int mtu)
 {
 	u32 speed;
@@ -384,27 +329,7 @@ static int update_xoff_threshold(struct mlx5e_port_buffer *port_buffer,
 	return 0;
 }
 
-/**
- *	update_buffer_lossy	- Update buffer configuration based on pfc
- *	@mdev: port function core device
- *	@max_mtu: netdev's max_mtu
- *	@pfc_en: <input> current pfc configuration
- *	@buffer: <input> current prio to buffer mapping
- *	@xoff:   <input> xoff value
- *	@port_buff_cell_sz: <input> port buffer cell_size
- *	@port_buffer: <output> port receive buffer configuration
- *	@change: <output>
- *
- *	Update buffer configuration based on pfc configuration and
- *	priority to buffer mapping.
- *	Buffer's lossy bit is changed to:
- *		lossless if there is at least one PFC enabled priority
- *		mapped to this buffer lossy if all priorities mapped to
- *		this buffer are PFC disabled
- *
- *	@return: 0 if no error,
- *	sets change to true if buffer configuration was modified.
- */
+ 
 static int update_buffer_lossy(struct mlx5_core_dev *mdev,
 			       unsigned int max_mtu,
 			       u8 pfc_en, u8 *buffer, u32 xoff, u16 port_buff_cell_sz,
@@ -433,7 +358,7 @@ static int update_buffer_lossy(struct mlx5_core_dev *mdev,
 
 		if (lossy_count == prio_count)
 			lossy = 1;
-		else /* lossy_count < prio_count */
+		else  
 			lossy = 0;
 
 		if (lossy != port_buffer->buffer[i].lossy) {
@@ -466,9 +391,7 @@ static int fill_pfc_en(struct mlx5_core_dev *mdev, u8 *pfc_en)
 	if (err)
 		return err;
 
-	/* If global pause enabled, set all active buffers to lossless.
-	 * Otherwise, check PFC setting.
-	 */
+	 
 	if (g_rx_pause || g_tx_pause)
 		*pfc_en = 0xff;
 	else
@@ -567,7 +490,7 @@ int mlx5e_port_manual_buffer_config(struct mlx5e_priv *priv,
 			return err;
 	}
 
-	/* Need to update buffer configuration if xoff value is changed */
+	 
 	if (!update_buffer && xoff != priv->dcbx.xoff) {
 		update_buffer = true;
 		err = update_xoff_threshold(&port_buffer, xoff, max_mtu, port_buff_cell_sz);
@@ -576,7 +499,7 @@ int mlx5e_port_manual_buffer_config(struct mlx5e_priv *priv,
 	}
 	priv->dcbx.xoff = xoff;
 
-	/* Apply the settings */
+	 
 	if (update_buffer) {
 		err = port_set_buffer(priv, &port_buffer);
 		if (err)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/moduleparam.h>
 #include <linux/module.h>
@@ -15,39 +15,16 @@
 #include "cxl.h"
 #include "pmu.h"
 
-/**
- * DOC: cxl pci
- *
- * This implements the PCI exclusive functionality for a CXL device as it is
- * defined by the Compute Express Link specification. CXL devices may surface
- * certain functionality even if it isn't CXL enabled. While this driver is
- * focused around the PCI specific aspects of a CXL device, it binds to the
- * specific CXL memory device class code, and therefore the implementation of
- * cxl_pci is focused around CXL memory devices.
- *
- * The driver has several responsibilities, mainly:
- *  - Create the memX device and register on the CXL bus.
- *  - Enumerate device's register interface and map them.
- *  - Registers nvdimm bridge device with cxl_core.
- *  - Registers a CXL mailbox with cxl_core.
- */
+ 
 
 #define cxl_doorbell_busy(cxlds)                                                \
 	(readl((cxlds)->regs.mbox + CXLDEV_MBOX_CTRL_OFFSET) &                  \
 	 CXLDEV_MBOX_CTRL_DOORBELL)
 
-/* CXL 2.0 - 8.2.8.4 */
+ 
 #define CXL_MAILBOX_TIMEOUT_MS (2 * HZ)
 
-/*
- * CXL 2.0 ECN "Add Mailbox Ready Time" defines a capability field to
- * dictate how long to wait for the mailbox to become ready. The new
- * field allows the device to tell software the amount of time to wait
- * before mailbox ready. This field per the spec theoretically allows
- * for up to 255 seconds. 255 seconds is unreasonably long, its longer
- * than the maximum SATA port link recovery wait. Default to 60 seconds
- * until someone builds a CXL device that needs more time in practice.
- */
+ 
 static unsigned short mbox_ready_timeout = 60;
 module_param(mbox_ready_timeout, ushort, 0644);
 MODULE_PARM_DESC(mbox_ready_timeout, "seconds to wait for mailbox ready");
@@ -61,7 +38,7 @@ static int cxl_pci_mbox_wait_for_doorbell(struct cxl_dev_state *cxlds)
 		end = jiffies;
 
 		if (time_after(end, start + CXL_MAILBOX_TIMEOUT_MS)) {
-			/* Check again in case preempted before timeout test */
+			 
 			if (!cxl_doorbell_busy(cxlds))
 				break;
 			return -ETIMEDOUT;
@@ -95,7 +72,7 @@ static int cxl_request_irq(struct cxl_dev_state *cxlds, int irq,
 	struct device *dev = cxlds->dev;
 	struct cxl_dev_id *dev_id;
 
-	/* dev_id must be globally unique and must contain the cxlds */
+	 
 	dev_id = devm_kzalloc(dev, sizeof(*dev_id), GFP_KERNEL);
 	if (!dev_id)
 		return -ENOMEM;
@@ -133,16 +110,14 @@ static irqreturn_t cxl_pci_mbox_irq(int irq, void *id)
 			mod_delayed_work(system_wq, &mds->security.poll_dwork, 0);
 		mutex_unlock(&mds->mbox_mutex);
 	} else {
-		/* short-circuit the wait in __cxl_pci_mbox_send_cmd() */
+		 
 		rcuwait_wake_up(&mds->mbox_wait);
 	}
 
 	return IRQ_HANDLED;
 }
 
-/*
- * Sanitization operation polling mode.
- */
+ 
 static void cxl_mbox_sanitize_work(struct work_struct *work)
 {
 	struct cxl_memdev_state *mds =
@@ -166,28 +141,7 @@ static void cxl_mbox_sanitize_work(struct work_struct *work)
 	mutex_unlock(&mds->mbox_mutex);
 }
 
-/**
- * __cxl_pci_mbox_send_cmd() - Execute a mailbox command
- * @mds: The memory device driver data
- * @mbox_cmd: Command to send to the memory device.
- *
- * Context: Any context. Expects mbox_mutex to be held.
- * Return: -ETIMEDOUT if timeout occurred waiting for completion. 0 on success.
- *         Caller should check the return code in @mbox_cmd to make sure it
- *         succeeded.
- *
- * This is a generic form of the CXL mailbox send command thus only using the
- * registers defined by the mailbox capability ID - CXL 2.0 8.2.8.4. Memory
- * devices, and perhaps other types of CXL devices may have further information
- * available upon error conditions. Driver facilities wishing to send mailbox
- * commands should use the wrapper command.
- *
- * The CXL spec allows for up to two mailboxes. The intention is for the primary
- * mailbox to be OS controlled and the secondary mailbox to be used by system
- * firmware. This allows the OS and firmware to communicate with the device and
- * not need to coordinate with each other. The driver only uses the primary
- * mailbox.
- */
+ 
 static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 				   struct cxl_mbox_cmd *mbox_cmd)
 {
@@ -200,24 +154,9 @@ static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 
 	lockdep_assert_held(&mds->mbox_mutex);
 
-	/*
-	 * Here are the steps from 8.2.8.4 of the CXL 2.0 spec.
-	 *   1. Caller reads MB Control Register to verify doorbell is clear
-	 *   2. Caller writes Command Register
-	 *   3. Caller writes Command Payload Registers if input payload is non-empty
-	 *   4. Caller writes MB Control Register to set doorbell
-	 *   5. Caller either polls for doorbell to be clear or waits for interrupt if configured
-	 *   6. Caller reads MB Status Register to fetch Return code
-	 *   7. If command successful, Caller reads Command Register to get Payload Length
-	 *   8. If output payload is non-empty, host reads Command Payload Registers
-	 *
-	 * Hardware is free to do whatever it wants before the doorbell is rung,
-	 * and isn't allowed to change anything after it clears the doorbell. As
-	 * such, steps 2 and 3 can happen in any order, and steps 6, 7, 8 can
-	 * also happen in any order (though some orders might not make sense).
-	 */
+	 
 
-	/* #1 */
+	 
 	if (cxl_doorbell_busy(cxlds)) {
 		u64 md_status =
 			readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
@@ -227,11 +166,7 @@ static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 		return -EBUSY;
 	}
 
-	/*
-	 * With sanitize polling, hardware might be done and the poller still
-	 * not be in sync. Ensure no new command comes in until so. Keep the
-	 * hardware semantics and only allow device health status.
-	 */
+	 
 	if (mds->security.poll_tmo_secs > 0) {
 		if (mbox_cmd->opcode != CXL_MBOX_OP_GET_HEALTH_INFO)
 			return -EBUSY;
@@ -248,15 +183,15 @@ static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 		memcpy_toio(payload, mbox_cmd->payload_in, mbox_cmd->size_in);
 	}
 
-	/* #2, #3 */
+	 
 	writeq(cmd_reg, cxlds->regs.mbox + CXLDEV_MBOX_CMD_OFFSET);
 
-	/* #4 */
+	 
 	dev_dbg(dev, "Sending command: 0x%04x\n", mbox_cmd->opcode);
 	writel(CXLDEV_MBOX_CTRL_DOORBELL,
 	       cxlds->regs.mbox + CXLDEV_MBOX_CTRL_OFFSET);
 
-	/* #5 */
+	 
 	rc = cxl_pci_mbox_wait_for_doorbell(cxlds);
 	if (rc == -ETIMEDOUT) {
 		u64 md_status = readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
@@ -265,38 +200,22 @@ static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 		return rc;
 	}
 
-	/* #6 */
+	 
 	status_reg = readq(cxlds->regs.mbox + CXLDEV_MBOX_STATUS_OFFSET);
 	mbox_cmd->return_code =
 		FIELD_GET(CXLDEV_MBOX_STATUS_RET_CODE_MASK, status_reg);
 
-	/*
-	 * Handle the background command in a synchronous manner.
-	 *
-	 * All other mailbox commands will serialize/queue on the mbox_mutex,
-	 * which we currently hold. Furthermore this also guarantees that
-	 * cxl_mbox_background_complete() checks are safe amongst each other,
-	 * in that no new bg operation can occur in between.
-	 *
-	 * Background operations are timesliced in accordance with the nature
-	 * of the command. In the event of timeout, the mailbox state is
-	 * indeterminate until the next successful command submission and the
-	 * driver can get back in sync with the hardware state.
-	 */
+	 
 	if (mbox_cmd->return_code == CXL_MBOX_CMD_RC_BACKGROUND) {
 		u64 bg_status_reg;
 		int i, timeout;
 
-		/*
-		 * Sanitization is a special case which monopolizes the device
-		 * and cannot be timesliced. Handle asynchronously instead,
-		 * and allow userspace to poll(2) for completion.
-		 */
+		 
 		if (mbox_cmd->opcode == CXL_MBOX_OP_SANITIZE) {
 			if (mds->security.sanitize_active)
 				return -EBUSY;
 
-			/* give first timeout a second */
+			 
 			timeout = 1;
 			mds->security.poll_tmo_secs = timeout;
 			mds->security.sanitize_active = true;
@@ -337,23 +256,17 @@ static int __cxl_pci_mbox_send_cmd(struct cxl_memdev_state *mds,
 	if (mbox_cmd->return_code != CXL_MBOX_CMD_RC_SUCCESS) {
 		dev_dbg(dev, "Mailbox operation had an error: %s\n",
 			cxl_mbox_cmd_rc2str(mbox_cmd));
-		return 0; /* completed but caller must check return_code */
+		return 0;  
 	}
 
 success:
-	/* #7 */
+	 
 	cmd_reg = readq(cxlds->regs.mbox + CXLDEV_MBOX_CMD_OFFSET);
 	out_len = FIELD_GET(CXLDEV_MBOX_CMD_PAYLOAD_LENGTH_MASK, cmd_reg);
 
-	/* #8 */
+	 
 	if (out_len && mbox_cmd->payload_out) {
-		/*
-		 * Sanitize the copy. If hardware misbehaves, out_len per the
-		 * spec can actually be greater than the max allowed size (21
-		 * bits available but spec defined 1M max). The caller also may
-		 * have requested less data than the hardware supplied even
-		 * within spec.
-		 */
+		 
 		size_t n;
 
 		n = min3(mbox_cmd->size_out, mds->payload_size, out_len);
@@ -402,12 +315,7 @@ static int cxl_pci_setup_mailbox(struct cxl_memdev_state *mds)
 		return -ETIMEDOUT;
 	}
 
-	/*
-	 * A command may be in flight from a previous driver instance,
-	 * think kexec, do one doorbell wait so that
-	 * __cxl_pci_mbox_send_cmd() can assume that it is the only
-	 * source for future doorbell busy events.
-	 */
+	 
 	if (cxl_pci_mbox_wait_for_doorbell(cxlds) != 0) {
 		cxl_err(dev, md_status, "timeout awaiting mailbox idle");
 		return -ETIMEDOUT;
@@ -417,13 +325,7 @@ static int cxl_pci_setup_mailbox(struct cxl_memdev_state *mds)
 	mds->payload_size =
 		1 << FIELD_GET(CXLDEV_MBOX_CAP_PAYLOAD_SIZE_MASK, cap);
 
-	/*
-	 * CXL 2.0 8.2.8.4.3 Mailbox Capabilities Register
-	 *
-	 * If the size is too small, mandatory commands will not work and so
-	 * there's no point in going forward. If the size is too large, there's
-	 * no harm is soft limiting it.
-	 */
+	 
 	mds->payload_size = min_t(size_t, mds->payload_size, SZ_1M);
 	if (mds->payload_size < 256) {
 		dev_err(dev, "Mailbox is too small (%zub)",
@@ -436,7 +338,7 @@ static int cxl_pci_setup_mailbox(struct cxl_memdev_state *mds)
 	rcuwait_init(&mds->mbox_wait);
 	INIT_DELAYED_WORK(&mds->security.poll_dwork, cxl_mbox_sanitize_work);
 
-	/* background command interrupts are optional */
+	 
 	if (!(cap & CXLDEV_MBOX_CAP_BG_CMD_IRQ))
 		return 0;
 
@@ -449,7 +351,7 @@ static int cxl_pci_setup_mailbox(struct cxl_memdev_state *mds)
 		return 0;
 
 	dev_dbg(cxlds->dev, "Mailbox interrupts enabled\n");
-	/* enable background command mbox irq support */
+	 
 	ctrl = readl(cxlds->regs.mbox + CXLDEV_MBOX_CTRL_OFFSET);
 	ctrl |= CXLDEV_MBOX_CTRL_BG_CMD_IRQ;
 	writel(ctrl, cxlds->regs.mbox + CXLDEV_MBOX_CTRL_OFFSET);
@@ -457,10 +359,7 @@ static int cxl_pci_setup_mailbox(struct cxl_memdev_state *mds)
 	return 0;
 }
 
-/*
- * Assume that any RCIEP that emits the CXL memory expander class code
- * is an RCD
- */
+ 
 static bool is_cxl_restricted(struct pci_dev *pdev)
 {
 	return pci_pcie_type(pdev) == PCI_EXP_TYPE_RC_END;
@@ -503,11 +402,7 @@ static int cxl_pci_setup_regs(struct pci_dev *pdev, enum cxl_regloc_type type,
 
 	rc = cxl_find_regblock(pdev, type, map);
 
-	/*
-	 * If the Register Locator DVSEC does not exist, check if it
-	 * is an RCH and try to extract the Component Registers from
-	 * an RCRB.
-	 */
+	 
 	if (rc && type == CXL_REGLOC_RBI_COMPONENT && is_cxl_restricted(pdev))
 		rc = cxl_rcrb_get_comp_regs(pdev, map);
 
@@ -530,7 +425,7 @@ static int cxl_pci_ras_unmask(struct pci_dev *pdev)
 		return 0;
 	}
 
-	/* BIOS has PCIe AER error control */
+	 
 	if (!pcie_aer_is_native(pdev))
 		return 0;
 
@@ -568,10 +463,7 @@ static void free_event_buf(void *buf)
 	kvfree(buf);
 }
 
-/*
- * There is a single buffer for reading event logs from the mailbox.  All logs
- * share this buffer protected by the mds->event_log_lock.
- */
+ 
 static int cxl_mem_alloc_event_buf(struct cxl_memdev_state *mds)
 {
 	struct cxl_get_event_payload *buf;
@@ -588,15 +480,7 @@ static int cxl_alloc_irq_vectors(struct pci_dev *pdev)
 {
 	int nvecs;
 
-	/*
-	 * Per CXL 3.0 3.1.1 CXL.io Endpoint a function on a CXL device must
-	 * not generate INTx messages if that function participates in
-	 * CXL.cache or CXL.mem.
-	 *
-	 * Additionally pci_alloc_irq_vectors() handles calling
-	 * pci_free_irq_vectors() automatically despite not being called
-	 * pcim_*.  See pci_setup_msi_context().
-	 */
+	 
 	nvecs = pci_alloc_irq_vectors(pdev, 1, CXL_PCI_DEFAULT_MAX_VECTORS,
 				      PCI_IRQ_MSIX | PCI_IRQ_MSI);
 	if (nvecs < 1) {
@@ -614,12 +498,9 @@ static irqreturn_t cxl_event_thread(int irq, void *id)
 	u32 status;
 
 	do {
-		/*
-		 * CXL 3.0 8.2.8.3.1: The lower 32 bits are the status;
-		 * ignore the reserved upper 32 bits
-		 */
+		 
 		status = readl(cxlds->regs.status + CXLDEV_DEV_EVENT_STATUS_OFFSET);
-		/* Ignore logs unknown to the driver */
+		 
 		status &= CXLDEV_EVENT_STATUS_ALL;
 		if (!status)
 			break;
@@ -690,7 +571,7 @@ static int cxl_event_config_msgnums(struct cxl_memdev_state *mds,
 		return rc;
 	}
 
-	/* Retrieve final interrupt settings */
+	 
 	return cxl_event_get_int_policy(mds, policy);
 }
 
@@ -744,10 +625,7 @@ static int cxl_event_config(struct pci_host_bridge *host_bridge,
 	struct cxl_event_interrupt_policy policy;
 	int rc;
 
-	/*
-	 * When BIOS maintains CXL error reporting control, it will process
-	 * event records.  Only one agent can do so.
-	 */
+	 
 	if (!host_bridge->native_cxl_error)
 		return 0;
 
@@ -786,10 +664,7 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	struct cxl_memdev *cxlmd;
 	int i, rc, pmu_count;
 
-	/*
-	 * Double check the anonymous union trickery in struct cxl_regs
-	 * FIXME switch to struct_group()
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct cxl_regs, memdev) !=
 		     offsetof(struct cxl_regs, device_regs.memdev));
 
@@ -820,10 +695,7 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (rc)
 		return rc;
 
-	/*
-	 * If the component registers can't be found, the cxl_pci driver may
-	 * still be useful for management functions so don't return an error.
-	 */
+	 
 	cxlds->component_reg_phys = CXL_RESOURCE_NONE;
 	rc = cxl_pci_setup_regs(pdev, CXL_REGLOC_RBI_COMPONENT, &map);
 	if (rc)
@@ -921,9 +793,9 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 }
 
 static const struct pci_device_id cxl_mem_pci_tbl[] = {
-	/* PCI class code for CXL.mem Type-3 Devices */
+	 
 	{ PCI_DEVICE_CLASS((PCI_CLASS_MEMORY_CXL << 8 | CXL_MEMORY_PROGIF), ~0)},
-	{ /* terminate list */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(pci, cxl_mem_pci_tbl);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* procfs files for key database enumeration
- *
- * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/sched.h>
@@ -37,9 +33,7 @@ static const struct seq_operations proc_key_users_ops = {
 	.show	= proc_key_users_show,
 };
 
-/*
- * Declare the /proc files.
- */
+ 
 static int __init key_proc_init(void)
 {
 	struct proc_dir_entry *p;
@@ -57,10 +51,7 @@ static int __init key_proc_init(void)
 
 __initcall(key_proc_init);
 
-/*
- * Implement "/proc/keys" to provide a list of the keys on the system that
- * grant View permission to the caller.
- */
+ 
 static struct rb_node *key_serial_next(struct seq_file *p, struct rb_node *n)
 {
 	struct user_namespace *user_ns = seq_user_ns(p);
@@ -174,9 +165,7 @@ static int proc_keys_show(struct seq_file *m, void *v)
 
 	key_ref = make_key_ref(key, 0);
 
-	/* determine if the key is possessed by this process (a test we can
-	 * skip if the key does not indicate the possessor can view it
-	 */
+	 
 	if (key->perm & KEY_POS_VIEW) {
 		rcu_read_lock();
 		skey_ref = search_cred_keyrings_rcu(&ctx);
@@ -187,7 +176,7 @@ static int proc_keys_show(struct seq_file *m, void *v)
 		}
 	}
 
-	/* check whether the current task is allowed to view the key */
+	 
 	rc = key_task_permission(key_ref, ctx.cred, KEY_NEED_VIEW);
 	if (rc < 0)
 		return 0;
@@ -196,7 +185,7 @@ static int proc_keys_show(struct seq_file *m, void *v)
 
 	rcu_read_lock();
 
-	/* come up with a suitable timeout value */
+	 
 	expiry = READ_ONCE(key->expiry);
 	if (expiry == TIME64_MAX) {
 		memcpy(xbuf, "perm", 5);

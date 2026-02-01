@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2021 Intel Corporation
+
+
 
 #include <linux/bug.h>
 #include <linux/device.h>
@@ -89,10 +89,7 @@ static void unregister_controller(void *_controller)
 {
 	struct peci_controller *controller = _controller;
 
-	/*
-	 * Detach any active PECI devices. This can't fail, thus we do not
-	 * check the returned value.
-	 */
+	 
 	device_for_each_child_reverse(&controller->dev, NULL, unregister_child);
 
 	device_unregister(&controller->dev);
@@ -102,16 +99,7 @@ static void unregister_controller(void *_controller)
 	pm_runtime_disable(&controller->dev);
 }
 
-/**
- * devm_peci_controller_add() - add PECI controller
- * @dev: device for devm operations
- * @ops: pointer to controller specific methods
- *
- * In final stage of its probe(), peci_controller driver calls
- * devm_peci_controller_add() to register itself with the PECI bus.
- *
- * Return: Pointer to the newly allocated controller or ERR_PTR() in case of failure.
- */
+ 
 struct peci_controller *devm_peci_controller_add(struct device *dev,
 						 const struct peci_controller_ops *ops)
 {
@@ -140,10 +128,7 @@ struct peci_controller *devm_peci_controller_add(struct device *dev,
 	if (ret)
 		return ERR_PTR(ret);
 
-	/*
-	 * Ignoring retval since failures during scan are non-critical for
-	 * controller itself.
-	 */
+	 
 	peci_controller_scan_devices(controller);
 
 	return controller;

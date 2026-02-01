@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright 2018 NXP
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -187,13 +187,7 @@ static const char * const micfil_hwvad_hpf_texts[] = {
 	"Cut-off @102Hz",
 };
 
-/*
- * DC Remover Control
- * Filter Bypassed	1 1
- * Cut-off @21Hz	0 0
- * Cut-off @83Hz	0 1
- * Cut-off @152HZ	1 0
- */
+ 
 static const char * const micfil_dc_remover_texts[] = {
 	"Cut-off @21Hz", "Cut-off @83Hz",
 	"Cut-off @152Hz", "Bypass",
@@ -229,11 +223,11 @@ static int micfil_put_dc_remover_state(struct snd_kcontrol *kcontrol,
 
 	micfil->dc_remover = val;
 
-	/* Calculate total value for all channels */
+	 
 	for (i = 0; i < MICFIL_OUTPUT_CHANNELS; i++)
 		reg_val |= val << MICFIL_DC_CHX_SHIFT(i);
 
-	/* Update DC Remover mode for all channels */
+	 
 	ret = snd_soc_component_update_bits(comp, REG_MICFIL_DC_CTRL,
 					    MICFIL_DC_CTRL_CONFIG, reg_val);
 	if (ret < 0)
@@ -287,9 +281,7 @@ static int hwvad_put_init_mode(struct snd_kcontrol *kcontrol,
 	struct fsl_micfil *micfil = snd_soc_component_get_drvdata(comp);
 	int val = snd_soc_enum_item_to_val(e, item[0]);
 
-	/* 0 - Envelope-based Mode
-	 * 1 - Energy-based Mode
-	 */
+	 
 	micfil->vad_init_mode = val;
 
 	return 0;
@@ -403,11 +395,7 @@ static int fsl_micfil_use_verid(struct device *dev)
 	return 0;
 }
 
-/* The SRES is a self-negated bit which provides the CPU with the
- * capability to initialize the PDM Interface module through the
- * slave-bus interface. This bit always reads as zero, and this
- * bit is only effective when MDIS is cleared
- */
+ 
 static int fsl_micfil_reset(struct device *dev)
 {
 	struct fsl_micfil *micfil = dev_get_drvdata(dev);
@@ -423,21 +411,13 @@ static int fsl_micfil_reset(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * SRES is self-cleared bit, but REG_MICFIL_CTRL1 is defined
-	 * as non-volatile register, so SRES still remain in regmap
-	 * cache after set, that every update of REG_MICFIL_CTRL1,
-	 * software reset happens. so clear it explicitly.
-	 */
+	 
 	ret = regmap_clear_bits(micfil->regmap, REG_MICFIL_CTRL1,
 				MICFIL_CTRL1_SRES);
 	if (ret)
 		return ret;
 
-	/*
-	 * Set SRES should clear CHnF flags, But even add delay here
-	 * the CHnF may not be cleared sometimes, so clear CHnF explicitly.
-	 */
+	 
 	ret = regmap_write_bits(micfil->regmap, REG_MICFIL_STAT, 0xFF, 0xFF);
 	if (ret)
 		return ret;
@@ -458,119 +438,107 @@ static int fsl_micfil_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* Enable/disable hwvad interrupts */
+ 
 static int fsl_micfil_configure_hwvad_interrupts(struct fsl_micfil *micfil, int enable)
 {
 	u32 vadie_reg = enable ? MICFIL_VAD0_CTRL1_IE : 0;
 	u32 vaderie_reg = enable ? MICFIL_VAD0_CTRL1_ERIE : 0;
 
-	/* Voice Activity Detector Error Interruption */
+	 
 	regmap_update_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			   MICFIL_VAD0_CTRL1_ERIE, vaderie_reg);
 
-	/* Voice Activity Detector Interruption */
+	 
 	regmap_update_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			   MICFIL_VAD0_CTRL1_IE, vadie_reg);
 
 	return 0;
 }
 
-/* Configuration done only in energy-based initialization mode */
+ 
 static int fsl_micfil_init_hwvad_energy_mode(struct fsl_micfil *micfil)
 {
-	/* Keep the VADFRENDIS bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL2,
 			  MICFIL_VAD0_CTRL2_FRENDIS);
 
-	/* Keep the VADPREFEN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL2,
 			  MICFIL_VAD0_CTRL2_PREFEN);
 
-	/* Keep the VADSFILEN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_SCONFIG,
 			  MICFIL_VAD0_SCONFIG_SFILEN);
 
-	/* Keep the VADSMAXEN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_SCONFIG,
 			  MICFIL_VAD0_SCONFIG_SMAXEN);
 
-	/* Keep the VADNFILAUTO bitfield asserted. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			MICFIL_VAD0_NCONFIG_NFILAUT);
 
-	/* Keep the VADNMINEN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			  MICFIL_VAD0_NCONFIG_NMINEN);
 
-	/* Keep the VADNDECEN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			  MICFIL_VAD0_NCONFIG_NDECEN);
 
-	/* Keep the VADNOREN bitfield cleared. */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			  MICFIL_VAD0_NCONFIG_NOREN);
 
 	return 0;
 }
 
-/* Configuration done only in envelope-based initialization mode */
+ 
 static int fsl_micfil_init_hwvad_envelope_mode(struct fsl_micfil *micfil)
 {
-	/* Assert the VADFRENDIS bitfield */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL2,
 			MICFIL_VAD0_CTRL2_FRENDIS);
 
-	/* Assert the VADPREFEN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL2,
 			MICFIL_VAD0_CTRL2_PREFEN);
 
-	/* Assert the VADSFILEN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_SCONFIG,
 			MICFIL_VAD0_SCONFIG_SFILEN);
 
-	/* Assert the VADSMAXEN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_SCONFIG,
 			MICFIL_VAD0_SCONFIG_SMAXEN);
 
-	/* Clear the VADNFILAUTO bitfield */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			  MICFIL_VAD0_NCONFIG_NFILAUT);
 
-	/* Assert the VADNMINEN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			MICFIL_VAD0_NCONFIG_NMINEN);
 
-	/* Assert the VADNDECEN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			MICFIL_VAD0_NCONFIG_NDECEN);
 
-	/* Assert VADNOREN bitfield. */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_NCONFIG,
 			MICFIL_VAD0_NCONFIG_NOREN);
 
 	return 0;
 }
 
-/*
- * Hardware Voice Active Detection: The HWVAD takes data from the input
- * of a selected PDM microphone to detect if there is any
- * voice activity. When a voice activity is detected, an interrupt could
- * be delivered to the system. Initialization in section 8.4:
- * Can work in two modes:
- *  -> Eneveope-based mode (section 8.4.1)
- *  -> Energy-based mode (section 8.4.2)
- *
- * It is important to remark that the HWVAD detector could be enabled
- * or reset only when the MICFIL isn't running i.e. when the BSY_FIL
- * bit in STAT register is cleared
- */
+ 
 static int fsl_micfil_hwvad_enable(struct fsl_micfil *micfil)
 {
 	int ret;
 
 	micfil->vad_detected = 0;
 
-	/* envelope-based specific initialization */
+	 
 	if (micfil->vad_init_mode == MICFIL_HWVAD_ENVELOPE_MODE)
 		ret = fsl_micfil_init_hwvad_envelope_mode(micfil);
 	else
@@ -578,24 +546,24 @@ static int fsl_micfil_hwvad_enable(struct fsl_micfil *micfil)
 	if (ret)
 		return ret;
 
-	/* Voice Activity Detector Internal Filters Initialization*/
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			MICFIL_VAD0_CTRL1_ST10);
 
-	/* Voice Activity Detector Internal Filter */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			  MICFIL_VAD0_CTRL1_ST10);
 
-	/* Enable Interrupts */
+	 
 	ret = fsl_micfil_configure_hwvad_interrupts(micfil, 1);
 	if (ret)
 		return ret;
 
-	/* Voice Activity Detector Reset */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			MICFIL_VAD0_CTRL1_RST);
 
-	/* Voice Activity Detector Enabled */
+	 
 	regmap_set_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			MICFIL_VAD0_CTRL1_EN);
 
@@ -607,11 +575,11 @@ static int fsl_micfil_hwvad_disable(struct fsl_micfil *micfil)
 	struct device *dev = &micfil->pdev->dev;
 	int ret = 0;
 
-	/* Disable HWVAD */
+	 
 	regmap_clear_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			  MICFIL_VAD0_CTRL1_EN);
 
-	/* Disable hwvad interrupts */
+	 
 	ret = fsl_micfil_configure_hwvad_interrupts(micfil, 0);
 	if (ret)
 		dev_err(dev, "Failed to disable interrupts\n");
@@ -636,19 +604,14 @@ static int fsl_micfil_trigger(struct snd_pcm_substream *substream, int cmd,
 			return ret;
 		}
 
-		/* DMA Interrupt Selection - DISEL bits
-		 * 00 - DMA and IRQ disabled
-		 * 01 - DMA req enabled
-		 * 10 - IRQ enabled
-		 * 11 - reserved
-		 */
+		 
 		ret = regmap_update_bits(micfil->regmap, REG_MICFIL_CTRL1,
 				MICFIL_CTRL1_DISEL,
 				FIELD_PREP(MICFIL_CTRL1_DISEL, MICFIL_CTRL1_DISEL_DMA));
 		if (ret)
 			return ret;
 
-		/* Enable the module */
+		 
 		ret = regmap_set_bits(micfil->regmap, REG_MICFIL_CTRL1,
 				      MICFIL_CTRL1_PDMIEN);
 		if (ret)
@@ -664,7 +627,7 @@ static int fsl_micfil_trigger(struct snd_pcm_substream *substream, int cmd,
 		if (micfil->vad_enabled)
 			fsl_micfil_hwvad_disable(micfil);
 
-		/* Disable the module */
+		 
 		ret = regmap_clear_bits(micfil->regmap, REG_MICFIL_CTRL1,
 					MICFIL_CTRL1_PDMIEN);
 		if (ret)
@@ -689,10 +652,10 @@ static int fsl_micfil_reparent_rootclk(struct fsl_micfil *micfil, unsigned int s
 	struct clk *clk;
 	int ret;
 
-	/* Get root clock */
+	 
 	clk = micfil->mclk;
 
-	/* Disable clock first, for it was enabled by pm_runtime */
+	 
 	clk_disable_unprepare(clk);
 	fsl_asoc_reparent_pll_clocks(dev, clk, micfil->pll8k_clk,
 				     micfil->pll11k_clk, ratio);
@@ -714,13 +677,13 @@ static int fsl_micfil_hw_params(struct snd_pcm_substream *substream,
 	int osr = MICFIL_OSR_DEFAULT;
 	int ret;
 
-	/* 1. Disable the module */
+	 
 	ret = regmap_clear_bits(micfil->regmap, REG_MICFIL_CTRL1,
 				MICFIL_CTRL1_PDMIEN);
 	if (ret)
 		return ret;
 
-	/* enable channels */
+	 
 	ret = regmap_update_bits(micfil->regmap, REG_MICFIL_CTRL1,
 				 0xFF, ((1 << channels) - 1));
 	if (ret)
@@ -743,12 +706,12 @@ static int fsl_micfil_hw_params(struct snd_pcm_substream *substream,
 				 FIELD_PREP(MICFIL_CTRL2_CLKDIV, clk_div) |
 				 FIELD_PREP(MICFIL_CTRL2_CICOSR, 16 - osr));
 
-	/* Configure CIC OSR in VADCICOSR */
+	 
 	regmap_update_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			   MICFIL_VAD0_CTRL1_CICOSR,
 			   FIELD_PREP(MICFIL_VAD0_CTRL1_CICOSR, 16 - osr));
 
-	/* Configure source channel in VADCHSEL */
+	 
 	regmap_update_bits(micfil->regmap, REG_MICFIL_VAD0_CTRL1,
 			   MICFIL_VAD0_CTRL1_CHSEL,
 			   FIELD_PREP(MICFIL_VAD0_CTRL1_CHSEL, (channels - 1)));
@@ -774,10 +737,10 @@ static int fsl_micfil_dai_probe(struct snd_soc_dai *cpu_dai)
 	micfil->quality = QUALITY_VLOW0;
 	micfil->card = cpu_dai->component->card;
 
-	/* set default gain to 2 */
+	 
 	regmap_write(micfil->regmap, REG_MICFIL_OUT_CTRL, 0x22222222);
 
-	/* set DC Remover in bypass mode*/
+	 
 	for (i = 0; i < MICFIL_OUTPUT_CHANNELS; i++)
 		val |= MICFIL_DC_BYPASS << MICFIL_DC_CHX_SHIFT(i);
 	ret = regmap_update_bits(micfil->regmap, REG_MICFIL_DC_CTRL,
@@ -791,7 +754,7 @@ static int fsl_micfil_dai_probe(struct snd_soc_dai *cpu_dai)
 	snd_soc_dai_init_dma_data(cpu_dai, NULL,
 				  &micfil->dma_params_rx);
 
-	/* FIFO Watermark Control - FIFOWMK*/
+	 
 	ret = regmap_update_bits(micfil->regmap, REG_MICFIL_FIFO_CTRL,
 			MICFIL_FIFO_CTRL_FIFOWMK,
 			FIELD_PREP(MICFIL_FIFO_CTRL_FIFOWMK, micfil->soc->fifo_depth - 1));
@@ -826,7 +789,7 @@ static const struct snd_soc_component_driver fsl_micfil_component = {
 	.legacy_dai_naming      = 1,
 };
 
-/* REGMAP */
+ 
 static const struct reg_default fsl_micfil_reg_defaults[] = {
 	{REG_MICFIL_CTRL1,		0x00000000},
 	{REG_MICFIL_CTRL2,		0x00000000},
@@ -893,16 +856,16 @@ static bool fsl_micfil_writeable_reg(struct device *dev, unsigned int reg)
 	switch (reg) {
 	case REG_MICFIL_CTRL1:
 	case REG_MICFIL_CTRL2:
-	case REG_MICFIL_STAT:		/* Write 1 to Clear */
+	case REG_MICFIL_STAT:		 
 	case REG_MICFIL_FIFO_CTRL:
-	case REG_MICFIL_FIFO_STAT:	/* Write 1 to Clear */
+	case REG_MICFIL_FIFO_STAT:	 
 	case REG_MICFIL_DC_CTRL:
 	case REG_MICFIL_OUT_CTRL:
-	case REG_MICFIL_OUT_STAT:	/* Write 1 to Clear */
+	case REG_MICFIL_OUT_STAT:	 
 	case REG_MICFIL_FSYNC_CTRL:
 	case REG_MICFIL_VAD0_CTRL1:
 	case REG_MICFIL_VAD0_CTRL2:
-	case REG_MICFIL_VAD0_STAT:	/* Write 1 to Clear */
+	case REG_MICFIL_VAD0_STAT:	 
 	case REG_MICFIL_VAD0_SCONFIG:
 	case REG_MICFIL_VAD0_NCONFIG:
 	case REG_MICFIL_VAD0_ZCD:
@@ -948,7 +911,7 @@ static const struct regmap_config fsl_micfil_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/* END OF REGMAP */
+ 
 
 static irqreturn_t micfil_isr(int irq, void *devid)
 {
@@ -966,14 +929,12 @@ static irqreturn_t micfil_isr(int irq, void *devid)
 
 	dma_enabled = FIELD_GET(MICFIL_CTRL1_DISEL, ctrl1_reg) == MICFIL_CTRL1_DISEL_DMA;
 
-	/* Channel 0-7 Output Data Flags */
+	 
 	for (i = 0; i < MICFIL_OUTPUT_CHANNELS; i++) {
 		if (stat_reg & MICFIL_STAT_CHXF(i))
 			dev_dbg(&pdev->dev,
 				"Data available in Data Channel %d\n", i);
-		/* if DMA is not enabled, field must be written with 1
-		 * to clear
-		 */
+		 
 		if (!dma_enabled)
 			regmap_write_bits(micfil->regmap,
 					  REG_MICFIL_STAT,
@@ -1048,14 +1009,9 @@ static irqreturn_t hwvad_isr(int irq, void *devid)
 
 	regmap_read(micfil->regmap, REG_MICFIL_VAD0_STAT, &vad0_reg);
 
-	/*
-	 * The only difference between MICFIL_VAD0_STAT_EF and
-	 * MICFIL_VAD0_STAT_IF is that the former requires Write
-	 * 1 to Clear. Since both flags are set, it is enough
-	 * to only read one of them
-	 */
+	 
 	if (vad0_reg & MICFIL_VAD0_STAT_IF) {
-		/* Write 1 to clear */
+		 
 		regmap_write_bits(micfil->regmap, REG_MICFIL_VAD0_STAT,
 				  MICFIL_VAD0_STAT_IF,
 				  MICFIL_VAD0_STAT_IF);
@@ -1104,9 +1060,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 
 	micfil->soc = of_device_get_match_data(&pdev->dev);
 
-	/* ipg_clk is used to control the registers
-	 * ipg_clk_app is used to operate the filter
-	 */
+	 
 	micfil->mclk = devm_clk_get(&pdev->dev, "ipg_clk_app");
 	if (IS_ERR(micfil->mclk)) {
 		dev_err(&pdev->dev, "failed to get core clock: %ld\n",
@@ -1124,7 +1078,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 	fsl_asoc_get_pll_clocks(&pdev->dev, &micfil->pll8k_clk,
 				&micfil->pll11k_clk);
 
-	/* init regmap */
+	 
 	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
@@ -1138,7 +1092,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 		return PTR_ERR(micfil->regmap);
 	}
 
-	/* dataline mask for RX */
+	 
 	ret = of_property_read_u32_index(np,
 					 "fsl,dataline",
 					 0,
@@ -1152,14 +1106,14 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* get IRQs */
+	 
 	for (i = 0; i < MICFIL_IRQ_LINES; i++) {
 		micfil->irq[i] = platform_get_irq(pdev, i);
 		if (micfil->irq[i] < 0)
 			return micfil->irq[i];
 	}
 
-	/* Digital Microphone interface interrupt */
+	 
 	ret = devm_request_irq(&pdev->dev, micfil->irq[0],
 			       micfil_isr, IRQF_SHARED,
 			       micfil->name, micfil);
@@ -1169,7 +1123,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Digital Microphone interface error interrupt */
+	 
 	ret = devm_request_irq(&pdev->dev, micfil->irq[1],
 			       micfil_err_isr, IRQF_SHARED,
 			       micfil->name, micfil);
@@ -1179,7 +1133,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Digital Microphone interface voice activity detector event */
+	 
 	ret = devm_request_threaded_irq(&pdev->dev, micfil->irq[2],
 					hwvad_isr, voice_detected_fn,
 					IRQF_SHARED, micfil->name, micfil);
@@ -1189,7 +1143,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Digital Microphone interface voice activity detector error */
+	 
 	ret = devm_request_irq(&pdev->dev, micfil->irq[3],
 			       hwvad_err_isr, IRQF_SHARED,
 			       micfil->name, micfil);
@@ -1216,7 +1170,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm_get_sync;
 
-	/* Get micfil version */
+	 
 	ret = fsl_micfil_use_verid(&pdev->dev);
 	if (ret < 0)
 		dev_warn(&pdev->dev, "Error reading MICFIL version: %d\n", ret);
@@ -1227,10 +1181,7 @@ static int fsl_micfil_probe(struct platform_device *pdev)
 
 	regcache_cache_only(micfil->regmap, true);
 
-	/*
-	 * Register platform component before registering cpu dai for there
-	 * is not defer probe for platform component in snd_soc_add_pcm_runtime().
-	 */
+	 
 	ret = devm_snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to pcm register\n");

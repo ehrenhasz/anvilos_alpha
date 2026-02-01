@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  Definitions for the SMC module (socket related)
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+ 
+ 
 #ifndef _SMC_H
 #define _SMC_H
 
@@ -19,7 +11,7 @@
 
 struct sock;
 
-#define SMC_MAX_PNETID_LEN	16	/* Max. length of PNET id */
+#define SMC_MAX_PNETID_LEN	16	 
 
 struct smc_hashinfo {
 	rwlock_t lock;
@@ -29,7 +21,7 @@ struct smc_hashinfo {
 int smc_hash_sk(struct sock *sk);
 void smc_unhash_sk(struct sock *sk);
 
-/* SMCD/ISM device driver interface */
+ 
 struct smcd_dmb {
 	u64 dmb_tok;
 	u64 rgid;
@@ -91,4 +83,4 @@ struct smcd_dev {
 	u8 going_away : 1;
 };
 
-#endif	/* _SMC_H */
+#endif	 

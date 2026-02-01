@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car V2H (R8A7792) System Controller
- *
- * Copyright (C) 2016 Cogent Embedded Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>

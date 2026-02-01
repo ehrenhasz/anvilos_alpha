@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -111,7 +111,7 @@ static int check_madvise_options(int mem_type, int mode, int mapping)
 	if (check_allocated_memory(ptr, TEST_UNIT * page_sz, mem_type, false) != KSFT_PASS)
 		return KSFT_FAIL;
 
-	/* Insert same data in all the pages */
+	 
 	memset(ptr, 'A', TEST_UNIT * page_sz);
 	ret = madvise(ptr, TEST_UNIT * page_sz, MADV_MERGEABLE);
 	if (ret) {
@@ -119,7 +119,7 @@ static int check_madvise_options(int mem_type, int mode, int mapping)
 		goto madvise_err;
 	}
 	mte_ksm_scan();
-	/* Tagged pages should not merge */
+	 
 	if ((read_sysfs(PATH_KSM "pages_shared") < 1) ||
 	    (read_sysfs(PATH_KSM "pages_sharing") < (TEST_UNIT - 1)))
 		err = KSFT_PASS;
@@ -140,14 +140,14 @@ int main(int argc, char *argv[])
 		ksft_print_msg("ERR: Unable to get page size\n");
 		return KSFT_FAIL;
 	}
-	/* Register signal handlers */
+	 
 	mte_register_signal(SIGBUS, mte_default_handler);
 	mte_register_signal(SIGSEGV, mte_default_handler);
 
-	/* Set test plan */
+	 
 	ksft_set_plan(4);
 
-	/* Enable KSM */
+	 
 	mte_ksm_setup();
 
 	evaluate_test(check_madvise_options(USE_MMAP, MTE_SYNC_ERR, MAP_PRIVATE),

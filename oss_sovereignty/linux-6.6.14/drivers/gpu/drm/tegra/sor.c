@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -235,12 +233,12 @@ static const struct tegra_sor_hdmi_settings tegra186_sor_hdmi_defaults[] = {
 		.ichpmp = 5,
 		.loadadj = 3,
 		.tmds_termadj = 15,
-		.tx_pu_value = 0x66 /* 0 */,
+		.tx_pu_value = 0x66  ,
 		.bg_temp_coef = 3,
 		.bg_vref_level = 8,
 		.avdd10_level = 4,
 		.avdd14_level = 4,
-		.sparepll = 0x00, /* 0x34 */
+		.sparepll = 0x00,  
 		.drive_current = { 0x3a, 0x3a, 0x3a, 0x37 },
 		.preemphasis = { 0x00, 0x00, 0x00, 0x00 },
 	}, {
@@ -314,12 +312,12 @@ static const struct tegra_sor_hdmi_settings tegra194_sor_hdmi_defaults[] = {
 		.ichpmp = 5,
 		.loadadj = 3,
 		.tmds_termadj = 15,
-		.tx_pu_value = 0x66 /* 0 */,
+		.tx_pu_value = 0x66  ,
 		.bg_temp_coef = 3,
 		.bg_vref_level = 8,
 		.avdd10_level = 4,
 		.avdd14_level = 4,
-		.sparepll = 0x00, /* 0x34 */
+		.sparepll = 0x00,  
 		.drive_current = { 0x3a, 0x3a, 0x3a, 0x37 },
 		.preemphasis = { 0x00, 0x00, 0x00, 0x00 },
 	}, {
@@ -429,7 +427,7 @@ struct tegra_sor {
 	const struct tegra_sor_ops *ops;
 	enum tegra_io_pad pad;
 
-	/* for HDMI 2.0 */
+	 
 	struct tegra_sor_hdmi_settings *settings;
 	unsigned int num_settings;
 
@@ -529,13 +527,7 @@ static const char * const tegra_clk_sor_pad_parents[2][2] = {
 	{ "pll_d2_out0", "pll_dp" },
 };
 
-/*
- * Implementing ->set_parent() here isn't really required because the parent
- * will be explicitly selected in the driver code via the DP_CLK_SEL mux in
- * the SOR_CLK_CNTRL register. This is primarily for compatibility with the
- * Tegra186 and later SoC generations where the BPMP implements this clock
- * and doesn't expose the mux via the common clock framework.
- */
+ 
 
 static int tegra_clk_sor_pad_set_parent(struct clk_hw *hw, u8 index)
 {
@@ -622,7 +614,7 @@ static void tegra_sor_filter_rates(struct tegra_sor *sor)
 	struct drm_dp_link *link = &sor->link;
 	unsigned int i;
 
-	/* Tegra only supports RBR, HBR and HBR2 */
+	 
 	for (i = 0; i < link->num_rates; i++) {
 		switch (link->rates[i]) {
 		case 1620000:
@@ -646,10 +638,7 @@ static int tegra_sor_power_up_lanes(struct tegra_sor *sor, unsigned int lanes)
 	unsigned long timeout;
 	u32 value;
 
-	/*
-	 * Clear or set the PD_TXD bit corresponding to each lane, depending
-	 * on whether it is used or not.
-	 */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 
 	if (lanes <= 2)
@@ -671,7 +660,7 @@ static int tegra_sor_power_up_lanes(struct tegra_sor *sor, unsigned int lanes)
 
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
 
-	/* start lane sequencer */
+	 
 	value = SOR_LANE_SEQ_CTL_TRIGGER | SOR_LANE_SEQ_CTL_SEQUENCE_DOWN |
 		SOR_LANE_SEQ_CTL_POWER_STATE_UP;
 	tegra_sor_writel(sor, value, SOR_LANE_SEQ_CTL);
@@ -697,13 +686,13 @@ static int tegra_sor_power_down_lanes(struct tegra_sor *sor)
 	unsigned long timeout;
 	u32 value;
 
-	/* power down all lanes */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 	value &= ~(SOR_DP_PADCTL_PD_TXD_3 | SOR_DP_PADCTL_PD_TXD_0 |
 		   SOR_DP_PADCTL_PD_TXD_1 | SOR_DP_PADCTL_PD_TXD_2);
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
 
-	/* start lane sequencer */
+	 
 	value = SOR_LANE_SEQ_CTL_TRIGGER | SOR_LANE_SEQ_CTL_SEQUENCE_UP |
 		SOR_LANE_SEQ_CTL_POWER_STATE_DOWN;
 	tegra_sor_writel(sor, value, SOR_LANE_SEQ_CTL);
@@ -728,7 +717,7 @@ static void tegra_sor_dp_precharge(struct tegra_sor *sor, unsigned int lanes)
 {
 	u32 value;
 
-	/* pre-charge all used lanes */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 
 	if (lanes <= 2)
@@ -762,7 +751,7 @@ static void tegra_sor_dp_term_calibrate(struct tegra_sor *sor)
 {
 	u32 mask = 0x08, adj = 0, value;
 
-	/* enable pad calibration logic */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 	value &= ~SOR_DP_PADCTL_PAD_CAL_PD;
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
@@ -793,7 +782,7 @@ static void tegra_sor_dp_term_calibrate(struct tegra_sor *sor)
 	value |= SOR_PLL1_TMDS_TERMADJ(adj);
 	tegra_sor_writel(sor, value, sor->soc->regs->pll1);
 
-	/* disable pad calibration logic */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 	value |= SOR_DP_PADCTL_PAD_CAL_PD;
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
@@ -880,7 +869,7 @@ static int tegra_sor_dp_link_configure(struct drm_dp_link *link)
 	rate = drm_dp_link_rate_to_bw_code(link->rate);
 	lanes = link->lanes;
 
-	/* configure link speed and lane count */
+	 
 	value = tegra_sor_readl(sor, SOR_CLK_CNTRL);
 	value &= ~SOR_CLK_CNTRL_DP_LINK_SPEED_MASK;
 	value |= SOR_CLK_CNTRL_DP_LINK_SPEED(rate);
@@ -897,7 +886,7 @@ static int tegra_sor_dp_link_configure(struct drm_dp_link *link)
 
 	usleep_range(400, 1000);
 
-	/* configure load pulse position adjustment */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->pll1);
 	value &= ~SOR_PLL1_LOADADJ_MASK;
 
@@ -917,7 +906,7 @@ static int tegra_sor_dp_link_configure(struct drm_dp_link *link)
 
 	tegra_sor_writel(sor, value, sor->soc->regs->pll1);
 
-	/* use alternate scrambler reset for eDP */
+	 
 	value = tegra_sor_readl(sor, SOR_DP_SPARE0);
 
 	if (link->edp == 0)
@@ -933,7 +922,7 @@ static int tegra_sor_dp_link_configure(struct drm_dp_link *link)
 		return err;
 	}
 
-	/* power up and pre-charge lanes */
+	 
 	err = tegra_sor_power_up_lanes(sor, lanes);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to power up %u lane%s: %d\n",
@@ -971,13 +960,13 @@ static int tegra_sor_setup_pwm(struct tegra_sor *sor, unsigned long timeout)
 
 	value = tegra_sor_readl(sor, SOR_PWM_DIV);
 	value &= ~SOR_PWM_DIV_MASK;
-	value |= 0x400; /* period */
+	value |= 0x400;  
 	tegra_sor_writel(sor, value, SOR_PWM_DIV);
 
 	value = tegra_sor_readl(sor, SOR_PWM_CTL);
 	value &= ~SOR_PWM_CTL_DUTY_CYCLE_MASK;
-	value |= 0x400; /* duty cycle */
-	value &= ~SOR_PWM_CTL_CLK_SEL; /* clock source: PCLK */
+	value |= 0x400;  
+	value &= ~SOR_PWM_CTL_CLK_SEL;  
 	value |= SOR_PWM_CTL_TRIGGER;
 	tegra_sor_writel(sor, value, SOR_PWM_CTL);
 
@@ -998,14 +987,14 @@ static int tegra_sor_attach(struct tegra_sor *sor)
 {
 	unsigned long value, timeout;
 
-	/* wake up in normal mode */
+	 
 	value = tegra_sor_readl(sor, SOR_SUPER_STATE1);
 	value |= SOR_SUPER_STATE_HEAD_MODE_AWAKE;
 	value |= SOR_SUPER_STATE_MODE_NORMAL;
 	tegra_sor_writel(sor, value, SOR_SUPER_STATE1);
 	tegra_sor_super_update(sor);
 
-	/* attach */
+	 
 	value = tegra_sor_readl(sor, SOR_SUPER_STATE1);
 	value |= SOR_SUPER_STATE_ATTACHED;
 	tegra_sor_writel(sor, value, SOR_SUPER_STATE1);
@@ -1030,7 +1019,7 @@ static int tegra_sor_wakeup(struct tegra_sor *sor)
 
 	timeout = jiffies + msecs_to_jiffies(250);
 
-	/* wait for head to wake up */
+	 
 	while (time_before(jiffies, timeout)) {
 		value = tegra_sor_readl(sor, SOR_TEST);
 		value &= SOR_TEST_HEAD_MODE_MASK;
@@ -1066,11 +1055,11 @@ static int tegra_sor_power_up(struct tegra_sor *sor, unsigned long timeout)
 }
 
 struct tegra_sor_params {
-	/* number of link clocks per line */
+	 
 	unsigned int num_clocks;
-	/* ratio between input and output */
+	 
 	u64 ratio;
-	/* precision factor */
+	 
 	u64 precision;
 
 	unsigned int active_polarity;
@@ -1093,7 +1082,7 @@ static int tegra_sor_compute_params(struct tegra_sor *sor,
 	active_count = div_u64(active_sym, f) * f;
 	frac = active_sym - active_count;
 
-	/* fraction < 0.5 */
+	 
 	if (frac >= (f / 2)) {
 		active_polarity = 1;
 		frac = f - frac;
@@ -1102,11 +1091,11 @@ static int tegra_sor_compute_params(struct tegra_sor *sor,
 	}
 
 	if (frac != 0) {
-		frac = div_u64(f * f,  frac); /* 1/fraction */
+		frac = div_u64(f * f,  frac);  
 		if (frac <= (15 * f)) {
 			active_frac = div_u64(frac, f);
 
-			/* round up */
+			 
 			if (active_polarity)
 				active_frac++;
 		} else {
@@ -1220,7 +1209,7 @@ static int tegra_sor_compute_config(struct tegra_sor *sor,
 			config->watermark);
 	}
 
-	/* compute the number of symbols per horizontal blanking interval */
+	 
 	num = ((mode->htotal - mode->hdisplay) - 7) * link_rate;
 	config->hblank_symbols = div_u64(num, pclk);
 
@@ -1229,7 +1218,7 @@ static int tegra_sor_compute_config(struct tegra_sor *sor,
 
 	config->hblank_symbols -= 12 / link->lanes;
 
-	/* compute the number of symbols per vertical blanking interval */
+	 
 	num = (mode->hdisplay - 25) * link_rate;
 	config->vblank_symbols = div_u64(num, pclk);
 	config->vblank_symbols -= 36 / link->lanes + 4;
@@ -1336,36 +1325,33 @@ static void tegra_sor_mode_set(struct tegra_sor *sor,
 
 	tegra_sor_writel(sor, value, SOR_STATE1);
 
-	/*
-	 * TODO: The video timing programming below doesn't seem to match the
-	 * register definitions.
-	 */
+	 
 
 	value = ((mode->vtotal & 0x7fff) << 16) | (mode->htotal & 0x7fff);
 	tegra_sor_writel(sor, value, sor->soc->regs->head_state1 + dc->pipe);
 
-	/* sync end = sync width - 1 */
+	 
 	vse = mode->vsync_end - mode->vsync_start - 1;
 	hse = mode->hsync_end - mode->hsync_start - 1;
 
 	value = ((vse & 0x7fff) << 16) | (hse & 0x7fff);
 	tegra_sor_writel(sor, value, sor->soc->regs->head_state2 + dc->pipe);
 
-	/* blank end = sync end + back porch */
+	 
 	vbe = vse + (mode->vtotal - mode->vsync_end);
 	hbe = hse + (mode->htotal - mode->hsync_end);
 
 	value = ((vbe & 0x7fff) << 16) | (hbe & 0x7fff);
 	tegra_sor_writel(sor, value, sor->soc->regs->head_state3 + dc->pipe);
 
-	/* blank start = blank end + active */
+	 
 	vbs = vbe + mode->vdisplay;
 	hbs = hbe + mode->hdisplay;
 
 	value = ((vbs & 0x7fff) << 16) | (hbs & 0x7fff);
 	tegra_sor_writel(sor, value, sor->soc->regs->head_state4 + dc->pipe);
 
-	/* XXX interlacing support */
+	 
 	tegra_sor_writel(sor, 0x001, sor->soc->regs->head_state5 + dc->pipe);
 }
 
@@ -1373,7 +1359,7 @@ static int tegra_sor_detach(struct tegra_sor *sor)
 {
 	unsigned long value, timeout;
 
-	/* switch to safe mode */
+	 
 	value = tegra_sor_readl(sor, SOR_SUPER_STATE1);
 	value &= ~SOR_SUPER_STATE_MODE_NORMAL;
 	tegra_sor_writel(sor, value, SOR_SUPER_STATE1);
@@ -1390,13 +1376,13 @@ static int tegra_sor_detach(struct tegra_sor *sor)
 	if ((value & SOR_PWR_MODE_SAFE) == 0)
 		return -ETIMEDOUT;
 
-	/* go to sleep */
+	 
 	value = tegra_sor_readl(sor, SOR_SUPER_STATE1);
 	value &= ~SOR_SUPER_STATE_HEAD_MODE_MASK;
 	tegra_sor_writel(sor, value, SOR_SUPER_STATE1);
 	tegra_sor_super_update(sor);
 
-	/* detach */
+	 
 	value = tegra_sor_readl(sor, SOR_SUPER_STATE1);
 	value &= ~SOR_SUPER_STATE_ATTACHED;
 	tegra_sor_writel(sor, value, SOR_SUPER_STATE1);
@@ -1441,7 +1427,7 @@ static int tegra_sor_power_down(struct tegra_sor *sor)
 	if ((value & SOR_PWR_TRIGGER) != 0)
 		return -ETIMEDOUT;
 
-	/* switch to safe parent clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_safe);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to set safe parent clock: %d\n", err);
@@ -1811,10 +1797,7 @@ tegra_sor_encoder_atomic_check(struct drm_encoder *encoder,
 
 	info = &output->connector.display_info;
 
-	/*
-	 * For HBR2 modes, the SOR brick needs to use the x20 multiplier, so
-	 * the pixel clock must be corrected accordingly.
-	 */
+	 
 	if (pclk >= 340000000) {
 		state->link_speed = 20;
 		state->pclk = pclk / 2;
@@ -1889,11 +1872,7 @@ static void tegra_sor_hdmi_write_infopack(struct tegra_sor *sor,
 	tegra_sor_writel(sor, value, offset);
 	offset++;
 
-	/*
-	 * Each subpack contains 7 bytes, divided into:
-	 * - subpack_low: bytes 0 - 3
-	 * - subpack_high: bytes 4 - 6 (with byte 7 padded to 0x00)
-	 */
+	 
 	for (i = 3, j = 0; i < size; i += 7, j += 8) {
 		size_t rem = size - i, num = min_t(size_t, rem, 4);
 
@@ -1916,7 +1895,7 @@ tegra_sor_hdmi_setup_avi_infoframe(struct tegra_sor *sor,
 	u32 value;
 	int err;
 
-	/* disable AVI infoframe */
+	 
 	value = tegra_sor_readl(sor, SOR_HDMI_AVI_INFOFRAME_CTRL);
 	value &= ~INFOFRAME_CTRL_SINGLE;
 	value &= ~INFOFRAME_CTRL_OTHER;
@@ -1938,7 +1917,7 @@ tegra_sor_hdmi_setup_avi_infoframe(struct tegra_sor *sor,
 
 	tegra_sor_hdmi_write_infopack(sor, buffer, err);
 
-	/* enable AVI infoframe */
+	 
 	value = tegra_sor_readl(sor, SOR_HDMI_AVI_INFOFRAME_CTRL);
 	value |= INFOFRAME_CTRL_CHECKSUM_ENABLE;
 	value |= INFOFRAME_CTRL_ENABLE;
@@ -1955,12 +1934,7 @@ static void tegra_sor_write_eld(struct tegra_sor *sor)
 		tegra_sor_writel(sor, i << 8 | sor->output.connector.eld[i],
 				 SOR_AUDIO_HDA_ELD_BUFWR);
 
-	/*
-	 * The HDA codec will always report an ELD buffer size of 96 bytes and
-	 * the HDA codec driver will check that each byte read from the buffer
-	 * is valid. Therefore every byte must be written, even if no 96 bytes
-	 * were parsed from EDID.
-	 */
+	 
 	for (i = length; i < 96; i++)
 		tegra_sor_writel(sor, i << 8 | 0, SOR_AUDIO_HDA_ELD_BUFWR);
 }
@@ -1969,11 +1943,7 @@ static void tegra_sor_audio_prepare(struct tegra_sor *sor)
 {
 	u32 value;
 
-	/*
-	 * Enable and unmask the HDA codec SCRATCH0 register interrupt. This
-	 * is used for interoperability between the HDA codec driver and the
-	 * HDMI/DP driver.
-	 */
+	 
 	value = SOR_INT_CODEC_SCRATCH1 | SOR_INT_CODEC_SCRATCH0;
 	tegra_sor_writel(sor, value, SOR_INT_ENABLE);
 	tegra_sor_writel(sor, value, SOR_INT_MASK);
@@ -1997,11 +1967,11 @@ static void tegra_sor_audio_enable(struct tegra_sor *sor)
 
 	value = tegra_sor_readl(sor, SOR_AUDIO_CNTRL);
 
-	/* select HDA audio input */
+	 
 	value &= ~SOR_AUDIO_CNTRL_SOURCE_SELECT(SOURCE_SELECT_MASK);
 	value |= SOR_AUDIO_CNTRL_SOURCE_SELECT(SOURCE_SELECT_HDA);
 
-	/* inject null samples */
+	 
 	if (sor->format.channels != 2)
 		value &= ~SOR_AUDIO_CNTRL_INJECT_NULLSMPL;
 	else
@@ -2011,7 +1981,7 @@ static void tegra_sor_audio_enable(struct tegra_sor *sor)
 
 	tegra_sor_writel(sor, value, SOR_AUDIO_CNTRL);
 
-	/* enable advertising HBR capability */
+	 
 	tegra_sor_writel(sor, SOR_AUDIO_SPARE_HBR_ENABLE, SOR_AUDIO_SPARE);
 }
 
@@ -2059,15 +2029,15 @@ static void tegra_sor_hdmi_audio_enable(struct tegra_sor *sor)
 		SOR_HDMI_SPARE_HW_CTS_ENABLE;
 	tegra_sor_writel(sor, value, SOR_HDMI_SPARE);
 
-	/* enable HW CTS */
+	 
 	value = SOR_HDMI_ACR_SUBPACK_LOW_SB1(0);
 	tegra_sor_writel(sor, value, SOR_HDMI_ACR_0441_SUBPACK_LOW);
 
-	/* allow packet to be sent */
+	 
 	value = SOR_HDMI_ACR_SUBPACK_HIGH_ENABLE;
 	tegra_sor_writel(sor, value, SOR_HDMI_ACR_0441_SUBPACK_HIGH);
 
-	/* reset N counter and enable lookup */
+	 
 	value = SOR_HDMI_AUDIO_N_RESET | SOR_HDMI_AUDIO_N_LOOKUP;
 	tegra_sor_writel(sor, value, SOR_HDMI_AUDIO_N);
 
@@ -2217,7 +2187,7 @@ static void tegra_sor_hdmi_disable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, 0, SOR_STATE1);
 	tegra_sor_update(sor);
 
-	/* disable display to SOR clock */
+	 
 	value = tegra_dc_readl(dc, DC_DISP_DISP_WIN_OPTIONS);
 
 	if (!sor->soc->has_nvdisplay)
@@ -2264,7 +2234,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* switch to safe parent clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_safe);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to set safe parent clock: %d\n", err);
@@ -2347,7 +2317,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	value |= SOR_CLK_CNTRL_DP_CLK_SEL_SINGLE_PCLK;
 	tegra_sor_writel(sor, value, SOR_CLK_CNTRL);
 
-	/* SOR pad PLL stabilization time */
+	 
 	usleep_range(250, 1000);
 
 	value = tegra_sor_readl(sor, SOR_DP_LINKCTL0);
@@ -2372,12 +2342,12 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, value, SOR_SEQ_INST(8));
 
 	if (!sor->soc->has_nvdisplay) {
-		/* program the reference clock */
+		 
 		value = SOR_REFCLK_DIV_INT(div) | SOR_REFCLK_DIV_FRAC(div);
 		tegra_sor_writel(sor, value, SOR_REFCLK);
 	}
 
-	/* XXX not in TRM */
+	 
 	for (value = 0, i = 0; i < 5; i++)
 		value |= SOR_XBAR_CTRL_LINK0_XSEL(i, sor->xbar_cfg[i]) |
 			 SOR_XBAR_CTRL_LINK1_XSEL(i, i);
@@ -2385,12 +2355,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, 0x00000000, SOR_XBAR_POL);
 	tegra_sor_writel(sor, value, SOR_XBAR_CTRL);
 
-	/*
-	 * Switch the pad clock to the DP clock. Note that we cannot actually
-	 * do this because Tegra186 and later don't support clk_set_parent()
-	 * on the sorX_pad_clkout clocks. We already do the equivalent above
-	 * using the DP_CLK_SEL mux of the SOR_CLK_CNTRL register.
-	 */
+	 
 #if 0
 	err = clk_set_parent(sor->clk_pad, sor->clk_dp);
 	if (err < 0) {
@@ -2400,7 +2365,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	}
 #endif
 
-	/* switch the SOR clock to the pad clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_pad);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to select SOR parent clock: %d\n",
@@ -2408,7 +2373,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* switch the output clock to the parent pixel clock */
+	 
 	err = clk_set_parent(sor->clk, sor->clk_parent);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to select output parent clock: %d\n",
@@ -2416,7 +2381,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* adjust clock rate for HDMI 2.0 modes */
+	 
 	rate = clk_get_rate(sor->clk_parent);
 
 	if (mode->clock >= 340000)
@@ -2429,7 +2394,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	if (!sor->soc->has_nvdisplay) {
 		value = SOR_INPUT_CONTROL_HDMI_SRC_SELECT(dc->pipe);
 
-		/* XXX is this the proper check? */
+		 
 		if (mode->clock < 75000)
 			value |= SOR_INPUT_CONTROL_ARM_VIDEO_RANGE_LIMITED;
 
@@ -2443,7 +2408,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, value, SOR_HDMI_CTRL);
 
 	if (!dc->soc->has_nvdisplay) {
-		/* H_PULSE2 setup */
+		 
 		pulse_start = h_ref_to_sync +
 			      (mode->hsync_end - mode->hsync_start) +
 			      (mode->htotal - mode->hsync_end) - 10;
@@ -2460,26 +2425,26 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 		tegra_dc_writel(dc, value, DC_DISP_DISP_SIGNAL_OPTIONS0);
 	}
 
-	/* infoframe setup */
+	 
 	err = tegra_sor_hdmi_setup_avi_infoframe(sor, mode);
 	if (err < 0)
 		dev_err(sor->dev, "failed to setup AVI infoframe: %d\n", err);
 
-	/* XXX HDMI audio support not implemented yet */
+	 
 	tegra_sor_hdmi_disable_audio_infoframe(sor);
 
-	/* use single TMDS protocol */
+	 
 	value = tegra_sor_readl(sor, SOR_STATE1);
 	value &= ~SOR_STATE_ASY_PROTOCOL_MASK;
 	value |= SOR_STATE_ASY_PROTOCOL_SINGLE_TMDS_A;
 	tegra_sor_writel(sor, value, SOR_STATE1);
 
-	/* power up pad calibration */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 	value &= ~SOR_DP_PADCTL_PAD_CAL_PD;
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
 
-	/* production settings */
+	 
 	settings = tegra_sor_hdmi_find_settings(sor, mode->clock * 1000);
 	if (!settings) {
 		dev_err(sor->dev, "no settings for pixel clock %d Hz\n",
@@ -2496,7 +2461,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	value |= SOR_PLL0_VCOCAP(settings->vcocap);
 	tegra_sor_writel(sor, value, sor->soc->regs->pll0);
 
-	/* XXX not in TRM */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->pll1);
 	value &= ~SOR_PLL1_LOADADJ_MASK;
 	value &= ~SOR_PLL1_TMDS_TERMADJ_MASK;
@@ -2539,13 +2504,13 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	value |= SOR_DP_PADCTL_SPAREPLL(settings->sparepll);
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl2);
 
-	/* power down pad calibration */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->dp_padctl0);
 	value |= SOR_DP_PADCTL_PAD_CAL_PD;
 	tegra_sor_writel(sor, value, sor->soc->regs->dp_padctl0);
 
 	if (!dc->soc->has_nvdisplay) {
-		/* miscellaneous display controller settings */
+		 
 		value = VSYNC_H_POSITION(1);
 		tegra_dc_writel(dc, value, DC_DISP_DISP_TIMING_OPTIONS);
 	}
@@ -2579,7 +2544,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 
 	tegra_dc_writel(dc, value, DC_DISP_DISP_COLOR_CONTROL);
 
-	/* XXX set display head owner */
+	 
 	value = tegra_sor_readl(sor, SOR_STATE1);
 	value &= ~SOR_STATE_ASY_OWNER_MASK;
 	value |= SOR_STATE_ASY_OWNER(1 + dc->pipe);
@@ -2589,13 +2554,13 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	if (err < 0)
 		dev_err(sor->dev, "failed to power up SOR: %d\n", err);
 
-	/* configure dynamic range of output */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->head_state0 + dc->pipe);
 	value &= ~SOR_HEAD_STATE_RANGECOMPRESS_MASK;
 	value &= ~SOR_HEAD_STATE_DYNRANGE_MASK;
 	tegra_sor_writel(sor, value, sor->soc->regs->head_state0 + dc->pipe);
 
-	/* configure colorspace */
+	 
 	value = tegra_sor_readl(sor, sor->soc->regs->head_state0 + dc->pipe);
 	value &= ~SOR_HEAD_STATE_COLORSPACE_MASK;
 	value |= SOR_HEAD_STATE_COLORSPACE_RGB;
@@ -2605,7 +2570,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 
 	tegra_sor_update(sor);
 
-	/* program preamble timing in SOR (XXX) */
+	 
 	value = tegra_sor_readl(sor, SOR_DP_SPARE0);
 	value &= ~SOR_DP_SPARE_DISP_VIDEO_PREAMBLE;
 	tegra_sor_writel(sor, value, SOR_DP_SPARE0);
@@ -2614,7 +2579,7 @@ static void tegra_sor_hdmi_enable(struct drm_encoder *encoder)
 	if (err < 0)
 		dev_err(sor->dev, "failed to attach SOR: %d\n", err);
 
-	/* enable display to SOR clock and generate HDMI preamble */
+	 
 	value = tegra_dc_readl(dc, DC_DISP_DISP_WIN_OPTIONS);
 
 	if (!sor->soc->has_nvdisplay)
@@ -2658,10 +2623,7 @@ static void tegra_sor_dp_disable(struct drm_encoder *encoder)
 	if (output->panel)
 		drm_panel_disable(output->panel);
 
-	/*
-	 * Do not attempt to power down a DP link if we're not connected since
-	 * the AUX transactions would just be timing out.
-	 */
+	 
 	if (output->connector.status != connector_status_disconnected) {
 		err = drm_dp_link_power_down(sor->aux, &sor->link);
 		if (err < 0)
@@ -2688,7 +2650,7 @@ static void tegra_sor_dp_disable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, value, SOR_STATE1);
 	tegra_sor_update(sor);
 
-	/* switch to safe parent clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_safe);
 	if (err < 0)
 		dev_err(sor->dev, "failed to set safe clock: %d\n", err);
@@ -2734,7 +2696,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* switch to safe parent clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_safe);
 	if (err < 0)
 		dev_err(sor->dev, "failed to set safe parent clock: %d\n", err);
@@ -2801,7 +2763,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	usleep_range(200, 400);
 
 	value = tegra_sor_readl(sor, SOR_DP_SPARE0);
-	/* XXX not in TRM */
+	 
 	if (output->panel)
 		value |= SOR_DP_SPARE_PANEL_INTERNAL;
 	else
@@ -2810,7 +2772,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	value |= SOR_DP_SPARE_SEQ_ENABLE;
 	tegra_sor_writel(sor, value, SOR_DP_SPARE0);
 
-	/* XXX not in TRM */
+	 
 	tegra_sor_writel(sor, 0, SOR_LVDS);
 
 	value = tegra_sor_readl(sor, sor->soc->regs->pll0);
@@ -2821,7 +2783,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	value |= SOR_PLL0_RESISTOR_EXT;
 	tegra_sor_writel(sor, value, sor->soc->regs->pll0);
 
-	/* XXX not in TRM */
+	 
 	for (value = 0, i = 0; i < 5; i++)
 		value |= SOR_XBAR_CTRL_LINK0_XSEL(i, sor->soc->xbar_cfg[i]) |
 			 SOR_XBAR_CTRL_LINK1_XSEL(i, i);
@@ -2829,12 +2791,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	tegra_sor_writel(sor, 0x00000000, SOR_XBAR_POL);
 	tegra_sor_writel(sor, value, SOR_XBAR_CTRL);
 
-	/*
-	 * Switch the pad clock to the DP clock. Note that we cannot actually
-	 * do this because Tegra186 and later don't support clk_set_parent()
-	 * on the sorX_pad_clkout clocks. We already do the equivalent above
-	 * using the DP_CLK_SEL mux of the SOR_CLK_CNTRL register.
-	 */
+	 
 #if 0
 	err = clk_set_parent(sor->clk_pad, sor->clk_parent);
 	if (err < 0) {
@@ -2844,7 +2801,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	}
 #endif
 
-	/* switch the SOR clock to the pad clock */
+	 
 	err = tegra_sor_set_parent_clock(sor, sor->clk_pad);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to select SOR parent clock: %d\n",
@@ -2852,7 +2809,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* switch the output clock to the parent pixel clock */
+	 
 	err = clk_set_parent(sor->clk, sor->clk_parent);
 	if (err < 0) {
 		dev_err(sor->dev, "failed to select output parent clock: %d\n",
@@ -2860,13 +2817,13 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 		return;
 	}
 
-	/* use DP-A protocol */
+	 
 	value = tegra_sor_readl(sor, SOR_STATE1);
 	value &= ~SOR_STATE_ASY_PROTOCOL_MASK;
 	value |= SOR_STATE_ASY_PROTOCOL_DP_A;
 	tegra_sor_writel(sor, value, SOR_STATE1);
 
-	/* enable port */
+	 
 	value = tegra_sor_readl(sor, SOR_DP_LINKCTL0);
 	value |= SOR_DP_LINKCTL_ENABLE;
 	tegra_sor_writel(sor, value, SOR_DP_LINKCTL0);
@@ -2883,7 +2840,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	if (err < 0)
 		dev_err(sor->dev, "failed to power up DP link: %d\n", err);
 
-	/* compute configuration */
+	 
 	memset(&config, 0, sizeof(config));
 	config.bits_per_pixel = state->bpc * 3;
 
@@ -2895,12 +2852,12 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	tegra_sor_mode_set(sor, mode, state);
 
 	if (output->panel) {
-		/* CSTM (LVDS, link A/B, upper) */
+		 
 		value = SOR_CSTM_LVDS | SOR_CSTM_LINK_ACT_A | SOR_CSTM_LINK_ACT_B |
 			SOR_CSTM_UPPER;
 		tegra_sor_writel(sor, value, SOR_CSTM);
 
-		/* PWM setup */
+		 
 		err = tegra_sor_setup_pwm(sor, 250);
 		if (err < 0)
 			dev_err(sor->dev, "failed to setup PWM: %d\n", err);
@@ -2912,7 +2869,7 @@ static void tegra_sor_dp_enable(struct drm_encoder *encoder)
 	if (err < 0)
 		dev_err(sor->dev, "failed to power up SOR: %d\n", err);
 
-	/* attach and wake up */
+	 
 	err = tegra_sor_attach(sor);
 	if (err < 0)
 		dev_err(sor->dev, "failed to attach SOR: %d\n", err);
@@ -3100,10 +3057,7 @@ static int tegra_sor_init(struct host1x_client *client)
 		}
 	}
 
-	/*
-	 * XXX: Remove this reset once proper hand-over from firmware to
-	 * kernel is possible.
-	 */
+	 
 	if (sor->rst) {
 		err = pm_runtime_resume_and_get(sor->dev);
 		if (err < 0) {
@@ -3286,7 +3240,7 @@ static const struct tegra_sor_regs tegra124_sor_regs = {
 	.dp_padctl2 = 0x73,
 };
 
-/* Tegra124 and Tegra132 have lanes 0 and 2 swapped. */
+ 
 static const u8 tegra124_sor_lane_map[4] = {
 	2, 1, 0, 3,
 };
@@ -3649,10 +3603,7 @@ static int tegra_sor_parse_dt(struct tegra_sor *sor)
 
 		sor->index = value;
 
-		/*
-		 * override the default that we already set for Tegra210 and
-		 * earlier
-		 */
+		 
 		sor->pad = TEGRA_IO_PAD_HDMI_DP0 + sor->index;
 	} else {
 		if (!sor->soc->supports_audio)
@@ -3663,11 +3614,11 @@ static int tegra_sor_parse_dt(struct tegra_sor *sor)
 
 	err = of_property_read_u32_array(np, "nvidia,xbar-cfg", xbar_cfg, 5);
 	if (err < 0) {
-		/* fall back to default per-SoC XBAR configuration */
+		 
 		for (i = 0; i < 5; i++)
 			sor->xbar_cfg[i] = sor->soc->xbar_cfg[i];
 	} else {
-		/* copy cells to SOR XBAR configuration */
+		 
 		for (i = 0; i < 5; i++)
 			sor->xbar_cfg[i] = xbar_cfg[i];
 	}
@@ -3751,10 +3702,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 		}
 	} else {
 		np = of_parse_phandle(pdev->dev.of_node, "nvidia,panel", 0);
-		/*
-		 * No need to keep this around since we only use it as a check
-		 * to see if a panel is connected (eDP) or not (DP).
-		 */
+		 
 		of_node_put(np);
 
 		sor->ops = &tegra_sor_dp_ops;
@@ -3809,12 +3757,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 			goto remove;
 		}
 
-		/*
-		 * At this point, the reset control is most likely being used
-		 * by the generic power domain implementation. With any luck
-		 * the power domain will have taken care of resetting the SOR
-		 * and we don't have to do anything.
-		 */
+		 
 		sor->rst = NULL;
 	}
 
@@ -3829,11 +3772,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 		struct device_node *np = pdev->dev.of_node;
 		const char *name;
 
-		/*
-		 * For backwards compatibility with Tegra210 device trees,
-		 * fall back to the old clock name "source" if the new "out"
-		 * clock is not available.
-		 */
+		 
 		if (of_property_match_string(np, "clock-names", "out") < 0)
 			name = "source";
 		else
@@ -3847,7 +3786,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 			goto remove;
 		}
 	} else {
-		/* fall back to the module clock on SOR0 (eDP/LVDS only) */
+		 
 		sor->clk_out = sor->clk;
 	}
 
@@ -3872,10 +3811,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 		goto remove;
 	}
 
-	/*
-	 * Starting with Tegra186, the BPMP provides an implementation for
-	 * the pad output clock, so we have to look it up from device tree.
-	 */
+	 
 	sor->clk_pad = devm_clk_get(&pdev->dev, "pad");
 	if (IS_ERR(sor->clk_pad)) {
 		if (sor->clk_pad != ERR_PTR(-ENOENT)) {
@@ -3883,19 +3819,11 @@ static int tegra_sor_probe(struct platform_device *pdev)
 			goto remove;
 		}
 
-		/*
-		 * If the pad output clock is not available, then we assume
-		 * we're on Tegra210 or earlier and have to provide our own
-		 * implementation.
-		 */
+		 
 		sor->clk_pad = NULL;
 	}
 
-	/*
-	 * The bootloader may have set up the SOR such that it's module clock
-	 * is sourced by one of the display PLLs. However, that doesn't work
-	 * without properly having set up other bits of the SOR.
-	 */
+	 
 	err = clk_set_parent(sor->clk_out, sor->clk_safe);
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to use safe clock: %d\n", err);
@@ -3909,10 +3837,7 @@ static int tegra_sor_probe(struct platform_device *pdev)
 	sor->client.ops = &sor_client_ops;
 	sor->client.dev = &pdev->dev;
 
-	/*
-	 * On Tegra210 and earlier, provide our own implementation for the
-	 * pad output clock.
-	 */
+	 
 	if (!sor->clk_pad) {
 		char *name;
 

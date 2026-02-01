@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform Firmware Runtime Update tool to do Management
- * Mode code injection/driver update and telemetry retrieval.
- *
- * This tool uses the interfaces provided by pfr_update and
- * pfr_telemetry drivers. These interfaces are exposed via
- * /dev/pfr_update and /dev/pfr_telemetry. Write operation
- * on the /dev/pfr_update is to load the EFI capsule into
- * kernel space. Mmap/read operations on /dev/pfr_telemetry
- * could be used to read the telemetry data to user space.
- */
+
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>

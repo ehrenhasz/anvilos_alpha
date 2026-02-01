@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Module sysfs support
- *
- * Copyright (C) 2008 Rusty Russell
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -14,10 +10,7 @@
 #include <linux/mutex.h>
 #include "internal.h"
 
-/*
- * /sys/module/foo/sections stuff
- * J. Corbet <corbet@lwn.net>
- */
+ 
 #ifdef CONFIG_KALLSYMS
 struct module_sect_attr {
 	struct bin_attribute battr;
@@ -30,7 +23,7 @@ struct module_sect_attrs {
 	struct module_sect_attr attrs[];
 };
 
-#define MODULE_SECT_READ_SIZE (3 /* "0x", "\n" */ + (BITS_PER_LONG / 4))
+#define MODULE_SECT_READ_SIZE (3   + (BITS_PER_LONG / 4))
 static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
 				struct bin_attribute *battr,
 				char *buf, loff_t pos, size_t count)
@@ -43,14 +36,7 @@ static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
 	if (pos != 0)
 		return -EINVAL;
 
-	/*
-	 * Since we're a binary read handler, we must account for the
-	 * trailing NUL byte that sprintf will write: if "buf" is
-	 * too small to hold the NUL, or the NUL is exactly the last
-	 * byte, the read will look like it got truncated by one byte.
-	 * Since there is no way to ask sprintf nicely to not write
-	 * the NUL, we have to use a bounce buffer.
-	 */
+	 
 	wrote = scnprintf(bounce, sizeof(bounce), "0x%px\n",
 			  kallsyms_show_value(file->f_cred)
 				? (void *)sattr->address : NULL);
@@ -76,7 +62,7 @@ static void add_sect_attrs(struct module *mod, const struct load_info *info)
 	struct module_sect_attr *sattr;
 	struct bin_attribute **gattr;
 
-	/* Count loaded sections and allocate structures */
+	 
 	for (i = 0; i < info->hdr->e_shnum; i++)
 		if (!sect_empty(&info->sechdrs[i]))
 			nloaded++;
@@ -87,7 +73,7 @@ static void add_sect_attrs(struct module *mod, const struct load_info *info)
 	if (!sect_attrs)
 		return;
 
-	/* Setup section attributes. */
+	 
 	sect_attrs->grp.name = "sections";
 	sect_attrs->grp.bin_attrs = (void *)sect_attrs + size[0];
 
@@ -127,18 +113,13 @@ static void remove_sect_attrs(struct module *mod)
 	if (mod->sect_attrs) {
 		sysfs_remove_group(&mod->mkobj.kobj,
 				   &mod->sect_attrs->grp);
-		/*
-		 * We are positive that no one is using any sect attrs
-		 * at this point.  Deallocate immediately.
-		 */
+		 
 		free_sect_attrs(mod->sect_attrs);
 		mod->sect_attrs = NULL;
 	}
 }
 
-/*
- * /sys/module/foo/notes/.section.name gives contents of SHT_NOTE sections.
- */
+ 
 
 struct module_notes_attrs {
 	struct kobject *dir;
@@ -150,9 +131,7 @@ static ssize_t module_notes_read(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *bin_attr,
 				 char *buf, loff_t pos, size_t count)
 {
-	/*
-	 * The caller checked the pos and count against our size.
-	 */
+	 
 	memcpy(buf, bin_attr->private + pos, count);
 	return count;
 }
@@ -175,11 +154,11 @@ static void add_notes_attrs(struct module *mod, const struct load_info *info)
 	struct module_notes_attrs *notes_attrs;
 	struct bin_attribute *nattr;
 
-	/* failed to create section attributes, so can't create notes */
+	 
 	if (!mod->sect_attrs)
 		return;
 
-	/* Count notes sections and allocate structures.  */
+	 
 	notes = 0;
 	for (i = 0; i < info->hdr->e_shnum; i++)
 		if (!sect_empty(&info->sechdrs[i]) &&
@@ -233,12 +212,12 @@ static void remove_notes_attrs(struct module *mod)
 		free_notes_attrs(mod->notes_attrs, mod->notes_attrs->notes);
 }
 
-#else /* !CONFIG_KALLSYMS */
+#else  
 static inline void add_sect_attrs(struct module *mod, const struct load_info *info) { }
 static inline void remove_sect_attrs(struct module *mod) { }
 static inline void add_notes_attrs(struct module *mod, const struct load_info *info) { }
 static inline void remove_notes_attrs(struct module *mod) { }
-#endif /* CONFIG_KALLSYMS */
+#endif  
 
 static void del_usage_links(struct module *mod)
 {
@@ -280,7 +259,7 @@ static void module_remove_modinfo_attrs(struct module *mod, int end)
 	for (i = 0; (attr = &mod->modinfo_attrs[i]); i++) {
 		if (end >= 0 && i > end)
 			break;
-		/* pick a field to test for end of list */
+		 
 		if (!attr->attr.name)
 			break;
 		sysfs_remove_file(&mod->mkobj.kobj, &attr->attr);

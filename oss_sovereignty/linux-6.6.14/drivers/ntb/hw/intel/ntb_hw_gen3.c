@@ -1,48 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- *   redistributing this file, you may do so under either license.
- *
- *   GPL LICENSE SUMMARY
- *
- *   Copyright(c) 2017 Intel Corporation. All rights reserved.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of version 2 of the GNU General Public License as
- *   published by the Free Software Foundation.
- *
- *   BSD LICENSE
- *
- *   Copyright(c) 2017 Intel Corporation. All rights reserved.
- *
- *   Redistribution and use in source and binary forms, with or without
- *   modification, are permitted provided that the following conditions
- *   are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copy
- *       notice, this list of conditions and the following disclaimer in
- *       the documentation and/or other materials provided with the
- *       distribution.
- *     * Neither the name of Intel Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Intel PCIe GEN3 NTB Linux driver
- *
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -85,7 +41,7 @@ static const struct intel_ntb_alt_reg gen3_b2b_reg = {
 };
 
 static const struct intel_ntb_xlat_reg gen3_sec_xlat = {
-/*	.bar0_base		= GEN3_EMBAR0_OFFSET, */
+ 
 	.bar2_limit		= GEN3_IMBAR1XLMT_OFFSET,
 	.bar2_xlat		= GEN3_IMBAR1XBASE_OFFSET,
 };
@@ -116,17 +72,12 @@ static int gen3_init_isr(struct intel_ntb_dev *ndev)
 {
 	int i;
 
-	/*
-	 * The MSIX vectors and the interrupt status bits are not lined up
-	 * on Skylake. By default the link status bit is bit 32, however it
-	 * is by default MSIX vector0. We need to fixup to line them up.
-	 * The vectors at reset is 1-32,0. We need to reprogram to 0-32.
-	 */
+	 
 
 	for (i = 0; i < GEN3_DB_MSIX_VECTOR_COUNT; i++)
 		iowrite8(i, ndev->self_mmio + GEN3_INTVEC_OFFSET + i);
 
-	/* move link status down one as workaround */
+	 
 	if (ndev->hwerr_flags & NTB_HWERR_MSIX_VECTOR32_BAD) {
 		iowrite8(GEN3_DB_MSIX_VECTOR_COUNT - 2,
 			 ndev->self_mmio + GEN3_INTVEC_OFFSET +
@@ -150,7 +101,7 @@ static int gen3_setup_b2b_mw(struct intel_ntb_dev *ndev,
 	pdev = ndev->ntb.pdev;
 	mmio = ndev->self_mmio;
 
-	/* setup incoming bar limits == base addrs (zero length windows) */
+	 
 	bar_addr = addr->bar2_addr64;
 	iowrite64(bar_addr, mmio + GEN3_IMBAR1XLMT_OFFSET);
 	bar_addr = ioread64(mmio + GEN3_IMBAR1XLMT_OFFSET);
@@ -161,7 +112,7 @@ static int gen3_setup_b2b_mw(struct intel_ntb_dev *ndev,
 	bar_addr = ioread64(mmio + GEN3_IMBAR2XLMT_OFFSET);
 	dev_dbg(&pdev->dev, "IMBAR2XLMT %#018llx\n", bar_addr);
 
-	/* zero incoming translation addrs */
+	 
 	iowrite64(0, mmio + GEN3_IMBAR1XBASE_OFFSET);
 	iowrite64(0, mmio + GEN3_IMBAR2XBASE_OFFSET);
 
@@ -180,7 +131,7 @@ static int gen3_init_ntb(struct intel_ntb_dev *ndev)
 	ndev->db_count = GEN3_DB_COUNT;
 	ndev->db_link_mask = GEN3_DB_LINK_BIT;
 
-	/* DB fixup for using 31 right now */
+	 
 	if (ndev->hwerr_flags & NTB_HWERR_MSIX_VECTOR32_BAD)
 		ndev->db_link_mask |= BIT_ULL(31);
 
@@ -204,7 +155,7 @@ static int gen3_init_ntb(struct intel_ntb_dev *ndev)
 		if (rc)
 			return rc;
 
-		/* Enable Bus Master and Memory Space on the secondary side */
+		 
 		iowrite16(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER,
 			  ndev->self_mmio + GEN3_SPCICMD_OFFSET);
 
@@ -467,11 +418,11 @@ static int intel_ntb3_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 	else
 		mw_size = bar_size;
 
-	/* hardware requires that addr is aligned to bar size */
+	 
 	if (addr & (bar_size - 1))
 		return -EINVAL;
 
-	/* make sure the range fits in the usable mw size */
+	 
 	if (size > mw_size)
 		return -EINVAL;
 
@@ -480,13 +431,13 @@ static int intel_ntb3_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 	limit_reg = ndev->xlat_reg->bar2_limit + (idx * 0x10);
 	base = pci_resource_start(ndev->ntb.pdev, bar);
 
-	/* Set the limit if supported, if size is not mw_size */
+	 
 	if (limit_reg && size != mw_size)
 		limit = base + size;
 	else
 		limit = base + mw_size;
 
-	/* set and verify setting the translation address */
+	 
 	iowrite64(addr, mmio + xlat_reg);
 	reg_val = ioread64(mmio + xlat_reg);
 	if (reg_val != addr) {
@@ -496,7 +447,7 @@ static int intel_ntb3_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 
 	dev_dbg(&ntb->pdev->dev, "BAR %d IMBARXBASE: %#Lx\n", bar, reg_val);
 
-	/* set and verify setting the limit */
+	 
 	iowrite64(limit, mmio + limit_reg);
 	reg_val = ioread64(mmio + limit_reg);
 	if (reg_val != limit) {
@@ -507,7 +458,7 @@ static int intel_ntb3_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 
 	dev_dbg(&ntb->pdev->dev, "BAR %d IMBARXLMT: %#Lx\n", bar, reg_val);
 
-	/* setup the EP */
+	 
 	limit_reg = ndev->xlat_reg->bar2_limit + (idx * 0x10) + 0x4000;
 	base = ioread64(mmio + GEN3_EMBAR1_OFFSET + (8 * idx));
 	base &= ~0xf;
@@ -517,7 +468,7 @@ static int intel_ntb3_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 	else
 		limit = base + mw_size;
 
-	/* set and verify setting the limit */
+	 
 	iowrite64(limit, mmio + limit_reg);
 	reg_val = ioread64(mmio + limit_reg);
 	if (reg_val != limit) {

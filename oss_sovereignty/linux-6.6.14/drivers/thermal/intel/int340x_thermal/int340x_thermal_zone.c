@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * int340x_thermal_zone.c
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -31,7 +28,7 @@ static int int340x_thermal_get_zone_temp(struct thermal_zone_device *zone,
 
 		*temp = conv_temp * 10;
 	} else {
-		/* _TMP returns the temperature in tenths of degrees Kelvin */
+		 
 		*temp = deci_kelvin_to_millicelsius(tmp);
 	}
 

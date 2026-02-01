@@ -1,22 +1,6 @@
-/* hashlib.c -- functions to manage and access hash tables for bash. */
+ 
 
-/* Copyright (C) 1987,1989,1991,1995,1998,2001,2003,2005,2006,2008,2009 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -34,20 +18,19 @@
 #include "shell.h"
 #include "hashlib.h"
 
-/* tunable constants for rehashing */
+ 
 #define HASH_REHASH_MULTIPLIER	4
 #define HASH_REHASH_FACTOR	2
 
 #define HASH_SHOULDGROW(table) \
   ((table)->nentries >= (table)->nbuckets * HASH_REHASH_FACTOR)
 
-/* an initial approximation */
+ 
 #define HASH_SHOULDSHRINK(table) \
   (((table)->nbuckets > DEFAULT_HASH_BUCKETS) && \
    ((table)->nentries < (table)->nbuckets / HASH_REHASH_MULTIPLIER))
 
-/* Rely on properties of unsigned division (unsigned/int -> unsigned) and
-   don't discard the upper 32 bits of the value, if present. */
+ 
 #define HASH_BUCKET(s, t, h) (((h) = hash_string (s)) & ((t)->nbuckets - 1))
 
 static BUCKET_CONTENTS *copy_bucket_array PARAMS((BUCKET_CONTENTS *, sh_string_func_t *));
@@ -56,8 +39,7 @@ static void hash_rehash PARAMS((HASH_TABLE *, int));
 static void hash_grow PARAMS((HASH_TABLE *));
 static void hash_shrink PARAMS((HASH_TABLE *));
 
-/* Make a new hash table with BUCKETS number of buckets.  Initialize
-   each slot in the table to NULL. */
+ 
 HASH_TABLE *
 hash_create (buckets)
      int buckets;
@@ -90,7 +72,7 @@ hash_size (table)
 static BUCKET_CONTENTS *
 copy_bucket_array (ba, cpdata)
      BUCKET_CONTENTS *ba;
-     sh_string_func_t *cpdata;	/* data copy function */
+     sh_string_func_t *cpdata;	 
 {
   BUCKET_CONTENTS *new_bucket, *n, *e;
 
@@ -161,7 +143,7 @@ hash_grow (table)
   int nsize;
 
   nsize = table->nbuckets * HASH_REHASH_MULTIPLIER;
-  if (nsize > 0)		/* overflow */
+  if (nsize > 0)		 
     hash_rehash (table, nsize);
 }
 
@@ -195,22 +177,14 @@ hash_copy (table, cpdata)
   return new_table;
 }
 
-/* This is the best 32-bit string hash function I found. It's one of the
-   Fowler-Noll-Vo family (FNV-1).
-
-   The magic is in the interesting relationship between the special prime
-   16777619 (2^24 + 403) and 2^32 and 2^8. */
+ 
 
 #define FNV_OFFSET 2166136261
 #define FNV_PRIME 16777619
 
-/* If you want to use 64 bits, use
-FNV_OFFSET	14695981039346656037
-FNV_PRIME	1099511628211
-*/
+ 
 
-/* The `khash' check below requires that strings that compare equally with
-   strcmp hash to the same value. */
+ 
 unsigned int
 hash_string (s)
      const char *s;
@@ -219,9 +193,9 @@ hash_string (s)
 
   for (i = FNV_OFFSET; *s; s++)
     {
-      /* FNV-1a has the XOR first, traditional FNV-1 has the multiply first */
+       
 
-      /* was i *= FNV_PRIME */
+       
       i += (i<<1) + (i<<4) + (i<<7) + (i<<8) + (i<<24);
       i ^= *s;
     }
@@ -229,8 +203,7 @@ hash_string (s)
   return i;
 }
 
-/* Return the location of the bucket which should contain the data
-   for STRING.  TABLE is a pointer to a HASH_TABLE. */
+ 
 
 int
 hash_bucket (string, table)
@@ -242,8 +215,7 @@ hash_bucket (string, table)
   return (HASH_BUCKET (string, table, h));
 }
 
-/* Return a pointer to the hashed item.  If the HASH_CREATE flag is passed,
-   create a new hash table entry for STRING, otherwise return NULL. */
+ 
 BUCKET_CONTENTS *
 hash_search (string, table, flags)
      const char *string;
@@ -261,7 +233,7 @@ hash_search (string, table, flags)
 
   for (list = table->bucket_array ? table->bucket_array[bucket] : 0; list; list = list->next)
     {
-      /* This is the comparison function */
+       
       if (hv == list->khash && STREQ (list->key, string))
 	{
 	  list->times_found++;
@@ -282,7 +254,7 @@ hash_search (string, table, flags)
       table->bucket_array[bucket] = list;
 
       list->data = NULL;
-      list->key = (char *)string;	/* XXX fix later */
+      list->key = (char *)string;	 
       list->khash = hv;
       list->times_found = 0;
 
@@ -293,9 +265,7 @@ hash_search (string, table, flags)
   return (BUCKET_CONTENTS *)NULL;
 }
 
-/* Remove the item specified by STRING from the hash table TABLE.
-   The item removed is returned, so you can free its contents.  If
-   the item isn't in this table NULL is returned. */
+ 
 BUCKET_CONTENTS *
 hash_remove (string, table, flags)
      const char *string;
@@ -328,8 +298,7 @@ hash_remove (string, table, flags)
   return ((BUCKET_CONTENTS *) NULL);
 }
 
-/* Create an entry for STRING, in TABLE.  If the entry already
-   exists, then return it (unless the HASH_NOSRCH flag is set). */
+ 
 BUCKET_CONTENTS *
 hash_insert (string, table, flags)
      char *string;
@@ -368,9 +337,7 @@ hash_insert (string, table, flags)
   return (item);
 }
 
-/* Remove and discard all entries in TABLE.  If FREE_DATA is non-null, it
-   is a function to call to dispose of a hash item's data.  Otherwise,
-   free() is called. */
+ 
 void
 hash_flush (table, free_data)
      HASH_TABLE *table;
@@ -404,7 +371,7 @@ hash_flush (table, free_data)
   table->nentries = 0;
 }
 
-/* Free the hash table pointed to by TABLE. */
+ 
 void
 hash_dispose (table)
      HASH_TABLE *table;
@@ -446,8 +413,7 @@ hash_pstats (table, name)
 
   fprintf (stderr, "%s: %d buckets; %d items\n", name, table->nbuckets, table->nentries);
 
-  /* Print out a count of how many strings hashed to each bucket, so we can
-     see how even the distribution is. */
+   
   for (slot = 0; slot < table->nbuckets; slot++)
     {
       bc = hash_items (slot, table);
@@ -463,7 +429,7 @@ hash_pstats (table, name)
 
 #ifdef TEST_HASHING
 
-/* link with xmalloc.o and lib/malloc/libmalloc.a */
+ 
 #undef NULL
 #include <stdio.h>
 
@@ -542,4 +508,4 @@ main ()
   exit (0);
 }
 
-#endif /* TEST_HASHING */
+#endif  

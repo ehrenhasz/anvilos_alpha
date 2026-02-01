@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2017 Hari Bathini, IBM Corporation
- */
+
+ 
 
 #include "namespaces.h"
 #include "event.h"
@@ -72,7 +69,7 @@ static int nsinfo__get_nspid(pid_t *tgid, pid_t *nstgid, bool *in_pidns, const c
 		return -1;
 
 	while (getline(&statln, &linesz, f) != -1) {
-		/* Use tgid if CONFIG_PID_NS is not defined. */
+		 
 		if (strstr(statln, "Tgid:") != NULL) {
 			*tgid = (pid_t)strtol(strrchr(statln, '\t'), NULL, 10);
 			*nstgid = *tgid;
@@ -81,10 +78,7 @@ static int nsinfo__get_nspid(pid_t *tgid, pid_t *nstgid, bool *in_pidns, const c
 		if (strstr(statln, "NStgid:") != NULL) {
 			nspid = strrchr(statln, '\t');
 			*nstgid = (pid_t)strtol(nspid, NULL, 10);
-			/*
-			 * If innermost tgid is not the first, process is in a different
-			 * PID namespace.
-			 */
+			 
 			*in_pidns = (statln + sizeof("NStgid:") - 1) != nspid;
 			break;
 		}
@@ -116,18 +110,14 @@ int nsinfo__init(struct nsinfo *nsi)
 	if (stat(newns, &new_stat) < 0)
 		goto out;
 
-	/* Check if the mount namespaces differ, if so then indicate that we
-	 * want to switch as part of looking up dso/map data.
-	 */
+	 
 	if (old_stat.st_ino != new_stat.st_ino) {
 		RC_CHK_ACCESS(nsi)->need_setns = true;
 		RC_CHK_ACCESS(nsi)->mntns_path = newns;
 		newns = NULL;
 	}
 
-	/* If we're dealing with a process that is in a different PID namespace,
-	 * attempt to work out the innermost tgid for the process.
-	 */
+	 
 	if (snprintf(spath, PATH_MAX, "/proc/%d/status", nsinfo__pid(nsi)) >= PATH_MAX)
 		goto out;
 
@@ -167,10 +157,7 @@ struct nsinfo *nsinfo__new(pid_t pid)
 	RC_CHK_ACCESS(nsi)->nstgid = pid;
 	nsinfo__clear_need_setns(nsi);
 	RC_CHK_ACCESS(nsi)->in_pidns = false;
-	/* Init may fail if the process exits while we're trying to look at its
-	 * proc information. In that case, save the pid but don't try to enter
-	 * the namespace.
-	 */
+	 
 	if (nsinfo__init(nsi) == -1)
 		nsinfo__clear_need_setns(nsi);
 

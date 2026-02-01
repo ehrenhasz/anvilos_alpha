@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -27,28 +27,28 @@
 #define HI556_MODE_STANDBY		0x0000
 #define HI556_MODE_STREAMING		0x0100
 
-/* vertical-timings from sensor */
+ 
 #define HI556_REG_FLL			0x0006
 #define HI556_FLL_30FPS			0x0814
 #define HI556_FLL_30FPS_MIN		0x0814
 #define HI556_FLL_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define HI556_REG_LLP			0x0008
 
-/* Exposure controls from sensor */
+ 
 #define HI556_REG_EXPOSURE		0x0074
 #define HI556_EXPOSURE_MIN		6
 #define HI556_EXPOSURE_MAX_MARGIN	2
 #define HI556_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define HI556_REG_ANALOG_GAIN		0x0077
 #define HI556_ANAL_GAIN_MIN		0
 #define HI556_ANAL_GAIN_MAX		240
 #define HI556_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define HI556_REG_MWB_GR_GAIN		0x0078
 #define HI556_REG_MWB_GB_GAIN		0x007a
 #define HI556_REG_MWB_R_GAIN		0x007c
@@ -58,12 +58,12 @@
 #define HI556_DGTL_GAIN_STEP		1
 #define HI556_DGTL_GAIN_DEFAULT		256
 
-/* Test Pattern Control */
+ 
 #define HI556_REG_ISP			0X0a05
 #define HI556_REG_ISP_TPG_EN		0x01
 #define HI556_REG_TEST_PATTERN		0x0201
 
-/* HI556 native and active pixel array size. */
+ 
 #define HI556_NATIVE_WIDTH		2592U
 #define HI556_NATIVE_HEIGHT		1944U
 #define HI556_PIXEL_ARRAY_LEFT		0U
@@ -90,34 +90,34 @@ struct hi556_link_freq_config {
 };
 
 struct hi556_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Analog crop rectangle. */
+	 
 	struct v4l2_rect crop;
 
-	/* Horizontal timining size */
+	 
 	u32 llp;
 
-	/* Default vertical timining size */
+	 
 	u32 fll_def;
 
-	/* Min vertical timining size */
+	 
 	u32 fll_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct hi556_reg_list reg_list;
 };
 
 #define to_hi556(_sd) container_of(_sd, struct hi556, sd)
 
-//SENSOR_INITIALIZATION
+
 static const struct hi556_reg mipi_data_rate_874mbps[] = {
 	{0x0e00, 0x0102},
 	{0x0e02, 0x0102},
@@ -564,23 +564,23 @@ struct hi556 {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct hi556_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
@@ -714,9 +714,9 @@ static int hi556_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = hi556->cur_mode->height + ctrl->val -
 			       HI556_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(hi556->exposure,
@@ -725,7 +725,7 @@ static int hi556_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -745,7 +745,7 @@ static int hi556_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_VBLANK:
-		/* Update FLL that meets expected vertical blanking */
+		 
 		ret = hi556_write_reg(hi556, HI556_REG_FLL,
 				      HI556_REG_VALUE_16BIT,
 				      hi556->cur_mode->height + ctrl->val);
@@ -1065,7 +1065,7 @@ static int hi556_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(hi556->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->fll_def - mode->height;
 		__v4l2_ctrl_modify_range(hi556->vblank,
 					 mode->fll_min - mode->height,
@@ -1142,7 +1142,7 @@ static int hi556_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	hi556_assign_pad_format(&supported_modes[0],
 				v4l2_subdev_get_try_format(sd, fh->state, 0));
 
-	/* Initialize try_crop rectangle. */
+	 
 	try_crop = v4l2_subdev_get_try_crop(sd, fh->state, 0);
 	try_crop->top = HI556_PIXEL_ARRAY_TOP;
 	try_crop->left = HI556_PIXEL_ARRAY_LEFT;
@@ -1313,7 +1313,7 @@ static int hi556_probe(struct i2c_client *client)
 		goto probe_error_media_entity_cleanup;
 	}
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);

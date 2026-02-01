@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2015 by Delphix. All rights reserved.
- */
+ 
 
 #ifndef	_SYS_VDEV_INDIRECT_BIRTHS_H
 #define	_SYS_VDEV_INDIRECT_BIRTHS_H
@@ -33,18 +18,13 @@ typedef struct vdev_indirect_birth_entry_phys {
 } vdev_indirect_birth_entry_phys_t;
 
 typedef struct vdev_indirect_birth_phys {
-	uint64_t	vib_count; /* count of v_i_b_entry_phys_t's */
+	uint64_t	vib_count;  
 } vdev_indirect_birth_phys_t;
 
 typedef struct vdev_indirect_births {
 	uint64_t	vib_object;
 
-	/*
-	 * Each entry indicates that everything up to but not including
-	 * vibe_offset was copied in vibe_phys_birth_txg. Entries are sorted
-	 * by increasing phys_birth, and also by increasing offset. See
-	 * vdev_indirect_births_physbirth for usage.
-	 */
+	 
 	vdev_indirect_birth_entry_phys_t *vib_entries;
 
 	objset_t	*vib_objset;
@@ -77,4 +57,4 @@ extern uint64_t vdev_indirect_births_last_entry_txg(
 }
 #endif
 
-#endif	/* _SYS_VDEV_INDIRECT_BIRTHS_H */
+#endif	 

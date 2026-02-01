@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -33,9 +33,7 @@ void ceph_release_page_vector(struct page **pages, int num_pages)
 }
 EXPORT_SYMBOL(ceph_release_page_vector);
 
-/*
- * allocate a vector new pages
- */
+ 
 struct page **ceph_alloc_page_vector(int num_pages, gfp_t flags)
 {
 	struct page **pages;
@@ -55,9 +53,7 @@ struct page **ceph_alloc_page_vector(int num_pages, gfp_t flags)
 }
 EXPORT_SYMBOL(ceph_alloc_page_vector);
 
-/*
- * copy user data into a page vector
- */
+ 
 int ceph_copy_user_to_page_vector(struct page **pages,
 					 const void __user *data,
 					 loff_t off, size_t len)
@@ -130,10 +126,7 @@ void ceph_copy_from_page_vector(struct page **pages,
 }
 EXPORT_SYMBOL(ceph_copy_from_page_vector);
 
-/*
- * Zero an extent within a page vector.  Offset is relative to the
- * start of the first page.
- */
+ 
 void ceph_zero_page_vector_range(int off, int len, struct page **pages)
 {
 	int i = off >> PAGE_SHIFT;
@@ -142,7 +135,7 @@ void ceph_zero_page_vector_range(int off, int len, struct page **pages)
 
 	dout("zero_page_vector_page %u~%u\n", off, len);
 
-	/* leading partial page? */
+	 
 	if (off) {
 		int end = min((int)PAGE_SIZE, off + len);
 		dout("zeroing %d %p head from %d\n", i, pages[i],
@@ -157,7 +150,7 @@ void ceph_zero_page_vector_range(int off, int len, struct page **pages)
 		len -= PAGE_SIZE;
 		i++;
 	}
-	/* trailing partial page? */
+	 
 	if (len) {
 		dout("zeroing %d %p tail to %d\n", i, pages[i], (int)len);
 		zero_user_segment(pages[i], 0, len);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/mfd/mfd-core.c
- *
- * core MFD support
- * Copyright (c) 2006 Ian Molton
- * Copyright (c) 2007,2008 Dmitry Baryshkov
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -62,15 +56,7 @@ static void mfd_acpi_add_device(const struct mfd_cell *cell,
 	if (!parent)
 		return;
 
-	/*
-	 * MFD child device gets its ACPI handle either from the ACPI device
-	 * directly under the parent that matches the either _HID or _CID, or
-	 * _ADR or it will use the parent handle if is no ID is given.
-	 *
-	 * Note that use of _ADR is a grey area in the ACPI specification,
-	 * though at least Intel Galileo Gen 2 is using it to distinguish
-	 * the children devices.
-	 */
+	 
 	if (match) {
 		if (match->pnpid) {
 			struct acpi_device_id ids[2] = {};
@@ -104,22 +90,22 @@ static int mfd_match_of_node_to_dev(struct platform_device *pdev,
 	struct mfd_of_node_entry *of_entry;
 	u64 of_node_addr;
 
-	/* Skip if OF node has previously been allocated to a device */
+	 
 	list_for_each_entry(of_entry, &mfd_of_node_list, list)
 		if (of_entry->np == np)
 			return -EAGAIN;
 
 	if (!cell->use_of_reg)
-		/* No of_reg defined - allocate first free compatible match */
+		 
 		goto allocate_of_node;
 
-	/* We only care about each node's first defined address */
+	 
 	if (of_property_read_reg(np, 0, &of_node_addr, NULL))
-		/* OF node does not contatin a 'reg' property to match to */
+		 
 		return -EAGAIN;
 
 	if (cell->of_reg != of_node_addr)
-		/* No match */
+		 
 		return -EAGAIN;
 
 allocate_of_node:
@@ -184,7 +170,7 @@ static int mfd_add_device(struct device *parent, int id,
 	if (IS_ENABLED(CONFIG_OF) && parent->of_node && cell->of_compatible) {
 		for_each_child_of_node(parent->of_node, np) {
 			if (of_device_is_compatible(np, cell->of_compatible)) {
-				/* Skip 'disabled' devices */
+				 
 				if (!of_device_is_available(np)) {
 					disabled = true;
 					continue;
@@ -202,7 +188,7 @@ static int mfd_add_device(struct device *parent, int id,
 		}
 
 		if (disabled) {
-			/* Ignore 'disabled' devices error free */
+			 
 			ret = 0;
 			goto fail_alias;
 		}
@@ -232,7 +218,7 @@ match:
 		res[r].name = cell->resources[r].name;
 		res[r].flags = cell->resources[r].flags;
 
-		/* Find out base to use */
+		 
 		if ((cell->resources[r].flags & IORESOURCE_MEM) && mem_base) {
 			res[r].parent = mem_base;
 			res[r].start = mem_base->start +
@@ -241,7 +227,7 @@ match:
 				cell->resources[r].end;
 		} else if (cell->resources[r].flags & IORESOURCE_IRQ) {
 			if (domain) {
-				/* Unable to create mappings for IRQ ranges. */
+				 
 				WARN_ON(cell->resources[r].start !=
 					cell->resources[r].end);
 				res[r].start = res[r].end = irq_create_mapping(
@@ -303,19 +289,7 @@ fail_alloc:
 	return ret;
 }
 
-/**
- * mfd_add_devices - register child devices
- *
- * @parent:	Pointer to parent device.
- * @id:		Can be PLATFORM_DEVID_AUTO to let the Platform API take care
- *		of device numbering, or will be added to a device's cell_id.
- * @cells:	Array of (struct mfd_cell)s describing child devices.
- * @n_devs:	Number of child devices to register.
- * @mem_base:	Parent register range resource for child devices.
- * @irq_base:	Base of the range of virtual interrupt numbers allocated for
- *		this MFD device. Unused if @domain is specified.
- * @domain:	Interrupt domain to create mappings for hardware interrupts.
- */
+ 
 int mfd_add_devices(struct device *parent, int id,
 		    const struct mfd_cell *cells, int n_devs,
 		    struct resource *mem_base,
@@ -394,23 +368,7 @@ static void devm_mfd_dev_release(struct device *dev, void *res)
 	mfd_remove_devices(dev);
 }
 
-/**
- * devm_mfd_add_devices - Resource managed version of mfd_add_devices()
- *
- * Returns 0 on success or an appropriate negative error number on failure.
- * All child-devices of the MFD will automatically be removed when it gets
- * unbinded.
- *
- * @dev:	Pointer to parent device.
- * @id:		Can be PLATFORM_DEVID_AUTO to let the Platform API take care
- *		of device numbering, or will be added to a device's cell_id.
- * @cells:	Array of (struct mfd_cell)s describing child devices.
- * @n_devs:	Number of child devices to register.
- * @mem_base:	Parent register range resource for child devices.
- * @irq_base:	Base of the range of virtual interrupt numbers allocated for
- *		this MFD device. Unused if @domain is specified.
- * @domain:	Interrupt domain to create mappings for hardware interrupts.
- */
+ 
 int devm_mfd_add_devices(struct device *dev, int id,
 			 const struct mfd_cell *cells, int n_devs,
 			 struct resource *mem_base,

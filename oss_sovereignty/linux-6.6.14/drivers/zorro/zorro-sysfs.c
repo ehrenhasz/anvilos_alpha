@@ -1,14 +1,4 @@
-/*
- *  File Attributes for Zorro Devices
- *
- *  Copyright (C) 2003 Geert Uytterhoeven
- *
- *  Loosely based on drivers/pci/pci-sysfs.c
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive
- *  for more details.
- */
+ 
 
 
 #include <linux/kernel.h>
@@ -21,7 +11,7 @@
 #include "zorro.h"
 
 
-/* show configuration fields */
+ 
 #define zorro_config_attr(name, field, format_string)			\
 static ssize_t name##_show(struct device *dev,				\
 			   struct device_attribute *attr, char *buf)	\
@@ -87,7 +77,7 @@ static ssize_t zorro_read_config(struct file *filp, struct kobject *kobj,
 	struct zorro_dev *z = to_zorro_dev(kobj_to_dev(kobj));
 	struct ConfigDev cd;
 
-	/* Construct a ConfigDev */
+	 
 	memset(&cd, 0, sizeof(cd));
 	cd.cd_Rom = z->rom;
 	cd.cd_SlotAddr = cpu_to_be16(z->slotaddr);

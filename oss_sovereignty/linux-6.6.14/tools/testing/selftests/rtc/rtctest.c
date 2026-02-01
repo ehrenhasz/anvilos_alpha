@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock Driver Test Program
- *
- * Copyright (c) 2018 Alexandre Belloni <alexandre.belloni@bootlin.com>
- */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -45,7 +41,7 @@ TEST_F(rtc, date_read) {
 		SKIP(return, "Skipping test since %s does not exist", rtc_file);
 	ASSERT_NE(-1, self->fd);
 
-	/* Read the RTC time/date */
+	 
 	rc = ioctl(self->fd, RTC_RD_TIME, &rtc_tm);
 	ASSERT_NE(-1, rc);
 
@@ -107,12 +103,12 @@ TEST_F_TIMEOUT(rtc, date_read_loop, READ_LOOP_DURATION_SEC + 2) {
 		ASSERT_NE(-1, rc);
 
 		rtc_read = rtc_time_to_timestamp(&rtc_tm);
-		/* Time should not go backwards */
+		 
 		ASSERT_LE(prev_rtc_read, rtc_read);
-		/* Time should not increase more then 1s at a time */
+		 
 		ASSERT_GE(prev_rtc_read + 1, rtc_read);
 
-		/* Sleep 11ms to avoid killing / overheating the RTC */
+		 
 		nanosleep_with_retries(READ_LOOP_SLEEP_MS * 1000000);
 
 		prev_rtc_read = rtc_read;
@@ -130,7 +126,7 @@ TEST_F_TIMEOUT(rtc, uie_read, NUM_UIE + 2) {
 		SKIP(return, "Skipping test since %s does not exist", rtc_file);
 	ASSERT_NE(-1, self->fd);
 
-	/* Turn on update interrupts */
+	 
 	rc = ioctl(self->fd, RTC_UIE_ON, 0);
 	if (rc == -1) {
 		ASSERT_EQ(EINVAL, errno);
@@ -139,7 +135,7 @@ TEST_F_TIMEOUT(rtc, uie_read, NUM_UIE + 2) {
 	}
 
 	for (i = 0; i < NUM_UIE; i++) {
-		/* This read will block */
+		 
 		rc = read(self->fd, &data, sizeof(data));
 		ASSERT_NE(-1, rc);
 		irq++;
@@ -159,7 +155,7 @@ TEST_F(rtc, uie_select) {
 		SKIP(return, "Skipping test since %s does not exist", rtc_file);
 	ASSERT_NE(-1, self->fd);
 
-	/* Turn on update interrupts */
+	 
 	rc = ioctl(self->fd, RTC_UIE_ON, 0);
 	if (rc == -1) {
 		ASSERT_EQ(EINVAL, errno);
@@ -173,12 +169,12 @@ TEST_F(rtc, uie_select) {
 
 		FD_ZERO(&readfds);
 		FD_SET(self->fd, &readfds);
-		/* The select will wait until an RTC interrupt happens. */
+		 
 		rc = select(self->fd + 1, &readfds, NULL, NULL, &tv);
 		ASSERT_NE(-1, rc);
 		ASSERT_NE(0, rc);
 
-		/* This read won't block */
+		 
 		rc = read(self->fd, &data, sizeof(unsigned long));
 		ASSERT_NE(-1, rc);
 		irq++;
@@ -221,7 +217,7 @@ TEST_F(rtc, alarm_alm_set) {
 	TH_LOG("Alarm time now set to %02d:%02d:%02d.",
 	       tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-	/* Enable alarm interrupts */
+	 
 	rc = ioctl(self->fd, RTC_AIE_ON, 0);
 	ASSERT_NE(-1, rc);
 
@@ -232,7 +228,7 @@ TEST_F(rtc, alarm_alm_set) {
 	ASSERT_NE(-1, rc);
 	ASSERT_NE(0, rc);
 
-	/* Disable alarm interrupts */
+	 
 	rc = ioctl(self->fd, RTC_AIE_OFF, 0);
 	ASSERT_NE(-1, rc);
 
@@ -331,7 +327,7 @@ TEST_F_TIMEOUT(rtc, alarm_alm_set_minute, 65) {
 	TH_LOG("Alarm time now set to %02d:%02d:%02d.",
 	       tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-	/* Enable alarm interrupts */
+	 
 	rc = ioctl(self->fd, RTC_AIE_ON, 0);
 	ASSERT_NE(-1, rc);
 
@@ -342,7 +338,7 @@ TEST_F_TIMEOUT(rtc, alarm_alm_set_minute, 65) {
 	ASSERT_NE(-1, rc);
 	ASSERT_NE(0, rc);
 
-	/* Disable alarm interrupts */
+	 
 	rc = ioctl(self->fd, RTC_AIE_OFF, 0);
 	ASSERT_NE(-1, rc);
 
@@ -422,7 +418,7 @@ int main(int argc, char **argv)
 	switch (argc) {
 	case 2:
 		rtc_file = argv[1];
-		/* FALLTHROUGH */
+		 
 	case 1:
 		break;
 	default:

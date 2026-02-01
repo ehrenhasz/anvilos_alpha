@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_tmr.c
- *
- * This file contains SPC-3 task management infrastructure
- *
- * (c) Copyright 2009-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -75,16 +66,7 @@ static bool __target_check_io_state(struct se_cmd *se_cmd,
 
 	lockdep_assert_held(&sess->sess_cmd_lock);
 
-	/*
-	 * If command already reached CMD_T_COMPLETE state within
-	 * target_complete_cmd() or CMD_T_FABRIC_STOP due to shutdown,
-	 * this se_cmd has been passed to fabric driver and will
-	 * not be aborted.
-	 *
-	 * Otherwise, obtain a local se_cmd->cmd_kref now for TMR
-	 * ABORT_TASK + LUN_RESET for CMD_T_ABORTED processing as
-	 * long as se_cmd->cmd_kref is still active unless zero.
-	 */
+	 
 	spin_lock(&se_cmd->t_state_lock);
 	if (se_cmd->transport_state & (CMD_T_COMPLETE | CMD_T_FABRIC_STOP)) {
 		pr_debug("Attempted to abort io tag: %llu already complete or"
@@ -123,10 +105,7 @@ void core_tmr_abort_task(
 			if (se_sess != se_cmd->se_sess)
 				continue;
 
-			/*
-			 * skip task management functions, including
-			 * tmr->task_cmd
-			 */
+			 
 			if (se_cmd->se_cmd_flags & SCF_SCSI_TMR_CDB)
 				continue;
 
@@ -183,10 +162,7 @@ static void core_tmr_drain_tmr_list(
 	struct se_cmd *cmd;
 	unsigned long flags;
 	bool rc;
-	/*
-	 * Release all pending and outgoing TMRs aside from the received
-	 * LUN_RESET tmr..
-	 */
+	 
 	spin_lock_irqsave(&dev->se_tmr_lock, flags);
 	list_for_each_entry_safe(tmr_p, tmr_pp, &dev->dev_tmr_list, tmr_list) {
 		if (tmr_p == tmr)
@@ -198,18 +174,11 @@ static void core_tmr_drain_tmr_list(
 			continue;
 		}
 
-		/*
-		 * We only execute one LUN_RESET at a time so we can't wait
-		 * on them below.
-		 */
+		 
 		if (tmr_p->function == TMR_LUN_RESET)
 			continue;
 
-		/*
-		 * If this function was called with a valid pr_res_key
-		 * parameter (eg: for PROUT PREEMPT_AND_ABORT service action
-		 * skip non registration key matching TMRs.
-		 */
+		 
 		if (target_check_cdb_and_preempt(preempt_and_abort_list, cmd))
 			continue;
 
@@ -244,24 +213,7 @@ static void core_tmr_drain_tmr_list(
 	}
 }
 
-/**
- * core_tmr_drain_state_list() - abort SCSI commands associated with a device
- *
- * @dev:       Device for which to abort outstanding SCSI commands.
- * @prout_cmd: Pointer to the SCSI PREEMPT AND ABORT if this function is called
- *             to realize the PREEMPT AND ABORT functionality.
- * @tmr_sess:  Session through which the LUN RESET has been received.
- * @tas:       Task Aborted Status (TAS) bit from the SCSI control mode page.
- *             A quote from SPC-4, paragraph "7.5.10 Control mode page":
- *             "A task aborted status (TAS) bit set to zero specifies that
- *             aborted commands shall be terminated by the device server
- *             without any response to the application client. A TAS bit set
- *             to one specifies that commands aborted by the actions of an I_T
- *             nexus other than the I_T nexus on which the command was
- *             received shall be completed with TASK ABORTED status."
- * @preempt_and_abort_list: For the PREEMPT AND ABORT functionality, a list
- *             with registrations that will be preempted.
- */
+ 
 static void core_tmr_drain_state_list(
 	struct se_device *dev,
 	struct se_cmd *prout_cmd,
@@ -275,45 +227,19 @@ static void core_tmr_drain_state_list(
 	unsigned long flags;
 	int rc, i;
 
-	/*
-	 * Complete outstanding commands with TASK_ABORTED SAM status.
-	 *
-	 * This is following sam4r17, section 5.6 Aborting commands, Table 38
-	 * for TMR LUN_RESET:
-	 *
-	 * a) "Yes" indicates that each command that is aborted on an I_T nexus
-	 * other than the one that caused the SCSI device condition is
-	 * completed with TASK ABORTED status, if the TAS bit is set to one in
-	 * the Control mode page (see SPC-4). "No" indicates that no status is
-	 * returned for aborted commands.
-	 *
-	 * d) If the logical unit reset is caused by a particular I_T nexus
-	 * (e.g., by a LOGICAL UNIT RESET task management function), then "yes"
-	 * (TASK_ABORTED status) applies.
-	 *
-	 * Otherwise (e.g., if triggered by a hard reset), "no"
-	 * (no TASK_ABORTED SAM status) applies.
-	 *
-	 * Note that this seems to be independent of TAS (Task Aborted Status)
-	 * in the Control Mode Page.
-	 */
+	 
 	for (i = 0; i < dev->queue_cnt; i++) {
 		flush_work(&dev->queues[i].sq.work);
 
 		spin_lock_irqsave(&dev->queues[i].lock, flags);
 		list_for_each_entry_safe(cmd, next, &dev->queues[i].state_list,
 					 state_list) {
-			/*
-			 * For PREEMPT_AND_ABORT usage, only process commands
-			 * with a matching reservation key.
-			 */
+			 
 			if (target_check_cdb_and_preempt(preempt_and_abort_list,
 							 cmd))
 				continue;
 
-			/*
-			 * Not aborting PROUT PREEMPT_AND_ABORT CDB..
-			 */
+			 
 			if (prout_cmd == cmd)
 				continue;
 
@@ -361,22 +287,9 @@ int core_tmr_lun_reset(
 	struct se_portal_group *tmr_tpg = NULL;
 	struct se_session *tmr_sess = NULL;
 	bool tas;
-        /*
-	 * TASK_ABORTED status bit, this is configurable via ConfigFS
-	 * struct se_device attributes.  spc4r17 section 7.4.6 Control mode page
-	 *
-	 * A task aborted status (TAS) bit set to zero specifies that aborted
-	 * tasks shall be terminated by the device server without any response
-	 * to the application client. A TAS bit set to one specifies that tasks
-	 * aborted by the actions of an I_T nexus other than the I_T nexus on
-	 * which the command was received shall be completed with TASK ABORTED
-	 * status (see SAM-4).
-	 */
+         
 	tas = dev->dev_attrib.emulate_tas;
-	/*
-	 * Determine if this se_tmr is coming from a $FABRIC_MOD
-	 * or struct se_device passthrough..
-	 */
+	 
 	if (tmr && tmr->task_cmd && tmr->task_cmd->se_sess) {
 		tmr_sess = tmr->task_cmd->se_sess;
 		tmr_nacl = tmr_sess->se_node_acl;
@@ -390,12 +303,7 @@ int core_tmr_lun_reset(
 	}
 
 
-	/*
-	 * We only allow one reset or preempt and abort to execute at a time
-	 * to prevent one call from claiming all the cmds causing a second
-	 * call from returning while cmds it should have waited on are still
-	 * running.
-	 */
+	 
 	mutex_lock(&dev->lun_reset_mutex);
 
 	pr_debug("LUN_RESET: %s starting for [%s], tas: %d\n",
@@ -407,10 +315,7 @@ int core_tmr_lun_reset(
 
 	mutex_unlock(&dev->lun_reset_mutex);
 
-	/*
-	 * Clear any legacy SPC-2 reservation when called during
-	 * LOGICAL UNIT RESET
-	 */
+	 
 	if (!preempt_and_abort_list &&
 	     (dev->dev_reservation_flags & DRF_SPC2_RESERVATIONS)) {
 		spin_lock(&dev->dev_reservation_lock);

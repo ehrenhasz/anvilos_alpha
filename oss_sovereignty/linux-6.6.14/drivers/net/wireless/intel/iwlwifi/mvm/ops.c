@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/module.h>
 #include <linux/rtnetlink.h>
 #include <linux/vmalloc.h>
@@ -41,7 +37,7 @@ static const struct iwl_op_mode_ops iwl_mvm_ops_mq;
 
 struct iwl_mvm_mod_params iwlmvm_mod_params = {
 	.power_scheme = IWL_POWER_SCHEME_BPS,
-	/* rest of fields are 0 by default */
+	 
 };
 
 module_param_named(init_dbg, iwlmvm_mod_params.init_dbg, bool, 0444);
@@ -51,9 +47,7 @@ module_param_named(power_scheme, iwlmvm_mod_params.power_scheme, int, 0444);
 MODULE_PARM_DESC(power_scheme,
 		 "power management scheme: 1-active, 2-balanced, 3-low power, default: 2");
 
-/*
- * module init and exit functions
- */
+ 
 static int __init iwl_mvm_init(void)
 {
 	int ret;
@@ -99,10 +93,10 @@ static void iwl_mvm_nic_config(struct iwl_op_mode *op_mode)
 	if (mvm->trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_AX210)
 		return;
 
-	/* SKU control */
+	 
 	reg_val = CSR_HW_REV_STEP_DASH(mvm->trans->hw_rev);
 
-	/* radio configuration */
+	 
 	reg_val |= radio_cfg_type << CSR_HW_IF_CONFIG_REG_POS_PHY_TYPE;
 	reg_val |= radio_cfg_step << CSR_HW_IF_CONFIG_REG_POS_PHY_STEP;
 	reg_val |= radio_cfg_dash << CSR_HW_IF_CONFIG_REG_POS_PHY_DASH;
@@ -110,14 +104,7 @@ static void iwl_mvm_nic_config(struct iwl_op_mode *op_mode)
 	WARN_ON((radio_cfg_type << CSR_HW_IF_CONFIG_REG_POS_PHY_TYPE) &
 		 ~CSR_HW_IF_CONFIG_REG_MSK_PHY_TYPE);
 
-	/*
-	 * TODO: Bits 7-8 of CSR in 8000 HW family and higher set the ADC
-	 * sampling, and shouldn't be set to any non-zero value.
-	 * The same is supposed to be true of the other HW, but unsetting
-	 * them (such as the 7260) causes automatic tests to fail on seemingly
-	 * unrelated errors. Need to further investigate this, but for now
-	 * we'll separate cases.
-	 */
+	 
 	if (mvm->trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_8000)
 		reg_val |= CSR_HW_IF_CONFIG_REG_BIT_RADIO_SI;
 
@@ -134,11 +121,7 @@ static void iwl_mvm_nic_config(struct iwl_op_mode *op_mode)
 				CSR_HW_IF_CONFIG_REG_D3_DEBUG,
 				reg_val);
 
-	/*
-	 * W/A : NIC is stuck in a reset state after Early PCIe power off
-	 * (PCIe power is lost before PERST# is asserted), causing ME FW
-	 * to lose ownership and not being able to obtain it back.
-	 */
+	 
 	if (!mvm->trans->cfg->apmg_not_supported)
 		iwl_set_bits_mask_prph(mvm->trans, APMG_PS_CTRL_REG,
 				       APMG_PS_CTRL_EARLY_PWR_OFF_RESET_DIS,
@@ -169,23 +152,14 @@ static void iwl_mvm_rx_monitor_notif(struct iwl_mvm *mvm,
 	if (!vif->cfg.assoc)
 		return;
 
-	/* this shouldn't happen *again*, ignore it */
+	 
 	if (mvm->cca_40mhz_workaround)
 		return;
 
-	/*
-	 * We'll decrement this on disconnect - so set to 2 since we'll
-	 * still have to disconnect from the current AP first.
-	 */
+	 
 	mvm->cca_40mhz_workaround = 2;
 
-	/*
-	 * This capability manipulation isn't really ideal, but it's the
-	 * easiest choice - otherwise we'd have to do some major changes
-	 * in mac80211 to support this, which isn't worth it. This does
-	 * mean that userspace may have outdated information, but that's
-	 * actually not an issue at all.
-	 */
+	 
 	sband = mvm->hw->wiphy->bands[NL80211_BAND_2GHZ];
 
 	WARN_ON(!sband->ht_cap.ht_supported);
@@ -195,7 +169,7 @@ static void iwl_mvm_rx_monitor_notif(struct iwl_mvm *mvm,
 	he_cap = ieee80211_get_he_iftype_cap_vif(sband, vif);
 
 	if (he_cap) {
-		/* we know that ours is writable */
+		 
 		struct ieee80211_sta_he_cap *he = (void *)(uintptr_t)he_cap;
 
 		WARN_ON(!he->has_he);
@@ -247,10 +221,7 @@ static void iwl_mvm_rx_thermal_dual_chain_req(struct iwl_mvm *mvm,
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
 	struct iwl_thermal_dual_chain_request *req = (void *)pkt->data;
 
-	/*
-	 * We could pass it to the iterator data, but also need to remember
-	 * it for new interfaces that are added while in this state.
-	 */
+	 
 	mvm->fw_static_smps_request =
 		req->event == cpu_to_le32(THERMAL_DUAL_CHAIN_REQ_DISABLE);
 	ieee80211_iterate_interfaces(mvm->hw,
@@ -258,29 +229,14 @@ static void iwl_mvm_rx_thermal_dual_chain_req(struct iwl_mvm *mvm,
 				     iwl_mvm_intf_dual_chain_req, NULL);
 }
 
-/**
- * enum iwl_rx_handler_context context for Rx handler
- * @RX_HANDLER_SYNC : this means that it will be called in the Rx path
- *	which can't acquire mvm->mutex.
- * @RX_HANDLER_ASYNC_LOCKED : If the handler needs to hold mvm->mutex
- *	(and only in this case!), it should be set as ASYNC. In that case,
- *	it will be called from a worker with mvm->mutex held.
- * @RX_HANDLER_ASYNC_UNLOCKED : in case the handler needs to lock the
- *	mutex itself, it will be called from a worker without mvm->mutex held.
- */
+ 
 enum iwl_rx_handler_context {
 	RX_HANDLER_SYNC,
 	RX_HANDLER_ASYNC_LOCKED,
 	RX_HANDLER_ASYNC_UNLOCKED,
 };
 
-/**
- * struct iwl_rx_handlers handler for FW notification
- * @cmd_id: command id
- * @min_size: minimum size to expect for the notification
- * @context: see &iwl_rx_handler_context
- * @fn: the function is called when notification is received
- */
+ 
 struct iwl_rx_handlers {
 	u16 cmd_id, min_size;
 	enum iwl_rx_handler_context context;
@@ -298,13 +254,7 @@ struct iwl_rx_handlers {
 	{ .cmd_id = WIDE_ID(_grp, _cmd), .fn = _fn,		\
 	  .context = _context, .min_size = sizeof(_struct), }
 
-/*
- * Handlers for fw notifications
- * Convention: RX_HANDLER(CMD_NAME, iwl_mvm_rx_CMD_NAME
- * This list should be in order of frequency for performance purposes.
- *
- * The handler can be one from three contexts, see &iwl_rx_handler_context
- */
+ 
 static const struct iwl_rx_handlers iwl_mvm_rx_handlers[] = {
 	RX_HANDLER(TX_CMD, iwl_mvm_rx_tx_cmd, RX_HANDLER_SYNC,
 		   struct iwl_mvm_tx_resp),
@@ -430,9 +380,7 @@ static const struct iwl_rx_handlers iwl_mvm_rx_handlers[] = {
 #undef RX_HANDLER
 #undef RX_HANDLER_GRP
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_legacy_names[] = {
 	HCMD_NAME(UCODE_ALIVE_NTFY),
 	HCMD_NAME(REPLY_ERROR),
@@ -524,9 +472,7 @@ static const struct iwl_hcmd_names iwl_mvm_legacy_names[] = {
 	HCMD_NAME(LDBG_CONFIG_CMD),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_system_names[] = {
 	HCMD_NAME(SHARED_MEM_CFG_CMD),
 	HCMD_NAME(INIT_EXTENDED_CFG_CMD),
@@ -537,9 +483,7 @@ static const struct iwl_hcmd_names iwl_mvm_system_names[] = {
 	HCMD_NAME(RFI_DEACTIVATE_NOTIF),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_mac_conf_names[] = {
 	HCMD_NAME(CHANNEL_SWITCH_TIME_EVENT_CMD),
 	HCMD_NAME(SESSION_PROTECTION_CMD),
@@ -553,9 +497,7 @@ static const struct iwl_hcmd_names iwl_mvm_mac_conf_names[] = {
 	HCMD_NAME(CHANNEL_SWITCH_START_NOTIF),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_phy_names[] = {
 	HCMD_NAME(CMD_DTS_MEASUREMENT_TRIGGER_WIDE),
 	HCMD_NAME(CTDP_CONFIG_CMD),
@@ -565,9 +507,7 @@ static const struct iwl_hcmd_names iwl_mvm_phy_names[] = {
 	HCMD_NAME(DTS_MEASUREMENT_NOTIF_WIDE),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_data_path_names[] = {
 	HCMD_NAME(DQA_ENABLE_CMD),
 	HCMD_NAME(UPDATE_MU_GROUPS_CMD),
@@ -586,16 +526,12 @@ static const struct iwl_hcmd_names iwl_mvm_data_path_names[] = {
 	HCMD_NAME(RX_QUEUES_NOTIFICATION),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_scan_names[] = {
 	HCMD_NAME(OFFLOAD_MATCH_INFO_NOTIF),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_location_names[] = {
 	HCMD_NAME(TOF_RANGE_REQ_CMD),
 	HCMD_NAME(TOF_CONFIG_CMD),
@@ -609,9 +545,7 @@ static const struct iwl_hcmd_names iwl_mvm_location_names[] = {
 	HCMD_NAME(TOF_RANGE_RESPONSE_NOTIF),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_prot_offload_names[] = {
 	HCMD_NAME(WOWLAN_WAKE_PKT_NOTIFICATION),
 	HCMD_NAME(WOWLAN_INFO_NOTIFICATION),
@@ -619,9 +553,7 @@ static const struct iwl_hcmd_names iwl_mvm_prot_offload_names[] = {
 	HCMD_NAME(STORED_BEACON_NTF),
 };
 
-/* Please keep this array *SORTED* by hex value.
- * Access is done through binary search
- */
+ 
 static const struct iwl_hcmd_names iwl_mvm_regulatory_and_nvm_names[] = {
 	HCMD_NAME(NVM_ACCESS_COMPLETE),
 	HCMD_NAME(NVM_GET_INFO),
@@ -642,7 +574,7 @@ static const struct iwl_hcmd_arr iwl_mvm_groups[] = {
 		HCMD_ARR(iwl_mvm_regulatory_and_nvm_names),
 };
 
-/* this forward declaration can avoid to export the function */
+ 
 static void iwl_mvm_async_handlers_wk(struct work_struct *wk);
 
 static u32 iwl_mvm_min_backoff(struct iwl_mvm *mvm)
@@ -744,11 +676,7 @@ static int iwl_mvm_start_get_nvm(struct iwl_mvm *mvm)
 
 		mvm->mei_nvm_data = iwl_mei_get_nvm();
 		if (mvm->mei_nvm_data) {
-			/*
-			 * mvm->mei_nvm_data is set and because of that,
-			 * we'll load the NVM from the FW when we'll get
-			 * ownership.
-			 */
+			 
 			mvm->nvm_data =
 				iwl_parse_mei_nvm_data(trans, trans->cfg,
 						       mvm->mei_nvm_data, mvm->fw);
@@ -841,19 +769,14 @@ static void iwl_mvm_frob_txf_key_iter(struct ieee80211_hw *hw,
 	case WLAN_CIPHER_SUITE_WEP40:
 	case WLAN_CIPHER_SUITE_WEP104:
 	case WLAN_CIPHER_SUITE_TKIP:
-		/*
-		 * WEP has short keys which might show up in the payload,
-		 * and then you can deduce the key, so in this case just
-		 * remove all FIFO data.
-		 * For TKIP, we don't know the phase 2 keys here, so same.
-		 */
+		 
 		memset(txf->buf, 0xBB, txf->buflen);
 		return;
 	default:
 		return;
 	}
 
-	/* scan for key material and clear it out */
+	 
 	match = 0;
 	for (i = 0; i < txf->buflen; i++) {
 		if (txf->buf[i] != keydata[match]) {
@@ -867,7 +790,7 @@ static void iwl_mvm_frob_txf_key_iter(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* we're dealing with a FIFO, so check wrapped around data */
+	 
 	matchend = match;
 	for (i = 0; match && i < keylen - match; i++) {
 		if (txf->buf[i] != keydata[match])
@@ -890,7 +813,7 @@ static void iwl_mvm_frob_txf(void *ctx, void *buf, size_t buflen)
 	};
 	struct iwl_mvm *mvm = ctx;
 
-	/* embedded key material exists only on old API */
+	 
 	if (iwl_mvm_has_new_tx_api(mvm))
 		return;
 
@@ -901,14 +824,14 @@ static void iwl_mvm_frob_txf(void *ctx, void *buf, size_t buflen)
 
 static void iwl_mvm_frob_hcmd(void *ctx, void *hcmd, size_t len)
 {
-	/* we only use wide headers for commands */
+	 
 	struct iwl_cmd_header_wide *hdr = hcmd;
 	unsigned int frob_start = sizeof(*hdr), frob_end = 0;
 
 	if (len < sizeof(hdr))
 		return;
 
-	/* all the commands we care about are in LONG_GROUP */
+	 
 	if (hdr->group_id != LONG_GROUP)
 		return;
 
@@ -917,10 +840,7 @@ static void iwl_mvm_frob_hcmd(void *ctx, void *hcmd, size_t len)
 	case WOWLAN_TKIP_PARAM:
 	case WOWLAN_KEK_KCK_MATERIAL:
 	case ADD_STA_KEY:
-		/*
-		 * blank out everything here, easier than dealing
-		 * with the various versions of the command
-		 */
+		 
 		frob_end = INT_MAX;
 		break;
 	case MGMT_MCAST_KEY:
@@ -952,7 +872,7 @@ static void iwl_mvm_frob_mem(void *ctx, u32 mem_addr, void *mem, size_t buflen)
 	switch (mvm->fwrt.cur_fw_img) {
 	case IWL_UCODE_INIT:
 	default:
-		/* not relevant */
+		 
 		return;
 	case IWL_UCODE_REGULAR:
 	case IWL_UCODE_REGULAR_USNIFFER:
@@ -999,10 +919,7 @@ static void iwl_mvm_me_conn_status(void *priv, const struct iwl_mei_conn_info *c
 	struct iwl_mvm *mvm = priv;
 	struct iwl_mvm_csme_conn_info *prev_conn_info, *curr_conn_info;
 
-	/*
-	 * This is protected by the guarantee that this function will not be
-	 * called twice on two different threads
-	 */
+	 
 	prev_conn_info = rcu_dereference_protected(mvm->csme_conn_info, true);
 
 	curr_conn_info = kzalloc(sizeof(*curr_conn_info), GFP_KERNEL);
@@ -1117,17 +1034,11 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	u32 min_backoff;
 	struct iwl_mvm_csme_conn_info *csme_conn_info __maybe_unused;
 
-	/*
-	 * We use IWL_MVM_STATION_COUNT_MAX to check the validity of the station
-	 * index all over the driver - check that its value corresponds to the
-	 * array size.
-	 */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(mvm->fw_id_to_mac_id) !=
 		     IWL_MVM_STATION_COUNT_MAX);
 
-	/********************************
-	 * 1. Allocating and configuring HW data
-	 ********************************/
+	 
 	hw = ieee80211_alloc_hw(sizeof(struct iwl_op_mode) +
 				sizeof(struct iwl_mvm),
 				iwl_mvm_has_mld_api(fw) ? &iwl_mvm_mld_hw_ops :
@@ -1184,15 +1095,7 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	mvm->fw_restart = iwlwifi_mod_params.fw_restart ? -1 : 0;
 
 	if (iwl_mvm_has_new_tx_api(mvm)) {
-		/*
-		 * If we have the new TX/queue allocation API initialize them
-		 * all to invalid numbers. We'll rewrite the ones that we need
-		 * later, but that doesn't happen for all of them all of the
-		 * time (e.g. P2P Device is optional), and if a dynamic queue
-		 * ends up getting number 2 (IWL_MVM_DQA_P2P_DEVICE_QUEUE) then
-		 * iwl_mvm_is_static_queue() erroneously returns true, and we
-		 * might have things getting stuck.
-		 */
+		 
 		mvm->aux_queue = IWL_MVM_INVALID_QUEUE;
 		mvm->snif_queue = IWL_MVM_INVALID_QUEUE;
 		mvm->probe_queue = IWL_MVM_INVALID_QUEUE;
@@ -1247,14 +1150,11 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	mvm->cmd_ver.range_resp =
 		iwl_fw_lookup_notif_ver(mvm->fw, LOCATION_GROUP,
 					TOF_RANGE_RESPONSE_NOTIF, 5);
-	/* we only support up to version 9 */
+	 
 	if (WARN_ON_ONCE(mvm->cmd_ver.range_resp > 9))
 		goto out_free;
 
-	/*
-	 * Populate the state variables that the transport layer needs
-	 * to know about.
-	 */
+	 
 	trans_cfg.op_mode = op_mode;
 	trans_cfg.no_reclaim_cmds = no_reclaim_cmds;
 	trans_cfg.n_no_reclaim_cmds = ARRAY_SIZE(no_reclaim_cmds);
@@ -1292,7 +1192,7 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	trans_cfg.cb_data_offs = offsetof(struct ieee80211_tx_info,
 					  driver_data[2]);
 
-	/* Set a short watchdog for the command queue */
+	 
 	trans_cfg.cmd_q_wdg_timeout =
 		iwl_mvm_get_wd_timeout(mvm, NULL, false, true);
 
@@ -1313,7 +1213,7 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 
 	mvm->mld_api_is_used = iwl_mvm_has_mld_api(mvm->fw);
 
-	/* Configure transport layer */
+	 
 	iwl_trans_configure(mvm->trans, &trans_cfg);
 
 	trans->rx_mpdu_cmd = REPLY_RX_MPDU_CMD;
@@ -1326,10 +1226,10 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	trans->iml = mvm->fw->iml;
 	trans->iml_len = mvm->fw->iml_len;
 
-	/* set up notification wait support */
+	 
 	iwl_notification_wait_init(&mvm->notif_wait);
 
-	/* Init phy db */
+	 
 	mvm->phy_db = iwl_phy_db_init(trans);
 	if (!mvm->phy_db) {
 		IWL_ERR(mvm, "Cannot init phy_db\n");
@@ -1352,11 +1252,11 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 		goto out_free;
 	mvm->scan_cmd_size = scan_size;
 
-	/* invalidate ids to prevent accidental removal of sta_id 0 */
+	 
 	mvm->aux_sta.sta_id = IWL_MVM_INVALID_STA;
 	mvm->snif_sta.sta_id = IWL_MVM_INVALID_STA;
 
-	/* Set EBS as successful as long as not stated otherwise by the FW. */
+	 
 	mvm->last_ebs_successful = true;
 
 	min_backoff = iwl_mvm_min_backoff(mvm);
@@ -1379,11 +1279,7 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
 	iwl_mvm_mei_scan_filter_init(&mvm->mei_scan_filter);
 
 	if (iwl_mvm_start_get_nvm(mvm)) {
-		/*
-		 * Getting NVM failed while CSME is the owner, but we are
-		 * registered to MEI, we'll get the NVM later when it'll be
-		 * possible to get it from CSME.
-		 */
+		 
 		if (trans->csme_own && mvm->mei_registered)
 			return op_mode;
 
@@ -1443,24 +1339,14 @@ static void iwl_op_mode_mvm_stop(struct iwl_op_mode *op_mode)
 		iwl_mei_start_unregister();
 	}
 
-	/*
-	 * After we unregister from mei, the worker can't be scheduled
-	 * anymore.
-	 */
+	 
 	cancel_work_sync(&mvm->sap_connected_wk);
 
 	iwl_mvm_leds_exit(mvm);
 
 	iwl_mvm_thermal_exit(mvm);
 
-	/*
-	 * If we couldn't get ownership on the device and we couldn't
-	 * get the NVM from CSME, we haven't registered to mac80211.
-	 * In that case, we didn't fail op_mode_start, because we are
-	 * waiting for CSME to allow us to get the NVM to register to
-	 * mac80211. If that didn't happen, we haven't registered to
-	 * mac80211, hence the if below.
-	 */
+	 
 	if (mvm->hw_registered)
 		ieee80211_unregister_hw(mvm->hw);
 
@@ -1523,12 +1409,9 @@ static void iwl_mvm_async_handlers_wk(struct work_struct *wk)
 	struct iwl_async_handler_entry *entry, *tmp;
 	LIST_HEAD(local_list);
 
-	/* Ensure that we are not in stop flow (check iwl_mvm_mac_stop) */
+	 
 
-	/*
-	 * Sync with Rx path with a lock. Remove all the entries from this list,
-	 * add them to a local one (lock free), and then handle them.
-	 */
+	 
 	spin_lock_bh(&mvm->async_handlers_lock);
 	list_splice_init(&mvm->async_handlers_list, &local_list);
 	spin_unlock_bh(&mvm->async_handlers_lock);
@@ -1560,7 +1443,7 @@ static inline void iwl_mvm_rx_check_trigger(struct iwl_mvm *mvm,
 	cmds_trig = (void *)trig->data;
 
 	for (i = 0; i < ARRAY_SIZE(cmds_trig->cmds); i++) {
-		/* don't collect on CMD 0 */
+		 
 		if (!cmds_trig->cmds[i].cmd_id)
 			break;
 
@@ -1587,11 +1470,7 @@ static void iwl_mvm_rx_common(struct iwl_mvm *mvm,
 			       IWL_FW_INI_TIME_POINT_FW_RSP_OR_NOTIF, &tp_data);
 	iwl_mvm_rx_check_trigger(mvm, pkt);
 
-	/*
-	 * Do the notification wait before RX handlers so
-	 * even if the RX handler consumes the RXB we have
-	 * access to it in the notification wait entry.
-	 */
+	 
 	iwl_notification_wait_notify(&mvm->notif_wait, pkt);
 
 	for (i = 0; i < ARRAY_SIZE(iwl_mvm_rx_handlers); i++) {
@@ -1612,7 +1491,7 @@ static void iwl_mvm_rx_common(struct iwl_mvm *mvm,
 		}
 
 		entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
-		/* we can't do much... */
+		 
 		if (!entry)
 			return;
 
@@ -1673,10 +1552,7 @@ static void iwl_mvm_async_cb(struct iwl_op_mode *op_mode,
 {
 	struct iwl_mvm *mvm = IWL_OP_MODE_GET_MVM(op_mode);
 
-	/*
-	 * For now, we only set the CMD_WANT_ASYNC_CALLBACK for ADD_STA
-	 * commands that need to block the Tx queues.
-	 */
+	 
 	iwl_trans_block_txq_ptrs(mvm->trans, false);
 }
 
@@ -1802,21 +1678,15 @@ static bool iwl_mvm_set_hw_rfkill_state(struct iwl_op_mode *op_mode, bool state)
 
 	iwl_mvm_set_rfkill_state(mvm);
 
-	 /* iwl_run_init_mvm_ucode is waiting for results, abort it. */
+	  
 	if (rfkill_safe_init_done)
 		iwl_abort_notification_waits(&mvm->notif_wait);
 
-	/*
-	 * Don't ask the transport to stop the firmware. We'll do it
-	 * after cfg80211 takes us down.
-	 */
+	 
 	if (unified)
 		return false;
 
-	/*
-	 * Stop the device if we run OPERATIONAL firmware or if we are in the
-	 * middle of the calibrations.
-	 */
+	 
 	return state && rfkill_safe_init_done;
 }
 
@@ -1852,24 +1722,10 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
 	iwl_abort_notification_waits(&mvm->notif_wait);
 	iwl_dbg_tlv_del_timers(mvm->trans);
 
-	/*
-	 * This is a bit racy, but worst case we tell mac80211 about
-	 * a stopped/aborted scan when that was already done which
-	 * is not a problem. It is necessary to abort any os scan
-	 * here because mac80211 requires having the scan cleared
-	 * before restarting.
-	 * We'll reset the scan_status to NONE in restart cleanup in
-	 * the next start() call from mac80211. If restart isn't called
-	 * (no fw restart) scan status will stay busy.
-	 */
+	 
 	iwl_mvm_report_scan_aborted(mvm);
 
-	/*
-	 * If we're restarting already, don't cycle restarts.
-	 * If INIT fw asserted, it will likely fail again.
-	 * If WoWLAN fw asserted, don't restart either, mac80211
-	 * can't recover this since we're already half suspended.
-	 */
+	 
 	if (!mvm->fw_restart && fw_error) {
 		iwl_fw_error_collect(&mvm->fwrt, false);
 	} else if (test_bit(IWL_MVM_STATUS_STARTING,
@@ -1881,11 +1737,7 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
 		IWL_ERR(mvm,
 			"Firmware error during reconfiguration - reprobe!\n");
 
-		/*
-		 * get a module reference to avoid doing this while unloading
-		 * anyway and to avoid scheduling a work with code that's
-		 * being removed.
-		 */
+		 
 		if (!try_module_get(THIS_MODULE)) {
 			IWL_ERR(mvm, "Module is being unloaded - abort\n");
 			return;
@@ -1905,10 +1757,7 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
 	} else if (mvm->fwrt.cur_fw_img == IWL_UCODE_REGULAR &&
 		   mvm->hw_registered &&
 		   !test_bit(STATUS_TRANS_DEAD, &mvm->trans->status)) {
-		/* This should be first thing before trying to collect any
-		 * data to avoid endless loops if any HW error happens while
-		 * collecting debug data.
-		 */
+		 
 		set_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED, &mvm->status);
 
 		if (mvm->fw->ucode_capa.error_log_size) {
@@ -1954,19 +1803,11 @@ static void iwl_mvm_nic_error(struct iwl_op_mode *op_mode, bool sync)
 
 	if (sync) {
 		iwl_fw_error_collect(&mvm->fwrt, true);
-		/*
-		 * Currently, the only case for sync=true is during
-		 * shutdown, so just stop in this case. If/when that
-		 * changes, we need to be a bit smarter here.
-		 */
+		 
 		return;
 	}
 
-	/*
-	 * If the firmware crashes while we're already considering it
-	 * to be dead then don't ask for a restart, that cannot do
-	 * anything useful anyway.
-	 */
+	 
 	if (!test_bit(IWL_MVM_STATUS_FIRMWARE_RUNNING, &mvm->status))
 		return;
 
@@ -1991,7 +1832,7 @@ static void iwl_op_mode_mvm_time_point(struct iwl_op_mode *op_mode,
 }
 
 #define IWL_MVM_COMMON_OPS					\
-	/* these could be differentiated */			\
+	 			\
 	.async_cb = iwl_mvm_async_cb,				\
 	.queue_full = iwl_mvm_stop_sw_queue,			\
 	.queue_not_full = iwl_mvm_wake_sw_queue,		\
@@ -2000,7 +1841,7 @@ static void iwl_op_mode_mvm_time_point(struct iwl_op_mode *op_mode,
 	.nic_error = iwl_mvm_nic_error,				\
 	.cmd_queue_full = iwl_mvm_cmd_queue_full,		\
 	.nic_config = iwl_mvm_nic_config,			\
-	/* as we only register one, these MUST be common! */	\
+	 	\
 	.start = iwl_op_mode_mvm_start,				\
 	.stop = iwl_op_mode_mvm_stop,				\
 	.time_point = iwl_op_mode_mvm_time_point

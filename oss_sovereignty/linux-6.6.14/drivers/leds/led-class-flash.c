@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Flash class interface
- *
- * Copyright (C) 2015 Samsung Electronics Co., Ltd.
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -69,7 +64,7 @@ static ssize_t flash_brightness_show(struct device *dev,
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct led_classdev_flash *fled_cdev = lcdev_to_flcdev(led_cdev);
 
-	/* no lock needed for this */
+	 
 	led_update_flash_brightness(fled_cdev);
 
 	return sprintf(buf, "%u\n", fled_cdev->brightness.val);
@@ -125,7 +120,7 @@ static ssize_t flash_strobe_show(struct device *dev,
 	bool state;
 	int ret;
 
-	/* no lock needed for this */
+	 
 	ret = led_get_flash_strobe(fled_cdev, &state);
 	if (ret < 0)
 		return ret;
@@ -303,11 +298,11 @@ int led_classdev_flash_register_ext(struct device *parent,
 
 		led_cdev->flash_resume = led_flash_resume;
 
-		/* Select the sysfs attributes to be created for the device */
+		 
 		led_flash_init_sysfs_groups(fled_cdev);
 	}
 
-	/* Register led class device */
+	 
 	ret = led_classdev_register_ext(parent, led_cdev, init_data);
 	if (ret < 0)
 		return ret;

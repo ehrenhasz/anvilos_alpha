@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sunvnet.c: Sun LDOM Virtual Network Driver.
- *
- * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
- * Copyright (C) 2016-2017 Oracle. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,9 +29,7 @@
 
 #include "sunvnet_common.h"
 
-/* length of time before we decide the hardware is borked,
- * and dev->tx_timeout() should be called to fix the problem
- */
+ 
 #define VNET_TX_TIMEOUT			(5 * HZ)
 
 #define DRV_MODULE_NAME		"sunvnet"
@@ -49,7 +43,7 @@ MODULE_DESCRIPTION("Sun LDOM virtual network driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
-/* Ordered from largest major to lowest */
+ 
 static struct vio_version vnet_versions[] = {
 	{ .major = 1, .minor = 8 },
 	{ .major = 1, .minor = 7 },
@@ -224,7 +218,7 @@ static struct vnet_port *__tx_port_find(struct vnet *vp, struct sk_buff *skb)
 	return NULL;
 }
 
-/* func arg to vnet_start_xmit_common() to get the proper tx port */
+ 
 static struct vnet_port *vnet_tx_port_find(struct sk_buff *skb,
 					   struct net_device *dev)
 {
@@ -245,7 +239,7 @@ static u16 vnet_select_queue(struct net_device *dev, struct sk_buff *skb,
 	return port->q_index;
 }
 
-/* Wrappers to common functions */
+ 
 static netdev_tx_t vnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	return sunvnet_start_xmit_common(skb, dev, vnet_tx_port_find);
@@ -318,7 +312,7 @@ static struct vnet *vnet_new(const u64 *local_mac,
 			   NETIF_F_HW_CSUM | NETIF_F_SG;
 	dev->features = dev->hw_features;
 
-	/* MTU range: 68 - 65535 */
+	 
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = VNET_MAX_MTU;
 
@@ -372,7 +366,7 @@ static void vnet_cleanup(void)
 		vp = list_first_entry(&vnet_list, struct vnet, list);
 		list_del(&vp->list);
 		dev = vp->dev;
-		/* vio_unregister_driver() should have cleaned up port_list */
+		 
 		BUG_ON(!list_empty(&vp->port_list));
 		unregister_netdev(dev);
 		free_netdev(dev);

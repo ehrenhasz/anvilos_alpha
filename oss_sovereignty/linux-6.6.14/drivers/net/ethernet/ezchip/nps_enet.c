@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2015 EZchip Technologies.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -26,7 +24,7 @@ static void nps_enet_clean_rx_fifo(struct net_device *ndev, u32 frame_len)
 	struct nps_enet_priv *priv = netdev_priv(ndev);
 	u32 i, len = DIV_ROUND_UP(frame_len, sizeof(u32));
 
-	/* Empty Rx FIFO buffer by reading all words */
+	 
 	for (i = 0; i < len; i++)
 		nps_enet_reg_get(priv, NPS_ENET_REG_RX_BUF);
 }
@@ -39,18 +37,18 @@ static void nps_enet_read_rx_fifo(struct net_device *ndev,
 	u32 *reg = (u32 *)dst, len = length / sizeof(u32);
 	bool dst_is_aligned = IS_ALIGNED((unsigned long)dst, sizeof(u32));
 
-	/* In case dst is not aligned we need an intermediate buffer */
+	 
 	if (dst_is_aligned) {
 		ioread32_rep(priv->regs_base + NPS_ENET_REG_RX_BUF, reg, len);
 		reg += len;
-	} else { /* !dst_is_aligned */
+	} else {  
 		for (i = 0; i < len; i++, reg++) {
 			u32 buf = nps_enet_reg_get(priv, NPS_ENET_REG_RX_BUF);
 
 			put_unaligned_be32(buf, reg);
 		}
 	}
-	/* copy last bytes (if any) */
+	 
 	if (last) {
 		u32 buf;
 
@@ -72,27 +70,27 @@ static u32 nps_enet_rx_handler(struct net_device *ndev)
 
 	frame_len = (rx_ctrl_value & RX_CTL_NR_MASK) >> RX_CTL_NR_SHIFT;
 
-	/* Check if we got RX */
+	 
 	if (!rx_ctrl_cr)
 		return work_done;
 
-	/* If we got here there is a work for us */
+	 
 	work_done++;
 
-	/* Check Rx error */
+	 
 	if (rx_ctrl_er) {
 		ndev->stats.rx_errors++;
 		err = 1;
 	}
 
-	/* Check Rx CRC error */
+	 
 	if (rx_ctrl_crc) {
 		ndev->stats.rx_crc_errors++;
 		ndev->stats.rx_dropped++;
 		err = 1;
 	}
 
-	/* Check Frame length Min 64b */
+	 
 	if (unlikely(frame_len < ETH_ZLEN)) {
 		ndev->stats.rx_length_errors++;
 		ndev->stats.rx_dropped++;
@@ -102,7 +100,7 @@ static u32 nps_enet_rx_handler(struct net_device *ndev)
 	if (err)
 		goto rx_irq_clean;
 
-	/* Skb allocation */
+	 
 	skb = netdev_alloc_skb_ip_align(ndev, frame_len);
 	if (unlikely(!skb)) {
 		ndev->stats.rx_errors++;
@@ -110,7 +108,7 @@ static u32 nps_enet_rx_handler(struct net_device *ndev)
 		goto rx_irq_clean;
 	}
 
-	/* Copy frame from Rx fifo into the skb */
+	 
 	nps_enet_read_rx_fifo(ndev, skb->data, frame_len);
 
 	skb_put(skb, frame_len);
@@ -124,11 +122,11 @@ static u32 nps_enet_rx_handler(struct net_device *ndev)
 	goto rx_irq_frame_done;
 
 rx_irq_clean:
-	/* Clean Rx fifo */
+	 
 	nps_enet_clean_rx_fifo(ndev, frame_len);
 
 rx_irq_frame_done:
-	/* Ack Rx ctrl register */
+	 
 	nps_enet_reg_set(priv, NPS_ENET_REG_RX_CTL, 0);
 
 	return work_done;
@@ -141,14 +139,14 @@ static void nps_enet_tx_handler(struct net_device *ndev)
 	u32 tx_ctrl_et = (tx_ctrl_value & TX_CTL_ET_MASK) >> TX_CTL_ET_SHIFT;
 	u32 tx_ctrl_nt = (tx_ctrl_value & TX_CTL_NT_MASK) >> TX_CTL_NT_SHIFT;
 
-	/* Check if we got TX */
+	 
 	if (!nps_enet_is_tx_pending(priv))
 		return;
 
-	/* Ack Tx ctrl register */
+	 
 	nps_enet_reg_set(priv, NPS_ENET_REG_TX_CTL, 0);
 
-	/* Check Tx transmit error */
+	 
 	if (unlikely(tx_ctrl_et)) {
 		ndev->stats.tx_errors++;
 	} else {
@@ -163,13 +161,7 @@ static void nps_enet_tx_handler(struct net_device *ndev)
 		netif_wake_queue(ndev);
 }
 
-/**
- * nps_enet_poll - NAPI poll handler.
- * @napi:       Pointer to napi_struct structure.
- * @budget:     How many frames to process on one call.
- *
- * returns:     Number of processed frames
- */
+ 
 static int nps_enet_poll(struct napi_struct *napi, int budget)
 {
 	struct net_device *ndev = napi->dev;
@@ -181,21 +173,14 @@ static int nps_enet_poll(struct napi_struct *napi, int budget)
 	if ((work_done < budget) && napi_complete_done(napi, work_done)) {
 		u32 buf_int_enable_value = 0;
 
-		/* set tx_done and rx_rdy bits */
+		 
 		buf_int_enable_value |= NPS_ENET_ENABLE << RX_RDY_SHIFT;
 		buf_int_enable_value |= NPS_ENET_ENABLE << TX_DONE_SHIFT;
 
 		nps_enet_reg_set(priv, NPS_ENET_REG_BUF_INT_ENABLE,
 				 buf_int_enable_value);
 
-		/* in case we will get a tx interrupt while interrupts
-		 * are masked, we will lose it since the tx is edge interrupt.
-		 * specifically, while executing the code section above,
-		 * between nps_enet_tx_handler and the interrupts enable, all
-		 * tx requests will be stuck until we will get an rx interrupt.
-		 * the two code lines below will solve this situation by
-		 * re-adding ourselves to the poll list.
-		 */
+		 
 		if (nps_enet_is_tx_pending(priv)) {
 			nps_enet_reg_set(priv, NPS_ENET_REG_BUF_INT_ENABLE, 0);
 			napi_reschedule(napi);
@@ -205,17 +190,7 @@ static int nps_enet_poll(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/**
- * nps_enet_irq_handler - Global interrupt handler for ENET.
- * @irq:                irq number.
- * @dev_instance:       device instance.
- *
- * returns: IRQ_HANDLED for all cases.
- *
- * EZchip ENET has 2 interrupt causes, and depending on bits raised in
- * CTRL registers we may tell what is a reason for interrupt to fire up.
- * We got one for RX and the other for TX (completion).
- */
+ 
 static irqreturn_t nps_enet_irq_handler(s32 irq, void *dev_instance)
 {
 	struct net_device *ndev = dev_instance;
@@ -238,7 +213,7 @@ static void nps_enet_set_hw_mac_address(struct net_device *ndev)
 	u32 ge_mac_cfg_1_value = 0;
 	u32 *ge_mac_cfg_2_value = &priv->ge_mac_cfg_2_value;
 
-	/* set MAC address in HW */
+	 
 	ge_mac_cfg_1_value |= ndev->dev_addr[0] << CFG_1_OCTET_0_SHIFT;
 	ge_mac_cfg_1_value |= ndev->dev_addr[1] << CFG_1_OCTET_1_SHIFT;
 	ge_mac_cfg_1_value |= ndev->dev_addr[2] << CFG_1_OCTET_2_SHIFT;
@@ -255,29 +230,20 @@ static void nps_enet_set_hw_mac_address(struct net_device *ndev)
 			 *ge_mac_cfg_2_value);
 }
 
-/**
- * nps_enet_hw_reset - Reset the network device.
- * @ndev:       Pointer to the network device.
- *
- * This function reset the PCS and TX fifo.
- * The programming model is to set the relevant reset bits
- * wait for some time for this to propagate and then unset
- * the reset bits. This way we ensure that reset procedure
- * is done successfully by device.
- */
+ 
 static void nps_enet_hw_reset(struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
 	u32 ge_rst_value = 0, phase_fifo_ctl_value = 0;
 
-	/* Pcs reset sequence*/
+	 
 	ge_rst_value |= NPS_ENET_ENABLE << RST_GMAC_0_SHIFT;
 	nps_enet_reg_set(priv, NPS_ENET_REG_GE_RST, ge_rst_value);
 	usleep_range(10, 20);
 	ge_rst_value = 0;
 	nps_enet_reg_set(priv, NPS_ENET_REG_GE_RST, ge_rst_value);
 
-	/* Tx fifo reset sequence */
+	 
 	phase_fifo_ctl_value |= NPS_ENET_ENABLE << PHASE_FIFO_CTL_RST_SHIFT;
 	phase_fifo_ctl_value |= NPS_ENET_ENABLE << PHASE_FIFO_CTL_INIT_SHIFT;
 	nps_enet_reg_set(priv, NPS_ENET_REG_PHASE_FIFO_CTL,
@@ -296,22 +262,22 @@ static void nps_enet_hw_enable_control(struct net_device *ndev)
 	u32 *ge_mac_cfg_3_value = &priv->ge_mac_cfg_3_value;
 	s32 max_frame_length;
 
-	/* Enable Rx and Tx statistics */
+	 
 	*ge_mac_cfg_2_value = (*ge_mac_cfg_2_value & ~CFG_2_STAT_EN_MASK)
 		 | NPS_ENET_GE_MAC_CFG_2_STAT_EN << CFG_2_STAT_EN_SHIFT;
 
-	/* Discard packets with different MAC address */
+	 
 	*ge_mac_cfg_2_value = (*ge_mac_cfg_2_value & ~CFG_2_DISK_DA_MASK)
 		 | NPS_ENET_ENABLE << CFG_2_DISK_DA_SHIFT;
 
-	/* Discard multicast packets */
+	 
 	*ge_mac_cfg_2_value = (*ge_mac_cfg_2_value & ~CFG_2_DISK_MC_MASK)
 		 | NPS_ENET_ENABLE << CFG_2_DISK_MC_SHIFT;
 
 	nps_enet_reg_set(priv, NPS_ENET_REG_GE_MAC_CFG_2,
 			 *ge_mac_cfg_2_value);
 
-	/* Discard Packets bigger than max frame length */
+	 
 	max_frame_length = ETH_HLEN + ndev->mtu + ETH_FCS_LEN;
 	if (max_frame_length <= NPS_ENET_MAX_FRAME_LENGTH) {
 		*ge_mac_cfg_3_value =
@@ -319,32 +285,32 @@ static void nps_enet_hw_enable_control(struct net_device *ndev)
 			 | max_frame_length << CFG_3_MAX_LEN_SHIFT;
 	}
 
-	/* Enable interrupts */
+	 
 	buf_int_enable_value |= NPS_ENET_ENABLE << RX_RDY_SHIFT;
 	buf_int_enable_value |= NPS_ENET_ENABLE << TX_DONE_SHIFT;
 	nps_enet_reg_set(priv, NPS_ENET_REG_BUF_INT_ENABLE,
 			 buf_int_enable_value);
 
-	/* Write device MAC address to HW */
+	 
 	nps_enet_set_hw_mac_address(ndev);
 
-	/* Rx and Tx HW features */
+	 
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_TX_PAD_EN_SHIFT;
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_TX_CRC_EN_SHIFT;
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_RX_CRC_STRIP_SHIFT;
 
-	/* IFG configuration */
+	 
 	ge_mac_cfg_0_value |=
 		 NPS_ENET_GE_MAC_CFG_0_RX_IFG << CFG_0_RX_IFG_SHIFT;
 	ge_mac_cfg_0_value |=
 		 NPS_ENET_GE_MAC_CFG_0_TX_IFG << CFG_0_TX_IFG_SHIFT;
 
-	/* preamble configuration */
+	 
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_RX_PR_CHECK_EN_SHIFT;
 	ge_mac_cfg_0_value |=
 		 NPS_ENET_GE_MAC_CFG_0_TX_PR_LEN << CFG_0_TX_PR_LEN_SHIFT;
 
-	/* enable flow control frames */
+	 
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_TX_FC_EN_SHIFT;
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_RX_FC_EN_SHIFT;
 	ge_mac_cfg_0_value |=
@@ -352,7 +318,7 @@ static void nps_enet_hw_enable_control(struct net_device *ndev)
 	*ge_mac_cfg_3_value = (*ge_mac_cfg_3_value & ~CFG_3_CF_DROP_MASK)
 		 | NPS_ENET_ENABLE << CFG_3_CF_DROP_SHIFT;
 
-	/* Enable Rx and Tx */
+	 
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_RX_EN_SHIFT;
 	ge_mac_cfg_0_value |= NPS_ENET_ENABLE << CFG_0_TX_EN_SHIFT;
 
@@ -366,10 +332,10 @@ static void nps_enet_hw_disable_control(struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
 
-	/* Disable interrupts */
+	 
 	nps_enet_reg_set(priv, NPS_ENET_REG_BUF_INT_ENABLE, 0);
 
-	/* Disable Rx and Tx */
+	 
 	nps_enet_reg_set(priv, NPS_ENET_REG_GE_MAC_CFG_0, 0);
 }
 
@@ -383,33 +349,23 @@ static void nps_enet_send_frame(struct net_device *ndev,
 	u32 *src = (void *)skb->data;
 	bool src_is_aligned = IS_ALIGNED((unsigned long)src, sizeof(u32));
 
-	/* In case src is not aligned we need an intermediate buffer */
+	 
 	if (src_is_aligned)
 		iowrite32_rep(priv->regs_base + NPS_ENET_REG_TX_BUF, src, len);
-	else /* !src_is_aligned */
+	else  
 		for (i = 0; i < len; i++, src++)
 			nps_enet_reg_set(priv, NPS_ENET_REG_TX_BUF,
 					 get_unaligned_be32(src));
 
-	/* Write the length of the Frame */
+	 
 	tx_ctrl_value |= length << TX_CTL_NT_SHIFT;
 
 	tx_ctrl_value |= NPS_ENET_ENABLE << TX_CTL_CT_SHIFT;
-	/* Send Frame */
+	 
 	nps_enet_reg_set(priv, NPS_ENET_REG_TX_CTL, tx_ctrl_value);
 }
 
-/**
- * nps_enet_set_mac_address - Set the MAC address for this device.
- * @ndev:       Pointer to net_device structure.
- * @p:          6 byte Address to be written as MAC address.
- *
- * This function copies the HW address from the sockaddr structure to the
- * net_device structure and updates the address in HW.
- *
- * returns:     -EBUSY if the net device is busy or 0 if the address is set
- *              successfully.
- */
+ 
 static s32 nps_enet_set_mac_address(struct net_device *ndev, void *p)
 {
 	struct sockaddr *addr = p;
@@ -427,12 +383,7 @@ static s32 nps_enet_set_mac_address(struct net_device *ndev, void *p)
 	return res;
 }
 
-/**
- * nps_enet_set_rx_mode - Change the receive filtering mode.
- * @ndev:       Pointer to the network device.
- *
- * This function enables/disables promiscuous mode
- */
+ 
 static void nps_enet_set_rx_mode(struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
@@ -454,36 +405,28 @@ static void nps_enet_set_rx_mode(struct net_device *ndev)
 	nps_enet_reg_set(priv, NPS_ENET_REG_GE_MAC_CFG_2, ge_mac_cfg_2_value);
 }
 
-/**
- * nps_enet_open - Open the network device.
- * @ndev:       Pointer to the network device.
- *
- * returns: 0, on success or non-zero error value on failure.
- *
- * This function sets the MAC address, requests and enables an IRQ
- * for the ENET device and starts the Tx queue.
- */
+ 
 static s32 nps_enet_open(struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
 	s32 err;
 
-	/* Reset private variables */
+	 
 	priv->tx_skb = NULL;
 	priv->ge_mac_cfg_2_value = 0;
 	priv->ge_mac_cfg_3_value = 0;
 
-	/* ge_mac_cfg_3 default values */
+	 
 	priv->ge_mac_cfg_3_value |=
 		 NPS_ENET_GE_MAC_CFG_3_RX_IFG_TH << CFG_3_RX_IFG_TH_SHIFT;
 
 	priv->ge_mac_cfg_3_value |=
 		 NPS_ENET_GE_MAC_CFG_3_MAX_LEN << CFG_3_MAX_LEN_SHIFT;
 
-	/* Disable HW device */
+	 
 	nps_enet_hw_disable_control(ndev);
 
-	/* irq Rx allocation */
+	 
 	err = request_irq(priv->irq, nps_enet_irq_handler,
 			  0, "enet-rx-tx", ndev);
 	if (err)
@@ -491,7 +434,7 @@ static s32 nps_enet_open(struct net_device *ndev)
 
 	napi_enable(&priv->napi);
 
-	/* Enable HW device */
+	 
 	nps_enet_hw_reset(ndev);
 	nps_enet_hw_enable_control(ndev);
 
@@ -500,12 +443,7 @@ static s32 nps_enet_open(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * nps_enet_stop - Close the network device.
- * @ndev:       Pointer to the network device.
- *
- * This function stops the Tx queue, disables interrupts for the ENET device.
- */
+ 
 static s32 nps_enet_stop(struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
@@ -518,29 +456,18 @@ static s32 nps_enet_stop(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * nps_enet_start_xmit - Starts the data transmission.
- * @skb:        sk_buff pointer that contains data to be Transmitted.
- * @ndev:       Pointer to net_device structure.
- *
- * returns: NETDEV_TX_OK, on success
- *              NETDEV_TX_BUSY, if any of the descriptors are not free.
- *
- * This function is invoked from upper layers to initiate transmission.
- */
+ 
 static netdev_tx_t nps_enet_start_xmit(struct sk_buff *skb,
 				       struct net_device *ndev)
 {
 	struct nps_enet_priv *priv = netdev_priv(ndev);
 
-	/* This driver handles one frame at a time  */
+	 
 	netif_stop_queue(ndev);
 
 	priv->tx_skb = skb;
 
-	/* make sure tx_skb is actually written to the memory
-	 * before the HW is informed and the IRQ is fired.
-	 */
+	 
 	wmb();
 
 	nps_enet_send_frame(ndev, skb);
@@ -586,10 +513,10 @@ static s32 nps_enet_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(ndev, dev);
 	priv = netdev_priv(ndev);
 
-	/* The EZ NET specific entries in the device structure. */
+	 
 	ndev->netdev_ops = &nps_netdev_ops;
 	ndev->watchdog_timeo = (400 * HZ / 1000);
-	/* FIXME :: no multicast support yet */
+	 
 	ndev->flags &= ~IFF_MULTICAST;
 
 	priv->regs_base = devm_platform_ioremap_resource(pdev, 0);
@@ -599,12 +526,12 @@ static s32 nps_enet_probe(struct platform_device *pdev)
 	}
 	dev_dbg(dev, "Registers base address is 0x%p\n", priv->regs_base);
 
-	/* set kernel MAC address to dev */
+	 
 	err = of_get_ethdev_address(dev->of_node, ndev);
 	if (err)
 		eth_hw_addr_random(ndev);
 
-	/* Get IRQ number */
+	 
 	priv->irq = platform_get_irq(pdev, 0);
 	if (priv->irq < 0) {
 		err = -ENODEV;
@@ -614,7 +541,7 @@ static s32 nps_enet_probe(struct platform_device *pdev)
 	netif_napi_add_weight(ndev, &priv->napi, nps_enet_poll,
 			      NPS_ENET_NAPI_POLL_WEIGHT);
 
-	/* Register the driver. Should be the last thing in probe */
+	 
 	err = register_netdev(ndev);
 	if (err) {
 		dev_err(dev, "Failed to register ndev for %s, err = 0x%08x\n",
@@ -647,7 +574,7 @@ static s32 nps_enet_remove(struct platform_device *pdev)
 
 static const struct of_device_id nps_enet_dt_ids[] = {
 	{ .compatible = "ezchip,nps-mgt-enet" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nps_enet_dt_ids);
 

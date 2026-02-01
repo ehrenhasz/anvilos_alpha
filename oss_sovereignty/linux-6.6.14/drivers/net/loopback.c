@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Pseudo-driver for the loopback interface.
- *
- * Version:	@(#)loopback.c	1.0.4b	08/16/93
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *		Donald Becker, <becker@scyld.com>
- *
- *		Alan Cox	:	Fixed oddments for NET3.014
- *		Alan Cox	:	Rejig for NET3.029 snap #3
- *		Alan Cox	:	Fixed NET3.029 bugs and sped up
- *		Larry McVoy	:	Tiny tweak to double performance
- *		Alan Cox	:	Backed out LMV's tweak - the linux mm
- *					can't take it...
- *              Michael Griffith:       Don't bother computing the checksums
- *                                      on packets received on the loopback
- *                                      interface.
- *		Alexey Kuznetsov:	Potential hang under some extreme
- *					cases removed.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
 #include <linux/module.h>
@@ -47,8 +23,8 @@
 #include <net/sch_generic.h>
 #include <net/sock.h>
 #include <net/checksum.h>
-#include <linux/if_ether.h>	/* For the statistics structure. */
-#include <linux/if_arp.h>	/* For ARPHRD_ETHER */
+#include <linux/if_ether.h>	 
+#include <linux/if_arp.h>	 
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/percpu.h>
@@ -56,16 +32,11 @@
 #include <net/net_namespace.h>
 #include <linux/u64_stats_sync.h>
 
-/* blackhole_netdev - a device used for dsts that are marked expired!
- * This is global device (instead of per-net-ns) since it's not needed
- * to be per-ns and gets initialized at boot time.
- */
+ 
 struct net_device *blackhole_netdev;
 EXPORT_SYMBOL(blackhole_netdev);
 
-/* The higher levels take care of making this non-reentrant (it's
- * called with bh's disabled).
- */
+ 
 static netdev_tx_t loopback_xmit(struct sk_buff *skb,
 				 struct net_device *dev)
 {
@@ -73,14 +44,12 @@ static netdev_tx_t loopback_xmit(struct sk_buff *skb,
 
 	skb_tx_timestamp(skb);
 
-	/* do not fool net_timestamp_check() with various clock bases */
+	 
 	skb_clear_tstamp(skb);
 
 	skb_orphan(skb);
 
-	/* Before queueing this packet to __netif_rx(),
-	 * make sure dst is refcounted.
-	 */
+	 
 	skb_dst_force(skb);
 
 	skb->protocol = eth_type_trans(skb, dev);
@@ -168,10 +137,10 @@ static void gen_lo_setup(struct net_device *dev,
 			 void (*dev_destructor)(struct net_device *dev))
 {
 	dev->mtu		= mtu;
-	dev->hard_header_len	= ETH_HLEN;	/* 14	*/
-	dev->min_header_len	= ETH_HLEN;	/* 14	*/
-	dev->addr_len		= ETH_ALEN;	/* 6	*/
-	dev->type		= ARPHRD_LOOPBACK;	/* 0x0001*/
+	dev->hard_header_len	= ETH_HLEN;	 
+	dev->min_header_len	= ETH_HLEN;	 
+	dev->addr_len		= ETH_ALEN;	 
+	dev->type		= ARPHRD_LOOPBACK;	 
 	dev->flags		= IFF_LOOPBACK;
 	dev->priv_flags		|= IFF_LIVE_ADDR_CHANGE | IFF_NO_QUEUE;
 	netif_keep_dst(dev);
@@ -195,16 +164,14 @@ static void gen_lo_setup(struct net_device *dev,
 	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
 }
 
-/* The loopback device is special. There is only one instance
- * per network namespace.
- */
+ 
 static void loopback_setup(struct net_device *dev)
 {
 	gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
 		     &loopback_ops, loopback_dev_free);
 }
 
-/* Setup and register the loopback device. */
+ 
 static __net_init int loopback_net_init(struct net *net)
 {
 	struct net_device *dev;
@@ -232,12 +199,12 @@ out:
 	return err;
 }
 
-/* Registered in net/core/dev.c */
+ 
 struct pernet_operations __net_initdata loopback_net_ops = {
 	.init = loopback_net_init,
 };
 
-/* blackhole netdevice */
+ 
 static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
 					 struct net_device *dev)
 {
@@ -250,15 +217,13 @@ static const struct net_device_ops blackhole_netdev_ops = {
 	.ndo_start_xmit = blackhole_netdev_xmit,
 };
 
-/* This is a dst-dummy device used specifically for invalidated
- * DSTs and unlike loopback, this is not per-ns.
- */
+ 
 static void blackhole_netdev_setup(struct net_device *dev)
 {
 	gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
 }
 
-/* Setup and register the blackhole_netdev. */
+ 
 static int __init blackhole_netdev_init(void)
 {
 	blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,

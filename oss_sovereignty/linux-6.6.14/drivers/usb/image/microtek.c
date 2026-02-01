@@ -1,124 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for Microtek Scanmaker X6 USB scanner, and possibly others.
- *
- * (C) Copyright 2000 John Fremlin <vii@penguinpowered.com>
- * (C) Copyright 2000 Oliver Neukum <Oliver.Neukum@lrz.uni-muenchen.de>
- *
- * Parts shamelessly stolen from usb-storage and copyright by their
- * authors. Thanks to Matt Dharm for giving us permission!
- *
- * This driver implements a SCSI host controller driver and a USB
- * device driver. To avoid confusion, all the USB related stuff is
- * prefixed by mts_usb_ and all the SCSI stuff by mts_scsi_.
- *
- * Microtek (www.microtek.com) did not release the specifications for
- * their USB protocol to us, so we had to reverse engineer them. We
- * don't know for which models they are valid.
- *
- * The X6 USB has three bulk endpoints, one output (0x1) down which
- * commands and outgoing data are sent, and two input: 0x82 from which
- * normal data is read from the scanner (in packets of maximum 32
- * bytes) and from which the status byte is read, and 0x83 from which
- * the results of a scan (or preview) are read in up to 64 * 1024 byte
- * chunks by the Windows driver. We don't know how much it is possible
- * to read at a time from 0x83.
- *
- * It seems possible to read (with URB transfers) everything from 0x82
- * in one go, without bothering to read in 32 byte chunks.
- *
- * There seems to be an optimisation of a further READ implicit if
- * you simply read from 0x83.
- *
- * Guessed protocol:
- *
- *	Send raw SCSI command to EP 0x1
- *
- *	If there is data to receive:
- *		If the command was READ datatype=image:
- *			Read a lot of data from EP 0x83
- *		Else:
- *			Read data from EP 0x82
- *	Else:
- *		If there is data to transmit:
- *			Write it to EP 0x1
- *
- *	Read status byte from EP 0x82
- *
- * References:
- *
- * The SCSI command set for the scanner is available from
- *	ftp://ftp.microtek.com/microtek/devpack/
- *
- * Microtek NV sent us a more up to date version of the document. If
- * you want it, just send mail.
- *
- * Status:
- *
- *	Untested with multiple scanners.
- *	Untested on SMP.
- *	Untested on a bigendian machine.
- *
- * History:
- *
- *	20000417 starting history
- *	20000417 fixed load oops
- *	20000417 fixed unload oops
- *	20000419 fixed READ IMAGE detection
- *	20000424 started conversion to use URBs
- *	20000502 handled short transfers as errors
- *	20000513 rename and organisation of functions (john)
- *	20000513 added IDs for all products supported by Windows driver (john)
- *	20000514 Rewrote mts_scsi_queuecommand to use URBs (john)
- *	20000514 Version 0.0.8j
- *      20000514 Fix reporting of non-existent devices to SCSI layer (john)
- *	20000514 Added MTS_DEBUG_INT (john)
- *	20000514 Changed "usb-microtek" to "microtek" for consistency (john)
- *	20000514 Stupid bug fixes (john)
- *	20000514 Version 0.0.9j
- *	20000515 Put transfer context and URB in mts_desc (john)
- *	20000515 Added prelim turn off debugging support (john)
- *	20000515 Version 0.0.10j
- *      20000515 Fixed up URB allocation (clear URB on alloc) (john)
- *      20000515 Version 0.0.11j
- *	20000516 Removed unnecessary spinlock in mts_transfer_context (john)
- *	20000516 Removed unnecessary up on instance lock in mts_remove_nolock (john)
- *	20000516 Implemented (badly) scsi_abort (john)
- *	20000516 Version 0.0.12j
- *      20000517 Hopefully removed mts_remove_nolock quasideadlock (john)
- *      20000517 Added mts_debug_dump to print ll USB info (john)
- *	20000518 Tweaks and documentation updates (john)
- *	20000518 Version 0.0.13j
- *	20000518 Cleaned up abort handling (john)
- *	20000523 Removed scsi_command and various scsi_..._resets (john)
- *	20000523 Added unlink URB on scsi_abort, now OHCI supports it (john)
- *	20000523 Fixed last tiresome compile warning (john)
- *	20000523 Version 0.0.14j (though version 0.1 has come out?)
- *	20000602 Added primitive reset
- *	20000602 Version 0.2.0
- *	20000603 various cosmetic changes
- *	20000603 Version 0.2.1
- *	20000620 minor cosmetic changes
- *	20000620 Version 0.2.2
- *	20000822 Hopefully fixed deadlock in mts_remove_nolock()
- *	20000822 Fixed minor race in mts_transfer_cleanup()
- *	20000822 Fixed deadlock on submission error in queuecommand
- *	20000822 Version 0.2.3
- *	20000913 Reduced module size if debugging is off
- *	20000913 Version 0.2.4
- *      20010210 New abort logic
- *      20010210 Version 0.3.0
- *	20010217 Merged scatter/gather
- *	20010218 Version 0.4.0
- *	20010218 Cosmetic fixes
- *	20010218 Version 0.4.1
- *      20010306 Abort while using scatter/gather
- *      20010306 Version 0.4.2
- *      20010311 Remove all timeouts and tidy up generally (john)
- *	20010320 check return value of scsi_register()
- *	20010320 Version 0.4.3
- *	20010408 Identify version on module load.
- *	20011003 Fix multiple requests
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -145,11 +26,11 @@
 #define DRIVER_AUTHOR "John Fremlin <vii@penguinpowered.com>, Oliver Neukum <Oliver.Neukum@lrz.uni-muenchen.de>"
 #define DRIVER_DESC "Microtek Scanmaker X6 USB scanner driver"
 
-/* Should we do debugging? */
+ 
 
-//#define MTS_DO_DEBUG
 
-/* USB layer driver interface */
+
+ 
 
 static int mts_usb_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id);
@@ -165,7 +46,7 @@ static struct usb_driver mts_usb_driver = {
 };
 
 
-/* Internal driver stuff */
+ 
 
 #define MTS_VERSION	"0.4.3"
 #define MTS_NAME	"microtek usb (rev " MTS_VERSION "): "
@@ -373,9 +254,9 @@ void mts_int_submit_urb (struct urb* transfer,
 			void* data,
 			unsigned length,
 			usb_complete_t callback )
-/* Interrupt context! */
+ 
 
-/* Holding transfer->context->lock! */
+ 
 {
 	int res;
 
@@ -400,7 +281,7 @@ void mts_int_submit_urb (struct urb* transfer,
 
 
 static void mts_transfer_cleanup( struct urb *transfer )
-/* Interrupt context! */
+ 
 {
 	MTS_INT_INIT();
 
@@ -420,7 +301,7 @@ static void mts_transfer_done( struct urb *transfer )
 
 
 static void mts_get_status( struct urb *transfer )
-/* Interrupt context! */
+ 
 {
 	MTS_INT_INIT();
 
@@ -433,7 +314,7 @@ static void mts_get_status( struct urb *transfer )
 }
 
 static void mts_data_done( struct urb* transfer )
-/* Interrupt context! */
+ 
 {
 	int status = transfer->status;
 	MTS_INT_INIT();
@@ -450,18 +331,18 @@ static void mts_data_done( struct urb* transfer )
 
 
 static void mts_command_done( struct urb *transfer )
-/* Interrupt context! */
+ 
 {
 	int status = transfer->status;
 	MTS_INT_INIT();
 
 	if ( unlikely(status) ) {
 	        if (status == -ENOENT) {
-		        /* We are being killed */
+		         
 			MTS_DEBUG_GOT_HERE();
 			set_host_byte(context->srb, DID_ABORT);
                 } else {
-		        /* A genuine error has occurred */
+		         
 			MTS_DEBUG_GOT_HERE();
 
 		        set_host_byte(context->srb, DID_ERROR);
@@ -545,9 +426,9 @@ mts_build_transfer_context(struct scsi_cmnd *srb, struct mts_desc* desc)
 	}
 
 
-	/* can't rely on srb->sc_data_direction */
+	 
 
-	/* Brutally ripped from usb-storage */
+	 
 
 	if ( !memcmp( srb->cmnd, mts_read_image_sig, mts_read_image_sig_len )
 ) { 		pipe = usb_rcvbulkpipe(desc->usb_dev,desc->ep_image);
@@ -603,7 +484,7 @@ static int mts_scsi_queuecommand_lck(struct scsi_cmnd *srb)
 	mts_build_transfer_context( srb, desc );
 	desc->context.final_callback = callback;
 	
-	/* here we need ATOMIC as we are called with the iolock */
+	 
 	res=usb_submit_urb(desc->urb, GFP_ATOMIC);
 
 	if(unlikely(res)){
@@ -633,11 +514,10 @@ static const struct scsi_host_template mts_scsi_host_template = {
 	.emulated =		1,
 	.slave_alloc =		mts_slave_alloc,
 	.slave_configure =	mts_slave_configure,
-	.max_sectors=		256, /* 128 K */
+	.max_sectors=		256,  
 };
 
-/* The entries of microtek_table must correspond, line-by-line to
-   the entries of mts_supported_products[]. */
+ 
 
 static const struct usb_device_id mts_usb_ids[] =
 {
@@ -650,7 +530,7 @@ static const struct usb_device_id mts_usb_ids[] =
 	{ USB_DEVICE(0x5da, 0x80a3) },
 	{ USB_DEVICE(0x5da, 0x80ac) },
 	{ USB_DEVICE(0x5da, 0x00b6) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE (usb, mts_usb_ids);
@@ -661,15 +541,14 @@ static int mts_usb_probe(struct usb_interface *intf,
 {
 	int i;
 	int ep_out = -1;
-	int ep_in_set[3]; /* this will break if we have more than three endpoints
-			   which is why we check */
+	int ep_in_set[3];  
 	int *ep_in_current = ep_in_set;
 	int err_retval = -ENOMEM;
 
 	struct mts_desc * new_desc;
 	struct usb_device *dev = interface_to_usbdev (intf);
 
-	/* the current altsetting on the interface we're probing */
+	 
 	struct usb_host_interface *altsetting;
 
 	MTS_DEBUG_GOT_HERE();
@@ -681,11 +560,11 @@ static int mts_usb_probe(struct usb_interface *intf,
 
 	MTS_DEBUG_GOT_HERE();
 
-	/* the current altsetting on the interface we're probing */
+	 
 	altsetting = intf->cur_altsetting;
 
 
-	/* Check if the config is sane */
+	 
 
 	if ( altsetting->desc.bNumEndpoints != MTS_EP_TOTAL ) {
 		MTS_WARNING( "expecting %d got %d endpoints! Bailing out.\n",
@@ -744,7 +623,7 @@ static int mts_usb_probe(struct usb_interface *intf,
 	new_desc->usb_dev = dev;
 	new_desc->usb_intf = intf;
 
-	/* endpoints */
+	 
 	new_desc->ep_out = ep_out;
 	new_desc->ep_response = ep_in_set[0];
 	new_desc->ep_image = ep_in_set[1];

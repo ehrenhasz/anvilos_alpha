@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "core_types.h"
 #include "clk_mgr_internal.h"
@@ -31,11 +8,11 @@
 #include "dce110_clk_mgr.h"
 #include "../clk_mgr/dce100/dce_clk_mgr.h"
 
-/* set register offset */
+ 
 #define SR(reg_name)\
 	.reg_name = mm ## reg_name
 
-/* set register offset with instance */
+ 
 #define SRI(reg_name, block, id)\
 	.reg_name = mm ## block ## id ## _ ## reg_name
 
@@ -52,15 +29,15 @@ static const struct clk_mgr_mask disp_clk_mask = {
 };
 
 static const struct state_dependent_clocks dce110_max_clks_by_state[] = {
-/*ClocksStateInvalid - should not be used*/
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/*ClocksStateUltraLow - currently by HW design team not supposed to be used*/
+ 
 { .display_clk_khz = 352000, .pixel_clk_khz = 330000 },
-/*ClocksStateLow*/
+ 
 { .display_clk_khz = 352000, .pixel_clk_khz = 330000 },
-/*ClocksStateNominal*/
+ 
 { .display_clk_khz = 467000, .pixel_clk_khz = 400000 },
-/*ClocksStatePerformance*/
+ 
 { .display_clk_khz = 643000, .pixel_clk_khz = 400000 } };
 
 static int determine_sclk_from_bounding_box(
@@ -69,10 +46,7 @@ static int determine_sclk_from_bounding_box(
 {
 	int i;
 
-	/*
-	 * Some asics do not give us sclk levels, so we just report the actual
-	 * required sclk
-	 */
+	 
 	if (dc->sclk_lvls.num_levels == 0)
 		return required_sclk;
 
@@ -80,11 +54,7 @@ static int determine_sclk_from_bounding_box(
 		if (dc->sclk_lvls.clocks_in_khz[i] >= required_sclk)
 			return dc->sclk_lvls.clocks_in_khz[i];
 	}
-	/*
-	 * even maximum level could not satisfy requirement, this
-	 * is unexpected at this stage, should have been caught at
-	 * validation time
-	 */
+	 
 	ASSERT(0);
 	return dc->sclk_lvls.clocks_in_khz[dc->sclk_lvls.num_levels - 1];
 }
@@ -139,7 +109,7 @@ void dce110_fill_display_configs(
 
 		ASSERT(pipe_ctx != NULL);
 
-		/* only notify active stream */
+		 
 		if (stream->dpms_off)
 			continue;
 
@@ -159,7 +129,7 @@ void dce110_fill_display_configs(
 		cfg->link_settings.link_spread =
 			stream->link->cur_link_settings.link_spread;
 		cfg->sym_clock = stream->phy_pix_clk;
-		/* Round v_refresh*/
+		 
 		cfg->v_refresh = stream->timing.pix_clk_100hz * 100;
 		cfg->v_refresh /= stream->timing.h_total;
 		cfg->v_refresh = (cfg->v_refresh + stream->timing.v_total / 2)
@@ -190,11 +160,7 @@ void dce11_pplib_apply_display_requirements(
 	pp_display_cfg->cpu_pstate_separation_time =
 			context->bw_ctx.bw.dce.blackout_recovery_time_us;
 
-	/*
-	 * TODO: determine whether the bandwidth has reached memory's limitation
-	 * , then change minimum memory clock based on real-time bandwidth
-	 * limitation.
-	 */
+	 
 	if ((dc->ctx->asic_id.chip_family == FAMILY_AI) &&
 	     ASICREV_IS_VEGA20_P(dc->ctx->asic_id.hw_internal_rev) && (context->stream_count >= 2)) {
 		pp_display_cfg->min_memory_clock_khz = max(pp_display_cfg->min_memory_clock_khz,
@@ -210,13 +176,7 @@ void dce11_pplib_apply_display_requirements(
 			dc,
 			context->bw_ctx.bw.dce.sclk_khz);
 
-	/*
-	 * As workaround for >4x4K lightup set dcfclock to min_engine_clock value.
-	 * This is not required for less than 5 displays,
-	 * thus don't request decfclk in dc to avoid impact
-	 * on power saving.
-	 *
-	 */
+	 
 	pp_display_cfg->min_dcfclock_khz = (context->stream_count > 4) ?
 			pp_display_cfg->min_engine_clock_khz : 0;
 
@@ -225,14 +185,14 @@ void dce11_pplib_apply_display_requirements(
 
 	pp_display_cfg->avail_mclk_switch_time_us =
 						dce110_get_min_vblank_time_us(context);
-	/* TODO: dce11.2*/
+	 
 	pp_display_cfg->avail_mclk_switch_time_in_disp_active_us = 0;
 
 	pp_display_cfg->disp_clk_khz = dc->clk_mgr->clks.dispclk_khz;
 
 	dce110_fill_display_configs(context, pp_display_cfg);
 
-	/* TODO: is this still applicable?*/
+	 
 	if (pp_display_cfg->display_count == 1) {
 		const struct dc_crtc_timing *timing =
 			&context->streams[0]->timing;
@@ -254,12 +214,12 @@ static void dce11_update_clocks(struct clk_mgr *clk_mgr_base,
 	struct dm_pp_power_level_change_request level_change_req;
 	int patched_disp_clk = context->bw_ctx.bw.dce.dispclk_khz;
 
-	/*TODO: W/A for dal3 linux, investigate why this works */
+	 
 	if (!clk_mgr_dce->dfs_bypass_active)
 		patched_disp_clk = patched_disp_clk * 115 / 100;
 
 	level_change_req.power_level = dce_get_required_clocks_state(clk_mgr_base, context);
-	/* get max clock state from PPLIB */
+	 
 	if ((level_change_req.power_level < clk_mgr_dce->cur_min_clks_state && safe_to_lower)
 			|| level_change_req.power_level > clk_mgr_dce->cur_min_clks_state) {
 		if (dm_pp_apply_power_level_change_request(clk_mgr_base->ctx, &level_change_req))

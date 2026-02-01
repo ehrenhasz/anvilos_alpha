@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/netdevice.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -45,10 +45,7 @@ static inline struct net_device *dev_from_bucket(struct seq_file *seq, loff_t *p
 	return NULL;
 }
 
-/*
- *	This is invoked by the /proc filesystem handler to display a device
- *	in detail.
- */
+ 
 static void *dev_seq_start(struct seq_file *seq, loff_t *pos)
 	__acquires(RCU)
 {
@@ -98,10 +95,7 @@ static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
 		   stats->tx_compressed);
 }
 
-/*
- *	Called from the PROCfs module. This now uses the new arbitrary sized
- *	/proc/net interface to create /proc/net/dev
- */
+ 
 static int dev_seq_show(struct seq_file *seq, void *v)
 {
 	if (v == SEQ_START_TOKEN)
@@ -170,16 +164,13 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
 	rcu_read_unlock();
 #endif
 
-	/* the index is the CPU id owing this sd. Since offline CPUs are not
-	 * displayed, it would be othrwise not trivial for the user-space
-	 * mapping the data a specific CPU
-	 */
+	 
 	seq_printf(seq,
 		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
 		   "%08x %08x\n",
 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
-		   0, 0, 0, 0, /* was fastroute */
-		   0,	/* was cpu_collision */
+		   0, 0, 0, 0,  
+		   0,	 
 		   sd->received_rps, flow_limit_count,
 		   input_qlen + process_qlen, (int)seq->index,
 		   input_qlen, process_qlen);

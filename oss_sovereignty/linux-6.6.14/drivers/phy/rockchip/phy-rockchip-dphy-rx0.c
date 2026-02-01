@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip MIPI Synopsys DPHY RX0 driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on:
- *
- * drivers/media/platform/rockchip/isp1/mipi_dphy_sy.c
- * in https://chromium.googlesource.com/chromiumos/third_party/kernel,
- * chromeos-4.4 branch.
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
- *   Jacob Chen <jacob2.chen@rock-chips.com>
- *   Shunqian Zheng <zhengsq@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -90,12 +76,12 @@ enum dphy_reg_id {
 	GRF_DPHY_TX1RX1_ENABLECLK,
 	GRF_DPHY_TX1RX1_TURNREQUEST,
 	GRF_DPHY_RX1_SRC_SEL,
-	/* rk3288 only */
+	 
 	GRF_CON_DISABLE_ISP,
 	GRF_CON_ISP_DPHY_SEL,
 	GRF_DSI_CSI_TESTBUS_SEL,
 	GRF_DVP_V18SEL,
-	/* below is for rk3399 only */
+	 
 	GRF_DPHY_RX0_CLK_INV_SEL,
 	GRF_DPHY_RX1_CLK_INV_SEL,
 };
@@ -160,7 +146,7 @@ static inline void rk_dphy_write_grf(struct rk_dphy *priv,
 				     unsigned int index, u8 value)
 {
 	const struct dphy_reg *reg = &priv->drv_data->regs[index];
-	/* Update high word */
+	 
 	unsigned int val = (value << reg->shift) |
 			   (reg->mask << (reg->shift + 16));
 
@@ -173,12 +159,7 @@ static void rk_dphy_write(struct rk_dphy *priv, u8 test_code, u8 test_data)
 {
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTDIN, test_code);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTEN, 1);
-	/*
-	 * With the falling edge on TESTCLK, the TESTDIN[7:0] signal content
-	 * is latched internally as the current test code. Test data is
-	 * programmed internally by rising edge on TESTCLK.
-	 * This code assumes that TESTCLK is already 1.
-	 */
+	 
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTCLK, 0);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTEN, 0);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTDIN, test_data);
@@ -190,36 +171,36 @@ static void rk_dphy_enable(struct rk_dphy *priv)
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_FORCERXMODE, 0);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_FORCETXSTOPMODE, 0);
 
-	/* Disable lane turn around, which is ignored in receive mode */
+	 
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TURNREQUEST, 0);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TURNDISABLE, 0xf);
 
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_ENABLE,
 			  GENMASK(priv->config.lanes - 1, 0));
 
-	/* dphy start */
+	 
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTCLK, 1);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTCLR, 1);
 	usleep_range(100, 150);
 	rk_dphy_write_grf(priv, GRF_DPHY_RX0_TESTCLR, 0);
 	usleep_range(100, 150);
 
-	/* set clock lane */
-	/* HS hsfreq_range & lane 0  settle bypass */
+	 
+	 
 	rk_dphy_write(priv, CLOCK_LANE_HS_RX_CONTROL, 0);
-	/* HS RX Control of lane0 */
+	 
 	rk_dphy_write(priv, LANE0_HS_RX_CONTROL, priv->hsfreq << 1);
-	/* HS RX Control of lane1 */
+	 
 	rk_dphy_write(priv, LANE1_HS_RX_CONTROL, priv->hsfreq << 1);
-	/* HS RX Control of lane2 */
+	 
 	rk_dphy_write(priv, LANE2_HS_RX_CONTROL, priv->hsfreq << 1);
-	/* HS RX Control of lane3 */
+	 
 	rk_dphy_write(priv, LANE3_HS_RX_CONTROL, priv->hsfreq << 1);
-	/* HS RX Data Lanes Settle State Time Control */
+	 
 	rk_dphy_write(priv, LANES_THS_SETTLE_CONTROL,
 		      THS_SETTLE_COUNTER_THRESHOLD);
 
-	/* Normal operation */
+	 
 	rk_dphy_write(priv, 0x0, 0);
 }
 
@@ -233,7 +214,7 @@ static int rk_dphy_configure(struct phy *phy, union phy_configure_opts *opts)
 	u64 data_rate_mbps;
 	int ret;
 
-	/* pass with phy_mipi_dphy_get_default_config (with pixel rate?) */
+	 
 	ret = phy_mipi_dphy_config_validate(config);
 	if (ret)
 		return ret;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include "selq.h"
 #include <linux/slab.h>
@@ -40,7 +40,7 @@ int mlx5e_selq_init(struct mlx5e_selq *selq, struct mutex *state_lock)
 		selq->standby = NULL;
 		return -ENOMEM;
 	}
-	/* Assign dummy values, so that mlx5e_select_queue won't crash. */
+	 
 	*init_params = (struct mlx5e_selq_params) {
 		.num_regular_queues = 1,
 		.num_channels = 1,
@@ -123,7 +123,7 @@ void mlx5e_selq_apply(struct mlx5e_selq *selq)
 
 	old_params = rcu_replace_pointer(selq->active, selq->standby,
 					 lockdep_is_held(selq->state_lock));
-	synchronize_net(); /* Wait until ndo_select_queue starts emitting correct values. */
+	synchronize_net();  
 	selq->standby = old_params;
 }
 
@@ -176,7 +176,7 @@ static int mlx5e_select_htb_queue(struct mlx5e_priv *priv, struct sk_buff *skb,
 {
 	u16 classid;
 
-	/* Order maj_id before defcls - pairs with mlx5e_htb_root_add. */
+	 
 	if ((TC_H_MAJ(skb->priority) >> 16) == selq->htb_maj_id)
 		classid = TC_H_MIN(skb->priority);
 	else
@@ -197,15 +197,12 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
 
 	selq = rcu_dereference_bh(priv->selq.active);
 
-	/* This is a workaround needed only for the mlx5e_netdev_change_profile
-	 * flow that zeroes out the whole priv without unregistering the netdev
-	 * and without preventing ndo_select_queue from being called.
-	 */
+	 
 	if (unlikely(!selq))
 		return 0;
 
 	if (likely(!selq->is_special_queues)) {
-		/* No special queues, netdev_pick_tx returns one of the regular ones. */
+		 
 
 		txq_ix = netdev_pick_tx(dev, skb, NULL);
 
@@ -214,16 +211,13 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
 
 		up = mlx5e_get_up(priv, skb);
 
-		/* Normalize any picked txq_ix to [0, num_channels),
-		 * So we can return a txq_ix that matches the channel and
-		 * packet UP.
-		 */
+		 
 		return mlx5e_txq_to_ch_ix(txq_ix, selq->num_channels) +
 			up * selq->num_channels;
 	}
 
 	if (unlikely(selq->htb_maj_id)) {
-		/* num_tcs == 1, shortcut for PTP */
+		 
 
 		txq_ix = mlx5e_select_htb_queue(priv, skb, selq);
 		if (txq_ix > 0)
@@ -234,27 +228,18 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
 
 		txq_ix = netdev_pick_tx(dev, skb, NULL);
 
-		/* Fix netdev_pick_tx() not to choose ptp_channel and HTB txqs.
-		 * If they are selected, switch to regular queues.
-		 * Driver to select these queues only at mlx5e_select_ptpsq()
-		 * and mlx5e_select_htb_queue().
-		 */
+		 
 		return mlx5e_txq_to_ch_ix_htb(txq_ix, selq->num_channels);
 	}
 
-	/* PTP is enabled */
+	 
 
 	if (mlx5e_use_ptpsq(skb))
 		return mlx5e_select_ptpsq(dev, skb, selq);
 
 	txq_ix = netdev_pick_tx(dev, skb, NULL);
 
-	/* Normalize any picked txq_ix to [0, num_channels). Queues in range
-	 * [0, num_regular_queues) will be mapped to the corresponding channel
-	 * index, so that we can apply the packet's UP (if num_tcs > 1).
-	 * If netdev_pick_tx() picks ptp_channel, switch to a regular queue,
-	 * because driver should select the PTP only at mlx5e_select_ptpsq().
-	 */
+	 
 	txq_ix = mlx5e_txq_to_ch_ix(txq_ix, selq->num_channels);
 
 	if (selq->num_tcs <= 1)

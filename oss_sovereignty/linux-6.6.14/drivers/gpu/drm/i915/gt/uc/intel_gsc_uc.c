@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -31,25 +29,12 @@ static void gsc_work(struct work_struct *work)
 	if (actions & GSC_ACTION_FW_LOAD) {
 		ret = intel_gsc_uc_fw_upload(gsc);
 		if (!ret)
-			/* setup proxy on a new load */
+			 
 			actions |= GSC_ACTION_SW_PROXY;
 		else if (ret != -EEXIST)
 			goto out_put;
 
-		/*
-		 * The HuC auth can be done both before or after the proxy init;
-		 * if done after, a proxy request will be issued and must be
-		 * serviced before the authentication can complete.
-		 * Since this worker also handles proxy requests, we can't
-		 * perform an action that requires the proxy from within it and
-		 * then stall waiting for it, because we'd be blocking the
-		 * service path. Therefore, it is easier for us to load HuC
-		 * first and do proxy later. The GSC will ack the HuC auth and
-		 * then send the HuC proxy request as part of the proxy init
-		 * flow.
-		 * Note that we can only do the GSC auth if the GuC auth was
-		 * successful.
-		 */
+		 
 		if (intel_uc_uses_huc(&gt->uc) &&
 		    intel_huc_is_authenticated(&gt->uc.huc, INTEL_HUC_AUTH_BY_GUC))
 			intel_huc_auth(&gt->uc.huc, INTEL_HUC_AUTH_BY_GSC);
@@ -64,10 +49,7 @@ static void gsc_work(struct work_struct *work)
 		ret = intel_gsc_proxy_request_handler(gsc);
 		if (ret) {
 			if (actions & GSC_ACTION_FW_LOAD) {
-				/*
-				 * A proxy failure right after firmware load means the proxy-init
-				 * step has failed so mark GSC as not usable after this
-				 */
+				 
 				drm_err(&gt->i915->drm,
 					"GSC proxy handler failed to init\n");
 				intel_uc_fw_change_status(&gsc->fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
@@ -75,13 +57,9 @@ static void gsc_work(struct work_struct *work)
 			goto out_put;
 		}
 
-		/* mark the GSC FW init as done the first time we run this */
+		 
 		if (actions & GSC_ACTION_FW_LOAD) {
-			/*
-			 * If there is a proxy establishment error, the GSC might still
-			 * complete the request handling cleanly, so we need to check the
-			 * status register to check if the proxy init was actually successful
-			 */
+			 
 			if (intel_gsc_uc_fw_proxy_init_done(gsc, false)) {
 				drm_dbg(&gt->i915->drm, "GSC Proxy initialized\n");
 				intel_uc_fw_change_status(&gsc->fw, INTEL_UC_FIRMWARE_RUNNING);
@@ -101,12 +79,7 @@ static bool gsc_engine_supported(struct intel_gt *gt)
 {
 	intel_engine_mask_t mask;
 
-	/*
-	 * We reach here from i915_driver_early_probe for the primary GT before
-	 * its engine mask is set, so we use the device info engine mask for it.
-	 * For other GTs we expect the GT-specific mask to be set before we
-	 * call this function.
-	 */
+	 
 	GEM_BUG_ON(!gt_is_root(gt) && !gt->info.engine_mask);
 
 	if (gt_is_root(gt))
@@ -121,18 +94,11 @@ void intel_gsc_uc_init_early(struct intel_gsc_uc *gsc)
 {
 	struct intel_gt *gt = gsc_uc_to_gt(gsc);
 
-	/*
-	 * GSC FW needs to be copied to a dedicated memory allocations for
-	 * loading (see gsc->local), so we don't need to GGTT map the FW image
-	 * itself into GGTT.
-	 */
+	 
 	intel_uc_fw_init_early(&gsc->fw, INTEL_UC_FW_TYPE_GSC, false);
 	INIT_WORK(&gsc->work, gsc_work);
 
-	/* we can arrive here from i915_driver_early_probe for primary
-	 * GT with it being not fully setup hence check device info's
-	 * engine mask
-	 */
+	 
 	if (!gsc_engine_supported(gt)) {
 		intel_uc_fw_change_status(&gsc->fw, INTEL_UC_FIRMWARE_NOT_SUPPORTED);
 		return;
@@ -153,21 +119,7 @@ static int gsc_allocate_and_map_vma(struct intel_gsc_uc *gsc, u32 size)
 	void __iomem *vaddr;
 	int ret = 0;
 
-	/*
-	 * The GSC FW doesn't immediately suspend after becoming idle, so there
-	 * is a chance that it could still be awake after we successfully
-	 * return from the  pci suspend function, even if there are no pending
-	 * operations.
-	 * The FW might therefore try to access memory for its suspend operation
-	 * after the kernel has completed the HW suspend flow; this can cause
-	 * issues if the FW is mapped in normal RAM memory, as some of the
-	 * involved HW units might've already lost power.
-	 * The driver must therefore avoid this situation and the recommended
-	 * way to do so is to use stolen memory for the GSC memory allocation,
-	 * because stolen memory takes a different path in HW and it is
-	 * guaranteed to always work as long as the GPU itself is awake (which
-	 * it must be if the GSC is awake).
-	 */
+	 
 	obj = i915_gem_object_create_stolen(gt->i915, size);
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
@@ -236,7 +188,7 @@ int intel_gsc_uc_init(struct intel_gsc_uc *gsc)
 
 	gsc->ce = ce;
 
-	/* if we fail to init proxy we still want to load GSC for PM */
+	 
 	intel_gsc_proxy_init(gsc);
 
 	intel_uc_fw_change_status(&gsc->fw, INTEL_UC_FIRMWARE_LOADABLE);
@@ -286,14 +238,7 @@ void intel_gsc_uc_resume(struct intel_gsc_uc *gsc)
 	if (!intel_uc_fw_is_loadable(&gsc->fw))
 		return;
 
-	/*
-	 * we only want to start the GSC worker from here in the actual resume
-	 * flow and not during driver load. This is because GSC load is slow and
-	 * therefore we want to make sure that the default state init completes
-	 * first to not slow down the init thread. A separate call to
-	 * intel_gsc_uc_load_start will ensure that the GSC is loaded during
-	 * driver load.
-	 */
+	 
 	if (!gsc_uc_to_gt(gsc)->engine[GSC0]->default_state)
 		return;
 

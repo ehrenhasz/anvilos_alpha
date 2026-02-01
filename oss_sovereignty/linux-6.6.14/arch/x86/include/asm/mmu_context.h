@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_MMU_CONTEXT_H
 #define _ASM_X86_MMU_CONTEXT_H
 
@@ -23,35 +23,17 @@ void cr4_update_pce(void *ignored);
 #endif
 
 #ifdef CONFIG_MODIFY_LDT_SYSCALL
-/*
- * ldt_structs can be allocated, used, and freed, but they are never
- * modified while live.
- */
+ 
 struct ldt_struct {
-	/*
-	 * Xen requires page-aligned LDTs with special permissions.  This is
-	 * needed to prevent us from installing evil descriptors such as
-	 * call gates.  On native, we could merge the ldt_struct and LDT
-	 * allocations, but it's not worth trying to optimize.
-	 */
+	 
 	struct desc_struct	*entries;
 	unsigned int		nr_entries;
 
-	/*
-	 * If PTI is in use, then the entries array is not mapped while we're
-	 * in user mode.  The whole array will be aliased at the addressed
-	 * given by ldt_slot_va(slot).  We use two slots so that we can allocate
-	 * and map, and enable a new LDT without invalidating the mapping
-	 * of an older, still-in-use LDT.
-	 *
-	 * slot will be -1 if this LDT doesn't have an alias mapping.
-	 */
+	 
 	int			slot;
 };
 
-/*
- * Used for LDT copy/destruction.
- */
+ 
 static inline void init_new_context_ldt(struct mm_struct *mm)
 {
 	mm->context.ldt = NULL;
@@ -60,7 +42,7 @@ static inline void init_new_context_ldt(struct mm_struct *mm)
 int ldt_dup_context(struct mm_struct *oldmm, struct mm_struct *mm);
 void destroy_context_ldt(struct mm_struct *mm);
 void ldt_arch_exit_mmap(struct mm_struct *mm);
-#else	/* CONFIG_MODIFY_LDT_SYSCALL */
+#else	 
 static inline void init_new_context_ldt(struct mm_struct *mm) { }
 static inline int ldt_dup_context(struct mm_struct *oldmm,
 				  struct mm_struct *mm)
@@ -133,10 +115,7 @@ static inline void mm_reset_untag_mask(struct mm_struct *mm)
 #define enter_lazy_tlb enter_lazy_tlb
 extern void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk);
 
-/*
- * Init a new mm.  Used on mm copies, like at fork()
- * and on mm's that are brand-new, like at execve().
- */
+ 
 #define init_new_context init_new_context
 static inline int init_new_context(struct task_struct *tsk,
 				   struct mm_struct *mm)
@@ -148,9 +127,9 @@ static inline int init_new_context(struct task_struct *tsk,
 
 #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
 	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
-		/* pkey 0 is the default and allocated implicitly */
+		 
 		mm->context.pkey_allocation_map = 0x1;
-		/* -1 means unallocated or invalid */
+		 
 		mm->context.execute_only_pkey = -1;
 	}
 #endif
@@ -199,7 +178,7 @@ static inline void arch_dup_pkeys(struct mm_struct *oldmm,
 	if (!cpu_feature_enabled(X86_FEATURE_OSPKE))
 		return;
 
-	/* Duplicate the oldmm pkey state in mm: */
+	 
 	mm->context.pkey_allocation_map = oldmm->context.pkey_allocation_map;
 	mm->context.execute_only_pkey   = oldmm->context.execute_only_pkey;
 #endif
@@ -237,22 +216,14 @@ static inline void arch_unmap(struct mm_struct *mm, unsigned long start,
 {
 }
 
-/*
- * We only want to enforce protection keys on the current process
- * because we effectively have no access to PKRU for other
- * processes or any way to tell *which * PKRU in a threaded
- * process we could use.
- *
- * So do not enforce things if the VMA is not from the current
- * mm, or if we are in a kernel thread.
- */
+ 
 static inline bool arch_vma_access_permitted(struct vm_area_struct *vma,
 		bool write, bool execute, bool foreign)
 {
-	/* pkeys never affect instruction fetches */
+	 
 	if (execute)
 		return true;
-	/* allow access if the VMA is not one from this process */
+	 
 	if (foreign || vma_is_foreign(vma))
 		return true;
 	return __pkru_allows_pkey(vma_pkey(vma), write);
@@ -262,4 +233,4 @@ unsigned long __get_current_cr3_fast(void);
 
 #include <asm-generic/mmu_context.h>
 
-#endif /* _ASM_X86_MMU_CONTEXT_H */
+#endif  

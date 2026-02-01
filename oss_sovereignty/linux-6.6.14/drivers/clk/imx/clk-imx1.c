@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2008 Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>

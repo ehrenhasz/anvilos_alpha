@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef MTK_DRM_CRTC_H
 #define MTK_DRM_CRTC_H
@@ -25,4 +23,4 @@ void mtk_drm_crtc_async_update(struct drm_crtc *crtc, struct drm_plane *plane,
 			       struct drm_atomic_state *plane_state);
 struct device *mtk_drm_crtc_dma_dev_get(struct drm_crtc *crtc);
 
-#endif /* MTK_DRM_CRTC_H */
+#endif  

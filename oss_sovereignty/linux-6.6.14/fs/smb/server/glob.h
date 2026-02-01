@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __KSMBD_GLOB_H
 #define __KSMBD_GLOB_H
@@ -46,4 +43,4 @@ extern int ksmbd_debug_types;
 
 #define UNICODE_LEN(x)		((x) * 2)
 
-#endif /* __KSMBD_GLOB_H */
+#endif  

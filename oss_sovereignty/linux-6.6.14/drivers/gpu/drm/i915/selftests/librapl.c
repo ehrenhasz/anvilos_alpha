@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <asm/msr.h>
 
@@ -10,7 +8,7 @@
 
 bool librapl_supported(const struct drm_i915_private *i915)
 {
-	/* Discrete cards require hwmon integration */
+	 
 	if (IS_DGFX(i915))
 		return false;
 
@@ -30,5 +28,5 @@ u64 librapl_energy_uJ(void)
 	if (rdmsrl_safe(MSR_PP1_ENERGY_STATUS, &power))
 		return 0;
 
-	return (1000000 * power) >> units; /* convert to uJ */
+	return (1000000 * power) >> units;  
 }

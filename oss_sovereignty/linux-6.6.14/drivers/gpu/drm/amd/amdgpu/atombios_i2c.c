@@ -1,27 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- *
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
@@ -31,7 +8,7 @@
 
 #define TARGET_HW_I2C_CLOCK 50
 
-/* these are a limitation of ProcessI2cChannelTransaction not the hw */
+ 
 #define ATOM_MAX_HW_I2C_WRITE 3
 #define ATOM_MAX_HW_I2C_READ  255
 
@@ -88,7 +65,7 @@ static int amdgpu_atombios_i2c_process_i2c_ch(struct amdgpu_i2c_chan *chan,
 
 	amdgpu_atom_execute_table(adev->mode_info.atom_context, index, (uint32_t *)&args);
 
-	/* error */
+	 
 	if (args.ucStatus != HW_ASSISTED_I2C_STATUS_SUCCESS) {
 		DRM_DEBUG_KMS("hw_i2c error\n");
 		r = -EIO;
@@ -112,7 +89,7 @@ int amdgpu_atombios_i2c_xfer(struct i2c_adapter *i2c_adap,
 	int i, remaining, current_count, buffer_offset, max_bytes, ret;
 	u8 flags;
 
-	/* check for bus probe */
+	 
 	p = &msgs[0];
 	if ((num == 1) && (p->len == 0)) {
 		ret = amdgpu_atombios_i2c_process_i2c_ch(i2c,
@@ -128,7 +105,7 @@ int amdgpu_atombios_i2c_xfer(struct i2c_adapter *i2c_adap,
 		p = &msgs[i];
 		remaining = p->len;
 		buffer_offset = 0;
-		/* max_bytes are a limitation of ProcessI2cChannelTransaction not the hw */
+		 
 		if (p->flags & I2C_M_RD) {
 			max_bytes = ATOM_MAX_HW_I2C_READ;
 			flags = HW_I2C_READ;

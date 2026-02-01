@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MP2629 parent driver for ADC and battery charger
- *
- * Copyright 2020 Monolithic Power Systems, Inc
- *
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>

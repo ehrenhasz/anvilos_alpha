@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * apple-properties.c - EFI device properties on Macs
- * Copyright (C) 2016 Lukas Wunner <lukas@wunner.de>
- *
- * Properties are stored either as:
- * u8 arrays which can be retrieved with device_property_read_u8_array() or
- * booleans which can be queried with device_property_present().
- */
+
+ 
 
 #define pr_fmt(fmt) "apple-properties: " fmt
 
@@ -33,10 +26,7 @@ struct dev_header {
 	u32 len;
 	u32 prop_count;
 	struct efi_dev_path path[];
-	/*
-	 * followed by key/value pairs, each key and value preceded by u32 len,
-	 * len includes itself, value may be empty (in which case its len is 4)
-	 */
+	 
 };
 
 struct properties_header {
@@ -78,7 +68,7 @@ static void __init unmarshal_key_value_pairs(struct dev_header *dev_header,
 			break;
 		}
 
-		/* 4 bytes to accommodate UTF-8 code points + null byte */
+		 
 		key = kzalloc((key_len - sizeof(key_len)) * 4 + 1, GFP_KERNEL);
 		if (!key) {
 			dev_err(dev, "cannot allocate property name\n");
@@ -221,10 +211,7 @@ static int __init map_properties(void)
 		} else
 			ret = unmarshal_devices(properties);
 
-		/*
-		 * Can only free the setup_data payload but not its header
-		 * to avoid breaking the chain of ->next pointers.
-		 */
+		 
 		data->len = 0;
 		memunmap(data);
 		memblock_free_late(pa_data + sizeof(*data), data_len);

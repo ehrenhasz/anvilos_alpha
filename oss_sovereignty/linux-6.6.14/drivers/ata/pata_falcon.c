@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Atari Falcon PATA controller driver
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Based on falconide.c:
- *
- *     Created 12 Jul 1997 by Geert Uytterhoeven
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -56,7 +47,7 @@ static unsigned int pata_falcon_data_xfer(struct ata_queued_cmd *qc,
 	    !blk_rq_is_passthrough(scsi_cmd_to_rq(cmd)))
 		swap = (uintptr_t)ap->private_data & BIT(dev->devno);
 
-	/* Transfer multiple of 2 bytes */
+	 
 	if (rw == READ) {
 		if (swap)
 			raw_insw_swapw(data_addr, (u16 *)buf, words);
@@ -69,11 +60,11 @@ static unsigned int pata_falcon_data_xfer(struct ata_queued_cmd *qc,
 			raw_outsw(data_addr, (u16 *)buf, words);
 	}
 
-	/* Transfer trailing byte, if any. */
+	 
 	if (unlikely(buflen & 0x01)) {
 		unsigned char pad[2] = { };
 
-		/* Point buf to the tail of buffer */
+		 
 		buf += buflen - 1;
 
 		if (rw == READ) {
@@ -95,17 +86,14 @@ static unsigned int pata_falcon_data_xfer(struct ata_queued_cmd *qc,
 	return words << 1;
 }
 
-/*
- * Provide our own set_mode() as we don't want to change anything that has
- * already been configured..
- */
+ 
 static int pata_falcon_set_mode(struct ata_link *link,
 				struct ata_device **unused)
 {
 	struct ata_device *dev;
 
 	ata_for_each_dev(dev, link, ENABLED) {
-		/* We don't really care */
+		 
 		dev->pio_mode = dev->xfer_mode = XFER_PIO_0;
 		dev->xfer_shift = ATA_SHIFT_PIO;
 		dev->flags |= ATA_DFLAG_PIO;
@@ -128,8 +116,8 @@ static int __init pata_falcon_init_one(struct platform_device *pdev)
 	struct ata_host *host;
 	struct ata_port *ap;
 	void __iomem *base, *ctl_base;
-	int mask_shift = 0; /* Q40 & Falcon default */
-	int irq = 0, io_offset = 1, reg_shift = 2; /* Falcon defaults */
+	int mask_shift = 0;  
+	int irq = 0, io_offset = 1, reg_shift = 2;  
 
 	dev_info(&pdev->dev, "Atari Falcon and Q40/Q60 PATA controller\n");
 
@@ -160,7 +148,7 @@ static int __init pata_falcon_init_one(struct platform_device *pdev)
 	if (!ctl_mem_res)
 		return -ENODEV;
 
-	/* allocate host */
+	 
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host)
 		return -ENOMEM;
@@ -170,10 +158,10 @@ static int __init pata_falcon_init_one(struct platform_device *pdev)
 	ap->pio_mask = ATA_PIO4;
 	ap->flags |= ATA_FLAG_SLAVE_POSS | ATA_FLAG_NO_IORDY;
 
-	/* N.B. this assumes data_addr will be used for word-sized I/O only */
+	 
 	ap->ioaddr.data_addr = (void __iomem *)base_mem_res->start;
 
-	if (base_res) {		/* only Q40 has IO resources */
+	if (base_res) {		 
 		io_offset = 0x10000;
 		reg_shift = 0;
 		base = (void __iomem *)base_res->start;
@@ -211,7 +199,7 @@ static int __init pata_falcon_init_one(struct platform_device *pdev)
 		ata_port_desc(ap, "no IRQ, using PIO polling");
 	}
 
-	/* activate */
+	 
 	return ata_host_activate(host, irq, irq ? ata_sff_interrupt : NULL,
 				 IRQF_SHARED, &pata_falcon_sht);
 }

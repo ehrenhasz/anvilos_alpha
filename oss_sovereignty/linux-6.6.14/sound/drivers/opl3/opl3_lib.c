@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
- *                   Hannu Savolainen 1993-1996,
- *                   Rob Hooft
- *                   
- *  Routines for control of AdLib FM cards (OPL2/OPL3/OPL4 chips)
- *
- *  Most if code is ported from OSS/Lite.
- */
+
+ 
 
 #include <sound/opl3.h>
 #include <linux/io.h>
@@ -28,10 +20,7 @@ static void snd_opl2_command(struct snd_opl3 * opl3, unsigned short cmd, unsigne
 	unsigned long flags;
 	unsigned long port;
 
-	/*
-	 * The original 2-OP synth requires a quite long delay
-	 * after writing to a register.
-	 */
+	 
 
 	port = (cmd & OPL3_RIGHT) ? opl3->r_port : opl3->l_port;
 
@@ -51,10 +40,7 @@ static void snd_opl3_command(struct snd_opl3 * opl3, unsigned short cmd, unsigne
 	unsigned long flags;
 	unsigned long port;
 
-	/*
-	 * The OPL-3 survives with just two INBs
-	 * after writing to a register.
-	 */
+	 
 
 	port = (cmd & OPL3_RIGHT) ? opl3->r_port : opl3->l_port;
 
@@ -73,58 +59,45 @@ static void snd_opl3_command(struct snd_opl3 * opl3, unsigned short cmd, unsigne
 
 static int snd_opl3_detect(struct snd_opl3 * opl3)
 {
-	/*
-	 * This function returns 1 if the FM chip is present at the given I/O port
-	 * The detection algorithm plays with the timer built in the FM chip and
-	 * looks for a change in the status register.
-	 *
-	 * Note! The timers of the FM chip are not connected to AdLib (and compatible)
-	 * boards.
-	 *
-	 * Note2! The chip is initialized if detected.
-	 */
+	 
 
 	unsigned char stat1, stat2, signature;
 
-	/* Reset timers 1 and 2 */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, OPL3_TIMER1_MASK | OPL3_TIMER2_MASK);
-	/* Reset the IRQ of the FM chip */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, OPL3_IRQ_RESET);
-	signature = stat1 = inb(opl3->l_port);	/* Status register */
-	if ((stat1 & 0xe0) != 0x00) {	/* Should be 0x00 */
+	signature = stat1 = inb(opl3->l_port);	 
+	if ((stat1 & 0xe0) != 0x00) {	 
 		snd_printd("OPL3: stat1 = 0x%x\n", stat1);
 		return -ENODEV;
 	}
-	/* Set timer1 to 0xff */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER1, 0xff);
-	/* Unmask and start timer 1 */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, OPL3_TIMER2_MASK | OPL3_TIMER1_START);
-	/* Now we have to delay at least 80us */
+	 
 	udelay(200);
-	/* Read status after timers have expired */
+	 
 	stat2 = inb(opl3->l_port);
-	/* Stop the timers */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, OPL3_TIMER1_MASK | OPL3_TIMER2_MASK);
-	/* Reset the IRQ of the FM chip */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, OPL3_IRQ_RESET);
-	if ((stat2 & 0xe0) != 0xc0) {	/* There is no YM3812 */
+	if ((stat2 & 0xe0) != 0xc0) {	 
 		snd_printd("OPL3: stat2 = 0x%x\n", stat2);
 		return -ENODEV;
 	}
 
-	/* If the toplevel code knows exactly the type of chip, don't try
-	   to detect it. */
+	 
 	if (opl3->hardware != OPL3_HW_AUTO)
 		return 0;
 
-	/* There is a FM chip on this address. Detect the type (OPL2 to OPL4) */
-	if (signature == 0x06) {	/* OPL2 */
+	 
+	if (signature == 0x06) {	 
 		opl3->hardware = OPL3_HW_OPL2;
 	} else {
-		/*
-		 * If we had an OPL4 chip, opl3->hardware would have been set
-		 * by the OPL4 driver; so we can assume OPL3 here.
-		 */
+		 
 		if (snd_BUG_ON(!opl3->r_port))
 			return -ENODEV;
 		opl3->hardware = OPL3_HW_OPL3;
@@ -132,13 +105,9 @@ static int snd_opl3_detect(struct snd_opl3 * opl3)
 	return 0;
 }
 
-/*
- *  AdLib timers
- */
+ 
 
-/*
- *  Timer 1 - 80us
- */
+ 
 
 static int snd_opl3_timer1_start(struct snd_timer * timer)
 {
@@ -152,8 +121,8 @@ static int snd_opl3_timer1_start(struct snd_timer * timer)
 	ticks = timer->sticks;
 	tmp = (opl3->timer_enable | OPL3_TIMER1_START) & ~OPL3_TIMER1_MASK;
 	opl3->timer_enable = tmp;
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER1, 256 - ticks);	/* timer 1 count */
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	/* enable timer 1 IRQ */
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER1, 256 - ticks);	 
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	 
 	spin_unlock_irqrestore(&opl3->timer_lock, flags);
 	return 0;
 }
@@ -168,14 +137,12 @@ static int snd_opl3_timer1_stop(struct snd_timer * timer)
 	spin_lock_irqsave(&opl3->timer_lock, flags);
 	tmp = (opl3->timer_enable | OPL3_TIMER1_MASK) & ~OPL3_TIMER1_START;
 	opl3->timer_enable = tmp;
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	/* disable timer #1 */
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	 
 	spin_unlock_irqrestore(&opl3->timer_lock, flags);
 	return 0;
 }
 
-/*
- *  Timer 2 - 320us
- */
+ 
 
 static int snd_opl3_timer2_start(struct snd_timer * timer)
 {
@@ -189,8 +156,8 @@ static int snd_opl3_timer2_start(struct snd_timer * timer)
 	ticks = timer->sticks;
 	tmp = (opl3->timer_enable | OPL3_TIMER2_START) & ~OPL3_TIMER2_MASK;
 	opl3->timer_enable = tmp;
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER2, 256 - ticks);	/* timer 1 count */
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	/* enable timer 1 IRQ */
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER2, 256 - ticks);	 
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	 
 	spin_unlock_irqrestore(&opl3->timer_lock, flags);
 	return 0;
 }
@@ -205,14 +172,12 @@ static int snd_opl3_timer2_stop(struct snd_timer * timer)
 	spin_lock_irqsave(&opl3->timer_lock, flags);
 	tmp = (opl3->timer_enable | OPL3_TIMER2_MASK) & ~OPL3_TIMER2_START;
 	opl3->timer_enable = tmp;
-	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	/* disable timer #1 */
+	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TIMER_CONTROL, tmp);	 
 	spin_unlock_irqrestore(&opl3->timer_lock, flags);
 	return 0;
 }
 
-/*
-
- */
+ 
 
 static const struct snd_timer_hardware snd_opl3_timer1 =
 {
@@ -274,9 +239,7 @@ static int snd_opl3_timer2_init(struct snd_opl3 * opl3, int timer_no)
 	return err;
 }
 
-/*
-
- */
+ 
 
 void snd_opl3_interrupt(struct snd_hwdep * hw)
 {
@@ -307,9 +270,7 @@ void snd_opl3_interrupt(struct snd_hwdep * hw)
 
 EXPORT_SYMBOL(snd_opl3_interrupt);
 
-/*
-
- */
+ 
 
 static int snd_opl3_free(struct snd_opl3 *opl3)
 {
@@ -370,7 +331,7 @@ int snd_opl3_init(struct snd_opl3 *opl3)
 	}
 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_TEST, OPL3_ENABLE_WAVE_SELECT);
-	/* Melodic mode */
+	 
 	opl3->command(opl3, OPL3_LEFT | OPL3_REG_PERCUSSION, 0x00);
 
 	switch (opl3->hardware & OPL3_HW_MASK) {
@@ -380,7 +341,7 @@ int snd_opl3_init(struct snd_opl3 *opl3)
 	case OPL3_HW_OPL3:
 	case OPL3_HW_OPL4:
 		opl3->max_voices = MAX_OPL3_VOICES;
-		/* Enter OPL3 mode */
+		 
 		opl3->command(opl3, OPL3_RIGHT | OPL3_REG_MODE, OPL3_OPL3_ENABLE);
 	}
 	return 0;
@@ -422,7 +383,7 @@ int snd_opl3_create(struct snd_card *card,
 	opl3->r_port = r_port;
 
 	switch (opl3->hardware) {
-	/* some hardware doesn't support timers */
+	 
 	case OPL3_HW_OPL3_SV:
 	case OPL3_HW_OPL3_CS:
 	case OPL3_HW_OPL3_FM801:
@@ -437,7 +398,7 @@ int snd_opl3_create(struct snd_card *card,
 			snd_device_free(card, opl3);
 			return err;
 		}
-		/* detect routine returns correct hardware type */
+		 
 		switch (opl3->hardware & OPL3_HW_MASK) {
 		case OPL3_HW_OPL3:
 		case OPL3_HW_OPL4:
@@ -486,7 +447,7 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 	if (rhwdep)
 		*rhwdep = NULL;
 
-	/* create hardware dependent device (direct FM) */
+	 
 
 	err = snd_hwdep_new(card, "OPL2/OPL3", device, &hw);
 	if (err < 0) {
@@ -515,7 +476,7 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 		break;
 	}
 
-	/* operators - only ioctl */
+	 
 	hw->ops.open = snd_opl3_open;
 	hw->ops.ioctl = snd_opl3_ioctl;
 	hw->ops.write = snd_opl3_write;

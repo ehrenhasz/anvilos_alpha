@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for the N64 cart.
- *
- * Copyright (c) 2021 Lauri Kasanen
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/bitops.h>
@@ -56,15 +52,13 @@ static void n64cart_wait_dma(void)
 		cpu_relax();
 }
 
-/*
- * Process a single bvec of a bio.
- */
+ 
 static bool n64cart_do_bvec(struct device *dev, struct bio_vec *bv, u32 pos)
 {
 	dma_addr_t dma_addr;
 	const u32 bstart = pos + start;
 
-	/* Alignment check */
+	 
 	WARN_ON_ONCE((bv->bv_offset & (MIN_ALIGNMENT - 1)) ||
 		     (bv->bv_len & (MIN_ALIGNMENT - 1)));
 
@@ -107,11 +101,7 @@ static const struct block_device_operations n64cart_fops = {
 	.submit_bio	= n64cart_submit_bio,
 };
 
-/*
- * The target device is embedded and RAM-constrained. We save RAM
- * by initializing in __init code that gets dropped late in boot.
- * For the same reason there is no module or unloading support.
- */
+ 
 static int __init n64cart_probe(struct platform_device *pdev)
 {
 	struct gendisk *disk;

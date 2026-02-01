@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * PCM interface for generic AMD audio ACP DSP block
- */
+
+
+
+
+
+
+
+
+ 
 #include <sound/pcm_params.h>
 
 #include "../ops.h"
@@ -41,7 +39,7 @@ int acp_pcm_hw_params(struct snd_sof_dev *sdev, struct snd_pcm_substream *substr
 	platform_params->stream_tag = stream->stream_tag;
 	platform_params->cont_update_posn = 1;
 
-	/* write buffer size of stream in scratch memory */
+	 
 
 	buf_offset = sdev->debug_box.offset +
 		     offsetof(struct scratch_reg_conf, buf_size);

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register cache access API - rbtree caching support
-//
-// Copyright 2011 Wolfson Microelectronics plc
-//
-// Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -19,15 +19,15 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 static int regcache_rbtree_exit(struct regmap *map);
 
 struct regcache_rbtree_node {
-	/* block of adjacent registers */
+	 
 	void *block;
-	/* Which registers are present */
+	 
 	unsigned long *cache_present;
-	/* base register handled by this block */
+	 
 	unsigned int base_reg;
-	/* number of registers available in the block */
+	 
 	unsigned int blklen;
-	/* the actual rbtree node holding this block */
+	 
 	struct rb_node node;
 };
 
@@ -105,13 +105,13 @@ static int regcache_rbtree_insert(struct regmap *map, struct rb_root *root,
 	new = &root->rb_node;
 	while (*new) {
 		rbnode_tmp = rb_entry(*new, struct regcache_rbtree_node, node);
-		/* base and top registers of the current rbnode */
+		 
 		regcache_rbtree_get_base_top_reg(map, rbnode_tmp, &base_reg_tmp,
 						 &top_reg_tmp);
-		/* base register of the rbnode to be added */
+		 
 		base_reg = rbnode->base_reg;
 		parent = *new;
-		/* if this register has already been inserted, just return */
+		 
 		if (base_reg >= base_reg_tmp &&
 		    base_reg <= top_reg_tmp)
 			return 0;
@@ -121,7 +121,7 @@ static int regcache_rbtree_insert(struct regmap *map, struct rb_root *root,
 			new = &((*new)->rb_left);
 	}
 
-	/* insert the node into the rbtree */
+	 
 	rb_link_node(&rbnode->node, parent, new);
 	rb_insert_color(&rbnode->node, root);
 
@@ -216,12 +216,12 @@ static int regcache_rbtree_exit(struct regmap *map)
 	struct regcache_rbtree_ctx *rbtree_ctx;
 	struct regcache_rbtree_node *rbtree_node;
 
-	/* if we've already been called then just return */
+	 
 	rbtree_ctx = map->cache;
 	if (!rbtree_ctx)
 		return 0;
 
-	/* free up the rbtree */
+	 
 	next = rb_first(&rbtree_ctx->root);
 	while (next) {
 		rbtree_node = rb_entry(next, struct regcache_rbtree_node, node);
@@ -232,7 +232,7 @@ static int regcache_rbtree_exit(struct regmap *map)
 		kfree(rbtree_node);
 	}
 
-	/* release the resources */
+	 
 	kfree(map->cache);
 	map->cache = NULL;
 
@@ -297,14 +297,14 @@ static int regcache_rbtree_insert_to_block(struct regmap *map,
 		present = rbnode->cache_present;
 	}
 
-	/* insert the register value in the correct place in the rbnode block */
+	 
 	if (pos == 0) {
 		memmove(blk + offset * map->cache_word_size,
 			blk, rbnode->blklen * map->cache_word_size);
 		bitmap_shift_left(present, present, offset, blklen);
 	}
 
-	/* update the rbnode block, its size and the base register */
+	 
 	rbnode->blklen = blklen;
 	rbnode->base_reg = base_reg;
 	rbnode->cache_present = present;
@@ -324,7 +324,7 @@ regcache_rbtree_node_alloc(struct regmap *map, unsigned int reg)
 	if (!rbnode)
 		return NULL;
 
-	/* If there is a read table then use it to guess at an allocation */
+	 
 	if (map->rd_table) {
 		for (i = 0; i < map->rd_table->n_yes_ranges; i++) {
 			if (regmap_reg_in_range(reg,
@@ -376,9 +376,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 
 	rbtree_ctx = map->cache;
 
-	/* if we can't locate it in the cached rbnode we'll have
-	 * to traverse the rbtree looking for it.
-	 */
+	 
 	rbnode = regcache_rbtree_lookup(map, reg);
 	if (rbnode) {
 		reg_tmp = (reg - rbnode->base_reg) / map->reg_stride;
@@ -398,7 +396,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 			min = reg - max_dist;
 		max = reg + max_dist;
 
-		/* look for an adjacent register to the one we are about to add */
+		 
 		node = rbtree_ctx->root.rb_node;
 		while (node) {
 			rbnode_tmp = rb_entry(node, struct regcache_rbtree_node,
@@ -422,11 +420,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 				}
 			}
 
-			/*
-			 * Keep looking, we want to choose the closest block,
-			 * otherwise we might end up creating overlapping
-			 * blocks, which breaks the rbtree.
-			 */
+			 
 			if (reg < base_reg)
 				node = node->rb_left;
 			else if (reg > top_reg)
@@ -446,9 +440,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 			return 0;
 		}
 
-		/* We did not manage to find a place to insert it in
-		 * an existing block so create a new rbnode.
-		 */
+		 
 		rbnode = regcache_rbtree_node_alloc(map, reg);
 		if (!rbnode)
 			return -ENOMEM;

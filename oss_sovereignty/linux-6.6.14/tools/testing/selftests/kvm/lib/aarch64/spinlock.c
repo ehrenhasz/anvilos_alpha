@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM64 Spinlock support
- */
+
+ 
 #include <stdint.h>
 
 #include "spinlock.h"

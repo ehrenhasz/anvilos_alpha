@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 #include <linux/slab.h>
@@ -209,7 +207,7 @@ static const uint32_t plane_formats_yuv[] = {
 
 static const u32 rotation_v2_formats[] = {
 	DRM_FORMAT_NV12,
-	/* TODO add formats after validation */
+	 
 };
 
 static const uint32_t wb2_formats[] = {
@@ -246,11 +244,9 @@ static const uint32_t wb2_formats[] = {
 	DRM_FORMAT_XBGR4444,
 };
 
-/*************************************************************
- * SSPP sub blocks config
- *************************************************************/
+ 
 
-/* SSPP common configuration */
+ 
 #define _VIG_SBLK(sdma_pri, qseed_ver) \
 	{ \
 	.maxdwnscale = MAX_DOWNSCALE_RATIO, \
@@ -373,55 +369,51 @@ static const struct dpu_sspp_sub_blks sm8550_dma_sblk_5 = _DMA_SBLK(6);
 static const struct dpu_sspp_sub_blks qcm2290_vig_sblk_0 = _VIG_SBLK_NOSCALE(2);
 static const struct dpu_sspp_sub_blks qcm2290_dma_sblk_0 = _DMA_SBLK(1);
 
-/*************************************************************
- * MIXER sub blocks config
- *************************************************************/
+ 
 
-/* MSM8998 */
+ 
 
 static const struct dpu_lm_sub_blks msm8998_lm_sblk = {
 	.maxwidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-	.maxblendstages = 7, /* excluding base layer */
-	.blendstage_base = { /* offsets relative to mixer base */
+	.maxblendstages = 7,  
+	.blendstage_base = {  
 		0x20, 0x50, 0x80, 0xb0, 0x230,
 		0x260, 0x290
 	},
 };
 
-/* SDM845 */
+ 
 
 static const struct dpu_lm_sub_blks sdm845_lm_sblk = {
 	.maxwidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-	.maxblendstages = 11, /* excluding base layer */
-	.blendstage_base = { /* offsets relative to mixer base */
+	.maxblendstages = 11,  
+	.blendstage_base = {  
 		0x20, 0x38, 0x50, 0x68, 0x80, 0x98,
 		0xb0, 0xc8, 0xe0, 0xf8, 0x110
 	},
 };
 
-/* SC7180 */
+ 
 
 static const struct dpu_lm_sub_blks sc7180_lm_sblk = {
 	.maxwidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-	.maxblendstages = 7, /* excluding base layer */
-	.blendstage_base = { /* offsets relative to mixer base */
+	.maxblendstages = 7,  
+	.blendstage_base = {  
 		0x20, 0x38, 0x50, 0x68, 0x80, 0x98, 0xb0
 	},
 };
 
-/* QCM2290 */
+ 
 
 static const struct dpu_lm_sub_blks qcm2290_lm_sblk = {
 	.maxwidth = DEFAULT_DPU_LINE_WIDTH,
-	.maxblendstages = 4, /* excluding base layer */
-	.blendstage_base = { /* offsets relative to mixer base */
+	.maxblendstages = 4,  
+	.blendstage_base = {  
 		0x20, 0x38, 0x50, 0x68
 	},
 };
 
-/*************************************************************
- * DSPP sub blocks config
- *************************************************************/
+ 
 static const struct dpu_dspp_sub_blks msm8998_dspp_sblk = {
 	.pcc = {.name = "pcc", .id = DPU_DSPP_PCC, .base = 0x1700,
 		.len = 0x90, .version = 0x10007},
@@ -432,9 +424,7 @@ static const struct dpu_dspp_sub_blks sdm845_dspp_sblk = {
 		.len = 0x90, .version = 0x40000},
 };
 
-/*************************************************************
- * PINGPONG sub blocks config
- *************************************************************/
+ 
 static const struct dpu_pingpong_sub_blks sdm845_pp_sblk_te = {
 	.te2 = {.name = "te2", .id = DPU_PINGPONG_TE2, .base = 0x2000, .len = 0x0,
 		.version = 0x1},
@@ -452,9 +442,7 @@ static const struct dpu_pingpong_sub_blks sc7280_pp_sblk = {
 	.len = 0x20, .version = 0x20000},
 };
 
-/*************************************************************
- * DSC sub blocks config
- *************************************************************/
+ 
 static const struct dpu_dsc_sub_blks dsc_sblk_0 = {
 	.enc = {.name = "enc", .base = 0x100, .len = 0x9c},
 	.ctl = {.name = "ctl", .base = 0xF00, .len = 0x10},
@@ -465,10 +453,8 @@ static const struct dpu_dsc_sub_blks dsc_sblk_1 = {
 	.ctl = {.name = "ctl", .base = 0xF80, .len = 0x10},
 };
 
-/*************************************************************
- * VBIF sub blocks config
- *************************************************************/
-/* VBIF QOS remap */
+ 
+ 
 static const u32 msm8998_rt_pri_lvl[] = {1, 2, 2, 2};
 static const u32 msm8998_nrt_pri_lvl[] = {1, 1, 1, 1};
 static const u32 sdm845_rt_pri_lvl[] = {3, 3, 4, 4, 5, 5, 6, 6};
@@ -559,11 +545,9 @@ static const struct dpu_vbif_cfg sm8550_vbif[] = {
 	},
 };
 
-/*************************************************************
- * PERF data config
- *************************************************************/
+ 
 
-/* SSPP QOS LUTs */
+ 
 static const struct dpu_qos_lut_entry msm8998_qos_linear[] = {
 	{.fl = 4,  .lut = 0x1b},
 	{.fl = 5,  .lut = 0x5b},
@@ -648,9 +632,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
 	{.fl = 0, .lut = 0x0},
 };
 
-/*************************************************************
- * Hardware catalog
- *************************************************************/
+ 
 
 #include "catalog/dpu_3_0_msm8998.h"
 

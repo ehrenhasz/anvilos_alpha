@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright 2012 Red Hat Inc
- */
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/highmem.h>
@@ -33,10 +29,7 @@ static struct sg_table *i915_gem_map_dma_buf(struct dma_buf_attachment *attach,
 	struct scatterlist *src, *dst;
 	int ret, i;
 
-	/*
-	 * Make a copy of the object's sgt, so that we can make an independent
-	 * mapping
-	 */
+	 
 	sgt = kmalloc(sizeof(*sgt), GFP_KERNEL);
 	if (!sgt) {
 		ret = -ENOMEM;
@@ -246,17 +239,7 @@ static int i915_gem_object_get_pages_dmabuf(struct drm_i915_gem_object *obj)
 	if (IS_ERR(sgt))
 		return PTR_ERR(sgt);
 
-	/*
-	 * DG1 is special here since it still snoops transactions even with
-	 * CACHE_NONE. This is not the case with other HAS_SNOOP platforms. We
-	 * might need to revisit this as we add new discrete platforms.
-	 *
-	 * XXX: Consider doing a vmap flush or something, where possible.
-	 * Currently we just do a heavy handed wbinvd_on_all_cpus() here since
-	 * the underlying sg_table might not even point to struct pages, so we
-	 * can't just call drm_clflush_sg or similar, like we do elsewhere in
-	 * the driver.
-	 */
+	 
 	if (i915_gem_object_can_bypass_llc(obj) ||
 	    (!HAS_LLC(i915) && !IS_DG1(i915)))
 		wbinvd_on_all_cpus();
@@ -287,16 +270,13 @@ struct drm_gem_object *i915_gem_prime_import(struct drm_device *dev,
 	struct drm_i915_gem_object *obj;
 	int ret;
 
-	/* is this one of own objects? */
+	 
 	if (dma_buf->ops == &i915_dmabuf_ops) {
 		obj = dma_buf_to_obj(dma_buf);
-		/* is it from our device? */
+		 
 		if (obj->base.dev == dev &&
 		    !I915_SELFTEST_ONLY(force_different_devices)) {
-			/*
-			 * Importing dmabuf exported from out own gem increases
-			 * refcount on gem itself instead of f_count of dmabuf.
-			 */
+			 
 			return &i915_gem_object_get(obj)->base;
 		}
 	}
@@ -304,7 +284,7 @@ struct drm_gem_object *i915_gem_prime_import(struct drm_device *dev,
 	if (i915_gem_object_size_2big(dma_buf->size))
 		return ERR_PTR(-E2BIG);
 
-	/* need to attach */
+	 
 	attach = dma_buf_attach(dma_buf, dev->dev);
 	if (IS_ERR(attach))
 		return ERR_CAST(attach);
@@ -323,13 +303,7 @@ struct drm_gem_object *i915_gem_prime_import(struct drm_device *dev,
 	obj->base.import_attach = attach;
 	obj->base.resv = dma_buf->resv;
 
-	/* We use GTT as shorthand for a coherent domain, one that is
-	 * neither in the GPU cache nor in the CPU cache, where all
-	 * writes are immediately visible in memory. (That's not strictly
-	 * true, but it's close! There are internal buffers such as the
-	 * write-combined buffer or a delay through the chipset for GTT
-	 * writes that do require us to treat GTT as a separate cache domain.)
-	 */
+	 
 	obj->read_domains = I915_GEM_DOMAIN_GTT;
 	obj->write_domain = 0;
 

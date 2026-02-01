@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #ifndef __DCE_HWSEQ_H__
 #define __DCE_HWSEQ_H__
 
@@ -203,7 +180,7 @@
 
 
 #define MMHUB_DCN_REG_LIST()\
-	/* todo:  get these from GVM instead of reading registers ourselves */\
+	 \
 	MMHUB_SR(VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_HI32),\
 	MMHUB_SR(VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_LO32),\
 	MMHUB_SR(VM_CONTEXT0_PAGE_TABLE_START_ADDR_HI32),\
@@ -284,8 +261,8 @@
 	SR(DOMAIN7_PG_CONFIG), \
 	SR(DOMAIN8_PG_CONFIG), \
 	SR(DOMAIN9_PG_CONFIG), \
-/*	SR(DOMAIN10_PG_CONFIG), Navi1x HUBP5 not powergate-able*/\
-/*	SR(DOMAIN11_PG_CONFIG), Navi1x DPP5 is not powergate-able */\
+ \
+ \
 	SR(DOMAIN16_PG_CONFIG), \
 	SR(DOMAIN17_PG_CONFIG), \
 	SR(DOMAIN18_PG_CONFIG), \
@@ -580,7 +557,7 @@ struct dce_hwseq_registers {
 	uint32_t CRTC_H_BLANK_START_END[6];
 	uint32_t PIXEL_RATE_CNTL[6];
 	uint32_t PHYPLL_PIXEL_RATE_CNTL[6];
-	/*DCHUB*/
+	 
 	uint32_t DCHUB_FB_LOCATION;
 	uint32_t DCHUB_AGP_BASE;
 	uint32_t DCHUB_AGP_BOT;
@@ -655,7 +632,7 @@ struct dce_hwseq_registers {
 	uint32_t D5VGA_CONTROL;
 	uint32_t D6VGA_CONTROL;
 	uint32_t VGA_TEST_CONTROL;
-	/* MMHUB registers. read only. temporary hack */
+	 
 	uint32_t VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_HI32;
 	uint32_t VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_LO32;
 	uint32_t VM_CONTEXT0_PAGE_TABLE_START_ADDR_HI32;
@@ -671,7 +648,7 @@ struct dce_hwseq_registers {
 	uint32_t MC_VM_XGMI_LFB_CNTL;
 	uint32_t AZALIA_AUDIO_DTO;
 	uint32_t AZALIA_CONTROLLER_CLOCK_GATING;
-	/* MMHUB VM */
+	 
 	uint32_t MC_VM_FB_LOCATION_BASE;
 	uint32_t MC_VM_FB_LOCATION_TOP;
 	uint32_t MC_VM_FB_OFFSET;
@@ -682,7 +659,7 @@ struct dce_hwseq_registers {
 	uint32_t DCHUBBUB_ARB_HOSTVM_CNTL;
 	uint32_t HPO_TOP_HW_CONTROL;
 };
- /* set field name */
+  
 #define HWS_SF(blk_name, reg_name, field_name, post_fix)\
 	.field_name = blk_name ## reg_name ## __ ## field_name ## post_fix
 
@@ -775,7 +752,7 @@ struct dce_hwseq_registers {
 	HWS_SF(, DCHUBBUB_SDPIF_AGP_BASE, SDPIF_AGP_BASE, mask_sh), \
 	HWS_SF(, DCHUBBUB_SDPIF_AGP_BOT, SDPIF_AGP_BOT, mask_sh), \
 	HWS_SF(, DCHUBBUB_SDPIF_AGP_TOP, SDPIF_AGP_TOP, mask_sh), \
-	/* todo:  get these from GVM instead of reading registers ourselves */\
+	 \
 	HWS_SF(, VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_HI32, PAGE_DIRECTORY_ENTRY_HI32, mask_sh),\
 	HWS_SF(, VM_CONTEXT0_PAGE_TABLE_BASE_ADDR_LO32, PAGE_DIRECTORY_ENTRY_LO32, mask_sh),\
 	HWS_SF(, VM_CONTEXT0_PAGE_TABLE_START_ADDR_HI32, LOGICAL_PAGE_NUMBER_HI4, mask_sh),\
@@ -1048,7 +1025,7 @@ struct dce_hwseq_registers {
 	type PIXEL_RATE_SOURCE; \
 	type PHYPLL_PIXEL_RATE_SOURCE; \
 	type PIXEL_RATE_PLL_SOURCE; \
-	/* todo:  get these from GVM instead of reading registers ourselves */\
+	 \
 	type PAGE_DIRECTORY_ENTRY_HI32;\
 	type PAGE_DIRECTORY_ENTRY_LO32;\
 	type LOGICAL_PAGE_NUMBER_HI4;\
@@ -1185,9 +1162,9 @@ struct dce_hwseq_mask {
 
 
 enum blnd_mode {
-	BLND_MODE_CURRENT_PIPE = 0,/* Data from current pipe only */
-	BLND_MODE_OTHER_PIPE, /* Data from other pipe only */
-	BLND_MODE_BLENDING,/* Alpha blending - blend 'current' and 'other' */
+	BLND_MODE_CURRENT_PIPE = 0, 
+	BLND_MODE_OTHER_PIPE,  
+	BLND_MODE_BLENDING, 
 };
 
 struct dce_hwseq;
@@ -1218,4 +1195,4 @@ void dce_crtc_switch_to_clk_src(struct dce_hwseq *hws,
 		unsigned int tg_inst);
 
 bool dce_use_lut(enum surface_pixel_format format);
-#endif   /*__DCE_HWSEQ_H__*/
+#endif    

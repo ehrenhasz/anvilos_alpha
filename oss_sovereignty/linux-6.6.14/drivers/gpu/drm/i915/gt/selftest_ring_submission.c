@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include "intel_engine_pm.h"
 #include "selftests/igt_flush_test.h"
@@ -58,7 +56,7 @@ static struct i915_vma *create_wally(struct intel_engine_cs *engine)
 	i915_gem_object_flush_map(obj);
 	i915_gem_object_unpin_map(obj);
 
-	vma->private = intel_context_create(engine); /* dummy residuals */
+	vma->private = intel_context_create(engine);  
 	if (IS_ERR(vma->private)) {
 		vma = ERR_CAST(vma->private);
 		i915_gem_object_put(obj);
@@ -246,18 +244,7 @@ static int live_ctx_switch_wa(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * Exercise the inter-context wa batch.
-	 *
-	 * Between each user context we run a wa batch, and since it may
-	 * have implications for user visible state, we have to check that
-	 * we do actually execute it.
-	 *
-	 * The trick we use is to replace the normal wa batch with a custom
-	 * one that writes to a marker within it, and we can then look for
-	 * that marker to confirm if the batch was run when we expect it,
-	 * and equally important it was wasn't run when we don't!
-	 */
+	 
 
 	for_each_engine(engine, gt, id) {
 		struct i915_vma *saved_wa;
@@ -267,7 +254,7 @@ static int live_ctx_switch_wa(void *arg)
 			continue;
 
 		if (IS_GRAPHICS_VER(gt->i915, 4, 5))
-			continue; /* MI_STORE_DWORD is privileged! */
+			continue;  
 
 		saved_wa = fetch_and_zero(&engine->wa_ctx.vma);
 

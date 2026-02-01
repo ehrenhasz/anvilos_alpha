@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -15,7 +15,7 @@
 
 static int sizes[] = {
 	1, 555, 1033, MT_GRANULE_SIZE - 1, MT_GRANULE_SIZE,
-	/* page size - 1*/ 0, /* page_size */ 0, /* page size + 1 */ 0
+	  0,   0,   0
 };
 
 enum mte_block_test_alloc {
@@ -39,12 +39,12 @@ static int check_buffer_by_byte(int mem_type, int mode)
 		if (check_allocated_memory(ptr, sizes[i], mem_type, true) != KSFT_PASS)
 			return KSFT_FAIL;
 		mte_initialize_current_context(mode, (uintptr_t)ptr, sizes[i]);
-		/* Set some value in tagged memory */
+		 
 		for (j = 0; j < sizes[i]; j++)
 			ptr[j] = '1';
 		mte_wait_after_trig();
 		err = cur_mte_cxt.fault_valid;
-		/* Check the buffer whether it is filled. */
+		 
 		for (j = 0; j < sizes[i] && !err; j++) {
 			if (ptr[j] != '1')
 				err = true;
@@ -79,7 +79,7 @@ static int check_buffer_underflow_by_byte(int mem_type, int mode,
 
 		mte_initialize_current_context(mode, (uintptr_t)ptr, -underflow_range);
 		last_index = 0;
-		/* Set some value in tagged memory and make the buffer underflow */
+		 
 		for (j = sizes[i] - 1; (j >= -underflow_range) &&
 				       (!cur_mte_cxt.fault_valid); j--) {
 			ptr[j] = '1';
@@ -87,7 +87,7 @@ static int check_buffer_underflow_by_byte(int mem_type, int mode,
 		}
 		mte_wait_after_trig();
 		err = false;
-		/* Check whether the buffer is filled */
+		 
 		for (j = 0; j < sizes[i]; j++) {
 			if (ptr[j] != '1') {
 				err = true;
@@ -105,7 +105,7 @@ static int check_buffer_underflow_by_byte(int mem_type, int mode,
 				err = true;
 				break;
 			}
-			/* There were no fault so the underflow area should be filled */
+			 
 			und_ptr = (char *) MT_CLEAR_TAG((size_t) ptr - underflow_range);
 			for (j = 0 ; j < underflow_range; j++) {
 				if (und_ptr[j] != '1') {
@@ -115,15 +115,12 @@ static int check_buffer_underflow_by_byte(int mem_type, int mode,
 			}
 			break;
 		case MTE_ASYNC_ERR:
-			/* Imprecise fault should occur otherwise return error */
+			 
 			if (cur_mte_cxt.fault_valid == false) {
 				err = true;
 				break;
 			}
-			/*
-			 * The imprecise fault is checked after the write to the buffer,
-			 * so the underflow area before the fault should be filled.
-			 */
+			 
 			und_ptr = (char *) MT_CLEAR_TAG((size_t) ptr);
 			for (j = last_index ; j < 0 ; j++) {
 				if (und_ptr[j] != '1') {
@@ -133,12 +130,12 @@ static int check_buffer_underflow_by_byte(int mem_type, int mode,
 			}
 			break;
 		case MTE_SYNC_ERR:
-			/* Precise fault should occur otherwise return error */
+			 
 			if (!cur_mte_cxt.fault_valid || (last_index != (-1))) {
 				err = true;
 				break;
 			}
-			/* Underflow area should not be filled */
+			 
 			und_ptr = (char *) MT_CLEAR_TAG((size_t) ptr);
 			if (und_ptr[-1] == '1')
 				err = true;
@@ -177,7 +174,7 @@ static int check_buffer_overflow_by_byte(int mem_type, int mode,
 
 		mte_initialize_current_context(mode, (uintptr_t)ptr, sizes[i] + overflow_range);
 
-		/* Set some value in tagged memory and make the buffer underflow */
+		 
 		for (j = 0, last_index = 0 ; (j < (sizes[i] + overflow_range)) &&
 					     (cur_mte_cxt.fault_valid == false); j++) {
 			ptr[j] = '1';
@@ -185,7 +182,7 @@ static int check_buffer_overflow_by_byte(int mem_type, int mode,
 		}
 		mte_wait_after_trig();
 		err = false;
-		/* Check whether the buffer is filled */
+		 
 		for (j = 0; j < sizes[i]; j++) {
 			if (ptr[j] != '1') {
 				err = true;
@@ -206,7 +203,7 @@ static int check_buffer_overflow_by_byte(int mem_type, int mode,
 				err = true;
 				break;
 			}
-			/* There were no fault so the overflow area should be filled */
+			 
 			over_ptr = (char *) MT_CLEAR_TAG((size_t) ptr + tagged_size);
 			for (j = 0 ; j < overflow_size; j++) {
 				if (over_ptr[j] != '1') {
@@ -216,15 +213,12 @@ static int check_buffer_overflow_by_byte(int mem_type, int mode,
 			}
 			break;
 		case MTE_ASYNC_ERR:
-			/* Imprecise fault should occur otherwise return error */
+			 
 			if (cur_mte_cxt.fault_valid == false) {
 				err = true;
 				break;
 			}
-			/*
-			 * The imprecise fault is checked after the write to the buffer,
-			 * so the overflow area should be filled before the fault.
-			 */
+			 
 			over_ptr = (char *) MT_CLEAR_TAG((size_t) ptr);
 			for (j = tagged_size ; j < last_index; j++) {
 				if (over_ptr[j] != '1') {
@@ -234,12 +228,12 @@ static int check_buffer_overflow_by_byte(int mem_type, int mode,
 			}
 			break;
 		case MTE_SYNC_ERR:
-			/* Precise fault should occur otherwise return error */
+			 
 			if (!cur_mte_cxt.fault_valid || (last_index != tagged_size)) {
 				err = true;
 				break;
 			}
-			/* Underflow area should not be filled */
+			 
 			over_ptr = (char *) MT_CLEAR_TAG((size_t) ptr + tagged_size);
 			for (j = 0 ; j < overflow_size; j++) {
 				if (over_ptr[j] == '1')
@@ -307,7 +301,7 @@ static int check_buffer_by_block_iterate(int mem_type, int mode, size_t size)
 		cur_mte_cxt.fault_valid = false;
 		result = KSFT_PASS;
 		mte_initialize_current_context(mode, (uintptr_t)dst, size);
-		/* Set some value in memory and copy*/
+		 
 		memset((void *)src, (int)'1', size);
 		memcpy((void *)dst, (void *)src, size);
 		mte_wait_after_trig();
@@ -315,7 +309,7 @@ static int check_buffer_by_block_iterate(int mem_type, int mode, size_t size)
 			result = KSFT_FAIL;
 			goto check_buffer_by_block_err;
 		}
-		/* Check the buffer whether it is filled. */
+		 
 		for (j = 0; j < size; j++) {
 			if (src[j] != dst[j] || src[j] != '1') {
 				result = KSFT_FAIL;
@@ -370,7 +364,7 @@ static int check_memory_initial_tags(int mem_type, int mode, int mapping)
 
 	mte_switch_mode(mode, MTE_ALLOW_NON_ZERO_TAG);
 	for (run = 0; run < total; run++) {
-		/* check initial tags for anonymous mmap */
+		 
 		ptr = (char *)mte_allocate_memory(sizes[run], mem_type, mapping, false);
 		if (check_allocated_memory(ptr, sizes[run], mem_type, false) != KSFT_PASS)
 			return KSFT_FAIL;
@@ -380,7 +374,7 @@ static int check_memory_initial_tags(int mem_type, int mode, int mapping)
 		}
 		mte_free_memory((void *)ptr, sizes[run], mem_type, false);
 
-		/* check initial tags for file mmap */
+		 
 		fd = create_temp_file();
 		if (fd == -1)
 			return KSFT_FAIL;
@@ -414,13 +408,13 @@ int main(int argc, char *argv[])
 	if (err)
 		return err;
 
-	/* Register SIGSEGV handler */
+	 
 	mte_register_signal(SIGSEGV, mte_default_handler);
 
-	/* Set test plan */
+	 
 	ksft_set_plan(20);
 
-	/* Buffer by byte tests */
+	 
 	evaluate_test(check_buffer_by_byte(USE_MMAP, MTE_SYNC_ERR),
 	"Check buffer correctness by byte with sync err mode and mmap memory\n");
 	evaluate_test(check_buffer_by_byte(USE_MMAP, MTE_ASYNC_ERR),
@@ -430,7 +424,7 @@ int main(int argc, char *argv[])
 	evaluate_test(check_buffer_by_byte(USE_MPROTECT, MTE_ASYNC_ERR),
 	"Check buffer correctness by byte with async err mode and mmap/mprotect memory\n");
 
-	/* Check buffer underflow with underflow size as 16 */
+	 
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_SYNC_ERR, MT_GRANULE_SIZE),
 	"Check buffer write underflow by byte with sync mode and mmap memory\n");
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_ASYNC_ERR, MT_GRANULE_SIZE),
@@ -438,7 +432,7 @@ int main(int argc, char *argv[])
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_NONE_ERR, MT_GRANULE_SIZE),
 	"Check buffer write underflow by byte with tag check fault ignore and mmap memory\n");
 
-	/* Check buffer underflow with underflow size as page size */
+	 
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_SYNC_ERR, page_size),
 	"Check buffer write underflow by byte with sync mode and mmap memory\n");
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_ASYNC_ERR, page_size),
@@ -446,7 +440,7 @@ int main(int argc, char *argv[])
 	evaluate_test(check_buffer_underflow_by_byte(USE_MMAP, MTE_NONE_ERR, page_size),
 	"Check buffer write underflow by byte with tag check fault ignore and mmap memory\n");
 
-	/* Check buffer overflow with overflow size as 16 */
+	 
 	evaluate_test(check_buffer_overflow_by_byte(USE_MMAP, MTE_SYNC_ERR, MT_GRANULE_SIZE),
 	"Check buffer write overflow by byte with sync mode and mmap memory\n");
 	evaluate_test(check_buffer_overflow_by_byte(USE_MMAP, MTE_ASYNC_ERR, MT_GRANULE_SIZE),
@@ -454,7 +448,7 @@ int main(int argc, char *argv[])
 	evaluate_test(check_buffer_overflow_by_byte(USE_MMAP, MTE_NONE_ERR, MT_GRANULE_SIZE),
 	"Check buffer write overflow by byte with tag fault ignore mode and mmap memory\n");
 
-	/* Buffer by block tests */
+	 
 	evaluate_test(check_buffer_by_block(USE_MMAP, MTE_SYNC_ERR),
 	"Check buffer write correctness by block with sync mode and mmap memory\n");
 	evaluate_test(check_buffer_by_block(USE_MMAP, MTE_ASYNC_ERR),
@@ -462,7 +456,7 @@ int main(int argc, char *argv[])
 	evaluate_test(check_buffer_by_block(USE_MMAP, MTE_NONE_ERR),
 	"Check buffer write correctness by block with tag fault ignore and mmap memory\n");
 
-	/* Initial tags are supposed to be 0 */
+	 
 	evaluate_test(check_memory_initial_tags(USE_MMAP, MTE_SYNC_ERR, MAP_PRIVATE),
 	"Check initial tags with private mapping, sync error mode and mmap memory\n");
 	evaluate_test(check_memory_initial_tags(USE_MPROTECT, MTE_SYNC_ERR, MAP_PRIVATE),

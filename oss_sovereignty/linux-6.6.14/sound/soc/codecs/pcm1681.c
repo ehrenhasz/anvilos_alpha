@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PCM1681 ASoC codec driver
- *
- * Copyright (c) StreamUnlimited GmbH 2013
- *	Marek Belisko <marek.belisko@streamunlimited.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -32,12 +27,12 @@
 #define PCM1681_DEEMPH_RATE_MASK	0x18
 #define PCM1681_DEEMPH_MASK		0x01
 
-#define PCM1681_ATT_CONTROL(X)	(X <= 6 ? X : X + 9) /* Attenuation level */
-#define PCM1681_SOFT_MUTE	0x07	/* Soft mute control register */
-#define PCM1681_DAC_CONTROL	0x08	/* DAC operation control */
-#define PCM1681_FMT_CONTROL	0x09	/* Audio interface data format */
-#define PCM1681_DEEMPH_CONTROL	0x0a	/* De-emphasis control */
-#define PCM1681_ZERO_DETECT_STATUS	0x0e	/* Zero detect status reg */
+#define PCM1681_ATT_CONTROL(X)	(X <= 6 ? X : X + 9)  
+#define PCM1681_SOFT_MUTE	0x07	 
+#define PCM1681_DAC_CONTROL	0x08	 
+#define PCM1681_FMT_CONTROL	0x09	 
+#define PCM1681_DEEMPH_CONTROL	0x0a	 
+#define PCM1681_ZERO_DETECT_STATUS	0x0e	 
 
 static const struct reg_default pcm1681_reg_defaults[] = {
 	{ 0x01,	0xff },
@@ -73,9 +68,9 @@ static bool pcm1681_writeable_reg(struct device *dev, unsigned int reg)
 struct pcm1681_private {
 	struct regmap *regmap;
 	unsigned int format;
-	/* Current deemphasis status */
+	 
 	unsigned int deemph;
-	/* Current rate for deemphasis control */
+	 
 	unsigned int rate;
 };
 
@@ -103,7 +98,7 @@ static int pcm1681_set_deemph(struct snd_soc_component *component)
 		enable = 0;
 	}
 
-	/* enable/disable deemphasis functionality */
+	 
 	return regmap_update_bits(priv->regmap, PCM1681_DEEMPH_CONTROL,
 					PCM1681_DEEMPH_MASK, enable);
 }
@@ -136,7 +131,7 @@ static int pcm1681_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	struct pcm1681_private *priv = snd_soc_component_get_drvdata(component);
 
-	/* The PCM1681 can only be consumer to all clocks */
+	 
 	if ((format & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC) {
 		dev_err(component->dev, "Invalid clocking mode\n");
 		return -EINVAL;

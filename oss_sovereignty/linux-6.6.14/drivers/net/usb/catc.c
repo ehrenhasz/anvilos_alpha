@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2001 Vojtech Pavlik
- *
- *  CATC EL1210A NetMate USB Ethernet driver
- *
- *  Sponsored by SuSE
- *
- *  Based on the work of
- *		Donald Becker
- *
- *  Old chipset support added by Simon Evans <spse@secret.org.uk> 2002
- *    - adds support for Belkin F5U011
- */
 
-/*
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -37,9 +20,7 @@
 
 #include <linux/usb.h>
 
-/*
- * Version information.
- */
+ 
 
 #define DRIVER_VERSION "v2.8"
 #define DRIVER_AUTHOR "Vojtech Pavlik <vojtech@suse.cz>"
@@ -52,28 +33,24 @@ MODULE_LICENSE("GPL");
 
 static const char driver_name[] = "catc";
 
-/*
- * Some defines.
- */
+ 
 
-#define STATS_UPDATE		(HZ)	/* Time between stats updates */
-#define TX_TIMEOUT		(5*HZ)	/* Max time the queue can be stopped */
-#define PKT_SZ			1536	/* Max Ethernet packet size */
-#define RX_MAX_BURST		15	/* Max packets per rx buffer (> 0, < 16) */
-#define TX_MAX_BURST		15	/* Max full sized packets per tx buffer (> 0) */
-#define CTRL_QUEUE		16	/* Max control requests in flight (power of two) */
-#define RX_PKT_SZ		1600	/* Max size of receive packet for F5U011 */
+#define STATS_UPDATE		(HZ)	 
+#define TX_TIMEOUT		(5*HZ)	 
+#define PKT_SZ			1536	 
+#define RX_MAX_BURST		15	 
+#define TX_MAX_BURST		15	 
+#define CTRL_QUEUE		16	 
+#define RX_PKT_SZ		1600	 
 
-/*
- * Control requests.
- */
+ 
 
 enum control_requests {
 	ReadMem =	0xf1,
 	GetMac =	0xf2,
 	Reset =		0xf4,
 	SetMac =	0xf5,
-	SetRxMode =     0xf5,  /* F5U011 only */
+	SetRxMode =     0xf5,   
 	WriteROM =	0xf8,
 	SetReg =	0xfa,
 	GetReg =	0xfb,
@@ -81,9 +58,7 @@ enum control_requests {
 	ReadROM =	0xfd,
 };
 
-/*
- * Registers.
- */
+ 
 
 enum register_offsets {
 	TxBufCount =	0x20,
@@ -121,7 +96,7 @@ enum rx_filter_bits {
 	RxForceOK =	0x04,
 	RxMultiCast =	0x08,
 	RxPromisc =	0x10,
-	AltRxPromisc =  0x20, /* F5U011 uses different bit */
+	AltRxPromisc =  0x20,  
 };
 
 enum led_values {
@@ -138,9 +113,7 @@ enum link_status {
 	LinkBad      = 2
 };
 
-/*
- * The catc struct.
- */
+ 
 
 #define CTRL_RUNNING	0
 #define RX_RUNNING	1
@@ -181,14 +154,12 @@ struct catc {
 
 	struct urb *tx_urb, *rx_urb, *irq_urb, *ctrl_urb;
 
-	u8 is_f5u011;	/* Set if device is an F5U011 */
-	u8 rxmode[2];	/* Used for F5U011 */
-	atomic_t recq_sz; /* Used for F5U011 - counter of waiting rx packets */
+	u8 is_f5u011;	 
+	u8 rxmode[2];	 
+	atomic_t recq_sz;  
 };
 
-/*
- * Useful macros.
- */
+ 
 
 #define catc_get_mac(catc, mac)				catc_ctrl_msg(catc, USB_DIR_IN,  GetMac, 0, 0, mac,  6)
 #define catc_reset(catc)				catc_ctrl_msg(catc, USB_DIR_OUT, Reset, 0, 0, NULL, 0)
@@ -205,9 +176,7 @@ struct catc {
 #define catc_get_reg_async(catc, reg, cb)		catc_ctrl_async(catc, USB_DIR_IN, GetReg, 0, reg, NULL, 1, cb)
 #define catc_write_mem_async(catc, addr, buf, size)	catc_ctrl_async(catc, USB_DIR_OUT, WriteMem, 0, addr, buf, size, NULL)
 
-/*
- * Receive routines.
- */
+ 
 
 static void catc_rx_done(struct urb *urb)
 {
@@ -252,7 +221,7 @@ static void catc_rx_done(struct urb *urb)
 		catc->netdev->stats.rx_packets++;
 		catc->netdev->stats.rx_bytes += pkt_len;
 
-		/* F5U011 only does one packet per RX */
+		 
 		if (catc->is_f5u011)
 			break;
 		pkt_start += (((pkt_len + 1) >> 6) + 1) << 6;
@@ -298,14 +267,14 @@ static void catc_irq_done(struct urb *urb)
 	}
 
 	switch (status) {
-	case 0:			/* success */
+	case 0:			 
 		break;
-	case -ECONNRESET:	/* unlink */
+	case -ECONNRESET:	 
 	case -ENOENT:
 	case -ESHUTDOWN:
 		return;
-	/* -EPIPE:  should clear the halt */
-	default:		/* error */
+	 
+	default:		 
 		dev_dbg(&urb->dev->dev,
 			"irq_done, status %d, data %02x %02x.\n",
 			status, data[0], data[1]);
@@ -343,9 +312,7 @@ resubmit:
 			catc->usbdev->devpath, res);
 }
 
-/*
- * Transmit routines.
- */
+ 
 
 static int catc_tx_run(struct catc *catc)
 {
@@ -455,9 +422,7 @@ static void catc_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 	usb_unlink_urb(catc->tx_urb);
 }
 
-/*
- * Control messages.
- */
+ 
 
 static int catc_ctrl_msg(struct catc *catc, u8 dir, u8 request, u16 value, u16 index, void *buf, int len)
 {
@@ -565,9 +530,7 @@ static int catc_ctrl_async(struct catc *catc, u8 dir, u8 request, u16 value,
 	return retval;
 }
 
-/*
- * Statistics.
- */
+ 
 
 static void catc_stats_done(struct catc *catc, struct ctrl_queue *q)
 {
@@ -611,9 +574,7 @@ static void catc_stats_timer(struct timer_list *t)
 	mod_timer(&catc->timer, jiffies + STATS_UPDATE);
 }
 
-/*
- * Receive modes. Broadcast, Multicast, Promisc.
- */
+ 
 
 static void catc_multicast(const unsigned char *addr, u8 *multicast)
 {
@@ -707,9 +668,7 @@ static const struct ethtool_ops ops = {
 	.get_link_ksettings = catc_get_link_ksettings,
 };
 
-/*
- * Open, close.
- */
+ 
 
 static int catc_open(struct net_device *netdev)
 {
@@ -759,9 +718,7 @@ static const struct net_device_ops catc_netdev_ops = {
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
-/*
- * USB probe, disconnect.
- */
+ 
 
 static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
@@ -813,7 +770,7 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 		goto fail_free;
 	}
 
-	/* The F5U011 has the same vendor/product as the netmate but a device version of 0x130 */
+	 
 	if (le16_to_cpu(usbdev->descriptor.idVendor) == 0x0423 &&
 	    le16_to_cpu(usbdev->descriptor.idProduct) == 0xa &&
 	    le16_to_cpu(catc->usbdev->descriptor.bcdDevice) == 0x0130) {
@@ -957,14 +914,12 @@ static void catc_disconnect(struct usb_interface *intf)
 	}
 }
 
-/*
- * Module functions and tables.
- */
+ 
 
 static const struct usb_device_id catc_id_table[] = {
-	{ USB_DEVICE(0x0423, 0xa) },	/* CATC Netmate, Belkin F5U011 */
-	{ USB_DEVICE(0x0423, 0xc) },	/* CATC Netmate II, Belkin F5U111 */
-	{ USB_DEVICE(0x08d1, 0x1) },	/* smartBridges smartNIC */
+	{ USB_DEVICE(0x0423, 0xa) },	 
+	{ USB_DEVICE(0x0423, 0xc) },	 
+	{ USB_DEVICE(0x08d1, 0x1) },	 
 	{ }
 };
 

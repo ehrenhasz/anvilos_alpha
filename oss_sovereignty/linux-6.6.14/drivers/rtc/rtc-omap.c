@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI OMAP Real Time Clock interface for Linux
- *
- * Copyright (C) 2003 MontaVista Software, Inc.
- * Author: George G. Davis <gdavis@mvista.com> or <source@mvista.com>
- *
- * Copyright (C) 2006 David Brownell (new RTC framework)
- * Copyright (C) 2014 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/clk.h>
@@ -27,22 +19,9 @@
 #include <linux/rtc.h>
 #include <linux/rtc/rtc-omap.h>
 
-/*
- * The OMAP RTC is a year/month/day/hours/minutes/seconds BCD clock
- * with century-range alarm matching, driven by the 32kHz clock.
- *
- * The main user-visible ways it differs from PC RTCs are by omitting
- * "don't care" alarm fields and sub-second periodic IRQs, and having
- * an autoadjust mechanism to calibrate to the true oscillator rate.
- *
- * Board-specific wiring options include using split power mode with
- * RTC_OFF_NOFF used as the reset signal (so the RTC won't be reset),
- * and wiring RTC_WAKE_INT (so the RTC alarm can wake the system from
- * low power modes) for OMAP1 boards (OMAP-L138 has this built into
- * the SoC). See the BOARD-SPECIFIC CUSTOMIZATION comment.
- */
+ 
 
-/* RTC registers */
+ 
 #define OMAP_RTC_SECONDS_REG		0x00
 #define OMAP_RTC_MINUTES_REG		0x04
 #define OMAP_RTC_HOURS_REG		0x08
@@ -84,7 +63,7 @@
 
 #define OMAP_RTC_PMIC_REG		0x98
 
-/* OMAP_RTC_CTRL_REG bit fields: */
+ 
 #define OMAP_RTC_CTRL_SPLIT		BIT(7)
 #define OMAP_RTC_CTRL_DISABLE		BIT(6)
 #define OMAP_RTC_CTRL_SET_32_COUNTER	BIT(5)
@@ -94,7 +73,7 @@
 #define OMAP_RTC_CTRL_ROUND_30S		BIT(1)
 #define OMAP_RTC_CTRL_STOP		BIT(0)
 
-/* OMAP_RTC_STATUS_REG bit fields: */
+ 
 #define OMAP_RTC_STATUS_POWER_UP	BIT(7)
 #define OMAP_RTC_STATUS_ALARM2		BIT(7)
 #define OMAP_RTC_STATUS_ALARM		BIT(6)
@@ -105,25 +84,25 @@
 #define OMAP_RTC_STATUS_RUN		BIT(1)
 #define OMAP_RTC_STATUS_BUSY		BIT(0)
 
-/* OMAP_RTC_INTERRUPTS_REG bit fields: */
+ 
 #define OMAP_RTC_INTERRUPTS_IT_ALARM2	BIT(4)
 #define OMAP_RTC_INTERRUPTS_IT_ALARM	BIT(3)
 #define OMAP_RTC_INTERRUPTS_IT_TIMER	BIT(2)
 
-/* OMAP_RTC_OSC_REG bit fields: */
+ 
 #define OMAP_RTC_OSC_32KCLK_EN		BIT(6)
 #define OMAP_RTC_OSC_SEL_32KCLK_SRC	BIT(3)
 #define OMAP_RTC_OSC_OSC32K_GZ_DISABLE	BIT(4)
 
-/* OMAP_RTC_IRQWAKEEN bit fields: */
+ 
 #define OMAP_RTC_IRQWAKEEN_ALARM_WAKEEN	BIT(1)
 
-/* OMAP_RTC_PMIC bit fields: */
+ 
 #define OMAP_RTC_PMIC_POWER_EN_EN	BIT(16)
 #define OMAP_RTC_PMIC_EXT_WKUP_EN(x)	BIT(x)
 #define OMAP_RTC_PMIC_EXT_WKUP_POL(x)	BIT(4 + x)
 
-/* OMAP_RTC_KICKER values */
+ 
 #define	KICK0_VALUE			0x83e70b13
 #define	KICK1_VALUE			0x95a4f1e0
 
@@ -192,24 +171,20 @@ static void default_rtc_lock(struct omap_rtc *rtc)
 {
 }
 
-/*
- * We rely on the rtc framework to handle locking (rtc->ops_lock),
- * so the only other requirement is that register accesses which
- * require BUSY to be clear are made with IRQs locally disabled
- */
+ 
 static void rtc_wait_not_busy(struct omap_rtc *rtc)
 {
 	int count;
 	u8 status;
 
-	/* BUSY may stay active for 1/32768 second (~30 usec) */
+	 
 	for (count = 0; count < 50; count++) {
 		status = rtc_read(rtc, OMAP_RTC_STATUS_REG);
 		if (!(status & OMAP_RTC_STATUS_BUSY))
 			break;
 		udelay(1);
 	}
-	/* now we have ~15 usec to read/write various registers */
+	 
 }
 
 static irqreturn_t rtc_irq(int irq, void *dev_id)
@@ -220,7 +195,7 @@ static irqreturn_t rtc_irq(int irq, void *dev_id)
 
 	irq_data = rtc_read(rtc, OMAP_RTC_STATUS_REG);
 
-	/* alarm irq? */
+	 
 	if (irq_data & OMAP_RTC_STATUS_ALARM) {
 		rtc->type->unlock(rtc);
 		rtc_write(rtc, OMAP_RTC_STATUS_REG, OMAP_RTC_STATUS_ALARM);
@@ -228,7 +203,7 @@ static irqreturn_t rtc_irq(int irq, void *dev_id)
 		events |= RTC_IRQF | RTC_AF;
 	}
 
-	/* 1/sec periodic/update irq? */
+	 
 	if (irq_data & OMAP_RTC_STATUS_1S_EVENT)
 		events |= RTC_IRQF | RTC_UF;
 
@@ -266,7 +241,7 @@ static int omap_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return 0;
 }
 
-/* this hardware doesn't support "don't care" alarm fields */
+ 
 static void tm2bcd(struct rtc_time *tm)
 {
 	tm->tm_sec = bin2bcd(tm->tm_sec);
@@ -285,7 +260,7 @@ static void bcd2tm(struct rtc_time *tm)
 	tm->tm_hour = bcd2bin(tm->tm_hour);
 	tm->tm_mday = bcd2bin(tm->tm_mday);
 	tm->tm_mon = bcd2bin(tm->tm_mon) - 1;
-	/* epoch == 1900 */
+	 
 	tm->tm_year = bcd2bin(tm->tm_year) + 100;
 }
 
@@ -303,7 +278,7 @@ static int omap_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct omap_rtc *rtc = dev_get_drvdata(dev);
 
-	/* we don't report wday/yday/isdst ... */
+	 
 	local_irq_disable();
 	rtc_wait_not_busy(rtc);
 	omap_rtc_read_time_raw(rtc, tm);
@@ -403,11 +378,7 @@ static int omap_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 static struct omap_rtc *omap_rtc_power_off_rtc;
 
-/**
- * omap_rtc_power_off_program: Set the pmic power off sequence. The RTC
- * generates pmic_pwr_enable control, which can be used to control an external
- * PMIC.
- */
+ 
 int omap_rtc_power_off_program(struct device *dev)
 {
 	struct omap_rtc *rtc = omap_rtc_power_off_rtc;
@@ -417,15 +388,15 @@ int omap_rtc_power_off_program(struct device *dev)
 	u32 val;
 
 	rtc->type->unlock(rtc);
-	/* enable pmic_power_en control */
+	 
 	val = rtc_readl(rtc, OMAP_RTC_PMIC_REG);
 	rtc_writel(rtc, OMAP_RTC_PMIC_REG, val | OMAP_RTC_PMIC_POWER_EN_EN);
 
 again:
-	/* Clear any existing ALARM2 event */
+	 
 	rtc_writel(rtc, OMAP_RTC_STATUS_REG, OMAP_RTC_STATUS_ALARM2);
 
-	/* set alarm one second from now */
+	 
 	omap_rtc_read_time_raw(rtc, &tm);
 	seconds = tm.tm_sec;
 	bcd2tm(&tm);
@@ -443,16 +414,12 @@ again:
 	rtc_write(rtc, OMAP_RTC_ALARM2_MONTHS_REG, tm.tm_mon);
 	rtc_write(rtc, OMAP_RTC_ALARM2_YEARS_REG, tm.tm_year);
 
-	/*
-	 * enable ALARM2 interrupt
-	 *
-	 * NOTE: this fails on AM3352 if rtc_write (writeb) is used
-	 */
+	 
 	val = rtc_read(rtc, OMAP_RTC_INTERRUPTS_REG);
 	rtc_writel(rtc, OMAP_RTC_INTERRUPTS_REG,
 			val | OMAP_RTC_INTERRUPTS_IT_ALARM2);
 
-	/* Retry in case roll over happened before alarm was armed. */
+	 
 	if (rtc_read(rtc, OMAP_RTC_SECONDS_REG) != seconds) {
 		val = rtc_read(rtc, OMAP_RTC_STATUS_REG);
 		if (!(val & OMAP_RTC_STATUS_ALARM2))
@@ -465,20 +432,7 @@ again:
 }
 EXPORT_SYMBOL(omap_rtc_power_off_program);
 
-/*
- * omap_rtc_poweroff: RTC-controlled power off
- *
- * The RTC can be used to control an external PMIC via the pmic_power_en pin,
- * which can be configured to transition to OFF on ALARM2 events.
- *
- * Notes:
- * The one-second alarm offset is the shortest offset possible as the alarm
- * registers must be set before the next timer update and the offset
- * calculation is too heavy for everything to be done within a single access
- * period (~15 us).
- *
- * Called with local interrupts disabled.
- */
+ 
 static void omap_rtc_power_off(void)
 {
 	struct rtc_device *rtc = omap_rtc_power_off_rtc->rtc;
@@ -486,7 +440,7 @@ static void omap_rtc_power_off(void)
 
 	omap_rtc_power_off_program(rtc->dev.parent);
 
-	/* Set PMIC power enable and EXT_WAKEUP in case PB power on is used */
+	 
 	omap_rtc_power_off_rtc->type->unlock(omap_rtc_power_off_rtc);
 	val = rtc_readl(omap_rtc_power_off_rtc, OMAP_RTC_PMIC_REG);
 	val |= OMAP_RTC_PMIC_POWER_EN_EN | OMAP_RTC_PMIC_EXT_WKUP_POL(0) |
@@ -494,11 +448,7 @@ static void omap_rtc_power_off(void)
 	rtc_writel(omap_rtc_power_off_rtc, OMAP_RTC_PMIC_REG, val);
 	omap_rtc_power_off_rtc->type->lock(omap_rtc_power_off_rtc);
 
-	/*
-	 * Wait for alarm to trigger (within one second) and external PMIC to
-	 * power off the system. Add a 500 ms margin for external latencies
-	 * (e.g. debounce circuits).
-	 */
+	 
 	mdelay(1500);
 }
 
@@ -540,7 +490,7 @@ static const struct platform_device_id omap_rtc_id_table[] = {
 		.name	= "da830-rtc",
 		.driver_data = (kernel_ulong_t)&omap_rtc_da830_type,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, omap_rtc_id_table);
@@ -553,7 +503,7 @@ static const struct of_device_id omap_rtc_of_match[] = {
 		.compatible	= "ti,da830-rtc",
 		.data		= &omap_rtc_da830_type,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, omap_rtc_of_match);
@@ -635,7 +585,7 @@ static int rtc_pinconf_set(struct pinctrl_dev *pctldev,
 
 	val = rtc_readl(rtc, OMAP_RTC_PMIC_REG);
 
-	/* active low by default */
+	 
 	val |= OMAP_RTC_PMIC_EXT_WKUP_POL(pin);
 
 	for (i = 0; i < num_configs; i++) {
@@ -771,26 +721,22 @@ static int omap_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rtc);
 
-	/* Enable the clock/module so that we can access the registers */
+	 
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 
 	rtc->type->unlock(rtc);
 
-	/*
-	 * disable interrupts
-	 *
-	 * NOTE: ALARM2 is not cleared on AM3352 if rtc_write (writeb) is used
-	 */
+	 
 	rtc_writel(rtc, OMAP_RTC_INTERRUPTS_REG, 0);
 
-	/* enable RTC functional clock */
+	 
 	if (rtc->type->has_32kclk_en) {
 		reg = rtc_read(rtc, OMAP_RTC_OSC_REG);
 		rtc_write(rtc, OMAP_RTC_OSC_REG, reg | OMAP_RTC_OSC_32KCLK_EN);
 	}
 
-	/* clear old status */
+	 
 	reg = rtc_read(rtc, OMAP_RTC_STATUS_REG);
 
 	mask = OMAP_RTC_STATUS_ALARM;
@@ -807,29 +753,16 @@ static int omap_rtc_probe(struct platform_device *pdev)
 	if (reg & mask)
 		rtc_write(rtc, OMAP_RTC_STATUS_REG, reg & mask);
 
-	/* On boards with split power, RTC_ON_NOFF won't reset the RTC */
+	 
 	reg = rtc_read(rtc, OMAP_RTC_CTRL_REG);
 	if (reg & OMAP_RTC_CTRL_STOP)
 		dev_info(&pdev->dev, "already running\n");
 
-	/* force to 24 hour mode */
+	 
 	new_ctrl = reg & (OMAP_RTC_CTRL_SPLIT | OMAP_RTC_CTRL_AUTO_COMP);
 	new_ctrl |= OMAP_RTC_CTRL_STOP;
 
-	/*
-	 * BOARD-SPECIFIC CUSTOMIZATION CAN GO HERE:
-	 *
-	 *  - Device wake-up capability setting should come through chip
-	 *    init logic. OMAP1 boards should initialize the "wakeup capable"
-	 *    flag in the platform device if the board is wired right for
-	 *    being woken up by RTC alarm. For OMAP-L138, this capability
-	 *    is built into the SoC by the "Deep Sleep" capability.
-	 *
-	 *  - Boards wired so RTC_ON_nOFF is used as the reset signal,
-	 *    rather than nPWRON_RESET, should forcibly enable split
-	 *    power mode.  (Some chip errata report that RTC_CTRL_SPLIT
-	 *    is write-only, and always reads as zero...)
-	 */
+	 
 
 	if (new_ctrl & OMAP_RTC_CTRL_SPLIT)
 		dev_info(&pdev->dev, "split power mode\n");
@@ -837,10 +770,7 @@ static int omap_rtc_probe(struct platform_device *pdev)
 	if (reg != new_ctrl)
 		rtc_write(rtc, OMAP_RTC_CTRL_REG, new_ctrl);
 
-	/*
-	 * If we have the external clock then switch to it so we can keep
-	 * ticking across suspend.
-	 */
+	 
 	if (rtc->has_ext_clk) {
 		reg = rtc_read(rtc, OMAP_RTC_OSC_REG);
 		reg &= ~OMAP_RTC_OSC_OSC32K_GZ_DISABLE;
@@ -863,7 +793,7 @@ static int omap_rtc_probe(struct platform_device *pdev)
 	rtc->rtc->range_max = RTC_TIMESTAMP_END_2099;
 	omap_rtc_nvmem_config.priv = rtc;
 
-	/* handle periodic and alarm irqs */
+	 
 	ret = devm_request_irq(&pdev->dev, rtc->irq_timer, rtc_irq, 0,
 			dev_name(&rtc->rtc->dev), rtc);
 	if (ret)
@@ -876,7 +806,7 @@ static int omap_rtc_probe(struct platform_device *pdev)
 			goto err;
 	}
 
-	/* Support ext_wakeup pinconf */
+	 
 	rtc_pinctrl_desc.name = dev_name(&pdev->dev);
 
 	rtc->pctldev = devm_pinctrl_register(&pdev->dev, &rtc_pinctrl_desc, rtc);
@@ -928,7 +858,7 @@ static void omap_rtc_remove(struct platform_device *pdev)
 		clk_disable_unprepare(rtc->clk);
 
 	rtc->type->unlock(rtc);
-	/* leave rtc running, but disable irqs */
+	 
 	rtc_write(rtc, OMAP_RTC_INTERRUPTS_REG, 0);
 
 	if (rtc->has_ext_clk) {
@@ -939,7 +869,7 @@ static void omap_rtc_remove(struct platform_device *pdev)
 
 	rtc->type->lock(rtc);
 
-	/* Disable the clock/module */
+	 
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 }
@@ -951,11 +881,7 @@ static int __maybe_unused omap_rtc_suspend(struct device *dev)
 	rtc->interrupts_reg = rtc_read(rtc, OMAP_RTC_INTERRUPTS_REG);
 
 	rtc->type->unlock(rtc);
-	/*
-	 * FIXME: the RTC alarm is not currently acting as a wakeup event
-	 * source on some platforms, and in fact this enable() call is just
-	 * saving a flag that's never used...
-	 */
+	 
 	if (device_may_wakeup(dev))
 		enable_irq_wake(rtc->irq_alarm);
 	else
@@ -1003,10 +929,7 @@ static void omap_rtc_shutdown(struct platform_device *pdev)
 	struct omap_rtc *rtc = platform_get_drvdata(pdev);
 	u8 mask;
 
-	/*
-	 * Keep the ALARM interrupt enabled to allow the system to power up on
-	 * alarm events.
-	 */
+	 
 	rtc->type->unlock(rtc);
 	mask = rtc_read(rtc, OMAP_RTC_INTERRUPTS_REG);
 	mask &= OMAP_RTC_INTERRUPTS_IT_ALARM;

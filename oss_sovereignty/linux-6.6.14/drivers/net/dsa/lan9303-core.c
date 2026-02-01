@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Pengutronix, Juergen Borleis <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gpio/consumer.h>
@@ -16,14 +14,12 @@
 
 #include "lan9303.h"
 
-/* For the LAN9303 and LAN9354, only port 0 is an XMII port. */
+ 
 #define IS_PORT_XMII(port)	((port) == 0)
 
 #define LAN9303_NUM_PORTS 3
 
-/* 13.2 System Control and Status Registers
- * Multiply register number by 4 to get address offset.
- */
+ 
 #define LAN9303_CHIP_REV 0x14
 # define LAN9303_CHIP_ID 0x9303
 # define LAN9352_CHIP_ID 0x9352
@@ -64,11 +60,9 @@
 #define LAN9303_SWITCH_CSR_CMD_LANES (BIT(19) | BIT(18) | BIT(17) | BIT(16))
 #define LAN9303_VIRT_PHY_BASE 0x70
 #define LAN9303_VIRT_SPECIAL_CTRL 0x77
-#define  LAN9303_VIRT_SPECIAL_TURBO BIT(10) /*Turbo MII Enable*/
+#define  LAN9303_VIRT_SPECIAL_TURBO BIT(10)  
 
-/*13.4 Switch Fabric Control and Status Registers
- * Accessed indirectly via SWITCH_CSR_CMD, SWITCH_CSR_DATA.
- */
+ 
 #define LAN9303_SW_DEV_ID 0x0000
 #define LAN9303_SW_RESET 0x0001
 #define LAN9303_SW_RESET_RESET BIT(0)
@@ -191,24 +185,24 @@
 
 #define LAN9303_SWITCH_PORT_REG(port, reg0) (0x400 * (port) + (reg0))
 
-/* the built-in PHYs are of type LAN911X */
+ 
 #define MII_LAN911X_SPECIAL_MODES 0x12
 #define MII_LAN911X_SPECIAL_CONTROL_STATUS 0x1f
 
 static const struct regmap_range lan9303_valid_regs[] = {
-	regmap_reg_range(0x14, 0x17), /* misc, interrupt */
-	regmap_reg_range(0x19, 0x19), /* endian test */
-	regmap_reg_range(0x1d, 0x1d), /* hardware config */
-	regmap_reg_range(0x23, 0x24), /* general purpose timer */
-	regmap_reg_range(0x27, 0x27), /* counter */
-	regmap_reg_range(0x29, 0x2a), /* PMI index regs */
-	regmap_reg_range(0x68, 0x6a), /* flow control */
-	regmap_reg_range(0x6b, 0x6c), /* switch fabric indirect regs */
-	regmap_reg_range(0x6d, 0x6f), /* misc */
-	regmap_reg_range(0x70, 0x77), /* virtual phy */
-	regmap_reg_range(0x78, 0x7a), /* GPIO */
-	regmap_reg_range(0x7c, 0x7e), /* MAC & reset */
-	regmap_reg_range(0x80, 0xb7), /* switch fabric direct regs (wr only) */
+	regmap_reg_range(0x14, 0x17),  
+	regmap_reg_range(0x19, 0x19),  
+	regmap_reg_range(0x1d, 0x1d),  
+	regmap_reg_range(0x23, 0x24),  
+	regmap_reg_range(0x27, 0x27),  
+	regmap_reg_range(0x29, 0x2a),  
+	regmap_reg_range(0x68, 0x6a),  
+	regmap_reg_range(0x6b, 0x6c),  
+	regmap_reg_range(0x6d, 0x6f),  
+	regmap_reg_range(0x70, 0x77),  
+	regmap_reg_range(0x78, 0x7a),  
+	regmap_reg_range(0x7c, 0x7e),  
+	regmap_reg_range(0x80, 0xb7),  
 };
 
 static const struct regmap_range lan9303_reserved_ranges[] = {
@@ -232,7 +226,7 @@ const struct regmap_access_table lan9303_register_set = {
 };
 EXPORT_SYMBOL(lan9303_register_set);
 
-/* Flow Control registers indexed by port number */
+ 
 static unsigned int flow_ctl_reg[] = {
 	LAN9303_MANUAL_FC_0,
 	LAN9303_MANUAL_FC_1,
@@ -243,11 +237,7 @@ static int lan9303_read(struct regmap *regmap, unsigned int offset, u32 *reg)
 {
 	int ret, i;
 
-	/* we can lose arbitration for the I2C case, because the device
-	 * tries to detect and read an external EEPROM after reset and acts as
-	 * a master on the shared I2C bus itself. This conflicts with our
-	 * attempts to access the device as a slave at the same moment.
-	 */
+	 
 	for (i = 0; i < 5; i++) {
 		ret = regmap_read(regmap, offset, reg);
 		if (!ret)
@@ -325,7 +315,7 @@ static int lan9303_indirect_phy_read(struct lan9303 *chip, int addr, int regnum)
 	if (ret)
 		goto on_error;
 
-	/* start the MII read cycle */
+	 
 	ret = regmap_write(chip->regmap, LAN9303_PMI_ACCESS, val);
 	if (ret)
 		goto on_error;
@@ -334,7 +324,7 @@ static int lan9303_indirect_phy_read(struct lan9303 *chip, int addr, int regnum)
 	if (ret)
 		goto on_error;
 
-	/* read the result of this operation */
+	 
 	ret = lan9303_read(chip->regmap, LAN9303_PMI_DATA, &val);
 	if (ret)
 		goto on_error;
@@ -364,12 +354,12 @@ static int lan9303_indirect_phy_write(struct lan9303 *chip, int addr,
 	if (ret)
 		goto on_error;
 
-	/* write the data first... */
+	 
 	ret = regmap_write(chip->regmap, LAN9303_PMI_DATA, val);
 	if (ret)
 		goto on_error;
 
-	/* ...then start the MII write cycle */
+	 
 	ret = regmap_write(chip->regmap, LAN9303_PMI_ACCESS, reg);
 
 on_error:
@@ -410,7 +400,7 @@ static int lan9303_write_switch_reg(struct lan9303 *chip, u16 regnum, u32 val)
 		goto on_error;
 	}
 
-	/* trigger write */
+	 
 	ret = regmap_write(chip->regmap, LAN9303_SWITCH_CSR_CMD, reg);
 	if (ret)
 		dev_err(chip->dev, "Failed to write csr command reg: %d\n",
@@ -437,7 +427,7 @@ static int lan9303_read_switch_reg(struct lan9303 *chip, u16 regnum, u32 *val)
 	if (ret)
 		goto on_error;
 
-	/* trigger read */
+	 
 	ret = regmap_write(chip->regmap, LAN9303_SWITCH_CSR_CMD, reg);
 	if (ret) {
 		dev_err(chip->dev, "Failed to write csr command reg: %d\n",
@@ -490,16 +480,7 @@ static int lan9303_detect_phy_setup(struct lan9303 *chip)
 {
 	int reg;
 
-	/* Calculate chip->phy_addr_base:
-	 * Depending on the 'phy_addr_sel_strap' setting, the three phys are
-	 * using IDs 0-1-2 or IDs 1-2-3. We cannot read back the
-	 * 'phy_addr_sel_strap' setting directly, so we need a test, which
-	 * configuration is active:
-	 * Special reg 18 of phy 3 reads as 0x0000, if 'phy_addr_sel_strap' is 0
-	 * and the IDs are 0-1-2, else it contains something different from
-	 * 0x0000, which means 'phy_addr_sel_strap' is 1 and the IDs are 1-2-3.
-	 * 0xffff is returned on MDIO read with no response.
-	 */
+	 
 	reg = chip->ops->phy_read(chip, 3, MII_LAN911X_SPECIAL_MODES);
 	if (reg < 0) {
 		dev_err(chip->dev, "Failed to detect phy config: %d\n", reg);
@@ -514,11 +495,11 @@ static int lan9303_detect_phy_setup(struct lan9303 *chip)
 	return 0;
 }
 
-/* Map ALR-port bits to port bitmap, and back */
+ 
 static const int alrport_2_portmap[] = {1, 2, 4, 0, 3, 5, 6, 7 };
 static const int portmap_2_alrport[] = {3, 0, 1, 4, 2, 5, 6, 7 };
 
-/* Return pointer to first free ALR cache entry, return NULL if none */
+ 
 static struct lan9303_alr_cache_entry *
 lan9303_alr_cache_find_free(struct lan9303 *chip)
 {
@@ -532,7 +513,7 @@ lan9303_alr_cache_find_free(struct lan9303 *chip)
 	return NULL;
 }
 
-/* Return pointer to ALR cache entry matching MAC address */
+ 
 static struct lan9303_alr_cache_entry *
 lan9303_alr_cache_find_mac(struct lan9303 *chip, const u8 *mac_addr)
 {
@@ -629,7 +610,7 @@ struct del_port_learned_ctx {
 	int port;
 };
 
-/* Clear learned (non-static) entry on given port */
+ 
 static int alr_loop_cb_del_port_learned(struct lan9303 *chip, u32 dat0,
 					u32 dat1, int portmap, void *ctx)
 {
@@ -639,8 +620,8 @@ static int alr_loop_cb_del_port_learned(struct lan9303 *chip, u32 dat0,
 	if (((BIT(port) & portmap) == 0) || (dat1 & LAN9303_ALR_DAT1_STATIC))
 		return 0;
 
-	/* learned entries has only one port, we can just delete */
-	dat1 &= ~LAN9303_ALR_DAT1_VALID; /* delete entry */
+	 
+	dat1 &= ~LAN9303_ALR_DAT1_VALID;  
 	lan9303_alr_make_entry_raw(chip, dat0, dat1);
 
 	return 0;
@@ -667,7 +648,7 @@ static int alr_loop_cb_fdb_port_dump(struct lan9303 *chip, u32 dat0,
 	return dump_ctx->cb(mac, 0, is_static, dump_ctx->data);
 }
 
-/* Set a static ALR entry. Delete entry if port_map is zero */
+ 
 static void lan9303_alr_set_entry(struct lan9303 *chip, const u8 *mac,
 				  u8 port_map, bool stp_override)
 {
@@ -677,7 +658,7 @@ static void lan9303_alr_set_entry(struct lan9303 *chip, const u8 *mac,
 	dat1 = LAN9303_ALR_DAT1_STATIC;
 	if (port_map)
 		dat1 |= LAN9303_ALR_DAT1_VALID;
-	/* otherwise no ports: delete entry */
+	 
 	if (stp_override)
 		dat1 |= LAN9303_ALR_DAT1_AGE_OVERRID;
 
@@ -697,7 +678,7 @@ static void lan9303_alr_set_entry(struct lan9303 *chip, const u8 *mac,
 	lan9303_alr_make_entry_raw(chip, dat0, dat1);
 }
 
-/* Add port to static ALR entry, create new static entry if needed */
+ 
 static int lan9303_alr_add_port(struct lan9303 *chip, const u8 *mac, int port,
 				bool stp_override)
 {
@@ -705,7 +686,7 @@ static int lan9303_alr_add_port(struct lan9303 *chip, const u8 *mac, int port,
 
 	mutex_lock(&chip->alr_mutex);
 	entr = lan9303_alr_cache_find_mac(chip, mac);
-	if (!entr) { /*New entry */
+	if (!entr) {  
 		entr = lan9303_alr_cache_find_free(chip);
 		if (!entr) {
 			mutex_unlock(&chip->alr_mutex);
@@ -721,7 +702,7 @@ static int lan9303_alr_add_port(struct lan9303 *chip, const u8 *mac, int port,
 	return 0;
 }
 
-/* Delete static port from ALR entry, delete entry if last port */
+ 
 static int lan9303_alr_del_port(struct lan9303 *chip, const u8 *mac, int port)
 {
 	struct lan9303_alr_cache_entry *entr;
@@ -729,10 +710,10 @@ static int lan9303_alr_del_port(struct lan9303 *chip, const u8 *mac, int port)
 	mutex_lock(&chip->alr_mutex);
 	entr = lan9303_alr_cache_find_mac(chip, mac);
 	if (!entr)
-		goto out;  /* no static entry found */
+		goto out;   
 
 	entr->port_map &= ~BIT(port);
-	if (entr->port_map == 0) /* zero means its free again */
+	if (entr->port_map == 0)  
 		eth_zero_addr(entr->mac_addr);
 	lan9303_alr_set_entry(chip, mac, entr->port_map, entr->stp_override);
 
@@ -746,13 +727,13 @@ static int lan9303_disable_processing_port(struct lan9303 *chip,
 {
 	int ret;
 
-	/* disable RX, but keep register reset default values else */
+	 
 	ret = lan9303_write_switch_port(chip, port, LAN9303_MAC_RX_CFG_0,
 					LAN9303_MAC_RX_CFG_X_REJECT_MAC_TYPES);
 	if (ret)
 		return ret;
 
-	/* disable TX, but keep register reset default values else */
+	 
 	return lan9303_write_switch_port(chip, port, LAN9303_MAC_TX_CFG_0,
 				LAN9303_MAC_TX_CFG_X_TX_IFG_CONFIG_DEFAULT |
 				LAN9303_MAC_TX_CFG_X_TX_PAD_ENABLE);
@@ -763,45 +744,37 @@ static int lan9303_enable_processing_port(struct lan9303 *chip,
 {
 	int ret;
 
-	/* enable RX and keep register reset default values else */
+	 
 	ret = lan9303_write_switch_port(chip, port, LAN9303_MAC_RX_CFG_0,
 					LAN9303_MAC_RX_CFG_X_REJECT_MAC_TYPES |
 					LAN9303_MAC_RX_CFG_X_RX_ENABLE);
 	if (ret)
 		return ret;
 
-	/* enable TX and keep register reset default values else */
+	 
 	return lan9303_write_switch_port(chip, port, LAN9303_MAC_TX_CFG_0,
 				LAN9303_MAC_TX_CFG_X_TX_IFG_CONFIG_DEFAULT |
 				LAN9303_MAC_TX_CFG_X_TX_PAD_ENABLE |
 				LAN9303_MAC_TX_CFG_X_TX_ENABLE);
 }
 
-/* forward special tagged packets from port 0 to port 1 *or* port 2 */
+ 
 static int lan9303_setup_tagging(struct lan9303 *chip)
 {
 	int ret;
 	u32 val;
-	/* enable defining the destination port via special VLAN tagging
-	 * for port 0
-	 */
+	 
 	ret = lan9303_write_switch_reg(chip, LAN9303_SWE_INGRESS_PORT_TYPE,
 				       LAN9303_SWE_INGRESS_PORT_TYPE_VLAN);
 	if (ret)
 		return ret;
 
-	/* tag incoming packets at port 1 and 2 on their way to port 0 to be
-	 * able to discover their source port
-	 */
+	 
 	val = LAN9303_BM_EGRSS_PORT_TYPE_SPECIAL_TAG_PORT0;
 	return lan9303_write_switch_reg(chip, LAN9303_BM_EGRSS_PORT_TYPE, val);
 }
 
-/* We want a special working switch:
- * - do not forward packets between port 1 and 2
- * - forward everything from port 1 to port 0
- * - forward everything from port 2 to port 0
- */
+ 
 static int lan9303_separate_ports(struct lan9303 *chip)
 {
 	int ret;
@@ -816,7 +789,7 @@ static int lan9303_separate_ports(struct lan9303 *chip)
 	if (ret)
 		return ret;
 
-	/* prevent port 1 and 2 from forwarding packets by their own */
+	 
 	return lan9303_write_switch_reg(chip, LAN9303_SWE_PORT_STATE,
 				LAN9303_SWE_PORT_STATE_FORWARDING_PORT0 |
 				LAN9303_SWE_PORT_STATE_BLOCKING_PORT1 |
@@ -825,7 +798,7 @@ static int lan9303_separate_ports(struct lan9303 *chip)
 
 static void lan9303_bridge_ports(struct lan9303 *chip)
 {
-	/* ports bridged: remove mirroring */
+	 
 	lan9303_write_switch_reg(chip, LAN9303_SWE_PORT_MIRROR,
 				 LAN9303_SWE_PORT_MIRROR_DISABLED);
 
@@ -842,11 +815,11 @@ static void lan9303_handle_reset(struct lan9303 *chip)
 	if (chip->reset_duration != 0)
 		msleep(chip->reset_duration);
 
-	/* release (deassert) reset and activate the device */
+	 
 	gpiod_set_value_cansleep(chip->reset_gpio, 0);
 }
 
-/* stop processing packets for all ports */
+ 
 static int lan9303_disable_processing(struct lan9303 *chip)
 {
 	int p;
@@ -880,13 +853,7 @@ static int lan9303_check_device(struct lan9303 *chip)
 		return -ENODEV;
 	}
 
-	/* The default state of the LAN9303 device is to forward packets between
-	 * all ports (if not configured differently by an external EEPROM).
-	 * The initial state of a DSA device must be forwarding packets only
-	 * between the external and the internal ports and no forwarding
-	 * between the external ports. In preparation we stop packet handling
-	 * at all for now until the LAN9303 device is re-programmed accordingly.
-	 */
+	 
 	ret = lan9303_disable_processing(chip);
 	if (ret)
 		dev_warn(chip->dev, "failed to disable switching %d\n", ret);
@@ -903,7 +870,7 @@ static int lan9303_check_device(struct lan9303 *chip)
 	return 0;
 }
 
-/* ---------------------------- DSA -----------------------------------*/
+ 
 
 static enum dsa_tag_protocol lan9303_get_tag_protocol(struct dsa_switch *ds,
 						      int port,
@@ -918,18 +885,18 @@ static int lan9303_setup(struct dsa_switch *ds)
 	int ret;
 	u32 reg;
 
-	/* Make sure that port 0 is the cpu port */
+	 
 	if (!dsa_is_cpu_port(ds, 0)) {
 		dev_err(chip->dev, "port 0 is not the CPU port\n");
 		return -EINVAL;
 	}
 
-	/* Virtual Phy: Remove Turbo 200Mbit mode */
+	 
 	ret = lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, &reg);
 	if (ret)
 		return (ret);
 
-	/* Clear the TURBO Mode bit if it was set. */
+	 
 	if (reg & LAN9303_VIRT_SPECIAL_TURBO) {
 		reg &= ~LAN9303_VIRT_SPECIAL_TURBO;
 		regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, reg);
@@ -947,7 +914,7 @@ static int lan9303_setup(struct dsa_switch *ds)
 	if (ret)
 		dev_err(chip->dev, "failed to re-enable switching %d\n", ret);
 
-	/* Trap IGMP to port 0 */
+	 
 	ret = lan9303_write_switch_reg_mask(chip, LAN9303_SWE_GLB_INGRESS_CFG,
 					    LAN9303_SWE_GLB_INGR_IGMP_TRAP |
 					    LAN9303_SWE_GLB_INGR_IGMP_PORT(0),
@@ -960,7 +927,7 @@ static int lan9303_setup(struct dsa_switch *ds)
 }
 
 struct lan9303_mib_desc {
-	unsigned int offset; /* offset of first MAC */
+	unsigned int offset;  
 	const char *name;
 };
 
@@ -1113,7 +1080,7 @@ static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
 	dev_dbg(chip->dev, "%s(port %d)\n", __func__, port);
 	if (dsa_port_bridge_same(dsa_to_port(ds, 1), dsa_to_port(ds, 2))) {
 		lan9303_bridge_ports(chip);
-		chip->is_bridged = true;  /* unleash stp_state_set() */
+		chip->is_bridged = true;   
 	}
 
 	return 0;
@@ -1168,7 +1135,7 @@ static void lan9303_port_stp_state_set(struct dsa_switch *ds, int port,
 	if (chip->is_bridged)
 		lan9303_write_switch_reg(chip, LAN9303_SWE_PORT_STATE,
 					 chip->swe_port_state);
-	/* else: touching SWE_PORT_STATE would break port separation */
+	 
 }
 
 static void lan9303_port_fast_age(struct dsa_switch *ds, int port)
@@ -1285,9 +1252,7 @@ static void lan9303_phylink_get_caps(struct dsa_switch *ds, int port,
 	} else {
 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
 			  config->supported_interfaces);
-		/* Compatibility for phylib's default interface type when the
-		 * phy-mode property is absent
-		 */
+		 
 		__set_bit(PHY_INTERFACE_MODE_GMII,
 			  config->supported_interfaces);
 	}
@@ -1304,14 +1269,11 @@ static void lan9303_phylink_mac_link_up(struct dsa_switch *ds, int port,
 	u32 ctl;
 	u32 reg;
 
-	/* On this device, we are only interested in doing something here if
-	 * this is the xMII port. All other ports are 10/100 phys using MDIO
-	 * to control there link settings.
-	 */
+	 
 	if (!IS_PORT_XMII(port))
 		return;
 
-	/* Disable auto-negotiation and force the speed/duplex settings. */
+	 
 	ctl = lan9303_phy_read(ds, port, MII_BMCR);
 	ctl &= ~(BMCR_ANENABLE | BMCR_SPEED100 | BMCR_FULLDPLX);
 	if (speed == SPEED_100)
@@ -1320,7 +1282,7 @@ static void lan9303_phylink_mac_link_up(struct dsa_switch *ds, int port,
 		ctl |= BMCR_FULLDPLX;
 	lan9303_phy_write(ds, port, MII_BMCR, ctl);
 
-	/* Force the flow control settings. */
+	 
 	lan9303_read(chip->regmap, flow_ctl_reg[port], &reg);
 	reg &= ~(LAN9303_BP_EN | LAN9303_RX_FC_EN | LAN9303_TX_FC_EN);
 	if (rx_pause)
@@ -1393,7 +1355,7 @@ static int lan9303_probe_reset_gpio(struct lan9303 *chip,
 		dev_dbg(chip->dev, "reset duration defaults to 200 ms\n");
 	}
 
-	/* A sane reset duration should not be longer than 1s */
+	 
 	if (chip->reset_duration > 1000)
 		chip->reset_duration = 1000;
 
@@ -1414,8 +1376,8 @@ int lan9303_probe(struct lan9303 *chip, struct device_node *np)
 
 	lan9303_handle_reset(chip);
 
-	/* First read to the device.  This is a Dummy read to ensure MDIO */
-	/* access is in 32-bit sync. */
+	 
+	 
 	ret = lan9303_read(chip->regmap, LAN9303_BYTE_ORDER, &reg);
 	if (ret) {
 		dev_err(chip->dev, "failed to access the device: %d\n",
@@ -1451,7 +1413,7 @@ int lan9303_remove(struct lan9303 *chip)
 
 	dsa_unregister_switch(chip->ds);
 
-	/* assert reset to the whole device to prevent it from doing anything */
+	 
 	gpiod_set_value_cansleep(chip->reset_gpio, 1);
 
 	return 0;

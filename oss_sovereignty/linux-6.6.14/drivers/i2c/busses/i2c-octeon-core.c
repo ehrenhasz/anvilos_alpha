@@ -1,16 +1,4 @@
-/*
- * (C) Copyright 2009-2010
- * Nokia Siemens Networks, michael.lawnick.ext@nsn.com
- *
- * Portions Copyright (C) 2010 - 2016 Cavium, Inc.
- *
- * This file contains the shared part of the driver for the i2c adapter in
- * Cavium Networks' OCTEON processors and ThunderX SOCs.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -20,7 +8,7 @@
 
 #include "i2c-octeon-core.h"
 
-/* interrupt service routine */
+ 
 irqreturn_t octeon_i2c_isr(int irq, void *dev_id)
 {
 	struct octeon_i2c *i2c = dev_id;
@@ -36,20 +24,12 @@ static bool octeon_i2c_test_iflg(struct octeon_i2c *i2c)
 	return (octeon_i2c_ctl_read(i2c) & TWSI_CTL_IFLG);
 }
 
-/**
- * octeon_i2c_wait - wait for the IFLG to be set
- * @i2c: The struct octeon_i2c
- *
- * Returns 0 on success, otherwise a negative errno.
- */
+ 
 static int octeon_i2c_wait(struct octeon_i2c *i2c)
 {
 	long time_left;
 
-	/*
-	 * Some chip revisions don't assert the irq in the interrupt
-	 * controller. So we must poll for the IFLG change.
-	 */
+	 
 	if (i2c->broken_irq_mode) {
 		u64 end = get_jiffies_64() + i2c->adap.timeout;
 
@@ -85,13 +65,11 @@ static bool octeon_i2c_hlc_test_valid(struct octeon_i2c *i2c)
 
 static void octeon_i2c_hlc_int_clear(struct octeon_i2c *i2c)
 {
-	/* clear ST/TS events, listen for neither */
+	 
 	octeon_i2c_write_int(i2c, TWSI_INT_ST_INT | TWSI_INT_TS_INT);
 }
 
-/*
- * Cleanup low-level state & enable high-level controller.
- */
+ 
 static void octeon_i2c_hlc_enable(struct octeon_i2c *i2c)
 {
 	int try = 0;
@@ -106,7 +84,7 @@ static void octeon_i2c_hlc_enable(struct octeon_i2c *i2c)
 		if (!(val & (TWSI_CTL_STA | TWSI_CTL_STP)))
 			break;
 
-		/* clear IFLG event */
+		 
 		if (val & TWSI_CTL_IFLG)
 			octeon_i2c_ctl_write(i2c, TWSI_CTL_ENAB);
 
@@ -115,7 +93,7 @@ static void octeon_i2c_hlc_enable(struct octeon_i2c *i2c)
 			break;
 		}
 
-		/* spin until any start/stop has finished */
+		 
 		udelay(10);
 	}
 	octeon_i2c_ctl_write(i2c, TWSI_CTL_CE | TWSI_CTL_AAK | TWSI_CTL_ENAB);
@@ -130,20 +108,12 @@ static void octeon_i2c_hlc_disable(struct octeon_i2c *i2c)
 	octeon_i2c_ctl_write(i2c, TWSI_CTL_ENAB);
 }
 
-/**
- * octeon_i2c_hlc_wait - wait for an HLC operation to complete
- * @i2c: The struct octeon_i2c
- *
- * Returns 0 on success, otherwise -ETIMEDOUT.
- */
+ 
 static int octeon_i2c_hlc_wait(struct octeon_i2c *i2c)
 {
 	int time_left;
 
-	/*
-	 * Some cn38xx boards don't assert the irq in the interrupt
-	 * controller. So we must poll for the valid bit change.
-	 */
+	 
 	if (i2c->broken_irq_mode) {
 		u64 end = get_jiffies_64() + i2c->adap.timeout;
 
@@ -178,17 +148,14 @@ static int octeon_i2c_check_status(struct octeon_i2c *i2c, int final_read)
 {
 	u8 stat;
 
-	/*
-	 * This is ugly... in HLC mode the status is not in the status register
-	 * but in the lower 8 bits of SW_TWSI.
-	 */
+	 
 	if (i2c->hlc_enabled)
 		stat = __raw_readq(i2c->twsi_base + SW_TWSI(i2c));
 	else
 		stat = octeon_i2c_stat_read(i2c);
 
 	switch (stat) {
-	/* Everything is fine */
+	 
 	case STAT_IDLE:
 	case STAT_AD2W_ACK:
 	case STAT_RXADDR_ACK:
@@ -196,33 +163,33 @@ static int octeon_i2c_check_status(struct octeon_i2c *i2c, int final_read)
 	case STAT_TXDATA_ACK:
 		return 0;
 
-	/* ACK allowed on pre-terminal bytes only */
+	 
 	case STAT_RXDATA_ACK:
 		if (!final_read)
 			return 0;
 		return -EIO;
 
-	/* NAK allowed on terminal byte only */
+	 
 	case STAT_RXDATA_NAK:
 		if (final_read)
 			return 0;
 		return -EIO;
 
-	/* Arbitration lost */
+	 
 	case STAT_LOST_ARB_38:
 	case STAT_LOST_ARB_68:
 	case STAT_LOST_ARB_78:
 	case STAT_LOST_ARB_B0:
 		return -EAGAIN;
 
-	/* Being addressed as slave, should back off & listen */
+	 
 	case STAT_SLAVE_60:
 	case STAT_SLAVE_70:
 	case STAT_GENDATA_ACK:
 	case STAT_GENDATA_NAK:
 		return -EOPNOTSUPP;
 
-	/* Core busy as slave */
+	 
 	case STAT_SLAVE_80:
 	case STAT_SLAVE_88:
 	case STAT_SLAVE_A0:
@@ -251,17 +218,12 @@ static int octeon_i2c_recovery(struct octeon_i2c *i2c)
 
 	ret = i2c_recover_bus(&i2c->adap);
 	if (ret)
-		/* recover failed, try hardware re-init */
+		 
 		ret = octeon_i2c_init_lowlevel(i2c);
 	return ret;
 }
 
-/**
- * octeon_i2c_start - send START to the bus
- * @i2c: The struct octeon_i2c
- *
- * Returns 0 on success, otherwise a negative errno.
- */
+ 
 static int octeon_i2c_start(struct octeon_i2c *i2c)
 {
 	int ret;
@@ -276,33 +238,22 @@ static int octeon_i2c_start(struct octeon_i2c *i2c)
 
 	stat = octeon_i2c_stat_read(i2c);
 	if (stat == STAT_START || stat == STAT_REP_START)
-		/* START successful, bail out */
+		 
 		return 0;
 
 error:
-	/* START failed, try to recover */
+	 
 	ret = octeon_i2c_recovery(i2c);
 	return (ret) ? ret : -EAGAIN;
 }
 
-/* send STOP to the bus */
+ 
 static void octeon_i2c_stop(struct octeon_i2c *i2c)
 {
 	octeon_i2c_ctl_write(i2c, TWSI_CTL_ENAB | TWSI_CTL_STP);
 }
 
-/**
- * octeon_i2c_read - receive data from the bus via low-level controller
- * @i2c: The struct octeon_i2c
- * @target: Target address
- * @data: Pointer to the location to store the data
- * @rlength: Length of the data
- * @recv_len: flag for length byte
- *
- * The address is sent over the bus, then the data is read.
- *
- * Returns 0 on success, otherwise a negative errno.
- */
+ 
 static int octeon_i2c_read(struct octeon_i2c *i2c, int target,
 			   u8 *data, u16 *rlength, bool recv_len)
 {
@@ -316,24 +267,17 @@ static int octeon_i2c_read(struct octeon_i2c *i2c, int target,
 	if (result)
 		return result;
 
-	/* address OK ? */
+	 
 	result = octeon_i2c_check_status(i2c, false);
 	if (result)
 		return result;
 
 	for (i = 0; i < length; i++) {
-		/*
-		 * For the last byte to receive TWSI_CTL_AAK must not be set.
-		 *
-		 * A special case is I2C_M_RECV_LEN where we don't know the
-		 * additional length yet. If recv_len is set we assume we're
-		 * not reading the final byte and therefore need to set
-		 * TWSI_CTL_AAK.
-		 */
+		 
 		if ((i + 1 == length) && !(recv_len && i == 0))
 			final_read = true;
 
-		/* clear iflg to allow next event */
+		 
 		if (final_read)
 			octeon_i2c_ctl_write(i2c, TWSI_CTL_ENAB);
 		else
@@ -360,17 +304,7 @@ static int octeon_i2c_read(struct octeon_i2c *i2c, int target,
 	return 0;
 }
 
-/**
- * octeon_i2c_write - send data to the bus via low-level controller
- * @i2c: The struct octeon_i2c
- * @target: Target address
- * @data: Pointer to the data to be sent
- * @length: Length of the data
- *
- * The address is sent over the bus, then the data.
- *
- * Returns 0 on success, otherwise a negative errno.
- */
+ 
 static int octeon_i2c_write(struct octeon_i2c *i2c, int target,
 			    const u8 *data, int length)
 {
@@ -399,7 +333,7 @@ static int octeon_i2c_write(struct octeon_i2c *i2c, int target,
 	return 0;
 }
 
-/* high-level-controller pure read of up to 8 bytes */
+ 
 static int octeon_i2c_hlc_read(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 {
 	int i, j, ret = 0;
@@ -409,9 +343,9 @@ static int octeon_i2c_hlc_read(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 	octeon_i2c_hlc_int_clear(i2c);
 
 	cmd = SW_TWSI_V | SW_TWSI_R | SW_TWSI_SOVR;
-	/* SIZE */
+	 
 	cmd |= (u64)(msgs[0].len - 1) << SW_TWSI_SIZE_SHIFT;
-	/* A */
+	 
 	cmd |= (u64)(msgs[0].addr & 0x7full) << SW_TWSI_ADDR_SHIFT;
 
 	if (msgs[0].flags & I2C_M_TEN)
@@ -441,7 +375,7 @@ err:
 	return ret;
 }
 
-/* high-level-controller pure write of up to 8 bytes */
+ 
 static int octeon_i2c_hlc_write(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 {
 	int i, j, ret = 0;
@@ -451,9 +385,9 @@ static int octeon_i2c_hlc_write(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 	octeon_i2c_hlc_int_clear(i2c);
 
 	cmd = SW_TWSI_V | SW_TWSI_SOVR;
-	/* SIZE */
+	 
 	cmd |= (u64)(msgs[0].len - 1) << SW_TWSI_SIZE_SHIFT;
-	/* A */
+	 
 	cmd |= (u64)(msgs[0].addr & 0x7full) << SW_TWSI_ADDR_SHIFT;
 
 	if (msgs[0].flags & I2C_M_TEN)
@@ -485,7 +419,7 @@ err:
 	return ret;
 }
 
-/* high-level-controller composite write+read, msg0=addr, msg1=data */
+ 
 static int octeon_i2c_hlc_comp_read(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 {
 	int i, j, ret = 0;
@@ -494,9 +428,9 @@ static int octeon_i2c_hlc_comp_read(struct octeon_i2c *i2c, struct i2c_msg *msgs
 	octeon_i2c_hlc_enable(i2c);
 
 	cmd = SW_TWSI_V | SW_TWSI_R | SW_TWSI_SOVR;
-	/* SIZE */
+	 
 	cmd |= (u64)(msgs[1].len - 1) << SW_TWSI_SIZE_SHIFT;
-	/* A */
+	 
 	cmd |= (u64)(msgs[0].addr & 0x7full) << SW_TWSI_ADDR_SHIFT;
 
 	if (msgs[0].flags & I2C_M_TEN)
@@ -539,7 +473,7 @@ err:
 	return ret;
 }
 
-/* high-level-controller composite write+write, m[0]len<=2, m[1]len<=8 */
+ 
 static int octeon_i2c_hlc_comp_write(struct octeon_i2c *i2c, struct i2c_msg *msgs)
 {
 	bool set_ext = false;
@@ -549,9 +483,9 @@ static int octeon_i2c_hlc_comp_write(struct octeon_i2c *i2c, struct i2c_msg *msg
 	octeon_i2c_hlc_enable(i2c);
 
 	cmd = SW_TWSI_V | SW_TWSI_SOVR;
-	/* SIZE */
+	 
 	cmd |= (u64)(msgs[1].len - 1) << SW_TWSI_SIZE_SHIFT;
-	/* A */
+	 
 	cmd |= (u64)(msgs[0].addr & 0x7full) << SW_TWSI_ADDR_SHIFT;
 
 	if (msgs[0].flags & I2C_M_TEN)
@@ -594,14 +528,7 @@ err:
 	return ret;
 }
 
-/**
- * octeon_i2c_xfer - The driver's master_xfer function
- * @adap: Pointer to the i2c_adapter structure
- * @msgs: Pointer to the messages to be processed
- * @num: Length of the MSGS array
- *
- * Returns the number of messages processed, or a negative errno on failure.
- */
+ 
 int octeon_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 {
 	struct octeon_i2c *i2c = i2c_get_adapdata(adap);
@@ -632,7 +559,7 @@ int octeon_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	for (i = 0; ret == 0 && i < num; i++) {
 		struct i2c_msg *pmsg = &msgs[i];
 
-		/* zero-length messages are not supported */
+		 
 		if (!pmsg->len) {
 			ret = -EOPNOTSUPP;
 			break;
@@ -654,22 +581,16 @@ out:
 	return (ret != 0) ? ret : num;
 }
 
-/* calculate and set clock divisors */
+ 
 void octeon_i2c_set_clock(struct octeon_i2c *i2c)
 {
 	int tclk, thp_base, inc, thp_idx, mdiv_idx, ndiv_idx, foscl, diff;
 	int thp = 0x18, mdiv = 2, ndiv = 0, delta_hz = 1000000;
 
 	for (ndiv_idx = 0; ndiv_idx < 8 && delta_hz != 0; ndiv_idx++) {
-		/*
-		 * An mdiv value of less than 2 seems to not work well
-		 * with ds1337 RTCs, so we constrain it to larger values.
-		 */
+		 
 		for (mdiv_idx = 15; mdiv_idx >= 2 && delta_hz != 0; mdiv_idx--) {
-			/*
-			 * For given ndiv and mdiv values check the
-			 * two closest thp values.
-			 */
+			 
 			tclk = i2c->twsi_freq * (mdiv_idx + 1) * 10;
 			tclk *= (1 << ndiv_idx);
 			thp_base = (i2c->sys_freq / (tclk * 2)) - 1;
@@ -701,7 +622,7 @@ int octeon_i2c_init_lowlevel(struct octeon_i2c *i2c)
 	u8 status = 0;
 	int tries;
 
-	/* reset controller */
+	 
 	octeon_i2c_reg_write(i2c, SW_TWSI_EOP_TWSI_RST, 0);
 
 	for (tries = 10; tries && status != STAT_IDLE; tries--) {
@@ -717,7 +638,7 @@ int octeon_i2c_init_lowlevel(struct octeon_i2c *i2c)
 		return -EIO;
 	}
 
-	/* toggle twice to force both teardowns */
+	 
 	octeon_i2c_hlc_enable(i2c);
 	octeon_i2c_hlc_disable(i2c);
 	return 0;
@@ -754,13 +675,10 @@ static void octeon_i2c_prepare_recovery(struct i2c_adapter *adap)
 
 	octeon_i2c_hlc_disable(i2c);
 	octeon_i2c_reg_write(i2c, SW_TWSI_EOP_TWSI_RST, 0);
-	/* wait for software reset to settle */
+	 
 	udelay(5);
 
-	/*
-	 * Bring control register to a good state regardless
-	 * of HLC state.
-	 */
+	 
 	octeon_i2c_ctl_write(i2c, TWSI_CTL_ENAB);
 
 	octeon_i2c_write_int(i2c, 0);
@@ -770,11 +688,7 @@ static void octeon_i2c_unprepare_recovery(struct i2c_adapter *adap)
 {
 	struct octeon_i2c *i2c = i2c_get_adapdata(adap);
 
-	/*
-	 * Generate STOP to finish the unfinished transaction.
-	 * Can't generate STOP via the TWSI CTL register
-	 * since it could bring the TWSI controller into an inoperable state.
-	 */
+	 
 	octeon_i2c_write_int(i2c, TWSI_INT_SDA_OVR | TWSI_INT_SCL_OVR);
 	udelay(5);
 	octeon_i2c_write_int(i2c, TWSI_INT_SDA_OVR);

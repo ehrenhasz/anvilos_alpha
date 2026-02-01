@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-#include "iscsi_target_core.h" /* struct iscsit_cmd */
+ 
+#include "iscsi_target_core.h"  
 
 struct sockaddr_storage;
 
@@ -39,18 +39,14 @@ static inline void *iscsit_priv_cmd(struct iscsit_cmd *cmd)
 	return (void *)(cmd + 1);
 }
 
-/*
- * From iscsi_target_transport.c
- */
+ 
 
 extern void iscsit_register_transport(struct iscsit_transport *);
 extern void iscsit_unregister_transport(struct iscsit_transport *);
 extern struct iscsit_transport *iscsit_get_transport(int);
 extern void iscsit_put_transport(struct iscsit_transport *);
 
-/*
- * From iscsi_target.c
- */
+ 
 extern int iscsit_setup_scsi_cmd(struct iscsit_conn *, struct iscsit_cmd *,
 				unsigned char *);
 extern void iscsit_set_unsolicited_dataout(struct iscsit_cmd *);
@@ -102,27 +98,17 @@ extern int iscsit_build_r2ts_for_cmd(struct iscsit_conn *, struct iscsit_cmd *,
 				     bool);
 extern int iscsit_immediate_queue(struct iscsit_conn *, struct iscsit_cmd *, int);
 extern int iscsit_response_queue(struct iscsit_conn *, struct iscsit_cmd *, int);
-/*
- * From iscsi_target_device.c
- */
+ 
 extern void iscsit_increment_maxcmdsn(struct iscsit_cmd *, struct iscsit_session *);
-/*
- * From iscsi_target_erl0.c
- */
+ 
 extern void iscsit_cause_connection_reinstatement(struct iscsit_conn *, int);
-/*
- * From iscsi_target_erl1.c
- */
+ 
 extern void iscsit_stop_dataout_timer(struct iscsit_cmd *);
 
-/*
- * From iscsi_target_tmr.c
- */
+ 
 extern int iscsit_tmr_post_handler(struct iscsit_cmd *, struct iscsit_conn *);
 
-/*
- * From iscsi_target_util.c
- */
+ 
 extern struct iscsit_cmd *iscsit_allocate_cmd(struct iscsit_conn *, int);
 extern int iscsit_sequence_cmd(struct iscsit_conn *, struct iscsit_cmd *,
 			       unsigned char *, __be32);
@@ -134,20 +120,14 @@ extern struct iscsit_cmd *
 iscsit_find_cmd_from_itt_or_dump(struct iscsit_conn *conn,
 				 itt_t init_task_tag, u32 length);
 
-/*
- * From iscsi_target_nego.c
- */
+ 
 extern int iscsi_target_check_login_request(struct iscsit_conn *,
 					    struct iscsi_login *);
 
-/*
- * From iscsi_target_login.c
- */
+ 
 extern __printf(2, 3) int iscsi_change_param_sprintf(
 	struct iscsit_conn *, const char *, ...);
 
-/*
- * From iscsi_target_parameters.c
- */
+ 
 extern struct iscsi_param *iscsi_find_param_from_key(
 	char *, struct iscsi_param_list *);

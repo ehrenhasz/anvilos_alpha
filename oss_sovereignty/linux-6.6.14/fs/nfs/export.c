@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, Primary Data, Inc. All rights reserved.
- *
- * Tao Peng <bergwolf@primarydata.com>
- */
+
+ 
 #include <linux/dcache.h>
 #include <linux/exportfs.h>
 #include <linux/nfs.h>
@@ -15,10 +11,10 @@
 #define NFSDBG_FACILITY		NFSDBG_VFS
 
 enum {
-	FILEID_HIGH_OFF = 0,	/* inode fileid high */
-	FILEID_LOW_OFF,		/* inode fileid low */
-	FILE_I_TYPE_OFF,	/* inode type */
-	EMBED_FH_OFF		/* embeded server fh */
+	FILEID_HIGH_OFF = 0,	 
+	FILEID_LOW_OFF,		 
+	FILE_I_TYPE_OFF,	 
+	EMBED_FH_OFF		 
 };
 
 
@@ -27,10 +23,7 @@ static struct nfs_fh *nfs_exp_embedfh(__u32 *p)
 	return (struct nfs_fh *)(p + EMBED_FH_OFF);
 }
 
-/*
- * Let's break subtree checking for now... otherwise we'll have to embed parent fh
- * but there might not be enough space.
- */
+ 
 static int
 nfs_encode_fh(struct inode *inode, __u32 *p, int *max_len, struct inode *parent)
 {
@@ -52,7 +45,7 @@ nfs_encode_fh(struct inode *inode, __u32 *p, int *max_len, struct inode *parent)
 	p[FILEID_HIGH_OFF] = NFS_FILEID(inode) >> 32;
 	p[FILEID_LOW_OFF] = NFS_FILEID(inode);
 	p[FILE_I_TYPE_OFF] = inode->i_mode & S_IFMT;
-	p[len - 1] = 0; /* Padding */
+	p[len - 1] = 0;  
 	nfs_copy_fh(clnt_fh, server_fh);
 	*max_len = len;
 	dprintk("%s: result fh fileid %llu mode %u size %d\n",
@@ -74,7 +67,7 @@ nfs_fh_to_dentry(struct super_block *sb, struct fid *fid,
 	u32 *p = fid->raw;
 	int ret;
 
-	/* NULL translates to ESTALE */
+	 
 	if (fh_len < len || fh_type != len)
 		return NULL;
 

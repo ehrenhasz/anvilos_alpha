@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_HUGE_MM_H
 #define _LINUX_HUGE_MM_H
 
 #include <linux/sched/coredump.h>
 #include <linux/mm_types.h>
 
-#include <linux/fs.h> /* only for vma_is_dax() */
+#include <linux/fs.h>  
 
 vm_fault_t do_huge_pmd_anonymous_page(struct vm_fault *vmf);
 int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
@@ -86,23 +86,13 @@ extern unsigned long transparent_hugepage_flags;
 	(transparent_hugepage_flags &			\
 	 (1<<TRANSPARENT_HUGEPAGE_FLAG))
 
-/*
- * Do the below checks:
- *   - For file vma, check if the linear page offset of vma is
- *     HPAGE_PMD_NR aligned within the file.  The hugepage is
- *     guaranteed to be hugepage-aligned within the file, but we must
- *     check that the PMD-aligned addresses in the VMA map to
- *     PMD-aligned offsets within the file, else the hugepage will
- *     not be PMD-mappable.
- *   - For all vmas, check if the haddr is in an aligned HPAGE_PMD_SIZE
- *     area.
- */
+ 
 static inline bool transhuge_vma_suitable(struct vm_area_struct *vma,
 		unsigned long addr)
 {
 	unsigned long haddr;
 
-	/* Don't have to check pgoff for anonymous vma */
+	 
 	if (!vma_is_anonymous(vma)) {
 		if (!IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) - vma->vm_pgoff,
 				HPAGE_PMD_NR))
@@ -191,7 +181,7 @@ static inline int is_swap_pmd(pmd_t pmd)
 	return !pmd_none(pmd) && !pmd_present(pmd);
 }
 
-/* mmap_lock must be held on entry */
+ 
 static inline spinlock_t *pmd_trans_huge_lock(pmd_t *pmd,
 		struct vm_area_struct *vma)
 {
@@ -209,10 +199,7 @@ static inline spinlock_t *pud_trans_huge_lock(pud_t *pud,
 		return NULL;
 }
 
-/**
- * folio_test_pmd_mappable - Can we map this folio with a PMD?
- * @folio: The folio to test
- */
+ 
 static inline bool folio_test_pmd_mappable(struct folio *folio)
 {
 	return folio_order(folio) >= HPAGE_PMD_ORDER;
@@ -253,7 +240,7 @@ static inline bool thp_migration_supported(void)
 	return IS_ENABLED(CONFIG_ARCH_ENABLE_THP_MIGRATION);
 }
 
-#else /* CONFIG_TRANSPARENT_HUGEPAGE */
+#else  
 #define HPAGE_PMD_SHIFT ({ BUILD_BUG(); 0; })
 #define HPAGE_PMD_MASK ({ BUILD_BUG(); 0; })
 #define HPAGE_PMD_SIZE ({ BUILD_BUG(); 0; })
@@ -387,7 +374,7 @@ static inline bool thp_migration_supported(void)
 {
 	return false;
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 
 static inline int split_folio_to_list(struct folio *folio,
 		struct list_head *list)
@@ -400,11 +387,7 @@ static inline int split_folio(struct folio *folio)
 	return split_folio_to_list(folio, NULL);
 }
 
-/*
- * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
- * limitations in the implementation like arm64 MTE can override this to
- * false
- */
+ 
 #ifndef arch_thp_swp_supported
 static inline bool arch_thp_swp_supported(void)
 {
@@ -412,4 +395,4 @@ static inline bool arch_thp_swp_supported(void)
 }
 #endif
 
-#endif /* _LINUX_HUGE_MM_H */
+#endif  

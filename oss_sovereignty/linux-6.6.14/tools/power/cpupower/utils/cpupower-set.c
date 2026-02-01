@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2011 Thomas Renninger <trenn@suse.de>, Novell Inc.
- */
+
+ 
 
 
 #include <unistd.h>
@@ -61,7 +59,7 @@ int cmd_set(int argc, char **argv)
 	textdomain(PACKAGE);
 
 	params.params = 0;
-	/* parameter parsing */
+	 
 	while ((ret = getopt_long(argc, argv, "b:e:m:",
 						set_opts, NULL)) != -1) {
 		switch (ret) {
@@ -128,11 +126,11 @@ int cmd_set(int argc, char **argv)
 			fprintf(stderr, "Error setting turbo-boost\n");
 	}
 
-	/* Default is: set all CPUs */
+	 
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setall(cpus_chosen);
 
-	/* loop over CPUs */
+	 
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 

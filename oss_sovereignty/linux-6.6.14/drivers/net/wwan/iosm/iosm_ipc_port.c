@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include "iosm_ipc_chnl_cfg.h"
 #include "iosm_ipc_imem_ops.h"
 #include "iosm_ipc_port.h"
 
-/* open logical channel for control communication */
+ 
 static int ipc_port_ctrl_start(struct wwan_port *port)
 {
 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
@@ -22,7 +20,7 @@ static int ipc_port_ctrl_start(struct wwan_port *port)
 	return ret;
 }
 
-/* close logical channel */
+ 
 static void ipc_port_ctrl_stop(struct wwan_port *port)
 {
 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
@@ -30,7 +28,7 @@ static void ipc_port_ctrl_stop(struct wwan_port *port)
 	ipc_imem_sys_port_close(ipc_port->ipc_imem, ipc_port->channel);
 }
 
-/* transfer control data to modem */
+ 
 static int ipc_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
 {
 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
@@ -44,7 +42,7 @@ static const struct wwan_port_ops ipc_wwan_ctrl_ops = {
 	.tx = ipc_port_ctrl_tx,
 };
 
-/* Port init func */
+ 
 struct iosm_cdev *ipc_port_init(struct iosm_imem *ipc_imem,
 				struct ipc_chnl_cfg ipc_port_cfg)
 {
@@ -69,7 +67,7 @@ struct iosm_cdev *ipc_port_init(struct iosm_imem *ipc_imem,
 	return ipc_port;
 }
 
-/* Port deinit func */
+ 
 void ipc_port_deinit(struct iosm_cdev *port[])
 {
 	struct iosm_cdev *ipc_port;

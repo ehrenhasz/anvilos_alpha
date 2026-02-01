@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
+ 
 
 #ifndef _DT_BINDINGS_POWER_MT8192_POWER_H
 #define _DT_BINDINGS_POWER_MT8192_POWER_H
@@ -29,4 +25,4 @@
 #define MT8192_POWER_DOMAIN_CAM_RAWB	19
 #define MT8192_POWER_DOMAIN_CAM_RAWC	20
 
-#endif /* _DT_BINDINGS_POWER_MT8192_POWER_H */
+#endif  

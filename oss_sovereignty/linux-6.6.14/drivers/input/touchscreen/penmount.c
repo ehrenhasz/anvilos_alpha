@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Penmount serial touchscreen driver
- *
- * Copyright (c) 2006 Rick Koch <n1gp@hotmail.com>
- * Copyright (c) 2011 John Sung <penmount.touch@gmail.com>
- *
- * Based on ELO driver (drivers/input/touchscreen/elo.c)
- * Copyright (c) 2004 Vojtech Pavlik
- */
+
+ 
 
 
 #include <linux/errno.h>
@@ -25,27 +17,21 @@ MODULE_AUTHOR("John Sung <penmount.touch@gmail.com>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-/*
- * Definitions & global arrays.
- */
+ 
 
 #define	PM_MAX_LENGTH	6
 #define	PM_MAX_MTSLOT	16
 #define	PM_3000_MTSLOT	2
 #define	PM_6250_MTSLOT	12
 
-/*
- * Multi-touch slot
- */
+ 
 
 struct mt_slot {
 	unsigned short x, y;
-	bool active; /* is the touch valid? */
+	bool active;  
 };
 
-/*
- * Per-touchscreen data.
- */
+ 
 
 struct pm {
 	struct input_dev *dev;
@@ -59,9 +45,7 @@ struct pm {
 	void (*parse_packet)(struct pm *);
 };
 
-/*
- * pm_mtevent() sends mt events and also emulates pointer movement
- */
+ 
 
 static void pm_mtevent(struct pm *pm, struct input_dev *input)
 {
@@ -81,9 +65,7 @@ static void pm_mtevent(struct pm *pm, struct input_dev *input)
 	input_sync(input);
 }
 
-/*
- * pm_checkpacket() checks if data packet is valid
- */
+ 
 
 static bool pm_checkpacket(unsigned char *packet)
 {
@@ -170,9 +152,7 @@ static irqreturn_t pm_interrupt(struct serio *serio,
 	return IRQ_HANDLED;
 }
 
-/*
- * pm_disconnect() is the opposite of pm_connect()
- */
+ 
 
 static void pm_disconnect(struct serio *serio)
 {
@@ -186,11 +166,7 @@ static void pm_disconnect(struct serio *serio)
 	serio_set_drvdata(serio, NULL);
 }
 
-/*
- * pm_connect() is the routine that is called when someone adds a
- * new serio device that supports PenMount protocol and registers it as
- * an input device.
- */
+ 
 
 static int pm_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -285,9 +261,7 @@ static int pm_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id pm_serio_ids[] = {
 	{

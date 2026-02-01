@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <asm-generic/vmlinux.lds.h>
 
 OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT)
@@ -18,9 +18,7 @@ ENTRY(startup_32)
 
 SECTIONS
 {
-	/* Be careful parts of head_64.S assume startup_32 is at
-	 * address 0.
-	 */
+	 
 	. = 0;
 	.head.text : {
 		_head = . ;
@@ -31,7 +29,7 @@ SECTIONS
 		*(.rodata..compressed)
 	}
 	.text :	{
-		_text = .; 	/* Text */
+		_text = .; 	 
 		*(.text)
 		*(.text.*)
 		*(.noinstr.text)
@@ -39,7 +37,7 @@ SECTIONS
 	}
 	.rodata : {
 		_rodata = . ;
-		*(.rodata)	 /* read-only data */
+		*(.rodata)	  
 		*(.rodata.*)
 		_erodata = . ;
 	}
@@ -56,7 +54,7 @@ SECTIONS
 		*(.bss)
 		*(.bss.*)
 		*(COMMON)
-		. = ALIGN(8);	/* For convenience during zeroing */
+		. = ALIGN(8);	 
 		_ebss = .;
 	}
 #ifdef CONFIG_X86_64
@@ -67,7 +65,7 @@ SECTIONS
 		_epgtable = . ;
 	}
 #endif
-	. = ALIGN(PAGE_SIZE);	/* keep ZO size page aligned */
+	. = ALIGN(PAGE_SIZE);	 
 	_end = .;
 
 	STABS_DEBUG
@@ -92,10 +90,7 @@ SECTIONS
 #endif
 	       "Unexpected GOT/PLT entries detected!")
 
-	/*
-	 * Sections that should stay zero sized, which is safer to
-	 * explicitly check instead of blindly discarding.
-	 */
+	 
 	.got : {
 		*(.got)
 	}

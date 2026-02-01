@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI LMU (Lighting Management Unit) Device Register Map
- *
- * Copyright 2017 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- */
+ 
+ 
 
 #ifndef __MFD_TI_LMU_REGISTER_H__
 #define __MFD_TI_LMU_REGISTER_H__
 
 #include <linux/bitops.h>
 
-/* LM3631 */
+ 
 #define LM3631_REG_DEVCTRL			0x00
 #define LM3631_LCD_EN_MASK			BIT(1)
 #define LM3631_BL_EN_MASK			BIT(0)
@@ -63,7 +57,7 @@
 
 #define LM3631_MAX_REG				0x16
 
-/* LM3632 */
+ 
 #define LM3632_REG_CONFIG1			0x02
 #define LM3632_OVP_MASK				(BIT(5) | BIT(6) | BIT(7))
 #define LM3632_OVP_25V				BIT(6)
@@ -98,7 +92,7 @@
 
 #define LM3632_MAX_REG				0x10
 
-/* LM3633 */
+ 
 #define LM3633_REG_HVLED_OUTPUT_CFG		0x10
 #define LM3633_HVLED1_CFG_MASK			BIT(0)
 #define LM3633_HVLED2_CFG_MASK			BIT(1)
@@ -174,7 +168,7 @@
 
 #define LM3633_MAX_REG				0xB4
 
-/* LM3695 */
+ 
 #define LM3695_REG_GP				0x10
 #define LM3695_BL_CHANNEL_MASK			BIT(3)
 #define LM3695_BL_DUAL_CHANNEL			0
@@ -187,7 +181,7 @@
 
 #define LM3695_MAX_REG				0x14
 
-/* LM36274 */
+ 
 #define LM36274_REG_REV				0x01
 #define LM36274_REG_BL_CFG_1			0x02
 #define LM36274_REG_BL_CFG_2			0x03

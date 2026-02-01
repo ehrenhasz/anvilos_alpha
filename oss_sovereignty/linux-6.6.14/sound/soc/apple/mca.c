@@ -1,24 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Apple SoCs MCA driver
-//
-// Copyright (C) The Asahi Linux Contributors
-//
-// The MCA peripheral is made up of a number of identical units called clusters.
-// Each cluster has its separate clock parent, SYNC signal generator, carries
-// four SERDES units and has a dedicated I2S port on the SoC's periphery.
-//
-// The clusters can operate independently, or can be combined together in a
-// configurable manner. We mostly treat them as self-contained independent
-// units and don't configure any cross-cluster connections except for the I2S
-// ports. The I2S ports can be routed to any of the clusters (irrespective
-// of their native cluster). We map this onto ASoC's (DPCM) notion of backend
-// and frontend DAIs. The 'cluster guts' are frontends which are dynamically
-// routed to backend I2S ports.
-//
-// DAI references in devicetree are resolved to backends. The routing between
-// frontends and backends is determined by the machine driver in the DAPM paths
-// it supplies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -43,7 +43,7 @@
 
 #define USE_RXB_FOR_CAPTURE
 
-/* Relative to cluster base */
+ 
 #define REG_STATUS		0x0
 #define STATUS_MCLK_EN		BIT(0)
 #define REG_MCLK_CONF		0x4
@@ -68,7 +68,7 @@
 #define REG_INTSTATE		0x700
 #define REG_INTMASK		0x704
 
-/* Bases of serdes units (relative to cluster) */
+ 
 #define CLUSTER_RXA_OFF	0x200
 #define CLUSTER_TXA_OFF	0x300
 #define CLUSTER_RXB_OFF	0x400
@@ -82,7 +82,7 @@
 #define CLUSTER_RX_OFF	CLUSTER_RXB_OFF
 #endif
 
-/* Relative to serdes unit base */
+ 
 #define REG_SERDES_STATUS	0x00
 #define SERDES_STATUS_EN	BIT(0)
 #define SERDES_STATUS_RST	BIT(1)
@@ -107,7 +107,7 @@
 #define REG_RX_SERDES_SLOTMASK	0x10
 #define REG_RX_SERDES_PORT	0x04
 
-/* Relative to switch base */
+ 
 #define REG_DMA_ADAPTER_A(cl)	(0x8000 * (cl))
 #define REG_DMA_ADAPTER_B(cl)	(0x8000 * (cl) + 0x4000)
 #define DMA_ADAPTER_TX_LSB_PAD	GENMASK(4, 0)
@@ -134,14 +134,14 @@ struct mca_cluster {
 	struct dma_chan *dma_chans[SNDRV_PCM_STREAM_LAST + 1];
 
 	bool port_started[SNDRV_PCM_STREAM_LAST + 1];
-	int port_driver; /* The cluster driving this cluster's port */
+	int port_driver;  
 
 	bool clocks_in_use[SNDRV_PCM_STREAM_LAST + 1];
 	struct device_link *pd_link;
 
 	unsigned int bclk_ratio;
 
-	/* Masks etc. picked up via the set_tdm_slot method */
+	 
 	int tdm_slots;
 	int tdm_slot_width;
 	unsigned int tdm_tx_mask;
@@ -157,7 +157,7 @@ struct mca_data {
 	struct reset_control *rstc;
 	struct device_link *pd_link;
 
-	/* Mutex for accessing port_driver of foreign clusters */
+	 
 	struct mutex port_mutex;
 
 	int nclusters;
@@ -173,22 +173,17 @@ static void mca_modify(struct mca_cluster *cl, int regoffset, u32 mask, u32 val)
 	writel_relaxed(newval, ptr);
 }
 
-/*
- * Get the cluster of FE or BE DAI
- */
+ 
 static struct mca_cluster *mca_dai_to_cluster(struct snd_soc_dai *dai)
 {
 	struct mca_data *mca = snd_soc_dai_get_drvdata(dai);
-	/*
-	 * FE DAIs are         0 ... nclusters - 1
-	 * BE DAIs are nclusters ... 2*nclusters - 1
-	 */
+	 
 	int cluster_no = dai->id % mca->nclusters;
 
 	return &mca->clusters[cluster_no];
 }
 
-/* called before PCM trigger */
+ 
 static void mca_fe_early_trigger(struct snd_pcm_substream *substream, int cmd,
 				 struct snd_soc_dai *dai)
 {
@@ -209,10 +204,7 @@ static void mca_fe_early_trigger(struct snd_pcm_substream *substream, int cmd,
 		mca_modify(cl, serdes_unit + REG_SERDES_STATUS,
 			   SERDES_STATUS_EN | SERDES_STATUS_RST,
 			   SERDES_STATUS_RST);
-		/*
-		 * Experiments suggest that it takes at most ~1 us
-		 * for the bit to clear, so wait 2 us for good measure.
-		 */
+		 
 		udelay(2);
 		WARN_ON(readl_relaxed(cl->base + serdes_unit + REG_SERDES_STATUS) &
 			SERDES_STATUS_RST);
@@ -269,11 +261,7 @@ static int mca_fe_enable_clocks(struct mca_cluster *cl)
 		return ret;
 	}
 
-	/*
-	 * We can't power up the device earlier than this because
-	 * the power state driver would error out on seeing the device
-	 * as clock-gated.
-	 */
+	 
 	cl->pd_link = device_link_add(mca->dev, cl->pd_dev,
 				      DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME |
 					      DL_FLAG_RPM_ACTIVE);
@@ -338,12 +326,7 @@ static int mca_be_prepare(struct snd_pcm_substream *substream,
 
 	fe_cl = &mca->clusters[cl->port_driver];
 
-	/*
-	 * Typically the CODECs we are paired with will require clocks
-	 * to be present at time of unmute with the 'mute_stream' op
-	 * or at time of DAPM widget power-up. We need to enable clocks
-	 * here at the latest (frontend prepare would be too late).
-	 */
+	 
 	if (!mca_fe_clocks_in_use(fe_cl)) {
 		ret = mca_fe_enable_clocks(fe_cl);
 		if (ret < 0)
@@ -365,14 +348,10 @@ static int mca_be_hw_free(struct snd_pcm_substream *substream,
 	if (cl->port_driver < 0)
 		return -EINVAL;
 
-	/*
-	 * We are operating on a foreign cluster here, but since we
-	 * belong to the same PCM, accesses should have been
-	 * synchronized at ASoC level.
-	 */
+	 
 	fe_cl = &mca->clusters[cl->port_driver];
 	if (!mca_fe_clocks_in_use(fe_cl))
-		return 0; /* Nothing to do */
+		return 0;  
 
 	cl->clocks_in_use[substream->stream] = false;
 
@@ -578,10 +557,7 @@ static int mca_fe_hw_params(struct snd_pcm_substream *substream,
 	int ret, port, nchans_ceiled;
 
 	if (!cl->tdm_slot_width) {
-		/*
-		 * We were not given TDM settings from above, set initial
-		 * guesses which will later be refined.
-		 */
+		 
 		tdm_slot_width = params_width(params);
 		tdm_slots = params_channels(params);
 		refine_tdm = true;
@@ -636,9 +612,7 @@ static int mca_fe_hw_params(struct snd_pcm_substream *substream,
 
 	pad = 32 - params_width(params);
 
-	/*
-	 * TODO: Here the register semantics aren't clear.
-	 */
+	 
 	nchans_ceiled = min_t(int, params_channels(params), 4);
 	regval = FIELD_PREP(DMA_ADAPTER_NCHANS, nchans_ceiled) |
 		 FIELD_PREP(DMA_ADAPTER_TX_NCHANS, 0x2) |
@@ -658,9 +632,7 @@ static int mca_fe_hw_params(struct snd_pcm_substream *substream,
 #endif
 
 	if (!mca_fe_clocks_in_use(cl)) {
-		/*
-		 * Set up FSYNC duty cycle as even as possible.
-		 */
+		 
 		writel_relaxed((bclk_ratio / 2) - 1,
 			       cl->base + REG_SYNCGEN_HI_PERIOD);
 		writel_relaxed(((bclk_ratio + 1) / 2) - 1,
@@ -724,11 +696,7 @@ static int mca_be_startup(struct snd_pcm_substream *substream,
 	fe_cl = mca_dai_to_cluster(asoc_rtd_to_cpu(fe, 0));
 
 	if (mca_be_started(cl)) {
-		/*
-		 * Port is already started in the other direction.
-		 * Make sure there isn't a conflict with another cluster
-		 * driving the port.
-		 */
+		 
 		if (cl->port_driver != fe_cl->no)
 			return -EINVAL;
 
@@ -759,10 +727,7 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
 	cl->port_started[substream->stream] = false;
 
 	if (!mca_be_started(cl)) {
-		/*
-		 * Were we the last direction to shutdown?
-		 * Turn off the lights.
-		 */
+		 
 		writel_relaxed(0, cl->base + REG_PORT_ENABLES);
 		writel_relaxed(0, cl->base + REG_PORT_DATA_SEL);
 		mutex_lock(&mca->port_mutex);
@@ -873,10 +838,7 @@ static int mca_trigger(struct snd_soc_component *component,
 	if (rtd->dai_link->no_pcm)
 		return 0;
 
-	/*
-	 * Before we do the PCM trigger proper, insert an opportunity
-	 * to reset the frontend's SERDES.
-	 */
+	 
 	mca_fe_early_trigger(substream, cmd, asoc_rtd_to_cpu(rtd, 0));
 
 	return snd_dmaengine_pcm_trigger(substream, cmd);
@@ -1057,7 +1019,7 @@ static int apple_mca_probe(struct platform_device *pdev)
 					       DL_FLAG_RPM_ACTIVE);
 	if (!mca->pd_link) {
 		ret = -EINVAL;
-		/* Prevent an unbalanced reset rearm */
+		 
 		mca->rstc = NULL;
 		goto err_release;
 	}

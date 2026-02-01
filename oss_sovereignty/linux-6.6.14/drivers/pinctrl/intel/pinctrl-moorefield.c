@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Moorefield SoC pinctrl driver
- *
- * Copyright (C) 2022, Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -18,7 +13,7 @@
 #include "pinctrl-tangier.h"
 
 static const struct pinctrl_pin_desc mofld_pins[] = {
-	/* ULPI (13 pins) */
+	 
 	PINCTRL_PIN(0, "GP101_ULPI_CLK"),
 	PINCTRL_PIN(1, "GP136_ULPI_D0"),
 	PINCTRL_PIN(2, "GP143_ULPI_D1"),
@@ -32,7 +27,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(10, "ULPI_NXT"),
 	PINCTRL_PIN(11, "ULPI_REFCLK"),
 	PINCTRL_PIN(12, "ULPI_STP"),
-	/* eMMC (12 pins) */
+	 
 	PINCTRL_PIN(13, "EMMC_CLK"),
 	PINCTRL_PIN(14, "EMMC_CMD"),
 	PINCTRL_PIN(15, "EMMC_D0"),
@@ -45,7 +40,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(22, "EMMC_D7"),
 	PINCTRL_PIN(23, "EMMC_RST_N"),
 	PINCTRL_PIN(24, "EMMC_RCLK"),
-	/* SDIO (20 pins) */
+	 
 	PINCTRL_PIN(25, "GP77_SD_CD"),
 	PINCTRL_PIN(26, "GP78_SD_CLK"),
 	PINCTRL_PIN(27, "GP79_SD_CMD"),
@@ -66,7 +61,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(42, "GP94_SDIO_D2"),
 	PINCTRL_PIN(43, "GP95_SDIO_D3"),
 	PINCTRL_PIN(44, "GP96_SDIO_PD"),
-	/* HSI (8 pins) */
+	 
 	PINCTRL_PIN(45, "HSI_ACDATA"),
 	PINCTRL_PIN(46, "HSI_ACFLAG"),
 	PINCTRL_PIN(47, "HSI_ACREADY"),
@@ -75,7 +70,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(50, "HSI_CAFLAG"),
 	PINCTRL_PIN(51, "HSI_CAREADY"),
 	PINCTRL_PIN(52, "HSI_CAWAKE"),
-	/* SSP Audio (14 pins) */
+	 
 	PINCTRL_PIN(53, "GP70"),
 	PINCTRL_PIN(54, "GP71"),
 	PINCTRL_PIN(55, "GP32_I2S_0_CLK"),
@@ -90,7 +85,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(64, "GP41_I2S_2_FS"),
 	PINCTRL_PIN(65, "GP42_I2S_2_RXD"),
 	PINCTRL_PIN(66, "GP43_I2S_2_TXD"),
-	/* GP SSP (22 pins) */
+	 
 	PINCTRL_PIN(67, "GP120_SPI_0_CLK"),
 	PINCTRL_PIN(68, "GP121_SPI_0_SS"),
 	PINCTRL_PIN(69, "GP122_SPI_0_RXD"),
@@ -113,7 +108,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(86, "GP117_SPI_3_SS"),
 	PINCTRL_PIN(87, "GP118_SPI_3_RXD"),
 	PINCTRL_PIN(88, "GP119_SPI_3_TXD"),
-	/* I2C (20 pins) */
+	 
 	PINCTRL_PIN(89, "I2C_0_SCL"),
 	PINCTRL_PIN(90, "I2C_0_SDA"),
 	PINCTRL_PIN(91, "GP19_I2C_1_SCL"),
@@ -134,7 +129,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(106, "I2C_8_SDA"),
 	PINCTRL_PIN(107, "I2C_9_SCL"),
 	PINCTRL_PIN(108, "I2C_9_SDA"),
-	/* UART (23 pins) */
+	 
 	PINCTRL_PIN(109, "GP124_UART_0_CTS"),
 	PINCTRL_PIN(110, "GP125_UART_0_RTS"),
 	PINCTRL_PIN(111, "GP126_UART_0_RX"),
@@ -158,7 +153,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(129, "GP161"),
 	PINCTRL_PIN(130, "GP12_PWM0"),
 	PINCTRL_PIN(131, "GP13_PWM1"),
-	/* GPIO South (20 pins) */
+	 
 	PINCTRL_PIN(132, "GP176"),
 	PINCTRL_PIN(133, "GP177"),
 	PINCTRL_PIN(134, "GP178"),
@@ -179,7 +174,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(149, "GP15"),
 	PINCTRL_PIN(150, "GP162"),
 	PINCTRL_PIN(151, "GP163"),
-	/* Camera Sideband (15 pins) */
+	 
 	PINCTRL_PIN(152, "GP0"),
 	PINCTRL_PIN(153, "GP1"),
 	PINCTRL_PIN(154, "GP2"),
@@ -195,7 +190,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(164, "GP16_HDMI_HPD"),
 	PINCTRL_PIN(165, "GP68_DSI_A_TE"),
 	PINCTRL_PIN(166, "GP69_DSI_C_TE"),
-	/* Clock (14 pins) */
+	 
 	PINCTRL_PIN(167, "GP137"),
 	PINCTRL_PIN(168, "GP138"),
 	PINCTRL_PIN(169, "GP139"),
@@ -210,7 +205,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(178, "OSC_CLK2"),
 	PINCTRL_PIN(179, "OSC_CLK3"),
 	PINCTRL_PIN(180, "OSC_CLK4"),
-	/* PMIC (15 pins) */
+	 
 	PINCTRL_PIN(181, "PROCHOT"),
 	PINCTRL_PIN(182, "RESETOUT"),
 	PINCTRL_PIN(183, "RTC_CLK"),
@@ -226,7 +221,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(193, "GP65_FAST_INT1"),
 	PINCTRL_PIN(194, "GP66_FAST_INT2"),
 	PINCTRL_PIN(195, "GP67_FAST_INT3"),
-	/* Keyboard (20 pins) */
+	 
 	PINCTRL_PIN(196, "GP44"),
 	PINCTRL_PIN(197, "GP45"),
 	PINCTRL_PIN(198, "GP46"),
@@ -247,7 +242,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(213, "GP61"),
 	PINCTRL_PIN(214, "GP62"),
 	PINCTRL_PIN(215, "GP63"),
-	/* GPIO North (13 pins) */
+	 
 	PINCTRL_PIN(216, "GP164"),
 	PINCTRL_PIN(217, "GP165"),
 	PINCTRL_PIN(218, "GP166"),
@@ -261,7 +256,7 @@ static const struct pinctrl_pin_desc mofld_pins[] = {
 	PINCTRL_PIN(226, "GP174"),
 	PINCTRL_PIN(227, "GP175"),
 	PINCTRL_PIN(228, "GP176"),
-	/* PTI (22 pins) */
+	 
 	PINCTRL_PIN(229, "GP72_PTI_CLK"),
 	PINCTRL_PIN(230, "GP73_PTI_D0"),
 	PINCTRL_PIN(231, "GP74_PTI_D1"),

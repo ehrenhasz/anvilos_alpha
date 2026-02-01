@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Anna Schumaker <Anna.Schumaker@Netapp.com>
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/sunrpc/addr.h>
 #include <linux/sunrpc/sched.h>
@@ -277,17 +275,7 @@ out:
 	return status;
 }
 
-/**
- * nfs42_copy_dest_done - perform inode cache updates after clone/copy offload
- * @inode: pointer to destination inode
- * @pos: destination offset
- * @len: copy length
- *
- * Punch a hole in the inode page cache, so that the NFS client will
- * know to retrieve new data.
- * Update the file size if necessary, and then mark the inode as having
- * invalid cached values for change attribute, ctime, mtime and space used.
- */
+ 
 static void nfs42_copy_dest_done(struct inode *inode, loff_t pos, loff_t len)
 {
 	loff_t newsize = pos + len;
@@ -788,10 +776,7 @@ nfs42_layoutstat_done(struct rpc_task *task, void *calldata)
 					     &lo->plh_stateid)) {
 			LIST_HEAD(head);
 
-			/*
-			 * Mark the bad layout state as invalid, then retry
-			 * with the current stateid.
-			 */
+			 
 			pnfs_mark_layout_stateid_invalid(lo, &head);
 			spin_unlock(&inode->i_lock);
 			pnfs_free_lseg_list(&head);
@@ -805,7 +790,7 @@ nfs42_layoutstat_done(struct rpc_task *task, void *calldata)
 		if (pnfs_layout_is_valid(lo) &&
 		    nfs4_stateid_match_other(&data->args.stateid,
 					&lo->plh_stateid)) {
-			/* Do we need to delay before resending? */
+			 
 			if (!nfs4_stateid_is_newer(&lo->plh_stateid,
 						&data->args.stateid))
 				rpc_delay(task, HZ);
@@ -957,10 +942,7 @@ nfs42_layouterror_done(struct rpc_task *task, void *calldata)
 					     &lo->plh_stateid)) {
 			LIST_HEAD(head);
 
-			/*
-			 * Mark the bad layout state as invalid, then retry
-			 * with the current stateid.
-			 */
+			 
 			pnfs_mark_layout_stateid_invalid(lo, &head);
 			spin_unlock(&inode->i_lock);
 			pnfs_free_lseg_list(&head);
@@ -973,7 +955,7 @@ nfs42_layouterror_done(struct rpc_task *task, void *calldata)
 		if (pnfs_layout_is_valid(lo) &&
 		    nfs4_stateid_match_other(&data->args.errors[0].stateid,
 					&lo->plh_stateid)) {
-			/* Do we need to delay before resending? */
+			 
 			if (!nfs4_stateid_is_newer(&lo->plh_stateid,
 						&data->args.errors[0].stateid))
 				rpc_delay(task, HZ);
@@ -1096,7 +1078,7 @@ static int _nfs42_proc_clone(struct rpc_message *msg, struct file *src_f,
 				&args.seq_args, &res.seq_res, 0);
 	trace_nfs4_clone(src_inode, dst_inode, &args, status);
 	if (status == 0) {
-		/* a zero-length count means clone to EOF in src */
+		 
 		if (count == 0 && res.dst_fattr->valid & NFS_ATTR_FATTR_SIZE)
 			count = nfs_size_to_loff_t(res.dst_fattr->size) - dst_offset;
 		nfs42_copy_dest_done(dst_inode, dst_offset, count);
@@ -1275,15 +1257,7 @@ static ssize_t _nfs42_proc_getxattr(struct inode *inode, const char *name,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Normally, the caching is done one layer up, but for successful
-	 * RPCS, always cache the result here, even if the caller was
-	 * just querying the length, or if the reply was too big for
-	 * the caller. This avoids a second RPC in the case of the
-	 * common query-alloc-retrieve cycle for xattrs.
-	 *
-	 * Note that xattr_len is always capped to XATTR_SIZE_MAX.
-	 */
+	 
 
 	nfs4_xattr_cache_add(inode, name, NULL, pages, res.xattr_len);
 
@@ -1384,14 +1358,7 @@ ssize_t nfs42_proc_getxattr(struct inode *inode, const char *name,
 		}
 	}
 
-	/*
-	 * The GETXATTR op has no length field in the call, and the
-	 * xattr data is at the end of the reply.
-	 *
-	 * There is no downside in using the page-aligned length. It will
-	 * allow receiving and caching xattrs that are too large for the
-	 * caller but still fit in the page-rounded value.
-	 */
+	 
 	do {
 		err = _nfs42_proc_getxattr(inode, name, buf, buflen,
 			pages, np * PAGE_SIZE);

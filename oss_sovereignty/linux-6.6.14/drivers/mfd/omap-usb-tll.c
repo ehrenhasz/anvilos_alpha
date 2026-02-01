@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-usb-tll.c - The USB TLL driver for OMAP EHCI & OHCI
- *
- * Copyright (C) 2012-2013 Texas Instruments Incorporated - https://www.ti.com
- * Author: Keshava Munegowda <keshava_mgowda@ti.com>
- * Author: Roger Quadros <rogerq@ti.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,7 +17,7 @@
 
 #define USBTLL_DRIVER_NAME	"usbhs_tll"
 
-/* TLL Register Set */
+ 
 #define	OMAP_USBTLL_REVISION				(0x00)
 #define	OMAP_USBTLL_SYSCONFIG				(0x10)
 #define	OMAP_USBTLL_SYSCONFIG_CACTIVITY			(1 << 8)
@@ -84,31 +78,31 @@
 #define OMAP_TLL_CHANNEL_2_EN_MASK			(1 << 1)
 #define OMAP_TLL_CHANNEL_3_EN_MASK			(1 << 2)
 
-/* Values of USBTLL_REVISION - Note: these are not given in the TRM */
-#define OMAP_USBTLL_REV1		0x00000015	/* OMAP3 */
-#define OMAP_USBTLL_REV2		0x00000018	/* OMAP 3630 */
-#define OMAP_USBTLL_REV3		0x00000004	/* OMAP4 */
-#define OMAP_USBTLL_REV4		0x00000006	/* OMAP5 */
+ 
+#define OMAP_USBTLL_REV1		0x00000015	 
+#define OMAP_USBTLL_REV2		0x00000018	 
+#define OMAP_USBTLL_REV3		0x00000004	 
+#define OMAP_USBTLL_REV4		0x00000006	 
 
 #define is_ehci_tll_mode(x)	(x == OMAP_EHCI_PORT_MODE_TLL)
 
-/* only PHY and UNUSED modes don't need TLL */
+ 
 #define omap_usb_mode_needs_tll(x)	((x) != OMAP_USBHS_PORT_MODE_UNUSED &&\
 					 (x) != OMAP_EHCI_PORT_MODE_PHY)
 
 struct usbtll_omap {
 	void __iomem	*base;
-	int		nch;		/* num. of channels */
-	struct clk	*ch_clk[];	/* must be the last member */
+	int		nch;		 
+	struct clk	*ch_clk[];	 
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static const char usbtll_driver_name[] = USBTLL_DRIVER_NAME;
 static struct device	*tll_dev;
-static DEFINE_SPINLOCK(tll_lock);	/* serialize access to tll_dev */
+static DEFINE_SPINLOCK(tll_lock);	 
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static inline void usbtll_write(void __iomem *base, u32 reg, u32 val)
 {
@@ -125,7 +119,7 @@ static inline void usbtll_writeb(void __iomem *base, u32 reg, u8 val)
 	writeb_relaxed(val, base + reg);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static bool is_ohci_port(enum usbhs_omap_port_mode pmode)
 {
@@ -147,10 +141,7 @@ static bool is_ohci_port(enum usbhs_omap_port_mode pmode)
 	}
 }
 
-/*
- * convert the port-mode enum to a value we can use in the FSLSMODE
- * field of USBTLL_CHANNEL_CONF
- */
+ 
 static unsigned ohci_omap3_fslsmode(enum usbhs_omap_port_mode mode)
 {
 	switch (mode) {
@@ -190,13 +181,7 @@ static unsigned ohci_omap3_fslsmode(enum usbhs_omap_port_mode mode)
 	}
 }
 
-/**
- * usbtll_omap_probe - initialize TI-based HCDs
- *
- * Allocates basic resources for this USB host controller.
- *
- * @pdev: Pointer to this device's platform device structure
- */
+ 
 static int usbtll_omap_probe(struct platform_device *pdev)
 {
 	struct device				*dev =  &pdev->dev;
@@ -256,7 +241,7 @@ static int usbtll_omap_probe(struct platform_device *pdev)
 	}
 
 	pm_runtime_put_sync(dev);
-	/* only after this can omap_tll_enable/disable work */
+	 
 	spin_lock(&tll_lock);
 	tll_dev = dev;
 	spin_unlock(&tll_lock);
@@ -264,12 +249,7 @@ static int usbtll_omap_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * usbtll_omap_remove - shutdown processing for UHH & TLL HCDs
- * @pdev: USB Host Controller being removed
- *
- * Reverses the effect of usbtll_omap_probe().
- */
+ 
 static int usbtll_omap_remove(struct platform_device *pdev)
 {
 	struct usbtll_omap *tll = platform_get_drvdata(pdev);
@@ -327,7 +307,7 @@ int omap_tll_init(struct usbhs_omap_platform_data *pdata)
 	if (needs_tll) {
 		void __iomem *base = tll->base;
 
-		/* Program Common TLL register */
+		 
 		reg = usbtll_read(base, OMAP_TLL_SHARED_CONF);
 		reg |= (OMAP_TLL_SHARED_CONF_FCLK_IS_ON
 			| OMAP_TLL_SHARED_CONF_USB_DIVRATION);
@@ -336,7 +316,7 @@ int omap_tll_init(struct usbhs_omap_platform_data *pdata)
 
 		usbtll_write(base, OMAP_TLL_SHARED_CONF, reg);
 
-		/* Enable channels now */
+		 
 		for (i = 0; i < tll->nch; i++) {
 			reg = usbtll_read(base,	OMAP_TLL_CHANNEL_CONF(i));
 
@@ -346,19 +326,14 @@ int omap_tll_init(struct usbhs_omap_platform_data *pdata)
 				reg |= OMAP_TLL_CHANNEL_CONF_CHANMODE_FSLS;
 			} else if (pdata->port_mode[i] ==
 					OMAP_EHCI_PORT_MODE_TLL) {
-				/*
-				 * Disable UTMI AutoIdle, BitStuffing
-				 * and use SDR Mode. Enable ULPI AutoIdle.
-				 */
+				 
 				reg &= ~(OMAP_TLL_CHANNEL_CONF_UTMIAUTOIDLE
 					| OMAP_TLL_CHANNEL_CONF_ULPIDDRMODE);
 				reg |= OMAP_TLL_CHANNEL_CONF_ULPINOBITSTUFF;
 				reg |= OMAP_TLL_CHANNEL_CONF_ULPI_ULPIAUTOIDLE;
 			} else if (pdata->port_mode[i] ==
 					OMAP_EHCI_PORT_MODE_HSIC) {
-				/*
-				 * HSIC Mode requires UTMI port configurations
-				 */
+				 
 				reg |= OMAP_TLL_CHANNEL_CONF_DRVVBUS
 				 | OMAP_TLL_CHANNEL_CONF_CHRGVBUS
 				 | OMAP_TLL_CHANNEL_CONF_MODE_TRANSPARENT_UTMI
@@ -450,11 +425,7 @@ static int __init omap_usbtll_drvinit(void)
 	return platform_driver_register(&usbtll_omap_driver);
 }
 
-/*
- * init before usbhs core driver;
- * The usbtll driver should be initialized before
- * the usbhs core driver probe function is called.
- */
+ 
 fs_initcall(omap_usbtll_drvinit);
 
 static void __exit omap_usbtll_drvexit(void)

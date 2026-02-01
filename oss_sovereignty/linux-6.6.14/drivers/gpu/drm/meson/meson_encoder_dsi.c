@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -63,7 +59,7 @@ static void meson_encoder_dsi_atomic_enable(struct drm_bridge *bridge,
 	if (WARN_ON(!crtc_state))
 		return;
 
-	/* ENCL clock setup is handled by CCF */
+	 
 
 	meson_venc_mipi_dsi_mode_set(priv, &crtc_state->adjusted_mode);
 	meson_encl_load_gamma(priv);
@@ -110,7 +106,7 @@ int meson_encoder_dsi_init(struct meson_drm *priv)
 	if (!meson_encoder_dsi)
 		return -ENOMEM;
 
-	/* DSI Transceiver Bridge */
+	 
 	remote = of_graph_get_remote_node(priv->dev->of_node, 2, 0);
 	if (!remote) {
 		dev_err(priv->dev, "DSI transceiver device is disabled");
@@ -123,7 +119,7 @@ int meson_encoder_dsi_init(struct meson_drm *priv)
 		return -EPROBE_DEFER;
 	}
 
-	/* DSI Encoder Bridge */
+	 
 	meson_encoder_dsi->bridge.funcs = &meson_encoder_dsi_bridge_funcs;
 	meson_encoder_dsi->bridge.of_node = priv->dev->of_node;
 	meson_encoder_dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
@@ -132,7 +128,7 @@ int meson_encoder_dsi_init(struct meson_drm *priv)
 
 	meson_encoder_dsi->priv = priv;
 
-	/* Encoder */
+	 
 	ret = drm_simple_encoder_init(priv->drm, &meson_encoder_dsi->encoder,
 				      DRM_MODE_ENCODER_DSI);
 	if (ret) {
@@ -142,17 +138,14 @@ int meson_encoder_dsi_init(struct meson_drm *priv)
 
 	meson_encoder_dsi->encoder.possible_crtcs = BIT(0);
 
-	/* Attach DSI Encoder Bridge to Encoder */
+	 
 	ret = drm_bridge_attach(&meson_encoder_dsi->encoder, &meson_encoder_dsi->bridge, NULL, 0);
 	if (ret) {
 		dev_err(priv->dev, "Failed to attach bridge: %d\n", ret);
 		return ret;
 	}
 
-	/*
-	 * We should have now in place:
-	 * encoder->[dsi encoder bridge]->[dw-mipi-dsi bridge]->[panel bridge]->[panel]
-	 */
+	 
 
 	priv->encoders[MESON_ENC_DSI] = meson_encoder_dsi;
 

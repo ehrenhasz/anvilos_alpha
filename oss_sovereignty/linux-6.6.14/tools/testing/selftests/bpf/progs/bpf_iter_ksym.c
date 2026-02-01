@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022, Oracle and/or its affiliates. */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 
@@ -21,10 +21,7 @@ static inline char to_upper(char c)
 	return c;
 }
 
-/* Dump symbols with max size; the latter is calculated by caching symbol N value
- * and when iterating on symbol N+1, we can print max size of symbol N via
- * address of N+1 - address of N.
- */
+ 
 SEC("iter/ksym")
 int dump_ksym(struct bpf_iter__ksym *ctx)
 {

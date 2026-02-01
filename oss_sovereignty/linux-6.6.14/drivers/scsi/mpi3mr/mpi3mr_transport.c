@@ -1,35 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+ 
 
 #include "mpi3mr.h"
 
-/**
- * mpi3mr_post_transport_req - Issue transport requests and wait
- * @mrioc: Adapter instance reference
- * @request: Properly populated MPI3 request
- * @request_sz: Size of the MPI3 request
- * @reply: Pointer to return MPI3 reply
- * @reply_sz: Size of the MPI3 reply buffer
- * @timeout: Timeout in seconds
- * @ioc_status: Pointer to return ioc status
- *
- * A generic function for posting MPI3 requests from the SAS
- * transport layer that uses transport command infrastructure.
- * This blocks for the completion of request for timeout seconds
- * and if the request times out this function faults the
- * controller with proper reason code.
- *
- * On successful completion of the request this function returns
- * appropriate ioc status from the firmware back to the caller.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_post_transport_req(struct mpi3mr_ioc *mrioc, void *request,
 	u16 request_sz, void *reply, u16 reply_sz, int timeout,
 	u16 *ioc_status)
@@ -85,7 +59,7 @@ out:
 	return retval;
 }
 
-/* report manufacture request structure */
+ 
 struct rep_manu_request {
 	u8 smp_frame_type;
 	u8 function;
@@ -93,10 +67,10 @@ struct rep_manu_request {
 	u8 request_length;
 };
 
-/* report manufacture reply structure */
+ 
 struct rep_manu_reply {
-	u8 smp_frame_type; /* 0x41 */
-	u8 function; /* 0x01 */
+	u8 smp_frame_type;  
+	u8 function;  
 	u8 function_result;
 	u8 response_length;
 	u16 expander_change_count;
@@ -113,17 +87,7 @@ struct rep_manu_reply {
 	u8 vendor_specific[8];
 };
 
-/**
- * mpi3mr_report_manufacture - obtain SMP report_manufacture
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of the expander device
- * @edev: SAS transport layer sas_expander_device object
- * @port_id: ID of the HBA port
- *
- * Fills in the sas_expander_device with manufacturing info.
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int mpi3mr_report_manufacture(struct mpi3mr_ioc *mrioc,
 	u64 sas_address, struct sas_expander_device *edev, u8 port_id)
 {
@@ -234,18 +198,7 @@ out:
 	return rc;
 }
 
-/**
- * __mpi3mr_expander_find_by_handle - expander search by handle
- * @mrioc: Adapter instance reference
- * @handle: Firmware device handle of the expander
- *
- * Context: The caller should acquire sas_node_lock
- *
- * This searches for expander device based on handle, then
- * returns the sas_node object.
- *
- * Return: Expander sas_node object reference or NULL
- */
+ 
 struct mpi3mr_sas_node *__mpi3mr_expander_find_by_handle(struct mpi3mr_ioc
 	*mrioc, u16 handle)
 {
@@ -262,12 +215,7 @@ struct mpi3mr_sas_node *__mpi3mr_expander_find_by_handle(struct mpi3mr_ioc
 	return r;
 }
 
-/**
- * mpi3mr_is_expander_device - if device is an expander
- * @device_info: Bitfield providing information about the device
- *
- * Return: 1 if the device is expander device, else 0.
- */
+ 
 u8 mpi3mr_is_expander_device(u16 device_info)
 {
 	if ((device_info & MPI3_SAS_DEVICE_INFO_DEVICE_TYPE_MASK) ==
@@ -277,17 +225,7 @@ u8 mpi3mr_is_expander_device(u16 device_info)
 		return 0;
 }
 
-/**
- * mpi3mr_get_sas_address - retrieve sas_address for handle
- * @mrioc: Adapter instance reference
- * @handle: Firmware device handle
- * @sas_address: Address to hold sas address
- *
- * This function issues device page0 read for a given device
- * handle and gets the SAS address and return it back
- *
- * Return: 0 for success, non-zero for failure
- */
+ 
 static int mpi3mr_get_sas_address(struct mpi3mr_ioc *mrioc, u16 handle,
 	u64 *sas_address)
 {
@@ -324,17 +262,7 @@ static int mpi3mr_get_sas_address(struct mpi3mr_ioc *mrioc, u16 handle,
 	return 0;
 }
 
-/**
- * __mpi3mr_get_tgtdev_by_addr - target device search
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of the device
- * @hba_port: HBA port entry
- *
- * This searches for target device from sas address and hba port
- * pointer then return mpi3mr_tgt_dev object.
- *
- * Return: Valid tget_dev or NULL
- */
+ 
 static struct mpi3mr_tgt_dev *__mpi3mr_get_tgtdev_by_addr(struct mpi3mr_ioc *mrioc,
 	u64 sas_address, struct mpi3mr_hba_port *hba_port)
 {
@@ -353,20 +281,7 @@ found_device:
 	return tgtdev;
 }
 
-/**
- * mpi3mr_get_tgtdev_by_addr - target device search
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of the device
- * @hba_port: HBA port entry
- *
- * This searches for target device from sas address and hba port
- * pointer then return mpi3mr_tgt_dev object.
- *
- * Context: This function will acquire tgtdev_lock and will
- * release before returning the mpi3mr_tgt_dev object.
- *
- * Return: Valid tget_dev or NULL
- */
+ 
 static struct mpi3mr_tgt_dev *mpi3mr_get_tgtdev_by_addr(struct mpi3mr_ioc *mrioc,
 	u64 sas_address, struct mpi3mr_hba_port *hba_port)
 {
@@ -384,17 +299,7 @@ out:
 	return tgtdev;
 }
 
-/**
- * mpi3mr_remove_device_by_sas_address - remove the device
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of the device
- * @hba_port: HBA port entry
- *
- * This searches for target device using sas address and hba
- * port pointer then removes it from the OS.
- *
- * Return: None
- */
+ 
 static void mpi3mr_remove_device_by_sas_address(struct mpi3mr_ioc *mrioc,
 	u64 sas_address, struct mpi3mr_hba_port *hba_port)
 {
@@ -423,17 +328,7 @@ static void mpi3mr_remove_device_by_sas_address(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * __mpi3mr_get_tgtdev_by_addr_and_rphy - target device search
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of the device
- * @rphy: SAS transport layer rphy object
- *
- * This searches for target device from sas address and rphy
- * pointer then return mpi3mr_tgt_dev object.
- *
- * Return: Valid tget_dev or NULL
- */
+ 
 struct mpi3mr_tgt_dev *__mpi3mr_get_tgtdev_by_addr_and_rphy(
 	struct mpi3mr_ioc *mrioc, u64 sas_address, struct sas_rphy *rphy)
 {
@@ -452,15 +347,7 @@ found_device:
 	return tgtdev;
 }
 
-/**
- * mpi3mr_expander_find_by_sas_address - sas expander search
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of expander
- * @hba_port: HBA port entry
- *
- * Return: A valid SAS expander node or NULL.
- *
- */
+ 
 static struct mpi3mr_sas_node *mpi3mr_expander_find_by_sas_address(
 	struct mpi3mr_ioc *mrioc, u64 sas_address,
 	struct mpi3mr_hba_port *hba_port)
@@ -481,23 +368,7 @@ out:
 	return r;
 }
 
-/**
- * __mpi3mr_sas_node_find_by_sas_address - sas node search
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of expander or sas host
- * @hba_port: HBA port entry
- * Context: Caller should acquire mrioc->sas_node_lock.
- *
- * If the SAS address indicates the device is direct attached to
- * the controller (controller's SAS address) then the SAS node
- * associated with the controller is returned back else the SAS
- * address and hba port are used to identify the exact expander
- * and the associated sas_node object is returned. If there is
- * no match NULL is returned.
- *
- * Return: A valid SAS node or NULL.
- *
- */
+ 
 static struct mpi3mr_sas_node *__mpi3mr_sas_node_find_by_sas_address(
 	struct mpi3mr_ioc *mrioc, u64 sas_address,
 	struct mpi3mr_hba_port *hba_port)
@@ -509,13 +380,7 @@ static struct mpi3mr_sas_node *__mpi3mr_sas_node_find_by_sas_address(
 	    hba_port);
 }
 
-/**
- * mpi3mr_parent_present - Is parent present for a phy
- * @mrioc: Adapter instance reference
- * @phy: SAS transport layer phy object
- *
- * Return: 0 if parent is present else non-zero
- */
+ 
 static int mpi3mr_parent_present(struct mpi3mr_ioc *mrioc, struct sas_phy *phy)
 {
 	unsigned long flags;
@@ -532,15 +397,7 @@ static int mpi3mr_parent_present(struct mpi3mr_ioc *mrioc, struct sas_phy *phy)
 	return 0;
 }
 
-/**
- * mpi3mr_convert_phy_link_rate -
- * @link_rate: link rate as defined in the MPI header
- *
- * Convert link_rate from mpi format into sas_transport layer
- * form.
- *
- * Return: A valid SAS transport layer defined link rate
- */
+ 
 static enum sas_linkrate mpi3mr_convert_phy_link_rate(u8 link_rate)
 {
 	enum sas_linkrate rc;
@@ -582,14 +439,7 @@ static enum sas_linkrate mpi3mr_convert_phy_link_rate(u8 link_rate)
 	return rc;
 }
 
-/**
- * mpi3mr_delete_sas_phy - Remove a single phy from port
- * @mrioc: Adapter instance reference
- * @mr_sas_port: Internal Port object
- * @mr_sas_phy: Internal Phy object
- *
- * Return: None.
- */
+ 
 static void mpi3mr_delete_sas_phy(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_port *mr_sas_port,
 	struct mpi3mr_sas_phy *mr_sas_phy)
@@ -609,14 +459,7 @@ static void mpi3mr_delete_sas_phy(struct mpi3mr_ioc *mrioc,
 	mr_sas_phy->phy_belongs_to_port = 0;
 }
 
-/**
- * mpi3mr_add_sas_phy - Adding a single phy to a port
- * @mrioc: Adapter instance reference
- * @mr_sas_port: Internal Port object
- * @mr_sas_phy: Internal Phy object
- *
- * Return: None.
- */
+ 
 static void mpi3mr_add_sas_phy(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_port *mr_sas_port,
 	struct mpi3mr_sas_phy *mr_sas_phy)
@@ -636,17 +479,7 @@ static void mpi3mr_add_sas_phy(struct mpi3mr_ioc *mrioc,
 	mr_sas_phy->phy_belongs_to_port = 1;
 }
 
-/**
- * mpi3mr_add_phy_to_an_existing_port - add phy to existing port
- * @mrioc: Adapter instance reference
- * @mr_sas_node: Internal sas node object (expander or host)
- * @mr_sas_phy: Internal Phy object *
- * @sas_address: SAS address of device/expander were phy needs
- *             to be added to
- * @hba_port: HBA port entry
- *
- * Return: None.
- */
+ 
 static void mpi3mr_add_phy_to_an_existing_port(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *mr_sas_node, struct mpi3mr_sas_phy *mr_sas_phy,
 	u64 sas_address, struct mpi3mr_hba_port *hba_port)
@@ -677,13 +510,7 @@ static void mpi3mr_add_phy_to_an_existing_port(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_delete_sas_port - helper function to removing a port
- * @mrioc: Adapter instance reference
- * @mr_sas_port: Internal Port object
- *
- * Return: None.
- */
+ 
 static void  mpi3mr_delete_sas_port(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_port *mr_sas_port)
 {
@@ -705,14 +532,7 @@ static void  mpi3mr_delete_sas_port(struct mpi3mr_ioc *mrioc,
 		mpi3mr_expander_remove(mrioc, sas_address, hba_port);
 }
 
-/**
- * mpi3mr_del_phy_from_an_existing_port - del phy from a port
- * @mrioc: Adapter instance reference
- * @mr_sas_node: Internal sas node object (expander or host)
- * @mr_sas_phy: Internal Phy object
- *
- * Return: None.
- */
+ 
 static void mpi3mr_del_phy_from_an_existing_port(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *mr_sas_node, struct mpi3mr_sas_phy *mr_sas_phy)
 {
@@ -739,19 +559,7 @@ static void mpi3mr_del_phy_from_an_existing_port(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_sas_port_sanity_check - sanity check while adding port
- * @mrioc: Adapter instance reference
- * @mr_sas_node: Internal sas node object (expander or host)
- * @sas_address: SAS address of device/expander
- * @hba_port: HBA port entry
- *
- * Verifies whether the Phys attached to a device with the given
- * SAS address already belongs to an existing sas port if so
- * will remove those phys from the sas port
- *
- * Return: None.
- */
+ 
 static void mpi3mr_sas_port_sanity_check(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *mr_sas_node, u64 sas_address,
 	struct mpi3mr_hba_port *hba_port)
@@ -768,16 +576,7 @@ static void mpi3mr_sas_port_sanity_check(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_set_identify - set identify for phys and end devices
- * @mrioc: Adapter instance reference
- * @handle: Firmware device handle
- * @identify: SAS transport layer's identify info
- *
- * Populates sas identify info for a specific device.
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int mpi3mr_set_identify(struct mpi3mr_ioc *mrioc, u16 handle,
 	struct sas_identify *identify)
 {
@@ -808,13 +607,13 @@ static int mpi3mr_set_identify(struct mpi3mr_ioc *mrioc, u16 handle,
 	sasinf = &device_pg0.device_specific.sas_sata_format;
 	device_info = le16_to_cpu(sasinf->device_info);
 
-	/* sas_address */
+	 
 	identify->sas_address = le64_to_cpu(sasinf->sas_address);
 
-	/* phy number of the parent device this device is linked to */
+	 
 	identify->phy_identifier = sasinf->phy_num;
 
-	/* device_type */
+	 
 	switch (device_info & MPI3_SAS_DEVICE_INFO_DEVICE_TYPE_MASK) {
 	case MPI3_SAS_DEVICE_INFO_DEVICE_TYPE_NO_DEVICE:
 		identify->device_type = SAS_PHY_UNUSED;
@@ -827,20 +626,20 @@ static int mpi3mr_set_identify(struct mpi3mr_ioc *mrioc, u16 handle,
 		break;
 	}
 
-	/* initiator_port_protocols */
+	 
 	if (device_info & MPI3_SAS_DEVICE_INFO_SSP_INITIATOR)
 		identify->initiator_port_protocols |= SAS_PROTOCOL_SSP;
-	/* MPI3.0 doesn't have define for SATA INIT so setting both here*/
+	 
 	if (device_info & MPI3_SAS_DEVICE_INFO_STP_INITIATOR)
 		identify->initiator_port_protocols |= (SAS_PROTOCOL_STP |
 		    SAS_PROTOCOL_SATA);
 	if (device_info & MPI3_SAS_DEVICE_INFO_SMP_INITIATOR)
 		identify->initiator_port_protocols |= SAS_PROTOCOL_SMP;
 
-	/* target_port_protocols */
+	 
 	if (device_info & MPI3_SAS_DEVICE_INFO_SSP_TARGET)
 		identify->target_port_protocols |= SAS_PROTOCOL_SSP;
-	/* MPI3.0 doesn't have define for STP Target so setting both here*/
+	 
 	if (device_info & MPI3_SAS_DEVICE_INFO_STP_SATA_TARGET)
 		identify->target_port_protocols |= (SAS_PROTOCOL_STP |
 		    SAS_PROTOCOL_SATA);
@@ -849,15 +648,7 @@ static int mpi3mr_set_identify(struct mpi3mr_ioc *mrioc, u16 handle,
 	return 0;
 }
 
-/**
- * mpi3mr_add_host_phy - report sas_host phy to SAS transport
- * @mrioc: Adapter instance reference
- * @mr_sas_phy: Internal Phy object
- * @phy_pg0: SAS phy page 0
- * @parent_dev: Prent device class object
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int mpi3mr_add_host_phy(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_phy *mr_sas_phy, struct mpi3_sas_phy_page0 phy_pg0,
 	struct device *parent_dev)
@@ -919,15 +710,7 @@ static int mpi3mr_add_host_phy(struct mpi3mr_ioc *mrioc,
 	return 0;
 }
 
-/**
- * mpi3mr_add_expander_phy - report expander phy to transport
- * @mrioc: Adapter instance reference
- * @mr_sas_phy: Internal Phy object
- * @expander_pg1: SAS Expander page 1
- * @parent_dev: Parent device class object
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int mpi3mr_add_expander_phy(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_phy *mr_sas_phy,
 	struct mpi3_sas_expander_page1 expander_pg1,
@@ -990,13 +773,7 @@ static int mpi3mr_add_expander_phy(struct mpi3mr_ioc *mrioc,
 	return 0;
 }
 
-/**
- * mpi3mr_alloc_hba_port - alloc hba port object
- * @mrioc: Adapter instance reference
- * @port_id: Port number
- *
- * Alloc memory for hba port object.
- */
+ 
 static struct mpi3mr_hba_port *
 mpi3mr_alloc_hba_port(struct mpi3mr_ioc *mrioc, u16 port_id)
 {
@@ -1013,13 +790,7 @@ mpi3mr_alloc_hba_port(struct mpi3mr_ioc *mrioc, u16 port_id)
 	return hba_port;
 }
 
-/**
- * mpi3mr_get_hba_port_by_id - find hba port by id
- * @mrioc: Adapter instance reference
- * @port_id - Port ID to search
- *
- * Return: mpi3mr_hba_port reference for the matched port
- */
+ 
 
 struct mpi3mr_hba_port *mpi3mr_get_hba_port_by_id(struct mpi3mr_ioc *mrioc,
 	u8 port_id)
@@ -1038,17 +809,7 @@ struct mpi3mr_hba_port *mpi3mr_get_hba_port_by_id(struct mpi3mr_ioc *mrioc,
 	return NULL;
 }
 
-/**
- * mpi3mr_update_links - refreshing SAS phy link changes
- * @mrioc: Adapter instance reference
- * @sas_address_parent: SAS address of parent expander or host
- * @handle: Firmware device handle of attached device
- * @phy_number: Phy number
- * @link_rate: New link rate
- * @hba_port: HBA port entry
- *
- * Return: None.
- */
+ 
 void mpi3mr_update_links(struct mpi3mr_ioc *mrioc,
 	u64 sas_address_parent, u16 handle, u8 phy_number, u8 link_rate,
 	struct mpi3mr_hba_port *hba_port)
@@ -1095,17 +856,7 @@ void mpi3mr_update_links(struct mpi3mr_ioc *mrioc,
 		    mr_sas_phy->remote_identify.sas_address);
 }
 
-/**
- * mpi3mr_sas_host_refresh - refreshing sas host object contents
- * @mrioc: Adapter instance reference
- *
- * This function refreshes the controllers phy information and
- * updates the SAS transport layer with updated information,
- * this is executed for each device addition or device info
- * change events
- *
- * Return: None.
- */
+ 
 void mpi3mr_sas_host_refresh(struct mpi3mr_ioc *mrioc)
 {
 	int i;
@@ -1160,17 +911,7 @@ void mpi3mr_sas_host_refresh(struct mpi3mr_ioc *mrioc)
 	kfree(sas_io_unit_pg0);
 }
 
-/**
- * mpi3mr_sas_host_add - create sas host object
- * @mrioc: Adapter instance reference
- *
- * This function creates the controllers phy information and
- * updates the SAS transport layer with updated information,
- * this is executed for first device addition or device info
- * change event.
- *
- * Return: None.
- */
+ 
 void mpi3mr_sas_host_add(struct mpi3mr_ioc *mrioc)
 {
 	int i;
@@ -1289,20 +1030,7 @@ out:
 	kfree(sas_io_unit_pg0);
 }
 
-/**
- * mpi3mr_sas_port_add - Expose the SAS device to the SAS TL
- * @mrioc: Adapter instance reference
- * @handle: Firmware device handle of the attached device
- * @sas_address_parent: sas address of parent expander or host
- * @hba_port: HBA port entry
- *
- * This function creates a new sas port object for the given end
- * device matching sas address and hba_port and adds it to the
- * sas_node's sas_port_list and expose the attached sas device
- * to the SAS transport layer through sas_rphy_add.
- *
- * Returns a valid mpi3mr_sas_port reference or NULL.
- */
+ 
 static struct mpi3mr_sas_port *mpi3mr_sas_port_add(struct mpi3mr_ioc *mrioc,
 	u16 handle, u64 sas_address_parent, struct mpi3mr_hba_port *hba_port)
 {
@@ -1452,7 +1180,7 @@ static struct mpi3mr_sas_port *mpi3mr_sas_port_add(struct mpi3mr_ioc *mrioc,
 			mpi3mr_print_device_event_notice(mrioc, true);
 	}
 
-	/* fill in report manufacture */
+	 
 	if (mr_sas_port->remote_identify.device_type ==
 	    SAS_EDGE_EXPANDER_DEVICE ||
 	    mr_sas_port->remote_identify.device_type ==
@@ -1471,18 +1199,7 @@ static struct mpi3mr_sas_port *mpi3mr_sas_port_add(struct mpi3mr_ioc *mrioc,
 	return NULL;
 }
 
-/**
- * mpi3mr_sas_port_remove - remove port from the list
- * @mrioc: Adapter instance reference
- * @sas_address: SAS address of attached device
- * @sas_address_parent: SAS address of parent expander or host
- * @hba_port: HBA port entry
- *
- * Removing object and freeing associated memory from the
- * sas_port_list.
- *
- * Return: None
- */
+ 
 static void mpi3mr_sas_port_remove(struct mpi3mr_ioc *mrioc, u64 sas_address,
 	u64 sas_address_parent, struct mpi3mr_hba_port *hba_port)
 {
@@ -1576,15 +1293,7 @@ static void mpi3mr_sas_port_remove(struct mpi3mr_ioc *mrioc, u64 sas_address,
 	kfree(mr_sas_port);
 }
 
-/**
- * struct host_port - host port details
- * @sas_address: SAS Address of the attached device
- * @phy_mask: phy mask of host port
- * @handle: Device Handle of attached device
- * @iounit_port_id: port ID
- * @used: host port is already matched with sas port from sas_port_list
- * @lowest_phy: lowest phy ID of host port
- */
+ 
 struct host_port {
 	u64	sas_address;
 	u32	phy_mask;
@@ -1594,18 +1303,7 @@ struct host_port {
 	u8	lowest_phy;
 };
 
-/**
- * mpi3mr_update_mr_sas_port - update sas port objects during reset
- * @mrioc: Adapter instance reference
- * @h_port: host_port object
- * @mr_sas_port: sas_port objects which needs to be updated
- *
- * Update the port ID of sas port object. Also add the phys if new phys got
- * added to current sas port and remove the phys if some phys are moved
- * out of the current sas port.
- *
- * Return: Nothing.
- */
+ 
 static void
 mpi3mr_update_mr_sas_port(struct mpi3mr_ioc *mrioc, struct host_port *h_port,
 	struct mpi3mr_sas_port *mr_sas_port)
@@ -1627,16 +1325,12 @@ mpi3mr_update_mr_sas_port(struct mpi3mr_ioc *mrioc, struct host_port *h_port,
 	mr_sas_port->hba_port->port_id = h_port->iounit_port_id;
 	mr_sas_port->hba_port->flags &= ~MPI3MR_HBA_PORT_FLAG_DIRTY;
 
-	/* Get the newly added phys bit map & removed phys bit map */
+	 
 	phy_mask_xor = mr_sas_port->phy_mask ^ h_port->phy_mask;
 	phys_to_be_added = h_port->phy_mask & phy_mask_xor;
 	phys_to_be_removed = mr_sas_port->phy_mask & phy_mask_xor;
 
-	/*
-	 * Register these new phys to current mr_sas_port's port.
-	 * if these phys are previously registered with another port
-	 * then delete these phys from that port first.
-	 */
+	 
 	for_each_set_bit(i, (ulong *) &phys_to_be_added, BITS_PER_TYPE(u32)) {
 		mr_sas_phy = &mrioc->sas_hba.phy[i];
 		if (mr_sas_phy->phy_belongs_to_port)
@@ -1648,7 +1342,7 @@ mpi3mr_update_mr_sas_port(struct mpi3mr_ioc *mrioc, struct host_port *h_port,
 		    mr_sas_port->hba_port);
 	}
 
-	/* Delete the phys which are not part of current mr_sas_port's port. */
+	 
 	for_each_set_bit(i, (ulong *) &phys_to_be_removed, BITS_PER_TYPE(u32)) {
 		mr_sas_phy = &mrioc->sas_hba.phy[i];
 		if (mr_sas_phy->phy_belongs_to_port)
@@ -1657,17 +1351,7 @@ mpi3mr_update_mr_sas_port(struct mpi3mr_ioc *mrioc, struct host_port *h_port,
 	}
 }
 
-/**
- * mpi3mr_refresh_sas_ports - update host's sas ports during reset
- * @mrioc: Adapter instance reference
- *
- * Update the host's sas ports during reset by checking whether
- * sas ports are still intact or not. Add/remove phys if any hba
- * phys are (moved in)/(moved out) of sas port. Also update
- * io_unit_port if it got changed during reset.
- *
- * Return: Nothing.
- */
+ 
 void
 mpi3mr_refresh_sas_ports(struct mpi3mr_ioc *mrioc)
 {
@@ -1691,7 +1375,7 @@ mpi3mr_refresh_sas_ports(struct mpi3mr_ioc *mrioc)
 		goto out;
 	}
 
-	/* Create a new expander port table */
+	 
 	for (i = 0; i < mrioc->sas_hba.num_phys; i++) {
 		attached_handle = le16_to_cpu(
 		    sas_io_unit_pg0->phy_data[i].attached_dev_handle);
@@ -1757,14 +1441,14 @@ mpi3mr_refresh_sas_ports(struct mpi3mr_ioc *mrioc)
 		}
 	}
 
-	/* mark all host sas port entries as dirty */
+	 
 	list_for_each_entry(mr_sas_port, &mrioc->sas_hba.sas_port_list,
 	    port_list) {
 		mr_sas_port->marked_responding = 0;
 		mr_sas_port->hba_port->flags |= MPI3MR_HBA_PORT_FLAG_DIRTY;
 	}
 
-	/* First check for matching lowest phy */
+	 
 	for (i = 0; i < host_port_count; i++) {
 		mr_sas_port = NULL;
 		list_for_each_entry(mr_sas_port, &mrioc->sas_hba.sas_port_list,
@@ -1780,7 +1464,7 @@ mpi3mr_refresh_sas_ports(struct mpi3mr_ioc *mrioc)
 		}
 	}
 
-	/* In case if lowest phy is got enabled or disabled during reset */
+	 
 	for (i = 0; i < host_port_count; i++) {
 		if (h_port[i].used)
 			continue;
@@ -1798,7 +1482,7 @@ mpi3mr_refresh_sas_ports(struct mpi3mr_ioc *mrioc)
 		}
 	}
 
-	/* In case if expander cable is removed & connected to another HBA port during reset */
+	 
 	for (i = 0; i < host_port_count; i++) {
 		if (h_port[i].used)
 			continue;
@@ -1817,16 +1501,7 @@ out:
 	kfree(sas_io_unit_pg0);
 }
 
-/**
- * mpi3mr_refresh_expanders - Refresh expander device exposure
- * @mrioc: Adapter instance reference
- *
- * This is executed post controller reset to identify any
- * missing expander devices during reset and remove from the upper layers
- * or expose any newly detected expander device to the upper layers.
- *
- * Return: Nothing.
- */
+ 
 void
 mpi3mr_refresh_expanders(struct mpi3mr_ioc *mrioc)
 {
@@ -1848,7 +1523,7 @@ mpi3mr_refresh_expanders(struct mpi3mr_ioc *mrioc)
 
 	handle = 0xffff;
 
-	/* Search for responding expander devices and add them if they are newly got added */
+	 
 	while (true) {
 		if ((mpi3mr_cfg_get_sas_exp_pg0(mrioc, &ioc_status, &expander_pg0,
 		    sizeof(struct mpi3_sas_expander_page0),
@@ -1897,11 +1572,7 @@ mpi3mr_refresh_expanders(struct mpi3mr_ioc *mrioc)
 			sas_expander->phy[i].handle = handle;
 	}
 
-	/*
-	 * Delete non responding expander devices and the corresponding
-	 * hba_port if the non responding expander device's parent device
-	 * is a host node.
-	 */
+	 
 	sas_expander = NULL;
 	spin_lock_irqsave(&mrioc->sas_node_lock, flags);
 	list_for_each_entry_safe_reverse(sas_expander, sas_expander_next,
@@ -1915,16 +1586,7 @@ mpi3mr_refresh_expanders(struct mpi3mr_ioc *mrioc)
 	spin_unlock_irqrestore(&mrioc->sas_node_lock, flags);
 }
 
-/**
- * mpi3mr_expander_node_add - insert an expander to the list.
- * @mrioc: Adapter instance reference
- * @sas_expander: Expander sas node
- * Context: This function will acquire sas_node_lock.
- *
- * Adding new object to the ioc->sas_expander_list.
- *
- * Return: None.
- */
+ 
 static void mpi3mr_expander_node_add(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *sas_expander)
 {
@@ -1935,17 +1597,7 @@ static void mpi3mr_expander_node_add(struct mpi3mr_ioc *mrioc,
 	spin_unlock_irqrestore(&mrioc->sas_node_lock, flags);
 }
 
-/**
- * mpi3mr_expander_add -  Create expander object
- * @mrioc: Adapter instance reference
- * @handle: Expander firmware device handle
- *
- * This function creating expander object, stored in
- * sas_expander_list and expose it to the SAS transport
- * layer.
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 int mpi3mr_expander_add(struct mpi3mr_ioc *mrioc, u16 handle)
 {
 	struct mpi3mr_sas_node *sas_expander;
@@ -2008,11 +1660,7 @@ int mpi3mr_expander_add(struct mpi3mr_ioc *mrioc, u16 handle)
 			if (rc != 0)
 				return rc;
 		} else {
-			/*
-			 * When there is a parent expander present, update it's
-			 * phys where child expander is connected with the link
-			 * speed, attached dev handle and sas address.
-			 */
+			 
 			for (i = 0 ; i < sas_expander->num_phys ; i++) {
 				phynum_handle =
 				    (i << MPI3_SAS_EXPAND_PGAD_PHYNUM_SHIFT) |
@@ -2149,18 +1797,7 @@ out_fail:
 	return rc;
 }
 
-/**
- * mpi3mr_expander_node_remove - recursive removal of expander.
- * @mrioc: Adapter instance reference
- * @sas_expander: Expander device object
- *
- * Removes expander object and freeing associated memory from
- * the sas_expander_list and removes the same from SAS TL, if
- * one of the attached device is an expander then it recursively
- * removes the expander device too.
- *
- * Return nothing.
- */
+ 
 void mpi3mr_expander_node_remove(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *sas_expander)
 {
@@ -2168,7 +1805,7 @@ void mpi3mr_expander_node_remove(struct mpi3mr_ioc *mrioc,
 	unsigned long flags;
 	u8 port_id;
 
-	/* remove sibling ports attached to this expander */
+	 
 	list_for_each_entry_safe(mr_sas_port, next,
 	   &sas_expander->sas_port_list, port_list) {
 		if (mrioc->reset_in_progress)
@@ -2203,18 +1840,7 @@ void mpi3mr_expander_node_remove(struct mpi3mr_ioc *mrioc,
 	kfree(sas_expander);
 }
 
-/**
- * mpi3mr_expander_remove - Remove expander object
- * @mrioc: Adapter instance reference
- * @sas_address: Remove expander sas_address
- * @hba_port: HBA port reference
- *
- * This function remove expander object, stored in
- * mrioc->sas_expander_list and removes it from the SAS TL by
- * calling mpi3mr_expander_node_remove().
- *
- * Return: None
- */
+ 
 void mpi3mr_expander_remove(struct mpi3mr_ioc *mrioc, u64 sas_address,
 	struct mpi3mr_hba_port *hba_port)
 {
@@ -2236,19 +1862,7 @@ void mpi3mr_expander_remove(struct mpi3mr_ioc *mrioc, u64 sas_address,
 
 }
 
-/**
- * mpi3mr_get_sas_negotiated_logical_linkrate - get linkrate
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device
- *
- * This function identifies whether the target device is
- * attached directly or through expander and issues sas phy
- * page0 or expander phy page1 and gets the link rate, if there
- * is any failure in reading the pages then this returns link
- * rate of 1.5.
- *
- * Return: logical link rate.
- */
+ 
 static u8 mpi3mr_get_sas_negotiated_logical_linkrate(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev)
 {
@@ -2299,16 +1913,7 @@ out:
 	return link_rate;
 }
 
-/**
- * mpi3mr_report_tgtdev_to_sas_transport - expose dev to SAS TL
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device
- *
- * This function exposes the target device after
- * preparing host_phy, setting up link rate etc.
- *
- * Return: 0 on success, non-zero for failure.
- */
+ 
 int mpi3mr_report_tgtdev_to_sas_transport(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev)
 {
@@ -2368,15 +1973,7 @@ int mpi3mr_report_tgtdev_to_sas_transport(struct mpi3mr_ioc *mrioc,
 	return retval;
 }
 
-/**
- * mpi3mr_remove_tgtdev_from_sas_transport - remove from SAS TL
- * @mrioc: Adapter instance reference
- * @tgtdev: Target device
- *
- * This function removes the target device
- *
- * Return: None.
- */
+ 
 void mpi3mr_remove_tgtdev_from_sas_transport(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_tgt_dev *tgtdev)
 {
@@ -2396,12 +1993,7 @@ void mpi3mr_remove_tgtdev_from_sas_transport(struct mpi3mr_ioc *mrioc,
 	tgtdev->dev_spec.sas_sata_inf.hba_port = NULL;
 }
 
-/**
- * mpi3mr_get_port_id_by_sas_phy -  Get port ID of the given phy
- * @phy: SAS transport layer phy object
- *
- * Return: Port number for valid ID else 0xFFFF
- */
+ 
 static inline u8 mpi3mr_get_port_id_by_sas_phy(struct sas_phy *phy)
 {
 	u8 port_id = 0xFF;
@@ -2413,17 +2005,7 @@ static inline u8 mpi3mr_get_port_id_by_sas_phy(struct sas_phy *phy)
 	return port_id;
 }
 
-/**
- * mpi3mr_get_port_id_by_rphy - Get Port number from SAS rphy
- *
- * @mrioc: Adapter instance reference
- * @rphy: SAS transport layer remote phy object
- *
- * Retrieves HBA port number in which the device pointed by the
- * rphy object is attached with.
- *
- * Return: Valid port number on success else OxFFFF.
- */
+ 
 static u8 mpi3mr_get_port_id_by_rphy(struct mpi3mr_ioc *mrioc, struct sas_rphy *rphy)
 {
 	struct mpi3mr_sas_node *sas_expander;
@@ -2474,21 +2056,21 @@ static inline struct mpi3mr_ioc *rphy_to_mrioc(struct sas_rphy *rphy)
 	return shost_priv(shost);
 }
 
-/* report phy error log structure */
+ 
 struct phy_error_log_request {
-	u8 smp_frame_type; /* 0x40 */
-	u8 function; /* 0x11 */
+	u8 smp_frame_type;  
+	u8 function;  
 	u8 allocated_response_length;
-	u8 request_length; /* 02 */
+	u8 request_length;  
 	u8 reserved_1[5];
 	u8 phy_identifier;
 	u8 reserved_2[2];
 };
 
-/* report phy error log reply structure */
+ 
 struct phy_error_log_reply {
-	u8 smp_frame_type; /* 0x41 */
-	u8 function; /* 0x11 */
+	u8 smp_frame_type;  
+	u8 function;  
 	u8 function_result;
 	u8 response_length;
 	__be16 expander_change_count;
@@ -2502,14 +2084,7 @@ struct phy_error_log_reply {
 };
 
 
-/**
- * mpi3mr_get_expander_phy_error_log - return expander counters:
- * @mrioc: Adapter instance reference
- * @phy: The SAS transport layer phy object
- *
- * Return: 0 for success, non-zero for failure.
- *
- */
+ 
 static int mpi3mr_get_expander_phy_error_log(struct mpi3mr_ioc *mrioc,
 	struct sas_phy *phy)
 {
@@ -2611,15 +2186,7 @@ out:
 	return rc;
 }
 
-/**
- * mpi3mr_transport_get_linkerrors - return phy error counters
- * @phy: The SAS transport layer phy object
- *
- * This function retrieves the phy error log information of the
- * HBA or expander for which the phy belongs to
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int mpi3mr_transport_get_linkerrors(struct sas_phy *phy)
 {
 	struct mpi3mr_ioc *mrioc = phy_to_mrioc(phy);
@@ -2635,7 +2202,7 @@ static int mpi3mr_transport_get_linkerrors(struct sas_phy *phy)
 		return mpi3mr_get_expander_phy_error_log(mrioc, phy);
 
 	memset(&phy_pg1, 0, sizeof(struct mpi3_sas_phy_page1));
-	/* get hba phy error logs */
+	 
 	if ((mpi3mr_cfg_get_sas_phy_pg1(mrioc, &ioc_status, &phy_pg1,
 	    sizeof(struct mpi3_sas_phy_page1),
 	    MPI3_SAS_PHY_PGAD_FORM_PHY_NUMBER, phy->number))) {
@@ -2659,16 +2226,7 @@ static int mpi3mr_transport_get_linkerrors(struct sas_phy *phy)
 	return 0;
 }
 
-/**
- * mpi3mr_transport_get_enclosure_identifier - Get Enclosure ID
- * @rphy: The SAS transport layer remote phy object
- * @identifier: Enclosure identifier to be returned
- *
- * Returns the enclosure id for the device pointed by the remote
- * phy object.
- *
- * Return: 0 on success or -ENXIO
- */
+ 
 static int
 mpi3mr_transport_get_enclosure_identifier(struct sas_rphy *rphy,
 	u64 *identifier)
@@ -2695,15 +2253,7 @@ mpi3mr_transport_get_enclosure_identifier(struct sas_rphy *rphy,
 	return rc;
 }
 
-/**
- * mpi3mr_transport_get_bay_identifier - Get bay ID
- * @rphy: The SAS transport layer remote phy object
- *
- * Returns the slot id for the device pointed by the remote phy
- * object.
- *
- * Return: Valid slot ID on success or -ENXIO
- */
+ 
 static int
 mpi3mr_transport_get_bay_identifier(struct sas_rphy *rphy)
 {
@@ -2725,12 +2275,12 @@ mpi3mr_transport_get_bay_identifier(struct sas_rphy *rphy)
 	return rc;
 }
 
-/* phy control request structure */
+ 
 struct phy_control_request {
-	u8 smp_frame_type; /* 0x40 */
-	u8 function; /* 0x91 */
+	u8 smp_frame_type;  
+	u8 function;  
 	u8 allocated_response_length;
-	u8 request_length; /* 0x09 */
+	u8 request_length;  
 	u16 expander_change_count;
 	u8 reserved_1[3];
 	u8 phy_identifier;
@@ -2742,10 +2292,10 @@ struct phy_control_request {
 	u8 reserved_3[6];
 };
 
-/* phy control reply structure */
+ 
 struct phy_control_reply {
-	u8 smp_frame_type; /* 0x41 */
-	u8 function; /* 0x11 */
+	u8 smp_frame_type;  
+	u8 function;  
 	u8 function_result;
 	u8 response_length;
 };
@@ -2754,17 +2304,7 @@ struct phy_control_reply {
 #define SMP_PHY_CONTROL_HARD_RESET	(0x02)
 #define SMP_PHY_CONTROL_DISABLE		(0x03)
 
-/**
- * mpi3mr_expander_phy_control - expander phy control
- * @mrioc: Adapter instance reference
- * @phy: The SAS transport layer phy object
- * @phy_operation: The phy operation to be executed
- *
- * Issues SMP passthru phy control request to execute a specific
- * phy operation for a given expander device.
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int
 mpi3mr_expander_phy_control(struct mpi3mr_ioc *mrioc,
 	struct sas_phy *phy, u8 phy_operation)
@@ -2866,13 +2406,7 @@ mpi3mr_expander_phy_control(struct mpi3mr_ioc *mrioc,
 	return rc;
 }
 
-/**
- * mpi3mr_transport_phy_reset - Reset a given phy
- * @phy: The SAS transport layer phy object
- * @hard_reset: Flag to indicate the type of reset
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int
 mpi3mr_transport_phy_reset(struct sas_phy *phy, int hard_reset)
 {
@@ -2888,13 +2422,13 @@ mpi3mr_transport_phy_reset(struct sas_phy *phy, int hard_reset)
 	if (rc)
 		return rc;
 
-	/* handle expander phys */
+	 
 	if (phy->identify.sas_address != mrioc->sas_hba.sas_address)
 		return mpi3mr_expander_phy_control(mrioc, phy,
 		    (hard_reset == 1) ? SMP_PHY_CONTROL_HARD_RESET :
 		    SMP_PHY_CONTROL_LINK_RESET);
 
-	/* handle hba phys */
+	 
 	memset(&mpi_request, 0, request_sz);
 	mpi_request.host_tag = cpu_to_le16(MPI3MR_HOSTTAG_TRANSPORT_CMDS);
 	mpi_request.function = MPI3_FUNCTION_IO_UNIT_CONTROL;
@@ -2923,16 +2457,7 @@ out:
 	return rc;
 }
 
-/**
- * mpi3mr_transport_phy_enable - enable/disable phys
- * @phy: The SAS transport layer phy object
- * @enable: flag to enable/disable, enable phy when true
- *
- * This function enables/disables a given by executing required
- * configuration page changes or expander phy control command
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int
 mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 {
@@ -2947,13 +2472,13 @@ mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 	if (rc)
 		return rc;
 
-	/* handle expander phys */
+	 
 	if (phy->identify.sas_address != mrioc->sas_hba.sas_address)
 		return mpi3mr_expander_phy_control(mrioc, phy,
 		    (enable == 1) ? SMP_PHY_CONTROL_LINK_RESET :
 		    SMP_PHY_CONTROL_DISABLE);
 
-	/* handle hba phys */
+	 
 	sz = offsetof(struct mpi3_sas_io_unit_page0, phy_data) +
 		(mrioc->sas_hba.num_phys *
 		 sizeof(struct mpi3_sas_io_unit0_phy_data));
@@ -2969,7 +2494,7 @@ mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 		goto out;
 	}
 
-	/* unable to enable/disable phys when discovery is active */
+	 
 	for (i = 0, discovery_active = 0; i < mrioc->sas_hba.num_phys ; i++) {
 		if (sas_io_unit_pg0->phy_data[i].port_flags &
 		    MPI3_SASIOUNIT0_PORTFLAGS_DISC_IN_PROGRESS) {
@@ -2995,7 +2520,7 @@ mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 		goto out;
 	}
 
-	/* read sas_iounit page 1 */
+	 
 	sz = offsetof(struct mpi3_sas_io_unit_page1, phy_data) +
 		(mrioc->sas_hba.num_phys *
 		 sizeof(struct mpi3_sas_io_unit1_phy_data));
@@ -3021,7 +2546,7 @@ mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 
 	mpi3mr_cfg_set_sas_io_unit_pg1(mrioc, sas_io_unit_pg1, sz);
 
-	/* link reset */
+	 
 	if (enable)
 		mpi3mr_transport_phy_reset(phy, 0);
 
@@ -3031,17 +2556,7 @@ mpi3mr_transport_phy_enable(struct sas_phy *phy, int enable)
 	return rc;
 }
 
-/**
- * mpi3mr_transport_phy_speed - set phy min/max speed
- * @phy: The SAS transport later phy object
- * @rates: Rates defined as in sas_phy_linkrates
- *
- * This function sets the link rates given in the rates
- * argument to the given phy by executing required configuration
- * page changes or expander phy control command
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int
 mpi3mr_transport_phy_speed(struct sas_phy *phy, struct sas_phy_linkrates *rates)
 {
@@ -3065,7 +2580,7 @@ mpi3mr_transport_phy_speed(struct sas_phy *phy, struct sas_phy_linkrates *rates)
 	else if (rates->maximum_linkrate > phy->maximum_linkrate_hw)
 		rates->maximum_linkrate = phy->maximum_linkrate_hw;
 
-	/* handle expander phys */
+	 
 	if (phy->identify.sas_address != mrioc->sas_hba.sas_address) {
 		phy->minimum_linkrate = rates->minimum_linkrate;
 		phy->maximum_linkrate = rates->maximum_linkrate;
@@ -3073,7 +2588,7 @@ mpi3mr_transport_phy_speed(struct sas_phy *phy, struct sas_phy_linkrates *rates)
 		    SMP_PHY_CONTROL_LINK_RESET);
 	}
 
-	/* handle hba phys */
+	 
 	sz = offsetof(struct mpi3_sas_io_unit_page1, phy_data) +
 		(mrioc->sas_hba.num_phys *
 		 sizeof(struct mpi3_sas_io_unit1_phy_data));
@@ -3100,10 +2615,10 @@ mpi3mr_transport_phy_speed(struct sas_phy *phy, struct sas_phy_linkrates *rates)
 		goto out;
 	}
 
-	/* link reset */
+	 
 	mpi3mr_transport_phy_reset(phy, 0);
 
-	/* read phy page 0, then update the rates in the sas transport phy */
+	 
 	if (!mpi3mr_cfg_get_sas_phy_pg0(mrioc, &ioc_status, &phy_pg0,
 	    sizeof(struct mpi3_sas_phy_page0),
 	    MPI3_SAS_PHY_PGAD_FORM_PHY_NUMBER, phy->number) &&
@@ -3125,23 +2640,12 @@ out:
 	return rc;
 }
 
-/**
- * mpi3mr_map_smp_buffer - map BSG dma buffer
- * @dev: Generic device reference
- * @buf: BSG buffer pointer
- * @dma_addr: Physical address holder
- * @dma_len: Mapped DMA buffer length.
- * @p: Virtual address holder
- *
- * This function maps the DMAable buffer
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 static int
 mpi3mr_map_smp_buffer(struct device *dev, struct bsg_buffer *buf,
 		dma_addr_t *dma_addr, size_t *dma_len, void **p)
 {
-	/* Check if the request is split across multiple segments */
+	 
 	if (buf->sg_cnt > 1) {
 		*p = dma_alloc_coherent(dev, buf->payload_len, dma_addr,
 				GFP_KERNEL);
@@ -3159,15 +2663,7 @@ mpi3mr_map_smp_buffer(struct device *dev, struct bsg_buffer *buf,
 	return 0;
 }
 
-/**
- * mpi3mr_unmap_smp_buffer - unmap BSG dma buffer
- * @dev: Generic device reference
- * @buf: BSG buffer pointer
- * @dma_addr: Physical address to be unmapped
- * @p: Virtual address
- *
- * This function unmaps the DMAable buffer
- */
+ 
 static void
 mpi3mr_unmap_smp_buffer(struct device *dev, struct bsg_buffer *buf,
 		dma_addr_t dma_addr, void *p)
@@ -3178,15 +2674,7 @@ mpi3mr_unmap_smp_buffer(struct device *dev, struct bsg_buffer *buf,
 		dma_unmap_sg(dev, buf->sg_list, 1, DMA_BIDIRECTIONAL);
 }
 
-/**
- * mpi3mr_transport_smp_handler - handler for smp passthru
- * @job: BSG job reference
- * @shost: SCSI host object reference
- * @rphy: SAS transport rphy object pointing the expander
- *
- * This is used primarily by smp utils for sending the SMP
- * commands to the expanders attached to the controller
- */
+ 
 static void
 mpi3mr_transport_smp_handler(struct bsg_job *job, struct Scsi_Host *shost,
 	struct sas_rphy *rphy)

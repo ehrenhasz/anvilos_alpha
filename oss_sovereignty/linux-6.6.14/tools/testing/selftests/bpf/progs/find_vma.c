@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -27,7 +27,7 @@ static long check_vma(struct task_struct *task, struct vm_area_struct *vma,
 		bpf_probe_read_kernel_str(d_iname, DNAME_INLINE_LEN - 1,
 					  vma->vm_file->f_path.dentry->d_iname);
 
-	/* check for VM_EXEC */
+	 
 	if (vma->vm_flags & VM_EXEC)
 		found_vm_exec = 1;
 
@@ -45,7 +45,7 @@ int handle_getpid(void)
 
 	find_addr_ret = bpf_find_vma(task, addr, check_vma, &data, 0);
 
-	/* this should return -ENOENT */
+	 
 	find_zero_ret = bpf_find_vma(task, 0, check_vma, &data, 0);
 	return 0;
 }
@@ -61,9 +61,7 @@ int handle_pe(void)
 
 	find_addr_ret = bpf_find_vma(task, addr, check_vma, &data, 0);
 
-	/* In NMI, this should return -EBUSY, as the previous call is using
-	 * the irq_work.
-	 */
+	 
 	find_zero_ret = bpf_find_vma(task, 0, check_vma, &data, 0);
 	return 0;
 }

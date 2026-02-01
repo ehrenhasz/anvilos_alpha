@@ -1,58 +1,39 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+ 
+ 
 #ifndef HFI1_TID_RDMA_H
 #define HFI1_TID_RDMA_H
 
 #include <linux/circ_buf.h>
 #include "common.h"
 
-/* Add a convenience helper */
+ 
 #define CIRC_ADD(val, add, size) (((val) + (add)) & ((size) - 1))
 #define CIRC_NEXT(val, size) CIRC_ADD(val, 1, size)
 #define CIRC_PREV(val, size) CIRC_ADD(val, -1, size)
 
-#define TID_RDMA_MIN_SEGMENT_SIZE       BIT(18)   /* 256 KiB (for now) */
-#define TID_RDMA_MAX_SEGMENT_SIZE       BIT(18)   /* 256 KiB (for now) */
+#define TID_RDMA_MIN_SEGMENT_SIZE       BIT(18)    
+#define TID_RDMA_MAX_SEGMENT_SIZE       BIT(18)    
 #define TID_RDMA_MAX_PAGES              (BIT(18) >> PAGE_SHIFT)
 #define TID_RDMA_SEGMENT_SHIFT		18
 
-/*
- * Bit definitions for priv->s_flags.
- * These bit flags overload the bit flags defined for the QP's s_flags.
- * Due to the fact that these bit fields are used only for the QP priv
- * s_flags, there are no collisions.
- *
- * HFI1_S_TID_WAIT_INTERLCK - QP is waiting for requester interlock
- * HFI1_R_TID_WAIT_INTERLCK - QP is waiting for responder interlock
- */
+ 
 #define HFI1_S_TID_BUSY_SET       BIT(0)
-/* BIT(1) reserved for RVT_S_BUSY. */
+ 
 #define HFI1_R_TID_RSC_TIMER      BIT(2)
-/* BIT(3) reserved for RVT_S_RESP_PENDING. */
-/* BIT(4) reserved for RVT_S_ACK_PENDING. */
+ 
+ 
 #define HFI1_S_TID_WAIT_INTERLCK  BIT(5)
 #define HFI1_R_TID_WAIT_INTERLCK  BIT(6)
-/* BIT(7) - BIT(15) reserved for RVT_S_WAIT_*. */
-/* BIT(16) reserved for RVT_S_SEND_ONE */
+ 
+ 
 #define HFI1_S_TID_RETRY_TIMER    BIT(17)
-/* BIT(18) reserved for RVT_S_ECN. */
+ 
 #define HFI1_R_TID_SW_PSN         BIT(19)
-/* BIT(26) reserved for HFI1_S_WAIT_HALT */
-/* BIT(27) reserved for HFI1_S_WAIT_TID_RESP */
-/* BIT(28) reserved for HFI1_S_WAIT_TID_SPACE */
+ 
+ 
+ 
 
-/*
- * Unlike regular IB RDMA VERBS, which do not require an entry
- * in the s_ack_queue, TID RDMA WRITE requests do because they
- * generate responses.
- * Therefore, the s_ack_queue needs to be extended by a certain
- * amount. The key point is that the queue needs to be extended
- * without letting the "user" know so they user doesn't end up
- * using these extra entries.
- */
+ 
 #define HFI1_TID_RDMA_WRITE_CNT 8
 
 struct tid_rdma_params {
@@ -73,7 +54,7 @@ struct tid_rdma_qp_params {
 	struct tid_rdma_params __rcu *remote;
 };
 
-/* Track state for each hardware flow */
+ 
 struct tid_flow_state {
 	u32 generation;
 	u32 psn;
@@ -102,79 +83,63 @@ struct tid_rdma_request {
 		struct rvt_ack_entry *ack;
 	} e;
 
-	struct tid_rdma_flow *flows;	/* array of tid flows */
-	struct rvt_sge_state ss; /* SGE state for TID RDMA requests */
-	u16 n_flows;		/* size of the flow buffer window */
-	u16 setup_head;		/* flow index we are setting up */
-	u16 clear_tail;		/* flow index we are clearing */
-	u16 flow_idx;		/* flow index most recently set up */
+	struct tid_rdma_flow *flows;	 
+	struct rvt_sge_state ss;  
+	u16 n_flows;		 
+	u16 setup_head;		 
+	u16 clear_tail;		 
+	u16 flow_idx;		 
 	u16 acked_tail;
 
 	u32 seg_len;
 	u32 total_len;
-	u32 r_ack_psn;          /* next expected ack PSN */
-	u32 r_flow_psn;         /* IB PSN of next segment start */
-	u32 r_last_acked;       /* IB PSN of last ACK'ed packet */
-	u32 s_next_psn;		/* IB PSN of next segment start for read */
+	u32 r_ack_psn;           
+	u32 r_flow_psn;          
+	u32 r_last_acked;        
+	u32 s_next_psn;		 
 
-	u32 total_segs;		/* segments required to complete a request */
-	u32 cur_seg;		/* index of current segment */
-	u32 comp_seg;           /* index of last completed segment */
-	u32 ack_seg;            /* index of last ack'ed segment */
-	u32 alloc_seg;          /* index of next segment to be allocated */
-	u32 isge;		/* index of "current" sge */
-	u32 ack_pending;        /* num acks pending for this request */
+	u32 total_segs;		 
+	u32 cur_seg;		 
+	u32 comp_seg;            
+	u32 ack_seg;             
+	u32 alloc_seg;           
+	u32 isge;		 
+	u32 ack_pending;         
 
 	enum tid_rdma_req_state state;
 };
 
-/*
- * When header suppression is used, PSNs associated with a "flow" are
- * relevant (and not the PSNs maintained by verbs). Track per-flow
- * PSNs here for a TID RDMA segment.
- *
- */
+ 
 struct flow_state {
 	u32 flags;
-	u32 resp_ib_psn;     /* The IB PSN of the response for this flow */
-	u32 generation;      /* generation of flow */
-	u32 spsn;            /* starting PSN in TID space */
-	u32 lpsn;            /* last PSN in TID space */
-	u32 r_next_psn;      /* next PSN to be received (in TID space) */
+	u32 resp_ib_psn;      
+	u32 generation;       
+	u32 spsn;             
+	u32 lpsn;             
+	u32 r_next_psn;       
 
-	/* For tid rdma read */
-	u32 ib_spsn;         /* starting PSN in Verbs space */
-	u32 ib_lpsn;         /* last PSn in Verbs space */
+	 
+	u32 ib_spsn;          
+	u32 ib_lpsn;          
 };
 
 struct tid_rdma_pageset {
-	dma_addr_t addr : 48; /* Only needed for the first page */
+	dma_addr_t addr : 48;  
 	u8 idx: 8;
 	u8 count : 7;
 	u8 mapped: 1;
 };
 
-/**
- * kern_tid_node - used for managing TID's in TID groups
- *
- * @grp_idx: rcd relative index to tid_group
- * @map: grp->map captured prior to programming this TID group in HW
- * @cnt: Only @cnt of available group entries are actually programmed
- */
+ 
 struct kern_tid_node {
 	struct tid_group *grp;
 	u8 map;
 	u8 cnt;
 };
 
-/* Overall info for a TID RDMA segment */
+ 
 struct tid_rdma_flow {
-	/*
-	 * While a TID RDMA segment is being transferred, it uses a QP number
-	 * from the "KDETH section of QP numbers" (which is different from the
-	 * QP number that originated the request). Bits 11-15 of these QP
-	 * numbers identify the "TID flow" for the segment.
-	 */
+	 
 	struct flow_state flow_state;
 	struct tid_rdma_request *req;
 	u32 tid_qpn;
@@ -213,11 +178,7 @@ int hfi1_kern_exp_rcv_clear(struct tid_rdma_request *req);
 void hfi1_kern_exp_rcv_clear_all(struct tid_rdma_request *req);
 void __trdma_clean_swqe(struct rvt_qp *qp, struct rvt_swqe *wqe);
 
-/**
- * trdma_clean_swqe - clean flows for swqe if large send queue
- * @qp: the qp
- * @wqe: the send wqe
- */
+ 
 static inline void trdma_clean_swqe(struct rvt_qp *qp, struct rvt_swqe *wqe)
 {
 	if (!wqe->priv)
@@ -316,4 +277,4 @@ bool hfi1_schedule_tid_send(struct rvt_qp *qp);
 
 bool hfi1_tid_rdma_ack_interlock(struct rvt_qp *qp, struct rvt_ack_entry *e);
 
-#endif /* HFI1_TID_RDMA_H */
+#endif  

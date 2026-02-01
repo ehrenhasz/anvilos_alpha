@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -13,7 +11,7 @@
 
 static int write_reg(struct i2c_client *client, int reg, int value)
 {
-	/* UDA1342 wants MSB first, but SMBus sends LSB first */
+	 
 	i2c_smbus_write_word_data(client, reg, swab16(value));
 	return 0;
 }
@@ -25,10 +23,10 @@ static int uda1342_s_routing(struct v4l2_subdev *sd,
 
 	switch (input) {
 	case UDA1342_IN1:
-		write_reg(client, 0x00, 0x1241); /* select input 1 */
+		write_reg(client, 0x00, 0x1241);  
 		break;
 	case UDA1342_IN2:
-		write_reg(client, 0x00, 0x1441); /* select input 2 */
+		write_reg(client, 0x00, 0x1441);  
 		break;
 	default:
 		v4l2_err(sd, "input %d not supported\n", input);
@@ -62,8 +60,8 @@ static int uda1342_probe(struct i2c_client *client)
 
 	v4l2_i2c_subdev_init(sd, client, &uda1342_ops);
 
-	write_reg(client, 0x00, 0x8000); /* reset registers */
-	write_reg(client, 0x00, 0x1241); /* select input 1 */
+	write_reg(client, 0x00, 0x8000);  
+	write_reg(client, 0x00, 0x1241);  
 
 	v4l_info(client, "chip found @ 0x%02x (%s)\n",
 			client->addr << 1, client->adapter->name);

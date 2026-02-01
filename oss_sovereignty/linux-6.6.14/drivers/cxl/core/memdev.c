@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2020 Intel Corporation. */
+
+ 
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/firmware.h>
@@ -13,10 +13,7 @@
 
 static DECLARE_RWSEM(cxl_memdev_rwsem);
 
-/*
- * An entire PCI topology full of devices should be enough for any
- * config
- */
+ 
 #define CXL_MEM_MAX_DEVS 65536
 
 static int cxl_mem_major;
@@ -128,7 +125,7 @@ static ssize_t security_state_show(struct device *dev,
 	unsigned long state = mds->security.state;
 	int rc = 0;
 
-	/* sync with latest submission state */
+	 
 	mutex_lock(&mds->mbox_mutex);
 	if (mds->security.sanitize_active)
 		rc = sysfs_emit(buf, "sanitize\n");
@@ -196,7 +193,7 @@ static int cxl_get_poison_by_memdev(struct cxl_memdev *cxlmd)
 	u64 offset, length;
 	int rc = 0;
 
-	/* CXL 3.0 Spec 8.2.9.8.4.1 Separate pmem and ram poison requests */
+	 
 	if (resource_size(&cxlds->pmem_res)) {
 		offset = cxlds->pmem_res.start;
 		length = resource_size(&cxlds->pmem_res);
@@ -208,10 +205,7 @@ static int cxl_get_poison_by_memdev(struct cxl_memdev *cxlmd)
 		offset = cxlds->ram_res.start;
 		length = resource_size(&cxlds->ram_res);
 		rc = cxl_mem_get_poison(cxlmd, offset, length, NULL);
-		/*
-		 * Invalid Physical Address is not an error for
-		 * volatile addresses. Device support is optional.
-		 */
+		 
 		if (rc == -EFAULT)
 			rc = 0;
 	}
@@ -238,10 +232,10 @@ int cxl_trigger_poison_list(struct cxl_memdev *cxlmd)
 	}
 
 	if (cxl_num_decoders_committed(port) == 0) {
-		/* No regions mapped to this memdev */
+		 
 		rc = cxl_get_poison_by_memdev(cxlmd);
 	} else {
-		/* Regions mapped, collect poison by endpoint */
+		 
 		rc =  cxl_get_poison_by_endpoint(port);
 	}
 	up_read(&cxl_dpa_rwsem);
@@ -400,11 +394,7 @@ int cxl_clear_poison(struct cxl_memdev *cxlmd, u64 dpa)
 	if (rc)
 		goto out;
 
-	/*
-	 * In CXL 3.0 Spec 8.2.9.8.4.3, the Clear Poison mailbox command
-	 * is defined to accept 64 bytes of write-data, along with the
-	 * address to clear. This driver uses zeroes as write-data.
-	 */
+	 
 	clear = (struct cxl_mbox_clear_poison) {
 		.address = cpu_to_le64(dpa)
 	};
@@ -532,15 +522,7 @@ bool is_cxl_memdev(const struct device *dev)
 }
 EXPORT_SYMBOL_NS_GPL(is_cxl_memdev, CXL);
 
-/**
- * set_exclusive_cxl_commands() - atomically disable user cxl commands
- * @mds: The device state to operate on
- * @cmds: bitmap of commands to mark exclusive
- *
- * Grab the cxl_memdev_rwsem in write mode to flush in-flight
- * invocations of the ioctl path and then disable future execution of
- * commands with the command ids set in @cmds.
- */
+ 
 void set_exclusive_cxl_commands(struct cxl_memdev_state *mds,
 				unsigned long *cmds)
 {
@@ -551,11 +533,7 @@ void set_exclusive_cxl_commands(struct cxl_memdev_state *mds,
 }
 EXPORT_SYMBOL_NS_GPL(set_exclusive_cxl_commands, CXL);
 
-/**
- * clear_exclusive_cxl_commands() - atomically enable user cxl commands
- * @mds: The device state to modify
- * @cmds: bitmap of commands to mark available for userspace
- */
+ 
 void clear_exclusive_cxl_commands(struct cxl_memdev_state *mds,
 				  unsigned long *cmds)
 {
@@ -683,16 +661,7 @@ static int cxl_memdev_release_file(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/**
- * cxl_mem_get_fw_info - Get Firmware info
- * @mds: The device data for the operation
- *
- * Retrieve firmware info for the device specified.
- *
- * Return: 0 if no error: or the result of the mailbox command.
- *
- * See CXL-3.0 8.2.9.3.1 Get FW Info
- */
+ 
 static int cxl_mem_get_fw_info(struct cxl_memdev_state *mds)
 {
 	struct cxl_mbox_get_fw_info info;
@@ -716,17 +685,7 @@ static int cxl_mem_get_fw_info(struct cxl_memdev_state *mds)
 	return 0;
 }
 
-/**
- * cxl_mem_activate_fw - Activate Firmware
- * @mds: The device data for the operation
- * @slot: slot number to activate
- *
- * Activate firmware in a given slot for the device specified.
- *
- * Return: 0 if no error: or the result of the mailbox command.
- *
- * See CXL-3.0 8.2.9.3.3 Activate FW
- */
+ 
 static int cxl_mem_activate_fw(struct cxl_memdev_state *mds, int slot)
 {
 	struct cxl_mbox_activate_fw activate;
@@ -741,23 +700,14 @@ static int cxl_mem_activate_fw(struct cxl_memdev_state *mds, int slot)
 		.payload_in = &activate,
 	};
 
-	/* Only offline activation supported for now */
+	 
 	activate.action = CXL_FW_ACTIVATE_OFFLINE;
 	activate.slot = slot;
 
 	return cxl_internal_send_cmd(mds, &mbox_cmd);
 }
 
-/**
- * cxl_mem_abort_fw_xfer - Abort an in-progress FW transfer
- * @mds: The device data for the operation
- *
- * Abort an in-progress firmware transfer for the device specified.
- *
- * Return: 0 if no error: or the result of the mailbox command.
- *
- * See CXL-3.0 8.2.9.3.2 Transfer FW
- */
+ 
 static int cxl_mem_abort_fw_xfer(struct cxl_memdev_state *mds)
 {
 	struct cxl_mbox_transfer_fw *transfer;
@@ -768,7 +718,7 @@ static int cxl_mem_abort_fw_xfer(struct cxl_memdev_state *mds)
 	if (!transfer)
 		return -ENOMEM;
 
-	/* Set a 1s poll interval and a total wait time of 30s */
+	 
 	mbox_cmd = (struct cxl_mbox_cmd) {
 		.opcode = CXL_MBOX_OP_TRANSFER_FW,
 		.size_in = sizeof(*transfer),
@@ -820,10 +770,7 @@ static enum fw_upload_err cxl_fw_prepare(struct fw_upload *fwl, const u8 *data,
 	if (cxl_mem_get_fw_info(mds))
 		return FW_UPLOAD_ERR_HW_ERROR;
 
-	/*
-	 * So far no state has been changed, hence no other cleanup is
-	 * necessary. Simply return the cancelled status.
-	 */
+	 
 	if (test_and_clear_bit(CXL_FW_CANCEL, mds->fw.state))
 		return FW_UPLOAD_ERR_CANCELED;
 
@@ -844,7 +791,7 @@ static enum fw_upload_err cxl_fw_write(struct fw_upload *fwl, const u8 *data,
 
 	*written = 0;
 
-	/* Offset has to be aligned to 128B (CXL-3.0 8.2.9.3.2 Table 8-57) */
+	 
 	if (!IS_ALIGNED(offset, CXL_FW_TRANSFER_ALIGNMENT)) {
 		dev_err(&cxlmd->dev,
 			"misaligned offset for FW transfer slice (%u)\n",
@@ -852,12 +799,7 @@ static enum fw_upload_err cxl_fw_write(struct fw_upload *fwl, const u8 *data,
 		return FW_UPLOAD_ERR_RW_ERROR;
 	}
 
-	/*
-	 * Pick transfer size based on mds->payload_size @size must bw 128-byte
-	 * aligned, ->payload_size is a power of 2 starting at 256 bytes, and
-	 * sizeof(*transfer) is 128.  These constraints imply that @cur_size
-	 * will always be 128b aligned.
-	 */
+	 
 	cur_size = min_t(size_t, size, mds->payload_size - sizeof(*transfer));
 
 	remaining = size - cur_size;
@@ -866,14 +808,10 @@ static enum fw_upload_err cxl_fw_write(struct fw_upload *fwl, const u8 *data,
 	if (test_and_clear_bit(CXL_FW_CANCEL, mds->fw.state))
 		return cxl_fw_do_cancel(fwl);
 
-	/*
-	 * Slot numbers are 1-indexed
-	 * cur_slot is the 0-indexed next_slot (i.e. 'cur_slot - 1 + 1')
-	 * Check for rollover using modulo, and 1-index it by adding 1
-	 */
+	 
 	mds->fw.next_slot = (mds->fw.cur_slot % mds->fw.num_slots) + 1;
 
-	/* Do the transfer via mailbox cmd */
+	 
 	transfer = kzalloc(size_in, GFP_KERNEL);
 	if (!transfer)
 		return FW_UPLOAD_ERR_RW_ERROR;
@@ -910,7 +848,7 @@ static enum fw_upload_err cxl_fw_write(struct fw_upload *fwl, const u8 *data,
 
 	*written = cur_size;
 
-	/* Activate FW if oneshot or if the last slice was written */
+	 
 	if (mds->fw.oneshot || remaining == 0) {
 		dev_dbg(&cxlmd->dev, "Activating firmware slot: %d\n",
 			mds->fw.next_slot);
@@ -934,12 +872,7 @@ static enum fw_upload_err cxl_fw_poll_complete(struct fw_upload *fwl)
 {
 	struct cxl_memdev_state *mds = fwl->dd_handle;
 
-	/*
-	 * cxl_internal_send_cmd() handles background operations synchronously.
-	 * No need to wait for completions here - any errors would've been
-	 * reported and handled during the ->write() call(s).
-	 * Just check if a cancel request was received, and return success.
-	 */
+	 
 	if (test_and_clear_bit(CXL_FW_CANCEL, mds->fw.state))
 		return cxl_fw_do_cancel(fwl);
 
@@ -1009,10 +942,7 @@ struct cxl_memdev *devm_cxl_add_memdev(struct device *host,
 	if (rc)
 		goto err;
 
-	/*
-	 * Activate ioctl operations, no cxl_memdev_rwsem manipulation
-	 * needed as this is ordered with cdev_add() publishing the device.
-	 */
+	 
 	cxlmd->cxlds = cxlds;
 	cxlds->cxlmd = cxlmd;
 
@@ -1027,10 +957,7 @@ struct cxl_memdev *devm_cxl_add_memdev(struct device *host,
 	return cxlmd;
 
 err:
-	/*
-	 * The cdev was briefly live, shutdown any ioctl operations that
-	 * saw that state.
-	 */
+	 
 	cxl_memdev_shutdown(dev);
 	put_device(dev);
 	return ERR_PTR(rc);
@@ -1042,10 +969,7 @@ static void sanitize_teardown_notifier(void *data)
 	struct cxl_memdev_state *mds = data;
 	struct kernfs_node *state;
 
-	/*
-	 * Prevent new irq triggered invocations of the workqueue and
-	 * flush inflight invocations.
-	 */
+	 
 	mutex_lock(&mds->mbox_mutex);
 	state = mds->security.sanitize_node;
 	mds->security.sanitize_node = NULL;
@@ -1065,10 +989,7 @@ int devm_cxl_sanitize_setup_notifier(struct device *host,
 	if (!test_bit(CXL_SEC_ENABLED_SANITIZE, mds->security.enabled_cmds))
 		return 0;
 
-	/*
-	 * Note, the expectation is that @cxlmd would have failed to be
-	 * created if these sysfs_get_dirent calls fail.
-	 */
+	 
 	sec = sysfs_get_dirent(cxlmd->dev.kobj.sd, "security");
 	if (!sec)
 		return -ENOENT;

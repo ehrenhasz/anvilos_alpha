@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Raspberry Pi 3 expander GPIO driver
- *
- *  Uses the firmware mailbox service to communicate with the
- *  GPIO expander on the VPU.
- *
- *  Copyright (C) 2017 Raspberry Pi Trading Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -27,7 +20,7 @@ struct rpi_exp_gpio {
 	struct rpi_firmware *fw;
 };
 
-/* VC4 firmware mailbox interface data structures */
+ 
 
 struct gpio_set_config {
 	u32 gpio;
@@ -59,7 +52,7 @@ static int rpi_exp_gpio_get_polarity(struct gpio_chip *gc, unsigned int off)
 
 	gpio = gpiochip_get_data(gc);
 
-	get.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
+	get.gpio = off + RPI_EXP_GPIO_BASE;	 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_GET_GPIO_CONFIG,
 				    &get, sizeof(get));
@@ -79,16 +72,16 @@ static int rpi_exp_gpio_dir_in(struct gpio_chip *gc, unsigned int off)
 
 	gpio = gpiochip_get_data(gc);
 
-	set_in.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
+	set_in.gpio = off + RPI_EXP_GPIO_BASE;	 
 	set_in.direction = RPI_EXP_GPIO_DIR_IN;
-	set_in.term_en = 0;		/* termination disabled */
-	set_in.term_pull_up = 0;	/* n/a as termination disabled */
-	set_in.state = 0;		/* n/a as configured as an input */
+	set_in.term_en = 0;		 
+	set_in.term_pull_up = 0;	 
+	set_in.state = 0;		 
 
 	ret = rpi_exp_gpio_get_polarity(gc, off);
 	if (ret < 0)
 		return ret;
-	set_in.polarity = ret;		/* Retain existing setting */
+	set_in.polarity = ret;		 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_SET_GPIO_CONFIG,
 				    &set_in, sizeof(set_in));
@@ -108,16 +101,16 @@ static int rpi_exp_gpio_dir_out(struct gpio_chip *gc, unsigned int off, int val)
 
 	gpio = gpiochip_get_data(gc);
 
-	set_out.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
+	set_out.gpio = off + RPI_EXP_GPIO_BASE;	 
 	set_out.direction = RPI_EXP_GPIO_DIR_OUT;
-	set_out.term_en = 0;		/* n/a as an output */
-	set_out.term_pull_up = 0;	/* n/a as termination disabled */
-	set_out.state = val;		/* Output state */
+	set_out.term_en = 0;		 
+	set_out.term_pull_up = 0;	 
+	set_out.state = val;		 
 
 	ret = rpi_exp_gpio_get_polarity(gc, off);
 	if (ret < 0)
 		return ret;
-	set_out.polarity = ret;		/* Retain existing setting */
+	set_out.polarity = ret;		 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_SET_GPIO_CONFIG,
 				    &set_out, sizeof(set_out));
@@ -137,7 +130,7 @@ static int rpi_exp_gpio_get_direction(struct gpio_chip *gc, unsigned int off)
 
 	gpio = gpiochip_get_data(gc);
 
-	get.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
+	get.gpio = off + RPI_EXP_GPIO_BASE;	 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_GET_GPIO_CONFIG,
 				    &get, sizeof(get));
@@ -161,8 +154,8 @@ static int rpi_exp_gpio_get(struct gpio_chip *gc, unsigned int off)
 
 	gpio = gpiochip_get_data(gc);
 
-	get.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
-	get.state = 0;		/* storage for returned value */
+	get.gpio = off + RPI_EXP_GPIO_BASE;	 
+	get.state = 0;		 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_GET_GPIO_STATE,
 					 &get, sizeof(get));
@@ -183,8 +176,8 @@ static void rpi_exp_gpio_set(struct gpio_chip *gc, unsigned int off, int val)
 
 	gpio = gpiochip_get_data(gc);
 
-	set.gpio = off + RPI_EXP_GPIO_BASE;	/* GPIO to update */
-	set.state = val;	/* Output state */
+	set.gpio = off + RPI_EXP_GPIO_BASE;	 
+	set.state = val;	 
 
 	ret = rpi_firmware_property(gpio->fw, RPI_FIRMWARE_SET_GPIO_STATE,
 					 &set, sizeof(set));

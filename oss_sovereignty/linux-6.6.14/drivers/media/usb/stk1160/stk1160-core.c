@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STK1160 driver
- *
- * Copyright (C) 2012 Ezequiel Garcia
- * <elezegarcia--a.t--gmail.com>
- *
- * Based on Easycap driver by R.M. Thomas
- *	Copyright (C) 2010 R.M. Thomas
- *	<rmthomas--a.t--sciolus.org>
- *
- * TODO:
- *
- * 1. Support stream at lower speed: lower frame rate or lower frame size.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -36,22 +23,20 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ezequiel Garcia");
 MODULE_DESCRIPTION("STK1160 driver");
 
-/* Devices supported by this driver */
+ 
 static const struct usb_device_id stk1160_id_table[] = {
 	{ USB_DEVICE(0x05e1, 0x0408) },
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, stk1160_id_table);
 
-/* saa7113 I2C address */
+ 
 static unsigned short saa7113_addrs[] = {
 	0x4a >> 1,
 	I2C_CLIENT_END
 };
 
-/*
- * Read/Write stk registers
- */
+ 
 int stk1160_read_reg(struct stk1160 *dev, u16 reg, u8 *value)
 {
 	int ret;
@@ -114,7 +99,7 @@ void stk1160_select_input(struct stk1160 *dev)
 	}
 }
 
-/* TODO: We should break this into pieces */
+ 
 static void stk1160_reg_reset(struct stk1160 *dev)
 {
 	int i;
@@ -132,7 +117,7 @@ static void stk1160_reg_reset(struct stk1160 *dev)
 
 		{STK1160_PLLFD,   0x0046},
 
-		/* Timing generator setup */
+		 
 		{STK1160_TIGEN,   0x0012},
 		{STK1160_TICTL,   0x002D},
 		{STK1160_TICTL+1, 0x0001},
@@ -163,14 +148,10 @@ static void stk1160_release(struct v4l2_device *v4l2_dev)
 	kfree(dev);
 }
 
-/* high bandwidth multiplier, as encoded in highspeed endpoint descriptors */
+ 
 #define hb_mult(wMaxPacketSize) (1 + (((wMaxPacketSize) >> 11) & 0x03))
 
-/*
- * Scan usb interface and populate max_pkt_size array
- * with information on each alternate setting.
- * The array should be allocated by the caller.
- */
+ 
 static int stk1160_scan_usb(struct usb_interface *intf, struct usb_device *udev,
 		unsigned int *max_pkt_size)
 {
@@ -182,12 +163,12 @@ static int stk1160_scan_usb(struct usb_interface *intf, struct usb_device *udev,
 
 	ifnum = intf->altsetting[0].desc.bInterfaceNumber;
 
-	/* Get endpoints */
+	 
 	for (i = 0; i < intf->num_altsetting; i++) {
 
 		for (e = 0; e < intf->altsetting[i].desc.bNumEndpoints; e++) {
 
-			/* This isn't clear enough, at least to me */
+			 
 			desc = &intf->altsetting[i].endpoint[e].desc;
 			sizedescr = le16_to_cpu(desc->wMaxPacketSize);
 			size = sizedescr & 0x7ff;
@@ -210,7 +191,7 @@ static int stk1160_scan_usb(struct usb_interface *intf, struct usb_device *udev,
 		}
 	}
 
-	/* Is this even possible? */
+	 
 	if (!(has_audio || has_video)) {
 		dev_err(&udev->dev, "no audio or video endpoints found\n");
 		return -ENODEV;
@@ -239,7 +220,7 @@ static int stk1160_scan_usb(struct usb_interface *intf, struct usb_device *udev,
 		ifnum,
 		intf->altsetting->desc.bInterfaceNumber);
 
-	/* This should never happen, since we rejected audio interfaces */
+	 
 	if (has_audio)
 		dev_warn(&udev->dev, "audio interface %d found.\n\
 				This is not implemented by this driver,\

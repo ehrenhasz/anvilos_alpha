@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kvm eventfd support - use eventfd objects to signal various KVM events
- *
- * Copyright 2009 Novell.  All Rights Reserved.
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
- *
- * Author:
- *	Gregory Haskins <ghaskins@novell.com>
- */
+
+ 
 
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
@@ -64,11 +56,7 @@ static void irqfd_resampler_notify(struct kvm_kernel_irqfd_resampler *resampler)
 		eventfd_signal(irqfd->resamplefd, 1);
 }
 
-/*
- * Since resampler irqfds share an IRQ source ID, we de-assert once
- * then notify all of the resampler irqfds using this GSI.  We can't
- * do multiple de-asserts or we risk racing with incoming re-asserts.
- */
+ 
 static void
 irqfd_resampler_ack(struct kvm_irq_ack_notifier *kian)
 {
@@ -102,10 +90,7 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
 	if (list_empty(&resampler->list)) {
 		list_del_rcu(&resampler->link);
 		kvm_unregister_irq_ack_notifier(kvm, &resampler->notifier);
-		/*
-		 * synchronize_srcu(&kvm->irq_srcu) already called
-		 * in kvm_unregister_irq_ack_notifier().
-		 */
+		 
 		kvm_set_irq(kvm, KVM_IRQFD_RESAMPLE_IRQ_SOURCE_ID,
 			    resampler->notifier.gsi, 0, false);
 		kfree(resampler);
@@ -114,9 +99,7 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
 	mutex_unlock(&kvm->irqfds.resampler_lock);
 }
 
-/*
- * Race-free decouple logic (ordering is critical)
- */
+ 
 static void
 irqfd_shutdown(struct work_struct *work)
 {
@@ -125,19 +108,13 @@ irqfd_shutdown(struct work_struct *work)
 	struct kvm *kvm = irqfd->kvm;
 	u64 cnt;
 
-	/* Make sure irqfd has been initialized in assign path. */
+	 
 	synchronize_srcu(&kvm->irq_srcu);
 
-	/*
-	 * Synchronize with the wait-queue and unhook ourselves to prevent
-	 * further events.
-	 */
+	 
 	eventfd_ctx_remove_wait_queue(irqfd->eventfd, &irqfd->wait, &cnt);
 
-	/*
-	 * We know no new events will be scheduled at this point, so block
-	 * until all previously outstanding events have completed
-	 */
+	 
 	flush_work(&irqfd->inject);
 
 	if (irqfd->resampler) {
@@ -145,9 +122,7 @@ irqfd_shutdown(struct work_struct *work)
 		eventfd_ctx_put(irqfd->resamplefd);
 	}
 
-	/*
-	 * It is now safe to release the object's resources
-	 */
+	 
 #ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
 	irq_bypass_unregister_consumer(&irqfd->consumer);
 #endif
@@ -156,18 +131,14 @@ irqfd_shutdown(struct work_struct *work)
 }
 
 
-/* assumes kvm->irqfds.lock is held */
+ 
 static bool
 irqfd_is_active(struct kvm_kernel_irqfd *irqfd)
 {
 	return list_empty(&irqfd->list) ? false : true;
 }
 
-/*
- * Mark the irqfd as inactive and schedule it for removal
- *
- * assumes kvm->irqfds.lock is held
- */
+ 
 static void
 irqfd_deactivate(struct kvm_kernel_irqfd *irqfd)
 {
@@ -187,9 +158,7 @@ int __attribute__((weak)) kvm_arch_set_irq_inatomic(
 	return -EWOULDBLOCK;
 }
 
-/*
- * Called with wqh->lock held and interrupts disabled
- */
+ 
 static int
 irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 {
@@ -211,7 +180,7 @@ irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 			seq = read_seqcount_begin(&irqfd->irq_entry_sc);
 			irq = irqfd->irq_entry;
 		} while (read_seqcount_retry(&irqfd->irq_entry_sc, seq));
-		/* An event has been signaled, inject an interrupt */
+		 
 		if (kvm_arch_set_irq_inatomic(&irq, kvm,
 					      KVM_USERSPACE_IRQ_SOURCE_ID, 1,
 					      false) == -EWOULDBLOCK)
@@ -221,20 +190,12 @@ irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 	}
 
 	if (flags & EPOLLHUP) {
-		/* The eventfd is closing, detach from KVM */
+		 
 		unsigned long iflags;
 
 		spin_lock_irqsave(&kvm->irqfds.lock, iflags);
 
-		/*
-		 * We must check if someone deactivated the irqfd before
-		 * we could acquire the irqfds.lock since the item is
-		 * deactivated from the KVM side before it is unhooked from
-		 * the wait-queue.  If it is already deactivated, we can
-		 * simply return knowing the other side will cleanup for us.
-		 * We cannot race against the irqfd going away since the
-		 * other side is required to acquire wqh->lock, which we hold
-		 */
+		 
 		if (irqfd_is_active(irqfd))
 			irqfd_deactivate(irqfd);
 
@@ -253,7 +214,7 @@ irqfd_ptable_queue_proc(struct file *file, wait_queue_head_t *wqh,
 	add_wait_queue_priority(wqh, &irqfd->wait);
 }
 
-/* Must be called under irqfds.lock */
+ 
 static void irqfd_update(struct kvm *kvm, struct kvm_kernel_irqfd *irqfd)
 {
 	struct kvm_kernel_irq_routing_entry *e;
@@ -389,10 +350,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 		mutex_unlock(&kvm->irqfds.resampler_lock);
 	}
 
-	/*
-	 * Install our own custom wake-up handling so we are notified via
-	 * a callback whenever someone signals the underlying eventfd
-	 */
+	 
 	init_waitqueue_func_entry(&irqfd->wait, irqfd_wakeup);
 	init_poll_funcptr(&irqfd->pt, irqfd_ptable_queue_proc);
 
@@ -402,7 +360,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 	list_for_each_entry(tmp, &kvm->irqfds.items, list) {
 		if (irqfd->eventfd != tmp->eventfd)
 			continue;
-		/* This fd is used for another irq already. */
+		 
 		ret = -EBUSY;
 		spin_unlock_irq(&kvm->irqfds.lock);
 		goto fail;
@@ -415,10 +373,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 
 	spin_unlock_irq(&kvm->irqfds.lock);
 
-	/*
-	 * Check if there was an event already pending on the eventfd
-	 * before we registered, and trigger it as if we didn't miss it.
-	 */
+	 
 	events = vfs_poll(f.file, &irqfd->pt);
 
 	if (events & EPOLLIN)
@@ -440,10 +395,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 
 	srcu_read_unlock(&kvm->irq_srcu, idx);
 
-	/*
-	 * do not drop the file until the irqfd is fully initialized, otherwise
-	 * we might race against the EPOLLHUP
-	 */
+	 
 	fdput(f);
 	return 0;
 
@@ -541,9 +493,7 @@ kvm_eventfd_init(struct kvm *kvm)
 }
 
 #ifdef CONFIG_HAVE_KVM_IRQFD
-/*
- * shutdown any irqfd's that match fd+gsi
- */
+ 
 static int
 kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 {
@@ -558,12 +508,7 @@ kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 
 	list_for_each_entry_safe(irqfd, tmp, &kvm->irqfds.items, list) {
 		if (irqfd->eventfd == eventfd && irqfd->gsi == args->gsi) {
-			/*
-			 * This clearing of irq_entry.type is needed for when
-			 * another thread calls kvm_irq_routing_update before
-			 * we flush workqueue below (we synchronize with
-			 * kvm_irq_routing_update using irqfds.lock).
-			 */
+			 
 			write_seqcount_begin(&irqfd->irq_entry_sc);
 			irqfd->irq_entry.type = 0;
 			write_seqcount_end(&irqfd->irq_entry_sc);
@@ -574,11 +519,7 @@ kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 	spin_unlock_irq(&kvm->irqfds.lock);
 	eventfd_ctx_put(eventfd);
 
-	/*
-	 * Block until we know all outstanding shutdown jobs have completed
-	 * so that we guarantee there will not be any more interrupts on this
-	 * gsi once this deassign function returns.
-	 */
+	 
 	flush_workqueue(irqfd_cleanup_wq);
 
 	return 0;
@@ -596,10 +537,7 @@ kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 	return kvm_irqfd_assign(kvm, args);
 }
 
-/*
- * This function is called as the kvm VM fd is being released. Shutdown all
- * irqfds that still remain open
- */
+ 
 void
 kvm_irqfd_release(struct kvm *kvm)
 {
@@ -612,18 +550,12 @@ kvm_irqfd_release(struct kvm *kvm)
 
 	spin_unlock_irq(&kvm->irqfds.lock);
 
-	/*
-	 * Block until we know all outstanding shutdown jobs have completed
-	 * since we do not take a kvm* reference.
-	 */
+	 
 	flush_workqueue(irqfd_cleanup_wq);
 
 }
 
-/*
- * Take note of a change in irq routing.
- * Caller must invoke synchronize_srcu(&kvm->irq_srcu) afterwards.
- */
+ 
 void kvm_irq_routing_update(struct kvm *kvm)
 {
 	struct kvm_kernel_irqfd *irqfd;
@@ -632,7 +564,7 @@ void kvm_irq_routing_update(struct kvm *kvm)
 
 	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
 #ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
-		/* Under irqfds.lock, so can read irq_entry safely */
+		 
 		struct kvm_kernel_irq_routing_entry old = irqfd->irq_entry;
 #endif
 
@@ -677,11 +609,7 @@ bool kvm_notify_irqfd_resampler(struct kvm *kvm,
 	return false;
 }
 
-/*
- * create a host-wide workqueue for issuing deferred shutdown requests
- * aggregated from all vm* instances. We need our own isolated
- * queue to ease flushing work items when a VM exits.
- */
+ 
 int kvm_irqfd_init(void)
 {
 	irqfd_cleanup_wq = alloc_workqueue("kvm-irqfd-cleanup", 0, 0);
@@ -697,14 +625,7 @@ void kvm_irqfd_exit(void)
 }
 #endif
 
-/*
- * --------------------------------------------------------------------
- * ioeventfd: translate a PIO/MMIO memory write to an eventfd signal.
- *
- * userspace can register a PIO/MMIO address with an eventfd for receiving
- * notification when the memory has been touched.
- * --------------------------------------------------------------------
- */
+ 
 
 struct _ioeventfd {
 	struct list_head     list;
@@ -737,22 +658,22 @@ ioeventfd_in_range(struct _ioeventfd *p, gpa_t addr, int len, const void *val)
 	u64 _val;
 
 	if (addr != p->addr)
-		/* address must be precise for a hit */
+		 
 		return false;
 
 	if (!p->length)
-		/* length = 0 means only look at the address, so always a hit */
+		 
 		return true;
 
 	if (len != p->length)
-		/* address-range must be precise for a hit */
+		 
 		return false;
 
 	if (p->wildcard)
-		/* all else equal, wildcard is always a hit */
+		 
 		return true;
 
-	/* otherwise, we have to actually compare the data */
+	 
 
 	BUG_ON(!IS_ALIGNED((unsigned long)val, len));
 
@@ -776,7 +697,7 @@ ioeventfd_in_range(struct _ioeventfd *p, gpa_t addr, int len, const void *val)
 	return _val == p->datamatch;
 }
 
-/* MMIO/PIO writes trigger an event if the addr/val match */
+ 
 static int
 ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,
 		int len, const void *val)
@@ -790,10 +711,7 @@ ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,
 	return 0;
 }
 
-/*
- * This function is called as KVM is completely shutting down.  We do not
- * need to worry about locking just nuke anything we have as quickly as possible
- */
+ 
 static void
 ioeventfd_destructor(struct kvm_io_device *this)
 {
@@ -807,7 +725,7 @@ static const struct kvm_io_device_ops ioeventfd_ops = {
 	.destructor = ioeventfd_destructor,
 };
 
-/* assumes kvm->slots_lock held */
+ 
 static bool
 ioeventfd_check_collision(struct kvm *kvm, struct _ioeventfd *p)
 {
@@ -859,7 +777,7 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 	p->length  = args->len;
 	p->eventfd = eventfd;
 
-	/* The datamatch feature is optional, otherwise this is a wildcard */
+	 
 	if (args->flags & KVM_IOEVENTFD_FLAG_DATAMATCH)
 		p->datamatch = args->datamatch;
 	else
@@ -867,7 +785,7 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 
 	mutex_lock(&kvm->slots_lock);
 
-	/* Verify that there isn't a match already */
+	 
 	if (ioeventfd_check_collision(kvm, p)) {
 		ret = -EEXIST;
 		goto unlock_fail;
@@ -959,7 +877,7 @@ kvm_assign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 	int ret;
 
 	bus_idx = ioeventfd_bus_from_flags(args->flags);
-	/* must be natural-word sized, or 0 to ignore length */
+	 
 	switch (args->len) {
 	case 0:
 	case 1:
@@ -971,15 +889,15 @@ kvm_assign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 		return -EINVAL;
 	}
 
-	/* check for range overflow */
+	 
 	if (args->addr + args->len < args->addr)
 		return -EINVAL;
 
-	/* check for extra flags that we don't understand */
+	 
 	if (args->flags & ~KVM_IOEVENTFD_VALID_FLAG_MASK)
 		return -EINVAL;
 
-	/* ioeventfd with no length can't be combined with DATAMATCH */
+	 
 	if (!args->len && (args->flags & KVM_IOEVENTFD_FLAG_DATAMATCH))
 		return -EINVAL;
 
@@ -987,9 +905,7 @@ kvm_assign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 	if (ret)
 		goto fail;
 
-	/* When length is ignored, MMIO is also put on a separate bus, for
-	 * faster lookups.
-	 */
+	 
 	if (!args->len && bus_idx == KVM_MMIO_BUS) {
 		ret = kvm_assign_ioeventfd_idx(kvm, KVM_FAST_MMIO_BUS, args);
 		if (ret < 0)

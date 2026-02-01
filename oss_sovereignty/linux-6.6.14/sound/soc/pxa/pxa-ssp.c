@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pxa-ssp.c  --  ALSA Soc Audio Layer
- *
- * Copyright 2005,2008 Wolfson Microelectronics PLC.
- * Author: Liam Girdwood
- *         Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * TODO:
- *  o Test network mode for > 16bit sample size
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -32,9 +23,7 @@
 
 #include "pxa-ssp.h"
 
-/*
- * SSP audio private data
- */
+ 
 struct ssp_priv {
 	struct ssp_device *ssp;
 	struct clk *extclk;
@@ -160,27 +149,22 @@ static int pxa_ssp_resume(struct snd_soc_component *component)
 #define pxa_ssp_resume	NULL
 #endif
 
-/*
- * ssp_set_clkdiv - set SSP clock divider
- * @div: serial clock rate divider
- */
+ 
 static void pxa_ssp_set_scr(struct ssp_device *ssp, u32 div)
 {
 	u32 sscr0 = pxa_ssp_read_reg(ssp, SSCR0);
 
 	if (ssp->type == PXA25x_SSP) {
 		sscr0 &= ~0x0000ff00;
-		sscr0 |= ((div - 2)/2) << 8; /* 2..512 */
+		sscr0 |= ((div - 2)/2) << 8;  
 	} else {
 		sscr0 &= ~0x000fff00;
-		sscr0 |= (div - 1) << 8;     /* 1..4096 */
+		sscr0 |= (div - 1) << 8;      
 	}
 	pxa_ssp_write_reg(ssp, SSCR0, sscr0);
 }
 
-/*
- * Set the SSP ports SYSCLK.
- */
+ 
 static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	int clk_id, unsigned int freq, int dir)
 {
@@ -193,10 +177,7 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	if (priv->extclk) {
 		int ret;
 
-		/*
-		 * For DT based boards, if an extclk is given, use it
-		 * here and configure PXA_SSP_CLK_EXT.
-		 */
+		 
 
 		ret = clk_set_rate(priv->extclk, freq);
 		if (ret < 0)
@@ -214,7 +195,7 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 		sscr0 |= SSCR0_MOD;
 		break;
 	case PXA_SSP_CLK_PLL:
-		/* Internal PLL is fixed */
+		 
 		if (ssp->type == PXA25x_SSP)
 			priv->sysclk = 1843200;
 		else
@@ -237,8 +218,7 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 		return -ENODEV;
 	}
 
-	/* The SSP clock must be disabled when changing SSP clock mode
-	 * on PXA2xx.  On PXA3xx it must be enabled when doing so. */
+	 
 	if (ssp->type != PXA3xx_SSP)
 		clk_disable_unprepare(ssp->clk);
 	pxa_ssp_write_reg(ssp, SSCR0, sscr0);
@@ -248,9 +228,7 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-/*
- * Configure the PLL frequency pxa27x and (afaik - pxa320 only)
- */
+ 
 static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 {
 	struct ssp_device *ssp = priv->ssp;
@@ -278,13 +256,11 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 		ssacd |= (0x5 << 4);
 		break;
 	case 0:
-		/* Disable */
+		 
 		break;
 
 	default:
-		/* PXA3xx has a clock ditherer which can be used to generate
-		 * a wider range of frequencies - calculate a value for it.
-		 */
+		 
 		if (ssp->type == PXA3xx_SSP) {
 			u32 val;
 			u64 tmp = 19968;
@@ -312,9 +288,7 @@ static int pxa_ssp_set_pll(struct ssp_priv *priv, unsigned int freq)
 	return 0;
 }
 
-/*
- * Set the active slots in TDM/Network mode
- */
+ 
 static int pxa_ssp_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	unsigned int tx_mask, unsigned int rx_mask, int slots, int slot_width)
 {
@@ -325,20 +299,20 @@ static int pxa_ssp_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	sscr0 = pxa_ssp_read_reg(ssp, SSCR0);
 	sscr0 &= ~(SSCR0_MOD | SSCR0_SlotsPerFrm(8) | SSCR0_EDSS | SSCR0_DSS);
 
-	/* set slot width */
+	 
 	if (slot_width > 16)
 		sscr0 |= SSCR0_EDSS | SSCR0_DataSize(slot_width - 16);
 	else
 		sscr0 |= SSCR0_DataSize(slot_width);
 
 	if (slots > 1) {
-		/* enable network mode */
+		 
 		sscr0 |= SSCR0_MOD;
 
-		/* set number of active slots */
+		 
 		sscr0 |= SSCR0_SlotsPerFrm(slots);
 
-		/* set active slot mask */
+		 
 		pxa_ssp_write_reg(ssp, SSTSA, tx_mask);
 		pxa_ssp_write_reg(ssp, SSRSA, rx_mask);
 	}
@@ -347,9 +321,7 @@ static int pxa_ssp_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-/*
- * Tristate the SSP DAI lines
- */
+ 
 static int pxa_ssp_set_dai_tristate(struct snd_soc_dai *cpu_dai,
 	int tristate)
 {
@@ -401,27 +373,23 @@ static int pxa_ssp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 		return -EINVAL;
 	}
 
-	/* Settings will be applied in hw_params() */
+	 
 	priv->dai_fmt = fmt;
 
 	return 0;
 }
 
-/*
- * Set up the SSP DAI format.
- * The SSP Port must be inactive before calling this function as the
- * physical interface format is changed.
- */
+ 
 static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 {
 	struct ssp_device *ssp = priv->ssp;
 	u32 sscr0, sscr1, sspsp, scfr;
 
-	/* check if we need to change anything at all */
+	 
 	if (priv->configured_dai_fmt == priv->dai_fmt)
 		return 0;
 
-	/* reset port settings */
+	 
 	sscr0 = pxa_ssp_read_reg(ssp, SSCR0) &
 		~(SSCR0_PSP | SSCR0_MOD);
 	sscr1 = pxa_ssp_read_reg(ssp, SSCR1) &
@@ -465,7 +433,7 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 	case SND_SOC_DAIFMT_I2S:
 		sscr0 |= SSCR0_PSP;
 		sscr1 |= SSCR1_RWOT | SSCR1_TRAIL;
-		/* See hw_params() */
+		 
 		break;
 
 	case SND_SOC_DAIFMT_DSP_A:
@@ -497,10 +465,7 @@ static int pxa_ssp_configure_dai_fmt(struct ssp_priv *priv)
 
 	dump_registers(ssp);
 
-	/* Since we are configuring the timings for the format by hand
-	 * we have to defer some things until hw_params() where we
-	 * know parameters like the sample size.
-	 */
+	 
 	priv->configured_dai_fmt = priv->dai_fmt;
 
 	return 0;
@@ -524,10 +489,7 @@ static const struct pxa_ssp_clock_mode pxa_ssp_clock_modes[] = {
 	{}
 };
 
-/*
- * Set the SSP audio DMA parameters and sample size.
- * Can be called multiple times by oss emulation.
- */
+ 
 static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *cpu_dai)
@@ -545,15 +507,12 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 
 	dma_data = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
-	/* Network mode with one active slot (ttsa == 1) can be used
-	 * to force 16-bit frame width on the wire (for S16_LE), even
-	 * with two channels. Use 16-bit DMA transfers for this case.
-	 */
+	 
 	pxa_ssp_set_dma_params(ssp,
 		((chn == 2) && (ttsa != 1)) || (width == 32),
 		substream->stream == SNDRV_PCM_STREAM_PLAYBACK, dma_data);
 
-	/* we can only change the settings if the port is not in use */
+	 
 	if (pxa_ssp_read_reg(ssp, SSCR0) & SSCR0_SSE)
 		return 0;
 
@@ -561,10 +520,10 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
-	/* clear selected SSP bits */
+	 
 	sscr0 = pxa_ssp_read_reg(ssp, SSCR0) & ~(SSCR0_DSS | SSCR0_EDSS);
 
-	/* bit size */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		if (ssp->type == PXA3xx_SSP)
@@ -583,11 +542,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	if (sscr0 & SSCR0_ACS) {
 		ret = pxa_ssp_set_pll(priv, bclk);
 
-		/*
-		 * If we were able to generate the bclk directly,
-		 * all is fine. Otherwise, look up the closest rate
-		 * from the table and also set the dividers.
-		 */
+		 
 
 		if (ret < 0) {
 			const struct pxa_ssp_clock_mode *m;
@@ -612,11 +567,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 			pxa_ssp_write_reg(ssp, SSACD, ssacd);
 		}
 	} else if (sscr0 & SSCR0_ECS) {
-		/*
-		 * For setups with external clocking, the PLL and its diviers
-		 * are not active. Instead, the SCR bits in SSCR0 can be used
-		 * to divide the clock.
-		 */
+		 
 		pxa_ssp_set_scr(ssp, bclk / rate);
 	}
 
@@ -625,14 +576,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	       sspsp = pxa_ssp_read_reg(ssp, SSPSP);
 
 		if (((priv->sysclk / bclk) == 64) && (width == 16)) {
-			/* This is a special case where the bitclk is 64fs
-			 * and we're not dealing with 2*32 bits of audio
-			 * samples.
-			 *
-			 * The SSP values used for that are all found out by
-			 * trying and failing a lot; some of the registers
-			 * needed for that mode are only available on PXA3xx.
-			 */
+			 
 			if (ssp->type != PXA3xx_SSP)
 				return -EINVAL;
 
@@ -642,12 +586,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 			sspsp |= SSPSP_DMYSTOP(3);
 			sspsp |= SSPSP_DMYSTRT(1);
 		} else {
-			/* The frame width is the width the LRCLK is
-			 * asserted for; the delay is expressed in
-			 * half cycle units.  We need the extra cycle
-			 * because the data starts clocking out one BCLK
-			 * after LRCLK changes polarity.
-			 */
+			 
 			sspsp |= SSPSP_SFRMWDTH(width + 1);
 			sspsp |= SSPSP_SFRMDLY((width + 1) * 2);
 			sspsp |= SSPSP_DMYSTRT(1);
@@ -659,9 +598,7 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
-	/* When we use a network mode, we always require TDM slots
-	 * - complain loudly and fail if they've not been set up yet.
-	 */
+	 
 	if ((sscr0 & SSCR0_MOD) && !ttsa) {
 		dev_err(ssp->dev, "No TDM timeslot configured\n");
 		return -EINVAL;
@@ -880,7 +817,7 @@ static struct platform_driver asoc_ssp_driver = {
 
 module_platform_driver(asoc_ssp_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("PXA SSP/PCM SoC Interface");
 MODULE_LICENSE("GPL");

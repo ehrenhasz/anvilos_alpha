@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX8 OCOTP fusebox driver
- *
- * Copyright 2019 NXP
- *
- * Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/firmware/imx/sci.h>
@@ -187,7 +181,7 @@ static int imx_scu_ocotp_write(void *context, unsigned int offset,
 	u32 index;
 	int ret;
 
-	/* allow only writing one complete OTP word at a time */
+	 
 	if (bytes != 4)
 		return -EINVAL;
 

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/slab.h>
@@ -23,13 +23,13 @@ avs_dsp_set_d0ix(struct avs_dev *adev, bool enable)
 	struct avs_ipc *ipc = adev->ipc;
 	int ret;
 
-	/* Is transition required? */
+	 
 	if (ipc->in_d0ix == enable)
 		return 0;
 
 	ret = avs_dsp_op(adev, set_d0ix, enable);
 	if (ret) {
-		/* Prevent further d0ix attempts on conscious IPC failure. */
+		 
 		if (ret == -AVS_EIPC)
 			atomic_inc(&ipc->d0ix_disable_depth);
 
@@ -73,7 +73,7 @@ int avs_dsp_disable_d0ix(struct avs_dev *adev)
 {
 	struct avs_ipc *ipc = adev->ipc;
 
-	/* Prevent PG only on the first disable. */
+	 
 	if (atomic_inc_return(&ipc->d0ix_disable_depth) == 1) {
 		cancel_delayed_work_sync(&ipc->d0ix_work);
 		return avs_dsp_set_d0ix(adev, false);
@@ -99,7 +99,7 @@ static void avs_dsp_recovery(struct avs_dev *adev)
 	int ret;
 
 	mutex_lock(&adev->comp_list_mutex);
-	/* disconnect all running streams */
+	 
 	list_for_each_entry(acomp, &adev->comp_list, node) {
 		struct snd_soc_pcm_runtime *rtd;
 		struct snd_soc_card *card;
@@ -123,7 +123,7 @@ static void avs_dsp_recovery(struct avs_dev *adev)
 				if (!substream || !substream->runtime)
 					continue;
 
-				/* No need for _irq() as we are in nonatomic context. */
+				 
 				snd_pcm_stream_lock(substream);
 				snd_pcm_stop(substream, SNDRV_PCM_STATE_DISCONNECTED);
 				snd_pcm_stream_unlock(substream);
@@ -132,11 +132,11 @@ static void avs_dsp_recovery(struct avs_dev *adev)
 	}
 	mutex_unlock(&adev->comp_list_mutex);
 
-	/* forcibly shutdown all cores */
+	 
 	core_mask = GENMASK(adev->hw_cfg.dsp_cores - 1, 0);
 	avs_dsp_core_disable(adev, core_mask);
 
-	/* attempt dsp reboot */
+	 
 	ret = avs_dsp_boot_firmware(adev, true);
 	if (ret < 0)
 		dev_err(adev->dev, "dsp reboot failed: %d\n", ret);
@@ -159,7 +159,7 @@ static void avs_dsp_exception_caught(struct avs_dev *adev, union avs_notify_msg 
 {
 	struct avs_ipc *ipc = adev->ipc;
 
-	/* Account for the double-exception case. */
+	 
 	ipc->ready = false;
 
 	if (!atomic_add_unless(&ipc->recovering, 1, 1)) {
@@ -171,10 +171,10 @@ static void avs_dsp_exception_caught(struct avs_dev *adev, union avs_notify_msg 
 
 	cancel_delayed_work_sync(&ipc->d0ix_work);
 	ipc->in_d0ix = false;
-	/* Re-enabled on recovery completion. */
+	 
 	pm_runtime_disable(adev->dev);
 
-	/* Process received notification. */
+	 
 	avs_dsp_op(adev, coredump, msg);
 
 	schedule_work(&ipc->recovery_work);
@@ -190,9 +190,9 @@ static void avs_dsp_receive_rx(struct avs_dev *adev, u64 header)
 	trace_avs_ipc_reply_msg(header, reg);
 
 	ipc->rx.header = header;
-	/* Abort copying payload if request processing was unsuccessful. */
+	 
 	if (!msg.status) {
-		/* update size in case of LARGE_CONFIG_GET */
+		 
 		if (msg.msg_target == AVS_MOD_MSG &&
 		    msg.global_msg_type == AVS_MOD_LARGE_CONFIG_GET)
 			ipc->rx.size = min_t(u32, AVS_MAILBOX_SIZE,
@@ -214,13 +214,13 @@ static void avs_dsp_process_notification(struct avs_dev *adev, u64 header)
 	reg = readq(avs_sram_addr(adev, AVS_FW_REGS_WINDOW));
 	trace_avs_ipc_notify_msg(header, reg);
 
-	/* Ignore spurious notifications until handshake is established. */
+	 
 	if (!adev->ipc->ready && msg.notify_msg_type != AVS_NOTIFY_FW_READY) {
 		dev_dbg(adev->dev, "FW not ready, skip notification: 0x%08x\n", msg.primary);
 		return;
 	}
 
-	/* Calculate notification payload size. */
+	 
 	switch (msg.notify_msg_type) {
 	case AVS_NOTIFY_FW_READY:
 		break;
@@ -238,7 +238,7 @@ static void avs_dsp_process_notification(struct avs_dev *adev, u64 header)
 		break;
 
 	case AVS_NOTIFY_MODULE_EVENT:
-		/* To know the total payload size, header needs to be read first. */
+		 
 		memcpy_fromio(&mod_data, avs_uplink_addr(adev), sizeof(mod_data));
 		data_size = sizeof(mod_data) + mod_data.data_size;
 		break;
@@ -257,7 +257,7 @@ static void avs_dsp_process_notification(struct avs_dev *adev, u64 header)
 		trace_avs_msg_payload(data, data_size);
 	}
 
-	/* Perform notification-specific operations. */
+	 
 	switch (msg.notify_msg_type) {
 	case AVS_NOTIFY_FW_READY:
 		dev_dbg(adev->dev, "FW READY 0x%08x\n", msg.primary);
@@ -284,12 +284,9 @@ void avs_dsp_process_response(struct avs_dev *adev, u64 header)
 {
 	struct avs_ipc *ipc = adev->ipc;
 
-	/*
-	 * Response may either be solicited - a reply for a request that has
-	 * been sent beforehand - or unsolicited (notification).
-	 */
+	 
 	if (avs_msg_is_reply(header)) {
-		/* Response processing is invoked from IRQ thread. */
+		 
 		spin_lock_irq(&ipc->rx_lock);
 		avs_dsp_receive_rx(adev, header);
 		ipc->rx_completed = true;
@@ -315,31 +312,28 @@ irqreturn_t avs_dsp_irq_handler(int irq, void *dev_id)
 	hipc_ack = snd_hdac_adsp_readl(adev, SKL_ADSP_REG_HIPCIE);
 	hipc_rsp = snd_hdac_adsp_readl(adev, SKL_ADSP_REG_HIPCT);
 
-	/* DSP acked host's request */
+	 
 	if (hipc_ack & SKL_ADSP_HIPCIE_DONE) {
-		/*
-		 * As an extra precaution, mask done interrupt. Code executed
-		 * due to complete() found below does not assume any masking.
-		 */
+		 
 		snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCCTL,
 				      AVS_ADSP_HIPCCTL_DONE, 0);
 
 		complete(&ipc->done_completion);
 
-		/* tell DSP it has our attention */
+		 
 		snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCIE,
 				      SKL_ADSP_HIPCIE_DONE,
 				      SKL_ADSP_HIPCIE_DONE);
-		/* unmask done interrupt */
+		 
 		snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCCTL,
 				      AVS_ADSP_HIPCCTL_DONE,
 				      AVS_ADSP_HIPCCTL_DONE);
 		ret = IRQ_HANDLED;
 	}
 
-	/* DSP sent new response to process */
+	 
 	if (hipc_rsp & SKL_ADSP_HIPCT_BUSY) {
-		/* mask busy interrupt */
+		 
 		snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCCTL,
 				      AVS_ADSP_HIPCCTL_BUSY, 0);
 
@@ -358,7 +352,7 @@ irqreturn_t avs_dsp_irq_thread(int irq, void *dev_id)
 	hipct = snd_hdac_adsp_readl(adev, SKL_ADSP_REG_HIPCT);
 	hipcte = snd_hdac_adsp_readl(adev, SKL_ADSP_REG_HIPCTE);
 
-	/* ensure DSP sent new response to process */
+	 
 	if (!(hipct & SKL_ADSP_HIPCT_BUSY))
 		return IRQ_NONE;
 
@@ -366,10 +360,10 @@ irqreturn_t avs_dsp_irq_thread(int irq, void *dev_id)
 	msg.ext.val = hipcte;
 	avs_dsp_process_response(adev, msg.val);
 
-	/* tell DSP we accepted its message */
+	 
 	snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCT,
 			      SKL_ADSP_HIPCT_BUSY, SKL_ADSP_HIPCT_BUSY);
-	/* unmask busy interrupt */
+	 
 	snd_hdac_adsp_updatel(adev, SKL_ADSP_REG_HIPCCTL,
 			      AVS_ADSP_HIPCCTL_BUSY, AVS_ADSP_HIPCCTL_BUSY);
 
@@ -387,31 +381,28 @@ static bool avs_ipc_is_busy(struct avs_ipc *ipc)
 
 static int avs_ipc_wait_busy_completion(struct avs_ipc *ipc, int timeout)
 {
-	u32 repeats_left = 128; /* to avoid infinite looping */
+	u32 repeats_left = 128;  
 	int ret;
 
 again:
 	ret = wait_for_completion_timeout(&ipc->busy_completion, msecs_to_jiffies(timeout));
 
-	/* DSP could be unresponsive at this point. */
+	 
 	if (!ipc->ready)
 		return -EPERM;
 
 	if (!ret) {
 		if (!avs_ipc_is_busy(ipc))
 			return -ETIMEDOUT;
-		/*
-		 * Firmware did its job, either notification or reply
-		 * has been received - now wait until it's processed.
-		 */
+		 
 		wait_for_completion_killable(&ipc->busy_completion);
 	}
 
-	/* Ongoing notification's bottom-half may cause early wakeup */
+	 
 	spin_lock(&ipc->rx_lock);
 	if (!ipc->rx_completed) {
 		if (repeats_left) {
-			/* Reply delayed due to notification. */
+			 
 			repeats_left--;
 			reinit_completion(&ipc->busy_completion);
 			spin_unlock(&ipc->rx_lock);
@@ -475,7 +466,7 @@ static int avs_dsp_do_send_msg(struct avs_dev *adev, struct avs_ipc_msg *request
 		if (ret == -ETIMEDOUT) {
 			union avs_notify_msg msg = AVS_NOTIFICATION(EXCEPTION_CAUGHT);
 
-			/* Same treatment as on exception, just stack_dump=0. */
+			 
 			avs_dsp_exception_caught(adev, &msg);
 		}
 		goto exit;
@@ -555,14 +546,11 @@ static int avs_dsp_do_send_rom_msg(struct avs_dev *adev, struct avs_ipc_msg *req
 
 	spin_lock(&ipc->rx_lock);
 	avs_ipc_msg_init(ipc, NULL);
-	/*
-	 * with hw still stalled, memory windows may not be
-	 * configured properly so avoid accessing SRAM
-	 */
+	 
 	avs_dsp_send_tx(adev, request, false);
 	spin_unlock(&ipc->rx_lock);
 
-	/* ROM messages must be sent before main core is unstalled */
+	 
 	ret = avs_dsp_op(adev, stall, AVS_MAIN_CORE_MASK, false);
 	if (!ret) {
 		ret = wait_for_completion_timeout(&ipc->done_completion, msecs_to_jiffies(timeout));
@@ -588,10 +576,7 @@ void avs_dsp_interrupt_control(struct avs_dev *adev, bool enable)
 {
 	u32 value, mask;
 
-	/*
-	 * No particular bit setting order. All of these are required
-	 * to have a functional SW <-> FW communication.
-	 */
+	 
 	value = enable ? AVS_ADSP_ADSPIC_IPC : 0;
 	snd_hdac_adsp_updatel(adev, AVS_ADSP_REG_ADSPIC, AVS_ADSP_ADSPIC_IPC, value);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+ 
 
 #include <ctype.h>
 #include <limits.h>
@@ -73,7 +71,7 @@ static void strip(char *str)
 		*p-- = 0;
 }
 
-/* Helper function to facilitate fgets() by Jean Sacren. */
+ 
 static void xfgets(char *str, int size, FILE *in)
 {
 	if (!fgets(str, size, in))
@@ -101,10 +99,7 @@ static void set_randconfig_seed(void)
 	if (!seed_set) {
 		struct timeval now;
 
-		/*
-		 * Use microseconds derived seed, compensate for systems where it may
-		 * be zero.
-		 */
+		 
 		gettimeofday(&now, NULL);
 		seed = (now.tv_sec + 1) * (now.tv_usec + 1);
 	}
@@ -120,25 +115,18 @@ static bool randomize_choice_values(struct symbol *csym)
 	struct expr *e;
 	int cnt, def;
 
-	/*
-	 * If choice is mod then we may have more items selected
-	 * and if no then no-one.
-	 * In both cases stop.
-	 */
+	 
 	if (csym->curr.tri != yes)
 		return false;
 
 	prop = sym_get_choice_prop(csym);
 
-	/* count entries in choice block */
+	 
 	cnt = 0;
 	expr_list_for_each_sym(prop->expr, e, sym)
 		cnt++;
 
-	/*
-	 * find a random value and set it to yes,
-	 * set the rest to no so we have only one set
-	 */
+	 
 	def = rand() % cnt;
 
 	cnt = 0;
@@ -150,11 +138,11 @@ static bool randomize_choice_values(struct symbol *csym)
 			sym->def[S_DEF_USER].tri = no;
 		}
 		sym->flags |= SYMBOL_DEF_USER;
-		/* clear VALID to get value calculated */
+		 
 		sym->flags &= ~SYMBOL_VALID;
 	}
 	csym->flags |= SYMBOL_DEF_USER;
-	/* clear VALID to get value calculated */
+	 
 	csym->flags &= ~SYMBOL_VALID;
 
 	return true;
@@ -172,13 +160,10 @@ static bool conf_set_all_new_symbols(enum conf_def_mode mode)
 {
 	struct symbol *sym, *csym;
 	int i, cnt;
-	/*
-	 * can't go as the default in switch-case below, otherwise gcc whines
-	 * about -Wmaybe-uninitialized
-	 */
-	int pby = 50; /* probability of bool     = y */
-	int pty = 33; /* probability of tristate = y */
-	int ptm = 33; /* probability of tristate = m */
+	 
+	int pby = 50;  
+	int pty = 33;  
+	int ptm = 33;  
 	bool has_changed = false;
 
 	if (mode == def_random) {
@@ -268,15 +253,7 @@ static bool conf_set_all_new_symbols(enum conf_def_mode mode)
 
 	sym_clear_all_valid();
 
-	/*
-	 * We have different type of choice blocks.
-	 * If curr.tri equals to mod then we can select several
-	 * choice symbols in one block.
-	 * In this case we do nothing.
-	 * If curr.tri equals yes then only one symbol can be
-	 * selected in a choice block and we set it to yes,
-	 * and the rest to no.
-	 */
+	 
 	if (mode != def_random) {
 		for_all_symbols(i, csym) {
 			if ((sym_is_choice(csym) && !sym_has_value(csym)) ||
@@ -336,7 +313,7 @@ static int conf_askvalue(struct symbol *sym, const char *def)
 			printf("%s\n", def);
 			return 0;
 		}
-		/* fall through */
+		 
 	default:
 		fflush(stdout);
 		xfgets(line, sizeof(line), stdin);
@@ -363,13 +340,13 @@ static int conf_string(struct menu *menu)
 		case '\n':
 			break;
 		case '?':
-			/* print help */
+			 
 			if (line[1] == '\n') {
 				print_help(menu);
 				def = NULL;
 				break;
 			}
-			/* fall through */
+			 
 		default:
 			line[strlen(line)-1] = 0;
 			def = line;
@@ -518,7 +495,7 @@ static int conf_choice(struct menu *menu)
 				printf("%d\n", cnt);
 				break;
 			}
-			/* fall through */
+			 
 		case oldaskconfig:
 			fflush(stdout);
 			xfgets(line, sizeof(line), stdin);
@@ -577,15 +554,12 @@ static void conf(struct menu *menu)
 
 		switch (prop->type) {
 		case P_MENU:
-			/*
-			 * Except in oldaskconfig mode, we show only menus that
-			 * contain new symbols.
-			 */
+			 
 			if (input_mode != oldaskconfig && rootEntry != menu) {
 				check_conf(menu);
 				return;
 			}
-			/* fall through */
+			 
 		case P_COMMENT:
 			prompt = menu_get_prompt(menu);
 			if (prompt)
@@ -719,7 +693,7 @@ int main(int ac, char **av)
 {
 	const char *progname = av[0];
 	int opt;
-	const char *name, *defconfig_file = NULL /* gcc uninit */;
+	const char *name, *defconfig_file = NULL  ;
 	int no_conf_write = 0;
 
 	tty_stdio = isatty(0) && isatty(1);
@@ -737,11 +711,7 @@ int main(int ac, char **av)
 			input_mode = input_mode_opt;
 			switch (input_mode) {
 			case syncconfig:
-				/*
-				 * syncconfig is invoked during the build stage.
-				 * Suppress distracting
-				 *   "configuration written to ..."
-				 */
+				 
 				conf_set_message_callback(NULL);
 				sync_kconfig = 1;
 				break;
@@ -765,7 +735,7 @@ int main(int ac, char **av)
 		exit(1);
 	}
 	conf_parse(av[optind]);
-	//zconfdump(stdout);
+	 
 
 	switch (input_mode) {
 	case defconfig:
@@ -853,7 +823,7 @@ int main(int ac, char **av)
 		conf_set_all_new_symbols(def_default);
 		break;
 	case randconfig:
-		/* Really nothing to do in this loop */
+		 
 		while (conf_set_all_new_symbols(def_random)) ;
 		break;
 	case defconfig:
@@ -874,12 +844,12 @@ int main(int ac, char **av)
 		rootEntry = &rootmenu;
 		conf(&rootmenu);
 		input_mode = oldconfig;
-		/* fall through */
+		 
 	case oldconfig:
 	case listnewconfig:
 	case helpnewconfig:
 	case syncconfig:
-		/* Update until a loop caused no more changes */
+		 
 		do {
 			conf_cnt = 0;
 			check_conf(&rootmenu);
@@ -902,15 +872,7 @@ int main(int ac, char **av)
 			exit(1);
 		}
 
-		/*
-		 * Create auto.conf if it does not exist.
-		 * This prevents GNU Make 4.1 or older from emitting
-		 * "include/config/auto.conf: No such file or directory"
-		 * in the top-level Makefile
-		 *
-		 * syncconfig always creates or updates auto.conf because it is
-		 * used during the build.
-		 */
+		 
 		if (conf_write_autoconf(sync_kconfig) && sync_kconfig) {
 			fprintf(stderr,
 				"\n*** Error during sync of the configuration.\n\n");

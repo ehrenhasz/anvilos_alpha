@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  fs/partitions/osf.c
- *
- *  Code extracted from drivers/block/genhd.c
- *
- *  Copyright (C) 1991-1998  Linus Torvalds
- *  Re-organised Feb 1998 Russell King
- */
+
+ 
 
 #include "check.h"
 

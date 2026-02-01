@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pnpacpi -- PnP ACPI driver
- *
- * Copyright (c) 2004 Matthieu Castet <castet.matthieu@free.fr>
- * Copyright (c) 2004 Li Shaohua <shaohua.li@intel.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/acpi.h>
@@ -17,9 +12,7 @@
 
 static int num;
 
-/*
- * Compatible Device IDs
- */
+ 
 #define TEST_HEX(c) \
 	if (!(('0' <= (c) && (c) <= '9') || ('A' <= (c) && (c) <= 'F'))) \
 		return 0
@@ -100,11 +93,11 @@ static int pnpacpi_disable_resources(struct pnp_dev *dev)
 		return 0;
 	}
 
-	/* acpi_unregister_gsi(pnp_irq(dev, 0)); */
+	 
 	if (acpi_device_power_manageable(acpi_dev))
 		acpi_device_set_power(acpi_dev, ACPI_STATE_D3_COLD);
 
-	/* continue even if acpi_device_set_power() fails */
+	 
 	status = acpi_evaluate_object(acpi_dev->handle, "_DIS", NULL, NULL);
 	if (ACPI_FAILURE(status) && status != AE_NOT_FOUND)
 		return -ENODEV;
@@ -149,12 +142,7 @@ static int pnpacpi_suspend(struct pnp_dev *dev, pm_message_t state)
 			power_state = (state.event == PM_EVENT_ON) ?
 					ACPI_STATE_D0 : ACPI_STATE_D3_COLD;
 
-		/*
-		 * acpi_device_set_power() can fail (keyboard port can't be
-		 * powered-down?), and in any case, our return value is ignored
-		 * by pnp_bus_suspend().  Hence we don't revert the wakeup
-		 * setting if the set_power fails.
-		 */
+		 
 		error = acpi_device_set_power(acpi_dev, power_state);
 	}
 
@@ -213,14 +201,11 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
 	struct acpi_hardware_id *id;
 	int error;
 
-	/* Skip devices that are already bound */
+	 
 	if (device->physical_node_count)
 		return 0;
 
-	/*
-	 * If a PnPacpi device is not present , the device
-	 * driver should not be loaded.
-	 */
+	 
 	if (!acpi_has_method(device->handle, "_CRS"))
 		return 0;
 
@@ -237,7 +222,7 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
 
 	ACPI_COMPANION_SET(&dev->dev, device);
 	dev->data = device;
-	/* .enabled means the device can decode the resources */
+	 
 	dev->active = device->status.enabled;
 	if (acpi_has_method(device->handle, "_SRS"))
 		dev->capabilities |= PNP_CONFIGURABLE;
@@ -254,7 +239,7 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
 	else
 		strncpy(dev->name, acpi_device_bid(device), sizeof(dev->name));
 
-	/* Handle possible string truncation */
+	 
 	dev->name[sizeof(dev->name) - 1] = '\0';
 
 	if (dev->active)
@@ -271,7 +256,7 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
 		pnp_add_id(dev, id->id);
 	}
 
-	/* clear out the damaged flags */
+	 
 	if (!dev->active)
 		pnp_init_resources(dev);
 

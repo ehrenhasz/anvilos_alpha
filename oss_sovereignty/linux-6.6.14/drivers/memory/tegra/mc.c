@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -49,7 +47,7 @@ static const struct of_device_id tegra_mc_of_match[] = {
 #ifdef CONFIG_ARCH_TEGRA_234_SOC
 	{ .compatible = "nvidia,tegra234-mc", .data = &tegra234_mc_soc },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tegra_mc_of_match);
 
@@ -60,15 +58,7 @@ static void tegra_mc_devm_action_put_device(void *data)
 	put_device(mc->dev);
 }
 
-/**
- * devm_tegra_memory_controller_get() - get Tegra Memory Controller handle
- * @dev: device pointer for the consumer device
- *
- * This function will search for the Memory Controller node in a device-tree
- * and retrieve the Memory Controller handle.
- *
- * Return: ERR_PTR() on error or a valid pointer to a struct tegra_mc.
- */
+ 
 struct tegra_mc *devm_tegra_memory_controller_get(struct device *dev)
 {
 	struct platform_device *pdev;
@@ -218,15 +208,15 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
 	if (!rst_ops)
 		return -ENODEV;
 
-	/* DMA flushing will fail if reset is already asserted */
+	 
 	if (rst_ops->reset_status) {
-		/* check whether reset is asserted */
+		 
 		if (rst_ops->reset_status(mc, rst))
 			return 0;
 	}
 
 	if (rst_ops->block_dma) {
-		/* block clients DMA requests */
+		 
 		err = rst_ops->block_dma(mc, rst);
 		if (err) {
 			dev_err(mc->dev, "failed to block %s DMA: %d\n",
@@ -236,7 +226,7 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
 	}
 
 	if (rst_ops->dma_idling) {
-		/* wait for completion of the outstanding DMA requests */
+		 
 		while (!rst_ops->dma_idling(mc, rst)) {
 			if (!retries--) {
 				dev_err(mc->dev, "failed to flush %s DMA\n",
@@ -249,7 +239,7 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
 	}
 
 	if (rst_ops->hotreset_assert) {
-		/* clear clients DMA requests sitting before arbitration */
+		 
 		err = rst_ops->hotreset_assert(mc, rst);
 		if (err) {
 			dev_err(mc->dev, "failed to hot reset %s: %d\n",
@@ -278,7 +268,7 @@ static int tegra_mc_hotreset_deassert(struct reset_controller_dev *rcdev,
 		return -ENODEV;
 
 	if (rst_ops->hotreset_deassert) {
-		/* take out client from hot reset */
+		 
 		err = rst_ops->hotreset_deassert(mc, rst);
 		if (err) {
 			dev_err(mc->dev, "failed to deassert hot reset %s: %d\n",
@@ -288,7 +278,7 @@ static int tegra_mc_hotreset_deassert(struct reset_controller_dev *rcdev,
 	}
 
 	if (rst_ops->unblock_dma) {
-		/* allow new DMA requests to proceed to arbitration */
+		 
 		err = rst_ops->unblock_dma(mc, rst);
 		if (err) {
 			dev_err(mc->dev, "failed to unblock %s DMA : %d\n",
@@ -389,7 +379,7 @@ static int tegra_mc_setup_latency_allowance(struct tegra_mc *mc)
 	unsigned int i;
 	u32 value;
 
-	/* compute the number of MC clock cycles per tick */
+	 
 	tick = (unsigned long long)mc->tick * clk_get_rate(mc->clk);
 	do_div(tick, NSEC_PER_SEC);
 
@@ -398,7 +388,7 @@ static int tegra_mc_setup_latency_allowance(struct tegra_mc *mc)
 	value |= MC_EMEM_ARB_CFG_CYCLES_PER_UPDATE(tick);
 	mc_writel(mc, value, MC_EMEM_ARB_CFG);
 
-	/* write latency allowance defaults */
+	 
 	for (i = 0; i < mc->soc->num_clients; i++) {
 		const struct tegra_mc_client *client = &mc->soc->clients[i];
 		u32 value;
@@ -409,7 +399,7 @@ static int tegra_mc_setup_latency_allowance(struct tegra_mc *mc)
 		mc_writel(mc, value, client->regs.la.reg);
 	}
 
-	/* latch new values */
+	 
 	mc_writel(mc, MC_TIMING_UPDATE, MC_TIMING_CONTROL);
 
 	return 0;
@@ -516,7 +506,7 @@ int tegra30_mc_probe(struct tegra_mc *mc)
 		return PTR_ERR(mc->clk);
 	}
 
-	/* ensure that debug features are disabled */
+	 
 	mc_writel(mc, 0x00000000, MC_TIMING_CONTROL_DBG);
 
 	err = tegra_mc_setup_latency_allowance(mc);
@@ -576,7 +566,7 @@ irqreturn_t tegra30_mc_handle_irq(int irq, void *data)
 			return IRQ_NONE;
 		}
 
-		/* mask all interrupts to avoid flooding */
+		 
 		status = mc_ch_readl(mc, channel, MC_INTSTATUS) & mc->soc->intmask;
 	} else {
 		status = mc_readl(mc, MC_INTSTATUS) & mc->soc->intmask;
@@ -720,7 +710,7 @@ irqreturn_t tegra30_mc_handle_irq(int irq, void *data)
 				    desc, perm);
 	}
 
-	/* clear interrupts */
+	 
 	if (mc->soc->num_channels) {
 		mc_ch_writel(mc, channel, status, MC_INTSTATUS);
 		mc_ch_writel(mc, MC_BROADCAST_CHANNEL,
@@ -765,10 +755,7 @@ struct icc_node *tegra_mc_icc_xlate(struct of_phandle_args *spec, void *data)
 			return node;
 	}
 
-	/*
-	 * If a client driver calls devm_of_icc_get() before the MC driver
-	 * is probed, then return EPROBE_DEFER to the client driver.
-	 */
+	 
 	return ERR_PTR(-EPROBE_DEFER);
 }
 
@@ -792,36 +779,14 @@ const struct tegra_mc_icc_ops tegra_mc_icc_ops = {
 	.set = tegra_mc_icc_set,
 };
 
-/*
- * Memory Controller (MC) has few Memory Clients that are issuing memory
- * bandwidth allocation requests to the MC interconnect provider. The MC
- * provider aggregates the requests and then sends the aggregated request
- * up to the External Memory Controller (EMC) interconnect provider which
- * re-configures hardware interface to External Memory (EMEM) in accordance
- * to the required bandwidth. Each MC interconnect node represents an
- * individual Memory Client.
- *
- * Memory interconnect topology:
- *
- *               +----+
- * +--------+    |    |
- * | TEXSRD +--->+    |
- * +--------+    |    |
- *               |    |    +-----+    +------+
- *    ...        | MC +--->+ EMC +--->+ EMEM |
- *               |    |    +-----+    +------+
- * +--------+    |    |
- * | DISP.. +--->+    |
- * +--------+    |    |
- *               +----+
- */
+ 
 static int tegra_mc_interconnect_setup(struct tegra_mc *mc)
 {
 	struct icc_node *node;
 	unsigned int i;
 	int err;
 
-	/* older device-trees don't have interconnect properties */
+	 
 	if (!device_property_present(mc->dev, "#interconnect-cells") ||
 	    !mc->soc->icc_ops)
 		return 0;
@@ -836,7 +801,7 @@ static int tegra_mc_interconnect_setup(struct tegra_mc *mc)
 
 	icc_provider_init(&mc->provider);
 
-	/* create Memory Controller node */
+	 
 	node = icc_node_create(TEGRA_ICC_MC);
 	if (IS_ERR(node))
 		return PTR_ERR(node);
@@ -844,13 +809,13 @@ static int tegra_mc_interconnect_setup(struct tegra_mc *mc)
 	node->name = "Memory Controller";
 	icc_node_add(node, &mc->provider);
 
-	/* link Memory Controller to External Memory Controller */
+	 
 	err = icc_link_create(node, TEGRA_ICC_EMC);
 	if (err)
 		goto remove_nodes;
 
 	for (i = 0; i < mc->soc->num_clients; i++) {
-		/* create MC client node */
+		 
 		node = icc_node_create(mc->soc->clients[i].id);
 		if (IS_ERR(node)) {
 			err = PTR_ERR(node);
@@ -860,7 +825,7 @@ static int tegra_mc_interconnect_setup(struct tegra_mc *mc)
 		node->name = mc->soc->clients[i].name;
 		icc_node_add(node, &mc->provider);
 
-		/* link Memory Client to Memory Controller */
+		 
 		err = icc_link_create(node, TEGRA_ICC_MC);
 		if (err)
 			goto remove_nodes;
@@ -920,7 +885,7 @@ static int tegra_mc_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* length of MC tick in nanoseconds */
+	 
 	mc->tick = 30;
 
 	mc->regs = devm_platform_ioremap_resource(pdev, 0);
@@ -1015,7 +980,7 @@ static void tegra_mc_sync_state(struct device *dev)
 {
 	struct tegra_mc *mc = dev_get_drvdata(dev);
 
-	/* check whether ICC provider is registered */
+	 
 	if (mc->provider.dev == dev)
 		icc_sync_state(dev);
 }

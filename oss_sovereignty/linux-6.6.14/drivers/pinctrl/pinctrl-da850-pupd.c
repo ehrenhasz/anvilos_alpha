@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinconf driver for TI DA850/OMAP-L138/AM18XX pullup/pulldown groups
- *
- * Copyright (C) 2016  David Lechner
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -79,7 +75,7 @@ static int da850_pupd_pin_config_group_get(struct pinctrl_dev *pctldev,
 	case PIN_CONFIG_BIAS_PULL_UP:
 	case PIN_CONFIG_BIAS_PULL_DOWN:
 		if (arg) {
-			/* bias is disabled */
+			 
 			arg = 0;
 			break;
 		}

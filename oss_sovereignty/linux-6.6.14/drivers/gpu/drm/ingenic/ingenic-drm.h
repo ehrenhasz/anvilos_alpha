@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Ingenic JZ47xx KMS driver - Register definitions and private API
-//
-// Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
+ 
+
+
+
+
 
 #ifndef DRIVERS_GPU_DRM_INGENIC_INGENIC_DRM_H
 #define DRIVERS_GPU_DRM_INGENIC_INGENIC_DRM_H
@@ -229,4 +229,4 @@ bool ingenic_drm_map_noncoherent(const struct device *dev);
 
 extern struct platform_driver *ingenic_ipu_driver_ptr;
 
-#endif /* DRIVERS_GPU_DRM_INGENIC_INGENIC_DRM_H */
+#endif  

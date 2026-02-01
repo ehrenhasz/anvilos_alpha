@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Silex Insight
+
+
 
 #include <linux/delay.h>
 #include <linux/hw_random.h>
@@ -11,10 +11,10 @@
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 
-#define BA431_RESET_DELAY			1 /* usec */
-#define BA431_RESET_READ_STATUS_TIMEOUT		1000 /* usec */
-#define BA431_RESET_READ_STATUS_INTERVAL	10 /* usec */
-#define BA431_READ_RETRY_INTERVAL		1 /* usec */
+#define BA431_RESET_DELAY			1  
+#define BA431_RESET_READ_STATUS_TIMEOUT		1000  
+#define BA431_RESET_READ_STATUS_INTERVAL	10  
+#define BA431_READ_RETRY_INTERVAL		1  
 
 #define BA431_REG_CTRL				0x00
 #define BA431_REG_FIFO_LEVEL			0x04
@@ -77,12 +77,12 @@ static int ba431_trng_reset(struct ba431_trng *ba431)
 {
 	int ret;
 
-	/* Disable interrupts, random generation and enable the softreset */
+	 
 	ba431_trng_write_reg(ba431, BA431_REG_CTRL, BA431_CTRL_SOFTRESET);
 	udelay(BA431_RESET_DELAY);
 	ba431_trng_write_reg(ba431, BA431_REG_CTRL, BA431_CTRL_ENABLE);
 
-	/* Wait until the state changed */
+	 
 	if (readx_poll_timeout(ba431_trng_is_in_error, ba431, ret, !ret,
 			       BA431_RESET_READ_STATUS_INTERVAL,
 			       BA431_RESET_READ_STATUS_TIMEOUT)) {
@@ -200,7 +200,7 @@ static int ba431_trng_probe(struct platform_device *pdev)
 
 static const struct of_device_id ba431_trng_dt_ids[] = {
 	{ .compatible = "silex-insight,ba431-rng" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ba431_trng_dt_ids);
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * consolemap.h
- *
- * Interface between console.c, selection.c  and consolemap.c
- */
+ 
+ 
 #ifndef __LINUX_CONSOLEMAP_H__
 #define __LINUX_CONSOLEMAP_H__
 
@@ -57,6 +53,6 @@ static inline int conv_uni_to_8bit(u32 uni)
 }
 
 static inline void console_map_init(void) { }
-#endif /* CONFIG_CONSOLE_TRANSLATIONS */
+#endif  
 
-#endif /* __LINUX_CONSOLEMAP_H__ */
+#endif  

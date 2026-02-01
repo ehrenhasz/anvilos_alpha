@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Key setup for v1 encryption policies
- *
- * Copyright 2015, 2019 Google LLC
- */
 
-/*
- * This file implements compatibility functions for the original encryption
- * policy version ("v1"), including:
- *
- * - Deriving per-file encryption keys using the AES-128-ECB based KDF
- *   (rather than the new method of using HKDF-SHA512)
- *
- * - Retrieving fscrypt master keys from process-subscribed keyrings
- *   (rather than the new method of using a filesystem-level keyring)
- *
- * - Handling policies with the DIRECT_KEY flag set using a master key table
- *   (rather than the new method of implementing DIRECT_KEY with per-mode keys
- *    managed alongside the master keys in the filesystem-level keyring)
- */
+ 
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/skcipher.h>
@@ -28,22 +11,11 @@
 
 #include "fscrypt_private.h"
 
-/* Table of keys referenced by DIRECT_KEY policies */
-static DEFINE_HASHTABLE(fscrypt_direct_keys, 6); /* 6 bits = 64 buckets */
+ 
+static DEFINE_HASHTABLE(fscrypt_direct_keys, 6);  
 static DEFINE_SPINLOCK(fscrypt_direct_keys_lock);
 
-/*
- * v1 key derivation function.  This generates the derived key by encrypting the
- * master key with AES-128-ECB using the nonce as the AES key.  This provides a
- * unique derived key with sufficient entropy for each inode.  However, it's
- * nonstandard, non-extensible, doesn't evenly distribute the entropy from the
- * master key, and is trivially reversible: an attacker who compromises a
- * derived key can "decrypt" it to get back to the master key, then derive any
- * other key.  For all new code, use HKDF instead.
- *
- * The master key must be at least as long as the derived key.  If the master
- * key is longer, then only the first 'derived_keysize' bytes are used.
- */
+ 
 static int derive_key_aes(const u8 *master_key,
 			  const u8 nonce[FSCRYPT_FILE_NONCE_SIZE],
 			  u8 *derived_key, unsigned int derived_keysize)
@@ -83,11 +55,7 @@ out:
 	return res;
 }
 
-/*
- * Search the current task's subscribed keyrings for a "logon" key with
- * description prefix:descriptor, and if found acquire a read lock on it and
- * return a pointer to its validated payload in *payload_ret.
- */
+ 
 static struct key *
 find_and_lock_process_key(const char *prefix,
 			  const u8 descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE],
@@ -112,7 +80,7 @@ find_and_lock_process_key(const char *prefix,
 	down_read(&key->sem);
 	ukp = user_key_payload_locked(key);
 
-	if (!ukp) /* was the key revoked before we acquired its semaphore? */
+	if (!ukp)  
 		goto invalid;
 
 	payload = (const struct fscrypt_key *)ukp->data;
@@ -141,7 +109,7 @@ invalid:
 	return ERR_PTR(-ENOKEY);
 }
 
-/* Master key referenced by DIRECT_KEY policy */
+ 
 struct fscrypt_direct_key {
 	struct super_block		*dk_sb;
 	struct hlist_node		dk_node;
@@ -170,12 +138,7 @@ void fscrypt_put_direct_key(struct fscrypt_direct_key *dk)
 	free_direct_key(dk);
 }
 
-/*
- * Find/insert the given key into the fscrypt_direct_keys table.  If found, it
- * is returned with elevated refcount, and 'to_insert' is freed if non-NULL.  If
- * not found, 'to_insert' is inserted and returned if it's non-NULL; otherwise
- * NULL is returned.
- */
+ 
 static struct fscrypt_direct_key *
 find_or_insert_direct_key(struct fscrypt_direct_key *to_insert,
 			  const u8 *raw_key, const struct fscrypt_info *ci)
@@ -183,11 +146,7 @@ find_or_insert_direct_key(struct fscrypt_direct_key *to_insert,
 	unsigned long hash_key;
 	struct fscrypt_direct_key *dk;
 
-	/*
-	 * Careful: to avoid potentially leaking secret key bytes via timing
-	 * information, we must key the hash table by descriptor rather than by
-	 * raw key, and use crypto_memneq() when comparing raw keys.
-	 */
+	 
 
 	BUILD_BUG_ON(sizeof(hash_key) > FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	memcpy(&hash_key, ci->ci_policy.v1.master_key_descriptor,
@@ -204,7 +163,7 @@ find_or_insert_direct_key(struct fscrypt_direct_key *to_insert,
 			continue;
 		if (crypto_memneq(raw_key, dk->dk_raw, ci->ci_mode->keysize))
 			continue;
-		/* using existing tfm with same (descriptor, mode, raw_key) */
+		 
 		refcount_inc(&dk->dk_refcount);
 		spin_unlock(&fscrypt_direct_keys_lock);
 		free_direct_key(to_insert);
@@ -216,19 +175,19 @@ find_or_insert_direct_key(struct fscrypt_direct_key *to_insert,
 	return to_insert;
 }
 
-/* Prepare to encrypt directly using the master key in the given mode */
+ 
 static struct fscrypt_direct_key *
 fscrypt_get_direct_key(const struct fscrypt_info *ci, const u8 *raw_key)
 {
 	struct fscrypt_direct_key *dk;
 	int err;
 
-	/* Is there already a tfm for this key? */
+	 
 	dk = find_or_insert_direct_key(NULL, raw_key, ci);
 	if (dk)
 		return dk;
 
-	/* Nope, allocate one. */
+	 
 	dk = kzalloc(sizeof(*dk), GFP_KERNEL);
 	if (!dk)
 		return ERR_PTR(-ENOMEM);
@@ -249,7 +208,7 @@ err_free_dk:
 	return ERR_PTR(err);
 }
 
-/* v1 policy, DIRECT_KEY: use the master key directly */
+ 
 static int setup_v1_file_key_direct(struct fscrypt_info *ci,
 				    const u8 *raw_master_key)
 {
@@ -263,17 +222,14 @@ static int setup_v1_file_key_direct(struct fscrypt_info *ci,
 	return 0;
 }
 
-/* v1 policy, !DIRECT_KEY: derive the file's encryption key */
+ 
 static int setup_v1_file_key_derived(struct fscrypt_info *ci,
 				     const u8 *raw_master_key)
 {
 	u8 *derived_key;
 	int err;
 
-	/*
-	 * This cannot be a stack buffer because it will be passed to the
-	 * scatterlist crypto API during derive_key_aes().
-	 */
+	 
 	derived_key = kmalloc(ci->ci_mode->keysize, GFP_KERNEL);
 	if (!derived_key)
 		return -ENOMEM;

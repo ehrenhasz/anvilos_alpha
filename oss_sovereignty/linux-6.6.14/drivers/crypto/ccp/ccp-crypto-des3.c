@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) DES3 crypto API support
- *
- * Copyright (C) 2016,2017 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <ghook@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -45,9 +39,7 @@ static int ccp_des3_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	if (err)
 		return err;
 
-	/* It's not clear that there is any support for a keysize of 112.
-	 * If needed, the caller should make K1 == K3
-	 */
+	 
 	ctx->u.des3.type = CCP_DES3_TYPE_168;
 	ctx->u.des3.mode = alg->mode;
 	ctx->u.des3.key_len = key_len;
@@ -189,7 +181,7 @@ static int ccp_register_des3_alg(struct list_head *head,
 
 	ccp_alg->mode = def->mode;
 
-	/* Copy the defaults and override as necessary */
+	 
 	alg = &ccp_alg->alg;
 	*alg = *def->alg_defaults;
 	snprintf(alg->base.cra_name, CRYPTO_MAX_ALG_NAME, "%s", def->name);

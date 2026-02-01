@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel PCH/PCU SPI flash PCI driver.
- *
- * Copyright (C) 2016 - 2022, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -19,7 +14,7 @@ static bool intel_spi_pci_set_writeable(void __iomem *base, void *data)
 	struct pci_dev *pdev = data;
 	u32 bcr;
 
-	/* Try to make the chip read/write */
+	 
 	pci_read_config_dword(pdev, BCR, &bcr);
 	if (!(bcr & BCR_WPD)) {
 		bcr |= BCR_WPD;

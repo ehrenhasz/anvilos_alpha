@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CY8C95X0 20/40/60 pin I2C GPIO port expander with interrupt support
- *
- * Copyright (C) 2022 9elements GmbH
- * Authors: Patrick Rudolph <patrick.rudolph@9elements.com>
- *	    Naresh Solanki <Naresh.Solanki@9elements.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitmap.h>
@@ -28,7 +22,7 @@
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/pinctrl/pinmux.h>
 
-/* Fast access registers */
+ 
 #define CY8C95X0_INPUT		0x00
 #define CY8C95X0_OUTPUT		0x08
 #define CY8C95X0_INTSTATUS	0x10
@@ -37,14 +31,14 @@
 #define CY8C95X0_OUTPUT_(x)	(CY8C95X0_OUTPUT + (x))
 #define CY8C95X0_INTSTATUS_(x)	(CY8C95X0_INTSTATUS + (x))
 
-/* Port Select configures the port */
+ 
 #define CY8C95X0_PORTSEL	0x18
-/* Port settings, write PORTSEL first */
+ 
 #define CY8C95X0_INTMASK	0x19
 #define CY8C95X0_PWMSEL		0x1A
 #define CY8C95X0_INVERT		0x1B
 #define CY8C95X0_DIRECTION	0x1C
-/* Drive mode register change state on writing '1' */
+ 
 #define CY8C95X0_DRV_PU		0x1D
 #define CY8C95X0_DRV_PD		0x1E
 #define CY8C95X0_DRV_ODH	0x1F
@@ -101,14 +95,7 @@ static int cy8c95x0_acpi_get_irq(struct device *dev)
 
 static const struct dmi_system_id cy8c95x0_dmi_acpi_irq_info[] = {
 	{
-		/*
-		 * On Intel Galileo Gen 1 board the IRQ pin is provided
-		 * as an absolute number instead of being relative.
-		 * Since first controller (gpio-sch.c) and second
-		 * (gpio-dwapb.c) are at the fixed bases, we may safely
-		 * refer to the number in the global space to get an IRQ
-		 * out of it.
-		 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Galileo"),
 		},
@@ -122,28 +109,7 @@ static const struct dmi_system_id cy8c95x0_dmi_acpi_irq_info[] = {
 
 #define CY8C95X0_GPIO_MASK		GENMASK(7, 0)
 
-/**
- * struct cy8c95x0_pinctrl - driver data
- * @regmap:         Device's regmap
- * @irq_lock:       IRQ bus lock
- * @i2c_lock:       Mutex for the device internal mux register
- * @irq_mask:       I/O bits affected by interrupts
- * @irq_trig_raise: I/O bits affected by raising voltage level
- * @irq_trig_fall:  I/O bits affected by falling voltage level
- * @irq_trig_low:   I/O bits affected by a low voltage level
- * @irq_trig_high:  I/O bits affected by a high voltage level
- * @push_pull:      I/O bits configured as push pull driver
- * @shiftmask:      Mask used to compensate for Gport2 width
- * @nport:          Number of Gports in this chip
- * @gpio_chip:      gpiolib chip
- * @driver_data:    private driver data
- * @regulator:      Pointer to the regulator for the IC
- * @dev:            struct device
- * @pctldev:        pin controller device
- * @pinctrl_desc:   pin controller description
- * @name:           Chip controller name
- * @tpin:           Total number of pins
- */
+ 
 struct cy8c95x0_pinctrl {
 	struct regmap *regmap;
 	struct mutex irq_lock;
@@ -312,13 +278,13 @@ static int cy8c95x0_pinmux_direction(struct cy8c95x0_pinctrl *chip,
 
 static inline u8 cypress_get_port(struct cy8c95x0_pinctrl *chip, unsigned int pin)
 {
-	/* Account for GPORT2 which only has 4 bits */
+	 
 	return CY8C95X0_PIN_TO_OFFSET(pin) / BANK_SZ;
 }
 
 static int cypress_get_pin_mask(struct cy8c95x0_pinctrl *chip, unsigned int pin)
 {
-	/* Account for GPORT2 which only has 4 bits */
+	 
 	return BIT(CY8C95X0_PIN_TO_OFFSET(pin) % BANK_SZ);
 }
 
@@ -417,7 +383,7 @@ static int cy8c95x0_write_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 	int i, off = 0;
 	u8 bits;
 
-	/* Add the 4 bit gap of Gport2 */
+	 
 	bitmap_andnot(tmask, mask, chip->shiftmask, MAX_LINE);
 	bitmap_shift_left(tmask, tmask, 4, MAX_LINE);
 	bitmap_replace(tmask, tmask, mask, chip->shiftmask, BANK_SZ * 3);
@@ -428,13 +394,13 @@ static int cy8c95x0_write_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 
 	mutex_lock(&chip->i2c_lock);
 	for (i = 0; i < chip->nport; i++) {
-		/* Skip over unused banks */
+		 
 		bits = bitmap_get_value8(tmask, i * BANK_SZ);
 		if (!bits)
 			continue;
 
 		switch (reg) {
-		/* Muxed registers */
+		 
 		case CY8C95X0_INTMASK:
 		case CY8C95X0_PWMSEL:
 		case CY8C95X0_INVERT:
@@ -451,7 +417,7 @@ static int cy8c95x0_write_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 				goto out;
 			off = reg;
 			break;
-		/* Direct access registers */
+		 
 		case CY8C95X0_INPUT:
 		case CY8C95X0_OUTPUT:
 		case CY8C95X0_INTSTATUS:
@@ -488,7 +454,7 @@ static int cy8c95x0_read_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 	int i, off = 0;
 	u8 bits;
 
-	/* Add the 4 bit gap of Gport2 */
+	 
 	bitmap_andnot(tmask, mask, chip->shiftmask, MAX_LINE);
 	bitmap_shift_left(tmask, tmask, 4, MAX_LINE);
 	bitmap_replace(tmask, tmask, mask, chip->shiftmask, BANK_SZ * 3);
@@ -499,13 +465,13 @@ static int cy8c95x0_read_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 
 	mutex_lock(&chip->i2c_lock);
 	for (i = 0; i < chip->nport; i++) {
-		/* Skip over unused banks */
+		 
 		bits = bitmap_get_value8(tmask, i * BANK_SZ);
 		if (!bits)
 			continue;
 
 		switch (reg) {
-		/* Muxed registers */
+		 
 		case CY8C95X0_INTMASK:
 		case CY8C95X0_PWMSEL:
 		case CY8C95X0_INVERT:
@@ -522,7 +488,7 @@ static int cy8c95x0_read_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 				goto out;
 			off = reg;
 			break;
-		/* Direct access registers */
+		 
 		case CY8C95X0_INPUT:
 		case CY8C95X0_OUTPUT:
 		case CY8C95X0_INTSTATUS:
@@ -542,7 +508,7 @@ static int cy8c95x0_read_regs_mask(struct cy8c95x0_pinctrl *chip, int reg,
 		bitmap_set_value8(tval, read_val, i * BANK_SZ);
 	}
 
-	/* Fill the 4 bit gap of Gport2 */
+	 
 	bitmap_shift_right(tmp, tval, 4, MAX_LINE);
 	bitmap_replace(val, tmp, tval, chip->shiftmask, MAX_LINE);
 
@@ -569,7 +535,7 @@ static int cy8c95x0_gpio_direction_output(struct gpio_chip *gc,
 	u8 bit = cypress_get_pin_mask(chip, off);
 	int ret;
 
-	/* Set output level */
+	 
 	ret = regmap_write_bits(chip->regmap, outreg, bit, val ? bit : 0);
 	if (ret)
 		return ret;
@@ -587,12 +553,7 @@ static int cy8c95x0_gpio_get_value(struct gpio_chip *gc, unsigned int off)
 
 	ret = regmap_read(chip->regmap, inreg, &reg_val);
 	if (ret < 0) {
-		/*
-		 * NOTE:
-		 * Diagnostic already emitted; that's all we should
-		 * do unless gpio_*_value_cansleep() calls become different
-		 * from their nonsleeping siblings (and report faults).
-		 */
+		 
 		return 0;
 	}
 
@@ -652,7 +613,7 @@ static int cy8c95x0_gpio_get_pincfg(struct cy8c95x0_pinctrl *chip,
 
 	mutex_lock(&chip->i2c_lock);
 
-	/* Select port */
+	 
 	ret = regmap_write(chip->regmap, CY8C95X0_PORTSEL, port);
 	if (ret < 0)
 		goto out;
@@ -707,10 +668,7 @@ static int cy8c95x0_gpio_get_pincfg(struct cy8c95x0_pinctrl *chip,
 		ret = -ENOTSUPP;
 		goto out;
 	}
-	/*
-	 * Writing 1 to one of the drive mode registers will automatically
-	 * clear conflicting set bits in the other drive mode registers.
-	 */
+	 
 	ret = regmap_read(chip->regmap, reg, &reg_val);
 	if (reg_val & bit)
 		arg = 1;
@@ -737,7 +695,7 @@ static int cy8c95x0_gpio_set_pincfg(struct cy8c95x0_pinctrl *chip,
 
 	mutex_lock(&chip->i2c_lock);
 
-	/* Select port */
+	 
 	ret = regmap_write(chip->regmap, CY8C95X0_PORTSEL, port);
 	if (ret < 0)
 		goto out;
@@ -780,10 +738,7 @@ static int cy8c95x0_gpio_set_pincfg(struct cy8c95x0_pinctrl *chip,
 		ret = -ENOTSUPP;
 		goto out;
 	}
-	/*
-	 * Writing 1 to one of the drive mode registers will automatically
-	 * clear conflicting set bits in the other drive mode registers.
-	 */
+	 
 	ret = regmap_write_bits(chip->regmap, reg, bit, bit);
 
 out:
@@ -889,12 +844,12 @@ static void cy8c95x0_irq_bus_sync_unlock(struct irq_data *d)
 
 	cy8c95x0_write_regs_mask(chip, CY8C95X0_INTMASK, chip->irq_mask, ones);
 
-	/* Switch direction to input if needed */
+	 
 	cy8c95x0_read_regs_mask(chip, CY8C95X0_DIRECTION, reg_direction, chip->irq_mask);
 	bitmap_or(irq_mask, chip->irq_mask, reg_direction, MAX_LINE);
 	bitmap_complement(irq_mask, irq_mask, MAX_LINE);
 
-	/* Look for any newly setup interrupt */
+	 
 	cy8c95x0_write_regs_mask(chip, CY8C95X0_DIRECTION, ones, irq_mask);
 
 	mutex_unlock(&chip->irq_lock);
@@ -965,15 +920,15 @@ static bool cy8c95x0_irq_pending(struct cy8c95x0_pinctrl *chip, unsigned long *p
 
 	bitmap_fill(ones, MAX_LINE);
 
-	/* Read the current interrupt status from the device */
+	 
 	if (cy8c95x0_read_regs_mask(chip, CY8C95X0_INTSTATUS, trigger, ones))
 		return false;
 
-	/* Check latched inputs */
+	 
 	if (cy8c95x0_read_regs_mask(chip, CY8C95X0_INPUT, cur_stat, trigger))
 		return false;
 
-	/* Apply filter for rising/falling edge selection */
+	 
 	bitmap_replace(new_stat, chip->irq_trig_fall, chip->irq_trig_raise,
 		       cur_stat, MAX_LINE);
 
@@ -996,7 +951,7 @@ static irqreturn_t cy8c95x0_irq_handler(int irq, void *devid)
 
 	ret = 0;
 	for_each_set_bit(level, pending, MAX_LINE) {
-		/* Already accounted for 4bit gap in GPort2 */
+		 
 		nested_irq = irq_find_mapping(gc->irq.domain, level);
 
 		if (unlikely(nested_irq <= 0)) {
@@ -1106,7 +1061,7 @@ static int cy8c95x0_set_mode(struct cy8c95x0_pinctrl *chip, unsigned int off, bo
 	u8 bit = cypress_get_pin_mask(chip, off);
 	int ret;
 
-	/* Select port */
+	 
 	ret = regmap_write(chip->regmap, CY8C95X0_PORTSEL, port);
 	if (ret < 0)
 		return ret;
@@ -1128,7 +1083,7 @@ static int cy8c95x0_pinmux_mode(struct cy8c95x0_pinctrl *chip,
 	if (selector == 0)
 		return 0;
 
-	/* Set direction to output & set output to 1 so that PWM can work */
+	 
 	ret = regmap_write_bits(chip->regmap, CY8C95X0_DIRECTION, bit, bit);
 	if (ret < 0)
 		return ret;
@@ -1170,20 +1125,17 @@ static int cy8c95x0_pinmux_direction(struct cy8c95x0_pinctrl *chip,
 	u8 bit = cypress_get_pin_mask(chip, pin);
 	int ret;
 
-	/* Select port... */
+	 
 	ret = regmap_write(chip->regmap, CY8C95X0_PORTSEL, port);
 	if (ret)
 		return ret;
 
-	/* ...then direction */
+	 
 	ret = regmap_write_bits(chip->regmap, CY8C95X0_DIRECTION, bit, input ? bit : 0);
 	if (ret)
 		return ret;
 
-	/*
-	 * Disable driving the pin by forcing it to HighZ. Only setting
-	 * the direction register isn't sufficient in Push-Pull mode.
-	 */
+	 
 	if (input && test_bit(pin, chip->push_pull)) {
 		ret = regmap_write_bits(chip->regmap, CY8C95X0_DRV_HIZ, bit, bit);
 		if (ret)
@@ -1259,19 +1211,19 @@ static int cy8c95x0_irq_setup(struct cy8c95x0_pinctrl *chip, int irq)
 
 	bitmap_zero(pending_irqs, MAX_LINE);
 
-	/* Read IRQ status register to clear all pending interrupts */
+	 
 	ret = cy8c95x0_irq_pending(chip, pending_irqs);
 	if (ret) {
 		dev_err(chip->dev, "failed to clear irq status register\n");
 		return ret;
 	}
 
-	/* Mask all interrupts */
+	 
 	bitmap_fill(chip->irq_mask, MAX_LINE);
 
 	gpio_irq_chip_set_chip(girq, &cy8c95x0_irqchip);
 
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -1357,7 +1309,7 @@ static int cy8c95x0_probe(struct i2c_client *client)
 
 	chip->dev = &client->dev;
 
-	/* Set the device type */
+	 
 	chip->driver_data = (unsigned long)device_get_match_data(&client->dev);
 	if (!chip->driver_data)
 		chip->driver_data = i2c_match_id(cy8c95x0_id, client)->driver_data;
@@ -1396,7 +1348,7 @@ static int cy8c95x0_probe(struct i2c_client *client)
 		chip->regulator = reg;
 	}
 
-	/* bring the chip out of reset if reset pin is provided */
+	 
 	chip->gpio_reset = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(chip->gpio_reset)) {
 		ret = dev_err_probe(chip->dev, PTR_ERR(chip->gpio_reset),

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2018, 2020-2021 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 #include <linux/delay.h>
@@ -28,11 +26,7 @@
 
 #define PP_TIMEOUT_MAX_TRIALS	10
 
-/*
- * Tearcheck sync start and continue thresholds are empirically found
- * based on common panels In the future, may want to allow panels to override
- * these default values
- */
+ 
 #define DEFAULT_TEARCHECK_SYNC_THRESH_START	4
 #define DEFAULT_TEARCHECK_SYNC_THRESH_CONTINUE	4
 
@@ -63,7 +57,7 @@ static void _dpu_encoder_phys_cmd_update_intf_cfg(
 	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
 	ctl->ops.setup_intf_cfg(ctl, &intf_cfg);
 
-	/* setup which pp blk will connect to this intf */
+	 
 	if (test_bit(DPU_CTL_ACTIVE_CFG, &ctl->caps->features) && phys_enc->hw_intf->ops.bind_pingpong_blk)
 		phys_enc->hw_intf->ops.bind_pingpong_blk(
 				phys_enc->hw_intf,
@@ -87,7 +81,7 @@ static void dpu_encoder_phys_cmd_pp_tx_done_irq(void *arg, int irq_idx)
 		return;
 
 	DPU_ATRACE_BEGIN("pp_done_irq");
-	/* notify all synchronous clients first, then asynchronous clients */
+	 
 	dpu_encoder_frame_done_callback(phys_enc->parent, phys_enc, event);
 
 	spin_lock_irqsave(phys_enc->enc_spinlock, lock_flags);
@@ -98,7 +92,7 @@ static void dpu_encoder_phys_cmd_pp_tx_done_irq(void *arg, int irq_idx)
 					  phys_enc->hw_pp->idx - PINGPONG_0,
 					  new_cnt, event);
 
-	/* Signal any waiting atomic commit thread */
+	 
 	wake_up_all(&phys_enc->pending_kickoff_wq);
 	DPU_ATRACE_END("pp_done_irq");
 }
@@ -134,7 +128,7 @@ static void dpu_encoder_phys_cmd_ctl_start_irq(void *arg, int irq_idx)
 
 	atomic_add_unless(&phys_enc->pending_ctlstart_cnt, -1, 0);
 
-	/* Signal any waiting ctl start interrupt */
+	 
 	wake_up_all(&phys_enc->pending_kickoff_wq);
 	DPU_ATRACE_END("ctl_start_irq");
 }
@@ -191,7 +185,7 @@ static int _dpu_encoder_phys_cmd_handle_ppdone_timeout(
 		     atomic_read(&phys_enc->pending_kickoff_cnt),
 		     frame_event);
 
-	/* to avoid flooding, only log first time, and "dead" time */
+	 
 	if (do_log) {
 		DRM_ERROR("id:%d pp:%d kickoff timeout %d cnt %d koff_cnt %d\n",
 			  DRMID(drm_enc),
@@ -206,7 +200,7 @@ static int _dpu_encoder_phys_cmd_handle_ppdone_timeout(
 
 	atomic_add_unless(&phys_enc->pending_kickoff_cnt, -1, 0);
 
-	/* request a ctl reset before the next kickoff */
+	 
 	phys_enc->enable_state = DPU_ENC_ERR_NEEDS_HW_RESET;
 
 	dpu_encoder_frame_done_callback(phys_enc->parent, phys_enc, frame_event);
@@ -252,11 +246,11 @@ static int dpu_encoder_phys_cmd_control_vblank_irq(
 
 	refcount = atomic_read(&phys_enc->vblank_refcount);
 
-	/* Slave encoders don't report vblank */
+	 
 	if (!dpu_encoder_phys_cmd_is_master(phys_enc))
 		goto end;
 
-	/* protect against negative */
+	 
 	if (!enable && refcount == 0) {
 		ret = -EINVAL;
 		goto end;
@@ -355,15 +349,7 @@ static void dpu_encoder_phys_cmd_tearcheck_config(
 
 	dpu_kms = phys_enc->dpu_kms;
 
-	/*
-	 * TE default: dsi byte clock calculated base on 70 fps;
-	 * around 14 ms to complete a kickoff cycle if te disabled;
-	 * vclk_line base on 60 fps; write is faster than read;
-	 * init == start == rdptr;
-	 *
-	 * vsync_count is ratio of MDP VSYNC clock frequency to LCD panel
-	 * frequency divided by the no. of rows (lines) in the LCDpanel.
-	 */
+	 
 	vsync_hz = dpu_kms_get_clk_rate(dpu_kms, "vsync");
 	if (!vsync_hz) {
 		DPU_DEBUG_CMDENC(cmd_enc, "invalid - no vsync clock\n");
@@ -373,10 +359,7 @@ static void dpu_encoder_phys_cmd_tearcheck_config(
 	tc_cfg.vsync_count = vsync_hz /
 				(mode->vtotal * drm_mode_vrefresh(mode));
 
-	/*
-	 * Set the sync_cfg_height to twice vtotal so that if we lose a
-	 * TE event coming from the display TE pin we won't stall immediately
-	 */
+	 
 	tc_cfg.hw_vsync_mode = 1;
 	tc_cfg.sync_cfg_height = mode->vtotal * 2;
 	tc_cfg.vsync_init_val = mode->vdisplay;
@@ -428,10 +411,7 @@ static void _dpu_encoder_phys_cmd_pingpong_config(
 static bool dpu_encoder_phys_cmd_needs_single_flush(
 		struct dpu_encoder_phys *phys_enc)
 {
-	/**
-	 * we do separate flush for each CTL and let
-	 * CTL_START synchronize them
-	 */
+	 
 	return false;
 }
 
@@ -590,13 +570,10 @@ static void dpu_encoder_phys_cmd_prepare_for_kickoff(
 		      phys_enc->hw_pp->idx - PINGPONG_0,
 		      atomic_read(&phys_enc->pending_kickoff_cnt));
 
-	/*
-	 * Mark kickoff request as outstanding. If there are more than one,
-	 * outstanding, then we have to wait for the previous one to complete
-	 */
+	 
 	ret = _dpu_encoder_phys_cmd_wait_for_idle(phys_enc);
 	if (ret) {
-		/* force pending_kickoff_cnt 0 to discard failed kickoff */
+		 
 		atomic_set(&phys_enc->pending_kickoff_cnt, 0);
 		DRM_ERROR("failed wait_for_idle: id:%u ret:%d pp:%d\n",
 			  DRMID(phys_enc->parent), ret,
@@ -680,7 +657,7 @@ static int dpu_encoder_phys_cmd_wait_for_tx_complete(
 static int dpu_encoder_phys_cmd_wait_for_commit_done(
 		struct dpu_encoder_phys *phys_enc)
 {
-	/* only required for master controller */
+	 
 	if (!dpu_encoder_phys_cmd_is_master(phys_enc))
 		return 0;
 
@@ -699,7 +676,7 @@ static int dpu_encoder_phys_cmd_wait_for_vblank(
 
 	cmd_enc = to_dpu_encoder_phys_cmd(phys_enc);
 
-	/* only required for master controller */
+	 
 	if (!dpu_encoder_phys_cmd_is_master(phys_enc))
 		return rc;
 
@@ -720,10 +697,7 @@ static int dpu_encoder_phys_cmd_wait_for_vblank(
 static void dpu_encoder_phys_cmd_handle_post_kickoff(
 		struct dpu_encoder_phys *phys_enc)
 {
-	/**
-	 * re-enable external TE, either for the first time after enabling
-	 * or if disabled for Autorefresh
-	 */
+	 
 	_dpu_encoder_phys_cmd_connect_te(phys_enc, true);
 }
 

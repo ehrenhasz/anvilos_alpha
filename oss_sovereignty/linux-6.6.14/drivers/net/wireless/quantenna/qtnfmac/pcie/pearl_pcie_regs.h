@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015 Quantenna Communications */
+ 
+ 
 
 #ifndef __PEARL_PCIE_H
 #define __PEARL_PCIE_H
 
-/* Pearl PCIe HDP registers */
+ 
 #define PCIE_HDP_CTRL(base)			((base) + 0x2c00)
 #define PCIE_HDP_AXI_CTRL(base)			((base) + 0x2c04)
 #define PCIE_HDP_HOST_WR_DESC0(base)		((base) + 0x2c10)
@@ -68,7 +68,7 @@
 #define PCIE_HDP_TX_HOST_Q_RD_PTR(base)		((base) + 0x2d3c)
 #define PCIE_HDP_TX_HOST_Q_STS(base)		((base) + 0x2d40)
 
-/* Pearl PCIe HBM pool registers */
+ 
 #define PCIE_HHBM_CSR_REG(base)			((base) + 0x2e00)
 #define PCIE_HHBM_Q_BASE_REG(base)		((base) + 0x2e04)
 #define PCIE_HHBM_Q_LIMIT_REG(base)		((base) + 0x2e08)
@@ -86,14 +86,14 @@
 #define HBM_INT_STATUS(base)			((base) + 0x2f9c)
 #define PCIE_HHBM_POOL_CNFIG(base)		((base) + 0x2f9c)
 
-/* Pearl PCIe HBM bit field definitions */
+ 
 #define HHBM_CONFIG_SOFT_RESET			(BIT(8))
 #define HHBM_WR_REQ				(BIT(0))
 #define HHBM_RD_REQ				(BIT(1))
 #define HHBM_DONE				(BIT(31))
 #define HHBM_64BIT				(BIT(10))
 
-/* PCIe HDP interrupt status definition */
+ 
 #define PCIE_HDP_INT_EP_RXDMA		(BIT(0))
 #define PCIE_HDP_INT_HBM_UF		(BIT(1))
 #define PCIE_HDP_INT_RX_LEN_ERR		(BIT(2))
@@ -103,19 +103,19 @@
 #define PCIE_HDP_INT_EP_TXEMPTY		(BIT(15))
 #define PCIE_HDP_INT_IPC		(BIT(29))
 
-/* PCIe interrupt status definition */
+ 
 #define PCIE_INT_MSI			(BIT(24))
 #define PCIE_INT_INTX			(BIT(23))
 
-/* PCIe legacy INTx */
+ 
 #define PEARL_PCIE_CFG0_OFFSET		(0x6C)
 #define PEARL_ASSERT_INTX		(BIT(9))
 
-/* SYS CTL regs */
+ 
 #define QTN_PEARL_SYSCTL_LHOST_IRQ_OFFSET	(0x001C)
 
 #define QTN_PEARL_IPC_IRQ_WORD(irq)	(BIT(irq) | BIT(irq + 16))
 #define QTN_PEARL_LHOST_IPC_IRQ		(6)
 #define QTN_PEARL_LHOST_EP_RESET	(7)
 
-#endif /* __PEARL_PCIE_H */
+#endif  

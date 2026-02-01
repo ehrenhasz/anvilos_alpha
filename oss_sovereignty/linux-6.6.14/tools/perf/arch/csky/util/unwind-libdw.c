@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <elfutils/libdwfl.h>
 #include "perf_regs.h"

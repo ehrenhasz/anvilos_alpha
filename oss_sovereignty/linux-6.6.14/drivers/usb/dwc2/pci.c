@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * pci.c - DesignWare HS OTG Controller PCI driver
- *
- * Copyright (C) 2004-2013 Synopsys, Inc.
- */
 
-/*
- * Provides the initialization and cleanup entry points for the DWC_otg PCI
- * driver
- */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -33,12 +26,7 @@ struct dwc2_pci_glue {
 	struct platform_device *phy;
 };
 
-/**
- * dwc2_pci_remove() - Provides the cleanup entry points for the DWC_otg PCI
- * driver
- *
- * @pci: The programming view of DWC_otg PCI
- */
+ 
 static void dwc2_pci_remove(struct pci_dev *pci)
 {
 	struct dwc2_pci_glue *glue = pci_get_drvdata(pci);

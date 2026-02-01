@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018-2019 MediaTek Inc.
 
-/* A library for configuring path from GMAC/GDM to target PHY
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+
+ 
 
 #include <linux/phy.h>
 #include <linux/regmap.h>
@@ -233,7 +229,7 @@ static int mtk_eth_mux_setup(struct mtk_eth *eth, u64 path)
 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_MUX))
 		return 0;
 
-	/* Setup MUX in path fabric */
+	 
 	for (i = 0; i < ARRAY_SIZE(mtk_eth_muxc); i++) {
 		if (MTK_HAS_CAPS(eth->soc->caps, mtk_eth_muxc[i].cap_bit)) {
 			err = mtk_eth_muxc[i].set_path(eth, path);
@@ -256,7 +252,7 @@ int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id)
 	path = (mac_id == 0) ?  MTK_ETH_PATH_GMAC1_SGMII :
 				MTK_ETH_PATH_GMAC2_SGMII;
 
-	/* Setup proper MUXes along the path */
+	 
 	return mtk_eth_mux_setup(eth, path);
 }
 
@@ -270,7 +266,7 @@ int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id)
 	if (!path)
 		return -EINVAL;
 
-	/* Setup proper MUXes along the path */
+	 
 	return mtk_eth_mux_setup(eth, path);
 }
 
@@ -281,7 +277,7 @@ int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id)
 	path = (mac_id == 0) ?  MTK_ETH_PATH_GMAC1_RGMII :
 				MTK_ETH_PATH_GMAC2_RGMII;
 
-	/* Setup proper MUXes along the path */
+	 
 	return mtk_eth_mux_setup(eth, path);
 }
 

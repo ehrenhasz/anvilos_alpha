@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DOC: Cadence GEM PCI wrapper.
- *
- * Copyright (C) 2016 Cadence Design Systems - https://www.cadence.com
- *
- * Authors: Rafal Ozieblo <rafalo@cadence.com>
- *	    Bartosz Folta <bfolta@cadence.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -33,7 +26,7 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	struct macb_platform_data plat_data;
 	struct resource res[2];
 
-	/* enable pci device */
+	 
 	err = pcim_enable_device(pdev);
 	if (err < 0) {
 		dev_err(&pdev->dev, "Enabling PCI device has failed: %d", err);
@@ -42,7 +35,7 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_master(pdev);
 
-	/* set up resources */
+	 
 	memset(res, 0x00, sizeof(struct resource) * ARRAY_SIZE(res));
 	res[0].start = pci_resource_start(pdev, 0);
 	res[0].end = pci_resource_end(pdev, 0);
@@ -55,10 +48,10 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	dev_info(&pdev->dev, "EMAC physical base addr: %pa\n",
 		 &res[0].start);
 
-	/* set up macb platform data */
+	 
 	memset(&plat_data, 0, sizeof(plat_data));
 
-	/* initialize clocks */
+	 
 	plat_data.pclk = clk_register_fixed_rate(&pdev->dev, "pclk", NULL, 0,
 						 GEM_PCLK_RATE);
 	if (IS_ERR(plat_data.pclk)) {
@@ -73,7 +66,7 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_hclk_register;
 	}
 
-	/* set up platform device info */
+	 
 	memset(&plat_info, 0, sizeof(plat_info));
 	plat_info.parent = &pdev->dev;
 	plat_info.fwnode = pdev->dev.fwnode;
@@ -85,7 +78,7 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	plat_info.size_data = sizeof(plat_data);
 	plat_info.dma_mask = pdev->dma_mask;
 
-	/* register platform device */
+	 
 	plat_dev = platform_device_register_full(&plat_info);
 	if (IS_ERR(plat_dev)) {
 		err = PTR_ERR(plat_dev);

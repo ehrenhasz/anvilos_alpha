@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Helpers for matrix keyboard bindings
- *
- * Copyright (C) 2012 Google, Inc
- *
- * Author:
- *	Olof Johansson <olof@lixom.net>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -41,14 +34,7 @@ static bool matrix_keypad_map_key(struct input_dev *input_dev,
 	return true;
 }
 
-/**
- * matrix_keypad_parse_properties() - Read properties of matrix keypad
- *
- * @dev: Device containing properties
- * @rows: Returns number of matrix rows
- * @cols: Returns number of matrix columns
- * @return 0 if OK, <0 on error
- */
+ 
 int matrix_keypad_parse_properties(struct device *dev,
 				   unsigned int *rows, unsigned int *cols)
 {
@@ -120,33 +106,7 @@ out:
 	return retval;
 }
 
-/**
- * matrix_keypad_build_keymap - convert platform keymap into matrix keymap
- * @keymap_data: keymap supplied by the platform code
- * @keymap_name: name of device tree property containing keymap (if device
- *	tree support is enabled).
- * @rows: number of rows in target keymap array
- * @cols: number of cols in target keymap array
- * @keymap: expanded version of keymap that is suitable for use by
- * matrix keyboard driver
- * @input_dev: input devices for which we are setting up the keymap
- *
- * This function converts platform keymap (encoded with KEY() macro) into
- * an array of keycodes that is suitable for using in a standard matrix
- * keyboard driver that uses row and col as indices.
- *
- * If @keymap_data is not supplied and device tree support is enabled
- * it will attempt load the keymap from property specified by @keymap_name
- * argument (or "linux,keymap" if @keymap_name is %NULL).
- *
- * If @keymap is %NULL the function will automatically allocate managed
- * block of memory to store the keymap. This memory will be associated with
- * the parent device and automatically freed when device unbinds from the
- * driver.
- *
- * Callers are expected to set up input_dev->dev.parent before calling this
- * function.
- */
+ 
 int matrix_keypad_build_keymap(const struct matrix_keymap_data *keymap_data,
 			       const char *keymap_name,
 			       unsigned int rows, unsigned int cols,

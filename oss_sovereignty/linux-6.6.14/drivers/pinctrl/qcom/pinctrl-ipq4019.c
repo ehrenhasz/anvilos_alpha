@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -221,7 +219,7 @@ DECLARE_QCA_GPIO_PINS(99);
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			qca_mux_gpio, /* gpio mode */	\
+			qca_mux_gpio,  	\
 			qca_mux_##f1,			\
 			qca_mux_##f2,			\
 			qca_mux_##f3,			\

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell PXA27x family clocks
- *
- * Copyright (C) 2014 Robert Jarzmik
- *
- * Heavily inspired from former arch/arm/mach-pxa/clock.c.
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -50,8 +44,8 @@ enum {
 	 ((T)  ? CLKCFG_TURBO : 0))
 #define PXA27x_CCCR(A, L, N2) (A << 25 | N2 << 7 | L)
 
-/* Define the refresh period in mSec for the SDRAM and the number of rows */
-#define SDRAM_TREF	64	/* standard 64ms SDRAM */
+ 
+#define SDRAM_TREF	64	 
 
 static void __iomem *clk_regs;
 
@@ -67,11 +61,7 @@ static u32 mdrefr_dri(unsigned int freq_khz)
 	return (interval - 31) / 32;
 }
 
-/*
- * Get the clock frequency as reflected by CCSR and the turbo flag.
- * We assume these values have been applied via a fcs.
- * If info is not 0 we also display the current settings.
- */
+ 
 unsigned int pxa27x_get_clk_frequency_khz(int info)
 {
 	struct clk *clk;
@@ -162,32 +152,7 @@ static struct desc_clk_cken pxa27x_clocks[] __initdata = {
 
 };
 
-/*
- * PXA270 definitions
- *
- * For the PXA27x:
- * Control variables are A, L, 2N for CCCR; B, HT, T for CLKCFG.
- *
- * A = 0 => memory controller clock from table 3-7,
- * A = 1 => memory controller clock = system bus clock
- * Run mode frequency	= 13 MHz * L
- * Turbo mode frequency = 13 MHz * L * N
- * System bus frequency = 13 MHz * L / (B + 1)
- *
- * In CCCR:
- * A = 1
- * L = 16	  oscillator to run mode ratio
- * 2N = 6	  2 * (turbo mode to run mode ratio)
- *
- * In CCLKCFG:
- * B = 1	  Fast bus mode
- * HT = 0	  Half-Turbo mode
- * T = 1	  Turbo mode
- *
- * For now, just support some of the combinations in table 3-7 of
- * PXA27x Processor Family Developer's Manual to simplify frequency
- * change sequences.
- */
+ 
 static struct pxa2xx_freq pxa27x_freqs[] = {
 	{104000000, 104000, PXA27x_CCCR(1,  8, 2), 0, PXA27x_CLKCFG(1, 0, 1) },
 	{156000000, 104000, PXA27x_CCCR(1,  8, 3), 0, PXA27x_CLKCFG(1, 0, 1) },

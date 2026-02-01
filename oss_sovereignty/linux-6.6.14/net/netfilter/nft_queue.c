@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Eric Leblond <eric@regit.org>
- *
- * Development of this code partly funded by OISF
- * (http://www.openinfosecfoundation.org/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -84,7 +79,7 @@ static int nft_queue_validate(const struct nft_ctx *ctx,
 	case NFPROTO_INET:
 	case NFPROTO_BRIDGE:
 		break;
-	case NFPROTO_NETDEV: /* lacks okfn */
+	case NFPROTO_NETDEV:  
 		fallthrough;
 	default:
 		return -EOPNOTSUPP;

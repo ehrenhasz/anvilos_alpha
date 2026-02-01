@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <drm/drm_print.h>
@@ -58,30 +56,27 @@ static ssize_t dp_aux_write(struct dp_aux_private *aux,
 	else
 		len = msg->size;
 
-	/*
-	 * cmd fifo only has depth of 144 bytes
-	 * limit buf length to 128 bytes here
-	 */
+	 
 	if (len > AUX_CMD_FIFO_LEN - 4) {
 		DRM_ERROR("buf size greater than allowed size of 128 bytes\n");
 		return -EINVAL;
 	}
 
-	/* Pack cmd and write to HW */
-	data[0] = (msg->address >> 16) & 0xf;	/* addr[19:16] */
+	 
+	data[0] = (msg->address >> 16) & 0xf;	 
 	if (aux->read)
-		data[0] |=  BIT(4);		/* R/W */
+		data[0] |=  BIT(4);		 
 
-	data[1] = msg->address >> 8;		/* addr[15:8] */
-	data[2] = msg->address;			/* addr[7:0] */
-	data[3] = msg->size - 1;		/* len[7:0] */
+	data[1] = msg->address >> 8;		 
+	data[2] = msg->address;			 
+	data[3] = msg->size - 1;		 
 
 	for (i = 0; i < len + 4; i++) {
 		reg = (i < 4) ? data[i] : msgdata[i - 4];
 		reg <<= DP_AUX_DATA_OFFSET;
 		reg &= DP_AUX_DATA_MASK;
 		reg |= DP_AUX_DATA_WRITE;
-		/* index = 0, write */
+		 
 		if (i == 0)
 			reg |= DP_AUX_DATA_INDEX_WRITE;
 		aux->catalog->aux_data = reg;
@@ -91,8 +86,8 @@ static ssize_t dp_aux_write(struct dp_aux_private *aux,
 	dp_catalog_aux_clear_trans(aux->catalog, false);
 	dp_catalog_aux_clear_hw_interrupts(aux->catalog);
 
-	reg = 0; /* Transaction number == 1 */
-	if (!aux->native) { /* i2c */
+	reg = 0;  
+	if (!aux->native) {  
 		reg |= DP_AUX_TRANS_CTRL_I2C;
 
 		if (aux->no_send_addr)
@@ -139,15 +134,15 @@ static ssize_t dp_aux_cmd_fifo_rx(struct dp_aux_private *aux,
 
 	dp_catalog_aux_clear_trans(aux->catalog, true);
 
-	data = DP_AUX_DATA_INDEX_WRITE; /* INDEX_WRITE */
-	data |= DP_AUX_DATA_READ;  /* read */
+	data = DP_AUX_DATA_INDEX_WRITE;  
+	data |= DP_AUX_DATA_READ;   
 
 	aux->catalog->aux_data = data;
 	dp_catalog_aux_write_data(aux->catalog);
 
 	dp = msg->buffer;
 
-	/* discard first byte */
+	 
 	data = dp_catalog_aux_read_data(aux->catalog);
 
 	for (i = 0; i < len; i++) {
@@ -183,18 +178,7 @@ static void dp_aux_update_offset_and_segment(struct dp_aux_private *aux,
 		aux->offset = *data;
 }
 
-/**
- * dp_aux_transfer_helper() - helper function for EDID read transactions
- *
- * @aux: DP AUX private structure
- * @input_msg: input message from DRM upstream APIs
- * @send_seg: send the segment to sink
- *
- * return: void
- *
- * This helper function is used to fix EDID reads for non-compliant
- * sinks that do not handle the i2c middle-of-transaction flag correctly.
- */
+ 
 static void dp_aux_transfer_helper(struct dp_aux_private *aux,
 				   struct drm_dp_aux_msg *input_msg,
 				   bool send_seg)
@@ -210,12 +194,7 @@ static void dp_aux_transfer_helper(struct dp_aux_private *aux,
 	if (!i2c_mot || !i2c_read || (input_msg->size == 0))
 		return;
 
-	/*
-	 * Sending the segment value and EDID offset will be performed
-	 * from the DRM upstream EDID driver for each block. Avoid
-	 * duplicate AUX transactions related to this while reading the
-	 * first 16 bytes of each block.
-	 */
+	 
 	if (!(aux->offset % edid_block_length) || !send_seg)
 		goto end;
 
@@ -224,13 +203,7 @@ static void dp_aux_transfer_helper(struct dp_aux_private *aux,
 	aux->no_send_addr = true;
 	aux->no_send_stop = true;
 
-	/*
-	 * Send the segment address for every i2c read in which the
-	 * middle-of-tranaction flag is set. This is required to support EDID
-	 * reads of more than 2 blocks as the segment address is reset to 0
-	 * since we are overriding the middle-of-transaction flag for read
-	 * transactions.
-	 */
+	 
 
 	if (aux->segment) {
 		memset(&helper_msg, 0, sizeof(helper_msg));
@@ -240,13 +213,7 @@ static void dp_aux_transfer_helper(struct dp_aux_private *aux,
 		dp_aux_cmd_fifo_tx(aux, &helper_msg);
 	}
 
-	/*
-	 * Send the offset address for every i2c read in which the
-	 * middle-of-transaction flag is set. This will ensure that the sink
-	 * will update its read pointer and return the correct portion of the
-	 * EDID buffer in the subsequent i2c read trasntion triggered in the
-	 * native AUX transfer function.
-	 */
+	 
 	memset(&helper_msg, 0, sizeof(helper_msg));
 	helper_msg.address = input_msg->address;
 	helper_msg.buffer = &aux->offset;
@@ -256,14 +223,10 @@ static void dp_aux_transfer_helper(struct dp_aux_private *aux,
 end:
 	aux->offset += message_size;
 	if (aux->offset == 0x80 || aux->offset == 0x100)
-		aux->segment = 0x0; /* reset segment at end of block */
+		aux->segment = 0x0;  
 }
 
-/*
- * This function does the real job to process an AUX transaction.
- * It will call aux_reset() function to reset the AUX channel,
- * if the waiting is timeout.
- */
+ 
 static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
 			       struct drm_dp_aux_msg *msg)
 {
@@ -276,14 +239,14 @@ static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
 
 	aux->native = msg->request & (DP_AUX_NATIVE_WRITE & DP_AUX_NATIVE_READ);
 
-	/* Ignore address only message */
+	 
 	if (msg->size == 0 || !msg->buffer) {
 		msg->reply = aux->native ?
 			DP_AUX_NATIVE_REPLY_ACK : DP_AUX_I2C_REPLY_ACK;
 		return msg->size;
 	}
 
-	/* msg sanity check */
+	 
 	if ((aux->native && msg->size > aux_cmd_native_max) ||
 	    msg->size > aux_cmd_i2c_max) {
 		DRM_ERROR("%s: invalid msg: size(%zu), request(%x)\n",
@@ -297,14 +260,7 @@ static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
 		goto exit;
 	}
 
-	/*
-	 * For eDP it's important to give a reasonably long wait here for HPD
-	 * to be asserted. This is because the panel driver may have _just_
-	 * turned on the panel and then tried to do an AUX transfer. The panel
-	 * driver has no way of knowing when the panel is ready, so it's up
-	 * to us to wait. For DP we never get into this situation so let's
-	 * avoid ever doing the extra long wait for DP.
-	 */
+	 
 	if (aux->is_edp) {
 		ret = dp_catalog_aux_wait_for_hpd_connect_state(aux->catalog);
 		if (ret) {
@@ -334,7 +290,7 @@ static ssize_t dp_aux_transfer(struct drm_dp_aux *dp_aux,
 			if (!(aux->retry_cnt % MAX_AUX_RETRIES))
 				dp_catalog_aux_update_cfg(aux->catalog);
 		}
-		/* reset aux if link is in connected state */
+		 
 		if (dp_catalog_link_is_connected(aux->catalog))
 			dp_catalog_aux_reset(aux->catalog);
 	} else {
@@ -382,7 +338,7 @@ irqreturn_t dp_aux_isr(struct drm_dp_aux *dp_aux)
 
 	isr = dp_catalog_aux_get_irq(aux->catalog);
 
-	/* no interrupts pending, return immediately */
+	 
 	if (!isr)
 		return IRQ_NONE;
 
@@ -391,12 +347,7 @@ irqreturn_t dp_aux_isr(struct drm_dp_aux *dp_aux)
 		return IRQ_NONE;
 	}
 
-	/*
-	 * The logic below assumes only one error bit is set (other than "done"
-	 * which can apparently be set at the same time as some of the other
-	 * bits). Warn if more than one get set so we know we need to improve
-	 * the logic.
-	 */
+	 
 	if (hweight32(isr & ~DP_INTR_AUX_XFER_DONE) > 1)
 		DRM_WARN("Some DP AUX interrupts unhandled: %#010x\n", isr);
 

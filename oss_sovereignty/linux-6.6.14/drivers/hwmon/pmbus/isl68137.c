@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Renesas Digital Multiphase Voltage Regulators
- *
- * Copyright (c) 2017 Google Inc
- * Copyright (c) 2020 Renesas Electronics America
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon-sysfs.h>
@@ -97,13 +91,7 @@ static ssize_t isl68137_avs_enable_store_page(struct i2c_client *client,
 
 	op_val = result ? ISL68137_VOUT_AVS : 0;
 
-	/*
-	 * Writes to VOUT setpoint over AVSBus will persist after the VRM is
-	 * switched to PMBus control. Switching back to AVSBus control
-	 * restores this persisted setpoint rather than re-initializing to
-	 * PMBus VOUT_COMMAND. Writing VOUT_COMMAND first over PMBus before
-	 * enabling AVS control is the workaround.
-	 */
+	 
 	if (op_val == ISL68137_VOUT_AVS) {
 		rc = pmbus_read_word_data(client, page, 0xff,
 					  PMBUS_VOUT_COMMAND);
@@ -318,7 +306,7 @@ static const struct i2c_device_id raa_dmpvr_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, raa_dmpvr_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver isl68137_driver = {
 	.driver = {
 		   .name = "isl68137",

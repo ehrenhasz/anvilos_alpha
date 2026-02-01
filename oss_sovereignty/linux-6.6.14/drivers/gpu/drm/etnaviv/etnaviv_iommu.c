@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
@@ -96,14 +94,14 @@ static void etnaviv_iommuv1_restore(struct etnaviv_gpu *gpu,
 		etnaviv_iommu_context_put(gpu->mmu_context);
 	gpu->mmu_context = etnaviv_iommu_context_get(context);
 
-	/* set base addresses */
+	 
 	gpu_write(gpu, VIVS_MC_MEMORY_BASE_ADDR_RA, context->global->memory_base);
 	gpu_write(gpu, VIVS_MC_MEMORY_BASE_ADDR_FE, context->global->memory_base);
 	gpu_write(gpu, VIVS_MC_MEMORY_BASE_ADDR_TX, context->global->memory_base);
 	gpu_write(gpu, VIVS_MC_MEMORY_BASE_ADDR_PEZ, context->global->memory_base);
 	gpu_write(gpu, VIVS_MC_MEMORY_BASE_ADDR_PE, context->global->memory_base);
 
-	/* set page table address in MC */
+	 
 	pgtable = (u32)v1_context->pgtable_dma;
 
 	gpu_write(gpu, VIVS_MC_MMU_FE_PAGE_TABLE, pgtable);
@@ -131,11 +129,7 @@ etnaviv_iommuv1_context_alloc(struct etnaviv_iommu_global *global)
 
 	mutex_lock(&global->lock);
 
-	/*
-	 * MMUv1 does not support switching between different contexts without
-	 * a stop the world operation, so we only support a single shared
-	 * context with this version.
-	 */
+	 
 	if (global->v1.shared_context) {
 		context = global->v1.shared_context;
 		etnaviv_iommu_context_get(context);

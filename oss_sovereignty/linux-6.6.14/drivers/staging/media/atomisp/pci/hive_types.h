@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef _HRT_HIVE_TYPES_H
 #define _HRT_HIVE_TYPES_H
@@ -37,7 +25,7 @@
 #define HRTMAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-/* boolean data type */
+ 
 typedef unsigned int hive_bool;
 #define hive_false 0
 #define hive_true  1
@@ -61,17 +49,17 @@ typedef unsigned long long   hive_uint64;
 typedef hive_uint32 hrt_data;
 typedef hive_uint64 hrt_address;
 
-/* use 64 bit addresses in simulation, where possible */
+ 
 typedef hive_uint64  hive_sim_address;
 
-/* below is for csim, not for hrt, rename and move this elsewhere */
+ 
 
 typedef unsigned int hive_uint;
 typedef hive_uint32  hive_address;
 typedef hive_address hive_slave_address;
 typedef hive_address hive_mem_address;
 
-/* MMIO devices */
+ 
 typedef hive_uint    hive_mmio_id;
 typedef hive_mmio_id hive_slave_id;
 typedef hive_mmio_id hive_port_id;
@@ -95,14 +83,14 @@ typedef hive_uint hive_fu_id;
 typedef hive_uint hive_reg_file_id;
 typedef hive_uint hive_reg_id;
 
-/* Streaming devices */
+ 
 typedef hive_uint hive_outport_id;
 typedef hive_uint hive_inport_id;
 
 typedef hive_uint hive_msink_id;
 
-/* HRT specific */
+ 
 typedef char *hive_program;
 typedef char *hive_function;
 
-#endif /* _HRT_HIVE_TYPES_H */
+#endif  

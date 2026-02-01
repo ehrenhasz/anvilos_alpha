@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Keytable for remote controller of HiSilicon poplar board.
- *
- * Copyright (c) 2017 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/rc-map.h>

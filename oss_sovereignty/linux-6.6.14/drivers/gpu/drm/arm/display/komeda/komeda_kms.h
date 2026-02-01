@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+ 
+ 
 #ifndef _KOMEDA_KMS_H_
 #define _KOMEDA_KMS_H_
 
@@ -15,116 +11,84 @@
 #include <drm/drm_writeback.h>
 #include <drm/drm_print.h>
 
-/**
- * struct komeda_plane - komeda instance of drm_plane
- */
+ 
 struct komeda_plane {
-	/** @base: &drm_plane */
+	 
 	struct drm_plane base;
-	/**
-	 * @layer:
-	 *
-	 * represents available layer input pipelines for this plane.
-	 *
-	 * NOTE:
-	 * the layer is not for a specific Layer, but indicate a group of
-	 * Layers with same capabilities.
-	 */
+	 
 	struct komeda_layer *layer;
 };
 
-/**
- * struct komeda_plane_state
- *
- * The plane_state can be split into two data flow (left/right) and handled
- * by two layers &komeda_plane.layer and &komeda_plane.layer.right
- */
+ 
 struct komeda_plane_state {
-	/** @base: &drm_plane_state */
+	 
 	struct drm_plane_state base;
-	/** @zlist_node: zorder list node */
+	 
 	struct list_head zlist_node;
 
-	/** @layer_split: on/off layer_split */
+	 
 	u8 layer_split : 1;
 };
 
-/**
- * struct komeda_wb_connector
- */
+ 
 struct komeda_wb_connector {
-	/** @base: &drm_writeback_connector */
+	 
 	struct drm_writeback_connector base;
 
-	/** @wb_layer: represents associated writeback pipeline of komeda */
+	 
 	struct komeda_layer *wb_layer;
 };
 
-/**
- * struct komeda_crtc
- */
+ 
 struct komeda_crtc {
-	/** @base: &drm_crtc */
+	 
 	struct drm_crtc base;
-	/** @master: only master has display output */
+	 
 	struct komeda_pipeline *master;
-	/**
-	 * @slave: optional
-	 *
-	 * Doesn't have its own display output, the handled data flow will
-	 * merge into the master.
-	 */
+	 
 	struct komeda_pipeline *slave;
 
-	/** @slave_planes: komeda slave planes mask */
+	 
 	u32 slave_planes;
 
-	/** @wb_conn: komeda write back connector */
+	 
 	struct komeda_wb_connector *wb_conn;
 
-	/** @disable_done: this flip_done is for tracing the disable */
+	 
 	struct completion *disable_done;
 
-	/** @encoder: encoder at the end of the pipeline */
+	 
 	struct drm_encoder encoder;
 };
 
-/**
- * struct komeda_crtc_state
- */
+ 
 struct komeda_crtc_state {
-	/** @base: &drm_crtc_state */
+	 
 	struct drm_crtc_state base;
 
-	/* private properties */
+	 
 
-	/* computed state which are used by validate/check */
-	/**
-	 * @affected_pipes:
-	 * the affected pipelines in once display instance
-	 */
+	 
+	 
 	u32 affected_pipes;
-	/**
-	 * @active_pipes:
-	 * the active pipelines in once display instance
-	 */
+	 
 	u32 active_pipes;
 
-	/** @clock_ratio: ratio of (aclk << 32)/pxlclk */
+	 
 	u64 clock_ratio;
 
-	/** @max_slave_zorder: the maximum of slave zorder */
+	 
 	u32 max_slave_zorder;
 };
 
-/** struct komeda_kms_dev - for gather KMS related things */
+ 
 struct komeda_kms_dev {
-	/** @base: &drm_device */
+	 
 	struct drm_device base;
 
-	/** @n_crtcs: valid numbers of crtcs in &komeda_kms_dev.crtcs */
+	 
 	int n_crtcs;
-	/** @crtcs: crtcs list */
+	 
 	struct komeda_crtc crtcs[KOMEDA_MAX_PIPELINES];
 };
 
@@ -191,4 +155,4 @@ void komeda_crtc_flush_and_wait_for_flip_done(struct komeda_crtc *kcrtc,
 struct komeda_kms_dev *komeda_kms_attach(struct komeda_dev *mdev);
 void komeda_kms_detach(struct komeda_kms_dev *kms);
 
-#endif /*_KOMEDA_KMS_H_*/
+#endif  

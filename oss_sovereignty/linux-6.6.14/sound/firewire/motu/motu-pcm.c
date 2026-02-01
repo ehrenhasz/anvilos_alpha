@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-pcm.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include <sound/pcm_params.h>
 #include "motu.h"
@@ -152,9 +148,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		goto err_locked;
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if ((src != SND_MOTU_CLOCK_SOURCE_INTERNAL &&
 	     src != SND_MOTU_CLOCK_SOURCE_SPH) ||
 	    (motu->substreams_counter > 0 && d->events_per_period > 0)) {

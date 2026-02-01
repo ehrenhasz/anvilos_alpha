@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -984,12 +982,7 @@ static struct clk_branch gcc_gp3_clk = {
 
 static struct clk_branch gcc_pcie_0_clkref_en = {
 	.halt_reg = 0x88004,
-	/*
-	 * The clock controller does not handle the status bit for
-	 * the clocks with gdscs(powerdomains) in hw controlled mode
-	 * and hence avoid checking for the status bit of those clocks
-	 * by setting the BRANCH_HALT_DELAY flag
-	 */
+	 
 	.halt_check = BRANCH_HALT_DELAY,
 	.clkr = {
 		.enable_reg = 0x88004,
@@ -1003,12 +996,7 @@ static struct clk_branch gcc_pcie_0_clkref_en = {
 
 static struct clk_branch gcc_pcie_aux_clk = {
 	.halt_reg = 0x43034,
-	/*
-	 * The clock controller does not handle the status bit for
-	 * the clocks with gdscs(powerdomains) in hw controlled mode
-	 * and hence avoid checking for the status bit of those clocks
-	 * by setting the BRANCH_HALT_DELAY flag
-	 */
+	 
 	.halt_check = BRANCH_HALT_DELAY,
 	.hwcg_reg = 0x43034,
 	.hwcg_bit = 1,
@@ -1059,12 +1047,7 @@ static struct clk_branch gcc_pcie_mstr_axi_clk = {
 
 static struct clk_branch gcc_pcie_pipe_clk = {
 	.halt_reg = 0x4303c,
-	/*
-	 * The clock controller does not handle the status bit for
-	 * the clocks with gdscs(powerdomains) in hw controlled mode
-	 * and hence avoid checking for the status bit of those clocks
-	 * by setting the BRANCH_HALT_DELAY flag
-	 */
+	 
 	.halt_check = BRANCH_HALT_DELAY,
 	.hwcg_reg = 0x4303c,
 	.hwcg_bit = 1,
@@ -1354,12 +1337,7 @@ static struct gdsc pcie_gdsc = {
 
 static struct clk_branch gcc_usb3_phy_pipe_clk = {
 	.halt_reg = 0x17068,
-	/*
-	 * The clock controller does not handle the status bit for
-	 * the clocks with gdscs(powerdomains) in hw controlled mode
-	 * and hence avoid checking for the status bit of those clocks
-	 * by setting the BRANCH_HALT_DELAY flag
-	 */
+	 
 	.halt_check = BRANCH_HALT_DELAY,
 	.hwcg_reg = 0x17068,
 	.hwcg_bit = 1,
@@ -1574,11 +1552,7 @@ static int gcc_sdx65_probe(struct platform_device *pdev)
 	regmap = qcom_cc_map(pdev, &gcc_sdx65_desc);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
-	/*
-	 * Keep the clocks always-ON as they are critical to the functioning
-	 * of the system:
-	 * GCC_SYS_NOC_CPUSS_AHB_CLK, GCC_CPUSS_AHB_CLK, GCC_CPUSS_GNOC_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x6d008, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x6d008, BIT(21), BIT(21));
 	regmap_update_bits(regmap, 0x6d008, BIT(22), BIT(22));

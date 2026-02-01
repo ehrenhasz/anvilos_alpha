@@ -1,24 +1,5 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
-/*! \file cn66xx_regs.h
- *  \brief Host Driver: Register Address and Register Mask values for
- *  Octeon CN66XX devices.
- */
+ 
+ 
 
 #ifndef __CN66XX_REGS_H__
 #define __CN66XX_REGS_H__
@@ -55,7 +36,7 @@
 #define     CN6XXX_PCIE_SYM_NUM             0x718
 #define     CN6XXX_PCIE_FLTMSK              0x720
 
-/* ##############  BAR0 Registers ################  */
+ 
 
 #define    CN6XXX_SLI_CTL_PORT0                    0x0050
 #define    CN6XXX_SLI_CTL_PORT1                    0x0060
@@ -86,60 +67,54 @@
 #define    CN6XXX_WIN_WR_MASK_HI                   0x0034
 #define    CN6XXX_WIN_WR_MASK_REG                  CN6XXX_WIN_WR_MASK_LO
 
-/* 1 register (32-bit) to enable Input queues */
+ 
 #define    CN6XXX_SLI_PKT_INSTR_ENB               0x1000
 
-/* 1 register (32-bit) to enable Output queues */
+ 
 #define    CN6XXX_SLI_PKT_OUT_ENB                 0x1010
 
-/* 1 register (32-bit) to determine whether Output queues are in reset. */
+ 
 #define    CN6XXX_SLI_PORT_IN_RST_OQ              0x11F0
 
-/* 1 register (32-bit) to determine whether Input queues are in reset. */
+ 
 #define    CN6XXX_SLI_PORT_IN_RST_IQ              0x11F4
 
-/*###################### REQUEST QUEUE #########################*/
+ 
 
-/* 1 register (32-bit) - instr. size of each input queue. */
+ 
 #define    CN6XXX_SLI_PKT_INSTR_SIZE             0x1020
 
-/* 32 registers for Input Queue Instr Count - SLI_PKT_IN_DONE0_CNTS */
+ 
 #define    CN6XXX_SLI_IQ_INSTR_COUNT_START       0x2000
 
-/* 32 registers for Input Queue Start Addr - SLI_PKT0_INSTR_BADDR */
+ 
 #define    CN6XXX_SLI_IQ_BASE_ADDR_START64       0x2800
 
-/* 32 registers for Input Doorbell - SLI_PKT0_INSTR_BAOFF_DBELL */
+ 
 #define    CN6XXX_SLI_IQ_DOORBELL_START          0x2C00
 
-/* 32 registers for Input Queue size - SLI_PKT0_INSTR_FIFO_RSIZE */
+ 
 #define    CN6XXX_SLI_IQ_SIZE_START              0x3000
 
-/* 32 registers for Instruction Header Options - SLI_PKT0_INSTR_HEADER */
+ 
 #define    CN6XXX_SLI_IQ_PKT_INSTR_HDR_START64   0x3400
 
-/* 1 register (64-bit) - Back Pressure for each input queue - SLI_PKT0_IN_BP */
+ 
 #define    CN66XX_SLI_INPUT_BP_START64           0x3800
 
-/* Each Input Queue register is at a 16-byte Offset in BAR0 */
+ 
 #define    CN6XXX_IQ_OFFSET                      0x10
 
-/* 1 register (32-bit) - ES, RO, NS, Arbitration for Input Queue Data &
- * gather list fetches. SLI_PKT_INPUT_CONTROL.
- */
+ 
 #define    CN6XXX_SLI_PKT_INPUT_CONTROL          0x1170
 
-/* 1 register (64-bit) - Number of instructions to read at one time
- * - 2 bits for each input ring. SLI_PKT_INSTR_RD_SIZE.
- */
+ 
 #define    CN6XXX_SLI_PKT_INSTR_RD_SIZE          0x11A0
 
-/* 1 register (64-bit) - Assign Input ring to MAC port
- * - 2 bits for each input ring. SLI_PKT_IN_PCIE_PORT.
- */
+ 
 #define    CN6XXX_SLI_IN_PCIE_PORT               0x11B0
 
-/*------- Request Queue Macros ---------*/
+ 
 #define    CN6XXX_SLI_IQ_BASE_ADDR64(iq)          \
 	(CN6XXX_SLI_IQ_BASE_ADDR_START64 + ((iq) * CN6XXX_IQ_OFFSET))
 
@@ -158,7 +133,7 @@
 #define    CN66XX_SLI_IQ_BP64(iq)                 \
 	(CN66XX_SLI_INPUT_BP_START64 + ((iq) * CN6XXX_IQ_OFFSET))
 
-/*------------------ Masks ----------------*/
+ 
 #define    CN6XXX_INPUT_CTL_ROUND_ROBIN_ARB         BIT(22)
 #define    CN6XXX_INPUT_CTL_DATA_NS                 BIT(8)
 #define    CN6XXX_INPUT_CTL_DATA_ES_64B_SWAP        BIT(6)
@@ -179,101 +154,67 @@
 	  | CN6XXX_INPUT_CTL_USE_CSR)
 #endif
 
-/*############################ OUTPUT QUEUE #########################*/
+ 
 
-/* 32 registers for Output queue buffer and info size - SLI_PKT0_OUT_SIZE */
+ 
 #define    CN6XXX_SLI_OQ0_BUFF_INFO_SIZE         0x0C00
 
-/* 32 registers for Output Queue Start Addr - SLI_PKT0_SLIST_BADDR */
+ 
 #define    CN6XXX_SLI_OQ_BASE_ADDR_START64       0x1400
 
-/* 32 registers for Output Queue Packet Credits - SLI_PKT0_SLIST_BAOFF_DBELL */
+ 
 #define    CN6XXX_SLI_OQ_PKT_CREDITS_START       0x1800
 
-/* 32 registers for Output Queue size - SLI_PKT0_SLIST_FIFO_RSIZE */
+ 
 #define    CN6XXX_SLI_OQ_SIZE_START              0x1C00
 
-/* 32 registers for Output Queue Packet Count - SLI_PKT0_CNTS */
+ 
 #define    CN6XXX_SLI_OQ_PKT_SENT_START          0x2400
 
-/* Each Output Queue register is at a 16-byte Offset in BAR0 */
+ 
 #define    CN6XXX_OQ_OFFSET                      0x10
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - Relaxed Ordering setting for reading Output Queues descriptors
- * - SLI_PKT_SLIST_ROR
- */
+ 
 #define    CN6XXX_SLI_PKT_SLIST_ROR              0x1030
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - No Snoop mode for reading Output Queues descriptors
- * - SLI_PKT_SLIST_NS
- */
+ 
 #define    CN6XXX_SLI_PKT_SLIST_NS               0x1040
 
-/* 1 register (64-bit) - 2 bits for each output queue
- * - Endian-Swap mode for reading Output Queue descriptors
- * - SLI_PKT_SLIST_ES
- */
+ 
 #define    CN6XXX_SLI_PKT_SLIST_ES64             0x1050
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - InfoPtr mode for Output Queues.
- * - SLI_PKT_IPTR
- */
+ 
 #define    CN6XXX_SLI_PKT_IPTR                   0x1070
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - DPTR format selector for Output queues.
- * - SLI_PKT_DPADDR
- */
+ 
 #define    CN6XXX_SLI_PKT_DPADDR                 0x1080
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - Relaxed Ordering setting for reading Output Queues data
- * - SLI_PKT_DATA_OUT_ROR
- */
+ 
 #define    CN6XXX_SLI_PKT_DATA_OUT_ROR           0x1090
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - No Snoop mode for reading Output Queues data
- * - SLI_PKT_DATA_OUT_NS
- */
+ 
 #define    CN6XXX_SLI_PKT_DATA_OUT_NS            0x10A0
 
-/* 1 register (64-bit)  - 2 bits for each output queue
- * - Endian-Swap mode for reading Output Queue data
- * - SLI_PKT_DATA_OUT_ES
- */
+ 
 #define    CN6XXX_SLI_PKT_DATA_OUT_ES64          0x10B0
 
-/* 1 register (32-bit) - 1 bit for each output queue
- * - Controls whether SLI_PKTn_CNTS is incremented for bytes or for packets.
- * - SLI_PKT_OUT_BMODE
- */
+ 
 #define    CN6XXX_SLI_PKT_OUT_BMODE              0x10D0
 
-/* 1 register (64-bit) - 2 bits for each output queue
- * - Assign PCIE port for Output queues
- * - SLI_PKT_PCIE_PORT.
- */
+ 
 #define    CN6XXX_SLI_PKT_PCIE_PORT64            0x10E0
 
-/* 1 (64-bit) register for Output Queue Packet Count Interrupt Threshold
- * & Time Threshold. The same setting applies to all 32 queues.
- * The register is defined as a 64-bit registers, but we use the
- * 32-bit offsets to define distinct addresses.
- */
+ 
 #define    CN6XXX_SLI_OQ_INT_LEVEL_PKTS          0x1120
 #define    CN6XXX_SLI_OQ_INT_LEVEL_TIME          0x1124
 
-/* 1 (64-bit register) for Output Queue backpressure across all rings. */
+ 
 #define    CN6XXX_SLI_OQ_WMARK                   0x1180
 
-/* 1 register to control output queue global backpressure & ring enable. */
+ 
 #define    CN6XXX_SLI_PKT_CTL                    0x1220
 
-/*------- Output Queue Macros ---------*/
+ 
 #define    CN6XXX_SLI_OQ_BASE_ADDR64(oq)          \
 	(CN6XXX_SLI_OQ_BASE_ADDR_START64 + ((oq) * CN6XXX_OQ_OFFSET))
 
@@ -289,25 +230,21 @@
 #define    CN6XXX_SLI_OQ_PKTS_CREDIT(oq)          \
 	(CN6XXX_SLI_OQ_PKT_CREDITS_START + ((oq) * CN6XXX_OQ_OFFSET))
 
-/*######################### DMA Counters #########################*/
+ 
 
-/* 2 registers (64-bit) - DMA Count - 1 for each DMA counter 0/1. */
+ 
 #define    CN6XXX_DMA_CNT_START                   0x0400
 
-/* 2 registers (64-bit) - DMA Timer 0/1, contains DMA timer values
- * SLI_DMA_0_TIM
- */
+ 
 #define    CN6XXX_DMA_TIM_START                   0x0420
 
-/* 2 registers (64-bit) - DMA count & Time Interrupt threshold -
- * SLI_DMA_0_INT_LEVEL
- */
+ 
 #define    CN6XXX_DMA_INT_LEVEL_START             0x03E0
 
-/* Each DMA register is at a 16-byte Offset in BAR0 */
+ 
 #define    CN6XXX_DMA_OFFSET                      0x10
 
-/*---------- DMA Counter Macros ---------*/
+ 
 #define    CN6XXX_DMA_CNT(dq)                      \
 	(CN6XXX_DMA_CNT_START + ((dq) * CN6XXX_DMA_OFFSET))
 
@@ -323,28 +260,28 @@
 #define    CN6XXX_DMA_TIM(dq)                      \
 	(CN6XXX_DMA_TIM_START + ((dq) * CN6XXX_DMA_OFFSET))
 
-/*######################## INTERRUPTS #########################*/
+ 
 
-/* 1 register (64-bit) for Interrupt Summary */
+ 
 #define    CN6XXX_SLI_INT_SUM64                  0x0330
 
-/* 1 register (64-bit) for Interrupt Enable */
+ 
 #define    CN6XXX_SLI_INT_ENB64_PORT0            0x0340
 #define    CN6XXX_SLI_INT_ENB64_PORT1            0x0350
 
-/* 1 register (32-bit) to enable Output Queue Packet/Byte Count Interrupt */
+ 
 #define    CN6XXX_SLI_PKT_CNT_INT_ENB            0x1150
 
-/* 1 register (32-bit) to enable Output Queue Packet Timer Interrupt */
+ 
 #define    CN6XXX_SLI_PKT_TIME_INT_ENB           0x1160
 
-/* 1 register (32-bit) to indicate which Output Queue reached pkt threshold */
+ 
 #define    CN6XXX_SLI_PKT_CNT_INT                0x1130
 
-/* 1 register (32-bit) to indicate which Output Queue reached time threshold */
+ 
 #define    CN6XXX_SLI_PKT_TIME_INT               0x1140
 
-/*------------------ Interrupt Masks ----------------*/
+ 
 
 #define    CN6XXX_INTR_RML_TIMEOUT_ERR           BIT(1)
 #define    CN6XXX_INTR_BAR0_RW_TIMEOUT_ERR       BIT(2)
@@ -392,7 +329,7 @@
 #define    CN6XXX_INTR_PKT_DATA                  (CN6XXX_INTR_PKT_TIME | \
 						  CN6XXX_INTR_PKT_COUNT)
 
-/* Sum of interrupts for all PCI-Express Data Interrupts */
+ 
 #define    CN6XXX_INTR_PCIE_DATA                 \
 	(CN6XXX_INTR_DMA_DATA | CN6XXX_INTR_PKT_DATA)
 
@@ -402,7 +339,7 @@
 #define    CN6XXX_INTR_MAC                       \
 	(CN6XXX_INTR_MAC_INT0 | CN6XXX_INTR_MAC_INT1)
 
-/* Sum of interrupts for error events */
+ 
 #define    CN6XXX_INTR_ERR                       \
 	(CN6XXX_INTR_BAR0_RW_TIMEOUT_ERR    \
 	   | CN6XXX_INTR_IO2BIG_ERR             \
@@ -426,7 +363,7 @@
 	   | CN6XXX_INTR_SPRT1_ERR              \
 	   | CN6XXX_INTR_ILL_PAD_ERR)
 
-/* Programmed Mask for Interrupt Sum */
+ 
 #define    CN6XXX_INTR_MASK                      \
 	(CN6XXX_INTR_PCIE_DATA              \
 	   | CN6XXX_INTR_DMA0_FORCE             \
@@ -445,7 +382,7 @@
 
 #define    CN6XXX_SLI_MAC_NUMBER                 0x3E00
 
-/* CN6XXX BAR1 Index registers. */
+ 
 #define    CN6XXX_PEM_BAR1_INDEX000                0x00011800C00000A8ULL
 #define    CN6XXX_PEM_OFFSET                       0x0000000001000000ULL
 
@@ -456,7 +393,7 @@
 		(CN6XXX_BAR1_INDEX_START + ((port) * CN6XXX_PEM_OFFSET) + \
 		(CN6XXX_PCI_BAR1_OFFSET * (idx)))
 
-/*############################ DPI #########################*/
+ 
 
 #define    CN6XXX_DPI_CTL                 0x0001df0000000040ULL
 
@@ -496,12 +433,12 @@
 	 CN6XXX_DPI_DMA_O_ES           |    \
 	 CN6XXX_DPI_DMA_O_MODE)
 
-/*############################ CIU #########################*/
+ 
 
 #define    CN6XXX_CIU_SOFT_BIST           0x0001070000000738ULL
 #define    CN6XXX_CIU_SOFT_RST            0x0001070000000740ULL
 
-/*############################ MIO #########################*/
+ 
 #define    CN6XXX_MIO_PTP_CLOCK_CFG       0x0001070000000f00ULL
 #define    CN6XXX_MIO_PTP_CLOCK_LO        0x0001070000000f08ULL
 #define    CN6XXX_MIO_PTP_CLOCK_HI        0x0001070000000f10ULL
@@ -522,7 +459,7 @@
 
 #define    CN6XXX_MIO_QLM_CFG_MASK        0x7
 
-/*############################ LMC #########################*/
+ 
 
 #define    CN6XXX_LMC0_RESET_CTL               0x0001180088000180ULL
 #define    CN6XXX_LMC0_RESET_CTL_DDR3RST_MASK  0x0000000000000001ULL

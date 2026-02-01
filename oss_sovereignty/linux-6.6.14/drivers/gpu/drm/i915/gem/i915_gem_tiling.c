@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2008 Intel Corporation
- */
+ 
 
 #include <linux/string.h>
 #include <linux/bitops.h>
@@ -15,43 +11,9 @@
 #include "i915_gem_tiling.h"
 #include "i915_reg.h"
 
-/**
- * DOC: buffer object tiling
- *
- * i915_gem_set_tiling_ioctl() and i915_gem_get_tiling_ioctl() is the userspace
- * interface to declare fence register requirements.
- *
- * In principle GEM doesn't care at all about the internal data layout of an
- * object, and hence it also doesn't care about tiling or swizzling. There's two
- * exceptions:
- *
- * - For X and Y tiling the hardware provides detilers for CPU access, so called
- *   fences. Since there's only a limited amount of them the kernel must manage
- *   these, and therefore userspace must tell the kernel the object tiling if it
- *   wants to use fences for detiling.
- * - On gen3 and gen4 platforms have a swizzling pattern for tiled objects which
- *   depends upon the physical page frame number. When swapping such objects the
- *   page frame number might change and the kernel must be able to fix this up
- *   and hence now the tiling. Note that on a subset of platforms with
- *   asymmetric memory channel population the swizzling pattern changes in an
- *   unknown way, and for those the kernel simply forbids swapping completely.
- *
- * Since neither of this applies for new tiling layouts on modern platforms like
- * W, Ys and Yf tiling GEM only allows object tiling to be set to X or Y tiled.
- * Anything else can be handled in userspace entirely without the kernel's
- * invovlement.
- */
+ 
 
-/**
- * i915_gem_fence_size - required global GTT size for a fence
- * @i915: i915 device
- * @size: object size
- * @tiling: tiling mode
- * @stride: tiling stride
- *
- * Return the required global GTT size for a fence (view of a tiled object),
- * taking into account potential fence register mapping.
- */
+ 
 u32 i915_gem_fence_size(struct drm_i915_private *i915,
 			u32 size, unsigned int tiling, unsigned int stride)
 {
@@ -70,7 +32,7 @@ u32 i915_gem_fence_size(struct drm_i915_private *i915,
 		return roundup(size, stride);
 	}
 
-	/* Previous chips need a power-of-two fence region when tiling */
+	 
 	if (GRAPHICS_VER(i915) == 3)
 		ggtt_size = 1024*1024;
 	else
@@ -82,39 +44,24 @@ u32 i915_gem_fence_size(struct drm_i915_private *i915,
 	return ggtt_size;
 }
 
-/**
- * i915_gem_fence_alignment - required global GTT alignment for a fence
- * @i915: i915 device
- * @size: object size
- * @tiling: tiling mode
- * @stride: tiling stride
- *
- * Return the required global GTT alignment for a fence (a view of a tiled
- * object), taking into account potential fence register mapping.
- */
+ 
 u32 i915_gem_fence_alignment(struct drm_i915_private *i915, u32 size,
 			     unsigned int tiling, unsigned int stride)
 {
 	GEM_BUG_ON(!size);
 
-	/*
-	 * Minimum alignment is 4k (GTT page size), but might be greater
-	 * if a fence register is needed for the object.
-	 */
+	 
 	if (tiling == I915_TILING_NONE)
 		return I915_GTT_MIN_ALIGNMENT;
 
 	if (GRAPHICS_VER(i915) >= 4)
 		return I965_FENCE_PAGE;
 
-	/*
-	 * Previous chips need to be aligned to the size of the smallest
-	 * fence register that can contain the object.
-	 */
+	 
 	return i915_gem_fence_size(i915, size, tiling, stride);
 }
 
-/* Check pitch constraints for all chips & tiling formats */
+ 
 static bool
 i915_tiling_ok(struct drm_i915_gem_object *obj,
 	       unsigned int tiling, unsigned int stride)
@@ -122,16 +69,15 @@ i915_tiling_ok(struct drm_i915_gem_object *obj,
 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
 	unsigned int tile_width;
 
-	/* Linear is always fine */
+	 
 	if (tiling == I915_TILING_NONE)
 		return true;
 
 	if (tiling > I915_TILING_LAST)
 		return false;
 
-	/* check maximum stride & object size */
-	/* i965+ stores the end address of the gtt mapping in the fence
-	 * reg, so dont bother to check the size */
+	 
+	 
 	if (GRAPHICS_VER(i915) >= 7) {
 		if (stride / 128 > GEN7_FENCE_MAX_PITCH_VAL)
 			return false;
@@ -178,7 +124,7 @@ static bool i915_vma_fence_prepare(struct i915_vma *vma,
 	return true;
 }
 
-/* Make the current GTT allocation valid for the change in tiling. */
+ 
 static int
 i915_gem_object_fence_prepare(struct drm_i915_gem_object *obj,
 			      int tiling_mode, unsigned int stride)
@@ -208,7 +154,7 @@ i915_gem_object_fence_prepare(struct drm_i915_gem_object *obj,
 	list_for_each_entry_safe(vma, vn, &unbind, vm_link) {
 		ret = __i915_vma_unbind(vma);
 		if (ret) {
-			/* Restore the remaining vma on an error */
+			 
 			list_splice(&unbind, &ggtt->vm.bound_list);
 			break;
 		}
@@ -235,7 +181,7 @@ i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
 	struct i915_vma *vma;
 	int err;
 
-	/* Make sure we don't cross-contaminate obj->tiling_and_stride */
+	 
 	BUILD_BUG_ON(I915_TILING_LAST & STRIDE_MASK);
 
 	GEM_BUG_ON(!i915_tiling_ok(obj, tiling, stride));
@@ -247,18 +193,7 @@ i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
 	if (i915_gem_object_is_framebuffer(obj))
 		return -EBUSY;
 
-	/* We need to rebind the object if its current allocation
-	 * no longer meets the alignment restrictions for its new
-	 * tiling mode. Otherwise we can just leave it alone, but
-	 * need to ensure that any fence register is updated before
-	 * the next fenced (either through the GTT or by the BLT unit
-	 * on older GPUs) access.
-	 *
-	 * After updating the tiling parameters, we then flag whether
-	 * we need to update an associated fence register. Note this
-	 * has to also include the unfenced register the GPU uses
-	 * whilst executing a fenced command for an untiled object.
-	 */
+	 
 
 	i915_gem_object_lock(obj, NULL);
 	if (i915_gem_object_is_framebuffer(obj)) {
@@ -272,10 +207,7 @@ i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
 		return err;
 	}
 
-	/* If the memory has unknown (i.e. varying) swizzling, we pin the
-	 * pages to prevent them being swapped out and causing corruption
-	 * due to the change in swizzling.
-	 */
+	 
 	if (i915_gem_object_has_pages(obj) &&
 	    obj->mm.madv == I915_MADV_WILLNEED &&
 	    i915->gem_quirks & GEM_QUIRK_PIN_SWIZZLED_PAGES) {
@@ -306,7 +238,7 @@ i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
 
 	obj->tiling_and_stride = tiling | stride;
 
-	/* Try to preallocate memory required to save swizzling on put-pages */
+	 
 	if (i915_gem_object_needs_bit17_swizzle(obj)) {
 		if (!obj->bit_17) {
 			obj->bit_17 = bitmap_zalloc(obj->base.size >> PAGE_SHIFT,
@@ -319,26 +251,13 @@ i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
 
 	i915_gem_object_unlock(obj);
 
-	/* Force the fence to be reacquired for GTT access */
+	 
 	i915_gem_object_release_mmap_gtt(obj);
 
 	return 0;
 }
 
-/**
- * i915_gem_set_tiling_ioctl - IOCTL handler to set tiling mode
- * @dev: DRM device
- * @data: data pointer for the ioctl
- * @file: DRM file for the ioctl call
- *
- * Sets the tiling mode of an object, returning the required swizzling of
- * bit 6 of addresses in the object.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int
 i915_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *file)
@@ -355,10 +274,7 @@ i915_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 	if (!obj)
 		return -ENOENT;
 
-	/*
-	 * The tiling mode of proxy objects is handled by its generator, and
-	 * not allowed to be changed by userspace.
-	 */
+	 
 	if (i915_gem_object_is_proxy(obj)) {
 		err = -ENXIO;
 		goto err;
@@ -378,19 +294,13 @@ i915_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 		else
 			args->swizzle_mode = to_gt(dev_priv)->ggtt->bit_6_swizzle_y;
 
-		/* Hide bit 17 swizzling from the user.  This prevents old Mesa
-		 * from aborting the application on sw fallbacks to bit 17,
-		 * and we use the pread/pwrite bit17 paths to swizzle for it.
-		 * If there was a user that was relying on the swizzle
-		 * information for drm_intel_bo_map()ed reads/writes this would
-		 * break it, but we don't have any of those.
-		 */
+		 
 		if (args->swizzle_mode == I915_BIT_6_SWIZZLE_9_17)
 			args->swizzle_mode = I915_BIT_6_SWIZZLE_9;
 		if (args->swizzle_mode == I915_BIT_6_SWIZZLE_9_10_17)
 			args->swizzle_mode = I915_BIT_6_SWIZZLE_9_10;
 
-		/* If we can't handle the swizzling, make it untiled. */
+		 
 		if (args->swizzle_mode == I915_BIT_6_SWIZZLE_UNKNOWN) {
 			args->tiling_mode = I915_TILING_NONE;
 			args->swizzle_mode = I915_BIT_6_SWIZZLE_NONE;
@@ -400,7 +310,7 @@ i915_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 
 	err = i915_gem_object_set_tiling(obj, args->tiling_mode, args->stride);
 
-	/* We have to maintain this existing ABI... */
+	 
 	args->stride = i915_gem_object_get_stride(obj);
 	args->tiling_mode = i915_gem_object_get_tiling(obj);
 
@@ -409,19 +319,7 @@ err:
 	return err;
 }
 
-/**
- * i915_gem_get_tiling_ioctl - IOCTL handler to get tiling mode
- * @dev: DRM device
- * @data: data pointer for the ioctl
- * @file: DRM file for the ioctl call
- *
- * Returns the current tiling mode and required bit 6 swizzling for the object.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int
 i915_gem_get_tiling_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *file)
@@ -458,7 +356,7 @@ i915_gem_get_tiling_ioctl(struct drm_device *dev, void *data,
 		break;
 	}
 
-	/* Hide bit 17 from the user -- see comment in i915_gem_set_tiling */
+	 
 	if (dev_priv->gem_quirks & GEM_QUIRK_PIN_SWIZZLED_PAGES)
 		args->phys_swizzle_mode = I915_BIT_6_SWIZZLE_UNKNOWN;
 	else

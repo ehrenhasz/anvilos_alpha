@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __INC_DOT11D_H
 #define __INC_DOT11D_H
 
@@ -17,18 +17,18 @@ enum dot11d_state {
 };
 
 struct rt_dot11d_info {
-	u16 country_ie_len; /* > 0 if country_ie_buf[] contains valid country information element. */
+	u16 country_ie_len;  
 
-	/*  country_ie_src_addr u16 aligned for comparison and copy */
-	u8  country_ie_src_addr[ETH_ALEN]; /* Source AP of the country IE. */
+	 
+	u8  country_ie_src_addr[ETH_ALEN];  
 	u8  country_ie_buf[MAX_IE_LEN];
 	u8  country_ie_watchdog;
 
-	u8  channel_map[MAX_CHANNEL_NUMBER + 1];  /* !Value 0: Invalid, 1: Valid (active scan), 2: Valid (passive scan) */
+	u8  channel_map[MAX_CHANNEL_NUMBER + 1];   
 	u8  max_tx_pwr_dbm_list[MAX_CHANNEL_NUMBER + 1];
 
 	enum dot11d_state state;
-	u8  dot11d_enabled; /* dot11MultiDomainCapabilityEnabled */
+	u8  dot11d_enabled;  
 };
 
 #define GET_DOT11D_INFO(ieee_dev) ((struct rt_dot11d_info *)((ieee_dev)->dot11d_info))
@@ -54,4 +54,4 @@ void dot11d_scan_complete(struct ieee80211_device *dev);
 int is_legal_channel(struct ieee80211_device *dev, u8 channel);
 int to_legal_channel(struct ieee80211_device *dev, u8 channel);
 
-#endif /* #ifndef __INC_DOT11D_H */
+#endif  

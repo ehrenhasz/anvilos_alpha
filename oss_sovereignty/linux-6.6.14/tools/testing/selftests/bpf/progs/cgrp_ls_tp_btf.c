@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -39,23 +39,23 @@ int BPF_PROG(on_enter, struct pt_regs *regs, long id)
 	if (task->pid != target_pid)
 		return 0;
 
-	/* populate value 0 */
+	 
 	ptr = bpf_cgrp_storage_get(&map_a, task->cgroups->dfl_cgrp, 0,
 				   BPF_LOCAL_STORAGE_GET_F_CREATE);
 	if (!ptr)
 		return 0;
 
-	/* delete value 0 */
+	 
 	err = bpf_cgrp_storage_delete(&map_a, task->cgroups->dfl_cgrp);
 	if (err)
 		return 0;
 
-	/* value is not available */
+	 
 	ptr = bpf_cgrp_storage_get(&map_a, task->cgroups->dfl_cgrp, 0, 0);
 	if (ptr)
 		return 0;
 
-	/* re-populate the value */
+	 
 	ptr = bpf_cgrp_storage_get(&map_a, task->cgroups->dfl_cgrp, 0,
 				   BPF_LOCAL_STORAGE_GET_F_CREATE);
 	if (!ptr)

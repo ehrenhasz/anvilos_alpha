@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP FXLS8962AF/FXLS8964AF Accelerometer Core Driver
- *
- * Copyright 2021 Connected Cars A/S
- *
- * Datasheet:
- * https://www.nxp.com/docs/en/data-sheet/FXLS8962AF.pdf
- * https://www.nxp.com/docs/en/data-sheet/FXLS8964AF.pdf
- *
- * Errata:
- * https://www.nxp.com/docs/en/errata/ES_FXLS8962AF.pdf
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -127,7 +116,7 @@
 #define FXLS8962AF_DEVICE_ID			0x62
 #define FXLS8964AF_DEVICE_ID			0x84
 
-/* Raw temp channel offset */
+ 
 #define FXLS8962AF_TEMP_CENTER_VAL		25
 
 #define FXLS8962AF_AUTO_SUSPEND_DELAY_MS	2000
@@ -163,7 +152,7 @@ struct fxls8962af_data {
 		__le16 channels[3];
 		s64 ts __aligned(8);
 	} scan;
-	int64_t timestamp, old_timestamp;	/* Only used in hw fifo mode. */
+	int64_t timestamp, old_timestamp;	 
 	struct iio_mount_matrix orientation;
 	int irq;
 	u8 watermark;
@@ -479,7 +468,7 @@ static int fxls8962af_write_raw(struct iio_dev *indio_dev,
 
 static int fxls8962af_event_setup(struct fxls8962af_data *data, int state)
 {
-	/* Enable wakeup interrupt */
+	 
 	int mask = FXLS8962AF_INT_EN_SDCD_OT_EN;
 	int value = state ? mask : 0;
 
@@ -649,18 +638,13 @@ fxls8962af_write_event_config(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* Enable events */
+	 
 	value = enable_event | FXLS8962AF_SDCD_CONFIG1_OT_ELE;
 	ret = regmap_write(data->regmap, FXLS8962AF_SDCD_CONFIG1, value);
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable update of SDCD_REF_X/Y/Z values with the current decimated and
-	 * trimmed X/Y/Z acceleration input data. This allows for acceleration
-	 * slope detection with Data(n) to Data(n–1) always used as the input
-	 * to the window comparator.
-	 */
+	 
 	value = enable_event ?
 		FXLS8962AF_SDCD_CONFIG2_SDCD_EN | FXLS8962AF_SC2_REF_UPDM_AC :
 		0x00;
@@ -682,7 +666,7 @@ fxls8962af_write_event_config(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/* Not in buffered mode so disable power */
+		 
 		ret = fxls8962af_power_off(data);
 
 		iio_device_release_direct_mode(indio_dev);
@@ -789,7 +773,7 @@ static int fxls8962af_reset(struct fxls8962af_data *data)
 	if (ret)
 		return ret;
 
-	/* TBOOT1, TBOOT2, specifies we have to wait between 1 - 17.7ms */
+	 
 	ret = regmap_read_poll_timeout(data->regmap, FXLS8962AF_INT_STATUS, reg,
 				       (reg & FXLS8962AF_INT_STATUS_SRC_BOOT),
 				       1000, 18000);
@@ -803,7 +787,7 @@ static int __fxls8962af_fifo_set_mode(struct fxls8962af_data *data, bool onoff)
 {
 	int ret;
 
-	/* Enable watermark at max fifo size */
+	 
 	ret = regmap_update_bits(data->regmap, FXLS8962AF_BUF_CONFIG2,
 				 FXLS8962AF_BUF_CONFIG2_BUF_WMRK,
 				 data->watermark);
@@ -827,7 +811,7 @@ static int fxls8962af_buffer_postenable(struct iio_dev *indio_dev)
 
 	fxls8962af_standby(data);
 
-	/* Enable buffer interrupt */
+	 
 	ret = regmap_update_bits(data->regmap, FXLS8962AF_INT_EN,
 				 FXLS8962AF_INT_EN_BUF_EN,
 				 FXLS8962AF_INT_EN_BUF_EN);
@@ -848,7 +832,7 @@ static int fxls8962af_buffer_predisable(struct iio_dev *indio_dev)
 
 	fxls8962af_standby(data);
 
-	/* Disable buffer interrupt */
+	 
 	ret = regmap_update_bits(data->regmap, FXLS8962AF_INT_EN,
 				 FXLS8962AF_INT_EN_BUF_EN, 0);
 	if (ret)
@@ -905,11 +889,7 @@ static int fxls8962af_fifo_transfer(struct fxls8962af_data *data,
 
 	if (i2c_verify_client(dev) &&
 	    data->chip_info->chip_id == FXLS8962AF_DEVICE_ID)
-		/*
-		 * Due to errata bug (only applicable on fxls8962af):
-		 * E3: FIFO burst read operation error using I2C interface
-		 * We have to avoid burst reads on I2C..
-		 */
+		 
 		ret = fxls8962af_i2c_raw_read_errata3(data, buffer, samples,
 						      sample_length);
 	else
@@ -949,10 +929,7 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
 	data->old_timestamp = data->timestamp;
 	data->timestamp = iio_get_time_ns(indio_dev);
 
-	/*
-	 * Approximate timestamps for each of the sample based on the sampling,
-	 * frequency, timestamp for last sample and number of samples.
-	 */
+	 
 	sample_period = (data->timestamp - data->old_timestamp);
 	do_div(sample_period, count);
 	tstamp = data->timestamp - (count - 1) * sample_period;
@@ -961,7 +938,7 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/* Demux hw FIFO into kfifo. */
+	 
 	for (i = 0; i < count; i++) {
 		int j, bit;
 
@@ -1252,10 +1229,7 @@ static int fxls8962af_suspend(struct device *dev)
 	if (device_may_wakeup(dev) && data->enable_event) {
 		enable_irq_wake(data->irq);
 
-		/*
-		 * Disable buffer, as the buffer is so small the device will wake
-		 * almost immediately.
-		 */
+		 
 		if (iio_buffer_enabled(indio_dev))
 			fxls8962af_buffer_predisable(indio_dev);
 	} else {

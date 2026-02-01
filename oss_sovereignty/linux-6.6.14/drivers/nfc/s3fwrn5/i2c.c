@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * I2C Link Layer for Samsung S3FWRN5 NCI based Driver
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -54,7 +49,7 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
 
 	ret = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
 	if (ret == -EREMOTEIO) {
-		/* Retry, chip was in standby */
+		 
 		usleep_range(110000, 120000);
 		ret  = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
 	}
@@ -156,7 +151,7 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
 
 	phy->common.gpio_en = of_get_named_gpio(np, "en-gpios", 0);
 	if (!gpio_is_valid(phy->common.gpio_en)) {
-		/* Support also deprecated property */
+		 
 		phy->common.gpio_en = of_get_named_gpio(np,
 							"s3fwrn5,en-gpios",
 							0);
@@ -166,7 +161,7 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
 
 	phy->common.gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
 	if (!gpio_is_valid(phy->common.gpio_fw_wake)) {
-		/* Support also deprecated property */
+		 
 		phy->common.gpio_fw_wake = of_get_named_gpio(np,
 							     "s3fwrn5,fw-gpios",
 							     0);
@@ -208,12 +203,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * S3FWRN5 depends on a clock input ("XI" pin) to function properly.
-	 * Depending on the hardware configuration this could be an always-on
-	 * oscillator or some external clock that must be explicitly enabled.
-	 * Make sure the clock is running before starting S3FWRN5.
-	 */
+	 
 	phy->clk = devm_clk_get_optional_enabled(&client->dev, NULL);
 	if (IS_ERR(phy->clk))
 		return dev_err_probe(&client->dev, PTR_ERR(phy->clk),

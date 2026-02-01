@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		The IP fragmentation functionality.
- *
- * Authors:	Fred N. van Kempen <waltje@uWalt.NL.Mugnet.ORG>
- *		Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * Fixes:
- *		Alan Cox	:	Split from ip.c , see ip_input.c for history.
- *		David S. Miller :	Begin massive cleanup...
- *		Andi Kleen	:	Add sysctls.
- *		xxxx		:	Overlapfrag bug.
- *		Ultima          :       ip_expire() kernel panic.
- *		Bill Hawes	:	Frag accounting and evictor fixes.
- *		John McDonald	:	0 length frag bug.
- *		Alexey Kuznetsov:	SMP races, threading, cleanup.
- *		Patrick McHardy :	LRU queue of frag heads for evictor.
- */
+
+ 
 
 #define pr_fmt(fmt) "IPv4: " fmt
 
@@ -51,18 +31,15 @@
 #include <net/inet_ecn.h>
 #include <net/l3mdev.h>
 
-/* NOTE. Logic of IP defragmentation is parallel to corresponding IPv6
- * code now. If you change something here, _PLEASE_ update ipv6/reassembly.c
- * as well. Or notify me, at least. --ANK
- */
+ 
 static const char ip_frag_cache_name[] = "ip4-frags";
 
-/* Describe an entry in the "incomplete datagrams" queue. */
+ 
 struct ipq {
 	struct inet_frag_queue q;
 
-	u8		ecn; /* RFC3168 support */
-	u16		max_df_size; /* largest frag with DF set seen */
+	u8		ecn;  
+	u16		max_df_size;  
 	int             iif;
 	unsigned int    rid;
 	struct inet_peer *peer;
@@ -103,16 +80,14 @@ static void ip4_frag_free(struct inet_frag_queue *q)
 }
 
 
-/* Destruction primitives. */
+ 
 
 static void ipq_put(struct ipq *ipq)
 {
 	inet_frag_put(&ipq->q);
 }
 
-/* Kill ipq entry. It is not destroyed immediately,
- * because caller (and someone more) holds reference count.
- */
+ 
 static void ipq_kill(struct ipq *ipq)
 {
 	inet_frag_kill(&ipq->q);
@@ -127,9 +102,7 @@ static bool frag_expire_skip_icmp(u32 user)
 					 __IP_DEFRAG_CONNTRACK_BRIDGE_IN);
 }
 
-/*
- * Oops, a fragment queue timed out.  Kill it and send an ICMP reply.
- */
+ 
 static void ip_expire(struct timer_list *t)
 {
 	struct inet_frag_queue *frag = from_timer(frag, t, timer);
@@ -144,7 +117,7 @@ static void ip_expire(struct timer_list *t)
 
 	rcu_read_lock();
 
-	/* Paired with WRITE_ONCE() in fqdir_pre_exit(). */
+	 
 	if (READ_ONCE(qp->q.fqdir->dead))
 		goto out_rcu_unlock;
 
@@ -161,10 +134,7 @@ static void ip_expire(struct timer_list *t)
 	if (!(qp->q.flags & INET_FRAG_FIRST_IN))
 		goto out;
 
-	/* sk_buff::dev and sk_buff::rbnode are unionized. So we
-	 * pull the head out of the tree in order to be able to
-	 * deal with head->dev.
-	 */
+	 
 	head = inet_frag_pull_head(&qp->q);
 	if (!head)
 		goto out;
@@ -173,16 +143,14 @@ static void ip_expire(struct timer_list *t)
 		goto out;
 
 
-	/* skb has no dst, perform route lookup again */
+	 
 	iph = ip_hdr(head);
 	err = ip_route_input_noref(head, iph->daddr, iph->saddr,
 					   iph->tos, head->dev);
 	if (err)
 		goto out;
 
-	/* Only an end host needs to send an ICMP
-	 * "Fragment Reassembly Timeout" message, per RFC792.
-	 */
+	 
 	if (frag_expire_skip_icmp(qp->q.key.v4.user) &&
 	    (skb_rtable(head)->rt_type != RTN_LOCAL))
 		goto out;
@@ -199,9 +167,7 @@ out_rcu_unlock:
 	ipq_put(qp);
 }
 
-/* Find the correct entry in the "incomplete datagrams" queue for
- * this IP datagram, and create new one, if nothing is found.
- */
+ 
 static struct ipq *ip_find(struct net *net, struct iphdr *iph,
 			   u32 user, int vif)
 {
@@ -222,7 +188,7 @@ static struct ipq *ip_find(struct net *net, struct iphdr *iph,
 	return container_of(q, struct ipq, q);
 }
 
-/* Is the fragment too far ahead to be part of ipq? */
+ 
 static int ip_frag_too_far(struct ipq *qp)
 {
 	struct inet_peer *peer = qp->peer;
@@ -271,7 +237,7 @@ static int ip_frag_reinit(struct ipq *qp)
 	return 0;
 }
 
-/* Add new segment to existing queue. */
+ 
 static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
 {
 	struct net *net = qp->q.fqdir->net;
@@ -283,7 +249,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
 	SKB_DR(reason);
 	u8 ecn;
 
-	/* If reassembly is already done, @skb must be a duplicate frag. */
+	 
 	if (qp->q.flags & INET_FRAG_COMPLETE) {
 		SKB_DR_SET(reason, DUP_FRAG);
 		goto err;
@@ -300,18 +266,16 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
 	offset = ntohs(ip_hdr(skb)->frag_off);
 	flags = offset & ~IP_OFFSET;
 	offset &= IP_OFFSET;
-	offset <<= 3;		/* offset is in 8-byte chunks */
+	offset <<= 3;		 
 	ihl = ip_hdrlen(skb);
 
-	/* Determine the position of this fragment. */
+	 
 	end = offset + skb->len - skb_network_offset(skb) - ihl;
 	err = -EINVAL;
 
-	/* Is this the final fragment? */
+	 
 	if ((flags & IP_MF) == 0) {
-		/* If we already have some bits beyond end
-		 * or have different end, the segment is corrupted.
-		 */
+		 
 		if (end < qp->q.len ||
 		    ((qp->q.flags & INET_FRAG_LAST_IN) && end != qp->q.len))
 			goto discard_qp;
@@ -324,7 +288,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
 				skb->ip_summed = CHECKSUM_NONE;
 		}
 		if (end > qp->q.len) {
-			/* Some bits beyond end -> corruption. */
+			 
 			if (qp->q.flags & INET_FRAG_LAST_IN)
 				goto discard_qp;
 			qp->q.len = end;
@@ -341,9 +305,9 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
 	if (err)
 		goto discard_qp;
 
-	/* Note : skb->rbnode and skb->dev share the same location. */
+	 
 	dev = skb->dev;
-	/* Makes sure compiler wont do silly aliasing games */
+	 
 	barrier();
 
 	prev_tail = qp->q.fragments_tail;
@@ -407,7 +371,7 @@ static bool ip_frag_coalesce_ok(const struct ipq *qp)
 	return qp->q.key.v4.user == IP_DEFRAG_LOCAL_DELIVER;
 }
 
-/* Build a new IP datagram from all its fragments. */
+ 
 static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
 			 struct sk_buff *prev_tail, struct net_device *dev)
 {
@@ -425,7 +389,7 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
 		goto out_fail;
 	}
 
-	/* Make the one we just received the head. */
+	 
 	reasm_data = inet_frag_reasm_prepare(&qp->q, skb, prev_tail);
 	if (!reasm_data)
 		goto out_nomem;
@@ -445,14 +409,7 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
 	iph->tot_len = htons(len);
 	iph->tos |= ecn;
 
-	/* When we set IP_DF on a refragmented skb we must also force a
-	 * call to ip_fragment to avoid forwarding a DF-skb of size s while
-	 * original sender only sent fragments of size f (where f < s).
-	 *
-	 * We only set DF/IPSKB_FRAG_PMTU if such DF fragment was the largest
-	 * frag seen to avoid sending tiny DF-fragments in case skb was built
-	 * from one very small df-fragment and one large non-df frag.
-	 */
+	 
 	if (qp->max_df_size == qp->q.max_size) {
 		IPCB(skb)->flags |= IPSKB_FRAG_PMTU;
 		iph->frag_off = htons(IP_DF);
@@ -479,7 +436,7 @@ out_fail:
 	return err;
 }
 
-/* Process an incoming IP datagram fragment. */
+ 
 int ip_defrag(struct net *net, struct sk_buff *skb, u32 user)
 {
 	struct net_device *dev = skb->dev ? : skb_dst(skb)->dev;
@@ -489,7 +446,7 @@ int ip_defrag(struct net *net, struct sk_buff *skb, u32 user)
 	__IP_INC_STATS(net, IPSTATS_MIB_REASMREQDS);
 	skb_orphan(skb);
 
-	/* Lookup (or create) queue header */
+	 
 	qp = ip_find(net, ip_hdr(skb), user, vif);
 	if (qp) {
 		int ret;
@@ -583,7 +540,7 @@ static struct ctl_table ip4_frags_ns_ctl_table[] = {
 	{ }
 };
 
-/* secret interval has been deprecated */
+ 
 static int ip4_frags_secret_interval_unused;
 static struct ctl_table ip4_frags_ctl_table[] = {
 	{
@@ -665,27 +622,10 @@ static int __net_init ipv4_frags_init_net(struct net *net)
 	res = fqdir_init(&net->ipv4.fqdir, &ip4_frags, net);
 	if (res < 0)
 		return res;
-	/* Fragment cache limits.
-	 *
-	 * The fragment memory accounting code, (tries to) account for
-	 * the real memory usage, by measuring both the size of frag
-	 * queue struct (inet_frag_queue (ipv4:ipq/ipv6:frag_queue))
-	 * and the SKB's truesize.
-	 *
-	 * A 64K fragment consumes 129736 bytes (44*2944)+200
-	 * (1500 truesize == 2944, sizeof(struct ipq) == 200)
-	 *
-	 * We will commit 4MB at one time. Should we cross that limit
-	 * we will prune down to 3MB, making room for approx 8 big 64K
-	 * fragments 8x128k.
-	 */
+	 
 	net->ipv4.fqdir->high_thresh = 4 * 1024 * 1024;
 	net->ipv4.fqdir->low_thresh  = 3 * 1024 * 1024;
-	/*
-	 * Important NOTE! Fragment queue must be destroyed before MSL expires.
-	 * RFC791 is wrong proposing to prolongate timer each fragment arrival
-	 * by TTL.
-	 */
+	 
 	net->ipv4.fqdir->timeout = IP_FRAG_TIME;
 
 	net->ipv4.fqdir->max_dist = 64;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains error recovery level two functions used by
- * the iSCSI Target driver.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <scsi/iscsi_proto.h>
@@ -22,9 +14,7 @@
 #include "iscsi_target_erl2.h"
 #include "iscsi_target.h"
 
-/*
- *	FIXME: Does RData SNACK apply here as well?
- */
+ 
 void iscsit_create_conn_recovery_datain_values(
 	struct iscsit_cmd *cmd,
 	__be32 exp_data_sn)
@@ -193,9 +183,7 @@ static void iscsit_remove_inactive_connection_recovery_entry(
 	spin_unlock(&sess->cr_i_lock);
 }
 
-/*
- *	Called with cr->conn_recovery_cmd_lock help.
- */
+ 
 int iscsit_remove_cmd_from_connection_recovery(
 	struct iscsit_cmd *cmd,
 	struct iscsit_session *sess)
@@ -310,12 +298,7 @@ int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
 	struct iscsit_cmd *cmd, *cmd_tmp;
 	struct iscsi_conn_recovery *cr;
 
-	/*
-	 * Allocate an struct iscsi_conn_recovery for this connection.
-	 * Each struct iscsit_cmd contains an struct iscsi_conn_recovery pointer
-	 * (struct iscsit_cmd->cr) so we need to allocate this before preparing the
-	 * connection's command list for connection recovery.
-	 */
+	 
 	cr = kzalloc(sizeof(struct iscsi_conn_recovery), GFP_KERNEL);
 	if (!cr) {
 		pr_err("Unable to allocate memory for"
@@ -325,15 +308,7 @@ int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
 	INIT_LIST_HEAD(&cr->cr_list);
 	INIT_LIST_HEAD(&cr->conn_recovery_cmd_list);
 	spin_lock_init(&cr->conn_recovery_cmd_lock);
-	/*
-	 * Only perform connection recovery on ISCSI_OP_SCSI_CMD or
-	 * ISCSI_OP_NOOP_OUT opcodes.  For all other opcodes call
-	 * list_del_init(&cmd->i_conn_node); to release the command to the
-	 * session pool and remove it from the connection's list.
-	 *
-	 * Also stop the DataOUT timer, which will be restarted after
-	 * sending the TMR response.
-	 */
+	 
 	spin_lock_bh(&conn->cmd_lock);
 	list_for_each_entry_safe(cmd, cmd_tmp, &conn->conn_cmd_list, i_conn_node) {
 
@@ -351,17 +326,7 @@ int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
 			continue;
 		}
 
-		/*
-		 * Special case where commands greater than or equal to
-		 * the session's ExpCmdSN are attached to the connection
-		 * list but not to the out of order CmdSN list.  The one
-		 * obvious case is when a command with immediate data
-		 * attached must only check the CmdSN against ExpCmdSN
-		 * after the data is received.  The special case below
-		 * is when the connection fails before data is received,
-		 * but also may apply to other PDUs, so it has been
-		 * made generic here.
-		 */
+		 
 		if (!(cmd->cmd_flags & ICF_OOO_CMDSN) && !cmd->immediate_cmd &&
 		     iscsi_sna_gte(cmd->cmd_sn, conn->sess->exp_cmd_sn)) {
 			list_del_init(&cmd->i_conn_node);
@@ -392,9 +357,7 @@ int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
 		iscsit_free_all_datain_reqs(cmd);
 
 		transport_wait_for_tasks(&cmd->se_cmd);
-		/*
-		 * Add the struct iscsit_cmd to the connection recovery cmd list
-		 */
+		 
 		spin_lock(&cr->conn_recovery_cmd_lock);
 		list_add_tail(&cmd->i_conn_node, &cr->conn_recovery_cmd_list);
 		spin_unlock(&cr->conn_recovery_cmd_lock);
@@ -404,9 +367,7 @@ int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
 		cmd->conn = NULL;
 	}
 	spin_unlock_bh(&conn->cmd_lock);
-	/*
-	 * Fill in the various values in the preallocated struct iscsi_conn_recovery.
-	 */
+	 
 	cr->cid = conn->cid;
 	cr->cmd_count = cmd_count;
 	cr->maxrecvdatasegmentlength = conn->conn_ops->MaxRecvDataSegmentLength;

@@ -1,13 +1,4 @@
-/*
- * Broadcom specific AMBA
- * ChipCommon Power Management Unit driver
- *
- * Copyright 2009, Michael Buesch <m@bues.ch>
- * Copyright 2007, 2011, Broadcom Corporation
- * Copyright 2011, 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/export.h>
@@ -85,7 +76,7 @@ static void bcma_pmu2_pll_init0(struct bcma_drv_cc *cc, u32 xtalfreq)
 
 	switch (bus->chipinfo.id) {
 	case BCMA_CHIP_ID_BCM43142:
-		/* pmu2_xtaltab0_adfll_485 */
+		 
 		switch (xtalfreq) {
 		case 12000:
 			freq_tgt_target = 0x50D52;
@@ -121,7 +112,7 @@ static void bcma_pmu2_pll_init0(struct bcma_drv_cc *cc, u32 xtalfreq)
 		return;
 	}
 
-	/* Turn off PLL */
+	 
 	switch (bus->chipinfo.id) {
 	case BCMA_CHIP_ID_BCM43142:
 		mask = (u32)~(BCMA_RES_4314_HT_AVAIL |
@@ -138,11 +129,11 @@ static void bcma_pmu2_pll_init0(struct bcma_drv_cc *cc, u32 xtalfreq)
 	pll0 |= freq_tgt_target << BCMA_CC_PMU15_PLL_PC0_FREQTGT_SHIFT;
 	bcma_chipco_pll_write(cc, BCMA_CC_PMU15_PLL_PLLCTL0, pll0);
 
-	/* Flush */
+	 
 	if (cc->pmu.rev >= 2)
 		bcma_pmu_set32(cc, BCMA_CC_PMU_CTL, BCMA_CC_PMU_CTL_PLL_UPD);
 
-	/* TODO: Do we need to update OTP? */
+	 
 }
 
 static void bcma_pmu_pll_init(struct bcma_drv_cc *cc)
@@ -193,20 +184,17 @@ static void bcma_pmu_resources_init(struct bcma_drv_cc *cc)
 			   bus->chipinfo.id);
 	}
 
-	/* Set the resource masks. */
+	 
 	if (min_msk)
 		bcma_pmu_write32(cc, BCMA_CC_PMU_MINRES_MSK, min_msk);
 	if (max_msk)
 		bcma_pmu_write32(cc, BCMA_CC_PMU_MAXRES_MSK, max_msk);
 
-	/*
-	 * Add some delay; allow resources to come up and settle.
-	 * Delay is required for SoC (early init).
-	 */
+	 
 	usleep_range(2000, 2500);
 }
 
-/* Disable to allow reading SPROM. Don't know the advantages of enabling it. */
+ 
 void bcma_chipco_bcm4331_ext_pa_lines_ctl(struct bcma_drv_cc *cc, bool enable)
 {
 	struct bcma_bus *bus = cc->core->bus;
@@ -233,25 +221,19 @@ static void bcma_pmu_workarounds(struct bcma_drv_cc *cc)
 
 	switch (bus->chipinfo.id) {
 	case BCMA_CHIP_ID_BCM4313:
-		/*
-		 * enable 12 mA drive strength for 4313 and set chipControl
-		 * register bit 1
-		 */
+		 
 		bcma_chipco_chipctl_maskset(cc, 0,
 					    ~BCMA_CCTRL_4313_12MA_LED_DRIVE,
 					    BCMA_CCTRL_4313_12MA_LED_DRIVE);
 		break;
 	case BCMA_CHIP_ID_BCM4331:
 	case BCMA_CHIP_ID_BCM43431:
-		/* Ext PA lines must be enabled for tx on BCM4331 */
+		 
 		bcma_chipco_bcm4331_ext_pa_lines_ctl(cc, true);
 		break;
 	case BCMA_CHIP_ID_BCM43224:
 	case BCMA_CHIP_ID_BCM43421:
-		/*
-		 * enable 12 mA drive strength for 43224 and set chipControl
-		 * register bit 15
-		 */
+		 
 		if (bus->chipinfo.rev == 0) {
 			bcma_cc_maskset32(cc, BCMA_CC_CHIPCTL,
 					  ~BCMA_CCTRL_43224_GPIO_TOGGLE,
@@ -327,11 +309,11 @@ u32 bcma_pmu_get_alp_clock(struct bcma_drv_cc *cc)
 	case BCMA_CHIP_ID_BCM5357:
 	case BCMA_CHIP_ID_BCM53572:
 	case BCMA_CHIP_ID_BCM6362:
-		/* always 20Mhz */
+		 
 		return 20000 * 1000;
 	case BCMA_CHIP_ID_BCM4706:
 	case BCMA_CHIP_ID_BCM5356:
-		/* always 25Mhz */
+		 
 		return 25000 * 1000;
 	case BCMA_CHIP_ID_BCM43460:
 	case BCMA_CHIP_ID_BCM4352:
@@ -347,9 +329,7 @@ u32 bcma_pmu_get_alp_clock(struct bcma_drv_cc *cc)
 	return BCMA_CC_PMU_ALP_CLOCK;
 }
 
-/* Find the output of the "m" pll divider given pll controls that start with
- * pllreg "pll0" i.e. 12 for main 6 for phy, 0 for misc.
- */
+ 
 static u32 bcma_pmu_pll_clock(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 {
 	u32 tmp, div, ndiv, p1, p2, fc;
@@ -361,7 +341,7 @@ static u32 bcma_pmu_pll_clock(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 
 	if (bus->chipinfo.id == BCMA_CHIP_ID_BCM5357 ||
 	    bus->chipinfo.id == BCMA_CHIP_ID_BCM4749) {
-		/* Detect failure in clock setting */
+		 
 		tmp = bcma_cc_read32(cc, BCMA_CC_CHIPSTAT);
 		if (tmp & 0x40000)
 			return 133 * 1000000;
@@ -378,11 +358,11 @@ static u32 bcma_pmu_pll_clock(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 	tmp = bcma_chipco_pll_read(cc, pll0 + BCMA_CC_PPL_NM5_OFF);
 	ndiv = (tmp & BCMA_CC_PPL_NDIV_MASK) >> BCMA_CC_PPL_NDIV_SHIFT;
 
-	/* Do calculation in Mhz */
+	 
 	fc = bcma_pmu_get_alp_clock(cc) / 1000000;
 	fc = (p1 * ndiv * fc) / p2;
 
-	/* Return clock in Hertz */
+	 
 	return (fc / div) * 1000000;
 }
 
@@ -393,7 +373,7 @@ static u32 bcma_pmu_pll_clock_bcm4706(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 
 	BUG_ON(!m || m > 4);
 
-	/* Get N, P1 and P2 dividers to determine CPU clock */
+	 
 	tmp = bcma_chipco_pll_read(cc, pll0 + BCMA_CC_PMU6_4706_PROCPLL_OFF);
 	ndiv = (tmp & BCMA_CC_PMU6_4706_PROC_NDIV_INT_MASK)
 		>> BCMA_CC_PMU6_4706_PROC_NDIV_INT_SHIFT;
@@ -404,10 +384,10 @@ static u32 bcma_pmu_pll_clock_bcm4706(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 
 	tmp = bcma_cc_read32(cc, BCMA_CC_CHIPSTAT);
 	if (tmp & BCMA_CC_CHIPST_4706_PKG_OPTION)
-		/* Low cost bonding: Fixed reference clock 25MHz and m = 4 */
+		 
 		clock = (25000000 / 4) * ndiv * p2div / p1div;
 	else
-		/* Fixed reference clock 25MHz and m = 2 */
+		 
 		clock = (25000000 / 2) * ndiv * p2div / p1div;
 
 	if (m == BCMA_CC_PMU5_MAINPLL_SSB)
@@ -416,7 +396,7 @@ static u32 bcma_pmu_pll_clock_bcm4706(struct bcma_drv_cc *cc, u32 pll0, u32 m)
 	return clock;
 }
 
-/* query bus clock frequency for PMU-enabled chipcommon */
+ 
 u32 bcma_pmu_get_bus_clock(struct bcma_drv_cc *cc)
 {
 	struct bcma_bus *bus = cc->core->bus;
@@ -448,7 +428,7 @@ u32 bcma_pmu_get_bus_clock(struct bcma_drv_cc *cc)
 }
 EXPORT_SYMBOL_GPL(bcma_pmu_get_bus_clock);
 
-/* query cpu clock frequency for PMU-enabled chipcommon */
+ 
 u32 bcma_pmu_get_cpu_clock(struct bcma_drv_cc *cc)
 {
 	struct bcma_bus *bus = cc->core->bus;
@@ -456,7 +436,7 @@ u32 bcma_pmu_get_cpu_clock(struct bcma_drv_cc *cc)
 	if (bus->chipinfo.id == BCMA_CHIP_ID_BCM53572)
 		return 300000000;
 
-	/* New PMUs can have different clock for bus and CPU */
+	 
 	if (cc->pmu.rev >= 5) {
 		u32 pll;
 		switch (bus->chipinfo.id) {
@@ -479,7 +459,7 @@ u32 bcma_pmu_get_cpu_clock(struct bcma_drv_cc *cc)
 		return bcma_pmu_pll_clock(cc, pll, BCMA_CC_PMU5_MAINPLL_CPU);
 	}
 
-	/* On old PMUs CPU has the same clock as the bus */
+	 
 	return bcma_pmu_get_bus_clock(cc);
 }
 
@@ -502,17 +482,14 @@ void bcma_pmu_spuravoid_pllupdate(struct bcma_drv_cc *cc, int spuravoid)
 	case BCMA_CHIP_ID_BCM5357:
 	case BCMA_CHIP_ID_BCM4749:
 	case BCMA_CHIP_ID_BCM53572:
-		/* 5357[ab]0, 43236[ab]0, and 6362b0 */
+		 
 
-		/*
-		 * BCM5357 needs to touch PLL1_PLLCTL[02],
-		 * so offset PLL0_PLLCTL[02] by 6
-		 */
+		 
 		phypll_offset = (bus->chipinfo.id == BCMA_CHIP_ID_BCM5357 ||
 		       bus->chipinfo.id == BCMA_CHIP_ID_BCM4749 ||
 		       bus->chipinfo.id == BCMA_CHIP_ID_BCM53572) ? 6 : 0;
 
-		/* RMW only the P1 divider */
+		 
 		bcma_pmu_write32(cc, BCMA_CC_PMU_PLLCTL_ADDR,
 				BCMA_CC_PMU_PLL_CTL0 + phypll_offset);
 		tmp = bcma_pmu_read32(cc, BCMA_CC_PMU_PLLCTL_DATA);
@@ -520,7 +497,7 @@ void bcma_pmu_spuravoid_pllupdate(struct bcma_drv_cc *cc, int spuravoid)
 		tmp |= (bcm5357_bcm43236_p1div[spuravoid] << BCMA_CC_PMU1_PLL0_PC0_P1DIV_SHIFT);
 		bcma_pmu_write32(cc, BCMA_CC_PMU_PLLCTL_DATA, tmp);
 
-		/* RMW only the int feedback divider */
+		 
 		bcma_pmu_write32(cc, BCMA_CC_PMU_PLLCTL_ADDR,
 				BCMA_CC_PMU_PLL_CTL2 + phypll_offset);
 		tmp = bcma_pmu_read32(cc, BCMA_CC_PMU_PLLCTL_DATA);
@@ -624,11 +601,8 @@ void bcma_pmu_spuravoid_pllupdate(struct bcma_drv_cc *cc, int spuravoid)
 	case BCMA_CHIP_ID_BCM43227:
 	case BCMA_CHIP_ID_BCM43228:
 	case BCMA_CHIP_ID_BCM43428:
-		/* LCNXN */
-		/*
-		 * PLL Settings for spur avoidance on/off mode,
-		 * no on2 support for 43228A0
-		 */
+		 
+		 
 		if (spuravoid == 1) {
 			bcma_pmu_spuravoid_pll_write(cc, BCMA_CC_PMU_PLL_CTL0,
 						     0x01100014);

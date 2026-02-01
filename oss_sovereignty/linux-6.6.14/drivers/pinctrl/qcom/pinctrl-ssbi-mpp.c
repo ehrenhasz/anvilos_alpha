@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -24,11 +21,11 @@
 #include "../core.h"
 #include "../pinctrl-utils.h"
 
-/* MPP registers */
+ 
 #define SSBI_REG_ADDR_MPP_BASE		0x50
 #define SSBI_REG_ADDR_MPP(n)		(SSBI_REG_ADDR_MPP_BASE + n)
 
-/* MPP Type: type */
+ 
 #define PM8XXX_MPP_TYPE_D_INPUT         0
 #define PM8XXX_MPP_TYPE_D_OUTPUT        1
 #define PM8XXX_MPP_TYPE_D_BI_DIR        2
@@ -38,70 +35,55 @@
 #define PM8XXX_MPP_TYPE_DTEST_SINK      6
 #define PM8XXX_MPP_TYPE_DTEST_OUTPUT    7
 
-/* Digital Input: control */
+ 
 #define PM8XXX_MPP_DIN_TO_INT           0
 #define PM8XXX_MPP_DIN_TO_DBUS1         1
 #define PM8XXX_MPP_DIN_TO_DBUS2         2
 #define PM8XXX_MPP_DIN_TO_DBUS3         3
 
-/* Digital Output: control */
+ 
 #define PM8XXX_MPP_DOUT_CTRL_LOW        0
 #define PM8XXX_MPP_DOUT_CTRL_HIGH       1
 #define PM8XXX_MPP_DOUT_CTRL_MPP        2
 #define PM8XXX_MPP_DOUT_CTRL_INV_MPP    3
 
-/* Bidirectional: control */
+ 
 #define PM8XXX_MPP_BI_PULLUP_1KOHM      0
 #define PM8XXX_MPP_BI_PULLUP_OPEN       1
 #define PM8XXX_MPP_BI_PULLUP_10KOHM     2
 #define PM8XXX_MPP_BI_PULLUP_30KOHM     3
 
-/* Analog Output: control */
+ 
 #define PM8XXX_MPP_AOUT_CTRL_DISABLE            0
 #define PM8XXX_MPP_AOUT_CTRL_ENABLE             1
 #define PM8XXX_MPP_AOUT_CTRL_MPP_HIGH_EN        2
 #define PM8XXX_MPP_AOUT_CTRL_MPP_LOW_EN         3
 
-/* Current Sink: control */
+ 
 #define PM8XXX_MPP_CS_CTRL_DISABLE      0
 #define PM8XXX_MPP_CS_CTRL_ENABLE       1
 #define PM8XXX_MPP_CS_CTRL_MPP_HIGH_EN  2
 #define PM8XXX_MPP_CS_CTRL_MPP_LOW_EN   3
 
-/* DTEST Current Sink: control */
+ 
 #define PM8XXX_MPP_DTEST_CS_CTRL_EN1    0
 #define PM8XXX_MPP_DTEST_CS_CTRL_EN2    1
 #define PM8XXX_MPP_DTEST_CS_CTRL_EN3    2
 #define PM8XXX_MPP_DTEST_CS_CTRL_EN4    3
 
-/* DTEST Digital Output: control */
+ 
 #define PM8XXX_MPP_DTEST_DBUS1          0
 #define PM8XXX_MPP_DTEST_DBUS2          1
 #define PM8XXX_MPP_DTEST_DBUS3          2
 #define PM8XXX_MPP_DTEST_DBUS4          3
 
-/* custom pinconf parameters */
+ 
 #define PM8XXX_CONFIG_AMUX		(PIN_CONFIG_END + 1)
 #define PM8XXX_CONFIG_DTEST_SELECTOR	(PIN_CONFIG_END + 2)
 #define PM8XXX_CONFIG_ALEVEL		(PIN_CONFIG_END + 3)
 #define PM8XXX_CONFIG_PAIRED		(PIN_CONFIG_END + 4)
 
-/**
- * struct pm8xxx_pin_data - dynamic configuration for a pin
- * @reg:		address of the control register
- * @mode:		operating mode for the pin (digital, analog or current sink)
- * @input:		pin is input
- * @output:		pin is output
- * @high_z:		pin is floating
- * @paired:		mpp operates in paired mode
- * @output_value:	logical output value of the mpp
- * @power_source:	selected power source
- * @dtest:		DTEST route selector
- * @amux:		input muxing in analog mode
- * @aout_level:		selector of the output in analog mode
- * @drive_strength:	drive strength of the current sink
- * @pullup:		pull up value, when in digital bidirectional mode
- */
+ 
 struct pm8xxx_pin_data {
 	unsigned reg;
 

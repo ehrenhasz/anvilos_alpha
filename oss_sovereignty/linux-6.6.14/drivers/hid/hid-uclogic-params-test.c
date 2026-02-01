@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- *  HID driver for UC-Logic devices not fully compliant with HID standard
- *
- *  Copyright (c) 2022 José Expósito <jose.exposito89@gmail.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include "./hid-uclogic-params.h"
@@ -53,7 +49,7 @@ static struct uclogic_parse_ugee_v2_desc_case uclogic_parse_ugee_v2_desc_cases[]
 		},
 		.frame_type = UCLOGIC_PARAMS_FRAME_BUTTONS,
 	},
-	/* XP-PEN Deco L str_desc: Frame with 8 buttons */
+	 
 	{
 		.name = "frame_type_buttons",
 		.res = 0,
@@ -77,7 +73,7 @@ static struct uclogic_parse_ugee_v2_desc_case uclogic_parse_ugee_v2_desc_cases[]
 		},
 		.frame_type = UCLOGIC_PARAMS_FRAME_BUTTONS,
 	},
-	/* PARBLO A610 PRO str_desc: Frame with 9 buttons and dial */
+	 
 	{
 		.name = "frame_type_dial",
 		.res = 0,
@@ -101,7 +97,7 @@ static struct uclogic_parse_ugee_v2_desc_case uclogic_parse_ugee_v2_desc_cases[]
 		},
 		.frame_type = UCLOGIC_PARAMS_FRAME_DIAL,
 	},
-	/* XP-PEN Deco Pro S str_desc: Frame with 8 buttons and mouse */
+	 
 	{
 		.name = "frame_type_mouse",
 		.res = 0,
@@ -196,7 +192,7 @@ static void hid_test_uclogic_params_cleanup_event_hooks(struct kunit *test)
 	res = uclogic_params_ugee_v2_init_event_hooks(hdev, &p);
 	KUNIT_ASSERT_EQ(test, res, 0);
 
-	/* Check that the function can be called repeatedly */
+	 
 	for (n = 0; n < 4; n++) {
 		uclogic_params_cleanup_event_hooks(&p);
 		KUNIT_EXPECT_PTR_EQ(test, p.event_hooks, NULL);

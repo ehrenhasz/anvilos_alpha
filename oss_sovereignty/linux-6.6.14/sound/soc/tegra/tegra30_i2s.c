@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra30_i2s.c - Tegra30 I2S driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (c) 2010-2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Based on code copyright/by:
- *
- * Copyright (c) 2009-2010, NVIDIA Corporation.
- * Scott Peterson <speterson@nvidia.com>
- *
- * Copyright (C) 2010 Google, Inc.
- * Iliyan Malchev <malchev@google.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -158,7 +145,7 @@ static int tegra30_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	srate = params_rate(params);
 
-	/* Final "* 2" required by Tegra hardware */
+	 
 	i2sclock = srate * params_channels(params) * sample_size * 2;
 
 	bitcnt = (i2sclock / (2 * srate)) - 1;
@@ -285,7 +272,7 @@ static int tegra30_i2s_set_tdm(struct snd_soc_dai *dai,
 
 	pm_runtime_get_sync(dai->dev);
 	regmap_update_bits(i2s->regmap, TEGRA30_I2S_SLOT_CTRL, mask, val);
-	/* set the fsync width to minimum of 1 clock width */
+	 
 	regmap_update_bits(i2s->regmap, TEGRA30_I2S_CH_CTRL,
 			   TEGRA30_I2S_CH_CTRL_FSYNC_WIDTH_MASK, 0x0);
 	pm_runtime_put(dai->dev);

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2000 Steven J. Hill (sjhill@realitydiluted.com)
- *		  2002-2006 Thomas Gleixner (tglx@linutronix.de)
- *
- *  Credits:
- *	David Woodhouse for adding multichip support
- *
- *	Aleph One Ltd. and Toby Churchill Ltd. for supporting the
- *	rework for 2K page size chips
- *
- * This file contains all ONFI helpers.
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -18,9 +7,7 @@
 
 #define JEDEC_PARAM_PAGES 3
 
-/*
- * Check if the NAND chip is JEDEC compliant, returns 1 if it is, 0 otherwise.
- */
+ 
 int nand_jedec_detect(struct nand_chip *chip)
 {
 	struct nand_device *base = &chip->base;
@@ -36,12 +23,12 @@ int nand_jedec_detect(struct nand_chip *chip)
 
 	memorg = nanddev_get_memorg(&chip->base);
 
-	/* Try JEDEC for unknown chip or LP */
+	 
 	ret = nand_readid_op(chip, 0x40, id, sizeof(id));
 	if (ret || strncmp(id, "JEDEC", sizeof(id)))
 		return 0;
 
-	/* JEDEC chip: allocate a buffer to hold its parameter page */
+	 
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
@@ -74,12 +61,12 @@ int nand_jedec_detect(struct nand_chip *chip)
 		goto free_jedec_param_page;
 	}
 
-	/* Check version */
+	 
 	val = le16_to_cpu(p->revision);
 	if (val & (1 << 2))
 		jedec_version = 10;
 	else if (val & (1 << 1))
-		jedec_version = 1; /* vendor specific version */
+		jedec_version = 1;  
 
 	if (!jedec_version) {
 		pr_info("unsupported JEDEC version: %d\n", val);
@@ -100,7 +87,7 @@ int nand_jedec_detect(struct nand_chip *chip)
 	memorg->pagesize = le32_to_cpu(p->byte_per_page);
 	mtd->writesize = memorg->pagesize;
 
-	/* Please reference to the comment for nand_flash_detect_onfi. */
+	 
 	memorg->pages_per_eraseblock =
 			1 << (fls(le32_to_cpu(p->pages_per_block)) - 1);
 	mtd->erasesize = memorg->pages_per_eraseblock * memorg->pagesize;
@@ -111,7 +98,7 @@ int nand_jedec_detect(struct nand_chip *chip)
 	memorg->luns_per_target = p->lun_count;
 	memorg->planes_per_lun = 1 << p->multi_plane_addr;
 
-	/* Please reference to the comment for nand_flash_detect_onfi. */
+	 
 	memorg->eraseblocks_per_lun =
 		1 << (fls(le32_to_cpu(p->blocks_per_lun)) - 1);
 	memorg->bits_per_cell = p->bits_per_cell;
@@ -119,7 +106,7 @@ int nand_jedec_detect(struct nand_chip *chip)
 	if (le16_to_cpu(p->features) & JEDEC_FEATURE_16_BIT_BUS)
 		chip->options |= NAND_BUSWIDTH_16;
 
-	/* ECC info */
+	 
 	ecc = &p->ecc_info[0];
 
 	if (ecc->codeword_size >= 9) {

@@ -1,30 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Philips webcam
-   Functions that send various control messages to the webcam, including
-   video modes.
-   (C) 1999-2003 Nemosoft Unv.
-   (C) 2004-2006 Luc Saillard (luc@saillard.org)
-   (C) 2011 Hans de Goede <hdegoede@redhat.com>
 
-   NOTE: this version of pwc is an unofficial (modified) release of pwc & pcwx
-   driver and thus may have bugs that are not present in the original version.
-   Please send bug reports and support requests to <luc@saillard.org>.
+ 
 
-   NOTE: this version of pwc is an unofficial (modified) release of pwc & pcwx
-   driver and thus may have bugs that are not present in the original version.
-   Please send bug reports and support requests to <luc@saillard.org>.
-   The decompression routines have been implemented by reverse-engineering the
-   Nemosoft binary pwcx module. Caveat emptor.
+ 
 
-*/
-
-/*
-   Changes
-   2001/08/03  Alvarado   Added methods for changing white balance and
-			  red/green gains
- */
-
-/* Control functions for the cam; brightness, contrast, video mode, etc. */
+ 
 
 #ifdef __KERNEL__
 #include <linux/uaccess.h>
@@ -37,7 +16,7 @@
 #include "pwc-dec1.h"
 #include "pwc-dec23.h"
 
-/* Selectors for status controls used only in this file */
+ 
 #define GET_STATUS_B00				0x0B00
 #define SENSOR_TYPE_FORMATTER1			0x0C00
 #define GET_STATUS_3000				0x3000
@@ -50,10 +29,10 @@
 #define SENSOR_TYPE_FORMATTER2			0x3700
 #define GET_STATUS_3800				0x3800
 #define GET_STATUS_4000				0x4000
-#define GET_STATUS_4100				0x4100	/* Get */
-#define CTL_STATUS_4200				0x4200	/* [GS] 1 */
+#define GET_STATUS_4100				0x4100	 
+#define CTL_STATUS_4200				0x4200	 
 
-/* Formatters for the Video Endpoint controls [GS]ET_EP_STREAM_CTL */
+ 
 #define VIDEO_OUTPUT_CONTROL_FORMATTER		0x0100
 
 static const char *size2name[PSZ_MAX] =
@@ -66,21 +45,17 @@ static const char *size2name[PSZ_MAX] =
 	"VGA",
 };
 
-/********/
+ 
 
-/* Entries for the Nala (645/646) camera; the Nala doesn't have compression
-   preferences, so you either get compressed or non-compressed streams.
-
-   An alternate value of 0 means this mode is not available at all.
- */
+ 
 
 #define PWC_FPS_MAX_NALA 8
 
 struct Nala_table_entry {
-	char alternate;			/* USB alternate setting */
-	int compressed;			/* Compressed yes/no */
+	char alternate;			 
+	int compressed;			 
 
-	unsigned char mode[3];		/* precomputed mode table */
+	unsigned char mode[3];		 
 };
 
 static unsigned int Nala_fps_vector[PWC_FPS_MAX_NALA] = { 4, 5, 7, 10, 12, 15, 20, 24 };
@@ -90,7 +65,7 @@ static struct Nala_table_entry Nala_table[PSZ_MAX][PWC_FPS_MAX_NALA] =
 #include "pwc-nala.h"
 };
 
-/****************************************************************************/
+ 
 
 static int recv_control_msg(struct pwc_device *pdev,
 	u8 request, u16 value, int recv_count)
@@ -144,23 +119,23 @@ static int set_video_mode_Nala(struct pwc_device *pdev, int size, int pixfmt,
 	int fps, ret = 0;
 	struct Nala_table_entry *pEntry;
 	int frames2frames[31] =
-	{ /* closest match of framerate */
-	   0,  0,  0,  0,  4,  /*  0-4  */
-	   5,  5,  7,  7, 10,  /*  5-9  */
-	  10, 10, 12, 12, 15,  /* 10-14 */
-	  15, 15, 15, 20, 20,  /* 15-19 */
-	  20, 20, 20, 24, 24,  /* 20-24 */
-	  24, 24, 24, 24, 24,  /* 25-29 */
-	  24                   /* 30    */
+	{  
+	   0,  0,  0,  0,  4,   
+	   5,  5,  7,  7, 10,   
+	  10, 10, 12, 12, 15,   
+	  15, 15, 15, 20, 20,   
+	  20, 20, 20, 24, 24,   
+	  24, 24, 24, 24, 24,   
+	  24                    
 	};
 	int frames2table[31] =
-	{ 0, 0, 0, 0, 0, /*  0-4  */
-	  1, 1, 1, 2, 2, /*  5-9  */
-	  3, 3, 4, 4, 4, /* 10-14 */
-	  5, 5, 5, 5, 5, /* 15-19 */
-	  6, 6, 6, 6, 7, /* 20-24 */
-	  7, 7, 7, 7, 7, /* 25-29 */
-	  7              /* 30    */
+	{ 0, 0, 0, 0, 0,  
+	  1, 1, 1, 2, 2,  
+	  3, 3, 4, 4, 4,  
+	  5, 5, 5, 5, 5,  
+	  6, 6, 6, 6, 7,  
+	  7, 7, 7, 7, 7,  
+	  7               
 	};
 
 	if (size < 0 || size > PSZ_CIF)
@@ -186,7 +161,7 @@ static int set_video_mode_Nala(struct pwc_device *pdev, int size, int pixfmt,
 	if (pEntry->compressed && pixfmt == V4L2_PIX_FMT_YUV420)
 		pwc_dec1_init(pdev, pEntry->mode);
 
-	/* Set various parameters */
+	 
 	pdev->pixfmt = pixfmt;
 	pdev->vframes = frames;
 	pdev->valternate = pEntry->alternate;
@@ -194,7 +169,7 @@ static int set_video_mode_Nala(struct pwc_device *pdev, int size, int pixfmt,
 	pdev->height = pwc_image_sizes[size][1];
 	pdev->frame_size = (pdev->width * pdev->height * 3) / 2;
 	if (pEntry->compressed) {
-		if (pdev->release < 5) { /* 4 fold compression */
+		if (pdev->release < 5) {  
 			pdev->vbandlength = 528;
 			pdev->frame_size /= 4;
 		}
@@ -206,7 +181,7 @@ static int set_video_mode_Nala(struct pwc_device *pdev, int size, int pixfmt,
 	else
 		pdev->vbandlength = 0;
 
-	/* Let pwc-if.c:isoc_init know we don't support higher compression */
+	 
 	*compression = 3;
 
 	return 0;
@@ -229,7 +204,7 @@ static int set_video_mode_Timon(struct pwc_device *pdev, int size, int pixfmt,
 		frames = 30;
 	fps = (frames / 5) - 1;
 
-	/* Find a supported framerate with progressively higher compression */
+	 
 	do {
 		pChoose = &Timon_table[size][fps][*compression];
 		if (pChoose->alternate != 0)
@@ -238,7 +213,7 @@ static int set_video_mode_Timon(struct pwc_device *pdev, int size, int pixfmt,
 	} while (*compression <= 3);
 
 	if (pChoose->alternate == 0)
-		return -ENOENT; /* Not supported. */
+		return -ENOENT;  
 
 	if (send_to_cam)
 		ret = send_video_command(pdev, pdev->vendpoint,
@@ -249,7 +224,7 @@ static int set_video_mode_Timon(struct pwc_device *pdev, int size, int pixfmt,
 	if (pChoose->bandlength > 0 && pixfmt == V4L2_PIX_FMT_YUV420)
 		pwc_dec23_init(pdev, pChoose->mode);
 
-	/* Set various parameters */
+	 
 	pdev->pixfmt = pixfmt;
 	pdev->vframes = (fps + 1) * 5;
 	pdev->valternate = pChoose->alternate;
@@ -280,7 +255,7 @@ static int set_video_mode_Kiara(struct pwc_device *pdev, int size, int pixfmt,
 		frames = 30;
 	fps = (frames / 5) - 1;
 
-	/* Find a supported framerate with progressively higher compression */
+	 
 	do {
 		pChoose = &Kiara_table[size][fps][*compression];
 		if (pChoose->alternate != 0)
@@ -289,9 +264,9 @@ static int set_video_mode_Kiara(struct pwc_device *pdev, int size, int pixfmt,
 	} while (*compression <= 3);
 
 	if (pChoose->alternate == 0)
-		return -ENOENT; /* Not supported. */
+		return -ENOENT;  
 
-	/* Firmware bug: video endpoint is 5, but commands are sent to endpoint 4 */
+	 
 	if (send_to_cam)
 		ret = send_video_command(pdev, 4, pChoose->mode, 12);
 	if (ret < 0)
@@ -300,7 +275,7 @@ static int set_video_mode_Kiara(struct pwc_device *pdev, int size, int pixfmt,
 	if (pChoose->bandlength > 0 && pixfmt == V4L2_PIX_FMT_YUV420)
 		pwc_dec23_init(pdev, pChoose->mode);
 
-	/* All set and go */
+	 
 	pdev->pixfmt = pixfmt;
 	pdev->vframes = (fps + 1) * 5;
 	pdev->valternate = pChoose->alternate;
@@ -470,7 +445,7 @@ int pwc_button_ctrl(struct pwc_device *pdev, u16 value)
 	return 0;
 }
 
-/* POWER */
+ 
 void pwc_camera_power(struct pwc_device *pdev, int power)
 {
 	int r;
@@ -479,12 +454,12 @@ void pwc_camera_power(struct pwc_device *pdev, int power)
 		return;
 
 	if (pdev->type < 675 || (pdev->type < 730 && pdev->release < 6))
-		return;	/* Not supported by Nala or Timon < release 6 */
+		return;	 
 
 	if (power)
-		pdev->ctrl_buf[0] = 0x00; /* active */
+		pdev->ctrl_buf[0] = 0x00;  
 	else
-		pdev->ctrl_buf[0] = 0xFF; /* power save */
+		pdev->ctrl_buf[0] = 0xFF;  
 	r = send_control_msg(pdev, SET_STATUS_CTL,
 		SET_POWER_SAVE_MODE_FORMATTER, pdev->ctrl_buf, 1);
 	if (r < 0)
@@ -528,7 +503,7 @@ int pwc_get_cmos_sensor(struct pwc_device *pdev, int *sensor)
 	if (pdev->type < 675)
 		request = SENSOR_TYPE_FORMATTER1;
 	else if (pdev->type < 730)
-		return -1; /* The Vesta series doesn't have this call */
+		return -1;  
 	else
 		request = SENSOR_TYPE_FORMATTER2;
 

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Based on:
- *
- * Minimal BPF JIT image disassembler
- *
- * Disassembles BPF JIT compiler emitted opcodes back to asm insn's for
- * debugging or verification purposes.
- *
- * Copyright 2013 Daniel Borkmann <daniel@iogearbox.net>
- * Licensed under the GNU General Public License, version 2.0 (GPLv2)
- */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -63,10 +53,7 @@ static int printf_json(char *s)
 	return 0;
 }
 
-/* This callback to set the ref_type is necessary to have the LLVM disassembler
- * print PC-relative addresses instead of byte offsets for branch instruction
- * targets.
- */
+ 
 static const char *
 symbol_lookup_callback(__maybe_unused void *disasm_info,
 		       __maybe_unused uint64_t ref_value,
@@ -131,7 +118,7 @@ int disasm_init(void)
 	LLVMInitializeAllDisassemblers();
 	return 0;
 }
-#endif /* HAVE_LLVM_SUPPORT */
+#endif  
 
 #ifdef HAVE_LIBBFD_SUPPORT
 #define DISASM_SPACER "\t"
@@ -168,7 +155,7 @@ static int printf_json(void *out, const char *fmt, va_list ap)
 	if (!oper_count) {
 		int i;
 
-		/* Strip trailing spaces */
+		 
 		i = strlen(s) - 1;
 		while (s[i] == ' ')
 			s[i--] = '\0';
@@ -178,7 +165,7 @@ static int printf_json(void *out, const char *fmt, va_list ap)
 		jsonw_start_array(json_wtr);
 		oper_count++;
 	} else if (!strcmp(fmt, ",")) {
-		   /* Skip */
+		    
 	} else {
 		jsonw_string(json_wtr, s);
 		oper_count++;
@@ -254,7 +241,7 @@ static int init_context(disasm_ctx_t *ctx, const char *arch,
 					     (fprintf_ftype) fprintf,
 					     fprintf_styled);
 
-	/* Update architecture info for offload. */
+	 
 	if (arch) {
 		const bfd_arch_info_type *inf = bfd_scan_arch(arch);
 
@@ -314,7 +301,7 @@ int disasm_init(void)
 	bfd_init();
 	return 0;
 }
-#endif /* HAVE_LIBBPFD_SUPPORT */
+#endif  
 
 int disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
 		      const char *arch, const char *disassembler_options,
@@ -363,10 +350,7 @@ int disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
 		count = disassemble_insn(&ctx, image, len, pc);
 
 		if (json_output) {
-			/* Operand array, was started in fprintf_json. Before
-			 * that, make sure we have a _null_ value if no operand
-			 * other than operation code was present.
-			 */
+			 
 			if (oper_count == 1)
 				jsonw_null(json_wtr);
 			jsonw_end_array(json_wtr);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _HW_H_
 #define _HW_H_
@@ -31,24 +27,24 @@ enum ath10k_bus {
 #define QCA9377_1_0_DEVICE_ID   (0x0042)
 #define QCA9887_1_0_DEVICE_ID   (0x0050)
 
-/* QCA988X 1.0 definitions (unsupported) */
+ 
 #define QCA988X_HW_1_0_CHIP_ID_REV	0x0
 
-/* QCA988X 2.0 definitions */
+ 
 #define QCA988X_HW_2_0_VERSION		0x4100016c
 #define QCA988X_HW_2_0_CHIP_ID_REV	0x2
 #define QCA988X_HW_2_0_FW_DIR		ATH10K_FW_DIR "/QCA988X/hw2.0"
 #define QCA988X_HW_2_0_BOARD_DATA_FILE	"board.bin"
 #define QCA988X_HW_2_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA9887 1.0 definitions */
+ 
 #define QCA9887_HW_1_0_VERSION		0x4100016d
 #define QCA9887_HW_1_0_CHIP_ID_REV	0
 #define QCA9887_HW_1_0_FW_DIR		ATH10K_FW_DIR "/QCA9887/hw1.0"
 #define QCA9887_HW_1_0_BOARD_DATA_FILE	"board.bin"
 #define QCA9887_HW_1_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA6174 target BMI version signatures */
+ 
 #define QCA6174_HW_1_0_VERSION		0x05000000
 #define QCA6174_HW_1_1_VERSION		0x05000001
 #define QCA6174_HW_1_3_VERSION		0x05000003
@@ -56,7 +52,7 @@ enum ath10k_bus {
 #define QCA6174_HW_3_0_VERSION		0x05020000
 #define QCA6174_HW_3_2_VERSION		0x05030000
 
-/* QCA9377 target BMI version signatures */
+ 
 #define QCA9377_HW_1_0_DEV_VERSION	0x05020000
 #define QCA9377_HW_1_1_DEV_VERSION	0x05020001
 
@@ -91,17 +87,17 @@ enum qca9377_chip_id_rev {
 #define QCA6174_HW_3_0_BOARD_DATA_FILE	"board.bin"
 #define QCA6174_HW_3_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA99X0 1.0 definitions (unsupported) */
+ 
 #define QCA99X0_HW_1_0_CHIP_ID_REV     0x0
 
-/* QCA99X0 2.0 definitions */
+ 
 #define QCA99X0_HW_2_0_DEV_VERSION     0x01000000
 #define QCA99X0_HW_2_0_CHIP_ID_REV     0x1
 #define QCA99X0_HW_2_0_FW_DIR          ATH10K_FW_DIR "/QCA99X0/hw2.0"
 #define QCA99X0_HW_2_0_BOARD_DATA_FILE "board.bin"
 #define QCA99X0_HW_2_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA9984 1.0 defines */
+ 
 #define QCA9984_HW_1_0_DEV_VERSION	0x1000000
 #define QCA9984_HW_DEV_TYPE		0xa
 #define QCA9984_HW_1_0_CHIP_ID_REV	0x0
@@ -110,7 +106,7 @@ enum qca9377_chip_id_rev {
 #define QCA9984_HW_1_0_EBOARD_DATA_FILE "eboard.bin"
 #define QCA9984_HW_1_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA9888 2.0 defines */
+ 
 #define QCA9888_HW_2_0_DEV_VERSION	0x1000000
 #define QCA9888_HW_DEV_TYPE		0xc
 #define QCA9888_HW_2_0_CHIP_ID_REV	0x0
@@ -118,18 +114,18 @@ enum qca9377_chip_id_rev {
 #define QCA9888_HW_2_0_BOARD_DATA_FILE "board.bin"
 #define QCA9888_HW_2_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA9377 1.0 definitions */
+ 
 #define QCA9377_HW_1_0_FW_DIR          ATH10K_FW_DIR "/QCA9377/hw1.0"
 #define QCA9377_HW_1_0_BOARD_DATA_FILE "board.bin"
 #define QCA9377_HW_1_0_PATCH_LOAD_ADDR	0x1234
 
-/* QCA4019 1.0 definitions */
+ 
 #define QCA4019_HW_1_0_DEV_VERSION     0x01000000
 #define QCA4019_HW_1_0_FW_DIR          ATH10K_FW_DIR "/QCA4019/hw1.0"
 #define QCA4019_HW_1_0_BOARD_DATA_FILE "board.bin"
 #define QCA4019_HW_1_0_PATCH_LOAD_ADDR  0x1234
 
-/* WCN3990 1.0 definitions */
+ 
 #define WCN3990_HW_1_0_DEV_VERSION	ATH10K_HW_WCN3990
 #define WCN3990_HW_1_0_FW_DIR		ATH10K_FW_DIR "/WCN3990/hw1.0"
 
@@ -140,13 +136,13 @@ enum qca9377_chip_id_rev {
 #define ATH10K_FW_API2_FILE		"firmware-2.bin"
 #define ATH10K_FW_API3_FILE		"firmware-3.bin"
 
-/* added support for ATH10K_FW_IE_WMI_OP_VERSION */
+ 
 #define ATH10K_FW_API4_FILE		"firmware-4.bin"
 
-/* HTT id conflict fix for management frames over HTT */
+ 
 #define ATH10K_FW_API5_FILE		"firmware-5.bin"
 
-/* the firmware-6.bin blob */
+ 
 #define ATH10K_FW_API6_FILE		"firmware-6.bin"
 
 #define ATH10K_FW_UTF_FILE		"utf.bin"
@@ -154,7 +150,7 @@ enum qca9377_chip_id_rev {
 
 #define ATH10K_FW_UTF_FILE_BASE		"utf"
 
-/* includes also the null byte */
+ 
 #define ATH10K_FIRMWARE_MAGIC               "QCA-ATH10K"
 #define ATH10K_BOARD_MAGIC                  "QCA-ATH10K-BOARD"
 
@@ -175,17 +171,13 @@ enum ath10k_fw_ie_type {
 	ATH10K_FW_IE_FW_IMAGE = 3,
 	ATH10K_FW_IE_OTP_IMAGE = 4,
 
-	/* WMI "operations" interface version, 32 bit value. Supported from
-	 * FW API 4 and above.
-	 */
+	 
 	ATH10K_FW_IE_WMI_OP_VERSION = 5,
 
-	/* HTT "operations" interface version, 32 bit value. Supported from
-	 * FW API 5 and above.
-	 */
+	 
 	ATH10K_FW_IE_HTT_OP_VERSION = 6,
 
-	/* Code swap image for firmware binary */
+	 
 	ATH10K_FW_IE_FW_CODE_SWAP_IMAGE = 7,
 };
 
@@ -199,7 +191,7 @@ enum ath10k_fw_wmi_op_version {
 	ATH10K_FW_WMI_OP_VERSION_10_2_4 = 5,
 	ATH10K_FW_WMI_OP_VERSION_10_4 = 6,
 
-	/* keep last */
+	 
 	ATH10K_FW_WMI_OP_VERSION_MAX,
 };
 
@@ -208,19 +200,19 @@ enum ath10k_fw_htt_op_version {
 
 	ATH10K_FW_HTT_OP_VERSION_MAIN = 1,
 
-	/* also used in 10.2 and 10.2.4 branches */
+	 
 	ATH10K_FW_HTT_OP_VERSION_10_1 = 2,
 
 	ATH10K_FW_HTT_OP_VERSION_TLV = 3,
 
 	ATH10K_FW_HTT_OP_VERSION_10_4 = 4,
 
-	/* keep last */
+	 
 	ATH10K_FW_HTT_OP_VERSION_MAX,
 };
 
 enum ath10k_bd_ie_type {
-	/* contains sub IEs of enum ath10k_bd_ie_board_type */
+	 
 	ATH10K_BD_IE_BOARD = 0,
 	ATH10K_BD_IE_BOARD_EXT = 1,
 };
@@ -411,22 +403,15 @@ int ath10k_hw_diag_fast_download(struct ath10k *ar,
 #define QCA_REV_40XX(ar) ((ar)->hw_rev == ATH10K_HW_QCA4019)
 #define QCA_REV_WCN3990(ar) ((ar)->hw_rev == ATH10K_HW_WCN3990)
 
-/* Known peculiarities:
- *  - raw appears in nwifi decap, raw and nwifi appear in ethernet decap
- *  - raw have FCS, nwifi doesn't
- *  - ethernet frames have 802.11 header decapped and parts (base hdr, cipher
- *    param, llc/snap) are aligned to 4byte boundaries each
- */
+ 
 enum ath10k_hw_txrx_mode {
 	ATH10K_HW_TXRX_RAW = 0,
 
-	/* Native Wifi decap mode is used to align IP frames to 4-byte
-	 * boundaries and avoid a very expensive re-alignment in mac80211.
-	 */
+	 
 	ATH10K_HW_TXRX_NATIVE_WIFI = 1,
 	ATH10K_HW_TXRX_ETHERNET = 2,
 
-	/* Valid for HTT >= 3.0. Used for management frames in TX_FRM. */
+	 
 	ATH10K_HW_TXRX_MGMT = 3,
 };
 
@@ -469,20 +454,10 @@ enum ath10k_hw_rate_rev2_cck {
 enum ath10k_hw_cc_wraparound_type {
 	ATH10K_HW_CC_WRAP_DISABLED = 0,
 
-	/* This type is when the HW chip has a quirky Cycle Counter
-	 * wraparound which resets to 0x7fffffff instead of 0. All
-	 * other CC related counters (e.g. Rx Clear Count) are divided
-	 * by 2 so they never wraparound themselves.
-	 */
+	 
 	ATH10K_HW_CC_WRAP_SHIFTED_ALL = 1,
 
-	/* Each hw counter wrapsaround independently. When the
-	 * counter overflows the repestive counter is right shifted
-	 * by 1, i.e reset to 0x7fffffff, and other counters will be
-	 * running unaffected. In this type of wraparound, it should
-	 * be possible to report accurate Rx busy time unlike the
-	 * first type.
-	 */
+	 
 	ATH10K_HW_CC_WRAP_SHIFTED_EACH = 2,
 };
 
@@ -497,7 +472,7 @@ enum ath10k_hw_refclk_speed {
 	ATH10K_HW_REFCLK_40_MHZ = 6,
 	ATH10K_HW_REFCLK_52_MHZ = 7,
 
-	/* must be the last one */
+	 
 	ATH10K_HW_REFCLK_COUNT,
 };
 
@@ -521,28 +496,18 @@ struct ath10k_hw_params {
 	int uart_pin;
 	u32 otp_exe_param;
 
-	/* Type of hw cycle counter wraparound logic, for more info
-	 * refer enum ath10k_hw_cc_wraparound_type.
-	 */
+	 
 	enum ath10k_hw_cc_wraparound_type cc_wraparound_type;
 
-	/* Some of chip expects fragment descriptor to be continuous
-	 * memory for any TX operation. Set continuous_frag_desc flag
-	 * for the hardware which have such requirement.
-	 */
+	 
 	bool continuous_frag_desc;
 
-	/* CCK hardware rate table mapping for the newer chipsets
-	 * like QCA99X0, QCA4019 got revised. The CCK h/w rate values
-	 * are in a proper order with respect to the rate/preamble
-	 */
+	 
 	bool cck_rate_map_rev2;
 
 	u32 channel_counters_freq_hz;
 
-	/* Mgmt tx descriptors threshold for limiting probe response
-	 * frames.
-	 */
+	 
 	u32 max_probe_resp_desc_thres;
 
 	u32 tx_chain_mask;
@@ -559,77 +524,69 @@ struct ath10k_hw_params {
 		size_t board_ext_size;
 	} fw;
 
-	/* qca99x0 family chips deliver broadcast/multicast management
-	 * frames encrypted and expect software do decryption.
-	 */
+	 
 	bool sw_decrypt_mcast_mgmt;
 
-	/* Rx descriptor abstraction */
+	 
 	const struct ath10k_htt_rx_desc_ops *rx_desc_ops;
 
 	const struct ath10k_hw_ops *hw_ops;
 
-	/* Number of bytes used for alignment in rx_hdr_status of rx desc. */
+	 
 	int decap_align_bytes;
 
-	/* hw specific clock control parameters */
+	 
 	const struct ath10k_hw_clk_params *hw_clk;
 	int target_cpu_freq;
 
-	/* Number of bytes to be discarded for each FFT sample */
+	 
 	int spectral_bin_discard;
 
-	/* The board may have a restricted NSS for 160 or 80+80 vs what it
-	 * can do for 80Mhz.
-	 */
+	 
 	int vht160_mcs_rx_highest;
 	int vht160_mcs_tx_highest;
 
-	/* Number of ciphers supported (i.e First N) in cipher_suites array */
+	 
 	int n_cipher_suites;
 
 	u32 num_peers;
 	u32 ast_skid_limit;
 	u32 num_wds_entries;
 
-	/* Targets supporting physical addressing capability above 32-bits */
+	 
 	bool target_64bit;
 
-	/* Target rx ring fill level */
+	 
 	u32 rx_ring_fill_level;
 
-	/* target supporting shadow register for ce write */
+	 
 	bool shadow_reg_support;
 
-	/* target supporting retention restore on ddr */
+	 
 	bool rri_on_ddr;
 
-	/* Number of bytes to be the offset for each FFT sample */
+	 
 	int spectral_bin_offset;
 
-	/* targets which require hw filter reset during boot up,
-	 * to avoid it sending spurious acks.
-	 */
+	 
 	bool hw_filter_reset_required;
 
-	/* target supporting fw download via diag ce */
+	 
 	bool fw_diag_ce_download;
 
-	/* target supporting fw download via large size BMI */
+	 
 	bool bmi_large_size_download;
 
-	/* need to set uart pin if disable uart print, workaround for a
-	 * firmware bug
-	 */
+	 
 	bool uart_pin_workaround;
 
-	/* Workaround for the credit size calculation */
+	 
 	bool credit_size_workaround;
 
-	/* tx stats support over pktlog */
+	 
 	bool tx_stats_over_pktlog;
 
-	/* provides bitrates for sta_statistics using WMI_TLV_PEER_STATS_INFO_EVENTID */
+	 
 	bool supports_peer_stats_info;
 
 	bool dynamic_sar_support;
@@ -645,7 +602,7 @@ struct htt_resp;
 struct htt_data_tx_completion_ext;
 struct htt_rx_ring_rx_desc_offsets;
 
-/* Defines needed for Rx descriptor abstraction */
+ 
 struct ath10k_hw_ops {
 	void (*set_coverage_class)(struct ath10k *ar, s16 value);
 	int (*enable_pll_clk)(struct ath10k *ar);
@@ -679,7 +636,7 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 	return 0;
 }
 
-/* Target specific defines for MAIN firmware */
+ 
 #define TARGET_NUM_VDEVS			8
 #define TARGET_NUM_PEER_AST			2
 #define TARGET_NUM_WDS_ENTRIES			32
@@ -712,7 +669,7 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_NUM_MSDU_DESC			(1024 + 400)
 #define TARGET_MAX_FRAG_ENTRIES			0
 
-/* Target specific defines for 10.X firmware */
+ 
 #define TARGET_10X_NUM_VDEVS			16
 #define TARGET_10X_NUM_PEER_AST			2
 #define TARGET_10X_NUM_WDS_ENTRIES		32
@@ -751,10 +708,10 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_10X_NUM_MSDU_DESC		(1024 + 400)
 #define TARGET_10X_MAX_FRAG_ENTRIES		0
 
-/* 10.2 parameters */
+ 
 #define TARGET_10_2_DMA_BURST_SIZE		0
 
-/* Target specific defines for WMI-TLV firmware */
+ 
 #define TARGET_TLV_NUM_VDEVS			4
 #define TARGET_TLV_NUM_STATIONS			32
 #define TARGET_TLV_NUM_PEERS			33
@@ -765,20 +722,20 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_TLV_NUM_WOW_PATTERNS		22
 #define TARGET_TLV_MGMT_NUM_MSDU_DESC		(50)
 
-/* Target specific defines for WMI-HL-1.0 firmware */
+ 
 #define TARGET_HL_TLV_NUM_PEERS			33
 #define TARGET_HL_TLV_AST_SKID_LIMIT		16
 #define TARGET_HL_TLV_NUM_WDS_ENTRIES		2
 
-/* Target specific defines for QCA9377 high latency firmware */
+ 
 #define TARGET_QCA9377_HL_NUM_PEERS		15
 
-/* Diagnostic Window */
+ 
 #define CE_DIAG_PIPE	7
 
 #define NUM_TARGET_CE_CONFIG_WLAN ar->hw_values->num_target_ce_config_wlan
 
-/* Target specific defines for 10.4 firmware */
+ 
 #define TARGET_10_4_NUM_VDEVS			16
 #define TARGET_10_4_NUM_STATIONS		32
 #define TARGET_10_4_NUM_PEERS			((TARGET_10_4_NUM_STATIONS) + \
@@ -796,10 +753,10 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_10_4_NUM_MSDU_DESC_PFC		2500
 #define TARGET_10_4_AST_SKID_LIMIT		32
 
-/* 100 ms for video, best-effort, and background */
+ 
 #define TARGET_10_4_RX_TIMEOUT_LO_PRI		100
 
-/* 40 ms for voice */
+ 
 #define TARGET_10_4_RX_TIMEOUT_HI_PRI		40
 
 #define TARGET_10_4_RX_DECAP_MODE		ATH10K_HW_TXRX_NATIVE_WIFI
@@ -808,7 +765,7 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_10_4_ROAM_OFFLOAD_MAX_VDEV	3
 #define TARGET_10_4_ROAM_OFFLOAD_MAX_PROFILES   8
 
-/* Note: mcast to ucast is disabled by default */
+ 
 #define TARGET_10_4_NUM_MCAST_GROUPS		0
 #define TARGET_10_4_NUM_MCAST_TABLE_ELEMS	0
 #define TARGET_10_4_MCAST2UCAST_MODE		0
@@ -833,32 +790,26 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define TARGET_10_4_IPHDR_PAD_CONFIG		1
 #define TARGET_10_4_QWRAP_CONFIG		0
 
-/* TDLS config */
+ 
 #define TARGET_10_4_NUM_TDLS_VDEVS		1
 #define TARGET_10_4_NUM_TDLS_BUFFER_STA		1
 #define TARGET_10_4_NUM_TDLS_SLEEP_STA		1
 
-/* Maximum number of Copy Engine's supported */
+ 
 #define CE_COUNT_MAX 12
 
-/* Number of Copy Engines supported */
+ 
 #define CE_COUNT ar->hw_values->ce_count
 
-/*
- * Granted MSIs are assigned as follows:
- * Firmware uses the first
- * Remaining MSIs, if any, are used by Copy Engines
- * This mapping is known to both Target firmware and Host software.
- * It may be changed as long as Host and Target are kept in sync.
- */
-/* MSI for firmware (errors, etc.) */
+ 
+ 
 #define MSI_ASSIGN_FW		0
 
-/* MSIs for Copy Engines */
+ 
 #define MSI_ASSIGN_CE_INITIAL	1
 #define MSI_ASSIGN_CE_MAX	ar->hw_values->msi_assign_ce_max
 
-/* as of IP3.7.1 */
+ 
 #define RTC_STATE_V_ON				ar->hw_values->rtc_state_val_on
 
 #define RTC_STATE_V_LSB				0
@@ -982,13 +933,13 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 
 #define CCNT_TO_MSEC(ar, x) ((x) / ar->hw_params.channel_counters_freq_hz)
 
-/* Firmware indications to the Host via SCRATCH_3 register. */
+ 
 #define FW_INDICATOR_ADDRESS			ar->regs->fw_indicator_address
 #define FW_IND_EVENT_PENDING			1
 #define FW_IND_INITIALIZED			2
 #define FW_IND_HOST_READY			0x80000000
 
-/* HOST_REG interrupt from firmware */
+ 
 #define PCIE_INTR_FIRMWARE_MASK			ar->regs->pcie_intr_fw_mask
 #define PCIE_INTR_CE_MASK_ALL			ar->regs->pcie_intr_ce_mask_all
 
@@ -1134,13 +1085,7 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 
 #define RTC_STATE_V_GET(x) (((x) & RTC_STATE_V_MASK) >> RTC_STATE_V_LSB)
 
-/* Register definitions for first generation ath10k cards. These cards include
- * a mac thich has a register allocation similar to ath9k and at least some
- * registers including the ones relevant for modifying the coverage class are
- * identical to the ath9k definitions.
- * These registers are usually managed by the ath10k firmware. However by
- * overriding them it is possible to support coverage class modifications.
- */
+ 
 #define WAVE1_PCU_ACK_CTS_TIMEOUT		0x8014
 #define WAVE1_PCU_ACK_CTS_TIMEOUT_MAX		0x00003FFF
 #define WAVE1_PCU_ACK_CTS_TIMEOUT_ACK_MASK	0x00003FFF
@@ -1158,7 +1103,7 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define WAVE1_PHYCLK_USEC_MASK			0x0000007F
 #define WAVE1_PHYCLK_USEC_LSB			0
 
-/* qca6174 PLL offset/mask */
+ 
 #define SOC_CORE_CLK_CTRL_OFFSET		0x00000114
 #define SOC_CORE_CLK_CTRL_DIV_LSB		0
 #define SOC_CORE_CLK_CTRL_DIV_MASK		0x00000007
@@ -1190,17 +1135,12 @@ ath10k_is_rssi_enable(struct ath10k_hw_params *hw,
 #define RTC_SYNC_STATUS_OFFSET			0x0244
 #define RTC_SYNC_STATUS_PLL_CHANGING_LSB	5
 #define RTC_SYNC_STATUS_PLL_CHANGING_MASK	0x00000020
-/* qca6174 PLL offset/mask end */
+ 
 
-/* CPU_ADDR_MSB is a register, bit[3:0] is to specify which memory
- * region is accessed. The memory region size is 1M.
- * If host wants to access 0xX12345 at target, then CPU_ADDR_MSB[3:0]
- * is 0xX.
- * The following MACROs are defined to get the 0xX and the size limit.
- */
+ 
 #define CPU_ADDR_MSB_REGION_MASK	GENMASK(23, 20)
 #define CPU_ADDR_MSB_REGION_VAL(X)	FIELD_GET(CPU_ADDR_MSB_REGION_MASK, X)
 #define REGION_ACCESS_SIZE_LIMIT	0x100000
 #define REGION_ACCESS_SIZE_MASK		(REGION_ACCESS_SIZE_LIMIT - 1)
 
-#endif /* _HW_H_ */
+#endif  

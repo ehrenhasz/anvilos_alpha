@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STM32 ALSA SoC Digital Audio Interface (SPDIF-rx) driver.
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author(s): Olivier Moysan <olivier.moysan@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -19,7 +14,7 @@
 #include <sound/dmaengine_pcm.h>
 #include <sound/pcm_params.h>
 
-/* SPDIF-rx Register Map */
+ 
 #define STM32_SPDIFRX_CR	0x00
 #define STM32_SPDIFRX_IMR	0x04
 #define STM32_SPDIFRX_SR	0x08
@@ -31,7 +26,7 @@
 #define STM32_SPDIFRX_IDR	0x3F8
 #define STM32_SPDIFRX_SIDR	0x3FC
 
-/* Bit definition for SPDIF_CR register */
+ 
 #define SPDIFRX_CR_SPDIFEN_SHIFT	0
 #define SPDIFRX_CR_SPDIFEN_MASK	GENMASK(1, SPDIFRX_CR_SPDIFEN_SHIFT)
 #define SPDIFRX_CR_SPDIFENSET(x)	((x) << SPDIFRX_CR_SPDIFEN_SHIFT)
@@ -65,7 +60,7 @@
 #define SPDIFRX_CR_CKSEN	BIT(20)
 #define SPDIFRX_CR_CKSBKPEN	BIT(21)
 
-/* Bit definition for SPDIFRX_IMR register */
+ 
 #define SPDIFRX_IMR_RXNEI	BIT(0)
 #define SPDIFRX_IMR_CSRNEIE	BIT(1)
 #define SPDIFRX_IMR_PERRIE	BIT(2)
@@ -76,7 +71,7 @@
 
 #define SPDIFRX_XIMR_MASK	GENMASK(6, 0)
 
-/* Bit definition for SPDIFRX_SR register */
+ 
 #define SPDIFRX_SR_RXNE		BIT(0)
 #define SPDIFRX_SR_CSRNE	BIT(1)
 #define SPDIFRX_SR_PERR		BIT(2)
@@ -91,7 +86,7 @@
 #define SPDIFRX_SR_WIDTH5_MASK	GENMASK(30, PDIFRX_SR_WIDTH5_SHIFT)
 #define SPDIFRX_SR_WIDTH5SET(x)	((x) << SPDIFRX_SR_WIDTH5_SHIFT)
 
-/* Bit definition for SPDIFRX_IFCR register */
+ 
 #define SPDIFRX_IFCR_PERRCF	BIT(2)
 #define SPDIFRX_IFCR_OVRCF	BIT(3)
 #define SPDIFRX_IFCR_SBDCF	BIT(4)
@@ -99,7 +94,7 @@
 
 #define SPDIFRX_XIFCR_MASK	GENMASK(5, 2)
 
-/* Bit definition for SPDIFRX_DR register (DRFMT = 0b00) */
+ 
 #define SPDIFRX_DR0_DR_SHIFT	0
 #define SPDIFRX_DR0_DR_MASK	GENMASK(23, SPDIFRX_DR0_DR_SHIFT)
 #define SPDIFRX_DR0_DRSET(x)	((x) << SPDIFRX_DR0_DR_SHIFT)
@@ -114,7 +109,7 @@
 #define SPDIFRX_DR0_PT_MASK	GENMASK(29, SPDIFRX_DR0_PT_SHIFT)
 #define SPDIFRX_DR0_PTSET(x)	((x) << SPDIFRX_DR0_PT_SHIFT)
 
-/* Bit definition for SPDIFRX_DR register (DRFMT = 0b01) */
+ 
 #define  SPDIFRX_DR1_PE		BIT(0)
 #define  SPDIFRX_DR1_V		BIT(1)
 #define  SPDIFRX_DR1_U		BIT(2)
@@ -128,7 +123,7 @@
 #define SPDIFRX_DR1_DR_MASK	GENMASK(31, SPDIFRX_DR1_DR_SHIFT)
 #define SPDIFRX_DR1_DRSET(x)	((x) << SPDIFRX_DR1_DR_SHIFT)
 
-/* Bit definition for SPDIFRX_DR register (DRFMT = 0b10) */
+ 
 #define SPDIFRX_DR1_DRNL1_SHIFT	0
 #define SPDIFRX_DR1_DRNL1_MASK	GENMASK(15, SPDIFRX_DR1_DRNL1_SHIFT)
 #define SPDIFRX_DR1_DRNL1SET(x)	((x) << SPDIFRX_DR1_DRNL1_SHIFT)
@@ -137,7 +132,7 @@
 #define SPDIFRX_DR1_DRNL2_MASK	GENMASK(31, SPDIFRX_DR1_DRNL2_SHIFT)
 #define SPDIFRX_DR1_DRNL2SET(x)	((x) << SPDIFRX_DR1_DRNL2_SHIFT)
 
-/* Bit definition for SPDIFRX_CSR register */
+ 
 #define SPDIFRX_CSR_USR_SHIFT	0
 #define SPDIFRX_CSR_USR_MASK	GENMASK(15, SPDIFRX_CSR_USR_SHIFT)
 #define SPDIFRX_CSR_USRGET(x)	(((x) & SPDIFRX_CSR_USR_MASK)\
@@ -150,7 +145,7 @@
 
 #define SPDIFRX_CSR_SOB		BIT(24)
 
-/* Bit definition for SPDIFRX_DIR register */
+ 
 #define SPDIFRX_DIR_THI_SHIFT	0
 #define SPDIFRX_DIR_THI_MASK	GENMASK(12, SPDIFRX_DIR_THI_SHIFT)
 #define SPDIFRX_DIR_THI_SET(x)	((x) << SPDIFRX_DIR_THI_SHIFT)
@@ -163,14 +158,14 @@
 #define SPDIFRX_SPDIFEN_SYNC	0x1
 #define SPDIFRX_SPDIFEN_ENABLE	0x3
 
-/* Bit definition for SPDIFRX_VERR register */
+ 
 #define SPDIFRX_VERR_MIN_MASK	GENMASK(3, 0)
 #define SPDIFRX_VERR_MAJ_MASK	GENMASK(7, 4)
 
-/* Bit definition for SPDIFRX_IDR register */
+ 
 #define SPDIFRX_IDR_ID_MASK	GENMASK(31, 0)
 
-/* Bit definition for SPDIFRX_SIDR register */
+ 
 #define SPDIFRX_SIDR_SID_MASK	GENMASK(31, 0)
 
 #define SPDIFRX_IPIDR_NUMBER	0x00130041
@@ -193,39 +188,14 @@
 #define SPDIFRX_DRFMT_LEFT	0x1
 #define SPDIFRX_DRFMT_PACKED	0x2
 
-/* 192 CS bits in S/PDIF frame. i.e 24 CS bytes */
+ 
 #define SPDIFRX_CS_BYTES_NB	24
 #define SPDIFRX_UB_BYTES_NB	48
 
-/*
- * CSR register is retrieved as a 32 bits word
- * It contains 1 channel status byte and 2 user data bytes
- * 2 S/PDIF frames are acquired to get all CS/UB bits
- */
+ 
 #define SPDIFRX_CSR_BUF_LENGTH	(SPDIFRX_CS_BYTES_NB * 4 * 2)
 
-/**
- * struct stm32_spdifrx_data - private data of SPDIFRX
- * @pdev: device data pointer
- * @base: mmio register base virtual address
- * @regmap: SPDIFRX register map pointer
- * @regmap_conf: SPDIFRX register map configuration pointer
- * @cs_completion: channel status retrieving completion
- * @kclk: kernel clock feeding the SPDIFRX clock generator
- * @dma_params: dma configuration data for rx channel
- * @substream: PCM substream data pointer
- * @dmab: dma buffer info pointer
- * @ctrl_chan: dma channel for S/PDIF control bits
- * @desc:dma async transaction descriptor
- * @slave_config: dma slave channel runtime config pointer
- * @phys_addr: SPDIFRX registers physical base address
- * @lock: synchronization enabling lock
- * @irq_lock: prevent race condition with IRQ on stream state
- * @cs: channel status buffer
- * @ub: user data buffer
- * @irq: SPDIFRX interrupt line
- * @refcount: keep count of opened DMA channels
- */
+ 
 struct stm32_spdifrx_data {
 	struct platform_device *pdev;
 	void __iomem *base;
@@ -240,8 +210,8 @@ struct stm32_spdifrx_data {
 	struct dma_async_tx_descriptor *desc;
 	struct dma_slave_config slave_config;
 	dma_addr_t phys_addr;
-	spinlock_t lock;  /* Sync enabling lock */
-	spinlock_t irq_lock; /* Prevent race condition on stream state */
+	spinlock_t lock;   
+	spinlock_t irq_lock;  
 	unsigned char cs[SPDIFRX_CS_BYTES_NB];
 	unsigned char ub[SPDIFRX_UB_BYTES_NB];
 	int irq;
@@ -324,7 +294,7 @@ static int stm32_spdifrx_start_sync(struct stm32_spdifrx_data *spdifrx)
 	int cr, cr_mask, imr, ret;
 	unsigned long flags;
 
-	/* Enable IRQs */
+	 
 	imr = SPDIFRX_IMR_IFEIE | SPDIFRX_IMR_SYNCDIE | SPDIFRX_IMR_PERRIE;
 	ret = regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_IMR, imr, imr);
 	if (ret)
@@ -337,19 +307,10 @@ static int stm32_spdifrx_start_sync(struct stm32_spdifrx_data *spdifrx)
 	regmap_read(spdifrx->regmap, STM32_SPDIFRX_CR, &cr);
 
 	if (!(cr & SPDIFRX_CR_SPDIFEN_MASK)) {
-		/*
-		 * Start sync if SPDIFRX is still in idle state.
-		 * SPDIFRX reception enabled when sync done
-		 */
+		 
 		dev_dbg(&spdifrx->pdev->dev, "start synchronization\n");
 
-		/*
-		 * SPDIFRX configuration:
-		 * Wait for activity before starting sync process. This avoid
-		 * to issue sync errors when spdif signal is missing on input.
-		 * Preamble, CS, user, validity and parity error bits not copied
-		 * to DR register.
-		 */
+		 
 		cr = SPDIFRX_CR_WFA | SPDIFRX_CR_PMSK | SPDIFRX_CR_VMSK |
 		     SPDIFRX_CR_CUMSK | SPDIFRX_CR_PTMSK | SPDIFRX_CR_RXSTEO;
 		cr_mask = cr;
@@ -393,7 +354,7 @@ static void stm32_spdifrx_stop(struct stm32_spdifrx_data *spdifrx)
 	regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_IFCR,
 			   SPDIFRX_XIFCR_MASK, SPDIFRX_XIFCR_MASK);
 
-	/* dummy read to clear CSRNE and RXNE in status register */
+	 
 	regmap_read(spdifrx->regmap, STM32_SPDIFRX_DR, &reg);
 	regmap_read(spdifrx->regmap, STM32_SPDIFRX_CSR, &reg);
 
@@ -445,7 +406,7 @@ static const char * const spdifrx_enum_input[] = {
 	"in0", "in1", "in2", "in3"
 };
 
-/*  By default CS bits are retrieved from channel A */
+ 
 static const char * const spdifrx_enum_cs_channel[] = {
 	"A", "B"
 };
@@ -553,7 +514,7 @@ static int stm32_spdif_user_bits_get(struct snd_kcontrol *kcontrol,
 }
 
 static struct snd_kcontrol_new stm32_spdifrx_iec_ctrls[] = {
-	/* Channel status control */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, DEFAULT),
@@ -562,7 +523,7 @@ static struct snd_kcontrol_new stm32_spdifrx_iec_ctrls[] = {
 		.info = stm32_spdifrx_info,
 		.get = stm32_spdifrx_capture_get,
 	},
-	/* User bits control */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = "IEC958 User Bit Capture Default",
@@ -674,7 +635,7 @@ static irqreturn_t stm32_spdifrx_isr(int irq, void *devid)
 	regmap_read(spdifrx->regmap, STM32_SPDIFRX_IMR, &imr);
 
 	mask = imr & SPDIFRX_XIMR_MASK;
-	/* SERR, TERR, FERR IRQs are generated if IFEIE is set */
+	 
 	if (mask & SPDIFRX_IMR_IFEIE)
 		mask |= (SPDIFRX_IMR_IFEIE << 1) | (SPDIFRX_IMR_IFEIE << 2);
 
@@ -685,7 +646,7 @@ static irqreturn_t stm32_spdifrx_isr(int irq, void *devid)
 		return IRQ_NONE;
 	}
 
-	/* Clear IRQs */
+	 
 	regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_IFCR,
 			   SPDIFRX_XIFCR_MASK, flags);
 
@@ -705,7 +666,7 @@ static irqreturn_t stm32_spdifrx_isr(int irq, void *devid)
 	if (flags & SPDIFRX_SR_SYNCD) {
 		dev_dbg(&pdev->dev, "Synchronization done\n");
 
-		/* Enable spdifrx */
+		 
 		cr = SPDIFRX_CR_SPDIFENSET(SPDIFRX_SPDIFEN_ENABLE);
 		regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_CR,
 				   SPDIFRX_CR_SPDIFEN_MASK, cr);
@@ -731,12 +692,12 @@ static irqreturn_t stm32_spdifrx_isr(int irq, void *devid)
 		sync_state = FIELD_GET(SPDIFRX_CR_SPDIFEN_MASK, cr) &&
 			     SPDIFRX_SPDIFEN_SYNC;
 
-		/* SPDIFRX is in STATE_STOP. Disable SPDIFRX to clear errors */
+		 
 		cr = SPDIFRX_CR_SPDIFENSET(SPDIFRX_SPDIFEN_DISABLE);
 		regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_CR,
 				   SPDIFRX_CR_SPDIFEN_MASK, cr);
 
-		/* If SPDIFRX was in STATE_SYNC, retry synchro */
+		 
 		if (sync_state) {
 			cr = SPDIFRX_CR_SPDIFENSET(SPDIFRX_SPDIFEN_SYNC);
 			regmap_update_bits(spdifrx->regmap, STM32_SPDIFRX_CR,
@@ -799,11 +760,7 @@ static int stm32_spdifrx_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/*
-	 * Set buswidth to 4 bytes for all data formats.
-	 * Packed format: transfer 2 x 2 bytes samples
-	 * Left format: transfer 1 x 3 bytes samples + 1 dummy byte
-	 */
+	 
 	spdifrx->dma_params.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	snd_soc_dai_init_dma_data(cpu_dai, NULL, &spdifrx->dma_params);
 
@@ -1063,7 +1020,7 @@ static int stm32_spdifrx_resume(struct device *dev)
 
 	return regcache_sync(spdifrx->regmap);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops stm32_spdifrx_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(stm32_spdifrx_suspend, stm32_spdifrx_resume)

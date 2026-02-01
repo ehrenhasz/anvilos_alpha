@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2013-2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _VLV_SIDEBAND_H_
 #define _VLV_SIDEBAND_H_
@@ -122,4 +120,4 @@ static inline void vlv_punit_put(struct drm_i915_private *i915)
 	vlv_iosf_sb_put(i915, BIT(VLV_IOSF_SB_PUNIT));
 }
 
-#endif /* _VLV_SIDEBAND_H_ */
+#endif  

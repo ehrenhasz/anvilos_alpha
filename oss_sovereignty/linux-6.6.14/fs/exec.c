@@ -1,27 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/exec.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
 
-/*
- * #!-checking implemented by tytso.
- */
-/*
- * Demand-loading implemented 01.12.91 - no need to read anything but
- * the header into memory. The inode of the executable is put into
- * "current->executable", and page faults do the actual loading. Clean.
- *
- * Once more I can proudly say that linux stood up to being changed: it
- * was less than 2 hours work to get demand-loading completely implemented.
- *
- * Demand loading changed July 1993 by Eric Youngdale.   Use mmap instead,
- * current->executable is only used by the procfs.  This allows a dispatch
- * table to check for several different types  of binary formats.  We keep
- * trying until we recognize the file or we run out of supported binary
- * formats.
- */
+ 
+
+ 
+ 
 
 #include <linux/kernel_read_file.h>
 #include <linux/slab.h>
@@ -114,12 +95,7 @@ bool path_noexec(const struct path *path)
 }
 
 #ifdef CONFIG_USELIB
-/*
- * Note that a shared library must be both readable and executable due to
- * security reasons.
- *
- * Also note that we take the address to load from the file itself.
- */
+ 
 SYSCALL_DEFINE1(uselib, const char __user *, library)
 {
 	struct linux_binfmt *fmt;
@@ -142,11 +118,7 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
 	if (IS_ERR(file))
 		goto out;
 
-	/*
-	 * may_open() has already checked for this, so it should be
-	 * impossible to trip now. But we need to be extra cautious
-	 * and check again at the very end too.
-	 */
+	 
 	error = -EACCES;
 	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
 			 path_noexec(&file->f_path)))
@@ -173,15 +145,10 @@ exit:
 out:
 	return error;
 }
-#endif /* #ifdef CONFIG_USELIB */
+#endif  
 
 #ifdef CONFIG_MMU
-/*
- * The nascent bprm->mm is not visible until exec_mmap() but it can
- * use a lot of memory, account these pages in current->mm temporary
- * for oom_badness()->get_mm_rss(). Once exec succeeds or fails, we
- * change the counter back via acct_arg_size(0).
- */
+ 
 static void acct_arg_size(struct linux_binprm *bprm, unsigned long pages)
 {
 	struct mm_struct *mm = current->mm;
@@ -202,11 +169,7 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 	struct mm_struct *mm = bprm->mm;
 	int ret;
 
-	/*
-	 * Avoid relying on expanding the stack down in GUP (which
-	 * does not work for STACK_GROWSUP anyway), and just do it
-	 * by hand ahead of time.
-	 */
+	 
 	if (write && pos < vma->vm_start) {
 		mmap_write_lock(mm);
 		ret = expand_downwards(vma, pos);
@@ -218,10 +181,7 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 	} else
 		mmap_read_lock(mm);
 
-	/*
-	 * We are doing an exec().  'current' is the process
-	 * doing the exec and 'mm' is the new process's mm.
-	 */
+	 
 	ret = get_user_pages_remote(mm, pos, 1,
 			write ? FOLL_WRITE : 0,
 			&page, NULL);
@@ -266,12 +226,7 @@ static int __bprm_mm_init(struct linux_binprm *bprm)
 		goto err_free;
 	}
 
-	/*
-	 * Place the stack at the largest stack address the architecture
-	 * supports. Later, we'll move this to an appropriate place. We don't
-	 * use STACK_TOP because that can depend on attributes which aren't
-	 * configured yet.
-	 */
+	 
 	BUILD_BUG_ON(VM_STACK_FLAGS & VM_STACK_INCOMPLETE_SETUP);
 	vma->vm_end = STACK_TOP_MAX;
 	vma->vm_start = vma->vm_end - PAGE_SIZE;
@@ -357,14 +312,9 @@ static bool valid_arg_len(struct linux_binprm *bprm, long len)
 	return len <= bprm->p;
 }
 
-#endif /* CONFIG_MMU */
+#endif  
 
-/*
- * Create a new mm_struct and populate it with a temporary stack
- * vm_area_struct.  We don't have enough context at this point to set the stack
- * flags, permissions, and offset, so we use temporary values.  We'll update
- * them later in setup_arg_pages().
- */
+ 
 static int bprm_mm_init(struct linux_binprm *bprm)
 {
 	int err;
@@ -375,7 +325,7 @@ static int bprm_mm_init(struct linux_binprm *bprm)
 	if (!mm)
 		goto err;
 
-	/* Save current stack limit for all calculations made during exec. */
+	 
 	task_lock(current->group_leader);
 	bprm->rlim_stack = current->signal->rlim[RLIMIT_STACK];
 	task_unlock(current->group_leader);
@@ -428,9 +378,7 @@ static const char __user *get_user_arg_ptr(struct user_arg_ptr argv, int nr)
 	return native;
 }
 
-/*
- * count() counts the number of strings in array ARGV.
- */
+ 
 static int count(struct user_arg_ptr argv, int max)
 {
 	int i = 0;
@@ -478,34 +426,12 @@ static int bprm_stack_limits(struct linux_binprm *bprm)
 {
 	unsigned long limit, ptr_size;
 
-	/*
-	 * Limit to 1/4 of the max stack size or 3/4 of _STK_LIM
-	 * (whichever is smaller) for the argv+env strings.
-	 * This ensures that:
-	 *  - the remaining binfmt code will not run out of stack space,
-	 *  - the program will have a reasonable amount of stack left
-	 *    to work from.
-	 */
+	 
 	limit = _STK_LIM / 4 * 3;
 	limit = min(limit, bprm->rlim_stack.rlim_cur / 4);
-	/*
-	 * We've historically supported up to 32 pages (ARG_MAX)
-	 * of argument strings even with small stacks
-	 */
+	 
 	limit = max_t(unsigned long, limit, ARG_MAX);
-	/*
-	 * We must account for the size of all the argv and envp pointers to
-	 * the argv and envp strings, since they will also take up space in
-	 * the stack. They aren't stored until much later when we can't
-	 * signal to the parent that the child has run out of stack space.
-	 * Instead, calculate it here so it's possible to fail gracefully.
-	 *
-	 * In the case of argc = 0, make sure there is space for adding a
-	 * empty string (which will bump argc to 1), to ensure confused
-	 * userspace programs don't start processing from argv[1], thinking
-	 * argc can never be 0, to keep them from walking envp by accident.
-	 * See do_execveat_common().
-	 */
+	 
 	ptr_size = (max(bprm->argc, 1) + bprm->envc) * sizeof(void *);
 	if (limit <= ptr_size)
 		return -E2BIG;
@@ -515,11 +441,7 @@ static int bprm_stack_limits(struct linux_binprm *bprm)
 	return 0;
 }
 
-/*
- * 'copy_strings()' copies argument/environment strings from the old
- * processes's memory to the new process's stack.  The call to get_user_pages()
- * ensures the destination page is created and not swapped out.
- */
+ 
 static int copy_strings(int argc, struct user_arg_ptr argv,
 			struct linux_binprm *bprm)
 {
@@ -546,7 +468,7 @@ static int copy_strings(int argc, struct user_arg_ptr argv,
 		if (!valid_arg_len(bprm, len))
 			goto out;
 
-		/* We're going to work our way backwards. */
+		 
 		pos = bprm->p;
 		str += len;
 		bprm->p -= len;
@@ -612,12 +534,10 @@ out:
 	return ret;
 }
 
-/*
- * Copy and argument/environment string from the kernel to the processes stack.
- */
+ 
 int copy_string_kernel(const char *arg, struct linux_binprm *bprm)
 {
-	int len = strnlen(arg, MAX_ARG_STRLEN) + 1 /* terminating NUL */;
+	int len = strnlen(arg, MAX_ARG_STRLEN) + 1  ;
 	unsigned long pos = bprm->p;
 
 	if (len == 0)
@@ -625,7 +545,7 @@ int copy_string_kernel(const char *arg, struct linux_binprm *bprm)
 	if (!valid_arg_len(bprm, len))
 		return -E2BIG;
 
-	/* We're going to work our way backwards. */
+	 
 	arg += len;
 	bprm->p -= len;
 	if (IS_ENABLED(CONFIG_MMU) && bprm->p < bprm->argmin)
@@ -668,18 +588,7 @@ static int copy_strings_kernel(int argc, const char *const *argv,
 
 #ifdef CONFIG_MMU
 
-/*
- * During bprm_mm_init(), we create a temporary stack at STACK_TOP_MAX.  Once
- * the binfmt code determines where the new stack should reside, we shift it to
- * its final location.  The process proceeds as follows:
- *
- * 1) Use shift to calculate the new vma endpoints.
- * 2) Extend vma to cover both the old and new ranges.  This ensures the
- *    arguments passed to subsequent functions are consistent.
- * 3) Move vma's page tables to the new range.
- * 4) Free up any cleared pgd range.
- * 5) Shrink the vma to cover only the new range.
- */
+ 
 static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
 {
 	struct mm_struct *mm = vma->vm_mm;
@@ -694,24 +603,16 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
 
 	BUG_ON(new_start > new_end);
 
-	/*
-	 * ensure there are no vmas between where we want to go
-	 * and where we are
-	 */
+	 
 	if (vma != vma_next(&vmi))
 		return -EFAULT;
 
 	vma_iter_prev_range(&vmi);
-	/*
-	 * cover the whole range: [new_start, old_end)
-	 */
+	 
 	if (vma_expand(&vmi, vma, new_start, old_end, vma->vm_pgoff, NULL))
 		return -ENOMEM;
 
-	/*
-	 * move the page tables downwards, on failure we rely on
-	 * process cleanup to remove whatever mess we made.
-	 */
+	 
 	if (length != move_page_tables(vma, old_start,
 				       vma, new_start, length, false))
 		return -ENOMEM;
@@ -720,32 +621,22 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
 	tlb_gather_mmu(&tlb, mm);
 	next = vma_next(&vmi);
 	if (new_end > old_start) {
-		/*
-		 * when the old and new regions overlap clear from new_end.
-		 */
+		 
 		free_pgd_range(&tlb, new_end, old_end, new_end,
 			next ? next->vm_start : USER_PGTABLES_CEILING);
 	} else {
-		/*
-		 * otherwise, clean from old_start; this is done to not touch
-		 * the address space in [new_end, old_start) some architectures
-		 * have constraints on va-space that make this illegal (IA64) -
-		 * for the others its just a little faster.
-		 */
+		 
 		free_pgd_range(&tlb, old_start, old_end, new_end,
 			next ? next->vm_start : USER_PGTABLES_CEILING);
 	}
 	tlb_finish_mmu(&tlb);
 
 	vma_prev(&vmi);
-	/* Shrink the vma to just the new range */
+	 
 	return vma_shrink(&vmi, vma, new_start, new_end, vma->vm_pgoff);
 }
 
-/*
- * Finalizes the stack vm_area_struct. The flags and permissions are updated,
- * the stack is optionally relocated, and some extra space is added.
- */
+ 
 int setup_arg_pages(struct linux_binprm *bprm,
 		    unsigned long stack_top,
 		    int executable_stack)
@@ -764,15 +655,15 @@ int setup_arg_pages(struct linux_binprm *bprm,
 	struct vma_iterator vmi;
 
 #ifdef CONFIG_STACK_GROWSUP
-	/* Limit stack size */
+	 
 	stack_base = bprm->rlim_stack.rlim_max;
 
 	stack_base = calc_max_stack_size(stack_base);
 
-	/* Add space for stack randomization. */
+	 
 	stack_base += (STACK_RND_MASK << PAGE_SHIFT);
 
-	/* Make sure we didn't let the argument array grow too large. */
+	 
 	if (vma->vm_end - vma->vm_start > stack_base)
 		return -ENOMEM;
 
@@ -804,11 +695,7 @@ int setup_arg_pages(struct linux_binprm *bprm,
 
 	vm_flags = VM_STACK_FLAGS;
 
-	/*
-	 * Adjust stack execute permissions; explicitly enable for
-	 * EXSTACK_ENABLE_X, disable for EXSTACK_DISABLE_X and leave alone
-	 * (arch default) otherwise.
-	 */
+	 
 	if (unlikely(executable_stack == EXSTACK_ENABLE_X))
 		vm_flags |= VM_EXEC;
 	else if (executable_stack == EXSTACK_DISABLE_X)
@@ -832,22 +719,19 @@ int setup_arg_pages(struct linux_binprm *bprm,
 			     bprm->file);
 	}
 
-	/* Move stack pages down in memory. */
+	 
 	if (stack_shift) {
 		ret = shift_arg_pages(vma, stack_shift);
 		if (ret)
 			goto out_unlock;
 	}
 
-	/* mprotect_fixup is overkill to remove the temporary stack flags */
+	 
 	vm_flags_clear(vma, VM_STACK_INCOMPLETE_SETUP);
 
-	stack_expand = 131072UL; /* randomly 32*4k (or 2*64k) pages */
+	stack_expand = 131072UL;  
 	stack_size = vma->vm_end - vma->vm_start;
-	/*
-	 * Align this down to a page boundary as expand_stack
-	 * will align it up.
-	 */
+	 
 	rlim_stack = bprm->rlim_stack.rlim_cur & PAGE_MASK;
 
 	stack_expand = min(rlim_stack, stack_size + stack_expand);
@@ -870,10 +754,7 @@ EXPORT_SYMBOL(setup_arg_pages);
 
 #else
 
-/*
- * Transfer the program arguments and environment from the holding pages
- * onto the stack. The provided stack pointer is adjusted accordingly.
- */
+ 
 int transfer_args_to_stack(struct linux_binprm *bprm,
 			   unsigned long *sp_location)
 {
@@ -901,7 +782,7 @@ out:
 }
 EXPORT_SYMBOL(transfer_args_to_stack);
 
-#endif /* CONFIG_MMU */
+#endif  
 
 static struct file *do_open_execat(int fd, struct filename *name, int flags)
 {
@@ -925,11 +806,7 @@ static struct file *do_open_execat(int fd, struct filename *name, int flags)
 	if (IS_ERR(file))
 		goto out;
 
-	/*
-	 * may_open() has already checked for this, so it should be
-	 * impossible to trip now. But we need to be extra cautious
-	 * and check again at the very end too.
-	 */
+	 
 	err = -EACCES;
 	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
 			 path_noexec(&file->f_path)))
@@ -971,18 +848,14 @@ ssize_t read_code(struct file *file, unsigned long addr, loff_t pos, size_t len)
 EXPORT_SYMBOL(read_code);
 #endif
 
-/*
- * Maps the mm_struct mm into the current task struct.
- * On success, this function returns with exec_update_lock
- * held for writing.
- */
+ 
 static int exec_mmap(struct mm_struct *mm)
 {
 	struct task_struct *tsk;
 	struct mm_struct *old_mm, *active_mm;
 	int ret;
 
-	/* Notify parent that we're no longer interested in the old VM */
+	 
 	tsk = current;
 	old_mm = current->mm;
 	exec_mm_release(tsk, old_mm);
@@ -994,11 +867,7 @@ static int exec_mmap(struct mm_struct *mm)
 		return ret;
 
 	if (old_mm) {
-		/*
-		 * If there is a pending fatal signal perhaps a signal
-		 * whose default action is to create a coredump get
-		 * out and die instead of going through with the exec.
-		 */
+		 
 		ret = mmap_read_lock_killable(old_mm);
 		if (ret) {
 			up_write(&tsk->signal->exec_update_lock);
@@ -1014,13 +883,7 @@ static int exec_mmap(struct mm_struct *mm)
 	tsk->active_mm = mm;
 	tsk->mm = mm;
 	mm_init_cid(mm);
-	/*
-	 * This prevents preemption while active_mm is being loaded and
-	 * it and mm are being updated, which could cause problems for
-	 * lazy tlb mm refcounting when these are updated by context
-	 * switches. Not all architectures can handle irqs off over
-	 * activate_mm yet.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_ARCH_WANT_IRQS_OFF_ACTIVATE_MM))
 		local_irq_enable();
 	activate_mm(active_mm, mm);
@@ -1050,15 +913,10 @@ static int de_thread(struct task_struct *tsk)
 	if (thread_group_empty(tsk))
 		goto no_thread_group;
 
-	/*
-	 * Kill all other threads in the thread group.
-	 */
+	 
 	spin_lock_irq(lock);
 	if ((sig->flags & SIGNAL_GROUP_EXIT) || sig->group_exec_task) {
-		/*
-		 * Another group action in progress, just
-		 * return so that the signal is processed.
-		 */
+		 
 		spin_unlock_irq(lock);
 		return -EAGAIN;
 	}
@@ -1078,21 +936,14 @@ static int de_thread(struct task_struct *tsk)
 	}
 	spin_unlock_irq(lock);
 
-	/*
-	 * At this point all other threads have exited, all we have to
-	 * do is to wait for the thread group leader to become inactive,
-	 * and to assume its PID:
-	 */
+	 
 	if (!thread_group_leader(tsk)) {
 		struct task_struct *leader = tsk->group_leader;
 
 		for (;;) {
 			cgroup_threadgroup_change_begin(tsk);
 			write_lock_irq(&tasklist_lock);
-			/*
-			 * Do this under tasklist_lock to ensure that
-			 * exit_notify() can't miss ->group_exec_task
-			 */
+			 
 			sig->notify_count = -1;
 			if (likely(leader->exit_state))
 				break;
@@ -1104,30 +955,14 @@ static int de_thread(struct task_struct *tsk)
 				goto killed;
 		}
 
-		/*
-		 * The only record we have of the real-time age of a
-		 * process, regardless of execs it's done, is start_time.
-		 * All the past CPU time is accumulated in signal_struct
-		 * from sister threads now dead.  But in this non-leader
-		 * exec, nothing survives from the original leader thread,
-		 * whose birth marks the true age of this process now.
-		 * When we take on its identity by switching to its PID, we
-		 * also take its birthdate (always earlier than our own).
-		 */
+		 
 		tsk->start_time = leader->start_time;
 		tsk->start_boottime = leader->start_boottime;
 
 		BUG_ON(!same_thread_group(leader, tsk));
-		/*
-		 * An exec() starts a new thread group with the
-		 * TGID of the previous thread group. Rehash the
-		 * two threads with a switched PID, and release
-		 * the former thread group leader:
-		 */
+		 
 
-		/* Become a process group leader with the old leader's pid.
-		 * The old leader becomes a thread of the this thread group.
-		 */
+		 
 		exchange_tids(tsk, leader);
 		transfer_pid(leader, tsk, PIDTYPE_TGID);
 		transfer_pid(leader, tsk, PIDTYPE_PGID);
@@ -1145,11 +980,7 @@ static int de_thread(struct task_struct *tsk)
 		BUG_ON(leader->exit_state != EXIT_ZOMBIE);
 		leader->exit_state = EXIT_DEAD;
 
-		/*
-		 * We are going to release_task()->ptrace_unlink() silently,
-		 * the tracer can sleep in do_wait(). EXIT_DEAD guarantees
-		 * the tracer won't block again waiting for this thread.
-		 */
+		 
 		if (unlikely(leader->ptrace))
 			__wake_up_parent(leader, leader->parent);
 		write_unlock_irq(&tasklist_lock);
@@ -1162,14 +993,14 @@ static int de_thread(struct task_struct *tsk)
 	sig->notify_count = 0;
 
 no_thread_group:
-	/* we have changed execution domain */
+	 
 	tsk->exit_signal = SIGCHLD;
 
 	BUG_ON(!thread_group_leader(tsk));
 	return 0;
 
 killed:
-	/* protects against exit_notify() and __exit_signal() */
+	 
 	read_lock(&tasklist_lock);
 	sig->group_exec_task = NULL;
 	sig->notify_count = 0;
@@ -1178,22 +1009,14 @@ killed:
 }
 
 
-/*
- * This function makes sure the current process has its own signal table,
- * so that flush_signal_handlers can later reset the handlers without
- * disturbing other processes.  (Other processes might share the signal
- * table via the CLONE_SIGHAND option to clone().)
- */
+ 
 static int unshare_sighand(struct task_struct *me)
 {
 	struct sighand_struct *oldsighand = me->sighand;
 
 	if (refcount_read(&oldsighand->count) != 1) {
 		struct sighand_struct *newsighand;
-		/*
-		 * This ->sighand is shared with the CLONE_SIGHAND
-		 * but not CLONE_THREAD task, switch to the new one.
-		 */
+		 
 		newsighand = kmem_cache_alloc(sighand_cachep, GFP_KERNEL);
 		if (!newsighand)
 			return -ENOMEM;
@@ -1216,17 +1039,14 @@ static int unshare_sighand(struct task_struct *me)
 char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
 {
 	task_lock(tsk);
-	/* Always NUL terminated and zero-padded */
+	 
 	strscpy_pad(buf, tsk->comm, buf_size);
 	task_unlock(tsk);
 	return buf;
 }
 EXPORT_SYMBOL_GPL(__get_task_comm);
 
-/*
- * These functions flushes out all traces of the currently running executable
- * so that a new one can be started
- */
+ 
 
 void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
 {
@@ -1237,61 +1057,44 @@ void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
 	perf_event_comm(tsk, exec);
 }
 
-/*
- * Calling this is the point of no return. None of the failures will be
- * seen by userspace since either the process is already taking a fatal
- * signal (via de_thread() or coredump), or will have SEGV raised
- * (after exec_mmap()) by search_binary_handler (see below).
- */
+ 
 int begin_new_exec(struct linux_binprm * bprm)
 {
 	struct task_struct *me = current;
 	int retval;
 
-	/* Once we are committed compute the creds */
+	 
 	retval = bprm_creds_from_file(bprm);
 	if (retval)
 		return retval;
 
-	/*
-	 * Ensure all future errors are fatal.
-	 */
+	 
 	bprm->point_of_no_return = true;
 
-	/*
-	 * Make this the only thread in the thread group.
-	 */
+	 
 	retval = de_thread(me);
 	if (retval)
 		goto out;
 
-	/*
-	 * Cancel any io_uring activity across execve
-	 */
+	 
 	io_uring_task_cancel();
 
-	/* Ensure the files table is not shared. */
+	 
 	retval = unshare_files();
 	if (retval)
 		goto out;
 
-	/*
-	 * Must be called _before_ exec_mmap() as bprm->mm is
-	 * not visible until then. Doing it here also ensures
-	 * we don't race against replace_mm_exe_file().
-	 */
+	 
 	retval = set_mm_exe_file(bprm->mm, bprm->file);
 	if (retval)
 		goto out;
 
-	/* If the binary is not readable then enforce mm->dumpable=0 */
+	 
 	would_dump(bprm, bprm->file);
 	if (bprm->have_execfd)
 		would_dump(bprm, bprm->executable);
 
-	/*
-	 * Release all of the old mmap stuff
-	 */
+	 
 	acct_arg_size(bprm, 0);
 	retval = exec_mmap(bprm->mm);
 	if (retval)
@@ -1311,9 +1114,7 @@ int begin_new_exec(struct linux_binprm * bprm)
 	flush_itimer_signals();
 #endif
 
-	/*
-	 * Make the signal table private.
-	 */
+	 
 	retval = unshare_sighand(me);
 	if (retval)
 		goto out_unlock;
@@ -1325,36 +1126,21 @@ int begin_new_exec(struct linux_binprm * bprm)
 
 	clear_syscall_work_syscall_user_dispatch(me);
 
-	/*
-	 * We have to apply CLOEXEC before we change whether the process is
-	 * dumpable (in setup_new_exec) to avoid a race with a process in userspace
-	 * trying to access the should-be-closed file descriptors of a process
-	 * undergoing exec(2).
-	 */
+	 
 	do_close_on_exec(me->files);
 
 	if (bprm->secureexec) {
-		/* Make sure parent cannot signal privileged process. */
+		 
 		me->pdeath_signal = 0;
 
-		/*
-		 * For secureexec, reset the stack limit to sane default to
-		 * avoid bad behavior from the prior rlimits. This has to
-		 * happen before arch_pick_mmap_layout(), which examines
-		 * RLIMIT_STACK, but after the point of no return to avoid
-		 * needing to clean up the change on failure.
-		 */
+		 
 		if (bprm->rlim_stack.rlim_cur > _STK_LIM)
 			bprm->rlim_stack.rlim_cur = _STK_LIM;
 	}
 
 	me->sas_ss_sp = me->sas_ss_size = 0;
 
-	/*
-	 * Figure out dumpability. Note that this checking only of current
-	 * is wrong, but userspace depends on it. This should be testing
-	 * bprm->secureexec instead.
-	 */
+	 
 	if (bprm->interp_flags & BINPRM_FLAGS_ENFORCE_NONDUMP ||
 	    !(uid_eq(current_euid(), current_uid()) &&
 	      gid_eq(current_egid(), current_gid())))
@@ -1365,8 +1151,7 @@ int begin_new_exec(struct linux_binprm * bprm)
 	perf_event_exec();
 	__set_task_comm(me, kbasename(bprm->filename), true);
 
-	/* An exec changes our domain. We are no longer part of the thread
-	   group */
+	 
 	WRITE_ONCE(me->self_exec_id, me->self_exec_id + 1);
 	flush_signal_handlers(me, 0);
 
@@ -1374,30 +1159,19 @@ int begin_new_exec(struct linux_binprm * bprm)
 	if (retval < 0)
 		goto out_unlock;
 
-	/*
-	 * install the new credentials for this executable
-	 */
+	 
 	security_bprm_committing_creds(bprm);
 
 	commit_creds(bprm->cred);
 	bprm->cred = NULL;
 
-	/*
-	 * Disable monitoring for regular users
-	 * when executing setuid binaries. Must
-	 * wait until new credentials are committed
-	 * by commit_creds() above
-	 */
+	 
 	if (get_dumpable(me->mm) != SUID_DUMP_USER)
 		perf_event_exit_task(me);
-	/*
-	 * cred_guard_mutex must be held at least to this point to prevent
-	 * ptrace_attach() from altering our determination of the task's
-	 * credentials; any time after this it may be unlocked.
-	 */
+	 
 	security_bprm_committed_creds(bprm);
 
-	/* Pass the opened binary to the interpreter. */
+	 
 	if (bprm->have_execfd) {
 		retval = get_unused_fd_flags(0);
 		if (retval < 0)
@@ -1423,7 +1197,7 @@ void would_dump(struct linux_binprm *bprm, struct file *file)
 		struct user_namespace *old, *user_ns;
 		bprm->interp_flags |= BINPRM_FLAGS_ENFORCE_NONDUMP;
 
-		/* Ensure mm->user_ns contains the executable */
+		 
 		user_ns = old = bprm->mm->user_ns;
 		while ((user_ns != &init_user_ns) &&
 		       !privileged_wrt_inode_uidgid(user_ns, idmap, inode))
@@ -1439,39 +1213,31 @@ EXPORT_SYMBOL(would_dump);
 
 void setup_new_exec(struct linux_binprm * bprm)
 {
-	/* Setup things that can depend upon the personality */
+	 
 	struct task_struct *me = current;
 
 	arch_pick_mmap_layout(me->mm, &bprm->rlim_stack);
 
 	arch_setup_new_exec();
 
-	/* Set the new mm task size. We have to do that late because it may
-	 * depend on TIF_32BIT which is only updated in flush_thread() on
-	 * some architectures like powerpc
-	 */
+	 
 	me->mm->task_size = TASK_SIZE;
 	up_write(&me->signal->exec_update_lock);
 	mutex_unlock(&me->signal->cred_guard_mutex);
 }
 EXPORT_SYMBOL(setup_new_exec);
 
-/* Runs immediately before start_thread() takes over. */
+ 
 void finalize_exec(struct linux_binprm *bprm)
 {
-	/* Store any stack rlimit changes before starting thread. */
+	 
 	task_lock(current->group_leader);
 	current->signal->rlim[RLIMIT_STACK] = bprm->rlim_stack;
 	task_unlock(current->group_leader);
 }
 EXPORT_SYMBOL(finalize_exec);
 
-/*
- * Prepare credentials and lock ->cred_guard_mutex.
- * setup_new_exec() commits the new creds and drops the lock.
- * Or, if exec fails before, free_bprm() should release ->cred
- * and unlock.
- */
+ 
 static int prepare_bprm_creds(struct linux_binprm *bprm)
 {
 	if (mutex_lock_interruptible(&current->signal->cred_guard_mutex))
@@ -1502,7 +1268,7 @@ static void free_bprm(struct linux_binprm *bprm)
 	}
 	if (bprm->executable)
 		fput(bprm->executable);
-	/* If a binfmt changed the interp, free it. */
+	 
 	if (bprm->interp != bprm->filename)
 		kfree(bprm->interp);
 	kfree(bprm->fdpath);
@@ -1544,7 +1310,7 @@ out:
 
 int bprm_change_interp(const char *interp, struct linux_binprm *bprm)
 {
-	/* If a binfmt changed the interp, free it first. */
+	 
 	if (bprm->interp != bprm->filename)
 		kfree(bprm->interp);
 	bprm->interp = kstrdup(interp, GFP_KERNEL);
@@ -1554,11 +1320,7 @@ int bprm_change_interp(const char *interp, struct linux_binprm *bprm)
 }
 EXPORT_SYMBOL(bprm_change_interp);
 
-/*
- * determine how safe it is to execute the proposed program
- * - the caller must hold ->cred_guard_mutex to protect against
- *   PTRACE_ATTACH or seccomp thread-sync
- */
+ 
 static void check_unsafe_exec(struct linux_binprm *bprm)
 {
 	struct task_struct *p = current, *t;
@@ -1567,19 +1329,11 @@ static void check_unsafe_exec(struct linux_binprm *bprm)
 	if (p->ptrace)
 		bprm->unsafe |= LSM_UNSAFE_PTRACE;
 
-	/*
-	 * This isn't strictly necessary, but it makes it harder for LSMs to
-	 * mess up.
-	 */
+	 
 	if (task_no_new_privs(current))
 		bprm->unsafe |= LSM_UNSAFE_NO_NEW_PRIVS;
 
-	/*
-	 * If another task is sharing our fs, we cannot safely
-	 * suid exec because the differently privileged task
-	 * will be able to manipulate the current directory, etc.
-	 * It would be nice to force an unshare instead...
-	 */
+	 
 	t = p;
 	n_fs = 1;
 	spin_lock(&p->fs->lock);
@@ -1599,7 +1353,7 @@ static void check_unsafe_exec(struct linux_binprm *bprm)
 
 static void bprm_fill_uid(struct linux_binprm *bprm, struct file *file)
 {
-	/* Handle suid and sgid on files */
+	 
 	struct mnt_idmap *idmap;
 	struct inode *inode = file_inode(file);
 	unsigned int mode;
@@ -1618,16 +1372,16 @@ static void bprm_fill_uid(struct linux_binprm *bprm, struct file *file)
 
 	idmap = file_mnt_idmap(file);
 
-	/* Be careful if suid/sgid is set */
+	 
 	inode_lock(inode);
 
-	/* reload atomically mode/uid/gid now that lock held */
+	 
 	mode = inode->i_mode;
 	vfsuid = i_uid_into_vfsuid(idmap, inode);
 	vfsgid = i_gid_into_vfsgid(idmap, inode);
 	inode_unlock(inode);
 
-	/* We ignore suid/sgid if there are no mappings for them in the ns */
+	 
 	if (!vfsuid_has_mapping(bprm->cred->user_ns, vfsuid) ||
 	    !vfsgid_has_mapping(bprm->cred->user_ns, vfsgid))
 		return;
@@ -1643,24 +1397,17 @@ static void bprm_fill_uid(struct linux_binprm *bprm, struct file *file)
 	}
 }
 
-/*
- * Compute brpm->cred based upon the final binary.
- */
+ 
 static int bprm_creds_from_file(struct linux_binprm *bprm)
 {
-	/* Compute creds based on which file? */
+	 
 	struct file *file = bprm->execfd_creds ? bprm->executable : bprm->file;
 
 	bprm_fill_uid(bprm, file);
 	return security_bprm_creds_from_file(bprm, file);
 }
 
-/*
- * Fill the binprm structure from the inode.
- * Read the first BINPRM_BUF_SIZE bytes
- *
- * This may be called multiple times for binary chains (scripts for example).
- */
+ 
 static int prepare_binprm(struct linux_binprm *bprm)
 {
 	loff_t pos = 0;
@@ -1669,11 +1416,7 @@ static int prepare_binprm(struct linux_binprm *bprm)
 	return kernel_read(bprm->file, bprm->buf, BINPRM_BUF_SIZE, &pos);
 }
 
-/*
- * Arguments are '\0' separated strings found at the location bprm->p
- * points to; chop off the first by relocating brpm->p to right after
- * the first '\0' encountered.
- */
+ 
 int remove_arg_zero(struct linux_binprm *bprm)
 {
 	int ret = 0;
@@ -1711,9 +1454,7 @@ out:
 EXPORT_SYMBOL(remove_arg_zero);
 
 #define printable(c) (((c)=='\t') || ((c)=='\n') || (0x20<=(c) && (c)<=0x7e))
-/*
- * cycle the list of binary formats handler, until one recognizes the image
- */
+ 
 static int search_binary_handler(struct linux_binprm *bprm)
 {
 	bool need_retry = IS_ENABLED(CONFIG_MODULES);
@@ -1760,19 +1501,19 @@ static int search_binary_handler(struct linux_binprm *bprm)
 	return retval;
 }
 
-/* binfmt handlers will call back into begin_new_exec() on success. */
+ 
 static int exec_binprm(struct linux_binprm *bprm)
 {
 	pid_t old_pid, old_vpid;
 	int ret, depth;
 
-	/* Need to fetch pid before load_binary changes it */
+	 
 	old_pid = current->pid;
 	rcu_read_lock();
 	old_vpid = task_pid_nr_ns(current, task_active_pid_ns(current->parent));
 	rcu_read_unlock();
 
-	/* This allows 4 levels of binfmt rewrites before failing hard. */
+	 
 	for (depth = 0;; depth++) {
 		struct file *exec;
 		if (depth > 5)
@@ -1806,9 +1547,7 @@ static int exec_binprm(struct linux_binprm *bprm)
 	return 0;
 }
 
-/*
- * sys_execve() executes a new program.
- */
+ 
 static int bprm_execve(struct linux_binprm *bprm,
 		       int fd, struct filename *filename, int flags)
 {
@@ -1819,11 +1558,7 @@ static int bprm_execve(struct linux_binprm *bprm,
 	if (retval)
 		return retval;
 
-	/*
-	 * Check for unsafe execution states before exec_binprm(), which
-	 * will call back into begin_new_exec(), into bprm_creds_from_file(),
-	 * where setuid-ness is evaluated.
-	 */
+	 
 	check_unsafe_exec(bprm);
 	current->in_execve = 1;
 	sched_mm_cid_before_execve(current);
@@ -1836,19 +1571,11 @@ static int bprm_execve(struct linux_binprm *bprm,
 	sched_exec();
 
 	bprm->file = file;
-	/*
-	 * Record that a name derived from an O_CLOEXEC fd will be
-	 * inaccessible after exec.  This allows the code in exec to
-	 * choose to fail when the executable is not mmaped into the
-	 * interpreter and an open file descriptor is not passed to
-	 * the interpreter.  This makes for a better user experience
-	 * than having the interpreter start and then immediately fail
-	 * when it finds the executable is inaccessible.
-	 */
+	 
 	if (bprm->fdpath && get_close_on_exec(fd))
 		bprm->interp_flags |= BINPRM_FLAGS_PATH_INACCESSIBLE;
 
-	/* Set the unchanging part of bprm->cred */
+	 
 	retval = security_bprm_creds_for_exec(bprm);
 	if (retval)
 		goto out;
@@ -1858,7 +1585,7 @@ static int bprm_execve(struct linux_binprm *bprm,
 		goto out;
 
 	sched_mm_cid_after_execve(current);
-	/* execve succeeded */
+	 
 	current->fs->in_exec = 0;
 	current->in_execve = 0;
 	rseq_execve(current);
@@ -1868,12 +1595,7 @@ static int bprm_execve(struct linux_binprm *bprm,
 	return retval;
 
 out:
-	/*
-	 * If past the point of no return ensure the code never
-	 * returns to the userspace process.  Use an existing fatal
-	 * signal if present otherwise terminate the process with
-	 * SIGSEGV.
-	 */
+	 
 	if (bprm->point_of_no_return && !fatal_signal_pending(current))
 		force_fatal_sig(SIGSEGV);
 
@@ -1896,20 +1618,14 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (IS_ERR(filename))
 		return PTR_ERR(filename);
 
-	/*
-	 * We move the actual failure in case of RLIMIT_NPROC excess from
-	 * set*uid() to execve() because too many poorly written programs
-	 * don't check setuid() return code.  Here we additionally recheck
-	 * whether NPROC limit is still exceeded.
-	 */
+	 
 	if ((current->flags & PF_NPROC_EXCEEDED) &&
 	    is_rlimit_overlimit(current_ucounts(), UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC))) {
 		retval = -EAGAIN;
 		goto out_ret;
 	}
 
-	/* We're below the limit (still or again), so we don't want to make
-	 * further execve() calls fail. */
+	 
 	current->flags &= ~PF_NPROC_EXCEEDED;
 
 	bprm = alloc_bprm(fd, filename);
@@ -1948,12 +1664,7 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (retval < 0)
 		goto out_free;
 
-	/*
-	 * When argv is empty, add an empty string ("") as argv[0] to
-	 * ensure confused userspace programs that start processing
-	 * from argv[1] won't end up walking envp. See also
-	 * bprm_stack_limits().
-	 */
+	 
 	if (bprm->argc == 0) {
 		retval = copy_string_kernel("", bprm);
 		if (retval < 0)
@@ -1978,7 +1689,7 @@ int kernel_execve(const char *kernel_filename,
 	int fd = AT_FDCWD;
 	int retval;
 
-	/* It is non-sense for kernel threads to call execve */
+	 
 	if (WARN_ON_ONCE(current->flags & PF_KTHREAD))
 		return -EINVAL;
 
@@ -2095,9 +1806,7 @@ void set_binfmt(struct linux_binfmt *new)
 }
 EXPORT_SYMBOL(set_binfmt);
 
-/*
- * set_dumpable stores three-value SUID_DUMP_* into mm->flags.
- */
+ 
 void set_dumpable(struct mm_struct *mm, int value)
 {
 	if (WARN_ON((unsigned)value > SUID_DUMP_ROOT))
@@ -2177,4 +1886,4 @@ static int __init init_fs_exec_sysctls(void)
 }
 
 fs_initcall(init_fs_exec_sysctls);
-#endif /* CONFIG_SYSCTL */
+#endif  

@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Amiga Gayle PATA controller driver
- *
- * Copyright (c) 2018 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Based on gayle.c:
- *
- *     Created 12 Jul 1997 by Geert Uytterhoeven
- */
+
+ 
 
 #include <linux/ata.h>
 #include <linux/blkdev.h>
@@ -38,7 +29,7 @@ static const struct scsi_host_template pata_gayle_sht = {
 	ATA_PIO_SHT(DRV_NAME),
 };
 
-/* FIXME: is this needed? */
+ 
 static unsigned int pata_gayle_data_xfer(struct ata_queued_cmd *qc,
 					 unsigned char *buf,
 					 unsigned int buflen, int rw)
@@ -48,17 +39,17 @@ static unsigned int pata_gayle_data_xfer(struct ata_queued_cmd *qc,
 	void __iomem *data_addr = ap->ioaddr.data_addr;
 	unsigned int words = buflen >> 1;
 
-	/* Transfer multiple of 2 bytes */
+	 
 	if (rw == READ)
 		raw_insw((u16 *)data_addr, (u16 *)buf, words);
 	else
 		raw_outsw((u16 *)data_addr, (u16 *)buf, words);
 
-	/* Transfer trailing byte, if any. */
+	 
 	if (unlikely(buflen & 0x01)) {
 		unsigned char pad[2] = { };
 
-		/* Point buf to the tail of buffer */
+		 
 		buf += buflen - 1;
 
 		if (rw == READ) {
@@ -74,17 +65,14 @@ static unsigned int pata_gayle_data_xfer(struct ata_queued_cmd *qc,
 	return words << 1;
 }
 
-/*
- * Provide our own set_mode() as we don't want to change anything that has
- * already been configured..
- */
+ 
 static int pata_gayle_set_mode(struct ata_link *link,
 			       struct ata_device **unused)
 {
 	struct ata_device *dev;
 
 	ata_for_each_dev(dev, link, ENABLED) {
-		/* We don't really care */
+		 
 		dev->pio_mode = dev->xfer_mode = XFER_PIO_0;
 		dev->xfer_shift = ATA_SHIFT_PIO;
 		dev->flags |= ATA_DFLAG_PIO;
@@ -148,7 +136,7 @@ static int __init pata_gayle_init_one(struct platform_device *pdev)
 		return -EBUSY;
 	}
 
-	/* allocate host */
+	 
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host)
 		return -ENOMEM;

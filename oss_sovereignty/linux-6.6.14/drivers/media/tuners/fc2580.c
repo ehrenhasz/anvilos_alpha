@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * FCI FC2580 silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "fc2580_priv.h"
 
-/*
- * TODO:
- * I2C write and read works only for one single register. Multiple registers
- * could not be accessed using normal register address auto-increment.
- * There could be (very likely) register to change that behavior....
- */
+ 
 
-/* write single register conditionally only when value differs from 0xff
- * XXX: This is special routine meant only for writing fc2580_freq_regs_lut[]
- * values. Do not use for the other purposes. */
+ 
 static int fc2580_wr_reg_ff(struct fc2580_dev *dev, u8 reg, u8 val)
 {
 	if (val == 0xff)
@@ -39,21 +28,7 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 		return 0;
 	}
 
-	/*
-	 * Fractional-N synthesizer
-	 *
-	 *                      +---------------------------------------+
-	 *                      v                                       |
-	 *  Fref   +----+     +----+     +-------+         +----+     +------+     +---+
-	 * ------> | /R | --> | PD | --> |  VCO  | ------> | /2 | --> | /N.F | <-- | K |
-	 *         +----+     +----+     +-------+         +----+     +------+     +---+
-	 *                                 |
-	 *                                 |
-	 *                                 v
-	 *                               +-------+  Fout
-	 *                               | /Rout | ------>
-	 *                               +-------+
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(fc2580_pll_lut); i++) {
 		if (dev->f_frequency <= fc2580_pll_lut[i].freq)
 			break;
@@ -73,7 +48,7 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 	else
 		synth_config |= 0x0e;
 
-	/* select reference divider R (keep PLL div N in valid range) */
+	 
 	#define DIV_N_MIN 76
 	if (f_vco >= div_u64((u64) DIV_PRE_N * DIV_N_MIN * F_REF, 1)) {
 		div_ref = 1;
@@ -86,7 +61,7 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 		div_ref_val = 0x20;
 	}
 
-	/* calculate PLL integer and fractional control word */
+	 
 	uitmp = DIV_PRE_N * F_REF / div_ref;
 	div_n = div_u64_rem(f_vco, uitmp, &k);
 	k_cw = div_u64((u64) k * 0x100000, uitmp);
@@ -116,7 +91,7 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 	if (ret)
 		goto err;
 
-	/* registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(fc2580_freq_regs_lut); i++) {
 		if (dev->f_frequency <= fc2580_freq_regs_lut[i].freq)
 			break;
@@ -222,7 +197,7 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 	if (ret)
 		goto err;
 
-	/* IF filters */
+	 
 	for (i = 0; i < ARRAY_SIZE(fc2580_if_filter_lut); i++) {
 		if (dev->f_bandwidth <= fc2580_if_filter_lut[i].freq)
 			break;
@@ -248,12 +223,12 @@ static int fc2580_set_params(struct fc2580_dev *dev)
 
 	timeout = jiffies + msecs_to_jiffies(30);
 	for (uitmp = ~0xc0; !time_after(jiffies, timeout) && uitmp != 0xc0;) {
-		/* trigger filter */
+		 
 		ret = regmap_write(dev->regmap, 0x2e, 0x09);
 		if (ret)
 			goto err;
 
-		/* locked when [7:6] are set (val: d7 6MHz, d5 7MHz, cd 8MHz) */
+		 
 		ret = regmap_read(dev->regmap, 0x2f, &uitmp);
 		if (ret)
 			goto err;
@@ -311,9 +286,7 @@ err:
 	return ret;
 }
 
-/*
- * DVB API
- */
+ 
 static int fc2580_dvb_set_params(struct dvb_frontend *fe)
 {
 	struct fc2580_dev *dev = fe->tuner_priv;
@@ -336,7 +309,7 @@ static int fc2580_dvb_sleep(struct dvb_frontend *fe)
 
 static int fc2580_dvb_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
-	*frequency = 0; /* Zero-IF */
+	*frequency = 0;  
 	return 0;
 }
 
@@ -354,9 +327,7 @@ static const struct dvb_tuner_ops fc2580_dvb_tuner_ops = {
 	.get_if_frequency = fc2580_dvb_get_if_frequency,
 };
 
-/*
- * V4L2 API
- */
+ 
 #if IS_ENABLED(CONFIG_VIDEO_DEV)
 static const struct v4l2_frequency_band bands[] = {
 	{
@@ -476,11 +447,7 @@ static int fc2580_s_ctrl(struct v4l2_ctrl *ctrl)
 	switch (ctrl->id) {
 	case V4L2_CID_RF_TUNER_BANDWIDTH_AUTO:
 	case V4L2_CID_RF_TUNER_BANDWIDTH:
-		/*
-		 * TODO: Auto logic does not work 100% correctly as tuner driver
-		 * do not have information to calculate maximum suitable
-		 * bandwidth. Calculating it is responsible of master driver.
-		 */
+		 
 		dev->f_bandwidth = dev->bandwidth->val;
 		ret = fc2580_set_params(dev);
 		break;
@@ -527,7 +494,7 @@ static int fc2580_probe(struct i2c_client *client)
 	if (pdata->clk)
 		dev->clk = pdata->clk;
 	else
-		dev->clk = 16384000; /* internal clock */
+		dev->clk = 16384000;  
 	dev->client = client;
 	dev->regmap = devm_regmap_init_i2c(client, &regmap_config);
 	if (IS_ERR(dev->regmap)) {
@@ -535,7 +502,7 @@ static int fc2580_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* check if the tuner is there */
+	 
 	ret = regmap_read(dev->regmap, 0x01, &uitmp);
 	if (ret)
 		goto err_kfree;
@@ -552,7 +519,7 @@ static int fc2580_probe(struct i2c_client *client)
 	}
 
 #if IS_ENABLED(CONFIG_VIDEO_DEV)
-	/* Register controls */
+	 
 	v4l2_ctrl_handler_init(&dev->hdl, 2);
 	dev->bandwidth_auto = v4l2_ctrl_new_std(&dev->hdl, &fc2580_ctrl_ops,
 						V4L2_CID_RF_TUNER_BANDWIDTH_AUTO,

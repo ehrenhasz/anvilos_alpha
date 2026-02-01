@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2019 NVIDIA Corporation
- */
+
+ 
 
 #ifndef DRM_TEGRA_HDA_H
 #define DRM_TEGRA_HDA_H 1

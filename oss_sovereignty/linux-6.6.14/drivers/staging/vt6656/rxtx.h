@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:
- *
- * Author: Jerry Chen
- *
- * Date: Jun. 27, 2002
- *
- */
+ 
+ 
 
 #ifndef __RXTX_H__
 #define __RXTX_H__
@@ -18,17 +8,17 @@
 #include "wcmd.h"
 #include "baseband.h"
 
-#define DEFAULT_MGN_LIFETIME_RES_64us	125  /* 64us */
+#define DEFAULT_MGN_LIFETIME_RES_64us	125   
 #define DEFAULT_MSDU_LIFETIME_RES_64us  8000
 
-/* Length, Service, and Signal fields of Phy for Tx */
+ 
 struct vnt_phy_field {
 	u8 signal;
 	u8 service;
 	__le16 len;
 } __packed;
 
-/* MIC HDR data header */
+ 
 struct vnt_mic_hdr {
 	u8 id;
 	u8 tx_priority;
@@ -42,10 +32,10 @@ struct vnt_mic_hdr {
 	u8 addr3[6];
 	__le16 seq_ctrl;
 	u8 addr4[6];
-	u16 packing; /* packing to 48 bytes */
+	u16 packing;  
 } __packed;
 
-/* RsvTime buffer header */
+ 
 struct vnt_rrv_time_rts {
 	__le16 rts_rrv_time_ba;
 	__le16 rts_rrv_time_aa;
@@ -67,7 +57,7 @@ struct vnt_rrv_time_ab {
 	__le16 rrv_time;
 } __packed;
 
-/* TX data header */
+ 
 struct vnt_tx_datahead_g {
 	struct vnt_phy_field b;
 	struct vnt_phy_field a;
@@ -83,7 +73,7 @@ struct vnt_tx_datahead_ab {
 	__le16 time_stamp_off;
 } __packed;
 
-/* RTS buffer header */
+ 
 struct vnt_rts_g {
 	struct vnt_phy_field b;
 	struct vnt_phy_field a;
@@ -103,7 +93,7 @@ struct vnt_rts_ab {
 	struct vnt_tx_datahead_ab data_head;
 } __packed __aligned(2);
 
-/* CTS buffer header */
+ 
 struct vnt_cts {
 	struct vnt_phy_field b;
 	__le16 duration_ba;
@@ -114,13 +104,13 @@ struct vnt_cts {
 } __packed __aligned(2);
 
 union vnt_tx_data_head {
-	/* rts g */
+	 
 	struct vnt_rts_g rts_g;
-	/* rts a/b */
+	 
 	struct vnt_rts_ab rts_ab;
-	/* cts g */
+	 
 	struct vnt_cts cts_g;
-	/* no rts/cts */
+	 
 	struct vnt_tx_datahead_ab data_head_ab;
 };
 
@@ -175,4 +165,4 @@ int vnt_beacon_make(struct vnt_private *priv, struct ieee80211_vif *vif);
 int vnt_beacon_enable(struct vnt_private *priv, struct ieee80211_vif *vif,
 		      struct ieee80211_bss_conf *conf);
 
-#endif /* __RXTX_H__ */
+#endif  

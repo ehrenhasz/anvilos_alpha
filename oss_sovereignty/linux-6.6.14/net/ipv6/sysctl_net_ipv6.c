@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sysctl_net_ipv6.c: sysctl interface to net IPV6 subsystem.
- *
- * Changes:
- * YOSHIFUJI Hideaki @USAGI:	added icmp sysctl table.
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/sysctl.h>
@@ -247,7 +242,7 @@ static struct ctl_table ipv6_rotable[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
-#endif /* CONFIG_NETLABEL */
+#endif  
 	{ }
 };
 
@@ -263,7 +258,7 @@ static int __net_init ipv6_sysctl_net_init(struct net *net)
 			     GFP_KERNEL);
 	if (!ipv6_table)
 		goto out;
-	/* Update the variables to point into the current struct net */
+	 
 	for (i = 0; i < ARRAY_SIZE(ipv6_table_template) - 1; i++)
 		ipv6_table[i].data += (void *)net - (void *)&init_net;
 

@@ -1,20 +1,4 @@
-/* join - join lines of two files on a common field
-   Copyright (C) 1991-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Mike Haertel, mike@gnu.ai.mit.edu.  */
+ 
 
 #include <config.h>
 
@@ -33,7 +17,7 @@
 #include "xstrtol.h"
 #include "argmatch.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "join"
 
 #define AUTHORS proper_name ("Mike Haertel")
@@ -46,100 +30,92 @@
   b = tmp; \
 } while (0);
 
-/* An element of the list identifying which fields to print for each
-   output line.  */
+ 
 struct outlist
   {
-    /* File number: 0, 1, or 2.  0 means use the join field.
-       1 means use the first file argument, 2 the second.  */
+     
     int file;
 
-    /* Field index (zero-based), specified only when FILE is 1 or 2.  */
+     
     idx_t field;
 
     struct outlist *next;
   };
 
-/* A field of a line.  */
+ 
 struct field
   {
-    char *beg;			/* First character in field.  */
-    idx_t len;			/* The length of the field.  */
+    char *beg;			 
+    idx_t len;			 
   };
 
-/* A line read from an input file.  */
+ 
 struct line
   {
-    struct linebuffer buf;	/* The line itself.  */
-    idx_t nfields;		/* Number of elements in 'fields'.  */
-    idx_t nfields_allocated;	/* Number of elements allocated for 'fields'. */
+    struct linebuffer buf;	 
+    idx_t nfields;		 
+    idx_t nfields_allocated;	 
     struct field *fields;
   };
 
-/* One or more consecutive lines read from a file that all have the
-   same join field value.  */
+ 
 struct seq
   {
-    idx_t count;		/* Elements used in 'lines'.  */
-    idx_t alloc;		/* Elements allocated in 'lines'.  */
+    idx_t count;		 
+    idx_t alloc;		 
     struct line **lines;
   };
 
-/* The previous line read from each file.  */
+ 
 static struct line *prevline[2] = {nullptr, nullptr};
 
-/* The number of lines read from each file.  */
+ 
 static uintmax_t line_no[2] = {0, 0};
 
-/* The input file names.  */
+ 
 static char *g_names[2];
 
-/* This provides an extra line buffer for each file.  We need these if we
-   try to read two consecutive lines into the same buffer, since we don't
-   want to overwrite the previous buffer before we check order. */
+ 
 static struct line *spareline[2] = {nullptr, nullptr};
 
-/* True if the LC_COLLATE locale is hard.  */
+ 
 static bool hard_LC_COLLATE;
 
-/* If nonzero, print unpairable lines in file 1 or 2.  */
+ 
 static bool print_unpairables_1, print_unpairables_2;
 
-/* If nonzero, print pairable lines.  */
+ 
 static bool print_pairables;
 
-/* If nonzero, we have seen at least one unpairable line. */
+ 
 static bool seen_unpairable;
 
-/* If nonzero, we have warned about disorder in that file. */
+ 
 static bool issued_disorder_warning[2];
 
-/* Empty output field filler.  */
+ 
 static char const *empty_filler;
 
-/* Whether to ensure the same number of fields are output from each line.  */
+ 
 static bool autoformat;
-/* The number of fields to output for each line.
-   Only significant when autoformat is true.  */
+ 
 static idx_t autocount_1;
 static idx_t autocount_2;
 
-/* Field to join on; -1 means they haven't been determined yet.  */
+ 
 static ptrdiff_t join_field_1 = -1;
 static ptrdiff_t join_field_2 = -1;
 
-/* List of fields to print.  */
+ 
 static struct outlist outlist_head;
 
-/* Last element in 'outlist', where a new element can be added.  */
+ 
 static struct outlist *outlist_end = &outlist_head;
 
-/* Tab character separating fields.  If negative, fields are separated
-   by any nonempty string of blanks, otherwise by exactly one
-   tab character whose value (when cast to unsigned char) equals TAB.  */
+ 
 static int tab = -1;
 
-/* If nonzero, check that the input is correctly ordered. */
+ 
 static enum
   {
     CHECK_ORDER_DEFAULT,
@@ -167,17 +143,16 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Used to print non-joining lines */
+ 
 static struct line uni_blank;
 
-/* If nonzero, ignore case when comparing join fields.  */
+ 
 static bool ignore_case;
 
-/* If nonzero, treat the first line of each file as column headers --
-   join them without checking for ordering */
+ 
 static bool join_header_lines;
 
-/* The character marking end of line. Default to \n. */
+ 
 static char eolchar = '\n';
 
 void

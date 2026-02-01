@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -8,7 +8,7 @@ struct {
 	__uint(max_entries, 1);
 	__type(key, __u32);
 	__type(value, __u64);
-	__uint(pinning, 2); /* invalid */
+	__uint(pinning, 2);  
 } nopinmap3 SEC(".maps");
 
 char _license[] SEC("license") = "GPL";

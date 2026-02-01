@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for polling mode for input devices.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -15,9 +13,9 @@
 struct input_dev_poller {
 	void (*poll)(struct input_dev *dev);
 
-	unsigned int poll_interval; /* msec */
-	unsigned int poll_interval_max; /* msec */
-	unsigned int poll_interval_min; /* msec */
+	unsigned int poll_interval;  
+	unsigned int poll_interval_max;  
+	unsigned int poll_interval_min;  
 
 	struct input_dev *input;
 	struct delayed_work work;
@@ -53,7 +51,7 @@ void input_dev_poller_finalize(struct input_dev_poller *poller)
 
 void input_dev_poller_start(struct input_dev_poller *poller)
 {
-	/* Only start polling if polling is enabled */
+	 
 	if (poller->poll_interval > 0) {
 		poller->poll(poller->input);
 		input_dev_poller_queue_work(poller);
@@ -72,11 +70,7 @@ int input_setup_polling(struct input_dev *dev,
 
 	poller = kzalloc(sizeof(*poller), GFP_KERNEL);
 	if (!poller) {
-		/*
-		 * We want to show message even though kzalloc() may have
-		 * printed backtrace as knowing what instance of input
-		 * device we were dealing with is helpful.
-		 */
+		 
 		dev_err(dev->dev.parent ?: &dev->dev,
 			"%s: unable to allocate poller structure\n", __func__);
 		return -ENOMEM;
@@ -132,7 +126,7 @@ int input_get_poll_interval(struct input_dev *dev)
 }
 EXPORT_SYMBOL(input_get_poll_interval);
 
-/* SYSFS interface */
+ 
 
 static ssize_t input_dev_get_poll_interval(struct device *dev,
 					   struct device_attribute *attr,

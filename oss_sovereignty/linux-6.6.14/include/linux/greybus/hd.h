@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus Host Device
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+ 
+ 
 
 #ifndef __HD_H
 #define __HD_H
@@ -50,14 +45,14 @@ struct gb_host_device {
 	struct list_head connections;
 	struct ida cport_id_map;
 
-	/* Number of CPorts supported by the UniPro IP */
+	 
 	size_t num_cports;
 
-	/* Host device buffer constraints */
+	 
 	size_t buffer_size_max;
 
 	struct gb_svc *svc;
-	/* Private data for the host driver */
+	 
 	unsigned long hd_priv[] __aligned(sizeof(s64));
 };
 #define to_gb_host_device(d) container_of(d, struct gb_host_device, dev)
@@ -82,4 +77,4 @@ int gb_hd_output(struct gb_host_device *hd, void *req, u16 size, u8 cmd,
 int gb_hd_init(void);
 void gb_hd_exit(void);
 
-#endif	/* __HD_H */
+#endif	 

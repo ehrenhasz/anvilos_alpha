@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LEDs driver for GPIOs
- *
- * Copyright (C) 2007 8D Technologies inc.
- * Raphael Assenat <raph@8d.com>
- * Copyright (C) 2008 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/gpio/consumer.h>
@@ -132,7 +126,7 @@ static int create_gpio_led(const struct gpio_led *template,
 				 "Failed to select %pOF pinctrl: %d\n",
 				 to_of_node(fwnode), ret);
 		} else {
-			/* pinctrl-%d not present, not an error */
+			 
 			ret = 0;
 		}
 	}
@@ -164,11 +158,7 @@ static struct gpio_leds_priv *gpio_leds_create(struct platform_device *pdev)
 		struct gpio_led_data *led_dat = &priv->leds[priv->num_leds];
 		struct gpio_led led = {};
 
-		/*
-		 * Acquire gpiod from DT with uninitialized label, which
-		 * will be updated after LED class device is registered,
-		 * Only then the final LED name is known.
-		 */
+		 
 		led.gpiod = devm_fwnode_gpiod_get(dev, child, NULL, GPIOD_ASIS,
 						  NULL);
 		if (IS_ERR(led.gpiod)) {
@@ -192,7 +182,7 @@ static struct gpio_leds_priv *gpio_leds_create(struct platform_device *pdev)
 			fwnode_handle_put(child);
 			return ERR_PTR(ret);
 		}
-		/* Set gpiod label to match the corresponding LED name. */
+		 
 		gpiod_set_consumer_name(led_dat->gpiod,
 					led_dat->cdev.dev->kobj.name);
 		priv->num_leds++;
@@ -215,12 +205,7 @@ static struct gpio_desc *gpio_led_get_gpiod(struct device *dev, int idx,
 	unsigned long flags = GPIOF_OUT_INIT_LOW;
 	int ret;
 
-	/*
-	 * This means the LED does not come from the device tree
-	 * or ACPI, so let's try just getting it by index from the
-	 * device, this will hit the board file, if any and get
-	 * the GPIO from there.
-	 */
+	 
 	gpiod = devm_gpiod_get_index(dev, NULL, idx, GPIOD_OUT_LOW);
 	if (!IS_ERR(gpiod)) {
 		gpiod_set_consumer_name(gpiod, template->name);
@@ -229,13 +214,9 @@ static struct gpio_desc *gpio_led_get_gpiod(struct device *dev, int idx,
 	if (PTR_ERR(gpiod) != -ENOENT)
 		return gpiod;
 
-	/*
-	 * This is the legacy code path for platform code that
-	 * still uses GPIO numbers. Ultimately we would like to get
-	 * rid of this block completely.
-	 */
+	 
 
-	/* skip leds that aren't available */
+	 
 	if (!gpio_is_valid(template->gpio))
 		return ERR_PTR(-ENOENT);
 

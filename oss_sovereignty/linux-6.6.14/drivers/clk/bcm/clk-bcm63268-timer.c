@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BCM63268 Timer Clock and Reset Controller Driver
- *
- * Copyright (C) 2023 Álvaro Fernández Rojas <noltari@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/container_of.h>
@@ -70,7 +66,7 @@ static const struct bcm63268_tclk_table_entry bcm63268_timer_clocks[] = {
 		.name = "usb_ref",
 		.bit = BCM63268_TCLK_USB_REF,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 
@@ -119,11 +115,7 @@ static int bcm63268_timer_reset_reset(struct reset_controller_dev *rcdev,
 		     BCM63268_TIMER_RESET_SLEEP_MAX_US);
 
 	bcm63268_timer_reset_update(rcdev, id, false);
-	/*
-	 * Ensure component is taken out reset state by sleeping also after
-	 * deasserting the reset. Otherwise, the component may not be ready
-	 * for operation.
-	 */
+	 
 	usleep_range(BCM63268_TIMER_RESET_SLEEP_MIN_US,
 		     BCM63268_TIMER_RESET_SLEEP_MAX_US);
 
@@ -203,7 +195,7 @@ static int bcm63268_tclk_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm63268_tclk_dt_ids[] = {
 	{ .compatible = "brcm,bcm63268-timer-clocks" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver bcm63268_tclk = {

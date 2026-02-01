@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Synopsys DesignWare I2C adapter driver.
- *
- * Based on the TI DAVINCI I2C adapter driver.
- *
- * Copyright (C) 2006 Texas Instruments.
- * Copyright (C) 2007 MontaVista Software Inc.
- * Copyright (C) 2009 Provigent Ltd.
- */
+ 
+ 
 
 #include <linux/bits.h>
 #include <linux/compiler_types.h>
@@ -42,9 +34,7 @@
 #define DW_IC_DATA_CMD_DAT			GENMASK(7, 0)
 #define DW_IC_DATA_CMD_FIRST_DATA_BYTE		BIT(11)
 
-/*
- * Registers offset
- */
+ 
 #define DW_IC_CON				0x00
 #define DW_IC_TAR				0x04
 #define DW_IC_SAR				0x08
@@ -81,9 +71,9 @@
 #define DW_IC_CLR_RESTART_DET			0xa8
 #define DW_IC_COMP_PARAM_1			0xf4
 #define DW_IC_COMP_VERSION			0xf8
-#define DW_IC_SDA_HOLD_MIN_VERS			0x3131312A /* "111*" == v1.11* */
+#define DW_IC_SDA_HOLD_MIN_VERS			0x3131312A  
 #define DW_IC_COMP_TYPE				0xfc
-#define DW_IC_COMP_TYPE_VALUE			0x44570140 /* "DW" + 0x0140 */
+#define DW_IC_COMP_TYPE_VALUE			0x44570140  
 
 #define DW_IC_INTR_RX_UNDER			BIT(0)
 #define DW_IC_INTR_RX_OVER			BIT(1)
@@ -127,26 +117,17 @@
 #define DW_IC_COMP_PARAM_1_SPEED_MODE_HIGH	(BIT(2) | BIT(3))
 #define DW_IC_COMP_PARAM_1_SPEED_MODE_MASK	GENMASK(3, 2)
 
-/*
- * Sofware status flags
- */
+ 
 #define STATUS_ACTIVE				BIT(0)
 #define STATUS_WRITE_IN_PROGRESS		BIT(1)
 #define STATUS_READ_IN_PROGRESS			BIT(2)
 #define STATUS_MASK				GENMASK(2, 0)
 
-/*
- * operation modes
- */
+ 
 #define DW_IC_MASTER				0
 #define DW_IC_SLAVE				1
 
-/*
- * Hardware abort codes from the DW_IC_TX_ABRT_SOURCE register
- *
- * Only expected abort codes are listed here
- * refer to the datasheet for the full list
- */
+ 
 #define ABRT_7B_ADDR_NOACK			0
 #define ABRT_10ADDR1_NOACK			1
 #define ABRT_10ADDR2_NOACK			2
@@ -187,65 +168,7 @@ struct clk;
 struct device;
 struct reset_control;
 
-/**
- * struct dw_i2c_dev - private i2c-designware data
- * @dev: driver model device node
- * @map: IO registers map
- * @sysmap: System controller registers map
- * @base: IO registers pointer
- * @ext: Extended IO registers pointer
- * @cmd_complete: tx completion indicator
- * @clk: input reference clock
- * @pclk: clock required to access the registers
- * @rst: optional reset for the controller
- * @slave: represent an I2C slave device
- * @get_clk_rate_khz: callback to retrieve IP specific bus speed
- * @cmd_err: run time hadware error code
- * @msgs: points to an array of messages currently being transferred
- * @msgs_num: the number of elements in msgs
- * @msg_write_idx: the element index of the current tx message in the msgs array
- * @tx_buf_len: the length of the current tx buffer
- * @tx_buf: the current tx buffer
- * @msg_read_idx: the element index of the current rx message in the msgs array
- * @rx_buf_len: the length of the current rx buffer
- * @rx_buf: the current rx buffer
- * @msg_err: error status of the current transfer
- * @status: i2c master status, one of STATUS_*
- * @abort_source: copy of the TX_ABRT_SOURCE register
- * @irq: interrupt number for the i2c master
- * @flags: platform specific flags like type of IO accessors or model
- * @adapter: i2c subsystem adapter node
- * @functionality: I2C_FUNC_* ORed bits to reflect what controller does support
- * @master_cfg: configuration for the master device
- * @slave_cfg: configuration for the slave device
- * @tx_fifo_depth: depth of the hardware tx fifo
- * @rx_fifo_depth: depth of the hardware rx fifo
- * @rx_outstanding: current master-rx elements in tx fifo
- * @timings: bus clock frequency, SDA hold and other timings
- * @sda_hold_time: SDA hold value
- * @ss_hcnt: standard speed HCNT value
- * @ss_lcnt: standard speed LCNT value
- * @fs_hcnt: fast speed HCNT value
- * @fs_lcnt: fast speed LCNT value
- * @fp_hcnt: fast plus HCNT value
- * @fp_lcnt: fast plus LCNT value
- * @hs_hcnt: high speed HCNT value
- * @hs_lcnt: high speed LCNT value
- * @acquire_lock: function to acquire a hardware lock on the bus
- * @release_lock: function to release a hardware lock on the bus
- * @semaphore_idx: Index of table with semaphore type attached to the bus. It's
- *	-1 if there is no semaphore.
- * @shared_with_punit: true if this bus is shared with the SoCs PUNIT
- * @disable: function to disable the controller
- * @init: function to initialize the I2C hardware
- * @set_sda_hold_time: callback to retrieve IP specific SDA hold timing
- * @mode: operation mode - DW_IC_MASTER or DW_IC_SLAVE
- * @rinfo: I²C GPIO recovery information
- *
- * HCNT and LCNT parameters can be used if the platform knows more accurate
- * values than the one computed based only on the input clock frequency.
- * Leave them to be %0 if not used.
- */
+ 
 struct dw_i2c_dev {
 	struct device		*dev;
 	struct regmap		*map;
@@ -310,10 +233,7 @@ struct dw_i2c_dev {
 #define MODEL_WANGXUN_SP			BIT(11)
 #define MODEL_MASK				GENMASK(11, 8)
 
-/*
- * Enable UCSI interrupt by writing 0xd at register
- * offset 0x474 specified in hardware specification.
- */
+ 
 #define AMD_UCSI_INTR_REG			0x474
 #define AMD_UCSI_INTR_EN			0xd
 

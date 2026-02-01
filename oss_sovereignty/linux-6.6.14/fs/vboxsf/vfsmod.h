@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * VirtualBox Guest Shared Folders support: module header.
- *
- * Copyright (C) 2006-2018 Oracle Corporation
- */
+ 
+ 
 
 #ifndef VFSMOD_H
 #define VFSMOD_H
@@ -14,7 +10,7 @@
 
 #define DIR_BUFFER_SIZE SZ_16K
 
-/* The cast is to prevent assignment of void * to pointers of arbitrary type */
+ 
 #define VBOXSF_SBI(sb)	((struct vboxsf_sbi *)(sb)->s_fs_info)
 #define VBOXSF_I(i)	container_of(i, struct vboxsf_inode, vfs_inode)
 
@@ -37,27 +33,27 @@ struct vboxsf_fs_context {
 	char *nls_name;
 };
 
-/* per-shared folder information */
+ 
 struct vboxsf_sbi {
 	struct vboxsf_options o;
 	struct shfl_fsobjinfo root_info;
 	struct idr ino_idr;
-	spinlock_t ino_idr_lock; /* This protects ino_idr */
+	spinlock_t ino_idr_lock;  
 	struct nls_table *nls;
 	u32 next_generation;
 	u32 root;
 	int bdi_id;
 };
 
-/* per-inode information */
+ 
 struct vboxsf_inode {
-	/* some information was changed, update data on next revalidate */
+	 
 	int force_restat;
-	/* list of open handles for this inode + lock protecting it */
+	 
 	struct list_head handle_list;
-	/* This mutex protects handle_list accesses */
+	 
 	struct mutex handle_list_mutex;
-	/* The VFS inode struct */
+	 
 	struct inode vfs_inode;
 };
 
@@ -73,7 +69,7 @@ struct vboxsf_dir_buf {
 	struct list_head head;
 };
 
-/* globals */
+ 
 extern const struct inode_operations vboxsf_dir_iops;
 extern const struct inode_operations vboxsf_lnk_iops;
 extern const struct inode_operations vboxsf_reg_iops;
@@ -82,12 +78,12 @@ extern const struct file_operations vboxsf_reg_fops;
 extern const struct address_space_operations vboxsf_reg_aops;
 extern const struct dentry_operations vboxsf_dentry_ops;
 
-/* from file.c */
+ 
 struct vboxsf_handle *vboxsf_create_sf_handle(struct inode *inode,
 					      u64 handle, u32 access_flags);
 void vboxsf_release_sf_handle(struct inode *inode, struct vboxsf_handle *sf_handle);
 
-/* from utils.c */
+ 
 struct inode *vboxsf_new_inode(struct super_block *sb);
 int vboxsf_init_inode(struct vboxsf_sbi *sbi, struct inode *inode,
 		       const struct shfl_fsobjinfo *info, bool reinit);
@@ -111,7 +107,7 @@ void vboxsf_dir_info_free(struct vboxsf_dir_info *p);
 int vboxsf_dir_read_all(struct vboxsf_sbi *sbi, struct vboxsf_dir_info *sf_d,
 			u64 handle);
 
-/* from vboxsf_wrappers.c */
+ 
 int vboxsf_connect(void);
 void vboxsf_disconnect(void);
 

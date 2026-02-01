@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
 
-/*
- * The AO Domain embeds a dual/divider to generate a more precise
- * 32,768KHz clock for low-power suspend mode and CEC.
- *     ______   ______
- *    |      | |      |
- *    | Div1 |-| Cnt1 |
- *   /|______| |______|\
- * -|  ______   ______  X--> Out
- *   \|      | |      |/
- *    | Div2 |-| Cnt2 |
- *    |______| |______|
- *
- * The dividing can be switched to single or dual, with a counter
- * for each divider to set when the switching is done.
- */
+ 
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -74,7 +56,7 @@ __dualdiv_get_setting(unsigned long rate, unsigned long parent_rate,
 	for (i = 0; table[i].n1; i++) {
 		now = __dualdiv_param_to_rate(parent_rate, &table[i]);
 
-		/* If we get an exact match, don't bother any further */
+		 
 		if (now == rate) {
 			return &table[i];
 		} else if (abs(now - rate) < abs(best - rate)) {

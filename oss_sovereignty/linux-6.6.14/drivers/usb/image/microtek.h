@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
- /*
- * Driver for Microtek Scanmaker X6 USB scanner and possibly others.
- * 
- * (C) Copyright 2000 John Fremlin <vii@penguinpowered.com>
- * (C) Copyright 2000 Oliver Neukum <Oliver.Neukum@lrz.uni-muenchen.de>
- *
- * See microtek.c for history
- *
- */
+ 
+  
 
 typedef void (*mts_scsi_cmnd_callback)(struct scsi_cmnd *);
 
@@ -23,7 +15,7 @@ struct mts_transfer_context
 	int data_pipe;
 	struct scatterlist *curr_sg;
 
-	u8 *scsi_status; /* status returned from ep_response after command completion */
+	u8 *scsi_status;  
 };
 
 
@@ -34,7 +26,7 @@ struct mts_desc {
 	struct usb_device *usb_dev;
 	struct usb_interface *usb_intf;
 
-	/* Endpoint addresses */
+	 
 	u8 ep_out;
 	u8 ep_response;
 	u8 ep_image;

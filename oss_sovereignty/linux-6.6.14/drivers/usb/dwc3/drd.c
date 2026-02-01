@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drd.c - DesignWare USB3 DRD Controller Dual-role support
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Roger Quadros <rogerq@ti.com>
- */
+
+ 
 
 #include <linux/extcon.h>
 #include <linux/of_platform.h>
@@ -74,7 +68,7 @@ static irqreturn_t dwc3_otg_irq(int irq, void *_dwc)
 
 	reg = dwc3_readl(dwc->regs, DWC3_OEVT);
 	if (reg) {
-		/* ignore non OTG events, we can't disable them in OEVTEN */
+		 
 		if (!(reg & DWC3_OTG_ALL_EVENTS)) {
 			dwc3_writel(dwc->regs, DWC3_OEVT, reg);
 			return IRQ_NONE;
@@ -94,39 +88,28 @@ static void dwc3_otgregs_init(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/*
-	 * Prevent host/device reset from resetting OTG core.
-	 * If we don't do this then xhci_reset (USBCMD.HCRST) will reset
-	 * the signal outputs sent to the PHY, the OTG FSM logic of the
-	 * core and also the resets to the VBUS filters inside the core.
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCFG);
 	reg |= DWC3_OCFG_SFTRSTMASK;
 	dwc3_writel(dwc->regs, DWC3_OCFG, reg);
 
-	/* Disable hibernation for simplicity */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_GCTL);
 	reg &= ~DWC3_GCTL_GBLHIBERNATIONEN;
 	dwc3_writel(dwc->regs, DWC3_GCTL, reg);
 
-	/*
-	 * Initialize OTG registers as per
-	 * Figure 11-4 OTG Driver Overall Programming Flow
-	 */
-	/* OCFG.SRPCap = 0, OCFG.HNPCap = 0 */
+	 
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCFG);
 	reg &= ~(DWC3_OCFG_SRPCAP | DWC3_OCFG_HNPCAP);
 	dwc3_writel(dwc->regs, DWC3_OCFG, reg);
-	/* OEVT = FFFF */
+	 
 	dwc3_otg_clear_events(dwc);
-	/* OEVTEN = 0 */
+	 
 	dwc3_otg_disable_events(dwc, DWC3_OTG_ALL_EVENTS);
-	/* OEVTEN.ConIDStsChngEn = 1. Instead we enable all events */
+	 
 	dwc3_otg_enable_events(dwc, DWC3_OTG_ALL_EVENTS);
-	/*
-	 * OCTL.PeriMode = 1, OCTL.DevSetHNPEn = 0, OCTL.HstSetHNPEn = 0,
-	 * OCTL.HNPReq = 0
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg |= DWC3_OCTL_PERIMODE;
 	reg &= ~(DWC3_OCTL_DEVSETHNPEN | DWC3_OCTL_HSTSETHNPEN |
@@ -168,157 +151,119 @@ void dwc3_otg_init(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/*
-	 * As per Figure 11-4 OTG Driver Overall Programming Flow,
-	 * block "Initialize GCTL for OTG operation".
-	 */
-	/* GCTL.PrtCapDir=2'b11 */
+	 
+	 
 	dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_OTG);
-	/* GUSB2PHYCFG0.SusPHY=0 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
 	reg &= ~DWC3_GUSB2PHYCFG_SUSPHY;
 	dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 
-	/* Initialize OTG registers */
+	 
 	dwc3_otgregs_init(dwc);
 }
 
 void dwc3_otg_exit(struct dwc3 *dwc)
 {
-	/* disable all OTG IRQs */
+	 
 	dwc3_otg_disable_events(dwc, DWC3_OTG_ALL_EVENTS);
-	/* clear all events */
+	 
 	dwc3_otg_clear_events(dwc);
 }
 
-/* should be called before Host controller driver is started */
+ 
 void dwc3_otg_host_init(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/* As per Figure 11-10 A-Device Flow Diagram */
-	/* OCFG.HNPCap = 0, OCFG.SRPCap = 0. Already 0 */
+	 
+	 
 
-	/*
-	 * OCTL.PeriMode=0, OCTL.TermSelDLPulse = 0,
-	 * OCTL.DevSetHNPEn = 0, OCTL.HstSetHNPEn = 0
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg &= ~(DWC3_OCTL_PERIMODE | DWC3_OCTL_TERMSELIDPULSE |
 			DWC3_OCTL_DEVSETHNPEN | DWC3_OCTL_HSTSETHNPEN);
 	dwc3_writel(dwc->regs, DWC3_OCTL, reg);
 
-	/*
-	 * OCFG.DisPrtPwrCutoff = 0/1
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCFG);
 	reg &= ~DWC3_OCFG_DISPWRCUTTOFF;
 	dwc3_writel(dwc->regs, DWC3_OCFG, reg);
 
-	/*
-	 * OCFG.SRPCap = 1, OCFG.HNPCap = GHWPARAMS6.HNP_CAP
-	 * We don't want SRP/HNP for simple dual-role so leave
-	 * these disabled.
-	 */
+	 
 
-	/*
-	 * OEVTEN.OTGADevHostEvntEn = 1
-	 * OEVTEN.OTGADevSessEndDetEvntEn = 1
-	 * We don't want HNP/role-swap so leave these disabled.
-	 */
+	 
 
-	/* GUSB2PHYCFG.ULPIAutoRes = 1/0, GUSB2PHYCFG.SusPHY = 1 */
+	 
 	if (!dwc->dis_u2_susphy_quirk) {
 		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
 		reg |= DWC3_GUSB2PHYCFG_SUSPHY;
 		dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 	}
 
-	/* Set Port Power to enable VBUS: OCTL.PrtPwrCtl = 1 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg |= DWC3_OCTL_PRTPWRCTL;
 	dwc3_writel(dwc->regs, DWC3_OCTL, reg);
 }
 
-/* should be called after Host controller driver is stopped */
+ 
 static void dwc3_otg_host_exit(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/*
-	 * Exit from A-device flow as per
-	 * Figure 11-4 OTG Driver Overall Programming Flow
-	 */
+	 
 
-	/*
-	 * OEVTEN.OTGADevBHostEndEvntEn=0, OEVTEN.OTGADevHNPChngEvntEn=0
-	 * OEVTEN.OTGADevSessEndDetEvntEn=0,
-	 * OEVTEN.OTGADevHostEvntEn = 0
-	 * But we don't disable any OTG events
-	 */
+	 
 
-	/* OCTL.HstSetHNPEn = 0, OCTL.PrtPwrCtl=0 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg &= ~(DWC3_OCTL_HSTSETHNPEN | DWC3_OCTL_PRTPWRCTL);
 	dwc3_writel(dwc->regs, DWC3_OCTL, reg);
 }
 
-/* should be called before the gadget controller driver is started */
+ 
 static void dwc3_otg_device_init(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/* As per Figure 11-20 B-Device Flow Diagram */
+	 
 
-	/*
-	 * OCFG.HNPCap = GHWPARAMS6.HNP_CAP, OCFG.SRPCap = 1
-	 * but we keep them 0 for simple dual-role operation.
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCFG);
-	/* OCFG.OTGSftRstMsk = 0/1 */
+	 
 	reg |= DWC3_OCFG_SFTRSTMASK;
 	dwc3_writel(dwc->regs, DWC3_OCFG, reg);
-	/*
-	 * OCTL.PeriMode = 1
-	 * OCTL.TermSelDLPulse = 0/1, OCTL.HNPReq = 0
-	 * OCTL.DevSetHNPEn = 0, OCTL.HstSetHNPEn = 0
-	 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg |= DWC3_OCTL_PERIMODE;
 	reg &= ~(DWC3_OCTL_TERMSELIDPULSE | DWC3_OCTL_HNPREQ |
 			DWC3_OCTL_DEVSETHNPEN | DWC3_OCTL_HSTSETHNPEN);
 	dwc3_writel(dwc->regs, DWC3_OCTL, reg);
-	/* OEVTEN.OTGBDevSesVldDetEvntEn = 1 */
+	 
 	dwc3_otg_enable_events(dwc, DWC3_OEVTEN_BDEVSESSVLDDETEN);
-	/* GUSB2PHYCFG.ULPIAutoRes = 0, GUSB2PHYCFG0.SusPHY = 1 */
+	 
 	if (!dwc->dis_u2_susphy_quirk) {
 		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
 		reg |= DWC3_GUSB2PHYCFG_SUSPHY;
 		dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 	}
-	/* GCTL.GblHibernationEn = 0. Already 0. */
+	 
 }
 
-/* should be called after the gadget controller driver is stopped */
+ 
 static void dwc3_otg_device_exit(struct dwc3 *dwc)
 {
 	u32 reg;
 
-	/*
-	 * Exit from B-device flow as per
-	 * Figure 11-4 OTG Driver Overall Programming Flow
-	 */
+	 
 
-	/*
-	 * OEVTEN.OTGBDevHNPChngEvntEn = 0
-	 * OEVTEN.OTGBDevVBusChngEvntEn = 0
-	 * OEVTEN.OTGBDevBHostEndEvntEn = 0
-	 */
+	 
 	dwc3_otg_disable_events(dwc, DWC3_OEVTEN_BDEVHNPCHNGEN |
 				DWC3_OEVTEN_BDEVVBUSCHNGEN |
 				DWC3_OEVTEN_BDEVBHOSTENDEN);
 
-	/* OCTL.DevSetHNPEn = 0, OCTL.HNPReq = 0, OCTL.PeriMode=1 */
+	 
 	reg = dwc3_readl(dwc->regs, DWC3_OCTL);
 	reg &= ~(DWC3_OCTL_DEVSETHNPEN | DWC3_OCTL_HNPREQ);
 	reg |= DWC3_OCTL_PERIMODE;
@@ -335,7 +280,7 @@ void dwc3_otg_update(struct dwc3 *dwc, bool ignore_idstatus)
 	if (dwc->dr_mode != USB_DR_MODE_OTG)
 		return;
 
-	/* don't do anything if debug user changed role to not OTG */
+	 
 	if (dwc->current_dr_role != DWC3_GCTL_PRTCAP_OTG)
 		return;
 
@@ -516,7 +461,7 @@ static int dwc3_setup_role_switch(struct dwc3 *dwc)
 		return PTR_ERR(dwc->role_sw);
 
 	if (dwc->dev->of_node) {
-		/* populate connector entry */
+		 
 		int ret = devm_of_platform_populate(dwc->dev);
 
 		if (ret) {
@@ -555,16 +500,16 @@ int dwc3_drd_init(struct dwc3 *dwc)
 	} else {
 		dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_OTG);
 
-		/* use OTG block to get ID event */
+		 
 		irq = dwc3_otg_get_irq(dwc);
 		if (irq < 0)
 			return irq;
 
 		dwc->otg_irq = irq;
 
-		/* disable all OTG IRQs */
+		 
 		dwc3_otg_disable_events(dwc, DWC3_OTG_ALL_EVENTS);
-		/* clear all events */
+		 
 		dwc3_otg_clear_events(dwc);
 
 		ret = request_threaded_irq(dwc->otg_irq, dwc3_otg_irq,
@@ -597,7 +542,7 @@ void dwc3_drd_exit(struct dwc3 *dwc)
 
 	cancel_work_sync(&dwc->drd_work);
 
-	/* debug user might have changed role, clean based on current role */
+	 
 	switch (dwc->current_dr_role) {
 	case DWC3_GCTL_PRTCAP_HOST:
 		dwc3_host_exit(dwc);

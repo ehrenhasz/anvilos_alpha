@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <subcmd/pager.h>
 #include <stdlib.h>
@@ -15,9 +15,7 @@ static int __color_vsnprintf(char *bf, size_t size, const char *color,
 {
 	int r = 0;
 
-	/*
-	 * Auto-detect:
-	 */
+	 
 	if (perf_use_color_default < 0) {
 		if (isatty(1) || pager_in_use())
 			perf_use_color_default = 1;
@@ -35,15 +33,13 @@ static int __color_vsnprintf(char *bf, size_t size, const char *color,
 	return r;
 }
 
-/* Colors are not included in return value */
+ 
 static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 		va_list args)
 {
 	int r = 0;
 
-	/*
-	 * Auto-detect:
-	 */
+	 
 	if (perf_use_color_default < 0) {
 		if (isatty(fileno(fp)) || pager_in_use())
 			perf_use_color_default = 1;
@@ -93,11 +89,7 @@ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
-/*
- * This function splits the buffer by newlines and colors the lines individually.
- *
- * Returns 0 on success.
- */
+ 
 int color_fwrite_lines(FILE *fp, const char *color,
 		size_t count, const char *buf)
 {
@@ -125,11 +117,7 @@ const char *get_percent_color(double percent)
 {
 	const char *color = PERF_COLOR_NORMAL;
 
-	/*
-	 * We color high-overhead entries in red, mid-overhead
-	 * entries in green - and keep the low overhead places
-	 * normal:
-	 */
+	 
 	if (fabs(percent) >= MIN_RED)
 		color = PERF_COLOR_RED;
 	else {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sun4i-ss-core.c - hardware cryptographic accelerator for Allwinner A20 SoC
- *
- * Copyright (C) 2013-2015 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * Core file which registers crypto algorithms supported by the SS.
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/crypto.h>
 #include <linux/debugfs.h>
@@ -267,10 +259,7 @@ static int sun4i_ss_debugfs_show(struct seq_file *seq, void *v)
 }
 DEFINE_SHOW_ATTRIBUTE(sun4i_ss_debugfs);
 
-/*
- * Power management strategy: The device is suspended unless a TFM exists for
- * one of the algorithms proposed by this driver.
- */
+ 
 static int sun4i_ss_pm_suspend(struct device *dev)
 {
 	struct sun4i_ss_ctx *ss = dev_get_drvdata(dev);
@@ -316,11 +305,7 @@ static const struct dev_pm_ops sun4i_ss_pm_ops = {
 	SET_RUNTIME_PM_OPS(sun4i_ss_pm_suspend, sun4i_ss_pm_resume, NULL)
 };
 
-/*
- * When power management is enabled, this function enables the PM and set the
- * device as suspended
- * When power management is disabled, this function just enables the device
- */
+ 
 static int sun4i_ss_pm_init(struct sun4i_ss_ctx *ss)
 {
 	int err;
@@ -390,21 +375,14 @@ static int sun4i_ss_probe(struct platform_device *pdev)
 	if (!ss->reset)
 		dev_info(&pdev->dev, "no reset control found\n");
 
-	/*
-	 * Check that clock have the correct rates given in the datasheet
-	 * Try to set the clock to the maximum allowed
-	 */
+	 
 	err = clk_set_rate(ss->ssclk, cr_mod);
 	if (err) {
 		dev_err(&pdev->dev, "Cannot set clock rate to ssclk\n");
 		return err;
 	}
 
-	/*
-	 * The only impact on clocks below requirement are bad performance,
-	 * so do not print "errors"
-	 * warn on Overclocked clocks
-	 */
+	 
 	cr = clk_get_rate(ss->busclk);
 	if (cr >= cr_ahb)
 		dev_dbg(&pdev->dev, "Clock bus %lu (%lu MHz) (must be >= %lu)\n",
@@ -434,12 +412,7 @@ static int sun4i_ss_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * Datasheet named it "Die Bonding ID"
-	 * I expect to be a sort of Security System Revision number.
-	 * Since the A80 seems to have an other version of SS
-	 * this info could be useful
-	 */
+	 
 
 	err = pm_runtime_resume_and_get(ss->dev);
 	if (err < 0)
@@ -483,7 +456,7 @@ static int sun4i_ss_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Ignore error of debugfs */
+	 
 	ss->dbgfs_dir = debugfs_create_dir("sun4i-ss", NULL);
 	ss->dbgfs_stats = debugfs_create_file("stats", 0444, ss->dbgfs_dir, ss,
 					      &sun4i_ss_debugfs_fops);

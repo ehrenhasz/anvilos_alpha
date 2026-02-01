@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 
 #include <core/gpuobj.h>
@@ -29,9 +7,7 @@
 
 #include <nvif/class.h>
 
-/*******************************************************************************
- * PMPEG context
- ******************************************************************************/
+ 
 
 static int
 nv50_mpeg_cclass_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -53,9 +29,7 @@ nv50_mpeg_cclass = {
 	.bind = nv50_mpeg_cclass_bind,
 };
 
-/*******************************************************************************
- * PMPEG engine/subdev functions
- ******************************************************************************/
+ 
 
 void
 nv50_mpeg_intr(struct nvkm_engine *mpeg)
@@ -69,7 +43,7 @@ nv50_mpeg_intr(struct nvkm_engine *mpeg)
 	u32 show = stat;
 
 	if (stat & 0x01000000) {
-		/* happens on initial binding of the object */
+		 
 		if (type == 0x00000020 && mthd == 0x0000) {
 			nvkm_wr32(device, 0x00b308, 0x00000100);
 			show &= ~0x01000000;

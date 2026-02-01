@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2018
- * Author: Christophe Kerello <christophe.kerello@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -21,37 +18,37 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* Bad block marker length */
+ 
 #define FMC2_BBM_LEN			2
 
-/* ECC step size */
+ 
 #define FMC2_ECC_STEP_SIZE		512
 
-/* BCHDSRx registers length */
+ 
 #define FMC2_BCHDSRS_LEN		20
 
-/* HECCR length */
+ 
 #define FMC2_HECCR_LEN			4
 
-/* Max requests done for a 8k nand page size */
+ 
 #define FMC2_MAX_SG			16
 
-/* Max chip enable */
+ 
 #define FMC2_MAX_CE			2
 
-/* Max ECC buffer length */
+ 
 #define FMC2_MAX_ECC_BUF_LEN		(FMC2_BCHDSRS_LEN * FMC2_MAX_SG)
 
 #define FMC2_TIMEOUT_MS			5000
 
-/* Timings */
+ 
 #define FMC2_THIZ			1
 #define FMC2_TIO			8000
 #define FMC2_TSYNC			3000
 #define FMC2_PCR_TIMING_MASK		0xf
 #define FMC2_PMEM_PATT_TIMING_MASK	0xff
 
-/* FMC2 Controller Registers */
+ 
 #define FMC2_BCR1			0x0
 #define FMC2_PCR			0x80
 #define FMC2_SR				0x84
@@ -83,10 +80,10 @@
 #define FMC2_BCHDSR3			0x288
 #define FMC2_BCHDSR4			0x28c
 
-/* Register: FMC2_BCR1 */
+ 
 #define FMC2_BCR1_FMC2EN		BIT(31)
 
-/* Register: FMC2_PCR */
+ 
 #define FMC2_PCR_PWAITEN		BIT(1)
 #define FMC2_PCR_PBKEN			BIT(2)
 #define FMC2_PCR_PWID			GENMASK(5, 4)
@@ -104,33 +101,33 @@
 #define FMC2_PCR_BCHECC			BIT(24)
 #define FMC2_PCR_WEN			BIT(25)
 
-/* Register: FMC2_SR */
+ 
 #define FMC2_SR_NWRF			BIT(6)
 
-/* Register: FMC2_PMEM */
+ 
 #define FMC2_PMEM_MEMSET		GENMASK(7, 0)
 #define FMC2_PMEM_MEMWAIT		GENMASK(15, 8)
 #define FMC2_PMEM_MEMHOLD		GENMASK(23, 16)
 #define FMC2_PMEM_MEMHIZ		GENMASK(31, 24)
 #define FMC2_PMEM_DEFAULT		0x0a0a0a0a
 
-/* Register: FMC2_PATT */
+ 
 #define FMC2_PATT_ATTSET		GENMASK(7, 0)
 #define FMC2_PATT_ATTWAIT		GENMASK(15, 8)
 #define FMC2_PATT_ATTHOLD		GENMASK(23, 16)
 #define FMC2_PATT_ATTHIZ		GENMASK(31, 24)
 #define FMC2_PATT_DEFAULT		0x0a0a0a0a
 
-/* Register: FMC2_ISR */
+ 
 #define FMC2_ISR_IHLF			BIT(1)
 
-/* Register: FMC2_ICR */
+ 
 #define FMC2_ICR_CIHLF			BIT(1)
 
-/* Register: FMC2_CSQCR */
+ 
 #define FMC2_CSQCR_CSQSTART		BIT(0)
 
-/* Register: FMC2_CSQCFGR1 */
+ 
 #define FMC2_CSQCFGR1_CMD2EN		BIT(1)
 #define FMC2_CSQCFGR1_DMADEN		BIT(2)
 #define FMC2_CSQCFGR1_ACYNBR		GENMASK(6, 4)
@@ -139,7 +136,7 @@
 #define FMC2_CSQCFGR1_CMD1T		BIT(24)
 #define FMC2_CSQCFGR1_CMD2T		BIT(25)
 
-/* Register: FMC2_CSQCFGR2 */
+ 
 #define FMC2_CSQCFGR2_SQSDTEN		BIT(0)
 #define FMC2_CSQCFGR2_RCMD2EN		BIT(1)
 #define FMC2_CSQCFGR2_DMASEN		BIT(2)
@@ -148,7 +145,7 @@
 #define FMC2_CSQCFGR2_RCMD1T		BIT(24)
 #define FMC2_CSQCFGR2_RCMD2T		BIT(25)
 
-/* Register: FMC2_CSQCFGR3 */
+ 
 #define FMC2_CSQCFGR3_SNBR		GENMASK(13, 8)
 #define FMC2_CSQCFGR3_AC1T		BIT(16)
 #define FMC2_CSQCFGR3_AC2T		BIT(17)
@@ -159,51 +156,51 @@
 #define FMC2_CSQCFGR3_RAC1T		BIT(22)
 #define FMC2_CSQCFGR3_RAC2T		BIT(23)
 
-/* Register: FMC2_CSQCAR1 */
+ 
 #define FMC2_CSQCAR1_ADDC1		GENMASK(7, 0)
 #define FMC2_CSQCAR1_ADDC2		GENMASK(15, 8)
 #define FMC2_CSQCAR1_ADDC3		GENMASK(23, 16)
 #define FMC2_CSQCAR1_ADDC4		GENMASK(31, 24)
 
-/* Register: FMC2_CSQCAR2 */
+ 
 #define FMC2_CSQCAR2_ADDC5		GENMASK(7, 0)
 #define FMC2_CSQCAR2_NANDCEN		GENMASK(11, 10)
 #define FMC2_CSQCAR2_SAO		GENMASK(31, 16)
 
-/* Register: FMC2_CSQIER */
+ 
 #define FMC2_CSQIER_TCIE		BIT(0)
 
-/* Register: FMC2_CSQICR */
+ 
 #define FMC2_CSQICR_CLEAR_IRQ		GENMASK(4, 0)
 
-/* Register: FMC2_CSQEMSR */
+ 
 #define FMC2_CSQEMSR_SEM		GENMASK(15, 0)
 
-/* Register: FMC2_BCHIER */
+ 
 #define FMC2_BCHIER_DERIE		BIT(1)
 #define FMC2_BCHIER_EPBRIE		BIT(4)
 
-/* Register: FMC2_BCHICR */
+ 
 #define FMC2_BCHICR_CLEAR_IRQ		GENMASK(4, 0)
 
-/* Register: FMC2_BCHDSR0 */
+ 
 #define FMC2_BCHDSR0_DUE		BIT(0)
 #define FMC2_BCHDSR0_DEF		BIT(1)
 #define FMC2_BCHDSR0_DEN		GENMASK(7, 4)
 
-/* Register: FMC2_BCHDSR1 */
+ 
 #define FMC2_BCHDSR1_EBP1		GENMASK(12, 0)
 #define FMC2_BCHDSR1_EBP2		GENMASK(28, 16)
 
-/* Register: FMC2_BCHDSR2 */
+ 
 #define FMC2_BCHDSR2_EBP3		GENMASK(12, 0)
 #define FMC2_BCHDSR2_EBP4		GENMASK(28, 16)
 
-/* Register: FMC2_BCHDSR3 */
+ 
 #define FMC2_BCHDSR3_EBP5		GENMASK(12, 0)
 #define FMC2_BCHDSR3_EBP6		GENMASK(28, 16)
 
-/* Register: FMC2_BCHDSR4 */
+ 
 #define FMC2_BCHDSR4_EBP7		GENMASK(12, 0)
 #define FMC2_BCHDSR4_EBP8		GENMASK(28, 16)
 
@@ -285,20 +282,20 @@ static void stm32_fmc2_nfc_timings_init(struct nand_chip *chip)
 	struct stm32_fmc2_timings *timings = &nand->timings;
 	u32 pmem, patt;
 
-	/* Set tclr/tar timings */
+	 
 	regmap_update_bits(nfc->regmap, FMC2_PCR,
 			   FMC2_PCR_TCLR | FMC2_PCR_TAR,
 			   FIELD_PREP(FMC2_PCR_TCLR, timings->tclr) |
 			   FIELD_PREP(FMC2_PCR_TAR, timings->tar));
 
-	/* Set tset/twait/thold/thiz timings in common bank */
+	 
 	pmem = FIELD_PREP(FMC2_PMEM_MEMSET, timings->tset_mem);
 	pmem |= FIELD_PREP(FMC2_PMEM_MEMWAIT, timings->twait);
 	pmem |= FIELD_PREP(FMC2_PMEM_MEMHOLD, timings->thold_mem);
 	pmem |= FIELD_PREP(FMC2_PMEM_MEMHIZ, timings->thiz);
 	regmap_write(nfc->regmap, FMC2_PMEM, pmem);
 
-	/* Set tset/twait/thold/thiz timings in attribut bank */
+	 
 	patt = FIELD_PREP(FMC2_PATT_ATTSET, timings->tset_att);
 	patt |= FIELD_PREP(FMC2_PATT_ATTWAIT, timings->twait);
 	patt |= FIELD_PREP(FMC2_PATT_ATTHOLD, timings->thold_att);
@@ -311,7 +308,7 @@ static void stm32_fmc2_nfc_setup(struct nand_chip *chip)
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
 	u32 pcr = 0, pcr_mask;
 
-	/* Configure ECC algorithm (default configuration is Hamming) */
+	 
 	pcr_mask = FMC2_PCR_ECCALG;
 	pcr_mask |= FMC2_PCR_BCHECC;
 	if (chip->ecc.strength == FMC2_ECC_BCH8) {
@@ -321,12 +318,12 @@ static void stm32_fmc2_nfc_setup(struct nand_chip *chip)
 		pcr |= FMC2_PCR_ECCALG;
 	}
 
-	/* Set buswidth */
+	 
 	pcr_mask |= FMC2_PCR_PWID;
 	if (chip->options & NAND_BUSWIDTH_16)
 		pcr |= FIELD_PREP(FMC2_PCR_PWID, FMC2_PCR_PWID_BUSWIDTH_16);
 
-	/* Set ECC sector size */
+	 
 	pcr_mask |= FMC2_PCR_ECCSS;
 	pcr |= FIELD_PREP(FMC2_PCR_ECCSS, FMC2_PCR_ECCSS_512);
 
@@ -370,10 +367,7 @@ static int stm32_fmc2_nfc_select_chip(struct nand_chip *chip, int chipnr)
 	}
 
 	if (nfc->dma_ecc_ch) {
-		/*
-		 * Hamming: we read HECCR register
-		 * BCH4/BCH8: we read BCHDSRSx registers
-		 */
+		 
 		memset(&dma_cfg, 0, sizeof(dma_cfg));
 		dma_cfg.src_addr = nfc->io_phys_addr;
 		dma_cfg.src_addr += chip->ecc.strength == FMC2_ECC_HAM ?
@@ -386,7 +380,7 @@ static int stm32_fmc2_nfc_select_chip(struct nand_chip *chip, int chipnr)
 			return ret;
 		}
 
-		/* Calculate ECC length needed for one sector */
+		 
 		nfc->dma_ecc_len = chip->ecc.strength == FMC2_ECC_HAM ?
 				   FMC2_HECCR_LEN : FMC2_BCHDSRS_LEN;
 	}
@@ -455,10 +449,7 @@ static void stm32_fmc2_nfc_clear_bch_irq(struct stm32_fmc2_nfc *nfc)
 	regmap_write(nfc->regmap, FMC2_BCHICR, FMC2_BCHICR_CLEAR_IRQ);
 }
 
-/*
- * Enable ECC logic and reset syndrome/parity bits previously calculated
- * Syndrome/parity bits is cleared by setting the ECCEN bit to 0
- */
+ 
 static void stm32_fmc2_nfc_hwctl(struct nand_chip *chip, int mode)
 {
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
@@ -477,11 +468,7 @@ static void stm32_fmc2_nfc_hwctl(struct nand_chip *chip, int mode)
 	stm32_fmc2_nfc_set_ecc(nfc, true);
 }
 
-/*
- * ECC Hamming calculation
- * ECC is 3 bytes for 512 bytes of data (supports error correction up to
- * max of 1-bit)
- */
+ 
 static void stm32_fmc2_nfc_ham_set_ecc(const u32 ecc_sta, u8 *ecc)
 {
 	ecc[0] = ecc_sta;
@@ -518,17 +505,17 @@ static int stm32_fmc2_nfc_ham_correct(struct nand_chip *chip, u8 *dat,
 	u32 byte_addr = 0, b;
 	u32 i, shifting = 1;
 
-	/* Indicate which bit and byte is faulty (if any) */
+	 
 	b0 = read_ecc[0] ^ calc_ecc[0];
 	b1 = read_ecc[1] ^ calc_ecc[1];
 	b2 = read_ecc[2] ^ calc_ecc[2];
 	b = b0 | (b1 << 8) | (b2 << 16);
 
-	/* No errors */
+	 
 	if (likely(!b))
 		return 0;
 
-	/* Calculate bit position */
+	 
 	for (i = 0; i < 3; i++) {
 		switch (b % 4) {
 		case 2:
@@ -543,7 +530,7 @@ static int stm32_fmc2_nfc_ham_correct(struct nand_chip *chip, u8 *dat,
 		b >>= 2;
 	}
 
-	/* Calculate byte position */
+	 
 	shifting = 1;
 	for (i = 0; i < 9; i++) {
 		switch (b % 4) {
@@ -559,24 +546,20 @@ static int stm32_fmc2_nfc_ham_correct(struct nand_chip *chip, u8 *dat,
 		b >>= 2;
 	}
 
-	/* Flip the bit */
+	 
 	dat[byte_addr] ^= (1 << bit_position);
 
 	return 1;
 }
 
-/*
- * ECC BCH calculation and correction
- * ECC is 7/13 bytes for 512 bytes of data (supports error correction up to
- * max of 4-bit/8-bit)
- */
+ 
 static int stm32_fmc2_nfc_bch_calculate(struct nand_chip *chip, const u8 *data,
 					u8 *ecc)
 {
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
 	u32 bchpbr;
 
-	/* Wait until the BCH code is ready */
+	 
 	if (!wait_for_completion_timeout(&nfc->complete,
 					 msecs_to_jiffies(FMC2_TIMEOUT_MS))) {
 		dev_err(nfc->dev, "bch timeout\n");
@@ -584,7 +567,7 @@ static int stm32_fmc2_nfc_bch_calculate(struct nand_chip *chip, const u8 *data,
 		return -ETIMEDOUT;
 	}
 
-	/* Read parity bits */
+	 
 	regmap_read(nfc->regmap, FMC2_BCHPBR1, &bchpbr);
 	ecc[0] = bchpbr;
 	ecc[1] = bchpbr >> 8;
@@ -625,11 +608,11 @@ static int stm32_fmc2_nfc_bch_decode(int eccsize, u8 *dat, u32 *ecc_sta)
 	int i, den;
 	unsigned int nb_errs = 0;
 
-	/* No errors found */
+	 
 	if (likely(!(bchdsr0 & FMC2_BCHDSR0_DEF)))
 		return 0;
 
-	/* Too many errors detected */
+	 
 	if (unlikely(bchdsr0 & FMC2_BCHDSR0_DUE))
 		return -EBADMSG;
 
@@ -659,7 +642,7 @@ static int stm32_fmc2_nfc_bch_correct(struct nand_chip *chip, u8 *dat,
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
 	u32 ecc_sta[5];
 
-	/* Wait until the decoding error is ready */
+	 
 	if (!wait_for_completion_timeout(&nfc->complete,
 					 msecs_to_jiffies(FMC2_TIMEOUT_MS))) {
 		dev_err(nfc->dev, "bch timeout\n");
@@ -695,22 +678,22 @@ static int stm32_fmc2_nfc_read_page(struct nand_chip *chip, u8 *buf,
 	     s++, i += eccbytes, p += eccsize) {
 		chip->ecc.hwctl(chip, NAND_ECC_READ);
 
-		/* Read the nand page sector (512 bytes) */
+		 
 		ret = nand_change_read_column_op(chip, s * eccsize, p,
 						 eccsize, false);
 		if (ret)
 			return ret;
 
-		/* Read the corresponding ECC bytes */
+		 
 		ret = nand_change_read_column_op(chip, i, ecc_code,
 						 eccbytes, false);
 		if (ret)
 			return ret;
 
-		/* Correct the data */
+		 
 		stat = chip->ecc.correct(chip, p, ecc_code, ecc_calc);
 		if (stat == -EBADMSG)
-			/* Check for empty pages with bitflips */
+			 
 			stat = nand_check_erased_ecc_chunk(p, eccsize,
 							   ecc_code, eccbytes,
 							   NULL, 0,
@@ -724,7 +707,7 @@ static int stm32_fmc2_nfc_read_page(struct nand_chip *chip, u8 *buf,
 		}
 	}
 
-	/* Read oob */
+	 
 	if (oob_required) {
 		ret = nand_change_read_column_op(chip, mtd->writesize,
 						 chip->oob_poi, mtd->oobsize,
@@ -736,27 +719,20 @@ static int stm32_fmc2_nfc_read_page(struct nand_chip *chip, u8 *buf,
 	return max_bitflips;
 }
 
-/* Sequencer read/write configuration */
+ 
 static void stm32_fmc2_nfc_rw_page_init(struct nand_chip *chip, int page,
 					int raw, bool write_data)
 {
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
 	struct mtd_info *mtd = nand_to_mtd(chip);
 	u32 ecc_offset = mtd->writesize + FMC2_BBM_LEN;
-	/*
-	 * cfg[0] => csqcfgr1, cfg[1] => csqcfgr2, cfg[2] => csqcfgr3
-	 * cfg[3] => csqar1, cfg[4] => csqar2
-	 */
+	 
 	u32 cfg[5];
 
 	regmap_update_bits(nfc->regmap, FMC2_PCR, FMC2_PCR_WEN,
 			   write_data ? FMC2_PCR_WEN : 0);
 
-	/*
-	 * - Set Program Page/Page Read command
-	 * - Enable DMA request data
-	 * - Set timings
-	 */
+	 
 	cfg[0] = FMC2_CSQCFGR1_DMADEN | FMC2_CSQCFGR1_CMD1T;
 	if (write_data)
 		cfg[0] |= FIELD_PREP(FMC2_CSQCFGR1_CMD1, NAND_CMD_SEQIN);
@@ -766,12 +742,7 @@ static void stm32_fmc2_nfc_rw_page_init(struct nand_chip *chip, int page,
 			  FIELD_PREP(FMC2_CSQCFGR1_CMD2, NAND_CMD_READSTART) |
 			  FMC2_CSQCFGR1_CMD2T;
 
-	/*
-	 * - Set Random Data Input/Random Data Read command
-	 * - Enable the sequencer to access the Spare data area
-	 * - Enable  DMA request status decoding for read
-	 * - Set timings
-	 */
+	 
 	if (write_data)
 		cfg[1] = FIELD_PREP(FMC2_CSQCFGR2_RCMD1, NAND_CMD_RNDIN);
 	else
@@ -785,10 +756,7 @@ static void stm32_fmc2_nfc_rw_page_init(struct nand_chip *chip, int page,
 		cfg[1] |= FMC2_CSQCFGR2_SQSDTEN;
 	}
 
-	/*
-	 * - Set the number of sectors to be written
-	 * - Set timings
-	 */
+	 
 	cfg[2] = FIELD_PREP(FMC2_CSQCFGR3_SNBR, chip->ecc.steps - 1);
 	if (write_data) {
 		cfg[2] |= FMC2_CSQCFGR3_RAC2T;
@@ -798,20 +766,11 @@ static void stm32_fmc2_nfc_rw_page_init(struct nand_chip *chip, int page,
 			cfg[2] |= FMC2_CSQCFGR3_AC4T;
 	}
 
-	/*
-	 * Set the fourth first address cycles
-	 * Byte 1 and byte 2 => column, we start at 0x0
-	 * Byte 3 and byte 4 => page
-	 */
+	 
 	cfg[3] = FIELD_PREP(FMC2_CSQCAR1_ADDC3, page);
 	cfg[3] |= FIELD_PREP(FMC2_CSQCAR1_ADDC4, page >> 8);
 
-	/*
-	 * - Set chip enable number
-	 * - Set ECC byte offset in the spare area
-	 * - Calculate the number of address cycles to be issued
-	 * - Set byte 5 of address cycle if needed
-	 */
+	 
 	cfg[4] = FIELD_PREP(FMC2_CSQCAR2_NANDCEN, nfc->cs_sel);
 	if (chip->options & NAND_BUSWIDTH_16)
 		cfg[4] |= FIELD_PREP(FMC2_CSQCAR2_SAO, ecc_offset >> 1);
@@ -832,7 +791,7 @@ static void stm32_fmc2_nfc_dma_callback(void *arg)
 	complete((struct completion *)arg);
 }
 
-/* Read/write data from/to a page */
+ 
 static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
 			       int raw, bool write_data)
 {
@@ -848,7 +807,7 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
 	const u8 *p = buf;
 	int s, ret;
 
-	/* Configure DMA data */
+	 
 	if (write_data) {
 		dma_data_dir = DMA_TO_DEVICE;
 		dma_transfer_dir = DMA_MEM_TO_DEV;
@@ -884,7 +843,7 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
 	dma_async_issue_pending(dma_ch);
 
 	if (!write_data && !raw) {
-		/* Configure DMA ECC status */
+		 
 		p = nfc->ecc_buf;
 		for_each_sg(nfc->dma_ecc_sg.sgl, sg, eccsteps, s) {
 			sg_set_buf(sg, p, nfc->dma_ecc_len);
@@ -920,11 +879,11 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
 	stm32_fmc2_nfc_clear_seq_irq(nfc);
 	stm32_fmc2_nfc_enable_seq_irq(nfc);
 
-	/* Start the transfer */
+	 
 	regmap_update_bits(nfc->regmap, FMC2_CSQCR,
 			   FMC2_CSQCR_CSQSTART, FMC2_CSQCR_CSQSTART);
 
-	/* Wait end of sequencer transfer */
+	 
 	if (!wait_for_completion_timeout(&nfc->complete, timeout)) {
 		dev_err(nfc->dev, "seq timeout\n");
 		stm32_fmc2_nfc_disable_seq_irq(nfc);
@@ -935,14 +894,14 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
 		goto err_unmap_ecc;
 	}
 
-	/* Wait DMA data transfer completion */
+	 
 	if (!wait_for_completion_timeout(&nfc->dma_data_complete, timeout)) {
 		dev_err(nfc->dev, "data DMA timeout\n");
 		dmaengine_terminate_all(dma_ch);
 		ret = -ETIMEDOUT;
 	}
 
-	/* Wait DMA ECC transfer completion */
+	 
 	if (!write_data && !raw) {
 		if (!wait_for_completion_timeout(&nfc->dma_ecc_complete,
 						 timeout)) {
@@ -969,15 +928,15 @@ static int stm32_fmc2_nfc_seq_write(struct nand_chip *chip, const u8 *buf,
 	struct mtd_info *mtd = nand_to_mtd(chip);
 	int ret;
 
-	/* Configure the sequencer */
+	 
 	stm32_fmc2_nfc_rw_page_init(chip, page, raw, true);
 
-	/* Write the page */
+	 
 	ret = stm32_fmc2_nfc_xfer(chip, buf, raw, true);
 	if (ret)
 		return ret;
 
-	/* Write oob */
+	 
 	if (oob_required) {
 		ret = nand_change_write_column_op(chip, mtd->writesize,
 						  chip->oob_poi, mtd->oobsize,
@@ -1014,7 +973,7 @@ static int stm32_fmc2_nfc_seq_write_page_raw(struct nand_chip *chip,
 	return stm32_fmc2_nfc_seq_write(chip, buf, oob_required, page, true);
 }
 
-/* Get a status indicating which sectors have errors */
+ 
 static u16 stm32_fmc2_nfc_get_mapping_status(struct stm32_fmc2_nfc *nfc)
 {
 	u32 csqemsr;
@@ -1041,7 +1000,7 @@ static int stm32_fmc2_nfc_seq_correct(struct nand_chip *chip, u8 *dat,
 		int stat = 0;
 
 		if (eccstrength == FMC2_ECC_HAM) {
-			/* Ecc_sta = FMC2_HECCR */
+			 
 			if (sta_map & BIT(s)) {
 				stm32_fmc2_nfc_ham_set_ecc(*ecc_sta,
 							   &calc_ecc[i]);
@@ -1051,13 +1010,7 @@ static int stm32_fmc2_nfc_seq_correct(struct nand_chip *chip, u8 *dat,
 			}
 			ecc_sta++;
 		} else {
-			/*
-			 * Ecc_sta[0] = FMC2_BCHDSR0
-			 * Ecc_sta[1] = FMC2_BCHDSR1
-			 * Ecc_sta[2] = FMC2_BCHDSR2
-			 * Ecc_sta[3] = FMC2_BCHDSR3
-			 * Ecc_sta[4] = FMC2_BCHDSR4
-			 */
+			 
 			if (sta_map & BIT(s))
 				stat = stm32_fmc2_nfc_bch_decode(eccsize, dat,
 								 ecc_sta);
@@ -1065,7 +1018,7 @@ static int stm32_fmc2_nfc_seq_correct(struct nand_chip *chip, u8 *dat,
 		}
 
 		if (stat == -EBADMSG)
-			/* Check for empty pages with bitflips */
+			 
 			stat = nand_check_erased_ecc_chunk(dat, eccsize,
 							   &read_ecc[i],
 							   eccbytes,
@@ -1097,17 +1050,17 @@ static int stm32_fmc2_nfc_seq_read_page(struct nand_chip *chip, u8 *buf,
 	if (ret)
 		return ret;
 
-	/* Configure the sequencer */
+	 
 	stm32_fmc2_nfc_rw_page_init(chip, page, 0, false);
 
-	/* Read the page */
+	 
 	ret = stm32_fmc2_nfc_xfer(chip, buf, 0, false);
 	if (ret)
 		return ret;
 
 	sta_map = stm32_fmc2_nfc_get_mapping_status(nfc);
 
-	/* Check if errors happen */
+	 
 	if (likely(!sta_map)) {
 		if (oob_required)
 			return nand_change_read_column_op(chip, mtd->writesize,
@@ -1117,7 +1070,7 @@ static int stm32_fmc2_nfc_seq_read_page(struct nand_chip *chip, u8 *buf,
 		return 0;
 	}
 
-	/* Read oob */
+	 
 	ret = nand_change_read_column_op(chip, mtd->writesize,
 					 chip->oob_poi, mtd->oobsize, false);
 	if (ret)
@@ -1128,7 +1081,7 @@ static int stm32_fmc2_nfc_seq_read_page(struct nand_chip *chip, u8 *buf,
 	if (ret)
 		return ret;
 
-	/* Correct data */
+	 
 	return chip->ecc.correct(chip, buf, ecc_code, ecc_calc);
 }
 
@@ -1142,15 +1095,15 @@ static int stm32_fmc2_nfc_seq_read_page_raw(struct nand_chip *chip, u8 *buf,
 	if (ret)
 		return ret;
 
-	/* Configure the sequencer */
+	 
 	stm32_fmc2_nfc_rw_page_init(chip, page, 1, false);
 
-	/* Read the page */
+	 
 	ret = stm32_fmc2_nfc_xfer(chip, buf, 1, false);
 	if (ret)
 		return ret;
 
-	/* Read oob */
+	 
 	if (oob_required)
 		return nand_change_read_column_op(chip, mtd->writesize,
 						  chip->oob_poi, mtd->oobsize,
@@ -1164,10 +1117,10 @@ static irqreturn_t stm32_fmc2_nfc_irq(int irq, void *dev_id)
 	struct stm32_fmc2_nfc *nfc = (struct stm32_fmc2_nfc *)dev_id;
 
 	if (nfc->irq_state == FMC2_IRQ_SEQ)
-		/* Sequencer is used */
+		 
 		stm32_fmc2_nfc_disable_seq_irq(nfc);
 	else if (nfc->irq_state == FMC2_IRQ_BCH)
-		/* BCH is used */
+		 
 		stm32_fmc2_nfc_disable_bch_irq(nfc);
 
 	complete(&nfc->complete);
@@ -1182,7 +1135,7 @@ static void stm32_fmc2_nfc_read_data(struct nand_chip *chip, void *buf,
 	void __iomem *io_addr_r = nfc->data_base[nfc->cs_sel];
 
 	if (force_8bit && chip->options & NAND_BUSWIDTH_16)
-		/* Reconfigure bus width to 8-bit */
+		 
 		stm32_fmc2_nfc_set_buswidth_16(nfc, false);
 
 	if (!IS_ALIGNED((uintptr_t)buf, sizeof(u32))) {
@@ -1200,14 +1153,14 @@ static void stm32_fmc2_nfc_read_data(struct nand_chip *chip, void *buf,
 		}
 	}
 
-	/* Buf is aligned */
+	 
 	while (len >= sizeof(u32)) {
 		*(u32 *)buf = readl_relaxed(io_addr_r);
 		buf += sizeof(u32);
 		len -= sizeof(u32);
 	}
 
-	/* Read remaining bytes */
+	 
 	if (len >= sizeof(u16)) {
 		*(u16 *)buf = readw_relaxed(io_addr_r);
 		buf += sizeof(u16);
@@ -1218,7 +1171,7 @@ static void stm32_fmc2_nfc_read_data(struct nand_chip *chip, void *buf,
 		*(u8 *)buf = readb_relaxed(io_addr_r);
 
 	if (force_8bit && chip->options & NAND_BUSWIDTH_16)
-		/* Reconfigure bus width to 16-bit */
+		 
 		stm32_fmc2_nfc_set_buswidth_16(nfc, true);
 }
 
@@ -1229,7 +1182,7 @@ static void stm32_fmc2_nfc_write_data(struct nand_chip *chip, const void *buf,
 	void __iomem *io_addr_w = nfc->data_base[nfc->cs_sel];
 
 	if (force_8bit && chip->options & NAND_BUSWIDTH_16)
-		/* Reconfigure bus width to 8-bit */
+		 
 		stm32_fmc2_nfc_set_buswidth_16(nfc, false);
 
 	if (!IS_ALIGNED((uintptr_t)buf, sizeof(u32))) {
@@ -1247,14 +1200,14 @@ static void stm32_fmc2_nfc_write_data(struct nand_chip *chip, const void *buf,
 		}
 	}
 
-	/* Buf is aligned */
+	 
 	while (len >= sizeof(u32)) {
 		writel_relaxed(*(u32 *)buf, io_addr_w);
 		buf += sizeof(u32);
 		len -= sizeof(u32);
 	}
 
-	/* Write remaining bytes */
+	 
 	if (len >= sizeof(u16)) {
 		writew_relaxed(*(u16 *)buf, io_addr_w);
 		buf += sizeof(u16);
@@ -1265,7 +1218,7 @@ static void stm32_fmc2_nfc_write_data(struct nand_chip *chip, const void *buf,
 		writeb_relaxed(*(u8 *)buf, io_addr_w);
 
 	if (force_8bit && chip->options & NAND_BUSWIDTH_16)
-		/* Reconfigure bus width to 16-bit */
+		 
 		stm32_fmc2_nfc_set_buswidth_16(nfc, true);
 }
 
@@ -1276,20 +1229,20 @@ static int stm32_fmc2_nfc_waitrdy(struct nand_chip *chip,
 	const struct nand_sdr_timings *timings;
 	u32 isr, sr;
 
-	/* Check if there is no pending requests to the NAND flash */
+	 
 	if (regmap_read_poll_timeout(nfc->regmap, FMC2_SR, sr,
 				     sr & FMC2_SR_NWRF, 1,
 				     1000 * FMC2_TIMEOUT_MS))
 		dev_warn(nfc->dev, "Waitrdy timeout\n");
 
-	/* Wait tWB before R/B# signal is low */
+	 
 	timings = nand_get_sdr_timings(nand_get_interface_config(chip));
 	ndelay(PSEC_TO_NSEC(timings->tWB_max));
 
-	/* R/B# signal is low, clear high level flag */
+	 
 	regmap_write(nfc->regmap, FMC2_ICR, FMC2_ICR_CIHLF);
 
-	/* Wait R/B# signal is high */
+	 
 	return regmap_read_poll_timeout(nfc->regmap, FMC2_ISR, isr,
 					isr & FMC2_ISR_IHLF, 5,
 					1000 * FMC2_TIMEOUT_MS);
@@ -1354,35 +1307,35 @@ static void stm32_fmc2_nfc_init(struct stm32_fmc2_nfc *nfc)
 
 	regmap_read(nfc->regmap, FMC2_PCR, &pcr);
 
-	/* Set CS used to undefined */
+	 
 	nfc->cs_sel = -1;
 
-	/* Enable wait feature and nand flash memory bank */
+	 
 	pcr |= FMC2_PCR_PWAITEN;
 	pcr |= FMC2_PCR_PBKEN;
 
-	/* Set buswidth to 8 bits mode for identification */
+	 
 	pcr &= ~FMC2_PCR_PWID;
 
-	/* ECC logic is disabled */
+	 
 	pcr &= ~FMC2_PCR_ECCEN;
 
-	/* Default mode */
+	 
 	pcr &= ~FMC2_PCR_ECCALG;
 	pcr &= ~FMC2_PCR_BCHECC;
 	pcr &= ~FMC2_PCR_WEN;
 
-	/* Set default ECC sector size */
+	 
 	pcr &= ~FMC2_PCR_ECCSS;
 	pcr |= FIELD_PREP(FMC2_PCR_ECCSS, FMC2_PCR_ECCSS_2048);
 
-	/* Set default tclr/tar timings */
+	 
 	pcr &= ~FMC2_PCR_TCLR;
 	pcr |= FIELD_PREP(FMC2_PCR_TCLR, FMC2_PCR_TCLR_DEFAULT);
 	pcr &= ~FMC2_PCR_TAR;
 	pcr |= FIELD_PREP(FMC2_PCR_TAR, FMC2_PCR_TAR_DEFAULT);
 
-	/* Enable FMC2 controller */
+	 
 	if (nfc->dev == nfc->cdev)
 		regmap_update_bits(nfc->regmap, FMC2_BCR1,
 				   FMC2_BCR1_FMC2EN, FMC2_BCR1_FMC2EN);
@@ -1414,22 +1367,14 @@ static void stm32_fmc2_nfc_calc_timings(struct nand_chip *chip,
 	tims->thiz = FMC2_THIZ;
 	thiz = (tims->thiz + 1) * hclkp;
 
-	/*
-	 * tWAIT > tRP
-	 * tWAIT > tWP
-	 * tWAIT > tREA + tIO
-	 */
+	 
 	twait = max_t(unsigned long, hclkp, sdrt->tRP_min);
 	twait = max_t(unsigned long, twait, sdrt->tWP_min);
 	twait = max_t(unsigned long, twait, sdrt->tREA_max + FMC2_TIO);
 	timing = DIV_ROUND_UP(twait, hclkp);
 	tims->twait = clamp_val(timing, 1, FMC2_PMEM_PATT_TIMING_MASK);
 
-	/*
-	 * tSETUP_MEM > tCS - tWAIT
-	 * tSETUP_MEM > tALS - tWAIT
-	 * tSETUP_MEM > tDS - (tWAIT - tHIZ)
-	 */
+	 
 	tset_mem = hclkp;
 	if (sdrt->tCS_min > twait && (tset_mem < sdrt->tCS_min - twait))
 		tset_mem = sdrt->tCS_min - twait;
@@ -1441,11 +1386,7 @@ static void stm32_fmc2_nfc_calc_timings(struct nand_chip *chip,
 	timing = DIV_ROUND_UP(tset_mem, hclkp);
 	tims->tset_mem = clamp_val(timing, 1, FMC2_PMEM_PATT_TIMING_MASK);
 
-	/*
-	 * tHOLD_MEM > tCH
-	 * tHOLD_MEM > tREH - tSETUP_MEM
-	 * tHOLD_MEM > max(tRC, tWC) - (tSETUP_MEM + tWAIT)
-	 */
+	 
 	thold_mem = max_t(unsigned long, hclkp, sdrt->tCH_min);
 	if (sdrt->tREH_min > tset_mem &&
 	    (thold_mem < sdrt->tREH_min - tset_mem))
@@ -1459,13 +1400,7 @@ static void stm32_fmc2_nfc_calc_timings(struct nand_chip *chip,
 	timing = DIV_ROUND_UP(thold_mem, hclkp);
 	tims->thold_mem = clamp_val(timing, 1, FMC2_PMEM_PATT_TIMING_MASK);
 
-	/*
-	 * tSETUP_ATT > tCS - tWAIT
-	 * tSETUP_ATT > tCLS - tWAIT
-	 * tSETUP_ATT > tALS - tWAIT
-	 * tSETUP_ATT > tRHW - tHOLD_MEM
-	 * tSETUP_ATT > tDS - (tWAIT - tHIZ)
-	 */
+	 
 	tset_att = hclkp;
 	if (sdrt->tCS_min > twait && (tset_att < sdrt->tCS_min - twait))
 		tset_att = sdrt->tCS_min - twait;
@@ -1482,19 +1417,7 @@ static void stm32_fmc2_nfc_calc_timings(struct nand_chip *chip,
 	timing = DIV_ROUND_UP(tset_att, hclkp);
 	tims->tset_att = clamp_val(timing, 1, FMC2_PMEM_PATT_TIMING_MASK);
 
-	/*
-	 * tHOLD_ATT > tALH
-	 * tHOLD_ATT > tCH
-	 * tHOLD_ATT > tCLH
-	 * tHOLD_ATT > tCOH
-	 * tHOLD_ATT > tDH
-	 * tHOLD_ATT > tWB + tIO + tSYNC - tSETUP_MEM
-	 * tHOLD_ATT > tADL - tSETUP_MEM
-	 * tHOLD_ATT > tWH - tSETUP_MEM
-	 * tHOLD_ATT > tWHR - tSETUP_MEM
-	 * tHOLD_ATT > tRC - (tSETUP_ATT + tWAIT)
-	 * tHOLD_ATT > tWC - (tSETUP_ATT + tWAIT)
-	 */
+	 
 	thold_att = max_t(unsigned long, hclkp, sdrt->tALH_min);
 	thold_att = max_t(unsigned long, thold_att, sdrt->tCH_min);
 	thold_att = max_t(unsigned long, thold_att, sdrt->tCLH_min);
@@ -1581,7 +1504,7 @@ static int stm32_fmc2_nfc_dma_setup(struct stm32_fmc2_nfc *nfc)
 	if (ret)
 		return ret;
 
-	/* Allocate a buffer to store ECC status registers */
+	 
 	nfc->ecc_buf = devm_kzalloc(nfc->dev, FMC2_MAX_ECC_BUF_LEN, GFP_KERNEL);
 	if (!nfc->ecc_buf)
 		return -ENOMEM;
@@ -1609,34 +1532,31 @@ static void stm32_fmc2_nfc_nand_callbacks_setup(struct nand_chip *chip)
 {
 	struct stm32_fmc2_nfc *nfc = to_stm32_nfc(chip->controller);
 
-	/*
-	 * Specific callbacks to read/write a page depending on
-	 * the mode (polling/sequencer) and the algo used (Hamming, BCH).
-	 */
+	 
 	if (nfc->dma_tx_ch && nfc->dma_rx_ch && nfc->dma_ecc_ch) {
-		/* DMA => use sequencer mode callbacks */
+		 
 		chip->ecc.correct = stm32_fmc2_nfc_seq_correct;
 		chip->ecc.write_page = stm32_fmc2_nfc_seq_write_page;
 		chip->ecc.read_page = stm32_fmc2_nfc_seq_read_page;
 		chip->ecc.write_page_raw = stm32_fmc2_nfc_seq_write_page_raw;
 		chip->ecc.read_page_raw = stm32_fmc2_nfc_seq_read_page_raw;
 	} else {
-		/* No DMA => use polling mode callbacks */
+		 
 		chip->ecc.hwctl = stm32_fmc2_nfc_hwctl;
 		if (chip->ecc.strength == FMC2_ECC_HAM) {
-			/* Hamming is used */
+			 
 			chip->ecc.calculate = stm32_fmc2_nfc_ham_calculate;
 			chip->ecc.correct = stm32_fmc2_nfc_ham_correct;
 			chip->ecc.options |= NAND_ECC_GENERIC_ERASED_CHECK;
 		} else {
-			/* BCH is used */
+			 
 			chip->ecc.calculate = stm32_fmc2_nfc_bch_calculate;
 			chip->ecc.correct = stm32_fmc2_nfc_bch_correct;
 			chip->ecc.read_page = stm32_fmc2_nfc_read_page;
 		}
 	}
 
-	/* Specific configurations depending on the algo used */
+	 
 	if (chip->ecc.strength == FMC2_ECC_HAM)
 		chip->ecc.bytes = chip->options & NAND_BUSWIDTH_16 ? 4 : 3;
 	else if (chip->ecc.strength == FMC2_ECC_BCH8)
@@ -1682,15 +1602,15 @@ static const struct mtd_ooblayout_ops stm32_fmc2_nfc_ooblayout_ops = {
 
 static int stm32_fmc2_nfc_calc_ecc_bytes(int step_size, int strength)
 {
-	/* Hamming */
+	 
 	if (strength == FMC2_ECC_HAM)
 		return 4;
 
-	/* BCH8 */
+	 
 	if (strength == FMC2_ECC_BCH8)
 		return 14;
 
-	/* BCH4 */
+	 
 	return 8;
 }
 
@@ -1704,20 +1624,14 @@ static int stm32_fmc2_nfc_attach_chip(struct nand_chip *chip)
 	struct mtd_info *mtd = nand_to_mtd(chip);
 	int ret;
 
-	/*
-	 * Only NAND_ECC_ENGINE_TYPE_ON_HOST mode is actually supported
-	 * Hamming => ecc.strength = 1
-	 * BCH4 => ecc.strength = 4
-	 * BCH8 => ecc.strength = 8
-	 * ECC sector size = 512
-	 */
+	 
 	if (chip->ecc.engine_type != NAND_ECC_ENGINE_TYPE_ON_HOST) {
 		dev_err(nfc->dev,
 			"nand_ecc_engine_type is not well defined in the DT\n");
 		return -EINVAL;
 	}
 
-	/* Default ECC settings in case they are not set in the device tree */
+	 
 	if (!chip->ecc.size)
 		chip->ecc.size = FMC2_ECC_STEP_SIZE;
 
@@ -1984,7 +1898,7 @@ static int stm32_fmc2_nfc_probe(struct platform_device *pdev)
 
 	stm32_fmc2_nfc_wp_disable(nand);
 
-	/* Scan to find existence of the device */
+	 
 	ret = nand_scan(chip, nand->ncs);
 	if (ret)
 		goto err_wp_enable;

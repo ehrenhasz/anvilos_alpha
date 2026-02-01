@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for a generic INET TIMEWAIT sock
- *
- *		From code originally in net/tcp.h
- */
+ 
+ 
 #ifndef _INET_TIMEWAIT_SOCK_
 #define _INET_TIMEWAIT_SOCK_
 
@@ -25,16 +17,9 @@
 
 struct inet_bind_bucket;
 
-/*
- * This is a TIME_WAIT sock. It works around the memory consumption
- * problems of sockets in such a state on heavily loaded servers, but
- * without violating the protocol specification.
- */
+ 
 struct inet_timewait_sock {
-	/*
-	 * Now struct sock also uses sock_common, so please just
-	 * don't add nothing before this first member (__tw_common) --acme
-	 */
+	 
 	struct sock_common	__tw_common;
 #define tw_family		__tw_common.skc_family
 #define tw_state		__tw_common.skc_state
@@ -61,13 +46,13 @@ struct inet_timewait_sock {
 	volatile unsigned char	tw_substate;
 	unsigned char		tw_rcv_wscale;
 
-	/* Socket demultiplex comparisons on incoming packets. */
-	/* these three are in inet_sock */
+	 
+	 
 	__be16			tw_sport;
-	/* And these are ours. */
+	 
 	unsigned int		tw_transparent  : 1,
 				tw_flowlabel	: 20,
-				tw_pad		: 3,	/* 3 bits hole */
+				tw_pad		: 3,	 
 				tw_tos		: 8;
 	u32			tw_txhash;
 	u32			tw_priority;
@@ -127,4 +112,4 @@ void twsk_net_set(struct inet_timewait_sock *twsk, struct net *net)
 {
 	write_pnet(&twsk->tw_net, net);
 }
-#endif	/* _INET_TIMEWAIT_SOCK_ */
+#endif	 

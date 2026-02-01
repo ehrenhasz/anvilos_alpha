@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IVPU_FW_LOG_H__
 #define __IVPU_FW_LOG_H__
@@ -35,4 +33,4 @@ static inline void ivpu_fw_log_dump(struct ivpu_device *vdev)
 	ivpu_fw_log_print(vdev, false, &p);
 }
 
-#endif /* __IVPU_FW_LOG_H__ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * This driver supports the analog controls for the internal codec
- * found in Allwinner's A31s, A23, A33 and H3 SoCs.
- *
- * Copyright 2016 Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -20,7 +15,7 @@
 
 #include "sun8i-adda-pr-regmap.h"
 
-/* Codec analog control register offsets and bit fields */
+ 
 #define SUN8I_ADDA_HP_VOLC		0x00
 #define SUN8I_ADDA_HP_VOLC_PA_CLK_GATE		7
 #define SUN8I_ADDA_HP_VOLC_HP_VOL		0
@@ -60,7 +55,7 @@
 #define SUN8I_ADDA_MICIN_GCTRL_MIC2G		0
 #define SUN8I_ADDA_PAEN_HP_CTRL		0x07
 #define SUN8I_ADDA_PAEN_HP_CTRL_HPPAEN		7
-#define SUN8I_ADDA_PAEN_HP_CTRL_LINEOUTEN	7	/* H3 specific */
+#define SUN8I_ADDA_PAEN_HP_CTRL_LINEOUTEN	7	 
 #define SUN8I_ADDA_PAEN_HP_CTRL_HPCOM_FC	5
 #define SUN8I_ADDA_PAEN_HP_CTRL_COMPTEN		4
 #define SUN8I_ADDA_PAEN_HP_CTRL_PA_ANTI_POP_CTRL	2
@@ -113,7 +108,7 @@
 #define SUN8I_ADDA_ADC_AP_EN_ADCLEN		6
 #define SUN8I_ADDA_ADC_AP_EN_ADCG		0
 
-/* mixer controls */
+ 
 static const struct snd_kcontrol_new sun8i_codec_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("DAC Playback Switch",
 			  SUN8I_ADDA_LOMIXSC,
@@ -137,7 +132,7 @@ static const struct snd_kcontrol_new sun8i_codec_mixer_controls[] = {
 			  SUN8I_ADDA_LOMIXSC_MIC2, 1, 0),
 };
 
-/* mixer controls */
+ 
 static const struct snd_kcontrol_new sun8i_v3s_codec_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("DAC Playback Switch",
 			  SUN8I_ADDA_LOMIXSC,
@@ -153,7 +148,7 @@ static const struct snd_kcontrol_new sun8i_v3s_codec_mixer_controls[] = {
 			  SUN8I_ADDA_LOMIXSC_MIC1, 1, 0),
 };
 
-/* ADC mixer controls */
+ 
 static const struct snd_kcontrol_new sun8i_codec_adc_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("Mixer Capture Switch",
 			  SUN8I_ADDA_LADCMIXSC,
@@ -177,7 +172,7 @@ static const struct snd_kcontrol_new sun8i_codec_adc_mixer_controls[] = {
 			  SUN8I_ADDA_LADCMIXSC_MIC2, 1, 0),
 };
 
-/* ADC mixer controls */
+ 
 static const struct snd_kcontrol_new sun8i_v3s_codec_adc_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("Mixer Capture Switch",
 			  SUN8I_ADDA_LADCMIXSC,
@@ -193,7 +188,7 @@ static const struct snd_kcontrol_new sun8i_v3s_codec_adc_mixer_controls[] = {
 			  SUN8I_ADDA_LADCMIXSC_MIC1, 1, 0),
 };
 
-/* volume / mute controls */
+ 
 static const DECLARE_TLV_DB_SCALE(sun8i_codec_out_mixer_pregain_scale,
 				  -450, 150, 0);
 static const DECLARE_TLV_DB_RANGE(sun8i_codec_mic_gain_scale,
@@ -202,44 +197,40 @@ static const DECLARE_TLV_DB_RANGE(sun8i_codec_mic_gain_scale,
 );
 
 static const struct snd_kcontrol_new sun8i_codec_common_controls[] = {
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Mic1 Playback Volume", SUN8I_ADDA_MICIN_GCTRL,
 		       SUN8I_ADDA_MICIN_GCTRL_MIC1G,
 		       0x7, 0, sun8i_codec_out_mixer_pregain_scale),
 
-	/* Microphone Amp boost gain */
+	 
 	SOC_SINGLE_TLV("Mic1 Boost Volume", SUN8I_ADDA_MIC1G_MICBIAS_CTRL,
 		       SUN8I_ADDA_MIC1G_MICBIAS_CTRL_MIC1BOOST, 0x7, 0,
 		       sun8i_codec_mic_gain_scale),
 
-	/* ADC */
+	 
 	SOC_SINGLE_TLV("ADC Gain Capture Volume", SUN8I_ADDA_ADC_AP_EN,
 		       SUN8I_ADDA_ADC_AP_EN_ADCG, 0x7, 0,
 		       sun8i_codec_out_mixer_pregain_scale),
 };
 
 static const struct snd_soc_dapm_widget sun8i_codec_common_widgets[] = {
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC("Left ADC", NULL, SUN8I_ADDA_ADC_AP_EN,
 			 SUN8I_ADDA_ADC_AP_EN_ADCLEN, 0),
 	SND_SOC_DAPM_ADC("Right ADC", NULL, SUN8I_ADDA_ADC_AP_EN,
 			 SUN8I_ADDA_ADC_AP_EN_ADCREN, 0),
 
-	/* DAC */
+	 
 	SND_SOC_DAPM_DAC("Left DAC", NULL, SUN8I_ADDA_DAC_PA_SRC,
 			 SUN8I_ADDA_DAC_PA_SRC_DACALEN, 0),
 	SND_SOC_DAPM_DAC("Right DAC", NULL, SUN8I_ADDA_DAC_PA_SRC,
 			 SUN8I_ADDA_DAC_PA_SRC_DACAREN, 0),
-	/*
-	 * Due to this component and the codec belonging to separate DAPM
-	 * contexts, we need to manually link the above widgets to their
-	 * stream widgets at the card level.
-	 */
+	 
 
-	/* Microphone input */
+	 
 	SND_SOC_DAPM_INPUT("MIC1"),
 
-	/* Mic input path */
+	 
 	SND_SOC_DAPM_PGA("Mic1 Amplifier", SUN8I_ADDA_MIC1G_MICBIAS_CTRL,
 			 SUN8I_ADDA_MIC1G_MICBIAS_CTRL_MIC1AMPEN, 0, NULL, 0),
 };
@@ -283,37 +274,37 @@ static const struct snd_soc_dapm_widget sun8i_v3s_codec_mixer_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route sun8i_codec_common_routes[] = {
-	/* Microphone Routes */
+	 
 	{ "Mic1 Amplifier", NULL, "MIC1"},
 };
 
 static const struct snd_soc_dapm_route sun8i_codec_mixer_routes[] = {
-	/* Left Mixer Routes */
+	 
 	{ "Left Mixer", "DAC Playback Switch", "Left DAC" },
 	{ "Left Mixer", "DAC Reversed Playback Switch", "Right DAC" },
 	{ "Left Mixer", "Mic1 Playback Switch", "Mic1 Amplifier" },
 
-	/* Right Mixer Routes */
+	 
 	{ "Right Mixer", "DAC Playback Switch", "Right DAC" },
 	{ "Right Mixer", "DAC Reversed Playback Switch", "Left DAC" },
 	{ "Right Mixer", "Mic1 Playback Switch", "Mic1 Amplifier" },
 
-	/* Left ADC Mixer Routes */
+	 
 	{ "Left ADC Mixer", "Mixer Capture Switch", "Left Mixer" },
 	{ "Left ADC Mixer", "Mixer Reversed Capture Switch", "Right Mixer" },
 	{ "Left ADC Mixer", "Mic1 Capture Switch", "Mic1 Amplifier" },
 
-	/* Right ADC Mixer Routes */
+	 
 	{ "Right ADC Mixer", "Mixer Capture Switch", "Right Mixer" },
 	{ "Right ADC Mixer", "Mixer Reversed Capture Switch", "Left Mixer" },
 	{ "Right ADC Mixer", "Mic1 Capture Switch", "Mic1 Amplifier" },
 
-	/* ADC Routes */
+	 
 	{ "Left ADC", NULL, "Left ADC Mixer" },
 	{ "Right ADC", NULL, "Right ADC Mixer" },
 };
 
-/* headphone specific controls, widgets, and routes */
+ 
 static const DECLARE_TLV_DB_SCALE(sun8i_codec_hp_vol_scale, -6300, 100, 1);
 static const struct snd_kcontrol_new sun8i_codec_headphone_controls[] = {
 	SOC_SINGLE_TLV("Headphone Playback Volume",
@@ -350,11 +341,7 @@ static int sun8i_headphone_amp_event(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(component, SUN8I_ADDA_PAEN_HP_CTRL,
 					      BIT(SUN8I_ADDA_PAEN_HP_CTRL_HPPAEN),
 					      BIT(SUN8I_ADDA_PAEN_HP_CTRL_HPPAEN));
-		/*
-		 * Need a delay to have the amplifier up. 700ms seems the best
-		 * compromise between the time to let the amplifier up and the
-		 * time not to feel this delay while playing a sound.
-		 */
+		 
 		msleep(700);
 	} else if (SND_SOC_DAPM_EVENT_OFF(event)) {
 		snd_soc_component_update_bits(component, SUN8I_ADDA_PAEN_HP_CTRL,
@@ -420,7 +407,7 @@ static int sun8i_codec_add_headphone(struct snd_soc_component *cmpnt)
 	return 0;
 }
 
-/* mbias specific widget */
+ 
 static const struct snd_soc_dapm_widget sun8i_codec_mbias_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("MBIAS", SUN8I_ADDA_MIC1G_MICBIAS_CTRL,
 			    SUN8I_ADDA_MIC1G_MICBIAS_CTRL_MMICBIASEN,
@@ -441,7 +428,7 @@ static int sun8i_codec_add_mbias(struct snd_soc_component *cmpnt)
 	return ret;
 }
 
-/* hmic specific widget */
+ 
 static const struct snd_soc_dapm_widget sun8i_codec_hmic_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("HBIAS", SUN8I_ADDA_MIC1G_MICBIAS_CTRL,
 			    SUN8I_ADDA_MIC1G_MICBIAS_CTRL_HMICBIASEN,
@@ -462,16 +449,16 @@ static int sun8i_codec_add_hmic(struct snd_soc_component *cmpnt)
 	return ret;
 }
 
-/* line in specific controls, widgets and rines */
+ 
 static const struct snd_kcontrol_new sun8i_codec_linein_controls[] = {
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Line In Playback Volume", SUN8I_ADDA_LINEIN_GCTRL,
 		       SUN8I_ADDA_LINEIN_GCTRL_LINEING,
 		       0x7, 0, sun8i_codec_out_mixer_pregain_scale),
 };
 
 static const struct snd_soc_dapm_widget sun8i_codec_linein_widgets[] = {
-	/* Line input */
+	 
 	SND_SOC_DAPM_INPUT("LINEIN"),
 };
 
@@ -517,7 +504,7 @@ static int sun8i_codec_add_linein(struct snd_soc_component *cmpnt)
 }
 
 
-/* line out specific controls, widgets and routes */
+ 
 static const DECLARE_TLV_DB_RANGE(sun8i_codec_lineout_vol_scale,
 	0, 1, TLV_DB_SCALE_ITEM(TLV_DB_GAIN_MUTE, 0, 1),
 	2, 31, TLV_DB_SCALE_ITEM(-4350, 150, 0),
@@ -551,7 +538,7 @@ static const struct snd_kcontrol_new sun8i_codec_lineout_src[] = {
 static const struct snd_soc_dapm_widget sun8i_codec_lineout_widgets[] = {
 	SND_SOC_DAPM_MUX("Line Out Source Playback Route",
 			 SND_SOC_NOPM, 0, 0, sun8i_codec_lineout_src),
-	/* It is unclear if this is a buffer or gate, model it as a supply */
+	 
 	SND_SOC_DAPM_SUPPLY("Line Out Enable", SUN8I_ADDA_PAEN_HP_CTRL,
 			    SUN8I_ADDA_PAEN_HP_CTRL_LINEOUTEN, 0, NULL, 0),
 	SND_SOC_DAPM_OUTPUT("LINEOUT"),
@@ -597,24 +584,24 @@ static int sun8i_codec_add_lineout(struct snd_soc_component *cmpnt)
 	return 0;
 }
 
-/* mic2 specific controls, widgets and routes */
+ 
 static const struct snd_kcontrol_new sun8i_codec_mic2_controls[] = {
-	/* Mixer pre-gain */
+	 
 	SOC_SINGLE_TLV("Mic2 Playback Volume",
 		       SUN8I_ADDA_MICIN_GCTRL, SUN8I_ADDA_MICIN_GCTRL_MIC2G,
 		       0x7, 0, sun8i_codec_out_mixer_pregain_scale),
 
-	/* Microphone Amp boost gain */
+	 
 	SOC_SINGLE_TLV("Mic2 Boost Volume", SUN8I_ADDA_MIC2G_CTRL,
 		       SUN8I_ADDA_MIC2G_CTRL_MIC2BOOST, 0x7, 0,
 		       sun8i_codec_mic_gain_scale),
 };
 
 static const struct snd_soc_dapm_widget sun8i_codec_mic2_widgets[] = {
-	/* Microphone input */
+	 
 	SND_SOC_DAPM_INPUT("MIC2"),
 
-	/* Mic input path */
+	 
 	SND_SOC_DAPM_PGA("Mic2 Amplifier", SUN8I_ADDA_MIC2G_CTRL,
 			 SUN8I_ADDA_MIC2G_CTRL_MIC2AMPEN, 0, NULL, 0),
 };
@@ -694,12 +681,7 @@ static int sun8i_codec_analog_add_mixer(struct snd_soc_component *cmpnt,
 	int ret;
 
 	if (!quirks->has_mic2 && !quirks->has_linein) {
-		/*
-		 * Apply the special widget set which has uses a control
-		 * without MIC2 and Line In, for SoCs without these.
-		 * TODO: not all special cases are supported now, this case
-		 * is present because it's the case of V3s.
-		 */
+		 
 		ret = snd_soc_dapm_new_controls(dapm,
 						sun8i_v3s_codec_mixer_widgets,
 						ARRAY_SIZE(sun8i_v3s_codec_mixer_widgets));
@@ -708,7 +690,7 @@ static int sun8i_codec_analog_add_mixer(struct snd_soc_component *cmpnt,
 			return ret;
 		}
 	} else {
-		/* Apply the generic mixer widget set. */
+		 
 		ret = snd_soc_dapm_new_controls(dapm,
 						sun8i_codec_mixer_widgets,
 						ARRAY_SIZE(sun8i_codec_mixer_widgets));
@@ -739,14 +721,10 @@ static int sun8i_codec_analog_cmpnt_probe(struct snd_soc_component *cmpnt)
 	const struct sun8i_codec_analog_quirks *quirks;
 	int ret;
 
-	/*
-	 * This would never return NULL unless someone directly registers a
-	 * platform device matching this driver's name, without specifying a
-	 * device tree node.
-	 */
+	 
 	quirks = of_device_get_match_data(dev);
 
-	/* Add controls, widgets, and routes for individual features */
+	 
 	ret = sun8i_codec_analog_add_mixer(cmpnt, quirks);
 	if (ret)
 		return ret;

@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * caam - Freescale FSL CAAM support for Public Key Cryptography descriptors
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- *
- * There is no Shared Descriptor for PKC so that the Job Descriptor must carry
- * all the desired key parameters, input and output pointers.
- */
+
+ 
 #include "caampkc.h"
 #include "desc_constr.h"
 
-/* Descriptor for RSA Public operation */
+ 
 void init_rsa_pub_desc(u32 *desc, struct rsa_pub_pdb *pdb)
 {
 	init_job_desc_pdb(desc, 0, SIZEOF_RSA_PUB_PDB);
@@ -23,7 +16,7 @@ void init_rsa_pub_desc(u32 *desc, struct rsa_pub_pdb *pdb)
 	append_operation(desc, OP_TYPE_UNI_PROTOCOL | OP_PCLID_RSAENC_PUBKEY);
 }
 
-/* Descriptor for RSA Private operation - Private Key Form #1 */
+ 
 void init_rsa_priv_f1_desc(u32 *desc, struct rsa_priv_f1_pdb *pdb)
 {
 	init_job_desc_pdb(desc, 0, SIZEOF_RSA_PRIV_F1_PDB);
@@ -36,7 +29,7 @@ void init_rsa_priv_f1_desc(u32 *desc, struct rsa_priv_f1_pdb *pdb)
 			 RSA_PRIV_KEY_FRM_1);
 }
 
-/* Descriptor for RSA Private operation - Private Key Form #2 */
+ 
 void init_rsa_priv_f2_desc(u32 *desc, struct rsa_priv_f2_pdb *pdb)
 {
 	init_job_desc_pdb(desc, 0, SIZEOF_RSA_PRIV_F2_PDB);
@@ -53,7 +46,7 @@ void init_rsa_priv_f2_desc(u32 *desc, struct rsa_priv_f2_pdb *pdb)
 			 RSA_PRIV_KEY_FRM_2);
 }
 
-/* Descriptor for RSA Private operation - Private Key Form #3 */
+ 
 void init_rsa_priv_f3_desc(u32 *desc, struct rsa_priv_f3_pdb *pdb)
 {
 	init_job_desc_pdb(desc, 0, SIZEOF_RSA_PRIV_F3_PDB);

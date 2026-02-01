@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2021, Alibaba Cloud
- */
+
+ 
 #include "internal.h"
 #include <linux/prefetch.h>
 #include <linux/sched/mm.h>
@@ -27,10 +23,7 @@ void erofs_put_metabuf(struct erofs_buf *buf)
 	buf->page = NULL;
 }
 
-/*
- * Derive the block size from inode->i_blkbits to make compatible with
- * anonymous inode in fscache mode.
- */
+ 
 void *erofs_bread(struct erofs_buf *buf, erofs_blk_t blkaddr,
 		  enum erofs_kmap_type type)
 {
@@ -50,7 +43,7 @@ void *erofs_bread(struct erofs_buf *buf, erofs_blk_t blkaddr,
 		if (IS_ERR(folio))
 			return folio;
 
-		/* should already be PageUptodate, no need to lock page */
+		 
 		page = folio_file_page(folio, index);
 		buf->page = page;
 	}
@@ -94,7 +87,7 @@ static int erofs_map_blocks_flatmode(struct inode *inode,
 	nblocks = erofs_iblks(inode);
 	lastblk = nblocks - tailendpacking;
 
-	/* there is no hole in flatmode */
+	 
 	map->m_flags = EROFS_MAP_MAPPED;
 	if (offset < erofs_pos(sb, lastblk)) {
 		map->m_pa = erofs_pos(sb, vi->raw_blkaddr) + map->m_la;
@@ -104,7 +97,7 @@ static int erofs_map_blocks_flatmode(struct inode *inode,
 			vi->xattr_isize + erofs_blkoff(sb, offset);
 		map->m_plen = inode->i_size - offset;
 
-		/* inline data should be located in the same meta block */
+		 
 		if (erofs_blkoff(sb, map->m_pa) + map->m_plen > sb->s_blocksize) {
 			erofs_err(sb, "inline data cross block boundary @ nid %llu",
 				  vi->nid);
@@ -136,7 +129,7 @@ int erofs_map_blocks(struct inode *inode, struct erofs_map_blocks *map)
 	trace_erofs_map_blocks_enter(inode, map, 0);
 	map->m_deviceid = 0;
 	if (map->m_la >= inode->i_size) {
-		/* leave out-of-bound access unmapped */
+		 
 		map->m_flags = 0;
 		map->m_plen = 0;
 		goto out;
@@ -148,9 +141,9 @@ int erofs_map_blocks(struct inode *inode, struct erofs_map_blocks *map)
 	}
 
 	if (vi->chunkformat & EROFS_CHUNK_FORMAT_INDEXES)
-		unit = sizeof(*idx);			/* chunk index */
+		unit = sizeof(*idx);			 
 	else
-		unit = EROFS_BLOCK_MAP_ENTRY_SIZE;	/* block map */
+		unit = EROFS_BLOCK_MAP_ENTRY_SIZE;	 
 
 	chunknr = map->m_la >> vi->chunkbits;
 	pos = ALIGN(erofs_iloc(inode) + vi->inode_isize +
@@ -165,7 +158,7 @@ int erofs_map_blocks(struct inode *inode, struct erofs_map_blocks *map)
 	map->m_plen = min_t(erofs_off_t, 1UL << vi->chunkbits,
 			round_up(inode->i_size - map->m_la, sb->s_blocksize));
 
-	/* handle block map */
+	 
 	if (!(vi->chunkformat & EROFS_CHUNK_FORMAT_INDEXES)) {
 		__le32 *blkaddr = kaddr + erofs_blkoff(sb, pos);
 
@@ -177,7 +170,7 @@ int erofs_map_blocks(struct inode *inode, struct erofs_map_blocks *map)
 		}
 		goto out_unlock;
 	}
-	/* parse chunk indexes */
+	 
 	idx = kaddr + erofs_blkoff(sb, pos);
 	switch (le32_to_cpu(idx->blkaddr)) {
 	case EROFS_NULL_ADDR:
@@ -351,10 +344,7 @@ int erofs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 	return iomap_fiemap(inode, fieinfo, start, len, &erofs_iomap_ops);
 }
 
-/*
- * since we dont have write or truncate flows, so no inode
- * locking needs to be held at the moment.
- */
+ 
 static int erofs_read_folio(struct file *file, struct folio *folio)
 {
 	return iomap_read_folio(folio, &erofs_iomap_ops);
@@ -374,7 +364,7 @@ static ssize_t erofs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 {
 	struct inode *inode = file_inode(iocb->ki_filp);
 
-	/* no need taking (shared) inode lock since it's a ro filesystem */
+	 
 	if (!iov_iter_count(to))
 		return 0;
 
@@ -401,7 +391,7 @@ static ssize_t erofs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	return filemap_read(iocb, to, 0);
 }
 
-/* for uncompressed (aligned) files and raw access for other files */
+ 
 const struct address_space_operations erofs_raw_access_aops = {
 	.read_folio = erofs_read_folio,
 	.readahead = erofs_readahead,

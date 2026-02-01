@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt1308-sdw.h -- RT1308 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT1308_SDW_H__
 #define __RT1308_SDW_H__
@@ -169,4 +165,4 @@ struct rt1308_sdw_priv {
 	unsigned int bq_params_cnt;
 };
 
-#endif /* __RT1308_SDW_H__ */
+#endif  

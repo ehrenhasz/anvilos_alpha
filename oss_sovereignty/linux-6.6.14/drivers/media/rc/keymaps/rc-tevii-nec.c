@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// tevii-nec.h - Keytable for tevii_nec Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -62,7 +62,7 @@ static struct rc_map_list tevii_nec_map = {
 	.map = {
 		.scan     = tevii_nec,
 		.size     = ARRAY_SIZE(tevii_nec),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_TEVII_NEC,
 	}
 };

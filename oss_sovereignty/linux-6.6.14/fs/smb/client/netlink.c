@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Netlink routines for CIFS
- *
- * Copyright (c) 2020 Samuel Cabrero <scabrero@suse.de>
- */
+
+ 
 
 #include <net/genetlink.h>
 #include <uapi/linux/cifs/cifs_netlink.h>
@@ -56,11 +52,7 @@ struct genl_family cifs_genl_family = {
 	.n_mcgrps	= ARRAY_SIZE(cifs_genl_mcgrps),
 };
 
-/**
- * cifs_genl_init - Register generic netlink family
- *
- * Return zero if initialized successfully, otherwise non-zero.
- */
+ 
 int cifs_genl_init(void)
 {
 	int ret;
@@ -75,9 +67,7 @@ int cifs_genl_init(void)
 	return 0;
 }
 
-/**
- * cifs_genl_exit - Unregister generic netlink family
- */
+ 
 void cifs_genl_exit(void)
 {
 	int ret;

@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_print.h>
 
-#include "i915_drv.h" /* for_each_engine! */
+#include "i915_drv.h"  
 #include "intel_engine.h"
 #include "intel_gt_debugfs.h"
 #include "intel_gt_engines_debugfs.h"

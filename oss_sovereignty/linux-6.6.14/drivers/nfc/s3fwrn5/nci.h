@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NCI based driver for Samsung S3FWRN5 NFC chip
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+ 
+ 
 
 #ifndef __LOCAL_S3FWRN5_NCI_H_
 #define __LOCAL_S3FWRN5_NCI_H_
@@ -53,4 +48,4 @@ struct nci_prop_fw_cfg_rsp {
 extern const struct nci_driver_ops s3fwrn5_nci_prop_ops[4];
 int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name);
 
-#endif /* __LOCAL_S3FWRN5_NCI_H_ */
+#endif  

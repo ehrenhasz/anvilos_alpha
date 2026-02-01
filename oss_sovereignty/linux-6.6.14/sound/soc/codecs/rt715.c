@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * rt715.c -- rt715 ALSA SoC audio driver
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- *
- * ALC715 ASoC Codec Driver based Intel Dummy SdW codec driver
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -108,13 +101,13 @@ static void rt715_get_gain(struct rt715_priv *rt715, unsigned int addr_h,
 				unsigned int *r_val, unsigned int *l_val)
 {
 	int ret;
-	/* R Channel */
+	 
 	*r_val = val_h << 8;
 	ret = regmap_read(rt715->regmap, addr_l, r_val);
 	if (ret < 0)
 		pr_err("Failed to get R channel gain.\n");
 
-	/* L Channel */
+	 
 	val_h |= 0x20;
 	*l_val = val_h << 8;
 	ret = regmap_read(rt715->regmap, addr_h, l_val);
@@ -122,7 +115,7 @@ static void rt715_get_gain(struct rt715_priv *rt715, unsigned int addr_h,
 		pr_err("Failed to get L channel gain.\n");
 }
 
-/* For Verb-Set Amplifier Gain (Verb ID = 3h) */
+ 
 static int rt715_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
@@ -143,13 +136,13 @@ static int rt715_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		}
 	}
 
-	/* Can't use update bit function, so read the original value first */
+	 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
 
-	if (mc->shift == RT715_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT715_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt715_get_gain(rt715, addr_h, addr_l, val_h, &read_rl, &read_ll);
@@ -158,47 +151,47 @@ static int rt715_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		regmap_write(rt715->regmap,
 				RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-	/* L Channel */
+	 
 	rt715->kctl_2ch_vol_ori[0] = ucontrol->value.integer.value[0];
-	/* for gain */
+	 
 	val_ll = ((ucontrol->value.integer.value[0]) & 0x7f);
 	if (val_ll > mc->max)
 		val_ll = mc->max;
-	/* keep mute status */
+	 
 	val_ll |= read_ll & 0x80;
 
-	/* R Channel */
+	 
 	rt715->kctl_2ch_vol_ori[1] = ucontrol->value.integer.value[1];
-	/* for gain */
+	 
 	val_lr = ((ucontrol->value.integer.value[1]) & 0x7f);
 	if (val_lr > mc->max)
 		val_lr = mc->max;
-	/* keep mute status */
+	 
 	val_lr |= read_rl & 0x80;
 
-	for (i = 0; i < 3; i++) { /* retry 3 times at most */
+	for (i = 0; i < 3; i++) {  
 
 		if (val_ll == val_lr) {
-			/* Set both L/R channels at the same time */
+			 
 			val_h = (1 << mc->shift) | (3 << 4);
 			regmap_write(rt715->regmap, addr_h,
 				(val_h << 8) | val_ll);
 			regmap_write(rt715->regmap, addr_l,
 				(val_h << 8) | val_ll);
 		} else {
-			/* Lch*/
+			 
 			val_h = (1 << mc->shift) | (1 << 5);
 			regmap_write(rt715->regmap, addr_h,
 				(val_h << 8) | val_ll);
-			/* Rch */
+			 
 			val_h = (1 << mc->shift) | (1 << 4);
 			regmap_write(rt715->regmap, addr_l,
 				(val_h << 8) | val_lr);
 		}
-		/* check result */
-		if (mc->shift == RT715_DIR_OUT_SFT) /* output */
+		 
+		if (mc->shift == RT715_DIR_OUT_SFT)  
 			val_h = 0x80;
-		else /* input */
+		else  
 			val_h = 0x0;
 
 		rt715_get_gain(rt715, addr_h, addr_l, val_h,
@@ -207,7 +200,7 @@ static int rt715_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 			break;
 	}
 
-	/* D0:power on state, D3: power saving mode */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt715->regmap,
 				RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
@@ -226,19 +219,19 @@ static int rt715_set_amp_gain_get(struct snd_kcontrol *kcontrol,
 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
-	if (mc->shift == RT715_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT715_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt715_get_gain(rt715, addr_h, addr_l, val_h, &read_rl, &read_ll);
 
 	if (mc->invert) {
-		/* for mute status */
+		 
 		read_ll = !(read_ll & 0x80);
 		read_rl = !(read_rl & 0x80);
 	} else {
-		/* for gain */
+		 
 		read_ll = read_ll & 0x7f;
 		read_rl = read_rl & 0x7f;
 	}
@@ -271,7 +264,7 @@ static int rt715_set_main_switch_put(struct snd_kcontrol *kcontrol,
 	}
 
 	for (j = 0; j < loop_cnt; j++) {
-		/* Can't use update bit function, so read the original value first */
+		 
 		addr_h = capture_reg_H[j];
 		addr_l = capture_reg_L[j];
 		rt715_get_gain(rt715, addr_h, addr_l, val_h, &read_rl, &read_ll);
@@ -280,37 +273,37 @@ static int rt715_set_main_switch_put(struct snd_kcontrol *kcontrol,
 			regmap_write(rt715->regmap,
 					RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-		/* L Channel */
-		/* for mute */
+		 
+		 
 		rt715->kctl_8ch_switch_ori[j * 2] =
 			ucontrol->value.integer.value[j * 2];
 		val_ll = (!ucontrol->value.integer.value[j * 2]) << 7;
-		/* keep gain */
+		 
 		val_ll |= read_ll & 0x7f;
 
-		/* R Channel */
-		/* for mute */
+		 
+		 
 		rt715->kctl_8ch_switch_ori[j * 2 + 1] =
 			ucontrol->value.integer.value[j * 2 + 1];
 		val_lr = (!ucontrol->value.integer.value[j * 2 + 1]) << 7;
-		/* keep gain */
+		 
 		val_lr |= read_rl & 0x7f;
 
-		for (i = 0; i < 3; i++) { /* retry 3 times at most */
+		for (i = 0; i < 3; i++) {  
 
 			if (val_ll == val_lr) {
-				/* Set both L/R channels at the same time */
+				 
 				val_h = (1 << k_shift) | (3 << 4);
 				regmap_write(rt715->regmap, addr_h,
 					(val_h << 8) | val_ll);
 				regmap_write(rt715->regmap, addr_l,
 					(val_h << 8) | val_ll);
 			} else {
-				/* Lch*/
+				 
 				val_h = (1 << k_shift) | (1 << 5);
 				regmap_write(rt715->regmap, addr_h,
 					(val_h << 8) | val_ll);
-				/* Rch */
+				 
 				val_h = (1 << k_shift) | (1 << 4);
 				regmap_write(rt715->regmap, addr_l,
 					(val_h << 8) | val_lr);
@@ -323,7 +316,7 @@ static int rt715_set_main_switch_put(struct snd_kcontrol *kcontrol,
 		}
 	}
 
-	/* D0:power on state, D3: power saving mode */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt715->regmap,
 				RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
@@ -387,39 +380,39 @@ static int rt715_set_main_vol_put(struct snd_kcontrol *kcontrol,
 			regmap_write(rt715->regmap,
 					RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-		/* L Channel */
-		/* for gain */
+		 
+		 
 		rt715->kctl_8ch_vol_ori[j * 2] = ucontrol->value.integer.value[j * 2];
 		val_ll = ((ucontrol->value.integer.value[j * 2]) & 0x7f);
 		if (val_ll > k_max)
 			val_ll = k_max;
-		/* keep mute status */
+		 
 		val_ll |= read_ll & 0x80;
 
-		/* R Channel */
-		/* for gain */
+		 
+		 
 		rt715->kctl_8ch_vol_ori[j * 2 + 1] =
 			ucontrol->value.integer.value[j * 2 + 1];
 		val_lr = ((ucontrol->value.integer.value[j * 2 + 1]) & 0x7f);
 		if (val_lr > k_max)
 			val_lr = k_max;
-		/* keep mute status */
+		 
 		val_lr |= read_rl & 0x80;
 
-		for (i = 0; i < 3; i++) { /* retry 3 times at most */
+		for (i = 0; i < 3; i++) {  
 			if (val_ll == val_lr) {
-				/* Set both L/R channels at the same time */
+				 
 				val_h = (1 << k_shift) | (3 << 4);
 				regmap_write(rt715->regmap, addr_h,
 					(val_h << 8) | val_ll);
 				regmap_write(rt715->regmap, addr_l,
 					(val_h << 8) | val_ll);
 			} else {
-				/* Lch*/
+				 
 				val_h = (1 << k_shift) | (1 << 5);
 				regmap_write(rt715->regmap, addr_h,
 					(val_h << 8) | val_ll);
-				/* Rch */
+				 
 				val_h = (1 << k_shift) | (1 << 4);
 				regmap_write(rt715->regmap, addr_l,
 					(val_h << 8) | val_lr);
@@ -432,7 +425,7 @@ static int rt715_set_main_vol_put(struct snd_kcontrol *kcontrol,
 		}
 	}
 
-	/* D0:power on state, D3: power saving mode */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt715->regmap,
 				RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
@@ -512,13 +505,13 @@ static int rt715_vol_info(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new rt715_snd_controls[] = {
-	/* Capture switch */
+	 
 	RT715_MAIN_SWITCH_EXT("Capture Switch",
 			rt715_set_main_switch_get, rt715_set_main_switch_put),
-	/* Volume Control */
+	 
 	RT715_MAIN_VOL_EXT_TLV("Capture Volume",
 			rt715_set_main_vol_get, rt715_set_main_vol_put, in_vol_tlv),
-	/* MIC Boost Control */
+	 
 	SOC_DOUBLE_R_EXT_TLV("DMIC1 Boost", RT715_SET_GAIN_DMIC1_H,
 			RT715_SET_GAIN_DMIC1_L, RT715_DIR_IN_SFT, 3, 0,
 			rt715_set_amp_gain_get, rt715_set_amp_gain_put,
@@ -563,7 +556,7 @@ static int rt715_mux_get(struct snd_kcontrol *kcontrol,
 	unsigned int reg, val;
 	int ret;
 
-	/* nid = e->reg, vid = 0xf01 */
+	 
 	reg = RT715_VERB_SET_CONNECT_SEL | e->reg;
 	ret = regmap_read(rt715->regmap, reg, &val);
 	if (ret < 0) {
@@ -572,11 +565,7 @@ static int rt715_mux_get(struct snd_kcontrol *kcontrol,
 		return ret;
 	}
 
-	/*
-	 * The first two indices of ADC Mux 24/25 are routed to the same
-	 * hardware source. ie, ADC Mux 24 0/1 will both connect to MIC2.
-	 * To have a unique set of inputs, we skip the index1 of the muxes.
-	 */
+	 
 	if ((e->reg == RT715_MUX_IN3 || e->reg == RT715_MUX_IN4) && (val > 0))
 		val -= 1;
 	ucontrol->value.enumerated.item[0] = val;
@@ -600,7 +589,7 @@ static int rt715_mux_put(struct snd_kcontrol *kcontrol,
 	if (item[0] >= e->items)
 		return -EINVAL;
 
-	/* Verb ID = 0x701h, nid = e->reg */
+	 
 	val = snd_soc_enum_item_to_val(e, item[0]) << e->shift_l;
 
 	reg = RT715_VERB_SET_CONNECT_SEL | e->reg;
@@ -638,11 +627,7 @@ static const char * const adc_22_23_mux_text[] = {
 	"DMIC4",
 };
 
-/*
- * Due to mux design for nid 24 (MUX_IN3)/25 (MUX_IN4), connection index 0 and
- * 1 will be connected to the same dmic source, therefore we skip index 1 to
- * avoid misunderstanding on usage of dapm routing.
- */
+ 
 static const unsigned int rt715_adc_24_25_values[] = {
 	0,
 	2,
@@ -876,8 +861,8 @@ static int rt715_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_rate(params)) {
-	/* bit 14 0:48K 1:44.1K */
-	/* bit 15 Stream Type 0:PCM 1:Non-PCM, should always be PCM */
+	 
+	 
 	case 44100:
 		val |= 0x40 << 8;
 		break;
@@ -891,7 +876,7 @@ static int rt715_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -900,7 +885,7 @@ static int rt715_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 8:
 		break;
 	case 16:
@@ -980,7 +965,7 @@ static struct snd_soc_dai_driver rt715_dai[] = {
 	},
 };
 
-/* Bus clock frequency */
+ 
 #define RT715_CLK_FREQ_9600000HZ 9600000
 #define RT715_CLK_FREQ_12000000HZ 12000000
 #define RT715_CLK_FREQ_6000000HZ 6000000
@@ -1041,10 +1026,7 @@ int rt715_init(struct device *dev, struct regmap *sdw_regmap,
 
 	regcache_cache_only(rt715->regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt715->hw_init = false;
 	rt715->first_hw_init = false;
 
@@ -1055,20 +1037,16 @@ int rt715_init(struct device *dev, struct regmap *sdw_regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	return 0;
 }
@@ -1082,35 +1060,33 @@ int rt715_io_init(struct device *dev, struct sdw_slave *slave)
 
 	regcache_cache_only(rt715->regmap, false);
 
-	/*
-	 *  PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!rt715->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 	pm_runtime_get_noresume(&slave->dev);
 
 	rt715_reset(rt715->regmap);
 
-	/* Mute nid=08h/09h */
+	 
 	regmap_write(rt715->regmap, RT715_SET_GAIN_LINE_ADC_H, 0xb080);
 	regmap_write(rt715->regmap, RT715_SET_GAIN_MIX_ADC_H, 0xb080);
-	/* Mute nid=07h/27h */
+	 
 	regmap_write(rt715->regmap, RT715_SET_GAIN_MIC_ADC_H, 0xb080);
 	regmap_write(rt715->regmap, RT715_SET_GAIN_MIX_ADC2_H, 0xb080);
 
-	/* Set Pin Widget */
+	 
 	regmap_write(rt715->regmap, RT715_SET_PIN_DMIC1, 0x20);
 	regmap_write(rt715->regmap, RT715_SET_PIN_DMIC2, 0x20);
 	regmap_write(rt715->regmap, RT715_SET_PIN_DMIC3, 0x20);
 	regmap_write(rt715->regmap, RT715_SET_PIN_DMIC4, 0x20);
-	/* Set Converter Stream */
+	 
 	regmap_write(rt715->regmap, RT715_SET_STREAMID_LINE_ADC, 0x10);
 	regmap_write(rt715->regmap, RT715_SET_STREAMID_MIX_ADC, 0x10);
 	regmap_write(rt715->regmap, RT715_SET_STREAMID_MIC_ADC, 0x10);
 	regmap_write(rt715->regmap, RT715_SET_STREAMID_MIX_ADC2, 0x10);
-	/* Set Configuration Default */
+	 
 	regmap_write(rt715->regmap, RT715_SET_DMIC1_CONFIG_DEFAULT1, 0xd0);
 	regmap_write(rt715->regmap, RT715_SET_DMIC1_CONFIG_DEFAULT2, 0x11);
 	regmap_write(rt715->regmap, RT715_SET_DMIC1_CONFIG_DEFAULT3, 0xa1);
@@ -1128,7 +1104,7 @@ int rt715_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt715->regmap, RT715_SET_DMIC4_CONFIG_DEFAULT3, 0xa1);
 	regmap_write(rt715->regmap, RT715_SET_DMIC4_CONFIG_DEFAULT4, 0x81);
 
-	/* Finish Initial Settings, set power to D3 */
+	 
 	regmap_write(rt715->regmap, RT715_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
 
 	if (rt715->first_hw_init)
@@ -1136,7 +1112,7 @@ int rt715_io_init(struct device *dev, struct sdw_slave *slave)
 	else
 		rt715->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt715->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);

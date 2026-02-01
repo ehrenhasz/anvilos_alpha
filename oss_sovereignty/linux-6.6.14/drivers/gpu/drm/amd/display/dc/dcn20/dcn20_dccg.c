@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -52,8 +29,8 @@ void dccg2_update_dpp_dto(struct dccg *dccg, int dpp_inst, int req_dppclk)
 		int ref_dppclk = dccg->ref_dppclk;
 		int modulo, phase;
 
-		// phase / modulo = dpp pipe clk / dpp global clk
-		modulo = 0xff;   // use FF at the end
+		
+		modulo = 0xff;   
 		phase = ((modulo * req_dppclk) + ref_dppclk - 1) / ref_dppclk;
 
 		if (phase > 0xff) {
@@ -85,9 +62,9 @@ void dccg2_get_dccg_ref_freq(struct dccg *dccg,
 	REG_GET_2(REFCLK_CNTL, REFCLK_CLOCK_EN, &clk_en, REFCLK_SRC_SEL, &clk_sel);
 
 	if (clk_en != 0) {
-		// DCN20 has never been validated for non-xtalin as reference
-		// frequency.  There's actually no way for DC to determine what
-		// frequency a non-xtalin source is.
+		
+		
+		
 		ASSERT_CRITICAL(false);
 	}
 

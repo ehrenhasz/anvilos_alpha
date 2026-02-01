@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * VirtualBox Guest Shared Folders support: Utility functions.
- * Mainly conversion from/to VirtualBox/Linux data structures.
- *
- * Copyright (C) 2006-2018 Oracle Corporation
- */
+
+ 
 
 #include <linux/namei.h>
 #include <linux/nls.h>
@@ -45,7 +40,7 @@ struct inode *vboxsf_new_inode(struct super_block *sb)
 	return inode;
 }
 
-/* set [inode] attributes based on [info], uid/gid based on [sbi] */
+ 
 int vboxsf_init_inode(struct vboxsf_sbi *sbi, struct inode *inode,
 		       const struct shfl_fsobjinfo *info, bool reinit)
 {
@@ -71,7 +66,7 @@ int vboxsf_init_inode(struct vboxsf_sbi *sbi, struct inode *inode,
 
 #undef mode_set
 
-	/* We use the host-side values for these */
+	 
 	inode->i_flags |= S_NOATIME | S_NOCMTIME;
 	inode->i_mapping->a_ops = &vboxsf_reg_aops;
 
@@ -83,10 +78,7 @@ int vboxsf_init_inode(struct vboxsf_sbi *sbi, struct inode *inode,
 		if (!reinit) {
 			inode->i_op = &vboxsf_dir_iops;
 			inode->i_fop = &vboxsf_dir_fops;
-			/*
-			 * XXX: this probably should be set to the number of entries
-			 * in the directory plus two (. ..)
-			 */
+			 
 			set_nlink(inode, 1);
 		} else if (!S_ISDIR(inode->i_mode))
 			return -ESTALE;
@@ -121,7 +113,7 @@ int vboxsf_init_inode(struct vboxsf_sbi *sbi, struct inode *inode,
 
 	inode->i_size = info->size;
 	inode->i_blkbits = 12;
-	/* i_blocks always in units of 512 bytes! */
+	 
 	allocated = info->allocated + 511;
 	do_div(allocated, 512);
 	inode->i_blocks = allocated;
@@ -220,11 +212,7 @@ int vboxsf_inode_revalidate(struct dentry *dentry)
 	if (err)
 		return err;
 
-	/*
-	 * If the file was changed on the host side we need to invalidate the
-	 * page-cache for it.  Note this also gets triggered by our own writes,
-	 * this is unavoidable.
-	 */
+	 
 	if (timespec64_compare(&inode->i_mtime, &prev_mtime) > 0)
 		invalidate_inode_pages2(inode->i_mapping);
 
@@ -271,7 +259,7 @@ int vboxsf_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			      SHFL_CF_ACT_FAIL_IF_NEW |
 			      SHFL_CF_ACCESS_ATTR_WRITE;
 
-	/* this is at least required for Posix hosts */
+	 
 	if (iattr->ia_valid & ATTR_SIZE)
 		params.create_flags |= SHFL_CF_ACCESS_WRITE;
 
@@ -281,10 +269,7 @@ int vboxsf_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 
 #define mode_set(r) ((iattr->ia_mode & (S_##r)) ? SHFL_UNIX_##r : 0)
 
-	/*
-	 * Setting the file size and setting the other attributes has to
-	 * be handled separately.
-	 */
+	 
 	if (iattr->ia_valid & (ATTR_MODE | ATTR_ATIME | ATTR_MTIME)) {
 		if (iattr->ia_valid & ATTR_MODE) {
 			info.attr.mode = mode_set(IRUSR);
@@ -311,10 +296,7 @@ int vboxsf_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			info.modification_time.ns_relative_to_unix_epoch =
 					    timespec64_to_ns(&iattr->ia_mtime);
 
-		/*
-		 * Ignore ctime (inode change time) as it can't be set
-		 * from userland anyway.
-		 */
+		 
 
 		buf_len = sizeof(info);
 		err = vboxsf_fsinfo(sbi->root, params.handle,
@@ -325,7 +307,7 @@ int vboxsf_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			return err;
 		}
 
-		/* the host may have given us different attr then requested */
+		 
 		sf_i->force_restat = 1;
 	}
 
@@ -343,25 +325,20 @@ int vboxsf_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			return err;
 		}
 
-		/* the host may have given us different attr then requested */
+		 
 		sf_i->force_restat = 1;
 	}
 
 	vboxsf_close(sbi->root, params.handle);
 
-	/* Update the inode with what the host has actually given us. */
+	 
 	if (sf_i->force_restat)
 		vboxsf_inode_revalidate(dentry);
 
 	return 0;
 }
 
-/*
- * [dentry] contains string encoded in coding system that corresponds
- * to [sbi]->nls, we must convert it to UTF8 here.
- * Returns a shfl_string allocated through __getname (must be freed using
- * __putname), or an ERR_PTR on error.
- */
+ 
 struct shfl_string *vboxsf_path_from_dentry(struct vboxsf_sbi *sbi,
 					    struct dentry *dentry)
 {
@@ -420,10 +397,7 @@ struct shfl_string *vboxsf_path_from_dentry(struct vboxsf_sbi *sbi,
 			__putname(buf);
 			return ERR_PTR(-ENAMETOOLONG);
 		}
-		/*
-		 * dentry_path stores the name at the end of buf, but the
-		 * shfl_string string we return must be properly aligned.
-		 */
+		 
 		shfl_path = (struct shfl_string *)buf;
 		memmove(shfl_path->string.utf8, path, path_len);
 		shfl_path->string.utf8[path_len] = 0;
@@ -448,7 +422,7 @@ int vboxsf_nlscpy(struct vboxsf_sbi *sbi, char *name, size_t name_bound_len,
 
 	out = name;
 	out_len = 0;
-	/* Reserve space for terminating 0 */
+	 
 	out_bound_len = name_bound_len - 1;
 
 	while (in_bound_len) {
@@ -539,7 +513,7 @@ int vboxsf_dir_read_all(struct vboxsf_sbi *sbi, struct vboxsf_dir_info *sf_d,
 	int err = 0;
 	void *buf;
 
-	/* vboxsf_dirinfo returns 1 on end of dir */
+	 
 	while (err == 0) {
 		b = vboxsf_dir_buf_alloc(&sf_d->info_list);
 		if (!b) {
@@ -563,7 +537,7 @@ int vboxsf_dir_read_all(struct vboxsf_sbi *sbi, struct vboxsf_dir_info *sf_d,
 	if (b && b->used == 0)
 		vboxsf_dir_buf_free(b);
 
-	/* -EILSEQ means the host could not translate a filename, ignore */
+	 
 	if (err > 0 || err == -EILSEQ)
 		err = 0;
 

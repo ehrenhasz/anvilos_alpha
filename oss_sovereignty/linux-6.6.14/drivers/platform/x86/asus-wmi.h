@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Asus PC WMI hotkey driver
- *
- * Copyright(C) 2010 Intel Corporation.
- * Copyright(C) 2010-2011 Corentin Chary <corentin.chary@gmail.com>
- *
- * Portions based on wistron_btns.c:
- * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
- * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
- * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
- */
+ 
+ 
 
 #ifndef _ASUS_WMI_H_
 #define _ASUS_WMI_H_
@@ -41,12 +31,7 @@ struct quirk_entry {
 	bool wmi_ignore_fan;
 	enum asus_wmi_tablet_switch_mode tablet_switch_mode;
 	int wapf;
-	/*
-	 * For machines with AMD graphic chips, it will send out WMI event
-	 * and ACPI interrupt at the same time while hitting the hotkey.
-	 * To simplify the problem, we just have to ignore the WMI event,
-	 * and let the ACPI interrupt to send out the key event.
-	 */
+	 
 	int no_display_toggle;
 	u32 xusb2pr;
 
@@ -68,8 +53,7 @@ struct asus_wmi_driver {
 	const char		*input_name;
 	const char		*input_phys;
 	struct quirk_entry	*quirks;
-	/* Returns new code, value, and autorelease values in arguments.
-	 * Return ASUS_WMI_KEY_IGNORE in code if event should be ignored. */
+	 
 	void (*key_filter) (struct asus_wmi_driver *driver, int *code,
 			    unsigned int *value, bool *autorelease);
 
@@ -83,4 +67,4 @@ struct asus_wmi_driver {
 int asus_wmi_register_driver(struct asus_wmi_driver *driver);
 void asus_wmi_unregister_driver(struct asus_wmi_driver *driver);
 
-#endif /* !_ASUS_WMI_H_ */
+#endif  

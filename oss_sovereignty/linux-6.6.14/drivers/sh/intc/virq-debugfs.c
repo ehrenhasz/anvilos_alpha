@@ -1,14 +1,4 @@
-/*
- * Support for virtual IRQ subgroups debugfs mapping.
- *
- * Copyright (C) 2010  Paul Mundt
- *
- * Modelled after arch/powerpc/kernel/irq.c.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #include <linux/seq_file.h>
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -41,10 +31,7 @@ DEFINE_SHOW_ATTRIBUTE(intc_irq_xlate);
 
 static int __init intc_irq_xlate_init(void)
 {
-	/*
-	 * XXX.. use arch_debugfs_dir here when all of the intc users are
-	 * converted.
-	 */
+	 
 	if (debugfs_create_file("intc_irq_xlate", S_IRUGO, NULL, NULL,
 				&intc_irq_xlate_fops) == NULL)
 		return -ENOMEM;

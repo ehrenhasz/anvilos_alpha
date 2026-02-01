@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <string.h>
 
@@ -12,7 +12,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-#define SERV6_IP_0		0xfaceb00c /* face:b00c:1234:5678::abcd */
+#define SERV6_IP_0		0xfaceb00c  
 #define SERV6_IP_1		0x12345678
 #define SERV6_IP_2		0x00000000
 #define SERV6_IP_3		0x0000abcd
@@ -86,7 +86,7 @@ static __inline int misc_opts(struct bpf_sock_addr *ctx, int opt)
 {
 	int old, tmp, new = 0xeb9f;
 
-	/* Socket in test case has guarantee that old never equals to new. */
+	 
 	if (bpf_getsockopt(ctx, SOL_SOCKET, opt, &old, sizeof(old)) ||
 	    old == new)
 		return 1;
@@ -126,7 +126,7 @@ int bind_v6_prog(struct bpf_sock_addr *ctx)
 	    ctx->user_port != bpf_htons(SERV6_PORT))
 		return 0;
 
-	// u8 narrow loads:
+	
 	for (i = 0; i < 4; i++) {
 		user_ip6 = 0;
 		user_ip6 |= ((volatile __u8 *)&ctx->user_ip6[i])[0] << 0;
@@ -143,7 +143,7 @@ int bind_v6_prog(struct bpf_sock_addr *ctx)
 	if (ctx->user_port != user_port)
 		return 0;
 
-	// u16 narrow loads:
+	
 	for (i = 0; i < 4; i++) {
 		user_ip6 = 0;
 		user_ip6 |= ((volatile __u16 *)&ctx->user_ip6[i])[0] << 0;
@@ -152,15 +152,15 @@ int bind_v6_prog(struct bpf_sock_addr *ctx)
 			return 0;
 	}
 
-	/* Bind to device and unbind it. */
+	 
 	if (bind_to_device(ctx))
 		return 0;
 
-	/* Test for misc socket options. */
+	 
 	if (misc_opts(ctx, SO_MARK) || misc_opts(ctx, SO_PRIORITY))
 		return 0;
 
-	/* Set reuseport and unset */
+	 
 	if (bind_reuseport(ctx))
 		return 0;
 

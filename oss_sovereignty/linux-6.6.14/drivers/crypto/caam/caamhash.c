@@ -1,59 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * caam - Freescale FSL CAAM support for ahash functions of crypto API
- *
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2018-2019, 2023 NXP
- *
- * Based on caamalg.c crypto API driver.
- *
- * relationship of digest job descriptor or first job descriptor after init to
- * shared descriptors:
- *
- * ---------------                     ---------------
- * | JobDesc #1  |-------------------->|  ShareDesc  |
- * | *(packet 1) |                     |  (hashKey)  |
- * ---------------                     | (operation) |
- *                                     ---------------
- *
- * relationship of subsequent job descriptors to shared descriptors:
- *
- * ---------------                     ---------------
- * | JobDesc #2  |-------------------->|  ShareDesc  |
- * | *(packet 2) |      |------------->|  (hashKey)  |
- * ---------------      |    |-------->| (operation) |
- *       .              |    |         | (load ctx2) |
- *       .              |    |         ---------------
- * ---------------      |    |
- * | JobDesc #3  |------|    |
- * | *(packet 3) |           |
- * ---------------           |
- *       .                   |
- *       .                   |
- * ---------------           |
- * | JobDesc #4  |------------
- * | *(packet 4) |
- * ---------------
- *
- * The SharedDesc never changes for a connection unless rekeyed, but
- * each packet will likely be in a different place. So all we need
- * to know to process the packet is where the input is, where the
- * output goes, and what context we want to process with. Context is
- * in the SharedDesc, packet references in the JobDesc.
- *
- * So, a job desc looks like:
- *
- * ---------------------
- * | Header            |
- * | ShareDesc Pointer |
- * | SEQ_OUT_PTR       |
- * | (output buffer)   |
- * | (output length)   |
- * | SEQ_IN_PTR        |
- * | (input buffer)    |
- * | (input length)    |
- * ---------------------
- */
+
+ 
 
 #include "compat.h"
 
@@ -75,7 +21,7 @@
 
 #define CAAM_CRA_PRIORITY		3000
 
-/* max hash key is max split key size */
+ 
 #define CAAM_MAX_HASH_KEY_SIZE		(SHA512_DIGEST_SIZE * 2)
 
 #define CAAM_MAX_HASH_BLOCK_SIZE	SHA512_BLOCK_SIZE
@@ -85,13 +31,13 @@
 					 CAAM_MAX_HASH_KEY_SIZE)
 #define DESC_HASH_MAX_USED_LEN		(DESC_HASH_MAX_USED_BYTES / CAAM_CMD_SZ)
 
-/* caam context sizes for hashes: running digest + 8 */
+ 
 #define HASH_MSG_LEN			8
 #define MAX_CTX_LEN			(HASH_MSG_LEN + SHA512_DIGEST_SIZE)
 
 static struct list_head hash_list;
 
-/* ahash per-session context */
+ 
 struct caam_hash_ctx {
 	u32 sh_desc_update[DESC_HASH_MAX_USED_LEN] ____cacheline_aligned;
 	u32 sh_desc_update_first[DESC_HASH_MAX_USED_LEN] ____cacheline_aligned;
@@ -109,7 +55,7 @@ struct caam_hash_ctx {
 	struct alginfo adata;
 };
 
-/* ahash state */
+ 
 struct caam_hash_state {
 	dma_addr_t buf_dma;
 	dma_addr_t ctx_dma;
@@ -140,9 +86,9 @@ static inline bool is_cmac_aes(u32 algtype)
 	return (algtype & (OP_ALG_ALGSEL_MASK | OP_ALG_AAI_MASK)) ==
 	       (OP_ALG_ALGSEL_AES | OP_ALG_AAI_CMAC);
 }
-/* Common job descriptor seq in/out ptr routines */
+ 
 
-/* Map state->caam_ctx, and append seq_out_ptr command that points to it */
+ 
 static inline int map_seq_out_ptr_ctx(u32 *desc, struct device *jrdev,
 				      struct caam_hash_state *state,
 				      int ctx_len)
@@ -161,7 +107,7 @@ static inline int map_seq_out_ptr_ctx(u32 *desc, struct device *jrdev,
 	return 0;
 }
 
-/* Map current buffer in state (if length > 0) and put it in link table */
+ 
 static inline int buf_map_to_sec4_sg(struct device *jrdev,
 				     struct sec4_sg_entry *sec4_sg,
 				     struct caam_hash_state *state)
@@ -184,7 +130,7 @@ static inline int buf_map_to_sec4_sg(struct device *jrdev,
 	return 0;
 }
 
-/* Map state->caam_ctx, and add it to link table */
+ 
 static inline int ctx_map_to_sec4_sg(struct device *jrdev,
 				     struct caam_hash_state *state, int ctx_len,
 				     struct sec4_sg_entry *sec4_sg, u32 flag)
@@ -212,7 +158,7 @@ static int ahash_set_sh_desc(struct crypto_ahash *ahash)
 
 	ctx->adata.key_virt = ctx->key;
 
-	/* ahash_update shared descriptor */
+	 
 	desc = ctx->sh_desc_update;
 	cnstr_shdsc_ahash(desc, &ctx->adata, OP_ALG_AS_UPDATE, ctx->ctx_len,
 			  ctx->ctx_len, true, ctrlpriv->era);
@@ -223,7 +169,7 @@ static int ahash_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc, desc_bytes(desc),
 			     1);
 
-	/* ahash_update_first shared descriptor */
+	 
 	desc = ctx->sh_desc_update_first;
 	cnstr_shdsc_ahash(desc, &ctx->adata, OP_ALG_AS_INIT, ctx->ctx_len,
 			  ctx->ctx_len, false, ctrlpriv->era);
@@ -233,7 +179,7 @@ static int ahash_set_sh_desc(struct crypto_ahash *ahash)
 			     ": ", DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* ahash_final shared descriptor */
+	 
 	desc = ctx->sh_desc_fin;
 	cnstr_shdsc_ahash(desc, &ctx->adata, OP_ALG_AS_FINALIZE, digestsize,
 			  ctx->ctx_len, true, ctrlpriv->era);
@@ -244,7 +190,7 @@ static int ahash_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* ahash_digest shared descriptor */
+	 
 	desc = ctx->sh_desc_digest;
 	cnstr_shdsc_ahash(desc, &ctx->adata, OP_ALG_AS_INITFINAL, digestsize,
 			  ctx->ctx_len, false, ctrlpriv->era);
@@ -265,7 +211,7 @@ static int axcbc_set_sh_desc(struct crypto_ahash *ahash)
 	struct device *jrdev = ctx->jrdev;
 	u32 *desc;
 
-	/* shared descriptor for ahash_update */
+	 
 	desc = ctx->sh_desc_update;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_UPDATE,
 			    ctx->ctx_len, ctx->ctx_len);
@@ -275,7 +221,7 @@ static int axcbc_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc, desc_bytes(desc),
 			     1);
 
-	/* shared descriptor for ahash_{final,finup} */
+	 
 	desc = ctx->sh_desc_fin;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_FINALIZE,
 			    digestsize, ctx->ctx_len);
@@ -285,10 +231,10 @@ static int axcbc_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc, desc_bytes(desc),
 			     1);
 
-	/* key is immediate data for INIT and INITFINAL states */
+	 
 	ctx->adata.key_virt = ctx->key;
 
-	/* shared descriptor for first invocation of ahash_update */
+	 
 	desc = ctx->sh_desc_update_first;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_INIT, ctx->ctx_len,
 			    ctx->ctx_len);
@@ -298,7 +244,7 @@ static int axcbc_set_sh_desc(struct crypto_ahash *ahash)
 			     " : ", DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* shared descriptor for ahash_digest */
+	 
 	desc = ctx->sh_desc_digest;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_INITFINAL,
 			    digestsize, ctx->ctx_len);
@@ -317,7 +263,7 @@ static int acmac_set_sh_desc(struct crypto_ahash *ahash)
 	struct device *jrdev = ctx->jrdev;
 	u32 *desc;
 
-	/* shared descriptor for ahash_update */
+	 
 	desc = ctx->sh_desc_update;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_UPDATE,
 			    ctx->ctx_len, ctx->ctx_len);
@@ -327,7 +273,7 @@ static int acmac_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* shared descriptor for ahash_{final,finup} */
+	 
 	desc = ctx->sh_desc_fin;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_FINALIZE,
 			    digestsize, ctx->ctx_len);
@@ -337,7 +283,7 @@ static int acmac_set_sh_desc(struct crypto_ahash *ahash)
 			     DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* shared descriptor for first invocation of ahash_update */
+	 
 	desc = ctx->sh_desc_update_first;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_INIT, ctx->ctx_len,
 			    ctx->ctx_len);
@@ -347,7 +293,7 @@ static int acmac_set_sh_desc(struct crypto_ahash *ahash)
 			     " : ", DUMP_PREFIX_ADDRESS, 16, 4, desc,
 			     desc_bytes(desc), 1);
 
-	/* shared descriptor for ahash_digest */
+	 
 	desc = ctx->sh_desc_digest;
 	cnstr_shdsc_sk_hash(desc, &ctx->adata, OP_ALG_AS_INITFINAL,
 			    digestsize, ctx->ctx_len);
@@ -360,7 +306,7 @@ static int acmac_set_sh_desc(struct crypto_ahash *ahash)
 	return 0;
 }
 
-/* Digest hash size if it is too large */
+ 
 static int hash_digest_key(struct caam_hash_ctx *ctx, u32 *keylen, u8 *key,
 			   u32 digestsize)
 {
@@ -383,7 +329,7 @@ static int hash_digest_key(struct caam_hash_ctx *ctx, u32 *keylen, u8 *key,
 		return -ENOMEM;
 	}
 
-	/* Job descriptor to perform unkeyed hash on key_in */
+	 
 	append_operation(desc, ctx->adata.algtype | OP_ALG_ENCRYPT |
 			 OP_ALG_AS_INITFINAL);
 	append_seq_in_ptr(desc, key_dma, *keylen, 0);
@@ -404,7 +350,7 @@ static int hash_digest_key(struct caam_hash_ctx *ctx, u32 *keylen, u8 *key,
 
 	ret = caam_jr_enqueue(jrdev, desc, split_key_done, &result);
 	if (ret == -EINPROGRESS) {
-		/* in progress */
+		 
 		wait_for_completion(&result.completion);
 		ret = result.err;
 
@@ -450,10 +396,7 @@ static int ahash_setkey(struct crypto_ahash *ahash,
 		key = hashed_key;
 	}
 
-	/*
-	 * If DKP is supported, use it in the shared descriptor to generate
-	 * the split key.
-	 */
+	 
 	if (ctrlpriv->era >= 6) {
 		ctx->adata.key_inline = true;
 		ctx->adata.keylen = keylen;
@@ -465,12 +408,7 @@ static int ahash_setkey(struct crypto_ahash *ahash,
 
 		memcpy(ctx->key, key, keylen);
 
-		/*
-		 * In case |user key| > |derived key|, using DKP<imm,imm>
-		 * would result in invalid opcodes (last bytes of user key) in
-		 * the resulting descriptor. Use DKP<ptr,imm> instead => both
-		 * virtual and dma key addresses are needed.
-		 */
+		 
 		if (keylen > ctx->adata.keylen_pad)
 			dma_sync_single_for_device(ctx->jrdev,
 						   ctx->adata.key_dma,
@@ -520,7 +458,7 @@ static int acmac_setkey(struct crypto_ahash *ahash, const u8 *key,
 	if (err)
 		return err;
 
-	/* key is immediate data for all cmac shared descriptors */
+	 
 	ctx->adata.key_virt = key;
 	ctx->adata.keylen = keylen;
 
@@ -530,15 +468,7 @@ static int acmac_setkey(struct crypto_ahash *ahash, const u8 *key,
 	return acmac_set_sh_desc(ahash);
 }
 
-/*
- * ahash_edesc - s/w-extended ahash descriptor
- * @sec4_sg_dma: physical mapped address of h/w link table
- * @src_nents: number of segments in input scatterlist
- * @sec4_sg_bytes: length of dma mapped sec4_sg space
- * @bklog: stored to determine if the request needs backlog
- * @hw_desc: the h/w job descriptor followed by any referenced link tables
- * @sec4_sg: h/w link table
- */
+ 
 struct ahash_edesc {
 	dma_addr_t sec4_sg_dma;
 	int src_nents;
@@ -610,10 +540,7 @@ static inline void ahash_done_cpy(struct device *jrdev, u32 *desc, u32 err,
 			     DUMP_PREFIX_ADDRESS, 16, 4, state->caam_ctx,
 			     ctx->ctx_len, 1);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		ahash_request_complete(req, ecode);
 	else
@@ -672,10 +599,7 @@ static inline void ahash_done_switch(struct device *jrdev, u32 *desc, u32 err,
 				     DUMP_PREFIX_ADDRESS, 16, 4, req->result,
 				     digestsize, 1);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		ahash_request_complete(req, ecode);
 	else
@@ -695,10 +619,7 @@ static void ahash_done_ctx_dst(struct device *jrdev, u32 *desc, u32 err,
 	ahash_done_switch(jrdev, desc, err, context, DMA_FROM_DEVICE);
 }
 
-/*
- * Allocate an enhanced descriptor, which contains the hardware descriptor
- * and space for hardware scatter table containing sg_num entries.
- */
+ 
 static struct ahash_edesc *ahash_edesc_alloc(struct ahash_request *req,
 					     int sg_num, u32 *sh_desc,
 					     dma_addr_t sh_desc_dma)
@@ -796,11 +717,7 @@ static int ahash_enqueue_req(struct device *jrdev,
 
 	state->ahash_op_done = cbk;
 
-	/*
-	 * Only the backlog request are sent to crypto-engine since the others
-	 * can be handled by CAAM, if free, especially since JR has up to 1024
-	 * entries (more than the 10 entries from crypto-engine).
-	 */
+	 
 	if (req->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)
 		ret = crypto_transfer_hash_request_to_engine(jrpriv->engine,
 							     req);
@@ -815,7 +732,7 @@ static int ahash_enqueue_req(struct device *jrdev,
 	return ret;
 }
 
-/* submit update job descriptor */
+ 
 static int ahash_update_ctx(struct ahash_request *req)
 {
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
@@ -835,10 +752,7 @@ static int ahash_update_ctx(struct ahash_request *req)
 	*next_buflen = in_len & (blocksize - 1);
 	to_hash = in_len - *next_buflen;
 
-	/*
-	 * For XCBC and CMAC, if to_hash is multiple of block size,
-	 * keep last block in internal buffer
-	 */
+	 
 	if ((is_xcbc_aes(ctx->adata.algtype) ||
 	     is_cmac_aes(ctx->adata.algtype)) && to_hash >= blocksize &&
 	     (*next_buflen == 0)) {
@@ -871,10 +785,7 @@ static int ahash_update_ctx(struct ahash_request *req)
 		pad_nents = pad_sg_nents(sec4_sg_src_index + mapped_nents);
 		sec4_sg_bytes = pad_nents * sizeof(struct sec4_sg_entry);
 
-		/*
-		 * allocate space for base edesc and hw desc commands,
-		 * link tables
-		 */
+		 
 		edesc = ahash_edesc_alloc(req, pad_nents, ctx->sh_desc_update,
 					  ctx->sh_desc_update_dma);
 		if (!edesc) {
@@ -957,7 +868,7 @@ static int ahash_final_ctx(struct ahash_request *req)
 	sec4_sg_bytes = pad_sg_nents(1 + (buflen ? 1 : 0)) *
 			sizeof(struct sec4_sg_entry);
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = ahash_edesc_alloc(req, 4, ctx->sh_desc_fin,
 				  ctx->sh_desc_fin_dma);
 	if (!edesc)
@@ -1035,7 +946,7 @@ static int ahash_finup_ctx(struct ahash_request *req)
 
 	sec4_sg_src_index = 1 + (buflen ? 1 : 0);
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = ahash_edesc_alloc(req, sec4_sg_src_index + mapped_nents,
 				  ctx->sh_desc_fin, ctx->sh_desc_fin_dma);
 	if (!edesc) {
@@ -1107,7 +1018,7 @@ static int ahash_digest(struct ahash_request *req)
 		mapped_nents = 0;
 	}
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = ahash_edesc_alloc(req, mapped_nents > 1 ? mapped_nents : 0,
 				  ctx->sh_desc_digest, ctx->sh_desc_digest_dma);
 	if (!edesc) {
@@ -1142,7 +1053,7 @@ static int ahash_digest(struct ahash_request *req)
 				 DMA_FROM_DEVICE);
 }
 
-/* submit ahash final if it the first job descriptor */
+ 
 static int ahash_final_no_ctx(struct ahash_request *req)
 {
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
@@ -1156,7 +1067,7 @@ static int ahash_final_no_ctx(struct ahash_request *req)
 	struct ahash_edesc *edesc;
 	int ret;
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = ahash_edesc_alloc(req, 0, ctx->sh_desc_digest,
 				  ctx->sh_desc_digest_dma);
 	if (!edesc)
@@ -1191,7 +1102,7 @@ static int ahash_final_no_ctx(struct ahash_request *req)
 	return -ENOMEM;
 }
 
-/* submit ahash update if it the first job descriptor after update */
+ 
 static int ahash_update_no_ctx(struct ahash_request *req)
 {
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
@@ -1211,10 +1122,7 @@ static int ahash_update_no_ctx(struct ahash_request *req)
 	*next_buflen = in_len & (blocksize - 1);
 	to_hash = in_len - *next_buflen;
 
-	/*
-	 * For XCBC and CMAC, if to_hash is multiple of block size,
-	 * keep last block in internal buffer
-	 */
+	 
 	if ((is_xcbc_aes(ctx->adata.algtype) ||
 	     is_cmac_aes(ctx->adata.algtype)) && to_hash >= blocksize &&
 	     (*next_buflen == 0)) {
@@ -1246,10 +1154,7 @@ static int ahash_update_no_ctx(struct ahash_request *req)
 		pad_nents = pad_sg_nents(1 + mapped_nents);
 		sec4_sg_bytes = pad_nents * sizeof(struct sec4_sg_entry);
 
-		/*
-		 * allocate space for base edesc and hw desc commands,
-		 * link tables
-		 */
+		 
 		edesc = ahash_edesc_alloc(req, pad_nents,
 					  ctx->sh_desc_update_first,
 					  ctx->sh_desc_update_first_dma);
@@ -1312,7 +1217,7 @@ static int ahash_update_no_ctx(struct ahash_request *req)
 	return ret;
 }
 
-/* submit ahash finup if it the first job descriptor after update */
+ 
 static int ahash_finup_no_ctx(struct ahash_request *req)
 {
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
@@ -1347,7 +1252,7 @@ static int ahash_finup_no_ctx(struct ahash_request *req)
 	sec4_sg_bytes = (sec4_sg_src_index + mapped_nents) *
 			 sizeof(struct sec4_sg_entry);
 
-	/* allocate space for base edesc and hw desc commands, link tables */
+	 
 	edesc = ahash_edesc_alloc(req, sec4_sg_src_index + mapped_nents,
 				  ctx->sh_desc_digest, ctx->sh_desc_digest_dma);
 	if (!edesc) {
@@ -1388,7 +1293,7 @@ static int ahash_finup_no_ctx(struct ahash_request *req)
 
 }
 
-/* submit first update job descriptor after init */
+ 
 static int ahash_update_first(struct ahash_request *req)
 {
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
@@ -1408,10 +1313,7 @@ static int ahash_update_first(struct ahash_request *req)
 	*next_buflen = req->nbytes & (blocksize - 1);
 	to_hash = req->nbytes - *next_buflen;
 
-	/*
-	 * For XCBC and CMAC, if to_hash is multiple of block size,
-	 * keep last block in internal buffer
-	 */
+	 
 	if ((is_xcbc_aes(ctx->adata.algtype) ||
 	     is_cmac_aes(ctx->adata.algtype)) && to_hash >= blocksize &&
 	     (*next_buflen == 0)) {
@@ -1438,10 +1340,7 @@ static int ahash_update_first(struct ahash_request *req)
 			mapped_nents = 0;
 		}
 
-		/*
-		 * allocate space for base edesc and hw desc commands,
-		 * link tables
-		 */
+		 
 		edesc = ahash_edesc_alloc(req, mapped_nents > 1 ?
 					  mapped_nents : 0,
 					  ctx->sh_desc_update_first,
@@ -1581,7 +1480,7 @@ struct caam_hash_template {
 	u32 alg_type;
 };
 
-/* ahash descriptors */
+ 
 static struct caam_hash_template driver_hash[] = {
 	{
 		.name = "sha1",
@@ -1767,7 +1666,7 @@ static int caam_hash_cra_init(struct crypto_tfm *tfm)
 	struct caam_hash_alg *caam_hash =
 		 container_of(alg, struct caam_hash_alg, ahash_alg.base);
 	struct caam_hash_ctx *ctx = crypto_ahash_ctx_dma(ahash);
-	/* Sizes for MDHA running digests: MD5, SHA1, 224, 256, 384, 512 */
+	 
 	static const u8 runninglen[] = { HASH_MSG_LEN + MD5_DIGEST_SIZE,
 					 HASH_MSG_LEN + SHA1_DIGEST_SIZE,
 					 HASH_MSG_LEN + 32,
@@ -1779,10 +1678,7 @@ static int caam_hash_cra_init(struct crypto_tfm *tfm)
 	dma_addr_t dma_addr;
 	struct caam_drv_private *priv;
 
-	/*
-	 * Get a Job ring from Job Ring driver to ensure in-order
-	 * crypto request processing per tfm
-	 */
+	 
 	ctx->jrdev = caam_jr_alloc();
 	if (IS_ERR(ctx->jrdev)) {
 		pr_err("Job Ring Device allocation for transform failed\n");
@@ -1858,10 +1754,7 @@ static int caam_hash_cra_init(struct crypto_tfm *tfm)
 
 	crypto_ahash_set_reqsize_dma(ahash, sizeof(struct caam_hash_state));
 
-	/*
-	 * For keyed hash algorithms shared descriptors
-	 * will be created later in setkey() callback
-	 */
+	 
 	return alg->setkey ? 0 : ahash_set_sh_desc(ahash);
 }
 
@@ -1944,10 +1837,7 @@ int caam_algapi_hash_init(struct device *ctrldev)
 	unsigned int md_limit = SHA512_DIGEST_SIZE;
 	u32 md_inst, md_vid;
 
-	/*
-	 * Register crypto algorithms the device supports.  First, identify
-	 * presence and attributes of MD block.
-	 */
+	 
 	if (priv->era < 10) {
 		struct caam_perfmon __iomem *perfmon = &priv->jr[0]->perfmon;
 
@@ -1962,30 +1852,27 @@ int caam_algapi_hash_init(struct device *ctrldev)
 		md_inst = mdha & CHA_VER_NUM_MASK;
 	}
 
-	/*
-	 * Skip registration of any hashing algorithms if MD block
-	 * is not present.
-	 */
+	 
 	if (!md_inst)
 		return 0;
 
-	/* Limit digest size based on LP256 */
+	 
 	if (md_vid == CHA_VER_VID_MD_LP256)
 		md_limit = SHA256_DIGEST_SIZE;
 
 	INIT_LIST_HEAD(&hash_list);
 
-	/* register crypto algorithms the device supports */
+	 
 	for (i = 0; i < ARRAY_SIZE(driver_hash); i++) {
 		struct caam_hash_alg *t_alg;
 		struct caam_hash_template *alg = driver_hash + i;
 
-		/* If MD size is not supported by device, skip registration */
+		 
 		if (is_mdha(alg->alg_type) &&
 		    alg->template_ahash.halg.digestsize > md_limit)
 			continue;
 
-		/* register hmac version */
+		 
 		t_alg = caam_hash_alloc(alg, true);
 		if (IS_ERR(t_alg)) {
 			err = PTR_ERR(t_alg);
@@ -2006,7 +1893,7 @@ int caam_algapi_hash_init(struct device *ctrldev)
 		if ((alg->alg_type & OP_ALG_ALGSEL_MASK) == OP_ALG_ALGSEL_AES)
 			continue;
 
-		/* register unkeyed version */
+		 
 		t_alg = caam_hash_alloc(alg, false);
 		if (IS_ERR(t_alg)) {
 			err = PTR_ERR(t_alg);

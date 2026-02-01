@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI CPUFreq/OPP hw-supported driver
- *
- * Copyright (C) 2016-2017 Texas Instruments, Inc.
- *	 Dave Gerlach <d-gerlach@ti.com>
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/io.h>
@@ -75,7 +70,7 @@ static unsigned long amx3_efuse_xlate(struct ti_cpufreq_data *opp_data,
 {
 	if (!efuse)
 		efuse = opp_data->soc_data->efuse_fallback;
-	/* AM335x and AM437x use "OPP disable" bits, so invert */
+	 
 	return ~efuse;
 }
 
@@ -84,10 +79,7 @@ static unsigned long dra7_efuse_xlate(struct ti_cpufreq_data *opp_data,
 {
 	unsigned long calculated_efuse = DRA7_EFUSE_NOM_MPU_OPP;
 
-	/*
-	 * The efuse on dra7 and am57 parts contains a specific
-	 * value indicating the highest available OPP.
-	 */
+	 
 
 	switch (efuse) {
 	case DRA76_EFUSE_HAS_PLUS_MPU_OPP:
@@ -108,7 +100,7 @@ static unsigned long dra7_efuse_xlate(struct ti_cpufreq_data *opp_data,
 static unsigned long omap3_efuse_xlate(struct ti_cpufreq_data *opp_data,
 				      unsigned long efuse)
 {
-	/* OPP enable bit ("Speed Binned") */
+	 
 	return BIT(efuse);
 }
 
@@ -158,22 +150,7 @@ static struct ti_cpufreq_soc_data dra7_soc_data = {
 	.multi_regulator = true,
 };
 
-/*
- * OMAP35x TRM (SPRUF98K):
- *  CONTROL_IDCODE (0x4830 A204) describes Silicon revisions.
- *  Control OMAP Status Register 15:0 (Address 0x4800 244C)
- *    to separate between omap3503, omap3515, omap3525, omap3530
- *    and feature presence.
- *    There are encodings for versions limited to 400/266MHz
- *    but we ignore.
- *    Not clear if this also holds for omap34xx.
- *  some eFuse values e.g. CONTROL_FUSE_OPP1_VDD1
- *    are stored in the SYSCON register range
- *  Register 0x4830A20C [ProdID.SKUID] [0:3]
- *    0x0 for normal 600/430MHz device.
- *    0x8 for 720/520MHz device.
- *    Not clear what omap34xx value is.
- */
+ 
 
 static struct ti_cpufreq_soc_data omap34xx_soc_data = {
 	.efuse_xlate = omap3_efuse_xlate,
@@ -184,20 +161,7 @@ static struct ti_cpufreq_soc_data omap34xx_soc_data = {
 	.multi_regulator = false,
 };
 
-/*
- * AM/DM37x TRM (SPRUGN4M)
- *  CONTROL_IDCODE (0x4830 A204) describes Silicon revisions.
- *  Control Device Status Register 15:0 (Address 0x4800 244C)
- *    to separate between am3703, am3715, dm3725, dm3730
- *    and feature presence.
- *   Speed Binned = Bit 9
- *     0 800/600 MHz
- *     1 1000/800 MHz
- *  some eFuse values e.g. CONTROL_FUSE_OPP 1G_VDD1
- *    are stored in the SYSCON register range.
- *  There is no 0x4830A20C [ProdID.SKUID] register (exists but
- *    seems to always read as 0).
- */
+ 
 
 static const char * const omap3_reg_names[] = {"cpu0", "vbb", NULL};
 
@@ -211,10 +175,7 @@ static struct ti_cpufreq_soc_data omap36xx_soc_data = {
 	.multi_regulator = true,
 };
 
-/*
- * AM3517 is quite similar to AM/DM37x except that it has no
- * high speed grade eFuse and no abb ldo
- */
+ 
 
 static struct ti_cpufreq_soc_data am3517_soc_data = {
 	.efuse_xlate = omap3_efuse_xlate,
@@ -234,13 +195,7 @@ static struct ti_cpufreq_soc_data am625_soc_data = {
 	.multi_regulator = false,
 };
 
-/**
- * ti_cpufreq_get_efuse() - Parse and return efuse value present on SoC
- * @opp_data: pointer to ti_cpufreq_data context
- * @efuse_value: Set to the value parsed from efuse
- *
- * Returns error code if efuse not read properly.
- */
+ 
 static int ti_cpufreq_get_efuse(struct ti_cpufreq_data *opp_data,
 				u32 *efuse_value)
 {
@@ -251,7 +206,7 @@ static int ti_cpufreq_get_efuse(struct ti_cpufreq_data *opp_data,
 	ret = regmap_read(opp_data->syscon, opp_data->soc_data->efuse_offset,
 			  &efuse);
 	if (ret == -EIO) {
-		/* not a syscon register! */
+		 
 		void __iomem *regs = ioremap(OMAP3_SYSCON_BASE +
 				opp_data->soc_data->efuse_offset, 4);
 
@@ -275,13 +230,7 @@ static int ti_cpufreq_get_efuse(struct ti_cpufreq_data *opp_data,
 	return 0;
 }
 
-/**
- * ti_cpufreq_get_rev() - Parse and return rev value present on SoC
- * @opp_data: pointer to ti_cpufreq_data context
- * @revision_value: Set to the value parsed from revision register
- *
- * Returns error code if revision not read properly.
- */
+ 
 static int ti_cpufreq_get_rev(struct ti_cpufreq_data *opp_data,
 			      u32 *revision_value)
 {
@@ -292,7 +241,7 @@ static int ti_cpufreq_get_rev(struct ti_cpufreq_data *opp_data,
 	ret = regmap_read(opp_data->syscon, opp_data->soc_data->rev_offset,
 			  &revision);
 	if (ret == -EIO) {
-		/* not a syscon register! */
+		 
 		void __iomem *regs = ioremap(OMAP3_SYSCON_BASE +
 				opp_data->soc_data->rev_offset, 4);
 
@@ -338,7 +287,7 @@ static const struct of_device_id ti_cpufreq_of_match[] = {
 	{ .compatible = "ti,omap36xx", .data = &omap36xx_soc_data, },
 	{ .compatible = "ti,am625", .data = &am625_soc_data, },
 	{ .compatible = "ti,am62a7", .data = &am625_soc_data, },
-	/* legacy */
+	 
 	{ .compatible = "ti,omap3430", .data = &omap34xx_soc_data, },
 	{ .compatible = "ti,omap3630", .data = &omap36xx_soc_data, },
 	{},
@@ -395,12 +344,7 @@ static int ti_cpufreq_probe(struct platform_device *pdev)
 	if (ret)
 		goto fail_put_node;
 
-	/*
-	 * OPPs determine whether or not they are supported based on
-	 * two metrics:
-	 *	0 - SoC Revision
-	 *	1 - eFuse value
-	 */
+	 
 	ret = ti_cpufreq_get_rev(opp_data, &version[0]);
 	if (ret)
 		goto fail_put_node;
@@ -439,7 +383,7 @@ static int __init ti_cpufreq_init(void)
 {
 	const struct of_device_id *match;
 
-	/* Check to ensure we are on a compatible platform */
+	 
 	match = ti_cpufreq_match_node();
 	if (match)
 		platform_device_register_data(NULL, "ti-cpufreq", -1, match,

@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Handle USB control endpoint
- *
- * Author: Warren Hsu
- *
- * Date: Mar. 29, 2005
- *
- * Functions:
- *	vnt_control_out - Write variable length bytes to MEM/BB/MAC/EEPROM
- *	vnt_control_in - Read variable length bytes from MEM/BB/MAC/EEPROM
- *	vnt_control_out_u8 - Write one byte to MEM/BB/MAC/EEPROM
- *	vnt_control_in_u8 - Read one byte from MEM/BB/MAC/EEPROM
- *
- * Revision History:
- *      04-05-2004 Jerry Chen: Initial release
- *      11-24-2004 Warren Hsu: Add ControlvWriteByte,ControlvReadByte,
- *                             ControlvMaskByte
- *
- */
+
+ 
 
 #include "rxtx.h"
 #include "desc.h"
@@ -29,7 +8,7 @@
 #include "mac.h"
 #include "rf.h"
 
-#define USB_CTL_WAIT	500 /* ms */
+#define USB_CTL_WAIT	500  
 
 int vnt_control_out(struct vnt_private *priv, u8 request, u16 value,
 		    u16 index, u16 length, const u8 *buffer)
@@ -277,7 +256,7 @@ static int vnt_rx_data(struct vnt_private *priv, struct vnt_rcb *ptr_rcb,
 	skb = ptr_rcb->skb;
 	rx_status = IEEE80211_SKB_RXCB(skb);
 
-	/* [31:16]RcvByteCount ( not include 4-byte Status ) */
+	 
 	head = (struct vnt_rx_header *)skb->data;
 	frame_size = head->wbk_status >> 16;
 	frame_size += 4;
@@ -288,17 +267,17 @@ static int vnt_rx_data(struct vnt_private *priv, struct vnt_rcb *ptr_rcb,
 	}
 
 	if ((bytes_received > 2372) || (bytes_received <= 40)) {
-		/* Frame Size error drop this packet.*/
+		 
 		dev_dbg(&priv->usb->dev, "------ WRONG Length 2\n");
 		return false;
 	}
 
-	/* real Frame Size = USBframe_size -4WbkStatus - 4RxStatus */
-	/* -8TSF - 4RSR - 4SQ3 - ?Padding */
+	 
+	 
 
-	/* if SQ3 the range is 24~27, if no SQ3 the range is 20~23 */
+	 
 
-	/*Fix hardware bug => PLCP_Length error */
+	 
 	if (((bytes_received - head->pay_load_len) > 27) ||
 	    ((bytes_received - head->pay_load_len) < 24) ||
 	    (bytes_received < head->pay_load_len)) {
@@ -308,7 +287,7 @@ static int vnt_rx_data(struct vnt_private *priv, struct vnt_rcb *ptr_rcb,
 	}
 
 	sband = hw->wiphy->bands[hw->conf.chandef.chan->band];
-	rx_bitrate = head->rx_rate * 5; /* rx_rate * 5 */
+	rx_bitrate = head->rx_rate * 5;  
 
 	for (ii = 0; ii < sband->n_bitrates; ii++) {
 		if (sband->bitrates[ii].bitrate == rx_bitrate) {

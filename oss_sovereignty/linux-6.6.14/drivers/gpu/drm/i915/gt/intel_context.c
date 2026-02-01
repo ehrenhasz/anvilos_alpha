@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_context.h"
 #include "gem/i915_gem_pm.h"
@@ -83,7 +81,7 @@ static int intel_context_active_acquire(struct intel_context *ce)
 	    intel_context_is_parallel(ce))
 		return 0;
 
-	/* Preallocate tracking nodes */
+	 
 	err = i915_active_acquire_preallocate_barrier(&ce->active,
 						      ce->engine);
 	if (err)
@@ -94,7 +92,7 @@ static int intel_context_active_acquire(struct intel_context *ce)
 
 static void intel_context_active_release(struct intel_context *ce)
 {
-	/* Nodes preallocated in intel_context_active() */
+	 
 	i915_active_acquire_barrier(&ce->active);
 	i915_active_release(&ce->active);
 }
@@ -112,10 +110,7 @@ static int __context_pin_state(struct i915_vma *vma, struct i915_gem_ww_ctx *ww)
 	if (err)
 		goto err_unpin;
 
-	/*
-	 * And mark it as a globally pinned object to let the shrinker know
-	 * it cannot reclaim the object until we release it.
-	 */
+	 
 	i915_vma_make_unshrinkable(vma);
 	vma->obj->mm.dirty = true;
 
@@ -213,11 +208,7 @@ int __intel_context_do_pin_ww(struct intel_context *ce,
 			return err;
 	}
 
-	/*
-	 * We always pin the context/ring/timeline here, to ensure a pin
-	 * refcount for __intel_context_active(), which prevent a lock
-	 * inversion of ce->pin_mutex vs dma_resv_lock().
-	 */
+	 
 
 	err = i915_gem_object_lock(ce->timeline->hwsp_ggtt->obj, ww);
 	if (!err)
@@ -264,11 +255,11 @@ int __intel_context_do_pin_ww(struct intel_context *ce,
 			 ce->ring->head, ce->ring->tail);
 
 		handoff = true;
-		smp_mb__before_atomic(); /* flush pin before it is visible */
+		smp_mb__before_atomic();  
 		atomic_inc(&ce->pin_count);
 	}
 
-	GEM_BUG_ON(!intel_context_is_pinned(ce)); /* no overflow! */
+	GEM_BUG_ON(!intel_context_is_pinned(ce));  
 
 	trace_intel_context_do_pin(ce);
 
@@ -282,12 +273,7 @@ err_post_unpin:
 err_ctx_unpin:
 	intel_context_post_unpin(ce);
 
-	/*
-	 * Unlock the hwsp_ggtt object since it's shared.
-	 * In principle we can unlock all the global state locked above
-	 * since it's pinned and doesn't need fencing, and will
-	 * thus remain resident until it is explicitly unpinned.
-	 */
+	 
 	i915_gem_ww_unlock_single(ce->timeline->hwsp_ggtt->obj);
 
 	return err;
@@ -319,12 +305,7 @@ void __intel_context_do_unpin(struct intel_context *ce, int sub)
 	ce->ops->unpin(ce);
 	ce->ops->post_unpin(ce);
 
-	/*
-	 * Once released, we may asynchronously drop the active reference.
-	 * As that may be the only reference keeping the context alive,
-	 * take an extra now so that it is not freed before we finish
-	 * dereferencing it.
-	 */
+	 
 	intel_context_get(ce);
 	intel_context_active_release(ce);
 	trace_intel_context_do_unpin(ce);
@@ -350,7 +331,7 @@ static int __intel_context_active(struct i915_active *active)
 
 	intel_context_get(ce);
 
-	/* everything should already be activated by intel_context_pre_pin() */
+	 
 	GEM_WARN_ON(!i915_active_acquire_if_busy(&ce->ring->vma->active));
 	__intel_ring_pin(ce->ring);
 
@@ -390,7 +371,7 @@ intel_context_init(struct intel_context *ce, struct intel_engine_cs *engine)
 
 	ce->vm = i915_vm_get(engine->gt->vm);
 
-	/* NB ce->signal_link/lock is used under RCU */
+	 
 	spin_lock_init(&ce->signal_lock);
 	INIT_LIST_HEAD(&ce->signals);
 
@@ -407,10 +388,7 @@ intel_context_init(struct intel_context *ce, struct intel_engine_cs *engine)
 
 	INIT_LIST_HEAD(&ce->parallel.child_list);
 
-	/*
-	 * Initialize fence to be complete as this is expected to be complete
-	 * unless there is a pending schedule disable outstanding.
-	 */
+	 
 	i915_sw_fence_init(&ce->guc_state.blocked,
 			   sw_fence_dummy_notify);
 	i915_sw_fence_commit(&ce->guc_state.blocked);
@@ -427,7 +405,7 @@ void intel_context_fini(struct intel_context *ce)
 		intel_timeline_put(ce->timeline);
 	i915_vm_put(ce->vm);
 
-	/* Need to put the creation ref for the children */
+	 
 	if (intel_context_is_parent(ce))
 		for_each_child_safe(ce, child, next)
 			intel_context_put(child);
@@ -469,23 +447,17 @@ int intel_context_prepare_remote_request(struct intel_context *ce,
 	struct intel_timeline *tl = ce->timeline;
 	int err;
 
-	/* Only suitable for use in remotely modifying this context */
+	 
 	GEM_BUG_ON(rq->context == ce);
 
-	if (rcu_access_pointer(rq->timeline) != tl) { /* timeline sharing! */
-		/* Queue this switch after current activity by this context. */
+	if (rcu_access_pointer(rq->timeline) != tl) {  
+		 
 		err = i915_active_fence_set(&tl->last_request, rq);
 		if (err)
 			return err;
 	}
 
-	/*
-	 * Guarantee context image and the timeline remains pinned until the
-	 * modifying request is retired by setting the ce activity tracker.
-	 *
-	 * But we only need to take one pin on the account of it. Or in other
-	 * words transfer the pinned ce object to tracked active request.
-	 */
+	 
 	GEM_BUG_ON(i915_active_is_idle(&ce->active));
 	return i915_active_add_request(&ce->active, rq);
 }
@@ -516,10 +488,7 @@ retry:
 	if (IS_ERR(rq))
 		return rq;
 
-	/*
-	 * timeline->mutex should be the inner lock, but is used as outer lock.
-	 * Hack around this to shut up lockdep in selftests..
-	 */
+	 
 	lockdep_unpin_lock(&ce->timeline->mutex, rq->cookie);
 	mutex_release(&ce->timeline->mutex.dep_map, _RET_IP_);
 	mutex_acquire(&ce->timeline->mutex.dep_map, SINGLE_DEPTH_NESTING, 0, _RET_IP_);
@@ -536,12 +505,7 @@ struct i915_request *intel_context_get_active_request(struct intel_context *ce)
 
 	GEM_BUG_ON(!intel_engine_uses_guc(ce->engine));
 
-	/*
-	 * We search the parent list to find an active request on the submitted
-	 * context. The parent list contains the requests for all the contexts
-	 * in the relationship so we have to do a compare of each request's
-	 * context.
-	 */
+	 
 	spin_lock_irqsave(&parent->guc_state.lock, flags);
 	list_for_each_entry_reverse(rq, &parent->guc_state.requests,
 				    sched.link) {
@@ -562,10 +526,7 @@ struct i915_request *intel_context_get_active_request(struct intel_context *ce)
 void intel_context_bind_parent_child(struct intel_context *parent,
 				     struct intel_context *child)
 {
-	/*
-	 * Callers responsibility to validate that this function is used
-	 * correctly but we use GEM_BUG_ON here ensure that they do.
-	 */
+	 
 	GEM_BUG_ON(intel_context_is_pinned(parent));
 	GEM_BUG_ON(intel_context_is_child(parent));
 	GEM_BUG_ON(intel_context_is_pinned(child));

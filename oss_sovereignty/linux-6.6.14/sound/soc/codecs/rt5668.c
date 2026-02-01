@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5668.c  --  RT5668B ALSA SoC audio component driver
- *
- * Copyright 2018 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -748,7 +743,7 @@ static const DECLARE_TLV_DB_SCALE(dac_vol_tlv, -65625, 375, 0);
 static const DECLARE_TLV_DB_SCALE(adc_vol_tlv, -17625, 375, 0);
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 
-/* {0, +20, +24, +30, +35, +40, +44, +50, +52} dB */
+ 
 static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
@@ -759,7 +754,7 @@ static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	8, 8, TLV_DB_SCALE_ITEM(5200, 0, 0)
 );
 
-/* Interface data select */
+ 
 static const char * const rt5668_data_select[] = {
 	"L/R", "R/L", "L/L", "R/R"
 };
@@ -799,20 +794,7 @@ static void rt5668_reset(struct regmap *regmap)
 	regmap_write(regmap, RT5668_RESET, 0);
 	regmap_write(regmap, RT5668_I2C_MODE, 1);
 }
-/**
- * rt5668_sel_asrc_clk_src - select ASRC clock source for a set of filters
- * @component: SoC audio component device.
- * @filter_mask: mask of filters.
- * @clk_src: clock source
- *
- * The ASRC function is for asynchronous MCLK and LRCK. Also, since RT5668 can
- * only support standard 32fs or 64fs i2s format, ASRC should be enabled to
- * support special i2s clock format such as Intel's 100fs(100 * sampling rate).
- * ASRC function will track i2s clock and generate a corresponding system clock
- * for codec. This function provides an API to select the clock source for a
- * set of filters specified by the mask. And the component driver will turn on
- * ASRC for these filters if ASRC is selected as their clock source.
- */
+ 
 int rt5668_sel_asrc_clk_src(struct snd_soc_component *component,
 		unsigned int filter_mask, unsigned int clk_src)
 {
@@ -883,15 +865,7 @@ static void rt5668_enable_push_button_irq(struct snd_soc_component *component,
 	}
 }
 
-/**
- * rt5668_headset_detect - Detect headset.
- * @component: SoC audio component device.
- * @jack_insert: Jack insert or not.
- *
- * Detect whether is headset or not when jack inserted.
- *
- * Returns detect status.
- */
+ 
 static int rt5668_headset_detect(struct snd_soc_component *component,
 		int jack_insert)
 {
@@ -957,7 +931,7 @@ static void rt5668_jd_check_handler(struct work_struct *work)
 
 	if (snd_soc_component_read(rt5668->component, RT5668_AJD1_CTRL)
 		& RT5668_JDH_RS_MASK) {
-		/* jack out */
+		 
 		rt5668->jack_type = rt5668_headset_detect(rt5668->component, 0);
 
 		snd_soc_jack_report(rt5668->hs_jack, rt5668->jack_type,
@@ -1024,7 +998,7 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 
 	if (!rt5668->component ||
 	    !snd_soc_card_is_instantiated(rt5668->component->card)) {
-		/* card not yet ready, try later */
+		 
 		mod_delayed_work(system_power_efficient_wq,
 				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
 		return;
@@ -1035,22 +1009,16 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 	val = snd_soc_component_read(rt5668->component, RT5668_AJD1_CTRL)
 		& RT5668_JDH_RS_MASK;
 	if (!val) {
-		/* jack in */
+		 
 		if (rt5668->jack_type == 0) {
-			/* jack was out, report jack type */
+			 
 			rt5668->jack_type =
 				rt5668_headset_detect(rt5668->component, 1);
 		} else {
-			/* jack is already in, report button event */
+			 
 			rt5668->jack_type = SND_JACK_HEADSET;
 			btn_type = rt5668_button_detect(rt5668->component);
-			/**
-			 * rt5668 can report three kinds of button behavior,
-			 * one click, double click and hold. However,
-			 * currently we will report button pressed/released
-			 * event. So all the three button behaviors are
-			 * treated as button pressed.
-			 */
+			 
 			switch (btn_type) {
 			case 0x8000:
 			case 0x4000:
@@ -1072,7 +1040,7 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 			case 0x0010:
 				rt5668->jack_type |= SND_JACK_BTN_3;
 				break;
-			case 0x0000: /* unpressed */
+			case 0x0000:  
 				break;
 			default:
 				btn_type = 0;
@@ -1083,7 +1051,7 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 			}
 		}
 	} else {
-		/* jack out */
+		 
 		rt5668->jack_type = rt5668_headset_detect(rt5668->component, 0);
 	}
 
@@ -1102,25 +1070,25 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 }
 
 static const struct snd_kcontrol_new rt5668_snd_controls[] = {
-	/* Headphone Output Volume */
+	 
 	SOC_DOUBLE_R_TLV("Headphone Playback Volume", RT5668_HPL_GAIN,
 		RT5668_HPR_GAIN, RT5668_G_HP_SFT, 15, 1, hp_vol_tlv),
 
-	/* DAC Digital Volume */
+	 
 	SOC_DOUBLE_TLV("DAC1 Playback Volume", RT5668_DAC1_DIG_VOL,
 		RT5668_L_VOL_SFT, RT5668_R_VOL_SFT, 175, 0, dac_vol_tlv),
 
-	/* IN Boost Volume */
+	 
 	SOC_SINGLE_TLV("CBJ Boost Volume", RT5668_CBJ_BST_CTRL,
 		RT5668_BST_CBJ_SFT, 8, 0, bst_tlv),
 
-	/* ADC Digital Volume Control */
+	 
 	SOC_DOUBLE("STO1 ADC Capture Switch", RT5668_STO1_ADC_DIG_VOL,
 		RT5668_L_MUTE_SFT, RT5668_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("STO1 ADC Capture Volume", RT5668_STO1_ADC_DIG_VOL,
 		RT5668_L_VOL_SFT, RT5668_R_VOL_SFT, 127, 0, adc_vol_tlv),
 
-	/* ADC Boost Volume Control */
+	 
 	SOC_DOUBLE_TLV("STO1 ADC Boost Gain Volume", RT5668_STO1_ADC_BOOST,
 		RT5668_STO1_ADC_L_BST_SFT, RT5668_STO1_ADC_R_BST_SFT,
 		3, 0, adc_bst_tlv),
@@ -1157,16 +1125,7 @@ static int rt5668_div_sel(struct rt5668_priv *rt5668,
 
 }
 
-/**
- * set_dmic_clk - Set parameter of dmic.
- *
- * @w: DAPM widget.
- * @kcontrol: The kcontrol of this widget.
- * @event: Event id.
- *
- * Choose dmic clock between 1MHz and 3MHz.
- * It is better for clock to approximate 3MHz.
- */
+ 
 static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -1260,7 +1219,7 @@ static int is_using_asrc(struct snd_soc_dapm_widget *w,
 
 }
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt5668_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5668_STO1_ADC_MIXER,
 			RT5668_M_STO1_ADC_L1_SFT, 1, 1),
@@ -1303,14 +1262,14 @@ static const struct snd_kcontrol_new rt5668_sto1_dac_r_mix[] = {
 			RT5668_M_DAC_R1_STO_R_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt5668_rec1_l_mix[] = {
 	SOC_DAPM_SINGLE("CBJ Switch", RT5668_REC_MIXER,
 			RT5668_M_CBJ_RM1_L_SFT, 1, 1),
 };
 
-/* STO1 ADC1 Source */
-/* MX-26 [13] [5] */
+ 
+ 
 static const char * const rt5668_sto1_adc1_src[] = {
 	"DAC MIX", "ADC"
 };
@@ -1329,8 +1288,8 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5668_sto1_adc1r_mux =
 	SOC_DAPM_ENUM("Stereo1 ADC1L Source", rt5668_sto1_adc1r_enum);
 
-/* STO1 ADC Source */
-/* MX-26 [11:10] [3:2] */
+ 
+ 
 static const char * const rt5668_sto1_adc_src[] = {
 	"ADC1 L", "ADC1 R"
 };
@@ -1349,8 +1308,8 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5668_sto1_adcr_mux =
 	SOC_DAPM_ENUM("Stereo1 ADCR Source", rt5668_sto1_adcr_enum);
 
-/* STO1 ADC2 Source */
-/* MX-26 [12] [4] */
+ 
+ 
 static const char * const rt5668_sto1_adc2_src[] = {
 	"DAC MIX", "DMIC"
 };
@@ -1369,7 +1328,7 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5668_sto1_adc2r_mux =
 	SOC_DAPM_ENUM("Stereo1 ADC2R Source", rt5668_sto1_adc2r_enum);
 
-/* MX-79 [6:4] I2S1 ADC data location */
+ 
 static const unsigned int rt5668_if1_adc_slot_values[] = {
 	0,
 	2,
@@ -1388,8 +1347,8 @@ static SOC_VALUE_ENUM_SINGLE_DECL(rt5668_if1_adc_slot_enum,
 static const struct snd_kcontrol_new rt5668_if1_adc_slot_mux =
 	SOC_DAPM_ENUM("IF1 ADC Slot location", rt5668_if1_adc_slot_enum);
 
-/* Analog DAC L1 Source, Analog DAC R1 Source*/
-/* MX-2B [4], MX-2B [0]*/
+ 
+ 
 static const char * const rt5668_alg_dac1_src[] = {
 	"Stereo1 DAC Mixer", "DAC1"
 };
@@ -1408,7 +1367,7 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5668_alg_dac_r1_mux =
 	SOC_DAPM_ENUM("Analog DAC R1 Source", rt5668_alg_dac_r1_enum);
 
-/* Out Switch */
+ 
 static const struct snd_kcontrol_new hpol_switch =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT5668_HP_CTRL_1,
 					RT5668_L_MUTE_SFT, 1, 1);
@@ -1454,7 +1413,7 @@ static int set_dmic_power(struct snd_soc_dapm_widget *w,
 {
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/*Add delay to avoid pop noise*/
+		 
 		msleep(150);
 		break;
 
@@ -1547,7 +1506,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Vref2", RT5668_PWR_ANLG_1, RT5668_PWR_VREF2_BIT, 0,
 		rt5655_set_verf, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU),
 
-	/* ASRC */
+	 
 	SND_SOC_DAPM_SUPPLY_S("DAC STO1 ASRC", 1, RT5668_PLL_TRACK_1,
 		RT5668_DAC_STO1_ASRC_SFT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("ADC STO1 ASRC", 1, RT5668_PLL_TRACK_1,
@@ -1559,13 +1518,13 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("DMIC ASRC", 1, RT5668_PLL_TRACK_1,
 		RT5668_DMIC_ASRC_SFT, 0, NULL, 0),
 
-	/* Input Side */
+	 
 	SND_SOC_DAPM_SUPPLY("MICBIAS1", RT5668_PWR_ANLG_2, RT5668_PWR_MB1_BIT,
 		0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("MICBIAS2", RT5668_PWR_ANLG_2, RT5668_PWR_MB2_BIT,
 		0, NULL, 0),
 
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC L1"),
 	SND_SOC_DAPM_INPUT("DMIC R1"),
 
@@ -1576,20 +1535,20 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DMIC1 Power", RT5668_DMIC_CTRL_1,
 		RT5668_DMIC_1_EN_SFT, 0, set_dmic_power, SND_SOC_DAPM_POST_PMU),
 
-	/* Boost */
+	 
 	SND_SOC_DAPM_PGA("BST1 CBJ", SND_SOC_NOPM,
 		0, 0, NULL, 0),
 
 	SND_SOC_DAPM_SUPPLY("CBJ Power", RT5668_PWR_ANLG_3,
 		RT5668_PWR_CBJ_BIT, 0, NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIX1L", SND_SOC_NOPM, 0, 0, rt5668_rec1_l_mix,
 		ARRAY_SIZE(rt5668_rec1_l_mix)),
 	SND_SOC_DAPM_SUPPLY("RECMIX1L Power", RT5668_PWR_ANLG_2,
 		RT5668_PWR_RM1_L_BIT, 0, NULL, 0),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC1 L", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC1 R", NULL, SND_SOC_NOPM, 0, 0),
 
@@ -1600,7 +1559,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("ADC1 clock", RT5668_CHOP_ADC,
 		RT5668_CKGEN_ADC1_SFT, 0, NULL, 0),
 
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("Stereo1 ADC L1 Mux", SND_SOC_NOPM, 0, 0,
 		&rt5668_sto1_adc1l_mux),
 	SND_SOC_DAPM_MUX("Stereo1 ADC R1 Mux", SND_SOC_NOPM, 0, 0,
@@ -1616,7 +1575,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("IF1_ADC Mux", SND_SOC_NOPM, 0, 0,
 		&rt5668_if1_adc_slot_mux),
 
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("ADC Stereo1 Filter", RT5668_PWR_DIG_2,
 		RT5668_PWR_ADC_S1F_BIT, 0, set_filter_clk,
 		SND_SOC_DAPM_PRE_PMU),
@@ -1627,10 +1586,10 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 		RT5668_R_MUTE_SFT, 1, rt5668_sto1_adc_r_mix,
 		ARRAY_SIZE(rt5668_sto1_adc_r_mix)),
 
-	/* ADC PGA */
+	 
 	SND_SOC_DAPM_PGA("Stereo1 ADC MIX", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5668_PWR_DIG_1, RT5668_PWR_I2S1_BIT,
 		0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("I2S2", RT5668_PWR_DIG_1, RT5668_PWR_I2S2_BIT,
@@ -1639,7 +1598,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("IF1 DAC1 L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC1 R", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Digital Interface Select */
+	 
 	SND_SOC_DAPM_MUX("IF1 01 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
 			&rt5668_if1_01_adc_swap_mux),
 	SND_SOC_DAPM_MUX("IF1 23 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
@@ -1654,27 +1613,27 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("ADCDAT Mux", SND_SOC_NOPM, 0, 0,
 			&rt5668_adcdat_pin_ctrl),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0,
 		RT5668_I2S1_SDP, RT5668_SEL_ADCDAT_SFT, 1),
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "AIF2 Capture", 0,
 		RT5668_I2S2_SDP, RT5668_I2S2_PIN_CFG_SFT, 1),
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DAC mixer before sound effect  */
+	 
+	 
 	SND_SOC_DAPM_MIXER("DAC1 MIXL", SND_SOC_NOPM, 0, 0,
 		rt5668_dac_l_mix, ARRAY_SIZE(rt5668_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("DAC1 MIXR", SND_SOC_NOPM, 0, 0,
 		rt5668_dac_r_mix, ARRAY_SIZE(rt5668_dac_r_mix)),
 
-	/* DAC channel Mux */
+	 
 	SND_SOC_DAPM_MUX("DAC L1 Source", SND_SOC_NOPM, 0, 0,
 		&rt5668_alg_dac_l1_mux),
 	SND_SOC_DAPM_MUX("DAC R1 Source", SND_SOC_NOPM, 0, 0,
 		&rt5668_alg_dac_r1_mux),
 
-	/* DAC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("DAC Stereo1 Filter", RT5668_PWR_DIG_2,
 		RT5668_PWR_DAC_S1F_BIT, 0, set_filter_clk,
 		SND_SOC_DAPM_PRE_PMU),
@@ -1683,7 +1642,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Stereo1 DAC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5668_sto1_dac_r_mix, ARRAY_SIZE(rt5668_sto1_dac_r_mix)),
 
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC L1", NULL, RT5668_PWR_DIG_1,
 		RT5668_PWR_DAC_L1_BIT, 0),
 	SND_SOC_DAPM_DAC("DAC R1", NULL, RT5668_PWR_DIG_1,
@@ -1691,7 +1650,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("DAC 1 Clock", 3, RT5668_CHOP_DAC,
 		RT5668_CKGEN_DAC1_SFT, 0, NULL, 0),
 
-	/* HPO */
+	 
 	SND_SOC_DAPM_PGA_S("HP Amp", 1, SND_SOC_NOPM, 0, 0, rt5668_hp_event,
 		SND_SOC_DAPM_POST_PMD | SND_SOC_DAPM_PRE_PMU),
 
@@ -1709,7 +1668,7 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("HPOR Playback", SND_SOC_NOPM, 0, 0,
 		&hpor_switch),
 
-	/* CLK DET */
+	 
 	SND_SOC_DAPM_SUPPLY("CLKDET SYS", RT5668_CLK_DET,
 		RT5668_SYS_CLK_DET_SFT,	0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("CLKDET PLL1", RT5668_CLK_DET,
@@ -1719,24 +1678,24 @@ static const struct snd_soc_dapm_widget rt5668_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("CLKDET", RT5668_CLK_DET,
 		RT5668_POW_CLK_DET_SFT, 0, NULL, 0),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("HPOL"),
 	SND_SOC_DAPM_OUTPUT("HPOR"),
 
 };
 
 static const struct snd_soc_dapm_route rt5668_dapm_routes[] = {
-	/*PLL*/
+	 
 	{"ADC Stereo1 Filter", NULL, "PLL1", is_sys_clk_from_pll1},
 	{"DAC Stereo1 Filter", NULL, "PLL1", is_sys_clk_from_pll1},
 
-	/*ASRC*/
+	 
 	{"ADC Stereo1 Filter", NULL, "ADC STO1 ASRC", is_using_asrc},
 	{"DAC Stereo1 Filter", NULL, "DAC STO1 ASRC", is_using_asrc},
 	{"ADC STO1 ASRC", NULL, "AD ASRC"},
 	{"DAC STO1 ASRC", NULL, "DA ASRC"},
 
-	/*Vref*/
+	 
 	{"MICBIAS1", NULL, "Vref1"},
 	{"MICBIAS1", NULL, "Vref2"},
 	{"MICBIAS2", NULL, "Vref1"},
@@ -1969,7 +1928,7 @@ static int rt5668_hw_params(struct snd_pcm_substream *substream,
 				RT5668_ADDA_CLK_1, RT5668_I2S_M_DIV_MASK,
 				pre_div << RT5668_I2S_M_DIV_SFT);
 		}
-		if (params_channels(params) == 1) /* mono mode */
+		if (params_channels(params) == 1)  
 			snd_soc_component_update_bits(component,
 				RT5668_I2S1_SDP, RT5668_I2S1_MONO_MASK,
 				RT5668_I2S1_MONO_EN);
@@ -1986,7 +1945,7 @@ static int rt5668_hw_params(struct snd_pcm_substream *substream,
 				RT5668_I2S_M_CLK_CTRL_1, RT5668_I2S2_M_PD_MASK,
 				pre_div << RT5668_I2S2_M_PD_SFT);
 		}
-		if (params_channels(params) == 1) /* mono mode */
+		if (params_channels(params) == 1)  
 			snd_soc_component_update_bits(component,
 				RT5668_I2S2_SDP, RT5668_I2S2_MONO_MASK,
 				RT5668_I2S2_MONO_EN);
@@ -2441,7 +2400,7 @@ static void rt5668_calibrate(struct rt5668_priv *rt5668)
 	if (count >= 60)
 		pr_err("HP Calibration Failure\n");
 
-	/* restore settings */
+	 
 	regmap_write(rt5668->regmap, RT5668_STO1_ADC_MIXER, 0xc0c4);
 	regmap_write(rt5668->regmap, RT5668_PWR_DIG_1, 0x0000);
 
@@ -2502,7 +2461,7 @@ static int rt5668_i2c_probe(struct i2c_client *i2c)
 		return PTR_ERR(rt5668->ldo1_en);
 	}
 
-	/* Sleep for 300 ms miniumum */
+	 
 	usleep_range(300000, 350000);
 
 	regmap_write(rt5668->regmap, RT5668_I2C_MODE, 0x1);
@@ -2520,17 +2479,17 @@ static int rt5668_i2c_probe(struct i2c_client *i2c)
 
 	regmap_write(rt5668->regmap, RT5668_DEPOP_1, 0x0000);
 
-	/* DMIC pin*/
+	 
 	if (rt5668->pdata.dmic1_data_pin != RT5668_DMIC1_NULL) {
 		switch (rt5668->pdata.dmic1_data_pin) {
-		case RT5668_DMIC1_DATA_GPIO2: /* share with LRCK2 */
+		case RT5668_DMIC1_DATA_GPIO2:  
 			regmap_update_bits(rt5668->regmap, RT5668_DMIC_CTRL_1,
 				RT5668_DMIC_1_DP_MASK, RT5668_DMIC_1_DP_GPIO2);
 			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
 				RT5668_GP2_PIN_MASK, RT5668_GP2_PIN_DMIC_SDA);
 			break;
 
-		case RT5668_DMIC1_DATA_GPIO5: /* share with DACDAT1 */
+		case RT5668_DMIC1_DATA_GPIO5:  
 			regmap_update_bits(rt5668->regmap, RT5668_DMIC_CTRL_1,
 				RT5668_DMIC_1_DP_MASK, RT5668_DMIC_1_DP_GPIO5);
 			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
@@ -2543,12 +2502,12 @@ static int rt5668_i2c_probe(struct i2c_client *i2c)
 		}
 
 		switch (rt5668->pdata.dmic1_clk_pin) {
-		case RT5668_DMIC1_CLK_GPIO1: /* share with IRQ */
+		case RT5668_DMIC1_CLK_GPIO1:  
 			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
 				RT5668_GP1_PIN_MASK, RT5668_GP1_PIN_DMIC_CLK);
 			break;
 
-		case RT5668_DMIC1_CLK_GPIO3: /* share with BCLK2 */
+		case RT5668_DMIC1_CLK_GPIO3:  
 			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
 				RT5668_GP3_PIN_MASK, RT5668_GP3_PIN_DMIC_CLK);
 			break;

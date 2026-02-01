@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2007 by Sebastian Claßen <sebastian.classen@freenet.ag>
- * (C) 2007-2010 by Jan Engelhardt <jengelh@medozas.de>
- *
- * Extracted from xt_TEE.c
- */
+
+ 
 #include <linux/ip.h>
 #include <linux/module.h>
 #include <linux/percpu.h>
@@ -54,29 +49,17 @@ void nf_dup_ipv4(struct net *net, struct sk_buff *skb, unsigned int hooknum,
 
 	if (this_cpu_read(nf_skb_duplicated))
 		return;
-	/*
-	 * Copy the skb, and route the copy. Will later return %XT_CONTINUE for
-	 * the original skb, which should continue on its way as if nothing has
-	 * happened. The copy should be independently delivered to the gateway.
-	 */
+	 
 	skb = pskb_copy(skb, GFP_ATOMIC);
 	if (skb == NULL)
 		return;
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
-	/* Avoid counting cloned packets towards the original connection. */
+	 
 	nf_reset_ct(skb);
 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
 #endif
-	/*
-	 * If we are in PREROUTING/INPUT, decrease the TTL to mitigate potential
-	 * loops between two hosts.
-	 *
-	 * Set %IP_DF so that the original source is notified of a potentially
-	 * decreased MTU on the clone route. IPv6 does this too.
-	 *
-	 * IP header checksum will be recalculated at ip_local_out.
-	 */
+	 
 	iph = ip_hdr(skb);
 	iph->frag_off |= htons(IP_DF);
 	if (hooknum == NF_INET_PRE_ROUTING ||

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the ILI9481 LCD Controller
- *
- * Copyright (c) 2014 Petr Olivka
- * Copyright (c) 2013 Noralf Tronnes
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,25 +14,25 @@
 #define HEIGHT		480
 
 static const s16 default_init_sequence[] = {
-	/* SLP_OUT - Sleep out */
+	 
 	-1, MIPI_DCS_EXIT_SLEEP_MODE,
 	-2, 50,
-	/* Power setting */
+	 
 	-1, 0xD0, 0x07, 0x42, 0x18,
-	/* VCOM */
+	 
 	-1, 0xD1, 0x00, 0x07, 0x10,
-	/* Power setting for norm. mode */
+	 
 	-1, 0xD2, 0x01, 0x02,
-	/* Panel driving setting */
+	 
 	-1, 0xC0, 0x10, 0x3B, 0x00, 0x02, 0x11,
-	/* Frame rate & inv. */
+	 
 	-1, 0xC5, 0x03,
-	/* Pixel format */
+	 
 	-1, MIPI_DCS_SET_PIXEL_FORMAT, 0x55,
-	/* Gamma */
+	 
 	-1, 0xC8, 0x00, 0x32, 0x36, 0x45, 0x06, 0x16,
 		  0x37, 0x75, 0x77, 0x54, 0x0C, 0x00,
-	/* DISP_ON */
+	 
 	-1, MIPI_DCS_SET_DISPLAY_ON,
 	-3
 };

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017-2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+ 
 
 #include "pinctrl-moore.h"
 
@@ -258,12 +253,9 @@ static const struct mtk_pin_desc mt7622_pins[] = {
 	MT7622_PIN(102, "GPIO_E"),
 };
 
-/* List all groups consisting of these pins dedicated to the enablement of
- * certain hardware block and the corresponding mode for all of the pins. The
- * hardware probably has multiple combinations of these pinouts.
- */
+ 
 
-/* ANTSEL */
+ 
 static int mt7622_antsel0_pins[] = { 91, };
 static int mt7622_antsel0_funcs[] = { 5, };
 static int mt7622_antsel1_pins[] = { 92, };
@@ -325,14 +317,14 @@ static int mt7622_antsel28_funcs[] = { 5, };
 static int mt7622_antsel29_pins[] = { 21, };
 static int mt7622_antsel29_funcs[] = { 5, };
 
-/* EMMC */
+ 
 static int mt7622_emmc_pins[] = { 40, 41, 42, 43, 44, 45, 47, 48, 49, 50, };
 static int mt7622_emmc_funcs[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, };
 
 static int mt7622_emmc_rst_pins[] = { 37, };
 static int mt7622_emmc_rst_funcs[] = { 1, };
 
-/* LED for EPHY */
+ 
 static int mt7622_ephy_leds_pins[] = { 86, 91, 92, 93, 94, };
 static int mt7622_ephy_leds_funcs[] = { 0, 0, 0, 0, 0, };
 static int mt7622_ephy0_led_pins[] = { 86, };
@@ -346,7 +338,7 @@ static int mt7622_ephy3_led_funcs[] = { 2, };
 static int mt7622_ephy4_led_pins[] = { 94, };
 static int mt7622_ephy4_led_funcs[] = { 2, };
 
-/* Embedded Switch */
+ 
 static int mt7622_esw_pins[] = { 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
 				 62, 63, 64, 65, 66, 67, 68, 69, 70, };
 static int mt7622_esw_funcs[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -357,25 +349,25 @@ static int mt7622_esw_p2_p3_p4_pins[] = { 59, 60, 61, 62, 63, 64, 65, 66, 67,
 					  68, 69, 70, };
 static int mt7622_esw_p2_p3_p4_funcs[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, };
-/* RGMII via ESW */
+ 
 static int mt7622_rgmii_via_esw_pins[] = { 59, 60, 61, 62, 63, 64, 65, 66,
 					   67, 68, 69, 70, };
 static int mt7622_rgmii_via_esw_funcs[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					    0, };
 
-/* RGMII via GMAC1 */
+ 
 static int mt7622_rgmii_via_gmac1_pins[] = { 59, 60, 61, 62, 63, 64, 65, 66,
 					     67, 68, 69, 70, };
 static int mt7622_rgmii_via_gmac1_funcs[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 					      2, };
 
-/* RGMII via GMAC2 */
+ 
 static int mt7622_rgmii_via_gmac2_pins[] = { 25, 26, 27, 28, 29, 30, 31, 32,
 					     33, 34, 35, 36, };
 static int mt7622_rgmii_via_gmac2_funcs[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					      0, };
 
-/* I2C */
+ 
 static int mt7622_i2c0_pins[] = { 14, 15, };
 static int mt7622_i2c0_funcs[] = { 0, 0, };
 static int mt7622_i2c1_0_pins[] = { 55, 56, };
@@ -391,7 +383,7 @@ static int mt7622_i2c2_1_funcs[] = { 3, 3, };
 static int mt7622_i2c2_2_pins[] = { 89, 90, };
 static int mt7622_i2c2_2_funcs[] = { 0, 0, };
 
-/* I2S */
+ 
 static int mt7622_i2s_in_mclk_bclk_ws_pins[] = { 3, 4, 5, };
 static int mt7622_i2s_in_mclk_bclk_ws_funcs[] = { 3, 3, 0, };
 static int mt7622_i2s1_in_data_pins[] = { 1, };
@@ -413,7 +405,7 @@ static int mt7622_i2s3_out_data_funcs[] = { 0, };
 static int mt7622_i2s4_out_data_pins[] = { 21, };
 static int mt7622_i2s4_out_data_funcs[] = { 0, };
 
-/* IR */
+ 
 static int mt7622_ir_0_tx_pins[] = { 16, };
 static int mt7622_ir_0_tx_funcs[] = { 4, };
 static int mt7622_ir_1_tx_pins[] = { 59, };
@@ -427,11 +419,11 @@ static int mt7622_ir_1_rx_funcs[] = { 5, };
 static int mt7622_ir_2_rx_pins[] = { 100, };
 static int mt7622_ir_2_rx_funcs[] = { 3, };
 
-/* MDIO */
+ 
 static int mt7622_mdc_mdio_pins[] = { 23, 24, };
 static int mt7622_mdc_mdio_funcs[] = { 0, 0, };
 
-/* PCIE */
+ 
 static int mt7622_pcie0_0_waken_pins[] = { 14, };
 static int mt7622_pcie0_0_waken_funcs[] = { 2, };
 static int mt7622_pcie0_0_clkreq_pins[] = { 15, };
@@ -450,17 +442,17 @@ static int mt7622_pcie0_pad_perst_funcs[] = { 0, };
 static int mt7622_pcie1_pad_perst_pins[] = { 84, };
 static int mt7622_pcie1_pad_perst_funcs[] = { 0, };
 
-/* PMIC bus */
+ 
 static int mt7622_pmic_bus_pins[] = { 71, 72, };
 static int mt7622_pmic_bus_funcs[] = { 0, 0, };
 
-/* Parallel NAND */
+ 
 static int mt7622_pnand_pins[] = { 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
 				   48, 49, 50, };
 static int mt7622_pnand_funcs[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				    0, };
 
-/* PWM */
+ 
 static int mt7622_pwm_ch1_0_pins[] = { 51, };
 static int mt7622_pwm_ch1_0_funcs[] = { 3, };
 static int mt7622_pwm_ch1_1_pins[] = { 73, };
@@ -502,21 +494,21 @@ static int mt7622_pwm_ch6_2_funcs[] = { 4, };
 static int mt7622_pwm_ch6_3_pins[] = { 100, };
 static int mt7622_pwm_ch6_3_funcs[] = { 0, };
 
-/* SD */
+ 
 static int mt7622_sd_0_pins[] = { 16, 17, 18, 19, 20, 21, };
 static int mt7622_sd_0_funcs[] = { 2, 2, 2, 2, 2, 2, };
 static int mt7622_sd_1_pins[] = { 25, 26, 27, 28, 29, 30, };
 static int mt7622_sd_1_funcs[] = { 2, 2, 2, 2, 2, 2, };
 
-/* Serial NAND */
+ 
 static int mt7622_snfi_pins[] = { 8, 9, 10, 11, 12, 13, };
 static int mt7622_snfi_funcs[] = { 2, 2, 2, 2, 2, 2, };
 
-/* SPI NOR */
+ 
 static int mt7622_spi_pins[] = { 8, 9, 10, 11, 12, 13 };
 static int mt7622_spi_funcs[] = { 0, 0, 0, 0, 0, 0, };
 
-/* SPIC */
+ 
 static int mt7622_spic0_0_pins[] = { 63, 64, 65, 66, };
 static int mt7622_spic0_0_funcs[] = { 4, 4, 4, 4, };
 static int mt7622_spic0_1_pins[] = { 79, 80, 81, 82, };
@@ -530,7 +522,7 @@ static int mt7622_spic2_0_funcs[] = { 0, 0, 0, 0, };
 static int mt7622_spic2_0_wp_hold_pins[] = { 8, 9, };
 static int mt7622_spic2_0_wp_hold_funcs[] = { 0, 0, };
 
-/* TDM */
+ 
 static int mt7622_tdm_0_out_mclk_bclk_ws_pins[] = { 8, 9, 10, };
 static int mt7622_tdm_0_out_mclk_bclk_ws_funcs[] = { 3, 3, 3, };
 static int mt7622_tdm_0_in_mclk_bclk_ws_pins[] = { 11, 12, 13, };
@@ -548,7 +540,7 @@ static int mt7622_tdm_1_out_data_funcs[] = { 3, };
 static int mt7622_tdm_1_in_data_pins[] = { 56, };
 static int mt7622_tdm_1_in_data_funcs[] = { 3, };
 
-/* UART */
+ 
 static int mt7622_uart0_0_tx_rx_pins[] = { 6, 7, };
 static int mt7622_uart0_0_tx_rx_funcs[] = { 0, 0, };
 static int mt7622_uart1_0_tx_rx_pins[] = { 55, 56, };
@@ -590,11 +582,11 @@ static int mt7622_uart4_2_tx_rx_funcs[] = { 2, 2, };
 static int mt7622_uart4_2_rts_cts_pins[] = { 95, 96 };
 static int mt7622_uart4_2_rts_cts_funcs[] = { 2, 2, };
 
-/* Watchdog */
+ 
 static int mt7622_watchdog_pins[] = { 78, };
 static int mt7622_watchdog_funcs[] = { 0, };
 
-/* WLAN LED */
+ 
 static int mt7622_wled_pins[] = { 85, };
 static int mt7622_wled_funcs[] = { 0, };
 
@@ -743,9 +735,7 @@ static const struct group_desc mt7622_groups[] = {
 	PINCTRL_PIN_GROUP("wled", mt7622_wled),
 };
 
-/* Joint those groups owning the same capability in user point of view which
- * allows that people tend to use through the device tree.
- */
+ 
 static const char *mt7622_antsel_groups[] = { "antsel0", "antsel1", "antsel2",
 					      "antsel3", "antsel4", "antsel5",
 					      "antsel6", "antsel7", "antsel8",

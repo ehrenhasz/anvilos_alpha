@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kexec bzImage loader
- *
- * Copyright (C) 2014 Red Hat Inc.
- * Authors:
- *      Vivek Goyal <vgoyal@redhat.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"kexec-bzImage64: " fmt
 
@@ -26,29 +20,17 @@
 #include <asm/e820/api.h>
 #include <asm/kexec-bzimage64.h>
 
-#define MAX_ELFCOREHDR_STR_LEN	30	/* elfcorehdr=0x<64bit-value> */
+#define MAX_ELFCOREHDR_STR_LEN	30	 
 
-/*
- * Defines lowest physical address for various segments. Not sure where
- * exactly these limits came from. Current bzimage64 loader in kexec-tools
- * uses these so I am retaining it. It can be changed over time as we gain
- * more insight.
- */
+ 
 #define MIN_PURGATORY_ADDR	0x3000
 #define MIN_BOOTPARAM_ADDR	0x3000
 #define MIN_KERNEL_LOAD_ADDR	0x100000
 #define MIN_INITRD_LOAD_ADDR	0x1000000
 
-/*
- * This is a place holder for all boot loader specific data structure which
- * gets allocated in one call but gets freed much later during cleanup
- * time. Right now there is only one field but it can grow as need be.
- */
+ 
 struct bzimage64_data {
-	/*
-	 * Temporary buffer to hold bootparams buffer. This should be
-	 * freed once the bootparam segment has been loaded.
-	 */
+	 
 	void *bootparams_buf;
 };
 
@@ -100,7 +82,7 @@ static int setup_e820_entries(struct boot_params *params)
 
 	nr_e820_entries = e820_table_kexec->nr_entries;
 
-	/* TODO: Pass entries more than E820_MAX_ENTRIES_ZEROPAGE in bootparams setup data */
+	 
 	if (nr_e820_entries > E820_MAX_ENTRIES_ZEROPAGE)
 		nr_e820_entries = E820_MAX_ENTRIES_ZEROPAGE;
 
@@ -168,7 +150,7 @@ prepare_add_efi_setup_data(struct boot_params *params,
 	sd->type = SETUP_EFI;
 	sd->len = sizeof(struct efi_setup_data);
 
-	/* Add setup data */
+	 
 	setup_data_phys = params_load_addr + efi_setup_data_offset;
 	sd->next = params->hdr.setup_data;
 	params->hdr.setup_data = setup_data_phys;
@@ -204,7 +186,7 @@ setup_efi_state(struct boot_params *params, unsigned long params_load_addr,
 				   efi_setup_data_offset);
 	return 0;
 }
-#endif /* CONFIG_EFI */
+#endif  
 
 static void
 setup_ima_state(const struct kimage *image, struct boot_params *params,
@@ -226,11 +208,11 @@ setup_ima_state(const struct kimage *image, struct boot_params *params,
 	ima->addr = image->ima_buffer_addr;
 	ima->size = image->ima_buffer_size;
 
-	/* Add setup data */
+	 
 	setup_data_phys = params_load_addr + ima_setup_data_offset;
 	sd->next = params->hdr.setup_data;
 	params->hdr.setup_data = setup_data_phys;
-#endif /* CONFIG_IMA_KEXEC */
+#endif  
 }
 
 static int
@@ -243,23 +225,23 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
 	unsigned long long mem_k, start, end;
 	int i, ret = 0;
 
-	/* Get subarch from existing bootparams */
+	 
 	params->hdr.hardware_subarch = boot_params.hdr.hardware_subarch;
 
-	/* Copying screen_info will do? */
+	 
 	memcpy(&params->screen_info, &screen_info, sizeof(struct screen_info));
 
-	/* Fill in memsize later */
+	 
 	params->screen_info.ext_mem_k = 0;
 	params->alt_mem_k = 0;
 
-	/* Always fill in RSDP: it is either 0 or a valid value */
+	 
 	params->acpi_rsdp_addr = boot_params.acpi_rsdp_addr;
 
-	/* Default APM info */
+	 
 	memset(&params->apm_bios_info, 0, sizeof(params->apm_bios_info));
 
-	/* Default drive info */
+	 
 	memset(&params->hd0_info, 0, sizeof(params->hd0_info));
 	memset(&params->hd1_info, 0, sizeof(params->hd1_info));
 
@@ -283,14 +265,14 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
 			params->screen_info.ext_mem_k = mem_k;
 			params->alt_mem_k = mem_k;
 			if (mem_k > 0xfc00)
-				params->screen_info.ext_mem_k = 0xfc00; /* 64M*/
+				params->screen_info.ext_mem_k = 0xfc00;  
 			if (mem_k > 0xffffffff)
 				params->alt_mem_k = 0xffffffff;
 		}
 	}
 
 #ifdef CONFIG_EFI
-	/* Setup EFI state */
+	 
 	setup_efi_state(params, params_load_addr, efi_map_offset, efi_map_sz,
 			setup_data_offset);
 	setup_data_offset += sizeof(struct setup_data) +
@@ -298,17 +280,17 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
 #endif
 
 	if (IS_ENABLED(CONFIG_IMA_KEXEC)) {
-		/* Setup IMA log buffer state */
+		 
 		setup_ima_state(image, params, params_load_addr,
 				setup_data_offset);
 		setup_data_offset += sizeof(struct setup_data) +
 				     sizeof(struct ima_setup_data);
 	}
 
-	/* Setup RNG seed */
+	 
 	setup_rng_seed(params, params_load_addr, setup_data_offset);
 
-	/* Setup EDD info */
+	 
 	memcpy(params->eddbuf, boot_params.eddbuf,
 				EDDMAXNR * sizeof(struct edd_info));
 	params->eddbuf_entries = boot_params.eddbuf_entries;
@@ -324,7 +306,7 @@ static int bzImage64_probe(const char *buf, unsigned long len)
 	int ret = -ENOEXEC;
 	struct setup_header *header;
 
-	/* kernel should be at least two sectors long */
+	 
 	if (len < 2 * 512) {
 		pr_err("File is too short to be a bzImage\n");
 		return ret;
@@ -361,10 +343,7 @@ static int bzImage64_probe(const char *buf, unsigned long len)
 		return ret;
 	}
 
-	/*
-	 * Can't handle 32bit EFI as it does not allow loading kernel
-	 * above 4G. This should be handled by 32bit bzImage loader
-	 */
+	 
 	if (efi_enabled(EFI_RUNTIME_SERVICES) && !efi_enabled(EFI_64BIT)) {
 		pr_debug("EFI is 32 bit. Can't load kernel above 4G.\n");
 		return ret;
@@ -375,7 +354,7 @@ static int bzImage64_probe(const char *buf, unsigned long len)
 		return ret;
 	}
 
-	/* I've got a bzImage */
+	 
 	pr_debug("It's a relocatable bzImage64\n");
 	ret = 0;
 
@@ -419,26 +398,20 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * In case of crash dump, we will append elfcorehdr=<addr> to
-	 * command line. Make sure it does not overflow
-	 */
+	 
 	if (cmdline_len + MAX_ELFCOREHDR_STR_LEN > header->cmdline_size) {
 		pr_debug("Appending elfcorehdr=<addr> to command line exceeds maximum allowed length\n");
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Allocate and load backup region */
+	 
 	if (image->type == KEXEC_TYPE_CRASH) {
 		ret = crash_load_segments(image);
 		if (ret)
 			return ERR_PTR(ret);
 	}
 
-	/*
-	 * Load purgatory. For 64bit entry point, purgatory  code can be
-	 * anywhere.
-	 */
+	 
 	ret = kexec_load_purgatory(image, &pbuf);
 	if (ret) {
 		pr_err("Loading purgatory failed\n");
@@ -448,14 +421,7 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	pr_debug("Loaded purgatory at 0x%lx\n", pbuf.mem);
 
 
-	/*
-	 * Load Bootparams and cmdline and space for efi stuff.
-	 *
-	 * Allocate memory together for multiple data structures so
-	 * that they all can go in single area/segment and we don't
-	 * have to create separate segment for each. Keeps things
-	 * little bit simple
-	 */
+	 
 	efi_map_sz = efi_get_runtime_map_size();
 	params_cmdline_sz = sizeof(struct boot_params) + cmdline_len +
 				MAX_ELFCOREHDR_STR_LEN;
@@ -476,10 +442,10 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	efi_map_offset = params_cmdline_sz;
 	efi_setup_data_offset = efi_map_offset + ALIGN(efi_map_sz, 16);
 
-	/* Copy setup header onto bootparams. Documentation/arch/x86/boot.rst */
+	 
 	setup_header_size = 0x0202 + kernel[0x0201] - setup_hdr_offset;
 
-	/* Is there a limit on setup header size? */
+	 
 	memcpy(&params->hdr, (kernel + setup_hdr_offset), setup_header_size);
 
 	kbuf.buffer = params;
@@ -493,7 +459,7 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	pr_debug("Loaded boot_param, command line and misc at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
 		 bootparam_load_addr, kbuf.bufsz, kbuf.bufsz);
 
-	/* Load kernel */
+	 
 	kbuf.buffer = kernel + kern16_size;
 	kbuf.bufsz =  kernel_len - kern16_size;
 	kbuf.memsz = PAGE_ALIGN(header->init_size);
@@ -508,7 +474,7 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	pr_debug("Loaded 64bit kernel at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
 		 kernel_load_addr, kbuf.bufsz, kbuf.memsz);
 
-	/* Load initrd high */
+	 
 	if (initrd) {
 		kbuf.buffer = initrd;
 		kbuf.bufsz = kbuf.memsz = initrd_len;
@@ -529,17 +495,17 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	setup_cmdline(image, params, bootparam_load_addr,
 		      sizeof(struct boot_params), cmdline, cmdline_len);
 
-	/* bootloader info. Do we need a separate ID for kexec kernel loader? */
+	 
 	params->hdr.type_of_loader = 0x0D << 4;
 	params->hdr.loadflags = 0;
 
-	/* Setup purgatory regs for entry */
+	 
 	ret = kexec_purgatory_get_set_symbol(image, "entry64_regs", &regs64,
 					     sizeof(regs64), 1);
 	if (ret)
 		goto out_free_params;
 
-	regs64.rbx = 0; /* Bootstrap Processor */
+	regs64.rbx = 0;  
 	regs64.rsi = bootparam_load_addr;
 	regs64.rip = kernel_load_addr + 0x200;
 	stack = kexec_purgatory_get_symbol_addr(image, "stack_end");
@@ -561,18 +527,14 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
 	if (ret)
 		goto out_free_params;
 
-	/* Allocate loader specific data */
+	 
 	ldata = kzalloc(sizeof(struct bzimage64_data), GFP_KERNEL);
 	if (!ldata) {
 		ret = -ENOMEM;
 		goto out_free_params;
 	}
 
-	/*
-	 * Store pointer to params so that it could be freed after loading
-	 * params segment has been loaded and contents have been copied
-	 * somewhere else.
-	 */
+	 
 	ldata->bootparams_buf = params;
 	return ldata;
 
@@ -581,7 +543,7 @@ out_free_params:
 	return ERR_PTR(ret);
 }
 
-/* This cleanup function is called after various segments have been loaded */
+ 
 static int bzImage64_cleanup(void *loader_data)
 {
 	struct bzimage64_data *ldata = loader_data;

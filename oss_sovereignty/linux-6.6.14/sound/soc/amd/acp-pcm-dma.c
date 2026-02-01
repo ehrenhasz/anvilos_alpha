@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD ALSA SoC PCM Driver for ACP 2.x
- *
- * Copyright 2014-2015 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -125,38 +121,32 @@ static void acp_reg_write(u32 val, void __iomem *acp_mmio, u32 reg)
 	writel(val, acp_mmio + (reg * 4));
 }
 
-/*
- * Configure a given dma channel parameters - enable/disable,
- * number of descriptors, priority
- */
+ 
 static void config_acp_dma_channel(void __iomem *acp_mmio, u8 ch_num,
 				   u16 dscr_strt_idx, u16 num_dscrs,
 				   enum acp_dma_priority_level priority_level)
 {
 	u32 dma_ctrl;
 
-	/* disable the channel run field */
+	 
 	dma_ctrl = acp_reg_read(acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 	dma_ctrl &= ~ACP_DMA_CNTL_0__DMAChRun_MASK;
 	acp_reg_write(dma_ctrl, acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 
-	/* program a DMA channel with first descriptor to be processed. */
+	 
 	acp_reg_write((ACP_DMA_DSCR_STRT_IDX_0__DMAChDscrStrtIdx_MASK
 			& dscr_strt_idx),
 			acp_mmio, mmACP_DMA_DSCR_STRT_IDX_0 + ch_num);
 
-	/*
-	 * program a DMA channel with the number of descriptors to be
-	 * processed in the transfer
-	 */
+	 
 	acp_reg_write(ACP_DMA_DSCR_CNT_0__DMAChDscrCnt_MASK & num_dscrs,
 		      acp_mmio, mmACP_DMA_DSCR_CNT_0 + ch_num);
 
-	/* set DMA channel priority */
+	 
 	acp_reg_write(priority_level, acp_mmio, mmACP_DMA_PRIO_0 + ch_num);
 }
 
-/* Initialize a dma descriptor in SRAM based on descriptor information passed */
+ 
 static void config_dma_descriptor_in_sram(void __iomem *acp_mmio,
 					  u16 descr_idx,
 					  acp_dma_dscr_transfer_t *descr_info)
@@ -165,14 +155,14 @@ static void config_dma_descriptor_in_sram(void __iomem *acp_mmio,
 
 	sram_offset = (descr_idx * sizeof(acp_dma_dscr_transfer_t));
 
-	/* program the source base address. */
+	 
 	acp_reg_write(sram_offset, acp_mmio, mmACP_SRBM_Targ_Idx_Addr);
 	acp_reg_write(descr_info->src,	acp_mmio, mmACP_SRBM_Targ_Idx_Data);
-	/* program the destination base address. */
+	 
 	acp_reg_write(sram_offset + 4,	acp_mmio, mmACP_SRBM_Targ_Idx_Addr);
 	acp_reg_write(descr_info->dest, acp_mmio, mmACP_SRBM_Targ_Idx_Data);
 
-	/* program the number of bytes to be transferred for this descriptor. */
+	 
 	acp_reg_write(sram_offset + 8,	acp_mmio, mmACP_SRBM_Targ_Idx_Addr);
 	acp_reg_write(descr_info->xfer_val, acp_mmio, mmACP_SRBM_Targ_Idx_Data);
 }
@@ -182,11 +172,11 @@ static void pre_config_reset(void __iomem *acp_mmio, u16 ch_num)
 	u32 dma_ctrl;
 	int ret;
 
-	/* clear the reset bit */
+	 
 	dma_ctrl = acp_reg_read(acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 	dma_ctrl &= ~ACP_DMA_CNTL_0__DMAChRst_MASK;
 	acp_reg_write(dma_ctrl, acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
-	/* check the reset bit before programming configuration registers */
+	 
 	ret = readl_poll_timeout(acp_mmio + ((mmACP_DMA_CNTL_0 + ch_num) * 4),
 				 dma_ctrl,
 				 !(dma_ctrl & ACP_DMA_CNTL_0__DMAChRst_MASK),
@@ -195,10 +185,7 @@ static void pre_config_reset(void __iomem *acp_mmio, u16 ch_num)
 		pr_err("Failed to clear reset of channel : %d\n", ch_num);
 }
 
-/*
- * Initialize the DMA descriptor information for transfer between
- * system memory <-> ACP SRAM
- */
+ 
 static void set_acp_sysmem_dma_descriptors(void __iomem *acp_mmio,
 					   u32 size, int direction,
 					   u32 pte_offset, u16 ch,
@@ -254,10 +241,7 @@ static void set_acp_sysmem_dma_descriptors(void __iomem *acp_mmio,
 			       ACP_DMA_PRIORITY_LEVEL_NORMAL);
 }
 
-/*
- * Initialize the DMA descriptor information for transfer between
- * ACP SRAM <-> I2S
- */
+ 
 static void set_acp_to_i2s_dma_descriptors(void __iomem *acp_mmio, u32 size,
 					   int direction, u32 sram_bank,
 					   u16 destination, u16 ch,
@@ -271,13 +255,13 @@ static void set_acp_to_i2s_dma_descriptors(void __iomem *acp_mmio, u32 size,
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
 			dma_dscr_idx = dma_dscr_idx + i;
 			dmadscr[i].src = sram_bank  + (i * (size / 2));
-			/* dmadscr[i].dest is unused by hardware. */
+			 
 			dmadscr[i].dest = 0;
 			dmadscr[i].xfer_val |= BIT(22) | (destination << 16) |
 						(size / 2);
 		} else {
 			dma_dscr_idx = dma_dscr_idx + i;
-			/* dmadscr[i].src is unused by hardware. */
+			 
 			dmadscr[i].src = 0;
 			dmadscr[i].dest =
 				 sram_bank + (i * (size / 2));
@@ -288,13 +272,13 @@ static void set_acp_to_i2s_dma_descriptors(void __iomem *acp_mmio, u32 size,
 					      &dmadscr[i]);
 	}
 	pre_config_reset(acp_mmio, ch);
-	/* Configure the DMA channel with the above descriptor */
+	 
 	config_acp_dma_channel(acp_mmio, ch, dma_dscr_idx - 1,
 			       NUM_DSCRS_PER_CHANNEL,
 			       ACP_DMA_PRIORITY_LEVEL_NORMAL);
 }
 
-/* Create page table entries in ACP SRAM for the allocated memory */
+ 
 static void acp_pte_config(void __iomem *acp_mmio, dma_addr_t addr,
 			   u16 num_of_pages, u32 pte_offset)
 {
@@ -305,7 +289,7 @@ static void acp_pte_config(void __iomem *acp_mmio, dma_addr_t addr,
 
 	offset	= ACP_DAGB_GRP_SRBM_SRAM_BASE_OFFSET + (pte_offset * 8);
 	for (page_idx = 0; page_idx < (num_of_pages); page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		acp_reg_write((offset + (page_idx * 8)),
 			      acp_mmio, mmACP_SRBM_Targ_Idx_Addr);
 
@@ -314,15 +298,15 @@ static void acp_pte_config(void __iomem *acp_mmio, dma_addr_t addr,
 
 		acp_reg_write(low, acp_mmio, mmACP_SRBM_Targ_Idx_Data);
 
-		/* Load the High address of page int ACP SRAM through SRBM */
+		 
 		acp_reg_write((offset + (page_idx * 8) + 4),
 			      acp_mmio, mmACP_SRBM_Targ_Idx_Addr);
 
-		/* page enable in ACP */
+		 
 		high |= BIT(31);
 		acp_reg_write(high, acp_mmio, mmACP_SRBM_Targ_Idx_Data);
 
-		/* Move to next physically contiguous page */
+		 
 		addr += PAGE_SIZE;
 	}
 }
@@ -343,12 +327,12 @@ static void config_acp_dma(void __iomem *acp_mmio,
 		ch_acp_i2s = rtd->ch1;
 		ch_acp_sysmem = rtd->ch2;
 	}
-	/* Configure System memory <-> ACP SRAM DMA descriptors */
+	 
 	set_acp_sysmem_dma_descriptors(acp_mmio, rtd->size,
 				       rtd->direction, rtd->pte_offset,
 				       ch_acp_sysmem, rtd->sram_bank,
 				       rtd->dma_dscr_idx_1, asic_type);
-	/* Configure ACP SRAM <-> I2S DMA descriptors */
+	 
 	set_acp_to_i2s_dma_descriptors(acp_mmio, rtd->size,
 				       rtd->direction, rtd->sram_bank,
 				       rtd->destination, ch_acp_i2s,
@@ -377,7 +361,7 @@ static void acp_dma_cap_channel_enable(void __iomem *acp_mmio,
 			   mmACP_I2S_16BIT_RESOLUTION_EN);
 	if (val & ACP_I2S_MIC_16BIT_RESOLUTION_EN) {
 		acp_reg_write(0x0, acp_mmio, ch_reg);
-		/* Set 16bit resolution on capture */
+		 
 		acp_reg_write(0x2, acp_mmio, res_reg);
 	}
 	val = acp_reg_read(acp_mmio, imr_reg);
@@ -410,22 +394,18 @@ static void acp_dma_cap_channel_disable(void __iomem *acp_mmio,
 	acp_reg_write(0x0, acp_mmio, ch_reg);
 }
 
-/* Start a given DMA channel transfer */
+ 
 static void acp_dma_start(void __iomem *acp_mmio, u16 ch_num, bool is_circular)
 {
 	u32 dma_ctrl;
 
-	/* read the dma control register and disable the channel run field */
+	 
 	dma_ctrl = acp_reg_read(acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 
-	/* Invalidating the DAGB cache */
+	 
 	acp_reg_write(1, acp_mmio, mmACP_DAGB_ATU_CTRL);
 
-	/*
-	 * configure the DMA channel and start the DMA transfer
-	 * set dmachrun bit to start the transfer and enable the
-	 * interrupt on completion of the dma transfer
-	 */
+	 
 	dma_ctrl |= ACP_DMA_CNTL_0__DMAChRun_MASK;
 
 	switch (ch_num) {
@@ -441,7 +421,7 @@ static void acp_dma_start(void __iomem *acp_mmio, u16 ch_num, bool is_circular)
 		break;
 	}
 
-	/* enable for ACP to SRAM DMA channel */
+	 
 	if (is_circular == true)
 		dma_ctrl |= ACP_DMA_CNTL_0__Circular_DMA_En_MASK;
 	else
@@ -450,7 +430,7 @@ static void acp_dma_start(void __iomem *acp_mmio, u16 ch_num, bool is_circular)
 	acp_reg_write(dma_ctrl, acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 }
 
-/* Stop a given DMA channel transfer */
+ 
 static int acp_dma_stop(void __iomem *acp_mmio, u8 ch_num)
 {
 	u32 dma_ctrl;
@@ -459,10 +439,7 @@ static int acp_dma_stop(void __iomem *acp_mmio, u8 ch_num)
 
 	dma_ctrl = acp_reg_read(acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 
-	/*
-	 * clear the dma control register fields before writing zero
-	 * in reset bit
-	 */
+	 
 	dma_ctrl &= ~ACP_DMA_CNTL_0__DMAChRun_MASK;
 	dma_ctrl &= ~ACP_DMA_CNTL_0__DMAChIOCEn_MASK;
 
@@ -470,22 +447,16 @@ static int acp_dma_stop(void __iomem *acp_mmio, u8 ch_num)
 	dma_ch_sts = acp_reg_read(acp_mmio, mmACP_DMA_CH_STS);
 
 	if (dma_ch_sts & BIT(ch_num)) {
-		/*
-		 * set the reset bit for this channel to stop the dma
-		 *  transfer
-		 */
+		 
 		dma_ctrl |= ACP_DMA_CNTL_0__DMAChRst_MASK;
 		acp_reg_write(dma_ctrl, acp_mmio, mmACP_DMA_CNTL_0 + ch_num);
 	}
 
-	/* check the channel status bit for some time and return the status */
+	 
 	while (true) {
 		dma_ch_sts = acp_reg_read(acp_mmio, mmACP_DMA_CH_STS);
 		if (!(dma_ch_sts & BIT(ch_num))) {
-			/*
-			 * clear the reset flag after successfully stopping
-			 * the dma transfer and break from the loop
-			 */
+			 
 			dma_ctrl &= ~ACP_DMA_CNTL_0__DMAChRst_MASK;
 
 			acp_reg_write(dma_ctrl, acp_mmio, mmACP_DMA_CNTL_0
@@ -521,20 +492,20 @@ static void acp_set_sram_bank_state(void __iomem *acp_mmio, u16 bank,
 
 	val = acp_reg_read(acp_mmio, req_reg);
 	if (val & (1 << bank)) {
-		/* bank is in off state */
+		 
 		if (power_on == true)
-			/* request to on */
+			 
 			val &= ~(1 << bank);
 		else
-			/* request to off */
+			 
 			return;
 	} else {
-		/* bank is in on state */
+		 
 		if (power_on == false)
-			/* request to off */
+			 
 			val |= 1 << bank;
 		else
-			/* request to on */
+			 
 			return;
 	}
 	acp_reg_write(val, acp_mmio, req_reg);
@@ -548,13 +519,13 @@ static void acp_set_sram_bank_state(void __iomem *acp_mmio, u16 bank,
 	}
 }
 
-/* Initialize and bring ACP hardware to default state. */
+ 
 static int acp_init(void __iomem *acp_mmio, u32 asic_type)
 {
 	u16 bank;
 	u32 val, count, sram_pte_offset;
 
-	/* Assert Soft reset of ACP */
+	 
 	val = acp_reg_read(acp_mmio, mmACP_SOFT_RESET);
 
 	val |= ACP_SOFT_RESET__SoftResetAud_MASK;
@@ -573,7 +544,7 @@ static int acp_init(void __iomem *acp_mmio, u32 asic_type)
 		udelay(100);
 	}
 
-	/* Enable clock to ACP and wait until the clock is enabled */
+	 
 	val = acp_reg_read(acp_mmio, mmACP_CONTROL);
 	val = val | ACP_CONTROL__ClkEn_MASK;
 	acp_reg_write(val, acp_mmio, mmACP_CONTROL);
@@ -591,23 +562,23 @@ static int acp_init(void __iomem *acp_mmio, u32 asic_type)
 		udelay(100);
 	}
 
-	/* Deassert the SOFT RESET flags */
+	 
 	val = acp_reg_read(acp_mmio, mmACP_SOFT_RESET);
 	val &= ~ACP_SOFT_RESET__SoftResetAud_MASK;
 	acp_reg_write(val, acp_mmio, mmACP_SOFT_RESET);
 
-	/* For BT instance change pins from UART to BT */
+	 
 	if (!acp_bt_uart_enable) {
 		val = acp_reg_read(acp_mmio, mmACP_BT_UART_PAD_SEL);
 		val |= ACP_BT_UART_PAD_SELECT_MASK;
 		acp_reg_write(val, acp_mmio, mmACP_BT_UART_PAD_SEL);
 	}
 
-	/* initialize Onion control DAGB register */
+	 
 	acp_reg_write(ACP_ONION_CNTL_DEFAULT, acp_mmio,
 		      mmACP_AXI2DAGB_ONION_CNTL);
 
-	/* initialize Garlic control DAGB registers */
+	 
 	acp_reg_write(ACP_GARLIC_CNTL_DEFAULT, acp_mmio,
 		      mmACP_AXI2DAGB_GARLIC_CNTL);
 
@@ -622,19 +593,12 @@ static int acp_init(void __iomem *acp_mmio, u32 asic_type)
 	acp_reg_write(ACP_SRAM_BASE_ADDRESS, acp_mmio,
 		      mmACP_DMA_DESC_BASE_ADDR);
 
-	/* Num of descriptors in SRAM 0x4, means 256 descriptors;(64 * 4) */
+	 
 	acp_reg_write(0x4, acp_mmio, mmACP_DMA_DESC_MAX_NUM_DSCR);
 	acp_reg_write(ACP_EXTERNAL_INTR_CNTL__DMAIOCMask_MASK,
 		      acp_mmio, mmACP_EXTERNAL_INTR_CNTL);
 
-       /*
-	* When ACP_TILE_P1 is turned on, all SRAM banks get turned on.
-	* Now, turn off all of them. This can't be done in 'poweron' of
-	* ACP pm domain, as this requires ACP to be initialized.
-	* For Stoney, Memory gating is disabled,i.e SRAM Banks
-	* won't be turned off. The default state for SRAM banks is ON.
-	* Setting SRAM bank state code skipped for STONEY platform.
-	*/
+        
 	if (asic_type != CHIP_STONEY) {
 		for (bank = 1; bank < 48; bank++)
 			acp_set_sram_bank_state(acp_mmio, bank, false);
@@ -642,13 +606,13 @@ static int acp_init(void __iomem *acp_mmio, u32 asic_type)
 	return 0;
 }
 
-/* Deinitialize ACP */
+ 
 static int acp_deinit(void __iomem *acp_mmio)
 {
 	u32 val;
 	u32 count;
 
-	/* Assert Soft reset of ACP */
+	 
 	val = acp_reg_read(acp_mmio, mmACP_SOFT_RESET);
 
 	val |= ACP_SOFT_RESET__SoftResetAud_MASK;
@@ -666,7 +630,7 @@ static int acp_deinit(void __iomem *acp_mmio)
 		}
 		udelay(100);
 	}
-	/* Disable ACP clock */
+	 
 	val = acp_reg_read(acp_mmio, mmACP_CONTROL);
 	val &= ~ACP_CONTROL__ClkEn_MASK;
 	acp_reg_write(val, acp_mmio, mmACP_CONTROL);
@@ -686,7 +650,7 @@ static int acp_deinit(void __iomem *acp_mmio)
 	return 0;
 }
 
-/* ACP DMA irq handler routine for playback, capture usecases */
+ 
 static irqreturn_t dma_irq_handler(int irq, void *arg)
 {
 	u16 dscr_idx;
@@ -808,23 +772,14 @@ static int acp_dma_open(struct snd_soc_component *component,
 	adata->acp_mmio = intr_data->acp_mmio;
 	runtime->private_data = adata;
 
-	/*
-	 * Enable ACP irq, when neither playback or capture streams are
-	 * active by the time when a new stream is being opened.
-	 * This enablement is not required for another stream, if current
-	 * stream is not closed
-	 */
+	 
 	if (!intr_data->play_i2ssp_stream && !intr_data->capture_i2ssp_stream &&
 	    !intr_data->play_i2sbt_stream && !intr_data->capture_i2sbt_stream &&
 	    !intr_data->play_i2s_micsp_stream)
 		acp_reg_write(1, adata->acp_mmio, mmACP_EXTERNAL_INTR_ENB);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		/*
-		 * For Stoney, Memory gating is disabled,i.e SRAM Banks
-		 * won't be turned off. The default state for SRAM banks is ON.
-		 * Setting SRAM bank state code skipped for STONEY platform.
-		 */
+		 
 		if (intr_data->asic_type != CHIP_STONEY) {
 			for (bank = 1; bank <= 4; bank++)
 				acp_set_sram_bank_state(intr_data->acp_mmio,
@@ -1003,11 +958,11 @@ static int acp_dma_hw_params(struct snd_soc_component *component,
 	size = params_buffer_bytes(params);
 
 	acp_set_sram_bank_state(rtd->acp_mmio, 0, true);
-	/* Save for runtime private data */
+	 
 	rtd->dma_addr = runtime->dma_addr;
 	rtd->order = get_order(size);
 
-	/* Fill the page table entries in ACP SRAM */
+	 
 	rtd->size = size;
 	rtd->num_of_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
 	rtd->direction = substream->stream;
@@ -1201,13 +1156,7 @@ static int acp_dma_close(struct snd_soc_component *component,
 		case I2S_SP_INSTANCE:
 		default:
 			adata->play_i2ssp_stream = NULL;
-			/*
-			 * For Stoney, Memory gating is disabled,i.e SRAM Banks
-			 * won't be turned off. The default state for SRAM banks
-			 * is ON.Setting SRAM bank state code skipped for STONEY
-			 * platform. Added condition checks for Carrizo platform
-			 * only.
-			 */
+			 
 			if (adata->asic_type != CHIP_STONEY) {
 				for (bank = 1; bank <= 4; bank++)
 					acp_set_sram_bank_state(adata->acp_mmio,
@@ -1231,10 +1180,7 @@ static int acp_dma_close(struct snd_soc_component *component,
 		}
 	}
 
-	/*
-	 * Disable ACP irq, when the current stream is being closed and
-	 * another stream is also not active.
-	 */
+	 
 	if (!adata->play_i2ssp_stream && !adata->capture_i2ssp_stream &&
 	    !adata->play_i2sbt_stream && !adata->capture_i2sbt_stream &&
 	    !adata->play_i2s_micsp_stream)
@@ -1275,11 +1221,7 @@ static int acp_audio_probe(struct platform_device *pdev)
 	if (IS_ERR(audio_drv_data->acp_mmio))
 		return PTR_ERR(audio_drv_data->acp_mmio);
 
-	/*
-	 * The following members gets populated in device 'open'
-	 * function. Till then interrupts are disabled in 'acp_init'
-	 * and device doesn't generate any interrupts.
-	 */
+	 
 
 	audio_drv_data->play_i2ssp_stream = NULL;
 	audio_drv_data->capture_i2ssp_stream = NULL;
@@ -1302,7 +1244,7 @@ static int acp_audio_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, audio_drv_data);
 
-	/* Initialize the ACP */
+	 
 	status = acp_init(audio_drv_data->acp_mmio, audio_drv_data->asic_type);
 	if (status) {
 		dev_err(&pdev->dev, "ACP Init failed status:%d\n", status);
@@ -1348,11 +1290,7 @@ static int acp_pcm_resume(struct device *dev)
 	}
 
 	if (adata->play_i2ssp_stream && adata->play_i2ssp_stream->runtime) {
-		/*
-		 * For Stoney, Memory gating is disabled,i.e SRAM Banks
-		 * won't be turned off. The default state for SRAM banks is ON.
-		 * Setting SRAM bank state code skipped for STONEY platform.
-		 */
+		 
 		if (adata->asic_type != CHIP_STONEY) {
 			for (bank = 1; bank <= 4; bank++)
 				acp_set_sram_bank_state(adata->acp_mmio, bank,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2017 QLogic Corporation
- */
+
+ 
 #include "qla_nvme.h"
 #include <linux/scatterlist.h>
 #include <linux/delay.h>
@@ -108,7 +105,7 @@ int qla_nvme_register_remote(struct scsi_qla_host *vha, struct fc_port *fcport)
 	return 0;
 }
 
-/* Allocate a queue for NVMe traffic */
+ 
 static int qla_nvme_alloc_queue(struct nvme_fc_local_port *lport,
     unsigned int qidx, u16 qsize, void **handle)
 {
@@ -116,7 +113,7 @@ static int qla_nvme_alloc_queue(struct nvme_fc_local_port *lport,
 	struct qla_hw_data *ha;
 	struct qla_qpair *qpair;
 
-	/* Map admin queue and 1st IO queue to index 0 */
+	 
 	if (qidx)
 		qidx--;
 
@@ -134,7 +131,7 @@ static int qla_nvme_alloc_queue(struct nvme_fc_local_port *lport,
 		return -EINVAL;
 	}
 
-	/* Use base qpair if max_qpairs is 0 */
+	 
 	if (!ha->max_qpairs) {
 		qpair = ha->base_qpair;
 	} else {
@@ -285,7 +282,7 @@ static void qla_nvme_sp_lsrsp_done(srb_t *sp, int res)
 	schedule_work(&uctx->lsrsp_work);
 }
 
-/* it assumed that QPair lock is held. */
+ 
 static void qla_nvme_sp_done(srb_t *sp, int res)
 {
 	struct nvme_private *priv = sp->priv;
@@ -322,10 +319,7 @@ static void qla_nvme_abort_work(struct work_struct *work)
 		goto out;
 	}
 
-	/*
-	 * sp may not be valid after abort_command if return code is either
-	 * SUCCESS or ERR_FROM_FW codes, so cache the value here.
-	 */
+	 
 	io_wait_for_abort_done = ql2xabts_wait_nvme &&
 					QLA_ABTS_WAIT_ENABLED(sp);
 	handle = sp->handle;
@@ -337,23 +331,16 @@ static void qla_nvme_abort_work(struct work_struct *work)
 	    __func__, (rval != QLA_SUCCESS) ? "Failed to abort" : "Aborted",
 	    sp, handle, fcport, rval);
 
-	/*
-	 * If async tmf is enabled, the abort callback is called only on
-	 * return codes QLA_SUCCESS and QLA_ERR_FROM_FW.
-	 */
+	 
 	if (ql2xasynctmfenable &&
 	    rval != QLA_SUCCESS && rval != QLA_ERR_FROM_FW)
 		abts_done_called = 0;
 
-	/*
-	 * Returned before decreasing kref so that I/O requests
-	 * are waited until ABTS complete. This kref is decreased
-	 * at qla24xx_abort_sp_done function.
-	 */
+	 
 	if (abts_done_called && io_wait_for_abort_done)
 		return;
 out:
-	/* kref_get was done before work was schedule. */
+	 
 	kref_put(&sp->cmd_kref, sp->put_fn);
 }
 
@@ -379,7 +366,7 @@ static int qla_nvme_xmt_ls_rsp(struct nvme_fc_local_port *lport,
 	if (!ha->flags.fw_started)
 		goto out;
 
-	/* Alloc SRB structure */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_ATOMIC);
 	if (!sp)
 		goto out;
@@ -486,7 +473,7 @@ static int qla_nvme_ls_req(struct nvme_fc_local_port *lport,
 	if (!ha->flags.fw_started)
 		return rval;
 
-	/* Alloc SRB structure */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_ATOMIC);
 	if (!sp)
 		return rval;
@@ -569,12 +556,12 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 	struct nvme_fc_cmd_iu *cmd = fd->cmdaddr;
 	uint32_t        rval = QLA_SUCCESS;
 
-	/* Setup qpair pointers */
+	 
 	req = qpair->req;
 	rsp = qpair->rsp;
 	tot_dsds = fd->sg_cnt;
 
-	/* Acquire qpair specific lock */
+	 
 	spin_lock_irqsave(&qpair->qp_lock, flags);
 
 	handle = qla2xxx_get_next_handle(req);
@@ -621,7 +608,7 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 		}
 	}
 
-	/* Build command packet. */
+	 
 	req->current_outstanding_cmd = handle;
 	req->outstanding_cmds[handle] = sp;
 	sp->handle = handle;
@@ -630,16 +617,16 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 	cmd_pkt = (struct cmd_nvme *)req->ring_ptr;
 	cmd_pkt->handle = make_handle(req->id, handle);
 
-	/* Zero out remaining portion of packet. */
+	 
 	clr_ptr = (uint32_t *)cmd_pkt + 2;
 	memset(clr_ptr, 0, REQUEST_ENTRY_SIZE - 8);
 
 	cmd_pkt->entry_status = 0;
 
-	/* Update entry type to indicate Command NVME IOCB */
+	 
 	cmd_pkt->entry_type = COMMAND_NVME;
 
-	/* No data transfer how do we check buffer len == 0?? */
+	 
 	if (fd->io_dir == NVMEFC_FCP_READ) {
 		cmd_pkt->control_flags = cpu_to_le16(CF_READ_DATA);
 		qpair->counters.input_bytes += fd->payload_length;
@@ -664,47 +651,44 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 	if (sp->fcport->edif.enable && fd->io_dir != 0)
 		cmd_pkt->control_flags |= cpu_to_le16(CF_EN_EDIF);
 
-	/* Set BIT_13 of control flags for Async event */
+	 
 	if (vha->flags.nvme2_enabled &&
 	    cmd->sqe.common.opcode == nvme_admin_async_event) {
 		cmd_pkt->control_flags |= cpu_to_le16(CF_ADMIN_ASYNC_EVENT);
 	}
 
-	/* Set NPORT-ID */
+	 
 	cmd_pkt->nport_handle = cpu_to_le16(sp->fcport->loop_id);
 	cmd_pkt->port_id[0] = sp->fcport->d_id.b.al_pa;
 	cmd_pkt->port_id[1] = sp->fcport->d_id.b.area;
 	cmd_pkt->port_id[2] = sp->fcport->d_id.b.domain;
 	cmd_pkt->vp_index = sp->fcport->vha->vp_idx;
 
-	/* NVME RSP IU */
+	 
 	cmd_pkt->nvme_rsp_dsd_len = cpu_to_le16(fd->rsplen);
 	put_unaligned_le64(fd->rspdma, &cmd_pkt->nvme_rsp_dseg_address);
 
-	/* NVME CNMD IU */
+	 
 	cmd_pkt->nvme_cmnd_dseg_len = cpu_to_le16(fd->cmdlen);
 	cmd_pkt->nvme_cmnd_dseg_address = cpu_to_le64(fd->cmddma);
 
 	cmd_pkt->dseg_count = cpu_to_le16(tot_dsds);
 	cmd_pkt->byte_count = cpu_to_le32(fd->payload_length);
 
-	/* One DSD is available in the Command Type NVME IOCB */
+	 
 	avail_dsds = 1;
 	cur_dsd = &cmd_pkt->nvme_dsd;
 	sgl = fd->first_sgl;
 
-	/* Load data segments */
+	 
 	for_each_sg(sgl, sg, tot_dsds, i) {
 		cont_a64_entry_t *cont_pkt;
 
-		/* Allocate additional continuation packets? */
+		 
 		if (avail_dsds == 0) {
-			/*
-			 * Five DSDs are available in the Continuation
-			 * Type 1 IOCB.
-			 */
+			 
 
-			/* Adjust ring index */
+			 
 			req->ring_index++;
 			if (req->ring_index == req->length) {
 				req->ring_index = 0;
@@ -724,11 +708,11 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 		avail_dsds--;
 	}
 
-	/* Set total entry count. */
+	 
 	cmd_pkt->entry_count = (uint8_t)req_cnt;
 	wmb();
 
-	/* Adjust ring index. */
+	 
 	req->ring_index++;
 	if (req->ring_index == req->length) {
 		req->ring_index = 0;
@@ -737,11 +721,11 @@ static inline int qla2x00_start_nvme_mq(srb_t *sp)
 		req->ring_ptr++;
 	}
 
-	/* ignore nvme async cmd due to long timeout */
+	 
 	if (!nvme->u.nvme.aen_op)
 		sp->qpair->cmd_cnt++;
 
-	/* Set chip new ring index. */
+	 
 	wrt_reg_dword(req->req_q_in, req->ring_index);
 
 	if (vha->flags.process_response_queue &&
@@ -756,7 +740,7 @@ queuing_error:
 	return rval;
 }
 
-/* Post a command */
+ 
 static int qla_nvme_post_cmd(struct nvme_fc_local_port *lport,
     struct nvme_fc_remote_port *rport, void *hw_queue_handle,
     struct nvmefc_fcp_req *fd)
@@ -772,7 +756,7 @@ static int qla_nvme_post_cmd(struct nvme_fc_local_port *lport,
 	struct qla_nvme_rport *qla_rport = rport->private;
 
 	if (!priv) {
-		/* nvme association has been torn down */
+		 
 		return -ENODEV;
 	}
 
@@ -790,19 +774,13 @@ static int qla_nvme_post_cmd(struct nvme_fc_local_port *lport,
 	if (test_bit(ABORT_ISP_ACTIVE, &vha->dpc_flags))
 		return -EBUSY;
 
-	/*
-	 * If we know the dev is going away while the transport is still sending
-	 * IO's return busy back to stall the IO Q.  This happens when the
-	 * link goes away and fw hasn't notified us yet, but IO's are being
-	 * returned. If the dev comes back quickly we won't exhaust the IO
-	 * retry count at the core.
-	 */
+	 
 	if (fcport->nvme_flag & NVME_FLAG_RESETTING)
 		return -EBUSY;
 
 	qpair = qla_mapq_nvme_select_qpair(ha, qpair);
 
-	/* Alloc SRB structure */
+	 
 	sp = qla2xxx_get_qpair_sp(vha, qpair, fcport, GFP_ATOMIC);
 	if (!sp)
 		return -EBUSY;
@@ -971,10 +949,7 @@ int qla_nvme_register_hba(struct scsi_qla_host *vha)
 	pinfo.port_id = vha->d_id.b24;
 
 	mutex_lock(&ha->vport_lock);
-	/*
-	 * Check again for nvme_local_port to see if any other thread raced
-	 * with this one and finished registration.
-	 */
+	 
 	if (!vha->nvme_local_port) {
 		ql_log(ql_log_info, vha, 0xffff,
 		    "register_localport: host-traddr=nn-0x%llx:pn-0x%llx on portID:%x\n",
@@ -1009,12 +984,12 @@ void qla_nvme_abort_set_option(struct abort_entry_24xx *abt, srb_t *orig_sp)
 	ha = orig_sp->fcport->vha->hw;
 
 	WARN_ON_ONCE(abt->options & cpu_to_le16(BIT_0));
-	/* Use Driver Specified Retry Count */
+	 
 	abt->options |= cpu_to_le16(AOF_ABTS_RTY_CNT);
 	abt->drv.abts_rty_cnt = cpu_to_le16(2);
-	/* Use specified response timeout */
+	 
 	abt->options |= cpu_to_le16(AOF_RSP_TIMEOUT);
-	/* set it to 2 * r_a_tov in secs */
+	 
 	abt->drv.rsp_timeout = cpu_to_le16(2 * (ha->r_a_tov / 10));
 }
 
@@ -1030,22 +1005,22 @@ void qla_nvme_abort_process_comp_status(struct abort_entry_24xx *abt, srb_t *ori
 
 	comp_status = le16_to_cpu(abt->comp_status);
 	switch (comp_status) {
-	case CS_RESET:		/* reset event aborted */
-	case CS_ABORTED:	/* IOCB was cleaned */
-	/* N_Port handle is not currently logged in */
+	case CS_RESET:		 
+	case CS_ABORTED:	 
+	 
 	case CS_TIMEOUT:
-	/* N_Port handle was logged out while waiting for ABTS to complete */
+	 
 	case CS_PORT_UNAVAILABLE:
-	/* Firmware found that the port name changed */
+	 
 	case CS_PORT_LOGGED_OUT:
-	/* BA_RJT was received for the ABTS */
+	 
 	case CS_PORT_CONFIG_CHG:
 		ql_dbg(ql_dbg_async, vha, 0xf09d,
 		       "Abort I/O IOCB completed with error, comp_status=%x\n",
 		comp_status);
 		break;
 
-	/* BA_RJT was received for the ABTS */
+	 
 	case CS_REJECT_RECEIVED:
 		ql_dbg(ql_dbg_async, vha, 0xf09e,
 		       "BA_RJT was received for the ABTS rjt_vendorUnique = %u",
@@ -1159,23 +1134,13 @@ qla_nvme_ls_reject_iocb(struct scsi_qla_host *vha, struct qla_qpair *qp,
 	}
 
 	qla_nvme_lsrjt_pt_iocb(vha, lsrjt_iocb, a);
-	/* flush iocb to mem before notifying hw doorbell */
+	 
 	wmb();
 	qla2x00_start_iocbs(vha, qp->req);
 	return 0;
 }
 
-/*
- * qla2xxx_process_purls_pkt() - Pass-up Unsolicited
- * Received FC-NVMe Link Service pkt to nvme_fc_rcv_ls_req().
- * LLDD need to provide memory for response buffer, which
- * will be used to reference the exchange corresponding
- * to the LS when issuing an ls response. LLDD will have to free
- * response buffer in lport->ops->xmt_ls_rsp().
- *
- * @vha: SCSI qla host
- * @item: ptr to purex_item
- */
+ 
 static void
 qla2xxx_process_purls_pkt(struct scsi_qla_host *vha, struct purex_item *item)
 {
@@ -1308,12 +1273,7 @@ void qla2xxx_process_purls_iocb(void **pkt, struct rsp_que **rsp)
 	       "PURLS OP[%01x] size %d xchg addr 0x%x portid %06x\n",
 	       item->iocb.iocb[3], item->size, uctx->exchange_address,
 	       fcport->d_id.b24);
-	/* +48    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
-	 * ----- -----------------------------------------------
-	 * 0000: 00 00 00 05 28 00 00 00 07 00 00 00 08 00 00 00
-	 * 0010: ab ec 0f cc 00 00 8d 7d 05 00 00 00 10 00 00 00
-	 * 0020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-	 */
+	 
 	ql_dump_buffer(ql_dbg_unsol + ql_dbg_verbose, vha, 0x2120,
 		       &item->iocb, item->size);
 

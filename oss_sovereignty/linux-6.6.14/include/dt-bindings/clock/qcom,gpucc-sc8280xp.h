@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H
 #define _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H
 
-/* GPU_CC clocks */
+ 
 #define GPU_CC_PLL0						0
 #define GPU_CC_PLL1						1
 #define GPU_CC_AHB_CLK						2
@@ -28,7 +26,7 @@
 #define GPU_CC_SLEEP_CLK					18
 #define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK				19
 
-/* GPU_CC power domains */
+ 
 #define GPU_CC_CX_GDSC				0
 #define GPU_CC_GX_GDSC				1
 

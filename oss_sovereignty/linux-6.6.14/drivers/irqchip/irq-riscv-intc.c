@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012 Regents of the University of California
- * Copyright (C) 2017-2018 SiFive
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- */
+
+ 
 
 #define pr_fmt(fmt) "riscv-intc: " fmt
 #include <linux/acpi.h>
@@ -30,12 +26,7 @@ static asmlinkage void riscv_intc_irq(struct pt_regs *regs)
 	generic_handle_domain_irq(intc_domain, cause);
 }
 
-/*
- * On RISC-V systems local interrupts are masked or unmasked by writing
- * the SIE (Supervisor Interrupt Enable) CSR.  As CSRs can only be written
- * on the local hart, these functions can only be called on the hart that
- * corresponds to the IRQ chip.
- */
+ 
 
 static void riscv_intc_irq_mask(struct irq_data *d)
 {
@@ -49,18 +40,7 @@ static void riscv_intc_irq_unmask(struct irq_data *d)
 
 static void riscv_intc_irq_eoi(struct irq_data *d)
 {
-	/*
-	 * The RISC-V INTC driver uses handle_percpu_devid_irq() flow
-	 * for the per-HART local interrupts and child irqchip drivers
-	 * (such as PLIC, SBI IPI, CLINT, APLIC, IMSIC, etc) implement
-	 * chained handlers for the per-HART local interrupts.
-	 *
-	 * In the absence of irq_eoi(), the chained_irq_enter() and
-	 * chained_irq_exit() functions (used by child irqchip drivers)
-	 * will do unnecessary mask/unmask of per-HART local interrupts
-	 * at the time of handling interrupts. To avoid this, we provide
-	 * an empty irq_eoi() callback for RISC-V INTC irqchip.
-	 */
+	 
 }
 
 static struct irq_chip riscv_intc_chip = {
@@ -149,19 +129,9 @@ static int __init riscv_intc_init(struct device_node *node,
 		return 0;
 	}
 
-	/*
-	 * The DT will have one INTC DT node under each CPU (or HART)
-	 * DT node so riscv_intc_init() function will be called once
-	 * for each INTC DT node. We only need to do INTC initialization
-	 * for the INTC DT node belonging to boot CPU (or boot HART).
-	 */
+	 
 	if (riscv_hartid_to_cpuid(hartid) != smp_processor_id()) {
-		/*
-		 * The INTC nodes of each CPU are suppliers for downstream
-		 * interrupt controllers (such as PLIC, IMSIC and APLIC
-		 * direct-mode) so we should mark an INTC node as initialized
-		 * if we are not creating IRQ domain for it.
-		 */
+		 
 		fwnode_dev_initialized(of_fwnode_handle(node), true);
 		return 0;
 	}
@@ -181,12 +151,7 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
 
 	rintc = (struct acpi_madt_rintc *)header;
 
-	/*
-	 * The ACPI MADT will have one INTC for each CPU (or HART)
-	 * so riscv_intc_acpi_init() function will be called once
-	 * for each INTC. We only do INTC initialization
-	 * for the INTC belonging to the boot CPU (or boot HART).
-	 */
+	 
 	if (riscv_hartid_to_cpuid(rintc->hart_id) != smp_processor_id())
 		return 0;
 

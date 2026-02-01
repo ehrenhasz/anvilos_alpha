@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -33,36 +31,31 @@ struct kingdisplay_panel_cmd {
 	char data;
 };
 
-/*
- * According to the discussion on
- * https://review.coreboot.org/#/c/coreboot/+/22472/
- * the panel init array is not part of the panels datasheet but instead
- * just came in this form from the panel vendor.
- */
+ 
 static const struct kingdisplay_panel_cmd init_code[] = {
-	/* voltage setting */
+	 
 	{ 0xB0, 0x00 },
 	{ 0xB2, 0x02 },
 	{ 0xB3, 0x11 },
 	{ 0xB4, 0x00 },
 	{ 0xB6, 0x80 },
-	/* VCOM disable */
+	 
 	{ 0xB7, 0x02 },
 	{ 0xB8, 0x80 },
 	{ 0xBA, 0x43 },
-	/* VCOM setting */
+	 
 	{ 0xBB, 0x53 },
-	/* VSP setting */
+	 
 	{ 0xBC, 0x0A },
-	/* VSN setting */
+	 
 	{ 0xBD, 0x4A },
-	/* VGH setting */
+	 
 	{ 0xBE, 0x2F },
-	/* VGL setting */
+	 
 	{ 0xBF, 0x1A },
 	{ 0xF0, 0x39 },
 	{ 0xF1, 0x22 },
-	/* Gamma setting */
+	 
 	{ 0xB0, 0x02 },
 	{ 0xC0, 0x00 },
 	{ 0xC1, 0x01 },
@@ -108,7 +101,7 @@ static const struct kingdisplay_panel_cmd init_code[] = {
 	{ 0xE9, 0x30 },
 	{ 0xEA, 0x19 },
 	{ 0xEB, 0x1F },
-	/* GOA MUX setting */
+	 
 	{ 0xB0, 0x01 },
 	{ 0xC0, 0x10 },
 	{ 0xC1, 0x0F },
@@ -146,7 +139,7 @@ static const struct kingdisplay_panel_cmd init_code[] = {
 	{ 0xE6, 0x04 },
 	{ 0xE7, 0x00 },
 	{ 0xEC, 0xC0 },
-	/* GOA timing setting */
+	 
 	{ 0xB0, 0x03 },
 	{ 0xC0, 0x01 },
 	{ 0xC2, 0x6F },
@@ -167,7 +160,7 @@ static const struct kingdisplay_panel_cmd init_code[] = {
 	{ 0xDE, 0x36 },
 	{ 0xE6, 0x6F },
 	{ 0xE7, 0x6F },
-	/* GOE setting */
+	 
 	{ 0xB0, 0x06 },
 	{ 0xB8, 0xA5 },
 	{ 0xC0, 0xA5 },
@@ -211,7 +204,7 @@ static int kingdisplay_panel_unprepare(struct drm_panel *panel)
 		return err;
 	}
 
-	/* T15: 120ms */
+	 
 	msleep(120);
 
 	gpiod_set_value_cansleep(kingdisplay->enable_gpio, 0);
@@ -240,12 +233,12 @@ static int kingdisplay_panel_prepare(struct drm_panel *panel)
 	if (err < 0)
 		return err;
 
-	/* T2: 15ms */
+	 
 	usleep_range(15000, 16000);
 
 	gpiod_set_value_cansleep(kingdisplay->enable_gpio, 1);
 
-	/* T4: 15ms */
+	 
 	usleep_range(15000, 16000);
 
 	for (i = 0; i < ARRAY_SIZE(init_code); i++) {
@@ -263,7 +256,7 @@ static int kingdisplay_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T6: 120ms */
+	 
 	msleep(120);
 
 	err = mipi_dsi_dcs_set_display_on(kingdisplay->link);
@@ -272,7 +265,7 @@ static int kingdisplay_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T7: 10ms */
+	 
 	usleep_range(10000, 11000);
 
 	kingdisplay->prepared = true;

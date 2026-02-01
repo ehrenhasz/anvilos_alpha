@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -80,9 +74,7 @@ static const int fw_versions[] = {
 	UTIL_WS2K8_FW_VERSION
 };
 
-/*
- * Send the "hibernate" udev event in a thread context.
- */
+ 
 struct hibernate_work_context {
 	struct work_struct work;
 	struct hv_device *dev;
@@ -172,14 +164,10 @@ static void perform_restart(struct work_struct *dummy)
 	orderly_reboot();
 }
 
-/*
- * Perform the shutdown operation in a thread context.
- */
+ 
 static DECLARE_WORK(shutdown_work, perform_shutdown);
 
-/*
- * Perform the restart operation in a thread context.
- */
+ 
 static DECLARE_WORK(restart_work, perform_restart);
 
 static void shutdown_onchannelcallback(void *context)
@@ -202,7 +190,7 @@ static void shutdown_onchannelcallback(void *context)
 	if (!recvlen)
 		return;
 
-	/* Ensure recvlen is big enough to read header data */
+	 
 	if (recvlen < ICMSG_HDR) {
 		pr_err_ratelimited("Shutdown request received. Packet length too small: %d\n",
 				   recvlen);
@@ -222,7 +210,7 @@ static void shutdown_onchannelcallback(void *context)
 				sd_srv_version & 0xFFFF);
 		}
 	} else if (icmsghdrp->icmsgtype == ICMSGTYPE_SHUTDOWN) {
-		/* Ensure recvlen is big enough to contain shutdown_msg_data struct */
+		 
 		if (recvlen < ICMSG_HDR + sizeof(struct shutdown_msg_data)) {
 			pr_err_ratelimited("Invalid shutdown msg data. Packet length too small: %u\n",
 					   recvlen);
@@ -231,12 +219,7 @@ static void shutdown_onchannelcallback(void *context)
 
 		shutdown_msg = (struct shutdown_msg_data *)&shut_txf_buf[ICMSG_HDR];
 
-		/*
-		 * shutdown_msg->flags can be 0(shut down), 2(reboot),
-		 * or 4(hibernate). It may bitwise-OR 1, which means
-		 * performing the request by force. Linux always tries
-		 * to perform the request by force.
-		 */
+		 
 		switch (shutdown_msg->flags) {
 		case 0:
 		case 1:
@@ -280,16 +263,10 @@ static void shutdown_onchannelcallback(void *context)
 		schedule_work(work);
 }
 
-/*
- * Set the host time in a process context.
- */
+ 
 static struct work_struct adj_time_work;
 
-/*
- * The last time sample, received from the host. PTP device responds to
- * requests by using this data and the current partition-wide time reference
- * count.
- */
+ 
 static struct {
 	u64				host_time;
 	u64				ref_time;
@@ -301,9 +278,7 @@ static inline u64 reftime_to_ns(u64 reftime)
 	return (reftime - WLTIMEDELTA) * 100;
 }
 
-/*
- * Hard coded threshold for host timesync delay: 600 seconds
- */
+ 
 static const u64 HOST_TIMESYNC_DELAY_THRESH = 600 * (u64)NSEC_PER_SEC;
 
 static int hv_get_adj_host_time(struct timespec64 *ts)
@@ -315,12 +290,7 @@ static int hv_get_adj_host_time(struct timespec64 *ts)
 	spin_lock_irqsave(&host_ts.lock, flags);
 	reftime = hv_read_reference_counter();
 
-	/*
-	 * We need to let the caller know that last update from host
-	 * is older than the max allowable threshold. clock_gettime()
-	 * and PTP ioctl do not have a documented error that we could
-	 * return for this specific case. Use ESTALE to report this.
-	 */
+	 
 	timediff_adj = reftime - host_ts.ref_time;
 	if (timediff_adj * 100 > HOST_TIMESYNC_DELAY_THRESH) {
 		pr_warn_once("TIMESYNC IC: Stale time stamp, %llu nsecs old\n",
@@ -344,53 +314,30 @@ static void hv_set_host_time(struct work_struct *work)
 		do_settimeofday64(&ts);
 }
 
-/*
- * Synchronize time with host after reboot, restore, etc.
- *
- * ICTIMESYNCFLAG_SYNC flag bit indicates reboot, restore events of the VM.
- * After reboot the flag ICTIMESYNCFLAG_SYNC is included in the first time
- * message after the timesync channel is opened. Since the hv_utils module is
- * loaded after hv_vmbus, the first message is usually missed. This bit is
- * considered a hard request to discipline the clock.
- *
- * ICTIMESYNCFLAG_SAMPLE bit indicates a time sample from host. This is
- * typically used as a hint to the guest. The guest is under no obligation
- * to discipline the clock.
- */
+ 
 static inline void adj_guesttime(u64 hosttime, u64 reftime, u8 adj_flags)
 {
 	unsigned long flags;
 	u64 cur_reftime;
 
-	/*
-	 * Save the adjusted time sample from the host and the snapshot
-	 * of the current system time.
-	 */
+	 
 	spin_lock_irqsave(&host_ts.lock, flags);
 
 	cur_reftime = hv_read_reference_counter();
 	host_ts.host_time = hosttime;
 	host_ts.ref_time = cur_reftime;
 
-	/*
-	 * TimeSync v4 messages contain reference time (guest's Hyper-V
-	 * clocksource read when the time sample was generated), we can
-	 * improve the precision by adding the delta between now and the
-	 * time of generation. For older protocols we set
-	 * reftime == cur_reftime on call.
-	 */
+	 
 	host_ts.host_time += (cur_reftime - reftime);
 
 	spin_unlock_irqrestore(&host_ts.lock, flags);
 
-	/* Schedule work to do do_settimeofday64() */
+	 
 	if (adj_flags & ICTIMESYNCFLAG_SYNC)
 		schedule_work(&adj_time_work);
 }
 
-/*
- * Time Sync Channel message handler.
- */
+ 
 static void timesync_onchannelcallback(void *context)
 {
 	struct vmbus_channel *channel = context;
@@ -401,10 +348,7 @@ static void timesync_onchannelcallback(void *context)
 	struct ictimesync_ref_data *refdata;
 	u8 *time_txf_buf = util_timesynch.recv_buffer;
 
-	/*
-	 * Drain the ring buffer and use the last packet to update
-	 * host_ts
-	 */
+	 
 	while (1) {
 		int ret = vmbus_recvpacket(channel, time_txf_buf,
 					   HV_HYP_PAGE_SIZE, &recvlen,
@@ -418,7 +362,7 @@ static void timesync_onchannelcallback(void *context)
 		if (!recvlen)
 			break;
 
-		/* Ensure recvlen is big enough to read header data */
+		 
 		if (recvlen < ICMSG_HDR) {
 			pr_err_ratelimited("Timesync request received. Packet length too small: %d\n",
 					   recvlen);
@@ -440,7 +384,7 @@ static void timesync_onchannelcallback(void *context)
 			}
 		} else if (icmsghdrp->icmsgtype == ICMSGTYPE_TIMESYNC) {
 			if (ts_srv_version > TS_VERSION_3) {
-				/* Ensure recvlen is big enough to read ictimesync_ref_data */
+				 
 				if (recvlen < ICMSG_HDR + sizeof(struct ictimesync_ref_data)) {
 					pr_err_ratelimited("Invalid ictimesync ref data. Length too small: %u\n",
 							   recvlen);
@@ -452,7 +396,7 @@ static void timesync_onchannelcallback(void *context)
 						refdata->vmreferencetime,
 						refdata->flags);
 			} else {
-				/* Ensure recvlen is big enough to read ictimesync_data */
+				 
 				if (recvlen < ICMSG_HDR + sizeof(struct ictimesync_data)) {
 					pr_err_ratelimited("Invalid ictimesync data. Length too small: %u\n",
 							   recvlen);
@@ -479,11 +423,7 @@ static void timesync_onchannelcallback(void *context)
 	}
 }
 
-/*
- * Heartbeat functionality.
- * Every two seconds, Hyper-V send us a heartbeat request message.
- * we respond to this message, and Hyper-V knows we are alive.
- */
+ 
 static void heartbeat_onchannelcallback(void *context)
 {
 	struct vmbus_channel *channel = context;
@@ -504,7 +444,7 @@ static void heartbeat_onchannelcallback(void *context)
 		if (!recvlen)
 			break;
 
-		/* Ensure recvlen is big enough to read header data */
+		 
 		if (recvlen < ICMSG_HDR) {
 			pr_err_ratelimited("Heartbeat request received. Packet length too small: %d\n",
 					   recvlen);
@@ -526,10 +466,7 @@ static void heartbeat_onchannelcallback(void *context)
 					hb_srv_version & 0xFFFF);
 			}
 		} else if (icmsghdrp->icmsgtype == ICMSGTYPE_HEARTBEAT) {
-			/*
-			 * Ensure recvlen is big enough to read seq_num. Reserved area is not
-			 * included in the check as the host may not fill it up entirely
-			 */
+			 
 			if (recvlen < ICMSG_HDR + sizeof(u64)) {
 				pr_err_ratelimited("Invalid heartbeat msg data. Length too small: %u\n",
 						   recvlen);
@@ -575,13 +512,7 @@ static int util_probe(struct hv_device *dev,
 		}
 	}
 
-	/*
-	 * The set of services managed by the util driver are not performance
-	 * critical and do not need batched reading. Furthermore, some services
-	 * such as KVP can only handle one message from the host at a time.
-	 * Turn off batched reading for all util drivers before we open the
-	 * channel.
-	 */
+	 
 	set_channel_read_mode(dev->channel, HV_CALL_DIRECT);
 
 	hv_set_drvdata(dev, srv);
@@ -612,11 +543,7 @@ static void util_remove(struct hv_device *dev)
 	kfree(srv->recv_buffer);
 }
 
-/*
- * When we're in util_suspend(), all the userspace processes have been frozen
- * (refer to hibernate() -> freeze_processes()). The userspace is thawed only
- * after the whole resume procedure, including util_resume(), finishes.
- */
+ 
 static int util_suspend(struct hv_device *dev)
 {
 	struct hv_util_service *srv = hv_get_drvdata(dev);
@@ -651,27 +578,27 @@ static int util_resume(struct hv_device *dev)
 }
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Shutdown guid */
+	 
 	{ HV_SHUTDOWN_GUID,
 	  .driver_data = (unsigned long)&util_shutdown
 	},
-	/* Time synch guid */
+	 
 	{ HV_TS_GUID,
 	  .driver_data = (unsigned long)&util_timesynch
 	},
-	/* Heartbeat guid */
+	 
 	{ HV_HEART_BEAT_GUID,
 	  .driver_data = (unsigned long)&util_heartbeat
 	},
-	/* KVP guid */
+	 
 	{ HV_KVP_GUID,
 	  .driver_data = (unsigned long)&util_kvp
 	},
-	/* VSS GUID */
+	 
 	{ HV_VSS_GUID,
 	  .driver_data = (unsigned long)&util_vss
 	},
-	/* File copy GUID */
+	 
 	{ HV_FCOPY_GUID,
 	  .driver_data = (unsigned long)&util_fcopy
 	},
@@ -680,7 +607,7 @@ static const struct hv_vmbus_device_id id_table[] = {
 
 MODULE_DEVICE_TABLE(vmbus, id_table);
 
-/* The one and only one */
+ 
 static  struct hv_driver util_drv = {
 	.name = "hv_utils",
 	.id_table = id_table,
@@ -736,11 +663,7 @@ static int hv_timesync_init(struct hv_util_service *srv)
 
 	INIT_WORK(&adj_time_work, hv_set_host_time);
 
-	/*
-	 * ptp_clock_register() returns NULL when CONFIG_PTP_1588_CLOCK is
-	 * disabled but the driver is still useful without the PTP device
-	 * as it still handles the ICTIMESYNCFLAG_SYNC case.
-	 */
+	 
 	hv_ptp_clock = ptp_clock_register(&ptp_hyperv_info, NULL);
 	if (IS_ERR_OR_NULL(hv_ptp_clock)) {
 		pr_err("cannot register PTP clock: %d\n",

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_file.c
- *
- * This file contains the Storage Engine <-> FILEIO transport specific functions
- *
- * (c) Copyright 2005-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/string.h>
 #include <linux/parser.h>
@@ -95,9 +86,9 @@ static bool fd_configure_unmap(struct se_device *dev)
 		return target_configure_unmap_from_queue(&dev->dev_attrib,
 							 I_BDEV(inode));
 
-	/* Limit UNMAP emulation to 8k Number of LBAs (NoLB) */
+	 
 	dev->dev_attrib.max_unmap_lba_count = 0x2000;
-	/* Currently hardcoded to 1 in Linux/SCSI code. */
+	 
 	dev->dev_attrib.max_unmap_block_desc_count = 1;
 	dev->dev_attrib.unmap_granularity = 1;
 	dev->dev_attrib.unmap_granularity_alignment = 0;
@@ -117,21 +108,10 @@ static int fd_configure_device(struct se_device *dev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Use O_DSYNC by default instead of O_SYNC to forgo syncing
-	 * of pure timestamp updates.
-	 */
+	 
 	flags = O_RDWR | O_CREAT | O_LARGEFILE | O_DSYNC;
 
-	/*
-	 * Optionally allow fd_buffered_io=1 to be enabled for people
-	 * who want use the fs buffer cache as an WriteCache mechanism.
-	 *
-	 * This means that in event of a hard failure, there is a risk
-	 * of silent data-loss if the SCSI client has *not* performed a
-	 * forced unit access (FUA) write, or issued SYNCHRONIZE_CACHE
-	 * to write-out the entire device cache.
-	 */
+	 
 	if (fd_dev->fbd_flags & FDBD_HAS_BUFFERED_IO_WCE) {
 		pr_debug("FILEIO: Disabling O_DSYNC, using buffered FILEIO\n");
 		flags &= ~O_DSYNC;
@@ -144,22 +124,14 @@ static int fd_configure_device(struct se_device *dev)
 		goto fail;
 	}
 	fd_dev->fd_file = file;
-	/*
-	 * If using a block backend with this struct file, we extract
-	 * fd_dev->fd_[block,dev]_size from struct block_device.
-	 *
-	 * Otherwise, we use the passed fd_size= from configfs
-	 */
+	 
 	inode = file->f_mapping->host;
 	if (S_ISBLK(inode->i_mode)) {
 		struct block_device *bdev = I_BDEV(inode);
 		unsigned long long dev_size;
 
 		fd_dev->fd_block_size = bdev_logical_block_size(bdev);
-		/*
-		 * Determine the number of bytes from i_size_read() minus
-		 * one (1) logical sector from underlying struct block_device
-		 */
+		 
 		dev_size = (i_size_read(file->f_mapping->host) -
 				       fd_dev->fd_block_size);
 
@@ -167,10 +139,7 @@ static int fd_configure_device(struct se_device *dev)
 			" block_device blocks: %llu logical_block_size: %d\n",
 			dev_size, div_u64(dev_size, fd_dev->fd_block_size),
 			fd_dev->fd_block_size);
-		/*
-		 * Enable write same emulation for IBLOCK and use 0xFFFF as
-		 * the smaller WRITE_SAME(10) only has a two-byte block count.
-		 */
+		 
 		dev->dev_attrib.max_write_same_len = 0xFFFF;
 
 		if (bdev_nonrot(bdev))
@@ -185,10 +154,7 @@ static int fd_configure_device(struct se_device *dev)
 
 		fd_dev->fd_block_size = FD_BLOCKSIZE;
 
-		/*
-		 * Limit WRITE_SAME w/ UNMAP=0 emulation to 8k Number of LBAs (NoLB)
-		 * based upon struct iovec limit for vfs_writev()
-		 */
+		 
 		dev->dev_attrib.max_write_same_len = 0x1000;
 	}
 
@@ -346,11 +312,7 @@ static int fd_do_rw(struct se_cmd *cmd, struct file *fd,
 				ret = -EINVAL;
 		}
 	} else {
-		/*
-		 * Return zeros and GOOD status even if the READ did not return
-		 * the expected virt_size for struct file w/o a backing struct
-		 * block_device.
-		 */
+		 
 		if (S_ISBLK(file_inode(fd)->i_mode)) {
 			if (ret < 0 || ret != data_length) {
 				pr_err("%s() returned %d, expecting %u for "
@@ -364,12 +326,7 @@ static int fd_do_rw(struct se_cmd *cmd, struct file *fd,
 				pr_err("%s() returned %d for non S_ISBLK\n",
 						__func__, ret);
 			} else if (ret != data_length) {
-				/*
-				 * Short read case:
-				 * Probably some one truncate file under us.
-				 * We must explicitly zero sg-pages to prevent
-				 * expose uninizialized pages to userspace.
-				 */
+				 
 				if (ret < data_length)
 					ret += iov_iter_zero(data_length - ret, &iter);
 				else
@@ -390,16 +347,11 @@ fd_execute_sync_cache(struct se_cmd *cmd)
 	loff_t start, end;
 	int ret;
 
-	/*
-	 * If the Immediate bit is set, queue up the GOOD response
-	 * for this SYNCHRONIZE_CACHE op
-	 */
+	 
 	if (immed)
 		target_complete_cmd(cmd, SAM_STAT_GOOD);
 
-	/*
-	 * Determine if we will be flushing the entire device.
-	 */
+	 
 	if (cmd->t_task_lba == 0 && cmd->data_length == 0) {
 		start = 0;
 		end = LLONG_MAX;
@@ -551,7 +503,7 @@ fd_execute_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
 	}
 
 	if (S_ISBLK(inode->i_mode)) {
-		/* The backend is block device, use discard */
+		 
 		struct block_device *bdev = I_BDEV(inode);
 		struct se_device *dev = cmd->se_dev;
 
@@ -565,7 +517,7 @@ fd_execute_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
 			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 		}
 	} else {
-		/* The backend is normal file, use fallocate */
+		 
 		struct se_device *se_dev = cmd->se_dev;
 		loff_t pos = lba * se_dev->dev_attrib.block_size;
 		unsigned int len = nolb * se_dev->dev_attrib.block_size;
@@ -594,10 +546,7 @@ fd_execute_rw_buffered(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nent
 	struct file *pfile = fd_dev->fd_prot_file;
 	sense_reason_t rc;
 	int ret = 0;
-	/*
-	 * Call vectorized fileio functions to map struct scatterlist
-	 * physical memory addresses to struct iovec virtual memory.
-	 */
+	 
 	if (data_direction == DMA_FROM_DEVICE) {
 		if (cmd->prot_type && dev->dev_attrib.pi_prot_type) {
 			ret = fd_do_rw(cmd, pfile, dev->prot_length,
@@ -634,11 +583,7 @@ fd_execute_rw_buffered(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nent
 
 		ret = fd_do_rw(cmd, file, dev->dev_attrib.block_size,
 			       sgl, sgl_nents, cmd->data_length, 1);
-		/*
-		 * Perform implicit vfs_fsync_range() for fd_do_writev() ops
-		 * for SCSI WRITEs with Forced Unit Access (FUA) set.
-		 * Allow this to happen independent of WCE=0 setting.
-		 */
+		 
 		if (ret > 0 && (cmd->se_cmd_flags & SCF_FUA)) {
 			loff_t start = cmd->t_task_lba *
 				dev->dev_attrib.block_size;
@@ -675,10 +620,7 @@ fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 	struct se_device *dev = cmd->se_dev;
 	struct fd_dev *fd_dev = FD_DEV(dev);
 
-	/*
-	 * We are currently limited by the number of iovecs (2048) per
-	 * single vfs_[writev,readv] call.
-	 */
+	 
 	if (cmd->data_length > FD_MAX_BYTES) {
 		pr_err("FILEIO: Not able to process I/O of %u bytes due to"
 		       "FD_MAX_BYTES: %u iovec count limitation\n",
@@ -811,11 +753,7 @@ static sector_t fd_get_blocks(struct se_device *dev)
 	struct file *f = fd_dev->fd_file;
 	struct inode *i = f->f_mapping->host;
 	unsigned long long dev_size;
-	/*
-	 * When using a file that references an underlying struct block_device,
-	 * ensure dev_size is always based on the current inode size in order
-	 * to handle underlying block_device resize operations.
-	 */
+	 
 	if (S_ISBLK(i->i_mode))
 		dev_size = i_size_read(i);
 	else

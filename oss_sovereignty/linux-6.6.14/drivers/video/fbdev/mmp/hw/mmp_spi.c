@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/video/mmp/hw/mmp_spi.c
- * using the spi in LCD controler for commands send
- *
- * Copyright (C) 2012 Marvell Technology Group Ltd.
- * Authors:  Guoqing Li <ligq@marvell.com>
- *          Lisa Du <cldu@marvell.com>
- *          Zhou Zhu <zzhu3@marvell.com>
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -15,18 +7,7 @@
 #include <linux/spi/spi.h>
 #include "mmp_ctrl.h"
 
-/**
- * spi_write - write command to the SPI port
- * @spi:  the SPI device.
- * @data: can be 8/16/32-bit, MSB justified data to write.
- *
- * Wait bus transfer complete IRQ.
- * The caller is expected to perform the necessary locking.
- *
- * Returns:
- *   %-ETIMEDOUT	timeout occurred
- *   0			success
- */
+ 
 static inline int lcd_spi_write(struct spi_device *spi, u32 data)
 {
 	int timeout = 100000, isr, ret = 0;
@@ -34,7 +15,7 @@ static inline int lcd_spi_write(struct spi_device *spi, u32 data)
 	void __iomem *reg_base = (void __iomem *)
 		*(void **)spi_master_get_devdata(spi->master);
 
-	/* clear ISR */
+	 
 	writel_relaxed(~SPI_IRQ_MASK, reg_base + SPU_IRQ_ISR);
 
 	switch (spi->bits_per_word) {
@@ -51,7 +32,7 @@ static inline int lcd_spi_write(struct spi_device *spi, u32 data)
 		dev_err(&spi->dev, "Wrong spi bit length\n");
 	}
 
-	/* SPI start to send command */
+	 
 	tmp = readl_relaxed(reg_base + LCD_SPU_SPI_CTRL);
 	tmp &= ~CFG_SPI_START_MASK;
 	tmp |= CFG_SPI_START(1);
@@ -90,11 +71,7 @@ static int lcd_spi_setup(struct spi_device *spi)
 		CFG_SPI_3W4WB(1);
 	writel(tmp, reg_base + LCD_SPU_SPI_CTRL);
 
-	/*
-	 * After set mode it need a time to pull up the spi singals,
-	 * or it would cause the wrong waveform when send spi command,
-	 * especially on pxa910h
-	 */
+	 
 	tmp = readl_relaxed(reg_base + SPU_IOPAD_CONTROL);
 	if ((tmp & CFG_IOPADMODE_MASK) != IOPAD_DUMB18SPI)
 		writel_relaxed(IOPAD_DUMB18SPI |
@@ -148,7 +125,7 @@ int lcd_spi_register(struct mmphw_ctrl *ctrl)
 	p_regbase = spi_master_get_devdata(master);
 	*p_regbase = (void __force *)ctrl->reg_base;
 
-	/* set bus num to 5 to avoid conflict with other spi hosts */
+	 
 	master->bus_num = 5;
 	master->num_chipselect = 1;
 	master->setup = lcd_spi_setup;

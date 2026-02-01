@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2020-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	infocmp.c -- decompile an entry, or compare two entries
- *		written by Eric S. Raymond
- *		and Thomas E Dickey
- */
+ 
 
 #include <progs.priv.h>
 
@@ -45,44 +10,39 @@
 
 MODULE_ID("$Id: infocmp.c,v 1.156 2022/09/24 10:13:06 tom Exp $")
 
-#define MAX_STRING	1024	/* maximum formatted string */
+#define MAX_STRING	1024	 
 
 const char *_nc_progname = "infocmp";
 
 typedef char path[PATH_MAX];
 
-/***************************************************************************
- *
- * The following control variables, together with the contents of the
- * terminfo entries, completely determine the actions of the program.
- *
- ***************************************************************************/
+ 
 
-static ENTRY *entries;		/* terminfo entries */
-static int termcount;		/* count of terminal entries */
+static ENTRY *entries;		 
+static int termcount;		 
 
-static bool limited = TRUE;	/* "-r" option is not set */
+static bool limited = TRUE;	 
 static bool quiet = FALSE;
 static bool literal = FALSE;
 static const char *bool_sep = ":";
 static const char *s_absent = "NULL";
 static const char *s_cancel = "NULL";
-static const char *tversion;	/* terminfo version selected */
-static unsigned itrace;		/* trace flag for debugging */
+static const char *tversion;	 
+static unsigned itrace;		 
 static int mwidth = 60;
 static int mheight = 65535;
-static int numbers = 0;		/* format "%'char'" to/from "%{number}" */
-static int outform = F_TERMINFO;	/* output format */
-static int sortmode;		/* sort_mode */
+static int numbers = 0;		 
+static int outform = F_TERMINFO;	 
+static int sortmode;		 
 
-/* main comparison mode */
+ 
 static int compare;
-#define C_DEFAULT	0	/* don't force comparison mode */
-#define C_DIFFERENCE	1	/* list differences between two terminals */
-#define C_COMMON	2	/* list common capabilities */
-#define C_NAND		3	/* list capabilities in neither terminal */
-#define C_USEALL	4	/* generate relative use-form entry */
-static bool ignorepads;		/* ignore pad prefixes when diffing */
+#define C_DEFAULT	0	 
+#define C_DIFFERENCE	1	 
+#define C_COMMON	2	 
+#define C_NAND		3	 
+#define C_USEALL	4	 
+static bool ignorepads;		 
 
 #if NO_LEAKS
 
@@ -95,7 +55,7 @@ static ENTERED *entered;
 
 #undef ExitProgram
 static GCC_NORETURN void ExitProgram(int code);
-/* prototype is to get gcc to accept the noreturn attribute */
+ 
 static void
 ExitProgram(int code)
 {
@@ -126,7 +86,7 @@ failed(const char *s)
 
 static void
 canonical_name(char *source, char *target)
-/* extract the terminal type's primary name */
+ 
 {
     int limit = NAMESIZE;
 
@@ -166,15 +126,11 @@ no_string(char *value)
     return result;
 }
 
-/***************************************************************************
- *
- * Predicates for dump function
- *
- ***************************************************************************/
+ 
 
 static int
 capcmp(PredIdx idx, const char *s, const char *t)
-/* capability comparison function */
+ 
 {
     if (!VALID_STRING(s) && !VALID_STRING(t))
 	return (s != t);
@@ -189,7 +145,7 @@ capcmp(PredIdx idx, const char *s, const char *t)
 
 static int
 use_predicate(unsigned type, PredIdx idx)
-/* predicate function to use for use decompilation */
+ 
 {
     ENTRY *ep;
 
@@ -198,17 +154,7 @@ use_predicate(unsigned type, PredIdx idx)
 	{
 	    int is_set = FALSE;
 
-	    /*
-	     * This assumes that multiple use entries are supposed
-	     * to contribute the logical or of their boolean capabilities.
-	     * This is true if we take the semantics of multiple uses to
-	     * be 'each capability gets the first non-default value found
-	     * in the sequence of use entries'.
-	     *
-	     * Note that cancelled or absent booleans are stored as FALSE,
-	     * unlike numbers and strings, whose cancelled/absent state is
-	     * recorded in the terminfo database.
-	     */
+	     
 	    for (ep = &entries[1]; ep < entries + termcount; ep++)
 		if (ep->tterm.Booleans[idx] == TRUE) {
 		    is_set = entries[0].tterm.Booleans[idx];
@@ -224,11 +170,7 @@ use_predicate(unsigned type, PredIdx idx)
 	{
 	    int value = ABSENT_NUMERIC;
 
-	    /*
-	     * We take the semantics of multiple uses to be 'each
-	     * capability gets the first non-default value found
-	     * in the sequence of use entries'.
-	     */
+	     
 	    for (ep = &entries[1]; ep < entries + termcount; ep++)
 		if (VALID_NUMERIC(ep->tterm.Numbers[idx])) {
 		    value = ep->tterm.Numbers[idx];
@@ -247,11 +189,7 @@ use_predicate(unsigned type, PredIdx idx)
 
 	    termstr = entries[0].tterm.Strings[idx];
 
-	    /*
-	     * We take the semantics of multiple uses to be 'each
-	     * capability gets the first non-default value found
-	     * in the sequence of use entries'.
-	     */
+	     
 	    for (ep = &entries[1]; ep < entries + termcount; ep++)
 		if (ep->tterm.Strings[idx]) {
 		    usestr = ep->tterm.Strings[idx];
@@ -267,23 +205,23 @@ use_predicate(unsigned type, PredIdx idx)
 	}
     }
 
-    return (FALSE);		/* pacify compiler */
+    return (FALSE);		 
 }
 
 static bool
 useeq(ENTRY * e1, ENTRY * e2)
-/* are the use references in two entries equivalent? */
+ 
 {
     unsigned i, j;
 
     if (e1->nuses != e2->nuses)
 	return (FALSE);
 
-    /* Ugh...this is quadratic again */
+     
     for (i = 0; i < e1->nuses; i++) {
 	bool foundmatch = FALSE;
 
-	/* search second entry for given use reference */
+	 
 	for (j = 0; j < e2->nuses; j++)
 	    if (!strcmp(e1->uses[i].name, e2->uses[j].name)) {
 		foundmatch = TRUE;
@@ -299,7 +237,7 @@ useeq(ENTRY * e1, ENTRY * e2)
 
 static bool
 entryeq(TERMTYPE2 *t1, TERMTYPE2 *t2)
-/* are two entries equivalent? */
+ 
 {
     unsigned i;
 
@@ -322,7 +260,7 @@ entryeq(TERMTYPE2 *t1, TERMTYPE2 *t2)
 
 static void
 print_uses(ENTRY * ep, FILE *fp)
-/* print an entry's use references */
+ 
 {
     if (!ep->nuses) {
 	fputs("NULL", fp);
@@ -339,7 +277,7 @@ print_uses(ENTRY * ep, FILE *fp)
 
 static const char *
 dump_boolean(int val)
-/* display the value of a boolean capability */
+ 
 {
     switch (val) {
     case ABSENT_BOOLEAN:
@@ -357,7 +295,7 @@ dump_boolean(int val)
 
 static void
 dump_numeric(int val, char *buf)
-/* display the value of a numeric capability */
+ 
 {
     switch (val) {
     case ABSENT_NUMERIC:
@@ -374,7 +312,7 @@ dump_numeric(int val, char *buf)
 
 static void
 dump_string(char *val, char *buf)
-/* display the value of a string capability */
+ 
 {
     if (val == ABSENT_STRING)
 	_nc_STRCPY(buf, s_absent, MAX_STRING);
@@ -386,9 +324,7 @@ dump_string(char *val, char *buf)
     }
 }
 
-/*
- * Show "comparing..." message for the given terminal names.
- */
+ 
 static void
 show_comparing(char **names)
 {
@@ -419,34 +355,20 @@ show_comparing(char **names)
     }
 }
 
-/*
- * ncurses stores two types of non-standard capabilities:
- * a) capabilities listed past the "STOP-HERE" comment in the Caps file.
- *    These are used in the terminfo source file to provide data for termcaps,
- *    e.g., when there is no equivalent capability in terminfo, as well as for
- *    widely-used non-standard capabilities.
- * b) user-definable capabilities, via "tic -x".
- *
- * However, if "-x" is omitted from the tic command, both types of
- * non-standard capability are not loaded into the terminfo database.  This
- * macro is used for limit-checks against the symbols that tic uses to omit
- * the two types of non-standard entry.
- */
+ 
 #if NCURSES_XNAMES
 #define check_user_definable(n,limit) if (!_nc_user_definable && (n) > (limit)) break
 #else
 #define check_user_definable(n,limit) if ((n) > (limit)) break
 #endif
 
-/*
- * Use these macros to simplify loops on C_COMMON and C_NAND:
- */
+ 
 #define for_each_entry() while (entries[extra].tterm.term_names)
 #define next_entry           (&(entries[extra++].tterm))
 
 static void
 compare_predicate(PredType type, PredIdx idx, const char *name)
-/* predicate function to use for entry difference reports */
+ 
 {
     ENTRY *e1 = &entries[0];
     ENTRY *e2 = &entries[1];
@@ -604,7 +526,7 @@ compare_predicate(PredType type, PredIdx idx, const char *name)
 	break;
 
     case CMP_USE:
-	/* unlike the other modes, this compares *all* use entries */
+	 
 	switch (compare) {
 	case C_DIFFERENCE:
 	    if (!useeq(e1, e2)) {
@@ -653,11 +575,7 @@ compare_predicate(PredType type, PredIdx idx, const char *name)
     }
 }
 
-/***************************************************************************
- *
- * Init string analysis
- *
- ***************************************************************************/
+ 
 
 #define DATA(from, to) { { from }, { to } }
 #define DATAX()        DATA("", "")
@@ -669,89 +587,89 @@ typedef struct {
 
 static const assoc std_caps[] =
 {
-    /* these are specified by X.364 and iBCS2 */
-    DATA("\033c", "RIS"),	/* full reset */
-    DATA("\0337", "SC"),	/* save cursor */
-    DATA("\0338", "RC"),	/* restore cursor */
-    DATA("\033[r", "RSR"),	/* not an X.364 mnemonic */
-    DATA("\033[m", "SGR0"),	/* not an X.364 mnemonic */
-    DATA("\033[2J", "ED2"),	/* clear page */
+     
+    DATA("\033c", "RIS"),	 
+    DATA("\0337", "SC"),	 
+    DATA("\0338", "RC"),	 
+    DATA("\033[r", "RSR"),	 
+    DATA("\033[m", "SGR0"),	 
+    DATA("\033[2J", "ED2"),	 
 
-    /* this group is specified by ISO 2022 */
-    DATA("\033(0", "ISO DEC G0"),	/* enable DEC graphics for G0 */
-    DATA("\033(A", "ISO UK G0"),	/* enable UK chars for G0 */
-    DATA("\033(B", "ISO US G0"),	/* enable US chars for G0 */
-    DATA("\033)0", "ISO DEC G1"),	/* enable DEC graphics for G1 */
-    DATA("\033)A", "ISO UK G1"),	/* enable UK chars for G1 */
-    DATA("\033)B", "ISO US G1"),	/* enable US chars for G1 */
+     
+    DATA("\033(0", "ISO DEC G0"),	 
+    DATA("\033(A", "ISO UK G0"),	 
+    DATA("\033(B", "ISO US G0"),	 
+    DATA("\033)0", "ISO DEC G1"),	 
+    DATA("\033)A", "ISO UK G1"),	 
+    DATA("\033)B", "ISO US G1"),	 
 
-    /* these are DEC private controls widely supported by emulators */
-    DATA("\033=", "DECPAM"),	/* application keypad mode */
-    DATA("\033>", "DECPNM"),	/* normal keypad mode */
-    DATA("\033<", "DECANSI"),	/* enter ANSI mode */
-    DATA("\033[!p", "DECSTR"),	/* soft reset */
-    DATA("\033 F", "S7C1T"),	/* 7-bit controls */
+     
+    DATA("\033=", "DECPAM"),	 
+    DATA("\033>", "DECPNM"),	 
+    DATA("\033<", "DECANSI"),	 
+    DATA("\033[!p", "DECSTR"),	 
+    DATA("\033 F", "S7C1T"),	 
 
     DATAX()
 };
 
 static const assoc std_modes[] =
-/* ECMA \E[ ... [hl] modes recognized by many emulators */
+ 
 {
-    DATA("2", "AM"),		/* keyboard action mode */
-    DATA("4", "IRM"),		/* insert/replace mode */
-    DATA("12", "SRM"),		/* send/receive mode */
-    DATA("20", "LNM"),		/* linefeed mode */
+    DATA("2", "AM"),		 
+    DATA("4", "IRM"),		 
+    DATA("12", "SRM"),		 
+    DATA("20", "LNM"),		 
     DATAX()
 };
 
 static const assoc private_modes[] =
-/* DEC \E[ ... [hl] modes recognized by many emulators */
+ 
 {
-    DATA("1", "CKM"),		/* application cursor keys */
-    DATA("2", "ANM"),		/* set VT52 mode */
-    DATA("3", "COLM"),		/* 132-column mode */
-    DATA("4", "SCLM"),		/* smooth scroll */
-    DATA("5", "SCNM"),		/* reverse video mode */
-    DATA("6", "OM"),		/* origin mode */
-    DATA("7", "AWM"),		/* wraparound mode */
-    DATA("8", "ARM"),		/* auto-repeat mode */
+    DATA("1", "CKM"),		 
+    DATA("2", "ANM"),		 
+    DATA("3", "COLM"),		 
+    DATA("4", "SCLM"),		 
+    DATA("5", "SCNM"),		 
+    DATA("6", "OM"),		 
+    DATA("7", "AWM"),		 
+    DATA("8", "ARM"),		 
     DATAX()
 };
 
 static const assoc ecma_highlights[] =
-/* recognize ECMA attribute sequences */
+ 
 {
-    DATA("0", "NORMAL"),	/* normal */
-    DATA("1", "+BOLD"),		/* bold on */
-    DATA("2", "+DIM"),		/* dim on */
-    DATA("3", "+ITALIC"),	/* italic on */
-    DATA("4", "+UNDERLINE"),	/* underline on */
-    DATA("5", "+BLINK"),	/* blink on */
-    DATA("6", "+FASTBLINK"),	/* fastblink on */
-    DATA("7", "+REVERSE"),	/* reverse on */
-    DATA("8", "+INVISIBLE"),	/* invisible on */
-    DATA("9", "+DELETED"),	/* deleted on */
-    DATA("10", "MAIN-FONT"),	/* select primary font */
-    DATA("11", "ALT-FONT-1"),	/* select alternate font 1 */
-    DATA("12", "ALT-FONT-2"),	/* select alternate font 2 */
-    DATA("13", "ALT-FONT-3"),	/* select alternate font 3 */
-    DATA("14", "ALT-FONT-4"),	/* select alternate font 4 */
-    DATA("15", "ALT-FONT-5"),	/* select alternate font 5 */
-    DATA("16", "ALT-FONT-6"),	/* select alternate font 6 */
-    DATA("17", "ALT-FONT-7"),	/* select alternate font 7 */
-    DATA("18", "ALT-FONT-1"),	/* select alternate font 1 */
-    DATA("19", "ALT-FONT-1"),	/* select alternate font 1 */
-    DATA("20", "FRAKTUR"),	/* Fraktur font */
-    DATA("21", "DOUBLEUNDER"),	/* double underline */
-    DATA("22", "-DIM"),		/* dim off */
-    DATA("23", "-ITALIC"),	/* italic off */
-    DATA("24", "-UNDERLINE"),	/* underline off */
-    DATA("25", "-BLINK"),	/* blink off */
-    DATA("26", "-FASTBLINK"),	/* fastblink off */
-    DATA("27", "-REVERSE"),	/* reverse off */
-    DATA("28", "-INVISIBLE"),	/* invisible off */
-    DATA("29", "-DELETED"),	/* deleted off */
+    DATA("0", "NORMAL"),	 
+    DATA("1", "+BOLD"),		 
+    DATA("2", "+DIM"),		 
+    DATA("3", "+ITALIC"),	 
+    DATA("4", "+UNDERLINE"),	 
+    DATA("5", "+BLINK"),	 
+    DATA("6", "+FASTBLINK"),	 
+    DATA("7", "+REVERSE"),	 
+    DATA("8", "+INVISIBLE"),	 
+    DATA("9", "+DELETED"),	 
+    DATA("10", "MAIN-FONT"),	 
+    DATA("11", "ALT-FONT-1"),	 
+    DATA("12", "ALT-FONT-2"),	 
+    DATA("13", "ALT-FONT-3"),	 
+    DATA("14", "ALT-FONT-4"),	 
+    DATA("15", "ALT-FONT-5"),	 
+    DATA("16", "ALT-FONT-6"),	 
+    DATA("17", "ALT-FONT-7"),	 
+    DATA("18", "ALT-FONT-1"),	 
+    DATA("19", "ALT-FONT-1"),	 
+    DATA("20", "FRAKTUR"),	 
+    DATA("21", "DOUBLEUNDER"),	 
+    DATA("22", "-DIM"),		 
+    DATA("23", "-ITALIC"),	 
+    DATA("24", "-UNDERLINE"),	 
+    DATA("25", "-BLINK"),	 
+    DATA("26", "-FASTBLINK"),	 
+    DATA("27", "-REVERSE"),	 
+    DATA("28", "-INVISIBLE"),	 
+    DATA("29", "-DELETED"),	 
     DATAX()
 };
 
@@ -833,11 +751,11 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	const char *expansion = 0;
 	char buf3[MAX_TERMINFO_LENGTH];
 
-	/* first, check other capabilities in this entry */
+	 
 	for (i = 0; i < STRCOUNT; i++) {
 	    char *cp = tp->Strings[i];
 
-	    /* don't use function-key capabilities */
+	     
 	    if (strnames[i] == NULL)
 		continue;
 	    if (strnames[i][0] == 'k' && strnames[i][1] == 'f')
@@ -854,13 +772,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 		    continue;
 
 #define ISRS(s)	(!strncmp((s), "is", (size_t) 2) || !strncmp((s), "rs", (size_t) 2))
-		/*
-		 * Theoretically we just passed the test for translation
-		 * (equality once the padding is stripped).  However, there
-		 * are a few more hoops that need to be jumped so that
-		 * identical pairs of initialization and reset strings
-		 * don't just refer to each other.
-		 */
+		 
 		if (ISRS(name) || ISRS(strnames[i]))
 		    if (cap < cp)
 			continue;
@@ -871,7 +783,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    }
 	}
 
-	/* now check the standard capabilities */
+	 
 	if (!expansion) {
 	    csi = skip_csi(sp);
 	    for (ap = std_caps; ap->from[0]; ap++) {
@@ -890,7 +802,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    }
 	}
 
-	/* now check for standard-mode sequences */
+	 
 	if (!expansion
 	    && (csi = skip_csi(sp)) != 0
 	    && (len = (strspn) (sp + csi, "0123456789;"))
@@ -909,7 +821,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    expansion = lookup_params(std_modes, buf2, buf3);
 	}
 
-	/* now check for private-mode sequences */
+	 
 	if (!expansion
 	    && (csi = skip_csi(sp)) != 0
 	    && sp[csi] == '?'
@@ -929,7 +841,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    expansion = lookup_params(private_modes, buf2, buf3);
 	}
 
-	/* now check for ECMA highlight sequences */
+	 
 	if (!expansion
 	    && (csi = skip_csi(sp)) != 0
 	    && (len = (strspn) (sp + csi, "0123456789;")) != 0
@@ -954,7 +866,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    expansion = buf2;
 	}
 
-	/* now check for scroll region reset */
+	 
 	if (!expansion
 	    && (csi = skip_csi(sp)) != 0) {
 	    if (sp[csi] == 'r') {
@@ -969,7 +881,7 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    len += (size_t) csi;
 	}
 
-	/* now check for home-down */
+	 
 	if (!expansion
 	    && (csi = skip_csi(sp)) != 0) {
 	    _nc_SPRINTF(buf2, _nc_SLIMIT(sizeof(buf2)) "%d;1H", tp_lines);
@@ -986,12 +898,12 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
 	    len += (size_t) csi;
 	}
 
-	/* now look at the expansion we got, if any */
+	 
 	if (expansion) {
 	    printf("{%s}", expansion);
 	    sp += len - 1;
 	} else {
-	    /* couldn't match anything */
+	     
 	    buf2[0] = *sp;
 	    buf2[1] = '\0';
 	    fputs(TIC_EXPAND(buf2), stdout);
@@ -1000,17 +912,13 @@ analyze_string(const char *name, const char *cap, TERMTYPE2 *tp)
     putchar('\n');
 }
 
-/***************************************************************************
- *
- * File comparison
- *
- ***************************************************************************/
+ 
 
 static void
 file_comparison(int argc, char *argv[])
 {
 #define MAXCOMPARE	2
-    /* someday we may allow comparisons on more files */
+     
     int filecount = 0;
     ENTRY *heads[MAXCOMPARE];
     ENTRY *qp, *rp;
@@ -1030,14 +938,14 @@ file_comparison(int argc, char *argv[])
 #endif
 	_nc_head = _nc_tail = 0;
 
-	/* parse entries out of the source file */
+	 
 	_nc_set_source(argv[n]);
 	_nc_read_entry_source(stdin, NULL, TRUE, literal, NULLHOOK);
 
 	if (itrace)
 	    (void) fprintf(stderr, "Resolving file %d...\n", n - 0);
 
-	/* maybe do use resolution */
+	 
 	if (!_nc_resolve_uses2(!limited, literal)) {
 	    (void) fprintf(stderr,
 			   "There are unresolved use entries in %s:\n",
@@ -1055,11 +963,11 @@ file_comparison(int argc, char *argv[])
 	filecount++;
     }
 
-    /* OK, all entries are in core.  Ready to do the comparison */
+     
     if (itrace)
 	(void) fprintf(stderr, "Entries are now in core...\n");
 
-    /* The entry-matching loop. Sigh, this is intrinsically quadratic. */
+     
     for (qp = heads[0]; qp; qp = qp->next) {
 	for (rp = heads[1]; rp; rp = rp->next)
 	    if (_nc_entry_match(qp->tterm.term_names, rp->tterm.term_names)) {
@@ -1073,7 +981,7 @@ file_comparison(int argc, char *argv[])
 	    }
     }
 
-    /* now we have two circular lists with crosslinks */
+     
     if (itrace)
 	(void) fprintf(stderr, "Name matches are done...\n");
 
@@ -1147,7 +1055,7 @@ file_comparison(int argc, char *argv[])
 	if (qp->ncrosslinks == 1) {
 	    rp = qp->crosslinks[0];
 #if NCURSES_XNAMES
-	    /* sorry - we have to do this on each pass */
+	     
 	    _nc_align_termtype(&qp->tterm, &rp->tterm);
 #endif
 	    if (!(entryeq(&qp->tterm, &rp->tterm) && useeq(qp, rp))) {
@@ -1197,7 +1105,7 @@ usage(void)
 	DATA("Options:")
     };
 #undef DATA
-    /* length is given here so the compiler can make everything readonly */
+     
 #define DATA(s) s
     static const char options[][46] =
     {
@@ -1297,7 +1205,7 @@ string_variable(const char *type)
     return any_initializer("_s_%s", type);
 }
 
-/* dump C initializers for the terminal type */
+ 
 static void
 dump_initializers(TERMTYPE2 *term)
 {
@@ -1421,7 +1329,7 @@ dump_initializers(TERMTYPE2 *term)
 #endif
 }
 
-/* dump C initializers for the terminal type */
+ 
 static void
 dump_termtype(TERMTYPE2 *term)
 {
@@ -1457,7 +1365,7 @@ dump_termtype(TERMTYPE2 *term)
     (void) printf("#endif /* NCURSES_XNAMES */\n");
 #else
     (void) term;
-#endif /* NCURSES_XNAMES */
+#endif  
     (void) printf("\t%s\n", R_CURL);
 }
 
@@ -1488,9 +1396,7 @@ terminal_env(void)
     return terminal;
 }
 
-/*
- * Show the databases that infocmp knows about.  The location to which it writes is
- */
+ 
 static void
 show_databases(void)
 {
@@ -1505,11 +1411,7 @@ show_databases(void)
     _nc_last_db();
 }
 
-/***************************************************************************
- *
- * Main sequence
- *
- ***************************************************************************/
+ 
 
 #if NO_LEAKS
 #define MAIN_LEAKS() \
@@ -1519,14 +1421,14 @@ show_databases(void)
     free(tfile); \
     free(tname)
 #else
-#define MAIN_LEAKS()		/* nothing */
+#define MAIN_LEAKS()		 
 #endif
 
 int
 main(int argc, char *argv[])
 {
-    /* Avoid "local data >32k" error with mwcc */
-    /* Also avoid overflowing smaller stacks on systems like AmigaOS */
+     
+     
     path *tfile = 0;
     char **tname = 0;
     size_t maxterms;
@@ -1543,7 +1445,7 @@ main(int argc, char *argv[])
     int quickdump = 0;
     bool wrap_strings = FALSE;
 
-    /* where is the terminfo database location going to default to? */
+     
     restdir = firstdir = 0;
 
 #if NCURSES_XNAMES
@@ -1553,7 +1455,7 @@ main(int argc, char *argv[])
 
     _nc_progname = _nc_rootname(argv[0]);
 
-    /* make sure we have enough space to add two terminal entries */
+     
     myargv = typeCalloc(char *, (size_t) (argc + 3));
     if (myargv == 0)
 	failed("myargv");
@@ -1590,7 +1492,7 @@ main(int argc, char *argv[])
 
 	case 'K':
 	    _nc_strict_bsd = 1;
-	    /* FALLTHRU */
+	     
 	case 'C':
 	    outform = F_TERMCAP;
 	    tversion = "BSD";
@@ -1766,20 +1668,20 @@ main(int argc, char *argv[])
 	ExitProgram(EXIT_FAILURE);
     }
 
-    /* by default, sort by terminfo name */
+     
     if (sortmode == S_DEFAULT)
 	sortmode = S_TERMINFO;
 
-    /* make sure we have at least one terminal name to work with */
+     
     if (optind >= argc)
 	argv[argc++] = terminal_env();
 
-    /* if user is after a comparison, make sure we have two entries */
+     
     if (compare != C_DEFAULT && optind >= argc - 1)
 	argv[argc++] = terminal_env();
 
-    /* exactly one terminal name with no options means display it */
-    /* exactly two terminal names with no options means do -d */
+     
+     
     if (compare == C_DEFAULT) {
 	switch (argc - optind) {
 	default:
@@ -1793,13 +1695,13 @@ main(int argc, char *argv[])
 	}
     }
 
-    /* set up for display */
+     
     dump_init(tversion, outform, sortmode,
 	      wrap_strings, mwidth, mheight, itrace,
 	      formatted, FALSE, quickdump);
 
     if (!filecompare) {
-	/* grab the entries */
+	 
 	termcount = 0;
 	for (; optind < argc; optind++) {
 	    const char *directory = termcount ? restdir : firstdir;
@@ -1862,7 +1764,7 @@ main(int argc, char *argv[])
 	    _nc_align_termtype(&entries[0].tterm, &entries[1].tterm);
 #endif
 
-	/* dump as C initializer for the terminal type */
+	 
 	if (initdump) {
 	    if (initdump & 1)
 		dump_termtype(&entries[0].tterm);
@@ -1870,7 +1772,7 @@ main(int argc, char *argv[])
 		dump_initializers(&entries[0].tterm);
 	}
 
-	/* analyze the init strings */
+	 
 	else if (init_analyze) {
 #undef CUR
 #define CUR	entries[0].tterm.
@@ -1889,9 +1791,7 @@ main(int argc, char *argv[])
 	    int i;
 	    int len;
 
-	    /*
-	     * Here's where the real work gets done
-	     */
+	     
 	    switch (compare) {
 	    case C_DEFAULT:
 		if (itrace)
@@ -1960,4 +1860,4 @@ main(int argc, char *argv[])
     ExitProgram(EXIT_SUCCESS);
 }
 
-/* infocmp.c ends here */
+ 

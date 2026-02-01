@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xfrm_device.c - IPsec device offloading code.
- *
- * Copyright (c) 2015 secunet Security Networks AG
- *
- * Author:
- * Steffen Klassert <steffen.klassert@secunet.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -64,7 +57,7 @@ static void __xfrm_mode_beet_prep(struct xfrm_state *x, struct sk_buff *skb,
 	pskb_pull(skb, skb->mac_len + hsize + (x->props.header_len - phlen));
 }
 
-/* Adjust pointers into the packet when IPsec is done at layer2 */
+ 
 static void xfrm_outer_mode_prep(struct xfrm_state *x, struct sk_buff *skb)
 {
 	switch (x->outer_mode.encap) {
@@ -133,17 +126,14 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
 	if (xo->flags & XFRM_GRO || x->xso.dir == XFRM_DEV_OFFLOAD_IN)
 		return skb;
 
-	/* The packet was sent to HW IPsec packet offload engine,
-	 * but to wrong device. Drop the packet, so it won't skip
-	 * XFRM stack.
-	 */
+	 
 	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET && x->xso.dev != dev) {
 		kfree_skb(skb);
 		dev_core_stats_tx_dropped_inc(dev);
 		return NULL;
 	}
 
-	/* This skb was already validated on the upper/virtual dev */
+	 
 	if ((x->xso.dev != dev) && (x->xso.real_dev == dev))
 		return skb;
 
@@ -161,7 +151,7 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
 				unlikely(xmit_xfrm_check_overflow(skb)))) {
 		struct sk_buff *segs;
 
-		/* Packet got rerouted, fixup features and segment it. */
+		 
 		esp_features = esp_features & ~(NETIF_F_HW_ESP | NETIF_F_GSO_ESP);
 
 		segs = skb_gso_segment(skb, esp_features);
@@ -255,7 +245,7 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
 
 	is_packet_offload = xuo->flags & XFRM_OFFLOAD_PACKET;
 
-	/* We don't yet support UDP encapsulation and TFC padding. */
+	 
 	if ((!is_packet_offload && x->encap) || x->tfcpad) {
 		NL_SET_ERR_MSG(extack, "Encapsulation and TFC padding can't be offloaded");
 		return -EINVAL;
@@ -319,13 +309,7 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
 		netdev_put(dev, &xso->dev_tracker);
 		xso->type = XFRM_DEV_OFFLOAD_UNSPECIFIED;
 
-		/* User explicitly requested packet offload mode and configured
-		 * policy in addition to the XFRM state. So be civil to users,
-		 * and return an error instead of taking fallback path.
-		 *
-		 * This WARN_ON() can be seen as a documentation for driver
-		 * authors to do not return -EOPNOTSUPP in packet offload mode.
-		 */
+		 
 		WARN_ON(err == -EOPNOTSUPP && is_packet_offload);
 		if (err != -EOPNOTSUPP || is_packet_offload) {
 			NL_SET_ERR_MSG_WEAK(extack, "Device failed to offload this state");
@@ -346,9 +330,7 @@ int xfrm_dev_policy_add(struct net *net, struct xfrm_policy *xp,
 	int err;
 
 	if (!xuo->flags || xuo->flags & ~XFRM_OFFLOAD_PACKET) {
-		/* We support only packet offload mode and it means
-		 * that user must set XFRM_OFFLOAD_PACKET bit.
-		 */
+		 
 		NL_SET_ERR_MSG(extack, "Unrecognized flags in offload request");
 		return -EINVAL;
 	}

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_DISP_OUTP_H__
 #define __NVKM_DISP_OUTP_H__
 #include "priv.h"
@@ -20,7 +20,7 @@ struct nvkm_outp {
 	struct nvkm_conn *conn;
 	bool identity;
 
-	/* Assembly state. */
+	 
 #define NVKM_OUTP_PRIV 1
 #define NVKM_OUTP_USER 2
 	u8 acquired:2;
@@ -46,7 +46,7 @@ struct nvkm_outp {
 			u8 dpcd[DP_RECEIVER_CAP_SIZE];
 
 			struct {
-				int dpcd; /* -1, or index into SUPPORTED_LINK_RATES table */
+				int dpcd;  
 				u32 rate;
 			} rate[8];
 			int rates;

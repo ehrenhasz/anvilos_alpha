@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fail_function.c: Function-based error injection
- */
+
+ 
 #include <linux/error-injection.h>
 #include <linux/debugfs.h>
 #include <linux/fault-inject.h>
@@ -17,10 +15,7 @@ static int fei_kprobe_handler(struct kprobe *kp, struct pt_regs *regs);
 static void fei_post_handler(struct kprobe *kp, struct pt_regs *regs,
 			     unsigned long flags)
 {
-	/*
-	 * A dummy post handler is required to prohibit optimizing, because
-	 * jump optimization does not support execution path overriding.
-	 */
+	 
 }
 
 struct fei_attr {
@@ -111,11 +106,7 @@ static int fei_retval_set(void *data, u64 val)
 	int err = 0;
 
 	mutex_lock(&fei_lock);
-	/*
-	 * Since this operation can be done after retval file is removed,
-	 * It is safer to check the attr is still valid before accessing
-	 * its member.
-	 */
+	 
 	if (!fei_attr_is_valid(attr)) {
 		err = -ENOENT;
 		goto out;
@@ -140,7 +131,7 @@ static int fei_retval_get(void *data, u64 *val)
 	int err = 0;
 
 	mutex_lock(&fei_lock);
-	/* Here we also validate @attr to ensure it still exists. */
+	 
 	if (!fei_attr_is_valid(attr))
 		err = -ENOENT;
 	else
@@ -241,7 +232,7 @@ static ssize_t fei_write(struct file *file, const char __user *buffer,
 	char *buf, *sym;
 	int ret;
 
-	/* cut off if it is too long */
+	 
 	if (count > KSYM_NAME_LEN)
 		count = KSYM_NAME_LEN;
 
@@ -253,13 +244,13 @@ static ssize_t fei_write(struct file *file, const char __user *buffer,
 
 	mutex_lock(&fei_lock);
 
-	/* Writing just spaces will remove all injection points */
+	 
 	if (sym[0] == '\0') {
 		fei_attr_remove_all();
 		ret = count;
 		goto out;
 	}
-	/* Writing !function will remove one injection point */
+	 
 	if (sym[0] == '!') {
 		attr = fei_attr_lookup(sym + 1);
 		if (!attr) {
@@ -321,7 +312,7 @@ static int __init fei_debugfs_init(void)
 	if (IS_ERR(dir))
 		return PTR_ERR(dir);
 
-	/* injectable attribute is just a symlink of error_inject/list */
+	 
 	debugfs_create_symlink("injectable", dir, "../error_injection/list");
 
 	debugfs_create_file("inject", 0600, dir, NULL, &fei_ops);

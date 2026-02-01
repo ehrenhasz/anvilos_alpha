@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Based on drivers/video/omap/lcd_inn1510.c
- *
- * LCD panel support for the Amstrad E3 (Delta) videophone.
- *
- * Copyright (C) 2006 Jonathan McDowell <noodles@earth.li>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,7 +18,7 @@
 #define AMS_DELTA_LCD_POWER		0x0100
 
 
-/* LCD class device section */
+ 
 
 static int ams_delta_lcd;
 static struct gpio_desc *gpiod_vblen;
@@ -85,7 +79,7 @@ static struct lcd_ops ams_delta_lcd_ops = {
 #endif
 
 
-/* omapfb panel section */
+ 
 
 static int ams_delta_panel_enable(struct lcd_panel *panel)
 {
@@ -123,7 +117,7 @@ static struct lcd_panel ams_delta_panel = {
 };
 
 
-/* platform driver section */
+ 
 
 static int ams_delta_panel_probe(struct platform_device *pdev)
 {

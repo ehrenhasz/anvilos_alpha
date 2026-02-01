@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Enumerate and control features for Mailbox Interface
- * Copyright (c) 2023 Intel Corporation.
- */
+
+ 
 #include "isst.h"
 
 static int mbox_delay;

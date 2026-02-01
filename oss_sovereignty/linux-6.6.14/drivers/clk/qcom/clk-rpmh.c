@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -18,13 +16,7 @@
 #define CLK_RPMH_ARC_EN_OFFSET		0
 #define CLK_RPMH_VRM_EN_OFFSET		4
 
-/**
- * struct bcm_db - Auxiliary data pertaining to each Bus Clock Manager(BCM)
- * @unit: divisor used to convert Hz value to an RPMh msg
- * @width: multiplier used to convert Hz value to an RPMh msg
- * @vcd: virtual clock domain that this bcm belongs to
- * @reserved: reserved to pad the struct
- */
+ 
 struct bcm_db {
 	__le32 unit;
 	__le16 width;
@@ -32,21 +24,7 @@ struct bcm_db {
 	u8 reserved;
 };
 
-/**
- * struct clk_rpmh - individual rpmh clock data structure
- * @hw:			handle between common and hardware-specific interfaces
- * @res_name:		resource name for the rpmh clock
- * @div:		clock divider to compute the clock rate
- * @res_addr:		base address of the rpmh resource within the RPMh
- * @res_on_val:		rpmh clock enable value
- * @state:		rpmh clock requested state
- * @aggr_state:		rpmh clock aggregated state
- * @last_sent_aggr_state: rpmh clock last aggr state sent to RPMh
- * @valid_state_mask:	mask to determine the state of the rpmh clock
- * @unit:		divisor to convert rate to rpmh msg in magnitudes of Khz
- * @dev:		device to which it is attached
- * @peer:		pointer to the clock rpmh sibling
- */
+ 
 struct clk_rpmh {
 	struct clk_hw hw;
 	const char *res_name;
@@ -184,9 +162,7 @@ static int clk_rpmh_send_aggregate_command(struct clk_rpmh *c)
 	return 0;
 }
 
-/*
- * Update state and aggregate state values based on enable value.
- */
+ 
 static int clk_rpmh_aggregate_state_send_command(struct clk_rpmh *c,
 						bool enable)
 {
@@ -236,9 +212,7 @@ static unsigned long clk_rpmh_recalc_rate(struct clk_hw *hw,
 {
 	struct clk_rpmh *r = to_clk_rpmh(hw);
 
-	/*
-	 * RPMh clocks have a fixed rate. Return static rate.
-	 */
+	 
 	return prate / r->div;
 }
 
@@ -267,11 +241,7 @@ static int clk_rpmh_bcm_send_cmd(struct clk_rpmh *c, bool enable)
 		cmd.addr = c->res_addr;
 		cmd.data = BCM_TCS_CMD(1, enable, 0, cmd_state);
 
-		/*
-		 * Send only an active only state request. RPMh continues to
-		 * use the active state when we're in sleep/wake state as long
-		 * as the sleep/wake state has never been set.
-		 */
+		 
 		ret = clk_rpmh_send(c, RPMH_ACTIVE_ONLY_STATE, &cmd, enable);
 		if (ret) {
 			dev_err(c->dev, "set active state of %s failed: (%d)\n",
@@ -306,10 +276,7 @@ static int clk_rpmh_bcm_set_rate(struct clk_hw *hw, unsigned long rate,
 	struct clk_rpmh *c = to_clk_rpmh(hw);
 
 	c->aggr_state = rate / c->unit;
-	/*
-	 * Since any non-zero value sent to hw would result in enabling the
-	 * clock, only send the value if the clock has already been prepared.
-	 */
+	 
 	if (clk_hw_is_prepared(hw))
 		clk_rpmh_bcm_send_cmd(c, true);
 
@@ -338,7 +305,7 @@ static const struct clk_ops clk_rpmh_bcm_ops = {
 	.recalc_rate	= clk_rpmh_bcm_recalc_rate,
 };
 
-/* Resource name must match resource id present in cmd-db */
+ 
 DEFINE_CLK_RPMH_ARC(bi_tcxo, "xo.lvl", 0x3, 1);
 DEFINE_CLK_RPMH_ARC(bi_tcxo, "xo.lvl", 0x3, 2);
 DEFINE_CLK_RPMH_ARC(bi_tcxo, "xo.lvl", 0x3, 4);
@@ -772,7 +739,7 @@ static int clk_rpmh_probe(struct platform_device *pdev)
 			return ret;
 		}
 
-		/* Convert unit from Khz to Hz */
+		 
 		if (aux_data_len == sizeof(*data))
 			rpmh_clk->unit = le32_to_cpu(data->unit) * 1000ULL;
 
@@ -786,7 +753,7 @@ static int clk_rpmh_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* typecast to silence compiler warning */
+	 
 	ret = devm_of_clk_add_hw_provider(&pdev->dev, of_clk_rpmh_hw_get,
 					  (void *)desc);
 	if (ret) {

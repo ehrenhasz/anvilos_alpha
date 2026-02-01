@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -25,57 +11,31 @@ struct ani_ofdm_level_entry {
 	int ofdm_weak_signal_on;
 };
 
-/* values here are relative to the INI */
+ 
 
-/*
- * Legend:
- *
- * SI: Spur immunity
- * FS: FIR Step
- * WS: OFDM / CCK Weak Signal detection
- * MRC-CCK: Maximal Ratio Combining for CCK
- */
+ 
 
 static const struct ani_ofdm_level_entry ofdm_level_table[] = {
-	/* SI  FS  WS */
-	{  0,  0,  1  }, /* lvl 0 */
-	{  1,  1,  1  }, /* lvl 1 */
-	{  2,  2,  1  }, /* lvl 2 */
-	{  3,  2,  1  }, /* lvl 3  (default) */
-	{  4,  3,  1  }, /* lvl 4 */
-	{  5,  4,  1  }, /* lvl 5 */
-	{  6,  5,  1  }, /* lvl 6 */
-	{  7,  6,  1  }, /* lvl 7 */
-	{  7,  7,  1  }, /* lvl 8 */
-	{  7,  8,  0  }  /* lvl 9 */
+	 
+	{  0,  0,  1  },  
+	{  1,  1,  1  },  
+	{  2,  2,  1  },  
+	{  3,  2,  1  },  
+	{  4,  3,  1  },  
+	{  5,  4,  1  },  
+	{  6,  5,  1  },  
+	{  7,  6,  1  },  
+	{  7,  7,  1  },  
+	{  7,  8,  0  }   
 };
 #define ATH9K_ANI_OFDM_NUM_LEVEL \
 	ARRAY_SIZE(ofdm_level_table)
 #define ATH9K_ANI_OFDM_MAX_LEVEL \
 	(ATH9K_ANI_OFDM_NUM_LEVEL-1)
 #define ATH9K_ANI_OFDM_DEF_LEVEL \
-	3 /* default level - matches the INI settings */
+	3  
 
-/*
- * MRC (Maximal Ratio Combining) has always been used with multi-antenna ofdm.
- * With OFDM for single stream you just add up all antenna inputs, you're
- * only interested in what you get after FFT. Signal alignment is also not
- * required for OFDM because any phase difference adds up in the frequency
- * domain.
- *
- * MRC requires extra work for use with CCK. You need to align the antenna
- * signals from the different antenna before you can add the signals together.
- * You need alignment of signals as CCK is in time domain, so addition can cancel
- * your signal completely if phase is 180 degrees (think of adding sine waves).
- * You also need to remove noise before the addition and this is where ANI
- * MRC CCK comes into play. One of the antenna inputs may be stronger but
- * lower SNR, so just adding after alignment can be dangerous.
- *
- * Regardless of alignment in time, the antenna signals add constructively after
- * FFT and improve your reception. For more information:
- *
- * https://en.wikipedia.org/wiki/Maximal-ratio_combining
- */
+ 
 
 struct ani_cck_level_entry {
 	int fir_step_level;
@@ -83,16 +43,16 @@ struct ani_cck_level_entry {
 };
 
 static const struct ani_cck_level_entry cck_level_table[] = {
-	/* FS  MRC-CCK  */
-	{  0,  1  }, /* lvl 0 */
-	{  1,  1  }, /* lvl 1 */
-	{  2,  1  }, /* lvl 2  (default) */
-	{  3,  1  }, /* lvl 3 */
-	{  4,  0  }, /* lvl 4 */
-	{  5,  0  }, /* lvl 5 */
-	{  6,  0  }, /* lvl 6 */
-	{  7,  0  }, /* lvl 7 (only for high rssi) */
-	{  8,  0  }  /* lvl 8 (only for high rssi) */
+	 
+	{  0,  1  },  
+	{  1,  1  },  
+	{  2,  1  },  
+	{  3,  1  },  
+	{  4,  0  },  
+	{  5,  0  },  
+	{  6,  0  },  
+	{  7,  0  },  
+	{  8,  0  }   
 };
 
 #define ATH9K_ANI_CCK_NUM_LEVEL \
@@ -102,7 +62,7 @@ static const struct ani_cck_level_entry cck_level_table[] = {
 #define ATH9K_ANI_CCK_MAX_LEVEL_LOW_RSSI \
 	(ATH9K_ANI_CCK_NUM_LEVEL-3)
 #define ATH9K_ANI_CCK_DEF_LEVEL \
-	2 /* default level - matches the INI settings */
+	2  
 
 static void ath9k_hw_update_mibstats(struct ath_hw *ah,
 				     struct ath9k_mib_stats *stats)
@@ -112,15 +72,15 @@ static void ath9k_hw_update_mibstats(struct ath_hw *ah,
 	u32 data[5];
 
 	REG_READ_MULTI(ah, &addr[0], &data[0], 5);
-	/* AR_RTS_OK */
+	 
 	stats->rts_good += data[0];
-	/* AR_RTS_FAIL */
+	 
 	stats->rts_bad += data[1];
-	/* AR_ACK_FAIL */
+	 
 	stats->ackrcv_bad += data[2];
-	/* AR_FCS_FAIL */
+	 
 	stats->fcs_bad += data[3];
-	/* AR_BEACON_CNT */
+	 
 	stats->beacons += data[4];
 }
 
@@ -145,7 +105,7 @@ static void ath9k_ani_restart(struct ath_hw *ah)
 	aniState->cckPhyErrCount = 0;
 }
 
-/* Adjust the OFDM Noise Immunity Level */
+ 
 static void ath9k_hw_set_ofdm_nil(struct ath_hw *ah, u8 immunityLevel,
 				  bool scan)
 {
@@ -185,16 +145,12 @@ static void ath9k_hw_set_ofdm_nil(struct ath_hw *ah, u8 immunityLevel,
 	if (ah->opmode == NL80211_IFTYPE_STATION &&
 	    BEACON_RSSI(ah) <= ATH9K_ANI_RSSI_THR_HIGH)
 		weak_sig = true;
-	/*
-	 * Newer chipsets are better at dealing with high PHY error counts -
-	 * keep weak signal detection enabled when no RSSI threshold is
-	 * available to determine if it is needed (mode != STA)
-	 */
+	 
 	else if (AR_SREV_9300_20_OR_LATER(ah) &&
 		 ah->opmode != NL80211_IFTYPE_STATION)
 		weak_sig = true;
 
-	/* Older chipsets are more sensitive to high PHY error counts */
+	 
 	else if (!AR_SREV_9300_20_OR_LATER(ah) &&
 		 aniState->ofdmNoiseImmunityLevel >= 8)
 		weak_sig = false;
@@ -223,9 +179,7 @@ static void ath9k_hw_ani_ofdm_err_trigger(struct ath_hw *ah)
 		ath9k_hw_set_ofdm_nil(ah, aniState->ofdmNoiseImmunityLevel + 1, false);
 }
 
-/*
- * Set the ANI settings to match an CCK level.
- */
+ 
 static void ath9k_hw_set_cck_nil(struct ath_hw *ah, u_int8_t immunityLevel,
 				 bool scan)
 {
@@ -259,7 +213,7 @@ static void ath9k_hw_set_cck_nil(struct ath_hw *ah, u_int8_t immunityLevel,
 				     ATH9K_ANI_FIRSTEP_LEVEL,
 				     entry_cck->fir_step_level);
 
-	/* Skip MRC CCK for pre AR9003 families */
+	 
 	if (!AR_SREV_9300_20_OR_LATER(ah) || AR_SREV_9485(ah) ||
 	    AR_SREV_9565(ah) || AR_SREV_9561(ah))
 		return;
@@ -279,15 +233,12 @@ static void ath9k_hw_ani_cck_err_trigger(struct ath_hw *ah)
 				     false);
 }
 
-/*
- * only lower either OFDM or CCK errors per turn
- * we lower the other one next time
- */
+ 
 static void ath9k_hw_ani_lower_immunity(struct ath_hw *ah)
 {
 	struct ar5416AniState *aniState = &ah->ani;
 
-	/* lower OFDM noise immunity */
+	 
 	if (aniState->ofdmNoiseImmunityLevel > 0 &&
 	    (aniState->ofdmsTurn || aniState->cckNoiseImmunityLevel == 0)) {
 		ath9k_hw_set_ofdm_nil(ah, aniState->ofdmNoiseImmunityLevel - 1,
@@ -295,17 +246,13 @@ static void ath9k_hw_ani_lower_immunity(struct ath_hw *ah)
 		return;
 	}
 
-	/* lower CCK noise immunity */
+	 
 	if (aniState->cckNoiseImmunityLevel > 0)
 		ath9k_hw_set_cck_nil(ah, aniState->cckNoiseImmunityLevel - 1,
 				     false);
 }
 
-/*
- * Restore the ANI parameters in the HAL and reset the statistics.
- * This routine should be called for every hardware reset and for
- * every channel change.
- */
+ 
 void ath9k_ani_reset(struct ath_hw *ah, bool is_scanning)
 {
 	struct ar5416AniState *aniState = &ah->ani;
@@ -327,12 +274,7 @@ void ath9k_ani_reset(struct ath_hw *ah, bool is_scanning)
 	if (is_scanning ||
 	    (ah->opmode != NL80211_IFTYPE_STATION &&
 	     ah->opmode != NL80211_IFTYPE_ADHOC)) {
-		/*
-		 * If we're scanning or in AP mode, the defaults (ini)
-		 * should be in place. For an AP we assume the historical
-		 * levels for this channel are probably outdated so start
-		 * from defaults instead.
-		 */
+		 
 		if (aniState->ofdmNoiseImmunityLevel !=
 		    ATH9K_ANI_OFDM_DEF_LEVEL ||
 		    aniState->cckNoiseImmunityLevel !=
@@ -349,9 +291,7 @@ void ath9k_ani_reset(struct ath_hw *ah, bool is_scanning)
 			cck_nil = ATH9K_ANI_CCK_DEF_LEVEL;
 		}
 	} else {
-		/*
-		 * restore historical levels for this channel
-		 */
+		 
 		ath_dbg(common, ANI,
 			"Restore history: opmode %u chan %d Mhz is_scanning=%d ofdm:%d cck:%d\n",
 			ah->opmode,
@@ -459,7 +399,7 @@ void ath9k_enable_mib_counters(struct ath_hw *ah)
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
-/* Freeze the MIB counters, get the stats and then clear them */
+ 
 void ath9k_hw_disable_mib_counters(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -501,10 +441,7 @@ void ath9k_hw_ani_init(struct ath_hw *ah)
 	ani->cckNoiseImmunityLevel = ATH9K_ANI_CCK_DEF_LEVEL;
 	ani->ofdmNoiseImmunityLevel = ATH9K_ANI_OFDM_DEF_LEVEL;
 
-	/*
-	 * since we expect some ongoing maintenance on the tables, let's sanity
-	 * check here default level should not modify INI setting.
-	 */
+	 
 	ah->aniperiod = ATH9K_ANI_PERIOD;
 	ah->config.ani_poll_interval = ATH9K_ANI_POLLINTERVAL;
 

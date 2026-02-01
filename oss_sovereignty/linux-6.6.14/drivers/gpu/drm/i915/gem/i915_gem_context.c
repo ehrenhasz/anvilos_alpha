@@ -1,68 +1,6 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2011-2012 Intel Corporation
- */
+ 
 
-/*
- * This file implements HW context support. On gen5+ a HW context consists of an
- * opaque GPU object which is referenced at times of context saves and restores.
- * With RC6 enabled, the context is also referenced as the GPU enters and exists
- * from RC6 (GPU has it's own internal power context, except on gen5). Though
- * something like a context does exist for the media ring, the code only
- * supports contexts for the render ring.
- *
- * In software, there is a distinction between contexts created by the user,
- * and the default HW context. The default HW context is used by GPU clients
- * that do not request setup of their own hardware context. The default
- * context's state is never restored to help prevent programming errors. This
- * would happen if a client ran and piggy-backed off another clients GPU state.
- * The default context only exists to give the GPU some offset to load as the
- * current to invoke a save of the context we actually care about. In fact, the
- * code could likely be constructed, albeit in a more complicated fashion, to
- * never use the default context, though that limits the driver's ability to
- * swap out, and/or destroy other contexts.
- *
- * All other contexts are created as a request by the GPU client. These contexts
- * store GPU state, and thus allow GPU clients to not re-emit state (and
- * potentially query certain state) at any time. The kernel driver makes
- * certain that the appropriate commands are inserted.
- *
- * The context life cycle is semi-complicated in that context BOs may live
- * longer than the context itself because of the way the hardware, and object
- * tracking works. Below is a very crude representation of the state machine
- * describing the context life.
- *                                         refcount     pincount     active
- * S0: initial state                          0            0           0
- * S1: context created                        1            0           0
- * S2: context is currently running           2            1           X
- * S3: GPU referenced, but not current        2            0           1
- * S4: context is current, but destroyed      1            1           0
- * S5: like S3, but destroyed                 1            0           1
- *
- * The most common (but not all) transitions:
- * S0->S1: client creates a context
- * S1->S2: client submits execbuf with context
- * S2->S3: other clients submits execbuf with context
- * S3->S1: context object was retired
- * S3->S2: clients submits another execbuf
- * S2->S4: context destroy called with current context
- * S3->S5->S0: destroy path
- * S4->S5->S0: destroy path on current context
- *
- * There are two confusing terms used above:
- *  The "current context" means the context which is currently running on the
- *  GPU. The GPU has loaded its state already and has stored away the gtt
- *  offset of the BO. The GPU is not actively referencing the data at this
- *  offset, but it will on the next context switch. The only way to avoid this
- *  is to do a GPU reset.
- *
- *  An "active context' is one which was previously the "current context" and is
- *  on the active list waiting for the next context switch to occur. Until this
- *  happens, the object must remain at the same gtt offset. It is therefore
- *  possible to destroy a context, but it is still active.
- *
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/log2.h>
@@ -213,33 +151,17 @@ static int proto_context_set_persistence(struct drm_i915_private *i915,
 					 bool persist)
 {
 	if (persist) {
-		/*
-		 * Only contexts that are short-lived [that will expire or be
-		 * reset] are allowed to survive past termination. We require
-		 * hangcheck to ensure that the persistent requests are healthy.
-		 */
+		 
 		if (!i915->params.enable_hangcheck)
 			return -EINVAL;
 
 		pc->user_flags |= BIT(UCONTEXT_PERSISTENCE);
 	} else {
-		/* To cancel a context we use "preempt-to-idle" */
+		 
 		if (!(i915->caps.scheduler & I915_SCHEDULER_CAP_PREEMPTION))
 			return -ENODEV;
 
-		/*
-		 * If the cancel fails, we then need to reset, cleanly!
-		 *
-		 * If the per-engine reset fails, all hope is lost! We resort
-		 * to a full GPU reset in that unlikely case, but realistically
-		 * if the engine could not reset, the full reset does not fare
-		 * much better. The damage has been done.
-		 *
-		 * However, if we cannot reset an engine by itself, we cannot
-		 * cleanup a hanging persistent context without causing
-		 * colateral damage, and we should not pretend we can by
-		 * exposing the interface.
-		 */
+		 
 		if (!intel_has_reset_engine(to_gt(i915)))
 			return -ENODEV;
 
@@ -265,10 +187,7 @@ static int proto_context_set_protected(struct drm_i915_private *i915,
 	} else {
 		pc->uses_protected_content = true;
 
-		/*
-		 * protected context usage requires the PXP session to be up,
-		 * which in turn requires the device to be active.
-		 */
+		 
 		pc->pxp_wakeref = intel_runtime_pm_get(&i915->runtime_pm);
 
 		if (!intel_pxp_is_active(i915->pxp))
@@ -647,7 +566,7 @@ set_proto_ctx_engines_parallel_submit(struct i915_user_extension __user *base,
 	if (!siblings)
 		return -ENOMEM;
 
-	/* Create contexts / engines */
+	 
 	for (i = 0; i < width; ++i) {
 		intel_engine_mask_t current_mask = 0;
 
@@ -671,10 +590,7 @@ set_proto_ctx_engines_parallel_submit(struct i915_user_extension __user *base,
 				goto out_err;
 			}
 
-			/*
-			 * We don't support breadcrumb handshake on these
-			 * classes
-			 */
+			 
 			if (siblings[n]->class == RENDER_CLASS ||
 			    siblings[n]->class == COMPUTE_CLASS) {
 				err = -EINVAL;
@@ -754,7 +670,7 @@ static int set_proto_ctx_engines(struct drm_i915_file_private *fpriv,
 	}
 
 	set.num_engines = (args->size - sizeof(*user)) / sizeof(*user->engines);
-	/* RING_MASK has no shift so we can use it directly here */
+	 
 	if (set.num_engines > I915_EXEC_RING_MASK + 1)
 		return -EINVAL;
 
@@ -847,17 +763,17 @@ static int set_proto_ctx_sseu(struct drm_i915_file_private *fpriv,
 		idx = array_index_nospec(idx, pc->num_user_engines);
 		pe = &pc->user_engines[idx];
 
-		/* Only render engine supports RPCS configuration. */
+		 
 		if (pe->engine->class != RENDER_CLASS)
 			return -EINVAL;
 
 		sseu = &pe->sseu;
 	} else {
-		/* Only render engine supports RPCS configuration. */
+		 
 		if (user_sseu.engine.engine_class != I915_ENGINE_CLASS_RENDER)
 			return -EINVAL;
 
-		/* There is only one render engine */
+		 
 		if (user_sseu.engine.engine_instance != 0)
 			return -EINVAL;
 
@@ -986,7 +902,7 @@ static int intel_context_set_gem(struct intel_context *ce,
 		intel_context_set_watchdog_us(ce, (u64)timeout_ms * 1000);
 	}
 
-	/* A valid SSEU has no zero fields */
+	 
 	if (sseu.slice_mask && !WARN_ON(ce->engine->class != RENDER_CLASS))
 		ret = intel_context_reconfigure_sseu(ce, sseu);
 
@@ -1046,7 +962,7 @@ static void accumulate_runtime(struct i915_drm_client *client,
 	if (!client)
 		return;
 
-	/* Transfer accumulated runtime to the parent GEM context. */
+	 
 	for_each_gem_engine(ce, engines, it) {
 		unsigned int class = ce->engine->uabi_class;
 
@@ -1239,15 +1155,7 @@ static struct i915_gem_engines *user_engines(struct i915_gem_context *ctx,
 			}
 		}
 
-		/*
-		 * XXX: Must be done after calling intel_context_set_gem as that
-		 * function changes the ring size. The ring is allocated when
-		 * the context is pinned. If the ring size is changed after
-		 * allocation we have a mismatch of the ring size and will cause
-		 * the context to hang. Presumably with a bit of reordering we
-		 * could move the perma-pin step to the backend function
-		 * intel_engine_create_parallel.
-		 */
+		 
 		if (pe[n].type == I915_GEM_ENGINE_TYPE_PARALLEL) {
 			ret = perma_pin_contexts(ce);
 			if (ret) {
@@ -1321,20 +1229,7 @@ static void __reset_context(struct i915_gem_context *ctx,
 
 static bool __cancel_engine(struct intel_engine_cs *engine)
 {
-	/*
-	 * Send a "high priority pulse" down the engine to cause the
-	 * current request to be momentarily preempted. (If it fails to
-	 * be preempted, it will be reset). As we have marked our context
-	 * as banned, any incomplete request, including any running, will
-	 * be skipped following the preemption.
-	 *
-	 * If there is no hangchecking (one of the reasons why we try to
-	 * cancel the context) and no forced preemption, there may be no
-	 * means by which we reset the GPU and evict the persistent hog.
-	 * Ergo if we are unable to inject a preemptive pulse that can
-	 * kill the banned context, we fallback to doing a local reset
-	 * instead.
-	 */
+	 
 	return intel_engine_pulse(engine) == 0;
 }
 
@@ -1349,20 +1244,16 @@ static struct intel_engine_cs *active_engine(struct intel_context *ce)
 	if (!ce->timeline)
 		return NULL;
 
-	/*
-	 * rq->link is only SLAB_TYPESAFE_BY_RCU, we need to hold a reference
-	 * to the request to prevent it being transferred to a new timeline
-	 * (and onto a new timeline->requests list).
-	 */
+	 
 	rcu_read_lock();
 	list_for_each_entry_reverse(rq, &ce->timeline->requests, link) {
 		bool found;
 
-		/* timeline is already completed upto this point? */
+		 
 		if (!i915_request_get_rcu(rq))
 			break;
 
-		/* Check with the backend if the request is inflight */
+		 
 		found = true;
 		if (likely(rcu_access_pointer(rq->timeline) == ce->timeline))
 			found = i915_request_active_engine(rq, &engine);
@@ -1382,35 +1273,19 @@ kill_engines(struct i915_gem_engines *engines, bool exit, bool persistent)
 	struct i915_gem_engines_iter it;
 	struct intel_context *ce;
 
-	/*
-	 * Map the user's engine back to the actual engines; one virtual
-	 * engine will be mapped to multiple engines, and using ctx->engine[]
-	 * the same engine may be have multiple instances in the user's map.
-	 * However, we only care about pending requests, so only include
-	 * engines on which there are incomplete requests.
-	 */
+	 
 	for_each_gem_engine(ce, engines, it) {
 		struct intel_engine_cs *engine;
 
 		if ((exit || !persistent) && intel_context_revoke(ce))
-			continue; /* Already marked. */
+			continue;  
 
-		/*
-		 * Check the current active state of this context; if we
-		 * are currently executing on the GPU we need to evict
-		 * ourselves. On the other hand, if we haven't yet been
-		 * submitted to the GPU or if everything is complete,
-		 * we have nothing to do.
-		 */
+		 
 		engine = active_engine(ce);
 
-		/* First attempt to gracefully cancel the context */
+		 
 		if (engine && !__cancel_engine(engine) && (exit || !persistent))
-			/*
-			 * If we are unable to send a preemptive pulse to bump
-			 * the context from the GPU, we have to resort to a full
-			 * reset. We hope the collateral damage is worth it.
-			 */
+			 
 			__reset_context(engines->ctx, engine);
 	}
 }
@@ -1435,7 +1310,7 @@ static void kill_context(struct i915_gem_context *ctx)
 		spin_lock_irq(&ctx->stale.lock);
 		GEM_BUG_ON(i915_sw_fence_signaled(&pos->fence));
 		list_safe_reset_next(pos, next, link);
-		list_del_init(&pos->link); /* decouple from FENCE_COMPLETE */
+		list_del_init(&pos->link);  
 
 		i915_sw_fence_complete(&pos->fence);
 	}
@@ -1455,12 +1330,12 @@ static void engines_idle_release(struct i915_gem_context *ctx,
 	for_each_gem_engine(ce, engines, it) {
 		int err;
 
-		/* serialises with execbuf */
+		 
 		intel_context_close(ce);
 		if (!intel_context_pin_if_active(ce))
 			continue;
 
-		/* Wait until context is finally scheduled out and retired */
+		 
 		err = i915_sw_fence_await_active(&engines->fence,
 						 &ce->active,
 						 I915_ACTIVE_AWAIT_BARRIER);
@@ -1475,7 +1350,7 @@ static void engines_idle_release(struct i915_gem_context *ctx,
 	spin_unlock_irq(&ctx->stale.lock);
 
 kill:
-	if (list_empty(&engines->link)) /* raced, already closed */
+	if (list_empty(&engines->link))  
 		kill_engines(engines, true,
 			     i915_gem_context_is_persistent(ctx));
 
@@ -1486,7 +1361,7 @@ static void set_closed_name(struct i915_gem_context *ctx)
 {
 	char *s;
 
-	/* Replace '[]' with '<>' to indicate closed in debug prints */
+	 
 
 	s = strrchr(ctx->name, '[');
 	if (!s)
@@ -1503,7 +1378,7 @@ static void context_close(struct i915_gem_context *ctx)
 {
 	struct i915_drm_client *client;
 
-	/* Flush any concurrent set_engines() */
+	 
 	mutex_lock(&ctx->engines_mutex);
 	unpin_engines(__context_engines_static(ctx));
 	engines_idle_release(ctx, rcu_replace_pointer(ctx->engines, NULL, 1));
@@ -1514,11 +1389,7 @@ static void context_close(struct i915_gem_context *ctx)
 
 	set_closed_name(ctx);
 
-	/*
-	 * The LUT uses the VMA as a backpointer to unref the object,
-	 * so we need to clear the LUT before we close all the VMA (inside
-	 * the ppgtt).
-	 */
+	 
 	lut_close(ctx);
 
 	ctx->file_priv = ERR_PTR(-EBADF);
@@ -1532,13 +1403,7 @@ static void context_close(struct i915_gem_context *ctx)
 
 	mutex_unlock(&ctx->mutex);
 
-	/*
-	 * If the user has disabled hangchecking, we can not be sure that
-	 * the batches will ever complete after the context is closed,
-	 * keeping the context and all resources pinned forever. So in this
-	 * case we opt to forcibly kill off all remaining requests on
-	 * context close.
-	 */
+	 
 	kill_context(ctx);
 
 	i915_gem_context_put(ctx);
@@ -1550,33 +1415,17 @@ static int __context_set_persistence(struct i915_gem_context *ctx, bool state)
 		return 0;
 
 	if (state) {
-		/*
-		 * Only contexts that are short-lived [that will expire or be
-		 * reset] are allowed to survive past termination. We require
-		 * hangcheck to ensure that the persistent requests are healthy.
-		 */
+		 
 		if (!ctx->i915->params.enable_hangcheck)
 			return -EINVAL;
 
 		i915_gem_context_set_persistence(ctx);
 	} else {
-		/* To cancel a context we use "preempt-to-idle" */
+		 
 		if (!(ctx->i915->caps.scheduler & I915_SCHEDULER_CAP_PREEMPTION))
 			return -ENODEV;
 
-		/*
-		 * If the cancel fails, we then need to reset, cleanly!
-		 *
-		 * If the per-engine reset fails, all hope is lost! We resort
-		 * to a full GPU reset in that unlikely case, but realistically
-		 * if the engine could not reset, the full reset does not fare
-		 * much better. The damage has been done.
-		 *
-		 * However, if we cannot reset an engine by itself, we cannot
-		 * cleanup a hanging persistent context without causing
-		 * colateral damage, and we should not pretend we can by
-		 * exposing the interface.
-		 */
+		 
 		if (!intel_has_reset_engine(to_gt(ctx->i915)))
 			return -ENODEV;
 
@@ -1644,9 +1493,7 @@ i915_gem_create_context(struct drm_i915_private *i915,
 	INIT_RADIX_TREE(&ctx->handles_vma, GFP_KERNEL);
 	mutex_init(&ctx->lut_mutex);
 
-	/* NB: Mark all slices as needing a remap so that when the context first
-	 * loads it will restore whatever remap state already exists. If there
-	 * is no remap info, it will be a NOP. */
+	 
 	ctx->remap_slice = ALL_L3_SLICES(i915);
 
 	ctx->user_flags = pc->user_flags;
@@ -1692,10 +1539,7 @@ void i915_gem_init__contexts(struct drm_i915_private *i915)
 	init_contexts(&i915->gem.contexts);
 }
 
-/*
- * Note that this implicitly consumes the ctx reference, by placing
- * the ctx in the context_xa.
- */
+ 
 static void gem_context_register(struct i915_gem_context *ctx,
 				 struct drm_i915_file_private *fpriv,
 				 u32 id)
@@ -1719,7 +1563,7 @@ static void gem_context_register(struct i915_gem_context *ctx,
 	list_add_tail(&ctx->link, &i915->gem.contexts.list);
 	spin_unlock(&i915->gem.contexts.lock);
 
-	/* And finally expose ourselves to userspace via the idr */
+	 
 	old = xa_store(&fpriv->context_xa, id, ctx, GFP_KERNEL);
 	WARN_ON(old);
 }
@@ -1735,10 +1579,10 @@ int i915_gem_context_open(struct drm_i915_private *i915,
 	mutex_init(&file_priv->proto_context_lock);
 	xa_init_flags(&file_priv->proto_context_xa, XA_FLAGS_ALLOC);
 
-	/* 0 reserved for the default context */
+	 
 	xa_init_flags(&file_priv->context_xa, XA_FLAGS_ALLOC1);
 
-	/* 0 reserved for invalid/unassigned ppgtt */
+	 
 	xa_init_flags(&file_priv->vm_xa, XA_FLAGS_ALLOC1);
 
 	pc = proto_context_create(i915, 0);
@@ -1821,7 +1665,7 @@ int i915_gem_vm_create_ioctl(struct drm_device *dev, void *data,
 	if (err)
 		goto err_put;
 
-	GEM_BUG_ON(id == 0); /* reserved for invalid/unassigned ppgtt */
+	GEM_BUG_ON(id == 0);  
 	args->vm_id = id;
 	return 0;
 
@@ -1865,12 +1709,7 @@ static int get_ppgtt(struct drm_i915_file_private *file_priv,
 	vm = ctx->vm;
 	GEM_BUG_ON(!vm);
 
-	/*
-	 * Get a reference for the allocated handle.  Once the handle is
-	 * visible in the vm_xa table, userspace could try to close it
-	 * from under our feet, so we need to hold the extra reference
-	 * first.
-	 */
+	 
 	i915_vm_get(vm);
 
 	err = xa_alloc(&file_priv->vm_xa, &id, vm, xa_limit_32b, GFP_KERNEL);
@@ -1879,7 +1718,7 @@ static int get_ppgtt(struct drm_i915_file_private *file_priv,
 		return err;
 	}
 
-	GEM_BUG_ON(id == 0); /* reserved for invalid/unassigned ppgtt */
+	GEM_BUG_ON(id == 0);  
 	args->value = id;
 	args->size = 0;
 
@@ -1895,19 +1734,16 @@ i915_gem_user_to_context_sseu(struct intel_gt *gt,
 	struct drm_i915_private *i915 = gt->i915;
 	unsigned int dev_subslice_mask = intel_sseu_get_hsw_subslices(device, 0);
 
-	/* No zeros in any field. */
+	 
 	if (!user->slice_mask || !user->subslice_mask ||
 	    !user->min_eus_per_subslice || !user->max_eus_per_subslice)
 		return -EINVAL;
 
-	/* Max > min. */
+	 
 	if (user->max_eus_per_subslice < user->min_eus_per_subslice)
 		return -EINVAL;
 
-	/*
-	 * Some future proofing on the types since the uAPI is wider than the
-	 * current internal implementation.
-	 */
+	 
 	if (overflows_type(user->slice_mask, context->slice_mask) ||
 	    overflows_type(user->subslice_mask, context->subslice_mask) ||
 	    overflows_type(user->min_eus_per_subslice,
@@ -1916,7 +1752,7 @@ i915_gem_user_to_context_sseu(struct intel_gt *gt,
 			   context->max_eus_per_subslice))
 		return -EINVAL;
 
-	/* Check validity against hardware. */
+	 
 	if (user->slice_mask & ~device->slice_mask)
 		return -EINVAL;
 
@@ -1931,51 +1767,38 @@ i915_gem_user_to_context_sseu(struct intel_gt *gt,
 	context->min_eus_per_subslice = user->min_eus_per_subslice;
 	context->max_eus_per_subslice = user->max_eus_per_subslice;
 
-	/* Part specific restrictions. */
+	 
 	if (GRAPHICS_VER(i915) == 11) {
 		unsigned int hw_s = hweight8(device->slice_mask);
 		unsigned int hw_ss_per_s = hweight8(dev_subslice_mask);
 		unsigned int req_s = hweight8(context->slice_mask);
 		unsigned int req_ss = hweight8(context->subslice_mask);
 
-		/*
-		 * Only full subslice enablement is possible if more than one
-		 * slice is turned on.
-		 */
+		 
 		if (req_s > 1 && req_ss != hw_ss_per_s)
 			return -EINVAL;
 
-		/*
-		 * If more than four (SScount bitfield limit) subslices are
-		 * requested then the number has to be even.
-		 */
+		 
 		if (req_ss > 4 && (req_ss & 1))
 			return -EINVAL;
 
-		/*
-		 * If only one slice is enabled and subslice count is below the
-		 * device full enablement, it must be at most half of the all
-		 * available subslices.
-		 */
+		 
 		if (req_s == 1 && req_ss < hw_ss_per_s &&
 		    req_ss > (hw_ss_per_s / 2))
 			return -EINVAL;
 
-		/* ABI restriction - VME use case only. */
+		 
 
-		/* All slices or one slice only. */
+		 
 		if (req_s != 1 && req_s != hw_s)
 			return -EINVAL;
 
-		/*
-		 * Half subslices or full enablement only when one slice is
-		 * enabled.
-		 */
+		 
 		if (req_s == 1 &&
 		    (req_ss != hw_ss_per_s && req_ss != (hw_ss_per_s / 2)))
 			return -EINVAL;
 
-		/* No EU configuration changes. */
+		 
 		if ((user->min_eus_per_subslice !=
 		     device->max_eus_per_subslice) ||
 		    (user->max_eus_per_subslice !=
@@ -2020,7 +1843,7 @@ static int set_sseu(struct i915_gem_context *ctx,
 	if (IS_ERR(ce))
 		return PTR_ERR(ce);
 
-	/* Only render engine supports RPCS configuration. */
+	 
 	if (ce->engine->class != RENDER_CLASS) {
 		ret = -ENODEV;
 		goto out_ce;
@@ -2112,7 +1935,7 @@ static int ctx_setparam(struct drm_i915_file_private *fpriv,
 		else if (args->value)
 			i915_gem_context_set_bannable(ctx);
 		else if (i915_gem_context_uses_protected_content(ctx))
-			ret = -EPERM; /* can't clear this for protected contexts */
+			ret = -EPERM;  
 		else
 			i915_gem_context_clear_bannable(ctx);
 		break;
@@ -2123,7 +1946,7 @@ static int ctx_setparam(struct drm_i915_file_private *fpriv,
 		else if (!args->value)
 			i915_gem_context_clear_recoverable(ctx);
 		else if (i915_gem_context_uses_protected_content(ctx))
-			ret = -EPERM; /* can't set this for protected contexts */
+			ret = -EPERM;  
 		else
 			i915_gem_context_set_recoverable(ctx);
 		break;
@@ -2215,13 +2038,7 @@ finalize_create_context_locked(struct drm_i915_file_private *file_priv,
 	if (IS_ERR(ctx))
 		return ctx;
 
-	/*
-	 * One for the xarray and one for the caller.  We need to grab
-	 * the reference *prior* to making the ctx visble to userspace
-	 * in gem_context_register(), as at any point after that
-	 * userspace can try to race us with another thread destroying
-	 * the context under our feet.
-	 */
+	 
 	i915_gem_context_get(ctx);
 
 	gem_context_register(ctx, file_priv, id);
@@ -2244,7 +2061,7 @@ i915_gem_context_lookup(struct drm_i915_file_private *file_priv, u32 id)
 		return ctx;
 
 	mutex_lock(&file_priv->proto_context_lock);
-	/* Try one more time under the lock */
+	 
 	ctx = __context_lookup(file_priv, id);
 	if (!ctx) {
 		pc = xa_load(&file_priv->proto_context_xa, id);
@@ -2301,7 +2118,7 @@ int i915_gem_context_create_ioctl(struct drm_device *dev, void *data,
 	if (GRAPHICS_VER(i915) > 12) {
 		struct i915_gem_context *ctx;
 
-		/* Get ourselves a context ID */
+		 
 		ret = xa_alloc(&ext_data.fpriv->context_xa, &id, NULL,
 			       xa_limit_32b, GFP_KERNEL);
 		if (ret)
@@ -2344,9 +2161,7 @@ int i915_gem_context_destroy_ioctl(struct drm_device *dev, void *data,
 	if (!args->ctx_id)
 		return -ENOENT;
 
-	/* We need to hold the proto-context lock here to prevent races
-	 * with finalize_create_context_locked().
-	 */
+	 
 	mutex_lock(&file_priv->proto_context_lock);
 	ctx = xa_erase(&file_priv->context_xa, args->ctx_id);
 	pc = xa_erase(&file_priv->proto_context_xa, args->ctx_id);
@@ -2396,7 +2211,7 @@ static int get_sseu(struct i915_gem_context *ctx,
 	if (IS_ERR(ce))
 		return PTR_ERR(ce);
 
-	err = intel_context_lock_pinned(ce); /* serialises with set_sseu */
+	err = intel_context_lock_pinned(ce);  
 	if (err) {
 		intel_context_put(ce);
 		return err;
@@ -2506,10 +2321,7 @@ int i915_gem_context_setparam_ioctl(struct drm_device *dev, void *data,
 	if (!ctx) {
 		pc = xa_load(&file_priv->proto_context_xa, args->ctx_id);
 		if (pc) {
-			/* Contexts should be finalized inside
-			 * GEM_CONTEXT_CREATE starting with graphics
-			 * version 13.
-			 */
+			 
 			WARN_ON(GRAPHICS_VER(file_priv->i915) > 12);
 			ret = set_proto_ctx_param(file_priv, pc, args);
 		} else {
@@ -2540,12 +2352,7 @@ int i915_gem_context_reset_stats_ioctl(struct drm_device *dev,
 	if (IS_ERR(ctx))
 		return PTR_ERR(ctx);
 
-	/*
-	 * We opt for unserialised reads here. This may result in tearing
-	 * in the extremely unlikely event of a GPU hang on this context
-	 * as we are querying them. If we need that extra layer of protection,
-	 * we should wrap the hangstats with a seqlock.
-	 */
+	 
 
 	if (capable(CAP_SYS_ADMIN))
 		args->reset_count = i915_reset_count(&i915->gpu_error);
@@ -2559,7 +2366,7 @@ int i915_gem_context_reset_stats_ioctl(struct drm_device *dev,
 	return 0;
 }
 
-/* GEM context-engines iterator: for_each_gem_engine() */
+ 
 struct intel_context *
 i915_gem_engines_iter_next(struct i915_gem_engines_iter *it)
 {

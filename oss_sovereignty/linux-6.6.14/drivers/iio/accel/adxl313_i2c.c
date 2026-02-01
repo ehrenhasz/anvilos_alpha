@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL313 3-Axis Digital Accelerometer
- *
- * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL313.pdf
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
@@ -61,10 +55,7 @@ static int adxl313_i2c_probe(struct i2c_client *client)
 	const struct adxl313_chip_info *chip_data;
 	struct regmap *regmap;
 
-	/*
-	 * Retrieves device specific data as a pointer to a
-	 * adxl313_chip_info structure
-	 */
+	 
 	chip_data = i2c_get_match_data(client);
 
 	regmap = devm_regmap_init_i2c(client,

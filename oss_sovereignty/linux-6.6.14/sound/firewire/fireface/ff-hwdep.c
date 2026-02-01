@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-hwdep.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
 
-/*
- * This codes give three functionality.
- *
- * 1.get firewire node information
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock stream
- */
+ 
+
+ 
 
 #include "ff.h"
 
@@ -55,8 +45,8 @@ static long hwdep_read(struct snd_hwdep *hwdep, char __user *buf,  long count,
 			return -EFAULT;
 		count = sizeof(ev);
 	} else if (has_msg(ff)) {
-		// NOTE: Acquired spin lock should be released before accessing to user space in the
-		// callback since the access can cause page fault.
+		
+		
 		count = ff->spec->protocol->copy_msg_to_user(ff, buf, count);
 		spin_unlock_irq(&ff->lock);
 	} else {

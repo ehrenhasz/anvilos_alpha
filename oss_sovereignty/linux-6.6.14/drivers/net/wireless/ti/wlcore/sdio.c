@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/module.h>
@@ -141,10 +135,7 @@ static int wl12xx_sdio_power_on(struct wl12xx_sdio_glue *glue)
 	}
 
 	sdio_claim_host(func);
-	/*
-	 * To guarantee that the SDIO card is power cycled, as required to make
-	 * the FW programming to succeed, let's do a brute force HW reset.
-	 */
+	 
 	mmc_hw_reset(card);
 
 	sdio_enable_func(func);
@@ -162,7 +153,7 @@ static int wl12xx_sdio_power_off(struct wl12xx_sdio_glue *glue)
 	sdio_disable_func(func);
 	sdio_release_host(func);
 
-	/* Let runtime PM know the card is powered off */
+	 
 	pm_runtime_put(&card->dev);
 	return 0;
 }
@@ -237,7 +228,7 @@ static int wlcore_probe_of(struct device *dev, int *irq, int *wakeirq,
 
 	*wakeirq = irq_of_parse_and_map(np, 1);
 
-	/* optional clock frequency params */
+	 
 	of_property_read_u32(np, "ref-clock-frequency",
 			     &pdev_data->ref_clock_freq);
 	of_property_read_u32(np, "tcxo-clock-frequency",
@@ -264,7 +255,7 @@ static int wl1271_probe(struct sdio_func *func,
 	int irq, wakeirq, num_irqs;
 	const char *chip_family;
 
-	/* We are only able to handle the wlan function */
+	 
 	if (func->num != 0x02)
 		return -ENODEV;
 
@@ -280,17 +271,17 @@ static int wl1271_probe(struct sdio_func *func,
 
 	glue->dev = &func->dev;
 
-	/* Grab access to FN0 for ELP reg. */
+	 
 	func->card->quirks |= MMC_QUIRK_LENIENT_FN0;
 
-	/* Use block mode for transferring over one block size of data */
+	 
 	func->card->quirks |= MMC_QUIRK_BLKSZ_FOR_BYTE_MODE;
 
 	ret = wlcore_probe_of(&func->dev, &irq, &wakeirq, pdev_data);
 	if (ret)
 		goto out;
 
-	/* if sdio can keep power while host is suspended, enable wow */
+	 
 	mmcflags = sdio_get_host_pm_caps(func);
 	dev_dbg(glue->dev, "sdio PM caps = 0x%x\n", mmcflags);
 
@@ -299,15 +290,10 @@ static int wl1271_probe(struct sdio_func *func,
 
 	sdio_set_drvdata(func, glue);
 
-	/* Tell PM core that we don't need the card to be powered now */
+	 
 	pm_runtime_put_noidle(&func->dev);
 
-	/*
-	 * Due to a hardware bug, we can't differentiate wl18xx from
-	 * wl12xx, because both report the same device ID.  The only
-	 * way to differentiate is by checking the SDIO revision,
-	 * which is 3.00 on the wl18xx chips.
-	 */
+	 
 	if (func->card->cccr.sdio_vsn == SDIO_SDIO_REV_3_00)
 		chip_family = "wl18xx";
 	else
@@ -370,7 +356,7 @@ static void wl1271_remove(struct sdio_func *func)
 {
 	struct wl12xx_sdio_glue *glue = sdio_get_drvdata(func);
 
-	/* Undo decrement done above in wl1271_probe */
+	 
 	pm_runtime_get_noresume(&func->dev);
 
 	platform_device_unregister(glue->core);
@@ -379,8 +365,7 @@ static void wl1271_remove(struct sdio_func *func)
 #ifdef CONFIG_PM
 static int wl1271_suspend(struct device *dev)
 {
-	/* Tell MMC/SDIO core it's OK to power down the card
-	 * (if it isn't already), but not to remove it completely */
+	 
 	struct sdio_func *func = dev_to_sdio_func(dev);
 	struct wl12xx_sdio_glue *glue = sdio_get_drvdata(func);
 	struct wl1271 *wl = platform_get_drvdata(glue->core);
@@ -395,7 +380,7 @@ static int wl1271_suspend(struct device *dev)
 	dev_dbg(dev, "wl1271 suspend. wow_enabled: %d\n",
 		wl->wow_enabled);
 
-	/* check whether sdio should keep power */
+	 
 	if (wl->wow_enabled) {
 		sdio_flags = sdio_get_host_pm_caps(func);
 
@@ -406,7 +391,7 @@ static int wl1271_suspend(struct device *dev)
 			goto out;
 		}
 
-		/* keep power while host suspended */
+		 
 		ret = sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 		if (ret) {
 			dev_err(dev, "error while trying to keep power\n");

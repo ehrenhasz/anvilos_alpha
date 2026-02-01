@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * inv_mpu_acpi: ACPI processing for creating client devices
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 
 #ifdef CONFIG_ACPI
 
@@ -36,7 +33,7 @@ static const struct dmi_system_id inv_mpu_dev_list[] = {
 			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
 		},
 	},
-	/* Add more matching tables here..*/
+	 
 	{}
 };
 
@@ -70,7 +67,7 @@ static int asus_acpi_get_sensor_info(struct acpi_device *adev,
 			else if (sub_elem->type == ACPI_TYPE_INTEGER) {
 				if (sub_elem->integer.value != client->addr) {
 					info->addr = sub_elem->integer.value;
-					break; /* Not a MPU6500 primary */
+					break;  
 				}
 			}
 		}
@@ -93,7 +90,7 @@ static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
 			*addr = sb->slave_address;
 	}
 
-	/* Tell the ACPI core that we already copied this address */
+	 
 	return 1;
 }
 
@@ -143,13 +140,13 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
 			ret = asus_acpi_get_sensor_info(adev, client,
 							&info);
 			break;
-		/* Add more matched product processing here */
+		 
 		default:
 			break;
 		}
 
 		if (ret < 0) {
-			/* No matching DMI, so create device on INV6XX type */
+			 
 			unsigned short primary, secondary;
 
 			ret = inv_mpu_process_acpi_config(client, &primary,
@@ -166,7 +163,7 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
 				strlcat(info.type, "-client",
 					sizeof(info.type));
 			} else
-				return 0; /* no secondary addr, which is OK */
+				return 0;  
 		}
 		mux_client = i2c_new_client_device(st->muxc->adapter[0], &info);
 		if (IS_ERR(mux_client))

@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Multifunction core driver for Zodiac Inflight Innovations RAVE
- * Supervisory Processor(SP) MCU that is connected via dedicated UART
- * port
- *
- * Copyright (C) 2017 Zodiac Inflight Innovations
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/crc-ccitt.h>
@@ -23,23 +17,7 @@
 #include <linux/serdev.h>
 #include <asm/unaligned.h>
 
-/*
- * UART protocol using following entities:
- *  - message to MCU => ACK response
- *  - event from MCU => event ACK
- *
- * Frame structure:
- * <STX> <DATA> <CHECKSUM> <ETX>
- * Where:
- * - STX - is start of transmission character
- * - ETX - end of transmission
- * - DATA - payload
- * - CHECKSUM - checksum calculated on <DATA>
- *
- * If <DATA> or <CHECKSUM> contain one of control characters, then it is
- * escaped using <DLE> control code. Added <DLE> does not participate in
- * checksum calculation.
- */
+ 
 #define RAVE_SP_STX			0x02
 #define RAVE_SP_ETX			0x03
 #define RAVE_SP_DLE			0x10
@@ -48,56 +26,30 @@
 #define RAVE_SP_CHECKSUM_8B2C		1
 #define RAVE_SP_CHECKSUM_CCITT		2
 #define RAVE_SP_CHECKSUM_SIZE		RAVE_SP_CHECKSUM_CCITT
-/*
- * We don't store STX, ETX and unescaped bytes, so Rx is only
- * DATA + CSUM
- */
+ 
 #define RAVE_SP_RX_BUFFER_SIZE				\
 	(RAVE_SP_MAX_DATA_SIZE + RAVE_SP_CHECKSUM_SIZE)
 
 #define RAVE_SP_STX_ETX_SIZE		2
-/*
- * For Tx we have to have space for everything, STX, EXT and
- * potentially stuffed DATA + CSUM data + csum
- */
+ 
 #define RAVE_SP_TX_BUFFER_SIZE				\
 	(RAVE_SP_STX_ETX_SIZE + 2 * RAVE_SP_RX_BUFFER_SIZE)
 
-/**
- * enum rave_sp_deframer_state - Possible state for de-framer
- *
- * @RAVE_SP_EXPECT_SOF:		 Scanning input for start-of-frame marker
- * @RAVE_SP_EXPECT_DATA:	 Got start of frame marker, collecting frame
- * @RAVE_SP_EXPECT_ESCAPED_DATA: Got escape character, collecting escaped byte
- */
+ 
 enum rave_sp_deframer_state {
 	RAVE_SP_EXPECT_SOF,
 	RAVE_SP_EXPECT_DATA,
 	RAVE_SP_EXPECT_ESCAPED_DATA,
 };
 
-/**
- * struct rave_sp_deframer - Device protocol deframer
- *
- * @state:  Current state of the deframer
- * @data:   Buffer used to collect deframed data
- * @length: Number of bytes de-framed so far
- */
+ 
 struct rave_sp_deframer {
 	enum rave_sp_deframer_state state;
 	unsigned char data[RAVE_SP_RX_BUFFER_SIZE];
 	size_t length;
 };
 
-/**
- * struct rave_sp_reply - Reply as per RAVE device protocol
- *
- * @length:	Expected reply length
- * @data:	Buffer to store reply payload in
- * @code:	Expected reply code
- * @ackid:	Expected reply ACK ID
- * @received:   Successful reply reception completion
- */
+ 
 struct rave_sp_reply {
 	size_t length;
 	void  *data;
@@ -106,12 +58,7 @@ struct rave_sp_reply {
 	struct completion received;
 };
 
-/**
- * struct rave_sp_checksum - Variant specific checksum implementation details
- *
- * @length:	Calculated checksum length
- * @subroutine:	Utilized checksum algorithm implementation
- */
+ 
 struct rave_sp_checksum {
 	size_t length;
 	void (*subroutine)(const u8 *, size_t, u8 *);
@@ -146,45 +93,19 @@ struct rave_sp_status {
 	u8  periph_power_shutoff;
 } __packed;
 
-/**
- * struct rave_sp_variant_cmds - Variant specific command routines
- *
- * @translate:	Generic to variant specific command mapping routine
- * @get_status: Variant specific implementation of CMD_GET_STATUS
- */
+ 
 struct rave_sp_variant_cmds {
 	int (*translate)(enum rave_sp_command);
 	int (*get_status)(struct rave_sp *sp, struct rave_sp_status *);
 };
 
-/**
- * struct rave_sp_variant - RAVE supervisory processor core variant
- *
- * @checksum:	Variant specific checksum implementation
- * @cmd:	Variant specific command pointer table
- *
- */
+ 
 struct rave_sp_variant {
 	const struct rave_sp_checksum *checksum;
 	struct rave_sp_variant_cmds cmd;
 };
 
-/**
- * struct rave_sp - RAVE supervisory processor core
- *
- * @serdev:			Pointer to underlying serdev
- * @deframer:			Stored state of the protocol deframer
- * @ackid:			ACK ID used in last reply sent to the device
- * @bus_lock:			Lock to serialize access to the device
- * @reply_lock:			Lock protecting @reply
- * @reply:			Pointer to memory to store reply payload
- *
- * @variant:			Device variant specific information
- * @event_notifier_list:	Input event notification chain
- *
- * @part_number_firmware:	Firmware version
- * @part_number_bootloader:	Bootloader version
- */
+ 
 struct rave_sp {
 	struct serdev_device *serdev;
 	struct rave_sp_deframer deframer;
@@ -253,10 +174,7 @@ static void csum_ccitt(const u8 *buf, size_t size, u8 *crc)
 {
 	const u16 calculated = crc_ccitt_false(0xffff, buf, size);
 
-	/*
-	 * While the rest of the wire protocol is little-endian,
-	 * CCITT-16 CRC in RDU2 device is sent out in big-endian order.
-	 */
+	 
 	put_unaligned_be16(calculated, crc);
 }
 
@@ -310,31 +228,16 @@ static int rave_sp_write(struct rave_sp *sp, const u8 *data, u8 data_size)
 
 static u8 rave_sp_reply_code(u8 command)
 {
-	/*
-	 * There isn't a single rule that describes command code ->
-	 * ACK code transformation, but, going through various
-	 * versions of ICDs, there appear to be three distinct groups
-	 * that can be described by simple transformation.
-	 */
+	 
 	switch (command) {
 	case 0xA0 ... 0xBE:
-		/*
-		 * Commands implemented by firmware found in RDU1 and
-		 * older devices all seem to obey the following rule
-		 */
+		 
 		return command + 0x20;
 	case 0xE0 ... 0xEF:
-		/*
-		 * Events emitted by all versions of the firmare use
-		 * least significant bit to get an ACK code
-		 */
+		 
 		return command | 0x01;
 	default:
-		/*
-		 * Commands implemented by firmware found in RDU2 are
-		 * similar to "old" commands, but they use slightly
-		 * different offset
-		 */
+		 
 		return command + 0x40;
 	}
 }
@@ -413,10 +316,7 @@ static void rave_sp_receive_reply(struct rave_sp *sp,
 	if (reply) {
 		if (reply->code == data[0] && reply->ackid == data[1] &&
 		    payload_length >= reply->length) {
-			/*
-			 * We are relying on memcpy(dst, src, 0) to be a no-op
-			 * when handling commands that have a no-payload reply
-			 */
+			 
 			memcpy(reply->data, &data[2], reply->length);
 			complete(&reply->received);
 			sp->reply = NULL;
@@ -490,100 +390,47 @@ static int rave_sp_receive_buf(struct serdev_device *serdev,
 			break;
 
 		case RAVE_SP_EXPECT_DATA:
-			/*
-			 * Treat special byte values first
-			 */
+			 
 			switch (byte) {
 			case RAVE_SP_ETX:
 				rave_sp_receive_frame(sp,
 						      deframer->data,
 						      deframer->length);
-				/*
-				 * Once we extracted a complete frame
-				 * out of a stream, we call it done
-				 * and proceed to bailing out while
-				 * resetting the framer to initial
-				 * state, regardless if we've consumed
-				 * all of the stream or not.
-				 */
+				 
 				goto reset_framer;
 			case RAVE_SP_STX:
 				dev_warn(dev, "Bad frame: STX before ETX\n");
-				/*
-				 * If we encounter second "start of
-				 * the frame" marker before seeing
-				 * corresponding "end of frame", we
-				 * reset the framer and ignore both:
-				 * frame started by first SOF and
-				 * frame started by current SOF.
-				 *
-				 * NOTE: The above means that only the
-				 * frame started by third SOF, sent
-				 * after this one will have a chance
-				 * to get throught.
-				 */
+				 
 				goto reset_framer;
 			case RAVE_SP_DLE:
 				deframer->state = RAVE_SP_EXPECT_ESCAPED_DATA;
-				/*
-				 * If we encounter escape sequence we
-				 * need to skip it and collect the
-				 * byte that follows. We do it by
-				 * forcing the next iteration of the
-				 * encompassing while loop.
-				 */
+				 
 				continue;
 			}
-			/*
-			 * For the rest of the bytes, that are not
-			 * speical snoflakes, we do the same thing
-			 * that we do to escaped data - collect it in
-			 * deframer buffer
-			 */
+			 
 
 			fallthrough;
 
 		case RAVE_SP_EXPECT_ESCAPED_DATA:
 			if (deframer->length == sizeof(deframer->data)) {
 				dev_warn(dev, "Bad frame: Too long\n");
-				/*
-				 * If the amount of data we've
-				 * accumulated for current frame so
-				 * far starts to exceed the capacity
-				 * of deframer's buffer, there's
-				 * nothing else we can do but to
-				 * discard that data and start
-				 * assemblying a new frame again
-				 */
+				 
 				goto reset_framer;
 			}
 
 			deframer->data[deframer->length++] = byte;
 
-			/*
-			 * We've extracted out special byte, now we
-			 * can go back to regular data collecting
-			 */
+			 
 			deframer->state = RAVE_SP_EXPECT_DATA;
 			break;
 		}
 	}
 
-	/*
-	 * The only way to get out of the above loop and end up here
-	 * is throught consuming all of the supplied data, so here we
-	 * report that we processed it all.
-	 */
+	 
 	return size;
 
 reset_framer:
-	/*
-	 * NOTE: A number of codepaths that will drop us here will do
-	 * so before consuming all 'size' bytes of the data passed by
-	 * serdev layer. We rely on the fact that serdev layer will
-	 * re-execute this handler with the remainder of the Rx bytes
-	 * once we report actual number of bytes that we processed.
-	 */
+	 
 	deframer->state  = RAVE_SP_EXPECT_SOF;
 	deframer->length = 0;
 
@@ -606,10 +453,7 @@ static int rave_sp_rdu2_cmd_translate(enum rave_sp_command command)
 		return command;
 
 	if (command == RAVE_SP_CMD_REQ_COPPER_REV) {
-		/*
-		 * As per RDU2 ICD 3.4.47 CMD_GET_COPPER_REV code is
-		 * different from that for RDU1 and it is set to 0x28.
-		 */
+		 
 		return 0x28;
 	}
 
@@ -618,11 +462,7 @@ static int rave_sp_rdu2_cmd_translate(enum rave_sp_command command)
 
 static int rave_sp_default_cmd_translate(enum rave_sp_command command)
 {
-	/*
-	 * All of the following command codes were taken from "Table :
-	 * Communications Protocol Message Types" in section 3.3
-	 * "MESSAGE TYPES" of Rave PIC24 ICD.
-	 */
+	 
 	switch (command) {
 	case RAVE_SP_CMD_GET_FIRMWARE_VERSION:
 		return 0x11;
@@ -648,11 +488,7 @@ static int rave_sp_default_cmd_translate(enum rave_sp_command command)
 static const char *devm_rave_sp_version(struct device *dev,
 					struct rave_sp_version *version)
 {
-	/*
-	 * NOTE: The format string below uses %02d to display u16
-	 * intentionally for the sake of backwards compatibility with
-	 * legacy software.
-	 */
+	 
 	return devm_kasprintf(dev, GFP_KERNEL, "%02d%02d%02d.%c%c\n",
 			      version->hardware,
 			      le16_to_cpu(version->major),
@@ -757,7 +593,7 @@ static const struct of_device_id rave_sp_dt_ids[] = {
 	{ .compatible = "zii,rave-sp-esb",  .data = &rave_sp_legacy },
 	{ .compatible = "zii,rave-sp-rdu1", .data = &rave_sp_rdu1   },
 	{ .compatible = "zii,rave-sp-rdu2", .data = &rave_sp_rdu2   },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct serdev_device_ops rave_sp_serdev_device_ops = {
@@ -815,10 +651,7 @@ static int rave_sp_probe(struct serdev_device *serdev)
 		sp->part_number_bootloader = unknown;
 	}
 
-	/*
-	 * Those strings already have a \n embedded, so there's no
-	 * need to have one in format string.
-	 */
+	 
 	dev_info(dev, "Firmware version: %s",   sp->part_number_firmware);
 	dev_info(dev, "Bootloader version: %s", sp->part_number_bootloader);
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/rockchip.c
- *
- * Driver for ROCKCHIP Ethernet PHYs
- *
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- *
- * David Wu <david.wu@rock-chips.com>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -43,7 +35,7 @@ static int rockchip_init_tstmode(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable access to Analog and DSP register banks */
+	 
 	ret = phy_write(phydev, SMI_ADDR_TSTCNTL, TSTMODE_ENABLE);
 	if (ret)
 		return ret;
@@ -57,7 +49,7 @@ static int rockchip_init_tstmode(struct phy_device *phydev)
 
 static int rockchip_close_tstmode(struct phy_device *phydev)
 {
-	/* Back to basic register bank */
+	 
 	return phy_write(phydev, SMI_ADDR_TSTCNTL, TSTMODE_DISABLE);
 }
 
@@ -69,10 +61,7 @@ static int rockchip_integrated_phy_analog_init(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Adjust tx amplitude to make sginal better,
-	 * the default value is 0x8.
-	 */
+	 
 	ret = phy_write(phydev, SMI_ADDR_TSTWRITE, 0xB);
 	if (ret)
 		return ret;
@@ -87,10 +76,7 @@ static int rockchip_integrated_phy_config_init(struct phy_device *phydev)
 {
 	int val, ret;
 
-	/*
-	 * The auto MIDX has linked problem on some board,
-	 * workround to disable auto MDIX.
-	 */
+	 
 	val = phy_read(phydev, MII_INTERNAL_CTRL_STATUS);
 	if (val < 0)
 		return val;
@@ -104,11 +90,7 @@ static int rockchip_integrated_phy_config_init(struct phy_device *phydev)
 
 static void rockchip_link_change_notify(struct phy_device *phydev)
 {
-	/*
-	 * If mode switch happens from 10BT to 100BT, all DSP/AFE
-	 * registers are set to default values. So any AFE/DSP
-	 * registers have to be re-initialized in this case.
-	 */
+	 
 	if (phydev->state == PHY_RUNNING && phydev->speed == SPEED_100) {
 		int ret = rockchip_integrated_phy_analog_init(phydev);
 
@@ -122,7 +104,7 @@ static int rockchip_set_polarity(struct phy_device *phydev, int polarity)
 {
 	int reg, err, val;
 
-	/* get the current settings */
+	 
 	reg = phy_read(phydev, MII_INTERNAL_CTRL_STATUS);
 	if (reg < 0)
 		return reg;
@@ -143,7 +125,7 @@ static int rockchip_set_polarity(struct phy_device *phydev, int polarity)
 	}
 
 	if (val != reg) {
-		/* Set the new polarity value in the register */
+		 
 		err = phy_write(phydev, MII_INTERNAL_CTRL_STATUS, val);
 		if (err)
 			return err;
@@ -175,7 +157,7 @@ static struct phy_driver rockchip_phy_driver[] = {
 	.phy_id			= INTERNAL_EPHY_ID,
 	.phy_id_mask		= 0xfffffff0,
 	.name			= "Rockchip integrated EPHY",
-	/* PHY_BASIC_FEATURES */
+	 
 	.flags			= 0,
 	.link_change_notify	= rockchip_link_change_notify,
 	.soft_reset		= genphy_soft_reset,

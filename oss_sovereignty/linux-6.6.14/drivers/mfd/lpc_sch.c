@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  lpc_sch.c - LPC interface for Intel Poulsbo SCH
- *
- *  LPC bridge function of the Intel SCH contains many other
- *  functional units, such as Interrupt controllers, Timers,
- *  Power Management, System Management, GPIO, RTC, and LPC
- *  Configuration Registers.
- *
- *  Copyright (c) 2010 CompuLab Ltd
- *  Copyright (c) 2014 Intel Corp.
- *  Author: Denis Turischev <denis@compulab.co.il>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -30,10 +19,10 @@
 #define WDT_IO_SIZE	64
 
 enum sch_chipsets {
-	LPC_SCH = 0,		/* Intel Poulsbo SCH */
-	LPC_ITC,		/* Intel Tunnel Creek */
-	LPC_CENTERTON,		/* Intel Centerton */
-	LPC_QUARK_X1000,	/* Intel Quark X1000 */
+	LPC_SCH = 0,		 
+	LPC_ITC,		 
+	LPC_CENTERTON,		 
+	LPC_QUARK_X1000,	 
 };
 
 struct lpc_sch_info {

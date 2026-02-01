@@ -1,19 +1,5 @@
-/* $OpenBSD: ssh-rsa.c,v 1.79 2023/03/05 05:34:09 dtucker Exp $ */
-/*
- * Copyright (c) 2000, 2003 Markus Friedl <markus@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -114,7 +100,7 @@ ssh_rsa_serialize_private(const struct sshkey *key, struct sshbuf *b,
 	RSA_get0_crt_params(key->rsa, NULL, NULL, &rsa_iqmp);
 
 	if (!sshkey_is_cert(key)) {
-		/* Note: can't reuse ssh_rsa_serialize_public: e, n vs. n, e */
+		 
 		if ((r = sshbuf_put_bignum2(b, rsa_n)) != 0 ||
 		    (r = sshbuf_put_bignum2(b, rsa_e)) != 0)
 			return r;
@@ -173,8 +159,8 @@ ssh_rsa_copy_public(const struct sshkey *from, struct sshkey *to)
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	rsa_n_dup = rsa_e_dup = NULL; /* transferred */
-	/* success */
+	rsa_n_dup = rsa_e_dup = NULL;  
+	 
 	r = 0;
  out:
 	BN_clear_free(rsa_n_dup);
@@ -198,13 +184,13 @@ ssh_rsa_deserialize_public(const char *ktype, struct sshbuf *b,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	rsa_n = rsa_e = NULL; /* transferred */
+	rsa_n = rsa_e = NULL;  
 	if ((ret = sshkey_check_rsa_length(key, 0)) != 0)
 		goto out;
 #ifdef DEBUG_PK
 	RSA_print_fp(stderr, key->rsa, 8);
 #endif
-	/* success */
+	 
 	ret = 0;
  out:
 	BN_clear_free(rsa_n);
@@ -220,7 +206,7 @@ ssh_rsa_deserialize_private(const char *ktype, struct sshbuf *b,
 	BIGNUM *rsa_n = NULL, *rsa_e = NULL, *rsa_d = NULL;
 	BIGNUM *rsa_iqmp = NULL, *rsa_p = NULL, *rsa_q = NULL;
 
-	/* Note: can't reuse ssh_rsa_deserialize_public: e, n vs. n, e */
+	 
 	if (!sshkey_is_cert(key)) {
 		if ((r = sshbuf_get_bignum2(b, &rsa_n)) != 0 ||
 		    (r = sshbuf_get_bignum2(b, &rsa_e)) != 0)
@@ -229,7 +215,7 @@ ssh_rsa_deserialize_private(const char *ktype, struct sshbuf *b,
 			r = SSH_ERR_LIBCRYPTO_ERROR;
 			goto out;
 		}
-		rsa_n = rsa_e = NULL; /* transferred */
+		rsa_n = rsa_e = NULL;  
 	}
 	if ((r = sshbuf_get_bignum2(b, &rsa_d)) != 0 ||
 	    (r = sshbuf_get_bignum2(b, &rsa_iqmp)) != 0 ||
@@ -240,12 +226,12 @@ ssh_rsa_deserialize_private(const char *ktype, struct sshbuf *b,
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	rsa_d = NULL; /* transferred */
+	rsa_d = NULL;  
 	if (!RSA_set0_factors(key->rsa, rsa_p, rsa_q)) {
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	rsa_p = rsa_q = NULL; /* transferred */
+	rsa_p = rsa_q = NULL;  
 	if ((r = sshkey_check_rsa_length(key, 0)) != 0)
 		goto out;
 	if ((r = ssh_rsa_complete_crt_parameters(key, rsa_iqmp)) != 0)
@@ -254,7 +240,7 @@ ssh_rsa_deserialize_private(const char *ktype, struct sshbuf *b,
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
  out:
 	BN_clear_free(rsa_n);
@@ -280,10 +266,7 @@ rsa_hash_alg_ident(int hash_alg)
 	return NULL;
 }
 
-/*
- * Returns the hash algorithm ID for a given algorithm identifier as used
- * inside the signature blob,
- */
+ 
 static int
 rsa_hash_id_from_ident(const char *ident)
 {
@@ -296,11 +279,7 @@ rsa_hash_id_from_ident(const char *ident)
 	return -1;
 }
 
-/*
- * Return the hash algorithm ID for the specified key name. This includes
- * all the cases of rsa_hash_id_from_ident() but also the certificate key
- * types.
- */
+ 
 static int
 rsa_hash_id_from_keyname(const char *alg)
 {
@@ -373,8 +352,8 @@ ssh_rsa_complete_crt_parameters(struct sshkey *key, const BIGNUM *iqmp)
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	rsa_dmp1 = rsa_dmq1 = rsa_iqmp = NULL; /* transferred */
-	/* success */
+	rsa_dmp1 = rsa_dmq1 = rsa_iqmp = NULL;  
+	 
 	r = 0;
  out:
 	BN_clear_free(aux);
@@ -386,7 +365,7 @@ ssh_rsa_complete_crt_parameters(struct sshkey *key, const BIGNUM *iqmp)
 	return r;
 }
 
-/* RSASSA-PKCS1-v1_5 (PKCS #1 v2.0 signature) with SHA1 */
+ 
 static int
 ssh_rsa_sign(struct sshkey *key,
     u_char **sigp, size_t *lenp,
@@ -419,7 +398,7 @@ ssh_rsa_sign(struct sshkey *key,
 	if (slen <= 0 || slen > SSHBUF_MAX_BIGNUM)
 		return SSH_ERR_INVALID_ARGUMENT;
 
-	/* hash the data */
+	 
 	nid = rsa_hash_alg_nid(hash_alg);
 	if ((hlen = ssh_digest_bytes(hash_alg)) == 0)
 		return SSH_ERR_INTERNAL_ERROR;
@@ -444,7 +423,7 @@ ssh_rsa_sign(struct sshkey *key,
 		ret = SSH_ERR_INTERNAL_ERROR;
 		goto out;
 	}
-	/* encode signature */
+	 
 	if ((b = sshbuf_new()) == NULL) {
 		ret = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -501,10 +480,7 @@ ssh_rsa_verify(const struct sshkey *key,
 		ret = SSH_ERR_KEY_TYPE_MISMATCH;
 		goto out;
 	}
-	/*
-	 * Allow ssh-rsa-cert-v01 certs to generate SHA2 signatures for
-	 * legacy reasons, but otherwise the signature type should match.
-	 */
+	 
 	if (alg != NULL && strcmp(alg, "ssh-rsa-cert-v01@openssh.com") != 0) {
 		if ((want_alg = rsa_hash_id_from_keyname(alg)) == -1) {
 			ret = SSH_ERR_INVALID_ARGUMENT;
@@ -523,7 +499,7 @@ ssh_rsa_verify(const struct sshkey *key,
 		ret = SSH_ERR_UNEXPECTED_TRAILING_DATA;
 		goto out;
 	}
-	/* RSA_verify expects a signature of RSA_size */
+	 
 	modlen = RSA_size(key->rsa);
 	if (len > modlen) {
 		ret = SSH_ERR_KEY_BITS_MISMATCH;
@@ -532,7 +508,7 @@ ssh_rsa_verify(const struct sshkey *key,
 		diff = modlen - len;
 		osigblob = sigblob;
 		if ((sigblob = realloc(sigblob, modlen)) == NULL) {
-			sigblob = osigblob; /* put it back for clear/free */
+			sigblob = osigblob;  
 			ret = SSH_ERR_ALLOC_FAIL;
 			goto out;
 		}
@@ -558,53 +534,36 @@ ssh_rsa_verify(const struct sshkey *key,
 	return ret;
 }
 
-/*
- * See:
- * http://www.rsasecurity.com/rsalabs/pkcs/pkcs-1/
- * ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1.asn
- */
+ 
 
-/*
- * id-sha1 OBJECT IDENTIFIER ::= { iso(1) identified-organization(3)
- *	oiw(14) secsig(3) algorithms(2) 26 }
- */
+ 
 static const u_char id_sha1[] = {
-	0x30, 0x21, /* type Sequence, length 0x21 (33) */
-	0x30, 0x09, /* type Sequence, length 0x09 */
-	0x06, 0x05, /* type OID, length 0x05 */
-	0x2b, 0x0e, 0x03, 0x02, 0x1a, /* id-sha1 OID */
-	0x05, 0x00, /* NULL */
-	0x04, 0x14  /* Octet string, length 0x14 (20), followed by sha1 hash */
+	0x30, 0x21,  
+	0x30, 0x09,  
+	0x06, 0x05,  
+	0x2b, 0x0e, 0x03, 0x02, 0x1a,  
+	0x05, 0x00,  
+	0x04, 0x14   
 };
 
-/*
- * See http://csrc.nist.gov/groups/ST/crypto_apps_infra/csor/algorithms.html
- * id-sha256 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) country(16) us(840)
- *      organization(1) gov(101) csor(3) nistAlgorithm(4) hashAlgs(2)
- *      id-sha256(1) }
- */
+ 
 static const u_char id_sha256[] = {
-	0x30, 0x31, /* type Sequence, length 0x31 (49) */
-	0x30, 0x0d, /* type Sequence, length 0x0d (13) */
-	0x06, 0x09, /* type OID, length 0x09 */
-	0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, /* id-sha256 */
-	0x05, 0x00, /* NULL */
-	0x04, 0x20  /* Octet string, length 0x20 (32), followed by sha256 hash */
+	0x30, 0x31,  
+	0x30, 0x0d,  
+	0x06, 0x09,  
+	0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,  
+	0x05, 0x00,  
+	0x04, 0x20   
 };
 
-/*
- * See http://csrc.nist.gov/groups/ST/crypto_apps_infra/csor/algorithms.html
- * id-sha512 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2) country(16) us(840)
- *      organization(1) gov(101) csor(3) nistAlgorithm(4) hashAlgs(2)
- *      id-sha256(3) }
- */
+ 
 static const u_char id_sha512[] = {
-	0x30, 0x51, /* type Sequence, length 0x51 (81) */
-	0x30, 0x0d, /* type Sequence, length 0x0d (13) */
-	0x06, 0x09, /* type OID, length 0x09 */
-	0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, /* id-sha512 */
-	0x05, 0x00, /* NULL */
-	0x04, 0x40  /* Octet string, length 0x40 (64), followed by sha512 hash */
+	0x30, 0x51,  
+	0x30, 0x0d,  
+	0x06, 0x09,  
+	0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03,  
+	0x05, 0x00,  
+	0x04, 0x40   
 };
 
 static int
@@ -678,91 +637,91 @@ done:
 }
 
 static const struct sshkey_impl_funcs sshkey_rsa_funcs = {
-	/* .size = */		ssh_rsa_size,
-	/* .alloc = */		ssh_rsa_alloc,
-	/* .cleanup = */	ssh_rsa_cleanup,
-	/* .equal = */		ssh_rsa_equal,
-	/* .ssh_serialize_public = */ ssh_rsa_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_rsa_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_rsa_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_rsa_deserialize_private,
-	/* .generate = */	ssh_rsa_generate,
-	/* .copy_public = */	ssh_rsa_copy_public,
-	/* .sign = */		ssh_rsa_sign,
-	/* .verify = */		ssh_rsa_verify,
+	 		ssh_rsa_size,
+	 		ssh_rsa_alloc,
+	 	ssh_rsa_cleanup,
+	 		ssh_rsa_equal,
+	  ssh_rsa_serialize_public,
+	  ssh_rsa_deserialize_public,
+	  ssh_rsa_serialize_private,
+	  ssh_rsa_deserialize_private,
+	 	ssh_rsa_generate,
+	 	ssh_rsa_copy_public,
+	 		ssh_rsa_sign,
+	 		ssh_rsa_verify,
 };
 
 const struct sshkey_impl sshkey_rsa_impl = {
-	/* .name = */		"ssh-rsa",
-	/* .shortname = */	"RSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_RSA,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"ssh-rsa",
+	 	"RSA",
+	 		NULL,
+	 		KEY_RSA,
+	 		0,
+	 		0,
+	 	0,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
 
 const struct sshkey_impl sshkey_rsa_cert_impl = {
-	/* .name = */		"ssh-rsa-cert-v01@openssh.com",
-	/* .shortname = */	"RSA-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_RSA_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"ssh-rsa-cert-v01@openssh.com",
+	 	"RSA-CERT",
+	 		NULL,
+	 		KEY_RSA_CERT,
+	 		0,
+	 		1,
+	 	0,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
 
-/* SHA2 signature algorithms */
+ 
 
 const struct sshkey_impl sshkey_rsa_sha256_impl = {
-	/* .name = */		"rsa-sha2-256",
-	/* .shortname = */	"RSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_RSA,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	1,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"rsa-sha2-256",
+	 	"RSA",
+	 		NULL,
+	 		KEY_RSA,
+	 		0,
+	 		0,
+	 	1,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
 
 const struct sshkey_impl sshkey_rsa_sha512_impl = {
-	/* .name = */		"rsa-sha2-512",
-	/* .shortname = */	"RSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_RSA,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	1,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"rsa-sha2-512",
+	 	"RSA",
+	 		NULL,
+	 		KEY_RSA,
+	 		0,
+	 		0,
+	 	1,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
 
 const struct sshkey_impl sshkey_rsa_sha256_cert_impl = {
-	/* .name = */		"rsa-sha2-256-cert-v01@openssh.com",
-	/* .shortname = */	"RSA-CERT",
-	/* .sigalg = */		"rsa-sha2-256",
-	/* .type = */		KEY_RSA_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	1,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"rsa-sha2-256-cert-v01@openssh.com",
+	 	"RSA-CERT",
+	 		"rsa-sha2-256",
+	 		KEY_RSA_CERT,
+	 		0,
+	 		1,
+	 	1,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
 
 const struct sshkey_impl sshkey_rsa_sha512_cert_impl = {
-	/* .name = */		"rsa-sha2-512-cert-v01@openssh.com",
-	/* .shortname = */	"RSA-CERT",
-	/* .sigalg = */		"rsa-sha2-512",
-	/* .type = */		KEY_RSA_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	1,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_rsa_funcs,
+	 		"rsa-sha2-512-cert-v01@openssh.com",
+	 	"RSA-CERT",
+	 		"rsa-sha2-512",
+	 		KEY_RSA_CERT,
+	 		0,
+	 		1,
+	 	1,
+	 	0,
+	 		&sshkey_rsa_funcs,
 };
-#endif /* WITH_OPENSSL */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Microchip MRF24J40 802.15.4 Wireless-PAN Networking controller
- *
- * Copyright (C) 2012 Alan Ott <alan@signal11.us>
- *                    Signal 11 Software
- */
+
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/interrupt.h>
@@ -16,18 +11,18 @@
 #include <net/cfg802154.h>
 #include <net/mac802154.h>
 
-/* MRF24J40 Short Address Registers */
-#define REG_RXMCR	0x00  /* Receive MAC control */
+ 
+#define REG_RXMCR	0x00   
 #define BIT_PROMI	BIT(0)
 #define BIT_ERRPKT	BIT(1)
 #define BIT_NOACKRSP	BIT(5)
 #define BIT_PANCOORD	BIT(3)
 
-#define REG_PANIDL	0x01  /* PAN ID (low) */
-#define REG_PANIDH	0x02  /* PAN ID (high) */
-#define REG_SADRL	0x03  /* Short address (low) */
-#define REG_SADRH	0x04  /* Short address (high) */
-#define REG_EADR0	0x05  /* Long address (low) (high is EADR7) */
+#define REG_PANIDL	0x01   
+#define REG_PANIDH	0x02   
+#define REG_SADRL	0x03   
+#define REG_SADRH	0x04   
+#define REG_EADR0	0x05   
 #define REG_EADR1	0x06
 #define REG_EADR2	0x07
 #define REG_EADR3	0x08
@@ -37,7 +32,7 @@
 #define REG_EADR7	0x0C
 #define REG_RXFLUSH	0x0D
 #define REG_ORDER	0x10
-#define REG_TXMCR	0x11  /* Transmit MAC control */
+#define REG_TXMCR	0x11   
 #define TXMCR_MIN_BE_SHIFT		3
 #define TXMCR_MIN_BE_MASK		0x18
 #define TXMCR_CSMA_RETRIES_SHIFT	0
@@ -47,11 +42,11 @@
 #define REG_ESLOTG1	0x13
 #define REG_SYMTICKL	0x14
 #define REG_SYMTICKH	0x15
-#define REG_PACON0	0x16  /* Power Amplifier Control */
-#define REG_PACON1	0x17  /* Power Amplifier Control */
-#define REG_PACON2	0x18  /* Power Amplifier Control */
+#define REG_PACON0	0x16   
+#define REG_PACON1	0x17   
+#define REG_PACON2	0x18   
 #define REG_TXBCON0	0x1A
-#define REG_TXNCON	0x1B  /* Transmit Normal FIFO Control */
+#define REG_TXNCON	0x1B   
 #define BIT_TXNTRIG	BIT(0)
 #define BIT_TXNSECEN	BIT(1)
 #define BIT_TXNACKREQ	BIT(2)
@@ -64,50 +59,50 @@
 #define REG_TXPEND	0x21
 #define REG_WAKECON	0x22
 #define REG_FROMOFFSET	0x23
-#define REG_TXSTAT	0x24  /* TX MAC Status Register */
+#define REG_TXSTAT	0x24   
 #define REG_TXBCON1	0x25
 #define REG_GATECLK	0x26
 #define REG_TXTIME	0x27
 #define REG_HSYMTMRL	0x28
 #define REG_HSYMTMRH	0x29
-#define REG_SOFTRST	0x2A  /* Soft Reset */
+#define REG_SOFTRST	0x2A   
 #define REG_SECCON0	0x2C
 #define REG_SECCON1	0x2D
-#define REG_TXSTBL	0x2E  /* TX Stabilization */
+#define REG_TXSTBL	0x2E   
 #define REG_RXSR	0x30
-#define REG_INTSTAT	0x31  /* Interrupt Status */
+#define REG_INTSTAT	0x31   
 #define BIT_TXNIF	BIT(0)
 #define BIT_RXIF	BIT(3)
 #define BIT_SECIF	BIT(4)
 #define BIT_SECIGNORE	BIT(7)
 
-#define REG_INTCON	0x32  /* Interrupt Control */
+#define REG_INTCON	0x32   
 #define BIT_TXNIE	BIT(0)
 #define BIT_RXIE	BIT(3)
 #define BIT_SECIE	BIT(4)
 
-#define REG_GPIO	0x33  /* GPIO */
-#define REG_TRISGPIO	0x34  /* GPIO direction */
+#define REG_GPIO	0x33   
+#define REG_TRISGPIO	0x34   
 #define REG_SLPACK	0x35
-#define REG_RFCTL	0x36  /* RF Control Mode Register */
+#define REG_RFCTL	0x36   
 #define BIT_RFRST	BIT(2)
 
 #define REG_SECCR2	0x37
 #define REG_BBREG0	0x38
-#define REG_BBREG1	0x39  /* Baseband Registers */
+#define REG_BBREG1	0x39   
 #define BIT_RXDECINV	BIT(2)
 
-#define REG_BBREG2	0x3A  /* */
+#define REG_BBREG2	0x3A   
 #define BBREG2_CCA_MODE_SHIFT	6
 #define BBREG2_CCA_MODE_MASK	0xc0
 
 #define REG_BBREG3	0x3B
 #define REG_BBREG4	0x3C
-#define REG_BBREG6	0x3E  /* */
-#define REG_CCAEDTH	0x3F  /* Energy Detection Threshold */
+#define REG_BBREG6	0x3E   
+#define REG_CCAEDTH	0x3F   
 
-/* MRF24J40 Long Address Registers */
-#define REG_RFCON0	0x200  /* RF Control Registers */
+ 
+#define REG_RFCON0	0x200   
 #define RFCON0_CH_SHIFT	4
 #define RFCON0_CH_MASK	0xf0
 #define RFOPT_RECOMMEND	3
@@ -143,19 +138,19 @@
 #define REG_SLPCAL2	0x20B
 #define REG_RFSTATE	0x20F
 #define REG_RSSI	0x210
-#define REG_SLPCON0	0x211  /* Sleep Clock Control Registers */
+#define REG_SLPCON0	0x211   
 #define BIT_INTEDGE	BIT(1)
 
 #define REG_SLPCON1	0x220
-#define REG_WAKETIMEL	0x222  /* Wake-up Time Match Value Low */
-#define REG_WAKETIMEH	0x223  /* Wake-up Time Match Value High */
+#define REG_WAKETIMEL	0x222   
+#define REG_WAKETIMEH	0x223   
 #define REG_REMCNTL	0x224
 #define REG_REMCNTH	0x225
 #define REG_MAINCNT0	0x226
 #define REG_MAINCNT1	0x227
 #define REG_MAINCNT2	0x228
 #define REG_MAINCNT3	0x229
-#define REG_TESTMODE	0x22F  /* Test mode */
+#define REG_TESTMODE	0x22F   
 #define REG_ASSOEAR0	0x230
 #define REG_ASSOEAR1	0x231
 #define REG_ASSOEAR2	0x232
@@ -179,21 +174,21 @@
 #define REG_UNONCE10	0x24A
 #define REG_UNONCE11	0x24B
 #define REG_UNONCE12	0x24C
-#define REG_RX_FIFO	0x300  /* Receive FIFO */
+#define REG_RX_FIFO	0x300   
 
-/* Device configuration: Only channels 11-26 on page 0 are supported. */
+ 
 #define MRF24J40_CHAN_MIN 11
 #define MRF24J40_CHAN_MAX 26
 #define CHANNEL_MASK (((u32)1 << (MRF24J40_CHAN_MAX + 1)) \
 		      - ((u32)1 << MRF24J40_CHAN_MIN))
 
-#define TX_FIFO_SIZE 128 /* From datasheet */
-#define RX_FIFO_SIZE 144 /* From datasheet */
-#define SET_CHANNEL_DELAY_US 192 /* From datasheet */
+#define TX_FIFO_SIZE 128  
+#define RX_FIFO_SIZE 144  
+#define SET_CHANNEL_DELAY_US 192  
 
 enum mrf24j40_modules { MRF24J40, MRF24J40MA, MRF24J40MC };
 
-/* Device Private Data */
+ 
 struct mrf24j40 {
 	struct spi_device *spi;
 	struct ieee802154_hw *hw;
@@ -201,7 +196,7 @@ struct mrf24j40 {
 	struct regmap *regmap_short;
 	struct regmap *regmap_long;
 
-	/* for writing txfifo */
+	 
 	struct spi_message tx_msg;
 	u8 tx_hdr_buf[2];
 	struct spi_transfer tx_hdr_trx;
@@ -210,17 +205,17 @@ struct mrf24j40 {
 	struct spi_transfer tx_buf_trx;
 	struct sk_buff *tx_skb;
 
-	/* post transmit message to send frame out  */
+	 
 	struct spi_message tx_post_msg;
 	u8 tx_post_buf[2];
 	struct spi_transfer tx_post_trx;
 
-	/* for protect/unprotect/read length rxfifo */
+	 
 	struct spi_message rx_msg;
 	u8 rx_buf[3];
 	struct spi_transfer rx_trx;
 
-	/* receive handling */
+	 
 	struct spi_message rx_buf_msg;
 	u8 rx_addr_buf[2];
 	struct spi_transfer rx_addr_trx;
@@ -229,28 +224,28 @@ struct mrf24j40 {
 	u8 rx_fifo_buf[RX_FIFO_SIZE];
 	struct spi_transfer rx_fifo_buf_trx;
 
-	/* isr handling for reading intstat */
+	 
 	struct spi_message irq_msg;
 	u8 irq_buf[2];
 	struct spi_transfer irq_trx;
 };
 
-/* regmap information for short address register access */
+ 
 #define MRF24J40_SHORT_WRITE	0x01
 #define MRF24J40_SHORT_READ	0x00
 #define MRF24J40_SHORT_NUMREGS	0x3F
 
-/* regmap information for long address register access */
+ 
 #define MRF24J40_LONG_ACCESS	0x80
 #define MRF24J40_LONG_NUMREGS	0x38F
 
-/* Read/Write SPI Commands for Short and Long Address registers. */
+ 
 #define MRF24J40_READSHORT(reg) ((reg) << 1)
 #define MRF24J40_WRITESHORT(reg) ((reg) << 1 | 1)
 #define MRF24J40_READLONG(reg) (1 << 15 | (reg) << 5)
 #define MRF24J40_WRITELONG(reg) (1 << 15 | (reg) << 5 | 1 << 4)
 
-/* The datasheet indicates the theoretical maximum for SCK to be 10MHz */
+ 
 #define MAX_SPI_SPEED_HZ 10000000
 
 #define printdev(X) (&X->spi->dev)
@@ -326,12 +321,12 @@ mrf24j40_short_reg_readable(struct device *dev, unsigned int reg)
 {
 	bool rc;
 
-	/* all writeable are also readable */
+	 
 	rc = mrf24j40_short_reg_writeable(dev, reg);
 	if (rc)
 		return rc;
 
-	/* readonly regs */
+	 
 	switch (reg) {
 	case REG_TXSTAT:
 	case REG_INTSTAT:
@@ -344,7 +339,7 @@ mrf24j40_short_reg_readable(struct device *dev, unsigned int reg)
 static bool
 mrf24j40_short_reg_volatile(struct device *dev, unsigned int reg)
 {
-	/* can be changed during runtime */
+	 
 	switch (reg) {
 	case REG_TXSTAT:
 	case REG_INTSTAT:
@@ -361,7 +356,7 @@ mrf24j40_short_reg_volatile(struct device *dev, unsigned int reg)
 	case REG_SLPACK:
 	case REG_SECCR2:
 	case REG_BBREG6:
-	/* use them in spi_async and regmap so it's volatile */
+	 
 	case REG_BBREG1:
 		return true;
 	default:
@@ -372,7 +367,7 @@ mrf24j40_short_reg_volatile(struct device *dev, unsigned int reg)
 static bool
 mrf24j40_short_reg_precious(struct device *dev, unsigned int reg)
 {
-	/* don't clear irq line on read */
+	 
 	switch (reg) {
 	case REG_INTSTAT:
 		return true;
@@ -454,12 +449,12 @@ mrf24j40_long_reg_readable(struct device *dev, unsigned int reg)
 {
 	bool rc;
 
-	/* all writeable are also readable */
+	 
 	rc = mrf24j40_long_reg_writeable(dev, reg);
 	if (rc)
 		return rc;
 
-	/* readonly regs */
+	 
 	switch (reg) {
 	case REG_SLPCAL0:
 	case REG_SLPCAL1:
@@ -474,7 +469,7 @@ mrf24j40_long_reg_readable(struct device *dev, unsigned int reg)
 static bool
 mrf24j40_long_reg_volatile(struct device *dev, unsigned int reg)
 {
-	/* can be changed during runtime */
+	 
 	switch (reg) {
 	case REG_SLPCAL0:
 	case REG_SLPCAL1:
@@ -511,10 +506,7 @@ static int mrf24j40_long_regmap_write(void *context, const void *data,
 	if (count > 3)
 		return -EINVAL;
 
-	/* regmap supports read/write mask only in frist byte
-	 * long write access need to set the 12th bit, so we
-	 * make special handling for write.
-	 */
+	 
 	memcpy(buf, data, count);
 	buf[1] |= (1 << 4);
 
@@ -559,16 +551,14 @@ static void write_tx_buf_complete(void *context)
 		dev_err(printdev(devrec), "SPI write Failed for transmit buf\n");
 }
 
-/* This function relies on an undocumented write method. Once a write command
-   and address is set, as many bytes of data as desired can be clocked into
-   the device. The datasheet only shows setting one byte at a time. */
+ 
 static int write_tx_buf(struct mrf24j40 *devrec, u16 reg,
 			const u8 *data, size_t length)
 {
 	u16 cmd;
 	int ret;
 
-	/* Range check the length. 2 bytes are used for the length fields.*/
+	 
 	if (length > TX_FIFO_SIZE-2) {
 		dev_err(printdev(devrec), "write_tx_buf() was passed too large a buffer. Performing short write.\n");
 		length = TX_FIFO_SIZE-2;
@@ -577,8 +567,8 @@ static int write_tx_buf(struct mrf24j40 *devrec, u16 reg,
 	cmd = MRF24J40_WRITELONG(reg);
 	devrec->tx_hdr_buf[0] = cmd >> 8 & 0xff;
 	devrec->tx_hdr_buf[1] = cmd & 0xff;
-	devrec->tx_len_buf[0] = 0x0; /* Header Length. Set to 0 for now. TODO */
-	devrec->tx_len_buf[1] = length; /* Total length */
+	devrec->tx_len_buf[0] = 0x0;  
+	devrec->tx_len_buf[1] = length;  
 	devrec->tx_buf_trx.tx_buf = data;
 	devrec->tx_buf_trx.len = length;
 
@@ -601,7 +591,7 @@ static int mrf24j40_tx(struct ieee802154_hw *hw, struct sk_buff *skb)
 
 static int mrf24j40_ed(struct ieee802154_hw *hw, u8 *level)
 {
-	/* TODO: */
+	 
 	pr_warn("mrf24j40: ed not implemented\n");
 	*level = 0;
 	return 0;
@@ -613,7 +603,7 @@ static int mrf24j40_start(struct ieee802154_hw *hw)
 
 	dev_dbg(printdev(devrec), "start\n");
 
-	/* Clear TXNIE and RXIE. Enable interrupts */
+	 
 	return regmap_update_bits(devrec->regmap_short, REG_INTCON,
 				  BIT_TXNIE | BIT_RXIE | BIT_SECIE, 0);
 }
@@ -624,7 +614,7 @@ static void mrf24j40_stop(struct ieee802154_hw *hw)
 
 	dev_dbg(printdev(devrec), "stop\n");
 
-	/* Set TXNIE and RXIE. Disable Interrupts */
+	 
 	regmap_update_bits(devrec->regmap_short, REG_INTCON,
 			   BIT_TXNIE | BIT_RXIE, BIT_TXNIE | BIT_RXIE);
 }
@@ -641,14 +631,14 @@ static int mrf24j40_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
 	WARN_ON(channel < MRF24J40_CHAN_MIN);
 	WARN_ON(channel > MRF24J40_CHAN_MAX);
 
-	/* Set Channel TODO */
+	 
 	val = (channel - 11) << RFCON0_CH_SHIFT | RFOPT_RECOMMEND;
 	ret = regmap_update_bits(devrec->regmap_long, REG_RFCON0,
 				 RFCON0_CH_MASK, val);
 	if (ret)
 		return ret;
 
-	/* RF Reset */
+	 
 	ret = regmap_update_bits(devrec->regmap_short, REG_RFCTL, BIT_RFRST,
 				 BIT_RFRST);
 	if (ret)
@@ -656,7 +646,7 @@ static int mrf24j40_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
 
 	ret = regmap_update_bits(devrec->regmap_short, REG_RFCTL, BIT_RFRST, 0);
 	if (!ret)
-		udelay(SET_CHANNEL_DELAY_US); /* per datasheet */
+		udelay(SET_CHANNEL_DELAY_US);  
 
 	return ret;
 }
@@ -670,7 +660,7 @@ static int mrf24j40_filter(struct ieee802154_hw *hw,
 	dev_dbg(printdev(devrec), "filter\n");
 
 	if (changed & IEEE802154_AFILT_SADDR_CHANGED) {
-		/* Short Addr */
+		 
 		u8 addrh, addrl;
 
 		addrh = le16_to_cpu(filt->short_addr) >> 8 & 0xff;
@@ -683,7 +673,7 @@ static int mrf24j40_filter(struct ieee802154_hw *hw,
 	}
 
 	if (changed & IEEE802154_AFILT_IEEEADDR_CHANGED) {
-		/* Device Address */
+		 
 		u8 i, addr[8];
 
 		memcpy(addr, &filt->ieee_addr, 8);
@@ -700,7 +690,7 @@ static int mrf24j40_filter(struct ieee802154_hw *hw,
 	}
 
 	if (changed & IEEE802154_AFILT_PANID_CHANGED) {
-		/* PAN ID */
+		 
 		u8 panidl, panidh;
 
 		panidh = le16_to_cpu(filt->pan_id) >> 8 & 0xff;
@@ -712,7 +702,7 @@ static int mrf24j40_filter(struct ieee802154_hw *hw,
 	}
 
 	if (changed & IEEE802154_AFILT_PANC_CHANGED) {
-		/* Pan Coordinator */
+		 
 		u8 val;
 		int ret;
 
@@ -725,9 +715,7 @@ static int mrf24j40_filter(struct ieee802154_hw *hw,
 		if (ret)
 			return ret;
 
-		/* REG_SLOTTED is maintained as default (unslotted/CSMA-CA).
-		 * REG_ORDER is maintained as default (no beacon/superframe).
-		 */
+		 
 
 		dev_dbg(printdev(devrec), "Set Pan Coord to %s\n",
 			filt->pan_coord ? "on" : "off");
@@ -740,10 +728,10 @@ static void mrf24j40_handle_rx_read_buf_unlock(struct mrf24j40 *devrec)
 {
 	int ret;
 
-	/* Turn back on reception of packets off the air. */
+	 
 	devrec->rx_msg.complete = NULL;
 	devrec->rx_buf[0] = MRF24J40_WRITESHORT(REG_BBREG1);
-	devrec->rx_buf[1] = 0x00; /* CLR RXDECINV */
+	devrec->rx_buf[1] = 0x00;  
 	ret = spi_async(devrec->spi, &devrec->rx_msg);
 	if (ret)
 		dev_err(printdev(devrec), "failed to unlock rx buffer\n");
@@ -782,7 +770,7 @@ static void mrf24j40_handle_rx_read_buf(void *context)
 	u16 cmd;
 	int ret;
 
-	/* if length is invalid read the full MTU */
+	 
 	if (!ieee802154_is_valid_psdu_len(devrec->rx_buf[2]))
 		devrec->rx_buf[2] = IEEE802154_MTU;
 
@@ -803,7 +791,7 @@ static void mrf24j40_handle_rx_read_len(void *context)
 	u16 cmd;
 	int ret;
 
-	/* read the length of received frame */
+	 
 	devrec->rx_msg.complete = mrf24j40_handle_rx_read_buf;
 	devrec->rx_trx.len = 3;
 	cmd = MRF24J40_READLONG(REG_RX_FIFO);
@@ -819,13 +807,11 @@ static void mrf24j40_handle_rx_read_len(void *context)
 
 static int mrf24j40_handle_rx(struct mrf24j40 *devrec)
 {
-	/* Turn off reception of packets off the air. This prevents the
-	 * device from overwriting the buffer while we're reading it.
-	 */
+	 
 	devrec->rx_msg.complete = mrf24j40_handle_rx_read_len;
 	devrec->rx_trx.len = 2;
 	devrec->rx_buf[0] = MRF24J40_WRITESHORT(REG_BBREG1);
-	devrec->rx_buf[1] = BIT_RXDECINV; /* SET RXDECINV */
+	devrec->rx_buf[1] = BIT_RXDECINV;  
 
 	return spi_async(devrec->spi, &devrec->rx_msg);
 }
@@ -837,9 +823,9 @@ mrf24j40_csma_params(struct ieee802154_hw *hw, u8 min_be, u8 max_be,
 	struct mrf24j40 *devrec = hw->priv;
 	u8 val;
 
-	/* min_be */
+	 
 	val = min_be << TXMCR_MIN_BE_SHIFT;
-	/* csma backoffs */
+	 
 	val |= retries << TXMCR_CSMA_RETRIES_SHIFT;
 
 	return regmap_update_bits(devrec->regmap_short, REG_TXMCR,
@@ -853,7 +839,7 @@ static int mrf24j40_set_cca_mode(struct ieee802154_hw *hw,
 	struct mrf24j40 *devrec = hw->priv;
 	u8 val;
 
-	/* mapping 802.15.4 to driver spec */
+	 
 	switch (cca->mode) {
 	case NL802154_CCA_ENERGY:
 		val = 2;
@@ -879,7 +865,7 @@ static int mrf24j40_set_cca_mode(struct ieee802154_hw *hw,
 				  val << BBREG2_CCA_MODE_SHIFT);
 }
 
-/* array for representing ed levels */
+ 
 static const s32 mrf24j40_ed_levels[] = {
 	-9000, -8900, -8800, -8700, -8600, -8500, -8400, -8300, -8200, -8100,
 	-8000, -7900, -7800, -7700, -7600, -7500, -7400, -7300, -7200, -7100,
@@ -889,7 +875,7 @@ static const s32 mrf24j40_ed_levels[] = {
 	-4000, -3900, -3800, -3700, -3600, -3500
 };
 
-/* map ed levels to register value */
+ 
 static const s32 mrf24j40_ed_levels_map[][2] = {
 	{ -9000, 0 }, { -8900, 1 }, { -8800, 2 }, { -8700, 5 }, { -8600, 9 },
 	{ -8500, 13 }, { -8400, 18 }, { -8300, 23 }, { -8200, 27 },
@@ -988,12 +974,12 @@ static int mrf24j40_set_promiscuous_mode(struct ieee802154_hw *hw, bool on)
 	int ret;
 
 	if (on) {
-		/* set PROMI, ERRPKT and NOACKRSP */
+		 
 		ret = regmap_update_bits(devrec->regmap_short, REG_RXMCR,
 					 BIT_PROMI | BIT_ERRPKT | BIT_NOACKRSP,
 					 BIT_PROMI | BIT_ERRPKT | BIT_NOACKRSP);
 	} else {
-		/* clear PROMI, ERRPKT and NOACKRSP */
+		 
 		ret = regmap_update_bits(devrec->regmap_short, REG_RXMCR,
 					 BIT_PROMI | BIT_ERRPKT | BIT_NOACKRSP,
 					 0);
@@ -1024,16 +1010,16 @@ static void mrf24j40_intstat_complete(void *context)
 
 	enable_irq(devrec->spi->irq);
 
-	/* Ignore Rx security decryption */
+	 
 	if (intstat & BIT_SECIF)
 		regmap_write_async(devrec->regmap_short, REG_SECCON0,
 				   BIT_SECIGNORE);
 
-	/* Check for TX complete */
+	 
 	if (intstat & BIT_TXNIF)
 		ieee802154_xmit_complete(devrec->hw, devrec->tx_skb, false);
 
-	/* Check for Rx */
+	 
 	if (intstat & BIT_RXIF)
 		mrf24j40_handle_rx(devrec);
 }
@@ -1048,7 +1034,7 @@ static irqreturn_t mrf24j40_isr(int irq, void *data)
 	devrec->irq_buf[0] = MRF24J40_READSHORT(REG_INTSTAT);
 	devrec->irq_buf[1] = 0;
 
-	/* Read the interrupt status */
+	 
 	ret = spi_async(devrec->spi, &devrec->irq_msg);
 	if (ret) {
 		enable_irq(irq);
@@ -1063,8 +1049,7 @@ static int mrf24j40_hw_init(struct mrf24j40 *devrec)
 	u32 irq_type;
 	int ret;
 
-	/* Initialize the device.
-		From datasheet section 3.2: Initialization. */
+	 
 	ret = regmap_write(devrec->regmap_short, REG_SOFTRST, 0x07);
 	if (ret)
 		goto err_ret;
@@ -1127,28 +1112,24 @@ static int mrf24j40_hw_init(struct mrf24j40 *devrec)
 
 	udelay(192);
 
-	/* Set RX Mode. RXMCR<1:0>: 0x0 normal, 0x1 promisc, 0x2 error */
+	 
 	ret = regmap_update_bits(devrec->regmap_short, REG_RXMCR, 0x03, 0x00);
 	if (ret)
 		goto err_ret;
 
 	if (spi_get_device_id(devrec->spi)->driver_data == MRF24J40MC) {
-		/* Enable external amplifier.
-		 * From MRF24J40MC datasheet section 1.3: Operation.
-		 */
+		 
 		regmap_update_bits(devrec->regmap_long, REG_TESTMODE, 0x07,
 				   0x07);
 
-		/* Set GPIO3 as output. */
+		 
 		regmap_update_bits(devrec->regmap_short, REG_TRISGPIO, 0x08,
 				   0x08);
 
-		/* Set GPIO3 HIGH to enable U5 voltage regulator */
+		 
 		regmap_update_bits(devrec->regmap_short, REG_GPIO, 0x08, 0x08);
 
-		/* Reduce TX pwr to meet FCC requirements.
-		 * From MRF24J40MC datasheet section 3.1.1
-		 */
+		 
 		regmap_write(devrec->regmap_long, REG_RFCON3, 0x28);
 	}
 
@@ -1160,14 +1141,14 @@ static int mrf24j40_hw_init(struct mrf24j40 *devrec)
 	switch (irq_type) {
 	case IRQ_TYPE_EDGE_RISING:
 	case IRQ_TYPE_LEVEL_HIGH:
-		/* set interrupt polarity to rising */
+		 
 		ret = regmap_update_bits(devrec->regmap_long, REG_SLPCON0,
 					 BIT_INTEDGE, BIT_INTEDGE);
 		if (ret)
 			goto err_ret;
 		break;
 	default:
-		/* default is falling edge */
+		 
 		break;
 	}
 
@@ -1238,11 +1219,9 @@ static void  mrf24j40_phy_setup(struct mrf24j40 *devrec)
 	ieee802154_random_extended_addr(&devrec->hw->phy->perm_extended_addr);
 	devrec->hw->phy->current_channel = 11;
 
-	/* mrf24j40 supports max_minbe 0 - 3 */
+	 
 	devrec->hw->phy->supported.max_minbe = 3;
-	/* datasheet doesn't say anything about max_be, but we have min_be
-	 * So we assume the max_be default.
-	 */
+	 
 	devrec->hw->phy->supported.min_maxbe = 5;
 	devrec->hw->phy->supported.max_maxbe = 5;
 
@@ -1276,7 +1255,7 @@ static int mrf24j40_probe(struct spi_device *spi)
 
 	dev_info(&spi->dev, "probe(). IRQ: %d\n", spi->irq);
 
-	/* Register with the 802154 subsystem */
+	 
 
 	hw = ieee802154_alloc_hw(sizeof(*devrec), &mrf24j40_ops);
 	if (!hw)
@@ -1331,7 +1310,7 @@ static int mrf24j40_probe(struct spi_device *spi)
 
 	mrf24j40_phy_setup(devrec);
 
-	/* request IRQF_TRIGGER_LOW as fallback default */
+	 
 	irq_type = irq_get_trigger_type(spi->irq);
 	if (!irq_type)
 		irq_type = IRQF_TRIGGER_LOW;
@@ -1364,8 +1343,7 @@ static void mrf24j40_remove(struct spi_device *spi)
 
 	ieee802154_unregister_hw(devrec->hw);
 	ieee802154_free_hw(devrec->hw);
-	/* TODO: Will ieee802154_free_device() wait until ->xmit() is
-	 * complete? */
+	 
 }
 
 static const struct of_device_id mrf24j40_of_match[] = {

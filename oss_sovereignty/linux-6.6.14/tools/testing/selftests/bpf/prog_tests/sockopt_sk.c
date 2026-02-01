@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "cgroup_helpers.h"
 
@@ -18,7 +18,7 @@ static int getsetsockopt(void)
 	union {
 		char u8[4];
 		__u32 u32;
-		char cc[16]; /* TCP_CA_NAME_MAX */
+		char cc[16];  
 		struct tcp_zerocopy_receive zc;
 	} buf = {};
 	socklen_t optlen;
@@ -30,7 +30,7 @@ static int getsetsockopt(void)
 		return -1;
 	}
 
-	/* IP_TOS - BPF bypass */
+	 
 
 	optlen = getpagesize() * 2;
 	big_buf = calloc(1, optlen);
@@ -60,7 +60,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* IP_TTL - EPERM */
+	 
 
 	buf.u8[0] = 1;
 	err = setsockopt(fd, SOL_IP, IP_TTL, &buf, 1);
@@ -69,7 +69,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* SOL_CUSTOM - handled by BPF */
+	 
 
 	buf.u8[0] = 0x01;
 	err = setsockopt(fd, SOL_CUSTOM, 0, &buf, 1);
@@ -95,7 +95,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* IP_FREEBIND - BPF can't access optval past PAGE_SIZE */
+	 
 
 	optlen = getpagesize() * 2;
 	memset(big_buf, 0, optlen);
@@ -117,7 +117,7 @@ static int getsetsockopt(void)
 			optlen, *(__u8 *)big_buf);
 	}
 
-	/* SO_SNDBUF is overwritten */
+	 
 
 	buf.u32 = 0x01010101;
 	err = setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &buf, 4);
@@ -140,7 +140,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* TCP_CONGESTION can extend the string */
+	 
 
 	strcpy(buf.cc, "nv");
 	err = setsockopt(fd, SOL_TCP, TCP_CONGESTION, &buf, strlen("nv"));
@@ -163,7 +163,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* TCP_ZEROCOPY_RECEIVE triggers */
+	 
 	memset(&buf, 0, sizeof(buf));
 	optlen = sizeof(buf.zc);
 	err = getsockopt(fd, SOL_TCP, TCP_ZEROCOPY_RECEIVE, &buf, &optlen);
@@ -174,7 +174,7 @@ static int getsetsockopt(void)
 	}
 
 	memset(&buf, 0, sizeof(buf));
-	buf.zc.address = 12345; /* Not page aligned. Rejected by tcp_zerocopy_receive() */
+	buf.zc.address = 12345;  
 	optlen = sizeof(buf.zc);
 	errno = 0;
 	err = getsockopt(fd, SOL_TCP, TCP_ZEROCOPY_RECEIVE, &buf, &optlen);
@@ -184,7 +184,7 @@ static int getsetsockopt(void)
 		goto err;
 	}
 
-	/* optval=NULL case is handled correctly */
+	 
 
 	close(fd);
 	fd = socket(AF_NETLINK, SOCK_RAW, 0);

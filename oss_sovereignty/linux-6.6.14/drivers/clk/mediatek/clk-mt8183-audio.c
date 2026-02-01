@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: Weiyi Lu <weiyi.lu@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/of_platform.h>
@@ -33,7 +33,7 @@ static const struct mtk_gate_regs audio1_cg_regs = {
 		&mtk_clk_gate_ops_no_setclr)
 
 static const struct mtk_gate audio_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_AUDIO0(CLK_AUDIO_AFE, "aud_afe", "audio_sel",
 		2),
 	GATE_AUDIO0(CLK_AUDIO_22M, "aud_22m", "aud_eng1_sel",
@@ -54,7 +54,7 @@ static const struct mtk_gate audio_clks[] = {
 		26),
 	GATE_AUDIO0(CLK_AUDIO_TML, "aud_tml", "audio_sel",
 		27),
-	/* AUDIO1 */
+	 
 	GATE_AUDIO1(CLK_AUDIO_I2S1, "aud_i2s1", "audio_sel",
 		4),
 	GATE_AUDIO1(CLK_AUDIO_I2S2, "aud_i2s2", "audio_sel",
@@ -95,7 +95,7 @@ static void clk_mt8183_audio_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_match_clk_mt8183_audio[] = {
 	{ .compatible = "mediatek,mt8183-audiosys", .data = &audio_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8183_audio);
 

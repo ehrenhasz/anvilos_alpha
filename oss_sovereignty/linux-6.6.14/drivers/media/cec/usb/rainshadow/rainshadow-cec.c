@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RainShadow Tech HDMI CEC driver
- *
- * Copyright 2016 Hans Verkuil <hverkuil@xs4all.nl
- */
 
-/*
- * Notes:
- *
- * The higher level protocols are currently disabled. This can be added
- * later, similar to how this is done for the Pulse Eight CEC driver.
- *
- * Documentation of the protocol is available here:
- *
- * http://rainshadowtech.com/doc/HDMICECtoUSBandRS232v2.0.pdf
- */
+ 
+
+ 
 
 #include <linux/completion.h>
 #include <linux/ctype.h>
@@ -44,19 +31,19 @@ struct rain {
 	struct completion cmd_done;
 	struct work_struct work;
 
-	/* Low-level ringbuffer, collecting incoming characters */
+	 
 	char buf[DATA_SIZE];
 	unsigned int buf_rd_idx;
 	unsigned int buf_wr_idx;
 	unsigned int buf_len;
 	spinlock_t buf_lock;
 
-	/* command buffer */
+	 
 	char cmd[DATA_SIZE];
 	unsigned int cmd_idx;
 	bool cmd_started;
 
-	/* reply to a command, only used to store the firmware version */
+	 
 	char cmd_reply[DATA_SIZE];
 
 	struct mutex write_lock;

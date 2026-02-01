@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018 Facebook */
+
+ 
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -69,13 +69,13 @@ static int create_maps(enum bpf_map_type inner_type)
 
 	inner_map_type = inner_type;
 
-	/* Creating reuseport_array */
+	 
 	reuseport_array = bpf_map_create(inner_type, "reuseport_array",
 					 sizeof(__u32), sizeof(__u32), REUSEPORT_ARRAY_SIZE, NULL);
 	RET_ERR(reuseport_array < 0, "creating reuseport_array",
 		"reuseport_array:%d errno:%d\n", reuseport_array, errno);
 
-	/* Creating outer_map */
+	 
 	opts.inner_map_fd = reuseport_array;
 	outer_map = bpf_map_create(BPF_MAP_TYPE_ARRAY_OF_MAPS, "outer_map",
 				   sizeof(__u32), sizeof(__u32), 1, &opts);
@@ -500,19 +500,10 @@ static void test_syncookie(int type, sa_family_t family)
 		.pass_on_failure = 0,
 	};
 
-	/*
-	 * +1 for TCP-SYN and
-	 * +1 for the TCP-ACK (ack the syncookie)
-	 */
+	 
 	expected_results[PASS] += 2;
 	enable_syncookie();
-	/*
-	 * Simulate TCP-SYN and TCP-ACK are handled by two different sk:
-	 * TCP-SYN: select sk_fds[tmp_index = 1] tmp_index is from the
-	 *          tmp_index_ovr_map
-	 * TCP-ACK: select sk_fds[reuseport_index = 0] reuseport_index
-	 *          is from the cmd.reuseport_index
-	 */
+	 
 	err = bpf_map_update_elem(tmp_index_ovr_map, &index_zero,
 				  &tmp_index, BPF_ANY);
 	RET_IF(err < 0, "update_elem(tmp_index_ovr_map, 0, 1)",
@@ -604,10 +595,7 @@ static void prepare_sk_fds(int type, sa_family_t family, bool inany)
 		sa46_init_loopback(&srv_sa, family);
 	addrlen = sizeof(srv_sa);
 
-	/*
-	 * The sk_fds[] is filled from the back such that the order
-	 * is exactly opposite to the (struct sock_reuseport *)reuse->socks[].
-	 */
+	 
 	for (i = first; i >= 0; i--) {
 		sk_fds[i] = socket(family, type, 0);
 		RET_IF(sk_fds[i] == -1, "socket()", "sk_fds[%d]:%d errno:%d\n",
@@ -676,7 +664,7 @@ static void setup_per_test(int type, sa_family_t family, bool inany,
 	RET_IF(err < 0, "update_elem(tmp_index_ovr_map, 0, -1)",
 	       "err:%d errno:%d\n", err, errno);
 
-	/* Install reuseport_array to outer_map? */
+	 
 	if (no_inner_map)
 		return;
 
@@ -706,7 +694,7 @@ static void cleanup_per_test(bool no_inner_map)
 		close(sk_fds[i]);
 	close(epfd);
 
-	/* Delete reuseport_array from outer_map? */
+	 
 	if (no_inner_map)
 		return;
 
@@ -798,7 +786,7 @@ static void test_config(int sotype, sa_family_t family, bool inany)
 
 	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
 		if (t->need_sotype && t->need_sotype != sotype)
-			continue; /* test not compatible with socket type */
+			continue;  
 
 		snprintf(s, sizeof(s), "%s %s/%s %s %s",
 			 maptype_str(inner_map_type),

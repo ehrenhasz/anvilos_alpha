@@ -1,37 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *
- * Contributors:
- *    Bing Niu <bing.niu@intel.com>
- *    Xu Han <xu.han@intel.com>
- *    Ping Gao <ping.a.gao@intel.com>
- *    Xiaoguang Chen <xiaoguang.chen@intel.com>
- *    Yang Liu <yang2.liu@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *
- */
+ 
 
 #ifndef _GVT_FB_DECODER_H_
 #define _GVT_FB_DECODER_H_
@@ -102,61 +69,61 @@ enum DDI_PORT {
 	DDI_PORT_E	= 4
 };
 
-/* color space conversion and gamma correction are not included */
+ 
 struct intel_vgpu_primary_plane_format {
-	u8	enabled;	/* plane is enabled */
-	u32	tiled;		/* tiling mode: linear, X-tiled, Y tiled, etc */
-	u8	bpp;		/* bits per pixel */
-	u32	hw_format;	/* format field in the PRI_CTL register */
-	u32	drm_format;	/* format in DRM definition */
-	u32	base;		/* framebuffer base in graphics memory */
+	u8	enabled;	 
+	u32	tiled;		 
+	u8	bpp;		 
+	u32	hw_format;	 
+	u32	drm_format;	 
+	u32	base;		 
 	u64     base_gpa;
-	u32	x_offset;	/* in pixels */
-	u32	y_offset;	/* in lines */
-	u32	width;		/* in pixels */
-	u32	height;		/* in lines */
-	u32	stride;		/* in bytes */
+	u32	x_offset;	 
+	u32	y_offset;	 
+	u32	width;		 
+	u32	height;		 
+	u32	stride;		 
 };
 
 struct intel_vgpu_sprite_plane_format {
-	u8	enabled;	/* plane is enabled */
-	u8	tiled;		/* X-tiled */
-	u8	bpp;		/* bits per pixel */
-	u32	hw_format;	/* format field in the SPR_CTL register */
-	u32	drm_format;	/* format in DRM definition */
-	u32	base;		/* sprite base in graphics memory */
+	u8	enabled;	 
+	u8	tiled;		 
+	u8	bpp;		 
+	u32	hw_format;	 
+	u32	drm_format;	 
+	u32	base;		 
 	u64     base_gpa;
-	u32	x_pos;		/* in pixels */
-	u32	y_pos;		/* in lines */
-	u32	x_offset;	/* in pixels */
-	u32	y_offset;	/* in lines */
-	u32	width;		/* in pixels */
-	u32	height;		/* in lines */
-	u32	stride;		/* in bytes */
+	u32	x_pos;		 
+	u32	y_pos;		 
+	u32	x_offset;	 
+	u32	y_offset;	 
+	u32	width;		 
+	u32	height;		 
+	u32	stride;		 
 };
 
 struct intel_vgpu_cursor_plane_format {
 	u8	enabled;
-	u8	mode;		/* cursor mode select */
-	u8	bpp;		/* bits per pixel */
-	u32	drm_format;	/* format in DRM definition */
-	u32	base;		/* cursor base in graphics memory */
+	u8	mode;		 
+	u8	bpp;		 
+	u32	drm_format;	 
+	u32	base;		 
 	u64     base_gpa;
-	u32	x_pos;		/* in pixels */
-	u32	y_pos;		/* in lines */
-	u8	x_sign;		/* X Position Sign */
-	u8	y_sign;		/* Y Position Sign */
-	u32	width;		/* in pixels */
-	u32	height;		/* in lines */
-	u32	x_hot;		/* in pixels */
-	u32	y_hot;		/* in pixels */
+	u32	x_pos;		 
+	u32	y_pos;		 
+	u8	x_sign;		 
+	u8	y_sign;		 
+	u32	width;		 
+	u32	height;		 
+	u32	x_hot;		 
+	u32	y_hot;		 
 };
 
 struct intel_vgpu_pipe_format {
 	struct intel_vgpu_primary_plane_format	primary;
 	struct intel_vgpu_sprite_plane_format	sprite;
 	struct intel_vgpu_cursor_plane_format	cursor;
-	enum DDI_PORT ddi_port;  /* the DDI port that pipe is connected to */
+	enum DDI_PORT ddi_port;   
 };
 
 struct intel_vgpu_fb_format {

@@ -1,26 +1,4 @@
-/*
- * Copyright 2000 VA Linux Systems, Inc., Sunnyvale, California.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include <drm/drm_drv.h>
@@ -52,77 +30,16 @@
 #include "amdgpu_xgmi.h"
 #include "../amdxcp/amdgpu_xcp_drv.h"
 
-/*
- * KMS wrapper.
- * - 3.0.0 - initial driver
- * - 3.1.0 - allow reading more status registers (GRBM, SRBM, SDMA, CP)
- * - 3.2.0 - GFX8: Uses EOP_TC_WB_ACTION_EN, so UMDs don't have to do the same
- *           at the end of IBs.
- * - 3.3.0 - Add VM support for UVD on supported hardware.
- * - 3.4.0 - Add AMDGPU_INFO_NUM_EVICTIONS.
- * - 3.5.0 - Add support for new UVD_NO_OP register.
- * - 3.6.0 - kmd involves use CONTEXT_CONTROL in ring buffer.
- * - 3.7.0 - Add support for VCE clock list packet
- * - 3.8.0 - Add support raster config init in the kernel
- * - 3.9.0 - Add support for memory query info about VRAM and GTT.
- * - 3.10.0 - Add support for new fences ioctl, new gem ioctl flags
- * - 3.11.0 - Add support for sensor query info (clocks, temp, etc).
- * - 3.12.0 - Add query for double offchip LDS buffers
- * - 3.13.0 - Add PRT support
- * - 3.14.0 - Fix race in amdgpu_ctx_get_fence() and note new functionality
- * - 3.15.0 - Export more gpu info for gfx9
- * - 3.16.0 - Add reserved vmid support
- * - 3.17.0 - Add AMDGPU_NUM_VRAM_CPU_PAGE_FAULTS.
- * - 3.18.0 - Export gpu always on cu bitmap
- * - 3.19.0 - Add support for UVD MJPEG decode
- * - 3.20.0 - Add support for local BOs
- * - 3.21.0 - Add DRM_AMDGPU_FENCE_TO_HANDLE ioctl
- * - 3.22.0 - Add DRM_AMDGPU_SCHED ioctl
- * - 3.23.0 - Add query for VRAM lost counter
- * - 3.24.0 - Add high priority compute support for gfx9
- * - 3.25.0 - Add support for sensor query info (stable pstate sclk/mclk).
- * - 3.26.0 - GFX9: Process AMDGPU_IB_FLAG_TC_WB_NOT_INVALIDATE.
- * - 3.27.0 - Add new chunk to AMDGPU_CS to enable BO_LIST creation.
- * - 3.28.0 - Add AMDGPU_CHUNK_ID_SCHEDULED_DEPENDENCIES
- * - 3.29.0 - Add AMDGPU_IB_FLAG_RESET_GDS_MAX_WAVE_ID
- * - 3.30.0 - Add AMDGPU_SCHED_OP_CONTEXT_PRIORITY_OVERRIDE.
- * - 3.31.0 - Add support for per-flip tiling attribute changes with DC
- * - 3.32.0 - Add syncobj timeline support to AMDGPU_CS.
- * - 3.33.0 - Fixes for GDS ENOMEM failures in AMDGPU_CS.
- * - 3.34.0 - Non-DC can flip correctly between buffers with different pitches
- * - 3.35.0 - Add drm_amdgpu_info_device::tcc_disabled_mask
- * - 3.36.0 - Allow reading more status registers on si/cik
- * - 3.37.0 - L2 is invalidated before SDMA IBs, needed for correctness
- * - 3.38.0 - Add AMDGPU_IB_FLAG_EMIT_MEM_SYNC
- * - 3.39.0 - DMABUF implicit sync does a full pipeline sync
- * - 3.40.0 - Add AMDGPU_IDS_FLAGS_TMZ
- * - 3.41.0 - Add video codec query
- * - 3.42.0 - Add 16bpc fixed point display support
- * - 3.43.0 - Add device hot plug/unplug support
- * - 3.44.0 - DCN3 supports DCC independent block settings: !64B && 128B, 64B && 128B
- * - 3.45.0 - Add context ioctl stable pstate interface
- * - 3.46.0 - To enable hot plug amdgpu tests in libdrm
- * - 3.47.0 - Add AMDGPU_GEM_CREATE_DISCARDABLE and AMDGPU_VM_NOALLOC flags
- * - 3.48.0 - Add IP discovery version info to HW INFO
- * - 3.49.0 - Add gang submit into CS IOCTL
- * - 3.50.0 - Update AMDGPU_INFO_DEV_INFO IOCTL for minimum engine and memory clock
- *            Update AMDGPU_INFO_SENSOR IOCTL for PEAK_PSTATE engine and memory clock
- *   3.51.0 - Return the PCIe gen and lanes from the INFO ioctl
- *   3.52.0 - Add AMDGPU_IDS_FLAGS_CONFORMANT_TRUNC_COORD, add device_info fields:
- *            tcp_cache_size, num_sqc_per_wgp, sqc_data_cache_size, sqc_inst_cache_size,
- *            gl1c_cache_size, gl2c_cache_size, mall_size, enabled_rb_pipes_mask_hi
- *   3.53.0 - Support for GFX11 CP GFX shadowing
- *   3.54.0 - Add AMDGPU_CTX_QUERY2_FLAGS_RESET_IN_PROGRESS support
- */
+ 
 #define KMS_DRIVER_MAJOR	3
 #define KMS_DRIVER_MINOR	54
 #define KMS_DRIVER_PATCHLEVEL	0
 
 unsigned int amdgpu_vram_limit = UINT_MAX;
 int amdgpu_vis_vram_limit;
-int amdgpu_gart_size = -1; /* auto */
-int amdgpu_gtt_size = -1; /* auto */
-int amdgpu_moverate = -1; /* auto */
+int amdgpu_gart_size = -1;  
+int amdgpu_gtt_size = -1;  
+int amdgpu_moverate = -1;  
 int amdgpu_audio = -1;
 int amdgpu_disp_priority;
 int amdgpu_hw_i2c;
@@ -154,28 +71,16 @@ uint amdgpu_sdma_phase_quantum = 32;
 char *amdgpu_disable_cu;
 char *amdgpu_virtual_display;
 bool enforce_isolation;
-/*
- * OverDrive(bit 14) disabled by default
- * GFX DCS(bit 19) disabled by default
- */
+ 
 uint amdgpu_pp_feature_mask = 0xfff7bfff;
 uint amdgpu_force_long_training;
 int amdgpu_lbpw = -1;
 int amdgpu_compute_multipipe = -1;
-int amdgpu_gpu_recovery = -1; /* auto */
+int amdgpu_gpu_recovery = -1;  
 int amdgpu_emu_mode;
 uint amdgpu_smu_memory_pool_size;
 int amdgpu_smu_pptable_id = -1;
-/*
- * FBC (bit 0) disabled by default
- * MULTI_MON_PP_MCLK_SWITCH (bit 1) enabled by default
- *   - With this, for multiple monitors in sync(e.g. with the same model),
- *     mclk switching will be allowed. And the mclk will be not foced to the
- *     highest. That helps saving some idle power.
- * DISABLE_FRACTIONAL_PWM (bit 2) disabled by default
- * PSR (bit 3) disabled by default
- * EDP NO POWER SEQUENCING (bit 4) disabled by default
- */
+ 
 uint amdgpu_dc_feature_mask = 2;
 uint amdgpu_dc_debug_mask;
 uint amdgpu_dc_visual_confirm;
@@ -186,13 +91,13 @@ int amdgpu_mes;
 int amdgpu_mes_kiq;
 int amdgpu_noretry = -1;
 int amdgpu_force_asic_type = -1;
-int amdgpu_tmz = -1; /* auto */
-int amdgpu_reset_method = -1; /* auto */
+int amdgpu_tmz = -1;  
+int amdgpu_reset_method = -1;  
 int amdgpu_num_kcq = -1;
 int amdgpu_smartshift_bias;
 int amdgpu_use_xgmi_p2p = 1;
 int amdgpu_vcnfw_log;
-int amdgpu_sg_display = -1; /* auto */
+int amdgpu_sg_display = -1;  
 int amdgpu_user_partt_mode = AMDGPU_AUTO_COMPUTE_PARTITION_MODE;
 
 static void amdgpu_drv_delayed_reset_work_handler(struct work_struct *work);
@@ -220,366 +125,192 @@ uint amdgpu_ras_mask = 0xffffffff;
 int amdgpu_bad_page_threshold = -1;
 struct amdgpu_watchdog_timer amdgpu_watchdog_timer = {
 	.timeout_fatal_disable = false,
-	.period = 0x0, /* default to 0x0 (timeout disable) */
+	.period = 0x0,  
 };
 
-/**
- * DOC: vramlimit (int)
- * Restrict the total amount of VRAM in MiB for testing.  The default is 0 (Use full VRAM).
- */
+ 
 MODULE_PARM_DESC(vramlimit, "Restrict VRAM for testing, in megabytes");
 module_param_named(vramlimit, amdgpu_vram_limit, int, 0600);
 
-/**
- * DOC: vis_vramlimit (int)
- * Restrict the amount of CPU visible VRAM in MiB for testing.  The default is 0 (Use full CPU visible VRAM).
- */
+ 
 MODULE_PARM_DESC(vis_vramlimit, "Restrict visible VRAM for testing, in megabytes");
 module_param_named(vis_vramlimit, amdgpu_vis_vram_limit, int, 0444);
 
-/**
- * DOC: gartsize (uint)
- * Restrict the size of GART (for kernel use) in Mib (32, 64, etc.) for testing.
- * The default is -1 (The size depends on asic).
- */
+ 
 MODULE_PARM_DESC(gartsize, "Size of kernel GART to setup in megabytes (32, 64, etc., -1=auto)");
 module_param_named(gartsize, amdgpu_gart_size, uint, 0600);
 
-/**
- * DOC: gttsize (int)
- * Restrict the size of GTT domain (for userspace use) in MiB for testing.
- * The default is -1 (Use 1/2 RAM, minimum value is 3GB).
- */
+ 
 MODULE_PARM_DESC(gttsize, "Size of the GTT userspace domain in megabytes (-1 = auto)");
 module_param_named(gttsize, amdgpu_gtt_size, int, 0600);
 
-/**
- * DOC: moverate (int)
- * Set maximum buffer migration rate in MB/s. The default is -1 (8 MB/s).
- */
+ 
 MODULE_PARM_DESC(moverate, "Maximum buffer migration rate in MB/s. (32, 64, etc., -1=auto, 0=1=disabled)");
 module_param_named(moverate, amdgpu_moverate, int, 0600);
 
-/**
- * DOC: audio (int)
- * Set HDMI/DPAudio. Only affects non-DC display handling. The default is -1 (Enabled), set 0 to disabled it.
- */
+ 
 MODULE_PARM_DESC(audio, "Audio enable (-1 = auto, 0 = disable, 1 = enable)");
 module_param_named(audio, amdgpu_audio, int, 0444);
 
-/**
- * DOC: disp_priority (int)
- * Set display Priority (1 = normal, 2 = high). Only affects non-DC display handling. The default is 0 (auto).
- */
+ 
 MODULE_PARM_DESC(disp_priority, "Display Priority (0 = auto, 1 = normal, 2 = high)");
 module_param_named(disp_priority, amdgpu_disp_priority, int, 0444);
 
-/**
- * DOC: hw_i2c (int)
- * To enable hw i2c engine. Only affects non-DC display handling. The default is 0 (Disabled).
- */
+ 
 MODULE_PARM_DESC(hw_i2c, "hw i2c engine enable (0 = disable)");
 module_param_named(hw_i2c, amdgpu_hw_i2c, int, 0444);
 
-/**
- * DOC: pcie_gen2 (int)
- * To disable PCIE Gen2/3 mode (0 = disable, 1 = enable). The default is -1 (auto, enabled).
- */
+ 
 MODULE_PARM_DESC(pcie_gen2, "PCIE Gen2 mode (-1 = auto, 0 = disable, 1 = enable)");
 module_param_named(pcie_gen2, amdgpu_pcie_gen2, int, 0444);
 
-/**
- * DOC: msi (int)
- * To disable Message Signaled Interrupts (MSI) functionality (1 = enable, 0 = disable). The default is -1 (auto, enabled).
- */
+ 
 MODULE_PARM_DESC(msi, "MSI support (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(msi, amdgpu_msi, int, 0444);
 
-/**
- * DOC: lockup_timeout (string)
- * Set GPU scheduler timeout value in ms.
- *
- * The format can be [Non-Compute] or [GFX,Compute,SDMA,Video]. That is there can be one or
- * multiple values specified. 0 and negative values are invalidated. They will be adjusted
- * to the default timeout.
- *
- * - With one value specified, the setting will apply to all non-compute jobs.
- * - With multiple values specified, the first one will be for GFX.
- *   The second one is for Compute. The third and fourth ones are
- *   for SDMA and Video.
- *
- * By default(with no lockup_timeout settings), the timeout for all non-compute(GFX, SDMA and Video)
- * jobs is 10000. The timeout for compute is 60000.
- */
+ 
 MODULE_PARM_DESC(lockup_timeout, "GPU lockup timeout in ms (default: for bare metal 10000 for non-compute jobs and 60000 for compute jobs; "
 		"for passthrough or sriov, 10000 for all jobs. 0: keep default value. negative: infinity timeout), format: for bare metal [Non-Compute] or [GFX,Compute,SDMA,Video]; "
 		"for passthrough or sriov [all jobs] or [GFX,Compute,SDMA,Video].");
 module_param_string(lockup_timeout, amdgpu_lockup_timeout, sizeof(amdgpu_lockup_timeout), 0444);
 
-/**
- * DOC: dpm (int)
- * Override for dynamic power management setting
- * (0 = disable, 1 = enable)
- * The default is -1 (auto).
- */
+ 
 MODULE_PARM_DESC(dpm, "DPM support (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(dpm, amdgpu_dpm, int, 0444);
 
-/**
- * DOC: fw_load_type (int)
- * Set different firmware loading type for debugging, if supported.
- * Set to 0 to force direct loading if supported by the ASIC.  Set
- * to -1 to select the default loading mode for the ASIC, as defined
- * by the driver.  The default is -1 (auto).
- */
+ 
 MODULE_PARM_DESC(fw_load_type, "firmware loading type (3 = rlc backdoor autoload if supported, 2 = smu load if supported, 1 = psp load, 0 = force direct if supported, -1 = auto)");
 module_param_named(fw_load_type, amdgpu_fw_load_type, int, 0444);
 
-/**
- * DOC: aspm (int)
- * To disable ASPM (1 = enable, 0 = disable). The default is -1 (auto, enabled).
- */
+ 
 MODULE_PARM_DESC(aspm, "ASPM support (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(aspm, amdgpu_aspm, int, 0444);
 
-/**
- * DOC: runpm (int)
- * Override for runtime power management control for dGPUs. The amdgpu driver can dynamically power down
- * the dGPUs when they are idle if supported. The default is -1 (auto enable).
- * Setting the value to 0 disables this functionality.
- * Setting the value to -2 is auto enabled with power down when displays are attached.
- */
+ 
 MODULE_PARM_DESC(runpm, "PX runtime pm (2 = force enable with BAMACO, 1 = force enable with BACO, 0 = disable, -1 = auto, -2 = autowith displays)");
 module_param_named(runpm, amdgpu_runtime_pm, int, 0444);
 
-/**
- * DOC: ip_block_mask (uint)
- * Override what IP blocks are enabled on the GPU. Each GPU is a collection of IP blocks (gfx, display, video, etc.).
- * Use this parameter to disable specific blocks. Note that the IP blocks do not have a fixed index. Some asics may not have
- * some IPs or may include multiple instances of an IP so the ordering various from asic to asic. See the driver output in
- * the kernel log for the list of IPs on the asic. The default is 0xffffffff (enable all blocks on a device).
- */
+ 
 MODULE_PARM_DESC(ip_block_mask, "IP Block Mask (all blocks enabled (default))");
 module_param_named(ip_block_mask, amdgpu_ip_block_mask, uint, 0444);
 
-/**
- * DOC: bapm (int)
- * Bidirectional Application Power Management (BAPM) used to dynamically share TDP between CPU and GPU. Set value 0 to disable it.
- * The default -1 (auto, enabled)
- */
+ 
 MODULE_PARM_DESC(bapm, "BAPM support (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(bapm, amdgpu_bapm, int, 0444);
 
-/**
- * DOC: deep_color (int)
- * Set 1 to enable Deep Color support. Only affects non-DC display handling. The default is 0 (disabled).
- */
+ 
 MODULE_PARM_DESC(deep_color, "Deep Color support (1 = enable, 0 = disable (default))");
 module_param_named(deep_color, amdgpu_deep_color, int, 0444);
 
-/**
- * DOC: vm_size (int)
- * Override the size of the GPU's per client virtual address space in GiB.  The default is -1 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(vm_size, "VM address space size in gigabytes (default 64GB)");
 module_param_named(vm_size, amdgpu_vm_size, int, 0444);
 
-/**
- * DOC: vm_fragment_size (int)
- * Override VM fragment size in bits (4, 5, etc. 4 = 64K, 9 = 2M). The default is -1 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(vm_fragment_size, "VM fragment size in bits (4, 5, etc. 4 = 64K (default), Max 9 = 2M)");
 module_param_named(vm_fragment_size, amdgpu_vm_fragment_size, int, 0444);
 
-/**
- * DOC: vm_block_size (int)
- * Override VM page table size in bits (default depending on vm_size and hw setup). The default is -1 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(vm_block_size, "VM page table size in bits (default depending on vm_size)");
 module_param_named(vm_block_size, amdgpu_vm_block_size, int, 0444);
 
-/**
- * DOC: vm_fault_stop (int)
- * Stop on VM fault for debugging (0 = never, 1 = print first, 2 = always). The default is 0 (No stop).
- */
+ 
 MODULE_PARM_DESC(vm_fault_stop, "Stop on VM fault (0 = never (default), 1 = print first, 2 = always)");
 module_param_named(vm_fault_stop, amdgpu_vm_fault_stop, int, 0444);
 
-/**
- * DOC: vm_debug (int)
- * Debug VM handling (0 = disabled, 1 = enabled). The default is 0 (Disabled).
- */
+ 
 MODULE_PARM_DESC(vm_debug, "Debug VM handling (0 = disabled (default), 1 = enabled)");
 module_param_named(vm_debug, amdgpu_vm_debug, int, 0644);
 
-/**
- * DOC: vm_update_mode (int)
- * Override VM update mode. VM updated by using CPU (0 = never, 1 = Graphics only, 2 = Compute only, 3 = Both). The default
- * is -1 (Only in large BAR(LB) systems Compute VM tables will be updated by CPU, otherwise 0, never).
- */
+ 
 MODULE_PARM_DESC(vm_update_mode, "VM update using CPU (0 = never (default except for large BAR(LB)), 1 = Graphics only, 2 = Compute only (default for LB), 3 = Both");
 module_param_named(vm_update_mode, amdgpu_vm_update_mode, int, 0444);
 
-/**
- * DOC: exp_hw_support (int)
- * Enable experimental hw support (1 = enable). The default is 0 (disabled).
- */
+ 
 MODULE_PARM_DESC(exp_hw_support, "experimental hw support (1 = enable, 0 = disable (default))");
 module_param_named(exp_hw_support, amdgpu_exp_hw_support, int, 0444);
 
-/**
- * DOC: dc (int)
- * Disable/Enable Display Core driver for debugging (1 = enable, 0 = disable). The default is -1 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(dc, "Display Core driver (1 = enable, 0 = disable, -1 = auto (default))");
 module_param_named(dc, amdgpu_dc, int, 0444);
 
-/**
- * DOC: sched_jobs (int)
- * Override the max number of jobs supported in the sw queue. The default is 32.
- */
+ 
 MODULE_PARM_DESC(sched_jobs, "the max number of jobs supported in the sw queue (default 32)");
 module_param_named(sched_jobs, amdgpu_sched_jobs, int, 0444);
 
-/**
- * DOC: sched_hw_submission (int)
- * Override the max number of HW submissions. The default is 2.
- */
+ 
 MODULE_PARM_DESC(sched_hw_submission, "the max number of HW submissions (default 2)");
 module_param_named(sched_hw_submission, amdgpu_sched_hw_submission, int, 0444);
 
-/**
- * DOC: ppfeaturemask (hexint)
- * Override power features enabled. See enum PP_FEATURE_MASK in drivers/gpu/drm/amd/include/amd_shared.h.
- * The default is the current set of stable power features.
- */
+ 
 MODULE_PARM_DESC(ppfeaturemask, "all power features enabled (default))");
 module_param_named(ppfeaturemask, amdgpu_pp_feature_mask, hexint, 0444);
 
-/**
- * DOC: forcelongtraining (uint)
- * Force long memory training in resume.
- * The default is zero, indicates short training in resume.
- */
+ 
 MODULE_PARM_DESC(forcelongtraining, "force memory long training");
 module_param_named(forcelongtraining, amdgpu_force_long_training, uint, 0444);
 
-/**
- * DOC: pcie_gen_cap (uint)
- * Override PCIE gen speed capabilities. See the CAIL flags in drivers/gpu/drm/amd/include/amd_pcie.h.
- * The default is 0 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(pcie_gen_cap, "PCIE Gen Caps (0: autodetect (default))");
 module_param_named(pcie_gen_cap, amdgpu_pcie_gen_cap, uint, 0444);
 
-/**
- * DOC: pcie_lane_cap (uint)
- * Override PCIE lanes capabilities. See the CAIL flags in drivers/gpu/drm/amd/include/amd_pcie.h.
- * The default is 0 (automatic for each asic).
- */
+ 
 MODULE_PARM_DESC(pcie_lane_cap, "PCIE Lane Caps (0: autodetect (default))");
 module_param_named(pcie_lane_cap, amdgpu_pcie_lane_cap, uint, 0444);
 
-/**
- * DOC: cg_mask (ullong)
- * Override Clockgating features enabled on GPU (0 = disable clock gating). See the AMD_CG_SUPPORT flags in
- * drivers/gpu/drm/amd/include/amd_shared.h. The default is 0xffffffffffffffff (all enabled).
- */
+ 
 MODULE_PARM_DESC(cg_mask, "Clockgating flags mask (0 = disable clock gating)");
 module_param_named(cg_mask, amdgpu_cg_mask, ullong, 0444);
 
-/**
- * DOC: pg_mask (uint)
- * Override Powergating features enabled on GPU (0 = disable power gating). See the AMD_PG_SUPPORT flags in
- * drivers/gpu/drm/amd/include/amd_shared.h. The default is 0xffffffff (all enabled).
- */
+ 
 MODULE_PARM_DESC(pg_mask, "Powergating flags mask (0 = disable power gating)");
 module_param_named(pg_mask, amdgpu_pg_mask, uint, 0444);
 
-/**
- * DOC: sdma_phase_quantum (uint)
- * Override SDMA context switch phase quantum (x 1K GPU clock cycles, 0 = no change). The default is 32.
- */
+ 
 MODULE_PARM_DESC(sdma_phase_quantum, "SDMA context switch phase quantum (x 1K GPU clock cycles, 0 = no change (default 32))");
 module_param_named(sdma_phase_quantum, amdgpu_sdma_phase_quantum, uint, 0444);
 
-/**
- * DOC: disable_cu (charp)
- * Set to disable CUs (It's set like se.sh.cu,...). The default is NULL.
- */
+ 
 MODULE_PARM_DESC(disable_cu, "Disable CUs (se.sh.cu,...)");
 module_param_named(disable_cu, amdgpu_disable_cu, charp, 0444);
 
-/**
- * DOC: virtual_display (charp)
- * Set to enable virtual display feature. This feature provides a virtual display hardware on headless boards
- * or in virtualized environments. It will be set like xxxx:xx:xx.x,x;xxxx:xx:xx.x,x. It's the pci address of
- * the device, plus the number of crtcs to expose. E.g., 0000:26:00.0,4 would enable 4 virtual crtcs on the pci
- * device at 26:00.0. The default is NULL.
- */
+ 
 MODULE_PARM_DESC(virtual_display,
 		 "Enable virtual display feature (the virtual_display will be set like xxxx:xx:xx.x,x;xxxx:xx:xx.x,x)");
 module_param_named(virtual_display, amdgpu_virtual_display, charp, 0444);
 
-/**
- * DOC: lbpw (int)
- * Override Load Balancing Per Watt (LBPW) support (1 = enable, 0 = disable). The default is -1 (auto, enabled).
- */
+ 
 MODULE_PARM_DESC(lbpw, "Load Balancing Per Watt (LBPW) support (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(lbpw, amdgpu_lbpw, int, 0444);
 
 MODULE_PARM_DESC(compute_multipipe, "Force compute queues to be spread across pipes (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(compute_multipipe, amdgpu_compute_multipipe, int, 0444);
 
-/**
- * DOC: gpu_recovery (int)
- * Set to enable GPU recovery mechanism (1 = enable, 0 = disable). The default is -1 (auto, disabled except SRIOV).
- */
+ 
 MODULE_PARM_DESC(gpu_recovery, "Enable GPU recovery mechanism, (1 = enable, 0 = disable, -1 = auto)");
 module_param_named(gpu_recovery, amdgpu_gpu_recovery, int, 0444);
 
-/**
- * DOC: emu_mode (int)
- * Set value 1 to enable emulation mode. This is only needed when running on an emulator. The default is 0 (disabled).
- */
+ 
 MODULE_PARM_DESC(emu_mode, "Emulation mode, (1 = enable, 0 = disable)");
 module_param_named(emu_mode, amdgpu_emu_mode, int, 0444);
 
-/**
- * DOC: ras_enable (int)
- * Enable RAS features on the GPU (0 = disable, 1 = enable, -1 = auto (default))
- */
+ 
 MODULE_PARM_DESC(ras_enable, "Enable RAS features on the GPU (0 = disable, 1 = enable, -1 = auto (default))");
 module_param_named(ras_enable, amdgpu_ras_enable, int, 0444);
 
-/**
- * DOC: ras_mask (uint)
- * Mask of RAS features to enable (default 0xffffffff), only valid when ras_enable == 1
- * See the flags in drivers/gpu/drm/amd/amdgpu/amdgpu_ras.h
- */
+ 
 MODULE_PARM_DESC(ras_mask, "Mask of RAS features to enable (default 0xffffffff), only valid when ras_enable == 1");
 module_param_named(ras_mask, amdgpu_ras_mask, uint, 0444);
 
-/**
- * DOC: timeout_fatal_disable (bool)
- * Disable Watchdog timeout fatal error event
- */
+ 
 MODULE_PARM_DESC(timeout_fatal_disable, "disable watchdog timeout fatal error (false = default)");
 module_param_named(timeout_fatal_disable, amdgpu_watchdog_timer.timeout_fatal_disable, bool, 0644);
 
-/**
- * DOC: timeout_period (uint)
- * Modify the watchdog timeout max_cycles as (1 << period)
- */
+ 
 MODULE_PARM_DESC(timeout_period, "watchdog timeout period (0 = timeout disabled, 1 ~ 0x23 = timeout maxcycles = (1 << period)");
 module_param_named(timeout_period, amdgpu_watchdog_timer.period, uint, 0644);
 
-/**
- * DOC: si_support (int)
- * Set SI support driver. This parameter works after set config CONFIG_DRM_AMDGPU_SI. For SI asic, when radeon driver is enabled,
- * set value 0 to use radeon driver, while set value 1 to use amdgpu driver. The default is using radeon driver when it available,
- * otherwise using amdgpu driver.
- */
+ 
 #ifdef CONFIG_DRM_AMDGPU_SI
 
 #if IS_ENABLED(CONFIG_DRM_RADEON) || IS_ENABLED(CONFIG_DRM_RADEON_MODULE)
@@ -593,12 +324,7 @@ MODULE_PARM_DESC(si_support, "SI support (1 = enabled (default), 0 = disabled)")
 module_param_named(si_support, amdgpu_si_support, int, 0444);
 #endif
 
-/**
- * DOC: cik_support (int)
- * Set CIK support driver. This parameter works after set config CONFIG_DRM_AMDGPU_CIK. For CIK asic, when radeon driver is enabled,
- * set value 0 to use radeon driver, while set value 1 to use amdgpu driver. The default is using radeon driver when it available,
- * otherwise using amdgpu driver.
- */
+ 
 #ifdef CONFIG_DRM_AMDGPU_CIK
 
 #if IS_ENABLED(CONFIG_DRM_RADEON) || IS_ENABLED(CONFIG_DRM_RADEON_MODULE)
@@ -612,247 +338,143 @@ MODULE_PARM_DESC(cik_support, "CIK support (1 = enabled (default), 0 = disabled)
 module_param_named(cik_support, amdgpu_cik_support, int, 0444);
 #endif
 
-/**
- * DOC: smu_memory_pool_size (uint)
- * It is used to reserve gtt for smu debug usage, setting value 0 to disable it. The actual size is value * 256MiB.
- * E.g. 0x1 = 256Mbyte, 0x2 = 512Mbyte, 0x4 = 1 Gbyte, 0x8 = 2GByte. The default is 0 (disabled).
- */
+ 
 MODULE_PARM_DESC(smu_memory_pool_size,
 	"reserve gtt for smu debug usage, 0 = disable,0x1 = 256Mbyte, 0x2 = 512Mbyte, 0x4 = 1 Gbyte, 0x8 = 2GByte");
 module_param_named(smu_memory_pool_size, amdgpu_smu_memory_pool_size, uint, 0444);
 
-/**
- * DOC: async_gfx_ring (int)
- * It is used to enable gfx rings that could be configured with different prioritites or equal priorities
- */
+ 
 MODULE_PARM_DESC(async_gfx_ring,
 	"Asynchronous GFX rings that could be configured with either different priorities (HP3D ring and LP3D ring), or equal priorities (0 = disabled, 1 = enabled (default))");
 module_param_named(async_gfx_ring, amdgpu_async_gfx_ring, int, 0444);
 
-/**
- * DOC: mcbp (int)
- * It is used to enable mid command buffer preemption. (0 = disabled, 1 = enabled, -1 auto (default))
- */
+ 
 MODULE_PARM_DESC(mcbp,
 	"Enable Mid-command buffer preemption (0 = disabled, 1 = enabled), -1 = auto (default)");
 module_param_named(mcbp, amdgpu_mcbp, int, 0444);
 
-/**
- * DOC: discovery (int)
- * Allow driver to discover hardware IP information from IP Discovery table at the top of VRAM.
- * (-1 = auto (default), 0 = disabled, 1 = enabled, 2 = use ip_discovery table from file)
- */
+ 
 MODULE_PARM_DESC(discovery,
 	"Allow driver to discover hardware IPs from IP Discovery table at the top of VRAM");
 module_param_named(discovery, amdgpu_discovery, int, 0444);
 
-/**
- * DOC: mes (int)
- * Enable Micro Engine Scheduler. This is a new hw scheduling engine for gfx, sdma, and compute.
- * (0 = disabled (default), 1 = enabled)
- */
+ 
 MODULE_PARM_DESC(mes,
 	"Enable Micro Engine Scheduler (0 = disabled (default), 1 = enabled)");
 module_param_named(mes, amdgpu_mes, int, 0444);
 
-/**
- * DOC: mes_kiq (int)
- * Enable Micro Engine Scheduler KIQ. This is a new engine pipe for kiq.
- * (0 = disabled (default), 1 = enabled)
- */
+ 
 MODULE_PARM_DESC(mes_kiq,
 	"Enable Micro Engine Scheduler KIQ (0 = disabled (default), 1 = enabled)");
 module_param_named(mes_kiq, amdgpu_mes_kiq, int, 0444);
 
-/**
- * DOC: noretry (int)
- * Disable XNACK retry in the SQ by default on GFXv9 hardware. On ASICs that
- * do not support per-process XNACK this also disables retry page faults.
- * (0 = retry enabled, 1 = retry disabled, -1 auto (default))
- */
+ 
 MODULE_PARM_DESC(noretry,
 	"Disable retry faults (0 = retry enabled, 1 = retry disabled, -1 auto (default))");
 module_param_named(noretry, amdgpu_noretry, int, 0644);
 
-/**
- * DOC: force_asic_type (int)
- * A non negative value used to specify the asic type for all supported GPUs.
- */
+ 
 MODULE_PARM_DESC(force_asic_type,
 	"A non negative value used to specify the asic type for all supported GPUs");
 module_param_named(force_asic_type, amdgpu_force_asic_type, int, 0444);
 
-/**
- * DOC: use_xgmi_p2p (int)
- * Enables/disables XGMI P2P interface (0 = disable, 1 = enable).
- */
+ 
 MODULE_PARM_DESC(use_xgmi_p2p,
 	"Enable XGMI P2P interface (0 = disable; 1 = enable (default))");
 module_param_named(use_xgmi_p2p, amdgpu_use_xgmi_p2p, int, 0444);
 
 
 #ifdef CONFIG_HSA_AMD
-/**
- * DOC: sched_policy (int)
- * Set scheduling policy. Default is HWS(hardware scheduling) with over-subscription.
- * Setting 1 disables over-subscription. Setting 2 disables HWS and statically
- * assigns queues to HQDs.
- */
+ 
 int sched_policy = KFD_SCHED_POLICY_HWS;
 module_param(sched_policy, int, 0444);
 MODULE_PARM_DESC(sched_policy,
 	"Scheduling policy (0 = HWS (Default), 1 = HWS without over-subscription, 2 = Non-HWS (Used for debugging only)");
 
-/**
- * DOC: hws_max_conc_proc (int)
- * Maximum number of processes that HWS can schedule concurrently. The maximum is the
- * number of VMIDs assigned to the HWS, which is also the default.
- */
+ 
 int hws_max_conc_proc = -1;
 module_param(hws_max_conc_proc, int, 0444);
 MODULE_PARM_DESC(hws_max_conc_proc,
 	"Max # processes HWS can execute concurrently when sched_policy=0 (0 = no concurrency, #VMIDs for KFD = Maximum(default))");
 
-/**
- * DOC: cwsr_enable (int)
- * CWSR(compute wave store and resume) allows the GPU to preempt shader execution in
- * the middle of a compute wave. Default is 1 to enable this feature. Setting 0
- * disables it.
- */
+ 
 int cwsr_enable = 1;
 module_param(cwsr_enable, int, 0444);
 MODULE_PARM_DESC(cwsr_enable, "CWSR enable (0 = Off, 1 = On (Default))");
 
-/**
- * DOC: max_num_of_queues_per_device (int)
- * Maximum number of queues per device. Valid setting is between 1 and 4096. Default
- * is 4096.
- */
+ 
 int max_num_of_queues_per_device = KFD_MAX_NUM_OF_QUEUES_PER_DEVICE_DEFAULT;
 module_param(max_num_of_queues_per_device, int, 0444);
 MODULE_PARM_DESC(max_num_of_queues_per_device,
 	"Maximum number of supported queues per device (1 = Minimum, 4096 = default)");
 
-/**
- * DOC: send_sigterm (int)
- * Send sigterm to HSA process on unhandled exceptions. Default is not to send sigterm
- * but just print errors on dmesg. Setting 1 enables sending sigterm.
- */
+ 
 int send_sigterm;
 module_param(send_sigterm, int, 0444);
 MODULE_PARM_DESC(send_sigterm,
 	"Send sigterm to HSA process on unhandled exception (0 = disable, 1 = enable)");
 
-/**
- * DOC: debug_largebar (int)
- * Set debug_largebar as 1 to enable simulating large-bar capability on non-large bar
- * system. This limits the VRAM size reported to ROCm applications to the visible
- * size, usually 256MB.
- * Default value is 0, diabled.
- */
+ 
 int debug_largebar;
 module_param(debug_largebar, int, 0444);
 MODULE_PARM_DESC(debug_largebar,
 	"Debug large-bar flag used to simulate large-bar capability on non-large bar machine (0 = disable, 1 = enable)");
 
-/**
- * DOC: halt_if_hws_hang (int)
- * Halt if HWS hang is detected. Default value, 0, disables the halt on hang.
- * Setting 1 enables halt on hang.
- */
+ 
 int halt_if_hws_hang;
 module_param(halt_if_hws_hang, int, 0644);
 MODULE_PARM_DESC(halt_if_hws_hang, "Halt if HWS hang is detected (0 = off (default), 1 = on)");
 
-/**
- * DOC: hws_gws_support(bool)
- * Assume that HWS supports GWS barriers regardless of what firmware version
- * check says. Default value: false (rely on MEC2 firmware version check).
- */
+ 
 bool hws_gws_support;
 module_param(hws_gws_support, bool, 0444);
 MODULE_PARM_DESC(hws_gws_support, "Assume MEC2 FW supports GWS barriers (false = rely on FW version check (Default), true = force supported)");
 
-/**
- * DOC: queue_preemption_timeout_ms (int)
- * queue preemption timeout in ms (1 = Minimum, 9000 = default)
- */
+ 
 int queue_preemption_timeout_ms = 9000;
 module_param(queue_preemption_timeout_ms, int, 0644);
 MODULE_PARM_DESC(queue_preemption_timeout_ms, "queue preemption timeout in ms (1 = Minimum, 9000 = default)");
 
-/**
- * DOC: debug_evictions(bool)
- * Enable extra debug messages to help determine the cause of evictions
- */
+ 
 bool debug_evictions;
 module_param(debug_evictions, bool, 0644);
 MODULE_PARM_DESC(debug_evictions, "enable eviction debug messages (false = default)");
 
-/**
- * DOC: no_system_mem_limit(bool)
- * Disable system memory limit, to support multiple process shared memory
- */
+ 
 bool no_system_mem_limit;
 module_param(no_system_mem_limit, bool, 0644);
 MODULE_PARM_DESC(no_system_mem_limit, "disable system memory limit (false = default)");
 
-/**
- * DOC: no_queue_eviction_on_vm_fault (int)
- * If set, process queues will not be evicted on gpuvm fault. This is to keep the wavefront context for debugging (0 = queue eviction, 1 = no queue eviction). The default is 0 (queue eviction).
- */
+ 
 int amdgpu_no_queue_eviction_on_vm_fault;
 MODULE_PARM_DESC(no_queue_eviction_on_vm_fault, "No queue eviction on VM fault (0 = queue eviction, 1 = no queue eviction)");
 module_param_named(no_queue_eviction_on_vm_fault, amdgpu_no_queue_eviction_on_vm_fault, int, 0444);
 #endif
 
-/**
- * DOC: mtype_local (int)
- */
+ 
 int amdgpu_mtype_local;
 MODULE_PARM_DESC(mtype_local, "MTYPE for local memory (0 = MTYPE_RW (default), 1 = MTYPE_NC, 2 = MTYPE_CC)");
 module_param_named(mtype_local, amdgpu_mtype_local, int, 0444);
 
-/**
- * DOC: pcie_p2p (bool)
- * Enable PCIe P2P (requires large-BAR). Default value: true (on)
- */
+ 
 #ifdef CONFIG_HSA_AMD_P2P
 bool pcie_p2p = true;
 module_param(pcie_p2p, bool, 0444);
 MODULE_PARM_DESC(pcie_p2p, "Enable PCIe P2P (requires large-BAR). (N = off, Y = on(default))");
 #endif
 
-/**
- * DOC: dcfeaturemask (uint)
- * Override display features enabled. See enum DC_FEATURE_MASK in drivers/gpu/drm/amd/include/amd_shared.h.
- * The default is the current set of stable display features.
- */
+ 
 MODULE_PARM_DESC(dcfeaturemask, "all stable DC features enabled (default))");
 module_param_named(dcfeaturemask, amdgpu_dc_feature_mask, uint, 0444);
 
-/**
- * DOC: dcdebugmask (uint)
- * Override display features enabled. See enum DC_DEBUG_MASK in drivers/gpu/drm/amd/include/amd_shared.h.
- */
+ 
 MODULE_PARM_DESC(dcdebugmask, "all debug options disabled (default))");
 module_param_named(dcdebugmask, amdgpu_dc_debug_mask, uint, 0444);
 
 MODULE_PARM_DESC(visualconfirm, "Visual confirm (0 = off (default), 1 = MPO, 5 = PSR)");
 module_param_named(visualconfirm, amdgpu_dc_visual_confirm, uint, 0444);
 
-/**
- * DOC: abmlevel (uint)
- * Override the default ABM (Adaptive Backlight Management) level used for DC
- * enabled hardware. Requires DMCU to be supported and loaded.
- * Valid levels are 0-4. A value of 0 indicates that ABM should be disabled by
- * default. Values 1-4 control the maximum allowable brightness reduction via
- * the ABM algorithm, with 1 being the least reduction and 4 being the most
- * reduction.
- *
- * Defaults to 0, or disabled. Userspace can still override this level later
- * after boot.
- */
+ 
 uint amdgpu_dm_abm_level;
 MODULE_PARM_DESC(abmlevel, "ABM level (0 = off (default), 1-4 = backlight reduction level) ");
 module_param_named(abmlevel, amdgpu_dm_abm_level, uint, 0444);
@@ -861,65 +483,35 @@ int amdgpu_backlight = -1;
 MODULE_PARM_DESC(backlight, "Backlight control (0 = pwm, 1 = aux, -1 auto (default))");
 module_param_named(backlight, amdgpu_backlight, bint, 0444);
 
-/**
- * DOC: tmz (int)
- * Trusted Memory Zone (TMZ) is a method to protect data being written
- * to or read from memory.
- *
- * The default value: 0 (off).  TODO: change to auto till it is completed.
- */
+ 
 MODULE_PARM_DESC(tmz, "Enable TMZ feature (-1 = auto (default), 0 = off, 1 = on)");
 module_param_named(tmz, amdgpu_tmz, int, 0444);
 
-/**
- * DOC: reset_method (int)
- * GPU reset method (-1 = auto (default), 0 = legacy, 1 = mode0, 2 = mode1, 3 = mode2, 4 = baco)
- */
+ 
 MODULE_PARM_DESC(reset_method, "GPU reset method (-1 = auto (default), 0 = legacy, 1 = mode0, 2 = mode1, 3 = mode2, 4 = baco/bamaco)");
 module_param_named(reset_method, amdgpu_reset_method, int, 0444);
 
-/**
- * DOC: bad_page_threshold (int) Bad page threshold is specifies the
- * threshold value of faulty pages detected by RAS ECC, which may
- * result in the GPU entering bad status when the number of total
- * faulty pages by ECC exceeds the threshold value.
- */
+ 
 MODULE_PARM_DESC(bad_page_threshold, "Bad page threshold(-1 = ignore threshold (default value), 0 = disable bad page retirement, -2 = driver sets threshold)");
 module_param_named(bad_page_threshold, amdgpu_bad_page_threshold, int, 0444);
 
 MODULE_PARM_DESC(num_kcq, "number of kernel compute queue user want to setup (8 if set to greater than 8 or less than 0, only affect gfx 8+)");
 module_param_named(num_kcq, amdgpu_num_kcq, int, 0444);
 
-/**
- * DOC: vcnfw_log (int)
- * Enable vcnfw log output for debugging, the default is disabled.
- */
+ 
 MODULE_PARM_DESC(vcnfw_log, "Enable vcnfw log(0 = disable (default value), 1 = enable)");
 module_param_named(vcnfw_log, amdgpu_vcnfw_log, int, 0444);
 
-/**
- * DOC: sg_display (int)
- * Disable S/G (scatter/gather) display (i.e., display from system memory).
- * This option is only relevant on APUs.  Set this option to 0 to disable
- * S/G display if you experience flickering or other issues under memory
- * pressure and report the issue.
- */
+ 
 MODULE_PARM_DESC(sg_display, "S/G Display (-1 = auto (default), 0 = disable)");
 module_param_named(sg_display, amdgpu_sg_display, int, 0444);
 
-/**
- * DOC: smu_pptable_id (int)
- * Used to override pptable id. id = 0 use VBIOS pptable.
- * id > 0 use the soft pptable with specicfied id.
- */
+ 
 MODULE_PARM_DESC(smu_pptable_id,
 	"specify pptable id to be used (-1 = auto(default) value, 0 = use pptable from vbios, > 0 = soft pptable id)");
 module_param_named(smu_pptable_id, amdgpu_smu_pptable_id, int, 0444);
 
-/**
- * DOC: partition_mode (int)
- * Used to override the default SPX mode.
- */
+ 
 MODULE_PARM_DESC(
 	user_partt_mode,
 	"specify partition mode to be used (-2 = AMDGPU_AUTO_COMPUTE_PARTITION_MODE(default value) \

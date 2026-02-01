@@ -1,15 +1,4 @@
-/*
- * AHCI glue platform driver for Marvell EBU SOCs
- *
- * Copyright (C) 2014 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- * Marcin Wojtas <mw@semihalf.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/kernel.h>
@@ -58,11 +47,7 @@ static void ahci_mvebu_mbus_config(struct ahci_host_priv *hpriv,
 
 static void ahci_mvebu_regret_option(struct ahci_host_priv *hpriv)
 {
-	/*
-	 * Enable the regret bit to allow the SATA unit to regret a
-	 * request that didn't receive an acknowlegde and avoid a
-	 * deadlock
-	 */
+	 
 	writel(0x4, hpriv->mmio + AHCI_VENDOR_SPECIFIC_0_ADDR);
 	writel(0x80, hpriv->mmio + AHCI_VENDOR_SPECIFIC_0_DATA);
 }
@@ -96,26 +81,7 @@ static int ahci_mvebu_armada_3700_config(struct ahci_host_priv *hpriv)
 	return 0;
 }
 
-/**
- * ahci_mvebu_stop_engine
- *
- * @ap:	Target ata port
- *
- * Errata Ref#226 - SATA Disk HOT swap issue when connected through
- * Port Multiplier in FIS-based Switching mode.
- *
- * To avoid the issue, according to design, the bits[11:8, 0] of
- * register PxFBS are cleared when Port Command and Status (0x18) bit[0]
- * changes its value from 1 to 0, i.e. falling edge of Port
- * Command and Status bit[0] sends PULSE that resets PxFBS
- * bits[11:8; 0].
- *
- * This function is used to override function of "ahci_stop_engine"
- * from libahci.c by adding the mvebu work around(WA) to save PxFBS
- * value before the PxCMD ST write of 0, then restore PxFBS value.
- *
- * Return: 0 on success; Error code otherwise.
- */
+ 
 static int ahci_mvebu_stop_engine(struct ata_port *ap)
 {
 	void __iomem *port_mmio = ahci_port_base(ap);
@@ -123,25 +89,21 @@ static int ahci_mvebu_stop_engine(struct ata_port *ap)
 
 	tmp = readl(port_mmio + PORT_CMD);
 
-	/* check if the HBA is idle */
+	 
 	if ((tmp & (PORT_CMD_START | PORT_CMD_LIST_ON)) == 0)
 		return 0;
 
-	/* save the port PxFBS register for later restore */
+	 
 	port_fbs = readl(port_mmio + PORT_FBS);
 
-	/* setting HBA to idle */
+	 
 	tmp &= ~PORT_CMD_START;
 	writel(tmp, port_mmio + PORT_CMD);
 
-	/*
-	 * bit #15 PxCMD signal doesn't clear PxFBS,
-	 * restore the PxFBS register right after clearing the PxCMD ST,
-	 * no need to wait for the PxCMD bit #15.
-	 */
+	 
 	writel(port_fbs, port_mmio + PORT_FBS);
 
-	/* wait for engine to stop. This could be as long as 500 msec */
+	 
 	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
 				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
 	if (tmp & PORT_CMD_LIST_ON)
@@ -239,7 +201,7 @@ static const struct of_device_id ahci_mvebu_of_match[] = {
 		.compatible = "marvell,armada-3700-ahci",
 		.data = &ahci_mvebu_armada_3700_plat_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_mvebu_of_match);
 

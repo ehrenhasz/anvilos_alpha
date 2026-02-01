@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Houlong Wei <houlong.wei@mediatek.com>
- *         Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -20,15 +16,7 @@
 #include "mtk_vpu.h"
 
 
-/**
- *  struct mtk_mdp_pix_limit - image pixel size limits
- *  @org_w: source pixel width
- *  @org_h: source pixel height
- *  @target_rot_dis_w: pixel dst scaled width with the rotator is off
- *  @target_rot_dis_h: pixel dst scaled height with the rotator is off
- *  @target_rot_en_w: pixel dst scaled width with the rotator is on
- *  @target_rot_en_h: pixel dst scaled height with the rotator is on
- */
+ 
 struct mtk_mdp_pix_limit {
 	u16 org_w;
 	u16 org_h;
@@ -97,7 +85,7 @@ static struct mtk_mdp_pix_limit mtk_mdp_size_min = {
 	.target_rot_en_h	= 16,
 };
 
-/* align size for normal raster scan pixel format */
+ 
 static struct mtk_mdp_pix_align mtk_mdp_rs_align = {
 	.org_w			= 2,
 	.org_h			= 2,
@@ -204,7 +192,7 @@ static const struct mtk_mdp_fmt *mtk_mdp_try_fmt_mplane(struct mtk_mdp_ctx *ctx,
 	max_h = variant->pix_max->target_rot_dis_h;
 
 	if (fmt->align == NULL) {
-		/* use default alignment */
+		 
 		align_w = variant->pix_align->org_w;
 		align_h = variant->pix_align->org_h;
 	} else {
@@ -223,10 +211,7 @@ static const struct mtk_mdp_fmt *mtk_mdp_try_fmt_mplane(struct mtk_mdp_ctx *ctx,
 	mtk_mdp_dbg(2, "[%d] type:%d, wxh:%ux%u, align:%ux%u, max:%ux%u",
 		    ctx->id, f->type, pix_mp->width, pix_mp->height,
 		    align_w, align_h, max_w, max_h);
-	/*
-	 * To check if image size is modified to adjust parameter against
-	 * hardware abilities
-	 */
+	 
 	org_w = pix_mp->width;
 	org_h = pix_mp->height;
 
@@ -332,8 +317,8 @@ static int mtk_mdp_try_crop(struct mtk_mdp_ctx *ctx, u32 type,
 		mtk_mdp_check_crop_change(new_w, new_h,
 					  &r->width, &r->height);
 
-	/* adjust left/top if cropping rectangle is out of bounds */
-	/* Need to add code to algin left value with 2's multiple */
+	 
+	 
 	if (r->left + new_w > max_w)
 		r->left = max_w - new_w;
 	if (r->top + new_h > max_h)
@@ -422,7 +407,7 @@ static void mtk_mdp_m2m_stop_streaming(struct vb2_queue *q)
 	pm_runtime_put(&ctx->mdp_dev->pdev->dev);
 }
 
-/* The color format (num_planes) must be already configured. */
+ 
 static void mtk_mdp_prepare_addr(struct mtk_mdp_ctx *ctx,
 				 struct vb2_buffer *vb,
 				 struct mtk_mdp_frame *frame,
@@ -867,7 +852,7 @@ static int mtk_mdp_m2m_s_selection(struct file *file, void *fh,
 	else
 		frame = &ctx->d_frame;
 
-	/* Check to see if scaling ratio is within supported range */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(s->type))
 		ret = mtk_mdp_check_scaler_ratio(variant, new_r.width,
 			new_r.height, ctx->d_frame.crop.width,
@@ -1072,7 +1057,7 @@ static int mtk_mdp_m2m_open(struct file *file)
 	if (ret)
 		goto error_ctrls;
 
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
 	v4l2_fh_add(&ctx->fh);
 	INIT_LIST_HEAD(&ctx->list);
@@ -1108,7 +1093,7 @@ static int mtk_mdp_m2m_open(struct file *file)
 	list_add(&ctx->list, &mdp->ctx_list);
 	mutex_unlock(&mdp->lock);
 
-	/* Default format */
+	 
 	memset(&default_format, 0, sizeof(default_format));
 	default_format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
 	default_format.fmt.pix_mp.width = 32;

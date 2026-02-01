@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __DRV_TYPES_SDIO_H__
 #define __DRV_TYPES_SDIO_H__
 
-/*  SDIO Header Files */
+ 
 	#include <linux/mmc/sdio_func.h>
 	#include <linux/mmc/sdio_ids.h>
 

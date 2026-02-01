@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) Maxime Coquelin 2015
- * Copyright (C) STMicroelectronics 2017
- * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -25,7 +21,7 @@
 
 #define IRQS_PER_BANK 32
 
-#define HWSPNLCK_TIMEOUT	1000 /* usec */
+#define HWSPNLCK_TIMEOUT	1000  
 
 struct stm32_exti_bank {
 	u32 imr_ofst;
@@ -174,18 +170,13 @@ static struct irq_chip stm32_exti_h_chip_direct;
 #define EXTI_INVALID_IRQ       U8_MAX
 #define STM32MP1_DESC_IRQ_SIZE (ARRAY_SIZE(stm32mp1_exti_banks) * IRQS_PER_BANK)
 
-/*
- * Use some intentionally tricky logic here to initialize the whole array to
- * EXTI_INVALID_IRQ, but then override certain fields, requiring us to indicate
- * that we "know" that there are overrides in this structure, and we'll need to
- * disable that warning from W=1 builds.
- */
+ 
 __diag_push();
 __diag_ignore_all("-Woverride-init",
 		  "logic to initialize all and then override some is OK");
 
 static const u8 stm32mp1_desc_irq[] = {
-	/* default value */
+	 
 	[0 ... (STM32MP1_DESC_IRQ_SIZE - 1)] = EXTI_INVALID_IRQ,
 
 	[0] = 6,
@@ -234,7 +225,7 @@ static const u8 stm32mp1_desc_irq[] = {
 };
 
 static const u8 stm32mp13_desc_irq[] = {
-	/* default value */
+	 
 	[0 ... (STM32MP1_DESC_IRQ_SIZE - 1)] = EXTI_INVALID_IRQ,
 
 	[0] = 6,
@@ -397,7 +388,7 @@ static void stm32_chip_suspend(struct stm32_exti_chip_data *chip_data,
 	const struct stm32_exti_bank *stm32_bank = chip_data->reg_bank;
 	void __iomem *base = chip_data->host_data->base;
 
-	/* save rtsr, ftsr registers */
+	 
 	chip_data->rtsr_cache = readl_relaxed(base + stm32_bank->rtsr_ofst);
 	chip_data->ftsr_cache = readl_relaxed(base + stm32_bank->ftsr_ofst);
 
@@ -410,7 +401,7 @@ static void stm32_chip_resume(struct stm32_exti_chip_data *chip_data,
 	const struct stm32_exti_bank *stm32_bank = chip_data->reg_bank;
 	void __iomem *base = chip_data->host_data->base;
 
-	/* restore rtsr, ftsr, registers */
+	 
 	writel_relaxed(chip_data->rtsr_cache, base + stm32_bank->rtsr_ofst);
 	writel_relaxed(chip_data->ftsr_cache, base + stm32_bank->ftsr_ofst);
 
@@ -478,7 +469,7 @@ static void stm32_irq_ack(struct irq_data *d)
 	irq_gc_unlock(gc);
 }
 
-/* directly set the target bit without reading first. */
+ 
 static inline void stm32_exti_write_bit(struct irq_data *d, u32 reg)
 {
 	struct stm32_exti_chip_data *chip_data = irq_data_get_irq_chip_data(d);
@@ -799,10 +790,7 @@ stm32_exti_chip_data *stm32_exti_chip_init(struct stm32_exti_host_data *h_data,
 
 	raw_spin_lock_init(&chip_data->rlock);
 
-	/*
-	 * This IP has no reset, so after hot reboot we should
-	 * clear registers to avoid residue
-	 */
+	 
 	writel_relaxed(0, base + stm32_bank->imr_ofst);
 	if (stm32_bank->emr_ofst != UNDEF_REG)
 		writel_relaxed(0, base + stm32_bank->emr_ofst);
@@ -917,10 +905,10 @@ static int stm32_exti_probe(struct platform_device *pdev)
 	if (!host_data)
 		return -ENOMEM;
 
-	/* check for optional hwspinlock which may be not available yet */
+	 
 	ret = of_hwspin_lock_get_id(np, 0);
 	if (ret == -EPROBE_DEFER)
-		/* hwspinlock framework not yet ready */
+		 
 		return ret;
 
 	if (ret >= 0) {
@@ -930,12 +918,12 @@ static int stm32_exti_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 	} else if (ret != -ENOENT) {
-		/* note: ENOENT is a valid case (means 'no hwspinlock') */
+		 
 		dev_err(dev, "Failed to get hwspinlock\n");
 		return ret;
 	}
 
-	/* initialize host_data */
+	 
 	drv_data = of_device_get_match_data(dev);
 	if (!drv_data) {
 		dev_err(dev, "no of match data\n");
@@ -981,7 +969,7 @@ static int stm32_exti_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* platform driver only for MP1 */
+ 
 static const struct of_device_id stm32_exti_ids[] = {
 	{ .compatible = "st,stm32mp1-exti", .data = &stm32mp1_drv_data},
 	{ .compatible = "st,stm32mp13-exti", .data = &stm32mp13_drv_data},
@@ -1011,7 +999,7 @@ static void __exit stm32_exti_arch_exit(void)
 arch_initcall(stm32_exti_arch_init);
 module_exit(stm32_exti_arch_exit);
 
-/* no platform driver for F4 and H7 */
+ 
 static int __init stm32f4_exti_of_init(struct device_node *np,
 				       struct device_node *parent)
 {

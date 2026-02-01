@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2018-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/printk.h>
 #include <linux/slab.h>
@@ -46,7 +25,7 @@ static void update_cu_mask(struct mqd_manager *mm, void *mqd,
 			struct mqd_update_info *minfo)
 {
 	struct v10_compute_mqd *m;
-	uint32_t se_mask[4] = {0}; /* 4 is the max # of SEs */
+	uint32_t se_mask[4] = {0};  
 
 	if (!minfo || !minfo->cu_mask.ptr)
 		return;
@@ -116,9 +95,7 @@ static void init_mqd(struct mqd_manager *mm, void **mqd,
 			1 << CP_HQD_QUANTUM__QUANTUM_SCALE__SHIFT |
 			1 << CP_HQD_QUANTUM__QUANTUM_DURATION__SHIFT;
 
-	/* Set cp_hqd_hq_scheduler0 bit 14 to 1 to have the CP set up the
-	 * DISPATCH_PTR.  This is required for the kfd debugger
-	 */
+	 
 	m->cp_hqd_hq_scheduler0 = 1 << 14;
 
 	if (q->format == KFD_QUEUE_FORMAT_AQL) {
@@ -150,7 +127,7 @@ static int load_mqd(struct mqd_manager *mm, void *mqd,
 			struct queue_properties *p, struct mm_struct *mms)
 {
 	int r = 0;
-	/* AQL write pointer counts in 64B packets, PM4/CP counts in dwords. */
+	 
 	uint32_t wptr_shift = (p->format == KFD_QUEUE_FORMAT_AQL ? 4 : 0);
 
 	r = mm->dev->kfd2kgd->hqd_load(mm->dev->adev, mqd, pipe_id, queue_id,
@@ -188,13 +165,7 @@ static void update_mqd(struct mqd_manager *mm, void *mqd,
 
 	m->cp_hqd_ib_control = 3 << CP_HQD_IB_CONTROL__MIN_IB_AVAIL_SIZE__SHIFT;
 
-	/*
-	 * HW does not clamp this field correctly. Maximum EOP queue size
-	 * is constrained by per-SE EOP done signal count, which is 8-bit.
-	 * Limit is 0xFF EOP entries (= 0x7F8 dwords). CP will not submit
-	 * more than (EOP entry count - 1) so a queue size of 0x800 dwords
-	 * is safe, giving a maximum field value of 0xA.
-	 */
+	 
 	m->cp_hqd_eop_control = min(0xA,
 		ffs(q->eop_ring_buffer_size / sizeof(unsigned int)) - 1 - 1);
 	m->cp_hqd_eop_base_addr_lo =
@@ -207,7 +178,7 @@ static void update_mqd(struct mqd_manager *mm, void *mqd,
 	m->cp_hqd_vmid = q->vmid;
 
 	if (q->format == KFD_QUEUE_FORMAT_AQL) {
-		/* GC 10 removed WPP_CLAMP from PQ Control */
+		 
 		m->cp_hqd_pq_control |= CP_HQD_PQ_CONTROL__NO_UPDATE_RPTR_MASK |
 				2 << CP_HQD_PQ_CONTROL__SLOT_BASED_WPTR__SHIFT |
 				1 << CP_HQD_PQ_CONTROL__QUEUE_FULL_EN__SHIFT;
@@ -241,20 +212,13 @@ static int get_wave_state(struct mqd_manager *mm, void *mqd,
 
 	m = get_mqd(mqd);
 
-	/* Control stack is written backwards, while workgroup context data
-	 * is written forwards. Both starts from m->cp_hqd_cntl_stack_size.
-	 * Current position is at m->cp_hqd_cntl_stack_offset and
-	 * m->cp_hqd_wg_state_offset, respectively.
-	 */
+	 
 	*ctl_stack_used_size = m->cp_hqd_cntl_stack_size -
 		m->cp_hqd_cntl_stack_offset;
 	*save_area_used_size = m->cp_hqd_wg_state_offset -
 		m->cp_hqd_cntl_stack_size;
 
-	/* Control stack is not copied to user mode for GFXv10 because
-	 * it's part of the context save area that is already
-	 * accessible to user mode
-	 */
+	 
 
 	header.wave_state.control_stack_size = *ctl_stack_used_size;
 	header.wave_state.wave_state_size = *save_area_used_size;

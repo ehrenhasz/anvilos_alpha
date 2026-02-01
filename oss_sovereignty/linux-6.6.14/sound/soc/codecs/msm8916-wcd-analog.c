@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2016, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -290,7 +290,7 @@ struct pm8916_wcd_analog_priv {
 	u16 pmic_rev;
 	u16 codec_version;
 	bool	mbhc_btn_enabled;
-	/* special event to detect accessory type */
+	 
 	int	mbhc_btn0_released;
 	bool	detect_accessory_type;
 	struct clk *mclk;
@@ -299,9 +299,9 @@ struct pm8916_wcd_analog_priv {
 	struct snd_soc_jack *jack;
 	bool hphl_jack_type_normally_open;
 	bool gnd_jack_type_normally_open;
-	/* Voltage threshold when internal current source of 100uA is used */
+	 
 	u32 vref_btn_cs[MBHC_MAX_BUTTONS];
-	/* Voltage threshold when microphone bias is ON */
+	 
 	u32 vref_btn_micb[MBHC_MAX_BUTTONS];
 	unsigned int micbias1_cap_mode;
 	unsigned int micbias2_cap_mode;
@@ -319,11 +319,11 @@ static const struct snd_kcontrol_new ear_mux = SOC_DAPM_ENUM("EAR_S", hph_enum);
 static const struct snd_kcontrol_new hphl_mux = SOC_DAPM_ENUM("HPHL", hph_enum);
 static const struct snd_kcontrol_new hphr_mux = SOC_DAPM_ENUM("HPHR", hph_enum);
 
-/* ADC2 MUX */
+ 
 static const struct soc_enum adc2_enum = SOC_ENUM_SINGLE_VIRT(
 			ARRAY_SIZE(adc2_mux_text), adc2_mux_text);
 
-/* RDAC2 MUX */
+ 
 static const struct soc_enum rdac2_mux_enum = SOC_ENUM_SINGLE(
 			CDC_D_CDC_CONN_HPHR_DAC_CTL, 0, 2, rdac2_mux_text);
 
@@ -336,7 +336,7 @@ static const struct snd_kcontrol_new rdac2_mux = SOC_DAPM_ENUM(
 static const struct snd_kcontrol_new tx_adc2_mux = SOC_DAPM_ENUM(
 					"ADC2 MUX Mux", adc2_enum);
 
-/* Analog Gain control 0 dB to +24 dB in 6 dB steps */
+ 
 static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 600, 0);
 
 static const struct snd_kcontrol_new pm8916_wcd_analog_snd_controls[] = {
@@ -359,10 +359,7 @@ static void pm8916_wcd_analog_micbias_enable(struct snd_soc_component *component
 		snd_soc_component_update_bits(component, CDC_A_MICB_1_VAL,
 				    MICB_1_VAL_MICB_OUT_VAL_MASK,
 				    MICB_VOLTAGE_REGVAL(wcd->micbias_mv));
-		/*
-		 * Special headset needs MICBIAS as 2.7V so wait for
-		 * 50 msec for the MICBIAS to reach 2.7 volts.
-		 */
+		 
 		if (wcd->micbias_mv >= 2700)
 			msleep(50);
 	}
@@ -434,16 +431,16 @@ static int pm8916_mbhc_configure_bias(struct pm8916_wcd_analog_priv *priv,
 	u32 coarse, fine, reg_val, reg_addr;
 	int *vrefs, i;
 
-	if (!micbias2_enabled) { /* use internal 100uA Current source */
-		/* Enable internal 2.2k Internal Rbias Resistor */
+	if (!micbias2_enabled) {  
+		 
 		snd_soc_component_update_bits(component, CDC_A_MICB_1_INT_RBIAS,
 				    MICB_1_INT_TX2_INT_RBIAS_EN_MASK,
 				    MICB_1_INT_TX2_INT_RBIAS_EN_ENABLE);
-		/* Remove pull down on MIC BIAS2 */
+		 
 		snd_soc_component_update_bits(component, CDC_A_MICB_2_EN,
 				   CDC_A_MICB_2_PULL_DOWN_EN_MASK,
 				   0);
-		/* enable 100uA internal current source */
+		 
 		snd_soc_component_update_bits(component, CDC_A_MBHC_FSM_CTL,
 				    CDC_A_MBHC_FSM_CTL_BTN_ISRC_CTRL_MASK,
 				    CDC_A_MBHC_FSM_CTL_BTN_ISRC_CTRL_I_100UA);
@@ -457,10 +454,10 @@ static int pm8916_mbhc_configure_bias(struct pm8916_wcd_analog_priv *priv,
 	else
 		vrefs = &priv->vref_btn_cs[0];
 
-	/* program vref ranges for all the buttons */
+	 
 	reg_addr = CDC_A_MBHC_BTN0_ZDET_CTL_0;
 	for (i = 0; i <  MBHC_MAX_BUTTONS; i++) {
-		/* split mv in to coarse parts of 100mv & fine parts of 12mv */
+		 
 		coarse = (vrefs[i] / 100);
 		fine = ((vrefs[i] % 100) / 12);
 		reg_val = (coarse << CDC_A_MBHC_BTN_VREF_COARSE_SHIFT) |
@@ -504,7 +501,7 @@ static void pm8916_wcd_setup_mbhc(struct pm8916_wcd_analog_priv *wcd)
 		      CDC_A_MBHC_DBNC_TIMER_INSREM_DBNC_T_256_MS |
 		      CDC_A_MBHC_DBNC_TIMER_BTN_DBNC_T_16MS);
 
-	/* enable MBHC clock */
+	 
 	snd_soc_component_update_bits(component, CDC_D_CDC_DIG_CLK_CTL,
 			    DIG_CLK_CTL_D_MBHC_CLK_EN_MASK,
 			    DIG_CLK_CTL_D_MBHC_CLK_EN);
@@ -567,11 +564,7 @@ static int pm8916_wcd_analog_enable_adc(struct snd_soc_dapm_widget *w,
 			snd_soc_component_update_bits(component, CDC_A_MICB_1_CTL,
 					    MICB_1_CTL_CFILT_REF_SEL_MASK,
 					    MICB_1_CTL_CFILT_REF_SEL_HPF_REF);
-		/*
-		 * Add delay of 10 ms to give sufficient time for the voltage
-		 * to shoot up and settle so that the txfe init does not
-		 * happen when the input voltage is changing too much.
-		 */
+		 
 		usleep_range(10000, 10010);
 		snd_soc_component_update_bits(component, adc_reg, 1 << init_bit_shift,
 				    1 << init_bit_shift);
@@ -590,10 +583,7 @@ static int pm8916_wcd_analog_enable_adc(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * Add delay of 12 ms before deasserting the init
-		 * to reduce the tx pop
-		 */
+		 
 		usleep_range(12000, 12010);
 		snd_soc_component_update_bits(component, adc_reg, 1 << init_bit_shift, 0x00);
 		break;
@@ -687,7 +677,7 @@ static int pm8916_wcd_analog_enable_ear_pa(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_component_update_bits(component, CDC_A_RX_EAR_CTL,
 				    RX_EAR_CTL_PA_EAR_PA_EN_MASK, 0);
-		/* Delay to reduce ear turn off pop */
+		 
 		usleep_range(7000, 7100);
 		snd_soc_component_update_bits(component, CDC_A_RX_EAR_CTL,
 				    RX_EAR_CTL_PA_SEL_MASK, 0);
@@ -771,7 +761,7 @@ static const struct snd_soc_dapm_route pm8916_wcd_analog_audio_map[] = {
 	{"PDM_RX3", NULL, "PDM Playback"},
 	{"PDM Capture", NULL, "PDM_TX"},
 
-	/* ADC Connections */
+	 
 	{"PDM_TX", NULL, "ADC2"},
 	{"PDM_TX", NULL, "ADC3"},
 	{"ADC2", NULL, "ADC2 MUX"},
@@ -784,7 +774,7 @@ static const struct snd_soc_dapm_route pm8916_wcd_analog_audio_map[] = {
 	{"ADC2_INP2", NULL, "AMIC2"},
 	{"ADC2_INP3", NULL, "AMIC3"},
 
-	/* RDAC Connections */
+	 
 	{"HPHR DAC", NULL, "RDAC2 MUX"},
 	{"RDAC2 MUX", "RX1", "PDM_RX1"},
 	{"RDAC2 MUX", "RX2", "PDM_RX2"},
@@ -812,7 +802,7 @@ static const struct snd_soc_dapm_route pm8916_wcd_analog_audio_map[] = {
 	{"PDM_TX", NULL, "A_MCLK2"},
 	{"A_MCLK2", NULL, "A_MCLK"},
 
-	/* Earpiece (RX MIX1) */
+	 
 	{"EAR", NULL, "EAR_S"},
 	{"EAR_S", "Switch", "EAR PA"},
 	{"EAR PA", NULL, "RX_BIAS"},
@@ -820,7 +810,7 @@ static const struct snd_soc_dapm_route pm8916_wcd_analog_audio_map[] = {
 	{"EAR PA", NULL, "HPHR DAC"},
 	{"EAR PA", NULL, "EAR CP"},
 
-	/* Headset (RX MIX1 and RX MIX2) */
+	 
 	{"HPH_L", NULL, "HPHL PA"},
 	{"HPH_R", NULL, "HPHR PA"},
 
@@ -872,7 +862,7 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("HPH_L"),
 	SND_SOC_DAPM_OUTPUT("HPH_R"),
 
-	/* RX stuff */
+	 
 	SND_SOC_DAPM_SUPPLY("INT_LDO_H", SND_SOC_NOPM, 1, 0, NULL, 0),
 
 	SND_SOC_DAPM_PGA_E("EAR PA", SND_SOC_NOPM,
@@ -894,7 +884,7 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("SPK DAC", SND_SOC_NOPM, 0, 0,
 			   spkr_switch, ARRAY_SIZE(spkr_switch)),
 
-	/* Speaker */
+	 
 	SND_SOC_DAPM_OUTPUT("SPK_OUT"),
 	SND_SOC_DAPM_PGA_E("SPK PA", CDC_A_SPKR_DRV_CTL,
 			   6, 0, NULL, 0,
@@ -907,7 +897,7 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DAC_REF", CDC_A_RX_COM_BIAS_DAC, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("RX_BIAS", CDC_A_RX_COM_BIAS_DAC, 7, 0, NULL, 0),
 
-	/* TX */
+	 
 	SND_SOC_DAPM_SUPPLY("MIC_BIAS1", CDC_A_MICB_1_EN, 7, 0,
 			    pm8916_wcd_analog_enable_micbias1,
 			    SND_SOC_DAPM_POST_PMU),
@@ -948,7 +938,7 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("ADC2 MUX", SND_SOC_NOPM, 0, 0, &tx_adc2_mux),
 	SND_SOC_DAPM_MUX("RDAC2 MUX", SND_SOC_NOPM, 0, 0, &rdac2_mux),
 
-	/* Analog path clocks */
+	 
 	SND_SOC_DAPM_SUPPLY("EAR_HPHR_CLK", CDC_D_CDC_ANA_CLK_CTL, 0, 0, NULL,
 			    0),
 	SND_SOC_DAPM_SUPPLY("EAR_HPHL_CLK", CDC_D_CDC_ANA_CLK_CTL, 1, 0, NULL,
@@ -956,7 +946,7 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("SPKR_CLK", CDC_D_CDC_ANA_CLK_CTL, 4, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("TXA_CLK25", CDC_D_CDC_ANA_CLK_CTL, 5, 0, NULL, 0),
 
-	/* Digital path clocks */
+	 
 
 	SND_SOC_DAPM_SUPPLY("RXD1_CLK", CDC_D_CDC_DIG_CLK_CTL, 0, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("RXD2_CLK", CDC_D_CDC_DIG_CLK_CTL, 1, 0, NULL, 0),
@@ -967,9 +957,9 @@ static const struct snd_soc_dapm_widget pm8916_wcd_analog_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("RXD_PDM_CLK", CDC_D_CDC_DIG_CLK_CTL, 7, 0, NULL,
 			    0),
 
-	/* System Clock source */
+	 
 	SND_SOC_DAPM_SUPPLY("A_MCLK", CDC_D_CDC_TOP_CLK_CTL, 2, 0, NULL, 0),
-	/* TX ADC and RX DAC Clock source. */
+	 
 	SND_SOC_DAPM_SUPPLY("A_MCLK2", CDC_D_CDC_TOP_CLK_CTL, 3, 0, NULL, 0),
 };
 
@@ -992,7 +982,7 @@ static irqreturn_t mbhc_btn_release_irq_handler(int irq, void *arg)
 		struct snd_soc_component *component = priv->component;
 		u32 val = snd_soc_component_read(component, CDC_A_MBHC_RESULT_1);
 
-		/* check if its BTN0 thats released */
+		 
 		if ((val != -1) && !(val & CDC_A_MBHC_RESULT_1_BTN_RESULT_MASK))
 			priv->mbhc_btn0_released = true;
 
@@ -1026,7 +1016,7 @@ static irqreturn_t mbhc_btn_press_irq_handler(int irq, void *arg)
 		snd_soc_jack_report(priv->jack, SND_JACK_BTN_1, btn_mask);
 		break;
 	case 0x0:
-		/* handle BTN_0 specially for type detection */
+		 
 		if (!priv->detect_accessory_type)
 			snd_soc_jack_report(priv->jack,
 					    SND_JACK_BTN_0, btn_mask);
@@ -1050,13 +1040,13 @@ static irqreturn_t pm8916_mbhc_switch_irq_handler(int irq, void *arg)
 				CDC_A_MBHC_DET_CTL_MECH_DET_TYPE_MASK)
 		ins = true;
 
-	/* Set the detection type appropriately */
+	 
 	snd_soc_component_update_bits(component, CDC_A_MBHC_DET_CTL_1,
 			    CDC_A_MBHC_DET_CTL_MECH_DET_TYPE_MASK,
 			    (!ins << CDC_A_MBHC_DET_CTL_MECH_DET_TYPE_SHIFT));
 
 
-	if (ins) { /* hs insertion */
+	if (ins) {  
 		bool micbias_enabled = false;
 
 		if (snd_soc_component_read(component, CDC_A_MICB_2_EN) &
@@ -1065,12 +1055,7 @@ static irqreturn_t pm8916_mbhc_switch_irq_handler(int irq, void *arg)
 
 		pm8916_mbhc_configure_bias(priv, micbias_enabled);
 
-		/*
-		 * if only a btn0 press event is receive just before
-		 * insert event then its a 3 pole headphone else if
-		 * both press and release event received then its
-		 * a headset.
-		 */
+		 
 		if (priv->mbhc_btn0_released)
 			snd_soc_jack_report(priv->jack,
 					    SND_JACK_HEADSET, hs_jack_mask);
@@ -1080,7 +1065,7 @@ static irqreturn_t pm8916_mbhc_switch_irq_handler(int irq, void *arg)
 
 		priv->detect_accessory_type = false;
 
-	} else { /* removal */
+	} else {  
 		snd_soc_jack_report(priv->jack, 0, hs_jack_mask);
 		priv->detect_accessory_type = true;
 		priv->mbhc_btn0_released = false;

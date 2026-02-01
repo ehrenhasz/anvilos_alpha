@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SOCK_REUSEPORT_H
 #define _SOCK_REUSEPORT_H
 
@@ -13,20 +13,18 @@ extern spinlock_t reuseport_lock;
 struct sock_reuseport {
 	struct rcu_head		rcu;
 
-	u16			max_socks;		/* length of socks */
-	u16			num_socks;		/* elements in socks */
-	u16			num_closed_socks;	/* closed elements in socks */
+	u16			max_socks;		 
+	u16			num_socks;		 
+	u16			num_closed_socks;	 
 	u16			incoming_cpu;
-	/* The last synq overflow event timestamp of this
-	 * reuse->socks[] group.
-	 */
+	 
 	unsigned int		synq_overflow_ts;
-	/* ID stays the same even after the size of socks[] grows. */
+	 
 	unsigned int		reuseport_id;
 	unsigned int		bind_inany:1;
 	unsigned int		has_conns:1;
-	struct bpf_prog __rcu	*prog;		/* optional BPF sock selector */
-	struct sock		*socks[];	/* array of sock pointers */
+	struct bpf_prog __rcu	*prog;		 
+	struct sock		*socks[];	 
 };
 
 extern int reuseport_alloc(struct sock *sk, bool bind_inany);
@@ -61,4 +59,4 @@ static inline bool reuseport_has_conns(struct sock *sk)
 void reuseport_has_conns_set(struct sock *sk);
 void reuseport_update_incoming_cpu(struct sock *sk, int val);
 
-#endif  /* _SOCK_REUSEPORT_H */
+#endif   

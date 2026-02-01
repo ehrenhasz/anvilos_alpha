@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, Steffen Trumtrar <s.trumtrar@pengutronix.de>
- *
- * based on drivers/clk/tegra/clk.h
- */
+ 
+ 
 
 #ifndef __SOCFPGA_CLK_H
 #define __SOCFPGA_CLK_H
 
 #include <linux/clk-provider.h>
 
-/* Clock Manager offsets */
+ 
 #define CLKMGR_CTRL		0x0
 #define CLKMGR_BYPASS		0x4
 #define CLKMGR_DBCTRL		0x10
@@ -47,9 +43,9 @@ struct socfpga_gate_clk {
 	void __iomem *div_reg;
 	void __iomem *bypass_reg;
 	struct regmap *sys_mgr_base_addr;
-	u32 width;	/* only valid if div_reg != 0 */
-	u32 shift;	/* only valid if div_reg != 0 */
-	u32 bypass_shift;      /* only valid if bypass_reg != 0 */
+	u32 width;	 
+	u32 shift;	 
+	u32 bypass_shift;       
 };
 
 struct socfpga_periph_clk {
@@ -58,9 +54,9 @@ struct socfpga_periph_clk {
 	u32 fixed_div;
 	void __iomem *div_reg;
 	void __iomem *bypass_reg;
-	u32 width;      /* only valid if div_reg != 0 */
-	u32 shift;      /* only valid if div_reg != 0 */
-	u32 bypass_shift;      /* only valid if bypass_reg != 0 */
+	u32 width;       
+	u32 shift;       
+	u32 bypass_shift;       
 };
 
-#endif /* SOCFPGA_CLK_H */
+#endif  

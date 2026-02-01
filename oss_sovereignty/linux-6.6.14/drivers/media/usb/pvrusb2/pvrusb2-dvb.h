@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PVRUSB2_DVB_H__
 #define __PVRUSB2_DVB_H__
 
@@ -42,4 +42,4 @@ struct pvr2_dvb_props {
 
 struct pvr2_dvb_adapter *pvr2_dvb_create(struct pvr2_context *pvr);
 
-#endif /* __PVRUSB2_DVB_H__ */
+#endif  

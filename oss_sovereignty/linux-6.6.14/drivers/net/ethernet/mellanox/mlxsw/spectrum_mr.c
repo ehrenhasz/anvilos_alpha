@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/rhashtable.h>
@@ -13,10 +13,10 @@ struct mlxsw_sp_mr {
 	void *catchall_route_priv;
 	struct delayed_work stats_update_dw;
 	struct list_head table_list;
-	struct mutex table_list_lock; /* Protects table_list */
-#define MLXSW_SP_MR_ROUTES_COUNTER_UPDATE_INTERVAL 5000 /* ms */
+	struct mutex table_list_lock;  
+#define MLXSW_SP_MR_ROUTES_COUNTER_UPDATE_INTERVAL 5000  
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_mr_vif;
@@ -29,17 +29,13 @@ struct mlxsw_sp_mr_vif {
 	const struct mlxsw_sp_rif *rif;
 	unsigned long vif_flags;
 
-	/* A list of route_vif_entry structs that point to routes that the VIF
-	 * instance is used as one of the egress VIFs
-	 */
+	 
 	struct list_head route_evif_list;
 
-	/* A list of route_vif_entry structs that point to routes that the VIF
-	 * instance is used as an ingress VIF
-	 */
+	 
 	struct list_head route_ivif_list;
 
-	/* Protocol specific operations for a VIF */
+	 
 	const struct mlxsw_sp_mr_vif_ops *ops;
 };
 
@@ -68,11 +64,11 @@ struct mlxsw_sp_mr_table {
 	u32 vr_id;
 	struct mlxsw_sp_mr_vif vifs[MAXVIFS];
 	struct list_head route_list;
-	struct mutex route_list_lock; /* Protects route_list */
+	struct mutex route_list_lock;  
 	struct rhashtable route_ht;
 	const struct mlxsw_sp_mr_table_ops *ops;
 	char catchall_route_priv[];
-	/* catchall_route_priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_mr_route {
@@ -84,9 +80,9 @@ struct mlxsw_sp_mr_route {
 	struct mr_mfc *mfc;
 	void *route_priv;
 	const struct mlxsw_sp_mr_table *mr_table;
-	/* A list of route_vif_entry structs that point to the egress VIFs */
+	 
 	struct list_head evif_list;
-	/* A route_vif_entry struct that point to the ingress VIF */
+	 
 	struct mlxsw_sp_mr_route_vif_entry ivif;
 };
 
@@ -133,25 +129,21 @@ mlxsw_sp_mr_route_action(const struct mlxsw_sp_mr_route *mr_route)
 {
 	struct mlxsw_sp_mr_route_vif_entry *rve;
 
-	/* If the ingress port is not regular and resolved, trap the route */
+	 
 	if (!mlxsw_sp_mr_vif_valid(mr_route->ivif.mr_vif))
 		return MLXSW_SP_MR_ROUTE_ACTION_TRAP;
 
-	/* The kernel does not match a (*,G) route that the ingress interface is
-	 * not one of the egress interfaces, so trap these kind of routes.
-	 */
+	 
 	if (mr_route->mr_table->ops->is_route_starg(mr_route->mr_table,
 						    mr_route) &&
 	    !mlxsw_sp_mr_route_ivif_in_evifs(mr_route))
 		return MLXSW_SP_MR_ROUTE_ACTION_TRAP;
 
-	/* If the route has no valid eVIFs, trap it. */
+	 
 	if (!mlxsw_sp_mr_route_valid_evifs_num(mr_route))
 		return MLXSW_SP_MR_ROUTE_ACTION_TRAP;
 
-	/* If one of the eVIFs has no RIF, trap-and-forward the route as there
-	 * is some more routing to do in software too.
-	 */
+	 
 	list_for_each_entry(rve, &mr_route->evif_list, route_node)
 		if (mlxsw_sp_mr_vif_exists(rve->mr_vif) && !rve->mr_vif->rif)
 			return MLXSW_SP_MR_ROUTE_ACTION_TRAP_AND_FORWARD;
@@ -304,13 +296,13 @@ mlxsw_sp_mr_route_create(struct mlxsw_sp_mr_table *mr_table,
 	int err = 0;
 	int i;
 
-	/* Allocate and init a new route and fill it with parameters */
+	 
 	mr_route = kzalloc(sizeof(*mr_route), GFP_KERNEL);
 	if (!mr_route)
 		return ERR_PTR(-ENOMEM);
 	INIT_LIST_HEAD(&mr_route->evif_list);
 
-	/* Find min_mtu and link iVIF and eVIFs */
+	 
 	mr_route->min_mtu = ETH_MAX_MTU;
 	mr_cache_hold(mfc);
 	mr_route->mfc = mfc;
@@ -393,39 +385,36 @@ int mlxsw_sp_mr_route_add(struct mlxsw_sp_mr_table *mr_table,
 	if (!mr_table->ops->is_route_valid(mr_table, mfc))
 		return -EINVAL;
 
-	/* Create a new route */
+	 
 	mr_route = mlxsw_sp_mr_route_create(mr_table, mfc);
 	if (IS_ERR(mr_route))
 		return PTR_ERR(mr_route);
 
-	/* Find any route with a matching key */
+	 
 	mr_orig_route = rhashtable_lookup_fast(&mr_table->route_ht,
 					       &mr_route->key,
 					       mlxsw_sp_mr_route_ht_params);
 	if (replace) {
-		/* On replace case, make the route point to the new route_priv.
-		 */
+		 
 		if (WARN_ON(!mr_orig_route)) {
 			err = -ENOENT;
 			goto err_no_orig_route;
 		}
 		mr_route->route_priv = mr_orig_route->route_priv;
 	} else if (mr_orig_route) {
-		/* On non replace case, if another route with the same key was
-		 * found, abort, as duplicate routes are used for proxy routes.
-		 */
+		 
 		dev_warn(mr_table->mlxsw_sp->bus_info->dev,
 			 "Offloading proxy routes is not supported.\n");
 		err = -EINVAL;
 		goto err_duplicate_route;
 	}
 
-	/* Write the route to the hardware */
+	 
 	err = mlxsw_sp_mr_route_write(mr_table, mr_route, replace);
 	if (err)
 		goto err_mr_route_write;
 
-	/* Put it in the table data-structures */
+	 
 	mutex_lock(&mr_table->route_list_lock);
 	list_add_tail(&mr_route->node, &mr_table->route_list);
 	mutex_unlock(&mr_table->route_list_lock);
@@ -435,7 +424,7 @@ int mlxsw_sp_mr_route_add(struct mlxsw_sp_mr_table *mr_table,
 	if (err)
 		goto err_rhashtable_insert;
 
-	/* Destroy the original route */
+	 
 	if (replace) {
 		rhashtable_remove_fast(&mr_table->route_ht,
 				       &mr_orig_route->ht_node,
@@ -475,7 +464,7 @@ void mlxsw_sp_mr_route_del(struct mlxsw_sp_mr_table *mr_table,
 	}
 }
 
-/* Should be called after the VIF struct is updated */
+ 
 static int
 mlxsw_sp_mr_route_ivif_resolve(struct mlxsw_sp_mr_table *mr_table,
 			       struct mlxsw_sp_mr_route_vif_entry *rve)
@@ -490,7 +479,7 @@ mlxsw_sp_mr_route_ivif_resolve(struct mlxsw_sp_mr_table *mr_table,
 	if (route_action == MLXSW_SP_MR_ROUTE_ACTION_TRAP)
 		return 0;
 
-	/* rve->mr_vif->rif is guaranteed to be valid at this stage */
+	 
 	irif_index = mlxsw_sp_rif_index(rve->mr_vif->rif);
 	err = mr->mr_ops->route_irif_update(mlxsw_sp, rve->mr_route->route_priv,
 					    irif_index);
@@ -501,9 +490,7 @@ mlxsw_sp_mr_route_ivif_resolve(struct mlxsw_sp_mr_table *mr_table,
 					      rve->mr_route->route_priv,
 					      route_action);
 	if (err)
-		/* No need to rollback here because the iRIF change only takes
-		 * place after the action has been updated.
-		 */
+		 
 		return err;
 
 	rve->mr_route->route_action = route_action;
@@ -524,7 +511,7 @@ mlxsw_sp_mr_route_ivif_unresolve(struct mlxsw_sp_mr_table *mr_table,
 	mlxsw_sp_mr_mfc_offload_update(rve->mr_route);
 }
 
-/* Should be called after the RIF struct is updated */
+ 
 static int
 mlxsw_sp_mr_route_evif_resolve(struct mlxsw_sp_mr_table *mr_table,
 			       struct mlxsw_sp_mr_route_vif_entry *rve)
@@ -535,7 +522,7 @@ mlxsw_sp_mr_route_evif_resolve(struct mlxsw_sp_mr_table *mr_table,
 	u16 erif_index = 0;
 	int err;
 
-	/* Add the eRIF */
+	 
 	if (mlxsw_sp_mr_vif_valid(rve->mr_vif)) {
 		erif_index = mlxsw_sp_rif_index(rve->mr_vif->rif);
 		err = mr->mr_ops->route_erif_add(mlxsw_sp,
@@ -545,9 +532,7 @@ mlxsw_sp_mr_route_evif_resolve(struct mlxsw_sp_mr_table *mr_table,
 			return err;
 	}
 
-	/* Update the route action, as the new eVIF can be a tunnel or a pimreg
-	 * device which will require updating the action.
-	 */
+	 
 	route_action = mlxsw_sp_mr_route_action(rve->mr_route);
 	if (route_action != rve->mr_route->route_action) {
 		err = mr->mr_ops->route_action_update(mlxsw_sp,
@@ -557,7 +542,7 @@ mlxsw_sp_mr_route_evif_resolve(struct mlxsw_sp_mr_table *mr_table,
 			goto err_route_action_update;
 	}
 
-	/* Update the minimum MTU */
+	 
 	if (rve->mr_vif->dev->mtu < rve->mr_route->min_mtu) {
 		rve->mr_route->min_mtu = rve->mr_vif->dev->mtu;
 		err = mr->mr_ops->route_min_mtu_update(mlxsw_sp,
@@ -583,7 +568,7 @@ err_route_action_update:
 	return err;
 }
 
-/* Should be called before the RIF struct is updated */
+ 
 static void
 mlxsw_sp_mr_route_evif_unresolve(struct mlxsw_sp_mr_table *mr_table,
 				 struct mlxsw_sp_mr_route_vif_entry *rve)
@@ -593,15 +578,11 @@ mlxsw_sp_mr_route_evif_unresolve(struct mlxsw_sp_mr_table *mr_table,
 	struct mlxsw_sp_mr *mr = mlxsw_sp->mr;
 	u16 rifi;
 
-	/* If the unresolved RIF was not valid, no need to delete it */
+	 
 	if (!mlxsw_sp_mr_vif_valid(rve->mr_vif))
 		return;
 
-	/* Update the route action: if there is only one valid eVIF in the
-	 * route, set the action to trap as the VIF deletion will lead to zero
-	 * valid eVIFs. On any other case, use the mlxsw_sp_mr_route_action to
-	 * determine the route action.
-	 */
+	 
 	if (mlxsw_sp_mr_route_valid_evifs_num(rve->mr_route) == 1)
 		route_action = MLXSW_SP_MR_ROUTE_ACTION_TRAP;
 	else
@@ -611,7 +592,7 @@ mlxsw_sp_mr_route_evif_unresolve(struct mlxsw_sp_mr_table *mr_table,
 						rve->mr_route->route_priv,
 						route_action);
 
-	/* Delete the erif from the route */
+	 
 	rifi = mlxsw_sp_rif_index(rve->mr_vif->rif);
 	mr->mr_ops->route_erif_del(mlxsw_sp, rve->mr_route->route_priv, rifi);
 	rve->mr_route->route_action = route_action;
@@ -627,19 +608,19 @@ static int mlxsw_sp_mr_vif_resolve(struct mlxsw_sp_mr_table *mr_table,
 	struct mlxsw_sp_mr_route_vif_entry *irve, *erve;
 	int err;
 
-	/* Update the VIF */
+	 
 	mr_vif->dev = dev;
 	mr_vif->rif = rif;
 	mr_vif->vif_flags = vif_flags;
 
-	/* Update all routes where this VIF is used as an unresolved iRIF */
+	 
 	list_for_each_entry(irve, &mr_vif->route_ivif_list, vif_node) {
 		err = mlxsw_sp_mr_route_ivif_resolve(mr_table, irve);
 		if (err)
 			goto err_irif_unresolve;
 	}
 
-	/* Update all routes where this VIF is used as an unresolved eRIF */
+	 
 	list_for_each_entry(erve, &mr_vif->route_evif_list, vif_node) {
 		err = mlxsw_sp_mr_route_evif_resolve(mr_table, erve);
 		if (err)
@@ -665,15 +646,15 @@ static void mlxsw_sp_mr_vif_unresolve(struct mlxsw_sp_mr_table *mr_table,
 {
 	struct mlxsw_sp_mr_route_vif_entry *rve;
 
-	/* Update all routes where this VIF is used as an unresolved eRIF */
+	 
 	list_for_each_entry(rve, &mr_vif->route_evif_list, vif_node)
 		mlxsw_sp_mr_route_evif_unresolve(mr_table, rve);
 
-	/* Update all routes where this VIF is used as an unresolved iRIF */
+	 
 	list_for_each_entry(rve, &mr_vif->route_ivif_list, vif_node)
 		mlxsw_sp_mr_route_ivif_unresolve(mr_table, rve);
 
-	/* Update the VIF */
+	 
 	mr_vif->dev = dev;
 	mr_vif->rif = NULL;
 }
@@ -754,12 +735,12 @@ void mlxsw_sp_mr_rif_mtu_update(struct mlxsw_sp_mr_table *mr_table,
 	if (!mlxsw_sp_rif_has_dev(rif))
 		return;
 
-	/* Search for a VIF that use that RIF */
+	 
 	mr_vif = mlxsw_sp_mr_dev_vif_lookup(mr_table, rif);
 	if (!mr_vif)
 		return;
 
-	/* Update all the routes that uses that VIF as eVIF */
+	 
 	list_for_each_entry(rve, &mr_vif->route_evif_list, vif_node) {
 		if (mtu < rve->mr_route->min_mtu) {
 			rve->mr_route->min_mtu = mtu;
@@ -770,16 +751,14 @@ void mlxsw_sp_mr_rif_mtu_update(struct mlxsw_sp_mr_table *mr_table,
 	}
 }
 
-/* Protocol specific functions */
+ 
 static bool
 mlxsw_sp_mr_route4_validate(const struct mlxsw_sp_mr_table *mr_table,
 			    const struct mr_mfc *c)
 {
 	struct mfc_cache *mfc = (struct mfc_cache *) c;
 
-	/* If the route is a (*,*) route, abort, as these kind of routes are
-	 * used for proxy routes.
-	 */
+	 
 	if (mfc->mfc_origin == htonl(INADDR_ANY) &&
 	    mfc->mfc_mcastgrp == htonl(INADDR_ANY)) {
 		dev_warn(mr_table->mlxsw_sp->bus_info->dev,
@@ -824,9 +803,7 @@ mlxsw_sp_mr_route6_validate(const struct mlxsw_sp_mr_table *mr_table,
 {
 	struct mfc6_cache *mfc = (struct mfc6_cache *) c;
 
-	/* If the route is a (*,*) route, abort, as these kind of routes are
-	 * used for proxy routes.
-	 */
+	 
 	if (ipv6_addr_any(&mfc->mf6c_origin) &&
 	    ipv6_addr_any(&mfc->mf6c_mcastgrp)) {
 		dev_warn(mr_table->mlxsw_sp->bus_info->dev,
@@ -1050,7 +1027,7 @@ int mlxsw_sp_mr_init(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		goto err;
 
-	/* Create the delayed work for counter updates */
+	 
 	INIT_DELAYED_WORK(&mr->stats_update_dw, mlxsw_sp_mr_stats_update);
 	interval = msecs_to_jiffies(MLXSW_SP_MR_ROUTES_COUNTER_UPDATE_INTERVAL);
 	mlxsw_core_schedule_dw(&mr->stats_update_dw, interval);

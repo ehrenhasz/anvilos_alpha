@@ -1,55 +1,9 @@
-/* $OpenBSD: pkcs11.h,v 1.3 2013/11/26 19:15:09 deraadt Exp $ */
-/* pkcs11.h
-   Copyright 2006, 2007 g10 Code GmbH
-   Copyright 2006 Andreas Jellinghaus
+ 
+ 
 
-   This file is free software; as a special exception the author gives
-   unlimited permission to copy and/or distribute it, with or without
-   modifications, as long as this notice is preserved.
+ 
 
-   This file is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY, to the extent permitted by law; without even
-   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-   PURPOSE.  */
-
-/* Please submit changes back to the Scute project at
-   http://www.scute.org/ (or send them to marcus@g10code.com), so that
-   they can be picked up by other projects from there as well.  */
-
-/* This file is a modified implementation of the PKCS #11 standard by
-   RSA Security Inc.  It is mostly a drop-in replacement, with the
-   following change:
-
-   This header file does not require any macro definitions by the user
-   (like CK_DEFINE_FUNCTION etc).  In fact, it defines those macros
-   for you (if useful, some are missing, let me know if you need
-   more).
-
-   There is an additional API available that does comply better to the
-   GNU coding standard.  It can be switched on by defining
-   CRYPTOKI_GNU before including this header file.  For this, the
-   following changes are made to the specification:
-
-   All structure types are changed to a "struct ck_foo" where CK_FOO
-   is the type name in PKCS #11.
-
-   All non-structure types are changed to ck_foo_t where CK_FOO is the
-   lowercase version of the type name in PKCS #11.  The basic types
-   (CK_ULONG et al.) are removed without substitute.
-
-   All members of structures are modified in the following way: Type
-   indication prefixes are removed, and underscore characters are
-   inserted before words.  Then the result is lowercased.
-
-   Note that function names are still in the original case, as they
-   need for ABI compatibility.
-
-   CK_FALSE, CK_TRUE and NULL_PTR are removed without substitute.  Use
-   <stdbool.h>.
-
-   If CRYPTOKI_COMPAT is defined before including this header file,
-   then none of the API changes above take place, and the API is the
-   one defined by the PKCS #11 standard.  */
+ 
 
 #ifndef PKCS11_H
 #define PKCS11_H 1
@@ -59,29 +13,24 @@ extern "C" {
 #endif
 
 
-/* The version of cryptoki we implement.  The revision is changed with
-   each modification of this file.  If you do not use the "official"
-   version of this file, please consider deleting the revision macro
-   (you may use a macro with a different name to keep track of your
-   versions).  */
+ 
 #define CRYPTOKI_VERSION_MAJOR		2
 #define CRYPTOKI_VERSION_MINOR		20
 #define CRYPTOKI_VERSION_REVISION	6
 
 
-/* Compatibility interface is default, unless CRYPTOKI_GNU is
-   given.  */
+ 
 #ifndef CRYPTOKI_GNU
 #ifndef CRYPTOKI_COMPAT
 #define CRYPTOKI_COMPAT 1
 #endif
 #endif
 
-/* System dependencies.  */
+ 
 
 #if defined(_WIN32) || defined(CRYPTOKI_FORCE_WIN32)
 
-/* There is a matching pop below.  */
+ 
 #pragma pack(push, cryptoki, 1)
 
 #ifdef CRYPTOKI_EXPORTS
@@ -98,8 +47,7 @@ extern "C" {
 
 
 #ifdef CRYPTOKI_COMPAT
-  /* If we are in compatibility mode, switch all exposed names to the
-     PKCS #11 variant.  There are corresponding #undefs below.  */
+   
 
 #define ck_flags_t CK_FLAGS
 #define ck_version _CK_VERSION
@@ -180,7 +128,7 @@ extern "C" {
 #define unlock_mutex UnlockMutex
 #define reserved pReserved
 
-#endif	/* CRYPTOKI_COMPAT */
+#endif	 
 
 
 
@@ -706,7 +654,7 @@ struct ck_mechanism_info
 #define CKF_EXTENSION		(1U << 31)
 
 
-/* Flags for C_WaitForSlotEvent.  */
+ 
 #define CKF_DONT_BLOCK				(1)
 
 
@@ -716,7 +664,7 @@ typedef unsigned long ck_rv_t;
 typedef ck_rv_t (*ck_notify_t) (ck_session_handle_t session,
 				ck_notification_t event, void *application);
 
-/* Forward reference.  */
+ 
 struct ck_function_list;
 
 #define _CK_DECLARE_FUNCTION(name, args)	\
@@ -1183,14 +1131,14 @@ struct ck_c_initialize_args
 
 
 
-/* Compatibility layer.  */
+ 
 
 #ifdef CRYPTOKI_COMPAT
 
 #undef CK_DEFINE_FUNCTION
 #define CK_DEFINE_FUNCTION(retval, name) retval CK_SPEC name
 
-/* For NULL.  */
+ 
 #include <stddef.h>
 
 typedef unsigned char CK_BYTE;
@@ -1262,7 +1210,7 @@ typedef struct ck_c_initialize_args *CK_C_INITIALIZE_ARGS_PTR;
 
 #define NULL_PTR NULL
 
-/* Delete the helper macros defined at the top of the file.  */
+ 
 #undef ck_flags_t
 #undef ck_version
 
@@ -1342,10 +1290,10 @@ typedef struct ck_c_initialize_args *CK_C_INITIALIZE_ARGS_PTR;
 #undef unlock_mutex
 #undef reserved
 
-#endif	/* CRYPTOKI_COMPAT */
+#endif	 
 
 
-/* System dependencies.  */
+ 
 #if defined(_WIN32) || defined(CRYPTOKI_FORCE_WIN32)
 #pragma pack(pop, cryptoki)
 #endif
@@ -1354,4 +1302,4 @@ typedef struct ck_c_initialize_args *CK_C_INITIALIZE_ARGS_PTR;
 }
 #endif
 
-#endif	/* PKCS11_H */
+#endif	 

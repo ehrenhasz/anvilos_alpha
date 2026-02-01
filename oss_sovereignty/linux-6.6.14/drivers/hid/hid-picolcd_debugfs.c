@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hid-debug.h>
@@ -66,9 +60,7 @@ static const struct file_operations picolcd_debug_reset_fops = {
 	.release  = single_release,
 };
 
-/*
- * The "eeprom" file
- */
+ 
 static ssize_t picolcd_debug_eeprom_read(struct file *f, char __user *u,
 		size_t s, loff_t *off)
 {
@@ -82,7 +74,7 @@ static ssize_t picolcd_debug_eeprom_read(struct file *f, char __user *u,
 	if (*off > 0x0ff)
 		return 0;
 
-	/* prepare buffer with info about what we want to read (addr & len) */
+	 
 	raw_data[0] = *off & 0xff;
 	raw_data[1] = (*off >> 8) & 0xff;
 	raw_data[2] = s < 20 ? s : 20;
@@ -94,7 +86,7 @@ static ssize_t picolcd_debug_eeprom_read(struct file *f, char __user *u,
 		return -EIO;
 
 	if (resp->in_report && resp->in_report->id == REPORT_EE_DATA) {
-		/* successful read :) */
+		 
 		ret = resp->raw_data[2];
 		if (ret > s)
 			ret = s;
@@ -102,7 +94,7 @@ static ssize_t picolcd_debug_eeprom_read(struct file *f, char __user *u,
 			ret = -EFAULT;
 		else
 			*off += ret;
-	} /* anything else is some kind of IO error */
+	}  
 
 	kfree(resp);
 	return ret;
@@ -137,7 +129,7 @@ static ssize_t picolcd_debug_eeprom_write(struct file *f, const char __user *u,
 		return -EIO;
 
 	if (resp->in_report && resp->in_report->id == REPORT_EE_DATA) {
-		/* check if written data matches */
+		 
 		if (memcmp(raw_data, resp->raw_data, 3+raw_data[2]) == 0) {
 			*off += raw_data[2];
 			ret = raw_data[2];
@@ -147,13 +139,7 @@ static ssize_t picolcd_debug_eeprom_write(struct file *f, const char __user *u,
 	return ret;
 }
 
-/*
- * Notes:
- * - read/write happens in chunks of at most 20 bytes, it's up to userspace
- *   to loop in order to get more data.
- * - on write errors on otherwise correct write request the bytes
- *   that should have been written are in undefined state.
- */
+ 
 static const struct file_operations picolcd_debug_eeprom_fops = {
 	.owner    = THIS_MODULE,
 	.open     = simple_open,
@@ -162,10 +148,8 @@ static const struct file_operations picolcd_debug_eeprom_fops = {
 	.llseek   = generic_file_llseek,
 };
 
-/*
- * The "flash" file
- */
-/* record a flash address to buf (bounds check to be done by caller) */
+ 
+ 
 static int _picolcd_flash_setaddr(struct picolcd_data *data, u8 *buf, long off)
 {
 	buf[0] = off & 0xff;
@@ -175,7 +159,7 @@ static int _picolcd_flash_setaddr(struct picolcd_data *data, u8 *buf, long off)
 	return data->addr_sz == 2 ? 2 : 3;
 }
 
-/* read a given size of data (bounds check to be done by caller) */
+ 
 static ssize_t _picolcd_flash_read(struct picolcd_data *data, int report_id,
 		char __user *u, size_t s, loff_t *off)
 {
@@ -230,7 +214,7 @@ static ssize_t picolcd_debug_flash_read(struct file *f, char __user *u,
 		return _picolcd_flash_read(data, REPORT_READ_MEMORY, u, s, off);
 }
 
-/* erase block aligned to 64bytes boundary */
+ 
 static ssize_t _picolcd_flash_erase64(struct picolcd_data *data, int report_id,
 		loff_t *off)
 {
@@ -257,7 +241,7 @@ skip:
 	return ret;
 }
 
-/* write a given size of data (bounds check to be done by caller) */
+ 
 static ssize_t _picolcd_flash_write(struct picolcd_data *data, int report_id,
 		const char __user *u, size_t s, loff_t *off)
 {
@@ -336,17 +320,7 @@ static ssize_t picolcd_debug_flash_write(struct file *f, const char __user *u,
 	return ret > 0 ? ret : err;
 }
 
-/*
- * Notes:
- * - concurrent writing is prevented by mutex and all writes must be
- *   n*64 bytes and 64-byte aligned, each write being preceded by an
- *   ERASE which erases a 64byte block.
- *   If less than requested was written or an error is returned for an
- *   otherwise correct write request the next 64-byte block which should
- *   have been written is in undefined state (mostly: original, erased,
- *   (half-)written with write error)
- * - reading can happen without special restriction
- */
+ 
 static const struct file_operations picolcd_debug_flash_fops = {
 	.owner    = THIS_MODULE,
 	.open     = simple_open,
@@ -356,9 +330,7 @@ static const struct file_operations picolcd_debug_flash_fops = {
 };
 
 
-/*
- * Helper code for HID report level dumping/debugging
- */
+ 
 static const char * const error_codes[] = {
 	"success", "parameter missing", "data_missing", "block readonly",
 	"block not erasable", "block too big", "section overflow",
@@ -389,7 +361,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 	char *buff;
 #define BUFF_SZ 256
 
-	/* Avoid unnecessary overhead if debugfs is disabled */
+	 
 	if (list_empty(&hdev->debug_list))
 		return;
 
@@ -413,7 +385,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 
 	switch (report->id) {
 	case REPORT_LED_STATE:
-		/* 1 data byte with GPO state */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_LED_STATE", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -421,7 +393,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_BRIGHTNESS:
-		/* 1 data byte with brightness */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_BRIGHTNESS", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -429,7 +401,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_CONTRAST:
-		/* 1 data byte with contrast */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_CONTRAST", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -437,7 +409,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_RESET:
-		/* 2 data bytes with reset duration in ms */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_RESET", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -446,28 +418,28 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_LCD_CMD:
-		/* 63 data bytes with LCD commands */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_LCD_CMD", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
-		/* TODO: format decoding */
+		 
 		break;
 	case REPORT_LCD_DATA:
-		/* 63 data bytes with LCD data */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_LCD_CMD", report->id, raw_size-1);
-		/* TODO: format decoding */
+		 
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_LCD_CMD_DATA:
-		/* 63 data bytes with LCD commands and data */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_LCD_CMD", report->id, raw_size-1);
-		/* TODO: format decoding */
+		 
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_EE_READ:
-		/* 3 data bytes with read area description */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_EE_READ", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -478,7 +450,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_EE_WRITE:
-		/* 3+1..20 data bytes with write area description */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_EE_WRITE", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -500,7 +472,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		break;
 	case REPORT_ERASE_MEMORY:
 	case REPORT_BL_ERASE_MEMORY:
-		/* 3 data bytes with pointer inside erase block */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_ERASE_MEMORY", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -520,7 +492,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		break;
 	case REPORT_READ_MEMORY:
 	case REPORT_BL_READ_MEMORY:
-		/* 4 data bytes with read area description */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_READ_MEMORY", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -544,7 +516,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		break;
 	case REPORT_WRITE_MEMORY:
 	case REPORT_BL_WRITE_MEMORY:
-		/* 4+1..32 data bytes with write adrea description */
+		 
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
 			"REPORT_WRITE_MEMORY", report->id, raw_size-1);
 		hid_debug_event(hdev, buff);
@@ -587,7 +559,7 @@ void picolcd_debug_out_report(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_SPLASH_RESTART:
-		/* TODO */
+		 
 		break;
 	case REPORT_EXIT_KEYBOARD:
 		snprintf(buff, BUFF_SZ, "out report %s (%d, size=%d)\n",
@@ -645,7 +617,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 	char *buff;
 
 #define BUFF_SZ 256
-	/* Avoid unnecessary overhead if debugfs is disabled */
+	 
 	if (list_empty(&hdev->debug_list))
 		return;
 
@@ -655,7 +627,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 
 	switch (report->id) {
 	case REPORT_ERROR_CODE:
-		/* 2 data bytes with affected report and error code */
+		 
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_ERROR_CODE", report->id, size-1);
 		hid_debug_event(hdev, buff);
@@ -668,7 +640,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_KEY_STATE:
-		/* 2 data bytes with key state */
+		 
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_KEY_STATE", report->id, size-1);
 		hid_debug_event(hdev, buff);
@@ -683,7 +655,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 		hid_debug_event(hdev, buff);
 		break;
 	case REPORT_IR_DATA:
-		/* Up to 20 byes of IR scancode data */
+		 
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_IR_DATA", report->id, size-1);
 		hid_debug_event(hdev, buff);
@@ -703,7 +675,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 		}
 		break;
 	case REPORT_EE_DATA:
-		/* Data buffer in response to REPORT_EE_READ or REPORT_EE_WRITE */
+		 
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_EE_DATA", report->id, size-1);
 		hid_debug_event(hdev, buff);
@@ -726,7 +698,7 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 		}
 		break;
 	case REPORT_MEMORY:
-		/* Data buffer in response to REPORT_READ_MEMORY or REPORT_WRITE_MEMORY */
+		 
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_MEMORY", report->id, size-1);
 		hid_debug_event(hdev, buff);
@@ -780,19 +752,19 @@ void picolcd_debug_raw_event(struct picolcd_data *data,
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_BL_ERASE_MEMORY", report->id, size-1);
 		hid_debug_event(hdev, buff);
-		/* TODO */
+		 
 		break;
 	case REPORT_BL_READ_MEMORY:
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_BL_READ_MEMORY", report->id, size-1);
 		hid_debug_event(hdev, buff);
-		/* TODO */
+		 
 		break;
 	case REPORT_BL_WRITE_MEMORY:
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
 			"REPORT_BL_WRITE_MEMORY", report->id, size-1);
 		hid_debug_event(hdev, buff);
-		/* TODO */
+		 
 		break;
 	case REPORT_DEVID:
 		snprintf(buff, BUFF_SZ, "report %s (%d, size=%d)\n",
@@ -843,18 +815,18 @@ void picolcd_init_devfs(struct picolcd_data *data,
 
 	mutex_init(&data->mutex_flash);
 
-	/* reset */
+	 
 	if (reset)
 		data->debug_reset = debugfs_create_file("reset", 0600,
 				hdev->debug_dir, data, &picolcd_debug_reset_fops);
 
-	/* eeprom */
+	 
 	if (eeprom_r || eeprom_w)
 		data->debug_eeprom = debugfs_create_file("eeprom",
 			(eeprom_w ? S_IWUSR : 0) | (eeprom_r ? S_IRUSR : 0),
 			hdev->debug_dir, data, &picolcd_debug_eeprom_fops);
 
-	/* flash */
+	 
 	if (flash_r && flash_r->maxfield == 1 && flash_r->field[0]->report_size == 8)
 		data->addr_sz = flash_r->field[0]->report_count - 1;
 	else

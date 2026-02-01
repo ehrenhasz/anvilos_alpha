@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020-2022, Linaro Limited
- */
+
+ 
 
 #include <drm/display/drm_dsc_helper.h>
 
@@ -60,7 +58,7 @@ static void dpu_hw_dsc_config(struct dpu_hw_dsc *hw_dsc,
 
 	data = (initial_lines << 20);
 	data |= (slice_last_group_size << 18);
-	/* bpp is 6.4 format, 4 LSBs bits are for fractional part */
+	 
 	data |= (dsc->bits_per_pixel << 8);
 	data |= (dsc->block_pred_enable << 7);
 	data |= (dsc->line_buf_depth << 3);

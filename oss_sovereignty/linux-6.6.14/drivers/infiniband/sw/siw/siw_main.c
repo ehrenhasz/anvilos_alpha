@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -29,33 +29,28 @@ MODULE_AUTHOR("Bernard Metzler");
 MODULE_DESCRIPTION("Software iWARP Driver");
 MODULE_LICENSE("Dual BSD/GPL");
 
-/* transmit from user buffer, if possible */
+ 
 const bool zcopy_tx = true;
 
-/* Restrict usage of GSO, if hardware peer iwarp is unable to process
- * large packets. try_gso = true lets siw try to use local GSO,
- * if peer agrees.  Not using GSO severly limits siw maximum tx bandwidth.
- */
+ 
 const bool try_gso;
 
-/* Attach siw also with loopback devices */
+ 
 const bool loopback_enabled = true;
 
-/* We try to negotiate CRC on, if true */
+ 
 const bool mpa_crc_required;
 
-/* MPA CRC on/off enforced */
+ 
 const bool mpa_crc_strict;
 
-/* Control TCP_NODELAY socket option */
+ 
 const bool siw_tcp_nagle;
 
-/* Select MPA version to be used during connection setup */
+ 
 u_char mpa_version = MPA_REVISION_2;
 
-/* Selects MPA P2P mode (additional handshake during connection
- * setup, if true.
- */
+ 
 const bool peer_to_peer;
 
 struct task_struct *siw_tx_thread[NR_CPUS];
@@ -89,11 +84,7 @@ static void siw_device_cleanup(struct ib_device *base_dev)
 
 static int siw_dev_qualified(struct net_device *netdev)
 {
-	/*
-	 * Additional hardware support can be added here
-	 * (e.g. ARPHRD_FDDI, ARPHRD_ATM, ...) - see
-	 * <linux/if_arp.h> for type identifiers.
-	 */
+	 
 	if (netdev->type == ARPHRD_ETHER || netdev->type == ARPHRD_IEEE802 ||
 	    netdev->type == ARPHRD_NONE ||
 	    (netdev->type == ARPHRD_LOOPBACK && loopback_enabled))
@@ -156,10 +147,7 @@ static void siw_destroy_cpulist(void)
 	kfree(siw_cpu_info.tx_valid_cpus);
 }
 
-/*
- * Choose CPU with least number of active QP's from NUMA node of
- * TX interface.
- */
+ 
 int siw_get_tx_cpu(struct siw_device *sdev)
 {
 	const struct cpumask *tx_cpumask;
@@ -172,7 +160,7 @@ int siw_get_tx_cpu(struct siw_device *sdev)
 
 	num_cpus = cpumask_weight(tx_cpumask);
 	if (!num_cpus) {
-		/* no CPU on this NUMA node */
+		 
 		tx_cpumask = cpu_online_mask;
 		num_cpus = cpumask_weight(tx_cpumask);
 	}
@@ -185,7 +173,7 @@ int siw_get_tx_cpu(struct siw_device *sdev)
 	     i++, cpu = cpumask_next(cpu, tx_cpumask)) {
 		int usage;
 
-		/* Skip any cores which have no TX thread */
+		 
 		if (!siw_tx_thread[cpu])
 			continue;
 
@@ -217,9 +205,7 @@ static struct ib_qp *siw_get_base_qp(struct ib_device *base_dev, int id)
 	struct siw_qp *qp = siw_qp_id2obj(to_siw_dev(base_dev), id);
 
 	if (qp) {
-		/*
-		 * siw_qp_id2obj() increments object reference count
-		 */
+		 
 		siw_qp_put(qp);
 		return &qp->base_qp;
 	}
@@ -295,10 +281,7 @@ static struct siw_device *siw_device_create(struct net_device *netdev)
 		memcpy(sdev->raw_gid, netdev->dev_addr,
 		       min_t(unsigned int, netdev->addr_len, ETH_ALEN));
 	} else {
-		/*
-		 * This device does not have a HW address, but
-		 * connection mangagement requires a unique gid.
-		 */
+		 
 		eth_random_addr(sdev->raw_gid);
 	}
 	addrconf_addr_eui48((u8 *)&base_dev->node_guid, sdev->raw_gid);
@@ -309,11 +292,7 @@ static struct siw_device *siw_device_create(struct net_device *netdev)
 	memcpy(base_dev->node_desc, SIW_NODE_DESC_COMMON,
 	       sizeof(SIW_NODE_DESC_COMMON));
 
-	/*
-	 * Current model (one-to-one device association):
-	 * One Softiwarp device per net_device or, equivalently,
-	 * per physical port.
-	 */
+	 
 	base_dev->phys_port_cnt = 1;
 	base_dev->num_comp_vectors = num_possible_cpus();
 
@@ -328,7 +307,7 @@ static struct siw_device *siw_device_create(struct net_device *netdev)
 	memcpy(base_dev->iw_ifname, netdev->name,
 	       sizeof(base_dev->iw_ifname));
 
-	/* Disable TCP port mapping */
+	 
 	base_dev->iw_driver_flags = IW_F_NO_PORT_MAP;
 
 	sdev->attrs.max_qp = SIW_MAX_QP;
@@ -366,10 +345,7 @@ error:
 	return NULL;
 }
 
-/*
- * Network link becomes unavailable. Mark all
- * affected QP's accordingly.
- */
+ 
 static void siw_netdev_down(struct work_struct *work)
 {
 	struct siw_device *sdev =
@@ -430,11 +406,7 @@ static int siw_netdev_event(struct notifier_block *nb, unsigned long event,
 		break;
 
 	case NETDEV_REGISTER:
-		/*
-		 * Device registration now handled only by
-		 * rdma netlink commands. So it shall be impossible
-		 * to end up here with a valid siw device.
-		 */
+		 
 		siw_dbg(base_dev, "unexpected NETDEV_REGISTER event\n");
 		break;
 
@@ -445,9 +417,7 @@ static int siw_netdev_event(struct notifier_block *nb, unsigned long event,
 	case NETDEV_CHANGEADDR:
 		siw_port_event(sdev, 1, IB_EVENT_LID_CHANGE);
 		break;
-	/*
-	 * Todo: Below netdev events are currently not handled.
-	 */
+	 
 	case NETDEV_CHANGEMTU:
 	case NETDEV_CHANGE:
 		break;
@@ -499,10 +469,7 @@ static struct rdma_link_ops siw_link_ops = {
 	.newlink = siw_newlink,
 };
 
-/*
- * siw_init_module - Initialize Softiwarp module and register with netdev
- *                   subsystem.
- */
+ 
 static __init int siw_init_module(void)
 {
 	int rv;
@@ -526,10 +493,7 @@ static __init int siw_init_module(void)
 		rv = -ENOMEM;
 		goto out_error;
 	}
-	/*
-	 * Locate CRC32 algorithm. If unsuccessful, fail
-	 * loading siw only, if CRC is required.
-	 */
+	 
 	siw_crypto_shash = crypto_alloc_shash("crc32c", 0, 0);
 	if (IS_ERR(siw_crypto_shash)) {
 		pr_info("siw: Loading CRC32c failed: %ld\n",

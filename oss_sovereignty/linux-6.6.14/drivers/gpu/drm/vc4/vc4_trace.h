@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Broadcom
- */
+ 
+ 
 
 #if !defined(_VC4_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VC4_TRACE_H_
@@ -147,9 +145,9 @@ TRACE_EVENT(vc4_rcl_end_irq,
 		      __entry->seqno)
 );
 
-#endif /* _VC4_TRACE_H_ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/vc4
 #include <trace/define_trace.h>

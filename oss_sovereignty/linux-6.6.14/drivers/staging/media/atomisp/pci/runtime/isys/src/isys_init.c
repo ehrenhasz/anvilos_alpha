@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "input_system.h"
 
@@ -19,7 +7,7 @@
 #include "platform_support.h"
 
 #ifdef ISP2401
-#include "isys_dma_public.h"	/* isys2401_dma_set_max_burst_size() */
+#include "isys_dma_public.h"	 
 #include "isys_irq.h"
 #endif
 
@@ -44,41 +32,41 @@ input_system_err_t ia_css_isys_init(void)
 		return error;
 
 	error = input_system_csi_xmem_channel_cfg(
-		    0,			/*ch_id                 */
-		    INPUT_SYSTEM_PORT_A,	/*port                  */
-		    backend_ch0,		/*backend_ch            */
-		    32,			/*mem_region_size       */
-		    6,			/*nof_mem_regions       */
-		    acq_mem_region_size,	/*acq_mem_region_size   */
-		    acq_nof_mem_regions,	/*acq_nof_mem_regions   */
-		    targetB,		/*target                */
-		    3);			/*nof_xmem_buffers      */
+		    0,			 
+		    INPUT_SYSTEM_PORT_A,	 
+		    backend_ch0,		 
+		    32,			 
+		    6,			 
+		    acq_mem_region_size,	 
+		    acq_nof_mem_regions,	 
+		    targetB,		 
+		    3);			 
 	if (error != INPUT_SYSTEM_ERR_NO_ERROR)
 		return error;
 
 	error = input_system_csi_xmem_channel_cfg(
-		    1,			/*ch_id                 */
-		    INPUT_SYSTEM_PORT_B,	/*port                  */
-		    backend_ch0,		/*backend_ch            */
-		    16,			/*mem_region_size       */
-		    3,			/*nof_mem_regions       */
-		    acq_mem_region_size,	/*acq_mem_region_size   */
-		    acq_nof_mem_regions,	/*acq_nof_mem_regions   */
-		    targetB,		/*target                */
-		    3);			/*nof_xmem_buffers      */
+		    1,			 
+		    INPUT_SYSTEM_PORT_B,	 
+		    backend_ch0,		 
+		    16,			 
+		    3,			 
+		    acq_mem_region_size,	 
+		    acq_nof_mem_regions,	 
+		    targetB,		 
+		    3);			 
 	if (error != INPUT_SYSTEM_ERR_NO_ERROR)
 		return error;
 
 	error = input_system_csi_xmem_channel_cfg(
-		    2,			/*ch_id                 */
-		    INPUT_SYSTEM_PORT_C,	/*port                  */
-		    backend_ch1,		/*backend_ch            */
-		    32,			/*mem_region_size       */
-		    3,			/*nof_mem_regions       */
-		    acq_mem_region_size,	/*acq_mem_region_size   */
-		    acq_nof_mem_regions,	/*acq_nof_mem_regions   */
-		    targetC,		/*target                */
-		    2);			/*nof_xmem_buffers      */
+		    2,			 
+		    INPUT_SYSTEM_PORT_C,	 
+		    backend_ch1,		 
+		    32,			 
+		    3,			 
+		    acq_mem_region_size,	 
+		    acq_nof_mem_regions,	 
+		    targetC,		 
+		    2);			 
 	if (error != INPUT_SYSTEM_ERR_NO_ERROR)
 		return error;
 
@@ -95,9 +83,9 @@ input_system_err_t ia_css_isys_init(void)
 	ia_css_isys_stream2mmio_sid_rmgr_init();
 
 	isys2401_dma_set_max_burst_size(ISYS2401_DMA0_ID,
-					1 /* Non Burst DMA transactions */);
+					1  );
 
-	/* Enable 2401 input system IRQ status for driver to retrieve */
+	 
 	isys_irqc_status_enable(ISYS_IRQ0_ID);
 	isys_irqc_status_enable(ISYS_IRQ1_ID);
 	isys_irqc_status_enable(ISYS_IRQ2_ID);

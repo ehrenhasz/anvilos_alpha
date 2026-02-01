@@ -1,33 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks_transaction.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
 
-/*
- * Fireworks have its own transaction. The transaction can be delivered by AV/C
- * Vendor Specific command frame or usual asynchronous transaction. At least,
- * Windows driver and firmware version 5.5 or later don't use AV/C command.
- *
- * Transaction substance:
- *  At first, 6 data exist. Following to the data, parameters for each command
- *  exist. All of the parameters are 32 bit aligned to big endian.
- *   data[0]:	Length of transaction substance
- *   data[1]:	Transaction version
- *   data[2]:	Sequence number. This is incremented by the device
- *   data[3]:	Transaction category
- *   data[4]:	Transaction command
- *   data[5]:	Return value in response.
- *   data[6-]:	Parameters
- *
- * Transaction address:
- *  command:	0xecc000000000
- *  response:	0xecc080000000 (default)
- *
- * I note that the address for response can be changed by command. But this
- * module uses the default address.
- */
+ 
+
+ 
 #include "./fireworks.h"
 
 #define MEMORY_SPACE_EFW_COMMAND	0xecc000000000ULL
@@ -131,13 +105,13 @@ copy_resp_to_buf(struct snd_efw *efw, void *data, size_t length, int *rcode)
 		capacity = snd_efw_resp_buf_size -
 			   (unsigned int)(efw->push_ptr - efw->pull_ptr);
 
-	/* confirm enough space for this response */
+	 
 	if (capacity < length) {
 		*rcode = RCODE_CONFLICT_ERROR;
 		goto end;
 	}
 
-	/* copy to ring buffer */
+	 
 	while (length > 0) {
 		till_end = snd_efw_resp_buf_size -
 			   (unsigned int)(efw->push_ptr - efw->resp_buf);
@@ -153,7 +127,7 @@ copy_resp_to_buf(struct snd_efw *efw, void *data, size_t length, int *rcode)
 		data += till_end;
 	}
 
-	/* for hwdep */
+	 
 	wake_up(&efw->hwdep_wait);
 
 	*rcode = RCODE_COMPLETE;
@@ -179,7 +153,7 @@ handle_resp_for_user(struct fw_card *card, int generation, int source,
 		if ((device->card != card) ||
 		    (device->generation != generation))
 			continue;
-		smp_rmb();	/* node id vs. generation */
+		smp_rmb();	 
 		if (device->node_id != source)
 			continue;
 
@@ -207,7 +181,7 @@ handle_resp_for_kernel(struct fw_card *card, int generation, int source,
 		if ((device->card != card) ||
 		    (device->generation != generation))
 			continue;
-		smp_rmb();	/* node_id vs. generation */
+		smp_rmb();	 
 		if (device->node_id != source)
 			continue;
 

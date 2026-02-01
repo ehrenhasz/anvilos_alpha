@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <linux/module.h>
 #include <linux/zlib.h>
 #include "compress.h"
@@ -18,7 +18,7 @@ module_param_named(deflate_streams, z_erofs_deflate_nstrms, uint, 0444);
 
 void z_erofs_deflate_exit(void)
 {
-	/* there should be no running fs instance */
+	 
 	while (z_erofs_deflate_avail_strms) {
 		struct z_erofs_deflate *strm;
 
@@ -44,7 +44,7 @@ void z_erofs_deflate_exit(void)
 
 int __init z_erofs_deflate_init(void)
 {
-	/* by default, use # of possible CPUs instead */
+	 
 	if (!z_erofs_deflate_nstrms)
 		z_erofs_deflate_nstrms = num_possible_cpus();
 
@@ -56,7 +56,7 @@ int __init z_erofs_deflate_init(void)
 		if (!strm)
 			goto out_failed;
 
-		/* XXX: in-kernel zlib cannot shrink windowbits currently */
+		 
 		strm->z.workspace = vmalloc(zlib_inflate_workspacesize());
 		if (!strm->z.workspace) {
 			kfree(strm);
@@ -109,7 +109,7 @@ int z_erofs_deflate_decompress(struct z_erofs_decompress_req *rq,
 	bool bounced = false;
 	int no = -1, ni = 0, j = 0, zerr, err;
 
-	/* 1. get the exact DEFLATE compressed size */
+	 
 	kin = kmap_local_page(*rq->in);
 	err = z_erofs_fixup_insize(rq, kin + rq->pageofs_in,
 			min_t(unsigned int, rq->inputsize,
@@ -119,7 +119,7 @@ int z_erofs_deflate_decompress(struct z_erofs_decompress_req *rq,
 		return err;
 	}
 
-	/* 2. get an available DEFLATE context */
+	 
 again:
 	spin_lock(&z_erofs_deflate_lock);
 	strm = z_erofs_deflate_head;
@@ -131,7 +131,7 @@ again:
 	z_erofs_deflate_head = strm->next;
 	spin_unlock(&z_erofs_deflate_lock);
 
-	/* 3. multi-call decompress */
+	 
 	insz = rq->inputsize;
 	outsz = rq->outputsize;
 	zerr = zlib_inflateInit2(&strm->z, -MAX_WBITS);
@@ -176,7 +176,7 @@ again:
 				break;
 			}
 
-			if (kout) { /* unlike kmap(), take care of the orders */
+			if (kout) {  
 				j = strm->z.next_out - kout;
 				kunmap_local(kout);
 			}
@@ -192,12 +192,7 @@ again:
 			}
 		}
 
-		/*
-		 * Handle overlapping: Use bounced buffer if the compressed
-		 * data is under processing; Or use short-lived pages from the
-		 * on-stack pagepool where pages share among the same request
-		 * and not _all_ inplace I/O pages are needed to be doubled.
-		 */
+		 
 		if (!bounced && rq->out[no] == rq->in[ni]) {
 			memcpy(strm->bounce, strm->z.next_in, strm->z.avail_in);
 			strm->z.next_in = strm->bounce;
@@ -238,7 +233,7 @@ again:
 		kunmap_local(kout);
 failed_zinit:
 	kunmap_local(kin);
-	/* 4. push back DEFLATE stream context to the global list */
+	 
 	spin_lock(&z_erofs_deflate_lock);
 	strm->next = z_erofs_deflate_head;
 	z_erofs_deflate_head = strm;

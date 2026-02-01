@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Weighted Round-Robin Scheduling module
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *
- * Changes:
- *     Wensong Zhang            :     changed the ip_vs_wrr_schedule to return dest
- *     Wensong Zhang            :     changed some comestics things for debugging
- *     Wensong Zhang            :     changed for the d-linked destination list
- *     Wensong Zhang            :     added the ip_vs_wrr_update_svc
- *     Julian Anastasov         :     fixed the bug of returning destination
- *                                    with weight 0 when all weights are zero
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -24,44 +12,14 @@
 
 #include <net/ip_vs.h>
 
-/* The WRR algorithm depends on some caclulations:
- * - mw: maximum weight
- * - di: weight step, greatest common divisor from all weights
- * - cw: current required weight
- * As result, all weights are in the [di..mw] range with a step=di.
- *
- * First, we start with cw = mw and select dests with weight >= cw.
- * Then cw is reduced with di and all dests are checked again.
- * Last pass should be with cw = di. We have mw/di passes in total:
- *
- * pass 1: cw = max weight
- * pass 2: cw = max weight - di
- * pass 3: cw = max weight - 2 * di
- * ...
- * last pass: cw = di
- *
- * Weights are supposed to be >= di but we run in parallel with
- * weight changes, it is possible some dest weight to be reduced
- * below di, bad if it is the only available dest.
- *
- * So, we modify how mw is calculated, now it is reduced with (di - 1),
- * so that last cw is 1 to catch such dests with weight below di:
- * pass 1: cw = max weight - (di - 1)
- * pass 2: cw = max weight - di - (di - 1)
- * pass 3: cw = max weight - 2 * di - (di - 1)
- * ...
- * last pass: cw = 1
- *
- */
+ 
 
-/*
- * current destination pointer for weighted round-robin scheduling
- */
+ 
 struct ip_vs_wrr_mark {
-	struct ip_vs_dest *cl;	/* current dest or head */
-	int cw;			/* current weight */
-	int mw;			/* maximum weight */
-	int di;			/* decreasing interval */
+	struct ip_vs_dest *cl;	 
+	int cw;			 
+	int mw;			 
+	int di;			 
 	struct rcu_head		rcu_head;
 };
 
@@ -85,9 +43,7 @@ static int ip_vs_wrr_gcd_weight(struct ip_vs_service *svc)
 }
 
 
-/*
- *    Get the maximum weight of the service destinations.
- */
+ 
 static int ip_vs_wrr_max_weight(struct ip_vs_service *svc)
 {
 	struct ip_vs_dest *dest;
@@ -107,9 +63,7 @@ static int ip_vs_wrr_init_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_wrr_mark *mark;
 
-	/*
-	 *    Allocate the mark variable for WRR scheduling
-	 */
+	 
 	mark = kmalloc(sizeof(struct ip_vs_wrr_mark), GFP_KERNEL);
 	if (mark == NULL)
 		return -ENOMEM;
@@ -128,9 +82,7 @@ static void ip_vs_wrr_done_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_wrr_mark *mark = svc->sched_data;
 
-	/*
-	 *    Release the mark variable
-	 */
+	 
 	kfree_rcu(mark, rcu_head);
 }
 
@@ -153,9 +105,7 @@ static int ip_vs_wrr_dest_changed(struct ip_vs_service *svc,
 }
 
 
-/*
- *    Weighted Round-Robin Scheduling
- */
+ 
 static struct ip_vs_dest *
 ip_vs_wrr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		   struct ip_vs_iphdr *iph)
@@ -168,11 +118,11 @@ ip_vs_wrr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 
 	spin_lock_bh(&svc->sched_lock);
 	dest = mark->cl;
-	/* No available dests? */
+	 
 	if (mark->mw == 0)
 		goto err_noavail;
 	last = dest;
-	/* Stop only after all dests were checked for weight >= 1 (last pass) */
+	 
 	while (1) {
 		list_for_each_entry_continue_rcu(dest,
 						 &svc->destinations,
@@ -186,12 +136,7 @@ ip_vs_wrr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		mark->cw -= mark->di;
 		if (mark->cw <= 0) {
 			mark->cw = mark->mw;
-			/* Stop if we tried last pass from first dest:
-			 * 1. last_pass: we started checks when cw > di but
-			 *	then all dests were checked for w >= 1
-			 * 2. last was head: the first and only traversal
-			 *	was for weight >= 1, for all dests.
-			 */
+			 
 			if (last_pass ||
 			    &last->n_list == &svc->destinations)
 				goto err_over;
@@ -200,10 +145,7 @@ ip_vs_wrr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		last_pass = mark->cw <= mark->di;
 		if (last_pass && restarted &&
 		    &last->n_list != &svc->destinations) {
-			/* First traversal was for w >= 1 but only
-			 * for dests after 'last', now do the same
-			 * for all dests up to 'last'.
-			 */
+			 
 			stop = last;
 		}
 	}

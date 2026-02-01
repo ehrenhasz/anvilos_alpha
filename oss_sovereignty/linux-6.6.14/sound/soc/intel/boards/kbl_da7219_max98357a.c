@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2017-18 Intel Corporation.
 
-/*
- * Intel Kabylake I2S Machine Driver with MAX98357A & DA7219 Codecs
- *
- * Modified from:
- *   Intel Kabylake I2S Machine driver supporting MAXIM98927 and
- *   RT5663 codecs
- */
+
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -119,10 +113,10 @@ static const struct snd_soc_dapm_route kabylake_map[] = {
 	{ "Headphone Jack", NULL, "HPL" },
 	{ "Headphone Jack", NULL, "HPR" },
 
-	/* speaker */
+	 
 	{ "Spk", NULL, "Speaker" },
 
-	/* other jacks */
+	 
 	{ "MIC", NULL, "Headset Mic" },
 	{ "DMic", NULL, "SoC DMIC" },
 
@@ -130,7 +124,7 @@ static const struct snd_soc_dapm_route kabylake_map[] = {
 	{"HDMI2", NULL, "hif6-0 Output"},
 	{"HDMI3", NULL, "hif7-0 Output"},
 
-	/* CODEC BE connections */
+	 
 	{ "HiFi Playback", NULL, "ssp0 Tx" },
 	{ "ssp0 Tx", NULL, "codec0_out" },
 
@@ -140,7 +134,7 @@ static const struct snd_soc_dapm_route kabylake_map[] = {
 	{ "codec0_in", NULL, "ssp1 Rx" },
 	{ "ssp1 Rx", NULL, "Capture" },
 
-	/* DMIC */
+	 
 	{ "dmic01_hifi", NULL, "DMIC01 Rx" },
 	{ "DMIC01 Rx", NULL, "DMIC AIF" },
 
@@ -165,11 +159,11 @@ static int kabylake_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 			SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = DUAL_CHANNEL;
 
-	/* set SSP to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 
@@ -184,7 +178,7 @@ static int kabylake_da7219_codec_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_jack *jack;
 	int ret;
 
-	/* Configure sysclk for codec */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, DA7219_CLKSRC_MCLK, 24576000,
 						SND_SOC_CLOCK_IN);
 	if (ret) {
@@ -192,10 +186,7 @@ static int kabylake_da7219_codec_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(kabylake_audio_card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 					 SND_JACK_BTN_2 | SND_JACK_BTN_3 | SND_JACK_LINEOUT,
@@ -300,12 +291,7 @@ static int kbl_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * On this platform for PCM device we support,
-	 * 48Khz
-	 * stereo
-	 * 16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = DUAL_CHANNEL;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -330,9 +316,7 @@ static int kabylake_dmic_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_interval *chan = hw_param_interval(params,
 				SNDRV_PCM_HW_PARAM_CHANNELS);
 
-	/*
-	 * set BE channel constraint as user FE channels
-	 */
+	 
 
 	if (params_channels(params) == 2)
 		chan->min = chan->max = 2;
@@ -449,9 +433,9 @@ SND_SOC_DAILINK_DEF(idisp3_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* kabylake digital audio interface glue - connects codec <--> CPU */
+ 
 static struct snd_soc_dai_link kabylake_dais[] = {
-	/* Front End DAI links */
+	 
 	[KBL_DPCM_AUDIO_PB] = {
 		.name = "Kbl Audio Port",
 		.stream_name = "Audio",
@@ -529,9 +513,9 @@ static struct snd_soc_dai_link kabylake_dais[] = {
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "SSP0-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -544,7 +528,7 @@ static struct snd_soc_dai_link kabylake_dais[] = {
 		SND_SOC_DAILINK_REG(ssp0_pin, ssp0_codec, platform),
 	},
 	{
-		/* SSP1 - Codec */
+		 
 		.name = "SSP1-Codec",
 		.id = 1,
 		.no_pcm = 1,
@@ -626,7 +610,7 @@ static int kabylake_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/* kabylake audio machine driver for SPT + DA7219 */
+ 
 static struct snd_soc_card kabylake_audio_card_da7219_m98357a = {
 	.name = "kblda7219max",
 	.owner = THIS_MODULE,
@@ -681,7 +665,7 @@ static struct platform_driver kabylake_audio = {
 
 module_platform_driver(kabylake_audio)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("Audio Machine driver-DA7219 & MAX98357A in I2S mode");
 MODULE_AUTHOR("Naveen Manohar <naveen.m@intel.com>");
 MODULE_LICENSE("GPL v2");

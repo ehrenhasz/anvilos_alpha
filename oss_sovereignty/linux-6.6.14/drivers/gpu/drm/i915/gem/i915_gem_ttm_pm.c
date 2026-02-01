@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <drm/ttm/ttm_placement.h>
 #include <drm/ttm/ttm_tt.h>
@@ -15,10 +13,7 @@
 #include "gem/i915_gem_ttm_move.h"
 #include "gem/i915_gem_ttm_pm.h"
 
-/**
- * i915_ttm_backup_free - Free any backup attached to this object
- * @obj: The object whose backup is to be freed.
- */
+ 
 void i915_ttm_backup_free(struct drm_i915_gem_object *obj)
 {
 	if (obj->ttm.backup) {
@@ -27,12 +22,7 @@ void i915_ttm_backup_free(struct drm_i915_gem_object *obj)
 	}
 }
 
-/**
- * struct i915_gem_ttm_pm_apply - Apply-to-region subclass for restore
- * @base: The i915_gem_apply_to_region we derive from.
- * @allow_gpu: Whether using the gpu blitter is allowed.
- * @backup_pinned: On backup, backup also pinned objects.
- */
+ 
 struct i915_gem_ttm_pm_apply {
 	struct i915_gem_apply_to_region base;
 	bool allow_gpu : 1;
@@ -66,13 +56,7 @@ static int i915_ttm_backup(struct i915_gem_apply_to_region *apply,
 	if (obj->flags & I915_BO_ALLOC_PM_VOLATILE)
 		return 0;
 
-	/*
-	 * It seems that we might have some framebuffers still pinned at this
-	 * stage, but for such objects we might also need to deal with the CCS
-	 * aux state. Make sure we force the save/restore of the CCS state,
-	 * otherwise we might observe display corruption, when returning from
-	 * suspend.
-	 */
+	 
 	flags = 0;
 	if (i915_gem_object_needs_ccs_pages(obj)) {
 		WARN_ON_ONCE(!i915_gem_object_is_framebuffer(obj));
@@ -121,14 +105,7 @@ static int i915_ttm_recover(struct i915_gem_apply_to_region *apply,
 	return 0;
 }
 
-/**
- * i915_ttm_recover_region - Free the backup of all objects of a region
- * @mr: The memory region
- *
- * Checks all objects of a region if there is backup attached and if so
- * frees that backup. Typically this is called to recover after a partially
- * performed backup.
- */
+ 
 void i915_ttm_recover_region(struct intel_memory_region *mr)
 {
 	static const struct i915_gem_apply_to_region_ops recover_ops = {
@@ -141,16 +118,7 @@ void i915_ttm_recover_region(struct intel_memory_region *mr)
 	GEM_WARN_ON(ret);
 }
 
-/**
- * i915_ttm_backup_region - Back up all objects of a region to smem.
- * @mr: The memory region
- * @flags: TTM backup flags
- *
- * Loops over all objects of a region and either evicts them if they are
- * evictable or backs them up using a backup object if they are pinned.
- *
- * Return: Zero on success. Negative error code on error.
- */
+ 
 int i915_ttm_backup_region(struct intel_memory_region *mr, u32 flags)
 {
 	static const struct i915_gem_apply_to_region_ops backup_ops = {
@@ -185,7 +153,7 @@ static int i915_ttm_restore(struct i915_gem_apply_to_region *apply,
 	if (err)
 		return err;
 
-	/* Content may have been swapped. */
+	 
 	if (!backup_bo->resource)
 		err = ttm_bo_validate(backup_bo, i915_ttm_sys_placement(), &ctx);
 	if (!err)
@@ -208,16 +176,7 @@ static int i915_ttm_restore(struct i915_gem_apply_to_region *apply,
 	return err;
 }
 
-/**
- * i915_ttm_restore_region - Restore backed-up objects of a region from smem.
- * @mr: The memory region
- * @flags: TTM backup flags
- *
- * Loops over all objects of a region and if they are backed-up, restores
- * them from smem.
- *
- * Return: Zero on success. Negative error code on error.
- */
+ 
 int i915_ttm_restore_region(struct intel_memory_region *mr, u32 flags)
 {
 	static const struct i915_gem_apply_to_region_ops restore_ops = {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_NAT_H
 #define _NF_NAT_H
 
@@ -15,19 +15,19 @@ enum nf_nat_manip_type {
 	NF_NAT_MANIP_DST
 };
 
-/* SRC manip occurs POST_ROUTING or LOCAL_IN */
+ 
 #define HOOK2MANIP(hooknum) ((hooknum) != NF_INET_POST_ROUTING && \
 			     (hooknum) != NF_INET_LOCAL_IN)
 
-/* per conntrack: nat application helper private data */
+ 
 union nf_conntrack_nat_help {
-	/* insert nat helper private data here */
+	 
 #if IS_ENABLED(CONFIG_NF_NAT_PPTP)
 	struct nf_nat_pptp nat_pptp_info;
 #endif
 };
 
-/* The structure embedded in the conntrack structure. */
+ 
 struct nf_conn_nat {
 	union nf_conntrack_nat_help help;
 #if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE)
@@ -35,7 +35,7 @@ struct nf_conn_nat {
 #endif
 };
 
-/* Set up the info structure to map into this range. */
+ 
 unsigned int nf_nat_setup_info(struct nf_conn *ct,
 			       const struct nf_nat_range2 *range,
 			       enum nf_nat_manip_type maniptype);

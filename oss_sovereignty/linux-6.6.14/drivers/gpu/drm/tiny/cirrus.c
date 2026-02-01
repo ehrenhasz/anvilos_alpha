@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2012-2019 Red Hat
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License version 2. See the file COPYING in the main
- * directory of this archive for more details.
- *
- * Authors: Matthew Garrett
- *	    Dave Airlie
- *	    Gerd Hoffmann
- *
- * Portions of this code derived from cirrusfb.c:
- * drivers/video/cirrusfb.c - driver for Cirrus Logic chipsets
- *
- * Copyright 1999-2001 Jeff Garzik <jgarzik@pobox.com>
- */
+ 
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/module.h>
@@ -51,19 +36,19 @@
 #define DRIVER_MAJOR 2
 #define DRIVER_MINOR 0
 
-#define CIRRUS_MAX_PITCH (0x1FF << 3)      /* (4096 - 1) & ~111b bytes */
-#define CIRRUS_VRAM_SIZE (4 * 1024 * 1024) /* 4 MB */
+#define CIRRUS_MAX_PITCH (0x1FF << 3)       
+#define CIRRUS_VRAM_SIZE (4 * 1024 * 1024)  
 
 struct cirrus_device {
 	struct drm_device	       dev;
 
-	/* modesetting pipeline */
+	 
 	struct drm_plane	       primary_plane;
 	struct drm_crtc		       crtc;
 	struct drm_encoder	       encoder;
 	struct drm_connector	       connector;
 
-	/* HW resources */
+	 
 	void __iomem		       *vram;
 	void __iomem		       *mmio;
 };
@@ -73,7 +58,7 @@ struct cirrus_device {
 struct cirrus_primary_plane_state {
 	struct drm_shadow_plane_state base;
 
-	/* HW scanout buffer */
+	 
 	const struct drm_format_info   *format;
 	unsigned int		       pitch;
 };
@@ -84,15 +69,8 @@ to_cirrus_primary_plane_state(struct drm_plane_state *plane_state)
 	return container_of(plane_state, struct cirrus_primary_plane_state, base.base);
 };
 
-/* ------------------------------------------------------------------ */
-/*
- * The meat of this driver. The core passes us a mode and we have to program
- * it. The modesetting here is the bare minimum required to satisfy the qemu
- * emulation of this hardware, and running this against a real device is
- * likely to result in an inadequately programmed mode. We've already had
- * the opportunity to modify the mode, so whatever we receive here should
- * be something that can be correctly programmed and displayed
- */
+ 
+ 
 
 #define SEQ_INDEX 4
 #define SEQ_DATA 5
@@ -148,10 +126,10 @@ static const struct drm_format_info *cirrus_convert_to(struct drm_framebuffer *f
 {
 	if (fb->format->format == DRM_FORMAT_XRGB8888 && fb->pitches[0] > CIRRUS_MAX_PITCH) {
 		if (fb->width * 3 <= CIRRUS_MAX_PITCH)
-			/* convert from XR24 to RG24 */
+			 
 			return drm_format_info(DRM_FORMAT_RGB888);
 		else
-			/* convert from XR24 to RG16 */
+			 
 			return drm_format_info(DRM_FORMAT_RGB565);
 	}
 	return NULL;
@@ -232,9 +210,7 @@ static void cirrus_mode_set(struct cirrus_device *cirrus,
 		tmp |= 0x20;
 	wreg_crt(cirrus, VGA_CRTC_MAX_SCAN, tmp);
 
-	/*
-	 * Overflow bits for values that don't fit in the standard registers
-	 */
+	 
 	tmp = 0x10;
 	if (vtotal & 0x100)
 		tmp |= 0x01;
@@ -250,7 +226,7 @@ static void cirrus_mode_set(struct cirrus_device *cirrus,
 
 	tmp = 0;
 
-	/* More overflow bits */
+	 
 
 	if ((htotal + 5) & 0x40)
 		tmp |= 0x10;
@@ -263,7 +239,7 @@ static void cirrus_mode_set(struct cirrus_device *cirrus,
 
 	wreg_crt(cirrus, CL_CRT1A, tmp);
 
-	/* Disable Hercules/CGA compatibility */
+	 
 	wreg_crt(cirrus, VGA_CRTC_MODE, 0x03);
 }
 
@@ -298,10 +274,10 @@ static void cirrus_format_set(struct cirrus_device *cirrus,
 
 	wreg_seq(cirrus, 0x7, sr07);
 
-	/* Enable high-colour modes */
+	 
 	wreg_gfx(cirrus, VGA_GFX_MODE, 0x40);
 
-	/* And set graphics mode */
+	 
 	wreg_gfx(cirrus, VGA_GFX_MISC, 0x01);
 
 	wreg_hdr(cirrus, hdr);
@@ -311,11 +287,11 @@ static void cirrus_pitch_set(struct cirrus_device *cirrus, unsigned int pitch)
 {
 	u8 cr13, cr1b;
 
-	/* Program the pitch */
+	 
 	cr13 = pitch / 8;
 	wreg_crt(cirrus, VGA_CRTC_OFFSET, cr13);
 
-	/* Enable extended blanking and pitch bits, and enable full memory */
+	 
 	cr1b = 0x22;
 	cr1b |= (pitch >> 7) & 0x10;
 	cr1b |= (pitch >> 6) & 0x40;
@@ -324,8 +300,8 @@ static void cirrus_pitch_set(struct cirrus_device *cirrus, unsigned int pitch)
 	cirrus_set_start_address(cirrus, 0);
 }
 
-/* ------------------------------------------------------------------ */
-/* cirrus display pipe						      */
+ 
+ 
 
 static const uint32_t cirrus_primary_plane_formats[] = {
 	DRM_FORMAT_RGB565,
@@ -364,7 +340,7 @@ static int cirrus_primary_plane_helper_atomic_check(struct drm_plane *plane,
 
 	pitch = cirrus_pitch(fb);
 
-	/* validate size constraints */
+	 
 	if (pitch > CIRRUS_MAX_PITCH)
 		return -EINVAL;
 	else if (pitch * fb->height > CIRRUS_VRAM_SIZE)
@@ -463,7 +439,7 @@ static void cirrus_reset_primary_plane(struct drm_plane *plane)
 
 	if (plane->state) {
 		cirrus_primary_plane_atomic_destroy_state(plane, plane->state);
-		plane->state = NULL; /* must be set to NULL here */
+		plane->state = NULL;  
 	}
 
 	primary_plane_state = kzalloc(sizeof(*primary_plane_state), GFP_KERNEL);
@@ -508,7 +484,7 @@ static void cirrus_crtc_helper_atomic_enable(struct drm_crtc *crtc,
 
 	cirrus_mode_set(cirrus, &crtc_state->mode);
 
-	/* Unblank (needed on S3 resume, vgabios doesn't do it then) */
+	 
 	outb(VGA_AR_ENABLE_DISPLAY, VGA_ATT_W);
 
 	drm_dev_exit(idx);
@@ -604,8 +580,8 @@ static int cirrus_pipe_init(struct cirrus_device *cirrus)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
-/* cirrus framebuffers & mode config				      */
+ 
+ 
 
 static enum drm_mode_status cirrus_mode_config_mode_valid(struct drm_device *dev,
 							  const struct drm_display_mode *mode)
@@ -646,7 +622,7 @@ static int cirrus_mode_config_init(struct cirrus_device *cirrus)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 DEFINE_DRM_GEM_FOPS(cirrus_fops);
 
@@ -731,7 +707,7 @@ static const struct pci_device_id pciidlist[] = {
 	{
 		.vendor    = PCI_VENDOR_ID_CIRRUS,
 		.device    = PCI_DEVICE_ID_CIRRUS_5446,
-		/* only bind to the cirrus chip in qemu */
+		 
 		.subvendor = PCI_SUBVENDOR_ID_REDHAT_QUMRANET,
 		.subdevice = PCI_SUBDEVICE_ID_QEMU,
 	}, {
@@ -740,7 +716,7 @@ static const struct pci_device_id pciidlist[] = {
 		.subvendor = PCI_VENDOR_ID_XEN,
 		.subdevice = 0x0001,
 	},
-	{ /* end if list */ }
+	{   }
 };
 
 static struct pci_driver cirrus_pci_driver = {

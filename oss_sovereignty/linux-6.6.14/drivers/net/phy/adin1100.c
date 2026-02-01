@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- *  Driver for Analog Devices Industrial Ethernet T1L PHYs
- *
- * Copyright 2020 Analog Devices Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -55,12 +51,7 @@ static const struct adin_mse_sqi_range adin_mse_sqi_map[] = {
 	{ 0x0000, 0x02A0 },
 };
 
-/**
- * struct adin_priv - ADIN PHY driver private data
- * @tx_level_2v4_able:		set if the PHY supports 2.4V TX levels (10BASE-T1L)
- * @tx_level_2v4:		set if the PHY requests 2.4V TX levels (10BASE-T1L)
- * @tx_level_prop_present:	set if the TX level is specified in DT
- */
+ 
 struct adin_priv {
 	unsigned int		tx_level_2v4_able:1;
 	unsigned int		tx_level_2v4:1;
@@ -107,7 +98,7 @@ static int adin_config_aneg(struct phy_device *phydev)
 		if (ret < 0)
 			return ret;
 
-		/* Force PHY to use above configurations */
+		 
 		return phy_set_bits_mmd(phydev, MDIO_MMD_AN, ADIN_FORCED_MODE, ADIN_FORCED_MODE_EN);
 	}
 
@@ -115,7 +106,7 @@ static int adin_config_aneg(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Request increased transmit level from LP. */
+	 
 	if (priv->tx_level_prop_present && priv->tx_level_2v4) {
 		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
 				       MDIO_AN_T1_ADV_H_10L_TX_HI |
@@ -124,7 +115,7 @@ static int adin_config_aneg(struct phy_device *phydev)
 			return ret;
 	}
 
-	/* Disable 2.4 Vpp transmit level. */
+	 
 	if ((priv->tx_level_prop_present && !priv->tx_level_2v4) || !priv->tx_level_2v4_able) {
 		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
 					 MDIO_AN_T1_ADV_H_10L_TX_HI |
@@ -168,7 +159,7 @@ static int adin_set_loopback(struct phy_device *phydev, bool enable)
 		return phy_set_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
 					BMCR_LOOPBACK);
 
-	/* PCS loopback (according to 10BASE-T1L spec) */
+	 
 	return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
 				 BMCR_LOOPBACK);
 }
@@ -197,7 +188,7 @@ static int adin_get_features(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* This depends on the voltage level from the power source */
+	 
 	priv->tx_level_2v4_able = !!(ret & MDIO_PMA_10T1L_STAT_2V4_ABLE);
 
 	phydev_dbg(phydev, "PHY supports 2.4V TX level: %s\n",

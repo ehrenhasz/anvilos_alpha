@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef USB_F_MASS_STORAGE_H
 #define USB_F_MASS_STORAGE_H
 
@@ -14,8 +14,8 @@ struct fsg_module_parameters {
 
 	unsigned int	file_count, ro_count, removable_count, cdrom_count;
 	unsigned int	nofua_count;
-	unsigned int	luns;	/* nluns */
-	bool		stall;	/* can_stall */
+	unsigned int	luns;	 
+	bool		stall;	 
 };
 
 #define _FSG_MODULE_PARAM_ARRAY(prefix, params, name, type, desc)	\
@@ -60,7 +60,7 @@ struct fsg_module_parameters {
 
 struct fsg_common;
 
-/* FSF callback functions */
+ 
 struct fsg_lun_opts {
 	struct config_group group;
 	struct fsg_lun *lun;
@@ -72,14 +72,9 @@ struct fsg_opts {
 	struct usb_function_instance func_inst;
 	struct fsg_lun_opts lun0;
 	struct config_group *default_groups[2];
-	bool no_configfs; /* for legacy gadgets */
+	bool no_configfs;  
 
-	/*
-	 * Read/write access to configfs attributes is handled by configfs.
-	 *
-	 * This is to protect the data from concurrent access by read/write
-	 * and create symlink/remove symlink.
-	 */
+	 
 	struct mutex			lock;
 	int				refcnt;
 };
@@ -97,13 +92,13 @@ struct fsg_config {
 	unsigned nluns;
 	struct fsg_lun_config luns[FSG_MAX_LUNS];
 
-	/* Callback functions. */
+	 
 	const struct fsg_operations	*ops;
-	/* Gadget's private data. */
+	 
 	void			*private_data;
 
-	const char *vendor_name;		/*  8 characters or less */
-	const char *product_name;		/* 16 characters or less */
+	const char *vendor_name;		 
+	const char *product_name;		 
 
 	char			can_stall;
 	unsigned int		fsg_num_buffers;
@@ -141,4 +136,4 @@ void fsg_config_from_params(struct fsg_config *cfg,
 			    const struct fsg_module_parameters *params,
 			    unsigned int fsg_num_buffers);
 
-#endif /* USB_F_MASS_STORAGE_H */
+#endif  

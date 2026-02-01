@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_ROT0_DESC_REGS_H_
 #define ASIC_REG_ROT0_DESC_REGS_H_
 
-/*
- *****************************************
- *   ROT0_DESC
- *   (Prototype: ROT_DESC)
- *****************************************
- */
+ 
 
 #define mmROT0_DESC_CONTEXT_ID 0x4E0B100
 
@@ -152,4 +139,4 @@
 
 #define mmROT0_DESC_PUSH_DESC 0x4E0B204
 
-#endif /* ASIC_REG_ROT0_DESC_REGS_H_ */
+#endif  

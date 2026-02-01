@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* CAN driver for PEAK System micro-CAN based adapters
- *
- * Copyright (C) 2003-2011 PEAK System-Technik GmbH
- * Copyright (C) 2011-2013 Stephane Grosjean <s.grosjean@peak-system.com>
- */
+ 
+ 
 #ifndef PEAK_CANFD_USER_H
 #define PEAK_CANFD_USER_H
 
@@ -11,15 +7,15 @@
 
 #define PCANFD_ECHO_SKB_DEF		-1
 
-/* data structure private to each uCAN interface */
+ 
 struct peak_canfd_priv {
-	struct can_priv can;		/* socket-can private data */
-	struct net_device *ndev;	/* network device */
-	int index;			/* channel index */
+	struct can_priv can;		 
+	struct net_device *ndev;	 
+	int index;			 
 
-	struct can_berr_counter bec;	/* rx/tx err counters */
+	struct can_berr_counter bec;	 
 
-	int echo_idx;			/* echo skb free slot index */
+	int echo_idx;			 
 	spinlock_t echo_lock;
 
 	int cmd_len;

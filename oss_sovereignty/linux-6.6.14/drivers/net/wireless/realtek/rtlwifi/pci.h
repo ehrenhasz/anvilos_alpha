@@ -1,18 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL_PCI_H__
 #define __RTL_PCI_H__
 
 #include <linux/pci.h>
-/* 1: MSDU packet queue,
- * 2: Rx Command Queue
- */
+ 
 #define RTL_PCI_RX_MPDU_QUEUE			0
 #define RTL_PCI_RX_CMD_QUEUE			1
 #define RTL_PCI_MAX_RX_QUEUE			2
 
-#define RTL_PCI_MAX_RX_COUNT			512/*64*/
+#define RTL_PCI_MAX_RX_COUNT			512 
 #define RTL_PCI_MAX_TX_QUEUE_COUNT		9
 
 #define RT_TXDESC_NUM				128
@@ -29,7 +27,7 @@
 #define MGNT_QUEUE				6
 #define HIGH_QUEUE				7
 #define HCCA_QUEUE				8
-#define H2C_QUEUE				TXCMD_QUEUE	/* In 8822B */
+#define H2C_QUEUE				TXCMD_QUEUE	 
 
 #define RTL_PCI_DEVICE(vend, dev, cfg)  \
 	.vendor = (vend), \
@@ -48,8 +46,8 @@
 #define PCI_MAX_DEVICES				32
 #define PCI_MAX_FUNCTION			8
 
-#define PCI_CONF_ADDRESS	0x0CF8	/*PCI Configuration Space Address */
-#define PCI_CONF_DATA		0x0CFC	/*PCI Configuration Space Data */
+#define PCI_CONF_ADDRESS	0x0CF8	 
+#define PCI_CONF_DATA		0x0CFC	 
 
 #define PCI_CLASS_BRIDGE_DEV		0x06
 #define PCI_SUBCLASS_BR_PCI_TO_PCI	0x04
@@ -60,36 +58,36 @@
 #define U2DONTCARE			0xFFFF
 #define U4DONTCARE			0xFFFFFFFF
 
-#define RTL_PCI_8192_DID	0x8192	/*8192 PCI-E */
-#define RTL_PCI_8192SE_DID	0x8192	/*8192 SE */
-#define RTL_PCI_8174_DID	0x8174	/*8192 SE */
-#define RTL_PCI_8173_DID	0x8173	/*8191 SE Crab */
-#define RTL_PCI_8172_DID	0x8172	/*8191 SE RE */
-#define RTL_PCI_8171_DID	0x8171	/*8191 SE Unicron */
-#define RTL_PCI_8723AE_DID	0x8723	/*8723AE */
-#define RTL_PCI_0045_DID	0x0045	/*8190 PCI for Ceraga */
-#define RTL_PCI_0046_DID	0x0046	/*8190 Cardbus for Ceraga */
-#define RTL_PCI_0044_DID	0x0044	/*8192e PCIE for Ceraga */
-#define RTL_PCI_0047_DID	0x0047	/*8192e Express Card for Ceraga */
+#define RTL_PCI_8192_DID	0x8192	 
+#define RTL_PCI_8192SE_DID	0x8192	 
+#define RTL_PCI_8174_DID	0x8174	 
+#define RTL_PCI_8173_DID	0x8173	 
+#define RTL_PCI_8172_DID	0x8172	 
+#define RTL_PCI_8171_DID	0x8171	 
+#define RTL_PCI_8723AE_DID	0x8723	 
+#define RTL_PCI_0045_DID	0x0045	 
+#define RTL_PCI_0046_DID	0x0046	 
+#define RTL_PCI_0044_DID	0x0044	 
+#define RTL_PCI_0047_DID	0x0047	 
 #define RTL_PCI_700F_DID	0x700F
 #define RTL_PCI_701F_DID	0x701F
 #define RTL_PCI_DLINK_DID	0x3304
-#define RTL_PCI_8723AE_DID	0x8723	/*8723e */
-#define RTL_PCI_8192CET_DID	0x8191	/*8192ce */
-#define RTL_PCI_8192CE_DID	0x8178	/*8192ce */
-#define RTL_PCI_8191CE_DID	0x8177	/*8192ce */
-#define RTL_PCI_8188CE_DID	0x8176	/*8192ce */
-#define RTL_PCI_8192CU_DID	0x8191	/*8192ce */
-#define RTL_PCI_8192DE_DID	0x8193	/*8192de */
-#define RTL_PCI_8192DE_DID2	0x002B	/*92DE*/
-#define RTL_PCI_8188EE_DID	0x8179  /*8188ee*/
-#define RTL_PCI_8723BE_DID	0xB723  /*8723be*/
-#define RTL_PCI_8192EE_DID	0x818B	/*8192ee*/
-#define RTL_PCI_8821AE_DID	0x8821	/*8821ae*/
-#define RTL_PCI_8812AE_DID	0x8812	/*8812ae*/
-#define RTL_PCI_8822BE_DID	0xB822	/*8822be*/
+#define RTL_PCI_8723AE_DID	0x8723	 
+#define RTL_PCI_8192CET_DID	0x8191	 
+#define RTL_PCI_8192CE_DID	0x8178	 
+#define RTL_PCI_8191CE_DID	0x8177	 
+#define RTL_PCI_8188CE_DID	0x8176	 
+#define RTL_PCI_8192CU_DID	0x8191	 
+#define RTL_PCI_8192DE_DID	0x8193	 
+#define RTL_PCI_8192DE_DID2	0x002B	 
+#define RTL_PCI_8188EE_DID	0x8179   
+#define RTL_PCI_8723BE_DID	0xB723   
+#define RTL_PCI_8192EE_DID	0x818B	 
+#define RTL_PCI_8821AE_DID	0x8821	 
+#define RTL_PCI_8812AE_DID	0x8812	 
+#define RTL_PCI_8822BE_DID	0xB822	 
 
-/*8192 support 16 pages of IO registers*/
+ 
 #define RTL_MEM_MAPPED_IO_RANGE_8190PCI		0x1000
 #define RTL_MEM_MAPPED_IO_RANGE_8192PCIE	0x4000
 #define RTL_MEM_MAPPED_IO_RANGE_8192SE		0x4000
@@ -105,11 +103,11 @@
 #define RTL_DEFAULT_HARDWARE_TYPE	HARDWARE_TYPE_RTL8192CE
 
 enum pci_bridge_vendor {
-	PCI_BRIDGE_VENDOR_INTEL = 0x0,	/*0b'0000,0001 */
-	PCI_BRIDGE_VENDOR_ATI,		/*0b'0000,0010*/
-	PCI_BRIDGE_VENDOR_AMD,		/*0b'0000,0100*/
-	PCI_BRIDGE_VENDOR_SIS,		/*0b'0000,1000*/
-	PCI_BRIDGE_VENDOR_UNKNOWN,	/*0b'0100,0000*/
+	PCI_BRIDGE_VENDOR_INTEL = 0x0,	 
+	PCI_BRIDGE_VENDOR_ATI,		 
+	PCI_BRIDGE_VENDOR_AMD,		 
+	PCI_BRIDGE_VENDOR_SIS,		 
+	PCI_BRIDGE_VENDOR_UNKNOWN,	 
 	PCI_BRIDGE_VENDOR_MAX,
 };
 
@@ -118,10 +116,7 @@ struct rtl_pci_capabilities_header {
 	u8 next;
 };
 
-/* In new TRX flow, Buffer_desc is new concept
- * But TX wifi info == TX descriptor in old flow
- * RX wifi info == RX descriptor in old flow
- */
+ 
 struct rtl_tx_buffer_desc {
 	u32 dword[4 * (1 << (BUFDESC_SEG_NUM + 1))];
 } __packed;
@@ -130,11 +125,11 @@ struct rtl_tx_desc {
 	u32 dword[16];
 } __packed;
 
-struct rtl_rx_buffer_desc { /*rx buffer desc*/
+struct rtl_rx_buffer_desc {  
 	u32 dword[4];
 } __packed;
 
-struct rtl_rx_desc { /*old: rx desc new: rx wifi info*/
+struct rtl_rx_desc {  
 	u32 dword[8];
 } __packed;
 
@@ -148,11 +143,11 @@ struct rtl8192_tx_ring {
 	unsigned int idx;
 	unsigned int entries;
 	struct sk_buff_head queue;
-	/*add for new trx flow*/
-	struct rtl_tx_buffer_desc *buffer_desc; /*tx buffer descriptor*/
-	dma_addr_t buffer_desc_dma; /*tx bufferd desc dma memory*/
-	u16 cur_tx_wp; /* current_tx_write_point */
-	u16 cur_tx_rp; /* current_tx_read_point */
+	 
+	struct rtl_tx_buffer_desc *buffer_desc;  
+	dma_addr_t buffer_desc_dma;  
+	u16 cur_tx_wp;  
+	u16 cur_tx_rp;  
 };
 
 struct rtl8192_rx_ring {
@@ -160,9 +155,9 @@ struct rtl8192_rx_ring {
 	dma_addr_t dma;
 	unsigned int idx;
 	struct sk_buff *rx_buf[RTL_PCI_MAX_RX_COUNT];
-	/*add for new trx flow*/
-	struct rtl_rx_buffer_desc *buffer_desc; /*rx buffer descriptor*/
-	u16 next_rx_rp; /* next_rx_read_point */
+	 
+	struct rtl_rx_buffer_desc *buffer_desc;  
+	u16 next_rx_rp;  
 };
 
 struct rtl_pci {
@@ -175,49 +170,47 @@ struct rtl_pci {
 	bool being_init_adapter;
 	bool init_ready;
 
-	/*Tx */
+	 
 	struct rtl8192_tx_ring tx_ring[RTL_PCI_MAX_TX_QUEUE_COUNT];
 	int txringcount[RTL_PCI_MAX_TX_QUEUE_COUNT];
 	u32 transmit_config;
 
-	/*Rx */
+	 
 	struct rtl8192_rx_ring rx_ring[RTL_PCI_MAX_RX_QUEUE];
 	int rxringcount;
 	u16 rxbuffersize;
 	u32 receive_config;
 
-	/*irq */
+	 
 	u8 irq_alloc;
-	u32 irq_mask[4];	/* 0-1: normal, 2: unused, 3: h2c */
+	u32 irq_mask[4];	 
 	u32 sys_irq_mask;
 
-	/*Bcn control register setting */
+	 
 	u32 reg_bcn_ctrl_val;
 
-	 /*ASPM*/ u8 const_pci_aspm;
+	   u8 const_pci_aspm;
 	u8 const_amdpci_aspm;
 	u8 const_hwsw_rfoff_d3;
 	u8 const_support_pciaspm;
-	/*pci-e bridge */
+	 
 	u8 const_hostpci_aspm_setting;
-	/*pci-e device */
+	 
 	u8 const_devicepci_aspm_setting;
-	/* If it supports ASPM, Offset[560h] = 0x40,
-	 * otherwise Offset[560h] = 0x00.
-	 */
+	 
 	bool support_aspm;
 	bool support_backdoor;
 
-	/*QOS & EDCA */
+	 
 	enum acm_method acm_method;
 
 	u16 shortretry_limit;
 	u16 longretry_limit;
 
-	/* MSI support */
+	 
 	bool msi_support;
 	bool using_msi;
-	/* interrupt clear before set */
+	 
 	bool int_clear;
 };
 
@@ -259,7 +252,7 @@ void rtl_pci_disconnect(struct pci_dev *pdev);
 #ifdef CONFIG_PM_SLEEP
 int rtl_pci_suspend(struct device *dev);
 int rtl_pci_resume(struct device *dev);
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 static inline u8 pci_read8_sync(struct rtl_priv *rtlpriv, u32 addr)
 {
 	return readb((u8 __iomem *)rtlpriv->io.pci_mem_start + addr);

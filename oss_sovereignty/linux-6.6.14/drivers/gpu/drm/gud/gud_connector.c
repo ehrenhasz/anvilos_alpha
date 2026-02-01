@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2020 Noralf Trønnes
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/workqueue.h>
@@ -27,17 +25,14 @@ struct gud_connector {
 	struct backlight_device *backlight;
 	struct work_struct backlight_work;
 
-	/* Supported properties */
+	 
 	u16 *properties;
 	unsigned int num_properties;
 
-	/* Initial gadget tv state if applicable, applied on state reset */
+	 
 	struct drm_tv_connector_state initial_tv_state;
 
-	/*
-	 * Initial gadget backlight brightness if applicable, applied on state reset.
-	 * The value -ENODEV is used to signal no backlight.
-	 */
+	 
 	int initial_brightness;
 };
 
@@ -51,11 +46,7 @@ static void gud_conn_err(struct drm_connector *connector, const char *msg, int r
 	dev_err(connector->dev->dev, "%s: %s (ret=%d)\n", connector->name, msg, ret);
 }
 
-/*
- * Use a worker to avoid taking kms locks inside the backlight lock.
- * Other display drivers use backlight within their kms locks.
- * This avoids inconsistent locking rules, which would upset lockdep.
- */
+ 
 static void gud_connector_backlight_update_status_work(struct work_struct *work)
 {
 	struct gud_connector *gconn = container_of(work, struct gud_connector, backlight_work);
@@ -84,7 +75,7 @@ retry:
 		goto out;
 	}
 
-	/* Reuse tv.brightness to avoid having to subclass */
+	 
 	connector_state->tv.brightness = gconn->backlight->props.brightness;
 
 	ret = drm_atomic_commit(state);
@@ -111,7 +102,7 @@ static int gud_connector_backlight_update_status(struct backlight_device *bd)
 	struct drm_connector *connector = bl_get_data(bd);
 	struct gud_connector *gconn = to_gud_connector(connector);
 
-	/* The USB timeout is 5 seconds so use system_long_wq for worst case scenario */
+	 
 	queue_work(system_long_wq, &gconn->backlight_work);
 
 	return 0;
@@ -354,7 +345,7 @@ static void gud_connector_reset(struct drm_connector *connector)
 
 	drm_atomic_helper_connector_reset(connector);
 	connector->state->tv = gconn->initial_tv_state;
-	/* Set margins from command line */
+	 
 	drm_atomic_helper_connector_tv_margins_reset(connector);
 	if (gconn->initial_brightness >= 0)
 		connector->state->tv.brightness = gconn->initial_brightness;
@@ -370,11 +361,7 @@ static const struct drm_connector_funcs gud_connector_funcs = {
 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
 };
 
-/*
- * The tv.mode property is shared among the connectors and its enum names are
- * driver specific. This means that if more than one connector uses tv.mode,
- * the enum names has to be the same.
- */
+ 
 static int gud_connector_add_tv_mode(struct gud_device *gdrm, struct drm_connector *connector)
 {
 	size_t buf_len = GUD_CONNECTOR_TV_MODE_MAX_NUM * GUD_CONNECTOR_TV_MODE_NAME_LEN;
@@ -538,7 +525,7 @@ static int gud_connector_add_properties(struct gud_device *gdrm, struct gud_conn
 		case GUD_PROPERTY_TV_SATURATION:
 			fallthrough;
 		case GUD_PROPERTY_TV_HUE:
-			/* This is a no-op if already added. */
+			 
 			ret = drm_mode_create_tv_properties_legacy(drm, 0, NULL);
 			if (ret)
 				goto out;
@@ -551,7 +538,7 @@ static int gud_connector_add_properties(struct gud_device *gdrm, struct gud_conn
 			gconn->initial_brightness = val;
 			break;
 		default:
-			/* New ones might show up in future devices, skip those we don't know. */
+			 
 			drm_dbg(drm, "Ignoring unknown property: %u\n", prop);
 			continue;
 		}
@@ -559,7 +546,7 @@ static int gud_connector_add_properties(struct gud_device *gdrm, struct gud_conn
 		gconn->properties[gconn->num_properties++] = prop;
 
 		if (prop == GUD_PROPERTY_BACKLIGHT_BRIGHTNESS)
-			continue; /* not a DRM property */
+			continue;  
 
 		property = gud_connector_property_lookup(connector, prop);
 		if (WARN_ON(IS_ERR(property)))
@@ -653,7 +640,7 @@ static int gud_connector_create(struct gud_device *gdrm, unsigned int index,
 	case GUD_CONNECTOR_TYPE_HDMI:
 		connector_type = DRM_MODE_CONNECTOR_HDMIA;
 		break;
-	default: /* future types */
+	default:  
 		connector_type = DRM_MODE_CONNECTOR_USB;
 		break;
 	}
@@ -681,7 +668,7 @@ static int gud_connector_create(struct gud_device *gdrm, unsigned int index,
 		return ret;
 	}
 
-	/* The first connector is attached to the existing simple pipe encoder */
+	 
 	if (!connector->index) {
 		encoder = &gdrm->pipe.encoder;
 	} else {

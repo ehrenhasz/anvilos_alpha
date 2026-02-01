@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Header file for Intel Merrifield Basin Cove PMIC
- *
- * Copyright (C) 2019 Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __INTEL_SOC_PMIC_MRFLD_H__
 #define __INTEL_SOC_PMIC_MRFLD_H__
@@ -47,28 +43,28 @@
 #define BCOVE_SCHGRIRQ0		0x4E
 #define BCOVE_SCHGRIRQ1		0x4F
 
-/* Level 1 IRQs */
-#define BCOVE_LVL1_PWRBTN	BIT(0)	/* power button */
-#define BCOVE_LVL1_TMU		BIT(1)	/* time management unit */
-#define BCOVE_LVL1_THRM		BIT(2)	/* thermal */
-#define BCOVE_LVL1_BCU		BIT(3)	/* burst control unit */
-#define BCOVE_LVL1_ADC		BIT(4)	/* ADC */
-#define BCOVE_LVL1_CHGR		BIT(5)	/* charger */
-#define BCOVE_LVL1_GPIO		BIT(6)	/* GPIO */
-#define BCOVE_LVL1_CRIT		BIT(7)	/* critical event */
+ 
+#define BCOVE_LVL1_PWRBTN	BIT(0)	 
+#define BCOVE_LVL1_TMU		BIT(1)	 
+#define BCOVE_LVL1_THRM		BIT(2)	 
+#define BCOVE_LVL1_BCU		BIT(3)	 
+#define BCOVE_LVL1_ADC		BIT(4)	 
+#define BCOVE_LVL1_CHGR		BIT(5)	 
+#define BCOVE_LVL1_GPIO		BIT(6)	 
+#define BCOVE_LVL1_CRIT		BIT(7)	 
 
-/* Level 2 IRQs: power button */
+ 
 #define BCOVE_PBIRQ_PBTN	BIT(0)
 #define BCOVE_PBIRQ_UBTN	BIT(1)
 
-/* Level 2 IRQs: ADC */
+ 
 #define BCOVE_ADCIRQ_BATTEMP	BIT(2)
 #define BCOVE_ADCIRQ_SYSTEMP	BIT(3)
 #define BCOVE_ADCIRQ_BATTID	BIT(4)
 #define BCOVE_ADCIRQ_VIBATT	BIT(5)
 #define BCOVE_ADCIRQ_CCTICK	BIT(7)
 
-/* Level 2 IRQs: charger */
+ 
 #define BCOVE_CHGRIRQ_BAT0ALRT	BIT(4)
 #define BCOVE_CHGRIRQ_BAT1ALRT	BIT(5)
 #define BCOVE_CHGRIRQ_BATCRIT	BIT(6)
@@ -78,4 +74,4 @@
 #define BCOVE_CHGRIRQ_BATTDET	BIT(2)
 #define BCOVE_CHGRIRQ_USBIDDET	BIT(3)
 
-#endif	/* __INTEL_SOC_PMIC_MRFLD_H__ */
+#endif	 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/dma-fence.h>
 
@@ -36,9 +36,7 @@ static enum hrtimer_restart vkms_vblank_simulate(struct hrtimer *timer)
 	if (state && output->composer_enabled) {
 		u64 frame = drm_crtc_accurate_vblank_count(crtc);
 
-		/* update frame_start only if a queued vkms_composer_worker()
-		 * has read the data
-		 */
+		 
 		spin_lock(&output->composer_lock);
 		if (!state->crc_pending)
 			state->frame_start = frame;
@@ -103,13 +101,7 @@ static bool vkms_get_vblank_timestamp(struct drm_crtc *crtc,
 	if (WARN_ON(*vblank_time == vblank->time))
 		return true;
 
-	/*
-	 * To prevent races we roll the hrtimer forward before we do any
-	 * interrupt processing - this is how real hw works (the interrupt is
-	 * only generated after all the vblank registers are updated) and what
-	 * the vblank core expects. Therefore we need to always correct the
-	 * timestampe by one frame.
-	 */
+	 
 	*vblank_time -= output->period_ns;
 
 	return true;
@@ -238,9 +230,7 @@ static void vkms_crtc_atomic_begin(struct drm_crtc *crtc,
 {
 	struct vkms_output *vkms_output = drm_crtc_to_vkms_output(crtc);
 
-	/* This lock is held across the atomic commit to block vblank timer
-	 * from scheduling vkms_composer_worker until the composer is updated
-	 */
+	 
 	spin_lock_irq(&vkms_output->lock);
 }
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for TI TPS6598x USB Power Delivery controller family
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+ 
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -14,7 +9,7 @@
 
 #define TPS_FIELD_GET(_mask, _reg) ((typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)))
 
-/* TPS_REG_STATUS bits */
+ 
 #define TPS_STATUS_PLUG_PRESENT		BIT(0)
 #define TPS_STATUS_PLUG_UPSIDE_DOWN	BIT(4)
 #define TPS_STATUS_TO_UPSIDE_DOWN(s)	(!!((s) & TPS_STATUS_PLUG_UPSIDE_DOWN))
@@ -82,7 +77,7 @@
 #define TPS_STATUS_LEGACY_SINK			1
 #define TPS_STATUS_LEGACY_SOURCE		2
 
-/* TPS_REG_INT_* bits */
+ 
 #define TPS_REG_INT_USER_VID_ALT_MODE_OTHER_VDM		BIT_ULL(27+32)
 #define TPS_REG_INT_USER_VID_ALT_MODE_ATTN_VDM		BIT_ULL(26+32)
 #define TPS_REG_INT_USER_VID_ALT_MODE_EXIT		BIT_ULL(25+32)
@@ -130,19 +125,19 @@
 #define TPS_REG_INT_HARD_RESET				BIT(1)
 #define TPS_REG_INT_PD_SOFT_RESET			BIT(0)
 
-/* Apple-specific TPS_REG_INT_* bits */
+ 
 #define APPLE_CD_REG_INT_DATA_STATUS_UPDATE		BIT(10)
 #define APPLE_CD_REG_INT_POWER_STATUS_UPDATE		BIT(9)
 #define APPLE_CD_REG_INT_STATUS_UPDATE			BIT(8)
 #define APPLE_CD_REG_INT_PLUG_EVENT			BIT(1)
 
-/* TPS_REG_SYSTEM_POWER_STATE states */
+ 
 #define TPS_SYSTEM_POWER_STATE_S0	0x00
 #define TPS_SYSTEM_POWER_STATE_S3	0x03
 #define TPS_SYSTEM_POWER_STATE_S4	0x04
 #define TPS_SYSTEM_POWER_STATE_S5	0x05
 
-/* TPS_REG_POWER_STATUS bits */
+ 
 #define TPS_POWER_STATUS_CONNECTION(x)  TPS_FIELD_GET(BIT(0), (x))
 #define TPS_POWER_STATUS_SOURCESINK(x)	TPS_FIELD_GET(BIT(1), (x))
 #define TPS_POWER_STATUS_BC12_DET(x)	TPS_FIELD_GET(BIT(2), (x))
@@ -161,7 +156,7 @@
 #define TPS_POWER_STATUS_BC12_STATUS_CDP 2
 #define TPS_POWER_STATUS_BC12_STATUS_DCP 3
 
-/* TPS_REG_DATA_STATUS bits */
+ 
 #define TPS_DATA_STATUS_DATA_CONNECTION	     BIT(0)
 #define TPS_DATA_STATUS_UPSIDE_DOWN	     BIT(1)
 #define TPS_DATA_STATUS_ACTIVE_CABLE	     BIT(2)
@@ -188,7 +183,7 @@
 #define TPS_DATA_STATUS_TBT_CABLE_GEN \
 	TPS_FIELD_GET(TPS_DATA_STATUS_TBT_CABLE_GEN_MASK, (x))
 
-/* Map data status to DP spec assignments */
+ 
 #define TPS_DATA_STATUS_DP_SPEC_PIN_ASSIGNMENT(x) \
 	((TPS_DATA_STATUS_DP_PIN_ASSIGNMENT(x) << 1) | \
 		TPS_FIELD_GET(TPS_DATA_STATUS_USB3_CONNECTION, (x)))
@@ -199,4 +194,4 @@
 #define TPS_DATA_STATUS_DP_SPEC_PIN_ASSIGNMENT_A    BIT(2)
 #define TPS_DATA_STATUS_DP_SPEC_PIN_ASSIGNMENT_B    (BIT(2) | BIT(1))
 
-#endif /* __TPS6598X_H__ */
+#endif  

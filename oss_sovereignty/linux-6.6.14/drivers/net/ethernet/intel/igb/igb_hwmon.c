@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2007 - 2018 Intel Corporation. */
+
+ 
 
 #include "igb.h"
 #include "e1000_82575.h"
@@ -19,7 +19,7 @@ static struct i2c_board_info i350_sensor_info = {
 	I2C_BOARD_INFO("i350bb", (0Xf8 >> 1)),
 };
 
-/* hwmon callback functions */
+ 
 static ssize_t igb_hwmon_show_location(struct device *dev,
 				       struct device_attribute *attr,
 				       char *buf)
@@ -38,12 +38,12 @@ static ssize_t igb_hwmon_show_temp(struct device *dev,
 						   dev_attr);
 	unsigned int value;
 
-	/* reset the temp field */
+	 
 	igb_attr->hw->mac.ops.get_thermal_sensor_data(igb_attr->hw);
 
 	value = igb_attr->sensor->temp;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
@@ -57,7 +57,7 @@ static ssize_t igb_hwmon_show_cautionthresh(struct device *dev,
 						   dev_attr);
 	unsigned int value = igb_attr->sensor->caution_thresh;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
@@ -71,21 +71,13 @@ static ssize_t igb_hwmon_show_maxopthresh(struct device *dev,
 						   dev_attr);
 	unsigned int value = igb_attr->sensor->max_op_thresh;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
 }
 
-/* igb_add_hwmon_attr - Create hwmon attr table for a hwmon sysfs file.
- * @ adapter: pointer to the adapter structure
- * @ offset: offset in the eeprom sensor data table
- * @ type: type of sensor data to display
- *
- * For each file we want in hwmon's sysfs interface we need a device_attribute
- * This is included in our hwmon_attr struct that contains the references to
- * the data structures we need to get the data to display.
- */
+ 
 static int igb_add_hwmon_attr(struct igb_adapter *adapter,
 			      unsigned int offset, int type)
 {
@@ -122,7 +114,7 @@ static int igb_add_hwmon_attr(struct igb_adapter *adapter,
 		return rc;
 	}
 
-	/* These always the same regardless of type */
+	 
 	igb_attr->sensor =
 		&adapter->hw.mac.thermal_sensor_data.sensor[offset];
 	igb_attr->hw = &adapter->hw;
@@ -142,13 +134,13 @@ static void igb_sysfs_del_adapter(struct igb_adapter *adapter)
 {
 }
 
-/* called from igb_main.c */
+ 
 void igb_sysfs_exit(struct igb_adapter *adapter)
 {
 	igb_sysfs_del_adapter(adapter);
 }
 
-/* called from igb_main.c */
+ 
 int igb_sysfs_init(struct igb_adapter *adapter)
 {
 	struct hwmon_buff *igb_hwmon;
@@ -157,11 +149,11 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 	unsigned int i;
 	int rc = 0;
 
-	/* If this method isn't defined we don't support thermals */
+	 
 	if (adapter->hw.mac.ops.init_thermal_sensor_thresh == NULL)
 		goto exit;
 
-	/* Don't create thermal hwmon interface if no sensors present */
+	 
 	rc = (adapter->hw.mac.ops.init_thermal_sensor_thresh(&adapter->hw));
 	if (rc)
 		goto exit;
@@ -176,13 +168,11 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 
 	for (i = 0; i < E1000_MAX_SENSORS; i++) {
 
-		/* Only create hwmon sysfs entries for sensors that have
-		 * meaningful data.
-		 */
+		 
 		if (adapter->hw.mac.thermal_sensor_data.sensor[i].location == 0)
 			continue;
 
-		/* Bail if any hwmon attr struct fails to initialize */
+		 
 		rc = igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_CAUTION);
 		if (rc)
 			goto exit;
@@ -197,7 +187,7 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 			goto exit;
 	}
 
-	/* init i2c_client */
+	 
 	client = i2c_new_client_device(&adapter->i2c_adap, &i350_sensor_info);
 	if (IS_ERR(client)) {
 		dev_info(&adapter->pdev->dev,

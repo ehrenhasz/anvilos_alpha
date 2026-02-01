@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for Cougar 500k Gaming Keyboard
- *
- *  Copyright (c) 2018 Daniel M. Lambea <dmlambea@gmail.com>
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -40,11 +36,7 @@ MODULE_PARM_DESC(g6_is_space,
 #define COUGAR_KEY_LOCK		0x6e
 
 
-/* Default key mappings. The special key COUGAR_KEY_G6 is defined first
- * because it is more frequent to use the spacebar rather than any other
- * special keys. Depending on the value of the parameter 'g6_is_space',
- * the mapping will be updated in the probe function.
- */
+ 
 static unsigned char cougar_mapping[][2] = {
 	{ COUGAR_KEY_G6,   KEY_SPACE },
 	{ COUGAR_KEY_G1,   KEY_F13 },
@@ -53,15 +45,7 @@ static unsigned char cougar_mapping[][2] = {
 	{ COUGAR_KEY_G4,   KEY_F16 },
 	{ COUGAR_KEY_G5,   KEY_F17 },
 	{ COUGAR_KEY_LOCK, KEY_SCREENLOCK },
-/* The following keys are handled by the hardware itself, so no special
- * treatment is required:
-	{ COUGAR_KEY_FN, KEY_RESERVED },
-	{ COUGAR_KEY_MR, KEY_RESERVED },
-	{ COUGAR_KEY_M1, KEY_RESERVED },
-	{ COUGAR_KEY_M2, KEY_RESERVED },
-	{ COUGAR_KEY_M3, KEY_RESERVED },
-	{ COUGAR_KEY_LEDS, KEY_RESERVED },
-*/
+ 
 	{ 0, 0 },
 };
 
@@ -81,9 +65,7 @@ struct cougar {
 static LIST_HEAD(cougar_udev_list);
 static DEFINE_MUTEX(cougar_udev_list_lock);
 
-/**
- * cougar_fix_g6_mapping - configure the mapping for key G6/Spacebar
- */
+ 
 static void cougar_fix_g6_mapping(void)
 {
 	int i;
@@ -100,9 +82,7 @@ static void cougar_fix_g6_mapping(void)
 	pr_warn("cougar: no mappings defined for G6/spacebar");
 }
 
-/*
- * Constant-friendly rdesc fixup for mouse interface
- */
+ 
 static __u8 *cougar_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 				 unsigned int *rsize)
 {
@@ -120,7 +100,7 @@ static struct cougar_shared *cougar_get_shared_data(struct hid_device *hdev)
 {
 	struct cougar_shared *shared;
 
-	/* Try to find an already-probed interface from the same device */
+	 
 	list_for_each_entry(shared, &cougar_udev_list, list) {
 		if (hid_compare_device_paths(hdev, shared->dev, '/')) {
 			kref_get(&shared->kref);
@@ -152,10 +132,7 @@ static void cougar_remove_shared_data(void *resource)
 	}
 }
 
-/*
- * Bind the device group's shared data to this cougar struct.
- * If no shared data exists for this group, create and initialize it.
- */
+ 
 static int cougar_bind_shared_data(struct hid_device *hdev,
 				   struct cougar *cougar)
 {
@@ -225,10 +202,7 @@ static int cougar_probe(struct hid_device *hdev,
 	if (error)
 		goto fail_stop_and_cleanup;
 
-	/* The custom vendor interface will use the hid_input registered
-	 * for the keyboard interface, in order to send translated key codes
-	 * to it.
-	 */
+	 
 	if (hdev->collection->usage == HID_GD_KEYBOARD) {
 		list_for_each_entry_safe(hidinput, next, &hdev->inputs, list) {
 			if (hidinput->registered && hidinput->input != NULL) {
@@ -238,7 +212,7 @@ static int cougar_probe(struct hid_device *hdev,
 			}
 		}
 	} else if (hdev->collection->usage == COUGAR_VENDOR_USAGE) {
-		/* Preinit the mapping table */
+		 
 		cougar_fix_g6_mapping();
 		error = hid_hw_open(hdev);
 		if (error)
@@ -251,9 +225,7 @@ fail_stop_and_cleanup:
 	return error;
 }
 
-/*
- * Convert events from vendor intf to input key events
- */
+ 
 static int cougar_raw_event(struct hid_device *hdev, struct hid_report *report,
 			    u8 *data, int size)
 {
@@ -280,7 +252,7 @@ static int cougar_raw_event(struct hid_device *hdev, struct hid_report *report,
 			return -EPERM;
 		}
 	}
-	/* Avoid warnings on the same unmapped key twice */
+	 
 	if (action != 0)
 		hid_warn(hdev, "unmapped special key code %0x: ignoring\n", code);
 	return -EPERM;
@@ -291,7 +263,7 @@ static void cougar_remove(struct hid_device *hdev)
 	struct cougar *cougar = hid_get_drvdata(hdev);
 
 	if (cougar) {
-		/* Stop the vendor intf to process more events */
+		 
 		if (cougar->shared)
 			cougar->shared->enabled = false;
 		if (cougar->special_intf)

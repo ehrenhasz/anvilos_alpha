@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kvm asynchronous fault support
- *
- * Copyright 2010 Red Hat, Inc.
- *
- * Author:
- *      Gleb Natapov <gleb@redhat.com>
- */
+
+ 
 
 #include <linux/kvm_host.h>
 #include <linux/slab.h>
@@ -55,11 +48,7 @@ static void async_pf_execute(struct work_struct *work)
 
 	might_sleep();
 
-	/*
-	 * This work is run asynchronously to the task which owns
-	 * mm and might be done in another context, so we must
-	 * access remotely.
-	 */
+	 
 	mmap_read_lock(mm);
 	get_user_pages_remote(mm, addr, 1, FOLL_WRITE, NULL, &locked);
 	if (locked)
@@ -77,10 +66,7 @@ static void async_pf_execute(struct work_struct *work)
 	if (!IS_ENABLED(CONFIG_KVM_ASYNC_PF_SYNC) && first)
 		kvm_arch_async_page_present_queued(vcpu);
 
-	/*
-	 * apf may be freed by kvm_check_async_pf_completion() after
-	 * this point
-	 */
+	 
 
 	trace_kvm_async_pf_completed(addr, cr2_or_gpa);
 
@@ -94,17 +80,14 @@ void kvm_clear_async_pf_completion_queue(struct kvm_vcpu *vcpu)
 {
 	spin_lock(&vcpu->async_pf.lock);
 
-	/* cancel outstanding work queue item */
+	 
 	while (!list_empty(&vcpu->async_pf.queue)) {
 		struct kvm_async_pf *work =
 			list_first_entry(&vcpu->async_pf.queue,
 					 typeof(*work), queue);
 		list_del(&work->queue);
 
-		/*
-		 * We know it's present in vcpu->async_pf.done, do
-		 * nothing here.
-		 */
+		 
 		if (!work->vcpu)
 			continue;
 
@@ -114,7 +97,7 @@ void kvm_clear_async_pf_completion_queue(struct kvm_vcpu *vcpu)
 #else
 		if (cancel_work_sync(&work->work)) {
 			mmput(work->mm);
-			kvm_put_kvm(vcpu->kvm); /* == work->vcpu->kvm */
+			kvm_put_kvm(vcpu->kvm);  
 			kmem_cache_free(async_pf_cache, work);
 		}
 #endif
@@ -155,10 +138,7 @@ void kvm_check_async_pf_completion(struct kvm_vcpu *vcpu)
 	}
 }
 
-/*
- * Try to schedule a job to handle page fault asynchronously. Returns 'true' on
- * success, 'false' on failure (page fault has to be handled synchronously).
- */
+ 
 bool kvm_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
 			unsigned long hva, struct kvm_arch_async_pf *arch)
 {
@@ -167,14 +147,11 @@ bool kvm_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
 	if (vcpu->async_pf.queued >= ASYNC_PF_PER_VCPU)
 		return false;
 
-	/* Arch specific code should not do async PF in this case */
+	 
 	if (unlikely(kvm_is_error_hva(hva)))
 		return false;
 
-	/*
-	 * do alloc nowait since if we are going to sleep anyway we
-	 * may as well sleep faulting in page
-	 */
+	 
 	work = kmem_cache_zalloc(async_pf_cache, GFP_NOWAIT | __GFP_NOWARN);
 	if (!work)
 		return false;
@@ -212,7 +189,7 @@ int kvm_async_pf_wakeup_all(struct kvm_vcpu *vcpu)
 		return -ENOMEM;
 
 	work->wakeup_all = true;
-	INIT_LIST_HEAD(&work->queue); /* for list_del to work */
+	INIT_LIST_HEAD(&work->queue);  
 
 	spin_lock(&vcpu->async_pf.lock);
 	first = list_empty(&vcpu->async_pf.done);

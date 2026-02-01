@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/stat.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/export.h>
@@ -26,23 +22,7 @@
 #include "internal.h"
 #include "mount.h"
 
-/**
- * generic_fillattr - Fill in the basic attributes from the inode struct
- * @idmap:		idmap of the mount the inode was found from
- * @request_mask:	statx request_mask
- * @inode:		Inode to use as the source
- * @stat:		Where to fill in the attributes
- *
- * Fill in the basic attributes in the kstat structure from data that's to be
- * found on the VFS inode structure.  This is the default if no getattr inode
- * operation is supplied.
- *
- * If the inode has been found through an idmapped mount the idmap of
- * the vfsmount must be passed through @idmap. This function will then
- * take care to map the inode according to @idmap before filling in the
- * uid and gid filds. On non-idmapped mounts or if permission checking is to be
- * performed on the raw inode simply passs @nop_mnt_idmap.
- */
+ 
 void generic_fillattr(struct mnt_idmap *idmap, u32 request_mask,
 		      struct inode *inode, struct kstat *stat)
 {
@@ -71,14 +51,7 @@ void generic_fillattr(struct mnt_idmap *idmap, u32 request_mask,
 }
 EXPORT_SYMBOL(generic_fillattr);
 
-/**
- * generic_fill_statx_attr - Fill in the statx attributes from the inode flags
- * @inode:	Inode to use as the source
- * @stat:	Where to fill in the attribute flags
- *
- * Fill in the STATX_ATTR_* flags in the kstat structure for properties of the
- * inode that are published on i_flags and enforced by the VFS.
- */
+ 
 void generic_fill_statx_attr(struct inode *inode, struct kstat *stat)
 {
 	if (inode->i_flags & S_IMMUTABLE)
@@ -89,19 +62,7 @@ void generic_fill_statx_attr(struct inode *inode, struct kstat *stat)
 }
 EXPORT_SYMBOL(generic_fill_statx_attr);
 
-/**
- * vfs_getattr_nosec - getattr without security checks
- * @path: file to get attributes from
- * @stat: structure to return attributes in
- * @request_mask: STATX_xxx flags indicating what the caller wants
- * @query_flags: Query mode (AT_STATX_SYNC_TYPE)
- *
- * Get attributes without calling security_inode_getattr.
- *
- * Currently the only caller other than vfs_getattr is internal to the
- * filehandle lookup code, which uses only the inode number and returns no
- * attributes to any user.  Any other code probably wants vfs_getattr.
- */
+ 
 int vfs_getattr_nosec(const struct path *path, struct kstat *stat,
 		      u32 request_mask, unsigned int query_flags)
 {
@@ -112,15 +73,12 @@ int vfs_getattr_nosec(const struct path *path, struct kstat *stat,
 	stat->result_mask |= STATX_BASIC_STATS;
 	query_flags &= AT_STATX_SYNC_TYPE;
 
-	/* allow the fs to override these if it really wants to */
-	/* SB_NOATIME means filesystem supplies dummy atime value */
+	 
+	 
 	if (inode->i_sb->s_flags & SB_NOATIME)
 		stat->result_mask &= ~STATX_ATIME;
 
-	/*
-	 * Note: If you add another clause to set an attribute flag, please
-	 * update attributes_mask below.
-	 */
+	 
 	if (IS_AUTOMOUNT(inode))
 		stat->attributes |= STATX_ATTR_AUTOMOUNT;
 
@@ -141,27 +99,7 @@ int vfs_getattr_nosec(const struct path *path, struct kstat *stat,
 }
 EXPORT_SYMBOL(vfs_getattr_nosec);
 
-/*
- * vfs_getattr - Get the enhanced basic attributes of a file
- * @path: The file of interest
- * @stat: Where to return the statistics
- * @request_mask: STATX_xxx flags indicating what the caller wants
- * @query_flags: Query mode (AT_STATX_SYNC_TYPE)
- *
- * Ask the filesystem for a file's attributes.  The caller must indicate in
- * request_mask and query_flags to indicate what they want.
- *
- * If the file is remote, the filesystem can be forced to update the attributes
- * from the backing store by passing AT_STATX_FORCE_SYNC in query_flags or can
- * suppress the update by passing AT_STATX_DONT_SYNC.
- *
- * Bits must have been set in request_mask to indicate which attributes the
- * caller wants retrieving.  Any such attribute not requested may be returned
- * anyway, but the value may be approximate, and, if remote, may not have been
- * synchronised with the server.
- *
- * 0 will be returned on success, and a -ve error code if unsuccessful.
- */
+ 
 int vfs_getattr(const struct path *path, struct kstat *stat,
 		u32 request_mask, unsigned int query_flags)
 {
@@ -177,16 +115,7 @@ int vfs_getattr(const struct path *path, struct kstat *stat,
 }
 EXPORT_SYMBOL(vfs_getattr);
 
-/**
- * vfs_fstat - Get the basic attributes by file descriptor
- * @fd: The file descriptor referring to the file of interest
- * @stat: The result structure to fill in.
- *
- * This function is a wrapper around vfs_getattr().  The main difference is
- * that it uses a file descriptor to determine the file location.
- *
- * 0 will be returned on success, and a -ve error code if unsuccessful.
- */
+ 
 int vfs_fstat(int fd, struct kstat *stat)
 {
 	struct fd f;
@@ -214,21 +143,7 @@ int getname_statx_lookup_flags(int flags)
 	return lookup_flags;
 }
 
-/**
- * vfs_statx - Get basic and extra attributes by filename
- * @dfd: A file descriptor representing the base dir for a relative filename
- * @filename: The name of the file of interest
- * @flags: Flags to control the query
- * @stat: The result structure to fill in.
- * @request_mask: STATX_xxx flags indicating what the caller wants
- *
- * This function is a wrapper around vfs_getattr().  The main difference is
- * that it uses a filename and base directory to determine the file location.
- * Additionally, the use of AT_SYMLINK_NOFOLLOW in flags will prevent a symlink
- * at the given name from being referenced.
- *
- * 0 will be returned on success, and a -ve error code if unsuccessful.
- */
+ 
 static int vfs_statx(int dfd, struct filename *filename, int flags,
 	      struct kstat *stat, u32 request_mask)
 {
@@ -254,7 +169,7 @@ retry:
 		stat->attributes |= STATX_ATTR_MOUNT_ROOT;
 	stat->attributes_mask |= STATX_ATTR_MOUNT_ROOT;
 
-	/* Handle STATX_DIOALIGN for block devices. */
+	 
 	if (request_mask & STATX_DIOALIGN) {
 		struct inode *inode = d_backing_inode(path.dentry);
 
@@ -278,12 +193,7 @@ int vfs_fstatat(int dfd, const char __user *filename,
 	int statx_flags = flags | AT_NO_AUTOMOUNT;
 	struct filename *name;
 
-	/*
-	 * Work around glibc turning fstat() into fstatat(AT_EMPTY_PATH)
-	 *
-	 * If AT_EMPTY_PATH is set, we expect the common case to be that
-	 * empty path, and avoid doing all the extra pathname work.
-	 */
+	 
 	if (dfd >= 0 && flags == AT_EMPTY_PATH) {
 		char c;
 
@@ -304,10 +214,7 @@ int vfs_fstatat(int dfd, const char __user *filename,
 
 #ifdef __ARCH_WANT_OLD_STAT
 
-/*
- * For backward compatibility?  Maybe this should be moved
- * into arch/i386 instead?
- */
+ 
 static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * statbuf)
 {
 	static int warncount = 5;
@@ -318,7 +225,7 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
 		printk(KERN_WARNING "VFS: Warning: %s using old stat() call. Recompile your binary.\n",
 			current->comm);
 	} else if (warncount < 0) {
-		/* it's laughable, but... */
+		 
 		warncount = 0;
 	}
 
@@ -382,7 +289,7 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
 	return error;
 }
 
-#endif /* __ARCH_WANT_OLD_STAT */
+#endif  
 
 #ifdef __ARCH_WANT_NEW_STAT
 
@@ -496,9 +403,7 @@ retry:
 		struct inode *inode = d_backing_inode(path.dentry);
 
 		error = empty ? -ENOENT : -EINVAL;
-		/*
-		 * AFS mountpoints allow readlink(2) but are not symlinks
-		 */
+		 
 		if (d_is_symlink(path.dentry) || inode->i_op->readlink) {
 			error = security_inode_readlink(path.dentry);
 			if (!error) {
@@ -528,7 +433,7 @@ SYSCALL_DEFINE3(readlink, const char __user *, path, char __user *, buf,
 }
 
 
-/* ---------- LFS-64 ----------- */
+ 
 #if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
 
 #ifndef INIT_STRUCT_STAT64_PADDING
@@ -541,7 +446,7 @@ static long cp_new_stat64(struct kstat *stat, struct stat64 __user *statbuf)
 
 	INIT_STRUCT_STAT64_PADDING(tmp);
 #ifdef CONFIG_MIPS
-	/* mips has weird padding, so we don't get 64 bits there */
+	 
 	tmp.st_dev = new_encode_dev(stat->dev);
 	tmp.st_rdev = new_encode_dev(stat->rdev);
 #else
@@ -616,7 +521,7 @@ SYSCALL_DEFINE4(fstatat64, int, dfd, const char __user *, filename,
 		return error;
 	return cp_new_stat64(&stat, statbuf);
 }
-#endif /* __ARCH_WANT_STAT64 || __ARCH_WANT_COMPAT_STAT64 */
+#endif  
 
 static noinline_for_stack int
 cp_statx(const struct kstat *stat, struct statx __user *buffer)
@@ -625,10 +530,10 @@ cp_statx(const struct kstat *stat, struct statx __user *buffer)
 
 	memset(&tmp, 0, sizeof(tmp));
 
-	/* STATX_CHANGE_COOKIE is kernel-only for now */
+	 
 	tmp.stx_mask = stat->result_mask & ~STATX_CHANGE_COOKIE;
 	tmp.stx_blksize = stat->blksize;
-	/* STATX_ATTR_CHANGE_MONOTONIC is kernel-only for now */
+	 
 	tmp.stx_attributes = stat->attributes & ~STATX_ATTR_CHANGE_MONOTONIC;
 	tmp.stx_nlink = stat->nlink;
 	tmp.stx_uid = from_kuid_munged(current_user_ns(), stat->uid);
@@ -668,9 +573,7 @@ int do_statx(int dfd, struct filename *filename, unsigned int flags,
 	if ((flags & AT_STATX_SYNC_TYPE) == AT_STATX_SYNC_TYPE)
 		return -EINVAL;
 
-	/* STATX_CHANGE_COOKIE is kernel-only for now. Ignore requests
-	 * from userland.
-	 */
+	 
 	mask &= ~STATX_CHANGE_COOKIE;
 
 	error = vfs_statx(dfd, filename, flags, &stat, mask);
@@ -680,17 +583,7 @@ int do_statx(int dfd, struct filename *filename, unsigned int flags,
 	return cp_statx(&stat, buffer);
 }
 
-/**
- * sys_statx - System call to get enhanced stats
- * @dfd: Base directory to pathwalk from *or* fd to stat.
- * @filename: File to stat or "" with AT_EMPTY_PATH
- * @flags: AT_* flags to control pathwalk.
- * @mask: Parts of statx struct actually required.
- * @buffer: Result buffer.
- *
- * Note that fstat() can be emulated by setting dfd to the fd of interest,
- * supplying "" as the filename and setting AT_EMPTY_PATH in the flags.
- */
+ 
 SYSCALL_DEFINE5(statx,
 		int, dfd, const char __user *, filename, unsigned, flags,
 		unsigned int, mask,
@@ -793,7 +686,7 @@ COMPAT_SYSCALL_DEFINE2(newfstat, unsigned int, fd,
 }
 #endif
 
-/* Caller is here responsible for sufficient locking (ie. inode->i_lock) */
+ 
 void __inode_add_bytes(struct inode *inode, loff_t bytes)
 {
 	inode->i_blocks += bytes >> 9;
@@ -851,8 +744,7 @@ EXPORT_SYMBOL(inode_get_bytes);
 
 void inode_set_bytes(struct inode *inode, loff_t bytes)
 {
-	/* Caller is here responsible for sufficient locking
-	 * (ie. inode->i_lock) */
+	 
 	inode->i_blocks = bytes >> 9;
 	inode->i_bytes = bytes & 511;
 }

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for SMSC USB4604 USB HSIC 4-port 2.0 hub controller driver
- * Based on usb3503 driver
- *
- * Copyright (c) 2012-2013 Dongjin Kim (tobetter@gmail.com)
- * Copyright (c) 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/delay.h>
@@ -29,7 +23,7 @@ static void usb4604_reset(struct usb4604 *hub, int state)
 {
 	gpiod_set_value_cansleep(hub->gpio_reset, state);
 
-	/* Wait for i2c logic to come up */
+	 
 	if (state)
 		msleep(250);
 }

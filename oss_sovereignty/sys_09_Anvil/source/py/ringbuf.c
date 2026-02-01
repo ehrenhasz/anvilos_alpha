@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Jim Mussared
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 
@@ -75,10 +51,10 @@ int ringbuf_put16(ringbuf_t *r, uint16_t v) {
     return 0;
 }
 
-// Returns:
-//    0: Success
-//   -1: Not enough data available to complete read (try again later)
-//   -2: Requested read is larger than buffer - will never succeed
+
+
+
+
 int ringbuf_get_bytes(ringbuf_t *r, uint8_t *data, size_t data_len) {
     if (ringbuf_avail(r) < data_len) {
         return (r->size <= data_len) ? -2 : -1;
@@ -87,7 +63,7 @@ int ringbuf_get_bytes(ringbuf_t *r, uint8_t *data, size_t data_len) {
     uint32_t iget_a = (iget + data_len) % r->size;
     uint8_t *datap = data;
     if (iget_a < iget) {
-        // Copy part of the data from the space left at the end of the buffer
+        
         memcpy(datap, r->buf + iget, r->size - iget);
         datap += (r->size - iget);
         iget = 0;
@@ -97,10 +73,10 @@ int ringbuf_get_bytes(ringbuf_t *r, uint8_t *data, size_t data_len) {
     return 0;
 }
 
-// Returns:
-//    0: Success
-//   -1: Not enough free space available to complete write (try again later)
-//   -2: Requested write is larger than buffer - will never succeed
+
+
+
+
 int ringbuf_put_bytes(ringbuf_t *r, const uint8_t *data, size_t data_len) {
     if (ringbuf_free(r) < data_len) {
         return (r->size <= data_len) ? -2 : -1;
@@ -109,7 +85,7 @@ int ringbuf_put_bytes(ringbuf_t *r, const uint8_t *data, size_t data_len) {
     uint32_t iput_a = (iput + data_len) % r->size;
     const uint8_t *datap = data;
     if (iput_a < iput) {
-        // Copy part of the data to the end of the buffer
+        
         memcpy(r->buf + iput, datap, r->size - iput);
         datap += (r->size - iput);
         iput = 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -39,11 +37,11 @@
 #include "spum.h"
 #include "spu2.h"
 
-/* ================= Device Structure ================== */
+ 
 
 struct bcm_device_private iproc_priv;
 
-/* ==================== Parameters ===================== */
+ 
 
 int flow_debug_logging;
 module_param(flow_debug_logging, int, 0644);
@@ -57,15 +55,7 @@ int debug_logging_sleep;
 module_param(debug_logging_sleep, int, 0644);
 MODULE_PARM_DESC(debug_logging_sleep, "Packet Debug Logging Sleep");
 
-/*
- * The value of these module parameters is used to set the priority for each
- * algo type when this driver registers algos with the kernel crypto API.
- * To use a priority other than the default, set the priority in the insmod or
- * modprobe. Changing the module priority after init time has no effect.
- *
- * The default priorities are chosen to be lower (less preferred) than ARMv8 CE
- * algos, but more preferred than generic software algos.
- */
+ 
 static int cipher_pri = 150;
 module_param(cipher_pri, int, 0644);
 MODULE_PARM_DESC(cipher_pri, "Priority for cipher algos");
@@ -78,30 +68,16 @@ static int aead_pri = 150;
 module_param(aead_pri, int, 0644);
 MODULE_PARM_DESC(aead_pri, "Priority for AEAD algos");
 
-/* A type 3 BCM header, expected to precede the SPU header for SPU-M.
- * Bits 3 and 4 in the first byte encode the channel number (the dma ringset).
- * 0x60 - ring 0
- * 0x68 - ring 1
- * 0x70 - ring 2
- * 0x78 - ring 3
- */
+ 
 static char BCMHEADER[] = { 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x28 };
-/*
- * Some SPU hw does not use BCM header on SPU messages. So BCM_HDR_LEN
- * is set dynamically after reading SPU type from device tree.
- */
+ 
 #define BCM_HDR_LEN  iproc_priv.bcm_hdr_len
 
-/* min and max time to sleep before retrying when mbox queue is full. usec */
+ 
 #define MBOX_SLEEP_MIN  800
 #define MBOX_SLEEP_MAX 1000
 
-/**
- * select_channel() - Select a SPU channel to handle a crypto request. Selects
- * channel in round robin order.
- *
- * Return:  channel index
- */
+ 
 static u8 select_channel(void)
 {
 	u8 chan_idx = atomic_inc_return(&iproc_priv.next_chan);
@@ -109,26 +85,7 @@ static u8 select_channel(void)
 	return chan_idx % iproc_priv.spu.num_chan;
 }
 
-/**
- * spu_skcipher_rx_sg_create() - Build up the scatterlist of buffers used to
- * receive a SPU response message for an skcipher request. Includes buffers to
- * catch SPU message headers and the response data.
- * @mssg:	mailbox message containing the receive sg
- * @rctx:	crypto request context
- * @rx_frag_num: number of scatterlist elements required to hold the
- *		SPU response message
- * @chunksize:	Number of bytes of response data expected
- * @stat_pad_len: Number of bytes required to pad the STAT field to
- *		a 4-byte boundary
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Returns:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int
 spu_skcipher_rx_sg_create(struct brcm_message *mssg,
 			    struct iproc_reqctx_s *rctx,
@@ -136,9 +93,9 @@ spu_skcipher_rx_sg_create(struct brcm_message *mssg,
 			    unsigned int chunksize, u32 stat_pad_len)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
+	struct scatterlist *sg;	 
 	struct iproc_ctx_s *ctx = rctx->ctx;
-	u32 datalen;		/* Number of bytes of response data expected */
+	u32 datalen;		 
 
 	mssg->spu.dst = kcalloc(rx_frag_num, sizeof(struct scatterlist),
 				rctx->gfp);
@@ -147,16 +104,16 @@ spu_skcipher_rx_sg_create(struct brcm_message *mssg,
 
 	sg = mssg->spu.dst;
 	sg_init_table(sg, rx_frag_num);
-	/* Space for SPU message header */
+	 
 	sg_set_buf(sg++, rctx->msg_buf.spu_resp_hdr, ctx->spu_resp_hdr_len);
 
-	/* If XTS tweak in payload, add buffer to receive encrypted tweak */
+	 
 	if ((ctx->cipher.mode == CIPHER_MODE_XTS) &&
 	    spu->spu_xts_tweak_in_payload())
 		sg_set_buf(sg++, rctx->msg_buf.c.supdt_tweak,
 			   SPU_XTS_TWEAK_SIZE);
 
-	/* Copy in each dst sg entry from request, up to chunksize */
+	 
 	datalen = spu_msg_sg_add(&sg, &rctx->dst_sg, &rctx->dst_skip,
 				 rctx->dst_nents, chunksize);
 	if (datalen < chunksize) {
@@ -174,34 +131,16 @@ spu_skcipher_rx_sg_create(struct brcm_message *mssg,
 	return 0;
 }
 
-/**
- * spu_skcipher_tx_sg_create() - Build up the scatterlist of buffers used to
- * send a SPU request message for an skcipher request. Includes SPU message
- * headers and the request data.
- * @mssg:	mailbox message containing the transmit sg
- * @rctx:	crypto request context
- * @tx_frag_num: number of scatterlist elements required to construct the
- *		SPU request message
- * @chunksize:	Number of bytes of request data
- * @pad_len:	Number of pad bytes
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Returns:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int
 spu_skcipher_tx_sg_create(struct brcm_message *mssg,
 			    struct iproc_reqctx_s *rctx,
 			    u8 tx_frag_num, unsigned int chunksize, u32 pad_len)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
+	struct scatterlist *sg;	 
 	struct iproc_ctx_s *ctx = rctx->ctx;
-	u32 datalen;		/* Number of bytes of response data expected */
+	u32 datalen;		 
 	u32 stat_len;
 
 	mssg->spu.src = kcalloc(tx_frag_num, sizeof(struct scatterlist),
@@ -215,12 +154,12 @@ spu_skcipher_tx_sg_create(struct brcm_message *mssg,
 	sg_set_buf(sg++, rctx->msg_buf.bcm_spu_req_hdr,
 		   BCM_HDR_LEN + ctx->spu_req_hdr_len);
 
-	/* if XTS tweak in payload, copy from IV (where crypto API puts it) */
+	 
 	if ((ctx->cipher.mode == CIPHER_MODE_XTS) &&
 	    spu->spu_xts_tweak_in_payload())
 		sg_set_buf(sg++, rctx->msg_buf.iv_ctr, SPU_XTS_TWEAK_SIZE);
 
-	/* Copy in each src sg entry from request, up to chunksize */
+	 
 	datalen = spu_msg_sg_add(&sg, &rctx->src_sg, &rctx->src_skip,
 				 rctx->src_nents, chunksize);
 	if (unlikely(datalen < chunksize)) {
@@ -250,10 +189,7 @@ static int mailbox_send_message(struct brcm_message *mssg, u32 flags,
 	err = mbox_send_message(iproc_priv.mbox[chan_idx], mssg);
 	if (flags & CRYPTO_TFM_REQ_MAY_SLEEP) {
 		while ((err == -ENOBUFS) && (retry_cnt < SPU_MB_RETRY_MAX)) {
-			/*
-			 * Mailbox queue is full. Since MAY_SLEEP is set, assume
-			 * not in atomic context and we can wait and try again.
-			 */
+			 
 			retry_cnt++;
 			usleep_range(MBOX_SLEEP_MIN, MBOX_SLEEP_MAX);
 			err = mbox_send_message(iproc_priv.mbox[chan_idx],
@@ -266,36 +202,19 @@ static int mailbox_send_message(struct brcm_message *mssg, u32 flags,
 		return err;
 	}
 
-	/* Check error returned by mailbox controller */
+	 
 	err = mssg->error;
 	if (unlikely(err < 0)) {
 		dev_err(dev, "message error %d", err);
-		/* Signal txdone for mailbox channel */
+		 
 	}
 
-	/* Signal txdone for mailbox channel */
+	 
 	mbox_client_txdone(iproc_priv.mbox[chan_idx], err);
 	return err;
 }
 
-/**
- * handle_skcipher_req() - Submit as much of a block cipher request as fits in
- * a single SPU request message, starting at the current position in the request
- * data.
- * @rctx:	Crypto request context
- *
- * This may be called on the crypto API thread, or, when a request is so large
- * it must be broken into multiple SPU messages, on the thread used to invoke
- * the response callback. When requests are broken into multiple SPU
- * messages, we assume subsequent messages depend on previous results, and
- * thus always wait for previous results before submitting the next message.
- * Because requests are submitted in lock step like this, there is no need
- * to synchronize access to request data structures.
- *
- * Return: -EINPROGRESS: request has been accepted and result will be returned
- *			 asynchronously
- *         Any other value indicates an error
- */
+ 
 static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -305,19 +224,19 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	struct iproc_ctx_s *ctx = rctx->ctx;
 	struct spu_cipher_parms cipher_parms;
 	int err;
-	unsigned int chunksize;	/* Num bytes of request to submit */
-	int remaining;	/* Bytes of request still to process */
-	int chunk_start;	/* Beginning of data for current SPU msg */
+	unsigned int chunksize;	 
+	int remaining;	 
+	int chunk_start;	 
 
-	/* IV or ctr value to use in this SPU msg */
+	 
 	u8 local_iv_ctr[MAX_IV_SIZE];
-	u32 stat_pad_len;	/* num bytes to align status field */
-	u32 pad_len;		/* total length of all padding */
-	struct brcm_message *mssg;	/* mailbox message */
+	u32 stat_pad_len;	 
+	u32 pad_len;		 
+	struct brcm_message *mssg;	 
 
-	/* number of entries in src and dst sg in mailbox message. */
-	u8 rx_frag_num = 2;	/* response header and STATUS */
-	u8 tx_frag_num = 1;	/* request header */
+	 
+	u8 rx_frag_num = 2;	 
+	u8 tx_frag_num = 1;	 
 
 	flow_log("%s\n", __func__);
 
@@ -333,7 +252,7 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	chunk_start = rctx->src_sent;
 	remaining = rctx->total_todo - chunk_start;
 
-	/* determine the chunk we are breaking off and update the indexes */
+	 
 	if ((ctx->max_payload != SPU_MAX_PAYLOAD_INF) &&
 	    (remaining > ctx->max_payload))
 		chunksize = ctx->max_payload;
@@ -343,45 +262,31 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	rctx->src_sent += chunksize;
 	rctx->total_sent = rctx->src_sent;
 
-	/* Count number of sg entries to be included in this request */
+	 
 	rctx->src_nents = spu_sg_count(rctx->src_sg, rctx->src_skip, chunksize);
 	rctx->dst_nents = spu_sg_count(rctx->dst_sg, rctx->dst_skip, chunksize);
 
 	if ((ctx->cipher.mode == CIPHER_MODE_CBC) &&
 	    rctx->is_encrypt && chunk_start)
-		/*
-		 * Encrypting non-first first chunk. Copy last block of
-		 * previous result to IV for this chunk.
-		 */
+		 
 		sg_copy_part_to_buf(req->dst, rctx->msg_buf.iv_ctr,
 				    rctx->iv_ctr_len,
 				    chunk_start - rctx->iv_ctr_len);
 
 	if (rctx->iv_ctr_len) {
-		/* get our local copy of the iv */
+		 
 		__builtin_memcpy(local_iv_ctr, rctx->msg_buf.iv_ctr,
 				 rctx->iv_ctr_len);
 
-		/* generate the next IV if possible */
+		 
 		if ((ctx->cipher.mode == CIPHER_MODE_CBC) &&
 		    !rctx->is_encrypt) {
-			/*
-			 * CBC Decrypt: next IV is the last ciphertext block in
-			 * this chunk
-			 */
+			 
 			sg_copy_part_to_buf(req->src, rctx->msg_buf.iv_ctr,
 					    rctx->iv_ctr_len,
 					    rctx->src_sent - rctx->iv_ctr_len);
 		} else if (ctx->cipher.mode == CIPHER_MODE_CTR) {
-			/*
-			 * The SPU hardware increments the counter once for
-			 * each AES block of 16 bytes. So update the counter
-			 * for the next chunk, if there is one. Note that for
-			 * this chunk, the counter has already been copied to
-			 * local_iv_ctr. We can assume a block size of 16,
-			 * because we only support CTR mode for AES, not for
-			 * any other cipher alg.
-			 */
+			 
 			add_to_ctr(rctx->msg_buf.iv_ctr, chunksize >> 4);
 		}
 	}
@@ -394,7 +299,7 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	flow_log("sent:%u start:%u remains:%u size:%u\n",
 		 rctx->src_sent, chunk_start, remaining, chunksize);
 
-	/* Copy SPU header template created at setkey time */
+	 
 	memcpy(rctx->msg_buf.bcm_spu_req_hdr, ctx->bcm_spu_req_hdr,
 	       sizeof(rctx->msg_buf.bcm_spu_req_hdr));
 
@@ -421,34 +326,31 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	dump_sg(rctx->src_sg, rctx->src_skip, chunksize);
 	packet_dump("   pad: ", rctx->msg_buf.spu_req_pad, pad_len);
 
-	/*
-	 * Build mailbox message containing SPU request msg and rx buffers
-	 * to catch response message
-	 */
+	 
 	memset(mssg, 0, sizeof(*mssg));
 	mssg->type = BRCM_MESSAGE_SPU;
-	mssg->ctx = rctx;	/* Will be returned in response */
+	mssg->ctx = rctx;	 
 
-	/* Create rx scatterlist to catch result */
+	 
 	rx_frag_num += rctx->dst_nents;
 
 	if ((ctx->cipher.mode == CIPHER_MODE_XTS) &&
 	    spu->spu_xts_tweak_in_payload())
-		rx_frag_num++;	/* extra sg to insert tweak */
+		rx_frag_num++;	 
 
 	err = spu_skcipher_rx_sg_create(mssg, rctx, rx_frag_num, chunksize,
 					  stat_pad_len);
 	if (err)
 		return err;
 
-	/* Create tx scatterlist containing SPU request message */
+	 
 	tx_frag_num += rctx->src_nents;
 	if (spu->spu_tx_status_len())
 		tx_frag_num++;
 
 	if ((ctx->cipher.mode == CIPHER_MODE_XTS) &&
 	    spu->spu_xts_tweak_in_payload())
-		tx_frag_num++;	/* extra sg to insert tweak */
+		tx_frag_num++;	 
 
 	err = spu_skcipher_tx_sg_create(mssg, rctx, tx_frag_num, chunksize,
 					  pad_len);
@@ -462,11 +364,7 @@ static int handle_skcipher_req(struct iproc_reqctx_s *rctx)
 	return -EINPROGRESS;
 }
 
-/**
- * handle_skcipher_resp() - Process a block cipher SPU response. Updates the
- * total received count for the request and updates global stats.
- * @rctx:	Crypto request context
- */
+ 
 static void handle_skcipher_resp(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -475,13 +373,10 @@ static void handle_skcipher_resp(struct iproc_reqctx_s *rctx)
 	struct iproc_ctx_s *ctx = rctx->ctx;
 	u32 payload_len;
 
-	/* See how much data was returned */
+	 
 	payload_len = spu->spu_payload_length(rctx->msg_buf.spu_resp_hdr);
 
-	/*
-	 * In XTS mode, the first SPU_XTS_TWEAK_SIZE bytes may be the
-	 * encrypted tweak ("i") value; we don't count those.
-	 */
+	 
 	if ((ctx->cipher.mode == CIPHER_MODE_XTS) &&
 	    spu->spu_xts_tweak_in_payload() &&
 	    (payload_len >= SPU_XTS_TWEAK_SIZE))
@@ -502,25 +397,7 @@ static void handle_skcipher_resp(struct iproc_reqctx_s *rctx)
 	}
 }
 
-/**
- * spu_ahash_rx_sg_create() - Build up the scatterlist of buffers used to
- * receive a SPU response message for an ahash request.
- * @mssg:	mailbox message containing the receive sg
- * @rctx:	crypto request context
- * @rx_frag_num: number of scatterlist elements required to hold the
- *		SPU response message
- * @digestsize: length of hash digest, in bytes
- * @stat_pad_len: Number of bytes required to pad the STAT field to
- *		a 4-byte boundary
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Return:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int
 spu_ahash_rx_sg_create(struct brcm_message *mssg,
 		       struct iproc_reqctx_s *rctx,
@@ -528,7 +405,7 @@ spu_ahash_rx_sg_create(struct brcm_message *mssg,
 		       u32 stat_pad_len)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
+	struct scatterlist *sg;	 
 	struct iproc_ctx_s *ctx = rctx->ctx;
 
 	mssg->spu.dst = kcalloc(rx_frag_num, sizeof(struct scatterlist),
@@ -538,10 +415,10 @@ spu_ahash_rx_sg_create(struct brcm_message *mssg,
 
 	sg = mssg->spu.dst;
 	sg_init_table(sg, rx_frag_num);
-	/* Space for SPU message header */
+	 
 	sg_set_buf(sg++, rctx->msg_buf.spu_resp_hdr, ctx->spu_resp_hdr_len);
 
-	/* Space for digest */
+	 
 	sg_set_buf(sg++, rctx->msg_buf.digest, digestsize);
 
 	if (stat_pad_len)
@@ -552,27 +429,7 @@ spu_ahash_rx_sg_create(struct brcm_message *mssg,
 	return 0;
 }
 
-/**
- * spu_ahash_tx_sg_create() -  Build up the scatterlist of buffers used to send
- * a SPU request message for an ahash request. Includes SPU message headers and
- * the request data.
- * @mssg:	mailbox message containing the transmit sg
- * @rctx:	crypto request context
- * @tx_frag_num: number of scatterlist elements required to construct the
- *		SPU request message
- * @spu_hdr_len: length in bytes of SPU message header
- * @hash_carry_len: Number of bytes of data carried over from previous req
- * @new_data_len: Number of bytes of new request data
- * @pad_len:	Number of pad bytes
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Return:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int
 spu_ahash_tx_sg_create(struct brcm_message *mssg,
 		       struct iproc_reqctx_s *rctx,
@@ -582,8 +439,8 @@ spu_ahash_tx_sg_create(struct brcm_message *mssg,
 		       unsigned int new_data_len, u32 pad_len)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
-	u32 datalen;		/* Number of bytes of response data expected */
+	struct scatterlist *sg;	 
+	u32 datalen;		 
 	u32 stat_len;
 
 	mssg->spu.src = kcalloc(tx_frag_num, sizeof(struct scatterlist),
@@ -601,7 +458,7 @@ spu_ahash_tx_sg_create(struct brcm_message *mssg,
 		sg_set_buf(sg++, rctx->hash_carry, hash_carry_len);
 
 	if (new_data_len) {
-		/* Copy in each src sg entry from request, up to chunksize */
+		 
 		datalen = spu_msg_sg_add(&sg, &rctx->src_sg, &rctx->src_skip,
 					 rctx->src_nents, new_data_len);
 		if (datalen < new_data_len) {
@@ -623,32 +480,7 @@ spu_ahash_tx_sg_create(struct brcm_message *mssg,
 	return 0;
 }
 
-/**
- * handle_ahash_req() - Process an asynchronous hash request from the crypto
- * API.
- * @rctx:  Crypto request context
- *
- * Builds a SPU request message embedded in a mailbox message and submits the
- * mailbox message on a selected mailbox channel. The SPU request message is
- * constructed as a scatterlist, including entries from the crypto API's
- * src scatterlist to avoid copying the data to be hashed. This function is
- * called either on the thread from the crypto API, or, in the case that the
- * crypto API request is too large to fit in a single SPU request message,
- * on the thread that invokes the receive callback with a response message.
- * Because some operations require the response from one chunk before the next
- * chunk can be submitted, we always wait for the response for the previous
- * chunk before submitting the next chunk. Because requests are submitted in
- * lock step like this, there is no need to synchronize access to request data
- * structures.
- *
- * Return:
- *   -EINPROGRESS: request has been submitted to SPU and response will be
- *		   returned asynchronously
- *   -EAGAIN:      non-final request included a small amount of data, which for
- *		   efficiency we did not submit to the SPU, but instead stored
- *		   to be submitted to the SPU with the next part of the request
- *   other:        an error code
- */
+ 
 static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -659,22 +491,19 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 	unsigned int blocksize = crypto_tfm_alg_blocksize(tfm);
 	struct iproc_ctx_s *ctx = rctx->ctx;
 
-	/* number of bytes still to be hashed in this req */
+	 
 	unsigned int nbytes_to_hash = 0;
 	int err;
-	unsigned int chunksize = 0;	/* length of hash carry + new data */
-	/*
-	 * length of new data, not from hash carry, to be submitted in
-	 * this hw request
-	 */
+	unsigned int chunksize = 0;	 
+	 
 	unsigned int new_data_len;
 
 	unsigned int __maybe_unused chunk_start = 0;
-	u32 db_size;	 /* Length of data field, incl gcm and hash padding */
-	int pad_len = 0; /* total pad len, including gcm, hash, stat padding */
-	u32 data_pad_len = 0;	/* length of GCM/CCM padding */
-	u32 stat_pad_len = 0;	/* length of padding to align STATUS word */
-	struct brcm_message *mssg;	/* mailbox message */
+	u32 db_size;	  
+	int pad_len = 0;  
+	u32 data_pad_len = 0;	 
+	u32 stat_pad_len = 0;	 
+	struct brcm_message *mssg;	 
 	struct spu_request_opts req_opts;
 	struct spu_cipher_parms cipher_parms;
 	struct spu_hash_parms hash_parms;
@@ -684,10 +513,7 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 	unsigned int digestsize;
 	u16 rem = 0;
 
-	/*
-	 * number of entries in src and dst sg. Always includes SPU msg header.
-	 * rx always includes a buffer to catch digest and STATUS.
-	 */
+	 
 	u8 rx_frag_num = 3;
 	u8 tx_frag_num = 1;
 
@@ -706,43 +532,30 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 	hash_parms.key_buf = (u8 *)ctx->authkey;
 	hash_parms.key_len = ctx->authkeylen;
 
-	/*
-	 * For hash algorithms below assignment looks bit odd but
-	 * it's needed for AES-XCBC and AES-CMAC hash algorithms
-	 * to differentiate between 128, 192, 256 bit key values.
-	 * Based on the key values, hash algorithm is selected.
-	 * For example for 128 bit key, hash algorithm is AES-128.
-	 */
+	 
 	cipher_parms.type = ctx->cipher_type;
 
 	mssg = &rctx->mb_mssg;
 	chunk_start = rctx->src_sent;
 
-	/*
-	 * Compute the amount remaining to hash. This may include data
-	 * carried over from previous requests.
-	 */
+	 
 	nbytes_to_hash = rctx->total_todo - rctx->total_sent;
 	chunksize = nbytes_to_hash;
 	if ((ctx->max_payload != SPU_MAX_PAYLOAD_INF) &&
 	    (chunksize > ctx->max_payload))
 		chunksize = ctx->max_payload;
 
-	/*
-	 * If this is not a final request and the request data is not a multiple
-	 * of a full block, then simply park the extra data and prefix it to the
-	 * data for the next request.
-	 */
+	 
 	if (!rctx->is_final) {
 		u8 *dest = rctx->hash_carry + rctx->hash_carry_len;
-		u16 new_len;  /* len of data to add to hash carry */
+		u16 new_len;   
 
-		rem = chunksize % blocksize;   /* remainder */
+		rem = chunksize % blocksize;    
 		if (rem) {
-			/* chunksize not a multiple of blocksize */
+			 
 			chunksize -= rem;
 			if (chunksize == 0) {
-				/* Don't have a full block to submit to hw */
+				 
 				new_len = rem - rctx->hash_carry_len;
 				sg_copy_part_to_buf(req->src, dest, new_len,
 						    rctx->src_sent);
@@ -757,18 +570,18 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 		}
 	}
 
-	/* if we have hash carry, then prefix it to the data in this request */
+	 
 	local_nbuf = rctx->hash_carry_len;
 	rctx->hash_carry_len = 0;
 	if (local_nbuf)
 		tx_frag_num++;
 	new_data_len = chunksize - local_nbuf;
 
-	/* Count number of sg entries to be used in this request */
+	 
 	rctx->src_nents = spu_sg_count(rctx->src_sg, rctx->src_skip,
 				       new_data_len);
 
-	/* AES hashing keeps key size in type field, so need to copy it here */
+	 
 	if (hash_parms.alg == HASH_ALG_AES)
 		hash_parms.type = (enum hash_type)cipher_parms.type;
 	else
@@ -778,9 +591,9 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 					  hash_parms.type);
 	hash_parms.digestsize =	digestsize;
 
-	/* update the indexes */
+	 
 	rctx->total_sent += chunksize;
-	/* if you sent a prebuf then that wasn't from this req->src */
+	 
 	rctx->src_sent += new_data_len;
 
 	if ((rctx->total_sent == rctx->total_todo) && rctx->is_final)
@@ -789,10 +602,7 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 							   chunksize,
 							   blocksize);
 
-	/*
-	 * If a non-first chunk, then include the digest returned from the
-	 * previous chunk so that hw can add to it (except for AES types).
-	 */
+	 
 	if ((hash_parms.type == HASH_TYPE_UPDT) &&
 	    (hash_parms.alg != HASH_ALG_AES)) {
 		hash_parms.key_buf = rctx->incr_hash;
@@ -811,7 +621,7 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 
 	flow_log("chunk_start: %u chunk_size: %u\n", chunk_start, chunksize);
 
-	/* Prepend SPU header with type 3 BCM header */
+	 
 	memcpy(rctx->msg_buf.bcm_spu_req_hdr, BCMHEADER, BCM_HDR_LEN);
 
 	hash_parms.prebuf_len = local_nbuf;
@@ -826,10 +636,7 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 		return -EFAULT;
 	}
 
-	/*
-	 * Determine total length of padding required. Put all padding in one
-	 * buffer.
-	 */
+	 
 	data_pad_len = spu->spu_gcm_ccm_pad_len(ctx->cipher.mode, chunksize);
 	db_size = spu_real_db_size(0, 0, local_nbuf, new_data_len,
 				   0, 0, hash_parms.pad_len);
@@ -853,21 +660,18 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 	dump_sg(rctx->src_sg, rctx->src_skip, new_data_len);
 	packet_dump("   pad: ", rctx->msg_buf.spu_req_pad, pad_len);
 
-	/*
-	 * Build mailbox message containing SPU request msg and rx buffers
-	 * to catch response message
-	 */
+	 
 	memset(mssg, 0, sizeof(*mssg));
 	mssg->type = BRCM_MESSAGE_SPU;
-	mssg->ctx = rctx;	/* Will be returned in response */
+	mssg->ctx = rctx;	 
 
-	/* Create rx scatterlist to catch result */
+	 
 	err = spu_ahash_rx_sg_create(mssg, rctx, rx_frag_num, digestsize,
 				     stat_pad_len);
 	if (err)
 		return err;
 
-	/* Create tx scatterlist containing SPU request message */
+	 
 	tx_frag_num += rctx->src_nents;
 	if (spu->spu_tx_status_len())
 		tx_frag_num++;
@@ -883,16 +687,7 @@ static int handle_ahash_req(struct iproc_reqctx_s *rctx)
 	return -EINPROGRESS;
 }
 
-/**
- * spu_hmac_outer_hash() - Request synchonous software compute of the outer hash
- * for an HMAC request.
- * @req:  The HMAC request from the crypto API
- * @ctx:  The session context
- *
- * Return: 0 if synchronous hash operation successful
- *         -EINVAL if the hash algo is unrecognized
- *         any other value indicates an error
- */
+ 
 static int spu_hmac_outer_hash(struct ahash_request *req,
 			       struct iproc_ctx_s *ctx)
 {
@@ -933,13 +728,7 @@ static int spu_hmac_outer_hash(struct ahash_request *req,
 	return rc;
 }
 
-/**
- * ahash_req_done() - Process a hash result from the SPU hardware.
- * @rctx: Crypto request context
- *
- * Return: 0 if successful
- *         < 0 if an error
- */
+ 
 static int ahash_req_done(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -951,9 +740,7 @@ static int ahash_req_done(struct iproc_reqctx_s *rctx)
 	memcpy(req->result, rctx->msg_buf.digest, ctx->digestsize);
 
 	if (spu->spu_type == SPU_TYPE_SPUM) {
-		/* byte swap the output from the UPDT function to network byte
-		 * order
-		 */
+		 
 		if (ctx->auth.alg == HASH_ALG_MD5) {
 			__swab32s((u32 *)req->result);
 			__swab32s(((u32 *)req->result) + 1);
@@ -965,7 +752,7 @@ static int ahash_req_done(struct iproc_reqctx_s *rctx)
 
 	flow_dump("  digest ", req->result, ctx->digestsize);
 
-	/* if this an HMAC then do the outer hash */
+	 
 	if (rctx->is_sw_hmac) {
 		err = spu_hmac_outer_hash(req, ctx);
 		if (err < 0)
@@ -984,12 +771,7 @@ static int ahash_req_done(struct iproc_reqctx_s *rctx)
 	return 0;
 }
 
-/**
- * handle_ahash_resp() - Process a SPU response message for a hash request.
- * Checks if the entire crypto API request has been processed, and if so,
- * invokes post processing on the result.
- * @rctx: Crypto request context
- */
+ 
 static void handle_ahash_resp(struct iproc_reqctx_s *rctx)
 {
 	struct iproc_ctx_s *ctx = rctx->ctx;
@@ -998,10 +780,7 @@ static void handle_ahash_resp(struct iproc_reqctx_s *rctx)
 	struct crypto_ahash *ahash = crypto_ahash_reqtfm(req);
 	unsigned int blocksize =
 		crypto_tfm_alg_blocksize(crypto_ahash_tfm(ahash));
-	/*
-	 * Save hash to use as input to next op if incremental. Might be copying
-	 * too much, but that's easier than figuring out actual digest size here
-	 */
+	 
 	memcpy(rctx->incr_hash, rctx->msg_buf.digest, MAX_DIGEST_SIZE);
 
 	flow_log("%s() blocksize:%u digestsize:%u\n",
@@ -1013,31 +792,7 @@ static void handle_ahash_resp(struct iproc_reqctx_s *rctx)
 		ahash_req_done(rctx);
 }
 
-/**
- * spu_aead_rx_sg_create() - Build up the scatterlist of buffers used to receive
- * a SPU response message for an AEAD request. Includes buffers to catch SPU
- * message headers and the response data.
- * @mssg:	mailbox message containing the receive sg
- * @req:	Crypto API request
- * @rctx:	crypto request context
- * @rx_frag_num: number of scatterlist elements required to hold the
- *		SPU response message
- * @assoc_len:	Length of associated data included in the crypto request
- * @ret_iv_len: Length of IV returned in response
- * @resp_len:	Number of bytes of response data expected to be written to
- *              dst buffer from crypto API
- * @digestsize: Length of hash digest, in bytes
- * @stat_pad_len: Number of bytes required to pad the STAT field to
- *		a 4-byte boundary
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Returns:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 				 struct aead_request *req,
 				 struct iproc_reqctx_s *rctx,
@@ -1047,14 +802,14 @@ static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 				 unsigned int digestsize, u32 stat_pad_len)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
+	struct scatterlist *sg;	 
 	struct iproc_ctx_s *ctx = rctx->ctx;
-	u32 datalen;		/* Number of bytes of response data expected */
+	u32 datalen;		 
 	u32 assoc_buf_len;
 	u8 data_padlen = 0;
 
 	if (ctx->is_rfc4543) {
-		/* RFC4543: only pad after data, not after AAD */
+		 
 		data_padlen = spu->spu_gcm_ccm_pad_len(ctx->cipher.mode,
 							  assoc_len + resp_len);
 		assoc_buf_len = assoc_len;
@@ -1067,13 +822,13 @@ static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 	}
 
 	if (ctx->cipher.mode == CIPHER_MODE_CCM)
-		/* ICV (after data) must be in the next 32-bit word for CCM */
+		 
 		data_padlen += spu->spu_wordalign_padlen(assoc_buf_len +
 							 resp_len +
 							 data_padlen);
 
 	if (data_padlen)
-		/* have to catch gcm pad in separate buffer */
+		 
 		rx_frag_num++;
 
 	mssg->spu.dst = kcalloc(rx_frag_num, sizeof(struct scatterlist),
@@ -1084,23 +839,17 @@ static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 	sg = mssg->spu.dst;
 	sg_init_table(sg, rx_frag_num);
 
-	/* Space for SPU message header */
+	 
 	sg_set_buf(sg++, rctx->msg_buf.spu_resp_hdr, ctx->spu_resp_hdr_len);
 
 	if (assoc_buf_len) {
-		/*
-		 * Don't write directly to req->dst, because SPU may pad the
-		 * assoc data in the response
-		 */
+		 
 		memset(rctx->msg_buf.a.resp_aad, 0, assoc_buf_len);
 		sg_set_buf(sg++, rctx->msg_buf.a.resp_aad, assoc_buf_len);
 	}
 
 	if (resp_len) {
-		/*
-		 * Copy in each dst sg entry from request, up to chunksize.
-		 * dst sg catches just the data. digest caught in separate buf.
-		 */
+		 
 		datalen = spu_msg_sg_add(&sg, &rctx->dst_sg, &rctx->dst_skip,
 					 rctx->dst_nents, resp_len);
 		if (datalen < (resp_len)) {
@@ -1110,13 +859,13 @@ static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 		}
 	}
 
-	/* If GCM/CCM data is padded, catch padding in separate buffer */
+	 
 	if (data_padlen) {
 		memset(rctx->msg_buf.a.gcmpad, 0, data_padlen);
 		sg_set_buf(sg++, rctx->msg_buf.a.gcmpad, data_padlen);
 	}
 
-	/* Always catch ICV in separate buffer */
+	 
 	sg_set_buf(sg++, rctx->msg_buf.digest, digestsize);
 
 	flow_log("stat_pad_len %u\n", stat_pad_len);
@@ -1131,33 +880,7 @@ static int spu_aead_rx_sg_create(struct brcm_message *mssg,
 	return 0;
 }
 
-/**
- * spu_aead_tx_sg_create() - Build up the scatterlist of buffers used to send a
- * SPU request message for an AEAD request. Includes SPU message headers and the
- * request data.
- * @mssg:	mailbox message containing the transmit sg
- * @rctx:	crypto request context
- * @tx_frag_num: number of scatterlist elements required to construct the
- *		SPU request message
- * @spu_hdr_len: length of SPU message header in bytes
- * @assoc:	crypto API associated data scatterlist
- * @assoc_len:	length of associated data
- * @assoc_nents: number of scatterlist entries containing assoc data
- * @aead_iv_len: length of AEAD IV, if included
- * @chunksize:	Number of bytes of request data
- * @aad_pad_len: Number of bytes of padding at end of AAD. For GCM/CCM.
- * @pad_len:	Number of pad bytes
- * @incl_icv:	If true, write separate ICV buffer after data and
- *              any padding
- *
- * The scatterlist that gets allocated here is freed in spu_chunk_cleanup()
- * when the request completes, whether the request is handled successfully or
- * there is an error.
- *
- * Return:
- *   0 if successful
- *   < 0 if an error
- */
+ 
 static int spu_aead_tx_sg_create(struct brcm_message *mssg,
 				 struct iproc_reqctx_s *rctx,
 				 u8 tx_frag_num,
@@ -1170,11 +893,11 @@ static int spu_aead_tx_sg_create(struct brcm_message *mssg,
 				 u32 aad_pad_len, u32 pad_len, bool incl_icv)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
-	struct scatterlist *sg;	/* used to build sgs in mbox message */
+	struct scatterlist *sg;	 
 	struct scatterlist *assoc_sg = assoc;
 	struct iproc_ctx_s *ctx = rctx->ctx;
-	u32 datalen;		/* Number of bytes of data to write */
-	u32 written;		/* Number of bytes of data written */
+	u32 datalen;		 
+	u32 written;		 
 	u32 assoc_offset = 0;
 	u32 stat_len;
 
@@ -1190,7 +913,7 @@ static int spu_aead_tx_sg_create(struct brcm_message *mssg,
 		   BCM_HDR_LEN + spu_hdr_len);
 
 	if (assoc_len) {
-		/* Copy in each associated data sg entry from request */
+		 
 		written = spu_msg_sg_add(&sg, &assoc_sg, &assoc_offset,
 					 assoc_nents, assoc_len);
 		if (written < assoc_len) {
@@ -1212,7 +935,7 @@ static int spu_aead_tx_sg_create(struct brcm_message *mssg,
 	if ((chunksize > ctx->digestsize) && incl_icv)
 		datalen -= ctx->digestsize;
 	if (datalen) {
-		/* For aead, a single msg should consume the entire src sg */
+		 
 		written = spu_msg_sg_add(&sg, &rctx->src_sg, &rctx->src_skip,
 					 rctx->src_nents, datalen);
 		if (written < datalen) {
@@ -1238,23 +961,7 @@ static int spu_aead_tx_sg_create(struct brcm_message *mssg,
 	return 0;
 }
 
-/**
- * handle_aead_req() - Submit a SPU request message for the next chunk of the
- * current AEAD request.
- * @rctx:  Crypto request context
- *
- * Unlike other operation types, we assume the length of the request fits in
- * a single SPU request message. aead_enqueue() makes sure this is true.
- * Comments for other op types regarding threads applies here as well.
- *
- * Unlike incremental hash ops, where the spu returns the entire hash for
- * truncated algs like sha-224, the SPU returns just the truncated hash in
- * response to aead requests. So digestsize is always ctx->digestsize here.
- *
- * Return: -EINPROGRESS: crypto request has been accepted and result will be
- *			 returned asynchronously
- *         Any other value indicates an error
- */
+ 
 static int handle_aead_req(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -1269,7 +976,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	u32 db_size;
 	u32 stat_pad_len;
 	u32 pad_len;
-	struct brcm_message *mssg;	/* mailbox message */
+	struct brcm_message *mssg;	 
 	struct spu_request_opts req_opts;
 	struct spu_cipher_parms cipher_parms;
 	struct spu_hash_parms hash_parms;
@@ -1278,12 +985,11 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	bool incl_icv = false;
 	unsigned int digestsize = ctx->digestsize;
 
-	/* number of entries in src and dst sg. Always includes SPU msg header.
-	 */
-	u8 rx_frag_num = 2;	/* and STATUS */
+	 
+	u8 rx_frag_num = 2;	 
 	u8 tx_frag_num = 1;
 
-	/* doing the whole thing at once */
+	 
 	chunksize = rctx->total_todo;
 
 	flow_log("%s: chunksize %u\n", __func__, chunksize);
@@ -1318,11 +1024,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 
 	aead_parms.assoc_size = req->assoclen;
 	if (ctx->is_esp && !ctx->is_rfc4543) {
-		/*
-		 * 8-byte IV is included assoc data in request. SPU2
-		 * expects AAD to include just SPI and seqno. So
-		 * subtract off the IV len.
-		 */
+		 
 		aead_parms.assoc_size -= GCM_RFC4106_IV_SIZE;
 
 		if (rctx->is_encrypt) {
@@ -1334,12 +1036,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 		aead_parms.ret_iv_len = 0;
 	}
 
-	/*
-	 * Count number of sg entries from the crypto API request that are to
-	 * be included in this mailbox message. For dst sg, don't count space
-	 * for digest. Digest gets caught in a separate buffer and copied back
-	 * to dst sg when processing response.
-	 */
+	 
 	rctx->src_nents = spu_sg_count(rctx->src_sg, rctx->src_skip, chunksize);
 	rctx->dst_nents = spu_sg_count(rctx->dst_sg, rctx->dst_skip, chunksize);
 	if (aead_parms.assoc_size)
@@ -1362,43 +1059,34 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	if (ctx->auth.alg == HASH_ALG_AES)
 		hash_parms.type = (enum hash_type)ctx->cipher_type;
 
-	/* General case AAD padding (CCM and RFC4543 special cases below) */
+	 
 	aead_parms.aad_pad_len = spu->spu_gcm_ccm_pad_len(ctx->cipher.mode,
 						 aead_parms.assoc_size);
 
-	/* General case data padding (CCM decrypt special case below) */
+	 
 	aead_parms.data_pad_len = spu->spu_gcm_ccm_pad_len(ctx->cipher.mode,
 							   chunksize);
 
 	if (ctx->cipher.mode == CIPHER_MODE_CCM) {
-		/*
-		 * for CCM, AAD len + 2 (rather than AAD len) needs to be
-		 * 128-bit aligned
-		 */
+		 
 		aead_parms.aad_pad_len = spu->spu_gcm_ccm_pad_len(
 					 ctx->cipher.mode,
 					 aead_parms.assoc_size + 2);
 
-		/*
-		 * And when decrypting CCM, need to pad without including
-		 * size of ICV which is tacked on to end of chunk
-		 */
+		 
 		if (!rctx->is_encrypt)
 			aead_parms.data_pad_len =
 				spu->spu_gcm_ccm_pad_len(ctx->cipher.mode,
 							chunksize - digestsize);
 
-		/* CCM also requires software to rewrite portions of IV: */
+		 
 		spu->spu_ccm_update_iv(digestsize, &cipher_parms, req->assoclen,
 				       chunksize, rctx->is_encrypt,
 				       ctx->is_esp);
 	}
 
 	if (ctx->is_rfc4543) {
-		/*
-		 * RFC4543: data is included in AAD, so don't pad after AAD
-		 * and pad data based on both AAD + data size
-		 */
+		 
 		aead_parms.aad_pad_len = 0;
 		if (!rctx->is_encrypt)
 			aead_parms.data_pad_len = spu->spu_gcm_ccm_pad_len(
@@ -1416,7 +1104,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	if (spu_req_incl_icv(ctx->cipher.mode, rctx->is_encrypt)) {
 		incl_icv = true;
 		tx_frag_num++;
-		/* Copy ICV from end of src scatterlist to digest buf */
+		 
 		sg_copy_part_to_buf(req->src, rctx->msg_buf.digest, digestsize,
 				    req->assoclen + rctx->total_sent -
 				    digestsize);
@@ -1426,7 +1114,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 
 	flow_log("%s()-sent chunksize:%u\n", __func__, chunksize);
 
-	/* Prepend SPU header with type 3 BCM header */
+	 
 	memcpy(rctx->msg_buf.bcm_spu_req_hdr, BCMHEADER, BCM_HDR_LEN);
 
 	spu_hdr_len = spu->spu_create_request(rctx->msg_buf.bcm_spu_req_hdr +
@@ -1434,7 +1122,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 					      &cipher_parms, &hash_parms,
 					      &aead_parms, chunksize);
 
-	/* Determine total length of padding. Put all padding in one buffer. */
+	 
 	db_size = spu_real_db_size(aead_parms.assoc_size, aead_parms.iv_len, 0,
 				   chunksize, aead_parms.aad_pad_len,
 				   aead_parms.data_pad_len, 0);
@@ -1460,34 +1148,24 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	dump_sg(rctx->src_sg, rctx->src_skip, chunksize);
 	packet_dump("   pad: ", rctx->msg_buf.spu_req_pad, pad_len);
 
-	/*
-	 * Build mailbox message containing SPU request msg and rx buffers
-	 * to catch response message
-	 */
+	 
 	memset(mssg, 0, sizeof(*mssg));
 	mssg->type = BRCM_MESSAGE_SPU;
-	mssg->ctx = rctx;	/* Will be returned in response */
+	mssg->ctx = rctx;	 
 
-	/* Create rx scatterlist to catch result */
+	 
 	rx_frag_num += rctx->dst_nents;
 	resp_len = chunksize;
 
-	/*
-	 * Always catch ICV in separate buffer. Have to for GCM/CCM because of
-	 * padding. Have to for SHA-224 and other truncated SHAs because SPU
-	 * sends entire digest back.
-	 */
+	 
 	rx_frag_num++;
 
 	if (((ctx->cipher.mode == CIPHER_MODE_GCM) ||
 	     (ctx->cipher.mode == CIPHER_MODE_CCM)) && !rctx->is_encrypt) {
-		/*
-		 * Input is ciphertxt plus ICV, but ICV not incl
-		 * in output.
-		 */
+		 
 		resp_len -= ctx->digestsize;
 		if (resp_len == 0)
-			/* no rx frags to catch output data */
+			 
 			rx_frag_num -= rctx->dst_nents;
 	}
 
@@ -1498,7 +1176,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	if (err)
 		return err;
 
-	/* Create tx scatterlist containing SPU request message */
+	 
 	tx_frag_num += rctx->src_nents;
 	tx_frag_num += assoc_nents;
 	if (aead_parms.aad_pad_len)
@@ -1521,10 +1199,7 @@ static int handle_aead_req(struct iproc_reqctx_s *rctx)
 	return -EINPROGRESS;
 }
 
-/**
- * handle_aead_resp() - Process a SPU response message for an AEAD request.
- * @rctx:  Crypto request context
- */
+ 
 static void handle_aead_resp(struct iproc_reqctx_s *rctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -1536,22 +1211,18 @@ static void handle_aead_resp(struct iproc_reqctx_s *rctx)
 	unsigned int icv_offset;
 	u32 result_len;
 
-	/* See how much data was returned */
+	 
 	payload_len = spu->spu_payload_length(rctx->msg_buf.spu_resp_hdr);
 	flow_log("payload_len %u\n", payload_len);
 
-	/* only count payload */
+	 
 	atomic64_add(payload_len, &iproc_priv.bytes_in);
 
 	if (req->assoclen)
 		packet_dump("  assoc_data ", rctx->msg_buf.a.resp_aad,
 			    req->assoclen);
 
-	/*
-	 * Copy the ICV back to the destination
-	 * buffer. In decrypt case, SPU gives us back the digest, but crypto
-	 * API doesn't expect ICV in dst buffer.
-	 */
+	 
 	result_len = req->cryptlen;
 	if (rctx->is_encrypt) {
 		icv_offset = req->assoclen + rctx->total_sent;
@@ -1578,16 +1249,10 @@ static void handle_aead_resp(struct iproc_reqctx_s *rctx)
 	}
 }
 
-/**
- * spu_chunk_cleanup() - Do cleanup after processing one chunk of a request
- * @rctx:  request context
- *
- * Mailbox scatterlists are allocated for each chunk. So free them after
- * processing each chunk.
- */
+ 
 static void spu_chunk_cleanup(struct iproc_reqctx_s *rctx)
 {
-	/* mailbox message used to tx request */
+	 
 	struct brcm_message *mssg = &rctx->mb_mssg;
 
 	kfree(mssg->spu.src);
@@ -1595,32 +1260,21 @@ static void spu_chunk_cleanup(struct iproc_reqctx_s *rctx)
 	memset(mssg, 0, sizeof(struct brcm_message));
 }
 
-/**
- * finish_req() - Used to invoke the complete callback from the requester when
- * a request has been handled asynchronously.
- * @rctx:  Request context
- * @err:   Indicates whether the request was successful or not
- *
- * Ensures that cleanup has been done for request
- */
+ 
 static void finish_req(struct iproc_reqctx_s *rctx, int err)
 {
 	struct crypto_async_request *areq = rctx->parent;
 
 	flow_log("%s() err:%d\n\n", __func__, err);
 
-	/* No harm done if already called */
+	 
 	spu_chunk_cleanup(rctx);
 
 	if (areq)
 		crypto_request_complete(areq, err);
 }
 
-/**
- * spu_rx_callback() - Callback from mailbox framework with a SPU response.
- * @cl:		mailbox client structure for SPU driver
- * @msg:	mailbox message containing SPU response
- */
+ 
 static void spu_rx_callback(struct mbox_client *cl, void *msg)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -1630,13 +1284,13 @@ static void spu_rx_callback(struct mbox_client *cl, void *msg)
 
 	rctx = mssg->ctx;
 	if (unlikely(!rctx)) {
-		/* This is fatal */
+		 
 		pr_err("%s(): no request context", __func__);
 		err = -EFAULT;
 		goto cb_finish;
 	}
 
-	/* process the SPU status */
+	 
 	err = spu->spu_status_process(rctx->msg_buf.rx_stat);
 	if (err != 0) {
 		if (err == SPU_INVALID_ICV)
@@ -1645,7 +1299,7 @@ static void spu_rx_callback(struct mbox_client *cl, void *msg)
 		goto cb_finish;
 	}
 
-	/* Process the SPU response message */
+	 
 	switch (rctx->ctx->alg->type) {
 	case CRYPTO_ALG_TYPE_SKCIPHER:
 		handle_skcipher_resp(rctx);
@@ -1661,12 +1315,9 @@ static void spu_rx_callback(struct mbox_client *cl, void *msg)
 		goto cb_finish;
 	}
 
-	/*
-	 * If this response does not complete the request, then send the next
-	 * request chunk.
-	 */
+	 
 	if (rctx->total_sent < rctx->total_todo) {
-		/* Deallocate anything specific to previous chunk */
+		 
 		spu_chunk_cleanup(rctx);
 
 		switch (rctx->ctx->alg->type) {
@@ -1676,10 +1327,7 @@ static void spu_rx_callback(struct mbox_client *cl, void *msg)
 		case CRYPTO_ALG_TYPE_AHASH:
 			err = handle_ahash_req(rctx);
 			if (err == -EAGAIN)
-				/*
-				 * we saved data in hash carry, but tell crypto
-				 * API we successfully completed request.
-				 */
+				 
 				err = 0;
 			break;
 		case CRYPTO_ALG_TYPE_AEAD:
@@ -1690,7 +1338,7 @@ static void spu_rx_callback(struct mbox_client *cl, void *msg)
 		}
 
 		if (err == -EINPROGRESS)
-			/* Successfully submitted request for next chunk */
+			 
 			return;
 	}
 
@@ -1698,17 +1346,9 @@ cb_finish:
 	finish_req(rctx, err);
 }
 
-/* ==================== Kernel Cryptographic API ==================== */
+ 
 
-/**
- * skcipher_enqueue() - Handle skcipher encrypt or decrypt request.
- * @req:	Crypto API request
- * @encrypt:	true if encrypting; false if decrypting
- *
- * Return: -EINPROGRESS if request accepted and result will be returned
- *			asynchronously
- *	   < 0 if an error
- */
+ 
 static int skcipher_enqueue(struct skcipher_request *req, bool encrypt)
 {
 	struct iproc_reqctx_s *rctx = skcipher_request_ctx(req);
@@ -1729,7 +1369,7 @@ static int skcipher_enqueue(struct skcipher_request *req, bool encrypt)
 	rctx->total_received = 0;
 	rctx->ctx = ctx;
 
-	/* Initialize current position in src and dst scatterlists */
+	 
 	rctx->src_sg = req->src;
 	rctx->src_nents = 0;
 	rctx->src_skip = 0;
@@ -1750,11 +1390,11 @@ static int skcipher_enqueue(struct skcipher_request *req, bool encrypt)
 		rctx->iv_ctr_len = 0;
 	}
 
-	/* Choose a SPU to process this request */
+	 
 	rctx->chan_idx = select_channel();
 	err = handle_skcipher_req(rctx);
 	if (err != -EINPROGRESS)
-		/* synchronous result */
+		 
 		spu_chunk_cleanup(rctx);
 
 	return err;
@@ -1794,7 +1434,7 @@ static int aes_setkey(struct crypto_skcipher *cipher, const u8 *key,
 	struct iproc_ctx_s *ctx = crypto_skcipher_ctx(cipher);
 
 	if (ctx->cipher.mode == CIPHER_MODE_XTS)
-		/* XTS includes two keys of equal length */
+		 
 		keylen = keylen / 2;
 
 	switch (keylen) {
@@ -1847,7 +1487,7 @@ static int skcipher_setkey(struct crypto_skcipher *cipher, const u8 *key,
 	memcpy(ctx->enckey, key, keylen);
 	ctx->enckeylen = keylen;
 
-	/* SPU needs XTS keys in the reverse order the crypto API presents */
+	 
 	if ((ctx->cipher.alg == CIPHER_ALG_AES) &&
 	    (ctx->cipher.mode == CIPHER_MODE_XTS)) {
 		unsigned int xts_keylen = keylen / 2;
@@ -1871,7 +1511,7 @@ static int skcipher_setkey(struct crypto_skcipher *cipher, const u8 *key,
 	cipher_parms.key_buf = ctx->enckey;
 	cipher_parms.key_len = ctx->enckeylen;
 
-	/* Prepend SPU request message with BCM header */
+	 
 	memcpy(ctx->bcm_spu_req_hdr, BCMHEADER, BCM_HDR_LEN);
 	ctx->spu_req_hdr_len =
 	    spu->spu_cipher_req_init(ctx->bcm_spu_req_hdr + BCM_HDR_LEN,
@@ -1916,7 +1556,7 @@ static int ahash_enqueue(struct ahash_request *req)
 	rctx->bd_suppress = true;
 	memset(&rctx->mb_mssg, 0, sizeof(struct brcm_message));
 
-	/* Initialize position in src scatterlist */
+	 
 	rctx->src_sg = req->src;
 	rctx->src_skip = 0;
 	rctx->src_nents = 0;
@@ -1924,7 +1564,7 @@ static int ahash_enqueue(struct ahash_request *req)
 	rctx->dst_skip = 0;
 	rctx->dst_nents = 0;
 
-	/* SPU2 hardware does not compute hash of zero length data */
+	 
 	if ((rctx->is_final == 1) && (rctx->total_todo == 0) &&
 	    (iproc_priv.spu.spu_type == SPU_TYPE_SPU2)) {
 		alg_name = crypto_ahash_alg_name(tfm);
@@ -1937,19 +1577,16 @@ static int ahash_enqueue(struct ahash_request *req)
 			flow_log("Hash request failed with error %d\n", err);
 		return err;
 	}
-	/* Choose a SPU to process this request */
+	 
 	rctx->chan_idx = select_channel();
 
 	err = handle_ahash_req(rctx);
 	if (err != -EINPROGRESS)
-		/* synchronous result */
+		 
 		spu_chunk_cleanup(rctx);
 
 	if (err == -EAGAIN)
-		/*
-		 * we saved data in hash carry, but tell crypto API
-		 * we successfully completed request.
-		 */
+		 
 		err = 0;
 
 	return err;
@@ -1964,7 +1601,7 @@ static int __ahash_init(struct ahash_request *req)
 
 	flow_log("%s()\n", __func__);
 
-	/* Initialize the context */
+	 
 	rctx->hash_carry_len = 0;
 	rctx->is_final = 0;
 
@@ -1974,7 +1611,7 @@ static int __ahash_init(struct ahash_request *req)
 	rctx->total_received = 0;
 
 	ctx->digestsize = crypto_ahash_digestsize(tfm);
-	/* If we add a hash whose digest is larger, catch it here. */
+	 
 	WARN_ON(ctx->digestsize > MAX_DIGEST_SIZE);
 
 	rctx->is_sw_hmac = false;
@@ -1985,19 +1622,7 @@ static int __ahash_init(struct ahash_request *req)
 	return 0;
 }
 
-/**
- * spu_no_incr_hash() - Determine whether incremental hashing is supported.
- * @ctx:  Crypto session context
- *
- * SPU-2 does not support incremental hashing (we'll have to revisit and
- * condition based on chip revision or device tree entry if future versions do
- * support incremental hash)
- *
- * SPU-M also doesn't support incremental hashing of AES-XCBC
- *
- * Return: true if incremental hashing is not supported
- *         false otherwise
- */
+ 
 static bool spu_no_incr_hash(struct iproc_ctx_s *ctx)
 {
 	struct spu_hw *spu = &iproc_priv.spu;
@@ -2009,7 +1634,7 @@ static bool spu_no_incr_hash(struct iproc_ctx_s *ctx)
 	    (ctx->auth.mode == HASH_MODE_XCBC))
 		return true;
 
-	/* Otherwise, incremental hashing is supported */
+	 
 	return false;
 }
 
@@ -2023,11 +1648,7 @@ static int ahash_init(struct ahash_request *req)
 	gfp_t gfp;
 
 	if (spu_no_incr_hash(ctx)) {
-		/*
-		 * If we get an incremental hashing request and it's not
-		 * supported by the hardware, we need to handle it in software
-		 * by calling synchronous hash functions.
-		 */
+		 
 		alg_name = crypto_ahash_alg_name(tfm);
 		hash = crypto_alloc_shash(alg_name, 0, 0);
 		if (IS_ERR(hash)) {
@@ -2045,7 +1666,7 @@ static int ahash_init(struct ahash_request *req)
 		}
 		ctx->shash->tfm = hash;
 
-		/* Set the key using data we already have from setkey */
+		 
 		if (ctx->authkeylen > 0) {
 			ret = crypto_shash_setkey(hash, ctx->authkey,
 						  ctx->authkeylen);
@@ -2053,12 +1674,12 @@ static int ahash_init(struct ahash_request *req)
 				goto err_shash;
 		}
 
-		/* Initialize hash w/ this key and other params */
+		 
 		ret = crypto_shash_init(ctx->shash);
 		if (ret)
 			goto err_shash;
 	} else {
-		/* Otherwise call the internal function which uses SPU hw */
+		 
 		ret = __ahash_init(req);
 	}
 
@@ -2096,17 +1717,13 @@ static int ahash_update(struct ahash_request *req)
 	gfp_t gfp;
 
 	if (spu_no_incr_hash(ctx)) {
-		/*
-		 * If we get an incremental hashing request and it's not
-		 * supported by the hardware, we need to handle it in software
-		 * by calling synchronous hash functions.
-		 */
+		 
 		if (req->src)
 			nents = sg_nents(req->src);
 		else
 			return -EINVAL;
 
-		/* Copy data from req scatterlist to tmp buffer */
+		 
 		gfp = (req->base.flags & (CRYPTO_TFM_REQ_MAY_BACKLOG |
 		       CRYPTO_TFM_REQ_MAY_SLEEP)) ? GFP_KERNEL : GFP_ATOMIC;
 		tmpbuf = kmalloc(req->nbytes, gfp);
@@ -2119,11 +1736,11 @@ static int ahash_update(struct ahash_request *req)
 			return -EINVAL;
 		}
 
-		/* Call synchronous update */
+		 
 		ret = crypto_shash_update(ctx->shash, tmpbuf, req->nbytes);
 		kfree(tmpbuf);
 	} else {
-		/* Otherwise call the internal function which uses SPU hw */
+		 
 		ret = __ahash_update(req);
 	}
 
@@ -2148,19 +1765,15 @@ static int ahash_final(struct ahash_request *req)
 	int ret;
 
 	if (spu_no_incr_hash(ctx)) {
-		/*
-		 * If we get an incremental hashing request and it's not
-		 * supported by the hardware, we need to handle it in software
-		 * by calling synchronous hash functions.
-		 */
+		 
 		ret = crypto_shash_final(ctx->shash, req->result);
 
-		/* Done with hash, can deallocate it now */
+		 
 		crypto_free_shash(ctx->shash->tfm);
 		kfree(ctx->shash);
 
 	} else {
-		/* Otherwise call the internal function which uses SPU hw */
+		 
 		ret = __ahash_final(req);
 	}
 
@@ -2190,11 +1803,7 @@ static int ahash_finup(struct ahash_request *req)
 	gfp_t gfp;
 
 	if (spu_no_incr_hash(ctx)) {
-		/*
-		 * If we get an incremental hashing request and it's not
-		 * supported by the hardware, we need to handle it in software
-		 * by calling synchronous hash functions.
-		 */
+		 
 		if (req->src) {
 			nents = sg_nents(req->src);
 		} else {
@@ -2202,7 +1811,7 @@ static int ahash_finup(struct ahash_request *req)
 			goto ahash_finup_exit;
 		}
 
-		/* Copy data from req scatterlist to tmp buffer */
+		 
 		gfp = (req->base.flags & (CRYPTO_TFM_REQ_MAY_BACKLOG |
 		       CRYPTO_TFM_REQ_MAY_SLEEP)) ? GFP_KERNEL : GFP_ATOMIC;
 		tmpbuf = kmalloc(req->nbytes, gfp);
@@ -2217,18 +1826,18 @@ static int ahash_finup(struct ahash_request *req)
 			goto ahash_finup_free;
 		}
 
-		/* Call synchronous update */
+		 
 		ret = crypto_shash_finup(ctx->shash, tmpbuf, req->nbytes,
 					 req->result);
 	} else {
-		/* Otherwise call the internal function which uses SPU hw */
+		 
 		return __ahash_finup(req);
 	}
 ahash_finup_free:
 	kfree(tmpbuf);
 
 ahash_finup_exit:
-	/* Done with hash, can deallocate it now */
+	 
 	crypto_free_shash(ctx->shash->tfm);
 	kfree(ctx->shash);
 	return ret;
@@ -2240,7 +1849,7 @@ static int ahash_digest(struct ahash_request *req)
 
 	flow_log("ahash_digest() nbytes:%u\n", req->nbytes);
 
-	/* whole thing at once */
+	 
 	err = __ahash_init(req);
 	if (!err)
 		err = __ahash_finup(req);
@@ -2386,11 +1995,7 @@ static int ahash_hmac_setkey(struct crypto_ahash *ahash, const u8 *key,
 		ctx->authkeylen = keylen;
 	}
 
-	/*
-	 * Full HMAC operation in SPUM is not verified,
-	 * So keeping the generation of IPAD, OPAD and
-	 * outer hashing in software.
-	 */
+	 
 	if (iproc_priv.spu.spu_type == SPU_TYPE_SPUM) {
 		memcpy(ctx->ipad, ctx->authkey, ctx->authkeylen);
 		memset(ctx->ipad + ctx->authkeylen, 0,
@@ -2423,14 +2028,14 @@ static int ahash_hmac_init(struct ahash_request *req)
 
 	flow_log("ahash_hmac_init()\n");
 
-	/* init the context as a hash */
+	 
 	ahash_init(req);
 
 	if (!spu_no_incr_hash(ctx)) {
-		/* SPU-M can do incr hashing but needs sw for outer HMAC */
+		 
 		rctx->is_sw_hmac = true;
 		ctx->auth.mode = HASH_MODE_HASH;
-		/* start with a prepended ipad */
+		 
 		memcpy(rctx->hash_carry, ctx->ipad, blocksize);
 		rctx->hash_carry_len = blocksize;
 		rctx->total_todo += blocksize;
@@ -2473,24 +2078,17 @@ static int ahash_hmac_digest(struct ahash_request *req)
 
 	flow_log("ahash_hmac_digest() nbytes:%u\n", req->nbytes);
 
-	/* Perform initialization and then call finup */
+	 
 	__ahash_init(req);
 
 	if (iproc_priv.spu.spu_type == SPU_TYPE_SPU2) {
-		/*
-		 * SPU2 supports full HMAC implementation in the
-		 * hardware, need not to generate IPAD, OPAD and
-		 * outer hash in software.
-		 * Only for hash key len > hash block size, SPU2
-		 * expects to perform hashing on the key, shorten
-		 * it to digest size and feed it as hash key.
-		 */
+		 
 		rctx->is_sw_hmac = false;
 		ctx->auth.mode = HASH_MODE_HMAC;
 	} else {
 		rctx->is_sw_hmac = true;
 		ctx->auth.mode = HASH_MODE_HASH;
-		/* start with a prepended ipad */
+		 
 		memcpy(rctx->hash_carry, ctx->ipad, blocksize);
 		rctx->hash_carry_len = blocksize;
 		rctx->total_todo += blocksize;
@@ -2499,7 +2097,7 @@ static int ahash_hmac_digest(struct ahash_request *req)
 	return __ahash_finup(req);
 }
 
-/* aead helpers */
+ 
 
 static int aead_need_fallback(struct aead_request *req)
 {
@@ -2509,10 +2107,7 @@ static int aead_need_fallback(struct aead_request *req)
 	struct iproc_ctx_s *ctx = crypto_aead_ctx(aead);
 	u32 payload_len;
 
-	/*
-	 * SPU hardware cannot handle the AES-GCM/CCM case where plaintext
-	 * and AAD are both 0 bytes long. So use fallback in this case.
-	 */
+	 
 	if (((ctx->cipher.mode == CIPHER_MODE_GCM) ||
 	     (ctx->cipher.mode == CIPHER_MODE_CCM)) &&
 	    (req->assoclen == 0)) {
@@ -2523,7 +2118,7 @@ static int aead_need_fallback(struct aead_request *req)
 		}
 	}
 
-	/* SPU-M hardware only supports CCM digest size of 8, 12, or 16 bytes */
+	 
 	if ((ctx->cipher.mode == CIPHER_MODE_CCM) &&
 	    (spu->spu_type == SPU_TYPE_SPUM) &&
 	    (ctx->digestsize != 8) && (ctx->digestsize != 12) &&
@@ -2533,10 +2128,7 @@ static int aead_need_fallback(struct aead_request *req)
 		return 1;
 	}
 
-	/*
-	 * SPU-M on NSP has an issue where AES-CCM hash is not correct
-	 * when AAD size is 0
-	 */
+	 
 	if ((ctx->cipher.mode == CIPHER_MODE_CCM) &&
 	    (spu->spu_subtype == SPU_SUBTYPE_SPUM_NSP) &&
 	    (req->assoclen == 0)) {
@@ -2545,10 +2137,7 @@ static int aead_need_fallback(struct aead_request *req)
 		return 1;
 	}
 
-	/*
-	 * RFC4106 and RFC4543 cannot handle the case where AAD is other than
-	 * 16 or 20 bytes long. So use fallback in this case.
-	 */
+	 
 	if (ctx->cipher.mode == CIPHER_MODE_GCM &&
 	    ctx->cipher.alg == CIPHER_ALG_AES &&
 	    rctx->iv_ctr_len == GCM_RFC4106_IV_SIZE &&
@@ -2624,14 +2213,10 @@ static int aead_enqueue(struct aead_request *req, bool is_encrypt)
 	rctx->ctx = ctx;
 	memset(&rctx->mb_mssg, 0, sizeof(struct brcm_message));
 
-	/* assoc data is at start of src sg */
+	 
 	rctx->assoc = req->src;
 
-	/*
-	 * Init current position in src scatterlist to be after assoc data.
-	 * src_skip set to buffer offset where data begins. (Assoc data could
-	 * end in the middle of a buffer.)
-	 */
+	 
 	if (spu_sg_at_offset(req->src, req->assoclen, &rctx->src_sg,
 			     &rctx->src_skip) < 0) {
 		pr_err("%s() Error: Unable to find start of src data\n",
@@ -2645,11 +2230,7 @@ static int aead_enqueue(struct aead_request *req, bool is_encrypt)
 		rctx->dst_sg = rctx->src_sg;
 		rctx->dst_skip = rctx->src_skip;
 	} else {
-		/*
-		 * Expect req->dst to have room for assoc data followed by
-		 * output data and ICV, if encrypt. So initialize dst_sg
-		 * to point beyond assoc len offset.
-		 */
+		 
 		if (spu_sg_at_offset(req->dst, req->assoclen, &rctx->dst_sg,
 				     &rctx->dst_skip) < 0) {
 			pr_err("%s() Error: Unable to find start of dst data\n",
@@ -2694,10 +2275,7 @@ static int aead_enqueue(struct aead_request *req, bool is_encrypt)
 	if (unlikely(aead_need_fallback(req)))
 		return aead_do_fallback(req, is_encrypt);
 
-	/*
-	 * Do memory allocations for request after fallback check, because if we
-	 * do fallback, we won't call finish_req() to dealloc.
-	 */
+	 
 	if (rctx->iv_ctr_len) {
 		if (ctx->salt_len)
 			memcpy(rctx->msg_buf.iv_ctr + ctx->salt_offset,
@@ -2710,7 +2288,7 @@ static int aead_enqueue(struct aead_request *req, bool is_encrypt)
 	rctx->chan_idx = select_channel();
 	err = handle_aead_req(rctx);
 	if (err != -EINPROGRESS)
-		/* synchronous result */
+		 
 		spu_chunk_cleanup(rctx);
 
 	return err;
@@ -2741,7 +2319,7 @@ static int aead_authenc_setkey(struct crypto_aead *cipher,
 	ctx->authkeylen = keys.authkeylen;
 
 	memcpy(ctx->enckey, keys.enckey, keys.enckeylen);
-	/* May end up padding auth key. So make sure it's zeroed. */
+	 
 	memset(ctx->authkey, 0, sizeof(ctx->authkey));
 	memcpy(ctx->authkey, keys.authkey, keys.authkeylen);
 
@@ -2783,7 +2361,7 @@ static int aead_authenc_setkey(struct crypto_aead *cipher,
 	flow_dump("  enc: ", ctx->enckey, ctx->enckeylen);
 	flow_dump("  auth: ", ctx->authkey, ctx->authkeylen);
 
-	/* setkey the fallback just in case we needto use it */
+	 
 	if (ctx->fallback_cipher) {
 		flow_log("  running fallback setkey()\n");
 
@@ -2850,7 +2428,7 @@ static int aead_gcm_ccm_setkey(struct crypto_aead *cipher,
 	flow_dump("  enc: ", ctx->enckey, ctx->enckeylen);
 	flow_dump("  auth: ", ctx->authkey, ctx->authkeylen);
 
-	/* setkey the fallback just in case we need to use it */
+	 
 	if (ctx->fallback_cipher) {
 		flow_log("  running fallback setkey()\n");
 
@@ -2882,17 +2460,7 @@ badkey:
 	return -EINVAL;
 }
 
-/**
- * aead_gcm_esp_setkey() - setkey() operation for ESP variant of GCM AES.
- * @cipher: AEAD structure
- * @key:    Key followed by 4 bytes of salt
- * @keylen: Length of key plus salt, in bytes
- *
- * Extracts salt from key and stores it to be prepended to IV on each request.
- * Digest is always 16 bytes
- *
- * Return: Value from generic gcm setkey.
- */
+ 
 static int aead_gcm_esp_setkey(struct crypto_aead *cipher,
 			       const u8 *key, unsigned int keylen)
 {
@@ -2914,17 +2482,7 @@ static int aead_gcm_esp_setkey(struct crypto_aead *cipher,
 	return aead_gcm_ccm_setkey(cipher, key, keylen);
 }
 
-/**
- * rfc4543_gcm_esp_setkey() - setkey operation for RFC4543 variant of GCM/GMAC.
- * @cipher: AEAD structure
- * @key:    Key followed by 4 bytes of salt
- * @keylen: Length of key plus salt, in bytes
- *
- * Extracts salt from key and stores it to be prepended to IV on each request.
- * Digest is always 16 bytes
- *
- * Return: Value from generic gcm setkey.
- */
+ 
 static int rfc4543_gcm_esp_setkey(struct crypto_aead *cipher,
 				  const u8 *key, unsigned int keylen)
 {
@@ -2947,17 +2505,7 @@ static int rfc4543_gcm_esp_setkey(struct crypto_aead *cipher,
 	return aead_gcm_ccm_setkey(cipher, key, keylen);
 }
 
-/**
- * aead_ccm_esp_setkey() - setkey() operation for ESP variant of CCM AES.
- * @cipher: AEAD structure
- * @key:    Key followed by 4 bytes of salt
- * @keylen: Length of key plus salt, in bytes
- *
- * Extracts salt from key and stores it to be prepended to IV on each request.
- * Digest is always 16 bytes
- *
- * Return: Value from generic ccm setkey.
- */
+ 
 static int aead_ccm_esp_setkey(struct crypto_aead *cipher,
 			       const u8 *key, unsigned int keylen)
 {
@@ -2988,7 +2536,7 @@ static int aead_setauthsize(struct crypto_aead *cipher, unsigned int authsize)
 
 	ctx->digestsize = authsize;
 
-	/* setkey the fallback just in case we needto use it */
+	 
 	if (ctx->fallback_cipher) {
 		flow_log("  running fallback setauth()\n");
 
@@ -3019,7 +2567,7 @@ static int aead_decrypt(struct aead_request *req)
 	return aead_enqueue(req, false);
 }
 
-/* ==================== Supported Cipher Algorithms ==================== */
+ 
 
 static struct iproc_alg_s driver_algs[] = {
 	{
@@ -3513,7 +3061,7 @@ static struct iproc_alg_s driver_algs[] = {
 	 .auth_first = 0,
 	 },
 
-/* SKCIPHER algorithms. */
+ 
 	{
 	 .type = CRYPTO_ALG_TYPE_SKCIPHER,
 	 .alg.skcipher = {
@@ -3724,7 +3272,7 @@ static struct iproc_alg_s driver_algs[] = {
 		       },
 	 },
 
-/* AHASH algorithms. */
+ 
 	{
 	 .type = CRYPTO_ALG_TYPE_AHASH,
 	 .alg.hash = {
@@ -4194,10 +3742,7 @@ static int ahash_cra_init(struct crypto_tfm *tfm)
 	err = generic_cra_init(tfm, cipher_alg);
 	flow_log("%s()\n", __func__);
 
-	/*
-	 * export state size has to be < 512 bytes. So don't include msg bufs
-	 * in state size.
-	 */
+	 
 	crypto_ahash_set_reqsize(__crypto_ahash_cast(tfm),
 				 sizeof(struct iproc_reqctx_s));
 
@@ -4222,7 +3767,7 @@ static int aead_cra_init(struct crypto_aead *aead)
 	ctx->salt_len = 0;
 	ctx->salt_offset = 0;
 
-	/* random first IV */
+	 
 	get_random_bytes(ctx->iv, MAX_IV_SIZE);
 	flow_dump("  iv: ", ctx->iv, MAX_IV_SIZE);
 
@@ -4275,13 +3820,7 @@ static void aead_cra_exit(struct crypto_aead *aead)
 	}
 }
 
-/**
- * spu_functions_register() - Specify hardware-specific SPU functions based on
- * SPU type read from device tree.
- * @dev:	device structure
- * @spu_type:	SPU hardware generation
- * @spu_subtype: SPU hardware version
- */
+ 
 static void spu_functions_register(struct device *dev,
 				   enum spu_spu_type spu_type,
 				   enum spu_spu_subtype spu_subtype)
@@ -4338,14 +3877,7 @@ static void spu_functions_register(struct device *dev,
 	}
 }
 
-/**
- * spu_mb_init() - Initialize mailbox client. Request ownership of a mailbox
- * channel for the SPU being probed.
- * @dev:  SPU driver device structure
- *
- * Return: 0 if successful
- *	   < 0 otherwise
- */
+ 
 static int spu_mb_init(struct device *dev)
 {
 	struct mbox_client *mcl = &iproc_priv.mcl;
@@ -4443,7 +3975,7 @@ static int spu_register_skcipher(struct iproc_alg_s *driver_alg)
 	crypto->decrypt = skcipher_decrypt;
 
 	err = crypto_register_skcipher(crypto);
-	/* Mark alg as having been registered, if successful */
+	 
 	if (err == 0)
 		driver_alg->registered = true;
 	pr_debug("  registered skcipher %s\n", crypto->base.cra_driver_name);
@@ -4456,13 +3988,13 @@ static int spu_register_ahash(struct iproc_alg_s *driver_alg)
 	struct ahash_alg *hash = &driver_alg->alg.hash;
 	int err;
 
-	/* AES-XCBC is the only AES hash type currently supported on SPU-M */
+	 
 	if ((driver_alg->auth_info.alg == HASH_ALG_AES) &&
 	    (driver_alg->auth_info.mode != HASH_MODE_XCBC) &&
 	    (spu->spu_type == SPU_TYPE_SPUM))
 		return 0;
 
-	/* SHA3 algorithm variants are not registered for SPU-M or SPU2. */
+	 
 	if ((driver_alg->auth_info.alg >= HASH_ALG_SHA3_224) &&
 	    (spu->spu_subtype != SPU_SUBTYPE_SPU2_V2))
 		return 0;
@@ -4500,7 +4032,7 @@ static int spu_register_ahash(struct iproc_alg_s *driver_alg)
 	hash->import = ahash_import;
 
 	err = crypto_register_ahash(hash);
-	/* Mark alg as having been registered, if successful */
+	 
 	if (err == 0)
 		driver_alg->registered = true;
 	pr_debug("  registered ahash %s\n",
@@ -4519,7 +4051,7 @@ static int spu_register_aead(struct iproc_alg_s *driver_alg)
 	aead->base.cra_ctxsize = sizeof(struct iproc_ctx_s);
 
 	aead->base.cra_flags |= CRYPTO_ALG_ASYNC | CRYPTO_ALG_ALLOCATES_MEMORY;
-	/* setkey set in alg initialization */
+	 
 	aead->setauthsize = aead_setauthsize;
 	aead->encrypt = aead_encrypt;
 	aead->decrypt = aead_decrypt;
@@ -4527,14 +4059,14 @@ static int spu_register_aead(struct iproc_alg_s *driver_alg)
 	aead->exit = aead_cra_exit;
 
 	err = crypto_register_aead(aead);
-	/* Mark alg as having been registered, if successful */
+	 
 	if (err == 0)
 		driver_alg->registered = true;
 	pr_debug("  registered aead %s\n", aead->base.cra_driver_name);
 	return err;
 }
 
-/* register crypto algorithms the device supports */
+ 
 static int spu_algs_register(struct device *dev)
 {
 	int i, j;
@@ -4569,7 +4101,7 @@ static int spu_algs_register(struct device *dev)
 
 err_algs:
 	for (j = 0; j < i; j++) {
-		/* Skip any algorithm not registered */
+		 
 		if (!driver_algs[j].registered)
 			continue;
 		switch (driver_algs[j].type) {
@@ -4590,7 +4122,7 @@ err_algs:
 	return err;
 }
 
-/* ==================== Kernel Platform API ==================== */
+ 
 
 static struct spu_type_subtype spum_ns2_types = {
 	SPU_TYPE_SPUM, SPU_SUBTYPE_SPUM_NS2
@@ -4625,7 +4157,7 @@ static const struct of_device_id bcm_spu_dt_ids[] = {
 		.compatible = "brcm,spu2-v2-crypto",
 		.data = &spu2_v2_types,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, bcm_spu_dt_ids);
@@ -4639,7 +4171,7 @@ static int spu_dt_read(struct platform_device *pdev)
 	struct device_node *dn = pdev->dev.of_node;
 	int err, i;
 
-	/* Count number of mailbox channels */
+	 
 	spu->num_chan = of_count_phandle_with_args(dn, "mboxes", "#mbox-cells");
 
 	matched_spu_type = of_device_get_match_data(dev);
@@ -4720,11 +4252,7 @@ static int bcm_spu_remove(struct platform_device *pdev)
 	char *cdn;
 
 	for (i = 0; i < ARRAY_SIZE(driver_algs); i++) {
-		/*
-		 * Not all algorithms were registered, depending on whether
-		 * hardware is SPU or SPU2.  So here we make sure to skip
-		 * those algorithms that were not previously registered.
-		 */
+		 
 		if (!driver_algs[i].registered)
 			continue;
 
@@ -4754,7 +4282,7 @@ static int bcm_spu_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* ===== Kernel Module API ===== */
+ 
 
 static struct platform_driver bcm_spu_pdriver = {
 	.driver = {

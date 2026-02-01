@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hi3798CV200 Clock and Reset Generator Driver
- *
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/histb-clock.h>
 #include <linux/clk-provider.h>
@@ -14,7 +10,7 @@
 #include "crg.h"
 #include "reset.h"
 
-/* hi3798CV200 core CRG */
+ 
 #define HI3798CV200_INNER_CLK_OFFSET		64
 #define HI3798CV200_FIXED_24M			65
 #define HI3798CV200_FIXED_25M			66
@@ -98,10 +94,10 @@ static struct hisi_phase_clock hi3798cv200_phase_clks[] = {
 };
 
 static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
-	/* UART */
+	 
 	{ HISTB_UART2_CLK, "clk_uart2", "75m",
 		CLK_SET_RATE_PARENT, 0x68, 4, 0, },
-	/* I2C */
+	 
 	{ HISTB_I2C0_CLK, "clk_i2c0", "clk_apb",
 		CLK_SET_RATE_PARENT, 0x6C, 4, 0, },
 	{ HISTB_I2C1_CLK, "clk_i2c1", "clk_apb",
@@ -112,20 +108,20 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0x6C, 16, 0, },
 	{ HISTB_I2C4_CLK, "clk_i2c4", "clk_apb",
 		CLK_SET_RATE_PARENT, 0x6C, 20, 0, },
-	/* SPI */
+	 
 	{ HISTB_SPI0_CLK, "clk_spi0", "clk_apb",
 		CLK_SET_RATE_PARENT, 0x70, 0, 0, },
-	/* SDIO */
+	 
 	{ HISTB_SDIO0_BIU_CLK, "clk_sdio0_biu", "200m",
 			CLK_SET_RATE_PARENT, 0x9c, 0, 0, },
 	{ HISTB_SDIO0_CIU_CLK, "clk_sdio0_ciu", "sdio0_mux",
 		CLK_SET_RATE_PARENT, 0x9c, 1, 0, },
-	/* EMMC */
+	 
 	{ HISTB_MMC_BIU_CLK, "clk_mmc_biu", "200m",
 		CLK_SET_RATE_PARENT, 0xa0, 0, 0, },
 	{ HISTB_MMC_CIU_CLK, "clk_mmc_ciu", "mmc_mux",
 		CLK_SET_RATE_PARENT, 0xa0, 1, 0, },
-	/* PCIE*/
+	 
 	{ HISTB_PCIE_BUS_CLK, "clk_pcie_bus", "200m",
 		CLK_SET_RATE_PARENT, 0x18c, 0, 0, },
 	{ HISTB_PCIE_SYS_CLK, "clk_pcie_sys", "100m",
@@ -134,7 +130,7 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0x18c, 2, 0, },
 	{ HISTB_PCIE_AUX_CLK, "clk_pcie_aux", "24m",
 		CLK_SET_RATE_PARENT, 0x18c, 3, 0, },
-	/* Ethernet */
+	 
 	{ HI3798CV200_ETH_PUB_CLK, "clk_pub", NULL,
 		CLK_SET_RATE_PARENT, 0xcc, 5, 0, },
 	{ HI3798CV200_ETH_BUS_CLK, "clk_bus", "clk_pub",
@@ -151,13 +147,13 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0xcc, 4, 0, },
 	{ HISTB_ETH1_MACIF_CLK, "clk_macif1", "clk_bus_m1",
 		CLK_SET_RATE_PARENT, 0xcc, 25, 0, },
-	/* COMBPHY0 */
+	 
 	{ HISTB_COMBPHY0_CLK, "clk_combphy0", "combphy0_mux",
 		CLK_SET_RATE_PARENT, 0x188, 0, 0, },
-	/* COMBPHY1 */
+	 
 	{ HISTB_COMBPHY1_CLK, "clk_combphy1", "combphy1_mux",
 		CLK_SET_RATE_PARENT, 0x188, 8, 0, },
-	/* USB2 */
+	 
 	{ HISTB_USB2_BUS_CLK, "clk_u2_bus", "clk_ahb",
 		CLK_SET_RATE_PARENT, 0xb8, 0, 0, },
 	{ HISTB_USB2_PHY_CLK, "clk_u2_phy", "60m",
@@ -174,7 +170,7 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0xbc, 0, 0 },
 	{ HISTB_USB2_PHY2_REF_CLK, "clk_u2_phy2_ref", "24m",
 		CLK_SET_RATE_PARENT, 0xbc, 2, 0 },
-	/* USB3 */
+	 
 	{ HISTB_USB3_BUS_CLK, "clk_u3_bus", NULL,
 		CLK_SET_RATE_PARENT, 0xb0, 0, 0 },
 	{ HISTB_USB3_UTMI_CLK, "clk_u3_utmi", NULL,
@@ -203,7 +199,7 @@ static struct hisi_clock_data *hi3798cv200_clk_register(
 	if (!clk_data)
 		return ERR_PTR(-ENOMEM);
 
-	/* hisi_phase_clock is resource managed */
+	 
 	ret = hisi_clk_register_phase(&pdev->dev,
 				hi3798cv200_phase_clks,
 				ARRAY_SIZE(hi3798cv200_phase_clks),
@@ -273,7 +269,7 @@ static const struct hisi_crg_funcs hi3798cv200_crg_funcs = {
 	.unregister_clks = hi3798cv200_clk_unregister,
 };
 
-/* hi3798CV200 sysctrl CRG */
+ 
 
 #define HI3798CV200_SYSCTRL_NR_CLKS 16
 

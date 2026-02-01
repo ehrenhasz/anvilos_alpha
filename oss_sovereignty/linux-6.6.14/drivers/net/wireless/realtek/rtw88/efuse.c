@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/iopoll.h>
 
@@ -28,15 +27,7 @@ static void switch_efuse_bank(struct rtw_dev *rtwdev)
 #define block_idx_to_logical_idx(blk_idx, i) \
 	(((blk_idx) << 3) + ((i) << 1))
 
-/* efuse header format
- *
- * | 7        5   4    0 | 7        4   3          0 | 15  8  7   0 |
- *   block[2:0]   0 1111   block[6:3]   word_en[3:0]   byte0  byte1
- * | header 1 (optional) |          header 2         |    word N    |
- *
- * word_en: 4 bits each word. 0 -> write; 1 -> not write
- * N: 1~4, depends on word_en
- */
+ 
 static int rtw_dump_logical_efuse_map(struct rtw_dev *rtwdev, u8 *phy_map,
 				      u8 *log_map)
 {
@@ -56,12 +47,12 @@ static int rtw_dump_logical_efuse_map(struct rtw_dev *rtwdev, u8 *phy_map,
 			break;
 
 		if ((hdr1 & 0x1f) == 0xf) {
-			/* 2-byte header format */
+			 
 			blk_idx = get_efuse_blk_idx_2_byte(hdr1, hdr2);
 			word_en = hdr2 & 0xf;
 			phy_idx += 2;
 		} else {
-			/* 1-byte header format */
+			 
 			blk_idx = get_efuse_blk_idx_1_byte(hdr1);
 			word_en = hdr1 & 0xf;
 			phy_idx += 1;
@@ -96,7 +87,7 @@ static int rtw_dump_physical_efuse_map(struct rtw_dev *rtwdev, u8 *map)
 
 	switch_efuse_bank(rtwdev);
 
-	/* disable 2.5V LDO */
+	 
 	chip->ops->cfg_ldo25(rtwdev, false);
 
 	efuse_ctl = rtw_read32(rtwdev, REG_EFUSE_CTRL);

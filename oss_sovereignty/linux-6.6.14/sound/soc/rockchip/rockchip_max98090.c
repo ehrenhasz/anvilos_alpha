@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip machine ASoC driver for boards using a MAX90809 CODEC.
- *
- * Copyright (c) 2014, ROCKCHIP CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_device.h>
@@ -24,7 +20,7 @@
 
 static struct snd_soc_jack headset_jack;
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin headset_jack_pins[] = {
 	{
 		.pin = "Headphone",
@@ -131,10 +127,7 @@ static struct notifier_block rk_jack_nb = {
 
 static int rk_init(struct snd_soc_pcm_runtime *runtime)
 {
-	/*
-	 * The jack has already been created in the rk_98090_headset_init()
-	 * function.
-	 */
+	 
 	snd_soc_jack_notifier_register(&headset_jack, &rk_jack_nb);
 
 	return 0;
@@ -179,7 +172,7 @@ static int rk_aif1_hw_params(struct snd_pcm_substream *substream,
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0, mclk,
 				     SND_SOC_CLOCK_IN);
 
-	/* HDMI codec dai does not need to set sysclk. */
+	 
 	if (!strcmp(rtd->dai_link->name, "HDMI"))
 		return 0;
 
@@ -193,10 +186,7 @@ static int rk_aif1_hw_params(struct snd_pcm_substream *substream,
 
 static int rk_aif1_startup(struct snd_pcm_substream *substream)
 {
-	/*
-	 * Set period size to 240 because pl330 has issue
-	 * dealing with larger period in stress testing.
-	 */
+	 
 	return snd_pcm_hw_constraint_minmax(substream->runtime,
 			SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 240, 240);
 }
@@ -229,7 +219,7 @@ static int rk_hdmi_init(struct snd_soc_pcm_runtime *runtime)
 	struct snd_soc_component *component = asoc_rtd_to_codec(runtime, 0)->component;
 	int ret;
 
-	/* enable jack detection */
+	 
 	ret = snd_soc_card_jack_new(card, "HDMI Jack", SND_JACK_LINEOUT,
 				    &rk_hdmi_jack);
 	if (ret) {
@@ -240,21 +230,21 @@ static int rk_hdmi_init(struct snd_soc_pcm_runtime *runtime)
 	return snd_soc_component_set_jack(component, &rk_hdmi_jack, NULL);
 }
 
-/* max98090 dai_link */
+ 
 static struct snd_soc_dai_link rk_max98090_dailinks[] = {
 	{
 		.name = "max98090",
 		.stream_name = "Analog",
 		.init = rk_init,
 		.ops = &rk_aif1_ops,
-		/* set max98090 as slave */
+		 
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBS_CFS,
 		SND_SOC_DAILINK_REG(analog),
 	},
 };
 
-/* HDMI codec dai_link */
+ 
 static struct snd_soc_dai_link rk_hdmi_dailinks[] = {
 	{
 		.name = "HDMI",
@@ -267,14 +257,14 @@ static struct snd_soc_dai_link rk_hdmi_dailinks[] = {
 	}
 };
 
-/* max98090 and HDMI codec dai_link */
+ 
 static struct snd_soc_dai_link rk_max98090_hdmi_dailinks[] = {
 	[DAILINK_MAX98090] = {
 		.name = "max98090",
 		.stream_name = "Analog",
 		.init = rk_init,
 		.ops = &rk_aif1_ops,
-		/* set max98090 as slave */
+		 
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBS_CFS,
 		SND_SOC_DAILINK_REG(analog),
@@ -344,7 +334,7 @@ static int rk_98090_headset_init(struct snd_soc_component *component)
 {
 	int ret;
 
-	/* Enable Headset and 4 Buttons Jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(component->card, "Headset Jack",
 					 SND_JACK_HEADSET |
 					 SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -381,7 +371,7 @@ static int snd_rk_mc_probe(struct platform_device *pdev)
 	struct device_node *np_cpu;
 	struct device_node *np_audio, *np_hdmi;
 
-	/* Parse DTS for I2S controller. */
+	 
 	np_cpu = of_parse_phandle(np, "rockchip,i2s-controller", 0);
 
 	if (!np_cpu) {
@@ -390,10 +380,7 @@ static int snd_rk_mc_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Find the card to use based on the presences of audio codec
-	 * and hdmi codec in device property. Set their of_node accordingly.
-	 */
+	 
 	np_audio = of_parse_phandle(np, "rockchip,audio-codec", 0);
 	np_hdmi = of_parse_phandle(np, "rockchip,hdmi-codec", 0);
 	if (np_audio && np_hdmi) {
@@ -421,14 +408,14 @@ static int snd_rk_mc_probe(struct platform_device *pdev)
 
 	card->dev = dev;
 
-	/* Parse headset detection codec. */
+	 
 	if (np_audio) {
 		ret = rk_parse_headset_from_of(dev, np);
 		if (ret)
 			return ret;
 	}
 
-	/* Parse card name. */
+	 
 	ret = snd_soc_of_parse_card_name(card, "rockchip,model");
 	if (ret) {
 		dev_err(&pdev->dev,
@@ -436,7 +423,7 @@ static int snd_rk_mc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register the soc card */
+	 
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	if (ret) {
 		dev_err(&pdev->dev,

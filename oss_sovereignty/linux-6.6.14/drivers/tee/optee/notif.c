@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,19 +44,13 @@ int optee_notif_wait(struct optee *optee, u_int key)
 
 	spin_lock_irqsave(&optee->notif.lock, flags);
 
-	/*
-	 * If the bit is already set it means that the key has already
-	 * been posted and we must not wait.
-	 */
+	 
 	if (test_bit(key, optee->notif.bitmap)) {
 		clear_bit(key, optee->notif.bitmap);
 		goto out;
 	}
 
-	/*
-	 * Check if someone is already waiting for this key. If there is
-	 * it's a programming error.
-	 */
+	 
 	if (have_key(optee, key)) {
 		rc = -EBUSY;
 		goto out;
@@ -66,9 +58,7 @@ int optee_notif_wait(struct optee *optee, u_int key)
 
 	list_add_tail(&entry->link, &optee->notif.db);
 
-	/*
-	 * Unlock temporarily and wait for completion.
-	 */
+	 
 	spin_unlock_irqrestore(&optee->notif.lock, flags);
 	wait_for_completion(&entry->c);
 	spin_lock_irqsave(&optee->notif.lock, flags);
@@ -98,7 +88,7 @@ int optee_notif_send(struct optee *optee, u_int key)
 			goto out;
 		}
 
-	/* Only set the bit in case there where nobody waiting */
+	 
 	set_bit(key, optee->notif.bitmap);
 out:
 	spin_unlock_irqrestore(&optee->notif.lock, flags);

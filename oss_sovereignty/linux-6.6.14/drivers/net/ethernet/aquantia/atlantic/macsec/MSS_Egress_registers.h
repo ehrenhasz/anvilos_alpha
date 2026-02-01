@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef MSS_EGRESS_REGS_HEADER
 #define MSS_EGRESS_REGS_HEADER
@@ -24,7 +22,7 @@ struct mss_egress_ctl_register {
 			unsigned int unmatched_use_sc_0 : 1;
 			unsigned int drop_invalid_sa_sc_packets : 1;
 			unsigned int reserved0 : 1;
-			/* Should always be set to 0. */
+			 
 			unsigned int external_classification_enable : 1;
 			unsigned int icv_lsb_8bytes_enable : 1;
 			unsigned int high_prio : 1;
@@ -48,11 +46,7 @@ struct mss_egress_lut_addr_ctl_register {
 		struct {
 			unsigned int lut_addr : 9;
 			unsigned int reserved0 : 3;
-			/* 0x0 : Egress MAC Control FIlter (CTLF) LUT
-			 * 0x1 : Egress Classification LUT
-			 * 0x2 : Egress SC/SA LUT
-			 * 0x3 : Egress SMIB
-			 */
+			 
 			unsigned int lut_select : 4;
 		} bits_0;
 		unsigned short word_0;
@@ -70,4 +64,4 @@ struct mss_egress_lut_ctl_register {
 	};
 };
 
-#endif /* MSS_EGRESS_REGS_HEADER */
+#endif  

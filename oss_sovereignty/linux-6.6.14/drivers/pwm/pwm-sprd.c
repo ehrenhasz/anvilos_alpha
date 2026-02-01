@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Spreadtrum Communications Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -40,10 +38,7 @@ struct sprd_pwm_chip {
 	struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM];
 };
 
-/*
- * The list of clocks required by PWM channels, and each channel has 2 clocks:
- * enable clock and pwm clock.
- */
+ 
 static const char * const sprd_pwm_clks[] = {
 	"enable0", "pwm0",
 	"enable1", "pwm1",
@@ -76,10 +71,7 @@ static int sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 	u64 tmp;
 	int ret;
 
-	/*
-	 * The clocks to PWM channel has to be enabled first before
-	 * reading to the registers.
-	 */
+	 
 	ret = clk_bulk_prepare_enable(SPRD_PWM_CHN_CLKS_NUM, chn->clks);
 	if (ret) {
 		dev_err(spc->dev, "failed to enable pwm%u clocks\n",
@@ -93,14 +85,7 @@ static int sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 	else
 		state->enabled = false;
 
-	/*
-	 * The hardware provides a counter that is feed by the source clock.
-	 * The period length is (PRESCALE + 1) * MOD counter steps.
-	 * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
-	 * Thus the period_ns and duty_ns calculation formula should be:
-	 * period_ns = NSEC_PER_SEC * (prescale + 1) * mod / clk_rate
-	 * duty_ns = NSEC_PER_SEC * (prescale + 1) * duty / clk_rate
-	 */
+	 
 	val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE);
 	prescale = val & SPRD_PWM_PRESCALE_MSK;
 	tmp = (prescale + 1) * NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
@@ -112,7 +97,7 @@ static int sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
 	state->polarity = PWM_POLARITY_NORMAL;
 
-	/* Disable PWM clocks if the PWM channel is not in enable state. */
+	 
 	if (!state->enabled)
 		clk_bulk_disable_unprepare(SPRD_PWM_CHN_CLKS_NUM, chn->clks);
 
@@ -126,16 +111,7 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
 	u32 prescale, duty;
 	u64 tmp;
 
-	/*
-	 * The hardware provides a counter that is feed by the source clock.
-	 * The period length is (PRESCALE + 1) * MOD counter steps.
-	 * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
-	 *
-	 * To keep the maths simple we're always using MOD = SPRD_PWM_MOD_MAX.
-	 * The value for PRESCALE is selected such that the resulting period
-	 * gets the maximal length not bigger than the requested one with the
-	 * given settings (MOD = SPRD_PWM_MOD_MAX and input clock).
-	 */
+	 
 	duty = duty_ns * SPRD_PWM_MOD_MAX / period_ns;
 
 	tmp = (u64)chn->clk_rate * period_ns;
@@ -144,14 +120,7 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
 	if (prescale > SPRD_PWM_PRESCALE_MSK)
 		prescale = SPRD_PWM_PRESCALE_MSK;
 
-	/*
-	 * Note: Writing DUTY triggers the hardware to actually apply the
-	 * values written to MOD and DUTY to the output, so must keep writing
-	 * DUTY last.
-	 *
-	 * The hardware can ensures that current running period is completed
-	 * before changing a new configuration to avoid mixed settings.
-	 */
+	 
 	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PRESCALE, prescale);
 	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, SPRD_PWM_MOD_MAX);
 	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_DUTY, duty);
@@ -173,10 +142,7 @@ static int sprd_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (state->enabled) {
 		if (!cstate->enabled) {
-			/*
-			 * The clocks to PWM channel has to be enabled first
-			 * before writing to the registers.
-			 */
+			 
 			ret = clk_bulk_prepare_enable(SPRD_PWM_CHN_CLKS_NUM,
 						      chn->clks);
 			if (ret) {
@@ -194,11 +160,7 @@ static int sprd_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 		sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_ENABLE, 1);
 	} else if (cstate->enabled) {
-		/*
-		 * Note: After setting SPRD_PWM_ENABLE to zero, the controller
-		 * will not wait for current period to be completed, instead it
-		 * will stop the PWM channel immediately.
-		 */
+		 
 		sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_ENABLE, 0);
 
 		clk_bulk_disable_unprepare(SPRD_PWM_CHN_CLKS_NUM, chn->clks);

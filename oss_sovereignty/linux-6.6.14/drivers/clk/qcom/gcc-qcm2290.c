@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -108,7 +106,7 @@ static struct clk_alpha_pll gpll1 = {
 	},
 };
 
-/* 1152MHz configuration */
+ 
 static const struct alpha_pll_config gpll10_config = {
 	.l = 0x3c,
 	.alpha = 0x0,
@@ -138,7 +136,7 @@ static struct clk_alpha_pll gpll10 = {
 	},
 };
 
-/* 532MHz configuration */
+ 
 static const struct alpha_pll_config gpll11_config = {
 	.l = 0x1B,
 	.alpha = 0x55555555,
@@ -296,7 +294,7 @@ static struct clk_alpha_pll gpll7 = {
 	},
 };
 
-/* 533.2MHz configuration */
+ 
 static const struct alpha_pll_config gpll8_config = {
 	.l = 0x1B,
 	.alpha = 0x55555555,
@@ -353,7 +351,7 @@ static struct clk_alpha_pll_postdiv gpll8_out_main = {
 	},
 };
 
-/* 1152MHz configuration */
+ 
 static const struct alpha_pll_config gpll9_config = {
 	.l = 0x3C,
 	.alpha = 0x0,

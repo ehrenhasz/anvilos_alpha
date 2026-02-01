@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * mpq7920.h  -  Regulator definitions for mpq7920
- *
- * Copyright 2019 Monolithic Power Systems, Inc
- *
- */
+ 
+ 
 
 #ifndef __MPQ7920_H__
 #define __MPQ7920_H__
@@ -60,10 +55,10 @@
 
 #define MPQ7920_REGULATOR_EN_OFFSET	7
 
-/* values in mV */
+ 
 #define MPQ7920_BUCK_VOLT_MIN		400000
 #define MPQ7920_LDO_VOLT_MIN		650000
 #define MPQ7920_VOLT_MAX		3587500
 #define MPQ7920_VOLT_STEP		12500
 
-#endif /* __MPQ7920_H__ */
+#endif  

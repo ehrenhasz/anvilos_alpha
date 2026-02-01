@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -34,10 +9,10 @@
 #include "py/runtime.h"
 #include "py/mpprint.h"
 
-// returned value is always at least 1 greater than argument
+
 #define ROUND_ALLOC(a) (((a) & ((~0U) - 7)) + 8)
 
-// Init the vstr so it allocs exactly given number of bytes.  Set length to zero.
+
 void vstr_init(vstr_t *vstr, size_t alloc) {
     if (alloc < 1) {
         alloc = 1;
@@ -48,8 +23,8 @@ void vstr_init(vstr_t *vstr, size_t alloc) {
     vstr->fixed_buf = false;
 }
 
-// Init the vstr so it allocs exactly enough ram to hold a null-terminated
-// string of the given length, and set the length.
+
+
 void vstr_init_len(vstr_t *vstr, size_t len) {
     vstr_init(vstr, len + 1);
     vstr->len = len;
@@ -90,11 +65,11 @@ void vstr_free(vstr_t *vstr) {
     }
 }
 
-// Extend vstr strictly by requested size, return pointer to newly added chunk.
+
 char *vstr_extend(vstr_t *vstr, size_t size) {
     if (vstr->fixed_buf) {
-        // We can't reallocate, and the caller is expecting the space to
-        // be there, so the only safe option is to raise an exception.
+        
+        
         mp_raise_msg(&mp_type_RuntimeError, NULL);
     }
     char *new_buf = m_renew(char, vstr->buf, vstr->alloc, vstr->alloc + size);
@@ -107,8 +82,8 @@ char *vstr_extend(vstr_t *vstr, size_t size) {
 static void vstr_ensure_extra(vstr_t *vstr, size_t size) {
     if (vstr->len + size > vstr->alloc) {
         if (vstr->fixed_buf) {
-            // We can't reallocate, and the caller is expecting the space to
-            // be there, so the only safe option is to raise an exception.
+            
+            
             mp_raise_msg(&mp_type_RuntimeError, NULL);
         }
         size_t new_alloc = ROUND_ALLOC((vstr->len + size) + 16);
@@ -129,9 +104,9 @@ char *vstr_add_len(vstr_t *vstr, size_t len) {
     return buf;
 }
 
-// Doesn't increase len, just makes sure there is a null byte at the end
+
 char *vstr_null_terminated_str(vstr_t *vstr) {
-    // If there's no more room, add single byte
+    
     if (vstr->alloc == vstr->len) {
         vstr_extend(vstr, 1);
     }
@@ -146,8 +121,8 @@ void vstr_add_byte(vstr_t *vstr, byte b) {
 
 void vstr_add_char(vstr_t *vstr, unichar c) {
     #if MICROPY_PY_BUILTINS_STR_UNICODE
-    // TODO: Can this be simplified and deduplicated?
-    // Is it worth just calling vstr_add_len(vstr, 4)?
+    
+    
     if (c < 0x80) {
         byte *buf = (byte *)vstr_add_len(vstr, 1);
         *buf = (byte)c;
@@ -189,11 +164,11 @@ static char *vstr_ins_blank_bytes(vstr_t *vstr, size_t byte_pos, size_t byte_len
         byte_pos = l;
     }
     if (byte_len > 0) {
-        // ensure room for the new bytes
+        
         vstr_ensure_extra(vstr, byte_len);
-        // copy up the string to make room for the new bytes
+        
         memmove(vstr->buf + byte_pos + byte_len, vstr->buf + byte_pos, l - byte_pos);
-        // increase the length
+        
         vstr->len += byte_len;
     }
     return vstr->buf + byte_pos;
@@ -205,7 +180,7 @@ void vstr_ins_byte(vstr_t *vstr, size_t byte_pos, byte b) {
 }
 
 void vstr_ins_char(vstr_t *vstr, size_t char_pos, unichar chr) {
-    // TODO UNICODE
+    
     char *s = vstr_ins_blank_bytes(vstr, char_pos, 1);
     *s = chr;
 }

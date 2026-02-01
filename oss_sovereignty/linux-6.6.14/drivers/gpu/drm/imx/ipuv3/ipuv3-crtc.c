@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX IPUv3 Graphics driver
- *
- * Copyright (C) 2011 Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -32,7 +28,7 @@ struct ipu_crtc {
 	struct device		*dev;
 	struct drm_crtc		base;
 
-	/* plane[0] is the full plane, plane[1] is the partial plane */
+	 
 	struct ipu_plane	*plane[2];
 
 	struct ipu_dc		*dc;
@@ -88,11 +84,7 @@ static void ipu_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	ipu_dc_disable_channel(ipu_crtc->dc);
 	ipu_di_disable(ipu_crtc->di);
-	/*
-	 * Planes must be disabled before DC clock is removed, as otherwise the
-	 * attached IDMACs will be left in undefined state, possibly hanging
-	 * the IPU or even system.
-	 */
+	 
 	ipu_crtc_disable_planes(ipu_crtc, old_crtc_state);
 	ipu_dc_disable(ipu);
 	ipu_prg_disable(ipu);
@@ -281,11 +273,7 @@ static void ipu_crtc_mode_set_nofb(struct drm_crtc *crtc)
 	dev_dbg(ipu_crtc->dev, "%s: attached to encoder types 0x%lx\n",
 		__func__, encoder_types);
 
-	/*
-	 * If we have DAC or LDB, then we need the IPU DI clock to be
-	 * the same as the LDB DI clock. For TVDAC, derive the IPU DI
-	 * clock from 27 MHz TVE_DI clock, but allow to divide it.
-	 */
+	 
 	if (encoder_types & (BIT(DRM_MODE_ENCODER_DAC) |
 			     BIT(DRM_MODE_ENCODER_LVDS)))
 		sig_cfg.clkflags = IPU_DI_CLKMODE_SYNC | IPU_DI_CLKMODE_EXT;
@@ -295,7 +283,7 @@ static void ipu_crtc_mode_set_nofb(struct drm_crtc *crtc)
 		sig_cfg.clkflags = 0;
 
 	sig_cfg.enable_pol = !(imx_crtc_state->bus_flags & DRM_BUS_FLAG_DE_LOW);
-	/* Default to driving pixel data on negative clock edges */
+	 
 	sig_cfg.clk_pol = !!(imx_crtc_state->bus_flags &
 			     DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE);
 	sig_cfg.bus_format = imx_crtc_state->bus_format;
@@ -399,7 +387,7 @@ static int ipu_drm_bind(struct device *dev, struct device *master, void *data)
 		return ret;
 	}
 
-	/* If this crtc is using the DP, add an overlay plane */
+	 
 	if (pdata->dp >= 0 && pdata->dma[1] > 0) {
 		ipu_crtc->plane[1] = ipu_plane_init(drm, ipu, pdata->dma[1],
 						IPU_DP_FLOW_SYNC_FG,
@@ -416,7 +404,7 @@ static int ipu_drm_bind(struct device *dev, struct device *master, void *data)
 		dev_err(ipu_crtc->dev, "irq request failed with %d.\n", ret);
 		return ret;
 	}
-	/* Only enable IRQ when we actually need it to trigger work. */
+	 
 	disable_irq(ipu_crtc->irq);
 
 	return 0;

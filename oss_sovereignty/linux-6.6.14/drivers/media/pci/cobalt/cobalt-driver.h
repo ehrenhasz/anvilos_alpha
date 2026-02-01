@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  cobalt driver internal defines and structures
- *
- *  Derived from cx18-driver.h
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+ 
+ 
 
 #ifndef COBALT_DRIVER_H
 #define COBALT_DRIVER_H
@@ -35,33 +28,33 @@
 #include "m00479_clk_loss_detector_memmap_package.h"
 #include "m00514_syncgen_flow_evcnt_memmap_package.h"
 
-/* System device ID */
+ 
 #define PCI_DEVICE_ID_COBALT	0x2732
 
-/* Number of cobalt device nodes. */
+ 
 #define COBALT_NUM_INPUTS	4
 #define COBALT_NUM_NODES	6
 
-/* Number of cobalt device streams. */
+ 
 #define COBALT_NUM_STREAMS	12
 
 #define COBALT_HSMA_IN_NODE	4
 #define COBALT_HSMA_OUT_NODE	5
 
-/* Cobalt audio streams */
+ 
 #define COBALT_AUDIO_IN_STREAM	6
 #define COBALT_AUDIO_OUT_STREAM 11
 
-/* DMA stuff */
+ 
 #define DMA_CHANNELS_MAX	16
 
-/* i2c stuff */
+ 
 #define I2C_CLIENTS_MAX		16
 #define COBALT_NUM_ADAPTERS	5
 
 #define COBALT_CLK		50000000
 
-/* System status register */
+ 
 #define COBALT_SYSSTAT_DIP0_MSK			BIT(0)
 #define COBALT_SYSSTAT_DIP1_MSK			BIT(1)
 #define COBALT_SYSSTAT_HSMA_PRSNTN_MSK		BIT(2)
@@ -94,7 +87,7 @@
 #define COBALT_SYSSTAT_AUD_OUT_LOST_DATA_MSK	BIT(30)
 #define COBALT_SYSSTAT_PCIE_SMBCLK_MSK		BIT(31)
 
-/* Cobalt memory map */
+ 
 #define COBALT_I2C_0_BASE			0x0
 #define COBALT_I2C_1_BASE			0x080
 #define COBALT_I2C_2_BASE			0x100
@@ -140,18 +133,18 @@
 
 #define COBALT_HDL_SEARCH_STR			"** HDL version info **"
 
-/* Cobalt CPU bus interface */
+ 
 #define COBALT_BUS_BAR1_BASE			0x600
 #define COBALT_BUS_SRAM_BASE			0x0
 #define COBALT_BUS_CPLD_BASE			0x00600000
 #define COBALT_BUS_FLASH_BASE			0x08000000
 
-/* FDMA to PCIe packing */
+ 
 #define COBALT_BYTES_PER_PIXEL_YUYV		2
 #define COBALT_BYTES_PER_PIXEL_RGB24		3
 #define COBALT_BYTES_PER_PIXEL_RGB32		4
 
-/* debugging */
+ 
 extern int cobalt_debug;
 extern int cobalt_ignore_err;
 
@@ -164,7 +157,7 @@ extern int cobalt_ignore_err;
 struct cobalt;
 struct cobalt_i2c_regs;
 
-/* Per I2C bus private algo callback data */
+ 
 struct cobalt_i2c_data {
 	struct cobalt *cobalt;
 	struct cobalt_i2c_regs __iomem *regs;
@@ -246,12 +239,12 @@ struct cobalt_stream {
 
 struct snd_cobalt_card;
 
-/* Struct to hold info about cobalt cards */
+ 
 struct cobalt {
 	int instance;
 	struct pci_dev *pci_dev;
 	struct v4l2_device v4l2_dev;
-	/* serialize PCI access in cobalt_s_bit_sysctrl() */
+	 
 	struct mutex pci_lock;
 
 	void __iomem *bar0, *bar1;
@@ -259,17 +252,17 @@ struct cobalt {
 	u8 card_rev;
 	u16 device_id;
 
-	/* device nodes */
+	 
 	struct cobalt_stream streams[DMA_CHANNELS_MAX];
 	struct i2c_adapter i2c_adap[COBALT_NUM_ADAPTERS];
 	struct cobalt_i2c_data i2c_data[COBALT_NUM_ADAPTERS];
 	bool have_hsma_rx;
 	bool have_hsma_tx;
 
-	/* irq */
+	 
 	struct workqueue_struct *irq_work_queues;
-	struct work_struct irq_work_queue;              /* work entry */
-	/* irq counters */
+	struct work_struct irq_work_queue;               
+	 
 	u32 irq_adv1;
 	u32 irq_adv2;
 	u32 irq_advout;
@@ -278,14 +271,14 @@ struct cobalt {
 	u32 irq_none;
 	u32 irq_full_fifo;
 
-	/* omnitek dma */
+	 
 	int dma_channels;
 	int first_fifo_channel;
 	bool pci_32_bit;
 
 	char hdl_info[COBALT_HDL_INFO_SIZE];
 
-	/* NOR flash */
+	 
 	struct mtd_info *mtd;
 };
 
@@ -366,7 +359,7 @@ static inline void cobalt_bus_write32(void __iomem *bar1,
 		iowrite32(data, LOWER_DATA);
 }
 
-/*==============Prototypes==================*/
+ 
 
 void cobalt_pcie_status_show(struct cobalt *cobalt);
 

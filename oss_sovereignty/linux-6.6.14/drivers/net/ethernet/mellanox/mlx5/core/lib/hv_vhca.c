@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2018 Mellanox Technologies
+
+
 
 #include <linux/hyperv.h>
 #include "mlx5_core.h"
@@ -10,7 +10,7 @@ struct mlx5_hv_vhca {
 	struct mlx5_core_dev       *dev;
 	struct workqueue_struct    *work_queue;
 	struct mlx5_hv_vhca_agent  *agents[MLX5_HV_VHCA_AGENT_MAX];
-	struct mutex                agents_lock; /* Protect agents array */
+	struct mutex                agents_lock;  
 };
 
 struct mlx5_hv_vhca_work {
@@ -109,7 +109,7 @@ void mlx5_hv_vhca_invalidate(void *context, u64 block_mask)
 	queue_work(hv_vhca->work_queue, &work->invalidate_work);
 }
 
-#define AGENT_MASK(type) (type ? BIT(type - 1) : 0 /* control */)
+#define AGENT_MASK(type) (type ? BIT(type - 1) : 0  )
 
 static void mlx5_hv_vhca_agents_control(struct mlx5_hv_vhca *hv_vhca,
 					struct mlx5_hv_vhca_control_block *block)
@@ -162,7 +162,7 @@ mlx5_hv_vhca_control_agent_invalidate(struct mlx5_hv_vhca_agent *agent,
 
 	mlx5_hv_vhca_capabilities(hv_vhca, &capabilities);
 
-	/* In case no capabilities, send empty block in return */
+	 
 	if (!capabilities) {
 		memset(block, 0, sizeof(*block));
 		goto write;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Abilis Systems MODULE DESCRIPTION
- *
- * Copyright (C) Abilis Systems 2013
- *
- * Authors: Sascha Leuenberger <sascha.leuenberger@abilis.com>
- *          Christian Ruppert <christian.ruppert@abilis.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,12 +26,7 @@
 #define OFFSET_TO_REG_INT_TYPE	(0x14)
 
 
-/**
- * @base: register base address
- * @domain: IRQ domain of GPIO generated interrupts managed by this controller
- * @irq: Interrupt line of parent interrupt controller
- * @gc: gpio_chip structure associated to this GPIO controller
- */
+ 
 struct tb10x_gpio {
 	void __iomem *base;
 	struct irq_domain *domain;
@@ -132,11 +121,7 @@ static int tb10x_gpio_probe(struct platform_device *pdev)
 	if (!tb10x_gpio->gc.label)
 		return -ENOMEM;
 
-	/*
-	 * Initialize generic GPIO with one single register for reading and setting
-	 * the lines, no special set or clear registers and a data direction register
-	 * wher 1 means "output".
-	 */
+	 
 	ret = bgpio_init(&tb10x_gpio->gc, dev, 4,
 			 tb10x_gpio->base + OFFSET_TO_REG_DATA,
 			 NULL,
@@ -151,10 +136,7 @@ static int tb10x_gpio_probe(struct platform_device *pdev)
 	tb10x_gpio->gc.base = -1;
 	tb10x_gpio->gc.parent = dev;
 	tb10x_gpio->gc.owner = THIS_MODULE;
-	/*
-	 * ngpio is set by bgpio_init() but we override it, this .request()
-	 * callback also overrides the one set up by generic GPIO.
-	 */
+	 
 	tb10x_gpio->gc.ngpio = ngpio;
 	tb10x_gpio->gc.request = gpiochip_generic_request;
 	tb10x_gpio->gc.free = gpiochip_generic_free;

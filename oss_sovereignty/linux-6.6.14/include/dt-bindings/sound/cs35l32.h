@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DT_CS35L32_H
 #define __DT_CS35L32_H
 
@@ -24,4 +24,4 @@
 #define CS35L32_BATT_RECOV_3_5V		4
 #define CS35L32_BATT_RECOV_3_6V		5
 
-#endif /* __DT_CS35L32_H */
+#endif  

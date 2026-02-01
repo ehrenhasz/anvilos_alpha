@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8821AE_REG_H__
 #define __RTL8821AE_REG_H__
@@ -24,7 +24,7 @@
 #define REG_LDOHCI12_CTRL			0x0022
 #define REG_LPLDO_CTRL				0x0023
 #define REG_AFE_XTAL_CTRL			0x0024
- /* 1.5v for 8188EE test chip, 1.4v for MP chip */
+  
 #define REG_AFE_LDO_CTRL			0x0027
 #define REG_AFE_PLL_CTRL			0x0028
 #define REG_MAC_PHY_CTRL			0x002c
@@ -135,11 +135,11 @@
 #define REG_RQPN_NPQ				0x0214
 
 #define REG_RXDMA_AGG_PG_TH			0x0280
- /* FW shall update this register before FW write RXPKT_RELEASE_POLL to 1 */
+  
 #define REG_FW_UPD_RDPTR			0x0284
- /* Control the RX DMA.*/
+  
 #define REG_RXDMA_CONTROL			0x0286
-/* The number of packets in RXPKTBUF.	*/
+ 
 #define REG_RXPKT_NUM				0x0287
 
 #define	REG_PCIE_CTRL_REG			0x0300
@@ -389,14 +389,14 @@
 #define	GPIO_IO_SEL			(REG_GPIO_PIN_CTRL+2)
 #define	GPIO_MOD			(REG_GPIO_PIN_CTRL+3)
 
-/*    8723/8188E Host System Interrupt Mask Register (offset 0x58, 32 byte) */
+ 
 #define	HSIMR_GPIO12_0_INT_EN			BIT(0)
 #define	HSIMR_SPS_OCP_INT_EN			BIT(5)
 #define	HSIMR_RON_INT_EN			BIT(6)
 #define	HSIMR_PDN_INT_EN			BIT(7)
 #define	HSIMR_GPIO9_INT_EN			BIT(25)
 
-/* 8723/8188E Host System Interrupt Status Register (offset 0x5C, 32 byte) */
+ 
 #define	HSISR_GPIO12_0_INT			BIT(0)
 #define	HSISR_SPS_OCP_INT			BIT(5)
 #define	HSISR_RON_INT_EN			BIT(6)
@@ -535,103 +535,101 @@
 #define	WOW_MAGIC				BIT(2)
 #define	WOW_UWF					BIT(3)
 
-/*********************************************
-*       8188 IMR/ISR bits
-**********************************************/
+ 
 #define	IMR_DISABLED				0x0
-/* IMR DW0(0x0060-0063) Bit 0-31 */
-/* TXRPT interrupt when CCX bit of the packet is set	*/
+ 
+ 
 #define	IMR_TXCCK				BIT(30)
-/* Power Save Time Out Interrupt */
+ 
 #define	IMR_PSTIMEOUT				BIT(29)
-/* When GTIMER4 expires, this bit is set to 1	*/
+ 
 #define	IMR_GTINT4				BIT(28)
-/* When GTIMER3 expires, this bit is set to 1	*/
+ 
 #define	IMR_GTINT3				BIT(27)
-/* Transmit Beacon0 Error			*/
+ 
 #define	IMR_TBDER				BIT(26)
-/* Transmit Beacon0 OK			*/
+ 
 #define	IMR_TBDOK				BIT(25)
-/* TSF Timer BIT32 toggle indication interrupt		*/
+ 
 #define	IMR_TSF_BIT32_TOGGLE			BIT(24)
-/* Beacon DMA Interrupt 0			*/
+ 
 #define	IMR_BCNDMAINT0				BIT(20)
-/* Beacon Queue DMA OK0			*/
+ 
 #define	IMR_BCNDOK0				BIT(16)
-/* HSISR Indicator (HSIMR & HSISR is true, this bit is set to 1) */
+ 
 #define	IMR_HSISR_IND_ON_INT			BIT(15)
-/* Beacon DMA Interrupt Extension for Win7			*/
+ 
 #define	IMR_BCNDMAINT_E				BIT(14)
-/* CTWidnow End or ATIM Window End */
+ 
 #define	IMR_ATIMEND				BIT(12)
-/* HISR1 Indicator (HISR1 & HIMR1 is true, this bit is set to 1)*/
+ 
 #define	IMR_HISR1_IND_INT			BIT(11)
-/* CPU to Host Command INT Status, Write 1 clear	*/
+ 
 #define	IMR_C2HCMD				BIT(10)
-/* CPU power Mode exchange INT Status, Write 1 clear	*/
+ 
 #define	IMR_CPWM2				BIT(9)
-/* CPU power Mode exchange INT Status, Write 1 clear	*/
+ 
 #define	IMR_CPWM				BIT(8)
-/* High Queue DMA OK	*/
+ 
 #define	IMR_HIGHDOK				BIT(7)
-/* Management Queue DMA OK	*/
+ 
 #define	IMR_MGNTDOK				BIT(6)
-/* AC_BK DMA OK		*/
+ 
 #define	IMR_BKDOK				BIT(5)
-/* AC_BE DMA OK	*/
+ 
 #define	IMR_BEDOK				BIT(4)
-/* AC_VI DMA OK	*/
+ 
 #define	IMR_VIDOK				BIT(3)
-/* AC_VO DMA OK	*/
+ 
 #define	IMR_VODOK				BIT(2)
-/* Rx Descriptor Unavailable	*/
+ 
 #define	IMR_RDU					BIT(1)
-#define	IMR_ROK					BIT(0)	/* Receive DMA OK */
+#define	IMR_ROK					BIT(0)	 
 
-/* IMR DW1(0x00B4-00B7) Bit 0-31 */
-/* Beacon DMA Interrupt 7	*/
+ 
+ 
 #define	IMR_BCNDMAINT7				BIT(27)
-/* Beacon DMA Interrupt 6		*/
+ 
 #define	IMR_BCNDMAINT6				BIT(26)
-/* Beacon DMA Interrupt 5		*/
+ 
 #define	IMR_BCNDMAINT5				BIT(25)
-/* Beacon DMA Interrupt 4		*/
+ 
 #define	IMR_BCNDMAINT4				BIT(24)
-/* Beacon DMA Interrupt 3		*/
+ 
 #define	IMR_BCNDMAINT3				BIT(23)
-/* Beacon DMA Interrupt 2		*/
+ 
 #define	IMR_BCNDMAINT2				BIT(22)
-/* Beacon DMA Interrupt 1		*/
+ 
 #define	IMR_BCNDMAINT1				BIT(21)
-/* Beacon Queue DMA OK Interrup 7 */
+ 
 #define	IMR_BCNDOK7				BIT(20)
-/* Beacon Queue DMA OK Interrup 6 */
+ 
 #define	IMR_BCNDOK6				BIT(19)
-/* Beacon Queue DMA OK Interrup 5 */
+ 
 #define	IMR_BCNDOK5				BIT(18)
-/* Beacon Queue DMA OK Interrup 4 */
+ 
 #define	IMR_BCNDOK4				BIT(17)
-/* Beacon Queue DMA OK Interrup 3 */
+ 
 #define	IMR_BCNDOK3				BIT(16)
-/* Beacon Queue DMA OK Interrup 2 */
+ 
 #define	IMR_BCNDOK2				BIT(15)
-/* Beacon Queue DMA OK Interrup 1 */
+ 
 #define	IMR_BCNDOK1				BIT(14)
-/* ATIM Window End Extension for Win7 */
+ 
 #define	IMR_ATIMEND_E				BIT(13)
-/* Tx Error Flag Interrupt Status, write 1 clear. */
+ 
 #define	IMR_TXERR				BIT(11)
-/* Rx Error Flag INT Status, Write 1 clear */
+ 
 #define	IMR_RXERR				BIT(10)
-/* Transmit FIFO Overflow */
+ 
 #define	IMR_TXFOVW				BIT(9)
-/* Receive FIFO Overflow */
+ 
 #define	IMR_RXFOVW				BIT(8)
 
 #define	HWSET_MAX_SIZE				512
 #define   EFUSE_MAX_SECTION			64
 #define   EFUSE_REAL_CONTENT_LEN		256
-/* PG data exclude header, dummy 7 bytes frome CP test and reserved 1byte.*/
+ 
 #define		EFUSE_OOB_PROTECT_BYTES		18
 
 #define	EEPROM_DEFAULT_TSSI			0x0
@@ -1408,7 +1406,7 @@
 #define	RCCK0_FACOUNTERUPPER		0xa58
 #define	RCCK0_CCA_CNT			0xa60
 
-/* PageB(0XB00) */
+ 
 #define	RPDP_ANTA			0xb00
 #define	RPDP_ANTA_4			0xb04
 #define	RPDP_ANTA_8			0xb08
@@ -1454,7 +1452,7 @@
 #define	RPM_RX2_ANTB			0xbf4
 #define	RPM_RX3_ANTB			0xbf8
 
-/*RSSI Dump*/
+ 
 #define		RA_RSSI_DUMP		0XBF0
 #define		RB_RSSI_DUMP		0XBF1
 #define		RS1_RX_EVM_DUMP		0XBF4
@@ -1466,7 +1464,7 @@
 #define		RA_CFO_LONG_DUMP	0XBEC
 #define		RB_CFO_LONG_DUMP	0XBEE
 
-/*Page C*/
+ 
 #define	ROFDM0_LSTF			0xc00
 
 #define	ROFDM0_TRXPATHENABLE		0xc04
@@ -1523,9 +1521,9 @@
 #define	ROFDM0_TXCOEFF5			0xcb4
 #define	ROFDM0_TXCOEFF6			0xcb8
 
-/*Path_A RFE cotrol */
+ 
 #define	RA_RFE_CTRL_8812		0xcb8
-/*Path_B RFE control*/
+ 
 #define	RB_RFE_CTRL_8812		0xeb8
 
 #define	ROFDM0_RXHPPARAMETER		0xce0
@@ -1782,20 +1780,20 @@
 #define	BRFMOD				0x1
 #define	BJAPANMODE			0x2
 #define	BCCKTXSC			0x30
-/* Block & Path enable*/
+ 
 #define ROFDMCCKEN			0x808
 #define	BCCKEN				0x10000000
 #define	BOFDMEN				0x20000000
-/* Rx antenna*/
+ 
 #define	RRXPATH				0x808
 #define	BRXPATH				0xff
-/* Tx antenna*/
+ 
 #define	RTXPATH				0x80c
 #define	BTXPATH				0x0fffffff
-/* for cck rx path selection*/
+ 
 #define	RCCK_RX				0xa04
 #define	BCCK_RX				0x0c000000
-/* Use LSIG for VHT length*/
+ 
 #define	RVHTLEN_USE_LSIG		0x8c3
 
 #define	BOFDMRXADCPHASE			0x10000
@@ -2336,59 +2334,59 @@
 
 #define	REG_UN_used_register		0x01bf
 
-/* Path_A RFE cotrol pinmux*/
+ 
 #define		RA_RFE_PINMUX		0xcb0
-/* Path_B RFE control pinmux*/
+ 
 #define		RB_RFE_PINMUX		0xeb0
 
 #define		RA_RFE_INV		0xcb4
 #define		RB_RFE_INV		0xeb4
 
-/* RXIQC */
-/*RxIQ imblance matrix coeff. A & B*/
+ 
+ 
 #define RA_RXIQC_AB			0xc10
-/*RxIQ imblance matrix coeff. C & D*/
+ 
 #define	RA_RXIQC_CD			0xc14
-/* Pah_A TX scaling factor*/
+ 
 #define	RA_TXSCALE			0xc1c
-/* Path_B TX scaling factor*/
+ 
 #define	RB_TXSCALE			0xe1c
-/*RxIQ imblance matrix coeff. A & B*/
+ 
 #define	RB_RXIQC_AB			0xe10
-/*RxIQ imblance matrix coeff. C & D*/
+ 
 #define	RB_RXIQC_CD			0xe14
-/*bit mask for IQC matrix element A & C*/
+ 
 #define	RXIQC_AC			0x02ff
- /*bit mask for IQC matrix element A & C*/
+  
 #define	RXIQC_BD			0x02ff0000
 
-/* 2 EFUSE_TEST (For RTL8723 partially) */
+ 
 #define EFUSE_SEL(x)			(((x) & 0x3) << 8)
 #define EFUSE_SEL_MASK			0x300
 #define EFUSE_WIFI_SEL_0		0x0
 
-/*REG_MULTI_FUNC_CTRL(For RTL8723 Only)*/
-/* Enable GPIO[9] as WiFi HW PDn source*/
+ 
+ 
 #define	WL_HWPDN_EN			BIT(0)
-/* WiFi HW PDn polarity control*/
+ 
 #define	WL_HWPDN_SL			BIT(1)
-/* WiFi function enable */
+ 
 #define	WL_FUNC_EN			BIT(2)
-/* Enable GPIO[9] as WiFi RF HW PDn source */
+ 
 #define	WL_HWROF_EN			BIT(3)
-/* Enable GPIO[11] as BT HW PDn source */
+ 
 #define	BT_HWPDN_EN			BIT(16)
-/* BT HW PDn polarity control */
+ 
 #define	BT_HWPDN_SL			BIT(17)
-/* BT function enable */
+ 
 #define	BT_FUNC_EN			BIT(18)
-/* Enable GPIO[11] as BT/GPS RF HW PDn source */
+ 
 #define	BT_HWROF_EN			BIT(19)
-/* Enable GPIO[10] as GPS HW PDn source */
+ 
 #define	GPS_HWPDN_EN			BIT(20)
-/* GPS HW PDn polarity control */
+ 
 #define	GPS_HWPDN_SL			BIT(21)
-/* GPS function enable */
+ 
 #define	GPS_FUNC_EN			BIT(22)
 
 #define	BMASKBYTE0			0xff
@@ -2408,22 +2406,22 @@
 
 #define	ODM_REG_CCK_RPT_FORMAT_11AC	0x804
 #define	ODM_REG_BB_RX_PATH_11AC		0x808
-/*PAGE 9*/
+ 
 #define	ODM_REG_OFDM_FA_RST_11AC	0x9A4
-/*PAGE A*/
+ 
 #define	ODM_REG_CCK_CCA_11AC		0xA0A
 #define	ODM_REG_CCK_FA_RST_11AC		0xA2C
 #define	ODM_REG_CCK_FA_11AC		0xA5C
-/*PAGE C*/
+ 
 #define	ODM_REG_IGI_A_11AC		0xC50
-/*PAGE E*/
+ 
 #define	ODM_REG_IGI_B_11AC		0xE50
-/*PAGE F*/
+ 
 #define	ODM_REG_OFDM_FA_11AC		0xF48
 
-/* 2 MAC REG LIST */
+ 
 
-/* DIG Related */
+ 
 #define	ODM_BIT_IGI_11AC		0xFFFFFFFF
 #define	ODM_BIT_CCK_RPT_FORMAT_11AC	BIT16
 #define	ODM_BIT_BB_RX_PATH_11AC		0xF

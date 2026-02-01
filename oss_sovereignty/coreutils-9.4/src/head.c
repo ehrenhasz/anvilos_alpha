@@ -1,27 +1,4 @@
-/* head -- output first part of file(s)
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Options: (see usage)
-   Reads from standard input if no files are given or when a filename of
-   ''-'' is encountered.
-   By default, filename headers are printed only if more than one file
-   is given.
-   By default, prints the first 10 lines (head -n 10).
-
-   David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 
@@ -39,35 +16,32 @@
 #include "xbinary-io.h"
 #include "xdectoint.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "head"
 
 #define AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-/* Number of lines/chars/blocks to head. */
+ 
 #define DEFAULT_NUMBER 10
 
-/* Useful only when eliding tail bytes or lines.
-   If true, skip the is-regular-file test used to determine whether
-   to use the lseek optimization.  Instead, use the more general (and
-   more expensive) code unconditionally. Intended solely for testing.  */
+ 
 static bool presume_input_pipe;
 
-/* If true, print filename headers. */
+ 
 static bool print_headers;
 
-/* Character to split lines by. */
+ 
 static char line_end;
 
-/* When to print the filename banners. */
+ 
 enum header_mode
 {
   multiple_files, always, never
 };
 
-/* Have we ever read standard input?  */
+ 
 static bool have_read_stdin;
 
 enum Copy_fd_status
@@ -77,8 +51,7 @@ enum Copy_fd_status
     COPY_FD_UNEXPECTED_EOF
   };
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
@@ -89,7 +62,7 @@ static struct option const long_options[] =
   {"bytes", required_argument, nullptr, 'c'},
   {"lines", required_argument, nullptr, 'n'},
   {"-presume-input-pipe", no_argument, nullptr,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
+   PRESUME_INPUT_PIPE_OPTION},  
   {"quiet", no_argument, nullptr, 'q'},
   {"silent", no_argument, nullptr, 'q'},
   {"verbose", no_argument, nullptr, 'v'},

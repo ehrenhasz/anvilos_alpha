@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
- */
+
+ 
 
 
 #include <linux/bitfield.h>
@@ -19,10 +17,7 @@
 #define AR9331_HDR_TYPE_MASK		GENMASK(10, 8)
 #define AR9331_HDR_BROADCAST		BIT(7)
 #define AR9331_HDR_FROM_CPU		BIT(6)
-/* AR9331_HDR_RESERVED - not used or may be version field.
- * According to the AR8216 doc it should 0b10. On AR9331 it is 0b11 on RX path
- * and should be set to 0b11 to make it work.
- */
+ 
 #define AR9331_HDR_RESERVED_MASK	GENMASK(5, 4)
 #define AR9331_HDR_PORT_NUM_MASK	GENMASK(3, 0)
 
@@ -37,7 +32,7 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
 
 	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
 	hdr |= AR9331_HDR_FROM_CPU | dp->index;
-	/* 0b10 for AR8216 and 0b11 for AR9331 */
+	 
 	hdr |= AR9331_HDR_RESERVED_MASK;
 
 	phdr[0] = cpu_to_le16(hdr);
@@ -71,7 +66,7 @@ static struct sk_buff *ar9331_tag_rcv(struct sk_buff *skb,
 
 	skb_pull_rcsum(skb, AR9331_HDR_LEN);
 
-	/* Get source port information */
+	 
 	port = FIELD_GET(AR9331_HDR_PORT_NUM_MASK, hdr);
 
 	skb->dev = dsa_master_find_slave(ndev, 0, port);

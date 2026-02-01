@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt2701-afe-clock-ctrl.c  --  Mediatek 2701 afe clock ctrl
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Garlic Tseng <garlic.tseng@mediatek.com>
- *	   Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include "mt2701-afe-common.h"
 #include "mt2701-afe-clock-ctrl.h"
@@ -35,7 +29,7 @@ int mt2701_init_clock(struct mtk_base_afe *afe)
 		}
 	}
 
-	/* Get I2S related clocks */
+	 
 	for (i = 0; i < afe_priv->soc->i2s_num; i++) {
 		struct mt2701_i2s_path *i2s_path = &afe_priv->i2s_path[i];
 		struct clk *i2s_ck;
@@ -86,7 +80,7 @@ int mt2701_init_clock(struct mtk_base_afe *afe)
 		}
 	}
 
-	/* Some platforms may support BT path */
+	 
 	afe_priv->mrgif_ck = devm_clk_get(afe->dev, "audio_mrgif_pd");
 	if (IS_ERR(afe_priv->mrgif_ck)) {
 		if (PTR_ERR(afe_priv->mrgif_ck) == -EPROBE_DEFER)
@@ -167,22 +161,22 @@ static int mt2701_afe_enable_audsys(struct mtk_base_afe *afe)
 	struct mt2701_afe_private *afe_priv = afe->platform_priv;
 	int ret;
 
-	/* Enable infra clock gate */
+	 
 	ret = clk_prepare_enable(afe_priv->base_ck[MT2701_INFRA_SYS_AUDIO]);
 	if (ret)
 		return ret;
 
-	/* Enable top a1sys clock gate */
+	 
 	ret = clk_prepare_enable(afe_priv->base_ck[MT2701_TOP_AUD_A1SYS]);
 	if (ret)
 		goto err_a1sys;
 
-	/* Enable top a2sys clock gate */
+	 
 	ret = clk_prepare_enable(afe_priv->base_ck[MT2701_TOP_AUD_A2SYS]);
 	if (ret)
 		goto err_a2sys;
 
-	/* Internal clock gates */
+	 
 	ret = clk_prepare_enable(afe_priv->base_ck[MT2701_AUDSYS_AFE]);
 	if (ret)
 		goto err_afe;
@@ -234,7 +228,7 @@ int mt2701_afe_enable_clock(struct mtk_base_afe *afe)
 {
 	int ret;
 
-	/* Enable audio system */
+	 
 	ret = mt2701_afe_enable_audsys(afe);
 	if (ret) {
 		dev_err(afe->dev, "failed to enable audio system %d\n", ret);
@@ -248,7 +242,7 @@ int mt2701_afe_enable_clock(struct mtk_base_afe *afe)
 			   AFE_DAC_CON0_AFE_ON,
 			   AFE_DAC_CON0_AFE_ON);
 
-	/* Configure ASRC */
+	 
 	regmap_write(afe->regmap, PWR1_ASM_CON1, PWR1_ASM_CON1_INIT_VAL);
 	regmap_write(afe->regmap, PWR2_ASM_CON1, PWR2_ASM_CON1_INIT_VAL);
 
@@ -274,7 +268,7 @@ int mt2701_mclk_configuration(struct mtk_base_afe *afe, int id)
 	struct mt2701_i2s_path *i2s_path = &priv->i2s_path[id];
 	int ret = -EINVAL;
 
-	/* Set mclk source */
+	 
 	if (!(MT2701_PLL_DOMAIN_0_RATE % i2s_path->mclk_rate))
 		ret = clk_set_parent(i2s_path->sel_ck,
 				     priv->base_ck[MT2701_TOP_AUD_MCLK_SRC0]);
@@ -287,7 +281,7 @@ int mt2701_mclk_configuration(struct mtk_base_afe *afe, int id)
 		return ret;
 	}
 
-	/* Set mclk divider */
+	 
 	ret = clk_set_rate(i2s_path->div_ck, i2s_path->mclk_rate);
 	if (ret) {
 		dev_err(afe->dev, "failed to set mclk divider %d\n", ret);

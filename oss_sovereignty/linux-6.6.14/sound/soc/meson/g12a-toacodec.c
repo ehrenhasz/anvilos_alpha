@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -80,24 +80,14 @@ static int g12a_toacodec_mux_put_enum(struct snd_kcontrol *kcontrol,
 	if (mux == reg)
 		return 0;
 
-	/* Force disconnect of the mux while updating */
+	 
 	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
 
 	regmap_field_write(priv->field_dat_sel, mux);
 	regmap_field_write(priv->field_lrclk_sel, mux);
 	regmap_field_write(priv->field_bclk_sel, mux);
 
-	/*
-	 * FIXME:
-	 * On this soc, the glue gets the MCLK directly from the clock
-	 * controller instead of going the through the TDM interface.
-	 *
-	 * Here we assume interface A uses clock A, etc ... While it is
-	 * true for now, it could be different. Instead the glue should
-	 * find out the clock used by the interface and select the same
-	 * source. For that, we will need regmap backed clock mux which
-	 * is a work in progress
-	 */
+	 
 	snd_soc_component_update_bits(component, e->reg,
 				      CTRL0_MCLK_SEL,
 				      FIELD_PREP(CTRL0_MCLK_SEL, mux));
@@ -154,7 +144,7 @@ static int g12a_toacodec_input_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/* The glue will provide 1 lane out of the 4 to the output */
+	 
 	data = meson_codec_glue_input_get_data(dai);
 	data->params.channels_min = min_t(unsigned int, TOACODEC_OUT_CHMAX,
 					data->params.channels_min);
@@ -208,14 +198,14 @@ static struct snd_soc_dai_driver g12a_toacodec_dai_drv[] = {
 
 static int g12a_toacodec_component_probe(struct snd_soc_component *c)
 {
-	/* Initialize the static clock parameters */
+	 
 	return snd_soc_component_write(c, TOACODEC_CTRL0,
 				       CTRL0_BLK_CAP_INV);
 }
 
 static int sm1_toacodec_component_probe(struct snd_soc_component *c)
 {
-	/* Initialize the static clock parameters */
+	 
 	return snd_soc_component_write(c, TOACODEC_CTRL0,
 				       CTRL0_BLK_CAP_INV_SM1);
 }

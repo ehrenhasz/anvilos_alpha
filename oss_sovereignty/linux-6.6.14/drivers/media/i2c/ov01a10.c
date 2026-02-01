@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023 Intel Corporation.
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -27,32 +25,32 @@
 #define OV01A10_MODE_STANDBY		0x00
 #define OV01A10_MODE_STREAMING		0x01
 
-/* pixel array */
+ 
 #define OV01A10_PIXEL_ARRAY_WIDTH	1296
 #define OV01A10_PIXEL_ARRAY_HEIGHT	816
 #define OV01A10_ACITVE_WIDTH		1280
 #define OV01A10_ACITVE_HEIGHT		800
 
-/* vertical and horizontal timings */
+ 
 #define OV01A10_REG_VTS			0x380e
 #define OV01A10_VTS_DEF			0x0380
 #define OV01A10_VTS_MIN			0x0380
 #define OV01A10_VTS_MAX			0xffff
 #define OV01A10_HTS_DEF			1488
 
-/* exposure controls */
+ 
 #define OV01A10_REG_EXPOSURE		0x3501
 #define OV01A10_EXPOSURE_MIN		4
 #define OV01A10_EXPOSURE_MAX_MARGIN	8
 #define OV01A10_EXPOSURE_STEP		1
 
-/* analog gain controls */
+ 
 #define OV01A10_REG_ANALOG_GAIN		0x3508
 #define OV01A10_ANAL_GAIN_MIN		0x100
 #define OV01A10_ANAL_GAIN_MAX		0xffff
 #define OV01A10_ANAL_GAIN_STEP		1
 
-/* digital gain controls */
+ 
 #define OV01A10_REG_DIGITAL_GAIN_B	0x350a
 #define OV01A10_REG_DIGITAL_GAIN_GB	0x3510
 #define OV01A10_REG_DIGITAL_GAIN_GR	0x3513
@@ -62,17 +60,17 @@
 #define OV01A10_DGTL_GAIN_STEP		1
 #define OV01A10_DGTL_GAIN_DEFAULT	1024
 
-/* test pattern control */
+ 
 #define OV01A10_REG_TEST_PATTERN	0x4503
 #define OV01A10_TEST_PATTERN_ENABLE	BIT(7)
 #define OV01A10_LINK_FREQ_400MHZ_INDEX	0
 
-/* flip and mirror control */
+ 
 #define OV01A10_REG_FORMAT1		0x3820
 #define OV01A10_VFLIP_MASK		BIT(4)
 #define OV01A10_HFLIP_MASK		BIT(3)
 
-/* window offset */
+ 
 #define OV01A10_REG_X_WIN		0x3811
 #define OV01A10_REG_Y_WIN		0x3813
 
@@ -279,7 +277,7 @@ struct ov01a10 {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* v4l2 controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
@@ -288,7 +286,7 @@ struct ov01a10 {
 
 	const struct ov01a10_mode *cur_mode;
 
-	/* streaming state */
+	 
 	bool streaming;
 };
 
@@ -409,7 +407,7 @@ static int ov01a10_test_pattern(struct ov01a10 *ov01a10, u32 pattern)
 	return ov01a10_write_reg(ov01a10, OV01A10_REG_TEST_PATTERN, 1, pattern);
 }
 
-/* for vflip and hflip, use 0x9 as window offset to keep the bayer */
+ 
 static int ov01a10_set_hflip(struct ov01a10 *ov01a10, u32 hflip)
 {
 	int ret;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "OVERLAY"
 
@@ -69,7 +63,7 @@ static ssize_t overlay_manager_store(struct omap_overlay *ovl, const char *buf,
 	if (r)
 		return r;
 
-	/* detach old manager */
+	 
 	if (old_mgr) {
 		r = ovl->unset_manager(ovl);
 		if (r) {

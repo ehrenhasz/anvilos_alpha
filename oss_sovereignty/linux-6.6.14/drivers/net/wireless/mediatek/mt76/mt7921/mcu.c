@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/firmware.h>
@@ -52,7 +52,7 @@ int mt7921_mcu_parse_response(struct mt76_dev *mdev, int cmd,
 		skb_pull(skb, sizeof(*rxd));
 		event = (struct mt76_connac_mcu_uni_event *)skb->data;
 		ret = le32_to_cpu(event->status);
-		/* skip invalid event */
+		 
 		if (mcu_cmd != event->cid)
 			ret = -EAGAIN;
 	} else if (cmd == MCU_CE_QUERY(REG_READ)) {
@@ -131,7 +131,7 @@ void mt7921_mcu_set_suspend_iter(void *priv, u8 *mac, struct ieee80211_vif *vif)
 	mt76_connac_mcu_set_suspend_iter(priv, mac, vif);
 }
 
-#endif /* CONFIG_PM */
+#endif  
 
 static void
 mt7921_mcu_uni_roc_event(struct mt792x_dev *dev, struct sk_buff *skb)
@@ -143,7 +143,7 @@ mt7921_mcu_uni_roc_event(struct mt792x_dev *dev, struct sk_buff *skb)
 	rxd = (struct mt76_connac2_mcu_rxd *)skb->data;
 	grant = (struct mt7921_roc_grant_tlv *)(rxd->tlv + 4);
 
-	/* should never happen */
+	 
 	WARN_ON_ONCE((le16_to_cpu(grant->tag) != UNI_EVENT_ROC_GRANT));
 
 	if (grant->reqtype == MT7921_ROC_REQ_ROC)
@@ -216,7 +216,7 @@ mt7921_mcu_debug_msg_event(struct mt792x_dev *dev, struct sk_buff *skb)
 	skb_pull(skb, sizeof(struct mt76_connac2_mcu_rxd));
 	msg = (struct mt7921_debug_msg *)skb->data;
 
-	if (msg->type == 3) { /* fw log */
+	if (msg->type == 3) {  
 		u16 len = min_t(u16, le16_to_cpu(msg->len), 512);
 		int i;
 
@@ -338,7 +338,7 @@ void mt7921_mcu_rx_event(struct mt792x_dev *dev, struct sk_buff *skb)
 		mt76_mcu_rx_event(&dev->mt76, skb);
 }
 
-/** starec & wtbl **/
+ 
 int mt7921_mcu_uni_tx_ba(struct mt792x_dev *dev,
 			 struct ieee80211_ampdu_params *params,
 			 bool enable)
@@ -402,7 +402,7 @@ static int mt7921_load_clc(struct mt792x_dev *dev, const char *fw_name)
 					(hdr->n_region - i) * sizeof(*region));
 		len = le32_to_cpu(region->len);
 
-		/* check if we have valid buffer size */
+		 
 		if (offset + len > fw->size) {
 			dev_err(mdev->dev, "Invalid firmware region\n");
 			ret = -EINVAL;
@@ -423,11 +423,11 @@ static int mt7921_load_clc(struct mt792x_dev *dev, const char *fw_name)
 	for (offset = 0; offset < len; offset += le32_to_cpu(clc->len)) {
 		clc = (const struct mt7921_clc *)(clc_base + offset);
 
-		/* do not init buf again if chip reset triggered */
+		 
 		if (phy->clc[clc->idx])
 			continue;
 
-		/* header content sanity */
+		 
 		if (clc->idx == MT7921_CLC_POWER &&
 		    u8_get_bits(clc->type, MT_EE_HW_TYPE_ENCAP) != hw_encap)
 			continue;
@@ -618,14 +618,14 @@ int mt7921_mcu_set_roc(struct mt792x_phy *phy, struct mt792x_vif *vif,
 			.bw_from_ap = CMD_CBW_20MHZ,
 			.center_chan = center_ch,
 			.center_chan_from_ap = center_ch,
-			.dbdcband = 0xff, /* auto */
+			.dbdcband = 0xff,  
 		},
 	};
 
 	if (chan->hw_value < center_ch)
-		req.roc.sco = 1; /* SCA */
+		req.roc.sco = 1;  
 	else if (chan->hw_value > center_ch)
-		req.roc.sco = 3; /* SCB */
+		req.roc.sco = 3;  
 
 	switch (chan->band) {
 	case NL80211_BAND_6GHZ:
@@ -665,7 +665,7 @@ int mt7921_mcu_abort_roc(struct mt792x_phy *phy, struct mt792x_vif *vif,
 			.len = cpu_to_le16(sizeof(struct roc_abort_tlv)),
 			.tokenid = token_id,
 			.bss_idx = vif->mt76.idx,
-			.dbdcband = 0xff, /* auto*/
+			.dbdcband = 0xff,  
 		},
 	};
 
@@ -683,10 +683,10 @@ int mt7921_mcu_set_chan_info(struct mt792x_phy *phy, int cmd)
 		u8 center_ch;
 		u8 bw;
 		u8 tx_streams_num;
-		u8 rx_streams;	/* mask or num */
+		u8 rx_streams;	 
 		u8 switch_reason;
 		u8 band_idx;
-		u8 center_ch2;	/* for 80+80 only */
+		u8 center_ch2;	 
 		__le16 cac_case;
 		u8 channel_band;
 		u8 rsv0;
@@ -759,12 +759,7 @@ int mt7921_mcu_uni_bss_ps(struct mt792x_dev *dev, struct ieee80211_vif *vif)
 		struct ps_tlv {
 			__le16 tag;
 			__le16 len;
-			u8 ps_state; /* 0: device awake
-				      * 1: static power save
-				      * 2: dynamic power saving
-				      * 3: enter TWT power saving
-				      * 4: leave TWT power saving
-				      */
+			u8 ps_state;  
 			u8 pad[3];
 		} __packed ps;
 	} __packed ps_req = {
@@ -1031,9 +1026,9 @@ int mt7921_mcu_config_sniffer(struct mt792x_vif *vif,
 		req.tlv.center_ch2 = ieee80211_frequency_to_channel(freq2);
 
 	if (req.tlv.control_ch < req.tlv.center_ch)
-		req.tlv.sco = 1; /* SCA */
+		req.tlv.sco = 1;  
 	else if (req.tlv.control_ch > req.tlv.center_ch)
-		req.tlv.sco = 3; /* SCB */
+		req.tlv.sco = 3;  
 
 	return mt76_mcu_send_msg(vif->phy->mt76->dev, MCU_UNI_CMD(SNIFFER),
 				 &req, sizeof(req), true);
@@ -1059,14 +1054,9 @@ mt7921_mcu_uni_add_beacon_offload(struct mt792x_dev *dev,
 			__le16 tim_ie_pos;
 			__le16 csa_ie_pos;
 			__le16 bcc_ie_pos;
-			/* 0: disable beacon offload
-			 * 1: enable beacon offload
-			 * 2: update probe respond offload
-			 */
+			 
 			u8 enable;
-			/* 0: legacy format (TXD + payload)
-			 * 1: only cap field IE
-			 */
+			 
 			u8 type;
 			__le16 pkt_len;
 			u8 pkt[512];
@@ -1083,9 +1073,7 @@ mt7921_mcu_uni_add_beacon_offload(struct mt792x_dev *dev,
 	};
 	struct sk_buff *skb;
 
-	/* support enable/update process only
-	 * disable flow would be handled in bss stop handler automatically
-	 */
+	 
 	if (!enable)
 		return -EOPNOTSUPP;
 
@@ -1191,12 +1179,12 @@ int mt7921_mcu_set_clc(struct mt792x_dev *dev, u8 *alpha2,
 	struct mt792x_phy *phy = (struct mt792x_phy *)&dev->phy;
 	int i, ret;
 
-	/* submit all clc config */
+	 
 	for (i = 0; i < ARRAY_SIZE(phy->clc); i++) {
 		ret = __mt7921_mcu_set_clc(dev, alpha2, env_cap,
 					   phy->clc[i], i);
 
-		/* If no country found, set "00" as default */
+		 
 		if (ret == -ENOENT)
 			ret = __mt7921_mcu_set_clc(dev, "00",
 						   ENVIRON_INDOOR,
@@ -1232,7 +1220,7 @@ int mt7921_mcu_set_rxfilter(struct mt792x_dev *dev, u32 fif,
 		u8 mode;
 		u8 rsv2[3];
 		__le32 fif;
-		__le32 bit_map; /* bit_* for bitmap update */
+		__le32 bit_map;  
 		u8 bit_op;
 		u8 pad[51];
 	} __packed data = {

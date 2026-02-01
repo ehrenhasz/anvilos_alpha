@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arm Firmware Framework for ARMv8-A(FFA) interface driver
- *
- * The Arm FFA specification[1] describes a software architecture to
- * leverages the virtualization extension to isolate software images
- * provided by an ecosystem of vendors from each other and describes
- * interfaces that standardize communication between the various software
- * images including communication between images in the Secure world and
- * Normal world. Any Hypervisor could use the FFA interfaces to enable
- * communication between VMs it manages.
- *
- * The Hypervisor a.k.a Partition managers in FFA terminology can assign
- * system resources(Memory regions, Devices, CPU cycles) to the partitions
- * and manage isolation amongst them.
- *
- * [1] https://developer.arm.com/docs/den0077/latest
- *
- * Copyright (C) 2021 ARM Ltd.
- */
+
+ 
 
 #define DRIVER_NAME "ARM FF-A"
 #define pr_fmt(fmt) DRIVER_NAME ": " fmt
@@ -45,25 +27,22 @@
 #define PACK_TARGET_INFO(s, r)		\
 	(FIELD_PREP(SENDER_ID_MASK, (s)) | FIELD_PREP(RECEIVER_ID_MASK, (r)))
 
-/*
- * Keeping RX TX buffer size as 4K for now
- * 64K may be preferred to keep it min a page in 64K PAGE_SIZE config
- */
+ 
 #define RXTX_BUFFER_SIZE	SZ_4K
 
 static ffa_fn *invoke_ffa_fn;
 
 static const int ffa_linux_errmap[] = {
-	/* better than switch case as long as return value is continuous */
-	0,		/* FFA_RET_SUCCESS */
-	-EOPNOTSUPP,	/* FFA_RET_NOT_SUPPORTED */
-	-EINVAL,	/* FFA_RET_INVALID_PARAMETERS */
-	-ENOMEM,	/* FFA_RET_NO_MEMORY */
-	-EBUSY,		/* FFA_RET_BUSY */
-	-EINTR,		/* FFA_RET_INTERRUPTED */
-	-EACCES,	/* FFA_RET_DENIED */
-	-EAGAIN,	/* FFA_RET_RETRY */
-	-ECANCELED,	/* FFA_RET_ABORTED */
+	 
+	0,		 
+	-EOPNOTSUPP,	 
+	-EINVAL,	 
+	-ENOMEM,	 
+	-EBUSY,		 
+	-EINTR,		 
+	-EACCES,	 
+	-EAGAIN,	 
+	-ECANCELED,	 
 };
 
 static inline int ffa_to_linux_errno(int errno)
@@ -78,8 +57,8 @@ static inline int ffa_to_linux_errno(int errno)
 struct ffa_drv_info {
 	u32 version;
 	u16 vm_id;
-	struct mutex rx_lock; /* lock to protect Rx buffer */
-	struct mutex tx_lock; /* lock to protect Tx buffer */
+	struct mutex rx_lock;  
+	struct mutex tx_lock;  
 	void *rx_buffer;
 	void *tx_buffer;
 	bool mem_ops_native;
@@ -87,14 +66,7 @@ struct ffa_drv_info {
 
 static struct ffa_drv_info *drv_info;
 
-/*
- * The driver must be able to support all the versions from the earliest
- * supported FFA_MIN_VERSION to the latest supported FFA_DRIVER_VERSION.
- * The specification states that if firmware supports a FFA implementation
- * that is incompatible with and at a greater version number than specified
- * by the caller(FFA_DRIVER_VERSION passed as parameter to FFA_VERSION),
- * it must return the NOT_SUPPORTED error code.
- */
+ 
 static u32 ffa_compatible_version_find(u32 version)
 {
 	u16 major = FFA_MAJOR_VERSION(version), minor = FFA_MINOR_VERSION(version);
@@ -149,7 +121,7 @@ static int ffa_rx_release(void)
 	if (ret.a0 == FFA_ERROR)
 		return ffa_to_linux_errno((int)ret.a2);
 
-	/* check for ret.a0 == FFA_RX_RELEASE ? */
+	 
 
 	return 0;
 }
@@ -185,7 +157,7 @@ static int ffa_rxtx_unmap(u16 vm_id)
 
 #define PARTITION_INFO_GET_RETURN_COUNT_ONLY	BIT(0)
 
-/* buffer must be sizeof(struct ffa_partition_info) * num_partitions */
+ 
 static int
 __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
 			 struct ffa_partition_info *buffer, int num_partitions)
@@ -194,7 +166,7 @@ __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
 	ffa_value_t partition_info;
 
 	if (drv_info->version > FFA_VERSION_1_0 &&
-	    (!buffer || !num_partitions)) /* Just get the count for now */
+	    (!buffer || !num_partitions))  
 		flags = PARTITION_INFO_GET_RETURN_COUNT_ONLY;
 
 	mutex_lock(&drv_info->rx_lock);
@@ -216,7 +188,7 @@ __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
 		if (sz > sizeof(*buffer))
 			buf_sz = sizeof(*buffer);
 	} else {
-		/* FFA_VERSION_1_0 lacks size in the response */
+		 
 		buf_sz = sz = 8;
 	}
 
@@ -232,7 +204,7 @@ __ffa_partition_info_get(u32 uuid0, u32 uuid1, u32 uuid2, u32 uuid3,
 	return count;
 }
 
-/* buffer is allocated and caller must free the same if returned count > 0 */
+ 
 static int
 ffa_partition_probe(const uuid_t *uuid, struct ffa_partition_info **buffer)
 {
@@ -399,10 +371,7 @@ static u32 ffa_get_num_pages_sg(struct scatterlist *sg)
 
 static u8 ffa_memory_attributes_get(u32 func_id)
 {
-	/*
-	 * For the memory lend or donate operation, if the receiver is a PE or
-	 * a proxy endpoint, the owner/sender must not specify the attributes
-	 */
+	 
 	if (func_id == FFA_FN_NATIVE(MEM_LEND) ||
 	    func_id == FFA_MEM_LEND)
 		return 0;
@@ -609,13 +578,7 @@ static int ffa_memory_share(struct ffa_mem_ops_args *args)
 
 static int ffa_memory_lend(struct ffa_mem_ops_args *args)
 {
-	/* Note that upon a successful MEM_LEND request the caller
-	 * must ensure that the memory region specified is not accessed
-	 * until a successful MEM_RECALIM call has been made.
-	 * On systems with a hypervisor present this will been enforced,
-	 * however on systems without a hypervisor the responsibility
-	 * falls to the calling kernel driver to prevent access.
-	 */
+	 
 	if (drv_info->mem_ops_native)
 		return ffa_memory_ops(FFA_FN_NATIVE(MEM_LEND), args);
 
@@ -649,11 +612,7 @@ void ffa_device_match_uuid(struct ffa_device *ffa_dev, const uuid_t *uuid)
 	int count, idx;
 	struct ffa_partition_info *pbuf, *tpbuf;
 
-	/*
-	 * FF-A v1.1 provides UUID for each partition as part of the discovery
-	 * API, the discovered UUID must be populated in the device's UUID and
-	 * there is no need to copy the same from the driver table.
-	 */
+	 
 	if (drv_info->version > FFA_VERSION_1_0)
 		return;
 
@@ -683,12 +642,7 @@ static void ffa_setup_partitions(void)
 	for (idx = 0, tpbuf = pbuf; idx < count; idx++, tpbuf++) {
 		import_uuid(&uuid, (u8 *)tpbuf->uuid);
 
-		/* Note that if the UUID will be uuid_null, that will require
-		 * ffa_device_match() to find the UUID of this partition id
-		 * with help of ffa_device_match_uuid(). FF-A v1.1 and above
-		 * provides UUID here for each partition as part of the
-		 * discovery API and the same is passed.
-		 */
+		 
 		ffa_dev = ffa_device_register(&uuid, tpbuf->id, &ffa_drv_ops);
 		if (!ffa_dev) {
 			pr_err("%s: failed to register partition ID 0x%x\n",

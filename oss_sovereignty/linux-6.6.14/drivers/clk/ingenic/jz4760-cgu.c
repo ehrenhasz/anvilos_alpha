@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ4760 SoC CGU driver
- * Copyright 2018, Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -19,9 +16,7 @@
 
 #define MHZ (1000 * 1000)
 
-/*
- * CPM registers offset address definition
- */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_LCR		0x04
 #define CGU_REG_CPPCR0		0x10
@@ -60,10 +55,10 @@ jz4760_cgu_calc_m_n_od(const struct ingenic_cgu_pll_info *pll_info,
 {
 	unsigned int m, n, od, m_max = (1 << pll_info->m_bits) - 1;
 
-	/* The frequency after the N divider must be between 1 and 50 MHz. */
+	 
 	n = parent_rate / (1 * MHZ);
 
-	/* The N divider must be >= 2. */
+	 
 	n = clamp_val(n, 2, 1 << pll_info->n_bits);
 
 	rate /= MHZ;
@@ -82,12 +77,12 @@ jz4760_cgu_calc_m_n_od(const struct ingenic_cgu_pll_info *pll_info,
 
 static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4760_CLK_EXT] = { "ext", CGU_CLK_EXT },
 	[JZ4760_CLK_OSC32K] = { "osc32k", CGU_CLK_EXT },
 
-	/* PLLs */
+	 
 
 	[JZ4760_CLK_PLL0] = {
 		"pll0", CGU_CLK_PLL,
@@ -114,7 +109,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 	},
 
 	[JZ4760_CLK_PLL1] = {
-		/* TODO: PLL1 can depend on PLL0 */
+		 
 		"pll1", CGU_CLK_PLL,
 		.parents = { JZ4760_CLK_EXT },
 		.pll = {
@@ -137,14 +132,11 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		},
 	},
 
-	/* Main clocks */
+	 
 
 	[JZ4760_CLK_CCLK] = {
 		"cclk", CGU_CLK_DIV,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4760_CLK_PLL0, },
 		.div = {
@@ -178,10 +170,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 	},
 	[JZ4760_CLK_MCLK] = {
 		"mclk", CGU_CLK_DIV,
-		/*
-		 * Disabling MCLK or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4760_CLK_PLL0, },
 		.div = {
@@ -198,7 +187,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		},
 	},
 
-	/* Divided clocks */
+	 
 
 	[JZ4760_CLK_PLL0_HALF] = {
 		"pll0_half", CGU_CLK_DIV,
@@ -209,7 +198,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		},
 	},
 
-	/* Those divided clocks can connect to PLL0 or PLL1 */
+	 
 
 	[JZ4760_CLK_UHC] = {
 		"uhc", CGU_CLK_DIV | CGU_CLK_GATE | CGU_CLK_MUX,
@@ -251,7 +240,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 22 },
 	},
 
-	/* Those divided clocks can connect to EXT, PLL0 or PLL1 */
+	 
 
 	[JZ4760_CLK_PCM] = {
 		"pcm", CGU_CLK_DIV | CGU_CLK_GATE | CGU_CLK_MUX,
@@ -277,7 +266,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 2 },
 	},
 
-	/* Those divided clocks can connect to EXT or PLL0 */
+	 
 	[JZ4760_CLK_MMC_MUX] = {
 		"mmc_mux", CGU_CLK_MUX | CGU_CLK_DIV,
 		.parents = { JZ4760_CLK_EXT, JZ4760_CLK_PLL0_HALF, },
@@ -291,7 +280,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		.div = { CGU_REG_SSICDR, 0, 1, 6, -1, -1, -1, BIT(0) },
 	},
 
-	/* These divided clock can connect to PLL0 only */
+	 
 	[JZ4760_CLK_CIM] = {
 		"cim", CGU_CLK_DIV | CGU_CLK_GATE,
 		.parents = { JZ4760_CLK_PLL0_HALF },
@@ -299,7 +288,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR0, 26 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4760_CLK_SSI0] = {
 		"ssi0", CGU_CLK_GATE,
@@ -407,7 +396,7 @@ static const struct ingenic_cgu_clk_info jz4760_cgu_clocks[] = {
 		.gate = { CGU_REG_OPCR, 7, true, 50 },
 	},
 
-	/* Custom clocks */
+	 
 	[JZ4760_CLK_EXT512] = {
 		"ext/512", CGU_CLK_FIXDIV,
 		.parents = { JZ4760_CLK_EXT },
@@ -439,8 +428,8 @@ static void __init jz4760_cgu_init(struct device_node *np)
 	ingenic_cgu_register_syscore_ops(cgu);
 }
 
-/* We only probe via devicetree, no need for a platform driver */
+ 
 CLK_OF_DECLARE_DRIVER(jz4760_cgu, "ingenic,jz4760-cgu", jz4760_cgu_init);
 
-/* JZ4760B has some small differences, but we don't implement them. */
+ 
 CLK_OF_DECLARE_DRIVER(jz4760b_cgu, "ingenic,jz4760b-cgu", jz4760_cgu_init);

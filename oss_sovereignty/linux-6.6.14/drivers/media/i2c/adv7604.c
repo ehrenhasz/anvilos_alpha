@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * adv7604 - Analog Devices ADV7604 video decoder driver
- *
- * Copyright 2012 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- *
- */
 
-/*
- * References (c = chapter, p = page):
- * REF_01 - Analog devices, ADV7604, Register Settings Recommendations,
- *		Revision 2.5, June 2010
- * REF_02 - Analog devices, Register map documentation, Documentation of
- *		the register maps, Software manual, Rev. F, June 2010
- * REF_03 - Analog devices, ADV7604, Hardware Manual, Rev. F, August 2010
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -46,7 +34,7 @@ MODULE_AUTHOR("Hans Verkuil <hans.verkuil@cisco.com>");
 MODULE_AUTHOR("Mats Randgaard <mats.randgaard@cisco.com>");
 MODULE_LICENSE("GPL");
 
-/* ADV7604 system clock frequency */
+ 
 #define ADV76XX_FSC (28636360)
 
 #define ADV76XX_RGB_OUT					(1 << 1)
@@ -77,7 +65,7 @@ MODULE_LICENSE("GPL");
 
 enum adv76xx_type {
 	ADV7604,
-	ADV7611, // including ADV7610
+	ADV7611, 
 	ADV7612,
 };
 
@@ -135,13 +123,13 @@ struct adv76xx_chip_info {
 	unsigned int (*read_hdmi_pixelclock)(struct v4l2_subdev *sd);
 	unsigned int (*read_cable_det)(struct v4l2_subdev *sd);
 
-	/* 0 = AFE, 1 = HDMI */
+	 
 	const struct adv76xx_reg_seq *recommended_settings[2];
 	unsigned int num_recommended_settings[2];
 
 	unsigned long page_mask;
 
-	/* Masks for timings */
+	 
 	unsigned int linewidth_mask;
 	unsigned int field0_height_mask;
 	unsigned int field1_height_mask;
@@ -156,13 +144,7 @@ struct adv76xx_chip_info {
 	unsigned int field1_vbackporch_mask;
 };
 
-/*
- **********************************************************************
- *
- *  Arrays with configuration parameters for the ADV7604
- *
- **********************************************************************
- */
+ 
 
 struct adv76xx_state {
 	const struct adv76xx_chip_info *info;
@@ -193,19 +175,19 @@ struct adv76xx_state {
 	struct delayed_work delayed_work_enable_hotplug;
 	bool restart_stdi_once;
 
-	/* CEC */
+	 
 	struct cec_adapter *cec_adap;
 	u8   cec_addr[ADV76XX_MAX_ADDRS];
 	u8   cec_valid_addrs;
 	bool cec_enabled_adap;
 
-	/* i2c clients */
+	 
 	struct i2c_client *i2c_clients[ADV76XX_PAGE_MAX];
 
-	/* Regmaps */
+	 
 	struct regmap *regmap[ADV76XX_PAGE_MAX];
 
-	/* controls */
+	 
 	struct v4l2_ctrl *detect_tx_5v_ctrl;
 	struct v4l2_ctrl *analog_sampling_phase_ctrl;
 	struct v4l2_ctrl *free_run_color_manual_ctrl;
@@ -218,7 +200,7 @@ static bool adv76xx_has_afe(struct adv76xx_state *state)
 	return state->info->has_afe;
 }
 
-/* Unsupported timings. This device cannot support 720p30. */
+ 
 static const struct v4l2_dv_timings adv76xx_timings_exceptions[] = {
 	V4L2_DV_BT_CEA_1280X720P30,
 	{ }
@@ -240,9 +222,9 @@ struct adv76xx_video_standards {
 	u8 v_freq;
 };
 
-/* sorted by number of lines */
+ 
 static const struct adv76xx_video_standards adv7604_prim_mode_comp[] = {
-	/* { V4L2_DV_BT_CEA_720X480P59_94, 0x0a, 0x00 }, TODO flickering */
+	 
 	{ V4L2_DV_BT_CEA_720X576P50, 0x0b, 0x00 },
 	{ V4L2_DV_BT_CEA_1280X720P50, 0x19, 0x01 },
 	{ V4L2_DV_BT_CEA_1280X720P60, 0x19, 0x00 },
@@ -251,11 +233,11 @@ static const struct adv76xx_video_standards adv7604_prim_mode_comp[] = {
 	{ V4L2_DV_BT_CEA_1920X1080P30, 0x1e, 0x02 },
 	{ V4L2_DV_BT_CEA_1920X1080P50, 0x1e, 0x01 },
 	{ V4L2_DV_BT_CEA_1920X1080P60, 0x1e, 0x00 },
-	/* TODO add 1920x1080P60_RB (CVT timing) */
+	 
 	{ },
 };
 
-/* sorted by number of lines */
+ 
 static const struct adv76xx_video_standards adv7604_prim_mode_gr[] = {
 	{ V4L2_DV_BT_DMT_640X480P60, 0x08, 0x00 },
 	{ V4L2_DV_BT_DMT_640X480P72, 0x09, 0x00 },
@@ -276,14 +258,14 @@ static const struct adv76xx_video_standards adv7604_prim_mode_gr[] = {
 	{ V4L2_DV_BT_DMT_1366X768P60, 0x13, 0x00 },
 	{ V4L2_DV_BT_DMT_1400X1050P60, 0x14, 0x00 },
 	{ V4L2_DV_BT_DMT_1400X1050P75, 0x15, 0x00 },
-	{ V4L2_DV_BT_DMT_1600X1200P60, 0x16, 0x00 }, /* TODO not tested */
-	/* TODO add 1600X1200P60_RB (not a DMT timing) */
+	{ V4L2_DV_BT_DMT_1600X1200P60, 0x16, 0x00 },  
+	 
 	{ V4L2_DV_BT_DMT_1680X1050P60, 0x18, 0x00 },
-	{ V4L2_DV_BT_DMT_1920X1200P60_RB, 0x19, 0x00 }, /* TODO not tested */
+	{ V4L2_DV_BT_DMT_1920X1200P60_RB, 0x19, 0x00 },  
 	{ },
 };
 
-/* sorted by number of lines */
+ 
 static const struct adv76xx_video_standards adv76xx_prim_mode_hdmi_comp[] = {
 	{ V4L2_DV_BT_CEA_720X480P59_94, 0x0a, 0x00 },
 	{ V4L2_DV_BT_CEA_720X576P50, 0x0b, 0x00 },
@@ -297,7 +279,7 @@ static const struct adv76xx_video_standards adv76xx_prim_mode_hdmi_comp[] = {
 	{ },
 };
 
-/* sorted by number of lines */
+ 
 static const struct adv76xx_video_standards adv76xx_prim_mode_hdmi_gr[] = {
 	{ V4L2_DV_BT_DMT_640X480P60, 0x08, 0x00 },
 	{ V4L2_DV_BT_DMT_640X480P72, 0x09, 0x00 },
@@ -322,7 +304,7 @@ static const struct v4l2_event adv76xx_ev_fmt = {
 	.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline struct adv76xx_state *to_state(struct v4l2_subdev *sd)
 {
@@ -339,7 +321,7 @@ static inline unsigned vtotal(const struct v4l2_bt_timings *t)
 	return V4L2_DV_BT_FRAME_HEIGHT(t);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int adv76xx_read_check(struct adv76xx_state *state,
 			     int client_page, u8 reg)
@@ -358,12 +340,7 @@ static int adv76xx_read_check(struct adv76xx_state *state,
 	return val;
 }
 
-/* adv76xx_write_block(): Write raw data with a maximum of I2C_SMBUS_BLOCK_MAX
- * size to one or more registers.
- *
- * A value of zero will be returned on success, a negative errno will
- * be returned in error cases.
- */
+ 
 static int adv76xx_write_block(struct adv76xx_state *state, int client_page,
 			      unsigned int init_reg, const void *val,
 			      size_t val_len)
@@ -376,7 +353,7 @@ static int adv76xx_write_block(struct adv76xx_state *state, int client_page,
 	return regmap_raw_write(regmap, init_reg, val, val_len);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline int io_read(struct v4l2_subdev *sd, u8 reg)
 {
@@ -658,9 +635,7 @@ static void adv76xx_write_reg_seq(struct v4l2_subdev *sd,
 		adv76xx_write_reg(sd, reg_seq[i].reg, reg_seq[i].val);
 }
 
-/* -----------------------------------------------------------------------------
- * Format helpers
- */
+ 
 
 static const struct adv76xx_format_info adv7604_formats[] = {
 	{ MEDIA_BUS_FMT_RGB888_1X24, ADV76XX_OP_CH_SEL_RGB, true, false,
@@ -762,7 +737,7 @@ adv76xx_format_info(struct adv76xx_state *state, u32 code)
 	return NULL;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline bool is_analog_input(struct v4l2_subdev *sd)
 {
@@ -784,7 +759,7 @@ static inline bool is_digital_input(struct v4l2_subdev *sd)
 
 static const struct v4l2_dv_timings_cap adv7604_timings_cap_analog = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
 	V4L2_INIT_BT_TIMINGS(640, 1920, 350, 1200, 25000000, 170000000,
 		V4L2_DV_BT_STD_CEA861 | V4L2_DV_BT_STD_DMT |
@@ -795,7 +770,7 @@ static const struct v4l2_dv_timings_cap adv7604_timings_cap_analog = {
 
 static const struct v4l2_dv_timings_cap adv76xx_timings_cap_digital = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
 	V4L2_INIT_BT_TIMINGS(640, 1920, 350, 1200, 25000000, 225000000,
 		V4L2_DV_BT_STD_CEA861 | V4L2_DV_BT_STD_DMT |
@@ -804,10 +779,7 @@ static const struct v4l2_dv_timings_cap adv76xx_timings_cap_digital = {
 			V4L2_DV_BT_CAP_CUSTOM)
 };
 
-/*
- * Return the DV timings capabilities for the requested sink pad. As a special
- * case, pad value -1 returns the capabilities for the currently selected input.
- */
+ 
 static const struct v4l2_dv_timings_cap *
 adv76xx_get_dv_timings_cap(struct v4l2_subdev *sd, int pad)
 {
@@ -832,7 +804,7 @@ adv76xx_get_dv_timings_cap(struct v4l2_subdev *sd, int pad)
 }
 
 
-/* ----------------------------------------------------------------------- */
+ 
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static void adv76xx_inv_register(struct v4l2_subdev *sd)
@@ -905,9 +877,7 @@ static unsigned int adv7611_read_cable_det(struct v4l2_subdev *sd)
 
 static unsigned int adv7612_read_cable_det(struct v4l2_subdev *sd)
 {
-	/*  Reads CABLE_DET_A_RAW. For input B support, need to
-	 *  account for bit 7 [MSB] of 0x6a (ie. CABLE_DET_B_RAW)
-	 */
+	 
 	u8 value = io_read(sd, 0x6f);
 
 	return value & 1;
@@ -933,9 +903,9 @@ static int find_and_set_predefined_video_timings(struct v4l2_subdev *sd,
 		if (!v4l2_match_dv_timings(timings, &predef_vid_timings[i].timings,
 				is_digital_input(sd) ? 250000 : 1000000, false))
 			continue;
-		io_write(sd, 0x00, predef_vid_timings[i].vid_std); /* video std */
+		io_write(sd, 0x00, predef_vid_timings[i].vid_std);  
 		io_write(sd, 0x01, (predef_vid_timings[i].v_freq << 4) +
-				prim_mode); /* v_freq and prim mode */
+				prim_mode);  
 		return 0;
 	}
 
@@ -951,11 +921,11 @@ static int configure_predefined_video_timings(struct v4l2_subdev *sd,
 	v4l2_dbg(1, debug, sd, "%s", __func__);
 
 	if (adv76xx_has_afe(state)) {
-		/* reset to default values */
+		 
 		io_write(sd, 0x16, 0x43);
 		io_write(sd, 0x17, 0x5a);
 	}
-	/* disable embedded syncs for auto graphics mode */
+	 
 	cp_write_clr_set(sd, 0x81, 0x10, 0x00);
 	cp_write(sd, 0x8f, 0x00);
 	cp_write(sd, 0x90, 0x00);
@@ -1010,35 +980,34 @@ static void configure_custom_video_timings(struct v4l2_subdev *sd,
 	v4l2_dbg(2, debug, sd, "%s\n", __func__);
 
 	if (is_analog_input(sd)) {
-		/* auto graphics */
-		io_write(sd, 0x00, 0x07); /* video std */
-		io_write(sd, 0x01, 0x02); /* prim mode */
-		/* enable embedded syncs for auto graphics mode */
+		 
+		io_write(sd, 0x00, 0x07);  
+		io_write(sd, 0x01, 0x02);  
+		 
 		cp_write_clr_set(sd, 0x81, 0x10, 0x10);
 
-		/* Should only be set in auto-graphics mode [REF_02, p. 91-92] */
-		/* setup PLL_DIV_MAN_EN and PLL_DIV_RATIO */
-		/* IO-map reg. 0x16 and 0x17 should be written in sequence */
+		 
+		 
+		 
 		if (regmap_raw_write(state->regmap[ADV76XX_PAGE_IO],
 					0x16, pll, 2))
 			v4l2_err(sd, "writing to reg 0x16 and 0x17 failed\n");
 
-		/* active video - horizontal timing */
+		 
 		cp_write(sd, 0xa2, (cp_start_sav >> 4) & 0xff);
 		cp_write(sd, 0xa3, ((cp_start_sav & 0x0f) << 4) |
 				   ((cp_start_eav >> 8) & 0x0f));
 		cp_write(sd, 0xa4, cp_start_eav & 0xff);
 
-		/* active video - vertical timing */
+		 
 		cp_write(sd, 0xa5, (cp_start_vbi >> 4) & 0xff);
 		cp_write(sd, 0xa6, ((cp_start_vbi & 0xf) << 4) |
 				   ((cp_end_vbi >> 8) & 0xf));
 		cp_write(sd, 0xa7, cp_end_vbi & 0xff);
 	} else if (is_digital_input(sd)) {
-		/* set default prim_mode/vid_std for HDMI
-		   according to [REF_03, c. 4.2] */
-		io_write(sd, 0x00, 0x02); /* video std */
-		io_write(sd, 0x01, 0x06); /* prim mode */
+		 
+		io_write(sd, 0x00, 0x02);  
+		io_write(sd, 0x01, 0x06);  
 	} else {
 		v4l2_dbg(2, debug, sd, "%s: Unknown port %d selected\n",
 				__func__, state->selected_input);
@@ -1070,7 +1039,7 @@ static void adv76xx_set_offset(struct v4l2_subdev *sd, bool auto_offset, u16 off
 	offset_buf[2] = ((offset_b & 0x03f) << 2) | ((offset_c & 0x300) >> 8);
 	offset_buf[3] = offset_c & 0x0ff;
 
-	/* Registers must be written in this order with no i2c access in between */
+	 
 	if (regmap_raw_write(state->regmap[ADV76XX_PAGE_CP],
 			0x77, offset_buf, 4))
 		v4l2_err(sd, "%s: i2c error writing to CP reg 0x77, 0x78, 0x79, 0x7a\n", __func__);
@@ -1100,7 +1069,7 @@ static void adv76xx_set_gain(struct v4l2_subdev *sd, bool auto_gain, u16 gain_a,
 	gain_buf[2] = (((gain_b & 0x03f) << 2) | ((gain_c & 0x300) >> 8));
 	gain_buf[3] = ((gain_c & 0x0ff));
 
-	/* Registers must be written in this order with no i2c access in between */
+	 
 	if (regmap_raw_write(state->regmap[ADV76XX_PAGE_CP],
 			     0x73, gain_buf, 4))
 		v4l2_err(sd, "%s: i2c error writing to CP reg 0x73, 0x74, 0x75, 0x76\n", __func__);
@@ -1127,34 +1096,29 @@ static void set_rgb_quantization_range(struct v4l2_subdev *sd)
 	switch (state->rgb_quantization_range) {
 	case V4L2_DV_RGB_RANGE_AUTO:
 		if (state->selected_input == ADV7604_PAD_VGA_RGB) {
-			/* Receiving analog RGB signal
-			 * Set RGB full range (0-255) */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0x10);
 			break;
 		}
 
 		if (state->selected_input == ADV7604_PAD_VGA_COMP) {
-			/* Receiving analog YPbPr signal
-			 * Set automode */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0xf0);
 			break;
 		}
 
 		if (hdmi_signal) {
-			/* Receiving HDMI signal
-			 * Set automode */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0xf0);
 			break;
 		}
 
-		/* Receiving DVI-D signal
-		 * ADV7604 selects RGB limited range regardless of
-		 * input format (CE/IT) in automatic mode */
+		 
 		if (state->timings.bt.flags & V4L2_DV_FL_IS_CE_VIDEO) {
-			/* RGB limited range (16-235) */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0x00);
 		} else {
-			/* RGB full range (0-255) */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0x10);
 
 			if (is_digital_input(sd) && rgb_output) {
@@ -1167,7 +1131,7 @@ static void set_rgb_quantization_range(struct v4l2_subdev *sd)
 		break;
 	case V4L2_DV_RGB_RANGE_LIMITED:
 		if (state->selected_input == ADV7604_PAD_VGA_COMP) {
-			/* YCrCb limited range (16-235) */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0x20);
 			break;
 		}
@@ -1175,13 +1139,13 @@ static void set_rgb_quantization_range(struct v4l2_subdev *sd)
 		if (y != HDMI_COLORSPACE_RGB)
 			break;
 
-		/* RGB limited range (16-235) */
+		 
 		io_write_clr_set(sd, 0x02, 0xf0, 0x00);
 
 		break;
 	case V4L2_DV_RGB_RANGE_FULL:
 		if (state->selected_input == ADV7604_PAD_VGA_COMP) {
-			/* YCrCb full range (0-255) */
+			 
 			io_write_clr_set(sd, 0x02, 0xf0, 0x60);
 			break;
 		}
@@ -1189,13 +1153,13 @@ static void set_rgb_quantization_range(struct v4l2_subdev *sd)
 		if (y != HDMI_COLORSPACE_RGB)
 			break;
 
-		/* RGB full range (0-255) */
+		 
 		io_write_clr_set(sd, 0x02, 0xf0, 0x10);
 
 		if (is_analog_input(sd) || hdmi_signal)
 			break;
 
-		/* Adjust gain/offset for DVI-D signals only */
+		 
 		if (rgb_output) {
 			adv76xx_set_offset(sd, false, 0x40, 0x40, 0x40);
 		} else {
@@ -1233,15 +1197,11 @@ static int adv76xx_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_ADV_RX_ANALOG_SAMPLING_PHASE:
 		if (!adv76xx_has_afe(state))
 			return -EINVAL;
-		/* Set the analog sampling phase. This is needed to find the
-		   best sampling phase for analog video: an application or
-		   driver has to try a number of phases and analyze the picture
-		   quality before settling on the best performing phase. */
+		 
 		afe_write(sd, 0xc8, ctrl->val);
 		return 0;
 	case V4L2_CID_ADV_RX_FREE_RUN_COLOR_MANUAL:
-		/* Use the default blue color for free running mode,
-		   or supply your own. */
+		 
 		cp_write_clr_set(sd, 0xbf, 0x04, ctrl->val << 2);
 		return 0;
 	case V4L2_CID_ADV_RX_FREE_RUN_COLOR:
@@ -1267,11 +1227,11 @@ static int adv76xx_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 	return -EINVAL;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline bool no_power(struct v4l2_subdev *sd)
 {
-	/* Entire chip or CP powered off */
+	 
 	return io_read(sd, 0x0c) & 0x24;
 }
 
@@ -1299,20 +1259,17 @@ static inline bool no_lock_sspd(struct v4l2_subdev *sd)
 {
 	struct adv76xx_state *state = to_state(sd);
 
-	/*
-	 * Chips without a AFE don't expose registers for the SSPD, so just assume
-	 * that we have a lock.
-	 */
+	 
 	if (adv76xx_has_afe(state))
 		return false;
 
-	/* TODO channel 2 */
+	 
 	return ((cp_read(sd, 0xb5) & 0xd0) != 0xd0);
 }
 
 static inline bool no_lock_stdi(struct v4l2_subdev *sd)
 {
-	/* TODO channel 2 */
+	 
 	return !(cp_read(sd, 0xb1) & 0x80);
 }
 
@@ -1340,8 +1297,7 @@ static inline bool no_lock_cp(struct v4l2_subdev *sd)
 	if (!adv76xx_has_afe(state))
 		return false;
 
-	/* CP has detected a non standard number of lines on the incoming
-	   video compared to what it is configured to receive by s_dv_timings */
+	 
 	return io_read(sd, 0x12) & 0x01;
 }
 
@@ -1364,7 +1320,7 @@ static int adv76xx_g_input_status(struct v4l2_subdev *sd, u32 *status)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 struct stdi_readback {
 	u16 bl, lcf, lcvs;
@@ -1432,14 +1388,14 @@ static int read_stdi(struct v4l2_subdev *sd, struct stdi_readback *stdi)
 		return -1;
 	}
 
-	/* read STDI */
+	 
 	stdi->bl = cp_read16(sd, 0xb1, 0x3fff);
 	stdi->lcf = cp_read16(sd, info->lcf_reg, 0x7ff);
 	stdi->lcvs = cp_read(sd, 0xb3) >> 3;
 	stdi->interlaced = io_read(sd, 0x12) & 0x10;
 
 	if (adv76xx_has_afe(state)) {
-		/* read SSPD */
+		 
 		polarity = cp_read(sd, 0xb5);
 		if ((polarity & 0x03) == 0x01) {
 			stdi->hs_pol = polarity & 0x10
@@ -1505,8 +1461,7 @@ static int adv76xx_dv_timings_cap(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Fill the optional fields .standards and .flags in struct v4l2_dv_timings
-   if the format is listed in adv76xx_timings[] */
+ 
 static void adv76xx_fill_optional_dv_timings_fields(struct v4l2_subdev *sd,
 		struct v4l2_dv_timings *timings)
 {
@@ -1547,7 +1502,7 @@ static unsigned int adv76xx_read_hdmi_pixelclock(struct v4l2_subdev *sd)
 
 	freq = info->read_hdmi_pixelclock(sd);
 	if (is_hdmi(sd)) {
-		/* adjust for deep color mode and pixel repetition */
+		 
 		bits_per_channel = ((hdmi_read(sd, 0x0b) & 0x60) >> 4) + 8;
 		pixelrepetition = (hdmi_read(sd, 0x05) & 0x0f) + 1;
 
@@ -1576,7 +1531,7 @@ static int adv76xx_query_dv_timings(struct v4l2_subdev *sd,
 		return -ENOLINK;
 	}
 
-	/* read STDI */
+	 
 	if (read_stdi(sd, &stdi)) {
 		v4l2_dbg(1, debug, sd, "%s: STDI/SSPD not locked\n", __func__);
 		return -ENOLINK;
@@ -1626,10 +1581,7 @@ static int adv76xx_query_dv_timings(struct v4l2_subdev *sd,
 		}
 		adv76xx_fill_optional_dv_timings_fields(sd, timings);
 	} else {
-		/* find format
-		 * Since LCVS values are inaccurate [REF_03, p. 275-276],
-		 * stdi2dv_timings() is called with lcvs +-1 if the first attempt fails.
-		 */
+		 
 		if (!stdi2dv_timings(sd, &stdi, timings))
 			goto found;
 		stdi.lcvs += 1;
@@ -1639,23 +1591,15 @@ static int adv76xx_query_dv_timings(struct v4l2_subdev *sd,
 		stdi.lcvs -= 2;
 		v4l2_dbg(1, debug, sd, "%s: lcvs - 1 = %d\n", __func__, stdi.lcvs);
 		if (stdi2dv_timings(sd, &stdi, timings)) {
-			/*
-			 * The STDI block may measure wrong values, especially
-			 * for lcvs and lcf. If the driver can not find any
-			 * valid timing, the STDI block is restarted to measure
-			 * the video timings again. The function will return an
-			 * error, but the restart of STDI will generate a new
-			 * STDI interrupt and the format detection process will
-			 * restart.
-			 */
+			 
 			if (state->restart_stdi_once) {
 				v4l2_dbg(1, debug, sd, "%s: restart STDI\n", __func__);
-				/* TODO restart STDI for Sync Channel 2 */
-				/* enter one-shot mode */
+				 
+				 
 				cp_write_clr_set(sd, 0x86, 0x06, 0x00);
-				/* trigger STDI restart */
+				 
 				cp_write_clr_set(sd, 0x86, 0x06, 0x04);
-				/* reset to continuous mode */
+				 
 				cp_write_clr_set(sd, 0x86, 0x06, 0x02);
 				state->restart_stdi_once = false;
 				return -ENOLINK;
@@ -1714,11 +1658,10 @@ static int adv76xx_s_dv_timings(struct v4l2_subdev *sd,
 
 	cp_write_clr_set(sd, 0x91, 0x40, bt->interlaced ? 0x40 : 0x00);
 
-	/* Use prim_mode and vid_std when available */
+	 
 	err = configure_predefined_video_timings(sd, timings);
 	if (err) {
-		/* custom settings when the video format
-		 does not have prim_mode/vid_std */
+		 
 		configure_custom_video_timings(sd, bt);
 	}
 
@@ -1754,12 +1697,12 @@ static void enable_input(struct v4l2_subdev *sd)
 	struct adv76xx_state *state = to_state(sd);
 
 	if (is_analog_input(sd)) {
-		io_write(sd, 0x15, 0xb0);   /* Disable Tristate of Pins (no audio) */
+		io_write(sd, 0x15, 0xb0);    
 	} else if (is_digital_input(sd)) {
 		hdmi_write_clr_set(sd, 0x00, 0x03, state->selected_input);
 		state->info->set_termination(sd, true);
-		io_write(sd, 0x15, 0xa0);   /* Disable Tristate of Pins */
-		hdmi_write_clr_set(sd, 0x1a, 0x10, 0x00); /* Unmute audio */
+		io_write(sd, 0x15, 0xa0);    
+		hdmi_write_clr_set(sd, 0x1a, 0x10, 0x00);  
 	} else {
 		v4l2_dbg(2, debug, sd, "%s: Unknown port %d selected\n",
 				__func__, state->selected_input);
@@ -1770,9 +1713,9 @@ static void disable_input(struct v4l2_subdev *sd)
 {
 	struct adv76xx_state *state = to_state(sd);
 
-	hdmi_write_clr_set(sd, 0x1a, 0x10, 0x10); /* Mute audio */
-	msleep(16); /* 512 samples with >= 32 kHz sample rate [REF_03, c. 7.16.10] */
-	io_write(sd, 0x15, 0xbe);   /* Tristate all outputs from video core */
+	hdmi_write_clr_set(sd, 0x1a, 0x10, 0x10);  
+	msleep(16);  
+	io_write(sd, 0x15, 0xbe);    
 	state->info->set_termination(sd, false);
 }
 
@@ -1784,29 +1727,29 @@ static void select_input(struct v4l2_subdev *sd)
 	if (is_analog_input(sd)) {
 		adv76xx_write_reg_seq(sd, info->recommended_settings[0]);
 
-		afe_write(sd, 0x00, 0x08); /* power up ADC */
-		afe_write(sd, 0x01, 0x06); /* power up Analog Front End */
-		afe_write(sd, 0xc8, 0x00); /* phase control */
+		afe_write(sd, 0x00, 0x08);  
+		afe_write(sd, 0x01, 0x06);  
+		afe_write(sd, 0xc8, 0x00);  
 	} else if (is_digital_input(sd)) {
 		hdmi_write(sd, 0x00, state->selected_input & 0x03);
 
 		adv76xx_write_reg_seq(sd, info->recommended_settings[1]);
 
 		if (adv76xx_has_afe(state)) {
-			afe_write(sd, 0x00, 0xff); /* power down ADC */
-			afe_write(sd, 0x01, 0xfe); /* power down Analog Front End */
-			afe_write(sd, 0xc8, 0x40); /* phase control */
+			afe_write(sd, 0x00, 0xff);  
+			afe_write(sd, 0x01, 0xfe);  
+			afe_write(sd, 0xc8, 0x40);  
 		}
 
-		cp_write(sd, 0x3e, 0x00); /* CP core pre-gain control */
-		cp_write(sd, 0xc3, 0x39); /* CP coast control. Graphics mode */
-		cp_write(sd, 0x40, 0x80); /* CP core pre-gain control. Graphics mode */
+		cp_write(sd, 0x3e, 0x00);  
+		cp_write(sd, 0xc3, 0x39);  
+		cp_write(sd, 0x40, 0x80);  
 	} else {
 		v4l2_dbg(2, debug, sd, "%s: Unknown port %d selected\n",
 				__func__, state->selected_input);
 	}
 
-	/* Enable video adjustment (contrast, saturation, brightness and hue) */
+	 
 	cp_write_clr_set(sd, 0x3e, 0x80, 0x80);
 }
 
@@ -1864,24 +1807,7 @@ static void adv76xx_fill_format(struct adv76xx_state *state,
 			V4L2_COLORSPACE_SMPTE170M : V4L2_COLORSPACE_REC709;
 }
 
-/*
- * Compute the op_ch_sel value required to obtain on the bus the component order
- * corresponding to the selected format taking into account bus reordering
- * applied by the board at the output of the device.
- *
- * The following table gives the op_ch_value from the format component order
- * (expressed as op_ch_sel value in column) and the bus reordering (expressed as
- * adv76xx_bus_order value in row).
- *
- *           |	GBR(0)	GRB(1)	BGR(2)	RGB(3)	BRG(4)	RBG(5)
- * ----------+-------------------------------------------------
- * RGB (NOP) |	GBR	GRB	BGR	RGB	BRG	RBG
- * GRB (1-2) |	BGR	RGB	GBR	GRB	RBG	BRG
- * RBG (2-3) |	GRB	GBR	BRG	RBG	BGR	RGB
- * BGR (1-3) |	RBG	BRG	RGB	BGR	GRB	GBR
- * BRG (ROR) |	BRG	RBG	GRB	GBR	RGB	BGR
- * GBR (ROL) |	RGB	BGR	RBG	BRG	GBR	GRB
- */
+ 
 static unsigned int adv76xx_op_ch_sel(struct adv76xx_state *state)
 {
 #define _SEL(a,b,c,d,e,f)	{ \
@@ -1890,12 +1816,12 @@ static unsigned int adv76xx_op_ch_sel(struct adv76xx_state *state)
 #define _BUS(x)			[ADV7604_BUS_ORDER_##x]
 
 	static const unsigned int op_ch_sel[6][6] = {
-		_BUS(RGB) /* NOP */ = _SEL(GBR, GRB, BGR, RGB, BRG, RBG),
-		_BUS(GRB) /* 1-2 */ = _SEL(BGR, RGB, GBR, GRB, RBG, BRG),
-		_BUS(RBG) /* 2-3 */ = _SEL(GRB, GBR, BRG, RBG, BGR, RGB),
-		_BUS(BGR) /* 1-3 */ = _SEL(RBG, BRG, RGB, BGR, GRB, GBR),
-		_BUS(BRG) /* ROR */ = _SEL(BRG, RBG, GRB, GBR, RGB, BGR),
-		_BUS(GBR) /* ROL */ = _SEL(RGB, BGR, RBG, BRG, GBR, GRB),
+		_BUS(RGB)   = _SEL(GBR, GRB, BGR, RGB, BRG, RBG),
+		_BUS(GRB)   = _SEL(BGR, RGB, GBR, GRB, RBG, BRG),
+		_BUS(RBG)   = _SEL(GRB, GBR, BRG, RBG, BGR, RGB),
+		_BUS(BGR)   = _SEL(RBG, BRG, RGB, BGR, GRB, GBR),
+		_BUS(BRG)   = _SEL(BRG, RBG, GRB, GBR, RGB, BGR),
+		_BUS(GBR)   = _SEL(RGB, BGR, RBG, BRG, GBR, GRB),
 	};
 
 	return op_ch_sel[state->pdata.bus_order][state->format->op_ch_sel >> 5];
@@ -1946,7 +1872,7 @@ static int adv76xx_get_selection(struct v4l2_subdev *sd,
 
 	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
 		return -EINVAL;
-	/* Only CROP, CROP_DEFAULT and CROP_BOUNDS are supported */
+	 
 	if (sel->target > V4L2_SEL_TGT_CROP_BOUNDS)
 		return -EINVAL;
 
@@ -2011,10 +1937,7 @@ static void adv76xx_cec_tx_raw_status(struct v4l2_subdev *sd, u8 tx_raw_status)
 		u8 low_drive_cnt;
 
 		v4l2_dbg(1, debug, sd, "%s: tx raw: retry failed\n", __func__);
-		/*
-		 * We set this status bit since this hardware performs
-		 * retransmissions.
-		 */
+		 
 		status = CEC_TX_STATUS_MAX_RETRIES;
 		nack_cnt = cec_read(sd, 0x14) & 0xf;
 		if (nack_cnt)
@@ -2039,7 +1962,7 @@ static void adv76xx_cec_isr(struct v4l2_subdev *sd, bool *handled)
 	const struct adv76xx_chip_info *info = state->info;
 	u8 cec_irq;
 
-	/* cec controller */
+	 
 	cec_irq = io_read(sd, info->cec_irq_status) & 0x0f;
 	if (!cec_irq)
 		return;
@@ -2059,16 +1982,13 @@ static void adv76xx_cec_isr(struct v4l2_subdev *sd, bool *handled)
 			for (i = 0; i < msg.len; i++)
 				msg.msg[i] = cec_read(sd, i + 0x15);
 			cec_write(sd, info->cec_rx_enable,
-				  info->cec_rx_enable_mask); /* re-enable rx */
+				  info->cec_rx_enable_mask);  
 			cec_received_msg(state->cec_adap, &msg);
 		}
 	}
 
 	if (info->cec_irq_swap) {
-		/*
-		 * Note: the bit order is swapped between 0x4d and 0x4e
-		 * on adv7604
-		 */
+		 
 		cec_irq = ((cec_irq & 0x08) >> 3) | ((cec_irq & 0x04) >> 1) |
 			  ((cec_irq & 0x02) << 1) | ((cec_irq & 0x01) << 3);
 	}
@@ -2085,22 +2005,22 @@ static int adv76xx_cec_adap_enable(struct cec_adapter *adap, bool enable)
 	struct v4l2_subdev *sd = &state->sd;
 
 	if (!state->cec_enabled_adap && enable) {
-		cec_write_clr_set(sd, 0x2a, 0x01, 0x01); /* power up cec */
-		cec_write(sd, 0x2c, 0x01);	/* cec soft reset */
-		cec_write_clr_set(sd, 0x11, 0x01, 0); /* initially disable tx */
-		/* enabled irqs: */
-		/* tx: ready */
-		/* tx: arbitration lost */
-		/* tx: retry timeout */
-		/* rx: ready */
+		cec_write_clr_set(sd, 0x2a, 0x01, 0x01);  
+		cec_write(sd, 0x2c, 0x01);	 
+		cec_write_clr_set(sd, 0x11, 0x01, 0);  
+		 
+		 
+		 
+		 
+		 
 		io_write_clr_set(sd, info->cec_irq_status + 3, 0x0f, 0x0f);
 		cec_write(sd, info->cec_rx_enable, info->cec_rx_enable_mask);
 	} else if (state->cec_enabled_adap && !enable) {
-		/* disable cec interrupts */
+		 
 		io_write_clr_set(sd, info->cec_irq_status + 3, 0x0f, 0x00);
-		/* disable address mask 1-3 */
+		 
 		cec_write_clr_set(sd, 0x27, 0x70, 0x00);
-		/* power down cec section */
+		 
 		cec_write_clr_set(sd, 0x2a, 0x01, 0x00);
 		state->cec_valid_addrs = 0;
 	}
@@ -2142,21 +2062,21 @@ static int adv76xx_cec_adap_log_addr(struct cec_adapter *adap, u8 addr)
 
 	switch (i) {
 	case 0:
-		/* enable address mask 0 */
+		 
 		cec_write_clr_set(sd, 0x27, 0x10, 0x10);
-		/* set address for mask 0 */
+		 
 		cec_write_clr_set(sd, 0x28, 0x0f, addr);
 		break;
 	case 1:
-		/* enable address mask 1 */
+		 
 		cec_write_clr_set(sd, 0x27, 0x20, 0x20);
-		/* set address for mask 1 */
+		 
 		cec_write_clr_set(sd, 0x28, 0xf0, addr << 4);
 		break;
 	case 2:
-		/* enable address mask 2 */
+		 
 		cec_write_clr_set(sd, 0x27, 0x40, 0x40);
-		/* set address for mask 1 */
+		 
 		cec_write_clr_set(sd, 0x29, 0x0f, addr);
 		break;
 	}
@@ -2171,11 +2091,7 @@ static int adv76xx_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	u8 len = msg->len;
 	unsigned int i;
 
-	/*
-	 * The number of retries is the number of attempts - 1, but retry
-	 * at least once. It's not clear if a value of 0 is allowed, so
-	 * let's do at least one retry.
-	 */
+	 
 	cec_write_clr_set(sd, 0x12, 0x70, max(1, attempts - 1) << 4);
 
 	if (len > 16) {
@@ -2183,13 +2099,13 @@ static int adv76xx_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 		return -EINVAL;
 	}
 
-	/* write data */
+	 
 	for (i = 0; i < len; i++)
 		cec_write(sd, i, msg->msg[i]);
 
-	/* set length (data + header) */
+	 
 	cec_write(sd, 0x10, len);
-	/* start transmit, enable tx */
+	 
 	cec_write(sd, 0x11, 0x01);
 	return 0;
 }
@@ -2221,7 +2137,7 @@ static int adv76xx_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 
 	v4l2_dbg(2, debug, sd, "%s: ", __func__);
 
-	/* format change */
+	 
 	fmt_change = irq_reg_0x43 & 0x98;
 	fmt_change_digital = is_digital_input(sd)
 			   ? irq_reg_0x6b & info->fmt_change_digital_mask
@@ -2237,7 +2153,7 @@ static int adv76xx_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 		if (handled)
 			*handled = true;
 	}
-	/* HDMI/DVI mode */
+	 
 	if (irq_reg_0x6b & 0x01) {
 		v4l2_dbg(1, debug, sd, "%s: irq %s mode\n", __func__,
 			(io_read(sd, 0x6a) & 0x01) ? "HDMI" : "DVI");
@@ -2247,11 +2163,11 @@ static int adv76xx_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 	}
 
 #if IS_ENABLED(CONFIG_VIDEO_ADV7604_CEC)
-	/* cec */
+	 
 	adv76xx_cec_isr(sd, handled);
 #endif
 
-	/* tx 5v detect */
+	 
 	tx_5v = irq_reg_0x70 & info->cable_det_mask;
 	if (tx_5v) {
 		v4l2_dbg(1, debug, sd, "%s: tx_5v: 0x%x\n", __func__, tx_5v);
@@ -2326,12 +2242,12 @@ static int adv76xx_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 	if (edid->start_block != 0)
 		return -EINVAL;
 	if (edid->blocks == 0) {
-		/* Disable hotplug and I2C access to EDID RAM from DDC port */
+		 
 		state->edid.present &= ~(1 << edid->pad);
 		adv76xx_set_hpd(state, state->edid.present);
 		rep_write_clr_set(sd, info->edid_enable_reg, 0x0f, state->edid.present);
 
-		/* Fall back to a 16:9 aspect ratio */
+		 
 		state->aspect_ratio.numerator = 16;
 		state->aspect_ratio.denominator = 9;
 
@@ -2355,10 +2271,7 @@ static int adv76xx_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 		return err;
 
 	if (!spa_loc) {
-		/*
-		 * There is no SPA, so just set spa_loc to 128 and pa to whatever
-		 * data is there.
-		 */
+		 
 		spa_loc = 128;
 		pa = (edid->edid[spa_loc] << 8) | edid->edid[spa_loc + 1];
 	}
@@ -2366,7 +2279,7 @@ static int adv76xx_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 	v4l2_dbg(2, debug, sd, "%s: write EDID pad %d, edid.present = 0x%x\n",
 			__func__, edid->pad, state->edid.present);
 
-	/* Disable hotplug and I2C access to EDID RAM from DDC port */
+	 
 	cancel_delayed_work_sync(&state->delayed_work_enable_hotplug);
 	adv76xx_set_hpd(state, 0);
 	rep_write_clr_set(sd, info->edid_enable_reg, 0x0f, 0x00);
@@ -2429,8 +2342,7 @@ static int adv76xx_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 		}
 	}
 
-	/* adv76xx calculates the checksums and enables I2C access to internal
-	   EDID RAM from DDC port. */
+	 
 	rep_write_clr_set(sd, info->edid_enable_reg, 0x0f, state->edid.present);
 
 	for (i = 0; i < 1000; i++) {
@@ -2444,12 +2356,12 @@ static int adv76xx_set_edid(struct v4l2_subdev *sd, struct v4l2_edid *edid)
 	}
 	cec_s_phys_addr(state->cec_adap, parent_pa, false);
 
-	/* enable hotplug after 100 ms */
+	 
 	schedule_delayed_work(&state->delayed_work_enable_hotplug, HZ / 10);
 	return 0;
 }
 
-/*********** avi info frame CEA-861-E **************/
+ 
 
 static const struct adv76xx_cfg_read_infoframe adv76xx_cri[] = {
 	{ "AVI", 0x01, 0xe0, 0x00 },
@@ -2705,7 +2617,7 @@ static void adv76xx_unregistered(struct v4l2_subdev *sd)
 	cec_unregister_adapter(state->cec_adap);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_ctrl_ops adv76xx_ctrl_ops = {
 	.s_ctrl = adv76xx_s_ctrl,
@@ -2753,7 +2665,7 @@ static const struct v4l2_subdev_internal_ops adv76xx_int_ops = {
 	.unregistered = adv76xx_unregistered,
 };
 
-/* -------------------------- custom ctrls ---------------------------------- */
+ 
 
 static const struct v4l2_ctrl_config adv7604_ctrl_analog_sampling_phase = {
 	.ops = &adv76xx_ctrl_ops,
@@ -2788,7 +2700,7 @@ static const struct v4l2_ctrl_config adv76xx_ctrl_free_run_color = {
 	.def = 0x0,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 struct adv76xx_register_map {
 	const char *name;
@@ -2830,68 +2742,61 @@ static int adv76xx_core_init(struct v4l2_subdev *sd)
 		enable_input(sd);
 	}
 
-	/* power */
-	io_write(sd, 0x0c, 0x42);   /* Power up part and power down VDP */
-	io_write(sd, 0x0b, 0x44);   /* Power down ESDP block */
-	cp_write(sd, 0xcf, 0x01);   /* Power down macrovision */
+	 
+	io_write(sd, 0x0c, 0x42);    
+	io_write(sd, 0x0b, 0x44);    
+	cp_write(sd, 0xcf, 0x01);    
 
-	/* HPD */
+	 
 	if (info->type != ADV7604) {
-		/* Set manual HPD values to 0 */
+		 
 		io_write_clr_set(sd, 0x20, 0xc0, 0);
-		/*
-		 * Set HPA_DELAY to 200 ms and set automatic HPD control
-		 * to: internal EDID is active AND a cable is detected
-		 * AND the manual HPD control is set to 1.
-		 */
+		 
 		hdmi_write_clr_set(sd, 0x6c, 0xf6, 0x26);
 	}
 
-	/* video format */
+	 
 	io_write_clr_set(sd, 0x02, 0x0f, pdata->alt_gamma << 3);
 	io_write_clr_set(sd, 0x05, 0x0e, pdata->blank_data << 3 |
 			pdata->insert_av_codes << 2 |
 			pdata->replicate_av_codes << 1);
 	adv76xx_setup_format(state);
 
-	cp_write(sd, 0x69, 0x30);   /* Enable CP CSC */
+	cp_write(sd, 0x69, 0x30);    
 
-	/* VS, HS polarities */
+	 
 	io_write(sd, 0x06, 0xa0 | pdata->inv_vs_pol << 2 |
 		 pdata->inv_hs_pol << 1 | pdata->inv_llc_pol);
 
-	/* Adjust drive strength */
+	 
 	io_write(sd, 0x14, 0x40 | pdata->dr_str_data << 4 |
 				pdata->dr_str_clk << 2 |
 				pdata->dr_str_sync);
 
-	cp_write(sd, 0xba, (pdata->hdmi_free_run_mode << 1) | 0x01); /* HDMI free run */
-	cp_write(sd, 0xf3, 0xdc); /* Low threshold to enter/exit free run mode */
-	cp_write(sd, 0xf9, 0x23); /*  STDI ch. 1 - LCVS change threshold -
-				      ADI recommended setting [REF_01, c. 2.3.3] */
-	cp_write(sd, 0x45, 0x23); /*  STDI ch. 2 - LCVS change threshold -
-				      ADI recommended setting [REF_01, c. 2.3.3] */
-	cp_write(sd, 0xc9, 0x2d); /* use prim_mode and vid_std as free run resolution
-				     for digital formats */
+	cp_write(sd, 0xba, (pdata->hdmi_free_run_mode << 1) | 0x01);  
+	cp_write(sd, 0xf3, 0xdc);  
+	cp_write(sd, 0xf9, 0x23);  
+	cp_write(sd, 0x45, 0x23);  
+	cp_write(sd, 0xc9, 0x2d);  
 
-	/* HDMI audio */
-	hdmi_write_clr_set(sd, 0x15, 0x03, 0x03); /* Mute on FIFO over-/underflow [REF_01, c. 1.2.18] */
-	hdmi_write_clr_set(sd, 0x1a, 0x0e, 0x08); /* Wait 1 s before unmute */
-	hdmi_write_clr_set(sd, 0x68, 0x06, 0x06); /* FIFO reset on over-/underflow [REF_01, c. 1.2.19] */
+	 
+	hdmi_write_clr_set(sd, 0x15, 0x03, 0x03);  
+	hdmi_write_clr_set(sd, 0x1a, 0x0e, 0x08);  
+	hdmi_write_clr_set(sd, 0x68, 0x06, 0x06);  
 
-	/* TODO from platform data */
-	afe_write(sd, 0xb5, 0x01);  /* Setting MCLK to 256Fs */
+	 
+	afe_write(sd, 0xb5, 0x01);   
 
 	if (adv76xx_has_afe(state)) {
-		afe_write(sd, 0x02, pdata->ain_sel); /* Select analog input muxing mode */
+		afe_write(sd, 0x02, pdata->ain_sel);  
 		io_write_clr_set(sd, 0x30, 1 << 4, pdata->output_bus_lsb_to_msb << 4);
 	}
 
-	/* interrupts */
-	io_write(sd, 0x40, 0xc0 | pdata->int1_config); /* Configure INT1 */
-	io_write(sd, 0x46, 0x98); /* Enable SSPD, STDI and CP unlocked interrupts */
-	io_write(sd, 0x6e, info->fmt_change_digital_mask); /* Enable V_LOCKED and DE_REGEN_LCK interrupts */
-	io_write(sd, 0x73, info->cable_det_mask); /* Enable cable detection (+5v) interrupts */
+	 
+	io_write(sd, 0x40, 0xc0 | pdata->int1_config);  
+	io_write(sd, 0x46, 0x98);  
+	io_write(sd, 0x6e, info->fmt_change_digital_mask);  
+	io_write(sd, 0x73, info->cable_det_mask);  
 	info->setup_irqs(sd);
 
 	return v4l2_ctrl_handler_setup(sd->ctrl_handler);
@@ -2899,17 +2804,17 @@ static int adv76xx_core_init(struct v4l2_subdev *sd)
 
 static void adv7604_setup_irqs(struct v4l2_subdev *sd)
 {
-	io_write(sd, 0x41, 0xd7); /* STDI irq for any change, disable INT2 */
+	io_write(sd, 0x41, 0xd7);  
 }
 
 static void adv7611_setup_irqs(struct v4l2_subdev *sd)
 {
-	io_write(sd, 0x41, 0xd0); /* STDI irq for any change, disable INT2 */
+	io_write(sd, 0x41, 0xd0);  
 }
 
 static void adv7612_setup_irqs(struct v4l2_subdev *sd)
 {
-	io_write(sd, 0x41, 0xd0); /* disable INT2 */
+	io_write(sd, 0x41, 0xd0);  
 }
 
 static void adv76xx_unregister_clients(struct adv76xx_state *state)
@@ -2944,57 +2849,57 @@ static struct i2c_client *adv76xx_dummy_client(struct v4l2_subdev *sd,
 }
 
 static const struct adv76xx_reg_seq adv7604_recommended_settings_afe[] = {
-	/* reset ADI recommended settings for HDMI: */
-	/* "ADV7604 Register Settings Recommendations (rev. 2.5, June 2010)" p. 4. */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x04 }, /* HDMI filter optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x04 }, /* HDMI filter optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3d), 0x00 }, /* DDC bus active pull-up control */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3e), 0x74 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x4e), 0x3b }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x57), 0x74 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x58), 0x63 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8d), 0x18 }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8e), 0x34 }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x93), 0x88 }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x94), 0x2e }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x96), 0x00 }, /* enable automatic EQ changing */
+	 
+	 
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x04 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x04 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3d), 0x00 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3e), 0x74 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x4e), 0x3b },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x57), 0x74 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x58), 0x63 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8d), 0x18 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8e), 0x34 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x93), 0x88 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x94), 0x2e },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x96), 0x00 },  
 
-	/* set ADI recommended settings for digitizer */
-	/* "ADV7604 Register Settings Recommendations (rev. 2.5, June 2010)" p. 17. */
-	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x12), 0x7b }, /* ADC noise shaping filter controls */
-	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x0c), 0x1f }, /* CP core gain controls */
-	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0x3e), 0x04 }, /* CP core pre-gain control */
-	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0xc3), 0x39 }, /* CP coast control. Graphics mode */
-	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0x40), 0x5c }, /* CP core pre-gain control. Graphics mode */
+	 
+	 
+	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x12), 0x7b },  
+	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x0c), 0x1f },  
+	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0x3e), 0x04 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0xc3), 0x39 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0x40), 0x5c },  
 
 	{ ADV76XX_REG_SEQ_TERM, 0 },
 };
 
 static const struct adv76xx_reg_seq adv7604_recommended_settings_hdmi[] = {
-	/* set ADI recommended settings for HDMI: */
-	/* "ADV7604 Register Settings Recommendations (rev. 2.5, June 2010)" p. 4. */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x84 }, /* HDMI filter optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3d), 0x10 }, /* DDC bus active pull-up control */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3e), 0x39 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x4e), 0x3b }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x57), 0xb6 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x58), 0x03 }, /* TMDS PLL optimization */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8d), 0x18 }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8e), 0x34 }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x93), 0x8b }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x94), 0x2d }, /* equaliser */
-	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x96), 0x01 }, /* enable automatic EQ changing */
+	 
+	 
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x0d), 0x84 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3d), 0x10 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x3e), 0x39 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x4e), 0x3b },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x57), 0xb6 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x58), 0x03 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8d), 0x18 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x8e), 0x34 },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x93), 0x8b },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x94), 0x2d },  
+	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x96), 0x01 },  
 
-	/* reset ADI recommended settings for digitizer */
-	/* "ADV7604 Register Settings Recommendations (rev. 2.5, June 2010)" p. 17. */
-	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x12), 0xfb }, /* ADC noise shaping filter controls */
-	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x0c), 0x0d }, /* CP core gain controls */
+	 
+	 
+	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x12), 0xfb },  
+	{ ADV76XX_REG(ADV76XX_PAGE_AFE, 0x0c), 0x0d },  
 
 	{ ADV76XX_REG_SEQ_TERM, 0 },
 };
 
 static const struct adv76xx_reg_seq adv7611_recommended_settings_hdmi[] = {
-	/* ADV7611 Register Settings Recommendations Rev 1.5, May 2014 */
+	 
 	{ ADV76XX_REG(ADV76XX_PAGE_CP, 0x6c), 0x00 },
 	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x9b), 0x03 },
 	{ ADV76XX_REG(ADV76XX_PAGE_HDMI, 0x6f), 0x08 },
@@ -3128,8 +3033,8 @@ static const struct adv76xx_chip_info adv76xx_chip_info[] = {
 	[ADV7612] = {
 		.type = ADV7612,
 		.has_afe = false,
-		.max_port = ADV76XX_PAD_HDMI_PORT_A,	/* B not supported */
-		.num_dv_ports = 1,			/* normally 2 */
+		.max_port = ADV76XX_PAD_HDMI_PORT_A,	 
+		.num_dv_ports = 1,			 
 		.edid_enable_reg = 0x74,
 		.edid_status_reg = 0x76,
 		.edid_segment_reg = 0x7a,
@@ -3204,7 +3109,7 @@ static int adv76xx_parse_dt(struct adv76xx_state *state)
 
 	np = state->i2c_clients[ADV76XX_PAGE_IO]->dev.of_node;
 
-	/* Parse the endpoint. */
+	 
 	endpoint = of_graph_get_next_endpoint(np, NULL);
 	if (!endpoint)
 		return -EINVAL;
@@ -3233,10 +3138,10 @@ static int adv76xx_parse_dt(struct adv76xx_state *state)
 	if (bus_cfg.bus_type == V4L2_MBUS_BT656)
 		state->pdata.insert_av_codes = 1;
 
-	/* Disable the interrupt for now as no DT-based board uses it. */
+	 
 	state->pdata.int1_config = ADV76XX_INT1_CONFIG_ACTIVE_HIGH;
 
-	/* Hardcode the remaining platform data fields. */
+	 
 	state->pdata.disable_pwrdnb = 0;
 	state->pdata.disable_cable_det_rst = 0;
 	state->pdata.blank_data = 1;
@@ -3394,12 +3299,12 @@ static int configure_regmaps(struct adv76xx_state *state)
 static void adv76xx_reset(struct adv76xx_state *state)
 {
 	if (state->reset_gpio) {
-		/* ADV76XX can be reset by a low reset pulse of minimum 5 ms. */
+		 
 		gpiod_set_value_cansleep(state->reset_gpio, 0);
 		usleep_range(5000, 10000);
 		gpiod_set_value_cansleep(state->reset_gpio, 1);
-		/* It is recommended to wait 5 ms after the low pulse before */
-		/* an I2C write is performed to the ADV76XX. */
+		 
+		 
 		usleep_range(5000, 10000);
 	}
 }
@@ -3417,7 +3322,7 @@ static int adv76xx_probe(struct i2c_client *client)
 	unsigned int val, val2;
 	int err;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 	v4l_dbg(1, debug, client, "detecting adv76xx client on address 0x%x\n",
@@ -3429,7 +3334,7 @@ static int adv76xx_probe(struct i2c_client *client)
 
 	state->i2c_clients[ADV76XX_PAGE_IO] = client;
 
-	/* initialize variables */
+	 
 	state->restart_stdi_once = true;
 	state->selected_input = ~0;
 
@@ -3454,7 +3359,7 @@ static int adv76xx_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* Request GPIOs. */
+	 
 	for (i = 0; i < state->info->num_dv_ports; ++i) {
 		state->hpd_gpio[i] =
 			devm_gpiod_get_index_optional(&client->dev, "hpd", i,
@@ -3483,7 +3388,7 @@ static int adv76xx_probe(struct i2c_client *client)
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
 	sd->internal_ops = &adv76xx_int_ops;
 
-	/* Configure IO Regmap region */
+	 
 	err = configure_regmap(state, ADV76XX_PAGE_IO);
 
 	if (err) {
@@ -3491,11 +3396,7 @@ static int adv76xx_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * Verify that the chip is present. On ADV7604 the RD_INFO register only
-	 * identifies the revision, while on ADV7611 it identifies the model as
-	 * well. Use the HDMI slave address on ADV7604 and RD_INFO on ADV7611.
-	 */
+	 
 	switch (state->info->type) {
 	case ADV7604:
 		err = regmap_read(state->regmap[ADV76XX_PAGE_IO], 0xfb, &val);
@@ -3537,7 +3438,7 @@ static int adv76xx_probe(struct i2c_client *client)
 		break;
 	}
 
-	/* control handlers */
+	 
 	hdl = &state->hdl;
 	v4l2_ctrl_handler_init(hdl, adv76xx_has_afe(state) ? 9 : 8);
 
@@ -3563,7 +3464,7 @@ static int adv76xx_probe(struct i2c_client *client)
 			V4L2_CID_DV_RX_RGB_RANGE, V4L2_DV_RGB_RANGE_FULL,
 			0, V4L2_DV_RGB_RANGE_AUTO);
 
-	/* custom controls */
+	 
 	if (adv76xx_has_afe(state))
 		state->analog_sampling_phase_ctrl =
 			v4l2_ctrl_new_custom(hdl, &adv7604_ctrl_analog_sampling_phase, NULL);
@@ -3613,7 +3514,7 @@ static int adv76xx_probe(struct i2c_client *client)
 	if (err)
 		goto err_work_queues;
 
-	/* Configure regmaps */
+	 
 	err = configure_regmaps(state);
 	if (err)
 		goto err_entity;
@@ -3661,14 +3562,14 @@ err_hdl:
 	return err;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static void adv76xx_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct adv76xx_state *state = to_state(sd);
 
-	/* disable interrupts */
+	 
 	io_write(sd, 0x40, 0);
 	io_write(sd, 0x41, 0);
 	io_write(sd, 0x46, 0);
@@ -3682,7 +3583,7 @@ static void adv76xx_remove(struct i2c_client *client)
 	v4l2_ctrl_handler_free(sd->ctrl_handler);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static struct i2c_driver adv76xx_driver = {
 	.driver = {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2020 Intel Corporation */
+
+ 
 #include "adf_common_drv.h"
 #include "adf_gen2_hw_data.h"
 #include "icp_qat_hw.h"
@@ -31,7 +31,7 @@ void adf_gen2_enable_error_correction(struct adf_accel_dev *accel_dev)
 	unsigned long ae_mask = hw_data->ae_mask;
 	unsigned int val, i;
 
-	/* Enable Accel Engine error detection & correction */
+	 
 	for_each_set_bit(i, &ae_mask, hw_data->num_engines) {
 		val = ADF_CSR_RD(pmisc_addr, ADF_GEN2_AE_CTX_ENABLES(i));
 		val |= ADF_GEN2_ENABLE_AE_ECC_ERR;
@@ -41,7 +41,7 @@ void adf_gen2_enable_error_correction(struct adf_accel_dev *accel_dev)
 		ADF_CSR_WR(pmisc_addr, ADF_GEN2_AE_MISC_CONTROL(i), val);
 	}
 
-	/* Enable shared memory error detection & correction */
+	 
 	for_each_set_bit(i, &accel_mask, hw_data->num_accel) {
 		val = ADF_CSR_RD(pmisc_addr, ADF_GEN2_UERRSSMSH(i));
 		val |= ADF_GEN2_ERRSSMSH_EN;
@@ -60,7 +60,7 @@ void adf_gen2_cfg_iov_thds(struct adf_accel_dev *accel_dev, bool enable,
 	u32 reg;
 	int i;
 
-	/* Set/Unset Valid bit in AE Thread to PCIe Function Mapping Group A */
+	 
 	for (i = 0; i < num_a_regs; i++) {
 		reg = READ_CSR_AE2FUNCTION_MAP_A(pmisc_addr, i);
 		if (enable)
@@ -70,7 +70,7 @@ void adf_gen2_cfg_iov_thds(struct adf_accel_dev *accel_dev, bool enable,
 		WRITE_CSR_AE2FUNCTION_MAP_A(pmisc_addr, i, reg);
 	}
 
-	/* Set/Unset Valid bit in AE Thread to PCIe Function Mapping Group B */
+	 
 	for (i = 0; i < num_b_regs; i++) {
 		reg = READ_CSR_AE2FUNCTION_MAP_B(pmisc_addr, i);
 		if (enable)
@@ -105,7 +105,7 @@ void adf_gen2_enable_ints(struct adf_accel_dev *accel_dev)
 
 	val = accel_dev->pf.vf_info ? 0 : BIT_ULL(GET_MAX_BANKS(accel_dev)) - 1;
 
-	/* Enable bundle and misc interrupts */
+	 
 	ADF_CSR_WR(addr, ADF_GEN2_SMIAPF0_MASK_OFFSET, val);
 	ADF_CSR_WR(addr, ADF_GEN2_SMIAPF1_MASK_OFFSET, ADF_GEN2_SMIA1_MASK);
 }
@@ -221,10 +221,10 @@ u32 adf_gen2_get_accel_cap(struct adf_accel_dev *accel_dev)
 			   ICP_ACCEL_CAPABILITIES_CIPHER |
 			   ICP_ACCEL_CAPABILITIES_COMPRESSION;
 
-	/* Read accelerator capabilities mask */
+	 
 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
 
-	/* A set bit in legfuses means the feature is OFF in this SKU */
+	 
 	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
@@ -257,11 +257,11 @@ void adf_gen2_set_ssm_wdtimer(struct adf_accel_dev *accel_dev)
 	unsigned long accel_mask = hw_data->accel_mask;
 	u32 i = 0;
 
-	/* Configures WDT timers */
+	 
 	for_each_set_bit(i, &accel_mask, hw_data->num_accel) {
-		/* Enable WDT for sym and dc */
+		 
 		ADF_CSR_WR(pmisc_addr, ADF_SSMWDT(i), timer_val);
-		/* Enable WDT for pke */
+		 
 		ADF_CSR_WR(pmisc_addr, ADF_SSMWDTPKE(i), timer_val_pke);
 	}
 }

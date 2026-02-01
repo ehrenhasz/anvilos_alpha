@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * adm1021.c - Part of lm_sensors, Linux kernel modules for hardware
- *	       monitoring
- * Copyright (c) 1998, 1999  Frodo Looijaard <frodol@dds.nl> and
- *			     Philip Edelbrock <phil@netroedge.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -17,54 +12,49 @@
 #include <linux/mutex.h>
 
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = {
 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x4c, 0x4d, 0x4e, I2C_CLIENT_END };
 
 enum chips {
 	adm1021, adm1023, max1617, max1617a, thmc10, lm84, gl523sm, mc1066 };
 
-/* adm1021 constants specified below */
+ 
 
-/* The adm1021 registers */
-/* Read-only */
-/* For nr in 0-1 */
+ 
+ 
+ 
 #define ADM1021_REG_TEMP(nr)		(nr)
 #define ADM1021_REG_STATUS		0x02
-/* 0x41 = AD, 0x49 = TI, 0x4D = Maxim, 0x23 = Genesys , 0x54 = Onsemi */
+ 
 #define ADM1021_REG_MAN_ID		0xFE
-/* ADM1021 = 0x0X, ADM1023 = 0x3X */
+ 
 #define ADM1021_REG_DEV_ID		0xFF
-/* These use different addresses for reading/writing */
+ 
 #define ADM1021_REG_CONFIG_R		0x03
 #define ADM1021_REG_CONFIG_W		0x09
 #define ADM1021_REG_CONV_RATE_R		0x04
 #define ADM1021_REG_CONV_RATE_W		0x0A
-/* These are for the ADM1023's additional precision on the remote temp sensor */
+ 
 #define ADM1023_REG_REM_TEMP_PREC	0x10
 #define ADM1023_REG_REM_OFFSET		0x11
 #define ADM1023_REG_REM_OFFSET_PREC	0x12
 #define ADM1023_REG_REM_TOS_PREC	0x13
 #define ADM1023_REG_REM_THYST_PREC	0x14
-/* limits */
-/* For nr in 0-1 */
+ 
+ 
 #define ADM1021_REG_TOS_R(nr)		(0x05 + 2 * (nr))
 #define ADM1021_REG_TOS_W(nr)		(0x0B + 2 * (nr))
 #define ADM1021_REG_THYST_R(nr)		(0x06 + 2 * (nr))
 #define ADM1021_REG_THYST_W(nr)		(0x0C + 2 * (nr))
-/* write-only */
+ 
 #define ADM1021_REG_ONESHOT		0x0F
 
-/* Initial values */
+ 
 
-/*
- * Note: Even though I left the low and high limits named os and hyst,
- * they don't quite work like a thermostat the way the LM75 does.  I.e.,
- * a lower temp than THYST actually triggers an alarm instead of
- * clearing it.  Weird, ey?   --Phil
- */
+ 
 
-/* Each client has this additional data */
+ 
 struct adm1021_data {
 	struct i2c_client *client;
 	enum chips type;
@@ -72,20 +62,20 @@ struct adm1021_data {
 	const struct attribute_group *groups[3];
 
 	struct mutex update_lock;
-	bool valid;		/* true if following fields are valid */
-	char low_power;		/* !=0 if device in low power mode */
-	unsigned long last_updated;	/* In jiffies */
+	bool valid;		 
+	char low_power;		 
+	unsigned long last_updated;	 
 
-	int temp_max[2];		/* Register values */
+	int temp_max[2];		 
 	int temp_min[2];
 	int temp[2];
 	u8 alarms;
-	/* Special values for ADM1023 only */
+	 
 	u8 remote_temp_offset;
 	u8 remote_temp_offset_prec;
 };
 
-/* (amalysh) read only mode, otherwise any limit's writing confuse BIOS */
+ 
 static bool read_only;
 
 static struct adm1021_data *adm1021_update_device(struct device *dev)
@@ -117,10 +107,7 @@ static struct adm1021_data *adm1021_update_device(struct device *dev)
 		data->alarms = i2c_smbus_read_byte_data(client,
 						ADM1021_REG_STATUS) & 0x7c;
 		if (data->type == adm1023) {
-			/*
-			 * The ADM1023 provides 3 extra bits of precision for
-			 * the remote sensor in extra registers.
-			 */
+			 
 			data->temp[1] += 125 * (i2c_smbus_read_byte_data(
 				client, ADM1023_REG_REM_TEMP_PREC) >> 5);
 			data->temp_max[1] += 125 * (i2c_smbus_read_byte_data(
@@ -318,7 +305,7 @@ static const struct attribute_group adm1021_min_group = {
 	.attrs = adm1021_min_attributes,
 };
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adm1021_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -336,13 +323,13 @@ static int adm1021_detect(struct i2c_client *client,
 					     ADM1021_REG_CONV_RATE_R);
 	config = i2c_smbus_read_byte_data(client, ADM1021_REG_CONFIG_R);
 
-	/* Check unused bits */
+	 
 	if ((status & 0x03) || (config & 0x3F) || (conv_rate & 0xF8)) {
 		pr_debug("detect failed, chip not detected!\n");
 		return -ENODEV;
 	}
 
-	/* Determine the chip type. */
+	 
 	man_id = i2c_smbus_read_byte_data(client, ADM1021_REG_MAN_ID);
 	dev_id = i2c_smbus_read_byte_data(client, ADM1021_REG_DEV_ID);
 
@@ -350,12 +337,7 @@ static int adm1021_detect(struct i2c_client *client,
 		return -ENODEV;
 
 	if (man_id == 0x4d && dev_id == 0x01) {
-		/*
-		 * dev_id 0x01 matches MAX6680, MAX6695, MAX6696, and possibly
-		 * others. Read register which is unsupported on MAX1617 but
-		 * exists on all those chips and compare with the dev_id
-		 * register. If it matches, it may be a MAX1617A.
-		 */
+		 
 		reg = i2c_smbus_read_byte_data(client,
 					       ADM1023_REG_REM_TEMP_PREC);
 		if (reg != dev_id)
@@ -377,12 +359,12 @@ static int adm1021_detect(struct i2c_client *client,
 	else {
 		int lte, rte, lhi, rhi, llo, rlo;
 
-		/* extra checks for LM84 and MAX1617 to avoid misdetections */
+		 
 
 		llo = i2c_smbus_read_byte_data(client, ADM1021_REG_THYST_R(0));
 		rlo = i2c_smbus_read_byte_data(client, ADM1021_REG_THYST_R(1));
 
-		/* fail if any of the additional register reads failed */
+		 
 		if (llo < 0 || rlo < 0)
 			return -ENODEV;
 
@@ -391,24 +373,16 @@ static int adm1021_detect(struct i2c_client *client,
 		lhi = i2c_smbus_read_byte_data(client, ADM1021_REG_TOS_R(0));
 		rhi = i2c_smbus_read_byte_data(client, ADM1021_REG_TOS_R(1));
 
-		/*
-		 * Fail for negative temperatures and negative high limits.
-		 * This check also catches read errors on the tested registers.
-		 */
+		 
 		if ((s8)lte < 0 || (s8)rte < 0 || (s8)lhi < 0 || (s8)rhi < 0)
 			return -ENODEV;
 
-		/* fail if all registers hold the same value */
+		 
 		if (lte == rte && lte == lhi && lte == rhi && lte == llo
 		    && lte == rlo)
 			return -ENODEV;
 
-		/*
-		 * LM84 Mfr ID is in a different place,
-		 * and it has more unused bits. Registers at 0xfe and 0xff
-		 * are undefined and return the most recently read value,
-		 * here the value of the configuration register.
-		 */
+		 
 		if (conv_rate == 0x00
 		    && man_id == config && dev_id == config
 		    && (config & 0x7F) == 0x00
@@ -417,7 +391,7 @@ static int adm1021_detect(struct i2c_client *client,
 		} else {
 			if ((config & 0x3f) || (status & 0x03))
 				return -ENODEV;
-			/* fail if low limits are larger than high limits */
+			 
 			if ((s8)llo > lhi || (s8)rlo > rhi)
 				return -ENODEV;
 			type_name = "max1617";
@@ -433,10 +407,10 @@ static int adm1021_detect(struct i2c_client *client,
 
 static void adm1021_init_client(struct i2c_client *client)
 {
-	/* Enable ADC and disable suspend mode */
+	 
 	i2c_smbus_write_byte_data(client, ADM1021_REG_CONFIG_W,
 		i2c_smbus_read_byte_data(client, ADM1021_REG_CONFIG_R) & 0xBF);
-	/* Set Conversion rate to 1/sec (this can be tinkered with) */
+	 
 	i2c_smbus_write_byte_data(client, ADM1021_REG_CONV_RATE_W, 0x04);
 }
 
@@ -456,7 +430,7 @@ static int adm1021_probe(struct i2c_client *client)
 	data->type = i2c_match_id(adm1021_id, client)->driver_data;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the ADM1021 chip */
+	 
 	if (data->type != lm84 && !read_only)
 		adm1021_init_client(client);
 

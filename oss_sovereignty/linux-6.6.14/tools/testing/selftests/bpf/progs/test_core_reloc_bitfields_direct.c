@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -14,19 +14,19 @@ struct {
 } data = {};
 
 struct core_reloc_bitfields {
-	/* unsigned bitfields */
+	 
 	uint8_t		ub1: 1;
 	uint8_t		ub2: 2;
 	uint32_t	ub7: 7;
-	/* signed bitfields */
+	 
 	int8_t		sb4: 4;
 	int32_t		sb20: 20;
-	/* non-bitfields */
+	 
 	uint32_t	u32;
 	int32_t		s32;
 };
 
-/* bitfield read results, all as plain integers */
+ 
 struct core_reloc_bitfields_output {
 	int64_t		ub1;
 	int64_t		ub2;

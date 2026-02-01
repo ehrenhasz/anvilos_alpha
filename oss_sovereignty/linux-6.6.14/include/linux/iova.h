@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2006, Intel Corporation.
- *
- * Copyright (C) 2006-2008 Intel Corporation
- * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- */
+ 
+ 
 
 #ifndef _IOVA_H_
 #define _IOVA_H_
@@ -14,27 +9,27 @@
 #include <linux/rbtree.h>
 #include <linux/dma-mapping.h>
 
-/* iova structure */
+ 
 struct iova {
 	struct rb_node	node;
-	unsigned long	pfn_hi; /* Highest allocated pfn */
-	unsigned long	pfn_lo; /* Lowest allocated pfn */
+	unsigned long	pfn_hi;  
+	unsigned long	pfn_lo;  
 };
 
 
 struct iova_rcache;
 
-/* holds all the iova translations for a domain */
+ 
 struct iova_domain {
-	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
-	struct rb_root	rbroot;		/* iova domain rbtree root */
-	struct rb_node	*cached_node;	/* Save last alloced node */
-	struct rb_node	*cached32_node; /* Save last 32-bit alloced node */
-	unsigned long	granule;	/* pfn granularity for this domain */
-	unsigned long	start_pfn;	/* Lower limit for this domain */
+	spinlock_t	iova_rbtree_lock;  
+	struct rb_root	rbroot;		 
+	struct rb_node	*cached_node;	 
+	struct rb_node	*cached32_node;  
+	unsigned long	granule;	 
+	unsigned long	start_pfn;	 
 	unsigned long	dma_32bit_pfn;
-	unsigned long	max32_alloc_size; /* Size of last failed allocation */
-	struct iova	anchor;		/* rbtree lookup anchor */
+	unsigned long	max32_alloc_size;  
+	struct iova	anchor;		 
 
 	struct iova_rcache	*rcaches;
 	struct hlist_node	cpuhp_dead;

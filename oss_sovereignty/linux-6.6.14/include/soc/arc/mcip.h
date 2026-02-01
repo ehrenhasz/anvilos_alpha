@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ARConnect IP Support (Multi core enabler: Cross core IPI, RTC ...)
- *
- * Copyright (C) 2014-15 Synopsys, Inc. (www.synopsys.com)
- */
+ 
+ 
 
 #ifndef __SOC_ARC_MCIP_H
 #define __SOC_ARC_MCIP_H
@@ -29,7 +25,7 @@ struct mcip_cmd {
 #define CMD_INTRPT_READ_STATUS		0x03
 #define CMD_INTRPT_CHECK_SOURCE		0x04
 
-/* Semaphore Commands */
+ 
 #define CMD_SEMA_CLAIM_AND_READ		0x11
 #define CMD_SEMA_RELEASE		0x12
 
@@ -83,21 +79,10 @@ struct mcip_idu_bcr {
 };
 
 
-/*
- * Build register for IDU contains not an actual number of supported common
- * interrupts but an exponent of 2 which must be multiplied by 4 to
- * get a number of supported common interrupts.
- */
+ 
 #define mcip_idu_bcr_to_nr_irqs(bcr) (4 * (1 << (bcr).cirqnum))
 
-/*
- * MCIP programming model
- *
- * - Simple commands write {cmd:8,param:16} to MCIP_CMD aux reg
- *   (param could be irq, common_irq, core_id ...)
- * - More involved commands setup MCIP_WDATA with cmd specific data
- *   before invoking the simple command
- */
+ 
 static inline void __mcip_cmd(unsigned int cmd, unsigned int param)
 {
 	struct mcip_cmd buf;
@@ -109,10 +94,7 @@ static inline void __mcip_cmd(unsigned int cmd, unsigned int param)
 	WRITE_AUX(ARC_REG_MCIP_CMD, buf);
 }
 
-/*
- * Setup additional data for a cmd
- * Callers need to lock to ensure atomicity
- */
+ 
 static inline void __mcip_cmd_data(unsigned int cmd, unsigned int param,
 				   unsigned int data)
 {
@@ -121,9 +103,7 @@ static inline void __mcip_cmd_data(unsigned int cmd, unsigned int param,
 	__mcip_cmd(cmd, param);
 }
 
-/*
- * Read MCIP register
- */
+ 
 static inline unsigned int __mcip_cmd_read(unsigned int cmd, unsigned int param)
 {
 	__mcip_cmd(cmd, param);

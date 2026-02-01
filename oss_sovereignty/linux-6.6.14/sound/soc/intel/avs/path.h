@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021 Intel Corporation. All rights reserved.
- *
- * Authors: Cezary Rojewski <cezary.rojewski@intel.com>
- *          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_INTEL_AVS_PATH_H
 #define __SOUND_SOC_INTEL_AVS_PATH_H
@@ -20,7 +15,7 @@ struct avs_path {
 
 	struct avs_tplg_path *template;
 	struct avs_dev *owner;
-	/* device path management */
+	 
 	struct list_head node;
 };
 
@@ -31,7 +26,7 @@ struct avs_path_pipeline {
 
 	struct avs_tplg_pipeline *template;
 	struct avs_path *owner;
-	/* path pipelines management */
+	 
 	struct list_head node;
 };
 
@@ -42,7 +37,7 @@ struct avs_path_module {
 
 	struct avs_tplg_module *template;
 	struct avs_path_pipeline *owner;
-	/* pipeline modules management */
+	 
 	struct list_head node;
 };
 
@@ -54,7 +49,7 @@ struct avs_path_binding {
 
 	struct avs_tplg_binding *template;
 	struct avs_path_pipeline *owner;
-	/* pipeline bindings management */
+	 
 	struct list_head node;
 };
 

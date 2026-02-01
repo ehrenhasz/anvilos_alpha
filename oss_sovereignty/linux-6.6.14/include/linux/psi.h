@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PSI_H
 #define _LINUX_PSI_H
 
@@ -43,7 +43,7 @@ void cgroup_move_task(struct task_struct *p, struct css_set *to);
 void psi_cgroup_restart(struct psi_group *group);
 #endif
 
-#else /* CONFIG_PSI */
+#else  
 
 static inline void psi_init(void) {}
 
@@ -65,6 +65,6 @@ static inline void cgroup_move_task(struct task_struct *p, struct css_set *to)
 static inline void psi_cgroup_restart(struct psi_group *group) {}
 #endif
 
-#endif /* CONFIG_PSI */
+#endif  
 
-#endif /* _LINUX_PSI_H */
+#endif  

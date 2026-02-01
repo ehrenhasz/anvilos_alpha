@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -9,12 +9,12 @@ struct rtspi {
 	void __iomem *base;
 };
 
-/* SPI Flash Configuration Register */
+ 
 #define RTL_SPI_SFCR			0x00
 #define RTL_SPI_SFCR_RBO		BIT(28)
 #define RTL_SPI_SFCR_WBO		BIT(27)
 
-/* SPI Flash Control and Status Register */
+ 
 #define RTL_SPI_SFCSR			0x08
 #define RTL_SPI_SFCSR_CSB0		BIT(31)
 #define RTL_SPI_SFCSR_CSB1		BIT(30)
@@ -24,7 +24,7 @@ struct rtspi {
 #define RTL_SPI_SFCSR_LEN1		(0x00 << 28)
 #define RTL_SPI_SFCSR_LEN4		(0x03 << 28)
 
-/* SPI Flash Data Register */
+ 
 #define RTL_SPI_SFDR			0x0c
 
 #define REG(x)		(rtspi->base + x)
@@ -35,7 +35,7 @@ static void rt_set_cs(struct spi_device *spi, bool active)
 	struct rtspi *rtspi = spi_controller_get_devdata(spi->controller);
 	u32 value;
 
-	/* CS0 bit is active low */
+	 
 	value = readl(REG(RTL_SPI_SFCSR));
 	if (active)
 		value |= RTL_SPI_SFCSR_CSB0;
@@ -134,15 +134,15 @@ static void init_hw(struct rtspi *rtspi)
 {
 	u32 value;
 
-	/* Turn on big-endian byte ordering */
+	 
 	value = readl(REG(RTL_SPI_SFCR));
 	value |= RTL_SPI_SFCR_RBO | RTL_SPI_SFCR_WBO;
 	writel(value, REG(RTL_SPI_SFCR));
 
 	value = readl(REG(RTL_SPI_SFCSR));
-	/* Permanently disable CS1, since it's never used */
+	 
 	value |= RTL_SPI_SFCSR_CSB1;
-	/* Select CS0 for use */
+	 
 	value &= RTL_SPI_SFCSR_CS;
 	writel(value, REG(RTL_SPI_SFCSR));
 }
@@ -190,7 +190,7 @@ static const struct of_device_id realtek_rtl_spi_of_ids[] = {
 	{ .compatible = "realtek,rtl8391-spi" },
 	{ .compatible = "realtek,rtl8392-spi" },
 	{ .compatible = "realtek,rtl8393-spi" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, realtek_rtl_spi_of_ids);
 

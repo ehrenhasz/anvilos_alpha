@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pistachio SoC Reset Controller driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -123,7 +117,7 @@ static int pistachio_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id pistachio_reset_dt_ids[] = {
 	 { .compatible = "img,pistachio-reset", },
-	 { /* sentinel */ },
+	 {   },
 };
 
 static struct platform_driver pistachio_reset_driver = {

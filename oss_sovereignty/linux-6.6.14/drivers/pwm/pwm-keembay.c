@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Keem Bay PWM driver
- *
- * Copyright (C) 2020 Intel Corporation
- * Authors: Lai Poey Seng <poey.seng.lai@intel.com>
- *          Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
- *
- * Limitations:
- * - Upon disabling a channel, the currently running
- *   period will not be completed. However, upon
- *   reconfiguration of the duty cycle/period, the
- *   currently running period will be completed first.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -26,12 +14,12 @@
 #define KMB_PWM_COUNT_MAX		U16_MAX
 #define KMB_PWM_EN_BIT			BIT(31)
 
-/* Mask */
+ 
 #define KMB_PWM_HIGH_MASK		GENMASK(31, 16)
 #define KMB_PWM_LOW_MASK		GENMASK(15, 0)
 #define KMB_PWM_LEADIN_MASK		GENMASK(30, 0)
 
-/* PWM Register offset */
+ 
 #define KMB_PWM_LEADIN_OFFSET(ch)	(0x00 + 4 * (ch))
 #define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
 
@@ -63,11 +51,7 @@ static int keembay_clk_enable(struct device *dev, struct clk *clk)
 	return devm_add_action_or_reset(dev, keembay_clk_unprepare, clk);
 }
 
-/*
- * With gcc 10, CONFIG_CC_OPTIMIZE_FOR_SIZE and only "inline" instead of
- * "__always_inline" this fails to compile because the compiler doesn't notice
- * for all valid masks (e.g. KMB_PWM_LEADIN_MASK) that they are ok.
- */
+ 
 static __always_inline void keembay_pwm_update_bits(struct keembay_pwm *priv, u32 mask,
 					   u32 val, u32 offset)
 {
@@ -99,14 +83,14 @@ static int keembay_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	clk_rate = clk_get_rate(priv->clk);
 
-	/* Read channel enabled status */
+	 
 	highlow = readl(priv->base + KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
 	if (highlow & KMB_PWM_EN_BIT)
 		state->enabled = true;
 	else
 		state->enabled = false;
 
-	/* Read period and duty cycle */
+	 
 	highlow = readl(priv->base + KMB_PWM_HIGHLOW_OFFSET(pwm->hwpwm));
 	low = FIELD_GET(KMB_PWM_LOW_MASK, highlow) * NSEC_PER_SEC;
 	high = FIELD_GET(KMB_PWM_HIGH_MASK, highlow) * NSEC_PER_SEC;
@@ -130,10 +114,7 @@ static int keembay_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (state->polarity != PWM_POLARITY_NORMAL)
 		return -EINVAL;
 
-	/*
-	 * Configure the pwm repeat count as infinite at (15:0) and leadin
-	 * low time as 0 at (30:16), which is in terms of clock cycles.
-	 */
+	 
 	keembay_pwm_update_bits(priv, KMB_PWM_LEADIN_MASK, 0,
 				KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
 
@@ -145,11 +126,7 @@ static int keembay_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * The upper 16 bits and lower 16 bits of the KMB_PWM_HIGHLOW_OFFSET
-	 * register contain the high time and low time of waveform accordingly.
-	 * All the values are in terms of clock cycles.
-	 */
+	 
 
 	clk_rate = clk_get_rate(priv->clk);
 	div = clk_rate * state->duty_cycle;

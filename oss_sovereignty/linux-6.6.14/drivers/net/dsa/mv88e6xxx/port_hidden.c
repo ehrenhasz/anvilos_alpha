@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch Hidden Registers support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2019 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/bitfield.h>
 
 #include "chip.h"
 #include "port.h"
 
-/* The mv88e6390 and mv88e6341 have some hidden registers used for debug and
- * development. The errata also makes use of them.
- */
+ 
 int mv88e6xxx_port_hidden_write(struct mv88e6xxx_chip *chip, int block,
 				int port, int reg, u16 val)
 {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Real time clock driver for DA9052
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: Dajun Dajun Chen <dajun.chen@diasemi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -109,7 +103,7 @@ static int da9052_set_alarm(struct da9052_rtc *rtc, struct rtc_time *rtc_tm)
 		alm_time += 60 - rtc_tm->tm_sec;
 		rtc_time64_to_tm(alm_time, rtc_tm);
 	}
-	BUG_ON(rtc_tm->tm_sec); /* it will cause repeated irqs if not zero */
+	BUG_ON(rtc_tm->tm_sec);  
 
 	rtc_tm->tm_year -= 100;
 	rtc_tm->tm_mon += 1;
@@ -199,7 +193,7 @@ static int da9052_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	uint8_t v[6];
 	int ret;
 
-	/* DA9052 only has 6 bits for year - to represent 2000-2063 */
+	 
 	if ((tm->tm_year < 100) || (tm->tm_year > 163))
 		return -EINVAL;
 
@@ -240,7 +234,7 @@ static int da9052_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	struct rtc_time *tm = &alrm->time;
 	struct da9052_rtc *rtc = dev_get_drvdata(dev);
 
-	/* DA9052 only has 6 bits for year - to represent 2000-2063 */
+	 
 	if ((tm->tm_year < 100) || (tm->tm_year > 163))
 		return -EINVAL;
 

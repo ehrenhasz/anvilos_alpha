@@ -1,41 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pin controller and GPIO driver for Amlogic Meson SoCs
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
 
-/*
- * The available pins are organized in banks (A,B,C,D,E,X,Y,Z,AO,
- * BOOT,CARD for meson6, X,Y,DV,H,Z,AO,BOOT,CARD for meson8 and
- * X,Y,DV,H,AO,BOOT,CARD,DIF for meson8b) and each bank has a
- * variable number of pins.
- *
- * The AO bank is special because it belongs to the Always-On power
- * domain which can't be powered off; the bank also uses a set of
- * registers different from the other banks.
- *
- * For each pin controller there are 4 different register ranges that
- * control the following properties of the pins:
- *  1) pin muxing
- *  2) pull enable/disable
- *  3) pull up/down
- *  4) GPIO direction, output value, input value
- *
- * In some cases the register ranges for pull enable and pull
- * direction are the same and thus there are only 3 register ranges.
- *
- * Since Meson G12A SoC, the ao register ranges for gpio, pull enable
- * and pull direction are the same, so there are only 2 register ranges.
- *
- * For the pull and GPIO configuration every bank uses a contiguous
- * set of bits in the register sets described above; the same register
- * can be shared by more banks with different offsets.
- *
- * In addition to this there are some registers shared between all
- * banks that control the IRQ functionality. This feature is not
- * supported at the moment by the driver.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/driver.h>
@@ -60,15 +26,7 @@ static const unsigned int meson_bit_strides[] = {
 	1, 1, 1, 1, 1, 2, 1
 };
 
-/**
- * meson_get_bank() - find the bank containing a given pin
- *
- * @pc:		the pinctrl instance
- * @pin:	the pin number
- * @bank:	the found bank
- *
- * Return:	0 on success, a negative value on error
- */
+ 
 static int meson_get_bank(struct meson_pinctrl *pc, unsigned int pin,
 			  struct meson_bank **bank)
 {
@@ -85,15 +43,7 @@ static int meson_get_bank(struct meson_pinctrl *pc, unsigned int pin,
 	return -EINVAL;
 }
 
-/**
- * meson_calc_reg_and_bit() - calculate register and bit for a pin
- *
- * @bank:	the bank containing the pin
- * @pin:	the pin number
- * @reg_type:	the type of register needed (pull-enable, pull, etc...)
- * @reg:	the computed register offset
- * @bit:	the computed bit
- */
+ 
 static void meson_calc_reg_and_bit(struct meson_bank *bank, unsigned int pin,
 				   enum meson_reg_type reg_type,
 				   unsigned int *reg, unsigned int *bit)

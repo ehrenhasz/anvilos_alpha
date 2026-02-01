@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 
@@ -12,7 +12,7 @@ struct callback_ctx {
 static long write_task(struct task_struct *task, struct vm_area_struct *vma,
 		       struct callback_ctx *data)
 {
-	/* writing to task, which is illegal */
+	 
 	task->mm = NULL;
 
 	return 0;

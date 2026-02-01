@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright © 2011 Intel Corporation
- */
+ 
+ 
 
 struct drm_crtc;
 struct drm_device;

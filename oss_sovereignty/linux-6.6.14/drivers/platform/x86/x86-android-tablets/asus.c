@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Board info for Asus X86 tablets which ship with Android as the factory image
- * and which have broken DSDT tables. The factory kernels shipped on these
- * devices typically have a bunch of things hardcoded, rather than specified
- * in their DSDT.
- *
- * Copyright (C) 2021-2023 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/gpio/machine.h>
 #include <linux/input.h>
@@ -15,7 +8,7 @@
 #include "shared-psy-info.h"
 #include "x86-android-tablets.h"
 
-/* Asus ME176C and TF103C tablets shared data */
+ 
 static struct gpiod_lookup_table int3496_gpo2_pin22_gpios = {
 	.dev_id = "intel-int3496",
 	.table = {
@@ -37,7 +30,7 @@ static const struct x86_gpio_button asus_me176c_tf103c_lid __initconst = {
 	.pin = 12,
 };
 
-/* Asus ME176C tablets have an Android factory img with everything hardcoded */
+ 
 static const char * const asus_me176c_accel_mount_matrix[] = {
 	"-1", "0", "0",
 	"0", "1", "0",
@@ -79,7 +72,7 @@ static const struct software_node asus_me176c_ug3105_node = {
 
 static const struct x86_i2c_client_info asus_me176c_i2c_clients[] __initconst = {
 	{
-		/* bq24297 battery charger */
+		 
 		.board_info = {
 			.type = "bq24190",
 			.addr = 0x6b,
@@ -95,7 +88,7 @@ static const struct x86_i2c_client_info asus_me176c_i2c_clients[] __initconst = 
 			.index = 0,
 		},
 	}, {
-		/* ug3105 battery monitor */
+		 
 		.board_info = {
 			.type = "ug3105",
 			.addr = 0x70,
@@ -104,7 +97,7 @@ static const struct x86_i2c_client_info asus_me176c_i2c_clients[] __initconst = 
 		},
 		.adapter_path = "\\_SB_.I2C1",
 	}, {
-		/* ak09911 compass */
+		 
 		.board_info = {
 			.type = "ak09911",
 			.addr = 0x0c,
@@ -112,7 +105,7 @@ static const struct x86_i2c_client_info asus_me176c_i2c_clients[] __initconst = 
 		},
 		.adapter_path = "\\_SB_.I2C5",
 	}, {
-		/* kxtj21009 accel */
+		 
 		.board_info = {
 			.type = "kxtj21009",
 			.addr = 0x0f,
@@ -127,7 +120,7 @@ static const struct x86_i2c_client_info asus_me176c_i2c_clients[] __initconst = 
 			.polarity = ACPI_ACTIVE_LOW,
 		},
 	}, {
-		/* goodix touchscreen */
+		 
 		.board_info = {
 			.type = "GDIX1001:00",
 			.addr = 0x14,
@@ -181,7 +174,7 @@ const struct x86_dev_info asus_me176c_info __initconst = {
 	.modules = bq24190_modules,
 };
 
-/* Asus TF103C tablets have an Android factory img with everything hardcoded */
+ 
 static const char * const asus_tf103c_accel_mount_matrix[] = {
 	"0", "-1", "0",
 	"-1", "0", "0",
@@ -247,7 +240,7 @@ static const struct software_node asus_tf103c_ug3105_node = {
 
 static const struct x86_i2c_client_info asus_tf103c_i2c_clients[] __initconst = {
 	{
-		/* bq24297 battery charger */
+		 
 		.board_info = {
 			.type = "bq24190",
 			.addr = 0x6b,
@@ -263,7 +256,7 @@ static const struct x86_i2c_client_info asus_tf103c_i2c_clients[] __initconst = 
 			.index = 0,
 		},
 	}, {
-		/* ug3105 battery monitor */
+		 
 		.board_info = {
 			.type = "ug3105",
 			.addr = 0x70,
@@ -272,7 +265,7 @@ static const struct x86_i2c_client_info asus_tf103c_i2c_clients[] __initconst = 
 		},
 		.adapter_path = "\\_SB_.I2C1",
 	}, {
-		/* ak09911 compass */
+		 
 		.board_info = {
 			.type = "ak09911",
 			.addr = 0x0c,
@@ -280,7 +273,7 @@ static const struct x86_i2c_client_info asus_tf103c_i2c_clients[] __initconst = 
 		},
 		.adapter_path = "\\_SB_.I2C5",
 	}, {
-		/* kxtj21009 accel */
+		 
 		.board_info = {
 			.type = "kxtj21009",
 			.addr = 0x0f,
@@ -289,7 +282,7 @@ static const struct x86_i2c_client_info asus_tf103c_i2c_clients[] __initconst = 
 		},
 		.adapter_path = "\\_SB_.I2C5",
 	}, {
-		/* atmel touchscreen */
+		 
 		.board_info = {
 			.type = "atmel_mxt_ts",
 			.addr = 0x4a,

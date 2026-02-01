@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* The industrial I/O core, trigger consumer functions
- *
- * Copyright (c) 2008-2011 Jonathan Cameron
- */
+ 
+ 
 
 #ifndef __LINUX_IIO_TRIGGER_CONSUMER_H__
 #define __LINUX_IIO_TRIGGER_CONSUMER_H__
@@ -13,20 +10,7 @@
 struct iio_dev;
 struct iio_trigger;
 
-/**
- * struct iio_poll_func - poll function pair
- *
- * @indio_dev:			data specific to device (passed into poll func)
- * @h:				the function that is actually run on trigger
- * @thread:			threaded interrupt part
- * @type:			the type of interrupt (basically if oneshot)
- * @name:			name used to identify the trigger consumer.
- * @irq:			the corresponding irq as allocated from the
- *				trigger pool
- * @timestamp:			some devices need a timestamp grabbed as soon
- *				as possible after the trigger - hence handler
- *				passes it via here.
- **/
+ 
 struct iio_poll_func {
 	struct iio_dev *indio_dev;
 	irqreturn_t (*h)(int irq, void *p);

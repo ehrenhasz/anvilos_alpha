@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STMicroelectronics STMPE811 Touchscreen Driver
- *
- * (C) 2010 Luotao Fu <l.fu@pengutronix.de>
- * All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,9 +17,7 @@
 
 #include <linux/mfd/stmpe.h>
 
-/* Register layouts and functionalities are identical on all stmpexxx variants
- * with touchscreen controller
- */
+ 
 #define STMPE_REG_INT_STA		0x0B
 #define STMPE_REG_TSC_CTRL		0x40
 #define STMPE_REG_TSC_CFG		0x41
@@ -46,29 +39,7 @@
 #define STMPE_TS_NAME			"stmpe-ts"
 #define XY_MASK				0xfff
 
-/**
- * struct stmpe_touch - stmpe811 touch screen controller state
- * @stmpe: pointer back to STMPE MFD container
- * @idev: registered input device
- * @work: a work item used to scan the device
- * @dev: a pointer back to the MFD cell struct device*
- * @prop: Touchscreen properties
- * @ave_ctrl: Sample average control
- * (0 -> 1 sample, 1 -> 2 samples, 2 -> 4 samples, 3 -> 8 samples)
- * @touch_det_delay: Touch detect interrupt delay
- * (0 -> 10 us, 1 -> 50 us, 2 -> 100 us, 3 -> 500 us,
- * 4-> 1 ms, 5 -> 5 ms, 6 -> 10 ms, 7 -> 50 ms)
- * recommended is 3
- * @settling: Panel driver settling time
- * (0 -> 10 us, 1 -> 100 us, 2 -> 500 us, 3 -> 1 ms,
- * 4 -> 5 ms, 5 -> 10 ms, 6 for 50 ms, 7 -> 100 ms)
- * recommended is 2
- * @fraction_z: Length of the fractional part in z
- * (fraction_z ([0..7]) = Count of the fractional part)
- * recommended is 7
- * @i_drive: current limit value of the touchscreen drivers
- * (0 -> 20 mA typical 35 mA max, 1 -> 50 mA typical 80 mA max)
- */
+ 
 struct stmpe_touch {
 	struct stmpe *stmpe;
 	struct input_dev *idev;
@@ -105,20 +76,14 @@ static void stmpe_work(struct work_struct *work)
 
 	int_sta = stmpe_reg_read(ts->stmpe, STMPE_REG_INT_STA);
 
-	/*
-	 * touch_det sometimes get desasserted or just get stuck. This appears
-	 * to be a silicon bug, We still have to clearify this with the
-	 * manufacture. As a workaround We release the key anyway if the
-	 * touch_det keeps coming in after 4ms, while the FIFO contains no value
-	 * during the whole time.
-	 */
+	 
 	while ((int_sta & (1 << STMPE_IRQ_TOUCH_DET)) && (timeout > 0)) {
 		timeout--;
 		int_sta = stmpe_reg_read(ts->stmpe, STMPE_REG_INT_STA);
 		udelay(100);
 	}
 
-	/* reset the FIFO before we report release event */
+	 
 	__stmpe_reset_fifo(ts->stmpe);
 
 	input_report_abs(ts->idev, ABS_PRESSURE, 0);
@@ -132,18 +97,10 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	int x, y, z;
 	struct stmpe_touch *ts = data;
 
-	/*
-	 * Cancel scheduled polling for release if we have new value
-	 * available. Wait if the polling is already running.
-	 */
+	 
 	cancel_delayed_work_sync(&ts->work);
 
-	/*
-	 * The FIFO sometimes just crashes and stops generating interrupts. This
-	 * appears to be a silicon bug. We still have to clearify this with
-	 * the manufacture. As a workaround we disable the TSC while we are
-	 * collecting data and flush the FIFO after reading
-	 */
+	 
 	stmpe_set_bits(ts->stmpe, STMPE_REG_TSC_CTRL,
 				STMPE_TSC_CTRL_TSC_EN, 0);
 
@@ -158,14 +115,14 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	input_report_key(ts->idev, BTN_TOUCH, 1);
 	input_sync(ts->idev);
 
-       /* flush the FIFO after we have read out our values. */
+        
 	__stmpe_reset_fifo(ts->stmpe);
 
-	/* reenable the tsc */
+	 
 	stmpe_set_bits(ts->stmpe, STMPE_REG_TSC_CTRL,
 			STMPE_TSC_CTRL_TSC_EN, STMPE_TSC_CTRL_TSC_EN);
 
-	/* start polling for touch_det to detect release */
+	 
 	schedule_delayed_work(&ts->work, msecs_to_jiffies(50));
 
 	return IRQ_HANDLED;
@@ -216,7 +173,7 @@ static int stmpe_init_hw(struct stmpe_touch *ts)
 		return ret;
 	}
 
-	/* set FIFO to 1 for single point reading */
+	 
 	ret = stmpe_reg_write(stmpe, STMPE_REG_FIFO_TH, 1);
 	if (ret) {
 		dev_err(dev, "Could not set FIFO\n");

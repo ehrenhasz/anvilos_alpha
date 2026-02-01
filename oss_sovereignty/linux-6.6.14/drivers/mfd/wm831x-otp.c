@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm831x-otp.c  --  OTP for Wolfson WM831x PMICs
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,10 +12,10 @@
 #include <linux/mfd/wm831x/core.h>
 #include <linux/mfd/wm831x/otp.h>
 
-/* In bytes */
+ 
 #define WM831X_UNIQUE_ID_LEN 16
 
-/* Read the unique ID from the chip into id */
+ 
 static int wm831x_unique_id_read(struct wm831x *wm831x, char *id)
 {
 	int i, val;

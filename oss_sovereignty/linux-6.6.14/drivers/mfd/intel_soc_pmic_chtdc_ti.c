@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device access for Dollar Cove TI PMIC
- *
- * Copyright (c) 2014, Intel Corporation.
- *   Author: Ramakrishna Pallala <ramakrishna.pallala@intel.com>
- *
- * Cleanup and forward-ported
- *   Copyright (c) 2017 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/interrupt.h>
@@ -20,16 +12,16 @@
 #define CHTDC_TI_IRQLVL1	0x01
 #define CHTDC_TI_MASK_IRQLVL1	0x02
 
-/* Level 1 IRQs */
+ 
 enum {
-	CHTDC_TI_PWRBTN = 0,	/* power button */
-	CHTDC_TI_DIETMPWARN,	/* thermal */
-	CHTDC_TI_ADCCMPL,	/* ADC */
-	/* No IRQ 3 */
-	CHTDC_TI_VBATLOW = 4,	/* battery */
-	CHTDC_TI_VBUSDET,	/* power source */
-	/* No IRQ 6 */
-	CHTDC_TI_CCEOCAL = 7,	/* battery */
+	CHTDC_TI_PWRBTN = 0,	 
+	CHTDC_TI_DIETMPWARN,	 
+	CHTDC_TI_ADCCMPL,	 
+	 
+	CHTDC_TI_VBATLOW = 4,	 
+	CHTDC_TI_VBUSDET,	 
+	 
+	CHTDC_TI_CCEOCAL = 7,	 
 };
 
 static const struct resource power_button_resources[] = {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/capability.h>
 #include <linux/socket.h>
 
@@ -34,10 +34,7 @@
 #error New capability defined, please update COMMON_CAP2_PERMS.
 #endif
 
-/*
- * Note: The name for any socket class should be suffixed by "socket",
- *	 and doesn't contain more than one substr of "socket".
- */
+ 
 const struct security_class_mapping secclass_map[] = {
 	{ "security",
 	  { "compute_av", "compute_create", "compute_member",

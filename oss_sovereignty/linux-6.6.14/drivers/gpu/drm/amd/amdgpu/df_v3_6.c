@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "df_v3_6.h"
 
@@ -30,10 +9,10 @@
 #define DF_3_6_SMN_REG_INST_DIST        0x8
 #define DF_3_6_INST_CNT                 8
 
-/* Defined in global_features.h as FTI_PERFMON_VISIBLE */
+ 
 #define DF_V3_6_MAX_COUNTERS		4
 
-/* get flags from df perfmon config */
+ 
 #define DF_V3_6_GET_EVENT(x)		(x & 0xFFUL)
 #define DF_V3_6_GET_INSTANCE(x)		((x >> 8) & 0xFFUL)
 #define DF_V3_6_GET_UNITMASK(x)		((x >> 16) & 0xFFUL)
@@ -87,12 +66,7 @@ static void df_v3_6_set_fica(struct amdgpu_device *adev, uint32_t ficaa_val,
 	spin_unlock_irqrestore(&adev->pcie_idx_lock, flags);
 }
 
-/*
- * df_v3_6_perfmon_rreg - read perfmon lo and hi
- *
- * required to be atomic.  no mmio method provided so subsequent reads for lo
- * and hi require to preserve df finite state machine
- */
+ 
 static void df_v3_6_perfmon_rreg(struct amdgpu_device *adev,
 			    uint32_t lo_addr, uint32_t *lo_val,
 			    uint32_t hi_addr, uint32_t *hi_val)
@@ -110,12 +84,7 @@ static void df_v3_6_perfmon_rreg(struct amdgpu_device *adev,
 	spin_unlock_irqrestore(&adev->pcie_idx_lock, flags);
 }
 
-/*
- * df_v3_6_perfmon_wreg - write to perfmon lo and hi
- *
- * required to be atomic.  no mmio method provided so subsequent reads after
- * data writes cannot occur to preserve data fabrics finite state machine.
- */
+ 
 static void df_v3_6_perfmon_wreg(struct amdgpu_device *adev, uint32_t lo_addr,
 			    uint32_t lo_val, uint32_t hi_addr, uint32_t hi_val)
 {
@@ -132,7 +101,7 @@ static void df_v3_6_perfmon_wreg(struct amdgpu_device *adev, uint32_t lo_addr,
 	spin_unlock_irqrestore(&adev->pcie_idx_lock, flags);
 }
 
-/* same as perfmon_wreg but return status on write value check */
+ 
 static int df_v3_6_perfmon_arm_with_status(struct amdgpu_device *adev,
 					  uint32_t lo_addr, uint32_t lo_val,
 					  uint32_t hi_addr, uint32_t  hi_val)
@@ -162,10 +131,7 @@ static int df_v3_6_perfmon_arm_with_status(struct amdgpu_device *adev,
 }
 
 
-/*
- * retry arming counters every 100 usecs within 1 millisecond interval.
- * if retry fails after time out, return error.
- */
+ 
 #define ARM_RETRY_USEC_TIMEOUT	1000
 #define ARM_RETRY_USEC_INTERVAL	100
 static int df_v3_6_perfmon_arm_with_retry(struct amdgpu_device *adev,
@@ -187,7 +153,7 @@ static int df_v3_6_perfmon_arm_with_retry(struct amdgpu_device *adev,
 	return countdown > 0 ? 0 : -ETIME;
 }
 
-/* get the number of df counters available */
+ 
 static ssize_t df_v3_6_get_df_cntr_avail(struct device *dev,
 		struct device_attribute *attr,
 		char *buf)
@@ -208,7 +174,7 @@ static ssize_t df_v3_6_get_df_cntr_avail(struct device *dev,
 	return sysfs_emit(buf, "%i\n", count);
 }
 
-/* device attr for available perfmon counters */
+ 
 static DEVICE_ATTR(df_cntr_avail, S_IRUGO, df_v3_6_get_df_cntr_avail, NULL);
 
 static void df_v3_6_query_hashes(struct amdgpu_device *adev)
@@ -219,7 +185,7 @@ static void df_v3_6_query_hashes(struct amdgpu_device *adev)
 	adev->df.hash_status.hash_2m = false;
 	adev->df.hash_status.hash_1g = false;
 
-	/* encoding for hash-enabled on Arcturus and Aldebaran */
+	 
 	if ((adev->asic_type == CHIP_ARCTURUS &&
 	     adev->df.funcs->get_fb_channel_number(adev) == 0xe) ||
 	     (adev->asic_type == CHIP_ALDEBARAN &&
@@ -237,7 +203,7 @@ static void df_v3_6_query_hashes(struct amdgpu_device *adev)
 	}
 }
 
-/* init perfmons */
+ 
 static void df_v3_6_sw_init(struct amdgpu_device *adev)
 {
 	int i, ret;
@@ -307,7 +273,7 @@ static void df_v3_6_update_medium_grain_clock_gating(struct amdgpu_device *adev,
 	u32 tmp;
 
 	if (adev->cg_flags & AMD_CG_SUPPORT_DF_MGCG) {
-		/* Put DF on broadcast mode */
+		 
 		adev->df.funcs->enable_broadcast_mode(adev, true);
 
 		if (enable) {
@@ -326,7 +292,7 @@ static void df_v3_6_update_medium_grain_clock_gating(struct amdgpu_device *adev,
 					mmDF_PIE_AON0_DfGlobalClkGater, tmp);
 		}
 
-		/* Exit broadcast mode */
+		 
 		adev->df.funcs->enable_broadcast_mode(adev, false);
 	}
 }
@@ -336,13 +302,13 @@ static void df_v3_6_get_clockgating_state(struct amdgpu_device *adev,
 {
 	u32 tmp;
 
-	/* AMD_CG_SUPPORT_DF_MGCG */
+	 
 	tmp = RREG32_SOC15(DF, 0, mmDF_PIE_AON0_DfGlobalClkGater);
 	if (tmp & DF_V3_6_MGCG_ENABLE_15_CYCLE_DELAY)
 		*flags |= AMD_CG_SUPPORT_DF_MGCG;
 }
 
-/* get assigned df perfmon ctr as int */
+ 
 static bool df_v3_6_pmc_has_counter(struct amdgpu_device *adev,
 				      uint64_t config,
 				      int counter_idx)
@@ -353,7 +319,7 @@ static bool df_v3_6_pmc_has_counter(struct amdgpu_device *adev,
 
 }
 
-/* get address based on counter assignment */
+ 
 static void df_v3_6_pmc_get_addr(struct amdgpu_device *adev,
 				 uint64_t config,
 				 int counter_idx,
@@ -387,7 +353,7 @@ static void df_v3_6_pmc_get_addr(struct amdgpu_device *adev,
 
 }
 
-/* get read counter address */
+ 
 static void df_v3_6_pmc_get_read_settings(struct amdgpu_device *adev,
 					  uint64_t config,
 					  int counter_idx,
@@ -398,7 +364,7 @@ static void df_v3_6_pmc_get_read_settings(struct amdgpu_device *adev,
 								hi_base_addr);
 }
 
-/* get control counter settings i.e. address and values to set */
+ 
 static int df_v3_6_pmc_get_ctrl_settings(struct amdgpu_device *adev,
 					  uint64_t config,
 					  int counter_idx,
@@ -439,7 +405,7 @@ static int df_v3_6_pmc_get_ctrl_settings(struct amdgpu_device *adev,
 	return 0;
 }
 
-/* add df performance counters for read */
+ 
 static int df_v3_6_pmc_add_cntr(struct amdgpu_device *adev,
 				   uint64_t config)
 {
@@ -485,7 +451,7 @@ static bool df_v3_6_pmc_is_deferred(struct amdgpu_device *adev,
 
 }
 
-/* release performance counter */
+ 
 static void df_v3_6_pmc_release_cntr(struct amdgpu_device *adev,
 				     uint64_t config,
 				     int counter_idx)
@@ -510,7 +476,7 @@ static void df_v3_6_reset_perfmon_cntr(struct amdgpu_device *adev,
 	df_v3_6_perfmon_wreg(adev, lo_base_addr, 0, hi_base_addr, 0);
 }
 
-/* return available counter if is_add == 1 otherwise return error status. */
+ 
 static int df_v3_6_pmc_start(struct amdgpu_device *adev, uint64_t config,
 			     int counter_idx, int is_add)
 {
@@ -607,7 +573,7 @@ static void df_v3_6_pmc_get_count(struct amdgpu_device *adev,
 		if ((lo_base_addr == 0) || (hi_base_addr == 0))
 			return;
 
-		/* rearm the counter or throw away count value on failure */
+		 
 		if (df_v3_6_pmc_is_deferred(adev, config, counter_idx)) {
 			int rearm_err = df_v3_6_perfmon_arm_with_status(adev,
 							lo_base_addr, lo_val,

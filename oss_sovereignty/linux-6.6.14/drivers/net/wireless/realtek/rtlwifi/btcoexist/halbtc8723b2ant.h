@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef _HAL8723B_2_ANT
 #define _HAL8723B_2_ANT
 
-/************************************************************************
- * The following is for 8723B 2Ant BT Co-exist definition
- ************************************************************************/
+ 
 #define	BT_INFO_8723B_2ANT_B_FTP			BIT7
 #define	BT_INFO_8723B_2ANT_B_A2DP			BIT6
 #define	BT_INFO_8723B_2ANT_B_HID			BIT5
@@ -18,9 +16,9 @@
 
 #define BTC_RSSI_COEX_THRESH_TOL_8723B_2ANT		2
 
-/* WiFi RSSI Threshold for 2-Ant TDMA/1-Ant PS-TDMA translation */
+ 
 #define BT_8723B_2ANT_WIFI_RSSI_COEXSWITCH_THRES	42
-/* BT RSSI Threshold for 2-Ant TDMA/1-Ant PS-TDMA translation */
+ 
 #define BT_8723B_2ANT_BT_RSSI_COEXSWITCH_THRES		46
 
 enum BT_INFO_SRC_8723B_2ANT {
@@ -56,7 +54,7 @@ enum BT_8723B_2ANT_COEX_ALGO {
 };
 
 struct coex_dm_8723b_2ant {
-	/* fw mechanism */
+	 
 	bool pre_dec_bt_pwr_lvl;
 	bool cur_dec_bt_pwr_lvl;
 	u8 pre_fw_dac_swing_lvl;
@@ -74,7 +72,7 @@ struct coex_dm_8723b_2ant {
 	bool pre_bt_auto_report;
 	bool cur_bt_auto_report;
 
-	/* sw mechanism */
+	 
 	bool pre_rf_rx_lpf_shrink;
 	bool cur_rf_rx_lpf_shrink;
 	u32 bt_rf0x1e_backup;
@@ -98,7 +96,7 @@ struct coex_dm_8723b_2ant {
 	u8 cur_val0x6cc;
 	bool limited_dig;
 
-	/* algorithm related */
+	 
 	u8 pre_algorithm;
 	u8 cur_algorithm;
 	u8 bt_status;
@@ -157,9 +155,7 @@ struct coex_sta_8723b_2ant {
 	u8 a2dp_bit_pool;
 };
 
-/*********************************************************************
- * The following is interface which will notify coex module.
- *********************************************************************/
+ 
 void ex_btc8723b2ant_init_hwconfig(struct btc_coexist *btcoexist);
 void ex_btc8723b2ant_init_coex_dm(struct btc_coexist *btcoexist);
 void ex_btc8723b2ant_ips_notify(struct btc_coexist *btcoexist, u8 type);

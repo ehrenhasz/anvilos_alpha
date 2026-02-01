@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/drm_color_mgmt.h>
 #include <drm/drm_drv.h>
@@ -75,7 +53,7 @@
 		[I915_CACHE_WT]     = 1, \
 	}
 
-/* Keep in gen based order, and chronological order within a gen */
+ 
 
 #define GEN_DEFAULT_PAGE_SIZES \
 	.__runtime.page_sizes = I915_GTT_PAGE_SIZE_4K
@@ -246,7 +224,7 @@ static const struct intel_device_info gm45_info = {
 	.has_3d_pipeline = 1, \
 	.has_snoop = true, \
 	.has_coherent_ggtt = true, \
-	/* ilk does support rc6, but we do not implement [power] contexts */ \
+	  \
 	.has_rc6 = 0, \
 	.dma_mask_size = 36, \
 	.max_pat_index = 3, \
@@ -273,7 +251,7 @@ static const struct intel_device_info ilk_m_info = {
 	.has_coherent_ggtt = true, \
 	.has_llc = 1, \
 	.has_rc6 = 1, \
-	/* snb does support rc6p, but enabling it causes various issues */ \
+	  \
 	.has_rc6p = 0, \
 	.has_rps = true, \
 	.dma_mask_size = 40, \
@@ -393,7 +371,7 @@ static const struct intel_device_info vlv_info = {
 #define G75_FEATURES  \
 	GEN7_FEATURES, \
 	.platform_engine_mask = BIT(RCS0) | BIT(VCS0) | BIT(BCS0) | BIT(VECS0), \
-	.has_rc6p = 0 /* RC6p removed-by HSW */, \
+	.has_rc6p = 0  , \
 	.has_runtime_pm = 1
 
 #define HSW_PLATFORM \
@@ -442,9 +420,7 @@ static const struct intel_device_info bdw_gt2_info = {
 static const struct intel_device_info bdw_rsvd_info = {
 	BDW_PLATFORM,
 	.gt = 3,
-	/* According to the device ID those devices are GT3, they were
-	 * previously treated as not GT3, keep it like that.
-	 */
+	 
 };
 
 static const struct intel_device_info bdw_gt3_info = {
@@ -676,7 +652,7 @@ static const struct intel_device_info dg1_info = {
 	.platform_engine_mask =
 		BIT(RCS0) | BIT(BCS0) | BIT(VECS0) |
 		BIT(VCS0) | BIT(VCS2),
-	/* Wa_16011227922 */
+	 
 	.__runtime.ppgtt_size = 47,
 };
 
@@ -818,10 +794,7 @@ static const struct intel_gt_definition xelpmp_extra_gt[] = {
 
 static const struct intel_device_info mtl_info = {
 	XE_HP_FEATURES,
-	/*
-	 * Real graphics IP version will be obtained from hardware GMD_ID
-	 * register.  Value provided here is just for sanity checking.
-	 */
+	 
 	.__runtime.graphics.ip.ver = 12,
 	.__runtime.graphics.ip.rel = 70,
 	.__runtime.media.ip.ver = 13,
@@ -843,12 +816,7 @@ static const struct intel_device_info mtl_info = {
 
 #undef PLATFORM
 
-/*
- * Make sure any device matches here are from most specific to most
- * general.  For example, since the Quanta match is based on the subsystem
- * and subvendor IDs, we need it to come before the more general IVB
- * PCI ID matches, otherwise we'll use the wrong info struct above.
- */
+ 
 static const struct pci_device_id pciidlist[] = {
 	INTEL_I830_IDS(&i830_info),
 	INTEL_I845G_IDS(&i845g_info),
@@ -871,7 +839,7 @@ static const struct pci_device_id pciidlist[] = {
 	INTEL_SNB_D_GT2_IDS(&snb_d_gt2_info),
 	INTEL_SNB_M_GT1_IDS(&snb_m_gt1_info),
 	INTEL_SNB_M_GT2_IDS(&snb_m_gt2_info),
-	INTEL_IVB_Q_IDS(&ivb_q_info), /* must be first IVB */
+	INTEL_IVB_Q_IDS(&ivb_q_info),  
 	INTEL_IVB_M_GT1_IDS(&ivb_m_gt1_info),
 	INTEL_IVB_M_GT2_IDS(&ivb_m_gt2_info),
 	INTEL_IVB_D_GT1_IDS(&ivb_d_gt1_info),
@@ -933,14 +901,14 @@ static void i915_pci_remove(struct pci_dev *pdev)
 	struct drm_i915_private *i915;
 
 	i915 = pci_get_drvdata(pdev);
-	if (!i915) /* driver load aborted, nothing to cleanup */
+	if (!i915)  
 		return;
 
 	i915_driver_remove(i915);
 	pci_set_drvdata(pdev, NULL);
 }
 
-/* is device_id present in comma separated list of ids */
+ 
 static bool device_id_in_list(u16 device_id, const char *devices, bool negative)
 {
 	char *s, *p, *tok;
@@ -949,7 +917,7 @@ static bool device_id_in_list(u16 device_id, const char *devices, bool negative)
 	if (!devices || !*devices)
 		return false;
 
-	/* match everything */
+	 
 	if (negative && strcmp(devices, "!*") == 0)
 		return true;
 	if (!negative && strcmp(devices, "*") == 0)
@@ -1036,18 +1004,14 @@ static int i915_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 	}
 
-	/* Only bind to function 0 of the device. Early generations
-	 * used function 1 as a placeholder for multi-head. This causes
-	 * us confusion instead, especially on the systems where both
-	 * functions have the same PCI-ID!
-	 */
+	 
 	if (PCI_FUNC(pdev->devfn))
 		return -ENODEV;
 
 	if (!intel_mmio_bar_valid(pdev, intel_info))
 		return -ENXIO;
 
-	/* Detect if we need to wait for other drivers early on */
+	 
 	if (intel_display_driver_probe_defer(pdev))
 		return -EPROBE_DEFER;
 

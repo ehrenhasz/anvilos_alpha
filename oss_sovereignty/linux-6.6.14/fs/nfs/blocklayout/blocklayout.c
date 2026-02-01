@@ -1,40 +1,10 @@
-/*
- *  linux/fs/nfs/blocklayout/blocklayout.c
- *
- *  Module for the NFSv4.1 pNFS block layout driver.
- *
- *  Copyright (c) 2006 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Andy Adamson <andros@citi.umich.edu>
- *  Fred Isaman <iisaman@umich.edu>
- *
- * permission is granted to use, copy, create derivative works and
- * redistribute this software and such derivative works for any purpose,
- * so long as the name of the university of michigan is not used in
- * any advertising or publicity pertaining to the use or distribution
- * of this software without specific, written prior authorization.  if
- * the above copyright notice or any other identification of the
- * university of michigan is included in any copy of any portion of
- * this software, then the disclaimer below must also be included.
- *
- * this software is provided as is, without representation from the
- * university of michigan as to its fitness for any purpose, and without
- * warranty by the university of michigan of any kind, either express
- * or implied, including without limitation the implied warranties of
- * merchantability and fitness for a particular purpose.  the regents
- * of the university of michigan shall not be liable for any damages,
- * including special, indirect, incidental, or consequential damages,
- * with respect to any claim arising out or in connection with the use
- * of the software, even if it has been or is hereafter advised of the
- * possibility of such damages.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/mount.h>
 #include <linux/namei.h>
-#include <linux/bio.h>		/* struct bio */
+#include <linux/bio.h>		 
 #include <linux/prefetch.h>
 #include <linux/pagevec.h>
 
@@ -61,9 +31,7 @@ static bool is_hole(struct pnfs_block_extent *be)
 	}
 }
 
-/* The data we are handed might be spread across several bios.  We need
- * to track when the last one is finished.
- */
+ 
 struct parallel_io {
 	struct kref refcnt;
 	void (*pnfs_callback) (void *data);
@@ -133,11 +101,11 @@ do_add_page_to_bio(struct bio *bio, int npg, enum req_op op, sector_t isect,
 	dprintk("%s: npg %d rw %d isect %llu offset %u len %d\n", __func__,
 		npg, (__force u32)op, (unsigned long long)isect, offset, *len);
 
-	/* translate to device offset */
+	 
 	isect += be->be_v_offset;
 	isect -= be->be_f_offset;
 
-	/* translate to physical disk offset */
+	 
 	disk_addr = (u64)isect << SECTOR_SHIFT;
 	if (!offset_in_map(disk_addr, map)) {
 		if (!dev->map(dev, disk_addr, map) || !offset_in_map(disk_addr, map))
@@ -147,7 +115,7 @@ do_add_page_to_bio(struct bio *bio, int npg, enum req_op op, sector_t isect,
 	disk_addr += map->disk_offset;
 	disk_addr -= map->start;
 
-	/* limit length to what the device mapping allows */
+	 
 	end = disk_addr + *len;
 	if (end >= map->start + map->len)
 		*len = map->start + map->len - disk_addr;
@@ -256,13 +224,13 @@ bl_read_pagelist(struct nfs_pgio_header *header)
 	blk_start_plug(&plug);
 
 	isect = (sector_t) (f_offset >> SECTOR_SHIFT);
-	/* Code assumes extents are page-aligned */
+	 
 	for (i = pg_index; i < header->page_array.npages; i++) {
 		if (extent_length <= 0) {
-			/* We've used up the previous extent */
+			 
 			bio = bl_submit_bio(bio);
 
-			/* Get the next one */
+			 
 			if (!ext_tree_lookup(bl, isect, &be, false)) {
 				header->pnfs_error = -EIO;
 				goto out;
@@ -282,11 +250,11 @@ bl_read_pagelist(struct nfs_pgio_header *header)
 
 		if (is_hole(&be)) {
 			bio = bl_submit_bio(bio);
-			/* Fill hole w/ zeroes w/o accessing device */
+			 
 			dprintk("%s Zeroing page for hole\n", __func__);
 			zero_user_segment(pages[i], pg_offset, pg_len);
 
-			/* invalidate map */
+			 
 			map.start = NFS4_MAX_UINT64;
 		} else {
 			bio = do_add_page_to_bio(bio,
@@ -335,9 +303,7 @@ static void bl_end_io_write(struct bio *bio)
 	put_parallel(par);
 }
 
-/* Function scheduled for call during bl_end_par_io_write,
- * it marks sectors as written and extends the commitlist.
- */
+ 
 static void bl_write_cleanup(struct work_struct *work)
 {
 	struct rpc_task *task = container_of(work, struct rpc_task, u.tk_work);
@@ -360,7 +326,7 @@ static void bl_write_cleanup(struct work_struct *work)
 	pnfs_ld_write_done(hdr);
 }
 
-/* Called when last of bios associated with a bl_write_pagelist call finishes */
+ 
 static void bl_end_par_io_write(void *data)
 {
 	struct nfs_pgio_header *hdr = data;
@@ -390,10 +356,7 @@ bl_write_pagelist(struct nfs_pgio_header *header, int sync)
 
 	dprintk("%s enter, %zu@%lld\n", __func__, count, offset);
 
-	/* At this point, header->page_aray is a (sequential) list of nfs_pages.
-	 * We want to write each, and if there is an error set pnfs_error
-	 * to have it redone using nfs.
-	 */
+	 
 	par = alloc_parallel(header);
 	if (!par)
 		return PNFS_NOT_ATTEMPTED;
@@ -401,15 +364,15 @@ bl_write_pagelist(struct nfs_pgio_header *header, int sync)
 
 	blk_start_plug(&plug);
 
-	/* we always write out the whole page */
+	 
 	offset = offset & (loff_t)PAGE_MASK;
 	isect = offset >> SECTOR_SHIFT;
 
 	for (i = pg_index; i < header->page_array.npages; i++) {
 		if (extent_length <= 0) {
-			/* We've used up the previous extent */
+			 
 			bio = bl_submit_bio(bio);
-			/* Get the next one */
+			 
 			if (!ext_tree_lookup(bl, isect, &be, true)) {
 				header->pnfs_error = -EINVAL;
 				goto out;
@@ -491,17 +454,15 @@ static void bl_free_lseg(struct pnfs_layout_segment *lseg)
 	kfree(lseg);
 }
 
-/* Tracks info needed to ensure extents in layout obey constraints of spec */
+ 
 struct layout_verification {
-	u32 mode;	/* R or RW */
-	u64 start;	/* Expected start of next non-COW extent */
-	u64 inval;	/* Start of INVAL coverage */
-	u64 cowread;	/* End of COW read coverage */
+	u32 mode;	 
+	u64 start;	 
+	u64 inval;	 
+	u64 cowread;	 
 };
 
-/* Verify the extent meets the layout requirements of the pnfs-block draft,
- * section 2.3.1.
- */
+ 
 static int verify_extent(struct pnfs_block_extent *be,
 			 struct layout_verification *lv)
 {
@@ -514,7 +475,7 @@ static int verify_extent(struct pnfs_block_extent *be,
 		lv->start += be->be_length;
 		return 0;
 	}
-	/* lv->mode == IOMODE_RW */
+	 
 	if (be->be_state == PNFS_BLOCK_READWRITE_DATA) {
 		if (be->be_f_offset != lv->start)
 			return -EIO;
@@ -535,9 +496,7 @@ static int verify_extent(struct pnfs_block_extent *be,
 			return -EIO;
 		if (be->be_f_offset < lv->cowread)
 			return -EIO;
-		/* It looks like you might want to min this with lv->start,
-		 * but you really don't.
-		 */
+		 
 		lv->inval = lv->inval + be->be_length;
 		lv->cowread = be->be_f_offset + be->be_length;
 		return 0;
@@ -613,10 +572,7 @@ bl_alloc_extent(struct xdr_stream *xdr, struct pnfs_layout_hdr *lo,
 		goto out_free_be;
 	}
 
-	/*
-	 * The next three values are read in as bytes, but stored in the
-	 * extent structure in 512-byte granularity.
-	 */
+	 
 	error = -EIO;
 	if (decode_sector_number(&p, &be->be_f_offset) < 0)
 		goto out_put_deviceid;
@@ -685,10 +641,7 @@ bl_alloc_lseg(struct pnfs_layout_hdr *lo, struct nfs4_layoutget_res *lgr,
 	count = be32_to_cpup(p++);
 	dprintk("%s: number of extents %d\n", __func__, count);
 
-	/*
-	 * Decode individual extents, putting them in temporary staging area
-	 * until whole layout is decoded to make error recovery easier.
-	 */
+	 
 	for (i = 0; i < count; i++) {
 		status = bl_alloc_extent(&xdr, lo, &lv, &extents, gfp_mask);
 		if (status)
@@ -729,7 +682,7 @@ out:
 	dprintk("%s returns %d\n", __func__, status);
 	switch (status) {
 	case -ENODEV:
-		/* Our extent block devices are unavailable */
+		 
 		set_bit(NFS_LSEG_UNAVAILABLE, &lseg->pls_flags);
 		fallthrough;
 	case 0:
@@ -802,10 +755,7 @@ static bool
 is_aligned_req(struct nfs_pageio_descriptor *pgio,
 		struct nfs_page *req, unsigned int alignment, bool is_write)
 {
-	/*
-	 * Always accept buffered writes, higher layers take care of the
-	 * right alignment.
-	 */
+	 
 	if (pgio->pg_dreq == NULL)
 		return true;
 
@@ -817,13 +767,7 @@ is_aligned_req(struct nfs_pageio_descriptor *pgio,
 
 	if (is_write &&
 	    (req_offset(req) + req->wb_bytes == i_size_read(pgio->pg_inode))) {
-		/*
-		 * If the write goes up to the inode size, just write
-		 * the full page.  Data past the inode size is
-		 * guaranteed to be zeroed by the higher level client
-		 * code, and this behaviour is mandated by RFC 5663
-		 * section 2.3.2.
-		 */
+		 
 		return true;
 	}
 
@@ -848,10 +792,7 @@ bl_pg_init_read(struct nfs_pageio_descriptor *pgio, struct nfs_page *req)
 	}
 }
 
-/*
- * Return 0 if @req cannot be coalesced into @pgio, otherwise return the number
- * of bytes (maximum @req->wb_bytes) that can be coalesced.
- */
+ 
 static size_t
 bl_pg_test_read(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 		struct nfs_page *req)
@@ -861,16 +802,13 @@ bl_pg_test_read(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 	return pnfs_generic_pg_test(pgio, prev, req);
 }
 
-/*
- * Return the number of contiguous bytes for a given inode
- * starting at page frame idx.
- */
+ 
 static u64 pnfs_num_cont_bytes(struct inode *inode, pgoff_t idx)
 {
 	struct address_space *mapping = inode->i_mapping;
 	pgoff_t end;
 
-	/* Optimize common case that writes from 0 to end of file */
+	 
 	end = DIV_ROUND_UP(i_size_read(inode), PAGE_SIZE);
 	if (end != inode->i_mapping->nrpages) {
 		rcu_read_lock();
@@ -910,10 +848,7 @@ bl_pg_init_write(struct nfs_pageio_descriptor *pgio, struct nfs_page *req)
 	}
 }
 
-/*
- * Return 0 if @req cannot be coalesced into @pgio, otherwise return the number
- * of bytes (maximum @req->wb_bytes) that can be coalesced.
- */
+ 
 static size_t
 bl_pg_test_write(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 		 struct nfs_page *req)

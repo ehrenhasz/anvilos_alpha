@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/errno.h>
@@ -94,9 +64,7 @@ static u16 in_to_opcode(void *in)
 	return MLX5_GET(mbox_in, in, opcode);
 }
 
-/* Returns true for opcodes that might be triggered very frequently and throttle
- * the command interface. Limit their command slots usage.
- */
+ 
 static bool mlx5_cmd_is_throttle_opcode(u16 op)
 {
 	switch (op) {
@@ -826,13 +794,13 @@ static void cmd_status_print(struct mlx5_core_dev *dev, void *in, void *out)
 
 int mlx5_cmd_check(struct mlx5_core_dev *dev, int err, void *in, void *out)
 {
-	/* aborted due to PCI error or via reset flow mlx5_cmd_trigger_completions() */
+	 
 	if (err == -ENXIO) {
 		u16 opcode = in_to_opcode(in);
 		u32 syndrome;
 		u8 status;
 
-		/* PCI Error, emulate command return status, for smooth reset */
+		 
 		err = mlx5_internal_err_ret_value(dev, opcode, &syndrome, &status);
 		MLX5_SET(mbox_out, out, status, status);
 		MLX5_SET(mbox_out, out, syndrome, syndrome);
@@ -840,11 +808,11 @@ int mlx5_cmd_check(struct mlx5_core_dev *dev, int err, void *in, void *out)
 			return 0;
 	}
 
-	/* driver or FW delivery error */
+	 
 	if (err != -EREMOTEIO && err)
 		return err;
 
-	/* check outbox status */
+	 
 	err = cmd_status_to_err(MLX5_GET(mbox_out, out, status));
 	if (err)
 		cmd_status_print(dev, in, out);
@@ -925,11 +893,11 @@ static void cb_timeout_handler(struct work_struct *work)
 
 	mlx5_cmd_eq_recover(dev);
 
-	/* Maybe got handled by eq recover ? */
+	 
 	if (!test_bit(MLX5_CMD_ENT_STATE_PENDING_COMP, &ent->state)) {
 		mlx5_core_warn(dev, "cmd[%d]: %s(0x%x) Async, recovered after timeout\n", ent->idx,
 			       mlx5_command_str(ent->op), ent->op);
-		goto out; /* phew, already handled */
+		goto out;  
 	}
 
 	ent->ret = -ETIMEDOUT;
@@ -938,7 +906,7 @@ static void cb_timeout_handler(struct work_struct *work)
 	mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, true);
 
 out:
-	cmd_ent_put(ent); /* for the cmd_ent_get() took on schedule delayed work */
+	cmd_ent_put(ent);  
 }
 
 static void free_msg(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *msg);
@@ -1025,22 +993,22 @@ static void cmd_work_handler(struct work_struct *work)
 		cmd_ent_get(ent);
 	set_bit(MLX5_CMD_ENT_STATE_PENDING_COMP, &ent->state);
 
-	cmd_ent_get(ent); /* for the _real_ FW event on completion */
-	/* Skip sending command to fw if internal error */
+	cmd_ent_get(ent);  
+	 
 	if (mlx5_cmd_is_down(dev) || !opcode_allowed(&dev->cmd, ent->op)) {
 		ent->ret = -ENXIO;
 		mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, true);
 		return;
 	}
 
-	/* ring doorbell after the descriptor is valid */
+	 
 	mlx5_core_dbg(dev, "writing 0x%x to command doorbell\n", 1 << ent->idx);
 	wmb();
 	iowrite32be(1 << ent->idx, &dev->iseg->cmd_dbell);
-	/* if not in polling don't use ent after this point */
+	 
 	if (cmd_mode == CMD_MODE_POLLING || poll_cmd) {
 		poll_timeout(ent);
-		/* make sure we read the descriptor after ownership is SW */
+		 
 		rmb();
 		mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, (ent->ret == -ETIMEDOUT));
 	}
@@ -1058,7 +1026,7 @@ static int deliv_status_to_err(u8 status)
 	case MLX5_CMD_DELIVERY_STAT_BAD_BLK_NUM_ERR:
 	case MLX5_CMD_DELIVERY_STAT_OUT_PTR_ALIGN_ERR:
 	case MLX5_CMD_DELIVERY_STAT_IN_PTR_ALIGN_ERR:
-		return -EFAULT; /* Bad address */
+		return -EFAULT;  
 	case MLX5_CMD_DELIVERY_STAT_IN_LENGTH_ERR:
 	case MLX5_CMD_DELIVERY_STAT_OUT_LENGTH_ERR:
 	case MLX5_CMD_DELIVERY_STAT_CMD_DESCR_ERR:
@@ -1112,11 +1080,7 @@ static void wait_func_handle_exec_timeout(struct mlx5_core_dev *dev,
 
 	mlx5_cmd_eq_recover(dev);
 
-	/* Re-wait on the ent->done after executing the recovery flow. If the
-	 * recovery flow (or any other recovery flow running simultaneously)
-	 * has recovered an EQE, it should cause the entry to be completed by
-	 * the command interface.
-	 */
+	 
 	if (wait_for_completion_timeout(&ent->done, timeout)) {
 		mlx5_core_warn(dev, "cmd[%d]: %s(0x%x) recovered after timeout\n", ent->idx,
 			       mlx5_command_str(ent->op), ent->op);
@@ -1162,20 +1126,7 @@ out_err:
 	return err;
 }
 
-/*  Notes:
- *    1. Callback functions may not sleep
- *    2. page queue commands do not support asynchrous completion
- *
- * return value in case (!callback):
- *	ret < 0 : Command execution couldn't be submitted by driver
- *	ret > 0 : Command execution couldn't be performed by firmware
- *	ret == 0: Command was executed by FW, Caller must check FW outbox status.
- *
- * return value in case (callback):
- *	ret < 0 : Command execution couldn't be submitted by driver
- *	ret == 0: Command will be submitted to FW for execution
- *		  and the callback will be called for further status updates
- */
+ 
 static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
 			   struct mlx5_cmd_msg *out, void *uout, int uout_size,
 			   mlx5_cmd_cbk_t callback,
@@ -1197,10 +1148,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
 	if (IS_ERR(ent))
 		return PTR_ERR(ent);
 
-	/* put for this ent is when consumed, depending on the use case
-	 * 1) (!callback) blocking flow: by caller after wait_func completes
-	 * 2) (callback) flow: by mlx5_cmd_comp_handler() when ent is handled
-	 */
+	 
 
 	ent->token = token;
 	ent->polling = force_polling;
@@ -1220,7 +1168,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
 	}
 
 	if (callback)
-		return 0; /* mlx5_cmd_comp_handler() will put(ent) */
+		return 0;  
 
 	err = wait_func(dev, ent);
 	if (err == -ETIMEDOUT || err == -ECANCELED)
@@ -1295,7 +1243,7 @@ static int mlx5_copy_to_msg(struct mlx5_cmd_msg *to, void *from, int size,
 	next = to->next;
 	while (size) {
 		if (!next) {
-			/* this is a BUG */
+			 
 			return -ENOMEM;
 		}
 
@@ -1328,7 +1276,7 @@ static int mlx5_copy_from_msg(void *to, struct mlx5_cmd_msg *from, int size)
 	next = from->next;
 	while (size) {
 		if (!next) {
-			/* this is a BUG */
+			 
 			return -ENOMEM;
 		}
 
@@ -1652,16 +1600,16 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
 	unsigned long flags;
 	unsigned long vector;
 
-	/* there can be at most 32 command queues */
+	 
 	vector = vec & 0xffffffff;
 	for (i = 0; i < (1 << cmd->vars.log_sz); i++) {
 		if (test_bit(i, &vector)) {
 			ent = cmd->ent_arr[i];
 
-			/* if we already completed the command, ignore it */
+			 
 			if (!test_and_clear_bit(MLX5_CMD_ENT_STATE_PENDING_COMP,
 						&ent->state)) {
-				/* only real completion can free the cmd slot */
+				 
 				if (!forced) {
 					mlx5_core_err(dev, "Command completion arrived after timeout (entry idx = %d).\n",
 						      ent->idx);
@@ -1671,10 +1619,10 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
 			}
 
 			if (ent->callback && cancel_delayed_work(&ent->cb_timeout_work))
-				cmd_ent_put(ent); /* timeout work was canceled */
+				cmd_ent_put(ent);  
 
-			if (!forced || /* Real FW completion */
-			     mlx5_cmd_is_down(dev) || /* No real FW completion is expected */
+			if (!forced ||  
+			     mlx5_cmd_is_down(dev) ||  
 			     !opcode_allowed(cmd, ent->op))
 				cmd_ent_put(ent);
 
@@ -1685,7 +1633,7 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
 			if (vec & MLX5_TRIGGERED_CMD_COMP)
 				ent->ret = -ENXIO;
 
-			if (!ent->ret) { /* Command completed by FW */
+			if (!ent->ret) {  
 				if (!cmd->checksum_disabled)
 					ent->ret = verify_signature(ent);
 
@@ -1708,7 +1656,7 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
 				callback = ent->callback;
 				context = ent->context;
 				err = ent->ret ? : ent->status;
-				if (err > 0) /* Failed in FW, command didn't execute */
+				if (err > 0)  
 					err = deliv_status_to_err(err);
 
 				if (!err)
@@ -1719,13 +1667,11 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
 				mlx5_free_cmd_msg(dev, ent->out);
 				free_msg(dev, ent->in);
 
-				/* final consumer is done, release ent */
+				 
 				cmd_ent_put(ent);
 				callback(err, context);
 			} else {
-				/* release wait_func() so mlx5_cmd_invoke()
-				 * can make the final ent_put()
-				 */
+				 
 				complete(&ent->done);
 			}
 		}
@@ -1740,7 +1686,7 @@ static void mlx5_cmd_trigger_completions(struct mlx5_core_dev *dev)
 	u64 vector;
 	int i;
 
-	/* wait for pending handlers to complete */
+	 
 	mlx5_eq_synchronize_cmd_irq(dev);
 	spin_lock_irqsave(&dev->cmd.alloc_lock, flags);
 	vector = ~dev->cmd.vars.bitmask & ((1ul << (1 << dev->cmd.vars.log_sz)) - 1);
@@ -1748,10 +1694,7 @@ static void mlx5_cmd_trigger_completions(struct mlx5_core_dev *dev)
 		goto no_trig;
 
 	bitmask = vector;
-	/* we must increment the allocated entries refcount before triggering the completions
-	 * to guarantee pending commands will not get freed in the meanwhile.
-	 * For that reason, it also has to be done inside the alloc_lock.
-	 */
+	 
 	for_each_set_bit(i, &bitmask, (1 << cmd->vars.log_sz))
 		cmd_ent_get(cmd->ent_arr[i]);
 	vector |= MLX5_TRIGGERED_CMD_COMP;
@@ -1784,7 +1727,7 @@ void mlx5_cmd_flush(struct mlx5_core_dev *dev)
 		cond_resched();
 	}
 
-	/* Unlock cmdif */
+	 
 	up(&cmd->vars.pages_sem);
 	for (i = 0; i < cmd->vars.max_reg_cmds; i++)
 		up(&cmd->vars.sem);
@@ -1811,9 +1754,7 @@ static struct mlx5_cmd_msg *alloc_msg(struct mlx5_core_dev *dev, int in_size,
 			continue;
 		}
 		msg = list_entry(ch->head.next, typeof(*msg), list);
-		/* For cached lists, we must explicitly state what is
-		 * the real size
-		 */
+		 
 		msg->len = in_size;
 		list_del(&msg->list);
 		spin_unlock_irq(&ch->lock);
@@ -1833,10 +1774,7 @@ static int is_manage_pages(void *in)
 	return in_to_opcode(in) == MLX5_CMD_OP_MANAGE_PAGES;
 }
 
-/*  Notes:
- *    1. Callback functions may not sleep
- *    2. Page queue commands do not support asynchrous completion
- */
+ 
 static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 		    int out_size, mlx5_cmd_cbk_t callback, void *context,
 		    bool force_polling)
@@ -1854,7 +1792,7 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 
 	throttle_op = mlx5_cmd_is_throttle_opcode(opcode);
 	if (throttle_op) {
-		/* atomic context may not sleep */
+		 
 		if (callback)
 			return -EINVAL;
 		down(&dev->cmd.vars.throttle_sem);
@@ -1888,13 +1826,13 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 	if (callback)
 		return err;
 
-	if (err > 0) /* Failed in FW, command didn't execute */
+	if (err > 0)  
 		err = deliv_status_to_err(err);
 
 	if (err)
 		goto out_out;
 
-	/* command completed by FW */
+	 
 	err = mlx5_copy_from_msg(out, outb, out_size);
 out_out:
 	mlx5_free_cmd_msg(dev, outb);
@@ -1940,13 +1878,13 @@ static void cmd_status_log(struct mlx5_core_dev *dev, u16 opcode, u8 status,
 	spin_unlock_irq(&stats->lock);
 }
 
-/* preserve -EREMOTEIO for outbox.status != OK, otherwise return err as is */
+ 
 static int cmd_status_err(struct mlx5_core_dev *dev, int err, u16 opcode, u16 op_mod, void *out)
 {
 	u32 syndrome = MLX5_GET(mbox_out, out, syndrome);
 	u8 status = MLX5_GET(mbox_out, out, status);
 
-	if (err == -EREMOTEIO) /* -EREMOTEIO is preserved */
+	if (err == -EREMOTEIO)  
 		err = -EIO;
 
 	if (!err && status != MLX5_CMD_STAT_OK) {
@@ -1958,24 +1896,7 @@ static int cmd_status_err(struct mlx5_core_dev *dev, int err, u16 opcode, u16 op
 	return err;
 }
 
-/**
- * mlx5_cmd_do - Executes a fw command, wait for completion.
- * Unlike mlx5_cmd_exec, this function will not translate or intercept
- * outbox.status and will return -EREMOTEIO when
- * outbox.status != MLX5_CMD_STAT_OK
- *
- * @dev: mlx5 core device
- * @in: inbox mlx5_ifc command buffer
- * @in_size: inbox buffer size
- * @out: outbox mlx5_ifc buffer
- * @out_size: outbox size
- *
- * @return:
- * -EREMOTEIO : Command executed by FW, outbox.status != MLX5_CMD_STAT_OK.
- *              Caller must check FW outbox status.
- *   0 : Command execution successful, outbox.status == MLX5_CMD_STAT_OK.
- * < 0 : Command execution couldn't be performed by firmware or driver
- */
+ 
 int mlx5_cmd_do(struct mlx5_core_dev *dev, void *in, int in_size, void *out, int out_size)
 {
 	int err = cmd_exec(dev, in, in_size, out, out_size, NULL, NULL, false);
@@ -1986,18 +1907,7 @@ int mlx5_cmd_do(struct mlx5_core_dev *dev, void *in, int in_size, void *out, int
 }
 EXPORT_SYMBOL(mlx5_cmd_do);
 
-/**
- * mlx5_cmd_exec - Executes a fw command, wait for completion
- *
- * @dev: mlx5 core device
- * @in: inbox mlx5_ifc command buffer
- * @in_size: inbox buffer size
- * @out: outbox mlx5_ifc buffer
- * @out_size: outbox size
- *
- * @return: 0 if no error, FW command execution was successful
- *          and outbox status is ok.
- */
+ 
 int mlx5_cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 		  int out_size)
 {
@@ -2007,20 +1917,7 @@ int mlx5_cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 }
 EXPORT_SYMBOL(mlx5_cmd_exec);
 
-/**
- * mlx5_cmd_exec_polling - Executes a fw command, poll for completion
- *	Needed for driver force teardown, when command completion EQ
- *	will not be available to complete the command
- *
- * @dev: mlx5 core device
- * @in: inbox mlx5_ifc command buffer
- * @in_size: inbox buffer size
- * @out: outbox mlx5_ifc buffer
- * @out_size: outbox size
- *
- * @return: 0 if no error, FW command execution was successful
- *          and outbox status is ok.
- */
+ 
 int mlx5_cmd_exec_polling(struct mlx5_core_dev *dev, void *in, int in_size,
 			  void *out, int out_size)
 {
@@ -2037,20 +1934,13 @@ void mlx5_cmd_init_async_ctx(struct mlx5_core_dev *dev,
 			     struct mlx5_async_ctx *ctx)
 {
 	ctx->dev = dev;
-	/* Starts at 1 to avoid doing wake_up if we are not cleaning up */
+	 
 	atomic_set(&ctx->num_inflight, 1);
 	init_completion(&ctx->inflight_done);
 }
 EXPORT_SYMBOL(mlx5_cmd_init_async_ctx);
 
-/**
- * mlx5_cmd_cleanup_async_ctx - Clean up an async_ctx
- * @ctx: The ctx to clean
- *
- * Upon return all callbacks given to mlx5_cmd_exec_cb() have been called. The
- * caller must ensure that mlx5_cmd_exec_cb() is not called during or after
- * the call mlx5_cleanup_async_ctx().
- */
+ 
 void mlx5_cmd_cleanup_async_ctx(struct mlx5_async_ctx *ctx)
 {
 	if (!atomic_dec_and_test(&ctx->num_inflight))
@@ -2128,7 +2018,7 @@ static void create_msg_cache(struct mlx5_core_dev *dev)
 	int i;
 	int k;
 
-	/* Initialize and fill the caches with initial entries */
+	 
 	for (k = 0; k < dev->profile.num_cmd_caches; k++) {
 		ch = &cmd->cache[k];
 		spin_lock_init(&ch->lock);
@@ -2153,7 +2043,7 @@ static int alloc_cmd_page(struct mlx5_core_dev *dev, struct mlx5_cmd *cmd)
 	if (!cmd->cmd_alloc_buf)
 		return -ENOMEM;
 
-	/* make sure it is aligned to 4K */
+	 
 	if (!((uintptr_t)cmd->cmd_alloc_buf & (MLX5_ADAPTER_PAGE_SIZE - 1))) {
 		cmd->cmd_buf = cmd->cmd_alloc_buf;
 		cmd->dma = cmd->alloc_dma;
@@ -2273,7 +2163,7 @@ int mlx5_cmd_enable(struct mlx5_core_dev *dev)
 	iowrite32be(cmd_h, &dev->iseg->cmdq_addr_h);
 	iowrite32be(cmd_l, &dev->iseg->cmdq_addr_l_sz);
 
-	/* Make sure firmware sees the complete address before we proceed */
+	 
 	wmb();
 
 	mlx5_core_dbg(dev, "descriptor at dma 0x%llx\n", (unsigned long long)(cmd->dma));

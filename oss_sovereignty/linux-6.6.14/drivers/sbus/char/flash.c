@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* flash.c: Allow mmap access to the OBP Flash, for OBP updates.
- *
- * Copyright (C) 1997  Eddie C. Dost  (ecd@skynet.be)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,11 +20,11 @@
 static DEFINE_MUTEX(flash_mutex);
 static DEFINE_SPINLOCK(flash_lock);
 static struct {
-	unsigned long read_base;	/* Physical read address */
-	unsigned long write_base;	/* Physical write address */
-	unsigned long read_size;	/* Size of read area */
-	unsigned long write_size;	/* Size of write area */
-	unsigned long busy;		/* In use? */
+	unsigned long read_base;	 
+	unsigned long write_base;	 
+	unsigned long read_size;	 
+	unsigned long write_size;	 
+	unsigned long busy;		 
 } flash;
 
 static int
@@ -143,9 +140,7 @@ flash_release(struct inode *inode, struct file *file)
 }
 
 static const struct file_operations flash_fops = {
-	/* no write to the Flash, use mmap
-	 * and play flash dependent tricks.
-	 */
+	 
 	.owner =	THIS_MODULE,
 	.llseek =	flash_llseek,
 	.read =		flash_read,

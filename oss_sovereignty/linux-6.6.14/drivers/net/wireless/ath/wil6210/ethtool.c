@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014,2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/pci.h>
@@ -68,9 +65,7 @@ wil_ethtoolops_set_coalesce(struct net_device *ndev,
 		goto out;
 	}
 
-	/* only @rx_coalesce_usecs and @tx_coalesce_usecs supported,
-	 * ignore other parameters
-	 */
+	 
 
 	if (cp->rx_coalesce_usecs > WIL6210_ITR_TRSH_MAX ||
 	    cp->tx_coalesce_usecs > WIL6210_ITR_TRSH_MAX)

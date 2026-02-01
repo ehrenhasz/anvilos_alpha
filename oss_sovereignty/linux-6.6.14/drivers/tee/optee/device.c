@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Linaro Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,7 +32,7 @@ static int get_devices(struct tee_context *ctx, u32 session,
 	inv_arg.session = session;
 	inv_arg.num_params = 4;
 
-	/* Fill invoke cmd params */
+	 
 	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
 	param[0].u.memref.shm = device_shm;
 	param[0].u.memref.size = *shm_size;
@@ -113,19 +111,19 @@ static int __optee_enumerate_devices(u32 func)
 
 	memset(&sess_arg, 0, sizeof(sess_arg));
 
-	/* Open context with OP-TEE driver */
+	 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx))
 		return -ENODEV;
 
-	/* Open session with device enumeration pseudo TA */
+	 
 	export_uuid(sess_arg.uuid, &pta_uuid);
 	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
 	sess_arg.num_params = 0;
 
 	rc = tee_client_open_session(ctx, &sess_arg, NULL);
 	if ((rc < 0) || (sess_arg.ret != TEEC_SUCCESS)) {
-		/* Device enumeration pseudo TA not found */
+		 
 		rc = 0;
 		goto out_ctx;
 	}

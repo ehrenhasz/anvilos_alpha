@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * si1133.c - Support for Silabs SI1133 combined ambient
- * light and UV index sensors
- *
- * Copyright 2018 Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -114,7 +109,7 @@ static IIO_CONST_ATTR(scale_available, "1 2 4 8 16 32 64 128");
 static IIO_CONST_ATTR_INT_TIME_AVAIL("0.0244 0.0488 0.0975 0.195 0.390 0.780 "
 				     "1.560 3.120 6.24 12.48 25.0 50.0");
 
-/* A.K.A. HW_GAIN in datasheet */
+ 
 enum si1133_int_time {
 	    _24_4_us = 0,
 	    _48_8_us = 1,
@@ -130,7 +125,7 @@ enum si1133_int_time {
 	_50_ms = 11,
 };
 
-/* Integration time in milliseconds, nanoseconds */
+ 
 static const int si1133_int_time_table[][2] = {
 	[_24_4_us] = {0, 24400},
 	[_48_8_us] = {0, 48800},
@@ -196,7 +191,7 @@ struct si1133_data {
 	struct regmap *regmap;
 	struct i2c_client *client;
 
-	/* Lock protecting one command at a time can be processed */
+	 
 	struct mutex mutex;
 
 	int rsp_seq;
@@ -275,10 +270,7 @@ static int si1133_calculate_output(s32 x, s32 y, u8 x_order, u8 y_order,
 	return sign * x1 * x2 * y1 * y2;
 }
 
-/*
- * The algorithm is from:
- * https://siliconlabs.github.io/Gecko_SDK_Doc/efm32zg/html/si1133_8c_source.html#l00716
- */
+ 
 static int si1133_calc_polynomial(s32 x, s32 y, u8 input_fraction, u8 num_coeff,
 				  const struct si1133_coeff *coeffs)
 {
@@ -406,7 +398,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
 	}
 
 	if (cmd == SI1133_CMD_FORCE) {
-		/* wait for irq */
+		 
 		if (!wait_for_completion_timeout(&data->completion,
 			msecs_to_jiffies(SI1133_COMPLETION_TIMEOUT_MS))) {
 			err = -ETIMEDOUT;
@@ -545,7 +537,7 @@ static int si1133_set_integration_time(struct si1133_data *data, u8 adc,
 
 static int si1133_set_chlist(struct si1133_data *data, u8 scan_mask)
 {
-	/* channel list already set, no need to reprogram */
+	 
 	if (data->scan_mask == scan_mask)
 		return 0;
 
@@ -589,7 +581,7 @@ static int si1133_update_adcconfig(struct si1133_data *data, uint8_t adc,
 static int si1133_set_adcmux(struct si1133_data *data, u8 adc, u8 mux)
 {
 	if ((mux & data->adc_config[adc]) == mux)
-		return 0; /* mux already set to correct value */
+		return 0;  
 
 	return si1133_update_adcconfig(data, adc, SI1133_ADCMUX_MASK, 0, mux);
 }
@@ -623,7 +615,7 @@ static int si1133_measure(struct si1133_data *data,
 	if (err)
 		return err;
 
-	/* Deactivate lux measurements if they were active */
+	 
 	err = si1133_set_chlist(data, BIT(0));
 	if (err)
 		return err;
@@ -712,7 +704,7 @@ static int si1133_get_lux(struct si1133_data *data, int *val)
 	s32 ir;
 	u8 buffer[SI1133_LUX_BUFFER_SIZE];
 
-	/* Activate lux channels */
+	 
 	err = si1133_set_chlist(data, SI1133_LUX_ADC_MASK);
 	if (err)
 		return err;
@@ -877,13 +869,7 @@ static const struct iio_info si1133_info = {
 	.attrs = &si1133_attribute_group,
 };
 
-/*
- * si1133_init_lux_channels - Configure 3 different channels(adc) (1,2 and 3)
- * The channel configuration for the lux measurement was taken from :
- * https://siliconlabs.github.io/Gecko_SDK_Doc/efm32zg/html/si1133_8c_source.html#l00578
- *
- * Reserved the channel 0 for the other raw measurements
- */
+ 
 static int si1133_init_lux_channels(struct si1133_data *data)
 {
 	int err;
@@ -945,7 +931,7 @@ static int si1133_initialize(struct si1133_data *data)
 	if (err)
 		return err;
 
-	/* Turn off autonomous mode */
+	 
 	err = si1133_param_set(data, SI1133_REG_MEAS_RATE, 0);
 	if (err)
 		return err;

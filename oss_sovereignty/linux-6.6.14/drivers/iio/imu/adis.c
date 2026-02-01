@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Common library for ADIS16XXX devices
- *
- * Copyright 2012 Analog Devices Inc.
- *   Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -23,13 +18,7 @@
 #define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
 #define ADIS_GLOB_CMD_SW_RESET		BIT(7)
 
-/**
- * __adis_write_reg() - write N bytes to register (unlocked version)
- * @adis: The adis device
- * @reg: The address of the lower of the two registers
- * @value: The value to write to device (up to 4 bytes)
- * @size: The size of the @value (in bytes)
- */
+ 
 int __adis_write_reg(struct adis *adis, unsigned int reg, unsigned int value,
 		     unsigned int size)
 {
@@ -123,13 +112,7 @@ int __adis_write_reg(struct adis *adis, unsigned int reg, unsigned int value,
 }
 EXPORT_SYMBOL_NS_GPL(__adis_write_reg, IIO_ADISLIB);
 
-/**
- * __adis_read_reg() - read N bytes from register (unlocked version)
- * @adis: The adis device
- * @reg: The address of the lower of the two registers
- * @val: The value read back from the device
- * @size: The size of the @val buffer
- */
+ 
 int __adis_read_reg(struct adis *adis, unsigned int reg, unsigned int *val,
 		    unsigned int size)
 {
@@ -219,16 +202,7 @@ int __adis_read_reg(struct adis *adis, unsigned int reg, unsigned int *val,
 	return ret;
 }
 EXPORT_SYMBOL_NS_GPL(__adis_read_reg, IIO_ADISLIB);
-/**
- * __adis_update_bits_base() - ADIS Update bits function - Unlocked version
- * @adis: The adis device
- * @reg: The address of the lower of the two registers
- * @mask: Bitmask to change
- * @val: Value to be written
- * @size: Size of the register to update
- *
- * Updates the desired bits of @reg in accordance with @mask and @val.
- */
+ 
 int __adis_update_bits_base(struct adis *adis, unsigned int reg, const u32 mask,
 			    const u32 val, u8 size)
 {
@@ -269,13 +243,7 @@ EXPORT_SYMBOL_NS(adis_debugfs_reg_access, IIO_ADISLIB);
 
 #endif
 
-/**
- * __adis_enable_irq() - Enable or disable data ready IRQ (unlocked)
- * @adis: The adis device
- * @enable: Whether to enable the IRQ
- *
- * Returns 0 on success, negative error code otherwise
- */
+ 
 int __adis_enable_irq(struct adis *adis, bool enable)
 {
 	int ret;
@@ -308,12 +276,7 @@ int __adis_enable_irq(struct adis *adis, bool enable)
 }
 EXPORT_SYMBOL_NS(__adis_enable_irq, IIO_ADISLIB);
 
-/**
- * __adis_check_status() - Check the device for error conditions (unlocked)
- * @adis: The adis device
- *
- * Returns 0 on success, a negative error code otherwise
- */
+ 
 int __adis_check_status(struct adis *adis)
 {
 	u16 status;
@@ -340,12 +303,7 @@ int __adis_check_status(struct adis *adis)
 }
 EXPORT_SYMBOL_NS_GPL(__adis_check_status, IIO_ADISLIB);
 
-/**
- * __adis_reset() - Reset the device (unlocked version)
- * @adis: The adis device
- *
- * Returns 0 on success, a negative error code otherwise
- */
+ 
 int __adis_reset(struct adis *adis)
 {
 	int ret;
@@ -387,23 +345,7 @@ static int adis_self_test(struct adis *adis)
 	return ret;
 }
 
-/**
- * __adis_initial_startup() - Device initial setup
- * @adis: The adis device
- *
- * The function performs a HW reset via a reset pin that should be specified
- * via GPIOLIB. If no pin is configured a SW reset will be performed.
- * The RST pin for the ADIS devices should be configured as ACTIVE_LOW.
- *
- * After the self-test operation is performed, the function will also check
- * that the product ID is as expected. This assumes that drivers providing
- * 'prod_id_reg' will also provide the 'prod_id'.
- *
- * Returns 0 if the device is operational, a negative error code otherwise.
- *
- * This function should be called early on in the device initialization sequence
- * to ensure that the device is in a sane and known state and that it is usable.
- */
+ 
 int __adis_initial_startup(struct adis *adis)
 {
 	const struct adis_timeout *timeouts = adis->data->timeouts;
@@ -411,14 +353,14 @@ int __adis_initial_startup(struct adis *adis)
 	u16 prod_id;
 	int ret;
 
-	/* check if the device has rst pin low */
+	 
 	gpio = devm_gpiod_get_optional(&adis->spi->dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(gpio))
 		return PTR_ERR(gpio);
 
 	if (gpio) {
 		usleep_range(10, 12);
-		/* bring device out of reset */
+		 
 		gpiod_set_value_cansleep(gpio, 0);
 		msleep(timeouts->reset_ms);
 	} else {
@@ -431,11 +373,7 @@ int __adis_initial_startup(struct adis *adis)
 	if (ret)
 		return ret;
 
-	/*
-	 * don't bother calling this if we can't unmask the IRQ as in this case
-	 * the IRQ is most likely not yet requested and we will request it
-	 * with 'IRQF_NO_AUTOEN' anyways.
-	 */
+	 
 	if (!adis->data->unmasked_drdy)
 		__adis_enable_irq(adis, false);
 
@@ -455,21 +393,7 @@ int __adis_initial_startup(struct adis *adis)
 }
 EXPORT_SYMBOL_NS_GPL(__adis_initial_startup, IIO_ADISLIB);
 
-/**
- * adis_single_conversion() - Performs a single sample conversion
- * @indio_dev: The IIO device
- * @chan: The IIO channel
- * @error_mask: Mask for the error bit
- * @val: Result of the conversion
- *
- * Returns IIO_VAL_INT on success, a negative error code otherwise.
- *
- * The function performs a single conversion on a given channel and post
- * processes the value accordingly to the channel spec. If a error_mask is given
- * the function will check if the mask is set in the returned raw value. If it
- * is set the function will perform a self-check. If the device does not report
- * a error bit in the channels raw value set error_mask to 0.
- */
+ 
 int adis_single_conversion(struct iio_dev *indio_dev,
 			   const struct iio_chan_spec *chan,
 			   unsigned int error_mask, int *val)
@@ -503,18 +427,7 @@ err_unlock:
 }
 EXPORT_SYMBOL_NS_GPL(adis_single_conversion, IIO_ADISLIB);
 
-/**
- * adis_init() - Initialize adis device structure
- * @adis:	The adis device
- * @indio_dev:	The iio device
- * @spi:	The spi device
- * @data:	Chip specific data
- *
- * Returns 0 on success, a negative error code otherwise.
- *
- * This function must be called, before any other adis helper function may be
- * called.
- */
+ 
 int adis_init(struct adis *adis, struct iio_dev *indio_dev,
 	      struct spi_device *spi, const struct adis_data *data)
 {
@@ -529,10 +442,10 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
 	iio_device_set_drvdata(indio_dev, adis);
 
 	if (data->has_paging) {
-		/* Need to set the page before first read/write */
+		 
 		adis->current_page = -1;
 	} else {
-		/* Page will always be 0 */
+		 
 		adis->current_page = 0;
 	}
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2017
- * Author:  Amelie Delaunay <amelie.delaunay@st.com>
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/clk.h>
@@ -19,7 +16,7 @@
 
 #define DRIVER_NAME "stm32_rtc"
 
-/* STM32_RTC_TR bit fields  */
+ 
 #define STM32_RTC_TR_SEC_SHIFT		0
 #define STM32_RTC_TR_SEC		GENMASK(6, 0)
 #define STM32_RTC_TR_MIN_SHIFT		8
@@ -27,7 +24,7 @@
 #define STM32_RTC_TR_HOUR_SHIFT		16
 #define STM32_RTC_TR_HOUR		GENMASK(21, 16)
 
-/* STM32_RTC_DR bit fields */
+ 
 #define STM32_RTC_DR_DATE_SHIFT		0
 #define STM32_RTC_DR_DATE		GENMASK(5, 0)
 #define STM32_RTC_DR_MONTH_SHIFT	8
@@ -37,12 +34,12 @@
 #define STM32_RTC_DR_YEAR_SHIFT		16
 #define STM32_RTC_DR_YEAR		GENMASK(23, 16)
 
-/* STM32_RTC_CR bit fields */
+ 
 #define STM32_RTC_CR_FMT		BIT(6)
 #define STM32_RTC_CR_ALRAE		BIT(8)
 #define STM32_RTC_CR_ALRAIE		BIT(12)
 
-/* STM32_RTC_ISR/STM32_RTC_ICSR bit fields */
+ 
 #define STM32_RTC_ISR_ALRAWF		BIT(0)
 #define STM32_RTC_ISR_INITS		BIT(4)
 #define STM32_RTC_ISR_RSF		BIT(5)
@@ -50,13 +47,13 @@
 #define STM32_RTC_ISR_INIT		BIT(7)
 #define STM32_RTC_ISR_ALRAF		BIT(8)
 
-/* STM32_RTC_PRER bit fields */
+ 
 #define STM32_RTC_PRER_PRED_S_SHIFT	0
 #define STM32_RTC_PRER_PRED_S		GENMASK(14, 0)
 #define STM32_RTC_PRER_PRED_A_SHIFT	16
 #define STM32_RTC_PRER_PRED_A		GENMASK(22, 16)
 
-/* STM32_RTC_ALRMAR and STM32_RTC_ALRMBR bit fields */
+ 
 #define STM32_RTC_ALRMXR_SEC_SHIFT	0
 #define STM32_RTC_ALRMXR_SEC		GENMASK(6, 0)
 #define STM32_RTC_ALRMXR_SEC_MASK	BIT(7)
@@ -74,24 +71,24 @@
 #define STM32_RTC_ALRMXR_WDAY		GENMASK(27, 24)
 #define STM32_RTC_ALRMXR_DATE_MASK	BIT(31)
 
-/* STM32_RTC_SR/_SCR bit fields */
+ 
 #define STM32_RTC_SR_ALRA		BIT(0)
 
-/* STM32_RTC_VERR bit fields */
+ 
 #define STM32_RTC_VERR_MINREV_SHIFT	0
 #define STM32_RTC_VERR_MINREV		GENMASK(3, 0)
 #define STM32_RTC_VERR_MAJREV_SHIFT	4
 #define STM32_RTC_VERR_MAJREV		GENMASK(7, 4)
 
-/* STM32_RTC_WPR key constants */
+ 
 #define RTC_WPR_1ST_KEY			0xCA
 #define RTC_WPR_2ND_KEY			0x53
 #define RTC_WPR_WRONG_KEY		0xFF
 
-/* Max STM32 RTC register offset is 0x3FC */
+ 
 #define UNDEF_REG			0xFFFF
 
-/* STM32 RTC driver time helpers */
+ 
 #define SEC_PER_DAY		(24 * 60 * 60)
 
 struct stm32_rtc;
@@ -158,12 +155,7 @@ static int stm32_rtc_enter_init_mode(struct stm32_rtc *rtc)
 		isr |= STM32_RTC_ISR_INIT;
 		writel_relaxed(isr, rtc->base + regs->isr);
 
-		/*
-		 * It takes around 2 rtc_ck clock cycles to enter in
-		 * initialization phase mode (and have INITF flag set). As
-		 * slowest rtc_ck frequency may be 32kHz and highest should be
-		 * 1MHz, we poll every 10 us with a timeout of 100ms.
-		 */
+		 
 		return readl_relaxed_poll_timeout_atomic(rtc->base + regs->isr, isr,
 							 (isr & STM32_RTC_ISR_INITF),
 							 10, 100000);
@@ -189,10 +181,7 @@ static int stm32_rtc_wait_sync(struct stm32_rtc *rtc)
 	isr &= ~STM32_RTC_ISR_RSF;
 	writel_relaxed(isr, rtc->base + regs->isr);
 
-	/*
-	 * Wait for RSF to be set to ensure the calendar registers are
-	 * synchronised, it takes around 2 rtc_ck clock cycles
-	 */
+	 
 	return readl_relaxed_poll_timeout_atomic(rtc->base + regs->isr,
 						 isr,
 						 (isr & STM32_RTC_ISR_RSF),
@@ -219,13 +208,13 @@ static irqreturn_t stm32_rtc_alarm_irq(int irq, void *dev_id)
 
 	if ((status & evts->alra) &&
 	    (cr & STM32_RTC_CR_ALRAIE)) {
-		/* Alarm A flag - Alarm interrupt */
+		 
 		dev_dbg(&rtc->rtc_dev->dev, "Alarm occurred\n");
 
-		/* Pass event to the kernel */
+		 
 		rtc_update_irq(rtc->rtc_dev, 1, RTC_IRQF | RTC_AF);
 
-		/* Clear event flags, otherwise new events won't be received */
+		 
 		stm32_rtc_clear_event_flags(rtc, evts->alra);
 	}
 
@@ -234,7 +223,7 @@ static irqreturn_t stm32_rtc_alarm_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* Convert rtc_time structure from bin to bcd format */
+ 
 static void tm2bcd(struct rtc_time *tm)
 {
 	tm->tm_sec = bin2bcd(tm->tm_sec);
@@ -244,15 +233,11 @@ static void tm2bcd(struct rtc_time *tm)
 	tm->tm_mday = bin2bcd(tm->tm_mday);
 	tm->tm_mon = bin2bcd(tm->tm_mon + 1);
 	tm->tm_year = bin2bcd(tm->tm_year - 100);
-	/*
-	 * Number of days since Sunday
-	 * - on kernel side, 0=Sunday...6=Saturday
-	 * - on rtc side, 0=invalid,1=Monday...7=Sunday
-	 */
+	 
 	tm->tm_wday = (!tm->tm_wday) ? 7 : tm->tm_wday;
 }
 
-/* Convert rtc_time structure from bcd to bin format */
+ 
 static void bcd2tm(struct rtc_time *tm)
 {
 	tm->tm_sec = bcd2bin(tm->tm_sec);
@@ -262,11 +247,7 @@ static void bcd2tm(struct rtc_time *tm)
 	tm->tm_mday = bcd2bin(tm->tm_mday);
 	tm->tm_mon = bcd2bin(tm->tm_mon) - 1;
 	tm->tm_year = bcd2bin(tm->tm_year) + 100;
-	/*
-	 * Number of days since Sunday
-	 * - on kernel side, 0=Sunday...6=Saturday
-	 * - on rtc side, 0=invalid,1=Monday...7=Sunday
-	 */
+	 
 	tm->tm_wday %= 7;
 }
 
@@ -276,7 +257,7 @@ static int stm32_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	const struct stm32_rtc_registers *regs = &rtc->data->regs;
 	unsigned int tr, dr;
 
-	/* Time and Date in BCD format */
+	 
 	tr = readl_relaxed(rtc->base + regs->tr);
 	dr = readl_relaxed(rtc->base + regs->dr);
 
@@ -289,7 +270,7 @@ static int stm32_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_year = (dr & STM32_RTC_DR_YEAR) >> STM32_RTC_DR_YEAR_SHIFT;
 	tm->tm_wday = (dr & STM32_RTC_DR_WDAY) >> STM32_RTC_DR_WDAY_SHIFT;
 
-	/* We don't report tm_yday and tm_isdst */
+	 
 
 	bcd2tm(tm);
 
@@ -305,12 +286,12 @@ static int stm32_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	tm2bcd(tm);
 
-	/* Time in BCD format */
+	 
 	tr = ((tm->tm_sec << STM32_RTC_TR_SEC_SHIFT) & STM32_RTC_TR_SEC) |
 	     ((tm->tm_min << STM32_RTC_TR_MIN_SHIFT) & STM32_RTC_TR_MIN) |
 	     ((tm->tm_hour << STM32_RTC_TR_HOUR_SHIFT) & STM32_RTC_TR_HOUR);
 
-	/* Date in BCD format */
+	 
 	dr = ((tm->tm_mday << STM32_RTC_DR_DATE_SHIFT) & STM32_RTC_DR_DATE) |
 	     ((tm->tm_mon << STM32_RTC_DR_MONTH_SHIFT) & STM32_RTC_DR_MONTH) |
 	     ((tm->tm_year << STM32_RTC_DR_YEAR_SHIFT) & STM32_RTC_DR_YEAR) |
@@ -349,21 +330,18 @@ static int stm32_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	status = readl_relaxed(rtc->base + regs->sr);
 
 	if (alrmar & STM32_RTC_ALRMXR_DATE_MASK) {
-		/*
-		 * Date/day doesn't matter in Alarm comparison so alarm
-		 * triggers every day
-		 */
+		 
 		tm->tm_mday = -1;
 		tm->tm_wday = -1;
 	} else {
 		if (alrmar & STM32_RTC_ALRMXR_WDSEL) {
-			/* Alarm is set to a day of week */
+			 
 			tm->tm_mday = -1;
 			tm->tm_wday = (alrmar & STM32_RTC_ALRMXR_WDAY) >>
 				      STM32_RTC_ALRMXR_WDAY_SHIFT;
 			tm->tm_wday %= 7;
 		} else {
-			/* Alarm is set to a day of month */
+			 
 			tm->tm_wday = -1;
 			tm->tm_mday = (alrmar & STM32_RTC_ALRMXR_DATE) >>
 				       STM32_RTC_ALRMXR_DATE_SHIFT;
@@ -371,7 +349,7 @@ static int stm32_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	}
 
 	if (alrmar & STM32_RTC_ALRMXR_HOUR_MASK) {
-		/* Hours don't matter in Alarm comparison */
+		 
 		tm->tm_hour = -1;
 	} else {
 		tm->tm_hour = (alrmar & STM32_RTC_ALRMXR_HOUR) >>
@@ -381,7 +359,7 @@ static int stm32_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	}
 
 	if (alrmar & STM32_RTC_ALRMXR_MIN_MASK) {
-		/* Minutes don't matter in Alarm comparison */
+		 
 		tm->tm_min = -1;
 	} else {
 		tm->tm_min = (alrmar & STM32_RTC_ALRMXR_MIN) >>
@@ -389,7 +367,7 @@ static int stm32_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	}
 
 	if (alrmar & STM32_RTC_ALRMXR_SEC_MASK) {
-		/* Seconds don't matter in Alarm comparison */
+		 
 		tm->tm_sec = -1;
 	} else {
 		tm->tm_sec = (alrmar & STM32_RTC_ALRMXR_SEC) >>
@@ -415,14 +393,14 @@ static int stm32_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 
 	stm32_rtc_wpr_unlock(rtc);
 
-	/* We expose Alarm A to the kernel */
+	 
 	if (enabled)
 		cr |= (STM32_RTC_CR_ALRAIE | STM32_RTC_CR_ALRAE);
 	else
 		cr &= ~(STM32_RTC_CR_ALRAIE | STM32_RTC_CR_ALRAE);
 	writel_relaxed(cr, rtc->base + regs->cr);
 
-	/* Clear event flags, otherwise new events won't be received */
+	 
 	stm32_rtc_clear_event_flags(rtc, evts->alra);
 
 	stm32_rtc_wpr_lock(rtc);
@@ -438,18 +416,10 @@ static int stm32_rtc_valid_alrm(struct device *dev, struct rtc_time *tm)
 	int next_month;
 	int next_year;
 
-	/*
-	 * Assuming current date is M-D-Y H:M:S.
-	 * RTC alarm can't be set on a specific month and year.
-	 * So the valid alarm range is:
-	 *	M-D-Y H:M:S < alarm <= (M+1)-D-Y H:M:S
-	 */
+	 
 	stm32_rtc_read_time(dev, &now);
 
-	/*
-	 * Find the next month and the year of the next month.
-	 * Note: tm_mon and next_month are from 0 to 11
-	 */
+	 
 	next_month = now.tm_mon + 1;
 	if (next_month == 12) {
 		next_month = 0;
@@ -458,12 +428,12 @@ static int stm32_rtc_valid_alrm(struct device *dev, struct rtc_time *tm)
 		next_year = now.tm_year;
 	}
 
-	/* Find the maximum limit of alarm in days. */
+	 
 	max_day_forward = rtc_month_days(now.tm_mon, now.tm_year)
 			 - now.tm_mday
 			 + min(rtc_month_days(next_month, next_year), now.tm_mday);
 
-	/* Convert to timestamp and compare the alarm time and its upper limit */
+	 
 	max_alarm_time64 = rtc_tm_to_time64(&now) + max_day_forward * SEC_PER_DAY;
 	return rtc_tm_to_time64(tm) <= max_alarm_time64 ? 0 : -EINVAL;
 }
@@ -476,10 +446,7 @@ static int stm32_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	unsigned int cr, isr, alrmar;
 	int ret = 0;
 
-	/*
-	 * RTC alarm can't be set on a specific date, unless this date is
-	 * up to the same day of month next month.
-	 */
+	 
 	if (stm32_rtc_valid_alrm(dev, tm) < 0) {
 		dev_err(dev, "Alarm can be set only on upcoming month.\n");
 		return -EINVAL;
@@ -488,10 +455,10 @@ static int stm32_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	tm2bcd(tm);
 
 	alrmar = 0;
-	/* tm_year and tm_mon are not used because not supported by RTC */
+	 
 	alrmar |= (tm->tm_mday << STM32_RTC_ALRMXR_DATE_SHIFT) &
 		  STM32_RTC_ALRMXR_DATE;
-	/* 24-hour format */
+	 
 	alrmar &= ~STM32_RTC_ALRMXR_PM;
 	alrmar |= (tm->tm_hour << STM32_RTC_ALRMXR_HOUR_SHIFT) &
 		  STM32_RTC_ALRMXR_HOUR;
@@ -502,15 +469,12 @@ static int stm32_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	stm32_rtc_wpr_unlock(rtc);
 
-	/* Disable Alarm */
+	 
 	cr = readl_relaxed(rtc->base + regs->cr);
 	cr &= ~STM32_RTC_CR_ALRAE;
 	writel_relaxed(cr, rtc->base + regs->cr);
 
-	/*
-	 * Poll Alarm write flag to be sure that Alarm update is allowed: it
-	 * takes around 2 rtc_ck clock cycles
-	 */
+	 
 	ret = readl_relaxed_poll_timeout_atomic(rtc->base + regs->isr,
 						isr,
 						(isr & STM32_RTC_ISR_ALRAWF),
@@ -521,7 +485,7 @@ static int stm32_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		goto end;
 	}
 
-	/* Write to Alarm register */
+	 
 	writel_relaxed(alrmar, rtc->base + regs->alrmar);
 
 	stm32_rtc_alarm_irq_enable(dev, alrm->enabled);
@@ -544,7 +508,7 @@ static void stm32_rtc_clear_events(struct stm32_rtc *rtc,
 {
 	const struct stm32_rtc_registers *regs = &rtc->data->regs;
 
-	/* Flags are cleared by writing 0 in RTC_ISR */
+	 
 	writel_relaxed(readl_relaxed(rtc->base + regs->isr) & ~flags,
 		       rtc->base + regs->isr);
 }
@@ -561,7 +525,7 @@ static const struct stm32_rtc_data stm32_rtc_data = {
 		.prer = 0x10,
 		.alrmar = 0x1C,
 		.wpr = 0x24,
-		.sr = 0x0C, /* set to ISR offset to ease alarm management */
+		.sr = 0x0C,  
 		.scr = UNDEF_REG,
 		.verr = UNDEF_REG,
 	},
@@ -583,7 +547,7 @@ static const struct stm32_rtc_data stm32h7_rtc_data = {
 		.prer = 0x10,
 		.alrmar = 0x1C,
 		.wpr = 0x24,
-		.sr = 0x0C, /* set to ISR offset to ease alarm management */
+		.sr = 0x0C,  
 		.scr = UNDEF_REG,
 		.verr = UNDEF_REG,
 	},
@@ -598,7 +562,7 @@ static void stm32mp1_rtc_clear_events(struct stm32_rtc *rtc,
 {
 	struct stm32_rtc_registers regs = rtc->data->regs;
 
-	/* Flags are cleared by writing 1 in RTC_SCR */
+	 
 	writel_relaxed(flags, rtc->base + regs.scr);
 }
 
@@ -610,7 +574,7 @@ static const struct stm32_rtc_data stm32mp1_data = {
 		.tr = 0x00,
 		.dr = 0x04,
 		.cr = 0x18,
-		.isr = 0x0C, /* named RTC_ICSR on stm32mp1 */
+		.isr = 0x0C,  
 		.prer = 0x10,
 		.alrmar = 0x40,
 		.wpr = 0x24,
@@ -642,7 +606,7 @@ static int stm32_rtc_init(struct platform_device *pdev,
 
 	rate = clk_get_rate(rtc->rtc_ck);
 
-	/* Find prediv_a and prediv_s to obtain the 1Hz calendar clock */
+	 
 	pred_a_max = STM32_RTC_PRER_PRED_A >> STM32_RTC_PRER_PRED_A_SHIFT;
 	pred_s_max = STM32_RTC_PRER_PRED_S >> STM32_RTC_PRER_PRED_S_SHIFT;
 
@@ -667,10 +631,7 @@ static int stm32_rtc_init(struct platform_device *pdev,
 		}
 	}
 
-	/*
-	 * Can't find a 1Hz, so give priority to RTC power consumption
-	 * by choosing the higher possible value for prediv_a
-	 */
+	 
 	if (pred_s > pred_s_max || pred_a > pred_a_max) {
 		pred_a = pred_a_max;
 		pred_s = (rate / (pred_a + 1)) - 1;
@@ -690,7 +651,7 @@ static int stm32_rtc_init(struct platform_device *pdev,
 	pred_a = (pred_a << STM32_RTC_PRER_PRED_A_SHIFT) &
 		 STM32_RTC_PRER_PRED_A;
 
-	/* quit if there is nothing to initialize */
+	 
 	if ((cr & STM32_RTC_CR_FMT) == 0 && prer == (pred_s | pred_a))
 		return 0;
 
@@ -706,7 +667,7 @@ static int stm32_rtc_init(struct platform_device *pdev,
 	writel_relaxed(pred_s, rtc->base + regs->prer);
 	writel_relaxed(pred_a | pred_s, rtc->base + regs->prer);
 
-	/* Force 24h time format */
+	 
 	cr &= ~STM32_RTC_CR_FMT;
 	writel_relaxed(cr, rtc->base + regs->cr);
 
@@ -787,14 +748,7 @@ static int stm32_rtc_probe(struct platform_device *pdev)
 		regmap_update_bits(rtc->dbp, rtc->dbp_reg,
 				   rtc->dbp_mask, rtc->dbp_mask);
 
-	/*
-	 * After a system reset, RTC_ISR.INITS flag can be read to check if
-	 * the calendar has been initialized or not. INITS flag is reset by a
-	 * power-on reset (no vbat, no power-supply). It is not reset if
-	 * rtc_ck parent clock has changed (so RTC prescalers need to be
-	 * changed). That's why we cannot rely on this flag to know if RTC
-	 * init has to be done.
-	 */
+	 
 	ret = stm32_rtc_init(pdev, rtc);
 	if (ret)
 		goto err;
@@ -824,7 +778,7 @@ static int stm32_rtc_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Handle RTC alarm interrupts */
+	 
 	ret = devm_request_threaded_irq(&pdev->dev, rtc->irq_alarm, NULL,
 					stm32_rtc_alarm_irq, IRQF_ONESHOT,
 					pdev->name, rtc);
@@ -834,10 +788,7 @@ static int stm32_rtc_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/*
-	 * If INITS flag is reset (calendar year field set to 0x00), calendar
-	 * must be initialized
-	 */
+	 
 	if (!(readl_relaxed(rtc->base + regs->isr) & STM32_RTC_ISR_INITS))
 		dev_warn(&pdev->dev, "Date/Time must be initialized\n");
 
@@ -872,7 +823,7 @@ static void stm32_rtc_remove(struct platform_device *pdev)
 	const struct stm32_rtc_registers *regs = &rtc->data->regs;
 	unsigned int cr;
 
-	/* Disable interrupts */
+	 
 	stm32_rtc_wpr_unlock(rtc);
 	cr = readl_relaxed(rtc->base + regs->cr);
 	cr &= ~STM32_RTC_CR_ALRAIE;
@@ -883,7 +834,7 @@ static void stm32_rtc_remove(struct platform_device *pdev)
 	if (rtc->data->has_pclk)
 		clk_disable_unprepare(rtc->pclk);
 
-	/* Enable backup domain write protection if needed */
+	 
 	if (rtc->data->need_dbp)
 		regmap_update_bits(rtc->dbp, rtc->dbp_reg, rtc->dbp_mask, 0);
 

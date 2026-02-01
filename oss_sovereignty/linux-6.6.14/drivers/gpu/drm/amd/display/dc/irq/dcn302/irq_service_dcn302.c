@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -90,7 +67,7 @@ static enum dc_irq_source to_dal_irq_source_dcn302(struct irq_service *irq_servi
 		return DC_IRQ_SOURCE_VUPDATE6;
 
 	case DCN_1_0__SRCID__DC_HPD1_INT:
-		/* generic src_id for all HPD and HPDRX interrupts */
+		 
 		switch (ext_id) {
 		case DCN_1_0__CTXID__DC_HPD1_INT:
 			return DC_IRQ_SOURCE_HPD1;
@@ -181,7 +158,7 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
 #undef BASE_INNER
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
-/* compile time expand base address. */
+ 
 #define BASE(seg) BASE_INNER(seg)
 
 #define SRI(reg_name, block, id)\
@@ -249,9 +226,7 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
 						.funcs = &pflip_irq_info_funcs\
 }
 
-/* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
- * of DCE's DC_IRQ_SOURCE_VUPDATEx.
- */
+ 
 #define vupdate_no_lock_int_entry(reg_num)\
 	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
 		IRQ_REG_ENTRY(OTG, reg_num,\

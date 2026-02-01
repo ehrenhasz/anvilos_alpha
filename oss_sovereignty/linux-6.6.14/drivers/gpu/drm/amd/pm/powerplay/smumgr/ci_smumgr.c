@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include "linux/delay.h"
@@ -123,7 +102,7 @@ static int ci_copy_bytes_to_smc(struct pp_hwmgr *hwmgr, uint32_t smc_start_addre
 	addr = smc_start_address;
 
 	while (byte_count >= 4) {
-	/* Bytes are written into the SMC address space with the MSB first. */
+	 
 		data = src[0] * 0x1000000 + src[1] * 0x10000 + src[2] * 0x100 + src[3];
 
 		result = ci_set_smc_sram_address(hwmgr, addr, limit);
@@ -153,7 +132,7 @@ static int ci_copy_bytes_to_smc(struct pp_hwmgr *hwmgr, uint32_t smc_start_addre
 		extra_shift = 8 * (4 - byte_count);
 
 		while (byte_count > 0) {
-			/* Bytes are written into the SMC addres space with the MSB first. */
+			 
 			data = (0x100 * data) + *src++;
 			byte_count--;
 		}
@@ -309,31 +288,31 @@ static int ci_calculate_sclk_params(struct pp_hwmgr *hwmgr,
 	uint32_t fbdiv;
 	int result;
 
-	/* get the engine clock dividers for this clock value */
+	 
 	result = atomctrl_get_engine_pll_dividers_vi(hwmgr, clock,  &dividers);
 
 	PP_ASSERT_WITH_CODE(result == 0,
 			"Error retrieving Engine Clock dividers from VBIOS.",
 			return result);
 
-	/* To get FBDIV we need to multiply this by 16384 and divide it by Fref. */
+	 
 	ref_clock = atomctrl_get_reference_clock(hwmgr);
 	ref_divider = 1 + dividers.uc_pll_ref_div;
 
-	/* low 14 bits is fraction and high 12 bits is divider */
+	 
 	fbdiv = dividers.ul_fb_div.ul_fb_divider & 0x3FFFFFF;
 
-	/* SPLL_FUNC_CNTL setup */
+	 
 	spll_func_cntl = PHM_SET_FIELD(spll_func_cntl, CG_SPLL_FUNC_CNTL,
 			SPLL_REF_DIV, dividers.uc_pll_ref_div);
 	spll_func_cntl = PHM_SET_FIELD(spll_func_cntl, CG_SPLL_FUNC_CNTL,
 			SPLL_PDIV_A,  dividers.uc_pll_post_div);
 
-	/* SPLL_FUNC_CNTL_3 setup*/
+	 
 	spll_func_cntl_3 = PHM_SET_FIELD(spll_func_cntl_3, CG_SPLL_FUNC_CNTL_3,
 			SPLL_FB_DIV, fbdiv);
 
-	/* set to use fractional accumulation*/
+	 
 	spll_func_cntl_3 = PHM_SET_FIELD(spll_func_cntl_3, CG_SPLL_FUNC_CNTL_3,
 			SPLL_DITHEN, 1);
 
@@ -374,7 +353,7 @@ static void ci_populate_phase_value_based_on_sclk(struct pp_hwmgr *hwmgr,
 {
 	unsigned int i;
 
-	/* use the minimum phase shedding */
+	 
 	*p_shed = 1;
 
 	for (i = 0; i < pl->count; i++) {
@@ -414,7 +393,7 @@ static int ci_populate_single_graphic_level(struct pp_hwmgr *hwmgr,
 
 	result = ci_calculate_sclk_params(hwmgr, clock, level);
 
-	/* populate graphics levels */
+	 
 	result = ci_get_dependency_volt_by_clk(hwmgr,
 			hwmgr->dyn_state.vddc_dependency_on_sclk, clock,
 			(uint32_t *)(&level->MinVddc));
@@ -436,7 +415,7 @@ static int ci_populate_single_graphic_level(struct pp_hwmgr *hwmgr,
 	level->CcPwrDynRm = 0;
 	level->CcPwrDynRm1 = 0;
 	level->EnabledForActivity = 0;
-	/* this level can be used for throttling.*/
+	 
 	level->EnabledForThrottle = 1;
 	level->UpH = data->current_profile_setting.sclk_up_hyst;
 	level->DownH = data->current_profile_setting.sclk_down_hyst;
@@ -450,7 +429,7 @@ static int ci_populate_single_graphic_level(struct pp_hwmgr *hwmgr,
 				ci_get_sleep_divider_id_from_clock(clock,
 						CISLAND_MINIMUM_ENGINE_CLOCK);
 
-	/* Default to slow, highest DPM level will be set to PPSMC_DISPLAY_WATERMARK_LOW later.*/
+	 
 	level->DisplayWatermark = PPSMC_DISPLAY_WATERMARK_LOW;
 
 	if (0 == result) {
@@ -686,15 +665,15 @@ static int ci_populate_pm_fuses(struct pp_hwmgr *hwmgr)
 			return -EINVAL;
 		}
 
-		/* DW0 - DW3 */
+		 
 		ret = ci_populate_bapm_vddc_vid_sidd(hwmgr);
-		/* DW4 - DW5 */
+		 
 		ret |= ci_populate_vddc_vid(hwmgr);
-		/* DW6 */
+		 
 		ret |= ci_populate_svi_load_line(hwmgr);
-		/* DW7 */
+		 
 		ret |= ci_populate_tdc_limit(hwmgr);
-		/* DW8 */
+		 
 		ret |= ci_populate_dw8(hwmgr, pm_fuse_table_offset);
 
 		ret |= ci_populate_fuzzy_fan(hwmgr, pm_fuse_table_offset);
@@ -852,7 +831,7 @@ static int ci_populate_smc_vddc_table(struct pp_hwmgr *hwmgr,
 				&(table->VddcLevel[count]));
 		PP_ASSERT_WITH_CODE(0 == result, "do not populate SMC VDDC voltage table", return -EINVAL);
 
-		/* GPIO voltage control */
+		 
 		if (SMU7_VOLTAGE_CONTROL_BY_GPIO == data->voltage_control) {
 			table->VddcLevel[count].Smio = (uint8_t) count;
 			table->Smio[count] |= data->vddc_voltage_table.entries[count].smio_low;
@@ -963,17 +942,17 @@ static int ci_populate_ulv_level(struct pp_hwmgr *hwmgr,
 	}
 
 	if (data->voltage_control != SMU7_VOLTAGE_CONTROL_BY_SVID2) {
-		/* use minimum voltage if ulv voltage in pptable is bigger than minimum voltage */
+		 
 		if (ulv_voltage > hwmgr->dyn_state.vddc_dependency_on_sclk->entries[0].v)
 			state->VddcOffset = 0;
 		else
-			/* used in SMIO Mode. not implemented for now. this is backup only for CI. */
+			 
 			state->VddcOffset = (uint16_t)(hwmgr->dyn_state.vddc_dependency_on_sclk->entries[0].v - ulv_voltage);
 	} else {
-		/* use minimum voltage if ulv voltage in pptable is bigger than minimum voltage */
+		 
 		if (ulv_voltage > hwmgr->dyn_state.vddc_dependency_on_sclk->entries[0].v)
 			state->VddcOffsetVid = 0;
-		else  /* used in SVI2 Mode */
+		else   
 			state->VddcOffsetVid = (uint8_t)(
 					(hwmgr->dyn_state.vddc_dependency_on_sclk->entries[0].v - ulv_voltage)
 						* VOLTAGE_VID_OFFSET_SCALE2
@@ -1001,7 +980,7 @@ static int ci_populate_smc_link_level(struct pp_hwmgr *hwmgr, SMU7_Discrete_DpmT
 	struct ci_smumgr *smu_data = (struct ci_smumgr *)(hwmgr->smu_backend);
 	uint32_t i;
 
-/* Index dpm_table->pcie_speed_table.count is reserved for PCIE boot level.*/
+ 
 	for (i = 0; i <= dpm_table->pcie_speed_table.count; i++) {
 		table->LinkLevel[i].PcieGenSpeed  =
 			(uint8_t)dpm_table->pcie_speed_table.dpm_levels[i].value;
@@ -1073,13 +1052,13 @@ static int ci_calculate_mclk_params(
 		uint32_t tmp;
 		uint32_t reference_clock = atomctrl_get_mpll_reference_clock(hwmgr);
 
-		/* for GDDR5 for all modes and DDR3 */
+		 
 		if (1 == mpll_param.qdr)
 			freq_nom = memory_clock * 4 * (1 << mpll_param.mpll_post_divider);
 		else
 			freq_nom = memory_clock * 2 * (1 << mpll_param.mpll_post_divider);
 
-		/* tmp = (freq_nom / reference_clock * reference_divider) ^ 2  Note: S.I. reference_divider = 1*/
+		 
 		tmp = (freq_nom / reference_clock);
 		tmp = tmp * tmp;
 
@@ -1222,7 +1201,7 @@ static int ci_populate_single_memory_level(
 	memory_level->DownH = data->current_profile_setting.mclk_down_hyst;
 	memory_level->VoltageDownH = 0;
 
-	/* Indicates maximum activity level for this performance level.*/
+	 
 	memory_level->ActivityLevel = data->current_profile_setting.mclk_activity;
 	memory_level->StutterEnable = 0;
 	memory_level->StrobeEnable = 0;
@@ -1230,19 +1209,19 @@ static int ci_populate_single_memory_level(
 	memory_level->EdcWriteEnable = 0;
 	memory_level->RttEnable = 0;
 
-	/* default set to low watermark. Highest level will be set to high later.*/
+	 
 	memory_level->DisplayWatermark = PPSMC_DISPLAY_WATERMARK_LOW;
 
 	data->display_timing.num_existing_displays = hwmgr->display_config->num_display;
 	data->display_timing.vrefresh = hwmgr->display_config->vrefresh;
 
-	/* stutter mode not support on ci */
+	 
 
-	/* decide strobe mode*/
+	 
 	memory_level->StrobeEnable = (mclk_strobe_mode_threshold != 0) &&
 		(memory_clock <= mclk_strobe_mode_threshold);
 
-	/* decide EDC mode and memory clock ratio*/
+	 
 	if (data->is_memory_gddr5) {
 		memory_level->StrobeRatio = ci_get_mclk_frequency_ratio(memory_clock,
 					memory_level->StrobeEnable);
@@ -1279,9 +1258,9 @@ static int ci_populate_single_memory_level(
 		CONVERT_FROM_HOST_TO_SMC_UL(memory_level->MinVddcPhases);
 		memory_level->MinVddci = PP_HOST_TO_SMC_UL(memory_level->MinVddci * VOLTAGE_SCALE);
 		memory_level->MinMvdd = PP_HOST_TO_SMC_UL(memory_level->MinMvdd * VOLTAGE_SCALE);
-		/* MCLK frequency in units of 10KHz*/
+		 
 		CONVERT_FROM_HOST_TO_SMC_UL(memory_level->MclkFrequency);
-		/* Indicates maximum activity level for this performance level.*/
+		 
 		CONVERT_FROM_HOST_TO_SMC_US(memory_level->ActivityLevel);
 		CONVERT_FROM_HOST_TO_SMC_UL(memory_level->MpllFuncCntl);
 		CONVERT_FROM_HOST_TO_SMC_UL(memory_level->MpllFuncCntl_1);
@@ -1355,10 +1334,10 @@ static int ci_populate_mvdd_value(struct pp_hwmgr *hwmgr, uint32_t mclk,
 	uint32_t i = 0;
 
 	if (SMU7_VOLTAGE_CONTROL_NONE != data->mvdd_control) {
-		/* find mvdd value which clock is more than request */
+		 
 		for (i = 0; i < hwmgr->dyn_state.mvdd_dependency_on_mclk->count; i++) {
 			if (mclk <= hwmgr->dyn_state.mvdd_dependency_on_mclk->entries[i].clk) {
-				/* Always round to higher voltage. */
+				 
 				voltage->Voltage = data->mvdd_voltage_table.entries[i].value;
 				break;
 			}
@@ -1388,7 +1367,7 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	uint32_t mclk_pwrmgt_cntl  = data->clock_registers.vMCLK_PWRMGT_CNTL;
 
 
-	/* The ACPI state should not do DPM on DC (or ever).*/
+	 
 	table->ACPILevel.Flags &= ~PPSMC_SWSTATE_FLAG_DC;
 
 	if (data->acpi_vddc)
@@ -1397,17 +1376,17 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 		table->ACPILevel.MinVddc = PP_HOST_TO_SMC_UL(data->min_vddc_in_pptable * VOLTAGE_SCALE);
 
 	table->ACPILevel.MinVddcPhases = data->vddc_phase_shed_control ? 0 : 1;
-	/* assign zero for now*/
+	 
 	table->ACPILevel.SclkFrequency = atomctrl_get_reference_clock(hwmgr);
 
-	/* get the engine clock dividers for this clock value*/
+	 
 	result = atomctrl_get_engine_pll_dividers_vi(hwmgr,
 		table->ACPILevel.SclkFrequency,  &dividers);
 
 	PP_ASSERT_WITH_CODE(result == 0,
 		"Error retrieving Engine Clock dividers from VBIOS.", return result);
 
-	/* divider ID for required SCLK*/
+	 
 	table->ACPILevel.SclkDid = (uint8_t)dividers.pll_post_divider;
 	table->ACPILevel.DisplayWatermark = PPSMC_DISPLAY_WATERMARK_LOW;
 	table->ACPILevel.DeepSleepDivId = 0;
@@ -1428,9 +1407,9 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	table->ACPILevel.CcPwrDynRm = 0;
 	table->ACPILevel.CcPwrDynRm1 = 0;
 
-	/* For various features to be enabled/disabled while this level is active.*/
+	 
 	CONVERT_FROM_HOST_TO_SMC_UL(table->ACPILevel.Flags);
-	/* SCLK frequency in units of 10KHz*/
+	 
 	CONVERT_FROM_HOST_TO_SMC_UL(table->ACPILevel.SclkFrequency);
 	CONVERT_FROM_HOST_TO_SMC_UL(table->ACPILevel.CgSpllFuncCntl);
 	CONVERT_FROM_HOST_TO_SMC_UL(table->ACPILevel.CgSpllFuncCntl2);
@@ -1442,7 +1421,7 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	CONVERT_FROM_HOST_TO_SMC_UL(table->ACPILevel.CcPwrDynRm1);
 
 
-	/* table->MemoryACPILevel.MinVddcPhases = table->ACPILevel.MinVddcPhases;*/
+	 
 	table->MemoryACPILevel.MinVddc = table->ACPILevel.MinVddc;
 	table->MemoryACPILevel.MinVddcPhases = table->ACPILevel.MinVddcPhases;
 
@@ -1461,19 +1440,19 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	else
 		table->MemoryACPILevel.MinMvdd = 0;
 
-	/* Force reset on DLL*/
+	 
 	mclk_pwrmgt_cntl    = PHM_SET_FIELD(mclk_pwrmgt_cntl,
 		MCLK_PWRMGT_CNTL, MRDCK0_RESET, 0x1);
 	mclk_pwrmgt_cntl    = PHM_SET_FIELD(mclk_pwrmgt_cntl,
 		MCLK_PWRMGT_CNTL, MRDCK1_RESET, 0x1);
 
-	/* Disable DLL in ACPIState*/
+	 
 	mclk_pwrmgt_cntl    = PHM_SET_FIELD(mclk_pwrmgt_cntl,
 		MCLK_PWRMGT_CNTL, MRDCK0_PDNB, 0);
 	mclk_pwrmgt_cntl    = PHM_SET_FIELD(mclk_pwrmgt_cntl,
 		MCLK_PWRMGT_CNTL, MRDCK1_PDNB, 0);
 
-	/* Enable DLL bypass signal*/
+	 
 	dll_cntl            = PHM_SET_FIELD(dll_cntl,
 		DLL_CNTL, MRDCK0_BYPASS, 0);
 	dll_cntl            = PHM_SET_FIELD(dll_cntl,
@@ -1503,7 +1482,7 @@ static int ci_populate_smc_acpi_level(struct pp_hwmgr *hwmgr,
 	table->MemoryACPILevel.UpH = 0;
 	table->MemoryACPILevel.DownH = 100;
 	table->MemoryACPILevel.VoltageDownH = 0;
-	/* Indicates maximum activity level for this performance level.*/
+	 
 	table->MemoryACPILevel.ActivityLevel = PP_HOST_TO_SMC_US(data->current_profile_setting.mclk_activity);
 
 	table->MemoryACPILevel.StutterEnable = 0;
@@ -1692,7 +1671,7 @@ static int ci_populate_smc_boot_level(struct pp_hwmgr *hwmgr,
 	table->GraphicsBootLevel = 0;
 	table->MemoryBootLevel = 0;
 
-	/* find boot level from dpm table*/
+	 
 	result = phm_find_boot_level(&(data->dpm_table.sclk_table),
 			data->vbios_boot_state.sclk_bootup_value,
 			(uint32_t *)&(smu_data->smc_state_table.GraphicsBootLevel));
@@ -1894,10 +1873,10 @@ static int ci_populate_smc_svi2_config(struct pp_hwmgr *hwmgr,
 
 static int ci_start_smc(struct pp_hwmgr *hwmgr)
 {
-	/* set smc instruct start point at 0x0 */
+	 
 	ci_program_jump_on_start(hwmgr);
 
-	/* enable smc clock */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, SMC_SYSCON_CLOCK_CNTL_0, ck_disable, 0);
 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, SMC_SYSCON_RESET_CNTL, rst_reg, 0);
@@ -1999,8 +1978,8 @@ static int ci_init_smc_table(struct pp_hwmgr *hwmgr)
 	PP_ASSERT_WITH_CODE(0 == result,
 		"Failed to initialize ACP Level!", return result);
 
-	/* Since only the initial state is completely set up at this point (the other states are just copies of the boot state) we only */
-	/* need to populate the  ARB settings for the initial state. */
+	 
+	 
 	result = ci_program_memory_timing_parameters(hwmgr);
 	PP_ASSERT_WITH_CODE(0 == result,
 		"Failed to Write ARB settings for the initial state.", return result);
@@ -2099,7 +2078,7 @@ static int ci_init_smc_table(struct pp_hwmgr *hwmgr)
 	table->BootVddci = PP_HOST_TO_SMC_US(table->BootVddci * VOLTAGE_SCALE);
 	table->BootMVdd = PP_HOST_TO_SMC_US(table->BootMVdd * VOLTAGE_SCALE);
 
-	/* Upload all dpm data to SMC memory.(dpm level, dpm level count etc) */
+	 
 	result = ci_copy_bytes_to_smc(hwmgr, smu_data->dpm_table_start +
 					offsetof(SMU7_Discrete_DpmTable, SystemFlags),
 					(uint8_t *)&(table->SystemFlags),
@@ -2685,7 +2664,7 @@ static int ci_initialize_mc_reg_table(struct pp_hwmgr *hwmgr)
 	if (NULL == table)
 		return -ENOMEM;
 
-	/* Program additional LP registers that are no longer programmed by VBIOS */
+	 
 	cgs_write_register(hwmgr->device, mmMC_SEQ_RAS_TIMING_LP, cgs_read_register(hwmgr->device, mmMC_SEQ_RAS_TIMING));
 	cgs_write_register(hwmgr->device, mmMC_SEQ_CAS_TIMING_LP, cgs_read_register(hwmgr->device, mmMC_SEQ_CAS_TIMING));
 	cgs_write_register(hwmgr->device, mmMC_SEQ_DLL_STBY_LP, cgs_read_register(hwmgr->device, mmMC_SEQ_DLL_STBY));
@@ -2905,7 +2884,7 @@ static int ci_update_vce_smc_table(struct pp_hwmgr *hwmgr)
 	int32_t i;
 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, DPM_TABLE_475,
-				VceBootLevel, 0); /* temp hard code to level 0, vce can set min evclk*/
+				VceBootLevel, 0);  
 
 	data->dpm_level_enable_mask.vce_dpm_enable_mask = 0;
 

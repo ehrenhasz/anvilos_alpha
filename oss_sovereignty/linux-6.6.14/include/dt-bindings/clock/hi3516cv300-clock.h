@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+ 
+ 
 
 #ifndef __DTS_HI3516CV300_CLOCK_H
 #define __DTS_HI3516CV300_CLOCK_H
 
-/* hi3516CV300 core CRG */
+ 
 #define HI3516CV300_APB_CLK		0
 #define HI3516CV300_UART0_CLK		1
 #define HI3516CV300_UART1_CLK		2
@@ -30,7 +28,7 @@
 #define HI3516CV300_USB2_UTMI0_CLK	20
 #define HI3516CV300_USB2_PHY_CLK	21
 
-/* hi3516CV300 sysctrl CRG */
+ 
 #define HI3516CV300_WDT_CLK		1
 
-#endif	/* __DTS_HI3516CV300_CLOCK_H */
+#endif	 

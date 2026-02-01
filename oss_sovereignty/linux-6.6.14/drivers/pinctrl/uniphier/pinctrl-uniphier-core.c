@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2015-2017 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/list.h>
 #include <linux/mfd/syscon.h>
@@ -189,7 +189,7 @@ static int uniphier_conf_get_drvctrl_data(struct pinctrl_dev *pctldev,
 		*strengths = uniphier_conf_drv_strengths_fixed8;
 		break;
 	default:
-		/* drive strength control is not supported for this pin */
+		 
 		return -EINVAL;
 	}
 
@@ -290,7 +290,7 @@ static int uniphier_conf_pin_input_enable_get(struct pinctrl_dev *pctldev,
 	int ret;
 
 	if (iectrl == UNIPHIER_PIN_IECTRL_NONE)
-		/* This pin is always input-enabled. */
+		 
 		return 0;
 
 	if (priv->socdata->caps & UNIPHIER_PINCTRL_CAPS_PERPIN_IECTRL)
@@ -329,7 +329,7 @@ static int uniphier_conf_pin_config_get(struct pinctrl_dev *pctldev,
 		ret = uniphier_conf_pin_input_enable_get(pctldev, pin);
 		break;
 	default:
-		/* unsupported parameter */
+		 
 		ret = -EINVAL;
 		break;
 	}
@@ -401,7 +401,7 @@ static int uniphier_conf_pin_bias_set(struct pinctrl_dev *pctldev,
 		}
 
 		if (arg == 0)
-			return 0; /* configuration ingored */
+			return 0;  
 		break;
 	default:
 		BUG();
@@ -461,15 +461,12 @@ static int uniphier_conf_pin_input_enable(struct pinctrl_dev *pctldev,
 	unsigned int iectrl = uniphier_pin_get_iectrl(desc->drv_data);
 	unsigned int reg, mask;
 
-	/*
-	 * Multiple pins share one input enable, per-pin disabling is
-	 * impossible.
-	 */
+	 
 	if (!(priv->socdata->caps & UNIPHIER_PINCTRL_CAPS_PERPIN_IECTRL) &&
 	    !enable)
 		return -EINVAL;
 
-	/* UNIPHIER_PIN_IECTRL_NONE means the pin is always input-enabled */
+	 
 	if (iectrl == UNIPHIER_PIN_IECTRL_NONE)
 		return enable ? 0 : -EINVAL;
 
@@ -585,29 +582,21 @@ static int uniphier_pmx_set_one_mux(struct pinctrl_dev *pctldev, unsigned pin,
 	bool load_pinctrl;
 	int ret;
 
-	/* some pins need input-enabling */
+	 
 	ret = uniphier_conf_pin_input_enable(pctldev, pin, 1);
 	if (ret)
 		return ret;
 
 	if (muxval < 0)
-		return 0;	/* dedicated pin; nothing to do for pin-mux */
+		return 0;	 
 
 	if (priv->socdata->caps & UNIPHIER_PINCTRL_CAPS_DBGMUX_SEPARATE) {
-		/*
-		 *  Mode     reg_offset     bit_position
-		 *  Normal    4 * n        shift+3:shift
-		 *  Debug     4 * n        shift+7:shift+4
-		 */
+		 
 		mux_bits = 4;
 		reg_stride = 8;
 		load_pinctrl = true;
 	} else {
-		/*
-		 *  Mode     reg_offset     bit_position
-		 *  Normal    8 * n        shift+3:shift
-		 *  Debug     8 * n + 4    shift+3:shift
-		 */
+		 
 		mux_bits = 8;
 		reg_stride = 4;
 		load_pinctrl = false;
@@ -618,10 +607,7 @@ static int uniphier_pmx_set_one_mux(struct pinctrl_dev *pctldev, unsigned pin,
 	shift = pin * mux_bits % 32;
 	mask = (1U << mux_bits) - 1;
 
-	/*
-	 * If reg_stride is greater than 4, the MSB of each pinsel shall be
-	 * stored in the offset+4.
-	 */
+	 
 	for (; reg < reg_end; reg += 4) {
 		ret = regmap_update_bits(priv->regmap, reg,
 					 mask << shift, muxval << shift);

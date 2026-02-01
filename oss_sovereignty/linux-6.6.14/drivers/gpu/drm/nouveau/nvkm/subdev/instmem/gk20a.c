@@ -1,46 +1,6 @@
-/*
- * Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
-/*
- * GK20A does not have dedicated video memory, and to accurately represent this
- * fact Nouveau will not create a RAM device for it. Therefore its instmem
- * implementation must be done directly on top of system memory, while
- * preserving coherency for read and write operations.
- *
- * Instmem can be allocated through two means:
- * 1) If an IOMMU unit has been probed, the IOMMU API is used to make memory
- *    pages contiguous to the GPU. This is the preferred way.
- * 2) If no IOMMU unit is probed, the DMA API is used to allocate physically
- *    contiguous memory.
- *
- * In both cases CPU read and writes are performed by creating a write-combined
- * mapping. The GPU L2 cache must thus be flushed/invalidated when required. To
- * be conservative we do this every time we acquire or release an instobj, but
- * ideally L2 management should be handled at a higher level.
- *
- * To improve performance, CPU mappings are not removed upon instobj release.
- * Instead they are placed into a LRU list to be recycled when the mapped space
- * goes beyond a certain threshold. At the moment this limit is 1MB.
- */
+ 
 #include "priv.h"
 
 #include <core/memory.h>
@@ -53,14 +13,12 @@ struct gk20a_instobj {
 	struct nvkm_mm_node *mn;
 	struct gk20a_instmem *imem;
 
-	/* CPU mapping */
+	 
 	u32 *vaddr;
 };
 #define gk20a_instobj(p) container_of((p), struct gk20a_instobj, memory)
 
-/*
- * Used for objects allocated using the DMA API
- */
+ 
 struct gk20a_instobj_dma {
 	struct gk20a_instobj base;
 
@@ -70,20 +28,18 @@ struct gk20a_instobj_dma {
 #define gk20a_instobj_dma(p) \
 	container_of(gk20a_instobj(p), struct gk20a_instobj_dma, base)
 
-/*
- * Used for objects flattened using the IOMMU API
- */
+ 
 struct gk20a_instobj_iommu {
 	struct gk20a_instobj base;
 
-	/* to link into gk20a_instmem::vaddr_lru */
+	 
 	struct list_head vaddr_node;
-	/* how many clients are using vaddr? */
+	 
 	u32 use_cpt;
 
-	/* will point to the higher half of pages */
+	 
 	dma_addr_t *dma_addrs;
-	/* array of base.mem->size pages (+ dma_addr_ts) */
+	 
 	struct page *pages[];
 };
 #define gk20a_instobj_iommu(p) \
@@ -92,22 +48,22 @@ struct gk20a_instobj_iommu {
 struct gk20a_instmem {
 	struct nvkm_instmem base;
 
-	/* protects vaddr_* and gk20a_instobj::vaddr* */
+	 
 	struct mutex lock;
 
-	/* CPU mappings LRU */
+	 
 	unsigned int vaddr_use;
 	unsigned int vaddr_max;
 	struct list_head vaddr_lru;
 
-	/* Only used if IOMMU if present */
+	 
 	struct mutex *mm_mutex;
 	struct nvkm_mm *mm;
 	struct iommu_domain *domain;
 	unsigned long iommu_pgshift;
 	u16 iommu_bit;
 
-	/* Only used by DMA API */
+	 
 	unsigned long attrs;
 };
 #define gk20a_instmem(p) container_of((p), struct gk20a_instmem, base)
@@ -136,14 +92,12 @@ gk20a_instobj_size(struct nvkm_memory *memory)
 	return (u64)gk20a_instobj(memory)->mn->length << 12;
 }
 
-/*
- * Recycle the vaddr of obj. Must be called with gk20a_instmem::lock held.
- */
+ 
 static void
 gk20a_instobj_iommu_recycle_vaddr(struct gk20a_instobj_iommu *obj)
 {
 	struct gk20a_instmem *imem = obj->base.imem;
-	/* there should not be any user left... */
+	 
 	WARN_ON(obj->use_cpt);
 	list_del(&obj->vaddr_node);
 	vunmap(obj->base.vaddr);
@@ -153,14 +107,12 @@ gk20a_instobj_iommu_recycle_vaddr(struct gk20a_instobj_iommu *obj)
 		   imem->vaddr_max);
 }
 
-/*
- * Must be called while holding gk20a_instmem::lock
- */
+ 
 static void
 gk20a_instmem_vaddr_gc(struct gk20a_instmem *imem, const u64 size)
 {
 	while (imem->vaddr_use + size > imem->vaddr_max) {
-		/* no candidate that can be unmapped, abort... */
+		 
 		if (list_empty(&imem->vaddr_lru))
 			break;
 
@@ -196,16 +148,16 @@ gk20a_instobj_acquire_iommu(struct nvkm_memory *memory)
 
 	if (node->base.vaddr) {
 		if (!node->use_cpt) {
-			/* remove from LRU list since mapping in use again */
+			 
 			list_del(&node->vaddr_node);
 		}
 		goto out;
 	}
 
-	/* try to free some address space if we reached the limit */
+	 
 	gk20a_instmem_vaddr_gc(imem, size);
 
-	/* map the pages */
+	 
 	node->base.vaddr = vmap(node->pages, size >> PAGE_SHIFT, VM_MAP,
 				pgprot_writecombine(PAGE_KERNEL));
 	if (!node->base.vaddr) {
@@ -232,7 +184,7 @@ gk20a_instobj_release_dma(struct nvkm_memory *memory)
 	struct gk20a_instmem *imem = node->imem;
 	struct nvkm_ltc *ltc = imem->base.subdev.device->ltc;
 
-	/* in case we got a write-combined mapping */
+	 
 	wmb();
 	nvkm_ltc_invalidate(ltc);
 }
@@ -246,11 +198,11 @@ gk20a_instobj_release_iommu(struct nvkm_memory *memory)
 
 	mutex_lock(&imem->lock);
 
-	/* we should at least have one user to release... */
+	 
 	if (WARN_ON(node->use_cpt == 0))
 		goto out;
 
-	/* add unused objs to the LRU list to recycle their mapping */
+	 
 	if (--node->use_cpt == 0)
 		list_add_tail(&node->vaddr_node, &imem->vaddr_lru);
 
@@ -322,16 +274,16 @@ gk20a_instobj_dtor_iommu(struct nvkm_memory *memory)
 
 	mutex_lock(&imem->lock);
 
-	/* vaddr has already been recycled */
+	 
 	if (node->base.vaddr)
 		gk20a_instobj_iommu_recycle_vaddr(node);
 
 	mutex_unlock(&imem->lock);
 
-	/* clear IOMMU bit to unmap pages */
+	 
 	r->offset &= ~BIT(imem->iommu_bit - imem->iommu_pgshift);
 
-	/* Unmap pages from GPU address space and free them */
+	 
 	for (i = 0; i < node->base.mn->length; i++) {
 		iommu_unmap(imem->domain,
 			    (r->offset + i) << imem->iommu_pgshift, PAGE_SIZE);
@@ -340,7 +292,7 @@ gk20a_instobj_dtor_iommu(struct nvkm_memory *memory)
 		__free_page(node->pages[i]);
 	}
 
-	/* Release area from GPU address space */
+	 
 	mutex_lock(imem->mm_mutex);
 	nvkm_mm_free(imem->mm, &r);
 	mutex_unlock(imem->mm_mutex);
@@ -402,13 +354,13 @@ gk20a_instobj_ctor_dma(struct gk20a_instmem *imem, u32 npages, u32 align,
 		return -ENOMEM;
 	}
 
-	/* alignment check */
+	 
 	if (unlikely(node->handle & (align - 1)))
 		nvkm_warn(subdev,
 			  "memory not aligned as requested: %pad (0x%x)\n",
 			  &node->handle, align);
 
-	/* present memory for being mapped using small pages */
+	 
 	node->r.type = 12;
 	node->r.offset = node->handle >> 12;
 	node->r.length = (npages << PAGE_SHIFT) >> 12;
@@ -428,10 +380,7 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
 	int ret;
 	int i;
 
-	/*
-	 * despite their variable size, instmem allocations are small enough
-	 * (< 1 page) to be handled by kzalloc
-	 */
+	 
 	if (!(node = kzalloc(sizeof(*node) + ((sizeof(node->pages[0]) +
 			     sizeof(*node->dma_addrs)) * npages), GFP_KERNEL)))
 		return -ENOMEM;
@@ -441,7 +390,7 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
 	nvkm_memory_ctor(&gk20a_instobj_func_iommu, &node->base.memory);
 	node->base.memory.ptrs = &gk20a_instobj_ptrs;
 
-	/* Allocate backing memory */
+	 
 	for (i = 0; i < npages; i++) {
 		struct page *p = alloc_page(GFP_KERNEL);
 		dma_addr_t dma_adr;
@@ -461,7 +410,7 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
 	}
 
 	mutex_lock(imem->mm_mutex);
-	/* Reserve area from GPU address space */
+	 
 	ret = nvkm_mm_head(imem->mm, 0, 1, npages, npages,
 			   align >> imem->iommu_pgshift, &r);
 	mutex_unlock(imem->mm_mutex);
@@ -470,7 +419,7 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
 		goto free_pages;
 	}
 
-	/* Map into GPU address space */
+	 
 	for (i = 0; i < npages; i++) {
 		u32 offset = (r->offset + i) << imem->iommu_pgshift;
 
@@ -488,7 +437,7 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
 		}
 	}
 
-	/* IOMMU bit tells that an address is to be resolved through the IOMMU */
+	 
 	r->offset |= BIT(imem->iommu_bit - imem->iommu_pgshift);
 
 	node->base.mn = r;
@@ -523,7 +472,7 @@ gk20a_instobj_new(struct nvkm_instmem *base, u32 size, u32 align, bool zero,
 	nvkm_debug(subdev, "%s (%s): size: %x align: %x\n", __func__,
 		   imem->domain ? "IOMMU" : "DMA", size, align);
 
-	/* Round size and align to page bounds */
+	 
 	size = max(roundup(size, PAGE_SIZE), PAGE_SIZE);
 	align = max(roundup(align, PAGE_SIZE), PAGE_SIZE);
 
@@ -550,7 +499,7 @@ gk20a_instmem_dtor(struct nvkm_instmem *base)
 {
 	struct gk20a_instmem *imem = gk20a_instmem(base);
 
-	/* perform some sanity checks... */
+	 
 	if (!list_empty(&imem->vaddr_lru))
 		nvkm_warn(&base->subdev, "instobj LRU not empty!\n");
 
@@ -581,7 +530,7 @@ gk20a_instmem_new(struct nvkm_device *device, enum nvkm_subdev_type type, int in
 	mutex_init(&imem->lock);
 	*pimem = &imem->base;
 
-	/* do not allow more than 1MB of CPU-mapped instmem */
+	 
 	imem->vaddr_use = 0;
 	imem->vaddr_max = 0x100000;
 	INIT_LIST_HEAD(&imem->vaddr_lru);

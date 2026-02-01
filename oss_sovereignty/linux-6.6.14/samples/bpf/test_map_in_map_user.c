@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Facebook
- */
+
+ 
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdint.h>
@@ -20,9 +18,9 @@ static int map_fd[7];
 #define PORT_H		(map_fd[1])
 #define REG_RESULT_H	(map_fd[2])
 #define INLINE_RESULT_H	(map_fd[3])
-#define A_OF_PORT_A	(map_fd[4]) /* Test case #0 */
-#define H_OF_PORT_A	(map_fd[5]) /* Test case #1 */
-#define H_OF_PORT_H	(map_fd[6]) /* Test case #2 */
+#define A_OF_PORT_A	(map_fd[4])  
+#define H_OF_PORT_A	(map_fd[5])  
+#define H_OF_PORT_H	(map_fd[6])  
 
 static const char * const test_names[] = {
 	"Array of Array",
@@ -133,7 +131,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

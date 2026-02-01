@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014-2019 Intel Corporation
- *
- * Authors:
- *    Vinit Azad <vinit.azad@intel.com>
- *    Ben Widawsky <ben@bwidawsk.net>
- *    Dave Gordon <david.s.gordon@intel.com>
- *    Alex Dai <yu.dai@intel.com>
- */
+
+ 
 
 #include "gt/intel_gt.h"
 #include "gt/intel_gt_mcr.h"
@@ -30,7 +22,7 @@ static void guc_prepare_xfer(struct intel_gt *gt)
 		shim_flags |= GUC_DISABLE_SRAM_INIT_TO_ZEROES |
 			      GUC_ENABLE_MIA_CACHING;
 
-	/* Must program this register before loading the ucode with DMA */
+	 
 	intel_uncore_write(uncore, GUC_SHIM_CONTROL, shim_flags);
 
 	if (IS_GEN9_LP(uncore->i915))
@@ -39,11 +31,11 @@ static void guc_prepare_xfer(struct intel_gt *gt)
 		intel_uncore_write(uncore, GEN9_GT_PM_CONFIG, GT_DOORBELL_ENABLE);
 
 	if (GRAPHICS_VER(uncore->i915) == 9) {
-		/* DOP Clock Gating Enable for GuC clocks */
+		 
 		intel_uncore_rmw(uncore, GEN7_MISCCPCTL, 0,
 				 GEN8_DOP_CLOCK_GATE_GUC_ENABLE);
 
-		/* allows for 5us (in 10ns units) before GT can go to RC6 */
+		 
 		intel_uncore_write(uncore, GUC_ARAT_C6DIS, 0x1FF);
 	}
 }
@@ -76,7 +68,7 @@ static int guc_xfer_rsa_vma(struct intel_uc_fw *guc_fw,
 	return 0;
 }
 
-/* Copy RSA signature from the fw image to HW for verification */
+ 
 static int guc_xfer_rsa(struct intel_uc_fw *guc_fw,
 			struct intel_uncore *uncore)
 {
@@ -86,14 +78,7 @@ static int guc_xfer_rsa(struct intel_uc_fw *guc_fw,
 		return guc_xfer_rsa_mmio(guc_fw, uncore);
 }
 
-/*
- * Read the GuC status register (GUC_STATUS) and store it in the
- * specified location; then return a boolean indicating whether
- * the value matches either completion or a known failure code.
- *
- * This is used for polling the GuC status in a wait_for()
- * loop below.
- */
+ 
 static inline bool guc_load_done(struct intel_uncore *uncore, u32 *status, bool *success)
 {
 	u32 val = intel_uncore_read(uncore, GUC_STATUS);
@@ -137,13 +122,7 @@ static inline bool guc_load_done(struct intel_uncore *uncore, u32 *status, bool 
 	return false;
 }
 
-/*
- * Use a longer timeout for debug builds so that problems can be detected
- * and analysed. But a shorter timeout for releases so that user's don't
- * wait forever to find out there is a problem. Note that the only reason
- * an end user should hit the timeout is in case of extreme thermal throttling.
- * And a system that is that hot during boot is probably dead anyway!
- */
+ 
 #if defined(CONFIG_DRM_I915_DEBUG_GEM)
 #define GUC_LOAD_RETRY_LIMIT	20
 #else
@@ -161,29 +140,7 @@ static int guc_wait_ucode(struct intel_guc *guc)
 	u64 delta_ms;
 	u32 before_freq;
 
-	/*
-	 * Wait for the GuC to start up.
-	 *
-	 * Measurements indicate this should take no more than 20ms
-	 * (assuming the GT clock is at maximum frequency). So, a
-	 * timeout here indicates that the GuC has failed and is unusable.
-	 * (Higher levels of the driver may decide to reset the GuC and
-	 * attempt the ucode load again if this happens.)
-	 *
-	 * FIXME: There is a known (but exceedingly unlikely) race condition
-	 * where the asynchronous frequency management code could reduce
-	 * the GT clock while a GuC reload is in progress (during a full
-	 * GT reset). A fix is in progress but there are complex locking
-	 * issues to be resolved. In the meantime bump the timeout to
-	 * 200ms. Even at slowest clock, this should be sufficient. And
-	 * in the working case, a larger timeout makes no difference.
-	 *
-	 * IFWI updates have also been seen to cause sporadic failures due to
-	 * the requested frequency not being granted and thus the firmware
-	 * load is attempted at minimum frequency. That can lead to load times
-	 * in the seconds range. However, there is a limit on how long an
-	 * individual wait_for() can wait. So wrap it in a loop.
-	 */
+	 
 	before_freq = intel_rps_read_actual_frequency(&uncore->gt->rps);
 	before = ktime_get();
 	for (count = 0; count < GUC_LOAD_RETRY_LIMIT; count++) {
@@ -247,7 +204,7 @@ static int guc_wait_ucode(struct intel_guc *guc)
 			break;
 		}
 
-		/* Uncommon/unexpected error, see earlier status code print for details */
+		 
 		if (ret == 0)
 			ret = -ENXIO;
 	} else if (delta_ms > 200) {
@@ -265,18 +222,7 @@ static int guc_wait_ucode(struct intel_guc *guc)
 	return ret;
 }
 
-/**
- * intel_guc_fw_upload() - load GuC uCode to device
- * @guc: intel_guc structure
- *
- * Called from intel_uc_init_hw() during driver load, resume from sleep and
- * after a GPU reset.
- *
- * The firmware image should have already been fetched into memory, so only
- * check that fetch succeeded, and then transfer the image to the h/w.
- *
- * Return:	non-zero code on error
- */
+ 
 int intel_guc_fw_upload(struct intel_guc *guc)
 {
 	struct intel_gt *gt = guc_to_gt(guc);
@@ -285,22 +231,12 @@ int intel_guc_fw_upload(struct intel_guc *guc)
 
 	guc_prepare_xfer(gt);
 
-	/*
-	 * Note that GuC needs the CSS header plus uKernel code to be copied
-	 * by the DMA engine in one operation, whereas the RSA signature is
-	 * loaded separately, either by copying it to the UOS_RSA_SCRATCH
-	 * register (if key size <= 256) or through a ggtt-pinned vma (if key
-	 * size > 256). The RSA size and therefore the way we provide it to the
-	 * HW is fixed for each platform and hard-coded in the bootrom.
-	 */
+	 
 	ret = guc_xfer_rsa(&guc->fw, uncore);
 	if (ret)
 		goto out;
 
-	/*
-	 * Current uCode expects the code to be loaded at 8k; locations below
-	 * this are used for the stack.
-	 */
+	 
 	ret = intel_uc_fw_upload(&guc->fw, 0x2000, UOS_MOVE);
 	if (ret)
 		goto out;

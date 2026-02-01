@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ftrace.h>
 #include <linux/tracepoint.h>
 #include <linux/kernel.h>
@@ -21,7 +21,7 @@ DECLARE_DA_MON_PER_TASK(wwnr, unsigned char);
 static void handle_switch(void *data, bool preempt, struct task_struct *p,
 			  struct task_struct *n, unsigned int prev_state)
 {
-	/* start monitoring only after the first suspension */
+	 
 	if (prev_state == TASK_INTERRUPTIBLE)
 		da_handle_start_event_wwnr(p, switch_out_wwnr);
 	else

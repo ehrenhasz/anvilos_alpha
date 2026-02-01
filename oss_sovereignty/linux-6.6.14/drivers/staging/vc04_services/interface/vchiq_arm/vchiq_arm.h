@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (c) 2014 Raspberry Pi (Trading) Ltd. All rights reserved.
- * Copyright (c) 2010-2012 Broadcom. All rights reserved.
- */
+ 
+ 
 
 #ifndef VCHIQ_ARM_H
 #define VCHIQ_ARM_H
@@ -14,7 +11,7 @@
 #include "vchiq_core.h"
 #include "vchiq_debugfs.h"
 
-/* Some per-instance constants */
+ 
 #define MAX_COMPLETIONS 128
 #define MAX_SERVICES 64
 #define MAX_ELEMENTS 8
@@ -135,7 +132,7 @@ vchiq_register_chrdev(struct device *parent);
 static inline void vchiq_deregister_chrdev(void) { }
 static inline int vchiq_register_chrdev(struct device *parent) { return 0; }
 
-#endif /* IS_ENABLED(CONFIG_VCHIQ_CDEV) */
+#endif  
 
 extern int
 service_callback(struct vchiq_instance *vchiq_instance, enum vchiq_reason reason,
@@ -144,4 +141,4 @@ service_callback(struct vchiq_instance *vchiq_instance, enum vchiq_reason reason
 extern void
 free_bulk_waiter(struct vchiq_instance *instance);
 
-#endif /* VCHIQ_ARM_H */
+#endif  

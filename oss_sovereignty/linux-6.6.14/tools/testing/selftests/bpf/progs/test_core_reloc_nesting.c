@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@ union core_reloc_nesting_subunion {
 	int b;
 };
 
-/* int a.a.a and b.b.b accesses */
+ 
 struct core_reloc_nesting {
 	union {
 		struct core_reloc_nesting_substruct a;

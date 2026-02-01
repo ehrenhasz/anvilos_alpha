@@ -1,28 +1,5 @@
-/* $OpenBSD: sftp-common.c,v 1.34 2023/03/31 04:00:37 djm Exp $ */
-/*
- * Copyright (c) 2001 Markus Friedl.  All rights reserved.
- * Copyright (c) 2001 Damien Miller.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -50,7 +27,7 @@
 #include "sftp.h"
 #include "sftp-common.h"
 
-/* Clear contents of attributes structure */
+ 
 void
 attrib_clear(Attrib *a)
 {
@@ -63,7 +40,7 @@ attrib_clear(Attrib *a)
 	a->mtime = 0;
 }
 
-/* Convert from struct stat to filexfer attribs */
+ 
 void
 stat_to_attrib(const struct stat *st, Attrib *a)
 {
@@ -81,7 +58,7 @@ stat_to_attrib(const struct stat *st, Attrib *a)
 	a->mtime = st->st_mtime;
 }
 
-/* Convert from filexfer attribs to struct stat */
+ 
 void
 attrib_to_stat(const Attrib *a, struct stat *st)
 {
@@ -101,7 +78,7 @@ attrib_to_stat(const Attrib *a, struct stat *st)
 	}
 }
 
-/* Decode attributes in buffer */
+ 
 int
 decode_attrib(struct sshbuf *b, Attrib *a)
 {
@@ -128,7 +105,7 @@ decode_attrib(struct sshbuf *b, Attrib *a)
 		    (r = sshbuf_get_u32(b, &a->mtime)) != 0)
 			return r;
 	}
-	/* vendor-specific extensions */
+	 
 	if (a->flags & SSH2_FILEXFER_ATTR_EXTENDED) {
 		char *type;
 		u_char *data;
@@ -152,7 +129,7 @@ decode_attrib(struct sshbuf *b, Attrib *a)
 	return 0;
 }
 
-/* Encode attributes to buffer */
+ 
 int
 encode_attrib(struct sshbuf *b, const Attrib *a)
 {
@@ -181,7 +158,7 @@ encode_attrib(struct sshbuf *b, const Attrib *a)
 	return 0;
 }
 
-/* Convert from SSH2_FX_ status to text error message */
+ 
 const char *
 fx2txt(int status)
 {
@@ -207,12 +184,10 @@ fx2txt(int status)
 	default:
 		return("Unknown status");
 	}
-	/* NOTREACHED */
+	 
 }
 
-/*
- * drwxr-xr-x    5 markus   markus       1024 Jan 13 18:39 .ssh
- */
+ 
 char *
 ls_file(const char *name, const struct stat *st, int remote, int si_units,
     const char *user, const char *group)

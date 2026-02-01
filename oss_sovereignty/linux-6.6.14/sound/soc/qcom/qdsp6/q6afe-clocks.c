@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020, Linaro Limited
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>

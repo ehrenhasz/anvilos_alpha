@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
@@ -16,7 +13,7 @@
 #include "sun6i_isp_proc.h"
 #include "sun6i_isp_reg.h"
 
-/* Helpers */
+ 
 
 void sun6i_isp_capture_dimensions(struct sun6i_isp_device *isp_dev,
 				  unsigned int *width, unsigned int *height)
@@ -34,7 +31,7 @@ void sun6i_isp_capture_format(struct sun6i_isp_device *isp_dev,
 		*pixelformat = isp_dev->capture.format.fmt.pix.pixelformat;
 }
 
-/* Format */
+ 
 
 static const struct sun6i_isp_capture_format sun6i_isp_capture_formats[] = {
 	{
@@ -59,7 +56,7 @@ sun6i_isp_capture_format_find(u32 pixelformat)
 	return NULL;
 }
 
-/* Capture */
+ 
 
 static void
 sun6i_isp_capture_buffer_configure(struct sun6i_isp_device *isp_dev,
@@ -85,7 +82,7 @@ sun6i_isp_capture_buffer_configure(struct sun6i_isp_device *isp_dev,
 	if (WARN_ON(!info))
 		return;
 
-	/* Stride needs to be aligned to 4. */
+	 
 	width_aligned = ALIGN(width, 2);
 
 	if (info->comp_planes > 1) {
@@ -144,7 +141,7 @@ void sun6i_isp_capture_configure(struct sun6i_isp_device *isp_dev)
 			     SUN6I_ISP_MCH_CFG_STRIDE_UV_DIV4(stride_chroma_div4));
 }
 
-/* State */
+ 
 
 static void sun6i_isp_capture_state_cleanup(struct sun6i_isp_device *isp_dev,
 					    bool error)
@@ -255,7 +252,7 @@ void sun6i_isp_capture_finish(struct sun6i_isp_device *isp_dev)
 	spin_unlock_irqrestore(&state->lock, flags);
 }
 
-/* Queue */
+ 
 
 static int sun6i_isp_capture_queue_setup(struct vb2_queue *queue,
 					 unsigned int *buffers_count,
@@ -307,7 +304,7 @@ static void sun6i_isp_capture_buffer_queue(struct vb2_buffer *vb2_buffer)
 	list_add_tail(&isp_buffer->list, &state->queue);
 	spin_unlock_irqrestore(&state->lock, flags);
 
-	/* Update the state to schedule our buffer as soon as possible. */
+	 
 	if (state->streaming)
 		sun6i_isp_state_update(isp_dev, false);
 }
@@ -372,7 +369,7 @@ static const struct vb2_ops sun6i_isp_capture_queue_ops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* Video Device */
+ 
 
 static void sun6i_isp_capture_format_prepare(struct v4l2_format *format)
 {
@@ -398,7 +395,7 @@ static void sun6i_isp_capture_format_prepare(struct v4l2_format *format)
 	width = pix_format->width;
 	height = pix_format->height;
 
-	/* Stride needs to be aligned to 4. */
+	 
 	width_aligned = ALIGN(width, 2);
 
 	pix_format->bytesperline = width_aligned * info->bpp[0];
@@ -589,7 +586,7 @@ static const struct v4l2_file_operations sun6i_isp_capture_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/* Media Entity */
+ 
 
 static int sun6i_isp_capture_link_validate(struct media_link *link)
 {
@@ -603,7 +600,7 @@ static int sun6i_isp_capture_link_validate(struct media_link *link)
 	sun6i_isp_capture_dimensions(isp_dev, &capture_width, &capture_height);
 	sun6i_isp_proc_dimensions(isp_dev, &proc_width, &proc_height);
 
-	/* No cropping/scaling is supported (yet). */
+	 
 	if (capture_width != proc_width || capture_height != proc_height) {
 		v4l2_err(v4l2_dev,
 			 "invalid input/output dimensions: %ux%u/%ux%u\n",
@@ -619,7 +616,7 @@ static const struct media_entity_operations sun6i_isp_capture_entity_ops = {
 	.link_validate	= sun6i_isp_capture_link_validate,
 };
 
-/* Capture */
+ 
 
 int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 {
@@ -634,16 +631,16 @@ int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 	struct v4l2_pix_format *pix_format = &format->fmt.pix;
 	int ret;
 
-	/* State */
+	 
 
 	INIT_LIST_HEAD(&state->queue);
 	spin_lock_init(&state->lock);
 
-	/* Media Entity */
+	 
 
 	video_dev->entity.ops = &sun6i_isp_capture_entity_ops;
 
-	/* Media Pads */
+	 
 
 	pad->flags = MEDIA_PAD_FL_SINK | MEDIA_PAD_FL_MUST_CONNECT;
 
@@ -651,7 +648,7 @@ int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 	if (ret)
 		goto error_mutex;
 
-	/* Queue */
+	 
 
 	mutex_init(&capture->lock);
 
@@ -672,7 +669,7 @@ int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 		goto error_media_entity;
 	}
 
-	/* V4L2 Format */
+	 
 
 	format->type = queue->type;
 	pix_format->pixelformat = sun6i_isp_capture_formats[0].pixelformat;
@@ -681,7 +678,7 @@ int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 
 	sun6i_isp_capture_format_prepare(format);
 
-	/* Video Device */
+	 
 
 	strscpy(video_dev->name, SUN6I_ISP_CAPTURE_NAME,
 		sizeof(video_dev->name));
@@ -703,7 +700,7 @@ int sun6i_isp_capture_setup(struct sun6i_isp_device *isp_dev)
 		goto error_media_entity;
 	}
 
-	/* Media Pad Link */
+	 
 
 	ret = media_create_pad_link(&proc_subdev->entity,
 				    SUN6I_ISP_PROC_PAD_SOURCE,

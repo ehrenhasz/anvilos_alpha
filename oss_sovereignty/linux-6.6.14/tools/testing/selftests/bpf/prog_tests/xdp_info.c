@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/if_link.h>
 #include <test_progs.h>
 
@@ -13,7 +13,7 @@ void serial_test_xdp_info(void)
 	struct bpf_object *obj;
 	int err, prog_fd;
 
-	/* Get prog_id for XDP_ATTACHED_NONE mode */
+	 
 
 	err = bpf_xdp_query_id(IFINDEX_LO, 0, &prog_id);
 	if (CHECK(err, "get_xdp_none", "errno=%d\n", errno))
@@ -28,7 +28,7 @@ void serial_test_xdp_info(void)
 		  prog_id))
 		return;
 
-	/* Setup prog */
+	 
 
 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
 	if (CHECK_FAIL(err))
@@ -42,7 +42,7 @@ void serial_test_xdp_info(void)
 	if (CHECK(err, "set_xdp_skb", "errno=%d\n", errno))
 		goto out_close;
 
-	/* Get prog_id for single prog mode */
+	 
 
 	err = bpf_xdp_query_id(IFINDEX_LO, 0, &prog_id);
 	if (CHECK(err, "get_xdp", "errno=%d\n", errno))
@@ -62,7 +62,7 @@ void serial_test_xdp_info(void)
 	if (CHECK(prog_id, "prog_id_drv", "unexpected prog_id=%u\n", prog_id))
 		goto out;
 
-	/* Check xdp features supported by lo device */
+	 
 	opts.feature_flags = ~0;
 	err = bpf_xdp_query(IFINDEX_LO, XDP_FLAGS_DRV_MODE, &opts);
 	if (!ASSERT_OK(err, "bpf_xdp_query"))

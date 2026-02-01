@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/sched/mm.h>
 #include "trace.h"
 #include "ocxl_internal.h"
@@ -37,22 +37,14 @@ int ocxl_context_alloc(struct ocxl_context **context, struct ocxl_afu *afu,
 	idr_init(&ctx->irq_idr);
 	ctx->tidr = 0;
 
-	/*
-	 * Keep a reference on the AFU to make sure it's valid for the
-	 * duration of the life of the context
-	 */
+	 
 	ocxl_afu_get(afu);
 	*context = ctx;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(ocxl_context_alloc);
 
-/*
- * Callback for when a translation fault triggers an error
- * data:	a pointer to the context which triggered the fault
- * addr:	the address that triggered the error
- * dsisr:	the value of the PPC64 dsisr register
- */
+ 
 static void xsl_fault_error(void *data, u64 addr, u64 dsisr)
 {
 	struct ocxl_context *ctx = (struct ocxl_context *) data;
@@ -72,7 +64,7 @@ int ocxl_context_attach(struct ocxl_context *ctx, u64 amr, struct mm_struct *mm)
 	unsigned long pidr = 0;
 	struct pci_dev *dev;
 
-	// Locks both status & tidr
+	 
 	mutex_lock(&ctx->status_mutex);
 	if (ctx->status != OPENED) {
 		rc = -EIO;
@@ -163,20 +155,15 @@ static int check_mmap_afu_irq(struct ocxl_context *ctx,
 {
 	int irq_id = ocxl_irq_offset_to_id(ctx, vma->vm_pgoff << PAGE_SHIFT);
 
-	/* only one page */
+	 
 	if (vma_pages(vma) != 1)
 		return -EINVAL;
 
-	/* check offset validty */
+	 
 	if (!ocxl_afu_irq_get_addr(ctx, irq_id))
 		return -EINVAL;
 
-	/*
-	 * trigger page should only be accessible in write mode.
-	 *
-	 * It's a bit theoretical, as a page mmaped with only
-	 * PROT_WRITE is currently readable, but it doesn't hurt.
-	 */
+	 
 	if ((vma->vm_flags & VM_READ) || (vma->vm_flags & VM_EXEC) ||
 		!(vma->vm_flags & VM_WRITE))
 		return -EINVAL;
@@ -232,19 +219,7 @@ int ocxl_context_detach(struct ocxl_context *ctx)
 	mutex_unlock(&ctx->afu->afu_control_lock);
 	trace_ocxl_terminate_pasid(ctx->pasid, rc);
 	if (rc) {
-		/*
-		 * If we timeout waiting for the AFU to terminate the
-		 * pasid, then it's dangerous to clean up the Process
-		 * Element entry in the SPA, as it may be referenced
-		 * in the future by the AFU. In which case, we would
-		 * checkstop because of an invalid PE access (FIR
-		 * register 2, bit 42). So leave the PE
-		 * defined. Caller shouldn't free the context so that
-		 * PASID remains allocated.
-		 *
-		 * A link reset will be required to cleanup the AFU
-		 * and the SPA.
-		 */
+		 
 		if (rc == -EBUSY)
 			return rc;
 	}
@@ -265,13 +240,7 @@ void ocxl_context_detach_all(struct ocxl_afu *afu)
 	mutex_lock(&afu->contexts_lock);
 	idr_for_each_entry(&afu->contexts_idr, ctx, tmp) {
 		ocxl_context_detach(ctx);
-		/*
-		 * We are force detaching - remove any active mmio
-		 * mappings so userspace cannot interfere with the
-		 * card if it comes back.  Easiest way to exercise
-		 * this is to unbind and rebind the driver via sysfs
-		 * while it is in use.
-		 */
+		 
 		mutex_lock(&ctx->mapping_lock);
 		if (ctx->mapping)
 			unmap_mapping_range(ctx->mapping, 0, 0, 1);
@@ -289,7 +258,7 @@ void ocxl_context_free(struct ocxl_context *ctx)
 
 	ocxl_afu_irq_free_all(ctx);
 	idr_destroy(&ctx->irq_idr);
-	/* reference to the AFU taken in ocxl_context_alloc() */
+	 
 	ocxl_afu_put(ctx->afu);
 	kfree(ctx);
 }

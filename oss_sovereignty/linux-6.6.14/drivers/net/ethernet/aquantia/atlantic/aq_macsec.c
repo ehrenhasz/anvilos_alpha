@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include "aq_macsec.h"
 #include "aq_nic.h"
@@ -13,11 +11,11 @@
 #define AQ_MACSEC_KEY_LEN_256_BIT 32
 
 enum aq_clear_type {
-	/* update HW configuration */
+	 
 	AQ_CLEAR_HW = BIT(0),
-	/* update SW configuration (busy bits, pointers) */
+	 
 	AQ_CLEAR_SW = BIT(1),
-	/* update both HW and SW configuration */
+	 
 	AQ_CLEAR_ALL = AQ_CLEAR_HW | AQ_CLEAR_SW,
 };
 
@@ -45,7 +43,7 @@ static void aq_ether_addr_to_mac(u32 mac[2], const unsigned char *emac)
 	mac[1] = swab32(tmp[0]);
 }
 
-/* There's a 1:1 mapping between SecY and TX SC */
+ 
 static int aq_get_txsc_idx_from_secy(struct aq_macsec_cfg *macsec_cfg,
 				     const struct macsec_secy *secy)
 {
@@ -93,7 +91,7 @@ static int aq_get_txsc_idx_from_sc_idx(const enum aq_macsec_sc_sa sc_sa,
 	return -1;
 }
 
-/* Rotate keys u32[8] */
+ 
 static void aq_rotate_keys(u32 (*key)[8], const int key_len)
 {
 	u32 tmp[8] = { 0 };
@@ -137,7 +135,7 @@ static int aq_get_macsec_common_stats(struct aq_hw_s *hw,
 	struct aq_mss_egress_common_counters egress_counters;
 	int ret;
 
-	/* MACSEC counters */
+	 
 	ret = aq_mss_get_ingress_common_counters(hw, &ingress_counters);
 	if (unlikely(ret))
 		return ret;
@@ -329,7 +327,7 @@ static int aq_set_txsc(struct aq_nic_s *nic, const int txsc_idx)
 
 	tx_class_rec.sa_mask = 0x3f;
 
-	tx_class_rec.action = 0; /* forward to SA/SC table */
+	tx_class_rec.action = 0;  
 	tx_class_rec.valid = 1;
 
 	tx_class_rec.sc_idx = sc_idx;
@@ -349,9 +347,7 @@ static int aq_set_txsc(struct aq_nic_s *nic, const int txsc_idx)
 		sc_rec.tci |= BIT(3);
 	if (secy->tx_sc.end_station)
 		sc_rec.tci |= BIT(4);
-	/* The C bit is clear if and only if the Secure Data is
-	 * exactly the same as the User Data and the ICV is 16 octets long.
-	 */
+	 
 	if (!(secy->icv_len == 16 && !secy->tx_sc.encrypt))
 		sc_rec.tci |= BIT(0);
 
@@ -698,7 +694,7 @@ static int aq_set_rxsc(struct aq_nic_s *nic, const u32 rxsc_idx)
 	memset(&pre_class_record, 0, sizeof(pre_class_record));
 	put_unaligned_be64((__force u64)rx_sc->sci, pre_class_record.sci);
 	pre_class_record.sci_mask = 0xff;
-	/* match all MACSEC ethertype packets */
+	 
 	pre_class_record.eth_type = ETH_P_MACSEC;
 	pre_class_record.eth_type_mask = 0x3;
 
@@ -707,7 +703,7 @@ static int aq_set_rxsc(struct aq_nic_s *nic, const u32 rxsc_idx)
 
 	pre_class_record.an_mask = nic->macsec_cfg->sc_sa;
 	pre_class_record.sc_idx = hw_sc_idx;
-	/* strip SecTAG & forward for decryption */
+	 
 	pre_class_record.action = 0x0;
 	pre_class_record.valid = 1;
 
@@ -716,7 +712,7 @@ static int aq_set_rxsc(struct aq_nic_s *nic, const u32 rxsc_idx)
 	if (ret)
 		return ret;
 
-	/* If SCI is absent, then match by SA alone */
+	 
 	pre_class_record.sci_mask = 0;
 	pre_class_record.sci_from_table = 1;
 
@@ -1510,7 +1506,7 @@ int aq_macsec_enable(struct aq_nic_s *nic)
 			goto unlock;
 	}
 
-	/* Init Ethertype bypass filters */
+	 
 	for (index = 0; index < ARRAY_SIZE(ctl_ether_types); index++) {
 		struct aq_mss_ingress_prectlf_record rx_prectlf_rec;
 		struct aq_mss_egress_ctlf_record tx_ctlf_rec;
@@ -1520,17 +1516,17 @@ int aq_macsec_enable(struct aq_nic_s *nic)
 
 		memset(&tx_ctlf_rec, 0, sizeof(tx_ctlf_rec));
 		tx_ctlf_rec.eth_type = ctl_ether_types[index];
-		tx_ctlf_rec.match_type = 4; /* Match eth_type only */
-		tx_ctlf_rec.match_mask = 0xf; /* match for eth_type */
-		tx_ctlf_rec.action = 0; /* Bypass MACSEC modules */
+		tx_ctlf_rec.match_type = 4;  
+		tx_ctlf_rec.match_mask = 0xf;  
+		tx_ctlf_rec.action = 0;  
 		tbl_idx = NUMROWS_EGRESSCTLFRECORD - num_ctl_ether_types - 1;
 		aq_mss_set_egress_ctlf_record(hw, &tx_ctlf_rec, tbl_idx);
 
 		memset(&rx_prectlf_rec, 0, sizeof(rx_prectlf_rec));
 		rx_prectlf_rec.eth_type = ctl_ether_types[index];
-		rx_prectlf_rec.match_type = 4; /* Match eth_type only */
-		rx_prectlf_rec.match_mask = 0xf; /* match for eth_type */
-		rx_prectlf_rec.action = 0; /* Bypass MACSEC modules */
+		rx_prectlf_rec.match_type = 4;  
+		rx_prectlf_rec.match_mask = 0xf;  
+		rx_prectlf_rec.action = 0;  
 		tbl_idx =
 			NUMROWS_INGRESSPRECTLFRECORD - num_ctl_ether_types - 1;
 		aq_mss_set_ingress_prectlf_record(hw, &rx_prectlf_rec, tbl_idx);

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <assert.h>
@@ -77,7 +53,7 @@ static mp_obj_t match_group(mp_obj_t self_in, mp_obj_t no_in) {
 
     const char *start = self->caps[no * 2];
     if (start == NULL) {
-        // no match for this group
+        
         return mp_const_none;
     }
     return mp_obj_new_str_of_type(mp_obj_get_type(self->str),
@@ -119,7 +95,7 @@ static void match_span_helper(size_t n_args, const mp_obj_t *args, mp_obj_t span
     mp_int_t e = -1;
     const char *start = self->caps[no * 2];
     if (start != NULL) {
-        // have a match for this group
+        
         const char *begin = mp_obj_str_get_str(self->str);
         s = start - begin;
         e = self->caps[no * 2 + 1] - begin;
@@ -208,7 +184,7 @@ static mp_obj_t re_exec(bool is_anchored, uint n_args, const mp_obj_t *args) {
     subj.end = subj.begin + len;
     int caps_num = (self->re.sub + 1) * 2;
     mp_obj_match_t *match = m_new_obj_var(mp_obj_match_t, caps, char *, caps_num);
-    // cast is a workaround for a bug in msvc: it treats const char** as a const pointer instead of a pointer to pointer to const char
+    
     memset((char *)match->caps, 0, caps_num * sizeof(char *));
     int res = re1_5_recursiveloopprog(&self->re, &subj, match->caps, caps_num, is_anchored);
     if (res == 0) {
@@ -217,7 +193,7 @@ static mp_obj_t re_exec(bool is_anchored, uint n_args, const mp_obj_t *args) {
     }
 
     match->base.type = (mp_obj_type_t *)&match_type;
-    match->num_matches = caps_num / 2; // caps_num counts start and end pointers
+    match->num_matches = caps_num / 2; 
     match->str = args[1];
     return MP_OBJ_FROM_PTR(match);
 }
@@ -249,11 +225,11 @@ static mp_obj_t re_split(size_t n_args, const mp_obj_t *args) {
     mp_obj_t retval = mp_obj_new_list(0, NULL);
     const char **caps = mp_local_alloc(caps_num * sizeof(char *));
     while (true) {
-        // cast is a workaround for a bug in msvc: it treats const char** as a const pointer instead of a pointer to pointer to const char
+        
         memset((char **)caps, 0, caps_num * sizeof(char *));
         int res = re1_5_recursiveloopprog(&self->re, &subj, caps, caps_num, false);
 
-        // if we didn't have a match, or had an empty match, it's time to stop
+        
         if (!res || caps[0] == caps[1]) {
             break;
         }
@@ -268,7 +244,7 @@ static mp_obj_t re_split(size_t n_args, const mp_obj_t *args) {
             break;
         }
     }
-    // cast is a workaround for a bug in msvc (see above)
+    
     mp_local_free((char **)caps);
 
     mp_obj_t s = mp_obj_new_str_of_type(str_type, (const byte *)subj.begin, subj.end - subj.begin);
@@ -291,7 +267,7 @@ static mp_obj_t re_sub_helper(size_t n_args, const mp_obj_t *args) {
     mp_int_t count = 0;
     if (n_args > 3) {
         count = mp_obj_get_int(args[3]);
-        // Note: flags are currently ignored
+        
     }
 
     size_t where_len;
@@ -302,46 +278,46 @@ static mp_obj_t re_sub_helper(size_t n_args, const mp_obj_t *args) {
     int caps_num = (self->re.sub + 1) * 2;
 
     vstr_t vstr_return;
-    vstr_return.buf = NULL; // We'll init the vstr after the first match
+    vstr_return.buf = NULL; 
     mp_obj_match_t *match = mp_local_alloc(sizeof(mp_obj_match_t) + caps_num * sizeof(char *));
     match->base.type = (mp_obj_type_t *)&match_type;
-    match->num_matches = caps_num / 2; // caps_num counts start and end pointers
+    match->num_matches = caps_num / 2; 
     match->str = where;
 
     for (;;) {
-        // cast is a workaround for a bug in msvc: it treats const char** as a const pointer instead of a pointer to pointer to const char
+        
         memset((char *)match->caps, 0, caps_num * sizeof(char *));
         int res = re1_5_recursiveloopprog(&self->re, &subj, match->caps, caps_num, false);
 
-        // If we didn't have a match, or had an empty match, it's time to stop
+        
         if (!res || match->caps[0] == match->caps[1]) {
             break;
         }
 
-        // Initialise the vstr if it's not already
+        
         if (vstr_return.buf == NULL) {
             vstr_init(&vstr_return, match->caps[0] - subj.begin);
         }
 
-        // Add pre-match string
+        
         vstr_add_strn(&vstr_return, subj.begin, match->caps[0] - subj.begin);
 
-        // Get replacement string
+        
         const char *repl = mp_obj_str_get_str((mp_obj_is_callable(replace) ? mp_call_function_1(replace, MP_OBJ_FROM_PTR(match)) : replace));
 
-        // Append replacement string to result, substituting any regex groups
+        
         while (*repl != '\0') {
             if (*repl == '\\') {
                 ++repl;
                 bool is_g_format = false;
                 if (*repl == 'g' && repl[1] == '<') {
-                    // Group specified with syntax "\g<number>"
+                    
                     repl += 2;
                     is_g_format = true;
                 }
 
                 if ('0' <= *repl && *repl <= '9') {
-                    // Group specified with syntax "\g<number>" or "\number"
+                    
                     unsigned int match_no = 0;
                     do {
                         match_no = match_no * 10 + (*repl++ - '0');
@@ -356,24 +332,24 @@ static mp_obj_t re_sub_helper(size_t n_args, const mp_obj_t *args) {
 
                     const char *start_match = match->caps[match_no * 2];
                     if (start_match != NULL) {
-                        // Add the substring matched by group
+                        
                         const char *end_match = match->caps[match_no * 2 + 1];
                         vstr_add_strn(&vstr_return, start_match, end_match - start_match);
                     }
                 } else if (*repl == '\\') {
-                    // Add the \ character
+                    
                     vstr_add_byte(&vstr_return, *repl++);
                 }
             } else {
-                // Just add the current byte from the replacement string
+                
                 vstr_add_byte(&vstr_return, *repl++);
             }
         }
 
-        // Move start pointer to end of last match
+        
         subj.begin = match->caps[1];
 
-        // Stop substitutions if count was given and gets to 0
+        
         if (count > 0 && --count == 0) {
             break;
         }
@@ -382,11 +358,11 @@ static mp_obj_t re_sub_helper(size_t n_args, const mp_obj_t *args) {
     mp_local_free(match);
 
     if (vstr_return.buf == NULL) {
-        // Optimisation for case of no substitutions
+        
         return where;
     }
 
-    // Add post-match string
+    
     vstr_add_strn(&vstr_return, subj.begin, subj.end - subj.begin);
 
     if (mp_obj_get_type(where) == &mp_type_str) {
@@ -473,8 +449,8 @@ const mp_obj_module_t mp_module_re = {
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_re, mp_module_re);
 #endif
 
-// Source files #include'd here to make sure they're compiled in
-// only if module is enabled by config setting.
+
+
 
 #define re1_5_fatal(x) assert(!x)
 
@@ -483,10 +459,10 @@ MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_re, mp_module_re);
 #include "lib/re1.5/charclass.c"
 
 #if MICROPY_PY_RE_DEBUG
-// Make sure the output print statements go to the same output as other Python output.
+
 #define printf(...) mp_printf(&mp_plat_print, __VA_ARGS__)
 #include "lib/re1.5/dumpcode.c"
 #undef printf
 #endif
 
-#endif // MICROPY_PY_RE
+#endif 

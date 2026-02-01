@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/clk.h>
 #include <linux/of_clk.h>
@@ -32,9 +32,7 @@
 #define DRIVER_MAJOR	1
 #define DRIVER_MINOR	0
 
-/*
- * Helpers for simplefb
- */
+ 
 
 static int
 simplefb_get_validated_int(struct drm_device *dev, const char *name,
@@ -210,33 +208,31 @@ simplefb_get_memory_of(struct drm_device *dev, struct device_node *of_node)
 	return res;
 }
 
-/*
- * Simple Framebuffer device
- */
+ 
 
 struct simpledrm_device {
 	struct drm_device dev;
 
-	/* clocks */
+	 
 #if defined CONFIG_OF && defined CONFIG_COMMON_CLK
 	unsigned int clk_count;
 	struct clk **clks;
 #endif
-	/* regulators */
+	 
 #if defined CONFIG_OF && defined CONFIG_REGULATOR
 	unsigned int regulator_count;
 	struct regulator **regulators;
 #endif
 
-	/* simplefb settings */
+	 
 	struct drm_display_mode mode;
 	const struct drm_format_info *format;
 	unsigned int pitch;
 
-	/* memory management */
+	 
 	struct iosys_map screen_base;
 
-	/* modesetting */
+	 
 	uint32_t formats[8];
 	size_t nformats;
 	struct drm_plane primary_plane;
@@ -250,29 +246,10 @@ static struct simpledrm_device *simpledrm_device_of_dev(struct drm_device *dev)
 	return container_of(dev, struct simpledrm_device, dev);
 }
 
-/*
- * Hardware
- */
+ 
 
 #if defined CONFIG_OF && defined CONFIG_COMMON_CLK
-/*
- * Clock handling code.
- *
- * Here we handle the clocks property of our "simple-framebuffer" dt node.
- * This is necessary so that we can make sure that any clocks needed by
- * the display engine that the bootloader set up for us (and for which it
- * provided a simplefb dt node), stay up, for the life of the simplefb
- * driver.
- *
- * When the driver unloads, we cleanly disable, and then release the clocks.
- *
- * We only complain about errors here, no action is taken as the most likely
- * error can only happen due to a mismatch between the bootloader which set
- * up simplefb, and the clock definitions in the device tree. Chances are
- * that there are no adverse effects, and if there are, a clean teardown of
- * the fb probe will not help us much either. So just complain and carry on,
- * and hope that the user actually gets a working fb at the end of things.
- */
+ 
 
 static void simpledrm_device_release_clocks(void *res)
 {
@@ -352,25 +329,7 @@ static int simpledrm_device_init_clocks(struct simpledrm_device *sdev)
 
 #define SUPPLY_SUFFIX "-supply"
 
-/*
- * Regulator handling code.
- *
- * Here we handle the num-supplies and vin*-supply properties of our
- * "simple-framebuffer" dt node. This is necessary so that we can make sure
- * that any regulators needed by the display hardware that the bootloader
- * set up for us (and for which it provided a simplefb dt node), stay up,
- * for the life of the simplefb driver.
- *
- * When the driver unloads, we cleanly disable, and then release the
- * regulators.
- *
- * We only complain about errors here, no action is taken as the most likely
- * error can only happen due to a mismatch between the bootloader which set
- * up simplefb, and the regulator definitions in the device tree. Chances are
- * that there are no adverse effects, and if there are, a clean teardown of
- * the fb probe will not help us much either. So just complain and carry on,
- * and hope that the user actually gets a working fb at the end of things.
- */
+ 
 
 static void simpledrm_device_release_regulators(void *res)
 {
@@ -399,7 +358,7 @@ static int simpledrm_device_init_regulators(struct simpledrm_device *sdev)
 	if (dev_get_platdata(&pdev->dev) || !of_node)
 		return 0;
 
-	/* Count the number of regulator supplies */
+	 
 	for_each_property_of_node(of_node, prop) {
 		p = strstr(prop->name, SUPPLY_SUFFIX);
 		if (p && p != prop->name)
@@ -416,7 +375,7 @@ static int simpledrm_device_init_regulators(struct simpledrm_device *sdev)
 		return -ENOMEM;
 
 	for_each_property_of_node(of_node, prop) {
-		char name[32]; /* 32 is max size of property name */
+		char name[32];  
 		size_t len;
 
 		p = strstr(prop->name, SUPPLY_SUFFIX);
@@ -468,9 +427,7 @@ static int simpledrm_device_init_regulators(struct simpledrm_device *sdev)
 }
 #endif
 
-/*
- * Modesetting
- */
+ 
 
 static const uint64_t simpledrm_primary_plane_format_modifiers[] = {
 	DRM_FORMAT_MOD_LINEAR,
@@ -525,7 +482,7 @@ static void simpledrm_primary_plane_helper_atomic_disable(struct drm_plane *plan
 	if (!drm_dev_enter(dev, &idx))
 		return;
 
-	/* Clear screen to black if disabled */
+	 
 	iosys_map_memset(&sdev->screen_base, 0, 0, sdev->pitch * sdev->mode.vdisplay);
 
 	drm_dev_exit(idx);
@@ -553,11 +510,7 @@ static enum drm_mode_status simpledrm_crtc_helper_mode_valid(struct drm_crtc *cr
 	return drm_crtc_helper_mode_valid_fixed(crtc, mode, &sdev->mode);
 }
 
-/*
- * The CRTC is always enabled. Screen updates are performed by
- * the primary plane's atomic_update function. Disabling clears
- * the screen in the primary plane's atomic_disable function.
- */
+ 
 static const struct drm_crtc_helper_funcs simpledrm_crtc_helper_funcs = {
 	.mode_valid = simpledrm_crtc_helper_mode_valid,
 	.atomic_check = drm_crtc_helper_atomic_check,
@@ -601,9 +554,7 @@ static const struct drm_mode_config_funcs simpledrm_mode_config_funcs = {
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
-/*
- * Init / Cleanup
- */
+ 
 
 static struct drm_display_mode simpledrm_mode(unsigned int width,
 					      unsigned int height,
@@ -643,9 +594,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 	dev = &sdev->dev;
 	platform_set_drvdata(pdev, sdev);
 
-	/*
-	 * Hardware settings
-	 */
+	 
 
 	ret = simpledrm_device_init_clocks(sdev);
 	if (ret)
@@ -699,10 +648,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 			return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * Assume a monitor resolution of 96 dpi if physical dimensions
-	 * are not specified to get a somewhat reasonable screen size.
-	 */
+	 
 	if (!width_mm)
 		width_mm = DRM_MODE_RES_MM(width, 96ul);
 	if (!height_mm)
@@ -716,9 +662,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 	drm_dbg(dev, "framebuffer format=%p4cc, size=%dx%d, stride=%d byte\n",
 		&format->format, width, height, stride);
 
-	/*
-	 * Memory management
-	 */
+	 
 
 	if (mem) {
 		void *screen_base;
@@ -754,11 +698,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 		mem = devm_request_mem_region(&pdev->dev, res->start, resource_size(res),
 					      drv->name);
 		if (!mem) {
-			/*
-			 * We cannot make this fatal. Sometimes this comes from magic
-			 * spaces our resource handlers simply don't know about. Use
-			 * the I/O-memory resource as-is and try to map that instead.
-			 */
+			 
 			drm_warn(dev, "could not acquire memory region %pr\n", res);
 			mem = res;
 		}
@@ -770,9 +710,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 		iosys_map_set_vaddr_iomem(&sdev->screen_base, screen_base);
 	}
 
-	/*
-	 * Modesetting
-	 */
+	 
 
 	ret = drmm_mode_config_init(dev);
 	if (ret)
@@ -788,7 +726,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 	dev->mode_config.preferred_depth = format->depth;
 	dev->mode_config.funcs = &simpledrm_mode_config_funcs;
 
-	/* Primary plane */
+	 
 
 	nformats = drm_fb_build_fourcc_list(dev, &format->format, 1,
 					    sdev->formats, ARRAY_SIZE(sdev->formats));
@@ -803,7 +741,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 	drm_plane_helper_add(primary_plane, &simpledrm_primary_plane_helper_funcs);
 	drm_plane_enable_fb_damage_clips(primary_plane);
 
-	/* CRTC */
+	 
 
 	crtc = &sdev->crtc;
 	ret = drm_crtc_init_with_planes(dev, crtc, primary_plane, NULL,
@@ -812,7 +750,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 		return ERR_PTR(ret);
 	drm_crtc_helper_add(crtc, &simpledrm_crtc_helper_funcs);
 
-	/* Encoder */
+	 
 
 	encoder = &sdev->encoder;
 	ret = drm_encoder_init(dev, encoder, &simpledrm_encoder_funcs,
@@ -821,7 +759,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 		return ERR_PTR(ret);
 	encoder->possible_crtcs = drm_crtc_mask(crtc);
 
-	/* Connector */
+	 
 
 	connector = &sdev->connector;
 	ret = drm_connector_init(dev, connector, &simpledrm_connector_funcs,
@@ -842,9 +780,7 @@ static struct simpledrm_device *simpledrm_device_create(struct drm_driver *drv,
 	return sdev;
 }
 
-/*
- * DRM driver
- */
+ 
 
 DEFINE_DRM_GEM_FOPS(simpledrm_fops);
 
@@ -859,9 +795,7 @@ static struct drm_driver simpledrm_driver = {
 	.fops			= &simpledrm_fops,
 };
 
-/*
- * Platform driver
- */
+ 
 
 static int simpledrm_probe(struct platform_device *pdev)
 {
@@ -881,7 +815,7 @@ static int simpledrm_probe(struct platform_device *pdev)
 
 	color_mode = drm_format_info_bpp(sdev->format, 0);
 	if (color_mode == 16)
-		color_mode = sdev->format->depth; // can be 15 or 16
+		color_mode = sdev->format->depth; 
 
 	drm_fbdev_generic_setup(dev, color_mode);
 
@@ -904,7 +838,7 @@ MODULE_DEVICE_TABLE(of, simpledrm_of_match_table);
 
 static struct platform_driver simpledrm_platform_driver = {
 	.driver = {
-		.name = "simple-framebuffer", /* connect to sysfb */
+		.name = "simple-framebuffer",  
 		.of_match_table = simpledrm_of_match_table,
 	},
 	.probe = simpledrm_probe,

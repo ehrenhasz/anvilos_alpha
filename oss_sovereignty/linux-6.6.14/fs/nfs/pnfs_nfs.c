@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common NFS I/O  operations for the pnfs file based
- * layout drivers.
- *
- * Copyright (c) 2014, Primary Data, Inc. All rights reserved.
- *
- * Tom Haynes <loghyr@primarydata.com>
- */
+
+ 
 
 #include <linux/nfs_fs.h>
 #include <linux/nfs_page.h>
@@ -28,7 +21,7 @@ void pnfs_generic_rw_release(void *data)
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_rw_release);
 
-/* Fake up some data that will cause nfs_commit_release to retry the writes. */
+ 
 void pnfs_generic_prepare_to_resend_writes(struct nfs_commit_data *data)
 {
 	struct nfs_writeverf *verf = data->res.verf;
@@ -43,7 +36,7 @@ void pnfs_generic_write_commit_done(struct rpc_task *task, void *data)
 {
 	struct nfs_commit_data *wdata = data;
 
-	/* Note this may cause RPC to be resent */
+	 
 	wdata->mds_ops->rpc_call_done(task, data);
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_write_commit_done);
@@ -70,10 +63,7 @@ pnfs_free_bucket_lseg(struct pnfs_commit_bucket *bucket)
 	return NULL;
 }
 
-/* The generic layer is about to remove the req from the commit list.
- * If this will make the bucket empty, it will need to put the lseg reference.
- * Note this must be called holding nfsi->commit_mutex
- */
+ 
 void
 pnfs_generic_clear_request_commit(struct nfs_page *req,
 				  struct nfs_commit_info *cinfo)
@@ -233,10 +223,7 @@ pnfs_generic_ds_cinfo_destroy(struct pnfs_ds_commit_info *fl_cinfo)
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_ds_cinfo_destroy);
 
-/*
- * Locks the nfs_page requests for commit and moves them to
- * @bucket->committing.
- */
+ 
 static int
 pnfs_bucket_scan_ds_commit_list(struct pnfs_commit_bucket *bucket,
 				struct nfs_commit_info *cinfo,
@@ -271,9 +258,7 @@ static int pnfs_bucket_scan_array(struct nfs_commit_info *cinfo,
 	return rv;
 }
 
-/* Move reqs from written to committing lists, returning count
- * of number moved.
- */
+ 
 int pnfs_generic_scan_commit_lists(struct nfs_commit_info *cinfo, int max)
 {
 	struct pnfs_ds_commit_info *fl_cinfo = cinfo->ds;
@@ -325,7 +310,7 @@ restart:
 	return ret;
 }
 
-/* Pull everything off the committing lists and dump into @dst.  */
+ 
 void pnfs_generic_recover_commit_reqs(struct list_head *dst,
 				      struct nfs_commit_info *cinfo)
 {
@@ -359,8 +344,7 @@ pnfs_bucket_search_commit_reqs(struct pnfs_commit_bucket *buckets,
 	struct pnfs_commit_bucket *b;
 	unsigned int i;
 
-	/* Linearly search the commit lists for each bucket until a matching
-	 * request is found */
+	 
 	for (i = 0, b = buckets; i < nbuckets; i++, b++) {
 		list_for_each_entry(req, &b->written, wb_list) {
 			if (nfs_page_to_folio(req) == folio)
@@ -374,13 +358,7 @@ pnfs_bucket_search_commit_reqs(struct pnfs_commit_bucket *buckets,
 	return NULL;
 }
 
-/* pnfs_generic_search_commit_reqs - Search lists in @cinfo for the head request
- *				   for @folio
- * @cinfo - commit info for current inode
- * @folio - page to search for matching head request
- *
- * Return: the head request if one is found, otherwise %NULL.
- */
+ 
 struct nfs_page *pnfs_generic_search_commit_reqs(struct nfs_commit_info *cinfo,
 						 struct folio *folio)
 {
@@ -475,7 +453,7 @@ pnfs_bucket_alloc_ds_commits(struct list_head *list,
 	return nreq;
 out_error:
 	mutex_unlock(&NFS_I(cinfo->inode)->commit_mutex);
-	/* Clean up on error */
+	 
 	pnfs_generic_retry_commit(buckets, nbuckets, cinfo, i);
 	return nreq;
 }
@@ -502,7 +480,7 @@ pnfs_alloc_ds_commits_list(struct list_head *list,
 	return ret;
 }
 
-/* This follows nfs_commit_list pretty closely */
+ 
 int
 pnfs_generic_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
 			     int how, struct nfs_commit_info *cinfo,
@@ -548,19 +526,11 @@ out:
 }
 EXPORT_SYMBOL_GPL(pnfs_generic_commit_pagelist);
 
-/*
- * Data server cache
- *
- * Data servers can be mapped to different device ids.
- * nfs4_pnfs_ds reference counting
- *   - set to 1 on allocation
- *   - incremented when a device id maps a data server already in the cache.
- *   - decremented when deviceid is removed from the cache.
- */
+ 
 static DEFINE_SPINLOCK(nfs4_ds_cache_lock);
 static LIST_HEAD(nfs4_data_server_cache);
 
-/* Debug routines */
+ 
 static void
 print_ds(struct nfs4_pnfs_ds *ds)
 {
@@ -600,7 +570,7 @@ same_sockaddr(struct sockaddr *addr1, struct sockaddr *addr2)
 		a6 = (struct sockaddr_in6 *)addr1;
 		b6 = (struct sockaddr_in6 *)addr2;
 
-		/* LINKLOCAL addresses must have matching scope_id */
+		 
 		if (ipv6_addr_src_scope(&a6->sin6_addr) ==
 		    IPV6_ADDR_SCOPE_LINKLOCAL &&
 		    a6->sin6_scope_id != b6->sin6_scope_id)
@@ -620,10 +590,7 @@ same_sockaddr(struct sockaddr *addr1, struct sockaddr *addr2)
 	return false;
 }
 
-/*
- * Checks if 'dsaddrs1' contains a subset of 'dsaddrs2'. If it does,
- * declare a match.
- */
+ 
 static bool
 _same_data_server_addrs_locked(const struct list_head *dsaddrs1,
 			       const struct list_head *dsaddrs2)
@@ -647,9 +614,7 @@ _same_data_server_addrs_locked(const struct list_head *dsaddrs1,
 	return match;
 }
 
-/*
- * Lookup DS by addresses.  nfs4_ds_cache_lock is held
- */
+ 
 static struct nfs4_pnfs_ds *
 _data_server_lookup_locked(const struct list_head *dsaddrs)
 {
@@ -709,10 +674,7 @@ void nfs4_pnfs_ds_put(struct nfs4_pnfs_ds *ds)
 }
 EXPORT_SYMBOL_GPL(nfs4_pnfs_ds_put);
 
-/*
- * Create a string with a human readable address and port to avoid
- * complicated setup around many dprinks.
- */
+ 
 static char *
 nfs4_pnfs_remotestr(struct list_head *dsaddrs, gfp_t gfp_flags)
 {
@@ -721,9 +683,9 @@ nfs4_pnfs_remotestr(struct list_head *dsaddrs, gfp_t gfp_flags)
 	size_t len;
 	char *p;
 
-	len = 3;        /* '{', '}' and eol */
+	len = 3;         
 	list_for_each_entry(da, dsaddrs, da_node) {
-		len += strlen(da->da_remotestr) + 1;    /* string plus comma */
+		len += strlen(da->da_remotestr) + 1;     
 	}
 
 	remotestr = kzalloc(len, gfp_flags);
@@ -758,10 +720,7 @@ out_err:
 	return NULL;
 }
 
-/*
- * Given a list of multipath struct nfs4_pnfs_ds_addr, add it to ds cache if
- * uncached and return cached struct nfs4_pnfs_ds.
- */
+ 
 struct nfs4_pnfs_ds *
 nfs4_pnfs_ds_add(struct list_head *dsaddrs, gfp_t gfp_flags)
 {
@@ -777,7 +736,7 @@ nfs4_pnfs_ds_add(struct list_head *dsaddrs, gfp_t gfp_flags)
 	if (!ds)
 		goto out;
 
-	/* this is only used for debugging, so it's ok if its NULL */
+	 
 	remotestr = nfs4_pnfs_remotestr(dsaddrs, gfp_flags);
 
 	spin_lock(&nfs4_ds_cache_lock);
@@ -879,7 +838,7 @@ static int _nfs4_pnfs_v3_ds_connect(struct nfs_server *mds_srv,
 				continue;
 			if (da->da_addr.ss_family != clp->cl_addr.ss_family)
 				continue;
-			/* Add this address as an alias */
+			 
 			rpc_clnt_add_xprt(clp->cl_rpcclient, &xprt_args,
 					rpc_clnt_test_and_add_xprt, NULL);
 			continue;
@@ -942,10 +901,7 @@ static int _nfs4_pnfs_v4_ds_connect(struct nfs_server *mds_srv,
 				continue;
 			if (da->da_addr.ss_family != clp->cl_addr.ss_family)
 				continue;
-			/**
-			* Test this address for session trunking and
-			* add as an alias
-			*/
+			 
 			xprtdata.cred = nfs4_get_clid_cred(clp);
 			rpc_clnt_add_xprt(clp->cl_rpcclient, &xprt_args,
 					  rpc_clnt_setup_test_and_add_xprt,
@@ -984,11 +940,7 @@ out:
 	return status;
 }
 
-/*
- * Create an rpc connection to the nfs4_pnfs_ds data server.
- * Currently only supports IPv4 and IPv6 addresses.
- * If connection fails, make devid unavailable and return a -errno.
- */
+ 
 int nfs4_pnfs_ds_connect(struct nfs_server *mds_srv, struct nfs4_pnfs_ds *ds,
 			  struct nfs4_deviceid_node *devid, unsigned int timeo,
 			  unsigned int retrans, u32 version, u32 minor_version)
@@ -1022,10 +974,7 @@ int nfs4_pnfs_ds_connect(struct nfs_server *mds_srv, struct nfs4_pnfs_ds *ds,
 connect_done:
 	nfs4_clear_ds_conn_bit(ds);
 out:
-	/*
-	 * At this point the ds->ds_clp should be ready, but it might have
-	 * hit an error.
-	 */
+	 
 	if (!err) {
 		if (!ds->ds_clp || !nfs_client_init_is_complete(ds->ds_clp)) {
 			WARN_ON_ONCE(ds->ds_clp ||
@@ -1039,9 +988,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(nfs4_pnfs_ds_connect);
 
-/*
- * Currently only supports ipv4, ipv6 and one multi-path address.
- */
+ 
 struct nfs4_pnfs_ds_addr *
 nfs4_decode_mp_ds_addr(struct net *net, struct xdr_stream *xdr, gfp_t gfp_flags)
 {
@@ -1056,20 +1003,20 @@ nfs4_decode_mp_ds_addr(struct net *net, struct xdr_stream *xdr, gfp_t gfp_flags)
 	char *endsep = "";
 
 
-	/* r_netid */
+	 
 	nlen = xdr_stream_decode_string_dup(xdr, &netid, XDR_MAX_NETOBJ,
 					    gfp_flags);
 	if (unlikely(nlen < 0))
 		goto out_err;
 
-	/* r_addr: ip/ip6addr with port in dec octets - see RFC 5665 */
-	/* port is ".ABC.DEF", 8 chars max */
+	 
+	 
 	rlen = xdr_stream_decode_string_dup(xdr, &buf, INET6_ADDRSTRLEN +
 					    IPV6_SCOPE_ID_LEN + 8, gfp_flags);
 	if (unlikely(rlen < 0))
 		goto out_free_netid;
 
-	/* replace port '.' with '-' */
+	 
 	portstr = strrchr(buf, '.');
 	if (!portstr) {
 		dprintk("%s: Failed finding expected dot in port\n",
@@ -1078,7 +1025,7 @@ nfs4_decode_mp_ds_addr(struct net *net, struct xdr_stream *xdr, gfp_t gfp_flags)
 	}
 	*portstr = '-';
 
-	/* find '.' between address and port */
+	 
 	portstr = strrchr(buf, '.');
 	if (!portstr) {
 		dprintk("%s: Failed finding expected dot between address and "
@@ -1129,11 +1076,11 @@ nfs4_decode_mp_ds_addr(struct net *net, struct xdr_stream *xdr, gfp_t gfp_flags)
 
 	da->da_netid = netid;
 
-	/* save human readable address */
+	 
 	len = strlen(startsep) + strlen(buf) + strlen(endsep) + 7;
 	da->da_remotestr = kzalloc(len, gfp_flags);
 
-	/* NULL is ok, only used for dprintk */
+	 
 	if (da->da_remotestr)
 		snprintf(da->da_remotestr, len, "%s%s%s:%u", startsep,
 			 buf, endsep, ntohs(port));
@@ -1170,12 +1117,7 @@ pnfs_layout_mark_request_commit(struct nfs_page *req,
 		goto out_resched;
 	bucket = &array->buckets[ds_commit_idx];
 	list = &bucket->written;
-	/* Non-empty buckets hold a reference on the lseg.  That ref
-	 * is normally transferred to the COMMIT call and released
-	 * there.  It could also be released if the last req is pulled
-	 * off due to a rewrite, in which case it will be done in
-	 * pnfs_common_clear_request_commit
-	 */
+	 
 	if (!bucket->lseg)
 		bucket->lseg = pnfs_get_lseg(lseg);
 	set_bit(PG_COMMIT_TO_DS, &req->wb_flags);

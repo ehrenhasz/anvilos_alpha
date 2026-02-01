@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019, Intel Corporation
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -222,7 +220,7 @@ static const struct clk_parent_data emac_ptp_mux[] = {
 	  .name = "boot_clk", },
 };
 
-/* clocks in AO (always on) controller */
+ 
 static const struct stratix10_pll_clock agilex_pll_clks[] = {
 	{ AGILEX_BOOT_CLK, "boot_clk", boot_mux, ARRAY_SIZE(boot_mux), 0,
 	  0x0},
@@ -290,10 +288,7 @@ static const struct stratix10_gate_clock agilex_gate_clks[] = {
 	  1, 0x44, 0, 2, 0x30, 1, 0},
 	{ AGILEX_L4_MP_CLK, "l4_mp_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux), 0, 0x24,
 	  2, 0x44, 8, 2, 0x30, 1, 0},
-	/*
-	 * The l4_sp_clk feeds a 100 MHz clock to various peripherals, one of them
-	 * being the SP timers, thus cannot get gated.
-	 */
+	 
 	{ AGILEX_L4_SP_CLK, "l4_sp_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux), CLK_IS_CRITICAL, 0x24,
 	  3, 0x44, 16, 2, 0x30, 1, 0},
 	{ AGILEX_CS_AT_CLK, "cs_at_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux), 0, 0x24,

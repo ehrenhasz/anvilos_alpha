@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L Pin Control and GPIO driver core
- *
- * Copyright (C) 2021 Renesas Electronics Corporation.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -32,16 +28,13 @@
 
 #define DRV_NAME	"pinctrl-rzg2l"
 
-/*
- * Use 16 lower bits [15:0] for pin identifier
- * Use 16 higher bits [31:16] for pin mux function
- */
+ 
 #define MUX_PIN_ID_MASK		GENMASK(15, 0)
 #define MUX_FUNC_MASK		GENMASK(31, 16)
 #define MUX_FUNC_OFFS		16
 #define MUX_FUNC(pinconf)	(((pinconf) & MUX_FUNC_MASK) >> MUX_FUNC_OFFS)
 
-/* PIN capabilities */
+ 
 #define PIN_CFG_IOLH_A			BIT(0)
 #define PIN_CFG_IOLH_B			BIT(1)
 #define PIN_CFG_SR			BIT(2)
@@ -68,20 +61,13 @@
 					 PIN_CFG_FILNUM | \
 					 PIN_CFG_FILCLKSEL)
 
-/*
- * n indicates number of pins in the port, a is the register index
- * and f is pin configuration capabilities supported.
- */
+ 
 #define RZG2L_GPIO_PORT_PACK(n, a, f)	(((n) << 28) | ((a) << 20) | (f))
 #define RZG2L_GPIO_PORT_GET_PINCNT(x)	(((x) & GENMASK(30, 28)) >> 28)
 #define RZG2L_GPIO_PORT_GET_INDEX(x)	(((x) & GENMASK(26, 20)) >> 20)
 #define RZG2L_GPIO_PORT_GET_CFGS(x)	((x) & GENMASK(19, 0))
 
-/*
- * BIT(31) indicates dedicated pin, p is the register index while
- * referencing to SR/IEN/IOLH/FILxx registers, b is the register bits
- * (b * 8) and f is the pin configuration capabilities supported.
- */
+ 
 #define RZG2L_SINGLE_PIN		BIT(31)
 #define RZG2L_SINGLE_PIN_PACK(p, b, f)	(RZG2L_SINGLE_PIN | \
 					 ((p) << 24) | ((b) << 20) | (f))
@@ -101,11 +87,11 @@
 #define SD_CH(n)		(0x3000 + (n) * 4)
 #define QSPI			(0x3008)
 
-#define PVDD_1800		1	/* I/O domain voltage <= 1.8V */
-#define PVDD_3300		0	/* I/O domain voltage >= 3.3V */
+#define PVDD_1800		1	 
+#define PVDD_3300		0	 
 
-#define PWPR_B0WI		BIT(7)	/* Bit Write Disable */
-#define PWPR_PFCWE		BIT(6)	/* PFC Register Write Enable */
+#define PWPR_B0WI		BIT(7)	 
+#define PWPR_PFCWE		BIT(6)	 
 
 #define PM_MASK			0x03
 #define PVDD_MASK		0x01
@@ -150,11 +136,11 @@ struct rzg2l_pinctrl {
 	struct gpio_chip		gpio_chip;
 	struct pinctrl_gpio_range	gpio_range;
 	DECLARE_BITMAP(tint_slot, RZG2L_TINT_MAX_INTERRUPT);
-	spinlock_t			bitmap_lock; /* protect tint_slot bitmap */
+	spinlock_t			bitmap_lock;  
 	unsigned int			hwirq[RZG2L_TINT_MAX_INTERRUPT];
 
-	spinlock_t			lock; /* lock read/write registers */
-	struct mutex			mutex; /* serialize adding groups and functions */
+	spinlock_t			lock;  
+	struct mutex			mutex;  
 };
 
 static const unsigned int iolh_groupa_mA[] = { 2, 4, 8, 12 };
@@ -168,29 +154,29 @@ static void rzg2l_pinctrl_set_pfc_mode(struct rzg2l_pinctrl *pctrl,
 
 	spin_lock_irqsave(&pctrl->lock, flags);
 
-	/* Set pin to 'Non-use (Hi-Z input protection)'  */
+	 
 	reg = readw(pctrl->base + PM(port));
 	reg &= ~(PM_MASK << (pin * 2));
 	writew(reg, pctrl->base + PM(port));
 
-	/* Temporarily switch to GPIO mode with PMC register */
+	 
 	reg = readb(pctrl->base + PMC(port));
 	writeb(reg & ~BIT(pin), pctrl->base + PMC(port));
 
-	/* Set the PWPR register to allow PFC register to write */
-	writel(0x0, pctrl->base + PWPR);        /* B0WI=0, PFCWE=0 */
-	writel(PWPR_PFCWE, pctrl->base + PWPR);  /* B0WI=0, PFCWE=1 */
+	 
+	writel(0x0, pctrl->base + PWPR);         
+	writel(PWPR_PFCWE, pctrl->base + PWPR);   
 
-	/* Select Pin function mode with PFC register */
+	 
 	reg = readl(pctrl->base + PFC(port));
 	reg &= ~(PFC_MASK << (pin * 4));
 	writel(reg | (func << (pin * 4)), pctrl->base + PFC(port));
 
-	/* Set the PWPR register to be write-protected */
-	writel(0x0, pctrl->base + PWPR);        /* B0WI=0, PFCWE=0 */
-	writel(PWPR_B0WI, pctrl->base + PWPR);  /* B0WI=1, PFCWE=0 */
+	 
+	writel(0x0, pctrl->base + PWPR);         
+	writel(PWPR_B0WI, pctrl->base + PWPR);   
 
-	/* Switch to Peripheral pin function with PMC register */
+	 
 	reg = readb(pctrl->base + PMC(port));
 	writeb(reg | BIT(pin), pctrl->base + PMC(port));
 
@@ -342,7 +328,7 @@ static int rzg2l_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 		goto done;
 	}
 
-	/* Collect pin locations and mux settings from DT properties */
+	 
 	for (i = 0; i < num_pinmux; ++i) {
 		u32 value;
 
@@ -366,17 +352,14 @@ static int rzg2l_dt_subnode_to_map(struct pinctrl_dev *pctldev,
 
 	mutex_lock(&pctrl->mutex);
 
-	/* Register a single pin group listing all the pins we read from DT */
+	 
 	gsel = pinctrl_generic_add_group(pctldev, name, pins, num_pinmux, NULL);
 	if (gsel < 0) {
 		ret = gsel;
 		goto unlock;
 	}
 
-	/*
-	 * Register a single group function where the 'data' is an array PSEL
-	 * register values read from DT.
-	 */
+	 
 	pin_fn[0] = name;
 	fsel = pinmux_generic_add_function(pctldev, name, pin_fn, 1, psel_val);
 	if (fsel < 0) {
@@ -486,7 +469,7 @@ static u32 rzg2l_read_pin_config(struct rzg2l_pinctrl *pctrl, u32 offset,
 {
 	void __iomem *addr = pctrl->base + offset;
 
-	/* handle _L/_H for 32-bit register read/write */
+	 
 	if (bit >= 4) {
 		bit -= 4;
 		addr += 4;
@@ -502,7 +485,7 @@ static void rzg2l_rmw_pin_config(struct rzg2l_pinctrl *pctrl, u32 offset,
 	unsigned long flags;
 	u32 reg;
 
-	/* handle _L/_H for 32-bit register read/write */
+	 
 	if (bit >= 4) {
 		bit -= 4;
 		addr += 4;
@@ -757,7 +740,7 @@ static int rzg2l_pinctrl_pinconf_group_get(struct pinctrl_dev *pctldev,
 		if (ret)
 			return ret;
 
-		/* Check config matching between to pin  */
+		 
 		if (i && prev_config != *config)
 			return -EOPNOTSUPP;
 
@@ -807,7 +790,7 @@ static int rzg2l_gpio_request(struct gpio_chip *chip, unsigned int offset)
 
 	spin_lock_irqsave(&pctrl->lock, flags);
 
-	/* Select GPIO mode in PMC Register */
+	 
 	reg8 = readb(pctrl->base + PMC(port));
 	reg8 &= ~BIT(bit);
 	writeb(reg8, pctrl->base + PMC(port));
@@ -926,10 +909,7 @@ static void rzg2l_gpio_free(struct gpio_chip *chip, unsigned int offset)
 	if (virq)
 		irq_dispose_mapping(virq);
 
-	/*
-	 * Set the GPIO as an input to ensure that the next GPIO request won't
-	 * drive the GPIO pin as an output.
-	 */
+	 
 	rzg2l_gpio_direction_input(chip, offset);
 }
 
@@ -1273,7 +1253,7 @@ static int rzg2l_gpio_child_to_parent_hwirq(struct gpio_chip *gc,
 	pctrl->hwirq[irq] = child;
 	irq += RZG2L_TINT_IRQ_START_INDEX;
 
-	/* All these interrupts are level high in the CPU */
+	 
 	*parent_type = IRQ_TYPE_LEVEL_HIGH;
 	*parent = RZG2L_PACK_HWIRQ(gpioint, irq);
 	return 0;
@@ -1328,7 +1308,7 @@ static void rzg2l_init_irq_valid_mask(struct gpio_chip *gc,
 	struct gpio_chip *chip = &pctrl->gpio_chip;
 	unsigned int offset;
 
-	/* Forbid unused lines to be mapped as IRQs */
+	 
 	for (offset = 0; offset < chip->ngpio; offset++) {
 		u32 port, bit;
 
@@ -1552,7 +1532,7 @@ static const struct of_device_id rzg2l_pinctrl_of_table[] = {
 		.compatible = "renesas,r9a07g044-pinctrl",
 		.data = &r9a07g044_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver rzg2l_pinctrl_driver = {

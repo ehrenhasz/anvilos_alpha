@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "hdp_v4_0.h"
@@ -29,7 +8,7 @@
 #include "hdp/hdp_4_0_sh_mask.h"
 #include <uapi/linux/kfd_ioctl.h>
 
-/* for Vega20 register name change */
+ 
 #define mmHDP_MEM_POWER_CTRL    0x00d4
 #define HDP_MEM_POWER_CTRL__IPH_MEM_POWER_CTRL_EN_MASK  0x00000001L
 #define HDP_MEM_POWER_CTRL__IPH_MEM_POWER_LS_EN_MASK    0x00000002L
@@ -71,7 +50,7 @@ static void hdp_v4_0_query_ras_error_count(struct amdgpu_device *adev,
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__HDP))
 		return;
 
-	/* HDP SRAM errors are uncorrectable ones (i.e. fatal errors) */
+	 
 	err_data->ue_count += RREG32_SOC15(HDP, 0, mmHDP_EDC_CNT);
 };
 
@@ -83,7 +62,7 @@ static void hdp_v4_0_reset_ras_error_count(struct amdgpu_device *adev)
 	if (adev->ip_versions[HDP_HWIP][0] >= IP_VERSION(4, 4, 0))
 		WREG32_SOC15(HDP, 0, mmHDP_EDC_CNT, 0);
 	else
-		/*read back hdp ras counter to reset it to 0 */
+		 
 		RREG32_SOC15(HDP, 0, mmHDP_EDC_CNT);
 }
 
@@ -129,7 +108,7 @@ static void hdp_v4_0_get_clockgating_state(struct amdgpu_device *adev,
 {
 	int data;
 
-	/* AMD_CG_SUPPORT_HDP_LS */
+	 
 	data = RREG32(SOC15_REG_OFFSET(HDP, 0, mmHDP_MEM_POWER_LS));
 	if (data & HDP_MEM_POWER_LS__LS_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_HDP_LS;

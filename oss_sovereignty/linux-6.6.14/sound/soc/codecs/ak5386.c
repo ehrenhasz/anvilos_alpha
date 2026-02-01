@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ALSA SoC driver for
- *    Asahi Kasei AK5386 Single-ended 24-Bit 192kHz delta-sigma ADC
- *
- * (c) 2013 Daniel Mack <zonque@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -63,7 +58,7 @@ static int ak5386_soc_resume(struct snd_soc_component *component)
 #else
 #define ak5386_soc_suspend	NULL
 #define ak5386_soc_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct snd_soc_component_driver soc_component_ak5386 = {
 	.probe			= ak5386_soc_probe,
@@ -101,15 +96,7 @@ static int ak5386_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	struct ak5386_priv *priv = snd_soc_component_get_drvdata(component);
 
-	/*
-	 * From the datasheet:
-	 *
-	 * All external clocks (MCLK, SCLK and LRCK) must be present unless
-	 * PDN pin = “L”. If these clocks are not provided, the AK5386 may
-	 * draw excess current due to its use of internal dynamically
-	 * refreshed logic. If the external clocks are not present, place
-	 * the AK5386 in power-down mode (PDN pin = “L”).
-	 */
+	 
 
 	if (gpio_is_valid(priv->reset_gpio))
 		gpio_set_value(priv->reset_gpio, 1);

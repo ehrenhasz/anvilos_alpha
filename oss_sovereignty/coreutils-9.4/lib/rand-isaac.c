@@ -1,35 +1,6 @@
-/* Bob Jenkins's cryptographic random number generators, ISAAC and ISAAC64.
+ 
 
-   Copyright (C) 1999-2023 Free Software Foundation, Inc.
-   Copyright (C) 1997, 1998, 1999 Colin Plumb.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Colin Plumb and Paul Eggert.  */
-
-/*
- * --------------------------------------------------------------------
- * We need a source of random numbers for some data.
- * Cryptographically secure is desirable, but it's not life-or-death
- * so I can be a little bit experimental in the choice of RNGs here.
- *
- * This generator is based somewhat on RC4, but has analysis
- * <https://burtleburtle.net/bob/rand/isaacafa.html>
- * pointing to it actually being better.  I like it because it's nice
- * and fast, and because the author did good work analyzing it.
- * --------------------------------------------------------------------
- */
+ 
 #include <config.h>
 
 #include "rand-isaac.h"
@@ -37,25 +8,20 @@
 #include <limits.h>
 #include <string.h>
 
-/* If the platform supports unaligned access,
-   then don't have -fsanitize=undefined warn about it.  */
+ 
 #undef ATTRIBUTE_NO_WARN_SANITIZE_UNDEFINED
 #if !(_STRING_ARCH_unaligned || _STRING_INLINE_unaligned) \
     || __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
-# define ATTRIBUTE_NO_WARN_SANITIZE_UNDEFINED /* empty */
+# define ATTRIBUTE_NO_WARN_SANITIZE_UNDEFINED  
 #else
 # define ATTRIBUTE_NO_WARN_SANITIZE_UNDEFINED \
   __attribute__ ((__no_sanitize_undefined__))
 #endif
 
-/* A if 32-bit ISAAC, B if 64-bit.  This is a macro, not an inline
-   function, to prevent undefined behavior if the unused argument
-   shifts by more than a word width.  */
+ 
 #define IF32(a, b) (ISAAC_BITS == 32 ? (a) : (b))
 
-/* Discard bits outside the desired range.  On typical machines, any
-   decent compiler should optimize this function call away to nothing.
-   But machines with pad bits in integers may need to do more work.  */
+ 
 static inline isaac_word
 just (isaac_word a)
 {
@@ -63,15 +29,13 @@ just (isaac_word a)
   return a & desired_bits;
 }
 
-/* The index operation.  */
+ 
 static inline isaac_word
 ind (isaac_word const *m, isaac_word x)
 {
   if (sizeof *m * CHAR_BIT == ISAAC_BITS)
     {
-      /* The typical case, where words are exactly the right size.
-         Optimize this to a mask, an addition, and an indirect
-         load.  */
+       
       void const *void_m = m;
       char const *base_p = void_m;
       void const *word_p = base_p + (x & ((ISAAC_WORDS - 1) * sizeof *m));
@@ -80,30 +44,26 @@ ind (isaac_word const *m, isaac_word x)
     }
   else
     {
-      /* Atypical machines need more work.  */
+       
       return m[(x / (ISAAC_BITS / CHAR_BIT)) & (ISAAC_WORDS - 1)];
     }
 }
 
-/* Use and update *S to generate random data to fill RESULT.  */
+ 
 void ATTRIBUTE_NO_WARN_SANITIZE_UNDEFINED
 isaac_refill (struct isaac_state *s, isaac_word result[ISAAC_WORDS])
 {
-  /* Caches of S->a and S->b.  */
+   
   isaac_word a = s->a;
   isaac_word b = s->b + (++s->c);
 
-  /* Pointers into state array and into result.  */
+   
   isaac_word *m = s->m;
   isaac_word *r = result;
 
   enum { HALF = ISAAC_WORDS / 2 };
 
-  /* The central step.  S->m is the whole state array, while M is a
-     pointer to the current word.  OFF is the offset from M to the
-     word ISAAC_WORDS/2 words away in the SM array, i.e., +/-
-     ISAAC_WORDS/2.  A and B are state variables, and R the result.
-     This updates A, B, M[I], and R[I].  */
+   
   #define ISAAC_STEP(i, off, mix)                             \
     {                                                         \
       isaac_word x, y;                                        \
@@ -137,10 +97,7 @@ isaac_refill (struct isaac_state *s, isaac_word result[ISAAC_WORDS])
   s->b = b;
 }
 
-/*
- * The basic seed-scrambling step for initialization, based on Bob
- * Jenkins' 256-bit hash.
- */
+ 
 #if ISAAC_BITS == 32
  #define mix(a, b, c, d, e, f, g, h)       \
     {                                      \
@@ -169,7 +126,7 @@ isaac_refill (struct isaac_state *s, isaac_word result[ISAAC_WORDS])
 #endif
 
 
-/* The basic ISAAC initialization pass.  */
+ 
 #define ISAAC_MIX(s, a, b, c, d, e, f, g, h, seed) \
   {                                                \
     int i;                                         \
@@ -196,32 +153,24 @@ isaac_refill (struct isaac_state *s, isaac_word result[ISAAC_WORDS])
       }                                            \
   }
 
-#if 0 /* Provided for reference only; not used in this code */
-/*
- * Initialize the ISAAC RNG with the given seed material.
- * Its size MUST be a multiple of ISAAC_BYTES, and may be
- * stored in the s->m array.
- *
- * This is a generalization of the original ISAAC initialization code
- * to support larger seed sizes.  For seed sizes of 0 and ISAAC_BYTES,
- * it is identical.
- */
+#if 0  
+ 
 static void
 isaac_init (struct isaac_state *s, isaac_word const *seed, size_t seedsize)
 {
   isaac_word a, b, c, d, e, f, g, h;
 
-  a = b = c = d = e = f = g = h =          /* the golden ratio */
+  a = b = c = d = e = f = g = h =           
     IF32 (UINT32_C (0x9e3779b9), UINT64_C (0x9e3779b97f4a7c13));
-  for (int i = 0; i < 4; i++)              /* scramble it */
+  for (int i = 0; i < 4; i++)               
     mix (a, b, c, d, e, f, g, h);
   s->a = s->b = s->c = 0;
 
   if (seedsize)
     {
-      /* First pass (as in reference ISAAC code) */
+       
       ISAAC_MIX (s, a, b, c, d, e, f, g, h, seed);
-      /* Second and subsequent passes (extension to ISAAC) */
+       
       while (seedsize -= ISAAC_BYTES)
         {
           seed += ISAAC_WORDS;
@@ -232,18 +181,17 @@ isaac_init (struct isaac_state *s, isaac_word const *seed, size_t seedsize)
     }
   else
     {
-      /* The no seed case (as in reference ISAAC code) */
+       
       for (i = 0; i < ISAAC_WORDS; i++)
         s->m[i] = 0;
     }
 
-  /* Final pass */
+   
   ISAAC_MIX (s, a, b, c, d, e, f, g, h, s->m);
 }
 #endif
 
-/* Initialize *S to a somewhat-random value, derived from a seed
-   stored in S->m.  */
+ 
 void
 isaac_seed (struct isaac_state *s)
 {
@@ -257,15 +205,14 @@ isaac_seed (struct isaac_state *s)
   isaac_word h = IF32 (UINT32_C (0x30609119), UINT64_C (0x98f5704f6c44c0ab));
 
 #if 0
-  /* The initialization of a through h is a precomputed form of: */
-  a = b = c = d = e = f = g = h =          /* the golden ratio */
+   
+  a = b = c = d = e = f = g = h =           
     IF32 (UINT32_C (0x9e3779b9), UINT64_C (0x9e3779b97f4a7c13));
-  for (int i = 0; i < 4; i++)              /* scramble it */
+  for (int i = 0; i < 4; i++)               
     mix (a, b, c, d, e, f, g, h);
 #endif
 
-  /* Mix S->m so that every part of the seed affects every part of the
-     state.  */
+   
   ISAAC_MIX (s, a, b, c, d, e, f, g, h, s->m);
   ISAAC_MIX (s, a, b, c, d, e, f, g, h, s->m);
 

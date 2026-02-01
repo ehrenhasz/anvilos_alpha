@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2015, 2017, 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -41,7 +39,7 @@
 #define THRESH_COUNT			4
 #define STAGE_COUNT			3
 
-/* Over-temperature trip point values in mC */
+ 
 static const long temp_map_gen1[THRESH_COUNT][STAGE_COUNT] = {
 	{ 105000, 125000, 145000 },
 	{ 110000, 130000, 150000 },
@@ -56,14 +54,14 @@ static const long temp_map_gen2_v1[THRESH_COUNT][STAGE_COUNT] = {
 	{ 105000, 125000, 155000 },
 };
 
-#define TEMP_THRESH_STEP		5000 /* Threshold step: 5 C */
+#define TEMP_THRESH_STEP		5000  
 
 #define THRESH_MIN			0
 #define THRESH_MAX			3
 
 #define TEMP_STAGE_HYSTERESIS		2000
 
-/* Temperature in Milli Celsius reported during stage 0 if no ADC is present */
+ 
 #define DEFAULT_TEMP			37000
 
 struct qpnp_tm_chip {
@@ -76,7 +74,7 @@ struct qpnp_tm_chip {
 	unsigned int			stage;
 	unsigned int			prev_stage;
 	unsigned int			base;
-	/* protects .thresh, .stage and chip registers */
+	 
 	struct mutex			lock;
 	bool				initialized;
 
@@ -84,7 +82,7 @@ struct qpnp_tm_chip {
 	const long			(*temp_map)[THRESH_COUNT][STAGE_COUNT];
 };
 
-/* This array maps from GEN2 alarm state to GEN1 alarm stage */
+ 
 static const unsigned int alarm_state_map[8] = {0, 1, 1, 2, 2, 3, 3, 3};
 
 static int qpnp_tm_read(struct qpnp_tm_chip *chip, u16 addr, u8 *data)
@@ -105,14 +103,7 @@ static int qpnp_tm_write(struct qpnp_tm_chip *chip, u16 addr, u8 data)
 	return regmap_write(chip->map, chip->base + addr, data);
 }
 
-/**
- * qpnp_tm_decode_temp() - return temperature in mC corresponding to the
- *		specified over-temperature stage
- * @chip:		Pointer to the qpnp_tm chip
- * @stage:		Over-temperature stage
- *
- * Return: temperature in mC
- */
+ 
 static long qpnp_tm_decode_temp(struct qpnp_tm_chip *chip, unsigned int stage)
 {
 	if (!chip->temp_map || chip->thresh >= THRESH_COUNT || stage == 0 ||
@@ -122,12 +113,7 @@ static long qpnp_tm_decode_temp(struct qpnp_tm_chip *chip, unsigned int stage)
 	return (*chip->temp_map)[chip->thresh][stage - 1];
 }
 
-/**
- * qpnp_tm_get_temp_stage() - return over-temperature stage
- * @chip:		Pointer to the qpnp_tm chip
- *
- * Return: stage (GEN1) or state (GEN2) on success, or errno on failure.
- */
+ 
 static int qpnp_tm_get_temp_stage(struct qpnp_tm_chip *chip)
 {
 	int ret;
@@ -145,10 +131,7 @@ static int qpnp_tm_get_temp_stage(struct qpnp_tm_chip *chip)
 	return ret;
 }
 
-/*
- * This function updates the internal temp value based on the
- * current thermal stage and threshold as well as the previous stage
- */
+ 
 static int qpnp_tm_update_temp_no_adc(struct qpnp_tm_chip *chip)
 {
 	unsigned int stage, stage_new, stage_old;
@@ -170,11 +153,11 @@ static int qpnp_tm_update_temp_no_adc(struct qpnp_tm_chip *chip)
 	}
 
 	if (stage_new > stage_old) {
-		/* increasing stage, use lower bound */
+		 
 		chip->temp = qpnp_tm_decode_temp(chip, stage_new)
 				+ TEMP_STAGE_HYSTERESIS;
 	} else if (stage_new < stage_old) {
-		/* decreasing stage, use upper bound */
+		 
 		chip->temp = qpnp_tm_decode_temp(chip, stage_new + 1)
 				- TEMP_STAGE_HYSTERESIS;
 	}
@@ -226,10 +209,7 @@ static int qpnp_tm_update_critical_trip_temp(struct qpnp_tm_chip *chip,
 
 	WARN_ON(!mutex_is_locked(&chip->lock));
 
-	/*
-	 * Default: S2 and S3 shutdown enabled, thresholds at
-	 * lowest threshold set, monitoring at 25Hz
-	 */
+	 
 	reg = SHUTDOWN_CTRL1_RATE_25HZ;
 
 	if (temp == THERMAL_TEMP_INVALID ||
@@ -314,11 +294,7 @@ static int qpnp_tm_get_critical_trip_temp(struct qpnp_tm_chip *chip)
 	return THERMAL_TEMP_INVALID;
 }
 
-/*
- * This function initializes the internal temp value based on only the
- * current thermal stage and threshold. Setup threshold control and
- * disable shutdown override.
- */
+ 
 static int qpnp_tm_init(struct qpnp_tm_chip *chip)
 {
 	unsigned int stage;
@@ -356,7 +332,7 @@ static int qpnp_tm_init(struct qpnp_tm_chip *chip)
 	if (ret < 0)
 		goto out;
 
-	/* Enable the thermal alarm PMIC module in always-on mode. */
+	 
 	reg = ALARM_CTRL_FORCE_ENABLE;
 	ret = qpnp_tm_write(chip, QPNP_TM_REG_ALARM_CTRL, reg);
 
@@ -398,7 +374,7 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* ADC based measurements are optional */
+	 
 	chip->adc = devm_iio_channel_get(&pdev->dev, "thermal");
 	if (IS_ERR(chip->adc)) {
 		ret = PTR_ERR(chip->adc);
@@ -437,11 +413,7 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 	else
 		chip->temp_map = &temp_map_gen1;
 
-	/*
-	 * Register the sensor before initializing the hardware to be able to
-	 * read the trip points. get_temp() returns the default temperature
-	 * before the hardware initialization is completed.
-	 */
+	 
 	chip->tz_dev = devm_thermal_of_zone_register(
 		&pdev->dev, 0, chip, &qpnp_tm_sensor_ops);
 	if (IS_ERR(chip->tz_dev))

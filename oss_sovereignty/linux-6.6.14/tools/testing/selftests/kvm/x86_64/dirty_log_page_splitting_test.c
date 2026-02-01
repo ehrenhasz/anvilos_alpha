@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM dirty logging page splitting test
- *
- * Based on dirty_log_perf.c
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2023, Google, Inc.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,7 +69,7 @@ static void vcpu_worker(struct memstress_vcpu_args *vcpu_args)
 
 		vcpu_last_completed_iteration[vcpu_idx] = current_iteration;
 
-		/* Wait for the start of the next iteration to be signaled. */
+		 
 		while (current_iteration == READ_ONCE(iteration) &&
 		       READ_ONCE(iteration) >= 0 &&
 		       !READ_ONCE(host_quit))
@@ -114,7 +107,7 @@ static void run_test(enum vm_guest_mode mode, void *unused)
 		vm_enable_cap(vm, KVM_CAP_MANUAL_DIRTY_LOG_PROTECT2,
 			      dirty_log_manual_caps);
 
-	/* Start the iterations */
+	 
 	iteration = -1;
 	host_quit = false;
 
@@ -126,7 +119,7 @@ static void run_test(enum vm_guest_mode mode, void *unused)
 	run_vcpu_iteration(vm);
 	get_page_stats(vm, &stats_populated, "populating memory");
 
-	/* Enable dirty logging */
+	 
 	memstress_enable_dirty_logging(vm, SLOTS);
 
 	get_page_stats(vm, &stats_dirty_logging_enabled, "enabling dirty logging");
@@ -145,39 +138,28 @@ static void run_test(enum vm_guest_mode mode, void *unused)
 		}
 	}
 
-	/* Disable dirty logging */
+	 
 	memstress_disable_dirty_logging(vm, SLOTS);
 
 	get_page_stats(vm, &stats_dirty_logging_disabled, "disabling dirty logging");
 
-	/* Run vCPUs again to fault pages back in. */
+	 
 	run_vcpu_iteration(vm);
 	get_page_stats(vm, &stats_repopulated, "repopulating memory");
 
-	/*
-	 * Tell the vCPU threads to quit.  No need to manually check that vCPUs
-	 * have stopped running after disabling dirty logging, the join will
-	 * wait for them to exit.
-	 */
+	 
 	host_quit = true;
 	memstress_join_vcpu_threads(VCPUS);
 
 	memstress_free_bitmaps(bitmaps, SLOTS);
 	memstress_destroy_vm(vm);
 
-	/* Make assertions about the page counts. */
+	 
 	total_4k_pages = stats_populated.pages_4k;
 	total_4k_pages += stats_populated.pages_2m * 512;
 	total_4k_pages += stats_populated.pages_1g * 512 * 512;
 
-	/*
-	 * Check that all huge pages were split. Since large pages can only
-	 * exist in the data slot, and the vCPUs should have dirtied all pages
-	 * in the data slot, there should be no huge pages left after splitting.
-	 * Splitting happens at dirty log enable time without
-	 * KVM_CAP_MANUAL_DIRTY_LOG_PROTECT2 and after the first clear pass
-	 * with that capability.
-	 */
+	 
 	if (dirty_log_manual_caps) {
 		TEST_ASSERT_EQ(stats_clear_pass[0].hugepages, 0);
 		TEST_ASSERT_EQ(stats_clear_pass[0].pages_4k, total_4k_pages);
@@ -187,11 +169,7 @@ static void run_test(enum vm_guest_mode mode, void *unused)
 		TEST_ASSERT_EQ(stats_dirty_logging_enabled.pages_4k, total_4k_pages);
 	}
 
-	/*
-	 * Once dirty logging is disabled and the vCPUs have touched all their
-	 * memory again, the page counts should be the same as they were
-	 * right after initial population of memory.
-	 */
+	 
 	TEST_ASSERT_EQ(stats_populated.pages_4k, stats_repopulated.pages_4k);
 	TEST_ASSERT_EQ(stats_populated.pages_2m, stats_repopulated.pages_2m);
 	TEST_ASSERT_EQ(stats_populated.pages_1g, stats_repopulated.pages_1g);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "hmc.h"
 #include "defs.h"
@@ -13,10 +13,7 @@ static void irdma_ieq_receive(struct irdma_sc_vsi *vsi,
 static void irdma_ieq_tx_compl(struct irdma_sc_vsi *vsi, void *sqwrid);
 static void irdma_ilq_putback_rcvbuf(struct irdma_sc_qp *qp,
 				     struct irdma_puda_buf *buf, u32 wqe_idx);
-/**
- * irdma_puda_get_listbuf - get buffer from puda list
- * @list: list to use for buffers (ILQ or IEQ)
- */
+ 
 static struct irdma_puda_buf *irdma_puda_get_listbuf(struct list_head *list)
 {
 	struct irdma_puda_buf *buf = NULL;
@@ -29,10 +26,7 @@ static struct irdma_puda_buf *irdma_puda_get_listbuf(struct list_head *list)
 	return buf;
 }
 
-/**
- * irdma_puda_get_bufpool - return buffer from resource
- * @rsrc: resource to use for buffer
- */
+ 
 struct irdma_puda_buf *irdma_puda_get_bufpool(struct irdma_puda_rsrc *rsrc)
 {
 	struct irdma_puda_buf *buf = NULL;
@@ -52,11 +46,7 @@ struct irdma_puda_buf *irdma_puda_get_bufpool(struct irdma_puda_rsrc *rsrc)
 	return buf;
 }
 
-/**
- * irdma_puda_ret_bufpool - return buffer to rsrc list
- * @rsrc: resource to use for buffer
- * @buf: buffer to return to resource
- */
+ 
 void irdma_puda_ret_bufpool(struct irdma_puda_rsrc *rsrc,
 			    struct irdma_puda_buf *buf)
 {
@@ -69,13 +59,7 @@ void irdma_puda_ret_bufpool(struct irdma_puda_rsrc *rsrc,
 	rsrc->avail_buf_count++;
 }
 
-/**
- * irdma_puda_post_recvbuf - set wqe for rcv buffer
- * @rsrc: resource ptr
- * @wqe_idx: wqe index to use
- * @buf: puda buffer for rcv q
- * @initial: flag if during init time
- */
+ 
 static void irdma_puda_post_recvbuf(struct irdma_puda_rsrc *rsrc, u32 wqe_idx,
 				    struct irdma_puda_buf *buf, bool initial)
 {
@@ -83,7 +67,7 @@ static void irdma_puda_post_recvbuf(struct irdma_puda_rsrc *rsrc, u32 wqe_idx,
 	struct irdma_sc_qp *qp = &rsrc->qp;
 	u64 offset24 = 0;
 
-	/* Synch buffer for use by device */
+	 
 	dma_sync_single_for_device(rsrc->dev->hw->device, buf->mem.pa,
 				   buf->mem.size, DMA_BIDIRECTIONAL);
 	qp->qp_uk.rq_wrid_array[wqe_idx] = (uintptr_t)buf;
@@ -103,16 +87,12 @@ static void irdma_puda_post_recvbuf(struct irdma_puda_rsrc *rsrc, u32 wqe_idx,
 			      FIELD_PREP(IRDMAQPSQ_FRAG_LEN, buf->mem.size) |
 			      offset24);
 	}
-	dma_wmb(); /* make sure WQE is written before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, offset24);
 }
 
-/**
- * irdma_puda_replenish_rq - post rcv buffers
- * @rsrc: resource to use for buffer
- * @initial: flag if during init time
- */
+ 
 static int irdma_puda_replenish_rq(struct irdma_puda_rsrc *rsrc, bool initial)
 {
 	u32 i;
@@ -131,11 +111,7 @@ static int irdma_puda_replenish_rq(struct irdma_puda_rsrc *rsrc, bool initial)
 	return 0;
 }
 
-/**
- * irdma_puda_alloc_buf - allocate mem for buffer
- * @dev: iwarp device
- * @len: length of buffer
- */
+ 
 static struct irdma_puda_buf *irdma_puda_alloc_buf(struct irdma_sc_dev *dev,
 						   u32 len)
 {
@@ -169,11 +145,7 @@ free_virt:
 	return NULL;
 }
 
-/**
- * irdma_puda_dele_buf - delete buffer back to system
- * @dev: iwarp device
- * @buf: buffer to free
- */
+ 
 static void irdma_puda_dele_buf(struct irdma_sc_dev *dev,
 				struct irdma_puda_buf *buf)
 {
@@ -183,11 +155,7 @@ static void irdma_puda_dele_buf(struct irdma_sc_dev *dev,
 	kfree(buf->buf_mem.va);
 }
 
-/**
- * irdma_puda_get_next_send_wqe - return next wqe for processing
- * @qp: puda qp for wqe
- * @wqe_idx: wqe index for caller
- */
+ 
 static __le64 *irdma_puda_get_next_send_wqe(struct irdma_qp_uk *qp,
 					    u32 *wqe_idx)
 {
@@ -203,11 +171,7 @@ static __le64 *irdma_puda_get_next_send_wqe(struct irdma_qp_uk *qp,
 	return qp->sq_base[*wqe_idx].elem;
 }
 
-/**
- * irdma_puda_poll_info - poll cq for completion
- * @cq: cq for poll
- * @info: info return for successful completion
- */
+ 
 static int irdma_puda_poll_info(struct irdma_sc_cq *cq,
 				struct irdma_puda_cmpl_info *info)
 {
@@ -230,7 +194,7 @@ static int irdma_puda_poll_info(struct irdma_sc_cq *cq,
 	if (valid_bit != cq_uk->polarity)
 		return -ENOENT;
 
-	/* Ensure CQE contents are read after valid bit is checked */
+	 
 	dma_rmb();
 
 	if (cq->dev->hw_attrs.uk_attrs.hw_rev >= IRDMA_GEN_2)
@@ -246,13 +210,13 @@ static int irdma_puda_poll_info(struct irdma_sc_cq *cq,
 		if (polarity != cq_uk->polarity)
 			return -ENOENT;
 
-		/* Ensure ext CQE contents are read after ext valid bit is checked */
+		 
 		dma_rmb();
 
 		IRDMA_RING_MOVE_HEAD_NOCHECK(cq_uk->cq_ring);
 		if (!IRDMA_RING_CURRENT_HEAD(cq_uk->cq_ring))
 			cq_uk->polarity = !cq_uk->polarity;
-		/* update cq tail in cq shadow memory also */
+		 
 		IRDMA_RING_MOVE_TAIL(cq_uk->cq_ring);
 	}
 
@@ -314,12 +278,7 @@ static int irdma_puda_poll_info(struct irdma_sc_cq *cq,
 	return 0;
 }
 
-/**
- * irdma_puda_poll_cmpl - processes completion for cq
- * @dev: iwarp device
- * @cq: cq getting interrupt
- * @compl_err: return any completion err
- */
+ 
 int irdma_puda_poll_cmpl(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq,
 			 u32 *compl_err)
 {
@@ -362,10 +321,10 @@ int irdma_puda_poll_cmpl(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq,
 		buf = (struct irdma_puda_buf *)(uintptr_t)
 			      qp->rq_wrid_array[info.wqe_idx];
 
-		/* reusing so synch the buffer for CPU use */
+		 
 		dma_sync_single_for_cpu(dev->hw->device, buf->mem.pa,
 					buf->mem.size, DMA_BIDIRECTIONAL);
-		/* Get all the tcpip information in the buf header */
+		 
 		ret = irdma_puda_get_tcpip_info(&info, buf);
 		if (ret) {
 			rsrc->stats_rcvd_pkt_err++;
@@ -393,7 +352,7 @@ int irdma_puda_poll_cmpl(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq,
 		buf = (struct irdma_puda_buf *)(uintptr_t)
 					qp->sq_wrtrk_array[info.wqe_idx].wrid;
 
-		/* reusing so synch the buffer for CPU use */
+		 
 		dma_sync_single_for_cpu(dev->hw->device, buf->mem.pa,
 					buf->mem.size, DMA_BIDIRECTIONAL);
 		IRDMA_RING_SET_TAIL(qp->sq_ring, info.wqe_idx);
@@ -409,7 +368,7 @@ done:
 	IRDMA_RING_MOVE_HEAD_NOCHECK(cq_uk->cq_ring);
 	if (!IRDMA_RING_CURRENT_HEAD(cq_uk->cq_ring))
 		cq_uk->polarity = !cq_uk->polarity;
-	/* update cq tail in cq shadow memory also */
+	 
 	IRDMA_RING_MOVE_TAIL(cq_uk->cq_ring);
 	set_64bit_val(cq_uk->shadow_area, 0,
 		      IRDMA_RING_CURRENT_HEAD(cq_uk->cq_ring));
@@ -417,11 +376,7 @@ done:
 	return ret;
 }
 
-/**
- * irdma_puda_send - complete send wqe for transmit
- * @qp: puda qp for send
- * @info: buffer information for transmit
- */
+ 
 int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 {
 	__le64 *wqe;
@@ -430,7 +385,7 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 	u32 wqe_idx;
 	u8 iipt;
 
-	/* number of 32 bits DWORDS in header */
+	 
 	l4len = info->tcplen >> 2;
 	if (info->ipv4) {
 		iipt = 3;
@@ -445,11 +400,11 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 		return -ENOMEM;
 
 	qp->qp_uk.sq_wrtrk_array[wqe_idx].wrid = (uintptr_t)info->scratch;
-	/* Third line of WQE descriptor */
-	/* maclen is in words */
+	 
+	 
 
 	if (qp->dev->hw_attrs.uk_attrs.hw_rev >= IRDMA_GEN_2) {
-		hdr[0] = 0; /* Dest_QPN and Dest_QKey only for UD */
+		hdr[0] = 0;  
 		hdr[1] = FIELD_PREP(IRDMA_UDA_QPSQ_OPCODE, IRDMA_OP_TYPE_SEND) |
 			 FIELD_PREP(IRDMA_UDA_QPSQ_L4LEN, l4len) |
 			 FIELD_PREP(IRDMAQPSQ_AHID, info->ah_id) |
@@ -457,7 +412,7 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 			 FIELD_PREP(IRDMA_UDA_QPSQ_VALID,
 				    qp->qp_uk.swqe_polarity);
 
-		/* Forth line of WQE descriptor */
+		 
 
 		set_64bit_val(wqe, 0, info->paddr);
 		set_64bit_val(wqe, 8,
@@ -475,7 +430,7 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 			 FIELD_PREP(IRDMA_UDA_QPSQ_DOLOOPBACK, info->do_lpb) |
 			 FIELD_PREP(IRDMA_UDA_QPSQ_VALID, qp->qp_uk.swqe_polarity);
 
-		/* Forth line of WQE descriptor */
+		 
 
 		set_64bit_val(wqe, 0, info->paddr);
 		set_64bit_val(wqe, 8,
@@ -483,7 +438,7 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 	}
 
 	set_64bit_val(wqe, 16, hdr[0]);
-	dma_wmb(); /* make sure WQE is written before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr[1]);
 
@@ -493,11 +448,7 @@ int irdma_puda_send(struct irdma_sc_qp *qp, struct irdma_puda_send_info *info)
 	return 0;
 }
 
-/**
- * irdma_puda_send_buf - transmit puda buffer
- * @rsrc: resource to use for buffer
- * @buf: puda buffer to transmit
- */
+ 
 void irdma_puda_send_buf(struct irdma_puda_rsrc *rsrc,
 			 struct irdma_puda_buf *buf)
 {
@@ -506,9 +457,7 @@ void irdma_puda_send_buf(struct irdma_puda_rsrc *rsrc,
 	unsigned long flags;
 
 	spin_lock_irqsave(&rsrc->bufpool_lock, flags);
-	/* if no wqe available or not from a completion and we have
-	 * pending buffers, we must queue new buffer
-	 */
+	 
 	if (!rsrc->tx_wqe_avail_cnt || (buf && !list_empty(&rsrc->txpend))) {
 		list_add_tail(&buf->list, &rsrc->txpend);
 		spin_unlock_irqrestore(&rsrc->bufpool_lock, flags);
@@ -519,9 +468,7 @@ void irdma_puda_send_buf(struct irdma_puda_rsrc *rsrc,
 		return;
 	}
 	rsrc->tx_wqe_avail_cnt--;
-	/* if we are coming from a completion and have pending buffers
-	 * then Get one from pending list
-	 */
+	 
 	if (!buf) {
 		buf = irdma_puda_get_listbuf(&rsrc->txpend);
 		if (!buf)
@@ -541,7 +488,7 @@ void irdma_puda_send_buf(struct irdma_puda_rsrc *rsrc,
 		info.do_lpb = buf->do_lpb;
 	}
 
-	/* Synch buffer for use by device */
+	 
 	dma_sync_single_for_cpu(rsrc->dev->hw->device, buf->mem.pa,
 				buf->mem.size, DMA_BIDIRECTIONAL);
 	ret = irdma_puda_send(&rsrc->qp, &info);
@@ -559,10 +506,7 @@ done:
 	spin_unlock_irqrestore(&rsrc->bufpool_lock, flags);
 }
 
-/**
- * irdma_puda_qp_setctx - during init, set qp's context
- * @rsrc: qp's resource
- */
+ 
 static void irdma_puda_qp_setctx(struct irdma_puda_rsrc *rsrc)
 {
 	struct irdma_sc_qp *qp = &rsrc->qp;
@@ -597,11 +541,7 @@ static void irdma_puda_qp_setctx(struct irdma_puda_rsrc *rsrc)
 			     8, qp_ctx, IRDMA_QP_CTX_SIZE, false);
 }
 
-/**
- * irdma_puda_qp_wqe - setup wqe for qp create
- * @dev: Device
- * @qp: Resource qp
- */
+ 
 static int irdma_puda_qp_wqe(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 {
 	struct irdma_sc_cqp *cqp;
@@ -624,7 +564,7 @@ static int irdma_puda_qp_wqe(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 	      FIELD_PREP(IRDMA_CQPSQ_QP_CQNUMVALID, 1) |
 	      FIELD_PREP(IRDMA_CQPSQ_QP_NEXTIWSTATE, 2) |
 	      FIELD_PREP(IRDMA_CQPSQ_WQEVALID, cqp->polarity);
-	dma_wmb(); /* make sure WQE is written before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -637,10 +577,7 @@ static int irdma_puda_qp_wqe(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 	return status;
 }
 
-/**
- * irdma_puda_qp_create - create qp for resource
- * @rsrc: resource to use for buffer
- */
+ 
 static int irdma_puda_qp_create(struct irdma_puda_rsrc *rsrc)
 {
 	struct irdma_sc_qp *qp = &rsrc->qp;
@@ -715,11 +652,7 @@ static int irdma_puda_qp_create(struct irdma_puda_rsrc *rsrc)
 	return ret;
 }
 
-/**
- * irdma_puda_cq_wqe - setup wqe for CQ create
- * @dev: Device
- * @cq: resource for cq
- */
+ 
 static int irdma_puda_cq_wqe(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 {
 	__le64 *wqe;
@@ -749,7 +682,7 @@ static int irdma_puda_cq_wqe(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 	      FIELD_PREP(IRDMA_CQPSQ_CQ_ENCEQEMASK, 1) |
 	      FIELD_PREP(IRDMA_CQPSQ_CQ_CEQIDVALID, 1) |
 	      FIELD_PREP(IRDMA_CQPSQ_WQEVALID, cqp->polarity);
-	dma_wmb(); /* make sure WQE is written before valid bit is set */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24, hdr);
 
@@ -768,10 +701,7 @@ static int irdma_puda_cq_wqe(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 	return status;
 }
 
-/**
- * irdma_puda_cq_create - create cq for resource
- * @rsrc: resource for which cq to create
- */
+ 
 static int irdma_puda_cq_create(struct irdma_puda_rsrc *rsrc)
 {
 	struct irdma_sc_dev *dev = rsrc->dev;
@@ -824,10 +754,7 @@ error:
 	return ret;
 }
 
-/**
- * irdma_puda_free_qp - free qp for resource
- * @rsrc: resource for which qp to free
- */
+ 
 static void irdma_puda_free_qp(struct irdma_puda_rsrc *rsrc)
 {
 	int ret;
@@ -856,10 +783,7 @@ static void irdma_puda_free_qp(struct irdma_puda_rsrc *rsrc)
 	rsrc->dev->ws_remove(rsrc->qp.vsi, rsrc->qp.user_pri);
 }
 
-/**
- * irdma_puda_free_cq - free cq for resource
- * @rsrc: resource for which cq to free
- */
+ 
 static void irdma_puda_free_cq(struct irdma_puda_rsrc *rsrc)
 {
 	int ret;
@@ -883,12 +807,7 @@ static void irdma_puda_free_cq(struct irdma_puda_rsrc *rsrc)
 	}
 }
 
-/**
- * irdma_puda_dele_rsrc - delete all resources during close
- * @vsi: VSI structure of device
- * @type: type of resource to dele
- * @reset: true if reset chip
- */
+ 
 void irdma_puda_dele_rsrc(struct irdma_sc_vsi *vsi, enum puda_rsrc_type type,
 			  bool reset)
 {
@@ -947,7 +866,7 @@ void irdma_puda_dele_rsrc(struct irdma_sc_vsi *vsi, enum puda_rsrc_type type,
 		ibdev_dbg(to_ibdev(rsrc->dev), "PUDA: error no resources\n");
 		break;
 	}
-	/* Free all allocated puda buffers for both tx and rx */
+	 
 	buf = rsrc->alloclist;
 	while (buf) {
 		nextbuf = buf->next;
@@ -959,11 +878,7 @@ void irdma_puda_dele_rsrc(struct irdma_sc_vsi *vsi, enum puda_rsrc_type type,
 	kfree(vmem->va);
 }
 
-/**
- * irdma_puda_allocbufs - allocate buffers for resource
- * @rsrc: resource for buffer allocation
- * @count: number of buffers to create
- */
+ 
 static int irdma_puda_allocbufs(struct irdma_puda_rsrc *rsrc, u32 count)
 {
 	u32 i;
@@ -992,11 +907,7 @@ static int irdma_puda_allocbufs(struct irdma_puda_rsrc *rsrc, u32 count)
 	return 0;
 }
 
-/**
- * irdma_puda_create_rsrc - create resource (ilq or ieq)
- * @vsi: sc VSI struct
- * @info: resource information
- */
+ 
 int irdma_puda_create_rsrc(struct irdma_sc_vsi *vsi,
 			   struct irdma_puda_rsrc_info *info)
 {
@@ -1049,7 +960,7 @@ int irdma_puda_create_rsrc(struct irdma_sc_vsi *vsi,
 	rsrc->sq_wrtrk_array = (struct irdma_sq_uk_wr_trk_info *)
 			       ((u8 *)vmem->va + pudasize);
 	rsrc->rq_wrid_array = (u64 *)((u8 *)vmem->va + pudasize + sqwridsize);
-	/* Initialize all ieq lists */
+	 
 	INIT_LIST_HEAD(&rsrc->bufpool);
 	INIT_LIST_HEAD(&rsrc->txpend);
 
@@ -1111,19 +1022,14 @@ error:
 	return ret;
 }
 
-/**
- * irdma_ilq_putback_rcvbuf - ilq buffer to put back on rq
- * @qp: ilq's qp resource
- * @buf: puda buffer for rcv q
- * @wqe_idx:  wqe index of completed rcvbuf
- */
+ 
 static void irdma_ilq_putback_rcvbuf(struct irdma_sc_qp *qp,
 				     struct irdma_puda_buf *buf, u32 wqe_idx)
 {
 	__le64 *wqe;
 	u64 offset8, offset24;
 
-	/* Synch buffer for use by device */
+	 
 	dma_sync_single_for_device(qp->dev->hw->device, buf->mem.pa,
 				   buf->mem.size, DMA_BIDIRECTIONAL);
 	wqe = qp->qp_uk.rq_base[wqe_idx].elem;
@@ -1135,7 +1041,7 @@ static void irdma_ilq_putback_rcvbuf(struct irdma_sc_qp *qp,
 		else
 			offset8 |= FIELD_PREP(IRDMAQPSQ_VALID, 1);
 		set_64bit_val(wqe, 8, offset8);
-		dma_wmb(); /* make sure WQE is written before valid bit is set */
+		dma_wmb();  
 	}
 	if (offset24)
 		offset24 = 0;
@@ -1145,12 +1051,7 @@ static void irdma_ilq_putback_rcvbuf(struct irdma_sc_qp *qp,
 	set_64bit_val(wqe, 24, offset24);
 }
 
-/**
- * irdma_ieq_get_fpdu_len - get length of fpdu with or without marker
- * @pfpdu: pointer to fpdu
- * @datap: pointer to data in the buffer
- * @rcv_seq: seqnum of the data buffer
- */
+ 
 static u16 irdma_ieq_get_fpdu_len(struct irdma_pfpdu *pfpdu, u8 *datap,
 				  u32 rcv_seq)
 {
@@ -1188,14 +1089,7 @@ static u16 irdma_ieq_get_fpdu_len(struct irdma_pfpdu *pfpdu, u8 *datap,
 	return total_len;
 }
 
-/**
- * irdma_ieq_copy_to_txbuf - copydata from rcv buf to tx buf
- * @buf: rcv buffer with partial
- * @txbuf: tx buffer for sending back
- * @buf_offset: rcv buffer offset to copy from
- * @txbuf_offset: at offset in tx buf to copy
- * @len: length of data to copy
- */
+ 
 static void irdma_ieq_copy_to_txbuf(struct irdma_puda_buf *buf,
 				    struct irdma_puda_buf *txbuf,
 				    u16 buf_offset, u32 txbuf_offset, u32 len)
@@ -1206,11 +1100,7 @@ static void irdma_ieq_copy_to_txbuf(struct irdma_puda_buf *buf,
 	memcpy(mem2, mem1, len);
 }
 
-/**
- * irdma_ieq_setup_tx_buf - setup tx buffer for partial handling
- * @buf: reeive buffer with partial
- * @txbuf: buffer to prepare
- */
+ 
 static void irdma_ieq_setup_tx_buf(struct irdma_puda_buf *buf,
 				   struct irdma_puda_buf *txbuf)
 {
@@ -1228,11 +1118,7 @@ static void irdma_ieq_setup_tx_buf(struct irdma_puda_buf *buf,
 	}
 }
 
-/**
- * irdma_ieq_check_first_buf - check if rcv buffer's seq is in range
- * @buf: receive exception buffer
- * @fps: first partial sequence number
- */
+ 
 static void irdma_ieq_check_first_buf(struct irdma_puda_buf *buf, u32 fps)
 {
 	u32 offset;
@@ -1247,14 +1133,7 @@ static void irdma_ieq_check_first_buf(struct irdma_puda_buf *buf, u32 fps)
 	}
 }
 
-/**
- * irdma_ieq_compl_pfpdu - write txbuf with full fpdu
- * @ieq: ieq resource
- * @rxlist: ieq's received buffer list
- * @pbufl: temporary list for buffers for fpddu
- * @txbuf: tx buffer for fpdu
- * @fpdu_len: total length of fpdu
- */
+ 
 static void irdma_ieq_compl_pfpdu(struct irdma_puda_rsrc *ieq,
 				  struct list_head *rxlist,
 				  struct list_head *pbufl,
@@ -1283,7 +1162,7 @@ static void irdma_ieq_compl_pfpdu(struct irdma_puda_rsrc *ieq,
 
 	do {
 		if (buf->datalen >= fpdu_len) {
-			/* copied full fpdu */
+			 
 			irdma_ieq_copy_to_txbuf(buf, txbuf, bufoffset, txoffset,
 						fpdu_len);
 			buf->datalen -= fpdu_len;
@@ -1291,7 +1170,7 @@ static void irdma_ieq_compl_pfpdu(struct irdma_puda_rsrc *ieq,
 			buf->seqnum = nextseqnum;
 			break;
 		}
-		/* copy partial fpdu */
+		 
 		irdma_ieq_copy_to_txbuf(buf, txbuf, bufoffset, txoffset,
 					buf->datalen);
 		txoffset += buf->datalen;
@@ -1304,21 +1183,14 @@ static void irdma_ieq_compl_pfpdu(struct irdma_puda_rsrc *ieq,
 		bufoffset = (u16)(buf->data - (u8 *)buf->mem.va);
 	} while (1);
 
-	/* last buffer on the list*/
+	 
 	if (buf->datalen)
 		list_add(&buf->list, rxlist);
 	else
 		irdma_puda_ret_bufpool(ieq, buf);
 }
 
-/**
- * irdma_ieq_create_pbufl - create buffer list for single fpdu
- * @pfpdu: pointer to fpdu
- * @rxlist: resource list for receive ieq buffes
- * @pbufl: temp. list for buffers for fpddu
- * @buf: first receive buffer
- * @fpdu_len: total length of fpdu
- */
+ 
 static int irdma_ieq_create_pbufl(struct irdma_pfpdu *pfpdu,
 				  struct list_head *rxlist,
 				  struct list_head *pbufl,
@@ -1355,13 +1227,7 @@ static int irdma_ieq_create_pbufl(struct irdma_pfpdu *pfpdu,
 	return status;
 }
 
-/**
- * irdma_ieq_handle_partial - process partial fpdu buffer
- * @ieq: ieq resource
- * @pfpdu: partial management per user qp
- * @buf: receive buffer
- * @fpdu_len: fpdu len in the buffer
- */
+ 
 static int irdma_ieq_handle_partial(struct irdma_puda_rsrc *ieq,
 				    struct irdma_pfpdu *pfpdu,
 				    struct irdma_puda_buf *buf, u16 fpdu_len)
@@ -1370,7 +1236,7 @@ static int irdma_ieq_handle_partial(struct irdma_puda_rsrc *ieq,
 	u8 *crcptr;
 	u32 mpacrc;
 	u32 seqnum = buf->seqnum;
-	struct list_head pbufl; /* partial buffer list */
+	struct list_head pbufl;  
 	struct irdma_puda_buf *txbuf = NULL;
 	struct list_head *rxlist = &pfpdu->rxlist;
 
@@ -1424,12 +1290,7 @@ error:
 	return status;
 }
 
-/**
- * irdma_ieq_process_buf - process buffer rcvd for ieq
- * @ieq: ieq resource
- * @pfpdu: partial management per user qp
- * @buf: receive buffer
- */
+ 
 static int irdma_ieq_process_buf(struct irdma_puda_rsrc *ieq,
 				 struct irdma_pfpdu *pfpdu,
 				 struct irdma_puda_buf *buf)
@@ -1481,16 +1342,16 @@ static int irdma_ieq_process_buf(struct irdma_puda_rsrc *ieq,
 		datalen -= fpdu_len;
 	}
 	if (full) {
-		/* copy full pdu's in the txbuf and send them out */
+		 
 		txbuf = irdma_puda_get_bufpool(ieq);
 		if (!txbuf) {
 			pfpdu->no_tx_bufs++;
 			list_add(&buf->list, rxlist);
 			return -ENOBUFS;
 		}
-		/* modify txbuf's buffer header */
+		 
 		irdma_ieq_setup_tx_buf(buf, txbuf);
-		/* copy full fpdu's to new buffer */
+		 
 		if (ieq->dev->hw_attrs.uk_attrs.hw_rev >= IRDMA_GEN_2) {
 			irdma_ieq_copy_to_txbuf(buf, txbuf, ioffset,
 						txbuf->hdrlen, len);
@@ -1524,11 +1385,7 @@ static int irdma_ieq_process_buf(struct irdma_puda_rsrc *ieq,
 	return 0;
 }
 
-/**
- * irdma_ieq_process_fpdus - process fpdu's buffers on its list
- * @qp: qp for which partial fpdus
- * @ieq: ieq resource
- */
+ 
 void irdma_ieq_process_fpdus(struct irdma_sc_qp *qp,
 			     struct irdma_puda_rsrc *ieq)
 {
@@ -1546,12 +1403,12 @@ void irdma_ieq_process_fpdus(struct irdma_sc_qp *qp,
 			break;
 		}
 		if (buf->seqnum != pfpdu->rcv_nxt) {
-			/* This could be out of order or missing packet */
+			 
 			pfpdu->out_of_order++;
 			list_add(&buf->list, rxlist);
 			break;
 		}
-		/* keep processing buffers from the head of the list */
+		 
 		status = irdma_ieq_process_buf(ieq, pfpdu, buf);
 		if (status == -EINVAL) {
 			pfpdu->mpa_crc_err = true;
@@ -1561,17 +1418,13 @@ void irdma_ieq_process_fpdus(struct irdma_sc_qp *qp,
 				pfpdu->crc_err++;
 				ieq->crc_err++;
 			}
-			/* create CQP for AE */
+			 
 			irdma_ieq_mpa_crc_ae(ieq->dev, qp);
 		}
 	} while (!status);
 }
 
-/**
- * irdma_ieq_create_ah - create an address handle for IEQ
- * @qp: qp pointer
- * @buf: buf received on IEQ used to create AH
- */
+ 
 static int irdma_ieq_create_ah(struct irdma_sc_qp *qp, struct irdma_puda_buf *buf)
 {
 	struct irdma_ah_info ah_info = {};
@@ -1583,12 +1436,7 @@ static int irdma_ieq_create_ah(struct irdma_sc_qp *qp, struct irdma_puda_buf *bu
 				    &qp->pfpdu.ah);
 }
 
-/**
- * irdma_ieq_handle_exception - handle qp's exception
- * @ieq: ieq resource
- * @qp: qp receiving excpetion
- * @buf: receive buffer
- */
+ 
 static void irdma_ieq_handle_exception(struct irdma_puda_rsrc *ieq,
 				       struct irdma_sc_qp *qp,
 				       struct irdma_puda_buf *buf)
@@ -1596,7 +1444,7 @@ static void irdma_ieq_handle_exception(struct irdma_puda_rsrc *ieq,
 	struct irdma_pfpdu *pfpdu = &qp->pfpdu;
 	u32 *hw_host_ctx = (u32 *)qp->hw_host_ctx;
 	u32 rcv_wnd = hw_host_ctx[23];
-	/* first partial seq # in q2 */
+	 
 	u32 fps = *(u32 *)(qp->q2_buf + Q2_FPSN_OFFSET);
 	struct list_head *rxlist = &pfpdu->rxlist;
 	unsigned long flags = 0;
@@ -1612,7 +1460,7 @@ static void irdma_ieq_handle_exception(struct irdma_puda_rsrc *ieq,
 		goto error;
 	}
 	if (pfpdu->mode && fps != pfpdu->fps) {
-		/* clean up qp as it is new partial sequence */
+		 
 		irdma_ieq_cleanup_qp(ieq, qp);
 		ibdev_dbg(to_ibdev(ieq->dev), "IEQ: restarting new partial\n");
 		pfpdu->mode = false;
@@ -1621,7 +1469,7 @@ static void irdma_ieq_handle_exception(struct irdma_puda_rsrc *ieq,
 	if (!pfpdu->mode) {
 		print_hex_dump_debug("IEQ: Q2 BUFFER", DUMP_PREFIX_OFFSET, 16,
 				     8, (u64 *)qp->q2_buf, 128, false);
-		/* First_Partial_Sequence_Number check */
+		 
 		pfpdu->rcv_nxt = fps;
 		pfpdu->fps = fps;
 		pfpdu->mode = true;
@@ -1643,11 +1491,11 @@ static void irdma_ieq_handle_exception(struct irdma_puda_rsrc *ieq,
 	if (!list_empty(rxlist)) {
 		if (buf->seqnum != pfpdu->nextseqnum) {
 			irdma_send_ieq_ack(qp);
-			/* throw away out-of-order, duplicates*/
+			 
 			goto error;
 		}
 	}
-	/* Insert buf before head */
+	 
 	list_add_tail(&buf->list, rxlist);
 	pfpdu->nextseqnum = buf->seqnum + buf->datalen;
 	pfpdu->lastrcv_buf = buf;
@@ -1671,11 +1519,7 @@ error:
 	spin_unlock_irqrestore(&pfpdu->lock, flags);
 }
 
-/**
- * irdma_ieq_receive - received exception buffer
- * @vsi: VSI of device
- * @buf: exception buffer received
- */
+ 
 static void irdma_ieq_receive(struct irdma_sc_vsi *vsi,
 			      struct irdma_puda_buf *buf)
 {
@@ -1690,20 +1534,13 @@ static void irdma_ieq_receive(struct irdma_sc_vsi *vsi,
 	} else {
 		irdma_ieq_handle_exception(ieq, qp, buf);
 	}
-	/*
-	 * ieq->rx_wqe_idx is used by irdma_puda_replenish_rq()
-	 * on which wqe_idx to start replenish rq
-	 */
+	 
 	if (!ieq->rxq_invalid_cnt)
 		ieq->rx_wqe_idx = wqe_idx;
 	ieq->rxq_invalid_cnt++;
 }
 
-/**
- * irdma_ieq_tx_compl - put back after sending completed exception buffer
- * @vsi: sc VSI struct
- * @sqwrid: pointer to puda buffer
- */
+ 
 static void irdma_ieq_tx_compl(struct irdma_sc_vsi *vsi, void *sqwrid)
 {
 	struct irdma_puda_rsrc *ieq = vsi->ieq;
@@ -1712,11 +1549,7 @@ static void irdma_ieq_tx_compl(struct irdma_sc_vsi *vsi, void *sqwrid)
 	irdma_puda_ret_bufpool(ieq, buf);
 }
 
-/**
- * irdma_ieq_cleanup_qp - qp is being destroyed
- * @ieq: ieq resource
- * @qp: all pending fpdu buffers
- */
+ 
 void irdma_ieq_cleanup_qp(struct irdma_puda_rsrc *ieq, struct irdma_sc_qp *qp)
 {
 	struct irdma_puda_buf *buf;

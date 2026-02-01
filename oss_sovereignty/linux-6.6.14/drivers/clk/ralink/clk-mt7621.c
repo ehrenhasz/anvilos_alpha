@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediatek MT7621 Clock Driver
- * Author: Sergio Paracuellos <sergio.paracuellos@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -16,7 +13,7 @@
 #include <dt-bindings/clock/mt7621-clk.h>
 #include <dt-bindings/reset/mt7621-reset.h>
 
-/* Configuration registers */
+ 
 #define SYSC_REG_SYSTEM_CONFIG0         0x10
 #define SYSC_REG_SYSTEM_CONFIG1         0x14
 #define SYSC_REG_CLKCFG0		0x2c
@@ -133,12 +130,7 @@ static const struct clk_ops mt7621_gate_ops = {
 static int mt7621_gate_ops_init(struct device *dev,
 				struct mt7621_gate *sclk)
 {
-	/*
-	 * There are drivers for this SoC that are older
-	 * than clock driver and are not prepared for the clock.
-	 * We don't want the kernel to disable anything so we
-	 * add CLK_IS_CRITICAL flag here.
-	 */
+	 
 	struct clk_init_data init = {
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 		.num_parents = 1,

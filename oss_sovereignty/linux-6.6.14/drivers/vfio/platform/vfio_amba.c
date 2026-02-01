@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 - Virtual Open Systems
- * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -16,7 +13,7 @@
 #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis@virtualopensystems.com>"
 #define DRIVER_DESC     "VFIO for AMBA devices - User Level meta-driver"
 
-/* probing devices from the AMBA bus */
+ 
 
 static struct resource *get_amba_resource(struct vfio_platform_device *vdev,
 					  int i)
@@ -37,7 +34,7 @@ static int get_amba_irq(struct vfio_platform_device *vdev, int i)
 	if (i < AMBA_NR_IRQS)
 		ret = adev->irq[i];
 
-	/* zero is an unset IRQ for AMBA devices */
+	 
 	return ret ? ret : -ENXIO;
 }
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
-* Copyright(c) 2015 - 2018 Intel Corporation.
-*/
+ 
+ 
 
 #if !defined(__HFI1_TRACE_EXTRA_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_EXTRA_H
@@ -11,11 +9,7 @@
 
 #include "hfi.h"
 
-/*
- * Note:
- * This produces a REALLY ugly trace in the console output when the string is
- * too long.
- */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_dbg
@@ -43,10 +37,7 @@ DECLARE_EVENT_CLASS(hfi1_trace_template,
 
 #pragma GCC diagnostic pop
 
-/*
- * It may be nice to macroize the __hfi1_trace but the va_* stuff requires an
- * actual function to work and can not be in a macro.
- */
+ 
 #define __hfi1_trace_def(lvl) \
 void __printf(2, 3) __hfi1_trace_##lvl(const char *funct, char *fmt, ...); \
 									\
@@ -69,12 +60,7 @@ void __printf(2, 3) __hfi1_trace_##lvl(const char *func, char *fmt, ...)\
 	return;								\
 }
 
-/*
- * To create a new trace level simply define it below and as a __hfi1_trace_fn
- * in trace.c. This will create all the hooks for calling
- * hfi1_cdbg(LVL, fmt, ...); as well as take care of all
- * the debugfs stuff.
- */
+ 
 __hfi1_trace_def(AFFINITY);
 __hfi1_trace_def(PKT);
 __hfi1_trace_def(PROC);
@@ -97,10 +83,7 @@ __hfi1_trace_def(IOCTL);
 #define hfi1_dbg(fmt, ...) \
 	hfi1_cdbg(DEBUG, fmt, ##__VA_ARGS__)
 
-/*
- * Define HFI1_EARLY_DBG at compile time or here to enable early trace
- * messages. Do not check in an enablement for this.
- */
+ 
 
 #ifdef HFI1_EARLY_DBG
 #define hfi1_dbg_early(fmt, ...) \
@@ -109,7 +92,7 @@ __hfi1_trace_def(IOCTL);
 #define hfi1_dbg_early(fmt, ...)
 #endif
 
-#endif /* __HFI1_TRACE_EXTRA_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

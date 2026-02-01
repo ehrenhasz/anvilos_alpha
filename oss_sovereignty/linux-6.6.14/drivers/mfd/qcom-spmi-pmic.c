@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -68,16 +66,7 @@ static const struct of_device_id pmic_spmi_id_table[] = {
 	{ }
 };
 
-/*
- * A PMIC can be represented by multiple SPMI devices, but
- * only the base PMIC device will contain a reference to
- * the revision information.
- *
- * This function takes a pointer to a pmic device and
- * returns a pointer to the base PMIC device.
- *
- * This only supports PMICs with 1 or 2 USIDs.
- */
+ 
 static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, struct qcom_spmi_dev *ctx)
 {
 	struct device_node *spmi_bus;
@@ -85,10 +74,7 @@ static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, str
 	int function_parent_usid, ret;
 	u32 pmic_addr;
 
-	/*
-	 * Quick return if the function device is already in the base
-	 * USID. This will always be hit for PMICs with only 1 USID.
-	 */
+	 
 	if (sdev->usid % ctx->num_usids == 0) {
 		get_device(&sdev->dev);
 		return sdev;
@@ -96,13 +82,7 @@ static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, str
 
 	function_parent_usid = sdev->usid;
 
-	/*
-	 * Walk through the list of PMICs until we find the sibling USID.
-	 * The goal is to find the first USID which is less than the
-	 * number of USIDs in the PMIC array, e.g. for a PMIC with 2 USIDs
-	 * where the function device is under USID 3, we want to find the
-	 * device for USID 2.
-	 */
+	 
 	spmi_bus = of_get_parent(sdev->dev.of_node);
 	sdev = ERR_PTR(-ENODATA);
 	for_each_child_of_node(spmi_bus, child) {
@@ -116,10 +96,7 @@ static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, str
 		if (pmic_addr == function_parent_usid - (ctx->num_usids - 1)) {
 			sdev = spmi_device_from_of(child);
 			if (!sdev) {
-				/*
-				 * If the base USID for this PMIC hasn't been
-				 * registered yet then we need to defer.
-				 */
+				 
 				sdev = ERR_PTR(-EPROBE_DEFER);
 			}
 			of_node_put(child);
@@ -142,10 +119,7 @@ static int pmic_spmi_get_base_revid(struct spmi_device *sdev, struct qcom_spmi_d
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
-	/*
-	 * Copy revid info from base device if it has probed and is still
-	 * bound to its driver.
-	 */
+	 
 	mutex_lock(&pmic_spmi_revid_lock);
 	base_ctx = spmi_device_get_drvdata(base);
 	if (!base_ctx) {
@@ -197,12 +171,7 @@ static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
 			return ret;
 	}
 
-	/*
-	 * In early versions of PM8941 and PM8226, the major revision number
-	 * started incrementing from 0 (eg 0 = v1.0, 1 = v2.0).
-	 * Increment the major revision number here if the chip is an early
-	 * version of PM8941 or PM8226.
-	 */
+	 
 	if ((pmic->subtype == PM8941_SUBTYPE || pmic->subtype == PM8226_SUBTYPE) &&
 	    pmic->major < PMIC_REV4_V2)
 		pmic->major++;
@@ -216,23 +185,13 @@ static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
 	return 0;
 }
 
-/**
- * qcom_pmic_get() - Get a pointer to the base PMIC device
- *
- * This function takes a struct device for a driver which is a child of a PMIC.
- * And locates the PMIC revision information for it.
- *
- * @dev: the pmic function device
- * @return: the struct qcom_spmi_pmic* pointer associated with the function device
- */
+ 
 const struct qcom_spmi_pmic *qcom_pmic_get(struct device *dev)
 {
 	struct spmi_device *sdev;
 	struct qcom_spmi_dev *spmi;
 
-	/*
-	 * Make sure the device is actually a child of a PMIC
-	 */
+	 
 	if (!of_match_device(pmic_spmi_id_table, dev->parent))
 		return ERR_PTR(-EINVAL);
 
@@ -266,7 +225,7 @@ static int pmic_spmi_probe(struct spmi_device *sdev)
 
 	ctx->num_usids = (uintptr_t)of_device_get_match_data(&sdev->dev);
 
-	/* Only the first slave id for a PMIC contains this information */
+	 
 	if (sdev->usid % ctx->num_usids == 0) {
 		ret = pmic_spmi_load_revid(regmap, &sdev->dev, &ctx->pmic);
 		if (ret < 0)

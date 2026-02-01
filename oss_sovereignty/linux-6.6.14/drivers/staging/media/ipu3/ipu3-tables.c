@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include "ipu3-tables.h"
 
-#define X					0	/*  Don't care value */
+#define X					0	 
 
 const struct imgu_css_bds_config
 			imgu_css_bds_configs[IMGU_BDS_CONFIG_LEN] = { {
-	/* Scale factor 32 / (32 + 0) = 1 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 0, 64, 6, 0, 0, 0 } },
 		.odd = { { 0, 0, 64, 6, 0, 0, 0 } } },
@@ -19,7 +19,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 0,
 	.ver_ds_en = 0
 }, {
-	/* Scale factor 32 / (32 + 1) = 0.969697 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 3, 122, 7, 3, 0, 0 },
 			 { 0, 0, 122, 7, 7, -1, 0 },
@@ -155,7 +155,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 2) = 0.941176 */
+	 
 	.hor_phase_arr = {
 		.even = { { -1, 6, 118, 7, 6, -1, 0 },
 			 { 0, 0, 117, 7, 13, -2, 0 },
@@ -227,7 +227,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 3) = 0.914286 */
+	 
 	.hor_phase_arr = {
 		.even = { { -2, 9, 114, 7, 9, -2, 0 },
 			 { -1, 0, 114, 7, 20, -5, 0 },
@@ -363,7 +363,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 4) = 0.888889 */
+	 
 	.hor_phase_arr = {
 		.even = { { -3, 12, 110, 7, 12, -3, 0 },
 			 { -1, 0, 110, 7, 26, -7, 0 },
@@ -403,7 +403,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 5) = 0.864865 */
+	 
 	.hor_phase_arr = {
 		.even = { { -5, 14, 110, 7, 14, -5, 0 },
 			 { -1, 0, 106, 7, 32, -9, 0 },
@@ -539,7 +539,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 6) = 0.842105 */
+	 
 	.hor_phase_arr = {
 		.even = { { -6, 17, 106, 7, 17, -6, 0 },
 			 { -2, 0, 102, 7, 38, -10, 0 },
@@ -611,7 +611,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 7) = 0.820513 */
+	 
 	.hor_phase_arr = {
 		.even = { { -7, 19, 104, 7, 19, -7, 0 },
 			 { -2, 0, 98, 7, 43, -11, 0 },
@@ -747,7 +747,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 8) = 0.8 */
+	 
 	.hor_phase_arr = {
 		.even = { { -8, 21, 102, 7, 21, -8, 0 },
 			 { -3, 0, 95, 7, 48, -12, 0 },
@@ -771,7 +771,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 9) = 0.780488 */
+	 
 	.hor_phase_arr = {
 		.even = { { -9, 23, 100, 7, 23, -9, 0 },
 			 { -3, 0, 91, 7, 52, -12, 0 },
@@ -907,7 +907,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 10) = 0.761905 */
+	 
 	.hor_phase_arr = {
 		.even = { { -9, 25, 96, 7, 25, -9, 0 },
 			 { -3, 0, 86, 7, 56, -11, 0 },
@@ -979,7 +979,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 11) = 0.744186 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 26, 96, 7, 26, -10, 0 },
 			 { -4, 0, 83, 7, 59, -10, 0 },
@@ -1115,7 +1115,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 12) = 0.727273 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 28, 92, 7, 28, -10, 0 },
 			 { -4, 0, 81, 7, 61, -9, -1 },
@@ -1155,7 +1155,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 13) = 0.711111 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 29, 90, 7, 29, -10, 0 },
 			 { -4, 0, 76, 7, 64, -7, -1 },
@@ -1291,7 +1291,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 14) = 0.695652 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 30, 88, 7, 30, -10, 0 },
 			 { -5, 0, 75, 7, 66, -5, -3 },
@@ -1363,7 +1363,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 15) = 0.680851 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 31, 86, 7, 31, -10, 0 },
 			 { -5, 0, 72, 7, 68, -3, -4 },
@@ -1499,7 +1499,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 16) = 0.666667 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 32, 84, 7, 32, -10, 0 },
 			 { -5, 0, 69, 7, 69, 0, -5 } },
@@ -1515,7 +1515,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 17) = 0.653061 */
+	 
 	.hor_phase_arr = {
 		.even = { { -10, 33, 82, 7, 33, -10, 0 },
 			 { -5, 0, 66, 7, 70, 3, -6 },
@@ -1651,7 +1651,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 18) = 0.64 */
+	 
 	.hor_phase_arr = {
 		.even = { { -9, 33, 80, 7, 33, -9, 0 },
 			 { -6, 0, 64, 7, 71, 6, -7 },
@@ -1723,7 +1723,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 19) = 0.627451 */
+	 
 	.hor_phase_arr = {
 		.even = { { -9, 34, 79, 7, 34, -9, -1 },
 			 { -6, 0, 61, 7, 72, 9, -8 },
@@ -1859,7 +1859,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 20) = 0.615385 */
+	 
 	.hor_phase_arr = {
 		.even = { { -8, 34, 77, 7, 34, -8, -1 },
 			 { -6, 0, 59, 7, 71, 12, -8 },
@@ -1899,7 +1899,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 21) = 0.603774 */
+	 
 	.hor_phase_arr = {
 		.even = { { -8, 35, 76, 7, 35, -8, -2 },
 			 { -6, 0, 57, 7, 71, 15, -9 },
@@ -2035,7 +2035,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 22) = 0.592593 */
+	 
 	.hor_phase_arr = {
 		.even = { { -7, 35, 74, 7, 35, -7, -2 },
 			 { -6, 0, 54, 7, 71, 18, -9 },
@@ -2107,7 +2107,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 23) = 0.581818 */
+	 
 	.hor_phase_arr = {
 		.even = { { -7, 36, 73, 7, 36, -7, -3 },
 			 { -6, 0, 52, 7, 71, 20, -9 },
@@ -2243,7 +2243,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 24) = 0.571429 */
+	 
 	.hor_phase_arr = {
 		.even = { { -6, 36, 71, 7, 36, -6, -3 },
 			 { -6, 0, 50, 7, 69, 23, -8 },
@@ -2267,7 +2267,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 25) = 0.561404 */
+	 
 	.hor_phase_arr = {
 		.even = { { -5, 36, 70, 7, 36, -5, -4 },
 			 { -6, 0, 48, 7, 69, 25, -8 },
@@ -2403,7 +2403,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 26) = 0.551724 */
+	 
 	.hor_phase_arr = {
 		.even = { { -5, 36, 70, 7, 36, -5, -4 },
 			 { -6, 0, 46, 7, 68, 27, -7 },
@@ -2475,7 +2475,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 27) = 0.542373 */
+	 
 	.hor_phase_arr = {
 		.even = { { -4, 37, 67, 7, 37, -4, -5 },
 			 { -6, 0, 44, 7, 67, 29, -6 },
@@ -2611,7 +2611,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 28) = 0.533333 */
+	 
 	.hor_phase_arr = {
 		.even = { { -3, 37, 65, 7, 37, -3, -5 },
 			 { -6, 0, 43, 7, 65, 31, -5 },
@@ -2651,7 +2651,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 29) = 0.52459 */
+	 
 	.hor_phase_arr = {
 		.even = { { -2, 37, 63, 7, 37, -2, -5 },
 			 { -6, 0, 41, 7, 64, 33, -4 },
@@ -2787,7 +2787,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 30) = 0.516129 */
+	 
 	.hor_phase_arr = {
 		.even = { { -2, 37, 64, 7, 37, -2, -6 },
 			 { -6, 0, 39, 7, 64, 34, -3 },
@@ -2859,7 +2859,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 31) = 0.507937 */
+	 
 	.hor_phase_arr = {
 		.even = { { -1, 37, 62, 7, 37, -1, -6 },
 			 { -6, 0, 38, 7, 62, 35, -1 },
@@ -2995,7 +2995,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 32) = 0.5 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 8, 112, 7, 8, 0, 0 } },
 		.odd = { { 0, 0, 64, 7, 64, 0, 0 } } },
@@ -3007,7 +3007,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 33) = 0.492308 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 9, 110, 7, 9, 0, 0 },
 			 { 0, 8, 109, 7, 11, 0, 0 },
@@ -3143,7 +3143,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 34) = 0.484848 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 10, 108, 7, 10, 0, 0 },
 			 { 0, 7, 108, 7, 13, 0, 0 },
@@ -3215,7 +3215,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 35) = 0.477612 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 10, 108, 7, 10, 0, 0 },
 			 { 0, 6, 106, 7, 16, 0, 0 },
@@ -3352,7 +3352,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 36) = 0.470588 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 11, 106, 7, 11, 0, 0 },
 			 { 0, 6, 103, 7, 19, 0, 0 },
@@ -3392,7 +3392,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 37) = 0.463768 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 11, 106, 7, 11, 0, 0 },
 			 { 0, 5, 101, 7, 22, 0, 0 },
@@ -3529,7 +3529,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 38) = 0.457143 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 12, 104, 7, 12, 0, 0 },
 			 { 0, 5, 98, 7, 25, 0, 0 },
@@ -3601,7 +3601,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 39) = 0.450704 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 13, 102, 7, 13, 0, 0 },
 			 { 0, 5, 94, 7, 29, 0, 0 },
@@ -3738,7 +3738,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 40) = 0.444444 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 13, 102, 7, 13, 0, 0 },
 			 { 0, 4, 91, 7, 33, 0, 0 },
@@ -3762,7 +3762,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 41) = 0.438356 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 14, 100, 7, 14, 0, 0 },
 			 { 0, 4, 87, 7, 37, 0, 0 },
@@ -3899,7 +3899,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 42) = 0.432432 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 14, 100, 7, 14, 0, 0 },
 			 { 0, 4, 84, 7, 40, 0, 0 },
@@ -3971,7 +3971,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 43) = 0.426667 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 15, 98, 7, 15, 0, 0 },
 			 { 0, 3, 80, 7, 44, 1, 0 },
@@ -4108,7 +4108,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 44) = 0.421053 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 16, 96, 7, 16, 0, 0 },
 			 { 0, 3, 76, 7, 48, 1, 0 },
@@ -4148,7 +4148,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 45) = 0.415584 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 16, 96, 7, 16, 0, 0 },
 			 { 0, 3, 72, 7, 52, 1, 0 },
@@ -4285,7 +4285,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 46) = 0.410256 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 17, 94, 7, 17, 0, 0 },
 			 { 0, 3, 69, 7, 55, 1, 0 },
@@ -4357,7 +4357,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 47) = 0.405063 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 17, 94, 7, 17, 0, 0 },
 			 { 0, 2, 65, 7, 59, 2, 0 },
@@ -4494,7 +4494,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 48) = 0.4 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 18, 92, 7, 18, 0, 0 },
 			 { 0, 2, 62, 7, 62, 2, 0 } },
@@ -4510,7 +4510,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 49) = 0.395062 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 18, 92, 7, 18, 0, 0 },
 			 { 0, 2, 58, 7, 65, 3, 0 },
@@ -4647,7 +4647,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 50) = 0.390244 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 19, 90, 7, 19, 0, 0 },
 			 { 0, 2, 55, 7, 67, 4, 0 },
@@ -4719,7 +4719,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 51) = 0.385542 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 19, 90, 7, 19, 0, 0 },
 			 { 0, 2, 52, 7, 70, 4, 0 },
@@ -4856,7 +4856,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 52) = 0.380952 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 20, 88, 7, 20, 0, 0 },
 			 { 0, 2, 49, 7, 72, 5, 0 },
@@ -4896,7 +4896,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 53) = 0.376471 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 20, 88, 7, 20, 0, 0 },
 			 { 0, 2, 47, 7, 73, 6, 0 },
@@ -5033,7 +5033,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 54) = 0.372093 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 21, 86, 7, 21, 0, 0 },
 			 { 0, 1, 44, 7, 76, 7, 0 },
@@ -5105,7 +5105,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 55) = 0.367816 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 21, 86, 7, 21, 0, 0 },
 			 { 0, 1, 41, 7, 77, 9, 0 },
@@ -5242,7 +5242,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 56) = 0.363636 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 1, 39, 7, 78, 10, 0 },
@@ -5266,7 +5266,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 57) = 0.359551 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 1, 37, 7, 79, 11, 0 },
@@ -5403,7 +5403,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 58) = 0.355556 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 1, 35, 7, 79, 13, 0 },
@@ -5475,7 +5475,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 59) = 0.351648 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 23, 82, 7, 23, 0, 0 },
 			 { 0, 1, 33, 7, 79, 15, 0 },
@@ -5612,7 +5612,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 60) = 0.347826 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 23, 80, 7, 23, 1, 0 },
 			 { 0, 1, 31, 7, 79, 17, 0 },
@@ -5652,7 +5652,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 61) = 0.344086 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 23, 80, 7, 23, 1, 0 },
 			 { 0, 1, 29, 7, 80, 18, 0 },
@@ -5789,7 +5789,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 62) = 0.340426 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 24, 78, 7, 24, 1, 0 },
 			 { 0, 1, 28, 7, 79, 20, 0 },
@@ -5861,7 +5861,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 63) = 0.336842 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 24, 78, 7, 24, 1, 0 },
 			 { 0, 1, 26, 7, 78, 22, 1 },
@@ -5998,7 +5998,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 64) = 0.333333 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 21, 86, 7, 21, 0, 0 } },
 		.odd = { { 0, 4, 60, 7, 60, 4, 0 } } },
@@ -6010,7 +6010,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 65) = 0.329897 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 20, 85, 7, 23, 0, 0 },
@@ -6147,7 +6147,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 66) = 0.326531 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 18, 83, 7, 26, 1, 0 },
@@ -6219,7 +6219,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 67) = 0.323232 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 22, 84, 7, 22, 0, 0 },
 			 { 0, 17, 82, 7, 28, 1, 0 },
@@ -6356,7 +6356,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 68) = 0.32 */
+	 
 	.hor_phase_arr = {
 		.even = { { 0, 23, 82, 7, 23, 0, 0 },
 			 { 0, 16, 80, 7, 31, 1, 0 },
@@ -6396,7 +6396,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 69) = 0.316832 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 23, 80, 7, 23, 1, 0 },
 			 { 0, 15, 79, 7, 33, 1, 0 },
@@ -6533,7 +6533,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 70) = 0.313725 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 23, 80, 7, 23, 1, 0 },
 			 { 0, 14, 77, 7, 36, 1, 0 },
@@ -6605,7 +6605,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 71) = 0.31068 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 24, 78, 7, 24, 1, 0 },
 			 { 0, 13, 75, 7, 38, 2, 0 },
@@ -6742,7 +6742,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 72) = 0.307692 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 24, 78, 7, 24, 1, 0 },
 			 { 0, 12, 74, 7, 40, 2, 0 },
@@ -6766,7 +6766,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 73) = 0.304762 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 24, 78, 7, 24, 1, 0 },
 			 { 0, 12, 70, 7, 43, 3, 0 },
@@ -6903,7 +6903,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 74) = 0.301887 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 25, 76, 7, 25, 1, 0 },
 			 { 0, 11, 69, 7, 45, 3, 0 },
@@ -6975,7 +6975,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 75) = 0.299065 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 25, 76, 7, 25, 1, 0 },
 			 { 0, 10, 67, 7, 47, 4, 0 },
@@ -7112,7 +7112,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 76) = 0.296296 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 25, 76, 7, 25, 1, 0 },
 			 { 0, 10, 65, 7, 49, 4, 0 },
@@ -7152,7 +7152,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 77) = 0.293578 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 26, 74, 7, 26, 1, 0 },
 			 { 0, 9, 63, 7, 51, 5, 0 },
@@ -7289,7 +7289,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 78) = 0.290909 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 26, 74, 7, 26, 1, 0 },
 			 { 0, 8, 61, 7, 53, 6, 0 },
@@ -7361,7 +7361,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 79) = 0.288288 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 26, 74, 7, 26, 1, 0 },
 			 { 0, 8, 59, 7, 55, 6, 0 },
@@ -7498,7 +7498,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 80) = 0.285714 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 26, 74, 7, 26, 1, 0 },
 			 { 0, 7, 57, 7, 57, 7, 0 } },
@@ -7514,7 +7514,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 81) = 0.283186 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 27, 72, 7, 27, 1, 0 },
 			 { 0, 7, 54, 7, 59, 8, 0 },
@@ -7651,7 +7651,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 82) = 0.280702 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 27, 72, 7, 27, 1, 0 },
 			 { 0, 6, 52, 7, 61, 9, 0 },
@@ -7723,7 +7723,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 83) = 0.278261 */
+	 
 	.hor_phase_arr = {
 		.even = { { 1, 27, 72, 7, 27, 1, 0 },
 			 { 0, 6, 51, 7, 61, 10, 0 },
@@ -7860,7 +7860,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 84) = 0.275862 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 27, 70, 7, 27, 2, 0 },
 			 { 0, 6, 49, 7, 61, 12, 0 },
@@ -7900,7 +7900,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 85) = 0.273504 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 27, 70, 7, 27, 2, 0 },
 			 { 0, 5, 47, 7, 63, 13, 0 },
@@ -8037,7 +8037,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 86) = 0.271186 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 28, 68, 7, 28, 2, 0 },
 			 { 0, 5, 45, 7, 63, 14, 1 },
@@ -8109,7 +8109,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 87) = 0.268908 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 28, 68, 7, 28, 2, 0 },
 			 { 0, 5, 43, 7, 63, 16, 1 },
@@ -8246,7 +8246,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 88) = 0.266667 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 28, 68, 7, 28, 2, 0 },
 			 { 0, 4, 41, 7, 65, 17, 1 },
@@ -8270,7 +8270,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 89) = 0.264463 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 28, 68, 7, 28, 2, 0 },
 			 { 0, 4, 40, 7, 65, 18, 1 },
@@ -8407,7 +8407,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 90) = 0.262295 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 28, 68, 7, 28, 2, 0 },
 			 { 0, 4, 38, 7, 65, 20, 1 },
@@ -8479,7 +8479,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 91) = 0.260163 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 29, 66, 7, 29, 2, 0 },
 			 { 0, 4, 36, 7, 66, 21, 1 },
@@ -8616,7 +8616,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 92) = 0.258065 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 29, 66, 7, 29, 2, 0 },
 			 { 0, 4, 35, 7, 64, 23, 2 },
@@ -8656,7 +8656,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 93) = 0.256 */
+	 
 	.hor_phase_arr = {
 		.even = { { 2, 29, 66, 7, 29, 2, 0 },
 			 { 0, 3, 33, 7, 65, 25, 2 },
@@ -8793,7 +8793,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 94) = 0.253968 */
+	 
 	.hor_phase_arr = {
 		.even = { { 3, 29, 64, 7, 29, 3, 0 },
 			 { 0, 3, 32, 7, 65, 26, 2 },
@@ -8865,7 +8865,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 95) = 0.251969 */
+	 
 	.hor_phase_arr = {
 		.even = { { 3, 29, 64, 7, 29, 3, 0 },
 			 { 0, 3, 31, 7, 64, 28, 2 },
@@ -9002,7 +9002,7 @@ const struct imgu_css_bds_config
 	.hor_ds_en = 1,
 	.ver_ds_en = 1
 }, {
-	/* Scale factor 32 / (32 + 96) = 0.25 */
+	 
 	.hor_phase_arr = {
 		.even = { { 3, 29, 64, 7, 29, 3, 0 } },
 		.odd = { { 0, 11, 53, 7, 53, 11, 0 } } },
@@ -9213,7 +9213,7 @@ const s32 imgu_css_downscale_2taps[IMGU_SCALER_DOWNSCALE_2TAPS_LEN] = {
 	IMGU_SCALER_FP * 0.074300676367033
 };
 
-/* settings for Geometric Distortion Correction */
+ 
 const s16 imgu_css_gdc_lut[4][256] = { {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -2, -2, -2,
 	-2, -3, -3, -3, -4, -4, -4, -5, -5, -5, -6, -6, -7, -7, -7, -8, -8,
@@ -9310,21 +9310,21 @@ const struct imgu_css_xnr3_vmem_defaults imgu_css_xnr3_vmem_defaults = {
 	},
 };
 
-/* settings for Bayer Noise Reduction */
+ 
 const struct ipu3_uapi_bnr_static_config imgu_css_bnr_defaults = {
-	{ 16, 16, 16, 16 },			/* wb_gains */
-	{ 16, 16, 16, 16 },			/* wb_gains_thr */
-	{ 0, X, 8, 6, X, 14 },			/* thr_coeffs */
-	{ 0, 0, 0, 0 },				/* thr_ctrl_shd */
-	{ -128, X, -128, X },			/* opt_center */
-	{					/* lut */
+	{ 16, 16, 16, 16 },			 
+	{ 16, 16, 16, 16 },			 
+	{ 0, X, 8, 6, X, 14 },			 
+	{ 0, 0, 0, 0 },				 
+	{ -128, X, -128, X },			 
+	{					 
 		{ 17, 23, 28, 32, 36, 39, 42, 45,
 		  48, 51, 53, 55, 58, 60, 62, 64,
 		  66, 68, 70, 72, 73, 75, 77, 78,
 		  80, 82, 83, 85, 86, 88, 89, 90 }
 	},
-	{ 4, X, 1, 8, X, 8, X, 8, X },		/* bp_ctrl */
-	{ 8, 4, 4, X, 8, X, 1, 1, 1, 1 },	/* dn_detect_ctrl */
+	{ 4, X, 1, 8, X, 8, X, 8, X },		 
+	{ 8, 4, 4, X, 8, X, 1, 1, 1, 1 },	 
 };
 
 const struct ipu3_uapi_dm_config imgu_css_dm_defaults = {
@@ -9337,7 +9337,7 @@ const struct ipu3_uapi_ccm_mat_config imgu_css_ccm_defaults = {
 	  -23, -7887, 16103, 0
 };
 
-/* settings for Gamma correction */
+ 
 const struct ipu3_uapi_gamma_corr_lut imgu_css_gamma_lut = { {
 	63, 79, 95, 111, 127, 143, 159, 175, 191, 207, 223, 239, 255, 271, 287,
 	303, 319, 335, 351, 367, 383, 399, 415, 431, 447, 463, 479, 495, 511,
@@ -9371,9 +9371,9 @@ const struct ipu3_uapi_csc_mat_config imgu_css_csc_defaults = {
 const struct ipu3_uapi_cds_params imgu_css_cds_defaults = {
 	1, 3, 3, 1,
 	1, 3, 3, 1,
-	4, X,					/* ds_nf */
-	1,					/* csc_en */
-	0, X					/* uv_bin_output */
+	4, X,					 
+	1,					 
+	0, X					 
 };
 
 const struct ipu3_uapi_shd_config_static imgu_css_shd_defaults = {
@@ -9544,7 +9544,7 @@ const struct imgu_abi_anr_config imgu_css_anr_defaults = {
 	}
 };
 
-/* frame settings for Auto White Balance */
+ 
 const struct ipu3_uapi_awb_fr_config_s imgu_css_awb_fr_defaults = {
 	.grid_cfg = {
 		.width = 16,
@@ -9559,7 +9559,7 @@ const struct ipu3_uapi_awb_fr_config_s imgu_css_awb_fr_defaults = {
 	.bayer_nf = 7
 };
 
-/* settings for Auto Exposure */
+ 
 const struct ipu3_uapi_ae_grid_config imgu_css_ae_grid_defaults = {
 	.width = 16,
 	.height = 16,
@@ -9570,13 +9570,13 @@ const struct ipu3_uapi_ae_grid_config imgu_css_ae_grid_defaults = {
 	.y_start = 0,
 };
 
-/* settings for Auto Exposure color correction matrix */
+ 
 const struct ipu3_uapi_ae_ccm imgu_css_ae_ccm_defaults = {
-	256, 256, 256, 256,		/* gain_gr/r/b/gb */
+	256, 256, 256, 256,		 
 	.mat = { 128, 0, 0, 0, 0, 128, 0, 0, 0, 0, 128, 0, 0, 0, 0, 128 },
 };
 
-/* settings for Auto Focus */
+ 
 const struct ipu3_uapi_af_config_s imgu_css_af_defaults = {
 	.filter_config = {
 		{ 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 128 }, 0,
@@ -9594,9 +9594,9 @@ const struct ipu3_uapi_af_config_s imgu_css_af_defaults = {
 	},
 };
 
-/* settings for Auto White Balance */
+ 
 const struct ipu3_uapi_awb_config_s imgu_css_awb_defaults = {
-	8191, 8191, 8191, 8191 |	/* rgbs_thr_gr/r/gb/b */
+	8191, 8191, 8191, 8191 |	 
 	IPU3_UAPI_AWB_RGBS_THR_B_EN | IPU3_UAPI_AWB_RGBS_THR_B_INCL_SAT,
 	.grid = {
 		.width = 16,

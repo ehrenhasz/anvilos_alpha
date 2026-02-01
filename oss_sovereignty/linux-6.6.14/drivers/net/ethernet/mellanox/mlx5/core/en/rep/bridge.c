@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/if_bridge.h>
@@ -464,18 +464,14 @@ static int mlx5_esw_bridge_switchdev_event(struct notifier_block *nb,
 						fdb_info);
 		break;
 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
-		/* only handle the event on peers */
+		 
 		if (mlx5_esw_bridge_is_local(dev, rep, esw))
 			break;
 
 		fdb_info = container_of(info,
 					struct switchdev_notifier_fdb_info,
 					info);
-		/* Mark for deletion to prevent the update wq task from
-		 * spuriously refreshing the entry which would mark it again as
-		 * offloaded in SW bridge. After this fallthrough to regular
-		 * async delete code.
-		 */
+		 
 		mlx5_esw_bridge_fdb_mark_deleted(dev, vport_num, esw_owner_vhca_id, br_offloads,
 						 fdb_info);
 		fallthrough;

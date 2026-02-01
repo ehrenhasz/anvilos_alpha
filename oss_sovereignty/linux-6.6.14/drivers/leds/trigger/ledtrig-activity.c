@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Activity LED trigger
- *
- * Copyright (C) 2017 Willy Tarreau <w@1wt.eu>
- * Partially based on Atsushi Nemoto's ledtrig-heartbeat.c.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -49,7 +44,7 @@ static void led_activity_function(struct timer_list *t)
 		led_cdev->blink_brightness = led_cdev->new_blink_brightness;
 
 	if (unlikely(panic_detected)) {
-		/* full brightness in case of panic */
+		 
 		led_set_brightness_nosleep(led_cdev, led_cdev->blink_brightness);
 		return;
 	}
@@ -70,11 +65,7 @@ static void led_activity_function(struct timer_list *t)
 		cpus++;
 	}
 
-	/* We come here every 100ms in the worst case, so that's 100M ns of
-	 * cumulated time. By dividing by 2^16, we get the time resolution
-	 * down to 16us, ensuring we won't overflow 32-bit computations below
-	 * even up to 3k CPUs, while keeping divides cheap on smaller systems.
-	 */
+	 
 	curr_boot = ktime_get_boottime_ns() * cpus;
 	diff_boot = (curr_boot - activity_data->last_boot) >> 16;
 	diff_used = (curr_used - activity_data->last_used) >> 16;
@@ -88,40 +79,7 @@ static void led_activity_function(struct timer_list *t)
 	else
 		usage = 100 * diff_used / diff_boot;
 
-	/*
-	 * Now we know the total boot_time multiplied by the number of CPUs, and
-	 * the total idle+wait time for all CPUs. We'll compare how they evolved
-	 * since last call. The % of overall CPU usage is :
-	 *
-	 *      1 - delta_idle / delta_boot
-	 *
-	 * What we want is that when the CPU usage is zero, the LED must blink
-	 * slowly with very faint flashes that are detectable but not disturbing
-	 * (typically 10ms every second, or 10ms ON, 990ms OFF). Then we want
-	 * blinking frequency to increase up to the point where the load is
-	 * enough to saturate one core in multi-core systems or 50% in single
-	 * core systems. At this point it should reach 10 Hz with a 10/90 duty
-	 * cycle (10ms ON, 90ms OFF). After this point, the blinking frequency
-	 * remains stable (10 Hz) and only the duty cycle increases to report
-	 * the activity, up to the point where we have 90ms ON, 10ms OFF when
-	 * all cores are saturated. It's important that the LED never stays in
-	 * a steady state so that it's easy to distinguish an idle or saturated
-	 * machine from a hung one.
-	 *
-	 * This gives us :
-	 *   - a target CPU usage of min(50%, 100%/#CPU) for a 10% duty cycle
-	 *     (10ms ON, 90ms OFF)
-	 *   - below target :
-	 *      ON_ms  = 10
-	 *      OFF_ms = 90 + (1 - usage/target) * 900
-	 *   - above target :
-	 *      ON_ms  = 10 + (usage-target)/(100%-target) * 80
-	 *      OFF_ms = 90 - (usage-target)/(100%-target) * 80
-	 *
-	 * In order to keep a good responsiveness, we cap the sleep time to
-	 * 100 ms and keep track of the sleep time left. This allows us to
-	 * quickly change it if needed.
-	 */
+	 
 
 	activity_data->time_left -= 100;
 	if (activity_data->time_left <= 0) {
@@ -136,12 +94,12 @@ static void led_activity_function(struct timer_list *t)
 
 	if (usage < target)
 		delay = activity_data->state ?
-			10 :                        /* ON  */
-			990 - 900 * usage / target; /* OFF */
+			10 :                         
+			990 - 900 * usage / target;  
 	else
 		delay = activity_data->state ?
-			10 + 80 * (usage - target) / (100 - target) : /* ON  */
-			90 - 80 * (usage - target) / (100 - target);  /* OFF */
+			10 + 80 * (usage - target) / (100 - target) :  
+			90 - 80 * (usage - target) / (100 - target);   
 
 
 	if (!activity_data->time_left || delay <= activity_data->time_left)

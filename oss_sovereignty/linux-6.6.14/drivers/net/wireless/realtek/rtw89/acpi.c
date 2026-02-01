@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2021-2023  Realtek Corporation
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/uuid.h>

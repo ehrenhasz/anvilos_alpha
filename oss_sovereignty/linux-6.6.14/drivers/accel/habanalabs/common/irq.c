@@ -1,36 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
 #include <linux/slab.h>
 
-/**
- * struct hl_eqe_work - This structure is used to schedule work of EQ
- *                      entry and cpucp_reset event
- *
- * @eq_work:          workqueue object to run when EQ entry is received
- * @hdev:             pointer to device structure
- * @eq_entry:         copy of the EQ entry
- */
+ 
 struct hl_eqe_work {
 	struct work_struct	eq_work;
 	struct hl_device	*hdev;
 	struct hl_eq_entry	eq_entry;
 };
 
-/**
- * hl_cq_inc_ptr - increment ci or pi of cq
- *
- * @ptr: the current ci or pi value of the completion queue
- *
- * Increment ptr by 1. If it reaches the number of completion queue
- * entries, set it to 0
- */
+ 
 inline u32 hl_cq_inc_ptr(u32 ptr)
 {
 	ptr++;
@@ -39,14 +22,7 @@ inline u32 hl_cq_inc_ptr(u32 ptr)
 	return ptr;
 }
 
-/**
- * hl_eq_inc_ptr - increment ci of eq
- *
- * @ptr: the current ci value of the event queue
- *
- * Increment ptr by 1. If it reaches the number of event queue
- * entries, set it to 0
- */
+ 
 static inline u32 hl_eq_inc_ptr(u32 ptr)
 {
 	ptr++;
@@ -66,15 +42,7 @@ static void irq_handle_eqe(struct work_struct *work)
 	kfree(eqe_work);
 }
 
-/**
- * job_finish - queue job finish work
- *
- * @hdev: pointer to device structure
- * @cs_seq: command submission sequence
- * @cq: completion queue
- * @timestamp: interrupt timestamp
- *
- */
+ 
 static void job_finish(struct hl_device *hdev, u32 cs_seq, struct hl_cq *cq, ktime_t timestamp)
 {
 	struct hl_hw_queue *queue;
@@ -88,14 +56,7 @@ static void job_finish(struct hl_device *hdev, u32 cs_seq, struct hl_cq *cq, kti
 	atomic_inc(&queue->ci);
 }
 
-/**
- * cs_finish - queue all cs jobs finish work
- *
- * @hdev: pointer to device structure
- * @cs_seq: command submission sequence
- * @timestamp: interrupt timestamp
- *
- */
+ 
 static void cs_finish(struct hl_device *hdev, u16 cs_seq, ktime_t timestamp)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -120,13 +81,7 @@ static void cs_finish(struct hl_device *hdev, u16 cs_seq, ktime_t timestamp)
 	queue_work(hdev->cs_cmplt_wq, &cs->finish_work);
 }
 
-/**
- * hl_irq_handler_cq - irq handler for completion queue
- *
- * @irq: irq number
- * @arg: pointer to completion queue structure
- *
- */
+ 
 irqreturn_t hl_irq_handler_cq(int irq, void *arg)
 {
 	struct hl_cq *cq = arg;
@@ -153,9 +108,7 @@ irqreturn_t hl_irq_handler_cq(int irq, void *arg)
 		if (!entry_ready)
 			break;
 
-		/* Make sure we read CQ entry contents after we've
-		 * checked the ownership bit.
-		 */
+		 
 		dma_rmb();
 
 		shadow_index_valid =
@@ -165,14 +118,7 @@ irqreturn_t hl_irq_handler_cq(int irq, void *arg)
 		shadow_index = FIELD_GET(CQ_ENTRY_SHADOW_INDEX_MASK,
 				le32_to_cpu(cq_entry->data));
 
-		/*
-		 * CQ interrupt handler has 2 modes of operation:
-		 * 1. Interrupt per CS completion: (Single CQ for all queues)
-		 *    CQ entry represents a completed CS
-		 *
-		 * 2. Interrupt per CS job completion in queue: (CQ per queue)
-		 *    CQ entry represents a completed job in a certain queue
-		 */
+		 
 		if (shadow_index_valid && !hdev->disabled) {
 			if (hdev->asic_prop.completion_mode ==
 					HL_COMPLETION_MODE_CS)
@@ -181,25 +127,20 @@ irqreturn_t hl_irq_handler_cq(int irq, void *arg)
 				job_finish(hdev, shadow_index, cq, timestamp);
 		}
 
-		/* Clear CQ entry ready bit */
+		 
 		cq_entry->data = cpu_to_le32(le32_to_cpu(cq_entry->data) &
 						~CQ_ENTRY_READY_MASK);
 
 		cq->ci = hl_cq_inc_ptr(cq->ci);
 
-		/* Increment free slots */
+		 
 		atomic_inc(&cq->free_slots_cnt);
 	}
 
 	return IRQ_HANDLED;
 }
 
-/*
- * hl_ts_free_objects - handler of the free objects workqueue.
- * This function should put refcount to objects that the registration node
- * took refcount to them.
- * @work: workqueue object pointer
- */
+ 
 static void hl_ts_free_objects(struct work_struct *work)
 {
 	struct timestamp_reg_work_obj *job =
@@ -222,16 +163,7 @@ static void hl_ts_free_objects(struct work_struct *work)
 	kfree(job);
 }
 
-/*
- * This function called with spin_lock of wait_list_lock taken
- * This function will set timestamp and delete the registration node from the
- * wait_list_lock.
- * and since we're protected with spin_lock here, so we cannot just put the refcount
- * for the objects here, since the release function may be called and it's also a long
- * logic (which might sleep also) that cannot be handled in irq context.
- * so here we'll be filling a list with nodes of "put" jobs and then will send this
- * list to a dedicated workqueue to do the actual put.
- */
+ 
 static int handle_registration_node(struct hl_device *hdev, struct hl_user_pending_interrupt *pend,
 						struct list_head **free_list, ktime_t now)
 {
@@ -239,7 +171,7 @@ static int handle_registration_node(struct hl_device *hdev, struct hl_user_pendi
 	u64 timestamp;
 
 	if (!(*free_list)) {
-		/* Alloc/Init the timestamp registration free objects list */
+		 
 		*free_list = kmalloc(sizeof(struct list_head), GFP_ATOMIC);
 		if (!(*free_list))
 			return -ENOMEM;
@@ -261,12 +193,10 @@ static int handle_registration_node(struct hl_device *hdev, struct hl_user_pendi
 
 	list_del(&pend->wait_list_node);
 
-	/* Mark kernel CB node as free */
+	 
 	pend->ts_reg_info.in_use = 0;
 
-	/* Putting the refcount for ts_buff and cq_cb objects will be handled
-	 * in workqueue context, just add job to free_list.
-	 */
+	 
 	free_node->buf = pend->ts_reg_info.buf;
 	free_node->cq_cb = pend->ts_reg_info.cq_cb;
 	list_add(&free_node->free_objects_node, *free_list);
@@ -282,15 +212,7 @@ static void handle_user_interrupt(struct hl_device *hdev, struct hl_user_interru
 	bool reg_node_handle_fail = false;
 	int rc;
 
-	/* For registration nodes:
-	 * As part of handling the registration nodes, we should put refcount to
-	 * some objects. the problem is that we cannot do that under spinlock
-	 * or in irq handler context at all (since release functions are long and
-	 * might sleep), so we will need to handle that part in workqueue context.
-	 * To avoid handling kmalloc failure which compels us rolling back actions
-	 * and move nodes hanged on the free list back to the interrupt wait list
-	 * we always alloc the job of the WQ at the beginning.
-	 */
+	 
 	job = kmalloc(sizeof(*job), GFP_ATOMIC);
 	if (!job)
 		return;
@@ -307,7 +229,7 @@ static void handle_user_interrupt(struct hl_device *hdev, struct hl_user_interru
 						reg_node_handle_fail = true;
 				}
 			} else {
-				/* Handle wait target value node */
+				 
 				pend->fence.timestamp = intr->timestamp;
 				complete_all(&pend->fence.completion);
 			}
@@ -345,13 +267,7 @@ static void handle_unexpected_user_interrupt(struct hl_device *hdev)
 	dev_err_ratelimited(hdev->dev, "Received unexpected user error interrupt\n");
 }
 
-/**
- * hl_irq_handler_user_interrupt - irq handler for user interrupts
- *
- * @irq: irq number
- * @arg: pointer to user interrupt structure
- *
- */
+ 
 irqreturn_t hl_irq_handler_user_interrupt(int irq, void *arg)
 {
 	struct hl_user_interrupt *user_int = arg;
@@ -361,14 +277,7 @@ irqreturn_t hl_irq_handler_user_interrupt(int irq, void *arg)
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * hl_irq_user_interrupt_thread_handler - irq thread handler for user interrupts.
- * This function is invoked by threaded irq mechanism
- *
- * @irq: irq number
- * @arg: pointer to user interrupt structure
- *
- */
+ 
 irqreturn_t hl_irq_user_interrupt_thread_handler(int irq, void *arg)
 {
 	struct hl_user_interrupt *user_int = arg;
@@ -378,13 +287,13 @@ irqreturn_t hl_irq_user_interrupt_thread_handler(int irq, void *arg)
 	case HL_USR_INTERRUPT_CQ:
 		handle_user_interrupt(hdev, &hdev->common_user_cq_interrupt);
 
-		/* Handle user cq interrupt registered on this specific irq */
+		 
 		handle_user_interrupt(hdev, user_int);
 		break;
 	case HL_USR_INTERRUPT_DECODER:
 		handle_user_interrupt(hdev, &hdev->common_decoder_interrupt);
 
-		/* Handle decoder interrupt registered on this specific irq */
+		 
 		handle_user_interrupt(hdev, user_int);
 		break;
 	case HL_USR_INTERRUPT_TPC:
@@ -400,13 +309,7 @@ irqreturn_t hl_irq_user_interrupt_thread_handler(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/**
- * hl_irq_handler_eq - irq handler for event queue
- *
- * @irq: irq number
- * @arg: pointer to event queue structure
- *
- */
+ 
 irqreturn_t hl_irq_handler_eq(int irq, void *arg)
 {
 	struct hl_eq *eq = arg;
@@ -442,10 +345,7 @@ irqreturn_t hl_irq_handler_eq(int irq, void *arg)
 
 		eq_entry = &eq_base[eq->ci];
 
-		/*
-		 * Make sure we read EQ entry contents after we've
-		 * checked the ownership bit.
-		 */
+		 
 		dma_rmb();
 
 		if (hdev->disabled && !hdev->reset_info.in_compute_reset) {
@@ -467,7 +367,7 @@ irqreturn_t hl_irq_handler_eq(int irq, void *arg)
 			queue_work(hdev->eq_wq, &handle_eqe_work->eq_work);
 		}
 skip_irq:
-		/* Clear EQ entry ready bit */
+		 
 		eq_entry->hdr.ctl =
 			cpu_to_le32(le32_to_cpu(eq_entry->hdr.ctl) &
 							~EQ_CTL_READY_MASK);
@@ -480,11 +380,7 @@ skip_irq:
 	return IRQ_HANDLED;
 }
 
-/**
- * hl_irq_handler_dec_abnrm - Decoder error interrupt handler
- * @irq: IRQ number
- * @arg: pointer to decoder structure.
- */
+ 
 irqreturn_t hl_irq_handler_dec_abnrm(int irq, void *arg)
 {
 	struct hl_dec *dec = arg;
@@ -494,17 +390,7 @@ irqreturn_t hl_irq_handler_dec_abnrm(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/**
- * hl_cq_init - main initialization function for an cq object
- *
- * @hdev: pointer to device structure
- * @q: pointer to cq structure
- * @hw_queue_id: The H/W queue ID this completion queue belongs to
- *               HL_INVALID_QUEUE if cq is not attached to any specific queue
- *
- * Allocate dma-able memory for the completion queue and initialize fields
- * Returns 0 on success
- */
+ 
 int hl_cq_init(struct hl_device *hdev, struct hl_cq *q, u32 hw_queue_id)
 {
 	void *p;
@@ -525,14 +411,7 @@ int hl_cq_init(struct hl_device *hdev, struct hl_cq *q, u32 hw_queue_id)
 	return 0;
 }
 
-/**
- * hl_cq_fini - destroy completion queue
- *
- * @hdev: pointer to device structure
- * @q: pointer to cq structure
- *
- * Free the completion queue memory
- */
+ 
 void hl_cq_fini(struct hl_device *hdev, struct hl_cq *q)
 {
 	hl_asic_dma_free_coherent(hdev, HL_CQ_SIZE_IN_BYTES, q->kernel_address, q->bus_address);
@@ -545,25 +424,12 @@ void hl_cq_reset(struct hl_device *hdev, struct hl_cq *q)
 
 	atomic_set(&q->free_slots_cnt, HL_CQ_LENGTH);
 
-	/*
-	 * It's not enough to just reset the PI/CI because the H/W may have
-	 * written valid completion entries before it was halted and therefore
-	 * we need to clean the actual queues so we won't process old entries
-	 * when the device is operational again
-	 */
+	 
 
 	memset(q->kernel_address, 0, HL_CQ_SIZE_IN_BYTES);
 }
 
-/**
- * hl_eq_init - main initialization function for an event queue object
- *
- * @hdev: pointer to device structure
- * @q: pointer to eq structure
- *
- * Allocate dma-able memory for the event queue and initialize fields
- * Returns 0 on success
- */
+ 
 int hl_eq_init(struct hl_device *hdev, struct hl_eq *q)
 {
 	void *p;
@@ -580,14 +446,7 @@ int hl_eq_init(struct hl_device *hdev, struct hl_eq *q)
 	return 0;
 }
 
-/**
- * hl_eq_fini - destroy event queue
- *
- * @hdev: pointer to device structure
- * @q: pointer to eq structure
- *
- * Free the event queue memory
- */
+ 
 void hl_eq_fini(struct hl_device *hdev, struct hl_eq *q)
 {
 	flush_workqueue(hdev->eq_wq);
@@ -600,12 +459,7 @@ void hl_eq_reset(struct hl_device *hdev, struct hl_eq *q)
 	q->ci = 0;
 	q->prev_eqe_index = 0;
 
-	/*
-	 * It's not enough to just reset the PI/CI because the H/W may have
-	 * written valid completion entries before it was halted and therefore
-	 * we need to clean the actual queues so we won't process old entries
-	 * when the device is operational again
-	 */
+	 
 
 	memset(q->kernel_address, 0, HL_EQ_SIZE_IN_BYTES);
 }

@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * inode.c -- user mode filesystem api for usb gadget controllers
- *
- * Copyright (C) 2003-2004 David Brownell
- * Copyright (C) 2003 Agilent Technologies
- */
+
+ 
 
 
-/* #define VERBOSE_DEBUG */
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -33,35 +28,7 @@
 #include <linux/usb/gadget.h>
 
 
-/*
- * The gadgetfs API maps each endpoint to a file descriptor so that you
- * can use standard synchronous read/write calls for I/O.  There's some
- * O_NONBLOCK and O_ASYNC/FASYNC style i/o support.  Example usermode
- * drivers show how this works in practice.  You can also use AIO to
- * eliminate I/O gaps between requests, to help when streaming data.
- *
- * Key parts that must be USB-specific are protocols defining how the
- * read/write operations relate to the hardware state machines.  There
- * are two types of files.  One type is for the device, implementing ep0.
- * The other type is for each IN or OUT endpoint.  In both cases, the
- * user mode driver must configure the hardware before using it.
- *
- * - First, dev_config() is called when /dev/gadget/$CHIP is configured
- *   (by writing configuration and device descriptors).  Afterwards it
- *   may serve as a source of device events, used to handle all control
- *   requests other than basic enumeration.
- *
- * - Then, after a SET_CONFIGURATION control request, ep_config() is
- *   called when each /dev/gadget/ep* file is configured (by writing
- *   endpoint descriptors).  Afterwards these files are used to write()
- *   IN data or to read() OUT data.  To halt the endpoint, a "wrong
- *   direction" request is issued (like reading an IN endpoint).
- *
- * Unlike "usbfs" the only ioctl()s are for things that are rare, and maybe
- * not possible on all hardware.  For example, precise fault handling with
- * respect to data left in endpoint fifos after aborted operations; or
- * selective clearing of endpoint halts, to implement SET_INTERFACE.
- */
+ 
 
 #define	DRIVER_DESC	"USB Gadget filesystem"
 #define	DRIVER_VERSION	"24 Aug 2004"
@@ -76,38 +43,28 @@ MODULE_LICENSE ("GPL");
 static int ep_open(struct inode *, struct file *);
 
 
-/*----------------------------------------------------------------------*/
+ 
 
 #define GADGETFS_MAGIC		0xaee71ee7
 
-/* /dev/gadget/$CHIP represents ep0 and the whole device */
+ 
 enum ep0_state {
-	/* DISABLED is the initial state. */
+	 
 	STATE_DEV_DISABLED = 0,
 
-	/* Only one open() of /dev/gadget/$CHIP; only one file tracks
-	 * ep0/device i/o modes and binding to the controller.  Driver
-	 * must always write descriptors to initialize the device, then
-	 * the device becomes UNCONNECTED until enumeration.
-	 */
+	 
 	STATE_DEV_OPENED,
 
-	/* From then on, ep0 fd is in either of two basic modes:
-	 * - (UN)CONNECTED: read usb_gadgetfs_event(s) from it
-	 * - SETUP: read/write will transfer control data and succeed;
-	 *   or if "wrong direction", performs protocol stall
-	 */
+	 
 	STATE_DEV_UNCONNECTED,
 	STATE_DEV_CONNECTED,
 	STATE_DEV_SETUP,
 
-	/* UNBOUND means the driver closed ep0, so the device won't be
-	 * accessible again (DEV_DISABLED) until all fds are closed.
-	 */
+	 
 	STATE_DEV_UNBOUND,
 };
 
-/* enough for the whole queue: most events invalidate others */
+ 
 #define	N_EVENT			5
 
 #define RBUF_SIZE		256
@@ -116,15 +73,13 @@ struct dev_data {
 	spinlock_t			lock;
 	refcount_t			count;
 	int				udc_usage;
-	enum ep0_state			state;		/* P: lock */
+	enum ep0_state			state;		 
 	struct usb_gadgetfs_event	event [N_EVENT];
 	unsigned			ev_next;
 	struct fasync_struct		*fasync;
 	u8				current_config;
 
-	/* drivers reading ep0 MUST handle control requests (SETUP)
-	 * reported that way; else the host will time out.
-	 */
+	 
 	unsigned			usermode_setup : 1,
 					setup_in : 1,
 					setup_can_stall : 1,
@@ -134,7 +89,7 @@ struct dev_data {
 					gadget_registered : 1;
 	unsigned			setup_wLength;
 
-	/* the rest is basically write-once */
+	 
 	struct usb_config_descriptor	*config, *hs_config;
 	struct usb_device_descriptor	*dev;
 	struct usb_request		*req;
@@ -145,7 +100,7 @@ struct dev_data {
 	struct super_block		*sb;
 	struct dentry			*dentry;
 
-	/* except this scratch i/o buffer for ep0 */
+	 
 	u8				rbuf[RBUF_SIZE];
 };
 
@@ -158,7 +113,7 @@ static void put_dev (struct dev_data *data)
 {
 	if (likely (!refcount_dec_and_test (&data->count)))
 		return;
-	/* needs no more cleanup */
+	 
 	BUG_ON (waitqueue_active (&data->wait));
 	kfree (data);
 }
@@ -178,9 +133,9 @@ static struct dev_data *dev_new (void)
 	return dev;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* other /dev/gadget/$ENDPOINT files represent endpoints */
+ 
 enum ep_state {
 	STATE_EP_DISABLED = 0,
 	STATE_EP_READY,
@@ -193,7 +148,7 @@ struct ep_data {
 	enum ep_state			state;
 	refcount_t			count;
 	struct dev_data			*dev;
-	/* must hold dev->lock before accessing ep or req */
+	 
 	struct usb_ep			*ep;
 	struct usb_request		*req;
 	ssize_t				status;
@@ -214,30 +169,24 @@ static void put_ep (struct ep_data *data)
 	if (likely (!refcount_dec_and_test (&data->count)))
 		return;
 	put_dev (data->dev);
-	/* needs no more cleanup */
+	 
 	BUG_ON (!list_empty (&data->epfiles));
 	BUG_ON (waitqueue_active (&data->wait));
 	kfree (data);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* most "how to use the hardware" policy choices are in userspace:
- * mapping endpoint roles (which the driver needs) to the capabilities
- * which the usb controller has.  most of those capabilities are exposed
- * implicitly, starting with the driver name and then endpoint names.
- */
+ 
 
 static const char *CHIP;
-static DEFINE_MUTEX(sb_mutex);		/* Serialize superblock operations */
+static DEFINE_MUTEX(sb_mutex);		 
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* NOTE:  don't use dev_printk calls before binding to the gadget
- * at the end of ep0 configuration, or after unbind.
- */
+ 
 
-/* too wordy: dev_printk(level , &(d)->gadget->dev , fmt , ## args) */
+ 
 #define xprintk(d,level,fmt,args...) \
 	printk(level "%s: " fmt , shortname , ## args)
 
@@ -247,14 +196,14 @@ static DEFINE_MUTEX(sb_mutex);		/* Serialize superblock operations */
 #else
 #define DBG(dev,fmt,args...) \
 	do { } while (0)
-#endif /* DEBUG */
+#endif  
 
 #ifdef VERBOSE_DEBUG
 #define VDEBUG	DBG
 #else
 #define VDEBUG(dev,fmt,args...) \
 	do { } while (0)
-#endif /* DEBUG */
+#endif  
 
 #define ERROR(dev,fmt,args...) \
 	xprintk(dev , KERN_ERR , fmt , ## args)
@@ -262,14 +211,9 @@ static DEFINE_MUTEX(sb_mutex);		/* Serialize superblock operations */
 	xprintk(dev , KERN_INFO , fmt , ## args)
 
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* SYNCHRONOUS ENDPOINT OPERATIONS (bulk/intr/iso)
- *
- * After opening, configure non-control endpoints.  Then use normal
- * stream read() and write() requests; and maybe ioctl() to get more
- * precise FIFO status when recovering from cancellation.
- */
+ 
 
 static void epio_complete (struct usb_ep *ep, struct usb_request *req)
 {
@@ -284,9 +228,7 @@ static void epio_complete (struct usb_ep *ep, struct usb_request *req)
 	complete ((struct completion *)req->context);
 }
 
-/* tasklock endpoint, returning when it's connected.
- * still need dev->lock to use epdata->ep.
- */
+ 
 static int
 get_ready_ep (unsigned f_flags, struct ep_data *epdata, bool is_write)
 {
@@ -312,14 +254,14 @@ nonblock:
 	switch (epdata->state) {
 	case STATE_EP_ENABLED:
 		return 0;
-	case STATE_EP_READY:			/* not configured yet */
+	case STATE_EP_READY:			 
 		if (is_write)
 			return 0;
 		fallthrough;
-	case STATE_EP_UNBOUND:			/* clean disconnect */
+	case STATE_EP_UNBOUND:			 
 		break;
-	// case STATE_EP_DISABLED:		/* "can't happen" */
-	default:				/* error! */
+	 
+	default:				 
 		pr_debug ("%s: ep %p not available, state %d\n",
 				shortname, epdata, epdata->state);
 	}
@@ -382,7 +324,7 @@ ep_release (struct inode *inode, struct file *fd)
 	if (value < 0)
 		return value;
 
-	/* clean up if this can be reopened */
+	 
 	if (data->state != STATE_EP_UNBOUND) {
 		data->state = STATE_EP_DISABLED;
 		data->desc.bDescriptorType = 0;
@@ -424,9 +366,9 @@ static long ep_ioctl(struct file *fd, unsigned code, unsigned long value)
 	return status;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* ASYNCHRONOUS ENDPOINT I/O OPERATIONS (bulk/intr/iso) */
+ 
 
 struct kiocb_priv {
 	struct usb_request	*req;
@@ -448,12 +390,12 @@ static int ep_aio_cancel(struct kiocb *iocb)
 
 	local_irq_disable();
 	epdata = priv->epdata;
-	// spin_lock(&epdata->dev->lock);
+	 
 	if (likely(epdata && epdata->ep && priv->req))
 		value = usb_ep_dequeue (epdata->ep, priv->req);
 	else
 		value = -EINVAL;
-	// spin_unlock(&epdata->dev->lock);
+	 
 	local_irq_enable();
 
 	return value;
@@ -472,7 +414,7 @@ static void ep_user_copy_worker(struct work_struct *work)
 	if (!ret)
 		ret = -EFAULT;
 
-	/* completing the iocb can drop the ctx and mm, don't touch mm after */
+	 
 	iocb->ki_complete(iocb, ret);
 
 	kfree(priv->buf);
@@ -486,15 +428,12 @@ static void ep_aio_complete(struct usb_ep *ep, struct usb_request *req)
 	struct kiocb_priv	*priv = iocb->private;
 	struct ep_data		*epdata = priv->epdata;
 
-	/* lock against disconnect (and ideally, cancel) */
+	 
 	spin_lock(&epdata->dev->lock);
 	priv->req = NULL;
 	priv->epdata = NULL;
 
-	/* if this was a write or a read returning no data then we
-	 * don't need to copy anything to userspace, so we can
-	 * complete the aio request immediately.
-	 */
+	 
 	if (priv->to_free == NULL || unlikely(req->actual == 0)) {
 		kfree(req->buf);
 		kfree(priv->to_free);
@@ -503,7 +442,7 @@ static void ep_aio_complete(struct usb_ep *ep, struct usb_request *req)
 		iocb->ki_complete(iocb,
 				req->actual ? req->actual : (long)req->status);
 	} else {
-		/* ep_copy_to_user() won't report both; we hide some faults */
+		 
 		if (unlikely(0 != req->status))
 			DBG(epdata->dev, "%s fault %d len %d\n",
 				ep->name, req->status, req->actual);
@@ -535,11 +474,9 @@ static ssize_t ep_aio(struct kiocb *iocb,
 	get_ep(epdata);
 	priv->epdata = epdata;
 	priv->actual = 0;
-	priv->mm = current->mm; /* mm teardown waits for iocbs in exit_aio() */
+	priv->mm = current->mm;  
 
-	/* each kiocb is coupled to one usb_request, but we can't
-	 * allocate or submit those if the host disconnected.
-	 */
+	 
 	spin_lock_irq(&epdata->dev->lock);
 	value = -ENODEV;
 	if (unlikely(epdata->ep == NULL))
@@ -583,7 +520,7 @@ ep_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	if ((value = get_ready_ep(file->f_flags, epdata, false)) < 0)
 		return value;
 
-	/* halt any endpoint by doing a "wrong direction" i/o call */
+	 
 	if (usb_endpoint_dir_in(&epdata->desc)) {
 		if (usb_endpoint_xfer_isoc(&epdata->desc) ||
 		    !is_sync_kiocb(iocb)) {
@@ -645,7 +582,7 @@ ep_write_iter(struct kiocb *iocb, struct iov_iter *from)
 
 	configured = epdata->state == STATE_EP_ENABLED;
 
-	/* halt any endpoint by doing a "wrong direction" i/o call */
+	 
 	if (configured && !usb_endpoint_dir_in(&epdata->desc)) {
 		if (usb_endpoint_xfer_isoc(&epdata->desc) ||
 		    !is_sync_kiocb(iocb)) {
@@ -691,9 +628,9 @@ out:
 	return value;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* used after endpoint configuration */
+ 
 static const struct file_operations ep_io_operations = {
 	.owner =	THIS_MODULE,
 
@@ -705,19 +642,7 @@ static const struct file_operations ep_io_operations = {
 	.write_iter =	ep_write_iter,
 };
 
-/* ENDPOINT INITIALIZATION
- *
- *     fd = open ("/dev/gadget/$ENDPOINT", O_RDWR)
- *     status = write (fd, descriptors, sizeof descriptors)
- *
- * That write establishes the endpoint configuration, configuring
- * the controller to process bulk, interrupt, or isochronous transfers
- * at the right maxpacket size, and so on.
- *
- * The descriptors are message type 1, identified by a host order u32
- * at the beginning of what's written.  Descriptor order is: full/low
- * speed descriptor, then optional high speed descriptor.
- */
+ 
 static ssize_t
 ep_config (struct ep_data *data, const char *buf, size_t len)
 {
@@ -734,7 +659,7 @@ ep_config (struct ep_data *data, const char *buf, size_t len)
 	if (len < USB_DT_ENDPOINT_SIZE + 4)
 		goto fail0;
 
-	/* we might need to change message format someday */
+	 
 	memcpy(&tag, buf, 4);
 	if (tag != 1) {
 		DBG(data->dev, "config %s, bad tag %d\n", data->name, tag);
@@ -743,11 +668,9 @@ ep_config (struct ep_data *data, const char *buf, size_t len)
 	buf += 4;
 	len -= 4;
 
-	/* NOTE:  audio endpoint extensions not accepted here;
-	 * just don't include the extra bytes.
-	 */
+	 
 
-	/* full/low speed descriptor, then high speed */
+	 
 	memcpy(&data->desc, buf, USB_DT_ENDPOINT_SIZE);
 	if (data->desc.bLength != USB_DT_ENDPOINT_SIZE
 			|| data->desc.bDescriptorType != USB_DT_ENDPOINT)
@@ -783,7 +706,7 @@ ep_config (struct ep_data *data, const char *buf, size_t len)
 		ep->desc = &data->desc;
 		break;
 	case USB_SPEED_HIGH:
-		/* fails if caller didn't provide that descriptor... */
+		 
 		ep->desc = &data->hs_desc;
 		break;
 	default:
@@ -835,14 +758,9 @@ ep_open (struct inode *inode, struct file *fd)
 	return value;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* EP0 IMPLEMENTATION can be partly in userspace.
- *
- * Drivers that use this facility receive various events, including
- * control requests the kernel doesn't handle.  Drivers that don't
- * use this facility may be too simple-minded for real applications.
- */
+ 
 
 static inline void ep0_readable (struct dev_data *dev)
 {
@@ -868,7 +786,7 @@ static void ep0_complete (struct usb_ep *ep, struct usb_request *req)
 	unsigned long		flags;
 	int			free = 1;
 
-	/* for control OUT, data must still get to userspace */
+	 
 	spin_lock_irqsave(&dev->lock, flags);
 	if (!dev->setup_in) {
 		dev->setup_out_error = (req->status != 0);
@@ -878,7 +796,7 @@ static void ep0_complete (struct usb_ep *ep, struct usb_request *req)
 		ep0_readable (dev);
 	}
 
-	/* clean up as appropriate */
+	 
 	if (free && req->buf != &dev->rbuf)
 		clean_req (ep, req);
 	req->complete = epio_complete;
@@ -918,23 +836,23 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 		goto done;
 	}
 
-	/* report fd mode change before acting on it */
+	 
 	if (dev->setup_abort) {
 		dev->setup_abort = 0;
 		retval = -EIDRM;
 		goto done;
 	}
 
-	/* control DATA stage */
+	 
 	if ((state = dev->state) == STATE_DEV_SETUP) {
 
-		if (dev->setup_in) {		/* stall IN */
+		if (dev->setup_in) {		 
 			VDEBUG(dev, "ep0in stall\n");
 			(void) usb_ep_set_halt (dev->gadget->ep0);
 			retval = -EL2HLT;
 			dev->state = STATE_DEV_CONNECTED;
 
-		} else if (len == 0) {		/* ack SET_CONFIGURATION etc */
+		} else if (len == 0) {		 
 			struct usb_ep		*ep = dev->gadget->ep0;
 			struct usb_request	*req = dev->req;
 
@@ -947,7 +865,7 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 			}
 			dev->state = STATE_DEV_CONNECTED;
 
-			/* assume that was SET_CONFIGURATION */
+			 
 			if (dev->current_config) {
 				unsigned power;
 
@@ -960,7 +878,7 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 				usb_gadget_vbus_draw(dev->gadget, 2 * power);
 			}
 
-		} else {			/* collect OUT data */
+		} else {			 
 			if ((fd->f_flags & O_NONBLOCK) != 0
 					&& !dev->setup_out_ready) {
 				retval = -EAGAIN;
@@ -970,7 +888,7 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 			retval = wait_event_interruptible (dev->wait,
 					dev->setup_out_ready != 0);
 
-			/* FIXME state could change from under us */
+			 
 			spin_lock_irq (&dev->lock);
 			if (retval)
 				goto done;
@@ -994,13 +912,13 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 				spin_lock_irq(&dev->lock);
 				--dev->udc_usage;
 				clean_req (dev->gadget->ep0, dev->req);
-				/* NOTE userspace can't yet choose to stall */
+				 
 			}
 		}
 		goto done;
 	}
 
-	/* else normal: return event data */
+	 
 	if (len < sizeof dev->event [0]) {
 		retval = -EINVAL;
 		goto done;
@@ -1009,7 +927,7 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 	dev->usermode_setup = 1;
 
 scan:
-	/* return queued events right away */
+	 
 	if (dev->ev_next != 0) {
 		unsigned		i, n;
 
@@ -1017,7 +935,7 @@ scan:
 		if (dev->ev_next < n)
 			n = dev->ev_next;
 
-		/* ep0 i/o has special semantics during STATE_DEV_SETUP */
+		 
 		for (i = 0; i < n; i++) {
 			if (dev->event [i].type == GADGETFS_SETUP) {
 				dev->state = STATE_DEV_SETUP;
@@ -1032,9 +950,7 @@ scan:
 		else
 			retval = len;
 		if (len > 0) {
-			/* NOTE this doesn't guard against broken drivers;
-			 * concurrent ep0 readers may lose events.
-			 */
+			 
 			spin_lock_irq (&dev->lock);
 			if (dev->ev_next > n) {
 				memmove(&dev->event[0], &dev->event[n],
@@ -1061,7 +977,7 @@ scan:
 		spin_unlock_irq (&dev->lock);
 		DBG (dev, "%s wait\n", __func__);
 
-		/* wait for events */
+		 
 		retval = wait_event_interruptible (dev->wait,
 				dev->ev_next != 0);
 		if (retval < 0)
@@ -1082,7 +998,7 @@ next_event (struct dev_data *dev, enum usb_gadgetfs_event_type type)
 	unsigned			i;
 
 	switch (type) {
-	/* these events purge the queue */
+	 
 	case GADGETFS_DISCONNECT:
 		if (dev->state == STATE_DEV_SETUP)
 			dev->setup_abort = 1;
@@ -1090,9 +1006,9 @@ next_event (struct dev_data *dev, enum usb_gadgetfs_event_type type)
 	case GADGETFS_CONNECT:
 		dev->ev_next = 0;
 		break;
-	case GADGETFS_SETUP:		/* previous request timed out */
-	case GADGETFS_SUSPEND:		/* same effect */
-		/* these events can't be repeated */
+	case GADGETFS_SETUP:		 
+	case GADGETFS_SUSPEND:		 
+		 
 		for (i = 0; i != dev->ev_next; i++) {
 			if (dev->event [i].type != type)
 				continue;
@@ -1100,7 +1016,7 @@ next_event (struct dev_data *dev, enum usb_gadgetfs_event_type type)
 			dev->ev_next--;
 			if (i == dev->ev_next)
 				break;
-			/* indices start at zero, for simplicity */
+			 
 			memmove (&dev->event [i], &dev->event [i + 1],
 				sizeof (struct usb_gadgetfs_event)
 					* (dev->ev_next - i));
@@ -1123,12 +1039,12 @@ ep0_write (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 	struct dev_data		*dev = fd->private_data;
 	ssize_t			retval = -ESRCH;
 
-	/* report fd mode change before acting on it */
+	 
 	if (dev->setup_abort) {
 		dev->setup_abort = 0;
 		retval = -EIDRM;
 
-	/* data and/or status stage for control request */
+	 
 	} else if (dev->state == STATE_DEV_SETUP) {
 
 		len = min_t(size_t, len, dev->setup_wLength);
@@ -1157,7 +1073,7 @@ ep0_write (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 				return retval;
 			}
 
-		/* can stall some OUT transfers */
+		 
 		} else if (dev->setup_can_stall) {
 			VDEBUG(dev, "ep0out stall\n");
 			(void) usb_ep_set_halt (dev->gadget->ep0);
@@ -1176,7 +1092,7 @@ static int
 ep0_fasync (int f, struct file *fd, int on)
 {
 	struct dev_data		*dev = fd->private_data;
-	// caller must F_SETOWN before signal delivery happens
+	 
 	VDEBUG (dev, "%s %s\n", __func__, on ? "on" : "off");
 	return fasync_helper (f, fd, on, &dev->fasync);
 }
@@ -1188,22 +1104,19 @@ dev_release (struct inode *inode, struct file *fd)
 {
 	struct dev_data		*dev = fd->private_data;
 
-	/* closing ep0 === shutdown all */
+	 
 
 	if (dev->gadget_registered) {
 		usb_gadget_unregister_driver (&gadgetfs_driver);
 		dev->gadget_registered = false;
 	}
 
-	/* at this point "good" hardware has disconnected the
-	 * device from USB; the host won't see it any more.
-	 * alternatively, all host requests will time out.
-	 */
+	 
 
 	kfree (dev->buf);
 	dev->buf = NULL;
 
-	/* other endpoints were all decoupled from this device */
+	 
 	spin_lock_irq(&dev->lock);
 	dev->state = STATE_DEV_DISABLED;
 	spin_unlock_irq(&dev->lock);
@@ -1225,7 +1138,7 @@ ep0_poll (struct file *fd, poll_table *wait)
 
 	spin_lock_irq(&dev->lock);
 
-	/* report fd mode change before acting on it */
+	 
 	if (dev->setup_abort) {
 		dev->setup_abort = 0;
 		mask = EPOLLHUP;
@@ -1253,7 +1166,7 @@ static long gadget_dev_ioctl (struct file *fd, unsigned code, unsigned long valu
 	spin_lock_irq(&dev->lock);
 	if (dev->state == STATE_DEV_OPENED ||
 			dev->state == STATE_DEV_UNBOUND) {
-		/* Not bound to a UDC */
+		 
 	} else if (gadget->ops->ioctl) {
 		++dev->udc_usage;
 		spin_unlock_irq(&dev->lock);
@@ -1268,13 +1181,9 @@ static long gadget_dev_ioctl (struct file *fd, unsigned code, unsigned long valu
 	return ret;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* The in-kernel gadget driver handles most ep0 issues, in particular
- * enumerating the single configuration (as provided from user space).
- *
- * Unrecognized ep0 requests may be handled in user space.
- */
+ 
 
 static void make_qualifier (struct dev_data *dev)
 {
@@ -1290,7 +1199,7 @@ static void make_qualifier (struct dev_data *dev)
 	qual.bDeviceSubClass = desc->bDeviceSubClass;
 	qual.bDeviceProtocol = desc->bDeviceProtocol;
 
-	/* assumes ep0 uses the same value for both speeds ... */
+	 
 	qual.bMaxPacketSize0 = dev->gadget->ep0->maxpacket;
 
 	qual.bNumConfigurations = 1;
@@ -1305,7 +1214,7 @@ config_buf (struct dev_data *dev, u8 type, unsigned index)
 	int		len;
 	int		hs = 0;
 
-	/* only one configuration */
+	 
 	if (index > 0)
 		return -EINVAL;
 
@@ -1337,7 +1246,7 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 
 	if (w_length > RBUF_SIZE) {
 		if (ctrl->bRequestType & USB_DIR_IN) {
-			/* Cast away the const, we are going to overwrite on purpose. */
+			 
 			__le16 *temp = (__le16 *)&ctrl->wLength;
 
 			*temp = cpu_to_le16(RBUF_SIZE);
@@ -1365,11 +1274,7 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		event->u.speed = gadget->speed;
 		ep0_readable (dev);
 
-	/* host may have given up waiting for response.  we can miss control
-	 * requests handled lower down (device/endpoint status and features);
-	 * then ep0_{read,write} will report the wrong status. controller
-	 * driver will have aborted pending i/o.
-	 */
+	 
 	} else if (dev->state == STATE_DEV_SETUP)
 		dev->setup_abort = 1;
 
@@ -1405,20 +1310,20 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		case USB_DT_STRING:
 			goto unrecognized;
 
-		default:		// all others are errors
+		default:		 
 			break;
 		}
 		break;
 
-	/* currently one config, two speeds */
+	 
 	case USB_REQ_SET_CONFIGURATION:
 		if (ctrl->bRequestType != 0)
 			goto unrecognized;
 		if (0 == (u8) w_value) {
 			value = 0;
 			dev->current_config = 0;
-			usb_gadget_vbus_draw(gadget, 8 /* mA */ );
-			// user mode expected to disable endpoints
+			usb_gadget_vbus_draw(gadget, 8   );
+			 
 		} else {
 			u8	config, power;
 
@@ -1438,15 +1343,7 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			}
 		}
 
-		/* report SET_CONFIGURATION like any other control request,
-		 * except that usermode may not stall this.  the next
-		 * request mustn't be allowed start until this finishes:
-		 * endpoints and threads set up, etc.
-		 *
-		 * NOTE:  older PXA hardware (before PXA 255: without UDCCFR)
-		 * has bad/racey automagic that prevents synchronizing here.
-		 * even kernel mode drivers often miss them.
-		 */
+		 
 		if (value == 0) {
 			INFO (dev, "configuration #%d\n", dev->current_config);
 			usb_gadget_set_state(gadget, USB_STATE_CONFIGURED);
@@ -1458,7 +1355,7 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		break;
 
 #ifndef	CONFIG_USB_PXA25X
-	/* PXA automagically handles this request too */
+	 
 	case USB_REQ_GET_CONFIGURATION:
 		if (ctrl->bRequestType != 0x80)
 			goto unrecognized;
@@ -1474,7 +1371,7 @@ unrecognized:
 			ctrl->bRequestType, ctrl->bRequest,
 			w_value, le16_to_cpu(ctrl->wIndex), w_length);
 
-		/* if there's an ep0 reader, don't stall */
+		 
 		if (dev->usermode_setup) {
 			dev->setup_can_stall = 1;
 delegate:
@@ -1484,7 +1381,7 @@ delegate:
 			dev->setup_out_ready = 0;
 			dev->setup_out_error = 0;
 
-			/* read DATA stage for OUT right away */
+			 
 			if (unlikely (!dev->setup_in && w_length)) {
 				value = setup_req (gadget->ep0, dev->req,
 							w_length);
@@ -1502,11 +1399,11 @@ delegate:
 					break;
 				}
 
-				/* we can't currently stall these */
+				 
 				dev->setup_can_stall = 0;
 			}
 
-			/* state changes when reader collects event */
+			 
 			event = next_event (dev, GADGETFS_SETUP);
 			event->u.setup = *ctrl;
 			ep0_readable (dev);
@@ -1515,7 +1412,7 @@ delegate:
 		}
 	}
 
-	/* proceed with data transfer and status phases? */
+	 
 	if (value >= 0 && dev->state != STATE_DEV_SETUP) {
 		req->length = value;
 		req->zero = value < w_length;
@@ -1533,7 +1430,7 @@ delegate:
 		return value;
 	}
 
-	/* device stalls when value < 0 */
+	 
 	spin_unlock (&dev->lock);
 	return value;
 }
@@ -1542,14 +1439,14 @@ static void destroy_ep_files (struct dev_data *dev)
 {
 	DBG (dev, "%s %d\n", __func__, dev->state);
 
-	/* dev->state must prevent interference */
+	 
 	spin_lock_irq (&dev->lock);
 	while (!list_empty(&dev->epfiles)) {
 		struct ep_data	*ep;
 		struct inode	*parent;
 		struct dentry	*dentry;
 
-		/* break link to FS */
+		 
 		ep = list_first_entry (&dev->epfiles, struct ep_data, epfiles);
 		list_del_init (&ep->epfiles);
 		spin_unlock_irq (&dev->lock);
@@ -1558,7 +1455,7 @@ static void destroy_ep_files (struct dev_data *dev)
 		ep->dentry = NULL;
 		parent = d_inode(dentry->d_parent);
 
-		/* break link to controller */
+		 
 		mutex_lock(&ep->lock);
 		if (ep->state == STATE_EP_ENABLED)
 			(void) usb_ep_disable (ep->ep);
@@ -1570,7 +1467,7 @@ static void destroy_ep_files (struct dev_data *dev)
 		wake_up (&ep->wait);
 		put_ep (ep);
 
-		/* break link to dcache */
+		 
 		inode_lock(parent);
 		d_delete (dentry);
 		dput (dentry);
@@ -1651,7 +1548,7 @@ gadgetfs_unbind (struct usb_gadget *gadget)
 	gadget->ep0->driver_data = NULL;
 	set_gadget_data (gadget, NULL);
 
-	/* we've already been disconnected ... no i/o is active */
+	 
 	if (dev->req)
 		usb_ep_free_request (gadget->ep0, dev->req);
 	DBG (dev, "%s done\n", __func__);
@@ -1677,7 +1574,7 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
 	dev->gadget = gadget;
 	gadget->ep0->driver_data = dev;
 
-	/* preallocate control response and buffer */
+	 
 	dev->req = usb_ep_alloc_request (gadget->ep0, GFP_KERNEL);
 	if (!dev->req)
 		goto enomem;
@@ -1726,7 +1623,7 @@ gadgetfs_suspend (struct usb_gadget *gadget)
 	INFO (dev, "suspended from state %d\n", dev->state);
 	spin_lock_irqsave(&dev->lock, flags);
 	switch (dev->state) {
-	case STATE_DEV_SETUP:		// VERY odd... host died??
+	case STATE_DEV_SETUP:		 
 	case STATE_DEV_CONNECTED:
 	case STATE_DEV_UNCONNECTED:
 		next_event (dev, GADGETFS_SUSPEND);
@@ -1752,32 +1649,8 @@ static struct usb_gadget_driver gadgetfs_driver = {
 	},
 };
 
-/*----------------------------------------------------------------------*/
-/* DEVICE INITIALIZATION
- *
- *     fd = open ("/dev/gadget/$CHIP", O_RDWR)
- *     status = write (fd, descriptors, sizeof descriptors)
- *
- * That write establishes the device configuration, so the kernel can
- * bind to the controller ... guaranteeing it can handle enumeration
- * at all necessary speeds.  Descriptor order is:
- *
- * . message tag (u32, host order) ... for now, must be zero; it
- *	would change to support features like multi-config devices
- * . full/low speed config ... all wTotalLength bytes (with interface,
- *	class, altsetting, endpoint, and other descriptors)
- * . high speed config ... all descriptors, for high speed operation;
- *	this one's optional except for high-speed hardware
- * . device descriptor
- *
- * Endpoints are not yet enabled. Drivers must wait until device
- * configuration and interface altsetting changes create
- * the need to configure (or unconfigure) them.
- *
- * After initialization, the device stays active for as long as that
- * $CHIP file is open.  Events must then be read from that descriptor,
- * such as configuration notifications.
- */
+ 
+ 
 
 static int is_valid_config(struct usb_config_descriptor *config,
 		unsigned int total)
@@ -1788,8 +1661,8 @@ static int is_valid_config(struct usb_config_descriptor *config,
 		&& config->bConfigurationValue != 0
 		&& (config->bmAttributes & USB_CONFIG_ATT_ONE) != 0
 		&& (config->bmAttributes & USB_CONFIG_ATT_WAKEUP) == 0;
-	/* FIXME if gadget->is_otg, _must_ include an otg descriptor */
-	/* FIXME check lengths: walk to end */
+	 
+	 
 }
 
 static ssize_t
@@ -1813,7 +1686,7 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 	    (len > PAGE_SIZE * 4))
 		return -EINVAL;
 
-	/* we might need to change message format someday */
+	 
 	if (copy_from_user (&tag, buf, 4))
 		return -EFAULT;
 	if (tag != 0)
@@ -1834,7 +1707,7 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 	}
 	dev->buf = kbuf;
 
-	/* full or low speed config */
+	 
 	dev->config = (void *) kbuf;
 	total = le16_to_cpu(dev->config->wTotalLength);
 	if (!is_valid_config(dev->config, total) ||
@@ -1843,7 +1716,7 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 	kbuf += total;
 	length -= total;
 
-	/* optional high speed config */
+	 
 	if (kbuf [1] == USB_DT_CONFIG) {
 		dev->hs_config = (void *) kbuf;
 		total = le16_to_cpu(dev->hs_config->wTotalLength);
@@ -1856,9 +1729,9 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 		dev->hs_config = NULL;
 	}
 
-	/* could support multiple configs, using another encoding! */
+	 
 
-	/* device descriptor (tweaked for paranoia) */
+	 
 	if (length != USB_DT_DEVICE_SIZE)
 		goto fail;
 	dev->dev = (void *)kbuf;
@@ -1868,7 +1741,7 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 		goto fail;
 	dev->dev->bcdUSB = cpu_to_le16 (0x0200);
 
-	/* triggers gadgetfs_bind(); then we can enumerate. */
+	 
 	spin_unlock_irq (&dev->lock);
 	if (dev->hs_config)
 		gadgetfs_driver.max_speed = USB_SPEED_HIGH;
@@ -1880,15 +1753,7 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 		spin_lock_irq(&dev->lock);
 		goto fail;
 	} else {
-		/* at this point "good" hardware has for the first time
-		 * let the USB the host see us.  alternatively, if users
-		 * unplug/replug that will clear all the error state.
-		 *
-		 * note:  everything running before here was guaranteed
-		 * to choke driver model style diagnostics.  from here
-		 * on, they can work ... except in cleanup paths that
-		 * kick in after the ep0 descriptor is closed.
-		 */
+		 
 		value = len;
 		dev->gadget_registered = true;
 	}
@@ -1935,18 +1800,12 @@ static const struct file_operations ep0_operations = {
 	.release =	dev_release,
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
-/* FILESYSTEM AND SUPERBLOCK OPERATIONS
- *
- * Mounting the filesystem creates a controller file, used first for
- * device configuration then later for event monitoring.
- */
+ 
 
 
-/* FIXME PAM etc could set this security policy without mount options
- * if epfiles inherited ownership and permissons from ep0 ...
- */
+ 
 
 static unsigned default_uid;
 static unsigned default_gid;
@@ -1976,9 +1835,7 @@ gadgetfs_make_inode (struct super_block *sb,
 	return inode;
 }
 
-/* creates in fs root directory, so non-renamable and non-linkable.
- * so inode and dentry are paired, until device reconfig.
- */
+ 
 static struct dentry *
 gadgetfs_create_file (struct super_block *sb, char const *name,
 		void *data, const struct file_operations *fops)
@@ -2025,14 +1882,14 @@ gadgetfs_fill_super (struct super_block *sb, struct fs_context *fc)
 		goto Done;
 	}
 
-	/* superblock */
+	 
 	sb->s_blocksize = PAGE_SIZE;
 	sb->s_blocksize_bits = PAGE_SHIFT;
 	sb->s_magic = GADGETFS_MAGIC;
 	sb->s_op = &gadget_fs_operations;
 	sb->s_time_gran = 1;
 
-	/* root inode */
+	 
 	inode = gadgetfs_make_inode (sb,
 			NULL, &simple_dir_operations,
 			S_IFDIR | S_IRUGO | S_IXUGO);
@@ -2042,9 +1899,7 @@ gadgetfs_fill_super (struct super_block *sb, struct fs_context *fc)
 	if (!(sb->s_root = d_make_root (inode)))
 		goto Enomem;
 
-	/* the ep0 file is named after the controller we expect;
-	 * user mode code can use it for sanity checks, like we do.
-	 */
+	 
 	dev = dev_new ();
 	if (!dev)
 		goto Enomem;
@@ -2056,9 +1911,7 @@ gadgetfs_fill_super (struct super_block *sb, struct fs_context *fc)
 		goto Enomem;
 	}
 
-	/* other endpoint files are available after hardware setup,
-	 * from binding to a controller.
-	 */
+	 
 	the_device = dev;
 	rc = 0;
 	goto Done;
@@ -2073,7 +1926,7 @@ gadgetfs_fill_super (struct super_block *sb, struct fs_context *fc)
 	return rc;
 }
 
-/* "mount -t gadgetfs path /dev/gadget" ends up here */
+ 
 static int gadgetfs_get_tree(struct fs_context *fc)
 {
 	return get_tree_single(fc, gadgetfs_fill_super);
@@ -2103,7 +1956,7 @@ gadgetfs_kill_sb (struct super_block *sb)
 	mutex_unlock(&sb_mutex);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static struct file_system_type gadgetfs_type = {
 	.owner		= THIS_MODULE,
@@ -2113,7 +1966,7 @@ static struct file_system_type gadgetfs_type = {
 };
 MODULE_ALIAS_FS("gadgetfs");
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int __init gadgetfs_init (void)
 {

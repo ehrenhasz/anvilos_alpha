@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -69,19 +46,7 @@
 #define CRTC_REG_SET_3(reg, field1, val1, field2, val2, field3, val3)	\
 		CRTC_REG_SET_N(reg, 3, FD(reg##__##field1), val1, FD(reg##__##field2), val2, FD(reg##__##field3), val3)
 
-/*
- *****************************************************************************
- *  Function: is_in_vertical_blank
- *
- *  @brief
- *     check the current status of CRTC to check if we are in Vertical Blank
- *     regioneased" state
- *
- *  @return
- *     true if currently in blank region, false otherwise
- *
- *****************************************************************************
- */
+ 
 static bool dce120_timing_generator_is_in_vertical_blank(
 		struct timing_generator *tg)
 {
@@ -97,7 +62,7 @@ static bool dce120_timing_generator_is_in_vertical_blank(
 }
 
 
-/* determine if given timing can be supported by TG */
+ 
 static bool dce120_timing_generator_validate_timing(
 	struct timing_generator *tg,
 	const struct dc_crtc_timing *timing,
@@ -131,15 +96,14 @@ static bool dce120_tg_validate_timing(struct timing_generator *tg,
 	return dce120_timing_generator_validate_timing(tg, timing, SIGNAL_TYPE_NONE);
 }
 
-/******** HW programming ************/
-/* Disable/Enable Timing Generator */
+ 
+ 
 static bool dce120_timing_generator_enable_crtc(struct timing_generator *tg)
 {
 	enum bp_result result;
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 
-	/* Set MASTER_UPDATE_MODE to 0
-	 * This is needed for DRR, and also suggested to be default value by Syed.*/
+	 
 
 	CRTC_REG_UPDATE(CRTC0_CRTC_MASTER_UPDATE_MODE,
 			MASTER_UPDATE_MODE, 0);
@@ -147,7 +111,7 @@ static bool dce120_timing_generator_enable_crtc(struct timing_generator *tg)
 	CRTC_REG_UPDATE(CRTC0_CRTC_MASTER_UPDATE_LOCK,
 			UNDERFLOW_UPDATE_LOCK, 0);
 
-	/* TODO API for AtomFirmware didn't change*/
+	 
 	result = tg->bp->funcs->enable_crtc(tg->bp, tg110->controller_id, true);
 
 	return result == BP_RESULT_OK;
@@ -163,9 +127,9 @@ static void dce120_timing_generator_set_early_control(
 			CRTC_HBLANK_EARLY_CONTROL, early_cntl);
 }
 
-/**************** TG current status ******************/
+ 
 
-/* return the current frame counter. Used by Linux kernel DRM */
+ 
 static uint32_t dce120_timing_generator_get_vblank_counter(
 		struct timing_generator *tg)
 {
@@ -180,7 +144,7 @@ static uint32_t dce120_timing_generator_get_vblank_counter(
 	return field;
 }
 
-/* Get current H and V position */
+ 
 static void dce120_timing_generator_get_crtc_position(
 	struct timing_generator *tg,
 	struct crtc_position *position)
@@ -206,42 +170,39 @@ static void dce120_timing_generator_get_crtc_position(
 			CRTC0_CRTC_NOM_VERT_POSITION, CRTC_VERT_COUNT_NOM);
 }
 
-/* wait until TG is in beginning of vertical blank region */
+ 
 static void dce120_timing_generator_wait_for_vblank(struct timing_generator *tg)
 {
-	/* We want to catch beginning of VBlank here, so if the first try are
-	 * in VBlank, we might be very close to Active, in this case wait for
-	 * another frame
-	 */
+	 
 	while (dce120_timing_generator_is_in_vertical_blank(tg)) {
 		if (!tg->funcs->is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
 
 	while (!dce120_timing_generator_is_in_vertical_blank(tg)) {
 		if (!tg->funcs->is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
 }
 
-/* wait until TG is in beginning of active region */
+ 
 static void dce120_timing_generator_wait_for_vactive(struct timing_generator *tg)
 {
 	while (dce120_timing_generator_is_in_vertical_blank(tg)) {
 		if (!tg->funcs->is_counter_moving(tg)) {
-			/* error - no point to wait if counter is not moving */
+			 
 			break;
 		}
 	}
 }
 
-/*********** Timing Generator Synchronization routines ****/
+ 
 
-/* Setups Global Swap Lock group, TimingServer or TimingClient*/
+ 
 static void dce120_timing_generator_setup_global_swap_lock(
 	struct timing_generator *tg,
 	const struct dcp_gsl_params *gsl_params)
@@ -251,7 +212,7 @@ static void dce120_timing_generator_setup_global_swap_lock(
 							dm_read_reg_soc15(tg->ctx,
 							mmCRTC0_CRTC_V_TOTAL,
 							tg110->offsets.crtc);
-	/* Checkpoint relative to end of frame */
+	 
 	uint32_t check_point =
 							get_reg_field_value(value_crtc_vtotal,
 							CRTC0_CRTC_V_TOTAL,
@@ -261,14 +222,13 @@ static void dce120_timing_generator_setup_global_swap_lock(
 	dm_write_reg_soc15(tg->ctx, mmCRTC0_CRTC_GSL_WINDOW, tg110->offsets.crtc, 0);
 
 	CRTC_REG_UPDATE_N(DCP0_DCP_GSL_CONTROL, 6,
-		/* This pipe will belong to GSL Group zero. */
+		 
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL0_EN), 1,
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_MASTER_EN), gsl_params->gsl_master == tg->inst,
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_HSYNC_FLIP_FORCE_DELAY), HFLIP_READY_DELAY,
-		/* Keep signal low (pending high) during 6 lines.
-		 * Also defines minimum interval before re-checking signal. */
+		 
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_HSYNC_FLIP_CHECK_DELAY), HFLIP_CHECK_DELAY,
-		/* DCP_GSL_PURPOSE_SURFACE_FLIP */
+		 
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_SYNC_SOURCE), 0,
 		FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_DELAY_SURFACE_UPDATE_PENDING), 1);
 
@@ -278,28 +238,28 @@ static void dce120_timing_generator_setup_global_swap_lock(
 			CRTC_GSL_FORCE_DELAY, VFLIP_READY_DELAY);
 }
 
-/* Clear all the register writes done by setup_global_swap_lock */
+ 
 static void dce120_timing_generator_tear_down_global_swap_lock(
 	struct timing_generator *tg)
 {
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 
-	/* Settig HW default values from reg specs */
+	 
 	CRTC_REG_SET_N(DCP0_DCP_GSL_CONTROL, 6,
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL0_EN), 0,
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_MASTER_EN), 0,
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_HSYNC_FLIP_FORCE_DELAY), HFLIP_READY_DELAY,
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_HSYNC_FLIP_CHECK_DELAY), HFLIP_CHECK_DELAY,
-			/* DCP_GSL_PURPOSE_SURFACE_FLIP */
+			 
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_SYNC_SOURCE), 0,
 			FD(DCP0_DCP_GSL_CONTROL__DCP_GSL_DELAY_SURFACE_UPDATE_PENDING), 0);
 
 	CRTC_REG_SET_2(CRTC0_CRTC_GSL_CONTROL,
 		       CRTC_GSL_CHECK_LINE_NUM, 0,
-		       CRTC_GSL_FORCE_DELAY, 0x2); /*TODO Why this value here ?*/
+		       CRTC_GSL_FORCE_DELAY, 0x2);  
 }
 
-/* Reset slave controllers on master VSync */
+ 
 static void dce120_timing_generator_enable_reset_trigger(
 	struct timing_generator *tg,
 	int source)
@@ -308,14 +268,13 @@ static void dce120_timing_generator_enable_reset_trigger(
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 	uint32_t rising_edge = 0;
 	uint32_t falling_edge = 0;
-	/* Setup trigger edge */
+	 
 	uint32_t pol_value = dm_read_reg_soc15(
 									tg->ctx,
 									mmCRTC0_CRTC_V_SYNC_A_CNTL,
 									tg110->offsets.crtc);
 
-	/* Register spec has reversed definition:
-	 *	0 for positive, 1 for negative */
+	 
 	if (get_reg_field_value(pol_value,
 			CRTC0_CRTC_V_SYNC_A_CNTL,
 			CRTC_V_SYNC_A_POL) == 0) {
@@ -324,7 +283,7 @@ static void dce120_timing_generator_enable_reset_trigger(
 		falling_edge = 1;
 	}
 
-	/* TODO What about other sources ?*/
+	 
 	trig_src_select = TRIGGER_SOURCE_SELECT_GSL_GROUP0;
 
 	CRTC_REG_UPDATE_N(CRTC0_CRTC_TRIGB_CNTL, 7,
@@ -332,11 +291,11 @@ static void dce120_timing_generator_enable_reset_trigger(
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_POLARITY_SELECT), TRIGGER_POLARITY_SELECT_LOGIC_ZERO,
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_RISING_EDGE_DETECT_CNTL), rising_edge,
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_FALLING_EDGE_DETECT_CNTL), falling_edge,
-		/* send every signal */
+		 
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_FREQUENCY_SELECT), 0,
-		/* no delay */
+		 
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_DELAY), 0,
-		/* clear trigger status */
+		 
 		FD(CRTC0_CRTC_TRIGB_CNTL__CRTC_TRIGB_CLEAR), 1);
 
 	CRTC_REG_UPDATE_3(
@@ -346,7 +305,7 @@ static void dce120_timing_generator_enable_reset_trigger(
 			CRTC_FORCE_COUNT_NOW_CLEAR, 1);
 }
 
-/* disabling trigger-reset */
+ 
 static void dce120_timing_generator_disable_reset_trigger(
 	struct timing_generator *tg)
 {
@@ -361,12 +320,12 @@ static void dce120_timing_generator_disable_reset_trigger(
 		CRTC0_CRTC_TRIGB_CNTL,
 		CRTC_TRIGB_SOURCE_SELECT, TRIGGER_SOURCE_SELECT_LOGIC_ZERO,
 		CRTC_TRIGB_POLARITY_SELECT, TRIGGER_POLARITY_SELECT_LOGIC_ZERO,
-		/* clear trigger status */
+		 
 		CRTC_TRIGB_CLEAR, 1);
 
 }
 
-/* Checks whether CRTC triggered reset occurred */
+ 
 static bool dce120_timing_generator_did_triggered_reset_occur(
 	struct timing_generator *tg)
 {
@@ -382,8 +341,8 @@ static bool dce120_timing_generator_did_triggered_reset_occur(
 }
 
 
-/******** Stuff to move to other virtual HW objects *****************/
-/* Move to enable accelerated mode */
+ 
+ 
 static void dce120_timing_generator_disable_vga(struct timing_generator *tg)
 {
 	uint32_t offset = 0;
@@ -423,8 +382,8 @@ static void dce120_timing_generator_disable_vga(struct timing_generator *tg)
 
 	dm_write_reg_soc15(tg->ctx, mmD1VGA_CONTROL, offset, value);
 }
-/* TODO: Should we move it to transform */
-/* Fully program CRTC timing in timing generator */
+ 
+ 
 static void dce120_timing_generator_program_blanking(
 	struct timing_generator *tg,
 	const struct dc_crtc_timing *timing)
@@ -450,9 +409,7 @@ static void dce120_timing_generator_program_blanking(
 		CRTC_V_TOTAL,
 		timing->v_total - 1);
 
-	/* In case of V_TOTAL_CONTROL is on, make sure V_TOTAL_MAX and
-	 * V_TOTAL_MIN are equal to V_TOTAL.
-	 */
+	 
 	CRTC_REG_UPDATE(
 		CRTC0_CRTC_V_TOTAL_MAX,
 		CRTC_V_TOTAL_MAX,
@@ -483,8 +440,8 @@ static void dce120_timing_generator_program_blanking(
 		CRTC_V_BLANK_START, tmp2);
 }
 
-/* TODO: Should we move it to opp? */
-/* Combine with below and move YUV/RGB color conversion to SW layer */
+ 
+ 
 static void dce120_timing_generator_program_blank_color(
 	struct timing_generator *tg,
 	const struct tg_color *black_color)
@@ -497,7 +454,7 @@ static void dce120_timing_generator_program_blank_color(
 		CRTC_BLACK_COLOR_G_Y, black_color->color_g_y,
 		CRTC_BLACK_COLOR_R_CR, black_color->color_r_cr);
 }
-/* Combine with above and move YUV/RGB color conversion to SW layer */
+ 
 static void dce120_timing_generator_set_overscan_color_black(
 	struct timing_generator *tg,
 	const struct tg_color *color)
@@ -521,23 +478,14 @@ static void dce120_timing_generator_set_overscan_color_black(
 			tg110->offsets.crtc,
 			value);
 
-	/* This is desirable to have a constant DAC output voltage during the
-	 * blank time that is higher than the 0 volt reference level that the
-	 * DAC outputs when the NBLANK signal
-	 * is asserted low, such as for output to an analog TV. */
+	 
 	dm_write_reg_soc15(
 		tg->ctx,
 		mmCRTC0_CRTC_BLANK_DATA_COLOR,
 		tg110->offsets.crtc,
 		value);
 
-	/* TO DO we have to program EXT registers and we need to know LB DATA
-	 * format because it is used when more 10 , i.e. 12 bits per color
-	 *
-	 * m_mmDxCRTC_OVERSCAN_COLOR_EXT
-	 * m_mmDxCRTC_BLACK_COLOR_EXT
-	 * m_mmDxCRTC_BLANK_DATA_COLOR_EXT
-	 */
+	 
 }
 
 static void dce120_timing_generator_set_drr(
@@ -638,9 +586,7 @@ static void dce120_timing_generator_enable_advanced_request(
 		CRTC0_CRTC_START_LINE_CONTROL,
 		CRTC_LEGACY_REQUESTOR_EN);
 
-	/* Program advanced line position acc.to the best case from fetching data perspective to hide MC latency
-	 * and prefilling Line Buffer in V Blank (to 10 lines as LB can store max 10 lines)
-	 */
+	 
 	if (v_sync_width_and_b_porch > 10)
 		v_sync_width_and_b_porch = 10;
 
@@ -781,7 +727,7 @@ static void dce120_timing_generator_set_static_screen_control(
 {
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 
-	// By register spec, it only takes 8 bit value
+	 
 	if (num_frames > 0xFF)
 		num_frames = 0xFF;
 
@@ -792,9 +738,7 @@ static void dce120_timing_generator_set_static_screen_control(
 
 static void dce120_timing_generator_set_test_pattern(
 	struct timing_generator *tg,
-	/* TODO: replace 'controller_dp_test_pattern' by 'test_pattern_mode'
-	 * because this is not DP-specific (which is probably somewhere in DP
-	 * encoder) */
+	 
 	enum controller_dp_test_pattern test_pattern,
 	enum dc_color_depth color_depth)
 {
@@ -804,23 +748,19 @@ static void dce120_timing_generator_set_test_pattern(
 	enum test_pattern_color_format bit_depth;
 	enum test_pattern_dyn_range dyn_range;
 	enum test_pattern_mode mode;
-	/* color ramp generator mixes 16-bits color */
+	 
 	uint32_t src_bpc = 16;
-	/* requested bpc */
+	 
 	uint32_t dst_bpc;
 	uint32_t index;
-	/* RGB values of the color bars.
-	 * Produce two RGB colors: RGB0 - white (all Fs)
-	 * and RGB1 - black (all 0s)
-	 * (three RGB components for two colors)
-	 */
+	 
 	uint16_t src_color[6] = {0xFFFF, 0xFFFF, 0xFFFF, 0x0000,
 						0x0000, 0x0000};
-	/* dest color (converted to the specified color format) */
+	 
 	uint16_t dst_color[6];
 	uint32_t inc_base;
 
-	/* translate to bit depth */
+	 
 	switch (color_depth) {
 	case COLOR_DEPTH_666:
 		bit_depth = TEST_PATTERN_COLOR_FORMAT_BPC_6;
@@ -884,77 +824,41 @@ static void dce120_timing_generator_set_test_pattern(
 		break;
 		}
 
-		/* adjust color to the required colorFormat */
+		 
 		for (index = 0; index < 6; index++) {
-			/* dst = 2^dstBpc * src / 2^srcBpc = src >>
-			 * (srcBpc - dstBpc);
-			 */
+			 
 			dst_color[index] =
 				src_color[index] >> (src_bpc - dst_bpc);
-		/* CRTC_TEST_PATTERN_DATA has 16 bits,
-		 * lowest 6 are hardwired to ZERO
-		 * color bits should be left aligned aligned to MSB
-		 * XXXXXXXXXX000000 for 10 bit,
-		 * XXXXXXXX00000000 for 8 bit and XXXXXX0000000000 for 6
-		 */
+		 
 			dst_color[index] <<= (16 - dst_bpc);
 		}
 
 		dm_write_reg_soc15(ctx, mmCRTC0_CRTC_TEST_PATTERN_PARAMETERS, tg110->offsets.crtc, 0);
 
-		/* We have to write the mask before data, similar to pipeline.
-		 * For example, for 8 bpc, if we want RGB0 to be magenta,
-		 * and RGB1 to be cyan,
-		 * we need to make 7 writes:
-		 * MASK   DATA
-		 * 000001 00000000 00000000                     set mask to R0
-		 * 000010 11111111 00000000     R0 255, 0xFF00, set mask to G0
-		 * 000100 00000000 00000000     G0 0,   0x0000, set mask to B0
-		 * 001000 11111111 00000000     B0 255, 0xFF00, set mask to R1
-		 * 010000 00000000 00000000     R1 0,   0x0000, set mask to G1
-		 * 100000 11111111 00000000     G1 255, 0xFF00, set mask to B1
-		 * 100000 11111111 00000000     B1 255, 0xFF00
-		 *
-		 * we will make a loop of 6 in which we prepare the mask,
-		 * then write, then prepare the color for next write.
-		 * first iteration will write mask only,
-		 * but each next iteration color prepared in
-		 * previous iteration will be written within new mask,
-		 * the last component will written separately,
-		 * mask is not changing between 6th and 7th write
-		 * and color will be prepared by last iteration
-		 */
+		 
 
-		/* write color, color values mask in CRTC_TEST_PATTERN_MASK
-		 * is B1, G1, R1, B0, G0, R0
-		 */
+		 
 		value = 0;
 		for (index = 0; index < 6; index++) {
-			/* prepare color mask, first write PATTERN_DATA
-			 * will have all zeros
-			 */
+			 
 			set_reg_field_value(
 				value,
 				(1 << index),
 				CRTC0_CRTC_TEST_PATTERN_COLOR,
 				CRTC_TEST_PATTERN_MASK);
-			/* write color component */
+			 
 			dm_write_reg_soc15(ctx, mmCRTC0_CRTC_TEST_PATTERN_COLOR, tg110->offsets.crtc, value);
-			/* prepare next color component,
-			 * will be written in the next iteration
-			 */
+			 
 			set_reg_field_value(
 				value,
 				dst_color[index],
 				CRTC0_CRTC_TEST_PATTERN_COLOR,
 				CRTC_TEST_PATTERN_DATA);
 		}
-		/* write last color component,
-		 * it's been already prepared in the loop
-		 */
+		 
 		dm_write_reg_soc15(ctx, mmCRTC0_CRTC_TEST_PATTERN_COLOR, tg110->offsets.crtc, value);
 
-		/* enable test pattern */
+		 
 		CRTC_REG_UPDATE_4(CRTC0_CRTC_TEST_PATTERN_CONTROL,
 				CRTC_TEST_PATTERN_EN, 1,
 				CRTC_TEST_PATTERN_MODE, mode,
@@ -985,10 +889,7 @@ static void dce120_timing_generator_set_test_pattern(
 		break;
 		}
 
-		/* increment for the first ramp for one color gradation
-		 * 1 gradation for 6-bit color is 2^10
-		 * gradations in 16-bit color
-		 */
+		 
 		inc_base = (src_bpc - dst_bpc);
 
 		switch (bit_depth) {
@@ -1028,7 +929,7 @@ static void dce120_timing_generator_set_test_pattern(
 
 		dm_write_reg_soc15(ctx, mmCRTC0_CRTC_TEST_PATTERN_COLOR, tg110->offsets.crtc, 0);
 
-		/* enable test pattern */
+		 
 		dm_write_reg_soc15(ctx, mmCRTC0_CRTC_TEST_PATTERN_CONTROL, tg110->offsets.crtc, 0);
 
 		CRTC_REG_UPDATE_4(CRTC0_CRTC_TEST_PATTERN_CONTROL,
@@ -1095,39 +996,39 @@ static bool dce120_configure_crc(struct timing_generator *tg,
 {
 	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
 
-	/* Cannot configure crc on a CRTC that is disabled */
+	 
 	if (!dce120_is_tg_enabled(tg))
 		return false;
 
-	/* First, disable CRC before we configure it. */
+	 
 	dm_write_reg_soc15(tg->ctx, mmCRTC0_CRTC_CRC_CNTL,
 			   tg110->offsets.crtc, 0);
 
 	if (!params->enable)
 		return true;
 
-	/* Program frame boundaries */
-	/* Window A x axis start and end. */
+	 
+	 
 	CRTC_REG_UPDATE_2(CRTC0_CRTC_CRC0_WINDOWA_X_CONTROL,
 			  CRTC_CRC0_WINDOWA_X_START, params->windowa_x_start,
 			  CRTC_CRC0_WINDOWA_X_END, params->windowa_x_end);
 
-	/* Window A y axis start and end. */
+	 
 	CRTC_REG_UPDATE_2(CRTC0_CRTC_CRC0_WINDOWA_Y_CONTROL,
 			  CRTC_CRC0_WINDOWA_Y_START, params->windowa_y_start,
 			  CRTC_CRC0_WINDOWA_Y_END, params->windowa_y_end);
 
-	/* Window B x axis start and end. */
+	 
 	CRTC_REG_UPDATE_2(CRTC0_CRTC_CRC0_WINDOWB_X_CONTROL,
 			  CRTC_CRC0_WINDOWB_X_START, params->windowb_x_start,
 			  CRTC_CRC0_WINDOWB_X_END, params->windowb_x_end);
 
-	/* Window B y axis start and end. */
+	 
 	CRTC_REG_UPDATE_2(CRTC0_CRTC_CRC0_WINDOWB_Y_CONTROL,
 			  CRTC_CRC0_WINDOWB_Y_START, params->windowb_y_start,
 			  CRTC_CRC0_WINDOWB_Y_END, params->windowb_y_end);
 
-	/* Set crc mode and selection, and enable. Only using CRC0*/
+	 
 	CRTC_REG_UPDATE_3(CRTC0_CRTC_CRC_CNTL,
 			  CRTC_CRC_EN, params->continuous_mode ? 1 : 0,
 			  CRTC_CRC0_SELECT, params->selection,
@@ -1146,7 +1047,7 @@ static bool dce120_get_crc(struct timing_generator *tg, uint32_t *r_cr,
 				  tg110->offsets.crtc);
 	field = get_reg_field_value(value, CRTC0_CRTC_CRC_CNTL, CRTC_CRC_EN);
 
-	/* Early return if CRC is not enabled for this CRTC */
+	 
 	if (!field)
 		return false;
 
@@ -1167,18 +1068,18 @@ static const struct timing_generator_funcs dce120_tg_funcs = {
 		.program_timing = dce120_tg_program_timing,
 		.enable_crtc = dce120_timing_generator_enable_crtc,
 		.disable_crtc = dce110_timing_generator_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = dce110_timing_generator_is_counter_moving,
-		/* never be called */
+		 
 		.get_position = dce120_timing_generator_get_crtc_position,
 		.get_frame_count = dce120_timing_generator_get_vblank_counter,
 		.get_scanoutpos = dce120_timing_generator_get_crtc_scanoutpos,
 		.set_early_control = dce120_timing_generator_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = dce120_tg_wait_for_state,
 		.set_blank = dce120_tg_set_blank,
 		.is_blanked = dce120_tg_is_blanked,
-		/* never be called */
+		 
 		.set_colors = dce120_tg_set_colors,
 		.set_overscan_blank_color = dce120_timing_generator_set_overscan_color_black,
 		.set_blank_color = dce120_timing_generator_program_blank_color,
@@ -1219,10 +1120,9 @@ void dce120_timing_generator_construct(
 	tg110->max_h_total = CRTC0_CRTC_H_TOTAL__CRTC_H_TOTAL_MASK + 1;
 	tg110->max_v_total = CRTC0_CRTC_V_TOTAL__CRTC_V_TOTAL_MASK + 1;
 
-	/*//CRTC requires a minimum HBLANK = 32 pixels and o
-	 * Minimum HSYNC = 8 pixels*/
+	 
 	tg110->min_h_blank = 32;
-	/*DCE12_CRTC_Block_ARch.doc*/
+	 
 	tg110->min_h_front_porch = 0;
 	tg110->min_h_back_porch = 0;
 

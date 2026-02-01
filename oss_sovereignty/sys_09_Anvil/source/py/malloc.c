@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,9 +8,9 @@
 #include "py/misc.h"
 #include "py/mpstate.h"
 
-#if MICROPY_DEBUG_VERBOSE // print debugging info
+#if MICROPY_DEBUG_VERBOSE 
 #define DEBUG_printf DEBUG_printf
-#else // don't print debugging info
+#else 
 #define DEBUG_printf(...) (void)0
 #endif
 
@@ -48,11 +24,11 @@
 #if MICROPY_ENABLE_GC
 #include "py/gc.h"
 
-// We redirect standard alloc functions to GC heap - just for the rest of
-// this module. In the rest of MicroPython source, system malloc can be
-// freely accessed - for interfacing with system and 3rd-party libs for
-// example. On the other hand, some (e.g. bare-metal) ports may use GC
-// heap as system heap, so, to avoid warnings, we do undef's first.
+
+
+
+
+
 #undef malloc
 #undef free
 #undef realloc
@@ -63,7 +39,7 @@
 #define realloc_ext(ptr, n, mv) gc_realloc(ptr, n, mv)
 #else
 
-// GC is disabled.  Use system malloc/realloc/free.
+
 
 #if MICROPY_ENABLE_FINALISER
 #error MICROPY_ENABLE_FINALISER requires MICROPY_ENABLE_GC
@@ -73,14 +49,14 @@ static void *realloc_ext(void *ptr, size_t n_bytes, bool allow_move) {
     if (allow_move) {
         return realloc(ptr, n_bytes);
     } else {
-        // We are asked to resize, but without moving the memory region pointed to
-        // by ptr.  Unless the underlying memory manager has special provision for
-        // this behaviour there is nothing we can do except fail to resize.
+        
+        
+        
         return NULL;
     }
 }
 
-#endif // MICROPY_ENABLE_GC
+#endif 
 
 void *m_malloc(size_t num_bytes) {
     void *ptr = malloc(num_bytes);
@@ -125,7 +101,7 @@ void *m_malloc_with_finaliser(size_t num_bytes) {
 
 void *m_malloc0(size_t num_bytes) {
     void *ptr = m_malloc(num_bytes);
-    // If this config is set then the GC clears all memory, so we don't need to.
+    
     #if !MICROPY_GC_CONSERVATIVE_CLEAR
     memset(ptr, 0, num_bytes);
     #endif
@@ -143,11 +119,11 @@ void *m_realloc(void *ptr, size_t new_num_bytes)
         m_malloc_fail(new_num_bytes);
     }
     #if MICROPY_MEM_STATS
-    // At first thought, "Total bytes allocated" should only grow,
-    // after all, it's *total*. But consider for example 2K block
-    // shrunk to 1K and then grown to 2K again. It's still 2K
-    // allocated total. If we process only positive increments,
-    // we'll count 3K.
+    
+    
+    
+    
+    
     size_t diff = new_num_bytes - old_num_bytes;
     MP_STATE_MEM(total_bytes_allocated) += diff;
     MP_STATE_MEM(current_bytes_allocated) += diff;
@@ -169,12 +145,12 @@ void *m_realloc_maybe(void *ptr, size_t new_num_bytes, bool allow_move)
 {
     void *new_ptr = realloc_ext(ptr, new_num_bytes, allow_move);
     #if MICROPY_MEM_STATS
-    // At first thought, "Total bytes allocated" should only grow,
-    // after all, it's *total*. But consider for example 2K block
-    // shrunk to 1K and then grown to 2K again. It's still 2K
-    // allocated total. If we process only positive increments,
-    // we'll count 3K.
-    // Also, don't count failed reallocs.
+    
+    
+    
+    
+    
+    
     if (!(new_ptr == NULL && new_num_bytes != 0)) {
         size_t diff = new_num_bytes - old_num_bytes;
         MP_STATE_MEM(total_bytes_allocated) += diff;
@@ -298,7 +274,7 @@ void m_tracked_free(void *ptr_in) {
         );
 }
 
-#endif // MICROPY_TRACKED_ALLOC
+#endif 
 
 #if MICROPY_MEM_STATS
 size_t m_get_total_bytes_allocated(void) {

@@ -1,34 +1,6 @@
-/*
- * Copyright © 2006-2008 Intel Corporation
- *   Jesse Barnes <jesse.barnes@intel.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *
- */
+ 
 
-/** @file
- * Integrated TV-out support for the 915GM and 945GM.
- */
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_crtc.h>
@@ -124,73 +96,11 @@ static const u32 filter_table[] = {
 	0x28003100, 0x28002F00, 0x00003100,
 };
 
-/*
- * Color conversion values have 3 separate fixed point formats:
- *
- * 10 bit fields (ay, au)
- *   1.9 fixed point (b.bbbbbbbbb)
- * 11 bit fields (ry, by, ru, gu, gv)
- *   exp.mantissa (ee.mmmmmmmmm)
- *   ee = 00 = 10^-1 (0.mmmmmmmmm)
- *   ee = 01 = 10^-2 (0.0mmmmmmmmm)
- *   ee = 10 = 10^-3 (0.00mmmmmmmmm)
- *   ee = 11 = 10^-4 (0.000mmmmmmmmm)
- * 12 bit fields (gy, rv, bu)
- *   exp.mantissa (eee.mmmmmmmmm)
- *   eee = 000 = 10^-1 (0.mmmmmmmmm)
- *   eee = 001 = 10^-2 (0.0mmmmmmmmm)
- *   eee = 010 = 10^-3 (0.00mmmmmmmmm)
- *   eee = 011 = 10^-4 (0.000mmmmmmmmm)
- *   eee = 100 = reserved
- *   eee = 101 = reserved
- *   eee = 110 = reserved
- *   eee = 111 = 10^0 (m.mmmmmmmm) (only usable for 1.0 representation)
- *
- * Saturation and contrast are 8 bits, with their own representation:
- * 8 bit field (saturation, contrast)
- *   exp.mantissa (ee.mmmmmm)
- *   ee = 00 = 10^-1 (0.mmmmmm)
- *   ee = 01 = 10^0 (m.mmmmm)
- *   ee = 10 = 10^1 (mm.mmmm)
- *   ee = 11 = 10^2 (mmm.mmm)
- *
- * Simple conversion function:
- *
- * static u32
- * float_to_csc_11(float f)
- * {
- *     u32 exp;
- *     u32 mant;
- *     u32 ret;
- *
- *     if (f < 0)
- *         f = -f;
- *
- *     if (f >= 1) {
- *         exp = 0x7;
- *	   mant = 1 << 8;
- *     } else {
- *         for (exp = 0; exp < 3 && f < 0.5; exp++)
- *	   f *= 2.0;
- *         mant = (f * (1 << 9) + 0.5);
- *         if (mant >= (1 << 9))
- *             mant = (1 << 9) - 1;
- *     }
- *     ret = (exp << 9) | mant;
- *     return ret;
- * }
- */
+ 
 
-/*
- * Behold, magic numbers!  If we plant them they might grow a big
- * s-video cable to the sky... or something.
- *
- * Pre-converted to appropriate hex value.
- */
+ 
 
-/*
- * PAL & NTSC values for composite & s-video connections
- */
+ 
 static const struct color_conversion ntsc_m_csc_composite = {
 	.ry = 0x0332, .gy = 0x012d, .by = 0x07d3, .ay = 0x0104,
 	.ru = 0x0733, .gu = 0x052d, .bu = 0x05c7, .au = 0x0200,
@@ -291,9 +201,7 @@ static const struct video_levels pal_n_levels_svideo = {
 	.blank = 266, .black = 316, .burst = 139,
 };
 
-/*
- * Component connections
- */
+ 
 static const struct color_conversion sdtv_csc_yprpb = {
 	.ry = 0x0332, .gy = 0x012d, .by = 0x07d3, .ay = 0x0145,
 	.ru = 0x0559, .gu = 0x0353, .bu = 0x0100, .au = 0x0200,
@@ -315,7 +223,7 @@ struct tv_mode {
 	const char *name;
 
 	u32 clock;
-	u16 refresh; /* in millihertz (for precision) */
+	u16 refresh;  
 	u8 oversample;
 	u8 hsync_end;
 	u16 hblank_start, hblank_end, htotal;
@@ -335,53 +243,22 @@ struct tv_mode {
 	u16 vburst_end_f3;
 	u8 vburst_start_f4;
 	u16 vburst_end_f4;
-	/*
-	 * subcarrier programming
-	 */
+	 
 	u16 dda2_size, dda3_size;
 	u8 dda1_inc;
 	u16 dda2_inc, dda3_inc;
 	u32 sc_reset;
 	bool pal_burst : 1;
-	/*
-	 * blank/black levels
-	 */
+	 
 	const struct video_levels *composite_levels, *svideo_levels;
 	const struct color_conversion *composite_color, *svideo_color;
 	const u32 *filter_table;
 };
 
 
-/*
- * Sub carrier DDA
- *
- *  I think this works as follows:
- *
- *  subcarrier freq = pixel_clock * (dda1_inc + dda2_inc / dda2_size) / 4096
- *
- * Presumably, when dda3 is added in, it gets to adjust the dda2_inc value
- *
- * So,
- *  dda1_ideal = subcarrier/pixel * 4096
- *  dda1_inc = floor (dda1_ideal)
- *  dda2 = dda1_ideal - dda1_inc
- *
- *  then pick a ratio for dda2 that gives the closest approximation. If
- *  you can't get close enough, you can play with dda3 as well. This
- *  seems likely to happen when dda2 is small as the jumps would be larger
- *
- * To invert this,
- *
- *  pixel_clock = subcarrier * 4096 / (dda1_inc + dda2_inc / dda2_size)
- *
- * The constants below were all computed using a 107.520MHz clock
- */
+ 
 
-/*
- * Register programming values for TV modes.
- *
- * These values account for -1s required.
- */
+ 
 static const struct tv_mode tv_modes[] = {
 	{
 		.name		= "NTSC-M",
@@ -389,7 +266,7 @@ static const struct tv_mode tv_modes[] = {
 		.refresh	= 59940,
 		.oversample	= 8,
 		.component_only = false,
-		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 3.580MHz */
+		 
 
 		.hsync_end	= 64,		    .hblank_end		= 124,
 		.hblank_start	= 836,		    .htotal		= 857,
@@ -412,7 +289,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f3 = 9,		    .vburst_end_f3	= 240,
 		.vburst_start_f4 = 10,		    .vburst_end_f4	= 240,
 
-		/* desired 3.5800000 actual 3.5800000 clock 107.52 */
+		 
 		.dda1_inc	=    135,
 		.dda2_inc	=  20800,	    .dda2_size		=  27456,
 		.dda3_inc	=      0,	    .dda3_size		=      0,
@@ -432,7 +309,7 @@ static const struct tv_mode tv_modes[] = {
 		.refresh	= 59940,
 		.oversample	= 8,
 		.component_only = false,
-		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 4.43MHz */
+		 
 		.hsync_end	= 64,		    .hblank_end		= 124,
 		.hblank_start	= 836,		    .htotal		= 857,
 
@@ -454,7 +331,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f3 = 9,		    .vburst_end_f3	= 240,
 		.vburst_start_f4 = 10,		    .vburst_end_f4	= 240,
 
-		/* desired 4.4336180 actual 4.4336180 clock 107.52 */
+		 
 		.dda1_inc       =    168,
 		.dda2_inc       =   4093,       .dda2_size      =  27456,
 		.dda3_inc       =    310,       .dda3_size      =    525,
@@ -475,7 +352,7 @@ static const struct tv_mode tv_modes[] = {
 		.oversample	= 8,
 		.component_only = false,
 
-		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 3.580MHz */
+		 
 		.hsync_end	= 64,		    .hblank_end		= 124,
 		.hblank_start = 836,	    .htotal		= 857,
 
@@ -497,7 +374,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f3 = 9,		    .vburst_end_f3	= 240,
 		.vburst_start_f4 = 10,		    .vburst_end_f4	= 240,
 
-		/* desired 3.5800000 actual 3.5800000 clock 107.52 */
+		 
 		.dda1_inc	=    135,
 		.dda2_inc	=  20800,	    .dda2_size		=  27456,
 		.dda3_inc	=      0,	    .dda3_size		=      0,
@@ -518,7 +395,7 @@ static const struct tv_mode tv_modes[] = {
 		.oversample	= 8,
 		.component_only = false,
 
-		/* 525 Lines, 60 Fields, 15.734KHz line, Sub-Carrier 3.580MHz */
+		 
 		.hsync_end	= 64,		  .hblank_end		= 124,
 		.hblank_start = 836,	  .htotal		= 857,
 
@@ -540,7 +417,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f3 = 9,		    .vburst_end_f3	= 240,
 		.vburst_start_f4 = 10,		    .vburst_end_f4	= 240,
 
-		/* desired 3.5800000 actual 3.5800000 clock 107.52 */
+		 
 		.dda1_inc	=    135,
 		.dda2_inc	=  16704,	    .dda2_size		=  27456,
 		.dda3_inc	=      0,	    .dda3_size		=      0,
@@ -555,7 +432,7 @@ static const struct tv_mode tv_modes[] = {
 		.filter_table = filter_table,
 	},
 	{
-		/* 625 Lines, 50 Fields, 15.625KHz line, Sub-Carrier 4.434MHz */
+		 
 		.name	    = "PAL-N",
 		.clock		= 108000,
 		.refresh	= 50000,
@@ -585,7 +462,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f4 = 9,	    .vburst_end_f4	= 285,
 
 
-		/* desired 4.4336180 actual 4.4336180 clock 107.52 */
+		 
 		.dda1_inc       =    135,
 		.dda2_inc       =  23578,       .dda2_size      =  27648,
 		.dda3_inc       =    134,       .dda3_size      =    625,
@@ -600,7 +477,7 @@ static const struct tv_mode tv_modes[] = {
 		.filter_table = filter_table,
 	},
 	{
-		/* 625 Lines, 50 Fields, 15.625KHz line, Sub-Carrier 4.434MHz */
+		 
 		.name	    = "PAL",
 		.clock		= 108000,
 		.refresh	= 50000,
@@ -628,7 +505,7 @@ static const struct tv_mode tv_modes[] = {
 		.vburst_start_f3 = 9,		    .vburst_end_f3	= 286,
 		.vburst_start_f4 = 9,		    .vburst_end_f4	= 285,
 
-		/* desired 4.4336180 actual 4.4336180 clock 107.52 */
+		 
 		.dda1_inc       =    168,
 		.dda2_inc       =   4122,       .dda2_size      =  27648,
 		.dda3_inc       =     67,       .dda3_size      =    625,
@@ -873,10 +750,7 @@ static const struct tv_mode tv_modes[] = {
 struct intel_tv_connector_state {
 	struct drm_connector_state base;
 
-	/*
-	 * May need to override the user margins for
-	 * gen3 >1024 wide source vertical centering.
-	 */
+	 
 	struct {
 		u16 top, bottom;
 	} margins;
@@ -929,7 +803,7 @@ intel_enable_tv(struct intel_atomic_state *state,
 	struct drm_device *dev = encoder->base.dev;
 	struct drm_i915_private *dev_priv = to_i915(dev);
 
-	/* Prevents vblank waits from timing out in intel_tv_detect_type() */
+	 
 	intel_crtc_wait_for_next_vblank(to_intel_crtc(pipe_config->uapi.crtc));
 
 	intel_de_rmw(dev_priv, TV_CTL, 0, TV_ENC_ENABLE);
@@ -973,7 +847,7 @@ intel_tv_mode_valid(struct drm_connector *connector,
 	if (mode->clock > max_dotclk)
 		return MODE_CLOCK_HIGH;
 
-	/* Ensure TV refresh is close to desired refresh */
+	 
 	if (abs(tv_mode->refresh - drm_mode_vrefresh(mode) * 1000) >= 1000)
 		return MODE_CLOCK_RANGE;
 
@@ -996,17 +870,7 @@ intel_tv_mode_to_mode(struct drm_display_mode *mode,
 {
 	mode->clock = clock / (tv_mode->oversample >> !tv_mode->progressive);
 
-	/*
-	 * tv_mode horizontal timings:
-	 *
-	 * hsync_end
-	 *    | hblank_end
-	 *    |    | hblank_start
-	 *    |    |       | htotal
-	 *    |     _______    |
-	 *     ____/       \___
-	 * \__/                \
-	 */
+	 
 	mode->hdisplay =
 		tv_mode->hblank_start - tv_mode->hblank_end;
 	mode->hsync_start = mode->hdisplay +
@@ -1015,17 +879,7 @@ intel_tv_mode_to_mode(struct drm_display_mode *mode,
 		tv_mode->hsync_end;
 	mode->htotal = tv_mode->htotal + 1;
 
-	/*
-	 * tv_mode vertical timings:
-	 *
-	 * vsync_start
-	 *    | vsync_end
-	 *    |  | vi_end nbr_end
-	 *    |  |    |       |
-	 *    |  |     _______
-	 * \__    ____/       \
-	 *    \__/
-	 */
+	 
 	mode->vdisplay = intel_tv_mode_vdisplay(tv_mode);
 	if (tv_mode->progressive) {
 		mode->vsync_start = mode->vdisplay +
@@ -1045,7 +899,7 @@ intel_tv_mode_to_mode(struct drm_display_mode *mode,
 			tv_mode->vi_end_f2 + 1;
 	}
 
-	/* TV has it's own notion of sync and other mode flags, so clear them. */
+	 
 	mode->flags = 0;
 
 	snprintf(mode->name, sizeof(mode->name),
@@ -1166,7 +1020,7 @@ intel_tv_get_config(struct intel_encoder *encoder,
 	if (adjusted_mode->flags & DRM_MODE_FLAG_INTERLACE)
 		adjusted_mode->crtc_clock /= 2;
 
-	/* pixel counter doesn't work on i965gm TV output */
+	 
 	if (IS_I965GM(dev_priv))
 		pipe_config->mode_flags |=
 			I915_MODE_FLAG_USE_SCANLINE_COUNTER;
@@ -1241,9 +1095,9 @@ intel_tv_compute_config(struct intel_encoder *encoder,
 			return -EINVAL;
 		}
 
-		/* Need to turn off the vertical filter and center the image */
+		 
 
-		/* Attempt to maintain the relative sizes of the margins */
+		 
 		top = conn_state->tv.margins.top;
 		bottom = conn_state->tv.margins.bottom;
 
@@ -1273,71 +1127,7 @@ intel_tv_compute_config(struct intel_encoder *encoder,
 	drm_dbg_kms(&dev_priv->drm, "TV mode: " DRM_MODE_FMT "\n",
 		    DRM_MODE_ARG(adjusted_mode));
 
-	/*
-	 * The pipe scanline counter behaviour looks as follows when
-	 * using the TV encoder:
-	 *
-	 * time ->
-	 *
-	 * dsl=vtotal-1       |             |
-	 *                   ||            ||
-	 *               ___| |        ___| |
-	 *              /     |       /     |
-	 *             /      |      /      |
-	 * dsl=0   ___/       |_____/       |
-	 *        | | |  |  | |
-	 *         ^ ^ ^   ^ ^
-	 *         | | |   | pipe vblank/first part of tv vblank
-	 *         | | |   bottom margin
-	 *         | | active
-	 *         | top margin
-	 *         remainder of tv vblank
-	 *
-	 * When the TV encoder is used the pipe wants to run faster
-	 * than expected rate. During the active portion the TV
-	 * encoder stalls the pipe every few lines to keep it in
-	 * check. When the TV encoder reaches the bottom margin the
-	 * pipe simply stops. Once we reach the TV vblank the pipe is
-	 * no longer stalled and it runs at the max rate (apparently
-	 * oversample clock on gen3, cdclk on gen4). Once the pipe
-	 * reaches the pipe vtotal the pipe stops for the remainder
-	 * of the TV vblank/top margin. The pipe starts up again when
-	 * the TV encoder exits the top margin.
-	 *
-	 * To avoid huge hassles for vblank timestamping we scale
-	 * the pipe timings as if the pipe always runs at the average
-	 * rate it maintains during the active period. This also
-	 * gives us a reasonable guesstimate as to the pixel rate.
-	 * Due to the variation in the actual pipe speed the scanline
-	 * counter will give us slightly erroneous results during the
-	 * TV vblank/margins. But since vtotal was selected such that
-	 * it matches the average rate of the pipe during the active
-	 * portion the error shouldn't cause any serious grief to
-	 * vblank timestamps.
-	 *
-	 * For posterity here is the empirically derived formula
-	 * that gives us the maximum length of the pipe vblank
-	 * we can use without causing display corruption. Following
-	 * this would allow us to have a ticking scanline counter
-	 * everywhere except during the bottom margin (there the
-	 * pipe always stops). Ie. this would eliminate the second
-	 * flat portion of the above graph. However this would also
-	 * complicate vblank timestamping as the pipe vtotal would
-	 * no longer match the average rate the pipe runs at during
-	 * the active portion. Hence following this formula seems
-	 * more trouble that it's worth.
-	 *
-	 * if (GRAPHICS_VER(dev_priv) == 4) {
-	 *	num = cdclk * (tv_mode->oversample >> !tv_mode->progressive);
-	 *	den = tv_mode->clock;
-	 * } else {
-	 *	num = tv_mode->oversample >> !tv_mode->progressive;
-	 *	den = 1;
-	 * }
-	 * max_pipe_vblank_len ~=
-	 *	(num * tv_htotal * (tv_vblank_len + top_margin)) /
-	 *	(den * pipe_htotal);
-	 */
+	 
 	intel_tv_scale_mode_horiz(adjusted_mode, hdisplay,
 				  conn_state->tv.margins.left,
 				  conn_state->tv.margins.right);
@@ -1347,7 +1137,7 @@ intel_tv_compute_config(struct intel_encoder *encoder,
 	drm_mode_set_crtcinfo(adjusted_mode, 0);
 	adjusted_mode->name[0] = '\0';
 
-	/* pixel counter doesn't work on i965gm TV output */
+	 
 	if (IS_I965GM(dev_priv))
 		pipe_config->mode_flags |=
 			I915_MODE_FLAG_USE_SCANLINE_COUNTER;
@@ -1455,7 +1245,7 @@ static void intel_tv_pre_enable(struct intel_atomic_state *state,
 	unsigned int xsize, ysize;
 
 	if (!tv_mode)
-		return;	/* can't happen (mode_prepare prevents this) */
+		return;	 
 
 	tv_ctl = intel_de_read(dev_priv, TV_CTL);
 	tv_ctl &= TV_CTL_SAVE;
@@ -1528,7 +1318,7 @@ static void intel_tv_pre_enable(struct intel_atomic_state *state,
 	scctl3 = tv_mode->dda3_size << TV_SCDDA3_SIZE_SHIFT |
 		tv_mode->dda3_inc << TV_SCDDA3_INC_SHIFT;
 
-	/* Enable two fixes for the chips that need them. */
+	 
 	if (IS_I915GM(dev_priv))
 		tv_ctl |= TV_ENC_C0_FIX | TV_ENC_SDP_FIX;
 
@@ -1551,7 +1341,7 @@ static void intel_tv_pre_enable(struct intel_atomic_state *state,
 
 	assert_transcoder_disabled(dev_priv, pipe_config->cpu_transcoder);
 
-	/* Filter ctl must be set before TV_WIN_SIZE */
+	 
 	tv_filter_ctl = TV_AUTO_SCALE;
 	if (tv_conn_state->bypass_vfilter)
 		tv_filter_ctl |= TV_V_FILTER_BYPASS;
@@ -1598,7 +1388,7 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	u32 tv_dac, save_tv_dac;
 	int type;
 
-	/* Disable TV interrupts around load detect or we'll recurse */
+	 
 	if (connector->polled & DRM_CONNECTOR_POLL_HPD) {
 		spin_lock_irq(&dev_priv->irq_lock);
 		i915_disable_pipestat(dev_priv, 0,
@@ -1610,7 +1400,7 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	save_tv_dac = tv_dac = intel_de_read(dev_priv, TV_DAC);
 	save_tv_ctl = tv_ctl = intel_de_read(dev_priv, TV_CTL);
 
-	/* Poll for TV detection */
+	 
 	tv_ctl &= ~(TV_ENC_ENABLE | TV_ENC_PIPE_SEL_MASK | TV_TEST_MODE_MASK);
 	tv_ctl |= TV_TEST_MODE_MONITOR_DETECT;
 	tv_ctl |= TV_ENC_PIPE_SEL(crtc->pipe);
@@ -1626,10 +1416,7 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 		   DAC_C_0_7_V);
 
 
-	/*
-	 * The TV sense state should be cleared to zero on cantiga platform. Otherwise
-	 * the TV is misdetected. This is hardware requirement.
-	 */
+	 
 	if (IS_GM45(dev_priv))
 		tv_dac &= ~(TVDAC_STATE_CHG_EN | TVDAC_A_SENSE_CTL |
 			    TVDAC_B_SENSE_CTL | TVDAC_C_SENSE_CTL);
@@ -1643,12 +1430,7 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	type = -1;
 	tv_dac = intel_de_read(dev_priv, TV_DAC);
 	drm_dbg_kms(&dev_priv->drm, "TV detected: %x, %x\n", tv_ctl, tv_dac);
-	/*
-	 *  A B C
-	 *  0 1 1 Composite
-	 *  1 0 X svideo
-	 *  0 0 0 Component
-	 */
+	 
 	if ((tv_dac & TVDAC_SENSE_MASK) == (TVDAC_B_SENSE | TVDAC_C_SENSE)) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "Detected Composite TV connection\n");
@@ -1670,10 +1452,10 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	intel_de_write(dev_priv, TV_CTL, save_tv_ctl);
 	intel_de_posting_read(dev_priv, TV_CTL);
 
-	/* For unknown reasons the hw barfs if we don't do this vblank wait. */
+	 
 	intel_crtc_wait_for_next_vblank(crtc);
 
-	/* Restore interrupt config */
+	 
 	if (connector->polled & DRM_CONNECTOR_POLL_HPD) {
 		spin_lock_irq(&dev_priv->irq_lock);
 		i915_enable_pipestat(dev_priv, 0,
@@ -1685,21 +1467,18 @@ intel_tv_detect_type(struct intel_tv *intel_tv,
 	return type;
 }
 
-/*
- * Here we set accurate tv format according to connector type
- * i.e Component TV should not be assigned by NTSC or PAL
- */
+ 
 static void intel_tv_find_better_format(struct drm_connector *connector)
 {
 	struct intel_tv *intel_tv = intel_attached_tv(to_intel_connector(connector));
 	const struct tv_mode *tv_mode = intel_tv_mode_find(connector->state);
 	int i;
 
-	/* Component supports everything so we can keep the current mode */
+	 
 	if (intel_tv->type == DRM_MODE_CONNECTOR_Component)
 		return;
 
-	/* If the current mode is fine don't change it */
+	 
 	if (!tv_mode->component_only)
 		return;
 
@@ -1768,14 +1547,14 @@ static const struct input_res {
 	{ 1920, 1080 },
 };
 
-/* Choose preferred mode according to line number of TV format */
+ 
 static bool
 intel_tv_is_preferred_mode(const struct drm_display_mode *mode,
 			   const struct tv_mode *tv_mode)
 {
 	int vdisplay = intel_tv_mode_vdisplay(tv_mode);
 
-	/* prefer 480 line modes for all SD TV modes */
+	 
 	if (vdisplay <= 576)
 		vdisplay = 480;
 
@@ -1808,7 +1587,7 @@ intel_tv_get_modes(struct drm_connector *connector)
 		    !tv_mode->component_only)
 			continue;
 
-		/* no vertical scaling with wide sources on gen3 */
+		 
 		if (DISPLAY_VER(dev_priv) == 3 && input->w > 1024 &&
 		    input->h > intel_tv_mode_vdisplay(tv_mode))
 			continue;
@@ -1817,13 +1596,7 @@ intel_tv_get_modes(struct drm_connector *connector)
 		if (!mode)
 			continue;
 
-		/*
-		 * We take the TV mode and scale it to look
-		 * like it had the expected h/vdisplay. This
-		 * provides the most information to userspace
-		 * about the actual timings of the mode. We
-		 * do ignore the margins though.
-		 */
+		 
 		intel_tv_mode_to_mode(mode, tv_mode, tv_mode->clock);
 		if (count == 0) {
 			drm_dbg_kms(&dev_priv->drm, "TV mode: " DRM_MODE_FMT "\n",
@@ -1870,7 +1643,7 @@ static int intel_tv_atomic_check(struct drm_connector *connector,
 	    old_state->tv.margins.right != new_state->tv.margins.right ||
 	    old_state->tv.margins.top != new_state->tv.margins.top ||
 	    old_state->tv.margins.bottom != new_state->tv.margins.bottom) {
-		/* Force a modeset. */
+		 
 
 		new_crtc_state->connectors_changed = true;
 	}
@@ -1896,7 +1669,7 @@ static void intel_tv_add_properties(struct drm_connector *connector)
 	const char *tv_format_names[ARRAY_SIZE(tv_modes)];
 	int i;
 
-	/* BIOS margin values */
+	 
 	conn_state->tv.margins.left = 54;
 	conn_state->tv.margins.top = 36;
 	conn_state->tv.margins.right = 46;
@@ -1904,9 +1677,9 @@ static void intel_tv_add_properties(struct drm_connector *connector)
 
 	conn_state->tv.mode = 0;
 
-	/* Create TV properties then attach current values */
+	 
 	for (i = 0; i < ARRAY_SIZE(tv_modes); i++) {
-		/* 1080p50/1080p60 not supported on gen3 */
+		 
 		if (DISPLAY_VER(i915) == 3 && tv_modes[i].oversample == 1)
 			break;
 
@@ -1948,10 +1721,7 @@ intel_tv_init(struct drm_i915_private *dev_priv)
 		return;
 	}
 
-	/*
-	 * Sanity check the TV output by checking to see if the
-	 * DAC register holds a value
-	 */
+	 
 	save_tv_dac = intel_de_read(dev_priv, TV_DAC);
 
 	intel_de_write(dev_priv, TV_DAC, save_tv_dac | TVDAC_STATE_CHG_EN);
@@ -1962,11 +1732,7 @@ intel_tv_init(struct drm_i915_private *dev_priv)
 
 	intel_de_write(dev_priv, TV_DAC, save_tv_dac);
 
-	/*
-	 * If the register does not hold the state change enable
-	 * bit, (either as a 0 or a 1), assume it doesn't really
-	 * exist
-	 */
+	 
 	if ((tv_dac_on & TVDAC_STATE_CHG_EN) == 0 ||
 	    (tv_dac_off & TVDAC_STATE_CHG_EN) != 0)
 		return;
@@ -1985,16 +1751,7 @@ intel_tv_init(struct drm_i915_private *dev_priv)
 	intel_encoder = &intel_tv->base;
 	connector = &intel_connector->base;
 
-	/*
-	 * The documentation, for the older chipsets at least, recommend
-	 * using a polling method rather than hotplug detection for TVs.
-	 * This is because in order to perform the hotplug detection, the PLLs
-	 * for the TV must be kept alive increasing power drain and starving
-	 * bandwidth from other encoders. Notably for instance, it causes
-	 * pipe underruns on Crestline when this encoder is supposedly idle.
-	 *
-	 * More recent chipsets favour HDMI rather than integrated S-Video.
-	 */
+	 
 	intel_connector->polled = DRM_CONNECTOR_POLL_CONNECT;
 
 	drm_connector_init(&dev_priv->drm, connector, &intel_tv_connector_funcs,

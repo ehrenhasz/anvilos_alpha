@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm2000.h  --  WM2000 Soc Audio driver
- */
+ 
+ 
 
 #ifndef _WM2000_H
 #define _WM2000_H
@@ -30,10 +28,10 @@
 #define WM2000_REG_ANA_MIC_CTL      0xf028
 #define WM2000_REG_SPK_CTL          0xf034
 
-/* SPEECH_CLARITY */
+ 
 #define WM2000_SPEECH_CLARITY   0x01
 
-/* SYS_STATUS */
+ 
 #define WM2000_STATUS_MOUSE_ACTIVE              0x40
 #define WM2000_STATUS_CAT_FREQ_COMPLETE         0x20
 #define WM2000_STATUS_CAT_GAIN_COMPLETE         0x10
@@ -42,7 +40,7 @@
 #define WM2000_STATUS_POWER_DOWN_COMPLETE       0x02
 #define WM2000_STATUS_BOOT_COMPLETE             0x01
 
-/* SYS_MODE_CNTRL */
+ 
 #define WM2000_MODE_ANA_SEQ_INCLUDE 0x80
 #define WM2000_MODE_MOUSE_ENABLE    0x40
 #define WM2000_MODE_CAT_FREQ_ENABLE 0x20
@@ -52,10 +50,10 @@
 #define WM2000_MODE_THERMAL_ENABLE  0x02
 #define WM2000_MODE_POWER_DOWN      0x01
 
-/* SYS_CTL1 */
+ 
 #define WM2000_SYS_STBY          0x01
 
-/* SYS_CTL2 */
+ 
 #define WM2000_MCLK_DIV2_ENA_CLR 0x80
 #define WM2000_MCLK_DIV2_ENA_SET 0x40
 #define WM2000_ANC_ENG_CLR       0x20
@@ -65,7 +63,7 @@
 #define WM2000_RAM_CLR           0x02
 #define WM2000_RAM_SET           0x01
 
-/* ANC_STAT */
+ 
 #define WM2000_ANC_ENG_IDLE      0x01
 
 #endif

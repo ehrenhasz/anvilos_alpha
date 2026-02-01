@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <linux/list.h>
@@ -25,7 +25,7 @@ struct mlxsw_sp_span {
 	const struct mlxsw_sp_span_entry_ops **span_entry_ops_arr;
 	size_t span_entry_ops_arr_size;
 	struct list_head analyzed_ports_list;
-	struct mutex analyzed_ports_lock; /* Protects analyzed_ports_list */
+	struct mutex analyzed_ports_lock;  
 	struct list_head trigger_entries_list;
 	u16 policer_id_base;
 	refcount_t policer_id_base_ref_count;
@@ -35,14 +35,14 @@ struct mlxsw_sp_span {
 };
 
 struct mlxsw_sp_span_analyzed_port {
-	struct list_head list; /* Member of analyzed_ports_list */
+	struct list_head list;  
 	refcount_t ref_count;
 	u16 local_port;
 	bool ingress;
 };
 
 struct mlxsw_sp_span_trigger_entry {
-	struct list_head list; /* Member of trigger_entries_list */
+	struct list_head list;  
 	struct mlxsw_sp_span *span;
 	const struct mlxsw_sp_span_trigger_ops *ops;
 	refcount_t ref_count;
@@ -183,7 +183,7 @@ mlxsw_sp_span_entry_phys_configure(struct mlxsw_sp_span_entry *span_entry,
 	char mpat_pl[MLXSW_REG_MPAT_LEN];
 	int pa_id = span_entry->id;
 
-	/* Create a new port analayzer entry for local_port. */
+	 
 	mlxsw_reg_mpat_pack(mpat_pl, pa_id, local_port, true,
 			    MLXSW_REG_MPAT_SPAN_TYPE_LOCAL_ETH);
 	mlxsw_reg_mpat_session_id_set(mpat_pl, sparms.session_id);
@@ -418,7 +418,7 @@ mlxsw_sp_span_gretap4_route(const struct net_device *to_dev,
 	struct rtable *rt = NULL;
 	struct flowi4 fl4;
 
-	/* We assume "dev" stays valid after rt is put. */
+	 
 	ASSERT_RTNL();
 
 	parms = mlxsw_sp_ipip_netdev_parms4(to_dev);
@@ -437,7 +437,7 @@ mlxsw_sp_span_gretap4_route(const struct net_device *to_dev,
 	*saddrp = fl4.saddr;
 	if (rt->rt_gw_family == AF_INET)
 		*daddrp = rt->rt_gw4;
-	/* can not offload if route has an IPv6 gateway */
+	 
 	else if (rt->rt_gw_family == AF_INET6)
 		dev = NULL;
 
@@ -460,11 +460,11 @@ mlxsw_sp_span_entry_gretap4_parms(struct mlxsw_sp *mlxsw_sp,
 	struct net_device *l3edev;
 
 	if (!(to_dev->flags & IFF_UP) ||
-	    /* Reject tunnels with GRE keys, checksums, etc. */
+	     
 	    tparm.i_flags || tparm.o_flags ||
-	    /* Require a fixed TTL and a TOS copied from the mirrored packet. */
+	     
 	    inherit_ttl || !inherit_tos ||
-	    /* A destination address may not be "any". */
+	     
 	    mlxsw_sp_l3addr_is_zero(daddr))
 		return mlxsw_sp_span_entry_unoffloadable(sparmsp);
 
@@ -484,7 +484,7 @@ mlxsw_sp_span_entry_gretap4_configure(struct mlxsw_sp_span_entry *span_entry,
 	char mpat_pl[MLXSW_REG_MPAT_LEN];
 	int pa_id = span_entry->id;
 
-	/* Create a new port analayzer entry for local_port. */
+	 
 	mlxsw_reg_mpat_pack(mpat_pl, pa_id, local_port, true,
 			    MLXSW_REG_MPAT_SPAN_TYPE_REMOTE_ETH_L3);
 	mlxsw_reg_mpat_pide_set(mpat_pl, sparms.policer_enable);
@@ -528,7 +528,7 @@ mlxsw_sp_span_gretap6_route(const struct net_device *to_dev,
 	struct dst_entry *dst;
 	struct rt6_info *rt6;
 
-	/* We assume "dev" stays valid after dst is released. */
+	 
 	ASSERT_RTNL();
 
 	fl6.flowi6_mark = t->parms.fwmark;
@@ -564,11 +564,11 @@ mlxsw_sp_span_entry_gretap6_parms(struct mlxsw_sp *mlxsw_sp,
 	struct net_device *l3edev;
 
 	if (!(to_dev->flags & IFF_UP) ||
-	    /* Reject tunnels with GRE keys, checksums, etc. */
+	     
 	    tparm.i_flags || tparm.o_flags ||
-	    /* Require a fixed TTL and a TOS copied from the mirrored packet. */
+	     
 	    inherit_ttl || !inherit_tos ||
-	    /* A destination address may not be "any". */
+	     
 	    mlxsw_sp_l3addr_is_zero(daddr))
 		return mlxsw_sp_span_entry_unoffloadable(sparmsp);
 
@@ -588,7 +588,7 @@ mlxsw_sp_span_entry_gretap6_configure(struct mlxsw_sp_span_entry *span_entry,
 	char mpat_pl[MLXSW_REG_MPAT_LEN];
 	int pa_id = span_entry->id;
 
-	/* Create a new port analayzer entry for local_port. */
+	 
 	mlxsw_reg_mpat_pack(mpat_pl, pa_id, local_port, true,
 			    MLXSW_REG_MPAT_SPAN_TYPE_REMOTE_ETH_L3);
 	mlxsw_reg_mpat_pide_set(mpat_pl, sparms.policer_enable);
@@ -708,9 +708,7 @@ static int
 mlxsw_sp2_span_entry_cpu_configure(struct mlxsw_sp_span_entry *span_entry,
 				   struct mlxsw_sp_span_parms sparms)
 {
-	/* Mirroring to the CPU port is like mirroring to any other physical
-	 * port. Its local port is used instead of that of the physical port.
-	 */
+	 
 	return mlxsw_sp_span_entry_phys_configure(span_entry, sparms);
 }
 
@@ -813,11 +811,7 @@ static int mlxsw_sp_span_policer_id_base_set(struct mlxsw_sp_span *span,
 	u16 policer_id_base;
 	int err;
 
-	/* Policers set on SPAN agents must be in the range of
-	 * `policer_id_base .. policer_id_base + max_span_agents - 1`. If the
-	 * base is set and the new policer is not within the range, then we
-	 * must error out.
-	 */
+	 
 	if (refcount_read(&span->policer_id_base_ref_count)) {
 		if (policer_id < span->policer_id_base ||
 		    policer_id >= span->policer_id_base + span->entries_count)
@@ -827,7 +821,7 @@ static int mlxsw_sp_span_policer_id_base_set(struct mlxsw_sp_span *span,
 		return 0;
 	}
 
-	/* Base must be even. */
+	 
 	policer_id_base = policer_id % 2 == 0 ? policer_id : policer_id - 1;
 	err = mlxsw_sp->span_ops->policer_id_base_set(mlxsw_sp,
 						      policer_id_base);
@@ -855,7 +849,7 @@ mlxsw_sp_span_entry_create(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_span_entry *span_entry = NULL;
 	int i;
 
-	/* find a free entry to use */
+	 
 	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
 		if (!refcount_read(&mlxsw_sp->span->entries[i].ref_count)) {
 			span_entry = &mlxsw_sp->span->entries[i];
@@ -958,7 +952,7 @@ mlxsw_sp_span_entry_get(struct mlxsw_sp *mlxsw_sp,
 	span_entry = mlxsw_sp_span_entry_find_by_parms(mlxsw_sp, to_dev,
 						       &sparms);
 	if (span_entry) {
-		/* Already exists, just take a reference */
+		 
 		refcount_inc(&span_entry->ref_count);
 		return span_entry;
 	}
@@ -1128,9 +1122,7 @@ mlxsw_sp_span_analyzed_port_create(struct mlxsw_sp_span *span,
 	analyzed_port->ingress = ingress;
 	list_add_tail(&analyzed_port->list, &span->analyzed_ports_list);
 
-	/* An egress mirror buffer should be allocated on the egress port which
-	 * does the mirroring.
-	 */
+	 
 	if (!ingress) {
 		err = mlxsw_sp_span_port_buffer_enable(mlxsw_sp_port);
 		if (err)
@@ -1150,9 +1142,7 @@ mlxsw_sp_span_analyzed_port_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
 				    struct mlxsw_sp_span_analyzed_port *
 				    analyzed_port)
 {
-	/* Remove egress mirror buffer now that port is no longer analyzed
-	 * at egress.
-	 */
+	 
 	if (!analyzed_port->ingress)
 		mlxsw_sp_span_port_buffer_disable(mlxsw_sp_port);
 
@@ -1271,7 +1261,7 @@ mlxsw_sp_span_trigger_port_enable(struct mlxsw_sp_span_trigger_entry *
 				  trigger_entry,
 				  struct mlxsw_sp_port *mlxsw_sp_port, u8 tc)
 {
-	/* Port trigger are enabled during binding. */
+	 
 	return 0;
 }
 
@@ -1382,9 +1372,7 @@ static void
 mlxsw_sp2_span_trigger_global_unbind(struct mlxsw_sp_span_trigger_entry *
 				     trigger_entry)
 {
-	/* There is no unbinding for global triggers. The trigger should be
-	 * disabled on all ports by now.
-	 */
+	 
 }
 
 static bool
@@ -1422,9 +1410,7 @@ __mlxsw_sp2_span_trigger_global_enable(struct mlxsw_sp_span_trigger_entry *
 		return -EINVAL;
 	}
 
-	/* Query existing configuration in order to only change the state of
-	 * the specified traffic class.
-	 */
+	 
 	mlxsw_reg_momte_pack(momte_pl, mlxsw_sp_port->local_port, type);
 	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(momte), momte_pl);
 	if (err)
@@ -1670,9 +1656,7 @@ static int mlxsw_sp1_span_init(struct mlxsw_sp *mlxsw_sp)
 {
 	size_t arr_size = ARRAY_SIZE(mlxsw_sp1_span_entry_ops_arr);
 
-	/* Must be first to avoid NULL pointer dereference by subsequent
-	 * can_handle() callbacks.
-	 */
+	 
 	if (WARN_ON(mlxsw_sp1_span_entry_ops_arr[0] !=
 		    &mlxsw_sp1_span_entry_ops_cpu))
 		return -EINVAL;
@@ -1699,9 +1683,7 @@ static int mlxsw_sp2_span_init(struct mlxsw_sp *mlxsw_sp)
 {
 	size_t arr_size = ARRAY_SIZE(mlxsw_sp2_span_entry_ops_arr);
 
-	/* Must be first to avoid NULL pointer dereference by subsequent
-	 * can_handle() callbacks.
-	 */
+	 
 	if (WARN_ON(mlxsw_sp2_span_entry_ops_arr[0] !=
 		    &mlxsw_sp2_span_entry_ops_cpu))
 		return -EINVAL;

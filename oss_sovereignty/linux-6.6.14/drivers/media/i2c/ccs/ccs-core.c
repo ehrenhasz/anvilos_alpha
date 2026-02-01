@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/ccs/ccs-core.c
- *
- * Generic driver for MIPI CCS/SMIA/SMIA++ compliant camera sensors
- *
- * Copyright (C) 2020 Intel Corporation
- * Copyright (C) 2010--2012 Nokia Corporation
- * Contact: Sakari Ailus <sakari.ailus@linux.intel.com>
- *
- * Based on smiapp driver by Vimarsh Zutshi
- * Based on jt8ev1.c by Vimarsh Zutshi
- * Based on smia-sensor.c by Tuukka Toivonen <tuukkat76@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -41,9 +29,7 @@ static struct ccs_limit_offset {
 	u16	info;
 } ccs_limit_offsets[CCS_L_LAST + 1];
 
-/*
- * ccs_module_idents - supported camera modules
- */
+ 
 static const struct ccs_module_ident ccs_module_idents[] = {
 	CCS_IDENT_L(0x01, 0x022b, -1, "vs6555"),
 	CCS_IDENT_L(0x01, 0x022e, -1, "vw6558"),
@@ -66,11 +52,7 @@ struct ccs_device {
 
 static const char * const ccs_regulators[] = { "vcore", "vio", "vana" };
 
-/*
- *
- * Dynamic Capability Identification
- *
- */
+ 
 
 static void ccs_assign_limit(void *ptr, unsigned int width, u32 val)
 {
@@ -331,7 +313,7 @@ static int ccs_read_frame_fmt(struct ccs_sensor *sensor)
 			continue;
 		}
 
-		/* Handle row descriptors */
+		 
 		switch (pixelcode) {
 		case CCS_FRAME_FORMAT_DESCRIPTOR_PCODE_EMBEDDED:
 			if (sensor->embedded_end)
@@ -384,7 +366,7 @@ static int ccs_pll_configure(struct ccs_sensor *sensor)
 
 	if (!(CCS_LIM(sensor, PHY_CTRL_CAPABILITY) &
 	      CCS_PHY_CTRL_CAPABILITY_AUTO_PHY_CTL)) {
-		/* Lane op clock ratio does not apply here. */
+		 
 		rval = ccs_write(sensor, REQUESTED_LINK_RATE,
 				 DIV_ROUND_UP(pll->op_bk.sys_clk_freq_hz,
 					      1000000 / 256 / 256) *
@@ -497,11 +479,7 @@ static int ccs_pll_update(struct ccs_sensor *sensor)
 }
 
 
-/*
- *
- * V4L2 Controls handling
- *
- */
+ 
 
 static void __ccs_update_exposure_limits(struct ccs_sensor *sensor)
 {
@@ -515,14 +493,7 @@ static void __ccs_update_exposure_limits(struct ccs_sensor *sensor)
 	__v4l2_ctrl_modify_range(ctrl, ctrl->minimum, max, ctrl->step, max);
 }
 
-/*
- * Order matters.
- *
- * 1. Bits-per-pixel, descending.
- * 2. Bits-per-pixel compressed, descending.
- * 3. Pixel order, same as in pixel_order_str. Formats for all four pixel
- *    orders must be defined.
- */
+ 
 static const struct ccs_csi_data_format ccs_csi_data_formats[] = {
 	{ MEDIA_BUS_FMT_SGRBG16_1X16, 16, 16, CCS_PIXEL_ORDER_GRBG, },
 	{ MEDIA_BUS_FMT_SRGGB16_1X16, 16, 16, CCS_PIXEL_ORDER_RGGB, },
@@ -773,7 +744,7 @@ static int ccs_set_ctrl(struct v4l2_ctrl *ctrl)
 
 		break;
 	case V4L2_CID_PIXEL_RATE:
-		/* For v4l2_ctrl_s_ctrl_int64() used internally. */
+		 
 		rval = 0;
 
 		break;
@@ -947,7 +918,7 @@ static int ccs_init_controls(struct ccs_sensor *sensor)
 				      1U),
 				  0x100);
 
-	/* Exposure limits will be updated soon, use just something here. */
+	 
 	sensor->exposure = v4l2_ctrl_new_std(
 		&sensor->pixel_array->ctrl_handler, &ccs_ctrl_ops,
 		V4L2_CID_EXPOSURE, 0, 0, 1, 0);
@@ -1016,10 +987,7 @@ static int ccs_init_controls(struct ccs_sensor *sensor)
 	return 0;
 }
 
-/*
- * For controls that require information on available media bus codes
- * and linke frequencies.
- */
+ 
 static int ccs_init_late_controls(struct ccs_sensor *sensor)
 {
 	unsigned long *valid_link_freqs = &sensor->valid_link_freqs[
@@ -1117,7 +1085,7 @@ static int ccs_get_mbus_formats(struct ccs_sensor *sensor)
 		}
 	}
 
-	/* Figure out which BPP values can be used with which formats. */
+	 
 	pll->binning_horizontal = 1;
 	pll->binning_vertical = 1;
 	pll->scale_m = sensor->scale_m;
@@ -1238,7 +1206,7 @@ static int ccs_pll_blanking_update(struct ccs_sensor *sensor)
 	if (rval < 0)
 		return rval;
 
-	/* Output from pixel array, including blanking */
+	 
 	ccs_update_blanking(sensor);
 
 	dev_dbg(&client->dev, "vblank\t\t%d\n", sensor->vblank->val);
@@ -1254,11 +1222,7 @@ static int ccs_pll_blanking_update(struct ccs_sensor *sensor)
 	return 0;
 }
 
-/*
- *
- * SMIA++ NVM handling
- *
- */
+ 
 
 static int ccs_read_nvm_page(struct ccs_sensor *sensor, u32 p, u8 *nvm,
 			     u8 *status)
@@ -1339,11 +1303,7 @@ static int ccs_read_nvm(struct ccs_sensor *sensor, unsigned char *nvm,
 		return rval2 ?: p * (CCS_LIM_DATA_TRANSFER_IF_1_DATA_MAX_P + 1);
 }
 
-/*
- *
- * SMIA++ CCI address control
- *
- */
+ 
 static int ccs_change_cci_addr(struct ccs_sensor *sensor)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
@@ -1359,7 +1319,7 @@ static int ccs_change_cci_addr(struct ccs_sensor *sensor)
 
 	client->addr = sensor->hwcfg.i2c_addr_alt;
 
-	/* verify addr change went ok */
+	 
 	rval = ccs_read(sensor, CCI_ADDRESS_CTRL, &val);
 	if (rval)
 		return rval;
@@ -1370,11 +1330,7 @@ static int ccs_change_cci_addr(struct ccs_sensor *sensor)
 	return 0;
 }
 
-/*
- *
- * SMIA++ Mode Control
- *
- */
+ 
 static int ccs_setup_flash_strobe(struct ccs_sensor *sensor)
 {
 	struct ccs_flash_strobe_parms *strobe_setup;
@@ -1386,75 +1342,7 @@ static int ccs_setup_flash_strobe(struct ccs_sensor *sensor)
 
 	strobe_setup = sensor->hwcfg.strobe_setup;
 
-	/*
-	 * How to calculate registers related to strobe length. Please
-	 * do not change, or if you do at least know what you're
-	 * doing. :-)
-	 *
-	 * Sakari Ailus <sakari.ailus@linux.intel.com> 2010-10-25
-	 *
-	 * flash_strobe_length [us] / 10^6 = (tFlash_strobe_width_ctrl
-	 *	/ EXTCLK freq [Hz]) * flash_strobe_adjustment
-	 *
-	 * tFlash_strobe_width_ctrl E N, [1 - 0xffff]
-	 * flash_strobe_adjustment E N, [1 - 0xff]
-	 *
-	 * The formula above is written as below to keep it on one
-	 * line:
-	 *
-	 * l / 10^6 = w / e * a
-	 *
-	 * Let's mark w * a by x:
-	 *
-	 * x = w * a
-	 *
-	 * Thus, we get:
-	 *
-	 * x = l * e / 10^6
-	 *
-	 * The strobe width must be at least as long as requested,
-	 * thus rounding upwards is needed.
-	 *
-	 * x = (l * e + 10^6 - 1) / 10^6
-	 * -----------------------------
-	 *
-	 * Maximum possible accuracy is wanted at all times. Thus keep
-	 * a as small as possible.
-	 *
-	 * Calculate a, assuming maximum w, with rounding upwards:
-	 *
-	 * a = (x + (2^16 - 1) - 1) / (2^16 - 1)
-	 * -------------------------------------
-	 *
-	 * Thus, we also get w, with that a, with rounding upwards:
-	 *
-	 * w = (x + a - 1) / a
-	 * -------------------
-	 *
-	 * To get limits:
-	 *
-	 * x E [1, (2^16 - 1) * (2^8 - 1)]
-	 *
-	 * Substituting maximum x to the original formula (with rounding),
-	 * the maximum l is thus
-	 *
-	 * (2^16 - 1) * (2^8 - 1) * 10^6 = l * e + 10^6 - 1
-	 *
-	 * l = (10^6 * (2^16 - 1) * (2^8 - 1) - 10^6 + 1) / e
-	 * --------------------------------------------------
-	 *
-	 * flash_strobe_length must be clamped between 1 and
-	 * (10^6 * (2^16 - 1) * (2^8 - 1) - 10^6 + 1) / EXTCLK freq.
-	 *
-	 * Then,
-	 *
-	 * flash_strobe_adjustment = ((flash_strobe_length *
-	 *	EXTCLK freq + 10^6 - 1) / 10^6 + (2^16 - 1) - 1) / (2^16 - 1)
-	 *
-	 * tFlash_strobe_width_ctrl = ((flash_strobe_length *
-	 *	EXTCLK freq + 10^6 - 1) / 10^6 +
-	 *	flash_strobe_adjustment - 1) / flash_strobe_adjustment
-	 */
+	 
 	tmp = div_u64(1000000ULL * ((1 << 16) - 1) * ((1 << 8) - 1) -
 		      1000000 + 1, ext_freq);
 	strobe_setup->strobe_width_high_us =
@@ -1497,9 +1385,7 @@ out:
 	return rval;
 }
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int ccs_write_msr_regs(struct ccs_sensor *sensor)
 {
@@ -1542,10 +1428,7 @@ static int ccs_power_on(struct device *dev)
 {
 	struct v4l2_subdev *subdev = dev_get_drvdata(dev);
 	struct ccs_subdev *ssd = to_ccs_subdev(subdev);
-	/*
-	 * The sub-device related to the I2C device is always the
-	 * source one, i.e. ssds[0].
-	 */
+	 
 	struct ccs_sensor *sensor =
 		container_of(ssd, struct ccs_sensor, ssds[0]);
 	const struct ccs_device *ccsdev = device_get_match_data(dev);
@@ -1578,16 +1461,7 @@ static int ccs_power_on(struct device *dev)
 		usleep_range(sleep, sleep);
 	}
 
-	/*
-	 * Failures to respond to the address change command have been noticed.
-	 * Those failures seem to be caused by the sensor requiring a longer
-	 * boot time than advertised. An additional 10ms delay seems to work
-	 * around the issue, but the SMIA++ I2C write retry hack makes the delay
-	 * unnecessary. The failures need to be investigated to find a proper
-	 * fix, and a delay will likely need to be added here if the I2C write
-	 * retry hack is reverted before the root cause of the boot time issue
-	 * is found.
-	 */
+	 
 
 	if (!sensor->reset && !sensor->xshutdown) {
 		u8 retry = 100;
@@ -1692,13 +1566,7 @@ static int ccs_power_off(struct device *dev)
 	struct ccs_sensor *sensor =
 		container_of(ssd, struct ccs_sensor, ssds[0]);
 
-	/*
-	 * Currently power/clock to lens are enable/disabled separately
-	 * but they are essentially the same signals. So if the sensor is
-	 * powered off while the lens is powered on the sensor does not
-	 * really see a power off and next time the cci address change
-	 * will fail. So do a soft reset explicitly here.
-	 */
+	 
 	if (sensor->hwcfg.i2c_addr_alt)
 		ccs_write(sensor, SOFTWARE_RESET, CCS_SOFTWARE_RESET_ON);
 
@@ -1713,9 +1581,7 @@ static int ccs_power_off(struct device *dev)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Video stream management
- */
+ 
 
 static int ccs_start_streaming(struct ccs_sensor *sensor)
 {
@@ -1731,7 +1597,7 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 	if (rval)
 		goto out;
 
-	/* Binning configuration */
+	 
 	if (sensor->binning_horizontal == 1 &&
 	    sensor->binning_vertical == 1) {
 		binning_mode = 0;
@@ -1750,12 +1616,12 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 	if (rval < 0)
 		goto out;
 
-	/* Set up PLL */
+	 
 	rval = ccs_pll_configure(sensor);
 	if (rval)
 		goto out;
 
-	/* Analog crop start coordinates */
+	 
 	rval = ccs_write(sensor, X_ADDR_START,
 			 sensor->pixel_array->crop[CCS_PA_PAD_SRC].left);
 	if (rval < 0)
@@ -1766,7 +1632,7 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 	if (rval < 0)
 		goto out;
 
-	/* Analog crop end coordinates */
+	 
 	rval = ccs_write(
 		sensor, X_ADDR_END,
 		sensor->pixel_array->crop[CCS_PA_PAD_SRC].left
@@ -1781,12 +1647,9 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 	if (rval < 0)
 		goto out;
 
-	/*
-	 * Output from pixel array, including blanking, is set using
-	 * controls below. No need to set here.
-	 */
+	 
 
-	/* Digital crop */
+	 
 	if (CCS_LIM(sensor, DIGITAL_CROP_CAPABILITY)
 	    == CCS_DIGITAL_CROP_CAPABILITY_INPUT_CROP) {
 		rval = ccs_write(
@@ -1814,7 +1677,7 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 			goto out;
 	}
 
-	/* Scaling */
+	 
 	if (CCS_LIM(sensor, SCALING_CAPABILITY)
 	    != CCS_SCALING_CAPABILITY_NONE) {
 		rval = ccs_write(sensor, SCALING_MODE, sensor->scaling_mode);
@@ -1826,7 +1689,7 @@ static int ccs_start_streaming(struct ccs_sensor *sensor)
 			goto out;
 	}
 
-	/* Output size from sensor */
+	 
 	rval = ccs_write(sensor, X_OUTPUT_SIZE,
 			 sensor->src->crop[CCS_PAD_SRC].width);
 	if (rval < 0)
@@ -1879,29 +1742,23 @@ out:
 	return rval;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev video operations
- */
+ 
 
 static int ccs_pm_get_init(struct ccs_sensor *sensor)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
 	int rval;
 
-	/*
-	 * It can't use pm_runtime_resume_and_get() here, as the driver
-	 * relies at the returned value to detect if the device was already
-	 * active or not.
-	 */
+	 
 	rval = pm_runtime_get_sync(&client->dev);
 	if (rval < 0)
 		goto error;
 
-	/* Device was already active, so don't set controls */
+	 
 	if (rval == 1)
 		return 0;
 
-	/* Restore V4L2 controls to the previously suspended device */
+	 
 	rval = v4l2_ctrl_handler_setup(&sensor->pixel_array->ctrl_handler);
 	if (rval)
 		goto error;
@@ -1910,7 +1767,7 @@ static int ccs_pm_get_init(struct ccs_sensor *sensor)
 	if (rval)
 		goto error;
 
-	/* Keep PM runtime usage_count incremented on success */
+	 
 	return 0;
 error:
 	pm_runtime_put(&client->dev);
@@ -2116,7 +1973,7 @@ static void ccs_get_crop_compose(struct v4l2_subdev *subdev,
 	}
 }
 
-/* Changes require propagation only on sink pad. */
+ 
 static void ccs_propagate(struct v4l2_subdev *subdev,
 			  struct v4l2_subdev_state *sd_state, int which,
 			  int target)
@@ -2180,10 +2037,7 @@ static int ccs_set_format_source(struct v4l2_subdev *subdev,
 	if (rval)
 		return rval;
 
-	/*
-	 * Media bus code is changeable on src subdev's source pad. On
-	 * other source pads we just get format here.
-	 */
+	 
 	if (subdev != &sensor->src->sd)
 		return 0;
 
@@ -2237,7 +2091,7 @@ static int ccs_set_format(struct v4l2_subdev *subdev,
 		return rval;
 	}
 
-	/* Sink pad. Width and height are changeable here. */
+	 
 	fmt->format.code = __ccs_get_mbus_code(subdev, fmt->pad);
 	fmt->format.width &= ~1;
 	fmt->format.height &= ~1;
@@ -2267,10 +2121,7 @@ static int ccs_set_format(struct v4l2_subdev *subdev,
 	return 0;
 }
 
-/*
- * Calculate goodness of scaled image size compared to expected image
- * size and flags provided.
- */
+ 
 #define SCALING_GOODNESS		100000
 #define SCALING_GOODNESS_EXTREME	100000000
 static int scaling_goodness(struct v4l2_subdev *subdev, int w, int ask_w,
@@ -2350,15 +2201,7 @@ static void ccs_set_compose_binner(struct v4l2_subdev *subdev,
 	sel->r.height = (crops[CCS_PAD_SINK]->height / binv) & ~1;
 }
 
-/*
- * Calculate best scaling ratio and mode for given output resolution.
- *
- * Try all of these: horizontal ratio, vertical ratio and smallest
- * size possible (horizontally).
- *
- * Also try whether horizontal scaler or full scaler gives a better
- * result.
- */
+ 
 static void ccs_set_compose_scaler(struct v4l2_subdev *subdev,
 				   struct v4l2_subdev_state *sd_state,
 				   struct v4l2_subdev_selection *sel,
@@ -2473,7 +2316,7 @@ static void ccs_set_compose_scaler(struct v4l2_subdev *subdev,
 		sensor->scaling_mode = mode;
 	}
 }
-/* We're only called on source pads. This function sets scaling. */
+ 
 static int ccs_set_compose(struct v4l2_subdev *subdev,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_selection *sel)
@@ -2507,7 +2350,7 @@ static int __ccs_sel_supported(struct v4l2_subdev *subdev,
 	struct ccs_sensor *sensor = to_ccs_sensor(subdev);
 	struct ccs_subdev *ssd = to_ccs_subdev(subdev);
 
-	/* We only implement crop in three places. */
+	 
 	switch (sel->target) {
 	case V4L2_SEL_TGT_CROP:
 	case V4L2_SEL_TGT_CROP_BOUNDS:
@@ -2721,9 +2564,7 @@ static int ccs_get_skip_top_lines(struct v4l2_subdev *subdev, u32 *lines)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * sysfs attributes
- */
+ 
 
 static ssize_t
 nvm_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -2750,10 +2591,7 @@ nvm_show(struct device *dev, struct device_attribute *attr, char *buf)
 	pm_runtime_mark_last_busy(&client->dev);
 	pm_runtime_put_autosuspend(&client->dev);
 
-	/*
-	 * NVM is still way below a PAGE_SIZE, so we can safely
-	 * assume this for now.
-	 */
+	 
 	return rval;
 }
 static DEVICE_ATTR_RO(nvm);
@@ -2776,9 +2614,7 @@ ident_show(struct device *dev, struct device_attribute *attr, char *buf)
 }
 static DEVICE_ATTR_RO(ident);
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev core operations
- */
+ 
 
 static int ccs_identify_module(struct ccs_sensor *sensor)
 {
@@ -2788,7 +2624,7 @@ static int ccs_identify_module(struct ccs_sensor *sensor)
 	u32 rev;
 	int rval = 0;
 
-	/* Module info */
+	 
 	rval = ccs_read(sensor, MODULE_MANUFACTURER_ID,
 			&minfo->mipi_manufacturer_id);
 	if (!rval && !minfo->mipi_manufacturer_id)
@@ -2818,7 +2654,7 @@ static int ccs_identify_module(struct ccs_sensor *sensor)
 		rval = ccs_read_addr_8only(sensor, CCS_R_MODULE_DATE_DAY,
 					   &minfo->module_day);
 
-	/* Sensor info */
+	 
 	if (!rval)
 		rval = ccs_read(sensor, SENSOR_MANUFACTURER_ID,
 				&minfo->sensor_mipi_manufacturer_id);
@@ -2843,7 +2679,7 @@ static int ccs_identify_module(struct ccs_sensor *sensor)
 					   CCS_R_SENSOR_FIRMWARE_VERSION,
 					   &minfo->sensor_firmware_version);
 
-	/* SMIA */
+	 
 	if (!rval)
 		rval = ccs_read(sensor, MIPI_CCS_VERSION, &minfo->ccs_version);
 	if (!rval && !minfo->ccs_version)
@@ -2894,11 +2730,7 @@ static int ccs_identify_module(struct ccs_sensor *sensor)
 			"smia version %2.2d smiapp version %2.2d\n",
 			minfo->smia_version, minfo->smiapp_version);
 		minfo->name = SMIAPP_NAME;
-		/*
-		 * Some modules have bad data in the lvalues below. Hope the
-		 * rvalues have better stuff. The lvalues are module
-		 * parameters whereas the rvalues are sensor parameters.
-		 */
+		 
 		if (minfo->sensor_smia_manufacturer_id &&
 		    !minfo->smia_manufacturer_id && !minfo->model_id) {
 			minfo->smia_manufacturer_id =
@@ -3148,9 +2980,7 @@ static const struct v4l2_subdev_internal_ops ccs_internal_ops = {
 	.open = ccs_open,
 };
 
-/* -----------------------------------------------------------------------------
- * I2C Driver
- */
+ 
 
 static int __maybe_unused ccs_suspend(struct device *dev)
 {
@@ -3167,7 +2997,7 @@ static int __maybe_unused ccs_suspend(struct device *dev)
 	if (sensor->streaming)
 		ccs_stop_streaming(sensor);
 
-	/* save state for resume */
+	 
 	sensor->streaming = streaming;
 
 	return 0;
@@ -3202,10 +3032,7 @@ static int ccs_get_hwconfig(struct ccs_sensor *sensor, struct device *dev)
 	if (!ep)
 		return -ENODEV;
 
-	/*
-	 * Note that we do need to rely on detecting the bus type between CSI-2
-	 * D-PHY and CCP2 as the old bindings did not require it.
-	 */
+	 
 	rval = v4l2_fwnode_endpoint_alloc_parse(ep, &bus_cfg);
 	if (rval)
 		goto out_err;
@@ -3247,7 +3074,7 @@ static int ccs_get_hwconfig(struct ccs_sensor *sensor, struct device *dev)
 	}
 
 	hwcfg->op_sys_clock = devm_kcalloc(
-		dev, bus_cfg.nr_of_link_frequencies + 1 /* guardian */,
+		dev, bus_cfg.nr_of_link_frequencies + 1  ,
 		sizeof(*hwcfg->op_sys_clock), GFP_KERNEL);
 	if (!hwcfg->op_sys_clock) {
 		rval = -ENOMEM;
@@ -3282,10 +3109,7 @@ static int ccs_firmware_name(struct i2c_client *client,
 	u16 model_id;
 	u16 revision_number;
 
-	/*
-	 * Old SMIA is module-agnostic. Its sensor identification is based on
-	 * what now are those of the module.
-	 */
+	 
 	if (is_module || (!is_ccs && !is_smiapp)) {
 		manufacturer_id = is_ccs ?
 			sensor->minfo.mipi_manufacturer_id :
@@ -3400,7 +3224,7 @@ static int ccs_probe(struct i2c_client *client)
 						GPIOD_OUT_HIGH);
 	if (IS_ERR(sensor->reset))
 		return PTR_ERR(sensor->reset);
-	/* Support old users that may have used "xshutdown" property. */
+	 
 	if (!sensor->reset)
 		sensor->xshutdown = devm_gpiod_get_optional(&client->dev,
 							    "xshutdown",
@@ -3512,13 +3336,13 @@ static int ccs_probe(struct i2c_client *client)
 	    !CCS_LIM(sensor, MAX_OP_SYS_CLK_DIV) ||
 	    !CCS_LIM(sensor, MIN_OP_PIX_CLK_DIV) ||
 	    !CCS_LIM(sensor, MAX_OP_PIX_CLK_DIV)) {
-		/* No OP clock branch */
+		 
 		sensor->pll.flags |= CCS_PLL_FLAG_NO_OP_CLOCKS;
 	} else if (CCS_LIM(sensor, SCALING_CAPABILITY)
 		   != CCS_SCALING_CAPABILITY_NONE ||
 		   CCS_LIM(sensor, DIGITAL_CROP_CAPABILITY)
 		   == CCS_DIGITAL_CROP_CAPABILITY_INPUT_CROP) {
-		/* We have a scaler or digital crop. */
+		 
 		sensor->scaler = &sensor->ssds[sensor->ssds_used];
 		sensor->ssds_used++;
 	}
@@ -3529,7 +3353,7 @@ static int ccs_probe(struct i2c_client *client)
 
 	sensor->scale_m = CCS_LIM(sensor, SCALER_N_MIN);
 
-	/* prepare PLL configuration input values */
+	 
 	sensor->pll.bus_type = CCS_PLL_BUS_TYPE_CSI2_DPHY;
 	sensor->pll.csi2.lanes = sensor->hwcfg.lanes;
 	if (CCS_LIM(sensor, CLOCK_CALCULATION) &
@@ -3566,7 +3390,7 @@ static int ccs_probe(struct i2c_client *client)
 		    CCS_CLOCK_TREE_PLL_CAPABILITY_SINGLE_PLL) {
 			u32 v;
 
-			/* Use sensor default in PLL mode selection */
+			 
 			rval = ccs_read(sensor, PLL_MODE, &v);
 			if (rval)
 				goto out_cleanup;

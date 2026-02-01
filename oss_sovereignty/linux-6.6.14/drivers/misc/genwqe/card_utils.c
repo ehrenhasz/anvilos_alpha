@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBM Accelerator Family 'GenWQE'
- *
- * (C) Copyright IBM Corp. 2013
- *
- * Author: Frank Haverkamp <haver@linux.vnet.ibm.com>
- * Author: Joerg-Stephan Vogt <jsvogt@de.ibm.com>
- * Author: Michael Jung <mijung@gmx.net>
- * Author: Michael Ruettger <michael@ibmra.de>
- */
 
-/*
- * Miscelanous functionality used in the other GenWQE driver parts.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -33,14 +22,7 @@
 #include "card_base.h"
 #include "card_ddcb.h"
 
-/**
- * __genwqe_writeq() - Write 64-bit register
- * @cd:	        genwqe device descriptor
- * @byte_offs:  byte offset within BAR
- * @val:        64-bit value
- *
- * Return: 0 if success; < 0 if error
- */
+ 
 int __genwqe_writeq(struct genwqe_dev *cd, u64 byte_offs, u64 val)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -58,13 +40,7 @@ int __genwqe_writeq(struct genwqe_dev *cd, u64 byte_offs, u64 val)
 	return 0;
 }
 
-/**
- * __genwqe_readq() - Read 64-bit register
- * @cd:         genwqe device descriptor
- * @byte_offs:  offset within BAR
- *
- * Return: value from register
- */
+ 
 u64 __genwqe_readq(struct genwqe_dev *cd, u64 byte_offs)
 {
 	if (cd->err_inject & GENWQE_INJECT_HARDWARE_FAILURE)
@@ -84,14 +60,7 @@ u64 __genwqe_readq(struct genwqe_dev *cd, u64 byte_offs)
 	return be64_to_cpu((__force __be64)__raw_readq(cd->mmio + byte_offs));
 }
 
-/**
- * __genwqe_writel() - Write 32-bit register
- * @cd:	        genwqe device descriptor
- * @byte_offs:  byte offset within BAR
- * @val:        32-bit value
- *
- * Return: 0 if success; < 0 if error
- */
+ 
 int __genwqe_writel(struct genwqe_dev *cd, u64 byte_offs, u32 val)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -109,13 +78,7 @@ int __genwqe_writel(struct genwqe_dev *cd, u64 byte_offs, u32 val)
 	return 0;
 }
 
-/**
- * __genwqe_readl() - Read 32-bit register
- * @cd:         genwqe device descriptor
- * @byte_offs:  offset within BAR
- *
- * Return: Value from register
- */
+ 
 u32 __genwqe_readl(struct genwqe_dev *cd, u64 byte_offs)
 {
 	if (cd->err_inject & GENWQE_INJECT_HARDWARE_FAILURE)
@@ -127,14 +90,7 @@ u32 __genwqe_readl(struct genwqe_dev *cd, u64 byte_offs)
 	return be32_to_cpu((__force __be32)__raw_readl(cd->mmio + byte_offs));
 }
 
-/**
- * genwqe_read_app_id() - Extract app_id
- * @cd:	        genwqe device descriptor
- * @app_name:   carrier used to pass-back name
- * @len:        length of data for name
- *
- * app_unitcfg need to be filled with valid data first
- */
+ 
 int genwqe_read_app_id(struct genwqe_dev *cd, char *app_name, int len)
 {
 	int i, j;
@@ -152,16 +108,9 @@ int genwqe_read_app_id(struct genwqe_dev *cd, char *app_name, int len)
 }
 
 #define CRC32_POLYNOMIAL	0x20044009
-static u32 crc32_tab[256];	/* crc32 lookup table */
+static u32 crc32_tab[256];	 
 
-/**
- * genwqe_init_crc32() - Prepare a lookup table for fast crc32 calculations
- *
- * Existing kernel functions seem to use a different polynom,
- * therefore we could not use them here.
- *
- * Genwqe's Polynomial = 0x20044009
- */
+ 
 void genwqe_init_crc32(void)
 {
 	int i, j;
@@ -179,21 +128,7 @@ void genwqe_init_crc32(void)
 	}
 }
 
-/**
- * genwqe_crc32() - Generate 32-bit crc as required for DDCBs
- * @buff:       pointer to data buffer
- * @len:        length of data for calculation
- * @init:       initial crc (0xffffffff at start)
- *
- * polynomial = x^32 * + x^29 + x^18 + x^14 + x^3 + 1 (0x20044009)
- *
- * Example: 4 bytes 0x01 0x02 0x03 0x04 with init=0xffffffff should
- * result in a crc32 of 0xf33cb7d3.
- *
- * The existing kernel crc functions did not cover this polynom yet.
- *
- * Return: crc32 checksum.
- */
+ 
 u32 genwqe_crc32(u8 *buff, size_t len, u32 init)
 {
 	int i;
@@ -246,15 +181,15 @@ static int genwqe_map_pages(struct genwqe_dev *cd,
 	int i;
 	struct pci_dev *pci_dev = cd->pci_dev;
 
-	/* establish DMA mapping for requested pages */
+	 
 	for (i = 0; i < num_pages; i++) {
 		dma_addr_t daddr;
 
 		dma_list[i] = 0x0;
 		daddr = dma_map_page(&pci_dev->dev, page_list[i],
-				     0,	 /* map_offs */
+				     0,	  
 				     PAGE_SIZE,
-				     DMA_BIDIRECTIONAL);  /* FIXME rd/rw */
+				     DMA_BIDIRECTIONAL);   
 
 		if (dma_mapping_error(&pci_dev->dev, daddr)) {
 			dev_err(&pci_dev->dev,
@@ -280,14 +215,7 @@ static int genwqe_sgl_size(int num_pages)
 	return roundup(len, PAGE_SIZE);
 }
 
-/*
- * genwqe_alloc_sync_sgl() - Allocate memory for sgl and overlapping pages
- *
- * Allocates memory for sgl and overlapping pages. Pages which might
- * overlap other user-space memory blocks are being cached for DMAs,
- * such that we do not run into syncronization issues. Data is copied
- * from user-space into the cached pages.
- */
+ 
 int genwqe_alloc_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 			  void __user *user_addr, size_t user_size, int write)
 {
@@ -322,14 +250,14 @@ int genwqe_alloc_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 		return ret;
 	}
 
-	/* Only use buffering on incomplete pages */
+	 
 	if ((sgl->fpage_size != 0) && (sgl->fpage_size != PAGE_SIZE)) {
 		sgl->fpage = __genwqe_alloc_consistent(cd, PAGE_SIZE,
 						       &sgl->fpage_dma_addr);
 		if (sgl->fpage == NULL)
 			goto err_out;
 
-		/* Sync with user memory */
+		 
 		if (copy_from_user(sgl->fpage + sgl->fpage_offs,
 				   user_addr, sgl->fpage_size)) {
 			ret = -EFAULT;
@@ -342,7 +270,7 @@ int genwqe_alloc_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 		if (sgl->lpage == NULL)
 			goto err_out1;
 
-		/* Sync with user memory */
+		 
 		if (copy_from_user(sgl->lpage, user_addr + user_size -
 				   sgl->lpage_size, sgl->lpage_size)) {
 			ret = -EFAULT;
@@ -380,16 +308,16 @@ int genwqe_setup_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 	struct sg_entry *s, *last_s = NULL;
 	size_t size = sgl->user_size;
 
-	dma_offs = 128;		/* next block if needed/dma_offset */
-	map_offs = sgl->fpage_offs; /* offset in first page */
+	dma_offs = 128;		 
+	map_offs = sgl->fpage_offs;  
 
-	s = &sgl->sgl[0];	/* first set of 8 entries */
-	p = 0;			/* page */
+	s = &sgl->sgl[0];	 
+	p = 0;			 
 	while (p < sgl->nr_pages) {
 		dma_addr_t daddr;
 		unsigned int size_to_map;
 
-		/* always write the chaining entry, cleanup is done later */
+		 
 		j = 0;
 		s[j].target_addr = cpu_to_be64(sgl->sgl_dma_addr + dma_offs);
 		s[j].len	 = cpu_to_be32(128);
@@ -397,7 +325,7 @@ int genwqe_setup_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 		j++;
 
 		while (j < 8) {
-			/* DMA mapping for requested page, offs, size */
+			 
 			size_to_map = min(size, PAGE_SIZE - map_offs);
 
 			if ((p == 0) && (sgl->fpage != NULL)) {
@@ -416,22 +344,20 @@ int genwqe_setup_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 			if (prev_daddr == daddr) {
 				u32 prev_len = be32_to_cpu(last_s->len);
 
-				/* pr_info("daddr combining: "
-					"%016llx/%08x -> %016llx\n",
-					prev_daddr, prev_len, daddr); */
+				 
 
 				last_s->len = cpu_to_be32(prev_len +
 							  size_to_map);
 
-				p++; /* process next page */
+				p++;  
 				if (p == sgl->nr_pages)
-					goto fixup;  /* nothing to do */
+					goto fixup;   
 
 				prev_daddr = daddr + size_to_map;
 				continue;
 			}
 
-			/* start new entry */
+			 
 			s[j].target_addr = cpu_to_be64(daddr);
 			s[j].len	 = cpu_to_be32(size_to_map);
 			s[j].flags	 = cpu_to_be32(SG_DATA);
@@ -439,20 +365,20 @@ int genwqe_setup_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 			last_s = &s[j];
 			j++;
 
-			p++;	/* process next page */
+			p++;	 
 			if (p == sgl->nr_pages)
-				goto fixup;  /* nothing to do */
+				goto fixup;   
 		}
 		dma_offs += 128;
-		s += 8;		/* continue 8 elements further */
+		s += 8;		 
 	}
  fixup:
-	if (j == 1) {		/* combining happened on last entry! */
-		s -= 8;		/* full shift needed on previous sgl block */
-		j =  7;		/* shift all elements */
+	if (j == 1) {		 
+		s -= 8;		 
+		j =  7;		 
 	}
 
-	for (i = 0; i < j; i++)	/* move elements 1 up */
+	for (i = 0; i < j; i++)	 
 		s[i] = s[i + 1];
 
 	s[i].target_addr = cpu_to_be64(0);
@@ -461,15 +387,7 @@ int genwqe_setup_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl,
 	return 0;
 }
 
-/**
- * genwqe_free_sync_sgl() - Free memory for sgl and overlapping pages
- * @cd:	        genwqe device descriptor
- * @sgl:        scatter gather list describing user-space memory
- *
- * After the DMA transfer has been completed we free the memory for
- * the sgl and the cached pages. Data is being transferred from cached
- * pages into user-space buffers.
- */
+ 
 int genwqe_free_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl)
 {
 	int rc = 0;
@@ -519,29 +437,7 @@ int genwqe_free_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl)
 	return rc;
 }
 
-/**
- * genwqe_user_vmap() - Map user-space memory to virtual kernel memory
- * @cd:         pointer to genwqe device
- * @m:          mapping params
- * @uaddr:      user virtual address
- * @size:       size of memory to be mapped
- *
- * We need to think about how we could speed this up. Of course it is
- * not a good idea to do this over and over again, like we are
- * currently doing it. Nevertheless, I am curious where on the path
- * the performance is spend. Most probably within the memory
- * allocation functions, but maybe also in the DMA mapping code.
- *
- * Restrictions: The maximum size of the possible mapping currently depends
- *               on the amount of memory we can get using kzalloc() for the
- *               page_list and pci_alloc_consistent for the sg_list.
- *               The sg_list is currently itself not scattered, which could
- *               be fixed with some effort. The page_list must be split into
- *               PAGE_SIZE chunks too. All that will make the complicated
- *               code more complicated.
- *
- * Return: 0 if success
- */
+ 
 int genwqe_user_vmap(struct genwqe_dev *cd, struct dma_mapping *m, void *uaddr,
 		     unsigned long size)
 {
@@ -550,17 +446,17 @@ int genwqe_user_vmap(struct genwqe_dev *cd, struct dma_mapping *m, void *uaddr,
 	struct pci_dev *pci_dev = cd->pci_dev;
 
 	if ((uaddr == NULL) || (size == 0)) {
-		m->size = 0;	/* mark unused and not added */
+		m->size = 0;	 
 		return -EINVAL;
 	}
 	m->u_vaddr = uaddr;
 	m->size    = size;
 
-	/* determine space needed for page_list. */
+	 
 	data = (unsigned long)uaddr;
 	offs = offset_in_page(data);
 	if (size > ULONG_MAX - PAGE_SIZE - offs) {
-		m->size = 0;	/* mark unused and not added */
+		m->size = 0;	 
 		return -EINVAL;
 	}
 	m->nr_pages = DIV_ROUND_UP(offs + size, PAGE_SIZE);
@@ -572,20 +468,20 @@ int genwqe_user_vmap(struct genwqe_dev *cd, struct dma_mapping *m, void *uaddr,
 		dev_err(&pci_dev->dev, "err: alloc page_list failed\n");
 		m->nr_pages = 0;
 		m->u_vaddr = NULL;
-		m->size = 0;	/* mark unused and not added */
+		m->size = 0;	 
 		return -ENOMEM;
 	}
 	m->dma_list = (dma_addr_t *)(m->page_list + m->nr_pages);
 
-	/* pin user pages in memory */
-	rc = pin_user_pages_fast(data & PAGE_MASK, /* page aligned addr */
+	 
+	rc = pin_user_pages_fast(data & PAGE_MASK,  
 				 m->nr_pages,
-				 m->write ? FOLL_WRITE : 0,	/* readable/writable */
-				 m->page_list);	/* ptrs to pages */
+				 m->write ? FOLL_WRITE : 0,	 
+				 m->page_list);	 
 	if (rc < 0)
 		goto fail_pin_user_pages;
 
-	/* assumption: pin_user_pages can be killed by signals. */
+	 
 	if (rc < m->nr_pages) {
 		unpin_user_pages_dirty_lock(m->page_list, rc, m->write);
 		rc = -EFAULT;
@@ -607,16 +503,11 @@ int genwqe_user_vmap(struct genwqe_dev *cd, struct dma_mapping *m, void *uaddr,
 	m->dma_list = NULL;
 	m->nr_pages = 0;
 	m->u_vaddr = NULL;
-	m->size = 0;		/* mark unused and not added */
+	m->size = 0;		 
 	return rc;
 }
 
-/**
- * genwqe_user_vunmap() - Undo mapping of user-space mem to virtual kernel
- *                        memory
- * @cd:         pointer to genwqe device
- * @m:          mapping params
- */
+ 
 int genwqe_user_vunmap(struct genwqe_dev *cd, struct dma_mapping *m)
 {
 	struct pci_dev *pci_dev = cd->pci_dev;
@@ -640,18 +531,11 @@ int genwqe_user_vunmap(struct genwqe_dev *cd, struct dma_mapping *m)
 	}
 
 	m->u_vaddr = NULL;
-	m->size = 0;		/* mark as unused and not added */
+	m->size = 0;		 
 	return 0;
 }
 
-/**
- * genwqe_card_type() - Get chip type SLU Configuration Register
- * @cd:         pointer to the genwqe device descriptor
- * Return: 0: Altera Stratix-IV 230
- *         1: Altera Stratix-IV 530
- *         2: Altera Stratix-V A4
- *         3: Altera Stratix-V A7
- */
+ 
 u8 genwqe_card_type(struct genwqe_dev *cd)
 {
 	u64 card_type = cd->slu_unitcfg;
@@ -659,10 +543,7 @@ u8 genwqe_card_type(struct genwqe_dev *cd)
 	return (u8)((card_type & IO_SLU_UNITCFG_TYPE_MASK) >> 20);
 }
 
-/**
- * genwqe_card_reset() - Reset the card
- * @cd:         pointer to the genwqe device descriptor
- */
+ 
 int genwqe_card_reset(struct genwqe_dev *cd)
 {
 	u64 softrst;
@@ -671,25 +552,18 @@ int genwqe_card_reset(struct genwqe_dev *cd)
 	if (!genwqe_is_privileged(cd))
 		return -ENODEV;
 
-	/* new SL */
+	 
 	__genwqe_writeq(cd, IO_SLC_CFGREG_SOFTRESET, 0x1ull);
 	msleep(1000);
 	__genwqe_readq(cd, IO_HSU_FIR_CLR);
 	__genwqe_readq(cd, IO_APP_FIR_CLR);
 	__genwqe_readq(cd, IO_SLU_FIR_CLR);
 
-	/*
-	 * Read-modify-write to preserve the stealth bits
-	 *
-	 * For SL >= 039, Stealth WE bit allows removing
-	 * the read-modify-wrote.
-	 * r-m-w may require a mask 0x3C to avoid hitting hard
-	 * reset again for error reset (should be 0, chicken).
-	 */
+	 
 	softrst = __genwqe_readq(cd, IO_SLC_CFGREG_SOFTRESET) & 0x3cull;
 	__genwqe_writeq(cd, IO_SLC_CFGREG_SOFTRESET, softrst | 0x2ull);
 
-	/* give ERRORRESET some time to finish */
+	 
 	msleep(50);
 
 	if (genwqe_need_err_masking(cd)) {
@@ -712,12 +586,7 @@ int genwqe_read_softreset(struct genwqe_dev *cd)
 	return 0;
 }
 
-/**
- * genwqe_set_interrupt_capability() - Configure MSI capability structure
- * @cd:         pointer to the device
- * @count:      number of vectors to allocate
- * Return: 0 if no error
- */
+ 
 int genwqe_set_interrupt_capability(struct genwqe_dev *cd, int count)
 {
 	int rc;
@@ -728,25 +597,13 @@ int genwqe_set_interrupt_capability(struct genwqe_dev *cd, int count)
 	return 0;
 }
 
-/**
- * genwqe_reset_interrupt_capability() - Undo genwqe_set_interrupt_capability()
- * @cd:         pointer to the device
- */
+ 
 void genwqe_reset_interrupt_capability(struct genwqe_dev *cd)
 {
 	pci_free_irq_vectors(cd->pci_dev);
 }
 
-/**
- * set_reg_idx() - Fill array with data. Ignore illegal offsets.
- * @cd:         card device
- * @r:          debug register array
- * @i:          index to desired entry
- * @m:          maximum possible entries
- * @addr:       addr which is read
- * @idx:        index in debug array
- * @val:        read value
- */
+ 
 static int set_reg_idx(struct genwqe_dev *cd, struct genwqe_reg *r,
 		       unsigned int *i, unsigned int m, u32 addr, u32 idx,
 		       u64 val)
@@ -774,33 +631,33 @@ int genwqe_read_ffdc_regs(struct genwqe_dev *cd, struct genwqe_reg *regs,
 	u32 ufir_addr, ufec_addr, sfir_addr, sfec_addr;
 	u64 gfir, sluid, appid, ufir, ufec, sfir, sfec;
 
-	/* Global FIR */
+	 
 	gfir = __genwqe_readq(cd, IO_SLC_CFGREG_GFIR);
 	set_reg(cd, regs, &idx, max_regs, IO_SLC_CFGREG_GFIR, gfir);
 
-	/* UnitCfg for SLU */
-	sluid = __genwqe_readq(cd, IO_SLU_UNITCFG); /* 0x00000000 */
+	 
+	sluid = __genwqe_readq(cd, IO_SLU_UNITCFG);  
 	set_reg(cd, regs, &idx, max_regs, IO_SLU_UNITCFG, sluid);
 
-	/* UnitCfg for APP */
-	appid = __genwqe_readq(cd, IO_APP_UNITCFG); /* 0x02000000 */
+	 
+	appid = __genwqe_readq(cd, IO_APP_UNITCFG);  
 	set_reg(cd, regs, &idx, max_regs, IO_APP_UNITCFG, appid);
 
-	/* Check all chip Units */
+	 
 	for (i = 0; i < GENWQE_MAX_UNITS; i++) {
 
-		/* Unit FIR */
+		 
 		ufir_addr = (i << 24) | 0x008;
 		ufir = __genwqe_readq(cd, ufir_addr);
 		set_reg(cd, regs, &idx, max_regs, ufir_addr, ufir);
 
-		/* Unit FEC */
+		 
 		ufec_addr = (i << 24) | 0x018;
 		ufec = __genwqe_readq(cd, ufec_addr);
 		set_reg(cd, regs, &idx, max_regs, ufec_addr, ufec);
 
 		for (j = 0; j < 64; j++) {
-			/* wherever there is a primary 1, read the 2ndary */
+			 
 			if (!all && (!(ufir & (1ull << j))))
 				continue;
 
@@ -814,7 +671,7 @@ int genwqe_read_ffdc_regs(struct genwqe_dev *cd, struct genwqe_reg *regs,
 		}
 	}
 
-	/* fill with invalid data until end */
+	 
 	for (i = idx; i < max_regs; i++) {
 		regs[i].addr = 0xffffffff;
 		regs[i].val = 0xffffffffffffffffull;
@@ -822,11 +679,7 @@ int genwqe_read_ffdc_regs(struct genwqe_dev *cd, struct genwqe_reg *regs,
 	return idx;
 }
 
-/**
- * genwqe_ffdc_buff_size() - Calculates the number of dump registers
- * @cd:	        genwqe device descriptor
- * @uid:	unit ID
- */
+ 
 int genwqe_ffdc_buff_size(struct genwqe_dev *cd, int uid)
 {
 	int entries = 0, ring, traps, traces, trace_entries;
@@ -845,15 +698,15 @@ int genwqe_ffdc_buff_size(struct genwqe_dev *cd, int uid)
 			if ((val == 0x0) || (val == -1ull))
 				break;
 
-			/* 38:24 */
+			 
 			d_len  = (val & 0x0000007fff000000ull) >> 24;
 
-			/* 39 */
+			 
 			d_type = (val & 0x0000008000000000ull) >> 36;
 
-			if (d_type) {	/* repeat */
+			if (d_type) {	 
 				entries += d_len;
-			} else {	/* size in bytes! */
+			} else {	 
 				entries += d_len >> 3;
 			}
 
@@ -877,13 +730,7 @@ int genwqe_ffdc_buff_size(struct genwqe_dev *cd, int uid)
 	return entries;
 }
 
-/**
- * genwqe_ffdc_buff_read() - Implements LogoutExtendedErrorRegisters procedure
- * @cd:	        genwqe device descriptor
- * @uid:	unit ID
- * @regs:       register information
- * @max_regs:   number of register entries
- */
+ 
 int genwqe_ffdc_buff_read(struct genwqe_dev *cd, int uid,
 			  struct genwqe_reg *regs, unsigned int max_regs)
 {
@@ -902,9 +749,9 @@ int genwqe_ffdc_buff_read(struct genwqe_dev *cd, int uid,
 			if ((e == 0x0) || (e == 0xffffffffffffffffull))
 				break;
 
-			d_addr = (e & 0x0000000000ffffffull);	    /* 23:0 */
-			d_len  = (e & 0x0000007fff000000ull) >> 24; /* 38:24 */
-			d_type = (e & 0x0000008000000000ull) >> 36; /* 39 */
+			d_addr = (e & 0x0000000000ffffffull);	     
+			d_len  = (e & 0x0000007fff000000ull) >> 24;  
+			d_type = (e & 0x0000008000000000ull) >> 36;  
 			d_addr |= GENWQE_UID_OFFS(uid);
 
 			if (d_type) {
@@ -914,7 +761,7 @@ int genwqe_ffdc_buff_read(struct genwqe_dev *cd, int uid,
 						    d_addr, i, val);
 				}
 			} else {
-				d_len >>= 3; /* Size in bytes! */
+				d_len >>= 3;  
 				for (i = 0; i < (int)d_len; i++, d_addr += 8) {
 					val = __genwqe_readq(cd, d_addr);
 					set_reg_idx(cd, regs, &idx, max_regs,
@@ -925,25 +772,21 @@ int genwqe_ffdc_buff_read(struct genwqe_dev *cd, int uid,
 		}
 	}
 
-	/*
-	 * To save time, there are only 6 traces poplulated on Uid=2,
-	 * Ring=1. each with iters=512.
-	 */
-	for (ring = 0; ring < 8; ring++) { /* 0 is fls, 1 is fds,
-					      2...7 are ASI rings */
+	 
+	for (ring = 0; ring < 8; ring++) {  
 		addr = GENWQE_UID_OFFS(uid) | IO_EXTENDED_DIAG_MAP(ring);
 		val = __genwqe_readq(cd, addr);
 
 		if ((val == 0x0ull) || (val == -1ull))
 			continue;
 
-		traps = (val >> 24) & 0xff;	/* Number of Traps	*/
-		traces = (val >> 16) & 0xff;	/* Number of Traces	*/
-		trace_entries = val & 0xffff;	/* Entries per trace	*/
+		traps = (val >> 24) & 0xff;	 
+		traces = (val >> 16) & 0xff;	 
+		trace_entries = val & 0xffff;	 
 
-		/* Note: This is a combined loop that dumps both the traps */
-		/* (for the trace == 0 case) as well as the traces 1 to    */
-		/* 'traces'.						   */
+		 
+		 
+		 
 		for (trace = 0; trace <= traces; trace++) {
 			u32 diag_sel =
 				GENWQE_EXTENDED_DIAG_SELECTOR(ring, trace);
@@ -966,16 +809,7 @@ int genwqe_ffdc_buff_read(struct genwqe_dev *cd, int uid,
 	return 0;
 }
 
-/**
- * genwqe_write_vreg() - Write register in virtual window
- * @cd:	        genwqe device descriptor
- * @reg:	register (byte) offset within BAR
- * @val:	value to write
- * @func:	PCI virtual function
- *
- * Note, these registers are only accessible to the PF through the
- * VF-window. It is not intended for the VF to access.
- */
+ 
 int genwqe_write_vreg(struct genwqe_dev *cd, u32 reg, u64 val, int func)
 {
 	__genwqe_writeq(cd, IO_PF_SLC_VIRTUAL_WINDOW, func & 0xf);
@@ -983,63 +817,33 @@ int genwqe_write_vreg(struct genwqe_dev *cd, u32 reg, u64 val, int func)
 	return 0;
 }
 
-/**
- * genwqe_read_vreg() - Read register in virtual window
- * @cd:	        genwqe device descriptor
- * @reg:	register (byte) offset within BAR
- * @func:	PCI virtual function
- *
- * Note, these registers are only accessible to the PF through the
- * VF-window. It is not intended for the VF to access.
- */
+ 
 u64 genwqe_read_vreg(struct genwqe_dev *cd, u32 reg, int func)
 {
 	__genwqe_writeq(cd, IO_PF_SLC_VIRTUAL_WINDOW, func & 0xf);
 	return __genwqe_readq(cd, reg);
 }
 
-/**
- * genwqe_base_clock_frequency() - Deteremine base clock frequency of the card
- * @cd:	        genwqe device descriptor
- *
- * Note: From a design perspective it turned out to be a bad idea to
- * use codes here to specifiy the frequency/speed values. An old
- * driver cannot understand new codes and is therefore always a
- * problem. Better is to measure out the value or put the
- * speed/frequency directly into a register which is always a valid
- * value for old as well as for new software.
- *
- * Return: Card clock in MHz
- */
+ 
 int genwqe_base_clock_frequency(struct genwqe_dev *cd)
 {
-	u16 speed;		/*         MHz  MHz  MHz  MHz */
+	u16 speed;		 
 	static const int speed_grade[] = { 250, 200, 166, 175 };
 
 	speed = (u16)((cd->slu_unitcfg >> 28) & 0x0full);
 	if (speed >= ARRAY_SIZE(speed_grade))
-		return 0;	/* illegal value */
+		return 0;	 
 
 	return speed_grade[speed];
 }
 
-/**
- * genwqe_stop_traps() - Stop traps
- * @cd:	        genwqe device descriptor
- *
- * Before reading out the analysis data, we need to stop the traps.
- */
+ 
 void genwqe_stop_traps(struct genwqe_dev *cd)
 {
 	__genwqe_writeq(cd, IO_SLC_MISC_DEBUG_SET, 0xcull);
 }
 
-/**
- * genwqe_start_traps() - Start traps
- * @cd:	        genwqe device descriptor
- *
- * After having read the data, we can/must enable the traps again.
- */
+ 
 void genwqe_start_traps(struct genwqe_dev *cd)
 {
 	__genwqe_writeq(cd, IO_SLC_MISC_DEBUG_CLR, 0xcull);

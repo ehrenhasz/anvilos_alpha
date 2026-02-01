@@ -1,18 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
- *
- * Test code for seccomp bpf.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sys/types.h>
 
-/*
- * glibc 2.26 and later have SIGSYS in siginfo_t. Before that,
- * we need to use the kernel's siginfo.h file and trick glibc
- * into accepting it.
- */
+ 
 #if !__GLIBC_PREREQ(2, 26)
 # include <asm/siginfo.h>
 # define __have_siginfo_t 1
@@ -55,7 +47,7 @@
 #include "../kselftest_harness.h"
 #include "../clone3/clone3_selftests.h"
 
-/* Attempt to de-conflict with the selftests tree. */
+ 
 #ifndef SKIP
 #define SKIP(s, ...)	XFAIL(s, ##__VA_ARGS__)
 #endif
@@ -101,18 +93,18 @@ struct seccomp_data {
 #endif
 
 #ifndef SECCOMP_RET_KILL_PROCESS
-#define SECCOMP_RET_KILL_PROCESS 0x80000000U /* kill the process */
-#define SECCOMP_RET_KILL_THREAD	 0x00000000U /* kill the thread */
+#define SECCOMP_RET_KILL_PROCESS 0x80000000U  
+#define SECCOMP_RET_KILL_THREAD	 0x00000000U  
 #endif
 #ifndef SECCOMP_RET_KILL
 #define SECCOMP_RET_KILL	 SECCOMP_RET_KILL_THREAD
-#define SECCOMP_RET_TRAP	 0x00030000U /* disallow and force a SIGSYS */
-#define SECCOMP_RET_ERRNO	 0x00050000U /* returns an errno */
-#define SECCOMP_RET_TRACE	 0x7ff00000U /* pass to a tracer or disallow */
-#define SECCOMP_RET_ALLOW	 0x7fff0000U /* allow */
+#define SECCOMP_RET_TRAP	 0x00030000U  
+#define SECCOMP_RET_ERRNO	 0x00050000U  
+#define SECCOMP_RET_TRACE	 0x7ff00000U  
+#define SECCOMP_RET_ALLOW	 0x7fff0000U  
 #endif
 #ifndef SECCOMP_RET_LOG
-#define SECCOMP_RET_LOG		 0x7ffc0000U /* allow after logging */
+#define SECCOMP_RET_LOG		 0x7ffc0000U  
 #endif
 
 #ifndef __NR_seccomp
@@ -180,8 +172,8 @@ struct seccomp_data {
 #define PTRACE_SECCOMP_GET_METADATA	0x420d
 
 struct seccomp_metadata {
-	__u64 filter_off;       /* Input: which filter */
-	__u64 flags;             /* Output: filter's flags */
+	__u64 filter_off;        
+	__u64 flags;              
 };
 #endif
 
@@ -198,7 +190,7 @@ struct seccomp_metadata {
 #define SECCOMP_IOW(nr, type)		_IOW(SECCOMP_IOC_MAGIC, nr, type)
 #define SECCOMP_IOWR(nr, type)		_IOWR(SECCOMP_IOC_MAGIC, nr, type)
 
-/* Flags for seccomp notification fd ioctl. */
+ 
 #define SECCOMP_IOCTL_NOTIF_RECV	SECCOMP_IOWR(0, struct seccomp_notif)
 #define SECCOMP_IOCTL_NOTIF_SEND	SECCOMP_IOWR(1,	\
 						struct seccomp_notif_resp)
@@ -226,12 +218,12 @@ struct seccomp_notif_sizes {
 #endif
 
 #ifndef SECCOMP_IOCTL_NOTIF_ADDFD
-/* On success, the return value is the remote process's added fd number */
+ 
 #define SECCOMP_IOCTL_NOTIF_ADDFD	SECCOMP_IOW(3,	\
 						struct seccomp_notif_addfd)
 
-/* valid flags for seccomp_notif_addfd */
-#define SECCOMP_ADDFD_FLAG_SETFD	(1UL << 0) /* Specify remote fd */
+ 
+#define SECCOMP_ADDFD_FLAG_SETFD	(1UL << 0)  
 
 struct seccomp_notif_addfd {
 	__u64 id;
@@ -243,7 +235,7 @@ struct seccomp_notif_addfd {
 #endif
 
 #ifndef SECCOMP_ADDFD_FLAG_SEND
-#define SECCOMP_ADDFD_FLAG_SEND	(1UL << 1) /* Addfd and return it, atomically */
+#define SECCOMP_ADDFD_FLAG_SEND	(1UL << 1)  
 #endif
 
 struct seccomp_notif_addfd_small {
@@ -310,7 +302,7 @@ static int __filecmp(pid_t pid1, pid_t pid2, int fd1, int fd2)
 #endif
 }
 
-/* Have TH_LOG report actual location filecmp() is used. */
+ 
 #define filecmp(pid1, pid2, fd1, fd2)	({		\
 	int _ret;					\
 							\
@@ -359,7 +351,7 @@ TEST_SIGNAL(mode_strict_cannot_call_prctl, SIGKILL)
 	}
 }
 
-/* Note! This doesn't test no new privs behavior */
+ 
 TEST(no_new_privs_support)
 {
 	long ret;
@@ -370,7 +362,7 @@ TEST(no_new_privs_support)
 	}
 }
 
-/* Tests kernel support by checking for a copy_from_user() fault on NULL. */
+ 
 TEST(mode_filter_support)
 {
 	long ret;
@@ -405,7 +397,7 @@ TEST(mode_filter_without_nnp)
 	}
 	errno = 0;
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
-	/* Succeeds with CAP_SYS_ADMIN, fails without */
+	 
 	cap_get_flag(cap, CAP_SYS_ADMIN, CAP_EFFECTIVE, &is_cap_sys_admin);
 	if (!is_cap_sys_admin) {
 		EXPECT_EQ(-1, ret);
@@ -440,13 +432,13 @@ TEST(filter_size_limits)
 	prog.filter = filter;
 	prog.len = count;
 
-	/* Too many filter instructions in a single filter. */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 	ASSERT_NE(0, ret) {
 		TH_LOG("Installing %d insn filter was allowed", prog.len);
 	}
 
-	/* One less is okay, though. */
+	 
 	prog.len -= 1;
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 	ASSERT_EQ(0, ret) {
@@ -482,7 +474,7 @@ TEST(filter_chain_limits)
 
 	prog.len = count;
 
-	/* Too many total filter instructions. */
+	 
 	for (i = 0; i < MAX_INSNS_PER_PATH; i++) {
 		ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 		if (ret != 0)
@@ -596,7 +588,7 @@ TEST(log_all)
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog);
 	ASSERT_EQ(0, ret);
 
-	/* getppid() should succeed and be logged (no check for logging) */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
 }
 
@@ -621,7 +613,7 @@ TEST_SIGNAL(unknown_ret_is_kill_inside, SIGSYS)
 	}
 }
 
-/* return code >= 0x80000000 is unused. */
+ 
 TEST_SIGNAL(unknown_ret_is_kill_above_allow, SIGSYS)
 {
 	struct sock_filter filter[] = {
@@ -684,7 +676,7 @@ TEST_SIGNAL(KILL_one, SIGSYS)
 	ASSERT_EQ(0, ret);
 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* getpid() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
 
@@ -696,7 +688,7 @@ TEST_SIGNAL(KILL_one_arg_one, SIGSYS)
 			offsetof(struct seccomp_data, nr)),
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_times, 1, 0),
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ALLOW),
-		/* Only both with lower 32-bit for now. */
+		 
 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS, syscall_arg(0)),
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K,
 			(unsigned long)&fatal_address, 0, 1),
@@ -720,7 +712,7 @@ TEST_SIGNAL(KILL_one_arg_one, SIGSYS)
 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
 	EXPECT_LE(clock, syscall(__NR_times, &timebuf));
-	/* times() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_times, &fatal_address));
 }
 
@@ -736,7 +728,7 @@ TEST_SIGNAL(KILL_one_arg_six, SIGSYS)
 			offsetof(struct seccomp_data, nr)),
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, sysno, 1, 0),
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ALLOW),
-		/* Only both with lower 32-bit for now. */
+		 
 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS, syscall_arg(5)),
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, 0x0C0FFEE, 0, 1),
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_KILL),
@@ -767,18 +759,18 @@ TEST_SIGNAL(KILL_one_arg_six, SIGSYS)
 	map1 = (void *)syscall(sysno,
 		NULL, page_size, PROT_READ, MAP_PRIVATE, fd, page_size);
 	EXPECT_NE(MAP_FAILED, map1);
-	/* mmap2() should never return. */
+	 
 	map2 = (void *)syscall(sysno,
 		 NULL, page_size, PROT_READ, MAP_PRIVATE, fd, 0x0C0FFEE);
 	EXPECT_EQ(MAP_FAILED, map2);
 
-	/* The test failed, so clean up the resources. */
+	 
 	munmap(map1, page_size);
 	munmap(map2, page_size);
 	close(fd);
 }
 
-/* This is a thread task to die via seccomp filter violation. */
+ 
 void *kill_thread(void *data)
 {
 	bool die = (bool)data;
@@ -797,13 +789,13 @@ enum kill_t {
 	RET_UNKNOWN
 };
 
-/* Prepare a thread that will kill itself or both of us. */
+ 
 void kill_thread_or_group(struct __test_metadata *_metadata,
 			  enum kill_t kill_how)
 {
 	pthread_t thread;
 	void *status;
-	/* Kill only when calling __NR_prctl. */
+	 
 	struct sock_filter filter_thread[] = {
 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS,
 			offsetof(struct seccomp_data, nr)),
@@ -836,28 +828,21 @@ void kill_thread_or_group(struct __test_metadata *_metadata,
 			     kill_how == KILL_THREAD ? &prog_thread
 						     : &prog_process));
 
-	/*
-	 * Add the KILL_THREAD rule again to make sure that the KILL_PROCESS
-	 * flag cannot be downgraded by a new filter.
-	 */
+	 
 	if (kill_how == KILL_PROCESS)
 		ASSERT_EQ(0, seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog_thread));
 
-	/* Start a thread that will exit immediately. */
+	 
 	ASSERT_EQ(0, pthread_create(&thread, NULL, kill_thread, (void *)false));
 	ASSERT_EQ(0, pthread_join(thread, &status));
 	ASSERT_EQ(SIBLING_EXIT_UNKILLED, (unsigned long)status);
 
-	/* Start a thread that will die immediately. */
+	 
 	ASSERT_EQ(0, pthread_create(&thread, NULL, kill_thread, (void *)true));
 	ASSERT_EQ(0, pthread_join(thread, &status));
 	ASSERT_NE(SIBLING_EXIT_FAILURE, (unsigned long)status);
 
-	/*
-	 * If we get here, only the spawned thread died. Let the parent know
-	 * the whole process didn't die (i.e. this thread, the spawner,
-	 * stayed running).
-	 */
+	 
 	exit(42);
 }
 
@@ -875,7 +860,7 @@ TEST(KILL_thread)
 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 
-	/* If only the thread was killed, we'll see exit 42. */
+	 
 	ASSERT_TRUE(WIFEXITED(status));
 	ASSERT_EQ(42, WEXITSTATUS(status));
 }
@@ -894,7 +879,7 @@ TEST(KILL_process)
 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 
-	/* If the entire process was killed, we'll see SIGSYS. */
+	 
 	ASSERT_TRUE(WIFSIGNALED(status));
 	ASSERT_EQ(SIGSYS, WTERMSIG(status));
 }
@@ -913,14 +898,14 @@ TEST(KILL_unknown)
 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 
-	/* If the entire process was killed, we'll see SIGSYS. */
+	 
 	EXPECT_TRUE(WIFSIGNALED(status)) {
 		TH_LOG("Unknown SECCOMP_RET is only killing the thread?");
 	}
 	ASSERT_EQ(SIGSYS, WTERMSIG(status));
 }
 
-/* TODO(wad) add 64-bit versus 32-bit arg tests. */
+ 
 TEST(arg_out_of_range)
 {
 	struct sock_filter filter[] = {
@@ -954,7 +939,7 @@ TEST(arg_out_of_range)
 		.filter = _read_filter_##name,				\
 	}
 
-/* Make sure basic errno values are correctly passed through a filter. */
+ 
 TEST(ERRNO_valid)
 {
 	ERRNO_FILTER(valid, E2BIG);
@@ -972,7 +957,7 @@ TEST(ERRNO_valid)
 	EXPECT_EQ(E2BIG, errno);
 }
 
-/* Make sure an errno of zero is correctly handled by the arch code. */
+ 
 TEST(ERRNO_zero)
 {
 	ERRNO_FILTER(zero, 0);
@@ -986,15 +971,11 @@ TEST(ERRNO_zero)
 	ASSERT_EQ(0, ret);
 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* "errno" of 0 is ok. */
+	 
 	EXPECT_EQ(0, read(-1, NULL, 0));
 }
 
-/*
- * The SECCOMP_RET_DATA mask is 16 bits wide, but errno is smaller.
- * This tests that the errno value gets capped correctly, fixed by
- * 580c57f10768 ("seccomp: cap SECCOMP_RET_ERRNO data to MAX_ERRNO").
- */
+ 
 TEST(ERRNO_capped)
 {
 	ERRNO_FILTER(capped, 4096);
@@ -1012,12 +993,7 @@ TEST(ERRNO_capped)
 	EXPECT_EQ(4095, errno);
 }
 
-/*
- * Filters are processed in reverse order: last applied is executed first.
- * Since only the SECCOMP_RET_ACTION mask is tested for return values, the
- * SECCOMP_RET_DATA mask results will follow the most recently applied
- * matching filter return (and not the lowest or highest value).
- */
+ 
 TEST(ERRNO_order)
 {
 	ERRNO_FILTER(first,  11);
@@ -1082,7 +1058,7 @@ TEST_F_SIGNAL(TRAP, dfl, SIGSYS)
 	syscall(__NR_getpid);
 }
 
-/* Ensure that SIGSYS overrides SIG_IGN */
+ 
 TEST_F_SIGNAL(TRAP, ign, SIGSYS)
 {
 	long ret;
@@ -1132,16 +1108,15 @@ TEST_F(TRAP, handler)
 	ASSERT_EQ(0, ret);
 	TRAP_nr = 0;
 	memset(&TRAP_info, 0, sizeof(TRAP_info));
-	/* Expect the registers to be rolled back. (nr = error) may vary
-	 * based on arch. */
+	 
 	ret = syscall(__NR_getpid);
-	/* Silence gcc warning about volatile. */
+	 
 	test = TRAP_nr;
 	EXPECT_EQ(SIGSYS, test);
 	struct local_sigsys {
-		void *_call_addr;	/* calling user insn */
-		int _syscall;		/* triggering system call number */
-		unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
+		void *_call_addr;	 
+		int _syscall;		 
+		unsigned int _arch;	 
 	} *sigsys = (struct local_sigsys *)
 #ifdef si_syscall
 		&(TRAP_info.si_call_addr);
@@ -1149,7 +1124,7 @@ TEST_F(TRAP, handler)
 		&TRAP_info.si_pid;
 #endif
 	EXPECT_EQ(__NR_getpid, sigsys->_syscall);
-	/* Make sure arch is non-zero. */
+	 
 	EXPECT_NE(0, sigsys->_arch);
 	EXPECT_NE(0, (unsigned long)sigsys->_call_addr);
 }
@@ -1250,7 +1225,7 @@ TEST_F(precedence, allow_ok)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->kill);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	res = syscall(__NR_getppid);
 	EXPECT_EQ(parent, res);
 }
@@ -1276,10 +1251,10 @@ TEST_F_SIGNAL(precedence, kill_is_highest, SIGSYS)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->kill);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	res = syscall(__NR_getppid);
 	EXPECT_EQ(parent, res);
-	/* getpid() should never return. */
+	 
 	res = syscall(__NR_getpid);
 	EXPECT_EQ(0, res);
 }
@@ -1305,9 +1280,9 @@ TEST_F_SIGNAL(precedence, kill_is_highest_in_any_order, SIGSYS)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->trap);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* getpid() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
 
@@ -1330,9 +1305,9 @@ TEST_F_SIGNAL(precedence, trap_is_second, SIGSYS)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->trap);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* getpid() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
 
@@ -1355,9 +1330,9 @@ TEST_F_SIGNAL(precedence, trap_is_second_in_any_order, SIGSYS)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->error);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* getpid() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
 
@@ -1378,7 +1353,7 @@ TEST_F(precedence, errno_is_third)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->error);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
@@ -1400,7 +1375,7 @@ TEST_F(precedence, errno_is_third_in_any_order)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->allow);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
@@ -1420,9 +1395,9 @@ TEST_F(precedence, trace_is_fourth)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->trace);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* No ptracer */
+	 
 	EXPECT_EQ(-1, syscall(__NR_getpid));
 }
 
@@ -1441,9 +1416,9 @@ TEST_F(precedence, trace_is_fourth_in_any_order)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->log);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* No ptracer */
+	 
 	EXPECT_EQ(-1, syscall(__NR_getpid));
 }
 
@@ -1461,9 +1436,9 @@ TEST_F(precedence, log_is_fifth)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->log);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* Should also work just fine */
+	 
 	EXPECT_EQ(mypid, syscall(__NR_getpid));
 }
 
@@ -1481,9 +1456,9 @@ TEST_F(precedence, log_is_fifth_in_any_order)
 	ASSERT_EQ(0, ret);
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &self->allow);
 	ASSERT_EQ(0, ret);
-	/* Should work just fine. */
+	 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* Should also work just fine */
+	 
 	EXPECT_EQ(mypid, syscall(__NR_getpid));
 }
 
@@ -1491,7 +1466,7 @@ TEST_F(precedence, log_is_fifth_in_any_order)
 #define PTRACE_O_TRACESECCOMP	0x00000080
 #endif
 
-/* Catch the Ubuntu 12.04 value error. */
+ 
 #if PTRACE_EVENT_SECCOMP != 7
 #undef PTRACE_EVENT_SECCOMP
 #endif
@@ -1518,7 +1493,7 @@ void start_tracer(struct __test_metadata *_metadata, int fd, pid_t tracee,
 		.sa_handler = tracer_stop,
 	};
 
-	/* Allow external shutdown. */
+	 
 	tracer_running = true;
 	ASSERT_EQ(0, sigaction(SIGUSR1, &action, NULL));
 
@@ -1528,7 +1503,7 @@ void start_tracer(struct __test_metadata *_metadata, int fd, pid_t tracee,
 	ASSERT_EQ(0, ret) {
 		kill(tracee, SIGKILL);
 	}
-	/* Wait for attach stop */
+	 
 	wait(NULL);
 
 	ret = ptrace(PTRACE_SETOPTIONS, tracee, NULL, ptrace_syscall ?
@@ -1542,11 +1517,11 @@ void start_tracer(struct __test_metadata *_metadata, int fd, pid_t tracee,
 		     tracee, NULL, 0);
 	ASSERT_EQ(0, ret);
 
-	/* Unblock the tracee */
+	 
 	ASSERT_EQ(1, write(fd, "A", 1));
 	ASSERT_EQ(0, close(fd));
 
-	/* Run until we're shut down. Must assert to stop execution. */
+	 
 	while (tracer_running) {
 		int status;
 
@@ -1554,15 +1529,15 @@ void start_tracer(struct __test_metadata *_metadata, int fd, pid_t tracee,
 			continue;
 
 		if (WIFSIGNALED(status)) {
-			/* Child caught a fatal signal. */
+			 
 			return;
 		}
 		if (WIFEXITED(status)) {
-			/* Child exited with code. */
+			 
 			return;
 		}
 
-		/* Check if we got an expected event. */
+		 
 		ASSERT_EQ(WIFCONTINUED(status), false);
 		ASSERT_EQ(WIFSTOPPED(status), true);
 		ASSERT_EQ(WSTOPSIG(status) & SIGTRAP, SIGTRAP) {
@@ -1575,11 +1550,11 @@ void start_tracer(struct __test_metadata *_metadata, int fd, pid_t tracee,
 			     tracee, NULL, 0);
 		ASSERT_EQ(0, ret);
 	}
-	/* Directly report the status of our test harness results. */
+	 
 	syscall(__NR_exit, _metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-/* Common tracer setup/teardown functions. */
+ 
 void cont_handler(int num)
 { }
 pid_t setup_trace_fixture(struct __test_metadata *_metadata,
@@ -1590,10 +1565,10 @@ pid_t setup_trace_fixture(struct __test_metadata *_metadata,
 	pid_t tracer_pid;
 	pid_t tracee = getpid();
 
-	/* Setup a pipe for clean synchronization. */
+	 
 	ASSERT_EQ(0, pipe(pipefd));
 
-	/* Fork a child which we'll promote to tracer */
+	 
 	tracer_pid = fork();
 	ASSERT_LE(0, tracer_pid);
 	signal(SIGALRM, cont_handler);
@@ -1616,10 +1591,7 @@ void teardown_trace_fixture(struct __test_metadata *_metadata,
 {
 	if (tracer) {
 		int status;
-		/*
-		 * Extract the exit code from the other process and
-		 * adopt it for ourselves in case its asserts failed.
-		 */
+		 
 		ASSERT_EQ(0, kill(tracer, SIGUSR1));
 		ASSERT_EQ(tracer, waitpid(tracer, &status, 0));
 		if (WEXITSTATUS(status))
@@ -1627,7 +1599,7 @@ void teardown_trace_fixture(struct __test_metadata *_metadata,
 	}
 }
 
-/* "poke" tracer arguments and function. */
+ 
 struct tracer_args_poke_t {
 	unsigned long poke_addr;
 };
@@ -1641,15 +1613,11 @@ void tracer_poke(struct __test_metadata *_metadata, pid_t tracee, int status,
 
 	ret = ptrace(PTRACE_GETEVENTMSG, tracee, NULL, &msg);
 	EXPECT_EQ(0, ret);
-	/* If this fails, don't try to recover. */
+	 
 	ASSERT_EQ(0x1001, msg) {
 		kill(tracee, SIGKILL);
 	}
-	/*
-	 * Poke in the message.
-	 * Registers are not touched to try to keep this relatively arch
-	 * agnostic.
-	 */
+	 
 	ret = ptrace(PTRACE_POKEDATA, tracee, info->poke_addr, 0x1001);
 	EXPECT_EQ(0, ret);
 }
@@ -1678,10 +1646,10 @@ FIXTURE_SETUP(TRACE_poke)
 	memcpy(self->prog.filter, filter, sizeof(filter));
 	self->prog.len = (unsigned short)ARRAY_SIZE(filter);
 
-	/* Set up tracer args. */
+	 
 	self->tracer_args.poke_addr = (unsigned long)&self->poked;
 
-	/* Launch tracer. */
+	 
 	self->tracer = setup_trace_fixture(_metadata, tracer_poke,
 					   &self->tracer_args, false);
 }
@@ -1785,17 +1753,10 @@ TEST_F(TRACE_poke, getpid_runs_normally)
 	do {							\
 		typeof(_val) _result = (_val);			\
 		if ((_regs.trap & 0xfff0) == 0x3000) {		\
-			/*					\
-			 * scv 0 system call uses -ve result	\
-			 * for error, so no need to adjust.	\
-			 */					\
+			 					\
 			SYSCALL_RET(_regs) = _result;		\
 		} else {					\
-			/*					\
-			 * A syscall error is signaled by the	\
-			 * CR0 SO bit and the code is stored as	\
-			 * a positive value.			\
-			 */					\
+			 					\
 			if (_result < 0) {			\
 				SYSCALL_RET(_regs) = -_result;	\
 				(_regs).ccr |= 0x10000000;	\
@@ -1837,10 +1798,7 @@ TEST_F(TRACE_poke, getpid_runs_normally)
 #elif defined(__xtensa__)
 # define ARCH_REGS		struct user_pt_regs
 # define SYSCALL_NUM(_regs)	(_regs).syscall
-/*
- * On xtensa syscall return value is in the register
- * a2 of the current window which is not fixed.
- */
+ 
 #define SYSCALL_RET(_regs)	(_regs).a[(_regs).windowbase * 4 + 2]
 #elif defined(__sh__)
 # define ARCH_REGS		struct pt_regs
@@ -1854,24 +1812,14 @@ TEST_F(TRACE_poke, getpid_runs_normally)
 # error "Do not know how to find your architecture's registers and syscalls"
 #endif
 
-/*
- * Most architectures can change the syscall by just updating the
- * associated register. This is the default if not defined above.
- */
+ 
 #ifndef SYSCALL_NUM_SET
 # define SYSCALL_NUM_SET(_regs, _nr)		\
 	do {					\
 		SYSCALL_NUM(_regs) = (_nr);	\
 	} while (0)
 #endif
-/*
- * Most architectures can change the syscall return value by just
- * writing to the SYSCALL_RET register. This is the default if not
- * defined above. If an architecture cannot set the return value
- * (for example when the syscall and return value register is
- * shared), report it with TH_LOG() in an arch-specific definition
- * of SYSCALL_RET_SET() above, and leave SYSCALL_RET undefined.
- */
+ 
 #if !defined(SYSCALL_RET) && !defined(SYSCALL_RET_SET)
 # error "One of SYSCALL_RET or SYSCALL_RET_SET is needed for this arch"
 #endif
@@ -1882,7 +1830,7 @@ TEST_F(TRACE_poke, getpid_runs_normally)
 	} while (0)
 #endif
 
-/* When the syscall return can't be changed, stub out the tests for it. */
+ 
 #ifndef SYSCALL_RET
 # define EXPECT_SYSCALL_RETURN(val, action)	EXPECT_EQ(-1, action)
 #else
@@ -1898,10 +1846,7 @@ TEST_F(TRACE_poke, getpid_runs_normally)
 	} while (0)
 #endif
 
-/*
- * Some architectures (e.g. powerpc) can only set syscall
- * return values on syscall exit during ptrace.
- */
+ 
 const bool ptrace_entry_set_syscall_nr = true;
 const bool ptrace_entry_set_syscall_ret =
 #ifndef SYSCALL_RET_SET_ON_PTRACE_EXIT
@@ -1910,10 +1855,7 @@ const bool ptrace_entry_set_syscall_ret =
 	false;
 #endif
 
-/*
- * Use PTRACE_GETREGS and PTRACE_SETREGS when available. This is useful for
- * architectures without HAVE_ARCH_TRACEHOOK (e.g. User-mode Linux).
- */
+ 
 #if defined(__x86_64__) || defined(__i386__) || defined(__mips__) || defined(__mc68000__)
 # define ARCH_GETREGS(_regs)	ptrace(PTRACE_GETREGS, tracee, 0, &(_regs))
 # define ARCH_SETREGS(_regs)	ptrace(PTRACE_SETREGS, tracee, 0, &(_regs))
@@ -1932,7 +1874,7 @@ const bool ptrace_entry_set_syscall_ret =
 	})
 #endif
 
-/* Architecture-specific syscall fetching routine. */
+ 
 int get_syscall(struct __test_metadata *_metadata, pid_t tracee)
 {
 	ARCH_REGS regs;
@@ -1944,13 +1886,13 @@ int get_syscall(struct __test_metadata *_metadata, pid_t tracee)
 	return SYSCALL_NUM(regs);
 }
 
-/* Architecture-specific syscall changing routine. */
+ 
 void __change_syscall(struct __test_metadata *_metadata,
 		    pid_t tracee, long *syscall, long *ret)
 {
 	ARCH_REGS orig, regs;
 
-	/* Do not get/set registers if we have nothing to do. */
+	 
 	if (!syscall && !ret)
 		return;
 
@@ -1965,19 +1907,19 @@ void __change_syscall(struct __test_metadata *_metadata,
 	if (ret)
 		SYSCALL_RET_SET(regs, *ret);
 
-	/* Flush any register changes made. */
+	 
 	if (memcmp(&orig, &regs, sizeof(orig)) != 0)
 		EXPECT_EQ(0, ARCH_SETREGS(regs));
 }
 
-/* Change only syscall number. */
+ 
 void change_syscall_nr(struct __test_metadata *_metadata,
 		       pid_t tracee, long syscall)
 {
 	__change_syscall(_metadata, tracee, &syscall, NULL);
 }
 
-/* Change syscall return value (and set syscall number to -1). */
+ 
 void change_syscall_ret(struct __test_metadata *_metadata,
 			pid_t tracee, long ret)
 {
@@ -1997,29 +1939,29 @@ void tracer_seccomp(struct __test_metadata *_metadata, pid_t tracee,
 		return;
 	}
 
-	/* Make sure we got the right message. */
+	 
 	ret = ptrace(PTRACE_GETEVENTMSG, tracee, NULL, &msg);
 	EXPECT_EQ(0, ret);
 
-	/* Validate and take action on expected syscalls. */
+	 
 	switch (msg) {
 	case 0x1002:
-		/* change getpid to getppid. */
+		 
 		EXPECT_EQ(__NR_getpid, get_syscall(_metadata, tracee));
 		change_syscall_nr(_metadata, tracee, __NR_getppid);
 		break;
 	case 0x1003:
-		/* skip gettid with valid return code. */
+		 
 		EXPECT_EQ(__NR_gettid, get_syscall(_metadata, tracee));
 		change_syscall_ret(_metadata, tracee, 45000);
 		break;
 	case 0x1004:
-		/* skip openat with error. */
+		 
 		EXPECT_EQ(__NR_openat, get_syscall(_metadata, tracee));
 		change_syscall_ret(_metadata, tracee, -ESRCH);
 		break;
 	case 0x1005:
-		/* do nothing (allow getppid) */
+		 
 		EXPECT_EQ(__NR_getppid, get_syscall(_metadata, tracee));
 		break;
 	default:
@@ -2052,42 +1994,30 @@ void tracer_ptrace(struct __test_metadata *_metadata, pid_t tracee,
 		return;
 	}
 
-	/*
-	 * The traditional way to tell PTRACE_SYSCALL entry/exit
-	 * is by counting.
-	 */
+	 
 	entry = !entry;
 
-	/* Make sure we got an appropriate message. */
+	 
 	ret = ptrace(PTRACE_GETEVENTMSG, tracee, NULL, &msg);
 	EXPECT_EQ(0, ret);
 	EXPECT_EQ(entry ? PTRACE_EVENTMSG_SYSCALL_ENTRY
 			: PTRACE_EVENTMSG_SYSCALL_EXIT, msg);
 
-	/*
-	 * Some architectures only support setting return values during
-	 * syscall exit under ptrace, and on exit the syscall number may
-	 * no longer be available. Therefore, save the initial sycall
-	 * number here, so it can be examined during both entry and exit
-	 * phases.
-	 */
+	 
 	if (entry)
 		self->syscall_nr = get_syscall(_metadata, tracee);
 
-	/*
-	 * Depending on the architecture's syscall setting abilities, we
-	 * pick which things to set during this phase (entry or exit).
-	 */
+	 
 	if (entry == ptrace_entry_set_syscall_nr)
 		syscall_nr = &syscall_nr_val;
 	if (entry == ptrace_entry_set_syscall_ret)
 		syscall_ret = &syscall_ret_val;
 
-	/* Now handle the actual rewriting cases. */
+	 
 	switch (self->syscall_nr) {
 	case __NR_getpid:
 		syscall_nr_val = __NR_getppid;
-		/* Never change syscall return for this case. */
+		 
 		syscall_ret = NULL;
 		break;
 	case __NR_gettid:
@@ -2099,7 +2029,7 @@ void tracer_ptrace(struct __test_metadata *_metadata, pid_t tracee,
 		syscall_ret_val = -ESRCH;
 		break;
 	default:
-		/* Unhandled, do nothing. */
+		 
 		return;
 	}
 
@@ -2107,12 +2037,7 @@ void tracer_ptrace(struct __test_metadata *_metadata, pid_t tracee,
 }
 
 FIXTURE_VARIANT(TRACE_syscall) {
-	/*
-	 * All of the SECCOMP_RET_TRACE behaviors can be tested with either
-	 * SECCOMP_RET_TRACE+PTRACE_CONT or plain ptrace()+PTRACE_SYSCALL.
-	 * This indicates if we should use SECCOMP_RET_TRACE (false), or
-	 * ptrace (true).
-	 */
+	 
 	bool use_ptrace;
 };
 
@@ -2145,7 +2070,7 @@ FIXTURE_SETUP(TRACE_syscall)
 	};
 	long ret;
 
-	/* Prepare some testable syscall results. */
+	 
 	self->mytid = syscall(__NR_gettid);
 	ASSERT_GT(self->mytid, 0);
 	ASSERT_NE(self->mytid, 1) {
@@ -2160,7 +2085,7 @@ FIXTURE_SETUP(TRACE_syscall)
 	ASSERT_GT(self->parent, 0);
 	ASSERT_NE(self->parent, self->mypid);
 
-	/* Launch tracer. */
+	 
 	self->tracer = setup_trace_fixture(_metadata,
 					   variant->use_ptrace ? tracer_ptrace
 							       : tracer_seccomp,
@@ -2169,7 +2094,7 @@ FIXTURE_SETUP(TRACE_syscall)
 	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 	ASSERT_EQ(0, ret);
 
-	/* Do not install seccomp rewrite filters, as we'll use ptrace instead. */
+	 
 	if (variant->use_ptrace)
 		return;
 
@@ -2187,14 +2112,11 @@ TEST(negative_ENOSYS)
 #if defined(__arm__)
 	SKIP(return, "arm32 does not support calling syscall -1");
 #endif
-	/*
-	 * There should be no difference between an "internal" skip
-	 * and userspace asking for syscall "-1".
-	 */
+	 
 	errno = 0;
 	EXPECT_EQ(-1, syscall(-1));
 	EXPECT_EQ(errno, ENOSYS);
-	/* And no difference for "still not valid but not -1". */
+	 
 	errno = 0;
 	EXPECT_EQ(-1, syscall(-101));
 	EXPECT_EQ(errno, ENOSYS);
@@ -2207,27 +2129,27 @@ TEST_F(TRACE_syscall, negative_ENOSYS)
 
 TEST_F(TRACE_syscall, syscall_allowed)
 {
-	/* getppid works as expected (no changes). */
+	 
 	EXPECT_EQ(self->parent, syscall(__NR_getppid));
 	EXPECT_NE(self->mypid, syscall(__NR_getppid));
 }
 
 TEST_F(TRACE_syscall, syscall_redirected)
 {
-	/* getpid has been redirected to getppid as expected. */
+	 
 	EXPECT_EQ(self->parent, syscall(__NR_getpid));
 	EXPECT_NE(self->mypid, syscall(__NR_getpid));
 }
 
 TEST_F(TRACE_syscall, syscall_errno)
 {
-	/* Tracer should skip the open syscall, resulting in ESRCH. */
+	 
 	EXPECT_SYSCALL_RETURN(-ESRCH, syscall(__NR_openat));
 }
 
 TEST_F(TRACE_syscall, syscall_faked)
 {
-	/* Tracer skips the gettid syscall and store altered return value. */
+	 
 	EXPECT_SYSCALL_RETURN(45000, syscall(__NR_gettid));
 }
 
@@ -2246,11 +2168,11 @@ TEST_F_SIGNAL(TRACE_syscall, kill_immediate, SIGSYS)
 	};
 	long ret;
 
-	/* Install "kill on mknodat" filter. */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 	ASSERT_EQ(0, ret);
 
-	/* This should immediately die with SIGSYS, regardless of tracer. */
+	 
 	EXPECT_EQ(-1, syscall(__NR_mknodat, -1, NULL, 0, 0));
 }
 
@@ -2269,11 +2191,11 @@ TEST_F(TRACE_syscall, skip_after)
 	};
 	long ret;
 
-	/* Install additional "errno on getppid" filter. */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 	ASSERT_EQ(0, ret);
 
-	/* Tracer will redirect getpid to getppid, and we should see EPERM. */
+	 
 	errno = 0;
 	EXPECT_EQ(-1, syscall(__NR_getpid));
 	EXPECT_EQ(EPERM, errno);
@@ -2294,11 +2216,11 @@ TEST_F_SIGNAL(TRACE_syscall, kill_after, SIGSYS)
 	};
 	long ret;
 
-	/* Install additional "death on getppid" filter. */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog, 0, 0);
 	ASSERT_EQ(0, ret);
 
-	/* Tracer will redirect getpid to getppid, and we should die. */
+	 
 	EXPECT_NE(self->mypid, syscall(__NR_getpid));
 }
 
@@ -2318,7 +2240,7 @@ TEST(seccomp_syscall)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* Reject insane operation. */
+	 
 	ret = seccomp(-1, 0, &prog);
 	ASSERT_NE(ENOSYS, errno) {
 		TH_LOG("Kernel does not support seccomp syscall!");
@@ -2327,7 +2249,7 @@ TEST(seccomp_syscall)
 		TH_LOG("Did not reject crazy op value!");
 	}
 
-	/* Reject strict with flags or pointer. */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_STRICT, -1, NULL);
 	EXPECT_EQ(EINVAL, errno) {
 		TH_LOG("Did not reject mode strict with flags!");
@@ -2337,7 +2259,7 @@ TEST(seccomp_syscall)
 		TH_LOG("Did not reject mode strict with uargs!");
 	}
 
-	/* Reject insane args for filter. */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, -1, &prog);
 	EXPECT_EQ(EINVAL, errno) {
 		TH_LOG("Did not reject crazy filter flags!");
@@ -2378,7 +2300,7 @@ TEST(seccomp_syscall_mode_lock)
 		TH_LOG("Could not install filter!");
 	}
 
-	/* Make sure neither entry point will switch to strict. */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT, 0, 0, 0);
 	EXPECT_EQ(EINVAL, errno) {
 		TH_LOG("Switched to mode strict!");
@@ -2390,13 +2312,7 @@ TEST(seccomp_syscall_mode_lock)
 	}
 }
 
-/*
- * Test detection of known and unknown filter flags. Userspace needs to be able
- * to check if a filter flag is supported by the current kernel and a good way
- * of doing that is by attempting to enter filter mode, with the flag bit in
- * question set, and a NULL pointer for the _args_ parameter. EFAULT indicates
- * that the flag is valid and EINVAL indicates that the flag is invalid.
- */
+ 
 TEST(detect_seccomp_filter_flags)
 {
 	unsigned int flags[] = { SECCOMP_FILTER_FLAG_TSYNC,
@@ -2411,12 +2327,12 @@ TEST(detect_seccomp_filter_flags)
 	int i;
 	long ret;
 
-	/* Test detection of individual known-good filter flags */
+	 
 	for (i = 0, all_flags = 0; i < ARRAY_SIZE(flags); i++) {
 		int bits = 0;
 
 		flag = flags[i];
-		/* Make sure the flag is a single bit! */
+		 
 		while (flag) {
 			if (flag & 0x1)
 				bits ++;
@@ -2438,11 +2354,7 @@ TEST(detect_seccomp_filter_flags)
 		all_flags |= flag;
 	}
 
-	/*
-	 * Test detection of all known-good filter flags combined. But
-	 * for the exclusive flags we need to mask them out and try them
-	 * individually for the "all flags" testing.
-	 */
+	 
 	exclusive_mask = 0;
 	for (i = 0; i < ARRAY_SIZE(exclusive); i++)
 		exclusive_mask |= exclusive[i];
@@ -2458,7 +2370,7 @@ TEST(detect_seccomp_filter_flags)
 		}
 	}
 
-	/* Test detection of an unknown filter flags, without exclusives. */
+	 
 	flag = -1;
 	flag &= ~exclusive_mask;
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, flag, NULL);
@@ -2468,10 +2380,7 @@ TEST(detect_seccomp_filter_flags)
 		       flag);
 	}
 
-	/*
-	 * Test detection of an unknown filter flag that may simply need to be
-	 * added to this test
-	 */
+	 
 	flag = flags[ARRAY_SIZE(flags) - 1] << 1;
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, flag, NULL);
 	EXPECT_EQ(-1, ret);
@@ -2520,12 +2429,7 @@ struct tsync_sibling {
 	struct __test_metadata *metadata;
 };
 
-/*
- * To avoid joining joined threads (which is not allowed by Bionic),
- * make sure we both successfully join and clear the tid to skip a
- * later join attempt during fixture teardown. Any remaining threads
- * will be directly killed during teardown.
- */
+ 
 #define PTHREAD_JOIN(tid, status)					\
 	do {								\
 		int _rc = pthread_join(tid, status);			\
@@ -2608,10 +2512,7 @@ FIXTURE_TEARDOWN(TSYNC)
 
 		if (!s->tid)
 			continue;
-		/*
-		 * If a thread is still running, it may be stuck, so hit
-		 * it over the head really hard.
-		 */
+		 
 		pthread_kill(s->tid, 9);
 	}
 	pthread_mutex_destroy(&self->mutex);
@@ -2628,12 +2529,12 @@ void *tsync_sibling(void *data)
 
 	pthread_mutex_lock(me->mutex);
 	if (me->diverge) {
-		/* Just re-apply the root prog to fork the tree */
+		 
 		ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
 				me->prog, 0, 0);
 	}
 	sem_post(me->started);
-	/* Return outside of started so parent notices failures. */
+	 
 	if (ret) {
 		pthread_mutex_unlock(me->mutex);
 		return (void *)SIBLING_EXIT_FAILURE;
@@ -2676,7 +2577,7 @@ TEST_F(TSYNC, siblings_fail_prctl)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* Check prctl failure detection by requesting sib 0 diverge. */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog);
 	ASSERT_NE(ENOSYS, errno) {
 		TH_LOG("Kernel does not support seccomp syscall!");
@@ -2694,14 +2595,14 @@ TEST_F(TSYNC, siblings_fail_prctl)
 		self->sibling_count++;
 	}
 
-	/* Signal the threads to clean up*/
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 
-	/* Ensure diverging sibling failed to call prctl. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(SIBLING_EXIT_FAILURE, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2737,13 +2638,13 @@ TEST_F(TSYNC, two_siblings_with_ancestor)
 	ASSERT_EQ(0, ret) {
 		TH_LOG("Could install filter on all threads!");
 	}
-	/* Tell the siblings to test the policy */
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
-	/* Ensure they are both killed and don't exit cleanly. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(0x0, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2754,7 +2655,7 @@ TEST_F(TSYNC, two_sibling_want_nnp)
 {
 	void *status;
 
-	/* start siblings before any prctl() operations */
+	 
 	tsync_start_sibling(&self->sibling[0]);
 	tsync_start_sibling(&self->sibling[1]);
 	while (self->sibling_count < TSYNC_SIBLINGS) {
@@ -2762,14 +2663,14 @@ TEST_F(TSYNC, two_sibling_want_nnp)
 		self->sibling_count++;
 	}
 
-	/* Tell the siblings to test no policy */
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 
-	/* Ensure they are both upset about lacking nnp. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(SIBLING_EXIT_NEWPRIVS, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2781,7 +2682,7 @@ TEST_F(TSYNC, two_siblings_with_no_filter)
 	long ret;
 	void *status;
 
-	/* start siblings before any prctl() operations */
+	 
 	tsync_start_sibling(&self->sibling[0]);
 	tsync_start_sibling(&self->sibling[1]);
 	while (self->sibling_count < TSYNC_SIBLINGS) {
@@ -2802,14 +2703,14 @@ TEST_F(TSYNC, two_siblings_with_no_filter)
 		TH_LOG("Could install filter on all threads!");
 	}
 
-	/* Tell the siblings to test the policy */
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 
-	/* Ensure they are both killed and don't exit cleanly. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(0x0, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2847,14 +2748,14 @@ TEST_F(TSYNC, two_siblings_with_one_divergence)
 		TH_LOG("Did not fail on diverged sibling.");
 	}
 
-	/* Wake the threads */
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 
-	/* Ensure they are both unkilled. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(SIBLING_EXIT_UNKILLED, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2896,14 +2797,14 @@ TEST_F(TSYNC, two_siblings_with_one_divergence_no_tid_in_err)
 		TH_LOG("Did not fail on diverged sibling.");
 	}
 
-	/* Wake the threads */
+	 
 	pthread_mutex_lock(&self->mutex);
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 
-	/* Ensure they are both unkilled. */
+	 
 	PTHREAD_JOIN(self->sibling[0].tid, &status);
 	EXPECT_EQ(SIBLING_EXIT_UNKILLED, (long)status);
 	PTHREAD_JOIN(self->sibling[1].tid, &status);
@@ -2920,12 +2821,7 @@ TEST_F(TSYNC, two_siblings_not_under_filter)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/*
-	 * Sibling 0 will have its own seccomp policy
-	 * and Sibling 1 will not be under seccomp at
-	 * all. Sibling 1 will enter seccomp and 0
-	 * will cause failure.
-	 */
+	 
 	self->sibling[0].diverge = 1;
 	tsync_start_sibling(&self->sibling[0]);
 	tsync_start_sibling(&self->sibling[1]);
@@ -2954,22 +2850,20 @@ TEST_F(TSYNC, two_siblings_not_under_filter)
 
 	pthread_mutex_lock(&self->mutex);
 
-	/* Increment the other siblings num_waits so we can clean up
-	 * the one we just saw.
-	 */
+	 
 	self->sibling[!sib].num_waits += 1;
 
-	/* Signal the thread to clean up*/
+	 
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
 		TH_LOG("cond broadcast non-zero");
 	}
 	pthread_mutex_unlock(&self->mutex);
 	PTHREAD_JOIN(self->sibling[sib].tid, &status);
 	EXPECT_EQ(SIBLING_EXIT_UNKILLED, (long)status);
-	/* Poll for actual task death. pthread_join doesn't guarantee it. */
+	 
 	while (!kill(self->sibling[sib].system_tid, 0))
 		nanosleep(&delay, NULL);
-	/* Switch to the remaining sibling */
+	 
 	sib = !sib;
 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC,
@@ -2980,9 +2874,7 @@ TEST_F(TSYNC, two_siblings_not_under_filter)
 
 	pthread_mutex_lock(&self->mutex);
 
-	/* If remaining sibling didn't have a chance to wake up during
-	 * the first broadcast, manually reduce the num_waits now.
-	 */
+	 
 	if (self->sibling[sib].num_waits > 1)
 		self->sibling[sib].num_waits = 1;
 	ASSERT_EQ(0, pthread_cond_broadcast(&self->cond)) {
@@ -2991,16 +2883,16 @@ TEST_F(TSYNC, two_siblings_not_under_filter)
 	pthread_mutex_unlock(&self->mutex);
 	PTHREAD_JOIN(self->sibling[sib].tid, &status);
 	EXPECT_EQ(0, (long)status);
-	/* Poll for actual task death. pthread_join doesn't guarantee it. */
+	 
 	while (!kill(self->sibling[sib].system_tid, 0))
 		nanosleep(&delay, NULL);
 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC,
 		      &self->apply_prog);
-	ASSERT_EQ(0, ret);  /* just us chickens */
+	ASSERT_EQ(0, ret);   
 }
 
-/* Make sure restarted syscalls are seen directly as "restart_syscall". */
+ 
 TEST(syscall_restart)
 {
 	long ret;
@@ -3023,13 +2915,13 @@ TEST(syscall_restart)
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_clock_nanosleep, 4, 0),
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_restart_syscall, 4, 0),
 
-		/* Allow __NR_write for easy logging. */
+		 
 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_write, 0, 1),
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_ALLOW),
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_KILL),
-		/* The nanosleep jump target. */
+		 
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_TRACE|0x100),
-		/* The restart_syscall jump target. */
+		 
 		BPF_STMT(BPF_RET|BPF_K, SECCOMP_RET_TRACE|0x200),
 	};
 	struct sock_fprog prog = {
@@ -3045,11 +2937,11 @@ TEST(syscall_restart)
 	child_pid = fork();
 	ASSERT_LE(0, child_pid);
 	if (child_pid == 0) {
-		/* Child uses EXPECT not ASSERT to deliver status correctly. */
+		 
 		char buf = ' ';
 		struct timespec timeout = { };
 
-		/* Attach parent as tracer and stop. */
+		 
 		EXPECT_EQ(0, ptrace(PTRACE_TRACEME));
 		EXPECT_EQ(0, raise(SIGSTOP));
 
@@ -3071,7 +2963,7 @@ TEST(syscall_restart)
 			TH_LOG("Failed to get sync data from read()");
 		}
 
-		/* Start nanosleep to be interrupted. */
+		 
 		timeout.tv_sec = 1;
 		errno = 0;
 		EXPECT_EQ(0, nanosleep(&timeout, NULL)) {
@@ -3079,7 +2971,7 @@ TEST(syscall_restart)
 				errno, strerror(errno));
 		}
 
-		/* Read final sync from parent. */
+		 
 		EXPECT_EQ(1, read(pipefd[0], &buf, 1)) {
 			TH_LOG("Failed final read() from parent");
 		}
@@ -3087,13 +2979,13 @@ TEST(syscall_restart)
 			TH_LOG("Failed to get final data from read()");
 		}
 
-		/* Directly report the status of our test harness results. */
+		 
 		syscall(__NR_exit, _metadata->passed ? EXIT_SUCCESS
 						     : EXIT_FAILURE);
 	}
 	EXPECT_EQ(0, close(pipefd[0]));
 
-	/* Attach to child, setup options, and release. */
+	 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 	ASSERT_EQ(true, WIFSTOPPED(status));
 	ASSERT_EQ(0, ptrace(PTRACE_SETOPTIONS, child_pid, NULL,
@@ -3101,7 +2993,7 @@ TEST(syscall_restart)
 	ASSERT_EQ(0, ptrace(PTRACE_CONT, child_pid, NULL, 0));
 	ASSERT_EQ(1, write(pipefd[1], ".", 1));
 
-	/* Wait for nanosleep() to start. */
+	 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 	ASSERT_EQ(true, WIFSTOPPED(status));
 	ASSERT_EQ(SIGTRAP, WSTOPSIG(status));
@@ -3111,31 +3003,26 @@ TEST(syscall_restart)
 	ret = get_syscall(_metadata, child_pid);
 	EXPECT_TRUE(ret == __NR_nanosleep || ret == __NR_clock_nanosleep);
 
-	/* Might as well check siginfo for sanity while we're here. */
+	 
 	ASSERT_EQ(0, ptrace(PTRACE_GETSIGINFO, child_pid, NULL, &info));
 	ASSERT_EQ(SIGTRAP, info.si_signo);
 	ASSERT_EQ(SIGTRAP | (PTRACE_EVENT_SECCOMP << 8), info.si_code);
 	EXPECT_EQ(0, info.si_errno);
 	EXPECT_EQ(getuid(), info.si_uid);
-	/* Verify signal delivery came from child (seccomp-triggered). */
+	 
 	EXPECT_EQ(child_pid, info.si_pid);
 
-	/* Interrupt nanosleep with SIGSTOP (which we'll need to handle). */
+	 
 	ASSERT_EQ(0, kill(child_pid, SIGSTOP));
 	ASSERT_EQ(0, ptrace(PTRACE_CONT, child_pid, NULL, 0));
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 	ASSERT_EQ(true, WIFSTOPPED(status));
 	ASSERT_EQ(SIGSTOP, WSTOPSIG(status));
 	ASSERT_EQ(0, ptrace(PTRACE_GETSIGINFO, child_pid, NULL, &info));
-	/*
-	 * There is no siginfo on SIGSTOP any more, so we can't verify
-	 * signal delivery came from parent now (getpid() == info.si_pid).
-	 * https://lkml.kernel.org/r/CAGXu5jJaZAOzP1qFz66tYrtbuywqb+UN2SOA1VLHpCCOiYvYeg@mail.gmail.com
-	 * At least verify the SIGSTOP via PTRACE_GETSIGINFO.
-	 */
+	 
 	EXPECT_EQ(SIGSTOP, info.si_signo);
 
-	/* Restart nanosleep with SIGCONT, which triggers restart_syscall. */
+	 
 	ASSERT_EQ(0, kill(child_pid, SIGCONT));
 	ASSERT_EQ(0, ptrace(PTRACE_CONT, child_pid, NULL, 0));
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
@@ -3143,7 +3030,7 @@ TEST(syscall_restart)
 	ASSERT_EQ(SIGCONT, WSTOPSIG(status));
 	ASSERT_EQ(0, ptrace(PTRACE_CONT, child_pid, NULL, 0));
 
-	/* Wait for restart_syscall() to start. */
+	 
 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
 	ASSERT_EQ(true, WIFSTOPPED(status));
 	ASSERT_EQ(SIGTRAP, WSTOPSIG(status));
@@ -3153,11 +3040,7 @@ TEST(syscall_restart)
 	ASSERT_EQ(0x200, msg);
 	ret = get_syscall(_metadata, child_pid);
 #if defined(__arm__)
-	/*
-	 * FIXME:
-	 * - native ARM registers do NOT expose true syscall.
-	 * - compat ARM registers on ARM64 DO expose true syscall.
-	 */
+	 
 	ASSERT_EQ(0, uname(&utsbuf));
 	if (strncmp(utsbuf.machine, "arm", 3) == 0) {
 		EXPECT_EQ(__NR_nanosleep, ret);
@@ -3167,7 +3050,7 @@ TEST(syscall_restart)
 		EXPECT_EQ(__NR_restart_syscall, ret);
 	}
 
-	/* Write again to end test. */
+	 
 	ASSERT_EQ(0, ptrace(PTRACE_CONT, child_pid, NULL, 0));
 	ASSERT_EQ(1, write(pipefd[1], "!", 1));
 	EXPECT_EQ(0, close(pipefd[1]));
@@ -3203,7 +3086,7 @@ TEST_SIGNAL(filter_flag_log, SIGSYS)
 	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 	ASSERT_EQ(0, ret);
 
-	/* Verify that the FILTER_FLAG_LOG flag isn't accepted in strict mode */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_STRICT, SECCOMP_FILTER_FLAG_LOG,
 		      &allow_prog);
 	ASSERT_NE(ENOSYS, errno) {
@@ -3216,11 +3099,11 @@ TEST_SIGNAL(filter_flag_log, SIGSYS)
 		TH_LOG("Kernel returned unexpected errno for FILTER_FLAG_LOG flag in strict mode!");
 	}
 
-	/* Verify that a simple, permissive filter can be added with no flags */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, 0, &allow_prog);
 	EXPECT_EQ(0, ret);
 
-	/* See if the same filter can be added with the FILTER_FLAG_LOG flag */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_LOG,
 		      &allow_prog);
 	ASSERT_NE(EINVAL, errno) {
@@ -3228,13 +3111,13 @@ TEST_SIGNAL(filter_flag_log, SIGSYS)
 	}
 	EXPECT_EQ(0, ret);
 
-	/* Ensure that the kill filter works with the FILTER_FLAG_LOG flag */
+	 
 	ret = seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_LOG,
 		      &kill_prog);
 	EXPECT_EQ(0, ret);
 
 	EXPECT_EQ(parent, syscall(__NR_getppid));
-	/* getpid() should never return. */
+	 
 	EXPECT_EQ(0, syscall(__NR_getpid));
 }
 
@@ -3264,7 +3147,7 @@ TEST(get_action_avail)
 		}
 	}
 
-	/* Check that an unknown action is handled properly (EOPNOTSUPP) */
+	 
 	ret = seccomp(SECCOMP_GET_ACTION_AVAIL, 0, &unknown_action);
 	EXPECT_EQ(ret, -1);
 	EXPECT_EQ(errno, EOPNOTSUPP);
@@ -3278,7 +3161,7 @@ TEST(get_metadata)
 	struct seccomp_metadata md;
 	long ret;
 
-	/* Only real root can get metadata. */
+	 
 	if (geteuid()) {
 		SKIP(return, "get_metadata requires real root");
 		return;
@@ -3297,7 +3180,7 @@ TEST(get_metadata)
 			.filter = filter,
 		};
 
-		/* one with log, one without */
+		 
 		EXPECT_EQ(0, seccomp(SECCOMP_SET_MODE_FILTER,
 				     SECCOMP_FILTER_FLAG_LOG, &prog));
 		EXPECT_EQ(0, seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog));
@@ -3316,7 +3199,7 @@ TEST(get_metadata)
 	ASSERT_EQ(0, ptrace(PTRACE_ATTACH, pid));
 	ASSERT_EQ(pid, waitpid(pid, NULL, 0));
 
-	/* Past here must not use ASSERT or child process is never killed. */
+	 
 
 	md.filter_off = 0;
 	errno = 0;
@@ -3383,7 +3266,7 @@ TEST(user_notification_basic)
 	pid = fork();
 	ASSERT_GE(pid, 0);
 
-	/* Check that we get -ENOSYS with no listener attached */
+	 
 	if (pid == 0) {
 		if (user_notif_syscall(__NR_getppid, 0) < 0)
 			exit(1);
@@ -3395,18 +3278,18 @@ TEST(user_notification_basic)
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 
-	/* Add some no-op filters for grins. */
+	 
 	EXPECT_EQ(seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog), 0);
 	EXPECT_EQ(seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog), 0);
 	EXPECT_EQ(seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog), 0);
 	EXPECT_EQ(seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog), 0);
 
-	/* Check that the basic notification machinery works */
+	 
 	listener = user_notif_syscall(__NR_getppid,
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
 
-	/* Installing a second listener in the chain should EBUSY */
+	 
 	EXPECT_EQ(user_notif_syscall(__NR_getppid,
 				     SECCOMP_FILTER_FLAG_NEW_LISTENER),
 		  -1);
@@ -3426,7 +3309,7 @@ TEST(user_notification_basic)
 	EXPECT_GT(poll(&pollfd, 1, -1), 0);
 	EXPECT_EQ(pollfd.revents, POLLIN);
 
-	/* Test that we can't pass garbage to the kernel. */
+	 
 	memset(&req, 0, sizeof(req));
 	req.pid = -1;
 	errno = 0;
@@ -3451,7 +3334,7 @@ TEST(user_notification_basic)
 	resp.error = 0;
 	resp.val = USER_NOTIF_MAGIC;
 
-	/* check that we make sure flags == 0 */
+	 
 	resp.flags = 1;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
 	EXPECT_EQ(errno, EINVAL);
@@ -3474,13 +3357,13 @@ TEST(user_notification_with_tsync)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* these were exclusive */
+	 
 	flags = SECCOMP_FILTER_FLAG_NEW_LISTENER |
 		SECCOMP_FILTER_FLAG_TSYNC;
 	ASSERT_EQ(-1, user_notif_syscall(__NR_getppid, flags));
 	ASSERT_EQ(EINVAL, errno);
 
-	/* but now they're not */
+	 
 	flags |= SECCOMP_FILTER_FLAG_TSYNC_ESRCH;
 	ret = user_notif_syscall(__NR_getppid, flags);
 	close(ret);
@@ -3504,10 +3387,7 @@ TEST(user_notification_kill_in_middle)
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
 
-	/*
-	 * Check that nothing bad happens when we kill the task in the middle
-	 * of a syscall.
-	 */
+	 
 	pid = fork();
 	ASSERT_GE(pid, 0);
 
@@ -3568,12 +3448,7 @@ TEST(user_notification_signal)
 			perror("signal");
 			exit(1);
 		}
-		/*
-		 * ERESTARTSYS behavior is a bit hard to test, because we need
-		 * to rely on a signal that has not yet been handled. Let's at
-		 * least check that the error code gets propagated through, and
-		 * hope that it doesn't break when there is actually a signal :)
-		 */
+		 
 		ret = syscall(__NR_gettid);
 		exit(!(ret == -1 && errno == 512));
 	}
@@ -3585,11 +3460,7 @@ TEST(user_notification_signal)
 
 	EXPECT_EQ(kill(pid, SIGUSR1), 0);
 
-	/*
-	 * Make sure the signal really is delivered, which means we're not
-	 * stuck in the user notification code any more and the notification
-	 * should be dead.
-	 */
+	 
 	EXPECT_EQ(read(sk_pair[0], &c, 1), 1);
 
 	resp.id = req.id;
@@ -3603,7 +3474,7 @@ TEST(user_notification_signal)
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
 
 	resp.id = req.id;
-	resp.error = -512; /* -ERESTARTSYS */
+	resp.error = -512;  
 	resp.val = 0;
 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
@@ -3628,9 +3499,7 @@ TEST(user_notification_closed_listener)
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
 
-	/*
-	 * Check that we get an ENOSYS when the listener is closed.
-	 */
+	 
 	pid = fork();
 	ASSERT_GE(pid, 0);
 	if (pid == 0) {
@@ -3646,9 +3515,7 @@ TEST(user_notification_closed_listener)
 	EXPECT_EQ(0, WEXITSTATUS(status));
 }
 
-/*
- * Check that a pid in a child namespace still shows up as valid in ours.
- */
+ 
 TEST(user_notification_child_pid_ns)
 {
 	pid_t pid;
@@ -3686,10 +3553,7 @@ TEST(user_notification_child_pid_ns)
 	close(listener);
 }
 
-/*
- * Check that a pid in a sibling (i.e. unrelated) namespace shows up as 0, i.e.
- * invalid.
- */
+ 
 TEST(user_notification_sibling_pid_ns)
 {
 	pid_t pid, pid2;
@@ -3723,7 +3587,7 @@ TEST(user_notification_sibling_pid_ns)
 		exit(WEXITSTATUS(status));
 	}
 
-	/* Create the sibling ns, and sibling in it. */
+	 
 	ASSERT_EQ(unshare(CLONE_NEWPID), 0) {
 		if (errno == EPERM)
 			SKIP(return, "CLONE_NEWPID requires CAP_SYS_ADMIN");
@@ -3735,10 +3599,7 @@ TEST(user_notification_sibling_pid_ns)
 
 	if (pid2 == 0) {
 		ASSERT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-		/*
-		 * The pid should be 0, i.e. the task is in some namespace that
-		 * we can't "see".
-		 */
+		 
 		EXPECT_EQ(req.pid, 0);
 
 		resp.id = req.id;
@@ -3782,11 +3643,11 @@ TEST(user_notification_fault_recv)
 	if (pid == 0)
 		exit(syscall(__NR_getppid) != USER_NOTIF_MAGIC);
 
-	/* Do a bad recv() */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, NULL), -1);
 	EXPECT_EQ(errno, EFAULT);
 
-	/* We should still be able to receive this notification, though. */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
 	EXPECT_EQ(req.pid, pid);
 
@@ -3864,10 +3725,7 @@ TEST(user_notification_continue)
 	resp.id = req.id;
 	resp.flags = SECCOMP_USER_NOTIF_FLAG_CONTINUE;
 
-	/*
-	 * Verify that setting SECCOMP_USER_NOTIF_FLAG_CONTINUE enforces other
-	 * args be set to 0.
-	 */
+	 
 	resp.error = 0;
 	resp.val = USER_NOTIF_MAGIC;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
@@ -3937,10 +3795,7 @@ TEST(user_notification_filter_empty)
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 
-	/*
-	 * The seccomp filter has become unused so we should be notified once
-	 * the kernel gets around to cleaning up task struct.
-	 */
+	 
 	pollfd.fd = 200;
 	pollfd.events = POLLHUP;
 
@@ -4026,10 +3881,7 @@ TEST(user_notification_filter_empty_threaded)
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 
-	/*
-	 * The seccomp filter has become unused so we should be notified once
-	 * the kernel gets around to cleaning up task struct.
-	 */
+	 
 	pollfd.fd = 200;
 	pollfd.events = POLLHUP;
 
@@ -4047,10 +3899,10 @@ TEST(user_notification_addfd)
 	struct seccomp_notif_addfd_big big = {};
 	struct seccomp_notif req = {};
 	struct seccomp_notif_resp resp = {};
-	/* 100 ms */
+	 
 	struct timespec delay = { .tv_nsec = 100000000 };
 
-	/* There may be arbitrary already-open fds at test start. */
+	 
 	memfd = memfd_create("test", 0);
 	ASSERT_GE(memfd, 0);
 	nextfd = memfd + 1;
@@ -4060,8 +3912,8 @@ TEST(user_notification_addfd)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* fd: 4 */
-	/* Check that the basic notification machinery works */
+	 
+	 
 	listener = user_notif_syscall(__NR_getppid,
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_EQ(listener, nextfd++);
@@ -4070,11 +3922,11 @@ TEST(user_notification_addfd)
 	ASSERT_GE(pid, 0);
 
 	if (pid == 0) {
-		/* fds will be added and this value is expected */
+		 
 		if (syscall(__NR_getppid) != USER_NOTIF_MAGIC)
 			exit(1);
 
-		/* Atomic addfd+send is received here. Check it is a valid fd */
+		 
 		if (fcntl(syscall(__NR_getppid), F_GETFD) == -1)
 			exit(1);
 
@@ -4088,66 +3940,63 @@ TEST(user_notification_addfd)
 	addfd.id = req.id;
 	addfd.flags = 0x0;
 
-	/* Verify bad newfd_flags cannot be set */
+	 
 	addfd.newfd_flags = ~O_CLOEXEC;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
 	EXPECT_EQ(errno, EINVAL);
 	addfd.newfd_flags = O_CLOEXEC;
 
-	/* Verify bad flags cannot be set */
+	 
 	addfd.flags = 0xff;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
 	EXPECT_EQ(errno, EINVAL);
 	addfd.flags = 0;
 
-	/* Verify that remote_fd cannot be set without setting flags */
+	 
 	addfd.newfd = 1;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
 	EXPECT_EQ(errno, EINVAL);
 	addfd.newfd = 0;
 
-	/* Verify small size cannot be set */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_SMALL, &small), -1);
 	EXPECT_EQ(errno, EINVAL);
 
-	/* Verify we can't send bits filled in unknown buffer area */
+	 
 	memset(&big, 0xAA, sizeof(big));
 	big.addfd = addfd;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_BIG, &big), -1);
 	EXPECT_EQ(errno, E2BIG);
 
 
-	/* Verify we can set an arbitrary remote fd */
+	 
 	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
 	EXPECT_EQ(fd, nextfd++);
 	EXPECT_EQ(filecmp(getpid(), pid, memfd, fd), 0);
 
-	/* Verify we can set an arbitrary remote fd with large size */
+	 
 	memset(&big, 0x0, sizeof(big));
 	big.addfd = addfd;
 	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_BIG, &big);
 	EXPECT_EQ(fd, nextfd++);
 
-	/* Verify we can set a specific remote fd */
+	 
 	addfd.newfd = 42;
 	addfd.flags = SECCOMP_ADDFD_FLAG_SETFD;
 	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
 	EXPECT_EQ(fd, 42);
 	EXPECT_EQ(filecmp(getpid(), pid, memfd, fd), 0);
 
-	/* Resume syscall */
+	 
 	resp.id = req.id;
 	resp.error = 0;
 	resp.val = USER_NOTIF_MAGIC;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 
-	/*
-	 * This sets the ID of the ADD FD to the last request plus 1. The
-	 * notification ID increments 1 per notification.
-	 */
+	 
 	addfd.id = req.id + 1;
 
-	/* This spins until the underlying notification is generated */
+	 
 	while (ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd) != -1 &&
 	       errno != -EINPROGRESS)
 		nanosleep(&delay, NULL);
@@ -4156,24 +4005,18 @@ TEST(user_notification_addfd)
 	ASSERT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
 	ASSERT_EQ(addfd.id, req.id);
 
-	/* Verify we can do an atomic addfd and send */
+	 
 	addfd.newfd = 0;
 	addfd.flags = SECCOMP_ADDFD_FLAG_SEND;
 	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
-	/*
-	 * Child has earlier "low" fds and now 42, so we expect the next
-	 * lowest available fd to be assigned here.
-	 */
+	 
 	EXPECT_EQ(fd, nextfd++);
 	ASSERT_EQ(filecmp(getpid(), pid, memfd, fd), 0);
 
-	/*
-	 * This sets the ID of the ADD FD to the last request plus 1. The
-	 * notification ID increments 1 per notification.
-	 */
+	 
 	addfd.id = req.id + 1;
 
-	/* This spins until the underlying notification is generated */
+	 
 	while (ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd) != -1 &&
 	       errno != -EINPROGRESS)
 		nanosleep(&delay, NULL);
@@ -4187,7 +4030,7 @@ TEST(user_notification_addfd)
 	resp.val = USER_NOTIF_MAGIC;
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 
-	/* Wait for child to finish. */
+	 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
@@ -4216,7 +4059,7 @@ TEST(user_notification_addfd_rlimit)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* Check that the basic notification machinery works */
+	 
 	listener = user_notif_syscall(__NR_getppid,
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
@@ -4238,7 +4081,7 @@ TEST(user_notification_addfd_rlimit)
 	addfd.id = req.id;
 	addfd.flags = 0;
 
-	/* Should probably spot check /proc/sys/fs/file-nr */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
 	EXPECT_EQ(errno, EMFILE);
 
@@ -4257,7 +4100,7 @@ TEST(user_notification_addfd_rlimit)
 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 
-	/* Wait for child to finish. */
+	 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
@@ -4287,7 +4130,7 @@ TEST(user_notification_sync)
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
 
-	/* Try to set invalid flags. */
+	 
 	EXPECT_SYSCALL_RETURN(-EINVAL,
 		ioctl(listener, SECCOMP_IOCTL_NOTIF_SET_FLAGS, 0xffffffff, 0));
 
@@ -4320,7 +4163,7 @@ TEST(user_notification_sync)
 }
 
 
-/* Make sure PTRACE_O_SUSPEND_SECCOMP requires CAP_SYS_ADMIN. */
+ 
 FIXTURE(O_SUSPEND_SECCOMP) {
 	pid_t pid;
 };
@@ -4333,7 +4176,7 @@ FIXTURE_SETUP(O_SUSPEND_SECCOMP)
 
 	self->pid = 0;
 
-	/* make sure we don't have CAP_SYS_ADMIN */
+	 
 	caps = cap_get_proc();
 	ASSERT_NE(NULL, caps);
 	ASSERT_EQ(0, cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_list, CAP_CLEAR));
@@ -4382,12 +4225,7 @@ TEST_F(O_SUSPEND_SECCOMP, seize)
 	ASSERT_EQ(EPERM, errno);
 }
 
-/*
- * get_nth - Get the nth, space separated entry in a file.
- *
- * Returns the length of the read field.
- * Throws error if field is zero-lengthed.
- */
+ 
 static ssize_t get_nth(struct __test_metadata *_metadata, const char *path,
 		     const unsigned int position, char **entry)
 {
@@ -4418,7 +4256,7 @@ static ssize_t get_nth(struct __test_metadata *_metadata, const char *path,
 	return nread - 1;
 }
 
-/* For a given PID, get the task state (D, R, etc...) */
+ 
 static char get_proc_stat(struct __test_metadata *_metadata, pid_t pid)
 {
 	char proc_path[100] = {0};
@@ -4442,7 +4280,7 @@ TEST(user_notification_fifo)
 	pid_t pid, pids[3];
 	__u64 baseid;
 	long ret;
-	/* 100 ms */
+	 
 	struct timespec delay = { .tv_nsec = 100000000 };
 
 	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
@@ -4450,7 +4288,7 @@ TEST(user_notification_fifo)
 		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
 	}
 
-	/* Setup a listener */
+	 
 	listener = user_notif_syscall(__NR_getppid,
 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
 	ASSERT_GE(listener, 0);
@@ -4470,14 +4308,14 @@ TEST(user_notification_fifo)
 	resp.error = 0;
 	resp.val = USER_NOTIF_MAGIC;
 
-	/* check that we make sure flags == 0 */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 
-	/* Start children, and generate notifications */
+	 
 	for (i = 0; i < ARRAY_SIZE(pids); i++) {
 		pid = fork();
 		if (pid == 0) {
@@ -4487,7 +4325,7 @@ TEST(user_notification_fifo)
 		pids[i] = pid;
 	}
 
-	/* This spins until all of the children are sleeping */
+	 
 restart_wait:
 	for (i = 0; i < ARRAY_SIZE(pids); i++) {
 		if (get_proc_stat(_metadata, pids[i]) != 'S') {
@@ -4496,7 +4334,7 @@ restart_wait:
 		}
 	}
 
-	/* Read the notifications in order (and respond) */
+	 
 	for (i = 0; i < ARRAY_SIZE(pids); i++) {
 		memset(&req, 0, sizeof(req));
 		EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
@@ -4505,7 +4343,7 @@ restart_wait:
 		EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 	}
 
-	/* Make sure notifications were received */
+	 
 	for (i = 0; i < ARRAY_SIZE(pids); i++) {
 		EXPECT_EQ(waitpid(pids[i], &status, 0), pids[i]);
 		EXPECT_EQ(true, WIFEXITED(status));
@@ -4513,11 +4351,7 @@ restart_wait:
 	}
 }
 
-/* get_proc_syscall - Get the syscall in progress for a given pid
- *
- * Returns the current syscall number for a given process
- * Returns -1 if not in syscall (running or blocked)
- */
+ 
 static long get_proc_syscall(struct __test_metadata *_metadata, int pid)
 {
 	char proc_path[100] = {0};
@@ -4536,7 +4370,7 @@ static long get_proc_syscall(struct __test_metadata *_metadata, int pid)
 	return ret;
 }
 
-/* Ensure non-fatal signals prior to receive are unmodified */
+ 
 TEST(user_notification_wait_killable_pre_notification)
 {
 	struct sigaction new_action = {
@@ -4546,7 +4380,7 @@ TEST(user_notification_wait_killable_pre_notification)
 	pid_t pid;
 	long ret;
 	char c;
-	/* 100 ms */
+	 
 	struct timespec delay = { .tv_nsec = 100000000 };
 
 	ASSERT_EQ(sigemptyset(&new_action.sa_mask), 0);
@@ -4564,11 +4398,7 @@ TEST(user_notification_wait_killable_pre_notification)
 				      SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV);
 	ASSERT_GE(listener, 0);
 
-	/*
-	 * Check that we can kill the process with SIGUSR1 prior to receiving
-	 * the notification. SIGUSR1 is wired up to a custom signal handler,
-	 * and make sure it gets called.
-	 */
+	 
 	pid = fork();
 	ASSERT_GE(pid, 0);
 
@@ -4576,29 +4406,26 @@ TEST(user_notification_wait_killable_pre_notification)
 		close(sk_pair[0]);
 		handled = sk_pair[1];
 
-		/* Setup the non-fatal sigaction without SA_RESTART */
+		 
 		if (sigaction(SIGUSR1, &new_action, NULL)) {
 			perror("sigaction");
 			exit(1);
 		}
 
 		ret = syscall(__NR_getppid);
-		/* Make sure we got a return from a signal interruption */
+		 
 		exit(ret != -1 || errno != EINTR);
 	}
 
-	/*
-	 * Make sure we've gotten to the seccomp user notification wait
-	 * from getppid prior to sending any signals
-	 */
+	 
 	while (get_proc_syscall(_metadata, pid) != __NR_getppid &&
 	       get_proc_stat(_metadata, pid) != 'S')
 		nanosleep(&delay, NULL);
 
-	/* Send non-fatal kill signal */
+	 
 	EXPECT_EQ(kill(pid, SIGUSR1), 0);
 
-	/* wait for process to exit (exit checks for EINTR) */
+	 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
@@ -4606,7 +4433,7 @@ TEST(user_notification_wait_killable_pre_notification)
 	EXPECT_EQ(read(sk_pair[0], &c, 1), 1);
 }
 
-/* Ensure non-fatal signals after receive are blocked */
+ 
 TEST(user_notification_wait_killable)
 {
 	struct sigaction new_action = {
@@ -4618,7 +4445,7 @@ TEST(user_notification_wait_killable)
 	pid_t pid;
 	long ret;
 	char c;
-	/* 100 ms */
+	 
 	struct timespec delay = { .tv_nsec = 100000000 };
 
 	ASSERT_EQ(sigemptyset(&new_action.sa_mask), 0);
@@ -4643,56 +4470,47 @@ TEST(user_notification_wait_killable)
 		close(sk_pair[0]);
 		handled = sk_pair[1];
 
-		/* Setup the sigaction without SA_RESTART */
+		 
 		if (sigaction(SIGUSR1, &new_action, NULL)) {
 			perror("sigaction");
 			exit(1);
 		}
 
-		/* Make sure that the syscall is completed (no EINTR) */
+		 
 		ret = syscall(__NR_getppid);
 		exit(ret != USER_NOTIF_MAGIC);
 	}
 
-	/*
-	 * Get the notification, to make move the notifying process into a
-	 * non-preemptible (TASK_KILLABLE) state.
-	 */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-	/* Send non-fatal kill signal */
+	 
 	EXPECT_EQ(kill(pid, SIGUSR1), 0);
 
-	/*
-	 * Make sure the task enters moves to TASK_KILLABLE by waiting for
-	 * D (Disk Sleep) state after receiving non-fatal signal.
-	 */
+	 
 	while (get_proc_stat(_metadata, pid) != 'D')
 		nanosleep(&delay, NULL);
 
 	resp.id = req.id;
 	resp.val = USER_NOTIF_MAGIC;
-	/* Make sure the notification is found and able to be replied to */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
 
-	/*
-	 * Make sure that the signal handler does get called once we're back in
-	 * userspace.
-	 */
+	 
 	EXPECT_EQ(read(sk_pair[0], &c, 1), 1);
-	/* wait for process to exit (exit checks for USER_NOTIF_MAGIC) */
+	 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 }
 
-/* Ensure fatal signals after receive are not blocked */
+ 
 TEST(user_notification_wait_killable_fatal)
 {
 	struct seccomp_notif req = {};
 	int listener, status;
 	pid_t pid;
 	long ret;
-	/* 100 ms */
+	 
 	struct timespec delay = { .tv_nsec = 100000000 };
 
 	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
@@ -4710,7 +4528,7 @@ TEST(user_notification_wait_killable_fatal)
 	ASSERT_GE(pid, 0);
 
 	if (pid == 0) {
-		/* This should never complete as it should get a SIGTERM */
+		 
 		syscall(__NR_getppid);
 		exit(1);
 	}
@@ -4718,32 +4536,17 @@ TEST(user_notification_wait_killable_fatal)
 	while (get_proc_stat(_metadata, pid) != 'S')
 		nanosleep(&delay, NULL);
 
-	/*
-	 * Get the notification, to make move the notifying process into a
-	 * non-preemptible (TASK_KILLABLE) state.
-	 */
+	 
 	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-	/* Kill the process with a fatal signal */
+	 
 	EXPECT_EQ(kill(pid, SIGTERM), 0);
 
-	/*
-	 * Wait for the process to exit, and make sure the process terminated
-	 * due to the SIGTERM signal.
-	 */
+	 
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(true, WIFSIGNALED(status));
 	EXPECT_EQ(SIGTERM, WTERMSIG(status));
 }
 
-/*
- * TODO:
- * - expand NNP testing
- * - better arch-specific TRACE and TRAP handlers.
- * - endianness checking when appropriate
- * - 64-bit arg prodding
- * - arch value testing (x86 modes especially)
- * - verify that FILTER_FLAG_LOG filters generate log messages
- * - verify that RET_LOG generates log messages
- */
+ 
 
 TEST_HARNESS_MAIN

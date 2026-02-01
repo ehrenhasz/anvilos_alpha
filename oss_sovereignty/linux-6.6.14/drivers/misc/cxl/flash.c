@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/semaphore.h>
@@ -207,13 +207,13 @@ static int update_devicetree(struct cxl *adapter, s32 scope)
 
 				switch (action) {
 				case OPCODE_DELETE:
-					/* nothing to do */
+					 
 					break;
 				case OPCODE_UPDATE:
 					update_node(phandle, scope);
 					break;
 				case OPCODE_ADD:
-					/* nothing to do, just move pointer */
+					 
 					data++;
 					break;
 				}
@@ -235,7 +235,7 @@ static int handle_image(struct cxl *adapter, int operation,
 	void *dest, *from;
 	int rc = 0, need_header;
 
-	/* base adapter image header */
+	 
 	need_header = (ai->flags & CXL_AI_NEED_HEADER);
 	if (need_header) {
 		header = kzalloc(sizeof(struct ai_header), GFP_KERNEL);
@@ -250,7 +250,7 @@ static int handle_image(struct cxl *adapter, int operation,
 		header->image_length = cpu_to_be64(ai->len_image);
 	}
 
-	/* number of entries in the list */
+	 
 	len_chunk = ai->len_data;
 	if (need_header)
 		len_chunk += CXL_AI_HEADER_SIZE;
@@ -265,37 +265,26 @@ static int handle_image(struct cxl *adapter, int operation,
 		goto err;
 	}
 
-	/*          < -- MAX_CHUNK_SIZE = 4096 * 256 = 1048576 bytes -->
-	 * chunk 0  ----------------------------------------------------
-	 *          | header   |  data                                 |
-	 *          ----------------------------------------------------
-	 * chunk 1  ----------------------------------------------------
-	 *          | data                                             |
-	 *          ----------------------------------------------------
-	 * ....
-	 * chunk n  ----------------------------------------------------
-	 *          | data                                             |
-	 *          ----------------------------------------------------
-	 */
+	 
 	from = (void *) ai->data;
 	for (i = 0; i < entries; i++) {
 		dest = buffer[i];
 		s_copy = CXL_AI_BUFFER_SIZE;
 
 		if ((need_header) && (i == 0)) {
-			/* add adapter image header */
+			 
 			memcpy(buffer[i], header, sizeof(struct ai_header));
 			s_copy = CXL_AI_BUFFER_SIZE - CXL_AI_HEADER_SIZE;
-			dest += CXL_AI_HEADER_SIZE; /* image offset */
+			dest += CXL_AI_HEADER_SIZE;  
 		}
 		if ((i == (entries - 1)) && mod)
 			s_copy = mod;
 
-		/* copy data */
+		 
 		if (copy_from_user(dest, from, s_copy))
 			goto err;
 
-		/* fill in the list */
+		 
 		le[i].phys_addr = cpu_to_be64(virt_to_phys(buffer[i]));
 		le[i].len = cpu_to_be64(CXL_AI_BUFFER_SIZE);
 		if ((i == (entries - 1)) && mod)
@@ -305,13 +294,10 @@ static int handle_image(struct cxl *adapter, int operation,
 	pr_devel("%s (op: %i, need header: %i, entries: %i, token: %#llx)\n",
 		 __func__, operation, need_header, entries, continue_token);
 
-	/*
-	 * download/validate the adapter image to the coherent
-	 * platform facility
-	 */
+	 
 	rc = fct(adapter->guest->handle, virt_to_phys(le), entries,
 		&continue_token);
-	if (rc == 0) /* success of download/validation operation */
+	if (rc == 0)  
 		continue_token = 0;
 
 err:
@@ -352,14 +338,7 @@ static int transfer_image(struct cxl *adapter, int operation,
 			pr_devel("resetting adapter\n");
 			cxl_h_reset_adapter(adapter->guest->handle);
 
-			/* The entire image has now been
-			 * downloaded and the validation has
-			 * been successfully performed.
-			 * After that, the partition should call
-			 * ibm,update-nodes and
-			 * ibm,update-properties to receive the
-			 * current configuration
-			 */
+			 
 			rc = update_devicetree(adapter, DEVICE_SCOPE);
 			transfer = 1;
 		}
@@ -379,9 +358,7 @@ static long ioctl_transfer_image(struct cxl *adapter, int operation,
 	if (copy_from_user(&ai, uai, sizeof(struct cxl_adapter_image)))
 		return -EFAULT;
 
-	/*
-	 * Make sure reserved fields and bits are set to 0
-	 */
+	 
 	if (ai.reserved1 || ai.reserved2 || ai.reserved3 || ai.reserved4 ||
 		(ai.flags & ~CXL_AI_ALL))
 		return -EINVAL;
@@ -399,7 +376,7 @@ static int device_open(struct inode *inode, struct file *file)
 
 	BUG_ON(sizeof(struct ai_header) != CXL_AI_HEADER_SIZE);
 
-	/* Allows one process to open the device by using a semaphore */
+	 
 	if (down_interruptible(&sem) != 0)
 		return -EPERM;
 
@@ -415,15 +392,7 @@ static int device_open(struct inode *inode, struct file *file)
 	for (i = 0; i < CXL_AI_MAX_ENTRIES; i++)
 		buffer[i] = NULL;
 
-	/* aligned buffer containing list entries which describes up to
-	 * 1 megabyte of data (256 entries of 4096 bytes each)
-	 *  Logical real address of buffer 0  -  Buffer 0 length in bytes
-	 *  Logical real address of buffer 1  -  Buffer 1 length in bytes
-	 *  Logical real address of buffer 2  -  Buffer 2 length in bytes
-	 *  ....
-	 *  ....
-	 *  Logical real address of buffer N  -  Buffer N length in bytes
-	 */
+	 
 	le = (struct sg_list *)get_zeroed_page(GFP_KERNEL);
 	if (!le) {
 		rc = -ENOMEM;
@@ -493,7 +462,7 @@ static int device_close(struct inode *inode, struct file *file)
 	put_device(&adapter->dev);
 	continue_token = 0;
 
-	/* reload the module */
+	 
 	if (transfer)
 		cxl_guest_reload_module(adapter);
 	else {

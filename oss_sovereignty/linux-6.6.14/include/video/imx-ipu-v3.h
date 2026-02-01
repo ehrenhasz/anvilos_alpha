@@ -1,13 +1,4 @@
-/*
- * Copyright 2005-2009 Freescale Semiconductor, Inc.
- *
- * The code contained herein is licensed under the GNU Lesser General
- * Public License.  You may obtain a copy of the GNU Lesser General
- * Public License Version 2.1 or later at the following locations:
- *
- * http://www.opensource.org/licenses/lgpl-license.html
- * http://www.gnu.org/copyleft/lgpl.html
- */
+ 
 
 #ifndef __DRM_IPU_H__
 #define __DRM_IPU_H__
@@ -31,12 +22,10 @@ enum ipuv3_type {
 
 #define IPU_PIX_FMT_GBR24	v4l2_fourcc('G', 'B', 'R', '3')
 
-/*
- * Bitfield of Display Interface signal polarities.
- */
+ 
 struct ipu_di_signal_cfg {
-	unsigned data_pol:1;	/* true = inverted */
-	unsigned clk_pol:1;	/* true = rising edge */
+	unsigned data_pol:1;	 
+	unsigned clk_pol:1;	 
 	unsigned enable_pol:1;
 
 	struct videomode mode;
@@ -52,18 +41,14 @@ struct ipu_di_signal_cfg {
 	u8 vsync_pin;
 };
 
-/*
- * Enumeration of CSI destinations
- */
+ 
 enum ipu_csi_dest {
-	IPU_CSI_DEST_IDMAC, /* to memory via SMFC */
-	IPU_CSI_DEST_IC,	/* to Image Converter */
-	IPU_CSI_DEST_VDIC,  /* to VDIC */
+	IPU_CSI_DEST_IDMAC,  
+	IPU_CSI_DEST_IC,	 
+	IPU_CSI_DEST_VDIC,   
 };
 
-/*
- * Enumeration of IPU rotation modes
- */
+ 
 #define IPU_ROT_BIT_VFLIP (1 << 0)
 #define IPU_ROT_BIT_HFLIP (1 << 1)
 #define IPU_ROT_BIT_90    (1 << 2)
@@ -80,7 +65,7 @@ enum ipu_rotate_mode {
 			      IPU_ROT_BIT_VFLIP | IPU_ROT_BIT_HFLIP),
 };
 
-/* 90-degree rotations require the IRT unit */
+ 
 #define ipu_rot_mode_is_irt(m) (((m) & IPU_ROT_BIT_90) != 0)
 
 enum ipu_color_space {
@@ -89,9 +74,7 @@ enum ipu_color_space {
 	IPUV3_COLORSPACE_UNKNOWN,
 };
 
-/*
- * Enumeration of VDI MOTION select
- */
+ 
 enum ipu_motion_sel {
 	MOTION_NONE = 0,
 	LOW_MOTION,
@@ -108,20 +91,13 @@ enum ipu_channel_irq {
 	IPU_IRQ_EOS = 192,
 };
 
-/*
- * Enumeration of IDMAC channels
- */
+ 
 #define IPUV3_CHANNEL_CSI0			 0
 #define IPUV3_CHANNEL_CSI1			 1
 #define IPUV3_CHANNEL_CSI2			 2
 #define IPUV3_CHANNEL_CSI3			 3
 #define IPUV3_CHANNEL_VDI_MEM_IC_VF		 5
-/*
- * NOTE: channels 6,7 are unused in the IPU and are not IDMAC channels,
- * but the direct CSI->VDI linking is handled the same way as IDMAC
- * channel linking in the FSU via the IPU_FS_PROC_FLOW registers, so
- * these channel names are used to support the direct CSI->VDI link.
- */
+ 
 #define IPUV3_CHANNEL_CSI_DIRECT		 6
 #define IPUV3_CHANNEL_CSI_VDI_PREV		 7
 #define IPUV3_CHANNEL_MEM_VDI_PREV		 8
@@ -200,17 +176,13 @@ int ipu_idmac_channel_irq(struct ipu_soc *ipu, struct ipuv3_channel *channel,
 #define IPU_IRQ_VSYNC_PRE_0		(448 + 14)
 #define IPU_IRQ_VSYNC_PRE_1		(448 + 15)
 
-/*
- * IPU Common functions
- */
+ 
 int ipu_get_num(struct ipu_soc *ipu);
 void ipu_set_csi_src_mux(struct ipu_soc *ipu, int csi_id, bool mipi_csi2);
 void ipu_set_ic_src_mux(struct ipu_soc *ipu, int csi_id, bool vdi);
 void ipu_dump(struct ipu_soc *ipu);
 
-/*
- * IPU Image DMA Controller (idmac) functions
- */
+ 
 struct ipuv3_channel *ipu_idmac_get(struct ipu_soc *ipu, unsigned channel);
 void ipu_idmac_put(struct ipuv3_channel *);
 
@@ -231,9 +203,7 @@ int ipu_fsu_unlink(struct ipu_soc *ipu, int src_ch, int sink_ch);
 int ipu_idmac_link(struct ipuv3_channel *src, struct ipuv3_channel *sink);
 int ipu_idmac_unlink(struct ipuv3_channel *src, struct ipuv3_channel *sink);
 
-/*
- * IPU Channel Parameter Memory (cpmem) functions
- */
+ 
 struct ipu_rgb {
 	struct fb_bitfield      red;
 	struct fb_bitfield      green;
@@ -247,7 +217,7 @@ struct ipu_image {
 	struct v4l2_rect rect;
 	dma_addr_t phys0;
 	dma_addr_t phys1;
-	/* chroma plane offset overrides */
+	 
 	u32 u_offset;
 	u32 v_offset;
 };
@@ -279,9 +249,7 @@ int ipu_cpmem_set_fmt(struct ipuv3_channel *ch, u32 drm_fourcc);
 int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image);
 void ipu_cpmem_dump(struct ipuv3_channel *ch);
 
-/*
- * IPU Display Controller (dc) functions
- */
+ 
 struct ipu_dc;
 struct ipu_di;
 struct ipu_dc *ipu_dc_get(struct ipu_soc *ipu, int channel);
@@ -293,9 +261,7 @@ void ipu_dc_enable_channel(struct ipu_dc *dc);
 void ipu_dc_disable_channel(struct ipu_dc *dc);
 void ipu_dc_disable(struct ipu_soc *ipu);
 
-/*
- * IPU Display Interface (di) functions
- */
+ 
 struct ipu_di *ipu_di_get(struct ipu_soc *ipu, int disp);
 void ipu_di_put(struct ipu_di *);
 int ipu_di_disable(struct ipu_di *);
@@ -304,9 +270,7 @@ int ipu_di_get_num(struct ipu_di *);
 int ipu_di_adjust_videomode(struct ipu_di *di, struct videomode *mode);
 int ipu_di_init_sync_panel(struct ipu_di *, struct ipu_di_signal_cfg *sig);
 
-/*
- * IPU Display Multi FIFO Controller (dmfc) functions
- */
+ 
 struct dmfc_channel;
 int ipu_dmfc_enable_channel(struct dmfc_channel *dmfc);
 void ipu_dmfc_disable_channel(struct dmfc_channel *dmfc);
@@ -314,9 +278,7 @@ void ipu_dmfc_config_wait4eot(struct dmfc_channel *dmfc, int width);
 struct dmfc_channel *ipu_dmfc_get(struct ipu_soc *ipu, int ipuv3_channel);
 void ipu_dmfc_put(struct dmfc_channel *dmfc);
 
-/*
- * IPU Display Processor (dp) functions
- */
+ 
 #define IPU_DP_FLOW_SYNC_BG	0
 #define IPU_DP_FLOW_SYNC_FG	1
 #define IPU_DP_FLOW_ASYNC0_BG	2
@@ -337,9 +299,7 @@ int ipu_dp_set_window_pos(struct ipu_dp *, u16 x_pos, u16 y_pos);
 int ipu_dp_set_global_alpha(struct ipu_dp *dp, bool enable, u8 alpha,
 		bool bg_chan);
 
-/*
- * IPU Prefetch Resolve Gasket (prg) functions
- */
+ 
 int ipu_prg_max_active_channels(void);
 bool ipu_prg_present(struct ipu_soc *ipu);
 bool ipu_prg_format_supported(struct ipu_soc *ipu, uint32_t format,
@@ -353,9 +313,7 @@ int ipu_prg_channel_configure(struct ipuv3_channel *ipu_chan,
 			      u32 format, uint64_t modifier, unsigned long *eba);
 bool ipu_prg_channel_configure_pending(struct ipuv3_channel *ipu_chan);
 
-/*
- * IPU CMOS Sensor Interface (csi) functions
- */
+ 
 struct ipu_csi;
 int ipu_csi_init_interface(struct ipu_csi *csi,
 			   const struct v4l2_mbus_config *mbus_cfg,
@@ -379,9 +337,7 @@ struct ipu_csi *ipu_csi_get(struct ipu_soc *ipu, int id);
 void ipu_csi_put(struct ipu_csi *csi);
 void ipu_csi_dump(struct ipu_csi *csi);
 
-/*
- * IPU Image Converter (ic) functions
- */
+ 
 enum ipu_ic_task {
 	IC_TASK_ENCODER,
 	IC_TASK_VIEWFINDER,
@@ -389,13 +345,7 @@ enum ipu_ic_task {
 	IC_NUM_TASKS,
 };
 
-/*
- * The parameters that describe a colorspace according to the
- * Image Converter:
- *    - Y'CbCr encoding
- *    - quantization
- *    - "colorspace" (RGB or YUV).
- */
+ 
 struct ipu_ic_colorspace {
 	enum v4l2_ycbcr_encoding enc;
 	enum v4l2_quantization quant;
@@ -414,10 +364,10 @@ ipu_ic_fill_colorspace(struct ipu_ic_colorspace *ic_cs,
 }
 
 struct ipu_ic_csc_params {
-	s16 coeff[3][3];	/* signed 9-bit integer coefficients */
-	s16 offset[3];		/* signed 11+2-bit fixed point offset */
-	u8 scale:2;		/* scale coefficients * 2^(scale-1) */
-	bool sat:1;		/* saturate to (16, 235(Y) / 240(U, V)) */
+	s16 coeff[3][3];	 
+	s16 offset[3];		 
+	u8 scale:2;		 
+	bool sat:1;		 
 };
 
 struct ipu_ic_csc {
@@ -460,9 +410,7 @@ struct ipu_ic *ipu_ic_get(struct ipu_soc *ipu, enum ipu_ic_task task);
 void ipu_ic_put(struct ipu_ic *ic);
 void ipu_ic_dump(struct ipu_ic *ic);
 
-/*
- * IPU Video De-Interlacer (vdi) functions
- */
+ 
 struct ipu_vdi;
 void ipu_vdi_set_field_order(struct ipu_vdi *vdi, v4l2_std_id std, u32 field);
 void ipu_vdi_set_motion(struct ipu_vdi *vdi, enum ipu_motion_sel motion_sel);
@@ -473,9 +421,7 @@ int ipu_vdi_disable(struct ipu_vdi *vdi);
 struct ipu_vdi *ipu_vdi_get(struct ipu_soc *ipu);
 void ipu_vdi_put(struct ipu_vdi *vdi);
 
-/*
- * IPU Sensor Multiple FIFO Controller (SMFC) functions
- */
+ 
 struct ipu_smfc *ipu_smfc_get(struct ipu_soc *ipu, unsigned int chno);
 void ipu_smfc_put(struct ipu_smfc *smfc);
 int ipu_smfc_enable(struct ipu_smfc *smfc);
@@ -500,4 +446,4 @@ struct ipu_client_platformdata {
 	struct device_node *of_node;
 };
 
-#endif /* __DRM_IPU_H__ */
+#endif  

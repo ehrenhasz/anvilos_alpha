@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/skbuff.h>
 #include <linux/ctype.h>
 
@@ -19,7 +16,7 @@ struct sk_buff *ath12k_htc_alloc_skb(struct ath12k_base *ab, int size)
 
 	skb_reserve(skb, sizeof(struct ath12k_htc_hdr));
 
-	/* FW/HTC requires 4-byte aligned streams */
+	 
 	if (!IS_ALIGNED((unsigned long)skb->data, 4))
 		ath12k_warn(ab, "Unaligned HTC tx skb\n");
 
@@ -195,7 +192,7 @@ static int ath12k_htc_process_trailer(struct ath12k_htc *htc,
 		}
 
 		if (record->hdr.len > length) {
-			/* no room left in buffer for record */
+			 
 			ath12k_warn(ab, "Invalid record length: %d\n",
 				    record->hdr.len);
 			status = -EINVAL;
@@ -224,7 +221,7 @@ static int ath12k_htc_process_trailer(struct ath12k_htc *htc,
 		if (status)
 			break;
 
-		/* multiple records may be present in a trailer */
+		 
 		buffer += sizeof(record->hdr) + record->hdr.len;
 		length -= sizeof(record->hdr) + record->hdr.len;
 	}
@@ -283,7 +280,7 @@ void ath12k_htc_rx_completion_handler(struct ath12k_base *ab,
 		goto out;
 	}
 
-	/* get flags to check for trailer */
+	 
 	trailer_present = le32_get_bits(hdr->htc_info, HTC_HDR_FLAGS) &
 			  ATH12K_HTC_FLAG_TRAILER_PRESENT;
 
@@ -314,7 +311,7 @@ void ath12k_htc_rx_completion_handler(struct ath12k_base *ab,
 	}
 
 	if (trailer_len >= payload_len)
-		/* zero length packet with trailer data, just drop these */
+		 
 		goto out;
 
 	if (eid == ATH12K_HTC_EP_0) {
@@ -323,11 +320,9 @@ void ath12k_htc_rx_completion_handler(struct ath12k_base *ab,
 		switch (le32_get_bits(msg->msg_svc_id, HTC_MSG_MESSAGEID)) {
 		case ATH12K_HTC_MSG_READY_ID:
 		case ATH12K_HTC_MSG_CONNECT_SERVICE_RESP_ID:
-			/* handle HTC control message */
+			 
 			if (completion_done(&htc->ctl_resp)) {
-				/* this is a fatal error, target should not be
-				 * sending unsolicited messages on the ep 0
-				 */
+				 
 				ath12k_warn(ab, "HTC rx ctrl still processing\n");
 				complete(&htc->ctl_resp);
 				goto out;
@@ -362,10 +357,10 @@ void ath12k_htc_rx_completion_handler(struct ath12k_base *ab,
 		   eid, skb);
 	ep->ep_ops.ep_rx_complete(ab, skb);
 
-	/* poll tx completion for interrupt disabled CE's */
+	 
 	ath12k_ce_poll_send_completed(ab, ep->ul_pipe_id);
 
-	/* skb is now owned by the rx completion handler */
+	 
 	skb = NULL;
 out:
 	kfree_skb(skb);
@@ -374,9 +369,7 @@ out:
 static void ath12k_htc_control_rx_complete(struct ath12k_base *ab,
 					   struct sk_buff *skb)
 {
-	/* This is unexpected. FW is not supposed to send regular rx on this
-	 * endpoint.
-	 */
+	 
 	ath12k_warn(ab, "unexpected htc rx\n");
 	kfree_skb(skb);
 }
@@ -472,7 +465,7 @@ static int ath12k_htc_setup_target_buffer_assignments(struct ath12k_htc *htc)
 	    (htc->wmi_ep_count > ARRAY_SIZE(svc_id)))
 		return -EINVAL;
 
-	/* Divide credits among number of endpoints for WMI */
+	 
 	credits = credits / htc->wmi_ep_count;
 	for (i = 0; i < htc->wmi_ep_count; i++) {
 		serv_entry[i].service_id = svc_id[i];
@@ -566,7 +559,7 @@ int ath12k_htc_connect_service(struct ath12k_htc *htc,
 	u16 message_id, service_id, flags = 0;
 	u8 tx_alloc = 0;
 
-	/* special case for HTC pseudo control service */
+	 
 	if (conn_req->service_id == ATH12K_HTC_SVC_ID_RSVD_CTRL) {
 		disable_credit_flow_ctrl = true;
 		assigned_eid = ATH12K_HTC_EP_0;
@@ -598,7 +591,7 @@ int ath12k_htc_connect_service(struct ath12k_htc *htc,
 
 	flags |= u32_encode_bits(tx_alloc, ATH12K_HTC_CONN_FLAGS_RECV_ALLOC);
 
-	/* Only enable credit flow control for WMI ctrl service */
+	 
 	if (!(conn_req->service_id == ATH12K_HTC_SVC_ID_WMI_CONTROL ||
 	      conn_req->service_id == ATH12K_HTC_SVC_ID_WMI_CONTROL_MAC1 ||
 	      conn_req->service_id == ATH12K_HTC_SVC_ID_WMI_CONTROL_MAC2)) {
@@ -618,7 +611,7 @@ int ath12k_htc_connect_service(struct ath12k_htc *htc,
 		return status;
 	}
 
-	/* wait for response */
+	 
 	time_left = wait_for_completion_timeout(&htc->ctl_resp,
 						ATH12K_HTC_CONN_SVC_TIMEOUT_HZ);
 	if (!time_left) {
@@ -626,7 +619,7 @@ int ath12k_htc_connect_service(struct ath12k_htc *htc,
 		return -ETIMEDOUT;
 	}
 
-	/* we controlled the buffer creation, it's aligned */
+	 
 	resp_msg = (struct ath12k_htc_conn_svc_resp *)htc->control_resp_buffer;
 	message_id = le32_get_bits(resp_msg->msg_svc_id, HTC_MSG_MESSAGEID);
 	service_id = le32_get_bits(resp_msg->msg_svc_id,
@@ -647,7 +640,7 @@ int ath12k_htc_connect_service(struct ath12k_htc *htc,
 	conn_resp->connect_resp_code = le32_get_bits(resp_msg->flags_len,
 						     HTC_SVC_RESP_MSG_STATUS);
 
-	/* check response status */
+	 
 	if (conn_resp->connect_resp_code != ATH12K_HTC_CONN_SVC_STATUS_SUCCESS) {
 		ath12k_err(ab, "HTC Service %s connect request failed: 0x%x)\n",
 			   htc_service_name(service_id),
@@ -675,19 +668,19 @@ setup:
 	if (ep->service_id != ATH12K_HTC_SVC_ID_UNUSED)
 		return -EPROTO;
 
-	/* return assigned endpoint to caller */
+	 
 	conn_resp->eid = assigned_eid;
 	conn_resp->max_msg_len = le32_get_bits(resp_msg->flags_len,
 					       HTC_SVC_RESP_MSG_MAXMSGSIZE);
 
-	/* setup the endpoint */
+	 
 	ep->service_id = conn_req->service_id;
 	ep->max_tx_queue_depth = conn_req->max_send_queue_depth;
 	ep->max_ep_message_len = le32_get_bits(resp_msg->flags_len,
 					       HTC_SVC_RESP_MSG_MAXMSGSIZE);
 	ep->tx_credits = tx_alloc;
 
-	/* copy all the callbacks */
+	 
 	ep->ep_ops = conn_req->ep_ops;
 
 	status = ath12k_hif_map_service_to_pipe(htc->ab,
@@ -770,13 +763,13 @@ int ath12k_htc_init(struct ath12k_base *ab)
 		break;
 	}
 
-	/* setup our pseudo HTC control endpoint connection */
+	 
 	conn_req.ep_ops.ep_tx_complete = ath12k_htc_control_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath12k_htc_control_rx_complete;
 	conn_req.max_send_queue_depth = ATH12K_NUM_CONTROL_TX_BUFFERS;
 	conn_req.service_id = ATH12K_HTC_SVC_ID_RSVD_CTRL;
 
-	/* connect fake service */
+	 
 	ret = ath12k_htc_connect_service(htc, &conn_req, &conn_resp);
 	if (ret) {
 		ath12k_err(ab, "could not connect to htc service (%d)\n", ret);

@@ -1,65 +1,22 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-2-Clause) */
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #ifndef __VMW_PVRDMA_ABI_H__
 #define __VMW_PVRDMA_ABI_H__
 
 #include <linux/types.h>
 
-#define PVRDMA_UVERBS_ABI_VERSION	3		/* ABI Version. */
-#define PVRDMA_UAR_HANDLE_MASK		0x00FFFFFF	/* Bottom 24 bits. */
-#define PVRDMA_UAR_QP_OFFSET		0		/* QP doorbell. */
-#define PVRDMA_UAR_QP_SEND		(1 << 30)	/* Send bit. */
-#define PVRDMA_UAR_QP_RECV		(1 << 31)	/* Recv bit. */
-#define PVRDMA_UAR_CQ_OFFSET		4		/* CQ doorbell. */
-#define PVRDMA_UAR_CQ_ARM_SOL		(1 << 29)	/* Arm solicited bit. */
-#define PVRDMA_UAR_CQ_ARM		(1 << 30)	/* Arm bit. */
-#define PVRDMA_UAR_CQ_POLL		(1 << 31)	/* Poll bit. */
-#define PVRDMA_UAR_SRQ_OFFSET		8		/* SRQ doorbell. */
-#define PVRDMA_UAR_SRQ_RECV		(1 << 30)	/* Recv bit. */
+#define PVRDMA_UVERBS_ABI_VERSION	3		 
+#define PVRDMA_UAR_HANDLE_MASK		0x00FFFFFF	 
+#define PVRDMA_UAR_QP_OFFSET		0		 
+#define PVRDMA_UAR_QP_SEND		(1 << 30)	 
+#define PVRDMA_UAR_QP_RECV		(1 << 31)	 
+#define PVRDMA_UAR_CQ_OFFSET		4		 
+#define PVRDMA_UAR_CQ_ARM_SOL		(1 << 29)	 
+#define PVRDMA_UAR_CQ_ARM		(1 << 30)	 
+#define PVRDMA_UAR_CQ_POLL		(1 << 31)	 
+#define PVRDMA_UAR_SRQ_OFFSET		8		 
+#define PVRDMA_UAR_SRQ_RECV		(1 << 30)	 
 
 enum pvrdma_wr_opcode {
 	PVRDMA_WR_RDMA_WRITE,
@@ -191,7 +148,7 @@ struct pvrdma_create_qp_resp {
 	__u32 qp_handle;
 };
 
-/* PVRDMA masked atomic compare and swap */
+ 
 struct pvrdma_ex_cmp_swap {
 	__aligned_u64 swap_val;
 	__aligned_u64 compare_val;
@@ -199,13 +156,13 @@ struct pvrdma_ex_cmp_swap {
 	__aligned_u64 compare_mask;
 };
 
-/* PVRDMA masked atomic fetch and add */
+ 
 struct pvrdma_ex_fetch_add {
 	__aligned_u64 add_val;
 	__aligned_u64 field_boundary;
 };
 
-/* PVRDMA address vector. */
+ 
 struct pvrdma_av {
 	__u32 port_pd;
 	__u32 sl_tclass_flowlabel;
@@ -218,28 +175,28 @@ struct pvrdma_av {
 	__u8 reserved[6];
 };
 
-/* PVRDMA scatter/gather entry */
+ 
 struct pvrdma_sge {
 	__aligned_u64 addr;
 	__u32   length;
 	__u32   lkey;
 };
 
-/* PVRDMA receive queue work request */
+ 
 struct pvrdma_rq_wqe_hdr {
-	__aligned_u64 wr_id;		/* wr id */
-	__u32 num_sge;		/* size of s/g array */
-	__u32 total_len;	/* reserved */
+	__aligned_u64 wr_id;		 
+	__u32 num_sge;		 
+	__u32 total_len;	 
 };
-/* Use pvrdma_sge (ib_sge) for receive queue s/g array elements. */
+ 
 
-/* PVRDMA send queue work request */
+ 
 struct pvrdma_sq_wqe_hdr {
-	__aligned_u64 wr_id;		/* wr id */
-	__u32 num_sge;		/* size of s/g array */
-	__u32 total_len;	/* reserved */
-	__u32 opcode;		/* operation type */
-	__u32 send_flags;	/* wr flags */
+	__aligned_u64 wr_id;		 
+	__u32 num_sge;		 
+	__u32 total_len;	 
+	__u32 opcode;		 
+	__u32 send_flags;	 
 	union {
 		__be32 imm_data;
 		__u32 invalidate_rkey;
@@ -284,9 +241,9 @@ struct pvrdma_sq_wqe_hdr {
 		} ud;
 	} wr;
 };
-/* Use pvrdma_sge (ib_sge) for send queue s/g array elements. */
+ 
 
-/* Completion queue element. */
+ 
 struct pvrdma_cqe {
 	__aligned_u64 wr_id;
 	__aligned_u64 qp;
@@ -304,7 +261,7 @@ struct pvrdma_cqe {
 	__u8 port_num;
 	__u8 smac[6];
 	__u8 network_hdr_type;
-	__u8 reserved2[6]; /* Pad to next power of 2 (64). */
+	__u8 reserved2[6];  
 };
 
-#endif /* __VMW_PVRDMA_ABI_H__ */
+#endif  

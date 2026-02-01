@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <net/tcp.h>
 #include <net/strparser.h>
 #include <net/xfrm.h>
@@ -34,7 +34,7 @@ static void handle_esp(struct sk_buff *skb, struct sock *sk)
 
 	skb_reset_transport_header(skb);
 
-	/* restore IP CB, we need at least IP6CB->nhoff */
+	 
 	memmove(skb->cb, &tcp_cb->header, sizeof(tcp_cb->header));
 
 	rcu_read_lock();
@@ -59,7 +59,7 @@ static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
 	u32 nonesp_marker;
 	int err;
 
-	/* keepalive packet? */
+	 
 	if (unlikely(len == 1)) {
 		u8 data;
 
@@ -76,7 +76,7 @@ static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
 		}
 	}
 
-	/* drop other short messages */
+	 
 	if (unlikely(len <= sizeof(nonesp_marker))) {
 		XFRM_INC_STATS(sock_net(strp->sk), LINUX_MIB_XFRMINHDRERROR);
 		kfree_skb(skb);
@@ -91,7 +91,7 @@ static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
 		return;
 	}
 
-	/* remove header, leave non-ESP marker/SPI */
+	 
 	if (!pskb_pull(skb, rxm->offset + 2)) {
 		XFRM_INC_STATS(sock_net(strp->sk), LINUX_MIB_XFRMINERROR);
 		kfree_skb(skb);
@@ -178,7 +178,7 @@ int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(espintcp_queue_out);
 
-/* espintcp length field is 2B and length includes the length field's size */
+ 
 #define MAX_ESPINTCP_MSG (((1 << 16) - 1) - 2)
 
 static int espintcp_sendskb_locked(struct sock *sk, struct espintcp_msg *emsg,
@@ -348,7 +348,7 @@ static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
 
 	sk_msg_init(&emsg->skmsg);
 	while (1) {
-		/* only -ENOMEM is possible since we don't coalesce */
+		 
 		err = sk_msg_alloc(sk, &emsg->skmsg, msglen, 0);
 		if (!err)
 			break;
@@ -380,7 +380,7 @@ static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
 	tcp_rate_check_app_limited(sk);
 
 	err = espintcp_push_msgs(sk, msg->msg_flags & MSG_DONTWAIT);
-	/* this message could be partially sent, keep it */
+	 
 
 	release_sock(sk);
 
@@ -457,7 +457,7 @@ static int espintcp_init_sk(struct sock *sk)
 	struct espintcp_ctx *ctx;
 	int err;
 
-	/* sockmap is not compatible with espintcp */
+	 
 	if (sk->sk_user_data)
 		return -EBUSY;
 
@@ -496,7 +496,7 @@ static int espintcp_init_sk(struct sock *sk)
 	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
 	INIT_WORK(&ctx->work, espintcp_tx_work);
 
-	/* avoid using task_frag */
+	 
 	sk->sk_allocation = GFP_ATOMIC;
 	sk->sk_use_task_frag = false;
 

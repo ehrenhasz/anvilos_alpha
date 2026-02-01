@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_hgt.c  --  R-Car VSP1 Histogram Generator 2D
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Niklas Söderlund (niklas.soderlund@ragnatech.se)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -19,9 +13,7 @@
 
 #define HGT_DATA_SIZE				((2 +  6 * 32) * 4)
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline u32 vsp1_hgt_read(struct vsp1_hgt *hgt, u32 reg)
 {
@@ -34,9 +26,7 @@ static inline void vsp1_hgt_write(struct vsp1_hgt *hgt,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Frame End Handler
- */
+ 
 
 void vsp1_hgt_frame_end(struct vsp1_entity *entity)
 {
@@ -62,9 +52,7 @@ void vsp1_hgt_frame_end(struct vsp1_entity *entity)
 	vsp1_histogram_buffer_complete(&hgt->histo, buf, HGT_DATA_SIZE);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 #define V4L2_CID_VSP1_HGT_HUE_AREAS	(V4L2_CID_USER_BASE | 0x1001)
 
@@ -73,22 +61,13 @@ static int hgt_hue_areas_try_ctrl(struct v4l2_ctrl *ctrl)
 	const u8 *values = ctrl->p_new.p_u8;
 	unsigned int i;
 
-	/*
-	 * The hardware has constraints on the hue area boundaries beyond the
-	 * control min, max and step. The values must match one of the following
-	 * expressions.
-	 *
-	 * 0L <= 0U <= 1L <= 1U <= 2L <= 2U <= 3L <= 3U <= 4L <= 4U <= 5L <= 5U
-	 * 0U <= 1L <= 1U <= 2L <= 2U <= 3L <= 3U <= 4L <= 4U <= 5L <= 5U <= 0L
-	 *
-	 * Start by verifying the common part...
-	 */
+	 
 	for (i = 1; i < (HGT_NUM_HUE_AREAS * 2) - 1; ++i) {
 		if (values[i] > values[i+1])
 			return -EINVAL;
 	}
 
-	/* ... and handle 0L separately. */
+	 
 	if (values[0] > values[1] && values[11] > values[0])
 		return -EINVAL;
 
@@ -121,9 +100,7 @@ static const struct v4l2_ctrl_config hgt_hue_areas = {
 	.dims = { 12 },
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void hgt_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -176,9 +153,7 @@ static const struct vsp1_entity_operations hgt_entity_ops = {
 	.destroy = vsp1_histogram_destroy,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 static const unsigned int hgt_mbus_formats[] = {
 	MEDIA_BUS_FMT_AHSV8888_1X32,
@@ -193,13 +168,13 @@ struct vsp1_hgt *vsp1_hgt_create(struct vsp1_device *vsp1)
 	if (hgt == NULL)
 		return ERR_PTR(-ENOMEM);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&hgt->ctrls, 1);
 	v4l2_ctrl_new_custom(&hgt->ctrls, &hgt_hue_areas, NULL);
 
 	hgt->histo.entity.subdev.ctrl_handler = &hgt->ctrls;
 
-	/* Initialize the video device and queue for statistics data. */
+	 
 	ret = vsp1_histogram_init(vsp1, &hgt->histo, VSP1_ENTITY_HGT, "hgt",
 				  &hgt_entity_ops, hgt_mbus_formats,
 				  ARRAY_SIZE(hgt_mbus_formats),

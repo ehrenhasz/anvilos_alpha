@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2020 Intel Corporation
- */
+
+ 
 #include <net/tso.h>
 #include <linux/tcp.h>
 
@@ -13,17 +10,9 @@
 #include "fw/api/tx.h"
 #include "queue/tx.h"
 
-/*************** HOST COMMAND QUEUE FUNCTIONS   *****/
+ 
 
-/*
- * iwl_pcie_gen2_enqueue_hcmd - enqueue a uCode command
- * @priv: device private data point
- * @cmd: a pointer to the ucode command structure
- *
- * The function returns < 0 values to indicate the operation
- * failed. On success, it returns the index (>= 0) of command in the
- * command queue.
- */
+ 
 int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 			       struct iwl_host_cmd *cmd)
 {
@@ -52,7 +41,7 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 		if (!cmd->len[i])
 			continue;
 
-		/* need at least IWL_FIRST_TB_SIZE copied */
+		 
 		if (copy_size < IWL_FIRST_TB_SIZE) {
 			int copy = IWL_FIRST_TB_SIZE - copy_size;
 
@@ -70,13 +59,10 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 				goto free_dup_buf;
 			}
 		} else if (cmd->dataflags[i] & IWL_HCMD_DFL_DUP) {
-			/*
-			 * This is also a chunk that isn't copied
-			 * to the static buffer so set had_nocopy.
-			 */
+			 
 			had_nocopy = true;
 
-			/* only allowed once */
+			 
 			if (WARN_ON(dup_buf)) {
 				idx = -EINVAL;
 				goto free_dup_buf;
@@ -87,7 +73,7 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 			if (!dup_buf)
 				return -ENOMEM;
 		} else {
-			/* NOCOPY must not be followed by normal! */
+			 
 			if (WARN_ON(had_nocopy)) {
 				idx = -EINVAL;
 				goto free_dup_buf;
@@ -97,11 +83,7 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 		cmd_size += cmd->len[i];
 	}
 
-	/*
-	 * If any of the command structures end up being larger than the
-	 * TFD_MAX_PAYLOAD_SIZE and they aren't dynamically allocated into
-	 * separate TFDs, then we will need to increase the size of the buffers
-	 */
+	 
 	if (WARN(copy_size > TFD_MAX_PAYLOAD_SIZE,
 		 "Command %s (%#x) is too large (%d bytes)\n",
 		 iwl_get_cmd_string(trans, cmd->id), cmd->id, copy_size)) {
@@ -127,12 +109,12 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 	out_cmd = txq->entries[idx].cmd;
 	out_meta = &txq->entries[idx].meta;
 
-	/* re-initialize to NULL */
+	 
 	memset(out_meta, 0, sizeof(*out_meta));
 	if (cmd->flags & CMD_WANT_SKB)
 		out_meta->source = cmd;
 
-	/* set up the header */
+	 
 	out_cmd->hdr_wide.cmd = iwl_cmd_opcode(cmd->id);
 	out_cmd->hdr_wide.group_id = group_id;
 	out_cmd->hdr_wide.version = iwl_cmd_version(cmd->id);
@@ -146,14 +128,14 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 	cmd_pos = sizeof(struct iwl_cmd_header_wide);
 	copy_size = sizeof(struct iwl_cmd_header_wide);
 
-	/* and copy the data that needs to be copied */
+	 
 	for (i = 0; i < IWL_MAX_CMD_TBS_PER_TFD; i++) {
 		int copy;
 
 		if (!cmd->len[i])
 			continue;
 
-		/* copy everything if not nocopy/dup */
+		 
 		if (!(cmd->dataflags[i] & (IWL_HCMD_DFL_NOCOPY |
 					   IWL_HCMD_DFL_DUP))) {
 			copy = cmd->len[i];
@@ -164,17 +146,13 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 			continue;
 		}
 
-		/*
-		 * Otherwise we need at least IWL_FIRST_TB_SIZE copied
-		 * in total (for bi-directional DMA), but copy up to what
-		 * we can fit into the payload for debug dump purposes.
-		 */
+		 
 		copy = min_t(int, TFD_MAX_PAYLOAD_SIZE - cmd_pos, cmd->len[i]);
 
 		memcpy((u8 *)out_cmd + cmd_pos, cmd->data[i], copy);
 		cmd_pos += copy;
 
-		/* However, treat copy_size the proper way, we need it below */
+		 
 		if (copy_size < IWL_FIRST_TB_SIZE) {
 			copy = IWL_FIRST_TB_SIZE - copy_size;
 
@@ -190,13 +168,13 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 		     out_cmd->hdr.cmd, le16_to_cpu(out_cmd->hdr.sequence),
 		     cmd_size, txq->write_ptr, idx, trans->txqs.cmd.q_id);
 
-	/* start the TFD with the minimum copy bytes */
+	 
 	tb0_size = min_t(int, copy_size, IWL_FIRST_TB_SIZE);
 	memcpy(&txq->first_tb_bufs[idx], out_cmd, tb0_size);
 	iwl_txq_gen2_set_tb(trans, tfd, iwl_txq_get_first_tb_dma(txq, idx),
 			    tb0_size);
 
-	/* map first command fragment, if any remains */
+	 
 	if (copy_size > tb0_size) {
 		phys_addr = dma_map_single(trans->dev,
 					   (u8 *)out_cmd + tb0_size,
@@ -211,7 +189,7 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 				    copy_size - tb0_size);
 	}
 
-	/* map the remaining (adjusted) nocopy/dup fragments */
+	 
 	for (i = 0; i < IWL_MAX_CMD_TBS_PER_TFD; i++) {
 		void *data = (void *)(uintptr_t)cmddata[i];
 
@@ -240,12 +218,12 @@ int iwl_pcie_gen2_enqueue_hcmd(struct iwl_trans *trans,
 
 	trace_iwlwifi_dev_hcmd(trans->dev, cmd, cmd_size, &out_cmd->hdr_wide);
 
-	/* start timer if queue currently empty */
+	 
 	if (txq->read_ptr == txq->write_ptr && txq->wd_timeout)
 		mod_timer(&txq->stuck_timer, jiffies + txq->wd_timeout);
 
 	spin_lock(&trans_pcie->reg_lock);
-	/* Increment and update queue's write index */
+	 
 	txq->write_ptr = iwl_txq_inc_wrap(trans, txq->write_ptr);
 	iwl_txq_inc_wr_ptr(trans, txq);
 	spin_unlock(&trans_pcie->reg_lock);

@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Fabian Vogt
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #ifndef MICROPY_INCLUDED_PY_ASMARM_H
 #define MICROPY_INCLUDED_PY_ASMARM_H
 
@@ -81,7 +56,7 @@ void asm_arm_exit(asm_arm_t *as);
 
 void asm_arm_bkpt(asm_arm_t *as);
 
-// mov
+
 void asm_arm_mov_reg_reg(asm_arm_t *as, uint reg_dest, uint reg_src);
 size_t asm_arm_mov_reg_i32(asm_arm_t *as, uint rd, int imm);
 void asm_arm_mov_reg_i32_optimised(asm_arm_t *as, uint rd, int imm);
@@ -89,11 +64,11 @@ void asm_arm_mov_local_reg(asm_arm_t *as, int local_num, uint rd);
 void asm_arm_mov_reg_local(asm_arm_t *as, uint rd, int local_num);
 void asm_arm_setcc_reg(asm_arm_t *as, uint rd, uint cond);
 
-// compare
+
 void asm_arm_cmp_reg_i8(asm_arm_t *as, uint rd, int imm);
 void asm_arm_cmp_reg_reg(asm_arm_t *as, uint rd, uint rn);
 
-// arithmetic
+
 void asm_arm_mvn_reg_reg(asm_arm_t *as, uint rd, uint rm);
 void asm_arm_add_reg_reg_reg(asm_arm_t *as, uint rd, uint rn, uint rm);
 void asm_arm_sub_reg_reg_reg(asm_arm_t *as, uint rd, uint rn, uint rm);
@@ -108,7 +83,7 @@ void asm_arm_lsl_reg_reg(asm_arm_t *as, uint rd, uint rs);
 void asm_arm_lsr_reg_reg(asm_arm_t *as, uint rd, uint rs);
 void asm_arm_asr_reg_reg(asm_arm_t *as, uint rd, uint rs);
 
-// memory
+
 void asm_arm_ldr_reg_reg(asm_arm_t *as, uint rd, uint rn, uint byte_offset);
 void asm_arm_ldrh_reg_reg(asm_arm_t *as, uint rd, uint rn);
 void asm_arm_ldrh_reg_reg_offset(asm_arm_t *as, uint rd, uint rn, uint byte_offset);
@@ -116,28 +91,28 @@ void asm_arm_ldrb_reg_reg(asm_arm_t *as, uint rd, uint rn);
 void asm_arm_str_reg_reg(asm_arm_t *as, uint rd, uint rm, uint byte_offset);
 void asm_arm_strh_reg_reg(asm_arm_t *as, uint rd, uint rm);
 void asm_arm_strb_reg_reg(asm_arm_t *as, uint rd, uint rm);
-// store to array
+
 void asm_arm_str_reg_reg_reg(asm_arm_t *as, uint rd, uint rm, uint rn);
 void asm_arm_strh_reg_reg_reg(asm_arm_t *as, uint rd, uint rm, uint rn);
 void asm_arm_strb_reg_reg_reg(asm_arm_t *as, uint rd, uint rm, uint rn);
 
-// stack
+
 void asm_arm_push(asm_arm_t *as, uint reglist);
 void asm_arm_pop(asm_arm_t *as, uint reglist);
 
-// control flow
+
 void asm_arm_bcc_label(asm_arm_t *as, int cond, uint label);
 void asm_arm_b_label(asm_arm_t *as, uint label);
 void asm_arm_bl_ind(asm_arm_t *as, uint fun_id, uint reg_temp);
 void asm_arm_bx_reg(asm_arm_t *as, uint reg_src);
 
-// Holds a pointer to mp_fun_table
+
 #define ASM_ARM_REG_FUN_TABLE ASM_ARM_REG_R7
 
 #if GENERIC_ASM_API
 
-// The following macros provide a (mostly) arch-independent API to
-// generate native code, and are used by the native emitter.
+
+
 
 #define ASM_WORD_SIZE (4)
 
@@ -156,7 +131,7 @@ void asm_arm_bx_reg(asm_arm_t *as, uint reg_src);
 #define REG_LOCAL_3 ASM_ARM_REG_R6
 #define REG_LOCAL_NUM (3)
 
-// Holds a pointer to mp_fun_table
+
 #define REG_FUN_TABLE ASM_ARM_REG_FUN_TABLE
 
 #define ASM_T               asm_arm_t
@@ -215,6 +190,6 @@ void asm_arm_bx_reg(asm_arm_t *as, uint reg_src);
 #define ASM_STORE16_REG_REG(as, reg_value, reg_base) asm_arm_strh_reg_reg((as), (reg_value), (reg_base))
 #define ASM_STORE32_REG_REG(as, reg_value, reg_base) asm_arm_str_reg_reg((as), (reg_value), (reg_base), 0)
 
-#endif // GENERIC_ASM_API
+#endif 
 
-#endif // MICROPY_INCLUDED_PY_ASMARM_H
+#endif 

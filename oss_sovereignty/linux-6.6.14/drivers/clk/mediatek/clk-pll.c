@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/container_of.h>
@@ -27,7 +24,7 @@
 
 #define AUDPLL_TUNER_EN		BIT(31)
 
-/* default 7 bits integer, can be overridden with pcwibits. */
+ 
 #define INTEGER_BITS		7
 
 int mtk_pll_is_prepared(struct clk_hw *hw)
@@ -46,7 +43,7 @@ static unsigned long __mtk_pll_recalc_rate(struct mtk_clk_pll *pll, u32 fin,
 	u64 vco;
 	u8 c = 0;
 
-	/* The fractional part of the PLL divider. */
+	 
 	ibits = pll->data->pcwibits ? pll->data->pcwibits : INTEGER_BITS;
 	if (pcwbits > ibits)
 		pcwfbits = pcwbits - ibits;
@@ -95,21 +92,21 @@ static void mtk_pll_set_rate_regs(struct mtk_clk_pll *pll, u32 pcw,
 {
 	u32 chg, val;
 
-	/* disable tuner */
+	 
 	__mtk_pll_tuner_disable(pll);
 
-	/* set postdiv */
+	 
 	val = readl(pll->pd_addr);
 	val &= ~(POSTDIV_MASK << pll->data->pd_shift);
 	val |= (ffs(postdiv) - 1) << pll->data->pd_shift;
 
-	/* postdiv and pcw need to set at the same time if on same register */
+	 
 	if (pll->pd_addr != pll->pcw_addr) {
 		writel(val, pll->pd_addr);
 		val = readl(pll->pcw_addr);
 	}
 
-	/* set pcw */
+	 
 	val &= ~GENMASK(pll->data->pcw_shift + pll->data->pcwbits - 1,
 			pll->data->pcw_shift);
 	val |= pcw << pll->data->pcw_shift;
@@ -119,21 +116,13 @@ static void mtk_pll_set_rate_regs(struct mtk_clk_pll *pll, u32 pcw,
 	if (pll->tuner_addr)
 		writel(val + 1, pll->tuner_addr);
 
-	/* restore tuner_en */
+	 
 	__mtk_pll_tuner_enable(pll);
 
 	udelay(20);
 }
 
-/*
- * mtk_pll_calc_values - calculate good values for a given input frequency.
- * @pll:	The pll
- * @pcw:	The pcw value (output)
- * @postdiv:	The post divider (output)
- * @freq:	The desired target frequency
- * @fin:	The input frequency
- *
- */
+ 
 void mtk_pll_calc_values(struct mtk_clk_pll *pll, u32 *pcw, u32 *postdiv,
 			 u32 freq, u32 fin)
 {
@@ -163,7 +152,7 @@ void mtk_pll_calc_values(struct mtk_clk_pll *pll, u32 *pcw, u32 *postdiv,
 		}
 	}
 
-	/* _pcw = freq * postdiv / fin * 2^pcwfbits */
+	 
 	ibits = pll->data->pcwibits ? pll->data->pcwibits : INTEGER_BITS;
 	_pcw = ((u64)freq << val) << (pll->data->pcwbits - ibits);
 	do_div(_pcw, fin);
@@ -430,12 +419,7 @@ void mtk_clk_unregister_plls(const struct mtk_pll_data *plls, int num_plls,
 		if (IS_ERR_OR_NULL(clk_data->hws[pll->id]))
 			continue;
 
-		/*
-		 * This is quite ugly but unfortunately the clks don't have
-		 * any device tied to them, so there's no place to store the
-		 * pointer to the I/O region base address. We have to fetch
-		 * it from one of the registered clks.
-		 */
+		 
 		base = mtk_clk_pll_get_base(clk_data->hws[pll->id], pll);
 
 		mtk_clk_unregister_pll(clk_data->hws[pll->id]);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2014, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -52,17 +50,17 @@ static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info,
 {
 	int sku = sku_info->sku_id;
 
-	/* Assign to default */
+	 
 	sku_info->cpu_speedo_id = 0;
 	sku_info->soc_speedo_id = 0;
 	sku_info->gpu_speedo_id = 0;
 	*threshold = THRESHOLD_INDEX_0;
 
 	switch (sku) {
-	case 0x00: /* Eng sku */
+	case 0x00:  
 	case 0x0F:
 	case 0x23:
-		/* Using the default */
+		 
 		break;
 	case 0x83:
 		sku_info->cpu_speedo_id = 2;
@@ -94,7 +92,7 @@ static void __init rev_sku_to_speedo_ids(struct tegra_sku_info *sku_info,
 		break;
 	default:
 		pr_err("Tegra Unknown SKU %d\n", sku);
-		/* Using the default for the error case */
+		 
 		break;
 	}
 }
@@ -117,7 +115,7 @@ void __init tegra124_init_speedo_data(struct tegra_sku_info *sku_info)
 		return;
 	}
 
-	/* GPU Speedo is stored in CPU_SPEEDO_2 */
+	 
 	sku_info->gpu_speedo_value = tegra_fuse_read_early(FUSE_CPU_SPEEDO_2);
 	soc_speedo_0_value = tegra_fuse_read_early(FUSE_SOC_SPEEDO_0);
 

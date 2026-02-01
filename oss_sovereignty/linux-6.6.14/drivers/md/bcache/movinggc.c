@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Moving/copying garbage collector
- *
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "btree.h"
@@ -33,7 +29,7 @@ static bool moving_pred(struct keybuf *buf, struct bkey *k)
 	return false;
 }
 
-/* Moving GC - IO loop */
+ 
 
 static void moving_io_destructor(struct closure *cl)
 {
@@ -132,7 +128,7 @@ static void read_moving(struct cache_set *c)
 
 	closure_init_stack(&cl);
 
-	/* XXX: if we error, background writeback could stall indefinitely */
+	 
 
 	while (!test_bit(CACHE_SET_STOPPING, &c->flags)) {
 		w = bch_keybuf_next_rescan(c, &c->moving_gc_keys,

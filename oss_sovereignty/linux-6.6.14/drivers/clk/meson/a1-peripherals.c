@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Author: Jian Hu <jian.hu@amlogic.com>
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- * Author: Dmitry Rokosov <ddrokosov@sberdevices.ru>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -356,15 +350,7 @@ static struct clk_regmap sys = {
 			&sys_b.hw,
 		},
 		.num_parents = 2,
-		/*
-		 * This clock is used by APB bus which is set in boot ROM code
-		 * and is required by the platform to operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) Mark the clock used by a firmware resource, if possible
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 	},
 };
@@ -746,10 +732,7 @@ static struct clk_regmap fclk_div2_divn = {
 	},
 };
 
-/*
- * the index 2 is sys_pll_div16, it will be implemented in the CPU clock driver,
- * the index 4 is the clock measurement source, it's not supported yet
- */
+ 
 static u32 gen_table[] = { 0, 1, 3, 5, 6, 7, 8 };
 static const struct clk_parent_data gen_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -773,13 +756,7 @@ static struct clk_regmap gen_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_data = gen_parent_data,
 		.num_parents = ARRAY_SIZE(gen_parent_data),
-		/*
-		 * The GEN clock can be connected to an external pad, so it
-		 * may be set up directly from the device tree. Additionally,
-		 * the GEN clock can be inherited from a more accurate RTC
-		 * clock, so in certain situations, it may be necessary
-		 * to freeze its parent.
-		 */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
@@ -1162,15 +1139,7 @@ static struct clk_regmap pwm_f = {
 	},
 };
 
-/*
- * spicc clk
- *   fdiv2   |\         |\       _____
- *  ---------| |---DIV--| |     |     |    spicc out
- *  ---------| |        | |-----|GATE |---------
- *     ..... |/         | /     |_____|
- *  --------------------|/
- *                 24M
- */
+ 
 static const struct clk_parent_data spicc_spifc_parents[] = {
 	{ .fw_name = "fclk_div2"},
 	{ .fw_name = "fclk_div3"},
@@ -1868,7 +1837,7 @@ static MESON_GATE(cpu_ctrl,	AXI_CLK_EN,	10);
 static MESON_GATE(rom,		AXI_CLK_EN,	11);
 static MESON_GATE(prod_i2c,	AXI_CLK_EN,	12);
 
-/* Array of all clocks registered by this provider */
+ 
 static struct clk_hw *a1_periphs_hw_clks[] = {
 	[CLKID_XTAL_IN]			= &xtal_in.hw,
 	[CLKID_FIXPLL_IN]		= &fixpll_in.hw,
@@ -2026,7 +1995,7 @@ static struct clk_hw *a1_periphs_hw_clks[] = {
 	[CLKID_DMC_SEL2]		= &dmc_sel2.hw,
 };
 
-/* Convenience table to populate regmap in .probe */
+ 
 static struct clk_regmap *const a1_periphs_regmaps[] = {
 	&xtal_in,
 	&fixpll_in,
@@ -2211,7 +2180,7 @@ static int meson_a1_periphs_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(map),
 				     "can't init regmap mmio region\n");
 
-	/* Populate regmap for the regmap backed clocks */
+	 
 	for (i = 0; i < ARRAY_SIZE(a1_periphs_regmaps); i++)
 		a1_periphs_regmaps[i]->map = map;
 

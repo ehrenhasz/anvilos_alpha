@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC driver for LEDs
- *
- * Copyright (c) Siemens AG, 2018-2021
- *
- * Authors:
- *  Henning Schild <henning.schild@siemens.com>
- *  Jan Kiszka <jan.kiszka@siemens.com>
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- */
+
+ 
 
 #include <linux/ioport.h>
 #include <linux/kernel.h>
@@ -23,7 +14,7 @@
 #define SIMATIC_IPC_LED_PORT_BASE	0x404E
 
 struct simatic_ipc_led {
-	unsigned int value; /* mask for io */
+	unsigned int value;  
 	char *name;
 	struct led_classdev cdev;
 };
@@ -87,7 +78,7 @@ static int simatic_ipc_leds_probe(struct platform_device *pdev)
 	case SIMATIC_IPC_DEVICE_427E:
 		res = &simatic_ipc_led_io_res;
 		ipcled = simatic_ipc_leds_io;
-		/* on 227D the two bytes work the other way araound */
+		 
 		if (plat->devmode == SIMATIC_IPC_DEVICE_227D) {
 			while (ipcled->value) {
 				ipcled->value = swab16(ipcled->value);

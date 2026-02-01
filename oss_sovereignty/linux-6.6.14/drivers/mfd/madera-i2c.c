@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C bus interface to Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -77,7 +73,7 @@ static int madera_i2c_probe(struct i2c_client *i2c)
 	name = madera_name_from_type(type);
 
 	if (!regmap_16bit_config) {
-		/* it's polite to say which codec isn't built into the kernel */
+		 
 		dev_err(&i2c->dev,
 			"Kernel does not include support for %s\n", name);
 		return -EINVAL;

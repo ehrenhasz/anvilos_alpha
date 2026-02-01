@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/handshake.yaml */
-/* YNL-GEN user source */
+
+ 
+ 
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
 
-/* Enums */
+ 
 static const char * const handshake_op_strmap[] = {
 	[HANDSHAKE_CMD_READY] = "ready",
 	[HANDSHAKE_CMD_ACCEPT] = "accept",
@@ -66,7 +66,7 @@ const char *handshake_auth_str(enum handshake_auth value)
 	return handshake_auth_strmap[value];
 }
 
-/* Policies */
+ 
 struct ynl_policy_attr handshake_x509_policy[HANDSHAKE_A_X509_MAX + 1] = {
 	[HANDSHAKE_A_X509_CERT] = { .name = "cert", .type = YNL_PT_U32, },
 	[HANDSHAKE_A_X509_PRIVKEY] = { .name = "privkey", .type = YNL_PT_U32, },
@@ -104,7 +104,7 @@ struct ynl_policy_nest handshake_done_nest = {
 	.table = handshake_done_policy,
 };
 
-/* Common nested types */
+ 
 void handshake_x509_free(struct handshake_x509 *obj)
 {
 }
@@ -134,8 +134,8 @@ int handshake_x509_parse(struct ynl_parse_arg *yarg,
 	return 0;
 }
 
-/* ============== HANDSHAKE_CMD_ACCEPT ============== */
-/* HANDSHAKE_CMD_ACCEPT - do */
+ 
+ 
 void handshake_accept_req_free(struct handshake_accept_req *req)
 {
 	free(req);
@@ -272,7 +272,7 @@ err_free:
 	return NULL;
 }
 
-/* HANDSHAKE_CMD_ACCEPT - notify */
+ 
 void handshake_accept_ntf_free(struct handshake_accept_ntf *rsp)
 {
 	unsigned int i;
@@ -285,8 +285,8 @@ void handshake_accept_ntf_free(struct handshake_accept_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== HANDSHAKE_CMD_DONE ============== */
-/* HANDSHAKE_CMD_DONE - do */
+ 
+ 
 void handshake_done_req_free(struct handshake_done_req *req)
 {
 	free(req->remote_auth);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KCSAN short boot-time selftests.
- *
- * Copyright (C) 2019, Google LLC.
- */
+
+ 
 
 #define pr_fmt(fmt) "kcsan: " fmt
 
@@ -22,10 +18,7 @@
 
 #define ITERS_PER_TEST 2000
 
-/*
- * Test watchpoint encode and decode: check that encoding some access's info,
- * and then subsequent decode preserves the access's info.
- */
+ 
 static bool __init test_encode_decode(void)
 {
 	int i;
@@ -48,13 +41,13 @@ static bool __init test_encode_decode(void)
 
 		encoded_watchpoint = encode_watchpoint(addr, size, is_write);
 
-		/* Check special watchpoints */
+		 
 		if (WARN_ON(decode_watchpoint(INVALID_WATCHPOINT, &verif_masked_addr, &verif_size, &verif_is_write)))
 			return false;
 		if (WARN_ON(decode_watchpoint(CONSUMED_WATCHPOINT, &verif_masked_addr, &verif_size, &verif_is_write)))
 			return false;
 
-		/* Check decoding watchpoint returns same data */
+		 
 		if (WARN_ON(!decode_watchpoint(encoded_watchpoint, &verif_masked_addr, &verif_size, &verif_is_write)))
 			return false;
 		if (WARN_ON(verif_masked_addr != (addr & WATCHPOINT_ADDR_MASK)))
@@ -75,7 +68,7 @@ fail:
 	return true;
 }
 
-/* Test access matching function. */
+ 
 static bool __init test_matching_access(void)
 {
 	if (WARN_ON(!matching_access(10, 1, 10, 1)))
@@ -89,23 +82,14 @@ static bool __init test_matching_access(void)
 	if (WARN_ON(matching_access(9, 1, 10, 1)))
 		return false;
 
-	/*
-	 * An access of size 0 could match another access, as demonstrated here.
-	 * Rather than add more comparisons to 'matching_access()', which would
-	 * end up in the fast-path for *all* checks, check_access() simply
-	 * returns for all accesses of size 0.
-	 */
+	 
 	if (WARN_ON(!matching_access(8, 8, 12, 0)))
 		return false;
 
 	return true;
 }
 
-/*
- * Correct memory barrier instrumentation is critical to avoiding false
- * positives: simple test to check at boot certain barriers are always properly
- * instrumented. See kcsan_test for a more complete test.
- */
+ 
 static DEFINE_SPINLOCK(test_spinlock);
 static bool __init test_barrier(void)
 {
@@ -136,7 +120,7 @@ static bool __init test_barrier(void)
 #define KCSAN_CHECK_WRITE_BARRIER(b) __KCSAN_CHECK_BARRIER(KCSAN_ACCESS_WRITE, b, #b)
 #define KCSAN_CHECK_RW_BARRIER(b)    __KCSAN_CHECK_BARRIER(KCSAN_ACCESS_WRITE | KCSAN_ACCESS_COMPOUND, b, #b)
 
-	kcsan_nestable_atomic_begin(); /* No watchpoints in called functions. */
+	kcsan_nestable_atomic_begin();  
 
 	KCSAN_CHECK_READ_BARRIER(mb());
 	KCSAN_CHECK_READ_BARRIER(rmb());

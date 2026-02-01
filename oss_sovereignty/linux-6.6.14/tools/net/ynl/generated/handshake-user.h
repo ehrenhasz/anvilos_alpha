@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/handshake.yaml */
-/* YNL-GEN user header */
+ 
+ 
+ 
+ 
 
 #ifndef _LINUX_HANDSHAKE_GEN_H
 #define _LINUX_HANDSHAKE_GEN_H
@@ -15,13 +15,13 @@ struct ynl_sock;
 
 extern const struct ynl_family ynl_handshake_family;
 
-/* Enums */
+ 
 const char *handshake_op_str(int op);
 const char *handshake_handler_class_str(enum handshake_handler_class value);
 const char *handshake_msg_type_str(enum handshake_msg_type value);
 const char *handshake_auth_str(enum handshake_auth value);
 
-/* Common nested types */
+ 
 struct handshake_x509 {
 	struct {
 		__u32 cert:1;
@@ -32,8 +32,8 @@ struct handshake_x509 {
 	__u32 privkey;
 };
 
-/* ============== HANDSHAKE_CMD_ACCEPT ============== */
-/* HANDSHAKE_CMD_ACCEPT - do */
+ 
+ 
 struct handshake_accept_req {
 	struct {
 		__u32 handler_class:1;
@@ -78,13 +78,11 @@ struct handshake_accept_rsp {
 
 void handshake_accept_rsp_free(struct handshake_accept_rsp *rsp);
 
-/*
- * Handler retrieves next queued handshake request
- */
+ 
 struct handshake_accept_rsp *
 handshake_accept(struct ynl_sock *ys, struct handshake_accept_req *req);
 
-/* HANDSHAKE_CMD_ACCEPT - notify */
+ 
 struct handshake_accept_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -95,8 +93,8 @@ struct handshake_accept_ntf {
 
 void handshake_accept_ntf_free(struct handshake_accept_ntf *rsp);
 
-/* ============== HANDSHAKE_CMD_DONE ============== */
-/* HANDSHAKE_CMD_DONE - do */
+ 
+ 
 struct handshake_done_req {
 	struct {
 		__u32 status:1;
@@ -137,9 +135,7 @@ __handshake_done_req_set_remote_auth(struct handshake_done_req *req,
 	req->n_remote_auth = n_remote_auth;
 }
 
-/*
- * Handler reports handshake completion
- */
+ 
 int handshake_done(struct ynl_sock *ys, struct handshake_done_req *req);
 
-#endif /* _LINUX_HANDSHAKE_GEN_H */
+#endif  

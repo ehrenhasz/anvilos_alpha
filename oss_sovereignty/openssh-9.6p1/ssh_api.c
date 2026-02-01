@@ -1,19 +1,5 @@
-/* $OpenBSD: ssh_api.c,v 1.27 2021/04/03 06:18:41 djm Exp $ */
-/*
- * Copyright (c) 2012 Markus Friedl.  All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -48,10 +34,7 @@ struct sshkey *_ssh_host_private_key(int, int, struct ssh *);
 int	_ssh_host_key_sign(struct ssh *, struct sshkey *, struct sshkey *,
     u_char **, size_t *, const u_char *, size_t, const char *);
 
-/*
- * stubs for the server side implementation of kex.
- * disable privsep so our stubs will never be called.
- */
+ 
 int	use_privsep = 0;
 int	mm_sshkey_sign(struct sshkey *, u_char **, u_int *,
     const u_char *, u_int, const char *, const char *, const char *, u_int);
@@ -76,7 +59,7 @@ mm_choose_dh(int min, int nbits, int max)
 }
 #endif
 
-/* API */
+ 
 
 int
 ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
@@ -97,7 +80,7 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
 	if (is_server)
 		ssh_packet_set_server(ssh);
 
-	/* Initialize key exchange */
+	 
 	proposal = kex_params ? kex_params->proposal : myproposal;
 	if ((r = kex_ready(ssh, proposal)) != 0) {
 		ssh_free(ssh);
@@ -116,7 +99,7 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
 # ifdef OPENSSL_HAS_ECC
 		ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
 # endif
-#endif /* WITH_OPENSSL */
+#endif  
 		ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_server;
 		ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
 		ssh->kex->load_host_public_key=&_ssh_host_public_key;
@@ -134,7 +117,7 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
 # ifdef OPENSSL_HAS_ECC
 		ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_client;
 # endif
-#endif /* WITH_OPENSSL */
+#endif  
 		ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_client;
 		ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_client;
 		ssh->kex->verify_host_key =&_ssh_verify_host_key;
@@ -151,10 +134,7 @@ ssh_free(struct ssh *ssh)
 	if (ssh == NULL)
 		return;
 
-	/*
-	 * we've only created the public keys variants in case we
-	 * are a acting as a server.
-	 */
+	 
 	while ((k = TAILQ_FIRST(&ssh->public_keys)) != NULL) {
 		TAILQ_REMOVE(&ssh->public_keys, k, next);
 		if (ssh->kex && ssh->kex->server)
@@ -181,7 +161,7 @@ ssh_get_app_data(struct ssh *ssh)
 	return ssh->app_data;
 }
 
-/* Returns < 0 on error, 0 otherwise */
+ 
 int
 ssh_add_hostkey(struct ssh *ssh, struct sshkey *key)
 {
@@ -201,7 +181,7 @@ ssh_add_hostkey(struct ssh *ssh, struct sshkey *key)
 		k_prv->key = key;
 		TAILQ_INSERT_TAIL(&ssh->private_keys, k_prv, next);
 
-		/* add the public key, too */
+		 
 		k->key = pubkey;
 		TAILQ_INSERT_TAIL(&ssh->public_keys, k, next);
 		r = 0;
@@ -241,25 +221,12 @@ ssh_packet_next(struct ssh *ssh, u_char *typep)
 	u_int32_t seqnr;
 	u_char type;
 
-	/*
-	 * Try to read a packet. Return SSH_MSG_NONE if no packet or not
-	 * enough data.
-	 */
+	 
 	*typep = SSH_MSG_NONE;
 	if (sshbuf_len(ssh->kex->client_version) == 0 ||
 	    sshbuf_len(ssh->kex->server_version) == 0)
 		return _ssh_exchange_banner(ssh);
-	/*
-	 * If we enough data and a dispatch function then
-	 * call the function and get the next packet.
-	 * Otherwise return the packet type to the caller so it
-	 * can decide how to go on.
-	 *
-	 * We will only call the dispatch function for:
-	 *     20-29    Algorithm negotiation
-	 *     30-49    Key exchange method specific (numbers can be reused for
-	 *              different authentication methods)
-	 */
+	 
 	for (;;) {
 		if ((r = ssh_packet_read_poll2(ssh, &type, &seqnr)) != 0)
 			return r;
@@ -320,7 +287,7 @@ ssh_input_space(struct ssh *ssh, size_t len)
 	return (0 == sshbuf_check_reserve(ssh_packet_get_input(ssh), len));
 }
 
-/* Read other side's version identification. */
+ 
 int
 _ssh_read_banner(struct ssh *ssh, struct sshbuf *banner)
 {
@@ -337,7 +304,7 @@ _ssh_read_banner(struct ssh *ssh, struct sshbuf *banner)
 		expect_nl = 0;
 		for (;;) {
 			if (j >= sshbuf_len(input))
-				return 0; /* insufficient data in input buf */
+				return 0;  
 			c = s[j++];
 			if (c == '\r') {
 				expect_nl = 1;
@@ -357,7 +324,7 @@ _ssh_read_banner(struct ssh *ssh, struct sshbuf *banner)
 			break;
 		debug_f("%.*s", (int)sshbuf_len(banner),
 		    sshbuf_ptr(banner));
-		/* Accept lines before banner only on client */
+		 
 		if (ssh->kex->server || ++n > SSH_MAX_PRE_BANNER_LINES) {
   bad:
 			if ((r = sshbuf_put(ssh_packet_get_output(ssh),
@@ -369,17 +336,14 @@ _ssh_read_banner(struct ssh *ssh, struct sshbuf *banner)
 	if ((r = sshbuf_consume(input, j)) != 0)
 		return r;
 
-	/* XXX remote version must be the same size as banner for sscanf */
+	 
 	if ((cp = sshbuf_dup_string(banner)) == NULL ||
 	    (remote_version = calloc(1, sshbuf_len(banner))) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
 	}
 
-	/*
-	 * Check that the versions match.  In future this might accept
-	 * several versions and set appropriate flags to handle them.
-	 */
+	 
 	if (sscanf(cp, "SSH-%d.%d-%[^\n]\n",
 	    &remote_major, &remote_minor, remote_version) != 3) {
 		r = SSH_ERR_INVALID_FORMAT;
@@ -403,7 +367,7 @@ _ssh_read_banner(struct ssh *ssh, struct sshbuf *banner)
 	return r;
 }
 
-/* Send our own protocol version identification. */
+ 
 int
 _ssh_send_banner(struct ssh *ssh, struct sshbuf *banner)
 {
@@ -414,7 +378,7 @@ _ssh_send_banner(struct ssh *ssh, struct sshbuf *banner)
 		return r;
 	if ((r = sshbuf_putb(ssh_packet_get_output(ssh), banner)) != 0)
 		return r;
-	/* Remove trailing \r\n */
+	 
 	if ((r = sshbuf_consume_end(banner, 2)) != 0)
 		return r;
 	if ((cp = sshbuf_dup_string(banner)) == NULL)
@@ -430,10 +394,7 @@ _ssh_exchange_banner(struct ssh *ssh)
 	struct kex *kex = ssh->kex;
 	int r;
 
-	/*
-	 * if _ssh_read_banner() cannot parse a full version string
-	 * it will return NULL and we end up calling it again.
-	 */
+	 
 
 	r = 0;
 	if (kex->server) {
@@ -453,7 +414,7 @@ _ssh_exchange_banner(struct ssh *ssh)
 	}
 	if (r != 0)
 		return r;
-	/* start initial kex as soon as we have exchanged the banners */
+	 
 	if (sshbuf_len(ssh->kex->server_version) != 0 &&
 	    sshbuf_len(ssh->kex->client_version) != 0) {
 		if ((r = _ssh_order_hostkeyalgs(ssh)) != 0 ||
@@ -502,12 +463,12 @@ _ssh_verify_host_key(struct sshkey *hostkey, struct ssh *ssh)
 	TAILQ_FOREACH(k, &ssh->public_keys, next) {
 		debug3_f("check %s", sshkey_type(k->key));
 		if (sshkey_equal_public(hostkey, k->key))
-			return (0);	/* ok */
+			return (0);	 
 	}
-	return (-1);	/* failed */
+	return (-1);	 
 }
 
-/* offer hostkey algorithms in kexinit depending on registered keys */
+ 
 int
 _ssh_order_hostkeyalgs(struct ssh *ssh)
 {
@@ -517,7 +478,7 @@ _ssh_order_hostkeyalgs(struct ssh *ssh)
 	size_t maxlen;
 	int ktype, r;
 
-	/* XXX we de-serialize ssh->kex->my, modify it, and change it */
+	 
 	if ((r = kex_buf2prop(ssh->kex->my, NULL, &proposal)) != 0)
 		return r;
 	orig = proposal[PROPOSAL_SERVER_HOST_KEY_ALGS];
@@ -550,7 +511,7 @@ _ssh_order_hostkeyalgs(struct ssh *ssh)
 		debug2_f("replace/%d %s", ssh->kex->server, replace);
 		free(orig);
 		proposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = replace;
-		replace = NULL;	/* owned by proposal */
+		replace = NULL;	 
 		r = kex_prop2buf(ssh->kex->my, proposal);
 	}
  out:

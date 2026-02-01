@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Test module for stress and analyze performance of vmalloc allocator.
- * (C) 2018 Uladzislau Rezki (Sony) <urezki@gmail.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -54,18 +51,13 @@ __param(int, run_test_mask, INT_MAX,
 		"\t\tid: 256,  name: kvfree_rcu_1_arg_vmalloc_test\n"
 		"\t\tid: 512,  name: kvfree_rcu_2_arg_vmalloc_test\n"
 		"\t\tid: 1024, name: vm_map_ram_test\n"
-		/* Add a new test case description here. */
+		 
 );
 
-/*
- * Read write semaphore for synchronization of setup
- * phase that is done in main thread and workers.
- */
+ 
 static DECLARE_RWSEM(prepare_for_test_rwsem);
 
-/*
- * Completion tracking for worker threads.
- */
+ 
 static DECLARE_COMPLETION(test_all_done_comp);
 static atomic_t test_n_undone = ATOMIC_INIT(0);
 
@@ -86,14 +78,10 @@ static int random_size_align_alloc_test(void)
 	for (i = 0; i < test_loop_count; i++) {
 		rnd = get_random_u8();
 
-		/*
-		 * Maximum 1024 pages, if PAGE_SIZE is 4096.
-		 */
+		 
 		align = 1 << (rnd % 23);
 
-		/*
-		 * Maximum 10 pages.
-		 */
+		 
 		size = ((rnd % 10) + 1) * PAGE_SIZE;
 
 		ptr = __vmalloc_node(size, align, GFP_KERNEL | __GFP_ZERO, 0,
@@ -107,9 +95,7 @@ static int random_size_align_alloc_test(void)
 	return 0;
 }
 
-/*
- * This test case is supposed to be failed.
- */
+ 
 static int align_shift_alloc_test(void)
 {
 	unsigned long align;
@@ -200,7 +186,7 @@ static int long_busy_list_alloc_test(void)
 		vfree(ptr_2);
 	}
 
-	/*  Success */
+	 
 	rv = 0;
 
 leave:
@@ -249,7 +235,7 @@ static int full_fit_alloc_test(void)
 		vfree(tmp);
 	}
 
-	/* Success */
+	 
 	rv = 0;
 
 error:
@@ -300,9 +286,7 @@ pcpu_alloc_test(void)
 	for (i = 0; i < 35000; i++) {
 		size = get_random_u32_inclusive(1, PAGE_SIZE / 4);
 
-		/*
-		 * Maximum PAGE_SIZE
-		 */
+		 
 		align = 1 << get_random_u32_inclusive(1, 11);
 
 		pcpu[i] = __alloc_percpu(size, align);
@@ -377,7 +361,7 @@ vm_map_ram_test(void)
 	if (nr_allocated != map_nr_pages)
 		goto cleanup;
 
-	/* Run the test loop. */
+	 
 	for (i = 0; i < test_loop_count; i++) {
 		v_ptr = vm_map_ram(pages, map_nr_pages, NUMA_NO_NODE);
 		*v_ptr = 'a';
@@ -390,7 +374,7 @@ cleanup:
 
 	kfree(pages);
 
-	/* 0 indicates success. */
+	 
 	return nr_allocated != map_nr_pages;
 }
 
@@ -411,7 +395,7 @@ static struct test_case_desc test_case_array[] = {
 	{ "kvfree_rcu_1_arg_vmalloc_test", kvfree_rcu_1_arg_vmalloc_test },
 	{ "kvfree_rcu_2_arg_vmalloc_test", kvfree_rcu_2_arg_vmalloc_test },
 	{ "vm_map_ram_test", vm_map_ram_test },
-	/* Add a new test case here. */
+	 
 };
 
 struct test_case_data {
@@ -433,10 +417,10 @@ static void shuffle_array(int *arr, int n)
 	int i, j;
 
 	for (i = n - 1; i > 0; i--)  {
-		/* Cut the range. */
+		 
 		j = get_random_u32_below(i);
 
-		/* Swap indexes. */
+		 
 		swap(arr[i], arr[j]);
 	}
 }
@@ -455,18 +439,14 @@ static int test_func(void *private)
 	if (!sequential_test_order)
 		shuffle_array(random_array, ARRAY_SIZE(test_case_array));
 
-	/*
-	 * Block until initialization is done.
-	 */
+	 
 	down_read(&prepare_for_test_rwsem);
 
 	t->start = get_cycles();
 	for (i = 0; i < ARRAY_SIZE(test_case_array); i++) {
 		index = random_array[i];
 
-		/*
-		 * Skip tests if run_test_mask has been specified.
-		 */
+		 
 		if (!((run_test_mask & (1 << index)) >> index))
 			continue;
 
@@ -478,9 +458,7 @@ static int test_func(void *private)
 				t->data[index].test_failed++;
 		}
 
-		/*
-		 * Take an average time that test took.
-		 */
+		 
 		delta = (u64) ktime_us_delta(ktime_get(), kt);
 		do_div(delta, (u32) test_repeat_count);
 
@@ -491,9 +469,7 @@ static int test_func(void *private)
 	up_read(&prepare_for_test_rwsem);
 	test_report_one_done();
 
-	/*
-	 * Wait for the kthread_stop() call.
-	 */
+	 
 	while (!kthread_should_stop())
 		msleep(10);
 
@@ -503,14 +479,10 @@ static int test_func(void *private)
 static int
 init_test_configurtion(void)
 {
-	/*
-	 * A maximum number of workers is defined as hard-coded
-	 * value and set to USHRT_MAX. We add such gap just in
-	 * case and for potential heavy stressing.
-	 */
+	 
 	nr_threads = clamp(nr_threads, 1, (int) USHRT_MAX);
 
-	/* Allocate the space for test instances. */
+	 
 	tdriver = kvcalloc(nr_threads, sizeof(*tdriver), GFP_KERNEL);
 	if (tdriver == NULL)
 		return -1;
@@ -528,16 +500,12 @@ static void do_concurrent_test(void)
 {
 	int i, ret;
 
-	/*
-	 * Set some basic configurations plus sanity check.
-	 */
+	 
 	ret = init_test_configurtion();
 	if (ret < 0)
 		return;
 
-	/*
-	 * Put on hold all workers.
-	 */
+	 
 	down_write(&prepare_for_test_rwsem);
 
 	for (i = 0; i < nr_threads; i++) {
@@ -546,23 +514,16 @@ static void do_concurrent_test(void)
 		t->task = kthread_run(test_func, t, "vmalloc_test/%d", i);
 
 		if (!IS_ERR(t->task))
-			/* Success. */
+			 
 			atomic_inc(&test_n_undone);
 		else
 			pr_err("Failed to start %d kthread\n", i);
 	}
 
-	/*
-	 * Now let the workers do their job.
-	 */
+	 
 	up_write(&prepare_for_test_rwsem);
 
-	/*
-	 * Sleep quiet until all workers are done with 1 second
-	 * interval. Since the test can take a lot of time we
-	 * can run into a stack trace of the hung task. That is
-	 * why we go with completion_timeout and HZ value.
-	 */
+	 
 	do {
 		ret = wait_for_completion_timeout(&test_all_done_comp, HZ);
 	} while (!ret);
@@ -597,7 +558,7 @@ static void do_concurrent_test(void)
 static int vmalloc_test_init(void)
 {
 	do_concurrent_test();
-	return -EAGAIN; /* Fail will directly unload the module */
+	return -EAGAIN;  
 }
 
 static void vmalloc_test_exit(void)

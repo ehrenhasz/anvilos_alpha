@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- */
+
+ 
 
 #include "pvrusb2-ioread.h"
 #include "pvrusb2-debug.h"
@@ -24,11 +21,11 @@ struct pvr2_ioread {
 	unsigned int sync_buf_offs;
 	unsigned int sync_state;
 	unsigned int sync_trashed_count;
-	int enabled;         // Streaming is on
-	int spigot_open;     // OK to pass data to client
-	int stream_running;  // Passing data to client now
+	int enabled;         
+	int spigot_open;     
+	int stream_running;  
 
-	/* State relevant to current buffer being read */
+	 
 	struct pvr2_buffer *c_buf;
 	char *c_data_ptr;
 	unsigned int c_data_len;
@@ -49,7 +46,7 @@ static int pvr2_ioread_init(struct pvr2_ioread *cp)
 	}
 
 	if (idx < BUFFER_COUNT) {
-		// An allocation appears to have failed
+		
 		for (idx = 0; idx < BUFFER_COUNT; idx++) {
 			if (!(cp->buffer_storage[idx])) continue;
 			kfree(cp->buffer_storage[idx]);
@@ -249,10 +246,10 @@ static int pvr2_ioread_get_buffer(struct pvr2_ioread *cp)
 
 	while (cp->c_data_len <= cp->c_data_offs) {
 		if (cp->c_buf) {
-			// Flush out current buffer first.
+			
 			stat = pvr2_buffer_queue(cp->c_buf);
 			if (stat < 0) {
-				// Streaming error...
+				
 				pvr2_trace(PVR2_TRACE_DATA_FLOW,
 					   "/*---TRACE_READ---*/ pvr2_ioread_read id=%p queue_error=%d",
 					   cp,stat);
@@ -264,23 +261,23 @@ static int pvr2_ioread_get_buffer(struct pvr2_ioread *cp)
 			cp->c_data_len = 0;
 			cp->c_data_offs = 0;
 		}
-		// Now get a freshly filled buffer.
+		
 		cp->c_buf = pvr2_stream_get_ready_buffer(cp->stream);
-		if (!cp->c_buf) break; // Nothing ready; done.
+		if (!cp->c_buf) break; 
 		cp->c_data_len = pvr2_buffer_get_count(cp->c_buf);
 		if (!cp->c_data_len) {
-			// Nothing transferred.  Was there an error?
+			
 			stat = pvr2_buffer_get_status(cp->c_buf);
 			if (stat < 0) {
-				// Streaming error...
+				
 				pvr2_trace(PVR2_TRACE_DATA_FLOW,
 					   "/*---TRACE_READ---*/ pvr2_ioread_read id=%p buffer_error=%d",
 					   cp,stat);
 				pvr2_ioread_stop(cp);
-				// Give up.
+				
 				return 0;
 			}
-			// Start over...
+			
 			continue;
 		}
 		cp->c_data_offs = 0;
@@ -296,34 +293,34 @@ static void pvr2_ioread_filter(struct pvr2_ioread *cp)
 	if (!cp->enabled) return;
 	if (cp->sync_state != 1) return;
 
-	// Search the stream for our synchronization key.  This is made
-	// complicated by the fact that in order to be honest with
-	// ourselves here we must search across buffer boundaries...
+	
+	
+	
 	mutex_lock(&cp->mutex);
 	while (1) {
-		// Ensure we have a buffer
+		
 		if (!pvr2_ioread_get_buffer(cp)) break;
 		if (!cp->c_data_len) break;
 
-		// Now walk the buffer contents until we match the key or
-		// run out of buffer data.
+		
+		
 		for (idx = cp->c_data_offs; idx < cp->c_data_len; idx++) {
 			if (cp->sync_buf_offs >= cp->sync_key_len) break;
 			if (cp->c_data_ptr[idx] ==
 			    cp->sync_key_ptr[cp->sync_buf_offs]) {
-				// Found the next key byte
+				
 				(cp->sync_buf_offs)++;
 			} else {
-				// Whoops, mismatched.  Start key over...
+				
 				cp->sync_buf_offs = 0;
 			}
 		}
 
-		// Consume what we've walked through
+		
 		cp->c_data_offs += idx;
 		cp->sync_trashed_count += idx;
 
-		// If we've found the key, then update state and get out.
+		
 		if (cp->sync_buf_offs >= cp->sync_key_len) {
 			cp->sync_trashed_count -= cp->sync_key_len;
 			pvr2_trace(PVR2_TRACE_DATA_FLOW,
@@ -335,16 +332,16 @@ static void pvr2_ioread_filter(struct pvr2_ioread *cp)
 		}
 
 		if (cp->c_data_offs < cp->c_data_len) {
-			// Sanity check - should NEVER get here
+			
 			pvr2_trace(PVR2_TRACE_ERROR_LEGS,
 				   "ERROR: pvr2_ioread filter sync problem len=%u offs=%u",
 				   cp->c_data_len,cp->c_data_offs);
-			// Get out so we don't get stuck in an infinite
-			// loop.
+			
+			
 			break;
 		}
 
-		continue; // (for clarity)
+		continue; 
 	}
 	mutex_unlock(&cp->mutex);
 }
@@ -353,7 +350,7 @@ int pvr2_ioread_avail(struct pvr2_ioread *cp)
 {
 	int ret;
 	if (!(cp->enabled)) {
-		// Stream is not enabled; so this is an I/O error
+		
 		return -EIO;
 	}
 
@@ -365,12 +362,12 @@ int pvr2_ioread_avail(struct pvr2_ioread *cp)
 	ret = 0;
 	if (cp->stream_running) {
 		if (!pvr2_stream_get_ready_count(cp->stream)) {
-			// No data available at all right now.
+			
 			ret = -EAGAIN;
 		}
 	} else {
 		if (pvr2_stream_get_ready_count(cp->stream) < BUFFER_COUNT/2) {
-			// Haven't buffered up enough yet; try again later
+			
 			ret = -EAGAIN;
 		}
 	}
@@ -409,7 +406,7 @@ cp);
 	mutex_lock(&cp->mutex);
 	do {
 
-		// Suck data out of the buffers and copy to the user
+		
 		copied_cnt = 0;
 		if (!buf) cnt = 0;
 		while (1) {
@@ -421,25 +418,25 @@ cp);
 			if (!cnt) break;
 
 			if (cp->sync_state == 2) {
-				// We're repeating the sync key data into
-				// the stream.
+				
+				
 				src = cp->sync_key_ptr + cp->sync_buf_offs;
 				bcnt = cp->sync_key_len - cp->sync_buf_offs;
 			} else {
-				// Normal buffer copy
+				
 				src = cp->c_data_ptr + cp->c_data_offs;
 				bcnt = cp->c_data_len - cp->c_data_offs;
 			}
 
 			if (!bcnt) break;
 
-			// Don't run past user's buffer
+			
 			if (bcnt > cnt) bcnt = cnt;
 
 			if (copy_to_user(buf,src,bcnt)) {
-				// User supplied a bad pointer?
-				// Give up - this *will* cause data
-				// to be lost.
+				
+				
+				
 				ret = -EFAULT;
 				break;
 			}
@@ -448,18 +445,18 @@ cp);
 			copied_cnt += bcnt;
 
 			if (cp->sync_state == 2) {
-				// Update offset inside sync key that we're
-				// repeating back out.
+				
+				
 				cp->sync_buf_offs += bcnt;
 				if (cp->sync_buf_offs >= cp->sync_key_len) {
-					// Consumed entire key; switch mode
-					// to normal.
+					
+					
 					pvr2_trace(PVR2_TRACE_DATA_FLOW,
 						   "/*---TRACE_READ---*/ sync_state <== 0");
 					cp->sync_state = 0;
 				}
 			} else {
-				// Update buffer offset.
+				
 				cp->c_data_offs += bcnt;
 			}
 		}
@@ -469,11 +466,11 @@ cp);
 
 	if (!ret) {
 		if (copied_cnt) {
-			// If anything was copied, return that count
+			
 			ret = copied_cnt;
 		} else {
-			// Nothing copied; suggest to caller that another
-			// attempt should be tried again later
+			
+			
 			ret = -EAGAIN;
 		}
 	}

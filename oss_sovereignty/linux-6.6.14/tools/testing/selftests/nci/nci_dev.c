@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Samsung Electrnoics
- * Bongsu Jeon <bongsu.jeon@samsung.com>
- *
- * Test code for nci
- */
+
+ 
 
 #include <stdlib.h>
 #include <errno.h>
@@ -889,11 +884,7 @@ TEST_F(NCI, deinit)
 	ASSERT_EQ(rc, 0);
 	EXPECT_EQ(get_dev_enable_state(&msg), 0);
 
-	/* Test that operations that normally send packets to the driver
-	 * don't cause issues when the device is already closed.
-	 * Note: the send of NFC_CMD_DEV_UP itself still succeeds it's just
-	 * that the device won't actually be up.
-	 */
+	 
 	close(self->virtual_nci_fd);
 	self->virtual_nci_fd = -1;
 	rc = send_cmd_with_idx(self->sd, self->fid, self->pid,

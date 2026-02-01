@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the IMX keypad port.
-// Copyright (C) 2009 Alberto Panizzo <maramaopercheseimorto@gmail.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,22 +19,20 @@
 #include <linux/slab.h>
 #include <linux/timer.h>
 
-/*
- * Keypad Controller registers (halfword)
- */
-#define KPCR		0x00 /* Keypad Control Register */
+ 
+#define KPCR		0x00  
 
-#define KPSR		0x02 /* Keypad Status Register */
-#define KBD_STAT_KPKD	(0x1 << 0) /* Key Press Interrupt Status bit (w1c) */
-#define KBD_STAT_KPKR	(0x1 << 1) /* Key Release Interrupt Status bit (w1c) */
-#define KBD_STAT_KDSC	(0x1 << 2) /* Key Depress Synch Chain Status bit (w1c)*/
-#define KBD_STAT_KRSS	(0x1 << 3) /* Key Release Synch Status bit (w1c)*/
-#define KBD_STAT_KDIE	(0x1 << 8) /* Key Depress Interrupt Enable Status bit */
-#define KBD_STAT_KRIE	(0x1 << 9) /* Key Release Interrupt Enable */
-#define KBD_STAT_KPPEN	(0x1 << 10) /* Keypad Clock Enable */
+#define KPSR		0x02  
+#define KBD_STAT_KPKD	(0x1 << 0)  
+#define KBD_STAT_KPKR	(0x1 << 1)  
+#define KBD_STAT_KDSC	(0x1 << 2)  
+#define KBD_STAT_KRSS	(0x1 << 3)  
+#define KBD_STAT_KDIE	(0x1 << 8)  
+#define KBD_STAT_KRIE	(0x1 << 9)  
+#define KBD_STAT_KPPEN	(0x1 << 10)  
 
-#define KDDR		0x04 /* Keypad Data Direction Register */
-#define KPDR		0x06 /* Keypad Data Register */
+#define KDDR		0x04  
+#define KPDR		0x06  
 
 #define MAX_MATRIX_KEY_ROWS	8
 #define MAX_MATRIX_KEY_COLS	8
@@ -51,31 +49,24 @@ struct imx_keypad {
 	int			irq;
 	struct timer_list	check_matrix_timer;
 
-	/*
-	 * The matrix is stable only if no changes are detected after
-	 * IMX_KEYPAD_SCANS_FOR_STABILITY scans
-	 */
+	 
 #define IMX_KEYPAD_SCANS_FOR_STABILITY 3
 	int			stable_count;
 
 	bool			enabled;
 
-	/* Masks for enabled rows/cols */
+	 
 	unsigned short		rows_en_mask;
 	unsigned short		cols_en_mask;
 
 	unsigned short		keycodes[MAX_MATRIX_KEY_NUM];
 
-	/*
-	 * Matrix states:
-	 * -stable: achieved after a complete debounce process.
-	 * -unstable: used in the debouncing process.
-	 */
+	 
 	unsigned short		matrix_stable_state[MAX_MATRIX_KEY_COLS];
 	unsigned short		matrix_unstable_state[MAX_MATRIX_KEY_COLS];
 };
 
-/* Scan the matrix and return the new state in *matrix_volatile_state. */
+ 
 static void imx_keypad_scan_matrix(struct imx_keypad *keypad,
 				  unsigned short *matrix_volatile_state)
 {
@@ -85,12 +76,7 @@ static void imx_keypad_scan_matrix(struct imx_keypad *keypad,
 	for (col = 0; col < MAX_MATRIX_KEY_COLS; col++) {
 		if ((keypad->cols_en_mask & (1 << col)) == 0)
 			continue;
-		/*
-		 * Discharge keypad capacitance:
-		 * 2. write 1s on column data.
-		 * 3. configure columns as totem-pole to discharge capacitance.
-		 * 4. configure columns as open-drain.
-		 */
+		 
 		reg_val = readw(keypad->mmio_base + KPDR);
 		reg_val |= 0xff00;
 		writew(reg_val, keypad->mmio_base + KPDR);
@@ -105,42 +91,26 @@ static void imx_keypad_scan_matrix(struct imx_keypad *keypad,
 		reg_val |= (keypad->cols_en_mask & 0xff) << 8;
 		writew(reg_val, keypad->mmio_base + KPCR);
 
-		/*
-		 * 5. Write a single column to 0, others to 1.
-		 * 6. Sample row inputs and save data.
-		 * 7. Repeat steps 2 - 6 for remaining columns.
-		 */
+		 
 		reg_val = readw(keypad->mmio_base + KPDR);
 		reg_val &= ~(1 << (8 + col));
 		writew(reg_val, keypad->mmio_base + KPDR);
 
-		/*
-		 * Delay added to avoid propagating the 0 from column to row
-		 * when scanning.
-		 */
+		 
 		udelay(5);
 
-		/*
-		 * 1s in matrix_volatile_state[col] means key pressures
-		 * throw data from non enabled rows.
-		 */
+		 
 		reg_val = readw(keypad->mmio_base + KPDR);
 		matrix_volatile_state[col] = (~reg_val) & keypad->rows_en_mask;
 	}
 
-	/*
-	 * Return in standby mode:
-	 * 9. write 0s to columns
-	 */
+	 
 	reg_val = readw(keypad->mmio_base + KPDR);
 	reg_val &= 0x00ff;
 	writew(reg_val, keypad->mmio_base + KPDR);
 }
 
-/*
- * Compare the new matrix state (volatile) with the stable one stored in
- * keypad->matrix_stable_state and fire events if changes are detected.
- */
+ 
 static void imx_keypad_fire_events(struct imx_keypad *keypad,
 				   unsigned short *matrix_volatile_state)
 {
@@ -152,19 +122,19 @@ static void imx_keypad_fire_events(struct imx_keypad *keypad,
 		int code;
 
 		if ((keypad->cols_en_mask & (1 << col)) == 0)
-			continue; /* Column is not enabled */
+			continue;  
 
 		bits_changed = keypad->matrix_stable_state[col] ^
 						matrix_volatile_state[col];
 
 		if (bits_changed == 0)
-			continue; /* Column does not contain changes */
+			continue;  
 
 		for (row = 0; row < MAX_MATRIX_KEY_ROWS; row++) {
 			if ((keypad->rows_en_mask & (1 << row)) == 0)
-				continue; /* Row is not enabled */
+				continue;  
 			if ((bits_changed & (1 << row)) == 0)
-				continue; /* Row does not contain changes */
+				continue;  
 
 			code = MATRIX_SCAN_CODE(row, col, MATRIX_ROW_SHIFT);
 			input_event(input_dev, EV_MSC, MSC_SCAN, code);
@@ -178,9 +148,7 @@ static void imx_keypad_fire_events(struct imx_keypad *keypad,
 	input_sync(input_dev);
 }
 
-/*
- * imx_keypad_check_for_events is the timer handler.
- */
+ 
 static void imx_keypad_check_for_events(struct timer_list *t)
 {
 	struct imx_keypad *keypad = from_timer(keypad, t, check_matrix_timer);
@@ -204,13 +172,7 @@ static void imx_keypad_check_for_events(struct timer_list *t)
 		}
 	}
 
-	/*
-	 * If the matrix state is changed from the previous scan
-	 *   (Re)Begin the debouncing process, saving the new state in
-	 *    keypad->matrix_unstable_state.
-	 * else
-	 *   Increase the count of number of scans with a stable state.
-	 */
+	 
 	if (state_changed) {
 		memcpy(keypad->matrix_unstable_state, matrix_volatile_state,
 			sizeof(matrix_volatile_state));
@@ -218,22 +180,14 @@ static void imx_keypad_check_for_events(struct timer_list *t)
 	} else
 		keypad->stable_count++;
 
-	/*
-	 * If the matrix is not as stable as we want reschedule scan
-	 * in the near future.
-	 */
+	 
 	if (keypad->stable_count < IMX_KEYPAD_SCANS_FOR_STABILITY) {
 		mod_timer(&keypad->check_matrix_timer,
 			  jiffies + msecs_to_jiffies(10));
 		return;
 	}
 
-	/*
-	 * If the matrix state is stable, fire the events and save the new
-	 * stable state. Note, if the matrix is kept stable for longer
-	 * (keypad->stable_count > IMX_KEYPAD_SCANS_FOR_STABILITY) all
-	 * events have already been generated.
-	 */
+	 
 	if (keypad->stable_count == IMX_KEYPAD_SCANS_FOR_STABILITY) {
 		imx_keypad_fire_events(keypad, matrix_volatile_state);
 
@@ -251,11 +205,7 @@ static void imx_keypad_check_for_events(struct timer_list *t)
 
 
 	if (is_zero_matrix) {
-		/*
-		 * All keys have been released. Enable only the KDI
-		 * interrupt for future key presses (clear the KDI
-		 * status bit and its sync chain before that).
-		 */
+		 
 		reg_val = readw(keypad->mmio_base + KPSR);
 		reg_val |= KBD_STAT_KPKD | KBD_STAT_KDSC;
 		writew(reg_val, keypad->mmio_base + KPSR);
@@ -265,12 +215,7 @@ static void imx_keypad_check_for_events(struct timer_list *t)
 		reg_val &= ~KBD_STAT_KRIE;
 		writew(reg_val, keypad->mmio_base + KPSR);
 	} else {
-		/*
-		 * Some keys are still pressed. Schedule a rescan in
-		 * attempt to detect multiple key presses and enable
-		 * the KRI interrupt to react quickly to key release
-		 * event.
-		 */
+		 
 		mod_timer(&keypad->check_matrix_timer,
 			  jiffies + msecs_to_jiffies(60));
 
@@ -292,17 +237,17 @@ static irqreturn_t imx_keypad_irq_handler(int irq, void *dev_id)
 
 	reg_val = readw(keypad->mmio_base + KPSR);
 
-	/* Disable both interrupt types */
+	 
 	reg_val &= ~(KBD_STAT_KRIE | KBD_STAT_KDIE);
-	/* Clear interrupts status bits */
+	 
 	reg_val |= KBD_STAT_KPKR | KBD_STAT_KPKD;
 	writew(reg_val, keypad->mmio_base + KPSR);
 
 	if (keypad->enabled) {
-		/* The matrix is supposed to be changed */
+		 
 		keypad->stable_count = 0;
 
-		/* Schedule the scanning procedure near in the future */
+		 
 		mod_timer(&keypad->check_matrix_timer,
 			  jiffies + msecs_to_jiffies(2));
 	}
@@ -314,33 +259,27 @@ static void imx_keypad_config(struct imx_keypad *keypad)
 {
 	unsigned short reg_val;
 
-	/*
-	 * Include enabled rows in interrupt generation (KPCR[7:0])
-	 * Configure keypad columns as open-drain (KPCR[15:8])
-	 */
+	 
 	reg_val = readw(keypad->mmio_base + KPCR);
-	reg_val |= keypad->rows_en_mask & 0xff;		/* rows */
-	reg_val |= (keypad->cols_en_mask & 0xff) << 8;	/* cols */
+	reg_val |= keypad->rows_en_mask & 0xff;		 
+	reg_val |= (keypad->cols_en_mask & 0xff) << 8;	 
 	writew(reg_val, keypad->mmio_base + KPCR);
 
-	/* Write 0's to KPDR[15:8] (Colums) */
+	 
 	reg_val = readw(keypad->mmio_base + KPDR);
 	reg_val &= 0x00ff;
 	writew(reg_val, keypad->mmio_base + KPDR);
 
-	/* Configure columns as output, rows as input (KDDR[15:0]) */
+	 
 	writew(0xff00, keypad->mmio_base + KDDR);
 
-	/*
-	 * Clear Key Depress and Key Release status bit.
-	 * Clear both synchronizer chain.
-	 */
+	 
 	reg_val = readw(keypad->mmio_base + KPSR);
 	reg_val |= KBD_STAT_KPKR | KBD_STAT_KPKD |
 		   KBD_STAT_KDSC | KBD_STAT_KRSS;
 	writew(reg_val, keypad->mmio_base + KPSR);
 
-	/* Enable KDI and disable KRI (avoid false release events). */
+	 
 	reg_val |= KBD_STAT_KDIE;
 	reg_val &= ~KBD_STAT_KRIE;
 	writew(reg_val, keypad->mmio_base + KPSR);
@@ -350,13 +289,13 @@ static void imx_keypad_inhibit(struct imx_keypad *keypad)
 {
 	unsigned short reg_val;
 
-	/* Inhibit KDI and KRI interrupts. */
+	 
 	reg_val = readw(keypad->mmio_base + KPSR);
 	reg_val &= ~(KBD_STAT_KRIE | KBD_STAT_KDIE);
 	reg_val |= KBD_STAT_KPKR | KBD_STAT_KPKD;
 	writew(reg_val, keypad->mmio_base + KPSR);
 
-	/* Colums as open drain and disable all rows */
+	 
 	reg_val = (keypad->cols_en_mask & 0xff) << 8;
 	writew(reg_val, keypad->mmio_base + KPCR);
 }
@@ -367,14 +306,14 @@ static void imx_keypad_close(struct input_dev *dev)
 
 	dev_dbg(&dev->dev, ">%s\n", __func__);
 
-	/* Mark keypad as being inactive */
+	 
 	keypad->enabled = false;
 	synchronize_irq(keypad->irq);
 	del_timer_sync(&keypad->check_matrix_timer);
 
 	imx_keypad_inhibit(keypad);
 
-	/* Disable clock unit */
+	 
 	clk_disable_unprepare(keypad->clk);
 }
 
@@ -385,17 +324,17 @@ static int imx_keypad_open(struct input_dev *dev)
 
 	dev_dbg(&dev->dev, ">%s\n", __func__);
 
-	/* Enable the kpp clock */
+	 
 	error = clk_prepare_enable(keypad->clk);
 	if (error)
 		return error;
 
-	/* We became active from now */
+	 
 	keypad->enabled = true;
 
 	imx_keypad_config(keypad);
 
-	/* Sanity control, not all the rows must be actived now. */
+	 
 	if ((readw(keypad->mmio_base + KPDR) & keypad->rows_en_mask) == 0) {
 		dev_err(&dev->dev,
 			"too many keys pressed, control pins initialisation\n");
@@ -411,7 +350,7 @@ open_err:
 
 static const struct of_device_id imx_keypad_of_match[] = {
 	{ .compatible = "fsl,imx21-kpp", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_keypad_of_match);
 
@@ -454,7 +393,7 @@ static int imx_keypad_probe(struct platform_device *pdev)
 		return PTR_ERR(keypad->clk);
 	}
 
-	/* Init the Input device */
+	 
 	input_dev->name = pdev->name;
 	input_dev->id.bustype = BUS_HOST;
 	input_dev->dev.parent = &pdev->dev;
@@ -470,7 +409,7 @@ static int imx_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Search for rows and cols enabled */
+	 
 	for (row = 0; row < MAX_MATRIX_KEY_ROWS; row++) {
 		for (col = 0; col < MAX_MATRIX_KEY_COLS; col++) {
 			i = MATRIX_SCAN_CODE(row, col, MATRIX_ROW_SHIFT);
@@ -487,7 +426,7 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 	input_set_drvdata(input_dev, keypad);
 
-	/* Ensure that the keypad will stay dormant until opened */
+	 
 	error = clk_prepare_enable(keypad->clk);
 	if (error)
 		return error;
@@ -501,7 +440,7 @@ static int imx_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Register the input device */
+	 
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register input device\n");
@@ -521,7 +460,7 @@ static int __maybe_unused imx_kbd_noirq_suspend(struct device *dev)
 	struct input_dev *input_dev = kbd->input_dev;
 	unsigned short reg_val = readw(kbd->mmio_base + KPSR);
 
-	/* imx kbd can wake up system even clock is disabled */
+	 
 	mutex_lock(&input_dev->mutex);
 
 	if (input_device_enabled(input_dev))

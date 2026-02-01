@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bpf_kwork.c
- *
- * Copyright (c) 2022  Huawei Inc,  Yang Jihong <yangjihong1@huawei.com>
- */
+
+ 
 
 #include <time.h>
 #include <fcntl.h>
@@ -22,9 +18,7 @@
 
 #include "util/bpf_skel/kwork_trace.skel.h"
 
-/*
- * This should be in sync with "util/kwork_trace.bpf.c"
- */
+ 
 #define MAX_KWORKNAME 128
 
 struct work_key {
@@ -215,10 +209,7 @@ int perf_kwork__trace_prepare_bpf(struct perf_kwork *kwork)
 		return -1;
 	}
 
-	/*
-	 * set all progs to non-autoload,
-	 * then set corresponding progs according to config
-	 */
+	 
 	bpf_object__for_each_program(prog, skel->obj)
 		bpf_program__set_autoload(prog, false);
 

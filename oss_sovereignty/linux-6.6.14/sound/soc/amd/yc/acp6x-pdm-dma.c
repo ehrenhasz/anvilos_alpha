@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AMD ALSA SoC Yellow Carp PDM Driver
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -159,13 +155,13 @@ static void acp6x_config_dma(struct pdm_stream_instance *rtd, int direction)
 	addr = rtd->dma_addr;
 	val = PDM_PTE_OFFSET;
 
-	/* Group Enable */
+	 
 	acp6x_writel(ACP_SRAM_PTE_OFFSET | BIT(31), rtd->acp6x_base +
 		     ACPAXI2AXI_ATU_BASE_ADDR_GRP_1);
 	acp6x_writel(PAGE_SIZE_4K_ENABLE, rtd->acp6x_base +
 		     ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1);
 	for (page_idx = 0; page_idx < rtd->num_pages; page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 

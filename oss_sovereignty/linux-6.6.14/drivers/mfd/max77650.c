@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 BayLibre SAS
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-//
-// Core MFD driver for MAXIM 77650/77651 charger/power-supply.
-// Programming manual: https://pdfserv.maximintegrated.com/en/an/AN6428.pdf
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -181,12 +181,7 @@ static int max77650_i2c_probe(struct i2c_client *i2c)
 		return -ENODEV;
 	}
 
-	/*
-	 * This IC has a low-power mode which reduces the quiescent current
-	 * consumption to ~5.6uA but is only suitable for systems consuming
-	 * less than ~2mA. Since this is not likely the case even on
-	 * linux-based wearables - keep the chip in normal power mode.
-	 */
+	 
 	rv = regmap_update_bits(map,
 				MAX77650_REG_CNFG_GLBL,
 				MAX77650_SBIA_LPM_MASK,

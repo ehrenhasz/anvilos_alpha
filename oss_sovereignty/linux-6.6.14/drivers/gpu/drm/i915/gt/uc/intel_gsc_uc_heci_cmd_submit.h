@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GSC_UC_HECI_CMD_SUBMIT_H_
 #define _INTEL_GSC_UC_HECI_CMD_SUBMIT_H_
@@ -27,30 +25,15 @@ struct intel_gsc_mtl_header {
 	u16 header_version;
 #define MTL_GSC_HEADER_VERSION 1
 
-	/*
-	 * FW allows host to decide host_session handle
-	 * as it sees fit.
-	 * For intertracebility reserving select bits(60-63)
-	 * to differentiate caller-target subsystem
-	 * 0000 - HDCP
-	 * 0001 - PXP Single Session
-	 */
+	 
 	u64 host_session_handle;
 #define HOST_SESSION_MASK	REG_GENMASK64(63, 60)
 #define HOST_SESSION_PXP_SINGLE BIT_ULL(60)
 	u64 gsc_message_handle;
 
-	u32 message_size; /* lower 20 bits only, upper 12 are reserved */
+	u32 message_size;  
 
-	/*
-	 * Flags mask:
-	 * Bit 0: Pending
-	 * Bit 1: Session Cleanup;
-	 * Bits 2-15: Flags
-	 * Bits 16-31: Extension Size
-	 * According to internal spec flags are either input or output
-	 * we distinguish the flags using OUTFLAG or INFLAG
-	 */
+	 
 	u32 flags;
 #define GSC_OUTFLAG_MSG_PENDING	BIT(0)
 #define GSC_INFLAG_MSG_CLEANUP	BIT(1)

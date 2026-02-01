@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- * Header file containing the public API for the System Controller (SC)
- * Miscellaneous (MISC) function.
- *
- * MISC_SVC (SVC) Miscellaneous Service
- *
- * Module for the Miscellaneous (MISC) service.
- */
+ 
+ 
 
 #ifndef _SC_MISC_API_H
 #define _SC_MISC_API_H
 
 #include <linux/firmware/imx/sci.h>
 
-/*
- * This type is used to indicate RPC MISC function calls.
- */
+ 
 enum imx_misc_func {
 	IMX_SC_MISC_FUNC_UNKNOWN = 0,
 	IMX_SC_MISC_FUNC_SET_CONTROL = 1,
@@ -42,9 +30,7 @@ enum imx_misc_func {
 	IMX_SC_MISC_FUNC_GET_BUTTON_STATUS = 18,
 };
 
-/*
- * Control Functions
- */
+ 
 
 #ifdef CONFIG_IMX_SCU
 int imx_sc_misc_set_control(struct imx_sc_ipc *ipc, u32 resource,
@@ -74,4 +60,4 @@ static inline int imx_sc_pm_cpu_start(struct imx_sc_ipc *ipc, u32 resource,
 	return -ENOTSUPP;
 }
 #endif
-#endif /* _SC_MISC_API_H */
+#endif  

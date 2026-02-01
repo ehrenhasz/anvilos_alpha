@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_pipe.c  --  R-Car VSP1 Pipeline
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/list.h>
@@ -25,9 +19,7 @@
 #include "vsp1_rwpf.h"
 #include "vsp1_uds.h"
 
-/* -----------------------------------------------------------------------------
- * Helper Functions
- */
+ 
 
 static const struct vsp1_format_info vsp1_video_formats[] = {
 	{ V4L2_PIX_FMT_RGB332, MEDIA_BUS_FMT_ARGB8888_1X32,
@@ -222,20 +214,13 @@ static const struct vsp1_format_info vsp1_video_formats[] = {
 	  1, { 32, 0, 0 }, false, false, 2, 1, false },
 };
 
-/**
- * vsp1_get_format_info - Retrieve format information for a 4CC
- * @vsp1: the VSP1 device
- * @fourcc: the format 4CC
- *
- * Return a pointer to the format information structure corresponding to the
- * given V4L2 format 4CC, or NULL if no corresponding format can be found.
- */
+ 
 const struct vsp1_format_info *vsp1_get_format_info(struct vsp1_device *vsp1,
 						    u32 fourcc)
 {
 	unsigned int i;
 
-	/* Special case, the VYUY and HSV formats are supported on Gen2 only. */
+	 
 	if (vsp1->info->gen != 2) {
 		switch (fourcc) {
 		case V4L2_PIX_FMT_VYUY:
@@ -255,9 +240,7 @@ const struct vsp1_format_info *vsp1_get_format_info(struct vsp1_device *vsp1,
 	return NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Pipeline Management
- */
+ 
 
 void vsp1_pipeline_reset(struct vsp1_pipeline *pipe)
 {
@@ -301,7 +284,7 @@ void vsp1_pipeline_init(struct vsp1_pipeline *pipe)
 	pipe->state = VSP1_PIPELINE_STOPPED;
 }
 
-/* Must be called with the pipe irqlock held. */
+ 
 void vsp1_pipeline_run(struct vsp1_pipeline *pipe)
 {
 	struct vsp1_device *vsp1 = pipe->output->entity.vsp1;
@@ -335,10 +318,7 @@ int vsp1_pipeline_stop(struct vsp1_pipeline *pipe)
 	int ret;
 
 	if (pipe->lif) {
-		/*
-		 * When using display lists in continuous frame mode the only
-		 * way to stop the pipeline is to reset the hardware.
-		 */
+		 
 		ret = vsp1_reset_wpf(vsp1, pipe->output->entity.index);
 		if (ret == 0) {
 			spin_lock_irqsave(&pipe->irqlock, flags);
@@ -346,7 +326,7 @@ int vsp1_pipeline_stop(struct vsp1_pipeline *pipe)
 			spin_unlock_irqrestore(&pipe->irqlock, flags);
 		}
 	} else {
-		/* Otherwise just request a stop and wait. */
+		 
 		spin_lock_irqsave(&pipe->irqlock, flags);
 		if (pipe->state == VSP1_PIPELINE_RUNNING)
 			pipe->state = VSP1_PIPELINE_STOPPING;
@@ -396,11 +376,7 @@ void vsp1_pipeline_frame_end(struct vsp1_pipeline *pipe)
 	if (pipe == NULL)
 		return;
 
-	/*
-	 * If the DL commit raced with the frame end interrupt, the commit ends
-	 * up being postponed by one frame. The returned flags tell whether the
-	 * active frame was finished or postponed.
-	 */
+	 
 	flags = vsp1_dlm_irq_frame_end(pipe->output->dlm);
 
 	if (pipe->hgo)
@@ -409,34 +385,21 @@ void vsp1_pipeline_frame_end(struct vsp1_pipeline *pipe)
 	if (pipe->hgt)
 		vsp1_hgt_frame_end(pipe->hgt);
 
-	/*
-	 * Regardless of frame completion we still need to notify the pipe
-	 * frame_end to account for vblank events.
-	 */
+	 
 	if (pipe->frame_end)
 		pipe->frame_end(pipe, flags);
 
 	pipe->sequence++;
 }
 
-/*
- * Propagate the alpha value through the pipeline.
- *
- * As the UDS has restricted scaling capabilities when the alpha component needs
- * to be scaled, we disable alpha scaling when the UDS input has a fixed alpha
- * value. The UDS then outputs a fixed alpha value which needs to be programmed
- * from the input RPF alpha.
- */
+ 
 void vsp1_pipeline_propagate_alpha(struct vsp1_pipeline *pipe,
 				   struct vsp1_dl_body *dlb, unsigned int alpha)
 {
 	if (!pipe->uds)
 		return;
 
-	/*
-	 * The BRU and BRS background color has a fixed alpha value set to 255,
-	 * the output alpha value is thus always equal to 255.
-	 */
+	 
 	if (pipe->uds_input->type == VSP1_ENTITY_BRU ||
 	    pipe->uds_input->type == VSP1_ENTITY_BRS)
 		alpha = 255;
@@ -444,14 +407,7 @@ void vsp1_pipeline_propagate_alpha(struct vsp1_pipeline *pipe,
 	vsp1_uds_set_alpha(pipe->uds, dlb, alpha);
 }
 
-/*
- * Propagate the partition calculations through the pipeline
- *
- * Work backwards through the pipe, allowing each entity to update the partition
- * parameters based on its configuration, and the entity connected to its
- * source. Each entity must produce the partition required for the previous
- * entity in the pipeline.
- */
+ 
 void vsp1_pipeline_propagate_partition(struct vsp1_pipeline *pipe,
 				       struct vsp1_partition *partition,
 				       unsigned int index,

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is rewrite of original c2c tool introduced in here:
- *   http://lwn.net/Articles/588866/
- *
- * The original tool was changed to fit in current perf state.
- *
- * Original authors:
- *   Don Zickus <dzickus@redhat.com>
- *   Dick Fowles <fowles@inreach.com>
- *   Joe Mario <jmario@redhat.com>
- */
+
+ 
 #include <errno.h>
 #include <inttypes.h>
 #include <linux/compiler.h>
@@ -74,10 +64,7 @@ struct c2c_hist_entry {
 	bool			 paddr_zero;
 	char			*nodestr;
 
-	/*
-	 * must be at the end,
-	 * because of its callchain dynamic entry
-	 */
+	 
 	struct hist_entry	he;
 };
 
@@ -101,7 +88,7 @@ struct perf_c2c {
 	bool			 symbol_full;
 	bool			 stitch_lbr;
 
-	/* Shared cache line stats */
+	 
 	struct c2c_stats	shared_clines_stats;
 	int			shared_clines;
 
@@ -310,11 +297,7 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 		goto out;
 	}
 
-	/*
-	 * The mi object is released in hists__add_entry_ops,
-	 * if it gets sorted out into existing data, so we need
-	 * to take the copy now.
-	 */
+	 
 	mi_dup = mem_info__get(mi);
 
 	c2c_decode_stats(&stats, mi);
@@ -336,14 +319,7 @@ static int process_sample_event(struct perf_tool *tool __maybe_unused,
 	ret = hist_entry__append_callchain(he, sample);
 
 	if (!ret) {
-		/*
-		 * There's already been warning about missing
-		 * sample's cpu value. Let's account all to
-		 * node 0 in this case, without any further
-		 * warning.
-		 *
-		 * Doing node stats only for single callchain data.
-		 */
+		 
 		int cpu = sample->cpu == (unsigned int) -1 ? 0 : sample->cpu;
 		int node = c2c.cpu2node[cpu];
 
@@ -488,7 +464,7 @@ static int c2c_header(struct perf_hpp_fmt *fmt, struct perf_hpp *hpp,
 
 	if (dim->se) {
 		text = dim->header.line[line].text;
-		/* Use the last line from sort_entry if not defined. */
+		 
 		if (!text && (line == hpp_list->nr_header_lines - 1))
 			text = dim->se->se_header;
 	} else {
@@ -2046,18 +2022,13 @@ static int hpp_list__parse(struct perf_hpp_list *hpp_list,
 	PARSE_LIST(output, c2c_hists__init_output);
 	PARSE_LIST(sort,   c2c_hists__init_sort);
 
-	/* copy sort keys to output fields */
+	 
 	perf_hpp__setup_output_field(hpp_list);
 
-	/*
-	 * We dont need other sorting keys other than those
-	 * we already specified. It also really slows down
-	 * the processing a lot with big number of output
-	 * fields, so switching this off for c2c.
-	 */
+	 
 
 #if 0
-	/* and then copy output fields to sort keys */
+	 
 	perf_hpp__append_sort_keys(&hists->list);
 #endif
 
@@ -2072,14 +2043,10 @@ static int c2c_hists__init(struct c2c_hists *hists,
 {
 	__hists__init(&hists->hists, &hists->list);
 
-	/*
-	 * Initialize only with sort fields, we need to resort
-	 * later anyway, and that's where we add output fields
-	 * as well.
-	 */
+	 
 	perf_hpp_list__init(&hists->list);
 
-	/* Overload number of header lines.*/
+	 
 	hists->list.nr_header_lines = nr_header_lines;
 
 	return hpp_list__parse(&hists->list, NULL, sort);
@@ -2143,7 +2110,7 @@ static inline bool is_valid_hist_entry(struct hist_entry *he)
 
 	c2c_he = container_of(he, struct c2c_hist_entry, he);
 
-	/* It's a valid entry if contains stores */
+	 
 	if (c2c_he->stats.store)
 		return true;
 
@@ -2319,7 +2286,7 @@ static int setup_nodes(struct perf_session *session)
 
 		nodes[node] = set;
 
-		/* empty node, skip */
+		 
 		if (perf_cpu_map__empty(map))
 			continue;
 
@@ -2634,7 +2601,7 @@ static int perf_c2c__browse_cacheline(struct hist_entry *he)
 	if (!he)
 		return 0;
 
-	/* Display compact version first. */
+	 
 	c2c.symbol_full = false;
 
 	c2c_he = container_of(he, struct c2c_hist_entry, he);
@@ -2646,7 +2613,7 @@ static int perf_c2c__browse_cacheline(struct hist_entry *he)
 
 	browser = &cl_browser->hb;
 
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 
@@ -2715,7 +2682,7 @@ static int perf_c2c__hists_browse(struct hists *hists)
 	if (browser == NULL)
 		return -1;
 
-	/* reset abort key so that it can get Ctrl-C as a key */
+	 
 	SLang_reset_tty();
 	SLang_init_tty(0, 0, 0);
 
@@ -2756,7 +2723,7 @@ static void perf_c2c_display(struct perf_session *session)
 	use_browser = 0;
 	perf_c2c__hists_fprintf(stdout, session);
 }
-#endif /* HAVE_SLANG_SUPPORT */
+#endif  
 
 static char *fill_line(const char *orig, int len)
 {
@@ -2799,7 +2766,7 @@ static int ui_quirks(void)
 
 	dim_percent_costly_snoop.header = percent_costly_snoop_header[c2c.display];
 
-	/* Fix the zero line for dcacheline column. */
+	 
 	buf = fill_line(chk_double_cl ? "Double-Cacheline" : "Cacheline",
 				dim_dcacheline.width +
 				dim_dcacheline_node.width +
@@ -2809,7 +2776,7 @@ static int ui_quirks(void)
 
 	dim_dcacheline.header.line[0].text = buf;
 
-	/* Fix the zero line for offset column. */
+	 
 	buf = fill_line(nodestr, dim_offset.width +
 			         dim_offset_node.width +
 				 dim_dcacheline_count.width + 4);
@@ -2833,9 +2800,7 @@ parse_callchain_opt(const struct option *opt, const char *arg, int unset)
 	struct callchain_param *callchain = opt->value;
 
 	callchain->enabled = !unset;
-	/*
-	 * --no-call-graph
-	 */
+	 
 	if (unset) {
 		symbol_conf.use_callchain = false;
 		callchain->mode = CHAIN_NONE;
@@ -3005,7 +2970,7 @@ static int perf_c2c__report(int argc, const char **argv)
 {
 	struct itrace_synth_opts itrace_synth_opts = {
 		.set = true,
-		.mem = true,	/* Only enable memory event */
+		.mem = true,	 
 		.default_no_sample = true,
 	};
 
@@ -3080,11 +3045,7 @@ static int perf_c2c__report(int argc, const char **argv)
 		goto out;
 	}
 
-	/*
-	 * Use the 'tot' as default display type if user doesn't specify it;
-	 * since Arm64 platform doesn't support HITMs flag, use 'peer' as the
-	 * default display type.
-	 */
+	 
 	if (!display) {
 		if (!strcmp(perf_env__arch(&session->header.env), "arm64"))
 			display = "peer";
@@ -3127,7 +3088,7 @@ static int perf_c2c__report(int argc, const char **argv)
 	if (symbol__init(&session->header.env) < 0)
 		goto out_mem2node;
 
-	/* No pipe support at the moment. */
+	 
 	if (perf_data__is_pipe(session->data)) {
 		pr_debug("No pipe support at the moment.\n");
 		goto out_mem2node;
@@ -3264,7 +3225,7 @@ static int perf_c2c__record(int argc, const char **argv)
 	argc = parse_options(argc, argv, options, record_mem_usage,
 			     PARSE_OPT_KEEP_UNKNOWN);
 
-	/* Max number of arguments multiplied by number of PMUs that can support them. */
+	 
 	rec_argc = argc + 11 * perf_pmus__num_mem_pmus();
 
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
@@ -3281,10 +3242,7 @@ static int perf_c2c__record(int argc, const char **argv)
 
 	if (!event_set) {
 		e = perf_mem_events__ptr(PERF_MEM_EVENTS__LOAD_STORE);
-		/*
-		 * The load and store operations are required, use the event
-		 * PERF_MEM_EVENTS__LOAD_STORE if it is supported.
-		 */
+		 
 		if (e->tag) {
 			e->record = true;
 			rec_argv[i++] = "-W";

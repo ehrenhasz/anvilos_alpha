@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-afe-common.h  --  Mediatek 8195 audio driver definitions
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT_8195_AFE_COMMON_H_
 #define _MT_8195_AFE_COMMON_H_
@@ -132,16 +126,16 @@ struct mt8195_afe_private {
 #endif
 	int afe_on_ref_cnt;
 	int top_cg_ref_cnt[MT8195_TOP_CG_NUM];
-	spinlock_t afe_ctrl_lock;	/* Lock for afe control */
+	spinlock_t afe_ctrl_lock;	 
 	struct mtk_dai_memif_irq_priv irq_priv[MT8195_AFE_IRQ_NUM];
 	struct mtkaif_param mtkaif_params;
 
-	/* dai */
+	 
 	void *dai_priv[MT8195_DAI_NUM];
 };
 
 int mt8195_afe_fs_timing(unsigned int rate);
-/* dai register */
+ 
 int mt8195_dai_adda_register(struct mtk_base_afe *afe);
 int mt8195_dai_etdm_register(struct mtk_base_afe *afe);
 int mt8195_dai_pcm_register(struct mtk_base_afe *afe);

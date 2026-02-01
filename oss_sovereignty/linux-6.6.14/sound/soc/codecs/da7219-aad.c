@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * da7219-aad.c - Dialog DA7219 ALSA SoC AAD Driver
- *
- * Copyright (c) 2015 Dialog Semiconductor Ltd.
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,9 +18,7 @@
 #include "da7219-aad.h"
 
 
-/*
- * Detection control
- */
+ 
 
 void da7219_aad_jack_det(struct snd_soc_component *component, struct snd_soc_jack *jack)
 {
@@ -35,18 +27,16 @@ void da7219_aad_jack_det(struct snd_soc_component *component, struct snd_soc_jac
 	da7219->aad->jack = jack;
 	da7219->aad->jack_inserted = false;
 
-	/* Send an initial empty report */
+	 
 	snd_soc_jack_report(jack, 0, DA7219_AAD_REPORT_ALL_MASK);
 
-	/* Enable/Disable jack detection */
+	 
 	snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_1,
 			    DA7219_ACCDET_EN_MASK,
 			    (jack ? DA7219_ACCDET_EN_MASK : 0));
 }
 
-/*
- * Button/HPTest work
- */
+ 
 
 static void da7219_aad_btn_det_work(struct work_struct *work)
 {
@@ -59,7 +49,7 @@ static void da7219_aad_btn_det_work(struct work_struct *work)
 	bool micbias_up = false;
 	int retries = 0;
 
-	/* Drive headphones/lineout */
+	 
 	snd_soc_component_update_bits(component, DA7219_HP_L_CTRL,
 			    DA7219_HP_L_AMP_OE_MASK,
 			    DA7219_HP_L_AMP_OE_MASK);
@@ -67,7 +57,7 @@ static void da7219_aad_btn_det_work(struct work_struct *work)
 			    DA7219_HP_R_AMP_OE_MASK,
 			    DA7219_HP_R_AMP_OE_MASK);
 
-	/* Make sure mic bias is up */
+	 
 	snd_soc_dapm_force_enable_pin(dapm, "Mic Bias");
 	snd_soc_dapm_sync(dapm);
 
@@ -84,12 +74,9 @@ static void da7219_aad_btn_det_work(struct work_struct *work)
 
 	da7219->micbias_on_event = true;
 
-	/*
-	 * Mic bias pulse required to enable mic, must be done before enabling
-	 * button detection to prevent erroneous button readings.
-	 */
+	 
 	if (da7219_aad->micbias_pulse_lvl && da7219_aad->micbias_pulse_time) {
-		/* Pulse higher level voltage */
+		 
 		micbias_ctrl = snd_soc_component_read(component, DA7219_MICBIAS_CTRL);
 		snd_soc_component_update_bits(component, DA7219_MICBIAS_CTRL,
 				    DA7219_MICBIAS1_LEVEL_MASK,
@@ -116,12 +103,12 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 	u8 pll_srm_sts, pll_ctrl, gain_ramp_ctrl, accdet_cfg8;
 	int report = 0, ret;
 
-	/* Lock DAPM, Kcontrols affected by this test and the PLL */
+	 
 	snd_soc_dapm_mutex_lock(dapm);
 	mutex_lock(&da7219->ctrl_lock);
 	mutex_lock(&da7219->pll_lock);
 
-	/* Ensure MCLK is available for HP test procedure */
+	 
 	if (da7219->mclk) {
 		ret = clk_prepare_enable(da7219->mclk);
 		if (ret) {
@@ -133,13 +120,7 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 		}
 	}
 
-	/*
-	 * If MCLK not present, then we're using the internal oscillator and
-	 * require different frequency settings to achieve the same result.
-	 *
-	 * If MCLK is present, but PLL is not enabled then we enable it here to
-	 * ensure a consistent detection procedure.
-	 */
+	 
 	pll_srm_sts = snd_soc_component_read(component, DA7219_PLL_SRM_STS);
 	if (pll_srm_sts & DA7219_PLL_SRM_STS_MCLK) {
 		tonegen_freq_hptest = cpu_to_le16(DA7219_AAD_HPTEST_RAMP_FREQ);
@@ -152,29 +133,29 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 		tonegen_freq_hptest = cpu_to_le16(DA7219_AAD_HPTEST_RAMP_FREQ_INT_OSC);
 	}
 
-	/* Ensure gain ramping at fastest rate */
+	 
 	gain_ramp_ctrl = snd_soc_component_read(component, DA7219_GAIN_RAMP_CTRL);
 	snd_soc_component_write(component, DA7219_GAIN_RAMP_CTRL, DA7219_GAIN_RAMP_RATE_X8);
 
-	/* Bypass cache so it saves current settings */
+	 
 	regcache_cache_bypass(da7219->regmap, true);
 
-	/* Make sure Tone Generator is disabled */
+	 
 	snd_soc_component_write(component, DA7219_TONE_GEN_CFG1, 0);
 
-	/* Enable HPTest block, 1KOhms check */
+	 
 	snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_8,
 			    DA7219_HPTEST_EN_MASK | DA7219_HPTEST_RES_SEL_MASK,
 			    DA7219_HPTEST_EN_MASK |
 			    DA7219_HPTEST_RES_SEL_1KOHMS);
 
-	/* Set gains to 0db */
+	 
 	snd_soc_component_write(component, DA7219_DAC_L_GAIN, DA7219_DAC_DIGITAL_GAIN_0DB);
 	snd_soc_component_write(component, DA7219_DAC_R_GAIN, DA7219_DAC_DIGITAL_GAIN_0DB);
 	snd_soc_component_write(component, DA7219_HP_L_GAIN, DA7219_HP_AMP_GAIN_0DB);
 	snd_soc_component_write(component, DA7219_HP_R_GAIN, DA7219_HP_AMP_GAIN_0DB);
 
-	/* Disable DAC filters, EQs and soft mute */
+	 
 	snd_soc_component_update_bits(component, DA7219_DAC_FILTERS1, DA7219_HPF_MODE_MASK,
 			    0);
 	snd_soc_component_update_bits(component, DA7219_DAC_FILTERS4, DA7219_DAC_EQ_EN_MASK,
@@ -182,7 +163,7 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 	snd_soc_component_update_bits(component, DA7219_DAC_FILTERS5,
 			    DA7219_DAC_SOFTMUTE_EN_MASK, 0);
 
-	/* Enable HP left & right paths */
+	 
 	snd_soc_component_update_bits(component, DA7219_CP_CTRL, DA7219_CP_EN_MASK,
 			    DA7219_CP_EN_MASK);
 	snd_soc_component_update_bits(component, DA7219_DIG_ROUTING_DAC,
@@ -227,14 +208,11 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 			    DA7219_HP_R_AMP_MUTE_EN_MASK |
 			    DA7219_HP_R_AMP_MIN_GAIN_EN_MASK, 0);
 
-	/*
-	 * If we're running from the internal oscillator then give audio paths
-	 * time to settle before running test.
-	 */
+	 
 	if (!(pll_srm_sts & DA7219_PLL_SRM_STS_MCLK))
 		msleep(DA7219_AAD_HPTEST_INT_OSC_PATH_DELAY);
 
-	/* Configure & start Tone Generator */
+	 
 	snd_soc_component_write(component, DA7219_TONE_GEN_ON_PER, DA7219_BEEP_ON_PER_MASK);
 	regmap_raw_write(da7219->regmap, DA7219_TONE_GEN_FREQ1_L,
 			 &tonegen_freq_hptest, sizeof(tonegen_freq_hptest));
@@ -246,19 +224,19 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 
 	msleep(DA7219_AAD_HPTEST_PERIOD);
 
-	/* Grab comparator reading */
+	 
 	accdet_cfg8 = snd_soc_component_read(component, DA7219_ACCDET_CONFIG_8);
 	if (accdet_cfg8 & DA7219_HPTEST_COMP_MASK)
 		report |= SND_JACK_HEADPHONE;
 	else
 		report |= SND_JACK_LINEOUT;
 
-	/* Stop tone generator */
+	 
 	snd_soc_component_write(component, DA7219_TONE_GEN_CFG1, 0);
 
 	msleep(DA7219_AAD_HPTEST_PERIOD);
 
-	/* Restore original settings from cache */
+	 
 	regcache_mark_dirty(da7219->regmap);
 	regcache_sync_region(da7219->regmap, DA7219_HP_L_CTRL,
 			     DA7219_HP_R_CTRL);
@@ -291,32 +269,29 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 
 	regcache_cache_bypass(da7219->regmap, false);
 
-	/* Disable HPTest block */
+	 
 	snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_8,
 			    DA7219_HPTEST_EN_MASK, 0);
 
-	/*
-	 * If we're running from the internal oscillator then give audio paths
-	 * time to settle before allowing headphones to be driven as required.
-	 */
+	 
 	if (!(pll_srm_sts & DA7219_PLL_SRM_STS_MCLK))
 		msleep(DA7219_AAD_HPTEST_INT_OSC_PATH_DELAY);
 
-	/* Restore gain ramping rate */
+	 
 	snd_soc_component_write(component, DA7219_GAIN_RAMP_CTRL, gain_ramp_ctrl);
 
-	/* Drive Headphones/lineout */
+	 
 	snd_soc_component_update_bits(component, DA7219_HP_L_CTRL, DA7219_HP_L_AMP_OE_MASK,
 			    DA7219_HP_L_AMP_OE_MASK);
 	snd_soc_component_update_bits(component, DA7219_HP_R_CTRL, DA7219_HP_R_AMP_OE_MASK,
 			    DA7219_HP_R_AMP_OE_MASK);
 
-	/* Restore PLL to previous configuration, if re-configured */
+	 
 	if ((pll_srm_sts & DA7219_PLL_SRM_STS_MCLK) &&
 	    ((pll_ctrl & DA7219_PLL_MODE_MASK) == DA7219_PLL_MODE_BYPASS))
 		da7219_set_pll(component, DA7219_SYSCLK_MCLK, 0);
 
-	/* Remove MCLK, if previously enabled */
+	 
 	if (da7219->mclk)
 		clk_disable_unprepare(da7219->mclk);
 
@@ -324,10 +299,7 @@ static void da7219_aad_hptest_work(struct work_struct *work)
 	mutex_unlock(&da7219->ctrl_lock);
 	snd_soc_dapm_mutex_unlock(dapm);
 
-	/*
-	 * Only send report if jack hasn't been removed during process,
-	 * otherwise it's invalid and we drop it.
-	 */
+	 
 	if (da7219_aad->jack_inserted)
 		snd_soc_jack_report(da7219_aad->jack, report,
 				    SND_JACK_HEADSET | SND_JACK_LINEOUT);
@@ -339,13 +311,11 @@ static void da7219_aad_jack_det_work(struct work_struct *work)
 		container_of(work, struct da7219_aad_priv, jack_det_work.work);
 	struct snd_soc_component *component = da7219_aad->component;
 
-	/* Enable ground switch */
+	 
 	snd_soc_component_update_bits(component, 0xFB, 0x01, 0x01);
 }
 
-/*
- * IRQ
- */
+ 
 
 static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 {
@@ -357,7 +327,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 	u8 statusa;
 	int i, ret, report = 0, mask = 0;
 
-	/* Read current IRQ events */
+	 
 	ret = regmap_bulk_read(da7219->regmap, DA7219_ACCDET_IRQ_EVENT_A,
 			       events, DA7219_AAD_IRQ_REG_MAX);
 	if (ret) {
@@ -368,7 +338,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 	if (!events[DA7219_AAD_IRQ_REG_A] && !events[DA7219_AAD_IRQ_REG_B])
 		return IRQ_NONE;
 
-	/* Read status register for jack insertion & type status */
+	 
 	statusa = snd_soc_component_read(component, DA7219_ACCDET_STATUS_A);
 
 	if (events[DA7219_AAD_IRQ_REG_A] & DA7219_E_JACK_INSERTED_MASK) {
@@ -383,7 +353,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 							msecs_to_jiffies(delay));
 	}
 
-	/* Clear events */
+	 
 	regmap_bulk_write(da7219->regmap, DA7219_ACCDET_IRQ_EVENT_A,
 			  events, DA7219_AAD_IRQ_REG_MAX);
 
@@ -392,7 +362,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 		statusa);
 
 	if (statusa & DA7219_JACK_INSERTION_STS_MASK) {
-		/* Jack Insertion */
+		 
 		if (events[DA7219_AAD_IRQ_REG_A] &
 		    DA7219_E_JACK_INSERTED_MASK) {
 			report |= SND_JACK_MECHANICAL;
@@ -400,24 +370,13 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 			da7219_aad->jack_inserted = true;
 		}
 
-		/* Jack type detection */
+		 
 		if (events[DA7219_AAD_IRQ_REG_A] &
 		    DA7219_E_JACK_DETECT_COMPLETE_MASK) {
-			/*
-			 * If 4-pole, then enable button detection, else perform
-			 * HP impedance test to determine output type to report.
-			 *
-			 * We schedule work here as the tasks themselves can
-			 * take time to complete, and in particular for hptest
-			 * we want to be able to check if the jack was removed
-			 * during the procedure as this will invalidate the
-			 * result. By doing this as work, the IRQ thread can
-			 * handle a removal, and we can check at the end of
-			 * hptest if we have a valid result or not.
-			 */
+			 
 
 			cancel_delayed_work_sync(&da7219_aad->jack_det_work);
-			/* Disable ground switch */
+			 
 			snd_soc_component_update_bits(component, 0xFB, 0x01, 0x00);
 
 			if (statusa & DA7219_JACK_TYPE_STS_MASK) {
@@ -429,10 +388,10 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 			}
 		}
 
-		/* Button support for 4-pole jack */
+		 
 		if (statusa & DA7219_JACK_TYPE_STS_MASK) {
 			for (i = 0; i < DA7219_AAD_MAX_BUTTONS; ++i) {
-				/* Button Press */
+				 
 				if (events[DA7219_AAD_IRQ_REG_B] &
 				    (DA7219_E_BUTTON_A_PRESSED_MASK << i)) {
 					report |= SND_JACK_BTN_0 >> i;
@@ -442,7 +401,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 			snd_soc_jack_report(da7219_aad->jack, report, mask);
 
 			for (i = 0; i < DA7219_AAD_MAX_BUTTONS; ++i) {
-				/* Button Release */
+				 
 				if (events[DA7219_AAD_IRQ_REG_B] &
 				    (DA7219_E_BUTTON_A_RELEASED_MASK >> i)) {
 					report &= ~(SND_JACK_BTN_0 >> i);
@@ -451,34 +410,34 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 			}
 		}
 	} else {
-		/* Jack removal */
+		 
 		if (events[DA7219_AAD_IRQ_REG_A] & DA7219_E_JACK_REMOVED_MASK) {
 			report = 0;
 			mask |= DA7219_AAD_REPORT_ALL_MASK;
 			da7219_aad->jack_inserted = false;
 
-			/* Cancel any pending work */
+			 
 			cancel_delayed_work_sync(&da7219_aad->jack_det_work);
 			cancel_work_sync(&da7219_aad->btn_det_work);
 			cancel_work_sync(&da7219_aad->hptest_work);
 
-			/* Un-drive headphones/lineout */
+			 
 			snd_soc_component_update_bits(component, DA7219_HP_R_CTRL,
 					    DA7219_HP_R_AMP_OE_MASK, 0);
 			snd_soc_component_update_bits(component, DA7219_HP_L_CTRL,
 					    DA7219_HP_L_AMP_OE_MASK, 0);
 
-			/* Ensure button detection disabled */
+			 
 			snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_1,
 					    DA7219_BUTTON_CONFIG_MASK, 0);
 
 			da7219->micbias_on_event = false;
 
-			/* Disable mic bias */
+			 
 			snd_soc_dapm_disable_pin(dapm, "Mic Bias");
 			snd_soc_dapm_sync(dapm);
 
-			/* Disable ground switch */
+			 
 			snd_soc_component_update_bits(component, 0xFB, 0x01, 0x00);
 		}
 	}
@@ -488,9 +447,7 @@ static irqreturn_t da7219_aad_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * DT/ACPI to pdata conversion
- */
+ 
 
 static enum da7219_aad_micbias_pulse_lvl
 	da7219_aad_fw_micbias_pulse_lvl(struct device *dev, u32 val)
@@ -916,9 +873,7 @@ static void da7219_aad_handle_gnd_switch_time(struct snd_soc_component *componen
 	}
 }
 
-/*
- * Suspend/Resume
- */
+ 
 
 void da7219_aad_suspend(struct snd_soc_component *component)
 {
@@ -928,16 +883,11 @@ void da7219_aad_suspend(struct snd_soc_component *component)
 	u8 micbias_ctrl;
 
 	if (da7219_aad->jack) {
-		/* Disable jack detection during suspend */
+		 
 		snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_1,
 				    DA7219_ACCDET_EN_MASK, 0);
 
-		/*
-		 * If we have a 4-pole jack inserted, then micbias will be
-		 * enabled. We can disable micbias here, and keep a note to
-		 * re-enable it on resume. If jack removal occurred during
-		 * suspend then this will be dealt with through the IRQ handler.
-		 */
+		 
 		if (da7219_aad->jack_inserted) {
 			micbias_ctrl = snd_soc_component_read(component, DA7219_MICBIAS_CTRL);
 			if (micbias_ctrl & DA7219_MICBIAS1_EN_MASK) {
@@ -958,7 +908,7 @@ void da7219_aad_resume(struct snd_soc_component *component)
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 
 	if (da7219_aad->jack) {
-		/* Re-enable micbias if previously enabled for 4-pole jack */
+		 
 		if (da7219_aad->jack_inserted &&
 		    da7219_aad->micbias_resume_enable) {
 			snd_soc_dapm_force_enable_pin(dapm, "Mic Bias");
@@ -966,7 +916,7 @@ void da7219_aad_resume(struct snd_soc_component *component)
 			da7219_aad->micbias_resume_enable = false;
 		}
 
-		/* Re-enable jack detection */
+		 
 		snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_1,
 				    DA7219_ACCDET_EN_MASK,
 				    DA7219_ACCDET_EN_MASK);
@@ -974,9 +924,7 @@ void da7219_aad_resume(struct snd_soc_component *component)
 }
 
 
-/*
- * Init/Exit
- */
+ 
 
 int da7219_aad_init(struct snd_soc_component *component)
 {
@@ -987,10 +935,10 @@ int da7219_aad_init(struct snd_soc_component *component)
 
 	da7219_aad->component = component;
 
-	/* Handle any DT/ACPI/platform data */
+	 
 	da7219_aad_handle_pdata(component);
 
-	/* Disable button detection */
+	 
 	snd_soc_component_update_bits(component, DA7219_ACCDET_CONFIG_1,
 			    DA7219_BUTTON_CONFIG_MASK, 0);
 
@@ -1015,7 +963,7 @@ int da7219_aad_init(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* Unmask AAD IRQs */
+	 
 	memset(mask, 0, DA7219_AAD_IRQ_REG_MAX);
 	regmap_bulk_write(da7219->regmap, DA7219_ACCDET_IRQ_MASK_A,
 			  &mask, DA7219_AAD_IRQ_REG_MAX);
@@ -1029,7 +977,7 @@ void da7219_aad_exit(struct snd_soc_component *component)
 	struct da7219_aad_priv *da7219_aad = da7219->aad;
 	u8 mask[DA7219_AAD_IRQ_REG_MAX];
 
-	/* Mask off AAD IRQs */
+	 
 	memset(mask, DA7219_BYTE_MASK, DA7219_AAD_IRQ_REG_MAX);
 	regmap_bulk_write(da7219->regmap, DA7219_ACCDET_IRQ_MASK_A,
 			  mask, DA7219_AAD_IRQ_REG_MAX);
@@ -1042,9 +990,7 @@ void da7219_aad_exit(struct snd_soc_component *component)
 	destroy_workqueue(da7219_aad->aad_wq);
 }
 
-/*
- * AAD related I2C probe handling
- */
+ 
 
 int da7219_aad_probe(struct i2c_client *i2c)
 {
@@ -1058,7 +1004,7 @@ int da7219_aad_probe(struct i2c_client *i2c)
 
 	da7219->aad = da7219_aad;
 
-	/* Retrieve any DT/ACPI/platform data */
+	 
 	if (da7219->pdata && !da7219->pdata->aad_pdata)
 		da7219->pdata->aad_pdata = da7219_aad_fw_to_pdata(dev);
 

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 #include <linux/file.h>
 #include <linux/interval_tree.h>
 #include <linux/iommu.h>
@@ -25,14 +24,7 @@ out_unlock:
 	return ioas;
 }
 
-/**
- * iommufd_vfio_compat_ioas_get_id - Ensure a compat IOAS exists
- * @ictx: Context to operate on
- * @out_ioas_id: The IOAS ID of the compatibility IOAS
- *
- * Return the ID of the current compatibility IOAS. The ID can be passed into
- * other functions that take an ioas_id.
- */
+ 
 int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
 {
 	struct iommufd_ioas *ioas;
@@ -46,12 +38,7 @@ int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
 }
 EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_get_id, IOMMUFD_VFIO);
 
-/**
- * iommufd_vfio_compat_set_no_iommu - Called when a no-iommu device is attached
- * @ictx: Context to operate on
- *
- * This allows selecting the VFIO_NOIOMMU_IOMMU and blocks normal types.
- */
+ 
 int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
 {
 	int ret;
@@ -68,15 +55,7 @@ int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
 }
 EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_set_no_iommu, IOMMUFD_VFIO);
 
-/**
- * iommufd_vfio_compat_ioas_create - Ensure the compat IOAS is created
- * @ictx: Context to operate on
- *
- * The compatibility IOAS is the IOAS that the vfio compatibility ioctls operate
- * on since they do not have an IOAS ID input in their ABI. Only attaching a
- * group should cause a default creation of the internal ioas, this does nothing
- * if an existing ioas has already been assigned somehow.
- */
+ 
 int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
 {
 	struct iommufd_ioas *ioas = NULL;
@@ -87,10 +66,7 @@ int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
 		return PTR_ERR(ioas);
 
 	xa_lock(&ictx->objects);
-	/*
-	 * VFIO won't allow attaching a container to both iommu and no iommu
-	 * operation
-	 */
+	 
 	if (ictx->no_iommu_mode) {
 		ret = -EINVAL;
 		goto out_abort;
@@ -104,12 +80,7 @@ int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
 	ictx->vfio_ioas = ioas;
 	xa_unlock(&ictx->objects);
 
-	/*
-	 * An automatically created compat IOAS is treated as a userspace
-	 * created object. Userspace can learn the ID via IOMMU_VFIO_IOAS_GET,
-	 * and if not manually destroyed it will be destroyed automatically
-	 * at iommufd release.
-	 */
+	 
 	iommufd_object_finalize(ictx, &ioas->obj);
 	return 0;
 
@@ -182,11 +153,7 @@ static int iommufd_vfio_map_dma(struct iommufd_ctx *ictx, unsigned int cmd,
 	if (IS_ERR(ioas))
 		return PTR_ERR(ioas);
 
-	/*
-	 * Maps created through the legacy interface always use VFIO compatible
-	 * rlimit accounting. If the user wishes to use the faster user based
-	 * rlimit accounting then they must use the new interface.
-	 */
+	 
 	iova = map.iova;
 	rc = iopt_map_user_pages(ictx, &ioas->iopt, &iova, u64_to_user_ptr(map.vaddr),
 				 map.size, iommu_prot, 0);
@@ -198,12 +165,7 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
 				  void __user *arg)
 {
 	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
-	/*
-	 * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
-	 * dirty tracking direction:
-	 *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
-	 *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
-	 */
+	 
 	u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
 	struct vfio_iommu_type1_dma_unmap unmap;
 	unsigned long unmapped = 0;
@@ -228,11 +190,7 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
 		rc = iopt_unmap_all(&ioas->iopt, &unmapped);
 	} else {
 		if (READ_ONCE(ioas->iopt.disable_large_pages)) {
-			/*
-			 * Create cuts at the start and last of the requested
-			 * range. If the start IOVA is 0 then it doesn't need to
-			 * be cut.
-			 */
+			 
 			unsigned long iovas[] = { unmap.iova + unmap.size - 1,
 						  unmap.iova - 1 };
 
@@ -291,21 +249,11 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
 	case VFIO_DMA_CC_IOMMU:
 		return iommufd_vfio_cc_iommu(ictx);
 
-	/*
-	 * This is obsolete, and to be removed from VFIO. It was an incomplete
-	 * idea that got merged.
-	 * https://lore.kernel.org/kvm/0-v1-0093c9b0e345+19-vfio_no_nesting_jgg@nvidia.com/
-	 */
+	 
 	case VFIO_TYPE1_NESTING_IOMMU:
 		return 0;
 
-	/*
-	 * VFIO_DMA_MAP_FLAG_VADDR
-	 * https://lore.kernel.org/kvm/1611939252-7240-1-git-send-email-steven.sistare@oracle.com/
-	 * https://lore.kernel.org/all/Yz777bJZjTyLrHEQ@nvidia.com/
-	 *
-	 * It is hard to see how this could be implemented safely.
-	 */
+	 
 	case VFIO_UPDATE_VADDR:
 	default:
 		return 0;
@@ -318,11 +266,7 @@ static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
 	struct iommufd_ioas *ioas = NULL;
 	int rc = 0;
 
-	/*
-	 * Emulation for NOIOMMU is imperfect in that VFIO blocks almost all
-	 * other ioctls. We let them keep working but they mostly fail since no
-	 * IOAS should exist.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && type == VFIO_NOIOMMU_IOMMU &&
 	    no_iommu_mode) {
 		if (!capable(CAP_SYS_RAWIO))
@@ -334,19 +278,12 @@ static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
 	    no_iommu_mode)
 		return -EINVAL;
 
-	/* VFIO fails the set_iommu if there is no group */
+	 
 	ioas = get_compat_ioas(ictx);
 	if (IS_ERR(ioas))
 		return PTR_ERR(ioas);
 
-	/*
-	 * The difference between TYPE1 and TYPE1v2 is the ability to unmap in
-	 * the middle of mapped ranges. This is complicated by huge page support
-	 * which creates single large IOPTEs that cannot be split by the iommu
-	 * driver. TYPE1 is very old at this point and likely nothing uses it,
-	 * however it is simple enough to emulate by simply disabling the
-	 * problematic large IOPTEs. Then we can safely unmap within any range.
-	 */
+	 
 	if (type == VFIO_TYPE1_IOMMU)
 		rc = iopt_disable_large_pages(&ioas->iopt);
 	iommufd_put_object(&ioas->obj);
@@ -364,7 +301,7 @@ static unsigned long iommufd_get_pagesizes(struct iommufd_ioas *ioas)
 	xa_for_each(&iopt->domains, index, domain)
 		pgsize_bitmap &= domain->pgsize_bitmap;
 
-	/* See vfio_update_pgsize_bitmap() */
+	 
 	if (pgsize_bitmap & ~PAGE_MASK) {
 		pgsize_bitmap &= PAGE_MASK;
 		pgsize_bitmap |= PAGE_SIZE;
@@ -420,13 +357,7 @@ static int iommufd_fill_cap_dma_avail(struct iommufd_ioas *ioas,
 			.id = VFIO_IOMMU_TYPE1_INFO_DMA_AVAIL,
 			.version = 1,
 		},
-		/*
-		 * iommufd's limit is based on the cgroup's memory limit.
-		 * Normally vfio would return U16_MAX here, and provide a module
-		 * parameter to adjust it. Since S390 qemu userspace actually
-		 * pays attention and needs a value bigger than U16_MAX return
-		 * U32_MAX.
-		 */
+		 
 		.avail = U32_MAX,
 	};
 
@@ -494,11 +425,7 @@ static int iommufd_vfio_iommu_get_info(struct iommufd_ctx *ictx,
 		total_cap_size += cap_size;
 	}
 
-	/*
-	 * If the user did not provide enough space then only some caps are
-	 * returned and the argsz will be updated to the correct amount to get
-	 * all caps.
-	 */
+	 
 	if (info.argsz >= total_cap_size)
 		info.cap_offset = sizeof(info);
 	info.argsz = total_cap_size;

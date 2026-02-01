@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
+ 
+ 
 
 #ifndef _AMPHION_VPU_CORE_H
 #define _AMPHION_VPU_CORE_H

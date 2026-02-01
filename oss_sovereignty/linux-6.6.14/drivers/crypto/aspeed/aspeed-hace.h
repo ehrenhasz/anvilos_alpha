@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 #ifndef __ASPEED_HACE_H__
 #define __ASPEED_HACE_H__
 
@@ -11,32 +11,28 @@
 #include <linux/interrupt.h>
 #include <linux/types.h>
 
-/*****************************
- *                           *
- * HACE register definitions *
- *                           *
- * ***************************/
-#define ASPEED_HACE_SRC			0x00	/* Crypto Data Source Base Address Register */
-#define ASPEED_HACE_DEST		0x04	/* Crypto Data Destination Base Address Register */
-#define ASPEED_HACE_CONTEXT		0x08	/* Crypto Context Buffer Base Address Register */
-#define ASPEED_HACE_DATA_LEN		0x0C	/* Crypto Data Length Register */
-#define ASPEED_HACE_CMD			0x10	/* Crypto Engine Command Register */
+ 
+#define ASPEED_HACE_SRC			0x00	 
+#define ASPEED_HACE_DEST		0x04	 
+#define ASPEED_HACE_CONTEXT		0x08	 
+#define ASPEED_HACE_DATA_LEN		0x0C	 
+#define ASPEED_HACE_CMD			0x10	 
 
-/* G5 */
-#define ASPEED_HACE_TAG			0x18	/* HACE Tag Register */
-/* G6 */
-#define ASPEED_HACE_GCM_ADD_LEN		0x14	/* Crypto AES-GCM Additional Data Length Register */
-#define ASPEED_HACE_GCM_TAG_BASE_ADDR	0x18	/* Crypto AES-GCM Tag Write Buff Base Address Reg */
+ 
+#define ASPEED_HACE_TAG			0x18	 
+ 
+#define ASPEED_HACE_GCM_ADD_LEN		0x14	 
+#define ASPEED_HACE_GCM_TAG_BASE_ADDR	0x18	 
 
-#define ASPEED_HACE_STS			0x1C	/* HACE Status Register */
+#define ASPEED_HACE_STS			0x1C	 
 
-#define ASPEED_HACE_HASH_SRC		0x20	/* Hash Data Source Base Address Register */
-#define ASPEED_HACE_HASH_DIGEST_BUFF	0x24	/* Hash Digest Write Buffer Base Address Register */
-#define ASPEED_HACE_HASH_KEY_BUFF	0x28	/* Hash HMAC Key Buffer Base Address Register */
-#define ASPEED_HACE_HASH_DATA_LEN	0x2C	/* Hash Data Length Register */
-#define ASPEED_HACE_HASH_CMD		0x30	/* Hash Engine Command Register */
+#define ASPEED_HACE_HASH_SRC		0x20	 
+#define ASPEED_HACE_HASH_DIGEST_BUFF	0x24	 
+#define ASPEED_HACE_HASH_KEY_BUFF	0x28	 
+#define ASPEED_HACE_HASH_DATA_LEN	0x2C	 
+#define ASPEED_HACE_HASH_CMD		0x30	 
 
-/* crypto cmd */
+ 
 #define  HACE_CMD_SINGLE_DES		0
 #define  HACE_CMD_TRIPLE_DES		BIT(17)
 #define  HACE_CMD_AES_SELECT		0
@@ -63,12 +59,12 @@
 #define  HACE_CMD_OP_CASCADE		(0x3)
 #define  HACE_CMD_OP_INDEPENDENT	(0x1)
 
-/* G5 */
+ 
 #define  HACE_CMD_RI_WO_DATA_ENABLE	(0)
 #define  HACE_CMD_RI_WO_DATA_DISABLE	BIT(11)
 #define  HACE_CMD_CONTEXT_LOAD_ENABLE	(0)
 #define  HACE_CMD_CONTEXT_LOAD_DISABLE	BIT(10)
-/* G6 */
+ 
 #define  HACE_CMD_AES_KEY_FROM_OTP	BIT(24)
 #define  HACE_CMD_GHASH_TAG_XOR_EN	BIT(23)
 #define  HACE_CMD_GHASH_PAD_LEN_INV	BIT(22)
@@ -83,12 +79,12 @@
 #define  HACE_CMD_AES_KEY_HW_EXP	BIT(13)
 #define  HACE_CMD_GCM			(0x5 << 4)
 
-/* interrupt status reg */
+ 
 #define  HACE_CRYPTO_ISR		BIT(12)
 #define  HACE_HASH_ISR			BIT(9)
 #define  HACE_HASH_BUSY			BIT(0)
 
-/* hash cmd reg */
+ 
 #define  HASH_CMD_MBUS_REQ_SYNC_EN	BIT(20)
 #define  HASH_CMD_HASH_SRC_SG_CTRL	BIT(18)
 #define  HASH_CMD_SHA512_224		(0x3 << 10)
@@ -147,7 +143,7 @@ struct aspeed_engine_hash {
 	unsigned long			flags;
 	struct ahash_request		*req;
 
-	/* input buffer */
+	 
 	void				*ahash_src_addr;
 	dma_addr_t			ahash_src_dma_addr;
 
@@ -156,7 +152,7 @@ struct aspeed_engine_hash {
 
 	size_t				src_length;
 
-	/* callback func */
+	 
 	aspeed_hace_fn_t		resume;
 	aspeed_hace_fn_t		dma_prepare;
 };
@@ -169,33 +165,33 @@ struct aspeed_sha_hmac_ctx {
 
 struct aspeed_sham_ctx {
 	struct aspeed_hace_dev		*hace_dev;
-	unsigned long			flags;	/* hmac flag */
+	unsigned long			flags;	 
 
 	struct aspeed_sha_hmac_ctx	base[];
 };
 
 struct aspeed_sham_reqctx {
-	unsigned long		flags;		/* final update flag should no use*/
-	unsigned long		op;		/* final or update */
-	u32			cmd;		/* trigger cmd */
+	unsigned long		flags;		 
+	unsigned long		op;		 
+	u32			cmd;		 
 
-	/* walk state */
+	 
 	struct scatterlist	*src_sg;
 	int			src_nents;
-	unsigned int		offset;		/* offset in current sg */
-	unsigned int		total;		/* per update length */
+	unsigned int		offset;		 
+	unsigned int		total;		 
 
 	size_t			digsize;
 	size_t			block_size;
 	size_t			ivsize;
 	const __be32		*sha_iv;
 
-	/* remain data buffer */
+	 
 	u8			buffer[SHA512_BLOCK_SIZE * 2];
 	dma_addr_t		buffer_dma_addr;
-	size_t			bufcnt;		/* buffer counter */
+	size_t			bufcnt;		 
 
-	/* output buffer */
+	 
 	u8			digest[SHA512_DIGEST_SIZE] __aligned(64);
 	dma_addr_t		digest_dma_addr;
 	u64			digcnt[2];
@@ -206,19 +202,19 @@ struct aspeed_engine_crypto {
 	unsigned long			flags;
 	struct skcipher_request		*req;
 
-	/* context buffer */
+	 
 	void				*cipher_ctx;
 	dma_addr_t			cipher_ctx_dma;
 
-	/* input buffer, could be single/scatter-gather lists */
+	 
 	void				*cipher_addr;
 	dma_addr_t			cipher_dma_addr;
 
-	/* output buffer, only used in scatter-gather lists */
+	 
 	void				*dst_sg_addr;
 	dma_addr_t			dst_sg_dma_addr;
 
-	/* callback func */
+	 
 	aspeed_hace_fn_t		resume;
 };
 
@@ -227,7 +223,7 @@ struct aspeed_cipher_ctx {
 	int				key_len;
 	u8				key[AES_MAX_KEYLENGTH];
 
-	/* callback func */
+	 
 	aspeed_hace_fn_t		start;
 
 	struct crypto_skcipher          *fallback_tfm;
@@ -238,7 +234,7 @@ struct aspeed_cipher_reqctx {
 	int src_nents;
 	int dst_nents;
 
-	struct skcipher_request         fallback_req;   /* keep at the end */
+	struct skcipher_request         fallback_req;    
 };
 
 struct aspeed_hace_dev {

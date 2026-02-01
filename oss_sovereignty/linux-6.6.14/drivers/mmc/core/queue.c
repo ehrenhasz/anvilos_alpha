@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2003 Russell King, All Rights Reserved.
- *  Copyright 2006-2007 Pierre Ossman
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/blkdev.h>
@@ -25,7 +22,7 @@
 
 static inline bool mmc_cqe_dcmd_busy(struct mmc_queue *mq)
 {
-	/* Allow only 1 DCMD at a time */
+	 
 	return mq->in_flight[MMC_ISSUE_DCMD];
 }
 
@@ -109,10 +106,10 @@ static enum blk_eh_timer_return mmc_cqe_timed_out(struct request *req)
 				mmc_cqe_recovery_notifier(mrq);
 			return BLK_EH_RESET_TIMER;
 		}
-		/* The request has gone already */
+		 
 		return BLK_EH_DONE;
 	default:
-		/* Timeout is handled by mmc core */
+		 
 		return BLK_EH_RESET_TIMER;
 	}
 }
@@ -185,7 +182,7 @@ static void mmc_queue_setup_discard(struct request_queue *q,
 
 	blk_queue_max_discard_sectors(q, max_discard);
 	q->limits.discard_granularity = card->pref_erase << 9;
-	/* granularity must not be greater than max. discard */
+	 
 	if (card->pref_erase > max_discard)
 		q->limits.discard_granularity = SECTOR_SIZE;
 	if (mmc_can_secure_erase_trim(card))
@@ -260,28 +257,19 @@ static blk_status_t mmc_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
 		}
 		break;
 	case MMC_ISSUE_ASYNC:
-		/*
-		 * For MMC host software queue, we only allow 2 requests in
-		 * flight to avoid a long latency.
-		 */
+		 
 		if (host->hsq_enabled && mq->in_flight[issue_type] > 2) {
 			spin_unlock_irq(&mq->lock);
 			return BLK_STS_RESOURCE;
 		}
 		break;
 	default:
-		/*
-		 * Timeouts are handled by mmc core, and we don't have a host
-		 * API to abort requests, so we can't handle the timeout anyway.
-		 * However, when the timeout happens, blk_mq_complete_request()
-		 * no longer works (to stop the request disappearing under us).
-		 * To avoid racing with that, set a large timeout.
-		 */
+		 
 		req->timeout = 600 * HZ;
 		break;
 	}
 
-	/* Parallel dispatch of requests is not supported at the moment */
+	 
 	mq->busy = true;
 
 	mq->in_flight[issue_type] += 1;
@@ -371,11 +359,7 @@ static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
 	}
 
 	blk_queue_logical_block_size(mq->queue, block_size);
-	/*
-	 * After blk_queue_can_use_dma_map_merging() was called with succeed,
-	 * since it calls blk_queue_virt_boundary(), the mmc should not call
-	 * both blk_queue_max_segment_size().
-	 */
+	 
 	if (!host->can_dma_map_merge)
 		blk_queue_max_segment_size(mq->queue,
 			round_down(host->max_seg_size, block_size));
@@ -397,16 +381,10 @@ static inline bool mmc_merge_capable(struct mmc_host *host)
 	return host->caps2 & MMC_CAP2_MERGE_CAPABLE;
 }
 
-/* Set queue depth to get a reasonable value for q->nr_requests */
+ 
 #define MMC_QUEUE_DEPTH 64
 
-/**
- * mmc_init_queue - initialise a queue structure.
- * @mq: mmc queue
- * @card: mmc card to attach this queue
- *
- * Initialise a MMC card request queue.
- */
+ 
 struct gendisk *mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card)
 {
 	struct mmc_host *host = card->host;
@@ -419,10 +397,7 @@ struct gendisk *mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card)
 
 	memset(&mq->tag_set, 0, sizeof(mq->tag_set));
 	mq->tag_set.ops = &mmc_mq_ops;
-	/*
-	 * The queue depth for CQE must match the hardware because the request
-	 * tag is used to index the hardware queue.
-	 */
+	 
 	if (host->cqe_enabled && !host->hsq_enabled)
 		mq->tag_set.queue_depth =
 			min_t(int, card->ext_csd.cmdq_depth, host->cqe_qdepth);
@@ -434,11 +409,7 @@ struct gendisk *mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card)
 	mq->tag_set.cmd_size = sizeof(struct mmc_queue_req);
 	mq->tag_set.driver_data = mq;
 
-	/*
-	 * Since blk_mq_alloc_tag_set() calls .init_request() of mmc_mq_ops,
-	 * the host->can_dma_map_merge should be set before to get max_segs
-	 * from mmc_get_max_segments().
-	 */
+	 
 	if (mmc_merge_capable(host) &&
 	    host->max_segs < MMC_DMA_MAP_MERGE_SEGMENTS &&
 	    dma_get_merge_boundary(mmc_dev(host)))
@@ -470,10 +441,7 @@ void mmc_queue_suspend(struct mmc_queue *mq)
 {
 	blk_mq_quiesce_queue(mq->queue);
 
-	/*
-	 * The host remains claimed while there are outstanding requests, so
-	 * simply claiming and releasing here ensures there are none.
-	 */
+	 
 	mmc_claim_host(mq->card->host);
 	mmc_release_host(mq->card->host);
 }
@@ -487,35 +455,22 @@ void mmc_cleanup_queue(struct mmc_queue *mq)
 {
 	struct request_queue *q = mq->queue;
 
-	/*
-	 * The legacy code handled the possibility of being suspended,
-	 * so do that here too.
-	 */
+	 
 	if (blk_queue_quiesced(q))
 		blk_mq_unquiesce_queue(q);
 
-	/*
-	 * If the recovery completes the last (and only remaining) request in
-	 * the queue, and the card has been removed, we could end up here with
-	 * the recovery not quite finished yet, so cancel it.
-	 */
+	 
 	cancel_work_sync(&mq->recovery_work);
 
 	blk_mq_free_tag_set(&mq->tag_set);
 
-	/*
-	 * A request can be completed before the next request, potentially
-	 * leaving a complete_work with nothing to do. Such a work item might
-	 * still be queued at this point. Flush it.
-	 */
+	 
 	flush_work(&mq->complete_work);
 
 	mq->card = NULL;
 }
 
-/*
- * Prepare the sg list(s) to be handed of to the host driver
- */
+ 
 unsigned int mmc_queue_map_sg(struct mmc_queue *mq, struct mmc_queue_req *mqrq)
 {
 	struct request *req = mmc_queue_req_to_req(mqrq);

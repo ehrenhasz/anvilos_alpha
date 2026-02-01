@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017 Facebook
- */
+
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -11,9 +10,7 @@
 #include <bpf/libbpf.h>
 #include <bpf/bpf.h>
 
-/* This program verifies bpf attachment to tracepoint sys_enter_* and sys_exit_*.
- * This requires kernel CONFIG_FTRACE_SYSCALLS to be set.
- */
+ 
 
 static void usage(const char *cmd)
 {
@@ -60,7 +57,7 @@ static int test(char *filename, int nr_tests)
 			goto cleanup;
 		}
 
-		/* One-time initialization */
+		 
 		if (!links) {
 			int nr_progs = 0;
 
@@ -73,7 +70,7 @@ static int test(char *filename, int nr_tests)
 				goto cleanup;
 		}
 
-		/* load BPF program */
+		 
 		if (bpf_object__load(objs[i])) {
 			fprintf(stderr, "loading BPF object file failed\n");
 			goto cleanup;
@@ -100,12 +97,8 @@ static int test(char *filename, int nr_tests)
 		printf("prog #%d: map ids %d %d\n", i, map0_fds[i], map1_fds[i]);
 	}
 
-	/* current load_bpf_file has perf_event_open default pid = -1
-	 * and cpu = 0, which permits attached bpf execution on
-	 * all cpus for all pid's. bpf program execution ignores
-	 * cpu affinity.
-	 */
-	/* trigger some "open" operations */
+	 
+	 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0) {
 		fprintf(stderr, "open failed: %s\n", strerror(errno));
@@ -113,7 +106,7 @@ static int test(char *filename, int nr_tests)
 	}
 	close(fd);
 
-	/* verify the map */
+	 
 	for (i = 0; i < nr_tests; i++) {
 		verify_map(map0_fds[i]);
 		verify_map(map1_fds[i]);

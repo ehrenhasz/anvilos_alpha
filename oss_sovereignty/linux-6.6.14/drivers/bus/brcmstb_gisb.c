@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2021 Broadcom
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/types.h>
@@ -142,7 +140,7 @@ static u32 gisb_read(struct brcmstb_gisb_arb_device *gdev, int reg)
 	int offset = gdev->gisb_offsets[reg];
 
 	if (offset < 0) {
-		/* return 1 if the hardware doesn't have ARB_ERR_CAP_MASTER */
+		 
 		if (reg == ARB_ERR_CAP_MASTER)
 			return 1;
 		else
@@ -246,11 +244,11 @@ static int brcmstb_gisb_arb_decode_addr(struct brcmstb_gisb_arb_device *gdev,
 
 	cap_status = gisb_read(gdev, ARB_ERR_CAP_STATUS);
 
-	/* Invalid captured address, bail out */
+	 
 	if (!(cap_status & ARB_ERR_CAP_STATUS_VALID))
 		return 1;
 
-	/* Read the address and master */
+	 
 	arb_addr = gisb_read_address(gdev);
 	master = gisb_read(gdev, ARB_ERR_CAP_MASTER);
 
@@ -266,7 +264,7 @@ static int brcmstb_gisb_arb_decode_addr(struct brcmstb_gisb_arb_device *gdev,
 		cap_status & ARB_ERR_CAP_STATUS_TIMEOUT ? "timeout" : "",
 		m_name);
 
-	/* clear the GISB error */
+	 
 	gisb_write(gdev, ARB_ERR_CAP_CLEAR, ARB_ERR_CAP_CLR);
 
 	return 0;
@@ -282,7 +280,7 @@ static int brcmstb_bus_error_handler(struct pt_regs *regs, int is_fixup)
 	list_for_each_entry(gdev, &brcmstb_gisb_arb_device_list, next) {
 		cap_status = gisb_read(gdev, ARB_ERR_CAP_STATUS);
 
-		/* Invalid captured address, bail out */
+		 
 		if (!(cap_status & ARB_ERR_CAP_STATUS_VALID)) {
 			is_fixup = 1;
 			goto out;
@@ -320,11 +318,11 @@ static irqreturn_t brcmstb_gisb_bp_handler(int irq, void *dev_id)
 
 	bp_status = gisb_read(gdev, ARB_BP_CAP_STATUS);
 
-	/* Invalid captured address, bail out */
+	 
 	if (!(bp_status & ARB_BP_CAP_STATUS_VALID))
 		return IRQ_HANDLED;
 
-	/* Read the address and master */
+	 
 	arb_addr = gisb_read_bp_address(gdev);
 	master = gisb_read(gdev, ARB_BP_CAP_MASTER);
 
@@ -338,15 +336,13 @@ static irqreturn_t brcmstb_gisb_bp_handler(int irq, void *dev_id)
 		arb_addr, bp_status & ARB_BP_CAP_STATUS_WRITE ? 'W' : 'R',
 		m_name);
 
-	/* clear the GISB error */
+	 
 	gisb_write(gdev, ARB_ERR_CAP_CLEAR, ARB_ERR_CAP_CLR);
 
 	return IRQ_HANDLED;
 }
 
-/*
- * Dump out gisb errors on die or panic.
- */
+ 
 static int dump_gisb_error(struct notifier_block *self, unsigned long v,
 			   void *p);
 
@@ -367,7 +363,7 @@ static int dump_gisb_error(struct notifier_block *self, unsigned long v,
 	if (self == &gisb_die_notifier)
 		reason = "die";
 
-	/* iterate over each GISB arb registered handlers */
+	 
 	list_for_each_entry(gdev, &brcmstb_gisb_arb_device_list, next)
 		brcmstb_gisb_arb_decode_addr(gdev, reason);
 
@@ -440,7 +436,7 @@ static int __init brcmstb_gisb_arb_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-	/* Interrupt is optional */
+	 
 	if (bp_irq > 0) {
 		err = devm_request_irq(&pdev->dev, bp_irq,
 				       brcmstb_gisb_bp_handler, 0, pdev->name,
@@ -449,14 +445,12 @@ static int __init brcmstb_gisb_arb_probe(struct platform_device *pdev)
 			return err;
 	}
 
-	/* If we do not have a valid mask, assume all masters are enabled */
+	 
 	if (of_property_read_u32(dn, "brcm,gisb-arb-master-mask",
 				&gdev->valid_mask))
 		gdev->valid_mask = 0xffffffff;
 
-	/* Proceed with reading the litteral names if we agree on the
-	 * number of masters
-	 */
+	 
 	num_masters = of_property_count_strings(dn,
 			"brcm,gisb-arb-master-names");
 	if (hweight_long(gdev->valid_mask) == num_masters) {
@@ -508,9 +502,7 @@ static int brcmstb_gisb_arb_suspend(struct device *dev)
 	return 0;
 }
 
-/* Make sure we provide the same timeout value that was configured before, and
- * do this before the GISB timeout interrupt handler has any chance to run.
- */
+ 
 static int brcmstb_gisb_arb_resume_noirq(struct device *dev)
 {
 	struct brcmstb_gisb_arb_device *gdev = dev_get_drvdata(dev);

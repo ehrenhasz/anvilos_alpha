@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for FSP 3Y-Power PSUs
- *
- * Copyright (c) 2021 Václav Kubernát, CESNET
- *
- * This driver is mostly reverse engineered with the help of a tool called pmbus_peek written by
- * David Brownell (and later adopted by Jan Kundrát). The device has some sort of a timing issue
- * when switching pages, details are explained in the code. The driver support is limited. It
- * exposes only the values, that have been tested to work correctly. Unsupported values either
- * aren't supported by the devices or their encondings are unknown.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -90,13 +80,7 @@ static int set_page(struct i2c_client *client, int page_log)
 
 		data->page = page_real;
 
-		/*
-		 * Testing showed that the device has a timing issue. After
-		 * setting a page, it takes a while, before the device actually
-		 * gives the correct values from the correct page. 20 ms was
-		 * tested to be enough to not give wrong values (15 ms wasn't
-		 * enough).
-		 */
+		 
 		usleep_range(20000, 30000);
 	}
 
@@ -109,9 +93,7 @@ static int fsp3y_read_byte_data(struct i2c_client *client, int page, int reg)
 	struct fsp3y_data *data = to_fsp3y_data(info);
 	int rv;
 
-	/*
-	 * Inject an exponent for non-compliant YH5151-E.
-	 */
+	 
 	if (data->vout_linear_11 && reg == PMBUS_VOUT_MODE)
 		return 0x1A;
 
@@ -128,13 +110,7 @@ static int fsp3y_read_word_data(struct i2c_client *client, int page, int phase, 
 	struct fsp3y_data *data = to_fsp3y_data(info);
 	int rv;
 
-	/*
-	 * This masks commands which weren't tested to work correctly. Some of
-	 * the masked commands return 0xFFFF. These would probably get tagged as
-	 * invalid by pmbus_core. Other ones do return values which might be
-	 * useful (that is, they are not 0xFFFF), but their encoding is unknown,
-	 * and so they are unsupported.
-	 */
+	 
 	switch (reg) {
 	case PMBUS_READ_FAN_SPEED_1:
 	case PMBUS_READ_IIN:
@@ -160,9 +136,7 @@ static int fsp3y_read_word_data(struct i2c_client *client, int page, int phase, 
 	if (rv < 0)
 		return rv;
 
-	/*
-	 * Handle YH-5151E non-compliant linear11 vout voltage.
-	 */
+	 
 	if (data->vout_linear_11 && reg == PMBUS_READ_VOUT)
 		rv = sign_extend32(rv, 10) & 0xffff;
 
@@ -254,15 +228,7 @@ static int fsp3y_probe(struct i2c_client *client)
 
 	data->info = fsp3y_info[data->chip];
 
-	/*
-	 * YH-5151E sometimes reports vout in linear11 and sometimes in
-	 * linear16. This depends on the exact individual piece of hardware. One
-	 * YH-5151E can use linear16 and another might use linear11 instead.
-	 *
-	 * The format can be recognized by reading VOUT_MODE - if it doesn't
-	 * report a valid exponent, then vout uses linear11. Otherwise, the
-	 * device is compliant and uses linear16.
-	 */
+	 
 	data->vout_linear_11 = false;
 	if (data->chip == yh5151e) {
 		rv = i2c_smbus_read_byte_data(client, PMBUS_VOUT_MODE);

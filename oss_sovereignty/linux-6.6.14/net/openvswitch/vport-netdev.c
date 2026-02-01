@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2012 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +23,7 @@
 
 static struct vport_ops ovs_netdev_vport_ops;
 
-/* Must be called with rcu_read_lock. */
+ 
 static void netdev_port_receive(struct sk_buff *skb)
 {
 	struct vport *vport;
@@ -37,9 +35,7 @@ static void netdev_port_receive(struct sk_buff *skb)
 	if (unlikely(skb_warn_if_lro(skb)))
 		goto error;
 
-	/* Make our own copy of the packet.  Otherwise we will mangle the
-	 * packet for anyone who came before us (e.g. tcpdump via AF_PACKET).
-	 */
+	 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (unlikely(!skb))
 		return;
@@ -53,7 +49,7 @@ error:
 	kfree_skb(skb);
 }
 
-/* Called with rcu_read_lock and bottom-halves disabled. */
+ 
 static rx_handler_result_t netdev_frame_hook(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -167,10 +163,7 @@ void ovs_netdev_tunnel_destroy(struct vport *vport)
 	if (netif_is_ovs_port(vport->dev))
 		ovs_netdev_detach_dev(vport);
 
-	/* We can be invoked by both explicit vport deletion and
-	 * underlying netdev deregistration; delete the link only
-	 * if it's not already shutting down.
-	 */
+	 
 	if (vport->dev->reg_state == NETREG_REGISTERED)
 		rtnl_delete_link(vport->dev, 0, NULL);
 	netdev_put(vport->dev, &vport->dev_tracker);
@@ -181,7 +174,7 @@ void ovs_netdev_tunnel_destroy(struct vport *vport)
 }
 EXPORT_SYMBOL_GPL(ovs_netdev_tunnel_destroy);
 
-/* Returns null if this device is not attached to a datapath. */
+ 
 struct vport *ovs_netdev_get_vport(struct net_device *dev)
 {
 	if (likely(netif_is_ovs_port(dev)))

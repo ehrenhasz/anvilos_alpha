@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -16,12 +13,7 @@ meson_vid_pll_div_data(struct clk_regmap *clk)
 	return (struct meson_vid_pll_div_data *)clk->data;
 }
 
-/*
- * This vid_pll divided is a fully programmable fractionnal divider to
- * achieve complex video clock rates.
- *
- * Here are provided the commonly used fraction values provided by Amlogic.
- */
+ 
 
 struct vid_pll_div {
 	unsigned int shift_val;
@@ -39,20 +31,20 @@ struct vid_pll_div {
 	}
 
 static const struct vid_pll_div vid_pll_div_table[] = {
-	VID_PLL_DIV(0x0aaa, 0, 2, 1),	/* 2/1  => /2 */
-	VID_PLL_DIV(0x5294, 2, 5, 2),	/* 5/2  => /2.5 */
-	VID_PLL_DIV(0x0db6, 0, 3, 1),	/* 3/1  => /3 */
-	VID_PLL_DIV(0x36cc, 1, 7, 2),	/* 7/2  => /3.5 */
-	VID_PLL_DIV(0x6666, 2, 15, 4),	/* 15/4 => /3.75 */
-	VID_PLL_DIV(0x0ccc, 0, 4, 1),	/* 4/1  => /4 */
-	VID_PLL_DIV(0x739c, 2, 5, 1),	/* 5/1  => /5 */
-	VID_PLL_DIV(0x0e38, 0, 6, 1),	/* 6/1  => /6 */
-	VID_PLL_DIV(0x0000, 3, 25, 4),	/* 25/4 => /6.25 */
-	VID_PLL_DIV(0x3c78, 1, 7, 1),	/* 7/1  => /7 */
-	VID_PLL_DIV(0x78f0, 2, 15, 2),	/* 15/2 => /7.5 */
-	VID_PLL_DIV(0x0fc0, 0, 12, 1),	/* 12/1 => /12 */
-	VID_PLL_DIV(0x3f80, 1, 14, 1),	/* 14/1 => /14 */
-	VID_PLL_DIV(0x7f80, 2, 15, 1),	/* 15/1 => /15 */
+	VID_PLL_DIV(0x0aaa, 0, 2, 1),	 
+	VID_PLL_DIV(0x5294, 2, 5, 2),	 
+	VID_PLL_DIV(0x0db6, 0, 3, 1),	 
+	VID_PLL_DIV(0x36cc, 1, 7, 2),	 
+	VID_PLL_DIV(0x6666, 2, 15, 4),	 
+	VID_PLL_DIV(0x0ccc, 0, 4, 1),	 
+	VID_PLL_DIV(0x739c, 2, 5, 1),	 
+	VID_PLL_DIV(0x0e38, 0, 6, 1),	 
+	VID_PLL_DIV(0x0000, 3, 25, 4),	 
+	VID_PLL_DIV(0x3c78, 1, 7, 1),	 
+	VID_PLL_DIV(0x78f0, 2, 15, 2),	 
+	VID_PLL_DIV(0x0fc0, 0, 12, 1),	 
+	VID_PLL_DIV(0x3f80, 1, 14, 1),	 
+	VID_PLL_DIV(0x7f80, 2, 15, 1),	 
 };
 
 #define to_meson_vid_pll_div(_hw) \

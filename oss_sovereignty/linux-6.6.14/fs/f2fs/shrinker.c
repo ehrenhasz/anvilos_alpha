@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * f2fs shrinker support
- *   the basic infra was copied from fs/ubifs/shrinker.c
- *
- * Copyright (c) 2015 Motorola Mobility
- * Copyright (c) 2015 Jaegeuk Kim <jaegeuk@kernel.org>
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 
@@ -49,23 +43,23 @@ unsigned long f2fs_shrink_count(struct shrinker *shrink,
 	while (p != &f2fs_list) {
 		sbi = list_entry(p, struct f2fs_sb_info, s_list);
 
-		/* stop f2fs_put_super */
+		 
 		if (!mutex_trylock(&sbi->umount_mutex)) {
 			p = p->next;
 			continue;
 		}
 		spin_unlock(&f2fs_list_lock);
 
-		/* count read extent cache entries */
+		 
 		count += __count_extent_cache(sbi, EX_READ);
 
-		/* count block age extent cache entries */
+		 
 		count += __count_extent_cache(sbi, EX_BLOCK_AGE);
 
-		/* count clean nat cache entries */
+		 
 		count += __count_nat_entries(sbi);
 
-		/* count free nids cache entries */
+		 
 		count += __count_free_nids(sbi);
 
 		spin_lock(&f2fs_list_lock);
@@ -96,7 +90,7 @@ unsigned long f2fs_shrink_scan(struct shrinker *shrink,
 		if (sbi->shrinker_run_no == run_no)
 			break;
 
-		/* stop f2fs_put_super */
+		 
 		if (!mutex_trylock(&sbi->umount_mutex)) {
 			p = p->next;
 			continue;
@@ -105,17 +99,17 @@ unsigned long f2fs_shrink_scan(struct shrinker *shrink,
 
 		sbi->shrinker_run_no = run_no;
 
-		/* shrink extent cache entries */
+		 
 		freed += f2fs_shrink_age_extent_tree(sbi, nr >> 2);
 
-		/* shrink read extent cache entries */
+		 
 		freed += f2fs_shrink_read_extent_tree(sbi, nr >> 2);
 
-		/* shrink clean nat cache entries */
+		 
 		if (freed < nr)
 			freed += f2fs_try_to_free_nats(sbi, nr - freed);
 
-		/* shrink free nids cache entries */
+		 
 		if (freed < nr)
 			freed += f2fs_try_to_free_nids(sbi, nr - freed);
 

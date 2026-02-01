@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- */
+ 
+ 
 
 #ifndef _SELFTESTS_POWERPC_GPR_ASM_H
 #define _SELFTESTS_POWERPC_GPR_ASM_H
@@ -51,21 +49,18 @@
 #define PUSH_NVREGS(stack_size) \
 	__PUSH_NVREGS(stack_size + STACK_FRAME_MIN_SIZE)
 
-/* 18 NV FPU REGS */
+ 
 #define PUSH_NVREGS_BELOW_FPU(stack_size) \
 	__PUSH_NVREGS(stack_size + STACK_FRAME_MIN_SIZE - (18 * 8))
 
 #define POP_NVREGS(stack_size) \
 	__POP_NVREGS(stack_size + STACK_FRAME_MIN_SIZE)
 
-/* 18 NV FPU REGS */
+ 
 #define POP_NVREGS_BELOW_FPU(stack_size) \
 	__POP_NVREGS(stack_size + STACK_FRAME_MIN_SIZE - (18 * 8))
 
-/*
- * Careful calling this, it will 'clobber' NVGPRs (by design)
- * Don't call this from C
- */
+ 
 FUNC_START(load_gpr)
 	ld	r14,0(r3)
 	ld	r15,8(r3)
@@ -89,4 +84,4 @@ FUNC_START(load_gpr)
 FUNC_END(load_gpr)
 
 
-#endif /* _SELFTESTS_POWERPC_GPR_ASM_H */
+#endif  

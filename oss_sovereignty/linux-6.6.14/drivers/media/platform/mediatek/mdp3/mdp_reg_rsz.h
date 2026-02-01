@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MDP_REG_RSZ_H__
 #define __MDP_REG_RSZ_H__
@@ -21,7 +18,7 @@
 #define PRZ_CHROMA_HORIZONTAL_INTEGER_OFFSET              0x030
 #define PRZ_CHROMA_HORIZONTAL_SUBPIXEL_OFFSET             0x034
 
-/* MASK */
+ 
 #define PRZ_ENABLE_MASK                                   0x00010001
 #define PRZ_CONTROL_1_MASK                                0xfffffff3
 #define PRZ_CONTROL_2_MASK                                0x0ffffaff
@@ -36,4 +33,4 @@
 #define PRZ_CHROMA_HORIZONTAL_INTEGER_OFFSET_MASK         0x0000ffff
 #define PRZ_CHROMA_HORIZONTAL_SUBPIXEL_OFFSET_MASK        0x001fffff
 
-#endif // __MDP_REG_RSZ_H__
+#endif 

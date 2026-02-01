@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved
-  */
+
+  
 
 #include "dpu_hw_mdss.h"
 #include "dpu_hwio.h"
@@ -80,10 +78,10 @@ static void dpu_hw_wb_setup_format(struct dpu_hw_wb *ctx,
 		(fmt->bits[C0_G_Y] << 0);
 
 	if (fmt->bits[C3_ALPHA] || fmt->alpha_enable) {
-		dst_format |= BIT(8); /* DSTC3_EN */
+		dst_format |= BIT(8);  
 		if (!fmt->alpha_enable ||
 			!(ctx->caps->features & BIT(DPU_WB_PIPE_ALPHA)))
-			dst_format |= BIT(14); /* DST_ALPHA_X */
+			dst_format |= BIT(14);  
 	}
 
 	pattern = (fmt->element[3] << 24) |
@@ -209,7 +207,7 @@ struct dpu_hw_wb *dpu_hw_wb_init(const struct dpu_wb_cfg *cfg,
 	c->hw.blk_addr = addr + cfg->base;
 	c->hw.log_mask = DPU_DBG_MASK_WB;
 
-	/* Assign ops */
+	 
 	c->idx = cfg->id;
 	c->caps = cfg;
 	_setup_wb_ops(&c->ops, c->caps->features);

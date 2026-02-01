@@ -1,29 +1,5 @@
-/* $OpenBSD: monitor_wrap.c,v 1.129 2023/12/18 14:45:49 djm Exp $ */
-/*
- * Copyright 2002 Niels Provos <provos@citi.umich.edu>
- * Copyright 2002 Markus Friedl <markus@openbsd.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -76,7 +52,7 @@
 
 #include "ssherr.h"
 
-/* Imports */
+ 
 extern struct monitor *pmonitor;
 extern struct sshbuf *loginmsg;
 extern ServerOptions options;
@@ -95,7 +71,7 @@ mm_log_handler(LogLevel level, int forced, const char *msg, void *ctx)
 	if ((log_msg = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 
-	if ((r = sshbuf_put_u32(log_msg, 0)) != 0 || /* length; filled below */
+	if ((r = sshbuf_put_u32(log_msg, 0)) != 0 ||  
 	    (r = sshbuf_put_u32(log_msg, level)) != 0 ||
 	    (r = sshbuf_put_u32(log_msg, forced)) != 0 ||
 	    (r = sshbuf_put_cstring(log_msg, msg)) != 0)
@@ -112,10 +88,7 @@ mm_log_handler(LogLevel level, int forced, const char *msg, void *ctx)
 int
 mm_is_monitor(void)
 {
-	/*
-	 * m_pid is only set in the privileged part, and
-	 * points to the unprivileged child.
-	 */
+	 
 	return (pmonitor && pmonitor->m_pid > 0);
 }
 
@@ -130,7 +103,7 @@ mm_request_send(int sock, enum monitor_reqtype type, struct sshbuf *m)
 	if (mlen >= 0xffffffff)
 		fatal_f("bad length %zu", mlen);
 	POKE_U32(buf, mlen + 1);
-	buf[4] = (u_char) type;		/* 1st byte of payload is mesg-type */
+	buf[4] = (u_char) type;		 
 	if (atomicio(vwrite, sock, buf, sizeof(buf)) != sizeof(buf))
 		fatal_f("write: %s", strerror(errno));
 	if (atomicio(vwrite, sock, sshbuf_mutable_ptr(m), mlen) != mlen)
@@ -283,7 +256,7 @@ mm_getpwnamallow(struct ssh *ssh, const char *username)
 		goto out;
 	}
 
-	/* XXX don't like passing struct passwd like this */
+	 
 	pw = xcalloc(sizeof(*pw), 1);
 	GETPW(m, pw_uid);
 	GETPW(m, pw_gid);
@@ -306,7 +279,7 @@ mm_getpwnamallow(struct ssh *ssh, const char *username)
 		fatal_fr(r, "parse pw");
 
 out:
-	/* copy options block as a Match directive may have changed some */
+	 
 	if ((r = sshbuf_get_string_direct(m, &p, &len)) != 0)
 		fatal_fr(r, "parse opts");
 	if (len != sizeof(*newopts))
@@ -328,7 +301,7 @@ out:
 				fatal_fr(r, "parse %s", #x); \
 		} \
 	} while (0)
-	/* See comment in servconf.h */
+	 
 	COPY_MATCH_STRING_OPTS();
 #undef M_CP_STROPT
 #undef M_CP_STRARRAYOPT
@@ -367,7 +340,7 @@ mm_auth2_read_banner(void)
 		fatal_fr(r, "parse");
 	sshbuf_free(m);
 
-	/* treat empty banner as missing banner */
+	 
 	if (strlen(banner) == 0) {
 		free(banner);
 		banner = NULL;
@@ -375,7 +348,7 @@ mm_auth2_read_banner(void)
 	return (banner);
 }
 
-/* Inform the privileged process about service and style */
+ 
 
 void
 mm_inform_authserv(char *service, char *style)
@@ -396,7 +369,7 @@ mm_inform_authserv(char *service, char *style)
 	sshbuf_free(m);
 }
 
-/* Do the password authentication */
+ 
 int
 mm_auth_password(struct ssh *ssh, char *password)
 {
@@ -493,11 +466,7 @@ mm_key_allowed(enum mm_keytype type, const char *user, const char *host,
 	return allowed;
 }
 
-/*
- * This key verify needs to send the key type along, because the
- * privileged parent makes the decision if the key is allowed
- * for authentication.
- */
+ 
 
 int
 mm_sshkey_verify(const struct sshkey *key, const u_char *sig, size_t siglen,
@@ -571,7 +540,7 @@ mm_pty_allocate(int *ptyfd, int *ttyfd, char *namebuf, size_t namebuflen)
 	char *p, *msg;
 	int success = 0, tmp1 = -1, tmp2 = -1, r;
 
-	/* Kludge: ensure there are fds free to receive the pty/tty */
+	 
 	if ((tmp1 = dup(pmonitor->m_recvfd)) == -1 ||
 	    (tmp2 = dup(pmonitor->m_recvfd)) == -1) {
 		error_f("cannot allocate fds for pty");
@@ -601,7 +570,7 @@ mm_pty_allocate(int *ptyfd, int *ttyfd, char *namebuf, size_t namebuflen)
 		fatal_fr(r, "parse");
 	sshbuf_free(m);
 
-	strlcpy(namebuf, p, namebuflen); /* Possible truncation */
+	strlcpy(namebuf, p, namebuflen);  
 	free(p);
 
 	if ((r = sshbuf_put(loginmsg, msg, strlen(msg))) != 0)
@@ -612,7 +581,7 @@ mm_pty_allocate(int *ptyfd, int *ttyfd, char *namebuf, size_t namebuflen)
 	    (*ttyfd = mm_receive_fd(pmonitor->m_recvfd)) == -1)
 		fatal_f("receive fds failed");
 
-	/* Success */
+	 
 	return (1);
 }
 
@@ -631,12 +600,12 @@ mm_session_pty_cleanup2(Session *s)
 	mm_request_send(pmonitor->m_recvfd, MONITOR_REQ_PTYCLEANUP, m);
 	sshbuf_free(m);
 
-	/* closed dup'ed master */
+	 
 	if (s->ptymaster != -1 && close(s->ptymaster) == -1)
 		error("close(s->ptymaster/%d): %s",
 		    s->ptymaster, strerror(errno));
 
-	/* unlink pty from session */
+	 
 	s->ttyfd = -1;
 }
 
@@ -770,7 +739,7 @@ mm_sshpam_respond(void *ctx, u_int num, char **resp)
 	    MONITOR_ANS_PAM_RESPOND, m);
 	if ((r = sshbuf_get_u32(m, &n)) != 0)
 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-	ret = (int)n; /* XXX */
+	ret = (int)n;  
 	debug3("%s: pam_respond returned %d", __func__, ret);
 	sshbuf_free(m);
 	return (ret);
@@ -790,9 +759,9 @@ mm_sshpam_free_ctx(void *ctxtp)
 	    MONITOR_ANS_PAM_FREE_CTX, m);
 	sshbuf_free(m);
 }
-#endif /* USE_PAM */
+#endif  
 
-/* Request process termination */
+ 
 
 void
 mm_terminate(void)
@@ -842,7 +811,7 @@ mm_bsdauth_query(void *ctx, char **name, char **infotxt,
 		return (-1);
 	}
 
-	/* Get the challenge, and format the response */
+	 
 	if ((r = sshbuf_get_cstring(m, &challenge, NULL)) != 0)
 		fatal_fr(r, "parse challenge");
 	sshbuf_free(m);
@@ -915,7 +884,7 @@ mm_audit_run_command(const char *command)
 	mm_request_send(pmonitor->m_recvfd, MONITOR_REQ_AUDIT_COMMAND, m);
 	sshbuf_free(m);
 }
-#endif /* SSH_AUDIT_EVENTS */
+#endif  
 
 #ifdef GSSAPI
 OM_uint32
@@ -925,7 +894,7 @@ mm_ssh_gssapi_server_ctx(Gssctxt **ctx, gss_OID goid)
 	OM_uint32 major;
 	int r;
 
-	/* Client doesn't get to see the context */
+	 
 	*ctx = NULL;
 
 	if ((m = sshbuf_new()) == NULL)
@@ -1017,4 +986,4 @@ mm_ssh_gssapi_userok(char *user)
 	debug3_f("user %sauthenticated", authenticated ? "" : "not ");
 	return (authenticated);
 }
-#endif /* GSSAPI */
+#endif  

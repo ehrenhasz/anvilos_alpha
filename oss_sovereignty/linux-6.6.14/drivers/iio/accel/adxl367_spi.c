@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -29,10 +26,7 @@ struct adxl367_spi_state {
 	struct spi_message	fifo_msg;
 	struct spi_transfer	fifo_xfer[2];
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers live in their own cache lines.
-	 */
+	 
 	u8			reg_write_tx_buf[1] __aligned(IIO_DMA_MINALIGN);
 	u8			reg_read_tx_buf[2];
 	u8			fifo_tx_buf[1];
@@ -97,33 +91,21 @@ static int adxl367_spi_probe(struct spi_device *spi)
 
 	st->spi = spi;
 
-	/*
-	 * Xfer:   [XFR1] [           XFR2           ]
-	 * Master:  0x0A   ADDR DATA0 DATA1 ... DATAN
-	 * Slave:   ....   ..........................
-	 */
+	 
 	st->reg_write_tx_buf[0] = ADXL367_SPI_WRITE_COMMAND;
 	st->reg_write_xfer[0].tx_buf = st->reg_write_tx_buf;
 	st->reg_write_xfer[0].len = sizeof(st->reg_write_tx_buf);
 	spi_message_init_with_transfers(&st->reg_write_msg,
 					st->reg_write_xfer, 2);
 
-	/*
-	 * Xfer:   [   XFR1  ] [         XFR2        ]
-	 * Master:  0x0B ADDR   .....................
-	 * Slave:   .........   DATA0 DATA1 ... DATAN
-	 */
+	 
 	st->reg_read_tx_buf[0] = ADXL367_SPI_READ_COMMAND;
 	st->reg_read_xfer[0].tx_buf = st->reg_read_tx_buf;
 	st->reg_read_xfer[0].len = sizeof(st->reg_read_tx_buf);
 	spi_message_init_with_transfers(&st->reg_read_msg,
 					st->reg_read_xfer, 2);
 
-	/*
-	 * Xfer:   [XFR1] [         XFR2        ]
-	 * Master:  0x0D   .....................
-	 * Slave:   ....   DATA0 DATA1 ... DATAN
-	 */
+	 
 	st->fifo_tx_buf[0] = ADXL367_SPI_FIFO_COMMAND;
 	st->fifo_xfer[0].tx_buf = st->fifo_tx_buf;
 	st->fifo_xfer[0].len = sizeof(st->fifo_tx_buf);

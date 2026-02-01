@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fake_mem.c
- *
- * Copyright (C) 2015 FUJITSU LIMITED
- * Author: Taku Izumi <izumi.taku@jp.fujitsu.com>
- *
- * This code introduces new boot option named "efi_fake_mem"
- * By specifying this parameter, you can add arbitrary attribute to
- * specific memory range by updating original (firmware provided) EFI
- * memmap.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/efi.h>
@@ -44,15 +34,15 @@ static void __init efi_fake_range(struct efi_mem_range *efi_range)
 	efi_memory_desc_t *md;
 	void *new_memmap;
 
-	/* count up the number of EFI memory descriptor */
+	 
 	for_each_efi_memory_desc(md)
 		new_nr_map += efi_memmap_split_count(md, &efi_range->range);
 
-	/* allocate memory for new EFI memmap */
+	 
 	if (efi_memmap_alloc(new_nr_map, &data) != 0)
 		return;
 
-	/* create new EFI memmap */
+	 
 	new_memmap = early_memremap(data.phys_map, data.size);
 	if (!new_memmap) {
 		__efi_memmap_free(data.phys_map, data.size, data.flags);
@@ -61,7 +51,7 @@ static void __init efi_fake_range(struct efi_mem_range *efi_range)
 
 	efi_memmap_insert(&efi.memmap, new_memmap, efi_range);
 
-	/* swap into new EFI memmap */
+	 
 	early_memunmap(new_memmap, data.size);
 
 	efi_memmap_install(&data);
@@ -77,7 +67,7 @@ void __init efi_fake_memmap(void)
 	for (i = 0; i < nr_fake_mem; i++)
 		efi_fake_range(&efi_fake_mems[i]);
 
-	/* print new EFI memmap */
+	 
 	efi_print_memmap();
 }
 
@@ -130,25 +120,14 @@ void __init efi_fake_memmap_early(void)
 {
 	int i;
 
-	/*
-	 * The late efi_fake_mem() call can handle all requests if
-	 * EFI_MEMORY_SP support is disabled.
-	 */
+	 
 	if (!efi_soft_reserve_enabled())
 		return;
 
 	if (!efi_enabled(EFI_MEMMAP) || !nr_fake_mem)
 		return;
 
-	/*
-	 * Given that efi_fake_memmap() needs to perform memblock
-	 * allocations it needs to run after e820__memblock_setup().
-	 * However, if efi_fake_mem specifies EFI_MEMORY_SP for a given
-	 * address range that potentially needs to mark the memory as
-	 * reserved prior to e820__memblock_setup(). Update e820
-	 * directly if EFI_MEMORY_SP is specified for an
-	 * EFI_CONVENTIONAL_MEMORY descriptor.
-	 */
+	 
 	for (i = 0; i < nr_fake_mem; i++) {
 		struct efi_mem_range *mem = &efi_fake_mems[i];
 		efi_memory_desc_t *md;
@@ -169,15 +148,11 @@ void __init efi_fake_memmap_early(void)
 			end = md->phys_addr + (md->num_pages << EFI_PAGE_SHIFT) - 1;
 
 			if (m_start <= end && m_end >= start)
-				/* fake range overlaps descriptor */;
+				 ;
 			else
 				continue;
 
-			/*
-			 * Trim the boundary of the e820 update to the
-			 * descriptor in case the fake range overlaps
-			 * !EFI_CONVENTIONAL_MEMORY
-			 */
+			 
 			start = max(start, m_start);
 			end = min(end, m_end);
 			size = end - start + 1;
@@ -185,10 +160,7 @@ void __init efi_fake_memmap_early(void)
 			if (end <= start)
 				continue;
 
-			/*
-			 * Ensure each efi_fake_mem instance results in
-			 * a unique e820 resource
-			 */
+			 
 			e820__range_remove(start, size, E820_TYPE_RAM, 1);
 			e820__range_add(start, size, E820_TYPE_SOFT_RESERVED);
 			e820__update_table(e820_table);

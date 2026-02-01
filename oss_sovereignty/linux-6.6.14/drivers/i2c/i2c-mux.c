@@ -1,23 +1,4 @@
-/*
- * Multiplexed I2C bus driver.
- *
- * Copyright (c) 2008-2009 Rodolfo Giometti <giometti@linux.it>
- * Copyright (c) 2008-2009 Eurotech S.p.A. <info@eurotech.it>
- * Copyright (c) 2009-2010 NSN GmbH & Co KG <michael.lawnick.ext@nsn.com>
- *
- * Simplifies access to complex multiplexed I2C bus topologies, by presenting
- * each multiplexed bus segment as an additional I2C adapter.
- * Supports multi-level mux'ing (mux behind a mux).
- *
- * Based on:
- *	i2c-virt.c from Kumar Gala <galak@kernel.crashing.org>
- *	i2c-virtual.c from Ken Harrenstien, Copyright (c) 2004 Google, Inc.
- *	i2c-virtual.c from Brian Kuschak <bkuschak@yahoo.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -28,7 +9,7 @@
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 
-/* multiplexer per channel data */
+ 
 struct i2c_mux_priv {
 	struct i2c_adapter adap;
 	struct i2c_algorithm algo;
@@ -44,7 +25,7 @@ static int __i2c_mux_master_xfer(struct i2c_adapter *adap,
 	struct i2c_adapter *parent = muxc->parent;
 	int ret;
 
-	/* Switch to the right mux port and perform the transfer. */
+	 
 
 	ret = muxc->select(muxc, priv->chan_id);
 	if (ret >= 0)
@@ -63,7 +44,7 @@ static int i2c_mux_master_xfer(struct i2c_adapter *adap,
 	struct i2c_adapter *parent = muxc->parent;
 	int ret;
 
-	/* Switch to the right mux port and perform the transfer. */
+	 
 
 	ret = muxc->select(muxc, priv->chan_id);
 	if (ret >= 0)
@@ -84,7 +65,7 @@ static int __i2c_mux_smbus_xfer(struct i2c_adapter *adap,
 	struct i2c_adapter *parent = muxc->parent;
 	int ret;
 
-	/* Select the right mux port and perform the transfer. */
+	 
 
 	ret = muxc->select(muxc, priv->chan_id);
 	if (ret >= 0)
@@ -106,7 +87,7 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
 	struct i2c_adapter *parent = muxc->parent;
 	int ret;
 
-	/* Select the right mux port and perform the transfer. */
+	 
 
 	ret = muxc->select(muxc, priv->chan_id);
 	if (ret >= 0)
@@ -118,7 +99,7 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
 	return ret;
 }
 
-/* Return the parent's functionality */
+ 
 static u32 i2c_mux_functionality(struct i2c_adapter *adap)
 {
 	struct i2c_mux_priv *priv = adap->algo_data;
@@ -127,7 +108,7 @@ static u32 i2c_mux_functionality(struct i2c_adapter *adap)
 	return parent->algo->functionality(parent);
 }
 
-/* Return all parent classes, merged */
+ 
 static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
 {
 	unsigned int class = 0;
@@ -157,13 +138,13 @@ static int i2c_mux_trylock_bus(struct i2c_adapter *adapter, unsigned int flags)
 	struct i2c_adapter *parent = priv->muxc->parent;
 
 	if (!rt_mutex_trylock(&parent->mux_lock))
-		return 0;	/* mux_lock not locked, failure */
+		return 0;	 
 	if (!(flags & I2C_LOCK_ROOT_ADAPTER))
-		return 1;	/* we only want mux_lock, success */
+		return 1;	 
 	if (i2c_trylock_bus(parent, flags))
-		return 1;	/* parent locked too, success */
+		return 1;	 
 	rt_mutex_unlock(&parent->mux_lock);
-	return 0;		/* parent not locked, failure */
+	return 0;		 
 }
 
 static void i2c_mux_unlock_bus(struct i2c_adapter *adapter, unsigned int flags)
@@ -193,11 +174,11 @@ static int i2c_parent_trylock_bus(struct i2c_adapter *adapter,
 	struct i2c_adapter *parent = priv->muxc->parent;
 
 	if (!rt_mutex_trylock(&parent->mux_lock))
-		return 0;	/* mux_lock not locked, failure */
+		return 0;	 
 	if (i2c_trylock_bus(parent, flags))
-		return 1;	/* parent locked too, success */
+		return 1;	 
 	rt_mutex_unlock(&parent->mux_lock);
-	return 0;		/* parent not locked, failure */
+	return 0;		 
 }
 
 static void i2c_parent_unlock_bus(struct i2c_adapter *adapter,
@@ -215,11 +196,7 @@ struct i2c_adapter *i2c_root_adapter(struct device *dev)
 	struct device *i2c;
 	struct i2c_adapter *i2c_root;
 
-	/*
-	 * Walk up the device tree to find an i2c adapter, indicating
-	 * that this is an i2c client device. Check all ancestors to
-	 * handle mfd devices etc.
-	 */
+	 
 	for (i2c = dev; i2c; i2c = i2c->parent) {
 		if (i2c->type == &i2c_adapter_type)
 			break;
@@ -227,7 +204,7 @@ struct i2c_adapter *i2c_root_adapter(struct device *dev)
 	if (!i2c)
 		return NULL;
 
-	/* Continue up the tree to find the root i2c adapter */
+	 
 	i2c_root = to_i2c_adapter(i2c);
 	while (i2c_parent_is_i2c_adapter(i2c_root))
 		i2c_root = i2c_parent_is_i2c_adapter(i2c_root);
@@ -298,13 +275,11 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 	if (!priv)
 		return -ENOMEM;
 
-	/* Set up private adapter data */
+	 
 	priv->muxc = muxc;
 	priv->chan_id = chan_id;
 
-	/* Need to do algo dynamically because we don't know ahead
-	 * of time what sort of physical adapter we'll be dealing with.
-	 */
+	 
 	if (parent->algo->master_xfer) {
 		if (muxc->mux_locked)
 			priv->algo.master_xfer = i2c_mux_master_xfer;
@@ -325,7 +300,7 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 
 	priv->algo.functionality = i2c_mux_functionality;
 
-	/* Now fill out new adapter structure */
+	 
 	snprintf(priv->adap.name, sizeof(priv->adap.name),
 		 "i2c-%d-mux (chan_id %d)", i2c_adapter_id(parent), chan_id);
 	priv->adap.owner = THIS_MODULE;
@@ -340,7 +315,7 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 	else
 		priv->adap.lock_ops = &i2c_parent_lock_ops;
 
-	/* Sanity check on class */
+	 
 	if (i2c_mux_parent_classes(parent) & class & ~I2C_CLASS_DEPRECATED)
 		dev_err(&parent->dev,
 			"Segment %d behind mux can't share classes with ancestors\n",
@@ -348,10 +323,7 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 	else
 		priv->adap.class = class;
 
-	/*
-	 * Try to populate the mux adapter's of_node, expands to
-	 * nothing if !CONFIG_OF.
-	 */
+	 
 	if (muxc->dev->of_node) {
 		struct device_node *dev_node = muxc->dev->of_node;
 		struct device_node *mux_node, *child = NULL;
@@ -365,7 +337,7 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 			mux_node = of_get_child_by_name(dev_node, "i2c-mux");
 
 		if (mux_node) {
-			/* A "reg" property indicates an old-style DT entry */
+			 
 			if (!of_property_read_u32(mux_node, "reg", &reg)) {
 				of_node_put(mux_node);
 				mux_node = NULL;
@@ -391,9 +363,7 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
 		of_node_put(mux_node);
 	}
 
-	/*
-	 * Associate the mux channel with an ACPI node.
-	 */
+	 
 	if (has_acpi_companion(muxc->dev))
 		acpi_preset_companion(&priv->adap.dev,
 				      ACPI_COMPANION(muxc->dev),

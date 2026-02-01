@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Texas Instruments' Bluetooth HCILL UART protocol
- *
- *  HCILL (HCI Low Level) is a Texas Instruments' power management
- *  protocol extension to H4.
- *
- *  Copyright (C) 2007 Texas Instruments, Inc.
- *
- *  Written by Ohad Ben-Cohen <ohad@bencohen.org>
- *
- *  Acknowledgements:
- *  This file is based on hci_h4.c, which was written
- *  by Maxim Krasnyansky and Marcel Holtmann.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -44,17 +31,17 @@
 
 #include "hci_uart.h"
 
-/* Vendor-specific HCI commands */
+ 
 #define HCI_VS_WRITE_BD_ADDR			0xfc06
 #define HCI_VS_UPDATE_UART_HCI_BAUDRATE		0xff36
 
-/* HCILL commands */
+ 
 #define HCILL_GO_TO_SLEEP_IND	0x30
 #define HCILL_GO_TO_SLEEP_ACK	0x31
 #define HCILL_WAKE_UP_IND	0x32
 #define HCILL_WAKE_UP_ACK	0x33
 
-/* HCILL states */
+ 
 enum hcill_states_e {
 	HCILL_ASLEEP,
 	HCILL_ASLEEP_TO_AWAKE,
@@ -73,15 +60,12 @@ struct ll_device {
 struct ll_struct {
 	struct sk_buff *rx_skb;
 	struct sk_buff_head txq;
-	spinlock_t hcill_lock;		/* HCILL state lock	*/
-	unsigned long hcill_state;	/* HCILL power state	*/
-	struct sk_buff_head tx_wait_q;	/* HCILL wait queue	*/
+	spinlock_t hcill_lock;		 
+	unsigned long hcill_state;	 
+	struct sk_buff_head tx_wait_q;	 
 };
 
-/*
- * Builds and sends an HCILL command packet.
- * These are very simple packets with only 1 cmd byte
- */
+ 
 static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 {
 	int err = 0;
@@ -90,7 +74,7 @@ static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 
 	BT_DBG("hu %p cmd 0x%x", hu, cmd);
 
-	/* allocate packet */
+	 
 	skb = bt_skb_alloc(1, GFP_ATOMIC);
 	if (!skb) {
 		BT_ERR("cannot allocate memory for HCILL packet");
@@ -98,16 +82,16 @@ static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 		goto out;
 	}
 
-	/* prepare packet */
+	 
 	skb_put_u8(skb, cmd);
 
-	/* send packet */
+	 
 	skb_queue_tail(&ll->txq, skb);
 out:
 	return err;
 }
 
-/* Initialize protocol */
+ 
 static int ll_open(struct hci_uart *hu)
 {
 	struct ll_struct *ll;
@@ -136,7 +120,7 @@ static int ll_open(struct hci_uart *hu)
 	return 0;
 }
 
-/* Flush protocol data */
+ 
 static int ll_flush(struct hci_uart *hu)
 {
 	struct ll_struct *ll = hu->priv;
@@ -149,7 +133,7 @@ static int ll_flush(struct hci_uart *hu)
 	return 0;
 }
 
-/* Close protocol */
+ 
 static int ll_close(struct hci_uart *hu)
 {
 	struct ll_struct *ll = hu->priv;
@@ -176,13 +160,7 @@ static int ll_close(struct hci_uart *hu)
 	return 0;
 }
 
-/*
- * internal function, which does common work of the device wake up process:
- * 1. places all pending packets (waiting in tx_wait_q list) in txq list.
- * 2. changes internal state to HCILL_AWAKE.
- * Note: assumes that hcill_lock spinlock is taken,
- * shouldn't be called otherwise!
- */
+ 
 static void __ll_do_awake(struct ll_struct *ll)
 {
 	struct sk_buff *skb = NULL;
@@ -193,9 +171,7 @@ static void __ll_do_awake(struct ll_struct *ll)
 	ll->hcill_state = HCILL_AWAKE;
 }
 
-/*
- * Called upon a wake-up-indication from the device
- */
+ 
 static void ll_device_want_to_wakeup(struct hci_uart *hu)
 {
 	unsigned long flags;
@@ -203,50 +179,39 @@ static void ll_device_want_to_wakeup(struct hci_uart *hu)
 
 	BT_DBG("hu %p", hu);
 
-	/* lock hcill state */
+	 
 	spin_lock_irqsave(&ll->hcill_lock, flags);
 
 	switch (ll->hcill_state) {
 	case HCILL_ASLEEP_TO_AWAKE:
-		/*
-		 * This state means that both the host and the BRF chip
-		 * have simultaneously sent a wake-up-indication packet.
-		 * Traditionally, in this case, receiving a wake-up-indication
-		 * was enough and an additional wake-up-ack wasn't needed.
-		 * This has changed with the BRF6350, which does require an
-		 * explicit wake-up-ack. Other BRF versions, which do not
-		 * require an explicit ack here, do accept it, thus it is
-		 * perfectly safe to always send one.
-		 */
+		 
 		BT_DBG("dual wake-up-indication");
 		fallthrough;
 	case HCILL_ASLEEP:
-		/* acknowledge device wake up */
+		 
 		if (send_hcill_cmd(HCILL_WAKE_UP_ACK, hu) < 0) {
 			BT_ERR("cannot acknowledge device wake up");
 			goto out;
 		}
 		break;
 	default:
-		/* any other state is illegal */
+		 
 		BT_ERR("received HCILL_WAKE_UP_IND in state %ld",
 		       ll->hcill_state);
 		break;
 	}
 
-	/* send pending packets and change state to HCILL_AWAKE */
+	 
 	__ll_do_awake(ll);
 
 out:
 	spin_unlock_irqrestore(&ll->hcill_lock, flags);
 
-	/* actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
-/*
- * Called upon a sleep-indication from the device
- */
+ 
 static void ll_device_want_to_sleep(struct hci_uart *hu)
 {
 	unsigned long flags;
@@ -254,33 +219,31 @@ static void ll_device_want_to_sleep(struct hci_uart *hu)
 
 	BT_DBG("hu %p", hu);
 
-	/* lock hcill state */
+	 
 	spin_lock_irqsave(&ll->hcill_lock, flags);
 
-	/* sanity check */
+	 
 	if (ll->hcill_state != HCILL_AWAKE)
 		BT_ERR("ERR: HCILL_GO_TO_SLEEP_IND in state %ld",
 		       ll->hcill_state);
 
-	/* acknowledge device sleep */
+	 
 	if (send_hcill_cmd(HCILL_GO_TO_SLEEP_ACK, hu) < 0) {
 		BT_ERR("cannot acknowledge device sleep");
 		goto out;
 	}
 
-	/* update state */
+	 
 	ll->hcill_state = HCILL_ASLEEP;
 
 out:
 	spin_unlock_irqrestore(&ll->hcill_lock, flags);
 
-	/* actually send the sleep ack packet */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
-/*
- * Called upon wake-up-acknowledgement from the device
- */
+ 
 static void ll_device_woke_up(struct hci_uart *hu)
 {
 	unsigned long flags;
@@ -288,25 +251,25 @@ static void ll_device_woke_up(struct hci_uart *hu)
 
 	BT_DBG("hu %p", hu);
 
-	/* lock hcill state */
+	 
 	spin_lock_irqsave(&ll->hcill_lock, flags);
 
-	/* sanity check */
+	 
 	if (ll->hcill_state != HCILL_ASLEEP_TO_AWAKE)
 		BT_ERR("received HCILL_WAKE_UP_ACK in state %ld",
 		       ll->hcill_state);
 
-	/* send pending packets and change state to HCILL_AWAKE */
+	 
 	__ll_do_awake(ll);
 
 	spin_unlock_irqrestore(&ll->hcill_lock, flags);
 
-	/* actually send the packets */
+	 
 	hci_uart_tx_wakeup(hu);
 }
 
-/* Enqueue frame for transmittion (padding, crc, etc) */
-/* may be called from two simultaneous tasklets */
+ 
+ 
 static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	unsigned long flags = 0;
@@ -314,13 +277,13 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 
 	BT_DBG("hu %p skb %p", hu, skb);
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 
-	/* lock hcill state */
+	 
 	spin_lock_irqsave(&ll->hcill_lock, flags);
 
-	/* act according to current state */
+	 
 	switch (ll->hcill_state) {
 	case HCILL_AWAKE:
 		BT_DBG("device awake, sending normally");
@@ -328,9 +291,9 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		break;
 	case HCILL_ASLEEP:
 		BT_DBG("device asleep, waking up and queueing packet");
-		/* save packet for later */
+		 
 		skb_queue_tail(&ll->tx_wait_q, skb);
-		/* awake device */
+		 
 		if (send_hcill_cmd(HCILL_WAKE_UP_IND, hu) < 0) {
 			BT_ERR("cannot wake up device");
 			break;
@@ -339,7 +302,7 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		break;
 	case HCILL_ASLEEP_TO_AWAKE:
 		BT_DBG("device waking up, queueing packet");
-		/* transient state; just keep packet for later */
+		 
 		skb_queue_tail(&ll->tx_wait_q, skb);
 		break;
 	default:
@@ -365,7 +328,7 @@ static int ll_recv_frame(struct hci_dev *hdev, struct sk_buff *skb)
 		ll_device_want_to_sleep(hu);
 		break;
 	case HCILL_GO_TO_SLEEP_ACK:
-		/* shouldn't happen */
+		 
 		bt_dev_err(hdev, "received HCILL_GO_TO_SLEEP_ACK in state %ld",
 			   ll->hcill_state);
 		break;
@@ -421,7 +384,7 @@ static const struct h4_recv_pkt ll_recv_pkts[] = {
 	{ LL_RECV_WAKE_ACK,  .recv = ll_recv_frame  },
 };
 
-/* Recv data */
+ 
 static int ll_recv(struct hci_uart *hu, const void *data, int count)
 {
 	struct ll_struct *ll = hu->priv;
@@ -489,9 +452,7 @@ static int send_command_from_firmware(struct ll_device *lldev,
 	struct sk_buff *skb;
 
 	if (cmd->opcode == HCI_VS_UPDATE_UART_HCI_BAUDRATE) {
-		/* ignore remote change
-		 * baud rate HCI VS command
-		 */
+		 
 		bt_dev_warn(lldev->hu.hdev,
 			    "change remote baud rate command in firmware");
 		return 0;
@@ -509,17 +470,13 @@ static int send_command_from_firmware(struct ll_device *lldev,
 	return 0;
 }
 
-/*
- * download_firmware -
- *	internal function which parses through the .bts firmware
- *	script file intreprets SEND, DELAY actions only as of now
- */
+ 
 static int download_firmware(struct ll_device *lldev)
 {
 	unsigned short chip, min_ver, maj_ver;
 	int version, err, len;
 	unsigned char *ptr, *action_ptr;
-	unsigned char bts_scr_name[40];	/* 40 char long bts scr name? */
+	unsigned char bts_scr_name[40];	 
 	const struct firmware *fw;
 	struct hci_command *cmd;
 
@@ -545,9 +502,7 @@ static int download_firmware(struct ll_device *lldev)
 	}
 	ptr = (void *)fw->data;
 	len = fw->size;
-	/* bts_header to remove out magic number and
-	 * version
-	 */
+	 
 	ptr += sizeof(struct bts_header);
 	len -= sizeof(struct bts_header);
 
@@ -559,18 +514,18 @@ static int download_firmware(struct ll_device *lldev)
 		action_ptr = &(((struct bts_action *)ptr)->data[0]);
 
 		switch (((struct bts_action *)ptr)->type) {
-		case ACTION_SEND_COMMAND:	/* action send */
+		case ACTION_SEND_COMMAND:	 
 			bt_dev_dbg(lldev->hu.hdev, "S");
 			cmd = (struct hci_command *)action_ptr;
 			err = send_command_from_firmware(lldev, cmd);
 			if (err)
 				goto out_rel_fw;
 			break;
-		case ACTION_WAIT_EVENT:  /* wait */
-			/* no need to wait as command was synchronous */
+		case ACTION_WAIT_EVENT:   
+			 
 			bt_dev_dbg(lldev->hu.hdev, "W");
 			break;
-		case ACTION_DELAY:	/* sleep */
+		case ACTION_DELAY:	 
 			bt_dev_info(lldev->hu.hdev, "sleep command in scr");
 			msleep(((struct bts_action_delay *)action_ptr)->msec);
 			break;
@@ -582,7 +537,7 @@ static int download_firmware(struct ll_device *lldev)
 	}
 
 out_rel_fw:
-	/* fw download complete */
+	 
 	release_firmware(fw);
 	return err;
 }
@@ -592,10 +547,7 @@ static int ll_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 	bdaddr_t bdaddr_swapped;
 	struct sk_buff *skb;
 
-	/* HCI_VS_WRITE_BD_ADDR (at least on a CC2560A chip) expects the BD
-	 * address to be MSB first, but bdaddr_t has the convention of being
-	 * LSB first.
-	 */
+	 
 	baswap(&bdaddr_swapped, bdaddr);
 	skb = __hci_cmd_sync(hdev, HCI_VS_WRITE_BD_ADDR, sizeof(bdaddr_t),
 			     &bdaddr_swapped, HCI_INIT_TIMEOUT);
@@ -622,7 +574,7 @@ static int ll_setup(struct hci_uart *hu)
 	serdev_device_set_flow_control(serdev, true);
 
 	do {
-		/* Reset the Bluetooth device */
+		 
 		gpiod_set_value_cansleep(lldev->enable_gpio, 0);
 		msleep(5);
 		gpiod_set_value_cansleep(lldev->enable_gpio, 1);
@@ -637,18 +589,16 @@ static int ll_setup(struct hci_uart *hu)
 		if (!err)
 			break;
 
-		/* Toggle BT_EN and retry */
+		 
 		bt_dev_err(hu->hdev, "download firmware failed, retrying...");
 	} while (retry--);
 
 	if (err)
 		return err;
 
-	/* Set BD address if one was specified at probe */
+	 
 	if (!bacmp(&lldev->bdaddr, BDADDR_NONE)) {
-		/* This means that there was an error getting the BD address
-		 * during probe, so mark the device as having a bad address.
-		 */
+		 
 		set_bit(HCI_QUIRK_INVALID_BDADDR, &hu->hdev->quirks);
 	} else if (bacmp(&lldev->bdaddr, BDADDR_ANY)) {
 		err = ll_set_bdaddr(hu->hdev, &lldev->bdaddr);
@@ -656,7 +606,7 @@ static int ll_setup(struct hci_uart *hu)
 			set_bit(HCI_QUIRK_INVALID_BDADDR, &hu->hdev->quirks);
 	}
 
-	/* Operational speed if any */
+	 
 	if (hu->oper_speed)
 		speed = hu->oper_speed;
 	else if (hu->proto->oper_speed)
@@ -710,7 +660,7 @@ static int hci_ti_probe(struct serdev_device *serdev)
 	of_property_read_u32(serdev->dev.of_node, "max-speed", &max_speed);
 	hci_uart_set_speeds(hu, 115200, max_speed);
 
-	/* optional BD address from nvram */
+	 
 	bdaddr_cell = nvmem_cell_get(&serdev->dev, "bd-address");
 	if (IS_ERR(bdaddr_cell)) {
 		int err = PTR_ERR(bdaddr_cell);
@@ -718,15 +668,9 @@ static int hci_ti_probe(struct serdev_device *serdev)
 		if (err == -EPROBE_DEFER)
 			return err;
 
-		/* ENOENT means there is no matching nvmem cell and ENOSYS
-		 * means that nvmem is not enabled in the kernel configuration.
-		 */
+		 
 		if (err != -ENOENT && err != -ENOSYS) {
-			/* If there was some other error, give userspace a
-			 * chance to fix the problem instead of failing to load
-			 * the driver. Using BDADDR_NONE as a flag that is
-			 * tested later in the setup function.
-			 */
+			 
 			dev_warn(&serdev->dev,
 				 "Failed to get \"bd-address\" nvmem cell (%d)\n",
 				 err);
@@ -748,10 +692,7 @@ static int hci_ti_probe(struct serdev_device *serdev)
 			return -EINVAL;
 		}
 
-		/* As per the device tree bindings, the value from nvmem is
-		 * expected to be MSB first, but in the kernel it is expected
-		 * that bdaddr_t is LSB first.
-		 */
+		 
 		baswap(&lldev->bdaddr, bdaddr);
 		kfree(bdaddr);
 	}

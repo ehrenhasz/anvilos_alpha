@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- */
+
+ 
 
 #include <asm/byteorder.h>
 #include <linux/kthread.h>
@@ -72,14 +70,10 @@ static int tweak_clear_halt_cmd(struct urb *urb)
 
 	req = (struct usb_ctrlrequest *) urb->setup_packet;
 
-	/*
-	 * The stalled endpoint is specified in the wIndex value. The endpoint
-	 * of the urb is the target of this clear_halt request (i.e., control
-	 * endpoint).
-	 */
+	 
 	target_endp = le16_to_cpu(req->wIndex) & 0x000f;
 
-	/* the stalled endpoint direction is IN or OUT?. USB_DIR_IN is 0x80.  */
+	 
 	target_dir = le16_to_cpu(req->wIndex) & 0x0080;
 
 	if (target_dir)
@@ -164,9 +158,7 @@ static int tweak_reset_device_cmd(struct urb *urb)
 	return 0;
 }
 
-/*
- * clear_halt, set_interface, and set_configuration require special tricks.
- */
+ 
 static void tweak_special_requests(struct urb *urb)
 {
 	if (!urb || !urb->setup_packet)
@@ -176,15 +168,15 @@ static void tweak_special_requests(struct urb *urb)
 		return;
 
 	if (is_clear_halt_cmd(urb))
-		/* tweak clear_halt */
+		 
 		 tweak_clear_halt_cmd(urb);
 
 	else if (is_set_interface_cmd(urb))
-		/* tweak set_interface */
+		 
 		tweak_set_interface_cmd(urb);
 
 	else if (is_set_configuration_cmd(urb))
-		/* tweak set_configuration */
+		 
 		tweak_set_configuration_cmd(urb);
 
 	else if (is_reset_device_cmd(urb))
@@ -193,14 +185,7 @@ static void tweak_special_requests(struct urb *urb)
 		usbip_dbg_stub_rx("no need to tweak\n");
 }
 
-/*
- * stub_recv_unlink() unlinks the URB by a call to usb_unlink_urb().
- * By unlinking the urb asynchronously, stub_rx can continuously
- * process coming urbs.  Even if the urb is unlinked, its completion
- * handler will be called and stub_tx will send a return pdu.
- *
- * See also comments about unlinking strategy in vhci_hcd.c.
- */
+ 
 static int stub_recv_cmd_unlink(struct stub_device *sdev,
 				struct usbip_header *pdu)
 {
@@ -214,41 +199,16 @@ static int stub_recv_cmd_unlink(struct stub_device *sdev,
 		if (priv->seqnum != pdu->u.cmd_unlink.seqnum)
 			continue;
 
-		/*
-		 * This matched urb is not completed yet (i.e., be in
-		 * flight in usb hcd hardware/driver). Now we are
-		 * cancelling it. The unlinking flag means that we are
-		 * now not going to return the normal result pdu of a
-		 * submission request, but going to return a result pdu
-		 * of the unlink request.
-		 */
+		 
 		priv->unlinking = 1;
 
-		/*
-		 * In the case that unlinking flag is on, prev->seqnum
-		 * is changed from the seqnum of the cancelling urb to
-		 * the seqnum of the unlink request. This will be used
-		 * to make the result pdu of the unlink request.
-		 */
+		 
 		priv->seqnum = pdu->base.seqnum;
 
 		spin_unlock_irqrestore(&sdev->priv_lock, flags);
 
-		/*
-		 * usb_unlink_urb() is now out of spinlocking to avoid
-		 * spinlock recursion since stub_complete() is
-		 * sometimes called in this context but not in the
-		 * interrupt context.  If stub_complete() is executed
-		 * before we call usb_unlink_urb(), usb_unlink_urb()
-		 * will return an error value. In this case, stub_tx
-		 * will return the result pdu of this unlink request
-		 * though submission is completed and actual unlinking
-		 * is not executed. OK?
-		 */
-		/* In the above case, urb->status is not -ECONNRESET,
-		 * so a driver in a client host will know the failure
-		 * of the unlink request ?
-		 */
+		 
+		 
 		for (i = priv->completed_urbs; i < priv->num_urbs; i++) {
 			ret = usb_unlink_urb(priv->urbs[i]);
 			if (ret != -EINPROGRESS)
@@ -263,12 +223,7 @@ static int stub_recv_cmd_unlink(struct stub_device *sdev,
 	usbip_dbg_stub_rx("seqnum %d is not pending\n",
 			  pdu->u.cmd_unlink.seqnum);
 
-	/*
-	 * The urb of the unlink target is not found in priv_init queue. It was
-	 * already completed and its results is/was going to be sent by a
-	 * CMD_RET pdu. In this case, usb_unlink_urb() is not needed. We only
-	 * return the completeness of this unlink request to vhci_hcd.
-	 */
+	 
 	stub_enqueue_ret_unlink(sdev, pdu->base.seqnum, 0);
 
 	spin_unlock_irqrestore(&sdev->priv_lock, flags);
@@ -284,7 +239,7 @@ static int valid_request(struct stub_device *sdev, struct usbip_header *pdu)
 	if (pdu->base.devid == sdev->devid) {
 		spin_lock_irq(&ud->lock);
 		if (ud->status == SDEV_ST_USED) {
-			/* A request is valid. */
+			 
 			valid = 1;
 		}
 		spin_unlock_irq(&ud->lock);
@@ -313,10 +268,7 @@ static struct stub_priv *stub_priv_alloc(struct stub_device *sdev,
 	priv->seqnum = pdu->base.seqnum;
 	priv->sdev = sdev;
 
-	/*
-	 * After a stub_priv is linked to a list_head,
-	 * our error handler can free allocated data.
-	 */
+	 
 	list_add_tail(&priv->list, &sdev->priv_init);
 
 	spin_unlock_irqrestore(&sdev->priv_lock, flags);
@@ -366,7 +318,7 @@ static int get_pipe(struct stub_device *sdev, struct usbip_header *pdu)
 	}
 
 	if (usb_endpoint_xfer_isoc(epd)) {
-		/* validate number of packets */
+		 
 		if (pdu->u.cmd_submit.number_of_packets < 0 ||
 		    pdu->u.cmd_submit.number_of_packets >
 		    USBIP_MAX_ISO_PACKETS) {
@@ -382,7 +334,7 @@ static int get_pipe(struct stub_device *sdev, struct usbip_header *pdu)
 	}
 
 err_ret:
-	/* NOT REACHED */
+	 
 	dev_err(&sdev->udev->dev, "CMD_SUBMIT: invalid epnum %d\n", epnum);
 	return -1;
 }
@@ -419,7 +371,7 @@ static void masking_bogus_flags(struct urb *urb)
 		is_out = usb_endpoint_dir_out(&ep->desc);
 	}
 
-	/* enforce simple/standard policy */
+	 
 	allowed = (URB_NO_TRANSFER_DMA_MAP | URB_NO_INTERRUPT |
 		   URB_DIR_MASK | URB_FREE_BUFFER);
 	switch (xfertype) {
@@ -427,7 +379,7 @@ static void masking_bogus_flags(struct urb *urb)
 		if (is_out)
 			allowed |= URB_ZERO_PACKET;
 		fallthrough;
-	default:			/* all non-iso endpoints */
+	default:			 
 		if (!is_out)
 			allowed |= URB_SHORT_NOT_OK;
 		break;
@@ -472,11 +424,7 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 	if (pipe == -1)
 		return;
 
-	/*
-	 * Smatch reported the error case where use_sg is true and buf_len is 0.
-	 * In this case, It adds SDEV_EVENT_ERROR_MALLOC and stub_priv will be
-	 * released by stub event handler and connection will be shut down.
-	 */
+	 
 	priv = stub_priv_alloc(sdev, pdu);
 	if (!priv)
 		return;
@@ -488,28 +436,16 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 		goto err_malloc;
 	}
 
-	/* allocate urb transfer buffer, if needed */
+	 
 	if (buf_len) {
 		if (use_sg) {
 			sgl = sgl_alloc(buf_len, GFP_KERNEL, &nents);
 			if (!sgl)
 				goto err_malloc;
 
-			/* Check if the server's HCD supports SG */
+			 
 			if (!udev->bus->sg_tablesize) {
-				/*
-				 * If the server's HCD doesn't support SG, break
-				 * a single SG request into several URBs and map
-				 * each SG list entry to corresponding URB
-				 * buffer. The previously allocated SG list is
-				 * stored in priv->sgl (If the server's HCD
-				 * support SG, SG list is stored only in
-				 * urb->sg) and it is used as an indicator that
-				 * the server split single SG request into
-				 * several URBs. Later, priv->sgl is used by
-				 * stub_complete() and stub_send_ret_submit() to
-				 * reassemble the divied URBs.
-				 */
+				 
 				support_sg = 0;
 				num_urbs = nents;
 				priv->completed_urbs = 0;
@@ -523,13 +459,13 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 		}
 	}
 
-	/* allocate urb array */
+	 
 	priv->num_urbs = num_urbs;
 	priv->urbs = kmalloc_array(num_urbs, sizeof(*priv->urbs), GFP_KERNEL);
 	if (!priv->urbs)
 		goto err_urbs;
 
-	/* setup a urb */
+	 
 	if (support_sg) {
 		if (usb_pipeisoc(pipe))
 			np = pdu->u.cmd_submit.number_of_packets;
@@ -548,7 +484,7 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 			}
 		}
 
-		/* copy urb setup packet */
+		 
 		priv->urbs[0]->setup_packet = kmemdup(&pdu->u.cmd_submit.setup,
 					8, GFP_KERNEL);
 		if (!priv->urbs[0]->setup_packet) {
@@ -560,9 +496,7 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 	} else {
 		for_each_sg(sgl, sg, nents, i) {
 			priv->urbs[i] = usb_alloc_urb(0, GFP_KERNEL);
-			/* The URBs which is previously allocated will be freed
-			 * in stub_device_cleanup_urbs() if error occurs.
-			 */
+			 
 			if (!priv->urbs[i])
 				goto err_urb;
 
@@ -574,13 +508,13 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 	}
 
 	for (i = 0; i < num_urbs; i++) {
-		/* set other members from the base header of pdu */
+		 
 		priv->urbs[i]->context = (void *) priv;
 		priv->urbs[i]->dev = udev;
 		priv->urbs[i]->pipe = pipe;
 		priv->urbs[i]->complete = stub_complete;
 
-		/* no need to submit an intercepted request, but harmless? */
+		 
 		tweak_special_requests(priv->urbs[i]);
 
 		masking_bogus_flags(priv->urbs[i]);
@@ -592,7 +526,7 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 	if (usbip_recv_iso(ud, priv->urbs[0]) < 0)
 		return;
 
-	/* urb is now ready to submit */
+	 
 	for (i = 0; i < priv->num_urbs; i++) {
 		ret = usb_submit_urb(priv->urbs[i], GFP_KERNEL);
 
@@ -604,10 +538,7 @@ static void stub_recv_cmd_submit(struct stub_device *sdev,
 			usbip_dump_header(pdu);
 			usbip_dump_urb(priv->urbs[i]);
 
-			/*
-			 * Pessimistic.
-			 * This connection will be discarded.
-			 */
+			 
 			usbip_event_add(ud, SDEV_EVENT_ERROR_SUBMIT);
 			break;
 		}
@@ -625,7 +556,7 @@ err_malloc:
 	usbip_event_add(ud, SDEV_EVENT_ERROR_MALLOC);
 }
 
-/* recv a pdu */
+ 
 static void stub_rx_pdu(struct usbip_device *ud)
 {
 	int ret;
@@ -637,7 +568,7 @@ static void stub_rx_pdu(struct usbip_device *ud)
 
 	memset(&pdu, 0, sizeof(pdu));
 
-	/* receive a pdu header */
+	 
 	ret = usbip_recv(ud->tcp_socket, &pdu, sizeof(pdu));
 	if (ret != sizeof(pdu)) {
 		dev_err(dev, "recv a header, %d\n", ret);
@@ -666,7 +597,7 @@ static void stub_rx_pdu(struct usbip_device *ud)
 		break;
 
 	default:
-		/* NOTREACHED */
+		 
 		dev_err(dev, "unknown pdu\n");
 		usbip_event_add(ud, SDEV_EVENT_ERROR_TCP);
 		break;

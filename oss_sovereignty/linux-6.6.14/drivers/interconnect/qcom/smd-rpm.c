@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RPM over SMD communication wrapper for interconnects
- *
- * Copyright (C) 2019 Linaro Ltd
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+ 
 
 #include <linux/interconnect-provider.h>
 #include <linux/module.h>
@@ -50,7 +45,7 @@ int qcom_icc_rpm_set_bus_rate(const struct rpm_clk_resource *clk, int ctx, u32 r
 		.nbytes = cpu_to_le32(sizeof(u32)),
 	};
 
-	/* Branch clocks are only on/off */
+	 
 	if (clk->branch)
 		rate = !!rate;
 

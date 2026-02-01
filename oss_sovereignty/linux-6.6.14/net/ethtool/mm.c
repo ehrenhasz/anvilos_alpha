@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022-2023 NXP
- */
+
+ 
 #include "common.h"
 #include "netlink.h"
 
@@ -64,18 +62,18 @@ static int mm_reply_size(const struct ethnl_req_info *req_base,
 {
 	int len = 0;
 
-	len += nla_total_size(sizeof(u8)); /* _MM_PMAC_ENABLED */
-	len += nla_total_size(sizeof(u8)); /* _MM_TX_ENABLED */
-	len += nla_total_size(sizeof(u8)); /* _MM_TX_ACTIVE */
-	len += nla_total_size(sizeof(u8)); /* _MM_VERIFY_ENABLED */
-	len += nla_total_size(sizeof(u8)); /* _MM_VERIFY_STATUS */
-	len += nla_total_size(sizeof(u32)); /* _MM_VERIFY_TIME */
-	len += nla_total_size(sizeof(u32)); /* _MM_MAX_VERIFY_TIME */
-	len += nla_total_size(sizeof(u32)); /* _MM_TX_MIN_FRAG_SIZE */
-	len += nla_total_size(sizeof(u32)); /* _MM_RX_MIN_FRAG_SIZE */
+	len += nla_total_size(sizeof(u8));  
+	len += nla_total_size(sizeof(u8));  
+	len += nla_total_size(sizeof(u8));  
+	len += nla_total_size(sizeof(u8));  
+	len += nla_total_size(sizeof(u8));  
+	len += nla_total_size(sizeof(u32));  
+	len += nla_total_size(sizeof(u32));  
+	len += nla_total_size(sizeof(u32));  
+	len += nla_total_size(sizeof(u32));  
 
 	if (req_base->flags & ETHTOOL_FLAG_STATS)
-		len += nla_total_size(0) + /* _MM_STATS */
+		len += nla_total_size(0) +  
 		       nla_total_size_64bit(sizeof(u64)) * ETHTOOL_MM_STAT_CNT;
 
 	return len;
@@ -158,13 +156,7 @@ const struct nla_policy ethnl_mm_set_policy[ETHTOOL_A_MM_MAX + 1] = {
 static void mm_state_to_cfg(const struct ethtool_mm_state *state,
 			    struct ethtool_mm_cfg *cfg)
 {
-	/* We could also compare state->verify_status against
-	 * ETHTOOL_MM_VERIFY_STATUS_DISABLED, but state->verify_enabled
-	 * is more like an administrative state which should be seen in
-	 * ETHTOOL_MSG_MM_GET replies. For example, a port with verification
-	 * disabled might be in the ETHTOOL_MM_VERIFY_STATUS_INITIAL
-	 * if it's down.
-	 */
+	 
 	cfg->verify_enabled = state->verify_enabled;
 	cfg->verify_time = state->verify_time;
 	cfg->tx_enabled = state->tx_enabled;
@@ -244,10 +236,7 @@ const struct ethnl_request_ops ethnl_mm_request_ops = {
 	.set_ntf_cmd		= ETHTOOL_MSG_MM_NTF,
 };
 
-/* Returns whether a given device supports the MAC merge layer
- * (has an eMAC and a pMAC). Must be called under rtnl_lock() and
- * ethnl_ops_begin().
- */
+ 
 bool __ethtool_dev_mm_supported(struct net_device *dev)
 {
 	const struct ethtool_ops *ops = dev->ethtool_ops;

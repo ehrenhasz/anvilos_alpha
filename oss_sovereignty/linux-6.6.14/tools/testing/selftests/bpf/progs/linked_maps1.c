@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -15,9 +15,7 @@ struct {
 	__uint(max_entries, 16);
 } map1 SEC(".maps");
 
- /* Matches map2 definition in linked_maps2.c. Order of the attributes doesn't
-  * matter.
-  */
+  
 typedef struct {
 	__uint(max_entries, 8);
 	__type(key, int);
@@ -27,9 +25,7 @@ typedef struct {
 
 extern map2_t map2 SEC(".maps");
 
-/* This should be the winning map definition, but we have no way of verifying,
- * so we just make sure that it links and works without errors
- */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__type(key, int);
@@ -44,7 +40,7 @@ int output_weak1;
 SEC("raw_tp/sys_enter")
 int BPF_PROG(handler_enter1)
 {
-	/* update values with key = 1 */
+	 
 	int key = 1, val = 1;
 	struct my_key key_struct = { .x = 1 };
 	struct my_value val_struct = { .x = 1000 };
@@ -59,7 +55,7 @@ int BPF_PROG(handler_enter1)
 SEC("raw_tp/sys_exit")
 int BPF_PROG(handler_exit1)
 {
-	/* lookup values with key = 2, set in another file */
+	 
 	int key = 2, *val;
 	struct my_key key_struct = { .x = 2 };
 	struct my_value *value_struct;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * Core driver code with main interface to the I3C subsystem.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -23,30 +17,28 @@
 #include "dat.h"
 
 
-/*
- * Host Controller Capabilities and Operation Registers
- */
+ 
 
 #define reg_read(r)		readl(hci->base_regs + (r))
 #define reg_write(r, v)		writel(v, hci->base_regs + (r))
 #define reg_set(r, v)		reg_write(r, reg_read(r) | (v))
 #define reg_clear(r, v)		reg_write(r, reg_read(r) & ~(v))
 
-#define HCI_VERSION			0x00	/* HCI Version (in BCD) */
+#define HCI_VERSION			0x00	 
 
 #define HC_CONTROL			0x04
 #define HC_CONTROL_BUS_ENABLE		BIT(31)
 #define HC_CONTROL_RESUME		BIT(30)
 #define HC_CONTROL_ABORT		BIT(29)
 #define HC_CONTROL_HALT_ON_CMD_TIMEOUT	BIT(12)
-#define HC_CONTROL_HOT_JOIN_CTRL	BIT(8)	/* Hot-Join ACK/NACK Control */
+#define HC_CONTROL_HOT_JOIN_CTRL	BIT(8)	 
 #define HC_CONTROL_I2C_TARGET_PRESENT	BIT(7)
-#define HC_CONTROL_PIO_MODE		BIT(6)	/* DMA/PIO Mode Selector */
+#define HC_CONTROL_PIO_MODE		BIT(6)	 
 #define HC_CONTROL_DATA_BIG_ENDIAN	BIT(4)
-#define HC_CONTROL_IBA_INCLUDE		BIT(0)	/* Include I3C Broadcast Address */
+#define HC_CONTROL_IBA_INCLUDE		BIT(0)	 
 
-#define MASTER_DEVICE_ADDR		0x08	/* Master Device Address */
-#define MASTER_DYNAMIC_ADDR_VALID	BIT(31)	/* Dynamic Address is Valid */
+#define MASTER_DEVICE_ADDR		0x08	 
+#define MASTER_DYNAMIC_ADDR_VALID	BIT(31)	 
 #define MASTER_DYNAMIC_ADDR(v)		FIELD_PREP(GENMASK(22, 16), v)
 
 #define HC_CAPABILITIES			0x0c
@@ -61,8 +53,8 @@
 #define HC_CAP_HDR_BT_EN		BIT(8)
 #define HC_CAP_HDR_TS_EN		BIT(7)
 #define HC_CAP_HDR_DDR_EN		BIT(6)
-#define HC_CAP_NON_CURRENT_MASTER_CAP	BIT(5)	/* master handoff capable */
-#define HC_CAP_DATA_BYTE_CFG_EN		BIT(4)	/* endian selection possible */
+#define HC_CAP_NON_CURRENT_MASTER_CAP	BIT(5)	 
+#define HC_CAP_DATA_BYTE_CFG_EN		BIT(4)	 
 #define HC_CAP_AUTO_COMMAND		BIT(3)
 #define HC_CAP_COMBO_COMMAND		BIT(2)
 
@@ -74,7 +66,7 @@
 #define TX_FIFO_RST			BIT(3)
 #define RESP_QUEUE_RST			BIT(2)
 #define CMD_QUEUE_RST			BIT(1)
-#define SOFT_RST			BIT(0)	/* Core Reset */
+#define SOFT_RST			BIT(0)	 
 
 #define PRESENT_STATE			0x14
 #define STATE_CURRENT_MASTER		BIT(2)
@@ -83,18 +75,18 @@
 #define INTR_STATUS_ENABLE		0x24
 #define INTR_SIGNAL_ENABLE		0x28
 #define INTR_FORCE			0x2c
-#define INTR_HC_CMD_SEQ_UFLOW_STAT	BIT(12)	/* Cmd Sequence Underflow */
-#define INTR_HC_RESET_CANCEL		BIT(11)	/* HC Cancelled Reset */
-#define INTR_HC_INTERNAL_ERR		BIT(10)	/* HC Internal Error */
-#define INTR_HC_PIO			BIT(8)	/* cascaded PIO interrupt */
+#define INTR_HC_CMD_SEQ_UFLOW_STAT	BIT(12)	 
+#define INTR_HC_RESET_CANCEL		BIT(11)	 
+#define INTR_HC_INTERNAL_ERR		BIT(10)	 
+#define INTR_HC_PIO			BIT(8)	 
 #define INTR_HC_RINGS			GENMASK(7, 0)
 
-#define DAT_SECTION			0x30	/* Device Address Table */
+#define DAT_SECTION			0x30	 
 #define DAT_ENTRY_SIZE			GENMASK(31, 28)
 #define DAT_TABLE_SIZE			GENMASK(18, 12)
 #define DAT_TABLE_OFFSET		GENMASK(11, 0)
 
-#define DCT_SECTION			0x34	/* Device Characteristics Table */
+#define DCT_SECTION			0x34	 
 #define DCT_ENTRY_SIZE			GENMASK(31, 28)
 #define DCT_TABLE_INDEX			GENMASK(23, 19)
 #define DCT_TABLE_SIZE			GENMASK(18, 12)
@@ -104,15 +96,15 @@
 #define RING_HEADERS_OFFSET		GENMASK(15, 0)
 
 #define PIO_SECTION			0x3c
-#define PIO_REGS_OFFSET			GENMASK(15, 0)	/* PIO Offset */
+#define PIO_REGS_OFFSET			GENMASK(15, 0)	 
 
 #define EXT_CAPS_SECTION		0x40
 #define EXT_CAPS_OFFSET			GENMASK(15, 0)
 
-#define IBI_NOTIFY_CTRL			0x58	/* IBI Notify Control */
-#define IBI_NOTIFY_SIR_REJECTED		BIT(3)	/* Rejected Target Interrupt Request */
-#define IBI_NOTIFY_MR_REJECTED		BIT(1)	/* Rejected Master Request Control */
-#define IBI_NOTIFY_HJ_REJECTED		BIT(0)	/* Rejected Hot-Join Control */
+#define IBI_NOTIFY_CTRL			0x58	 
+#define IBI_NOTIFY_SIR_REJECTED		BIT(3)	 
+#define IBI_NOTIFY_MR_REJECTED		BIT(1)	 
+#define IBI_NOTIFY_HJ_REJECTED		BIT(0)	 
 
 #define DEV_CTX_BASE_LO			0x60
 #define DEV_CTX_BASE_HI			0x64
@@ -172,17 +164,17 @@ static void i3c_hci_bus_cleanup(struct i3c_master_controller *m)
 
 void mipi_i3c_hci_resume(struct i3c_hci *hci)
 {
-	/* the HC_CONTROL_RESUME bit is R/W1C so just read and write back */
+	 
 	reg_write(HC_CONTROL, reg_read(HC_CONTROL));
 }
 
-/* located here rather than pio.c because needed bits are in core reg space */
+ 
 void mipi_i3c_hci_pio_reset(struct i3c_hci *hci)
 {
 	reg_write(RESET_CONTROL, RX_FIFO_RST | TX_FIFO_RST | RESP_QUEUE_RST);
 }
 
-/* located here rather than dct.c because needed bits are in core reg space */
+ 
 void mipi_i3c_hci_dct_index_reset(struct i3c_hci *hci)
 {
 	reg_write(DCT_SECTION, FIELD_PREP(DCT_TABLE_INDEX, 0));
@@ -296,7 +288,7 @@ static int i3c_hci_priv_xfers(struct i3c_dev_desc *dev,
 		if (i3c_xfers[i].rnw) {
 			xfer[i].data = i3c_xfers[i].data.in;
 		} else {
-			/* silence the const qualifier warning with a cast */
+			 
 			xfer[i].data = (void *) i3c_xfers[i].data.out;
 		}
 		hci->cmd->prep_i3c_xfer(hci, dev, &xfer[i]);
@@ -552,7 +544,7 @@ static irqreturn_t i3c_hci_irq_handler(int irq, void *dev_id)
 	if (val) {
 		reg_write(INTR_STATUS, val);
 	} else {
-		/* v1.0 does not have PIO cascaded notification bits */
+		 
 		val |= INTR_HC_PIO;
 	}
 
@@ -585,18 +577,18 @@ static int i3c_hci_init(struct i3c_hci *hci)
 	u32 regval, offset;
 	int ret;
 
-	/* Validate HCI hardware version */
+	 
 	regval = reg_read(HCI_VERSION);
 	hci->version_major = (regval >> 8) & 0xf;
 	hci->version_minor = (regval >> 4) & 0xf;
 	hci->revision = regval & 0xf;
 	dev_notice(&hci->master.dev, "MIPI I3C HCI v%u.%u r%02u\n",
 		   hci->version_major, hci->version_minor, hci->revision);
-	/* known versions */
+	 
 	switch (regval & ~0xf) {
-	case 0x100:	/* version 1.0 */
-	case 0x110:	/* version 1.1 */
-	case 0x200:	/* version 2.0 */
+	case 0x100:	 
+	case 0x110:	 
+	case 0x200:	 
 		break;
 	default:
 		dev_err(&hci->master.dev, "unsupported HCI version\n");
@@ -641,11 +633,7 @@ static int i3c_hci_init(struct i3c_hci *hci)
 	if (ret)
 		return ret;
 
-	/*
-	 * Now let's reset the hardware.
-	 * SOFT_RST must be clear before we write to it.
-	 * Then we must wait until it clears again.
-	 */
+	 
 	ret = readx_poll_timeout(reg_read, RESET_CONTROL, regval,
 				 !(regval & SOFT_RST), 1, 10000);
 	if (ret)
@@ -656,11 +644,11 @@ static int i3c_hci_init(struct i3c_hci *hci)
 	if (ret)
 		return -ENXIO;
 
-	/* Disable all interrupts and allow all signal updates */
+	 
 	reg_write(INTR_SIGNAL_ENABLE, 0x0);
 	reg_write(INTR_STATUS_ENABLE, 0xffffffff);
 
-	/* Make sure our data ordering fits the host's */
+	 
 	regval = reg_read(HC_CONTROL);
 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN)) {
 		if (!(regval & HC_CONTROL_DATA_BIG_ENDIAN)) {
@@ -684,7 +672,7 @@ static int i3c_hci_init(struct i3c_hci *hci)
 		}
 	}
 
-	/* Select our command descriptor model */
+	 
 	switch (FIELD_GET(HC_CAP_CMD_SIZE, hci->caps)) {
 	case 0:
 		hci->cmd = &mipi_i3c_hci_cmd_v1;
@@ -697,7 +685,7 @@ static int i3c_hci_init(struct i3c_hci *hci)
 		return -EINVAL;
 	}
 
-	/* Try activating DMA operations first */
+	 
 	if (hci->RHS_regs) {
 		reg_clear(HC_CONTROL, HC_CONTROL_PIO_MODE);
 		if (reg_read(HC_CONTROL) & HC_CONTROL_PIO_MODE) {
@@ -709,7 +697,7 @@ static int i3c_hci_init(struct i3c_hci *hci)
 		}
 	}
 
-	/* If no DMA, try PIO */
+	 
 	if (!hci->io && hci->PIO_regs) {
 		reg_set(HC_CONTROL, HC_CONTROL_PIO_MODE);
 		if (!(reg_read(HC_CONTROL) & HC_CONTROL_PIO_MODE)) {
@@ -744,7 +732,7 @@ static int i3c_hci_probe(struct platform_device *pdev)
 		return PTR_ERR(hci->base_regs);
 
 	platform_set_drvdata(pdev, hci);
-	/* temporary for dev_printk's, to be replaced in i3c_master_register */
+	 
 	hci->master.dev.init_name = dev_name(&pdev->dev);
 
 	ret = i3c_hci_init(hci);

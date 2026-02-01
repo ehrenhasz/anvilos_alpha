@@ -1,42 +1,14 @@
-/* Copyright 2008 - 2016 Freescale Semiconductor, Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "bman_priv.h"
 
 #define IRQNAME		"BMan portal %d"
-#define MAX_IRQNAME	16	/* big enough for "BMan portal %d" */
+#define MAX_IRQNAME	16	 
 
-/* Portal register assists */
+ 
 
 #if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-/* Cache-inhibited register offsets */
+ 
 #define BM_REG_RCR_PI_CINH	0x3000
 #define BM_REG_RCR_CI_CINH	0x3100
 #define BM_REG_RCR_ITR		0x3200
@@ -47,7 +19,7 @@
 #define BM_REG_ISDR		0x3e80
 #define BM_REG_IIR		0x3ec0
 
-/* Cache-enabled register offsets */
+ 
 #define BM_CL_CR		0x0000
 #define BM_CL_RR0		0x0100
 #define BM_CL_RR1		0x0140
@@ -56,7 +28,7 @@
 #define BM_CL_RCR_CI_CENA	0x3100
 
 #else
-/* Cache-inhibited register offsets */
+ 
 #define BM_REG_RCR_PI_CINH	0x0000
 #define BM_REG_RCR_CI_CINH	0x0004
 #define BM_REG_RCR_ITR		0x0008
@@ -67,7 +39,7 @@
 #define BM_REG_ISDR		0x0e08
 #define BM_REG_IIR		0x0e0c
 
-/* Cache-enabled register offsets */
+ 
 #define BM_CL_CR		0x0000
 #define BM_CL_RR0		0x0100
 #define BM_CL_RR1		0x0140
@@ -76,48 +48,38 @@
 #define BM_CL_RCR_CI_CENA	0x3100
 #endif
 
-/*
- * Portal modes.
- *   Enum types;
- *     pmode == production mode
- *     cmode == consumption mode,
- *   Enum values use 3 letter codes. First letter matches the portal mode,
- *   remaining two letters indicate;
- *     ci == cache-inhibited portal register
- *     ce == cache-enabled portal register
- *     vb == in-band valid-bit (cache-enabled)
- */
-enum bm_rcr_pmode {		/* matches BCSP_CFG::RPM */
-	bm_rcr_pci = 0,		/* PI index, cache-inhibited */
-	bm_rcr_pce = 1,		/* PI index, cache-enabled */
-	bm_rcr_pvb = 2		/* valid-bit */
+ 
+enum bm_rcr_pmode {		 
+	bm_rcr_pci = 0,		 
+	bm_rcr_pce = 1,		 
+	bm_rcr_pvb = 2		 
 };
-enum bm_rcr_cmode {		/* s/w-only */
-	bm_rcr_cci,		/* CI index, cache-inhibited */
-	bm_rcr_cce		/* CI index, cache-enabled */
+enum bm_rcr_cmode {		 
+	bm_rcr_cci,		 
+	bm_rcr_cce		 
 };
 
 
-/* --- Portal structures --- */
+ 
 
 #define BM_RCR_SIZE		8
 
-/* Release Command */
+ 
 struct bm_rcr_entry {
 	union {
 		struct {
-			u8 _ncw_verb; /* writes to this are non-coherent */
-			u8 bpid; /* used with BM_RCR_VERB_CMD_BPID_SINGLE */
+			u8 _ncw_verb;  
+			u8 bpid;  
 			u8 __reserved1[62];
 		};
 		struct bm_buffer bufs[8];
 	};
 };
 #define BM_RCR_VERB_VBIT		0x80
-#define BM_RCR_VERB_CMD_MASK		0x70	/* one of two values; */
+#define BM_RCR_VERB_CMD_MASK		0x70	 
 #define BM_RCR_VERB_CMD_BPID_SINGLE	0x20
 #define BM_RCR_VERB_CMD_BPID_MULTI	0x30
-#define BM_RCR_VERB_BUFCOUNT_MASK	0x0f	/* values 1..8 */
+#define BM_RCR_VERB_BUFCOUNT_MASK	0x0f	 
 
 struct bm_rcr {
 	struct bm_rcr_entry *ring, *cursor;
@@ -129,19 +91,19 @@ struct bm_rcr {
 #endif
 };
 
-/* MC (Management Command) command */
+ 
 struct bm_mc_command {
-	u8 _ncw_verb; /* writes to this are non-coherent */
-	u8 bpid; /* used by acquire command */
+	u8 _ncw_verb;  
+	u8 bpid;  
 	u8 __reserved[62];
 };
 #define BM_MCC_VERB_VBIT		0x80
-#define BM_MCC_VERB_CMD_MASK		0x70	/* where the verb contains; */
+#define BM_MCC_VERB_CMD_MASK		0x70	 
 #define BM_MCC_VERB_CMD_ACQUIRE		0x10
 #define BM_MCC_VERB_CMD_QUERY		0x40
-#define BM_MCC_VERB_ACQUIRE_BUFCOUNT	0x0f	/* values 1..8 go here */
+#define BM_MCC_VERB_ACQUIRE_BUFCOUNT	0x0f	 
 
-/* MC result, Acquire and Query Response */
+ 
 union bm_mc_result {
 	struct {
 		u8 verb;
@@ -156,8 +118,8 @@ union bm_mc_result {
 #define BM_MCR_VERB_CMD_QUERY		BM_MCC_VERB_CMD_QUERY
 #define BM_MCR_VERB_CMD_ERR_INVALID	0x60
 #define BM_MCR_VERB_CMD_ERR_ECC		0x70
-#define BM_MCR_VERB_ACQUIRE_BUFCOUNT	BM_MCC_VERB_ACQUIRE_BUFCOUNT /* 0..8 */
-#define BM_MCR_TIMEOUT			10000 /* us */
+#define BM_MCR_VERB_ACQUIRE_BUFCOUNT	BM_MCC_VERB_ACQUIRE_BUFCOUNT  
+#define BM_MCR_TIMEOUT			10000  
 
 struct bm_mc {
 	struct bm_mc_command *cr;
@@ -165,20 +127,20 @@ struct bm_mc {
 	u8 rridx, vbit;
 #ifdef CONFIG_FSL_DPAA_CHECKING
 	enum {
-		/* Can only be _mc_start()ed */
+		 
 		mc_idle,
-		/* Can only be _mc_commit()ed or _mc_abort()ed */
+		 
 		mc_user,
-		/* Can only be _mc_retry()ed */
+		 
 		mc_hw
 	} state;
 #endif
 };
 
 struct bm_addr {
-	void *ce;		/* cache-enabled */
-	__be32 *ce_be;		/* Same as above but for direct access */
-	void __iomem *ci;	/* cache-inhibited */
+	void *ce;		 
+	__be32 *ce_be;		 
+	void __iomem *ci;	 
 };
 
 struct bm_portal {
@@ -187,7 +149,7 @@ struct bm_portal {
 	struct bm_mc mc;
 } ____cacheline_aligned;
 
-/* Cache-inhibited register access. */
+ 
 static inline u32 bm_in(struct bm_portal *p, u32 offset)
 {
 	return ioread32be(p->addr.ci + offset);
@@ -198,7 +160,7 @@ static inline void bm_out(struct bm_portal *p, u32 offset, u32 val)
 	iowrite32be(val, p->addr.ci + offset);
 }
 
-/* Cache Enabled Portal Access */
+ 
 static inline void bm_cl_invalidate(struct bm_portal *p, u32 offset)
 {
 	dpaa_invalidate(p->addr.ce + offset);
@@ -216,9 +178,9 @@ static inline u32 bm_ce_in(struct bm_portal *p, u32 offset)
 
 struct bman_portal {
 	struct bm_portal p;
-	/* interrupt sources processed by portal_isr(), configurable */
+	 
 	unsigned long irq_sources;
-	/* probing time config params for cpu-affine portals */
+	 
 	const struct bm_portal_config *config;
 	char irqname[MAX_IRQNAME];
 };
@@ -237,15 +199,11 @@ static inline void put_affine_portal(void)
 	put_cpu_var(bman_affine_portal);
 }
 
-/*
- * This object type refers to a pool, it isn't *the* pool. There may be
- * more than one such object per BMan buffer pool, eg. if different users of the
- * pool are operating via different portals.
- */
+ 
 struct bman_pool {
-	/* index of the buffer pool to encapsulate (0-63) */
+	 
 	u32 bpid;
-	/* Used for hash-table admin when using depletion notifications. */
+	 
 	struct bman_portal *portal;
 	struct bman_pool *next;
 };
@@ -267,12 +225,12 @@ static irqreturn_t portal_isr(int irq, void *ptr)
 	return IRQ_HANDLED;
 }
 
-/* --- RCR API --- */
+ 
 
 #define RCR_SHIFT	ilog2(sizeof(struct bm_rcr_entry))
 #define RCR_CARRY	(uintptr_t)(BM_RCR_SIZE << RCR_SHIFT)
 
-/* Bit-wise logic to wrap a ring pointer by clearing the "carry bit" */
+ 
 static struct bm_rcr_entry *rcr_carryclear(struct bm_rcr_entry *p)
 {
 	uintptr_t addr = (uintptr_t)p;
@@ -283,17 +241,17 @@ static struct bm_rcr_entry *rcr_carryclear(struct bm_rcr_entry *p)
 }
 
 #ifdef CONFIG_FSL_DPAA_CHECKING
-/* Bit-wise logic to convert a ring pointer to a ring index */
+ 
 static int rcr_ptr2idx(struct bm_rcr_entry *e)
 {
 	return ((uintptr_t)e >> RCR_SHIFT) & (BM_RCR_SIZE - 1);
 }
 #endif
 
-/* Increment the 'cursor' ring pointer, taking 'vbit' into account */
+ 
 static inline void rcr_inc(struct bm_rcr *rcr)
 {
-	/* increment to the next RCR pointer and handle overflow and 'vbit' */
+	 
 	struct bm_rcr_entry *partial = rcr->cursor + 1;
 
 	rcr->cursor = rcr_carryclear(partial);
@@ -399,7 +357,7 @@ static int bm_rcr_init(struct bm_portal *portal, enum bm_rcr_pmode pmode,
 	rcr->cmode = cmode;
 #endif
 	cfg = (bm_in(portal, BM_REG_CFG) & 0xffffffe0)
-		| (pmode & 0x3); /* BCSP_CFG::RPM */
+		| (pmode & 0x3);  
 	bm_out(portal, BM_REG_CFG, cfg);
 	return 0;
 }
@@ -424,7 +382,7 @@ static void bm_rcr_finish(struct bm_portal *portal)
 #endif
 }
 
-/* --- Management command API --- */
+ 
 static int bm_mc_init(struct bm_portal *portal)
 {
 	struct bm_mc *mc = &portal->mc;
@@ -484,11 +442,7 @@ static inline union bm_mc_result *bm_mc_result(struct bm_portal *portal)
 	union bm_mc_result *rr = mc->rr + mc->rridx;
 
 	DPAA_ASSERT(mc->state == mc_hw);
-	/*
-	 * The inactive response register's verb byte always returns zero until
-	 * its command is submitted and completed. This includes the valid-bit,
-	 * in case you were wondering...
-	 */
+	 
 	if (!rr->verb) {
 		dpaa_invalidate_touch_ro(rr);
 		return NULL;
@@ -516,7 +470,7 @@ static inline int bm_mc_result_timeout(struct bm_portal *portal,
 	return timeout;
 }
 
-/* Disable all BSCN interrupts for the portal */
+ 
 static void bm_isr_bscn_disable(struct bm_portal *portal)
 {
 	bm_out(portal, BM_REG_SCN(0), 0);
@@ -530,11 +484,7 @@ static int bman_create_portal(struct bman_portal *portal,
 	int ret;
 
 	p = &portal->p;
-	/*
-	 * prep the low-level portal struct with the mapped addresses from the
-	 * config, everything that follows depends on it and "config" is more
-	 * for (de)reference...
-	 */
+	 
 	p->addr.ce = c->addr_virt_ce;
 	p->addr.ce_be = c->addr_virt_ce;
 	p->addr.ci = c->addr_virt_ci;
@@ -546,13 +496,10 @@ static int bman_create_portal(struct bman_portal *portal,
 		dev_err(c->dev, "MC initialisation failed\n");
 		goto fail_mc;
 	}
-	/*
-	 * Default to all BPIDs disabled, we enable as required at
-	 * run-time.
-	 */
+	 
 	bm_isr_bscn_disable(p);
 
-	/* Write-to-clear any stale interrupt status bits */
+	 
 	bm_out(p, BM_REG_ISDR, 0xffffffff);
 	portal->irq_sources = 0;
 	bm_out(p, BM_REG_IER, 0);
@@ -566,13 +513,13 @@ static int bman_create_portal(struct bman_portal *portal,
 	if (dpaa_set_portal_irq_affinity(c->dev, c->irq, c->cpu))
 		goto fail_affinity;
 
-	/* Need RCR to be empty before continuing */
+	 
 	ret = bm_rcr_get_fill(p);
 	if (ret) {
 		dev_err(c->dev, "RCR unclean\n");
 		goto fail_rcr_empty;
 	}
-	/* Success */
+	 
 	portal->config = c;
 
 	bm_out(p, BM_REG_ISDR, 0);
@@ -619,7 +566,7 @@ static u32 poll_portal_slow(struct bman_portal *p, u32 is)
 		is &= ~BM_PIRQ_RCRI;
 	}
 
-	/* There should be no status register bits left undefined */
+	 
 	DPAA_ASSERT(!is);
 	return ret;
 }
@@ -644,7 +591,7 @@ int bm_shutdown_pool(u32 bpid)
 
 	struct bman_portal *p = get_affine_portal();
 	while (1) {
-		/* Acquire buffers until empty */
+		 
 		bm_cmd = bm_mc_start(&p->p);
 		bm_cmd->bpid = bpid;
 		bm_mc_commit(&p->p, BM_MCC_VERB_CMD_ACQUIRE | 1);
@@ -654,7 +601,7 @@ int bm_shutdown_pool(u32 bpid)
 			goto done;
 		}
 		if (!(bm_res->verb & BM_MCR_VERB_ACQUIRE_BUFCOUNT)) {
-			/* Pool is empty */
+			 
 			goto done;
 		}
 	}
@@ -740,7 +687,7 @@ int bman_release(struct bman_pool *pool, const struct bm_buffer *bufs, u8 num)
 	struct bman_portal *p;
 	struct bm_rcr_entry *r;
 	unsigned long irqflags;
-	int avail, timeout = 1000; /* 1ms */
+	int avail, timeout = 1000;  
 	int i = num - 1;
 
 	DPAA_ASSERT(num > 0 && num <= 8);
@@ -765,10 +712,7 @@ int bman_release(struct bman_pool *pool, const struct bm_buffer *bufs, u8 num)
 
 	p = get_affine_portal();
 	local_irq_save(irqflags);
-	/*
-	 * we can copy all but the first entry, as this can trigger badness
-	 * with the valid-bit
-	 */
+	 
 	bm_buffer_set64(r->bufs, bm_buffer_get64(bufs));
 	bm_buffer_set_bpid(r->bufs, pool->bpid);
 	if (i)

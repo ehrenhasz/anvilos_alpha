@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dwmac-sun8i.c - Allwinner sun8i DWMAC specific glue layer
- *
- * Copyright (C) 2017 Corentin Labbe <clabbe.montjoie@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -25,28 +21,9 @@
 #include "stmmac.h"
 #include "stmmac_platform.h"
 
-/* General notes on dwmac-sun8i:
- * Locking: no locking is necessary in this file because all necessary locking
- *		is done in the "stmmac files"
- */
+ 
 
-/* struct emac_variant - Describe dwmac-sun8i hardware variant
- * @default_syscon_value:	The default value of the EMAC register in syscon
- *				This value is used for disabling properly EMAC
- *				and used as a good starting value in case of the
- *				boot process(uboot) leave some stuff.
- * @syscon_field		reg_field for the syscon's gmac register
- * @soc_has_internal_phy:	Does the MAC embed an internal PHY
- * @support_mii:		Does the MAC handle MII
- * @support_rmii:		Does the MAC handle RMII
- * @support_rgmii:		Does the MAC handle RGMII
- *
- * @rx_delay_max:		Maximum raw value for RX delay chain
- * @tx_delay_max:		Maximum raw value for TX delay chain
- *				These two also indicate the bitmask for
- *				the RX and TX delay chain registers. A
- *				value of zero indicates this is not supported.
- */
+ 
 struct emac_variant {
 	u32 default_syscon_value;
 	const struct reg_field *syscon_field;
@@ -58,16 +35,7 @@ struct emac_variant {
 	u8 tx_delay_max;
 };
 
-/* struct sunxi_priv_data - hold all sunxi private data
- * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
- * @regulator:	reference to the optional regulator
- * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
- * @variant:	reference to the current board variant
- * @regmap:	regmap for using the syscon
- * @internal_phy_powered: Does the internal PHY is enabled
- * @use_internal_phy: Is the internal PHY selected for use
- * @mux_handle:	Internal pointer used by mdio-mux lib
- */
+ 
 struct sunxi_priv_data {
 	struct clk *ephy_clk;
 	struct regulator *regulator;
@@ -79,14 +47,14 @@ struct sunxi_priv_data {
 	void *mux_handle;
 };
 
-/* EMAC clock register @ 0x30 in the "system control" address range */
+ 
 static const struct reg_field sun8i_syscon_reg_field = {
 	.reg = 0x30,
 	.lsb = 0,
 	.msb = 31,
 };
 
-/* EMAC clock register @ 0x164 in the CCU address range */
+ 
 static const struct reg_field sun8i_ccu_reg_field = {
 	.reg = 0x164,
 	.lsb = 0,
@@ -143,9 +111,7 @@ static const struct emac_variant emac_variant_a64 = {
 static const struct emac_variant emac_variant_h6 = {
 	.default_syscon_value = 0x50000,
 	.syscon_field = &sun8i_syscon_reg_field,
-	/* The "Internal PHY" of H6 is not on the die. It's on the
-	 * co-packaged AC200 chip instead.
-	 */
+	 
 	.soc_has_internal_phy = false,
 	.support_mii = true,
 	.support_rmii = true,
@@ -177,22 +143,22 @@ static const struct emac_variant emac_variant_h6 = {
 #define EMAC_RX_CUR_DESC        0xC4
 #define EMAC_RX_CUR_BUF 0xC8
 
-/* Use in EMAC_BASIC_CTL0 */
+ 
 #define EMAC_DUPLEX_FULL	BIT(0)
 #define EMAC_LOOPBACK		BIT(1)
 #define EMAC_SPEED_1000 0
 #define EMAC_SPEED_100 (0x03 << 2)
 #define EMAC_SPEED_10 (0x02 << 2)
 
-/* Use in EMAC_BASIC_CTL1 */
+ 
 #define EMAC_BURSTLEN_SHIFT		24
 
-/* Used in EMAC_RX_FRM_FLT */
+ 
 #define EMAC_FRM_FLT_RXALL              BIT(0)
 #define EMAC_FRM_FLT_CTL                BIT(13)
 #define EMAC_FRM_FLT_MULTICAST          BIT(16)
 
-/* Used in RX_CTL1*/
+ 
 #define EMAC_RX_MD              BIT(1)
 #define EMAC_RX_TH_MASK		GENMASK(5, 4)
 #define EMAC_RX_TH_32		0
@@ -202,7 +168,7 @@ static const struct emac_variant emac_variant_h6 = {
 #define EMAC_RX_DMA_EN  BIT(30)
 #define EMAC_RX_DMA_START       BIT(31)
 
-/* Used in TX_CTL1*/
+ 
 #define EMAC_TX_MD              BIT(1)
 #define EMAC_TX_NEXT_FRM        BIT(2)
 #define EMAC_TX_TH_MASK		GENMASK(10, 8)
@@ -213,18 +179,18 @@ static const struct emac_variant emac_variant_h6 = {
 #define EMAC_TX_DMA_EN  BIT(30)
 #define EMAC_TX_DMA_START       BIT(31)
 
-/* Used in RX_CTL0 */
+ 
 #define EMAC_RX_RECEIVER_EN             BIT(31)
 #define EMAC_RX_DO_CRC BIT(27)
 #define EMAC_RX_FLOW_CTL_EN             BIT(16)
 
-/* Used in TX_CTL0 */
+ 
 #define EMAC_TX_TRANSMITTER_EN  BIT(31)
 
-/* Used in EMAC_TX_FLOW_CTL */
+ 
 #define EMAC_TX_FLOW_CTL_EN             BIT(0)
 
-/* Used in EMAC_INT_STA */
+ 
 #define EMAC_TX_INT             BIT(0)
 #define EMAC_TX_DMA_STOP_INT    BIT(1)
 #define EMAC_TX_BUF_UA_INT      BIT(2)
@@ -257,32 +223,30 @@ static const struct emac_variant emac_variant_h6 = {
 
 #define MAC_ADDR_TYPE_DST BIT(31)
 
-/* H3 specific bits for EPHY */
+ 
 #define H3_EPHY_ADDR_SHIFT	20
-#define H3_EPHY_CLK_SEL		BIT(18) /* 1: 24MHz, 0: 25MHz */
-#define H3_EPHY_LED_POL		BIT(17) /* 1: active low, 0: active high */
-#define H3_EPHY_SHUTDOWN	BIT(16) /* 1: shutdown, 0: power up */
-#define H3_EPHY_SELECT		BIT(15) /* 1: internal PHY, 0: external PHY */
+#define H3_EPHY_CLK_SEL		BIT(18)  
+#define H3_EPHY_LED_POL		BIT(17)  
+#define H3_EPHY_SHUTDOWN	BIT(16)  
+#define H3_EPHY_SELECT		BIT(15)  
 #define H3_EPHY_MUX_MASK	(H3_EPHY_SHUTDOWN | H3_EPHY_SELECT)
 #define DWMAC_SUN8I_MDIO_MUX_INTERNAL_ID	1
 #define DWMAC_SUN8I_MDIO_MUX_EXTERNAL_ID	2
 
-/* H3/A64 specific bits */
-#define SYSCON_RMII_EN		BIT(13) /* 1: enable RMII (overrides EPIT) */
+ 
+#define SYSCON_RMII_EN		BIT(13)  
 
-/* Generic system control EMAC_CLK bits */
+ 
 #define SYSCON_ETXDC_SHIFT		10
 #define SYSCON_ERXDC_SHIFT		5
-/* EMAC PHY Interface Type */
-#define SYSCON_EPIT			BIT(2) /* 1: RGMII, 0: MII */
+ 
+#define SYSCON_EPIT			BIT(2)  
 #define SYSCON_ETCS_MASK		GENMASK(1, 0)
 #define SYSCON_ETCS_MII		0x0
 #define SYSCON_ETCS_EXT_GMII	0x1
 #define SYSCON_ETCS_INT_GMII	0x2
 
-/* sun8i_dwmac_dma_reset() - reset the EMAC
- * Called from stmmac via stmmac_dma_ops->reset
- */
+ 
 static int sun8i_dwmac_dma_reset(void __iomem *ioaddr)
 {
 	writel(0, ioaddr + EMAC_RX_CTL1);
@@ -295,9 +259,7 @@ static int sun8i_dwmac_dma_reset(void __iomem *ioaddr)
 	return 0;
 }
 
-/* sun8i_dwmac_dma_init() - initialize the EMAC
- * Called from stmmac via stmmac_dma_ops->init
- */
+ 
 static void sun8i_dwmac_dma_init(void __iomem *ioaddr,
 				 struct stmmac_dma_cfg *dma_cfg, int atds)
 {
@@ -310,7 +272,7 @@ static void sun8i_dwmac_dma_init_rx(struct stmmac_priv *priv,
 				    struct stmmac_dma_cfg *dma_cfg,
 				    dma_addr_t dma_rx_phy, u32 chan)
 {
-	/* Write RX descriptors address */
+	 
 	writel(lower_32_bits(dma_rx_phy), ioaddr + EMAC_RX_DESC_LIST);
 }
 
@@ -319,14 +281,11 @@ static void sun8i_dwmac_dma_init_tx(struct stmmac_priv *priv,
 				    struct stmmac_dma_cfg *dma_cfg,
 				    dma_addr_t dma_tx_phy, u32 chan)
 {
-	/* Write TX descriptors address */
+	 
 	writel(lower_32_bits(dma_tx_phy), ioaddr + EMAC_TX_DESC_LIST);
 }
 
-/* sun8i_dwmac_dump_regs() - Dump EMAC address space
- * Called from stmmac_dma_ops->dump_regs
- * Used for ethtool
- */
+ 
 static void sun8i_dwmac_dump_regs(struct stmmac_priv *priv,
 				  void __iomem *ioaddr, u32 *reg_space)
 {
@@ -339,10 +298,7 @@ static void sun8i_dwmac_dump_regs(struct stmmac_priv *priv,
 	}
 }
 
-/* sun8i_dwmac_dump_mac_regs() - Dump EMAC address space
- * Called from stmmac_ops->dump_regs
- * Used for ethtool
- */
+ 
 static void sun8i_dwmac_dump_mac_regs(struct mac_device_info *hw,
 				      u32 *reg_space)
 {
@@ -542,11 +498,7 @@ static void sun8i_dwmac_dma_operation_mode_tx(struct stmmac_priv *priv,
 	v = readl(ioaddr + EMAC_TX_CTL1);
 	if (mode == SF_DMA_MODE) {
 		v |= EMAC_TX_MD;
-		/* Undocumented bit (called TX_NEXT_FRM in BSP), the original
-		 * comment is
-		 * "Operating on second frame increase the performance
-		 * especially when transmit store-and-forward is used."
-		 */
+		 
 		v |= EMAC_TX_NEXT_FRM;
 	} else {
 		v &= ~EMAC_TX_MD;
@@ -618,7 +570,7 @@ static void sun8i_dwmac_core_init(struct mac_device_info *hw,
 	void __iomem *ioaddr = hw->pcsr;
 	u32 v;
 
-	v = (8 << EMAC_BURSTLEN_SHIFT); /* burst len */
+	v = (8 << EMAC_BURSTLEN_SHIFT);  
 	writel(v, ioaddr + EMAC_BASIC_CTL1);
 }
 
@@ -639,10 +591,7 @@ static void sun8i_dwmac_set_mac(void __iomem *ioaddr, bool enable)
 	writel(r, ioaddr + EMAC_RX_CTL0);
 }
 
-/* Set MAC address at slot reg_n
- * All slot > 0 need to be enabled with MAC_ADDR_TYPE_DST
- * If addr is NULL, clear the slot
- */
+ 
 static void sun8i_dwmac_set_umac_addr(struct mac_device_info *hw,
 				      const unsigned char *addr,
 				      unsigned int reg_n)
@@ -674,7 +623,7 @@ static void sun8i_dwmac_get_umac_addr(struct mac_device_info *hw,
 			    EMAC_MACADDR_LO(reg_n));
 }
 
-/* caution this function must return non 0 to work */
+ 
 static int sun8i_dwmac_rx_ipc_enable(struct mac_device_info *hw)
 {
 	void __iomem *ioaddr = hw->pcsr;
@@ -721,7 +670,7 @@ static void sun8i_dwmac_set_filter(struct mac_device_info *hw,
 		v = EMAC_FRM_FLT_RXALL;
 	}
 
-	/* Disable unused address filter slots */
+	 
 	while (i < hw->unicast_filter_entries)
 		sun8i_dwmac_set_umac_addr(hw, NULL, i++);
 
@@ -758,9 +707,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
 	v = readl(priv->ioaddr + EMAC_BASIC_CTL1);
 	writel(v | 0x01, priv->ioaddr + EMAC_BASIC_CTL1);
 
-	/* The timeout was previoulsy set to 10ms, but some board (OrangePI0)
-	 * need more if no cable plugged. 100ms seems OK
-	 */
+	 
 	err = readl_poll_timeout(priv->ioaddr + EMAC_BASIC_CTL1, v,
 				 !(v & 0x01), 100, 100000);
 
@@ -771,7 +718,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
 	return 0;
 }
 
-/* Search in mdio-mux node for internal PHY node and get its clk/reset */
+ 
 static int get_ephy_nodes(struct stmmac_priv *priv)
 {
 	struct sunxi_priv_data *gmac = priv->plat->bsp_priv;
@@ -793,7 +740,7 @@ static int get_ephy_nodes(struct stmmac_priv *priv)
 		return -ENODEV;
 	}
 
-	/* Seek for internal PHY */
+	 
 	for_each_child_of_node(mdio_internal, iphynode) {
 		gmac->ephy_clk = of_clk_get(iphynode, 0);
 		if (IS_ERR(gmac->ephy_clk))
@@ -835,11 +782,7 @@ static int sun8i_dwmac_power_internal_phy(struct stmmac_priv *priv)
 		return ret;
 	}
 
-	/* Make sure the EPHY is properly reseted, as U-Boot may leave
-	 * it at deasserted state, and thus it may fail to reset EMAC.
-	 *
-	 * This assumes the driver has exclusive access to the EPHY reset.
-	 */
+	 
 	ret = reset_control_reset(gmac->rst_ephy);
 	if (ret) {
 		dev_err(priv->device, "Cannot reset internal PHY\n");
@@ -862,16 +805,7 @@ static void sun8i_dwmac_unpower_internal_phy(struct sunxi_priv_data *gmac)
 	gmac->internal_phy_powered = false;
 }
 
-/* MDIO multiplexing switch function
- * This function is called by the mdio-mux layer when it thinks the mdio bus
- * multiplexer needs to switch.
- * 'current_child' is the current value of the mux register
- * 'desired_child' is the value of the 'reg' property of the target child MDIO
- * node.
- * The first time this function is called, current_child == -1.
- * If current_child == desired_child, then the mux is already set to the
- * correct bus.
- */
+ 
 static int mdio_mux_syscon_switch_fn(int current_child, int desired_child,
 				     void *data)
 {
@@ -906,9 +840,7 @@ static int mdio_mux_syscon_switch_fn(int current_child, int desired_child,
 		} else {
 			sun8i_dwmac_unpower_internal_phy(gmac);
 		}
-		/* After changing syscon value, the MAC need reset or it will
-		 * use the last value (and so the last PHY set).
-		 */
+		 
 		ret = sun8i_dwmac_reset(priv);
 	}
 	return ret;
@@ -956,7 +888,7 @@ static int sun8i_dwmac_set_syscon(struct device *dev,
 		else
 			reg &= ~H3_EPHY_LED_POL;
 
-		/* Force EPHY xtal frequency to 24MHz. */
+		 
 		reg |= H3_EPHY_CLK_SEL;
 
 		ret = of_mdio_parse_addr(dev, plat->phy_node);
@@ -964,14 +896,10 @@ static int sun8i_dwmac_set_syscon(struct device *dev,
 			dev_err(dev, "Could not parse MDIO addr\n");
 			return ret;
 		}
-		/* of_mdio_parse_addr returns a valid (0 ~ 31) PHY
-		 * address. No need to mask it again.
-		 */
+		 
 		reg |= 1 << H3_EPHY_ADDR_SHIFT;
 	} else {
-		/* For SoCs without internal PHY the PHY selection bit should be
-		 * set to 0 (external PHY).
-		 */
+		 
 		reg &= ~H3_EPHY_SELECT;
 	}
 
@@ -1011,14 +939,14 @@ static int sun8i_dwmac_set_syscon(struct device *dev,
 		}
 	}
 
-	/* Clear interface mode bits */
+	 
 	reg &= ~(SYSCON_ETCS_MASK | SYSCON_EPIT);
 	if (gmac->variant->support_rmii)
 		reg &= ~SYSCON_RMII_EN;
 
 	switch (plat->mac_interface) {
 	case PHY_INTERFACE_MODE_MII:
-		/* default */
+		 
 		break;
 	case PHY_INTERFACE_MODE_RGMII:
 	case PHY_INTERFACE_MODE_RGMII_ID:
@@ -1097,10 +1025,7 @@ static struct mac_device_info *sun8i_dwmac_setup(void *ppriv)
 
 	priv->dev->priv_flags |= IFF_UNICAST_FLT;
 
-	/* The loopback bit seems to be re-set when link change
-	 * Simply mask it each time
-	 * Speed 10/100/1000 are set in BIT(2)/BIT(3)
-	 */
+	 
 	mac->link.speed_mask = GENMASK(3, 2) | EMAC_LOOPBACK;
 	mac->link.speed10 = EMAC_SPEED_10;
 	mac->link.speed100 = EMAC_SPEED_100;
@@ -1116,7 +1041,7 @@ static struct mac_device_info *sun8i_dwmac_setup(void *ppriv)
 	mac->mii.clk_csr_mask = GENMASK(22, 20);
 	mac->unicast_filter_entries = 8;
 
-	/* Synopsys Id is not available */
+	 
 	priv->synopsys_id = 0;
 
 	return mac;
@@ -1134,12 +1059,12 @@ static struct regmap *sun8i_dwmac_get_syscon_from_dev(struct device_node *node)
 
 	syscon_pdev = of_find_device_by_node(syscon_node);
 	if (!syscon_pdev) {
-		/* platform device might not be probed yet */
+		 
 		regmap = ERR_PTR(-EPROBE_DEFER);
 		goto out_put_node;
 	}
 
-	/* If no regmap is found then the other device driver is at fault */
+	 
 	regmap = dev_get_regmap(&syscon_pdev->dev, NULL);
 	if (!regmap)
 		regmap = ERR_PTR(-EINVAL);
@@ -1176,7 +1101,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Optional regulator for PHY */
+	 
 	gmac->regulator = devm_regulator_get_optional(dev, "phy");
 	if (IS_ERR(gmac->regulator)) {
 		if (PTR_ERR(gmac->regulator) == -EPROBE_DEFER)
@@ -1185,23 +1110,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
 		gmac->regulator = NULL;
 	}
 
-	/* The "GMAC clock control" register might be located in the
-	 * CCU address range (on the R40), or the system control address
-	 * range (on most other sun8i and later SoCs).
-	 *
-	 * The former controls most if not all clocks in the SoC. The
-	 * latter has an SoC identification register, and on some SoCs,
-	 * controls to map device specific SRAM to either the intended
-	 * peripheral, or the CPU address space.
-	 *
-	 * In either case, there should be a coordinated and restricted
-	 * method of accessing the register needed here. This is done by
-	 * having the device export a custom regmap, instead of a generic
-	 * syscon, which grants all access to all registers.
-	 *
-	 * To support old device trees, we fall back to using the syscon
-	 * interface if possible.
-	 */
+	 
 	regmap = sun8i_dwmac_get_syscon_from_dev(pdev->dev.of_node);
 	if (IS_ERR(regmap))
 		regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
@@ -1228,9 +1137,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
 	if (IS_ERR(plat_dat))
 		return PTR_ERR(plat_dat);
 
-	/* platform data specifying hardware features and callbacks.
-	 * hardware features were copied from Allwinner drivers.
-	 */
+	 
 	plat_dat->mac_interface = interface;
 	plat_dat->rx_coe = STMMAC_RX_COE_TYPE2;
 	plat_dat->tx_coe = 1;
@@ -1257,15 +1164,10 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
 	ndev = dev_get_drvdata(&pdev->dev);
 	priv = netdev_priv(ndev);
 
-	/* the MAC is runtime suspended after stmmac_dvr_probe(), so we
-	 * need to ensure the MAC resume back before other operations such
-	 * as reset.
-	 */
+	 
 	pm_runtime_get_sync(&pdev->dev);
 
-	/* The mux must be registered after parent MDIO
-	 * so after stmmac_dvr_probe()
-	 */
+	 
 	if (gmac->variant->soc_has_internal_phy) {
 		ret = get_ephy_nodes(priv);
 		if (ret)

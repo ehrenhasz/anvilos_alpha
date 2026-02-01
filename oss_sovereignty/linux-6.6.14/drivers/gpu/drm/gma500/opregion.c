@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/acpi.h>
 #include "psb_drv.h"
 #include "psb_irq.h"
@@ -31,8 +9,8 @@
 
 #define OPREGION_HEADER_OFFSET 0
 #define OPREGION_ACPI_OFFSET   0x100
-#define   ACPI_CLID 0x01ac /* current lid state indicator */
-#define   ACPI_CDCK 0x01b0 /* current docking state indicator */
+#define   ACPI_CLID 0x01ac  
+#define   ACPI_CDCK 0x01b0  
 #define OPREGION_SWSCI_OFFSET  0x200
 #define OPREGION_ASLE_OFFSET   0x300
 #define OPREGION_VBT_OFFSET    0x400
@@ -53,90 +31,90 @@ struct opregion_header {
 	u8 reserved[164];
 } __packed;
 
-/* OpRegion mailbox #1: public ACPI methods */
+ 
 struct opregion_acpi {
-	u32 drdy;	/* driver readiness */
-	u32 csts;	/* notification status */
-	u32 cevt;	/* current event */
+	u32 drdy;	 
+	u32 csts;	 
+	u32 cevt;	 
 	u8 rsvd1[20];
-	u32 didl[8];	/* supported display devices ID list */
-	u32 cpdl[8];	/* currently presented display list */
-	u32 cadl[8];	/* currently active display list */
-	u32 nadl[8];	/* next active devices list */
-	u32 aslp;	/* ASL sleep time-out */
-	u32 tidx;	/* toggle table index */
-	u32 chpd;	/* current hotplug enable indicator */
-	u32 clid;	/* current lid state*/
-	u32 cdck;	/* current docking state */
-	u32 sxsw;	/* Sx state resume */
-	u32 evts;	/* ASL supported events */
-	u32 cnot;	/* current OS notification */
-	u32 nrdy;	/* driver status */
+	u32 didl[8];	 
+	u32 cpdl[8];	 
+	u32 cadl[8];	 
+	u32 nadl[8];	 
+	u32 aslp;	 
+	u32 tidx;	 
+	u32 chpd;	 
+	u32 clid;	 
+	u32 cdck;	 
+	u32 sxsw;	 
+	u32 evts;	 
+	u32 cnot;	 
+	u32 nrdy;	 
 	u8 rsvd2[60];
 } __packed;
 
-/* OpRegion mailbox #2: SWSCI */
+ 
 struct opregion_swsci {
-	/*FIXME: add it later*/
+	 
 } __packed;
 
-/* OpRegion mailbox #3: ASLE */
+ 
 struct opregion_asle {
-	u32 ardy;	/* driver readiness */
-	u32 aslc;	/* ASLE interrupt command */
-	u32 tche;	/* technology enabled indicator */
-	u32 alsi;	/* current ALS illuminance reading */
-	u32 bclp;	/* backlight brightness to set */
-	u32 pfit;	/* panel fitting state */
-	u32 cblv;	/* current brightness level */
-	u16 bclm[20];	/* backlight level duty cycle mapping table */
-	u32 cpfm;	/* current panel fitting mode */
-	u32 epfm;	/* enabled panel fitting modes */
-	u8 plut[74];	/* panel LUT and identifier */
-	u32 pfmb;	/* PWM freq and min brightness */
+	u32 ardy;	 
+	u32 aslc;	 
+	u32 tche;	 
+	u32 alsi;	 
+	u32 bclp;	 
+	u32 pfit;	 
+	u32 cblv;	 
+	u16 bclm[20];	 
+	u32 cpfm;	 
+	u32 epfm;	 
+	u8 plut[74];	 
+	u32 pfmb;	 
 	u8 rsvd[102];
 } __packed;
 
-/* ASLE irq request bits */
+ 
 #define ASLE_SET_ALS_ILLUM     (1 << 0)
 #define ASLE_SET_BACKLIGHT     (1 << 1)
 #define ASLE_SET_PFIT          (1 << 2)
 #define ASLE_SET_PWM_FREQ      (1 << 3)
 #define ASLE_REQ_MSK           0xf
 
-/* response bits of ASLE irq request */
+ 
 #define ASLE_ALS_ILLUM_FAILED   (1<<10)
 #define ASLE_BACKLIGHT_FAILED   (1<<12)
 #define ASLE_PFIT_FAILED        (1<<14)
 #define ASLE_PWM_FREQ_FAILED    (1<<16)
 
-/* ASLE backlight brightness to set */
+ 
 #define ASLE_BCLP_VALID                (1<<31)
 #define ASLE_BCLP_MSK          (~(1<<31))
 
-/* ASLE panel fitting request */
+ 
 #define ASLE_PFIT_VALID         (1<<31)
 #define ASLE_PFIT_CENTER (1<<0)
 #define ASLE_PFIT_STRETCH_TEXT (1<<1)
 #define ASLE_PFIT_STRETCH_GFX (1<<2)
 
-/* response bits of ASLE irq request */
+ 
 #define ASLE_ALS_ILLUM_FAILED	(1<<10)
 #define ASLE_BACKLIGHT_FAILED	(1<<12)
 #define ASLE_PFIT_FAILED	(1<<14)
 #define ASLE_PWM_FREQ_FAILED	(1<<16)
 
-/* ASLE backlight brightness to set */
+ 
 #define ASLE_BCLP_VALID                (1<<31)
 #define ASLE_BCLP_MSK          (~(1<<31))
 
-/* ASLE panel fitting request */
+ 
 #define ASLE_PFIT_VALID         (1<<31)
 #define ASLE_PFIT_CENTER (1<<0)
 #define ASLE_PFIT_STRETCH_TEXT (1<<1)
 #define ASLE_PFIT_STRETCH_GFX (1<<2)
 
-/* PWM frequency and minimum brightness */
+ 
 #define ASLE_PFMB_BRIGHTNESS_MASK (0xff)
 #define ASLE_PFMB_BRIGHTNESS_VALID (1<<8)
 #define ASLE_PFMB_PWM_MASK (0x7ffffe00)
@@ -212,8 +190,7 @@ void psb_intel_opregion_enable_asle(struct drm_device *dev)
 	struct opregion_asle *asle = dev_priv->opregion.asle;
 
 	if (asle && system_opregion ) {
-		/* Don't do this on Medfield or other non PC like devices, they
-		   use the bit for something different altogether */
+		 
 		gma_enable_pipestat(dev_priv, 0, PIPE_LEGACY_BLC_EVENT_ENABLE);
 		gma_enable_pipestat(dev_priv, 1, PIPE_LEGACY_BLC_EVENT_ENABLE);
 
@@ -231,12 +208,7 @@ void psb_intel_opregion_enable_asle(struct drm_device *dev)
 static int psb_intel_opregion_video_event(struct notifier_block *nb,
 					  unsigned long val, void *data)
 {
-	/* The only video events relevant to opregion are 0x80. These indicate
-	   either a docking event, lid switch or display switch request. In
-	   Linux, these are handled by the dock, button and video drivers.
-	   We might want to fix the video driver to be opregion-aware in
-	   future, but right now we just indicate to the firmware that the
-	   request has been handled */
+	 
 
 	struct opregion_acpi *acpi;
 
@@ -262,9 +234,7 @@ void psb_intel_opregion_init(struct drm_device *dev)
 		return;
 
 	if (opregion->acpi) {
-		/* Notify BIOS we are ready to handle ACPI video ext notifs.
-		 * Right now, all the events are handled by the ACPI video
-		 * module. We don't actually need to do anything with them. */
+		 
 		opregion->acpi->csts = 0;
 		opregion->acpi->drdy = 1;
 
@@ -290,7 +260,7 @@ void psb_intel_opregion_fini(struct drm_device *dev)
 
 	cancel_work_sync(&opregion->asle_work);
 
-	/* just clear all opregion memory pointers now */
+	 
 	iounmap(opregion->header);
 	opregion->header = NULL;
 	opregion->acpi = NULL;

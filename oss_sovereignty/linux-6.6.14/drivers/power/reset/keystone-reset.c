@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI keystone reboot driver
- *
- * Copyright (C) 2014 Texas Instruments Incorporated. https://www.ti.com/
- *
- * Author: Ivan Khoronzhuk <ivan.khoronzhuk@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -39,11 +33,7 @@
 static int rspll_offset;
 static struct regmap *pllctrl_regs;
 
-/**
- * rsctrl_enable_rspll_write - enable access to RSCTRL, RSCFG
- * To be able to access to RSCTRL, RSCFG registers
- * we have to write a key before
- */
+ 
 static inline int rsctrl_enable_rspll_write(void)
 {
 	return regmap_update_bits(pllctrl_regs, rspll_offset + RSCTRL_RG,
@@ -53,10 +43,10 @@ static inline int rsctrl_enable_rspll_write(void)
 static int rsctrl_restart_handler(struct notifier_block *this,
 				  unsigned long mode, void *cmd)
 {
-	/* enable write access to RSTCTRL */
+	 
 	rsctrl_enable_rspll_write();
 
-	/* reset the SOC */
+	 
 	regmap_update_bits(pllctrl_regs, rspll_offset + RSCTRL_RG,
 			   RSCTRL_RESET_MASK, 0);
 
@@ -88,7 +78,7 @@ static int rsctrl_probe(struct platform_device *pdev)
 	if (!np)
 		return -ENODEV;
 
-	/* get regmaps */
+	 
 	pllctrl_regs = syscon_regmap_lookup_by_phandle(np, "ti,syscon-pll");
 	if (IS_ERR(pllctrl_regs))
 		return PTR_ERR(pllctrl_regs);
@@ -109,7 +99,7 @@ static int rsctrl_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* set soft/hard reset */
+	 
 	val = of_property_read_bool(np, "ti,soft-reset");
 	val = val ? RSCFG_RSTYPE_SOFT : RSCFG_RSTYPE_HARD;
 
@@ -121,12 +111,12 @@ static int rsctrl_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* disable a reset isolation for all module clocks */
+	 
 	ret = regmap_write(pllctrl_regs, rspll_offset + RSISO_RG, 0);
 	if (ret)
 		return ret;
 
-	/* enable a reset for watchdogs from wdt-list */
+	 
 	for (i = 0; i < WDT_MUX_NUMBER; i++) {
 		ret = of_property_read_u32_index(np, "ti,wdt-list", i, &val);
 		if (ret == -EOVERFLOW && !i) {

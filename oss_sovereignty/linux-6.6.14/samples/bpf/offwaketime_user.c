@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -14,7 +13,7 @@
 
 #define PRINT_RAW_ADDR 0
 
-/* counts, stackmap */
+ 
 static int map_fd[2];
 
 static void print_ksym(__u64 addr)
@@ -113,7 +112,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

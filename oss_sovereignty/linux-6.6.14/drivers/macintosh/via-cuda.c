@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device driver for the Cuda and Egret system controllers found on PowerMacs
- * and 68k Macs.
- *
- * The Cuda or Egret is a 6805 microcontroller interfaced to the 6522 VIA.
- * This MCU controls system power, Parameter RAM, Real Time Clock and the
- * Apple Desktop Bus (ADB) that connects to the keyboard and mouse.
- *
- * Copyright (C) 1996 Paul Mackerras.
- */
+
+ 
 #include <linux/stdarg.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -35,62 +26,47 @@
 static volatile unsigned char __iomem *via;
 static DEFINE_SPINLOCK(cuda_lock);
 
-/* VIA registers - spaced 0x200 bytes apart */
-#define RS		0x200		/* skip between registers */
-#define B		0		/* B-side data */
-#define A		RS		/* A-side data */
-#define DIRB		(2*RS)		/* B-side direction (1=output) */
-#define DIRA		(3*RS)		/* A-side direction (1=output) */
-#define T1CL		(4*RS)		/* Timer 1 ctr/latch (low 8 bits) */
-#define T1CH		(5*RS)		/* Timer 1 counter (high 8 bits) */
-#define T1LL		(6*RS)		/* Timer 1 latch (low 8 bits) */
-#define T1LH		(7*RS)		/* Timer 1 latch (high 8 bits) */
-#define T2CL		(8*RS)		/* Timer 2 ctr/latch (low 8 bits) */
-#define T2CH		(9*RS)		/* Timer 2 counter (high 8 bits) */
-#define SR		(10*RS)		/* Shift register */
-#define ACR		(11*RS)		/* Auxiliary control register */
-#define PCR		(12*RS)		/* Peripheral control register */
-#define IFR		(13*RS)		/* Interrupt flag register */
-#define IER		(14*RS)		/* Interrupt enable register */
-#define ANH		(15*RS)		/* A-side data, no handshake */
+ 
+#define RS		0x200		 
+#define B		0		 
+#define A		RS		 
+#define DIRB		(2*RS)		 
+#define DIRA		(3*RS)		 
+#define T1CL		(4*RS)		 
+#define T1CH		(5*RS)		 
+#define T1LL		(6*RS)		 
+#define T1LH		(7*RS)		 
+#define T2CL		(8*RS)		 
+#define T2CH		(9*RS)		 
+#define SR		(10*RS)		 
+#define ACR		(11*RS)		 
+#define PCR		(12*RS)		 
+#define IFR		(13*RS)		 
+#define IER		(14*RS)		 
+#define ANH		(15*RS)		 
 
-/*
- * When the Cuda design replaced the Egret, some signal names and
- * logic sense changed. They all serve the same purposes, however.
- *
- *   VIA pin       |  Egret pin
- * ----------------+------------------------------------------
- *   PB3 (input)   |  Transceiver session   (active low)
- *   PB4 (output)  |  VIA full              (active high)
- *   PB5 (output)  |  System session        (active high)
- *
- *   VIA pin       |  Cuda pin
- * ----------------+------------------------------------------
- *   PB3 (input)   |  Transfer request      (active low)
- *   PB4 (output)  |  Byte acknowledge      (active low)
- *   PB5 (output)  |  Transfer in progress  (active low)
- */
+ 
 
-/* Bits in Port B data register */
-#define TREQ		0x08		/* Transfer request */
-#define TACK		0x10		/* Transfer acknowledge */
-#define TIP		0x20		/* Transfer in progress */
+ 
+#define TREQ		0x08		 
+#define TACK		0x10		 
+#define TIP		0x20		 
 
-/* Bits in ACR */
-#define SR_CTRL		0x1c		/* Shift register control bits */
-#define SR_EXT		0x0c		/* Shift on external clock */
-#define SR_OUT		0x10		/* Shift out if 1 */
+ 
+#define SR_CTRL		0x1c		 
+#define SR_EXT		0x0c		 
+#define SR_OUT		0x10		 
 
-/* Bits in IFR and IER */
-#define IER_SET		0x80		/* set bits in IER */
-#define IER_CLR		0		/* clear bits in IER */
-#define SR_INT		0x04		/* Shift register full/empty */
+ 
+#define IER_SET		0x80		 
+#define IER_CLR		0		 
+#define SR_INT		0x04		 
 
-/* Duration of byte acknowledgement pulse (us) */
+ 
 #define EGRET_TACK_ASSERTED_DELAY	300
 #define EGRET_TACK_NEGATED_DELAY	400
 
-/* Interval from interrupt to start of session (us) */
+ 
 #define EGRET_SESSION_DELAY		450
 
 #ifdef CONFIG_PPC
@@ -180,7 +156,7 @@ static int cuda_probe(void);
 static int cuda_send_request(struct adb_request *req, int sync);
 static int cuda_adb_autopoll(int devs);
 static int cuda_reset_adb_bus(void);
-#endif /* CONFIG_ADB */
+#endif  
 
 static int cuda_init_via(void);
 static void cuda_start(void);
@@ -201,7 +177,7 @@ struct adb_driver via_cuda_driver = {
 	.poll         = cuda_poll,
 	.reset_bus    = cuda_reset_adb_bus,
 };
-#endif /* CONFIG_ADB */
+#endif  
 
 #ifdef CONFIG_MAC
 int __init find_via_cuda(void)
@@ -224,7 +200,7 @@ int __init find_via_cuda(void)
 	return 0;
     }
 
-    /* enable autopoll */
+     
     cuda_request(&req, NULL, 3, CUDA_PACKET, CUDA_AUTOPOLL, 1);
     while (!req.complete)
 	cuda_poll();
@@ -265,13 +241,13 @@ int __init find_via_cuda(void)
 	return 0;
     }
 
-    /* Clear and enable interrupts, but only on PPC. On 68K it's done  */
-    /* for us by the main VIA driver in arch/m68k/mac/via.c        */
+     
+     
 
-    out_8(&via[IFR], 0x7f);	/* clear interrupts by writing 1s */
-    out_8(&via[IER], IER_SET|SR_INT); /* enable interrupt from SR */
+    out_8(&via[IFR], 0x7f);	 
+    out_8(&via[IER], IER_SET|SR_INT);  
 
-    /* enable autopoll */
+     
     cuda_request(&req, NULL, 3, CUDA_PACKET, CUDA_AUTOPOLL, 1);
     while (!req.complete)
 	cuda_poll();
@@ -283,7 +259,7 @@ int __init find_via_cuda(void)
     vias = NULL;
     return 0;
 }
-#endif /* !defined CONFIG_MAC */
+#endif  
 
 static int __init via_cuda_start(void)
 {
@@ -330,12 +306,12 @@ cuda_probe(void)
 	return -ENODEV;
     return 0;
 }
-#endif /* CONFIG_ADB */
+#endif  
 
 static int __init sync_egret(void)
 {
 	if (TREQ_asserted(in_8(&via[B]))) {
-		/* Complete the inbound transfer */
+		 
 		assert_TIP_and_TACK();
 		while (1) {
 			negate_TACK();
@@ -347,13 +323,13 @@ static int __init sync_egret(void)
 		}
 		negate_TIP_and_TACK();
 	} else if (in_8(&via[B]) & TIP) {
-		/* Terminate the outbound transfer */
+		 
 		negate_TACK();
 		assert_TACK();
 		mdelay(1);
 		negate_TIP_and_TACK();
 	}
-	/* Clear shift register interrupt */
+	 
 	if (in_8(&via[IFR]) & SR_INT)
 		(void)in_8(&via[SR]);
 	return 0;
@@ -375,41 +351,41 @@ static int
 __init cuda_init_via(void)
 {
 #ifdef CONFIG_PPC
-    out_8(&via[IER], 0x7f);					/* disable interrupts from VIA */
+    out_8(&via[IER], 0x7f);					 
     (void)in_8(&via[IER]);
 #else
-    out_8(&via[IER], SR_INT);					/* disable SR interrupt from VIA */
+    out_8(&via[IER], SR_INT);					 
 #endif
 
-    out_8(&via[DIRB], (in_8(&via[DIRB]) | TACK | TIP) & ~TREQ);	/* TACK & TIP out */
-    out_8(&via[ACR], (in_8(&via[ACR]) & ~SR_CTRL) | SR_EXT);	/* SR data in */
-    (void)in_8(&via[SR]);					/* clear any left-over data */
+    out_8(&via[DIRB], (in_8(&via[DIRB]) | TACK | TIP) & ~TREQ);	 
+    out_8(&via[ACR], (in_8(&via[ACR]) & ~SR_CTRL) | SR_EXT);	 
+    (void)in_8(&via[SR]);					 
 
     if (mcu_is_egret)
 	return sync_egret();
 
     negate_TIP_and_TACK();
 
-    /* delay 4ms and then clear any pending interrupt */
+     
     mdelay(4);
     (void)in_8(&via[SR]);
     out_8(&via[IFR], SR_INT);
 
-    /* sync with the CUDA - assert TACK without TIP */
+     
     assert_TACK();
 
-    /* wait for the CUDA to assert TREQ in response */
+     
     WAIT_FOR(TREQ_asserted(in_8(&via[B])), "CUDA response to sync");
 
-    /* wait for the interrupt and then clear it */
+     
     WAIT_FOR(in_8(&via[IFR]) & SR_INT, "CUDA response to sync (2)");
     (void)in_8(&via[SR]);
     out_8(&via[IFR], SR_INT);
 
-    /* finish the sync by negating TACK */
+     
     negate_TACK();
 
-    /* wait for the CUDA to negate TREQ and the corresponding interrupt */
+     
     WAIT_FOR(!TREQ_asserted(in_8(&via[B])), "CUDA response to sync (3)");
     WAIT_FOR(in_8(&via[IFR]) & SR_INT, "CUDA response to sync (4)");
     (void)in_8(&via[SR]);
@@ -419,7 +395,7 @@ __init cuda_init_via(void)
 }
 
 #ifdef CONFIG_ADB
-/* Send an ADB command */
+ 
 static int
 cuda_send_request(struct adb_request *req, int sync)
 {
@@ -444,7 +420,7 @@ cuda_send_request(struct adb_request *req, int sync)
 }
 
 
-/* Enable/disable autopolling */
+ 
 static int
 cuda_adb_autopoll(int devs)
 {
@@ -459,7 +435,7 @@ cuda_adb_autopoll(int devs)
     return 0;
 }
 
-/* Reset adb bus - how do we do this?? */
+ 
 static int
 cuda_reset_adb_bus(void)
 {
@@ -468,14 +444,14 @@ cuda_reset_adb_bus(void)
     if ((via == NULL) || !cuda_fully_inited)
 	return -ENXIO;
 
-    cuda_request(&req, NULL, 2, ADB_PACKET, 0);		/* maybe? */
+    cuda_request(&req, NULL, 2, ADB_PACKET, 0);		 
     while (!req.complete)
 	cuda_poll();
     return 0;
 }
-#endif /* CONFIG_ADB */
+#endif  
 
-/* Construct and send a cuda request */
+ 
 int
 cuda_request(struct adb_request *req, void (*done)(struct adb_request *),
 	     int nbytes, ...)
@@ -531,14 +507,14 @@ cuda_write(struct adb_request *req)
 static void
 cuda_start(void)
 {
-    /* assert cuda_state == idle */
+     
     if (current_req == NULL)
 	return;
     data_index = 0;
     if (TREQ_asserted(in_8(&via[B])))
-	return;			/* a byte is coming in from the CUDA */
+	return;			 
 
-    /* set the shift register to shift out and send a byte */
+     
     out_8(&via[ACR], in_8(&via[ACR]) | SR_OUT);
     out_8(&via[SR], current_req->data[data_index++]);
     if (mcu_is_egret)
@@ -570,11 +546,7 @@ cuda_interrupt(int irq, void *arg)
     
     spin_lock_irqsave(&cuda_lock, flags);
 
-    /* On powermacs, this handler is registered for the VIA IRQ. But they use
-     * just the shift register IRQ -- other VIA interrupt sources are disabled.
-     * On m68k macs, the VIA IRQ sources are dispatched individually. Unless
-     * we are polling, the shift register IRQ flag has already been cleared.
-     */
+     
 
 #ifdef CONFIG_MAC
     if (!arg)
@@ -592,7 +564,7 @@ cuda_interrupt(int irq, void *arg)
 
     switch (cuda_state) {
     case idle:
-	/* System controller has unsolicited data for us */
+	 
 	(void)in_8(&via[SR]);
 idle_state:
 	assert_TIP();
@@ -602,7 +574,7 @@ idle_state:
 	break;
 
     case awaiting_reply:
-	/* System controller has reply data for us */
+	 
 	(void)in_8(&via[SR]);
 	assert_TIP();
 	cuda_state = reading;
@@ -612,12 +584,12 @@ idle_state:
 
     case sent_first_byte:
 	if (TREQ_asserted(status)) {
-	    /* collision */
+	     
 	    out_8(&via[ACR], in_8(&via[ACR]) & ~SR_OUT);
 	    (void)in_8(&via[SR]);
 	    negate_TIP_and_TACK();
 	    cuda_state = idle;
-	    /* Egret does not raise an "aborted" interrupt */
+	     
 	    if (mcu_is_egret)
 		goto idle_state;
 	} else {
@@ -641,7 +613,7 @@ idle_state:
 	    } else {
 		current_req = req->next;
 		complete = 1;
-		/* not sure about this */
+		 
 		cuda_state = idle;
 		cuda_start();
 	    }
@@ -663,10 +635,10 @@ idle_state:
 	if (!TREQ_asserted(status) || full) {
 	    if (mcu_is_egret)
 		assert_TACK();
-	    /* that's all folks */
+	     
 	    negate_TIP_and_TACK();
 	    cuda_state = read_done;
-	    /* Egret does not raise a "read done" interrupt */
+	     
 	    if (mcu_is_egret)
 		goto read_done_state;
 	} else {
@@ -683,12 +655,12 @@ read_done_state:
 	    req = current_req;
 	    req->reply_len = reply_ptr - req->reply;
 	    if (req->data[0] == ADB_PACKET) {
-		/* Have to adjust the reply from ADB commands */
+		 
 		if (req->reply_len <= 2 || (req->reply[1] & 2) != 0) {
-		    /* the 0x2 bit indicates no response */
+		     
 		    req->reply_len = 0;
 		} else {
-		    /* leave just the command and result bytes in the reply */
+		     
 		    req->reply_len -= 2;
 		    memmove(req->reply, req->reply + 2, req->reply_len);
 		}
@@ -697,13 +669,7 @@ read_done_state:
 	    complete = 1;
 	    reading_reply = 0;
 	} else {
-	    /* This is tricky. We must break the spinlock to call
-	     * cuda_input. However, doing so means we might get
-	     * re-entered from another CPU getting an interrupt
-	     * or calling cuda_poll(). I ended up using the stack
-	     * (it's only for 16 bytes) and moving the actual
-	     * call to cuda_input to outside of the lock.
-	     */
+	     
 	    ibuf_len = reply_ptr - cuda_rbuf;
 	    memcpy(ibuf, cuda_rbuf, ibuf_len);
 	}
@@ -724,9 +690,7 @@ read_done_state:
     	void (*done)(struct adb_request *) = req->done;
     	mb();
     	req->complete = 1;
-    	/* Here, we assume that if the request has a done member, the
-    	 * struct request will survive to setting req->complete to 1
-    	 */
+    	 
     	if (done)
 		(*done)(req);
     }
@@ -748,16 +712,14 @@ cuda_input(unsigned char *buf, int nb)
 		return;
 	    }
 	}
-#endif /* CONFIG_XMON */
+#endif  
 #ifdef CONFIG_ADB
 	adb_input(buf+2, nb-2, buf[1] & 0x40);
-#endif /* CONFIG_ADB */
+#endif  
 	break;
 
     case TIMER_PACKET:
-	/* Egret sends these periodically. Might be useful as a 'heartbeat'
-	 * to trigger a recovery for the VIA shift register errata.
-	 */
+	 
 	break;
 
     default:
@@ -766,7 +728,7 @@ cuda_input(unsigned char *buf, int nb)
     }
 }
 
-/* Offset between Unix time (1970-based) and Mac time (1904-based) */
+ 
 #define RTC_OFFSET	2082844800
 
 time64_t cuda_get_time(void)

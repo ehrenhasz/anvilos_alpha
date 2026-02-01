@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains the procedures for the handling of select and poll
- *
- * Created for Linux based loosely upon Mathius Lattner's minix
- * patches by Peter MacDonald. Heavily edited by Linus.
- *
- *  4 February 1994
- *     COFF/ELF binary emulation. If the process has the STICKY_TIMEOUTS
- *     flag set in its personality we do *not* modify the given timeout
- *     parameter to reflect time remaining.
- *
- *  24 January 2000
- *     Changed sys_poll()/do_poll() to use PAGE_SIZE chunk-based allocation 
- *     of fds to overcome nfds < 16390 descriptors limit (Tigran Aivazian).
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/kernel.h>
@@ -23,7 +9,7 @@
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/poll.h>
-#include <linux/personality.h> /* for STICKY_TIMEOUTS */
+#include <linux/personality.h>  
 #include <linux/file.h>
 #include <linux/fdtable.h>
 #include <linux/fs.h>
@@ -36,17 +22,7 @@
 #include <linux/uaccess.h>
 
 
-/*
- * Estimate expected accuracy in ns from a timeval.
- *
- * After quite a bit of churning around, we've settled on
- * a simple thing of taking 0.1% of the timeout as the
- * slack, with a cap of 100 msec.
- * "nice" tasks get a 0.5% slack instead.
- *
- * Consider this comment an open invitation to come up with even
- * better solutions..
- */
+ 
 
 #define MAX_SLACK	(100 * NSEC_PER_MSEC)
 
@@ -78,9 +54,7 @@ u64 select_estimate_accuracy(struct timespec64 *tv)
 	u64 ret;
 	struct timespec64 now;
 
-	/*
-	 * Realtime tasks get a slack of 0 for obvious reasons.
-	 */
+	 
 
 	if (rt_task(current))
 		return 0;
@@ -104,18 +78,7 @@ struct poll_table_page {
 #define POLL_TABLE_FULL(table) \
 	((unsigned long)((table)->entry+1) > PAGE_SIZE + (unsigned long)(table))
 
-/*
- * Ok, Peter made a complicated, but straightforward multiple_wait() function.
- * I have rewritten this, taking some shortcuts: This code may not be easy to
- * follow, but it should be free of race-conditions, and it's practical. If you
- * understand what I'm doing here, then you understand how the linux
- * sleep/wakeup mechanism works.
- *
- * Two very simple procedures, poll_wait() and poll_freewait() make all the
- * work.  poll_wait() is an inline-function defined in <linux/poll.h>,
- * as all select/poll functions have to call it to add an entry to the
- * poll table.
- */
+ 
 static void __pollwait(struct file *filp, wait_queue_head_t *wait_address,
 		       poll_table *p);
 
@@ -187,24 +150,11 @@ static int __pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *k
 	struct poll_wqueues *pwq = wait->private;
 	DECLARE_WAITQUEUE(dummy_wait, pwq->polling_task);
 
-	/*
-	 * Although this function is called under waitqueue lock, LOCK
-	 * doesn't imply write barrier and the users expect write
-	 * barrier semantics on wakeup functions.  The following
-	 * smp_wmb() is equivalent to smp_wmb() in try_to_wake_up()
-	 * and is paired with smp_store_mb() in poll_schedule_timeout.
-	 */
+	 
 	smp_wmb();
 	pwq->triggered = 1;
 
-	/*
-	 * Perform the default wake up operation using a dummy
-	 * waitqueue.
-	 *
-	 * TODO: This is hacky but there currently is no interface to
-	 * pass in @sync.  @sync is scheduled to be removed and once
-	 * that happens, wake_up_process() can be used directly.
-	 */
+	 
 	return default_wake_function(&dummy_wait, mode, sync, key);
 }
 
@@ -218,7 +168,7 @@ static int pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *key
 	return __pollwake(wait, mode, sync, key);
 }
 
-/* Add a new entry */
+ 
 static void __pollwait(struct file *filp, wait_queue_head_t *wait_address,
 				poll_table *p)
 {
@@ -244,33 +194,13 @@ static int poll_schedule_timeout(struct poll_wqueues *pwq, int state,
 		rc = schedule_hrtimeout_range(expires, slack, HRTIMER_MODE_ABS);
 	__set_current_state(TASK_RUNNING);
 
-	/*
-	 * Prepare for the next iteration.
-	 *
-	 * The following smp_store_mb() serves two purposes.  First, it's
-	 * the counterpart rmb of the wmb in pollwake() such that data
-	 * written before wake up is always visible after wake up.
-	 * Second, the full barrier guarantees that triggered clearing
-	 * doesn't pass event check of the next iteration.  Note that
-	 * this problem doesn't exist for the first iteration as
-	 * add_wait_queue() has full barrier semantics.
-	 */
+	 
 	smp_store_mb(pwq->triggered, 0);
 
 	return rc;
 }
 
-/**
- * poll_select_set_timeout - helper function to setup the timeout value
- * @to:		pointer to timespec64 variable for the final timeout
- * @sec:	seconds (from user space)
- * @nsec:	nanoseconds (from user space)
- *
- * Note, we do not use a timespec for the user space value here, That
- * way we can use the function for timeval and compat interfaces as well.
- *
- * Returns -EINVAL if sec/nsec are not normalized. Otherwise 0.
- */
+ 
 int poll_select_set_timeout(struct timespec64 *to, time64_t sec, long nsec)
 {
 	struct timespec64 ts = {.tv_sec = sec, .tv_nsec = nsec};
@@ -278,7 +208,7 @@ int poll_select_set_timeout(struct timespec64 *to, time64_t sec, long nsec)
 	if (!timespec64_valid(&ts))
 		return -EINVAL;
 
-	/* Optimize for the zero timeout value here */
+	 
 	if (!sec && !nsec) {
 		to->tv_sec = to->tv_nsec = 0;
 	} else {
@@ -309,7 +239,7 @@ static int poll_select_finish(struct timespec64 *end_time,
 	if (current->personality & STICKY_TIMEOUTS)
 		goto sticky;
 
-	/* No update for zero timeout */
+	 
 	if (!end_time->tv_sec && !end_time->tv_nsec)
 		return ret;
 
@@ -353,13 +283,7 @@ static int poll_select_finish(struct timespec64 *end_time,
 	default:
 		BUG();
 	}
-	/*
-	 * If an application puts its timeval in read-only memory, we
-	 * don't want the Linux-specific update to the timeval to
-	 * cause a fault after the select has completed
-	 * successfully. However, because we're not updating the
-	 * timeval, we can't restart the system call.
-	 */
+	 
 
 sticky:
 	if (ret == -ERESTARTNOHAND)
@@ -367,25 +291,19 @@ sticky:
 	return ret;
 }
 
-/*
- * Scalable version of the fd_set.
- */
+ 
 
 typedef struct {
 	unsigned long *in, *out, *ex;
 	unsigned long *res_in, *res_out, *res_ex;
 } fd_set_bits;
 
-/*
- * How many longwords for "nr" bits?
- */
+ 
 #define FDS_BITPERLONG	(8*sizeof(long))
 #define FDS_LONGS(nr)	(((nr)+FDS_BITPERLONG-1)/FDS_BITPERLONG)
 #define FDS_BYTES(nr)	(FDS_LONGS(nr)*sizeof(long))
 
-/*
- * Use "unsigned long" accesses to let user-mode fd_set's be long-aligned.
- */
+ 
 static inline
 int get_fd_set(unsigned long nr, void __user *ufdset, unsigned long *fdset)
 {
@@ -424,7 +342,7 @@ static int max_select_fd(unsigned long n, fd_set_bits *fds)
 	int max;
 	struct fdtable *fdt;
 
-	/* handle last in-complete long-word first */
+	 
 	set = ~(~0UL << (n & (BITS_PER_LONG-1)));
 	n /= BITS_PER_LONG;
 	fdt = files_fdtable(current->files);
@@ -554,15 +472,12 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
 					retval++;
 					wait->_qproc = NULL;
 				}
-				/* got something, stop busy polling */
+				 
 				if (retval) {
 					can_busy_loop = false;
 					busy_flag = 0;
 
-				/*
-				 * only remember a returned
-				 * POLL_BUSY_LOOP if we asked for it
-				 */
+				 
 				} else if (busy_flag & mask)
 					can_busy_loop = true;
 
@@ -583,7 +498,7 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
 			break;
 		}
 
-		/* only if found POLL_BUSY_LOOP sockets && not out of time */
+		 
 		if (can_busy_loop && !need_resched()) {
 			if (!busy_start) {
 				busy_start = busy_loop_current_time();
@@ -594,11 +509,7 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
 		}
 		busy_flag = 0;
 
-		/*
-		 * If this is the first loop and we have a timeout
-		 * given, then we convert to ktime_t and set the to
-		 * pointer to the expiry value.
-		 */
+		 
 		if (end_time && !to) {
 			expire = timespec64_to_ktime(*end_time);
 			to = &expire;
@@ -614,14 +525,7 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
 	return retval;
 }
 
-/*
- * We can actually return ERESTARTSYS instead of EINTR, but I'd
- * like to be certain this leads to no problems. So I return
- * EINTR just for safety.
- *
- * Update: ERESTARTSYS breaks at least the xview clock binary, so
- * I'm trying ERESTARTNOHAND which restart only when you want to.
- */
+ 
 int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
 			   fd_set __user *exp, struct timespec64 *end_time)
 {
@@ -630,14 +534,14 @@ int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
 	int ret, max_fds;
 	size_t size, alloc_size;
 	struct fdtable *fdt;
-	/* Allocate small arguments on the stack to save memory and be faster */
+	 
 	long stack_fds[SELECT_STACK_ALLOC/sizeof(long)];
 
 	ret = -EINVAL;
 	if (n < 0)
 		goto out_nofds;
 
-	/* max_fds can increase, so grab it once to avoid race */
+	 
 	rcu_read_lock();
 	fdt = files_fdtable(current->files);
 	max_fds = fdt->max_fds;
@@ -645,15 +549,11 @@ int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
 	if (n > max_fds)
 		n = max_fds;
 
-	/*
-	 * We need 6 bitmaps (in/out/ex for both incoming and outgoing),
-	 * since we used fdset we need to allocate memory in units of
-	 * long-words. 
-	 */
+	 
 	size = FDS_BYTES(n);
 	bits = stack_fds;
 	if (size > sizeof(stack_fds) / 6) {
-		/* Not enough space in on-stack array; must use kmalloc */
+		 
 		ret = -ENOMEM;
 		if (size > (SIZE_MAX / 6))
 			goto out_nofds;
@@ -764,12 +664,7 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
 	return poll_select_finish(&end_time, tsp, type, ret);
 }
 
-/*
- * Most architectures can't handle 7-argument syscalls. So we provide a
- * 6-argument version where the sixth argument is a pointer to a structure
- * which has a pointer to the sigset_t itself followed by a size_t containing
- * the sigset size.
- */
+ 
 struct sigset_argpack {
 	sigset_t __user *p;
 	size_t size;
@@ -778,7 +673,7 @@ struct sigset_argpack {
 static inline int get_sigset_argpack(struct sigset_argpack *to,
 				     struct sigset_argpack __user *from)
 {
-	// the path is hot enough for overhead of copy_from_user() to matter
+	 
 	if (from) {
 		if (!user_read_access_begin(from, sizeof(*from)))
 			return -EFAULT;
@@ -845,13 +740,7 @@ struct poll_list {
 
 #define POLLFD_PER_PAGE  ((PAGE_SIZE-sizeof(struct poll_list)) / sizeof(struct pollfd))
 
-/*
- * Fish for pollable events on the pollfd->fd file descriptor. We're only
- * interested in events matching the pollfd->events mask, and the result
- * matching that mask is both recorded in pollfd->revents and returned. The
- * pwait poll_table will be used by the fd-provided poll handler for waiting,
- * if pwait->_qproc is non-NULL.
- */
+ 
 static inline __poll_t do_pollfd(struct pollfd *pollfd, poll_table *pwait,
 				     bool *can_busy_poll,
 				     __poll_t busy_flag)
@@ -867,17 +756,17 @@ static inline __poll_t do_pollfd(struct pollfd *pollfd, poll_table *pwait,
 	if (!f.file)
 		goto out;
 
-	/* userland u16 ->events contains POLL... bitmap */
+	 
 	filter = demangle_poll(pollfd->events) | EPOLLERR | EPOLLHUP;
 	pwait->_key = filter | busy_flag;
 	mask = vfs_poll(f.file, pwait);
 	if (mask & busy_flag)
 		*can_busy_poll = true;
-	mask &= filter;		/* Mask out unneeded events. */
+	mask &= filter;		 
 	fdput(f);
 
 out:
-	/* ... and so does ->revents */
+	 
 	pollfd->revents = mangle_poll(mask);
 	return mask;
 }
@@ -892,7 +781,7 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 	__poll_t busy_flag = net_busy_loop_on() ? POLL_BUSY_LOOP : 0;
 	unsigned long busy_start = 0;
 
-	/* Optimise the no-wait case */
+	 
 	if (end_time && !end_time->tv_sec && !end_time->tv_nsec) {
 		pt->_qproc = NULL;
 		timed_out = 1;
@@ -911,27 +800,18 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 			pfd = walk->entries;
 			pfd_end = pfd + walk->len;
 			for (; pfd != pfd_end; pfd++) {
-				/*
-				 * Fish for events. If we found one, record it
-				 * and kill poll_table->_qproc, so we don't
-				 * needlessly register any other waiters after
-				 * this. They'll get immediately deregistered
-				 * when we break out and return.
-				 */
+				 
 				if (do_pollfd(pfd, pt, &can_busy_loop,
 					      busy_flag)) {
 					count++;
 					pt->_qproc = NULL;
-					/* found something, stop busy polling */
+					 
 					busy_flag = 0;
 					can_busy_loop = false;
 				}
 			}
 		}
-		/*
-		 * All waiters have already been registered, so don't provide
-		 * a poll_table->_qproc to them on the next loop iteration.
-		 */
+		 
 		pt->_qproc = NULL;
 		if (!count) {
 			count = wait->error;
@@ -941,7 +821,7 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 		if (count || timed_out)
 			break;
 
-		/* only if found POLL_BUSY_LOOP sockets && not out of time */
+		 
 		if (can_busy_loop && !need_resched()) {
 			if (!busy_start) {
 				busy_start = busy_loop_current_time();
@@ -952,11 +832,7 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 		}
 		busy_flag = 0;
 
-		/*
-		 * If this is the first loop and we have a timeout
-		 * given, then we convert to ktime_t and set the to
-		 * pointer to the expiry value.
-		 */
+		 
 		if (end_time && !to) {
 			expire = timespec64_to_ktime(*end_time);
 			to = &expire;
@@ -976,9 +852,7 @@ static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 {
 	struct poll_wqueues table;
 	int err = -EFAULT, fdcount, len;
-	/* Allocate small arguments on the stack to save memory and be
-	   faster - use long to make sure the buffer is aligned properly
-	   on 64 bit archs to avoid unaligned access */
+	 
 	long stack_pps[POLL_STACK_ALLOC/sizeof(long)];
 	struct poll_list *const head = (struct poll_list *)stack_pps;
  	struct poll_list *walk = head;
@@ -1152,10 +1026,7 @@ SYSCALL_DEFINE5(ppoll_time32, struct pollfd __user *, ufds, unsigned int, nfds,
 #ifdef CONFIG_COMPAT
 #define __COMPAT_NFDBITS       (8 * sizeof(compat_ulong_t))
 
-/*
- * Ooo, nasty.  We need here to frob 32-bit unsigned longs to
- * 64-bit unsigned longs.
- */
+ 
 static
 int compat_get_fd_set(unsigned long nr, compat_ulong_t __user *ufdset,
 			unsigned long *fdset)
@@ -1178,19 +1049,9 @@ int compat_set_fd_set(unsigned long nr, compat_ulong_t __user *ufdset,
 }
 
 
-/*
- * This is a virtual copy of sys_select from fs/select.c and probably
- * should be compared to it from time to time
- */
+ 
 
-/*
- * We can actually return ERESTARTSYS instead of EINTR, but I'd
- * like to be certain this leads to no problems. So I return
- * EINTR just for safety.
- *
- * Update: ERESTARTSYS breaks at least the xview clock binary, so
- * I'm trying ERESTARTNOHAND which restart only when you want to.
- */
+ 
 static int compat_core_sys_select(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
 	struct timespec64 *end_time)
@@ -1204,7 +1065,7 @@ static int compat_core_sys_select(int n, compat_ulong_t __user *inp,
 	if (n < 0)
 		goto out_nofds;
 
-	/* max_fds can increase, so grab it once to avoid race */
+	 
 	rcu_read_lock();
 	fdt = files_fdtable(current->files);
 	max_fds = fdt->max_fds;
@@ -1212,11 +1073,7 @@ static int compat_core_sys_select(int n, compat_ulong_t __user *inp,
 	if (n > max_fds)
 		n = max_fds;
 
-	/*
-	 * We need 6 bitmaps (in/out/ex for both incoming and outgoing),
-	 * since we used fdset we need to allocate memory in units of
-	 * long-words.
-	 */
+	 
 	size = FDS_BYTES(n);
 	bits = stack_fds;
 	if (size > sizeof(stack_fds) / 6) {
@@ -1421,7 +1278,7 @@ COMPAT_SYSCALL_DEFINE5(ppoll_time32, struct pollfd __user *, ufds,
 }
 #endif
 
-/* New compat syscall for 64 bit time_t*/
+ 
 COMPAT_SYSCALL_DEFINE5(ppoll_time64, struct pollfd __user *, ufds,
 	unsigned int,  nfds, struct __kernel_timespec __user *, tsp,
 	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)

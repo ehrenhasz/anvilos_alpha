@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * WM831x clock control
- *
- * Copyright 2011-2 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -92,7 +86,7 @@ static int wm831x_fll_prepare(struct clk_hw *hw)
 	if (ret != 0)
 		dev_crit(wm831x->dev, "Failed to enable FLL: %d\n", ret);
 
-	/* wait 2-3 ms for new frequency taking effect */
+	 
 	usleep_range(2000, 3000);
 
 	return ret;
@@ -180,7 +174,7 @@ static u8 wm831x_fll_get_parent(struct clk_hw *hw)
 	struct wm831x *wm831x = clkdata->wm831x;
 	int ret;
 
-	/* AUTO mode is always clocked from the crystal */
+	 
 	ret = wm831x_reg_read(wm831x, WM831X_CLOCK_CONTROL_2);
 	if (ret < 0) {
 		dev_err(wm831x->dev, "Unable to read CLOCK_CONTROL_2: %d\n",
@@ -354,7 +348,7 @@ static int wm831x_clk_probe(struct platform_device *pdev)
 
 	clkdata->wm831x = wm831x;
 
-	/* XTAL_ENA can only be set via OTP/InstantConfig so just read once */
+	 
 	ret = wm831x_reg_read(wm831x, WM831X_CLOCK_CONTROL_2);
 	if (ret < 0) {
 		dev_err(wm831x->dev, "Unable to read CLOCK_CONTROL_2: %d\n",
@@ -392,7 +386,7 @@ static struct platform_driver wm831x_clk_driver = {
 
 module_platform_driver(wm831x_clk_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("WM831x clock driver");
 MODULE_LICENSE("GPL");

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA Region - Support for FPGA programming under Linux
- *
- *  Copyright (C) 2013-2016 Altera Corporation
- *  Copyright (C) 2017 Intel Corporation
- */
+
+ 
 #include <linux/fpga/fpga-bridge.h>
 #include <linux/fpga/fpga-mgr.h>
 #include <linux/fpga/fpga-region.h>
@@ -32,17 +27,7 @@ fpga_region_class_find(struct device *start, const void *data,
 }
 EXPORT_SYMBOL_GPL(fpga_region_class_find);
 
-/**
- * fpga_region_get - get an exclusive reference to an fpga region
- * @region: FPGA Region struct
- *
- * Caller should call fpga_region_put() when done with region.
- *
- * Return:
- * * fpga_region struct if successful.
- * * -EBUSY if someone already has a reference to the region.
- * * -ENODEV if can't take parent driver module refcount.
- */
+ 
 static struct fpga_region *fpga_region_get(struct fpga_region *region)
 {
 	struct device *dev = &region->dev;
@@ -64,11 +49,7 @@ static struct fpga_region *fpga_region_get(struct fpga_region *region)
 	return region;
 }
 
-/**
- * fpga_region_put - release a reference to a region
- *
- * @region: FPGA region
- */
+ 
 static void fpga_region_put(struct fpga_region *region)
 {
 	struct device *dev = &region->dev;
@@ -80,20 +61,7 @@ static void fpga_region_put(struct fpga_region *region)
 	mutex_unlock(&region->mutex);
 }
 
-/**
- * fpga_region_program_fpga - program FPGA
- *
- * @region: FPGA region
- *
- * Program an FPGA using fpga image info (region->info).
- * If the region has a get_bridges function, the exclusive reference for the
- * bridges will be held if programming succeeds.  This is intended to prevent
- * reprogramming the region until the caller considers it safe to do so.
- * The caller will need to call fpga_bridges_put() before attempting to
- * reprogram the region.
- *
- * Return: 0 for success or negative error code.
- */
+ 
 int fpga_region_program_fpga(struct fpga_region *region)
 {
 	struct device *dev = &region->dev;
@@ -112,10 +80,7 @@ int fpga_region_program_fpga(struct fpga_region *region)
 		goto err_put_region;
 	}
 
-	/*
-	 * In some cases, we already have a list of bridges in the
-	 * fpga region struct.  Or we don't have any bridges.
-	 */
+	 
 	if (region->get_bridges) {
 		ret = region->get_bridges(region);
 		if (ret) {
@@ -180,13 +145,7 @@ static struct attribute *fpga_region_attrs[] = {
 };
 ATTRIBUTE_GROUPS(fpga_region);
 
-/**
- * fpga_region_register_full - create and register an FPGA Region device
- * @parent: device parent
- * @info: parameters for FPGA Region
- *
- * Return: struct fpga_region or ERR_PTR()
- */
+ 
 struct fpga_region *
 fpga_region_register_full(struct device *parent, const struct fpga_region_info *info)
 {
@@ -243,18 +202,7 @@ err_free:
 }
 EXPORT_SYMBOL_GPL(fpga_region_register_full);
 
-/**
- * fpga_region_register - create and register an FPGA Region device
- * @parent: device parent
- * @mgr: manager that programs this region
- * @get_bridges: optional function to get bridges to a list
- *
- * This simple version of the register function should be sufficient for most users.
- * The fpga_region_register_full() function is available for users that need to
- * pass additional, optional parameters.
- *
- * Return: struct fpga_region or ERR_PTR()
- */
+ 
 struct fpga_region *
 fpga_region_register(struct device *parent, struct fpga_manager *mgr,
 		     int (*get_bridges)(struct fpga_region *))
@@ -268,12 +216,7 @@ fpga_region_register(struct device *parent, struct fpga_manager *mgr,
 }
 EXPORT_SYMBOL_GPL(fpga_region_register);
 
-/**
- * fpga_region_unregister - unregister an FPGA region
- * @region: FPGA region
- *
- * This function is intended for use in an FPGA region driver's remove function.
- */
+ 
 void fpga_region_unregister(struct fpga_region *region)
 {
 	device_unregister(&region->dev);
@@ -294,11 +237,7 @@ static const struct class fpga_region_class = {
 	.dev_release = fpga_region_dev_release,
 };
 
-/**
- * fpga_region_init - creates the fpga_region class.
- *
- * Return: 0 on success or ERR_PTR() on error.
- */
+ 
 static int __init fpga_region_init(void)
 {
 	return class_register(&fpga_region_class);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip PolarFire SoC (MPFS) system controller driver
- *
- * Copyright (c) 2020-2021 Microchip Corporation. All rights reserved.
- *
- * Author: Conor Dooley <conor.dooley@microchip.com>
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kref.h>
@@ -18,10 +11,7 @@
 #include <linux/platform_device.h>
 #include <soc/microchip/mpfs.h>
 
-/*
- * This timeout must be long, as some services (example: image authentication)
- * take significant time to complete
- */
+ 
 #define MPFS_SYS_CTRL_TIMEOUT_MS 30000
 
 static DEFINE_MUTEX(transaction_lock);
@@ -50,17 +40,7 @@ int mpfs_blocking_transaction(struct mpfs_sys_controller *sys_controller, struct
 		goto out;
 	}
 
-	/*
-	 * Unfortunately, the system controller will only deliver an interrupt
-	 * if a service succeeds. mbox_send_message() will block until the busy
-	 * flag is gone. If the busy flag is gone but no interrupt has arrived
-	 * to trigger the rx callback then the service can be deemed to have
-	 * failed.
-	 * The caller can then interrogate msg::response::resp_status to
-	 * determine the cause of the failure.
-	 * mbox_send_message() returns positive integers in the success path, so
-	 * ret needs to be cleared if we do get an interrupt.
-	 */
+	 
 	if (!wait_for_completion_timeout(&sys_controller->c, timeout)) {
 		ret = -EBADMSG;
 		dev_warn(sys_controller->client.dev, "MPFS sys controller service failed\n");

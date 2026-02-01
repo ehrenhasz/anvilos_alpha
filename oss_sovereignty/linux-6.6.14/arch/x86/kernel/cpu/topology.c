@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Check for extended topology enumeration cpuid leaf 0xb and if it
- * exists, use it for populating initial_apicid and cpu topology
- * detection.
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <asm/apic.h>
@@ -12,10 +8,10 @@
 
 #include "cpu.h"
 
-/* leaf 0xb SMT level */
+ 
 #define SMT_LEVEL	0
 
-/* extended topology sub-leaf types */
+ 
 #define INVALID_TYPE	0
 #define SMT_TYPE	1
 #define CORE_TYPE	2
@@ -29,9 +25,7 @@ unsigned int __max_die_per_package __read_mostly = 1;
 EXPORT_SYMBOL(__max_die_per_package);
 
 #ifdef CONFIG_SMP
-/*
- * Check if given CPUID extended topology "leaf" is implemented
- */
+ 
 static int check_extended_topology_leaf(int leaf)
 {
 	unsigned int eax, ebx, ecx, edx;
@@ -43,9 +37,7 @@ static int check_extended_topology_leaf(int leaf)
 
 	return 0;
 }
-/*
- * Return best CPUID Extended Topology Leaf supported
- */
+ 
 static int detect_extended_topology_leaf(struct cpuinfo_x86 *c)
 {
 	if (c->cpuid_level >= 0x1f) {
@@ -75,20 +67,14 @@ int detect_extended_topology_early(struct cpuinfo_x86 *c)
 	set_cpu_cap(c, X86_FEATURE_XTOPOLOGY);
 
 	cpuid_count(leaf, SMT_LEVEL, &eax, &ebx, &ecx, &edx);
-	/*
-	 * initial apic id, which also represents 32-bit extended x2apic id.
-	 */
+	 
 	c->initial_apicid = edx;
 	smp_num_siblings = max_t(int, smp_num_siblings, LEVEL_MAX_SIBLINGS(ebx));
 #endif
 	return 0;
 }
 
-/*
- * Check for extended topology enumeration cpuid leaf, and if it
- * exists, use it for populating initial_apicid and cpu topology
- * detection.
- */
+ 
 int detect_extended_topology(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_SMP
@@ -104,9 +90,7 @@ int detect_extended_topology(struct cpuinfo_x86 *c)
 	if (leaf < 0)
 		return -1;
 
-	/*
-	 * Populate HT related information from sub-leaf level 0.
-	 */
+	 
 	cpuid_count(leaf, SMT_LEVEL, &eax, &ebx, &ecx, &edx);
 	c->initial_apicid = edx;
 	core_level_siblings = LEVEL_MAX_SIBLINGS(ebx);
@@ -119,9 +103,7 @@ int detect_extended_topology(struct cpuinfo_x86 *c)
 	while (true) {
 		cpuid_count(leaf, sub_index, &eax, &ebx, &ecx, &edx);
 
-		/*
-		 * Check for the Core type in the implemented sub leaves.
-		 */
+		 
 		if (LEAFB_SUBTYPE(ecx) == CORE_TYPE) {
 			core_level_siblings = LEVEL_MAX_SIBLINGS(ebx);
 			core_plus_mask_width = BITS_SHIFT_NEXT_LEVEL(eax);
@@ -156,9 +138,7 @@ int detect_extended_topology(struct cpuinfo_x86 *c)
 
 	c->phys_proc_id = apic->phys_pkg_id(c->initial_apicid,
 				pkg_mask_width);
-	/*
-	 * Reinit the apicid, now that we have extended initial_apicid.
-	 */
+	 
 	c->apicid = apic->phys_pkg_id(c->initial_apicid, 0);
 
 	c->x86_max_cores = (core_level_siblings / smp_num_siblings);

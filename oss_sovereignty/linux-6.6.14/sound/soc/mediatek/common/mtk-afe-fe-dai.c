@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtk-afe-fe-dais.c  --  Mediatek afe fe dai operator
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Garlic Tseng <garlic.tseng@mediatek.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -49,18 +44,13 @@ int mtk_afe_fe_startup(struct snd_pcm_substream *substream,
 
 	snd_pcm_hw_constraint_step(substream->runtime, 0,
 				   SNDRV_PCM_HW_PARAM_BUFFER_BYTES, 16);
-	/* enable agent */
+	 
 	mtk_regmap_update_bits(afe->regmap, memif->data->agent_disable_reg,
 			       1, 0, memif->data->agent_disable_shift);
 
 	snd_soc_set_runtime_hwparams(substream, mtk_afe_hardware);
 
-	/*
-	 * Capture cannot use ping-pong buffer since hw_ptr at IRQ may be
-	 * smaller than period_size due to AFE's internal buffer.
-	 * This easily leads to overrun when avail_min is period_size.
-	 * One more period can hold the possible unread buffer.
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
 		int periods_max = mtk_afe_hardware->periods_max;
 
@@ -78,12 +68,12 @@ int mtk_afe_fe_startup(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		dev_err(afe->dev, "snd_pcm_hw_constraint_integer failed\n");
 
-	/* dynamic allocate irq to memif */
+	 
 	if (memif->irq_usage < 0) {
 		int irq_id = mtk_dynamic_irq_acquire(afe);
 
 		if (irq_id != afe->irqs_size) {
-			/* link */
+			 
 			memif->irq_usage = irq_id;
 		} else {
 			dev_err(afe->dev, "%s() error: no more asys irq\n",
@@ -142,7 +132,7 @@ int mtk_afe_fe_hw_params(struct snd_pcm_substream *substream,
 	memset_io((void __force __iomem *)substream->runtime->dma_area, 0,
 		  substream->runtime->dma_bytes);
 
-	/* set addr */
+	 
 	ret = mtk_memif_set_addr(afe, id,
 				 substream->runtime->dma_area,
 				 substream->runtime->dma_addr,
@@ -153,7 +143,7 @@ int mtk_afe_fe_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* set channel */
+	 
 	ret = mtk_memif_set_channel(afe, id, channels);
 	if (ret) {
 		dev_err(afe->dev, "%s(), error, id %d, set channel %d, ret %d\n",
@@ -161,7 +151,7 @@ int mtk_afe_fe_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* set rate */
+	 
 	ret = mtk_memif_set_rate_substream(substream, id, rate);
 	if (ret) {
 		dev_err(afe->dev, "%s(), error, id %d, set rate %d, ret %d\n",
@@ -169,7 +159,7 @@ int mtk_afe_fe_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* set format */
+	 
 	ret = mtk_memif_set_format(afe, id, format);
 	if (ret) {
 		dev_err(afe->dev, "%s(), error, id %d, set format %d, ret %d\n",
@@ -219,12 +209,12 @@ int mtk_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 			return ret;
 		}
 
-		/* set irq counter */
+		 
 		mtk_regmap_update_bits(afe->regmap, irq_data->irq_cnt_reg,
 				       irq_data->irq_cnt_maskbit, counter,
 				       irq_data->irq_cnt_shift);
 
-		/* set irq fs */
+		 
 		fs = afe->irq_fs(substream, runtime->rate);
 
 		if (fs < 0)
@@ -234,7 +224,7 @@ int mtk_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 				       irq_data->irq_fs_maskbit, fs,
 				       irq_data->irq_fs_shift);
 
-		/* enable interrupt */
+		 
 		mtk_regmap_update_bits(afe->regmap, irq_data->irq_en_reg,
 				       1, 1, irq_data->irq_en_shift);
 
@@ -247,10 +237,10 @@ int mtk_afe_fe_trigger(struct snd_pcm_substream *substream, int cmd,
 				__func__, id, ret);
 		}
 
-		/* disable interrupt */
+		 
 		mtk_regmap_update_bits(afe->regmap, irq_data->irq_en_reg,
 				       1, 0, irq_data->irq_en_shift);
-		/* and clear pending IRQ */
+		 
 		mtk_regmap_write(afe->regmap, irq_data->irq_clr_reg,
 				 1 << irq_data->irq_clr_shift);
 		return ret;
@@ -412,10 +402,10 @@ int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
 	memif->dma_addr = dma_addr;
 	memif->dma_bytes = dma_bytes;
 
-	/* start */
+	 
 	mtk_regmap_write(afe->regmap, memif->data->reg_ofs_base,
 			 phys_buf_addr);
-	/* end */
+	 
 	if (memif->data->reg_ofs_end)
 		mtk_regmap_write(afe->regmap,
 				 memif->data->reg_ofs_end,
@@ -426,7 +416,7 @@ int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
 				 AFE_BASE_END_OFFSET,
 				 phys_buf_addr + dma_bytes - 1);
 
-	/* set start, end, upper 32 bits */
+	 
 	if (memif->data->reg_ofs_base_msb) {
 		mtk_regmap_write(afe->regmap, memif->data->reg_ofs_base_msb,
 				 phys_buf_addr_upper_32);
@@ -435,15 +425,12 @@ int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
 				 phys_buf_addr_upper_32);
 	}
 
-	/*
-	 * set MSB to 33-bit, for memif address
-	 * only for memif base address, if msb_end_reg exists
-	 */
+	 
 	if (memif->data->msb_reg)
 		mtk_regmap_update_bits(afe->regmap, memif->data->msb_reg,
 				       1, msb_at_bit33, memif->data->msb_shift);
 
-	/* set MSB to 33-bit, for memif end address */
+	 
 	if (memif->data->msb_end_reg)
 		mtk_regmap_update_bits(afe->regmap, memif->data->msb_end_reg,
 				       1, msb_at_bit33,
@@ -475,7 +462,7 @@ int mtk_memif_set_channel(struct mtk_base_afe *afe,
 	else
 		mono = (channel == 1) ? 1 : 0;
 
-	/* for specific configuration of memif mono mode */
+	 
 	if (memif->data->int_odd_flag_reg)
 		mtk_regmap_update_bits(afe->regmap,
 				       memif->data->int_odd_flag_reg,
@@ -552,7 +539,7 @@ int mtk_memif_set_format(struct mtk_base_afe *afe,
 	int hd_audio = 0;
 	int hd_align = 0;
 
-	/* set hd mode */
+	 
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 	case SNDRV_PCM_FORMAT_U16_LE:

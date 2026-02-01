@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// em-terratec.h - Keytable for em_terratec Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -43,7 +43,7 @@ static struct rc_map_list em_terratec_map = {
 	.map = {
 		.scan     = em_terratec,
 		.size     = ARRAY_SIZE(em_terratec),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_EM_TERRATEC,
 	}
 };

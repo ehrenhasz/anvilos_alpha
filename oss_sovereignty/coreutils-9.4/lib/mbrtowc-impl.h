@@ -1,23 +1,6 @@
-/* Convert multibyte character to wide character.
-   Copyright (C) 1999-2002, 2005-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2008.  */
-
-/* This file contains the body of the mbrtowc and mbrtoc32 functions,
-   when GNULIB_defined_mbstate_t is defined.  */
+ 
 
   char *pstate = (char *)ps;
 
@@ -31,7 +14,7 @@
   if (n == 0)
     return (size_t)(-2);
 
-  /* Here n > 0.  */
+   
 
   if (pstate == NULL)
     pstate = internal_state;
@@ -73,22 +56,18 @@
         return (size_t)(-1);
       }
 
-    /* Here m > 0.  */
+     
 
     enc = locale_encoding_classification ();
 
-    if (enc == enc_utf8) /* UTF-8 */
+    if (enc == enc_utf8)  
       {
-        /* Achieve
-             - multi-thread safety and
-             - the ability to produce wide character values > WCHAR_MAX
-           by not calling mbtowc() at all.  */
+         
 #include "mbrtowc-impl-utf8.h"
       }
     else
       {
-        /* The hidden internal state of mbtowc would make this function not
-           multi-thread safe.  Achieve multi-thread safety through a lock.  */
+         
         wchar_t wc;
         res = mbtowc_with_lock (&wc, p, m);
 
@@ -101,27 +80,15 @@
             goto success;
           }
 
-        /* mbtowc does not distinguish between invalid and incomplete multibyte
-           sequences.  But mbrtowc needs to make this distinction.
-           There are two possible approaches:
-             - Use iconv() and its return value.
-             - Use built-in knowledge about the possible encodings.
-           Given the low quality of implementation of iconv() on the systems
-           that lack mbrtowc(), we use the second approach.
-           The possible encodings are:
-             - 8-bit encodings,
-             - EUC-JP, EUC-KR, GB2312, EUC-TW, BIG5, GB18030, SJIS,
-             - UTF-8 (already handled above).
-           Use specialized code for each.  */
+         
         if (m >= 4 || m >= MB_CUR_MAX)
           goto invalid;
-        /* Here MB_CUR_MAX > 1 and 0 < m < 4.  */
+         
         switch (enc)
           {
-          /* As a reference for this code, you can use the GNU libiconv
-             implementation.  Look for uses of the RET_TOOFEW macro.  */
+           
 
-          case enc_eucjp: /* EUC-JP */
+          case enc_eucjp:  
             {
               if (m == 1)
                 {
@@ -145,7 +112,7 @@
               goto invalid;
             }
 
-          case enc_94: /* EUC-KR, GB2312, BIG5 */
+          case enc_94:  
             {
               if (m == 1)
                 {
@@ -157,7 +124,7 @@
               goto invalid;
             }
 
-          case enc_euctw: /* EUC-TW */
+          case enc_euctw:  
             {
               if (m == 1)
                 {
@@ -166,7 +133,7 @@
                   if ((c >= 0xa1 && c < 0xff) || c == 0x8e)
                     goto incomplete;
                 }
-              else /* m == 2 || m == 3 */
+              else  
                 {
                   unsigned char c = (unsigned char) p[0];
 
@@ -176,7 +143,7 @@
               goto invalid;
             }
 
-          case enc_gb18030: /* GB18030 */
+          case enc_gb18030:  
             {
               if (m == 1)
                 {
@@ -185,7 +152,7 @@
                   if ((c >= 0x90 && c <= 0xe3) || (c >= 0xf8 && c <= 0xfe))
                     goto incomplete;
                 }
-              else /* m == 2 || m == 3 */
+              else  
                 {
                   unsigned char c = (unsigned char) p[0];
 
@@ -197,7 +164,7 @@
                         {
                           if (m == 2)
                             goto incomplete;
-                          else /* m == 3 */
+                          else  
                             {
                               unsigned char c3 = (unsigned char) p[2];
 
@@ -210,7 +177,7 @@
               goto invalid;
             }
 
-          case enc_sjis: /* SJIS */
+          case enc_sjis:  
             {
               if (m == 1)
                 {
@@ -224,14 +191,13 @@
             }
 
           default:
-            /* An unknown multibyte encoding.  */
+             
             goto incomplete;
           }
       }
 
    success:
-    /* res >= 0 is the corrected return value of
-       mbtowc_with_lock (&wc, p, m).  */
+     
     if (nstate >= (res > 0 ? res : 1))
       abort ();
     res -= nstate;
@@ -241,7 +207,7 @@
    incomplete:
     {
       size_t k = nstate;
-      /* Here 0 <= k < m < 4.  */
+       
       pstate[++k] = s[0];
       if (k < m)
         {
@@ -257,6 +223,6 @@
 
    invalid:
     errno = EILSEQ;
-    /* The conversion state is undefined, says POSIX.  */
+     
     return (size_t)(-1);
   }

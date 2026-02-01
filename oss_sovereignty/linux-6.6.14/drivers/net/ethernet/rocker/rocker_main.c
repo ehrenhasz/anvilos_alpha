@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/ethernet/rocker/rocker.c - Rocker switch device driver
- * Copyright (c) 2014-2016 Jiri Pirko <jiri@mellanox.com>
- * Copyright (c) 2014 Scott Feldman <sfeldma@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -119,9 +115,7 @@ static u32 rocker_msix_rx_vector(const struct rocker_port *rocker_port)
 #define rocker_read64(rocker, reg)	\
 	readq((rocker)->hw_addr + (ROCKER_ ## reg))
 
-/*****************************
- * HW basic testing functions
- *****************************/
+ 
 
 static int rocker_reg_test(const struct rocker *rocker)
 {
@@ -303,9 +297,7 @@ free_irq:
 	return err;
 }
 
-/******************************************
- * DMA rings and descriptors manipulations
- ******************************************/
+ 
 
 static u32 __pos_inc(u32 pos, size_t limit)
 {
@@ -372,7 +364,7 @@ rocker_desc_head_get(const struct rocker_dma_ring_info *info)
 
 	desc_info = &info->desc_info[info->head];
 	if (head == info->tail)
-		return NULL; /* ring full */
+		return NULL;  
 	desc_info->tlv_size = 0;
 	return desc_info;
 }
@@ -401,10 +393,10 @@ rocker_desc_tail_get(struct rocker_dma_ring_info *info)
 	struct rocker_desc_info *desc_info;
 
 	if (info->tail == info->head)
-		return NULL; /* nothing to be done between head and tail */
+		return NULL;  
 	desc_info = &info->desc_info[info->tail];
 	if (!rocker_desc_gen(desc_info))
-		return NULL; /* gen bit not set, desc is not ready yet */
+		return NULL;  
 	info->tail = __pos_inc(info->tail, info->size);
 	desc_info->tlv_size = desc_info->desc->tlv_size;
 	return desc_info;
@@ -478,9 +470,7 @@ static void rocker_dma_ring_pass_to_producer(const struct rocker *rocker,
 
 	BUG_ON(info->head || info->tail);
 
-	/* When ring is consumer, we need to advance head for each desc.
-	 * That tells hw that the desc is ready to be used by it.
-	 */
+	 
 	for (i = 0; i < info->size - 1; i++)
 		rocker_desc_head_set(rocker, info, &info->desc_info[i]);
 	rocker_desc_commit(&info->desc_info[i]);
@@ -707,9 +697,7 @@ static int rocker_dma_rx_ring_skb_alloc(const struct rocker_port *rocker_port,
 	size_t buf_len = rocker_port_rx_buf_len(rocker_port);
 	int err;
 
-	/* Ensure that hw will see tlv_size zero in case of an error.
-	 * That tells hw to use another descriptor.
-	 */
+	 
 	rocker_desc_cookie_ptr_set(desc_info, NULL);
 	desc_info->tlv_size = 0;
 
@@ -870,9 +858,7 @@ static void rocker_port_set_enable(const struct rocker_port *rocker_port,
 	rocker_write64(rocker_port->rocker, PORT_PHYS_ENABLE, val);
 }
 
-/********************************
- * Interrupt handler and helpers
- ********************************/
+ 
 
 static irqreturn_t rocker_cmd_irq_handler(int irq, void *dev_id)
 {
@@ -1038,9 +1024,7 @@ static irqreturn_t rocker_rx_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/********************
- * Command interface
- ********************/
+ 
 
 int rocker_cmd_exec(struct rocker_port *rocker_port, bool nowait,
 		    rocker_cmd_prep_cb_t prepare, void *prepare_priv,
@@ -1231,7 +1215,7 @@ rocker_cmd_get_port_settings_phys_name_proc(const struct rocker_port *rocker_por
 	len = min_t(size_t, rocker_tlv_len(attr), name->len);
 	str = rocker_tlv_data(attr);
 
-	/* make sure name only contains alphanumeric characters */
+	 
 	for (i = j = 0; i < len; ++i) {
 		if (isalnum(str[i])) {
 			name->buf[j] = str[i];
@@ -1413,9 +1397,7 @@ int rocker_port_set_learning(struct rocker_port *rocker_port,
 			       &learning, NULL, NULL);
 }
 
-/**********************
- * Worlds manipulation
- **********************/
+ 
 
 static struct rocker_world_ops *rocker_world_ops[] = {
 	&rocker_ofdpa_ops,
@@ -1749,9 +1731,7 @@ static void rocker_world_fib4_abort(struct rocker *rocker)
 		wops->fib4_abort(rocker);
 }
 
-/*****************
- * Net device ops
- *****************/
+ 
 
 static int rocker_port_open(struct net_device *dev)
 {
@@ -2030,9 +2010,7 @@ static const struct net_device_ops rocker_port_netdev_ops = {
 	.ndo_get_port_parent_id		= rocker_port_get_port_parent_id,
 };
 
-/********************
- * swdev interface
- ********************/
+ 
 
 static int rocker_port_attr_set(struct net_device *dev,
 				const struct switchdev_attr *attr)
@@ -2121,7 +2099,7 @@ static void rocker_router_fib_event_work(struct work_struct *work)
 	struct fib_rule *rule;
 	int err;
 
-	/* Protect internal structures from changes */
+	 
 	rtnl_lock();
 	switch (fib_work->event) {
 	case FIB_EVENT_ENTRY_REPLACE:
@@ -2146,7 +2124,7 @@ static void rocker_router_fib_event_work(struct work_struct *work)
 	kfree(fib_work);
 }
 
-/* Called with rcu_read_lock() */
+ 
 static int rocker_router_fib_event(struct notifier_block *nb,
 				   unsigned long event, void *ptr)
 {
@@ -2184,9 +2162,7 @@ static int rocker_router_fib_event(struct notifier_block *nb,
 		}
 
 		memcpy(&fib_work->fen_info, ptr, sizeof(fib_work->fen_info));
-		/* Take referece on fib_info to prevent it from being
-		 * freed while work is queued. Release it afterwards.
-		 */
+		 
 		fib_info_hold(fib_work->fen_info.fi);
 		break;
 	case FIB_EVENT_RULE_ADD:
@@ -2201,9 +2177,7 @@ static int rocker_router_fib_event(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-/********************
- * ethtool interface
- ********************/
+ 
 
 static int
 rocker_port_get_link_ksettings(struct net_device *dev,
@@ -2367,9 +2341,7 @@ static const struct ethtool_ops rocker_port_ethtool_ops = {
 	.set_link_ksettings	= rocker_port_set_link_ksettings,
 };
 
-/*****************
- * NAPI interface
- *****************/
+ 
 
 static struct rocker_port *rocker_port_napi_tx_get(struct napi_struct *napi)
 {
@@ -2384,7 +2356,7 @@ static int rocker_port_poll_tx(struct napi_struct *napi, int budget)
 	u32 credits = 0;
 	int err;
 
-	/* Cleanup tx descriptors */
+	 
 	while ((desc_info = rocker_desc_tail_get(&rocker_port->tx_ring))) {
 		struct sk_buff *skb;
 
@@ -2463,7 +2435,7 @@ static int rocker_port_poll_rx(struct napi_struct *napi, int budget)
 	u32 credits = 0;
 	int err;
 
-	/* Process rx descriptors */
+	 
 	while (credits < budget &&
 	       (desc_info = rocker_desc_tail_get(&rocker_port->rx_ring))) {
 		err = rocker_desc_err(desc_info);
@@ -2494,9 +2466,7 @@ static int rocker_port_poll_rx(struct napi_struct *napi, int budget)
 	return credits;
 }
 
-/*****************
- * PCI driver ops
- *****************/
+ 
 
 static void rocker_carrier_init(const struct rocker_port *rocker_port)
 {
@@ -2579,7 +2549,7 @@ static int rocker_probe_port(struct rocker *rocker, unsigned int port_number)
 
 	dev->features |= NETIF_F_NETNS_LOCAL | NETIF_F_SG;
 
-	/* MTU range: 68 - 9000 */
+	 
 	dev->min_mtu = ROCKER_PORT_MIN_MTU;
 	dev->max_mtu = ROCKER_PORT_MAX_MTU;
 
@@ -2750,7 +2720,7 @@ static void rocker_switchdev_event_work(struct work_struct *work)
 	dev_put(rocker_port->dev);
 }
 
-/* called under rcu_read_lock() */
+ 
 static int rocker_switchdev_event(struct notifier_block *unused,
 				  unsigned long event, void *ptr)
 {
@@ -2787,7 +2757,7 @@ static int rocker_switchdev_event(struct notifier_block *unused,
 
 		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
 				fdb_info->addr);
-		/* Take a reference on the rocker device */
+		 
 		dev_hold(dev);
 		break;
 	default:
@@ -2941,9 +2911,7 @@ static int rocker_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_probe_ports;
 	}
 
-	/* Only FIBs pointing to our own netdevs are programmed into
-	 * the device, so no need to pass a callback.
-	 */
+	 
 	rocker->fib_nb.notifier_call = rocker_router_fib_event;
 	err = register_fib_notifier(&init_net, &rocker->fib_nb, NULL, NULL);
 	if (err)
@@ -3029,9 +2997,7 @@ static struct pci_driver rocker_pci_driver = {
 	.remove		= rocker_remove,
 };
 
-/************************************
- * Net device notifier event handler
- ************************************/
+ 
 
 static bool rocker_port_dev_check_under(const struct net_device *dev,
 					struct rocker *rocker)
@@ -3125,9 +3091,7 @@ static struct notifier_block rocker_netdevice_nb __read_mostly = {
 	.notifier_call = rocker_netdevice_event,
 };
 
-/************************************
- * Net event notifier event handler
- ************************************/
+ 
 
 static int rocker_netevent_event(struct notifier_block *unused,
 				 unsigned long event, void *ptr)
@@ -3159,9 +3123,7 @@ static struct notifier_block rocker_netevent_nb __read_mostly = {
 	.notifier_call = rocker_netevent_event,
 };
 
-/***********************
- * Module init and exit
- ***********************/
+ 
 
 static int __init rocker_module_init(void)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * simple driver for PWM (Pulse Width Modulator) controller
- *
- * Derived from pxa PWM driver by eric miao <eric.miao@marvell.com>
- *
- * Limitations:
- * - When disabled the output is driven to 0 independent of the configured
- *   polarity.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -22,10 +14,10 @@
 #include <linux/pwm.h>
 #include <linux/slab.h>
 
-#define MX3_PWMCR			0x00    /* PWM Control Register */
-#define MX3_PWMSR			0x04    /* PWM Status Register */
-#define MX3_PWMSAR			0x0C    /* PWM Sample Register */
-#define MX3_PWMPR			0x10    /* PWM Period Register */
+#define MX3_PWMCR			0x00     
+#define MX3_PWMSR			0x04     
+#define MX3_PWMSAR			0x0C     
+#define MX3_PWMPR			0x10     
 
 #define MX3_PWMCR_FWM			GENMASK(27, 26)
 #define MX3_PWMCR_STOPEN		BIT(25)
@@ -76,7 +68,7 @@
 
 #define MX3_PWM_SWR_LOOP		5
 
-/* PWMPR register value of 0xffff has the same effect as 0xfffe */
+ 
 #define MX3_PWMPR_MAX			0xfffe
 
 struct pwm_imx27_chip {
@@ -85,11 +77,7 @@ struct pwm_imx27_chip {
 	void __iomem	*mmio_base;
 	struct pwm_chip	chip;
 
-	/*
-	 * The driver cannot read the current duty cycle from the hardware if
-	 * the hardware is disabled. Cache the last programmed duty cycle
-	 * value to return in that case.
-	 */
+	 
 	unsigned int duty_cycle;
 };
 
@@ -153,14 +141,11 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
 	val = readl(imx->mmio_base + MX3_PWMPR);
 	period = val >= MX3_PWMPR_MAX ? MX3_PWMPR_MAX : val;
 
-	/* PWMOUT (Hz) = PWMCLK / (PWMPR + 2) */
+	 
 	tmp = NSEC_PER_SEC * (u64)(period + 2) * prescaler;
 	state->period = DIV_ROUND_UP_ULL(tmp, pwm_clk);
 
-	/*
-	 * PWMSAR can be read only if PWM is enabled. If the PWM is disabled,
-	 * use the cached value.
-	 */
+	 
 	if (state->enabled)
 		val = readl(imx->mmio_base + MX3_PWMSAR);
 	else
@@ -241,19 +226,13 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	duty_cycles = c;
 	duty_cycles /= prescale;
 
-	/*
-	 * according to imx pwm RM, the real period value should be PERIOD
-	 * value in PWMPR plus 2.
-	 */
+	 
 	if (period_cycles > 2)
 		period_cycles -= 2;
 	else
 		period_cycles = 0;
 
-	/*
-	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
-	 * the FIFO if the PWM was disabled and is about to be enabled.
-	 */
+	 
 	if (cstate.enabled) {
 		pwm_imx27_wait_fifo_slot(chip, pwm);
 	} else {
@@ -267,10 +246,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
 	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
 
-	/*
-	 * Store the duty cycle for future reference in cases where the
-	 * MX3_PWMSAR register can't be read (i.e. when the PWM is disabled).
-	 */
+	 
 	imx->duty_cycle = duty_cycles;
 
 	cr = MX3_PWMCR_PRESCALER_SET(prescale) |
@@ -301,7 +277,7 @@ static const struct pwm_ops pwm_imx27_ops = {
 
 static const struct of_device_id pwm_imx27_dt_ids[] = {
 	{ .compatible = "fsl,imx27-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
 
@@ -337,7 +313,7 @@ static int pwm_imx27_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* keep clks on if pwm is running */
+	 
 	pwmcr = readl(imx->mmio_base + MX3_PWMCR);
 	if (!(pwmcr & MX3_PWMCR_EN))
 		pwm_imx27_clk_disable_unprepare(imx);

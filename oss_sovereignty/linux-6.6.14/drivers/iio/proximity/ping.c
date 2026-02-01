@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PING: ultrasonic sensor for distance measuring by using only one GPIOs
- *
- * Copyright (c) 2019 Andreas Klinger <ak@it-klinger.de>
- *
- * For details about the devices see:
- * http://parallax.com/sites/default/files/downloads/28041-LaserPING-2m-Rangefinder-Guide.pdf
- * http://parallax.com/sites/default/files/downloads/28015-PING-Documentation-v1.6.pdf
- *
- * the measurement cycle as timing diagram looks like:
- *
- * GPIO      ___              ________________________
- * ping:  __/   \____________/                        \________________
- *          ^   ^            ^                        ^
- *          |<->|            interrupt                interrupt
- *         udelay(5)         (ts_rising)              (ts_falling)
- *                           |<---------------------->|
- *                           .  pulse time measured   .
- *                           .  --> one round trip of ultra sonic waves
- * ultra                     .                        .
- * sonic            _   _   _.                        .
- * burst: _________/ \_/ \_/ \_________________________________________
- *                                                    .
- * ultra                                              .
- * sonic                                     _   _   _.
- * echo:  __________________________________/ \_/ \_/ \________________
- */
+
+ 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>
@@ -40,11 +14,11 @@
 #include <linux/iio/sysfs.h>
 
 struct ping_cfg {
-	unsigned long	trigger_pulse_us;	/* length of trigger pulse */
-	int		laserping_error;	/* support error code in */
-						/*   pulse width of laser */
-						/*   ping sensors */
-	s64		timeout_ns;		/* timeout in ns */
+	unsigned long	trigger_pulse_us;	 
+	int		laserping_error;	 
+						 
+						 
+	s64		timeout_ns;		 
 };
 
 struct ping_data {
@@ -62,13 +36,13 @@ struct ping_data {
 static const struct ping_cfg pa_ping_cfg = {
 	.trigger_pulse_us	= 5,
 	.laserping_error	= 0,
-	.timeout_ns		= 18500000,	/* 3 meters */
+	.timeout_ns		= 18500000,	 
 };
 
 static const struct ping_cfg pa_laser_ping_cfg = {
 	.trigger_pulse_us	= 5,
 	.laserping_error	= 1,
-	.timeout_ns		= 15500000,	/* 2 meters plus error codes */
+	.timeout_ns		= 15500000,	 
 };
 
 static irqreturn_t ping_handle_irq(int irq, void *dev_id)
@@ -97,10 +71,7 @@ static int ping_read(struct iio_dev *indio_dev)
 	u32 time_ns, distance_mm;
 	struct platform_device *pdev = to_platform_device(data->dev);
 
-	/*
-	 * just one read-echo-cycle can take place at a time
-	 * ==> lock against concurrent reading calls
-	 */
+	 
 	mutex_lock(&data->lock);
 
 	reinit_completion(&data->rising);
@@ -132,7 +103,7 @@ static int ping_read(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* it should not take more than 20 ms until echo is rising */
+	 
 	ret = wait_for_completion_killable_timeout(&data->rising, HZ/50);
 	if (ret < 0)
 		goto err_reset_direction;
@@ -141,7 +112,7 @@ static int ping_read(struct iio_dev *indio_dev)
 		goto err_reset_direction;
 	}
 
-	/* it cannot take more than 50 ms until echo is falling */
+	 
 	ret = wait_for_completion_killable_timeout(&data->falling, HZ/20);
 	if (ret < 0)
 		goto err_reset_direction;
@@ -171,10 +142,7 @@ static int ping_read(struct iio_dev *indio_dev)
 
 	time_ns = dt_ns;
 
-	/*
-	 * read error code of laser ping sensor and give users chance to
-	 * figure out error by using dynamic debugging
-	 */
+	 
 	if (data->cfg->laserping_error) {
 		if ((time_ns > 12500000) && (time_ns <= 13500000)) {
 			dev_dbg(data->dev, "target too close or to far\n");
@@ -190,26 +158,7 @@ static int ping_read(struct iio_dev *indio_dev)
 		}
 	}
 
-	/*
-	 * the speed as function of the temperature is approximately:
-	 *
-	 * speed = 331,5 + 0,6 * Temp
-	 *   with Temp in °C
-	 *   and speed in m/s
-	 *
-	 * use 343,5 m/s as ultrasonic speed at 20 °C here in absence of the
-	 * temperature
-	 *
-	 * therefore:
-	 *             time     343,5     time * 232
-	 * distance = ------ * ------- = ------------
-	 *             10^6         2        1350800
-	 *   with time in ns
-	 *   and distance in mm (one way)
-	 *
-	 * because we limit to 3 meters the multiplication with 232 just
-	 * fits into 32 bit
-	 */
+	 
 	distance_mm = time_ns * 232 / 1350800;
 
 	return distance_mm;
@@ -240,10 +189,7 @@ static int ping_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * maximum resolution in datasheet is 1 mm
-		 * 1 LSB is 1 mm
-		 */
+		 
 		*val = 0;
 		*val2 = 1000;
 		return IIO_VAL_INT_PLUS_MICRO;

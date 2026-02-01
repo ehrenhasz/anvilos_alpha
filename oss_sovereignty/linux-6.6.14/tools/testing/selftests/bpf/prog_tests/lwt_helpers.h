@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __LWT_HELPERS_H
 #define __LWT_HELPERS_H
@@ -68,7 +68,7 @@ static int open_tuntap(const char *dev_name, bool need_mac)
 
 #define ICMP_PAYLOAD_SIZE     100
 
-/* Match an ICMP packet with payload len ICMP_PAYLOAD_SIZE */
+ 
 static int __expect_icmp_ipv4(char *buf, ssize_t len)
 {
 	struct iphdr *ip = (struct iphdr *)buf;
@@ -89,23 +89,16 @@ static int __expect_icmp_ipv4(char *buf, ssize_t len)
 
 typedef int (*filter_t) (char *, ssize_t);
 
-/* wait_for_packet - wait for a packet that matches the filter
- *
- * @fd: tun fd/packet socket to read packet
- * @filter: filter function, returning 1 if matches
- * @timeout: timeout to wait for the packet
- *
- * Returns 1 if a matching packet is read, 0 if timeout expired, -1 on error.
- */
+ 
 static int wait_for_packet(int fd, filter_t filter, struct timeval *timeout)
 {
 	char buf[4096];
-	int max_retry = 5; /* in case we read some spurious packets */
+	int max_retry = 5;  
 	fd_set fds;
 
 	FD_ZERO(&fds);
 	while (max_retry--) {
-		/* Linux modifies timeout arg... So make a copy */
+		 
 		struct timeval copied_timeout = *timeout;
 		ssize_t ret = -1;
 
@@ -136,4 +129,4 @@ static int wait_for_packet(int fd, filter_t filter, struct timeval *timeout)
 	return 0;
 }
 
-#endif /* __LWT_HELPERS_H */
+#endif  

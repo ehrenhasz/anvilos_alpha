@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is the test which covers PCM middle layer data transferring using
- * the virtual pcm test driver (snd-pcmtest).
- *
- * Copyright 2023 Ivan Orlov <ivan.orlov0322@gmail.com>
- */
+
+ 
 #include <string.h>
 #include <alsa/asoundlib.h>
 #include "../kselftest_harness.h"
@@ -159,10 +154,7 @@ FIXTURE_SETUP(pcmtest) {
 	ASSERT_NE(self->card, -1);
 }
 
-/*
- * Here we are trying to send the looped monotonically increasing sequence of bytes to the driver.
- * If our data isn't corrupted, the driver will set the content of 'pc_test' debugfs file to '1'
- */
+ 
 TEST_F(pcmtest, playback) {
 	snd_pcm_t *handle;
 	unsigned char *it;
@@ -198,11 +190,7 @@ TEST_F(pcmtest, playback) {
 	ASSERT_EQ(test_results, 1);
 }
 
-/*
- * Here we test that the virtual alsa driver returns looped and monotonically increasing sequence
- * of bytes. In the interleaved mode the buffer will contain samples in the following order:
- * C0, C1, C2, C3, C0, C1, ...
- */
+ 
 TEST_F(pcmtest, capture) {
 	snd_pcm_t *handle;
 	unsigned char *it;
@@ -234,7 +222,7 @@ TEST_F(pcmtest, capture) {
 	free(samples);
 }
 
-// Test capture in the non-interleaved access mode. The are buffers for each recorded channel
+ 
 TEST_F(pcmtest, ni_capture) {
 	snd_pcm_t *handle;
 	struct pcmtest_test_params params = self->params;
@@ -307,10 +295,7 @@ TEST_F(pcmtest, ni_playback) {
 	free(chan_samples);
 }
 
-/*
- * Here we are testing the custom ioctl definition inside the virtual driver. If it triggers
- * successfully, the driver sets the content of 'ioctl_test' debugfs file to '1'.
- */
+ 
 TEST_F(pcmtest, reset_ioctl) {
 	snd_pcm_t *handle;
 	int test_res;

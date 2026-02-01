@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control.  SMU "satellite" controller sensors.
- *
- * Copyright (C) 2005 Paul Mackerras, IBM Corp. <paulus@samba.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -21,14 +17,14 @@
 
 #define VERSION "1.0"
 
-/* If the cache is older than 800ms we'll refetch it */
+ 
 #define MAX_AGE		msecs_to_jiffies(800)
 
 struct wf_sat {
 	struct kref		ref;
 	int			nr;
 	struct mutex		mutex;
-	unsigned long		last_read; /* jiffies when cache last updated */
+	unsigned long		last_read;  
 	u8			cache[16];
 	struct list_head	sensors;
 	struct i2c_client	*i2c;
@@ -40,7 +36,7 @@ static struct wf_sat *sats[2];
 struct wf_sat_sensor {
 	struct list_head	link;
 	int			index;
-	int			index2;		/* used for power sensors */
+	int			index2;		 
 	int			shift;
 	struct wf_sat		*sat;
 	struct wf_sensor 	sens;
@@ -57,7 +53,7 @@ struct smu_sdbp_header *smu_sat_get_sdb_partition(unsigned int sat_id, int id,
 	u8 *buf;
 	u8 data[4];
 
-	/* TODO: Add the resulting partition to the device-tree */
+	 
 
 	if (sat_id > 1 || (sat = sats[sat_id]) == NULL)
 		return NULL;
@@ -111,7 +107,7 @@ struct smu_sdbp_header *smu_sat_get_sdb_partition(unsigned int sat_id, int id,
 }
 EXPORT_SYMBOL_GPL(smu_sat_get_sdb_partition);
 
-/* refresh the cache */
+ 
 static int wf_sat_read_cache(struct wf_sat *sat)
 {
 	int err;
@@ -153,7 +149,7 @@ static int wf_sat_sensor_get(struct wf_sensor *sr, s32 *value)
 	val = ((sat->cache[i] << 8) + sat->cache[i+1]) << sens->shift;
 	if (sens->index2 >= 0) {
 		i = sens->index2 * 2;
-		/* 4.12 * 8.8 -> 12.20; shift right 4 to get 16.16 */
+		 
 		val = (val * ((sat->cache[i] << 8) + sat->cache[i+1])) >> 4;
 	}
 
@@ -222,12 +218,12 @@ static int wf_sat_probe(struct i2c_client *client)
 		if (reg == NULL || loc == NULL)
 			continue;
 
-		/* the cooked sensors are between 0x30 and 0x37 */
+		 
 		if (*reg < 0x30 || *reg > 0x37)
 			continue;
 		index = *reg - 0x30;
 
-		/* expect location to be CPU [AB][01] ... */
+		 
 		if (strncmp(loc, "CPU ", 4) != 0)
 			continue;
 		chip = loc[4] - 'A';
@@ -258,9 +254,9 @@ static int wf_sat_probe(struct i2c_client *client)
 			name = "cpu-temp";
 			shift = 10;
 		} else
-			continue;	/* hmmm shouldn't happen */
+			continue;	 
 
-		/* the +16 is enough for "cpu-voltage-n" */
+		 
 		sens = kzalloc(sizeof(struct wf_sat_sensor) + 16, GFP_KERNEL);
 		if (sens == NULL) {
 			printk(KERN_ERR "wf_sat_create: couldn't create "
@@ -283,7 +279,7 @@ static int wf_sat_probe(struct i2c_client *client)
 		}
 	}
 
-	/* make the power sensors */
+	 
 	for (core = 0; core < 2; ++core) {
 		if (vsens[core] < 0 || isens[core] < 0)
 			continue;
@@ -321,7 +317,7 @@ static void wf_sat_remove(struct i2c_client *client)
 	struct wf_sat *sat = i2c_get_clientdata(client);
 	struct wf_sat_sensor *sens;
 
-	/* release sensors */
+	 
 	while(!list_empty(&sat->sensors)) {
 		sens = list_first_entry(&sat->sensors,
 					struct wf_sat_sensor, link);

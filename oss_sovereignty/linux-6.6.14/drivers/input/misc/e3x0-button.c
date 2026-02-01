@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, National Instruments Corp. All rights reserved.
- *
- * Driver for NI Ettus Research USRP E3x0 Button Driver
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>

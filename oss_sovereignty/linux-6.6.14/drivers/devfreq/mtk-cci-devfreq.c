@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
@@ -29,7 +27,7 @@ struct mtk_ccifreq_drv {
 	struct clk *inter_clk;
 	int inter_voltage;
 	unsigned long pre_freq;
-	/* Avoid race condition for regulators between notify and policy */
+	 
 	struct mutex reg_lock;
 	struct notifier_block opp_nb;
 	const struct mtk_ccifreq_platform_data *soc_data;
@@ -159,7 +157,7 @@ static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
 		goto out_unlock;
 	}
 
-	/* scale up: set voltage first then freq. */
+	 
 	target_voltage = max(inter_voltage, voltage);
 	if (pre_voltage <= target_voltage) {
 		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
@@ -169,14 +167,14 @@ static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
 		}
 	}
 
-	/* switch the cci clock to intermediate clock source. */
+	 
 	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
 	if (ret) {
 		dev_err(dev, "failed to re-parent cci clock\n");
 		goto out_restore_voltage;
 	}
 
-	/* set the original clock to target rate. */
+	 
 	ret = clk_set_rate(cci_pll, *freq);
 	if (ret) {
 		dev_err(dev, "failed to set cci pll rate: %d\n", ret);
@@ -184,7 +182,7 @@ static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
 		goto out_restore_voltage;
 	}
 
-	/* switch the cci clock back to the original clock source. */
+	 
 	ret = clk_set_parent(drv->cci_clk, cci_pll);
 	if (ret) {
 		dev_err(dev, "failed to re-parent cci clock\n");
@@ -192,10 +190,7 @@ static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
 		goto out_unlock;
 	}
 
-	/*
-	 * If the new voltage is lower than the intermediate voltage or the
-	 * original voltage, scale down to the new voltage.
-	 */
+	 
 	if (voltage < inter_voltage || voltage < pre_voltage) {
 		ret = mtk_ccifreq_set_voltage(drv, voltage);
 		if (ret) {
@@ -230,7 +225,7 @@ static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
 		freq = dev_pm_opp_get_freq(opp);
 
 		mutex_lock(&drv->reg_lock);
-		/* current opp item is changed */
+		 
 		if (freq == drv->pre_freq) {
 			volt = dev_pm_opp_get_voltage(opp);
 			mtk_ccifreq_set_voltage(drv, volt);
@@ -305,11 +300,7 @@ static int mtk_ccifreq_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * We assume min voltage is 0 and tracking target voltage using
-	 * min_volt_shift for each iteration.
-	 * The retry_max is 3 times of expected iteration count.
-	 */
+	 
 	drv->vtrack_max = 3 * DIV_ROUND_UP(max(drv->soc_data->sram_max_volt,
 					       drv->soc_data->proc_max_volt),
 					   drv->soc_data->min_volt_shift);

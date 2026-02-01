@@ -1,37 +1,4 @@
-/*
- * KVMGT - the implementation of Intel mediated pass-through framework for KVM
- *
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Jike Song <jike.song@intel.com>
- *    Xiaoguang Chen <xiaoguang.chen@intel.com>
- *    Eddie Dong <eddie.dong@intel.com>
- *
- * Contributors:
- *    Niu Bing <bing.niu@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- */
+ 
 
 #include <linux/init.h>
 #include <linux/mm.h>
@@ -56,7 +23,7 @@
 MODULE_IMPORT_NS(DMA_BUF);
 MODULE_IMPORT_NS(I915_GVT);
 
-/* helper macros copied from vfio-pci */
+ 
 #define VFIO_PCI_OFFSET_SHIFT   40
 #define VFIO_PCI_OFFSET_TO_INDEX(off)   (off >> VFIO_PCI_OFFSET_SHIFT)
 #define VFIO_PCI_INDEX_TO_OFFSET(index) ((u64)(index) << VFIO_PCI_OFFSET_SHIFT)
@@ -132,7 +99,7 @@ static void gvt_unpin_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
 			 DIV_ROUND_UP(size, PAGE_SIZE));
 }
 
-/* Pin a normal or compound guest page for dma. */
+ 
 static int gvt_pin_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
 		unsigned long size, struct page **page)
 {
@@ -141,10 +108,7 @@ static int gvt_pin_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
 	int npage;
 	int ret;
 
-	/*
-	 * We pin the pages one-by-one to avoid allocating a big arrary
-	 * on stack to hold pfns.
-	 */
+	 
 	for (npage = 0; npage < total_pages; npage++) {
 		dma_addr_t cur_iova = (gfn + npage) << PAGE_SHIFT;
 		struct page *cur_page;
@@ -185,7 +149,7 @@ static int gvt_dma_map_page(struct intel_vgpu *vgpu, unsigned long gfn,
 	if (ret)
 		return ret;
 
-	/* Setup DMA mapping. */
+	 
 	*dma_addr = dma_map_page(dev, page, 0, size, DMA_BIDIRECTIONAL);
 	if (dma_mapping_error(dev, *dma_addr)) {
 		gvt_vgpu_err("DMA mapping failed for pfn 0x%lx, ret %d\n",
@@ -259,7 +223,7 @@ static int __gvt_cache_add(struct intel_vgpu *vgpu, gfn_t gfn,
 	new->size = size;
 	kref_init(&new->ref);
 
-	/* gfn_cache maps gfn to struct gvt_dma. */
+	 
 	link = &vgpu->gfn_cache.rb_node;
 	while (*link) {
 		parent = *link;
@@ -273,7 +237,7 @@ static int __gvt_cache_add(struct intel_vgpu *vgpu, gfn_t gfn,
 	rb_link_node(&new->gfn_node, parent, link);
 	rb_insert_color(&new->gfn_node, &vgpu->gfn_cache);
 
-	/* dma_addr_cache maps dma addr to struct gvt_dma. */
+	 
 	parent = NULL;
 	link = &vgpu->dma_addr_cache.rb_node;
 	while (*link) {
@@ -470,7 +434,7 @@ static int handle_edid_regs(struct intel_vgpu *vgpu,
 			regs->edid_size = data;
 			break;
 		default:
-			/* read-only regs */
+			 
 			gvt_vgpu_err("write read-only EDID region at offset %d\n",
 				offset);
 			return -EPERM;
@@ -558,10 +522,7 @@ int intel_gvt_set_opregion(struct intel_vgpu *vgpu)
 	void *base;
 	int ret;
 
-	/* Each vgpu has its own opregion, although VFIO would create another
-	 * one later. This one is used to expose opregion to VFIO. And the
-	 * other one created by VFIO later, is used by guest actually.
-	 */
+	 
 	base = vgpu_opregion(vgpu)->va;
 	if (!base)
 		return -ENOMEM;
@@ -590,7 +551,7 @@ int intel_gvt_set_edid(struct intel_vgpu *vgpu, int port_num)
 	if (!base)
 		return -ENOMEM;
 
-	/* TODO: Add multi-port and EDID extension block support */
+	 
 	base->vfio_edid_regs.edid_offset = EDID_BLOB_OFFSET;
 	base->vfio_edid_regs.edid_max_size = EDID_SIZE;
 	base->vfio_edid_regs.edid_size = EDID_SIZE;
@@ -730,9 +691,9 @@ static u64 intel_vgpu_get_bar_addr(struct intel_vgpu *vgpu, int bar)
 		break;
 	case PCI_BASE_ADDRESS_MEM_TYPE_32:
 	case PCI_BASE_ADDRESS_MEM_TYPE_1M:
-		/* 1M mem BAR treated as 32-bit BAR */
+		 
 	default:
-		/* mem unknown type treated as 32-bit BAR */
+		 
 		start_hi = 0;
 		break;
 	}
@@ -842,7 +803,7 @@ static bool gtt_entry(struct intel_vgpu *vgpu, loff_t *ppos)
 	struct intel_gvt *gvt = vgpu->gvt;
 	int offset;
 
-	/* Only allow MMIO GGTT entry access */
+	 
 	if (index != PCI_BASE_ADDRESS_0)
 		return false;
 
@@ -864,7 +825,7 @@ static ssize_t intel_vgpu_read(struct vfio_device *vfio_dev, char __user *buf,
 	while (count) {
 		size_t filled;
 
-		/* Only support GGTT entry 8 bytes read */
+		 
 		if (count >= 8 && !(*ppos % 8) &&
 			gtt_entry(vgpu, ppos)) {
 			u64 val;
@@ -939,7 +900,7 @@ static ssize_t intel_vgpu_write(struct vfio_device *vfio_dev,
 	while (count) {
 		size_t filled;
 
-		/* Only support GGTT entry 8 bytes write */
+		 
 		if (count >= 8 && !(*ppos % 8) &&
 			gtt_entry(vgpu, ppos)) {
 			u64 val;
@@ -1117,7 +1078,7 @@ static int intel_vgpu_set_irqs(struct intel_vgpu *vgpu, u32 flags,
 		switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
 		case VFIO_IRQ_SET_ACTION_MASK:
 		case VFIO_IRQ_SET_ACTION_UNMASK:
-			/* XXX Need masking support exported */
+			 
 			break;
 		case VFIO_IRQ_SET_ACTION_TRIGGER:
 			func = intel_vgpu_set_msi_trigger;
@@ -1647,7 +1608,7 @@ int intel_gvt_dma_map_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
 		if (ret)
 			goto err_unmap;
 	} else if (entry->size != size) {
-		/* the same gfn with different size: unmap and re-map */
+		 
 		gvt_dma_unmap_page(vgpu, gfn, entry->dma_addr, entry->size);
 		__gvt_cache_remove_entry(vgpu, entry);
 
@@ -1797,14 +1758,7 @@ static int init_service_thread(struct intel_gvt *gvt)
 	return 0;
 }
 
-/**
- * intel_gvt_clean_device - clean a GVT device
- * @i915: i915 private
- *
- * This function is called at the driver unloading stage, to free the
- * resources owned by a GVT device.
- *
- */
+ 
 static void intel_gvt_clean_device(struct drm_i915_private *i915)
 {
 	struct intel_gvt *gvt = fetch_and_zero(&i915->gvt);
@@ -1829,17 +1783,7 @@ static void intel_gvt_clean_device(struct drm_i915_private *i915)
 	kfree(i915->gvt);
 }
 
-/**
- * intel_gvt_init_device - initialize a GVT device
- * @i915: drm i915 private data
- *
- * This function is called at the initialization stage, to initialize
- * necessary GVT components.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 static int intel_gvt_init_device(struct drm_i915_private *i915)
 {
 	struct intel_gvt *gvt;

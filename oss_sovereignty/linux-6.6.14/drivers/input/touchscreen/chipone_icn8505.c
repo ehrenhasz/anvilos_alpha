@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for ChipOne icn8505 i2c touchscreen controller
- *
- * Copyright (c) 2015-2018 Red Hat Inc.
- *
- * Red Hat authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -20,27 +13,24 @@
 #include <linux/input/touchscreen.h>
 #include <linux/module.h>
 
-/* Normal operation mode defines */
+ 
 #define ICN8505_REG_ADDR_WIDTH		16
 
 #define ICN8505_REG_POWER		0x0004
 #define ICN8505_REG_TOUCHDATA		0x1000
 #define ICN8505_REG_CONFIGDATA		0x8000
 
-/* ICN8505_REG_POWER commands */
+ 
 #define ICN8505_POWER_ACTIVE		0x00
 #define ICN8505_POWER_MONITOR		0x01
 #define ICN8505_POWER_HIBERNATE		0x02
-/*
- * The Android driver uses these to turn on/off the charger filter, but the
- * filter is way too aggressive making e.g. onscreen keyboards unusable.
- */
+ 
 #define ICN8505_POWER_ENA_CHARGER_MODE	0x55
 #define ICN8505_POWER_DIS_CHARGER_MODE	0x66
 
 #define ICN8505_MAX_TOUCHES		10
 
-/* Programming mode defines */
+ 
 #define ICN8505_PROG_I2C_ADDR		0x30
 #define ICN8505_PROG_REG_ADDR_WIDTH	24
 
@@ -50,13 +40,13 @@ struct icn8505_touch {
 	u8 slot;
 	u8 x[2];
 	u8 y[2];
-	u8 pressure;	/* Seems more like finger width then pressure really */
+	u8 pressure;	 
 	u8 event;
-/* The difference between 2 and 3 is unclear */
-#define ICN8505_EVENT_NO_DATA	1 /* No finger seen yet since wakeup */
-#define ICN8505_EVENT_UPDATE1	2 /* New or updated coordinates */
-#define ICN8505_EVENT_UPDATE2	3 /* New or updated coordinates */
-#define ICN8505_EVENT_END	4 /* Finger lifted */
+ 
+#define ICN8505_EVENT_NO_DATA	1  
+#define ICN8505_EVENT_UPDATE1	2  
+#define ICN8505_EVENT_UPDATE2	3  
+#define ICN8505_EVENT_END	4  
 } __packed;
 
 struct icn8505_touch_data {
@@ -114,7 +104,7 @@ static int icn8505_write_xfer(struct i2c_client *client, u16 i2c_addr,
 			      int reg_addr, int reg_addr_width,
 			      const void *data, int len, bool silent)
 {
-	u8 buf[3 + 32]; /* 3 bytes for 24 bit reg-addr + 32 bytes max len */
+	u8 buf[3 + 32];  
 	int i, ret;
 	struct i2c_msg msg = {
 		.addr = i2c_addr,
@@ -190,12 +180,7 @@ static int icn8505_write_prog_reg(struct icn8505_data *icn8505, int reg, u8 val)
 				  ICN8505_PROG_REG_ADDR_WIDTH, &val, 1, false);
 }
 
-/*
- * Note this function uses a number of magic register addresses and values,
- * there are deliberately no defines for these because the algorithm is taken
- * from the icn85xx Android driver and I do not want to make up possibly wrong
- * names for the addresses and/or values.
- */
+ 
 static int icn8505_try_fw_upload(struct icn8505_data *icn8505,
 				 const struct firmware *fw)
 {
@@ -205,7 +190,7 @@ static int icn8505_try_fw_upload(struct icn8505_data *icn8505,
 	u8 buf[4];
 	u32 crc;
 
-	/* Put the controller in programming mode */
+	 
 	error = icn8505_write_prog_reg(icn8505, 0xcc3355, 0x5a);
 	if (error)
 		return error;
@@ -229,12 +214,12 @@ static int icn8505_try_fw_upload(struct icn8505_data *icn8505,
 
 	usleep_range(1000, 5000);
 
-	/* Enable CRC mode */
+	 
 	error = icn8505_write_prog_reg(icn8505, 0x40028, 1);
 	if (error)
 		return error;
 
-	/* Send the firmware to SRAM */
+	 
 	for (offset = 0; offset < fw->size; offset += count) {
 		count = min_t(size_t, fw->size - offset, 32);
 		error = icn8505_write_prog_data(icn8505, offset,
@@ -243,12 +228,12 @@ static int icn8505_try_fw_upload(struct icn8505_data *icn8505,
 			return error;
 	}
 
-	/* Disable CRC mode */
+	 
 	error = icn8505_write_prog_reg(icn8505, 0x40028, 0);
 	if (error)
 		return error;
 
-	/* Get and check length and CRC */
+	 
 	error = icn8505_read_prog_data(icn8505, 0x40034, buf, 2);
 	if (error)
 		return error;
@@ -268,7 +253,7 @@ static int icn8505_try_fw_upload(struct icn8505_data *icn8505,
 		return -EIO;
 	}
 
-	/* Boot controller from SRAM */
+	 
 	error = icn8505_write_prog_reg(icn8505, 0x40400, 0x03);
 	if (error)
 		return error;
@@ -283,18 +268,14 @@ static int icn8505_upload_fw(struct icn8505_data *icn8505)
 	const struct firmware *fw;
 	int i, error;
 
-	/*
-	 * Always load the firmware, even if we don't need it at boot, we
-	 * we may need it at resume. Having loaded it once will make the
-	 * firmware class code cache it at suspend/resume.
-	 */
+	 
 	error = firmware_request_platform(&fw, icn8505->firmware_name, dev);
 	if (error) {
 		dev_err(dev, "Firmware request error %d\n", error);
 		return error;
 	}
 
-	/* Check if the controller is not already up and running */
+	 
 	if (icn8505_read_reg_silent(icn8505, 0x000a) == 0x85)
 		goto success;
 

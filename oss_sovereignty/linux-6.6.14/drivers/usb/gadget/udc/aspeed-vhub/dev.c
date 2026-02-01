@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * aspeed-vhub -- Driver for Aspeed SoC "vHub" USB gadget
- *
- * dev.c - Individual device/gadget management (ie, a port = a gadget)
- *
- * Copyright 2017 IBM Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -49,10 +43,10 @@ static void ast_vhub_dev_enable(struct ast_vhub_dev *d)
 	if (d->enabled)
 		return;
 
-	/* Cleanup EP0 state */
+	 
 	ast_vhub_reset_ep0(d);
 
-	/* Enable device and its EP0 interrupts */
+	 
 	reg = VHUB_DEV_EN_ENABLE_PORT |
 		VHUB_DEV_EN_EP0_IN_ACK_IRQEN |
 		VHUB_DEV_EN_EP0_OUT_ACK_IRQEN |
@@ -61,16 +55,16 @@ static void ast_vhub_dev_enable(struct ast_vhub_dev *d)
 		reg |= VHUB_DEV_EN_SPEED_SEL_HIGH;
 	writel(reg, d->regs + AST_VHUB_DEV_EN_CTRL);
 
-	/* Enable device interrupt in the hub as well */
+	 
 	hmsk = VHUB_IRQ_DEVICE1 << d->index;
 	reg = readl(d->vhub->regs + AST_VHUB_IER);
 	reg |= hmsk;
 	writel(reg, d->vhub->regs + AST_VHUB_IER);
 
-	/* Set EP0 DMA buffer address */
+	 
 	writel(d->ep0.buf_dma, d->regs + AST_VHUB_DEV_EP0_DATA);
 
-	/* Clear stall on all EPs */
+	 
 	for (i = 0; i < d->max_epns; i++) {
 		struct ast_vhub_ep *ep = d->epns[i];
 
@@ -81,7 +75,7 @@ static void ast_vhub_dev_enable(struct ast_vhub_dev *d)
 		}
 	}
 
-	/* Additional cleanups */
+	 
 	d->wakeup_en = false;
 	d->enabled = true;
 }
@@ -93,13 +87,13 @@ static void ast_vhub_dev_disable(struct ast_vhub_dev *d)
 	if (!d->enabled)
 		return;
 
-	/* Disable device interrupt in the hub */
+	 
 	hmsk = VHUB_IRQ_DEVICE1 << d->index;
 	reg = readl(d->vhub->regs + AST_VHUB_IER);
 	reg &= ~hmsk;
 	writel(reg, d->vhub->regs + AST_VHUB_IER);
 
-	/* Then disable device */
+	 
 	writel(0, d->regs + AST_VHUB_DEV_EN_CTRL);
 	d->gadget.speed = USB_SPEED_UNKNOWN;
 	d->enabled = false;
@@ -220,7 +214,7 @@ int ast_vhub_std_dev_request(struct ast_vhub_ep *ep,
 	struct ast_vhub_dev *d = ep->dev;
 	u16 wValue, wIndex;
 
-	/* No driver, we shouldn't be enabled ... */
+	 
 	if (!d->driver || !d->enabled) {
 		EPDBG(ep,
 		      "Device is wrong state driver=%p enabled=%d\n",
@@ -228,13 +222,9 @@ int ast_vhub_std_dev_request(struct ast_vhub_ep *ep,
 		return std_req_stall;
 	}
 
-	/*
-	 * Note: we used to reject/stall requests while suspended,
-	 * we don't do that anymore as we seem to have cases of
-	 * mass storage getting very upset.
-	 */
+	 
 
-	/* First packet, grab speed */
+	 
 	if (d->gadget.speed == USB_SPEED_UNKNOWN) {
 		d->gadget.speed = ep->vhub->speed;
 		if (d->gadget.speed > d->driver->max_speed)
@@ -247,12 +237,12 @@ int ast_vhub_std_dev_request(struct ast_vhub_ep *ep,
 	wIndex = le16_to_cpu(crq->wIndex);
 
 	switch ((crq->bRequestType << 8) | crq->bRequest) {
-		/* SET_ADDRESS */
+		 
 	case DeviceOutRequest | USB_REQ_SET_ADDRESS:
 		ast_vhub_dev_set_address(d, wValue);
 		return std_req_complete;
 
-		/* GET_STATUS */
+		 
 	case DeviceRequest | USB_REQ_GET_STATUS:
 		return ast_vhub_dev_status(d, wIndex, wValue);
 	case InterfaceRequest | USB_REQ_GET_STATUS:
@@ -260,7 +250,7 @@ int ast_vhub_std_dev_request(struct ast_vhub_ep *ep,
 	case EndpointRequest | USB_REQ_GET_STATUS:
 		return ast_vhub_ep_status(d, wIndex, wValue);
 
-		/* SET/CLEAR_FEATURE */
+		 
 	case DeviceOutRequest | USB_REQ_SET_FEATURE:
 		return ast_vhub_dev_feature(d, wIndex, wValue, true);
 	case DeviceOutRequest | USB_REQ_CLEAR_FEATURE:
@@ -285,7 +275,7 @@ static int ast_vhub_udc_wakeup(struct usb_gadget* gadget)
 
 	DDBG(d, "Device initiated wakeup\n");
 
-	/* Wakeup the host */
+	 
 	ast_vhub_hub_wake_all(d->vhub);
 	rc = 0;
  err:
@@ -320,13 +310,10 @@ static int ast_vhub_udc_pullup(struct usb_gadget* gadget, int on)
 
 	DDBG(d, "pullup(%d)\n", on);
 
-	/* Mark disconnected in the hub */
+	 
 	ast_vhub_device_connect(d->vhub, d->index, on);
 
-	/*
-	 * If enabled, nuke all requests if any (there shouldn't be)
-	 * and disable the port. This will clear the address too.
-	 */
+	 
 	if (d->enabled) {
 		ast_vhub_dev_nuke(d);
 		ast_vhub_dev_disable(d);
@@ -347,7 +334,7 @@ static int ast_vhub_udc_start(struct usb_gadget *gadget,
 
 	DDBG(d, "start\n");
 
-	/* We don't do much more until the hub enables us */
+	 
 	d->driver = driver;
 	d->gadget.is_selfpowered = 1;
 
@@ -367,12 +354,7 @@ static struct usb_ep *ast_vhub_udc_match_ep(struct usb_gadget *gadget,
 
 	DDBG(d, "Match EP type %d\n", usb_endpoint_type(desc));
 
-	/*
-	 * First we need to look for an existing unclaimed EP as another
-	 * configuration may have already associated a bunch of EPs with
-	 * this gadget. This duplicates the code in usb_ep_autoconfig_ss()
-	 * unfortunately.
-	 */
+	 
 	list_for_each_entry(u_ep, &gadget->ep_list, ep_list) {
 		if (usb_gadget_ep_match_desc(gadget, u_ep, desc, ss)) {
 			DDBG(d, " -> using existing EP%d\n",
@@ -381,17 +363,13 @@ static struct usb_ep *ast_vhub_udc_match_ep(struct usb_gadget *gadget,
 		}
 	}
 
-	/*
-	 * We didn't find one, we need to grab one from the pool.
-	 *
-	 * First let's do some sanity checking
-	 */
+	 
 	switch(usb_endpoint_type(desc)) {
 	case USB_ENDPOINT_XFER_CONTROL:
-		/* Only EP0 can be a control endpoint */
+		 
 		return NULL;
 	case USB_ENDPOINT_XFER_ISOC:
-		/* ISO:	 limit 1023 bytes full speed, 1024 high/super speed */
+		 
 		if (gadget_is_dualspeed(gadget))
 			max = 1024;
 		else
@@ -413,14 +391,7 @@ static struct usb_ep *ast_vhub_udc_match_ep(struct usb_gadget *gadget,
 	if (usb_endpoint_maxp(desc) > max)
 		return NULL;
 
-	/*
-	 * Find a free EP address for that device. We can't
-	 * let the generic code assign these as it would
-	 * create overlapping numbers for IN and OUT which
-	 * we don't support, so also create a suitable name
-	 * that will allow the generic code to use our
-	 * assigned address.
-	 */
+	 
 	for (i = 0; i < d->max_epns; i++)
 		if (d->epns[i] == NULL)
 			break;
@@ -428,10 +399,7 @@ static struct usb_ep *ast_vhub_udc_match_ep(struct usb_gadget *gadget,
 		return NULL;
 	addr = i + 1;
 
-	/*
-	 * Now grab an EP from the shared pool and associate
-	 * it with our device
-	 */
+	 
 	ep = ast_vhub_alloc_epn(d, addr);
 	if (!ep)
 		return NULL;
@@ -492,13 +460,13 @@ void ast_vhub_dev_resume(struct ast_vhub_dev *d)
 
 void ast_vhub_dev_reset(struct ast_vhub_dev *d)
 {
-	/* No driver, just disable the device and return */
+	 
 	if (!d->driver) {
 		ast_vhub_dev_disable(d);
 		return;
 	}
 
-	/* If the port isn't enabled, just enable it */
+	 
 	if (!d->enabled) {
 		DDBG(d, "Reset of disabled device, enabling...\n");
 		ast_vhub_dev_enable(d);
@@ -508,10 +476,7 @@ void ast_vhub_dev_reset(struct ast_vhub_dev *d)
 		usb_gadget_udc_reset(&d->gadget, d->driver);
 		spin_lock(&d->vhub->lock);
 
-		/*
-		 * Disable and maybe re-enable HW, this will clear the address
-		 * and speed setting.
-		 */
+		 
 		ast_vhub_dev_disable(d);
 		ast_vhub_dev_enable(d);
 	}
@@ -552,20 +517,13 @@ int ast_vhub_init_dev(struct ast_vhub *vhub, unsigned int idx)
 
 	ast_vhub_init_ep0(vhub, &d->ep0, d);
 
-	/*
-	 * A USB device can have up to 30 endpoints besides control
-	 * endpoint 0.
-	 */
+	 
 	d->max_epns = min_t(u32, vhub->max_epns, 30);
 	d->epns = kcalloc(d->max_epns, sizeof(*d->epns), GFP_KERNEL);
 	if (!d->epns)
 		return -ENOMEM;
 
-	/*
-	 * The UDC core really needs us to have separate and uniquely
-	 * named "parent" devices for each port so we create a sub device
-	 * here for that purpose
-	 */
+	 
 	d->port_dev = kzalloc(sizeof(struct device), GFP_KERNEL);
 	if (!d->port_dev) {
 		rc = -ENOMEM;
@@ -579,7 +537,7 @@ int ast_vhub_init_dev(struct ast_vhub *vhub, unsigned int idx)
 	if (rc)
 		goto fail_add;
 
-	/* Populate gadget */
+	 
 	INIT_LIST_HEAD(&d->gadget.ep_list);
 	d->gadget.ops = &ast_vhub_udc_ops;
 	d->gadget.ep0 = &d->ep0.ep;

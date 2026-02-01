@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <crypto/hash.h>
 #include <linux/export.h>
 #include <linux/bvec.h>
@@ -14,7 +14,7 @@
 #include <linux/scatterlist.h>
 #include <linux/instrumented.h>
 
-/* covers ubuf and kbuf alike */
+ 
 #define iterate_buf(i, n, base, len, off, __p, STEP) {		\
 	size_t __maybe_unused off = 0;				\
 	len = n;						\
@@ -24,7 +24,7 @@
 	n = len;						\
 }
 
-/* covers iovec and kvec alike */
+ 
 #define iterate_iovec(i, n, base, len, off, __p, STEP) {	\
 	size_t off = 0;						\
 	size_t skip = i->iov_offset;				\
@@ -196,19 +196,7 @@ static int copyin(void *to, const void __user *from, size_t n)
 	return res;
 }
 
-/*
- * fault_in_iov_iter_readable - fault in iov iterator for reading
- * @i: iterator
- * @size: maximum length
- *
- * Fault in one or more iovecs of the given iov_iter, to a maximum length of
- * @size.  For each iovec, fault in each page that constitutes the iovec.
- *
- * Returns the number of bytes not faulted in (like copy_to_user() and
- * copy_from_user()).
- *
- * Always returns 0 for non-userspace iterators.
- */
+ 
 size_t fault_in_iov_iter_readable(const struct iov_iter *i, size_t size)
 {
 	if (iter_is_ubuf(i)) {
@@ -238,20 +226,7 @@ size_t fault_in_iov_iter_readable(const struct iov_iter *i, size_t size)
 }
 EXPORT_SYMBOL(fault_in_iov_iter_readable);
 
-/*
- * fault_in_iov_iter_writeable - fault in iov iterator for writing
- * @i: iterator
- * @size: maximum length
- *
- * Faults in the iterator using get_user_pages(), i.e., without triggering
- * hardware page faults.  This is primarily useful when we already know that
- * some or all of the pages in @i aren't in memory.
- *
- * Returns the number of bytes not faulted in, like copy_to_user() and
- * copy_from_user().
- *
- * Always returns 0 for non-user-space iterators.
- */
+ 
 size_t fault_in_iov_iter_writeable(const struct iov_iter *i, size_t size)
 {
 	if (iter_is_ubuf(i)) {
@@ -332,30 +307,7 @@ static int copyout_mc(void __user *to, const void *from, size_t n)
 	return n;
 }
 
-/**
- * _copy_mc_to_iter - copy to iter with source memory error exception handling
- * @addr: source kernel address
- * @bytes: total transfer length
- * @i: destination iterator
- *
- * The pmem driver deploys this for the dax operation
- * (dax_copy_to_iter()) for dax reads (bypass page-cache and the
- * block-layer). Upon #MC read(2) aborts and returns EIO or the bytes
- * successfully copied.
- *
- * The main differences between this and typical _copy_to_iter().
- *
- * * Typical tail/residue handling after a fault retries the copy
- *   byte-by-byte until the fault happens again. Re-triggering machine
- *   checks is potentially fatal so the implementation uses source
- *   alignment and poison alignment assumptions to avoid re-triggering
- *   hardware exceptions.
- *
- * * ITER_KVEC and ITER_BVEC can return short copies.  Compare to
- *   copy_to_iter() where only ITER_IOVEC attempts might return a short copy.
- *
- * Return: number of bytes copied (may be %0)
- */
+ 
 size_t _copy_mc_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
 {
 	if (WARN_ON_ONCE(i->data_source))
@@ -370,7 +322,7 @@ size_t _copy_mc_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
 	return bytes;
 }
 EXPORT_SYMBOL_GPL(_copy_mc_to_iter);
-#endif /* CONFIG_ARCH_HAS_COPY_MC */
+#endif  
 
 static void *memcpy_from_iter(struct iov_iter *i, void *to, const void *from,
 				 size_t size)
@@ -411,22 +363,7 @@ size_t _copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i)
 EXPORT_SYMBOL(_copy_from_iter_nocache);
 
 #ifdef CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE
-/**
- * _copy_from_iter_flushcache - write destination through cpu cache
- * @addr: destination kernel address
- * @bytes: total transfer length
- * @i: source iterator
- *
- * The pmem driver arranges for filesystem-dax to use this facility via
- * dax_copy_from_iter() for ensuring that writes to persistent memory
- * are flushed through the CPU cache. It is differentiated from
- * _copy_from_iter_nocache() in that guarantees all data is flushed for
- * all iterator types. The _copy_from_iter_nocache() only attempts to
- * bypass the cache for the ITER_IOVEC case, and on some archs may use
- * instructions that strand dirty-data in the cache.
- *
- * Return: number of bytes copied (may be %0)
- */
+ 
 size_t _copy_from_iter_flushcache(void *addr, size_t bytes, struct iov_iter *i)
 {
 	if (WARN_ON_ONCE(!i->data_source))
@@ -447,13 +384,7 @@ static inline bool page_copy_sane(struct page *page, size_t offset, size_t n)
 	struct page *head;
 	size_t v = n + offset;
 
-	/*
-	 * The general case needs to access the page order in order
-	 * to compute the page size.
-	 * However, we mostly deal with order-0 pages and thus can
-	 * avoid a possible cache line miss for requests that fit all
-	 * page orders.
-	 */
+	 
 	if (n <= v && v <= PAGE_SIZE)
 		return true;
 
@@ -473,7 +404,7 @@ size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
 		return 0;
 	if (WARN_ON_ONCE(i->data_source))
 		return 0;
-	page += offset / PAGE_SIZE; // first subpage
+	page += offset / PAGE_SIZE;  
 	offset %= PAGE_SIZE;
 	while (1) {
 		void *kaddr = kmap_local_page(page);
@@ -503,7 +434,7 @@ size_t copy_page_to_iter_nofault(struct page *page, unsigned offset, size_t byte
 		return 0;
 	if (WARN_ON_ONCE(i->data_source))
 		return 0;
-	page += offset / PAGE_SIZE; // first subpage
+	page += offset / PAGE_SIZE;  
 	offset %= PAGE_SIZE;
 	while (1) {
 		void *kaddr = kmap_local_page(page);
@@ -534,7 +465,7 @@ size_t copy_page_from_iter(struct page *page, size_t offset, size_t bytes,
 	size_t res = 0;
 	if (!page_copy_sane(page, offset, bytes))
 		return 0;
-	page += offset / PAGE_SIZE; // first subpage
+	page += offset / PAGE_SIZE;  
 	offset %= PAGE_SIZE;
 	while (1) {
 		void *kaddr = kmap_local_page(page);
@@ -628,7 +559,7 @@ static void iov_iter_iovec_advance(struct iov_iter *i, size_t size)
 		return;
 	i->count -= size;
 
-	size += i->iov_offset; // from beginning of current segment
+	size += i->iov_offset;  
 	for (iov = iter_iov(i), end = iov + i->nr_segs; iov < end; iov++) {
 		if (likely(size < iov->iov_len))
 			break;
@@ -647,7 +578,7 @@ void iov_iter_advance(struct iov_iter *i, size_t size)
 		i->iov_offset += size;
 		i->count -= size;
 	} else if (likely(iter_is_iovec(i) || iov_iter_is_kvec(i))) {
-		/* iovec and kvec have identical layouts */
+		 
 		iov_iter_iovec_advance(i, size);
 	} else if (iov_iter_is_bvec(i)) {
 		iov_iter_bvec_advance(i, size);
@@ -672,10 +603,7 @@ void iov_iter_revert(struct iov_iter *i, size_t unroll)
 	}
 	unroll -= i->iov_offset;
 	if (iov_iter_is_xarray(i) || iter_is_ubuf(i)) {
-		BUG(); /* We should never go beyond the start of the specified
-			* range since we might then be straying into pages that
-			* aren't pinned.
-			*/
+		BUG();  
 	} else if (iov_iter_is_bvec(i)) {
 		const struct bio_vec *bvec = i->bvec;
 		while (1) {
@@ -688,7 +616,7 @@ void iov_iter_revert(struct iov_iter *i, size_t unroll)
 			}
 			unroll -= n;
 		}
-	} else { /* same logics for iovec and kvec */
+	} else {  
 		const struct iovec *iov = iter_iov(i);
 		while (1) {
 			size_t n = (--iov)->iov_len;
@@ -704,9 +632,7 @@ void iov_iter_revert(struct iov_iter *i, size_t unroll)
 }
 EXPORT_SYMBOL(iov_iter_revert);
 
-/*
- * Return the count of just the current iov_iter segment.
- */
+ 
 size_t iov_iter_single_seg_count(const struct iov_iter *i)
 {
 	if (i->nr_segs > 1) {
@@ -753,19 +679,7 @@ void iov_iter_bvec(struct iov_iter *i, unsigned int direction,
 }
 EXPORT_SYMBOL(iov_iter_bvec);
 
-/**
- * iov_iter_xarray - Initialise an I/O iterator to use the pages in an xarray
- * @i: The iterator to initialise.
- * @direction: The direction of the transfer.
- * @xarray: The xarray to access.
- * @start: The start file position.
- * @count: The size of the I/O buffer in bytes.
- *
- * Set up an I/O iterator to either draw data out of the pages attached to an
- * inode or to inject data into those pages.  The pages *must* be prevented
- * from evaporation, either by taking a ref on them or locking them by the
- * caller.
- */
+ 
 void iov_iter_xarray(struct iov_iter *i, unsigned int direction,
 		     struct xarray *xarray, loff_t start, size_t count)
 {
@@ -782,15 +696,7 @@ void iov_iter_xarray(struct iov_iter *i, unsigned int direction,
 }
 EXPORT_SYMBOL(iov_iter_xarray);
 
-/**
- * iov_iter_discard - Initialise an I/O iterator that discards data
- * @i: The iterator to initialise.
- * @direction: The direction of the transfer.
- * @count: The size of the I/O buffer in bytes.
- *
- * Set up an I/O iterator that just discards everything that's written to it.
- * It's only available as a READ iterator.
- */
+ 
 void iov_iter_discard(struct iov_iter *i, unsigned int direction, size_t count)
 {
 	BUG_ON(direction != READ);
@@ -853,16 +759,7 @@ static bool iov_iter_aligned_bvec(const struct iov_iter *i, unsigned addr_mask,
 	return true;
 }
 
-/**
- * iov_iter_is_aligned() - Check if the addresses and lengths of each segments
- * 	are aligned to the parameters.
- *
- * @i: &struct iov_iter to restore
- * @addr_mask: bit mask to check against the iov element's addresses
- * @len_mask: bit mask to check against the iov element's lengths
- *
- * Return: false if any addresses or lengths intersect with the provided masks
- */
+ 
 bool iov_iter_is_aligned(const struct iov_iter *i, unsigned addr_mask,
 			 unsigned len_mask)
 {
@@ -943,7 +840,7 @@ unsigned long iov_iter_alignment(const struct iov_iter *i)
 		return 0;
 	}
 
-	/* iovec and kvec have identical layouts */
+	 
 	if (likely(iter_is_iovec(i) || iov_iter_is_kvec(i)))
 		return iov_iter_alignment_iovec(i);
 
@@ -974,8 +871,8 @@ unsigned long iov_iter_gap_alignment(const struct iov_iter *i)
 		const struct iovec *iov = iter_iov(i) + k;
 		if (iov->iov_len) {
 			unsigned long base = (unsigned long)iov->iov_base;
-			if (v) // if not the first one
-				res |= base | v; // this start | previous end
+			if (v) 
+				res |= base | v; 
 			v = base + iov->iov_len;
 			if (size <= iov->iov_len)
 				break;
@@ -993,7 +890,7 @@ static int want_pages_array(struct page ***res, size_t size,
 
 	if (count > maxpages)
 		count = maxpages;
-	WARN_ON(!count);	// caller should've prevented that
+	WARN_ON(!count);	
 	if (!*res) {
 		*res = kvmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
 		if (!*res)
@@ -1014,7 +911,7 @@ static ssize_t iter_xarray_populate_pages(struct page **pages, struct xarray *xa
 		if (xas_retry(&xas, page))
 			continue;
 
-		/* Has the page moved or been split? */
+		 
 		if (unlikely(page != xas_reload(&xas))) {
 			xas_reset(&xas);
 			continue;
@@ -1055,7 +952,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
 	return maxsize;
 }
 
-/* must be done on non-empty ITER_UBUF or ITER_IOVEC one */
+ 
 static unsigned long first_iovec_segment(const struct iov_iter *i, size_t *size)
 {
 	size_t skip;
@@ -1074,10 +971,10 @@ static unsigned long first_iovec_segment(const struct iov_iter *i, size_t *size)
 			*size = len;
 		return (unsigned long)iov->iov_base + skip;
 	}
-	BUG(); // if it had been empty, we wouldn't get called
+	BUG(); 
 }
 
-/* must be done on non-empty ITER_BVEC one */
+ 
 static struct page *first_bvec_segment(const struct iov_iter *i,
 				       size_t *size, size_t *start)
 {
@@ -1211,7 +1108,7 @@ size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *_csstate,
 	if (WARN_ON_ONCE(i->data_source))
 		return 0;
 	if (unlikely(iov_iter_is_discard(i))) {
-		// can't use csum_memcpy() for that one - data is not copied
+		
 		csstate->csum = csum_block_add(csstate->csum,
 					       csum_partial(addr, bytes, 0),
 					       csstate->off);
@@ -1300,7 +1197,7 @@ int iov_iter_npages(const struct iov_iter *i, int maxpages)
 		int npages = DIV_ROUND_UP(offs + i->count, PAGE_SIZE);
 		return min(npages, maxpages);
 	}
-	/* iovec and kvec have identical layouts */
+	 
 	if (likely(iter_is_iovec(i) || iov_iter_is_kvec(i)))
 		return iov_npages(i, maxpages);
 	if (iov_iter_is_bvec(i))
@@ -1322,7 +1219,7 @@ const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags)
 				    new->nr_segs * sizeof(struct bio_vec),
 				    flags);
 	else if (iov_iter_is_kvec(new) || iter_is_iovec(new))
-		/* iovec and kvec have identical layout */
+		 
 		return new->__iov = kmemdup(new->__iov,
 				   new->nr_segs * sizeof(struct iovec),
 				   flags);
@@ -1347,7 +1244,7 @@ static __noclone int copy_compat_iovec_from_user(struct iovec *iov,
 		unsafe_get_user(len, &uiov[i].iov_len, uaccess_end);
 		unsafe_get_user(buf, &uiov[i].iov_base, uaccess_end);
 
-		/* check for compat_size_t not fitting in compat_ssize_t .. */
+		 
 		if (len < 0) {
 			ret = -EINVAL;
 			goto uaccess_end;
@@ -1377,7 +1274,7 @@ static __noclone int copy_iovec_from_user(struct iovec *iov,
 		unsafe_get_user(len, &uiov->iov_len, uaccess_end);
 		unsafe_get_user(buf, &uiov->iov_base, uaccess_end);
 
-		/* check for size_t not fitting in ssize_t .. */
+		 
 		if (unlikely(len < 0)) {
 			ret = -EINVAL;
 			goto uaccess_end;
@@ -1401,11 +1298,7 @@ struct iovec *iovec_from_user(const struct iovec __user *uvec,
 	struct iovec *iov = fast_iov;
 	int ret;
 
-	/*
-	 * SuS says "The readv() function *may* fail if the iovcnt argument was
-	 * less than or equal to 0, or greater than {IOV_MAX}.  Linux has
-	 * traditionally returned zero for zero segments, so...
-	 */
+	 
 	if (nr_segs == 0)
 		return iov;
 	if (nr_segs > UIO_MAXIOV)
@@ -1429,9 +1322,7 @@ struct iovec *iovec_from_user(const struct iovec __user *uvec,
 	return iov;
 }
 
-/*
- * Single segment iovec supplied by the user, import it as ITER_UBUF.
- */
+ 
 static ssize_t __import_iovec_ubuf(int type, const struct iovec __user *uvec,
 				   struct iovec **iovp, struct iov_iter *i,
 				   bool compat)
@@ -1470,14 +1361,7 @@ ssize_t __import_iovec(int type, const struct iovec __user *uvec,
 		return PTR_ERR(iov);
 	}
 
-	/*
-	 * According to the Single Unix Specification we should return EINVAL if
-	 * an element length is < 0 when cast to ssize_t or if the total length
-	 * would overflow the ssize_t return value of the system call.
-	 *
-	 * Linux caps all read/write calls to MAX_RW_COUNT, and avoids the
-	 * overflow case.
-	 */
+	 
 	for (seg = 0; seg < nr_segs; seg++) {
 		ssize_t len = (ssize_t)iov[seg].iov_len;
 
@@ -1503,28 +1387,7 @@ ssize_t __import_iovec(int type, const struct iovec __user *uvec,
 	return total_len;
 }
 
-/**
- * import_iovec() - Copy an array of &struct iovec from userspace
- *     into the kernel, check that it is valid, and initialize a new
- *     &struct iov_iter iterator to access it.
- *
- * @type: One of %READ or %WRITE.
- * @uvec: Pointer to the userspace array.
- * @nr_segs: Number of elements in userspace array.
- * @fast_segs: Number of elements in @iov.
- * @iovp: (input and output parameter) Pointer to pointer to (usually small
- *     on-stack) kernel array.
- * @i: Pointer to iterator that will be initialized on success.
- *
- * If the array pointed to by *@iov is large enough to hold all @nr_segs,
- * then this function places %NULL in *@iov on return. Otherwise, a new
- * array will be allocated and the result placed in *@iov. This means that
- * the caller may call kfree() on *@iov regardless of whether the small
- * on-stack array was used or not (and regardless of whether this function
- * returns an error or not).
- *
- * Return: Negative error code on error, bytes imported on success
- */
+ 
 ssize_t import_iovec(int type, const struct iovec __user *uvec,
 		 unsigned nr_segs, unsigned fast_segs,
 		 struct iovec **iovp, struct iov_iter *i)
@@ -1559,18 +1422,7 @@ int import_ubuf(int rw, void __user *buf, size_t len, struct iov_iter *i)
 }
 EXPORT_SYMBOL_GPL(import_ubuf);
 
-/**
- * iov_iter_restore() - Restore a &struct iov_iter to the same state as when
- *     iov_iter_save_state() was called.
- *
- * @i: &struct iov_iter to restore
- * @state: state to restore from
- *
- * Used after iov_iter_save_state() to bring restore @i, if operations may
- * have advanced it.
- *
- * Note: only works on ITER_IOVEC, ITER_BVEC, and ITER_KVEC
- */
+ 
 void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state)
 {
 	if (WARN_ON_ONCE(!iov_iter_is_bvec(i) && !iter_is_iovec(i) &&
@@ -1580,15 +1432,7 @@ void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state)
 	i->count = state->count;
 	if (iter_is_ubuf(i))
 		return;
-	/*
-	 * For the *vec iters, nr_segs + iov is constant - if we increment
-	 * the vec, then we also decrement the nr_segs count. Hence we don't
-	 * need to track both of these, just one is enough and we can deduct
-	 * the other from that. ITER_KVEC and ITER_IOVEC are the same struct
-	 * size, so we can just increment the iov pointer as they are unionzed.
-	 * ITER_BVEC _may_ be the same size on some archs, but on others it is
-	 * not. Be safe and handle it separately.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(struct iovec) != sizeof(struct kvec));
 	if (iov_iter_is_bvec(i))
 		i->bvec -= state->nr_segs - i->nr_segs;
@@ -1597,10 +1441,7 @@ void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state)
 	i->nr_segs = state->nr_segs;
 }
 
-/*
- * Extract a list of contiguous pages from an ITER_XARRAY iterator.  This does not
- * get references on the pages, nor does it get a pin on them.
- */
+ 
 static ssize_t iov_iter_extract_xarray_pages(struct iov_iter *i,
 					     struct page ***pages, size_t maxsize,
 					     unsigned int maxpages,
@@ -1626,7 +1467,7 @@ static ssize_t iov_iter_extract_xarray_pages(struct iov_iter *i,
 		if (xas_retry(&xas, page))
 			continue;
 
-		/* Has the page moved or been split? */
+		 
 		if (unlikely(page != xas_reload(&xas))) {
 			xas_reset(&xas);
 			continue;
@@ -1643,10 +1484,7 @@ static ssize_t iov_iter_extract_xarray_pages(struct iov_iter *i,
 	return maxsize;
 }
 
-/*
- * Extract a list of contiguous pages from an ITER_BVEC iterator.  This does
- * not get references on the pages, nor does it get a pin on them.
- */
+ 
 static ssize_t iov_iter_extract_bvec_pages(struct iov_iter *i,
 					   struct page ***pages, size_t maxsize,
 					   unsigned int maxpages,
@@ -1686,10 +1524,7 @@ static ssize_t iov_iter_extract_bvec_pages(struct iov_iter *i,
 	return size;
 }
 
-/*
- * Extract a list of virtually contiguous pages from an ITER_KVEC iterator.
- * This does not get references on the pages, nor does it get a pin on them.
- */
+ 
 static ssize_t iov_iter_extract_kvec_pages(struct iov_iter *i,
 					   struct page ***pages, size_t maxsize,
 					   unsigned int maxpages,
@@ -1742,18 +1577,7 @@ static ssize_t iov_iter_extract_kvec_pages(struct iov_iter *i,
 	return size;
 }
 
-/*
- * Extract a list of contiguous pages from a user iterator and get a pin on
- * each of them.  This should only be used if the iterator is user-backed
- * (IOBUF/UBUF).
- *
- * It does not get refs on the pages, but the pages must be unpinned by the
- * caller once the transfer is complete.
- *
- * This is safe to be used where background IO/DMA *is* going to be modifying
- * the buffer; using a pin rather than a ref makes forces fork() to give the
- * child a copy of the page.
- */
+ 
 static ssize_t iov_iter_extract_user_pages(struct iov_iter *i,
 					   struct page ***pages,
 					   size_t maxsize,
@@ -1787,49 +1611,7 @@ static ssize_t iov_iter_extract_user_pages(struct iov_iter *i,
 	return maxsize;
 }
 
-/**
- * iov_iter_extract_pages - Extract a list of contiguous pages from an iterator
- * @i: The iterator to extract from
- * @pages: Where to return the list of pages
- * @maxsize: The maximum amount of iterator to extract
- * @maxpages: The maximum size of the list of pages
- * @extraction_flags: Flags to qualify request
- * @offset0: Where to return the starting offset into (*@pages)[0]
- *
- * Extract a list of contiguous pages from the current point of the iterator,
- * advancing the iterator.  The maximum number of pages and the maximum amount
- * of page contents can be set.
- *
- * If *@pages is NULL, a page list will be allocated to the required size and
- * *@pages will be set to its base.  If *@pages is not NULL, it will be assumed
- * that the caller allocated a page list at least @maxpages in size and this
- * will be filled in.
- *
- * @extraction_flags can have ITER_ALLOW_P2PDMA set to request peer-to-peer DMA
- * be allowed on the pages extracted.
- *
- * The iov_iter_extract_will_pin() function can be used to query how cleanup
- * should be performed.
- *
- * Extra refs or pins on the pages may be obtained as follows:
- *
- *  (*) If the iterator is user-backed (ITER_IOVEC/ITER_UBUF), pins will be
- *      added to the pages, but refs will not be taken.
- *      iov_iter_extract_will_pin() will return true.
- *
- *  (*) If the iterator is ITER_KVEC, ITER_BVEC or ITER_XARRAY, the pages are
- *      merely listed; no extra refs or pins are obtained.
- *      iov_iter_extract_will_pin() will return 0.
- *
- * Note also:
- *
- *  (*) Use with ITER_DISCARD is not supported as that has no content.
- *
- * On success, the function sets *@pages to the new pagelist, if allocated, and
- * sets *offset0 to the offset into the first page.
- *
- * It may also return -ENOMEM and -EFAULT.
- */
+ 
 ssize_t iov_iter_extract_pages(struct iov_iter *i,
 			       struct page ***pages,
 			       size_t maxsize,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002-2003 Romain Lievin <roms@tilp.info>
- */
+
+ 
 
 #include <stdlib.h>
 #include "lkc.h"
@@ -18,7 +16,7 @@
 #include <unistd.h>
 #include <time.h>
 
-//#define DEBUG
+
 
 enum {
 	SINGLE_VIEW, SPLIT_VIEW, FULL_VIEW
@@ -36,8 +34,8 @@ static gboolean resizeable = FALSE;
 static int opt_mode = OPT_NORMAL;
 
 GtkWidget *main_wnd = NULL;
-GtkWidget *tree1_w = NULL;	// left  frame
-GtkWidget *tree2_w = NULL;	// right frame
+GtkWidget *tree1_w = NULL;	
+GtkWidget *tree2_w = NULL;	
 GtkWidget *text_w = NULL;
 GtkWidget *hpaned = NULL;
 GtkWidget *vpaned = NULL;
@@ -53,8 +51,8 @@ GtkTreeModel *model1, *model2;
 static GtkTreeIter *parents[256];
 static gint indent;
 
-static struct menu *current; // current node for SINGLE view
-static struct menu *browsed; // browsed node for SPLIT view
+static struct menu *current; 
+static struct menu *browsed; 
 
 enum {
 	COL_OPTION, COL_NAME, COL_NO, COL_MOD, COL_YES, COL_VALUE,
@@ -71,7 +69,7 @@ static void set_node(GtkTreeIter * node, struct menu *menu, gchar ** row);
 static gchar **fill_row(struct menu *menu);
 static void conf_changed(void);
 
-/* Helping/Debugging Functions */
+ 
 #ifdef DEBUG
 static const char *dbg_sym_flags(int val)
 {
@@ -122,7 +120,7 @@ static void replace_button_icon(GladeXML *xml, GdkDrawable *window,
 	gtk_tool_button_set_icon_widget(button, image);
 }
 
-/* Main Window Initialization */
+ 
 static void init_main_window(const gchar *glade_file)
 {
 	GladeXML *xml;
@@ -177,7 +175,7 @@ static void init_main_window(const gchar *glade_file)
 					  "weight", PANGO_WEIGHT_BOLD,
 					  NULL);
 	tag2 = gtk_text_buffer_create_tag(txtbuf, "mytag2",
-					  /*"style", PANGO_STYLE_OBLIQUE, */
+					   
 					  NULL);
 
 	gtk_window_set_title(GTK_WINDOW(main_wnd), rootmenu.prompt->text);
@@ -356,7 +354,7 @@ static void init_right_tree(void)
 }
 
 
-/* Utility Functions */
+ 
 
 
 static void text_insert_help(struct menu *menu)
@@ -405,7 +403,7 @@ static void text_insert_msg(const char *title, const char *message)
 }
 
 
-/* Main Windows Callbacks */
+ 
 
 void on_save_activate(GtkMenuItem * menuitem, gpointer user_data);
 gboolean on_window1_delete_event(GtkWidget * widget, GdkEvent * event,
@@ -479,7 +477,7 @@ on_window1_size_request(GtkWidget * widget,
 }
 
 
-/* Menu & Toolbar Callbacks */
+ 
 
 
 static void
@@ -610,7 +608,7 @@ on_set_option_mode1_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	opt_mode = OPT_NORMAL;
 	gtk_tree_store_clear(tree2);
-	display_tree(&rootmenu);	/* instead of update_tree to speed-up */
+	display_tree(&rootmenu);	 
 }
 
 
@@ -619,7 +617,7 @@ on_set_option_mode2_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	opt_mode = OPT_ALL;
 	gtk_tree_store_clear(tree2);
-	display_tree(&rootmenu);	/* instead of update_tree to speed-up */
+	display_tree(&rootmenu);	 
 }
 
 
@@ -628,7 +626,7 @@ on_set_option_mode3_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	opt_mode = OPT_PROMPT;
 	gtk_tree_store_clear(tree2);
-	display_tree(&rootmenu);	/* instead of update_tree to speed-up */
+	display_tree(&rootmenu);	 
 }
 
 
@@ -738,7 +736,7 @@ void on_split_clicked(GtkButton * button, gpointer user_data)
 		gtk_tree_store_clear(tree2);
 	display_list();
 
-	/* Disable back btn, like in full mode. */
+	 
 	gtk_widget_set_sensitive(back_btn, FALSE);
 }
 
@@ -766,9 +764,9 @@ void on_expand_clicked(GtkButton * button, gpointer user_data)
 }
 
 
-/* CTree Callbacks */
+ 
 
-/* Change hex/int/string value in the cell */
+ 
 static void renderer_edited(GtkCellRendererText * cell,
 			    const gchar * path_string,
 			    const gchar * new_text, gpointer user_data)
@@ -795,7 +793,7 @@ static void renderer_edited(GtkCellRendererText * cell,
 	gtk_tree_path_free(path);
 }
 
-/* Change the value of a symbol and update the tree */
+ 
 static void change_sym_value(struct menu *menu, gint col)
 {
 	struct symbol *sym = menu->sym;
@@ -826,7 +824,7 @@ static void change_sym_value(struct menu *menu, gint col)
 			display_list();
 		}
 		else if (view_mode == SINGLE_VIEW)
-			display_tree_part();	//fixme: keep exp/coll
+			display_tree_part();	
 		break;
 	case S_INT:
 	case S_HEX:
@@ -849,7 +847,7 @@ static void toggle_sym_value(struct menu *menu)
 		display_list();
 	}
 	else if (view_mode == SINGLE_VIEW)
-		display_tree_part();	//fixme: keep exp/coll
+		display_tree_part();	
 }
 
 static gint column2index(GtkTreeViewColumn * column)
@@ -868,7 +866,7 @@ static gint column2index(GtkTreeViewColumn * column)
 }
 
 
-/* User click: update choice (full) or goes down (single) */
+ 
 gboolean
 on_treeview2_button_press_event(GtkWidget * widget,
 				GdkEventButton * event, gpointer user_data)
@@ -880,7 +878,7 @@ on_treeview2_button_press_event(GtkWidget * widget,
 	struct menu *menu;
 	gint col;
 
-#if GTK_CHECK_VERSION(2,1,4) // bug in ctree with earlier version of GTK
+#if GTK_CHECK_VERSION(2,1,4) 
 	gint tx = (gint) event->x;
 	gint ty = (gint) event->y;
 	gint cx, cy;
@@ -903,7 +901,7 @@ on_treeview2_button_press_event(GtkWidget * widget,
 		ptype = menu->prompt ? menu->prompt->type : P_UNKNOWN;
 
 		if (ptype == P_MENU && view_mode != FULL_VIEW && col == COL_OPTION) {
-			// goes down into menu
+			
 			current = menu;
 			display_tree_part();
 			gtk_widget_set_sensitive(back_btn, TRUE);
@@ -925,7 +923,7 @@ on_treeview2_button_press_event(GtkWidget * widget,
 	return FALSE;
 }
 
-/* Key pressed: update choice */
+ 
 gboolean
 on_treeview2_key_press_event(GtkWidget * widget,
 			     GdkEventKey * event, gpointer user_data)
@@ -970,7 +968,7 @@ on_treeview2_key_press_event(GtkWidget * widget,
 }
 
 
-/* Row selection changed: update help */
+ 
 void
 on_treeview2_cursor_changed(GtkTreeView * treeview, gpointer user_data)
 {
@@ -986,7 +984,7 @@ on_treeview2_cursor_changed(GtkTreeView * treeview, gpointer user_data)
 }
 
 
-/* User click: display sub-tree in the right frame. */
+ 
 gboolean
 on_treeview1_button_press_event(GtkWidget * widget,
 				GdkEventButton * event, gpointer user_data)
@@ -1026,7 +1024,7 @@ on_treeview1_button_press_event(GtkWidget * widget,
 }
 
 
-/* Fill a row of strings */
+ 
 static gchar **fill_row(struct menu *menu)
 {
 	static gchar *row[COL_NUMBER];
@@ -1084,7 +1082,7 @@ static gchar **fill_row(struct menu *menu)
 	sym_calc_value(sym);
 	sym->flags &= ~SYMBOL_CHANGED;
 
-	if (sym_is_choice(sym)) {	// parse childs for getting final value
+	if (sym_is_choice(sym)) {	
 		struct menu *child;
 		struct symbol *def_sym = sym_get_choice_value(sym);
 		struct menu *def_menu = NULL;
@@ -1111,7 +1109,7 @@ static gchar **fill_row(struct menu *menu)
 			row[COL_BTNVIS] = GINT_TO_POINTER(TRUE);
 		if (sym_is_choice(sym))
 			break;
-		/* fall through */
+		 
 	case S_TRISTATE:
 		val = sym_get_tristate_value(sym);
 		switch (val) {
@@ -1155,7 +1153,7 @@ static gchar **fill_row(struct menu *menu)
 }
 
 
-/* Set the node content with a row of strings */
+ 
 static void set_node(GtkTreeIter * node, struct menu *menu, gchar ** row)
 {
 	GdkColor color;
@@ -1191,7 +1189,7 @@ static void set_node(GtkTreeIter * node, struct menu *menu, gchar ** row)
 }
 
 
-/* Add a node to the tree */
+ 
 static void place_node(struct menu *menu, char **row)
 {
 	GtkTreeIter *parent = parents[indent - 1];
@@ -1202,12 +1200,10 @@ static void place_node(struct menu *menu, char **row)
 }
 
 
-/* Find a node in the GTK+ tree */
+ 
 static GtkTreeIter found;
 
-/*
- * Find a menu in the GtkTree starting at parent.
- */
+ 
 static GtkTreeIter *gtktree_iter_find_node(GtkTreeIter *parent,
 					   struct menu *tofind)
 {
@@ -1238,10 +1234,7 @@ static GtkTreeIter *gtktree_iter_find_node(GtkTreeIter *parent,
 }
 
 
-/*
- * Update the tree by adding/removing entries
- * Does not change other nodes
- */
+ 
 static void update_tree(struct menu *src, GtkTreeIter * dst)
 {
 	struct menu *child1;
@@ -1266,7 +1259,7 @@ static void update_tree(struct menu *src, GtkTreeIter * dst)
 			gtk_tree_model_get(model2, child2, COL_MENU,
 					   &menu2, -1);
 		else
-			menu2 = NULL;	// force adding of a first child
+			menu2 = NULL;	
 
 #ifdef DEBUG
 		printf("%*c%s | %s\n", indent, ' ',
@@ -1278,22 +1271,22 @@ static void update_tree(struct menu *src, GtkTreeIter * dst)
 		    (opt_mode == OPT_PROMPT && !menu_has_prompt(child1)) ||
 		    (opt_mode == OPT_ALL    && !menu_get_prompt(child1))) {
 
-			/* remove node */
+			 
 			if (gtktree_iter_find_node(dst, menu1) != NULL) {
 				memcpy(&tmp, child2, sizeof(GtkTreeIter));
 				valid = gtk_tree_model_iter_next(model2,
 								 child2);
 				gtk_tree_store_remove(tree2, &tmp);
 				if (!valid)
-					return;		/* next parent */
+					return;		 
 				else
-					goto reparse;	/* next child */
+					goto reparse;	 
 			} else
 				continue;
 		}
 
 		if (menu1 != menu2) {
-			if (gtktree_iter_find_node(dst, menu1) == NULL) {	// add node
+			if (gtktree_iter_find_node(dst, menu1) == NULL) {	
 				if (!valid && !menu2)
 					sibling = NULL;
 				else
@@ -1304,15 +1297,15 @@ static void update_tree(struct menu *src, GtkTreeIter * dst)
 				set_node(child2, menu1, fill_row(menu1));
 				if (menu2 == NULL)
 					valid = TRUE;
-			} else {	// remove node
+			} else {	
 				memcpy(&tmp, child2, sizeof(GtkTreeIter));
 				valid = gtk_tree_model_iter_next(model2,
 								 child2);
 				gtk_tree_store_remove(tree2, &tmp);
 				if (!valid)
-					return;	// next parent
+					return;	
 				else
-					goto reparse;	// next child
+					goto reparse;	
 			}
 		} else if (sym && (sym->flags & SYMBOL_CHANGED)) {
 			set_node(child2, menu1, fill_row(menu1));
@@ -1327,7 +1320,7 @@ static void update_tree(struct menu *src, GtkTreeIter * dst)
 }
 
 
-/* Display the whole tree (single/split/full view) */
+ 
 static void display_tree(struct menu *menu)
 {
 	struct symbol *sym;
@@ -1376,12 +1369,9 @@ static void display_tree(struct menu *menu)
 		if ((view_mode != FULL_VIEW) && (ptype == P_MENU)
 		    && (tree == tree2))
 			continue;
-/*
-		if (((menu != &rootmenu) && !(menu->flags & MENU_ROOT))
-		    || (view_mode == FULL_VIEW)
-		    || (view_mode == SPLIT_VIEW))*/
+ 
 
-		/* Change paned position if the view is not in 'split mode' */
+		 
 		if (view_mode == SINGLE_VIEW || view_mode == FULL_VIEW) {
 			gtk_paned_set_position(GTK_PANED(hpaned), 0);
 		}
@@ -1396,7 +1386,7 @@ static void display_tree(struct menu *menu)
 	}
 }
 
-/* Display a part of the tree starting at current node (single/split view) */
+ 
 static void display_tree_part(void)
 {
 	if (tree2)
@@ -1408,7 +1398,7 @@ static void display_tree_part(void)
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree2_w));
 }
 
-/* Display the list in the left frame (split view) */
+ 
 static void display_list(void)
 {
 	if (tree1)
@@ -1437,19 +1427,19 @@ static void fixup_rootmenu(struct menu *menu)
 }
 
 
-/* Main */
+ 
 int main(int ac, char *av[])
 {
 	const char *name;
 	char *env;
 	gchar *glade_file;
 
-	/* GTK stuffs */
+	 
 	gtk_set_locale();
 	gtk_init(&ac, &av);
 	glade_init();
 
-	/* Determine GUI path */
+	 
 	env = getenv(SRCTREE);
 	if (env)
 		glade_file = g_strconcat(env, "/scripts/kconfig/gconf.glade", NULL);
@@ -1458,11 +1448,11 @@ int main(int ac, char *av[])
 	else
 		glade_file = g_strconcat(g_get_current_dir(), "/", av[0], ".glade", NULL);
 
-	/* Conf stuffs */
+	 
 	if (ac > 1 && av[1][0] == '-') {
 		switch (av[1][1]) {
 		case 'a':
-			//showAll = 1;
+			
 			break;
 		case 's':
 			conf_set_message_callback(NULL);
@@ -1480,7 +1470,7 @@ int main(int ac, char *av[])
 	fixup_rootmenu(&rootmenu);
 	conf_read(NULL);
 
-	/* Load the interface and connect signals */
+	 
 	init_main_window(glade_file);
 	init_tree_model();
 	init_left_tree();

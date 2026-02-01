@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1251
- *
- * Copyright (C) 2008 Nokia Corporation
- */
+
+ 
 
 #include "reg.h"
 #include "ps.h"
 #include "cmd.h"
 #include "io.h"
 
-/* in ms */
+ 
 #define WL1251_WAKEUP_TIMEOUT 100
 
 void wl1251_elp_work(struct work_struct *work)
@@ -38,7 +34,7 @@ out:
 
 #define ELP_ENTRY_DELAY  5
 
-/* Routines to toggle sleep mode while in ELP */
+ 
 void wl1251_ps_elp_sleep(struct wl1251 *wl)
 {
 	unsigned long delay;
@@ -68,10 +64,7 @@ int wl1251_ps_elp_wakeup(struct wl1251 *wl)
 
 	elp_reg = wl1251_read_elp(wl, HW_ACCESS_ELP_CTRL_REG_ADDR);
 
-	/*
-	 * FIXME: we should wait for irq from chip but, as a temporary
-	 * solution to simplify locking, let's poll instead
-	 */
+	 
 	while (!(elp_reg & ELPCTRL_WLAN_READY)) {
 		if (time_after(jiffies, timeout)) {
 			wl1251_error("elp wakeup timeout");
@@ -97,7 +90,7 @@ int wl1251_ps_set_mode(struct wl1251 *wl, enum wl1251_station_mode mode)
 	case STATION_POWER_SAVE_MODE:
 		wl1251_debug(DEBUG_PSM, "entering psm");
 
-		/* enable beacon filtering */
+		 
 		ret = wl1251_acx_beacon_filter_opt(wl, true);
 		if (ret < 0)
 			return ret;
@@ -140,13 +133,13 @@ int wl1251_ps_set_mode(struct wl1251 *wl, enum wl1251_station_mode mode)
 		if (ret < 0)
 			return ret;
 
-		/* disable BET */
+		 
 		ret = wl1251_acx_bet_enable(wl, WL1251_ACX_BET_DISABLE,
 					    WL1251_DEFAULT_BET_CONSECUTIVE);
 		if (ret < 0)
 			return ret;
 
-		/* disable beacon filtering */
+		 
 		ret = wl1251_acx_beacon_filter_opt(wl, false);
 		if (ret < 0)
 			return ret;

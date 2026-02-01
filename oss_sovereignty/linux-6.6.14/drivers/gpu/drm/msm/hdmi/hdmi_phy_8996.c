@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -30,9 +28,9 @@ struct hdmi_pll_8996 {
 	struct platform_device *pdev;
 	struct clk_hw clk_hw;
 
-	/* pll mmio base */
+	 
 	void __iomem *mmio_qserdes_com;
-	/* tx channel base */
+	 
 	void __iomem *mmio_qserdes_tx[HDMI_NUM_TX_CHANNEL];
 };
 
@@ -233,7 +231,7 @@ static int pll_calculate(unsigned long pix_clk, unsigned long ref_clk,
 	u32 pll_cmp;
 	int i, ret;
 
-	/* bit clk = 10 * pix_clk */
+	 
 	bclk = ((u64)pix_clk) * 10;
 
 	if (bclk > HDMI_HIGH_FREQ_BIT_CLK_THRESHOLD)
@@ -281,7 +279,7 @@ static int pll_calculate(unsigned long pix_clk, unsigned long ref_clk,
 	DBG("TX_BAND: %d", pd.tx_band_sel);
 	DBG("PLL_CMP: %u", pll_cmp);
 
-	/* Convert these values to register specific values */
+	 
 	if (bclk > HDMI_DIG_FREQ_BIT_CLK_THRESHOLD)
 		cfg->com_svs_mode_clk_sel = 1;
 	else
@@ -408,12 +406,12 @@ static int hdmi_8996_pll_set_clk_rate(struct clk_hw *hw, unsigned long rate,
 		return ret;
 	}
 
-	/* Initially shut down PHY */
+	 
 	DBG("Disabling PHY");
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_PD_CTL, 0x0);
 	udelay(500);
 
-	/* Power up sequence */
+	 
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_BG_CTRL, 0x04);
 
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_PD_CTL, 0x1);
@@ -444,7 +442,7 @@ static int hdmi_8996_pll_set_clk_rate(struct clk_hw *hw, unsigned long rate,
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_SYS_CLK_CTRL, 0x02);
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_CLK_ENABLE1, 0x0E);
 
-	/* Bypass VCO calibration */
+	 
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_SVS_MODE_CLK_SEL,
 		       cfg.com_svs_mode_clk_sel);
 
@@ -497,7 +495,7 @@ static int hdmi_8996_pll_set_clk_rate(struct clk_hw *hw, unsigned long rate,
 
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_RESCODE_DIV_NUM, 0x15);
 
-	/* TX lanes setup (TX 0/1/2/3) */
+	 
 	for (i = 0; i < HDMI_NUM_TX_CHANNEL; i++) {
 		hdmi_tx_chan_write(pll, i,
 				   REG_HDMI_PHY_QSERDES_TX_LX_TX_DRV_LVL,
@@ -531,10 +529,7 @@ static int hdmi_8996_pll_set_clk_rate(struct clk_hw *hw, unsigned long rate,
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_MODE, cfg.phy_mode);
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_PD_CTL, 0x1F);
 
-	/*
-	 * Ensure that vco configuration gets flushed to hardware before
-	 * enabling the PLL
-	 */
+	 
 	wmb();
 
 	return 0;
@@ -610,7 +605,7 @@ static int hdmi_8996_pll_prepare(struct clk_hw *hw)
 			REG_HDMI_PHY_QSERDES_TX_LX_HIGHZ_TRANSCEIVEREN_BIAS_DRVR_EN,
 			0x6F);
 
-	/* Disable SSC */
+	 
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_SSC_PER1, 0x0);
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_SSC_PER2, 0x0);
 	hdmi_pll_write(pll, REG_HDMI_PHY_QSERDES_COM_SSC_STEP_SIZE1, 0x0);
@@ -621,7 +616,7 @@ static int hdmi_8996_pll_prepare(struct clk_hw *hw)
 	if (!ret)
 		return ret;
 
-	/* Restart the retiming buffer */
+	 
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_CFG, 0x18);
 	udelay(1);
 	hdmi_phy_write(phy, REG_HDMI_8996_PHY_CFG, 0x19);

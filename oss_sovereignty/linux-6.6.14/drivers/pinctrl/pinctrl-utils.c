@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Utils functions to implement the pincontrol driver.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/export.h>
 #include <linux/kernel.h>

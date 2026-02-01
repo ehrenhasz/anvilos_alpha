@@ -1,17 +1,9 @@
-/*
- *  linux/fs/hfs/sysdep.c
- *
- * Copyright (C) 1996  Paul H. Hargrove
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- * This file may be distributed under the terms of the GNU General Public License.
- *
- * This file contains the code to do various system dependent things.
- */
+ 
 
 #include <linux/namei.h>
 #include "hfs_fs.h"
 
-/* dentry case-handling: just lowercase everything */
+ 
 
 static int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)
 {
@@ -25,7 +17,7 @@ static int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)
 	if(!inode)
 		return 1;
 
-	/* fix up inode on a timezone change */
+	 
 	diff = sys_tz.tz_minuteswest * 60 - HFS_I(inode)->tz_secondswest;
 	if (diff) {
 		struct timespec64 ctime = inode_get_ctime(inode);

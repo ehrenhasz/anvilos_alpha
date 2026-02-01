@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vsock_diag_test - vsock_diag.ko test suite
- *
- * Copyright (C) 2017 Red Hat, Inc.
- *
- * Author: Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 
 #include <getopt.h>
 #include <stdio.h>
@@ -26,7 +20,7 @@
 #include "control.h"
 #include "util.h"
 
-/* Per-socket status */
+ 
 struct vsock_stat {
 	struct list_head list;
 	struct vsock_diag_msg msg;
@@ -248,9 +242,7 @@ static void add_vsock_stat(struct list_head *sockets,
 	list_add_tail(&st->list, sockets);
 }
 
-/*
- * Read vsock stats into a list.
- */
+ 
 static void read_vsock_stat(struct list_head *sockets)
 {
 	long buf[8192 / sizeof(long)];

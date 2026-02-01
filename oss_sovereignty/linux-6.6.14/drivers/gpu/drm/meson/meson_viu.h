@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+ 
+ 
 
-/* Video Input Unit */
+ 
 
 #ifndef __MESON_VIU_H
 #define __MESON_VIU_H
 
-/* OSDx_BLKx_CFG */
+ 
 #define OSD_MALI_SRC_EN		BIT(30)
 
 #define OSD_CANVAS_SEL		16
@@ -49,14 +46,14 @@
 #define OSD_INTERLACE_ODD	BIT(0)
 #define OSD_INTERLACE_EVEN	(0)
 
-/* OSDx_CTRL_STAT */
+ 
 #define OSD_ENABLE		BIT(21)
 #define OSD_MEM_LINEAR_ADDR	BIT(2)
 #define OSD_BLK0_ENABLE		BIT(0)
 
 #define OSD_GLOBAL_ALPHA_SHIFT	12
 
-/* OSDx_CTRL_STAT2 */
+ 
 #define OSD_DPATH_MALI_AFBCD	BIT(15)
 #define OSD_REPLACE_EN		BIT(14)
 #define OSD_REPLACE_SHIFT	6
@@ -69,4 +66,4 @@ void meson_viu_gxm_enable_osd1_afbc(struct meson_drm *priv);
 void meson_viu_gxm_disable_osd1_afbc(struct meson_drm *priv);
 void meson_viu_init(struct meson_drm *priv);
 
-#endif /* __MESON_VIU_H */
+#endif  

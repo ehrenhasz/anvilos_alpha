@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __CI_DPM_H__
 #define __CI_DPM_H__
 
@@ -213,18 +192,18 @@ struct ci_power_info {
 	u32 mclk_edc_enable_threshold;
 	u32 mclk_edc_wr_enable_threshold;
 	struct ci_vbios_boot_state vbios_boot_state;
-	/* smc offsets */
+	 
 	u32 sram_end;
 	u32 dpm_table_start;
 	u32 soft_regs_start;
 	u32 mc_reg_table_start;
 	u32 fan_table_start;
 	u32 arb_table_start;
-	/* smc tables */
+	 
 	SMU7_Discrete_DpmTable smc_state_table;
 	SMU7_Discrete_MCRegisters smc_mc_reg_table;
 	SMU7_Discrete_PmFuses smc_powertune_table;
-	/* other stuff */
+	 
 	struct ci_mc_reg_table mc_reg_table;
 	struct atom_voltage_table vddc_voltage_table;
 	struct atom_voltage_table vddci_voltage_table;
@@ -250,7 +229,7 @@ struct ci_power_info {
 	u32 low_sclk_interrupt_t;
 	u32 last_mclk_dpm_enable_mask;
 	u32 sys_pcie_mask;
-	/* caps */
+	 
 	bool caps_power_containment;
 	bool caps_cac;
 	bool caps_sq_ramping;
@@ -269,7 +248,7 @@ struct ci_power_info {
 	bool caps_sclk_throttle_low_notification;
 	bool caps_dynamic_ac_timing;
 	bool caps_od_fuzzy_fan_control_support;
-	/* flags */
+	 
 	bool thermal_protection;
 	bool pcie_performance_request;
 	bool dynamic_ss;
@@ -285,12 +264,12 @@ struct ci_power_info {
 	bool use_pcie_performance_levels;
 	bool use_pcie_powersaving_levels;
 	bool uvd_power_gated;
-	/* driver states */
+	 
 	struct radeon_ps current_rps;
 	struct ci_ps current_ps;
 	struct radeon_ps requested_rps;
 	struct ci_ps requested_ps;
-	/* fan control */
+	 
 	bool fan_ctrl_is_in_default_mode;
 	bool fan_is_controlled_by_smc;
 	u32 t_min;

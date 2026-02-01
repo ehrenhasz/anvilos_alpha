@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Brian Starkey <brian.starkey@arm.com>
- *
- * ARM Mali DP Writeback connector implementation
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -161,7 +156,7 @@ malidp_mw_encoder_atomic_check(struct drm_encoder *encoder,
 	n_planes = fb->format->num_planes;
 	for (i = 0; i < n_planes; i++) {
 		struct drm_gem_dma_object *obj = drm_fb_dma_get_gem_obj(fb, i);
-		/* memory write buffers are never rotated */
+		 
 		u8 alignment = malidp_hw_get_pitch_align(malidp->dev, 0);
 
 		if (fb->pitches[i] & (alignment - 1)) {

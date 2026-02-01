@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2023, Advanced Micro Devices, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "tc_encap_actions.h"
 #include "tc.h"
@@ -64,9 +57,7 @@ fail_neigh_ht:
 	return rc;
 }
 
-/* Only call this in init failure teardown.
- * Normal exit should fini instead as there may be entries in the table.
- */
+ 
 void efx_tc_destroy_encap_actions(struct efx_nic *efx)
 {
 	rhashtable_destroy(&efx->tc->encap_ht);
@@ -90,10 +81,7 @@ static int efx_bind_neigh(struct efx_nic *efx,
 	struct flowi4 flow4 = {};
 	int rc;
 
-	/* GCC stupidly thinks that only values explicitly listed in the enum
-	 * definition can _possibly_ be sensible case values, so without this
-	 * cast it complains about the IPv6 versions.
-	 */
+	 
 	switch ((int)encap->type) {
 	case EFX_ENCAP_TYPE_VXLAN:
 	case EFX_ENCAP_TYPE_GENEVE:
@@ -129,17 +117,17 @@ static int efx_bind_neigh(struct efx_nic *efx,
 						&neigh->linkage,
 						efx_neigh_ht_params);
 	if (old) {
-		/* don't need our new entry */
+		 
 		put_net_track(neigh->net, &neigh->ns_tracker);
 		kfree(neigh);
-		if (IS_ERR(old)) /* oh dear, it's actually an error */
+		if (IS_ERR(old))  
 			return PTR_ERR(old);
 		if (!refcount_inc_not_zero(&old->ref))
 			return -EAGAIN;
-		/* existing entry found, ref taken */
+		 
 		neigh = old;
 	} else {
-		/* New entry.  We need to initiate a lookup */
+		 
 		struct neighbour *n;
 		struct rtable *rt;
 
@@ -161,9 +149,7 @@ static int efx_bind_neigh(struct efx_nic *efx,
 			n = dst_neigh_lookup(dst, &flow6.daddr);
 			dst_release(dst);
 #else
-			/* We shouldn't ever get here, because if IPv6 isn't
-			 * enabled how did someone create an IPv6 tunnel_key?
-			 */
+			 
 			rc = -EOPNOTSUPP;
 			NL_SET_ERR_MSG_MOD(extack, "No IPv6 support (neigh bind)");
 			goto out_free;
@@ -201,17 +187,17 @@ static int efx_bind_neigh(struct efx_nic *efx,
 		neigh->efx = efx;
 		neigh->used = jiffies;
 		if (!neigh->n_valid)
-			/* Prod ARP to find us a neighbour */
+			 
 			neigh_event_send(n, NULL);
 		neigh_release(n);
 	}
-	/* Add us to this neigh */
+	 
 	encap->neigh = neigh;
 	list_add_tail(&encap->list, &neigh->users);
 	return 0;
 
 out_free:
-	/* cleanup common to several error paths */
+	 
 	rhashtable_remove_fast(&efx->tc->neigh_ht, &neigh->linkage,
 			       efx_neigh_ht_params);
 	synchronize_rcu();
@@ -242,7 +228,7 @@ static void efx_release_neigh(struct efx_nic *efx,
 	list_del(&encap->list);
 	encap->neigh = NULL;
 	if (!refcount_dec_and_test(&neigh->ref))
-		return; /* still in use */
+		return;  
 	efx_free_neigh(neigh);
 }
 
@@ -335,9 +321,7 @@ static void efx_gen_tun_header_geneve(struct efx_tc_encap_action *encap)
 	encap->encap_hdr_len += sizeof(*geneve);
 
 	geneve->proto_type = htons(ETH_P_TEB);
-	/* convert tun_id to host-endian so we can use host arithmetic to
-	 * extract individual bytes.
-	 */
+	 
 	vni = ntohl(tunnel_id_to_key32(key->tun_id));
 	geneve->vni[0] = vni >> 16;
 	geneve->vni[1] = vni >> 8;
@@ -393,10 +377,7 @@ static void efx_gen_encap_header(struct efx_nic *efx,
 {
 	encap->n_valid = encap->neigh->n_valid;
 
-	/* GCC stupidly thinks that only values explicitly listed in the enum
-	 * definition can _possibly_ be sensible case values, so without this
-	 * cast it complains about the IPv6 versions.
-	 */
+	 
 	switch ((int)encap->type) {
 	case EFX_ENCAP_TYPE_VXLAN:
 		efx_gen_vxlan_header_ipv4(encap);
@@ -413,13 +394,13 @@ static void efx_gen_encap_header(struct efx_nic *efx,
 		break;
 #endif
 	default:
-		/* unhandled encap type, can't happen */
+		 
 		if (net_ratelimit())
 			netif_err(efx, drv, efx->net_dev,
 				  "Bogus encap type %d, can't generate\n",
 				  encap->type);
 
-		/* Use fallback action. */
+		 
 		encap->n_valid = false;
 		break;
 	}
@@ -434,15 +415,15 @@ static void efx_tc_update_encap(struct efx_nic *efx,
 	int rc;
 
 	if (encap->n_valid) {
-		/* Make sure no rules are using this encap while we change it */
+		 
 		list_for_each_entry(act, &encap->users, encap_user) {
 			acts = act->user;
-			if (WARN_ON(!acts)) /* can't happen */
+			if (WARN_ON(!acts))  
 				continue;
 			rule = container_of(acts, struct efx_tc_flow_rule, acts);
 			if (rule->fallback)
 				fallback = rule->fallback;
-			else /* fallback fallback: deliver to PF */
+			else  
 				fallback = &efx->tc->facts.pf;
 			rc = efx_mae_update_rule(efx, fallback->fw_id,
 						 rule->fw_id);
@@ -456,10 +437,7 @@ static void efx_tc_update_encap(struct efx_nic *efx,
 		}
 	}
 
-	/* Make sure we don't leak arbitrary bytes on the wire;
-	 * set an all-0s ethernet header.  A successful call to
-	 * efx_gen_encap_header() will overwrite this.
-	 */
+	 
 	memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
 	encap->encap_hdr_len = ETH_HLEN;
 
@@ -482,10 +460,10 @@ static void efx_tc_update_encap(struct efx_nic *efx,
 		  encap->fw_id);
 	if (!encap->n_valid)
 		return;
-	/* Update rule users: use the action if they are now ready */
+	 
 	list_for_each_entry(act, &encap->users, encap_user) {
 		acts = act->user;
-		if (WARN_ON(!acts)) /* can't happen */
+		if (WARN_ON(!acts))  
 			continue;
 		rule = container_of(acts, struct efx_tc_flow_rule, acts);
 		if (!efx_tc_check_ready(efx, rule))
@@ -510,7 +488,7 @@ static void efx_neigh_update(struct work_struct *work)
 	mutex_lock(&efx->tc->mutex);
 	list_for_each_entry(encap, &neigh->users, list)
 		efx_tc_update_encap(neigh->efx, encap);
-	/* release ref taken in efx_neigh_event() */
+	 
 	if (refcount_dec_and_test(&neigh->ref))
 		efx_free_neigh(neigh);
 	mutex_unlock(&efx->tc->mutex);
@@ -546,7 +524,7 @@ static int efx_neigh_event(struct efx_nic *efx, struct neighbour *n)
 			   n->tbl->key_len);
 		return NOTIFY_DONE;
 	}
-	read_lock_bh(&n->lock); /* Get a consistent view */
+	read_lock_bh(&n->lock);  
 	memcpy(ha, n->ha, ETH_ALEN);
 	n_valid = (n->nud_state & NUD_VALID) && !n->dead;
 	read_unlock_bh(&n->lock);
@@ -558,12 +536,12 @@ static int efx_neigh_event(struct efx_nic *efx, struct neighbour *n)
 	neigh = rhashtable_lookup_fast(&efx->tc->neigh_ht, &keys,
 				       efx_neigh_ht_params);
 	if (!neigh || neigh->dying)
-		/* We're not interested in this neighbour */
+		 
 		goto done;
 	write_lock_bh(&neigh->lock);
 	if (n_valid == neigh->n_valid && !memcmp(ha, neigh->ha, ETH_ALEN)) {
 		write_unlock_bh(&neigh->lock);
-		/* Nothing has changed; no work to do */
+		 
 		goto done;
 	}
 	neigh->n_valid = n_valid;
@@ -572,7 +550,7 @@ static int efx_neigh_event(struct efx_nic *efx, struct neighbour *n)
 	if (refcount_inc_not_zero(&neigh->ref)) {
 		rcu_read_unlock();
 		if (!schedule_work(&neigh->work))
-			/* failed to schedule, release the ref we just took */
+			 
 			if (refcount_dec_and_test(&neigh->ref))
 				efx_free_neigh(neigh);
 	} else {
@@ -586,9 +564,7 @@ bool efx_tc_check_ready(struct efx_nic *efx, struct efx_tc_flow_rule *rule)
 {
 	struct efx_tc_action_set *act;
 
-	/* Encap actions can only be offloaded if they have valid
-	 * neighbour info for the outer Ethernet header.
-	 */
+	 
 	list_for_each_entry(act, &rule->acts.list, list)
 		if (act->encap_md && !act->encap_md->n_valid)
 			return false;
@@ -605,7 +581,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
 	s64 rc;
 
 	if (type == EFX_ENCAP_TYPE_NONE) {
-		/* dest is not an encap device */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "Not a (supported) tunnel device but tunnel_key is set");
 		return ERR_PTR(-EOPNOTSUPP);
 	}
@@ -614,7 +590,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
 		NL_SET_ERR_MSG_MOD(extack, "Firmware reports no support for this tunnel type");
 		return ERR_PTR(rc);
 	}
-	/* No support yet for Geneve options */
+	 
 	if (info->options_len) {
 		NL_SET_ERR_MSG_MOD(extack, "Unsupported tunnel options");
 		return ERR_PTR(-EOPNOTSUPP);
@@ -640,13 +616,13 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
 						&encap->linkage,
 						efx_tc_encap_ht_params);
 	if (old) {
-		/* don't need our new entry */
+		 
 		kfree(encap);
-		if (IS_ERR(old)) /* oh dear, it's actually an error */
+		if (IS_ERR(old))  
 			return ERR_CAST(old);
 		if (!refcount_inc_not_zero(&old->ref))
 			return ERR_PTR(-EAGAIN);
-		/* existing entry found, ref taken */
+		 
 		return old;
 	}
 
@@ -655,7 +631,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
 		goto out_remove;
 	to_efv = efx_tc_flower_lookup_efv(efx, encap->neigh->egdev);
 	if (IS_ERR(to_efv)) {
-		/* neigh->egdev isn't ours */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "Tunnel egress device not on switch");
 		rc = PTR_ERR(to_efv);
 		goto out_release;
@@ -676,7 +652,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
 		goto out_release;
 	}
 
-	/* ref and return */
+	 
 	refcount_set(&encap->ref, 1);
 	return encap;
 out_release:
@@ -692,7 +668,7 @@ void efx_tc_flower_release_encap_md(struct efx_nic *efx,
 				    struct efx_tc_encap_action *encap)
 {
 	if (!refcount_dec_and_test(&encap->ref))
-		return; /* still in use */
+		return;  
 	efx_release_neigh(efx, encap);
 	rhashtable_remove_fast(&efx->tc->encap_ht, &encap->linkage,
 			       efx_tc_encap_ht_params);
@@ -705,9 +681,9 @@ static void efx_tc_remove_neigh_users(struct efx_nic *efx, struct efx_neigh_bind
 	struct efx_tc_encap_action *encap, *next;
 
 	list_for_each_entry_safe(encap, next, &neigh->users, list) {
-		/* Should cause neigh usage count to fall to zero, freeing it */
+		 
 		efx_release_neigh(efx, encap);
-		/* The encap has lost its neigh, so it's now unready */
+		 
 		efx_tc_update_encap(efx, encap);
 	}
 }
@@ -727,8 +703,8 @@ void efx_tc_unregister_egdev(struct efx_nic *efx, struct net_device *net_dev)
 			continue;
 		neigh->dying = true;
 		rhashtable_walk_stop(&walk);
-		synchronize_rcu(); /* Make sure any updates see dying flag */
-		efx_tc_remove_neigh_users(efx, neigh); /* might sleep */
+		synchronize_rcu();  
+		efx_tc_remove_neigh_users(efx, neigh);  
 		rhashtable_walk_start(&walk);
 	}
 	rhashtable_walk_stop(&walk);

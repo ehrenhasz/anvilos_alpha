@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  blacklist.c
- *
- *  Check to see if the given machine has a known bad ACPI BIOS
- *  or if the BIOS is too old.
- *  Check given machine against acpi_rev_dmi_table[].
- *
- *  Copyright (C) 2004 Len Brown <len.brown@intel.com>
- *  Copyright (C) 2002 Andy Grover <andrew.grover@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -23,21 +14,18 @@
 static const struct dmi_system_id acpi_rev_dmi_table[] __initconst;
 #endif
 
-/*
- * POLICY: If *anything* doesn't work, put it on the blacklist.
- *	   If they are critical errors, mark it critical, and abort driver load.
- */
+ 
 static struct acpi_platform_list acpi_blacklist[] __initdata = {
-	/* Compaq Presario 1700 */
+	 
 	{"PTLTD ", "  DSDT  ", 0x06040000, ACPI_SIG_DSDT, less_than_or_equal,
 	 "Multiple problems", 1},
-	/* Sony FX120, FX140, FX150? */
+	 
 	{"SONY  ", "U0      ", 0x20010313, ACPI_SIG_DSDT, less_than_or_equal,
 	 "ACPI driver problem", 1},
-	/* Compaq Presario 800, Insyde BIOS */
+	 
 	{"INT440", "SYSFexxx", 0x00001001, ACPI_SIG_DSDT, less_than_or_equal,
 	 "Does not use _REG to protect EC OpRegions", 1},
-	/* IBM 600E - _ADR should return 7, but it returns 1 */
+	 
 	{"IBM   ", "TP600E  ", 0x00000105, ACPI_SIG_DSDT, less_than_or_equal,
 	 "Incorrect _ADR", 1},
 
@@ -83,12 +71,7 @@ static int __init dmi_enable_rev_override(const struct dmi_system_id *d)
 
 static const struct dmi_system_id acpi_rev_dmi_table[] __initconst = {
 #ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
-	/*
-	 * DELL XPS 13 (2015) switches sound between HDA and I2S
-	 * depending on the ACPI _REV callback. If userspace supports
-	 * I2S sufficiently (or if you do not care about sound), you
-	 * can safely disable this quirk.
-	 */
+	 
 	{
 	 .callback = dmi_enable_rev_override,
 	 .ident = "DELL XPS 13 (2015)",
@@ -113,10 +96,7 @@ static const struct dmi_system_id acpi_rev_dmi_table[] __initconst = {
 		      DMI_MATCH(DMI_PRODUCT_NAME, "Precision 3520"),
 		},
 	},
-	/*
-	 * Resolves a quirk with the Dell Latitude 3350 that
-	 * causes the ethernet adapter to not function.
-	 */
+	 
 	{
 	 .callback = dmi_enable_rev_override,
 	 .ident = "DELL Latitude 3350",
@@ -137,4 +117,4 @@ static const struct dmi_system_id acpi_rev_dmi_table[] __initconst = {
 	{}
 };
 
-#endif /* CONFIG_DMI */
+#endif  

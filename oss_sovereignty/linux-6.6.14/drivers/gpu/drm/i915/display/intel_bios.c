@@ -1,29 +1,4 @@
-/*
- * Copyright © 2006 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *
- */
+ 
 
 #include <drm/display/drm_dp_helper.h>
 #include <drm/display/drm_dsc_helper.h>
@@ -38,29 +13,9 @@
 #define _INTEL_BIOS_PRIVATE
 #include "intel_vbt_defs.h"
 
-/**
- * DOC: Video BIOS Table (VBT)
- *
- * The Video BIOS Table, or VBT, provides platform and board specific
- * configuration information to the driver that is not discoverable or available
- * through other means. The configuration is mostly related to display
- * hardware. The VBT is available via the ACPI OpRegion or, on older systems, in
- * the PCI ROM.
- *
- * The VBT consists of a VBT Header (defined as &struct vbt_header), a BDB
- * Header (&struct bdb_header), and a number of BIOS Data Blocks (BDB) that
- * contain the actual configuration information. The VBT Header, and thus the
- * VBT, begins with "$VBT" signature. The VBT Header contains the offset of the
- * BDB Header. The data blocks are concatenated after the BDB Header. The data
- * blocks have a 1-byte Block ID, 2-byte Block Size, and Block Size bytes of
- * data. (Block 53, the MIPI Sequence Block is an exception.)
- *
- * The driver parses the VBT during load. The relevant information is stored in
- * driver private data for ease of use, and the actual VBT is not read after
- * that.
- */
+ 
 
-/* Wrapper for VBT child device config */
+ 
 struct intel_bios_encoder_data {
 	struct drm_i915_private *i915;
 
@@ -72,17 +27,17 @@ struct intel_bios_encoder_data {
 #define	SLAVE_ADDR1	0x70
 #define	SLAVE_ADDR2	0x72
 
-/* Get BDB block size given a pointer to Block ID. */
+ 
 static u32 _get_blocksize(const u8 *block_base)
 {
-	/* The MIPI Sequence Block v3+ has a separate size field. */
+	 
 	if (*block_base == BDB_MIPI_SEQUENCE && *(block_base + 3) >= 3)
 		return *((const u32 *)(block_base + 4));
 	else
 		return *((const u16 *)(block_base + 1));
 }
 
-/* Get BDB block size give a pointer to data after Block ID and Block Size. */
+ 
 static u32 get_blocksize(const void *block_data)
 {
 	return _get_blocksize(block_data - 3);
@@ -97,11 +52,11 @@ find_raw_section(const void *_bdb, enum bdb_block_id section_id)
 	u32 total, current_size;
 	enum bdb_block_id current_id;
 
-	/* skip to first section */
+	 
 	index += bdb->header_size;
 	total = bdb->bdb_size;
 
-	/* walk the sections looking for section_id */
+	 
 	while (index + 3 < total) {
 		current_id = *(base + index);
 		current_size = _get_blocksize(base + index);
@@ -119,10 +74,7 @@ find_raw_section(const void *_bdb, enum bdb_block_id section_id)
 	return NULL;
 }
 
-/*
- * Offset from the start of BDB to the start of the
- * block data (just past the block header).
- */
+ 
 static u32 raw_block_offset(const void *bdb, enum bdb_block_id section_id)
 {
 	const void *block;
@@ -174,14 +126,11 @@ static const struct {
 	  .min_size = sizeof(struct bdb_edp), },
 	{ .section_id = BDB_LVDS_OPTIONS,
 	  .min_size = sizeof(struct bdb_lvds_options), },
-	/*
-	 * BDB_LVDS_LFP_DATA depends on BDB_LVDS_LFP_DATA_PTRS,
-	 * so keep the two ordered.
-	 */
+	 
 	{ .section_id = BDB_LVDS_LFP_DATA_PTRS,
 	  .min_size = sizeof(struct bdb_lvds_lfp_data_ptrs), },
 	{ .section_id = BDB_LVDS_LFP_DATA,
-	  .min_size = 0, /* special case */ },
+	  .min_size = 0,   },
 	{ .section_id = BDB_LVDS_BACKLIGHT,
 	  .min_size = sizeof(struct bdb_lfp_backlight_data), },
 	{ .section_id = BDB_LFP_POWER,
@@ -229,7 +178,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	if (data_block_size == 0)
 		return false;
 
-	/* always 3 indicating the presence of fp_timing+dvo_timing+panel_pnp_id */
+	 
 	if (ptrs->lvds_entries != 3)
 		return false;
 
@@ -238,13 +187,13 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	panel_pnp_id_size = ptrs->ptr[0].panel_pnp_id.table_size;
 	panel_name_size = ptrs->panel_name.table_size;
 
-	/* fp_timing has variable size */
+	 
 	if (fp_timing_size < 32 ||
 	    dvo_timing_size != sizeof(struct lvds_dvo_timing) ||
 	    panel_pnp_id_size != sizeof(struct lvds_pnp_id))
 		return false;
 
-	/* panel_name is not present in old VBTs */
+	 
 	if (panel_name_size != 0 &&
 	    panel_name_size != sizeof(struct lvds_lfp_panel_name))
 		return false;
@@ -253,7 +202,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	if (16 * lfp_data_size > data_block_size)
 		return false;
 
-	/* make sure the table entries have uniform size */
+	 
 	for (i = 1; i < 16; i++) {
 		if (ptrs->ptr[i].fp_timing.table_size != fp_timing_size ||
 		    ptrs->ptr[i].dvo_timing.table_size != dvo_timing_size ||
@@ -266,12 +215,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 			return false;
 	}
 
-	/*
-	 * Except for vlv/chv machines all real VBTs seem to have 6
-	 * unaccounted bytes in the fp_timing table. And it doesn't
-	 * appear to be a really intentional hole as the fp_timing
-	 * 0xffff terminator is always within those 6 missing bytes.
-	 */
+	 
 	if (fp_timing_size + 6 + dvo_timing_size + panel_pnp_id_size == lfp_data_size)
 		fp_timing_size += 6;
 
@@ -283,7 +227,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	    ptrs->ptr[0].panel_pnp_id.offset + panel_pnp_id_size != lfp_data_size)
 		return false;
 
-	/* make sure the tables fit inside the data block */
+	 
 	for (i = 0; i < 16; i++) {
 		if (ptrs->ptr[i].fp_timing.offset + fp_timing_size > data_block_size ||
 		    ptrs->ptr[i].dvo_timing.offset + dvo_timing_size > data_block_size ||
@@ -294,7 +238,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	if (ptrs->panel_name.offset + 16 * panel_name_size > data_block_size)
 		return false;
 
-	/* make sure fp_timing terminators are present at expected locations */
+	 
 	for (i = 0; i < 16; i++) {
 		const u16 *t = data_block + ptrs->ptr[i].fp_timing.offset +
 			fp_timing_size - 2;
@@ -306,7 +250,7 @@ static bool validate_lfp_data_ptrs(const void *bdb,
 	return true;
 }
 
-/* make the data table offsets relative to the data block */
+ 
 static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
 {
 	struct bdb_lvds_lfp_data_ptrs *ptrs = ptrs_block;
@@ -364,12 +308,7 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
 	const void *block;
 	void *ptrs_block;
 
-	/*
-	 * The hardcoded fp_timing_size is only valid for
-	 * modernish VBTs. All older VBTs definitely should
-	 * include block 41 and thus we don't need to
-	 * generate one.
-	 */
+	 
 	if (i915->display.vbt.version < 155)
 		return NULL;
 
@@ -458,7 +397,7 @@ init_bdb_block(struct drm_i915_private *i915,
 
 	block = find_raw_section(bdb, section_id);
 
-	/* Modern VBTs lack the LFP data table pointers block, make one up */
+	 
 	if (!block && section_id == BDB_LVDS_LFP_DATA_PTRS) {
 		temp_block = generate_lfp_data_ptrs(i915, bdb);
 		if (temp_block)
@@ -472,10 +411,7 @@ init_bdb_block(struct drm_i915_private *i915,
 
 	block_size = get_blocksize(block);
 
-	/*
-	 * Version number and new block size are considered
-	 * part of the header for MIPI sequenece block v3+.
-	 */
+	 
 	if (section_id == BDB_MIPI_SEQUENCE && *(const u8 *)block >= 3)
 		block_size += 5;
 
@@ -561,7 +497,7 @@ fill_detail_timing_data(struct drm_display_mode *panel_fixed_mode,
 	panel_fixed_mode->height_mm = (dvo_timing->vimage_hi << 8) |
 		dvo_timing->vimage_lo;
 
-	/* Some VBTs have bogus h/vtotal values */
+	 
 	if (panel_fixed_mode->hsync_end > panel_fixed_mode->htotal)
 		panel_fixed_mode->htotal = panel_fixed_mode->hsync_end + 1;
 	if (panel_fixed_mode->vsync_end > panel_fixed_mode->vtotal)
@@ -657,7 +593,7 @@ static int pnpid_get_panel_type(struct drm_i915_private *i915,
 	const struct bdb_lvds_lfp_data_ptrs *ptrs;
 	const struct lvds_pnp_id *edid_id;
 	struct lvds_pnp_id edid_id_nodate;
-	const struct edid *edid = drm_edid_raw(drm_edid); /* FIXME */
+	const struct edid *edid = drm_edid_raw(drm_edid);  
 	int i, best = -1;
 
 	if (!edid)
@@ -683,14 +619,11 @@ static int pnpid_get_panel_type(struct drm_i915_private *i915,
 		const struct lvds_pnp_id *vbt_id =
 			get_lvds_pnp_id(data, ptrs, i);
 
-		/* full match? */
+		 
 		if (!memcmp(vbt_id, edid_id, sizeof(*vbt_id)))
 			return i;
 
-		/*
-		 * Accept a match w/o date if no full match is found,
-		 * and the VBT entry does not specify a date.
-		 */
+		 
 		if (best < 0 &&
 		    !memcmp(vbt_id, &edid_id_nodate, sizeof(*vbt_id)))
 			best = i;
@@ -782,7 +715,7 @@ static bool panel_bool(unsigned int value, int panel_type)
 	return panel_bits(value, panel_type, 1);
 }
 
-/* Parse general panel options */
+ 
 static void
 parse_panel_options(struct drm_i915_private *i915,
 		    struct intel_panel *panel)
@@ -797,21 +730,13 @@ parse_panel_options(struct drm_i915_private *i915,
 
 	panel->vbt.lvds_dither = lvds_options->pixel_dither;
 
-	/*
-	 * Empirical evidence indicates the block size can be
-	 * either 4,14,16,24+ bytes. For older VBTs no clear
-	 * relationship between the block size vs. BDB version.
-	 */
+	 
 	if (get_blocksize(lvds_options) < 16)
 		return;
 
 	drrs_mode = panel_bits(lvds_options->dps_panel_type_bits,
 			       panel_type, 2);
-	/*
-	 * VBT has static DRRS = 0 and seamless DRRS = 2.
-	 * The below piece of code is required to adjust vbt.drrs_type
-	 * to match the enum drrs_support_type.
-	 */
+	 
 	switch (drrs_mode) {
 	case 0:
 		panel->vbt.drrs_type = DRRS_TYPE_STATIC;
@@ -861,7 +786,7 @@ parse_lfp_panel_dtd(struct drm_i915_private *i915,
 				       lvds_lfp_data_ptrs,
 				       panel_type);
 
-	/* check the resolution, just to be sure */
+	 
 	if (fp_timing->x_res == panel_fixed_mode->hdisplay &&
 	    fp_timing->y_res == panel_fixed_mode->vdisplay) {
 		panel->vbt.bios_lvds_val = fp_timing->lvds_reg_val;
@@ -921,14 +846,7 @@ parse_generic_dtd(struct drm_i915_private *i915,
 	struct drm_display_mode *panel_fixed_mode;
 	int num_dtd;
 
-	/*
-	 * Older VBTs provided DTD information for internal displays through
-	 * the "LFP panel tables" block (42).  As of VBT revision 229 the
-	 * DTD information should be provided via a newer "generic DTD"
-	 * block (58).  Just to be safe, we'll try the new generic DTD block
-	 * first on VBT >= 229, but still fall back to trying the old LFP
-	 * block if that fails.
-	 */
+	 
 	if (i915->display.vbt.version < 229)
 		return;
 
@@ -944,7 +862,7 @@ parse_generic_dtd(struct drm_i915_private *i915,
 		   sizeof(struct generic_dtd_entry)) {
 		drm_err(&i915->drm, "Unexpected GDTD size %u\n",
 			generic_dtd->gdtd_size);
-		/* DTD has unknown fields, but keep going */
+		 
 	}
 
 	num_dtd = (get_blocksize(generic_dtd) -
@@ -1100,7 +1018,7 @@ parse_lfp_backlight(struct drm_i915_private *i915,
 		    panel->vbt.backlight.controller);
 }
 
-/* Try to find sdvo panel data */
+ 
 static void
 parse_sdvo_panel_data(struct drm_i915_private *i915,
 		      struct intel_panel *panel)
@@ -1167,7 +1085,7 @@ parse_general_features(struct drm_i915_private *i915)
 		return;
 
 	i915->display.vbt.int_tv_support = general->int_tv_support;
-	/* int_crt_support can't be trusted on earlier platforms */
+	 
 	if (i915->display.vbt.version >= 155 &&
 	    (HAS_DDI(i915) || IS_VALLEYVIEW(i915)))
 		i915->display.vbt.int_crt_support = general->int_crt_support;
@@ -1211,10 +1129,7 @@ parse_sdvo_device_mapping(struct drm_i915_private *i915)
 	const struct intel_bios_encoder_data *devdata;
 	int count = 0;
 
-	/*
-	 * Only parse SDVO mappings on gens that could have SDVO. This isn't
-	 * accurate and doesn't have to be, as long as it's not too strict.
-	 */
+	 
 	if (!IS_DISPLAY_VER(i915, 3, 7)) {
 		drm_dbg_kms(&i915->drm, "Skipping SDVO device mapping\n");
 		return;
@@ -1226,15 +1141,12 @@ parse_sdvo_device_mapping(struct drm_i915_private *i915)
 
 		if (child->slave_addr != SLAVE_ADDR1 &&
 		    child->slave_addr != SLAVE_ADDR2) {
-			/*
-			 * If the slave address is neither 0x70 nor 0x72,
-			 * it is not a SDVO device. Skip it.
-			 */
+			 
 			continue;
 		}
 		if (child->dvo_port != DEVICE_PORT_DVOB &&
 		    child->dvo_port != DEVICE_PORT_DVOC) {
-			/* skip the incorrect SDVO port */
+			 
 			drm_dbg_kms(&i915->drm,
 				    "Incorrect SDVO port. Skip it\n");
 			continue;
@@ -1264,8 +1176,8 @@ parse_sdvo_device_mapping(struct drm_i915_private *i915)
 				    "two SDVO device.\n");
 		}
 		if (child->slave2_addr) {
-			/* Maybe this is a SDVO device with multiple inputs */
-			/* And the mapping info is not added */
+			 
+			 
 			drm_dbg_kms(&i915->drm,
 				    "there exists the slave2_addr. Maybe this"
 				    " is a SDVO device with multiple inputs.\n");
@@ -1274,7 +1186,7 @@ parse_sdvo_device_mapping(struct drm_i915_private *i915)
 	}
 
 	if (!count) {
-		/* No SDVO device info is found */
+		 
 		drm_dbg_kms(&i915->drm,
 			    "No SDVO device info is found in VBT\n");
 	}
@@ -1290,25 +1202,11 @@ parse_driver_features(struct drm_i915_private *i915)
 		return;
 
 	if (DISPLAY_VER(i915) >= 5) {
-		/*
-		 * Note that we consider BDB_DRIVER_FEATURE_INT_SDVO_LVDS
-		 * to mean "eDP". The VBT spec doesn't agree with that
-		 * interpretation, but real world VBTs seem to.
-		 */
+		 
 		if (driver->lvds_config != BDB_DRIVER_FEATURE_INT_LVDS)
 			i915->display.vbt.int_lvds_support = 0;
 	} else {
-		/*
-		 * FIXME it's not clear which BDB version has the LVDS config
-		 * bits defined. Revision history in the VBT spec says:
-		 * "0.92 | Add two definitions for VBT value of LVDS Active
-		 *  Config (00b and 11b values defined) | 06/13/2005"
-		 * but does not the specify the BDB version.
-		 *
-		 * So far version 134 (on i945gm) is the oldest VBT observed
-		 * in the wild with the bits correctly populated. Version
-		 * 108 (on i85x) does not have the bits correctly populated.
-		 */
+		 
 		if (i915->display.vbt.version >= 134 &&
 		    driver->lvds_config != BDB_DRIVER_FEATURE_INT_LVDS &&
 		    driver->lvds_config != BDB_DRIVER_FEATURE_INT_SDVO_LVDS)
@@ -1329,17 +1227,9 @@ parse_panel_driver_features(struct drm_i915_private *i915,
 	if (i915->display.vbt.version < 228) {
 		drm_dbg_kms(&i915->drm, "DRRS State Enabled:%d\n",
 			    driver->drrs_enabled);
-		/*
-		 * If DRRS is not supported, drrs_type has to be set to 0.
-		 * This is because, VBT is configured in such a way that
-		 * static DRRS is 0 and DRRS not supported is represented by
-		 * driver->drrs_enabled=false
-		 */
+		 
 		if (!driver->drrs_enabled && panel->vbt.drrs_type != DRRS_TYPE_NONE) {
-			/*
-			 * FIXME Should DMRRS perhaps be treated as seamless
-			 * but without the automatic downclocking?
-			 */
+			 
 			if (driver->dmrrs_enabled)
 				panel->vbt.drrs_type = DRRS_TYPE_STATIC;
 			else
@@ -1357,7 +1247,7 @@ parse_power_conservation_features(struct drm_i915_private *i915,
 	const struct bdb_lfp_power *power;
 	u8 panel_type = panel->vbt.panel_type;
 
-	panel->vbt.vrr = true; /* matches Windows behaviour */
+	panel->vbt.vrr = true;  
 
 	if (i915->display.vbt.version < 228)
 		return;
@@ -1368,17 +1258,9 @@ parse_power_conservation_features(struct drm_i915_private *i915,
 
 	panel->vbt.psr.enable = panel_bool(power->psr, panel_type);
 
-	/*
-	 * If DRRS is not supported, drrs_type has to be set to 0.
-	 * This is because, VBT is configured in such a way that
-	 * static DRRS is 0 and DRRS not supported is represented by
-	 * power->drrs & BIT(panel_type)=false
-	 */
+	 
 	if (!panel_bool(power->drrs, panel_type) && panel->vbt.drrs_type != DRRS_TYPE_NONE) {
-		/*
-		 * FIXME Should DMRRS perhaps be treated as seamless
-		 * but without the automatic downclocking?
-		 */
+		 
 		if (panel_bool(power->dmrrs, panel_type))
 			panel->vbt.drrs_type = DRRS_TYPE_STATIC;
 		else
@@ -1418,7 +1300,7 @@ parse_edp(struct drm_i915_private *i915,
 		break;
 	}
 
-	/* Get the eDP sequencing and link info */
+	 
 	edp_pps = &edp->power_seqs[panel_type];
 	edp_link_params = &edp->fast_link_params[panel_type];
 
@@ -1506,7 +1388,7 @@ parse_edp(struct drm_i915_private *i915,
 	if (i915->display.vbt.version >= 173) {
 		u8 vswing;
 
-		/* Don't read from VBT if module parameter has valid value*/
+		 
 		if (i915->params.edp_vswing) {
 			panel->vbt.edp.low_vswing =
 				i915->params.edp_vswing == 1;
@@ -1543,14 +1425,11 @@ parse_psr(struct drm_i915_private *i915,
 	panel->vbt.psr.full_link = psr_table->full_link;
 	panel->vbt.psr.require_aux_wakeup = psr_table->require_aux_to_wakeup;
 
-	/* Allowed VBT values goes from 0 to 15 */
+	 
 	panel->vbt.psr.idle_frames = psr_table->idle_frames < 0 ? 0 :
 		psr_table->idle_frames > 15 ? 15 : psr_table->idle_frames;
 
-	/*
-	 * New psr options 0=500us, 1=100us, 2=2500us, 3=0us
-	 * Old decimal value is wake up time in multiples of 100 us.
-	 */
+	 
 	if (i915->display.vbt.version >= 205 &&
 	    (DISPLAY_VER(i915) >= 9 && !IS_BROXTON(i915))) {
 		switch (psr_table->tp1_wakeup_time) {
@@ -1618,7 +1497,7 @@ parse_psr(struct drm_i915_private *i915,
 		}
 		panel->vbt.psr.psr2_tp2_tp3_wakeup_time_us = wakeup_time;
 	} else {
-		/* Reusing PSR1 wakeup time for PSR2 in older VBTs */
+		 
 		panel->vbt.psr.psr2_tp2_tp3_wakeup_time_us = panel->vbt.psr.tp2_tp3_wakeup_time_us;
 	}
 }
@@ -1678,21 +1557,16 @@ parse_mipi_config(struct drm_i915_private *i915,
 	int panel_type = panel->vbt.panel_type;
 	enum port port;
 
-	/* parse MIPI blocks only if LFP type is MIPI */
+	 
 	if (!intel_bios_is_dsi_present(i915, &port))
 		return;
 
-	/* Initialize this to undefined indicating no generic MIPI support */
+	 
 	panel->vbt.dsi.panel_id = MIPI_DSI_UNDEFINED_PANEL_ID;
 
-	/* Block #40 is already parsed and panel_fixed_mode is
-	 * stored in i915->lfp_lvds_vbt_mode
-	 * resuse this when needed
-	 */
+	 
 
-	/* Parse #52 for panel index used from panel_type already
-	 * parsed
-	 */
+	 
 	start = bdb_find_section(i915, BDB_MIPI_CONFIG);
 	if (!start) {
 		drm_dbg_kms(&i915->drm, "No MIPI config BDB found");
@@ -1702,14 +1576,11 @@ parse_mipi_config(struct drm_i915_private *i915,
 	drm_dbg(&i915->drm, "Found MIPI Config block, panel index = %d\n",
 		panel_type);
 
-	/*
-	 * get hold of the correct configuration block and pps data as per
-	 * the panel_type as index
-	 */
+	 
 	config = &start->config[panel_type];
 	pps = &start->pps[panel_type];
 
-	/* store as of now full data. Trim when we realise all is not needed */
+	 
 	panel->vbt.dsi.config = kmemdup(config, sizeof(struct mipi_config), GFP_KERNEL);
 	if (!panel->vbt.dsi.config)
 		return;
@@ -1722,13 +1593,10 @@ parse_mipi_config(struct drm_i915_private *i915,
 
 	parse_dsi_backlight_ports(i915, panel, port);
 
-	/* FIXME is the 90 vs. 270 correct? */
+	 
 	switch (config->rotation) {
 	case ENABLE_ROTATION_0:
-		/*
-		 * Most (all?) VBTs claim 0 degrees despite having
-		 * an upside down panel, thus we do not trust this.
-		 */
+		 
 		panel->vbt.dsi.orientation =
 			DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
 		break;
@@ -1746,11 +1614,11 @@ parse_mipi_config(struct drm_i915_private *i915,
 		break;
 	}
 
-	/* We have mandatory mipi config blocks. Initialize as generic panel */
+	 
 	panel->vbt.dsi.panel_id = MIPI_DSI_GENERIC_PANEL_ID;
 }
 
-/* Find the sequence block and size for the given panel. */
+ 
 static const u8 *
 find_panel_sequence_block(const struct bdb_mipi_sequence *sequence,
 			  u16 panel_id, u32 *seq_size)
@@ -1763,7 +1631,7 @@ find_panel_sequence_block(const struct bdb_mipi_sequence *sequence,
 	int index = 0;
 	int i;
 
-	/* skip new block size */
+	 
 	if (sequence->version >= 3)
 		data += 4;
 
@@ -1803,7 +1671,7 @@ static int goto_next_sequence(const u8 *data, int index, int total)
 {
 	u16 len;
 
-	/* Skip Sequence Byte. */
+	 
 	for (index = index + 1; index < total; index += len) {
 		u8 operation_byte = *(data + index);
 		index++;
@@ -1843,23 +1711,16 @@ static int goto_next_sequence_v3(const u8 *data, int index, int total)
 	u16 len;
 	u32 size_of_sequence;
 
-	/*
-	 * Could skip sequence based on Size of Sequence alone, but also do some
-	 * checking on the structure.
-	 */
+	 
 	if (total < 5) {
 		DRM_ERROR("Too small sequence size\n");
 		return 0;
 	}
 
-	/* Skip Sequence Byte. */
+	 
 	index++;
 
-	/*
-	 * Size of Sequence. Excludes the Sequence Byte and the size itself,
-	 * includes MIPI_SEQ_ELEM_END byte, excludes the final MIPI_SEQ_END
-	 * byte.
-	 */
+	 
 	size_of_sequence = *((const u32 *)(data + index));
 	index += 4;
 
@@ -1884,10 +1745,7 @@ static int goto_next_sequence_v3(const u8 *data, int index, int total)
 		len = *(data + index);
 		index++;
 
-		/*
-		 * FIXME: Would be nice to check elements like for v1/v2 in
-		 * goto_next_sequence() above.
-		 */
+		 
 		switch (operation_byte) {
 		case MIPI_SEQ_ELEM_SEND_PKT:
 		case MIPI_SEQ_ELEM_DELAY:
@@ -1906,10 +1764,7 @@ static int goto_next_sequence_v3(const u8 *data, int index, int total)
 	return 0;
 }
 
-/*
- * Get len of pre-fixed deassert fragment from a v1 init OTP sequence,
- * skip all delay + gpio operands and stop at the first DSI packet op.
- */
+ 
 static int get_init_otp_deassert_fragment_len(struct drm_i915_private *i915,
 					      struct intel_panel *panel)
 {
@@ -1920,16 +1775,16 @@ static int get_init_otp_deassert_fragment_len(struct drm_i915_private *i915,
 			!data || panel->vbt.dsi.seq_version != 1))
 		return 0;
 
-	/* index = 1 to skip sequence byte */
+	 
 	for (index = 1; data[index] != MIPI_SEQ_ELEM_END; index += len) {
 		switch (data[index]) {
 		case MIPI_SEQ_ELEM_SEND_PKT:
 			return index == 1 ? 0 : index;
 		case MIPI_SEQ_ELEM_DELAY:
-			len = 5; /* 1 byte for operand + uint32 */
+			len = 5;  
 			break;
 		case MIPI_SEQ_ELEM_GPIO:
-			len = 3; /* 1 byte for op, 1 for gpio_nr, 1 for value */
+			len = 3;  
 			break;
 		default:
 			return 0;
@@ -1939,34 +1794,29 @@ static int get_init_otp_deassert_fragment_len(struct drm_i915_private *i915,
 	return 0;
 }
 
-/*
- * Some v1 VBT MIPI sequences do the deassert in the init OTP sequence.
- * The deassert must be done before calling intel_dsi_device_ready, so for
- * these devices we split the init OTP sequence into a deassert sequence and
- * the actual init OTP part.
- */
+ 
 static void fixup_mipi_sequences(struct drm_i915_private *i915,
 				 struct intel_panel *panel)
 {
 	u8 *init_otp;
 	int len;
 
-	/* Limit this to VLV for now. */
+	 
 	if (!IS_VALLEYVIEW(i915))
 		return;
 
-	/* Limit this to v1 vid-mode sequences */
+	 
 	if (panel->vbt.dsi.config->is_cmd_mode ||
 	    panel->vbt.dsi.seq_version != 1)
 		return;
 
-	/* Only do this if there are otp and assert seqs and no deassert seq */
+	 
 	if (!panel->vbt.dsi.sequence[MIPI_SEQ_INIT_OTP] ||
 	    !panel->vbt.dsi.sequence[MIPI_SEQ_ASSERT_RESET] ||
 	    panel->vbt.dsi.sequence[MIPI_SEQ_DEASSERT_RESET])
 		return;
 
-	/* The deassert-sequence ends at the first DSI packet */
+	 
 	len = get_init_otp_deassert_fragment_len(i915, panel);
 	if (!len)
 		return;
@@ -1974,19 +1824,19 @@ static void fixup_mipi_sequences(struct drm_i915_private *i915,
 	drm_dbg_kms(&i915->drm,
 		    "Using init OTP fragment to deassert reset\n");
 
-	/* Copy the fragment, update seq byte and terminate it */
+	 
 	init_otp = (u8 *)panel->vbt.dsi.sequence[MIPI_SEQ_INIT_OTP];
 	panel->vbt.dsi.deassert_seq = kmemdup(init_otp, len + 1, GFP_KERNEL);
 	if (!panel->vbt.dsi.deassert_seq)
 		return;
 	panel->vbt.dsi.deassert_seq[0] = MIPI_SEQ_DEASSERT_RESET;
 	panel->vbt.dsi.deassert_seq[len] = MIPI_SEQ_ELEM_END;
-	/* Use the copy for deassert */
+	 
 	panel->vbt.dsi.sequence[MIPI_SEQ_DEASSERT_RESET] =
 		panel->vbt.dsi.deassert_seq;
-	/* Replace the last byte of the fragment with init OTP seq byte */
+	 
 	init_otp[len - 1] = MIPI_SEQ_INIT_OTP;
-	/* And make MIPI_MIPI_SEQ_INIT_OTP point to it */
+	 
 	panel->vbt.dsi.sequence[MIPI_SEQ_INIT_OTP] = init_otp + len - 1;
 }
 
@@ -2001,7 +1851,7 @@ parse_mipi_sequence(struct drm_i915_private *i915,
 	u8 *data;
 	int index = 0;
 
-	/* Only our generic panel driver uses the sequence block. */
+	 
 	if (panel->vbt.dsi.panel_id != MIPI_DSI_GENERIC_PANEL_ID)
 		return;
 
@@ -2012,7 +1862,7 @@ parse_mipi_sequence(struct drm_i915_private *i915,
 		return;
 	}
 
-	/* Fail gracefully for forward incompatible sequence block. */
+	 
 	if (sequence->version >= 4) {
 		drm_err(&i915->drm,
 			"Unable to parse MIPI Sequence Block v%u\n",
@@ -2031,7 +1881,7 @@ parse_mipi_sequence(struct drm_i915_private *i915,
 	if (!data)
 		return;
 
-	/* Parse the sequences, store pointers to each sequence. */
+	 
 	for (;;) {
 		u8 seq_id = *(data + index);
 		if (seq_id == MIPI_SEQ_END)
@@ -2043,7 +1893,7 @@ parse_mipi_sequence(struct drm_i915_private *i915,
 			goto err;
 		}
 
-		/* Log about presence of sequences we won't run. */
+		 
 		if (seq_id == MIPI_SEQ_TEAR_ON || seq_id == MIPI_SEQ_TEAR_OFF)
 			drm_dbg_kms(&i915->drm,
 				    "Unsupported sequence %u\n", seq_id);
@@ -2088,7 +1938,7 @@ parse_compression_parameters(struct drm_i915_private *i915)
 
 	params = bdb_find_section(i915, BDB_COMPRESSION_PARAMETERS);
 	if (params) {
-		/* Sanity checks */
+		 
 		if (params->entry_size != sizeof(params->data[0])) {
 			drm_dbg_kms(&i915->drm,
 				    "VBT: unsupported compression param entry size\n");
@@ -2130,7 +1980,7 @@ parse_compression_parameters(struct drm_i915_private *i915)
 
 static u8 translate_iboost(u8 val)
 {
-	static const u8 mapping[] = { 1, 3, 7 }; /* See VBT spec */
+	static const u8 mapping[] = { 1, 3, 7 };  
 
 	if (val >= ARRAY_SIZE(mapping)) {
 		DRM_DEBUG_KMS("Unsupported I_boost value found in VBT (%d), display may not work properly\n", val);
@@ -2140,11 +1990,11 @@ static u8 translate_iboost(u8 val)
 }
 
 static const u8 cnp_ddc_pin_map[] = {
-	[0] = 0, /* N/A */
+	[0] = 0,  
 	[GMBUS_PIN_1_BXT] = DDC_BUS_DDI_B,
 	[GMBUS_PIN_2_BXT] = DDC_BUS_DDI_C,
-	[GMBUS_PIN_4_CNP] = DDC_BUS_DDI_D, /* sic */
-	[GMBUS_PIN_3_BXT] = DDC_BUS_DDI_F, /* sic */
+	[GMBUS_PIN_4_CNP] = DDC_BUS_DDI_D,  
+	[GMBUS_PIN_3_BXT] = DDC_BUS_DDI_F,  
 };
 
 static const u8 icp_ddc_pin_map[] = {
@@ -2215,7 +2065,7 @@ static u8 map_ddc_pin(struct drm_i915_private *i915, u8 vbt_pin)
 		ddc_pin_map = cnp_ddc_pin_map;
 		n_entries = ARRAY_SIZE(cnp_ddc_pin_map);
 	} else {
-		/* Assuming direct map */
+		 
 		return vbt_pin;
 	}
 
@@ -2285,10 +2135,7 @@ static enum port __dvo_port_to_port(int n_ports, int n_dvo,
 static enum port dvo_port_to_port(struct drm_i915_private *i915,
 				  u8 dvo_port)
 {
-	/*
-	 * Each DDI port can have more than one value on the "DVO Port" field,
-	 * so look for all the possible values for each port.
-	 */
+	 
 	static const int port_mapping[][3] = {
 		[PORT_A] = { DVO_PORT_HDMIA, DVO_PORT_DPA, -1 },
 		[PORT_B] = { DVO_PORT_HDMIB, DVO_PORT_DPB, -1 },
@@ -2300,10 +2147,7 @@ static enum port dvo_port_to_port(struct drm_i915_private *i915,
 		[PORT_H] = { DVO_PORT_HDMIH, DVO_PORT_DPH, -1 },
 		[PORT_I] = { DVO_PORT_HDMII, DVO_PORT_DPI, -1 },
 	};
-	/*
-	 * RKL VBT uses PHY based mapping. Combo PHYs A,B,C,D
-	 * map to DDI A,B,TC1,TC2 respectively.
-	 */
+	 
 	static const int rkl_port_mapping[][3] = {
 		[PORT_A] = { DVO_PORT_HDMIA, DVO_PORT_DPA, -1 },
 		[PORT_B] = { DVO_PORT_HDMIB, DVO_PORT_DPB, -1 },
@@ -2311,10 +2155,7 @@ static enum port dvo_port_to_port(struct drm_i915_private *i915,
 		[PORT_TC1] = { DVO_PORT_HDMIC, DVO_PORT_DPC, -1 },
 		[PORT_TC2] = { DVO_PORT_HDMID, DVO_PORT_DPD, -1 },
 	};
-	/*
-	 * Alderlake S ports used in the driver are PORT_A, PORT_D, PORT_E,
-	 * PORT_F and PORT_G, we need to map that to correct VBT sections.
-	 */
+	 
 	static const int adls_port_mapping[][3] = {
 		[PORT_A] = { DVO_PORT_HDMIA, DVO_PORT_DPA, -1 },
 		[PORT_B] = { -1 },
@@ -2509,7 +2350,7 @@ intel_bios_encoder_is_lspcon(const struct intel_bios_encoder_data *devdata)
 	return devdata && HAS_LSPCON(devdata->i915) && devdata->child.lspcon;
 }
 
-/* This is an index in the HDMI/DVI DDI buffer translation table, or -1 */
+ 
 int intel_bios_hdmi_level_shift(const struct intel_bios_encoder_data *devdata)
 {
 	if (!devdata || devdata->i915->display.vbt.version < 158 ||
@@ -2545,11 +2386,7 @@ int intel_bios_hdmi_max_tmds_clock(const struct intel_bios_encoder_data *devdata
 
 static bool is_port_valid(struct drm_i915_private *i915, enum port port)
 {
-	/*
-	 * On some ICL SKUs port F is not present, but broken VBTs mark
-	 * the port as present. Only try to initialize port F for the
-	 * SKUs that may actually have it.
-	 */
+	 
 	if (port == PORT_F && IS_ICELAKE(i915))
 		return IS_ICL_WITH_PORT_F(i915);
 
@@ -2599,7 +2436,7 @@ static void print_ddi_port(const struct intel_bios_encoder_data *devdata)
 			    "Port %c VBT HDMI max TMDS clock: %d kHz\n",
 			    port_name(port), max_tmds_clock);
 
-	/* I_boost config for SKL and above */
+	 
 	dp_boost_level = intel_bios_dp_boost_level(devdata);
 	if (dp_boost_level)
 		drm_dbg_kms(&i915->drm,
@@ -2618,10 +2455,7 @@ static void print_ddi_port(const struct intel_bios_encoder_data *devdata)
 			    "Port %c VBT DP max link rate: %d\n",
 			    port_name(port), dp_max_link_rate);
 
-	/*
-	 * FIXME need to implement support for VBT
-	 * vswing/preemph tables should this ever trigger.
-	 */
+	 
 	drm_WARN(&i915->drm, child->use_vbt_vswing,
 		 "Port %c asks to use VBT vswing/preemph tables\n",
 		 port_name(port));
@@ -2716,13 +2550,13 @@ parse_general_definitions(struct drm_i915_private *i915)
 			i915->display.vbt.version, expected_size);
 	}
 
-	/* Flag an error for unexpected size, but continue anyway. */
+	 
 	if (defs->child_dev_size != expected_size)
 		drm_err(&i915->drm,
 			"Unexpected child device config size %u (expected %u for VBT version %u)\n",
 			defs->child_dev_size, expected_size, i915->display.vbt.version);
 
-	/* The legacy sized child device config is the minimum we need. */
+	 
 	if (defs->child_dev_size < LEGACY_CHILD_DEVICE_CONFIG_SIZE) {
 		drm_dbg_kms(&i915->drm,
 			    "Child device config size %u is too small.\n",
@@ -2730,7 +2564,7 @@ parse_general_definitions(struct drm_i915_private *i915)
 		return;
 	}
 
-	/* get the number of child device */
+	 
 	child_device_num = (block_size - sizeof(*defs)) / defs->child_dev_size;
 
 	for (i = 0; i < child_device_num; i++) {
@@ -2748,11 +2582,7 @@ parse_general_definitions(struct drm_i915_private *i915)
 
 		devdata->i915 = i915;
 
-		/*
-		 * Copy as much as we know (sizeof) and is available
-		 * (child_dev_size) of the child device config. Accessing the
-		 * data must depend on VBT version.
-		 */
+		 
 		memcpy(&devdata->child, child,
 		       min_t(size_t, defs->child_dev_size, sizeof(*child)));
 
@@ -2764,43 +2594,40 @@ parse_general_definitions(struct drm_i915_private *i915)
 			    "no child dev is parsed from VBT\n");
 }
 
-/* Common defaults which may be overridden by VBT. */
+ 
 static void
 init_vbt_defaults(struct drm_i915_private *i915)
 {
 	i915->display.vbt.crt_ddc_pin = GMBUS_PIN_VGADDC;
 
-	/* general features */
+	 
 	i915->display.vbt.int_tv_support = 1;
 	i915->display.vbt.int_crt_support = 1;
 
-	/* driver features */
+	 
 	i915->display.vbt.int_lvds_support = 1;
 
-	/* Default to using SSC */
+	 
 	i915->display.vbt.lvds_use_ssc = 1;
-	/*
-	 * Core/SandyBridge/IvyBridge use alternative (120MHz) reference
-	 * clock for LVDS.
-	 */
+	 
 	i915->display.vbt.lvds_ssc_freq = intel_bios_ssc_frequency(i915,
 								   !HAS_PCH_SPLIT(i915));
 	drm_dbg_kms(&i915->drm, "Set default to SSC at %d kHz\n",
 		    i915->display.vbt.lvds_ssc_freq);
 }
 
-/* Common defaults which may be overridden by VBT. */
+ 
 static void
 init_vbt_panel_defaults(struct intel_panel *panel)
 {
-	/* Default to having backlight */
+	 
 	panel->vbt.backlight.present = true;
 
-	/* LFP panel data */
+	 
 	panel->vbt.lvds_dither = true;
 }
 
-/* Defaults to initialize only if there is no VBT. */
+ 
 static void
 init_vbt_missing_defaults(struct drm_i915_private *i915)
 {
@@ -2816,14 +2643,11 @@ init_vbt_missing_defaults(struct drm_i915_private *i915)
 		struct child_device_config *child;
 		enum phy phy = intel_port_to_phy(i915, port);
 
-		/*
-		 * VBT has the TypeC mode (native,TBT/USB) and we don't want
-		 * to detect it.
-		 */
+		 
 		if (intel_phy_is_tc(i915, phy))
 			continue;
 
-		/* Create fake child device config */
+		 
 		devdata = kzalloc(sizeof(*devdata), GFP_KERNEL);
 		if (!devdata)
 			break;
@@ -2854,7 +2678,7 @@ init_vbt_missing_defaults(struct drm_i915_private *i915)
 			    child->device_type, port_name(port));
 	}
 
-	/* Bypass some minimum baseline VBT version checks */
+	 
 	i915->display.vbt.version = 155;
 }
 
@@ -2865,13 +2689,7 @@ static const struct bdb_header *get_bdb_header(const struct vbt_header *vbt)
 	return _vbt + vbt->bdb_offset;
 }
 
-/**
- * intel_bios_is_valid_vbt - does the given buffer contain a valid VBT
- * @buf:	pointer to a buffer to validate
- * @size:	size of the buffer
- *
- * Returns true on valid VBT.
- */
+ 
 bool intel_bios_is_valid_vbt(const void *buf, size_t size)
 {
 	const struct vbt_header *vbt = buf;
@@ -2947,7 +2765,7 @@ static struct vbt_header *spi_oprom_get_vbt(struct drm_i915_private *i915)
 	if (count >= oprom_size)
 		goto err_not_found;
 
-	/* Get VBT size and allocate space for the VBT */
+	 
 	vbt_size = intel_spi_read(&i915->uncore,
 				  found + offsetof(struct vbt_header, vbt_size));
 	vbt_size &= 0xffff;
@@ -2984,7 +2802,7 @@ static struct vbt_header *oprom_get_vbt(struct drm_i915_private *i915)
 	if (!oprom)
 		return NULL;
 
-	/* Scour memory looking for the VBT signature. */
+	 
 	for (i = 0; i + 4 < size; i += 4) {
 		if (ioread32(oprom + i) != *((const u32 *)"$VBT"))
 			continue;
@@ -3009,7 +2827,7 @@ static struct vbt_header *oprom_get_vbt(struct drm_i915_private *i915)
 		goto err_unmap_oprom;
 	}
 
-	/* The rest will be validated by intel_bios_is_valid_vbt() */
+	 
 	vbt = kmalloc(vbt_size, GFP_KERNEL);
 	if (!vbt)
 		goto err_unmap_oprom;
@@ -3033,14 +2851,7 @@ err_unmap_oprom:
 	return NULL;
 }
 
-/**
- * intel_bios_init - find VBT and initialize settings from the BIOS
- * @i915: i915 device instance
- *
- * Parse and initialize settings from the Video BIOS Tables (VBT). If the VBT
- * was not found in ACPI OpRegion, try to find it in PCI ROM first. Also
- * initialize some defaults if the VBT is not present at all.
- */
+ 
 void intel_bios_init(struct drm_i915_private *i915)
 {
 	const struct vbt_header *vbt = i915->display.opregion.vbt;
@@ -3058,10 +2869,7 @@ void intel_bios_init(struct drm_i915_private *i915)
 
 	init_vbt_defaults(i915);
 
-	/*
-	 * If the OpRegion does not have VBT, look in SPI flash through MMIO or
-	 * PCI mapping
-	 */
+	 
 	if (!vbt && IS_DGFX(i915)) {
 		oprom_vbt = spi_oprom_get_vbt(i915);
 		vbt = oprom_vbt;
@@ -3084,12 +2892,12 @@ void intel_bios_init(struct drm_i915_private *i915)
 
 	init_bdb_blocks(i915, bdb);
 
-	/* Grab useful general definitions */
+	 
 	parse_general_features(i915);
 	parse_general_definitions(i915);
 	parse_driver_features(i915);
 
-	/* Depends on child device list */
+	 
 	parse_compression_parameters(i915);
 
 out:
@@ -3099,7 +2907,7 @@ out:
 		init_vbt_missing_defaults(i915);
 	}
 
-	/* Further processing on pre-parsed or generated child device data */
+	 
 	parse_sdvo_device_mapping(i915);
 	parse_ddi_ports(i915);
 
@@ -3112,7 +2920,7 @@ static void intel_bios_init_panel(struct drm_i915_private *i915,
 				  const struct drm_edid *drm_edid,
 				  bool use_fallback)
 {
-	/* already have it? */
+	 
 	if (panel->vbt.panel_type >= 0) {
 		drm_WARN_ON(&i915->drm, !use_fallback);
 		return;
@@ -3155,10 +2963,7 @@ void intel_bios_init_panel_late(struct drm_i915_private *i915,
 	intel_bios_init_panel(i915, panel, devdata, drm_edid, true);
 }
 
-/**
- * intel_bios_driver_remove - Free any resources allocated by intel_bios_init()
- * @i915: i915 device instance
- */
+ 
 void intel_bios_driver_remove(struct drm_i915_private *i915)
 {
 	struct intel_bios_encoder_data *devdata, *nd;
@@ -3192,13 +2997,7 @@ void intel_bios_fini_panel(struct intel_panel *panel)
 	panel->vbt.dsi.deassert_seq = NULL;
 }
 
-/**
- * intel_bios_is_tv_present - is integrated TV present in VBT
- * @i915: i915 device instance
- *
- * Return true if TV is present. If no child devices were parsed from VBT,
- * assume TV is present.
- */
+ 
 bool intel_bios_is_tv_present(struct drm_i915_private *i915)
 {
 	const struct intel_bios_encoder_data *devdata;
@@ -3212,9 +3011,7 @@ bool intel_bios_is_tv_present(struct drm_i915_private *i915)
 	list_for_each_entry(devdata, &i915->display.vbt.display_devices, node) {
 		const struct child_device_config *child = &devdata->child;
 
-		/*
-		 * If the device type is not TV, continue.
-		 */
+		 
 		switch (child->device_type) {
 		case DEVICE_TYPE_INT_TV:
 		case DEVICE_TYPE_TV:
@@ -3223,9 +3020,7 @@ bool intel_bios_is_tv_present(struct drm_i915_private *i915)
 		default:
 			continue;
 		}
-		/* Only when the addin_offset is non-zero, it is regarded
-		 * as present.
-		 */
+		 
 		if (child->addin_offset)
 			return true;
 	}
@@ -3233,14 +3028,7 @@ bool intel_bios_is_tv_present(struct drm_i915_private *i915)
 	return false;
 }
 
-/**
- * intel_bios_is_lvds_present - is LVDS present in VBT
- * @i915:	i915 device instance
- * @i2c_pin:	i2c pin for LVDS if present
- *
- * Return true if LVDS is present. If no child devices were parsed from VBT,
- * assume LVDS is present.
- */
+ 
 bool intel_bios_is_lvds_present(struct drm_i915_private *i915, u8 *i2c_pin)
 {
 	const struct intel_bios_encoder_data *devdata;
@@ -3251,10 +3039,7 @@ bool intel_bios_is_lvds_present(struct drm_i915_private *i915, u8 *i2c_pin)
 	list_for_each_entry(devdata, &i915->display.vbt.display_devices, node) {
 		const struct child_device_config *child = &devdata->child;
 
-		/* If the device type is not LFP, continue.
-		 * We have to check both the new identifiers as well as the
-		 * old for compatibility with some BIOSes.
-		 */
+		 
 		if (child->device_type != DEVICE_TYPE_INT_LFP &&
 		    child->device_type != DEVICE_TYPE_LFP)
 			continue;
@@ -3262,19 +3047,11 @@ bool intel_bios_is_lvds_present(struct drm_i915_private *i915, u8 *i2c_pin)
 		if (intel_gmbus_is_valid_pin(i915, child->i2c_pin))
 			*i2c_pin = child->i2c_pin;
 
-		/* However, we cannot trust the BIOS writers to populate
-		 * the VBT correctly.  Since LVDS requires additional
-		 * information from AIM blocks, a non-zero addin offset is
-		 * a good indicator that the LVDS is actually present.
-		 */
+		 
 		if (child->addin_offset)
 			return true;
 
-		/* But even then some BIOS writers perform some black magic
-		 * and instantiate the device without reference to any
-		 * additional data.  Trust that if the VBT was written into
-		 * the OpRegion then they have validated the LVDS's existence.
-		 */
+		 
 		if (i915->display.opregion.vbt)
 			return true;
 	}
@@ -3282,13 +3059,7 @@ bool intel_bios_is_lvds_present(struct drm_i915_private *i915, u8 *i2c_pin)
 	return false;
 }
 
-/**
- * intel_bios_is_port_present - is the specified digital port present
- * @i915:	i915 device instance
- * @port:	port to check
- *
- * Return true if the device in %port is present.
- */
+ 
 bool intel_bios_is_port_present(struct drm_i915_private *i915, enum port port)
 {
 	const struct intel_bios_encoder_data *devdata;
@@ -3320,7 +3091,7 @@ bool intel_bios_encoder_supports_dp_dual_mode(const struct intel_bios_encoder_da
 	if (dvo_port_type(child->dvo_port) == DVO_PORT_DPA)
 		return true;
 
-	/* Only accept a HDMI dvo_port as DP++ if it has an AUX channel */
+	 
 	if (dvo_port_type(child->dvo_port) == DVO_PORT_HDMIA &&
 	    child->aux_channel != 0)
 		return true;
@@ -3328,13 +3099,7 @@ bool intel_bios_encoder_supports_dp_dual_mode(const struct intel_bios_encoder_da
 	return false;
 }
 
-/**
- * intel_bios_is_dsi_present - is DSI present in VBT
- * @i915:	i915 device instance
- * @port:	port for DSI if present
- *
- * Return true if DSI is present, and return the port in %port.
- */
+ 
 bool intel_bios_is_dsi_present(struct drm_i915_private *i915,
 			       enum port *port)
 {
@@ -3387,18 +3152,13 @@ static void fill_dsc(struct intel_crtc_state *crtc_state,
 	crtc_state->dsc.compressed_bpp = min(crtc_state->pipe_bpp,
 					     VBT_DSC_MAX_BPP(dsc->max_bpp));
 
-	/*
-	 * FIXME: This is ugly, and slice count should take DSC engine
-	 * throughput etc. into account.
-	 *
-	 * Also, per spec DSI supports 1, 2, 3 or 4 horizontal slices.
-	 */
+	 
 	if (dsc->slices_per_line & BIT(2)) {
 		crtc_state->dsc.slice_count = 4;
 	} else if (dsc->slices_per_line & BIT(1)) {
 		crtc_state->dsc.slice_count = 2;
 	} else {
-		/* FIXME */
+		 
 		if (!(dsc->slices_per_line & BIT(0)))
 			DRM_DEBUG_KMS("VBT: Unsupported DSC slice count for DSI\n");
 
@@ -3411,14 +3171,11 @@ static void fill_dsc(struct intel_crtc_state *crtc_state,
 			      crtc_state->hw.adjusted_mode.crtc_hdisplay,
 			      crtc_state->dsc.slice_count);
 
-	/*
-	 * The VBT rc_buffer_block_size and rc_buffer_size definitions
-	 * correspond to DP 1.4 DPCD offsets 0x62 and 0x63.
-	 */
+	 
 	vdsc_cfg->rc_model_size = drm_dsc_dp_rc_buffer_size(dsc->rc_buffer_block_size,
 							    dsc->rc_buffer_size);
 
-	/* FIXME: DSI spec says bpc + 1 for this one */
+	 
 	vdsc_cfg->line_buf_depth = VBT_DSC_LINE_BUFFER_DEPTH(dsc->line_buffer_depth);
 
 	vdsc_cfg->block_pred_enable = dsc->block_prediction_enable;
@@ -3426,7 +3183,7 @@ static void fill_dsc(struct intel_crtc_state *crtc_state,
 	vdsc_cfg->slice_height = dsc->slice_height;
 }
 
-/* FIXME: initially DSI specific */
+ 
 bool intel_bios_get_dsc_params(struct intel_encoder *encoder,
 			       struct intel_crtc_state *crtc_state,
 			       int dsc_max_bpc)
@@ -3466,10 +3223,7 @@ static const u8 adlp_aux_ch_map[] = {
 	[AUX_CH_USBC4] = DP_AUX_I,
 };
 
-/*
- * ADL-S VBT uses PHY based mapping. Combo PHYs A,B,C,D,E
- * map to DDI A,TC1,TC2,TC3,TC4 respectively.
- */
+ 
 static const u8 adls_aux_ch_map[] = {
 	[AUX_CH_A] = DP_AUX_A,
 	[AUX_CH_USBC1] = DP_AUX_B,
@@ -3478,10 +3232,7 @@ static const u8 adls_aux_ch_map[] = {
 	[AUX_CH_USBC4] = DP_AUX_E,
 };
 
-/*
- * RKL/DG1 VBT uses PHY based mapping. Combo PHYs A,B,C,D
- * map to DDI A,B,TC1,TC2 respectively.
- */
+ 
 static const u8 rkl_aux_ch_map[] = {
 	[AUX_CH_A] = DP_AUX_A,
 	[AUX_CH_B] = DP_AUX_B,
@@ -3493,12 +3244,12 @@ static const u8 direct_aux_ch_map[] = {
 	[AUX_CH_A] = DP_AUX_A,
 	[AUX_CH_B] = DP_AUX_B,
 	[AUX_CH_C] = DP_AUX_C,
-	[AUX_CH_D] = DP_AUX_D, /* aka AUX_CH_USBC1 */
-	[AUX_CH_E] = DP_AUX_E, /* aka AUX_CH_USBC2 */
-	[AUX_CH_F] = DP_AUX_F, /* aka AUX_CH_USBC3 */
-	[AUX_CH_G] = DP_AUX_G, /* aka AUX_CH_USBC4 */
-	[AUX_CH_H] = DP_AUX_H, /* aka AUX_CH_USBC5 */
-	[AUX_CH_I] = DP_AUX_I, /* aka AUX_CH_USBC6 */
+	[AUX_CH_D] = DP_AUX_D,  
+	[AUX_CH_E] = DP_AUX_E,  
+	[AUX_CH_F] = DP_AUX_F,  
+	[AUX_CH_G] = DP_AUX_G,  
+	[AUX_CH_H] = DP_AUX_H,  
+	[AUX_CH_I] = DP_AUX_I,  
 };
 
 static enum aux_ch map_aux_ch(struct drm_i915_private *i915, u8 aux_channel)

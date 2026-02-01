@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: station command response handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -15,19 +11,7 @@
 #include "11ac.h"
 
 
-/*
- * This function handles the command response error case.
- *
- * For scan response error, the function cancels all the pending
- * scan commands and generates an event to inform the applications
- * of the scan completion.
- *
- * For Power Save command failure, we do not retry enter PS
- * command in case of Ad-hoc mode.
- *
- * For all other response errors, the current command buffer is freed
- * and returned to the free command queue.
- */
+ 
 static void
 mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
 			      struct host_cmd_ds_command *resp)
@@ -48,7 +32,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
 		mwifiex_dbg(adapter, ERROR,
 			    "PS_MODE_ENH cmd failed: result=0x%x action=0x%X\n",
 			    resp->result, le16_to_cpu(pm->action));
-		/* We do not re-try enter-ps command in ad-hoc mode. */
+		 
 		if (le16_to_cpu(pm->action) == EN_AUTO_PS &&
 		    (le16_to_cpu(pm->params.ps_bitmap) & BITMAP_STA_PS) &&
 		    priv->bss_mode == NL80211_IFTYPE_ADHOC)
@@ -71,7 +55,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
 	default:
 		break;
 	}
-	/* Handling errors here */
+	 
 	mwifiex_recycle_cmd_node(adapter, adapter->curr_cmd);
 
 	spin_lock_bh(&adapter->mwifiex_cmd_lock);
@@ -79,19 +63,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
 	spin_unlock_bh(&adapter->mwifiex_cmd_lock);
 }
 
-/*
- * This function handles the command response of get RSSI info.
- *
- * Handling includes changing the header fields into CPU format
- * and saving the following parameters in driver -
- *      - Last data and beacon RSSI value
- *      - Average data and beacon RSSI value
- *      - Last data and beacon NF value
- *      - Average data and beacon NF value
- *
- * The parameters are send to the application as well, along with
- * calculated SNR values.
- */
+ 
 static int mwifiex_ret_802_11_rssi_info(struct mwifiex_private *priv,
 					struct host_cmd_ds_command *resp)
 {
@@ -117,7 +89,7 @@ static int mwifiex_ret_802_11_rssi_info(struct mwifiex_private *priv,
 
 	memset(subsc_evt, 0x00, sizeof(struct mwifiex_ds_misc_subsc_evt));
 
-	/* Resubscribe low and high rssi events with new thresholds */
+	 
 	subsc_evt->events = BITMASK_BCN_RSSI_LOW | BITMASK_BCN_RSSI_HIGH;
 	subsc_evt->action = HostCmd_ACT_BITWISE_SET;
 	if (priv->subsc_evt_rssi_state == RSSI_LOW_RECVD) {
@@ -140,18 +112,7 @@ static int mwifiex_ret_802_11_rssi_info(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get SNMP
- * MIB parameters.
- *
- * Handling includes changing the header fields into CPU format
- * and saving the parameter in driver.
- *
- * The following parameters are supported -
- *      - Fragmentation threshold
- *      - RTS threshold
- *      - Short retry limit
- */
+ 
 static int mwifiex_ret_802_11_snmp_mib(struct mwifiex_private *priv,
 				       struct host_cmd_ds_command *resp,
 				       u32 *data_buf)
@@ -198,12 +159,7 @@ static int mwifiex_ret_802_11_snmp_mib(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of get log request
- *
- * Handling includes changing the header fields into CPU format
- * and sending the received parameters to application.
- */
+ 
 static int mwifiex_ret_get_log(struct mwifiex_private *priv,
 			       struct host_cmd_ds_command *resp,
 			       struct mwifiex_ds_get_stats *stats)
@@ -239,20 +195,7 @@ static int mwifiex_ret_get_log(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get Tx rate
- * configurations.
- *
- * Handling includes changing the header fields into CPU format
- * and saving the following parameters in driver -
- *      - DSSS rate bitmap
- *      - OFDM rate bitmap
- *      - HT MCS rate bitmaps
- *
- * Based on the new rate bitmaps, the function re-evaluates if
- * auto data rate has been activated. If not, it sends another
- * query to the firmware to get the current Tx data rate.
- */
+ 
 static int mwifiex_ret_tx_rate_cfg(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *resp)
 {
@@ -297,7 +240,7 @@ static int mwifiex_ret_tx_rate_cfg(struct mwifiex_private *priv,
 							vht_mcs_rate_bitmap[i]);
 			}
 			break;
-			/* Add RATE_DROP tlv here */
+			 
 		}
 
 		tlv_buf += (sizeof(*head) + tlv_buf_len);
@@ -315,12 +258,7 @@ static int mwifiex_ret_tx_rate_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of get Tx power level.
- *
- * Handling includes saving the maximum and minimum Tx power levels
- * in driver, as well as sending the values to user.
- */
+ 
 static int mwifiex_get_power_level(struct mwifiex_private *priv, void *data_buf)
 {
 	int length, max_power = -1, min_power = -1;
@@ -335,7 +273,7 @@ static int mwifiex_get_power_level(struct mwifiex_private *priv, void *data_buf)
 		((u8 *) pg_tlv_hdr + sizeof(struct mwifiex_types_power_group));
 	length = le16_to_cpu(pg_tlv_hdr->length);
 
-	/* At least one structure required to update power */
+	 
 	if (length < sizeof(struct mwifiex_power_group))
 		return 0;
 
@@ -359,13 +297,7 @@ static int mwifiex_get_power_level(struct mwifiex_private *priv, void *data_buf)
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get Tx power
- * configurations.
- *
- * Handling includes changing the header fields into CPU format
- * and saving the current Tx power level in driver.
- */
+ 
 static int mwifiex_ret_tx_power_cfg(struct mwifiex_private *priv,
 				    struct host_cmd_ds_command *resp)
 {
@@ -418,9 +350,7 @@ static int mwifiex_ret_tx_power_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of get RF Tx power.
- */
+ 
 static int mwifiex_ret_rf_tx_power(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *resp)
 {
@@ -442,9 +372,7 @@ static int mwifiex_ret_rf_tx_power(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set rf antenna
- */
+ 
 static int mwifiex_ret_rf_antenna(struct mwifiex_private *priv,
 				  struct host_cmd_ds_command *resp)
 {
@@ -473,11 +401,7 @@ static int mwifiex_ret_rf_antenna(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get MAC address.
- *
- * Handling includes saving the MAC address in driver.
- */
+ 
 static int mwifiex_ret_802_11_mac_address(struct mwifiex_private *priv,
 					  struct host_cmd_ds_command *resp)
 {
@@ -492,25 +416,14 @@ static int mwifiex_ret_802_11_mac_address(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get MAC multicast
- * address.
- */
+ 
 static int mwifiex_ret_mac_multicast_adr(struct mwifiex_private *priv,
 					 struct host_cmd_ds_command *resp)
 {
 	return 0;
 }
 
-/*
- * This function handles the command response of get Tx rate query.
- *
- * Handling includes changing the header fields into CPU format
- * and saving the Tx rate and HT information parameters in driver.
- *
- * Both rate configuration and current data rate can be retrieved
- * with this request.
- */
+ 
 static int mwifiex_ret_802_11_tx_rate_query(struct mwifiex_private *priv,
 					    struct host_cmd_ds_command *resp)
 {
@@ -524,13 +437,7 @@ static int mwifiex_ret_802_11_tx_rate_query(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of a deauthenticate
- * command.
- *
- * If the deauthenticated MAC matches the current BSS MAC, the connection
- * state is reset.
- */
+ 
 static int mwifiex_ret_802_11_deauthenticate(struct mwifiex_private *priv,
 					     struct host_cmd_ds_command *resp)
 {
@@ -546,11 +453,7 @@ static int mwifiex_ret_802_11_deauthenticate(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of ad-hoc stop.
- *
- * The function resets the connection state in driver.
- */
+ 
 static int mwifiex_ret_802_11_ad_hoc_stop(struct mwifiex_private *priv,
 					  struct host_cmd_ds_command *resp)
 {
@@ -558,12 +461,7 @@ static int mwifiex_ret_802_11_ad_hoc_stop(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get v1 key material.
- *
- * Handling includes updating the driver parameters to reflect the
- * changes.
- */
+ 
 static int mwifiex_ret_802_11_key_material_v1(struct mwifiex_private *priv,
 					      struct host_cmd_ds_command *resp)
 {
@@ -593,12 +491,7 @@ static int mwifiex_ret_802_11_key_material_v1(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of set/get v2 key material.
- *
- * Handling includes updating the driver parameters to reflect the
- * changes.
- */
+ 
 static int mwifiex_ret_802_11_key_material_v2(struct mwifiex_private *priv,
 					      struct host_cmd_ds_command *resp)
 {
@@ -633,7 +526,7 @@ static int mwifiex_ret_802_11_key_material_v2(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* Wrapper function for processing response of key material command */
+ 
 static int mwifiex_ret_802_11_key_material(struct mwifiex_private *priv,
 					   struct host_cmd_ds_command *resp)
 {
@@ -643,9 +536,7 @@ static int mwifiex_ret_802_11_key_material(struct mwifiex_private *priv,
 		return mwifiex_ret_802_11_key_material_v1(priv, resp);
 }
 
-/*
- * This function handles the command response of get 11d domain information.
- */
+ 
 static int mwifiex_ret_802_11d_domain_info(struct mwifiex_private *priv,
 					   struct host_cmd_ds_command *resp)
 {
@@ -671,7 +562,7 @@ static int mwifiex_ret_802_11d_domain_info(struct mwifiex_private *priv,
 	}
 
 	switch (action) {
-	case HostCmd_ACT_GEN_SET:  /* Proc Set Action */
+	case HostCmd_ACT_GEN_SET:   
 		break;
 	case HostCmd_ACT_GEN_GET:
 		break;
@@ -684,12 +575,7 @@ static int mwifiex_ret_802_11d_domain_info(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of get extended version.
- *
- * Handling includes forming the extended version string and sending it
- * to application.
- */
+ 
 static int mwifiex_ret_ver_ext(struct mwifiex_private *priv,
 			       struct host_cmd_ds_command *resp,
 			       struct host_cmd_ds_version_ext *version_ext)
@@ -723,15 +609,13 @@ static int mwifiex_ret_ver_ext(struct mwifiex_private *priv,
 		memcpy(priv->version_str, ver_ext->version_str,
 		       MWIFIEX_VERSION_STR_LENGTH);
 
-		/* Ensure the version string from the firmware is 0-terminated */
+		 
 		priv->version_str[MWIFIEX_VERSION_STR_LENGTH - 1] = '\0';
 	}
 	return 0;
 }
 
-/*
- * This function handles the command response of remain on channel.
- */
+ 
 static int
 mwifiex_ret_remain_on_chan(struct mwifiex_private *priv,
 			   struct host_cmd_ds_command *resp,
@@ -745,9 +629,7 @@ mwifiex_ret_remain_on_chan(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command response of P2P mode cfg.
- */
+ 
 static int
 mwifiex_ret_p2p_mode_cfg(struct mwifiex_private *priv,
 			 struct host_cmd_ds_command *resp,
@@ -761,8 +643,7 @@ mwifiex_ret_p2p_mode_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function handles the command response of mem_access command
- */
+ 
 static int
 mwifiex_ret_mem_access(struct mwifiex_private *priv,
 		       struct host_cmd_ds_command *resp, void *pioctl_buf)
@@ -774,12 +655,7 @@ mwifiex_ret_mem_access(struct mwifiex_private *priv,
 
 	return 0;
 }
-/*
- * This function handles the command response of register access.
- *
- * The register value and offset are returned to the user. For EEPROM
- * access, the byte count is also returned.
- */
+ 
 static int mwifiex_ret_reg_access(u16 type, struct host_cmd_ds_command *resp,
 				  void *data_buf)
 {
@@ -846,13 +722,7 @@ static int mwifiex_ret_reg_access(u16 type, struct host_cmd_ds_command *resp,
 	return 0;
 }
 
-/*
- * This function handles the command response of get IBSS coalescing status.
- *
- * If the received BSSID is different than the current one, the current BSSID,
- * beacon interval, ATIM window and ERP information are updated, along with
- * changing the ad-hoc state accordingly.
- */
+ 
 static int mwifiex_ret_ibss_coalescing_status(struct mwifiex_private *priv,
 					      struct host_cmd_ds_command *resp)
 {
@@ -865,23 +735,23 @@ static int mwifiex_ret_ibss_coalescing_status(struct mwifiex_private *priv,
 	mwifiex_dbg(priv->adapter, INFO,
 		    "info: new BSSID %pM\n", ibss_coal_resp->bssid);
 
-	/* If rsp has NULL BSSID, Just return..... No Action */
+	 
 	if (is_zero_ether_addr(ibss_coal_resp->bssid)) {
 		mwifiex_dbg(priv->adapter, FATAL, "new BSSID is NULL\n");
 		return 0;
 	}
 
-	/* If BSSID is diff, modify current BSS parameters */
+	 
 	if (!ether_addr_equal(priv->curr_bss_params.bss_descriptor.mac_address, ibss_coal_resp->bssid)) {
-		/* BSSID */
+		 
 		memcpy(priv->curr_bss_params.bss_descriptor.mac_address,
 		       ibss_coal_resp->bssid, ETH_ALEN);
 
-		/* Beacon Interval */
+		 
 		priv->curr_bss_params.bss_descriptor.beacon_period
 			= le16_to_cpu(ibss_coal_resp->beacon_interval);
 
-		/* ERP Information */
+		 
 		priv->curr_bss_params.bss_descriptor.erp_flags =
 			(u8) le16_to_cpu(ibss_coal_resp->use_g_rate_protect);
 
@@ -950,17 +820,14 @@ static int mwifiex_ret_tdls_oper(struct mwifiex_private *priv,
 
 	return 0;
 }
-/*
- * This function handles the command response for subscribe event command.
- */
+ 
 static int mwifiex_ret_subsc_evt(struct mwifiex_private *priv,
 				 struct host_cmd_ds_command *resp)
 {
 	struct host_cmd_ds_802_11_subsc_evt *cmd_sub_event =
 		&resp->params.subsc_evt;
 
-	/* For every subscribe event command (Get/Set/Clear), FW reports the
-	 * current set of subscribed events*/
+	 
 	mwifiex_dbg(priv->adapter, EVENT,
 		    "Bitmap of currently subscribed events: %16x\n",
 		    le16_to_cpu(cmd_sub_event->events));
@@ -989,7 +856,7 @@ static int mwifiex_ret_uap_sta_list(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function handles the command response of set_cfg_data */
+ 
 static int mwifiex_ret_cfg_data(struct mwifiex_private *priv,
 				struct host_cmd_ds_command *resp)
 {
@@ -1001,7 +868,7 @@ static int mwifiex_ret_cfg_data(struct mwifiex_private *priv,
 	return 0;
 }
 
-/** This Function handles the command response of sdio rx aggr */
+ 
 static int mwifiex_ret_sdio_rx_aggr_cfg(struct mwifiex_private *priv,
 					struct host_cmd_ds_command *resp)
 {
@@ -1203,12 +1070,7 @@ static int mwifiex_ret_get_chan_info(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function handles the command responses.
- *
- * This is a generic function, which calls command specific
- * response handlers based on the command ID.
- */
+ 
 int mwifiex_process_sta_cmdresp(struct mwifiex_private *priv, u16 cmdresp_no,
 				struct host_cmd_ds_command *resp)
 {
@@ -1216,12 +1078,12 @@ int mwifiex_process_sta_cmdresp(struct mwifiex_private *priv, u16 cmdresp_no,
 	struct mwifiex_adapter *adapter = priv->adapter;
 	void *data_buf = adapter->curr_cmd->data_buf;
 
-	/* If the command is not successful, cleanup and return failure */
+	 
 	if (resp->result != HostCmd_RESULT_OK) {
 		mwifiex_process_cmdresp_error(priv, resp);
 		return -1;
 	}
-	/* Command successful, handle response */
+	 
 	switch (cmdresp_no) {
 	case HostCmd_CMD_GET_HW_SPEC:
 		ret = mwifiex_ret_get_hw_spec(priv, resp);

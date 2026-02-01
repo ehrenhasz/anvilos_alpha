@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2022 MediaTek Inc.
- * Author: Hui Liu <hui.liu@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef __PINCTRL_MTK_MT8188_H
 #define __PINCTRL_MTK_MT8188_H
@@ -2256,4 +2252,4 @@ static const struct mtk_pin_desc mtk_pins_mt8188[] = {
 	)
 };
 
-#endif /* __PINCTRL__MTK_MT8188_H */
+#endif  

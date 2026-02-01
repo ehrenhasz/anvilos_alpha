@@ -1,10 +1,4 @@
-/*
-  FUSE: Filesystem in Userspace
-  Copyright (C) 2001-2008  Miklos Szeredi <miklos@szeredi.hu>
-
-  This program can be distributed under the terms of the GNU GPL.
-  See the file COPYING.
-*/
+ 
 
 #include "fuse_i.h"
 
@@ -53,10 +47,10 @@ MODULE_PARM_DESC(max_user_congthresh,
 
 #define FUSE_DEFAULT_BLKSIZE 512
 
-/** Maximum number of outstanding background requests */
+ 
 #define FUSE_DEFAULT_MAX_BACKGROUND 12
 
-/** Congestion starts at 75% of maximum */
+ 
 #define FUSE_DEFAULT_CONGESTION_THRESHOLD (FUSE_DEFAULT_MAX_BACKGROUND * 3 / 4)
 
 #ifdef CONFIG_BLOCK
@@ -147,7 +141,7 @@ static void fuse_evict_inode(struct inode *inode)
 {
 	struct fuse_inode *fi = get_fuse_inode(inode);
 
-	/* Will write inode on close/munmap and in all other dirtiers */
+	 
 	WARN_ON(inode->i_state & I_DIRTY_INODE);
 
 	truncate_inode_pages_final(&inode->i_data);
@@ -185,10 +179,7 @@ static int fuse_reconfigure(struct fs_context *fsc)
 	return 0;
 }
 
-/*
- * ino_t is 32-bits on 32-bit arch. We have to squash the 64-bit value down
- * so that it will fit.
- */
+ 
 static ino_t fuse_squash_ino(u64 ino64)
 {
 	ino_t ino = (ino_t) ino64;
@@ -208,7 +199,7 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 
 	fi->attr_version = atomic64_inc_return(&fc->attr_version);
 	fi->i_time = attr_valid;
-	/* Clear basic stats from invalid mask */
+	 
 	set_mask_bits(&fi->inval_mask, STATX_BASIC_STATS, 0);
 
 	inode->i_ino     = fuse_squash_ino(attr->ino);
@@ -218,14 +209,14 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 	inode->i_gid     = make_kgid(fc->user_ns, attr->gid);
 	inode->i_blocks  = attr->blocks;
 
-	/* Sanitize nsecs */
+	 
 	attr->atimensec = min_t(u32, attr->atimensec, NSEC_PER_SEC - 1);
 	attr->mtimensec = min_t(u32, attr->mtimensec, NSEC_PER_SEC - 1);
 	attr->ctimensec = min_t(u32, attr->ctimensec, NSEC_PER_SEC - 1);
 
 	inode->i_atime.tv_sec   = attr->atime;
 	inode->i_atime.tv_nsec  = attr->atimensec;
-	/* mtime from server may be stale due to local buffered write */
+	 
 	if (!(cache_mask & STATX_MTIME)) {
 		inode->i_mtime.tv_sec   = attr->mtime;
 		inode->i_mtime.tv_nsec  = attr->mtimensec;
@@ -234,17 +225,11 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 		inode_set_ctime(inode, attr->ctime, attr->ctimensec);
 	}
 	if (sx) {
-		/* Sanitize nsecs */
+		 
 		sx->btime.tv_nsec =
 			min_t(u32, sx->btime.tv_nsec, NSEC_PER_SEC - 1);
 
-		/*
-		 * Btime has been queried, cache is valid (whether or not btime
-		 * is available or not) so clear STATX_BTIME from inval_mask.
-		 *
-		 * Availability of the btime attribute is indicated in
-		 * FUSE_I_BTIME
-		 */
+		 
 		set_mask_bits(&fi->inval_mask, STATX_BTIME, 0);
 		if (sx->mask & STATX_BTIME) {
 			set_bit(FUSE_I_BTIME, &fi->state);
@@ -258,25 +243,14 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 	else
 		inode->i_blkbits = inode->i_sb->s_blocksize_bits;
 
-	/*
-	 * Don't set the sticky bit in i_mode, unless we want the VFS
-	 * to check permissions.  This prevents failures due to the
-	 * check in may_delete().
-	 */
+	 
 	fi->orig_i_mode = inode->i_mode;
 	if (!fc->default_permissions)
 		inode->i_mode &= ~S_ISVTX;
 
 	fi->orig_ino = attr->ino;
 
-	/*
-	 * We are refreshing inode data and it is possible that another
-	 * client set suid/sgid or security.capability xattr. So clear
-	 * S_NOSEC. Ideally, we could have cleared it only if suid/sgid
-	 * was set or if security.capability xattr was set. But we don't
-	 * know if security.capability has been set or not. So clear it
-	 * anyway. Its less efficient but should be safe.
-	 */
+	 
 	inode->i_flags &= ~S_NOSEC;
 }
 
@@ -301,11 +275,7 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
 	struct timespec64 old_mtime;
 
 	spin_lock(&fi->lock);
-	/*
-	 * In case of writeback_cache enabled, writes update mtime, ctime and
-	 * may update i_size.  In these cases trust the cached value in the
-	 * inode.
-	 */
+	 
 	cache_mask = fuse_get_cache_mask(inode);
 	if (cache_mask & STATX_SIZE)
 		attr->size = i_size_read(inode);
@@ -329,11 +299,7 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
 	fuse_change_attributes_common(inode, attr, sx, attr_valid, cache_mask);
 
 	oldsize = inode->i_size;
-	/*
-	 * In case of writeback_cache enabled, the cached writes beyond EOF
-	 * extend local i_size without keeping userspace server in sync. So,
-	 * attr->size coming from server can be stale. We cannot trust it.
-	 */
+	 
 	if (!(cache_mask & STATX_SIZE))
 		i_size_write(inode, attr->size);
 	spin_unlock(&fi->lock);
@@ -351,10 +317,7 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
 				.tv_nsec = attr->mtimensec,
 			};
 
-			/*
-			 * Auto inval mode also checks and invalidates if mtime
-			 * has changed.
-			 */
+			 
 			if (!timespec64_equal(&old_mtime, &new_mtime))
 				inval = true;
 		}
@@ -396,10 +359,7 @@ static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr,
 				   new_decode_dev(attr->rdev));
 	} else
 		BUG();
-	/*
-	 * Ensure that we don't cache acls for daemons without FUSE_POSIX_ACL
-	 * so they see the exact same behavior as before.
-	 */
+	 
 	if (!fc->posix_acl)
 		inode->i_acl = inode->i_default_acl = ACL_DONT_CACHE;
 }
@@ -428,13 +388,7 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 	struct fuse_inode *fi;
 	struct fuse_conn *fc = get_fuse_conn_super(sb);
 
-	/*
-	 * Auto mount points get their node id from the submount root, which is
-	 * not a unique identifier within this filesystem.
-	 *
-	 * To avoid conflicts, do not place submount points into the inode hash
-	 * table.
-	 */
+	 
 	if (fc->auto_submounts && (attr->flags & FUSE_ATTR_SUBMOUNT) &&
 	    S_ISDIR(attr->mode)) {
 		struct fuse_inode *fi;
@@ -451,7 +405,7 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 			iput(inode);
 			return NULL;
 		}
-		/* Sets nlookup = 1 on fi->submount_lookup->nlookup */
+		 
 		fuse_init_submount_lookup(fi->submount_lookup, nodeid);
 		inode->i_flags |= S_AUTOMOUNT;
 		goto done;
@@ -470,7 +424,7 @@ retry:
 		fuse_init_inode(inode, attr, fc);
 		unlock_new_inode(inode);
 	} else if (fuse_stale_inode(inode, generation, attr)) {
-		/* nodeid was reused, any I/O on the old inode should fail */
+		 
 		fuse_make_bad(inode);
 		iput(inode);
 		goto retry;
@@ -566,7 +520,7 @@ static void fuse_umount_begin(struct super_block *sb)
 
 	fuse_abort_conn(fc);
 
-	// Only retire block-device-based superblocks.
+	 
 	if (sb->s_bdev != NULL)
 		retire_super(sb);
 }
@@ -594,7 +548,7 @@ static void convert_fuse_statfs(struct kstatfs *stbuf, struct fuse_kstatfs *attr
 	stbuf->f_files   = attr->files;
 	stbuf->f_ffree   = attr->ffree;
 	stbuf->f_namelen = attr->namelen;
-	/* fsid is left zero */
+	 
 }
 
 static int fuse_statfs(struct dentry *dentry, struct kstatfs *buf)
@@ -630,7 +584,7 @@ static struct fuse_sync_bucket *fuse_sync_bucket_alloc(void)
 	bucket = kzalloc(sizeof(*bucket), GFP_KERNEL | __GFP_NOFAIL);
 	if (bucket) {
 		init_waitqueue_head(&bucket->waitq);
-		/* Initial active count */
+		 
 		atomic_set(&bucket->count, 1);
 	}
 	return bucket;
@@ -646,30 +600,23 @@ static void fuse_sync_fs_writes(struct fuse_conn *fc)
 	bucket = rcu_dereference_protected(fc->curr_bucket, 1);
 	count = atomic_read(&bucket->count);
 	WARN_ON(count < 1);
-	/* No outstanding writes? */
+	 
 	if (count == 1) {
 		spin_unlock(&fc->lock);
 		kfree(new_bucket);
 		return;
 	}
 
-	/*
-	 * Completion of new bucket depends on completion of this bucket, so add
-	 * one more count.
-	 */
+	 
 	atomic_inc(&new_bucket->count);
 	rcu_assign_pointer(fc->curr_bucket, new_bucket);
 	spin_unlock(&fc->lock);
-	/*
-	 * Drop initial active count.  At this point if all writes in this and
-	 * ancestor buckets complete, the count will go to zero and this task
-	 * will be woken up.
-	 */
+	 
 	atomic_dec(&bucket->count);
 
 	wait_event(bucket->waitq, atomic_read(&bucket->count) == 0);
 
-	/* Drop temp count on descendant bucket */
+	 
 	fuse_sync_bucket_dec(new_bucket);
 	kfree_rcu(bucket, rcu);
 }
@@ -682,14 +629,11 @@ static int fuse_sync_fs(struct super_block *sb, int wait)
 	FUSE_ARGS(args);
 	int err;
 
-	/*
-	 * Userspace cannot handle the wait == 0 case.  Avoid a
-	 * gratuitous roundtrip.
-	 */
+	 
 	if (!wait)
 		return 0;
 
-	/* The filesystem is being unmounted.  Nothing to do. */
+	 
 	if (!sb->s_root)
 		return 0;
 
@@ -750,10 +694,7 @@ static int fuse_parse_param(struct fs_context *fsc, struct fs_parameter *param)
 	int opt;
 
 	if (fsc->purpose == FS_CONTEXT_FOR_RECONFIGURE) {
-		/*
-		 * Ignore options coming from mount(MS_REMOUNT) for backward
-		 * compatibility.
-		 */
+		 
 		if (fsc->oldapi)
 			return 0;
 
@@ -1133,10 +1074,7 @@ static const struct super_operations fuse_super_operations = {
 
 static void sanitize_global_limit(unsigned *limit)
 {
-	/*
-	 * The default maximum number of async requests is calculated to consume
-	 * 1/2^13 of the total memory, assuming 392 bytes per request.
-	 */
+	 
 	if (*limit == 0)
 		*limit = ((totalram_pages() << PAGE_SHIFT) >> 13) / 392;
 
@@ -1226,7 +1164,7 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
 			if (flags & FUSE_ATOMIC_O_TRUNC)
 				fc->atomic_o_trunc = 1;
 			if (arg->minor >= 9) {
-				/* LOOKUP has dependency on proto version */
+				 
 				if (flags & FUSE_EXPORT_SUPPORT)
 					fc->export_support = 1;
 			}
@@ -1350,9 +1288,7 @@ void fuse_send_init(struct fuse_mount *fm)
 	ia->args.in_args[0].size = sizeof(ia->in);
 	ia->args.in_args[0].value = &ia->in;
 	ia->args.out_numargs = 1;
-	/* Variable length argument used for backward compatibility
-	   with interface version < 7.5.  Rest of init_out is zeroed
-	   by do_get_request(), so a short reply is not a problem */
+	 
 	ia->args.out_argvar = true;
 	ia->args.out_args[0].size = sizeof(ia->out);
 	ia->args.out_args[0].value = &ia->out;
@@ -1379,10 +1315,7 @@ static int fuse_bdi_init(struct fuse_conn *fc, struct super_block *sb)
 
 	if (sb->s_bdev) {
 		suffix = "-fuseblk";
-		/*
-		 * sb->s_bdi points to blkdev's bdi however we want to redirect
-		 * it to our private bdi...
-		 */
+		 
 		bdi_put(sb->s_bdi);
 		sb->s_bdi = &noop_backing_dev_info;
 	}
@@ -1391,22 +1324,11 @@ static int fuse_bdi_init(struct fuse_conn *fc, struct super_block *sb)
 	if (err)
 		return err;
 
-	/* fuse does it's own writeback accounting */
+	 
 	sb->s_bdi->capabilities &= ~BDI_CAP_WRITEBACK_ACCT;
 	sb->s_bdi->capabilities |= BDI_CAP_STRICTLIMIT;
 
-	/*
-	 * For a single fuse filesystem use max 1% of dirty +
-	 * writeback threshold.
-	 *
-	 * This gives about 1M of write buffer for memory maps on a
-	 * machine with 1G and 10% dirty_ratio, which should be more
-	 * than enough.
-	 *
-	 * Privileged users can raise it by writing to
-	 *
-	 *    /sys/class/bdi/<bdi>/max_ratio
-	 */
+	 
 	bdi_set_max_ratio(sb->s_bdi, 1);
 
 	return 0;
@@ -1536,11 +1458,7 @@ static int fuse_fill_super_submount(struct super_block *sb,
 
 	fuse_fill_attr_from_inode(&root_attr, parent_fi);
 	root = fuse_iget(sb, parent_fi->nodeid, 0, &root_attr, 0, 0);
-	/*
-	 * This inode is just a duplicate, so it is not looked up and
-	 * its nlookup should not be incremented.  fuse_iget() does
-	 * that, though, so undo it here.
-	 */
+	 
 	fi = get_fuse_inode(root);
 	fi->nlookup--;
 
@@ -1549,12 +1467,7 @@ static int fuse_fill_super_submount(struct super_block *sb,
 	if (!sb->s_root)
 		return -ENOMEM;
 
-	/*
-	 * Grab the parent's submount_lookup pointer and take a
-	 * reference on the shared nlookup from the parent.  This is to
-	 * prevent the last forget for this nodeid from getting
-	 * triggered until all users have finished with it.
-	 */
+	 
 	sl = parent_fi->submount_lookup;
 	WARN_ON(!sl);
 	if (sl) {
@@ -1565,7 +1478,7 @@ static int fuse_fill_super_submount(struct super_block *sb,
 	return 0;
 }
 
-/* Filesystem context private data holds the FUSE inode of the mount point */
+ 
 static int fuse_get_tree_submount(struct fs_context *fsc)
 {
 	struct fuse_mount *fm;
@@ -1586,7 +1499,7 @@ static int fuse_get_tree_submount(struct fs_context *fsc)
 	if (IS_ERR(sb))
 		return PTR_ERR(sb);
 
-	/* Initialize superblock, making @mp_fi its root */
+	 
 	err = fuse_fill_super_submount(sb, mp_fi);
 	if (err) {
 		deactivate_locked_super(sb);
@@ -1662,7 +1575,7 @@ int fuse_fill_super_common(struct super_block *sb, struct fuse_fs_context *ctx)
 	if (err)
 		goto err_dev_free;
 
-	/* Handle umasking inside the fuse code */
+	 
 	if (sb->s_flags & SB_POSIXACL)
 		fc->dont_mask = 1;
 	sb->s_flags |= SB_POSIXACL;
@@ -1683,7 +1596,7 @@ int fuse_fill_super_common(struct super_block *sb, struct fuse_fs_context *ctx)
 	root_dentry = d_make_root(root);
 	if (!root_dentry)
 		goto err_dev_free;
-	/* Root dentry doesn't have .d_revalidate */
+	 
 	sb->s_d_op = &fuse_dentry_operations;
 
 	mutex_lock(&fuse_mutex);
@@ -1725,10 +1638,7 @@ static int fuse_fill_super(struct super_block *sb, struct fs_context *fsc)
 	    !ctx->user_id_present || !ctx->group_id_present)
 		return -EINVAL;
 
-	/*
-	 * Require mount to happen from the same user namespace which
-	 * opened /dev/fuse to prevent potential attacks.
-	 */
+	 
 	if ((ctx->file->f_op != &fuse_dev_operations) ||
 	    (ctx->file->f_cred->user_ns != sb->s_user_ns))
 		return -EINVAL;
@@ -1737,16 +1647,13 @@ static int fuse_fill_super(struct super_block *sb, struct fs_context *fsc)
 	err = fuse_fill_super_common(sb, ctx);
 	if (err)
 		return err;
-	/* file->private_data shall be visible on all CPUs after this */
+	 
 	smp_mb();
 	fuse_send_init(get_fuse_mount_super(sb));
 	return 0;
 }
 
-/*
- * This is the path where user supplied an already initialized fuse dev.  In
- * this case never create a new super if the old one is gone.
- */
+ 
 static int fuse_set_no_super(struct super_block *sb, struct fs_context *fsc)
 {
 	return -ENOTCONN;
@@ -1789,18 +1696,12 @@ static int fuse_get_tree(struct fs_context *fsc)
 		err = get_tree_bdev(fsc, fuse_fill_super);
 		goto out;
 	}
-	/*
-	 * While block dev mount can be initialized with a dummy device fd
-	 * (found by device name), normal fuse mounts can't
-	 */
+	 
 	err = -EINVAL;
 	if (!ctx->file)
 		goto out;
 
-	/*
-	 * Allow creating a fuse mount with an already initialized fuse
-	 * connection
-	 */
+	 
 	fud = READ_ONCE(ctx->file->private_data);
 	if (ctx->file->f_op == &fuse_dev_operations && fud) {
 		fsc->sget_key = fud->fc;
@@ -1826,9 +1727,7 @@ static const struct fs_context_operations fuse_context_ops = {
 	.get_tree	= fuse_get_tree,
 };
 
-/*
- * Set up the filesystem mount context.
- */
+ 
 static int fuse_init_fs_context(struct fs_context *fsc)
 {
 	struct fuse_fs_context *ctx;
@@ -2003,10 +1902,7 @@ static void fuse_fs_cleanup(void)
 	unregister_filesystem(&fuse_fs_type);
 	unregister_fuseblk();
 
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(fuse_inode_cachep);
 }

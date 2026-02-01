@@ -1,30 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010-2017 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
-/*
- * This file contains entry functions for memory management of ISP driver
- */
+
+ 
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/mm.h>
-#include <linux/highmem.h>	/* for kmap */
-#include <linux/io.h>		/* for page_to_phys */
+#include <linux/highmem.h>	 
+#include <linux/io.h>		 
 #include <linux/sysfs.h>
 
 #include "hmm/hmm.h"
@@ -39,10 +20,7 @@ struct hmm_bo_device bo_device;
 static ia_css_ptr dummy_ptr = mmgr_EXCEPTION;
 static bool hmm_initialized;
 
-/*
- * p: private
- * v: vmalloc
- */
+ 
 static const char hmm_bo_type_string[] = "pv";
 
 static ssize_t bo_show(struct device *dev, struct device_attribute *attr,
@@ -91,7 +69,7 @@ static ssize_t bo_show(struct device *dev, struct device_attribute *attr,
 		}
 	}
 
-	/* Add trailing zero, not included by scnprintf */
+	 
 	return index1 + index2 + 1;
 }
 
@@ -132,13 +110,7 @@ int hmm_init(void)
 
 	hmm_initialized = true;
 
-	/*
-	 * As hmm use NULL to indicate invalid ISP virtual address,
-	 * and ISP_VM_START is defined to 0 too, so we allocate
-	 * one piece of dummy memory, which should return value 0,
-	 * at the beginning, to avoid hmm_alloc return 0 in the
-	 * further allocation.
-	 */
+	 
 	dummy_ptr = hmm_alloc(1);
 
 	if (!ret) {
@@ -158,7 +130,7 @@ void hmm_cleanup(void)
 		return;
 	sysfs_remove_group(&atomisp_dev->kobj, atomisp_attribute_group);
 
-	/* free dummy memory first */
+	 
 	hmm_free(dummy_ptr);
 	dummy_ptr = 0;
 
@@ -173,31 +145,28 @@ static ia_css_ptr __hmm_alloc(size_t bytes, enum hmm_bo_type type,
 	struct hmm_buffer_object *bo;
 	int ret;
 
-	/*
-	 * Check if we are initialized. In the ideal world we wouldn't need
-	 * this but we can tackle it once the driver is a lot cleaner
-	 */
+	 
 
 	if (!hmm_initialized)
 		hmm_init();
-	/* Get page number from size */
+	 
 	pgnr = size_to_pgnr_ceil(bytes);
 
-	/* Buffer object structure init */
+	 
 	bo = hmm_bo_alloc(&bo_device, pgnr);
 	if (!bo) {
 		dev_err(atomisp_dev, "hmm_bo_create failed.\n");
 		goto create_bo_err;
 	}
 
-	/* Allocate pages for memory */
+	 
 	ret = hmm_bo_alloc_pages(bo, type, vmalloc_addr);
 	if (ret) {
 		dev_err(atomisp_dev, "hmm_bo_alloc_pages failed.\n");
 		goto alloc_page_err;
 	}
 
-	/* Combine the virtual address and pages together */
+	 
 	ret = hmm_bo_bind(bo);
 	if (ret) {
 		dev_err(atomisp_dev, "hmm_bo_bind failed.\n");
@@ -274,7 +243,7 @@ static inline int hmm_check_bo(struct hmm_buffer_object *bo, unsigned int ptr)
 	return 0;
 }
 
-/* Read function in ISP memory management */
+ 
 static int load_and_flush_by_kmap(ia_css_ptr virt, void *data,
 				  unsigned int bytes)
 {
@@ -303,7 +272,7 @@ static int load_and_flush_by_kmap(ia_css_ptr virt, void *data,
 			bytes = 0;
 		}
 
-		virt += len;	/* update virt for next loop */
+		virt += len;	 
 
 		if (des) {
 			memcpy(des, src, len);
@@ -318,7 +287,7 @@ static int load_and_flush_by_kmap(ia_css_ptr virt, void *data,
 	return 0;
 }
 
-/* Read function in ISP memory management */
+ 
 static int load_and_flush(ia_css_ptr virt, void *data, unsigned int bytes)
 {
 	struct hmm_buffer_object *bo;
@@ -353,7 +322,7 @@ static int load_and_flush(ia_css_ptr virt, void *data, unsigned int bytes)
 	return 0;
 }
 
-/* Read function in ISP memory management */
+ 
 int hmm_load(ia_css_ptr virt, void *data, unsigned int bytes)
 {
 	if (!virt) {
@@ -369,13 +338,13 @@ int hmm_load(ia_css_ptr virt, void *data, unsigned int bytes)
 	return load_and_flush(virt, data, bytes);
 }
 
-/* Flush hmm data from the data cache */
+ 
 int hmm_flush(ia_css_ptr virt, unsigned int bytes)
 {
 	return load_and_flush(virt, NULL, bytes);
 }
 
-/* Write function in ISP memory management */
+ 
 int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
 {
 	struct hmm_buffer_object *bo;
@@ -458,7 +427,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
 	return 0;
 }
 
-/* memset function in ISP memory management */
+ 
 int hmm_set(ia_css_ptr virt, int c, unsigned int bytes)
 {
 	struct hmm_buffer_object *bo;
@@ -518,7 +487,7 @@ int hmm_set(ia_css_ptr virt, int c, unsigned int bytes)
 	return 0;
 }
 
-/* Virtual address to physical address convert */
+ 
 phys_addr_t hmm_virt_to_phys(ia_css_ptr virt)
 {
 	unsigned int idx, offset;
@@ -553,7 +522,7 @@ int hmm_mmap(struct vm_area_struct *vma, ia_css_ptr virt)
 	return hmm_bo_mmap(vma, bo);
 }
 
-/* Map ISP virtual address into IA virtual address */
+ 
 void *hmm_vmap(ia_css_ptr virt, bool cached)
 {
 	struct hmm_buffer_object *bo;
@@ -574,7 +543,7 @@ void *hmm_vmap(ia_css_ptr virt, bool cached)
 		return NULL;
 }
 
-/* Flush the memory which is mapped as cached memory through hmm_vmap */
+ 
 void hmm_flush_vmap(ia_css_ptr virt)
 {
 	struct hmm_buffer_object *bo;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,7 +27,7 @@ static int open_pe(void)
 	struct perf_event_attr attr = {0};
 	int pfd;
 
-	/* create perf event */
+	 
 	attr.size = sizeof(attr);
 	attr.type = PERF_TYPE_HARDWARE;
 	attr.config = PERF_COUNT_HW_CPU_CYCLES;
@@ -71,7 +71,7 @@ static void test_find_vma_pe(struct find_vma *skel)
 	for (i = 0; i < one_bn && find_vma_pe_condition(skel); ++i)
 		++j;
 
-	test_and_reset_skel(skel, -EBUSY /* in nmi, irq_work is busy */, i == one_bn);
+	test_and_reset_skel(skel, -EBUSY  , i == one_bn);
 cleanup:
 	bpf_link__destroy(link);
 	close(pfd);
@@ -86,7 +86,7 @@ static void test_find_vma_kprobe(struct find_vma *skel)
 		return;
 
 	getpgid(skel->bss->target_pid);
-	test_and_reset_skel(skel, -ENOENT /* could not find vma for ptr 0 */, true);
+	test_and_reset_skel(skel, -ENOENT  , true);
 }
 
 static void test_illegal_write_vma(void)

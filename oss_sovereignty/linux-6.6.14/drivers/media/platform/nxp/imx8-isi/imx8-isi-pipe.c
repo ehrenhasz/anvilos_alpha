@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * V4L2 Capture ISI subdev driver for i.MX8QXP/QM platform
- *
- * ISI is a Image Sensor Interface of i.MX8QXP/QM platform, which
- * used to process image from camera sensor to memory or DC
- *
- * Copyright (c) 2019 NXP Semiconductor
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -26,14 +19,9 @@
 #include "imx8-isi-core.h"
 #include "imx8-isi-regs.h"
 
-/*
- * While the ISI receives data from the gasket on a 3x12-bit bus, the pipeline
- * subdev conceptually includes the gasket in order to avoid exposing an extra
- * subdev between the CSIS and the ISI. We thus need to expose media bus codes
- * corresponding to the CSIS output, which is narrower.
- */
+ 
 static const struct mxc_isi_bus_format_info mxc_isi_bus_formats[] = {
-	/* YUV formats */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_UYVY8_1X16,
 		.output		= MEDIA_BUS_FMT_YUV8_1X24,
@@ -45,7 +33,7 @@ static const struct mxc_isi_bus_format_info mxc_isi_bus_formats[] = {
 		.pads		= BIT(MXC_ISI_PIPE_PAD_SOURCE),
 		.encoding	= MXC_ISI_ENC_YUV,
 	},
-	/* RGB formats */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_RGB565_1X16,
 		.output		= MEDIA_BUS_FMT_RGB888_1X24,
@@ -58,7 +46,7 @@ static const struct mxc_isi_bus_format_info mxc_isi_bus_formats[] = {
 				| BIT(MXC_ISI_PIPE_PAD_SOURCE),
 		.encoding	= MXC_ISI_ENC_RGB,
 	},
-	/* RAW formats */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_Y8_1X8,
 		.output		= MEDIA_BUS_FMT_Y8_1X8,
@@ -180,7 +168,7 @@ static const struct mxc_isi_bus_format_info mxc_isi_bus_formats[] = {
 				| BIT(MXC_ISI_PIPE_PAD_SOURCE),
 		.encoding	= MXC_ISI_ENC_RAW,
 	},
-	/* JPEG */
+	 
 	{
 		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
 		.output		= MEDIA_BUS_FMT_JPEG_1X8,
@@ -247,10 +235,7 @@ int mxc_isi_pipe_enable(struct mxc_isi_pipe *pipe)
 	u32 input;
 	int ret;
 
-	/*
-	 * Find the connected input by inspecting the crossbar switch routing
-	 * table.
-	 */
+	 
 	state = v4l2_subdev_lock_and_get_active_state(&xbar->sd);
 	ret = v4l2_subdev_routing_find_opposite_end(&state->routing,
 						    xbar->num_sinks + pipe->id,
@@ -260,7 +245,7 @@ int mxc_isi_pipe_enable(struct mxc_isi_pipe *pipe)
 	if (ret)
 		return -EPIPE;
 
-	/* Configure the pipeline. */
+	 
 	state = v4l2_subdev_lock_and_get_active_state(sd);
 
 	sink_fmt = v4l2_subdev_get_try_format(sd, state, MXC_ISI_PIPE_PAD_SINK);
@@ -280,13 +265,13 @@ int mxc_isi_pipe_enable(struct mxc_isi_pipe *pipe)
 
 	v4l2_subdev_unlock_state(state);
 
-	/* Configure the ISI channel. */
+	 
 	mxc_isi_channel_config(pipe, input, &in_size, &scale, &crop,
 			       sink_info->encoding, src_info->encoding);
 
 	mxc_isi_channel_enable(pipe);
 
-	/* Enable streams on the crossbar switch. */
+	 
 	ret = v4l2_subdev_enable_streams(&xbar->sd, xbar->num_sinks + pipe->id,
 					 BIT(0));
 	if (ret) {
@@ -313,9 +298,7 @@ void mxc_isi_pipe_disable(struct mxc_isi_pipe *pipe)
 	mxc_isi_channel_disable(pipe);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 mxc_isi_pipe_get_pad_format(struct mxc_isi_pipe *pipe,
@@ -405,20 +388,13 @@ static int mxc_isi_pipe_enum_mbus_code(struct v4l2_subdev *sd,
 						  MXC_ISI_PIPE_PAD_SINK);
 
 		if (info->encoding == MXC_ISI_ENC_RAW) {
-			/*
-			 * For RAW formats, the sink and source media bus codes
-			 * must match.
-			 */
+			 
 			if (code->index)
 				return -EINVAL;
 
 			code->code = info->output;
 		} else {
-			/*
-			 * For RGB or YUV formats, the ISI supports format
-			 * conversion. Either of the two output formats can be
-			 * used regardless of the input.
-			 */
+			 
 			if (code->index > 1)
 				return -EINVAL;
 
@@ -469,10 +445,7 @@ static int mxc_isi_pipe_set_fmt(struct v4l2_subdev *sd,
 			info = mxc_isi_bus_format_by_code(MXC_ISI_DEF_MBUS_CODE_SINK,
 							  MXC_ISI_PIPE_PAD_SINK);
 
-		/*
-		 * Limit the max line length if there's no adjacent pipe to
-		 * chain with.
-		 */
+		 
 		max_width = pipe->id == pipe->isi->pdata->num_channels - 1
 			  ? MXC_ISI_MAX_WIDTH_UNCHAINED
 			  : MXC_ISI_MAX_WIDTH_CHAINED;
@@ -482,7 +455,7 @@ static int mxc_isi_pipe_set_fmt(struct v4l2_subdev *sd,
 		mf->height = clamp(mf->height, MXC_ISI_MIN_HEIGHT,
 				   MXC_ISI_MAX_HEIGHT);
 
-		/* Propagate the format to the source pad. */
+		 
 		rect = mxc_isi_pipe_get_pad_compose(pipe, state,
 						    MXC_ISI_PIPE_PAD_SINK);
 		rect->width = mf->width;
@@ -501,11 +474,7 @@ static int mxc_isi_pipe_set_fmt(struct v4l2_subdev *sd,
 		format->width = mf->width;
 		format->height = mf->height;
 	} else {
-		/*
-		 * For RGB or YUV formats, the ISI supports RGB <-> YUV format
-		 * conversion. For RAW formats, the sink and source media bus
-		 * codes must match.
-		 */
+		 
 		format = mxc_isi_pipe_get_pad_format(pipe, state,
 						     MXC_ISI_PIPE_PAD_SINK);
 		info = mxc_isi_bus_format_by_code(format->code,
@@ -522,10 +491,7 @@ static int mxc_isi_pipe_set_fmt(struct v4l2_subdev *sd,
 
 		mf->code = info->output;
 
-		/*
-		 * The width and height on the source can't be changed, they
-		 * must match the crop rectangle size.
-		 */
+		 
 		rect = mxc_isi_pipe_get_pad_crop(pipe, state,
 						 MXC_ISI_PIPE_PAD_SOURCE);
 
@@ -553,10 +519,10 @@ static int mxc_isi_pipe_get_selection(struct v4l2_subdev *sd,
 	switch (sel->target) {
 	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SINK)
-			/* No compose rectangle on source pad. */
+			 
 			return -EINVAL;
 
-		/* The sink compose is bound by the sink format. */
+		 
 		format = mxc_isi_pipe_get_pad_format(pipe, state,
 						     MXC_ISI_PIPE_PAD_SINK);
 		sel->r.left = 0;
@@ -567,10 +533,10 @@ static int mxc_isi_pipe_get_selection(struct v4l2_subdev *sd,
 
 	case V4L2_SEL_TGT_CROP_BOUNDS:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SOURCE)
-			/* No crop rectangle on sink pad. */
+			 
 			return -EINVAL;
 
-		/* The source crop is bound by the sink compose. */
+		 
 		rect = mxc_isi_pipe_get_pad_compose(pipe, state,
 						    MXC_ISI_PIPE_PAD_SINK);
 		sel->r = *rect;
@@ -578,7 +544,7 @@ static int mxc_isi_pipe_get_selection(struct v4l2_subdev *sd,
 
 	case V4L2_SEL_TGT_CROP:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SOURCE)
-			/* No crop rectangle on sink pad. */
+			 
 			return -EINVAL;
 
 		rect = mxc_isi_pipe_get_pad_crop(pipe, state, sel->pad);
@@ -587,7 +553,7 @@ static int mxc_isi_pipe_get_selection(struct v4l2_subdev *sd,
 
 	case V4L2_SEL_TGT_COMPOSE:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SINK)
-			/* No compose rectangle on source pad. */
+			 
 			return -EINVAL;
 
 		rect = mxc_isi_pipe_get_pad_compose(pipe, state, sel->pad);
@@ -612,10 +578,10 @@ static int mxc_isi_pipe_set_selection(struct v4l2_subdev *sd,
 	switch (sel->target) {
 	case V4L2_SEL_TGT_CROP:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SOURCE)
-			/* The pipeline support cropping on the source only. */
+			 
 			return -EINVAL;
 
-		/* The source crop is bound by the sink compose. */
+		 
 		rect = mxc_isi_pipe_get_pad_compose(pipe, state,
 						    MXC_ISI_PIPE_PAD_SINK);
 		sel->r.left = clamp_t(s32, sel->r.left, 0, rect->width - 1);
@@ -629,7 +595,7 @@ static int mxc_isi_pipe_set_selection(struct v4l2_subdev *sd,
 						 MXC_ISI_PIPE_PAD_SOURCE);
 		*rect = sel->r;
 
-		/* Propagate the crop rectangle to the source pad. */
+		 
 		format = mxc_isi_pipe_get_pad_format(pipe, state,
 						     MXC_ISI_PIPE_PAD_SOURCE);
 		format->width = sel->r.width;
@@ -638,10 +604,10 @@ static int mxc_isi_pipe_set_selection(struct v4l2_subdev *sd,
 
 	case V4L2_SEL_TGT_COMPOSE:
 		if (sel->pad != MXC_ISI_PIPE_PAD_SINK)
-			/* Composing is supported on the sink only. */
+			 
 			return -EINVAL;
 
-		/* The sink crop is bound by the sink format downscaling only). */
+		 
 		format = mxc_isi_pipe_get_pad_format(pipe, state,
 						     MXC_ISI_PIPE_PAD_SINK);
 
@@ -656,7 +622,7 @@ static int mxc_isi_pipe_set_selection(struct v4l2_subdev *sd,
 						    MXC_ISI_PIPE_PAD_SINK);
 		*rect = sel->r;
 
-		/* Propagate the compose rectangle to the source pad. */
+		 
 		rect = mxc_isi_pipe_get_pad_crop(pipe, state,
 						 MXC_ISI_PIPE_PAD_SOURCE);
 		rect->left = 0;
@@ -694,9 +660,7 @@ static const struct v4l2_subdev_ops mxc_isi_pipe_subdev_ops = {
 	.pad = &mxc_isi_pipe_subdev_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * IRQ handling
- */
+ 
 
 static irqreturn_t mxc_isi_pipe_irq_handler(int irq, void *priv)
 {
@@ -738,9 +702,7 @@ static irqreturn_t mxc_isi_pipe_irq_handler(int irq, void *priv)
 	return IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * Init & cleanup
- */
+ 
 
 static const struct media_entity_operations mxc_isi_pipe_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
@@ -786,7 +748,7 @@ int mxc_isi_pipe_init(struct mxc_isi_dev *isi, unsigned int id)
 	if (ret < 0)
 		goto error;
 
-	/* Register IRQ handler. */
+	 
 	mxc_isi_channel_irq_clear(pipe);
 
 	irq = platform_get_irq(to_platform_device(isi->dev), id);
@@ -849,7 +811,7 @@ int mxc_isi_pipe_acquire(struct mxc_isi_pipe *pipe,
 	if (ret)
 		return ret;
 
-	/* Chain the channel if needed for wide resolutions. */
+	 
 	if (sink_fmt->width > MXC_ISI_MAX_WIDTH_UNCHAINED) {
 		ret = mxc_isi_channel_chain(pipe, bypass);
 		if (ret)

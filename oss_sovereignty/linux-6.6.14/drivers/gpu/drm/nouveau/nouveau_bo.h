@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NOUVEAU_BO_H__
 #define __NOUVEAU_BO_H__
 #include <drm/drm_gem.h>
@@ -21,14 +21,14 @@ struct nouveau_bo {
 	struct list_head head;
 	struct list_head io_reserve_lru;
 
-	/* protected by ttm_bo_reserve() */
+	 
 	struct drm_file *reserved_by;
 	struct list_head entry;
 	int pbbo_index;
 	bool validate_mapped;
 	bool no_share;
 
-	/* GPU address space is independent of CPU word size */
+	 
 	uint64_t offset;
 
 	struct list_head vma_list;
@@ -98,7 +98,7 @@ void nouveau_bo_sync_for_cpu(struct nouveau_bo *nvbo);
 void nouveau_bo_add_io_reserve_lru(struct ttm_buffer_object *bo);
 void nouveau_bo_del_io_reserve_lru(struct ttm_buffer_object *bo);
 
-/* TODO: submit equivalent to TTM generic API upstream? */
+ 
 static inline void __iomem *
 nvbo_kmap_obj_iovirtual(struct nouveau_bo *nvbo)
 {

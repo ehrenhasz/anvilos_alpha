@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2019 five technologies GmbH
-// Author: Markus Reichl <m.reichl@fivetechno.de>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -13,9 +13,9 @@
 #define VOL_MIN_IDX			0x00
 #define VOL_MAX_IDX			0x7ff
 
-/* Register definitions */
-#define MP8859_VOUT_L_REG		0    //3 lo Bits
-#define MP8859_VOUT_H_REG		1    //8 hi Bits
+ 
+#define MP8859_VOUT_L_REG		0    
+#define MP8859_VOUT_H_REG		1    
 #define MP8859_VOUT_GO_REG		2
 #define MP8859_IOUT_LIM_REG		3
 #define MP8859_CTL1_REG			4

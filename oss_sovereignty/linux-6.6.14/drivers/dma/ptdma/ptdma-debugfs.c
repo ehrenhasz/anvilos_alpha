@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Passthrough DMA device driver
- * -- Based on the CCP driver
- *
- * Copyright (C) 2016,2021 Advanced Micro Devices, Inc.
- *
- * Author: Sanjay R Mehta <sanju.mehta@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 
 #include "ptdma.h"
 
-/* DebugFS helpers */
+ 
 #define	RI_VERSION_NUM	0x0000003F
 
 #define	RI_NUM_VQM	0x00078000
@@ -39,10 +31,7 @@ static int pt_debugfs_info_show(struct seq_file *s, void *p)
 	return 0;
 }
 
-/*
- * Return a formatted buffer containing the current
- * statistics of queue for PTDMA
- */
+ 
 static int pt_debugfs_stats_show(struct seq_file *s, void *p)
 {
 	struct pt_device *pt = s->private;

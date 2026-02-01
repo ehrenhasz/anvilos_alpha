@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics pressures driver
- *
- * Copyright 2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- * v. 1.0.0
- */
+ 
+ 
 
 #ifndef ST_PRESS_H
 #define ST_PRESS_H
@@ -35,10 +28,7 @@ enum st_press_type {
 #define LPS22HH_PRESS_DEV_NAME		"lps22hh"
 #define LPS22DF_PRESS_DEV_NAME		"lps22df"
 
-/**
- * struct st_sensors_platform_data - default press platform data
- * @drdy_int_pin: default press DRDY is available on INT1 pin.
- */
+ 
 static __maybe_unused const struct st_sensors_platform_data default_press_pdata = {
 	.drdy_int_pin = 1,
 };
@@ -47,12 +37,12 @@ static __maybe_unused const struct st_sensors_platform_data default_press_pdata 
 int st_press_allocate_ring(struct iio_dev *indio_dev);
 int st_press_trig_set_state(struct iio_trigger *trig, bool state);
 #define ST_PRESS_TRIGGER_SET_STATE (&st_press_trig_set_state)
-#else /* CONFIG_IIO_BUFFER */
+#else  
 static inline int st_press_allocate_ring(struct iio_dev *indio_dev)
 {
 	return 0;
 }
 #define ST_PRESS_TRIGGER_SET_STATE NULL
-#endif /* CONFIG_IIO_BUFFER */
+#endif  
 
-#endif /* ST_PRESS_H */
+#endif  

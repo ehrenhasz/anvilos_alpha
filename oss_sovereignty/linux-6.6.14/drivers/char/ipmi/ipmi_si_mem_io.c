@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/io.h>
 #include "ipmi_si.h"
@@ -81,10 +81,7 @@ int ipmi_si_mem_setup(struct si_sm_io *io)
 	if (!addr)
 		return -ENODEV;
 
-	/*
-	 * Figure out the actual readb/readw/readl/etc routine to use based
-	 * upon the register size.
-	 */
+	 
 	switch (io->regsize) {
 	case 1:
 		io->inputb = intf_mem_inb;
@@ -110,28 +107,17 @@ int ipmi_si_mem_setup(struct si_sm_io *io)
 		return -EINVAL;
 	}
 
-	/*
-	 * Some BIOSes reserve disjoint memory regions in their ACPI
-	 * tables.  This causes problems when trying to request the
-	 * entire region.  Therefore we must request each register
-	 * separately.
-	 */
+	 
 	for (idx = 0; idx < io->io_size; idx++) {
 		if (request_mem_region(addr + idx * io->regspacing,
 				       io->regsize, SI_DEVICE_NAME) == NULL) {
-			/* Undo allocations */
+			 
 			mem_region_cleanup(io, idx);
 			return -EIO;
 		}
 	}
 
-	/*
-	 * Calculate the total amount of memory to claim.  This is an
-	 * unusual looking calculation, but it avoids claiming any
-	 * more memory than it has to.  It will claim everything
-	 * between the first address to the end of the last full
-	 * register.
-	 */
+	 
 	mapsize = ((io->io_size * io->regspacing)
 		   - (io->regspacing - io->regsize));
 	io->addr = ioremap(addr, mapsize);

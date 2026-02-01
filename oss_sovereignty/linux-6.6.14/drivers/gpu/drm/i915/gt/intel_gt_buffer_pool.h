@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_GT_BUFFER_POOL_H
 #define INTEL_GT_BUFFER_POOL_H
@@ -24,7 +22,7 @@ static inline int
 intel_gt_buffer_pool_mark_active(struct intel_gt_buffer_pool_node *node,
 				 struct i915_request *rq)
 {
-	/* did we call mark_used? */
+	 
 	GEM_WARN_ON(!node->pinned);
 
 	return i915_active_add_request(&node->active, rq);
@@ -40,4 +38,4 @@ void intel_gt_init_buffer_pool(struct intel_gt *gt);
 void intel_gt_flush_buffer_pool(struct intel_gt *gt);
 void intel_gt_fini_buffer_pool(struct intel_gt *gt);
 
-#endif /* INTEL_GT_BUFFER_POOL_H */
+#endif  

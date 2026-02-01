@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bsg.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_ioctl.h>
@@ -60,9 +60,7 @@ static int scsi_bsg_sg_io_fn(struct request_queue *q, struct sg_io_v4 *hdr,
 	bio = rq->bio;
 	blk_execute_rq(rq, !(hdr->flags & BSG_FLAG_Q_AT_TAIL));
 
-	/*
-	 * fill in all the output members
-	 */
+	 
 	hdr->device_status = scmd->result & 0xff;
 	hdr->transport_status = host_byte(scmd->result);
 	hdr->driver_status = 0;

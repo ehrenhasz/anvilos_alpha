@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Test triggering of loading of firmware from different mount
- * namespaces. Expect firmware to be always loaded from the mount
- * namespace of PID 1. */
+
+ 
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -77,7 +75,7 @@ static bool test_fw_in_ns(const char *fw_name, const char *sys_path, bool block_
 		die("fork failed: %s\n",
 			strerror(errno));
 	}
-	if (child != 0) { /* parent */
+	if (child != 0) {  
 		pid_t pid;
 		int status;
 
@@ -123,8 +121,7 @@ int main(int argc, char **argv)
 	if (argc != 2)
 		die("usage: %s sys_path\n", argv[0]);
 
-	/* Mount tmpfs to /lib/firmware so we don't have to assume
-	   that it is writable for us.*/
+	 
 	if (mount("test", "/lib/firmware", "tmpfs", 0, NULL) == -1)
 		die("mounting tmpfs to /lib/firmware failed\n");
 
@@ -135,12 +132,12 @@ int main(int argc, char **argv)
 	setup_fw(fw_path);
 
 	setvbuf(stdout, NULL, _IONBF, 0);
-	/* Positive case: firmware in PID1 mount namespace */
+	 
 	printf("Testing with firmware in parent namespace (assumed to be same file system as PID1)\n");
 	if (!test_fw_in_ns(fw_name, sys_path, false))
 		die("error: failed to access firmware\n");
 
-	/* Negative case: firmware in child mount namespace, expected to fail */
+	 
 	printf("Testing with firmware in child namespace\n");
 	if (test_fw_in_ns(fw_name, sys_path, true))
 		die("error: firmware access did not fail\n");

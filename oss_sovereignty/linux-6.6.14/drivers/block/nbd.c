@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Network block device - make block devices work over TCP
- *
- * Note that you can not swap over this thing, yet. Seems to work but
- * deadlocks sometimes - you can not swap over TCP in general.
- * 
- * Copyright 1997-2000, 2008 Pavel Machek <pavel@ucw.cz>
- * Parts copyright 2001 Steven Whitehouse <steve@chygwyn.com>
- *
- * (part of code stolen from loop.c)
- */
+
+ 
 
 #define pr_fmt(fmt) "nbd: " fmt
 
@@ -128,17 +118,13 @@ struct nbd_device {
 	struct task_struct *task_setup;
 
 	unsigned long flags;
-	pid_t pid; /* pid of nbd-client, if attached */
+	pid_t pid;  
 
 	char *backend;
 };
 
 #define NBD_CMD_REQUEUED	1
-/*
- * This flag will be set if nbd_queue_rq() succeed, and will be checked and
- * cleared in completion. Both setting and clearing of the flag are protected
- * by cmd->lock.
- */
+ 
 #define NBD_CMD_INFLIGHT	2
 
 struct nbd_cmd {
@@ -253,10 +239,7 @@ static void nbd_dev_remove(struct nbd_device *nbd)
 	del_gendisk(disk);
 	blk_mq_free_tag_set(&nbd->tag_set);
 
-	/*
-	 * Remove from idr after del_gendisk() completes, so if the same ID is
-	 * reused, the following add_disk() will succeed.
-	 */
+	 
 	mutex_lock(&nbd_index_mutex);
 	idr_remove(&nbd_index_idr, nbd->index);
 	mutex_unlock(&nbd_index_mutex);
@@ -274,7 +257,7 @@ static void nbd_put(struct nbd_device *nbd)
 	if (!refcount_dec_and_test(&nbd->refs))
 		return;
 
-	/* Call del_gendisk() asynchrounously to prevent deadlock */
+	 
 	if (test_bit(NBD_DESTROY_ON_DISCONNECT, &nbd->flags))
 		queue_work(nbd_del_wq, &nbd->remove_work);
 	else
@@ -358,9 +341,7 @@ static void nbd_complete_rq(struct request *req)
 	blk_mq_end_request(req, cmd->status);
 }
 
-/*
- * Forcibly shutdown the socket causing all listeners to error
- */
+ 
 static void sock_shutdown(struct nbd_device *nbd)
 {
 	struct nbd_config *config = nbd->config;
@@ -399,12 +380,7 @@ static u32 req_to_nbd_cmd_type(struct request *req)
 static struct nbd_config *nbd_get_config_unlocked(struct nbd_device *nbd)
 {
 	if (refcount_inc_not_zero(&nbd->config_refs)) {
-		/*
-		 * Add smp_mb__after_atomic to ensure that reading nbd->config_refs
-		 * and reading nbd->config is ordered. The pair is the barrier in
-		 * nbd_alloc_and_init_config(), avoid nbd->config_refs is set
-		 * before nbd->config.
-		 */
+		 
 		smp_mb__after_atomic();
 		return nbd->config;
 	}
@@ -440,23 +416,13 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
 				    "Connection timed out, retrying (%d/%d alive)\n",
 				    atomic_read(&config->live_connections),
 				    config->num_connections);
-		/*
-		 * Hooray we have more connections, requeue this IO, the submit
-		 * path will put it on a real connection. Or if only one
-		 * connection is configured, the submit path will wait util
-		 * a new connection is reconfigured or util dead timeout.
-		 */
+		 
 		if (config->socks) {
 			if (cmd->index < config->num_connections) {
 				struct nbd_sock *nsock =
 					config->socks[cmd->index];
 				mutex_lock(&nsock->tx_lock);
-				/* We can have multiple outstanding requests, so
-				 * we don't want to mark the nsock dead if we've
-				 * already reconnected with a new socket, so
-				 * only mark it dead if its the same socket we
-				 * were sent out on.
-				 */
+				 
 				if (cmd->cookie == nsock->cookie)
 					nbd_mark_nsock_dead(nbd, nsock, 1);
 				mutex_unlock(&nsock->tx_lock);
@@ -469,10 +435,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
 	}
 
 	if (!nbd->tag_set.timeout) {
-		/*
-		 * Userspace sets timeout=0 to disable socket disconnection,
-		 * so just warn and reset the timer.
-		 */
+		 
 		struct nbd_sock *nsock = config->socks[cmd->index];
 		cmd->retries++;
 		dev_info(nbd_to_dev(nbd), "Possible stuck request %p: control (%s@%llu,%uB). Runtime %u seconds\n",
@@ -539,7 +502,7 @@ static int __sock_xmit(struct nbd_device *nbd, struct socket *sock, int send,
 
 		if (result <= 0) {
 			if (result == 0)
-				result = -EPIPE; /* short read */
+				result = -EPIPE;  
 			break;
 		}
 		if (sent)
@@ -551,10 +514,7 @@ static int __sock_xmit(struct nbd_device *nbd, struct socket *sock, int send,
 	return result;
 }
 
-/*
- *  Send or receive packet. Return a positive value on success and
- *  negtive value on failure, and never return 0.
- */
+ 
 static int sock_xmit(struct nbd_device *nbd, int index, int send,
 		     struct iov_iter *iter, int msg_flags, int *sent)
 {
@@ -564,16 +524,13 @@ static int sock_xmit(struct nbd_device *nbd, int index, int send,
 	return __sock_xmit(nbd, sock, send, iter, msg_flags, sent);
 }
 
-/*
- * Different settings for sk->sk_sndtimeo can result in different return values
- * if there is a signal pending when we enter sendmsg, because reasons?
- */
+ 
 static inline int was_interrupted(int result)
 {
 	return result == -ERESTARTSYS || result == -EINTR;
 }
 
-/* always call with the tx_lock held */
+ 
 static int nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd, int index)
 {
 	struct request *req = blk_mq_rq_from_pdu(cmd);
@@ -606,15 +563,12 @@ static int nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd, int index)
 	if (req->cmd_flags & REQ_FUA)
 		nbd_cmd_flags |= NBD_CMD_FLAG_FUA;
 
-	/* We did a partial send previously, and we at least sent the whole
-	 * request struct, so just go and send the rest of the pages in the
-	 * request.
-	 */
+	 
 	if (sent) {
 		if (sent >= sizeof(request)) {
 			skip = sent - sizeof(request);
 
-			/* initialize handle for tracing purposes */
+			 
 			handle = nbd_cmd_handle(cmd);
 
 			goto send_pages;
@@ -644,11 +598,7 @@ static int nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd, int index)
 	trace_nbd_header_sent(req, handle);
 	if (result < 0) {
 		if (was_interrupted(result)) {
-			/* If we haven't sent anything we can just return BUSY,
-			 * however if we have sent something we need to make
-			 * sure we only allow this req to be sent until we are
-			 * completely done.
-			 */
+			 
 			if (sent) {
 				nsock->pending = req;
 				nsock->sent = sent;
@@ -688,10 +638,7 @@ send_pages:
 			result = sock_xmit(nbd, index, 1, &from, flags, &sent);
 			if (result < 0) {
 				if (was_interrupted(result)) {
-					/* We've already sent the header, we
-					 * have no choice but to set pending and
-					 * return BUSY.
-					 */
+					 
 					nsock->pending = req;
 					nsock->sent = sent;
 					set_bit(NBD_CMD_REQUEUED, &cmd->flags);
@@ -702,12 +649,7 @@ send_pages:
 					result);
 				return -EAGAIN;
 			}
-			/*
-			 * The completion might already have come in,
-			 * so break for the last one instead of letting
-			 * the iterator do it. This prevents use-after-free
-			 * of the bio.
-			 */
+			 
 			if (is_last)
 				break;
 		}
@@ -746,7 +688,7 @@ static int nbd_read_reply(struct nbd_device *nbd, struct socket *sock,
 	return 0;
 }
 
-/* NULL returned = something went wrong, inform userspace */
+ 
 static struct nbd_cmd *nbd_handle_reply(struct nbd_device *nbd, int index,
 					struct nbd_reply *reply)
 {
@@ -822,12 +764,7 @@ static struct nbd_cmd *nbd_handle_reply(struct nbd_device *nbd, int index,
 			if (result < 0) {
 				dev_err(disk_to_dev(nbd->disk), "Receive data failed (result %d)\n",
 					result);
-				/*
-				 * If we've disconnected, we need to make sure we
-				 * complete this request, otherwise error out
-				 * and let the timeout stuff handle resubmitting
-				 * this request onto another connection.
-				 */
+				 
 				if (nbd_disconnected(nbd->config)) {
 					cmd->status = BLK_STS_IOERR;
 					goto out;
@@ -863,12 +800,7 @@ static void recv_work(struct work_struct *work)
 		if (nbd_read_reply(nbd, nsock->sock, &reply))
 			break;
 
-		/*
-		 * Grab .q_usage_counter so request pool won't go away, then no
-		 * request use-after-free is possible during nbd_handle_reply().
-		 * If queue is frozen, there won't be any inflight requests, we
-		 * needn't to handle the incoming garbage message.
-		 */
+		 
 		if (!percpu_ref_tryget(&q->q_usage_counter)) {
 			dev_err(disk_to_dev(nbd->disk), "%s: no io inflight\n",
 				__func__);
@@ -909,7 +841,7 @@ static bool nbd_clear_req(struct request *req, void *data)
 {
 	struct nbd_cmd *cmd = blk_mq_rq_to_pdu(req);
 
-	/* don't abort one completed request */
+	 
 	if (blk_mq_request_completed(req))
 		return true;
 
@@ -1026,12 +958,7 @@ again:
 				index = old_index;
 				goto again;
 			}
-			/* All the sockets should already be down at this point,
-			 * we just want to make sure that DISCONNECTED is set so
-			 * any requests that come in that were queue'ed waiting
-			 * for the reconnect timer don't trigger the timer again
-			 * and instead just error out.
-			 */
+			 
 			sock_shutdown(nbd);
 			nbd_config_put(nbd);
 			return -EIO;
@@ -1039,26 +966,16 @@ again:
 		goto again;
 	}
 
-	/* Handle the case that we have a pending request that was partially
-	 * transmitted that _has_ to be serviced first.  We need to call requeue
-	 * here so that it gets put _after_ the request that is already on the
-	 * dispatch list.
-	 */
+	 
 	blk_mq_start_request(req);
 	if (unlikely(nsock->pending && nsock->pending != req)) {
 		nbd_requeue_cmd(cmd);
 		ret = 0;
 		goto out;
 	}
-	/*
-	 * Some failures are related to the link going down, so anything that
-	 * returns EAGAIN can be retried on a different socket.
-	 */
+	 
 	ret = nbd_send_cmd(nbd, cmd, index);
-	/*
-	 * Access to this flag is protected by cmd->lock, thus it's safe to set
-	 * the flag after nbd_send_cmd() succeed to send request to server.
-	 */
+	 
 	if (!ret)
 		__set_bit(NBD_CMD_INFLIGHT, &cmd->flags);
 	else if (ret == -EAGAIN) {
@@ -1080,23 +997,11 @@ static blk_status_t nbd_queue_rq(struct blk_mq_hw_ctx *hctx,
 	struct nbd_cmd *cmd = blk_mq_rq_to_pdu(bd->rq);
 	int ret;
 
-	/*
-	 * Since we look at the bio's to send the request over the network we
-	 * need to make sure the completion work doesn't mark this request done
-	 * before we are done doing our send.  This keeps us from dereferencing
-	 * freed data if we have particularly fast completions (ie we get the
-	 * completion before we exit sock_xmit on the last bvec) or in the case
-	 * that the server is misbehaving (or there was an error) before we're
-	 * done sending everything over the wire.
-	 */
+	 
 	mutex_lock(&cmd->lock);
 	clear_bit(NBD_CMD_REQUEUED, &cmd->flags);
 
-	/* We can be called directly from the user space process, which means we
-	 * could possibly have signals pending so our sendmsg will fail.  In
-	 * this case we need to return that we are busy, otherwise error out as
-	 * appropriate.
-	 */
+	 
 	ret = nbd_handle_cmd(cmd, hctx->queue_num);
 	if (ret < 0)
 		ret = BLK_STS_IOERR;
@@ -1136,17 +1041,14 @@ static int nbd_add_socket(struct nbd_device *nbd, unsigned long arg,
 	struct nbd_sock *nsock;
 	int err;
 
-	/* Arg will be cast to int, check it to avoid overflow */
+	 
 	if (arg > INT_MAX)
 		return -EINVAL;
 	sock = nbd_get_socket(nbd, arg, &err);
 	if (!sock)
 		return err;
 
-	/*
-	 * We need to make sure we don't get any errant requests while we're
-	 * reallocating the ->socks array.
-	 */
+	 
 	blk_mq_freeze_queue(nbd->disk->queue);
 
 	if (!netlink && !nbd->task_setup &&
@@ -1245,9 +1147,7 @@ static int nbd_reconnect_socket(struct nbd_device *nbd, unsigned long arg)
 
 		clear_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
 
-		/* We take the tx_mutex in an error path in the recv_work, so we
-		 * need to queue_work outside of the tx_mutex.
-		 */
+		 
 		queue_work(nbd->recv_workq, &args->work);
 
 		atomic_inc(&config->live_connections);
@@ -1401,14 +1301,7 @@ static int nbd_start_device(struct nbd_device *nbd)
 		args = kzalloc(sizeof(*args), GFP_KERNEL);
 		if (!args) {
 			sock_shutdown(nbd);
-			/*
-			 * If num_connections is m (2 < m),
-			 * and NO.1 ~ NO.n(1 < n < m) kzallocs are successful.
-			 * But NO.(n + 1) failed. We still have n recv threads.
-			 * So, add flush_workqueue here to prevent recv threads
-			 * dropping the last config_refs and trying to destroy
-			 * the workqueue from inside the workqueue.
-			 */
+			 
 			if (i)
 				flush_workqueue(nbd->recv_workq);
 			return -ENOMEM;
@@ -1450,7 +1343,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd)
 	flush_workqueue(nbd->recv_workq);
 	mutex_lock(&nbd->config_lock);
 	nbd_bdev_reset(nbd);
-	/* user requested, ignore socket errors */
+	 
 	if (test_bit(NBD_RT_DISCONNECT_REQUESTED, &config->runtime_flags))
 		ret = 0;
 	if (test_bit(NBD_RT_TIMEDOUT, &config->runtime_flags))
@@ -1477,7 +1370,7 @@ static void nbd_set_cmd_timeout(struct nbd_device *nbd, u64 timeout)
 		blk_queue_rq_timeout(nbd->disk->queue, 30 * HZ);
 }
 
-/* Must be called with config_lock held */
+ 
 static int __nbd_ioctl(struct block_device *bdev, struct nbd_device *nbd,
 		       unsigned int cmd, unsigned long arg)
 {
@@ -1510,16 +1403,10 @@ static int __nbd_ioctl(struct block_device *bdev, struct nbd_device *nbd,
 	case NBD_DO_IT:
 		return nbd_start_device_ioctl(nbd);
 	case NBD_CLEAR_QUE:
-		/*
-		 * This is for compatibility only.  The queue is always cleared
-		 * by NBD_DO_IT or NBD_CLEAR_SOCK.
-		 */
+		 
 		return 0;
 	case NBD_PRINT_DEBUG:
-		/*
-		 * For compatibility only, we no longer keep a list of
-		 * outstanding requests.
-		 */
+		 
 		return 0;
 	}
 	return -ENOTTY;
@@ -1535,17 +1422,13 @@ static int nbd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/* The block layer will pass back some non-nbd ioctls in case we have
-	 * special handling for them, but we don't so just return an error.
-	 */
+	 
 	if (_IOC_TYPE(cmd) != 0xab)
 		return -EINVAL;
 
 	mutex_lock(&nbd->config_lock);
 
-	/* Don't allow ioctl operations on a nbd device that was created with
-	 * netlink, unless it's DISCONNECT or CLEAR_SOCK, which are fine.
-	 */
+	 
 	if (!test_bit(NBD_RT_BOUND, &config->runtime_flags) ||
 	    (cmd == NBD_DISCONNECT || cmd == NBD_CLEAR_SOCK))
 		error = __nbd_ioctl(bdev, nbd, cmd, arg);
@@ -1578,12 +1461,7 @@ static int nbd_alloc_and_init_config(struct nbd_device *nbd)
 	atomic_set(&config->live_connections, 0);
 
 	nbd->config = config;
-	/*
-	 * Order refcount_set(&nbd->config_refs, 1) and nbd->config assignment,
-	 * its pair is the barrier in nbd_get_config_unlocked().
-	 * So nbd_get_config_unlocked() won't see nbd->config as null after
-	 * refcount_inc_not_zero() succeed.
-	 */
+	 
 	smp_mb__before_atomic();
 	refcount_set(&nbd->config_refs, 1);
 
@@ -1749,7 +1627,7 @@ static void nbd_dbg_close(void)
 	debugfs_remove_recursive(nbd_dbg_dir);
 }
 
-#else  /* IS_ENABLED(CONFIG_DEBUG_FS) */
+#else   
 
 static int nbd_dev_dbg_init(struct nbd_device *nbd)
 {
@@ -1846,9 +1724,7 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
 		goto out_err_disk;
 	}
 
-	/*
-	 * Tell the block layer that we are not a rotational device
-	 */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, disk->queue);
 	disk->queue->limits.discard_granularity = 0;
 	blk_queue_max_discard_sectors(disk->queue, 0);
@@ -1859,10 +1735,7 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
 
 	mutex_init(&nbd->config_lock);
 	refcount_set(&nbd->config_refs, 0);
-	/*
-	 * Start out with a zero references to keep other threads from using
-	 * this device until it is fully initialized.
-	 */
+	 
 	refcount_set(&nbd->refs, 0);
 	INIT_LIST_HEAD(&nbd->list);
 	disk->major = NBD_MAJOR;
@@ -1875,9 +1748,7 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
 	if (err)
 		goto out_free_work;
 
-	/*
-	 * Now publish the device.
-	 */
+	 
 	refcount_set(&nbd->refs, refs);
 	nbd_total_devices++;
 	return nbd;
@@ -1916,7 +1787,7 @@ static struct nbd_device *nbd_find_get_unused(void)
 	return NULL;
 }
 
-/* Netlink interface. */
+ 
 static const struct nla_policy nbd_attr_policy[NBD_ATTR_MAX + 1] = {
 	[NBD_ATTR_INDEX]		=	{ .type = NLA_U32 },
 	[NBD_ATTR_SIZE_BYTES]		=	{ .type = NLA_U64 },
@@ -1934,9 +1805,7 @@ static const struct nla_policy nbd_sock_policy[NBD_SOCK_MAX + 1] = {
 	[NBD_SOCK_FD]			=	{ .type = NLA_U32 },
 };
 
-/* We don't use this right now since we don't parse the incoming list, but we
- * still want it here so userspace knows what to expect.
- */
+ 
 static const struct nla_policy __attribute__((unused))
 nbd_device_policy[NBD_DEVICE_ATTR_MAX + 1] = {
 	[NBD_DEVICE_INDEX]		=	{ .type = NLA_U32 },
@@ -1974,11 +1843,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
 	if (info->attrs[NBD_ATTR_INDEX]) {
 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
 
-		/*
-		 * Too big first_minor can cause duplicate creation of
-		 * sysfs files/links, since index << part_shift might overflow, or
-		 * MKDEV() expect that the max bits of first_minor is 20.
-		 */
+		 
 		if (index < 0 || index > MINORMASK >> part_shift) {
 			pr_err("illegal input index %d\n", index);
 			return -EINVAL;
@@ -2057,14 +1922,7 @@ again:
 	if (info->attrs[NBD_ATTR_CLIENT_FLAGS]) {
 		u64 flags = nla_get_u64(info->attrs[NBD_ATTR_CLIENT_FLAGS]);
 		if (flags & NBD_CFLAG_DESTROY_ON_DISCONNECT) {
-			/*
-			 * We have 1 ref to keep the device around, and then 1
-			 * ref for our current operation here, which will be
-			 * inherited by the config.  If we already have
-			 * DESTROY_ON_DISCONNECT set then we know we don't have
-			 * that extra ref already held so we don't need the
-			 * put_dev.
-			 */
+			 
 			if (!test_and_set_bit(NBD_DESTROY_ON_DISCONNECT,
 					      &nbd->flags))
 				put_dev = true;
@@ -2146,10 +2004,7 @@ static void nbd_disconnect_and_put(struct nbd_device *nbd)
 	nbd_disconnect(nbd);
 	sock_shutdown(nbd);
 	wake_up(&nbd->config->conn_wait);
-	/*
-	 * Make sure recv thread has finished, we can safely call nbd_clear_que()
-	 * to cancel the inflight I/Os.
-	 */
+	 
 	flush_workqueue(nbd->recv_workq);
 	nbd_clear_que(nbd);
 	nbd->task_setup = NULL;
@@ -2383,13 +2238,7 @@ static int populate_nbd_status(struct nbd_device *nbd, struct sk_buff *reply)
 	u8 connected = 0;
 	int ret;
 
-	/* This is a little racey, but for status it's ok.  The
-	 * reason we don't take a ref here is because we can't
-	 * take a ref in the index == -1 case as we would need
-	 * to put under the nbd_index_mutex, which could
-	 * deadlock if we are configured to remove ourselves
-	 * once we're disconnected.
-	 */
+	 
 	if (refcount_read(&nbd->config_refs))
 		connected = 1;
 	dev_opt = nla_nest_start_noflag(reply, NBD_DEVICE_ITEM);
@@ -2537,14 +2386,7 @@ static int __init nbd_init(void)
 	if (max_part > 0) {
 		part_shift = fls(max_part);
 
-		/*
-		 * Adjust max_part according to part_shift as it is exported
-		 * to user space so that user can know the max number of
-		 * partition kernel should be able to manage.
-		 *
-		 * Note that -1 is required because partition 0 is reserved
-		 * for the whole disk.
-		 */
+		 
 		max_part = (1UL << part_shift) - 1;
 	}
 
@@ -2580,7 +2422,7 @@ static int nbd_exit_cb(int id, void *ptr, void *data)
 	struct list_head *list = (struct list_head *)data;
 	struct nbd_device *nbd = ptr;
 
-	/* Skip nbd that is being removed asynchronously */
+	 
 	if (refcount_read(&nbd->refs))
 		list_add_tail(&nbd->list, list);
 
@@ -2592,10 +2434,7 @@ static void __exit nbd_cleanup(void)
 	struct nbd_device *nbd;
 	LIST_HEAD(del_list);
 
-	/*
-	 * Unregister netlink interface prior to waiting
-	 * for the completion of netlink commands.
-	 */
+	 
 	genl_unregister_family(&nbd_genl_family);
 
 	nbd_dbg_close();
@@ -2615,7 +2454,7 @@ static void __exit nbd_cleanup(void)
 		nbd_put(nbd);
 	}
 
-	/* Also wait for nbd_dev_remove_work() completes */
+	 
 	destroy_workqueue(nbd_del_wq);
 
 	idr_destroy(&nbd_index_idr);

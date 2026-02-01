@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -11,15 +9,7 @@
 
 #define div_mask(d)	((1 << (d->width)) - 1)
 
-/**
- * struct clk_fixup_div - imx integer fixup divider clock
- * @divider: the parent class
- * @ops: pointer to clk_ops of parent class
- * @fixup: a hook to fixup the write value
- *
- * The imx fixup divider clock is a subclass of basic clk_divider
- * with an addtional fixup hook.
- */
+ 
 struct clk_fixup_div {
 	struct clk_divider divider;
 	const struct clk_ops *ops;
@@ -60,7 +50,7 @@ static int clk_fixup_div_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	divider = parent_rate / rate;
 
-	/* Zero based divider */
+	 
 	value = divider - 1;
 
 	if (value > div_mask(div))

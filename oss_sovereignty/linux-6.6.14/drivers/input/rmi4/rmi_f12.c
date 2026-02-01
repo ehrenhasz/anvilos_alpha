@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016 Synaptics Incorporated
- */
+
+ 
 #include <linux/input.h>
 #include <linux/input/mt.h>
 #include <linux/rmi.h>
@@ -36,20 +34,20 @@ struct f12_data {
 	struct rmi_register_descriptor control_reg_desc;
 	struct rmi_register_descriptor data_reg_desc;
 
-	/* F12 Data1 describes sensed objects */
+	 
 	const struct rmi_register_desc_item *data1;
 	u16 data1_offset;
 
-	/* F12 Data5 describes finger ACM */
+	 
 	const struct rmi_register_desc_item *data5;
 	u16 data5_offset;
 
-	/* F12 Data5 describes Pen */
+	 
 	const struct rmi_register_desc_item *data6;
 	u16 data6_offset;
 
 
-	/* F12 Data9 reports relative data */
+	 
 	const struct rmi_register_desc_item *data9;
 	u16 data9_offset;
 
@@ -112,7 +110,7 @@ static int rmi_f12_read_sensor_tuning(struct f12_data *f12)
 	}
 
 	if (rmi_register_desc_has_subpacket(item, 2)) {
-		/* Units 1/128 sensor pitch */
+		 
 		rmi_dbg(RMI_DEBUG_FN, &fn->dev,
 			"%s: Inactive Border xlo:%d xhi:%d ylo:%d yhi:%d\n",
 			__func__,
@@ -128,7 +126,7 @@ static int rmi_f12_read_sensor_tuning(struct f12_data *f12)
 		offset += 2;
 	}
 
-	/* Skip over sensor flags */
+	 
 	if (rmi_register_desc_has_subpacket(item, 4))
 		offset += 1;
 
@@ -251,12 +249,7 @@ static int rmi_f12_write_control_regs(struct rmi_function *fn)
 			control_offset = rmi_register_desc_calc_reg_offset(
 						&f12->control_reg_desc, 20);
 
-			/*
-			 * The byte containing the EnableDribble bit will be
-			 * in either byte 0 or byte 2 of control 20. Depending
-			 * on the existence of subpacket 0. If control 20 is
-			 * larger then 3 bytes, just read the first 3.
-			 */
+			 
 			control_size = min(item->reg_size, 3UL);
 
 			ret = rmi_read_block(rmi_dev, fn->fd.control_base_addr
@@ -428,13 +421,7 @@ static int rmi_f12_probe(struct rmi_function *fn)
 	if (ret)
 		return ret;
 
-	/*
-	 * Figure out what data is contained in the data registers. HID devices
-	 * may have registers defined, but their data is not reported in the
-	 * HID attention report. Registers which are not reported in the HID
-	 * attention report check to see if the device is receiving data from
-	 * HID attention reports.
-	 */
+	 
 	item = rmi_get_register_desc_item(&f12->data_reg_desc, 0);
 	if (item && !drvdata->attn_data.data)
 		data_offset += item->reg_size;
@@ -520,7 +507,7 @@ static int rmi_f12_probe(struct rmi_function *fn)
 		data_offset += item->reg_size;
 	}
 
-	/* allocate the in-kernel tracking buffers */
+	 
 	sensor->tracking_pos = devm_kcalloc(&fn->dev,
 			sensor->nbr_fingers, sizeof(struct input_mt_pos),
 			GFP_KERNEL);

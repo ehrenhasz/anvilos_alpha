@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for TS-4800 based boards
- *
- * Copyright (c) 2015 - Savoir-faire Linux
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mfd/syscon.h>
@@ -20,7 +15,7 @@ MODULE_PARM_DESC(nowayout,
 	"Watchdog cannot be stopped once started (default="
 	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
-/* possible feed values */
+ 
 #define TS4800_WDT_FEED_2S       0x1
 #define TS4800_WDT_FEED_10S      0x2
 #define TS4800_WDT_DISABLE       0x3
@@ -32,18 +27,7 @@ struct ts4800_wdt {
 	u32                     feed_val;
 };
 
-/*
- * TS-4800 supports the following timeout values:
- *
- *   value desc
- *   ---------------------
- *     0    feed for 338ms
- *     1    feed for 2.706s
- *     2    feed for 10.824s
- *     3    disable watchdog
- *
- * Keep the regmap/timeout map ordered by timeout
- */
+ 
 static const struct {
 	const int timeout;
 	const int regval;
@@ -127,14 +111,14 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* allocate memory for watchdog struct */
+	 
 	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
 	if (!wdt) {
 		of_node_put(syscon_np);
 		return -ENOMEM;
 	}
 
-	/* set regmap and offset to know where to write */
+	 
 	wdt->feed_offset = reg;
 	wdt->regmap = syscon_node_to_regmap(syscon_np);
 	of_node_put(syscon_np);
@@ -143,7 +127,7 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
 		return PTR_ERR(wdt->regmap);
 	}
 
-	/* Initialize struct watchdog_device */
+	 
 	wdd = &wdt->wdd;
 	wdd->parent = dev;
 	wdd->info = &ts4800_wdt_info;
@@ -155,20 +139,12 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(wdd, nowayout);
 	watchdog_init_timeout(wdd, 0, dev);
 
-	/*
-	 * As this watchdog supports only a few values, ts4800_wdt_set_timeout
-	 * must be called to initialize timeout and feed_val with valid values.
-	 * Default to maximum timeout if none, or an invalid one, is provided in
-	 * device tree.
-	 */
+	 
 	if (!wdd->timeout)
 		wdd->timeout = wdd->max_timeout;
 	ts4800_wdt_set_timeout(wdd, wdd->timeout);
 
-	/*
-	 * The feed register is write-only, so it is not possible to determine
-	 * watchdog's state. Disable it to be in a known state.
-	 */
+	 
 	ts4800_wdt_stop(wdd);
 
 	ret = devm_watchdog_register_device(dev, wdd);

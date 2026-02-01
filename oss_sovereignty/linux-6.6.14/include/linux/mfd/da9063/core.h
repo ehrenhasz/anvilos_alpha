@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Definitions for DA9063 MFD driver
- *
- * Copyright 2012 Dialog Semiconductor Ltd.
- *
- * Author: Michal Hajduk, Dialog Semiconductor
- * Author: Krystian Garbaciak, Dialog Semiconductor
- */
+ 
+ 
 
 #ifndef __MFD_DA9063_CORE_H__
 #define __MFD_DA9063_CORE_H__
@@ -14,7 +7,7 @@
 #include <linux/interrupt.h>
 #include <linux/mfd/da9063/registers.h>
 
-/* DA9063 modules */
+ 
 #define DA9063_DRVNAME_CORE		"da9063-core"
 #define DA9063_DRVNAME_REGULATORS	"da9063-regulators"
 #define DA9063_DRVNAME_LEDS		"da9063-leds"
@@ -39,7 +32,7 @@ enum da9063_variant_codes {
 	PMIC_DA9063_EA = 0x8,
 };
 
-/* Interrupts */
+ 
 enum da9063_irqs {
 	DA9063_IRQ_ONKEY = 0,
 	DA9063_IRQ_ALARM,
@@ -73,16 +66,16 @@ enum da9063_irqs {
 };
 
 struct da9063 {
-	/* Device */
+	 
 	struct device	*dev;
 	enum da9063_type type;
 	unsigned char	variant_code;
 	unsigned int	flags;
 
-	/* Control interface */
+	 
 	struct regmap	*regmap;
 
-	/* Interrupts */
+	 
 	int		chip_irq;
 	unsigned int	irq_base;
 	struct regmap_irq_chip_data *regmap_irq;
@@ -91,4 +84,4 @@ struct da9063 {
 int da9063_device_init(struct da9063 *da9063, unsigned int irq);
 int da9063_irq_init(struct da9063 *da9063);
 
-#endif /* __MFD_DA9063_CORE_H__ */
+#endif  

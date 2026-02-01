@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __TIDSS_CRTC_H__
 #define __TIDSS_CRTC_H__
@@ -29,7 +26,7 @@ struct tidss_crtc {
 #define to_tidss_crtc_state(x) container_of(x, struct tidss_crtc_state, base)
 
 struct tidss_crtc_state {
-	/* Must be first. */
+	 
 	struct drm_crtc_state base;
 
 	bool plane_pos_changed;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MEN 16Z127 GPIO driver
- *
- * Copyright (C) 2016 MEN Mikroelektronik GmbH (www.men.de)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,7 +20,7 @@
 #define GPIO_TO_DBCNT_REG(gpio)	((gpio * 4) + 0x80)
 
 #define MEN_Z127_DB_MIN_US	50
-/* 16 bit compare register. Each bit represents 50us */
+ 
 #define MEN_Z127_DB_MAX_US	(0xffff * MEN_Z127_DB_MIN_US)
 #define MEN_Z127_DB_IN_RANGE(db)	((db >= MEN_Z127_DB_MIN_US) && \
 					 (db <= MEN_Z127_DB_MAX_US))
@@ -49,7 +45,7 @@ static int men_z127_debounce(struct gpio_chip *gc, unsigned gpio,
 	}
 
 	if (debounce > 0) {
-		/* round up or down depending on MSB-1 */
+		 
 		rnd = fls(debounce) - 1;
 
 		if (rnd && (debounce & BIT(rnd - 1)))
@@ -60,7 +56,7 @@ static int men_z127_debounce(struct gpio_chip *gc, unsigned gpio,
 		if (debounce > MEN_Z127_DB_MAX_US)
 			debounce = MEN_Z127_DB_MAX_US;
 
-		/* 50us per register unit */
+		 
 		debounce /= 50;
 	}
 
@@ -97,7 +93,7 @@ static int men_z127_set_single_ended(struct gpio_chip *gc,
 	if (param == PIN_CONFIG_DRIVE_OPEN_DRAIN)
 		od_en |= BIT(offset);
 	else
-		/* Implicitly PIN_CONFIG_DRIVE_PUSH_PULL */
+		 
 		od_en &= ~BIT(offset);
 
 	writel(od_en, priv->reg_base + MEN_Z127_ODER);

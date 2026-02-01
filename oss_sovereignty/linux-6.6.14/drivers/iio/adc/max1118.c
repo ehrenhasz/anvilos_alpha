@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX1117/MAX1118/MAX1119 8-bit, dual-channel ADCs driver
- *
- * Copyright (c) 2017 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX1117-MAX1119.pdf
- *
- * SPI interface connections
- *
- * SPI                MAXIM
- * Master  Direction  MAX1117/8/9
- * ------  ---------  -----------
- * nCS        -->     CNVST
- * SCK        -->     SCLK
- * MISO       <--     DOUT
- * ------  ---------  -----------
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -36,7 +20,7 @@ struct max1118 {
 	struct spi_device *spi;
 	struct mutex lock;
 	struct regulator *reg;
-	/* Ensure natural alignment of buffer elements */
+	 
 	struct {
 		u8 channels[2];
 		s64 ts __aligned(8);
@@ -70,23 +54,16 @@ static int max1118_read(struct iio_dev *indio_dev, int channel)
 {
 	struct max1118 *adc = iio_priv(indio_dev);
 	struct spi_transfer xfers[] = {
-		/*
-		 * To select CH1 for conversion, CNVST pin must be brought high
-		 * and low for a second time.
-		 */
+		 
 		{
 			.len = 0,
-			.delay = {	/* > CNVST Low Time 100 ns */
+			.delay = {	 
 				.value = 1,
 				.unit = SPI_DELAY_UNIT_USECS
 			},
 			.cs_change = 1,
 		},
-		/*
-		 * The acquisition interval begins with the falling edge of
-		 * CNVST.  The total acquisition and conversion process takes
-		 * <7.5us.
-		 */
+		 
 		{
 			.len = 0,
 			.delay = {
@@ -241,12 +218,7 @@ static int max1118_probe(struct spi_device *spi)
 	indio_dev->channels = max1118_channels;
 	indio_dev->num_channels = ARRAY_SIZE(max1118_channels);
 
-	/*
-	 * To reinitiate a conversion on CH0, it is necessary to allow for a
-	 * conversion to be complete and all of the data to be read out.  Once
-	 * a conversion has been completed, the MAX1117/MAX1118/MAX1119 will go
-	 * into AutoShutdown mode until the next conversion is initiated.
-	 */
+	 
 	max1118_read(indio_dev, 0);
 
 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,

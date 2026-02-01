@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for generic ESS AudioDrive ESx688 soundcards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -28,18 +25,18 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("snd_es968");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
 #ifdef CONFIG_PNP
 static bool isapnp[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_ISAPNP;
 #endif
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	/* Enable this card */
-static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* 0x220,0x240,0x260 */
-static long fm_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* Usually 0x388 */
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	 
+static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static long fm_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
 static long mpu_port[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = -1};
-static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	/* 5,7,9,10 */
-static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	/* 5,7,9,10 */
-static int dma8[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	/* 0,1,3 */
+static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	 
+static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	 
+static int dma8[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	 
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for " CRD_NAME " soundcard.");
@@ -135,7 +132,7 @@ static int snd_es1688_probe(struct snd_card *card, unsigned int n)
 		  chip->irq, chip->dma8);
 
 	if (fm_port[n] == SNDRV_AUTO_PORT)
-		fm_port[n] = port[n];	/* share the same port */
+		fm_port[n] = port[n];	 
 
 	if (fm_port[n] > 0) {
 		if (snd_opl3_create(card, fm_port[n], fm_port[n] + 2,
@@ -187,7 +184,7 @@ static int snd_es1688_isa_probe(struct device *dev, unsigned int n)
 static struct isa_driver snd_es1688_driver = {
 	.match		= snd_es1688_match,
 	.probe		= snd_es1688_isa_probe,
-#if 0	/* FIXME */
+#if 0	 
 	.suspend	= snd_es1688_suspend,
 	.resume		= snd_es1688_resume,
 #endif
@@ -286,7 +283,7 @@ static int snd_es968_pnp_resume(struct pnp_card_link *pcard)
 static const struct pnp_card_device_id snd_es968_pnpids[] = {
 	{ .id = "ESS0968", .devs = { { "@@@0968" }, } },
 	{ .id = "ESS0968", .devs = { { "ESS0968" }, } },
-	{ .id = "", } /* end */
+	{ .id = "", }  
 };
 
 MODULE_DEVICE_TABLE(pnp_card, snd_es968_pnpids);

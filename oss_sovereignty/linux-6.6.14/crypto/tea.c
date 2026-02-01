@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* 
- * Cryptographic API.
- *
- * TEA, XTEA, and XETA crypto alogrithms
- *
- * The TEA and Xtended TEA algorithms were developed by David Wheeler 
- * and Roger Needham at the Computer Laboratory of Cambridge University.
- *
- * Due to the order of evaluation in XTEA many people have incorrectly
- * implemented it.  XETA (XTEA in the wrong order), exists for
- * compatibility with these implementations.
- *
- * Copyright (c) 2004 Aaron Grothe ajgrothe@yahoo.com
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/init.h>

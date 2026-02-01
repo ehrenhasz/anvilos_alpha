@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions related to mapping data to requests
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/sched/task_stack.h>
 #include <linux/module.h>
@@ -37,14 +35,7 @@ static struct bio_map_data *bio_alloc_map_data(struct iov_iter *data,
 	return bmd;
 }
 
-/**
- * bio_copy_from_iter - copy all pages from iov_iter to bio
- * @bio: The &struct bio which describes the I/O as destination
- * @iter: iov_iter as source
- *
- * Copy all pages from iov_iter to bio.
- * Returns 0 on success, or error on failure.
- */
+ 
 static int bio_copy_from_iter(struct bio *bio, struct iov_iter *iter)
 {
 	struct bio_vec *bvec;
@@ -68,14 +59,7 @@ static int bio_copy_from_iter(struct bio *bio, struct iov_iter *iter)
 	return 0;
 }
 
-/**
- * bio_copy_to_iter - copy all pages from bio to iov_iter
- * @bio: The &struct bio which describes the I/O as source
- * @iter: iov_iter as destination
- *
- * Copy all pages from bio to iov_iter.
- * Returns 0 on success, or error on failure.
- */
+ 
 static int bio_copy_to_iter(struct bio *bio, struct iov_iter iter)
 {
 	struct bio_vec *bvec;
@@ -99,24 +83,14 @@ static int bio_copy_to_iter(struct bio *bio, struct iov_iter iter)
 	return 0;
 }
 
-/**
- *	bio_uncopy_user	-	finish previously mapped bio
- *	@bio: bio being terminated
- *
- *	Free pages allocated from bio_copy_user_iov() and write back data
- *	to user space in case of a read.
- */
+ 
 static int bio_uncopy_user(struct bio *bio)
 {
 	struct bio_map_data *bmd = bio->bi_private;
 	int ret = 0;
 
 	if (!bmd->is_null_mapped) {
-		/*
-		 * if we're in a workqueue, the request is orphaned, so
-		 * don't copy into a random user address space, just free
-		 * and return -EINTR so user space doesn't expect any data.
-		 */
+		 
 		if (!current->mm)
 			ret = -EINTR;
 		else if (bio_data_dir(bio) == READ)
@@ -143,11 +117,7 @@ static int bio_copy_user_iov(struct request *rq, struct rq_map_data *map_data,
 	if (!bmd)
 		return -ENOMEM;
 
-	/*
-	 * We need to do a deep copy of the iov_iter including the iovecs.
-	 * The caller provided iov might point to an on-stack or otherwise
-	 * shortlived one.
-	 */
+	 
 	bmd->is_our_pages = !map_data;
 	bmd->is_null_mapped = (map_data && map_data->null_mapped);
 
@@ -202,9 +172,7 @@ static int bio_copy_user_iov(struct request *rq, struct rq_map_data *map_data,
 	if (map_data)
 		map_data->offset += bio->bi_iter.bi_size;
 
-	/*
-	 * success
-	 */
+	 
 	if ((iov_iter_rw(iter) == WRITE &&
 	     (!map_data || !map_data->null_mapped)) ||
 	    (map_data && map_data->from_user)) {
@@ -324,14 +292,12 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 				offs = 0;
 			}
 		}
-		/*
-		 * release the pages we didn't map into the bio, if any
-		 */
+		 
 		while (j < npages)
 			bio_release_page(bio, pages[j++]);
 		if (pages != stack_pages)
 			kvfree(pages);
-		/* couldn't stuff something into bio? */
+		 
 		if (bytes) {
 			iov_iter_revert(iter, bytes);
 			break;
@@ -369,16 +335,7 @@ static void bio_map_kern_endio(struct bio *bio)
 	kfree(bio);
 }
 
-/**
- *	bio_map_kern	-	map kernel address into bio
- *	@q: the struct request_queue for the bio
- *	@data: pointer to buffer to map
- *	@len: length in bytes
- *	@gfp_mask: allocation flags for bio allocation
- *
- *	Map the kernel address into a bio suitable for io to a block
- *	device. Returns an error pointer in case of error.
- */
+ 
 static struct bio *bio_map_kern(struct request_queue *q, void *data,
 		unsigned int len, gfp_t gfp_mask)
 {
@@ -417,7 +374,7 @@ static struct bio *bio_map_kern(struct request_queue *q, void *data,
 			page = vmalloc_to_page(data);
 		if (bio_add_pc_page(q, bio, page, bytes,
 				    offset) < bytes) {
-			/* we don't support partial mappings */
+			 
 			bio_uninit(bio);
 			kfree(bio);
 			return ERR_PTR(-EINVAL);
@@ -453,17 +410,7 @@ static void bio_copy_kern_endio_read(struct bio *bio)
 	bio_copy_kern_endio(bio);
 }
 
-/**
- *	bio_copy_kern	-	copy kernel address into bio
- *	@q: the struct request_queue for the bio
- *	@data: pointer to buffer to copy
- *	@len: length in bytes
- *	@gfp_mask: allocation flags for bio and page allocation
- *	@reading: data direction is READ
- *
- *	copy the kernel address into a bio suitable for io to a block
- *	device. Returns an error pointer in case of error.
- */
+ 
 static struct bio *bio_copy_kern(struct request_queue *q, void *data,
 		unsigned int len, gfp_t gfp_mask, int reading)
 {
@@ -474,9 +421,7 @@ static struct bio *bio_copy_kern(struct request_queue *q, void *data,
 	void *p = data;
 	int nr_pages = 0;
 
-	/*
-	 * Overflow, abort
-	 */
+	 
 	if (end < start)
 		return ERR_PTR(-EINVAL);
 
@@ -523,10 +468,7 @@ cleanup:
 	return ERR_PTR(-ENOMEM);
 }
 
-/*
- * Append a bio to a passthrough request.  Only works if the bio can be merged
- * into the request based on the driver constraints.
- */
+ 
 int blk_rq_append_bio(struct request *rq, struct bio *bio)
 {
 	struct bvec_iter iter;
@@ -551,7 +493,7 @@ int blk_rq_append_bio(struct request *rq, struct bio *bio)
 }
 EXPORT_SYMBOL(blk_rq_append_bio);
 
-/* Prepare bio for passthrough IO given ITER_BVEC iter */
+ 
 static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
 {
 	struct request_queue *q = rq->q;
@@ -568,7 +510,7 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
 	if (nr_segs > queue_max_segments(q))
 		return -EINVAL;
 
-	/* no iovecs to alloc, as we already have a BVEC iterator */
+	 
 	bio = blk_rq_map_bio_alloc(rq, 0, GFP_KERNEL);
 	if (bio == NULL)
 		return -ENOMEM;
@@ -576,20 +518,17 @@ static int blk_rq_map_user_bvec(struct request *rq, const struct iov_iter *iter)
 	bio_iov_bvec_set(bio, (struct iov_iter *)iter);
 	blk_rq_bio_prep(rq, bio, nr_segs);
 
-	/* loop to perform a bunch of sanity checks */
+	 
 	bvecs = (struct bio_vec *)iter->bvec;
 	for (i = 0; i < nr_segs; i++) {
 		struct bio_vec *bv = &bvecs[i];
 
-		/*
-		 * If the queue doesn't support SG gaps and adding this
-		 * offset would create a gap, fallback to copy.
-		 */
+		 
 		if (bvprvp && bvec_gap_to_prev(lim, bvprvp, bv->bv_offset)) {
 			blk_mq_map_bio_put(bio);
 			return -EREMOTEIO;
 		}
-		/* check full condition */
+		 
 		if (nsegs >= nr_segs || bytes > UINT_MAX - bv->bv_len)
 			goto put_bio;
 		if (bytes + bv->bv_len > nr_iter)
@@ -607,21 +546,7 @@ put_bio:
 	return -EINVAL;
 }
 
-/**
- * blk_rq_map_user_iov - map user data to a request, for passthrough requests
- * @q:		request queue where request should be inserted
- * @rq:		request to map data to
- * @map_data:   pointer to the rq_map_data holding pages (if necessary)
- * @iter:	iovec iterator
- * @gfp_mask:	memory allocation flags
- *
- * Description:
- *    Data will be mapped directly for zero copy I/O, if possible. Otherwise
- *    a kernel bounce buffer is used.
- *
- *    A matching blk_rq_unmap_user() must be issued at the end of I/O, while
- *    still in process context.
- */
+ 
 int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 			struct rq_map_data *map_data,
 			const struct iov_iter *iter, gfp_t gfp_mask)
@@ -651,7 +576,7 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 			return 0;
 		if (ret != -EREMOTEIO)
 			goto fail;
-		/* fall back to copying the data on limits mismatches */
+		 
 		copy = true;
 	}
 
@@ -708,7 +633,7 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 			return ret;
 
 		if (iov_count) {
-			/* SG_IO howto says that the shorter of the two wins */
+			 
 			iov_iter_truncate(&iter, buf_len);
 			if (check_iter_count && !iov_iter_count(&iter)) {
 				kfree(iov);
@@ -727,15 +652,7 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 }
 EXPORT_SYMBOL(blk_rq_map_user_io);
 
-/**
- * blk_rq_unmap_user - unmap a request with user data
- * @bio:	       start of bio list
- *
- * Description:
- *    Unmap a rq previously mapped by blk_rq_map_user(). The caller must
- *    supply the original rq->bio from the blk_rq_map_user() return, since
- *    the I/O completion may have changed rq->bio.
- */
+ 
 int blk_rq_unmap_user(struct bio *bio)
 {
 	struct bio *next_bio;
@@ -759,19 +676,7 @@ int blk_rq_unmap_user(struct bio *bio)
 }
 EXPORT_SYMBOL(blk_rq_unmap_user);
 
-/**
- * blk_rq_map_kern - map kernel data to a request, for passthrough requests
- * @q:		request queue where request should be inserted
- * @rq:		request to fill
- * @kbuf:	the kernel buffer
- * @len:	length of user data
- * @gfp_mask:	memory allocation flags
- *
- * Description:
- *    Data will be mapped directly if possible. Otherwise a bounce
- *    buffer is used. Can be called multiple times to append multiple
- *    buffers.
- */
+ 
 int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
 		    unsigned int len, gfp_t gfp_mask)
 {

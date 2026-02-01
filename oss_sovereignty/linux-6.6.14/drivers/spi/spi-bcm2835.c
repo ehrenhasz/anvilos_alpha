@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Broadcom BCM2835 SPI Controllers
- *
- * Copyright (C) 2012 Chris Boot
- * Copyright (C) 2013 Stephen Warren
- * Copyright (C) 2015 Martin Sperl
- *
- * This driver is inspired by:
- * spi-ath79.c, Copyright (C) 2009-2011 Gabor Juhos <juhosg@openwrt.org>
- * spi-atmel.c, Copyright (C) 2006 Atmel Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -26,12 +16,12 @@
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 #include <linux/gpio/consumer.h>
-#include <linux/gpio/machine.h> /* FIXME: using chip internals */
-#include <linux/gpio/driver.h> /* FIXME: using chip internals */
+#include <linux/gpio/machine.h>  
+#include <linux/gpio/driver.h>  
 #include <linux/of_irq.h>
 #include <linux/spi/spi.h>
 
-/* SPI register offsets */
+ 
 #define BCM2835_SPI_CS			0x00
 #define BCM2835_SPI_FIFO		0x04
 #define BCM2835_SPI_CLK			0x08
@@ -39,7 +29,7 @@
 #define BCM2835_SPI_LTOH		0x10
 #define BCM2835_SPI_DC			0x14
 
-/* Bitfields in CS */
+ 
 #define BCM2835_SPI_CS_LEN_LONG		0x02000000
 #define BCM2835_SPI_CS_DMA_LEN		0x01000000
 #define BCM2835_SPI_CS_CSPOL2		0x00800000
@@ -73,47 +63,13 @@
 
 #define DRV_NAME	"spi-bcm2835"
 
-/* define polling limits */
+ 
 static unsigned int polling_limit_us = 30;
 module_param(polling_limit_us, uint, 0664);
 MODULE_PARM_DESC(polling_limit_us,
 		 "time in us to run a transfer in polling mode\n");
 
-/**
- * struct bcm2835_spi - BCM2835 SPI controller
- * @regs: base address of register map
- * @clk: core clock, divided to calculate serial clock
- * @clk_hz: core clock cached speed
- * @irq: interrupt, signals TX FIFO empty or RX FIFO ¾ full
- * @tfr: SPI transfer currently processed
- * @ctlr: SPI controller reverse lookup
- * @tx_buf: pointer whence next transmitted byte is read
- * @rx_buf: pointer where next received byte is written
- * @tx_len: remaining bytes to transmit
- * @rx_len: remaining bytes to receive
- * @tx_prologue: bytes transmitted without DMA if first TX sglist entry's
- *	length is not a multiple of 4 (to overcome hardware limitation)
- * @rx_prologue: bytes received without DMA if first RX sglist entry's
- *	length is not a multiple of 4 (to overcome hardware limitation)
- * @tx_spillover: whether @tx_prologue spills over to second TX sglist entry
- * @debugfs_dir: the debugfs directory - neede to remove debugfs when
- *      unloading the module
- * @count_transfer_polling: count of how often polling mode is used
- * @count_transfer_irq: count of how often interrupt mode is used
- * @count_transfer_irq_after_polling: count of how often we fall back to
- *      interrupt mode after starting in polling mode.
- *      These are counted as well in @count_transfer_polling and
- *      @count_transfer_irq
- * @count_transfer_dma: count how often dma mode is used
- * @target: SPI target currently selected
- *	(used by bcm2835_spi_dma_tx_done() to write @clear_rx_cs)
- * @tx_dma_active: whether a TX DMA descriptor is in progress
- * @rx_dma_active: whether a RX DMA descriptor is in progress
- *	(used by bcm2835_spi_dma_tx_done() to handle a race)
- * @fill_tx_desc: preallocated TX DMA descriptor used for RX-only transfers
- *	(cyclically copies from zero page to TX FIFO)
- * @fill_tx_addr: bus address of zero page
- */
+ 
 struct bcm2835_spi {
 	void __iomem *regs;
 	struct clk *clk;
@@ -142,16 +98,7 @@ struct bcm2835_spi {
 	dma_addr_t fill_tx_addr;
 };
 
-/**
- * struct bcm2835_spidev - BCM2835 SPI target
- * @prepare_cs: precalculated CS register value for ->prepare_message()
- *	(uses target-specific clock polarity and phase settings)
- * @clear_rx_desc: preallocated RX DMA descriptor used for TX-only transfers
- *	(cyclically clears RX FIFO by writing @clear_rx_cs to CS register)
- * @clear_rx_addr: bus address of @clear_rx_cs
- * @clear_rx_cs: precalculated CS register value to clear RX FIFO
- *	(uses target-specific clock polarity and phase settings)
- */
+ 
 struct bcm2835_spidev {
 	u32 prepare_cs;
 	struct dma_async_tx_descriptor *clear_rx_desc;
@@ -166,14 +113,14 @@ static void bcm2835_debugfs_create(struct bcm2835_spi *bs,
 	char name[64];
 	struct dentry *dir;
 
-	/* get full name */
+	 
 	snprintf(name, sizeof(name), "spi-bcm2835-%s", dname);
 
-	/* the base directory */
+	 
 	dir = debugfs_create_dir(name, NULL);
 	bs->debugfs_dir = dir;
 
-	/* the counters */
+	 
 	debugfs_create_u64("count_transfer_polling", 0444, dir,
 			   &bs->count_transfer_polling);
 	debugfs_create_u64("count_transfer_irq", 0444, dir,
@@ -198,7 +145,7 @@ static void bcm2835_debugfs_create(struct bcm2835_spi *bs,
 static void bcm2835_debugfs_remove(struct bcm2835_spi *bs)
 {
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static inline u32 bcm2835_rd(struct bcm2835_spi *bs, unsigned int reg)
 {
@@ -235,16 +182,7 @@ static inline void bcm2835_wr_fifo(struct bcm2835_spi *bs)
 	}
 }
 
-/**
- * bcm2835_rd_fifo_count() - blindly read exactly @count bytes from RX FIFO
- * @bs: BCM2835 SPI controller
- * @count: bytes to read from RX FIFO
- *
- * The caller must ensure that @bs->rx_len is greater than or equal to @count,
- * that the RX FIFO contains at least @count bytes and that the DMA Enable flag
- * in the CS register is set (such that a read from the FIFO register receives
- * 32-bit instead of just 8-bit).  Moreover @bs->rx_buf must not be %NULL.
- */
+ 
 static inline void bcm2835_rd_fifo_count(struct bcm2835_spi *bs, int count)
 {
 	u32 val;
@@ -261,16 +199,7 @@ static inline void bcm2835_rd_fifo_count(struct bcm2835_spi *bs, int count)
 	} while (count > 0);
 }
 
-/**
- * bcm2835_wr_fifo_count() - blindly write exactly @count bytes to TX FIFO
- * @bs: BCM2835 SPI controller
- * @count: bytes to write to TX FIFO
- *
- * The caller must ensure that @bs->tx_len is greater than or equal to @count,
- * that the TX FIFO can accommodate @count bytes and that the DMA Enable flag
- * in the CS register is set (such that a write to the FIFO register transmits
- * 32-bit instead of just 8-bit).
- */
+ 
 static inline void bcm2835_wr_fifo_count(struct bcm2835_spi *bs, int count)
 {
 	u32 val;
@@ -291,25 +220,14 @@ static inline void bcm2835_wr_fifo_count(struct bcm2835_spi *bs, int count)
 	} while (count > 0);
 }
 
-/**
- * bcm2835_wait_tx_fifo_empty() - busy-wait for TX FIFO to empty
- * @bs: BCM2835 SPI controller
- *
- * The caller must ensure that the RX FIFO can accommodate as many bytes
- * as have been written to the TX FIFO:  Transmission is halted once the
- * RX FIFO is full, causing this function to spin forever.
- */
+ 
 static inline void bcm2835_wait_tx_fifo_empty(struct bcm2835_spi *bs)
 {
 	while (!(bcm2835_rd(bs, BCM2835_SPI_CS) & BCM2835_SPI_CS_DONE))
 		cpu_relax();
 }
 
-/**
- * bcm2835_rd_fifo_blind() - blindly read up to @count bytes from RX FIFO
- * @bs: BCM2835 SPI controller
- * @count: bytes available for reading in RX FIFO
- */
+ 
 static inline void bcm2835_rd_fifo_blind(struct bcm2835_spi *bs, int count)
 {
 	u8 val;
@@ -324,11 +242,7 @@ static inline void bcm2835_rd_fifo_blind(struct bcm2835_spi *bs, int count)
 	} while (--count);
 }
 
-/**
- * bcm2835_wr_fifo_blind() - blindly write up to @count bytes to TX FIFO
- * @bs: BCM2835 SPI controller
- * @count: bytes available for writing in TX FIFO
- */
+ 
 static inline void bcm2835_wr_fifo_blind(struct bcm2835_spi *bs, int count)
 {
 	u8 val;
@@ -346,24 +260,19 @@ static void bcm2835_spi_reset_hw(struct bcm2835_spi *bs)
 {
 	u32 cs = bcm2835_rd(bs, BCM2835_SPI_CS);
 
-	/* Disable SPI interrupts and transfer */
+	 
 	cs &= ~(BCM2835_SPI_CS_INTR |
 		BCM2835_SPI_CS_INTD |
 		BCM2835_SPI_CS_DMAEN |
 		BCM2835_SPI_CS_TA);
-	/*
-	 * Transmission sometimes breaks unless the DONE bit is written at the
-	 * end of every transfer.  The spec says it's a RO bit.  Either the
-	 * spec is wrong and the bit is actually of type RW1C, or it's a
-	 * hardware erratum.
-	 */
+	 
 	cs |= BCM2835_SPI_CS_DONE;
-	/* and reset RX/TX FIFOS */
+	 
 	cs |= BCM2835_SPI_CS_CLEAR_RX | BCM2835_SPI_CS_CLEAR_TX;
 
-	/* and reset the SPI_HW */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS, cs);
-	/* as well as DLEN */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_DLEN, 0);
 }
 
@@ -372,14 +281,11 @@ static irqreturn_t bcm2835_spi_interrupt(int irq, void *dev_id)
 	struct bcm2835_spi *bs = dev_id;
 	u32 cs = bcm2835_rd(bs, BCM2835_SPI_CS);
 
-	/* Bail out early if interrupts are not enabled */
+	 
 	if (!(cs & BCM2835_SPI_CS_INTR))
 		return IRQ_NONE;
 
-	/*
-	 * An interrupt is signaled either if DONE is set (TX FIFO empty)
-	 * or if RXR is set (RX FIFO >= ¾ full).
-	 */
+	 
 	if (cs & BCM2835_SPI_CS_RXF)
 		bcm2835_rd_fifo_blind(bs, BCM2835_SPI_FIFO_SIZE);
 	else if (cs & BCM2835_SPI_CS_RXR)
@@ -388,15 +294,15 @@ static irqreturn_t bcm2835_spi_interrupt(int irq, void *dev_id)
 	if (bs->tx_len && cs & BCM2835_SPI_CS_DONE)
 		bcm2835_wr_fifo_blind(bs, BCM2835_SPI_FIFO_SIZE);
 
-	/* Read as many bytes as possible from FIFO */
+	 
 	bcm2835_rd_fifo(bs);
-	/* Write as many bytes as possible to FIFO */
+	 
 	bcm2835_wr_fifo(bs);
 
 	if (!bs->rx_len) {
-		/* Transfer complete - reset SPI HW */
+		 
 		bcm2835_spi_reset_hw(bs);
-		/* wake up the framework */
+		 
 		spi_finalize_current_transfer(bs->ctlr);
 	}
 
@@ -410,74 +316,26 @@ static int bcm2835_spi_transfer_one_irq(struct spi_controller *ctlr,
 {
 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
 
-	/* update usage statistics */
+	 
 	bs->count_transfer_irq++;
 
-	/*
-	 * Enable HW block, but with interrupts still disabled.
-	 * Otherwise the empty TX FIFO would immediately trigger an interrupt.
-	 */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS, cs | BCM2835_SPI_CS_TA);
 
-	/* fill TX FIFO as much as possible */
+	 
 	if (fifo_empty)
 		bcm2835_wr_fifo_blind(bs, BCM2835_SPI_FIFO_SIZE);
 	bcm2835_wr_fifo(bs);
 
-	/* enable interrupts */
+	 
 	cs |= BCM2835_SPI_CS_INTR | BCM2835_SPI_CS_INTD | BCM2835_SPI_CS_TA;
 	bcm2835_wr(bs, BCM2835_SPI_CS, cs);
 
-	/* signal that we need to wait for completion */
+	 
 	return 1;
 }
 
-/**
- * bcm2835_spi_transfer_prologue() - transfer first few bytes without DMA
- * @ctlr: SPI host controller
- * @tfr: SPI transfer
- * @bs: BCM2835 SPI controller
- * @cs: CS register
- *
- * A limitation in DMA mode is that the FIFO must be accessed in 4 byte chunks.
- * Only the final write access is permitted to transmit less than 4 bytes, the
- * SPI controller deduces its intended size from the DLEN register.
- *
- * If a TX or RX sglist contains multiple entries, one per page, and the first
- * entry starts in the middle of a page, that first entry's length may not be
- * a multiple of 4.  Subsequent entries are fine because they span an entire
- * page, hence do have a length that's a multiple of 4.
- *
- * This cannot happen with kmalloc'ed buffers (which is what most clients use)
- * because they are contiguous in physical memory and therefore not split on
- * page boundaries by spi_map_buf().  But it *can* happen with vmalloc'ed
- * buffers.
- *
- * The DMA engine is incapable of combining sglist entries into a continuous
- * stream of 4 byte chunks, it treats every entry separately:  A TX entry is
- * rounded up a to a multiple of 4 bytes by transmitting surplus bytes, an RX
- * entry is rounded up by throwing away received bytes.
- *
- * Overcome this limitation by transferring the first few bytes without DMA:
- * E.g. if the first TX sglist entry's length is 23 and the first RX's is 42,
- * write 3 bytes to the TX FIFO but read only 2 bytes from the RX FIFO.
- * The residue of 1 byte in the RX FIFO is picked up by DMA.  Together with
- * the rest of the first RX sglist entry it makes up a multiple of 4 bytes.
- *
- * Should the RX prologue be larger, say, 3 vis-à-vis a TX prologue of 1,
- * write 1 + 4 = 5 bytes to the TX FIFO and read 3 bytes from the RX FIFO.
- * Caution, the additional 4 bytes spill over to the second TX sglist entry
- * if the length of the first is *exactly* 1.
- *
- * At most 6 bytes are written and at most 3 bytes read.  Do we know the
- * transfer has this many bytes?  Yes, see BCM2835_SPI_DMA_MIN_LENGTH.
- *
- * The FIFO is normally accessed with 8-bit width by the CPU and 32-bit width
- * by the DMA engine.  Toggling the DMA Enable flag in the CS register switches
- * the width but also garbles the FIFO's contents.  The prologue must therefore
- * be transmitted in 32-bit width to ensure that the following DMA transfer can
- * pick up the residue in the RX FIFO in ungarbled form.
- */
+ 
 static void bcm2835_spi_transfer_prologue(struct spi_controller *ctlr,
 					  struct spi_transfer *tfr,
 					  struct bcm2835_spi *bs,
@@ -507,11 +365,11 @@ static void bcm2835_spi_transfer_prologue(struct spi_controller *ctlr,
 		}
 	}
 
-	/* rx_prologue > 0 implies tx_prologue > 0, so check only the latter */
+	 
 	if (!bs->tx_prologue)
 		return;
 
-	/* Write and read RX prologue.  Adjust first entry in RX sglist. */
+	 
 	if (bs->rx_prologue) {
 		bcm2835_wr(bs, BCM2835_SPI_DLEN, bs->rx_prologue);
 		bcm2835_wr(bs, BCM2835_SPI_CS, cs | BCM2835_SPI_CS_TA
@@ -534,10 +392,7 @@ static void bcm2835_spi_transfer_prologue(struct spi_controller *ctlr,
 	if (!bs->tx_buf)
 		return;
 
-	/*
-	 * Write remaining TX prologue.  Adjust first entry in TX sglist.
-	 * Also adjust second entry if prologue spills over to it.
-	 */
+	 
 	tx_remaining = bs->tx_prologue - bs->rx_prologue;
 	if (tx_remaining) {
 		bcm2835_wr(bs, BCM2835_SPI_DLEN, tx_remaining);
@@ -559,14 +414,7 @@ static void bcm2835_spi_transfer_prologue(struct spi_controller *ctlr,
 	}
 }
 
-/**
- * bcm2835_spi_undo_prologue() - reconstruct original sglist state
- * @bs: BCM2835 SPI controller
- *
- * Undo changes which were made to an SPI transfer's sglist when transmitting
- * the prologue.  This is necessary to ensure the same memory ranges are
- * unmapped that were originally mapped.
- */
+ 
 static void bcm2835_spi_undo_prologue(struct bcm2835_spi *bs)
 {
 	struct spi_transfer *tfr = bs->tfr;
@@ -594,57 +442,39 @@ out:
 	bs->tx_prologue = 0;
 }
 
-/**
- * bcm2835_spi_dma_rx_done() - callback for DMA RX channel
- * @data: SPI host controller
- *
- * Used for bidirectional and RX-only transfers.
- */
+ 
 static void bcm2835_spi_dma_rx_done(void *data)
 {
 	struct spi_controller *ctlr = data;
 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
 
-	/* terminate tx-dma as we do not have an irq for it
-	 * because when the rx dma will terminate and this callback
-	 * is called the tx-dma must have finished - can't get to this
-	 * situation otherwise...
-	 */
+	 
 	dmaengine_terminate_async(ctlr->dma_tx);
 	bs->tx_dma_active = false;
 	bs->rx_dma_active = false;
 	bcm2835_spi_undo_prologue(bs);
 
-	/* reset fifo and HW */
+	 
 	bcm2835_spi_reset_hw(bs);
 
-	/* and mark as completed */;
+	 ;
 	spi_finalize_current_transfer(ctlr);
 }
 
-/**
- * bcm2835_spi_dma_tx_done() - callback for DMA TX channel
- * @data: SPI host controller
- *
- * Used for TX-only transfers.
- */
+ 
 static void bcm2835_spi_dma_tx_done(void *data)
 {
 	struct spi_controller *ctlr = data;
 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
 
-	/* busy-wait for TX FIFO to empty */
+	 
 	while (!(bcm2835_rd(bs, BCM2835_SPI_CS) & BCM2835_SPI_CS_DONE))
 		bcm2835_wr(bs, BCM2835_SPI_CS, bs->target->clear_rx_cs);
 
 	bs->tx_dma_active = false;
 	smp_wmb();
 
-	/*
-	 * In case of a very short transfer, RX DMA may not have been
-	 * issued yet.  The onus is then on bcm2835_spi_transfer_one_dma()
-	 * to terminate it immediately after issuing.
-	 */
+	 
 	if (cmpxchg(&bs->rx_dma_active, true, false))
 		dmaengine_terminate_async(ctlr->dma_rx);
 
@@ -653,17 +483,7 @@ static void bcm2835_spi_dma_tx_done(void *data)
 	spi_finalize_current_transfer(ctlr);
 }
 
-/**
- * bcm2835_spi_prepare_sg() - prepare and submit DMA descriptor for sglist
- * @ctlr: SPI host controller
- * @tfr: SPI transfer
- * @bs: BCM2835 SPI controller
- * @target: BCM2835 SPI target
- * @is_tx: whether to submit DMA descriptor for TX or RX sglist
- *
- * Prepare and submit a DMA descriptor for the TX or RX sglist of @tfr.
- * Return 0 on success or a negative error number.
- */
+ 
 static int bcm2835_spi_prepare_sg(struct spi_controller *ctlr,
 				  struct spi_transfer *tfr,
 				  struct bcm2835_spi *bs,
@@ -692,15 +512,12 @@ static int bcm2835_spi_prepare_sg(struct spi_controller *ctlr,
 		sgl   = tfr->rx_sg.sgl;
 		flags = DMA_PREP_INTERRUPT;
 	}
-	/* prepare the channel */
+	 
 	desc = dmaengine_prep_slave_sg(chan, sgl, nents, dir, flags);
 	if (!desc)
 		return -EINVAL;
 
-	/*
-	 * Completion is signaled by the RX channel for bidirectional and
-	 * RX-only transfers; else by the TX channel for TX-only transfers.
-	 */
+	 
 	if (!is_tx) {
 		desc->callback = bcm2835_spi_dma_rx_done;
 		desc->callback_param = ctlr;
@@ -710,59 +527,13 @@ static int bcm2835_spi_prepare_sg(struct spi_controller *ctlr,
 		bs->target = target;
 	}
 
-	/* submit it to DMA-engine */
+	 
 	cookie = dmaengine_submit(desc);
 
 	return dma_submit_error(cookie);
 }
 
-/**
- * bcm2835_spi_transfer_one_dma() - perform SPI transfer using DMA engine
- * @ctlr: SPI host controller
- * @tfr: SPI transfer
- * @target: BCM2835 SPI target
- * @cs: CS register
- *
- * For *bidirectional* transfers (both tx_buf and rx_buf are non-%NULL), set up
- * the TX and RX DMA channel to copy between memory and FIFO register.
- *
- * For *TX-only* transfers (rx_buf is %NULL), copying the RX FIFO's contents to
- * memory is pointless.  However not reading the RX FIFO isn't an option either
- * because transmission is halted once it's full.  As a workaround, cyclically
- * clear the RX FIFO by setting the CLEAR_RX bit in the CS register.
- *
- * The CS register value is precalculated in bcm2835_spi_setup().  Normally
- * this is called only once, on target registration.  A DMA descriptor to write
- * this value is preallocated in bcm2835_dma_init().  All that's left to do
- * when performing a TX-only transfer is to submit this descriptor to the RX
- * DMA channel.  Latency is thereby minimized.  The descriptor does not
- * generate any interrupts while running.  It must be terminated once the
- * TX DMA channel is done.
- *
- * Clearing the RX FIFO is paced by the DREQ signal.  The signal is asserted
- * when the RX FIFO becomes half full, i.e. 32 bytes.  (Tuneable with the DC
- * register.)  Reading 32 bytes from the RX FIFO would normally require 8 bus
- * accesses, whereas clearing it requires only 1 bus access.  So an 8-fold
- * reduction in bus traffic and thus energy consumption is achieved.
- *
- * For *RX-only* transfers (tx_buf is %NULL), fill the TX FIFO by cyclically
- * copying from the zero page.  The DMA descriptor to do this is preallocated
- * in bcm2835_dma_init().  It must be terminated once the RX DMA channel is
- * done and can then be reused.
- *
- * The BCM2835 DMA driver autodetects when a transaction copies from the zero
- * page and utilizes the DMA controller's ability to synthesize zeroes instead
- * of copying them from memory.  This reduces traffic on the memory bus.  The
- * feature is not available on so-called "lite" channels, but normally TX DMA
- * is backed by a full-featured channel.
- *
- * Zero-filling the TX FIFO is paced by the DREQ signal.  Unfortunately the
- * BCM2835 SPI controller continues to assert DREQ even after the DLEN register
- * has been counted down to zero (hardware erratum).  Thus, when the transfer
- * has finished, the DMA engine zero-fills the TX FIFO until it is half full.
- * (Tuneable with the DC register.)  So up to 9 gratuitous bus accesses are
- * performed at the end of an RX-only transfer.
- */
+ 
 static int bcm2835_spi_transfer_one_dma(struct spi_controller *ctlr,
 					struct spi_transfer *tfr,
 					struct bcm2835_spidev *target,
@@ -772,16 +543,13 @@ static int bcm2835_spi_transfer_one_dma(struct spi_controller *ctlr,
 	dma_cookie_t cookie;
 	int ret;
 
-	/* update usage statistics */
+	 
 	bs->count_transfer_dma++;
 
-	/*
-	 * Transfer first few bytes without DMA if length of first TX or RX
-	 * sglist entry is not a multiple of 4 bytes (hardware limitation).
-	 */
+	 
 	bcm2835_spi_transfer_prologue(ctlr, tfr, bs, cs);
 
-	/* setup tx-DMA */
+	 
 	if (bs->tx_buf) {
 		ret = bcm2835_spi_prepare_sg(ctlr, tfr, bs, target, true);
 	} else {
@@ -791,23 +559,20 @@ static int bcm2835_spi_transfer_one_dma(struct spi_controller *ctlr,
 	if (ret)
 		goto err_reset_hw;
 
-	/* set the DMA length */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_DLEN, bs->tx_len);
 
-	/* start the HW */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS,
 		   cs | BCM2835_SPI_CS_TA | BCM2835_SPI_CS_DMAEN);
 
 	bs->tx_dma_active = true;
 	smp_wmb();
 
-	/* start TX early */
+	 
 	dma_async_issue_pending(ctlr->dma_tx);
 
-	/* setup rx-DMA late - to run transfers while
-	 * mapping of the rx buffers still takes place
-	 * this saves 10us or more.
-	 */
+	 
 	if (bs->rx_buf) {
 		ret = bcm2835_spi_prepare_sg(ctlr, tfr, bs, target, false);
 	} else {
@@ -815,28 +580,25 @@ static int bcm2835_spi_transfer_one_dma(struct spi_controller *ctlr,
 		ret = dma_submit_error(cookie);
 	}
 	if (ret) {
-		/* need to reset on errors */
+		 
 		dmaengine_terminate_sync(ctlr->dma_tx);
 		bs->tx_dma_active = false;
 		goto err_reset_hw;
 	}
 
-	/* start rx dma late */
+	 
 	dma_async_issue_pending(ctlr->dma_rx);
 	bs->rx_dma_active = true;
 	smp_mb();
 
-	/*
-	 * In case of a very short TX-only transfer, bcm2835_spi_dma_tx_done()
-	 * may run before RX DMA is issued.  Terminate RX DMA if so.
-	 */
+	 
 	if (!bs->rx_buf && !bs->tx_dma_active &&
 	    cmpxchg(&bs->rx_dma_active, true, false)) {
 		dmaengine_terminate_async(ctlr->dma_rx);
 		bcm2835_spi_reset_hw(bs);
 	}
 
-	/* wait for wakeup in framework */
+	 
 	return 1;
 
 err_reset_hw:
@@ -849,11 +611,11 @@ static bool bcm2835_spi_can_dma(struct spi_controller *ctlr,
 				struct spi_device *spi,
 				struct spi_transfer *tfr)
 {
-	/* we start DMA efforts only on bigger transfers */
+	 
 	if (tfr->len < BCM2835_SPI_DMA_MIN_LENGTH)
 		return false;
 
-	/* return OK */
+	 
 	return true;
 }
 
@@ -891,16 +653,16 @@ static int bcm2835_dma_init(struct spi_controller *ctlr, struct device *dev,
 	dma_addr_t dma_reg_base;
 	int ret;
 
-	/* base address in dma-space */
+	 
 	addr = of_get_address(ctlr->dev.of_node, 0, NULL, NULL);
 	if (!addr) {
 		dev_err(dev, "could not get DMA-register address - not using dma mode\n");
-		/* Fall back to interrupt mode */
+		 
 		return 0;
 	}
 	dma_reg_base = be32_to_cpup(addr);
 
-	/* get tx/rx dma */
+	 
 	ctlr->dma_tx = dma_request_chan(dev, "tx");
 	if (IS_ERR(ctlr->dma_tx)) {
 		ret = dev_err_probe(dev, PTR_ERR(ctlr->dma_tx),
@@ -916,11 +678,7 @@ static int bcm2835_dma_init(struct spi_controller *ctlr, struct device *dev,
 		goto err_release;
 	}
 
-	/*
-	 * The TX DMA channel either copies a transfer's TX buffer to the FIFO
-	 * or, in case of an RX-only transfer, cyclically copies from the zero
-	 * page to the FIFO using a preallocated, reusable descriptor.
-	 */
+	 
 	slave_config.dst_addr = (u32)(dma_reg_base + BCM2835_SPI_FIFO);
 	slave_config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 
@@ -955,11 +713,7 @@ static int bcm2835_dma_init(struct spi_controller *ctlr, struct device *dev,
 		goto err_release;
 	}
 
-	/*
-	 * The RX DMA channel is used bidirectionally:  It either reads the
-	 * RX FIFO or, in case of a TX-only transfer, cyclically writes a
-	 * precalculated value to the CS register to clear the RX FIFO.
-	 */
+	 
 	slave_config.src_addr = (u32)(dma_reg_base + BCM2835_SPI_FIFO);
 	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	slave_config.dst_addr = (u32)(dma_reg_base + BCM2835_SPI_CS);
@@ -969,7 +723,7 @@ static int bcm2835_dma_init(struct spi_controller *ctlr, struct device *dev,
 	if (ret)
 		goto err_config;
 
-	/* all went well, so set can_dma */
+	 
 	ctlr->can_dma = bcm2835_spi_can_dma;
 
 	return 0;
@@ -980,10 +734,7 @@ err_config:
 err_release:
 	bcm2835_dma_release(ctlr, bs);
 err:
-	/*
-	 * Only report error for deferred probing, otherwise fall back to
-	 * interrupt mode
-	 */
+	 
 	if (ret != -EPROBE_DEFER)
 		ret = 0;
 
@@ -998,40 +749,35 @@ static int bcm2835_spi_transfer_one_poll(struct spi_controller *ctlr,
 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
 	unsigned long timeout;
 
-	/* update usage statistics */
+	 
 	bs->count_transfer_polling++;
 
-	/* enable HW block without interrupts */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS, cs | BCM2835_SPI_CS_TA);
 
-	/* fill in the fifo before timeout calculations
-	 * if we are interrupted here, then the data is
-	 * getting transferred by the HW while we are interrupted
-	 */
+	 
 	bcm2835_wr_fifo_blind(bs, BCM2835_SPI_FIFO_SIZE);
 
-	/* set the timeout to at least 2 jiffies */
+	 
 	timeout = jiffies + 2 + HZ * polling_limit_us / 1000000;
 
-	/* loop until finished the transfer */
+	 
 	while (bs->rx_len) {
-		/* fill in tx fifo with remaining data */
+		 
 		bcm2835_wr_fifo(bs);
 
-		/* read from fifo as much as possible */
+		 
 		bcm2835_rd_fifo(bs);
 
-		/* if there is still data pending to read
-		 * then check the timeout
-		 */
+		 
 		if (bs->rx_len && time_after(jiffies, timeout)) {
 			dev_dbg_ratelimited(&spi->dev,
 					    "timeout period reached: jiffies: %lu remaining tx/rx: %d/%d - falling back to interrupt mode\n",
 					    jiffies - timeout,
 					    bs->tx_len, bs->rx_len);
-			/* fall back to interrupt mode */
+			 
 
-			/* update usage statistics */
+			 
 			bs->count_transfer_irq_after_polling++;
 
 			return bcm2835_spi_transfer_one_irq(ctlr, spi,
@@ -1039,9 +785,9 @@ static int bcm2835_spi_transfer_one_poll(struct spi_controller *ctlr,
 		}
 	}
 
-	/* Transfer complete - reset SPI HW */
+	 
 	bcm2835_spi_reset_hw(bs);
-	/* and return without waiting for completion */
+	 
 	return 0;
 }
 
@@ -1055,55 +801,47 @@ static int bcm2835_spi_transfer_one(struct spi_controller *ctlr,
 	unsigned long hz_per_byte, byte_limit;
 	u32 cs = target->prepare_cs;
 
-	/* set clock */
+	 
 	spi_hz = tfr->speed_hz;
 
 	if (spi_hz >= bs->clk_hz / 2) {
-		cdiv = 2; /* clk_hz/2 is the fastest we can go */
+		cdiv = 2;  
 	} else if (spi_hz) {
-		/* CDIV must be a multiple of two */
+		 
 		cdiv = DIV_ROUND_UP(bs->clk_hz, spi_hz);
 		cdiv += (cdiv % 2);
 
 		if (cdiv >= 65536)
-			cdiv = 0; /* 0 is the slowest we can go */
+			cdiv = 0;  
 	} else {
-		cdiv = 0; /* 0 is the slowest we can go */
+		cdiv = 0;  
 	}
 	tfr->effective_speed_hz = cdiv ? (bs->clk_hz / cdiv) : (bs->clk_hz / 65536);
 	bcm2835_wr(bs, BCM2835_SPI_CLK, cdiv);
 
-	/* handle all the 3-wire mode */
+	 
 	if (spi->mode & SPI_3WIRE && tfr->rx_buf)
 		cs |= BCM2835_SPI_CS_REN;
 
-	/* set transmit buffers and length */
+	 
 	bs->tx_buf = tfr->tx_buf;
 	bs->rx_buf = tfr->rx_buf;
 	bs->tx_len = tfr->len;
 	bs->rx_len = tfr->len;
 
-	/* Calculate the estimated time in us the transfer runs.  Note that
-	 * there is 1 idle clocks cycles after each byte getting transferred
-	 * so we have 9 cycles/byte.  This is used to find the number of Hz
-	 * per byte per polling limit.  E.g., we can transfer 1 byte in 30 us
-	 * per 300,000 Hz of bus clock.
-	 */
+	 
 	hz_per_byte = polling_limit_us ? (9 * 1000000) / polling_limit_us : 0;
 	byte_limit = hz_per_byte ? tfr->effective_speed_hz / hz_per_byte : 1;
 
-	/* run in polling mode for short transfers */
+	 
 	if (tfr->len < byte_limit)
 		return bcm2835_spi_transfer_one_poll(ctlr, spi, tfr, cs);
 
-	/* run in dma mode if conditions are right
-	 * Note that unlike poll or interrupt mode DMA mode does not have
-	 * this 1 idle clock cycle pattern but runs the spi clock without gaps
-	 */
+	 
 	if (ctlr->can_dma && bcm2835_spi_can_dma(ctlr, spi, tfr))
 		return bcm2835_spi_transfer_one_dma(ctlr, tfr, target, cs);
 
-	/* run in interrupt-mode */
+	 
 	return bcm2835_spi_transfer_one_irq(ctlr, spi, tfr, cs, true);
 }
 
@@ -1116,21 +854,14 @@ static int bcm2835_spi_prepare_message(struct spi_controller *ctlr,
 	int ret;
 
 	if (ctlr->can_dma) {
-		/*
-		 * DMA transfers are limited to 16 bit (0 to 65535 bytes) by
-		 * the SPI HW due to DLEN. Split up transfers (32-bit FIFO
-		 * aligned) if the limit is exceeded.
-		 */
+		 
 		ret = spi_split_transfers_maxsize(ctlr, msg, 65532,
 						  GFP_KERNEL | GFP_DMA);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * Set up clock polarity before spi_transfer_one_message() asserts
-	 * chip select to avoid a gratuitous clock signal edge.
-	 */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS, target->prepare_cs);
 
 	return 0;
@@ -1141,7 +872,7 @@ static void bcm2835_spi_handle_err(struct spi_controller *ctlr,
 {
 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
 
-	/* if an error occurred and we have an active dma, then terminate */
+	 
 	if (ctlr->dma_tx) {
 		dmaengine_terminate_sync(ctlr->dma_tx);
 		bs->tx_dma_active = false;
@@ -1152,7 +883,7 @@ static void bcm2835_spi_handle_err(struct spi_controller *ctlr,
 	}
 	bcm2835_spi_undo_prologue(bs);
 
-	/* and reset */
+	 
 	bcm2835_spi_reset_hw(bs);
 }
 
@@ -1238,12 +969,7 @@ static int bcm2835_spi_setup(struct spi_device *spi)
 			goto err_cleanup;
 	}
 
-	/*
-	 * Precalculate SPI target's CS register value for ->prepare_message():
-	 * The driver always uses software-controlled GPIO chip select, hence
-	 * set the hardware-controlled native chip select to an invalid value
-	 * to prevent it from interfering.
-	 */
+	 
 	cs = BCM2835_SPI_CS_CS_10 | BCM2835_SPI_CS_CS_01;
 	if (spi->mode & SPI_CPOL)
 		cs |= BCM2835_SPI_CS_CPOL;
@@ -1251,10 +977,7 @@ static int bcm2835_spi_setup(struct spi_device *spi)
 		cs |= BCM2835_SPI_CS_CPHA;
 	target->prepare_cs = cs;
 
-	/*
-	 * Precalculate SPI target's CS register value to clear RX FIFO
-	 * in case of a TX-only DMA transfer.
-	 */
+	 
 	if (ctlr->dma_rx) {
 		target->clear_rx_cs = cs | BCM2835_SPI_CS_TA |
 					BCM2835_SPI_CS_DMAEN |
@@ -1265,38 +988,23 @@ static int bcm2835_spi_setup(struct spi_device *spi)
 					   DMA_TO_DEVICE);
 	}
 
-	/*
-	 * sanity checking the native-chipselects
-	 */
+	 
 	if (spi->mode & SPI_NO_CS)
 		return 0;
-	/*
-	 * The SPI core has successfully requested the CS GPIO line from the
-	 * device tree, so we are done.
-	 */
+	 
 	if (spi_get_csgpiod(spi, 0))
 		return 0;
 	if (spi_get_chipselect(spi, 0) > 1) {
-		/* error in the case of native CS requested with CS > 1
-		 * officially there is a CS2, but it is not documented
-		 * which GPIO is connected with that...
-		 */
+		 
 		dev_err(&spi->dev,
 			"setup: only two native chip-selects are supported\n");
 		ret = -EINVAL;
 		goto err_cleanup;
 	}
 
-	/*
-	 * Translate native CS to GPIO
-	 *
-	 * FIXME: poking around in the gpiolib internals like this is
-	 * not very good practice. Find a way to locate the real problem
-	 * and fix it. Why is the GPIO descriptor in spi->cs_gpiod
-	 * sometimes not assigned correctly? Erroneous device trees?
-	 */
+	 
 
-	/* get the gpio chip for the base */
+	 
 	chip = gpiochip_find("pinctrl-bcm2835", chip_match_name);
 	if (!chip)
 		return 0;
@@ -1311,7 +1019,7 @@ static int bcm2835_spi_setup(struct spi_device *spi)
 		goto err_cleanup;
 	}
 
-	/* and set up the "mode" and level */
+	 
 	dev_info(&spi->dev, "setting up native-CS%i to use GPIO\n",
 		 spi_get_chipselect(spi, 0));
 
@@ -1372,7 +1080,7 @@ static int bcm2835_spi_probe(struct platform_device *pdev)
 	if (err)
 		goto out_clk_disable;
 
-	/* initialise the hardware with the default polarities */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS,
 		   BCM2835_SPI_CS_CLEAR_RX | BCM2835_SPI_CS_CLEAR_TX);
 
@@ -1412,7 +1120,7 @@ static void bcm2835_spi_remove(struct platform_device *pdev)
 
 	bcm2835_dma_release(ctlr, bs);
 
-	/* Clear FIFOs, and disable the HW block */
+	 
 	bcm2835_wr(bs, BCM2835_SPI_CS,
 		   BCM2835_SPI_CS_CLEAR_RX | BCM2835_SPI_CS_CLEAR_TX);
 

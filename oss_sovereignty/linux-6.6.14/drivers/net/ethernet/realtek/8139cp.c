@@ -1,50 +1,5 @@
-/* 8139cp.c: A Linux PCI Ethernet driver for the RealTek 8139C+ chips. */
-/*
-	Copyright 2001-2004 Jeff Garzik <jgarzik@pobox.com>
-
-	Copyright (C) 2001, 2002 David S. Miller (davem@redhat.com) [tg3.c]
-	Copyright (C) 2000, 2001 David S. Miller (davem@redhat.com) [sungem.c]
-	Copyright 2001 Manfred Spraul				    [natsemi.c]
-	Copyright 1999-2001 by Donald Becker.			    [natsemi.c]
-	Written 1997-2001 by Donald Becker.			    [8139too.c]
-	Copyright 1998-2001 by Jes Sorensen, <jes@trained-monkey.org>. [acenic.c]
-
-	This software may be used and distributed according to the terms of
-	the GNU General Public License (GPL), incorporated herein by reference.
-	Drivers based on or derived from this code fall under the GPL and must
-	retain the authorship, copyright and license notice.  This file is not
-	a complete program and may only be used when the entire operating
-	system is licensed under the GPL.
-
-	See the file COPYING in this distribution for more information.
-
-	Contributors:
-
-		Wake-on-LAN support - Felipe Damasio <felipewd@terra.com.br>
-		PCI suspend/resume  - Felipe Damasio <felipewd@terra.com.br>
-		LinkChg interrupt   - Felipe Damasio <felipewd@terra.com.br>
-
-	TODO:
-	* Test Tx checksumming thoroughly
-
-	Low priority TODO:
-	* Complete reset on PciErr
-	* Consider Rx interrupt mitigation using TimerIntr
-	* Investigate using skb->priority with h/w VLAN priority
-	* Investigate using High Priority Tx Queue with skb->priority
-	* Adjust Rx FIFO threshold and Max Rx DMA burst on Rx FIFO error
-	* Adjust Tx FIFO threshold and Max Tx DMA burst on Tx FIFO error
-	* Implement Tx software interrupt mitigation via
-	  Tx descriptor bit
-	* The real minimum of CP_MIN_MTU is 4 bytes.  However,
-	  for this to be supported, one must(?) turn on packet padding.
-	* Support external MII transceivers (patch available)
-
-	NOTES:
-	* TX checksumming is considered experimental.  It is off by
-	  default, use ethtool to turn it on.
-
- */
+ 
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -78,7 +33,7 @@
 #include <asm/irq.h>
 #include <linux/uaccess.h>
 
-/* These identify the driver base version and may not be removed. */
+ 
 static char version[] =
 DRV_NAME ": 10/100 PCI Ethernet driver v" DRV_VERSION " (" DRV_RELDATE ")\n";
 
@@ -91,8 +46,7 @@ static int debug = -1;
 module_param(debug, int, 0);
 MODULE_PARM_DESC (debug, "8139cp: bitmapped message enable number");
 
-/* Maximum number of multicast addresses to filter (vs. Rx-all-multicast).
-   The RTL chips use a 64 element hash table based on the Ethernet CRC.  */
+ 
 static int multicast_filter_limit = 32;
 module_param(multicast_filter_limit, int, 0);
 MODULE_PARM_DESC (multicast_filter_limit, "8139cp: maximum number of filtered multicast addresses");
@@ -100,10 +54,10 @@ MODULE_PARM_DESC (multicast_filter_limit, "8139cp: maximum number of filtered mu
 #define CP_DEF_MSG_ENABLE	(NETIF_MSG_DRV		| \
 				 NETIF_MSG_PROBE 	| \
 				 NETIF_MSG_LINK)
-#define CP_NUM_STATS		14	/* struct cp_dma_stats, plus one */
-#define CP_STATS_SIZE		64	/* size in bytes of DMA stats block */
+#define CP_NUM_STATS		14	 
+#define CP_STATS_SIZE		64	 
 #define CP_REGS_SIZE		(0xff + 1)
-#define CP_REGS_VER		1		/* version 1 */
+#define CP_REGS_VER		1		 
 #define CP_RX_RING_SIZE		64
 #define CP_TX_RING_SIZE		64
 #define CP_RING_BYTES		\
@@ -117,172 +71,171 @@ MODULE_PARM_DESC (multicast_filter_limit, "8139cp: maximum number of filtered mu
 	  (CP)->tx_tail + (CP_TX_RING_SIZE - 1) - (CP)->tx_head :	\
 	  (CP)->tx_tail - (CP)->tx_head - 1)
 
-#define PKT_BUF_SZ		1536	/* Size of each temporary Rx buffer.*/
+#define PKT_BUF_SZ		1536	 
 #define CP_INTERNAL_PHY		32
 
-/* The following settings are log_2(bytes)-4:  0 == 16 bytes .. 6==1024, 7==end of packet. */
-#define RX_FIFO_THRESH		5	/* Rx buffer level before first PCI xfer.  */
-#define RX_DMA_BURST		4	/* Maximum PCI burst, '4' is 256 */
-#define TX_DMA_BURST		6	/* Maximum PCI burst, '6' is 1024 */
-#define TX_EARLY_THRESH		256	/* Early Tx threshold, in bytes */
+ 
+#define RX_FIFO_THRESH		5	 
+#define RX_DMA_BURST		4	 
+#define TX_DMA_BURST		6	 
+#define TX_EARLY_THRESH		256	 
 
-/* Time in jiffies before concluding the transmitter is hung. */
+ 
 #define TX_TIMEOUT		(6*HZ)
 
-/* hardware minimum and maximum for a single frame's data payload */
-#define CP_MIN_MTU		60	/* TODO: allow lower, but pad */
+ 
+#define CP_MIN_MTU		60	 
 #define CP_MAX_MTU		4096
 
 enum {
-	/* NIC register offsets */
-	MAC0		= 0x00,	/* Ethernet hardware address. */
-	MAR0		= 0x08,	/* Multicast filter. */
-	StatsAddr	= 0x10,	/* 64-bit start addr of 64-byte DMA stats blk */
-	TxRingAddr	= 0x20, /* 64-bit start addr of Tx ring */
-	HiTxRingAddr	= 0x28, /* 64-bit start addr of high priority Tx ring */
-	Cmd		= 0x37, /* Command register */
-	IntrMask	= 0x3C, /* Interrupt mask */
-	IntrStatus	= 0x3E, /* Interrupt status */
-	TxConfig	= 0x40, /* Tx configuration */
-	ChipVersion	= 0x43, /* 8-bit chip version, inside TxConfig */
-	RxConfig	= 0x44, /* Rx configuration */
-	RxMissed	= 0x4C,	/* 24 bits valid, write clears */
-	Cfg9346		= 0x50, /* EEPROM select/control; Cfg reg [un]lock */
-	Config1		= 0x52, /* Config1 */
-	Config3		= 0x59, /* Config3 */
-	Config4		= 0x5A, /* Config4 */
-	MultiIntr	= 0x5C, /* Multiple interrupt select */
-	BasicModeCtrl	= 0x62,	/* MII BMCR */
-	BasicModeStatus	= 0x64, /* MII BMSR */
-	NWayAdvert	= 0x66, /* MII ADVERTISE */
-	NWayLPAR	= 0x68, /* MII LPA */
-	NWayExpansion	= 0x6A, /* MII Expansion */
-	TxDmaOkLowDesc  = 0x82, /* Low 16 bit address of a Tx descriptor. */
-	Config5		= 0xD8,	/* Config5 */
-	TxPoll		= 0xD9,	/* Tell chip to check Tx descriptors for work */
-	RxMaxSize	= 0xDA, /* Max size of an Rx packet (8169 only) */
-	CpCmd		= 0xE0, /* C+ Command register (C+ mode only) */
-	IntrMitigate	= 0xE2,	/* rx/tx interrupt mitigation control */
-	RxRingAddr	= 0xE4, /* 64-bit start addr of Rx ring */
-	TxThresh	= 0xEC, /* Early Tx threshold */
-	OldRxBufAddr	= 0x30, /* DMA address of Rx ring buffer (C mode) */
-	OldTSD0		= 0x10, /* DMA address of first Tx desc (C mode) */
+	 
+	MAC0		= 0x00,	 
+	MAR0		= 0x08,	 
+	StatsAddr	= 0x10,	 
+	TxRingAddr	= 0x20,  
+	HiTxRingAddr	= 0x28,  
+	Cmd		= 0x37,  
+	IntrMask	= 0x3C,  
+	IntrStatus	= 0x3E,  
+	TxConfig	= 0x40,  
+	ChipVersion	= 0x43,  
+	RxConfig	= 0x44,  
+	RxMissed	= 0x4C,	 
+	Cfg9346		= 0x50,  
+	Config1		= 0x52,  
+	Config3		= 0x59,  
+	Config4		= 0x5A,  
+	MultiIntr	= 0x5C,  
+	BasicModeCtrl	= 0x62,	 
+	BasicModeStatus	= 0x64,  
+	NWayAdvert	= 0x66,  
+	NWayLPAR	= 0x68,  
+	NWayExpansion	= 0x6A,  
+	TxDmaOkLowDesc  = 0x82,  
+	Config5		= 0xD8,	 
+	TxPoll		= 0xD9,	 
+	RxMaxSize	= 0xDA,  
+	CpCmd		= 0xE0,  
+	IntrMitigate	= 0xE2,	 
+	RxRingAddr	= 0xE4,  
+	TxThresh	= 0xEC,  
+	OldRxBufAddr	= 0x30,  
+	OldTSD0		= 0x10,  
 
-	/* Tx and Rx status descriptors */
-	DescOwn		= (1 << 31), /* Descriptor is owned by NIC */
-	RingEnd		= (1 << 30), /* End of descriptor ring */
-	FirstFrag	= (1 << 29), /* First segment of a packet */
-	LastFrag	= (1 << 28), /* Final segment of a packet */
-	LargeSend	= (1 << 27), /* TCP Large Send Offload (TSO) */
-	MSSShift	= 16,	     /* MSS value position */
-	MSSMask		= 0x7ff,     /* MSS value: 11 bits */
-	TxError		= (1 << 23), /* Tx error summary */
-	RxError		= (1 << 20), /* Rx error summary */
-	IPCS		= (1 << 18), /* Calculate IP checksum */
-	UDPCS		= (1 << 17), /* Calculate UDP/IP checksum */
-	TCPCS		= (1 << 16), /* Calculate TCP/IP checksum */
-	TxVlanTag	= (1 << 17), /* Add VLAN tag */
-	RxVlanTagged	= (1 << 16), /* Rx VLAN tag available */
-	IPFail		= (1 << 15), /* IP checksum failed */
-	UDPFail		= (1 << 14), /* UDP/IP checksum failed */
-	TCPFail		= (1 << 13), /* TCP/IP checksum failed */
-	NormalTxPoll	= (1 << 6),  /* One or more normal Tx packets to send */
-	PID1		= (1 << 17), /* 2 protocol id bits:  0==non-IP, */
-	PID0		= (1 << 16), /* 1==UDP/IP, 2==TCP/IP, 3==IP */
+	 
+	DescOwn		= (1 << 31),  
+	RingEnd		= (1 << 30),  
+	FirstFrag	= (1 << 29),  
+	LastFrag	= (1 << 28),  
+	LargeSend	= (1 << 27),  
+	MSSShift	= 16,	      
+	MSSMask		= 0x7ff,      
+	TxError		= (1 << 23),  
+	RxError		= (1 << 20),  
+	IPCS		= (1 << 18),  
+	UDPCS		= (1 << 17),  
+	TCPCS		= (1 << 16),  
+	TxVlanTag	= (1 << 17),  
+	RxVlanTagged	= (1 << 16),  
+	IPFail		= (1 << 15),  
+	UDPFail		= (1 << 14),  
+	TCPFail		= (1 << 13),  
+	NormalTxPoll	= (1 << 6),   
+	PID1		= (1 << 17),  
+	PID0		= (1 << 16),  
 	RxProtoTCP	= 1,
 	RxProtoUDP	= 2,
 	RxProtoIP	= 3,
-	TxFIFOUnder	= (1 << 25), /* Tx FIFO underrun */
-	TxOWC		= (1 << 22), /* Tx Out-of-window collision */
-	TxLinkFail	= (1 << 21), /* Link failed during Tx of packet */
-	TxMaxCol	= (1 << 20), /* Tx aborted due to excessive collisions */
-	TxColCntShift	= 16,	     /* Shift, to get 4-bit Tx collision cnt */
-	TxColCntMask	= 0x01 | 0x02 | 0x04 | 0x08, /* 4-bit collision count */
-	RxErrFrame	= (1 << 27), /* Rx frame alignment error */
-	RxMcast		= (1 << 26), /* Rx multicast packet rcv'd */
-	RxErrCRC	= (1 << 18), /* Rx CRC error */
-	RxErrRunt	= (1 << 19), /* Rx error, packet < 64 bytes */
-	RxErrLong	= (1 << 21), /* Rx error, packet > 4096 bytes */
-	RxErrFIFO	= (1 << 22), /* Rx error, FIFO overflowed, pkt bad */
+	TxFIFOUnder	= (1 << 25),  
+	TxOWC		= (1 << 22),  
+	TxLinkFail	= (1 << 21),  
+	TxMaxCol	= (1 << 20),  
+	TxColCntShift	= 16,	      
+	TxColCntMask	= 0x01 | 0x02 | 0x04 | 0x08,  
+	RxErrFrame	= (1 << 27),  
+	RxMcast		= (1 << 26),  
+	RxErrCRC	= (1 << 18),  
+	RxErrRunt	= (1 << 19),  
+	RxErrLong	= (1 << 21),  
+	RxErrFIFO	= (1 << 22),  
 
-	/* StatsAddr register */
-	DumpStats	= (1 << 3),  /* Begin stats dump */
+	 
+	DumpStats	= (1 << 3),   
 
-	/* RxConfig register */
-	RxCfgFIFOShift	= 13,	     /* Shift, to get Rx FIFO thresh value */
-	RxCfgDMAShift	= 8,	     /* Shift, to get Rx Max DMA value */
-	AcceptErr	= 0x20,	     /* Accept packets with CRC errors */
-	AcceptRunt	= 0x10,	     /* Accept runt (<64 bytes) packets */
-	AcceptBroadcast	= 0x08,	     /* Accept broadcast packets */
-	AcceptMulticast	= 0x04,	     /* Accept multicast packets */
-	AcceptMyPhys	= 0x02,	     /* Accept pkts with our MAC as dest */
-	AcceptAllPhys	= 0x01,	     /* Accept all pkts w/ physical dest */
+	 
+	RxCfgFIFOShift	= 13,	      
+	RxCfgDMAShift	= 8,	      
+	AcceptErr	= 0x20,	      
+	AcceptRunt	= 0x10,	      
+	AcceptBroadcast	= 0x08,	      
+	AcceptMulticast	= 0x04,	      
+	AcceptMyPhys	= 0x02,	      
+	AcceptAllPhys	= 0x01,	      
 
-	/* IntrMask / IntrStatus registers */
-	PciErr		= (1 << 15), /* System error on the PCI bus */
-	TimerIntr	= (1 << 14), /* Asserted when TCTR reaches TimerInt value */
-	LenChg		= (1 << 13), /* Cable length change */
-	SWInt		= (1 << 8),  /* Software-requested interrupt */
-	TxEmpty		= (1 << 7),  /* No Tx descriptors available */
-	RxFIFOOvr	= (1 << 6),  /* Rx FIFO Overflow */
-	LinkChg		= (1 << 5),  /* Packet underrun, or link change */
-	RxEmpty		= (1 << 4),  /* No Rx descriptors available */
-	TxErr		= (1 << 3),  /* Tx error */
-	TxOK		= (1 << 2),  /* Tx packet sent */
-	RxErr		= (1 << 1),  /* Rx error */
-	RxOK		= (1 << 0),  /* Rx packet received */
-	IntrResvd	= (1 << 10), /* reserved, according to RealTek engineers,
-					but hardware likes to raise it */
+	 
+	PciErr		= (1 << 15),  
+	TimerIntr	= (1 << 14),  
+	LenChg		= (1 << 13),  
+	SWInt		= (1 << 8),   
+	TxEmpty		= (1 << 7),   
+	RxFIFOOvr	= (1 << 6),   
+	LinkChg		= (1 << 5),   
+	RxEmpty		= (1 << 4),   
+	TxErr		= (1 << 3),   
+	TxOK		= (1 << 2),   
+	RxErr		= (1 << 1),   
+	RxOK		= (1 << 0),   
+	IntrResvd	= (1 << 10),  
 
 	IntrAll		= PciErr | TimerIntr | LenChg | SWInt | TxEmpty |
 			  RxFIFOOvr | LinkChg | RxEmpty | TxErr | TxOK |
 			  RxErr | RxOK | IntrResvd,
 
-	/* C mode command register */
-	CmdReset	= (1 << 4),  /* Enable to reset; self-clearing */
-	RxOn		= (1 << 3),  /* Rx mode enable */
-	TxOn		= (1 << 2),  /* Tx mode enable */
+	 
+	CmdReset	= (1 << 4),   
+	RxOn		= (1 << 3),   
+	TxOn		= (1 << 2),   
 
-	/* C+ mode command register */
-	RxVlanOn	= (1 << 6),  /* Rx VLAN de-tagging enable */
-	RxChkSum	= (1 << 5),  /* Rx checksum offload enable */
-	PCIDAC		= (1 << 4),  /* PCI Dual Address Cycle (64-bit PCI) */
-	PCIMulRW	= (1 << 3),  /* Enable PCI read/write multiple */
-	CpRxOn		= (1 << 1),  /* Rx mode enable */
-	CpTxOn		= (1 << 0),  /* Tx mode enable */
+	 
+	RxVlanOn	= (1 << 6),   
+	RxChkSum	= (1 << 5),   
+	PCIDAC		= (1 << 4),   
+	PCIMulRW	= (1 << 3),   
+	CpRxOn		= (1 << 1),   
+	CpTxOn		= (1 << 0),   
 
-	/* Cfg9436 EEPROM control register */
-	Cfg9346_Lock	= 0x00,	     /* Lock ConfigX/MII register access */
-	Cfg9346_Unlock	= 0xC0,	     /* Unlock ConfigX/MII register access */
+	 
+	Cfg9346_Lock	= 0x00,	      
+	Cfg9346_Unlock	= 0xC0,	      
 
-	/* TxConfig register */
-	IFG		= (1 << 25) | (1 << 24), /* standard IEEE interframe gap */
-	TxDMAShift	= 8,	     /* DMA burst value (0-7) is shift this many bits */
+	 
+	IFG		= (1 << 25) | (1 << 24),  
+	TxDMAShift	= 8,	      
 
-	/* Early Tx Threshold register */
-	TxThreshMask	= 0x3f,	     /* Mask bits 5-0 */
-	TxThreshMax	= 2048,	     /* Max early Tx threshold */
+	 
+	TxThreshMask	= 0x3f,	      
+	TxThreshMax	= 2048,	      
 
-	/* Config1 register */
-	DriverLoaded	= (1 << 5),  /* Software marker, driver is loaded */
-	LWACT           = (1 << 4),  /* LWAKE active mode */
-	PMEnable	= (1 << 0),  /* Enable various PM features of chip */
+	 
+	DriverLoaded	= (1 << 5),   
+	LWACT           = (1 << 4),   
+	PMEnable	= (1 << 0),   
 
-	/* Config3 register */
-	PARMEnable	= (1 << 6),  /* Enable auto-loading of PHY parms */
-	MagicPacket     = (1 << 5),  /* Wake up when receives a Magic Packet */
-	LinkUp          = (1 << 4),  /* Wake up when the cable connection is re-established */
+	 
+	PARMEnable	= (1 << 6),   
+	MagicPacket     = (1 << 5),   
+	LinkUp          = (1 << 4),   
 
-	/* Config4 register */
-	LWPTN           = (1 << 1),  /* LWAKE Pattern */
-	LWPME           = (1 << 4),  /* LANWAKE vs PMEB */
+	 
+	LWPTN           = (1 << 1),   
+	LWPME           = (1 << 4),   
 
-	/* Config5 register */
-	BWF             = (1 << 6),  /* Accept Broadcast wakeup frame */
-	MWF             = (1 << 5),  /* Accept Multicast wakeup frame */
-	UWF             = (1 << 4),  /* Accept Unicast wakeup frame */
-	LANWake         = (1 << 1),  /* Enable LANWake signal */
-	PMEStatus	= (1 << 0),  /* PME status can be reset by PCI RST# */
+	 
+	BWF             = (1 << 6),   
+	MWF             = (1 << 5),   
+	UWF             = (1 << 4),   
+	LANWake         = (1 << 1),   
+	PMEStatus	= (1 << 0),   
 
 	cp_norx_intr_mask = PciErr | LinkChg | TxOK | TxErr | TxEmpty,
 	cp_rx_intr_mask = RxOK | RxErr | RxEmpty | RxFIFOOvr,
@@ -345,7 +298,7 @@ struct cp_private {
 	u32			tx_opts[CP_TX_RING_SIZE];
 
 	unsigned		rx_buf_sz;
-	unsigned		wol_enabled : 1; /* Is Wake-on-LAN enabled? */
+	unsigned		wol_enabled : 1;  
 
 	dma_addr_t		ring_dma;
 
@@ -409,7 +362,7 @@ static inline void cp_set_rxbufsize (struct cp_private *cp)
 	unsigned int mtu = cp->dev->mtu;
 
 	if (mtu > ETH_DATA_LEN)
-		/* MTU + ethernet header + FCS + optional VLAN tag */
+		 
 		cp->rx_buf_sz = mtu + ETH_HLEN + 8;
 	else
 		cp->rx_buf_sz = PKT_BUF_SZ;
@@ -488,11 +441,7 @@ static int cp_rx_poll(struct napi_struct *napi, int budget)
 		mapping = le64_to_cpu(desc->addr);
 
 		if ((status & (FirstFrag | LastFrag)) != (FirstFrag | LastFrag)) {
-			/* we don't support incoming fragmented frames.
-			 * instead, we attempt to ensure that the
-			 * pre-allocated RX skbs are properly sized such
-			 * that RX fragments are never encountered
-			 */
+			 
 			cp_rx_err_acct(cp, rx_tail, status, len);
 			dev->stats.rx_dropped++;
 			cp->cp_stats.rx_frags++;
@@ -524,7 +473,7 @@ static int cp_rx_poll(struct napi_struct *napi, int budget)
 		dma_unmap_single(&cp->pdev->dev, mapping,
 				 buflen, DMA_FROM_DEVICE);
 
-		/* Handle checksum offloading for incoming packets. */
+		 
 		if (cp_rx_csum_ok(status))
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 		else
@@ -551,9 +500,7 @@ rx_next:
 
 	cp->rx_tail = rx_tail;
 
-	/* if we did not reach work limit, then we're done with
-	 * this round of polling
-	 */
+	 
 	if (rx < budget && napi_complete_done(napi, rx)) {
 		unsigned long flags;
 
@@ -594,7 +541,7 @@ static irqreturn_t cp_interrupt (int irq, void *dev_instance)
 
 	cpw16(IntrStatus, status & ~cp_rx_intr_mask);
 
-	/* close possible race's with dev_close */
+	 
 	if (unlikely(!netif_running(dev))) {
 		cpw16(IntrMask, 0);
 		goto out_unlock;
@@ -620,7 +567,7 @@ static irqreturn_t cp_interrupt (int irq, void *dev_instance)
 		netdev_err(dev, "PCI bus error, status=%04x, PCI status=%04x\n",
 			   status, pci_status);
 
-		/* TODO: reset hardware */
+		 
 	}
 
 out_unlock:
@@ -630,10 +577,7 @@ out_unlock:
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
-/*
- * Polling receive - used by netconsole and other diagnostic tools
- * to allow network i/o with interrupts disabled.
- */
+ 
 static void cp_poll_controller(struct net_device *dev)
 {
 	struct cp_private *cp = netdev_priv(dev);
@@ -740,7 +684,7 @@ static netdev_tx_t cp_start_xmit (struct sk_buff *skb,
 
 	spin_lock_irqsave(&cp->lock, intr_flags);
 
-	/* This is a hard error, log it. */
+	 
 	if (TX_BUFFS_AVAIL(cp) <= (skb_shinfo(skb)->nr_frags + 1)) {
 		netif_stop_queue(dev);
 		spin_unlock_irqrestore(&cp->lock, intr_flags);
@@ -804,9 +748,7 @@ static netdev_tx_t cp_start_xmit (struct sk_buff *skb,
 		dma_addr_t first_mapping;
 		int frag, first_entry = entry;
 
-		/* We must give this initial chunk to the device last.
-		 * Otherwise we could race with the device.
-		 */
+		 
 		first_eor = eor;
 		first_len = skb_headlen(skb);
 		first_mapping = dma_map_single(&cp->pdev->dev, skb->data,
@@ -882,25 +824,24 @@ out_dma_error:
 	goto out_unlock;
 }
 
-/* Set or clear the multicast filter for this adaptor.
-   This routine is not state sensitive and need not be SMP locked. */
+ 
 
 static void __cp_set_rx_mode (struct net_device *dev)
 {
 	struct cp_private *cp = netdev_priv(dev);
-	u32 mc_filter[2];	/* Multicast hash filter */
+	u32 mc_filter[2];	 
 	int rx_mode;
 
-	/* Note: do not reorder, GCC is clever about common statements. */
+	 
 	if (dev->flags & IFF_PROMISC) {
-		/* Unconditionally log net taps. */
+		 
 		rx_mode =
 		    AcceptBroadcast | AcceptMulticast | AcceptMyPhys |
 		    AcceptAllPhys;
 		mc_filter[1] = mc_filter[0] = 0xffffffff;
 	} else if ((netdev_mc_count(dev) > multicast_filter_limit) ||
 		   (dev->flags & IFF_ALLMULTI)) {
-		/* Too many to filter perfectly -- accept all multicasts. */
+		 
 		rx_mode = AcceptBroadcast | AcceptMulticast | AcceptMyPhys;
 		mc_filter[1] = mc_filter[0] = 0xffffffff;
 	} else {
@@ -915,7 +856,7 @@ static void __cp_set_rx_mode (struct net_device *dev)
 		}
 	}
 
-	/* We can safely update without stopping the chip. */
+	 
 	cp->rx_config = cp_rx_config | rx_mode;
 	cpw32_f(RxConfig, cp->rx_config);
 
@@ -935,7 +876,7 @@ static void cp_set_rx_mode (struct net_device *dev)
 
 static void __cp_get_stats(struct cp_private *cp)
 {
-	/* only lower 24 bits valid; write any value to clear */
+	 
 	cp->dev->stats.rx_missed_errors += (cpr32 (RxMissed) & 0xffffff);
 	cpw32 (RxMissed, 0);
 }
@@ -945,7 +886,7 @@ static struct net_device_stats *cp_get_stats(struct net_device *dev)
 	struct cp_private *cp = netdev_priv(dev);
 	unsigned long flags;
 
-	/* The chip only need report frame silently dropped. */
+	 
 	spin_lock_irqsave(&cp->lock, flags);
 	if (netif_running(dev) && netif_device_present(dev))
 		__cp_get_stats(cp);
@@ -990,14 +931,7 @@ static inline void cp_start_hw (struct cp_private *cp)
 
 	cpw16(CpCmd, cp->cpcmd);
 
-	/*
-	 * These (at least TxRingAddr) need to be configured after the
-	 * corresponding bits in CpCmd are enabled. Datasheet v1.6 §6.33
-	 * (C+ Command Register) recommends that these and more be configured
-	 * *after* the [RT]xEnable bits in CpCmd are set. And on some hardware
-	 * it's been observed that the TxRingAddr is actually reset to garbage
-	 * when C+ mode Tx is enabled in CpCmd.
-	 */
+	 
 	cpw32_f(HiTxRingAddr, 0);
 	cpw32_f(HiTxRingAddr + 4, 0);
 
@@ -1009,12 +943,7 @@ static inline void cp_start_hw (struct cp_private *cp)
 	cpw32_f(TxRingAddr, ring_dma & 0xffffffff);
 	cpw32_f(TxRingAddr + 4, (ring_dma >> 16) >> 16);
 
-	/*
-	 * Strictly speaking, the datasheet says this should be enabled
-	 * *before* setting the descriptor addresses. But what, then, would
-	 * prevent it from doing DMA to random unconfigured addresses?
-	 * This variant appears to work fine.
-	 */
+	 
 	cpw8(Cmd, RxOn | TxOn);
 
 	netdev_reset_queue(cp->dev);
@@ -1033,18 +962,18 @@ static void cp_init_hw (struct cp_private *cp)
 
 	cpw8_f (Cfg9346, Cfg9346_Unlock);
 
-	/* Restore our idea of the MAC address. */
+	 
 	cpw32_f (MAC0 + 0, le32_to_cpu (*(__le32 *) (dev->dev_addr + 0)));
 	cpw32_f (MAC0 + 4, le32_to_cpu (*(__le32 *) (dev->dev_addr + 4)));
 
 	cp_start_hw(cp);
-	cpw8(TxThresh, 0x06); /* XXX convert magic num to a constant */
+	cpw8(TxThresh, 0x06);  
 
 	__cp_set_rx_mode(dev);
 	cpw32_f (TxConfig, IFG | (TX_DMA_BURST << TxDMAShift));
 
 	cpw8(Config1, cpr8(Config1) | DriverLoaded | PMEnable);
-	/* Disable Wake-on-LAN. Can be turned on with ETHTOOL_SWOL */
+	 
 	cpw8(Config3, PARMEnable);
 	cp->wol_enabled = 0;
 
@@ -1275,14 +1204,14 @@ static int cp_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct cp_private *cp = netdev_priv(dev);
 
-	/* if network interface not up, no need for complexity */
+	 
 	if (!netif_running(dev)) {
 		dev->mtu = new_mtu;
-		cp_set_rxbufsize(cp);	/* set new rx buf size */
+		cp_set_rxbufsize(cp);	 
 		return 0;
 	}
 
-	/* network IS up, close it, reset MTU, and come up again. */
+	 
 	cp_close(dev);
 	dev->mtu = new_mtu;
 	cp_set_rxbufsize(cp);
@@ -1322,14 +1251,14 @@ static void mdio_write(struct net_device *dev, int phy_id, int location,
 		cpw16(mii_2_8139_map[location], value);
 }
 
-/* Set the ethtool Wake-on-LAN settings */
+ 
 static int netdev_set_wol (struct cp_private *cp,
 			   const struct ethtool_wolinfo *wol)
 {
 	u8 options;
 
 	options = cpr8 (Config3) & ~(LinkUp | MagicPacket);
-	/* If WOL is being disabled, no need for complexity */
+	 
 	if (wol->wolopts) {
 		if (wol->wolopts & WAKE_PHY)	options |= LinkUp;
 		if (wol->wolopts & WAKE_MAGIC)	options |= MagicPacket;
@@ -1339,9 +1268,9 @@ static int netdev_set_wol (struct cp_private *cp,
 	cpw8 (Config3, options);
 	cpw8 (Cfg9346, Cfg9346_Lock);
 
-	options = 0; /* Paranoia setting */
+	options = 0;  
 	options = cpr8 (Config5) & ~(UWF | MWF | BWF);
-	/* If WOL is being disabled, no need for complexity */
+	 
 	if (wol->wolopts) {
 		if (wol->wolopts & WAKE_UCAST)  options |= UWF;
 		if (wol->wolopts & WAKE_BCAST)	options |= BWF;
@@ -1355,23 +1284,23 @@ static int netdev_set_wol (struct cp_private *cp,
 	return 0;
 }
 
-/* Get the ethtool Wake-on-LAN settings */
+ 
 static void netdev_get_wol (struct cp_private *cp,
 	             struct ethtool_wolinfo *wol)
 {
 	u8 options;
 
-	wol->wolopts   = 0; /* Start from scratch */
+	wol->wolopts   = 0;  
 	wol->supported = WAKE_PHY   | WAKE_BCAST | WAKE_MAGIC |
 		         WAKE_MCAST | WAKE_UCAST;
-	/* We don't need to go on if WOL is disabled */
+	 
 	if (!cp->wol_enabled) return;
 
 	options        = cpr8 (Config3);
 	if (options & LinkUp)        wol->wolopts |= WAKE_PHY;
 	if (options & MagicPacket)   wol->wolopts |= WAKE_MAGIC;
 
-	options        = 0; /* Paranoia setting */
+	options        = 0;  
 	options        = cpr8 (Config5);
 	if (options & UWF)           wol->wolopts |= WAKE_UCAST;
 	if (options & BWF)           wol->wolopts |= WAKE_BCAST;
@@ -1491,7 +1420,7 @@ static void cp_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	unsigned long flags;
 
 	if (regs->len < CP_REGS_SIZE)
-		return /* -EINVAL */;
+		return  ;
 
 	regs->version = CP_REGS_VER;
 
@@ -1548,7 +1477,7 @@ static void cp_get_ethtool_stats (struct net_device *dev,
 	if (!nic_stats)
 		return;
 
-	/* begin NIC statistics dump */
+	 
 	cpw32(StatsAddr + 4, (u64)dma >> 32);
 	cpw32(StatsAddr, ((u64)dma & DMA_BIT_MASK(32)) | DumpStats);
 	cpr32(StatsAddr);
@@ -1640,24 +1569,22 @@ static int cp_set_mac_address(struct net_device *dev, void *p)
 	return 0;
 }
 
-/* Serial EEPROM section. */
+ 
 
-/*  EEPROM_Ctrl bits. */
-#define EE_SHIFT_CLK	0x04	/* EEPROM shift clock. */
-#define EE_CS			0x08	/* EEPROM chip select. */
-#define EE_DATA_WRITE	0x02	/* EEPROM chip data in. */
+ 
+#define EE_SHIFT_CLK	0x04	 
+#define EE_CS			0x08	 
+#define EE_DATA_WRITE	0x02	 
 #define EE_WRITE_0		0x00
 #define EE_WRITE_1		0x02
-#define EE_DATA_READ	0x01	/* EEPROM chip data out. */
+#define EE_DATA_READ	0x01	 
 #define EE_ENB			(0x80 | EE_CS)
 
-/* Delay between EEPROM clock transitions.
-   No extra delay is needed with 33Mhz PCI, but 66Mhz may change this.
- */
+ 
 
 #define eeprom_delay()	readb(ee_addr)
 
-/* The EEPROM commands include the alway-set leading bit. */
+ 
 #define EE_EXTEND_CMD	(4)
 #define EE_WRITE_CMD	(5)
 #define EE_READ_CMD		(6)
@@ -1681,7 +1608,7 @@ static void eeprom_cmd(void __iomem *ee_addr, int cmd, int cmd_len)
 {
 	int i;
 
-	/* Shift the command bits out. */
+	 
 	for (i = cmd_len - 1; i >= 0; i--) {
 		int dataval = (cmd & (1 << i)) ? EE_DATA_WRITE : 0;
 		writeb (EE_ENB | dataval, ee_addr);
@@ -1848,10 +1775,10 @@ static int cp_set_eeprom(struct net_device *dev,
 	return 0;
 }
 
-/* Put the board into D3cold state and wait for WakeUp signal */
+ 
 static void cp_set_d3_state (struct cp_private *cp)
 {
-	pci_enable_wake(cp->pdev, PCI_D0, 1); /* Enable PME# generation */
+	pci_enable_wake(cp->pdev, PCI_D0, 1);  
 	pci_set_power_state (cp->pdev, PCI_D3hot);
 }
 
@@ -1946,7 +1873,7 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out_res;
 	}
 
-	/* Configure DMA attributes. */
+	 
 	if ((sizeof(dma_addr_t) > 4) &&
 	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
 		pci_using_dac = 1;
@@ -1979,7 +1906,7 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	cp_stop_hw(cp);
 
-	/* read MAC address from EEPROM */
+	 
 	addr_len = read_eeprom (regs, 0, 8) == 0x8129 ? 8 : 6;
 	for (i = 0; i < 3; i++)
 		addr[i] = cpu_to_le16(read_eeprom (regs, i + 7, addr_len));
@@ -2001,7 +1928,7 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev->vlan_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO |
 		NETIF_F_HIGHDMA;
 
-	/* MTU range: 60 - 4096 */
+	 
 	dev->min_mtu = CP_MIN_MTU;
 	dev->max_mtu = CP_MAX_MTU;
 
@@ -2014,7 +1941,7 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, dev);
 
-	/* enable busmastering and memory-write-invalidate */
+	 
 	pci_set_master(pdev);
 
 	if (cp->wol_enabled)
@@ -2064,7 +1991,7 @@ static int __maybe_unused cp_suspend(struct device *device)
 
 	spin_lock_irqsave (&cp->lock, flags);
 
-	/* Disable Rx and Tx */
+	 
 	cpw16 (IntrMask, 0);
 	cpw8  (Cmd, cpr8 (Cmd) & (~RxOn | ~TxOn));
 
@@ -2086,7 +2013,7 @@ static int __maybe_unused cp_resume(struct device *device)
 
 	netif_device_attach (dev);
 
-	/* FIXME: sh*t may happen if the Rx ring buffer is depleted */
+	 
 	cp_init_rings_index (cp);
 	cp_init_hw (cp);
 	cp_enable_irq(cp);

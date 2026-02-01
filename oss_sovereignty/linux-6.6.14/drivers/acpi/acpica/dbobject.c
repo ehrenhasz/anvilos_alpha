@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbobject - ACPI object decode and display
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -13,23 +9,10 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbobject")
 
-/* Local prototypes */
+ 
 static void acpi_db_decode_node(struct acpi_namespace_node *node);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_dump_method_info
- *
- * PARAMETERS:  status          - Method execution status
- *              walk_state      - Current state of the parse tree walk
- *
- * RETURN:      None
- *
- * DESCRIPTION: Called when a method has been aborted because of an error.
- *              Dumps the method execution stack, and the method locals/args,
- *              and disassembles the AML opcode that failed.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_dump_method_info(acpi_status status, struct acpi_walk_state *walk_state)
@@ -39,36 +22,32 @@ acpi_db_dump_method_info(acpi_status status, struct acpi_walk_state *walk_state)
 
 	node = walk_state->method_node;
 
-	/* There are no locals or arguments for the module-level code case */
+	 
 
 	if (node == acpi_gbl_root_node) {
 		return;
 	}
 
-	/* Ignore control codes, they are not errors */
+	 
 
 	if (ACPI_CNTL_EXCEPTION(status)) {
 		return;
 	}
 
-	/* We may be executing a deferred opcode */
+	 
 
 	if (walk_state->deferred_node) {
 		acpi_os_printf("Executing subtree for Buffer/Package/Region\n");
 		return;
 	}
 
-	/*
-	 * If there is no Thread, we are not actually executing a method.
-	 * This can happen when the iASL compiler calls the interpreter
-	 * to perform constant folding.
-	 */
+	 
 	thread = walk_state->thread;
 	if (!thread) {
 		return;
 	}
 
-	/* Display the method locals and arguments */
+	 
 
 	acpi_os_printf("\n");
 	acpi_db_decode_locals(walk_state);
@@ -77,17 +56,7 @@ acpi_db_dump_method_info(acpi_status status, struct acpi_walk_state *walk_state)
 	acpi_os_printf("\n");
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_decode_internal_object
- *
- * PARAMETERS:  obj_desc        - Object to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Short display of an internal object. Numbers/Strings/Buffers.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_decode_internal_object(union acpi_operand_object *obj_desc)
 {
@@ -141,17 +110,7 @@ void acpi_db_decode_internal_object(union acpi_operand_object *obj_desc)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_decode_node
- *
- * PARAMETERS:  node        - Object to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Short display of a namespace node
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_decode_node(struct acpi_namespace_node *node)
 {
@@ -168,7 +127,7 @@ static void acpi_db_decode_node(struct acpi_namespace_node *node)
 
 	switch (node->type) {
 
-		/* These types have no attached object */
+		 
 
 	case ACPI_TYPE_DEVICE:
 
@@ -188,18 +147,7 @@ static void acpi_db_decode_node(struct acpi_namespace_node *node)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_internal_object
- *
- * PARAMETERS:  obj_desc        - Object to be displayed
- *              walk_state      - Current walk state
- *
- * RETURN:      None
- *
- * DESCRIPTION: Short display of an internal object
- *
- ******************************************************************************/
+ 
 
 void
 acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
@@ -214,7 +162,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 		return;
 	}
 
-	/* Decode the object type */
+	 
 
 	switch (ACPI_GET_DESCRIPTOR_TYPE(obj_desc)) {
 	case ACPI_DESC_TYPE_PARSER:
@@ -235,7 +183,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 			return;
 		}
 
-		/* Decode the ACPI object type */
+		 
 
 		switch (obj_desc->common.type) {
 		case ACPI_TYPE_LOCAL_REFERENCE:
@@ -243,7 +191,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 			acpi_os_printf("[%s] ",
 				       acpi_ut_get_reference_name(obj_desc));
 
-			/* Decode the reference */
+			 
 
 			switch (obj_desc->reference.class) {
 			case ACPI_REFCLASS_LOCAL:
@@ -316,7 +264,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 					break;
 				}
 
-				/* Reference can be to a Node or an Operand object */
+				 
 
 				switch (ACPI_GET_DESCRIPTOR_TYPE
 					(obj_desc->reference.object)) {
@@ -348,7 +296,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 				acpi_os_printf("\n");
 				break;
 
-			default:	/* Unknown reference class */
+			default:	 
 
 				acpi_os_printf("%2.2X\n",
 					       obj_desc->reference.class);
@@ -374,17 +322,7 @@ acpi_db_display_internal_object(union acpi_operand_object *obj_desc,
 	acpi_os_printf("\n");
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_decode_locals
- *
- * PARAMETERS:  walk_state      - State for current method
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display all locals for the currently running control method
- *
- ******************************************************************************/
+ 
 
 void acpi_db_decode_locals(struct acpi_walk_state *walk_state)
 {
@@ -395,7 +333,7 @@ void acpi_db_decode_locals(struct acpi_walk_state *walk_state)
 
 	node = walk_state->method_node;
 
-	/* There are no locals for the module-level code case */
+	 
 
 	if (node == acpi_gbl_root_node) {
 		return;
@@ -412,7 +350,7 @@ void acpi_db_decode_locals(struct acpi_walk_state *walk_state)
 		return;
 	}
 
-	/* Are any locals actually set? */
+	 
 
 	for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++) {
 		obj_desc = walk_state->local_variables[i].object;
@@ -422,7 +360,7 @@ void acpi_db_decode_locals(struct acpi_walk_state *walk_state)
 		}
 	}
 
-	/* If any are set, only display the ones that are set */
+	 
 
 	if (display_locals) {
 		acpi_os_printf
@@ -444,17 +382,7 @@ void acpi_db_decode_locals(struct acpi_walk_state *walk_state)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_decode_arguments
- *
- * PARAMETERS:  walk_state      - State for current method
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display all arguments for the currently running control method
- *
- ******************************************************************************/
+ 
 
 void acpi_db_decode_arguments(struct acpi_walk_state *walk_state)
 {
@@ -465,7 +393,7 @@ void acpi_db_decode_arguments(struct acpi_walk_state *walk_state)
 
 	node = walk_state->method_node;
 
-	/* There are no arguments for the module-level code case */
+	 
 
 	if (node == acpi_gbl_root_node) {
 		return;
@@ -482,7 +410,7 @@ void acpi_db_decode_arguments(struct acpi_walk_state *walk_state)
 		return;
 	}
 
-	/* Are any arguments actually set? */
+	 
 
 	for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++) {
 		obj_desc = walk_state->arguments[i].object;
@@ -492,7 +420,7 @@ void acpi_db_decode_arguments(struct acpi_walk_state *walk_state)
 		}
 	}
 
-	/* If any are set, only display the ones that are set */
+	 
 
 	if (display_args) {
 		acpi_os_printf("Initialized Arguments for Method [%4.4s]:  "

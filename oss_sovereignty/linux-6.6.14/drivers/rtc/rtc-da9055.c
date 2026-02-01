@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Real time clock driver for DA9055
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: Dajun Dajun Chen <dajun.chen@diasemi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -132,10 +126,7 @@ static int da9055_rtc_read_time(struct device *dev, struct rtc_time *rtc_tm)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Registers are only valid when RTC_READ
-	 * status bit is asserted
-	 */
+	 
 	if (!(ret & DA9055_RTC_READ))
 		return -EBUSY;
 
@@ -228,7 +219,7 @@ static int da9055_rtc_device_init(struct da9055 *da9055,
 {
 	int ret;
 
-	/* Enable RTC and the internal Crystal */
+	 
 	ret = da9055_reg_update(da9055, DA9055_REG_CONTROL_B,
 				DA9055_RTC_EN, DA9055_RTC_EN);
 	if (ret < 0)
@@ -238,13 +229,13 @@ static int da9055_rtc_device_init(struct da9055 *da9055,
 	if (ret < 0)
 		return ret;
 
-	/* Enable RTC in Power Down mode */
+	 
 	ret = da9055_reg_update(da9055, DA9055_REG_CONTROL_B,
 				DA9055_RTC_MODE_PD, DA9055_RTC_MODE_PD);
 	if (ret < 0)
 		return ret;
 
-	/* Enable RTC in Reset mode */
+	 
 	if (pdata && pdata->reset_enable) {
 		ret = da9055_reg_update(da9055, DA9055_REG_CONTROL_B,
 					DA9055_RTC_MODE_SD,
@@ -254,7 +245,7 @@ static int da9055_rtc_device_init(struct da9055 *da9055,
 			return ret;
 	}
 
-	/* Disable the RTC TICK ALM */
+	 
 	ret = da9055_reg_update(da9055, DA9055_REG_ALARM_MO,
 				DA9055_RTC_TICK_WAKE_MASK, 0);
 	if (ret < 0)
@@ -314,7 +305,7 @@ err_rtc:
 }
 
 #ifdef CONFIG_PM
-/* Turn off the alarm if it should not be a wake source. */
+ 
 static int da9055_rtc_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -322,7 +313,7 @@ static int da9055_rtc_suspend(struct device *dev)
 	int ret;
 
 	if (!device_may_wakeup(&pdev->dev)) {
-		/* Disable the ALM IRQ */
+		 
 		ret = da9055_rtc_enable_alarm(rtc, 0);
 		if (ret < 0)
 			dev_err(&pdev->dev, "Failed to disable RTC ALM\n");
@@ -331,9 +322,7 @@ static int da9055_rtc_suspend(struct device *dev)
 	return 0;
 }
 
-/* Enable the alarm if it should be enabled (in case it was disabled to
- * prevent use as a wake source).
- */
+ 
 static int da9055_rtc_resume(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -352,7 +341,7 @@ static int da9055_rtc_resume(struct device *dev)
 	return 0;
 }
 
-/* Unconditionally disable the alarm */
+ 
 static int da9055_rtc_freeze(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2004, 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -29,32 +27,17 @@
 #include "masklog.h"
 
 
-/*
- * The first heartbeat pass had one global thread that would serialize all hb
- * callback calls.  This global serializing sem should only be removed once
- * we've made sure that all callees can deal with being called concurrently
- * from multiple hb region threads.
- */
+ 
 static DECLARE_RWSEM(o2hb_callback_sem);
 
-/*
- * multiple hb threads are watching multiple regions.  A node is live
- * whenever any of the threads sees activity from the node in its region.
- */
+ 
 static DEFINE_SPINLOCK(o2hb_live_lock);
 static struct list_head o2hb_live_slots[O2NM_MAX_NODES];
 static unsigned long o2hb_live_node_bitmap[BITS_TO_LONGS(O2NM_MAX_NODES)];
 static LIST_HEAD(o2hb_node_events);
 static DECLARE_WAIT_QUEUE_HEAD(o2hb_steady_queue);
 
-/*
- * In global heartbeat, we maintain a series of region bitmaps.
- * 	- o2hb_region_bitmap allows us to limit the region number to max region.
- * 	- o2hb_live_region_bitmap tracks live regions (seen steady iterations).
- * 	- o2hb_quorum_region_bitmap tracks live regions that have seen all nodes
- * 		heartbeat on it.
- * 	- o2hb_failed_region_bitmap tracks the regions that have seen io timeouts.
- */
+ 
 static unsigned long o2hb_region_bitmap[BITS_TO_LONGS(O2NM_MAX_REGIONS)];
 static unsigned long o2hb_live_region_bitmap[BITS_TO_LONGS(O2NM_MAX_REGIONS)];
 static unsigned long o2hb_quorum_region_bitmap[BITS_TO_LONGS(O2NM_MAX_REGIONS)];
@@ -106,45 +89,24 @@ enum o2hb_heartbeat_modes {
 };
 
 static const char *o2hb_heartbeat_mode_desc[O2HB_HEARTBEAT_NUM_MODES] = {
-	"local",	/* O2HB_HEARTBEAT_LOCAL */
-	"global",	/* O2HB_HEARTBEAT_GLOBAL */
+	"local",	 
+	"global",	 
 };
 
 unsigned int o2hb_dead_threshold = O2HB_DEFAULT_DEAD_THRESHOLD;
 static unsigned int o2hb_heartbeat_mode = O2HB_HEARTBEAT_LOCAL;
 
-/*
- * o2hb_dependent_users tracks the number of registered callbacks that depend
- * on heartbeat. o2net and o2dlm are two entities that register this callback.
- * However only o2dlm depends on the heartbeat. It does not want the heartbeat
- * to stop while a dlm domain is still active.
- */
+ 
 static unsigned int o2hb_dependent_users;
 
-/*
- * In global heartbeat mode, all regions are pinned if there are one or more
- * dependent users and the quorum region count is <= O2HB_PIN_CUT_OFF. All
- * regions are unpinned if the region count exceeds the cut off or the number
- * of dependent users falls to zero.
- */
+ 
 #define O2HB_PIN_CUT_OFF		3
 
-/*
- * In local heartbeat mode, we assume the dlm domain name to be the same as
- * region uuid. This is true for domains created for the file system but not
- * necessarily true for userdlm domains. This is a known limitation.
- *
- * In global heartbeat mode, we pin/unpin all o2hb regions. This solution
- * works for both file system and userdlm domains.
- */
+ 
 static int o2hb_region_pin(const char *region_uuid);
 static void o2hb_region_unpin(const char *region_uuid);
 
-/* Only sets a new threshold if there are no active regions.
- *
- * No locking or otherwise interesting code is required for reading
- * o2hb_dead_threshold as it can't change once regions are active and
- * it's not interesting to anyone until then anyway. */
+ 
 static void o2hb_dead_threshold_set(unsigned int threshold)
 {
 	if (threshold > O2HB_MIN_DEAD_THRESHOLD) {
@@ -188,8 +150,7 @@ struct o2hb_disk_slot {
 	struct list_head	ds_live_item;
 };
 
-/* each thread owns a region.. when we're asked to tear down the region
- * we ask the thread to stop, who cleans up the region */
+ 
 struct o2hb_region {
 	struct config_item	hr_item;
 
@@ -200,7 +161,7 @@ struct o2hb_region {
 				hr_item_dropped:1,
 				hr_node_deleted:1;
 
-	/* protected by the hr_callback_sem */
+	 
 	struct task_struct 	*hr_task;
 
 	unsigned int		hr_blocks;
@@ -216,7 +177,7 @@ struct o2hb_region {
 	struct block_device	*hr_bdev;
 	struct o2hb_disk_slot	*hr_slots;
 
-	/* live node map of this region */
+	 
 	unsigned long		hr_live_node_bitmap[BITS_TO_LONGS(O2NM_MAX_NODES)];
 	unsigned int		hr_region_num;
 
@@ -226,38 +187,32 @@ struct o2hb_region {
 	struct o2hb_debug_buf	*hr_db_elapsed_time;
 	struct o2hb_debug_buf	*hr_db_pinned;
 
-	/* let the person setting up hb wait for it to return until it
-	 * has reached a 'steady' state.  This will be fixed when we have
-	 * a more complete api that doesn't lead to this sort of fragility. */
+	 
 	atomic_t		hr_steady_iterations;
 
-	/* terminate o2hb thread if it does not reach steady state
-	 * (hr_steady_iterations == 0) within hr_unsteady_iterations */
+	 
 	atomic_t		hr_unsteady_iterations;
 
 	unsigned int		hr_timeout_ms;
 
-	/* randomized as the region goes up and down so that a node
-	 * recognizes a node going up and down in one iteration */
+	 
 	u64			hr_generation;
 
 	struct delayed_work	hr_write_timeout_work;
 	unsigned long		hr_last_timeout_start;
 
-	/* negotiate timer, used to negotiate extending hb timeout. */
+	 
 	struct delayed_work	hr_nego_timeout_work;
 	unsigned long		hr_nego_node_bitmap[BITS_TO_LONGS(O2NM_MAX_NODES)];
 
-	/* Used during o2hb_check_slot to hold a copy of the block
-	 * being checked because we temporarily have to zero out the
-	 * crc field. */
+	 
 	struct o2hb_disk_heartbeat_block *hr_tmp_block;
 
-	/* Message key for negotiate timeout message. */
+	 
 	unsigned int		hr_key;
 	struct list_head	hr_handler_list;
 
-	/* last hb status, 0 for success, other value for error. */
+	 
 	int			hr_last_hb_status;
 };
 
@@ -302,10 +257,7 @@ static void o2hb_write_timeout(struct work_struct *work)
 		mlog(ML_HEARTBEAT, "Number of regions %d, failed regions %d\n",
 		     quorum, failed);
 
-		/*
-		 * Fence if the number of failed regions >= half the number
-		 * of  quorum regions
-		 */
+		 
 		if ((failed << 1) < quorum)
 			return;
 	}
@@ -315,7 +267,7 @@ static void o2hb_write_timeout(struct work_struct *work)
 
 static void o2hb_arm_timeout(struct o2hb_region *reg)
 {
-	/* Arm writeout only after thread reaches steady state */
+	 
 	if (atomic_read(&reg->hr_steady_iterations) != 0)
 		return;
 
@@ -332,7 +284,7 @@ static void o2hb_arm_timeout(struct o2hb_region *reg)
 			      msecs_to_jiffies(O2HB_MAX_WRITE_TIMEOUT_MS));
 
 	cancel_delayed_work(&reg->hr_nego_timeout_work);
-	/* negotiate timeout must be less than write timeout. */
+	 
 	schedule_delayed_work(&reg->hr_nego_timeout_work,
 			      msecs_to_jiffies(O2HB_NEGO_TIMEOUT_MS));
 	bitmap_zero(reg->hr_nego_node_bitmap, O2NM_MAX_NODES);
@@ -369,14 +321,12 @@ static void o2hb_nego_timeout(struct work_struct *work)
 	struct o2hb_region *reg;
 
 	reg = container_of(work, struct o2hb_region, hr_nego_timeout_work.work);
-	/* don't negotiate timeout if last hb failed since it is very
-	 * possible io failed. Should let write timeout fence self.
-	 */
+	 
 	if (reg->hr_last_hb_status)
 		return;
 
 	o2hb_fill_node_map(live_node_bitmap, O2NM_MAX_NODES);
-	/* lowest node as master node to make negotiate decision. */
+	 
 	master_node = find_first_bit(live_node_bitmap, O2NM_MAX_NODES);
 
 	if (master_node == o2nm_this_node()) {
@@ -388,9 +338,7 @@ static void o2hb_nego_timeout(struct work_struct *work)
 		}
 		if (!bitmap_equal(reg->hr_nego_node_bitmap, live_node_bitmap,
 				  O2NM_MAX_NODES)) {
-			/* check negotiate bitmap every second to do timeout
-			 * approve decision.
-			 */
+			 
 			schedule_delayed_work(&reg->hr_nego_timeout_work,
 				msecs_to_jiffies(1000));
 
@@ -399,7 +347,7 @@ static void o2hb_nego_timeout(struct work_struct *work)
 
 		printk(KERN_NOTICE "o2hb: all nodes hb write hung, maybe region %s (%pg) is down.\n",
 			config_item_name(&reg->hr_item), reg->hr_bdev);
-		/* approve negotiate timeout request. */
+		 
 		o2hb_arm_timeout(reg);
 
 		i = -1;
@@ -416,7 +364,7 @@ static void o2hb_nego_timeout(struct work_struct *work)
 					i, ret);
 		}
 	} else {
-		/* negotiate timeout with master node. */
+		 
 		printk(KERN_NOTICE "o2hb: node %d hb write hung for %ds on region %s (%pg), negotiate timeout with node %d.\n",
 			o2nm_this_node(), O2HB_NEGO_TIMEOUT_MS/1000, config_item_name(&reg->hr_item),
 			reg->hr_bdev, master_node);
@@ -463,12 +411,11 @@ static inline void o2hb_bio_wait_init(struct o2hb_bio_wait_ctxt *wc)
 	wc->wc_error = 0;
 }
 
-/* Used in error paths too */
+ 
 static inline void o2hb_bio_wait_dec(struct o2hb_bio_wait_ctxt *wc,
 				     unsigned int num)
 {
-	/* sadly atomic_sub_and_test() isn't available on all platforms.  The
-	 * good news is that the fast path only completes one at a time */
+	 
 	while(num--) {
 		if (atomic_dec_and_test(&wc->wc_num_reqs)) {
 			BUG_ON(num > 0);
@@ -496,8 +443,7 @@ static void o2hb_bio_end_io(struct bio *bio)
 	bio_put(bio);
 }
 
-/* Setup a Bio to cover I/O against num_slots slots starting at
- * start_slot. */
+ 
 static struct bio *o2hb_setup_one_bio(struct o2hb_region *reg,
 				      struct o2hb_bio_wait_ctxt *wc,
 				      unsigned int *current_slot,
@@ -511,10 +457,7 @@ static struct bio *o2hb_setup_one_bio(struct o2hb_region *reg,
 	struct bio *bio;
 	struct page *page;
 
-	/* Testing has shown this allocation to take long enough under
-	 * GFP_KERNEL that the local node can get fenced. It would be
-	 * nicest if we could pre-allocate these bios and avoid this
-	 * all together. */
+	 
 	bio = bio_alloc(reg->hr_bdev, 16, opf, GFP_ATOMIC);
 	if (!bio) {
 		mlog(ML_ERROR, "Could not alloc slots BIO!\n");
@@ -522,7 +465,7 @@ static struct bio *o2hb_setup_one_bio(struct o2hb_region *reg,
 		goto bail;
 	}
 
-	/* Must put everything in 512 byte sectors for the bio... */
+	 
 	bio->bi_iter.bi_sector = (reg->hr_start_block + cs) << (bits - 9);
 	bio->bi_private = wc;
 	bio->bi_end_io = o2hb_bio_end_io;
@@ -617,9 +560,7 @@ static u32 o2hb_compute_block_crc_le(struct o2hb_region *reg,
 	__le32 old_cksum;
 	u32 ret;
 
-	/* We want to compute the block crc with a 0 value in the
-	 * hb_cksum field. Save it off here and replace after the
-	 * crc. */
+	 
 	old_cksum = hb_block->hb_cksum;
 	hb_block->hb_cksum = 0;
 
@@ -650,13 +591,7 @@ static int o2hb_verify_crc(struct o2hb_region *reg,
 	return read == computed;
 }
 
-/*
- * Compare the slot data with what we wrote in the last iteration.
- * If the match fails, print an appropriate error message. This is to
- * detect errors like... another node hearting on the same slot,
- * flaky device that is losing writes, etc.
- * Returns 1 if check succeeds, 0 otherwise.
- */
+ 
 static int o2hb_check_own_slot(struct o2hb_region *reg)
 {
 	struct o2hb_disk_slot *slot;
@@ -664,7 +599,7 @@ static int o2hb_check_own_slot(struct o2hb_region *reg)
 	char *errstr;
 
 	slot = &reg->hr_slots[o2nm_this_node()];
-	/* Don't check on our 1st timestamp */
+	 
 	if (!slot->ds_last_time)
 		return 0;
 
@@ -709,7 +644,7 @@ static inline void o2hb_prepare_block(struct o2hb_region *reg,
 
 	hb_block = (struct o2hb_disk_heartbeat_block *)slot->ds_raw_block;
 	memset(hb_block, 0, reg->hr_block_bytes);
-	/* TODO: time stuff */
+	 
 	cputime = ktime_get_real_seconds();
 	if (!cputime)
 		cputime = 1;
@@ -719,7 +654,7 @@ static inline void o2hb_prepare_block(struct o2hb_region *reg,
 	hb_block->hb_generation = cpu_to_le64(generation);
 	hb_block->hb_dead_ms = cpu_to_le32(o2hb_dead_threshold * O2HB_REGION_TIMEOUT_MS);
 
-	/* This step must always happen last! */
+	 
 	hb_block->hb_cksum = cpu_to_le32(o2hb_compute_block_crc_le(reg,
 								   hb_block));
 
@@ -740,15 +675,13 @@ static void o2hb_fire_callbacks(struct o2hb_callback *hbcall,
 	}
 }
 
-/* Will run the list in order until we process the passed event */
+ 
 static void o2hb_run_event_list(struct o2hb_node_event *queued_event)
 {
 	struct o2hb_callback *hbcall;
 	struct o2hb_node_event *event;
 
-	/* Holding callback sem assures we don't alter the callback
-	 * lists when doing this, and serializes ourselves with other
-	 * processes wanting callbacks. */
+	 
 	down_write(&o2hb_callback_sem);
 
 	spin_lock(&o2hb_live_lock);
@@ -766,9 +699,7 @@ static void o2hb_run_event_list(struct o2hb_node_event *queued_event)
 
 		hbcall = hbcall_from_type(event->hn_event_type);
 
-		/* We should *never* have gotten on to the list with a
-		 * bad type... This isn't something that we should try
-		 * to recover from. */
+		 
 		BUG_ON(IS_ERR(hbcall));
 
 		o2hb_fire_callbacks(hbcall, event->hn_node, event->hn_node_num);
@@ -838,11 +769,11 @@ static void o2hb_set_quorum_device(struct o2hb_region *reg)
 	if (!o2hb_global_heartbeat_active())
 		return;
 
-	/* Prevent race with o2hb_heartbeat_group_drop_item() */
+	 
 	if (kthread_should_stop())
 		return;
 
-	/* Tag region as quorum only after thread reaches steady state */
+	 
 	if (atomic_read(&reg->hr_steady_iterations) != 0)
 		return;
 
@@ -851,11 +782,7 @@ static void o2hb_set_quorum_device(struct o2hb_region *reg)
 	if (test_bit(reg->hr_region_num, o2hb_quorum_region_bitmap))
 		goto unlock;
 
-	/*
-	 * A region can be added to the quorum only when it sees all
-	 * live nodes heartbeat on it. In other words, the region has been
-	 * added to all nodes.
-	 */
+	 
 	if (!bitmap_equal(reg->hr_live_node_bitmap, o2hb_live_node_bitmap,
 			  O2NM_MAX_NODES))
 		goto unlock;
@@ -865,10 +792,7 @@ static void o2hb_set_quorum_device(struct o2hb_region *reg)
 
 	set_bit(reg->hr_region_num, o2hb_quorum_region_bitmap);
 
-	/*
-	 * If global heartbeat active, unpin all regions if the
-	 * region count > CUT_OFF
-	 */
+	 
 	if (bitmap_weight(o2hb_quorum_region_bitmap,
 			   O2NM_MAX_REGIONS) > O2HB_PIN_CUT_OFF)
 		o2hb_region_unpin(NULL);
@@ -892,10 +816,7 @@ static int o2hb_check_slot(struct o2hb_region *reg,
 
 	memcpy(hb_block, slot->ds_raw_block, reg->hr_block_bytes);
 
-	/*
-	 * If a node is no longer configured but is still in the livemap, we
-	 * may need to clear that bit from the livemap.
-	 */
+	 
 	node = o2nm_get_node_by_num(slot->ds_node_num);
 	if (!node) {
 		spin_lock(&o2hb_live_lock);
@@ -906,19 +827,14 @@ static int o2hb_check_slot(struct o2hb_region *reg,
 	}
 
 	if (!o2hb_verify_crc(reg, hb_block)) {
-		/* all paths from here will drop o2hb_live_lock for
-		 * us. */
+		 
 		spin_lock(&o2hb_live_lock);
 
-		/* Don't print an error on the console in this case -
-		 * a freshly formatted heartbeat area will not have a
-		 * crc set on it. */
+		 
 		if (list_empty(&slot->ds_live_item))
 			goto out;
 
-		/* The node is live but pushed out a bad crc. We
-		 * consider it a transient miss but don't populate any
-		 * other values as they may be junk. */
+		 
 		mlog(ML_ERROR, "Node %d has written a bad crc to %pg\n",
 		     slot->ds_node_num, reg->hr_bdev);
 		o2hb_dump_slot(hb_block);
@@ -927,8 +843,7 @@ static int o2hb_check_slot(struct o2hb_region *reg,
 		goto fire_callbacks;
 	}
 
-	/* we don't care if these wrap.. the state transitions below
-	 * clear at the right places */
+	 
 	cputime = le64_to_cpu(hb_block->hb_seq);
 	if (slot->ds_last_time != cputime)
 		slot->ds_changed_samples++;
@@ -936,11 +851,7 @@ static int o2hb_check_slot(struct o2hb_region *reg,
 		slot->ds_equal_samples++;
 	slot->ds_last_time = cputime;
 
-	/* The node changed heartbeat generations. We assume this to
-	 * mean it dropped off but came back before we timed out. We
-	 * want to consider it down for the time being but don't want
-	 * to lose any changed_samples state we might build up to
-	 * considering it live again. */
+	 
 	if (slot->ds_last_generation != le64_to_cpu(hb_block->hb_generation)) {
 		gen_changed = 1;
 		slot->ds_equal_samples = 0;
@@ -963,8 +874,7 @@ static int o2hb_check_slot(struct o2hb_region *reg,
 	spin_lock(&o2hb_live_lock);
 
 fire_callbacks:
-	/* dead nodes only come to life after some number of
-	 * changes at any time during their dead time */
+	 
 	if (list_empty(&slot->ds_live_item) &&
 	    slot->ds_changed_samples >= O2HB_LIVE_THRESHOLD) {
 		mlog(ML_HEARTBEAT, "Node %d (id 0x%llx) joined my region\n",
@@ -972,7 +882,7 @@ fire_callbacks:
 
 		set_bit(slot->ds_node_num, reg->hr_live_node_bitmap);
 
-		/* first on the list generates a callback */
+		 
 		if (list_empty(&o2hb_live_slots[slot->ds_node_num])) {
 			mlog(ML_HEARTBEAT, "o2hb: Add node %d to live nodes "
 			     "bitmap\n", slot->ds_node_num);
@@ -990,15 +900,10 @@ fire_callbacks:
 
 		slot->ds_equal_samples = 0;
 
-		/* We want to be sure that all nodes agree on the
-		 * number of milliseconds before a node will be
-		 * considered dead. The self-fencing timeout is
-		 * computed from this value, and a discrepancy might
-		 * result in heartbeat calling a node dead when it
-		 * hasn't self-fenced yet. */
+		 
 		slot_dead_ms = le32_to_cpu(hb_block->hb_dead_ms);
 		if (slot_dead_ms && slot_dead_ms != dead_ms) {
-			/* TODO: Perhaps we can fail the region here. */
+			 
 			mlog(ML_ERROR, "Node %d on device %pg has a dead count "
 			     "of %u ms, but our count is %u ms.\n"
 			     "Please double check your configuration values "
@@ -1009,27 +914,25 @@ fire_callbacks:
 		goto out;
 	}
 
-	/* if the list is dead, we're done.. */
+	 
 	if (list_empty(&slot->ds_live_item))
 		goto out;
 
-	/* live nodes only go dead after enough consequtive missed
-	 * samples..  reset the missed counter whenever we see
-	 * activity */
+	 
 	if (slot->ds_equal_samples >= o2hb_dead_threshold || gen_changed) {
 		mlog(ML_HEARTBEAT, "Node %d left my region\n",
 		     slot->ds_node_num);
 
 		clear_bit(slot->ds_node_num, reg->hr_live_node_bitmap);
 
-		/* last off the live_slot generates a callback */
+		 
 		list_del_init(&slot->ds_live_item);
 		if (list_empty(&o2hb_live_slots[slot->ds_node_num])) {
 			mlog(ML_HEARTBEAT, "o2hb: Remove node %d from live "
 			     "nodes bitmap\n", slot->ds_node_num);
 			clear_bit(slot->ds_node_num, o2hb_live_node_bitmap);
 
-			/* node can be null */
+			 
 			o2hb_queue_node_event(&event, O2HB_NODE_DOWN_CB,
 					      node, slot->ds_node_num);
 
@@ -1037,8 +940,7 @@ fire_callbacks:
 			queued = 1;
 		}
 
-		/* We don't clear this because the node is still
-		 * actually writing new blocks. */
+		 
 		if (!gen_changed)
 			slot->ds_changed_samples = 0;
 		goto out;
@@ -1083,10 +985,7 @@ static int o2hb_do_disk_heartbeat(struct o2hb_region *reg)
 		goto bail;
 	}
 
-	/*
-	 * If a node is not configured but is in the livemap, we still need
-	 * to read the slot so as to be able to remove it from the livemap.
-	 */
+	 
 	o2hb_fill_node_map(live_node_bitmap, O2NM_MAX_NODES);
 	i = -1;
 	while ((i = find_next_bit(live_node_bitmap,
@@ -1102,22 +1001,17 @@ static int o2hb_do_disk_heartbeat(struct o2hb_region *reg)
 		goto bail;
 	}
 
-	/* No sense in reading the slots of nodes that don't exist
-	 * yet. Of course, if the node definitions have holes in them
-	 * then we're reading an empty slot anyway... Consider this
-	 * best-effort. */
+	 
 	ret = o2hb_read_slots(reg, lowest_node, highest_node + 1);
 	if (ret < 0) {
 		mlog_errno(ret);
 		goto bail;
 	}
 
-	/* With an up to date view of the slots, we can check that no
-	 * other node has been improperly configured to heartbeat in
-	 * our slot. */
+	 
 	own_slot_ok = o2hb_check_own_slot(reg);
 
-	/* fill in the proper info for our next heartbeat */
+	 
 	o2hb_prepare_block(reg, reg->hr_generation);
 
 	ret = o2hb_issue_node_write(reg, &write_wc);
@@ -1132,23 +1026,17 @@ static int o2hb_do_disk_heartbeat(struct o2hb_region *reg)
 		membership_change |= o2hb_check_slot(reg, &reg->hr_slots[i]);
 	}
 
-	/*
-	 * We have to be sure we've advertised ourselves on disk
-	 * before we can go to steady state.  This ensures that
-	 * people we find in our steady state have seen us.
-	 */
+	 
 	o2hb_wait_on_io(&write_wc);
 	if (write_wc.wc_error) {
-		/* Do not re-arm the write timeout on I/O error - we
-		 * can't be sure that the new block ever made it to
-		 * disk */
+		 
 		mlog(ML_ERROR, "Write error %d on device \"%pg\"\n",
 		     write_wc.wc_error, reg->hr_bdev);
 		ret = write_wc.wc_error;
 		goto bail;
 	}
 
-	/* Skip disarming the timeout if own slot has stale/bad data */
+	 
 	if (own_slot_ok) {
 		o2hb_set_quorum_device(reg);
 		o2hb_arm_timeout(reg);
@@ -1156,7 +1044,7 @@ static int o2hb_do_disk_heartbeat(struct o2hb_region *reg)
 	}
 
 bail:
-	/* let the person who launched us know when things are steady */
+	 
 	if (atomic_read(&reg->hr_steady_iterations) != 0) {
 		if (!ret && own_slot_ok && !membership_change) {
 			if (atomic_dec_and_test(&reg->hr_steady_iterations))
@@ -1180,11 +1068,7 @@ bail:
 	return ret;
 }
 
-/*
- * we ride the region ref that the region dir holds.  before the region
- * dir is removed and drops it ref it will wait to tear down this
- * thread.
- */
+ 
 static int o2hb_thread(void *data)
 {
 	int i, ret;
@@ -1197,7 +1081,7 @@ static int o2hb_thread(void *data)
 
 	set_user_nice(current, MIN_NICE);
 
-	/* Pin node */
+	 
 	ret = o2nm_depend_this_node();
 	if (ret) {
 		mlog(ML_ERROR, "Node has been deleted, ret = %d\n", ret);
@@ -1208,11 +1092,7 @@ static int o2hb_thread(void *data)
 
 	while (!kthread_should_stop() &&
 	       !reg->hr_unclean_stop && !reg->hr_aborted_start) {
-		/* We track the time spent inside
-		 * o2hb_do_disk_heartbeat so that we avoid more than
-		 * hr_timeout_ms between disk writes. On busy systems
-		 * this should result in a heartbeat which is less
-		 * likely to time itself out. */
+		 
 		before_hb = ktime_get_real();
 
 		ret = o2hb_do_disk_heartbeat(reg);
@@ -1229,23 +1109,18 @@ static int o2hb_thread(void *data)
 
 		if (!kthread_should_stop() &&
 		    elapsed_msec < reg->hr_timeout_ms) {
-			/* the kthread api has blocked signals for us so no
-			 * need to record the return value. */
+			 
 			msleep_interruptible(reg->hr_timeout_ms - elapsed_msec);
 		}
 	}
 
 	o2hb_disarm_timeout(reg);
 
-	/* unclean stop is only used in very bad situation */
+	 
 	for(i = 0; !reg->hr_unclean_stop && i < reg->hr_blocks; i++)
 		o2hb_shutdown_slot(&reg->hr_slots[i]);
 
-	/* Explicit down notification - avoid forcing the other nodes
-	 * to timeout on this region when we could just as easily
-	 * write a clear generation - thus indicating to them that
-	 * this node has left this region.
-	 */
+	 
 	if (!reg->hr_unclean_stop && !reg->hr_aborted_start) {
 		o2hb_prepare_block(reg, 0);
 		ret = o2hb_issue_node_write(reg, &write_wc);
@@ -1255,7 +1130,7 @@ static int o2hb_thread(void *data)
 			mlog_errno(ret);
 	}
 
-	/* Unpin node */
+	 
 	o2nm_undepend_this_node();
 
 	mlog(ML_HEARTBEAT|ML_KTHREAD, "o2hb thread exiting\n");
@@ -1274,7 +1149,7 @@ static int o2hb_debug_open(struct inode *inode, struct file *file)
 	int i = -1;
 	int out = 0;
 
-	/* max_nodes should be the largest bitmap we pass here */
+	 
 	BUG_ON(sizeof(map) < db->db_size);
 
 	buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
@@ -1307,7 +1182,7 @@ static int o2hb_debug_open(struct inode *inode, struct file *file)
 	case O2HB_DB_TYPE_REGION_ELAPSED_TIME:
 		reg = (struct o2hb_region *)db->db_data;
 		lts = reg->hr_last_timeout_start;
-		/* If 0, it has never been set before */
+		 
 		if (lts)
 			lts = jiffies_to_msecs(jiffies - lts);
 		out += scnprintf(buf + out, PAGE_SIZE - out, "%lu\n", lts);
@@ -1363,7 +1238,7 @@ static ssize_t o2hb_debug_read(struct file *file, char __user *buf,
 {
 	return 0;
 }
-#endif  /* CONFIG_DEBUG_FS */
+#endif   
 
 static const struct file_operations o2hb_debug_fops = {
 	.open =		o2hb_debug_open,
@@ -1448,20 +1323,17 @@ void o2hb_init(void)
 	o2hb_debug_init();
 }
 
-/* if we're already in a callback then we're already serialized by the sem */
+ 
 static void o2hb_fill_node_map_from_callback(unsigned long *map,
 					     unsigned int bits)
 {
 	bitmap_copy(map, o2hb_live_node_bitmap, bits);
 }
 
-/*
- * get a map of all nodes that are heartbeating in any regions
- */
+ 
 void o2hb_fill_node_map(unsigned long *map, unsigned int bits)
 {
-	/* callers want to serialize this map and callbacks so that they
-	 * can trust that they don't miss nodes coming to the party */
+	 
 	down_read(&o2hb_callback_sem);
 	spin_lock(&o2hb_live_lock);
 	o2hb_fill_node_map_from_callback(map, bits);
@@ -1470,19 +1342,14 @@ void o2hb_fill_node_map(unsigned long *map, unsigned int bits)
 }
 EXPORT_SYMBOL_GPL(o2hb_fill_node_map);
 
-/*
- * heartbeat configfs bits.  The heartbeat set is a default set under
- * the cluster set in nodemanager.c.
- */
+ 
 
 static struct o2hb_region *to_o2hb_region(struct config_item *item)
 {
 	return item ? container_of(item, struct o2hb_region, hr_item) : NULL;
 }
 
-/* drop_item only drops its ref after killing the thread, nothing should
- * be using the region anymore.  this has to clean up any state that
- * attributes might have built up. */
+ 
 static void o2hb_region_release(struct config_item *item)
 {
 	int i;
@@ -1533,7 +1400,7 @@ static int o2hb_read_block_input(struct o2hb_region *reg,
 	if (!p || (*p && (*p != '\n')))
 		return -EINVAL;
 
-	/* Heartbeat and fs min / max block sizes are the same. */
+	 
 	if (bytes > 4096 || bytes < 512)
 		return -ERANGE;
 	if (hweight16(bytes) != 1)
@@ -1714,9 +1581,7 @@ static int o2hb_map_slot_data(struct o2hb_region *reg)
 	return 0;
 }
 
-/* Read in all the slots available and populate the tracking
- * structures so that we can start with a baseline idea of what's
- * there. */
+ 
 static int o2hb_populate_slot_data(struct o2hb_region *reg)
 {
 	int ret, i;
@@ -1727,16 +1592,12 @@ static int o2hb_populate_slot_data(struct o2hb_region *reg)
 	if (ret)
 		goto out;
 
-	/* We only want to get an idea of the values initially in each
-	 * slot, so we do no verification - o2hb_check_slot will
-	 * actually determine if each configured slot is valid and
-	 * whether any values have changed. */
+	 
 	for(i = 0; i < reg->hr_blocks; i++) {
 		slot = &reg->hr_slots[i];
 		hb_block = (struct o2hb_disk_heartbeat_block *) slot->ds_raw_block;
 
-		/* Only fill the values that o2hb_check_slot uses to
-		 * determine changing slots */
+		 
 		slot->ds_last_time = le64_to_cpu(hb_block->hb_seq);
 		slot->ds_last_generation = le64_to_cpu(hb_block->hb_generation);
 	}
@@ -1745,7 +1606,7 @@ out:
 	return ret;
 }
 
-/* this is acting as commit; we set up all of hr_bdev and hr_task or nothing */
+ 
 static ssize_t o2hb_region_dev_store(struct config_item *item,
 				     const char *page,
 				     size_t count)
@@ -1762,8 +1623,7 @@ static ssize_t o2hb_region_dev_store(struct config_item *item,
 	if (reg->hr_bdev)
 		goto out;
 
-	/* We can't heartbeat without having had our node number
-	 * configured yet. */
+	 
 	if (o2nm_this_node() == O2NM_MAX_NODES)
 		goto out;
 
@@ -1805,7 +1665,7 @@ static ssize_t o2hb_region_dev_store(struct config_item *item,
 
 	o2hb_init_region_params(reg);
 
-	/* Generation of zero is invalid */
+	 
 	do {
 		get_random_bytes(&reg->hr_generation,
 				 sizeof(reg->hr_generation));
@@ -1826,14 +1686,7 @@ static ssize_t o2hb_region_dev_store(struct config_item *item,
 	INIT_DELAYED_WORK(&reg->hr_write_timeout_work, o2hb_write_timeout);
 	INIT_DELAYED_WORK(&reg->hr_nego_timeout_work, o2hb_nego_timeout);
 
-	/*
-	 * A node is considered live after it has beat LIVE_THRESHOLD
-	 * times.  We're not steady until we've given them a chance
-	 * _after_ our first read.
-	 * The default threshold is bare minimum so as to limit the delay
-	 * during mounts. For global heartbeat, the threshold doubled for the
-	 * first region.
-	 */
+	 
 	live_threshold = O2HB_LIVE_THRESHOLD;
 	if (o2hb_global_heartbeat_active()) {
 		spin_lock(&o2hb_live_lock);
@@ -1843,7 +1696,7 @@ static ssize_t o2hb_region_dev_store(struct config_item *item,
 	}
 	++live_threshold;
 	atomic_set(&reg->hr_steady_iterations, live_threshold);
-	/* unsteady_iterations is triple the steady_iterations */
+	 
 	atomic_set(&reg->hr_unsteady_iterations, (live_threshold * 3));
 
 	hb_task = kthread_run(o2hb_thread, reg, "o2hb-%s",
@@ -1876,7 +1729,7 @@ static ssize_t o2hb_region_dev_store(struct config_item *item,
 		goto out3;
 	}
 
-	/* Ok, we were woken.  Make sure it wasn't by drop_item() */
+	 
 	spin_lock(&o2hb_live_lock);
 	hb_task = reg->hr_task;
 	if (o2hb_global_heartbeat_active())
@@ -1944,11 +1797,11 @@ static const struct config_item_type o2hb_region_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* heartbeat set */
+ 
 
 struct o2hb_heartbeat_group {
 	struct config_group hs_group;
-	/* some stuff? */
+	 
 };
 
 static struct o2hb_heartbeat_group *to_o2hb_heartbeat_group(struct config_group *group)
@@ -2019,10 +1872,7 @@ static struct config_item *o2hb_heartbeat_group_make_item(struct config_group *g
 
 	config_item_init_type_name(&reg->hr_item, name, &o2hb_region_type);
 
-	/* this is the same way to generate msg key as dlm, for local heartbeat,
-	 * name is also the same, so make initial crc value different to avoid
-	 * message key conflict.
-	 */
+	 
 	reg->hr_key = crc32_le(reg->hr_region_num + O2NM_MAX_REGIONS,
 		name, strlen(name));
 	INIT_LIST_HEAD(&reg->hr_handler_list);
@@ -2064,7 +1914,7 @@ static void o2hb_heartbeat_group_drop_item(struct config_group *group,
 	struct o2hb_region *reg = to_o2hb_region(item);
 	int quorum_region = 0;
 
-	/* stop the thread when the user removes the region dir */
+	 
 	spin_lock(&o2hb_live_lock);
 	hb_task = reg->hr_task;
 	reg->hr_task = NULL;
@@ -2088,10 +1938,7 @@ static void o2hb_heartbeat_group_drop_item(struct config_group *group,
 		       reg->hr_bdev);
 	}
 
-	/*
-	 * If we're racing a dev_write(), we need to wake them.  They will
-	 * check reg->hr_task
-	 */
+	 
 	if (atomic_read(&reg->hr_steady_iterations) != 0) {
 		reg->hr_aborted_start = 1;
 		atomic_set(&reg->hr_steady_iterations, 0);
@@ -2103,10 +1950,7 @@ static void o2hb_heartbeat_group_drop_item(struct config_group *group,
 	if (!o2hb_global_heartbeat_active() || !quorum_region)
 		return;
 
-	/*
-	 * If global heartbeat active and there are dependent users,
-	 * pin all regions if quorum region count <= CUT_OFF
-	 */
+	 
 	spin_lock(&o2hb_live_lock);
 
 	if (!o2hb_dependent_users)
@@ -2136,7 +1980,7 @@ static ssize_t o2hb_heartbeat_group_dead_threshold_store(struct config_item *ite
 	if (!p || (*p && (*p != '\n')))
                 return -EINVAL;
 
-	/* this will validate ranges for us. */
+	 
 	o2hb_dead_threshold_set((unsigned int) tmp);
 
 	return count;
@@ -2195,8 +2039,7 @@ static const struct config_item_type o2hb_heartbeat_group_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/* this is just here to avoid touching group in heartbeat.h which the
- * entire damn world #includes */
+ 
 struct config_group *o2hb_alloc_hb_set(void)
 {
 	struct o2hb_heartbeat_group *hs = NULL;
@@ -2222,7 +2065,7 @@ void o2hb_free_hb_set(struct config_group *group)
 	kfree(hs);
 }
 
-/* hb callback registration and issuing */
+ 
 
 static struct o2hb_callback *hbcall_from_type(enum o2hb_callback_type type)
 {
@@ -2247,13 +2090,7 @@ void o2hb_setup_callback(struct o2hb_callback_func *hc,
 }
 EXPORT_SYMBOL_GPL(o2hb_setup_callback);
 
-/*
- * In local heartbeat mode, region_uuid passed matches the dlm domain name.
- * In global heartbeat mode, region_uuid passed is NULL.
- *
- * In local, we only pin the matching region. In global we pin all the active
- * regions.
- */
+ 
 static int o2hb_region_pin(const char *region_uuid)
 {
 	int ret = 0, found = 0;
@@ -2268,7 +2105,7 @@ static int o2hb_region_pin(const char *region_uuid)
 
 		uuid = config_item_name(&reg->hr_item);
 
-		/* local heartbeat */
+		 
 		if (region_uuid) {
 			if (strcmp(region_uuid, uuid))
 				continue;
@@ -2278,7 +2115,7 @@ static int o2hb_region_pin(const char *region_uuid)
 		if (reg->hr_item_pinned || reg->hr_item_dropped)
 			goto skip_pin;
 
-		/* Ignore ENOENT only for local hb (userdlm domain) */
+		 
 		ret = o2nm_depend_item(&reg->hr_item);
 		if (!ret) {
 			mlog(ML_CLUSTER, "Pin region %s\n", uuid);
@@ -2300,13 +2137,7 @@ skip_pin:
 	return ret;
 }
 
-/*
- * In local heartbeat mode, region_uuid passed matches the dlm domain name.
- * In global heartbeat mode, region_uuid passed is NULL.
- *
- * In local, we only unpin the matching region. In global we unpin all the
- * active regions.
- */
+ 
 static void o2hb_region_unpin(const char *region_uuid)
 {
 	struct o2hb_region *reg;
@@ -2342,16 +2173,13 @@ static int o2hb_region_inc_user(const char *region_uuid)
 
 	spin_lock(&o2hb_live_lock);
 
-	/* local heartbeat */
+	 
 	if (!o2hb_global_heartbeat_active()) {
 	    ret = o2hb_region_pin(region_uuid);
 	    goto unlock;
 	}
 
-	/*
-	 * if global heartbeat active and this is the first dependent user,
-	 * pin all regions if quorum region count <= CUT_OFF
-	 */
+	 
 	o2hb_dependent_users++;
 	if (o2hb_dependent_users > 1)
 		goto unlock;
@@ -2369,16 +2197,13 @@ static void o2hb_region_dec_user(const char *region_uuid)
 {
 	spin_lock(&o2hb_live_lock);
 
-	/* local heartbeat */
+	 
 	if (!o2hb_global_heartbeat_active()) {
 	    o2hb_region_unpin(region_uuid);
 	    goto unlock;
 	}
 
-	/*
-	 * if global heartbeat active and there are no dependent users,
-	 * unpin all quorum regions
-	 */
+	 
 	o2hb_dependent_users--;
 	if (!o2hb_dependent_users)
 		o2hb_region_unpin(NULL);
@@ -2439,7 +2264,7 @@ void o2hb_unregister_callback(const char *region_uuid,
 	mlog(ML_CLUSTER, "on behalf of %p for funcs %p\n",
 	     __builtin_return_address(0), hc);
 
-	/* XXX Can this happen _with_ a region reference? */
+	 
 	if (list_empty(&hc->hc_item))
 		return;
 
@@ -2488,10 +2313,7 @@ int o2hb_check_node_heartbeating_from_callback(u8 node_num)
 }
 EXPORT_SYMBOL_GPL(o2hb_check_node_heartbeating_from_callback);
 
-/*
- * this is just a hack until we get the plumbing which flips file systems
- * read only and drops the hb ref instead of killing the node dead.
- */
+ 
 void o2hb_stop_all_regions(void)
 {
 	struct o2hb_region *reg;

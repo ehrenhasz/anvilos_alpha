@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/clocksource/timer-sp.c
- *
- *  Copyright (C) 1999 - 2003 ARM Limited
- *  Copyright (C) 2000 Deep Blue Solutions Ltd
- */
+
+ 
 
 #define pr_fmt(fmt)    KBUILD_MODNAME ": " fmt
 
@@ -23,7 +18,7 @@
 
 #include "timer-sp.h"
 
-/* Hisilicon 64-bit timer(a variant of ARM SP804) */
+ 
 #define HISI_TIMER_1_BASE	0x00
 #define HISI_TIMER_2_BASE	0x40
 #define HISI_TIMER_LOAD		0x00
@@ -89,7 +84,7 @@ static struct sp804_clkevt * __init sp804_clkevt_get(void __iomem *base)
 			return &sp804_clkevt[i];
 	}
 
-	/* It's impossible to reach here */
+	 
 	WARN_ON(1);
 
 	return NULL;
@@ -140,14 +135,12 @@ static int __init sp804_clocksource_and_sched_clock_init(void __iomem *base,
 
 static struct sp804_clkevt *common_clkevt;
 
-/*
- * IRQ handler for the timer
- */
+ 
 static irqreturn_t sp804_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = dev_id;
 
-	/* clear the interrupt */
+	 
 	writel(1, common_clkevt->intclr);
 
 	evt->event_handler(evt);
@@ -271,7 +264,7 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
 	timer1_base = base + timer->timer_base[0];
 	timer2_base = base + timer->timer_base[1];
 
-	/* Ensure timers are disabled */
+	 
 	writel(0, timer1_base + timer->ctrl);
 	writel(0, timer2_base + timer->ctrl);
 
@@ -279,7 +272,7 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
 	if (IS_ERR(clk1))
 		clk1 = NULL;
 
-	/* Get the 2nd clock if the timer has 3 timer clocks */
+	 
 	if (of_clk_get_parent_count(np) == 3) {
 		clk2 = of_clk_get(np, 1);
 		if (IS_ERR(clk2)) {
@@ -358,7 +351,7 @@ static int __init integrator_cp_of_init(struct device_node *np)
 		return PTR_ERR(clk);
 	}
 
-	/* Ensure timer is disabled */
+	 
 	writel(0, base + arm_sp804_timer.ctrl);
 
 	if (init_count == 2 || !of_device_is_available(np))

@@ -1,78 +1,47 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * icp_multi.c
- * Comedi driver for Inova ICP_MULTI board
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-2002 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: icp_multi
- * Description: Inova ICP_MULTI
- * Devices: [Inova] ICP_MULTI (icp_multi)
- * Author: Anne Smorthit <anne.smorthit@sfwte.ch>
- * Status: works
- *
- * Configuration options: not applicable, uses PCI auto config
- *
- * The driver works for analog input and output and digital input and
- * output. It does not work with interrupts or with the counters. Currently
- * no support for DMA.
- *
- * It has 16 single-ended or 8 differential Analogue Input channels with
- * 12-bit resolution.  Ranges : 5V, 10V, +/-5V, +/-10V, 0..20mA and 4..20mA.
- * Input ranges can be individually programmed for each channel.  Voltage or
- * current measurement is selected by jumper.
- *
- * There are 4 x 12-bit Analogue Outputs.  Ranges : 5V, 10V, +/-5V, +/-10V
- *
- * 16 x Digital Inputs, 24V
- *
- * 8 x Digital Outputs, 24V, 1A
- *
- * 4 x 16-bit counters - not implemented
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/comedi/comedi_pci.h>
 
-#define ICP_MULTI_ADC_CSR	0x00	/* R/W: ADC command/status register */
-#define ICP_MULTI_ADC_CSR_ST	BIT(0)	/* Start ADC */
-#define ICP_MULTI_ADC_CSR_BSY	BIT(0)	/* ADC busy */
-#define ICP_MULTI_ADC_CSR_BI	BIT(4)	/* Bipolar input range */
-#define ICP_MULTI_ADC_CSR_RA	BIT(5)	/* Input range 0 = 5V, 1 = 10V */
-#define ICP_MULTI_ADC_CSR_DI	BIT(6)	/* Input mode 1 = differential */
+#define ICP_MULTI_ADC_CSR	0x00	 
+#define ICP_MULTI_ADC_CSR_ST	BIT(0)	 
+#define ICP_MULTI_ADC_CSR_BSY	BIT(0)	 
+#define ICP_MULTI_ADC_CSR_BI	BIT(4)	 
+#define ICP_MULTI_ADC_CSR_RA	BIT(5)	 
+#define ICP_MULTI_ADC_CSR_DI	BIT(6)	 
 #define ICP_MULTI_ADC_CSR_DI_CHAN(x) (((x) & 0x7) << 9)
 #define ICP_MULTI_ADC_CSR_SE_CHAN(x) (((x) & 0xf) << 8)
-#define ICP_MULTI_AI		2	/* R:   Analogue input data */
-#define ICP_MULTI_DAC_CSR	0x04	/* R/W: DAC command/status register */
-#define ICP_MULTI_DAC_CSR_ST	BIT(0)	/* Start DAC */
-#define ICP_MULTI_DAC_CSR_BSY	BIT(0)	/* DAC busy */
-#define ICP_MULTI_DAC_CSR_BI	BIT(4)	/* Bipolar output range */
-#define ICP_MULTI_DAC_CSR_RA	BIT(5)	/* Output range 0 = 5V, 1 = 10V */
+#define ICP_MULTI_AI		2	 
+#define ICP_MULTI_DAC_CSR	0x04	 
+#define ICP_MULTI_DAC_CSR_ST	BIT(0)	 
+#define ICP_MULTI_DAC_CSR_BSY	BIT(0)	 
+#define ICP_MULTI_DAC_CSR_BI	BIT(4)	 
+#define ICP_MULTI_DAC_CSR_RA	BIT(5)	 
 #define ICP_MULTI_DAC_CSR_CHAN(x) (((x) & 0x3) << 8)
-#define ICP_MULTI_AO		6	/* R/W: Analogue output data */
-#define ICP_MULTI_DI		8	/* R/W: Digital inputs */
-#define ICP_MULTI_DO		0x0A	/* R/W: Digital outputs */
-#define ICP_MULTI_INT_EN	0x0c	/* R/W: Interrupt enable register */
-#define ICP_MULTI_INT_STAT	0x0e	/* R/W: Interrupt status register */
-#define ICP_MULTI_INT_ADC_RDY	BIT(0)	/* A/D conversion ready interrupt */
-#define ICP_MULTI_INT_DAC_RDY	BIT(1)	/* D/A conversion ready interrupt */
-#define ICP_MULTI_INT_DOUT_ERR	BIT(2)	/* Digital output error interrupt */
-#define ICP_MULTI_INT_DIN_STAT	BIT(3)	/* Digital input status change int. */
-#define ICP_MULTI_INT_CIE0	BIT(4)	/* Counter 0 overrun interrupt */
-#define ICP_MULTI_INT_CIE1	BIT(5)	/* Counter 1 overrun interrupt */
-#define ICP_MULTI_INT_CIE2	BIT(6)	/* Counter 2 overrun interrupt */
-#define ICP_MULTI_INT_CIE3	BIT(7)	/* Counter 3 overrun interrupt */
-#define ICP_MULTI_INT_MASK	0xff	/* All interrupts */
-#define ICP_MULTI_CNTR0		0x10	/* R/W: Counter 0 */
-#define ICP_MULTI_CNTR1		0x12	/* R/W: counter 1 */
-#define ICP_MULTI_CNTR2		0x14	/* R/W: Counter 2 */
-#define ICP_MULTI_CNTR3		0x16	/* R/W: Counter 3 */
+#define ICP_MULTI_AO		6	 
+#define ICP_MULTI_DI		8	 
+#define ICP_MULTI_DO		0x0A	 
+#define ICP_MULTI_INT_EN	0x0c	 
+#define ICP_MULTI_INT_STAT	0x0e	 
+#define ICP_MULTI_INT_ADC_RDY	BIT(0)	 
+#define ICP_MULTI_INT_DAC_RDY	BIT(1)	 
+#define ICP_MULTI_INT_DOUT_ERR	BIT(2)	 
+#define ICP_MULTI_INT_DIN_STAT	BIT(3)	 
+#define ICP_MULTI_INT_CIE0	BIT(4)	 
+#define ICP_MULTI_INT_CIE1	BIT(5)	 
+#define ICP_MULTI_INT_CIE2	BIT(6)	 
+#define ICP_MULTI_INT_CIE3	BIT(7)	 
+#define ICP_MULTI_INT_MASK	0xff	 
+#define ICP_MULTI_CNTR0		0x10	 
+#define ICP_MULTI_CNTR1		0x12	 
+#define ICP_MULTI_CNTR2		0x14	 
+#define ICP_MULTI_CNTR3		0x16	 
 
-/* analog input and output have the same range options */
+ 
 static const struct comedi_lrange icp_multi_ranges = {
 	4, {
 		UNI_RANGE(5),
@@ -109,7 +78,7 @@ static int icp_multi_ai_insn_read(struct comedi_device *dev,
 	int ret = 0;
 	int n;
 
-	/* Set mode and range data for specified channel */
+	 
 	if (aref == AREF_DIFF) {
 		adc_csr = ICP_MULTI_ADC_CSR_DI_CHAN(chan) |
 			  ICP_MULTI_ADC_CSR_DI;
@@ -120,13 +89,13 @@ static int icp_multi_ai_insn_read(struct comedi_device *dev,
 	writew(adc_csr, dev->mmio + ICP_MULTI_ADC_CSR);
 
 	for (n = 0; n < insn->n; n++) {
-		/*  Set start ADC bit */
+		 
 		writew(adc_csr | ICP_MULTI_ADC_CSR_ST,
 		       dev->mmio + ICP_MULTI_ADC_CSR);
 
 		udelay(1);
 
-		/*  Wait for conversion to complete, or get fed up waiting */
+		 
 		ret = comedi_timeout(dev, s, insn, icp_multi_ai_eoc, 0);
 		if (ret)
 			break;
@@ -160,7 +129,7 @@ static int icp_multi_ao_insn_write(struct comedi_device *dev,
 	unsigned int dac_csr;
 	int i;
 
-	/* Select channel and range */
+	 
 	dac_csr = ICP_MULTI_DAC_CSR_CHAN(chan);
 	dac_csr |= range_codes_analog[range];
 	writew(dac_csr, dev->mmio + ICP_MULTI_DAC_CSR);
@@ -169,14 +138,14 @@ static int icp_multi_ao_insn_write(struct comedi_device *dev,
 		unsigned int val = data[i];
 		int ret;
 
-		/* Wait for analog output to be ready for new data */
+		 
 		ret = comedi_timeout(dev, s, insn, icp_multi_ao_ready, 0);
 		if (ret)
 			return ret;
 
 		writew(val, dev->mmio + ICP_MULTI_AO);
 
-		/* Set start conversion bit to write data to channel */
+		 
 		writew(dac_csr | ICP_MULTI_DAC_CSR_ST,
 		       dev->mmio + ICP_MULTI_DAC_CSR);
 
@@ -213,27 +182,27 @@ static int icp_multi_reset(struct comedi_device *dev)
 {
 	int i;
 
-	/* Disable all interrupts and clear any requests */
+	 
 	writew(0, dev->mmio + ICP_MULTI_INT_EN);
 	writew(ICP_MULTI_INT_MASK, dev->mmio + ICP_MULTI_INT_STAT);
 
-	/* Reset the analog output channels to 0V */
+	 
 	for (i = 0; i < 4; i++) {
 		unsigned int dac_csr = ICP_MULTI_DAC_CSR_CHAN(i);
 
-		/* Select channel and 0..5V range */
+		 
 		writew(dac_csr, dev->mmio + ICP_MULTI_DAC_CSR);
 
-		/* Output 0V */
+		 
 		writew(0, dev->mmio + ICP_MULTI_AO);
 
-		/* Set start conversion bit to write data to channel */
+		 
 		writew(dac_csr | ICP_MULTI_DAC_CSR_ST,
 		       dev->mmio + ICP_MULTI_DAC_CSR);
 		udelay(1);
 	}
 
-	/* Digital outputs to 0 */
+	 
 	writew(0, dev->mmio + ICP_MULTI_DO);
 
 	return 0;
@@ -260,7 +229,7 @@ static int icp_multi_auto_attach(struct comedi_device *dev,
 
 	icp_multi_reset(dev);
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_COMMON | SDF_GROUND | SDF_DIFF;
@@ -269,7 +238,7 @@ static int icp_multi_auto_attach(struct comedi_device *dev,
 	s->range_table	= &icp_multi_ranges;
 	s->insn_read	= icp_multi_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE | SDF_GROUND | SDF_COMMON;
@@ -282,7 +251,7 @@ static int icp_multi_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -291,7 +260,7 @@ static int icp_multi_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= icp_multi_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;

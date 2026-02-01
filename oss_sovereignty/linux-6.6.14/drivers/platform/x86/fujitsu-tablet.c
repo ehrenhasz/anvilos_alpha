@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2012 Robert Gerlach <khnz@gmx.de>
- * Copyright (C) 2005-2006 Jan Rychter <jan@rychter.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -233,7 +230,7 @@ static int input_fujitsu_setup(struct device *parent, const char *name,
 	idev->phys = phys;
 	idev->name = name;
 	idev->id.bustype = BUS_HOST;
-	idev->id.vendor  = 0x1734;	/* Fujitsu Siemens Computer GmbH */
+	idev->id.vendor  = 0x1734;	 
 	idev->id.product = 0x0001;
 	idev->id.version = 0x0101;
 

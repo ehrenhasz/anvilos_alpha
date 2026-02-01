@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020, Oracle and/or its affiliates.
- */
+ 
+ 
 
 #ifndef _KUNIT_DEBUGFS_H
 #define _KUNIT_DEBUGFS_H
@@ -25,6 +23,6 @@ static inline void kunit_debugfs_init(void) { }
 
 static inline void kunit_debugfs_cleanup(void) { }
 
-#endif /* CONFIG_KUNIT_DEBUGFS */
+#endif  
 
-#endif /* _KUNIT_DEBUGFS_H */
+#endif  

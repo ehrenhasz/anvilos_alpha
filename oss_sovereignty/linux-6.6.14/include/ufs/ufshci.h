@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Universal Flash Storage Host controller driver
- * Copyright (C) 2011-2013 Samsung India Software Operations
- *
- * Authors:
- *	Santosh Yaraganavi <santosh.sy@samsung.com>
- *	Vinayak Holikatti <h.vinayak@samsung.com>
- */
+ 
+ 
 
 #ifndef _UFSHCI_H
 #define _UFSHCI_H
@@ -20,7 +13,7 @@ enum {
 	ALIGNED_UPIU_SIZE		= 512,
 };
 
-/* UFSHCI Registers */
+ 
 enum {
 	REG_CONTROLLER_CAPABILITIES		= 0x00,
 	REG_MCQCAP				= 0x04,
@@ -65,7 +58,7 @@ enum {
 	UFSHCI_CRYPTO_REG_SPACE_SIZE		= 0x400,
 };
 
-/* Controller capability masks */
+ 
 enum {
 	MASK_TRANSFER_REQUESTS_SLOTS		= 0x0000001F,
 	MASK_TASK_MANAGEMENT_REQUEST_SLOTS	= 0x00070000,
@@ -78,7 +71,7 @@ enum {
 	MASK_MCQ_SUPPORT			= 0x40000000,
 };
 
-/* MCQ capability mask */
+ 
 enum {
 	MASK_EXT_IID_SUPPORT = 0x00000400,
 };
@@ -129,46 +122,32 @@ enum {
 #define SQ_ICU_ERR_CODE_MASK		GENMASK(7, 4)
 #define UFS_MASK(mask, offset)		((mask) << (offset))
 
-/* UFS Version 08h */
+ 
 #define MINOR_VERSION_NUM_MASK		UFS_MASK(0xFFFF, 0)
 #define MAJOR_VERSION_NUM_MASK		UFS_MASK(0xFFFF, 16)
 
 #define UFSHCD_NUM_RESERVED	1
-/*
- * Controller UFSHCI version
- * - 2.x and newer use the following scheme:
- *   major << 8 + minor << 4
- * - 1.x has been converted to match this in
- *   ufshcd_get_ufs_version()
- */
+ 
 static inline u32 ufshci_version(u32 major, u32 minor)
 {
 	return (major << 8) + (minor << 4);
 }
 
-/*
- * HCDDID - Host Controller Identification Descriptor
- *	  - Device ID and Device Class 10h
- */
+ 
 #define DEVICE_CLASS	UFS_MASK(0xFFFF, 0)
 #define DEVICE_ID	UFS_MASK(0xFF, 24)
 
-/*
- * HCPMID - Host Controller Identification Descriptor
- *	  - Product/Manufacturer ID  14h
- */
+ 
 #define MANUFACTURE_ID_MASK	UFS_MASK(0xFFFF, 0)
 #define PRODUCT_ID_MASK		UFS_MASK(0xFFFF, 16)
 
-/* AHIT - Auto-Hibernate Idle Timer */
+ 
 #define UFSHCI_AHIBERN8_TIMER_MASK		GENMASK(9, 0)
 #define UFSHCI_AHIBERN8_SCALE_MASK		GENMASK(12, 10)
 #define UFSHCI_AHIBERN8_SCALE_FACTOR		10
 #define UFSHCI_AHIBERN8_MAX			(1023 * 100000)
 
-/*
- * IS - Interrupt Status - 20h
- */
+ 
 #define UTP_TRANSFER_REQ_COMPL			0x1
 #define UIC_DME_END_PT_RESET			0x2
 #define UIC_ERROR				0x4
@@ -202,7 +181,7 @@ static inline u32 ufshci_version(u32 major, u32 minor)
 				CRYPTO_ENGINE_FATAL_ERROR |\
 				UIC_LINK_LOST)
 
-/* HCS - Host Controller Status 30h */
+ 
 #define DEVICE_PRESENT				0x1
 #define UTP_TRANSFER_REQ_LIST_READY		0x2
 #define UTP_TASK_REQ_LIST_READY			0x4
@@ -224,18 +203,18 @@ enum {
 	PWR_FATAL_ERROR	= 0x05,
 };
 
-/* HCE - Host Controller Enable 34h */
+ 
 #define CONTROLLER_ENABLE	0x1
 #define CONTROLLER_DISABLE	0x0
 #define CRYPTO_GENERAL_ENABLE	0x2
 
-/* UECPA - Host UIC Error Code PHY Adapter Layer 38h */
+ 
 #define UIC_PHY_ADAPTER_LAYER_ERROR			0x80000000
 #define UIC_PHY_ADAPTER_LAYER_ERROR_CODE_MASK		0x1F
 #define UIC_PHY_ADAPTER_LAYER_LANE_ERR_MASK		0xF
 #define UIC_PHY_ADAPTER_LAYER_GENERIC_ERROR		0x10
 
-/* UECDL - Host UIC Error Code Data Link Layer 3Ch */
+ 
 #define UIC_DATA_LINK_LAYER_ERROR		0x80000000
 #define UIC_DATA_LINK_LAYER_ERROR_CODE_MASK	0xFFFF
 #define UIC_DATA_LINK_LAYER_ERROR_TCX_REP_TIMER_EXP	0x2
@@ -246,14 +225,14 @@ enum {
 #define UIC_DATA_LINK_LAYER_ERROR_NAC_RECEIVED	0x0001
 #define UIC_DATA_LINK_LAYER_ERROR_TCx_REPLAY_TIMEOUT 0x0002
 
-/* UECN - Host UIC Error Code Network Layer 40h */
+ 
 #define UIC_NETWORK_LAYER_ERROR			0x80000000
 #define UIC_NETWORK_LAYER_ERROR_CODE_MASK	0x7
 #define UIC_NETWORK_UNSUPPORTED_HEADER_TYPE	0x1
 #define UIC_NETWORK_BAD_DEVICEID_ENC		0x2
 #define UIC_NETWORK_LHDR_TRAP_PACKET_DROPPING	0x4
 
-/* UECT - Host UIC Error Code Transport Layer 44h */
+ 
 #define UIC_TRANSPORT_LAYER_ERROR		0x80000000
 #define UIC_TRANSPORT_LAYER_ERROR_CODE_MASK	0x7F
 #define UIC_TRANSPORT_UNSUPPORTED_HEADER_TYPE	0x1
@@ -264,11 +243,11 @@ enum {
 #define UIC_TRANSPORT_E2E_CREDIT_OVERFOW	0x20
 #define UIC_TRANSPORT_SAFETY_VALUE_DROPPING	0x40
 
-/* UECDME - Host UIC Error Code DME 48h */
+ 
 #define UIC_DME_ERROR			0x80000000
 #define UIC_DME_ERROR_CODE_MASK		0x1
 
-/* UTRIACR - Interrupt Aggregation control register - 0x4Ch */
+ 
 #define INT_AGGR_TIMEOUT_VAL_MASK		0xFF
 #define INT_AGGR_COUNTER_THRESHOLD_MASK		UFS_MASK(0x1F, 8)
 #define INT_AGGR_COUNTER_AND_TIMER_RESET	0x10000
@@ -276,16 +255,16 @@ enum {
 #define INT_AGGR_PARAM_WRITE			0x1000000
 #define INT_AGGR_ENABLE				0x80000000
 
-/* UTRLRSR - UTP Transfer Request Run-Stop Register 60h */
+ 
 #define UTP_TRANSFER_REQ_LIST_RUN_STOP_BIT	0x1
 
-/* UTMRLRSR - UTP Task Management Request Run-Stop Register 80h */
+ 
 #define UTP_TASK_REQ_LIST_RUN_STOP_BIT		0x1
 
-/* CQISy - CQ y Interrupt Status Register  */
+ 
 #define UFSHCD_MCQ_CQIS_TAIL_ENT_PUSH_STS	0x1
 
-/* UICCMD - UIC Command */
+ 
 #define COMMAND_OPCODE_MASK		0xFF
 #define GEN_SELECTOR_INDEX_MASK		0xFFFF
 
@@ -296,7 +275,7 @@ enum {
 #define CONFIG_RESULT_CODE_MASK		0xFF
 #define GENERIC_ERROR_CODE_MASK		0xFF
 
-/* GenSelectorIndex calculation macros for M-PHY attributes */
+ 
 #define UIC_ARG_MPHY_TX_GEN_SEL_INDEX(lane) (lane)
 #define UIC_ARG_MPHY_RX_GEN_SEL_INDEX(lane) (PA_MAXDATALANES + (lane))
 
@@ -306,13 +285,13 @@ enum {
 #define UIC_ARG_ATTR_TYPE(t)		(((t) & 0xFF) << 16)
 #define UIC_GET_ATTR_ID(v)		(((v) >> 16) & 0xFFFF)
 
-/* Link Status*/
+ 
 enum link_status {
 	UFSHCD_LINK_IS_DOWN	= 1,
 	UFSHCD_LINK_IS_UP	= 2,
 };
 
-/* UIC Commands */
+ 
 enum uic_cmd_dme {
 	UIC_CMD_DME_GET			= 0x01,
 	UIC_CMD_DME_SET			= 0x02,
@@ -329,7 +308,7 @@ enum uic_cmd_dme {
 	UIC_CMD_DME_TEST_MODE		= 0x1A,
 };
 
-/* UIC Config result code / Generic error code */
+ 
 enum {
 	UIC_CMD_RESULT_SUCCESS			= 0x00,
 	UIC_CMD_RESULT_INVALID_ATTR		= 0x01,
@@ -350,20 +329,20 @@ enum {
 #define INT_AGGR_COUNTER_THLD_VAL(c)	(((c) & 0x1F) << 8)
 #define INT_AGGR_TIMEOUT_VAL(t)		(((t) & 0xFF) << 0)
 
-/* Interrupt disable masks */
+ 
 enum {
-	/* Interrupt disable mask for UFSHCI v1.0 */
+	 
 	INTERRUPT_MASK_ALL_VER_10	= 0x30FFF,
 	INTERRUPT_MASK_RW_VER_10	= 0x30000,
 
-	/* Interrupt disable mask for UFSHCI v1.1 */
+	 
 	INTERRUPT_MASK_ALL_VER_11	= 0x31FFF,
 
-	/* Interrupt disable mask for UFSHCI v2.1 */
+	 
 	INTERRUPT_MASK_ALL_VER_21	= 0x71FFF,
 };
 
-/* CCAP - Crypto Capability 100h */
+ 
 union ufs_crypto_capabilities {
 	__le32 reg_val;
 	struct {
@@ -389,12 +368,12 @@ enum ufs_crypto_alg {
 	UFS_CRYPTO_ALG_ESSIV_AES_CBC		= 0x3,
 };
 
-/* x-CRYPTOCAP - Crypto Capability X */
+ 
 union ufs_crypto_cap_entry {
 	__le32 reg_val;
 	struct {
 		u8 algorithm_id;
-		u8 sdus_mask; /* Supported data unit size mask */
+		u8 sdus_mask;  
 		u8 key_size;
 		u8 reserved;
 	};
@@ -402,7 +381,7 @@ union ufs_crypto_cap_entry {
 
 #define UFS_CRYPTO_CONFIGURATION_ENABLE (1 << 7)
 #define UFS_CRYPTO_KEY_MAX_SIZE 64
-/* x-CRYPTOCFG - Crypto Configuration X */
+ 
 union ufs_crypto_cfg_entry {
 	__le32 reg_val[32];
 	struct {
@@ -418,18 +397,16 @@ union ufs_crypto_cfg_entry {
 	};
 };
 
-/*
- * Request Descriptor Definitions
- */
+ 
 
-/* Transfer request command type */
+ 
 enum {
 	UTP_CMD_TYPE_SCSI		= 0x0,
 	UTP_CMD_TYPE_UFS		= 0x1,
 	UTP_CMD_TYPE_DEV_MANAGE		= 0x2,
 };
 
-/* To accommodate UFS2.0 required Command type */
+ 
 enum {
 	UTP_CMD_TYPE_UFS_STORAGE	= 0x1,
 };
@@ -440,14 +417,14 @@ enum {
 	UTP_DEVICE_MANAGEMENT_FUNCTION	= 0x20000000,
 };
 
-/* UTP Transfer Request Data Direction (DD) */
+ 
 enum utp_data_direction {
 	UTP_NO_DATA_TRANSFER	= 0,
 	UTP_HOST_TO_DEVICE	= 1,
 	UTP_DEVICE_TO_HOST	= 2,
 };
 
-/* Overall command status values */
+ 
 enum utp_ocs {
 	OCS_SUCCESS			= 0x0,
 	OCS_INVALID_CMD_TABLE_ATTR	= 0x1,
@@ -467,43 +444,27 @@ enum {
 	MASK_OCS			= 0x0F,
 };
 
-/* The maximum length of the data byte count field in the PRDT is 256KB */
+ 
 #define PRDT_DATA_BYTE_COUNT_MAX	SZ_256K
-/* The granularity of the data byte count field in the PRDT is 32-bit */
+ 
 #define PRDT_DATA_BYTE_COUNT_PAD	4
 
-/**
- * struct ufshcd_sg_entry - UFSHCI PRD Entry
- * @addr: Physical address; DW-0 and DW-1.
- * @reserved: Reserved for future use DW-2
- * @size: size of physical segment DW-3
- */
+ 
 struct ufshcd_sg_entry {
 	__le64    addr;
 	__le32    reserved;
 	__le32    size;
-	/*
-	 * followed by variant-specific fields if
-	 * CONFIG_SCSI_UFS_VARIABLE_SG_ENTRY_SIZE has been defined.
-	 */
+	 
 };
 
-/**
- * struct utp_transfer_cmd_desc - UTP Command Descriptor (UCD)
- * @command_upiu: Command UPIU Frame address
- * @response_upiu: Response UPIU Frame address
- * @prd_table: Physical Region Descriptor: an array of SG_ALL struct
- *	ufshcd_sg_entry's.  Variant-specific fields may be present after each.
- */
+ 
 struct utp_transfer_cmd_desc {
 	u8 command_upiu[ALIGNED_UPIU_SIZE];
 	u8 response_upiu[ALIGNED_UPIU_SIZE];
 	u8 prd_table[];
 };
 
-/**
- * struct request_desc_header - Descriptor Header common to both UTRD and UTMRD
- */
+ 
 struct request_desc_header {
 	u8 cci;
 	u8 ehs_length;
@@ -536,62 +497,52 @@ struct request_desc_header {
 
 static_assert(sizeof(struct request_desc_header) == 16);
 
-/**
- * struct utp_transfer_req_desc - UTP Transfer Request Descriptor (UTRD)
- * @header: UTRD header DW-0 to DW-3
- * @command_desc_base_addr: UCD base address DW 4-5
- * @response_upiu_length: response UPIU length DW-6
- * @response_upiu_offset: response UPIU offset DW-6
- * @prd_table_length: Physical region descriptor length DW-7
- * @prd_table_offset: Physical region descriptor offset DW-7
- */
+ 
 struct utp_transfer_req_desc {
 
-	/* DW 0-3 */
+	 
 	struct request_desc_header header;
 
-	/* DW 4-5*/
+	 
 	__le64  command_desc_base_addr;
 
-	/* DW 6 */
+	 
 	__le16  response_upiu_length;
 	__le16  response_upiu_offset;
 
-	/* DW 7 */
+	 
 	__le16  prd_table_length;
 	__le16  prd_table_offset;
 };
 
-/* MCQ Completion Queue Entry */
+ 
 struct cq_entry {
-	/* DW 0-1 */
+	 
 	__le64 command_desc_base_addr;
 
-	/* DW 2 */
+	 
 	__le16  response_upiu_length;
 	__le16  response_upiu_offset;
 
-	/* DW 3 */
+	 
 	__le16  prd_table_length;
 	__le16  prd_table_offset;
 
-	/* DW 4 */
+	 
 	__le32 status;
 
-	/* DW 5-7 */
+	 
 	__le32 reserved[3];
 };
 
 static_assert(sizeof(struct cq_entry) == 32);
 
-/*
- * UTMRD structure.
- */
+ 
 struct utp_task_req_desc {
-	/* DW 0-3 */
+	 
 	struct request_desc_header header;
 
-	/* DW 4-11 - Task request UPIU structure */
+	 
 	struct {
 		struct utp_upiu_header	req_header;
 		__be32			input_param1;
@@ -600,7 +551,7 @@ struct utp_task_req_desc {
 		__be32			__reserved1[2];
 	} upiu_req;
 
-	/* DW 12-19 - Task Management Response UPIU structure */
+	 
 	struct {
 		struct utp_upiu_header	rsp_header;
 		__be32			output_param1;
@@ -609,4 +560,4 @@ struct utp_task_req_desc {
 	} upiu_rsp;
 };
 
-#endif /* End of Header */
+#endif  

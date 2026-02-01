@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
 
-//#include "gt/intel_engine_user.h"
+ 
+
+
 #include "gt/intel_gt.h"
 #include "i915_drv.h"
 #include "i915_selftest.h"
@@ -39,14 +37,7 @@ int intel_selftest_modify_policy(struct intel_engine_cs *engine,
 
 	switch (modify_type) {
 	case SELFTEST_SCHEDULER_MODIFY_FAST_RESET:
-		/*
-		 * Enable force pre-emption on time slice expiration
-		 * together with engine reset on pre-emption timeout.
-		 * This is required to make the GuC notice and reset
-		 * the single hanging context.
-		 * Also, reduce the preemption timeout to something
-		 * small to speed the test up.
-		 */
+		 
 		engine->i915->params.reset = 2;
 		engine->flags |= I915_ENGINE_WANT_FORCED_PREEMPTION;
 		engine->props.timeslice_duration_ms = REDUCED_TIMESLICE;
@@ -75,7 +66,7 @@ int intel_selftest_modify_policy(struct intel_engine_cs *engine,
 int intel_selftest_restore_policy(struct intel_engine_cs *engine,
 				  struct intel_selftest_saved_policy *saved)
 {
-	/* Restore the original policies */
+	 
 	engine->i915->params.reset = saved->reset;
 	engine->flags = saved->flags;
 	engine->props.timeslice_duration_ms = saved->timeslice;

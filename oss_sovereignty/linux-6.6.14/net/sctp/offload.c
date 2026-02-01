@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sctp_offload - GRO/GSO Offloading for SCTP
- *
- * Copyright (C) 2015, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,9 +24,7 @@ static __le32 sctp_gso_make_checksum(struct sk_buff *skb)
 {
 	skb->ip_summed = CHECKSUM_NONE;
 	skb->csum_not_inet = 0;
-	/* csum and csum_start in GSO CB may be needed to do the UDP
-	 * checksum when it's a UDP tunneling packet.
-	 */
+	 
 	SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
 	SKB_GSO_CB(skb)->csum_start = skb_headroom(skb) + skb->len;
 	return sctp_compute_cksum(skb, skb_transport_offset(skb));
@@ -52,13 +46,13 @@ static struct sk_buff *sctp_gso_segment(struct sk_buff *skb,
 	__skb_pull(skb, sizeof(*sh));
 
 	if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
-		/* Packet is from an untrusted source, reset gso_segs. */
+		 
 		struct skb_shared_info *pinfo = skb_shinfo(skb);
 		struct sk_buff *frag_iter;
 
 		pinfo->gso_segs = 0;
 		if (skb->len != skb->data_len) {
-			/* Means we have chunks in here too */
+			 
 			pinfo->gso_segs++;
 		}
 
@@ -73,7 +67,7 @@ static struct sk_buff *sctp_gso_segment(struct sk_buff *skb,
 	if (IS_ERR(segs))
 		goto out;
 
-	/* All that is left is update SCTP CRC if necessary */
+	 
 	if (!(features & NETIF_F_SCTP_CRC)) {
 		for (skb = segs; skb; skb = skb->next) {
 			if (skb->ip_summed == CHECKSUM_PARTIAL) {

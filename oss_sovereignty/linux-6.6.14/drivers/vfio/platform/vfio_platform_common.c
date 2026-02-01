@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 - Virtual Open Systems
- * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
- */
+
+ 
 
 #define dev_fmt(fmt)	"VFIO: " fmt
 
@@ -162,10 +159,7 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
 				vdev->regions[i].flags |=
 					VFIO_REGION_INFO_FLAG_WRITE;
 
-			/*
-			 * Only regions addressed with PAGE granularity may be
-			 * MMAPed securely.
-			 */
+			 
 			if (!(vdev->regions[i].addr & ~PAGE_MASK) &&
 					!(vdev->regions[i].size & ~PAGE_MASK))
 				vdev->regions[i].flags |=
@@ -314,7 +308,7 @@ long vfio_platform_ioctl(struct vfio_device *core_vdev,
 		if (info.index >= vdev->num_regions)
 			return -EINVAL;
 
-		/* map offset to the physical address  */
+		 
 		info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
 		info.size = vdev->regions[info.index].size;
 		info.flags = vdev->regions[info.index].flags;
@@ -455,7 +449,7 @@ ssize_t vfio_platform_read(struct vfio_device *core_vdev,
 		return vfio_platform_read_mmio(&vdev->regions[index],
 							buf, count, off);
 	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
-		return -EINVAL; /* not implemented */
+		return -EINVAL;  
 
 	return -EINVAL;
 }
@@ -533,7 +527,7 @@ ssize_t vfio_platform_write(struct vfio_device *core_vdev, const char __user *bu
 		return vfio_platform_write_mmio(&vdev->regions[index],
 							buf, count, off);
 	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
-		return -EINVAL; /* not implemented */
+		return -EINVAL;  
 
 	return -EINVAL;
 }
@@ -595,7 +589,7 @@ int vfio_platform_mmap(struct vfio_device *core_vdev, struct vm_area_struct *vma
 		return vfio_platform_mmap_mmio(vdev->regions[index], vma);
 
 	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
-		return -EINVAL; /* not implemented */
+		return -EINVAL;  
 
 	return -EINVAL;
 }
@@ -614,23 +608,7 @@ static int vfio_platform_of_probe(struct vfio_platform_device *vdev,
 	return ret;
 }
 
-/*
- * There can be two kernel build combinations. One build where
- * ACPI is not selected in Kconfig and another one with the ACPI Kconfig.
- *
- * In the first case, vfio_platform_acpi_probe will return since
- * acpi_disabled is 1. DT user will not see any kind of messages from
- * ACPI.
- *
- * In the second case, both DT and ACPI is compiled in but the system is
- * booting with any of these combinations.
- *
- * If the firmware is DT type, then acpi_disabled is 1. The ACPI probe routine
- * terminates immediately without any messages.
- *
- * If the firmware is ACPI type, then acpi_disabled is 0. All other checks are
- * valid checks. We cannot claim that this system is DT.
- */
+ 
 int vfio_platform_init_common(struct vfio_platform_device *vdev)
 {
 	int ret;

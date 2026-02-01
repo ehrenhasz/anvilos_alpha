@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+ 
+ 
 
 #ifndef __REALTEK_RTSX_CARD_H
 #define __REALTEK_RTSX_CARD_H
@@ -883,7 +875,7 @@
 #define CHANGE_LINK_STATE		0xFE5B
 #define RESET_LOAD_REG			0xFE5E
 #define HOST_SLEEP_STATE		0xFE60
-#define MAIN_PWR_OFF_CTL		0xFE70	/* RTS5208 */
+#define MAIN_PWR_OFF_CTL		0xFE70	 
 
 #define NFTS_TX_CTRL			0xFE72
 
@@ -939,7 +931,7 @@
 
 #define OCPCTL				0xFC15
 #define OCPSTAT				0xFC16
-#define OCPCLR				0xFC17	/* 5208 */
+#define OCPCLR				0xFC17	 
 #define OCPPARA1			0xFC18
 #define OCPPARA2			0xFC19
 
@@ -1084,4 +1076,4 @@ static inline void rtsx_clear_spi_error(struct rtsx_chip *chip)
 void dynamic_configure_sdio_aspm(struct rtsx_chip *chip);
 #endif
 
-#endif  /* __REALTEK_RTSX_CARD_H */
+#endif   

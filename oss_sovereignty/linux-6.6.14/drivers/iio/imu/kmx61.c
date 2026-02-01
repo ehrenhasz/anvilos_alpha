@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KMX61 - Kionix 6-axis Accelerometer/Magnetometer
- *
- * Copyright (c) 2014, Intel Corporation.
- *
- * IIO driver for KMX61 (7-bit I2C slave address 0x0E or 0x0F).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -28,12 +22,7 @@
 #define KMX61_REG_INS1		0x01
 #define KMX61_REG_INS2		0x02
 
-/*
- * three 16-bit accelerometer output registers for X/Y/Z axis
- * we use only XOUT_L as a base register, all other addresses
- * can be obtained by applying an offset and are provided here
- * only for clarity.
- */
+ 
 #define KMX61_ACC_XOUT_L	0x0A
 #define KMX61_ACC_XOUT_H	0x0B
 #define KMX61_ACC_YOUT_L	0x0C
@@ -41,15 +30,11 @@
 #define KMX61_ACC_ZOUT_L	0x0E
 #define KMX61_ACC_ZOUT_H	0x0F
 
-/*
- * one 16-bit temperature output register
- */
+ 
 #define KMX61_TEMP_L		0x10
 #define KMX61_TEMP_H		0x11
 
-/*
- * three 16-bit magnetometer output registers for X/Y/Z axis
- */
+ 
 #define KMX61_MAG_XOUT_L	0x12
 #define KMX61_MAG_XOUT_H	0x13
 #define KMX61_MAG_YOUT_L	0x14
@@ -108,31 +93,31 @@
 
 #define KMX61_CHIP_ID		0x12
 
-/* KMX61 devices */
+ 
 #define KMX61_ACC	0x01
 #define KMX61_MAG	0x02
 
 struct kmx61_data {
 	struct i2c_client *client;
 
-	/* serialize access to non-atomic ops, e.g set_mode */
+	 
 	struct mutex lock;
 
-	/* standby state */
+	 
 	bool acc_stby;
 	bool mag_stby;
 
-	/* power state */
+	 
 	bool acc_ps;
 	bool mag_ps;
 
-	/* config bits */
+	 
 	u8 range;
 	u8 odr_bits;
 	u8 wake_thresh;
 	u8 wake_duration;
 
-	/* accelerometer specific data */
+	 
 	struct iio_dev *acc_indio_dev;
 	struct iio_trigger *acc_dready_trig;
 	struct iio_trigger *motion_trig;
@@ -140,7 +125,7 @@ struct kmx61_data {
 	bool motion_trig_on;
 	bool ev_enable_state;
 
-	/* magnetometer specific data */
+	 
 	struct iio_dev *mag_indio_dev;
 	struct iio_trigger *mag_dready_trig;
 	bool mag_dready_trig_on;
@@ -310,18 +295,7 @@ static int kmx61_convert_wake_up_odr_to_bit(int val, int val2)
 	return -EINVAL;
 }
 
-/**
- * kmx61_set_mode() - set KMX61 device operating mode
- * @data: kmx61 device private data pointer
- * @mode: bitmask, indicating operating mode for @device
- * @device: bitmask, indicating device for which @mode needs to be set
- * @update: update stby bits stored in device's private  @data
- *
- * For each sensor (accelerometer/magnetometer) there are two operating modes
- * STANDBY and OPERATION. Neither accel nor magn can be disabled independently
- * if they are both enabled. Internal sensors state is saved in acc_stby and
- * mag_stby members of driver's private @data.
- */
+ 
 static int kmx61_set_mode(struct kmx61_data *data, u8 mode, u8 device,
 			  bool update)
 {
@@ -427,7 +401,7 @@ static int kmx61_set_odr(struct kmx61_data *data, int val, int val2, u8 device)
 	if (lodr_bits < 0)
 		return lodr_bits;
 
-	/* To change ODR, accel and magn must be in STDBY */
+	 
 	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG,
 			     true);
 	if (ret < 0)
@@ -547,7 +521,7 @@ static int kmx61_chip_init(struct kmx61_data *data)
 		return -EINVAL;
 	}
 
-	/* set accel 12bit, 4g range */
+	 
 	ret = kmx61_set_range(data, KMX61_RANGE_4G);
 	if (ret < 0)
 		return ret;
@@ -559,10 +533,7 @@ static int kmx61_chip_init(struct kmx61_data *data)
 	}
 	data->odr_bits = ret;
 
-	/*
-	 * set output data rate for wake up (motion detection) function
-	 * to match data rate for accelerometer sampling
-	 */
+	 
 	ret = kmx61_get_odr(data, &val, &val2, KMX61_ACC);
 	if (ret < 0)
 		return ret;
@@ -571,7 +542,7 @@ static int kmx61_chip_init(struct kmx61_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* set acc/magn to OPERATION mode */
+	 
 	ret = kmx61_set_mode(data, 0, KMX61_ACC | KMX61_MAG, true);
 	if (ret < 0)
 		return ret;
@@ -716,17 +687,7 @@ static int kmx61_setup_any_motion_interrupt(struct kmx61_data *data,
 	return kmx61_set_mode(data, mode, KMX61_ACC | KMX61_MAG, true);
 }
 
-/**
- * kmx61_set_power_state() - set power state for kmx61 @device
- * @data: kmx61 device private pointer
- * @on: power state to be set for @device
- * @device: bitmask indicating device for which @on state needs to be set
- *
- * Notice that when ACC power state needs to be set to ON and MAG is in
- * OPERATION then we know that kmx61_runtime_resume was already called
- * so we must set ACC OPERATION mode here. The same happens when MAG power
- * state needs to be set to ON and ACC is in OPERATION.
- */
+ 
 static int kmx61_set_power_state(struct kmx61_data *data, bool on, u8 device)
 {
 #ifdef CONFIG_PM
@@ -827,7 +788,7 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
 			*val2 = kmx61_uscale_table[data->range];
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_MAGN:
-			/* 14 bits res, 1465 microGauss per magn count */
+			 
 			*val = 0;
 			*val2 = 1465;
 			return IIO_VAL_INT_PLUS_MICRO;

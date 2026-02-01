@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dma-fence-array: aggregate fences to be waited together
- *
- * Copyright (C) 2016 Collabora Ltd
- * Copyright (C) 2016 Advanced Micro Devices, Inc.
- * Authors:
- *	Gustavo Padovan <gustavo@padovan.org>
- *	Christian König <christian.koenig@amd.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -28,17 +20,14 @@ static const char *dma_fence_array_get_timeline_name(struct dma_fence *fence)
 static void dma_fence_array_set_pending_error(struct dma_fence_array *array,
 					      int error)
 {
-	/*
-	 * Propagate the first error reported by any of our fences, but only
-	 * before we ourselves are signaled.
-	 */
+	 
 	if (error)
 		cmpxchg(&array->base.error, PENDING_ERROR, error);
 }
 
 static void dma_fence_array_clear_pending_error(struct dma_fence_array *array)
 {
-	/* Clear the error flag if not actually set. */
+	 
 	cmpxchg(&array->base.error, PENDING_ERROR, 0);
 }
 
@@ -75,14 +64,7 @@ static bool dma_fence_array_enable_signaling(struct dma_fence *fence)
 
 	for (i = 0; i < array->num_fences; ++i) {
 		cb[i].array = array;
-		/*
-		 * As we may report that the fence is signaled before all
-		 * callbacks are complete, we need to take an additional
-		 * reference count on the array so that we do not free it too
-		 * early. The core fence handling will only hold the reference
-		 * until we signal the array as complete (but that is now
-		 * insufficient).
-		 */
+		 
 		dma_fence_get(&array->base);
 		if (dma_fence_add_callback(array->fences[i], &cb[i].cb,
 					   dma_fence_array_cb_func)) {
@@ -143,25 +125,7 @@ const struct dma_fence_ops dma_fence_array_ops = {
 };
 EXPORT_SYMBOL(dma_fence_array_ops);
 
-/**
- * dma_fence_array_create - Create a custom fence array
- * @num_fences:		[in]	number of fences to add in the array
- * @fences:		[in]	array containing the fences
- * @context:		[in]	fence context to use
- * @seqno:		[in]	sequence number to use
- * @signal_on_any:	[in]	signal on any fence in the array
- *
- * Allocate a dma_fence_array object and initialize the base fence with
- * dma_fence_init().
- * In case of error it returns NULL.
- *
- * The caller should allocate the fences array with num_fences size
- * and fill it with the fences it wants to add to the object. Ownership of this
- * array is taken and dma_fence_put() is used on each fence on release.
- *
- * If @signal_on_any is true the fence array signals if any fence in the array
- * signals, otherwise it signals when all fences in the array signal.
- */
+ 
 struct dma_fence_array *dma_fence_array_create(int num_fences,
 					       struct dma_fence **fences,
 					       u64 context, unsigned seqno,
@@ -172,7 +136,7 @@ struct dma_fence_array *dma_fence_array_create(int num_fences,
 
 	WARN_ON(!num_fences || !fences);
 
-	/* Allocate the callback structures behind the array. */
+	 
 	size += num_fences * sizeof(struct dma_fence_array_cb);
 	array = kzalloc(size, GFP_KERNEL);
 	if (!array)
@@ -189,17 +153,7 @@ struct dma_fence_array *dma_fence_array_create(int num_fences,
 
 	array->base.error = PENDING_ERROR;
 
-	/*
-	 * dma_fence_array objects should never contain any other fence
-	 * containers or otherwise we run into recursion and potential kernel
-	 * stack overflow on operations on the dma_fence_array.
-	 *
-	 * The correct way of handling this is to flatten out the array by the
-	 * caller instead.
-	 *
-	 * Enforce this here by checking that we don't create a dma_fence_array
-	 * with any container inside.
-	 */
+	 
 	while (num_fences--)
 		WARN_ON(dma_fence_is_container(fences[num_fences]));
 
@@ -207,15 +161,7 @@ struct dma_fence_array *dma_fence_array_create(int num_fences,
 }
 EXPORT_SYMBOL(dma_fence_array_create);
 
-/**
- * dma_fence_match_context - Check if all fences are from the given context
- * @fence:		[in]	fence or fence array
- * @context:		[in]	fence context to check all fences against
- *
- * Checks the provided fence or, for a fence array, all fences in the array
- * against the given context. Returns false if any fence is from a different
- * context.
- */
+ 
 bool dma_fence_match_context(struct dma_fence *fence, u64 context)
 {
 	struct dma_fence_array *array = to_dma_fence_array(fence);

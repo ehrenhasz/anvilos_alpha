@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Interrupt support for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2016-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #ifndef IRQCHIP_MADERA_H
 #define IRQCHIP_MADERA_H
@@ -87,10 +82,7 @@
 
 #define MADERA_NUM_IRQ			72
 
-/*
- * These wrapper functions are for use by other child drivers of the
- * same parent MFD.
- */
+ 
 static inline int madera_get_irq_mapping(struct madera *madera, int irq)
 {
 	if (!madera->irq_dev)

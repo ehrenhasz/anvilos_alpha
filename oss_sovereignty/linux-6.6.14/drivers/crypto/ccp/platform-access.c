@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Platform Security Processor (PSP) Platform Access interface
- *
- * Copyright (C) 2023 Advanced Micro Devices, Inc.
- *
- * Author: Mario Limonciello <mario.limonciello@amd.com>
- *
- * Some of this code is adapted from drivers/i2c/busses/i2c-designware-amdpsp.c
- * developed by Jan Dabros <jsd@semihalf.com> and Copyright (C) 2022 Google Inc.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/errno.h>
@@ -21,7 +11,7 @@
 #define PSP_CMD_TIMEOUT_US	(500 * USEC_PER_MSEC)
 #define DOORBELL_CMDRESP_STS	GENMASK(7, 0)
 
-/* Recovery field should be equal 0 to start sending commands */
+ 
 static int check_recovery(u32 __iomem *cmd)
 {
 	return FIELD_GET(PSP_CMDRESP_RECOVERY, ioread32(cmd));
@@ -31,13 +21,10 @@ static int wait_cmd(u32 __iomem *cmd)
 {
 	u32 tmp, expected;
 
-	/* Expect mbox_cmd to be cleared and ready bit to be set by PSP */
+	 
 	expected = FIELD_PREP(PSP_CMDRESP_RESP, 1);
 
-	/*
-	 * Check for readiness of PSP mailbox in a tight loop in order to
-	 * process further as soon as command was consumed.
-	 */
+	 
 	return readl_poll_timeout(cmd, tmp, (tmp & expected), 0,
 				  PSP_CMD_TIMEOUT_US);
 }
@@ -90,11 +77,7 @@ int psp_send_platform_access_msg(enum psp_platform_access_msg msg,
 		goto unlock;
 	}
 
-	/*
-	 * Fill mailbox with address of command-response buffer, which will be
-	 * used for sending i2c requests as well as reading status returned by
-	 * PSP. Use physical address of buffer, since PSP will map this region.
-	 */
+	 
 	req_addr = __psp_pa(req);
 	iowrite32(lower_32_bits(req_addr), lo);
 	iowrite32(upper_32_bits(req_addr), hi);
@@ -102,7 +85,7 @@ int psp_send_platform_access_msg(enum psp_platform_access_msg msg,
 	print_hex_dump_debug("->psp ", DUMP_PREFIX_OFFSET, 16, 2, req,
 			     req->header.payload_size, false);
 
-	/* Write command register to trigger processing */
+	 
 	cmd_reg = FIELD_PREP(PSP_CMDRESP_CMD, msg);
 	iowrite32(cmd_reg, cmd);
 
@@ -111,14 +94,14 @@ int psp_send_platform_access_msg(enum psp_platform_access_msg msg,
 		goto unlock;
 	}
 
-	/* Ensure it was triggered by this driver */
+	 
 	if (ioread32(lo) != lower_32_bits(req_addr) ||
 	    ioread32(hi) != upper_32_bits(req_addr)) {
 		ret = -EBUSY;
 		goto unlock;
 	}
 
-	/* Store the status in request header for caller to investigate */
+	 
 	cmd_reg = ioread32(cmd);
 	req->header.status = FIELD_GET(PSP_CMDRESP_STS, cmd_reg);
 	if (req->header.status) {

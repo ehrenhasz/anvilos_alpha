@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	Implement 'Simple Boot Flag Specification 2.0'
- */
+
+ 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -18,7 +16,7 @@
 #define SBF_DIAG     (1<<2)
 #define SBF_PARITY   (1<<7)
 
-int sbf_port __initdata = -1;	/* set via acpi_boot_init() */
+int sbf_port __initdata = -1;	 
 
 static int __init parity(u8 v)
 {
@@ -68,7 +66,7 @@ static u8 __init sbf_read(void)
 
 static int __init sbf_value_valid(u8 v)
 {
-	if (v & SBF_RESERVED)		/* Reserved bits */
+	if (v & SBF_RESERVED)		 
 		return 0;
 	if (!parity(v))
 		return 0;

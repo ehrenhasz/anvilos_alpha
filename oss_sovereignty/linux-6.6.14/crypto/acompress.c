@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Asynchronous Compression operations
- *
- * Copyright (c) 2016, Intel Corporation
- * Authors: Weigang Li <weigang.li@intel.com>
- *          Giovanni Cabiddu <giovanni.cabiddu@intel.com>
- */
+
+ 
 
 #include <crypto/internal/acompress.h>
 #include <linux/cryptouser.h>

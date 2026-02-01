@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * SuperH Video Output Unit (VOU) driver header
- *
- * Copyright (C) 2010, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+ 
+ 
 #ifndef SH_VOU_H
 #define SH_VOU_H
 
 #include <linux/i2c.h>
 
-/* Bus flags */
+ 
 #define SH_VOU_PCLK_FALLING	(1 << 0)
 #define SH_VOU_HSYNC_LOW	(1 << 1)
 #define SH_VOU_VSYNC_LOW	(1 << 2)

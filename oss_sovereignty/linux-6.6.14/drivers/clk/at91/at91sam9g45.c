@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -43,10 +43,7 @@ static const struct {
 	unsigned long flags;
 	u8 id;
 } at91sam9g45_systemck[] = {
-	/*
-	 * ddrck feeds DDR controller and is enabled by bootloader thus we need
-	 * to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "ddrck", .p = "masterck_div", .id = 2, .flags = CLK_IS_CRITICAL },
 	{ .n = "uhpck", .p = "usbck",        .id = 6 },
 	{ .n = "pck0",  .p = "prog0",        .id = 8 },
@@ -229,8 +226,5 @@ static void __init at91sam9g45_pmc_setup(struct device_node *np)
 err_free:
 	kfree(at91sam9g45_pmc);
 }
-/*
- * The TCB is used as the clocksource so its clock is needed early. This means
- * this can't be a platform driver.
- */
+ 
 CLK_OF_DECLARE(at91sam9g45_pmc, "atmel,at91sam9g45-pmc", at91sam9g45_pmc_setup);

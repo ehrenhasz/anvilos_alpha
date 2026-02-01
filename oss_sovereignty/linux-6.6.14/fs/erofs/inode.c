@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2021, Alibaba Cloud
- */
+
+ 
 #include "xattr.h"
 
 #include <trace/events/erofs.h>
@@ -54,7 +50,7 @@ static void *erofs_read_inode(struct erofs_buf *buf,
 	switch (erofs_inode_version(ifmt)) {
 	case EROFS_INODE_LAYOUT_EXTENDED:
 		vi->inode_isize = sizeof(struct erofs_inode_extended);
-		/* check if the extended inode acrosses block boundary */
+		 
 		if (*ofs + vi->inode_isize <= sb->s_blocksize) {
 			*ofs += vi->inode_isize;
 			die = (struct erofs_inode_extended *)dic;
@@ -104,17 +100,17 @@ static void *erofs_read_inode(struct erofs_buf *buf,
 		i_gid_write(inode, le32_to_cpu(die->i_gid));
 		set_nlink(inode, le32_to_cpu(die->i_nlink));
 
-		/* extended inode has its own timestamp */
+		 
 		inode_set_ctime(inode, le64_to_cpu(die->i_mtime),
 				le32_to_cpu(die->i_mtime_nsec));
 
 		inode->i_size = le64_to_cpu(die->i_size);
 
-		/* total blocks for compressed files */
+		 
 		if (erofs_inode_is_data_compressed(vi->datalayout))
 			nblks = le32_to_cpu(die->i_u.compressed_blocks);
 		else if (vi->datalayout == EROFS_INODE_CHUNK_BASED)
-			/* fill chunked inode summary info */
+			 
 			vi->chunkformat = le16_to_cpu(die->i_u.c.format);
 		kfree(copied);
 		copied = NULL;
@@ -147,7 +143,7 @@ static void *erofs_read_inode(struct erofs_buf *buf,
 		i_gid_write(inode, le16_to_cpu(dic->i_gid));
 		set_nlink(inode, le16_to_cpu(dic->i_nlink));
 
-		/* use build time for compact inodes */
+		 
 		inode_set_ctime(inode, sbi->build_time, sbi->build_time_nsec);
 
 		inode->i_size = le32_to_cpu(dic->i_size);
@@ -184,7 +180,7 @@ static void *erofs_read_inode(struct erofs_buf *buf,
 		inode->i_flags |= S_DAX;
 
 	if (!nblks)
-		/* measure inode.i_blocks as generic filesystems */
+		 
 		inode->i_blocks = round_up(inode->i_size, sb->s_blocksize) >> 9;
 	else
 		inode->i_blocks = nblks << (sb->s_blocksize_bits - 9);
@@ -208,7 +204,7 @@ static int erofs_fill_symlink(struct inode *inode, void *kaddr,
 	unsigned int bsz = i_blocksize(inode);
 	char *lnk;
 
-	/* if it cannot be handled with fast symlink scheme */
+	 
 	if (vi->datalayout != EROFS_INODE_FLAT_INLINE ||
 	    inode->i_size >= bsz || inode->i_size < 0) {
 		inode->i_op = &erofs_symlink_iops;
@@ -220,7 +216,7 @@ static int erofs_fill_symlink(struct inode *inode, void *kaddr,
 		return -ENOMEM;
 
 	m_pofs += vi->xattr_isize;
-	/* inline symlink data shouldn't cross block boundary */
+	 
 	if (m_pofs + inode->i_size > bsz) {
 		kfree(lnk);
 		erofs_err(inode->i_sb,
@@ -247,12 +243,12 @@ static int erofs_fill_inode(struct inode *inode)
 
 	trace_erofs_fill_inode(inode);
 
-	/* read inode base data from disk */
+	 
 	kaddr = erofs_read_inode(&buf, inode, &ofs);
 	if (IS_ERR(kaddr))
 		return PTR_ERR(kaddr);
 
-	/* setup the new inode */
+	 
 	switch (inode->i_mode & S_IFMT) {
 	case S_IFREG:
 		inode->i_op = &erofs_generic_iops;
@@ -308,10 +304,7 @@ out_unlock:
 	return err;
 }
 
-/*
- * ino_t is 32-bits on 32-bit arch. We have to squash the 64-bit value down
- * so that it will fit.
- */
+ 
 static ino_t erofs_squash_ino(erofs_nid_t nid)
 {
 	ino_t ino = (ino_t)nid;

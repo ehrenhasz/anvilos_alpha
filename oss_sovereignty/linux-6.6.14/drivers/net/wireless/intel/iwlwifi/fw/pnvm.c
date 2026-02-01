@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright(c) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include "iwl-drv.h"
 #include "pnvm.h"
@@ -106,7 +104,7 @@ static int iwl_pnvm_handle_section(struct iwl_trans *trans, const u8 *data,
 				     "Got IWL_UCODE_TLV_SEC_RT len %d\n",
 				     tlv_len);
 
-			/* TODO: remove, this is a deprecated separator */
+			 
 			if (le32_to_cpup((const __le32 *)data) == 0xddddeeee) {
 				IWL_DEBUG_FW(trans, "Ignoring separator.\n");
 				break;
@@ -255,21 +253,21 @@ static u8 *iwl_get_pnvm_image(struct iwl_trans *trans_p, size_t *len)
 	struct pnvm_sku_package *package;
 	u8 *image = NULL;
 
-	/* First attempt to get the PNVM from BIOS */
+	 
 	package = iwl_uefi_get_pnvm(trans_p, len);
 	if (!IS_ERR_OR_NULL(package)) {
 		if (*len >= sizeof(*package)) {
-			/* we need only the data */
+			 
 			*len -= sizeof(*package);
 			image = kmemdup(package->data, *len, GFP_KERNEL);
 		}
-		/* free package regardless of whether kmemdup succeeded */
+		 
 		kfree(package);
 		if (image)
 			return image;
 	}
 
-	/* If it's not available, try from the filesystem */
+	 
 	if (iwl_pnvm_get_from_fs(trans_p, &image, len))
 		return NULL;
 	return image;
@@ -283,7 +281,7 @@ static void iwl_pnvm_load_pnvm_to_trans(struct iwl_trans *trans,
 	size_t length;
 	int ret;
 
-	/* failed to get/parse the image in the past, no use trying again */
+	 
 	if (trans->fail_to_parse_pnvm_image)
 		return;
 
@@ -373,7 +371,7 @@ int iwl_pnvm_load(struct iwl_trans *trans,
 	static const u16 ntf_cmds[] = { WIDE_ID(REGULATORY_AND_NVM_GROUP,
 						PNVM_INIT_COMPLETE_NTFY) };
 
-	/* if the SKU_ID is empty, there's nothing to do */
+	 
 	if (!trans->sku_id[0] && !trans->sku_id[1] && !trans->sku_id[2])
 		return 0;
 
@@ -384,7 +382,7 @@ int iwl_pnvm_load(struct iwl_trans *trans,
 				   ntf_cmds, ARRAY_SIZE(ntf_cmds),
 				   iwl_pnvm_complete_fn, trans);
 
-	/* kick the doorbell */
+	 
 	iwl_write_umac_prph(trans, UREG_DOORBELL_TO_ISR6,
 			    UREG_DOORBELL_TO_ISR6_PNVM);
 

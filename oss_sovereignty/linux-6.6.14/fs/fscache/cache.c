@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* FS-Cache cache handling
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define FSCACHE_DEBUG_LEVEL CACHE
 #include <linux/export.h>
@@ -18,9 +14,7 @@ EXPORT_SYMBOL(fscache_clearance_waiters);
 
 static atomic_t fscache_cache_debug_id;
 
-/*
- * Allocate a cache cookie.
- */
+ 
 static struct fscache_cache *fscache_alloc_cache(const char *name)
 {
 	struct fscache_cache *cache;
@@ -53,14 +47,12 @@ static bool fscache_get_cache_maybe(struct fscache_cache *cache,
 	return success;
 }
 
-/*
- * Look up a cache cookie.
- */
+ 
 struct fscache_cache *fscache_lookup_cache(const char *name, bool is_cache)
 {
 	struct fscache_cache *candidate, *cache, *unnamed = NULL;
 
-	/* firstly check for the existence of the cache under read lock */
+	 
 	down_read(&fscache_addremove_sem);
 
 	list_for_each_entry(cache, &fscache_caches, cache_link) {
@@ -82,12 +74,12 @@ struct fscache_cache *fscache_lookup_cache(const char *name, bool is_cache)
 
 	up_read(&fscache_addremove_sem);
 
-	/* the cache does not exist - create a candidate */
+	 
 	candidate = fscache_alloc_cache(name);
 	if (!candidate)
 		return ERR_PTR(-ENOMEM);
 
-	/* write lock, search again and add if still not present */
+	 
 	down_write(&fscache_addremove_sem);
 
 	list_for_each_entry(cache, &fscache_caches, cache_link) {
@@ -135,17 +127,7 @@ got_cache_w:
 	return cache;
 }
 
-/**
- * fscache_acquire_cache - Acquire a cache-level cookie.
- * @name: The name of the cache.
- *
- * Get a cookie to represent an actual cache.  If a name is given and there is
- * a nameless cache record available, this will acquire that and set its name,
- * directing all the volumes using it to this cache.
- *
- * The cache will be switched over to the preparing state if not currently in
- * use, otherwise -EBUSY will be returned.
- */
+ 
 struct fscache_cache *fscache_acquire_cache(const char *name)
 {
 	struct fscache_cache *cache;
@@ -167,15 +149,7 @@ struct fscache_cache *fscache_acquire_cache(const char *name)
 }
 EXPORT_SYMBOL(fscache_acquire_cache);
 
-/**
- * fscache_put_cache - Release a cache-level cookie.
- * @cache: The cache cookie to be released
- * @where: An indication of where the release happened
- *
- * Release the caller's reference on a cache-level cookie.  The @where
- * indication should give information about the circumstances in which the call
- * occurs and will be logged through a tracepoint.
- */
+ 
 void fscache_put_cache(struct fscache_cache *cache,
 		       enum fscache_cache_trace where)
 {
@@ -198,13 +172,7 @@ void fscache_put_cache(struct fscache_cache *cache,
 	}
 }
 
-/**
- * fscache_relinquish_cache - Reset cache state and release cookie
- * @cache: The cache cookie to be released
- *
- * Reset the state of a cache and release the caller's reference on a cache
- * cookie.
- */
+ 
 void fscache_relinquish_cache(struct fscache_cache *cache)
 {
 	enum fscache_cache_trace where =
@@ -219,17 +187,7 @@ void fscache_relinquish_cache(struct fscache_cache *cache)
 }
 EXPORT_SYMBOL(fscache_relinquish_cache);
 
-/**
- * fscache_add_cache - Declare a cache as being open for business
- * @cache: The cache-level cookie representing the cache
- * @ops: Table of cache operations to use
- * @cache_priv: Private data for the cache record
- *
- * Add a cache to the system, making it available for netfs's to use.
- *
- * See Documentation/filesystems/caching/backend-api.rst for a complete
- * description.
- */
+ 
 int fscache_add_cache(struct fscache_cache *cache,
 		      const struct fscache_cache_ops *ops,
 		      void *cache_priv)
@@ -240,10 +198,7 @@ int fscache_add_cache(struct fscache_cache *cache,
 
 	BUG_ON(fscache_cache_state(cache) != FSCACHE_CACHE_IS_PREPARING);
 
-	/* Get a ref on the cache cookie and keep its n_accesses counter raised
-	 * by 1 to prevent wakeups from transitioning it to 0 until we're
-	 * withdrawing caching services from it.
-	 */
+	 
 	n_accesses = atomic_inc_return(&cache->n_accesses);
 	trace_fscache_access_cache(cache->debug_id, refcount_read(&cache->ref),
 				   n_accesses, fscache_access_cache_pin);
@@ -261,30 +216,7 @@ int fscache_add_cache(struct fscache_cache *cache,
 }
 EXPORT_SYMBOL(fscache_add_cache);
 
-/**
- * fscache_begin_cache_access - Pin a cache so it can be accessed
- * @cache: The cache-level cookie
- * @why: An indication of the circumstances of the access for tracing
- *
- * Attempt to pin the cache to prevent it from going away whilst we're
- * accessing it and returns true if successful.  This works as follows:
- *
- *  (1) If the cache tests as not live (state is not FSCACHE_CACHE_IS_ACTIVE),
- *      then we return false to indicate access was not permitted.
- *
- *  (2) If the cache tests as live, then we increment the n_accesses count and
- *      then recheck the liveness, ending the access if it ceased to be live.
- *
- *  (3) When we end the access, we decrement n_accesses and wake up the any
- *      waiters if it reaches 0.
- *
- *  (4) Whilst the cache is caching, n_accesses is kept artificially
- *      incremented to prevent wakeups from happening.
- *
- *  (5) When the cache is taken offline, the state is changed to prevent new
- *      accesses, n_accesses is decremented and we wait for n_accesses to
- *      become 0.
- */
+ 
 bool fscache_begin_cache_access(struct fscache_cache *cache, enum fscache_access_trace why)
 {
 	int n_accesses;
@@ -293,7 +225,7 @@ bool fscache_begin_cache_access(struct fscache_cache *cache, enum fscache_access
 		return false;
 
 	n_accesses = atomic_inc_return(&cache->n_accesses);
-	smp_mb__after_atomic(); /* Reread live flag after n_accesses */
+	smp_mb__after_atomic();  
 	trace_fscache_access_cache(cache->debug_id, refcount_read(&cache->ref),
 				   n_accesses, why);
 	if (!fscache_cache_is_live(cache)) {
@@ -303,14 +235,7 @@ bool fscache_begin_cache_access(struct fscache_cache *cache, enum fscache_access
 	return true;
 }
 
-/**
- * fscache_end_cache_access - Unpin a cache at the end of an access.
- * @cache: The cache-level cookie
- * @why: An indication of the circumstances of the access for tracing
- *
- * Unpin a cache after we've accessed it.  The @why indicator is merely
- * provided for tracing purposes.
- */
+ 
 void fscache_end_cache_access(struct fscache_cache *cache, enum fscache_access_trace why)
 {
 	int n_accesses;
@@ -323,16 +248,7 @@ void fscache_end_cache_access(struct fscache_cache *cache, enum fscache_access_t
 		wake_up_var(&cache->n_accesses);
 }
 
-/**
- * fscache_io_error - Note a cache I/O error
- * @cache: The record describing the cache
- *
- * Note that an I/O error occurred in a cache and that it should no longer be
- * used for anything.  This also reports the error into the kernel log.
- *
- * See Documentation/filesystems/caching/backend-api.rst for a complete
- * description.
- */
+ 
 void fscache_io_error(struct fscache_cache *cache)
 {
 	if (fscache_set_cache_state_maybe(cache,
@@ -343,14 +259,7 @@ void fscache_io_error(struct fscache_cache *cache)
 }
 EXPORT_SYMBOL(fscache_io_error);
 
-/**
- * fscache_withdraw_cache - Withdraw a cache from the active service
- * @cache: The cache cookie
- *
- * Begin the process of withdrawing a cache from service.  This stops new
- * cache-level and volume-level accesses from taking place and waits for
- * currently ongoing cache-level accesses to end.
- */
+ 
 void fscache_withdraw_cache(struct fscache_cache *cache)
 {
 	int n_accesses;
@@ -360,7 +269,7 @@ void fscache_withdraw_cache(struct fscache_cache *cache)
 
 	fscache_set_cache_state(cache, FSCACHE_CACHE_IS_WITHDRAWN);
 
-	/* Allow wakeups on dec-to-0 */
+	 
 	n_accesses = atomic_dec_return(&cache->n_accesses);
 	trace_fscache_access_cache(cache->debug_id, refcount_read(&cache->ref),
 				   n_accesses, fscache_access_cache_unpin);
@@ -373,9 +282,7 @@ EXPORT_SYMBOL(fscache_withdraw_cache);
 #ifdef CONFIG_PROC_FS
 static const char fscache_cache_states[NR__FSCACHE_CACHE_STATE] = "-PAEW";
 
-/*
- * Generate a list of caches in /proc/fs/fscache/caches
- */
+ 
 static int fscache_caches_seq_show(struct seq_file *m, void *v)
 {
 	struct fscache_cache *cache;
@@ -425,4 +332,4 @@ const struct seq_operations fscache_caches_seq_ops = {
 	.stop   = fscache_caches_seq_stop,
 	.show   = fscache_caches_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
+#endif  

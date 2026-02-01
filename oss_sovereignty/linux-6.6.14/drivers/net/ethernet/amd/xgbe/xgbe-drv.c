@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/spinlock.h>
@@ -135,7 +21,7 @@ static unsigned int ecc_ded_threshold = 2;
 static unsigned int ecc_ded_period = 600;
 
 #ifdef CONFIG_AMD_XGBE_HAVE_ECC
-/* Only expose the ECC parameters if supported */
+ 
 module_param(ecc_sec_info_threshold, uint, 0644);
 MODULE_PARM_DESC(ecc_sec_info_threshold,
 		 " ECC corrected error informational threshold setting");
@@ -197,10 +83,10 @@ static int xgbe_alloc_channels(struct xgbe_prv_data *pdata)
 
 	count = max_t(unsigned int, pdata->tx_ring_count, pdata->rx_ring_count);
 	for (i = 0; i < count; i++) {
-		/* Attempt to use a CPU on the node the device is on */
+		 
 		cpu = cpumask_local_spread(i, dev_to_node(pdata->dev));
 
-		/* Set the allocation node based on the returned CPU */
+		 
 		node = cpu_to_node(cpu);
 
 		channel = xgbe_alloc_node(sizeof(*channel), node);
@@ -281,9 +167,7 @@ static int xgbe_maybe_stop_tx_queue(struct xgbe_channel *channel,
 		netif_stop_subqueue(pdata->netdev, channel->queue_index);
 		ring->tx.queue_stopped = 1;
 
-		/* If we haven't notified the hardware because of xmit_more
-		 * support, tell it now
-		 */
+		 
 		if (ring->tx.xmit_more)
 			pdata->hw_if.tx_start_xmit(channel, ring);
 
@@ -409,7 +293,7 @@ static void xgbe_ecc_isr_task(struct tasklet_struct *t)
 	unsigned int ecc_isr;
 	bool stop = false;
 
-	/* Mask status with only the interrupts we care about */
+	 
 	ecc_isr = XP_IOREAD(pdata, XP_ECC_ISR);
 	ecc_isr &= XP_IOREAD(pdata, XP_ECC_IER);
 	netif_dbg(pdata, intr, pdata->netdev, "ECC_ISR=%#010x\n", ecc_isr);
@@ -453,10 +337,10 @@ static void xgbe_ecc_isr_task(struct tasklet_struct *t)
 			pdata->hw_if.disable_ecc_sec(pdata, XGBE_ECC_SEC_DESC);
 
 out:
-	/* Clear all ECC interrupts */
+	 
 	XP_IOWRITE(pdata, XP_ECC_ISR, ecc_isr);
 
-	/* Reissue interrupt if status is not clear */
+	 
 	if (pdata->vdata->irq_reissue_support)
 		XP_IOWRITE(pdata, XP_INT_REISSUE_EN, 1 << 1);
 }
@@ -482,10 +366,7 @@ static void xgbe_isr_task(struct tasklet_struct *t)
 	unsigned int mac_isr, mac_tssr, mac_mdioisr;
 	unsigned int i;
 
-	/* The DMA interrupt status register also reports MAC and MTL
-	 * interrupts. So for polling mode, we just need to check for
-	 * this register to be non-zero
-	 */
+	 
 	dma_isr = XGMAC_IOREAD(pdata, DMA_ISR);
 	if (!dma_isr)
 		goto isr_done;
@@ -502,25 +383,19 @@ static void xgbe_isr_task(struct tasklet_struct *t)
 		netif_dbg(pdata, intr, pdata->netdev, "DMA_CH%u_ISR=%#010x\n",
 			  i, dma_ch_isr);
 
-		/* The TI or RI interrupt bits may still be set even if using
-		 * per channel DMA interrupts. Check to be sure those are not
-		 * enabled before using the private data napi structure.
-		 */
+		 
 		if (!pdata->per_channel_irq &&
 		    (XGMAC_GET_BITS(dma_ch_isr, DMA_CH_SR, TI) ||
 		     XGMAC_GET_BITS(dma_ch_isr, DMA_CH_SR, RI))) {
 			if (napi_schedule_prep(&pdata->napi)) {
-				/* Disable Tx and Rx interrupts */
+				 
 				xgbe_disable_rx_tx_ints(pdata);
 
-				/* Turn on polling */
+				 
 				__napi_schedule(&pdata->napi);
 			}
 		} else {
-			/* Don't clear Rx/Tx status if doing per channel DMA
-			 * interrupts, these will be cleared by the ISR for
-			 * per channel DMA interrupts.
-			 */
+			 
 			XGMAC_SET_BITS(dma_ch_isr, DMA_CH_SR, TI, 0);
 			XGMAC_SET_BITS(dma_ch_isr, DMA_CH_SR, RI, 0);
 		}
@@ -528,11 +403,11 @@ static void xgbe_isr_task(struct tasklet_struct *t)
 		if (XGMAC_GET_BITS(dma_ch_isr, DMA_CH_SR, RBU))
 			pdata->ext_stats.rx_buffer_unavailable++;
 
-		/* Restart the device on a Fatal Bus Error */
+		 
 		if (XGMAC_GET_BITS(dma_ch_isr, DMA_CH_SR, FBE))
 			schedule_work(&pdata->restart_work);
 
-		/* Clear interrupt signals */
+		 
 		XGMAC_DMA_IOWRITE(channel, DMA_CH_SR, dma_ch_isr);
 	}
 
@@ -555,7 +430,7 @@ static void xgbe_isr_task(struct tasklet_struct *t)
 				  "MAC_TSSR=%#010x\n", mac_tssr);
 
 			if (XGMAC_GET_BITS(mac_tssr, MAC_TSSR, TXTSC)) {
-				/* Read Tx Timestamp to clear interrupt */
+				 
 				pdata->tx_tstamp =
 					hw_if->get_tx_tstamp(pdata);
 				queue_work(pdata->dev_workqueue,
@@ -576,19 +451,19 @@ static void xgbe_isr_task(struct tasklet_struct *t)
 	}
 
 isr_done:
-	/* If there is not a separate AN irq, handle it here */
+	 
 	if (pdata->dev_irq == pdata->an_irq)
 		pdata->phy_if.an_isr(pdata);
 
-	/* If there is not a separate ECC irq, handle it here */
+	 
 	if (pdata->vdata->ecc_support && (pdata->dev_irq == pdata->ecc_irq))
 		xgbe_ecc_isr_task(&pdata->tasklet_ecc);
 
-	/* If there is not a separate I2C irq, handle it here */
+	 
 	if (pdata->vdata->i2c_support && (pdata->dev_irq == pdata->i2c_irq))
 		pdata->i2c_if.i2c_isr(pdata);
 
-	/* Reissue interrupt if status is not clear */
+	 
 	if (pdata->vdata->irq_reissue_support) {
 		unsigned int reissue_mask;
 
@@ -618,21 +493,19 @@ static irqreturn_t xgbe_dma_isr(int irq, void *data)
 	struct xgbe_prv_data *pdata = channel->pdata;
 	unsigned int dma_status;
 
-	/* Per channel DMA interrupts are enabled, so we use the per
-	 * channel napi structure and not the private data napi structure
-	 */
+	 
 	if (napi_schedule_prep(&channel->napi)) {
-		/* Disable Tx and Rx interrupts */
+		 
 		if (pdata->channel_irq_mode)
 			xgbe_disable_rx_tx_int(pdata, channel);
 		else
 			disable_irq_nosync(channel->dma_irq);
 
-		/* Turn on polling */
+		 
 		__napi_schedule_irqoff(&channel->napi);
 	}
 
-	/* Clear Tx/Rx signals */
+	 
 	dma_status = 0;
 	XGMAC_SET_BITS(dma_status, DMA_CH_SR, TI, 1);
 	XGMAC_SET_BITS(dma_status, DMA_CH_SR, RI, 1);
@@ -652,7 +525,7 @@ static void xgbe_tx_timer(struct timer_list *t)
 	napi = (pdata->per_channel_irq) ? &channel->napi : &pdata->napi;
 
 	if (napi_schedule_prep(napi)) {
-		/* Disable Tx and Rx interrupts */
+		 
 		if (pdata->per_channel_irq)
 			if (pdata->channel_irq_mode)
 				xgbe_disable_rx_tx_int(pdata, channel);
@@ -661,7 +534,7 @@ static void xgbe_tx_timer(struct timer_list *t)
 		else
 			xgbe_disable_rx_tx_ints(pdata);
 
-		/* Turn on polling */
+		 
 		__napi_schedule(napi);
 	}
 
@@ -735,7 +608,7 @@ static void xgbe_stop_timers(struct xgbe_prv_data *pdata)
 		if (!channel->tx_ring)
 			break;
 
-		/* Deactivate the Tx timer */
+		 
 		del_timer_sync(&channel->tx_timer);
 		channel->tx_timer_active = 0;
 	}
@@ -754,7 +627,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 
 	hw_feat->version = XGMAC_IOREAD(pdata, MAC_VR);
 
-	/* Hardware feature register 0 */
+	 
 	hw_feat->gmii        = XGMAC_GET_BITS(mac_hfr0, MAC_HWF0R, GMIISEL);
 	hw_feat->vlhash      = XGMAC_GET_BITS(mac_hfr0, MAC_HWF0R, VLHASH);
 	hw_feat->sma         = XGMAC_GET_BITS(mac_hfr0, MAC_HWF0R, SMASEL);
@@ -772,7 +645,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 	hw_feat->sa_vlan_ins = XGMAC_GET_BITS(mac_hfr0, MAC_HWF0R, SAVLANINS);
 	hw_feat->vxn         = XGMAC_GET_BITS(mac_hfr0, MAC_HWF0R, VXN);
 
-	/* Hardware feature register 1 */
+	 
 	hw_feat->rx_fifo_size  = XGMAC_GET_BITS(mac_hfr1, MAC_HWF1R,
 						RXFIFOSIZE);
 	hw_feat->tx_fifo_size  = XGMAC_GET_BITS(mac_hfr1, MAC_HWF1R,
@@ -790,7 +663,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 	hw_feat->l3l4_filter_num = XGMAC_GET_BITS(mac_hfr1, MAC_HWF1R,
 						  L3L4FNUM);
 
-	/* Hardware feature register 2 */
+	 
 	hw_feat->rx_q_cnt     = XGMAC_GET_BITS(mac_hfr2, MAC_HWF2R, RXQCNT);
 	hw_feat->tx_q_cnt     = XGMAC_GET_BITS(mac_hfr2, MAC_HWF2R, TXQCNT);
 	hw_feat->rx_ch_cnt    = XGMAC_GET_BITS(mac_hfr2, MAC_HWF2R, RXCHCNT);
@@ -798,7 +671,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 	hw_feat->pps_out_num  = XGMAC_GET_BITS(mac_hfr2, MAC_HWF2R, PPSOUTNUM);
 	hw_feat->aux_snap_num = XGMAC_GET_BITS(mac_hfr2, MAC_HWF2R, AUXSNAPNUM);
 
-	/* Translate the Hash Table size into actual number */
+	 
 	switch (hw_feat->hash_table_size) {
 	case 0:
 		break;
@@ -813,7 +686,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 		break;
 	}
 
-	/* Translate the address width setting into actual number */
+	 
 	switch (hw_feat->dma_width) {
 	case 0:
 		hw_feat->dma_width = 32;
@@ -828,23 +701,21 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 		hw_feat->dma_width = 32;
 	}
 
-	/* The Queue, Channel and TC counts are zero based so increment them
-	 * to get the actual number
-	 */
+	 
 	hw_feat->rx_q_cnt++;
 	hw_feat->tx_q_cnt++;
 	hw_feat->rx_ch_cnt++;
 	hw_feat->tx_ch_cnt++;
 	hw_feat->tc_cnt++;
 
-	/* Translate the fifo sizes into actual numbers */
+	 
 	hw_feat->rx_fifo_size = 1 << (hw_feat->rx_fifo_size + 7);
 	hw_feat->tx_fifo_size = 1 << (hw_feat->tx_fifo_size + 7);
 
 	if (netif_msg_probe(pdata)) {
 		dev_dbg(pdata->dev, "Hardware features:\n");
 
-		/* Hardware feature register 0 */
+		 
 		dev_dbg(pdata->dev, "  1GbE support              : %s\n",
 			hw_feat->gmii ? "yes" : "no");
 		dev_dbg(pdata->dev, "  VLAN hash filter          : %s\n",
@@ -878,7 +749,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 		dev_dbg(pdata->dev, "  VXLAN/NVGRE support       : %s\n",
 			hw_feat->vxn ? "yes" : "no");
 
-		/* Hardware feature register 1 */
+		 
 		dev_dbg(pdata->dev, "  RX fifo size              : %u\n",
 			hw_feat->rx_fifo_size);
 		dev_dbg(pdata->dev, "  TX fifo size              : %u\n",
@@ -904,7 +775,7 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
 		dev_dbg(pdata->dev, "  L3/L4 Filters             : %u\n",
 			hw_feat->l3l4_filter_num);
 
-		/* Hardware feature register 2 */
+		 
 		dev_dbg(pdata->dev, "  RX queue count            : %u\n",
 			hw_feat->rx_q_cnt);
 		dev_dbg(pdata->dev, "  TX queue count            : %u\n",
@@ -1054,7 +925,7 @@ static int xgbe_request_irqs(struct xgbe_prv_data *pdata)
 	return 0;
 
 err_dma_irq:
-	/* Using an unsigned int, 'i' will go to UINT_MAX and exit */
+	 
 	for (i--; i < pdata->channel_count; i--) {
 		channel = pdata->channel[i];
 
@@ -1259,10 +1130,10 @@ static void xgbe_free_memory(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_desc_if *desc_if = &pdata->desc_if;
 
-	/* Free the ring descriptors and buffers */
+	 
 	desc_if->free_ring_resources(pdata);
 
-	/* Free the channel and ring structures */
+	 
 	xgbe_free_channels(pdata);
 }
 
@@ -1283,20 +1154,20 @@ static int xgbe_alloc_memory(struct xgbe_prv_data *pdata)
 		pdata->new_rx_ring_count = 0;
 	}
 
-	/* Calculate the Rx buffer size before allocating rings */
+	 
 	pdata->rx_buf_size = xgbe_calc_rx_buf_size(netdev, netdev->mtu);
 
-	/* Allocate the channel and ring structures */
+	 
 	ret = xgbe_alloc_channels(pdata);
 	if (ret)
 		return ret;
 
-	/* Allocate the ring descriptors and buffers */
+	 
 	ret = desc_if->alloc_ring_resources(pdata);
 	if (ret)
 		goto err_channels;
 
-	/* Initialize the service and Tx timers */
+	 
 	xgbe_init_timers(pdata);
 
 	return 0;
@@ -1315,7 +1186,7 @@ static int xgbe_start(struct xgbe_prv_data *pdata)
 	unsigned int i;
 	int ret;
 
-	/* Set the number of queues */
+	 
 	ret = netif_set_real_num_tx_queues(netdev, pdata->tx_ring_count);
 	if (ret) {
 		netdev_err(netdev, "error setting real tx queue count\n");
@@ -1328,7 +1199,7 @@ static int xgbe_start(struct xgbe_prv_data *pdata)
 		return ret;
 	}
 
-	/* Set RSS lookup table data for programming */
+	 
 	for (i = 0; i < XGBE_RSS_MAX_TABLE_SIZE; i++)
 		XGMAC_SET_BITS(pdata->rss_table[i], MAC_RSSDR, DMCH,
 			       i % pdata->rx_ring_count);
@@ -1439,7 +1310,7 @@ static void xgbe_stopdev(struct work_struct *work)
 
 void xgbe_full_restart_dev(struct xgbe_prv_data *pdata)
 {
-	/* If not running, "restart" will happen on open */
+	 
 	if (!netif_running(pdata->netdev))
 		return;
 
@@ -1453,7 +1324,7 @@ void xgbe_full_restart_dev(struct xgbe_prv_data *pdata)
 
 void xgbe_restart_dev(struct xgbe_prv_data *pdata)
 {
-	/* If not running, "restart" will happen on open */
+	 
 	if (!netif_running(pdata->netdev))
 		return;
 
@@ -1551,10 +1422,10 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2, UDP, any kind of event packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
-		fallthrough;	/* to PTP v1, UDP, any kind of event packet */
+		fallthrough;	 
 	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV4ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV6ENA, 1);
@@ -1562,10 +1433,10 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2, UDP, Sync packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
-		fallthrough;	/* to PTP v1, UDP, Sync packet */
+		fallthrough;	 
 	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV4ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV6ENA, 1);
@@ -1573,10 +1444,10 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2, UDP, Delay_req packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
-		fallthrough;	/* to PTP v1, UDP, Delay_req packet */
+		fallthrough;	 
 	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV4ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPV6ENA, 1);
@@ -1585,21 +1456,21 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* 802.AS1, Ethernet, any kind of event packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, AV8021ASMEN, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, SNAPTYPSEL, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* 802.AS1, Ethernet, Sync packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, AV8021ASMEN, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSEVNTENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* 802.AS1, Ethernet, Delay_req packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, AV8021ASMEN, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSMSTRENA, 1);
@@ -1607,7 +1478,7 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2/802.AS1, any layer, any kind of event packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPENA, 1);
@@ -1617,7 +1488,7 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2/802.AS1, any layer, Sync packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPENA, 1);
@@ -1627,7 +1498,7 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSENA, 1);
 		break;
 
-	/* PTP v2/802.AS1, any layer, Delay_req packet */
+	 
 	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSVER2ENA, 1);
 		XGMAC_SET_BITS(mac_tscr, MAC_TSCR, TSIPENA, 1);
@@ -1658,7 +1529,7 @@ static void xgbe_prep_tx_tstamp(struct xgbe_prv_data *pdata,
 	if (XGMAC_GET_BITS(packet->attributes, TX_PACKET_ATTRIBUTES, PTP)) {
 		spin_lock_irqsave(&pdata->tstamp_lock, flags);
 		if (pdata->tx_tstamp_skb) {
-			/* Another timestamp in progress, ignore this one */
+			 
 			XGMAC_SET_BITS(packet->attributes,
 				       TX_PACKET_ATTRIBUTES, PTP, 0);
 		} else {
@@ -1704,9 +1575,7 @@ static int xgbe_prep_tso(struct sk_buff *skb, struct xgbe_packet_data *packet)
 	      packet->tcp_header_len, packet->tcp_payload_len);
 	DBGPR("  packet->mss=%u\n", packet->mss);
 
-	/* Update the number of packets that will ultimately be transmitted
-	 * along with the extra bytes for each extra packet
-	 */
+	 
 	packet->tx_packets = skb_shinfo(skb)->gso_segs;
 	packet->tx_bytes += (packet->tx_packets - 1) * packet->header_len;
 
@@ -1776,13 +1645,13 @@ static void xgbe_packet_info(struct xgbe_prv_data *pdata,
 	packet->tx_bytes = skb->len;
 
 	if (xgbe_is_tso(skb)) {
-		/* TSO requires an extra descriptor if mss is different */
+		 
 		if (skb_shinfo(skb)->gso_size != ring->tx.cur_mss) {
 			context_desc = 1;
 			packet->rdesc_count++;
 		}
 
-		/* TSO requires an extra descriptor for TSO header */
+		 
 		packet->rdesc_count++;
 
 		XGMAC_SET_BITS(packet->attributes, TX_PACKET_ATTRIBUTES,
@@ -1798,9 +1667,9 @@ static void xgbe_packet_info(struct xgbe_prv_data *pdata,
 			       VXLAN, 1);
 
 	if (skb_vlan_tag_present(skb)) {
-		/* VLAN requires an extra descriptor if tag is different */
+		 
 		if (skb_vlan_tag_get(skb) != ring->tx.cur_vlan_ctag)
-			/* We can share with the TSO context descriptor */
+			 
 			if (!context_desc) {
 				context_desc = 1;
 				packet->rdesc_count++;
@@ -1834,7 +1703,7 @@ static int xgbe_open(struct net_device *netdev)
 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 	int ret;
 
-	/* Create the various names based on netdev name */
+	 
 	snprintf(pdata->an_name, sizeof(pdata->an_name) - 1, "%s-pcs",
 		 netdev_name(netdev));
 
@@ -1844,7 +1713,7 @@ static int xgbe_open(struct net_device *netdev)
 	snprintf(pdata->i2c_name, sizeof(pdata->i2c_name) - 1, "%s-i2c",
 		 netdev_name(netdev));
 
-	/* Create workqueues */
+	 
 	pdata->dev_workqueue =
 		create_singlethread_workqueue(netdev_name(netdev));
 	if (!pdata->dev_workqueue) {
@@ -1860,12 +1729,12 @@ static int xgbe_open(struct net_device *netdev)
 		goto err_dev_wq;
 	}
 
-	/* Reset the phy settings */
+	 
 	ret = xgbe_phy_reset(pdata);
 	if (ret)
 		goto err_an_wq;
 
-	/* Enable the clocks */
+	 
 	ret = clk_prepare_enable(pdata->sysclk);
 	if (ret) {
 		netdev_alert(netdev, "dma clk_prepare_enable failed\n");
@@ -1917,12 +1786,12 @@ static int xgbe_close(struct net_device *netdev)
 {
 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 
-	/* Stop the device */
+	 
 	xgbe_stop(pdata);
 
 	xgbe_free_memory(pdata);
 
-	/* Disable the clocks */
+	 
 	clk_disable_unprepare(pdata->ptpclk);
 	clk_disable_unprepare(pdata->sysclk);
 
@@ -1962,11 +1831,11 @@ static netdev_tx_t xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
 		goto tx_netdev_return;
 	}
 
-	/* Calculate preliminary packet info */
+	 
 	memset(packet, 0, sizeof(*packet));
 	xgbe_packet_info(pdata, ring, skb, packet);
 
-	/* Check that there are enough descriptors available */
+	 
 	ret = xgbe_maybe_stop_tx_queue(channel, ring, packet->rdesc_count);
 	if (ret)
 		goto tx_netdev_return;
@@ -1987,16 +1856,16 @@ static netdev_tx_t xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 	xgbe_prep_tx_tstamp(pdata, skb, packet);
 
-	/* Report on the actual number of bytes (to be) sent */
+	 
 	netdev_tx_sent_queue(txq, packet->tx_bytes);
 
-	/* Configure required descriptor fields for transmission */
+	 
 	hw_if->dev_xmit(channel);
 
 	if (netif_msg_pktdata(pdata))
 		xgbe_print_pkt(netdev, skb, true);
 
-	/* Stop the queue in advance if there may not be enough descriptors */
+	 
 	xgbe_maybe_stop_tx_queue(channel, ring, XGBE_TX_MAX_DESCS);
 
 	ret = NETDEV_TX_OK;
@@ -2170,7 +2039,7 @@ static void xgbe_poll_controller(struct net_device *netdev)
 
 	DBGPR("<--xgbe_poll_controller\n");
 }
-#endif /* End CONFIG_NET_POLL_CONTROLLER */
+#endif  
 
 static int xgbe_setup_tc(struct net_device *netdev, enum tc_setup_type type,
 			 void *type_data)
@@ -2205,7 +2074,7 @@ static netdev_features_t xgbe_fix_features(struct net_device *netdev,
 	if (!pdata->hw_feat.vxn)
 		return features;
 
-	/* VXLAN CSUM requires VXLAN base */
+	 
 	if ((features & NETIF_F_GSO_UDP_TUNNEL_CSUM) &&
 	    !(features & NETIF_F_GSO_UDP_TUNNEL)) {
 		netdev_notice(netdev,
@@ -2213,7 +2082,7 @@ static netdev_features_t xgbe_fix_features(struct net_device *netdev,
 		features |= NETIF_F_GSO_UDP_TUNNEL;
 	}
 
-	/* Can't do one without doing the other */
+	 
 	if ((features & vxlan_base) != vxlan_base) {
 		netdev_notice(netdev,
 			      "forcing both tx and rx udp tunnel support\n");
@@ -2327,7 +2196,7 @@ static void xgbe_rx_refresh(struct xgbe_channel *channel)
 	while (ring->dirty != ring->cur) {
 		rdata = XGBE_GET_DESC_DATA(ring, ring->dirty);
 
-		/* Reset rdata values */
+		 
 		desc_if->unmap_rdata(pdata, rdata);
 
 		if (desc_if->map_rx_buffer(pdata, ring, rdata))
@@ -2338,11 +2207,10 @@ static void xgbe_rx_refresh(struct xgbe_channel *channel)
 		ring->dirty++;
 	}
 
-	/* Make sure everything is written before the register write */
+	 
 	wmb();
 
-	/* Update the Rx Tail Pointer Register with address of
-	 * the last cleaned entry */
+	 
 	rdata = XGBE_GET_DESC_DATA(ring, ring->dirty - 1);
 	XGMAC_DMA_IOWRITE(channel, DMA_CH_RDTR_LO,
 			  lower_32_bits(rdata->rdesc_dma));
@@ -2360,9 +2228,7 @@ static struct sk_buff *xgbe_create_skb(struct xgbe_prv_data *pdata,
 	if (!skb)
 		return NULL;
 
-	/* Pull in the header buffer which may contain just the header
-	 * or the header plus data
-	 */
+	 
 	dma_sync_single_range_for_cpu(pdata->dev, rdata->rx.hdr.dma_base,
 				      rdata->rx.hdr.dma_off,
 				      rdata->rx.hdr.dma_len, DMA_FROM_DEVICE);
@@ -2378,23 +2244,19 @@ static struct sk_buff *xgbe_create_skb(struct xgbe_prv_data *pdata,
 static unsigned int xgbe_rx_buf1_len(struct xgbe_ring_data *rdata,
 				     struct xgbe_packet_data *packet)
 {
-	/* Always zero if not the first descriptor */
+	 
 	if (!XGMAC_GET_BITS(packet->attributes, RX_PACKET_ATTRIBUTES, FIRST))
 		return 0;
 
-	/* First descriptor with split header, return header length */
+	 
 	if (rdata->rx.hdr_len)
 		return rdata->rx.hdr_len;
 
-	/* First descriptor but not the last descriptor and no split header,
-	 * so the full buffer was used
-	 */
+	 
 	if (!XGMAC_GET_BITS(packet->attributes, RX_PACKET_ATTRIBUTES, LAST))
 		return rdata->rx.hdr.dma_len;
 
-	/* First descriptor and last descriptor and no split header, so
-	 * calculate how much of the buffer was used
-	 */
+	 
 	return min_t(unsigned int, rdata->rx.hdr.dma_len, rdata->rx.len);
 }
 
@@ -2402,13 +2264,11 @@ static unsigned int xgbe_rx_buf2_len(struct xgbe_ring_data *rdata,
 				     struct xgbe_packet_data *packet,
 				     unsigned int len)
 {
-	/* Always the full buffer if not the last descriptor */
+	 
 	if (!XGMAC_GET_BITS(packet->attributes, RX_PACKET_ATTRIBUTES, LAST))
 		return rdata->rx.buf.dma_len;
 
-	/* Last descriptor so calculate how much of the buffer was used
-	 * for the last bit of data
-	 */
+	 
 	return rdata->rx.len - len;
 }
 
@@ -2428,13 +2288,13 @@ static int xgbe_tx_poll(struct xgbe_channel *channel)
 
 	DBGPR("-->xgbe_tx_poll\n");
 
-	/* Nothing to do if there isn't a Tx ring for this channel */
+	 
 	if (!ring)
 		return 0;
 
 	cur = ring->cur;
 
-	/* Be sure we get ring->cur before accessing descriptor data */
+	 
 	smp_rmb();
 
 	txq = netdev_get_tx_queue(netdev, channel->queue_index);
@@ -2447,8 +2307,7 @@ static int xgbe_tx_poll(struct xgbe_channel *channel)
 		if (!hw_if->tx_complete(rdesc))
 			break;
 
-		/* Make sure descriptor fields are read after reading the OWN
-		 * bit */
+		 
 		dma_rmb();
 
 		if (netif_msg_tx_done(pdata))
@@ -2459,7 +2318,7 @@ static int xgbe_tx_poll(struct xgbe_channel *channel)
 			tx_bytes += rdata->tx.bytes;
 		}
 
-		/* Free the SKB and reset the descriptor for re-use */
+		 
 		desc_if->unmap_rdata(pdata, rdata);
 		hw_if->tx_desc_reset(rdata);
 
@@ -2501,7 +2360,7 @@ static int xgbe_rx_poll(struct xgbe_channel *channel, int budget)
 
 	DBGPR("-->xgbe_rx_poll: budget=%d\n", budget);
 
-	/* Nothing to do if there isn't a Rx ring for this channel */
+	 
 	if (!ring)
 		return 0;
 
@@ -2515,7 +2374,7 @@ static int xgbe_rx_poll(struct xgbe_channel *channel, int budget)
 	while (packet_count < budget) {
 		DBGPR("  cur = %d\n", ring->cur);
 
-		/* First time in loop see if we need to restore state */
+		 
 		if (!received && rdata->state_saved) {
 			skb = rdata->state.skb;
 			error = rdata->state.error;
@@ -2548,7 +2407,7 @@ read_again:
 					 RX_PACKET_ATTRIBUTES,
 					 CONTEXT);
 
-		/* Earlier error, just drain the remaining data */
+		 
 		if ((!last || context_next) && error)
 			goto read_again;
 
@@ -2561,16 +2420,14 @@ read_again:
 		}
 
 		if (!context) {
-			/* Get the data length in the descriptor buffers */
+			 
 			buf1_len = xgbe_rx_buf1_len(rdata, packet);
 			len += buf1_len;
 			buf2_len = xgbe_rx_buf2_len(rdata, packet, len);
 			len += buf2_len;
 
 			if (buf2_len > rdata->rx.buf.dma_len) {
-				/* Hardware inconsistency within the descriptors
-				 * that has resulted in a length underflow.
-				 */
+				 
 				error = 1;
 				goto skip_data;
 			}
@@ -2609,7 +2466,7 @@ skip_data:
 			goto next_packet;
 		}
 
-		/* Be sure we don't exceed the configured MTU */
+		 
 		max_len = netdev->mtu + ETH_HLEN;
 		if (!(netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
 		    (skb->protocol == htons(ETH_P_8021Q)))
@@ -2669,7 +2526,7 @@ next_packet:
 		packet_count++;
 	}
 
-	/* Check if we need to save state before leaving */
+	 
 	if (received && (!last || context_next)) {
 		rdata = XGBE_GET_DESC_DATA(ring, ring->cur);
 		rdata->state_saved = 1;
@@ -2692,15 +2549,15 @@ static int xgbe_one_poll(struct napi_struct *napi, int budget)
 
 	DBGPR("-->xgbe_one_poll: budget=%d\n", budget);
 
-	/* Cleanup Tx ring first */
+	 
 	xgbe_tx_poll(channel);
 
-	/* Process Rx ring next */
+	 
 	processed = xgbe_rx_poll(channel, budget);
 
-	/* If we processed everything, we are done */
+	 
 	if ((processed < budget) && napi_complete_done(napi, processed)) {
-		/* Enable Tx and Rx interrupts */
+		 
 		if (pdata->channel_irq_mode)
 			xgbe_enable_rx_tx_int(pdata, channel);
 		else
@@ -2731,19 +2588,19 @@ static int xgbe_all_poll(struct napi_struct *napi, int budget)
 		for (i = 0; i < pdata->channel_count; i++) {
 			channel = pdata->channel[i];
 
-			/* Cleanup Tx ring first */
+			 
 			xgbe_tx_poll(channel);
 
-			/* Process Rx ring next */
+			 
 			if (ring_budget > (budget - processed))
 				ring_budget = budget - processed;
 			processed += xgbe_rx_poll(channel, ring_budget);
 		}
 	} while ((processed < budget) && (processed != last_processed));
 
-	/* If we processed everything, we are done */
+	 
 	if ((processed < budget) && napi_complete_done(napi, processed)) {
-		/* Enable Tx and Rx interrupts */
+		 
 		xgbe_enable_rx_tx_ints(pdata);
 	}
 

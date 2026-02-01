@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  User level driver support for input subsystem
- *
- * Heavily based on evdev.c by Vojtech Pavlik
- *
- * Author: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
- *
- * Changes/Revisions:
- *	0.4	01/09/2014 (Benjamin Tissoires <benjamin.tissoires@redhat.com>)
- *		- add UI_GET_SYSNAME ioctl
- *	0.3	09/04/2006 (Anssi Hannula <anssi.hannula@gmail.com>)
- *		- updated ff support for the changes in kernel interface
- *		- added MODULE_VERSION
- *	0.2	16/10/2004 (Micah Dowty <micah@navi.cx>)
- *		- added force feedback support
- *              - added UI_SET_PHYS
- *	0.1	20/06/2002
- *		- first public version
- */
+
+ 
 #include <uapi/linux/uinput.h>
 #include <linux/poll.h>
 #include <linux/sched.h>
@@ -39,7 +21,7 @@ enum uinput_state { UIST_NEW_DEVICE, UIST_SETUP_COMPLETE, UIST_CREATED };
 
 struct uinput_request {
 	unsigned int		id;
-	unsigned int		code;	/* UI_FF_UPLOAD, UI_FF_ERASE */
+	unsigned int		code;	 
 
 	int			retval;
 	struct completion	done;
@@ -92,7 +74,7 @@ static int uinput_dev_event(struct input_dev *dev,
 	return 0;
 }
 
-/* Atomically allocate an ID for the given request. Returns 0 on success. */
+ 
 static bool uinput_request_alloc_id(struct uinput_device *udev,
 				    struct uinput_request *request)
 {
@@ -117,7 +99,7 @@ static bool uinput_request_alloc_id(struct uinput_device *udev,
 static struct uinput_request *uinput_request_find(struct uinput_device *udev,
 						  unsigned int id)
 {
-	/* Find an input request, by ID. Returns NULL if the ID isn't valid. */
+	 
 	if (id >= UINPUT_NUM_REQUESTS)
 		return NULL;
 
@@ -127,7 +109,7 @@ static struct uinput_request *uinput_request_find(struct uinput_device *udev,
 static int uinput_request_reserve_slot(struct uinput_device *udev,
 				       struct uinput_request *request)
 {
-	/* Allocate slot. If none are available right away, wait. */
+	 
 	return wait_event_interruptible(udev->requests_waitq,
 					uinput_request_alloc_id(udev, request));
 }
@@ -135,7 +117,7 @@ static int uinput_request_reserve_slot(struct uinput_device *udev,
 static void uinput_request_release_slot(struct uinput_device *udev,
 					unsigned int id)
 {
-	/* Mark slot as available */
+	 
 	spin_lock(&udev->requests_lock);
 	udev->requests[id] = NULL;
 	spin_unlock(&udev->requests_lock);
@@ -159,10 +141,7 @@ static int uinput_request_send(struct uinput_device *udev,
 
 	init_completion(&request->done);
 
-	/*
-	 * Tell our userspace application about this new request
-	 * by queueing an input event.
-	 */
+	 
 	uinput_dev_event(udev->dev, EV_UINPUT, request->code, request->id);
 
  out:
@@ -195,10 +174,7 @@ static int uinput_request_submit(struct uinput_device *udev,
 	return retval;
 }
 
-/*
- * Fail all outstanding requests so handlers don't wait for the userspace
- * to finish processing them.
- */
+ 
 static void uinput_flush_requests(struct uinput_device *udev)
 {
 	struct uinput_request *request;
@@ -239,13 +215,7 @@ static int uinput_dev_upload_effect(struct input_dev *dev,
 	struct uinput_device *udev = input_get_drvdata(dev);
 	struct uinput_request request;
 
-	/*
-	 * uinput driver does not currently support periodic effects with
-	 * custom waveform since it does not have a way to pass buffer of
-	 * samples (custom_data) to userspace. If ever there is a device
-	 * supporting custom waveforms we would need to define an additional
-	 * ioctl (UI_UPLOAD_SAMPLES) but for now we just bail out.
-	 */
+	 
 	if (effect->type == FF_PERIODIC &&
 			effect->u.periodic.waveform == FF_CUSTOM)
 		return -EINVAL;
@@ -273,13 +243,7 @@ static int uinput_dev_erase_effect(struct input_dev *dev, int effect_id)
 
 static int uinput_dev_flush(struct input_dev *dev, struct file *file)
 {
-	/*
-	 * If we are called with file == NULL that means we are tearing
-	 * down the device, and therefore we can not handle FF erase
-	 * requests: either we are handling UI_DEV_DESTROY (and holding
-	 * the udev->mutex), or the file descriptor is closed and there is
-	 * nobody on the other side anymore.
-	 */
+	 
 	return file ? input_ff_flush(dev, file) : 0;
 }
 
@@ -350,11 +314,7 @@ static int uinput_create_device(struct uinput_device *udev)
 		dev->ff->playback = uinput_dev_playback;
 		dev->ff->set_gain = uinput_dev_set_gain;
 		dev->ff->set_autocenter = uinput_dev_set_autocenter;
-		/*
-		 * The standard input_ff_flush() implementation does
-		 * not quite work for uinput as we can't reasonably
-		 * handle FF requests during device teardown.
-		 */
+		 
 		dev->flush = uinput_dev_flush;
 	}
 
@@ -428,9 +388,7 @@ static int uinput_validate_absbits(struct input_dev *dev)
 	if (!test_bit(EV_ABS, dev->evbit))
 		return 0;
 
-	/*
-	 * Check if absmin/absmax/absfuzz/absflat are sane.
-	 */
+	 
 
 	for_each_set_bit(cnt, dev->absbit, ABS_CNT) {
 		if (!dev->absinfo)
@@ -506,7 +464,7 @@ static int uinput_abs_setup(struct uinput_device *udev,
 	return 0;
 }
 
-/* legacy setup via write() */
+ 
 static int uinput_setup_device_legacy(struct uinput_device *udev,
 				      const char __user *buffer, size_t count)
 {
@@ -532,7 +490,7 @@ static int uinput_setup_device_legacy(struct uinput_device *udev,
 
 	udev->ff_effects_max = user_dev->ff_effects_max;
 
-	/* Ensure name is filled in */
+	 
 	if (!user_dev->name[0]) {
 		retval = -EINVAL;
 		goto exit;
@@ -570,13 +528,7 @@ static int uinput_setup_device_legacy(struct uinput_device *udev,
 	return retval;
 }
 
-/*
- * Returns true if the given timestamp is valid (i.e., if all the following
- * conditions are satisfied), false otherwise.
- * 1) given timestamp is positive
- * 2) it's within the allowed offset before the current time
- * 3) it's not in the future
- */
+ 
 static bool is_valid_timestamp(const ktime_t timestamp)
 {
 	ktime_t zero_time;
@@ -609,12 +561,7 @@ static ssize_t uinput_inject_events(struct uinput_device *udev,
 		return -EINVAL;
 
 	while (bytes + input_event_size() <= count) {
-		/*
-		 * Note that even if some events were fetched successfully
-		 * we are still going to return EFAULT instead of partial
-		 * count to let userspace know that it got it's buffers
-		 * all wrong.
-		 */
+		 
 		if (input_event_from_user(buffer + bytes, &ev))
 			return -EFAULT;
 
@@ -727,7 +674,7 @@ static ssize_t uinput_read(struct file *file, char __user *buffer,
 static __poll_t uinput_poll(struct file *file, poll_table *wait)
 {
 	struct uinput_device *udev = file->private_data;
-	__poll_t mask = EPOLLOUT | EPOLLWRNORM; /* uinput is always writable */
+	__poll_t mask = EPOLLOUT | EPOLLWRNORM;  
 
 	poll_wait(file, &udev->waitq, wait);
 
@@ -763,12 +710,7 @@ static int uinput_ff_upload_to_user(char __user *buffer,
 
 		ff_up_compat.request_id = ff_up->request_id;
 		ff_up_compat.retval = ff_up->retval;
-		/*
-		 * It so happens that the pointer that gives us the trouble
-		 * is the last field in the structure. Since we don't support
-		 * custom waveforms in uinput anyway we can just copy the whole
-		 * thing (to the compat size) and ignore the pointer.
-		 */
+		 
 		memcpy(&ff_up_compat.effect, &ff_up->effect,
 			sizeof(struct ff_effect_compat));
 		memcpy(&ff_up_compat.old, &ff_up->old,
@@ -865,7 +807,7 @@ static int uinput_str_to_user(void __user *dest, const char *str,
 	if (ret)
 		return -EFAULT;
 
-	/* force terminating '\0' */
+	 
 	ret = put_user(0, p + len - 1);
 	return ret ? -EFAULT : len;
 }
@@ -912,7 +854,7 @@ static long uinput_ioctl_handler(struct file *file, unsigned int cmd,
 		retval = uinput_dev_setup(udev, p);
 		goto out;
 
-	/* UI_ABS_SETUP is handled in the variable size ioctls */
+	 
 
 	case UI_SET_EVBIT:
 		retval = uinput_set_bit(arg, evbit, EV_MAX);
@@ -1048,7 +990,7 @@ static long uinput_ioctl_handler(struct file *file, unsigned int cmd,
 
 	size = _IOC_SIZE(cmd);
 
-	/* Now check variable-length commands */
+	 
 	switch (cmd & ~IOCSIZE_MASK) {
 	case UI_GET_SYSNAME(0):
 		if (udev->state != UIST_CREATED) {
@@ -1077,10 +1019,7 @@ static long uinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 #ifdef CONFIG_COMPAT
 
-/*
- * These IOCTLs change their size and thus their numbers between
- * 32 and 64 bits.
- */
+ 
 #define UI_SET_PHYS_COMPAT		\
 	_IOW(UINPUT_IOCTL_BASE, 108, compat_uptr_t)
 #define UI_BEGIN_FF_UPLOAD_COMPAT	\

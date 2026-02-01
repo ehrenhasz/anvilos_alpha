@@ -1,24 +1,9 @@
-// SPDX-License-Identifier: LGPL-2.0+
-/* Copyright (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Paul Eggert (eggert@twinsun.com). */
 
-/*
- * dgb 10/02/98: ripped this from glibc source to help convert timestamps
- *               to unix time
- *     10/04/98: added new table-based lookup after seeing how ugly
- *               the gnu code is
- * blf 09/27/99: ripped out all the old code and inserted new table from
- *		 John Brockmeyer (without leap second corrections)
- *		 rewrote udf_stamp_to_time and fixed timezone accounting in
- *		 udf_time_to_stamp.
- */
+ 
 
-/*
- * We don't take into account leap seconds. This may be correct or incorrect.
- * For more NIST information (especially dealing with leap seconds), see:
- * http://www.boulder.nist.gov/timefreq/pubs/bulletin/leapsecond.htm
- */
+ 
+
+ 
 
 #include "udfdecl.h"
 
@@ -36,9 +21,9 @@ udf_disk_stamp_to_time(struct timespec64 *dest, struct timestamp src)
 
 	if (type == 1) {
 		offset = typeAndTimezone << 4;
-		/* sign extent offset */
+		 
 		offset = (offset >> 4);
-		if (offset == -2047) /* unspecified offset */
+		if (offset == -2047)  
 			offset = 0;
 	} else
 		offset = 0;
@@ -48,10 +33,7 @@ udf_disk_stamp_to_time(struct timespec64 *dest, struct timestamp src)
 	dest->tv_sec -= offset * 60;
 	dest->tv_nsec = 1000 * (src.centiseconds * 10000 +
 			src.hundredsOfMicroseconds * 100 + src.microseconds);
-	/*
-	 * Sanitize nanosecond field since reportedly some filesystems are
-	 * recorded with bogus sub-second values.
-	 */
+	 
 	dest->tv_nsec %= NSEC_PER_SEC;
 }
 
@@ -81,4 +63,4 @@ udf_time_to_disk_stamp(struct timestamp *dest, struct timespec64 ts)
 			      dest->hundredsOfMicroseconds * 100);
 }
 
-/* EOF */
+ 

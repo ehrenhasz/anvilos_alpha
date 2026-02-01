@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <asm/unaligned.h>
 
@@ -39,24 +39,24 @@ mcp251xfd_cmd_prepare_write_reg(const struct mcp251xfd_priv *priv,
 	} else if (len == 1) {
 		u16 crc;
 
-		/* CRC */
+		 
 		len += sizeof(write_reg_buf->safe.cmd);
 		crc = mcp251xfd_crc16_compute(&write_reg_buf->safe, len);
 		put_unaligned_be16(crc, (void *)write_reg_buf + len);
 
-		/* Total length */
+		 
 		len += sizeof(write_reg_buf->safe.crc);
 	} else {
 		u16 crc;
 
 		mcp251xfd_spi_cmd_crc_set_len_in_reg(&write_reg_buf->crc.cmd,
 						     len);
-		/* CRC */
+		 
 		len += sizeof(write_reg_buf->crc.cmd);
 		crc = mcp251xfd_crc16_compute(&write_reg_buf->crc, len);
 		put_unaligned_be16(crc, (void *)write_reg_buf + len);
 
-		/* Total length */
+		 
 		len += sizeof(write_reg_buf->crc.crc);
 	}
 
@@ -73,15 +73,15 @@ mcp251xfd_ring_init_tef(struct mcp251xfd_priv *priv, u16 *base)
 	u8 len;
 	int i;
 
-	/* TEF */
+	 
 	tef_ring = priv->tef;
 	tef_ring->head = 0;
 	tef_ring->tail = 0;
 
-	/* TEF- and TX-FIFO have same number of objects */
+	 
 	*base = mcp251xfd_get_tef_obj_addr(priv->tx->obj_num);
 
-	/* FIFO IRQ enable */
+	 
 	addr = MCP251XFD_REG_TEFCON;
 	val = MCP251XFD_REG_TEFCON_TEFOVIE | MCP251XFD_REG_TEFCON_TEFNEIE;
 
@@ -92,7 +92,7 @@ mcp251xfd_ring_init_tef(struct mcp251xfd_priv *priv, u16 *base)
 	spi_message_init_with_transfers(&tef_ring->irq_enable_msg,
 					&tef_ring->irq_enable_xfer, 1);
 
-	/* FIFO increment TEF tail pointer */
+	 
 	addr = MCP251XFD_REG_TEFCON;
 	val = MCP251XFD_REG_TEFCON_UINC;
 	len = mcp251xfd_cmd_prepare_write_reg(priv, &tef_ring->uinc_buf,
@@ -107,13 +107,7 @@ mcp251xfd_ring_init_tef(struct mcp251xfd_priv *priv, u16 *base)
 		xfer->cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
 	}
 
-	/* "cs_change == 1" on the last transfer results in an active
-	 * chip select after the complete SPI message. This causes the
-	 * controller to interpret the next register access as
-	 * data. Set "cs_change" of the last transfer to "0" to
-	 * properly deactivate the chip select at the end of the
-	 * message.
-	 */
+	 
 	xfer->cs_change = 0;
 
 	if (priv->tx_coalesce_usecs_irq || priv->tx_obj_num_coalesce_irq) {
@@ -139,7 +133,7 @@ mcp251xfd_tx_ring_init_tx_obj(const struct mcp251xfd_priv *priv,
 	struct spi_transfer *xfer;
 	u16 addr;
 
-	/* FIFO load */
+	 
 	addr = mcp251xfd_get_tx_obj_addr(ring, n);
 	if (priv->devtype_data.quirks & MCP251XFD_QUIRK_CRC_TX)
 		mcp251xfd_spi_cmd_write_crc_set_addr(&tx_obj->buf.crc.cmd,
@@ -150,17 +144,17 @@ mcp251xfd_tx_ring_init_tx_obj(const struct mcp251xfd_priv *priv,
 
 	xfer = &tx_obj->xfer[0];
 	xfer->tx_buf = &tx_obj->buf;
-	xfer->len = 0;	/* actual len is assigned on the fly */
+	xfer->len = 0;	 
 	xfer->cs_change = 1;
 	xfer->cs_change_delay.value = 0;
 	xfer->cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
 
-	/* FIFO request to send */
+	 
 	xfer = &tx_obj->xfer[1];
 	xfer->tx_buf = &ring->rts_buf;
 	xfer->len = rts_buf_len;
 
-	/* SPI message */
+	 
 	spi_message_init_with_transfers(&tx_obj->msg, tx_obj->xfer,
 					ARRAY_SIZE(tx_obj->xfer));
 }
@@ -185,7 +179,7 @@ mcp251xfd_ring_init_tx(struct mcp251xfd_priv *priv, u16 *base, u8 *fifo_nr)
 	*base = mcp251xfd_get_tx_obj_addr(tx_ring, tx_ring->obj_num);
 	*fifo_nr += 1;
 
-	/* FIFO request to send */
+	 
 	addr = MCP251XFD_REG_FIFOCON(tx_ring->fifo_nr);
 	val = MCP251XFD_REG_FIFOCON_TXREQ | MCP251XFD_REG_FIFOCON_UINC;
 	len = mcp251xfd_cmd_prepare_write_reg(priv, &tx_ring->rts_buf,
@@ -215,7 +209,7 @@ mcp251xfd_ring_init_rx(struct mcp251xfd_priv *priv, u16 *base, u8 *fifo_nr)
 		*base = mcp251xfd_get_rx_obj_addr(rx_ring, rx_ring->obj_num);
 		*fifo_nr += 1;
 
-		/* FIFO IRQ enable */
+		 
 		addr = MCP251XFD_REG_FIFOCON(rx_ring->fifo_nr);
 		val = MCP251XFD_REG_FIFOCON_RXOVIE |
 			MCP251XFD_REG_FIFOCON_TFNRFNIE;
@@ -226,7 +220,7 @@ mcp251xfd_ring_init_rx(struct mcp251xfd_priv *priv, u16 *base, u8 *fifo_nr)
 		spi_message_init_with_transfers(&rx_ring->irq_enable_msg,
 						&rx_ring->irq_enable_xfer, 1);
 
-		/* FIFO increment RX tail pointer */
+		 
 		val = MCP251XFD_REG_FIFOCON_UINC;
 		len = mcp251xfd_cmd_prepare_write_reg(priv, &rx_ring->uinc_buf,
 						      addr, val, val);
@@ -240,31 +234,10 @@ mcp251xfd_ring_init_rx(struct mcp251xfd_priv *priv, u16 *base, u8 *fifo_nr)
 			xfer->cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
 		}
 
-		/* "cs_change == 1" on the last transfer results in an
-		 * active chip select after the complete SPI
-		 * message. This causes the controller to interpret
-		 * the next register access as data. Set "cs_change"
-		 * of the last transfer to "0" to properly deactivate
-		 * the chip select at the end of the message.
-		 */
+		 
 		xfer->cs_change = 0;
 
-		/* Use 1st RX-FIFO for IRQ coalescing. If enabled
-		 * (rx_coalesce_usecs_irq or rx_max_coalesce_frames_irq
-		 * is activated), use the last transfer to disable:
-		 *
-		 * - TFNRFNIE (Receive FIFO Not Empty Interrupt)
-		 *
-		 * and enable:
-		 *
-		 * - TFHRFHIE (Receive FIFO Half Full Interrupt)
-		 *   - or -
-		 * - TFERFFIE (Receive FIFO Full Interrupt)
-		 *
-		 * depending on rx_max_coalesce_frames_irq.
-		 *
-		 * The RXOVIE (Overflow Interrupt) is always enabled.
-		 */
+		 
 		if (rx_ring->nr == 0 && (priv->rx_coalesce_usecs_irq ||
 					 priv->rx_obj_num_coalesce_irq)) {
 			val = MCP251XFD_REG_FIFOCON_UINC |
@@ -297,22 +270,7 @@ int mcp251xfd_ring_init(struct mcp251xfd_priv *priv)
 	mcp251xfd_ring_init_rx(priv, &base, &fifo_nr);
 	mcp251xfd_ring_init_tx(priv, &base, &fifo_nr);
 
-	/* mcp251xfd_handle_rxif() will iterate over all RX rings.
-	 * Rings with their corresponding bit set in
-	 * priv->regs_status.rxif are read out.
-	 *
-	 * If the chip is configured for only 1 RX-FIFO, and if there
-	 * is an RX interrupt pending (RXIF in INT register is set),
-	 * it must be the 1st RX-FIFO.
-	 *
-	 * We mark the RXIF of the 1st FIFO as pending here, so that
-	 * we can skip the read of the RXIF register in
-	 * mcp251xfd_read_regs_status() for the 1 RX-FIFO only case.
-	 *
-	 * If we use more than 1 RX-FIFO, this value gets overwritten
-	 * in mcp251xfd_read_regs_status(), so set it unconditionally
-	 * here.
-	 */
+	 
 	priv->regs_status.rxif = BIT(priv->rx[0]->fifo_nr);
 
 	if (priv->tx_obj_num_coalesce_irq) {
@@ -466,7 +424,7 @@ int mcp251xfd_ring_alloc(struct mcp251xfd_priv *priv)
 	u8 tx_obj_size, rx_obj_size;
 	u8 rem, i;
 
-	/* switching from CAN-2.0 to CAN-FD mode or vice versa */
+	 
 	if (fd_mode != test_bit(MCP251XFD_FLAGS_FD_MODE, priv->flags)) {
 		struct can_ram_layout layout;
 

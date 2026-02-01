@@ -1,30 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Authors:
- *    Dave Airlie <airlied@redhat.com>
- *    Gerd Hoffmann <kraxel@redhat.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/virtio.h>
@@ -113,10 +87,7 @@ virtio_gpu_get_vbuf(struct virtio_gpu_device *vgdev,
 static struct virtio_gpu_ctrl_hdr *
 virtio_gpu_vbuf_ctrl_hdr(struct virtio_gpu_vbuffer *vbuf)
 {
-	/* this assumes a vbuf contains a command that starts with a
-	 * virtio_gpu_ctrl_hdr, which is true for both ctrl and cursor
-	 * virtqueues.
-	 */
+	 
 	return (struct virtio_gpu_ctrl_hdr *)vbuf->buf;
 }
 
@@ -271,7 +242,7 @@ void virtio_gpu_dequeue_cursor_func(struct work_struct *work)
 	wake_up(&vgdev->cursorq.ack_queue);
 }
 
-/* Create sg_table from a vmalloc'd buffer. */
+ 
 static struct sg_table *vmalloc_to_sgt(char *data, uint32_t size, int *sg_ents)
 {
 	int ret, s, i;
@@ -342,9 +313,7 @@ again:
 		goto again;
 	}
 
-	/* now that the position of the vbuf in the virtqueue is known, we can
-	 * finally set the fence id
-	 */
+	 
 	if (fence) {
 		virtio_gpu_fence_emit(vgdev, virtio_gpu_vbuf_ctrl_hdr(vbuf),
 				      fence);
@@ -376,13 +345,13 @@ static int virtio_gpu_queue_fenced_ctrl_buffer(struct virtio_gpu_device *vgdev,
 	struct sg_table *sgt = NULL;
 	int elemcnt = 0, outcnt = 0, incnt = 0, ret;
 
-	/* set up vcmd */
+	 
 	sg_init_one(&vcmd, vbuf->buf, vbuf->size);
 	elemcnt++;
 	sgs[outcnt] = &vcmd;
 	outcnt++;
 
-	/* set up vout */
+	 
 	if (vbuf->data_size) {
 		if (is_vmalloc_addr(vbuf->data_buf)) {
 			int sg_ents;
@@ -404,7 +373,7 @@ static int virtio_gpu_queue_fenced_ctrl_buffer(struct virtio_gpu_device *vgdev,
 		outcnt++;
 	}
 
-	/* set up vresp */
+	 
 	if (vbuf->resp_size) {
 		sg_init_one(&vresp, vbuf->resp_buf, vbuf->resp_size);
 		elemcnt++;
@@ -486,11 +455,9 @@ retry:
 	drm_dev_exit(idx);
 }
 
-/* just create gem objects for userspace and long lived objects,
- * just use dma_alloced pages for the queue objects?
- */
+ 
 
-/* create a basic resource */
+ 
 void virtio_gpu_cmd_create_resource(struct virtio_gpu_device *vgdev,
 				    struct virtio_gpu_object *bo,
 				    struct virtio_gpu_object_params *params,
@@ -710,7 +677,7 @@ static void virtio_gpu_cmd_capset_cb(struct virtio_gpu_device *vgdev,
 		    cache_ent->id == le32_to_cpu(cmd->capset_id)) {
 			memcpy(cache_ent->caps_cache, resp->capset_data,
 			       cache_ent->size);
-			/* Copy must occur before is_valid is signalled. */
+			 
 			smp_wmb();
 			atomic_set(&cache_ent->is_valid, 1);
 			break;
@@ -848,7 +815,7 @@ int virtio_gpu_cmd_get_capset(struct virtio_gpu_device *vgdev,
 	atomic_set(&cache_ent->is_valid, 0);
 	cache_ent->size = max_size;
 	spin_lock(&vgdev->display_info_lock);
-	/* Search while under lock in case it was added by another task. */
+	 
 	list_for_each_entry(search_ent, &vgdev->cap_cache, head) {
 		if (search_ent->id == vgdev->capsets[idx].id &&
 		    search_ent->version == version) {
@@ -861,7 +828,7 @@ int virtio_gpu_cmd_get_capset(struct virtio_gpu_device *vgdev,
 	spin_unlock(&vgdev->display_info_lock);
 
 	if (*cache_p) {
-		/* Entry was found, so free everything that was just created. */
+		 
 		kfree(resp_buf);
 		kfree(cache_ent->caps_cache);
 		kfree(cache_ent);

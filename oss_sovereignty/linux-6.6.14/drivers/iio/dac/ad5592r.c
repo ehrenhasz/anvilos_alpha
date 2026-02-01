@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5592R Digital <-> Analog converters driver
- *
- * Copyright 2015-2016 Analog Devices Inc.
- * Author: Paul Cercueil <paul.cercueil@analog.com>
- */
+
+ 
 
 #include "ad5592r-base.h"
 
@@ -25,7 +20,7 @@ static int ad5592r_spi_wnop_r16(struct ad5592r_state *st, __be16 *buf)
 			.len = 2
 		};
 
-	st->spi_msg_nop = 0; /* NOP */
+	st->spi_msg_nop = 0;  
 
 	return spi_sync_transfer(spi, &t, 1);
 }
@@ -50,10 +45,7 @@ static int ad5592r_read_adc(struct ad5592r_state *st, unsigned chan, u16 *value)
 	if (ret)
 		return ret;
 
-	/*
-	 * Invalid data:
-	 * See Figure 40. Single-Channel ADC Conversion Sequence
-	 */
+	 
 	ret = ad5592r_spi_wnop_r16(st, &st->spi_msg);
 	if (ret)
 		return ret;

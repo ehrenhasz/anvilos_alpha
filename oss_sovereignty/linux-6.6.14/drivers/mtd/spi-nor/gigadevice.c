@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
@@ -13,15 +10,7 @@ gd25q256_post_bfpt(struct spi_nor *nor,
 		   const struct sfdp_parameter_header *bfpt_header,
 		   const struct sfdp_bfpt *bfpt)
 {
-	/*
-	 * GD25Q256C supports the first version of JESD216 which does not define
-	 * the Quad Enable methods. Overwrite the default Quad Enable method.
-	 *
-	 * GD25Q256 GENERATION | SFDP MAJOR VERSION | SFDP MINOR VERSION
-	 *      GD25Q256C      | SFDP_JESD216_MAJOR | SFDP_JESD216_MINOR
-	 *      GD25Q256D      | SFDP_JESD216_MAJOR | SFDP_JESD216B_MINOR
-	 *      GD25Q256E      | SFDP_JESD216_MAJOR | SFDP_JESD216B_MINOR
-	 */
+	 
 	if (bfpt_header->major == SFDP_JESD216_MAJOR &&
 	    bfpt_header->minor == SFDP_JESD216_MINOR)
 		nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;

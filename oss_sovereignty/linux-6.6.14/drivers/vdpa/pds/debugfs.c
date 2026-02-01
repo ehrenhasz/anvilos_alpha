@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/vdpa.h>
@@ -277,9 +277,7 @@ void pds_vdpa_debugfs_del_vdpadev(struct pds_vdpa_aux *vdpa_aux)
 
 void pds_vdpa_debugfs_reset_vdpadev(struct pds_vdpa_aux *vdpa_aux)
 {
-	/* we don't keep track of the entries, so remove it all
-	 * then rebuild the basics
-	 */
+	 
 	pds_vdpa_debugfs_del_vdpadev(vdpa_aux);
 	pds_vdpa_debugfs_add_pcidev(vdpa_aux);
 	pds_vdpa_debugfs_add_ident(vdpa_aux);

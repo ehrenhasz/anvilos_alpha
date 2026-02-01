@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cx20442.c  --  CX20442 ALSA Soc Audio driver
- *
- * Copyright 2009 Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
- *
- * Initially based on sound/soc/codecs/wm8400.c
- * Copyright 2008, 2009 Wolfson Microelectronics PLC.
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/tty.h>
 #include <linux/slab.h>
@@ -159,8 +151,7 @@ static int cx20442_write(struct snd_soc_component *component, unsigned int reg,
 	if (reg >= 1)
 		return -EINVAL;
 
-	/* tty and write pointers required for talking to the modem
-	 * are expected to be set by the line discipline initialization code */
+	 
 	if (!cx20442->tty || !cx20442->tty->ops->write)
 		return -EIO;
 
@@ -196,28 +187,21 @@ static int cx20442_write(struct snd_soc_component *component, unsigned int reg,
 	return 0;
 }
 
-/*
- * Line discpline related code
- *
- * Any of the callback functions below can be used in two ways:
- * 1) registerd by a machine driver as one of line discipline operations,
- * 2) called from a machine's provided line discipline callback function
- *    in case when extra machine specific code must be run as well.
- */
+ 
 
-/* Modem init: echo off, digital speaker off, quiet off, voice mode */
+ 
 static const char v253_init[] = "ate0m0q0+fclass=8\r";
 
-/* Line discipline .open() */
+ 
 static int v253_open(struct tty_struct *tty)
 {
 	int ret, len = strlen(v253_init);
 
-	/* Doesn't make sense without write callback */
+	 
 	if (!tty->ops->write)
 		return -EINVAL;
 
-	/* Won't work if no codec pointer has been passed by a card driver */
+	 
 	if (!tty->disc_data)
 		return -ENODEV;
 
@@ -226,14 +210,14 @@ static int v253_open(struct tty_struct *tty)
 		ret = -EIO;
 		goto err;
 	}
-	/* Actual setup will be performed after the modem responds. */
+	 
 	return 0;
 err:
 	tty->disc_data = NULL;
 	return ret;
 }
 
-/* Line discipline .close() */
+ 
 static void v253_close(struct tty_struct *tty)
 {
 	struct snd_soc_component *component = tty->disc_data;
@@ -246,18 +230,18 @@ static void v253_close(struct tty_struct *tty)
 
 	cx20442 = snd_soc_component_get_drvdata(component);
 
-	/* Prevent the codec driver from further accessing the modem */
+	 
 	cx20442->tty = NULL;
 	component->card->pop_time = 0;
 }
 
-/* Line discipline .hangup() */
+ 
 static void v253_hangup(struct tty_struct *tty)
 {
 	v253_close(tty);
 }
 
-/* Line discipline .receive_buf() */
+ 
 static void v253_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 			 size_t count)
 {
@@ -270,9 +254,9 @@ static void v253_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 	cx20442 = snd_soc_component_get_drvdata(component);
 
 	if (!cx20442->tty) {
-		/* First modem response, complete setup procedure */
+		 
 
-		/* Set up codec driver access to modem controls */
+		 
 		cx20442->tty = tty;
 		component->card->pop_time = 1;
 	}
@@ -289,9 +273,7 @@ struct tty_ldisc_ops v253_ops = {
 EXPORT_SYMBOL_GPL(v253_ops);
 
 
-/*
- * Codec DAI
- */
+ 
 
 static struct snd_soc_dai_driver cx20442_dai = {
 	.name = "cx20442-voice",
@@ -354,17 +336,7 @@ static int cx20442_component_probe(struct snd_soc_component *component)
 		int err = PTR_ERR(cx20442->por);
 
 		dev_warn(component->dev, "failed to get POR supply (%d)", err);
-		/*
-		 * When running on a non-dt platform and requested regulator
-		 * is not available, regulator_get() never returns
-		 * -EPROBE_DEFER as it is not able to justify if the regulator
-		 * may still appear later.  On the other hand, the board can
-		 * still set full constraints flag at late_initcall in order
-		 * to instruct regulator_get() to return a dummy one if
-		 * sufficient.  Hence, if we get -ENODEV here, let's convert
-		 * it to -EPROBE_DEFER and wait for the board to decide or
-		 * let Deferred Probe infrastructure handle this error.
-		 */
+		 
 		if (err == -ENODEV)
 			err = -EPROBE_DEFER;
 		kfree(cx20442);
@@ -379,7 +351,7 @@ static int cx20442_component_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-/* power down chip */
+ 
 static void cx20442_component_remove(struct snd_soc_component *component)
 {
 	struct cx20442_priv *cx20442 = snd_soc_component_get_drvdata(component);
@@ -390,7 +362,7 @@ static void cx20442_component_remove(struct snd_soc_component *component)
 	}
 
 	if (!IS_ERR(cx20442->por)) {
-		/* should be already in STANDBY, hence disabled */
+		 
 		regulator_put(cx20442->por);
 	}
 

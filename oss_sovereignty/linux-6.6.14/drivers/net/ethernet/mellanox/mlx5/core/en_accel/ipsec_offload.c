@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2017, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include "mlx5_core.h"
 #include "en.h"
@@ -79,10 +79,7 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
 	if (MLX5_CAP_IPSEC(mdev, ipsec_esn))
 		caps |= MLX5_IPSEC_CAP_ESN;
 
-	/* We can accommodate up to 2^24 different IPsec objects
-	 * because we use up to 24 bit in flow table metadata
-	 * to hold the IPsec Object unique handle.
-	 */
+	 
 	WARN_ON_ONCE(MLX5_CAP_IPSEC(mdev, log_max_ipsec_offload) > 24);
 	return caps;
 }
@@ -107,16 +104,11 @@ static void mlx5e_ipsec_packet_setup(void *obj, u32 pdn,
 			 attrs->replay_esn.esn);
 	}
 
-	/* ASO context */
+	 
 	MLX5_SET(ipsec_obj, obj, ipsec_aso_access_pd, pdn);
 	MLX5_SET(ipsec_obj, obj, full_offload, 1);
 	MLX5_SET(ipsec_aso, aso_ctx, valid, 1);
-	/* MLX5_IPSEC_ASO_REG_C_4_5 is type C register that is used
-	 * in flow steering to perform matching against. Please be
-	 * aware that this register was chosen arbitrary and can't
-	 * be used in other places as long as IPsec packet offload
-	 * active.
-	 */
+	 
 	MLX5_SET(ipsec_obj, obj, aso_return_reg, MLX5_IPSEC_ASO_REG_C_4_5);
 	if (attrs->dir == XFRM_DEV_OFFLOAD_OUT)
 		MLX5_SET(ipsec_aso, aso_ctx, mode, MLX5_IPSEC_ASO_INC_SN);
@@ -148,14 +140,14 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
 
 	obj = MLX5_ADDR_OF(create_ipsec_obj_in, in, ipsec_object);
 
-	/* salt and seq_iv */
+	 
 	salt_p = MLX5_ADDR_OF(ipsec_obj, obj, salt);
 	memcpy(salt_p, &aes_gcm->salt, sizeof(aes_gcm->salt));
 
 	MLX5_SET(ipsec_obj, obj, icv_length, MLX5_IPSEC_OBJECT_ICV_LEN_16B);
 	salt_iv_p = MLX5_ADDR_OF(ipsec_obj, obj, implicit_iv);
 	memcpy(salt_iv_p, &aes_gcm->seq_iv, sizeof(aes_gcm->seq_iv));
-	/* esn */
+	 
 	if (attrs->replay_esn.trigger) {
 		MLX5_SET(ipsec_obj, obj, esn_en, 1);
 		MLX5_SET(ipsec_obj, obj, esn_msb, attrs->replay_esn.esn_msb);
@@ -164,7 +156,7 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
 
 	MLX5_SET(ipsec_obj, obj, dekn, sa_entry->enc_key_id);
 
-	/* general object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
 		 MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
@@ -203,7 +195,7 @@ int mlx5_ipsec_create_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry)
 	struct mlx5_core_dev *mdev = mlx5e_ipsec_sa2dev(sa_entry);
 	int err;
 
-	/* key */
+	 
 	err = mlx5_create_encryption_key(mdev, aes_gcm->aes_key,
 					 aes_gcm->key_len / BITS_PER_BYTE,
 					 MLX5_ACCEL_OBJ_IPSEC_KEY,
@@ -249,7 +241,7 @@ static int mlx5_modify_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry,
 	if (!(general_obj_types & MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC))
 		return -EINVAL;
 
-	/* general object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_IPSEC);
 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, sa_entry->ipsec_obj_id);
@@ -263,7 +255,7 @@ static int mlx5_modify_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry,
 	obj = MLX5_ADDR_OF(query_ipsec_obj_out, out, ipsec_object);
 	modify_field_select = MLX5_GET64(ipsec_obj, obj, modify_field_select);
 
-	/* esn */
+	 
 	if (!(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_OVERLAP) ||
 	    !(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_MSB))
 		return -EOPNOTSUPP;
@@ -275,7 +267,7 @@ static int mlx5_modify_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry,
 	MLX5_SET(ipsec_obj, obj, esn_msb, attrs->replay_esn.esn_msb);
 	MLX5_SET(ipsec_obj, obj, esn_overlap, attrs->replay_esn.overlap);
 
-	/* general object fields set */
+	 
 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
 
 	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
@@ -318,13 +310,7 @@ static void mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry,
 
 	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &attrs);
 
-	/* It is safe to execute the modify below unlocked since the only flows
-	 * that could affect this HW object, are create, destroy and this work.
-	 *
-	 * Creation flow can't co-exist with this modify work, the destruction
-	 * flow would cancel this work, and this work is a single entity that
-	 * can't conflict with it self.
-	 */
+	 
 	spin_unlock_bh(&sa_entry->x->lock);
 	mlx5_accel_esp_modify_xfrm(sa_entry, &attrs);
 	spin_lock_bh(&sa_entry->x->lock);
@@ -373,47 +359,31 @@ static void mlx5e_ipsec_handle_limits(struct mlx5e_ipsec_sa_entry *sa_entry)
 	soft_arm = !MLX5_GET(ipsec_aso, aso->ctx, soft_lft_arm);
 	hard_arm = !MLX5_GET(ipsec_aso, aso->ctx, hard_lft_arm);
 	if (!soft_arm && !hard_arm)
-		/* It is not lifetime event */
+		 
 		return;
 
 	hard_cnt = MLX5_GET(ipsec_aso, aso->ctx, remove_flow_pkt_cnt);
 	if (!hard_cnt || hard_arm) {
-		/* It is possible to see packet counter equal to zero without
-		 * hard limit event armed. Such situation can be if packet
-		 * decreased, while we handled soft limit event.
-		 *
-		 * However it will be HW/FW bug if hard limit event is raised
-		 * and packet counter is not zero.
-		 */
+		 
 		WARN_ON_ONCE(hard_arm && hard_cnt);
 
-		/* Notify about hard limit */
+		 
 		xfrm_state_check_expire(sa_entry->x);
 		return;
 	}
 
-	/* We are in soft limit event. */
+	 
 	if (!sa_entry->limits.soft_limit_hit &&
 	    sa_entry->limits.round == attrs->lft.numb_rounds_soft) {
 		sa_entry->limits.soft_limit_hit = true;
-		/* Notify about soft limit */
+		 
 		xfrm_state_check_expire(sa_entry->x);
 
 		if (sa_entry->limits.round == attrs->lft.numb_rounds_hard)
 			goto hard;
 
 		if (attrs->lft.soft_packet_limit > BIT_ULL(31)) {
-			/* We cannot avoid a soft_value that might have the high
-			 * bit set. For instance soft_value=2^31+1 cannot be
-			 * adjusted to the low bit clear version of soft_value=1
-			 * because it is too close to 0.
-			 *
-			 * Thus we have this corner case where we can hit the
-			 * soft_limit with the high bit set, but cannot adjust
-			 * the counter. Thus we set a temporary interrupt_value
-			 * at least 2^30 away from here and do the adjustment
-			 * then.
-			 */
+			 
 			mlx5e_ipsec_aso_update_soft(sa_entry,
 						    BIT_ULL(31) - BIT_ULL(30));
 			sa_entry->limits.fix_limit = true;
@@ -619,7 +589,7 @@ int mlx5e_ipsec_aso_query(struct mlx5e_ipsec_sa_entry *sa_entry,
 	do {
 		ret = mlx5_aso_poll_cq(aso->aso, false);
 		if (ret)
-			/* We are in atomic context */
+			 
 			udelay(10);
 	} while (ret && time_is_after_jiffies(expires));
 	spin_unlock_bh(&aso->lock);

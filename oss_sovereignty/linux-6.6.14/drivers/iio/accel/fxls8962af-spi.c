@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP FXLS8962AF/FXLS8964AF Accelerometer SPI Driver
- *
- * Copyright 2021 Connected Cars A/S
- */
+
+ 
 
 #include <linux/dev_printk.h>
 #include <linux/err.h>

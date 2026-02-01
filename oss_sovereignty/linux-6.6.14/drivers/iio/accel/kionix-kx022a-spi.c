@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ROHM Semiconductors
- *
- * ROHM/KIONIX KX022A accelerometer driver
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>

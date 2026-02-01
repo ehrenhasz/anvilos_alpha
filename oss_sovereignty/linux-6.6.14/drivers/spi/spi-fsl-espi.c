@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale eSPI controller driver.
- *
- * Copyright 2010 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/fsl_devices.h>
@@ -19,24 +15,24 @@
 #include <linux/pm_runtime.h>
 #include <sysdev/fsl_soc.h>
 
-/* eSPI Controller registers */
-#define ESPI_SPMODE	0x00	/* eSPI mode register */
-#define ESPI_SPIE	0x04	/* eSPI event register */
-#define ESPI_SPIM	0x08	/* eSPI mask register */
-#define ESPI_SPCOM	0x0c	/* eSPI command register */
-#define ESPI_SPITF	0x10	/* eSPI transmit FIFO access register*/
-#define ESPI_SPIRF	0x14	/* eSPI receive FIFO access register*/
-#define ESPI_SPMODE0	0x20	/* eSPI cs0 mode register */
+ 
+#define ESPI_SPMODE	0x00	 
+#define ESPI_SPIE	0x04	 
+#define ESPI_SPIM	0x08	 
+#define ESPI_SPCOM	0x0c	 
+#define ESPI_SPITF	0x10	 
+#define ESPI_SPIRF	0x14	 
+#define ESPI_SPMODE0	0x20	 
 
 #define ESPI_SPMODEx(x)	(ESPI_SPMODE0 + (x) * 4)
 
-/* eSPI Controller mode register definitions */
+ 
 #define SPMODE_ENABLE		BIT(31)
 #define SPMODE_LOOP		BIT(30)
 #define SPMODE_TXTHR(x)		((x) << 8)
 #define SPMODE_RXTHR(x)		((x) << 0)
 
-/* eSPI Controller CS mode register definitions */
+ 
 #define CSMODE_CI_INACTIVEHIGH	BIT(31)
 #define CSMODE_CP_BEGIN_EDGECLK	BIT(30)
 #define CSMODE_REV		BIT(29)
@@ -51,39 +47,39 @@
 #define FSL_ESPI_FIFO_SIZE	32
 #define FSL_ESPI_RXTHR		15
 
-/* Default mode/csmode for eSPI controller */
+ 
 #define SPMODE_INIT_VAL (SPMODE_TXTHR(4) | SPMODE_RXTHR(FSL_ESPI_RXTHR))
 #define CSMODE_INIT_VAL (CSMODE_POL_1 | CSMODE_BEF(0) \
 		| CSMODE_AFT(0) | CSMODE_CG(1))
 
-/* SPIE register values */
+ 
 #define SPIE_RXCNT(reg)     ((reg >> 24) & 0x3F)
 #define SPIE_TXCNT(reg)     ((reg >> 16) & 0x3F)
-#define	SPIE_TXE		BIT(15)	/* TX FIFO empty */
-#define	SPIE_DON		BIT(14)	/* TX done */
-#define	SPIE_RXT		BIT(13)	/* RX FIFO threshold */
-#define	SPIE_RXF		BIT(12)	/* RX FIFO full */
-#define	SPIE_TXT		BIT(11)	/* TX FIFO threshold*/
-#define	SPIE_RNE		BIT(9)	/* RX FIFO not empty */
-#define	SPIE_TNF		BIT(8)	/* TX FIFO not full */
+#define	SPIE_TXE		BIT(15)	 
+#define	SPIE_DON		BIT(14)	 
+#define	SPIE_RXT		BIT(13)	 
+#define	SPIE_RXF		BIT(12)	 
+#define	SPIE_TXT		BIT(11)	 
+#define	SPIE_RNE		BIT(9)	 
+#define	SPIE_TNF		BIT(8)	 
 
-/* SPIM register values */
-#define	SPIM_TXE		BIT(15)	/* TX FIFO empty */
-#define	SPIM_DON		BIT(14)	/* TX done */
-#define	SPIM_RXT		BIT(13)	/* RX FIFO threshold */
-#define	SPIM_RXF		BIT(12)	/* RX FIFO full */
-#define	SPIM_TXT		BIT(11)	/* TX FIFO threshold*/
-#define	SPIM_RNE		BIT(9)	/* RX FIFO not empty */
-#define	SPIM_TNF		BIT(8)	/* TX FIFO not full */
+ 
+#define	SPIM_TXE		BIT(15)	 
+#define	SPIM_DON		BIT(14)	 
+#define	SPIM_RXT		BIT(13)	 
+#define	SPIM_RXF		BIT(12)	 
+#define	SPIM_TXT		BIT(11)	 
+#define	SPIM_RNE		BIT(9)	 
+#define	SPIM_TNF		BIT(8)	 
 
-/* SPCOM register values */
+ 
 #define SPCOM_CS(x)		((x) << 30)
-#define SPCOM_DO		BIT(28) /* Dual output */
-#define SPCOM_TO		BIT(27) /* TX only */
+#define SPCOM_DO		BIT(28)  
+#define SPCOM_TO		BIT(27)  
 #define SPCOM_RXSKIP(x)		((x) << 16)
 #define SPCOM_TRANLEN(x)	((x) << 0)
 
-#define	SPCOM_TRANLEN_MAX	0x10000	/* Max transaction length */
+#define	SPCOM_TRANLEN_MAX	0x10000	 
 
 #define AUTOSUSPEND_TIMEOUT 2000
 
@@ -104,7 +100,7 @@ struct fsl_espi {
 
 	spinlock_t lock;
 
-	u32 spibrg;             /* SPIBRG input clock */
+	u32 spibrg;              
 
 	struct completion done;
 };
@@ -168,7 +164,7 @@ static int fsl_espi_check_message(struct spi_message *m)
 		}
 	}
 
-	/* ESPI supports MSB-first transfers for word size 8 / 16 only */
+	 
 	if (!(m->spi->mode & SPI_LSB_FIRST) && first->bits_per_word != 8 &&
 	    first->bits_per_word != 16) {
 		dev_err(espi->dev,
@@ -185,16 +181,7 @@ static unsigned int fsl_espi_check_rxskip_mode(struct spi_message *m)
 	struct spi_transfer *t;
 	unsigned int i = 0, rxskip = 0;
 
-	/*
-	 * prerequisites for ESPI rxskip mode:
-	 * - message has two transfers
-	 * - first transfer is a write and second is a read
-	 *
-	 * In addition the current low-level transfer mechanism requires
-	 * that the rxskip bytes fit into the TX FIFO. Else the transfer
-	 * would hang because after the first FSL_ESPI_FIFO_SIZE bytes
-	 * the TX FIFO isn't re-filled.
-	 */
+	 
 	list_for_each_entry(t, &m->transfers, transfer_list) {
 		if (i == 0) {
 			if (!t->tx_buf || t->rx_buf ||
@@ -217,7 +204,7 @@ static void fsl_espi_fill_tx_fifo(struct fsl_espi *espi, u32 events)
 	unsigned int tx_left;
 	const void *tx_buf;
 
-	/* if events is zero transfer has not started and tx fifo is empty */
+	 
 	tx_fifo_avail = events ? SPIE_TXCNT(events) :  FSL_ESPI_FIFO_SIZE;
 start:
 	tx_left = espi->tx_t->len - espi->tx_pos;
@@ -254,7 +241,7 @@ start:
 	}
 
 	if (!tx_left) {
-		/* Last transfer finished, in rxskip mode only one is needed */
+		 
 		if (list_is_last(&espi->tx_t->transfer_list,
 		    espi->m_transfers) || espi->rxskip) {
 			espi->tx_done = true;
@@ -262,7 +249,7 @@ start:
 		}
 		espi->tx_t = list_next_entry(espi->tx_t, transfer_list);
 		espi->tx_pos = 0;
-		/* continue with next transfer if tx fifo is not full */
+		 
 		if (tx_fifo_avail)
 			goto start;
 	}
@@ -314,7 +301,7 @@ start:
 		}
 		espi->rx_t = list_next_entry(espi->rx_t, transfer_list);
 		espi->rx_pos = 0;
-		/* continue with next transfer if rx fifo is not empty */
+		 
 		if (rx_fifo_avail)
 			goto start;
 	}
@@ -329,7 +316,7 @@ static void fsl_espi_setup_transfer(struct spi_device *spi,
 	struct fsl_espi_cs *cs = spi_get_ctldata(spi);
 	u32 hw_mode_old = cs->hw_mode;
 
-	/* mask out bits we are going to set */
+	 
 	cs->hw_mode &= ~(CSMODE_LEN(0xF) | CSMODE_DIV16 | CSMODE_PM(0xF));
 
 	cs->hw_mode |= CSMODE_LEN(bits_per_word - 1);
@@ -343,7 +330,7 @@ static void fsl_espi_setup_transfer(struct spi_device *spi,
 
 	cs->hw_mode |= CSMODE_PM(pm);
 
-	/* don't write the mode register if the mode doesn't change */
+	 
 	if (cs->hw_mode != hw_mode_old)
 		fsl_espi_write_reg(espi, ESPI_SPMODEx(spi_get_chipselect(spi, 0)),
 				   cs->hw_mode);
@@ -358,11 +345,11 @@ static int fsl_espi_bufs(struct spi_device *spi, struct spi_transfer *t)
 
 	reinit_completion(&espi->done);
 
-	/* Set SPCOM[CS] and SPCOM[TRANLEN] field */
+	 
 	spcom = SPCOM_CS(spi_get_chipselect(spi, 0));
 	spcom |= SPCOM_TRANLEN(t->len - 1);
 
-	/* configure RXSKIP mode */
+	 
 	if (espi->rxskip) {
 		spcom |= SPCOM_RXSKIP(espi->rxskip);
 		rx_len = t->len - espi->rxskip;
@@ -372,23 +359,23 @@ static int fsl_espi_bufs(struct spi_device *spi, struct spi_transfer *t)
 
 	fsl_espi_write_reg(espi, ESPI_SPCOM, spcom);
 
-	/* enable interrupts */
+	 
 	mask = SPIM_DON;
 	if (rx_len > FSL_ESPI_FIFO_SIZE)
 		mask |= SPIM_RXT;
 	fsl_espi_write_reg(espi, ESPI_SPIM, mask);
 
-	/* Prevent filling the fifo from getting interrupted */
+	 
 	spin_lock_irq(&espi->lock);
 	fsl_espi_fill_tx_fifo(espi, 0);
 	spin_unlock_irq(&espi->lock);
 
-	/* Won't hang up forever, SPI bus sometimes got lost interrupts... */
+	 
 	ret = wait_for_completion_timeout(&espi->done, 2 * HZ);
 	if (ret == 0)
 		dev_err(espi->dev, "Transfer timed out!\n");
 
-	/* disable rx ints */
+	 
 	fsl_espi_write_reg(espi, ESPI_SPIM, 0);
 
 	return ret == 0 ? -ETIMEDOUT : 0;
@@ -400,7 +387,7 @@ static int fsl_espi_trans(struct spi_message *m, struct spi_transfer *trans)
 	struct spi_device *spi = m->spi;
 	int ret;
 
-	/* In case of LSB-first and bits_per_word > 8 byte-swap all words */
+	 
 	espi->swab = spi->mode & SPI_LSB_FIRST && trans->bits_per_word > 8;
 
 	espi->m_transfers = &m->transfers;
@@ -419,7 +406,7 @@ static int fsl_espi_trans(struct spi_message *m, struct spi_transfer *trans)
 		return -EINVAL;
 	}
 
-	/* In RXSKIP mode skip first transfer for reads */
+	 
 	if (espi->rxskip)
 		espi->rx_t = list_next_entry(espi->rx_t, transfer_list);
 
@@ -493,7 +480,7 @@ static int fsl_espi_setup(struct spi_device *spi)
 	pm_runtime_get_sync(espi->dev);
 
 	cs->hw_mode = fsl_espi_read_reg(espi, ESPI_SPMODEx(spi_get_chipselect(spi, 0)));
-	/* mask out bits we are going to set */
+	 
 	cs->hw_mode &= ~(CSMODE_CP_BEGIN_EDGECLK | CSMODE_CI_INACTIVEHIGH
 			 | CSMODE_REV);
 
@@ -504,7 +491,7 @@ static int fsl_espi_setup(struct spi_device *spi)
 	if (!(spi->mode & SPI_LSB_FIRST))
 		cs->hw_mode |= CSMODE_REV;
 
-	/* Handle the loop mode */
+	 
 	loop_mode = fsl_espi_read_reg(espi, ESPI_SPMODE);
 	loop_mode &= ~SPMODE_LOOP;
 	if (spi->mode & SPI_LOOP)
@@ -538,7 +525,7 @@ static void fsl_espi_cpu_irq(struct fsl_espi *espi, u32 events)
 	if (!espi->tx_done || !espi->rx_done)
 		return;
 
-	/* we're done, but check for errors before returning */
+	 
 	events = fsl_espi_read_reg(espi, ESPI_SPIE);
 
 	if (!(events & SPIE_DON))
@@ -561,7 +548,7 @@ static irqreturn_t fsl_espi_irq(s32 irq, void *context_data)
 
 	spin_lock(&espi->lock);
 
-	/* Get interrupt events(tx/rx) */
+	 
 	events = fsl_espi_read_reg(espi, ESPI_SPIE);
 	mask = fsl_espi_read_reg(espi, ESPI_SPIM);
 	if (!(events & mask)) {
@@ -573,7 +560,7 @@ static irqreturn_t fsl_espi_irq(s32 irq, void *context_data)
 
 	fsl_espi_cpu_irq(espi, events);
 
-	/* Clear the events */
+	 
 	fsl_espi_write_reg(espi, ESPI_SPIE, events);
 
 	spin_unlock(&espi->lock);
@@ -622,29 +609,29 @@ static void fsl_espi_init_regs(struct device *dev, bool initial)
 	u32 csmode, cs, prop;
 	int ret;
 
-	/* SPI controller initializations */
+	 
 	fsl_espi_write_reg(espi, ESPI_SPMODE, 0);
 	fsl_espi_write_reg(espi, ESPI_SPIM, 0);
 	fsl_espi_write_reg(espi, ESPI_SPCOM, 0);
 	fsl_espi_write_reg(espi, ESPI_SPIE, 0xffffffff);
 
-	/* Init eSPI CS mode register */
+	 
 	for_each_available_child_of_node(host->dev.of_node, nc) {
-		/* get chip select */
+		 
 		ret = of_property_read_u32(nc, "reg", &cs);
 		if (ret || cs >= host->num_chipselect)
 			continue;
 
 		csmode = CSMODE_INIT_VAL;
 
-		/* check if CSBEF is set in device tree */
+		 
 		ret = of_property_read_u32(nc, "fsl,csbef", &prop);
 		if (!ret) {
 			csmode &= ~(CSMODE_BEF(0xf));
 			csmode |= CSMODE_BEF(prop);
 		}
 
-		/* check if CSAFT is set in device tree */
+		 
 		ret = of_property_read_u32(nc, "fsl,csaft", &prop);
 		if (!ret) {
 			csmode &= ~(CSMODE_AFT(0xf));
@@ -657,7 +644,7 @@ static void fsl_espi_init_regs(struct device *dev, bool initial)
 			dev_info(dev, "cs=%u, init_csmode=0x%x\n", cs, csmode);
 	}
 
-	/* Enable SPI interface */
+	 
 	fsl_espi_write_reg(espi, ESPI_SPMODE, SPMODE_INIT_VAL | SPMODE_ENABLE);
 }
 
@@ -695,7 +682,7 @@ static int fsl_espi_probe(struct device *dev, struct resource *mem,
 		ret = -EINVAL;
 		goto err_probe;
 	}
-	/* determined by clock divider fields DIV16/PM in register SPMODEx */
+	 
 	host->min_speed_hz = DIV_ROUND_UP(espi->spibrg, 4 * 16 * 16);
 	host->max_speed_hz = DIV_ROUND_UP(espi->spibrg, 4);
 
@@ -707,7 +694,7 @@ static int fsl_espi_probe(struct device *dev, struct resource *mem,
 		goto err_probe;
 	}
 
-	/* Register for SPI Interrupt */
+	 
 	ret = devm_request_irq(dev, irq, fsl_espi_irq, 0, "fsl_espi", espi);
 	if (ret)
 		goto err_probe;
@@ -814,7 +801,7 @@ static int of_fsl_espi_resume(struct device *dev)
 
 	return spi_controller_resume(host);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops espi_pm = {
 	SET_RUNTIME_PM_OPS(fsl_espi_runtime_suspend,

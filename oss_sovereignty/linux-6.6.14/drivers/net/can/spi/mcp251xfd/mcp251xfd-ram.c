@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2021, 2022 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include "mcp251xfd-ram.h"
 
@@ -29,12 +29,7 @@ can_ram_rounddown_pow_of_two(const struct can_ram_config *config,
 	val = can_ram_clamp(config, obj, val);
 
 	if (coalesce) {
-		/* Use 1st FIFO for coalescing, if requested.
-		 *
-		 * Either use complete FIFO (and FIFO Full IRQ) for
-		 * coalescing or only half of FIFO (FIFO Half Full
-		 * IRQ) and use remaining half for normal objects.
-		 */
+		 
 		ret = min_t(u8, coalesce * 2, config->fifo_depth);
 		val -= ret;
 		fifo_num--;
@@ -46,7 +41,7 @@ can_ram_rounddown_pow_of_two(const struct can_ram_config *config,
 		n = min_t(u8, rounddown_pow_of_two(val),
 			  config->fifo_depth);
 
-		/* skip small FIFOs */
+		 
 		if (n < obj->fifo_depth_min)
 			return ret;
 
@@ -66,7 +61,7 @@ void can_ram_get_layout(struct can_ram_layout *layout,
 	u8 num_rx, num_tx;
 	u16 ram_free;
 
-	/* default CAN */
+	 
 
 	num_tx = config->tx.def[fd_mode];
 	num_tx = can_ram_rounddown_pow_of_two(config, &config->tx, 0, num_tx);
@@ -79,7 +74,7 @@ void can_ram_get_layout(struct can_ram_layout *layout,
 	layout->default_rx = can_ram_rounddown_pow_of_two(config, &config->rx, 0, num_rx);
 	layout->default_tx = num_tx;
 
-	/* MAX CAN */
+	 
 
 	ram_free = config->size;
 	ram_free -= config->tx.size[fd_mode] * config->tx.min;
@@ -92,21 +87,19 @@ void can_ram_get_layout(struct can_ram_layout *layout,
 	layout->max_rx = can_ram_rounddown_pow_of_two(config, &config->rx, 0, num_rx);
 	layout->max_tx = can_ram_rounddown_pow_of_two(config, &config->tx, 0, num_tx);
 
-	/* cur CAN */
+	 
 
 	if (ring) {
 		u8 num_rx_coalesce = 0, num_tx_coalesce = 0;
 
 		num_rx = can_ram_rounddown_pow_of_two(config, &config->rx, 0, ring->rx_pending);
 
-		/* The ethtool doc says:
-		 * To disable coalescing, set usecs = 0 and max_frames = 1.
-		 */
+		 
 		if (ec && !(ec->rx_coalesce_usecs_irq == 0 &&
 			    ec->rx_max_coalesced_frames_irq == 1)) {
 			u8 max;
 
-			/* use only max half of available objects for coalescing */
+			 
 			max = min_t(u8, num_rx / 2, config->fifo_depth);
 			num_rx_coalesce = clamp(ec->rx_max_coalesced_frames_irq,
 						(u32)config->rx.fifo_depth_coalesce_min,
@@ -122,14 +115,12 @@ void can_ram_get_layout(struct can_ram_layout *layout,
 		num_tx = min_t(u8, ring->tx_pending, num_tx);
 		num_tx = can_ram_rounddown_pow_of_two(config, &config->tx, 0, num_tx);
 
-		/* The ethtool doc says:
-		 * To disable coalescing, set usecs = 0 and max_frames = 1.
-		 */
+		 
 		if (ec && !(ec->tx_coalesce_usecs_irq == 0 &&
 			    ec->tx_max_coalesced_frames_irq == 1)) {
 			u8 max;
 
-			/* use only max half of available objects for coalescing */
+			 
 			max = min_t(u8, num_tx / 2, config->fifo_depth);
 			num_tx_coalesce = clamp(ec->tx_max_coalesced_frames_irq,
 						(u32)config->tx.fifo_depth_coalesce_min,

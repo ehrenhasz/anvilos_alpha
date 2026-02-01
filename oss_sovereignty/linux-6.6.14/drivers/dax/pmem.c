@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2016 - 2018 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/memremap.h>
 #include <linux/module.h>
 #include <linux/pfn_t.h>
@@ -26,7 +26,7 @@ static struct dev_dax *__dax_pmem_probe(struct device *dev)
 	if (IS_ERR(ndns))
 		return ERR_CAST(ndns);
 
-	/* parse the 'pfn' info block via ->rw_bytes */
+	 
 	rc = devm_namespace_enable(dev, ndns, nd_info_block_reserve());
 	if (rc)
 		return ERR_PTR(rc);
@@ -35,7 +35,7 @@ static struct dev_dax *__dax_pmem_probe(struct device *dev)
 		return ERR_PTR(rc);
 	devm_namespace_disable(dev, ndns);
 
-	/* reserve the metadata area, device-dax will reserve the data */
+	 
 	pfn_sb = nd_pfn->pfn_sb;
 	offset = le64_to_cpu(pfn_sb->dataoff);
 	nsio = to_nd_namespace_io(&ndns->dev);
@@ -49,7 +49,7 @@ static struct dev_dax *__dax_pmem_probe(struct device *dev)
 	if (rc != 2)
 		return ERR_PTR(-EINVAL);
 
-	/* adjust the dax_region range to the start of data */
+	 
 	range = pgmap.range;
 	range.start += offset;
 	dax_region = alloc_dax_region(dev, region_id, &range,

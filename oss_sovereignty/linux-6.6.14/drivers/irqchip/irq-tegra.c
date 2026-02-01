@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver code for Tegra's Legacy Interrupt Controller
- *
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- *
- * Heavily based on the original arch/arm/mach-tegra/irq.c code:
- * Copyright (C) 2011 Google, Inc.
- *
- * Author:
- *	Colin Cross <ccross@android.com>
- *
- * Copyright (C) 2010,2013, NVIDIA Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -125,10 +113,7 @@ static int tegra_set_wake(struct irq_data *d, unsigned int enable)
 	else
 		lic->ictlr_wake_mask[index] &= ~mask;
 
-	/*
-	 * Do *not* call into the parent, as the GIC doesn't have any
-	 * wake-up facility...
-	 */
+	 
 	return 0;
 }
 
@@ -141,19 +126,19 @@ static int tegra_ictlr_suspend(void)
 	for (i = 0; i < num_ictlrs; i++) {
 		void __iomem *ictlr = lic->base[i];
 
-		/* Save interrupt state */
+		 
 		lic->cpu_ier[i] = readl_relaxed(ictlr + ICTLR_CPU_IER);
 		lic->cpu_iep[i] = readl_relaxed(ictlr + ICTLR_CPU_IEP_CLASS);
 		lic->cop_ier[i] = readl_relaxed(ictlr + ICTLR_COP_IER);
 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
 
-		/* Disable COP interrupts */
+		 
 		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
 
-		/* Disable CPU interrupts */
+		 
 		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
 
-		/* Enable the wakeup sources of ictlr */
+		 
 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
 	}
 	local_irq_restore(flags);
@@ -221,7 +206,7 @@ static int tegra_ictlr_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
@@ -244,9 +229,9 @@ static int tegra_ictlr_domain_alloc(struct irq_domain *domain,
 	unsigned int i;
 
 	if (fwspec->param_count != 3)
-		return -EINVAL;	/* Not GIC compliant */
+		return -EINVAL;	 
 	if (fwspec->param[0] != GIC_SPI)
-		return -EINVAL;	/* No PPI should point to this domain */
+		return -EINVAL;	 
 
 	hwirq = fwspec->param[1];
 	if (hwirq >= (num_ictlrs * 32))
@@ -293,7 +278,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
 	}
 
 	match = of_match_node(ictlr_matches, node);
-	if (!match)		/* Should never happen... */
+	if (!match)		 
 		return -ENODEV;
 
 	soc = match->data;
@@ -311,9 +296,9 @@ static int __init tegra_ictlr_init(struct device_node *node,
 
 		lic->base[i] = base;
 
-		/* Disable all interrupts */
+		 
 		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
-		/* All interrupts target IRQ */
+		 
 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
 
 		num_ictlrs++;

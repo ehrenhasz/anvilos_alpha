@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * stac9766.c  --  ALSA SoC STAC9766 codec support
- *
- * Copyright 2009 Jon Smirl, Digispeaker
- * Author: Jon Smirl <jonsmirl@gmail.com>
- *
- *  Features:-
- *
- *   o Support for AC97 Codec, S/PDIF
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -101,9 +92,9 @@ static SOC_ENUM_SINGLE_DECL(stac9766_record_all_enum,
 			    AC97_STAC_ANALOG_SPECIAL, 12,
 			    stac9766_record_all_mux);
 static SOC_ENUM_SINGLE_DECL(stac9766_boost1_enum,
-			    AC97_MIC, 6, stac9766_boost1); /* 0/10dB */
+			    AC97_MIC, 6, stac9766_boost1);  
 static SOC_ENUM_SINGLE_DECL(stac9766_boost2_enum,
-			    AC97_STAC_ANALOG_SPECIAL, 2, stac9766_boost2); /* 0/20dB */
+			    AC97_STAC_ANALOG_SPECIAL, 2, stac9766_boost2);  
 static SOC_ENUM_SINGLE_DECL(stac9766_stereo_mic_enum,
 			    AC97_STAC_STEREO_MIC, 2, stac9766_stereo_mic);
 
@@ -168,7 +159,7 @@ static int ac97_analog_prepare(struct snd_pcm_substream *substream,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	unsigned short reg;
 
-	/* enable variable rate audio, disable SPDIF output */
+	 
 	snd_soc_component_update_bits(component, AC97_EXTENDED_STATUS, 0x5, 0x1);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -188,7 +179,7 @@ static int ac97_digital_prepare(struct snd_pcm_substream *substream,
 
 	snd_soc_component_write(component, AC97_SPDIF, 0x2002);
 
-	/* Enable VRA and SPDIF out */
+	 
 	snd_soc_component_update_bits(component, AC97_EXTENDED_STATUS, 0x5, 0x5);
 
 	reg = AC97_PCM_FRONT_DAC_RATE;
@@ -200,13 +191,13 @@ static int stac9766_set_bias_level(struct snd_soc_component *component,
 				   enum snd_soc_bias_level level)
 {
 	switch (level) {
-	case SND_SOC_BIAS_ON: /* full On */
-	case SND_SOC_BIAS_PREPARE: /* partial On */
-	case SND_SOC_BIAS_STANDBY: /* Off, with power */
+	case SND_SOC_BIAS_ON:  
+	case SND_SOC_BIAS_PREPARE:  
+	case SND_SOC_BIAS_STANDBY:  
 		snd_soc_component_write(component, AC97_POWERDOWN, 0x0000);
 		break;
-	case SND_SOC_BIAS_OFF: /* Off, without power */
-		/* disable everything including AC link */
+	case SND_SOC_BIAS_OFF:  
+		 
 		snd_soc_component_write(component, AC97_POWERDOWN, 0xffff);
 		break;
 	}
@@ -233,7 +224,7 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 {
 	.name = "stac9766-hifi-analog",
 
-	/* stream cababilities */
+	 
 	.playback = {
 		.stream_name = "stac9766 analog",
 		.channels_min = 1,
@@ -248,13 +239,13 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 		.rates = SNDRV_PCM_RATE_8000_48000,
 		.formats = SND_SOC_STD_AC97_FMTS,
 	},
-	/* alsa ops */
+	 
 	.ops = &stac9766_dai_ops_analog,
 },
 {
 	.name = "stac9766-hifi-IEC958",
 
-	/* stream cababilities */
+	 
 	.playback = {
 		.stream_name = "stac9766 IEC958",
 		.channels_min = 1,
@@ -263,7 +254,7 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 			SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000,
 		.formats = SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_BE,
 	},
-	/* alsa ops */
+	 
 	.ops = &stac9766_dai_ops_digital,
 }
 };

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Codec driver for ST STA350 2.1-channel high-efficiency digital audio system
- *
- * Copyright: 2014 Raumfeld GmbH
- * Author: Sven Brandau <info@brandau.biz>
- *
- * based on code from:
- *	Raumfeld GmbH
- *	  Johannes Stezenbach <js@sig21.net>
- *	Wolfson Microelectronics PLC.
- *	  Mark Brown <broonie@opensource.wolfsonmicro.com>
- *	Freescale Semiconductor, Inc.
- *	  Timur Tabi <timur@freescale.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
 
@@ -52,7 +39,7 @@
 	 SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S24_3LE | \
 	 SNDRV_PCM_FMTBIT_S24_LE  | SNDRV_PCM_FMTBIT_S32_LE)
 
-/* Power-up register defaults */
+ 
 static const struct reg_default sta350_regs[] = {
 	{  0x0, 0x63 },
 	{  0x1, 0x80 },
@@ -151,14 +138,14 @@ static const struct regmap_access_table sta350_volatile_regs = {
 	.n_yes_ranges =	ARRAY_SIZE(sta350_volatile_regs_range),
 };
 
-/* regulator power supply names */
+ 
 static const char * const sta350_supply_names[] = {
-	"vdd-dig",	/* digital supply, 3.3V */
-	"vdd-pll",	/* pll supply, 3.3V */
-	"vcc"		/* power amp supply, 5V - 26V */
+	"vdd-dig",	 
+	"vdd-pll",	 
+	"vcc"		 
 };
 
-/* codec private data */
+ 
 struct sta350_priv {
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(sta350_supply_names)];
@@ -282,13 +269,7 @@ static SOC_ENUM_SINGLE_DECL(sta350_limiter2_release_rate_enum,
 			    STA350_L2AR, STA350_LxR_SHIFT,
 			    sta350_limiter_release_rate);
 
-/*
- * byte array controls for setting biquad, mixer, scaling coefficients;
- * for biquads all five coefficients need to be set in one go,
- * mixer and pre/postscale coefs can be set individually;
- * each coef is 24bit, the bytes are ordered in the same way
- * as given in the STA350 data sheet (big endian; b1, b2, a1, a2, b0)
- */
+ 
 
 static int sta350_coefficient_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -311,13 +292,10 @@ static int sta350_coefficient_get(struct snd_kcontrol *kcontrol,
 
 	mutex_lock(&sta350->coeff_lock);
 
-	/* preserve reserved bits in STA350_CFUD */
+	 
 	regmap_read(sta350->regmap, STA350_CFUD, &cfud);
 	cfud &= 0xf0;
-	/*
-	 * chip documentation does not say if the bits are self clearing,
-	 * so do it explicitly
-	 */
+	 
 	regmap_write(sta350->regmap, STA350_CFUD, cfud);
 
 	regmap_write(sta350->regmap, STA350_CFADDR2, index);
@@ -351,13 +329,10 @@ static int sta350_coefficient_put(struct snd_kcontrol *kcontrol,
 	unsigned int cfud;
 	int i;
 
-	/* preserve reserved bits in STA350_CFUD */
+	 
 	regmap_read(sta350->regmap, STA350_CFUD, &cfud);
 	cfud &= 0xf0;
-	/*
-	 * chip documentation does not say if the bits are self clearing,
-	 * so do it explicitly
-	 */
+	 
 	regmap_write(sta350->regmap, STA350_CFUD, cfud);
 
 	regmap_write(sta350->regmap, STA350_CFADDR2, index);
@@ -385,7 +360,7 @@ static int sta350_sync_coef_shadow(struct snd_soc_component *component)
 	unsigned int cfud;
 	int i;
 
-	/* preserve reserved bits in STA350_CFUD */
+	 
 	regmap_read(sta350->regmap, STA350_CFUD, &cfud);
 	cfud &= 0xf0;
 
@@ -397,10 +372,7 @@ static int sta350_sync_coef_shadow(struct snd_soc_component *component)
 			     (sta350->coef_shadow[i] >> 8) & 0xff);
 		regmap_write(sta350->regmap, STA350_B1CF3,
 			     (sta350->coef_shadow[i]) & 0xff);
-		/*
-		 * chip documentation does not say if the bits are
-		 * self-clearing, so do it explicitly
-		 */
+		 
 		regmap_write(sta350->regmap, STA350_CFUD, cfud);
 		regmap_write(sta350->regmap, STA350_CFUD, cfud | 0x01);
 	}
@@ -413,7 +385,7 @@ static int sta350_cache_sync(struct snd_soc_component *component)
 	unsigned int mute;
 	int rc;
 
-	/* mute during register sync */
+	 
 	regmap_read(sta350->regmap, STA350_CFUD, &mute);
 	regmap_write(sta350->regmap, STA350_MMUTE, mute | STA350_MMUTE_MMUTE);
 	sta350_sync_coef_shadow(component);
@@ -438,11 +410,11 @@ static int sta350_cache_sync(struct snd_soc_component *component)
 
 static const struct snd_kcontrol_new sta350_snd_controls[] = {
 SOC_SINGLE_TLV("Master Volume", STA350_MVOL, 0, 0xff, 1, mvol_tlv),
-/* VOL */
+ 
 SOC_SINGLE_TLV("Ch1 Volume", STA350_C1VOL, 0, 0xff, 1, chvol_tlv),
 SOC_SINGLE_TLV("Ch2 Volume", STA350_C2VOL, 0, 0xff, 1, chvol_tlv),
 SOC_SINGLE_TLV("Ch3 Volume", STA350_C3VOL, 0, 0xff, 1, chvol_tlv),
-/* CONFD */
+ 
 SOC_SINGLE("High Pass Filter Bypass Switch",
 	   STA350_CONFD, STA350_CONFD_HPB_SHIFT, 1, 1),
 SOC_SINGLE("De-emphasis Filter Switch",
@@ -459,18 +431,18 @@ SOC_SINGLE("Zero-detect Mute Enable Switch",
 	   STA350_CONFD, STA350_CONFD_ZDE_SHIFT, 1, 0),
 SOC_SINGLE("Submix Mode Switch",
 	   STA350_CONFD, STA350_CONFD_SME_SHIFT, 1, 0),
-/* CONFE */
+ 
 SOC_SINGLE("Zero Cross Switch", STA350_CONFE, STA350_CONFE_ZCE_SHIFT, 1, 0),
 SOC_SINGLE("Soft Ramp Switch", STA350_CONFE, STA350_CONFE_SVE_SHIFT, 1, 0),
-/* MUTE */
+ 
 SOC_SINGLE("Master Switch", STA350_MMUTE, STA350_MMUTE_MMUTE_SHIFT, 1, 1),
 SOC_SINGLE("Ch1 Switch", STA350_MMUTE, STA350_MMUTE_C1M_SHIFT, 1, 1),
 SOC_SINGLE("Ch2 Switch", STA350_MMUTE, STA350_MMUTE_C2M_SHIFT, 1, 1),
 SOC_SINGLE("Ch3 Switch", STA350_MMUTE, STA350_MMUTE_C3M_SHIFT, 1, 1),
-/* AUTOx */
+ 
 SOC_ENUM("Automode GC", sta350_auto_gc_enum),
 SOC_ENUM("Automode XO", sta350_auto_xo_enum),
-/* CxCFG */
+ 
 SOC_SINGLE("Ch1 Tone Control Bypass Switch",
 	   STA350_C1CFG, STA350_CxCFG_TCB_SHIFT, 1, 0),
 SOC_SINGLE("Ch2 Tone Control Bypass Switch",
@@ -491,7 +463,7 @@ SOC_ENUM("Ch3 Binary Output Select", sta350_binary_output_ch3_enum),
 SOC_ENUM("Ch1 Limiter Select", sta350_limiter_ch1_enum),
 SOC_ENUM("Ch2 Limiter Select", sta350_limiter_ch2_enum),
 SOC_ENUM("Ch3 Limiter Select", sta350_limiter_ch3_enum),
-/* TONE */
+ 
 SOC_SINGLE_RANGE_TLV("Bass Tone Control Volume",
 		     STA350_TONE, STA350_TONE_BTC_SHIFT, 1, 13, 0, tone_tlv),
 SOC_SINGLE_RANGE_TLV("Treble Tone Control Volume",
@@ -501,10 +473,7 @@ SOC_ENUM("Limiter2 Attack Rate (dB/ms)", sta350_limiter2_attack_rate_enum),
 SOC_ENUM("Limiter1 Release Rate (dB/ms)", sta350_limiter1_release_rate_enum),
 SOC_ENUM("Limiter2 Release Rate (dB/ms)", sta350_limiter2_release_rate_enum),
 
-/*
- * depending on mode, the attack/release thresholds have
- * two different enum definitions; provide both
- */
+ 
 SOC_SINGLE_TLV("Limiter1 Attack Threshold (AC Mode)",
 	       STA350_L1ATRT, STA350_LxA_SHIFT,
 	       16, 0, sta350_limiter_ac_attack_tlv),
@@ -568,7 +537,7 @@ static const struct snd_soc_dapm_route sta350_dapm_routes[] = {
 	{ "DAC", NULL, "Playback" },
 };
 
-/* MCLK interpolation ratio per fs */
+ 
 static struct {
 	int fs;
 	int ir;
@@ -582,27 +551,14 @@ static struct {
 	{ 192000, 2 },
 };
 
-/* MCLK to fs clock ratios */
+ 
 static int mcs_ratio_table[3][6] = {
 	{ 768, 512, 384, 256, 128, 576 },
 	{ 384, 256, 192, 128,  64,   0 },
 	{ 192, 128,  96,  64,  32,   0 },
 };
 
-/**
- * sta350_set_dai_sysclk - configure MCLK
- * @codec_dai: the codec DAI
- * @clk_id: the clock ID (ignored)
- * @freq: the MCLK input frequency
- * @dir: the clock direction (ignored)
- *
- * The value of MCLK is used to determine which sample rates are supported
- * by the STA350, based on the mcs_ratio_table.
- *
- * This function must be called by the machine driver's 'startup' function,
- * otherwise the list of supported sample rates will not be available in
- * time for ALSA.
- */
+ 
 static int sta350_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
 {
@@ -615,14 +571,7 @@ static int sta350_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	return 0;
 }
 
-/**
- * sta350_set_dai_fmt - configure the codec for the selected audio format
- * @codec_dai: the codec DAI
- * @fmt: a SND_SOC_DAIFMT_x value indicating the data format
- *
- * This function takes a bitmask of SND_SOC_DAIFMT_x bits and programs the
- * codec accordingly.
- */
+ 
 static int sta350_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			      unsigned int fmt)
 {
@@ -662,15 +611,7 @@ static int sta350_set_dai_fmt(struct snd_soc_dai *codec_dai,
 				  STA350_CONFB_C1IM | STA350_CONFB_C2IM, confb);
 }
 
-/**
- * sta350_hw_params - program the STA350 with the given hardware parameters.
- * @substream: the audio stream
- * @params: the hardware parameters to set
- * @dai: the SOC DAI (ignored)
- *
- * This function programs the hardware with the values provided.
- * Specifically, the sample rate and the data format.
- */
+ 
 static int sta350_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
@@ -818,15 +759,7 @@ static int sta350_startup_sequence(struct sta350_priv *sta350)
 	return 0;
 }
 
-/**
- * sta350_set_bias_level - DAPM callback
- * @component: the component device
- * @level: DAPM power level
- *
- * This is called by ALSA to put the component into low power mode
- * or to wake it up.  If the component is powered off completely
- * all registers must be restored after power on.
- */
+ 
 static int sta350_set_bias_level(struct snd_soc_component *component,
 				 enum snd_soc_bias_level level)
 {
@@ -839,7 +772,7 @@ static int sta350_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/* Full power on */
+		 
 		regmap_update_bits(sta350->regmap, STA350_CONFF,
 				   STA350_CONFF_PWDN | STA350_CONFF_EAPD,
 				   STA350_CONFF_PWDN | STA350_CONFF_EAPD);
@@ -860,7 +793,7 @@ static int sta350_set_bias_level(struct snd_soc_component *component,
 			sta350_cache_sync(component);
 		}
 
-		/* Power down */
+		 
 		regmap_update_bits(sta350->regmap, STA350_CONFF,
 				   STA350_CONFF_PWDN | STA350_CONFF_EAPD,
 				   0);
@@ -868,11 +801,11 @@ static int sta350_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		/* The chip runs through the power down sequence for us */
+		 
 		regmap_update_bits(sta350->regmap, STA350_CONFF,
 				   STA350_CONFF_PWDN | STA350_CONFF_EAPD, 0);
 
-		/* power down: low */
+		 
 		if (sta350->gpiod_power_down)
 			gpiod_set_value(sta350->gpiod_power_down, 0);
 
@@ -923,7 +856,7 @@ static int sta350_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* CONFA */
+	 
 	if (!pdata->thermal_warning_recovery)
 		thermal |= STA350_CONFA_TWAB;
 	if (!pdata->thermal_warning_adjustment)
@@ -935,7 +868,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   STA350_CONFA_FDRB,
 			   thermal);
 
-	/* CONFC */
+	 
 	regmap_update_bits(sta350->regmap, STA350_CONFC,
 			   STA350_CONFC_OM_MASK,
 			   pdata->ffx_power_output_mode
@@ -950,7 +883,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   pdata->oc_warning_adjustment ?
 				STA350_CONFC_OCRB : 0);
 
-	/* CONFE */
+	 
 	regmap_update_bits(sta350->regmap, STA350_CONFE,
 			   STA350_CONFE_MPCV,
 			   pdata->max_power_use_mpcc ?
@@ -971,7 +904,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   STA350_CONFE_DCCV,
 			   pdata->distortion_compensation ?
 				STA350_CONFE_DCCV : 0);
-	/*  CONFF */
+	 
 	regmap_update_bits(sta350->regmap, STA350_CONFF,
 			   STA350_CONFF_IDE,
 			   pdata->invalid_input_detect_mute ?
@@ -981,7 +914,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   pdata->output_conf
 				<< STA350_CONFF_OCFG_SHIFT);
 
-	/* channel to output mapping */
+	 
 	regmap_update_bits(sta350->regmap, STA350_C1CFG,
 			   STA350_CxCFG_OM_MASK,
 			   pdata->ch1_output_mapping
@@ -995,7 +928,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   pdata->ch3_output_mapping
 				<< STA350_CxCFG_OM_SHIFT);
 
-	/* miscellaneous registers */
+	 
 	regmap_update_bits(sta350->regmap, STA350_MISC1,
 			   STA350_MISC1_CPWMEN,
 			   pdata->activate_mute_output ?
@@ -1018,7 +951,7 @@ static int sta350_probe(struct snd_soc_component *component)
 			   pdata->powerdown_delay_divider
 				<< STA350_MISC2_PNDLSL_SHIFT);
 
-	/* initialize coefficient shadow RAM with reset values */
+	 
 	for (i = 4; i <= 49; i += 5)
 		sta350->coef_shadow[i] = 0x400000;
 	for (i = 50; i <= 54; i++)
@@ -1030,7 +963,7 @@ static int sta350_probe(struct snd_soc_component *component)
 	sta350->coef_shadow[61] = 0x400000;
 
 	snd_soc_component_force_bias_level(component, SND_SOC_BIAS_STANDBY);
-	/* Bias level configuration will have done an extra enable */
+	 
 	regulator_bulk_disable(ARRAY_SIZE(sta350->supplies), sta350->supplies);
 
 	return 0;
@@ -1136,7 +1069,7 @@ static int sta350_probe_dt(struct device *dev, struct sta350_priv *sta350)
 	pdata->oc_warning_adjustment =
 		of_property_read_bool(np, "st,overcurrent-warning-adjustment");
 
-	/* CONFE */
+	 
 	pdata->max_power_use_mpcc =
 		of_property_read_bool(np, "st,max-power-use-mpcc");
 	pdata->max_power_correction =
@@ -1148,11 +1081,11 @@ static int sta350_probe_dt(struct device *dev, struct sta350_priv *sta350)
 	pdata->distortion_compensation =
 		of_property_read_bool(np, "st,distortion-compensation");
 
-	/* CONFF */
+	 
 	pdata->invalid_input_detect_mute =
 		of_property_read_bool(np, "st,invalid-input-detect-mute");
 
-	/* MISC */
+	 
 	pdata->activate_mute_output =
 		of_property_read_bool(np, "st,activate-mute-output");
 	pdata->bridge_immediate_off =
@@ -1197,7 +1130,7 @@ static int sta350_i2c_probe(struct i2c_client *i2c)
 	}
 #endif
 
-	/* GPIOs */
+	 
 	sta350->gpiod_nreset = devm_gpiod_get_optional(dev, "reset",
 						       GPIOD_OUT_LOW);
 	if (IS_ERR(sta350->gpiod_nreset))
@@ -1208,7 +1141,7 @@ static int sta350_i2c_probe(struct i2c_client *i2c)
 	if (IS_ERR(sta350->gpiod_power_down))
 		return PTR_ERR(sta350->gpiod_power_down);
 
-	/* regulators */
+	 
 	for (i = 0; i < ARRAY_SIZE(sta350->supplies); i++)
 		sta350->supplies[i].supply = sta350_supply_names[i];
 

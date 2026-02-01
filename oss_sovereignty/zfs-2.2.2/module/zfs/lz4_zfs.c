@@ -1,40 +1,6 @@
-/*
- * LZ4 - Fast LZ compression algorithm
- * Header File
- * Copyright (C) 2011-2013, Yann Collet.
- * BSD 2-Clause License (http://www.opensource.org/licenses/bsd-license.php)
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * You can contact the author at :
- * - LZ4 homepage : http://fastcompression.blogspot.com/p/lz4.html
- * - LZ4 source repository : http://code.google.com/p/lz4/
- */
+ 
 
-/*
- * N.B. - This file seems to be based on LZ4 r85, dated Dec 10, 2012
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/zio_compress.h>
@@ -46,7 +12,7 @@ static int LZ4_compressCtx(void *ctx, const char *source, char *dest,
 static int LZ4_compress64kCtx(void *ctx, const char *source, char *dest,
     int isize, int osize);
 
-/* See lz4.c */
+ 
 int LZ4_uncompress_unknownOutputSize(const char *source, char *dest,
     int isize, int maxOutputSize);
 
@@ -65,16 +31,11 @@ lz4_compress_zfs(void *s_start, void *d_start, size_t s_len,
 	bufsiz = real_LZ4_compress(s_start, &dest[sizeof (bufsiz)], s_len,
 	    d_len - sizeof (bufsiz));
 
-	/* Signal an error if the compression routine returned zero. */
+	 
 	if (bufsiz == 0)
 		return (s_len);
 
-	/*
-	 * The exact compressed size is needed by the decompression routine,
-	 * so it is stored at the start of the buffer. Note that this may be
-	 * less than the compressed block size, which is rounded up to a
-	 * multiple of 1<<ashift.
-	 */
+	 
 	*(uint32_t *)dest = BE_32(bufsiz);
 
 	return (bufsiz + sizeof (bufsiz));
@@ -88,174 +49,61 @@ lz4_decompress_zfs(void *s_start, void *d_start, size_t s_len,
 	const char *src = s_start;
 	uint32_t bufsiz = BE_IN32(src);
 
-	/* invalid compressed buffer size encoded at start */
+	 
 	if (bufsiz + sizeof (bufsiz) > s_len)
 		return (1);
 
-	/*
-	 * Returns 0 on success (decompression function returned non-negative)
-	 * and non-zero on failure (decompression function returned negative).
-	 */
+	 
 	return (LZ4_uncompress_unknownOutputSize(&src[sizeof (bufsiz)],
 	    d_start, bufsiz, d_len) < 0);
 }
 
-/*
- * LZ4 API Description:
- *
- * Simple Functions:
- * real_LZ4_compress() :
- * 	isize  : is the input size. Max supported value is ~1.9GB
- * 	return : the number of bytes written in buffer dest
- *		 or 0 if the compression fails (if LZ4_COMPRESSMIN is set).
- * 	note : destination buffer must be already allocated.
- * 		destination buffer must be sized to handle worst cases
- * 		situations (input data not compressible) worst case size
- * 		evaluation is provided by function LZ4_compressBound().
- *
- * real_LZ4_uncompress() :
- * 	osize  : is the output size, therefore the original size
- * 	return : the number of bytes read in the source buffer.
- * 		If the source stream is malformed, the function will stop
- * 		decoding and return a negative result, indicating the byte
- * 		position of the faulty instruction. This function never
- * 		writes beyond dest + osize, and is therefore protected
- * 		against malicious data packets.
- * 	note : destination buffer must be already allocated
- *	note : real_LZ4_uncompress() is not used in ZFS so its code
- *	       is not present here.
- *
- * Advanced Functions
- *
- * LZ4_compressBound() :
- * 	Provides the maximum size that LZ4 may output in a "worst case"
- * 	scenario (input data not compressible) primarily useful for memory
- * 	allocation of output buffer.
- *
- * 	isize  : is the input size. Max supported value is ~1.9GB
- * 	return : maximum output size in a "worst case" scenario
- * 	note : this function is limited by "int" range (2^31-1)
- *
- * LZ4_uncompress_unknownOutputSize() :
- * 	isize  : is the input size, therefore the compressed size
- * 	maxOutputSize : is the size of the destination buffer (which must be
- * 		already allocated)
- * 	return : the number of bytes decoded in the destination buffer
- * 		(necessarily <= maxOutputSize). If the source stream is
- * 		malformed, the function will stop decoding and return a
- * 		negative result, indicating the byte position of the faulty
- * 		instruction. This function never writes beyond dest +
- * 		maxOutputSize, and is therefore protected against malicious
- * 		data packets.
- * 	note   : Destination buffer must be already allocated.
- *		This version is slightly slower than real_LZ4_uncompress()
- *
- * LZ4_compressCtx() :
- * 	This function explicitly handles the CTX memory structure.
- *
- * 	ILLUMOS CHANGES: the CTX memory structure must be explicitly allocated
- * 	by the caller (either on the stack or using kmem_cache_alloc). Passing
- * 	NULL isn't valid.
- *
- * LZ4_compress64kCtx() :
- * 	Same as LZ4_compressCtx(), but specific to small inputs (<64KB).
- * 	isize *Must* be <64KB, otherwise the output will be corrupted.
- *
- * 	ILLUMOS CHANGES: the CTX memory structure must be explicitly allocated
- * 	by the caller (either on the stack or using kmem_cache_alloc). Passing
- * 	NULL isn't valid.
- */
+ 
 
-/*
- * Tuning parameters
- */
+ 
 
-/*
- * COMPRESSIONLEVEL: Increasing this value improves compression ratio
- *	 Lowering this value reduces memory usage. Reduced memory usage
- *	typically improves speed, due to cache effect (ex: L1 32KB for Intel,
- *	L1 64KB for AMD). Memory usage formula : N->2^(N+2) Bytes
- *	(examples : 12 -> 16KB ; 17 -> 512KB)
- */
+ 
 #define	COMPRESSIONLEVEL 12
 
-/*
- * NOTCOMPRESSIBLE_CONFIRMATION: Decreasing this value will make the
- *	algorithm skip faster data segments considered "incompressible".
- *	This may decrease compression ratio dramatically, but will be
- *	faster on incompressible data. Increasing this value will make
- *	the algorithm search more before declaring a segment "incompressible".
- *	This could improve compression a bit, but will be slower on
- *	incompressible data. The default value (6) is recommended.
- */
+ 
 #define	NOTCOMPRESSIBLE_CONFIRMATION 6
 
-/*
- * BIG_ENDIAN_NATIVE_BUT_INCOMPATIBLE: This will provide a boost to
- * performance for big endian cpu, but the resulting compressed stream
- * will be incompatible with little-endian CPU. You can set this option
- * to 1 in situations where data will stay within closed environment.
- * This option is useless on Little_Endian CPU (such as x86).
- */
-/* #define	BIG_ENDIAN_NATIVE_BUT_INCOMPATIBLE 1 */
+ 
+ 
 
-/*
- * CPU Feature Detection
- */
+ 
 
-/* 32 or 64 bits ? */
+ 
 #if defined(_LP64)
 #define	LZ4_ARCH64 1
 #else
 #define	LZ4_ARCH64 0
 #endif
 
-/*
- * Little Endian or Big Endian?
- * Note: overwrite the below #define if you know your architecture endianness.
- */
+ 
 #if defined(_ZFS_BIG_ENDIAN)
 #define	LZ4_BIG_ENDIAN 1
 #else
-/*
- * Little Endian assumed. PDP Endian and other very rare endian format
- * are unsupported.
- */
+ 
 #undef LZ4_BIG_ENDIAN
 #endif
 
-/*
- * Unaligned memory access is automatically enabled for "common" CPU,
- * such as x86. For others CPU, the compiler will be more cautious, and
- * insert extra code to ensure aligned access is respected. If you know
- * your target CPU supports unaligned memory access, you may want to
- * force this option manually to improve performance
- */
+ 
 #if defined(__ARM_FEATURE_UNALIGNED)
 #define	LZ4_FORCE_UNALIGNED_ACCESS 1
 #endif
 
-/*
- * Illumos : we can't use GCC's __builtin_ctz family of builtins in the
- * kernel
- * Linux : we can use GCC's __builtin_ctz family of builtins in the
- * kernel
- */
+ 
 #undef	LZ4_FORCE_SW_BITCOUNT
 #if defined(__sparc)
 #define	LZ4_FORCE_SW_BITCOUNT
 #endif
 
-/*
- * Compiler Options
- */
-/* Disable restrict */
+ 
+ 
 #define	restrict
 
-/*
- * Linux : GCC_VERSION is defined as of 3.9-rc1, so undefine it.
- * torvalds/linux@3f3f8d2f48acfd8ed3b8e6b7377935da57b27b16
- */
+ 
 #ifdef GCC_VERSION
 #undef GCC_VERSION
 #endif
@@ -279,7 +127,7 @@ lz4_decompress_zfs(void *s_start, void *d_start, size_t s_len,
 #define	lz4_bswap16(x) ((unsigned short int) ((((x) >> 8) & 0xffu) | \
 	(((x) & 0xffu) << 8)))
 
-/* Basic types */
+ 
 #define	BYTE	uint8_t
 #define	U16	uint16_t
 #define	U32	uint32_t
@@ -308,9 +156,7 @@ typedef struct _U64_S {
 #define	A32(x) (((U32_S *)(x))->v)
 #define	A16(x) (((U16_S *)(x))->v)
 
-/*
- * Constants
- */
+ 
 #define	MINMATCH 4
 
 #define	HASH_LOG COMPRESSIONLEVEL
@@ -334,9 +180,7 @@ typedef struct _U64_S {
 #define	RUN_MASK ((1U<<RUN_BITS)-1)
 
 
-/*
- * Architecture-specific macros
- */
+ 
 #if LZ4_ARCH64
 #define	STEPSIZE 8
 #define	UARCH U64
@@ -346,7 +190,7 @@ typedef struct _U64_S {
 #define	LZ4_SECURECOPY(s, d, e)	if (d < e) LZ4_WILDCOPY(s, d, e)
 #define	HTYPE U32
 #define	INITBASE(base)		const BYTE* const base = ip
-#else /* !LZ4_ARCH64 */
+#else  
 #define	STEPSIZE 4
 #define	UARCH U32
 #define	AARCH A32
@@ -355,7 +199,7 @@ typedef struct _U64_S {
 #define	LZ4_SECURECOPY		LZ4_WILDCOPY
 #define	HTYPE const BYTE *
 #define	INITBASE(base)		const int base = 0
-#endif /* !LZ4_ARCH64 */
+#endif  
 
 #if (defined(LZ4_BIG_ENDIAN) && !defined(BIG_ENDIAN_NATIVE_BUT_INCOMPATIBLE))
 #define	LZ4_READ_LITTLEENDIAN_16(d, s, p) \
@@ -368,13 +212,13 @@ typedef struct _U64_S {
 #endif
 
 
-/* Local structures */
+ 
 struct refTables {
 	HTYPE hashTable[HASHTABLESIZE];
 };
 
 
-/* Macros */
+ 
 #define	LZ4_HASH_FUNCTION(i) (((i) * 2654435761U) >> ((MINMATCH * 8) - \
 	HASH_LOG))
 #define	LZ4_HASH_VALUE(p) LZ4_HASH_FUNCTION(A32(p))
@@ -383,7 +227,7 @@ struct refTables {
 	d = e; }
 
 
-/* Private functions */
+ 
 #if LZ4_ARCH64
 
 static inline int
@@ -467,7 +311,7 @@ LZ4_NbCommonBytes(register U32 val)
 
 #endif
 
-/* Compression functions */
+ 
 
 static int
 LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
@@ -491,23 +335,23 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 	U32 forwardH;
 
 
-	/* Init */
+	 
 	if (isize < MINLENGTH)
 		goto _last_literals;
 
-	/* First Byte */
+	 
 	HashTable[LZ4_HASH_VALUE(ip)] = ip - base;
 	ip++;
 	forwardH = LZ4_HASH_VALUE(ip);
 
-	/* Main Loop */
+	 
 	for (;;) {
 		int findMatchAttempts = (1U << skipStrength) + 3;
 		const BYTE *forwardIp = ip;
 		const BYTE *ref;
 		BYTE *token;
 
-		/* Find a match */
+		 
 		do {
 			U32 h = forwardH;
 			int step = findMatchAttempts++ >> skipStrength;
@@ -524,18 +368,18 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 
 		} while ((ref < ip - MAX_DISTANCE) || (A32(ref) != A32(ip)));
 
-		/* Catch up */
+		 
 		while ((ip > anchor) && (ref > (BYTE *) source) &&
 		    unlikely(ip[-1] == ref[-1])) {
 			ip--;
 			ref--;
 		}
 
-		/* Encode Literal length */
+		 
 		length = ip - anchor;
 		token = op++;
 
-		/* Check output limit */
+		 
 		if (unlikely(op + length + (2 + 1 + LASTLITERALS) +
 		    (length >> 8) > oend))
 			return (0);
@@ -549,16 +393,16 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 		} else
 			*token = (length << ML_BITS);
 
-		/* Copy Literals */
+		 
 		LZ4_BLINDCOPY(anchor, op, length);
 
 		_next_match:
-		/* Encode Offset */
+		 
 		LZ4_WRITE_LITTLEENDIAN_16(op, ip - ref);
 
-		/* Start Counting */
+		 
 		ip += MINMATCH;
-		ref += MINMATCH;	/* MinMatch verified */
+		ref += MINMATCH;	 
 		anchor = ip;
 		while (likely(ip < matchlimit - (STEPSIZE - 1))) {
 			UARCH diff = AARCH(ref) ^ AARCH(ip);
@@ -584,9 +428,9 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 			ip++;
 		_endCount:
 
-		/* Encode MatchLength */
+		 
 		len = (ip - anchor);
-		/* Check output limit */
+		 
 		if (unlikely(op + (1 + LASTLITERALS) + (len >> 8) > oend))
 			return (0);
 		if (len >= (int)ML_MASK) {
@@ -604,15 +448,15 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 		} else
 			*token += len;
 
-		/* Test end of chunk */
+		 
 		if (ip > mflimit) {
 			anchor = ip;
 			break;
 		}
-		/* Fill table */
+		 
 		HashTable[LZ4_HASH_VALUE(ip - 2)] = ip - 2 - base;
 
-		/* Test next position */
+		 
 		ref = base + HashTable[LZ4_HASH_VALUE(ip)];
 		HashTable[LZ4_HASH_VALUE(ip)] = ip - base;
 		if ((ref > ip - (MAX_DISTANCE + 1)) && (A32(ref) == A32(ip))) {
@@ -620,13 +464,13 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 			*token = 0;
 			goto _next_match;
 		}
-		/* Prepare next loop */
+		 
 		anchor = ip++;
 		forwardH = LZ4_HASH_VALUE(ip);
 	}
 
 	_last_literals:
-	/* Encode Last Literals */
+	 
 	{
 		int lastRun = iend - anchor;
 		if (op + lastRun + 1 + ((lastRun + 255 - RUN_MASK) / 255) >
@@ -645,13 +489,13 @@ LZ4_compressCtx(void *ctx, const char *source, char *dest, int isize,
 		op += iend - anchor;
 	}
 
-	/* End */
+	 
 	return (int)(((char *)op) - dest);
 }
 
 
 
-/* Note : this function is valid only if isize < LZ4_64KLIMIT */
+ 
 #define	LZ4_64KLIMIT ((1 << 16) + (MFLIMIT - 1))
 #define	HASHLOG64K (HASH_LOG + 1)
 #define	HASH64KTABLESIZE (1U << HASHLOG64K)
@@ -680,22 +524,22 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 	const int skipStrength = SKIPSTRENGTH;
 	U32 forwardH;
 
-	/* Init */
+	 
 	if (isize < MINLENGTH)
 		goto _last_literals;
 
-	/* First Byte */
+	 
 	ip++;
 	forwardH = LZ4_HASH64K_VALUE(ip);
 
-	/* Main Loop */
+	 
 	for (;;) {
 		int findMatchAttempts = (1U << skipStrength) + 3;
 		const BYTE *forwardIp = ip;
 		const BYTE *ref;
 		BYTE *token;
 
-		/* Find a match */
+		 
 		do {
 			U32 h = forwardH;
 			int step = findMatchAttempts++ >> skipStrength;
@@ -712,18 +556,18 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 
 		} while (A32(ref) != A32(ip));
 
-		/* Catch up */
+		 
 		while ((ip > anchor) && (ref > (BYTE *) source) &&
 		    (ip[-1] == ref[-1])) {
 			ip--;
 			ref--;
 		}
 
-		/* Encode Literal length */
+		 
 		length = ip - anchor;
 		token = op++;
 
-		/* Check output limit */
+		 
 		if (unlikely(op + length + (2 + 1 + LASTLITERALS) +
 		    (length >> 8) > oend))
 			return (0);
@@ -737,16 +581,16 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 		} else
 			*token = (length << ML_BITS);
 
-		/* Copy Literals */
+		 
 		LZ4_BLINDCOPY(anchor, op, length);
 
 		_next_match:
-		/* Encode Offset */
+		 
 		LZ4_WRITE_LITTLEENDIAN_16(op, ip - ref);
 
-		/* Start Counting */
+		 
 		ip += MINMATCH;
-		ref += MINMATCH;	/* MinMatch verified */
+		ref += MINMATCH;	 
 		anchor = ip;
 		while (ip < matchlimit - (STEPSIZE - 1)) {
 			UARCH diff = AARCH(ref) ^ AARCH(ip);
@@ -772,9 +616,9 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 			ip++;
 		_endCount:
 
-		/* Encode MatchLength */
+		 
 		len = (ip - anchor);
-		/* Check output limit */
+		 
 		if (unlikely(op + (1 + LASTLITERALS) + (len >> 8) > oend))
 			return (0);
 		if (len >= (int)ML_MASK) {
@@ -792,15 +636,15 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 		} else
 			*token += len;
 
-		/* Test end of chunk */
+		 
 		if (ip > mflimit) {
 			anchor = ip;
 			break;
 		}
-		/* Fill table */
+		 
 		HashTable[LZ4_HASH64K_VALUE(ip - 2)] = ip - 2 - base;
 
-		/* Test next position */
+		 
 		ref = base + HashTable[LZ4_HASH64K_VALUE(ip)];
 		HashTable[LZ4_HASH64K_VALUE(ip)] = ip - base;
 		if (A32(ref) == A32(ip)) {
@@ -808,13 +652,13 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 			*token = 0;
 			goto _next_match;
 		}
-		/* Prepare next loop */
+		 
 		anchor = ip++;
 		forwardH = LZ4_HASH64K_VALUE(ip);
 	}
 
 	_last_literals:
-	/* Encode Last Literals */
+	 
 	{
 		int lastRun = iend - anchor;
 		if (op + lastRun + 1 + ((lastRun + 255 - RUN_MASK) / 255) >
@@ -832,7 +676,7 @@ LZ4_compress64kCtx(void *ctx, const char *source, char *dest, int isize,
 		op += iend - anchor;
 	}
 
-	/* End */
+	 
 	return (int)(((char *)op) - dest);
 }
 
@@ -845,10 +689,7 @@ real_LZ4_compress(const char *source, char *dest, int isize, int osize)
 	ASSERT(lz4_cache != NULL);
 	ctx = kmem_cache_alloc(lz4_cache, KM_SLEEP);
 
-	/*
-	 * out of kernel memory, gently fall through - this will disable
-	 * compression in zio_compress_data
-	 */
+	 
 	if (ctx == NULL)
 		return (0);
 

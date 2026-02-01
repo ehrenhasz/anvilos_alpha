@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices AD3552R
- * Digital to Analog converter driver
- *
- * Copyright 2021 Analog Devices Inc.
- */
+
+ 
 #include <asm/unaligned.h>
 #include <linux/device.h>
 #include <linux/iio/triggered_buffer.h>
@@ -14,8 +9,8 @@
 #include <linux/regulator/consumer.h>
 #include <linux/spi/spi.h>
 
-/* Register addresses */
-/* Primary address space */
+ 
+ 
 #define AD3552R_REG_ADDR_INTERFACE_CONFIG_A		0x00
 #define   AD3552R_MASK_SOFTWARE_RESET			(BIT(7) | BIT(0))
 #define   AD3552R_MASK_ADDR_ASCENSION			BIT(5)
@@ -93,11 +88,7 @@
 #define   AD3552R_MASK_CH_GAIN_SCALING_P		GENMASK(4, 3)
 #define   AD3552R_MASK_CH_OFFSET_POLARITY		BIT(2)
 #define   AD3552R_MASK_CH_OFFSET_BIT_8			BIT(0)
-/*
- * Secondary region
- * For multibyte registers specify the highest address because the access is
- * done in descending order
- */
+ 
 #define AD3552R_SECONDARY_REGION_START			0x28
 #define AD3552R_REG_ADDR_HW_LDAC_16B			0x28
 #define AD3552R_REG_ADDR_CH_DAC_16B(ch)			(0x2C - (1 - ch) * 2)
@@ -106,7 +97,7 @@
 #define AD3552R_REG_ADDR_INPUT_PAGE_MASK_16B		0x31
 #define AD3552R_REG_ADDR_SW_LDAC_16B			0x32
 #define AD3552R_REG_ADDR_CH_INPUT_16B(ch)		(0x36 - (1 - ch) * 2)
-/* 3 bytes registers */
+ 
 #define AD3552R_REG_START_24B				0x37
 #define AD3552R_REG_ADDR_HW_LDAC_24B			0x37
 #define AD3552R_REG_ADDR_CH_DAC_24B(ch)			(0x3D - (1 - ch) * 3)
@@ -116,7 +107,7 @@
 #define AD3552R_REG_ADDR_SW_LDAC_24B			0x45
 #define AD3552R_REG_ADDR_CH_INPUT_24B(ch)		(0x4B - (1 - ch) * 3)
 
-/* Useful defines */
+ 
 #define AD3552R_NUM_CH					2
 #define AD3552R_MASK_CH(ch)				BIT(ch)
 #define AD3552R_MASK_ALL_CH				GENMASK(1, 0)
@@ -131,11 +122,11 @@
 #define AD3552R_LDAC_PULSE_US				100
 
 enum ad3552r_ch_vref_select {
-	/* Internal source with Vref I/O floating */
+	 
 	AD3552R_INTERNAL_VREF_PIN_FLOATING,
-	/* Internal source with Vref I/O at 2.5V */
+	 
 	AD3552R_INTERNAL_VREF_PIN_2P5V,
-	/* External source with Vref I/O as input */
+	 
 	AD3552R_EXTERNAL_VREF_PIN_INPUT
 };
 
@@ -145,15 +136,15 @@ enum ad3542r_id {
 };
 
 enum ad3552r_ch_output_range {
-	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
+	 
 	AD3552R_CH_OUTPUT_RANGE_0__2P5V,
-	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
+	 
 	AD3552R_CH_OUTPUT_RANGE_0__5V,
-	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
+	 
 	AD3552R_CH_OUTPUT_RANGE_0__10V,
-	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
+	 
 	AD3552R_CH_OUTPUT_RANGE_NEG_5__5V,
-	/* Range from -10 V to 10 V. Requires Rfb4x connection  */
+	 
 	AD3552R_CH_OUTPUT_RANGE_NEG_10__10V,
 };
 
@@ -166,17 +157,17 @@ static const s32 ad3552r_ch_ranges[][2] = {
 };
 
 enum ad3542r_ch_output_range {
-	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
+	 
 	AD3542R_CH_OUTPUT_RANGE_0__2P5V,
-	/* Range from 0 V to 3 V. Requires Rfb1x connection  */
+	 
 	AD3542R_CH_OUTPUT_RANGE_0__3V,
-	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
+	 
 	AD3542R_CH_OUTPUT_RANGE_0__5V,
-	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
+	 
 	AD3542R_CH_OUTPUT_RANGE_0__10V,
-	/* Range from -2.5 V to 7.5 V. Requires Rfb2x connection  */
+	 
 	AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V,
-	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
+	 
 	AD3542R_CH_OUTPUT_RANGE_NEG_5__5V,
 };
 
@@ -190,17 +181,17 @@ static const s32 ad3542r_ch_ranges[][2] = {
 };
 
 enum ad3552r_ch_gain_scaling {
-	/* Gain scaling of 1 */
+	 
 	AD3552R_CH_GAIN_SCALING_1,
-	/* Gain scaling of 0.5 */
+	 
 	AD3552R_CH_GAIN_SCALING_0_5,
-	/* Gain scaling of 0.25 */
+	 
 	AD3552R_CH_GAIN_SCALING_0_25,
-	/* Gain scaling of 0.125 */
+	 
 	AD3552R_CH_GAIN_SCALING_0_125,
 };
 
-/* Gain * AD3552R_GAIN_SCALE */
+ 
 static const s32 gains_scaling_table[] = {
 	[AD3552R_CH_GAIN_SCALING_1]		= 1000,
 	[AD3552R_CH_GAIN_SCALING_0_5]		= 500,
@@ -209,42 +200,35 @@ static const s32 gains_scaling_table[] = {
 };
 
 enum ad3552r_dev_attributes {
-	/* - Direct register values */
-	/* From 0-3 */
+	 
+	 
 	AD3552R_SDO_DRIVE_STRENGTH,
-	/*
-	 * 0 -> Internal Vref, vref_io pin floating (default)
-	 * 1 -> Internal Vref, vref_io driven by internal vref
-	 * 2 or 3 -> External Vref
-	 */
+	 
 	AD3552R_VREF_SELECT,
-	/* Read registers in ascending order if set. Else descending */
+	 
 	AD3552R_ADDR_ASCENSION,
 };
 
 enum ad3552r_ch_attributes {
-	/* DAC powerdown */
+	 
 	AD3552R_CH_DAC_POWERDOWN,
-	/* DAC amplifier powerdown */
+	 
 	AD3552R_CH_AMPLIFIER_POWERDOWN,
-	/* Select the output range. Select from enum ad3552r_ch_output_range */
+	 
 	AD3552R_CH_OUTPUT_RANGE_SEL,
-	/*
-	 * Over-rider the range selector in order to manually set the output
-	 * voltage range
-	 */
+	 
 	AD3552R_CH_RANGE_OVERRIDE,
-	/* Manually set the offset voltage */
+	 
 	AD3552R_CH_GAIN_OFFSET,
-	/* Sets the polarity of the offset. */
+	 
 	AD3552R_CH_GAIN_OFFSET_POLARITY,
-	/* PDAC gain scaling */
+	 
 	AD3552R_CH_GAIN_SCALING_P,
-	/* NDAC gain scaling */
+	 
 	AD3552R_CH_GAIN_SCALING_N,
-	/* Rfb value */
+	 
 	AD3552R_CH_RFB,
-	/* Channel select. When set allow Input -> DAC and Mask -> DAC */
+	 
 	AD3552R_CH_SELECT,
 };
 
@@ -262,7 +246,7 @@ struct ad3552r_ch_data {
 };
 
 struct ad3552r_desc {
-	/* Used to look the spi bus for atomic operations where needed */
+	 
 	struct mutex		lock;
 	struct gpio_desc	*gpio_reset;
 	struct gpio_desc	*gpio_ldac;
@@ -289,7 +273,7 @@ static const u16 addr_mask_map[][2] = {
 	},
 };
 
-/* 0 -> reg addr, 1->ch0 mask, 2->ch1 mask */
+ 
 static const u16 addr_mask_map_ch[][3] = {
 	[AD3552R_CH_DAC_POWERDOWN] = {
 			AD3552R_REG_ADDR_POWERDOWN_CONFIG,
@@ -335,11 +319,11 @@ static u8 _ad3552r_reg_len(u8 addr)
 	return 1;
 }
 
-/* SPI transfer to device */
+ 
 static int ad3552r_transfer(struct ad3552r_desc *dac, u8 addr, u32 len,
 			    u8 *data, bool is_read)
 {
-	/* Maximum transfer: Addr (1B) + 2 * (Data Reg (3B)) + SW LDAC(1B) */
+	 
 	u8 buf[8];
 
 	buf[0] = addr & AD3552R_ADDR_MASK;
@@ -358,12 +342,12 @@ static int ad3552r_write_reg(struct ad3552r_desc *dac, u8 addr, u16 val)
 
 	reg_len = _ad3552r_reg_len(addr);
 	if (reg_len == 2)
-		/* Only DAC register are 2 bytes wide */
+		 
 		val &= AD3552R_MASK_DAC_12B;
 	if (reg_len == 1)
 		buf[0] = val & 0xFF;
 	else
-		/* reg_len can be 2 or 3, but 3rd bytes needs to be set to 0 */
+		 
 		put_unaligned_be16(val, buf);
 
 	return ad3552r_transfer(dac, addr, reg_len, buf, false);
@@ -382,7 +366,7 @@ static int ad3552r_read_reg(struct ad3552r_desc *dac, u8 addr, u16 *val)
 	if (reg_len == 1)
 		*val = buf[0];
 	else
-		/* reg_len can be 2 or 3, but only first 2 bytes are relevant */
+		 
 		*val = get_unaligned_be16(buf);
 
 	return 0;
@@ -393,7 +377,7 @@ static u16 ad3552r_field_prep(u16 val, u16 mask)
 	return (val << __ffs(mask)) & mask;
 }
 
-/* Update field of a register, shift val if needed */
+ 
 static int ad3552r_update_reg_field(struct ad3552r_desc *dac, u8 addr, u16 mask,
 				    u16 val)
 {
@@ -415,7 +399,7 @@ static int ad3552r_set_ch_value(struct ad3552r_desc *dac,
 				u8 ch,
 				u16 val)
 {
-	/* Update register related to attributes in chip */
+	 
 	return ad3552r_update_reg_field(dac, addr_mask_map_ch[attr][0],
 				       addr_mask_map_ch[attr][ch + 1], val);
 }
@@ -531,15 +515,15 @@ static int ad3552r_write_all_channels(struct ad3552r_desc *dac, u8 *data)
 	u8 addr, buff[AD3552R_NUM_CH * AD3552R_MAX_REG_SIZE + 1];
 
 	addr = AD3552R_REG_ADDR_CH_INPUT_24B(1);
-	/* CH1 */
+	 
 	memcpy(buff, data + 2, 2);
 	buff[2] = 0;
-	/* CH0 */
+	 
 	memcpy(buff + 3, data, 2);
 	buff[5] = 0;
 	len = 6;
 	if (!dac->gpio_ldac) {
-		/* Software LDAC */
+		 
 		buff[6] = AD3552R_MASK_ALL_CH;
 		++len;
 	}
@@ -585,7 +569,7 @@ static irqreturn_t ad3552r_trigger_handler(int irq, void *p)
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct iio_buffer *buf = indio_dev->buffer;
 	struct ad3552r_desc *dac = iio_priv(indio_dev);
-	/* Maximum size of a scan */
+	 
 	u8 buff[AD3552R_NUM_CH * AD3552R_MAX_REG_SIZE];
 	int err;
 
@@ -665,11 +649,11 @@ static int ad3552r_reset(struct ad3552r_desc *dac)
 				     "Error while getting gpio reset");
 
 	if (dac->gpio_reset) {
-		/* Perform hardware reset */
+		 
 		usleep_range(10, 20);
 		gpiod_set_value_cansleep(dac->gpio_reset, 1);
 	} else {
-		/* Perform software reset if no GPIO provided */
+		 
 		ret = ad3552r_update_reg_field(dac,
 					       AD3552R_REG_ADDR_INTERFACE_CONFIG_A,
 					       AD3552R_MASK_SOFTWARE_RESET,
@@ -713,14 +697,9 @@ static void ad3552r_get_custom_range(struct ad3552r_desc *dac, s32 i, s32 *v_min
 				     s32 *v_max)
 {
 	s64 vref, tmp, common, offset, gn, gp;
-	/*
-	 * From datasheet formula (In Volts):
-	 *	Vmin = 2.5 + [(GainN + Offset / 1024) * 2.5 * Rfb * 1.03]
-	 *	Vmax = 2.5 - [(GainP + Offset / 1024) * 2.5 * Rfb * 1.03]
-	 * Calculus are converted to milivolts
-	 */
+	 
 	vref = 2500;
-	/* 2.5 * 1.03 * 1000 (To mV) */
+	 
 	common = 2575 * dac->ch_data[i].rfb;
 	offset = dac->ch_data[i].gain_offset;
 
@@ -743,7 +722,7 @@ static void ad3552r_calc_gain_and_offset(struct ad3552r_desc *dac, s32 ch)
 	if (dac->ch_data[ch].range_override) {
 		ad3552r_get_custom_range(dac, ch, &v_min, &v_max);
 	} else {
-		/* Normal range */
+		 
 		idx = dac->ch_data[ch].range;
 		if (dac->chip_id == AD3542R_ID) {
 			v_min = ad3542r_ch_ranges[idx][0];
@@ -754,19 +733,10 @@ static void ad3552r_calc_gain_and_offset(struct ad3552r_desc *dac, s32 ch)
 		}
 	}
 
-	/*
-	 * From datasheet formula:
-	 *	Vout = Span * (D / 65536) + Vmin
-	 * Converted to scale and offset:
-	 *	Scale = Span / 65536
-	 *	Offset = 65536 * Vmin / Span
-	 *
-	 * Reminders are in micros in order to be printed as
-	 * IIO_VAL_INT_PLUS_MICRO
-	 */
+	 
 	span = v_max - v_min;
 	dac->ch_data[ch].scale_int = div_s64_rem(span, 65536, &rem);
-	/* Do operations in microvolts */
+	 
 	dac->ch_data[ch].scale_dec = DIV_ROUND_CLOSEST((s64)rem * 1000000,
 							65536);
 
@@ -1010,7 +980,7 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
 
 	}
 
-	/* Disable unused channels */
+	 
 	for_each_clear_bit(ch, &dac->enabled_ch, AD3552R_NUM_CH) {
 		err = ad3552r_set_ch_value(dac, AD3552R_CH_AMPLIFIER_POWERDOWN,
 					   ch, 1);
@@ -1087,7 +1057,7 @@ static int ad3552r_probe(struct spi_device *spi)
 	if (err)
 		return err;
 
-	/* Config triggered buffer device */
+	 
 	if (dac->chip_id == AD3552R_ID)
 		indio_dev->name = "ad3552r";
 	else

@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -48,11 +26,11 @@ nv04_chan_stop(struct nvkm_chan *chan)
 	u32 data = chan->ramfc_offset;
 	u32 chid;
 
-	/* prevent fifo context switches */
+	 
 	spin_lock_irqsave(&fifo->lock, flags);
 	nvkm_wr32(device, NV03_PFIFO_CACHES, 0);
 
-	/* if this channel is active, replace it with a null context */
+	 
 	chid = nvkm_rd32(device, NV03_PFIFO_CACHE1_PUSH1) & fifo->chid->mask;
 	if (chid == chan->id) {
 		nvkm_mask(device, NV04_PFIFO_CACHE1_DMA_PUSH, 0x00000001, 0);
@@ -82,7 +60,7 @@ nv04_chan_stop(struct nvkm_chan *chan)
 		nvkm_wr32(device, NV04_PFIFO_CACHE1_PULL0, 1);
 	}
 
-	/* restore normal operation, after disabling dma mode */
+	 
 	nvkm_mask(device, NV04_PFIFO_MODE, BIT(chan->id), 0);
 	nvkm_wr32(device, NV03_PFIFO_CACHES, 1);
 	spin_unlock_irqrestore(&fifo->lock, flags);
@@ -221,15 +199,7 @@ __acquires(fifo->lock)
 	nvkm_wr32(device, NV03_PFIFO_CACHES, 0x00000000);
 	nvkm_mask(device, NV04_PFIFO_CACHE1_PULL0, 0x00000001, 0x00000000);
 
-	/* in some cases the puller may be left in an inconsistent state
-	 * if you try to stop it while it's busy translating handles.
-	 * sometimes you get a CACHE_ERROR, sometimes it just fails
-	 * silently; sending incorrect instance offsets to PGRAPH after
-	 * it's started up again.
-	 *
-	 * to avoid this, we invalidate the most recently calculated
-	 * instance.
-	 */
+	 
 	nvkm_msec(device, 2000,
 		u32 tmp = nvkm_rd32(device, NV04_PFIFO_CACHE1_PULL0);
 		if (!(tmp & NV04_PFIFO_CACHE1_PULL0_HASH_BUSY))
@@ -265,7 +235,7 @@ nv_dma_state_err(u32 state)
 {
 	static const char * const desc[] = {
 		"NONE", "CALL_SUBR_ACTIVE", "INVALID_MTHD", "RET_SUBR_INACTIVE",
-		"INVALID_CMD", "IB_EMPTY"/* NV50+ */, "MEM_FAULT", "UNK"
+		"INVALID_CMD", "IB_EMPTY" , "MEM_FAULT", "UNK"
 	};
 	return desc[(state >> 29) & 0x7];
 }
@@ -281,14 +251,14 @@ nv04_fifo_swmthd(struct nvkm_device *device, u32 chid, u32 addr, u32 data)
 	bool handled = false;
 
 	switch (mthd) {
-	case 0x0000 ... 0x0000: /* subchannel's engine -> software */
+	case 0x0000 ... 0x0000:  
 		nvkm_wr32(device, 0x003280, (engine &= ~mask));
 		fallthrough;
-	case 0x0180 ... 0x01fc: /* handle -> instance */
+	case 0x0180 ... 0x01fc:  
 		data = nvkm_rd32(device, 0x003258) & 0x0000ffff;
 		fallthrough;
 	case 0x0100 ... 0x017c:
-	case 0x0200 ... 0x1ffc: /* pass method down to sw */
+	case 0x0200 ... 0x1ffc:  
 		if (!(engine & mask) && sw)
 			handled = nvkm_sw_mthd(sw, chid, subc, mthd, data);
 		break;
@@ -310,11 +280,7 @@ nv04_fifo_intr_cache_error(struct nvkm_fifo *fifo, u32 chid, u32 get)
 	u32 mthd, data;
 	int ptr;
 
-	/* NV_PFIFO_CACHE1_GET actually goes to 0xffc before wrapping on my
-	 * G80 chips, but CACHE1 isn't big enough for this much data.. Tests
-	 * show that it wraps around to the start at GET=0x800.. No clue as to
-	 * why..
-	 */
+	 
 	ptr = (get & 0x7ff) >> 2;
 
 	if (device->card_type < NV_40) {
@@ -378,7 +344,7 @@ nv04_fifo_intr_dma_pusher(struct nvkm_fifo *fifo, u32 chid)
 			   ib_get, ib_put, state, nv_dma_state_err(state),
 			   push);
 
-		/* METHOD_COUNT, in DMA_STATE on earlier chipsets */
+		 
 		nvkm_wr32(device, 0x003364, 0x00000000);
 		if (dma_get != dma_put || ho_get != ho_put) {
 			nvkm_wr32(device, 0x003244, dma_put);
@@ -474,7 +440,7 @@ nv04_fifo_init(struct nvkm_fifo *fifo)
 	nvkm_wr32(device, NV04_PFIFO_DELAY_0, 0x000000ff);
 	nvkm_wr32(device, NV04_PFIFO_DMA_TIMESLICE, 0x0101ffff);
 
-	nvkm_wr32(device, NV03_PFIFO_RAMHT, (0x03 << 24) /* search 128 */ |
+	nvkm_wr32(device, NV03_PFIFO_RAMHT, (0x03 << 24)   |
 					    ((ramht->bits - 9) << 16) |
 					    (ramht->gpuobj->addr >> 8));
 	nvkm_wr32(device, NV03_PFIFO_RAMRO, nvkm_memory_addr(ramro) >> 8);
@@ -502,14 +468,14 @@ nv04_fifo_runl_ctor(struct nvkm_fifo *fifo)
 	nvkm_runl_add(runl, 0, fifo->func->engn_sw, NVKM_ENGINE_SW, 0);
 	nvkm_runl_add(runl, 0, fifo->func->engn_sw, NVKM_ENGINE_DMAOBJ, 0);
 	nvkm_runl_add(runl, 1, fifo->func->engn   , NVKM_ENGINE_GR, 0);
-	nvkm_runl_add(runl, 2, fifo->func->engn   , NVKM_ENGINE_MPEG, 0); /* NV31- */
+	nvkm_runl_add(runl, 2, fifo->func->engn   , NVKM_ENGINE_MPEG, 0);  
 	return 0;
 }
 
 int
 nv04_fifo_chid_ctor(struct nvkm_fifo *fifo, int nr)
 {
-	/* The last CHID is reserved by HW as a "channel invalid" marker. */
+	 
 	return nvkm_chid_new(&nvkm_chan_event, &fifo->engine.subdev, nr, 0, nr - 1, &fifo->chid);
 }
 

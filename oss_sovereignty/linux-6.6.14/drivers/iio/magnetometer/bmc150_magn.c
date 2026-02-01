@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Bosch BMC150 three-axis magnetic field sensor driver
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * This code is based on bmm050_api.c authored by contact@bosch.sensortec.com:
- *
- * (C) Copyright 2011~2014 Bosch Sensortec GmbH All Rights Reserved
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -86,7 +78,7 @@
 #define BMC150_MAGN_XY_OVERFLOW_VAL		-4096
 #define BMC150_MAGN_Z_OVERFLOW_VAL		-16384
 
-/* Time from SUSPEND to SLEEP */
+ 
 #define BMC150_MAGN_START_UP_TIME_MS		3
 
 #define BMC150_MAGN_AUTO_SUSPEND_DELAY_MS	2000
@@ -130,15 +122,12 @@ struct bmc150_magn_trim_regs {
 
 struct bmc150_magn_data {
 	struct device *dev;
-	/*
-	 * 1. Protect this structure.
-	 * 2. Serialize sequences that power on/off the device and access HW.
-	 */
+	 
 	struct mutex mutex;
 	struct regmap *regmap;
 	struct regulator_bulk_data regulators[2];
 	struct iio_mount_matrix orientation;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		s32 chans[3];
 		s64 timestamp __aligned(8);
@@ -346,7 +335,7 @@ static int bmc150_magn_set_max_odr(struct bmc150_magn_data *data, int rep_xy,
 		if (ret < 0)
 			return ret;
 	}
-	/* the maximum selectable read-out frequency from datasheet */
+	 
 	max_odr = 1000000 / (145 * rep_xy + 500 * rep_z + 980);
 	if (odr > max_odr) {
 		dev_err(data->dev,
@@ -490,11 +479,7 @@ static int bmc150_magn_read_raw(struct iio_dev *indio_dev,
 		mutex_unlock(&data->mutex);
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * The API/driver performs an off-chip temperature
-		 * compensation and outputs x/y/z magnetic field data in
-		 * 16 LSB/uT to the upper application layer.
-		 */
+		 
 		*val = 0;
 		*val2 = 625;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -601,7 +586,7 @@ static ssize_t bmc150_magn_show_samp_freq_avail(struct device *dev,
 		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
 				 bmc150_magn_samp_freq_table[i].freq);
 	}
-	/* replace last space with a newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -700,10 +685,7 @@ static int bmc150_magn_init(struct bmc150_magn_data *data)
 		dev_err(data->dev, "Failed to enable regulators: %d\n", ret);
 		return ret;
 	}
-	/*
-	 * 3ms power-on time according to datasheet, let's better
-	 * be safe than sorry and set this delay to 5ms.
-	 */
+	 
 	msleep(5);
 
 	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND,
@@ -775,10 +757,7 @@ static int bmc150_magn_reset_intr(struct bmc150_magn_data *data)
 {
 	int tmp;
 
-	/*
-	 * Data Ready (DRDY) is always cleared after
-	 * readout of data registers ends.
-	 */
+	 
 	return regmap_read(data->regmap, BMC150_MAGN_REG_X_L, &tmp);
 }
 
@@ -1029,9 +1008,7 @@ static int bmc150_magn_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * Should be called with data->mutex held.
- */
+ 
 static int bmc150_magn_runtime_resume(struct device *dev)
 {
 	struct iio_dev *indio_dev = dev_get_drvdata(dev);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *         Roy Luo <royluo@google.com>
- *         Felix Fietkau <nbd@nbd.name>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/devcoredump.h>
 #include <linux/etherdevice.h>
@@ -120,7 +114,7 @@ void mt7615_mac_reset_counters(struct mt7615_phy *phy)
 	memset(phy->mt76->aggr_stats, 0, sizeof(phy->mt76->aggr_stats));
 	phy->mt76->survey_time = ktime_get_boottime();
 
-	/* reset airtime counters */
+	 
 	mt76_rr(dev, MT_MIB_SDR9(0));
 	mt76_rr(dev, MT_MIB_SDR9(1));
 
@@ -227,7 +221,7 @@ static void mt7615_mac_fill_tm_rx(struct mt7615_phy *phy, __le32 *rxv)
 	u32 foe_const = (BIT(cbw + 1) & 0xf) * 10000;
 
 	if (!mode) {
-		/* CCK */
+		 
 		foe &= ~BIT(11);
 		foe *= 1000;
 		foe >>= 11;
@@ -248,7 +242,7 @@ static void mt7615_mac_fill_tm_rx(struct mt7615_phy *phy, __le32 *rxv)
 #endif
 }
 
-/* The HW does not translate the mac header to 802.3 for mesh point */
+ 
 static int mt7615_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
 {
 	struct mt76_rx_status *status = (struct mt76_rx_status *)skb->cb;
@@ -273,7 +267,7 @@ static int mt7615_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
 	sta = container_of((void *)msta, struct ieee80211_sta, drv_priv);
 	vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
 
-	/* store the info from RXD and ethhdr to avoid being overridden */
+	 
 	frame_control = le32_get_bits(rxd[4], MT_RXD4_FRAME_CONTROL);
 	hdr.frame_control = cpu_to_le16(frame_control);
 	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[6], MT_RXD6_SEQ_CTRL));
@@ -375,7 +369,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
 	if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_CM))
 		return -EINVAL;
 
-	/* ICV error or CCMP/BIP/WPI MIC error */
+	 
 	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
 		status->flag |= RX_FLAG_ONLY_MONITOR;
 
@@ -469,7 +463,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
 			      MT_RXD2_NORMAL_NON_AMPDU))) {
 			status->flag |= RX_FLAG_AMPDU_DETAILS;
 
-			/* all subframes of an A-MPDU have the same timestamp */
+			 
 			if (phy->rx_ampdu_ts != status->timestamp) {
 				if (!++phy->ampdu_ref)
 					phy->ampdu_ref++;
@@ -487,13 +481,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
 	if (rxd0 & MT_RXD0_NORMAL_GROUP_3) {
 		u32 rxdg5 = le32_to_cpu(rxd[5]);
 
-		/*
-		 * If both PHYs are on the same channel and we don't have a WCID,
-		 * we need to figure out which PHY this packet was received on.
-		 * On the primary PHY, the noise value for the chains belonging to the
-		 * second PHY will be set to the noise value of the last packet from
-		 * that PHY.
-		 */
+		 
 		if (phy_idx < 0) {
 			int first_chain = ffs(phy2->mt76->chainmask) - 1;
 
@@ -607,14 +595,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
 		if (!hdr_trans && status->amsdu) {
 			pad_start = ieee80211_get_hdrlen_from_skb(skb);
 		} else if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_HDR_TRANS_ERROR)) {
-			/*
-			 * When header translation failure is indicated,
-			 * the hardware will insert an extra 2-byte field
-			 * containing the data length after the protocol
-			 * type field. This happens either when the LLC-SNAP
-			 * pattern did not match, or if a VLAN header was
-			 * detected.
-			 */
+			 
 			pad_start = 12;
 			if (get_unaligned_be16(skb->data + pad_start) == ETH_P_8021Q)
 				pad_start += 4;
@@ -838,7 +819,7 @@ int mt7615_mac_write_txwi(struct mt7615_dev *dev, __le32 *txwi,
 		txwi[5] = cpu_to_le32(val);
 	} else {
 		txwi[5] = 0;
-		/* use maximum tx count for beacons */
+		 
 		tx_count = 0x1f;
 	}
 
@@ -991,13 +972,7 @@ mt7615_mac_update_rate_desc(struct mt7615_phy *phy, struct mt7615_sta *sta,
 
 	rates = sta->rateset[rateset].rates;
 	for (i = 0; i < ARRAY_SIZE(sta->rateset[rateset].rates); i++) {
-		/*
-		 * We don't support switching between short and long GI
-		 * within the rate set. For accurate tx status reporting, we
-		 * need to make sure that flags match.
-		 * For improved performance, avoid duplicate entries by
-		 * decrementing the MCS index if necessary
-		 */
+		 
 		if ((ref->flags ^ rates[i].flags) & IEEE80211_TX_RC_SHORT_GI)
 			rates[i].flags ^= IEEE80211_TX_RC_SHORT_GI;
 
@@ -1161,7 +1136,7 @@ void mt7615_mac_set_rates(struct mt7615_phy *phy, struct mt7615_sta *sta,
 	idx = idx > HW_BSSID_MAX ? HW_BSSID_0 : idx;
 	addr = idx > 1 ? MT_LPON_TCR2(idx): MT_LPON_TCR0(idx);
 
-	mt76_rmw(dev, addr, MT_LPON_TCR_MODE, MT_LPON_TCR_READ); /* TSF read */
+	mt76_rmw(dev, addr, MT_LPON_TCR_MODE, MT_LPON_TCR_READ);  
 	sta->rate_set_tsf = mt76_rr(dev, MT_LPON_UTTR0) & ~BIT(0);
 	sta->rate_set_tsf |= rd.rateset;
 
@@ -1202,7 +1177,7 @@ mt7615_mac_wtbl_update_key(struct mt7615_dev *dev, struct mt76_wcid *wcid,
 
 	mt76_rr_copy(dev, addr, data, sizeof(data));
 	if (cipher == MT_CIPHER_TKIP) {
-		/* Rx/Tx MIC keys are swapped */
+		 
 		memcpy(data, key->key, 16);
 		memcpy(data + 16, key->key + 24, 8);
 		memcpy(data + 24, key->key + 16, 8);
@@ -1711,9 +1686,9 @@ mt7615_mac_set_sensitivity(struct mt7615_phy *phy, int val, bool ofdm)
 static void
 mt7615_mac_set_default_sensitivity(struct mt7615_phy *phy)
 {
-	/* ofdm */
+	 
 	mt7615_mac_set_sensitivity(phy, 0x13c, true);
-	/* cck */
+	 
 	mt7615_mac_set_sensitivity(phy, 0x92, false);
 
 	phy->ofdm_sensitivity = -98;
@@ -1786,7 +1761,7 @@ void mt7615_mac_cca_stats_reset(struct mt7615_phy *phy)
 	else
 		reg = MT_WF_PHY_R0_PHYMUX_5(ext_phy);
 
-	/* reset PD and MDRDY counters */
+	 
 	mt76_clear(dev, reg, GENMASK(22, 20));
 	mt76_set(dev, reg, BIT(22) | BIT(20));
 }
@@ -1815,7 +1790,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
 		if (rts_err_rate > MT_FRAC(40, 100))
 			return;
 
-		/* decrease coverage */
+		 
 		if (*sensitivity == def_th && signal > -90) {
 			*sensitivity = -90;
 			update = true;
@@ -1825,7 +1800,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
 		}
 	} else if ((false_cca > 0 && false_cca < 50) ||
 		   rts_err_rate > MT_FRAC(60, 100)) {
-		/* increase coverage */
+		 
 		if (*sensitivity - 2 >= def_th) {
 			*sensitivity -= 2;
 			update = true;
@@ -1879,9 +1854,9 @@ mt7615_mac_scs_check(struct mt7615_phy *phy)
 		rts_err_rate = MT_FRAC(mib->rts_retries_cnt,
 				       mib->rts_cnt + mib->rts_retries_cnt);
 
-	/* cck */
+	 
 	mt7615_mac_adjust_sensitivity(phy, rts_err_rate, false);
-	/* ofdm */
+	 
 	mt7615_mac_adjust_sensitivity(phy, rts_err_rate, true);
 
 	if (time_after(jiffies, phy->last_cca_adj + 10 * HZ))
@@ -1950,9 +1925,7 @@ static void mt7615_update_survey(struct mt7615_dev *dev)
 	struct mt76_phy *mphy_ext = mdev->phys[MT_BAND1];
 	ktime_t cur_time;
 
-	/* MT7615 can only update both phys simultaneously
-	 * since some reisters are shared across bands.
-	 */
+	 
 
 	mt7615_phy_update_channel(&mdev->phy, 0);
 	if (mphy_ext)
@@ -1964,7 +1937,7 @@ static void mt7615_update_survey(struct mt7615_dev *dev)
 	if (mphy_ext)
 		mt76_update_survey_active_time(mphy_ext, cur_time);
 
-	/* reset obss airtime */
+	 
 	mt76_set(dev, MT_WF_RMAC_MIB_TIME0, MT_WF_RMAC_MIB_RXTIME_CLR);
 }
 
@@ -2070,11 +2043,7 @@ void mt7615_pm_power_save_work(struct work_struct *work)
 		goto out;
 
 	if (mutex_is_locked(&dev->mt76.mutex))
-		/* if mt76 mutex is held we should not put the device
-		 * to sleep since we are currently accessing device
-		 * register map. We need to wait for the next power_save
-		 * trigger.
-		 */
+		 
 		goto out;
 
 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
@@ -2161,7 +2130,7 @@ static int mt7615_dfs_start_radar_detector(struct mt7615_phy *phy)
 	bool ext_phy = phy != &dev->phy;
 	int err;
 
-	/* start CAC */
+	 
 	err = mt76_connac_mcu_rdd_cmd(&dev->mt76, RDD_CAC_START, ext_phy,
 				      MT_RX_SEL0, 0);
 	if (err < 0)
@@ -2207,7 +2176,7 @@ mt7615_dfs_init_radar_specs(struct mt7615_phy *phy)
 		return -EINVAL;
 	}
 
-	/* avoid FCC radar detection in non-FCC region */
+	 
 	err = mt7615_mcu_set_fcc5_lpn(dev, lpn);
 	if (err < 0)
 		return err;

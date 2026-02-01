@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Actions Semi Owl SoCs SIRQ interrupt controller driver
- *
- * Copyright (C) 2014 Actions Semi Inc.
- * David Liu <liuwei@actions-semi.com>
- *
- * Author: Parthiban Nallathambi <pn@denx.de>
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- * Author: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/interrupt.h>
@@ -29,20 +20,20 @@
 #define INTC_EXTCTL_TYPE_RISING		BIT(7)
 #define INTC_EXTCTL_TYPE_FALLING	(BIT(6) | BIT(7))
 
-/* S500 & S700 SIRQ control register masks */
+ 
 #define INTC_EXTCTL_SIRQ0_MASK		GENMASK(23, 16)
 #define INTC_EXTCTL_SIRQ1_MASK		GENMASK(15, 8)
 #define INTC_EXTCTL_SIRQ2_MASK		GENMASK(7, 0)
 
-/* S900 SIRQ control register offsets, relative to controller base address */
+ 
 #define INTC_EXTCTL0			0x0000
 #define INTC_EXTCTL1			0x0328
 #define INTC_EXTCTL2			0x032c
 
 struct owl_sirq_params {
-	/* INTC_EXTCTL reg shared for all three SIRQ lines */
+	 
 	bool reg_shared;
-	/* INTC_EXTCTL reg offsets relative to controller base address */
+	 
 	u16 reg_offset[NUM_SIRQ];
 };
 
@@ -53,13 +44,13 @@ struct owl_sirq_chip_data {
 	u32				ext_irqs[NUM_SIRQ];
 };
 
-/* S500 & S700 SoCs */
+ 
 static const struct owl_sirq_params owl_sirq_s500_params = {
 	.reg_shared = true,
 	.reg_offset = { 0, 0, 0 },
 };
 
-/* S900 SoC */
+ 
 static const struct owl_sirq_params owl_sirq_s900_params = {
 	.reg_shared = false,
 	.reg_offset = { INTC_EXTCTL0, INTC_EXTCTL1, INTC_EXTCTL2 },
@@ -134,10 +125,7 @@ static void owl_sirq_eoi(struct irq_data *data)
 {
 	struct owl_sirq_chip_data *chip_data = irq_data_get_irq_chip_data(data);
 
-	/*
-	 * Software must clear external interrupt pending, when interrupt type
-	 * is edge triggered, so we need per SIRQ based clearing.
-	 */
+	 
 	if (!irqd_is_level_type(data))
 		owl_sirq_clear_set_extctl(chip_data, 0, INTC_EXTCTL_PENDING,
 					  data->hwirq);
@@ -161,11 +149,7 @@ static void owl_sirq_unmask(struct irq_data *data)
 	irq_chip_unmask_parent(data);
 }
 
-/*
- * GIC does not handle falling edge or active low, hence SIRQ shall be
- * programmed to convert falling edge to rising edge signal and active
- * low to active high signal.
- */
+ 
 static int owl_sirq_set_type(struct irq_data *data, unsigned int type)
 {
 	struct owl_sirq_chip_data *chip_data = irq_data_get_irq_chip_data(data);
@@ -319,7 +303,7 @@ static int __init owl_sirq_init(const struct owl_sirq_params *params,
 
 		chip_data->ext_irqs[i] = irq.args[1];
 
-		/* Set 24MHz external interrupt clock freq */
+		 
 		owl_sirq_clear_set_extctl(chip_data, 0, INTC_EXTCTL_CLK_SEL, i);
 	}
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 Avago Technologies.  All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/parser.h>
@@ -249,9 +247,9 @@ struct fcloop_nport {
 struct fcloop_lsreq {
 	struct nvmefc_ls_req		*lsreq;
 	struct nvmefc_ls_rsp		ls_rsp;
-	int				lsdir;	/* H2T or T2H */
+	int				lsdir;	 
 	int				status;
-	struct list_head		ls_list; /* fcloop_rport->ls_list */
+	struct list_head		ls_list;  
 };
 
 struct fcloop_rscn {
@@ -333,10 +331,7 @@ fcloop_rport_lsrqst_work(struct work_struct *work)
 		spin_unlock(&rport->lock);
 
 		tls_req->lsreq->done(tls_req->lsreq, tls_req->status);
-		/*
-		 * callee may free memory containing tls_req.
-		 * do not reference lsreq after this.
-		 */
+		 
 
 		spin_lock(&rport->lock);
 	}
@@ -417,10 +412,7 @@ fcloop_tport_lsrqst_work(struct work_struct *work)
 		spin_unlock(&tport->lock);
 
 		tls_req->lsreq->done(tls_req->lsreq, tls_req->status);
-		/*
-		 * callee may free memory containing tls_req.
-		 * do not reference lsreq after this.
-		 */
+		 
 
 		spin_lock(&tport->lock);
 	}
@@ -435,11 +427,7 @@ fcloop_t2h_ls_req(struct nvmet_fc_target_port *targetport, void *hosthandle,
 	struct fcloop_tport *tport = targetport->private;
 	int ret = 0;
 
-	/*
-	 * hosthandle should be the dst.rport value.
-	 * hosthandle ignored as fcloop currently is
-	 * 1:1 tgtport vs remoteport
-	 */
+	 
 	tls_req->lsreq = lsreq;
 	INIT_LIST_HEAD(&tls_req->ls_list);
 
@@ -489,13 +477,10 @@ fcloop_t2h_xmt_ls_rsp(struct nvme_fc_local_port *localport,
 static void
 fcloop_t2h_host_release(void *hosthandle)
 {
-	/* host handle ignored for now */
+	 
 }
 
-/*
- * Simulate reception of RSCN and converting it to a initiator transport
- * call to rescan a remote port.
- */
+ 
 static void
 fcloop_tgt_rscn_work(struct work_struct *work)
 {
@@ -560,24 +545,19 @@ fcloop_call_host_done(struct nvmefc_fcp_req *fcpreq,
 		fcpreq->done(fcpreq);
 	}
 
-	/* release original io reference on tgt struct */
+	 
 	fcloop_tfcp_req_put(tfcp_req);
 }
 
 static bool drop_fabric_opcode;
 #define DROP_OPCODE_MASK	0x00FF
-/* fabrics opcode will have a bit set above 1st byte */
+ 
 static int drop_opcode = -1;
 static int drop_instance;
 static int drop_amount;
 static int drop_current_cnt;
 
-/*
- * Routine to parse io and determine if the io is to be dropped.
- * Returns:
- *  0 if io is not obstructed
- *  1 if io was dropped
- */
+ 
 static int check_for_drop(struct fcloop_fcpreq *tfcp_req)
 {
 	struct nvmefc_fcp_req *fcpreq = tfcp_req->fcpreq;
@@ -672,7 +652,7 @@ fcloop_fcp_abort_recv_work(struct work_struct *work)
 	spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
 
 	if (unlikely(completed)) {
-		/* remove reference taken in original abort downcall */
+		 
 		fcloop_tfcp_req_put(tfcp_req);
 		return;
 	}
@@ -686,13 +666,10 @@ fcloop_fcp_abort_recv_work(struct work_struct *work)
 	spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
 
 	fcloop_call_host_done(fcpreq, tfcp_req, -ECANCELED);
-	/* call_host_done releases reference for abort downcall */
+	 
 }
 
-/*
- * FCP IO operation done by target completion.
- * call back up initiator "done" flows.
- */
+ 
 static void
 fcloop_tgt_fcprqst_done_work(struct work_struct *work)
 {
@@ -818,11 +795,11 @@ fcloop_fcp_op(struct nvmet_fc_target_port *tgtport,
 	spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
 
 	if (unlikely(active))
-		/* illegal - call while i/o active */
+		 
 		return -EALREADY;
 
 	if (unlikely(aborted)) {
-		/* target transport has aborted i/o prior */
+		 
 		spin_lock_irqsave(&tfcp_req->reqlock, flags);
 		tfcp_req->active = false;
 		spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
@@ -832,11 +809,7 @@ fcloop_fcp_op(struct nvmet_fc_target_port *tgtport,
 		return 0;
 	}
 
-	/*
-	 * if fcpreq is NULL, the I/O has been aborted (from
-	 * initiator side). For the target side, act as if all is well
-	 * but don't actually move data.
-	 */
+	 
 
 	switch (op) {
 	case NVMET_FCOP_WRITEDATA:
@@ -861,7 +834,7 @@ fcloop_fcp_op(struct nvmet_fc_target_port *tgtport,
 		if (op == NVMET_FCOP_READDATA)
 			break;
 
-		/* Fall-Thru to RSP handling */
+		 
 		fallthrough;
 
 	case NVMET_FCOP_RSP:
@@ -900,22 +873,14 @@ fcloop_tgt_fcp_abort(struct nvmet_fc_target_port *tgtport,
 	struct fcloop_fcpreq *tfcp_req = tgt_fcp_req_to_fcpreq(tgt_fcpreq);
 	unsigned long flags;
 
-	/*
-	 * mark aborted only in case there were 2 threads in transport
-	 * (one doing io, other doing abort) and only kills ops posted
-	 * after the abort request
-	 */
+	 
 	spin_lock_irqsave(&tfcp_req->reqlock, flags);
 	tfcp_req->aborted = true;
 	spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
 
 	tfcp_req->status = NVME_SC_INTERNAL;
 
-	/*
-	 * nothing more to do. If io wasn't active, the transport should
-	 * immediately call the req_release. If it was active, the op
-	 * will complete, and the lldd should call req_release.
-	 */
+	 
 }
 
 static void
@@ -958,10 +923,10 @@ fcloop_fcp_abort(struct nvme_fc_local_port *localport,
 	spin_unlock(&inireq->inilock);
 
 	if (!tfcp_req)
-		/* abort has already been called */
+		 
 		return;
 
-	/* break initiator/target relationship for io */
+	 
 	spin_lock_irqsave(&tfcp_req->reqlock, flags);
 	switch (tfcp_req->inistate) {
 	case INI_IO_START:
@@ -979,13 +944,10 @@ fcloop_fcp_abort(struct nvme_fc_local_port *localport,
 	spin_unlock_irqrestore(&tfcp_req->reqlock, flags);
 
 	if (abortio)
-		/* leave the reference while the work item is scheduled */
+		 
 		WARN_ON(!queue_work(nvmet_wq, &tfcp_req->abort_rcv_work));
 	else  {
-		/*
-		 * as the io has already had the done callback made,
-		 * nothing more to do. So release the reference taken above
-		 */
+		 
 		fcloop_tfcp_req_put(tfcp_req);
 	}
 }
@@ -1022,7 +984,7 @@ fcloop_localport_delete(struct nvme_fc_local_port *localport)
 	struct fcloop_lport_priv *lport_priv = localport->private;
 	struct fcloop_lport *lport = lport_priv->lport;
 
-	/* release any threads waiting for the unreg to complete */
+	 
 	complete(&lport->unreg_done);
 }
 
@@ -1062,7 +1024,7 @@ static struct nvme_fc_port_template fctemplate = {
 	.max_sgl_segments	= FCLOOP_SGL_SEGS,
 	.max_dif_sgl_segments	= FCLOOP_SGL_SEGS,
 	.dma_boundary		= FCLOOP_DMABOUND_4G,
-	/* sizes of additional private data for data structures */
+	 
 	.local_priv_sz		= sizeof(struct fcloop_lport_priv),
 	.remote_priv_sz		= sizeof(struct fcloop_rport),
 	.lsrqst_priv_sz		= sizeof(struct fcloop_lsreq),
@@ -1083,9 +1045,9 @@ static struct nvmet_fc_target_template tgttemplate = {
 	.max_sgl_segments	= FCLOOP_SGL_SEGS,
 	.max_dif_sgl_segments	= FCLOOP_SGL_SEGS,
 	.dma_boundary		= FCLOOP_DMABOUND_4G,
-	/* optional features */
+	 
 	.target_features	= 0,
-	/* sizes of additional private data for data structures */
+	 
 	.target_priv_sz		= sizeof(struct fcloop_tport),
 	.lsrqst_priv_sz		= sizeof(struct fcloop_lsreq),
 };
@@ -1114,7 +1076,7 @@ fcloop_create_local_port(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		goto out_free_opts;
 
-	/* everything there ? */
+	 
 	if ((opts->mask & LPORT_OPTS) != LPORT_OPTS) {
 		ret = -EINVAL;
 		goto out_free_opts;
@@ -1128,7 +1090,7 @@ fcloop_create_local_port(struct device *dev, struct device_attribute *attr,
 
 	ret = nvme_fc_register_localport(&pinfo, &fctemplate, NULL, &localport);
 	if (!ret) {
-		/* success */
+		 
 		lport_priv = localport->private;
 		lport_priv->lport = lport;
 
@@ -1143,7 +1105,7 @@ fcloop_create_local_port(struct device *dev, struct device_attribute *attr,
 out_free_opts:
 	kfree(opts);
 out_free_lport:
-	/* free only if we're going to fail */
+	 
 	if (ret)
 		kfree(lport);
 
@@ -1226,7 +1188,7 @@ fcloop_alloc_nport(const char *buf, size_t count, bool remoteport)
 	if (ret)
 		goto out_free_opts;
 
-	/* everything there ? */
+	 
 	if ((opts->mask & opts_mask) != opts_mask) {
 		ret = -EINVAL;
 		goto out_free_opts;
@@ -1329,7 +1291,7 @@ fcloop_create_remote_port(struct device *dev, struct device_attribute *attr,
 		return ret;
 	}
 
-	/* success */
+	 
 	rport = remoteport->private;
 	rport->remoteport = remoteport;
 	rport->targetport = (nport->tport) ?  nport->tport->targetport : NULL;
@@ -1429,7 +1391,7 @@ fcloop_create_target_port(struct device *dev, struct device_attribute *attr,
 		return ret;
 	}
 
-	/* success */
+	 
 	tport = targetport->private;
 	tport->targetport = targetport;
 	tport->remoteport = (nport->rport) ?  nport->rport->remoteport : NULL;
@@ -1516,10 +1478,7 @@ fcloop_set_cmd_drop(struct device *dev, struct device_attribute *attr,
 	drop_fabric_opcode = (opcode & ~DROP_OPCODE_MASK) ? true : false;
 	drop_opcode = (opcode & DROP_OPCODE_MASK);
 	drop_instance = starting;
-	/* the check to drop routine uses instance + count to know when
-	 * to end. Thus, if dropping 1 instance, count should be 0.
-	 * so subtract 1 from the count.
-	 */
+	 
 	drop_amount = amount - 1;
 
 	pr_info("%s: DROP: Starting at instance %d of%s opcode x%x drop +%d "

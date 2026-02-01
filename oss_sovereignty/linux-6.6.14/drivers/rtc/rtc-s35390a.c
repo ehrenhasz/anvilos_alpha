@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Seiko Instruments S-35390A RTC Driver
- *
- * Copyright (c) 2007 Byron Bradley
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -31,23 +27,23 @@
 #define S35390A_ALRM_BYTE_HOURS	1
 #define S35390A_ALRM_BYTE_MINS	2
 
-/* flags for STATUS1 */
+ 
 #define S35390A_FLAG_POC	BIT(0)
 #define S35390A_FLAG_BLD	BIT(1)
 #define S35390A_FLAG_INT2	BIT(2)
 #define S35390A_FLAG_24H	BIT(6)
 #define S35390A_FLAG_RESET	BIT(7)
 
-/* flag for STATUS2 */
+ 
 #define S35390A_FLAG_TEST	BIT(0)
 
-/* INT2 pin output mode */
+ 
 #define S35390A_INT2_MODE_MASK		0x0E
 #define S35390A_INT2_MODE_NOINTR	0x00
-#define S35390A_INT2_MODE_ALARM		BIT(1) /* INT2AE */
-#define S35390A_INT2_MODE_PMIN_EDG	BIT(2) /* INT2ME */
-#define S35390A_INT2_MODE_FREQ		BIT(3) /* INT2FE */
-#define S35390A_INT2_MODE_PMIN		(BIT(3) | BIT(2)) /* INT2FE | INT2ME */
+#define S35390A_INT2_MODE_ALARM		BIT(1)  
+#define S35390A_INT2_MODE_PMIN_EDG	BIT(2)  
+#define S35390A_INT2_MODE_FREQ		BIT(3)  
+#define S35390A_INT2_MODE_PMIN		(BIT(3) | BIT(2))  
 
 static const struct i2c_device_id s35390a_id[] = {
 	{ "s35390a", 0 },
@@ -109,14 +105,7 @@ static int s35390a_init(struct s35390a *s35390a)
 	int ret;
 	unsigned initcount = 0;
 
-	/*
-	 * At least one of POC and BLD are set, so reinitialise chip. Keeping
-	 * this information in the hardware to know later that the time isn't
-	 * valid is unfortunately not possible because POC and BLD are cleared
-	 * on read. So the reset is best done now.
-	 *
-	 * The 24H bit is kept over reset, so set it already here.
-	 */
+	 
 initialize:
 	buf = S35390A_FLAG_RESET | S35390A_FLAG_24H;
 	ret = s35390a_set_reg(s35390a, S35390A_CMD_STATUS1, &buf, 1);
@@ -129,7 +118,7 @@ initialize:
 		return ret;
 
 	if (buf & (S35390A_FLAG_POC | S35390A_FLAG_BLD)) {
-		/* Try up to five times to reset the chip */
+		 
 		if (initcount < 5) {
 			++initcount;
 			goto initialize;
@@ -140,11 +129,7 @@ initialize:
 	return 1;
 }
 
-/*
- * Returns <0 on error, 0 if rtc is setup fine and 1 if the chip was reset.
- * To keep the information if an irq is pending, pass the value read from
- * STATUS1 to the caller.
- */
+ 
 static int s35390a_read_status(struct s35390a *s35390a, char *status1)
 {
 	int ret;
@@ -154,17 +139,12 @@ static int s35390a_read_status(struct s35390a *s35390a, char *status1)
 		return ret;
 
 	if (*status1 & S35390A_FLAG_POC) {
-		/*
-		 * Do not communicate for 0.5 seconds since the power-on
-		 * detection circuit is in operation.
-		 */
+		 
 		msleep(500);
 		return 1;
 	} else if (*status1 & S35390A_FLAG_BLD)
 		return 1;
-	/*
-	 * If both POC and BLD are unset everything is fine.
-	 */
+	 
 	return 0;
 }
 
@@ -230,7 +210,7 @@ static int s35390a_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	buf[S35390A_BYTE_MINS] = bin2bcd(tm->tm_min);
 	buf[S35390A_BYTE_SECS] = bin2bcd(tm->tm_sec);
 
-	/* This chip expects the bits of each byte to be in reverse order */
+	 
 	for (i = 0; i < 7; ++i)
 		buf[i] = bitrev8(buf[i]);
 
@@ -251,7 +231,7 @@ static int s35390a_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (err < 0)
 		return err;
 
-	/* This chip returns the bits of each byte in reverse order */
+	 
 	for (i = 0; i < 7; ++i)
 		buf[i] = bitrev8(buf[i]);
 
@@ -283,12 +263,12 @@ static int s35390a_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 		alm->time.tm_min, alm->time.tm_hour, alm->time.tm_mday,
 		alm->time.tm_mon, alm->time.tm_year, alm->time.tm_wday);
 
-	/* disable interrupt (which deasserts the irq line) */
+	 
 	err = s35390a_set_reg(s35390a, S35390A_CMD_STATUS2, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
 
-	/* clear pending interrupt (in STATUS1 only), if any */
+	 
 	err = s35390a_get_reg(s35390a, S35390A_CMD_STATUS1, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
@@ -298,7 +278,7 @@ static int s35390a_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	else
 		sts = S35390A_INT2_MODE_NOINTR;
 
-	/* set interupt mode*/
+	 
 	err = s35390a_set_reg(s35390a, S35390A_CMD_STATUS2, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
@@ -336,10 +316,7 @@ static int s35390a_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 		return err;
 
 	if ((sts & S35390A_INT2_MODE_MASK) != S35390A_INT2_MODE_ALARM) {
-		/*
-		 * When the alarm isn't enabled, the register to configure
-		 * the alarm time isn't accessible.
-		 */
+		 
 		alm->enabled = 0;
 		return 0;
 	} else {
@@ -350,14 +327,11 @@ static int s35390a_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	if (err < 0)
 		return err;
 
-	/* This chip returns the bits of each byte in reverse order */
+	 
 	for (i = 0; i < 3; ++i)
 		buf[i] = bitrev8(buf[i]);
 
-	/*
-	 * B0 of the three matching registers is an enable flag. Iff it is set
-	 * the configured value is used for matching.
-	 */
+	 
 	if (buf[S35390A_ALRM_BYTE_WDAY] & 0x80)
 		alm->time.tm_wday =
 			bcd2bin(buf[S35390A_ALRM_BYTE_WDAY] & ~0x80);
@@ -370,7 +344,7 @@ static int s35390a_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	if (buf[S35390A_ALRM_BYTE_MINS] & 0x80)
 		alm->time.tm_min = bcd2bin(buf[S35390A_ALRM_BYTE_MINS] & ~0x80);
 
-	/* alarm triggers always at s=0 */
+	 
 	alm->time.tm_sec = 0;
 
 	dev_dbg(&client->dev, "%s: alm is mins=%d, hours=%d, wday=%d\n",
@@ -390,7 +364,7 @@ static int s35390a_rtc_ioctl(struct device *dev, unsigned int cmd,
 
 	switch (cmd) {
 	case RTC_VL_READ:
-		/* s35390a_reset set lowvoltage flag and init RTC if needed */
+		 
 		err = s35390a_read_status(s35390a, &sts);
 		if (err < 0)
 			return err;
@@ -398,7 +372,7 @@ static int s35390a_rtc_ioctl(struct device *dev, unsigned int cmd,
 			return -EFAULT;
 		break;
 	case RTC_VL_CLR:
-		/* update flag and clear register */
+		 
 		err = s35390a_init(s35390a);
 		if (err < 0)
 			return err;
@@ -436,7 +410,7 @@ static int s35390a_probe(struct i2c_client *client)
 	s35390a->client[0] = client;
 	i2c_set_clientdata(client, s35390a);
 
-	/* This chip uses multiple addresses, use dummy devices for them */
+	 
 	for (i = 1; i < 8; ++i) {
 		s35390a->client[i] = devm_i2c_new_dummy_device(dev,
 							       client->adapter,
@@ -464,7 +438,7 @@ static int s35390a_probe(struct i2c_client *client)
 		s35390a->twentyfourhour = 0;
 
 	if (status1 & S35390A_FLAG_INT2) {
-		/* disable alarm (and maybe test mode) */
+		 
 		buf = 0;
 		err = s35390a_set_reg(s35390a, S35390A_CMD_STATUS2, &buf, 1);
 		if (err < 0) {

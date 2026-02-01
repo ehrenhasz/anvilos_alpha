@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2009-2010 Pengutronix
- * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
- *
- * loosely based on an earlier driver that has
- * Copyright 2009 Pengutronix, Sascha Hauer <s.hauer@pengutronix.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -198,7 +192,7 @@ static void mc34708_print_revision(struct mc13xxx *mc13xxx, u32 revision)
 			maskval(revision, MC34708_REVISION_FAB));
 }
 
-/* These are only exported for mc13xxx-i2c and mc13xxx-spi */
+ 
 struct mc13xxx_variant mc13xxx_variant_mc13783 = {
 	.name = "mc13783",
 	.print_revision = mc13xxx_print_revision,
@@ -279,12 +273,7 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 	       MC13XXX_ADC0_CHRGRAWDIV;
 	adc1 = MC13XXX_ADC1_ADEN | MC13XXX_ADC1_ADTRIGIGN | MC13XXX_ADC1_ASC;
 
-	/*
-	 * Channels mapped through ADIN7:
-	 * 7  - General purpose ADIN7
-	 * 16 - UID
-	 * 17 - Die temperature
-	 */
+	 
 	if (channel > 7 && channel < 16) {
 		adc1 |= MC13XXX_ADC1_ADSEL;
 	} else if (channel == 16) {
@@ -351,7 +340,7 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 		}
 
 	if (mode == MC13XXX_ADC_MODE_TS)
-		/* restore TSMOD */
+		 
 		mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, old_adc0);
 
 	mc13xxx->adcflags &= ~MC13XXX_ADC_WORKING;
@@ -373,7 +362,7 @@ static int mc13xxx_add_subdevice_pdata(struct mc13xxx *mc13xxx,
 		.pdata_size = pdata_size,
 	};
 
-	/* there is no asnprintf in the kernel :-( */
+	 
 	if (snprintf(buf, sizeof(buf), format, name) > sizeof(buf))
 		return -E2BIG;
 

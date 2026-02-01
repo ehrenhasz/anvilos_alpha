@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device driver for monitoring ambient light intensity (lux)
- * within the TAOS tsl258x family of devices (tsl2580, tsl2581, tsl2583).
- *
- * Copyright (c) 2011, TAOS Corporation.
- * Copyright (c) 2016-2017 Brian Masney <masneyb@onstation.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/i2c.h>
@@ -20,7 +14,7 @@
 #include <linux/iio/sysfs.h>
 #include <linux/pm_runtime.h>
 
-/* Device Registers and Masks */
+ 
 #define TSL2583_CNTRL			0x00
 #define TSL2583_ALS_TIME		0X01
 #define TSL2583_INTERRUPT		0x02
@@ -34,21 +28,21 @@
 #define TSL2583_TMR_LO			0x18
 #define TSL2583_TMR_HI			0x19
 
-/* tsl2583 cmd reg masks */
+ 
 #define TSL2583_CMD_REG			0x80
 #define TSL2583_CMD_SPL_FN		0x60
 #define TSL2583_CMD_ALS_INT_CLR		0x01
 
-/* tsl2583 cntrl reg masks */
+ 
 #define TSL2583_CNTL_ADC_ENBL		0x02
 #define TSL2583_CNTL_PWR_OFF		0x00
 #define TSL2583_CNTL_PWR_ON		0x01
 
-/* tsl2583 status reg masks */
+ 
 #define TSL2583_STA_ADC_VALID		0x01
 #define TSL2583_STA_ADC_INTR		0x10
 
-/* Lux calculation constants */
+ 
 #define TSL2583_LUX_CALC_OVER_FLOW	65535
 
 #define TSL2583_INTERRUPT_DISABLED	0x00
@@ -58,7 +52,7 @@
 
 #define TSL2583_POWER_OFF_DELAY_MS	2000
 
-/* Per-device data */
+ 
 struct tsl2583_als_info {
 	u16 als_ch0;
 	u16 als_ch1;
@@ -76,7 +70,7 @@ static const struct tsl2583_lux tsl2583_default_lux[] = {
 	{ 12452, 10807, 23344 },
 	{ 14746,  6383, 11705 },
 	{ 17695,  4063,  6554 },
-	{     0,     0,     0 }  /* Termination segment */
+	{     0,     0,     0 }   
 };
 
 #define TSL2583_MAX_LUX_TABLE_ENTRIES 11
@@ -87,11 +81,7 @@ struct tsl2583_settings {
 	int als_gain_trim;
 	int als_cal_target;
 
-	/*
-	 * This structure is intentionally large to accommodate updates via
-	 * sysfs. Sized to 11 = max 10 segments + 1 termination segment.
-	 * Assumption is that one and only one type of glass used.
-	 */
+	 
 	struct tsl2583_lux als_device_lux[TSL2583_MAX_LUX_TABLE_ENTRIES];
 };
 
@@ -110,7 +100,7 @@ struct gainadj {
 	s16 mean;
 };
 
-/* Index = (0 - 3) Used to validate the gain selection index */
+ 
 static const struct gainadj gainadj[] = {
 	{ 1, 1, 1 },
 	{ 8, 8, 8 },
@@ -118,52 +108,31 @@ static const struct gainadj gainadj[] = {
 	{ 107, 115, 111 }
 };
 
-/*
- * Provides initial operational parameter defaults.
- * These defaults may be changed through the device's sysfs files.
- */
+ 
 static void tsl2583_defaults(struct tsl2583_chip *chip)
 {
-	/*
-	 * The integration time must be a multiple of 50ms and within the
-	 * range [50, 600] ms.
-	 */
+	 
 	chip->als_settings.als_time = 100;
 
-	/*
-	 * This is an index into the gainadj table. Assume clear glass as the
-	 * default.
-	 */
+	 
 	chip->als_settings.als_gain = 0;
 
-	/* Default gain trim to account for aperture effects */
+	 
 	chip->als_settings.als_gain_trim = 1000;
 
-	/* Known external ALS reading used for calibration */
+	 
 	chip->als_settings.als_cal_target = 130;
 
-	/* Default lux table. */
+	 
 	memcpy(chip->als_settings.als_device_lux, tsl2583_default_lux,
 	       sizeof(tsl2583_default_lux));
 }
 
-/*
- * Reads and calculates current lux value.
- * The raw ch0 and ch1 values of the ambient light sensed in the last
- * integration cycle are read from the device.
- * Time scale factor array values are adjusted based on the integration time.
- * The raw values are multiplied by a scale factor, and device gain is obtained
- * using gain index. Limit checks are done next, then the ratio of a multiple
- * of ch1 value, to the ch0 value, is calculated. The array als_device_lux[]
- * declared above is then scanned to find the first ratio value that is just
- * above the ratio we just calculated. The ch0 and ch1 multiplier constants in
- * the array are then used along with the time scale factor array values, to
- * calculate the lux.
- */
+ 
 static int tsl2583_get_lux(struct iio_dev *indio_dev)
 {
-	u16 ch0, ch1; /* separated ch0/ch1 data from device */
-	u32 lux; /* raw lux calculated from device data */
+	u16 ch0, ch1;  
+	u32 lux;  
 	u64 lux64;
 	u32 ratio;
 	u8 buf[5];
@@ -178,11 +147,11 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
 		goto done;
 	}
 
-	/* is data new & valid */
+	 
 	if (!(ret & TSL2583_STA_ADC_INTR)) {
 		dev_err(&chip->client->dev, "%s: data not valid; returning last value\n",
 			__func__);
-		ret = chip->als_cur_info.lux; /* return LAST VALUE */
+		ret = chip->als_cur_info.lux;  
 		goto done;
 	}
 
@@ -198,21 +167,17 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
 		buf[i] = ret;
 	}
 
-	/*
-	 * Clear the pending interrupt status bit on the chip to allow the next
-	 * integration cycle to start. This has to be done even though this
-	 * driver currently does not support interrupts.
-	 */
+	 
 	ret = i2c_smbus_write_byte(chip->client,
 				   (TSL2583_CMD_REG | TSL2583_CMD_SPL_FN |
 				    TSL2583_CMD_ALS_INT_CLR));
 	if (ret < 0) {
 		dev_err(&chip->client->dev, "%s: failed to clear the interrupt bit\n",
 			__func__);
-		goto done; /* have no data, so return failure */
+		goto done;  
 	}
 
-	/* extract ALS/lux data */
+	 
 	ch0 = le16_to_cpup((const __le16 *)&buf[0]);
 	ch1 = le16_to_cpup((const __le16 *)&buf[2]);
 
@@ -223,20 +188,16 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
 		goto return_max;
 
 	if (!ch0) {
-		/*
-		 * The sensor appears to be in total darkness so set the
-		 * calculated lux to 0 and return early to avoid a division by
-		 * zero below when calculating the ratio.
-		 */
+		 
 		ret = 0;
 		chip->als_cur_info.lux = 0;
 		goto done;
 	}
 
-	/* calculate ratio */
+	 
 	ratio = (ch1 << 15) / ch0;
 
-	/* convert to unscaled lux using the pointer to the table */
+	 
 	for (p = (struct tsl2583_lux *)chip->als_settings.als_device_lux;
 	     p->ratio != 0 && p->ratio < ratio; p++)
 		;
@@ -253,7 +214,7 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
 			  (gainadj[chip->als_settings.als_gain].ch1 >> 1))
 			 / gainadj[chip->als_settings.als_gain].ch1;
 
-		/* note: lux is 31 bit max at this point */
+		 
 		if (ch1lux > ch0lux) {
 			dev_dbg(&chip->client->dev, "%s: No Data - Returning 0\n",
 				__func__);
@@ -265,34 +226,26 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
 		lux = ch0lux - ch1lux;
 	}
 
-	/* adjust for active time scale */
+	 
 	if (chip->als_time_scale == 0)
 		lux = 0;
 	else
 		lux = (lux + (chip->als_time_scale >> 1)) /
 			chip->als_time_scale;
 
-	/*
-	 * Adjust for active gain scale.
-	 * The tsl2583_default_lux tables above have a factor of 8192 built in,
-	 * so we need to shift right.
-	 * User-specified gain provides a multiplier.
-	 * Apply user-specified gain before shifting right to retain precision.
-	 * Use 64 bits to avoid overflow on multiplication.
-	 * Then go back to 32 bits before division to avoid using div_u64().
-	 */
+	 
 	lux64 = lux;
 	lux64 = lux64 * chip->als_settings.als_gain_trim;
 	lux64 >>= 13;
 	lux = lux64;
 	lux = DIV_ROUND_CLOSEST(lux, 1000);
 
-	if (lux > TSL2583_LUX_CALC_OVER_FLOW) { /* check for overflow */
+	if (lux > TSL2583_LUX_CALC_OVER_FLOW) {  
 return_max:
 		lux = TSL2583_LUX_CALC_OVER_FLOW;
 	}
 
-	/* Update the structure with the latest VALID lux. */
+	 
 	chip->als_cur_info.lux = lux;
 	ret = lux;
 
@@ -300,11 +253,7 @@ done:
 	return ret;
 }
 
-/*
- * Obtain single reading and calculate the als_gain_trim (later used
- * to derive actual lux).
- * Return updated gain_trim value.
- */
+ 
 static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
 {
 	struct tsl2583_chip *chip = iio_priv(indio_dev);
@@ -341,7 +290,7 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
 		return lux_val;
 	}
 
-	/* Avoid division by zero of lux_value later on */
+	 
 	if (lux_val == 0) {
 		dev_err(&chip->client->dev,
 			"%s: lux_val of 0 will produce out of range trim_value\n",
@@ -368,12 +317,12 @@ static int tsl2583_set_als_time(struct tsl2583_chip *chip)
 	int als_count, als_time, ret;
 	u8 val;
 
-	/* determine als integration register */
+	 
 	als_count = DIV_ROUND_CLOSEST(chip->als_settings.als_time * 100, 270);
 	if (!als_count)
-		als_count = 1; /* ensure at least one cycle */
+		als_count = 1;  
 
-	/* convert back to time (encompasses overrides) */
+	 
 	als_time = DIV_ROUND_CLOSEST(als_count * 27, 10);
 
 	val = 256 - als_count;
@@ -386,8 +335,8 @@ static int tsl2583_set_als_time(struct tsl2583_chip *chip)
 		return ret;
 	}
 
-	/* set chip struct re scaling and saturation */
-	chip->als_saturation = als_count * 922; /* 90% of full scale */
+	 
+	chip->als_saturation = als_count * 922;  
 	chip->als_time_scale = DIV_ROUND_CLOSEST(als_time, 50);
 
 	return ret;
@@ -397,7 +346,7 @@ static int tsl2583_set_als_gain(struct tsl2583_chip *chip)
 {
 	int ret;
 
-	/* Set the gain based on als_settings struct */
+	 
 	ret = i2c_smbus_write_byte_data(chip->client,
 					TSL2583_CMD_REG | TSL2583_GAIN,
 					chip->als_settings.als_gain);
@@ -423,16 +372,13 @@ static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
 	return ret;
 }
 
-/*
- * Turn the device on.
- * Configuration must be set before calling this function.
- */
+ 
 static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
 {
 	struct tsl2583_chip *chip = iio_priv(indio_dev);
 	int ret;
 
-	/* Power on the device; ADC off. */
+	 
 	ret = tsl2583_set_power_state(chip, TSL2583_CNTL_PWR_ON);
 	if (ret < 0)
 		return ret;
@@ -464,7 +410,7 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
 	return ret;
 }
 
-/* Sysfs Interface Functions */
+ 
 
 static ssize_t in_illuminance_input_target_show(struct device *dev,
 						struct device_attribute *attr,
@@ -538,10 +484,7 @@ static ssize_t in_illuminance_lux_table_show(struct device *dev,
 				  chip->als_settings.als_device_lux[i].ch0,
 				  chip->als_settings.als_device_lux[i].ch1);
 		if (chip->als_settings.als_device_lux[i].ratio == 0) {
-			/*
-			 * We just printed the first "0" entry.
-			 * Now get rid of the extra "," and break.
-			 */
+			 
 			offset--;
 			break;
 		}
@@ -567,12 +510,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
 
 	get_options(buf, ARRAY_SIZE(value), value);
 
-	/*
-	 * We now have an array of ints starting at value[1], and
-	 * enumerated by value[0].
-	 * We expect each group of three ints is one table entry,
-	 * and the last table entry is all 0.
-	 */
+	 
 	n = value[0];
 	if ((n % 3) || n < 6 || n > max_ints) {
 		dev_err(dev,
@@ -674,15 +612,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
 			if (ret < 0)
 				goto read_done;
 
-			/*
-			 * From page 20 of the TSL2581, TSL2583 data
-			 * sheet (TAOS134 − MARCH 2011):
-			 *
-			 * One of the photodiodes (channel 0) is
-			 * sensitive to both visible and infrared light,
-			 * while the second photodiode (channel 1) is
-			 * sensitive primarily to infrared light.
-			 */
+			 
 			if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
 				*val = chip->als_cur_info.als_ch0;
 			else
@@ -732,11 +662,7 @@ read_done:
 		return ret;
 	}
 
-	/*
-	 * Preserve the ret variable if the call to
-	 * tsl2583_set_pm_runtime_busy() is successful so the reading
-	 * (if applicable) is returned to user space.
-	 */
+	 
 	pm_ret = tsl2583_set_pm_runtime_busy(chip, false);
 	if (pm_ret < 0)
 		return pm_ret;
@@ -864,7 +790,7 @@ static int tsl2583_probe(struct i2c_client *clientp)
 		return ret;
 	}
 
-	/* Load up the V2 defaults (these are hard coded defaults for now) */
+	 
 	tsl2583_defaults(chip);
 
 	dev_info(&clientp->dev, "Light sensor found.\n");
@@ -934,7 +860,7 @@ static const struct of_device_id tsl2583_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tsl2583_of_match);
 
-/* Driver definition */
+ 
 static struct i2c_driver tsl2583_driver = {
 	.driver = {
 		.name = "tsl2583",

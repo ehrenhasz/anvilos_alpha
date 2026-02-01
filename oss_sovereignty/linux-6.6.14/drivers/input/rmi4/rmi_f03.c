@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015-2016 Red Hat
- * Copyright (C) 2015 Lyude Paul <thatslyude@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -113,10 +110,7 @@ static int rmi_f03_initialize(struct f03_data *f03)
 
 	query2_len = f03->device_count * bytes_per_device;
 
-	/*
-	 * The first generation of image sensors don't have a second part to
-	 * their f03 query, as such we have to set some of these values manually
-	 */
+	 
 	if (query2_len < 1) {
 		f03->device_count = 1;
 		f03->rx_queue_length = 7;
@@ -145,11 +139,7 @@ static int rmi_f03_pt_open(struct serio *serio)
 	u8 obs[RMI_F03_QUEUE_LENGTH * RMI_F03_OB_SIZE];
 	int error;
 
-	/*
-	 * Consume any pending data. Some devices like to spam with
-	 * 0xaa 0x00 announcements which may confuse us as we try to
-	 * probe the device.
-	 */
+	 
 	error = rmi_read_block(fn->rmi_dev, data_addr, &obs, ob_len);
 	if (!error)
 		rmi_dbg(RMI_DEBUG_FN, &fn->dev,
@@ -231,10 +221,7 @@ static int rmi_f03_config(struct rmi_function *fn)
 
 		f03->serio_registered = true;
 	} else {
-		/*
-		 * We must be re-configuring the sensor, just enable
-		 * interrupts for this function.
-		 */
+		 
 		fn->rmi_dev->driver->set_irq_bits(fn->rmi_dev, fn->irq_mask);
 	}
 
@@ -257,7 +244,7 @@ static irqreturn_t rmi_f03_attention(int irq, void *ctx)
 	int error;
 
 	if (drvdata->attn_data.data) {
-		/* First grab the data passed by the transport device */
+		 
 		if (drvdata->attn_data.size < ob_len) {
 			dev_warn(&fn->dev, "F03 interrupted, but data is missing!\n");
 			return IRQ_HANDLED;
@@ -268,7 +255,7 @@ static irqreturn_t rmi_f03_attention(int irq, void *ctx)
 		drvdata->attn_data.data += ob_len;
 		drvdata->attn_data.size -= ob_len;
 	} else {
-		/* Grab all of the data registers, and check them for data */
+		 
 		error = rmi_read_block(fn->rmi_dev, data_addr, &obs, ob_len);
 		if (error) {
 			dev_err(&fn->dev,

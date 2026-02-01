@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xHCI host controller driver for HiSilicon STB SoCs
- *
- * Copyright (C) 2017-2018 HiSilicon Co., Ltd. http://www.hisilicon.com
- *
- * Authors: Jianguo Sun <sunjianguo1@huawei.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -52,7 +46,7 @@ static int xhci_histb_config(struct xhci_hcd_histb *histb)
 	u32 regval;
 
 	if (of_property_match_string(np, "phys-names", "inno") >= 0) {
-		/* USB2 PHY chose ulpi 8bit interface */
+		 
 		regval = readl(histb->ctrl + REG_GUSB2PHYCFG0);
 		regval &= ~BIT_UTMI_ULPI;
 		regval &= ~(BIT_UTMI_8_16);
@@ -61,13 +55,7 @@ static int xhci_histb_config(struct xhci_hcd_histb *histb)
 	}
 
 	if (of_property_match_string(np, "phys-names", "combo") >= 0) {
-		/*
-		 * write 0x010c0012 to GUSB3PIPECTL0
-		 * GUSB3PIPECTL0[5:3] = 010 : Tx Margin = 900mV ,
-		 * decrease TX voltage
-		 * GUSB3PIPECTL0[2:1] = 01 : Tx Deemphasis = -3.5dB,
-		 * refer to xHCI spec
-		 */
+		 
 		regval = readl(histb->ctrl + REG_GUSB3PIPECTL0);
 		regval &= ~USB3_DEEMPHASIS_MASK;
 		regval |= USB3_DEEMPHASIS0;
@@ -164,7 +152,7 @@ static void xhci_histb_host_disable(struct xhci_hcd_histb *histb)
 	clk_disable_unprepare(histb->bus_clk);
 }
 
-/* called during probe() after chip reset completes */
+ 
 static int xhci_histb_setup(struct usb_hcd *hcd)
 {
 	struct xhci_hcd_histb *histb = hcd_to_histb(hcd);
@@ -227,7 +215,7 @@ static int xhci_histb_probe(struct platform_device *pdev)
 	pm_runtime_get_sync(dev);
 	device_enable_async_suspend(dev);
 
-	/* Initialize dma_mask and coherent_dma_mask to 32-bits */
+	 
 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
 	if (ret)
 		goto disable_pm;
@@ -267,7 +255,7 @@ static int xhci_histb_probe(struct platform_device *pdev)
 	if (device_property_read_bool(dev, "usb3-lpm-capable"))
 		xhci->quirks |= XHCI_LPM_SUPPORT;
 
-	/* imod_interval is the interrupt moderation value in nanoseconds. */
+	 
 	xhci->imod_interval = 40000;
 	device_property_read_u32(dev, "imod-interval-ns",
 				 &xhci->imod_interval);
@@ -286,10 +274,7 @@ static int xhci_histb_probe(struct platform_device *pdev)
 	device_enable_async_suspend(dev);
 	pm_runtime_put_noidle(dev);
 
-	/*
-	 * Prevent runtime pm from being on as default, users should enable
-	 * runtime pm using power/control in sysfs.
-	 */
+	 
 	pm_runtime_forbid(dev);
 
 	return 0;

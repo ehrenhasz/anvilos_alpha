@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2015 Freescale Semiconductor Inc.
- * Copyright 2018-2019 NXP
- */
+
+ 
 #include <linux/module.h>
 #include <linux/debugfs.h>
 #include "dpaa2-eth.h"
@@ -73,7 +71,7 @@ static int dpaa2_dbg_fqs_show(struct seq_file *file, void *offset)
 		if (err)
 			fcnt = 0;
 
-		/* Skip FQs with no traffic */
+		 
 		if (!fq->stats.frames && !fcnt)
 			continue;
 
@@ -127,7 +125,7 @@ static int dpaa2_dbg_bp_show(struct seq_file *file, void *offset)
 	char ch_name[10];
 	int err;
 
-	/* Print out the header */
+	 
 	seq_printf(file, "Buffer pool info for %s:\n", priv->net_dev->name);
 	seq_printf(file, "%s  %10s%15s", "IDX", "BPID", "Buf count");
 	num_queues = dpaa2_eth_queue_count(priv);
@@ -137,9 +135,7 @@ static int dpaa2_dbg_bp_show(struct seq_file *file, void *offset)
 	}
 	seq_printf(file, "\n");
 
-	/* For each buffer pool, print out its BPID, the number of buffers in
-	 * that buffer pool and the channels which are using it.
-	 */
+	 
 	for (i = 0; i < priv->num_bps; i++) {
 		bp = priv->bp[i];
 
@@ -170,22 +166,22 @@ void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
 	struct dentry *dir;
 	char name[10];
 
-	/* Create a directory for the interface */
+	 
 	dpni_dev = to_fsl_mc_device(priv->net_dev->dev.parent);
 	snprintf(name, 10, "dpni.%d", dpni_dev->obj_desc.id);
 	dir = debugfs_create_dir(name, dpaa2_dbg_root);
 	priv->dbg.dir = dir;
 
-	/* per-cpu stats file */
+	 
 	debugfs_create_file("cpu_stats", 0444, dir, priv, &dpaa2_dbg_cpu_fops);
 
-	/* per-fq stats file */
+	 
 	debugfs_create_file("fq_stats", 0444, dir, priv, &dpaa2_dbg_fqs_fops);
 
-	/* per-fq stats file */
+	 
 	debugfs_create_file("ch_stats", 0444, dir, priv, &dpaa2_dbg_ch_fops);
 
-	/* per buffer pool stats file */
+	 
 	debugfs_create_file("bp_stats", 0444, dir, priv, &dpaa2_dbg_bp_fops);
 
 }

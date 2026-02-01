@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/errno.h>
@@ -17,7 +17,7 @@
 #include "spectrum.h"
 #include "spectrum_acl_tcam.h"
 
-/* gen_pool_alloc() returns 0 when allocation fails, so use an offset */
+ 
 #define MLXSW_SP_ACL_ERP_GENALLOC_OFFSET 0x100
 #define MLXSW_SP_ACL_ERP_MAX_PER_REGION 16
 
@@ -64,7 +64,7 @@ struct mlxsw_sp_acl_erp_table {
 	unsigned int num_ctcam_erps;
 	unsigned int num_deltas;
 	struct objagg *objagg;
-	struct mutex objagg_lock; /* guards objagg manipulation */
+	struct mutex objagg_lock;  
 };
 
 struct mlxsw_sp_acl_erp_table_ops {
@@ -303,7 +303,7 @@ mlxsw_sp_acl_erp_table_alloc(struct mlxsw_sp_acl_erp_core *erp_core,
 	unsigned int num_rows, entry_size;
 	unsigned long index;
 
-	/* We only allow allocations of entire rows */
+	 
 	if (num_erps % erp_core->num_erp_banks != 0)
 		return -EINVAL;
 
@@ -445,10 +445,7 @@ mlxsw_sp_acl_erp_table_disable(struct mlxsw_sp_acl_erp_table *erp_table)
 	struct mlxsw_sp_acl_erp *master_rp;
 
 	master_rp = mlxsw_sp_acl_erp_table_master_rp(erp_table);
-	/* It is possible we do not have a master RP when we disable the
-	 * table when there are no rules in the A-TCAM and the last C-TCAM
-	 * rule is deleted
-	 */
+	 
 	mlxsw_reg_pererp_pack(pererp_pl, region->id, false, false, 0, 0,
 			      master_rp ? master_rp->id : 0);
 	mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(pererp), pererp_pl);
@@ -570,7 +567,7 @@ mlxsw_sp_acl_erp_region_table_trans(struct mlxsw_sp_acl_erp_table *erp_table)
 	struct mlxsw_sp_acl_erp *master_rp;
 	int err;
 
-	/* Initially, allocate a single eRP row. Expand later as needed */
+	 
 	err = mlxsw_sp_acl_erp_table_alloc(erp_core, erp_core->num_erp_banks,
 					   erp_table->aregion->type,
 					   &erp_table->base_index);
@@ -578,18 +575,14 @@ mlxsw_sp_acl_erp_region_table_trans(struct mlxsw_sp_acl_erp_table *erp_table)
 		return err;
 	erp_table->num_max_atcam_erps = erp_core->num_erp_banks;
 
-	/* Transition the sole RP currently configured (the master RP)
-	 * to the eRP table
-	 */
+	 
 	master_rp = mlxsw_sp_acl_erp_table_master_rp(erp_table);
 	if (!master_rp) {
 		err = -EINVAL;
 		goto err_table_master_rp;
 	}
 
-	/* Make sure the master RP is using a valid index, as
-	 * only a single eRP row is currently allocated.
-	 */
+	 
 	master_rp->index = 0;
 	__set_bit(master_rp->index, erp_table->erp_index_bitmap);
 
@@ -597,10 +590,7 @@ mlxsw_sp_acl_erp_region_table_trans(struct mlxsw_sp_acl_erp_table *erp_table)
 	if (err)
 		goto err_table_master_rp_add;
 
-	/* Update Bloom filter before enabling eRP table, as rules
-	 * on the master RP were not set to Bloom filter up to this
-	 * point.
-	 */
+	 
 	err = mlxsw_acl_erp_table_bf_add(erp_table, master_rp);
 	if (err)
 		goto err_table_bf_add;
@@ -680,7 +670,7 @@ static void mlxsw_sp_acl_erp_region_erp_del(struct mlxsw_sp_acl_erp *erp)
 static int
 mlxsw_sp_acl_erp_region_ctcam_enable(struct mlxsw_sp_acl_erp_table *erp_table)
 {
-	/* No need to re-enable lookup in the C-TCAM */
+	 
 	if (erp_table->num_ctcam_erps > 1)
 		return 0;
 
@@ -690,7 +680,7 @@ mlxsw_sp_acl_erp_region_ctcam_enable(struct mlxsw_sp_acl_erp_table *erp_table)
 static void
 mlxsw_sp_acl_erp_region_ctcam_disable(struct mlxsw_sp_acl_erp_table *erp_table)
 {
-	/* Only disable C-TCAM lookup when last C-TCAM eRP is deleted */
+	 
 	if (erp_table->num_ctcam_erps > 1)
 		return;
 
@@ -703,16 +693,14 @@ __mlxsw_sp_acl_erp_table_other_inc(struct mlxsw_sp_acl_erp_table *erp_table,
 {
 	int err;
 
-	/* If there are C-TCAM eRP or deltas in use we need to transition
-	 * the region to use eRP table, if it is not already done
-	 */
+	 
 	if (!mlxsw_sp_acl_erp_table_is_used(erp_table)) {
 		err = mlxsw_sp_acl_erp_region_table_trans(erp_table);
 		if (err)
 			return err;
 	}
 
-	/* When C-TCAM or deltas are used, the eRP table must be used */
+	 
 	if (erp_table->ops != &erp_multiple_masks_ops)
 		erp_table->ops = &erp_multiple_masks_ops;
 
@@ -739,34 +727,22 @@ __mlxsw_sp_acl_erp_table_other_dec(struct mlxsw_sp_acl_erp_table *erp_table,
 {
 	(*dec_num)--;
 
-	/* If there are no C-TCAM eRP or deltas in use, the state we
-	 * transition to depends on the number of A-TCAM eRPs currently
-	 * in use.
-	 */
+	 
 	if (erp_table->num_ctcam_erps > 0 || erp_table->num_deltas > 0)
 		return;
 
 	switch (erp_table->num_atcam_erps) {
 	case 2:
-		/* Keep using the eRP table, but correctly set the
-		 * operations pointer so that when an A-TCAM eRP is
-		 * deleted we will transition to use the master mask
-		 */
+		 
 		erp_table->ops = &erp_two_masks_ops;
 		break;
 	case 1:
-		/* We only kept the eRP table because we had C-TCAM
-		 * eRPs in use. Now that the last C-TCAM eRP is gone we
-		 * can stop using the table and transition to use the
-		 * master mask
-		 */
+		 
 		mlxsw_sp_acl_erp_region_master_mask_trans(erp_table);
 		erp_table->ops = &erp_single_mask_ops;
 		break;
 	case 0:
-		/* There are no more eRPs of any kind used by the region
-		 * so free its eRP table and transition to initial state
-		 */
+		 
 		mlxsw_sp_acl_erp_table_disable(erp_table);
 		mlxsw_sp_acl_erp_table_free(erp_table->erp_core,
 					    erp_table->num_max_atcam_erps,
@@ -852,7 +828,7 @@ mlxsw_sp_acl_erp_mask_create(struct mlxsw_sp_acl_erp_table *erp_table,
 	if (key->ctcam)
 		return mlxsw_sp_acl_erp_ctcam_mask_create(erp_table, key);
 
-	/* Expand the eRP table for the new eRP, if needed */
+	 
 	err = mlxsw_sp_acl_erp_table_expand(erp_table);
 	if (err)
 		return ERR_PTR(err);
@@ -913,7 +889,7 @@ mlxsw_sp_acl_erp_second_mask_create(struct mlxsw_sp_acl_erp_table *erp_table,
 	if (key->ctcam)
 		return mlxsw_sp_acl_erp_ctcam_mask_create(erp_table, key);
 
-	/* Transition to use eRP table instead of master mask */
+	 
 	err = mlxsw_sp_acl_erp_region_table_trans(erp_table);
 	if (err)
 		return ERR_PTR(err);
@@ -962,7 +938,7 @@ mlxsw_sp_acl_erp_second_mask_destroy(struct mlxsw_sp_acl_erp_table *erp_table,
 	mlxsw_sp_acl_erp_table_erp_del(erp);
 	mlxsw_sp_acl_erp_index_put(erp_table, erp->index);
 	mlxsw_sp_acl_erp_generic_destroy(erp);
-	/* Transition to use master mask instead of eRP table */
+	 
 	mlxsw_sp_acl_erp_region_master_mask_trans(erp_table);
 
 	erp_table->ops = &erp_single_mask_ops;
@@ -1163,7 +1139,7 @@ mlxsw_sp_acl_erp_delta_fill(const struct mlxsw_sp_acl_erp_key *parent_key,
 	u16 mask;
 	int i;
 
-	/* The difference between 2 masks can be up to 8 consecutive bits. */
+	 
 	for (i = 0; i < __MASK_LEN; i++) {
 		if (parent_key->mask[__MASK_IDX(i)] == key->mask[__MASK_IDX(i)])
 			continue;
@@ -1173,11 +1149,7 @@ mlxsw_sp_acl_erp_delta_fill(const struct mlxsw_sp_acl_erp_key *parent_key,
 			return -EINVAL;
 	}
 	if (si == -1) {
-		/* The masks are the same, this can happen in case eRPs with
-		 * the same mask were created in both A-TCAM and C-TCAM.
-		 * The only possible condition under which this can happen
-		 * is identical rule insertion. Delta is not possible here.
-		 */
+		 
 		return -EINVAL;
 	}
 	pmask = (unsigned char) parent_key->mask[__MASK_IDX(si)];
@@ -1222,10 +1194,7 @@ static int mlxsw_sp_acl_erp_hints_obj_cmp(const void *obj1, const void *obj2)
 	const struct mlxsw_sp_acl_erp_key *key1 = obj1;
 	const struct mlxsw_sp_acl_erp_key *key2 = obj2;
 
-	/* For hints purposes, two objects are considered equal
-	 * in case the masks are the same. Does not matter what
-	 * the "ctcam" value is.
-	 */
+	 
 	return memcmp(key1->mask, key2->mask, sizeof(key1->mask));
 }
 
@@ -1403,7 +1372,7 @@ mlxsw_sp_acl_erp_hints_check(struct mlxsw_sp *mlxsw_sp,
 		goto err_hints_stats_get;
 	}
 
-	/* Very basic criterion for now. */
+	 
 	if (hstats->root_count < ostats->root_count)
 		*p_rehash_needed = true;
 
@@ -1467,12 +1436,12 @@ int mlxsw_sp_acl_erp_region_init(struct mlxsw_sp_acl_atcam_region *aregion,
 		return PTR_ERR(erp_table);
 	aregion->erp_table = erp_table;
 
-	/* Initialize the region's master mask to all zeroes */
+	 
 	err = mlxsw_sp_acl_erp_master_mask_init(aregion);
 	if (err)
 		goto err_erp_master_mask_init;
 
-	/* Initialize the region to not use the eRP table */
+	 
 	err = mlxsw_sp_acl_erp_region_param_init(aregion);
 	if (err)
 		goto err_erp_region_param_init;
@@ -1548,7 +1517,7 @@ static int mlxsw_sp_acl_erp_tables_init(struct mlxsw_sp *mlxsw_sp,
 		goto err_bf_init;
 	}
 
-	/* Different regions require masks of different sizes */
+	 
 	err = mlxsw_sp_acl_erp_tables_sizes_query(mlxsw_sp, erp_core);
 	if (err)
 		goto err_erp_tables_sizes_query;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Allegro VCU firmware mailbox mail definitions
- */
+ 
+ 
 
 #ifndef ALLEGRO_MAIL_H
 #define ALLEGRO_MAIL_H
@@ -34,7 +30,7 @@ struct mcu_msg_header {
 
 struct mcu_msg_init_request {
 	struct mcu_msg_header header;
-	u32 reserved0;		/* maybe a unused channel id */
+	u32 reserved0;		 
 	u32 suballoc_dma;
 	u32 suballoc_size;
 	s32 encoder_buffer_size;
@@ -97,7 +93,7 @@ struct create_channel_param {
 	u32 entropy_mode;
 	u32 wp_mode;
 
-	/* rate control param */
+	 
 	u32 rate_control_mode;
 	u32 initial_rem_delay;
 	u32 cpb_size;
@@ -119,7 +115,7 @@ struct create_channel_param {
 	u16 max_pixel_value;
 	u32 maxpicturesize[3];
 
-	/* gop param */
+	 
 	u32 gop_ctrl_mode;
 	u32 freq_idr;
 	u32 freq_lt;
@@ -220,10 +216,10 @@ struct mcu_msg_encode_frame {
 #define AL_OPT_USE_LONG_TERM		BIT(2)
 #define AL_OPT_UPDATE_PARAMS		BIT(3)
 
-	/* u32 scene_change_delay (optional) */
-	/* rate control param (optional) */
-	/* gop param (optional) */
-	/* dynamic resolution params (optional) */
+	 
+	 
+	 
+	 
 	u32 src_y;
 	u32 src_uv;
 	u32 is_10_bit;
@@ -236,9 +232,9 @@ struct mcu_msg_encode_frame {
 struct mcu_msg_encode_frame_response {
 	struct mcu_msg_header header;
 	u32 channel_id;
-	u64 dst_handle;		/* see mcu_msg_put_stream_buffer */
-	u64 user_param;		/* see mcu_msg_encode_frame */
-	u64 src_handle;		/* see mcu_msg_encode_frame */
+	u64 dst_handle;		 
+	u64 user_param;		 
+	u64 src_handle;		 
 	u16 skip;
 	u16 is_ref;
 	u32 initial_removal_delay;

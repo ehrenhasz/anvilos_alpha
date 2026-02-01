@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * kdb helper for dumping the ftrace buffer
- *
- * Copyright (C) 2010 Jason Wessel <jason.wessel@windriver.com>
- *
- * ftrace_dump_buf based on ftrace_dump:
- * Copyright (C) 2007-2008 Steven Rostedt <srostedt@redhat.com>
- * Copyright (C) 2008 Ingo Molnar <mingo@redhat.com>
- *
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kgdb.h>
 #include <linux/kdb.h>
@@ -30,7 +21,7 @@ static void ftrace_dump_buf(int skip_entries, long cpu_file)
 
 	old_userobj = tr->trace_flags;
 
-	/* don't look at user memory in panic mode */
+	 
 	tr->trace_flags &= ~TRACE_ITER_SYM_USEROBJ;
 
 	kdb_printf("Dumping ftrace buffer:\n");
@@ -89,9 +80,7 @@ out:
 	}
 }
 
-/*
- * kdb_ftdump - Dump the ftrace log buffer
- */
+ 
 static int kdb_ftdump(int argc, const char **argv)
 {
 	int skip_entries = 0;
@@ -127,7 +116,7 @@ static int kdb_ftdump(int argc, const char **argv)
 		atomic_inc(&per_cpu_ptr(iter.array_buffer->data, cpu)->disabled);
 	}
 
-	/* A negative skip_entries means skip all but the last entries */
+	 
 	if (skip_entries < 0) {
 		if (cpu_file == RING_BUFFER_ALL_CPUS)
 			cnt = trace_total_entries(NULL);

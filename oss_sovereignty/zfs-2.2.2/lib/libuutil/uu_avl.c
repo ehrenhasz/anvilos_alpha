@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 
 
@@ -35,12 +13,7 @@
 static uu_avl_pool_t	uu_null_apool = { &uu_null_apool, &uu_null_apool };
 static pthread_mutex_t	uu_apool_list_lock = PTHREAD_MUTEX_INITIALIZER;
 
-/*
- * The index mark change on every insert and delete, to catch stale
- * references.
- *
- * We leave the low bit alone, since the avl code uses it.
- */
+ 
 #define	INDEX_MAX		(sizeof (uintptr_t) - 2)
 #define	INDEX_NEXT(m)		(((m) == INDEX_MAX)? 2 : ((m) + 2) & INDEX_MAX)
 
@@ -49,12 +22,7 @@ static pthread_mutex_t	uu_apool_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define	INDEX_VALID(p, i)	(((i) & INDEX_MAX) == (p)->ua_index)
 #define	INDEX_CHECK(i)		(((i) & INDEX_MAX) != 0)
 
-/*
- * When an element is inactive (not in a tree), we keep a marked pointer to
- * its containing pool in its first word, and a NULL pointer in its second.
- *
- * On insert, we use these to verify that it comes from the correct pool.
- */
+ 
 #define	NODE_ARRAY(p, n)	((uintptr_t *)((uintptr_t)(n) + \
 				    (pp)->uap_nodeoffset))
 
@@ -424,17 +392,11 @@ uu_avl_remove(uu_avl_t *ap, void *elem)
 	uintptr_t *na = NODE_ARRAY(pp, elem);
 
 	if (ap->ua_debug) {
-		/*
-		 * invalidate outstanding uu_avl_index_ts.
-		 */
+		 
 		ap->ua_index = INDEX_NEXT(ap->ua_index);
 	}
 
-	/*
-	 * Robust walkers most be advanced, if we are removing the node
-	 * they are currently using.  In debug mode, non-robust walkers
-	 * are also on the walker list.
-	 */
+	 
 	for (wp = ap->ua_null_walk.uaw_next; wp != &ap->ua_null_walk;
 	    wp = wp->uaw_next) {
 		if (wp->uaw_robust) {
@@ -514,9 +476,7 @@ uu_avl_insert(uu_avl_t *ap, void *elem, uu_avl_index_t idx)
 			    INDEX_CHECK(idx)? "outdated index" :
 			    "invalid index");
 
-		/*
-		 * invalidate outstanding uu_avl_index_ts.
-		 */
+		 
 		ap->ua_index = INDEX_NEXT(ap->ua_index);
 	}
 	avl_insert(&ap->ua_tree, elem, INDEX_DECODE(idx));
@@ -542,9 +502,7 @@ uu_avl_nearest_prev(uu_avl_t *ap, uu_avl_index_t idx)
 	return (avl_nearest(&ap->ua_tree, INDEX_DECODE(idx), AVL_BEFORE));
 }
 
-/*
- * called from uu_lockup() and uu_release(), as part of our fork1()-safety.
- */
+ 
 void
 uu_avl_lockup(void)
 {

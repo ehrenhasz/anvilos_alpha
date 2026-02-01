@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV4 GSO/GRO offload support
- *	Linux INET implementation
- *
- *	TCPv4 GSO/GRO support
- */
+
+ 
 
 #include <linux/indirect_call_wrapper.h>
 #include <linux/skbuff.h>
@@ -41,9 +36,7 @@ static struct sk_buff *tcp4_gso_segment(struct sk_buff *skb,
 		const struct iphdr *iph = ip_hdr(skb);
 		struct tcphdr *th = tcp_hdr(skb);
 
-		/* Set up checksum pseudo header, usually expect stack to
-		 * have done this already.
-		 */
+		 
 
 		th->check = 0;
 		skb->ip_summed = CHECKSUM_PARTIAL;
@@ -84,7 +77,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
 		goto out;
 
 	if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
-		/* Packet is from an untrusted source, reset gso_segs. */
+		 
 
 		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
 
@@ -94,20 +87,17 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
 
 	copy_destructor = gso_skb->destructor == tcp_wfree;
 	ooo_okay = gso_skb->ooo_okay;
-	/* All segments but the first should have ooo_okay cleared */
+	 
 	skb->ooo_okay = 0;
 
 	segs = skb_segment(skb, features);
 	if (IS_ERR(segs))
 		goto out;
 
-	/* Only first segment might have ooo_okay set */
+	 
 	segs->ooo_okay = ooo_okay;
 
-	/* GSO partial and frag_list segmentation only requires splitting
-	 * the frame into an MSS multiple and possibly a remainder, both
-	 * cases return a GSO skb. So update the mss now.
-	 */
+	 
 	if (skb_is_gso(segs))
 		mss *= skb_shinfo(segs)->gso_segs;
 
@@ -144,11 +134,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
 		th->cwr = 0;
 	}
 
-	/* Following permits TCP Small Queues to work well with GSO :
-	 * The callback to TCP stack will be called at the time last frag
-	 * is freed at TX completion, and not right now when gso_skb
-	 * is freed by GSO engine
-	 */
+	 
 	if (copy_destructor) {
 		int delta;
 
@@ -156,9 +142,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
 		swap(gso_skb->destructor, skb->destructor);
 		sum_truesize += skb->truesize;
 		delta = sum_truesize - gso_skb->truesize;
-		/* In some pathological cases, delta can be negative.
-		 * We need to either use refcount_add() or refcount_sub_and_test()
-		 */
+		 
 		if (likely(delta >= 0))
 			refcount_add(delta, &skb->sk->sk_wmem_alloc);
 		else
@@ -232,7 +216,7 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
 	goto out_check_final;
 
 found:
-	/* Include the IP ID check below from the inner most IP hdr */
+	 
 	flush = NAPI_GRO_CB(p)->flush;
 	flush |= (__force int)(flags & TCP_FLAG_CWR);
 	flush |= (__force int)((flags ^ tcp_flag_word(th2)) &
@@ -242,10 +226,7 @@ found:
 		flush |= *(u32 *)((u8 *)th + i) ^
 			 *(u32 *)((u8 *)th2 + i);
 
-	/* When we receive our second frame we can made a decision on if we
-	 * continue this flow as an atomic flow with a fixed ID or if we use
-	 * an incrementing ID.
-	 */
+	 
 	if (NAPI_GRO_CB(p)->flush_id != 1 ||
 	    NAPI_GRO_CB(p)->count != 1 ||
 	    !NAPI_GRO_CB(p)->is_atomic)
@@ -255,10 +236,7 @@ found:
 
 	mss = skb_shinfo(p)->gso_size;
 
-	/* If skb is a GRO packet, make sure its gso_size matches prior packet mss.
-	 * If it is a single frame, do not aggregate it if its length
-	 * is bigger than our mss.
-	 */
+	 
 	if (unlikely(skb_is_gso(skb)))
 		flush |= (mss != skb_shinfo(skb)->gso_size);
 	else
@@ -277,7 +255,7 @@ found:
 	tcp_flag_word(th2) |= flags & (TCP_FLAG_FIN | TCP_FLAG_PSH);
 
 out_check_final:
-	/* Force a flush if last segment is smaller than mss. */
+	 
 	if (unlikely(skb_is_gso(skb)))
 		flush = len != NAPI_GRO_CB(skb)->count * skb_shinfo(skb)->gso_size;
 	else
@@ -317,7 +295,7 @@ EXPORT_SYMBOL(tcp_gro_complete);
 INDIRECT_CALLABLE_SCOPE
 struct sk_buff *tcp4_gro_receive(struct list_head *head, struct sk_buff *skb)
 {
-	/* Don't bother verifying checksum if we're going to flush anyway. */
+	 
 	if (!NAPI_GRO_CB(skb)->flush &&
 	    skb_gro_checksum_validate(skb, IPPROTO_TCP,
 				      inet_gro_compute_pseudo)) {

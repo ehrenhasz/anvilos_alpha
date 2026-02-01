@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOMMU API for MTK architected m4u v1 implementations
- *
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Honghui Zhang <honghui.zhang@mediatek.com>
- *
- * Based on driver/iommu/mtk_iommu.c
- */
+
+ 
 #include <linux/bug.h>
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -75,15 +68,12 @@
 #define F_DESC_NONSEC				BIT(3)
 #define MT2701_M4U_TF_LARB(TF)			(6 - (((TF) >> 13) & 0x7))
 #define MT2701_M4U_TF_PORT(TF)			(((TF) >> 8) & 0xF)
-/* MTK generation one iommu HW only support 4K size mapping */
+ 
 #define MT2701_IOMMU_PAGE_SHIFT			12
 #define MT2701_IOMMU_PAGE_SIZE			(1UL << MT2701_IOMMU_PAGE_SHIFT)
 #define MT2701_LARB_NR_MAX			3
 
-/*
- * MTK m4u support 4GB iova address space, and only support 4K page
- * mapping. So the pagetable size should be exactly as 4M.
- */
+ 
 #define M2701_IOMMU_PGT_SIZE			SZ_4M
 
 struct mtk_iommu_v1_suspend_reg {
@@ -98,7 +88,7 @@ struct mtk_iommu_v1_data {
 	int				irq;
 	struct device			*dev;
 	struct clk			*bclk;
-	phys_addr_t			protect_base; /* protect memory base */
+	phys_addr_t			protect_base;  
 	struct mtk_iommu_v1_domain	*m4u_dom;
 
 	struct iommu_device		iommu;
@@ -109,7 +99,7 @@ struct mtk_iommu_v1_data {
 };
 
 struct mtk_iommu_v1_domain {
-	spinlock_t			pgtlock; /* lock for page table */
+	spinlock_t			pgtlock;  
 	struct iommu_domain		domain;
 	u32				*pgt_va;
 	dma_addr_t			pgt_pa;
@@ -163,7 +153,7 @@ static void mtk_iommu_v1_tlb_flush_all(struct mtk_iommu_v1_data *data)
 	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
 			data->base + REG_MMU_INV_SEL);
 	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
-	wmb(); /* Make sure the tlb flush all done */
+	wmb();  
 }
 
 static void mtk_iommu_v1_tlb_flush_range(struct mtk_iommu_v1_data *data,
@@ -187,7 +177,7 @@ static void mtk_iommu_v1_tlb_flush_range(struct mtk_iommu_v1_data *data,
 			 "Partial TLB flush timed out, falling back to full flush\n");
 		mtk_iommu_v1_tlb_flush_all(data);
 	}
-	/* Clear the CPE status */
+	 
 	writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
 }
 
@@ -198,7 +188,7 @@ static irqreturn_t mtk_iommu_v1_isr(int irq, void *dev_id)
 	u32 int_state, regval, fault_iova, fault_pa;
 	unsigned int fault_larb, fault_port;
 
-	/* Read error information from registers */
+	 
 	int_state = readl_relaxed(data->base + REG_MMU_FAULT_ST);
 	fault_iova = readl_relaxed(data->base + REG_MMU_FAULT_VA);
 
@@ -208,10 +198,7 @@ static irqreturn_t mtk_iommu_v1_isr(int irq, void *dev_id)
 	fault_larb = MT2701_M4U_TF_LARB(regval);
 	fault_port = MT2701_M4U_TF_PORT(regval);
 
-	/*
-	 * MTK v1 iommu HW could not determine whether the fault is read or
-	 * write fault, report as read fault.
-	 */
+	 
 	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
 			IOMMU_FAULT_READ))
 		dev_err_ratelimited(data->dev,
@@ -219,7 +206,7 @@ static irqreturn_t mtk_iommu_v1_isr(int irq, void *dev_id)
 			int_state, fault_iova, fault_pa,
 			fault_larb, fault_port);
 
-	/* Interrupt clear */
+	 
 	regval = readl_relaxed(data->base + REG_MMU_INT_CONTROL);
 	regval |= F_INT_CLR_BIT;
 	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL);
@@ -301,7 +288,7 @@ static int mtk_iommu_v1_attach_device(struct iommu_domain *domain, struct device
 	struct dma_iommu_mapping *mtk_mapping;
 	int ret;
 
-	/* Only allow the domain created internally. */
+	 
 	mtk_mapping = data->mapping;
 	if (mtk_mapping->domain != domain)
 		return 0;
@@ -386,10 +373,7 @@ static phys_addr_t mtk_iommu_v1_iova_to_phys(struct iommu_domain *domain, dma_ad
 
 static const struct iommu_ops mtk_iommu_v1_ops;
 
-/*
- * MTK generation one iommu HW only support one iommu domain, and all the client
- * sharing the same iova address space.
- */
+ 
 static int mtk_iommu_v1_create_mapping(struct device *dev, struct of_phandle_args *args)
 {
 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
@@ -414,7 +398,7 @@ static int mtk_iommu_v1_create_mapping(struct device *dev, struct of_phandle_arg
 	}
 
 	if (!dev_iommu_priv_get(dev)) {
-		/* Get the m4u device */
+		 
 		m4updev = of_find_device_by_node(args->np);
 		if (WARN_ON(!m4updev))
 			return -EINVAL;
@@ -429,7 +413,7 @@ static int mtk_iommu_v1_create_mapping(struct device *dev, struct of_phandle_arg
 	data = dev_iommu_priv_get(dev);
 	mtk_mapping = data->mapping;
 	if (!mtk_mapping) {
-		/* MTK iommu support 4GB iova address space. */
+		 
 		mtk_mapping = arm_iommu_create_mapping(&platform_bus_type,
 						0, 1ULL << 32);
 		if (IS_ERR(mtk_mapping))
@@ -455,10 +439,7 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
 	struct device_link *link;
 	struct device *larbdev;
 
-	/*
-	 * In the deferred case, free the existed fwspec.
-	 * Always initialize the fwspec internally.
-	 */
+	 
 	if (fwspec) {
 		iommu_fwspec_free(dev);
 		fwspec = dev_iommu_fwspec_get(dev);
@@ -473,17 +454,17 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
 		if (err)
 			return ERR_PTR(err);
 
-		/* dev->iommu_fwspec might have changed */
+		 
 		fwspec = dev_iommu_fwspec_get(dev);
 		idx++;
 	}
 
 	if (!fwspec || fwspec->ops != &mtk_iommu_v1_ops)
-		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+		return ERR_PTR(-ENODEV);  
 
 	data = dev_iommu_priv_get(dev);
 
-	/* Link the consumer device with the smi-larb device(supplier) */
+	 
 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
 	if (larbid >= MT2701_LARB_NR_MAX)
 		return ERR_PTR(-EINVAL);
@@ -560,7 +541,7 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
 		F_INT_MISS_DMA_FIFO_OVERFLOW;
 	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL);
 
-	/* protect memory,hw will write here while translation fault */
+	 
 	writel_relaxed(data->protect_base,
 			data->base + REG_MMU_IVRP_PADDR);
 
@@ -621,7 +602,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
 
 	data->dev = dev;
 
-	/* Protect memory. HW will access here while translation fault.*/
+	 
 	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2,
 			GFP_KERNEL | GFP_DMA);
 	if (!protect)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+ 
 
 #include <net/bareudp.h>
 #include <net/mpls.h>
@@ -75,7 +75,7 @@ static int parse_tunnel(struct mlx5e_priv *priv,
 
 	flow_rule_match_mpls(rule, &match);
 
-	/* Only support matching the first LSE */
+	 
 	if (match.mask->used_lses != 1)
 		return -EOPNOTSUPP;
 

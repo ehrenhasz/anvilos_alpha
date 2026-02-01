@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Mapping of DWARF debug register numbers into register names.
- *
- * Copyright (C) 2010 Ian Munsie, IBM Corporation.
- */
+
+ 
 
 #include <stddef.h>
 #include <errno.h>
@@ -27,10 +23,7 @@ struct pt_regs_dwarfnum {
 		.ptregs_offset = offsetof(struct pt_regs, gpr[num])}
 #define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0, .ptregs_offset = 0}
 
-/*
- * Reference:
- * http://refspecs.linuxfoundation.org/ELF/ppc64/PPC-elf64abi-1.9.html
- */
+ 
 static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	GPR_DWARFNUM_NAME(0),
 	GPR_DWARFNUM_NAME(1),
@@ -73,14 +66,7 @@ static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	REG_DWARFNUM_END,
 };
 
-/**
- * get_arch_regstr() - lookup register name from it's DWARF register number
- * @n:	the DWARF register number
- *
- * get_arch_regstr() returns the name of the register in struct
- * regdwarfnum_table from it's DWARF register number. If the register is not
- * found in the table, this returns NULL;
- */
+ 
 const char *get_arch_regstr(unsigned int n)
 {
 	const struct pt_regs_dwarfnum *roff;

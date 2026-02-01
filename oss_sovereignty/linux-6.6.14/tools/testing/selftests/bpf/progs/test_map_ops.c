@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -131,7 +131,7 @@ int map_for_each_fail(void *ctx)
 
 	bpf_map_update_elem(&array_map, &key, &val, flags);
 
-	/* calling for_each with non-zero flags will return error */
+	 
 	err = bpf_for_each_map_elem(&array_map, callback, &callback_ctx, flags);
 
 	return 0;

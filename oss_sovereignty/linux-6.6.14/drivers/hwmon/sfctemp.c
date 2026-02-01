@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2021 Samin Guo <samin.guo@starfivetech.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -15,41 +12,26 @@
 #include <linux/platform_device.h>
 #include <linux/reset.h>
 
-/*
- * TempSensor reset. The RSTN can be de-asserted once the analog core has
- * powered up. Trst(min 100ns)
- * 0:reset  1:de-assert
- */
+ 
 #define SFCTEMP_RSTN	BIT(0)
 
-/*
- * TempSensor analog core power down. The analog core will be powered up
- * Tpu(min 50us) after PD is de-asserted. RSTN should be held low until the
- * analog core is powered up.
- * 0:power up  1:power down
- */
+ 
 #define SFCTEMP_PD	BIT(1)
 
-/*
- * TempSensor start conversion enable.
- * 0:disable  1:enable
- */
+ 
 #define SFCTEMP_RUN	BIT(2)
 
-/*
- * TempSensor conversion value output.
- * Temp(C)=DOUT*Y/4094 - K
- */
+ 
 #define SFCTEMP_DOUT_POS	16
 #define SFCTEMP_DOUT_MSK	GENMASK(27, 16)
 
-/* DOUT to Celcius conversion constants */
+ 
 #define SFCTEMP_Y1000	237500L
 #define SFCTEMP_Z	4094L
 #define SFCTEMP_K1000	81100L
 
 struct sfctemp {
-	/* serialize access to hardware register and enabled below */
+	 
 	struct mutex lock;
 	void __iomem *regs;
 	struct clk *clk_sense;
@@ -61,17 +43,17 @@ struct sfctemp {
 
 static void sfctemp_power_up(struct sfctemp *sfctemp)
 {
-	/* make sure we're powered down first */
+	 
 	writel(SFCTEMP_PD, sfctemp->regs);
 	udelay(1);
 
 	writel(0, sfctemp->regs);
-	/* wait t_pu(50us) + t_rst(100ns) */
+	 
 	usleep_range(60, 200);
 
-	/* de-assert reset */
+	 
 	writel(SFCTEMP_RSTN, sfctemp->regs);
-	udelay(1); /* wait t_su(500ps) */
+	udelay(1);  
 }
 
 static void sfctemp_power_down(struct sfctemp *sfctemp)
@@ -163,7 +145,7 @@ static int sfctemp_convert(struct sfctemp *sfctemp, long *val)
 		goto out;
 	}
 
-	/* calculate temperature in milli Celcius */
+	 
 	*val = (long)((readl(sfctemp->regs) & SFCTEMP_DOUT_MSK) >> SFCTEMP_DOUT_POS)
 		* SFCTEMP_Y1000 / SFCTEMP_Z - SFCTEMP_K1000;
 
@@ -313,7 +295,7 @@ static int sfctemp_probe(struct platform_device *pdev)
 static const struct of_device_id sfctemp_of_match[] = {
 	{ .compatible = "starfive,jh7100-temp" },
 	{ .compatible = "starfive,jh7110-temp" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sfctemp_of_match);
 

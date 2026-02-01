@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn31_optc.h"
 
@@ -49,7 +26,7 @@ static void optc31_set_odm_combine(struct timing_generator *optc, int *opp_id, i
 	uint32_t memory_mask = 0;
 	int mem_count_per_opp = (mpcc_hactive + 2559) / 2560;
 
-	/* Assume less than 6 pipes */
+	 
 	if (opp_cnt == 4) {
 		if (mem_count_per_opp == 1)
 			memory_mask = 0xf;
@@ -91,24 +68,22 @@ static void optc31_set_odm_combine(struct timing_generator *optc, int *opp_id, i
 	optc1->opp_count = opp_cnt;
 }
 
-/*
- * Enable CRTC - call ASIC Control Object to enable Timing generator.
- */
+ 
 static bool optc31_enable_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* opp instance for OTG, 1 to 1 mapping and odm will adjust */
+	 
 	REG_UPDATE(OPTC_DATA_SOURCE_SELECT,
 			OPTC_SEG0_SRC_SEL, optc->inst);
 
-	/* VTG enable first is for HW workaround */
+	 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 1);
 
 	REG_SEQ_START();
 
-	/* Enable CRTC */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_DISABLE_POINT_CNTL, 2,
 			OTG_MASTER_EN, 1);
@@ -119,20 +94,18 @@ static bool optc31_enable_crtc(struct timing_generator *optc)
 	return true;
 }
 
-/* disable_crtc - call ASIC Control Object to disable Timing generator. */
+ 
 static bool optc31_disable_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
-	/* disable otg request until end of the first line
-	 * in the vertical blank region
-	 */
+	 
 	REG_UPDATE(OTG_CONTROL,
 			OTG_MASTER_EN, 0);
 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 0);
 
-	/* CRTC disabled, so disable  clock. */
+	 
 	REG_WAIT(OTG_CLOCK_CONTROL,
 			OTG_BUSY, 0,
 			1, 100000);
@@ -152,12 +125,12 @@ bool optc31_immediate_disable_crtc(struct timing_generator *optc)
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 0);
 
-	/* CRTC disabled, so disable  clock. */
+	 
 	REG_WAIT(OTG_CLOCK_CONTROL,
 			OTG_BUSY, 0,
 			1, 100000);
 
-	/* clear the false state */
+	 
 	optc1_clear_optc_underflow(optc);
 
 	return true;
@@ -187,19 +160,14 @@ void optc31_set_drr(
 
 		optc->funcs->set_vtotal_min_max(optc, params->vertical_total_min - 1, params->vertical_total_max - 1);
 
-		/*
-		 * MIN_MASK_EN is gone and MASK is now always enabled.
-		 *
-		 * To get it to it work with manual trigger we need to make sure
-		 * we program the correct bit.
-		 */
+		 
 		REG_UPDATE_4(OTG_V_TOTAL_CONTROL,
 				OTG_V_TOTAL_MIN_SEL, 1,
 				OTG_V_TOTAL_MAX_SEL, 1,
 				OTG_FORCE_LOCK_ON_EVENT, 0,
-				OTG_SET_V_TOTAL_MIN_MASK, (1 << 1)); /* TRIGA */
+				OTG_SET_V_TOTAL_MIN_MASK, (1 << 1));  
 
-		// Setup manual flow control for EOF via TRIG_A
+		
 		optc->funcs->setup_manual_trigger(optc);
 	} else {
 		REG_UPDATE_4(OTG_V_TOTAL_CONTROL,
@@ -242,14 +210,14 @@ static struct timing_generator_funcs dcn31_tg_funcs = {
 		.enable_crtc = optc31_enable_crtc,
 		.disable_crtc = optc31_disable_crtc,
 		.immediate_disable_crtc = optc31_immediate_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank_color = optc3_program_blank_color,
 		.did_triggered_reset_occur = optc1_did_triggered_reset_occur,

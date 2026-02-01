@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _HIF_H_
 #define _HIF_H_
@@ -145,4 +143,4 @@ static inline void ath11k_get_ce_msi_idx(struct ath11k_base *ab, u32 ce_id,
 		*msi_data_idx = ce_id;
 }
 
-#endif /* _HIF_H_ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* scm.c - Socket level control messages processing.
- *
- * Author:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *              Alignment and value checking mods by Craig Metz
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/signal.h>
@@ -38,10 +34,7 @@
 #include <net/cls_cgroup.h>
 
 
-/*
- *	Only allow a user to send credentials, that they could set with
- *	setu(g)id.
- */
+ 
 
 static __inline__ int scm_check_creds(struct ucred *creds)
 {
@@ -93,9 +86,7 @@ static int scm_fp_copy(struct cmsghdr *cmsg, struct scm_fp_list **fplp)
 	if (fpl->count + num > fpl->max)
 		return -EINVAL;
 
-	/*
-	 *	Verify the descriptors and increment the usage count.
-	 */
+	 
 
 	for (i=0; i< num; i++)
 	{
@@ -104,7 +95,7 @@ static int scm_fp_copy(struct cmsghdr *cmsg, struct scm_fp_list **fplp)
 
 		if (fd < 0 || !(file = fget_raw(fd)))
 			return -EBADF;
-		/* don't allow io_uring files */
+		 
 		if (io_uring_get_socket(file)) {
 			fput(file);
 			return -EINVAL;
@@ -143,14 +134,8 @@ int __scm_send(struct socket *sock, struct msghdr *msg, struct scm_cookie *p)
 	for_each_cmsghdr(cmsg, msg) {
 		err = -EINVAL;
 
-		/* Verify that cmsg_len is at least sizeof(struct cmsghdr) */
-		/* The first check was omitted in <= 2.2.5. The reasoning was
-		   that parser checks cmsg_len in any case, so that
-		   additional check would be work duplication.
-		   But if cmsg_level is not SOL_SOCKET, we do not check
-		   for too short ancillary data object at all! Oops.
-		   OK, let's add it...
-		 */
+		 
+		 
 		if (!CMSG_OK(msg, cmsg))
 			goto error;
 
@@ -226,7 +211,7 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
 
 	if (!msg->msg_control || msg->msg_controllen < sizeof(struct cmsghdr)) {
 		msg->msg_flags |= MSG_CTRUNC;
-		return 0; /* XXX: return error? check spec. */
+		return 0;  
 	}
 	if (msg->msg_controllen < cmlen) {
 		msg->msg_flags |= MSG_CTRUNC;
@@ -315,7 +300,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
 	int __user *cmsg_data = CMSG_USER_DATA(cm);
 	int err = 0, i;
 
-	/* no use for FD passing from kernel space callers */
+	 
 	if (WARN_ON_ONCE(!msg->msg_control_is_user))
 		return;
 
@@ -350,10 +335,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
 	if (i < scm->fp->count || (scm->fp->count && fdmax <= 0))
 		msg->msg_flags |= MSG_CTRUNC;
 
-	/*
-	 * All of the files that fit in the message have had their usage counts
-	 * incremented, so we just free the list.
-	 */
+	 
 	__scm_destroy(scm);
 }
 EXPORT_SYMBOL(scm_detach_fds);

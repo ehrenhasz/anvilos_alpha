@@ -1,31 +1,4 @@
-/* 
- *   Creation Date: <2003/03/14 20:54:13 samuel>
- *   Time-stamp: <2004/03/20 14:20:59 samuel>
- *   
- *	<therm_windtunnel.c>
- *	
- *	The G4 "windtunnel" has a single fan controlled by an
- *	ADM1030 fan controller and a DS1775 thermostat.
- *
- *	The fan controller is equipped with a temperature sensor
- *	which measures the case temperature. The DS1775 sensor
- *	measures the CPU temperature. This driver tunes the
- *	behavior of the fan. It is based upon empirical observations
- *	of the 'AppleFan' driver under Mac OS X.
- *
- *	WARNING: This driver has only been testen on Apple's
- *	1.25 MHz Dual G4 (March 03). It is tuned for a CPU
- *	temperature around 57 C.
- *
- *   Copyright (C) 2003, 2004 Samuel Rydh (samuel@ibrium.se)
- *
- *   Loosely based upon 'thermostat.c' written by Benjamin Herrenschmidt
- *   
- *   This program is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU General Public License
- *   as published by the Free Software Foundation
- *   
- */
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -45,7 +18,7 @@
 #include <asm/sections.h>
 #include <asm/macio.h>
 
-#define LOG_TEMP		0			/* continuously log temperature */
+#define LOG_TEMP		0			 
 
 static struct {
 	volatile int		running;
@@ -57,16 +30,16 @@ static struct {
 	struct i2c_client	*thermostat;
 	struct i2c_client	*fan;
 
-	int			overheat_temp;		/* 100% fan at this temp */
+	int			overheat_temp;		 
 	int			overheat_hyst;
 	int			temp;
 	int			casetemp;
-	int			fan_level;		/* active fan_table setting */
+	int			fan_level;		 
 
 	int			downind;
 	int			upind;
 
-	int			r0, r1, r20, r23, r25;	/* saved register */
+	int			r0, r1, r20, r23, r25;	 
 } x;
 
 #define T(x,y)			(((x)<<8) | (y)*0x100/10 )
@@ -76,7 +49,7 @@ static struct {
 	int			temp;
 	int			fan_up_setting;
 } fan_table[] = {
-	{ 11, T(0,0),  11 },	/* min fan */
+	{ 11, T(0,0),  11 },	 
 	{ 11, T(55,0), 11 },
 	{  6, T(55,3), 11 },
 	{  7, T(56,0), 11 },
@@ -87,7 +60,7 @@ static struct {
 	{  4, T(59,6), 4 },
 	{  3, T(59,9), 3 },
 	{  2, T(60,1), 2 },
-	{  1, 0xfffff, 1 }	/* on fire */
+	{  1, 0xfffff, 1 }	 
 };
 
 static void
@@ -113,9 +86,9 @@ static DEVICE_ATTR(case_temperature, S_IRUGO, show_case_temperature, NULL );
 
 
 
-/************************************************************************/
-/*	controller thread						*/
-/************************************************************************/
+ 
+ 
+ 
 
 static int
 write_reg( struct i2c_client *cl, int reg, int data, int len )
@@ -155,7 +128,7 @@ tune_fan( int fan_setting )
 {
 	int val = (fan_setting << 3) | 7;
 
-	/* write_reg( x.fan, 0x24, val, 1 ); */
+	 
 	write_reg( x.fan, 0x25, val, 1 );
 	write_reg( x.fan, 0x20, 0, 1 );
 	print_temp("CPU-temp: ", x.temp );
@@ -173,7 +146,7 @@ poll_temp( void )
 
 	temp = read_reg( x.thermostat, 0, 2 );
 
-	/* this actually occurs when the computer is loaded */
+	 
 	if( temp < 0 )
 		return;
 
@@ -212,31 +185,27 @@ setup_hardware( void )
 	int val;
 	int err;
 
-	/* save registers (if we unload the module) */
+	 
 	x.r0 = read_reg( x.fan, 0x00, 1 );
 	x.r1 = read_reg( x.fan, 0x01, 1 );
 	x.r20 = read_reg( x.fan, 0x20, 1 );
 	x.r23 = read_reg( x.fan, 0x23, 1 );
 	x.r25 = read_reg( x.fan, 0x25, 1 );
 
-	/* improve measurement resolution (convergence time 1.5s) */
+	 
 	if( (val=read_reg(x.thermostat, 1, 1)) >= 0 ) {
 		val |= 0x60;
 		if( write_reg( x.thermostat, 1, val, 1 ) )
 			printk("Failed writing config register\n");
 	}
-	/* disable interrupts and TAC input */
+	 
 	write_reg( x.fan, 0x01, 0x01, 1 );
-	/* enable filter */
+	 
 	write_reg( x.fan, 0x23, 0x91, 1 );
-	/* remote temp. controls fan */
+	 
 	write_reg( x.fan, 0x00, 0x95, 1 );
 
-	/* The thermostat (which besides measureing temperature controls
-	 * has a THERM output which puts the fan on 100%) is usually
-	 * set to kick in at 80 C (chip default). We reduce this a bit
-	 * to be on the safe side (OSX doesn't)...
-	 */
+	 
 	if( x.overheat_temp == (80 << 8) ) {
 		x.overheat_temp = 75 << 8;
 		x.overheat_hyst = 70 << 8;
@@ -248,10 +217,10 @@ setup_hardware( void )
 		printk(")\n");
 	}
 
-	/* set an initial fan setting */
+	 
 	x.downind = 0xffff;
 	x.upind = -1;
-	/* tune_fan( fan_up_table[x.upind].fan_setting ); */
+	 
 
 	err = device_create_file( &x.of_dev->dev, &dev_attr_cpu_temperature );
 	err |= device_create_file( &x.of_dev->dev, &dev_attr_case_temperature );
@@ -297,16 +266,16 @@ static int control_loop(void *dummy)
 }
 
 
-/************************************************************************/
-/*	i2c probing and setup						*/
-/************************************************************************/
+ 
+ 
+ 
 
 static void do_attach(struct i2c_adapter *adapter)
 {
 	struct i2c_board_info info = { };
 	struct device_node *np;
 
-	/* scan 0x48-0x4f (DS1775) and 0x2c-2x2f (ADM1030) */
+	 
 	static const unsigned short scan_ds1775[] = {
 		0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
 		I2C_CLIENT_END
@@ -360,7 +329,7 @@ attach_fan( struct i2c_client *cl )
 	if( x.fan )
 		goto out;
 
-	/* check that this is an ADM1030 */
+	 
 	if( read_reg(cl, 0x3d, 1) != 0x30 || read_reg(cl, 0x3e, 1) != 0x41 )
 		goto out;
 	printk("ADM1030 fan controller [@%02x]\n", cl->addr );
@@ -381,7 +350,7 @@ attach_thermostat( struct i2c_client *cl )
 	if( (temp=read_reg(cl, 0, 2)) < 0 )
 		goto out;
 	
-	/* temperature sanity check */
+	 
 	if( temp < 0x1600 || temp > 0x3c00 )
 		goto out;
 	hyst_temp = read_reg(cl, 2, 2);
@@ -450,9 +419,9 @@ static struct i2c_driver g4fan_driver = {
 };
 
 
-/************************************************************************/
-/*	initialization / cleanup					*/
-/************************************************************************/
+ 
+ 
+ 
 
 static int therm_of_probe(struct platform_device *dev)
 {
@@ -469,7 +438,7 @@ static int therm_of_probe(struct platform_device *dev)
 		return ret;
 	}
 
-	/* We assume Macs have consecutive I2C bus numbers starting at 0 */
+	 
 	while (adap) {
 		do_attach(adap);
 		if (x.running)
@@ -505,9 +474,9 @@ static struct platform_driver therm_of_driver = {
 };
 
 struct apple_thermal_info {
-	u8		id;			/* implementation ID */
-	u8		fan_count;		/* number of fans */
-	u8		thermostat_count;	/* number of thermostats */
+	u8		id;			 
+	u8		fan_count;		 
+	u8		thermostat_count;	 
 	u8		unused;
 };
 

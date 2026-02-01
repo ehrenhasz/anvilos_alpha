@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 Google LLC
- */
+ 
+ 
 
 #ifndef __LINUX_BLK_CRYPTO_INTERNAL_H
 #define __LINUX_BLK_CRYPTO_INTERNAL_H
@@ -9,12 +7,12 @@
 #include <linux/bio.h>
 #include <linux/blk-mq.h>
 
-/* Represents a crypto mode supported by blk-crypto  */
+ 
 struct blk_crypto_mode {
-	const char *name; /* name of this mode, shown in sysfs */
-	const char *cipher_str; /* crypto API name (for fallback case) */
-	unsigned int keysize; /* key size in bytes */
-	unsigned int ivsize; /* iv size in bytes */
+	const char *name;  
+	const char *cipher_str;  
+	unsigned int keysize;  
+	unsigned int ivsize;  
 };
 
 extern const struct blk_crypto_mode blk_crypto_modes[];
@@ -82,7 +80,7 @@ int __blk_crypto_evict_key(struct blk_crypto_profile *profile,
 bool __blk_crypto_cfg_supported(struct blk_crypto_profile *profile,
 				const struct blk_crypto_config *cfg);
 
-#else /* CONFIG_BLK_INLINE_ENCRYPTION */
+#else  
 
 static inline int blk_crypto_sysfs_register(struct gendisk *disk)
 {
@@ -129,7 +127,7 @@ static inline bool blk_crypto_rq_has_keyslot(struct request *rq)
 	return false;
 }
 
-#endif /* CONFIG_BLK_INLINE_ENCRYPTION */
+#endif  
 
 void __bio_crypt_advance(struct bio *bio, unsigned int bytes);
 static inline void bio_crypt_advance(struct bio *bio, unsigned int bytes)
@@ -187,16 +185,7 @@ static inline void blk_crypto_free_request(struct request *rq)
 
 int __blk_crypto_rq_bio_prep(struct request *rq, struct bio *bio,
 			     gfp_t gfp_mask);
-/**
- * blk_crypto_rq_bio_prep - Prepare a request's crypt_ctx when its first bio
- *			    is inserted
- * @rq: The request to prepare
- * @bio: The first bio being inserted into the request
- * @gfp_mask: Memory allocation flags
- *
- * Return: 0 on success, -ENOMEM if out of memory.  -ENOMEM is only possible if
- *	   @gfp_mask doesn't include %__GFP_DIRECT_RECLAIM.
- */
+ 
 static inline int blk_crypto_rq_bio_prep(struct request *rq, struct bio *bio,
 					 gfp_t gfp_mask)
 {
@@ -213,7 +202,7 @@ bool blk_crypto_fallback_bio_prep(struct bio **bio_ptr);
 
 int blk_crypto_fallback_evict_key(const struct blk_crypto_key *key);
 
-#else /* CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK */
+#else  
 
 static inline int
 blk_crypto_fallback_start_using_mode(enum blk_crypto_mode_num mode_num)
@@ -235,6 +224,6 @@ blk_crypto_fallback_evict_key(const struct blk_crypto_key *key)
 	return 0;
 }
 
-#endif /* CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK */
+#endif  
 
-#endif /* __LINUX_BLK_CRYPTO_INTERNAL_H */
+#endif  

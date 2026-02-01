@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * c6xdigio.c
- * Hardware driver for Mechatronic Systems Inc. C6x_DIGIO DSP daughter card.
- * http://web.archive.org/web/%2A/http://robot0.ge.uiuc.edu/~spong/mecha/
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999 Dan Block
- */
 
-/*
- * Driver: c6xdigio
- * Description: Mechatronic Systems Inc. C6x_DIGIO DSP daughter card
- * Author: Dan Block
- * Status: unknown
- * Devices: [Mechatronic Systems Inc.] C6x_DIGIO DSP daughter card (c6xdigio)
- * Updated: Sun Nov 20 20:18:34 EST 2005
- *
- * Configuration Options:
- *	[0] - base address
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,9 +15,7 @@
 #include <linux/pnp.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register I/O map
- */
+ 
 #define C6XDIGIO_DATA_REG	0x00
 #define C6XDIGIO_DATA_CHAN(x)	(((x) + 1) << 4)
 #define C6XDIGIO_DATA_PWM	BIT(5)
@@ -159,12 +140,7 @@ static int c6xdigio_pwm_insn_write(struct comedi_device *dev,
 		c6xdigio_pwm_write(dev, chan, val);
 	}
 
-	/*
-	 * There are only 2 PWM channels and they have a maxdata of 500.
-	 * Instead of allocating private data to save the values in for
-	 * readback this driver just packs the values for the two channels
-	 * in the s->state.
-	 */
+	 
 	s->state &= (0xffff << (16 * chan));
 	s->state |= (val << (16 * chan));
 
@@ -200,7 +176,7 @@ static int c6xdigio_encoder_insn_read(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		val = c6xdigio_encoder_read(dev, chan);
 
-		/* munge two's complement value to offset binary */
+		 
 		data[i] = comedi_offset_munge(s, val);
 	}
 
@@ -209,13 +185,13 @@ static int c6xdigio_encoder_insn_read(struct comedi_device *dev,
 
 static void c6xdigio_init(struct comedi_device *dev)
 {
-	/* Initialize the PWM */
+	 
 	c6xdigio_write_data(dev, 0x70, 0x00);
 	c6xdigio_write_data(dev, 0x74, 0x80);
 	c6xdigio_write_data(dev, 0x70, 0x00);
 	c6xdigio_write_data(dev, 0x00, 0x80);
 
-	/* Reset the encoders */
+	 
 	c6xdigio_write_data(dev, 0x68, 0x00);
 	c6xdigio_write_data(dev, 0x6c, 0x80);
 	c6xdigio_write_data(dev, 0x68, 0x00);
@@ -223,9 +199,9 @@ static void c6xdigio_init(struct comedi_device *dev)
 }
 
 static const struct pnp_device_id c6xdigio_pnp_tbl[] = {
-	/* Standard LPT Printer Port */
+	 
 	{.id = "PNP0400", .driver_data = 0},
-	/* ECP Printer Port */
+	 
 	{.id = "PNP0401", .driver_data = 0},
 	{}
 };
@@ -249,11 +225,11 @@ static int c6xdigio_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/*  Make sure that PnP ports get activated */
+	 
 	pnp_register_driver(&c6xdigio_pnp_driver);
 
 	s = &dev->subdevices[0];
-	/* pwm output subdevice */
+	 
 	s->type		= COMEDI_SUBD_PWM;
 	s->subdev_flags	= SDF_WRITABLE;
 	s->n_chan	= 2;
@@ -263,7 +239,7 @@ static int c6xdigio_attach(struct comedi_device *dev,
 	s->insn_read	= c6xdigio_pwm_insn_read;
 
 	s = &dev->subdevices[1];
-	/* encoder (counter) subdevice */
+	 
 	s->type		= COMEDI_SUBD_COUNTER;
 	s->subdev_flags	= SDF_READABLE | SDF_LSAMPL;
 	s->n_chan	= 2;
@@ -271,8 +247,8 @@ static int c6xdigio_attach(struct comedi_device *dev,
 	s->range_table	= &range_unknown;
 	s->insn_read	= c6xdigio_encoder_insn_read;
 
-	/*  I will call this init anyway but more than likely the DSP board */
-	/*  will not be connected when device driver is loaded. */
+	 
+	 
 	c6xdigio_init(dev);
 
 	return 0;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf-cgroup.h>
 #include <linux/bpf.h>
 #include <linux/bpf_local_storage.h>
@@ -194,10 +194,7 @@ int bpf_percpu_cgroup_storage_copy(struct bpf_map *_map, void *key,
 		return -ENOENT;
 	}
 
-	/* per_cpu areas are zero-filled and bpf programs can only
-	 * access 'value_size' of them, so copying rounded areas
-	 * will not leak any kernel data
-	 */
+	 
 	size = round_up(_map->value_size, 8);
 	for_each_possible_cpu(cpu) {
 		bpf_long_memcpy(value + off,
@@ -226,12 +223,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *_map, void *key,
 		return -ENOENT;
 	}
 
-	/* the user space will provide round_up(value_size, 8) bytes that
-	 * will be copied into per-cpu area. bpf programs can only access
-	 * value_size of it. During lookup the same extra bytes will be
-	 * returned or zeros which were zero-filled by percpu_alloc,
-	 * so no kernel data leaks possible
-	 */
+	 
 	size = round_up(_map->value_size, 8);
 	for_each_possible_cpu(cpu) {
 		bpf_long_memcpy(per_cpu_ptr(storage->percpu_buf, cpu),
@@ -288,9 +280,7 @@ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
 	int numa_node = bpf_map_attr_numa_node(attr);
 	struct bpf_cgroup_storage_map *map;
 
-	/* percpu is bound by PCPU_MIN_UNIT_SIZE, non-percu
-	 * is the same as other local storages.
-	 */
+	 
 	if (attr->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
 		max_value_size = min_t(__u32, max_value_size,
 				       PCPU_MIN_UNIT_SIZE);
@@ -310,14 +300,14 @@ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
 		return ERR_PTR(-EINVAL);
 
 	if (attr->max_entries)
-		/* max_entries is not used and enforced to be 0 */
+		 
 		return ERR_PTR(-EINVAL);
 
 	map = bpf_map_area_alloc(sizeof(struct bpf_cgroup_storage_map), numa_node);
 	if (!map)
 		return ERR_PTR(-ENOMEM);
 
-	/* copy mandatory map attributes */
+	 
 	bpf_map_init_from_attr(&map->map, attr);
 
 	spin_lock_init(&map->lock);
@@ -362,32 +352,20 @@ static int cgroup_storage_check_btf(const struct bpf_map *map,
 		struct btf_member *m;
 		u32 offset, size;
 
-		/* Key is expected to be of struct bpf_cgroup_storage_key type,
-		 * which is:
-		 * struct bpf_cgroup_storage_key {
-		 *	__u64	cgroup_inode_id;
-		 *	__u32	attach_type;
-		 * };
-		 */
+		 
 
-		/*
-		 * Key_type must be a structure with two fields.
-		 */
+		 
 		if (BTF_INFO_KIND(key_type->info) != BTF_KIND_STRUCT ||
 		    BTF_INFO_VLEN(key_type->info) != 2)
 			return -EINVAL;
 
-		/*
-		 * The first field must be a 64 bit integer at 0 offset.
-		 */
+		 
 		m = (struct btf_member *)(key_type + 1);
 		size = sizeof_field(struct bpf_cgroup_storage_key, cgroup_inode_id);
 		if (!btf_member_is_reg_int(btf, key_type, m, 0, size))
 			return -EINVAL;
 
-		/*
-		 * The second field must be a 32 bit integer at 64 bit offset.
-		 */
+		 
 		m++;
 		offset = offsetof(struct bpf_cgroup_storage_key, attach_type);
 		size = sizeof_field(struct bpf_cgroup_storage_key, attach_type);
@@ -396,9 +374,7 @@ static int cgroup_storage_check_btf(const struct bpf_map *map,
 	} else {
 		u32 int_data;
 
-		/*
-		 * Key is expected to be u64, which stores the cgroup_inode_id
-		 */
+		 
 
 		if (BTF_INFO_KIND(key_type->info) != BTF_KIND_INT)
 			return -EINVAL;
@@ -448,7 +424,7 @@ static void cgroup_storage_seq_show_elem(struct bpf_map *map, void *key,
 
 static u64 cgroup_storage_map_usage(const struct bpf_map *map)
 {
-	/* Currently the dynamically allocated elements are not counted. */
+	 
 	return sizeof(struct bpf_cgroup_storage_map);
 }
 

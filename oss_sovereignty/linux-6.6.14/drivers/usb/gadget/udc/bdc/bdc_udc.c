@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * bdc_udc.c - BRCM BDC USB3.0 device controller gagdet ops
- *
- * Copyright (C) 2014 Broadcom Corporation
- *
- * Author: Ashwini Pahuja
- *
- * Based on drivers under drivers/usb/gadget/udc/
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/dma-mapping.h>
@@ -47,7 +39,7 @@ static const char * const conn_speed_str[] =  {
 	"Super Speed",
 };
 
-/* EP0 initial descripror */
+ 
 static struct usb_endpoint_descriptor bdc_gadget_ep0_desc = {
 	.bLength = USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType = USB_DT_ENDPOINT,
@@ -56,7 +48,7 @@ static struct usb_endpoint_descriptor bdc_gadget_ep0_desc = {
 	.wMaxPacketSize	= cpu_to_le16(EP0_MAX_PKT_SIZE),
 };
 
-/* Advance the srr dqp maintained by SW */
+ 
 static void srr_dqp_index_advc(struct bdc *bdc, u32 srr_num)
 {
 	struct srr *srr;
@@ -64,12 +56,12 @@ static void srr_dqp_index_advc(struct bdc *bdc, u32 srr_num)
 	srr = &bdc->srr;
 	dev_dbg_ratelimited(bdc->dev, "srr->dqp_index:%d\n", srr->dqp_index);
 	srr->dqp_index++;
-	/* rollback to 0 if we are past the last */
+	 
 	if (srr->dqp_index == NUM_SR_ENTRIES)
 		srr->dqp_index = 0;
 }
 
-/* connect sr */
+ 
 static void bdc_uspc_connected(struct bdc *bdc)
 {
 	u32 speed, temp;
@@ -85,7 +77,7 @@ static void bdc_uspc_connected(struct bdc *bdc)
 						cpu_to_le16(EP0_MAX_PKT_SIZE);
 		bdc->gadget.ep0->maxpacket = EP0_MAX_PKT_SIZE;
 		bdc->gadget.speed = USB_SPEED_SUPER;
-		/* Enable U1T in SS mode */
+		 
 		usppms =  bdc_readl(bdc->regs, BDC_USPPMS);
 		usppms &= ~BDC_U1T(0xff);
 		usppms |= BDC_U1T(U1_TIMEOUT);
@@ -115,7 +107,7 @@ static void bdc_uspc_connected(struct bdc *bdc)
 		return;
 	}
 	dev_dbg(bdc->dev, "connected at %s\n", conn_speed_str[speed]);
-	/* Now we know the speed, configure ep0 */
+	 
 	bdc->bdc_ep_array[1]->desc = &bdc_gadget_ep0_desc;
 	ret = bdc_config_ep(bdc, bdc->bdc_ep_array[1]);
 	if (ret)
@@ -125,19 +117,16 @@ static void bdc_uspc_connected(struct bdc *bdc)
 	usb_gadget_set_state(&bdc->gadget, USB_STATE_DEFAULT);
 }
 
-/* device got disconnected */
+ 
 static void bdc_uspc_disconnected(struct bdc *bdc, bool reinit)
 {
 	struct bdc_ep *ep;
 
 	dev_dbg(bdc->dev, "%s\n", __func__);
-	/*
-	 * Only stop ep0 from here, rest of the endpoints will be disabled
-	 * from gadget_disconnect
-	 */
+	 
 	ep = bdc->bdc_ep_array[1];
 	if (ep && (ep->flags & BDC_EP_ENABLED))
-		/* if enabled then stop and remove requests */
+		 
 		bdc_ep_disable(ep);
 
 	if (bdc->gadget_driver && bdc->gadget_driver->disconnect) {
@@ -145,7 +134,7 @@ static void bdc_uspc_disconnected(struct bdc *bdc, bool reinit)
 		bdc->gadget_driver->disconnect(&bdc->gadget);
 		spin_lock(&bdc->lock);
 	}
-	/* Set Unknown speed */
+	 
 	bdc->gadget.speed = USB_SPEED_UNKNOWN;
 	bdc->devstatus &= DEVSTATUS_CLEAR;
 	bdc->delayed_status = false;
@@ -154,7 +143,7 @@ static void bdc_uspc_disconnected(struct bdc *bdc, bool reinit)
 	usb_gadget_set_state(&bdc->gadget, USB_STATE_NOTATTACHED);
 }
 
-/* TNotify wkaeup timer */
+ 
 static void bdc_func_wake_timer(struct work_struct *work)
 {
 	struct bdc *bdc = container_of(work, struct bdc, func_wake_notify.work);
@@ -162,13 +151,10 @@ static void bdc_func_wake_timer(struct work_struct *work)
 
 	dev_dbg(bdc->dev, "%s\n", __func__);
 	spin_lock_irqsave(&bdc->lock, flags);
-	/*
-	 * Check if host has started transferring on endpoints
-	 * FUNC_WAKE_ISSUED is cleared when transfer has started after resume
-	 */
+	 
 	if (bdc->devstatus & FUNC_WAKE_ISSUED) {
 		dev_dbg(bdc->dev, "FUNC_WAKE_ISSUED FLAG IS STILL SET\n");
-		/* flag is still set, so again send func wake */
+		 
 		bdc_function_wake_fh(bdc, 0);
 		schedule_delayed_work(&bdc->func_wake_notify,
 						msecs_to_jiffies(BDC_TNOTIFY));
@@ -176,7 +162,7 @@ static void bdc_func_wake_timer(struct work_struct *work)
 	spin_unlock_irqrestore(&bdc->lock, flags);
 }
 
-/* handler for Link state change condition */
+ 
 static void handle_link_state_change(struct bdc *bdc, u32 uspc)
 {
 	u32 link_state;
@@ -200,13 +186,7 @@ static void handle_link_state_change(struct bdc *bdc, u32 uspc)
 			if (bdc->gadget.speed == USB_SPEED_SUPER) {
 				bdc_function_wake_fh(bdc, 0);
 				bdc->devstatus |= FUNC_WAKE_ISSUED;
-				/*
-				 * Start a Notification timer and check if the
-				 * Host transferred anything on any of the EPs,
-				 * if not then send function wake again every
-				 * TNotification secs until host initiates
-				 * transfer to BDC, USB3 spec Table 8.13
-				 */
+				 
 				schedule_delayed_work(
 						&bdc->func_wake_notify,
 						msecs_to_jiffies(BDC_TNOTIFY));
@@ -227,7 +207,7 @@ static void handle_link_state_change(struct bdc *bdc, u32 uspc)
 	}
 }
 
-/* something changes on upstream port, handle it here */
+ 
 void bdc_sr_uspc(struct bdc *bdc, struct bdc_sr *sreport)
 {
 	u32 clear_flags = 0;
@@ -238,9 +218,9 @@ void bdc_sr_uspc(struct bdc *bdc, struct bdc_sr *sreport)
 	uspc = bdc_readl(bdc->regs, BDC_USPC);
 	dev_dbg(bdc->dev, "%s uspc=0x%08x\n", __func__, uspc);
 
-	/* Port connect changed */
+	 
 	if (uspc & BDC_PCC) {
-		/* Vbus not present, and not connected to Downstream port */
+		 
 		if ((uspc & BDC_VBC) && !(uspc & BDC_VBS) && !(uspc & BDC_PCS))
 			disconn = true;
 		else if ((uspc & BDC_PCS) && !BDC_PST(uspc))
@@ -248,33 +228,29 @@ void bdc_sr_uspc(struct bdc *bdc, struct bdc_sr *sreport)
 		clear_flags |= BDC_PCC;
 	}
 
-	/* Change in VBus and VBus is present */
+	 
 	if ((uspc & BDC_VBC) && (uspc & BDC_VBS)) {
 		if (bdc->pullup) {
 			dev_dbg(bdc->dev, "Do a softconnect\n");
-			/* Attached state, do a softconnect */
+			 
 			bdc_softconn(bdc);
 			usb_gadget_set_state(&bdc->gadget, USB_STATE_POWERED);
 		}
 		clear_flags |= BDC_VBC;
 	} else if ((uspc & BDC_PRS) || (uspc & BDC_PRC) || disconn) {
-		/* Hot reset, warm reset, 2.0 bus reset or disconn */
+		 
 		dev_dbg(bdc->dev, "Port reset or disconn\n");
 		bdc_uspc_disconnected(bdc, disconn);
 		clear_flags |= BDC_PRC;
 	} else if ((uspc & BDC_PSC) && (uspc & BDC_PCS)) {
-		/* Change in Link state */
+		 
 		handle_link_state_change(bdc, uspc);
 		clear_flags |= BDC_PSC;
 	}
 
-	/*
-	 * In SS we might not have PRC bit set before connection, but in 2.0
-	 * the PRC bit is set before connection, so moving this condition out
-	 * of bus reset to handle both SS/2.0 speeds.
-	 */
+	 
 	if (connected) {
-		/* This is the connect event for U0/L0 */
+		 
 		dev_dbg(bdc->dev, "Connected\n");
 		bdc_uspc_connected(bdc);
 		bdc->devstatus &= ~(DEVICE_SUSPENDED);
@@ -285,7 +261,7 @@ void bdc_sr_uspc(struct bdc *bdc, struct bdc_sr *sreport)
 	bdc_writel(bdc->regs, BDC_USPC, clear_flags);
 }
 
-/* Main interrupt handler for bdc */
+ 
 static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 {
 	u32 eqp_index, dqp_index, sr_type, srr_int;
@@ -301,7 +277,7 @@ static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 		return IRQ_NONE;
 	}
 	srr_int = bdc_readl(bdc->regs, BDC_SRRINT(0));
-	/* Check if the SRR IP bit it set? */
+	 
 	if (!(srr_int & BDC_SRR_IP)) {
 		dev_warn(bdc->dev, "Global irq pending but SRR IP is 0\n");
 		spin_unlock(&bdc->lock);
@@ -313,7 +289,7 @@ static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 			"%s eqp_index=%d dqp_index=%d  srr.dqp_index=%d\n\n",
 			 __func__, eqp_index, dqp_index, bdc->srr.dqp_index);
 
-	/* check for ring empty condition */
+	 
 	if (eqp_index == dqp_index) {
 		dev_dbg(bdc->dev, "SRR empty?\n");
 		spin_unlock(&bdc->lock);
@@ -322,7 +298,7 @@ static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 
 	while (bdc->srr.dqp_index != eqp_index) {
 		sreport = &bdc->srr.sr_bds[bdc->srr.dqp_index];
-		/* sreport is read before using it */
+		 
 		rmb();
 		sr_type = le32_to_cpu(sreport->offset[3]) & BD_TYPE_BITMASK;
 		dev_dbg_ratelimited(bdc->dev, "sr_type=%d\n", sr_type);
@@ -337,10 +313,10 @@ static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 		default:
 			dev_warn(bdc->dev, "SR:%d not handled\n", sr_type);
 		}
-		/* Advance the srr dqp index */
+		 
 		srr_dqp_index_advc(bdc, 0);
 	}
-	/* update the hw dequeue pointer */
+	 
 	srr_int = bdc_readl(bdc->regs, BDC_SRRINT(0));
 	srr_int &= ~BDC_SRR_DPI_MASK;
 	srr_int &= ~(BDC_SRR_RWS|BDC_SRR_RST|BDC_SRR_ISR);
@@ -359,7 +335,7 @@ static irqreturn_t bdc_udc_interrupt(int irq, void *_bdc)
 	return IRQ_HANDLED;
 }
 
-/* Gadget ops */
+ 
 static int bdc_udc_start(struct usb_gadget *gadget,
 				struct usb_gadget_driver *driver)
 {
@@ -376,11 +352,7 @@ static int bdc_udc_start(struct usb_gadget *gadget,
 		ret = -EBUSY;
 		goto err;
 	}
-	/*
-	 * Run the controller from here and when BDC is connected to
-	 * Host then driver will receive a USPC SR with VBUS present
-	 * and then driver will do a softconnect.
-	 */
+	 
 	ret = bdc_run(bdc);
 	if (ret) {
 		dev_err(bdc->dev, "%s bdc run fail\n", __func__);
@@ -424,17 +396,9 @@ static int bdc_udc_pullup(struct usb_gadget *gadget, int is_on)
 		bdc_softdisconn(bdc);
 		bdc->pullup = false;
 	} else {
-		/*
-		 * For a self powered device, we need to wait till we receive
-		 * a VBUS change and Vbus present event, then if pullup flag
-		 * is set, then only we present the Termintation.
-		 */
+		 
 		bdc->pullup = true;
-		/*
-		 * Check if BDC is already connected to Host i.e Vbus=1,
-		 * if yes, then present TERM now, this is typical for bus
-		 * powered devices.
-		 */
+		 
 		uspc = bdc_readl(bdc->regs, BDC_USPC);
 		if (uspc & BDC_VBS)
 			bdc_softconn(bdc);
@@ -514,7 +478,7 @@ static const struct usb_gadget_ops bdc_gadget_ops = {
 	.udc_stop = bdc_udc_stop,
 };
 
-/* Init the gadget interface and register the udc */
+ 
 int bdc_udc_init(struct bdc *bdc)
 {
 	u32 temp;
@@ -552,10 +516,7 @@ int bdc_udc_init(struct bdc *bdc)
 	}
 	usb_gadget_set_state(&bdc->gadget, USB_STATE_NOTATTACHED);
 	bdc->bdc_ep_array[1]->desc = &bdc_gadget_ep0_desc;
-	/*
-	 * Allocate bd list for ep0 only, ep0 will be enabled on connect
-	 * status report when the speed is known
-	 */
+	 
 	ret = bdc_ep_enable(bdc->bdc_ep_array[1]);
 	if (ret) {
 		dev_err(bdc->dev, "fail to enable %s\n",
@@ -563,7 +524,7 @@ int bdc_udc_init(struct bdc *bdc)
 		goto err1;
 	}
 	INIT_DELAYED_WORK(&bdc->func_wake_notify, bdc_func_wake_timer);
-	/* Enable Interrupts */
+	 
 	temp = bdc_readl(bdc->regs, BDC_BDCSC);
 	temp |= BDC_GIE;
 	bdc_writel(bdc->regs, BDC_BDCSC, temp);

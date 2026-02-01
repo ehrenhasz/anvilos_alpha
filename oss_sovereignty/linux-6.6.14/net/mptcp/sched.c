@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP
- *
- * Copyright (c) 2022, SUSE.
- */
+
+ 
 
 #define pr_fmt(fmt) "MPTCP: " fmt
 
@@ -36,7 +33,7 @@ static struct mptcp_sched_ops mptcp_sched_default = {
 	.owner		= THIS_MODULE,
 };
 
-/* Must be called with rcu read lock held */
+ 
 struct mptcp_sched_ops *mptcp_sched_find(const char *name)
 {
 	struct mptcp_sched_ops *sched, *ret = NULL;
@@ -128,7 +125,7 @@ int mptcp_sched_get_send(struct mptcp_sock *msk)
 
 	msk_owned_by_me(msk);
 
-	/* the following check is moved out of mptcp_subflow_get_send */
+	 
 	if (__mptcp_check_fallback(msk)) {
 		if (msk->first &&
 		    __tcp_can_send(msk->first) &&
@@ -157,7 +154,7 @@ int mptcp_sched_get_retrans(struct mptcp_sock *msk)
 
 	msk_owned_by_me(msk);
 
-	/* the following check is moved out of mptcp_subflow_get_retrans */
+	 
 	if (__mptcp_check_fallback(msk))
 		return -EINVAL;
 

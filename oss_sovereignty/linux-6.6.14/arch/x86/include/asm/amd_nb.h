@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_AMD_NB_H
 #define _ASM_X86_AMD_NB_H
 
@@ -30,30 +30,24 @@ struct amd_l3_cache {
 };
 
 struct threshold_block {
-	unsigned int	 block;			/* Number within bank */
-	unsigned int	 bank;			/* MCA bank the block belongs to */
-	unsigned int	 cpu;			/* CPU which controls MCA bank */
-	u32		 address;		/* MSR address for the block */
-	u16		 interrupt_enable;	/* Enable/Disable APIC interrupt */
-	bool		 interrupt_capable;	/* Bank can generate an interrupt. */
+	unsigned int	 block;			 
+	unsigned int	 bank;			 
+	unsigned int	 cpu;			 
+	u32		 address;		 
+	u16		 interrupt_enable;	 
+	bool		 interrupt_capable;	 
 
-	u16		 threshold_limit;	/*
-						 * Value upon which threshold
-						 * interrupt is generated.
-						 */
+	u16		 threshold_limit;	 
 
-	struct kobject	 kobj;			/* sysfs object */
-	struct list_head miscj;			/*
-						 * List of threshold blocks
-						 * within a bank.
-						 */
+	struct kobject	 kobj;			 
+	struct list_head miscj;			 
 };
 
 struct threshold_bank {
 	struct kobject		*kobj;
 	struct threshold_block	*blocks;
 
-	/* initialized to the number of CPUs on the node sharing this bank */
+	 
 	refcount_t		cpus;
 	unsigned int		shared;
 };
@@ -104,7 +98,7 @@ static inline bool amd_gart_present(void)
 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
 		return false;
 
-	/* GART present only on Fam15h, upto model 0fh */
+	 
 	if (boot_cpu_data.x86 == 0xf || boot_cpu_data.x86 == 0x10 ||
 	    (boot_cpu_data.x86 == 0x15 && boot_cpu_data.x86_model < 0x10))
 		return true;
@@ -122,4 +116,4 @@ static inline bool amd_gart_present(void)
 #endif
 
 
-#endif /* _ASM_X86_AMD_NB_H */
+#endif  

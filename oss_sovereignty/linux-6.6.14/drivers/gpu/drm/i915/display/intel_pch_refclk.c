@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include "i915_reg.h"
 #include "intel_de.h"
@@ -25,7 +23,7 @@ static void lpt_fdi_reset_mphy(struct drm_i915_private *dev_priv)
 		drm_err(&dev_priv->drm, "FDI mPHY reset de-assert timeout\n");
 }
 
-/* WaMPhyProgramming:hsw */
+ 
 static void lpt_fdi_program_mphy(struct drm_i915_private *dev_priv)
 {
 	u32 tmp;
@@ -141,22 +139,14 @@ static void lpt_compute_iclkip(struct iclkip_params *p, int clock)
 {
 	iclkip_params_init(p);
 
-	/* The iCLK virtual clock root frequency is in MHz,
-	 * but the adjusted_mode->crtc_clock in KHz. To get the
-	 * divisors, it is necessary to divide one by another, so we
-	 * convert the virtual clock precision to KHz here for higher
-	 * precision.
-	 */
+	 
 	for (p->auxdiv = 0; p->auxdiv < 2; p->auxdiv++) {
 		p->desired_divisor = DIV_ROUND_CLOSEST(p->iclk_virtual_root_freq,
 						       clock << p->auxdiv);
 		p->divsel = (p->desired_divisor / p->iclk_pi_range) - 2;
 		p->phaseinc = p->desired_divisor % p->iclk_pi_range;
 
-		/*
-		 * Near 20MHz is a corner case which is
-		 * out of range for the 7-bit divisor
-		 */
+		 
 		if (p->divsel <= 0x7f)
 			break;
 	}
@@ -171,7 +161,7 @@ int lpt_iclkip(const struct intel_crtc_state *crtc_state)
 	return lpt_iclkip_freq(&p);
 }
 
-/* Program iCLKIP clock to the desired frequency */
+ 
 void lpt_program_iclkip(const struct intel_crtc_state *crtc_state)
 {
 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
@@ -185,7 +175,7 @@ void lpt_program_iclkip(const struct intel_crtc_state *crtc_state)
 	lpt_compute_iclkip(&p, clock);
 	drm_WARN_ON(&dev_priv->drm, lpt_iclkip_freq(&p) != clock);
 
-	/* This should not happen with any sane values */
+	 
 	drm_WARN_ON(&dev_priv->drm, SBI_SSCDIVINTPHASE_DIVSEL(p.divsel) &
 		    ~SBI_SSCDIVINTPHASE_DIVSEL_MASK);
 	drm_WARN_ON(&dev_priv->drm, SBI_SSCDIVINTPHASE_DIR(p.phasedir) &
@@ -197,7 +187,7 @@ void lpt_program_iclkip(const struct intel_crtc_state *crtc_state)
 
 	mutex_lock(&dev_priv->sb_lock);
 
-	/* Program SSCDIVINTPHASE6 */
+	 
 	temp = intel_sbi_read(dev_priv, SBI_SSCDIVINTPHASE6, SBI_ICLK);
 	temp &= ~SBI_SSCDIVINTPHASE_DIVSEL_MASK;
 	temp |= SBI_SSCDIVINTPHASE_DIVSEL(p.divsel);
@@ -207,20 +197,20 @@ void lpt_program_iclkip(const struct intel_crtc_state *crtc_state)
 	temp |= SBI_SSCDIVINTPHASE_PROPAGATE;
 	intel_sbi_write(dev_priv, SBI_SSCDIVINTPHASE6, temp, SBI_ICLK);
 
-	/* Program SSCAUXDIV */
+	 
 	temp = intel_sbi_read(dev_priv, SBI_SSCAUXDIV6, SBI_ICLK);
 	temp &= ~SBI_SSCAUXDIV_FINALDIV2SEL(1);
 	temp |= SBI_SSCAUXDIV_FINALDIV2SEL(p.auxdiv);
 	intel_sbi_write(dev_priv, SBI_SSCAUXDIV6, temp, SBI_ICLK);
 
-	/* Enable modulator and associated divider */
+	 
 	temp = intel_sbi_read(dev_priv, SBI_SSCCTL6, SBI_ICLK);
 	temp &= ~SBI_SSCCTL_DISABLE;
 	intel_sbi_write(dev_priv, SBI_SSCCTL6, temp, SBI_ICLK);
 
 	mutex_unlock(&dev_priv->sb_lock);
 
-	/* Wait for initialization time */
+	 
 	udelay(24);
 
 	intel_de_write(dev_priv, PIXCLK_GATE, PIXCLK_GATE_UNGATE);
@@ -261,12 +251,7 @@ int lpt_get_iclkip(struct drm_i915_private *dev_priv)
 	return lpt_iclkip_freq(&p);
 }
 
-/* Implements 3 different sequences from BSpec chapter "Display iCLK
- * Programming" based on the parameters passed:
- * - Sequence to enable CLKOUT_DP
- * - Sequence to enable CLKOUT_DP without spread
- * - Sequence to enable CLKOUT_DP for FDI usage and configure PCH FDI I/O
- */
+ 
 static void lpt_enable_clkout_dp(struct drm_i915_private *dev_priv,
 				 bool with_spread, bool with_fdi)
 {
@@ -305,7 +290,7 @@ static void lpt_enable_clkout_dp(struct drm_i915_private *dev_priv,
 	mutex_unlock(&dev_priv->sb_lock);
 }
 
-/* Sequence to disable CLKOUT_DP */
+ 
 void lpt_disable_clkout_dp(struct drm_i915_private *dev_priv)
 {
 	u32 reg, tmp;
@@ -357,12 +342,7 @@ static const u16 sscdivintphase[] = {
 	[BEND_IDX(-50)] = 0x0525,
 };
 
-/*
- * Bend CLKOUT_DP
- * steps -50 to 50 inclusive, in steps of 5
- * < 0 slow down the clock, > 0 speed up the clock, 0 == no bend (135MHz)
- * change in clock period = -(steps / 10) * 5.787 ps
- */
+ 
 static void lpt_bend_clkout_dp(struct drm_i915_private *dev_priv, int steps)
 {
 	u32 tmp;
@@ -446,21 +426,7 @@ static void lpt_init_pch_refclk(struct drm_i915_private *dev_priv)
 		}
 	}
 
-	/*
-	 * The BIOS may have decided to use the PCH SSC
-	 * reference so we must not disable it until the
-	 * relevant PLLs have stopped relying on it. We'll
-	 * just leave the PCH SSC reference enabled in case
-	 * any active PLL is using it. It will get disabled
-	 * after runtime suspend if we don't have FDI.
-	 *
-	 * TODO: Move the whole reference clock handling
-	 * to the modeset sequence proper so that we can
-	 * actually enable/disable/reconfigure these things
-	 * safely. To do that we need to introduce a real
-	 * clock hierarchy. That would also allow us to do
-	 * clock bending finally.
-	 */
+	 
 	dev_priv->display.dpll.pch_ssc_use = 0;
 
 	if (spll_uses_pch_ssc(dev_priv)) {
@@ -501,7 +467,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 	bool can_ssc = false;
 	bool using_ssc_source = false;
 
-	/* We need to take the global config into account */
+	 
 	for_each_intel_encoder(&dev_priv->drm, encoder) {
 		switch (encoder->type) {
 		case INTEL_OUTPUT_LVDS:
@@ -526,7 +492,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 		can_ssc = true;
 	}
 
-	/* Check if any DPLLs are using the SSC source */
+	 
 	for (i = 0; i < dev_priv->display.dpll.num_shared_dpll; i++) {
 		u32 temp = intel_de_read(dev_priv, PCH_DPLL(i));
 
@@ -544,17 +510,10 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 		    "has_panel %d has_lvds %d has_ck505 %d using_ssc_source %d\n",
 		    has_panel, has_lvds, has_ck505, using_ssc_source);
 
-	/* Ironlake: try to setup display ref clock before DPLL
-	 * enabling. This is only under driver's control after
-	 * PCH B stepping, previous chipset stepping should be
-	 * ignoring this setting.
-	 */
+	 
 	val = intel_de_read(dev_priv, PCH_DREF_CONTROL);
 
-	/* As we must carefully and slowly disable/enable each source in turn,
-	 * compute the final state we want first and check if we need to
-	 * make any changes at all.
-	 */
+	 
 	final = val;
 	final &= ~DREF_NONSPREAD_SOURCE_MASK;
 	if (has_ck505)
@@ -588,7 +547,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 	if (final == val)
 		return;
 
-	/* Always enable nonspread source */
+	 
 	val &= ~DREF_NONSPREAD_SOURCE_MASK;
 
 	if (has_ck505)
@@ -600,7 +559,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 		val &= ~DREF_SSC_SOURCE_MASK;
 		val |= DREF_SSC_SOURCE_ENABLE;
 
-		/* SSC must be turned on before enabling the CPU output  */
+		 
 		if (intel_panel_use_ssc(dev_priv) && can_ssc) {
 			drm_dbg_kms(&dev_priv->drm, "Using SSC on panel\n");
 			val |= DREF_SSC1_ENABLE;
@@ -608,14 +567,14 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 			val &= ~DREF_SSC1_ENABLE;
 		}
 
-		/* Get SSC going before enabling the outputs */
+		 
 		intel_de_write(dev_priv, PCH_DREF_CONTROL, val);
 		intel_de_posting_read(dev_priv, PCH_DREF_CONTROL);
 		udelay(200);
 
 		val &= ~DREF_CPU_SOURCE_OUTPUT_MASK;
 
-		/* Enable CPU source on CPU attached eDP */
+		 
 		if (has_cpu_edp) {
 			if (intel_panel_use_ssc(dev_priv) && can_ssc) {
 				drm_dbg_kms(&dev_priv->drm,
@@ -636,7 +595,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 
 		val &= ~DREF_CPU_SOURCE_OUTPUT_MASK;
 
-		/* Turn off CPU output */
+		 
 		val |= DREF_CPU_SOURCE_OUTPUT_DISABLE;
 
 		intel_de_write(dev_priv, PCH_DREF_CONTROL, val);
@@ -646,11 +605,11 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 		if (!using_ssc_source) {
 			drm_dbg_kms(&dev_priv->drm, "Disabling SSC source\n");
 
-			/* Turn off the SSC source */
+			 
 			val &= ~DREF_SSC_SOURCE_MASK;
 			val |= DREF_SSC_SOURCE_DISABLE;
 
-			/* Turn off SSC1 */
+			 
 			val &= ~DREF_SSC1_ENABLE;
 
 			intel_de_write(dev_priv, PCH_DREF_CONTROL, val);
@@ -662,9 +621,7 @@ static void ilk_init_pch_refclk(struct drm_i915_private *dev_priv)
 	drm_WARN_ON(&dev_priv->drm, val != final);
 }
 
-/*
- * Initialize reference clocks when the driver loads
- */
+ 
 void intel_init_pch_refclk(struct drm_i915_private *dev_priv)
 {
 	if (HAS_PCH_IBX(dev_priv) || HAS_PCH_CPT(dev_priv))

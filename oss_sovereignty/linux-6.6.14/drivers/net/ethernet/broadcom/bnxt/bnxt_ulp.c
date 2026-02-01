@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2016-2018 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/module.h>
 
@@ -153,7 +146,7 @@ int bnxt_send_msg(struct bnxt_en_dev *edev,
 	if (bp->fw_reset_state)
 		return -EBUSY;
 
-	rc = hwrm_req_init(bp, req, 0 /* don't care */);
+	rc = hwrm_req_init(bp, req, 0  );
 	if (rc)
 		return rc;
 
@@ -290,7 +283,7 @@ int bnxt_register_async_events(struct bnxt_en_dev *edev,
 
 	ulp = edev->ulp_tbl;
 	ulp->async_events_bmap = events_bmap;
-	/* Make sure bnxt_ulp_async_events() sees this order */
+	 
 	smp_wmb();
 	ulp->max_async_event_id = max_id;
 	bnxt_hwrm_func_drv_rgtr(bp, events_bmap, max_id + 1, true);
@@ -303,7 +296,7 @@ void bnxt_rdma_aux_device_uninit(struct bnxt *bp)
 	struct bnxt_aux_priv *aux_priv;
 	struct auxiliary_device *adev;
 
-	/* Skip if no auxiliary device init was done. */
+	 
 	if (!bp->aux_priv)
 		return;
 
@@ -386,10 +379,7 @@ void bnxt_rdma_aux_device_init(struct bnxt *bp)
 	}
 	bp->aux_priv = aux_priv;
 
-	/* From this point, all cleanup will happen via the .release callback &
-	 * any error unwinding will need to include a call to
-	 * auxiliary_device_uninit.
-	 */
+	 
 	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
 	if (!edev)
 		goto aux_dev_uninit;

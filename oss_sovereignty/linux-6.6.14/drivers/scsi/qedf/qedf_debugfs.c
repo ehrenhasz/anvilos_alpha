@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 QLogic Corporation
- */
+
+ 
 #ifdef CONFIG_DEBUG_FS
 
 #include <linux/uaccess.h>
@@ -15,9 +12,7 @@
 
 static struct dentry *qedf_dbg_root;
 
-/*
- * qedf_dbg_host_init - setup the debugfs file for the pf
- */
+ 
 void
 qedf_dbg_host_init(struct qedf_dbg_ctx *qedf,
 		    const struct qedf_debugfs_ops *dops,
@@ -26,11 +21,11 @@ qedf_dbg_host_init(struct qedf_dbg_ctx *qedf,
 	char host_dirname[32];
 
 	QEDF_INFO(qedf, QEDF_LOG_DEBUGFS, "Creating debugfs host node\n");
-	/* create pf dir */
+	 
 	sprintf(host_dirname, "host%u", qedf->host_no);
 	qedf->bdf_dentry = debugfs_create_dir(host_dirname, qedf_dbg_root);
 
-	/* create debugfs files */
+	 
 	while (dops) {
 		if (!(dops->name))
 			break;
@@ -42,41 +37,35 @@ qedf_dbg_host_init(struct qedf_dbg_ctx *qedf,
 	}
 }
 
-/*
- * qedf_dbg_host_exit - clear out the pf's debugfs entries
- */
+ 
 void
 qedf_dbg_host_exit(struct qedf_dbg_ctx *qedf_dbg)
 {
 	QEDF_INFO(qedf_dbg, QEDF_LOG_DEBUGFS, "Destroying debugfs host "
 		   "entry\n");
-	/* remove debugfs  entries of this PF */
+	 
 	debugfs_remove_recursive(qedf_dbg->bdf_dentry);
 	qedf_dbg->bdf_dentry = NULL;
 }
 
-/*
- * qedf_dbg_init - start up debugfs for the driver
- */
+ 
 void
 qedf_dbg_init(char *drv_name)
 {
 	QEDF_INFO(NULL, QEDF_LOG_DEBUGFS, "Creating debugfs root node\n");
 
-	/* create qed dir in root of debugfs. NULL means debugfs root */
+	 
 	qedf_dbg_root = debugfs_create_dir(drv_name, NULL);
 }
 
-/*
- * qedf_dbg_exit - clean out the driver's debugfs entries
- */
+ 
 void
 qedf_dbg_exit(void)
 {
 	QEDF_INFO(NULL, QEDF_LOG_DEBUGFS, "Destroying debugfs root "
 		   "entry\n");
 
-	/* remove qed dir in root of debugfs */
+	 
 	debugfs_remove_recursive(qedf_dbg_root);
 	qedf_dbg_root = NULL;
 }
@@ -89,7 +78,7 @@ const struct qedf_debugfs_ops qedf_debugfs_ops[] = {
 	{ "driver_stats", NULL},
 	{ "clear_stats", NULL},
 	{ "offload_stats", NULL},
-	/* This must be last */
+	 
 	{ NULL, NULL }
 };
 
@@ -231,7 +220,7 @@ qedf_dbg_stop_io_on_error_cmd_write(struct file *filp,
 	else if (strncmp(kern_buf, "true", 4) == 0)
 		qedf->stop_io_on_error = true;
 	else if (strncmp(kern_buf, "now", 3) == 0)
-		/* Trigger from user to stop all I/O on this host */
+		 
 		set_bit(QEDF_DBG_STOP_IO, &qedf->flags);
 
 	kfree(kern_buf);
@@ -295,7 +284,7 @@ qedf_dbg_io_trace_open(struct inode *inode, struct file *file)
 	return single_open(file, qedf_io_trace_show, qedf);
 }
 
-/* Based on fip_state enum from libfcoe.h */
+ 
 static char *fip_state_names[] = {
 	"FIP_ST_DISABLED",
 	"FIP_ST_LINK_WAIT",
@@ -309,7 +298,7 @@ static char *fip_state_names[] = {
 	"FIP_ST_VNMP_UP",
 };
 
-/* Based on fc_rport_state enum from libfc.h */
+ 
 static char *fc_rport_state_names[] = {
 	"RPORT_ST_INIT",
 	"RPORT_ST_FLOGI",
@@ -388,7 +377,7 @@ qedf_dbg_clear_stats_cmd_read(struct file *filp, char __user *buffer,
 {
 	int cnt = 0;
 
-	/* Essentially a read stub */
+	 
 	cnt = min_t(int, count, cnt - *ppos);
 	*ppos += cnt;
 	return cnt;
@@ -409,7 +398,7 @@ qedf_dbg_clear_stats_cmd_write(struct file *filp,
 	if (!count || *ppos)
 		return 0;
 
-	/* Clear stat counters exposed by 'stats' node */
+	 
 	qedf->slow_sge_ios = 0;
 	qedf->fast_sge_ios = 0;
 
@@ -429,7 +418,7 @@ qedf_offload_stats_show(struct seq_file *s, void *unused)
 		goto out;
 	}
 
-	/* Query firmware for offload stats */
+	 
 	qed_ops->get_stats(qedf->cdev, fw_fcoe_stats);
 
 	seq_printf(s, "fcoe_rx_byte_cnt=%llu\n"
@@ -482,13 +471,13 @@ const struct file_operations qedf_dbg_fops[] = {
 	qedf_dbg_fileops_seq(qedf, driver_stats),
 	qedf_dbg_fileops(qedf, clear_stats),
 	qedf_dbg_fileops_seq(qedf, offload_stats),
-	/* This must be last */
+	 
 	{ },
 };
 
-#else /* CONFIG_DEBUG_FS */
+#else  
 void qedf_dbg_host_init(struct qedf_dbg_ctx *);
 void qedf_dbg_host_exit(struct qedf_dbg_ctx *);
 void qedf_dbg_init(char *);
 void qedf_dbg_exit(void);
-#endif /* CONFIG_DEBUG_FS */
+#endif  

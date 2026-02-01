@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "fixed31_32.h"
@@ -77,7 +54,7 @@ static void dwb3_get_reg_field_ogam(struct dcn30_dwbc *dwbc30,
 	reg->masks.exp_resion_start_segment = dwbc30->dwbc_mask->DWB_OGAM_RAMA_EXP_REGION_START_SEGMENT_B;
 }
 
-/*program dwb ogam RAM A*/
+ 
 static void dwb3_program_ogam_luta_settings(
 	struct dcn30_dwbc *dwbc30,
 	const struct pwl_params *params)
@@ -106,11 +83,11 @@ static void dwb3_program_ogam_luta_settings(
 	gam_regs.offset_r = REG(DWB_OGAM_RAMA_OFFSET_R);
 	gam_regs.region_start = REG(DWB_OGAM_RAMA_REGION_0_1);
 	gam_regs.region_end = REG(DWB_OGAM_RAMA_REGION_32_33);
-	/*todo*/
+	 
 	cm_helper_program_gamcor_xfer_func(dwbc30->base.ctx, params, &gam_regs);
 }
 
-/*program dwb ogam RAM B*/
+ 
 static void dwb3_program_ogam_lutb_settings(
 	struct dcn30_dwbc *dwbc30,
 	const struct pwl_params *params)
@@ -164,7 +141,7 @@ static enum dc_lut_mode dwb3_get_ogam_current(
 		else
 			mode = LUT_BYPASS;
 	} else {
-		// Reserved value
+		
 		mode = LUT_BYPASS;
 		BREAK_TO_DEBUGGER();
 		return mode;
@@ -337,7 +314,7 @@ static void dwb3_program_gamut_remap(
 				&gam_regs);
 		break;
 	case CM_GAMUT_REMAP_MODE_RESERVED:
-		/* should never happen, bug */
+		 
 		BREAK_TO_DEBUGGER();
 		return;
 	default:
@@ -358,7 +335,7 @@ void dwb3_set_gamut_remap(
 	int i = 0;
 
 	if (adjust.gamut_adjust_type != CM_GAMUT_ADJUST_TYPE_SW) {
-		/* Bypass if type is bypass or hw */
+		 
 		dwb3_program_gamut_remap(dwbc, NULL, adjust.gamut_coef_format, CM_GAMUT_REMAP_MODE_BYPASS);
 	} else {
 		struct fixed31_32 arr_matrix[12];

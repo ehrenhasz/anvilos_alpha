@@ -1,31 +1,4 @@
-/*
- * Copyright (c) 2005-2010 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * Copyright (c) 2018 Sean Eric Fagan <sef@ixsystems.com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * Portions of this file are derived from sys/geom/eli/g_eli_hmac.c
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -64,36 +37,31 @@ crypto_mac_init(struct hmac_ctx *ctx, const crypto_key_t *c_key)
 	int i;
 	size_t cl_bytes = CRYPTO_BITS2BYTES(c_key->ck_length);
 
-	/*
-	 * This code is based on the similar code in geom/eli/g_eli_hmac.c
-	 */
+	 
 	memset(key, 0, sizeof (key));
 	if (c_key->ck_length  == 0)
-		/* do nothing */;
+		 ;
 	else if (cl_bytes <= SHA512_HMAC_BLOCK_SIZE)
 		memcpy(key, c_key->ck_data, cl_bytes);
 	else {
-		/*
-		 * If key is longer than 128 bytes reset it to
-		 * key = SHA512(key).
-		 */
+		 
 		SHA512_Init(&lctx);
 		SHA512_Update(&lctx, c_key->ck_data, cl_bytes);
 		SHA512_Final(key, &lctx);
 	}
 
-	/* XOR key with ipad and opad values. */
+	 
 	for (i = 0; i < sizeof (key); i++) {
 		k_ipad[i] = key[i] ^ 0x36;
 		k_opad[i] = key[i] ^ 0x5c;
 	}
 	memset(key, 0, sizeof (key));
 
-	/* Start inner SHA512. */
+	 
 	SHA512_Init(&ctx->innerctx);
 	SHA512_Update(&ctx->innerctx, k_ipad, sizeof (k_ipad));
 	memset(k_ipad, 0, sizeof (k_ipad));
-	/* Start outer SHA512. */
+	 
 	SHA512_Init(&ctx->outerctx);
 	SHA512_Update(&ctx->outerctx, k_opad, sizeof (k_opad));
 	memset(k_opad, 0, sizeof (k_opad));
@@ -110,15 +78,15 @@ crypto_mac_final(struct hmac_ctx *ctx, void *md, size_t mdsize)
 {
 	uint8_t digest[SHA512_DIGEST_LENGTH];
 
-	/* Complete inner hash */
+	 
 	SHA512_Final(digest, &ctx->innerctx);
 
-	/* Complete outer hash */
+	 
 	SHA512_Update(&ctx->outerctx, digest, sizeof (digest));
 	SHA512_Final(digest, &ctx->outerctx);
 
 	memset(ctx, 0, sizeof (*ctx));
-	/* mdsize == 0 means "Give me the whole hash!" */
+	 
 	if (mdsize == 0)
 		mdsize = SHA512_DIGEST_LENGTH;
 	memcpy(md, digest, mdsize);
@@ -201,10 +169,7 @@ zfs_crypto_dispatch(freebsd_crypt_session_t *session, struct cryptop *crp)
 		crp->crp_flags &= ~CRYPTO_F_DONE;
 		session->fs_done = false;
 #if __FreeBSD_version < 1300087
-		/*
-		 * Session ID changed, so we should record that,
-		 * and try again
-		 */
+		 
 		session->fs_sid = crp->crp_session;
 #endif
 	}
@@ -248,11 +213,7 @@ freebsd_crypt_uio_debug_log(boolean_t encrypt,
 	zfs_uio_resid(data_uio) = total;
 #endif
 }
-/*
- * Create a new cryptographic session.  This should
- * happen every time the key changes (including when
- * it's first loaded).
- */
+ 
 #if __FreeBSD_version >= 1300087
 int
 freebsd_crypt_newsession(freebsd_crypt_session_t *sessp,
@@ -310,17 +271,7 @@ freebsd_crypt_newsession(freebsd_crypt_session_t *sessp,
 		goto bad;
 	}
 
-	/*
-	 * Disable the use of hardware drivers on FreeBSD 13 and later since
-	 * common crypto offload drivers impose constraints on AES-GCM AAD
-	 * lengths that make them unusable for ZFS, and we currently do not have
-	 * a mechanism to fall back to a software driver for requests not
-	 * handled by a hardware driver.
-	 *
-	 * On 12 we continue to permit the use of hardware drivers since
-	 * CPU-accelerated drivers such as aesni(4) register themselves as
-	 * hardware drivers.
-	 */
+	 
 	error = crypto_newsession(&sessp->fs_sid, &csp, CRYPTOCAP_F_SOFTWARE);
 	mtx_init(&sessp->fs_lock, "FreeBSD Cryptographic Session Lock",
 	    NULL, MTX_DEF);
@@ -477,7 +428,7 @@ freebsd_crypt_newsession(freebsd_crypt_session_t *sessp,
 	cria.cri_next = &crie;
 	crie.cri_next = NULL;
 	crip = &cria;
-	// Everything else is zero-initialised
+	
 
 	error = crypto_newsession(&sid, crip,
 	    CRYPTOCAP_F_HARDWARE | CRYPTOCAP_F_SOFTWARE);
@@ -494,12 +445,7 @@ bad:
 	return (error);
 }
 
-/*
- * The meat of encryption/decryption.
- * If sessp is NULL, then it will create a
- * temporary cryptographic session, and release
- * it when done.
- */
+ 
 int
 freebsd_crypt_uio(boolean_t encrypt,
     freebsd_crypt_session_t *input_sessionp,

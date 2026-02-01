@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  pci_slot.c - ACPI PCI Slot Driver
- *
- *  The code here is heavily leveraged from the acpiphp module.
- *  Thanks to Matthew Wilcox <matthew@wil.cx> for much guidance.
- *  Thanks to Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com> for code
- *  review and fixes.
- *
- *  Copyright (C) 2007-2008 Hewlett-Packard Development Company, L.P.
- *  	Alex Chiang <achiang@hp.com>
- *
- *  Copyright (C) 2013 Huawei Tech. Co., Ltd.
- *	Jiang Liu <jiang.liu@huawei.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,11 +15,11 @@
 
 static int check_sta_before_sun;
 
-#define SLOT_NAME_SIZE 21		/* Inspired by #define in acpiphp.h */
+#define SLOT_NAME_SIZE 21		 
 
 struct acpi_pci_slot {
-	struct pci_slot *pci_slot;	/* corresponding pci_slot */
-	struct list_head list;		/* node in the list of slots */
+	struct pci_slot *pci_slot;	 
+	struct list_head list;		 
 };
 
 static LIST_HEAD(slot_list);
@@ -50,7 +37,7 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 	pr_debug("Checking slot on path: %s\n", (char *)buffer.pointer);
 
 	if (check_sta_before_sun) {
-		/* If SxFy doesn't have _STA, we just assume it's there */
+		 
 		status = acpi_evaluate_integer(handle, "_STA", NULL, &sta);
 		if (ACPI_SUCCESS(status) && !(sta & ACPI_STA_DEVICE_PRESENT))
 			goto out;
@@ -63,7 +50,7 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 		goto out;
 	}
 
-	/* No _SUN == not a slot == bail */
+	 
 	status = acpi_evaluate_integer(handle, "_SUN", NULL, sun);
 	if (ACPI_FAILURE(status)) {
 		pr_debug("_SUN returned %d on %s\n",
@@ -77,9 +64,7 @@ out:
 	return device;
 }
 
-/*
- * Check whether handle has an associated slot and create PCI slot if it has.
- */
+ 
 static acpi_status
 register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 {
@@ -94,10 +79,7 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 	if (device < 0)
 		return AE_OK;
 
-	/*
-	 * There may be multiple PCI functions associated with the same slot.
-	 * Check whether PCI slot has already been created for this PCI device.
-	 */
+	 
 	list_for_each_entry(slot, &slot_list, list) {
 		pci_slot = slot->pci_slot;
 		if (pci_slot->bus == pci_bus && pci_slot->number == device)
@@ -164,12 +146,7 @@ static int do_sta_before_sun(const struct dmi_system_id *d)
 }
 
 static const struct dmi_system_id acpi_pci_slot_dmi_table[] __initconst = {
-	/*
-	 * Fujitsu Primequest machines will return 1023 to indicate an
-	 * error if the _SUN method is evaluated on SxFy objects that
-	 * are not present (as indicated by _STA), so for those machines,
-	 * we want to check _STA before evaluating _SUN.
-	 */
+	 
 	{
 	 .callback = do_sta_before_sun,
 	 .ident = "Fujitsu PRIMEQUEST",

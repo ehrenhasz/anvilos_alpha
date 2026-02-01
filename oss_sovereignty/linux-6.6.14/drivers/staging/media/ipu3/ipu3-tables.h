@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018 Intel Corporation */
+ 
+ 
 
 #ifndef __IPU3_TABLES_H
 #define __IPU3_TABLES_H
@@ -8,13 +8,13 @@
 
 #include "ipu3-abi.h"
 
-#define IMGU_BDS_GRANULARITY		32	/* Downscaling granularity */
+#define IMGU_BDS_GRANULARITY		32	 
 #define IMGU_BDS_MIN_SF_INV		IMGU_BDS_GRANULARITY
 #define IMGU_BDS_CONFIG_LEN		97
 
 #define IMGU_SCALER_DOWNSCALE_4TAPS_LEN	128
 #define IMGU_SCALER_DOWNSCALE_2TAPS_LEN	64
-#define IMGU_SCALER_FP			BIT(31) /* 1.0 in fixed point */
+#define IMGU_SCALER_FP			BIT(31)  
 
 #define IMGU_XNR3_VMEM_LUT_LEN		16
 

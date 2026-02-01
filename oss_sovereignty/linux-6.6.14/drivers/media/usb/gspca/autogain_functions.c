@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Functions for auto gain.
- *
- * Copyright (C) 2010-2012 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 #include "gspca.h"
 
-/* auto gain and exposure algorithm based on the knee algorithm described here:
-   http://ytse.tricolour.net/docs/LowLightOptimization.html
-
-   Returns 0 if no changes were made, 1 if the gain and or exposure settings
-   where changed. */
+ 
 int gspca_expo_autogain(
 			struct gspca_dev *gspca_dev,
 			int avg_lum,
@@ -28,8 +20,7 @@ int gspca_expo_autogain(
 	orig_gain = gain = v4l2_ctrl_g_ctrl(gspca_dev->gain);
 	orig_exposure = exposure = v4l2_ctrl_g_ctrl(gspca_dev->exposure);
 
-	/* If we are of a multiple of deadzone, do multiple steps to reach the
-	   desired lumination fast (with the risc of a slight overshoot) */
+	 
 	steps = abs(desired_avg_lum - avg_lum) / deadzone;
 
 	gspca_dbg(gspca_dev, D_FRAM, "autogain: lum: %d, desired: %d, steps: %d\n",
@@ -81,18 +72,7 @@ int gspca_expo_autogain(
 }
 EXPORT_SYMBOL(gspca_expo_autogain);
 
-/* Autogain + exposure algorithm for cameras with a coarse exposure control
-   (usually this means we can only control the clockdiv to change exposure)
-   As changing the clockdiv so that the fps drops from 30 to 15 fps for
-   example, will lead to a huge exposure change (it effectively doubles),
-   this algorithm normally tries to only adjust the gain (between 40 and
-   80 %) and if that does not help, only then changes exposure. This leads
-   to a much more stable image then using the knee algorithm which at
-   certain points of the knee graph will only try to adjust exposure,
-   which leads to oscillating as one exposure step is huge.
-
-   Returns 0 if no changes were made, 1 if the gain and or exposure settings
-   where changed. */
+ 
 int gspca_coarse_grained_expo_autogain(
 			struct gspca_dev *gspca_dev,
 			int avg_lum,
@@ -113,8 +93,7 @@ int gspca_coarse_grained_expo_autogain(
 	gain_high = (s32)(gspca_dev->gain->maximum - gspca_dev->gain->minimum) /
 		    5 * 4 + gspca_dev->gain->minimum;
 
-	/* If we are of a multiple of deadzone, do multiple steps to reach the
-	   desired lumination fast (with the risc of a slight overshoot) */
+	 
 	steps = (desired_avg_lum - avg_lum) / deadzone;
 
 	gspca_dbg(gspca_dev, D_FRAM, "autogain: lum: %d, desired: %d, steps: %d\n",

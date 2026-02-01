@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PXA2xx SPI DMA engine support.
- *
- * Copyright (C) 2013, 2021 Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -22,29 +17,20 @@ static void pxa2xx_spi_dma_transfer_complete(struct driver_data *drv_data,
 {
 	struct spi_message *msg = drv_data->controller->cur_msg;
 
-	/*
-	 * It is possible that one CPU is handling ROR interrupt and other
-	 * just gets DMA completion. Calling pump_transfers() twice for the
-	 * same transfer leads to problems thus we prevent concurrent calls
-	 * by using dma_running.
-	 */
+	 
 	if (atomic_dec_and_test(&drv_data->dma_running)) {
-		/*
-		 * If the other CPU is still handling the ROR interrupt we
-		 * might not know about the error yet. So we re-check the
-		 * ROR bit here before we clear the status register.
-		 */
+		 
 		if (!error)
 			error = read_SSSR_bits(drv_data, drv_data->mask_sr) & SSSR_ROR;
 
-		/* Clear status & disable interrupts */
+		 
 		clear_SSCR1_bits(drv_data, drv_data->dma_cr1);
 		write_SSSR_CS(drv_data, drv_data->clear_sr);
 		if (!pxa25x_ssp_comp(drv_data))
 			pxa2xx_spi_write(drv_data, SSTO, 0);
 
 		if (error) {
-			/* In case we got an error we disable the SSP now */
+			 
 			pxa_ssp_disable(drv_data->ssp);
 			msg->status = -EIO;
 		}
@@ -150,7 +136,7 @@ int pxa2xx_spi_dma_prepare(struct driver_data *drv_data,
 		goto err_rx;
 	}
 
-	/* We are ready when RX completes */
+	 
 	rx_desc->callback = pxa2xx_spi_dma_callback;
 	rx_desc->callback_param = drv_data;
 
@@ -230,11 +216,7 @@ int pxa2xx_spi_set_dma_burst_and_threshold(struct chip_data *chip,
 	struct driver_data *drv_data = spi_controller_get_devdata(spi->controller);
 	u32 dma_burst_size = drv_data->controller_info->dma_burst_size;
 
-	/*
-	 * If the DMA burst size is given in chip_info we use that,
-	 * otherwise we use the default. Also we use the default FIFO
-	 * thresholds for now.
-	 */
+	 
 	*burst_code = chip_info ? chip_info->dma_burst_size : dma_burst_size;
 	*threshold = SSCR1_RxTresh(RX_THRESH_DFLT)
 		   | SSCR1_TxTresh(TX_THRESH_DFLT);

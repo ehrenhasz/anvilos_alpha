@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Surface GPE/Lid driver to enable wakeup from suspend via the lid by
- * properly configuring the respective GPEs. Required for wakeup via lid on
- * newer Intel-based Microsoft Surface devices.
- *
- * Copyright (C) 2020-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -15,11 +9,7 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 
-/*
- * Note: The GPE numbers for the lid devices found below have been obtained
- *       from ACPI/the DSDT table, specifically from the GPE handler for the
- *       lid.
- */
+ 
 
 static const struct property_entry lid_device_props_l17[] = {
 	PROPERTY_ENTRY_U32("gpe", 0x17),
@@ -46,10 +36,7 @@ static const struct property_entry lid_device_props_l57[] = {
 	{},
 };
 
-/*
- * Note: When changing this, don't forget to check that the MODULE_ALIAS below
- *       still fits.
- */
+ 
 static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Pro 4",
@@ -62,10 +49,7 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Pro 5",
 		.matches = {
-			/*
-			 * We match for SKU here due to generic product name
-			 * "Surface Pro".
-			 */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
 		},
@@ -74,10 +58,7 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Pro 5 (LTE)",
 		.matches = {
-			/*
-			 * We match for SKU here due to generic product name
-			 * "Surface Pro"
-			 */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
 		},
@@ -150,10 +131,7 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Laptop 3 (Intel 13\")",
 		.matches = {
-			/*
-			 * We match for SKU here due to different variants: The
-			 * AMD (15") version does not rely on GPEs.
-			 */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Laptop_3_1867:1868"),
 		},
@@ -162,10 +140,7 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Laptop 3 (Intel 15\")",
 		.matches = {
-			/*
-			 * We match for SKU here due to different variants: The
-			 * AMD (15") version does not rely on GPEs.
-			 */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Laptop_3_1872"),
 		},
@@ -174,10 +149,7 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
 	{
 		.ident = "Surface Laptop 4 (Intel 13\")",
 		.matches = {
-			/*
-			 * We match for SKU here due to different variants: The
-			 * AMD (15") version does not rely on GPEs.
-			 */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Laptop_4_1950:1951"),
 		},
@@ -271,7 +243,7 @@ static int surface_gpe_remove(struct platform_device *pdev)
 {
 	struct surface_lid_device *lid = dev_get_drvdata(&pdev->dev);
 
-	/* restore default behavior without this module */
+	 
 	surface_lid_enable_wakeup(&pdev->dev, false);
 	acpi_disable_gpe(NULL, lid->gpe_number);
 

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implement the AER root port service driver. The driver registers an IRQ
- * handler. When a root port triggers an AER interrupt, the IRQ handler
- * collects root port status and schedules work.
- *
- * Copyright (C) 2006 Intel Corp.
- *	Tom Long Nguyen (tom.l.nguyen@intel.com)
- *	Zhang Yanmin (yanmin.zhang@intel.com)
- *
- * (C) Copyright 2009 Hewlett-Packard Development Company, L.P.
- *    Andrew Patterson <andrew.patterson@hp.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "AER: " fmt
 #define dev_fmt pr_fmt
@@ -37,8 +26,8 @@
 
 #define AER_ERROR_SOURCES_MAX		128
 
-#define AER_MAX_TYPEOF_COR_ERRS		16	/* as per PCI_ERR_COR_STATUS */
-#define AER_MAX_TYPEOF_UNCOR_ERRS	27	/* as per PCI_ERR_UNCOR_STATUS*/
+#define AER_MAX_TYPEOF_COR_ERRS		16	 
+#define AER_MAX_TYPEOF_UNCOR_ERRS	27	 
 
 struct aer_err_source {
 	unsigned int status;
@@ -46,41 +35,28 @@ struct aer_err_source {
 };
 
 struct aer_rpc {
-	struct pci_dev *rpd;		/* Root Port device */
+	struct pci_dev *rpd;		 
 	DECLARE_KFIFO(aer_fifo, struct aer_err_source, AER_ERROR_SOURCES_MAX);
 };
 
-/* AER stats for the device */
+ 
 struct aer_stats {
 
-	/*
-	 * Fields for all AER capable devices. They indicate the errors
-	 * "as seen by this device". Note that this may mean that if an
-	 * end point is causing problems, the AER counters may increment
-	 * at its link partner (e.g. root port) because the errors will be
-	 * "seen" by the link partner and not the problematic end point
-	 * itself (which may report all counters as 0 as it never saw any
-	 * problems).
-	 */
-	/* Counters for different type of correctable errors */
+	 
+	 
 	u64 dev_cor_errs[AER_MAX_TYPEOF_COR_ERRS];
-	/* Counters for different type of fatal uncorrectable errors */
+	 
 	u64 dev_fatal_errs[AER_MAX_TYPEOF_UNCOR_ERRS];
-	/* Counters for different type of nonfatal uncorrectable errors */
+	 
 	u64 dev_nonfatal_errs[AER_MAX_TYPEOF_UNCOR_ERRS];
-	/* Total number of ERR_COR sent by this device */
+	 
 	u64 dev_total_cor_errs;
-	/* Total number of ERR_FATAL sent by this device */
+	 
 	u64 dev_total_fatal_errs;
-	/* Total number of ERR_NONFATAL sent by this device */
+	 
 	u64 dev_total_nonfatal_errs;
 
-	/*
-	 * Fields for Root ports & root complex event collectors only, these
-	 * indicate the total number of ERR_COR, ERR_FATAL, and ERR_NONFATAL
-	 * messages received by the root port / event collector, INCLUDING the
-	 * ones that are generated internally (by the rootport itself)
-	 */
+	 
 	u64 rootport_total_cor_errs;
 	u64 rootport_total_fatal_errs;
 	u64 rootport_total_nonfatal_errs;
@@ -122,9 +98,9 @@ bool pci_aer_available(void)
 
 #ifdef CONFIG_PCIE_ECRC
 
-#define ECRC_POLICY_DEFAULT 0		/* ECRC set by BIOS */
-#define ECRC_POLICY_OFF     1		/* ECRC off for performance */
-#define ECRC_POLICY_ON      2		/* ECRC on for data integrity */
+#define ECRC_POLICY_DEFAULT 0		 
+#define ECRC_POLICY_OFF     1		 
+#define ECRC_POLICY_ON      2		 
 
 static int ecrc_policy = ECRC_POLICY_DEFAULT;
 
@@ -134,12 +110,7 @@ static const char * const ecrc_policy_str[] = {
 	[ECRC_POLICY_ON] = "on"
 };
 
-/**
- * enable_ecrc_checking - enable PCIe ECRC checking for a device
- * @dev: the PCI device
- *
- * Returns 0 on success, or negative on failure.
- */
+ 
 static int enable_ecrc_checking(struct pci_dev *dev)
 {
 	int aer = dev->aer_cap;
@@ -158,12 +129,7 @@ static int enable_ecrc_checking(struct pci_dev *dev)
 	return 0;
 }
 
-/**
- * disable_ecrc_checking - disables PCIe ECRC checking for a device
- * @dev: the PCI device
- *
- * Returns 0 on success, or negative on failure.
- */
+ 
 static int disable_ecrc_checking(struct pci_dev *dev)
 {
 	int aer = dev->aer_cap;
@@ -179,10 +145,7 @@ static int disable_ecrc_checking(struct pci_dev *dev)
 	return 0;
 }
 
-/**
- * pcie_set_ecrc_checking - set/unset PCIe ECRC checking for a device based on global policy
- * @dev: the PCI device
- */
+ 
 void pcie_set_ecrc_checking(struct pci_dev *dev)
 {
 	if (!pcie_aer_is_native(dev))
@@ -202,10 +165,7 @@ void pcie_set_ecrc_checking(struct pci_dev *dev)
 	}
 }
 
-/**
- * pcie_ecrc_get_policy - parse kernel command-line ecrc option
- * @str: ECRC policy from kernel command line to use
- */
+ 
 void pcie_ecrc_get_policy(char *str)
 {
 	int i;
@@ -216,7 +176,7 @@ void pcie_ecrc_get_policy(char *str)
 
 	ecrc_policy = i;
 }
-#endif	/* CONFIG_PCIE_ECRC */
+#endif	 
 
 #define	PCI_EXP_AER_FLAGS	(PCI_EXP_DEVCTL_CERE | PCI_EXP_DEVCTL_NFERE | \
 				 PCI_EXP_DEVCTL_FERE | PCI_EXP_DEVCTL_URRE)
@@ -251,7 +211,7 @@ int pci_aer_clear_nonfatal_status(struct pci_dev *dev)
 	if (!pcie_aer_is_native(dev))
 		return -EIO;
 
-	/* Clear status bits for ERR_NONFATAL errors only */
+	 
 	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, &status);
 	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_SEVER, &sev);
 	status &= ~sev;
@@ -270,7 +230,7 @@ void pci_aer_clear_fatal_status(struct pci_dev *dev)
 	if (!pcie_aer_is_native(dev))
 		return;
 
-	/* Clear status bits for ERR_FATAL errors only */
+	 
 	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, &status);
 	pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_SEVER, &sev);
 	status &= sev;
@@ -278,15 +238,7 @@ void pci_aer_clear_fatal_status(struct pci_dev *dev)
 		pci_write_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS, status);
 }
 
-/**
- * pci_aer_raw_clear_status - Clear AER error registers.
- * @dev: the PCI device
- *
- * Clearing AER error status registers unconditionally, regardless of
- * whether they're owned by firmware or the OS.
- *
- * Returns 0 on success, or negative on failure.
- */
+ 
 int pci_aer_raw_clear_status(struct pci_dev *dev)
 {
 	int aer = dev->aer_cap;
@@ -374,12 +326,7 @@ void pci_aer_init(struct pci_dev *dev)
 
 	dev->aer_stats = kzalloc(sizeof(struct aer_stats), GFP_KERNEL);
 
-	/*
-	 * We save/restore PCI_ERR_UNCOR_MASK, PCI_ERR_UNCOR_SEVER,
-	 * PCI_ERR_COR_MASK, and PCI_ERR_CAP.  Root and Root Complex Event
-	 * Collectors also implement PCI_ERR_ROOT_COMMAND (PCIe r5.0, sec
-	 * 7.8.4).
-	 */
+	 
 	n = pcie_cap_has_rtctl(dev) ? 5 : 4;
 	pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_ID_ERR, sizeof(u32) * n);
 
@@ -432,9 +379,7 @@ void pci_aer_exit(struct pci_dev *dev)
 	(e & AER_DATA_LINK_LAYER_ERROR_MASK(t)) ? AER_DATA_LINK_LAYER_ERROR : \
 	AER_TRANSACTION_LAYER_ERROR)
 
-/*
- * AER error strings
- */
+ 
 static const char *aer_error_severity_string[] = {
 	"Uncorrected (Non-Fatal)",
 	"Uncorrected (Fatal)",
@@ -448,73 +393,73 @@ static const char *aer_error_layer[] = {
 };
 
 static const char *aer_correctable_error_string[] = {
-	"RxErr",			/* Bit Position 0	*/
+	"RxErr",			 
 	NULL,
 	NULL,
 	NULL,
 	NULL,
 	NULL,
-	"BadTLP",			/* Bit Position 6	*/
-	"BadDLLP",			/* Bit Position 7	*/
-	"Rollover",			/* Bit Position 8	*/
+	"BadTLP",			 
+	"BadDLLP",			 
+	"Rollover",			 
 	NULL,
 	NULL,
 	NULL,
-	"Timeout",			/* Bit Position 12	*/
-	"NonFatalErr",			/* Bit Position 13	*/
-	"CorrIntErr",			/* Bit Position 14	*/
-	"HeaderOF",			/* Bit Position 15	*/
-	NULL,				/* Bit Position 16	*/
-	NULL,				/* Bit Position 17	*/
-	NULL,				/* Bit Position 18	*/
-	NULL,				/* Bit Position 19	*/
-	NULL,				/* Bit Position 20	*/
-	NULL,				/* Bit Position 21	*/
-	NULL,				/* Bit Position 22	*/
-	NULL,				/* Bit Position 23	*/
-	NULL,				/* Bit Position 24	*/
-	NULL,				/* Bit Position 25	*/
-	NULL,				/* Bit Position 26	*/
-	NULL,				/* Bit Position 27	*/
-	NULL,				/* Bit Position 28	*/
-	NULL,				/* Bit Position 29	*/
-	NULL,				/* Bit Position 30	*/
-	NULL,				/* Bit Position 31	*/
+	"Timeout",			 
+	"NonFatalErr",			 
+	"CorrIntErr",			 
+	"HeaderOF",			 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
 };
 
 static const char *aer_uncorrectable_error_string[] = {
-	"Undefined",			/* Bit Position 0	*/
+	"Undefined",			 
 	NULL,
 	NULL,
 	NULL,
-	"DLP",				/* Bit Position 4	*/
-	"SDES",				/* Bit Position 5	*/
+	"DLP",				 
+	"SDES",				 
 	NULL,
 	NULL,
 	NULL,
 	NULL,
 	NULL,
 	NULL,
-	"TLP",				/* Bit Position 12	*/
-	"FCP",				/* Bit Position 13	*/
-	"CmpltTO",			/* Bit Position 14	*/
-	"CmpltAbrt",			/* Bit Position 15	*/
-	"UnxCmplt",			/* Bit Position 16	*/
-	"RxOF",				/* Bit Position 17	*/
-	"MalfTLP",			/* Bit Position 18	*/
-	"ECRC",				/* Bit Position 19	*/
-	"UnsupReq",			/* Bit Position 20	*/
-	"ACSViol",			/* Bit Position 21	*/
-	"UncorrIntErr",			/* Bit Position 22	*/
-	"BlockedTLP",			/* Bit Position 23	*/
-	"AtomicOpBlocked",		/* Bit Position 24	*/
-	"TLPBlockedErr",		/* Bit Position 25	*/
-	"PoisonTLPBlocked",		/* Bit Position 26	*/
-	NULL,				/* Bit Position 27	*/
-	NULL,				/* Bit Position 28	*/
-	NULL,				/* Bit Position 29	*/
-	NULL,				/* Bit Position 30	*/
-	NULL,				/* Bit Position 31	*/
+	"TLP",				 
+	"FCP",				 
+	"CmpltTO",			 
+	"CmpltAbrt",			 
+	"UnxCmplt",			 
+	"RxOF",				 
+	"MalfTLP",			 
+	"ECRC",				 
+	"UnsupReq",			 
+	"ACSViol",			 
+	"UncorrIntErr",			 
+	"BlockedTLP",			 
+	"AtomicOpBlocked",		 
+	"TLPBlockedErr",		 
+	"PoisonTLPBlocked",		 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
+	NULL,				 
 };
 
 static const char *aer_agent_string[] = {
@@ -803,11 +748,7 @@ void cper_print_aer(struct pci_dev *dev, int aer_severity,
 }
 #endif
 
-/**
- * add_error_device - list device to be handled
- * @e_info: pointer to error info
- * @dev: pointer to pci_dev to be added
- */
+ 
 static int add_error_device(struct aer_err_info *e_info, struct pci_dev *dev)
 {
 	if (e_info->error_dev_num < AER_MAX_MULTI_ERR_DEVICES) {
@@ -818,44 +759,30 @@ static int add_error_device(struct aer_err_info *e_info, struct pci_dev *dev)
 	return -ENOSPC;
 }
 
-/**
- * is_error_source - check whether the device is source of reported error
- * @dev: pointer to pci_dev to be checked
- * @e_info: pointer to reported error info
- */
+ 
 static bool is_error_source(struct pci_dev *dev, struct aer_err_info *e_info)
 {
 	int aer = dev->aer_cap;
 	u32 status, mask;
 	u16 reg16;
 
-	/*
-	 * When bus id is equal to 0, it might be a bad id
-	 * reported by root port.
-	 */
+	 
 	if ((PCI_BUS_NUM(e_info->id) != 0) &&
 	    !(dev->bus->bus_flags & PCI_BUS_FLAGS_NO_AERSID)) {
-		/* Device ID match? */
+		 
 		if (e_info->id == pci_dev_id(dev))
 			return true;
 
-		/* Continue id comparing if there is no multiple error */
+		 
 		if (!e_info->multi_error_valid)
 			return false;
 	}
 
-	/*
-	 * When either
-	 *      1) bus id is equal to 0. Some ports might lose the bus
-	 *              id of error source id;
-	 *      2) bus flag PCI_BUS_FLAGS_NO_AERSID is set
-	 *      3) There are multiple errors and prior ID comparing fails;
-	 * We check AER status registers to find possible reporter.
-	 */
+	 
 	if (atomic_read(&dev->enable_cnt) == 0)
 		return false;
 
-	/* Check if AER is enabled */
+	 
 	pcie_capability_read_word(dev, PCI_EXP_DEVCTL, &reg16);
 	if (!(reg16 & PCI_EXP_AER_FLAGS))
 		return false;
@@ -863,7 +790,7 @@ static bool is_error_source(struct pci_dev *dev, struct aer_err_info *e_info)
 	if (!aer)
 		return false;
 
-	/* Check if error is recorded */
+	 
 	if (e_info->severity == AER_CORRECTABLE) {
 		pci_read_config_dword(dev, aer + PCI_ERR_COR_STATUS, &status);
 		pci_read_config_dword(dev, aer + PCI_ERR_COR_MASK, &mask);
@@ -882,42 +809,31 @@ static int find_device_iter(struct pci_dev *dev, void *data)
 	struct aer_err_info *e_info = (struct aer_err_info *)data;
 
 	if (is_error_source(dev, e_info)) {
-		/* List this device */
+		 
 		if (add_error_device(e_info, dev)) {
-			/* We cannot handle more... Stop iteration */
-			/* TODO: Should print error message here? */
+			 
+			 
 			return 1;
 		}
 
-		/* If there is only a single error, stop iteration */
+		 
 		if (!e_info->multi_error_valid)
 			return 1;
 	}
 	return 0;
 }
 
-/**
- * find_source_device - search through device hierarchy for source device
- * @parent: pointer to Root Port pci_dev data structure
- * @e_info: including detailed error information such like id
- *
- * Return true if found.
- *
- * Invoked by DPC when error is detected at the Root Port.
- * Caller of this function must set id, severity, and multi_error_valid of
- * struct aer_err_info pointed by @e_info properly.  This function must fill
- * e_info->error_dev_num and e_info->dev[], based on the given information.
- */
+ 
 static bool find_source_device(struct pci_dev *parent,
 		struct aer_err_info *e_info)
 {
 	struct pci_dev *dev = parent;
 	int result;
 
-	/* Must reset in this function */
+	 
 	e_info->error_dev_num = 0;
 
-	/* Is Root Port an agent that sends error message? */
+	 
 	result = find_device_iter(dev, e_info);
 	if (result)
 		return true;
@@ -934,22 +850,13 @@ static bool find_source_device(struct pci_dev *parent,
 	return true;
 }
 
-/**
- * handle_error_source - handle logging error into an event log
- * @dev: pointer to pci_dev data structure of error source device
- * @info: comprehensive error information
- *
- * Invoked when an error being detected by Root Port.
- */
+ 
 static void handle_error_source(struct pci_dev *dev, struct aer_err_info *info)
 {
 	int aer = dev->aer_cap;
 
 	if (info->severity == AER_CORRECTABLE) {
-		/*
-		 * Correctable error does not need software intervention.
-		 * No need to go through error recovery process.
-		 */
+		 
 		if (aer)
 			pci_write_config_dword(dev, aer + PCI_ERR_COR_STATUS,
 					info->status);
@@ -998,12 +905,7 @@ static void aer_recover_work_func(struct work_struct *work)
 			continue;
 		}
 		cper_print_aer(pdev, entry.severity, entry.regs);
-		/*
-		 * Memory for aer_capability_regs(entry.regs) is being allocated from the
-		 * ghes_estatus_pool to protect it from overwriting when multiple sections
-		 * are present in the error status. Thus free the same after processing
-		 * the data.
-		 */
+		 
 		ghes_estatus_pool_region_free((unsigned long)entry.regs,
 					      sizeof(struct aer_capability_regs));
 
@@ -1017,11 +919,7 @@ static void aer_recover_work_func(struct work_struct *work)
 	}
 }
 
-/*
- * Mutual exclusion for writers of aer_recover_ring, reader side don't
- * need lock, because there is only one reader and lock is not needed
- * between reader and writer.
- */
+ 
 static DEFINE_SPINLOCK(aer_recover_ring_lock);
 static DECLARE_WORK(aer_recover_work, aer_recover_work_func);
 
@@ -1046,26 +944,18 @@ void aer_recover_queue(int domain, unsigned int bus, unsigned int devfn,
 EXPORT_SYMBOL_GPL(aer_recover_queue);
 #endif
 
-/**
- * aer_get_device_error_info - read error status from dev and store it to info
- * @dev: pointer to the device expected to have a error record
- * @info: pointer to structure to store the error record
- *
- * Return 1 on success, 0 on error.
- *
- * Note that @info is reused among all error devices. Clear fields properly.
- */
+ 
 int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
 {
 	int type = pci_pcie_type(dev);
 	int aer = dev->aer_cap;
 	int temp;
 
-	/* Must reset in this function */
+	 
 	info->status = 0;
 	info->tlp_header_valid = 0;
 
-	/* The device might not support AER */
+	 
 	if (!aer)
 		return 0;
 
@@ -1081,7 +971,7 @@ int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
 		   type == PCI_EXP_TYPE_DOWNSTREAM ||
 		   info->severity == AER_NONFATAL) {
 
-		/* Link is still healthy for IO reads */
+		 
 		pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_STATUS,
 			&info->status);
 		pci_read_config_dword(dev, aer + PCI_ERR_UNCOR_MASK,
@@ -1089,7 +979,7 @@ int aer_get_device_error_info(struct pci_dev *dev, struct aer_err_info *info)
 		if (!(info->status & ~info->mask))
 			return 0;
 
-		/* Get First Error Pointer */
+		 
 		pci_read_config_dword(dev, aer + PCI_ERR_CAP, &temp);
 		info->first_error = PCI_ERR_CAP_FEP(temp);
 
@@ -1113,7 +1003,7 @@ static inline void aer_process_err_devices(struct aer_err_info *e_info)
 {
 	int i;
 
-	/* Report all before handle them, not to lost records by reset etc. */
+	 
 	for (i = 0; i < e_info->error_dev_num && e_info->dev[i]; i++) {
 		if (aer_get_device_error_info(e_info->dev[i], e_info))
 			aer_print_error(e_info->dev[i], e_info);
@@ -1124,11 +1014,7 @@ static inline void aer_process_err_devices(struct aer_err_info *e_info)
 	}
 }
 
-/**
- * aer_isr_one_error - consume an error detected by root port
- * @rpc: pointer to the root port which holds an error
- * @e_src: pointer to an error source
- */
+ 
 static void aer_isr_one_error(struct aer_rpc *rpc,
 		struct aer_err_source *e_src)
 {
@@ -1137,10 +1023,7 @@ static void aer_isr_one_error(struct aer_rpc *rpc,
 
 	pci_rootport_aer_stats_incr(pdev, e_src);
 
-	/*
-	 * There is a possibility that both correctable error and
-	 * uncorrectable error being logged. Report correctable error first.
-	 */
+	 
 	if (e_src->status & PCI_ERR_ROOT_COR_RCV) {
 		e_info.id = ERR_COR_ID(e_src->id);
 		e_info.severity = AER_CORRECTABLE;
@@ -1175,13 +1058,7 @@ static void aer_isr_one_error(struct aer_rpc *rpc,
 	}
 }
 
-/**
- * aer_isr - consume errors detected by root port
- * @irq: IRQ assigned to Root Port
- * @context: pointer to Root Port data structure
- *
- * Invoked, as DPC, when root port records new detected error
- */
+ 
 static irqreturn_t aer_isr(int irq, void *context)
 {
 	struct pcie_device *dev = (struct pcie_device *)context;
@@ -1196,13 +1073,7 @@ static irqreturn_t aer_isr(int irq, void *context)
 	return IRQ_HANDLED;
 }
 
-/**
- * aer_irq - Root Port's ISR
- * @irq: IRQ assigned to Root Port
- * @context: pointer to Root Port data structure
- *
- * Invoked when Root Port detects AER messages.
- */
+ 
 static irqreturn_t aer_irq(int irq, void *context)
 {
 	struct pcie_device *pdev = (struct pcie_device *)context;
@@ -1224,12 +1095,7 @@ static irqreturn_t aer_irq(int irq, void *context)
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * aer_enable_rootport - enable Root Port's interrupts when receiving messages
- * @rpc: pointer to a Root Port data structure
- *
- * Invoked when PCIe bus loads AER service driver.
- */
+ 
 static void aer_enable_rootport(struct aer_rpc *rpc)
 {
 	struct pci_dev *pdev = rpc->rpd;
@@ -1237,15 +1103,15 @@ static void aer_enable_rootport(struct aer_rpc *rpc)
 	u16 reg16;
 	u32 reg32;
 
-	/* Clear PCIe Capability's Device Status */
+	 
 	pcie_capability_read_word(pdev, PCI_EXP_DEVSTA, &reg16);
 	pcie_capability_write_word(pdev, PCI_EXP_DEVSTA, reg16);
 
-	/* Disable system error generation in response to error messages */
+	 
 	pcie_capability_clear_word(pdev, PCI_EXP_RTCTL,
 				   SYSTEM_ERROR_INTR_ON_MESG_MASK);
 
-	/* Clear error status */
+	 
 	pci_read_config_dword(pdev, aer + PCI_ERR_ROOT_STATUS, &reg32);
 	pci_write_config_dword(pdev, aer + PCI_ERR_ROOT_STATUS, reg32);
 	pci_read_config_dword(pdev, aer + PCI_ERR_COR_STATUS, &reg32);
@@ -1253,40 +1119,30 @@ static void aer_enable_rootport(struct aer_rpc *rpc)
 	pci_read_config_dword(pdev, aer + PCI_ERR_UNCOR_STATUS, &reg32);
 	pci_write_config_dword(pdev, aer + PCI_ERR_UNCOR_STATUS, reg32);
 
-	/* Enable Root Port's interrupt in response to error messages */
+	 
 	pci_read_config_dword(pdev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
 	reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
 	pci_write_config_dword(pdev, aer + PCI_ERR_ROOT_COMMAND, reg32);
 }
 
-/**
- * aer_disable_rootport - disable Root Port's interrupts when receiving messages
- * @rpc: pointer to a Root Port data structure
- *
- * Invoked when PCIe bus unloads AER service driver.
- */
+ 
 static void aer_disable_rootport(struct aer_rpc *rpc)
 {
 	struct pci_dev *pdev = rpc->rpd;
 	int aer = pdev->aer_cap;
 	u32 reg32;
 
-	/* Disable Root's interrupt in response to error messages */
+	 
 	pci_read_config_dword(pdev, aer + PCI_ERR_ROOT_COMMAND, &reg32);
 	reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
 	pci_write_config_dword(pdev, aer + PCI_ERR_ROOT_COMMAND, reg32);
 
-	/* Clear Root's error status reg */
+	 
 	pci_read_config_dword(pdev, aer + PCI_ERR_ROOT_STATUS, &reg32);
 	pci_write_config_dword(pdev, aer + PCI_ERR_ROOT_STATUS, reg32);
 }
 
-/**
- * aer_remove - clean up resources
- * @dev: pointer to the pcie_dev data structure
- *
- * Invoked when PCI Express bus unloads or AER probe fails.
- */
+ 
 static void aer_remove(struct pcie_device *dev)
 {
 	struct aer_rpc *rpc = get_service_data(dev);
@@ -1294,12 +1150,7 @@ static void aer_remove(struct pcie_device *dev)
 	aer_disable_rootport(rpc);
 }
 
-/**
- * aer_probe - initialize resources
- * @dev: pointer to the pcie_dev data structure
- *
- * Invoked when PCI Express bus loads AER service driver.
- */
+ 
 static int aer_probe(struct pcie_device *dev)
 {
 	int status;
@@ -1312,7 +1163,7 @@ static int aer_probe(struct pcie_device *dev)
 	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
 		     AER_MAX_TYPEOF_UNCOR_ERRS);
 
-	/* Limit to Root Ports or Root Complex Event Collectors */
+	 
 	if ((pci_pcie_type(port) != PCI_EXP_TYPE_RC_EC) &&
 	    (pci_pcie_type(port) != PCI_EXP_TYPE_ROOT_PORT))
 		return -ENODEV;
@@ -1337,12 +1188,7 @@ static int aer_probe(struct pcie_device *dev)
 	return 0;
 }
 
-/**
- * aer_root_reset - reset Root Port hierarchy, RCEC, or RCiEP
- * @dev: pointer to Root Port, RCEC, or RCiEP
- *
- * Invoked by Port Bus driver when performing reset.
- */
+ 
 static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
 {
 	int type = pci_pcie_type(dev);
@@ -1352,25 +1198,17 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
 	u32 reg32;
 	int rc;
 
-	/*
-	 * Only Root Ports and RCECs have AER Root Command and Root Status
-	 * registers.  If "dev" is an RCiEP, the relevant registers are in
-	 * the RCEC.
-	 */
+	 
 	if (type == PCI_EXP_TYPE_RC_END)
 		root = dev->rcec;
 	else
 		root = pcie_find_root_port(dev);
 
-	/*
-	 * If the platform retained control of AER, an RCiEP may not have
-	 * an RCEC visible to us, so dev->rcec ("root") may be NULL.  In
-	 * that case, firmware is responsible for these registers.
-	 */
+	 
 	aer = root ? root->aer_cap : 0;
 
 	if ((host->native_aer || pcie_ports_native) && aer) {
-		/* Disable Root's interrupt in response to error messages */
+		 
 		pci_read_config_dword(root, aer + PCI_ERR_ROOT_COMMAND, &reg32);
 		reg32 &= ~ROOT_PORT_INTR_ON_MESG_MASK;
 		pci_write_config_dword(root, aer + PCI_ERR_ROOT_COMMAND, reg32);
@@ -1389,11 +1227,11 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
 	}
 
 	if ((host->native_aer || pcie_ports_native) && aer) {
-		/* Clear Root Error Status */
+		 
 		pci_read_config_dword(root, aer + PCI_ERR_ROOT_STATUS, &reg32);
 		pci_write_config_dword(root, aer + PCI_ERR_ROOT_STATUS, reg32);
 
-		/* Enable Root Port's interrupt in response to error messages */
+		 
 		pci_read_config_dword(root, aer + PCI_ERR_ROOT_COMMAND, &reg32);
 		reg32 |= ROOT_PORT_INTR_ON_MESG_MASK;
 		pci_write_config_dword(root, aer + PCI_ERR_ROOT_COMMAND, reg32);
@@ -1411,11 +1249,7 @@ static struct pcie_port_service_driver aerdriver = {
 	.remove		= aer_remove,
 };
 
-/**
- * pcie_aer_init - register AER root service driver
- *
- * Invoked when AER root service driver is loaded.
- */
+ 
 int __init pcie_aer_init(void)
 {
 	if (!pci_aer_available())

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include <bpf/btf.h>
 #include "test_btf_decl_tag.skel.h"
 
-/* struct btf_type_tag_test is referenced in btf_type_tag.skel.h */
+ 
 struct btf_type_tag_test {
         int **p;
 };
@@ -44,13 +44,7 @@ static void test_btf_type_tag(void)
 	btf_type_tag__destroy(skel);
 }
 
-/* loads vmlinux_btf as well as module_btf. If the caller passes NULL as
- * module_btf, it will not load module btf.
- *
- * Returns 0 on success.
- * Return -1 On error. In case of error, the loaded btf will be freed and the
- * input parameters will be set to pointing to NULL.
- */
+ 
 static int load_btfs(struct btf **vmlinux_btf, struct btf **module_btf,
 		     bool needs_vmlinux_tag)
 {
@@ -69,7 +63,7 @@ static int load_btfs(struct btf **vmlinux_btf, struct btf **module_btf,
 	if (!needs_vmlinux_tag)
 		goto load_module_btf;
 
-	/* skip the test if the vmlinux does not have __user tags */
+	 
 	type_id = btf__find_by_name_kind(*vmlinux_btf, "user", BTF_KIND_TYPE_TAG);
 	if (type_id <= 0) {
 		printf("%s:SKIP: btf_type_tag attribute not in vmlinux btf", __func__);
@@ -78,7 +72,7 @@ static int load_btfs(struct btf **vmlinux_btf, struct btf **module_btf,
 	}
 
 load_module_btf:
-	/* skip loading module_btf, if not requested by caller */
+	 
 	if (!module_btf)
 		return 0;
 
@@ -86,7 +80,7 @@ load_module_btf:
 	if (!ASSERT_OK_PTR(*module_btf, "could not load module BTF"))
 		goto free_vmlinux_btf;
 
-	/* skip the test if the module does not have __user tags */
+	 
 	type_id = btf__find_by_name_kind(*module_btf, "user", BTF_KIND_TYPE_TAG);
 	if (type_id <= 0) {
 		printf("%s:SKIP: btf_type_tag attribute not in %s", __func__, module_name);
@@ -113,7 +107,7 @@ static void test_btf_type_tag_mod_user(bool load_test_user1)
 	struct btf_type_tag_user *skel;
 	int err;
 
-	if (load_btfs(&vmlinux_btf, &module_btf, /*needs_vmlinux_tag=*/false))
+	if (load_btfs(&vmlinux_btf, &module_btf,  false))
 		return;
 
 	skel = btf_type_tag_user__open();
@@ -142,7 +136,7 @@ static void test_btf_type_tag_vmlinux_user(void)
 	struct btf *vmlinux_btf = NULL;
 	int err;
 
-	if (load_btfs(&vmlinux_btf, NULL, /*needs_vmlinux_tag=*/true))
+	if (load_btfs(&vmlinux_btf, NULL,  true))
 		return;
 
 	skel = btf_type_tag_user__open();
@@ -167,7 +161,7 @@ static void test_btf_type_tag_mod_percpu(bool load_test_percpu1)
 	struct btf_type_tag_percpu *skel;
 	int err;
 
-	if (load_btfs(&vmlinux_btf, &module_btf, /*needs_vmlinux_tag=*/false))
+	if (load_btfs(&vmlinux_btf, &module_btf,  false))
 		return;
 
 	skel = btf_type_tag_percpu__open();
@@ -197,7 +191,7 @@ static void test_btf_type_tag_vmlinux_percpu(bool load_test)
 	struct btf *vmlinux_btf = NULL;
 	int err;
 
-	if (load_btfs(&vmlinux_btf, NULL, /*needs_vmlinux_tag=*/true))
+	if (load_btfs(&vmlinux_btf, NULL,  true))
 		return;
 
 	skel = btf_type_tag_percpu__open();

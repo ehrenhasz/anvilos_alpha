@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5514.c  --  RT5514 ALSA SoC audio codec driver
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/fs.h>
@@ -116,30 +111,30 @@ static const struct reg_default rt5514_reg[] = {
 
 static void rt5514_enable_dsp_prepare(struct rt5514_priv *rt5514)
 {
-	/* Reset */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002000, 0x000010ec);
-	/* LDO_I_limit */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002200, 0x00028604);
-	/* I2C bypass enable */
+	 
 	regmap_write(rt5514->i2c_regmap, 0xfafafafa, 0x00000001);
-	/* mini-core reset */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002f00, 0x0005514b);
 	regmap_write(rt5514->i2c_regmap, 0x18002f00, 0x00055149);
-	/* I2C bypass disable */
+	 
 	regmap_write(rt5514->i2c_regmap, 0xfafafafa, 0x00000000);
-	/* PIN config */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002070, 0x00000040);
-	/* PLL3(QN)=RCOSC*(10+2) */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002240, 0x0000000a);
-	/* PLL3 source=RCOSC, fsi=rt_clk */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002100, 0x0000000b);
-	/* Power on RCOSC, pll3 */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002004, 0x00808b81);
-	/* DSP clk source = pll3, ENABLE DSP clk */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18002f08, 0x00000005);
-	/* Enable DSP clk auto switch */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18001114, 0x00000001);
-	/* Reduce DSP power */
+	 
 	regmap_write(rt5514->i2c_regmap, 0x18001118, 0x00000001);
 }
 
@@ -270,7 +265,7 @@ static bool rt5514_i2c_readable_register(struct device *dev,
 	}
 }
 
-/* {-3, 0, +3, +4.5, +7.5, +9.5, +12, +14, +17} dB */
+ 
 static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	0, 2, TLV_DB_SCALE_ITEM(-300, 300, 0),
 	3, 3, TLV_DB_SCALE_ITEM(450, 0, 0),
@@ -393,7 +388,7 @@ static int rt5514_dsp_voice_wake_up_put(struct snd_kcontrol *kcontrol,
 				fw = NULL;
 			}
 
-			/* DSP run */
+			 
 			regmap_write(rt5514->i2c_regmap, 0x18002f00,
 				0x00055148);
 
@@ -434,7 +429,7 @@ static const struct snd_kcontrol_new rt5514_snd_controls[] = {
 		rt5514_dsp_voice_wake_up_get, rt5514_dsp_voice_wake_up_put),
 };
 
-/* ADC Mixer*/
+ 
 static const struct snd_kcontrol_new rt5514_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("DMIC Switch", RT5514_DOWNFILTER0_CTRL1,
 		RT5514_AD_DMIC_MIX_BIT, 1, 1),
@@ -463,7 +458,7 @@ static const struct snd_kcontrol_new rt5514_sto2_adc_r_mix[] = {
 		RT5514_AD_AD_MIX_BIT, 1, 1),
 };
 
-/* DMIC Source */
+ 
 static const char * const rt5514_dmic_src[] = {
 	"DMIC1", "DMIC2"
 };
@@ -482,15 +477,7 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5514_sto2_dmic_mux =
 	SOC_DAPM_ENUM("Stereo2 DMIC Source", rt5514_stereo2_dmic_enum);
 
-/**
- * rt5514_calc_dmic_clk - Calculate the frequency divider parameter of dmic.
- *
- * @component: only used for dev_warn
- * @rate: base clock rate.
- *
- * Choose divider parameter that gives the highest possible DMIC frequency in
- * 1MHz - 3MHz range.
- */
+ 
 static int rt5514_calc_dmic_clk(struct snd_soc_component *component, int rate)
 {
 	static const int div[] = {2, 3, 4, 8, 12, 16, 24, 32};
@@ -502,7 +489,7 @@ static int rt5514_calc_dmic_clk(struct snd_soc_component *component, int rate)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(div); i++) {
-		/* find divider that gives DMIC frequency below 3.072MHz */
+		 
 		if (3072000 * div[i] >= rate)
 			return i;
 	}
@@ -554,7 +541,7 @@ static int rt5514_i2s_use_asrc(struct snd_soc_dapm_widget *source,
 }
 
 static const struct snd_soc_dapm_widget rt5514_dapm_widgets[] = {
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC1L"),
 	SND_SOC_DAPM_INPUT("DMIC1R"),
 	SND_SOC_DAPM_INPUT("DMIC2L"),
@@ -628,13 +615,13 @@ static const struct snd_soc_dapm_widget rt5514_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("ASRC AD2", 1, RT5514_CLK_CTRL2,
 		RT5514_CLK_AD1_ASRC_EN_BIT, 0, NULL, 0),
 
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("Stereo1 DMIC Mux", SND_SOC_NOPM, 0, 0,
 				&rt5514_sto1_dmic_mux),
 	SND_SOC_DAPM_MUX("Stereo2 DMIC Mux", SND_SOC_NOPM, 0, 0,
 				&rt5514_sto2_dmic_mux),
 
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("adc stereo1 filter", RT5514_CLK_CTRL1,
 		RT5514_CLK_AD0_EN_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("adc stereo2 filter", RT5514_CLK_CTRL1,
@@ -658,11 +645,11 @@ static const struct snd_soc_dapm_widget rt5514_dapm_widgets[] = {
 	SND_SOC_DAPM_ADC("Stereo2 ADC MIXR", NULL, RT5514_DOWNFILTER1_CTRL2,
 		RT5514_AD_AD_MUTE_BIT, 1),
 
-	/* ADC PGA */
+	 
 	SND_SOC_DAPM_PGA("Stereo1 ADC MIX", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("Stereo2 ADC MIX", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 };
 
@@ -1068,11 +1055,7 @@ static int rt5514_set_bias_level(struct snd_soc_component *component,
 
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-			/*
-			 * If the DSP is enabled in start of recording, the DSP
-			 * should be disabled, and sync back to normal recording
-			 * settings to make sure recording properly.
-			 */
+			 
 			if (rt5514->dsp_enabled) {
 				rt5514->dsp_enabled = 0;
 				regmap_multi_reg_write(rt5514->i2c_regmap,
@@ -1240,11 +1223,7 @@ static __maybe_unused int rt5514_i2c_resume(struct device *dev)
 	struct rt5514_priv *rt5514 = dev_get_drvdata(dev);
 	unsigned int val;
 
-	/*
-	 * Add a bogus read to avoid rt5514's confusion after s2r in case it
-	 * saw glitches on the i2c lines and thought the other side sent a
-	 * start bit.
-	 */
+	 
 	regmap_read(rt5514->regmap, RT5514_VENDOR_ID2, &val);
 
 	return 0;
@@ -1285,12 +1264,7 @@ static int rt5514_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/*
-	 * The rt5514 can get confused if the i2c lines glitch together, as
-	 * can happen at bootup as regulators are turned off and on.  If it's
-	 * in this glitched state the first i2c read will fail, so we'll give
-	 * it one change to retry.
-	 */
+	 
 	ret = regmap_read(rt5514->regmap, RT5514_VENDOR_ID2, &val);
 	if (ret || val != RT5514_DEVICE_ID)
 		ret = regmap_read(rt5514->regmap, RT5514_VENDOR_ID2, &val);

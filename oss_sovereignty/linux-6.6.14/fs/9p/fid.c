@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * V9FS FID Management
- *
- *  Copyright (C) 2007 by Latchesar Ionkov <lucho@ionkov.net>
- *  Copyright (C) 2005, 2006 by Eric Van Hensbergen <ericvh@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -24,12 +19,7 @@ static inline void __add_fid(struct dentry *dentry, struct p9_fid *fid)
 }
 
 
-/**
- * v9fs_fid_add - add a fid to a dentry
- * @dentry: dentry that the fid is being added to
- * @pfid: fid to add, NULLed out
- *
- */
+ 
 void v9fs_fid_add(struct dentry *dentry, struct p9_fid **pfid)
 {
 	struct p9_fid *fid = *pfid;
@@ -49,14 +39,7 @@ static bool v9fs_is_writeable(int mode)
 		return false;
 }
 
-/**
- * v9fs_fid_find_inode - search for an open fid off of the inode list
- * @inode: return a fid pointing to a specific inode
- * @want_writeable: only consider fids which are writeable
- * @uid: return a fid belonging to the specified user
- * @any: ignore uid as a selection criteria
- *
- */
+ 
 struct p9_fid *v9fs_fid_find_inode(struct inode *inode, bool want_writeable,
 	kuid_t uid, bool any)
 {
@@ -83,12 +66,7 @@ struct p9_fid *v9fs_fid_find_inode(struct inode *inode, bool want_writeable,
 	return ret;
 }
 
-/**
- * v9fs_open_fid_add - add an open fid to an inode
- * @inode: inode that the fid is being added to
- * @pfid: fid to add, NULLed out
- *
- */
+ 
 
 void v9fs_open_fid_add(struct inode *inode, struct p9_fid **pfid)
 {
@@ -102,13 +80,7 @@ void v9fs_open_fid_add(struct inode *inode, struct p9_fid **pfid)
 }
 
 
-/**
- * v9fs_fid_find - retrieve a fid that belongs to the specified uid
- * @dentry: dentry to look for fid in
- * @uid: return fid that belongs to the specified user
- * @any: if non-zero, return any fid associated with the dentry
- *
- */
+ 
 
 static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
 {
@@ -118,7 +90,7 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
 		 dentry, dentry, from_kuid(&init_user_ns, uid),
 		 any);
 	ret = NULL;
-	/* we'll recheck under lock if there's anything to look in */
+	 
 	if (dentry->d_fsdata) {
 		struct hlist_head *h = (struct hlist_head *)&dentry->d_fsdata;
 
@@ -139,11 +111,7 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
 	return ret;
 }
 
-/*
- * We need to hold v9ses->rename_sem as long as we hold references
- * to returned path array. Array element contain pointers to
- * dentry names.
- */
+ 
 static int build_path_from_dentry(struct v9fs_session_info *v9ses,
 				  struct dentry *dentry, const unsigned char ***names)
 {
@@ -181,16 +149,12 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 	fid = v9fs_fid_find(dentry, uid, any);
 	if (fid)
 		return fid;
-	/*
-	 * we don't have a matching fid. To do a TWALK we need
-	 * parent fid. We need to prevent rename when we want to
-	 * look at the parent.
-	 */
+	 
 	down_read(&v9ses->rename_sem);
 	ds = dentry->d_parent;
 	fid = v9fs_fid_find(ds, uid, any);
 	if (fid) {
-		/* Found the parent fid do a lookup with that */
+		 
 		old_fid = fid;
 
 		fid = p9_client_walk(old_fid, 1, &dentry->d_name.name, 1);
@@ -199,10 +163,10 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 	}
 	up_read(&v9ses->rename_sem);
 
-	/* start from the root and try to do a lookup */
+	 
 	root_fid = v9fs_fid_find(dentry->d_sb->s_root, uid, any);
 	if (!root_fid) {
-		/* the user is not attached to the fs yet */
+		 
 		if (access == V9FS_ACCESS_SINGLE)
 			return ERR_PTR(-EPERM);
 
@@ -219,15 +183,11 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 		root_fid = p9_fid_get(fid);
 		v9fs_fid_add(dentry->d_sb->s_root, &fid);
 	}
-	/* If we are root ourself just return that */
+	 
 	if (dentry->d_sb->s_root == dentry)
 		return root_fid;
 
-	/*
-	 * Do a multipath walk with attached root.
-	 * When walking parent we need to make sure we
-	 * don't have a parallel rename happening
-	 */
+	 
 	down_read(&v9ses->rename_sem);
 	n  = build_path_from_dentry(v9ses, dentry, &wnames);
 	if (n < 0) {
@@ -239,13 +199,10 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 	i = 0;
 	while (i < n) {
 		l = min(n - i, P9_MAXWELEM);
-		/*
-		 * We need to hold rename lock when doing a multipath
-		 * walk to ensure none of the path components change
-		 */
+		 
 		fid = p9_client_walk(old_fid, l, &wnames[i],
-				     old_fid == root_fid /* clone */);
-		/* non-cloning walk will return the same fid */
+				     old_fid == root_fid  );
+		 
 		if (fid != old_fid) {
 			p9_fid_put(old_fid);
 			old_fid = fid;
@@ -275,15 +232,7 @@ err_out:
 	return fid;
 }
 
-/**
- * v9fs_fid_lookup - lookup for a fid, try to walk if not found
- * @dentry: dentry to look for fid in
- *
- * Look for a fid in the specified dentry for the current user.
- * If no fid is found, try to create one walking from a fid from the parent
- * dentry (if it has one), or the root dentry. If the user haven't accessed
- * the fs yet, attach now and walk from the root.
- */
+ 
 
 struct p9_fid *v9fs_fid_lookup(struct dentry *dentry)
 {

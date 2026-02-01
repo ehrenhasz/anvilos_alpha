@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Distributed Switch Architecture loopback driver
- *
- * Copyright (C) 2016, Florian Fainelli <f.fainelli@gmail.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/netdevice.h>
@@ -214,7 +210,7 @@ static int dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
 	if (vlan->vid >= ARRAY_SIZE(ps->vlans))
 		return -ERANGE;
 
-	/* Just do a sleeping operation to make lockdep checks effective */
+	 
 	mdiobus_read(bus, ps->port_base + port, MII_BMSR);
 
 	vl = &ps->vlans[vlan->vid];
@@ -243,7 +239,7 @@ static int dsa_loop_port_vlan_del(struct dsa_switch *ds, int port,
 	struct mii_bus *bus = ps->bus;
 	struct dsa_loop_vlan *vl;
 
-	/* Just do a sleeping operation to make lockdep checks effective */
+	 
 	mdiobus_read(bus, ps->port_base + port, MII_BMSR);
 
 	vl = &ps->vlans[vlan->vid];

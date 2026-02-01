@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-touch-cap.h - touch support functions.
- */
+ 
+ 
 #ifndef _VIVID_TOUCH_CAP_H_
 #define _VIVID_TOUCH_CAP_H_
 

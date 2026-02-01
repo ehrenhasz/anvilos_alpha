@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Rahul Sharma <rahul.sharma@samsung.com>
- *
- * Provides Constants for Exynos5260 clocks.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_EXYNOS5260_H
 #define _DT_BINDINGS_CLK_EXYNOS5260_H
 
-/* Clock names: <cmu><type><IP> */
+ 
 
-/* List Of Clocks For CMU_TOP */
+ 
 
 #define TOP_FOUT_DISP_PLL				1
 #define TOP_FOUT_AUD_PLL				2
@@ -138,7 +133,7 @@
 #define PHYCLK_USBDRD30_UDRD30_PIPE_PCLK		123
 #define PHYCLK_USBDRD30_UDRD30_PHYCLOCK			124
 
-/* List Of Clocks For CMU_EGL */
+ 
 
 #define EGL_FOUT_EGL_PLL				1
 #define EGL_FOUT_EGL_DPLL				2
@@ -152,7 +147,7 @@
 #define EGL_DOUT_EGL2					10
 #define EGL_DOUT_EGL1					11
 
-/* List Of Clocks For CMU_KFC */
+ 
 
 #define KFC_FOUT_KFC_PLL				1
 #define KFC_MOUT_KFC_PLL				2
@@ -165,7 +160,7 @@
 #define KFC_DOUT_KFC2					9
 #define KFC_DOUT_KFC1					10
 
-/* List Of Clocks For CMU_MIF */
+ 
 
 #define MIF_FOUT_MEM_PLL				1
 #define MIF_FOUT_MEDIA_PLL				2
@@ -195,7 +190,7 @@
 #define MIF_SCLK_LPDDR3PHY_WRAP_U1			26
 #define MIF_SCLK_LPDDR3PHY_WRAP_U0			27
 
-/* List Of Clocks For CMU_G3D */
+ 
 
 #define G3D_FOUT_G3D_PLL				1
 #define G3D_MOUT_G3D_PLL				2
@@ -204,7 +199,7 @@
 #define G3D_CLK_G3D_HPM					5
 #define G3D_CLK_G3D					6
 
-/* List Of Clocks For CMU_AUD */
+ 
 
 #define AUD_MOUT_SCLK_AUD_PCM				1
 #define AUD_MOUT_SCLK_AUD_I2S				2
@@ -222,7 +217,7 @@
 #define AUD_SCLK_PCM					14
 #define AUD_SCLK_I2S					15
 
-/* List Of Clocks For CMU_MFC */
+ 
 
 #define MFC_MOUT_ACLK_MFC_333_USER			1
 #define MFC_DOUT_PCLK_MFC_83				2
@@ -230,7 +225,7 @@
 #define MFC_CLK_SMMU2_MFCM1				4
 #define MFC_CLK_SMMU2_MFCM0				5
 
-/* List Of Clocks For CMU_GSCL */
+ 
 
 #define GSCL_MOUT_ACLK_CSIS				1
 #define GSCL_MOUT_ACLK_GSCL_FIMC_USER			2
@@ -259,7 +254,7 @@
 #define GSCL_SCLK_CSIS1_WRAP				25
 #define GSCL_SCLK_CSIS0_WRAP				26
 
-/* List Of Clocks For CMU_FSYS */
+ 
 
 #define FSYS_MOUT_PHYCLK_USBHOST20_PHYCLK_USER		1
 #define FSYS_MOUT_PHYCLK_USBHOST20_FREECLK_USER		2
@@ -280,7 +275,7 @@
 #define FSYS_PHYCLK_USBDRD30				17
 #define FSYS_PHYCLK_USBHOST20				18
 
-/* List Of Clocks For CMU_PERI */
+ 
 
 #define PERI_MOUT_SCLK_SPDIF				1
 #define PERI_MOUT_SCLK_I2SCOD				2
@@ -349,7 +344,7 @@
 #define PERI_SCLK_I2S					65
 #define PERI_SCLK_PCM1					66
 
-/* List Of Clocks For CMU_DISP */
+ 
 
 #define DISP_MOUT_SCLK_HDMI_SPDIF			1
 #define DISP_MOUT_SCLK_HDMI_PIXEL			2
@@ -387,7 +382,7 @@
 #define DISP_SCLK_PIXEL					34
 #define DISP_MOUT_HDMI_PHY_PIXEL_USER			35
 
-/* List Of Clocks For CMU_G2D */
+ 
 
 #define G2D_MOUT_ACLK_G2D_333_USER			1
 #define G2D_DOUT_PCLK_G2D_83				2
@@ -402,7 +397,7 @@
 #define G2D_CLK_SMMU_MDMA				11
 #define G2D_CLK_SMMU3_G2D				12
 
-/* List Of Clocks For CMU_ISP */
+ 
 
 #define ISP_MOUT_ISP_400_USER				1
 #define ISP_MOUT_ISP_266_USER				2

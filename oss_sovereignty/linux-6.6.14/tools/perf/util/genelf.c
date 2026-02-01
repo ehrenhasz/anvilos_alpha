@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * genelf.c
- * Copyright (C) 2014, Google, Inc
- *
- * Contributed by:
- * 	Stephane Eranian <eranian@gmail.com>
- */
+
+ 
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -28,13 +22,13 @@
 #define NT_GNU_BUILD_ID 3
 #endif
 
-#define BUILD_ID_URANDOM /* different uuid for each run */
+#define BUILD_ID_URANDOM  
 
 #ifdef HAVE_LIBCRYPTO_SUPPORT
 
 #define BUILD_ID_MD5
-#undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
-#undef BUILD_ID_URANDOM /* different uuid for each run */
+#undef BUILD_ID_SHA	 
+#undef BUILD_ID_URANDOM  
 
 #ifdef BUILD_ID_SHA
 #include <openssl/sha.h>
@@ -48,10 +42,10 @@
 
 
 typedef struct {
-  unsigned int namesz;  /* Size of entry's owner string */
-  unsigned int descsz;  /* Size of the note descriptor */
-  unsigned int type;    /* Interpretation of the descriptor */
-  char         name[0]; /* Start of the name+desc data */
+  unsigned int namesz;   
+  unsigned int descsz;   
+  unsigned int type;     
+  char         name[0];  
 } Elf_Note;
 
 struct options {
@@ -61,39 +55,39 @@ struct options {
 
 static char shd_string_table[] = {
 	0,
-	'.', 't', 'e', 'x', 't', 0,			/*  1 */
-	'.', 's', 'h', 's', 't', 'r', 't', 'a', 'b', 0, /*  7 */
-	'.', 's', 'y', 'm', 't', 'a', 'b', 0,		/* 17 */
-	'.', 's', 't', 'r', 't', 'a', 'b', 0,		/* 25 */
-	'.', 'n', 'o', 't', 'e', '.', 'g', 'n', 'u', '.', 'b', 'u', 'i', 'l', 'd', '-', 'i', 'd', 0, /* 33 */
-	'.', 'd', 'e', 'b', 'u', 'g', '_', 'l', 'i', 'n', 'e', 0, /* 52 */
-	'.', 'd', 'e', 'b', 'u', 'g', '_', 'i', 'n', 'f', 'o', 0, /* 64 */
-	'.', 'd', 'e', 'b', 'u', 'g', '_', 'a', 'b', 'b', 'r', 'e', 'v', 0, /* 76 */
-	'.', 'e', 'h', '_', 'f', 'r', 'a', 'm', 'e', '_', 'h', 'd', 'r', 0, /* 90 */
-	'.', 'e', 'h', '_', 'f', 'r', 'a', 'm', 'e', 0, /* 104 */
+	'.', 't', 'e', 'x', 't', 0,			 
+	'.', 's', 'h', 's', 't', 'r', 't', 'a', 'b', 0,  
+	'.', 's', 'y', 'm', 't', 'a', 'b', 0,		 
+	'.', 's', 't', 'r', 't', 'a', 'b', 0,		 
+	'.', 'n', 'o', 't', 'e', '.', 'g', 'n', 'u', '.', 'b', 'u', 'i', 'l', 'd', '-', 'i', 'd', 0,  
+	'.', 'd', 'e', 'b', 'u', 'g', '_', 'l', 'i', 'n', 'e', 0,  
+	'.', 'd', 'e', 'b', 'u', 'g', '_', 'i', 'n', 'f', 'o', 0,  
+	'.', 'd', 'e', 'b', 'u', 'g', '_', 'a', 'b', 'b', 'r', 'e', 'v', 0,  
+	'.', 'e', 'h', '_', 'f', 'r', 'a', 'm', 'e', '_', 'h', 'd', 'r', 0,  
+	'.', 'e', 'h', '_', 'f', 'r', 'a', 'm', 'e', 0,  
 };
 
 static struct buildid_note {
-	Elf_Note desc;		/* descsz: size of build-id, must be multiple of 4 */
-	char	 name[4];	/* GNU\0 */
+	Elf_Note desc;		 
+	char	 name[4];	 
 	char	 build_id[20];
 } bnote;
 
 static Elf_Sym symtab[]={
-	/* symbol 0 MUST be the undefined symbol */
-	{ .st_name  = 0, /* index in sym_string table */
+	 
+	{ .st_name  = 0,  
 	  .st_info  = ELF_ST_TYPE(STT_NOTYPE),
-	  .st_shndx = 0, /* for now */
+	  .st_shndx = 0,  
 	  .st_value = 0x0,
 	  .st_other = ELF_ST_VIS(STV_DEFAULT),
 	  .st_size  = 0,
 	},
-	{ .st_name  = 1, /* index in sym_string table */
+	{ .st_name  = 1,  
 	  .st_info  = ELF_ST_BIND(STB_LOCAL) | ELF_ST_TYPE(STT_FUNC),
 	  .st_shndx = 1,
-	  .st_value = 0, /* for now */
+	  .st_value = 0,  
 	  .st_other = ELF_ST_VIS(STV_DEFAULT),
-	  .st_size  = 0, /* for now */
+	  .st_size  = 0,  
 	}
 };
 
@@ -165,9 +159,7 @@ jit_add_eh_frame_info(Elf *e, void* unwinding, uint64_t unwinding_header_size,
 	Elf_Shdr *shdr;
 	uint64_t unwinding_table_size = unwinding_size - unwinding_header_size;
 
-	/*
-	 * setup eh_frame section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -199,9 +191,7 @@ jit_add_eh_frame_info(Elf *e, void* unwinding, uint64_t unwinding_header_size,
 	shdr->sh_flags = SHF_ALLOC;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * setup eh_frame_hdr section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -236,13 +226,7 @@ jit_add_eh_frame_info(Elf *e, void* unwinding, uint64_t unwinding_header_size,
 	return 0;
 }
 
-/*
- * fd: file descriptor open for writing for the output file
- * load_addr: code load address (could be zero, just used for buildid)
- * sym: function name (for native code - used as the symbol)
- * code: the native code
- * csize: the code size in bytes
- */
+ 
 int
 jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 	      const void *code, int csize,
@@ -271,9 +255,7 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	/*
-	 * setup ELF header
-	 */
+	 
 	ehdr = elf_newehdr(e);
 	if (!ehdr) {
 		warnx("cannot get ehdr");
@@ -286,11 +268,9 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 	ehdr->e_type = ET_DYN;
 	ehdr->e_entry = GEN_ELF_TEXT_OFFSET;
 	ehdr->e_version = EV_CURRENT;
-	ehdr->e_shstrndx= unwinding ? 4 : 2; /* shdr index for section name */
+	ehdr->e_shstrndx= unwinding ? 4 : 2;  
 
-	/*
-	 * setup program header
-	 */
+	 
 	phdr = elf_newphdr(e, 1);
 	phdr[0].p_type = PT_LOAD;
 	phdr[0].p_offset = GEN_ELF_TEXT_OFFSET;
@@ -301,9 +281,7 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 	phdr[0].p_flags = PF_X | PF_R;
 	phdr[0].p_align = 8;
 
-	/*
-	 * setup text section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -335,9 +313,7 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 	shdr->sh_flags = SHF_EXECINSTR | SHF_ALLOC;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * Setup .eh_frame_hdr and .eh_frame
-	 */
+	 
 	if (unwinding) {
 		eh_frame_base_offset = ALIGN_8(GEN_ELF_TEXT_OFFSET + csize);
 		retval = jit_add_eh_frame_info(e, unwinding,
@@ -348,9 +324,7 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		retval = -1;
 	}
 
-	/*
-	 * setup section headers string table
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -376,14 +350,12 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	shdr->sh_name = 7; /* offset of '.shstrtab' in shd_string_table */
+	shdr->sh_name = 7;  
 	shdr->sh_type = SHT_STRTAB;
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * setup symtab section
-	 */
+	 
 	symtab[1].st_size  = csize;
 	symtab[1].st_value = GEN_ELF_TEXT_OFFSET;
 
@@ -412,16 +384,13 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	shdr->sh_name = 17; /* offset of '.symtab' in shd_string_table */
+	shdr->sh_name = 17;  
 	shdr->sh_type = SHT_SYMTAB;
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = sizeof(Elf_Sym);
-	shdr->sh_link = unwinding ? 6 : 4; /* index of .strtab section */
+	shdr->sh_link = unwinding ? 6 : 4;  
 
-	/*
-	 * setup symbols string table
-	 * 2 = 1 for 0 in 1st entry, 1 for the 0 at end of symbol for 2nd entry
-	 */
+	 
 	symlen = 2 + strlen(sym);
 	strsym = calloc(1, symlen);
 	if (!strsym) {
@@ -455,14 +424,12 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	shdr->sh_name = 25; /* offset in shd_string_table */
+	shdr->sh_name = 25;  
 	shdr->sh_type = SHT_STRTAB;
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * setup build-id section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -475,11 +442,9 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	/*
-	 * build-id generation
-	 */
+	 
 	gen_build_id(&bnote, load_addr, code, csize);
-	bnote.desc.namesz = sizeof(bnote.name); /* must include 0 termination */
+	bnote.desc.namesz = sizeof(bnote.name);  
 	bnote.desc.descsz = sizeof(bnote.build_id);
 	bnote.desc.type   = NT_GNU_BUILD_ID;
 	strcpy(bnote.name, "GNU");
@@ -497,7 +462,7 @@ jit_write_elf(int fd, uint64_t load_addr, const char *sym,
 		goto error;
 	}
 
-	shdr->sh_name = 33; /* offset in shd_string_table */
+	shdr->sh_name = 33;  
 	shdr->sh_type = SHT_NOTE;
 	shdr->sh_addr = 0x0;
 	shdr->sh_flags = SHF_ALLOC;

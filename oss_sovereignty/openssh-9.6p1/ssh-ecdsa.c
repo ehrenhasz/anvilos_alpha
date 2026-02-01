@@ -1,28 +1,5 @@
-/* $OpenBSD: ssh-ecdsa.c,v 1.26 2023/03/08 04:43:12 guenther Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- * Copyright (c) 2010 Damien Miller.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -149,7 +126,7 @@ ssh_ecdsa_copy_public(const struct sshkey *from, struct sshkey *to)
 		return SSH_ERR_ALLOC_FAIL;
 	if (EC_KEY_set_public_key(to->ecdsa,
 	    EC_KEY_get0_public_key(from->ecdsa)) != 1)
-		return SSH_ERR_LIBCRYPTO_ERROR; /* caller will free k->ecdsa */
+		return SSH_ERR_LIBCRYPTO_ERROR;  
 	return 0;
 }
 
@@ -181,7 +158,7 @@ ssh_ecdsa_deserialize_public(const char *ktype, struct sshbuf *b,
 		r = SSH_ERR_KEY_INVALID_EC_VALUE;
 		goto out;
 	}
-	/* success */
+	 
 	r = 0;
 #ifdef DEBUG_PK
 	sshkey_dump_ec_point(EC_KEY_get0_group(key->ecdsa),
@@ -215,7 +192,7 @@ ssh_ecdsa_deserialize_private(const char *ktype, struct sshbuf *b,
 	}
 	if ((r = sshkey_ec_validate_private(key->ecdsa)) != 0)
 		goto out;
-	/* success */
+	 
 	r = 0;
  out:
 	BN_clear_free(exponent);
@@ -311,7 +288,7 @@ ssh_ecdsa_verify(const struct sshkey *key,
 	    (hlen = ssh_digest_bytes(hash_alg)) == 0)
 		return SSH_ERR_INTERNAL_ERROR;
 
-	/* fetch signature */
+	 
 	if ((b = sshbuf_from(sig, siglen)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
 	if (sshbuf_get_cstring(b, &ktype, NULL) != 0 ||
@@ -328,7 +305,7 @@ ssh_ecdsa_verify(const struct sshkey *key,
 		goto out;
 	}
 
-	/* parse signature */
+	 
 	if (sshbuf_get_bignum2(sigbuf, &sig_r) != 0 ||
 	    sshbuf_get_bignum2(sigbuf, &sig_s) != 0) {
 		ret = SSH_ERR_INVALID_FORMAT;
@@ -342,7 +319,7 @@ ssh_ecdsa_verify(const struct sshkey *key,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	sig_r = sig_s = NULL; /* transferred */
+	sig_r = sig_s = NULL;  
 
 	if (sshbuf_len(sigbuf) != 0) {
 		ret = SSH_ERR_UNEXPECTED_TRAILING_DATA;
@@ -375,94 +352,94 @@ ssh_ecdsa_verify(const struct sshkey *key,
 	return ret;
 }
 
-/* NB. not static; used by ECDSA-SK */
+ 
 const struct sshkey_impl_funcs sshkey_ecdsa_funcs = {
-	/* .size = */		ssh_ecdsa_size,
-	/* .alloc = */		NULL,
-	/* .cleanup = */	ssh_ecdsa_cleanup,
-	/* .equal = */		ssh_ecdsa_equal,
-	/* .ssh_serialize_public = */ ssh_ecdsa_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_ecdsa_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_ecdsa_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_ecdsa_deserialize_private,
-	/* .generate = */	ssh_ecdsa_generate,
-	/* .copy_public = */	ssh_ecdsa_copy_public,
-	/* .sign = */		ssh_ecdsa_sign,
-	/* .verify = */		ssh_ecdsa_verify,
+	 		ssh_ecdsa_size,
+	 		NULL,
+	 	ssh_ecdsa_cleanup,
+	 		ssh_ecdsa_equal,
+	  ssh_ecdsa_serialize_public,
+	  ssh_ecdsa_deserialize_public,
+	  ssh_ecdsa_serialize_private,
+	  ssh_ecdsa_deserialize_private,
+	 	ssh_ecdsa_generate,
+	 	ssh_ecdsa_copy_public,
+	 		ssh_ecdsa_sign,
+	 		ssh_ecdsa_verify,
 };
 
 const struct sshkey_impl sshkey_ecdsa_nistp256_impl = {
-	/* .name = */		"ecdsa-sha2-nistp256",
-	/* .shortname = */	"ECDSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA,
-	/* .nid = */		NID_X9_62_prime256v1,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp256",
+	 	"ECDSA",
+	 		NULL,
+	 		KEY_ECDSA,
+	 		NID_X9_62_prime256v1,
+	 		0,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_nistp256_cert_impl = {
-	/* .name = */		"ecdsa-sha2-nistp256-cert-v01@openssh.com",
-	/* .shortname = */	"ECDSA-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_CERT,
-	/* .nid = */		NID_X9_62_prime256v1,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp256-cert-v01@openssh.com",
+	 	"ECDSA-CERT",
+	 		NULL,
+	 		KEY_ECDSA_CERT,
+	 		NID_X9_62_prime256v1,
+	 		1,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_nistp384_impl = {
-	/* .name = */		"ecdsa-sha2-nistp384",
-	/* .shortname = */	"ECDSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA,
-	/* .nid = */		NID_secp384r1,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp384",
+	 	"ECDSA",
+	 		NULL,
+	 		KEY_ECDSA,
+	 		NID_secp384r1,
+	 		0,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_nistp384_cert_impl = {
-	/* .name = */		"ecdsa-sha2-nistp384-cert-v01@openssh.com",
-	/* .shortname = */	"ECDSA-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_CERT,
-	/* .nid = */		NID_secp384r1,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp384-cert-v01@openssh.com",
+	 	"ECDSA-CERT",
+	 		NULL,
+	 		KEY_ECDSA_CERT,
+	 		NID_secp384r1,
+	 		1,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 
 #ifdef OPENSSL_HAS_NISTP521
 const struct sshkey_impl sshkey_ecdsa_nistp521_impl = {
-	/* .name = */		"ecdsa-sha2-nistp521",
-	/* .shortname = */	"ECDSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA,
-	/* .nid = */		NID_secp521r1,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp521",
+	 	"ECDSA",
+	 		NULL,
+	 		KEY_ECDSA,
+	 		NID_secp521r1,
+	 		0,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_nistp521_cert_impl = {
-	/* .name = */		"ecdsa-sha2-nistp521-cert-v01@openssh.com",
-	/* .shortname = */	"ECDSA-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_CERT,
-	/* .nid = */		NID_secp521r1,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_ecdsa_funcs,
+	 		"ecdsa-sha2-nistp521-cert-v01@openssh.com",
+	 	"ECDSA-CERT",
+	 		NULL,
+	 		KEY_ECDSA_CERT,
+	 		NID_secp521r1,
+	 		1,
+	 	0,
+	 	0,
+	 		&sshkey_ecdsa_funcs,
 };
 #endif
 
-#endif /* WITH_OPENSSL && OPENSSL_HAS_ECC */
+#endif  

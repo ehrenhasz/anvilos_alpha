@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 #include <linux/vfio.h>
 #include <linux/iommufd.h>
 
@@ -36,7 +34,7 @@ int vfio_iommufd_compat_attach_ioas(struct vfio_device *vdev,
 
 	lockdep_assert_held(&vdev->dev_set->lock);
 
-	/* compat noiommu does not need to do ioas attach */
+	 
 	if (vfio_device_is_noiommu(vdev))
 		return 0;
 
@@ -44,7 +42,7 @@ int vfio_iommufd_compat_attach_ioas(struct vfio_device *vdev,
 	if (ret)
 		return ret;
 
-	/* The legacy path has no way to return the selected pt_id */
+	 
 	return vdev->ops->attach_ioas(vdev, &ioas_id);
 }
 
@@ -76,12 +74,7 @@ static int vfio_iommufd_device_id(struct vfio_device *vdev)
 	return -EINVAL;
 }
 
-/*
- * Return devid for a device.
- *  valid ID for the device that is owned by the ictx
- *  -ENOENT = device is owned but there is no ID
- *  -ENODEV or other error = device is not owned
- */
+ 
 int vfio_iommufd_get_dev_id(struct vfio_device *vdev, struct iommufd_ctx *ictx)
 {
 	struct iommu_group *group;
@@ -105,11 +98,7 @@ int vfio_iommufd_get_dev_id(struct vfio_device *vdev, struct iommufd_ctx *ictx)
 }
 EXPORT_SYMBOL_GPL(vfio_iommufd_get_dev_id);
 
-/*
- * The physical standard ops mean that the iommufd_device is bound to the
- * physical device vdev->dev that was provided to vfio_init_group_dev(). Drivers
- * using this ops set should call vfio_register_group_dev()
- */
+ 
 int vfio_iommufd_physical_bind(struct vfio_device *vdev,
 			       struct iommufd_ctx *ictx, u32 *out_device_id)
 {
@@ -168,12 +157,7 @@ void vfio_iommufd_physical_detach_ioas(struct vfio_device *vdev)
 }
 EXPORT_SYMBOL_GPL(vfio_iommufd_physical_detach_ioas);
 
-/*
- * The emulated standard ops mean that vfio_device is going to use the
- * "mdev path" and will call vfio_pin_pages()/vfio_dma_rw(). Drivers using this
- * ops set should call vfio_register_emulated_iommu_dev(). Drivers that do
- * not call vfio_pin_pages()/vfio_dma_rw() have no need to provide dma_unmap.
- */
+ 
 
 static void vfio_emulated_unmap(void *data, unsigned long iova,
 				unsigned long length)

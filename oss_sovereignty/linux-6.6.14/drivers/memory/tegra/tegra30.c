@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/of.h>
@@ -1224,30 +1222,17 @@ static void tegra30_mc_tune_client_latency(struct tegra_mc *mc,
 	unsigned int fifo_size = client->fifo_size;
 	u32 arb_nsec, la_ticks, value;
 
-	/* see 18.4.1 Client Configuration in Tegra3 TRM v03p */
+	 
 	if (bandwidth_mbytes_sec)
 		arb_nsec = fifo_size * NSEC_PER_USEC / bandwidth_mbytes_sec;
 	else
 		arb_nsec = U32_MAX;
 
-	/*
-	 * Latency allowness should be set with consideration for the module's
-	 * latency tolerance and internal buffering capabilities.
-	 *
-	 * Display memory clients use isochronous transfers and have very low
-	 * tolerance to a belated transfers. Hence we need to compensate the
-	 * memory arbitration imperfection for them in order to prevent FIFO
-	 * underflow condition when memory bus is busy.
-	 *
-	 * VI clients also need a stronger compensation.
-	 */
+	 
 	switch (client->swgroup) {
 	case TEGRA_SWGROUP_MPCORE:
 	case TEGRA_SWGROUP_PTC:
-		/*
-		 * We always want lower latency for these clients, hence
-		 * don't touch them.
-		 */
+		 
 		return;
 
 	case TEGRA_SWGROUP_DC:
@@ -1274,11 +1259,7 @@ static void tegra30_mc_tune_client_latency(struct tegra_mc *mc,
 
 	arb_nsec /= arb_tolerance_compensation_div;
 
-	/*
-	 * Latency allowance is a number of ticks a request from a particular
-	 * client may wait in the EMEM arbiter before it becomes a high-priority
-	 * request.
-	 */
+	 
 	la_ticks = arb_nsec / mc->tick;
 	la_ticks = min(la_ticks, client->regs.la.mask);
 
@@ -1294,18 +1275,11 @@ static int tegra30_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	const struct tegra_mc_client *client = &mc->soc->clients[src->id];
 	u64 peak_bandwidth = icc_units_to_bps(src->peak_bw);
 
-	/*
-	 * Skip pre-initialization that is done by icc_node_add(), which sets
-	 * bandwidth to maximum for all clients before drivers are loaded.
-	 *
-	 * This doesn't make sense for us because we don't have drivers for all
-	 * clients and it's okay to keep configuration left from bootloader
-	 * during boot, at least for today.
-	 */
+	 
 	if (src == dst)
 		return 0;
 
-	/* convert bytes/sec to megabytes/sec */
+	 
 	do_div(peak_bandwidth, 1000000);
 
 	tegra30_mc_tune_client_latency(mc, client, peak_bandwidth);
@@ -1316,12 +1290,7 @@ static int tegra30_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 static int tegra30_mc_icc_aggreate(struct icc_node *node, u32 tag, u32 avg_bw,
 				   u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
 {
-	/*
-	 * ISO clients need to reserve extra bandwidth up-front because
-	 * there could be high bandwidth pressure during initial filling
-	 * of the client's FIFO buffers.  Secondly, we need to take into
-	 * account impurities of the memory subsystem.
-	 */
+	 
 	if (tag & TEGRA_MC_ICC_TAG_ISO)
 		peak_bw = tegra_mc_scale_percents(peak_bw, 400);
 
@@ -1356,7 +1325,7 @@ tegra30_mc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 		case TEGRA_SWGROUP_DCB:
 		case TEGRA_SWGROUP_PTC:
 		case TEGRA_SWGROUP_VI:
-			/* these clients are isochronous by default */
+			 
 			ndata->tag = TEGRA_MC_ICC_TAG_ISO;
 			break;
 

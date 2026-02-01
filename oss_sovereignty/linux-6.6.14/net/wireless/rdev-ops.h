@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Portions of this file
- * Copyright(c) 2016-2017 Intel Deutschland GmbH
- * Copyright (C) 2018, 2021-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __CFG80211_RDEV_OPS
 #define __CFG80211_RDEV_OPS
 
@@ -1524,4 +1520,4 @@ rdev_set_hw_timestamp(struct cfg80211_registered_device *rdev,
 
 	return ret;
 }
-#endif /* __CFG80211_RDEV_OPS */
+#endif  

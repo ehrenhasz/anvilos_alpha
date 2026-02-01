@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Panasonic MN88473 DVB-T/T2/C demodulator driver
- *
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef MN88473_PRIV_H
 #define MN88473_PRIV_H

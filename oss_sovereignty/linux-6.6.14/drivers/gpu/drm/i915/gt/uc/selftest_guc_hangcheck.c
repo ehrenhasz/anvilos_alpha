@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_gt_print.h"
 #include "selftests/igt_spinner.h"
@@ -104,7 +102,7 @@ static int intel_hang_guc(void *arg)
 		goto err_spin;
 	}
 
-	/* Wait for the heartbeat to cause a reset */
+	 
 	ret = intel_selftest_wait_for_rq(rq);
 	i915_request_put(rq);
 	if (ret) {

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2023 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
@@ -42,7 +42,7 @@ static int avs_es8336_speaker_power_event(struct snd_soc_dapm_widget *w,
 	bool speaker_en;
 
 	data = snd_soc_card_get_drvdata(card);
-	/* As enable_gpio has active_low=true, logic is inverted. */
+	 
 	speaker_en = !SND_SOC_DAPM_EVENT_ON(event);
 
 	gpiod_set_value_cansleep(data->gpiod, speaker_en);
@@ -64,15 +64,12 @@ static const struct snd_soc_dapm_route card_routes[] = {
 	{"Headphone", NULL, "HPOL"},
 	{"Headphone", NULL, "HPOR"},
 
-	/*
-	 * There is no separate speaker output instead the speakers are muxed to
-	 * the HP outputs. The mux is controlled by the "Speaker Power" widget.
-	 */
+	 
 	{"Speaker", NULL, "HPOL"},
 	{"Speaker", NULL, "HPOR"},
 	{"Speaker", NULL, "Speaker Power"},
 
-	/* Mic route map */
+	 
 	{"MIC1", NULL, "Internal Mic"},
 	{"MIC2", NULL, "Headset Mic"},
 };
@@ -183,11 +180,11 @@ static int avs_es8336_be_fixup(struct snd_soc_pcm_runtime *runtime,
 	channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 	fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSPN to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_3LE);
 

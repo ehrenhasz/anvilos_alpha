@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Bus implementation for the NuBus subsystem.
-//
-// Copyright (C) 2017 Finn Thain
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>

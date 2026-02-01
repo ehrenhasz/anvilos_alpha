@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016-17 Synopsys, Inc. (www.synopsys.com)
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- */
 
-/* ARC700 has two 32bit independent prog Timers: TIMER0 and TIMER1, Each can be
- * programmed to go from @count to @limit and optionally interrupt.
- * We've designated TIMER0 for clockevents and TIMER1 for clocksource
- *
- * ARCv2 based HS38 cores have RTC (in-core) and GFRC (inside ARConnect/MCIP)
- * which are suitable for UP and SMP based clocksources respectively
- */
+ 
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/bits.h>
@@ -51,7 +42,7 @@ static int noinline arc_get_timer_clk(struct device_node *node)
 	return 0;
 }
 
-/********** Clock Source Device *********/
+ 
 
 #ifdef CONFIG_ARC_TIMERS_64BIT
 
@@ -60,20 +51,7 @@ static u64 arc_read_gfrc(struct clocksource *cs)
 	unsigned long flags;
 	u32 l, h;
 
-	/*
-	 * From a programming model pov, there seems to be just one instance of
-	 * MCIP_CMD/MCIP_READBACK however micro-architecturally there's
-	 * an instance PER ARC CORE (not per cluster), and there are dedicated
-	 * hardware decode logic (per core) inside ARConnect to handle
-	 * simultaneous read/write accesses from cores via those two registers.
-	 * So several concurrent commands to ARConnect are OK if they are
-	 * trying to access two different sub-components (like GFRC,
-	 * inter-core interrupt, etc...). HW also supports simultaneously
-	 * accessing GFRC by multiple cores.
-	 * That's why it is safe to disable hard interrupts on the local CPU
-	 * before access to GFRC instead of taking global MCIP spinlock
-	 * defined in arch/arc/kernel/mcip.c
-	 */
+	 
 	local_irq_save(flags);
 
 	__mcip_cmd(CMD_GFRC_READ_LO, 0);
@@ -130,12 +108,7 @@ static u64 arc_read_rtc(struct clocksource *cs)
 	unsigned long status;
 	u32 l, h;
 
-	/*
-	 * hardware has an internal state machine which tracks readout of
-	 * low/high and updates the CTRL.status if
-	 *  - interrupt/exception taken between the two reads
-	 *  - high increments after low has been read
-	 */
+	 
 	do {
 		l = read_aux_reg(AUX_RTC_LOW);
 		h = read_aux_reg(AUX_RTC_HIGH);
@@ -169,7 +142,7 @@ static int __init arc_cs_setup_rtc(struct device_node *node)
 		return -ENXIO;
 	}
 
-	/* Local to CPU hence not usable in SMP */
+	 
 	if (IS_ENABLED(CONFIG_SMP)) {
 		pr_warn("Local-64-bit-Ctr not usable in SMP\n");
 		return -EINVAL;
@@ -189,9 +162,7 @@ TIMER_OF_DECLARE(arc_rtc, "snps,archs-timer-rtc", arc_cs_setup_rtc);
 
 #endif
 
-/*
- * 32bit TIMER1 to keep counting monotonically and wraparound
- */
+ 
 
 static u64 arc_read_timer1(struct clocksource *cs)
 {
@@ -215,7 +186,7 @@ static int __init arc_cs_setup_timer1(struct device_node *node)
 {
 	int ret;
 
-	/* Local to CPU hence not usable in SMP */
+	 
 	if (IS_ENABLED(CONFIG_SMP))
 		return -EINVAL;
 
@@ -232,18 +203,15 @@ static int __init arc_cs_setup_timer1(struct device_node *node)
 	return clocksource_register_hz(&arc_counter_timer1, arc_timer_freq);
 }
 
-/********** Clock Event Device *********/
+ 
 
 static int arc_timer_irq;
 
-/*
- * Arm the timer to interrupt after @cycles
- * The distinction for oneshot/periodic is done in arc_event_timer_ack() below
- */
+ 
 static void arc_timer_event_setup(unsigned int cycles)
 {
 	write_aux_reg(ARC_REG_TIMER0_LIMIT, cycles);
-	write_aux_reg(ARC_REG_TIMER0_CNT, 0);	/* start from 0 */
+	write_aux_reg(ARC_REG_TIMER0_CNT, 0);	 
 
 	write_aux_reg(ARC_REG_TIMER0_CTRL, ARC_TIMER_CTRL_IE | ARC_TIMER_CTRL_NH);
 }
@@ -258,10 +226,7 @@ static int arc_clkevent_set_next_event(unsigned long delta,
 
 static int arc_clkevent_set_periodic(struct clock_event_device *dev)
 {
-	/*
-	 * At X Hz, 1 sec = 1000ms -> X cycles;
-	 *		      10ms -> X / 100 cycles
-	 */
+	 
 	arc_timer_event_setup(arc_timer_freq / HZ);
 	return 0;
 }
@@ -277,23 +242,11 @@ static DEFINE_PER_CPU(struct clock_event_device, arc_clockevent_device) = {
 
 static irqreturn_t timer_irq_handler(int irq, void *dev_id)
 {
-	/*
-	 * Note that generic IRQ core could have passed @evt for @dev_id if
-	 * irq_set_chip_and_handler() asked for handle_percpu_devid_irq()
-	 */
+	 
 	struct clock_event_device *evt = this_cpu_ptr(&arc_clockevent_device);
 	int irq_reenable = clockevent_state_periodic(evt);
 
-	/*
-	 * 1. ACK the interrupt
-	 *    - For ARC700, any write to CTRL reg ACKs it, so just rewrite
-	 *      Count when [N]ot [H]alted bit.
-	 *    - For HS3x, it is a bit subtle. On taken count-down interrupt,
-	 *      IP bit [3] is set, which needs to be cleared for ACK'ing.
-	 *      The write below can only update the other two bits, hence
-	 *      explicitly clears IP bit
-	 * 2. Re-arm interrupt if periodic by writing to IE bit [0]
-	 */
+	 
 	write_aux_reg(ARC_REG_TIMER0_CTRL, irq_reenable | ARC_TIMER_CTRL_NH);
 
 	evt->event_handler(evt);
@@ -319,9 +272,7 @@ static int arc_timer_dying_cpu(unsigned int cpu)
 	return 0;
 }
 
-/*
- * clockevent setup for boot CPU
- */
+ 
 static int __init arc_clockevent_setup(struct device_node *node)
 {
 	struct clock_event_device *evt = this_cpu_ptr(&arc_clockevent_device);
@@ -337,7 +288,7 @@ static int __init arc_clockevent_setup(struct device_node *node)
 	if (ret)
 		return ret;
 
-	/* Needs apriori irq_set_percpu_devid() done in intc map function */
+	 
 	ret = request_percpu_irq(arc_timer_irq, timer_irq_handler,
 				 "Timer0 (per-cpu-tick)", evt);
 	if (ret) {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwmac-imx.c - DWMAC Specific Glue layer for NXP imx8
- *
- * Copyright 2020 NXP
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -101,7 +96,7 @@ imx8dxl_set_intf_mode(struct plat_stmmacenet_data *plat_dat)
 {
 	int ret = 0;
 
-	/* TBD: depends on imx8dxl scu interfaces to be upstreamed */
+	 
 	return ret;
 }
 
@@ -179,7 +174,7 @@ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
 
 static void imx_dwmac_exit(struct platform_device *pdev, void *priv)
 {
-	/* nothing to do now */
+	 
 }
 
 static void imx_dwmac_fix_speed(void *priv, unsigned int speed, unsigned int mode)
@@ -240,7 +235,7 @@ static void imx93_dwmac_fix_speed(void *priv, unsigned int speed, unsigned int m
 			   MX93_GPR_ENET_QOS_INTF_MODE_MASK, 0);
 	writel(ctrl, dwmac->base_addr + MAC_CTRL_REG);
 
-	 /* Ensure the settings for CTRL are applied. */
+	  
 	readl(dwmac->base_addr + MAC_CTRL_REG);
 
 	usleep_range(10, 20);
@@ -256,7 +251,7 @@ static int imx_dwmac_mx93_reset(void *priv, void __iomem *ioaddr)
 	struct plat_stmmacenet_data *plat_dat = priv;
 	u32 value = readl(ioaddr + DMA_BUS_MODE);
 
-	/* DMA SW reset */
+	 
 	value |= DMA_BUS_MODE_SFT_RESET;
 	writel(value, ioaddr + DMA_BUS_MODE);
 
@@ -297,10 +292,7 @@ imx_dwmac_parse_dt(struct imx_priv_data *dwmac, struct device *dev)
 
 	if (of_machine_is_compatible("fsl,imx8mp") ||
 	    of_machine_is_compatible("fsl,imx93")) {
-		/* Binding doc describes the propety:
-		 * is required by i.MX8MP, i.MX93.
-		 * is optinoal for i.MX8DXL.
-		 */
+		 
 		dwmac->intf_regmap = syscon_regmap_lookup_by_phandle(np, "intf_mode");
 		if (IS_ERR(dwmac->intf_regmap))
 			return PTR_ERR(dwmac->intf_regmap);

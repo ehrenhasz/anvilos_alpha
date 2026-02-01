@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LiteX SoC Controller Driver
- *
- * Copyright (C) 2020 Antmicro <www.antmicro.com>
- *
- */
+
+ 
 
 #include <linux/litex.h>
 #include <linux/device.h>
@@ -16,7 +11,7 @@
 #include <linux/io.h>
 #include <linux/reboot.h>
 
-/* reset register located at the base address */
+ 
 #define RESET_REG_OFF           0x00
 #define RESET_REG_VALUE         0x00000001
 
@@ -24,20 +19,7 @@
 #define SCRATCH_REG_VALUE       0x12345678
 #define SCRATCH_TEST_VALUE      0xdeadbeef
 
-/*
- * Check LiteX CSR read/write access
- *
- * This function reads and writes a scratch register in order to verify if CSR
- * access works.
- *
- * In case any problems are detected, the driver should panic.
- *
- * Access to the LiteX CSR is, by design, done in CPU native endianness.
- * The driver should not dynamically configure access functions when
- * the endianness mismatch is detected. Such situation indicates problems in
- * the soft SoC design and should be solved at the LiteX generator level,
- * not in the software.
- */
+ 
 static int litex_check_csr_access(void __iomem *reg_addr)
 {
 	unsigned long reg;
@@ -59,7 +41,7 @@ static int litex_check_csr_access(void __iomem *reg_addr)
 		return -EINVAL;
 	}
 
-	/* restore original value of the SCRATCH register */
+	 
 	litex_write32(reg_addr + SCRATCH_REG_OFF, SCRATCH_REG_VALUE);
 
 	pr_info("LiteX SoC Controller driver initialized");
@@ -88,7 +70,7 @@ static const struct of_device_id litex_soc_ctrl_of_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, litex_soc_ctrl_of_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static int litex_soc_ctrl_probe(struct platform_device *pdev)
 {

@@ -1,24 +1,4 @@
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- *
- * Permission to use, copy, modify, distribute, and sell this software and its
- * documentation for any purpose is hereby granted without fee, provided that
- * the above copyright notice appear in all copies and that both that copyright
- * notice and this permission notice appear in supporting documentation, and
- * that the name of the copyright holders not be used in advertising or
- * publicity pertaining to distribution of the software without specific,
- * written prior permission.  The copyright holders make no representations
- * about the suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/host1x.h>
@@ -61,15 +41,15 @@
 #define MIPI_CAL_CONFIG_DSID_CLK	0x1d
 #define MIPI_CAL_CONFIG_CSIE_CLK	0x1d
 
-/* for data and clock lanes */
+ 
 #define MIPI_CAL_CONFIG_SELECT		(1 << 21)
 
-/* for data lanes */
+ 
 #define MIPI_CAL_CONFIG_HSPDOS(x)	(((x) & 0x1f) << 16)
 #define MIPI_CAL_CONFIG_HSPUOS(x)	(((x) & 0x1f) <<  8)
 #define MIPI_CAL_CONFIG_TERMOS(x)	(((x) & 0x1f) <<  0)
 
-/* for clock lanes */
+ 
 #define MIPI_CAL_CONFIG_HSCLKPDOSD(x)	(((x) & 0x1f) <<  8)
 #define MIPI_CAL_CONFIG_HSCLKPUOSD(x)	(((x) & 0x1f) <<  0)
 
@@ -99,19 +79,19 @@ struct tegra_mipi_soc {
 	bool clock_enable_override;
 	bool needs_vclamp_ref;
 
-	/* bias pad configuration settings */
+	 
 	u8 pad_drive_down_ref;
 	u8 pad_drive_up_ref;
 
 	u8 pad_vclamp_level;
 	u8 pad_vauxp_level;
 
-	/* calibration settings for data lanes */
+	 
 	u8 hspdos;
 	u8 hspuos;
 	u8 termos;
 
-	/* calibration settings for clock lanes */
+	 
 	u8 hsclkpdos;
 	u8 hsclkpuos;
 };
@@ -180,21 +160,12 @@ static int tegra_mipi_power_down(struct tegra_mipi *mipi)
 	if (err < 0)
 		return err;
 
-	/*
-	 * The MIPI_CAL_BIAS_PAD_PDVREG controls a voltage regulator that
-	 * supplies the DSI pads. This must be kept enabled until none of the
-	 * DSI lanes are used anymore.
-	 */
+	 
 	value = tegra_mipi_readl(mipi, MIPI_CAL_BIAS_PAD_CFG2);
 	value |= MIPI_CAL_BIAS_PAD_PDVREG;
 	tegra_mipi_writel(mipi, value, MIPI_CAL_BIAS_PAD_CFG2);
 
-	/*
-	 * MIPI_CAL_BIAS_PAD_PDVCLAMP and MIPI_CAL_BIAS_PAD_E_VCLAMP_REF
-	 * control a regulator that supplies current to the pre-driver logic.
-	 * Powering down this regulator causes DSI to fail, so it must remain
-	 * powered on until none of the DSI lanes are used anymore.
-	 */
+	 
 	value = tegra_mipi_readl(mipi, MIPI_CAL_BIAS_PAD_CFG0);
 
 	if (mipi->soc->needs_vclamp_ref)
@@ -367,7 +338,7 @@ int tegra_mipi_start_calibration(struct tegra_mipi_device *device)
 
 	tegra_mipi_writel(device->mipi, value, MIPI_CAL_CTRL);
 
-	/* clear any pending status bits */
+	 
 	value = tegra_mipi_readl(device->mipi, MIPI_CAL_STATUS);
 	tegra_mipi_writel(device->mipi, value, MIPI_CAL_STATUS);
 
@@ -375,11 +346,7 @@ int tegra_mipi_start_calibration(struct tegra_mipi_device *device)
 	value |= MIPI_CAL_CTRL_START;
 	tegra_mipi_writel(device->mipi, value, MIPI_CAL_CTRL);
 
-	/*
-	 * Wait for min 72uS to let calibration logic finish calibration
-	 * sequence codes before waiting for pads idle state to apply the
-	 * results.
-	 */
+	 
 	usleep_range(75, 80);
 
 	return 0;

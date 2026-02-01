@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <linux/cpumask.h>
 #include <linux/module.h>
@@ -58,15 +27,13 @@ static const char mlx4_en_version[] =
 	MODULE_PARM_DESC(X, desc);
 
 
-/*
- * Device scope module parameters
- */
+ 
 
-/* Enable RSS UDP traffic */
+ 
 MLX4_EN_PARM_INT(udp_rss, 1,
 		 "Enable RSS for incoming UDP traffic or disabled (0)");
 
-/* Priority pausing */
+ 
 MLX4_EN_PARM_INT(pfctx, 0, "Priority based Flow Control policy on TX[7:0]."
 			   " Per priority bit mask");
 MLX4_EN_PARM_INT(pfcrx, 0, "Priority based Flow Control policy on RX[7:0]."
@@ -111,16 +78,12 @@ void mlx4_en_update_loopback_state(struct net_device *dev,
 	priv->flags &= ~(MLX4_EN_FLAG_RX_FILTER_NEEDED|
 			MLX4_EN_FLAG_ENABLE_HW_LOOPBACK);
 
-	/* Drop the packet if SRIOV is not enabled
-	 * and not performing the selftest or flb disabled
-	 */
+	 
 	if (mlx4_is_mfunc(priv->mdev->dev) &&
 	    !(features & NETIF_F_LOOPBACK) && !priv->validate_loopback)
 		priv->flags |= MLX4_EN_FLAG_RX_FILTER_NEEDED;
 
-	/* Set dmac in Tx WQE if we are in SRIOV mode or if loopback selftest
-	 * is requested
-	 */
+	 
 	if (mlx4_is_mfunc(priv->mdev->dev) || priv->validate_loopback)
 		priv->flags |= MLX4_EN_FLAG_ENABLE_HW_LOOPBACK;
 
@@ -209,8 +172,7 @@ static int mlx4_en_event(struct notifier_block *this, unsigned long event,
 		if (!mdev->pndev[port])
 			return NOTIFY_DONE;
 		priv = netdev_priv(mdev->pndev[port]);
-		/* To prevent races, we poll the link state in a separate
-		  task rather than changing it here */
+		 
 		priv->link_state = event;
 		queue_work(mdev->workqueue, &priv->linkstate_task);
 		break;
@@ -315,46 +277,43 @@ static int mlx4_en_probe(struct auxiliary_device *adev,
 		goto err_mr;
 	}
 
-	/* Build device profile according to supplied module parameters */
+	 
 	mlx4_en_get_profile(mdev);
 
-	/* Configure which ports to start according to module parameters */
+	 
 	mdev->port_cnt = 0;
 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH)
 		mdev->port_cnt++;
 
-	/* Set default number of RX rings*/
+	 
 	mlx4_en_set_num_rx_rings(mdev);
 
-	/* Create our own workqueue for reset/multicast tasks
-	 * Note: we cannot use the shared workqueue because of deadlocks caused
-	 *       by the rtnl lock */
+	 
 	mdev->workqueue = create_singlethread_workqueue("mlx4_en");
 	if (!mdev->workqueue) {
 		err = -ENOMEM;
 		goto err_mr;
 	}
 
-	/* At this stage all non-port specific tasks are complete:
-	 * mark the card state as up */
+	 
 	mutex_init(&mdev->state_lock);
 	mdev->device_up = true;
 
-	/* register mlx4 core notifier */
+	 
 	mdev->mlx_nb.notifier_call = mlx4_en_event;
 	err = mlx4_register_event_notifier(dev, &mdev->mlx_nb);
 	WARN(err, "failed to register mlx4 event notifier (%d)", err);
 
-	/* Setup ports */
+	 
 
-	/* Create a netdev for each port */
+	 
 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH) {
 		mlx4_info(mdev, "Activating port:%d\n", i);
 		if (mlx4_en_init_netdev(mdev, i, &mdev->profile.prof[i]))
 			mdev->pndev[i] = NULL;
 	}
 
-	/* register netdev notifier */
+	 
 	mdev->netdev_nb.notifier_call = mlx4_en_netdev_event;
 	if (register_netdevice_notifier(&mdev->netdev_nb)) {
 		mdev->netdev_nb.notifier_call = NULL;

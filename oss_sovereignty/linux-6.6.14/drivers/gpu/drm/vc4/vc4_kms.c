@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Broadcom
- */
 
-/**
- * DOC: VC4 KMS
- *
- * This is the general code for implementing KMS mode setting that
- * doesn't clearly associate with any of the other objects (plane,
- * crtc, HDMI encoder).
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/sort.h>
@@ -112,19 +104,19 @@ static int vc4_ctm_obj_init(struct vc4_dev *vc4)
 	return drmm_add_action_or_reset(&vc4->base, vc4_ctm_obj_fini, NULL);
 }
 
-/* Converts a DRM S31.32 value to the HW S0.9 format. */
+ 
 static u16 vc4_ctm_s31_32_to_s0_9(u64 in)
 {
 	u16 r;
 
-	/* Sign bit. */
+	 
 	r = in & BIT_ULL(63) ? BIT(9) : 0;
 
 	if ((in & GENMASK_ULL(62, 32)) > 0) {
-		/* We have zero integer bits so we can only saturate here. */
+		 
 		r |= GENMASK(8, 0);
 	} else {
-		/* Otherwise take the 9 most important fractional bits. */
+		 
 		r |= (in >> 23) & GENMASK(8, 0);
 	}
 
@@ -225,16 +217,7 @@ static void vc4_hvs_pv_muxing_commit(struct vc4_dev *vc4,
 		if (vc4_state->assigned_channel != 2)
 			continue;
 
-		/*
-		 * SCALER_DISPCTRL_DSP3 = X, where X < 2 means 'connect DSP3 to
-		 * FIFO X'.
-		 * SCALER_DISPCTRL_DSP3 = 3 means 'disable DSP 3'.
-		 *
-		 * DSP3 is connected to FIFO2 unless the transposer is
-		 * enabled. In this case, FIFO 2 is directly accessed by the
-		 * TXP IP, and we need to disable the FIFO2 -> pixelvalve1
-		 * route.
-		 */
+		 
 		if (vc4_crtc->feeds_txp)
 			dsp3_mux = VC4_SET_FIELD(3, SCALER_DISPCTRL_DSP3_MUX);
 		else
@@ -377,10 +360,7 @@ static void vc4_atomic_commit_tail(struct drm_atomic_state *state)
 
 		drm_dbg(dev, "Raising the core clock at %lu Hz\n", core_rate);
 
-		/*
-		 * Do a temporary request on the core clock during the
-		 * modeset.
-		 */
+		 
 		WARN_ON(clk_set_min_rate(hvs->core_clk, core_rate));
 	}
 
@@ -413,10 +393,7 @@ static void vc4_atomic_commit_tail(struct drm_atomic_state *state)
 
 		drm_dbg(dev, "Running the core clock at %lu Hz\n", core_rate);
 
-		/*
-		 * Request a clock rate based on the current HVS
-		 * requirements.
-		 */
+		 
 		WARN_ON(clk_set_min_rate(hvs->core_clk, core_rate));
 
 		drm_dbg(dev, "Core clock actual rate: %lu Hz\n",
@@ -464,9 +441,7 @@ static struct drm_framebuffer *vc4_fb_create(struct drm_device *dev,
 	if (WARN_ON_ONCE(vc4->is_vc5))
 		return ERR_PTR(-ENODEV);
 
-	/* If the user didn't specify a modifier, use the
-	 * vc4_set_tiling_ioctl() state for the BO.
-	 */
+	 
 	if (!(mode_cmd->flags & DRM_MODE_FB_MODIFIERS)) {
 		struct drm_gem_object *gem_obj;
 		struct vc4_bo *bo;
@@ -497,10 +472,7 @@ static struct drm_framebuffer *vc4_fb_create(struct drm_device *dev,
 	return drm_gem_fb_create(dev, file_priv, mode_cmd);
 }
 
-/* Our CTM has some peculiar limitations: we can only enable it for one CRTC
- * at a time and the HW only supports S0.9 scalars. To account for the latter,
- * we don't allow userland to set a CTM that we have no hope of approximating.
- */
+ 
 static int
 vc4_ctm_atomic_check(struct drm_device *dev, struct drm_atomic_state *state)
 {
@@ -512,7 +484,7 @@ vc4_ctm_atomic_check(struct drm_device *dev, struct drm_atomic_state *state)
 	int i;
 
 	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_state, new_crtc_state, i) {
-		/* CTM is being disabled. */
+		 
 		if (!new_crtc_state->ctm && old_crtc_state->ctm) {
 			ctm_state = vc4_get_ctm_state(state, &vc4->ctm_manager);
 			if (IS_ERR(ctm_state))
@@ -531,26 +503,21 @@ vc4_ctm_atomic_check(struct drm_device *dev, struct drm_atomic_state *state)
 				return PTR_ERR(ctm_state);
 		}
 
-		/* CTM is being enabled or the matrix changed. */
+		 
 		if (new_crtc_state->ctm) {
 			struct vc4_crtc_state *vc4_crtc_state =
 				to_vc4_crtc_state(new_crtc_state);
 
-			/* fifo is 1-based since 0 disables CTM. */
+			 
 			int fifo = vc4_crtc_state->assigned_channel + 1;
 
-			/* Check userland isn't trying to turn on CTM for more
-			 * than one CRTC at a time.
-			 */
+			 
 			if (ctm_state->fifo && ctm_state->fifo != fifo) {
 				DRM_DEBUG_DRIVER("Too many CTM configured\n");
 				return -EINVAL;
 			}
 
-			/* Check we can approximate the specified CTM.
-			 * We disallow scalars |c| > 1.0 since the HW has
-			 * no integer bits.
-			 */
+			 
 			ctm = new_crtc_state->ctm->data;
 			for (i = 0; i < ARRAY_SIZE(ctm->matrix); i++) {
 				u64 val = ctm->matrix[i];
@@ -600,19 +567,15 @@ static int vc4_load_tracker_atomic_check(struct drm_atomic_state *state)
 		}
 	}
 
-	/* Don't check the load when the tracker is disabled. */
+	 
 	if (!vc4->load_tracker_enabled)
 		return 0;
 
-	/* The absolute limit is 2Gbyte/sec, but let's take a margin to let
-	 * the system work when other blocks are accessing the memory.
-	 */
+	 
 	if (load_state->membus_load > SZ_1G + SZ_512M)
 		return -ENOSPC;
 
-	/* HVS clock is supposed to run @ 250Mhz, let's take a margin and
-	 * consider the maximum number of cycles is 240M.
-	 */
+	 
 	if (load_state->hvs_load > 240000000ULL)
 		return -ENOSPC;
 
@@ -766,36 +729,7 @@ static int cmp_vc4_crtc_hvs_output(const void *a, const void *b)
 	return data_a->hvs_output - data_b->hvs_output;
 }
 
-/*
- * The BCM2711 HVS has up to 7 outputs connected to the pixelvalves and
- * the TXP (and therefore all the CRTCs found on that platform).
- *
- * The naive (and our initial) implementation would just iterate over
- * all the active CRTCs, try to find a suitable FIFO, and then remove it
- * from the pool of available FIFOs. However, there are a few corner
- * cases that need to be considered:
- *
- * - When running in a dual-display setup (so with two CRTCs involved),
- *   we can update the state of a single CRTC (for example by changing
- *   its mode using xrandr under X11) without affecting the other. In
- *   this case, the other CRTC wouldn't be in the state at all, so we
- *   need to consider all the running CRTCs in the DRM device to assign
- *   a FIFO, not just the one in the state.
- *
- * - To fix the above, we can't use drm_atomic_get_crtc_state on all
- *   enabled CRTCs to pull their CRTC state into the global state, since
- *   a page flip would start considering their vblank to complete. Since
- *   we don't have a guarantee that they are actually active, that
- *   vblank might never happen, and shouldn't even be considered if we
- *   want to do a page flip on a single CRTC. That can be tested by
- *   doing a modetest -v first on HDMI1 and then on HDMI0.
- *
- * - Since we need the pixelvalve to be disabled and enabled back when
- *   the FIFO is changed, we should keep the FIFO assigned for as long
- *   as the CRTC is enabled, only considering it free again once that
- *   CRTC has been disabled. This can be tested by booting X11 on a
- *   single display, and changing the resolution down and then back up.
- */
+ 
 static int vc4_pv_muxing_atomic_check(struct drm_device *dev,
 				      struct drm_atomic_state *state)
 {
@@ -814,27 +748,7 @@ static int vc4_pv_muxing_atomic_check(struct drm_device *dev,
 		if (!hvs_new_state->fifo_state[i].in_use)
 			unassigned_channels |= BIT(i);
 
-	/*
-	 * The problem we have to solve here is that we have up to 7
-	 * encoders, connected to up to 6 CRTCs.
-	 *
-	 * Those CRTCs, depending on the instance, can be routed to 1, 2
-	 * or 3 HVS FIFOs, and we need to set the muxing between FIFOs and
-	 * outputs in the HVS accordingly.
-	 *
-	 * It would be pretty hard to come up with an algorithm that
-	 * would generically solve this. However, the current routing
-	 * trees we support allow us to simplify a bit the problem.
-	 *
-	 * Indeed, with the current supported layouts, if we try to
-	 * assign in the ascending crtc index order the FIFOs, we can't
-	 * fall into the situation where an earlier CRTC that had
-	 * multiple routes is assigned one that was the only option for
-	 * a later CRTC.
-	 *
-	 * If the layout changes and doesn't give us that in the future,
-	 * we will need to have something smarter, but it works so far.
-	 */
+	 
 	sorted_crtcs = kmalloc_array(dev->num_crtcs, sizeof(*sorted_crtcs), GFP_KERNEL);
 	if (!sorted_crtcs)
 		return -ENOMEM;
@@ -869,7 +783,7 @@ static int vc4_pv_muxing_atomic_check(struct drm_device *dev,
 
 		drm_dbg(dev, "%s: Trying to find a channel.\n", crtc->name);
 
-		/* Nothing to do here, let's skip it */
+		 
 		if (old_crtc_state->enable == new_crtc_state->enable) {
 			if (new_crtc_state->enable)
 				drm_dbg(dev, "%s: Already enabled, reusing channel %d.\n",
@@ -880,10 +794,10 @@ static int vc4_pv_muxing_atomic_check(struct drm_device *dev,
 			continue;
 		}
 
-		/* Muxing will need to be modified, mark it as such */
+		 
 		new_vc4_crtc_state->update_muxing = true;
 
-		/* If we're disabling our CRTC, we put back our channel */
+		 
 		if (!new_crtc_state->enable) {
 			channel = old_vc4_crtc_state->assigned_channel;
 
@@ -1035,19 +949,13 @@ int vc4_kms_load(struct drm_device *dev)
 	struct vc4_dev *vc4 = to_vc4_dev(dev);
 	int ret;
 
-	/*
-	 * The limits enforced by the load tracker aren't relevant for
-	 * the BCM2711, but the load tracker computations are used for
-	 * the core clock rate calculation.
-	 */
+	 
 	if (!vc4->is_vc5) {
-		/* Start with the load tracker enabled. Can be
-		 * disabled through the debugfs load_tracker file.
-		 */
+		 
 		vc4->load_tracker_enabled = true;
 	}
 
-	/* Set support for vblank irq fast disable, before drm_vblank_init() */
+	 
 	dev->vblank_disable_immediate = true;
 
 	ret = drm_vblank_init(dev, dev->mode_config.num_crtc);

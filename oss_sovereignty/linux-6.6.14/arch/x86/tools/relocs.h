@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef RELOCS_H
 #define RELOCS_H
 
@@ -36,4 +36,4 @@ void process_32(FILE *fp, int use_real_mode, int as_text,
 void process_64(FILE *fp, int use_real_mode, int as_text,
 		int show_absolute_syms, int show_absolute_relocs,
 		int show_reloc_info);
-#endif /* RELOCS_H */
+#endif  

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 - 2018, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Mikko Perttunen <mperttunen@nvidia.com>
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/bitops.h>
@@ -53,10 +38,7 @@
 #define SENSOR_CONFIG1_TEN_COUNT_SHIFT		24
 #define SENSOR_CONFIG1_TEMP_ENABLE		BIT(31)
 
-/*
- * SENSOR_CONFIG2 is defined in soctherm.h
- * because, it will be used by tegra_soctherm_fuse.c
- */
+ 
 
 #define SENSOR_STATUS0				0xc
 #define SENSOR_STATUS0_VALID_MASK		BIT(31)
@@ -71,10 +53,7 @@
 #define READBACK_ADD_HALF			BIT(7)
 #define READBACK_NEGATE				BIT(0)
 
-/*
- * THERMCTL_LEVEL0_GROUP_CPU is defined in soctherm.h
- * because it will be used by tegraxxx_soctherm.c
- */
+ 
 #define THERMCTL_LVL0_CPU0_EN_MASK		BIT(8)
 #define THERMCTL_LVL0_CPU0_CPU_THROT_MASK	(0x3 << 5)
 #define THERMCTL_LVL0_CPU0_CPU_THROT_LIGHT	0x1
@@ -158,10 +137,10 @@
 #define THROT_PSKIP_CTRL_VECT_CPU_MASK          (0x7 << 8)
 #define THROT_PSKIP_CTRL_VECT2_CPU_MASK         0x7
 
-#define THROT_VECT_NONE				0x0 /* 3'b000 */
-#define THROT_VECT_LOW				0x1 /* 3'b001 */
-#define THROT_VECT_MED				0x3 /* 3'b011 */
-#define THROT_VECT_HIGH				0x7 /* 3'b111 */
+#define THROT_VECT_NONE				0x0  
+#define THROT_VECT_LOW				0x1  
+#define THROT_VECT_MED				0x3  
+#define THROT_VECT_HIGH				0x7  
 
 #define THROT_PSKIP_RAMP_LITE_CPU		0x434
 #define THROT_PSKIP_RAMP_SEQ_BYPASS_MODE_MASK	BIT(31)
@@ -174,11 +153,11 @@
 #define THROT_DELAY_LITE			0x448
 #define THROT_DELAY_LITE_DELAY_MASK		0xff
 
-/* car register offsets needed for enabling HW throttling */
+ 
 #define CAR_SUPER_CCLKG_DIVIDER			0x36c
 #define CDIVG_USE_THERM_CONTROLS_MASK		BIT(30)
 
-/* ccroc register offsets needed for enabling HW throttling for Tegra132 */
+ 
 #define CCROC_SUPER_CCLKG_DIVIDER		0x024
 
 #define CCROC_GLOBAL_CFG			0x148
@@ -193,32 +172,26 @@
 #define CCROC_THROT_PSKIP_CTRL_DIVIDEND_MASK	(0xff << 8)
 #define CCROC_THROT_PSKIP_CTRL_DIVISOR_MASK	0xff
 
-/* get val from register(r) mask bits(m) */
+ 
 #define REG_GET_MASK(r, m)	(((r) & (m)) >> (ffs(m) - 1))
-/* set val(v) to mask bits(m) of register(r) */
+ 
 #define REG_SET_MASK(r, m, v)	(((r) & ~(m)) | \
 				 (((v) & (m >> (ffs(m) - 1))) << (ffs(m) - 1)))
 
-/* get dividend from the depth */
+ 
 #define THROT_DEPTH_DIVIDEND(depth)	((256 * (100 - (depth)) / 100) - 1)
 
-/* gk20a nv_therm interface N:3 Mapping. Levels defined in tegra124-soctherm.h
- * level	vector
- * NONE		3'b000
- * LOW		3'b001
- * MED		3'b011
- * HIGH		3'b111
- */
+ 
 #define THROT_LEVEL_TO_DEPTH(level)	((0x1 << (level)) - 1)
 
-/* get THROT_PSKIP_xxx offset per LIGHT/HEAVY throt and CPU/GPU dev */
+ 
 #define THROT_OFFSET			0x30
 #define THROT_PSKIP_CTRL(throt, dev)	(THROT_PSKIP_CTRL_LITE_CPU + \
 					(THROT_OFFSET * throt) + (8 * dev))
 #define THROT_PSKIP_RAMP(throt, dev)	(THROT_PSKIP_RAMP_LITE_CPU + \
 					(THROT_OFFSET * throt) + (8 * dev))
 
-/* get THROT_xxx_CTRL offset per LIGHT/HEAVY throt */
+ 
 #define THROT_PRIORITY_CTRL(throt)	(THROT_PRIORITY_LITE + \
 					(THROT_OFFSET * throt))
 #define THROT_DELAY_CTRL(throt)		(THROT_DELAY_LITE + \
@@ -243,14 +216,14 @@
 #define ALARM_STATS(throt)		(OC1_STATS + \
 					(4 * (throt - THROTTLE_OC1)))
 
-/* get CCROC_THROT_PSKIP_xxx offset per HIGH/MED/LOW vect*/
+ 
 #define CCROC_THROT_OFFSET			0x0c
 #define CCROC_THROT_PSKIP_CTRL_CPU_REG(vect)    (CCROC_THROT_PSKIP_CTRL_CPU + \
 						(CCROC_THROT_OFFSET * vect))
 #define CCROC_THROT_PSKIP_RAMP_CPU_REG(vect)    (CCROC_THROT_PSKIP_RAMP_CPU + \
 						(CCROC_THROT_OFFSET * vect))
 
-/* get THERMCTL_LEVELx offset per CPU/GPU/MEM/TSENSE rg and LEVEL0~3 lv */
+ 
 #define THERMCTL_LVL_REGS_SIZE		0x20
 #define THERMCTL_LVL_REG(rg, lv)	((rg) + ((lv) * THERMCTL_LVL_REGS_SIZE))
 
@@ -267,7 +240,7 @@ enum soctherm_throttle_id {
 	THROTTLE_OC2,
 	THROTTLE_OC3,
 	THROTTLE_OC4,
-	THROTTLE_OC5, /* OC5 is reserved */
+	THROTTLE_OC5,  
 	THROTTLE_SIZE,
 };
 
@@ -349,7 +322,7 @@ struct tegra_soctherm {
 };
 
 struct soctherm_oc_irq_chip_data {
-	struct mutex		irq_lock; /* serialize OC IRQs */
+	struct mutex		irq_lock;  
 	struct irq_chip		irq_chip;
 	struct irq_domain	*domain;
 	int			irq_enable;
@@ -357,26 +330,13 @@ struct soctherm_oc_irq_chip_data {
 
 static struct soctherm_oc_irq_chip_data soc_irq_cdata;
 
-/**
- * ccroc_writel() - writes a value to a CCROC register
- * @ts: pointer to a struct tegra_soctherm
- * @value: the value to write
- * @reg: the register offset
- *
- * Writes @v to @reg.  No return value.
- */
+ 
 static inline void ccroc_writel(struct tegra_soctherm *ts, u32 value, u32 reg)
 {
 	writel(value, (ts->ccroc_regs + reg));
 }
 
-/**
- * ccroc_readl() - reads specified register from CCROC IP block
- * @ts: pointer to a struct tegra_soctherm
- * @reg: register address to be read
- *
- * Return: the value of the register
- */
+ 
 static inline u32 ccroc_readl(struct tegra_soctherm *ts, u32 reg)
 {
 	return readl(ts->ccroc_regs + reg);
@@ -400,14 +360,7 @@ static void enable_tsensor(struct tegra_soctherm *tegra, unsigned int i)
 	writel(tegra->calib[i], base + SENSOR_CONFIG2);
 }
 
-/*
- * Translate from soctherm readback format to millicelsius.
- * The soctherm readback format in bits is as follows:
- *   TTTTTTTT H______N
- * where T's contain the temperature in Celsius,
- * H denotes an addition of 0.5 Celsius and N denotes negation
- * of the final value.
- */
+ 
 static int translate_temp(u16 val)
 {
 	int t;
@@ -433,17 +386,7 @@ static int tegra_thermctl_get_temp(struct thermal_zone_device *tz, int *out_temp
 	return 0;
 }
 
-/**
- * enforce_temp_range() - check and enforce temperature range [min, max]
- * @dev: struct device * of the SOC_THERM instance
- * @trip_temp: the trip temperature to check
- *
- * Checks and enforces the permitted temperature range that SOC_THERM
- * HW can support This is
- * done while taking care of precision.
- *
- * Return: The precision adjusted capped temperature in millicelsius.
- */
+ 
 static int enforce_temp_range(struct device *dev, int trip_temp)
 {
 	int temp;
@@ -455,22 +398,7 @@ static int enforce_temp_range(struct device *dev, int trip_temp)
 	return temp;
 }
 
-/**
- * thermtrip_program() - Configures the hardware to shut down the
- * system if a given sensor group reaches a given temperature
- * @dev: ptr to the struct device for the SOC_THERM IP block
- * @sg: pointer to the sensor group to set the thermtrip temperature for
- * @trip_temp: the temperature in millicelsius to trigger the thermal trip at
- *
- * Sets the thermal trip threshold of the given sensor group to be the
- * @trip_temp.  If this threshold is crossed, the hardware will shut
- * down.
- *
- * Note that, although @trip_temp is specified in millicelsius, the
- * hardware is programmed in degrees Celsius.
- *
- * Return: 0 upon success, or %-EINVAL upon failure.
- */
+ 
 static int thermtrip_program(struct device *dev,
 			     const struct tegra_tsensor_group *sg,
 			     int trip_temp)
@@ -493,23 +421,7 @@ static int thermtrip_program(struct device *dev,
 	return 0;
 }
 
-/**
- * throttrip_program() - Configures the hardware to throttle the
- * pulse if a given sensor group reaches a given temperature
- * @dev: ptr to the struct device for the SOC_THERM IP block
- * @sg: pointer to the sensor group to set the thermtrip temperature for
- * @stc: pointer to the throttle need to be triggered
- * @trip_temp: the temperature in millicelsius to trigger the thermal trip at
- *
- * Sets the thermal trip threshold and throttle event of the given sensor
- * group. If this threshold is crossed, the hardware will trigger the
- * throttle.
- *
- * Note that, although @trip_temp is specified in millicelsius, the
- * hardware is programmed in degrees Celsius.
- *
- * Return: 0 upon success, or %-EINVAL upon failure.
- */
+ 
 static int throttrip_program(struct device *dev,
 			     const struct tegra_tsensor_group *sg,
 			     struct soctherm_throt_cfg *stc,
@@ -525,7 +437,7 @@ static int throttrip_program(struct device *dev,
 
 	temp = enforce_temp_range(dev, trip_temp) / ts->soc->thresh_grain;
 
-	/* Hardcode LIGHT on LEVEL1 and HEAVY on LEVEL2 */
+	 
 	throt = stc->id;
 	reg_off = THERMCTL_LVL_REG(sg->thermctl_lvl0_offset, throt + 1);
 
@@ -599,11 +511,7 @@ static int tegra_thermctl_set_trip_temp(struct thermal_zone_device *tz, int trip
 		return ret;
 
 	if (trip.type == THERMAL_TRIP_CRITICAL) {
-		/*
-		 * If thermtrips property is set in DT,
-		 * doesn't need to program critical type trip to HW,
-		 * if not, program critical trip to HW.
-		 */
+		 
 		if (min_low_temp == tsensor_group_thermtrip_get(ts, sg->id))
 			return thermtrip_program(dev, sg, temp);
 		else
@@ -636,7 +544,7 @@ static void thermal_irq_enable(struct tegra_thermctl_zone *zn)
 {
 	u32 r;
 
-	/* multiple zones could be handling and setting trips at once */
+	 
 	mutex_lock(&zn->ts->thermctl_lock);
 	r = readl(zn->ts->regs + THERMCTL_INTR_ENABLE);
 	r = REG_SET_MASK(r, zn->sg->thermctl_isr_mask, TH_INTR_UP_DN_EN);
@@ -648,7 +556,7 @@ static void thermal_irq_disable(struct tegra_thermctl_zone *zn)
 {
 	u32 r;
 
-	/* multiple zones could be handling and setting trips at once */
+	 
 	mutex_lock(&zn->ts->thermctl_lock);
 	r = readl(zn->ts->regs + THERMCTL_INTR_DISABLE);
 	r = REG_SET_MASK(r, zn->sg->thermctl_isr_mask, 0);
@@ -707,30 +615,7 @@ static int get_hot_temp(struct thermal_zone_device *tz, int *trip_id, int *temp)
 	return -EINVAL;
 }
 
-/**
- * tegra_soctherm_set_hwtrips() - set HW trip point from DT data
- * @dev: struct device * of the SOC_THERM instance
- * @sg: pointer to the sensor group to set the thermtrip temperature for
- * @tz: struct thermal_zone_device *
- *
- * Configure the SOC_THERM HW trip points, setting "THERMTRIP"
- * "THROTTLE" trip points , using "thermtrips", "critical" or "hot"
- * type trip_temp
- * from thermal zone.
- * After they have been configured, THERMTRIP or THROTTLE will take
- * action when the configured SoC thermal sensor group reaches a
- * certain temperature.
- *
- * Return: 0 upon success, or a negative error code on failure.
- * "Success" does not mean that trips was enabled; it could also
- * mean that no node was found in DT.
- * THERMTRIP has been enabled successfully when a message similar to
- * this one appears on the serial console:
- * "thermtrip: will shut down when sensor group XXX reaches YYYYYY mC"
- * THROTTLE has been enabled successfully when a message similar to
- * this one appears on the serial console:
- * ""throttrip: will throttle when sensor group XXX reaches YYYYYY mC"
- */
+ 
 static int tegra_soctherm_set_hwtrips(struct device *dev,
 				      const struct tegra_tsensor_group *sg,
 				      struct thermal_zone_device *tz)
@@ -739,7 +624,7 @@ static int tegra_soctherm_set_hwtrips(struct device *dev,
 	struct soctherm_throt_cfg *stc;
 	int i, trip, temperature, ret;
 
-	/* Get thermtrips. If missing, try to get critical trips. */
+	 
 	temperature = tsensor_group_thermtrip_get(ts, sg->id);
 	if (min_low_temp == temperature)
 		if (thermal_zone_get_crit_temp(tz, &temperature))
@@ -798,38 +683,14 @@ static irqreturn_t soctherm_thermal_isr(int irq, void *dev_id)
 	struct tegra_soctherm *ts = dev_id;
 	u32 r;
 
-	/* Case for no lock:
-	 * Although interrupts are enabled in set_trips, there is still no need
-	 * to lock here because the interrupts are disabled before programming
-	 * new trip points. Hence there cant be a interrupt on the same sensor.
-	 * An interrupt can however occur on a sensor while trips are being
-	 * programmed on a different one. This beign a LEVEL interrupt won't
-	 * cause a new interrupt but this is taken care of by the re-reading of
-	 * the STATUS register in the thread function.
-	 */
+	 
 	r = readl(ts->regs + THERMCTL_INTR_STATUS);
 	writel(r, ts->regs + THERMCTL_INTR_DISABLE);
 
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * soctherm_thermal_isr_thread() - Handles a thermal interrupt request
- * @irq:       The interrupt number being requested; not used
- * @dev_id:    Opaque pointer to tegra_soctherm;
- *
- * Clears the interrupt status register if there are expected
- * interrupt bits set.
- * The interrupt(s) are then handled by updating the corresponding
- * thermal zones.
- *
- * An error is logged if any unexpected interrupt bits are set.
- *
- * Disabled interrupts are re-enabled.
- *
- * Return: %IRQ_HANDLED. Interrupt was handled and no further processing
- * is needed.
- */
+ 
 static irqreturn_t soctherm_thermal_isr_thread(int irq, void *dev_id)
 {
 	struct tegra_soctherm *ts = dev_id;
@@ -838,7 +699,7 @@ static irqreturn_t soctherm_thermal_isr_thread(int irq, void *dev_id)
 
 	st = readl(ts->regs + THERMCTL_INTR_STATUS);
 
-	/* deliberately clear expected interrupts handled in SW */
+	 
 	cp |= st & TH_INTR_CD0_MASK;
 	cp |= st & TH_INTR_CU0_MASK;
 
@@ -881,12 +742,12 @@ static irqreturn_t soctherm_thermal_isr_thread(int irq, void *dev_id)
 		}
 	}
 
-	/* deliberately ignore expected interrupts NOT handled in SW */
+	 
 	ex |= TH_INTR_IGNORE_MASK;
 	st &= ~ex;
 
 	if (st) {
-		/* Whine about any other unexpected INTR bits still set */
+		 
 		pr_err("soctherm: Ignored unexpected INTRs 0x%08x\n", st);
 		writel(st, ts->regs + THERMCTL_INTR_STATUS);
 	}
@@ -894,16 +755,7 @@ static irqreturn_t soctherm_thermal_isr_thread(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * soctherm_oc_intr_enable() - Enables the soctherm over-current interrupt
- * @ts:		pointer to a struct tegra_soctherm
- * @alarm:		The soctherm throttle id
- * @enable:		Flag indicating enable the soctherm over-current
- *			interrupt or disable it
- *
- * Enables a specific over-current pins @alarm to raise an interrupt if the flag
- * is set and the alarm corresponds to OC1, OC2, OC3, or OC4.
- */
+ 
 static void soctherm_oc_intr_enable(struct tegra_soctherm *ts,
 				    enum soctherm_throttle_id alarm,
 				    bool enable)
@@ -934,15 +786,7 @@ static void soctherm_oc_intr_enable(struct tegra_soctherm *ts,
 	writel(r, ts->regs + OC_INTR_ENABLE);
 }
 
-/**
- * soctherm_handle_alarm() - Handles soctherm alarms
- * @alarm:		The soctherm throttle id
- *
- * "Handles" over-current alarms (OC1, OC2, OC3, and OC4) by printing
- * a warning or informative message.
- *
- * Return: -EINVAL for @alarm = THROTTLE_OC3, otherwise 0 (success).
- */
+ 
 static int soctherm_handle_alarm(enum soctherm_throttle_id alarm)
 {
 	int rv = -EINVAL;
@@ -979,19 +823,7 @@ static int soctherm_handle_alarm(enum soctherm_throttle_id alarm)
 	return rv;
 }
 
-/**
- * soctherm_edp_isr_thread() - log an over-current interrupt request
- * @irq:	OC irq number. Currently not being used. See description
- * @arg:	a void pointer for callback, currently not being used
- *
- * Over-current events are handled in hardware. This function is called to log
- * and handle any OC events that happened. Additionally, it checks every
- * over-current interrupt registers for registers are set but
- * was not expected (i.e. any discrepancy in interrupt status) by the function,
- * the discrepancy will logged.
- *
- * Return: %IRQ_HANDLED
- */
+ 
 static irqreturn_t soctherm_edp_isr_thread(int irq, void *arg)
 {
 	struct tegra_soctherm *ts = arg;
@@ -999,7 +831,7 @@ static irqreturn_t soctherm_edp_isr_thread(int irq, void *arg)
 
 	st = readl(ts->regs + OC_INTR_STATUS);
 
-	/* deliberately clear expected interrupts handled in SW */
+	 
 	oc1 = st & OC_INTR_OC1_MASK;
 	oc2 = st & OC_INTR_OC2_MASK;
 	oc3 = st & OC_INTR_OC3_MASK;
@@ -1048,21 +880,7 @@ static irqreturn_t soctherm_edp_isr_thread(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/**
- * soctherm_edp_isr() - Disables any active interrupts
- * @irq:	The interrupt request number
- * @arg:	Opaque pointer to an argument
- *
- * Writes to the OC_INTR_DISABLE register the over current interrupt status,
- * masking any asserted interrupts. Doing this prevents the same interrupts
- * from triggering this isr repeatedly. The thread woken by this isr will
- * handle asserted interrupts and subsequently unmask/re-enable them.
- *
- * The OC_INTR_DISABLE register indicates which OC interrupts
- * have been disabled.
- *
- * Return: %IRQ_WAKE_THREAD, handler requests to wake the handler thread
- */
+ 
 static irqreturn_t soctherm_edp_isr(int irq, void *arg)
 {
 	struct tegra_soctherm *ts = arg;
@@ -1077,13 +895,7 @@ static irqreturn_t soctherm_edp_isr(int irq, void *arg)
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * soctherm_oc_irq_lock() - locks the over-current interrupt request
- * @data:	Interrupt request data
- *
- * Looks up the chip data from @data and locks the mutex associated with
- * a particular over-current interrupt request.
- */
+ 
 static void soctherm_oc_irq_lock(struct irq_data *data)
 {
 	struct soctherm_oc_irq_chip_data *d = irq_data_get_irq_chip_data(data);
@@ -1091,13 +903,7 @@ static void soctherm_oc_irq_lock(struct irq_data *data)
 	mutex_lock(&d->irq_lock);
 }
 
-/**
- * soctherm_oc_irq_sync_unlock() - Unlocks the OC interrupt request
- * @data:		Interrupt request data
- *
- * Looks up the interrupt request data @data and unlocks the mutex associated
- * with a particular over-current interrupt request.
- */
+ 
 static void soctherm_oc_irq_sync_unlock(struct irq_data *data)
 {
 	struct soctherm_oc_irq_chip_data *d = irq_data_get_irq_chip_data(data);
@@ -1105,14 +911,7 @@ static void soctherm_oc_irq_sync_unlock(struct irq_data *data)
 	mutex_unlock(&d->irq_lock);
 }
 
-/**
- * soctherm_oc_irq_enable() - Enables the SOC_THERM over-current interrupt queue
- * @data:       irq_data structure of the chip
- *
- * Sets the irq_enable bit of SOC_THERM allowing SOC_THERM
- * to respond to over-current interrupts.
- *
- */
+ 
 static void soctherm_oc_irq_enable(struct irq_data *data)
 {
 	struct soctherm_oc_irq_chip_data *d = irq_data_get_irq_chip_data(data);
@@ -1120,15 +919,7 @@ static void soctherm_oc_irq_enable(struct irq_data *data)
 	d->irq_enable |= BIT(data->hwirq);
 }
 
-/**
- * soctherm_oc_irq_disable() - Disables overcurrent interrupt requests
- * @data:	The interrupt request information
- *
- * Clears the interrupt request enable bit of the overcurrent
- * interrupt request chip data.
- *
- * Return: Nothing is returned (void)
- */
+ 
 static void soctherm_oc_irq_disable(struct irq_data *data)
 {
 	struct soctherm_oc_irq_chip_data *d = irq_data_get_irq_chip_data(data);
@@ -1141,23 +932,7 @@ static int soctherm_oc_irq_set_type(struct irq_data *data, unsigned int type)
 	return 0;
 }
 
-/**
- * soctherm_oc_irq_map() - SOC_THERM interrupt request domain mapper
- * @h:		Interrupt request domain
- * @virq:	Virtual interrupt request number
- * @hw:		Hardware interrupt request number
- *
- * Mapping callback function for SOC_THERM's irq_domain. When a SOC_THERM
- * interrupt request is called, the irq_domain takes the request's virtual
- * request number (much like a virtual memory address) and maps it to a
- * physical hardware request number.
- *
- * When a mapping doesn't already exist for a virtual request number, the
- * irq_domain calls this function to associate the virtual request number with
- * a hardware request number.
- *
- * Return: 0
- */
+ 
 static int soctherm_oc_irq_map(struct irq_domain *h, unsigned int virq,
 		irq_hw_number_t hw)
 {
@@ -1169,22 +944,7 @@ static int soctherm_oc_irq_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
-/**
- * soctherm_irq_domain_xlate_twocell() - xlate for soctherm interrupts
- * @d:      Interrupt request domain
- * @ctrlr:      Controller device tree node
- * @intspec:    Array of u32s from DTs "interrupt" property
- * @intsize:    Number of values inside the intspec array
- * @out_hwirq:  HW IRQ value associated with this interrupt
- * @out_type:   The IRQ SENSE type for this interrupt.
- *
- * This Device Tree IRQ specifier translation function will translate a
- * specific "interrupt" as defined by 2 DT values where the cell values map
- * the hwirq number + 1 and linux irq flags. Since the output is the hwirq
- * number, this function will subtract 1 from the value listed in DT.
- *
- * Return: 0
- */
+ 
 static int soctherm_irq_domain_xlate_twocell(struct irq_domain *d,
 	struct device_node *ctrlr, const u32 *intspec, unsigned int intsize,
 	irq_hw_number_t *out_hwirq, unsigned int *out_type)
@@ -1192,10 +952,7 @@ static int soctherm_irq_domain_xlate_twocell(struct irq_domain *d,
 	if (WARN_ON(intsize < 2))
 		return -EINVAL;
 
-	/*
-	 * The HW value is 1 index less than the DT IRQ values.
-	 * i.e. OC4 goes to HW index 3.
-	 */
+	 
 	*out_hwirq = intspec[0] - 1;
 	*out_type = intspec[1] & IRQ_TYPE_SENSE_MASK;
 	return 0;
@@ -1206,18 +963,7 @@ static const struct irq_domain_ops soctherm_oc_domain_ops = {
 	.xlate	= soctherm_irq_domain_xlate_twocell,
 };
 
-/**
- * soctherm_oc_int_init() - Initial enabling of the over
- * current interrupts
- * @np:	The devicetree node for soctherm
- * @num_irqs:	The number of new interrupt requests
- *
- * Sets the over current interrupt request chip data
- *
- * Return: 0 on success or if overcurrent interrupts are not enabled,
- * -ENOMEM (out of memory), or irq_base if the function failed to
- * allocate the irqs
- */
+ 
 static int soctherm_oc_int_init(struct device_node *np, int num_irqs)
 {
 	if (!num_irqs) {
@@ -1597,7 +1343,7 @@ static void soctherm_oc_cfg_parse(struct device *dev,
 	if (!of_property_read_u32(np_oc, "nvidia,alarm-filter", &val))
 		stc->oc_cfg.alarm_filter = val;
 
-	/* BRIEF throttling by default, do not support STICKY */
+	 
 	stc->oc_cfg.mode = OC_THROTTLE_MODE_BRIEF;
 }
 
@@ -1645,11 +1391,7 @@ err:
 	return -EINVAL;
 }
 
-/**
- * soctherm_init_hw_throt_cdev() - Parse the HW throttle configurations
- * and register them as cooling devices.
- * @pdev: Pointer to platform_device struct
- */
+ 
 static void soctherm_init_hw_throt_cdev(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -1717,18 +1459,7 @@ static void soctherm_init_hw_throt_cdev(struct platform_device *pdev)
 	of_node_put(np_stc);
 }
 
-/**
- * throttlectl_cpu_level_cfg() - programs CCROC NV_THERM level config
- * @ts: pointer to a struct tegra_soctherm
- * @level: describing the level LOW/MED/HIGH of throttling
- *
- * It's necessary to set up the CPU-local CCROC NV_THERM instance with
- * the M/N values desired for each level. This function does this.
- *
- * This function pre-programs the CCROC NV_THERM levels in terms of
- * pre-configured "Low", "Medium" or "Heavy" throttle levels which are
- * mapped to THROT_LEVEL_LOW, THROT_LEVEL_MED and THROT_LEVEL_HVY.
- */
+ 
 static void throttlectl_cpu_level_cfg(struct tegra_soctherm *ts, int level)
 {
 	u8 depth, dividend;
@@ -1752,7 +1483,7 @@ static void throttlectl_cpu_level_cfg(struct tegra_soctherm *ts, int level)
 
 	dividend = THROT_DEPTH_DIVIDEND(depth);
 
-	/* setup PSKIP in ccroc nv_therm registers */
+	 
 	r = ccroc_readl(ts, CCROC_THROT_PSKIP_RAMP_CPU_REG(level));
 	r = REG_SET_MASK(r, CCROC_THROT_PSKIP_RAMP_DURATION_MASK, 0xff);
 	r = REG_SET_MASK(r, CCROC_THROT_PSKIP_RAMP_STEP_MASK, 0xf);
@@ -1765,24 +1496,13 @@ static void throttlectl_cpu_level_cfg(struct tegra_soctherm *ts, int level)
 	ccroc_writel(ts, r, CCROC_THROT_PSKIP_CTRL_CPU_REG(level));
 }
 
-/**
- * throttlectl_cpu_level_select() - program CPU pulse skipper config
- * @ts: pointer to a struct tegra_soctherm
- * @throt: the LIGHT/HEAVY of throttle event id
- *
- * Pulse skippers are used to throttle clock frequencies.  This
- * function programs the pulse skippers based on @throt and platform
- * data.  This function is used on SoCs which have CPU-local pulse
- * skipper control, such as T13x. It programs soctherm's interface to
- * Denver:CCROC NV_THERM in terms of Low, Medium and HIGH throttling
- * vectors. PSKIP_BYPASS mode is set as required per HW spec.
- */
+ 
 static void throttlectl_cpu_level_select(struct tegra_soctherm *ts,
 					 enum soctherm_throttle_id throt)
 {
 	u32 r, throt_vect;
 
-	/* Denver:CCROC NV_THERM interface N:3 Mapping */
+	 
 	switch (ts->throt_cfgs[throt].cpu_throt_level) {
 	case TEGRA_SOCTHERM_THROT_LEVEL_LOW:
 		throt_vect = THROT_VECT_LOW;
@@ -1804,23 +1524,12 @@ static void throttlectl_cpu_level_select(struct tegra_soctherm *ts,
 	r = REG_SET_MASK(r, THROT_PSKIP_CTRL_VECT2_CPU_MASK, throt_vect);
 	writel(r, ts->regs + THROT_PSKIP_CTRL(throt, THROTTLE_DEV_CPU));
 
-	/* bypass sequencer in soc_therm as it is programmed in ccroc */
+	 
 	r = REG_SET_MASK(0, THROT_PSKIP_RAMP_SEQ_BYPASS_MODE_MASK, 1);
 	writel(r, ts->regs + THROT_PSKIP_RAMP(throt, THROTTLE_DEV_CPU));
 }
 
-/**
- * throttlectl_cpu_mn() - program CPU pulse skipper configuration
- * @ts: pointer to a struct tegra_soctherm
- * @throt: the LIGHT/HEAVY of throttle event id
- *
- * Pulse skippers are used to throttle clock frequencies.  This
- * function programs the pulse skippers based on @throt and platform
- * data.  This function is used for CPUs that have "remote" pulse
- * skipper control, e.g., the CPU pulse skipper is controlled by the
- * SOC_THERM IP block.  (SOC_THERM is located outside the CPU
- * complex.)
- */
+ 
 static void throttlectl_cpu_mn(struct tegra_soctherm *ts,
 			       enum soctherm_throttle_id throt)
 {
@@ -1843,16 +1552,7 @@ static void throttlectl_cpu_mn(struct tegra_soctherm *ts,
 	writel(r, ts->regs + THROT_PSKIP_RAMP(throt, THROTTLE_DEV_CPU));
 }
 
-/**
- * throttlectl_gpu_level_select() - selects throttling level for GPU
- * @ts: pointer to a struct tegra_soctherm
- * @throt: the LIGHT/HEAVY of throttle event id
- *
- * This function programs soctherm's interface to GK20a NV_THERM to select
- * pre-configured "Low", "Medium" or "Heavy" throttle levels.
- *
- * Return: boolean true if HW was programmed
- */
+ 
 static void throttlectl_gpu_level_select(struct tegra_soctherm *ts,
 					 enum soctherm_throttle_id throt)
 {
@@ -1888,14 +1588,7 @@ static int soctherm_oc_cfg_program(struct tegra_soctherm *ts,
 	return 0;
 }
 
-/**
- * soctherm_throttle_program() - programs pulse skippers' configuration
- * @ts: pointer to a struct tegra_soctherm
- * @throt: the LIGHT/HEAVY of the throttle event id.
- *
- * Pulse skippers are used to throttle clock frequencies.
- * This function programs the pulse skippers.
- */
+ 
 static void soctherm_throttle_program(struct tegra_soctherm *ts,
 				      enum soctherm_throttle_id throt)
 {
@@ -1908,7 +1601,7 @@ static void soctherm_throttle_program(struct tegra_soctherm *ts,
 	if ((throt >= THROTTLE_OC1) && (soctherm_oc_cfg_program(ts, throt)))
 		return;
 
-	/* Setup PSKIP parameters */
+	 
 	if (ts->soc->use_ccroc)
 		throttlectl_cpu_level_select(ts, throt);
 	else
@@ -1937,14 +1630,14 @@ static void tegra_soctherm_throttle(struct device *dev)
 	u32 v;
 	int i;
 
-	/* configure LOW, MED and HIGH levels for CCROC NV_THERM */
+	 
 	if (ts->soc->use_ccroc) {
 		throttlectl_cpu_level_cfg(ts, TEGRA_SOCTHERM_THROT_LEVEL_LOW);
 		throttlectl_cpu_level_cfg(ts, TEGRA_SOCTHERM_THROT_LEVEL_MED);
 		throttlectl_cpu_level_cfg(ts, TEGRA_SOCTHERM_THROT_LEVEL_HIGH);
 	}
 
-	/* Thermal HW throttle programming */
+	 
 	for (i = 0; i < THROTTLE_SIZE; i++)
 		soctherm_throttle_program(ts, i);
 
@@ -1963,7 +1656,7 @@ static void tegra_soctherm_throttle(struct device *dev)
 		writel(v, ts->clk_regs + CAR_SUPER_CCLKG_DIVIDER);
 	}
 
-	/* initialize stats collection */
+	 
 	v = STATS_CTL_CLR_DN | STATS_CTL_EN_DN |
 	    STATS_CTL_CLR_UP | STATS_CTL_EN_UP;
 	writel(v, ts->regs + THERMCTL_STATS_CTL);
@@ -2027,17 +1720,17 @@ static void soctherm_init(struct platform_device *pdev)
 	int i;
 	u32 pdiv, hotspot;
 
-	/* Initialize raw sensors */
+	 
 	for (i = 0; i < tegra->soc->num_tsensors; ++i)
 		enable_tsensor(tegra, i);
 
-	/* program pdiv and hotspot offsets per THERM */
+	 
 	pdiv = readl(tegra->regs + SENSOR_PDIV);
 	hotspot = readl(tegra->regs + SENSOR_HOTSPOT_OFF);
 	for (i = 0; i < tegra->soc->num_ttgs; ++i) {
 		pdiv = REG_SET_MASK(pdiv, ttgs[i]->pdiv_mask,
 				    ttgs[i]->pdiv);
-		/* hotspot offset from PLLX, doesn't need to configure PLLX */
+		 
 		if (ttgs[i]->id == TEGRA124_SOCTHERM_SENSOR_PLLX)
 			continue;
 		hotspot =  REG_SET_MASK(hotspot,
@@ -2047,7 +1740,7 @@ static void soctherm_init(struct platform_device *pdev)
 	writel(pdiv, tegra->regs + SENSOR_PDIV);
 	writel(hotspot, tegra->regs + SENSOR_HOTSPOT_OFF);
 
-	/* Configure hw throttle */
+	 
 	tegra_soctherm_throttle(&pdev->dev);
 }
 
@@ -2145,12 +1838,12 @@ static int tegra_soctherm_probe(struct platform_device *pdev)
 	if (!tegra->calib)
 		return -ENOMEM;
 
-	/* calculate shared calibration data */
+	 
 	err = tegra_calc_shared_calib(soc->tfuse, &shared_calib);
 	if (err)
 		return err;
 
-	/* calculate tsensor calibration data */
+	 
 	for (i = 0; i < soc->num_tsensors; ++i) {
 		err = tegra_calc_tsensor_calib(&soc->tsensors[i],
 					       &shared_calib,
@@ -2201,7 +1894,7 @@ static int tegra_soctherm_probe(struct platform_device *pdev)
 		zone->tz = z;
 		tegra->thermctl_tzs[soc->ttgs[i]->id] = z;
 
-		/* Configure hw trip points */
+		 
 		err = tegra_soctherm_set_hwtrips(&pdev->dev, soc->ttgs[i], z);
 		if (err)
 			goto disable_clocks;

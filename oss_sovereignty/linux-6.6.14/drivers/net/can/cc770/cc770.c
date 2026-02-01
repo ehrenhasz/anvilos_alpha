@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the CC770 and AN82527 CAN controllers
- *
- * Copyright (C) 2009, 2011 Wolfgang Grandegger <wg@grandegger.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,30 +31,7 @@ MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION(KBUILD_MODNAME "CAN netdevice driver");
 
-/*
- * The CC770 is a CAN controller from Bosch, which is 100% compatible
- * with the AN82527 from Intel, but with "bugs" being fixed and some
- * additional functionality, mainly:
- *
- * 1. RX and TX error counters are readable.
- * 2. Support of silent (listen-only) mode.
- * 3. Message object 15 can receive all types of frames, also RTR and EFF.
- *
- * Details are available from Bosch's "CC770_Product_Info_2007-01.pdf",
- * which explains in detail the compatibility between the CC770 and the
- * 82527. This driver use the additional functionality 3. on real CC770
- * devices. Unfortunately, the CC770 does still not store the message
- * identifier of received remote transmission request frames and
- * therefore it's set to 0.
- *
- * The message objects 1..14 can be used for TX and RX while the message
- * objects 15 is optimized for RX. It has a shadow register for reliable
- * data reception under heavy bus load. Therefore it makes sense to use
- * this message object for the needed use case. The frame type (EFF/SFF)
- * for the message object 15 can be defined via kernel module parameter
- * "msgobj15_eff". If not equal 0, it will receive 29-bit EFF frames,
- * otherwise 11 bit SFF messages.
- */
+ 
 static int msgobj15_eff;
 module_param(msgobj15_eff, int, 0444);
 MODULE_PARM_DESC(msgobj15_eff, "Extended 29-bit frames for message object 15 "
@@ -69,11 +42,7 @@ module_param(i82527_compat, int, 0444);
 MODULE_PARM_DESC(i82527_compat, "Strict Intel 82527 compatibility mode "
 		 "without using additional functions");
 
-/*
- * This driver uses the last 5 message objects 11..15. The definitions
- * and structure below allows to configure and assign them to the real
- * message object.
- */
+ 
 static unsigned char cc770_obj_flags[CC770_OBJ_MAX] = {
 	[CC770_OBJ_RX0] = CC770_OBJ_FLAG_RX,
 	[CC770_OBJ_RX1] = CC770_OBJ_FLAG_RX | CC770_OBJ_FLAG_EFF,
@@ -115,10 +84,7 @@ static void enable_all_objs(const struct net_device *dev)
 		mo = obj2msgobj(o);
 
 		if (obj_flags & CC770_OBJ_FLAG_RX) {
-			/*
-			 * We don't need extra objects for RTR and EFF if
-			 * the additional CC770 functions are enabled.
-			 */
+			 
 			if (priv->control_normal_mode & CTRL_EAF) {
 				if (o > 0)
 					continue;
@@ -185,7 +151,7 @@ static void disable_all_objs(const struct cc770_priv *priv)
 					MSGVAL_RES | TXIE_RES |
 					RXIE_RES | INTPND_RES);
 		} else {
-			/* Clear message object for send */
+			 
 			cc770_write_reg(priv, msgobj[mo].ctrl1,
 					RMTPND_RES | TXRQST_RES |
 					CPUUPD_RES | NEWDAT_RES);
@@ -200,18 +166,18 @@ static void set_reset_mode(struct net_device *dev)
 {
 	struct cc770_priv *priv = netdev_priv(dev);
 
-	/* Enable configuration and puts chip in bus-off, disable interrupts */
+	 
 	cc770_write_reg(priv, control, CTRL_CCE | CTRL_INI);
 
 	priv->can.state = CAN_STATE_STOPPED;
 
-	/* Clear interrupts */
+	 
 	cc770_read_reg(priv, interrupt);
 
-	/* Clear status register */
+	 
 	cc770_write_reg(priv, status, 0);
 
-	/* Disable all used message objects */
+	 
 	disable_all_objs(priv);
 }
 
@@ -219,19 +185,16 @@ static void set_normal_mode(struct net_device *dev)
 {
 	struct cc770_priv *priv = netdev_priv(dev);
 
-	/* Clear interrupts */
+	 
 	cc770_read_reg(priv, interrupt);
 
-	/* Clear status register and pre-set last error code */
+	 
 	cc770_write_reg(priv, status, STAT_LEC_MASK);
 
-	/* Enable all used message objects*/
+	 
 	enable_all_objs(dev);
 
-	/*
-	 * Clear bus-off, interrupts only for errors,
-	 * not for status change
-	 */
+	 
 	cc770_write_reg(priv, control, priv->control_normal_mode);
 
 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
@@ -241,25 +204,25 @@ static void chipset_init(struct cc770_priv *priv)
 {
 	int mo, id, data;
 
-	/* Enable configuration and put chip in bus-off, disable interrupts */
+	 
 	cc770_write_reg(priv, control, (CTRL_CCE | CTRL_INI));
 
-	/* Set CLKOUT divider and slew rates */
+	 
 	cc770_write_reg(priv, clkout, priv->clkout);
 
-	/* Configure CPU interface / CLKOUT enable */
+	 
 	cc770_write_reg(priv, cpu_interface, priv->cpu_interface);
 
-	/* Set bus configuration  */
+	 
 	cc770_write_reg(priv, bus_config, priv->bus_config);
 
-	/* Clear interrupts */
+	 
 	cc770_read_reg(priv, interrupt);
 
-	/* Clear status register */
+	 
 	cc770_write_reg(priv, status, 0);
 
-	/* Clear and invalidate message objects */
+	 
 	for (mo = MSGOBJ_FIRST; mo <= MSGOBJ_LAST; mo++) {
 		cc770_write_reg(priv, msgobj[mo].ctrl0,
 				INTPND_UNC | RXIE_RES |
@@ -277,7 +240,7 @@ static void chipset_init(struct cc770_priv *priv)
 		cc770_write_reg(priv, msgobj[mo].config, 0);
 	}
 
-	/* Set all global ID masks to "don't care" */
+	 
 	cc770_write_reg(priv, global_mask_std[0], 0);
 	cc770_write_reg(priv, global_mask_std[1], 0);
 	cc770_write_reg(priv, global_mask_ext[0], 0);
@@ -291,22 +254,19 @@ static int cc770_probe_chip(struct net_device *dev)
 {
 	struct cc770_priv *priv = netdev_priv(dev);
 
-	/* Enable configuration, put chip in bus-off, disable ints */
+	 
 	cc770_write_reg(priv, control, CTRL_CCE | CTRL_EAF | CTRL_INI);
-	/* Configure cpu interface / CLKOUT disable */
+	 
 	cc770_write_reg(priv, cpu_interface, priv->cpu_interface);
 
-	/*
-	 * Check if hardware reset is still inactive or maybe there
-	 * is no chip in this address space
-	 */
+	 
 	if (cc770_read_reg(priv, cpu_interface) & CPUIF_RST) {
 		netdev_info(dev, "probing @0x%p failed (reset)\n",
 			    priv->reg_base);
 		return -ENODEV;
 	}
 
-	/* Write and read back test pattern (some arbitrary values) */
+	 
 	cc770_write_reg(priv, msgobj[1].data[1], 0x25);
 	cc770_write_reg(priv, msgobj[2].data[3], 0x52);
 	cc770_write_reg(priv, msgobj[10].data[6], 0xc3);
@@ -318,7 +278,7 @@ static int cc770_probe_chip(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	/* Check if this chip is a CC770 supporting additional functions */
+	 
 	if (cc770_read_reg(priv, control) & CTRL_EAF)
 		priv->control_normal_mode |= CTRL_EAF;
 
@@ -329,11 +289,11 @@ static void cc770_start(struct net_device *dev)
 {
 	struct cc770_priv *priv = netdev_priv(dev);
 
-	/* leave reset mode */
+	 
 	if (priv->can.state != CAN_STATE_STOPPED)
 		set_reset_mode(dev);
 
-	/* leave reset mode */
+	 
 	set_normal_mode(dev);
 }
 
@@ -463,11 +423,7 @@ static void cc770_rx(struct net_device *dev, unsigned int mo, u8 ctrl1)
 	config = cc770_read_reg(priv, msgobj[mo].config);
 
 	if (ctrl1 & RMTPND_SET) {
-		/*
-		 * Unfortunately, the chip does not store the real message
-		 * identifier of the received remote transmission request
-		 * frame. Therefore we set it to 0.
-		 */
+		 
 		cf->can_id = CAN_RTR_FLAG;
 		if (config & MSGCFG_XTD)
 			cf->can_id |= CAN_EFF_FLAG;
@@ -511,7 +467,7 @@ static int cc770_err(struct net_device *dev, u8 status)
 	if (!skb)
 		return -ENOMEM;
 
-	/* Use extended functions of the CC770 */
+	 
 	if (priv->control_normal_mode & CTRL_EAF) {
 		cf->can_id |= CAN_ERR_CNT;
 		cf->data[6] = cc770_read_reg(priv, tx_error_counter);
@@ -519,7 +475,7 @@ static int cc770_err(struct net_device *dev, u8 status)
 	}
 
 	if (status & STAT_BOFF) {
-		/* Disable interrupts */
+		 
 		cc770_write_reg(priv, control, CTRL_INI);
 		cf->can_id |= CAN_ERR_BUSOFF;
 		priv->can.state = CAN_STATE_BUS_OFF;
@@ -527,7 +483,7 @@ static int cc770_err(struct net_device *dev, u8 status)
 		can_bus_off(dev);
 	} else if (status & STAT_WARN) {
 		cf->can_id |= CAN_ERR_CRTL;
-		/* Only the CC770 does show error passive */
+		 
 		if (cf->data[7] > 127) {
 			cf->data[1] = CAN_ERR_CRTL_RX_PASSIVE |
 				CAN_ERR_CRTL_TX_PASSIVE;
@@ -540,7 +496,7 @@ static int cc770_err(struct net_device *dev, u8 status)
 			priv->can.can_stats.error_warning++;
 		}
 	} else {
-		/* Back to error active */
+		 
 		cf->can_id |= CAN_ERR_PROT;
 		cf->data[2] = CAN_ERR_PROT_ACTIVE;
 		priv->can.state = CAN_STATE_ERROR_ACTIVE;
@@ -584,7 +540,7 @@ static int cc770_status_interrupt(struct net_device *dev)
 	u8 status;
 
 	status = cc770_read_reg(priv, status);
-	/* Reset the status register including RXOK and TXOK */
+	 
 	cc770_write_reg(priv, status, STAT_LEC_MASK);
 
 	if (status & (STAT_WARN | STAT_BOFF) ||
@@ -608,7 +564,7 @@ static void cc770_rx_interrupt(struct net_device *dev, unsigned int o)
 		ctrl1 = cc770_read_reg(priv, msgobj[mo].ctrl1);
 
 		if (!(ctrl1 & NEWDAT_SET))  {
-			/* Check for RTR if additional functions are enabled */
+			 
 			if (priv->control_normal_mode & CTRL_EAF) {
 				if (!(cc770_read_reg(priv, msgobj[mo].ctrl0) &
 				      INTPND_SET))
@@ -685,12 +641,7 @@ static void cc770_tx_interrupt(struct net_device *dev, unsigned int o)
 		stats->rx_errors++;
 	}
 
-	/* When the CC770 is sending an RTR message and it receives a regular
-	 * message that matches the id of the RTR message, it will overwrite the
-	 * outgoing message in the TX register. When this happens we must
-	 * process the received message and try to transmit the outgoing skb
-	 * again.
-	 */
+	 
 	if (unlikely(ctrl1 & NEWDAT_SET)) {
 		cc770_rx(dev, mo, ctrl1);
 		cc770_tx(dev, mo);
@@ -712,7 +663,7 @@ static irqreturn_t cc770_interrupt(int irq, void *dev_id)
 	u8 intid;
 	int o, n = 0;
 
-	/* Shared interrupts and IRQ off? */
+	 
 	if (priv->can.state == CAN_STATE_STOPPED)
 		return IRQ_NONE;
 
@@ -720,14 +671,14 @@ static irqreturn_t cc770_interrupt(int irq, void *dev_id)
 		priv->pre_irq(priv);
 
 	while (n < CC770_MAX_IRQ) {
-		/* Read the highest pending interrupt request */
+		 
 		intid = cc770_read_reg(priv, interrupt);
 		if (!intid)
 			break;
 		n++;
 
 		if (intid == 1) {
-			/* Exit in case of bus-off */
+			 
 			if (cc770_status_interrupt(dev))
 				break;
 		} else {
@@ -762,10 +713,10 @@ static int cc770_open(struct net_device *dev)
 	struct cc770_priv *priv = netdev_priv(dev);
 	int err;
 
-	/* set chip into reset mode */
+	 
 	set_reset_mode(dev);
 
-	/* common open */
+	 
 	err = open_candev(dev);
 	if (err)
 		return err;
@@ -777,7 +728,7 @@ static int cc770_open(struct net_device *dev)
 		return -EAGAIN;
 	}
 
-	/* init and start chip */
+	 
 	cc770_start(dev);
 
 	netif_start_queue(dev);
@@ -853,9 +804,9 @@ int register_cc770dev(struct net_device *dev)
 	dev->netdev_ops = &cc770_netdev_ops;
 	dev->ethtool_ops = &cc770_ethtool_ops;
 
-	dev->flags |= IFF_ECHO;	/* we support local echo */
+	dev->flags |= IFF_ECHO;	 
 
-	/* Should we use additional functions? */
+	 
 	if (!i82527_compat && priv->control_normal_mode & CTRL_EAF) {
 		priv->can.do_get_berr_counter = cc770_get_berr_counter;
 		priv->control_normal_mode = CTRL_IE | CTRL_EAF | CTRL_EIE;

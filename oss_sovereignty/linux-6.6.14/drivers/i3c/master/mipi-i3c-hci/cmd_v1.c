@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * I3C HCI v1.0/v1.1 Command Descriptor Handling
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i3c/master.h>
@@ -16,9 +10,7 @@
 #include "dct.h"
 
 
-/*
- * Address Assignment Command
- */
+ 
 
 #define CMD_0_ATTR_A			FIELD_PREP(CMD_0_ATTR, 0x2)
 
@@ -29,9 +21,7 @@
 #define CMD_A0_CMD(v)			FIELD_PREP(W0_MASK(14,  7), v)
 #define CMD_A0_TID(v)			FIELD_PREP(W0_MASK( 6,  3), v)
 
-/*
- * Immediate Data Transfer Command
- */
+ 
 
 #define CMD_0_ATTR_I			FIELD_PREP(CMD_0_ATTR, 0x1)
 
@@ -50,9 +40,7 @@
 #define CMD_I0_CMD(v)			FIELD_PREP(W0_MASK(14,  7), v)
 #define CMD_I0_TID(v)			FIELD_PREP(W0_MASK( 6,  3), v)
 
-/*
- * Regular Data Transfer Command
- */
+ 
 
 #define CMD_0_ATTR_R			FIELD_PREP(CMD_0_ATTR, 0x0)
 
@@ -68,9 +56,7 @@
 #define CMD_R0_CMD(v)			FIELD_PREP(W0_MASK(14,  7), v)
 #define CMD_R0_TID(v)			FIELD_PREP(W0_MASK( 6,  3), v)
 
-/*
- * Combo Transfer (Write + Write/Read) Command
- */
+ 
 
 #define CMD_0_ATTR_C			FIELD_PREP(CMD_0_ATTR, 0x3)
 
@@ -88,9 +74,7 @@
 #define CMD_C0_CMD(v)			FIELD_PREP(W0_MASK(14,  7), v)
 #define CMD_C0_TID(v)			FIELD_PREP(W0_MASK( 6,  3), v)
 
-/*
- * Internal Control Command
- */
+ 
 
 #define CMD_0_ATTR_M			FIELD_PREP(CMD_0_ATTR, 0x7)
 
@@ -101,7 +85,7 @@
 #define CMD_M0_TID(v)			FIELD_PREP(W0_MASK( 6,  3), v)
 
 
-/* Data Transfer Speed and Mode */
+ 
 enum hci_cmd_mode {
 	MODE_I3C_SDR0		= 0x0,
 	MODE_I3C_SDR1		= 0x1,
@@ -165,7 +149,7 @@ static void fill_data_bytes(struct hci_xfer *xfer, u8 *data,
 	case 0:
 		break;
 	}
-	/* we consumed all the data with the cmd descriptor */
+	 
 	xfer->data = NULL;
 }
 
@@ -180,7 +164,7 @@ static int hci_cmd_v1_prep_ccc(struct i3c_hci *hci,
 	bool rnw = xfer->rnw;
 	int ret;
 
-	/* this should never happen */
+	 
 	if (WARN_ON(raw))
 		return -EINVAL;
 
@@ -194,7 +178,7 @@ static int hci_cmd_v1_prep_ccc(struct i3c_hci *hci,
 	xfer->cmd_tid = hci_get_tid();
 
 	if (!rnw && data_len <= 4) {
-		/* we use an Immediate Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_I |
 			CMD_I0_TID(xfer->cmd_tid) |
@@ -204,7 +188,7 @@ static int hci_cmd_v1_prep_ccc(struct i3c_hci *hci,
 			CMD_I0_MODE(mode);
 		fill_data_bytes(xfer, data, data_len);
 	} else {
-		/* we use a Regular Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_R |
 			CMD_R0_TID(xfer->cmd_tid) |
@@ -233,7 +217,7 @@ static void hci_cmd_v1_prep_i3c_xfer(struct i3c_hci *hci,
 	xfer->cmd_tid = hci_get_tid();
 
 	if (!rnw && data_len <= 4) {
-		/* we use an Immediate Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_I |
 			CMD_I0_TID(xfer->cmd_tid) |
@@ -242,7 +226,7 @@ static void hci_cmd_v1_prep_i3c_xfer(struct i3c_hci *hci,
 			CMD_I0_MODE(mode);
 		fill_data_bytes(xfer, data, data_len);
 	} else {
-		/* we use a Regular Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_R |
 			CMD_R0_TID(xfer->cmd_tid) |
@@ -268,7 +252,7 @@ static void hci_cmd_v1_prep_i2c_xfer(struct i3c_hci *hci,
 	xfer->cmd_tid = hci_get_tid();
 
 	if (!rnw && data_len <= 4) {
-		/* we use an Immediate Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_I |
 			CMD_I0_TID(xfer->cmd_tid) |
@@ -277,7 +261,7 @@ static void hci_cmd_v1_prep_i2c_xfer(struct i3c_hci *hci,
 			CMD_I0_MODE(mode);
 		fill_data_bytes(xfer, data, data_len);
 	} else {
-		/* we use a Regular Data Transfer Command */
+		 
 		xfer->cmd_desc[0] =
 			CMD_0_ATTR_R |
 			CMD_R0_TID(xfer->cmd_tid) |
@@ -302,13 +286,7 @@ static int hci_cmd_v1_daa(struct i3c_hci *hci)
 	if (!xfer)
 		return -ENOMEM;
 
-	/*
-	 * Simple for now: we allocate a temporary DAT entry, do a single
-	 * DAA, register the device which will allocate its own DAT entry
-	 * via the core callback, then free the temporary DAT entry.
-	 * Loop until there is no more devices to assign an address to.
-	 * Yes, there is room for improvements.
-	 */
+	 
 	for (;;) {
 		ret = mipi_i3c_hci_dat_v1.alloc_entry(hci);
 		if (ret < 0)
@@ -340,7 +318,7 @@ static int hci_cmd_v1_daa(struct i3c_hci *hci)
 		}
 		if (RESP_STATUS(xfer[0].response) == RESP_ERR_NACK &&
 		    RESP_DATA_LENGTH(xfer->response) == 1) {
-			ret = 0;  /* no more devices to be assigned */
+			ret = 0;   
 			break;
 		}
 		if (RESP_STATUS(xfer[0].response) != RESP_SUCCESS) {
@@ -355,10 +333,7 @@ static int hci_cmd_v1_daa(struct i3c_hci *hci)
 		mipi_i3c_hci_dat_v1.free_entry(hci, dat_idx);
 		dat_idx = -1;
 
-		/*
-		 * TODO: Extend the subsystem layer to allow for registering
-		 * new device and provide BCR/DCR/PID at the same time.
-		 */
+		 
 		ret = i3c_master_add_i3c_dev_locked(&hci->master, next_addr);
 		if (ret)
 			break;

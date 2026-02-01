@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021, 2023 Advanced Micro Devices, Inc. All rights reserved.
-//
-// Authors: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-//	    Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * Hardware interface for generic AMD ACP processor
- */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -28,7 +26,7 @@ MODULE_PARM_DESC(enable_fw_debug, "Enable Firmware debug");
 
 const struct dmi_system_id acp_sof_quirk_table[] = {
 	{
-		/* Valve Jupiter device */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Valve"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Galileo"),
@@ -156,18 +154,14 @@ int configure_and_run_dma(struct acp_dev_data *adata, unsigned int src_addr,
 	if (ret)
 		dev_err(sdev->dev, "acpbus_dma_start failed\n");
 
-	/* Clear descriptor array */
+	 
 	for (index = 0; index < desc_count; index++)
 		memset(&adata->dscr_info[index], 0x00, sizeof(struct dma_descriptor));
 
 	return ret;
 }
 
-/*
- * psp_mbox_ready- function to poll ready bit of psp mbox
- * @adata: acp device data
- * @ack: bool variable to check ready bit status or psp ack
- */
+ 
 
 static int psp_mbox_ready(struct acp_dev_data *adata, bool ack)
 {
@@ -188,11 +182,7 @@ static int psp_mbox_ready(struct acp_dev_data *adata, bool ack)
 	return -EBUSY;
 }
 
-/*
- * psp_send_cmd - function to send psp command over mbox
- * @adata: acp device data
- * @cmd: non zero integer value for command type
- */
+ 
 
 static int psp_send_cmd(struct acp_dev_data *adata, int cmd)
 {
@@ -203,7 +193,7 @@ static int psp_send_cmd(struct acp_dev_data *adata, int cmd)
 	if (!cmd)
 		return -EINVAL;
 
-	/* Get a non-zero Doorbell value from PSP */
+	 
 	ret = read_poll_timeout(smn_read, data, data, MBOX_DELAY_US, ACP_PSP_TIMEOUT_US, false,
 				adata->smn_dev, MP0_C2PMSG_73_REG);
 
@@ -212,17 +202,17 @@ static int psp_send_cmd(struct acp_dev_data *adata, int cmd)
 		return ret;
 	}
 
-	/* Check if PSP is ready for new command */
+	 
 	ret = psp_mbox_ready(adata, 0);
 	if (ret)
 		return ret;
 
 	smn_write(adata->smn_dev, MP0_C2PMSG_114_REG, cmd);
 
-	/* Ring the Doorbell for PSP */
+	 
 	smn_write(adata->smn_dev, MP0_C2PMSG_73_REG, data);
 
-	/* Check MBOX ready as PSP ack */
+	 
 	ret = psp_mbox_ready(adata, 1);
 
 	return ret;
@@ -271,7 +261,7 @@ int configure_and_run_sha_dma(struct acp_dev_data *adata, void *image_addr,
 		return ret;
 	}
 
-	/* psp_send_cmd only required for renoir platform (rev - 3) */
+	 
 	if (desc->rev == 3) {
 		ret = psp_send_cmd(adata, MBOX_ACP_SHA_DMA_COMMAND);
 		if (ret)
@@ -344,7 +334,7 @@ static irqreturn_t acp_irq_thread(int irq, void *context)
 	unsigned int count = ACP_HW_SEM_RETRY_COUNT;
 
 	while (snd_sof_dsp_read(sdev, ACP_DSP_BAR, desc->hw_semaphore_offset)) {
-		/* Wait until acquired HW Semaphore lock or timeout */
+		 
 		count--;
 		if (!count) {
 			dev_err(sdev->dev, "%s: Failed to acquire HW lock\n", __func__);
@@ -353,7 +343,7 @@ static irqreturn_t acp_irq_thread(int irq, void *context)
 	}
 
 	sof_ops(sdev)->irq_thread(irq, sdev);
-	/* Unlock or Release HW Semaphore */
+	 
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, desc->hw_semaphore_offset, 0x0);
 
 	return IRQ_HANDLED;
@@ -436,7 +426,7 @@ static int acp_init(struct snd_sof_dev *sdev)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = acp_power_on(sdev);
 	if (ret) {
 		dev_err(sdev->dev, "ACP power on failed\n");
@@ -444,7 +434,7 @@ static int acp_init(struct snd_sof_dev *sdev)
 	}
 
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACP_CONTROL, 0x01);
-	/* Reset */
+	 
 	return acp_reset(sdev);
 }
 

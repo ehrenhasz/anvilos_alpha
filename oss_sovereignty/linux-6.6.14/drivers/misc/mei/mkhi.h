@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2003-2022, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+ 
+ 
 
 #ifndef _MEI_MKHI_H_
 #define _MEI_MKHI_H_
@@ -20,7 +17,7 @@
 #define MKHI_GFX_RESET_WARN_CMD_REQ    0x0
 #define MKHI_GFX_MEMORY_READY_CMD_REQ  0x1
 
-/* Allow transition to PXP mode without approval */
+ 
 #define MKHI_GFX_MEM_READY_PXP_ALLOWED  0x1
 
 struct mkhi_rule_id {
@@ -52,4 +49,4 @@ struct mkhi_gfx_mem_ready {
 	u32    flags;
 } __packed;
 
-#endif /* _MEI_MKHI_H_ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/rhashtable.h>
 #include <net/flow_offload.h>
@@ -9,7 +9,7 @@
 
 struct mlx5e_tc_act_stats_handle {
 	struct rhashtable ht;
-	spinlock_t ht_lock; /* protects hashtable */
+	spinlock_t ht_lock;  
 };
 
 struct mlx5e_tc_act_stats {
@@ -146,7 +146,7 @@ mlx5e_tc_act_stats_add_flow(struct mlx5e_tc_act_stats_handle *handle,
 			curr_counter = attr->counter;
 
 		for (i = 0; i < attr->tc_act_cookies_count; i++) {
-			/* jump over identical ids (e.g. pedit)*/
+			 
 			if (last_cookie == attr->tc_act_cookies[i])
 				continue;
 

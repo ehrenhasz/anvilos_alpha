@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NewVision NV3052C IPS LCD panel driver
- *
- * Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
- * Copyright (C) 2022, Christophe Branchereau <cbranchereau@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -251,7 +246,7 @@ static int nv3052c_prepare(struct drm_panel *panel)
 		return err;
 	}
 
-	/* Reset the chip */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 1);
 	usleep_range(10, 1000);
 	gpiod_set_value_cansleep(priv->reset_gpio, 0);
@@ -309,7 +304,7 @@ static int nv3052c_enable(struct drm_panel *panel)
 	}
 
 	if (panel->backlight) {
-		/* Wait for the picture to be ready before enabling backlight */
+		 
 		msleep(120);
 	}
 
@@ -427,7 +422,7 @@ static void nv3052c_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode ltk035c5444t_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 24000,
 		.hdisplay = 640,
 		.hsync_start = 640 + 96,
@@ -439,7 +434,7 @@ static const struct drm_display_mode ltk035c5444t_modes[] = {
 		.vtotal = 480 + 5 + 2 + 13,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 18000,
 		.hdisplay = 640,
 		.hsync_start = 640 + 39,
@@ -464,7 +459,7 @@ static const struct nv3052c_panel_info ltk035c5444t_panel_info = {
 
 static const struct of_device_id nv3052c_of_match[] = {
 	{ .compatible = "leadtek,ltk035c5444t", .data = &ltk035c5444t_panel_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nv3052c_of_match);
 

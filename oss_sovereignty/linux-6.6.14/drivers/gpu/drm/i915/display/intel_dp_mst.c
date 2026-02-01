@@ -1,27 +1,4 @@
-/*
- * Copyright © 2008 Intel Corporation
- *             2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -52,7 +29,7 @@ static int intel_dp_mst_check_constraints(struct drm_i915_private *i915, int bpp
 {
 	if (intel_dp_is_uhbr(crtc_state) && DISPLAY_VER(i915) <= 13 && dsc) {
 		int output_bpp = bpp;
-		/* DisplayPort 2 128b/132b, bits per lane is always 32 */
+		 
 		int symbol_clock = crtc_state->port_clock / 32;
 
 		if (output_bpp * adjusted_mode->crtc_clock >=
@@ -94,7 +71,7 @@ static int intel_dp_mst_find_vcpi_slots_for_bpp(struct intel_encoder *encoder,
 	crtc_state->lane_count = limits->max_lane_count;
 	crtc_state->port_clock = limits->max_rate;
 
-	// TODO: Handle pbn_div changes by adding a new MST helper
+	
 	if (!mst_state->pbn_div) {
 		mst_state->pbn_div = drm_dp_get_vc_payload_bw(&intel_dp->mst_mgr,
 							      crtc_state->port_clock,
@@ -119,16 +96,13 @@ static int intel_dp_mst_find_vcpi_slots_for_bpp(struct intel_encoder *encoder,
 
 		if (slots >= 0) {
 			ret = drm_dp_mst_atomic_check(state);
-			/*
-			 * If we got slots >= 0 and we can fit those based on check
-			 * then we can exit the loop. Otherwise keep trying.
-			 */
+			 
 			if (!ret)
 				break;
 		}
 	}
 
-	/* We failed to find a proper bpp/timeslots, return error */
+	 
 	if (ret)
 		slots = ret;
 
@@ -193,7 +167,7 @@ static int intel_dp_dsc_mst_compute_link_config(struct intel_encoder *encoder,
 	bool need_timeslot_recalc = false;
 	u32 last_compressed_bpp;
 
-	/* Max DSC Input BPC for ICL is 10 and for TGL+ is 12 */
+	 
 	if (DISPLAY_VER(i915) >= 12)
 		dsc_max_bpc = min_t(u8, 12, conn_state->max_requested_bpc);
 	else
@@ -243,10 +217,7 @@ static int intel_dp_dsc_mst_compute_link_config(struct intel_encoder *encoder,
 	if (crtc_state->dsc.compressed_bpp != last_compressed_bpp)
 		need_timeslot_recalc = true;
 
-	/*
-	 * Apparently some MST hubs dislike if vcpi slots are not matching precisely
-	 * the actual compressed bpp we use.
-	 */
+	 
 	if (need_timeslot_recalc) {
 		slots = intel_dp_mst_find_vcpi_slots_for_bpp(encoder, crtc_state,
 							     crtc_state->dsc.compressed_bpp,
@@ -325,10 +296,7 @@ static int intel_dp_mst_compute_config(struct intel_encoder *encoder,
 		intel_dp_mst_has_audio(conn_state) &&
 		intel_audio_compute_config(encoder, pipe_config, conn_state);
 
-	/*
-	 * for MST we always configure max link bw - the spec doesn't
-	 * seem to suggest we should do otherwise.
-	 */
+	 
 	limits.min_rate =
 	limits.max_rate = intel_dp_max_link_rate(intel_dp);
 
@@ -336,14 +304,7 @@ static int intel_dp_mst_compute_config(struct intel_encoder *encoder,
 	limits.max_lane_count = intel_dp_max_lane_count(intel_dp);
 
 	limits.min_bpp = intel_dp_min_bpp(pipe_config->output_format);
-	/*
-	 * FIXME: If all the streams can't fit into the link with
-	 * their current pipe_bpp we should reduce pipe_bpp across
-	 * the board until things start to fit. Until then we
-	 * limit to <= 8bpc since that's what was hardcoded for all
-	 * MST streams previously. This hack should be removed once
-	 * we have the proper retry logic in place.
-	 */
+	 
 	limits.max_bpp = min(pipe_config->pipe_bpp, 24);
 
 	intel_dp_adjust_compliance_config(intel_dp, pipe_config, &limits);
@@ -354,13 +315,10 @@ static int intel_dp_mst_compute_config(struct intel_encoder *encoder,
 	if (ret == -EDEADLK)
 		return ret;
 
-	/* enable compression if the mode doesn't fit available BW */
+	 
 	drm_dbg_kms(&dev_priv->drm, "Force DSC en = %d\n", intel_dp->force_dsc_en);
 	if (ret || intel_dp->force_dsc_en) {
-		/*
-		 * Try to get at least some timeslots and then see, if
-		 * we can fit there with DSC.
-		 */
+		 
 		drm_dbg_kms(&dev_priv->drm, "Trying to find VCPI slots in DSC mode\n");
 
 		ret = intel_dp_dsc_mst_compute_link_config(encoder, pipe_config,
@@ -392,10 +350,7 @@ static int intel_dp_mst_compute_config(struct intel_encoder *encoder,
 	return 0;
 }
 
-/*
- * Iterate over all connectors and return a mask of
- * all CPU transcoders streaming over the same DP link.
- */
+ 
 static unsigned int
 intel_dp_mst_transcoder_mask(struct intel_atomic_state *state,
 			     struct intel_dp *mst_port)
@@ -436,19 +391,14 @@ static int intel_dp_mst_compute_config_late(struct intel_encoder *encoder,
 	struct intel_dp_mst_encoder *intel_mst = enc_to_mst(encoder);
 	struct intel_dp *intel_dp = &intel_mst->primary->dp;
 
-	/* lowest numbered transcoder will be designated master */
+	 
 	crtc_state->mst_master_transcoder =
 		ffs(intel_dp_mst_transcoder_mask(state, intel_dp)) - 1;
 
 	return 0;
 }
 
-/*
- * If one of the connectors in a MST stream needs a modeset, mark all CRTCs
- * that shares the same MST stream as mode changed,
- * intel_modeset_pipe_config()+intel_crtc_check_fastset() will take care to do
- * a fastset when possible.
- */
+ 
 static int
 intel_dp_mst_atomic_master_trans_check(struct intel_connector *connector,
 				       struct intel_atomic_state *state)
@@ -614,27 +564,15 @@ static void intel_mst_post_disable_dp(struct intel_atomic_state *state,
 	else
 		ilk_pfit_disable(old_crtc_state);
 
-	/*
-	 * Power down mst path before disabling the port, otherwise we end
-	 * up getting interrupts from the sink upon detecting link loss.
-	 */
+	 
 	drm_dp_send_power_updown_phy(&intel_dp->mst_mgr, connector->port,
 				     false);
 
-	/*
-	 * BSpec 4287: disable DIP after the transcoder is disabled and before
-	 * the transcoder clock select is set to none.
-	 */
+	 
 	if (last_mst_stream)
 		intel_dp_set_infoframes(&dig_port->base, false,
 					old_crtc_state, NULL);
-	/*
-	 * From TGL spec: "If multi-stream slave transcoder: Configure
-	 * Transcoder Clock Select to direct no clock to the transcoder"
-	 *
-	 * From older GENs spec: "Configure Transcoder Clock Select to direct
-	 * no clock to the transcoder"
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) < 12 || !last_mst_stream)
 		intel_ddi_disable_transcoder_clock(old_crtc_state);
 
@@ -675,10 +613,7 @@ static void intel_mst_pre_pll_enable_dp(struct intel_atomic_state *state,
 		dig_port->base.pre_pll_enable(state, &dig_port->base,
 						    pipe_config, NULL);
 	else
-		/*
-		 * The port PLL state needs to get updated for secondary
-		 * streams as for the primary stream.
-		 */
+		 
 		intel_ddi_update_active_dpll(state, &dig_port->base,
 					     to_intel_crtc(pipe_config->uapi.crtc));
 }
@@ -699,9 +634,7 @@ static void intel_mst_pre_enable_dp(struct intel_atomic_state *state,
 	int ret;
 	bool first_mst_stream;
 
-	/* MST encoders are bound to a crtc, not to a connector,
-	 * force the mapping here for get_hw_state.
-	 */
+	 
 	connector->encoder = encoder;
 	intel_mst->connector = connector;
 	first_mst_stream = intel_dp->active_mst_links == 0;
@@ -729,13 +662,7 @@ static void intel_mst_pre_enable_dp(struct intel_atomic_state *state,
 		drm_err(&dev_priv->drm, "Failed to create MST payload for %s: %d\n",
 			connector->base.name, ret);
 
-	/*
-	 * Before Gen 12 this is not done as part of
-	 * dig_port->base.pre_enable() and should be done here. For
-	 * Gen 12+ the step in which this should be done is different for the
-	 * first MST stream, so it's done on the DDI for the first stream and
-	 * here for the following ones.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) < 12 || !first_mst_stream)
 		intel_ddi_enable_transcoder_clock(encoder, pipe_config);
 
@@ -797,7 +724,7 @@ static void intel_mst_enable_dp(struct intel_atomic_state *state,
 
 	intel_audio_codec_enable(encoder, pipe_config, conn_state);
 
-	/* Enable hdcp if it's desired */
+	 
 	if (conn_state->content_protection ==
 	    DRM_MODE_CONTENT_PROTECTION_DESIRED)
 		intel_hdcp_enable(state, encoder, pipe_config, conn_state);
@@ -959,17 +886,14 @@ intel_dp_mst_mode_valid_ctx(struct drm_connector *connector,
 		bigjoiner = true;
 		max_dotclk *= 2;
 
-		/* TODO: add support for bigjoiner */
+		 
 		*status = MODE_CLOCK_HIGH;
 		return 0;
 	}
 
 	if (DISPLAY_VER(dev_priv) >= 10 &&
 	    drm_dp_sink_supports_dsc(intel_dp->dsc_dpcd)) {
-		/*
-		 * TBD pass the connector BPC,
-		 * for now U8_MAX so that max BPC on that platform would be picked
-		 */
+		 
 		int pipe_bpp = intel_dp_dsc_compute_bpp(intel_dp, U8_MAX);
 
 		if (drm_dp_sink_supports_fec(intel_dp->fec_capable)) {
@@ -991,10 +915,7 @@ intel_dp_mst_mode_valid_ctx(struct drm_connector *connector,
 		dsc = dsc_max_output_bpp && dsc_slice_count;
 	}
 
-	/*
-	 * Big joiner configuration needs DSC for TGL which is not true for
-	 * XE_LPD where uncompressed joiner is supported.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) < 13 && bigjoiner && !dsc) {
 		*status = MODE_CLOCK_HIGH;
 		return 0;
@@ -1084,10 +1005,7 @@ static int intel_dp_mst_add_properties(struct intel_dp *intel_dp,
 	intel_attach_force_audio_property(connector);
 	intel_attach_broadcast_rgb_property(connector);
 
-	/*
-	 * Reuse the prop from the SST connector because we're
-	 * not allowed to create new props after device registration.
-	 */
+	 
 	connector->max_bpc_property =
 		intel_dp->attached_connector->base.max_bpc_property;
 	if (connector->max_bpc_property)
@@ -1190,14 +1108,7 @@ intel_dp_create_fake_mst_encoder(struct intel_digital_port *dig_port, enum pipe 
 	intel_encoder->power_domain = dig_port->base.power_domain;
 	intel_encoder->port = dig_port->base.port;
 	intel_encoder->cloneable = 0;
-	/*
-	 * This is wrong, but broken userspace uses the intersection
-	 * of possible_crtcs of all the encoders of a given connector
-	 * to figure out which crtcs can drive said connector. What
-	 * should be used instead is the union of possible_crtcs.
-	 * To keep such userspace functioning we must misconfigure
-	 * this to make sure the intersection is not empty :(
-	 */
+	 
 	intel_encoder->pipe_mask = ~0;
 
 	intel_encoder->compute_config = intel_dp_mst_compute_config;
@@ -1254,7 +1165,7 @@ intel_dp_mst_encoder_init(struct intel_digital_port *dig_port, int conn_base_id)
 
 	intel_dp->mst_mgr.cbs = &mst_cbs;
 
-	/* create encoders */
+	 
 	intel_dp_create_fake_mst_encoders(dig_port);
 	ret = drm_dp_mst_topology_mgr_init(&intel_dp->mst_mgr, &i915->drm,
 					   &intel_dp->aux, 16, 3, conn_base_id);
@@ -1280,7 +1191,7 @@ intel_dp_mst_encoder_cleanup(struct intel_digital_port *dig_port)
 		return;
 
 	drm_dp_mst_topology_mgr_destroy(&intel_dp->mst_mgr);
-	/* encoders will get killed by normal cleanup */
+	 
 
 	intel_dp->mst_mgr.cbs = NULL;
 }
@@ -1296,16 +1207,7 @@ bool intel_dp_mst_is_slave_trans(const struct intel_crtc_state *crtc_state)
 	       crtc_state->mst_master_transcoder != crtc_state->cpu_transcoder;
 }
 
-/**
- * intel_dp_mst_add_topology_state_for_connector - add MST topology state for a connector
- * @state: atomic state
- * @connector: connector to add the state for
- * @crtc: the CRTC @connector is attached to
- *
- * Add the MST topology state for @connector to @state.
- *
- * Returns 0 on success, negative error code on failure.
- */
+ 
 static int
 intel_dp_mst_add_topology_state_for_connector(struct intel_atomic_state *state,
 					      struct intel_connector *connector,
@@ -1326,15 +1228,7 @@ intel_dp_mst_add_topology_state_for_connector(struct intel_atomic_state *state,
 	return 0;
 }
 
-/**
- * intel_dp_mst_add_topology_state_for_crtc - add MST topology state for a CRTC
- * @state: atomic state
- * @crtc: CRTC to add the state for
- *
- * Add the MST topology state for @crtc to @state.
- *
- * Returns 0 on success, negative error code on failure.
- */
+ 
 int intel_dp_mst_add_topology_state_for_crtc(struct intel_atomic_state *state,
 					     struct intel_crtc *crtc)
 {

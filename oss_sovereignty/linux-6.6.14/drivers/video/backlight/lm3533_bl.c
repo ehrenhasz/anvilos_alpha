@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm3533-bl.c -- LM3533 Backlight driver
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -294,7 +288,7 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 
 	bl->cb.lm3533 = lm3533;
 	bl->cb.id = lm3533_bl_get_ctrlbank_id(bl);
-	bl->cb.dev = NULL;			/* until registered */
+	bl->cb.dev = NULL;			 
 
 	memset(&props, 0, sizeof(props));
 	props.type = BACKLIGHT_RAW;

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 
@@ -49,7 +25,7 @@ int DEBUG_printf(const char *fmt, ...) {
 
 #if MICROPY_USE_INTERNAL_PRINTF
 
-#undef putchar  // Some stdlibs have a #define for putchar
+#undef putchar  
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list ap);
 int putchar(int c);
@@ -69,17 +45,17 @@ int vprintf(const char *fmt, va_list ap) {
     return mp_vprintf(MICROPY_INTERNAL_PRINTF_PRINTER, fmt, ap);
 }
 
-// need this because gcc optimises printf("%c", c) -> putchar(c), and printf("a") -> putchar('a')
+
 int putchar(int c) {
     char chr = c;
     MICROPY_INTERNAL_PRINTF_PRINTER->print_strn(MICROPY_INTERNAL_PRINTF_PRINTER->data, &chr, 1);
     return chr;
 }
 
-// need this because gcc optimises printf("string\n") -> puts("string")
+
 int puts(const char *s) {
     MICROPY_INTERNAL_PRINTF_PRINTER->print_strn(MICROPY_INTERNAL_PRINTF_PRINTER->data, s, strlen(s));
-    return putchar('\n'); // will return 10, which is >0 per specs of puts
+    return putchar('\n'); 
 }
 
 typedef struct _strn_print_env_t {
@@ -98,10 +74,10 @@ static void strn_print_strn(void *data, const char *str, size_t len) {
 }
 
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 9
-// uClibc requires this alias to be defined, or there may be link errors
-// when linkings against it statically.
-// GCC 9 gives a warning about missing attributes so it's excluded until
-// uClibc+GCC9 support is needed.
+
+
+
+
 int __GI_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __attribute__((weak, alias("vsnprintf")));
 #endif
 
@@ -109,7 +85,7 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list ap) {
     strn_print_env_t strn_print_env = {str, size};
     mp_print_t print = {&strn_print_env, strn_print_strn};
     int len = mp_vprintf(&print, fmt, ap);
-    // add terminating null byte
+    
     if (size > 0) {
         if (strn_print_env.remain == 0) {
             strn_print_env.cur[-1] = 0;
@@ -128,4 +104,4 @@ int snprintf(char *str, size_t size, const char *fmt, ...) {
     return ret;
 }
 
-#endif // MICROPY_USE_INTERNAL_PRINTF
+#endif 

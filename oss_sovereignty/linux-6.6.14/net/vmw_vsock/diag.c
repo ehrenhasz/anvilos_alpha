@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vsock sock_diag(7) module
- *
- * Copyright (C) 2017 Red Hat, Inc.
- * Author: Stefan Hajnoczi <stefanha@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sock_diag.h>
@@ -26,11 +21,7 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
 	rep = nlmsg_data(nlh);
 	rep->vdiag_family = AF_VSOCK;
 
-	/* Lock order dictates that sk_lock is acquired before
-	 * vsock_table_lock, so we cannot lock here.  Simply don't take
-	 * sk_lock; sk is guaranteed to stay alive since vsock_table_lock is
-	 * held.
-	 */
+	 
 	rep->vdiag_type = sk->sk_type;
 	rep->vdiag_state = sk->sk_state;
 	rep->vdiag_shutdown = sk->sk_shutdown;
@@ -58,16 +49,16 @@ static int vsock_diag_dump(struct sk_buff *skb, struct netlink_callback *cb)
 	req = nlmsg_data(cb->nlh);
 	net = sock_net(skb->sk);
 
-	/* State saved between calls: */
+	 
 	table = cb->args[0];
 	bucket = cb->args[1];
 	i = last_i = cb->args[2];
 
-	/* TODO VMCI pending sockets? */
+	 
 
 	spin_lock_bh(&vsock_table_lock);
 
-	/* Bind table (locally created sockets) */
+	 
 	if (table == 0) {
 		while (bucket < ARRAY_SIZE(vsock_bind_table)) {
 			struct list_head *head = &vsock_bind_table[bucket];
@@ -98,7 +89,7 @@ next_bind:
 		bucket = 0;
 	}
 
-	/* Connected table (accepted connections) */
+	 
 	while (bucket < ARRAY_SIZE(vsock_connected_table)) {
 		struct list_head *head = &vsock_connected_table[bucket];
 
@@ -106,7 +97,7 @@ next_bind:
 		list_for_each_entry(vsk, head, connected_table) {
 			struct sock *sk = sk_vsock(vsk);
 
-			/* Skip sockets we've already seen above */
+			 
 			if (__vsock_in_bound_table(vsk))
 				continue;
 
@@ -175,4 +166,4 @@ module_init(vsock_diag_init);
 module_exit(vsock_diag_exit);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG,
-			       40 /* AF_VSOCK */);
+			       40  );

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -40,12 +16,12 @@
 #include "ports/windows/fmode.h"
 #endif
 
-// Command line options, with their defaults
+
 static uint emit_opt = MP_EMIT_OPT_NONE;
 mp_uint_t mp_verbose_flag = 0;
 
-// Heap size of GC heap (if enabled)
-// Make it larger on a 64 bit machine, because pointers are larger.
+
+
 long heap_size = 1024 * 1024 * (sizeof(mp_uint_t) / 4);
 
 static void stdout_print_strn(void *env, const char *str, size_t len) {
@@ -111,7 +87,7 @@ static int compile_and_save(const char *file, const char *output_file, const cha
         nlr_pop();
         return 0;
     } else {
-        // uncaught exception
+        
         mp_obj_print_exception(&mp_stderr_print, (mp_obj_t)nlr.ret_val);
         return 1;
     }
@@ -154,7 +130,7 @@ static int usage(char **argv) {
     return 1;
 }
 
-// Process options which set interpreter init options
+
 static void pre_process_options(int argc, char **argv) {
     for (int a = 1; a < argc; a++) {
         if (argv[a][0] == '-') {
@@ -173,12 +149,12 @@ static void pre_process_options(int argc, char **argv) {
                 } else if (strncmp(argv[a + 1], "heapsize=", sizeof("heapsize=") - 1) == 0) {
                     char *end;
                     heap_size = strtol(argv[a + 1] + sizeof("heapsize=") - 1, &end, 0);
-                    // Don't bring unneeded libc dependencies like tolower()
-                    // If there's 'w' immediately after number, adjust it for
-                    // target word size. Note that it should be *before* size
-                    // suffix like K or M, to avoid confusion with kilowords,
-                    // etc. the size is still in bytes, just can be adjusted
-                    // for word size (taking 32bit as baseline).
+                    
+                    
+                    
+                    
+                    
+                    
                     bool word_adjust = false;
                     if ((*end | 0x20) == 'w') {
                         word_adjust = true;
@@ -224,15 +200,15 @@ MP_NOINLINE int main_(int argc, char **argv) {
     #endif
 
     #if MICROPY_EMIT_NATIVE
-    // Set default emitter options
+    
     MP_STATE_VM(default_emit_opt) = emit_opt;
     #else
     (void)emit_opt;
     #endif
 
-    // set default compiler configuration
+    
     mp_dynamic_compiler.small_int_bits = 31;
-    // don't support native emitter unless -march is specified
+    
     mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
     mp_dynamic_compiler.nlr_buf_num_regs = 0;
 
@@ -241,7 +217,7 @@ MP_NOINLINE int main_(int argc, char **argv) {
     const char *source_file = NULL;
     bool option_parsing_active = true;
 
-    // parse main options
+    
     for (int a = 1; a < argc; a++) {
         if (option_parsing_active && argv[a][0] == '-' && argv[a][1] != '\0') {
             if (strcmp(argv[a], "-X") == 0) {
@@ -279,7 +255,7 @@ MP_NOINLINE int main_(int argc, char **argv) {
                 if (*end) {
                     return usage(argv);
                 }
-                // TODO check that small_int_bits is within range of host's capabilities
+                
             } else if (strncmp(argv[a], "-march=", sizeof("-march=") - 1) == 0) {
                 const char *arch = argv[a] + sizeof("-march=") - 1;
                 if (strcmp(arch, "x86") == 0) {
@@ -293,7 +269,7 @@ MP_NOINLINE int main_(int argc, char **argv) {
                     mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
                 } else if (strcmp(arch, "armv6m") == 0) {
                     mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6M;
-                    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP; // need to be conservative so this code can run on armv7emdp
+                    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP; 
                 } else if (strcmp(arch, "armv7m") == 0) {
                     mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV7M;
                     mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;

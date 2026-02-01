@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  inode.c - part of tracefs, a pseudo file system for activating tracing
- *
- * Based on debugfs by: Greg Kroah-Hartman <greg@kroah.com>
- *
- *  Copyright (C) 2014 Red Hat Inc, author: Steven Rostedt <srostedt@redhat.com>
- *
- * tracefs is the file system that is used by the tracing infrastructure.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -98,11 +90,7 @@ static int tracefs_syscall_mkdir(struct mnt_idmap *idmap,
 	if (!name)
 		return -ENOMEM;
 
-	/*
-	 * The mkdir call can call the generic functions that create
-	 * the files within the tracefs system. It is up to the individual
-	 * mkdir routine to handle races.
-	 */
+	 
 	inode_unlock(inode);
 	ret = tracefs_ops.mkdir(name);
 	inode_lock(inode);
@@ -121,13 +109,7 @@ static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
 	if (!name)
 		return -ENOMEM;
 
-	/*
-	 * The rmdir call can call the generic functions that create
-	 * the files within the tracefs system. It is up to the individual
-	 * rmdir routine to handle races.
-	 * This time we need to unlock not only the parent (inode) but
-	 * also the directory that is being deleted.
-	 */
+	 
 	inode_unlock(inode);
 	inode_unlock(d_inode(dentry));
 
@@ -161,7 +143,7 @@ struct tracefs_mount_opts {
 	kuid_t uid;
 	kgid_t gid;
 	umode_t mode;
-	/* Opt_* bitfield. */
+	 
 	unsigned int opts;
 };
 
@@ -190,13 +172,7 @@ static void change_gid(struct dentry *dentry, kgid_t gid)
 	dentry->d_inode->i_gid = gid;
 }
 
-/*
- * Taken from d_walk, but without he need for handling renames.
- * Nothing can be renamed while walking the list, as tracefs
- * does not support renames. This is only called when mounting
- * or remounting the file system, to set all the files to
- * the given gid.
- */
+ 
 static void set_gid(struct dentry *parent, kgid_t gid)
 {
 	struct dentry *this_parent;
@@ -227,9 +203,7 @@ resume:
 		}
 		spin_unlock(&dentry->d_lock);
 	}
-	/*
-	 * All done at this level ... ascend and resume the search.
-	 */
+	 
 	rcu_read_lock();
 ascend:
 	if (this_parent != parent) {
@@ -239,7 +213,7 @@ ascend:
 		spin_unlock(&child->d_lock);
 		spin_lock(&this_parent->d_lock);
 
-		/* go into the first sibling still alive */
+		 
 		do {
 			next = child->d_child.next;
 			if (next == &this_parent->d_subdirs)
@@ -293,10 +267,7 @@ static int tracefs_parse_options(char *data, struct tracefs_mount_opts *opts)
 				return -EINVAL;
 			opts->mode = option & S_IALLUGO;
 			break;
-		/*
-		 * We might like to report bad mount options here;
-		 * but traditionally tracefs has ignored all mount options
-		 */
+		 
 		}
 
 		opts->opts |= BIT(token);
@@ -312,10 +283,7 @@ static int tracefs_apply_options(struct super_block *sb, bool remount)
 	struct tracefs_mount_opts *opts = &fsi->mount_opts;
 	umode_t tmp_mode;
 
-	/*
-	 * On remount, only reset mode/uid/gid if they were provided as mount
-	 * options.
-	 */
+	 
 
 	if (!remount || opts->opts & BIT(Opt_mode)) {
 		tmp_mode = READ_ONCE(inode->i_mode) & ~S_IALLUGO;
@@ -327,7 +295,7 @@ static int tracefs_apply_options(struct super_block *sb, bool remount)
 		inode->i_uid = opts->uid;
 
 	if (!remount || opts->opts & BIT(Opt_gid)) {
-		/* Set all the group ids to the mount option */
+		 
 		set_gid(sb->s_root, opts->gid);
 	}
 
@@ -454,11 +422,7 @@ struct dentry *tracefs_start_creating(const char *name, struct dentry *parent)
 	if (error)
 		return ERR_PTR(error);
 
-	/* If the parent is not specified, we create it in the root.
-	 * We need the root dentry to do this, which is in the super
-	 * block. A pointer to that is in the struct vfsmount that we
-	 * have around.
-	 */
+	 
 	if (!parent)
 		parent = tracefs_mount->mnt_root;
 
@@ -494,22 +458,13 @@ struct dentry *tracefs_end_creating(struct dentry *dentry)
 	return dentry;
 }
 
-/**
- * eventfs_start_creating - start the process of creating a dentry
- * @name: Name of the file created for the dentry
- * @parent: The parent dentry where this dentry will be created
- *
- * This is a simple helper function for the dynamically created eventfs
- * files. When the directory of the eventfs files are accessed, their
- * dentries are created on the fly. This function is used to start that
- * process.
- */
+ 
 struct dentry *eventfs_start_creating(const char *name, struct dentry *parent)
 {
 	struct dentry *dentry;
 	int error;
 
-	/* Must always have a parent. */
+	 
 	if (WARN_ON_ONCE(!parent))
 		return ERR_PTR(-EINVAL);
 
@@ -534,14 +489,7 @@ struct dentry *eventfs_start_creating(const char *name, struct dentry *parent)
 	return dentry;
 }
 
-/**
- * eventfs_failed_creating - clean up a failed eventfs dentry creation
- * @dentry: The dentry to clean up
- *
- * If after calling eventfs_start_creating(), a failure is detected, the
- * resources created by eventfs_start_creating() needs to be cleaned up. In
- * that case, this function should be called to perform that clean up.
- */
+ 
 struct dentry *eventfs_failed_creating(struct dentry *dentry)
 {
 	dput(dentry);
@@ -549,46 +497,13 @@ struct dentry *eventfs_failed_creating(struct dentry *dentry)
 	return NULL;
 }
 
-/**
- * eventfs_end_creating - Finish the process of creating a eventfs dentry
- * @dentry: The dentry that has successfully been created.
- *
- * This function is currently just a place holder to match
- * eventfs_start_creating(). In case any synchronization needs to be added,
- * this function will be used to implement that without having to modify
- * the callers of eventfs_start_creating().
- */
+ 
 struct dentry *eventfs_end_creating(struct dentry *dentry)
 {
 	return dentry;
 }
 
-/**
- * tracefs_create_file - create a file in the tracefs filesystem
- * @name: a pointer to a string containing the name of the file to create.
- * @mode: the permission that the file should have.
- * @parent: a pointer to the parent dentry for this file.  This should be a
- *          directory dentry if set.  If this parameter is NULL, then the
- *          file will be created in the root of the tracefs filesystem.
- * @data: a pointer to something that the caller will want to get to later
- *        on.  The inode.i_private pointer will point to this value on
- *        the open() call.
- * @fops: a pointer to a struct file_operations that should be used for
- *        this file.
- *
- * This is the basic "create a file" function for tracefs.  It allows for a
- * wide range of flexibility in creating a file, or a directory (if you want
- * to create a directory, the tracefs_create_dir() function is
- * recommended to be used instead.)
- *
- * This function will return a pointer to a dentry if it succeeds.  This
- * pointer must be passed to the tracefs_remove() function when the file is
- * to be removed (no automatic cleanup happens if your module is unloaded,
- * you are responsible here.)  If an error occurs, %NULL will be returned.
- *
- * If tracefs is not enabled in the kernel, the value -%ENODEV will be
- * returned.
- */
+ 
 struct dentry *tracefs_create_file(const char *name, umode_t mode,
 				   struct dentry *parent, void *data,
 				   const struct file_operations *fops)
@@ -634,14 +549,14 @@ static struct dentry *__create_dir(const char *name, struct dentry *parent,
 	if (unlikely(!inode))
 		return tracefs_failed_creating(dentry);
 
-	/* Do not set bits for OTH */
+	 
 	inode->i_mode = S_IFDIR | S_IRWXU | S_IRUSR| S_IRGRP | S_IXUSR | S_IXGRP;
 	inode->i_op = ops;
 	inode->i_fop = &simple_dir_operations;
 	inode->i_uid = d_inode(dentry->d_parent)->i_uid;
 	inode->i_gid = d_inode(dentry->d_parent)->i_gid;
 
-	/* directory inodes start off with i_nlink == 2 (for "." entry) */
+	 
 	inc_nlink(inode);
 	d_instantiate(dentry, inode);
 	inc_nlink(d_inode(dentry->d_parent));
@@ -649,23 +564,7 @@ static struct dentry *__create_dir(const char *name, struct dentry *parent,
 	return tracefs_end_creating(dentry);
 }
 
-/**
- * tracefs_create_dir - create a directory in the tracefs filesystem
- * @name: a pointer to a string containing the name of the directory to
- *        create.
- * @parent: a pointer to the parent dentry for this file.  This should be a
- *          directory dentry if set.  If this parameter is NULL, then the
- *          directory will be created in the root of the tracefs filesystem.
- *
- * This function creates a directory in tracefs with the given name.
- *
- * This function will return a pointer to a dentry if it succeeds.  This
- * pointer must be passed to the tracefs_remove() function when the file is
- * to be removed. If an error occurs, %NULL will be returned.
- *
- * If tracing is not enabled in the kernel, the value -%ENODEV will be
- * returned.
- */
+ 
 struct dentry *tracefs_create_dir(const char *name, struct dentry *parent)
 {
 	if (security_locked_down(LOCKDOWN_TRACEFS))
@@ -674,23 +573,7 @@ struct dentry *tracefs_create_dir(const char *name, struct dentry *parent)
 	return __create_dir(name, parent, &simple_dir_inode_operations);
 }
 
-/**
- * tracefs_create_instance_dir - create the tracing instances directory
- * @name: The name of the instances directory to create
- * @parent: The parent directory that the instances directory will exist
- * @mkdir: The function to call when a mkdir is performed.
- * @rmdir: The function to call when a rmdir is performed.
- *
- * Only one instances directory is allowed.
- *
- * The instances directory is special as it allows for mkdir and rmdir
- * to be done by userspace. When a mkdir or rmdir is performed, the inode
- * locks are released and the methods passed in (@mkdir and @rmdir) are
- * called without locks and with the name of the directory being created
- * within the instances directory.
- *
- * Returns the dentry of the instances directory.
- */
+ 
 __init struct dentry *tracefs_create_instance_dir(const char *name,
 					  struct dentry *parent,
 					  int (*mkdir)(const char *name),
@@ -698,7 +581,7 @@ __init struct dentry *tracefs_create_instance_dir(const char *name,
 {
 	struct dentry *dentry;
 
-	/* Only allow one instance of the instances directory. */
+	 
 	if (WARN_ON(tracefs_ops.mkdir || tracefs_ops.rmdir))
 		return NULL;
 
@@ -717,14 +600,7 @@ static void remove_one(struct dentry *victim)
 	simple_release_fs(&tracefs_mount, &tracefs_mount_count);
 }
 
-/**
- * tracefs_remove - recursively removes a directory
- * @dentry: a pointer to a the dentry of the directory to be removed.
- *
- * This function recursively removes a directory tree in tracefs that
- * was previously created with a call to another tracefs function
- * (like tracefs_create_file() or variants thereof.)
- */
+ 
 void tracefs_remove(struct dentry *dentry)
 {
 	if (IS_ERR_OR_NULL(dentry))
@@ -735,9 +611,7 @@ void tracefs_remove(struct dentry *dentry)
 	simple_release_fs(&tracefs_mount, &tracefs_mount_count);
 }
 
-/**
- * tracefs_initialized - Tells whether tracefs has been registered
- */
+ 
 bool tracefs_initialized(void)
 {
 	return tracefs_registered;

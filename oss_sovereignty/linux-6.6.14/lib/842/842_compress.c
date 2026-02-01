@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * 842 Software Compression
- *
- * Copyright (C) 2015 Dan Streetman, IBM Corp
- *
- * See 842.h for details of the 842 compressed format.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define MODULE_NAME "842_compress"
@@ -19,49 +13,37 @@
 #define SW842_HASHTABLE4_BITS	(11)
 #define SW842_HASHTABLE2_BITS	(10)
 
-/* By default, we allow compressing input buffers of any length, but we must
- * use the non-standard "short data" template so the decompressor can correctly
- * reproduce the uncompressed data buffer at the right length.  However the
- * hardware 842 compressor will not recognize the "short data" template, and
- * will fail to decompress any compressed buffer containing it (I have no idea
- * why anyone would want to use software to compress and hardware to decompress
- * but that's beside the point).  This parameter forces the compression
- * function to simply reject any input buffer that isn't a multiple of 8 bytes
- * long, instead of using the "short data" template, so that all compressed
- * buffers produced by this function will be decompressable by the 842 hardware
- * decompressor.  Unless you have a specific need for that, leave this disabled
- * so that any length buffer can be compressed.
- */
+ 
 static bool sw842_strict;
 module_param_named(strict, sw842_strict, bool, 0644);
 
-static u8 comp_ops[OPS_MAX][5] = { /* params size in bits */
-	{ I8, N0, N0, N0, 0x19 }, /* 8 */
-	{ I4, I4, N0, N0, 0x18 }, /* 18 */
-	{ I4, I2, I2, N0, 0x17 }, /* 25 */
-	{ I2, I2, I4, N0, 0x13 }, /* 25 */
-	{ I2, I2, I2, I2, 0x12 }, /* 32 */
-	{ I4, I2, D2, N0, 0x16 }, /* 33 */
-	{ I4, D2, I2, N0, 0x15 }, /* 33 */
-	{ I2, D2, I4, N0, 0x0e }, /* 33 */
-	{ D2, I2, I4, N0, 0x09 }, /* 33 */
-	{ I2, I2, I2, D2, 0x11 }, /* 40 */
-	{ I2, I2, D2, I2, 0x10 }, /* 40 */
-	{ I2, D2, I2, I2, 0x0d }, /* 40 */
-	{ D2, I2, I2, I2, 0x08 }, /* 40 */
-	{ I4, D4, N0, N0, 0x14 }, /* 41 */
-	{ D4, I4, N0, N0, 0x04 }, /* 41 */
-	{ I2, I2, D4, N0, 0x0f }, /* 48 */
-	{ I2, D2, I2, D2, 0x0c }, /* 48 */
-	{ I2, D4, I2, N0, 0x0b }, /* 48 */
-	{ D2, I2, I2, D2, 0x07 }, /* 48 */
-	{ D2, I2, D2, I2, 0x06 }, /* 48 */
-	{ D4, I2, I2, N0, 0x03 }, /* 48 */
-	{ I2, D2, D4, N0, 0x0a }, /* 56 */
-	{ D2, I2, D4, N0, 0x05 }, /* 56 */
-	{ D4, I2, D2, N0, 0x02 }, /* 56 */
-	{ D4, D2, I2, N0, 0x01 }, /* 56 */
-	{ D8, N0, N0, N0, 0x00 }, /* 64 */
+static u8 comp_ops[OPS_MAX][5] = {  
+	{ I8, N0, N0, N0, 0x19 },  
+	{ I4, I4, N0, N0, 0x18 },  
+	{ I4, I2, I2, N0, 0x17 },  
+	{ I2, I2, I4, N0, 0x13 },  
+	{ I2, I2, I2, I2, 0x12 },  
+	{ I4, I2, D2, N0, 0x16 },  
+	{ I4, D2, I2, N0, 0x15 },  
+	{ I2, D2, I4, N0, 0x0e },  
+	{ D2, I2, I4, N0, 0x09 },  
+	{ I2, I2, I2, D2, 0x11 },  
+	{ I2, I2, D2, I2, 0x10 },  
+	{ I2, D2, I2, I2, 0x0d },  
+	{ D2, I2, I2, I2, 0x08 },  
+	{ I4, D4, N0, N0, 0x14 },  
+	{ D4, I4, N0, N0, 0x04 },  
+	{ I2, I2, D4, N0, 0x0f },  
+	{ I2, D2, I2, D2, 0x0c },  
+	{ I2, D4, I2, N0, 0x0b },  
+	{ D2, I2, I2, D2, 0x07 },  
+	{ D2, I2, D2, I2, 0x06 },  
+	{ D4, I2, I2, N0, 0x03 },  
+	{ I2, D2, D4, N0, 0x0a },  
+	{ D2, I2, D4, N0, 0x05 },  
+	{ D4, I2, D2, N0, 0x02 },  
+	{ D4, D2, I2, N0, 0x01 },  
+	{ D8, N0, N0, N0, 0x00 },  
 };
 
 struct sw842_hlist_node8 {
@@ -175,9 +157,7 @@ static int add_bits(struct sw842_param *p, u64 d, u8 n)
 	if (n > 64)
 		return -EINVAL;
 
-	/* split this up if writing to > 8 bytes (i.e. n == 64 && p->bit > 0),
-	 * or if we're at the end of the output buffer and would write past end
-	 */
+	 
 	if (bits > 64)
 		return __split_add_bits(p, d, n, 32);
 	else if (p->olen < 8 && bits > 32 && bits <= 56)
@@ -306,7 +286,7 @@ static int add_repeat_template(struct sw842_param *p, u8 r)
 {
 	int ret;
 
-	/* repeat param is 0-based */
+	 
 	if (!r || --r > REPEAT_BITS_MAX)
 		return -EINVAL;
 
@@ -416,10 +396,7 @@ static void get_next_data(struct sw842_param *p)
 	p->data2[3] = get_input_data(p, 6, 16);
 }
 
-/* update the hashtable entries.
- * only call this after finding/adding the current template
- * the dataN fields for the current 8 byte block must be already updated
- */
+ 
 static void update_hashtables(struct sw842_param *p)
 {
 	u64 pos = p->in - p->instart;
@@ -436,9 +413,7 @@ static void update_hashtables(struct sw842_param *p)
 	replace_hash(p, 2, n2, 3);
 }
 
-/* find the next template to use, and add it
- * the p->dataN fields must already be set for the current 8 byte block
- */
+ 
 static int process_next(struct sw842_param *p)
 {
 	int ret, i;
@@ -451,7 +426,7 @@ static int process_next(struct sw842_param *p)
 	p->index2[2] = INDEX_NOT_CHECKED;
 	p->index2[3] = INDEX_NOT_CHECKED;
 
-	/* check up to OPS_MAX - 1; last op is our fallback */
+	 
 	for (i = 0; i < OPS_MAX - 1; i++) {
 		if (check_template(p, i))
 			break;
@@ -464,16 +439,7 @@ static int process_next(struct sw842_param *p)
 	return 0;
 }
 
-/**
- * sw842_compress
- *
- * Compress the uncompressed buffer of length @ilen at @in to the output buffer
- * @out, using no more than @olen bytes, using the 842 compression format.
- *
- * Returns: 0 on success, error on failure.  The @olen parameter
- * will contain the number of output bytes written on success, or
- * 0 on error.
- */
+ 
 int sw842_compress(const u8 *in, unsigned int ilen,
 		   u8 *out, unsigned int *olen, void *wmem)
 {
@@ -500,40 +466,35 @@ int sw842_compress(const u8 *in, unsigned int ilen,
 
 	*olen = 0;
 
-	/* if using strict mode, we can only compress a multiple of 8 */
+	 
 	if (sw842_strict && (ilen % 8)) {
 		pr_err("Using strict mode, can't compress len %d\n", ilen);
 		return -EINVAL;
 	}
 
-	/* let's compress at least 8 bytes, mkay? */
+	 
 	if (unlikely(ilen < 8))
 		goto skip_comp;
 
-	/* make initial 'last' different so we don't match the first time */
+	 
 	last = ~get_unaligned((u64 *)p->in);
 
 	while (p->ilen > 7) {
 		next = get_unaligned((u64 *)p->in);
 
-		/* must get the next data, as we need to update the hashtable
-		 * entries with the new data every time
-		 */
+		 
 		get_next_data(p);
 
-		/* we don't care about endianness in last or next;
-		 * we're just comparing 8 bytes to another 8 bytes,
-		 * they're both the same endianness
-		 */
+		 
 		if (next == last) {
-			/* repeat count bits are 0-based, so we stop at +1 */
+			 
 			if (++repeat_count <= REPEAT_BITS_MAX)
 				goto repeat;
 		}
 		if (repeat_count) {
 			ret = add_repeat_template(p, repeat_count);
 			repeat_count = 0;
-			if (next == last) /* reached max repeat bits */
+			if (next == last)  
 				goto repeat;
 		}
 
@@ -572,13 +533,7 @@ skip_comp:
 	if (ret)
 		return ret;
 
-	/*
-	 * crc(0:31) is appended to target data starting with the next
-	 * bit after End of stream template.
-	 * nx842 calculates CRC for data in big-endian format. So doing
-	 * same here so that sw842 decompression can be used for both
-	 * compressed data.
-	 */
+	 
 	crc = crc32_be(0, in, ilen);
 	ret = add_bits(p, crc, CRC_BITS);
 	if (ret)
@@ -590,10 +545,10 @@ skip_comp:
 		p->bit = 0;
 	}
 
-	/* pad compressed length to multiple of 8 */
+	 
 	pad = (8 - ((total - p->olen) % 8)) % 8;
 	if (pad) {
-		if (pad > p->olen) /* we were so close! */
+		if (pad > p->olen)  
 			return -ENOSPC;
 		memset(p->out, 0, pad);
 		p->out += pad;

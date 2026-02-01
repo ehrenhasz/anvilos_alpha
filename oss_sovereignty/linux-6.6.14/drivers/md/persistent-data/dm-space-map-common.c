@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-space-map-common.h"
 #include "dm-transaction-manager.h"
@@ -15,11 +11,9 @@
 
 #define DM_MSG_PREFIX "space map common"
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Index validator.
- */
+ 
 #define INDEX_CSUM_XOR 160478
 
 static void index_prepare_for_write(struct dm_block_validator *v,
@@ -65,11 +59,9 @@ static struct dm_block_validator index_validator = {
 	.check = index_check
 };
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Bitmap validator
- */
+ 
 #define BITMAP_CSUM_XOR 240779
 
 static void dm_bitmap_prepare_for_write(struct dm_block_validator *v,
@@ -115,7 +107,7 @@ static struct dm_block_validator dm_sm_bitmap_validator = {
 	.check = dm_bitmap_check,
 };
 
-/*----------------------------------------------------------------*/
+ 
 
 #define ENTRIES_PER_WORD 32
 #define ENTRIES_SHIFT	5
@@ -189,7 +181,7 @@ static int sm_find_free(void *addr, unsigned int begin, unsigned int end,
 	return -ENOSPC;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int sm_ll_init(struct ll_disk *ll, struct dm_transaction_manager *tm)
 {
@@ -200,11 +192,7 @@ static int sm_ll_init(struct ll_disk *ll, struct dm_transaction_manager *tm)
 	ll->bitmap_info.tm = tm;
 	ll->bitmap_info.levels = 1;
 
-	/*
-	 * Because the new bitmap blocks are created via a shadow
-	 * operation, the old entry has already had its reference count
-	 * decremented and we don't need the btree to do any bookkeeping.
-	 */
+	 
 	ll->bitmap_info.value_type.size = sizeof(struct disk_index_entry);
 	ll->bitmap_info.value_type.inc = NULL;
 	ll->bitmap_info.value_type.dec = NULL;
@@ -250,9 +238,7 @@ int sm_ll_extend(struct ll_disk *ll, dm_block_t extra_blocks)
 		return -EINVAL;
 	}
 
-	/*
-	 * We need to set this before the dm_tm_new_block() call below.
-	 */
+	 
 	ll->nr_blocks = nr_blocks;
 	for (i = old_blocks; i < blocks; i++) {
 		struct dm_block *b;
@@ -342,9 +328,7 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 	dm_block_t i, index_begin = begin;
 	dm_block_t index_end = dm_sector_div_up(end, ll->entries_per_block);
 
-	/*
-	 * FIXME: Use shifts
-	 */
+	 
 	begin = do_div(index_begin, ll->entries_per_block);
 	end = do_div(end, ll->entries_per_block);
 	if (end == 0)
@@ -373,10 +357,7 @@ int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 				 max_t(unsigned int, begin, le32_to_cpu(ie_disk.none_free_before)),
 				 bit_end, &position);
 		if (r == -ENOSPC) {
-			/*
-			 * This might happen because we started searching
-			 * part way through the bitmap.
-			 */
+			 
 			dm_tm_unlock(ll->tm, blk);
 			continue;
 		}
@@ -401,7 +382,7 @@ int sm_ll_find_common_free_block(struct ll_disk *old_ll, struct ll_disk *new_ll,
 		if (r)
 			break;
 
-		/* double check this block wasn't used in the old transaction */
+		 
 		if (*b >= old_ll->nr_blocks)
 			count = 0;
 		else {
@@ -417,7 +398,7 @@ int sm_ll_find_common_free_block(struct ll_disk *old_ll, struct ll_disk *new_ll,
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 		 uint32_t ref_count, int32_t *nr_allocations)
@@ -503,12 +484,9 @@ int sm_ll_insert(struct ll_disk *ll, dm_block_t b,
 	return ll->save_ie(ll, index, &ie_disk);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Holds useful intermediate results for the range based inc and dec
- * operations.
- */
+ 
 struct inc_context {
 	struct disk_index_entry ie_disk;
 	struct dm_block *bitmap_block;
@@ -538,9 +516,7 @@ static inline void reset_inc_context(struct ll_disk *ll, struct inc_context *ic)
 	init_inc_context(ic);
 }
 
-/*
- * Confirms a btree node contains a particular key at an index.
- */
+ 
 static bool contains_key(struct btree_node *n, uint64_t key, int index)
 {
 	return index >= 0 &&
@@ -556,10 +532,7 @@ static int __sm_ll_inc_overflow(struct ll_disk *ll, dm_block_t b, struct inc_con
 	__le32 *v_ptr;
 	uint32_t rc;
 
-	/*
-	 * bitmap_block needs to be unlocked because getting the
-	 * overflow_leaf may need to allocate, and thus use the space map.
-	 */
+	 
 	reset_inc_context(ll, ic);
 
 	r = btree_get_overwrite_leaf(&ll->ref_count_info, ll->ref_count_root,
@@ -588,9 +561,7 @@ static int sm_ll_inc_overflow(struct ll_disk *ll, dm_block_t b, struct inc_conte
 	__le32 *v_ptr;
 	uint32_t rc;
 
-	/*
-	 * Do we already have the correct overflow leaf?
-	 */
+	 
 	if (ic->overflow_leaf) {
 		n = dm_block_data(ic->overflow_leaf);
 		index = lower_bound(n, b);
@@ -621,11 +592,7 @@ static inline int shadow_bitmap(struct ll_disk *ll, struct inc_context *ic)
 	return 0;
 }
 
-/*
- * Once shadow_bitmap has been called, which always happens at the start of inc/dec,
- * we can reopen the bitmap with a simple write lock, rather than re calling
- * dm_tm_shadow_block().
- */
+ 
 static inline int ensure_bitmap(struct ll_disk *ll, struct inc_context *ic)
 {
 	if (!ic->bitmap_block) {
@@ -641,9 +608,7 @@ static inline int ensure_bitmap(struct ll_disk *ll, struct inc_context *ic)
 	return 0;
 }
 
-/*
- * Loops round incrementing entries in a single bitmap.
- */
+ 
 static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 				   uint32_t bit, uint32_t bit_end,
 				   int32_t *nr_allocations, dm_block_t *new_b,
@@ -654,11 +619,7 @@ static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 	uint32_t old;
 
 	for (; bit != bit_end; bit++, b++) {
-		/*
-		 * We only need to drop the bitmap if we need to find a new btree
-		 * leaf for the overflow.  So if it was dropped last iteration,
-		 * we now re-get it.
-		 */
+		 
 		r = ensure_bitmap(ll, ic);
 		if (r)
 			return r;
@@ -666,7 +627,7 @@ static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 		old = sm_lookup_bitmap(ic->bitmap, bit);
 		switch (old) {
 		case 0:
-			/* inc bitmap, adjust nr_allocated */
+			 
 			sm_set_bitmap(ic->bitmap, bit, 1);
 			(*nr_allocations)++;
 			ll->nr_allocated++;
@@ -676,12 +637,12 @@ static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 			break;
 
 		case 1:
-			/* inc bitmap */
+			 
 			sm_set_bitmap(ic->bitmap, bit, 2);
 			break;
 
 		case 2:
-			/* inc bitmap and insert into overflow */
+			 
 			sm_set_bitmap(ic->bitmap, bit, 3);
 			reset_inc_context(ll, ic);
 
@@ -696,9 +657,7 @@ static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 			break;
 
 		default:
-			/*
-			 * inc within the overflow tree only.
-			 */
+			 
 			r = sm_ll_inc_overflow(ll, b, ic);
 			if (r < 0)
 				return r;
@@ -709,10 +668,7 @@ static inline int sm_ll_inc_bitmap(struct ll_disk *ll, dm_block_t b,
 	return 0;
 }
 
-/*
- * Finds a bitmap that contains entries in the block range, and increments
- * them.
- */
+ 
 static int __sm_ll_inc(struct ll_disk *ll, dm_block_t b, dm_block_t e,
 		       int32_t *nr_allocations, dm_block_t *new_b)
 {
@@ -757,7 +713,7 @@ int sm_ll_inc(struct ll_disk *ll, dm_block_t b, dm_block_t e,
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int __sm_ll_del_overflow(struct ll_disk *ll, dm_block_t b,
 				struct inc_context *ic)
@@ -804,9 +760,7 @@ static int __sm_ll_dec_overflow(struct ll_disk *ll, dm_block_t b,
 static int sm_ll_dec_overflow(struct ll_disk *ll, dm_block_t b,
 			      struct inc_context *ic, uint32_t *old_rc)
 {
-	/*
-	 * Do we already have the correct overflow leaf?
-	 */
+	 
 	if (ic->overflow_leaf) {
 		int index;
 		struct btree_node *n;
@@ -834,9 +788,7 @@ static int sm_ll_dec_overflow(struct ll_disk *ll, dm_block_t b,
 	return __sm_ll_dec_overflow(ll, b, ic, old_rc);
 }
 
-/*
- * Loops round incrementing entries in a single bitmap.
- */
+ 
 static inline int sm_ll_dec_bitmap(struct ll_disk *ll, dm_block_t b,
 				   uint32_t bit, uint32_t bit_end,
 				   struct inc_context *ic,
@@ -846,11 +798,7 @@ static inline int sm_ll_dec_bitmap(struct ll_disk *ll, dm_block_t b,
 	uint32_t old;
 
 	for (; bit != bit_end; bit++, b++) {
-		/*
-		 * We only need to drop the bitmap if we need to find a new btree
-		 * leaf for the overflow.  So if it was dropped last iteration,
-		 * we now re-get it.
-		 */
+		 
 		r = ensure_bitmap(ll, ic);
 		if (r)
 			return r;
@@ -862,7 +810,7 @@ static inline int sm_ll_dec_bitmap(struct ll_disk *ll, dm_block_t b,
 			return -EINVAL;
 
 		case 1:
-			/* dec bitmap */
+			 
 			sm_set_bitmap(ic->bitmap, bit, 0);
 			(*nr_allocations)--;
 			ll->nr_allocated--;
@@ -872,7 +820,7 @@ static inline int sm_ll_dec_bitmap(struct ll_disk *ll, dm_block_t b,
 			break;
 
 		case 2:
-			/* dec bitmap and insert into overflow */
+			 
 			sm_set_bitmap(ic->bitmap, bit, 1);
 			break;
 
@@ -939,7 +887,7 @@ int sm_ll_dec(struct ll_disk *ll, dm_block_t b, dm_block_t e,
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 int sm_ll_commit(struct ll_disk *ll)
 {
@@ -954,7 +902,7 @@ int sm_ll_commit(struct ll_disk *ll)
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int metadata_ll_load_ie(struct ll_disk *ll, dm_block_t index,
 			       struct disk_index_entry *ie)
@@ -1065,10 +1013,7 @@ int sm_ll_open_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm,
 		return -ENOMEM;
 	}
 
-	/*
-	 * We don't know the alignment of the root_le buffer, so need to
-	 * copy into a new structure.
-	 */
+	 
 	memcpy(&smr, root_le, sizeof(smr));
 
 	r = sm_ll_init(ll, tm);
@@ -1090,7 +1035,7 @@ int sm_ll_open_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm,
 	return ll->open_index(ll);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static inline int ie_cache_writeback(struct ll_disk *ll, struct ie_cache *iec)
 {
@@ -1262,4 +1207,4 @@ int sm_ll_open_disk(struct ll_disk *ll, struct dm_transaction_manager *tm,
 	return ll->open_index(ll);
 }
 
-/*----------------------------------------------------------------*/
+ 

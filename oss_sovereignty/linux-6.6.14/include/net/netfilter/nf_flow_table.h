@@ -36,7 +36,7 @@ struct nf_flow_key {
 	};
 	struct flow_dissector_key_tcp			tcp;
 	struct flow_dissector_key_ports			tp;
-} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+} __aligned(BITS_PER_LONG / 8);  
 
 struct nf_flow_match {
 	struct flow_dissector	dissector;
@@ -69,8 +69,8 @@ struct nf_flowtable_type {
 };
 
 enum nf_flowtable_flags {
-	NF_FLOWTABLE_HW_OFFLOAD		= 0x1,	/* NFT_FLOWTABLE_HW_OFFLOAD */
-	NF_FLOWTABLE_COUNTER		= 0x2,	/* NFT_FLOWTABLE_COUNTER */
+	NF_FLOWTABLE_HW_OFFLOAD		= 0x1,	 
+	NF_FLOWTABLE_COUNTER		= 0x2,	 
 };
 
 struct nf_flowtable {
@@ -81,7 +81,7 @@ struct nf_flowtable {
 	struct delayed_work		gc_work;
 	unsigned int			flags;
 	struct flow_block		flow_block;
-	struct rw_semaphore		flow_block_lock; /* Guards flow_block */
+	struct rw_semaphore		flow_block_lock;  
 	possible_net_t			net;
 };
 
@@ -129,7 +129,7 @@ struct flow_offload_tuple {
 		__be16			proto;
 	} encap[NF_FLOW_TABLE_ENCAP_MAX];
 
-	/* All members above are keys for lookups, see flow_offload_hash(). */
+	 
 	struct { }			__hash;
 
 	u8				dir:2,
@@ -370,6 +370,6 @@ static inline int nf_flow_table_init_proc(struct net *net)
 static inline void nf_flow_table_fini_proc(struct net *net)
 {
 }
-#endif /* CONFIG_NF_FLOW_TABLE_PROCFS */
+#endif  
 
-#endif /* _NF_FLOW_TABLE_H */
+#endif  

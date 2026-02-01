@@ -1,28 +1,4 @@
-/*
- * Aug 8, 2011 Bob Pearson with help from Joakim Tjernlund and George Spelvin
- * cleaned up code to current version of sparse and added the slicing-by-8
- * algorithm to the closely similar existing slicing-by-4 algorithm.
- *
- * Oct 15, 2000 Matt Domsch <Matt_Domsch@dell.com>
- * Nicer crc32 functions/docs submitted by linux@horizon.com.  Thanks!
- * Code was from the public domain, copyright abandoned.  Code was
- * subsequently included in the kernel, thus was re-licensed under the
- * GNU GPL v2.
- *
- * Oct 12, 2000 Matt Domsch <Matt_Domsch@dell.com>
- * Same crc32 function was used in 5 other places in the kernel.
- * I made one version, and deleted the others.
- * There are various incantations of crc32().  Some use a seed of 0 or ~0.
- * Some xor at the end with ~0.  The generic crc32() function takes
- * seed as an argument, and doesn't xor at the end.  Then individual
- * users can do whatever they need.
- *   drivers/net/smc9194.c uses seed ~0, doesn't xor with ~0.
- *   fs/jffs2 uses seed 0, doesn't xor with ~0.
- *   fs/partitions/efi.c uses seed ~0, xor's with ~0.
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
- */
+ 
 
 #include <linux/crc32.h>
 #include <linux/module.h>
@@ -30,7 +6,7 @@
 
 #include "crc32defs.h"
 
-/* 4096 random bytes */
+ 
 static u8 const __aligned(8) test_buf[] __initconst =
 {
 	0x5b, 0x85, 0x21, 0xcb, 0x09, 0x68, 0x7d, 0x30,
@@ -547,14 +523,14 @@ static u8 const __aligned(8) test_buf[] __initconst =
 	0xb9, 0x04, 0xf4, 0x8d, 0xe8, 0x2f, 0x15, 0x9d,
 };
 
-/* 100 test cases */
+ 
 static struct crc_test {
-	u32 crc;	/* random starting crc */
-	u32 start;	/* random 6 bit offset in buf */
-	u32 length;	/* random 11 bit length of test */
-	u32 crc_le;	/* expected crc32_le result */
-	u32 crc_be;	/* expected crc32_be result */
-	u32 crc32c_le;	/* expected crc32c_le result */
+	u32 crc;	 
+	u32 start;	 
+	u32 length;	 
+	u32 crc_le;	 
+	u32 crc_be;	 
+	u32 crc32c_le;	 
 } const test[] __initconst =
 {
 	{0x674bf11d, 0x00000038, 0x00000542, 0x0af6d466, 0xd8b6e4c1, 0xf6e93d6c},
@@ -669,11 +645,10 @@ static int __init crc32c_test(void)
 	u64 nsec;
 	unsigned long flags;
 
-	/* keep static to prevent cache warming code from
-	 * getting eliminated by the compiler */
+	 
 	static u32 crc;
 
-	/* pre-warm the cache */
+	 
 	for (i = 0; i < 100; i++) {
 		bytes += test[i].length;
 
@@ -681,7 +656,7 @@ static int __init crc32c_test(void)
 		    test[i].start, test[i].length);
 	}
 
-	/* reduce OS noise */
+	 
 	local_irq_save(flags);
 
 	nsec = ktime_get_ns();
@@ -749,11 +724,10 @@ static int __init crc32_test(void)
 	u64 nsec;
 	unsigned long flags;
 
-	/* keep static to prevent cache warming code from
-	 * getting eliminated by the compiler */
+	 
 	static u32 crc;
 
-	/* pre-warm the cache */
+	 
 	for (i = 0; i < 100; i++) {
 		bytes += 2*test[i].length;
 
@@ -764,7 +738,7 @@ static int __init crc32_test(void)
 		    test[i].start, test[i].length);
 	}
 
-	/* reduce OS noise */
+	 
 	local_irq_save(flags);
 
 	nsec = ktime_get_ns();

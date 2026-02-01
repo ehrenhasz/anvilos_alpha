@@ -1,31 +1,5 @@
-/* i915_drv.h -- Private header for the I915 driver -*- linux-c -*-
- */
-/*
- *
- * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
- * IN NO EVENT SHALL TUNGSTEN GRAPHICS AND/OR ITS SUPPLIERS BE LIABLE FOR
- * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
+ 
 
 #ifndef _I915_DRV_H_
 #define _I915_DRV_H_
@@ -70,34 +44,15 @@ struct intel_pxp;
 
 #define GEM_QUIRK_PIN_SWIZZLED_PAGES	BIT(0)
 
-/* Data Stolen Memory (DSM) aka "i915 stolen memory" */
+ 
 struct i915_dsm {
-	/*
-	 * The start and end of DSM which we can optionally use to create GEM
-	 * objects backed by stolen memory.
-	 *
-	 * Note that usable_size tells us exactly how much of this we are
-	 * actually allowed to use, given that some portion of it is in fact
-	 * reserved for use by hardware functions.
-	 */
+	 
 	struct resource stolen;
 
-	/*
-	 * Reserved portion of DSM.
-	 */
+	 
 	struct resource reserved;
 
-	/*
-	 * Total size minus reserved ranges.
-	 *
-	 * DSM is segmented in hardware with different portions offlimits to
-	 * certain functions.
-	 *
-	 * The drm_mm is initialised to the total accessible range, as found
-	 * from the PCI config. On Broadwell+, this is further restricted to
-	 * avoid the first page! The upper end of DSM is reserved for hardware
-	 * functions and similarly removed from the accessible range.
-	 */
+	 
 	resource_size_t usable_size;
 };
 
@@ -117,46 +72,29 @@ struct intel_l3_parity {
 };
 
 struct i915_gem_mm {
-	/*
-	 * Shortcut for the stolen region. This points to either
-	 * INTEL_REGION_STOLEN_SMEM for integrated platforms, or
-	 * INTEL_REGION_STOLEN_LMEM for discrete, or NULL if the device doesn't
-	 * support stolen.
-	 */
+	 
 	struct intel_memory_region *stolen_region;
-	/** Memory allocator for GTT stolen memory */
+	 
 	struct drm_mm stolen;
-	/** Protects the usage of the GTT stolen memory allocator. This is
-	 * always the inner lock when overlapping with struct_mutex. */
+	 
 	struct mutex stolen_lock;
 
-	/* Protects bound_list/unbound_list and #drm_i915_gem_object.mm.link */
+	 
 	spinlock_t obj_lock;
 
-	/**
-	 * List of objects which are purgeable.
-	 */
+	 
 	struct list_head purge_list;
 
-	/**
-	 * List of objects which have allocated pages and are shrinkable.
-	 */
+	 
 	struct list_head shrink_list;
 
-	/**
-	 * List of objects which are pending destruction.
-	 */
+	 
 	struct llist_head free_list;
 	struct work_struct free_work;
-	/**
-	 * Count of objects pending destructions. Used to skip needlessly
-	 * waiting on an RCU barrier if no objects are waiting to be freed.
-	 */
+	 
 	atomic_t free_count;
 
-	/**
-	 * tmpfs instance used for shmem backed objects
-	 */
+	 
 	struct vfsmount *gemfs;
 
 	struct intel_memory_region *regions[INTEL_REGION_UNKNOWN];
@@ -166,20 +104,17 @@ struct i915_gem_mm {
 	struct shrinker shrinker;
 
 #ifdef CONFIG_MMU_NOTIFIER
-	/**
-	 * notifier_lock for mmu notifiers, memory may not be allocated
-	 * while holding this lock.
-	 */
+	 
 	rwlock_t notifier_lock;
 #endif
 
-	/* shrinker accounting, also useful for userland debugging */
+	 
 	u64 shrink_memory;
 	u32 shrink_count;
 };
 
 struct i915_virtual_gpu {
-	struct mutex lock; /* serialises sending of g2v_notify command pkts */
+	struct mutex lock;  
 	bool active;
 	u32 caps;
 	u32 *initial_mmio;
@@ -197,14 +132,14 @@ struct drm_i915_private {
 
 	struct intel_display display;
 
-	/* FIXME: Device release actions should all be moved to drmm_ */
+	 
 	bool do_release;
 
-	/* i915 device parameters */
+	 
 	struct i915_params params;
 
-	const struct intel_device_info *__info; /* Use INTEL_INFO() to access. */
-	struct intel_runtime_info __runtime; /* Use RUNTIME_INFO() to access. */
+	const struct intel_device_info *__info;  
+	struct intel_runtime_info __runtime;  
 	struct intel_driver_caps caps;
 
 	struct i915_dsm dsm;
@@ -225,16 +160,16 @@ struct drm_i915_private {
 	struct rb_root uabi_engines;
 	unsigned int engine_uabi_class_count[I915_LAST_UABI_ENGINE_CLASS + 1];
 
-	/* protects the irq masks */
+	 
 	spinlock_t irq_lock;
 
 	bool display_irqs_enabled;
 
-	/* Sideband mailbox protection */
+	 
 	struct mutex sb_lock;
 	struct pm_qos_request sb_qos;
 
-	/** Cached value of IMR to avoid reads in updating the bitfield */
+	 
 	union {
 		u32 irq_mask;
 		u32 de_irq_mask[I915_MAX_PIPES];
@@ -250,29 +185,16 @@ struct drm_i915_private {
 	unsigned int hpll_freq;
 	unsigned int czclk_freq;
 
-	/**
-	 * wq - Driver workqueue for GEM.
-	 *
-	 * NOTE: Work items scheduled here are not allowed to grab any modeset
-	 * locks, for otherwise the flushing done in the pageflip code will
-	 * result in deadlocks.
-	 */
+	 
 	struct workqueue_struct *wq;
 
-	/**
-	 * unordered_wq - internal workqueue for unordered work
-	 *
-	 * This workqueue should be used for all unordered work
-	 * scheduling within i915, which used to be scheduled on the
-	 * system_wq before moving to a driver instance due
-	 * deprecation of flush_scheduled_work().
-	 */
+	 
 	struct workqueue_struct *unordered_wq;
 
-	/* pm private clock gating functions */
+	 
 	const struct drm_i915_clock_gating_funcs *clock_gating_funcs;
 
-	/* PCH chipset type */
+	 
 	enum intel_pch pch_type;
 	unsigned short pch_id;
 
@@ -282,10 +204,7 @@ struct drm_i915_private {
 
 	struct intel_l3_parity l3_parity;
 
-	/*
-	 * edram size in MB.
-	 * Cannot be determined by PCIID. You must always read a register.
-	 */
+	 
 	u32 edram_size_mb;
 
 	struct i915_gpu_error gpu_error;
@@ -317,54 +236,42 @@ struct drm_i915_private {
 
 	struct i915_hwmon *hwmon;
 
-	/* Abstract the submission mechanism (legacy ringbuffer or execlists) away */
+	 
 	struct intel_gt gt0;
 
-	/*
-	 * i915->gt[0] == &i915->gt0
-	 */
+	 
 	struct intel_gt *gt[I915_MAX_GT];
 
 	struct kobject *sysfs_gt;
 
-	/* Quick lookup of media GT (current platforms only have one) */
+	 
 	struct intel_gt *media_gt;
 
 	struct {
 		struct i915_gem_contexts {
-			spinlock_t lock; /* locks list */
+			spinlock_t lock;  
 			struct list_head list;
 		} contexts;
 
-		/*
-		 * We replace the local file with a global mappings as the
-		 * backing storage for the mmap is on the device and not
-		 * on the struct file, and we do not want to prolong the
-		 * lifetime of the local fd. To minimise the number of
-		 * anonymous inodes we create, we use a global singleton to
-		 * share the global mapping.
-		 */
+		 
 		struct file *mmap_singleton;
 	} gem;
 
 	struct intel_pxp *pxp;
 
-	/* For i915gm/i945gm vblank irq workaround */
+	 
 	u8 vblank_enabled;
 
 	bool irq_enabled;
 
 	struct i915_pmu pmu;
 
-	/* The TTM device structure. */
+	 
 	struct ttm_device bdev;
 
 	I915_SELFTEST_DECLARE(struct i915_selftest_stash selftest;)
 
-	/*
-	 * NOTE: This is the dri1/ums dungeon, don't add stuff here. Your patch
-	 * will be rejected. Instead look for a better place.
-	 */
+	 
 };
 
 static inline struct drm_i915_private *to_i915(const struct drm_device *dev)
@@ -387,14 +294,14 @@ static inline struct intel_gt *to_gt(struct drm_i915_private *i915)
 	return &i915->gt0;
 }
 
-/* Simple iterator over all initialised engines */
+ 
 #define for_each_engine(engine__, gt__, id__) \
 	for ((id__) = 0; \
 	     (id__) < I915_NUM_ENGINES; \
 	     (id__)++) \
 		for_each_if ((engine__) = (gt__)->engine[(id__)])
 
-/* Iterator over subset of engines selected by mask */
+ 
 #define for_each_engine_masked(engine__, gt__, mask__, tmp__) \
 	for ((tmp__) = (mask__) & (gt__)->info.engine_mask; \
 	     (tmp__) ? \
@@ -470,7 +377,7 @@ __platform_mask_index(const struct intel_runtime_info *info,
 	const unsigned int pbits =
 		BITS_PER_TYPE(info->platform_mask[0]) - INTEL_SUBPLATFORM_BITS;
 
-	/* Expand the platform_mask array if this fails. */
+	 
 	BUILD_BUG_ON(INTEL_MAX_PLATFORMS >
 		     pbits * ARRAY_SIZE(info->platform_mask));
 
@@ -521,7 +428,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 	BUILD_BUG_ON(!__builtin_constant_p(s));
 	BUILD_BUG_ON((s) >= INTEL_SUBPLATFORM_BITS);
 
-	/* Shift and test on the MSB position so sign flag can be used. */
+	 
 	return ((mask << (msb - pb)) & (mask << (msb - s))) & BIT(msb);
 }
 
@@ -605,7 +512,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 				 INTEL_INFO(i915)->gt == 3)
 #define IS_HASWELL_GT1(i915)	(IS_HASWELL(i915) && \
 				 INTEL_INFO(i915)->gt == 1)
-/* ULX machines are also considered ULT. */
+ 
 #define IS_HASWELL_ULX(i915) \
 	IS_SUBPLATFORM(i915, INTEL_HASWELL, INTEL_SUBPLATFORM_ULX)
 #define IS_SKYLAKE_ULT(i915) \
@@ -670,21 +577,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 	(IS_METEORLAKE(__i915) && \
 	 IS_MEDIA_STEP(__i915, since, until))
 
-/*
- * DG2 hardware steppings are a bit unusual.  The hardware design was forked to
- * create three variants (G10, G11, and G12) which each have distinct
- * workaround sets.  The G11 and G12 forks of the DG2 design reset the GT
- * stepping back to "A0" for their first iterations, even though they're more
- * similar to a G10 B0 stepping and G10 C0 stepping respectively in terms of
- * functionality and workarounds.  However the display stepping does not reset
- * in the same manner --- a specific stepping like "B0" has a consistent
- * meaning regardless of whether it belongs to a G10, G11, or G12 DG2.
- *
- * TLDR:  All GT workarounds and stepping-specific logic must be applied in
- * relation to a specific subplatform (G10/G11/G12), whereas display workarounds
- * and stepping-specific logic will be applied with a general DG2-wide stepping
- * number.
- */
+ 
 #define IS_DG2_GRAPHICS_STEP(__i915, variant, since, until) \
 	(IS_SUBPLATFORM(__i915, INTEL_DG2, INTEL_SUBPLATFORM_##variant) && \
 	 IS_GRAPHICS_STEP(__i915, since, until))
@@ -730,10 +623,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 
 #define HAS_MEDIA_RATIO_MODE(i915) (INTEL_INFO(i915)->has_media_ratio_mode)
 
-/*
- * The Gen7 cmdparser copies the scanned buffer to the ggtt for execution
- * All later gens can run the final buffer from the ppgtt
- */
+ 
 #define CMDPARSER_USES_GGTT(i915) (GRAPHICS_VER(i915) == 7)
 
 #define HAS_LLC(i915)	(INTEL_INFO(i915)->has_llc)
@@ -763,25 +653,23 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 	((sizes) & ~RUNTIME_INFO(i915)->page_sizes) == 0; \
 })
 
-/* Early gen2 have a totally busted CS tlb and require pinned batches. */
+ 
 #define HAS_BROKEN_CS_TLB(i915)	(IS_I830(i915) || IS_I845G(i915))
 
 #define NEEDS_RC6_CTX_CORRUPTION_WA(i915)	\
 	(IS_BROADWELL(i915) || GRAPHICS_VER(i915) == 9)
 
-/* WaRsDisableCoarsePowerGating:skl,cnl */
+ 
 #define NEEDS_WaRsDisableCoarsePowerGating(i915)			\
 	(IS_SKYLAKE_GT3(i915) || IS_SKYLAKE_GT4(i915))
 
-/* With the 945 and later, Y tiling got adjusted so that it was 32 128-byte
- * rows, which changed the alignment requirements and fence programming.
- */
+ 
 #define HAS_128_BYTE_Y_TILING(i915) (GRAPHICS_VER(i915) != 2 && \
 					 !(IS_I915G(i915) || IS_I915GM(i915)))
 
 #define HAS_RC6(i915)		 (INTEL_INFO(i915)->has_rc6)
 #define HAS_RC6p(i915)		 (INTEL_INFO(i915)->has_rc6p)
-#define HAS_RC6pp(i915)		 (false) /* HW was never validated */
+#define HAS_RC6pp(i915)		 (false)  
 
 #define HAS_RPS(i915)	(INTEL_INFO(i915)->has_rps)
 
@@ -803,10 +691,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 #define HAS_OAM(i915) \
 	(INTEL_INFO(i915)->has_oam)
 
-/*
- * Set this flag, when platform requires 64K GTT page sizes or larger for
- * device local memory access.
- */
+ 
 #define HAS_64K_PAGES(i915) (INTEL_INFO(i915)->has_64k_pages)
 
 #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
@@ -814,10 +699,7 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 
 #define HAS_EXTRA_GT_LIST(i915)   (INTEL_INFO(i915)->extra_gt_list)
 
-/*
- * Platform has the dedicated compression control state for each lmem surfaces
- * stored in lmem to support the 3D and media compression formats.
- */
+ 
 #define HAS_FLAT_CCS(i915)   (INTEL_INFO(i915)->has_flat_ccs)
 
 #define HAS_GT_UC(i915)	(INTEL_INFO(i915)->has_gt_uc)
@@ -830,12 +712,12 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
 
 #define HAS_L3_CCS_READ(i915) (INTEL_INFO(i915)->has_l3_ccs_read)
 
-/* DPF == dynamic parity feature */
+ 
 #define HAS_L3_DPF(i915) (INTEL_INFO(i915)->has_l3_dpf)
 #define NUM_L3_SLICES(i915) (IS_HASWELL_GT3(i915) ? \
 				 2 : HAS_L3_DPF(i915))
 
-/* Only valid when HAS_DISPLAY() is true */
+ 
 #define INTEL_DISPLAY_ENABLED(i915) \
 	(drm_WARN_ON(&(i915)->drm, !HAS_DISPLAY(i915)),		\
 	 !(i915)->params.disable_display &&				\

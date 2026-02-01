@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <net/if.h>
@@ -72,7 +72,7 @@ static void run_xdp_bpf2bpf_pkt_size(int pkt_fd, struct perf_buffer *pb,
 			buf_in[i + sizeof(pkt_v4)] = i;
 	}
 
-	/* Run test program */
+	 
 	topts.data_in = buf_in;
 	topts.data_size_in = pkt_size;
 	topts.data_out = buf;
@@ -84,14 +84,12 @@ static void run_xdp_bpf2bpf_pkt_size(int pkt_fd, struct perf_buffer *pb,
 	ASSERT_EQ(topts.retval, XDP_PASS, "ipv4 retval");
 	ASSERT_EQ(topts.data_size_out, pkt_size, "ipv4 size");
 
-	/* Make sure bpf_xdp_output() was triggered and it sent the expected
-	 * data to the perf ring buffer.
-	 */
+	 
 	err = perf_buffer__poll(pb, 100);
 
 	ASSERT_GE(err, 0, "perf_buffer__poll");
 	ASSERT_TRUE(test_ctx.passed, "test passed");
-	/* Verify test results */
+	 
 	ASSERT_EQ(ftrace_skel->bss->test_result_fentry, if_nametoindex("lo"),
 		  "fentry result");
 	ASSERT_EQ(ftrace_skel->bss->test_result_fexit, XDP_PASS, "fexit result");
@@ -111,7 +109,7 @@ void test_xdp_bpf2bpf(void)
 	struct bpf_program *prog;
 	struct perf_buffer *pb = NULL;
 
-	/* Load XDP program to introspect */
+	 
 	pkt_skel = test_xdp__open_and_load();
 	if (!ASSERT_OK_PTR(pkt_skel, "test_xdp__open_and_load"))
 		return;
@@ -121,14 +119,12 @@ void test_xdp_bpf2bpf(void)
 	map_fd = bpf_map__fd(pkt_skel->maps.vip2tnl);
 	bpf_map_update_elem(map_fd, &key4, &value4, 0);
 
-	/* Load trace program */
+	 
 	ftrace_skel = test_xdp_bpf2bpf__open();
 	if (!ASSERT_OK_PTR(ftrace_skel, "test_xdp_bpf2bpf__open"))
 		goto out;
 
-	/* Demonstrate the bpf_program__set_attach_target() API rather than
-	 * the load with options, i.e. opts.attach_prog_fd.
-	 */
+	 
 	prog = ftrace_skel->progs.trace_on_entry;
 	bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
 	bpf_program__set_attach_target(prog, pkt_fd, "_xdp_tx_iptunnel");
@@ -145,7 +141,7 @@ void test_xdp_bpf2bpf(void)
 	if (!ASSERT_OK(err, "test_xdp_bpf2bpf__attach"))
 		goto out;
 
-	/* Set up perf buffer */
+	 
 	pb = perf_buffer__new(bpf_map__fd(ftrace_skel->maps.perf_buf_map), 8,
 			      on_sample, NULL, &test_ctx, NULL);
 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))

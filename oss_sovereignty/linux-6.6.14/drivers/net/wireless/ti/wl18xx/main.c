@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2011 Texas Instruments
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -39,7 +35,7 @@ static char *board_type_param = NULL;
 static bool checksum_param = false;
 static int num_rx_desc_param = -1;
 
-/* phy paramters */
+ 
 static int dc2dc_param = -1;
 static int n_antennas_2_param = -1;
 static int n_antennas_5_param = -1;
@@ -50,77 +46,77 @@ static int high_band_component_type_param = -1;
 static int pwr_limit_reference_11_abg_param = -1;
 
 static const u8 wl18xx_rate_to_idx_2ghz[] = {
-	/* MCS rates are used only with 11n */
-	15,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS15 */
-	14,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS14 */
-	13,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS13 */
-	12,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS12 */
-	11,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS11 */
-	10,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS10 */
-	9,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS9 */
-	8,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS8 */
-	7,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS7 */
-	6,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS6 */
-	5,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS5 */
-	4,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS4 */
-	3,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS3 */
-	2,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS2 */
-	1,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS1 */
-	0,                             /* WL18XX_CONF_HW_RXTX_RATE_MCS0 */
+	 
+	15,                             
+	14,                             
+	13,                             
+	12,                             
+	11,                             
+	10,                             
+	9,                              
+	8,                              
+	7,                              
+	6,                              
+	5,                              
+	4,                              
+	3,                              
+	2,                              
+	1,                              
+	0,                              
 
-	11,                            /* WL18XX_CONF_HW_RXTX_RATE_54   */
-	10,                            /* WL18XX_CONF_HW_RXTX_RATE_48   */
-	9,                             /* WL18XX_CONF_HW_RXTX_RATE_36   */
-	8,                             /* WL18XX_CONF_HW_RXTX_RATE_24   */
+	11,                             
+	10,                             
+	9,                              
+	8,                              
 
-	/* TI-specific rate */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_22   */
+	 
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
 
-	7,                             /* WL18XX_CONF_HW_RXTX_RATE_18   */
-	6,                             /* WL18XX_CONF_HW_RXTX_RATE_12   */
-	3,                             /* WL18XX_CONF_HW_RXTX_RATE_11   */
-	5,                             /* WL18XX_CONF_HW_RXTX_RATE_9    */
-	4,                             /* WL18XX_CONF_HW_RXTX_RATE_6    */
-	2,                             /* WL18XX_CONF_HW_RXTX_RATE_5_5  */
-	1,                             /* WL18XX_CONF_HW_RXTX_RATE_2    */
-	0                              /* WL18XX_CONF_HW_RXTX_RATE_1    */
+	7,                              
+	6,                              
+	3,                              
+	5,                              
+	4,                              
+	2,                              
+	1,                              
+	0                               
 };
 
 static const u8 wl18xx_rate_to_idx_5ghz[] = {
-	/* MCS rates are used only with 11n */
-	15,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS15 */
-	14,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS14 */
-	13,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS13 */
-	12,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS12 */
-	11,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS11 */
-	10,                           /* WL18XX_CONF_HW_RXTX_RATE_MCS10 */
-	9,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS9 */
-	8,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS8 */
-	7,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS7 */
-	6,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS6 */
-	5,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS5 */
-	4,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS4 */
-	3,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS3 */
-	2,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS2 */
-	1,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS1 */
-	0,                            /* WL18XX_CONF_HW_RXTX_RATE_MCS0 */
+	 
+	15,                            
+	14,                            
+	13,                            
+	12,                            
+	11,                            
+	10,                            
+	9,                             
+	8,                             
+	7,                             
+	6,                             
+	5,                             
+	4,                             
+	3,                             
+	2,                             
+	1,                             
+	0,                             
 
-	7,                             /* WL18XX_CONF_HW_RXTX_RATE_54   */
-	6,                             /* WL18XX_CONF_HW_RXTX_RATE_48   */
-	5,                             /* WL18XX_CONF_HW_RXTX_RATE_36   */
-	4,                             /* WL18XX_CONF_HW_RXTX_RATE_24   */
+	7,                              
+	6,                              
+	5,                              
+	4,                              
 
-	/* TI-specific rate */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_22   */
+	 
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
 
-	3,                             /* WL18XX_CONF_HW_RXTX_RATE_18   */
-	2,                             /* WL18XX_CONF_HW_RXTX_RATE_12   */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_11   */
-	1,                             /* WL18XX_CONF_HW_RXTX_RATE_9    */
-	0,                             /* WL18XX_CONF_HW_RXTX_RATE_6    */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_5_5  */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_2    */
-	CONF_HW_RXTX_RATE_UNSUPPORTED, /* WL18XX_CONF_HW_RXTX_RATE_1    */
+	3,                              
+	2,                              
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
+	1,                              
+	0,                              
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
+	CONF_HW_RXTX_RATE_UNSUPPORTED,  
 };
 
 static const u8 *wl18xx_band_rate_to_idx[] = {
@@ -165,7 +161,7 @@ static struct wlcore_conf wl18xx_conf = {
 	.sg = {
 		.params = {
 			[WL18XX_CONF_SG_PARAM_0] = 0,
-			/* Configuration Parameters */
+			 
 			[WL18XX_CONF_SG_ANTENNA_CONFIGURATION] = 0,
 			[WL18XX_CONF_SG_ZIGBEE_COEX] = 0,
 			[WL18XX_CONF_SG_TIME_SYNC] = 0,
@@ -191,19 +187,19 @@ static struct wlcore_conf wl18xx_conf = {
 			[WL18XX_CONF_SG_PARAM_23] = 0,
 			[WL18XX_CONF_SG_PARAM_24] = 0,
 			[WL18XX_CONF_SG_PARAM_25] = 0,
-			/* Active Scan Parameters */
+			 
 			[WL18XX_CONF_SG_AUTO_SCAN_PROBE_REQ] = 170,
 			[WL18XX_CONF_SG_ACTIVE_SCAN_DURATION_FACTOR_HV3] = 50,
 			[WL18XX_CONF_SG_PARAM_28] = 0,
-			/* Passive Scan Parameters */
+			 
 			[WL18XX_CONF_SG_PARAM_29] = 0,
 			[WL18XX_CONF_SG_PARAM_30] = 0,
 			[WL18XX_CONF_SG_PASSIVE_SCAN_DURATION_FACTOR_HV3] = 200,
-			/* Passive Scan in Dual Antenna Parameters */
+			 
 			[WL18XX_CONF_SG_CONSECUTIVE_HV3_IN_PASSIVE_SCAN] = 0,
 			[WL18XX_CONF_SG_BEACON_HV3_COLL_TH_IN_PASSIVE_SCAN] = 0,
 			[WL18XX_CONF_SG_TX_RX_PROTECT_BW_IN_PASSIVE_SCAN] = 0,
-			/* General Parameters */
+			 
 			[WL18XX_CONF_SG_STA_FORCE_PS_IN_BT_SCO] = 1,
 			[WL18XX_CONF_SG_PARAM_36] = 0,
 			[WL18XX_CONF_SG_BEACON_MISS_PERCENT] = 60,
@@ -218,14 +214,14 @@ static struct wlcore_conf wl18xx_conf = {
 			[WL18XX_CONF_SG_CONSECUTIVE_CTS_THRESHOLD] = 2,
 			[WL18XX_CONF_SG_GEMINI_PARAM_47] = 0,
 			[WL18XX_CONF_SG_STA_CONNECTION_PROTECTION_TIME] = 0,
-			/* AP Parameters */
+			 
 			[WL18XX_CONF_SG_AP_BEACON_MISS_TX] = 3,
 			[WL18XX_CONF_SG_PARAM_50] = 0,
 			[WL18XX_CONF_SG_AP_BEACON_WINDOW_INTERVAL] = 2,
 			[WL18XX_CONF_SG_AP_CONNECTION_PROTECTION_TIME] = 30,
 			[WL18XX_CONF_SG_PARAM_53] = 0,
 			[WL18XX_CONF_SG_PARAM_54] = 0,
-			/* CTS Diluting Parameters */
+			 
 			[WL18XX_CONF_SG_CTS_DILUTED_BAD_RX_PACKETS_TH] = 0,
 			[WL18XX_CONF_SG_CTS_CHOP_IN_DUAL_ANT_SCO_MASTER] = 0,
 			[WL18XX_CONF_SG_TEMP_PARAM_1] = 0,
@@ -405,15 +401,12 @@ static struct wlcore_conf wl18xx_conf = {
 		.split_scan_timeout           = 50000,
 	},
 	.sched_scan = {
-		/*
-		 * Values are in TU/1000 but since sched scan FW command
-		 * params are in TUs rounding up may occur.
-		 */
+		 
 		.base_dwell_time		= 7500,
 		.max_dwell_time_delta		= 22500,
-		/* based on 250bits per probe @1Mbps */
+		 
 		.dwell_time_delta_per_probe	= 2000,
-		/* based on 250bits per probe @6Mbps (plus a bit more) */
+		 
 		.dwell_time_delta_per_probe_5	= 350,
 		.dwell_time_passive		= 100000,
 		.dwell_time_dfs			= 150000,
@@ -442,14 +435,14 @@ static struct wlcore_conf wl18xx_conf = {
 	.fm_coex = {
 		.enable                       = true,
 		.swallow_period               = 5,
-		.n_divider_fref_set_1         = 0xff,       /* default */
+		.n_divider_fref_set_1         = 0xff,        
 		.n_divider_fref_set_2         = 12,
 		.m_divider_fref_set_1         = 0xffff,
-		.m_divider_fref_set_2         = 148,        /* default */
-		.coex_pll_stabilization_time  = 0xffffffff, /* default */
-		.ldo_stabilization_time       = 0xffff,     /* default */
-		.fm_disturbed_band_margin     = 0xff,       /* default */
-		.swallow_clk_diff             = 0xff,       /* default */
+		.m_divider_fref_set_2         = 148,         
+		.coex_pll_stabilization_time  = 0xffffffff,  
+		.ldo_stabilization_time       = 0xffff,      
+		.fm_disturbed_band_margin     = 0xff,        
+		.swallow_clk_diff             = 0xff,        
 	},
 	.rx_streaming = {
 		.duration                      = 150,
@@ -569,7 +562,7 @@ static struct wl18xx_priv_conf wl18xx_default_priv_conf = {
 		.high_power_val_2nd		= 0xff,
 		.tx_rf_margin			= 1,
 	},
-	.ap_sleep = {               /* disabled by default */
+	.ap_sleep = {                
 		.idle_duty_cycle        = 0,
 		.connected_duty_cycle   = 0,
 		.max_stations_thresh    = 0,
@@ -623,11 +616,11 @@ static const int wl18xx_rtable[REG_TABLE_LEN] = {
 	[REG_CHIP_ID_B]			= WL18XX_REG_CHIP_ID_B,
 	[REG_CMD_MBOX_ADDRESS]		= WL18XX_CMD_MBOX_ADDRESS,
 
-	/* data access memory addresses, used with partition translation */
+	 
 	[REG_SLV_MEM_DATA]		= WL18XX_SLV_MEM_DATA,
 	[REG_SLV_REG_DATA]		= WL18XX_SLV_REG_DATA,
 
-	/* raw data access memory addresses */
+	 
 	[REG_RAW_FW_STATUS_ADDR]	= WL18XX_FW_STATUS_ADDR,
 };
 
@@ -655,7 +648,7 @@ static const struct wl18xx_clk_cfg wl18xx_clk_table[NUM_CLOCK_CONFIGS] = {
 	[CLOCK_CONFIG_52_M]	= { 13, 120,    0, 0, false },
 };
 
-/* TODO: maybe move to a new header file? */
+ 
 #define WL18XX_FW_NAME "ti-connectivity/wl18xx-fw-4.bin"
 
 static int wl18xx_identify_chip(struct wl1271 *wl)
@@ -667,7 +660,7 @@ static int wl18xx_identify_chip(struct wl1271 *wl)
 		wl1271_debug(DEBUG_BOOT, "chip id 0x%x (185x PG20)",
 				 wl->chip.id);
 		wl->sr_fw_name = WL18XX_FW_NAME;
-		/* wl18xx uses the same firmware for PLT */
+		 
 		wl->plt_fw_name = WL18XX_FW_NAME;
 		wl->quirks |= WLCORE_QUIRK_RX_BLOCKSIZE_ALIGN |
 			      WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN |
@@ -679,7 +672,7 @@ static int wl18xx_identify_chip(struct wl1271 *wl)
 		wlcore_set_min_fw_ver(wl, WL18XX_CHIP_VER,
 				      WL18XX_IFTYPE_VER,  WL18XX_MAJOR_VER,
 				      WL18XX_SUBTYPE_VER, WL18XX_MINOR_VER,
-				      /* there's no separate multi-role FW */
+				       
 				      0, 0, 0, 0);
 		break;
 	case CHIP_ID_185x_PG10:
@@ -716,7 +709,7 @@ static int wl18xx_set_clk(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* TODO: PG2: apparently we need to read the clk type */
+	 
 
 	ret = wl18xx_top_reg_read(wl, PRIMARY_CLK_DETECT, &clk_freq);
 	if (ret < 0)
@@ -727,7 +720,7 @@ static int wl18xx_set_clk(struct wl1271 *wl)
 		     wl18xx_clk_table[clk_freq].p, wl18xx_clk_table[clk_freq].q,
 		     wl18xx_clk_table[clk_freq].swallow ? "swallow" : "spit");
 
-	/* coex PLL configuration */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_COEX_PLL_N,
 				   wl18xx_clk_table_coex[clk_freq].n);
 	if (ret < 0)
@@ -738,7 +731,7 @@ static int wl18xx_set_clk(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* bypass the swallowing logic */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_COEX_PLL_SWALLOW_EN,
 				   PLLSH_COEX_PLL_SWALLOW_EN_VAL1);
 	if (ret < 0)
@@ -755,28 +748,28 @@ static int wl18xx_set_clk(struct wl1271 *wl)
 		goto out;
 
 	if (wl18xx_clk_table[clk_freq].swallow) {
-		/* first the 16 lower bits */
+		 
 		ret = wl18xx_top_reg_write(wl, PLLSH_WCS_PLL_Q_FACTOR_CFG_1,
 					   wl18xx_clk_table[clk_freq].q &
 					   PLLSH_WCS_PLL_Q_FACTOR_CFG_1_MASK);
 		if (ret < 0)
 			goto out;
 
-		/* then the 16 higher bits, masked out */
+		 
 		ret = wl18xx_top_reg_write(wl, PLLSH_WCS_PLL_Q_FACTOR_CFG_2,
 					(wl18xx_clk_table[clk_freq].q >> 16) &
 					PLLSH_WCS_PLL_Q_FACTOR_CFG_2_MASK);
 		if (ret < 0)
 			goto out;
 
-		/* first the 16 lower bits */
+		 
 		ret = wl18xx_top_reg_write(wl, PLLSH_WCS_PLL_P_FACTOR_CFG_1,
 					   wl18xx_clk_table[clk_freq].p &
 					   PLLSH_WCS_PLL_P_FACTOR_CFG_1_MASK);
 		if (ret < 0)
 			goto out;
 
-		/* then the 16 higher bits, masked out */
+		 
 		ret = wl18xx_top_reg_write(wl, PLLSH_WCS_PLL_P_FACTOR_CFG_2,
 					(wl18xx_clk_table[clk_freq].p >> 16) &
 					PLLSH_WCS_PLL_P_FACTOR_CFG_2_MASK);
@@ -789,25 +782,25 @@ static int wl18xx_set_clk(struct wl1271 *wl)
 			goto out;
 	}
 
-	/* choose WCS PLL */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_WL_PLL_SEL,
 				   PLLSH_WL_PLL_SEL_WCS_PLL);
 	if (ret < 0)
 		goto out;
 
-	/* enable both PLLs */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_WL_PLL_EN, PLLSH_WL_PLL_EN_VAL1);
 	if (ret < 0)
 		goto out;
 
 	udelay(1000);
 
-	/* disable coex PLL */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_WL_PLL_EN, PLLSH_WL_PLL_EN_VAL2);
 	if (ret < 0)
 		goto out;
 
-	/* reset the swallowing logic */
+	 
 	ret = wl18xx_top_reg_write(wl, PLLSH_COEX_PLL_SWALLOW_EN,
 				   PLLSH_COEX_PLL_SWALLOW_EN_VAL2);
 
@@ -819,12 +812,12 @@ static int wl18xx_boot_soft_reset(struct wl1271 *wl)
 {
 	int ret;
 
-	/* disable Rx/Tx */
+	 
 	ret = wlcore_write32(wl, WL18XX_ENABLE, 0x0);
 	if (ret < 0)
 		goto out;
 
-	/* disable auto calibration on start*/
+	 
 	ret = wlcore_write32(wl, WL18XX_SPARE_A2, 0xffff);
 
 out:
@@ -839,7 +832,7 @@ static int wl18xx_pre_boot(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* Continue the ELP wake up sequence */
+	 
 	ret = wlcore_write32(wl, WL18XX_WELP_ARM_COMMAND, WELP_ARM_COMMAND_VAL);
 	if (ret < 0)
 		goto out;
@@ -850,7 +843,7 @@ static int wl18xx_pre_boot(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* Disable interrupts */
+	 
 	ret = wlcore_write_reg(wl, REG_INTERRUPT_MASK, WL1271_ACX_INTR_ALL);
 	if (ret < 0)
 		goto out;
@@ -874,7 +867,7 @@ static int wl18xx_pre_upload(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* TODO: check if this is all needed */
+	 
 	ret = wlcore_write32(wl, WL18XX_EEPROMLESS_IND, WL18XX_EEPROMLESS_IND);
 	if (ret < 0)
 		goto out;
@@ -889,30 +882,25 @@ static int wl18xx_pre_upload(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * Workaround for FDSP code RAM corruption (needed for PG2.1
-	 * and newer; for older chips it's a NOP).  Change FDSP clock
-	 * settings so that it's muxed to the ATGP clock instead of
-	 * its own clock.
-	 */
+	 
 
 	ret = wlcore_set_partition(wl, &wl->ptable[PART_PHY_INIT]);
 	if (ret < 0)
 		goto out;
 
-	/* disable FDSP clock */
+	 
 	ret = wlcore_write32(wl, WL18XX_PHY_FPGA_SPARE_1,
 			     MEM_FDSP_CLK_120_DISABLE);
 	if (ret < 0)
 		goto out;
 
-	/* set ATPG clock toward FDSP Code RAM rather than its own clock */
+	 
 	ret = wlcore_write32(wl, WL18XX_PHY_FPGA_SPARE_1,
 			     MEM_FDSP_CODERAM_FUNC_CLK_SEL);
 	if (ret < 0)
 		goto out;
 
-	/* re-enable FDSP clock */
+	 
 	ret = wlcore_write32(wl, WL18XX_PHY_FPGA_SPARE_1,
 			     MEM_FDSP_CLK_120_ENABLE);
 	if (ret < 0)
@@ -1082,7 +1070,7 @@ wl18xx_set_tx_desc_data_len(struct wl1271 *wl, struct wl1271_tx_hw_descr *desc,
 {
 	desc->length = cpu_to_le16(skb->len);
 
-	/* if only the last frame is to be padded, we unset this bit on Tx */
+	 
 	if (wl->quirks & WLCORE_QUIRK_TX_PAD_LAST_FRAME)
 		desc->wl18xx_mem.ctrl = WL18XX_TX_CTRL_NOT_PADDED;
 	else
@@ -1109,7 +1097,7 @@ static u32 wl18xx_get_rx_packet_len(struct wl1271 *wl, void *rx_data,
 {
 	struct wl1271_rx_descriptor *desc = rx_data;
 
-	/* invalid packet */
+	 
 	if (data_len < sizeof(*desc))
 		return 0;
 
@@ -1128,13 +1116,13 @@ static int wl18xx_set_host_cfg_bitmap(struct wl1271 *wl, u32 extra_mem_blk)
 	u32 host_cfg_bitmap = HOST_IF_CFG_RX_FIFO_ENABLE |
 			      HOST_IF_CFG_ADD_RX_ALIGNMENT;
 
-	/* Enable Tx SDIO padding */
+	 
 	if (wl->quirks & WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN) {
 		host_cfg_bitmap |= HOST_IF_CFG_TX_PAD_TO_SDIO_BLK;
 		sdio_align_size = WL12XX_BUS_BLOCK_SIZE;
 	}
 
-	/* Enable Rx SDIO padding */
+	 
 	if (wl->quirks & WLCORE_QUIRK_RX_BLOCKSIZE_ALIGN) {
 		host_cfg_bitmap |= HOST_IF_CFG_RX_PAD_TO_SDIO_BLK;
 		sdio_align_size = WL12XX_BUS_BLOCK_SIZE;
@@ -1154,16 +1142,16 @@ static int wl18xx_hw_init(struct wl1271 *wl)
 	int ret;
 	struct wl18xx_priv *priv = wl->priv;
 
-	/* (re)init private structures. Relevant on recovery as well. */
+	 
 	priv->last_fw_rls_idx = 0;
 	priv->extra_spare_key_count = 0;
 
-	/* set the default amount of spare blocks in the bitmap */
+	 
 	ret = wl18xx_set_host_cfg_bitmap(wl, WL18XX_TX_HW_BLOCK_SPARE);
 	if (ret < 0)
 		return ret;
 
-	/* set the dynamic fw traces bitmap */
+	 
 	ret = wl18xx_acx_dynamic_fw_traces(wl);
 	if (ret < 0)
 		return ret;
@@ -1239,7 +1227,7 @@ static void wl18xx_set_tx_desc_csum(struct wl1271 *wl,
 
 	desc->wl18xx_checksum_data = ip_hdr_offset << 1;
 
-	/* FW is interested only in the LSB of the protocol  TCP=0 UDP=1 */
+	 
 	ip_hdr = (void *)skb_network_header(skb);
 	desc->wl18xx_checksum_data |= (ip_hdr->protocol & 0x01);
 }
@@ -1256,18 +1244,13 @@ static bool wl18xx_is_mimo_supported(struct wl1271 *wl)
 {
 	struct wl18xx_priv *priv = wl->priv;
 
-	/* only support MIMO with multiple antennas, and when SISO
-	 * is not forced through config
-	 */
+	 
 	return (priv->conf.phy.number_of_assembled_ant2_4 >= 2) &&
 	       (priv->conf.ht.mode != HT_MODE_WIDE) &&
 	       (priv->conf.ht.mode != HT_MODE_SISO20);
 }
 
-/*
- * TODO: instead of having these two functions to get the rate mask,
- * we should modify the wlvif->rate_set instead
- */
+ 
 static u32 wl18xx_sta_get_ap_rate_mask(struct wl1271 *wl,
 				       struct wl12xx_vif *wlvif)
 {
@@ -1278,7 +1261,7 @@ static u32 wl18xx_sta_get_ap_rate_mask(struct wl1271 *wl,
 		wl1271_debug(DEBUG_ACX, "using wide channel rate mask");
 		hw_rate_set |= CONF_TX_RATE_USE_WIDE_CHAN;
 
-		/* we don't support MIMO in wide-channel mode */
+		 
 		hw_rate_set &= ~CONF_TX_MIMO_RATES;
 	} else if (wl18xx_is_mimo_supported(wl)) {
 		wl1271_debug(DEBUG_ACX, "using MIMO channel rate mask");
@@ -1295,7 +1278,7 @@ static u32 wl18xx_ap_get_mimo_wide_rate_mask(struct wl1271 *wl,
 	    wlvif->channel_type == NL80211_CHAN_HT40PLUS) {
 		wl1271_debug(DEBUG_ACX, "using wide channel rate mask");
 
-		/* sanity check - we don't support this */
+		 
 		if (WARN_ON(wlvif->band != NL80211_BAND_5GHZ))
 			return 0;
 
@@ -1303,10 +1286,7 @@ static u32 wl18xx_ap_get_mimo_wide_rate_mask(struct wl1271 *wl,
 	} else if (wl18xx_is_mimo_supported(wl) &&
 		   wlvif->band == NL80211_BAND_2GHZ) {
 		wl1271_debug(DEBUG_ACX, "using MIMO rate mask");
-		/*
-		 * we don't care about HT channel here - if a peer doesn't
-		 * support MIMO, we won't enable it in its rates
-		 */
+		 
 		return CONF_TX_MIMO_RATES;
 	} else {
 		return 0;
@@ -1445,9 +1425,9 @@ static int wl18xx_conf_init(struct wl1271 *wl, struct device *dev)
 				  pdata->family->cfg_name) < 0) {
 		wl1271_warning("falling back to default config");
 
-		/* apply driver default configuration */
+		 
 		memcpy(&wl->conf, &wl18xx_conf, sizeof(wl->conf));
-		/* apply default private configuration */
+		 
 		memcpy(&priv->conf, &wl18xx_default_priv_conf,
 		       sizeof(priv->conf));
 	}
@@ -1459,7 +1439,7 @@ static int wl18xx_plt_init(struct wl1271 *wl)
 {
 	int ret;
 
-	/* calibrator based auto/fem detect not supported for 18xx */
+	 
 	if (wl->plt_mode == PLT_FEM_DETECT) {
 		wl1271_error("wl18xx_plt_init: PLT FEM_DETECT not supported");
 		return -EINVAL;
@@ -1489,7 +1469,7 @@ static int wl18xx_get_mac(struct wl1271 *wl)
 	if (ret < 0)
 		goto out;
 
-	/* these are the two parts of the BD_ADDR */
+	 
 	wl->fuse_oui_addr = ((mac2 & 0xffff) << 8) +
 		((mac1 & 0xff000000) >> 24);
 	wl->fuse_nic_addr = (mac1 & 0xffffff);
@@ -1519,7 +1499,7 @@ static int wl18xx_handle_static_data(struct wl1271 *wl,
 	strncpy(wl->chip.phy_fw_ver_str, static_data_priv->phy_version,
 		sizeof(wl->chip.phy_fw_ver_str));
 
-	/* make sure the string is NULL-terminated */
+	 
 	wl->chip.phy_fw_ver_str[sizeof(wl->chip.phy_fw_ver_str) - 1] = '\0';
 
 	wl1271_info("PHY firmware version: %s", static_data_priv->phy_version);
@@ -1531,7 +1511,7 @@ static int wl18xx_get_spare_blocks(struct wl1271 *wl, bool is_gem)
 {
 	struct wl18xx_priv *priv = wl->priv;
 
-	/* If we have keys requiring extra spare, indulge them */
+	 
 	if (priv->extra_spare_key_count)
 		return WL18XX_TX_HW_EXTRA_BLOCK_SPARE;
 
@@ -1557,17 +1537,14 @@ static int wl18xx_set_key(struct wl1271 *wl, enum set_key_cmd cmd,
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * when adding the first or removing the last GEM/TKIP key,
-	 * we have to adjust the number of spare blocks.
-	 */
+	 
 	if (special_enc) {
 		if (cmd == SET_KEY) {
-			/* first key */
+			 
 			change_spare = (priv->extra_spare_key_count == 0);
 			priv->extra_spare_key_count++;
 		} else if (cmd == DISABLE_KEY) {
-			/* last key */
+			 
 			change_spare = (priv->extra_spare_key_count == 1);
 			priv->extra_spare_key_count--;
 		}
@@ -1579,7 +1556,7 @@ static int wl18xx_set_key(struct wl1271 *wl, enum set_key_cmd cmd,
 	if (!change_spare)
 		goto out;
 
-	/* key is now set, change the spare blocks */
+	 
 	if (priv->extra_spare_key_count)
 		ret = wl18xx_set_host_cfg_bitmap(wl,
 					WL18XX_TX_HW_EXTRA_BLOCK_SPARE);
@@ -1597,16 +1574,16 @@ static u32 wl18xx_pre_pkt_send(struct wl1271 *wl,
 	if (wl->quirks & WLCORE_QUIRK_TX_PAD_LAST_FRAME) {
 		struct wl1271_tx_hw_descr *last_desc;
 
-		/* get the last TX HW descriptor written to the aggr buf */
+		 
 		last_desc = (struct wl1271_tx_hw_descr *)(wl->aggr_buf +
 							buf_offset - last_len);
 
-		/* the last frame is padded up to an SDIO block */
+		 
 		last_desc->wl18xx_mem.ctrl &= ~WL18XX_TX_CTRL_NOT_PADDED;
 		return ALIGN(buf_offset, WL12XX_BUS_BLOCK_SIZE);
 	}
 
-	/* no modifications */
+	 
 	return buf_offset;
 }
 
@@ -1617,18 +1594,15 @@ static void wl18xx_sta_rc_update(struct wl1271 *wl,
 
 	wl1271_debug(DEBUG_MAC80211, "mac80211 sta_rc_update wide %d", wide);
 
-	/* sanity */
+	 
 	if (WARN_ON(wlvif->bss_type != BSS_TYPE_STA_BSS))
 		return;
 
-	/* ignore the change before association */
+	 
 	if (!test_bit(WLVIF_FLAG_STA_ASSOCIATED, &wlvif->flags))
 		return;
 
-	/*
-	 * If we started out as wide, we can change the operation mode. If we
-	 * thought this was a 20mhz AP, we have to reconnect
-	 */
+	 
 	if (wlvif->sta.role_chan_type == NL80211_CHAN_HT40MINUS ||
 	    wlvif->sta.role_chan_type == NL80211_CHAN_HT40PLUS)
 		wl18xx_acx_peer_ht_operation_mode(wl, wlvif->sta.hlid, wide);
@@ -1653,16 +1627,16 @@ static bool wl18xx_lnk_high_prio(struct wl1271 *wl, u8 hlid,
 		(struct wl18xx_fw_status_priv *)wl->fw_status->priv;
 	unsigned long suspend_bitmap;
 
-	/* if we don't have the link map yet, assume they all low prio */
+	 
 	if (!status_priv)
 		return false;
 
-	/* suspended links are never high priority */
+	 
 	suspend_bitmap = le32_to_cpu(status_priv->link_suspend_bitmap);
 	if (test_bit(hlid, &suspend_bitmap))
 		return false;
 
-	/* the priority thresholds are taken from FW */
+	 
 	if (test_bit(hlid, &wl->fw_fast_lnk_map) &&
 	    !test_bit(hlid, &wl->ap_fw_ps_map))
 		thold = status_priv->tx_fast_link_prio_threshold;
@@ -1680,7 +1654,7 @@ static bool wl18xx_lnk_low_prio(struct wl1271 *wl, u8 hlid,
 		(struct wl18xx_fw_status_priv *)wl->fw_status->priv;
 	unsigned long suspend_bitmap;
 
-	/* if we don't have the link map yet, assume they all low prio */
+	 
 	if (!status_priv)
 		return true;
 
@@ -1752,7 +1726,7 @@ static struct wlcore_ops wl18xx_ops = {
 	.dfs_master_restart	= wl18xx_cmd_dfs_master_restart,
 };
 
-/* HT cap appropriate for wide channels in 2Ghz */
+ 
 static struct ieee80211_sta_ht_cap wl18xx_siso40_ht_cap_2ghz = {
 	.cap = IEEE80211_HT_CAP_SGI_20 | IEEE80211_HT_CAP_SGI_40 |
 	       IEEE80211_HT_CAP_SUP_WIDTH_20_40 | IEEE80211_HT_CAP_DSSSCCK40 |
@@ -1767,7 +1741,7 @@ static struct ieee80211_sta_ht_cap wl18xx_siso40_ht_cap_2ghz = {
 		},
 };
 
-/* HT cap appropriate for wide channels in 5Ghz */
+ 
 static struct ieee80211_sta_ht_cap wl18xx_siso40_ht_cap_5ghz = {
 	.cap = IEEE80211_HT_CAP_SGI_20 | IEEE80211_HT_CAP_SGI_40 |
 	       IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
@@ -1782,7 +1756,7 @@ static struct ieee80211_sta_ht_cap wl18xx_siso40_ht_cap_5ghz = {
 		},
 };
 
-/* HT cap appropriate for SISO 20 */
+ 
 static struct ieee80211_sta_ht_cap wl18xx_siso20_ht_cap = {
 	.cap = IEEE80211_HT_CAP_SGI_20 |
 	       IEEE80211_HT_CAP_GRN_FLD,
@@ -1796,7 +1770,7 @@ static struct ieee80211_sta_ht_cap wl18xx_siso20_ht_cap = {
 		},
 };
 
-/* HT cap appropriate for MIMO rates in 20mhz channel */
+ 
 static struct ieee80211_sta_ht_cap wl18xx_mimo_ht_cap_2ghz = {
 	.cap = IEEE80211_HT_CAP_SGI_20 |
 	       IEEE80211_HT_CAP_GRN_FLD,
@@ -1899,7 +1873,7 @@ static int wl18xx_setup(struct wl1271 *wl)
 	if (ret < 0)
 		return ret;
 
-	/* If the module param is set, update it in conf */
+	 
 	if (board_type_param) {
 		if (!strcmp(board_type_param, "fpga")) {
 			priv->conf.phy.board_type = BOARD_TYPE_FPGA_18XX;
@@ -1958,10 +1932,7 @@ static int wl18xx_setup(struct wl1271 *wl)
 	}
 
 	if (priv->conf.ht.mode == HT_MODE_DEFAULT) {
-		/*
-		 * Only support mimo with multiple antennas. Fall back to
-		 * siso40.
-		 */
+		 
 		if (wl18xx_is_mimo_supported(wl))
 			wlcore_set_ht_cap(wl, NL80211_BAND_2GHZ,
 					  &wl18xx_mimo_ht_cap_2ghz);
@@ -1969,7 +1940,7 @@ static int wl18xx_setup(struct wl1271 *wl)
 			wlcore_set_ht_cap(wl, NL80211_BAND_2GHZ,
 					  &wl18xx_siso40_ht_cap_2ghz);
 
-		/* 5Ghz is always wide */
+		 
 		wlcore_set_ht_cap(wl, NL80211_BAND_5GHZ,
 				  &wl18xx_siso40_ht_cap_5ghz);
 	} else if (priv->conf.ht.mode == HT_MODE_WIDE) {
@@ -1989,7 +1960,7 @@ static int wl18xx_setup(struct wl1271 *wl)
 		wl18xx_ops.init_vif = NULL;
 	}
 
-	/* Enable 11a Band only if we have 5G antennas */
+	 
 	wl->enable_11a = (priv->conf.phy.number_of_assembled_ant5 != 0);
 
 	return 0;
@@ -2027,7 +1998,7 @@ out:
 
 static const struct platform_device_id wl18xx_id_table[] = {
 	{ "wl18xx", 0 },
-	{  } /* Terminating Entry */
+	{  }  
 };
 MODULE_DEVICE_TABLE(platform, wl18xx_id_table);
 

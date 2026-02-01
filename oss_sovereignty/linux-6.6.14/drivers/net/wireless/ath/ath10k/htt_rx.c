@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "htc.h"
@@ -16,12 +12,12 @@
 #include <linux/log2.h>
 #include <linux/bitfield.h>
 
-/* when under memory pressure rx ring refill may fail and needs a retry */
+ 
 #define HTT_RX_RING_REFILL_RETRY_MS 50
 
 #define HTT_RX_RING_REFILL_RESCHED_MS 5
 
-/* shortcut to interpret a raw memory buffer as a rx descriptor */
+ 
 #define HTT_RX_BUF_TO_RX_DESC(hw, buf) ath10k_htt_rx_desc_from_raw_buffer(hw, buf)
 
 static int ath10k_htt_rx_get_csum_state(struct ath10k_hw_params *hw, struct sk_buff *skb);
@@ -138,11 +134,7 @@ static int __ath10k_htt_rx_ring_fill_n(struct ath10k_htt *htt, int num)
 	dma_addr_t paddr;
 	int ret = 0, idx;
 
-	/* The Full Rx Reorder firmware has no way of telling the host
-	 * implicitly when it copied HTT Rx Ring buffers to MAC Rx Ring.
-	 * To keep things simple make sure ring is always half empty. This
-	 * guarantees there'll be no replenishment overruns possible.
-	 */
+	 
 	BUILD_BUG_ON(HTT_RX_RING_FILL_LEVEL >= HTT_RX_RING_SIZE / 2);
 
 	idx = __le32_to_cpu(*htt->rx_ring.alloc_idx.vaddr);
@@ -166,7 +158,7 @@ static int __ath10k_htt_rx_ring_fill_n(struct ath10k_htt *htt, int num)
 				 PTR_ALIGN(skb->data, HTT_RX_DESC_ALIGN) -
 				 skb->data);
 
-		/* Clear rx_desc attention word before posting to Rx ring */
+		 
 		rx_desc = HTT_RX_BUF_TO_RX_DESC(hw, skb->data);
 		ath10k_htt_rx_desc_get_attention(hw, rx_desc)->flags = __cpu_to_le32(0);
 
@@ -198,10 +190,7 @@ static int __ath10k_htt_rx_ring_fill_n(struct ath10k_htt *htt, int num)
 	}
 
 fail:
-	/*
-	 * Make sure the rx buffer is updated before available buffer
-	 * index to avoid any potential rx ring corruption.
-	 */
+	 
 	mb();
 	*htt->rx_ring.alloc_idx.vaddr = __cpu_to_le32(idx);
 	return ret;
@@ -217,34 +206,14 @@ static void ath10k_htt_rx_msdu_buff_replenish(struct ath10k_htt *htt)
 {
 	int ret, num_deficit, num_to_fill;
 
-	/* Refilling the whole RX ring buffer proves to be a bad idea. The
-	 * reason is RX may take up significant amount of CPU cycles and starve
-	 * other tasks, e.g. TX on an ethernet device while acting as a bridge
-	 * with ath10k wlan interface. This ended up with very poor performance
-	 * once CPU the host system was overwhelmed with RX on ath10k.
-	 *
-	 * By limiting the number of refills the replenishing occurs
-	 * progressively. This in turns makes use of the fact tasklets are
-	 * processed in FIFO order. This means actual RX processing can starve
-	 * out refilling. If there's not enough buffers on RX ring FW will not
-	 * report RX until it is refilled with enough buffers. This
-	 * automatically balances load wrt to CPU power.
-	 *
-	 * This probably comes at a cost of lower maximum throughput but
-	 * improves the average and stability.
-	 */
+	 
 	spin_lock_bh(&htt->rx_ring.lock);
 	num_deficit = htt->rx_ring.fill_level - htt->rx_ring.fill_cnt;
 	num_to_fill = min(ATH10K_HTT_MAX_NUM_REFILL, num_deficit);
 	num_deficit -= num_to_fill;
 	ret = ath10k_htt_rx_ring_fill_n(htt, num_to_fill);
 	if (ret == -ENOMEM) {
-		/*
-		 * Failed to fill it to the desired level -
-		 * we'll start a timer and try again next time.
-		 * As long as enough buffers are left in the ring for
-		 * another A-MPDU rx, no special recovery is needed.
-		 */
+		 
 		mod_timer(&htt->rx_ring.refill_retry_timer, jiffies +
 			  msecs_to_jiffies(HTT_RX_RING_REFILL_RETRY_MS));
 	} else if (num_deficit > 0) {
@@ -346,7 +315,7 @@ static inline struct sk_buff *ath10k_htt_rx_netbuf_pop(struct ath10k_htt *htt)
 	return msdu;
 }
 
-/* return: < 0 fatal error, 0 - non chained msdu, 1 chained msdu */
+ 
 static int ath10k_htt_rx_amsdu_pop(struct ath10k_htt *htt,
 				   struct sk_buff_head *amsdu)
 {
@@ -380,20 +349,11 @@ static int ath10k_htt_rx_amsdu_pop(struct ath10k_htt *htt,
 		rx_desc_msdu_end_common = ath10k_htt_rx_desc_get_msdu_end(hw, rx_desc);
 		rx_desc_frag_info_common = ath10k_htt_rx_desc_get_frag_info(hw, rx_desc);
 
-		/* FIXME: we must report msdu payload since this is what caller
-		 * expects now
-		 */
+		 
 		skb_put(msdu, hw->rx_desc_ops->rx_desc_msdu_payload_offset);
 		skb_pull(msdu, hw->rx_desc_ops->rx_desc_msdu_payload_offset);
 
-		/*
-		 * Sanity check - confirm the HW is finished filling in the
-		 * rx data.
-		 * If the HW and SW are working correctly, then it's guaranteed
-		 * that the HW's MAC DMA is done before this point in the SW.
-		 * To prevent the case that we handle a stale Rx descriptor,
-		 * just assert for now until we have a way to recover.
-		 */
+		 
 		if (!(__le32_to_cpu(rx_desc_attention->flags)
 				& RX_ATTENTION_FLAGS_MSDU_DONE)) {
 			__skb_queue_purge(amsdu);
@@ -414,7 +374,7 @@ static int ath10k_htt_rx_amsdu_pop(struct ath10k_htt *htt,
 		skb_put(msdu, min(msdu_len, ath10k_htt_rx_msdu_size(hw)));
 		msdu_len -= msdu->len;
 
-		/* Note: Chained buffers do not contain rx descriptor */
+		 
 		while (msdu_chained--) {
 			msdu = ath10k_htt_rx_netbuf_pop(htt);
 			if (!msdu) {
@@ -432,7 +392,7 @@ static int ath10k_htt_rx_amsdu_pop(struct ath10k_htt *htt,
 		last_msdu = __le32_to_cpu(rx_desc_msdu_end_common->info0) &
 				RX_MSDU_END_INFO0_LAST_MSDU;
 
-		/* FIXME: why are we skipping the first part of the rx_desc? */
+		 
 		trace_ath10k_htt_rx_desc(ar, (void *)rx_desc + sizeof(u32),
 					 hw->rx_desc_ops->rx_desc_size - sizeof(u32));
 
@@ -443,18 +403,7 @@ static int ath10k_htt_rx_amsdu_pop(struct ath10k_htt *htt,
 	if (skb_queue_empty(amsdu))
 		msdu_chaining = -1;
 
-	/*
-	 * Don't refill the ring yet.
-	 *
-	 * First, the elements popped here are still in use - it is not
-	 * safe to overwrite them until the matching call to
-	 * mpdu_desc_list_next. Second, for efficiency it is preferable to
-	 * refill the rx ring with 1 PPDU's worth of rx buffers (something
-	 * like 32 x 3 buffers), rather than one MPDU's worth of rx buffers
-	 * (something like 3 buffers). Consequently, we'll rely on the txrx
-	 * SW to tell us when it is done pulling all the PPDU's rx buffers
-	 * out of the rx ring, and then refill it just once.
-	 */
+	 
 
 	return msdu_chaining;
 }
@@ -789,9 +738,7 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
 
 	htt->rx_confused = false;
 
-	/* XXX: The fill level could be changed during runtime in response to
-	 * the host processing latency. Is this really worth it?
-	 */
+	 
 	htt->rx_ring.size = HTT_RX_RING_SIZE;
 	htt->rx_ring.size_mask = htt->rx_ring.size - 1;
 	htt->rx_ring.fill_level = ar->hw_params.rx_ring_fill_level;
@@ -827,7 +774,7 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
 	htt->rx_ring.sw_rd_idx.msdu_payld = htt->rx_ring.size_mask;
 	*htt->rx_ring.alloc_idx.vaddr = 0;
 
-	/* Initialize the Rx refill retry timer */
+	 
 	timer_setup(timer, ath10k_htt_rx_ring_refill_retry, 0);
 
 	spin_lock_init(&htt->rx_ring.lock);
@@ -1004,9 +951,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
 
 	switch (preamble) {
 	case HTT_RX_LEGACY:
-		/* To get legacy rate index band is required. Since band can't
-		 * be undefined check if freq is non-zero.
-		 */
+		 
 		if (!status->freq)
 			return;
 
@@ -1019,7 +964,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
 		break;
 	case HTT_RX_HT:
 	case HTT_RX_HT_WITH_TXBF:
-		/* HT-SIG - Table 20-11 in info2 and info3 */
+		 
 		mcs = info2 & 0x1F;
 		nss = mcs >> 3;
 		bw = (info2 >> 7) & 1;
@@ -1034,9 +979,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
 		break;
 	case HTT_RX_VHT:
 	case HTT_RX_VHT_WITH_TXBF:
-		/* VHT-SIG-A1 in info2, VHT-SIG-A2 in info3
-		 * TODO check this
-		 */
+		 
 		bw = info2 & 3;
 		sgi = info3 & 1;
 		stbc = (info2 >> 3) & 1;
@@ -1050,16 +993,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
 			else
 				nss = (nsts_su + 1);
 		} else {
-			/* Hardware doesn't decode VHT-SIG-B into Rx descriptor
-			 * so it's impossible to decode MCS. Also since
-			 * firmware consumes Group Id Management frames host
-			 * has no knowledge regarding group/user position
-			 * mapping so it's impossible to pick the correct Nsts
-			 * from VHT-SIG-A1.
-			 *
-			 * Bandwidth and SGI are valid so report the rateinfo
-			 * on best-effort basis.
-			 */
+			 
 			mcs = 0;
 			nss = 1;
 		}
@@ -1235,7 +1169,7 @@ static void ath10k_htt_rx_h_signal(struct ath10k *ar,
 		}
 	}
 
-	/* FIXME: Get real NF */
+	 
 	status->signal = ATH10K_DEFAULT_NOISE_FLOOR +
 			 rxd_ppdu_start->rssi_comb;
 	status->flag &= ~RX_FLAG_NO_SIGNAL_VAL;
@@ -1250,12 +1184,7 @@ static void ath10k_htt_rx_h_mactime(struct ath10k *ar,
 
 	rxd_ppdu_end_common = ath10k_htt_rx_desc_get_ppdu_end(hw, rxd);
 
-	/* FIXME: TSF is known only at the end of PPDU, in the last MPDU. This
-	 * means all prior MSDUs in a PPDU are reported to mac80211 without the
-	 * TSF. Is it worth holding frames until end of PPDU is known?
-	 *
-	 * FIXME: Can we get/compute 64bit TSF?
-	 */
+	 
 	status->mactime = __le32_to_cpu(rxd_ppdu_end_common->tsf_timestamp);
 	status->flag |= RX_FLAG_MACTIME_END;
 }
@@ -1287,7 +1216,7 @@ static void ath10k_htt_rx_h_ppdu(struct ath10k *ar,
 			  __cpu_to_le32(RX_ATTENTION_FLAGS_LAST_MPDU));
 
 	if (is_first_ppdu) {
-		/* New PPDU starts so clear out the old per-PPDU status. */
+		 
 		status->freq = 0;
 		status->rate_idx = 0;
 		status->nss = 0;
@@ -1309,7 +1238,7 @@ static void ath10k_htt_rx_h_ppdu(struct ath10k *ar,
 	if (is_last_ppdu) {
 		ath10k_htt_rx_h_mactime(ar, status, rxd);
 
-		/* set ampdu last segment flag */
+		 
 		status->flag |= RX_FLAG_AMPDU_IS_LAST;
 		ar->ampdu_reference++;
 	}
@@ -1442,37 +1371,23 @@ static void ath10k_htt_rx_h_undecap_raw(struct ath10k *ar,
 	is_last = !!(rxd_msdu_end_common->info0 &
 		     __cpu_to_le32(RX_MSDU_END_INFO0_LAST_MSDU));
 
-	/* Delivered decapped frame:
-	 * [802.11 header]
-	 * [crypto param] <-- can be trimmed if !fcs_err &&
-	 *                    !decrypt_err && !peer_idx_invalid
-	 * [amsdu header] <-- only if A-MSDU
-	 * [rfc1042/llc]
-	 * [payload]
-	 * [FCS] <-- at end, needs to be trimmed
-	 */
+	 
 
-	/* Some hardwares(QCA99x0 variants) limit number of msdus in a-msdu when
-	 * deaggregate, so that unwanted MSDU-deaggregation is avoided for
-	 * error packets. If limit exceeds, hw sends all remaining MSDUs as
-	 * a single last MSDU with this msdu limit error set.
-	 */
+	 
 	msdu_limit_err = ath10k_htt_rx_desc_msdu_limit_error(hw, rxd);
 
-	/* If MSDU limit error happens, then don't warn on, the partial raw MSDU
-	 * without first MSDU is expected in that case, and handled later here.
-	 */
-	/* This probably shouldn't happen but warn just in case */
+	 
+	 
 	if (WARN_ON_ONCE(!is_first && !msdu_limit_err))
 		return;
 
-	/* This probably shouldn't happen but warn just in case */
+	 
 	if (WARN_ON_ONCE(!(is_first && is_last) && !msdu_limit_err))
 		return;
 
 	skb_trim(msdu, msdu->len - FCS_LEN);
 
-	/* Push original 80211 header */
+	 
 	if (unlikely(msdu_limit_err)) {
 		hdr = (struct ieee80211_hdr *)first_hdr;
 		hdr_len = ieee80211_hdrlen(hdr->frame_control);
@@ -1491,23 +1406,15 @@ static void ath10k_htt_rx_h_undecap_raw(struct ath10k *ar,
 		memcpy(skb_push(msdu, hdr_len), hdr, hdr_len);
 	}
 
-	/* In most cases this will be true for sniffed frames. It makes sense
-	 * to deliver them as-is without stripping the crypto param. This is
-	 * necessary for software based decryption.
-	 *
-	 * If there's no error then the frame is decrypted. At least that is
-	 * the case for frames that come in via fragmented rx indication.
-	 */
+	 
 	if (!is_decrypted)
 		return;
 
-	/* The payload is decrypted so strip crypto params. Start from tail
-	 * since hdr is used to compute some stuff.
-	 */
+	 
 
 	hdr = (void *)msdu->data;
 
-	/* Tail */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		skb_trim(msdu, msdu->len -
 			 ath10k_htt_rx_crypto_mic_len(ar, enctype));
@@ -1515,24 +1422,24 @@ static void ath10k_htt_rx_h_undecap_raw(struct ath10k *ar,
 		skb_trim(msdu, msdu->len -
 			 ath10k_htt_rx_crypto_icv_len(ar, enctype));
 	} else {
-		/* MIC */
+		 
 		if (status->flag & RX_FLAG_MIC_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath10k_htt_rx_crypto_mic_len(ar, enctype));
 
-		/* ICV */
+		 
 		if (status->flag & RX_FLAG_ICV_STRIPPED)
 			skb_trim(msdu, msdu->len -
 				 ath10k_htt_rx_crypto_icv_len(ar, enctype));
 	}
 
-	/* MMIC */
+	 
 	if ((status->flag & RX_FLAG_MMIC_STRIPPED) &&
 	    !ieee80211_has_morefrags(hdr->frame_control) &&
 	    enctype == HTT_RX_MPDU_ENCRYPT_TKIP_WPA)
 		skb_trim(msdu, msdu->len - MICHAEL_MIC_LEN);
 
-	/* Head */
+	 
 	if (status->flag & RX_FLAG_IV_STRIPPED) {
 		hdr_len = ieee80211_hdrlen(hdr->frame_control);
 		crypto_len = ath10k_htt_rx_crypto_param_len(ar, enctype);
@@ -1558,18 +1465,9 @@ static void ath10k_htt_rx_h_undecap_nwifi(struct ath10k *ar,
 	int l3_pad_bytes;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
-	/* Delivered decapped frame:
-	 * [nwifi 802.11 header] <-- replaced with 802.11 hdr
-	 * [rfc1042/llc]
-	 *
-	 * Note: The nwifi header doesn't have QoS Control and is
-	 * (always?) a 3addr frame.
-	 *
-	 * Note2: There's no A-MSDU subframe header. Even if it's part
-	 * of an A-MSDU.
-	 */
+	 
 
-	/* pull decapped header and copy SA & DA */
+	 
 	rxd = HTT_RX_BUF_TO_RX_DESC(hw, (void *)msdu->data -
 				    hw->rx_desc_ops->rx_desc_size);
 
@@ -1583,7 +1481,7 @@ static void ath10k_htt_rx_h_undecap_nwifi(struct ath10k *ar,
 	ether_addr_copy(sa, ieee80211_get_SA(hdr));
 	skb_pull(msdu, hdr_len);
 
-	/* push original 802.11 header */
+	 
 	hdr = (struct ieee80211_hdr *)first_hdr;
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 
@@ -1596,9 +1494,7 @@ static void ath10k_htt_rx_h_undecap_nwifi(struct ath10k *ar,
 
 	memcpy(skb_push(msdu, hdr_len), hdr, hdr_len);
 
-	/* original 802.11 header has a different DA and in
-	 * case of 4addr it may also have different SA
-	 */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	ether_addr_copy(ieee80211_get_DA(hdr), da);
 	ether_addr_copy(ieee80211_get_SA(hdr), sa);
@@ -1664,10 +1560,7 @@ static void ath10k_htt_rx_h_undecap_eth(struct ath10k *ar,
 	struct htt_rx_desc *rxd;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
-	/* Delivered decapped frame:
-	 * [eth header] <-- replaced with 802.11 hdr & rfc1042/llc
-	 * [payload]
-	 */
+	 
 
 	rfc1042 = ath10k_htt_rx_h_find_rfc1042(ar, msdu, enctype);
 	if (WARN_ON_ONCE(!rfc1042))
@@ -1680,17 +1573,17 @@ static void ath10k_htt_rx_h_undecap_eth(struct ath10k *ar,
 	skb_put(msdu, l3_pad_bytes);
 	skb_pull(msdu, l3_pad_bytes);
 
-	/* pull decapped header and copy SA & DA */
+	 
 	eth = (struct ethhdr *)msdu->data;
 	ether_addr_copy(da, eth->h_dest);
 	ether_addr_copy(sa, eth->h_source);
 	skb_pull(msdu, sizeof(struct ethhdr));
 
-	/* push rfc1042/llc/snap */
+	 
 	memcpy(skb_push(msdu, sizeof(struct rfc1042_hdr)), rfc1042,
 	       sizeof(struct rfc1042_hdr));
 
-	/* push original 802.11 header */
+	 
 	hdr = (struct ieee80211_hdr *)first_hdr;
 	hdr_len = ieee80211_hdrlen(hdr->frame_control);
 
@@ -1703,9 +1596,7 @@ static void ath10k_htt_rx_h_undecap_eth(struct ath10k *ar,
 
 	memcpy(skb_push(msdu, hdr_len), hdr, hdr_len);
 
-	/* original 802.11 header has a different DA and in
-	 * case of 4addr it may also have different SA
-	 */
+	 
 	hdr = (struct ieee80211_hdr *)msdu->data;
 	ether_addr_copy(ieee80211_get_DA(hdr), da);
 	ether_addr_copy(ieee80211_get_SA(hdr), sa);
@@ -1724,11 +1615,7 @@ static void ath10k_htt_rx_h_undecap_snap(struct ath10k *ar,
 	struct htt_rx_desc *rxd;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
-	/* Delivered decapped frame:
-	 * [amsdu header] <-- replaced with 802.11 hdr
-	 * [rfc1042/llc]
-	 * [payload]
-	 */
+	 
 
 	rxd = HTT_RX_BUF_TO_RX_DESC(hw,
 				    (void *)msdu->data - hw->rx_desc_ops->rx_desc_size);
@@ -1763,16 +1650,7 @@ static void ath10k_htt_rx_h_undecap(struct ath10k *ar,
 	struct rx_msdu_start_common *rxd_msdu_start_common;
 	enum rx_msdu_decap_format decap;
 
-	/* First msdu's decapped header:
-	 * [802.11 header] <-- padded to 4 bytes long
-	 * [crypto param] <-- padded to 4 bytes long
-	 * [amsdu header] <-- only if A-MSDU
-	 * [rfc1042/llc]
-	 *
-	 * Other (2nd, 3rd, ..) msdu's decapped header:
-	 * [amsdu header] <-- only if A-MSDU
-	 * [rfc1042/llc]
-	 */
+	 
 
 	rxd = HTT_RX_BUF_TO_RX_DESC(hw,
 				    (void *)msdu->data - hw->rx_desc_ops->rx_desc_size);
@@ -1963,18 +1841,14 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 	enctype = MS(__le32_to_cpu(rxd_mpdu_start->info0),
 		     RX_MPDU_START_INFO0_ENCRYPT_TYPE);
 
-	/* First MSDU's Rx descriptor in an A-MSDU contains full 802.11
-	 * decapped header. It'll be used for undecapping of each MSDU.
-	 */
+	 
 	hdr = (void *)ath10k_htt_rx_desc_get_rx_hdr_status(hw, rxd);
 	memcpy(first_hdr, hdr, RX_HTT_HDR_STATUS_LEN);
 
 	if (rx_hdr)
 		memcpy(rx_hdr, hdr, RX_HTT_HDR_STATUS_LEN);
 
-	/* Each A-MSDU subframe will use the original header as the base and be
-	 * reported as a separate MSDU so strip the A-MSDU bit from QoS Ctl.
-	 */
+	 
 	hdr = (void *)first_hdr;
 
 	if (ieee80211_is_data_qos(hdr->frame_control)) {
@@ -1982,7 +1856,7 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 		qos[0] &= ~IEEE80211_QOS_CTL_A_MSDU_PRESENT;
 	}
 
-	/* Some attention flags are valid only in the last MSDU. */
+	 
 	last = skb_peek_tail(amsdu);
 	rxd = HTT_RX_BUF_TO_RX_DESC(hw,
 				    (void *)last->data - hw->rx_desc_ops->rx_desc_size);
@@ -1995,16 +1869,13 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 	has_tkip_err = !!(attention & RX_ATTENTION_FLAGS_TKIP_MIC_ERR);
 	has_peer_idx_invalid = !!(attention & RX_ATTENTION_FLAGS_PEER_IDX_INVALID);
 
-	/* Note: If hardware captures an encrypted frame that it can't decrypt,
-	 * e.g. due to fcs error, missing peer or invalid key data it will
-	 * report the frame as raw.
-	 */
+	 
 	is_decrypted = (enctype != HTT_RX_MPDU_ENCRYPT_NONE &&
 			!has_fcs_err &&
 			!has_crypto_err &&
 			!has_peer_idx_invalid);
 
-	/* Clear per-MPDU flags while leaving per-PPDU flags intact. */
+	 
 	status->flag &= ~(RX_FLAG_FAILED_FCS_CRC |
 			  RX_FLAG_MMIC_ERROR |
 			  RX_FLAG_DECRYPTED |
@@ -2029,11 +1900,7 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 			*err = ATH10K_PKT_RX_ERR_PEER_IDX_INVAL;
 	}
 
-	/* Firmware reports all necessary management frames via WMI already.
-	 * They are not reported to monitor interfaces at all so pass the ones
-	 * coming via HTT to monitor interfaces instead. This simplifies
-	 * matters a lot.
-	 */
+	 
 	if (is_mgmt)
 		status->flag |= RX_FLAG_ONLY_MONITOR;
 
@@ -2063,8 +1930,7 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 									       msdu);
 
 		if (!frag_pn_check || !multicast_check) {
-			/* Discard the fragment with invalid PN or multicast DA
-			 */
+			 
 			temp = msdu->prev;
 			__skb_unlink(msdu, amsdu);
 			dev_kfree_skb_any(msdu);
@@ -2083,10 +1949,7 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 		ath10k_htt_rx_h_undecap(ar, msdu, status, first_hdr, enctype,
 					is_decrypted);
 
-		/* Undecapping involves copying the original 802.11 header back
-		 * to sk_buff. If frame is protected and hardware has decrypted
-		 * it then remove the protected bit.
-		 */
+		 
 		if (!is_decrypted)
 			continue;
 		if (is_mgmt)
@@ -2115,7 +1978,7 @@ static void ath10k_htt_rx_h_enqueue(struct ath10k *ar,
 	first_subframe = skb_peek(amsdu);
 
 	while ((msdu = __skb_dequeue(amsdu))) {
-		/* Setup per-MSDU flags */
+		 
 		if (skb_queue_empty(amsdu))
 			status->flag &= ~RX_FLAG_AMSDU_MORE;
 		else
@@ -2140,33 +2003,24 @@ static int ath10k_unchain_msdu(struct sk_buff_head *amsdu,
 	int total_len = 0;
 	int amsdu_len = skb_queue_len(amsdu);
 
-	/* TODO:  Might could optimize this by using
-	 * skb_try_coalesce or similar method to
-	 * decrease copying, or maybe get mac80211 to
-	 * provide a way to just receive a list of
-	 * skb?
-	 */
+	 
 
 	first = __skb_dequeue(amsdu);
 
-	/* Allocate total length all at once. */
+	 
 	skb_queue_walk(amsdu, skb)
 		total_len += skb->len;
 
 	space = total_len - skb_tailroom(first);
 	if ((space > 0) &&
 	    (pskb_expand_head(first, 0, space, GFP_ATOMIC) < 0)) {
-		/* TODO:  bump some rx-oom error stat */
-		/* put it back together so we can free the
-		 * whole list at once.
-		 */
+		 
+		 
 		__skb_queue_head(amsdu, first);
 		return -1;
 	}
 
-	/* Walk list again, copying contents into
-	 * msdu_head
-	 */
+	 
 	while ((skb = __skb_dequeue(amsdu))) {
 		skb_copy_from_linear_data(skb, skb_put(first, skb->len),
 					  skb->len);
@@ -2201,11 +2055,7 @@ static void ath10k_htt_rx_h_unchain(struct ath10k *ar,
 	decap = MS(__le32_to_cpu(rxd_msdu_start_common->info1),
 		   RX_MSDU_START_INFO1_DECAP_FORMAT);
 
-	/* FIXME: Current unchaining logic can only handle simple case of raw
-	 * msdu chaining. If decapping is other than raw the chaining may be
-	 * more complex and this isn't handled by the current code. Don't even
-	 * try re-constructing such frames - it'll be pretty much garbage.
-	 */
+	 
 	if (decap != RX_MSDU_DECAP_RAW ||
 	    skb_queue_len(amsdu) != 1 + rxd_frag_info->ring2_more_count) {
 		*drop_cnt += skb_queue_len(amsdu);
@@ -2245,11 +2095,11 @@ static bool ath10k_htt_rx_validate_amsdu(struct ath10k *ar,
 	is_last = !!(rxd_msdu_end_common->info0 &
 		     __cpu_to_le32(RX_MSDU_END_INFO0_LAST_MSDU));
 
-	/* Return in case of non-aggregated msdu */
+	 
 	if (is_first && is_last)
 		return true;
 
-	/* First msdu flag is not set for the first msdu of the list */
+	 
 	if (!is_first)
 		return false;
 
@@ -2262,13 +2112,7 @@ static bool ath10k_htt_rx_validate_amsdu(struct ath10k *ar,
 	subframe_hdr = (u8 *)hdr + round_up(hdr_len, bytes_aligned) +
 		       crypto_len;
 
-	/* Validate if the amsdu has a proper first subframe.
-	 * There are chances a single msdu can be received as amsdu when
-	 * the unauthenticated amsdu flag of a QoS header
-	 * gets flipped in non-SPP AMSDU's, in such cases the first
-	 * subframe has llc/snap header in place of a valid da.
-	 * return false if the da matches rfc1042 pattern
-	 */
+	 
 	if (ether_addr_equal(subframe_hdr, rfc1042_header))
 		return false;
 
@@ -2340,9 +2184,7 @@ static int ath10k_htt_rx_handle_amsdu(struct ath10k_htt *htt)
 	if (ret < 0) {
 		ath10k_warn(ar, "rx ring became corrupted: %d\n", ret);
 		__skb_queue_purge(&amsdu);
-		/* FIXME: It's probably a good idea to reboot the
-		 * device instead of leaving it inoperable.
-		 */
+		 
 		htt->rx_confused = true;
 		return ret;
 	}
@@ -2351,7 +2193,7 @@ static int ath10k_htt_rx_handle_amsdu(struct ath10k_htt *htt)
 
 	ath10k_htt_rx_h_ppdu(ar, &amsdu, rx_status, 0xffff);
 
-	/* only for ret = 1 indicates chained msdus */
+	 
 	if (ret > 0)
 		ath10k_htt_rx_h_unchain(ar, &amsdu, &drop_cnt, &unchain_cnt);
 
@@ -2495,10 +2337,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 		goto err;
 	}
 
-	/* I have not yet seen any case where num_mpdu_ranges > 1.
-	 * qcacld does not seem handle that case either, so we introduce the
-	 * same limitation here as well.
-	 */
+	 
 	if (num_mpdu_ranges > 1)
 		ath10k_warn(ar,
 			    "Unsupported number of MPDU ranges: %d, ignoring all but the first\n",
@@ -2535,9 +2374,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 			goto err;
 	}
 
-	/* Strip off all headers before the MAC header before delivery to
-	 * mac80211
-	 */
+	 
 	tot_hdr_len = sizeof(struct htt_resp_hdr) + sizeof(rx->hdr) +
 		      sizeof(rx->ppdu) + sizeof(rx->prefix) +
 		      sizeof(rx->fw_desc) +
@@ -2552,7 +2389,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 	memset(rx_status, 0, sizeof(*rx_status));
 
 	if (rx->ppdu.combined_rssi == 0) {
-		/* SDIO firmware does not provide signal */
+		 
 		rx_status->signal = 0;
 		rx_status->flag |= RX_FLAG_NO_SIGNAL_VAL;
 	} else {
@@ -2580,13 +2417,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 	else
 		rx_status->flag |= RX_FLAG_AMSDU_MORE;
 
-	/* Not entirely sure about this, but all frames from the chipset has
-	 * the protected flag set even though they have already been decrypted.
-	 * Unmasking this flag is necessary in order for mac80211 not to drop
-	 * the frame.
-	 * TODO: Verify this is always the case or find out a way to check
-	 * if there has been hw decryption.
-	 */
+	 
 	if (ieee80211_has_protected(hdr->frame_control)) {
 		hdr->frame_control &= ~__cpu_to_le16(IEEE80211_FCTL_PROTECTED);
 		rx_status->flag |= RX_FLAG_DECRYPTED |
@@ -2613,7 +2444,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 			skb_push(skb, IEEE80211_CCMP_HDR_LEN);
 			ivp = skb->data + offset;
 			memset(skb->data + offset, 0, IEEE80211_CCMP_HDR_LEN);
-			/* Ext IV */
+			 
 			ivp[IEEE80211_WEP_IV_LEN - 1] |= ATH10K_IEEE80211_EXTIV;
 
 			for (i = 0; i < ARRAY_SIZE(peer->keys); i++) {
@@ -2622,22 +2453,22 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 					keyidx = peer->keys[i]->keyidx;
 			}
 
-			/* Key ID */
+			 
 			ivp[IEEE80211_WEP_IV_LEN - 1] |= keyidx << 6;
 
 			if (sec_type == HTT_SECURITY_AES_CCMP) {
 				rx_status->flag |= RX_FLAG_MIC_STRIPPED;
-				/* pn 0, pn 1 */
+				 
 				memcpy(skb->data + offset, &pn48, 2);
-				/* pn 1, pn 3 , pn 34 , pn 5 */
+				 
 				memcpy(skb->data + offset + 4, ((u8 *)&pn48) + 2, 4);
 			} else {
 				rx_status->flag |= RX_FLAG_ICV_STRIPPED;
-				/* TSC 0 */
+				 
 				memcpy(skb->data + offset + 2, &pn48, 1);
-				/* TSC 1 */
+				 
 				memcpy(skb->data + offset, ((u8 *)&pn48) + 1, 1);
-				/* TSC 2 , TSC 3 , TSC 4 , TSC 5*/
+				 
 				memcpy(skb->data + offset + 4, ((u8 *)&pn48) + 2, 4);
 			}
 		}
@@ -2669,14 +2500,10 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
 	else
 		ieee80211_rx_ni(ar->hw, skb);
 
-	/* We have delivered the skb to the upper layers (mac80211) so we
-	 * must not free it.
-	 */
+	 
 	return false;
 err:
-	/* Tell the caller that it must free the skb since we have not
-	 * consumed it
-	 */
+	 
 	return true;
 }
 
@@ -2689,7 +2516,7 @@ static int ath10k_htt_rx_frag_tkip_decap_nomic(struct sk_buff *skb,
 	orig_hdr = skb->data;
 	ivp = orig_hdr + hdr_len + head_len;
 
-	/* the ExtIV bit is always set to 1 for TKIP */
+	 
 	if (!(ivp[IEEE80211_WEP_IV_LEN - 1] & ATH10K_IEEE80211_EXTIV))
 		return -EINVAL;
 
@@ -2708,7 +2535,7 @@ static int ath10k_htt_rx_frag_tkip_decap_withmic(struct sk_buff *skb,
 	orig_hdr = skb->data;
 	ivp = orig_hdr + hdr_len + head_len;
 
-	/* the ExtIV bit is always set to 1 for TKIP */
+	 
 	if (!(ivp[IEEE80211_WEP_IV_LEN - 1] & ATH10K_IEEE80211_EXTIV))
 		return -EINVAL;
 
@@ -2727,7 +2554,7 @@ static int ath10k_htt_rx_frag_ccmp_decap(struct sk_buff *skb,
 	orig_hdr = skb->data;
 	ivp = orig_hdr + hdr_len + head_len;
 
-	/* the ExtIV bit is always set to 1 for CCMP */
+	 
 	if (!(ivp[IEEE80211_WEP_IV_LEN - 1] & ATH10K_IEEE80211_EXTIV))
 		return -EINVAL;
 
@@ -2803,7 +2630,7 @@ static bool ath10k_htt_rx_proc_rx_frag_ind_hl(struct ath10k_htt *htt,
 	hdr = (struct ieee80211_hdr *)((u8 *)rx_desc + rx_hl->fw_desc.len);
 
 	if (is_multicast_ether_addr(hdr->addr1)) {
-		/* Discard the fragment with multicast DA */
+		 
 		goto err;
 	}
 
@@ -2904,9 +2731,7 @@ static bool ath10k_htt_rx_proc_rx_frag_ind_hl(struct ath10k_htt *htt,
 err:
 	spin_unlock_bh(&ar->data_lock);
 
-	/* Tell the caller that it must free the skb since we have not
-	 * consumed it
-	 */
+	 
 	return true;
 }
 
@@ -2989,10 +2814,7 @@ static void ath10k_htt_rx_tx_compl_ind(struct ath10k *ar,
 		tx_done.msdu_id = __le16_to_cpu(msdu_id);
 
 		if (rssi_enabled) {
-			/* Total no of MSDUs should be even,
-			 * if odd MSDUs are sent firmware fills
-			 * last msdu id with 0xffff
-			 */
+			 
 			if (msdu_count & 0x01) {
 				msdu_id = msdus[msdu_count +  i + 1 + htt_pad];
 				tx_done.ack_rssi = __le16_to_cpu(msdu_id);
@@ -3002,14 +2824,7 @@ static void ath10k_htt_rx_tx_compl_ind(struct ath10k *ar,
 			}
 		}
 
-		/* kfifo_put: In practice firmware shouldn't fire off per-CE
-		 * interrupt and main interrupt (MSI/-X range case) for the same
-		 * HTC service so it should be safe to use kfifo_put w/o lock.
-		 *
-		 * From kfifo_put() documentation:
-		 *  Note that with only one concurrent reader and one concurrent
-		 *  writer, you don't need extra locking to use these macro.
-		 */
+		 
 		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
 			ath10k_txrx_tx_unref(htt, &tx_done);
 		} else if (!kfifo_put(&htt->txdone_fifo, tx_done)) {
@@ -3194,10 +3009,7 @@ static void ath10k_htt_rx_h_rx_offload_prot(struct ieee80211_rx_status *status,
 	if (!ieee80211_has_protected(hdr->frame_control))
 		return;
 
-	/* Offloaded frames are already decrypted but firmware insists they are
-	 * protected in the 802.11 header. Strip the flag.  Otherwise mac80211
-	 * will drop the frame.
-	 */
+	 
 
 	hdr->frame_control &= ~__cpu_to_le16(IEEE80211_FCTL_PROTECTED);
 	status->flag |= RX_FLAG_DECRYPTED |
@@ -3215,9 +3027,7 @@ static void ath10k_htt_rx_h_rx_offload(struct ath10k *ar,
 	size_t offset;
 
 	while ((msdu = __skb_dequeue(list))) {
-		/* Offloaded frames don't have Rx descriptor. Instead they have
-		 * a short meta information header.
-		 */
+		 
 
 		rx = (void *)msdu->data;
 
@@ -3232,19 +3042,13 @@ static void ath10k_htt_rx_h_rx_offload(struct ath10k *ar,
 
 		skb_put(msdu, __le16_to_cpu(rx->msdu_len));
 
-		/* Offloaded rx header length isn't multiple of 2 nor 4 so the
-		 * actual payload is unaligned. Align the frame.  Otherwise
-		 * mac80211 complains.  This shouldn't reduce performance much
-		 * because these offloaded frames are rare.
-		 */
+		 
 		offset = 4 - ((unsigned long)msdu->data & 3);
 		skb_put(msdu, offset);
 		memmove(msdu->data + offset, msdu->data, msdu->len);
 		skb_pull(msdu, offset);
 
-		/* FIXME: The frame is NWifi. Re-construct QoS Control
-		 * if possible later.
-		 */
+		 
 
 		memset(status, 0, sizeof(*status));
 		status->flag |= RX_FLAG_NO_SIGNAL_VAL;
@@ -3295,9 +3099,7 @@ static int ath10k_htt_rx_in_ord_ind(struct ath10k *ar, struct sk_buff *skb)
 		return -EINVAL;
 	}
 
-	/* The event can deliver more than 1 A-MSDU. Each A-MSDU is later
-	 * extracted and processed.
-	 */
+	 
 	__skb_queue_head_init(&list);
 	if (ar->hw_params.target_64bit)
 		ret = ath10k_htt_rx_pop_paddr64_list(htt, &resp->rx_in_ord_ind,
@@ -3312,9 +3114,7 @@ static int ath10k_htt_rx_in_ord_ind(struct ath10k *ar, struct sk_buff *skb)
 		return -EIO;
 	}
 
-	/* Offloaded frames are very different and need to be handled
-	 * separately.
-	 */
+	 
 	if (offload)
 		ath10k_htt_rx_h_rx_offload(ar, &list);
 
@@ -3323,12 +3123,7 @@ static int ath10k_htt_rx_in_ord_ind(struct ath10k *ar, struct sk_buff *skb)
 		ret = ath10k_htt_rx_extract_amsdu(&ar->hw_params, &list, &amsdu);
 		switch (ret) {
 		case 0:
-			/* Note: The in-order indication may report interleaved
-			 * frames from different PPDUs meaning reported rx rate
-			 * to mac80211 isn't accurate/reliable. It's still
-			 * better to report something than nothing though. This
-			 * should still give an idea about rx rate to the user.
-			 */
+			 
 			ath10k_htt_rx_h_ppdu(ar, &amsdu, status, vdev_id);
 			ath10k_htt_rx_h_filter(ar, &amsdu, status, NULL);
 			ath10k_htt_rx_h_mpdu(ar, &amsdu, status, false, NULL,
@@ -3338,7 +3133,7 @@ static int ath10k_htt_rx_in_ord_ind(struct ath10k *ar, struct sk_buff *skb)
 		case -EAGAIN:
 			fallthrough;
 		default:
-			/* Should not happen. */
+			 
 			ath10k_warn(ar, "failed to extract amsdu: %d\n", ret);
 			htt->rx_confused = true;
 			__skb_queue_purge(&list);
@@ -3364,7 +3159,7 @@ static void ath10k_htt_rx_tx_fetch_resp_id_confirm(struct ath10k *ar,
 		ath10k_dbg(ar, ATH10K_DBG_HTT, "htt rx tx fetch confirm resp_id %u\n",
 			   resp_id);
 
-		/* TODO: free resp_id */
+		 
 	}
 }
 
@@ -3446,9 +3241,7 @@ static void ath10k_htt_rx_tx_fetch_ind(struct ath10k *ar, struct sk_buff *skb)
 		txq = ath10k_mac_txq_lookup(ar, peer_id, tid);
 		spin_unlock_bh(&ar->data_lock);
 
-		/* It is okay to release the lock and use txq because RCU read
-		 * lock is held.
-		 */
+		 
 
 		if (unlikely(!txq)) {
 			ath10k_warn(ar, "failed to lookup txq for peer_id %u tid %u\n",
@@ -3495,7 +3288,7 @@ static void ath10k_htt_rx_tx_fetch_ind(struct ath10k *ar, struct sk_buff *skb)
 	if (unlikely(ret)) {
 		ath10k_warn(ar, "failed to submit tx fetch resp for token 0x%08x: %d\n",
 			    le32_to_cpu(resp->tx_fetch_ind.token), ret);
-		/* FIXME: request fw restart */
+		 
 	}
 
 	ath10k_htt_tx_txq_sync(ar);
@@ -3610,9 +3403,7 @@ static void ath10k_htt_rx_tx_mode_switch_ind(struct ath10k *ar,
 		txq = ath10k_mac_txq_lookup(ar, peer_id, tid);
 		spin_unlock_bh(&ar->data_lock);
 
-		/* It is okay to release the lock and use txq because RCU read
-		 * lock is held.
-		 */
+		 
 
 		if (unlikely(!txq)) {
 			ath10k_warn(ar, "failed to lookup txq for peer_id %u tid %u\n",
@@ -3637,7 +3428,7 @@ void ath10k_htt_htc_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
 
 	release = ath10k_htt_t2h_msg_handler(ar, skb);
 
-	/* Free the indication buffer */
+	 
 	if (release)
 		dev_kfree_skb_any(skb);
 }
@@ -3800,9 +3591,7 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
 	sgi = ATH10K_HW_GI(peer_stats->flags);
 	skip_auto_rate = ATH10K_FW_SKIPPED_RATE_CTRL(peer_stats->flags);
 
-	/* Firmware's rate control skips broadcast/management frames,
-	 * if host has configure fixed rates and in some other special cases.
-	 */
+	 
 	if (skip_auto_rate)
 		return;
 
@@ -3823,7 +3612,7 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
 	if (txrate.flags == WMI_RATE_PREAMBLE_CCK ||
 	    txrate.flags == WMI_RATE_PREAMBLE_OFDM) {
 		rate = ATH10K_HW_LEGACY_RATE(peer_stats->ratecode);
-		/* This is hacky, FW sends CCK rate 5.5Mbps as 6 */
+		 
 		if (rate == 6 && txrate.flags == WMI_RATE_PREAMBLE_CCK)
 			rate = 5;
 		rate_idx = ath10k_get_legacy_rate_idx(ar, rate);
@@ -4074,7 +3863,7 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
 	struct htt_resp *resp = (struct htt_resp *)skb->data;
 	enum htt_t2h_msg_type type;
 
-	/* confirm alignment */
+	 
 	if (!IS_ALIGNED((unsigned long)skb->data, 4))
 		ath10k_warn(ar, "unaligned htt message, expect trouble\n");
 
@@ -4194,11 +3983,7 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
 		trace_ath10k_htt_stats(ar, skb->data, skb->len);
 		break;
 	case HTT_T2H_MSG_TYPE_TX_INSPECT_IND:
-		/* Firmware can return tx frames if it's unable to fully
-		 * process them and suspects host may be able to fix it. ath10k
-		 * sends all tx frames as already inspected so this shouldn't
-		 * happen unless fw has a bug.
-		 */
+		 
 		ath10k_warn(ar, "received an unexpected htt tx inspect event\n");
 		break;
 	case HTT_T2H_MSG_TYPE_RX_ADDBA:
@@ -4219,9 +4004,7 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
 		break;
 	}
 	case HTT_T2H_MSG_TYPE_RX_FLUSH: {
-		/* Ignore this event because mac80211 takes care of Rx
-		 * aggregation reordering.
-		 */
+		 
 		break;
 	}
 	case HTT_T2H_MSG_TYPE_RX_IN_ORD_PADDR_IND: {
@@ -4366,9 +4149,7 @@ int ath10k_htt_txrx_compl_task(struct ath10k *ar, int budget)
 
 	__skb_queue_head_init(&tx_ind_q);
 
-	/* Process pending frames before dequeuing more data
-	 * from hardware.
-	 */
+	 
 	quota = ath10k_htt_rx_deliver_msdu(ar, quota, budget);
 	if (quota == budget) {
 		resched_napi = true;
@@ -4396,22 +4177,14 @@ int ath10k_htt_txrx_compl_task(struct ath10k *ar, int budget)
 		atomic_dec(&htt->num_mpdus_ready);
 	}
 
-	/* Deliver received data after processing data from hardware */
+	 
 	quota = ath10k_htt_rx_deliver_msdu(ar, quota, budget);
 
-	/* From NAPI documentation:
-	 *  The napi poll() function may also process TX completions, in which
-	 *  case if it processes the entire TX ring then it should count that
-	 *  work as the rest of the budget.
-	 */
+	 
 	if ((quota < budget) && !kfifo_is_empty(&htt->txdone_fifo))
 		quota = budget;
 
-	/* kfifo_get: called only within txrx_tasklet so it's neatly serialized.
-	 * From kfifo_get() documentation:
-	 *  Note that with only one concurrent reader and one concurrent writer,
-	 *  you don't need extra locking to use these macro.
-	 */
+	 
 	while (kfifo_get(&htt->txdone_fifo, &tx_done))
 		ath10k_txrx_tx_unref(htt, &tx_done);
 
@@ -4428,9 +4201,7 @@ int ath10k_htt_txrx_compl_task(struct ath10k *ar, int budget)
 
 exit:
 	ath10k_htt_rx_msdu_buff_replenish(htt);
-	/* In case of rx failure or more data to read, report budget
-	 * to reschedule NAPI poll
-	 */
+	 
 	done = resched_napi ? budget : quota;
 
 	return done;

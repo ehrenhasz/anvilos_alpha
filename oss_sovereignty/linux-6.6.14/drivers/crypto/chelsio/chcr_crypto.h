@@ -1,37 +1,4 @@
-/*
- * This file is part of the Chelsio T6 Crypto driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #ifndef __CHCR_CRYPTO_H__
 #define __CHCR_CRYPTO_H__
@@ -41,24 +8,22 @@
 
 #define CCM_B0_SIZE             16
 #define CCM_AAD_FIELD_SIZE      2
-// 511 - 16(For IV)
+
 #define T6_MAX_AAD_SIZE 495
 
 
-/* Define following if h/w is not dropping the AAD and IV data before
- * giving the processed data
- */
+ 
 
 #define CHCR_CRA_PRIORITY 500
 #define CHCR_AEAD_PRIORITY 6000
-#define CHCR_AES_MAX_KEY_LEN  (2 * (AES_MAX_KEY_SIZE)) /* consider xts */
-#define CHCR_MAX_CRYPTO_IV_LEN 16 /* AES IV len */
+#define CHCR_AES_MAX_KEY_LEN  (2 * (AES_MAX_KEY_SIZE))  
+#define CHCR_MAX_CRYPTO_IV_LEN 16  
 
-#define CHCR_MAX_AUTHENC_AES_KEY_LEN 32 /* max aes key length*/
-#define CHCR_MAX_AUTHENC_SHA_KEY_LEN 128 /* max sha key length*/
+#define CHCR_MAX_AUTHENC_AES_KEY_LEN 32  
+#define CHCR_MAX_AUTHENC_SHA_KEY_LEN 128  
 
 #define CHCR_GIVENCRYPT_OP 2
-/* CPL/SCMD parameters */
+ 
 
 #define CHCR_ENCRYPT_OP 0
 #define CHCR_DECRYPT_OP 1
@@ -105,9 +70,7 @@
 
 #define CHCR_SCMD_IVGEN_CTRL_HW             0
 #define CHCR_SCMD_IVGEN_CTRL_SW             1
-/* This are not really mac key size. They are intermediate values
- * of sha engine and its size
- */
+ 
 #define CHCR_KEYCTX_MAC_KEY_SIZE_128        0
 #define CHCR_KEYCTX_MAC_KEY_SIZE_160        1
 #define CHCR_KEYCTX_MAC_KEY_SIZE_192        2
@@ -118,9 +81,9 @@
 #define CHCR_KEYCTX_CIPHER_KEY_SIZE_256     2
 #define CHCR_KEYCTX_NO_KEY                  15
 
-#define CHCR_CPL_FW4_PLD_IV_OFFSET          (5 * 64) /* bytes. flt #5 and #6 */
-#define CHCR_CPL_FW4_PLD_HASH_RESULT_OFFSET (7 * 64) /* bytes. flt #7 */
-#define CHCR_CPL_FW4_PLD_DATA_SIZE          (4 * 64) /* bytes. flt #4 to #7 */
+#define CHCR_CPL_FW4_PLD_IV_OFFSET          (5 * 64)  
+#define CHCR_CPL_FW4_PLD_HASH_RESULT_OFFSET (7 * 64)  
+#define CHCR_CPL_FW4_PLD_DATA_SIZE          (4 * 64)  
 
 #define KEY_CONTEXT_HDR_SALT_AND_PAD	    16
 #define flits_to_bytes(x)  (x * 8)
@@ -274,9 +237,7 @@ struct chcr_hctx_per_wr {
 	u32 result;
 	u8 is_sg_map;
 	u8 imm;
-	/*Final callback called. Driver cannot rely on nbytes to decide
-	 * final call
-	 */
+	 
 	u8 isfinal;
 };
 
@@ -284,8 +245,8 @@ struct chcr_ahash_req_ctx {
 	struct chcr_hctx_per_wr hctx_wr;
 	u8 *reqbfr;
 	u8 *skbfr;
-	/* SKB which is being sent to the hardware for processing */
-	u64 data_len;  /* Data len till time */
+	 
+	u64 data_len;   
 	u16 txqidx;
 	u16 rxqidx;
 	u8 reqlen;
@@ -309,7 +270,7 @@ struct chcr_skcipher_req_ctx {
 	u8 init_iv[CHCR_MAX_CRYPTO_IV_LEN];
 	u16 txqidx;
 	u16 rxqidx;
-	struct skcipher_request fallback_req;	// keep at the end
+	struct skcipher_request fallback_req;	
 };
 
 struct chcr_alg_template {
@@ -349,4 +310,4 @@ void chcr_add_hash_src_ent(struct ahash_request *req, struct ulptx_sgl *ulptx,
 int chcr_hash_dma_map(struct device *dev, struct ahash_request *req);
 void chcr_hash_dma_unmap(struct device *dev, struct ahash_request *req);
 void chcr_aead_common_exit(struct aead_request *req);
-#endif /* __CHCR_CRYPTO_H__ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * amdtp-motu.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/pcm.h>
@@ -24,10 +20,7 @@
 #define CIP_SPH_CYCLE_MASK	0x01fff000
 #define CIP_SPH_OFFSET_MASK	0x00000fff
 
-/*
- * Nominally 3125 bytes/second, but the MIDI port's clock might be
- * 1% too slow, and the bus clock 100 ppm too fast.
- */
+ 
 #define MIDI_BYTES_PER_SECOND	3093
 
 struct amdtp_motu {
@@ -66,9 +59,9 @@ int amdtp_motu_set_parameters(struct amdtp_stream *s, unsigned int rate,
 	if (i == ARRAY_SIZE(snd_motu_clock_rates))
 		return -EINVAL;
 
-	// Each data block includes SPH in its head. Data chunks follow with
-	// 3 byte alignment. Padding follows with zero to conform to quadlet
-	// alignment.
+	
+	
+	
 	pcm_chunks = formats->pcm_chunks[mode];
 	data_chunks = formats->msg_chunks + pcm_chunks;
 	data_block_quadlets = 1 + DIV_ROUND_UP(data_chunks * 3, 4);
@@ -191,7 +184,7 @@ int amdtp_motu_add_pcm_hw_constraints(struct amdtp_stream *s,
 {
 	int err;
 
-	/* TODO: how to set an constraint for exactly 24bit PCM sample? */
+	 
 	err = snd_pcm_hw_constraint_msbits(runtime, 0, 32, 24);
 	if (err < 0)
 		return err;
@@ -253,7 +246,7 @@ static void read_midi_messages(struct amdtp_stream *s, __be32 *buffer,
 	}
 }
 
-/* For tracepoints. */
+ 
 static void __maybe_unused copy_sph(u32 *frames, __be32 *buffer,
 				    unsigned int data_blocks,
 				    unsigned int data_block_quadlets)
@@ -267,14 +260,14 @@ static void __maybe_unused copy_sph(u32 *frames, __be32 *buffer,
 	}
 }
 
-/* For tracepoints. */
+ 
 static void __maybe_unused copy_message(u64 *frames, __be32 *buffer,
 					unsigned int data_blocks,
 					unsigned int data_block_quadlets)
 {
 	unsigned int i;
 
-	/* This is just for v2/v3 protocol. */
+	 
 	for (i = 0; i < data_blocks; ++i) {
 		*frames = be32_to_cpu(buffer[1]);
 		*frames <<= 16;
@@ -340,7 +333,7 @@ static void process_ir_ctx_payloads(struct amdtp_stream *s, const struct pkt_des
 	if (p->cache->tx_cycle_count == UINT_MAX)
 		p->cache->tx_cycle_count = (s->domain->processing_cycle.tx_start % CYCLES_PER_SECOND);
 
-	// For data block processing.
+	
 	for (i = 0; i < count; ++i) {
 		__be32 *buf = desc->ctx_payload;
 		unsigned int data_blocks = desc->data_blocks;
@@ -364,7 +357,7 @@ static void process_ir_ctx_payloads(struct amdtp_stream *s, const struct pkt_des
 	else if (motu->spec->flags & SND_MOTU_SPEC_COMMAND_DSP)
 		snd_motu_command_dsp_message_parser_parse(s, desc, count);
 
-	// For tracepoints.
+	
 	if (trace_data_block_sph_enabled() ||
 	    trace_data_block_message_enabled())
 		probe_tracepoints_events(s, desc, count);
@@ -403,7 +396,7 @@ static void process_it_ctx_payloads(struct amdtp_stream *s, const struct pkt_des
 	if (p->cache->rx_cycle_count == UINT_MAX)
 		p->cache->rx_cycle_count = (s->domain->processing_cycle.rx_start % CYCLES_PER_SECOND);
 
-	// For data block processing.
+	
 	for (i = 0; i < count; ++i) {
 		__be32 *buf = desc->ctx_payload;
 		unsigned int data_blocks = desc->data_blocks;
@@ -425,7 +418,7 @@ static void process_it_ctx_payloads(struct amdtp_stream *s, const struct pkt_des
 
 	desc = cursor;
 
-	// For tracepoints.
+	
 	if (trace_data_block_sph_enabled() ||
 	    trace_data_block_message_enabled())
 		probe_tracepoints_events(s, desc, count);
@@ -444,10 +437,7 @@ int amdtp_motu_init(struct amdtp_stream *s, struct fw_unit *unit,
 	if (dir == AMDTP_IN_STREAM) {
 		process_ctx_payloads = process_ir_ctx_payloads;
 
-		/*
-		 * Units of version 3 transmits packets with invalid CIP header
-		 * against IEC 61883-1.
-		 */
+		 
 		if (spec->protocol_version == SND_MOTU_PROTOCOL_V3) {
 			flags |= CIP_WRONG_DBS |
 				 CIP_SKIP_DBC_ZERO_CHECK |
@@ -457,7 +447,7 @@ int amdtp_motu_init(struct amdtp_stream *s, struct fw_unit *unit,
 
 		if (spec == &snd_motu_spec_8pre ||
 		    spec == &snd_motu_spec_ultralite) {
-			// 8pre has some quirks.
+			
 			flags |= CIP_WRONG_DBS |
 				 CIP_SKIP_DBC_ZERO_CHECK;
 		}
@@ -474,7 +464,7 @@ int amdtp_motu_init(struct amdtp_stream *s, struct fw_unit *unit,
 	s->sph = 1;
 
 	if (dir == AMDTP_OUT_STREAM) {
-		// Use fixed value for FDF field.
+		
 		s->ctx_data.rx.fdf = MOTU_FDF_AM824;
 	}
 

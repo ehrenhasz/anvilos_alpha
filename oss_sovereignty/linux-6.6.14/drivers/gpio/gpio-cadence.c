@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2017-2018 Cadence
- *
- * Authors:
- *  Jan Kotas <jank@cadence.com>
- *  Boris Brezillon <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/clk.h>
@@ -97,11 +91,7 @@ static int cdns_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	int_value = ioread32(cgpio->regs + CDNS_GPIO_IRQ_VALUE) & ~mask;
 	int_type = ioread32(cgpio->regs + CDNS_GPIO_IRQ_TYPE) & ~mask;
 
-	/*
-	 * The GPIO controller doesn't have an ACK register.
-	 * All interrupt statuses are cleared on a status register read.
-	 * Don't support edge interrupts for now.
-	 */
+	 
 
 	if (type == IRQ_TYPE_LEVEL_HIGH) {
 		int_type |= mask;
@@ -171,13 +161,7 @@ static int cdns_gpio_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Set all pins as inputs by default, otherwise:
-	 * gpiochip_lock_as_irq:
-	 * tried to flag a GPIO set as output for IRQ
-	 * Generic GPIO driver stores the direction value internally,
-	 * so it needs to be changed before bgpio_init() is called.
-	 */
+	 
 	dir_prev = ioread32(cgpio->regs + CDNS_GPIO_DIRECTION_MODE);
 	iowrite32(GENMASK(num_gpios - 1, 0),
 		  cgpio->regs + CDNS_GPIO_DIRECTION_MODE);
@@ -218,9 +202,7 @@ static int cdns_gpio_probe(struct platform_device *pdev)
 		goto err_revert_dir;
 	}
 
-	/*
-	 * Optional irq_chip support
-	 */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq >= 0) {
 		struct gpio_irq_chip *girq;
@@ -249,9 +231,7 @@ static int cdns_gpio_probe(struct platform_device *pdev)
 
 	cgpio->bypass_orig = ioread32(cgpio->regs + CDNS_GPIO_BYPASS_MODE);
 
-	/*
-	 * Enable gpio outputs, ignored for input direction
-	 */
+	 
 	iowrite32(GENMASK(num_gpios - 1, 0),
 		  cgpio->regs + CDNS_GPIO_OUTPUT_EN);
 	iowrite32(0, cgpio->regs + CDNS_GPIO_BYPASS_MODE);
@@ -280,7 +260,7 @@ static int cdns_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id cdns_of_ids[] = {
 	{ .compatible = "cdns,gpio-r1p02" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, cdns_of_ids);
 

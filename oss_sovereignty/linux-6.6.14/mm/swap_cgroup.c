@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/swap_cgroup.h>
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
 
-#include <linux/swapops.h> /* depends on mm.h include */
+#include <linux/swapops.h>  
 
 static DEFINE_MUTEX(swap_cgroup_mutex);
 struct swap_cgroup_ctrl {
@@ -19,23 +19,9 @@ struct swap_cgroup {
 };
 #define SC_PER_PAGE	(PAGE_SIZE/sizeof(struct swap_cgroup))
 
-/*
- * SwapCgroup implements "lookup" and "exchange" operations.
- * In typical usage, this swap_cgroup is accessed via memcg's charge/uncharge
- * against SwapCache. At swap_free(), this is accessed directly from swap.
- *
- * This means,
- *  - we have no race in "exchange" when we're accessed via SwapCache because
- *    SwapCache(and its swp_entry) is under lock.
- *  - When called via swap_free(), there is no user of this entry and no race.
- * Then, we don't need lock around "exchange".
- *
- * TODO: we can push these buffers out to HIGHMEM.
- */
+ 
 
-/*
- * allocate buffer for swap_cgroup.
- */
+ 
 static int swap_cgroup_prepare(int type)
 {
 	struct page *page;
@@ -85,15 +71,7 @@ static struct swap_cgroup *lookup_swap_cgroup(swp_entry_t ent,
 	return __lookup_swap_cgroup(ctrl, offset);
 }
 
-/**
- * swap_cgroup_cmpxchg - cmpxchg mem_cgroup's id for this swp_entry.
- * @ent: swap entry to be cmpxchged
- * @old: old id
- * @new: new id
- *
- * Returns old id at success, 0 at failure.
- * (There is no mem_cgroup using 0 as its id)
- */
+ 
 unsigned short swap_cgroup_cmpxchg(swp_entry_t ent,
 					unsigned short old, unsigned short new)
 {
@@ -114,15 +92,7 @@ unsigned short swap_cgroup_cmpxchg(swp_entry_t ent,
 	return retval;
 }
 
-/**
- * swap_cgroup_record - record mem_cgroup for a set of swap entries
- * @ent: the first swap entry to be recorded into
- * @id: mem_cgroup to be recorded
- * @nr_ents: number of swap entries to be recorded
- *
- * Returns old value at success, 0 at failure.
- * (Of course, old value can be 0.)
- */
+ 
 unsigned short swap_cgroup_record(swp_entry_t ent, unsigned short id,
 				  unsigned int nr_ents)
 {
@@ -153,12 +123,7 @@ unsigned short swap_cgroup_record(swp_entry_t ent, unsigned short id,
 	return old;
 }
 
-/**
- * lookup_swap_cgroup_id - lookup mem_cgroup id tied to swap entry
- * @ent: swap entry to be looked up.
- *
- * Returns ID of mem_cgroup at success. 0 at failure. (0 is invalid ID)
- */
+ 
 unsigned short lookup_swap_cgroup_id(swp_entry_t ent)
 {
 	return lookup_swap_cgroup(ent, NULL)->id;
@@ -185,7 +150,7 @@ int swap_cgroup_swapon(int type, unsigned long max_pages)
 	ctrl->map = array;
 	spin_lock_init(&ctrl->lock);
 	if (swap_cgroup_prepare(type)) {
-		/* memory shortage */
+		 
 		ctrl->map = NULL;
 		ctrl->length = 0;
 		mutex_unlock(&swap_cgroup_mutex);

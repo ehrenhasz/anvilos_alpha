@@ -1,24 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include <engine/falcon.h>
 
 #include <core/gpuobj.h>
@@ -134,7 +114,7 @@ nvkm_falcon_oneinit(struct nvkm_engine *engine)
 	const u32 base = falcon->addr;
 	u32 caps;
 
-	/* determine falcon capabilities */
+	 
 	if (device->chipset <  0xa3 ||
 	    device->chipset == 0xaa || device->chipset == 0xac) {
 		falcon->version = 0;
@@ -167,7 +147,7 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 	const u32 base = falcon->addr;
 	int ret, i;
 
-	/* wait for 'uc halted' to be signalled before continuing */
+	 
 	if (falcon->secret && falcon->version < 4) {
 		if (!falcon->version) {
 			nvkm_msec(device, 2000,
@@ -183,12 +163,10 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 		nvkm_wr32(device, base + 0x004, 0x00000010);
 	}
 
-	/* disable all interrupts */
+	 
 	nvkm_wr32(device, base + 0x014, 0xffffffff);
 
-	/* no default ucode provided by the engine implementation, try and
-	 * locate a "self-bootstrapping" firmware image for the engine
-	 */
+	 
 	if (!falcon->code.data) {
 		snprintf(name, sizeof(name), "nouveau/nv%02x_fuc%03x",
 			 device->chipset, falcon->addr >> 12);
@@ -205,9 +183,7 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 		falcon->external = true;
 	}
 
-	/* next step is to try and load "static code/data segment" firmware
-	 * images for the engine
-	 */
+	 
 	if (!falcon->code.data) {
 		snprintf(name, sizeof(name), "nouveau/nv%02x_fuc%03xd",
 			 device->chipset, falcon->addr >> 12);
@@ -243,7 +219,7 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 	nvkm_debug(subdev, "firmware: %s (%s)\n", name, falcon->data.data ?
 		   "static code/data segments" : "self-bootstrapping");
 
-	/* ensure any "self-bootstrapping" firmware image is in vram */
+	 
 	if (!falcon->data.data && !falcon->core) {
 		ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST,
 				      falcon->code.size, 256, false,
@@ -259,7 +235,7 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 		nvkm_done(falcon->core);
 	}
 
-	/* upload firmware bootloader (or the full code segments) */
+	 
 	if (falcon->core) {
 		u64 addr = nvkm_memory_addr(falcon->core);
 		if (device->card_type < NV_C0)
@@ -291,7 +267,7 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 		}
 	}
 
-	/* upload data segment (if necessary), zeroing the remainder */
+	 
 	if (falcon->version < 3) {
 		nvkm_wr32(device, base + 0xff8, 0x00000000);
 		for (i = 0; !falcon->core && i < falcon->data.size / 4; i++)
@@ -306,11 +282,11 @@ nvkm_falcon_init(struct nvkm_engine *engine)
 			nvkm_wr32(device, base + 0x1c4, 0x00000000);
 	}
 
-	/* start it running */
-	nvkm_wr32(device, base + 0x10c, 0x00000001); /* BLOCK_ON_FIFO */
-	nvkm_wr32(device, base + 0x104, 0x00000000); /* ENTRY */
-	nvkm_wr32(device, base + 0x100, 0x00000002); /* TRIGGER */
-	nvkm_wr32(device, base + 0x048, 0x00000003); /* FIFO | CHSW */
+	 
+	nvkm_wr32(device, base + 0x10c, 0x00000001);  
+	nvkm_wr32(device, base + 0x104, 0x00000000);  
+	nvkm_wr32(device, base + 0x100, 0x00000002);  
+	nvkm_wr32(device, base + 0x048, 0x00000003);  
 
 	if (falcon->func->init)
 		falcon->func->init(falcon);

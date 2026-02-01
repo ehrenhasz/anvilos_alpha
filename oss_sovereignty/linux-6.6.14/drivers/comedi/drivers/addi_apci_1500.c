@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_1500.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -19,23 +8,15 @@
 #include "amcc_s5933.h"
 #include "z8536.h"
 
-/*
- * PCI Bar 0 Register map (devpriv->amcc)
- * see amcc_s5933.h for register and bit defines
- */
+ 
 
-/*
- * PCI Bar 1 Register map (dev->iobase)
- * see z8536.h for Z8536 internal registers and bit defines
- */
+ 
 #define APCI1500_Z8536_PORTC_REG	0x00
 #define APCI1500_Z8536_PORTB_REG	0x01
 #define APCI1500_Z8536_PORTA_REG	0x02
 #define APCI1500_Z8536_CTRL_REG		0x03
 
-/*
- * PCI Bar 2 Register map (devpriv->addon)
- */
+ 
 #define APCI1500_CLK_SEL_REG		0x00
 #define APCI1500_DI_REG			0x00
 #define APCI1500_DO_REG			0x02
@@ -46,10 +27,10 @@ struct apci1500_private {
 
 	unsigned int clk_src;
 
-	/* Digital trigger configuration [0]=AND [1]=OR */
-	unsigned int pm[2];	/* Pattern Mask */
-	unsigned int pt[2];	/* Pattern Transition */
-	unsigned int pp[2];	/* Pattern Polarity */
+	 
+	unsigned int pm[2];	 
+	unsigned int pt[2];	 
+	unsigned int pp[2];	 
 };
 
 static unsigned int z8536_read(struct comedi_device *dev, unsigned int reg)
@@ -80,10 +61,7 @@ static void z8536_reset(struct comedi_device *dev)
 {
 	unsigned long flags;
 
-	/*
-	 * Even if the state of the Z8536 is not known, the following
-	 * sequence will reset it and put it in State 0.
-	 */
+	 
 	spin_lock_irqsave(&dev->spinlock, flags);
 	inb(dev->iobase + APCI1500_Z8536_CTRL_REG);
 	outb(0, dev->iobase + APCI1500_Z8536_CTRL_REG);
@@ -93,13 +71,10 @@ static void z8536_reset(struct comedi_device *dev)
 	outb(0, dev->iobase + APCI1500_Z8536_CTRL_REG);
 	spin_unlock_irqrestore(&dev->spinlock, flags);
 
-	/* Disable all Ports and Counter/Timers */
+	 
 	z8536_write(dev, 0x00, Z8536_CFG_CTRL_REG);
 
-	/*
-	 * Port A is connected to Ditial Input channels 0-7.
-	 * Configure the port to allow interrupt detection.
-	 */
+	 
 	z8536_write(dev, Z8536_PAB_MODE_PTS_BIT |
 			 Z8536_PAB_MODE_SB |
 			 Z8536_PAB_MODE_PMS_DISABLE,
@@ -107,13 +82,7 @@ static void z8536_reset(struct comedi_device *dev)
 	z8536_write(dev, 0xff, Z8536_PB_DPP_REG);
 	z8536_write(dev, 0xff, Z8536_PA_DD_REG);
 
-	/*
-	 * Port B is connected to Ditial Input channels 8-13.
-	 * Configure the port to allow interrupt detection.
-	 *
-	 * NOTE: Bits 7 and 6 of Port B are connected to internal
-	 * diagnostic signals and bit 7 is inverted.
-	 */
+	 
 	z8536_write(dev, Z8536_PAB_MODE_PTS_BIT |
 			 Z8536_PAB_MODE_SB |
 			 Z8536_PAB_MODE_PMS_DISABLE,
@@ -121,18 +90,11 @@ static void z8536_reset(struct comedi_device *dev)
 	z8536_write(dev, 0x7f, Z8536_PB_DPP_REG);
 	z8536_write(dev, 0xff, Z8536_PB_DD_REG);
 
-	/*
-	 * Not sure what Port C is connected to...
-	 */
+	 
 	z8536_write(dev, 0x09, Z8536_PC_DPP_REG);
 	z8536_write(dev, 0x0e, Z8536_PC_DD_REG);
 
-	/*
-	 * Clear and disable all interrupt sources.
-	 *
-	 * Just in case, the reset of the Z8536 should have already
-	 * done this.
-	 */
+	 
 	z8536_write(dev, Z8536_CMD_CLR_IP_IUS, Z8536_PA_CMDSTAT_REG);
 	z8536_write(dev, Z8536_CMD_CLR_IE, Z8536_PA_CMDSTAT_REG);
 
@@ -148,7 +110,7 @@ static void z8536_reset(struct comedi_device *dev)
 	z8536_write(dev, Z8536_CMD_CLR_IP_IUS, Z8536_CT_CMDSTAT_REG(2));
 	z8536_write(dev, Z8536_CMD_CLR_IE, Z8536_CT_CMDSTAT_REG(2));
 
-	/* Disable all interrupts */
+	 
 	z8536_write(dev, 0x00, Z8536_INT_CTRL_REG);
 }
 
@@ -194,7 +156,7 @@ static bool apci1500_ack_irq(struct comedi_device *dev,
 
 	val = z8536_read(dev, reg);
 	if ((val & Z8536_STAT_IE_IP) == Z8536_STAT_IE_IP) {
-		val &= 0x0f;			/* preserve any write bits */
+		val &= 0x0f;			 
 		val |= Z8536_CMD_CLR_IP_IUS;
 		z8536_write(dev, val, reg);
 
@@ -216,37 +178,23 @@ static irqreturn_t apci1500_interrupt(int irq, void *d)
 		return IRQ_NONE;
 
 	if (apci1500_ack_irq(dev, Z8536_PA_CMDSTAT_REG))
-		status |= 0x01;	/* port a event (inputs 0-7) */
+		status |= 0x01;	 
 
 	if (apci1500_ack_irq(dev, Z8536_PB_CMDSTAT_REG)) {
-		/* Tests if this is an external error */
+		 
 		val = inb(dev->iobase + APCI1500_Z8536_PORTB_REG);
 		val &= 0xc0;
 		if (val) {
-			if (val & 0x80)	/* voltage error */
+			if (val & 0x80)	 
 				status |= 0x40;
-			if (val & 0x40)	/* short circuit error */
+			if (val & 0x40)	 
 				status |= 0x80;
 		} else {
-			status |= 0x02;	/* port b event (inputs 8-13) */
+			status |= 0x02;	 
 		}
 	}
 
-	/*
-	 * NOTE: The 'status' returned by the sample matches the
-	 * interrupt mask information from the APCI-1500 Users Manual.
-	 *
-	 *    Mask     Meaning
-	 * ----------  ------------------------------------------
-	 * 0b00000001  Event 1 has occurred
-	 * 0b00000010  Event 2 has occurred
-	 * 0b00000100  Counter/timer 1 has run down (not implemented)
-	 * 0b00001000  Counter/timer 2 has run down (not implemented)
-	 * 0b00010000  Counter 3 has run down (not implemented)
-	 * 0b00100000  Watchdog has run down (not implemented)
-	 * 0b01000000  Voltage error
-	 * 0b10000000  Short-circuit error
-	 */
+	 
 	comedi_buf_write_samples(s, &status, 1);
 	comedi_handle_events(dev, s);
 
@@ -256,21 +204,21 @@ static irqreturn_t apci1500_interrupt(int irq, void *d)
 static int apci1500_di_cancel(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
-	/* Disables the main interrupt on the board */
+	 
 	z8536_write(dev, 0x00, Z8536_INT_CTRL_REG);
 
-	/* Disable Ports A & B */
+	 
 	apci1500_port_enable(dev, false);
 
-	/* Ack any pending interrupts */
+	 
 	apci1500_ack_irq(dev, Z8536_PA_CMDSTAT_REG);
 	apci1500_ack_irq(dev, Z8536_PB_CMDSTAT_REG);
 
-	/* Disable pattern interrupts */
+	 
 	z8536_write(dev, Z8536_CMD_CLR_IE, Z8536_PA_CMDSTAT_REG);
 	z8536_write(dev, Z8536_CMD_CLR_IE, Z8536_PB_CMDSTAT_REG);
 
-	/* Enable Ports A & B */
+	 
 	apci1500_port_enable(dev, true);
 
 	return 0;
@@ -292,20 +240,20 @@ static int apci1500_di_inttrig_start(struct comedi_device *dev,
 	if (trig_num != cmd->start_arg)
 		return -EINVAL;
 
-	/* Disable Ports A & B */
+	 
 	apci1500_port_enable(dev, false);
 
-	/* Set Port A for selected trigger pattern */
+	 
 	z8536_write(dev, devpriv->pm[pa_trig] & 0xff, Z8536_PA_PM_REG);
 	z8536_write(dev, devpriv->pt[pa_trig] & 0xff, Z8536_PA_PT_REG);
 	z8536_write(dev, devpriv->pp[pa_trig] & 0xff, Z8536_PA_PP_REG);
 
-	/* Set Port B for selected trigger pattern */
+	 
 	z8536_write(dev, (devpriv->pm[pb_trig] >> 8) & 0xff, Z8536_PB_PM_REG);
 	z8536_write(dev, (devpriv->pt[pb_trig] >> 8) & 0xff, Z8536_PB_PT_REG);
 	z8536_write(dev, (devpriv->pp[pb_trig] >> 8) & 0xff, Z8536_PB_PP_REG);
 
-	/* Set Port A trigger mode (if enabled) and enable interrupt */
+	 
 	if (devpriv->pm[pa_trig] & 0xff) {
 		pa_mode = pa_trig ? Z8536_PAB_MODE_PMS_AND
 				  : Z8536_PAB_MODE_PMS_OR;
@@ -324,7 +272,7 @@ static int apci1500_di_inttrig_start(struct comedi_device *dev,
 			pa_trig ? "AND" : "OR");
 	}
 
-	/* Set Port B trigger mode (if enabled) and enable interrupt */
+	 
 	if (devpriv->pm[pb_trig] & 0xff00) {
 		pb_mode = pb_trig ? Z8536_PAB_MODE_PMS_AND
 				  : Z8536_PAB_MODE_PMS_OR;
@@ -343,7 +291,7 @@ static int apci1500_di_inttrig_start(struct comedi_device *dev,
 			pb_trig ? "AND" : "OR");
 	}
 
-	/* Enable Ports A & B */
+	 
 	apci1500_port_enable(dev, true);
 
 	if (!valid_trig) {
@@ -352,7 +300,7 @@ static int apci1500_di_inttrig_start(struct comedi_device *dev,
 		return -EINVAL;
 	}
 
-	/* Authorizes the main interrupt on the board */
+	 
 	z8536_write(dev, Z8536_INT_CTRL_MIE | Z8536_INT_CTRL_DLC,
 		    Z8536_INT_CTRL_REG);
 
@@ -373,7 +321,7 @@ static int apci1500_di_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_INT);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -384,26 +332,12 @@ static int apci1500_di_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
-	/*
-	 * Internal start source triggers:
-	 *
-	 *   0	AND mode for Port A (digital inputs 0-7)
-	 *	AND mode for Port B (digital inputs 8-13 and internal signals)
-	 *
-	 *   1	OR mode for Port A (digital inputs 0-7)
-	 *	AND mode for Port B (digital inputs 8-13 and internal signals)
-	 *
-	 *   2	AND mode for Port A (digital inputs 0-7)
-	 *	OR mode for Port B (digital inputs 8-13 and internal signals)
-	 *
-	 *   3	OR mode for Port A (digital inputs 0-7)
-	 *	OR mode for Port B (digital inputs 8-13 and internal signals)
-	 */
+	 
 	err |= comedi_check_trigger_arg_max(&cmd->start_arg, 3);
 
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -415,35 +349,14 @@ static int apci1500_di_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
 
-/*
- * The pattern-recognition logic must be configured before the digital
- * input async command is started.
- *
- * Digital input channels 0 to 13 can generate interrupts. Channels 14
- * and 15 are connected to internal board status/diagnostic signals.
- *
- * Channel 14 - Voltage error (the external supply is < 5V)
- * Channel 15 - Short-circuit/overtemperature error
- *
- *	data[0] : INSN_CONFIG_DIGITAL_TRIG
- *	data[1] : trigger number
- *		  0 = AND mode
- *		  1 = OR mode
- *	data[2] : configuration operation:
- *	          COMEDI_DIGITAL_TRIG_DISABLE = no interrupts
- *	          COMEDI_DIGITAL_TRIG_ENABLE_EDGES = edge interrupts
- *	          COMEDI_DIGITAL_TRIG_ENABLE_LEVELS = level interrupts
- *	data[3] : left-shift for data[4] and data[5]
- *	data[4] : rising-edge/high level channels
- *	data[5] : falling-edge/low level channels
- */
+ 
 static int apci1500_di_cfg_trig(struct comedi_device *dev,
 				struct comedi_subdevice *s,
 				struct comedi_insn *insn,
@@ -491,31 +404,28 @@ static int apci1500_di_cfg_trig(struct comedi_device *dev,
 
 	switch (data[2]) {
 	case COMEDI_DIGITAL_TRIG_DISABLE:
-		/* clear trigger configuration */
+		 
 		pm = 0;
 		pt = 0;
 		pp = 0;
 		break;
 	case COMEDI_DIGITAL_TRIG_ENABLE_EDGES:
-		pm |= chan_mask;	/* enable channels */
-		pt |= chan_mask;	/* enable edge detection */
-		pp |= hi_mask;		/* rising-edge channels */
-		pp &= ~lo_mask;		/* falling-edge channels */
+		pm |= chan_mask;	 
+		pt |= chan_mask;	 
+		pp |= hi_mask;		 
+		pp &= ~lo_mask;		 
 		break;
 	case COMEDI_DIGITAL_TRIG_ENABLE_LEVELS:
-		pm |= chan_mask;	/* enable channels */
-		pt &= ~chan_mask;	/* enable level detection */
-		pp |= hi_mask;		/* high level channels */
-		pp &= ~lo_mask;		/* low level channels */
+		pm |= chan_mask;	 
+		pt &= ~chan_mask;	 
+		pp |= hi_mask;		 
+		pp &= ~lo_mask;		 
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/*
-	 * The AND mode trigger can only have one channel (max) enabled
-	 * for edge detection.
-	 */
+	 
 	if (trig == 0) {
 		int ret = 0;
 		unsigned int src;
@@ -535,7 +445,7 @@ static int apci1500_di_cfg_trig(struct comedi_device *dev,
 		}
 	}
 
-	/* save the trigger configuration */
+	 
 	devpriv->pm[trig] = pm;
 	devpriv->pt[trig] = pt;
 	devpriv->pp[trig] = pp;
@@ -623,35 +533,35 @@ static int apci1500_timer_insn_config(struct comedi_device *dev,
 		break;
 
 	case INSN_CONFIG_SET_COUNTER_MODE:
-		/* Simulate the 8254 timer modes */
+		 
 		switch (data[1]) {
 		case I8254_MODE0:
-			/* Interrupt on Terminal Count */
+			 
 			val = Z8536_CT_MODE_ECE |
 			      Z8536_CT_MODE_DCS_ONESHOT;
 			break;
 		case I8254_MODE1:
-			/* Hardware Retriggerable One-Shot */
+			 
 			val = Z8536_CT_MODE_ETE |
 			      Z8536_CT_MODE_DCS_ONESHOT;
 			break;
 		case I8254_MODE2:
-			/* Rate Generator */
+			 
 			val = Z8536_CT_MODE_CSC |
 			      Z8536_CT_MODE_DCS_PULSE;
 			break;
 		case I8254_MODE3:
-			/* Square Wave Mode */
+			 
 			val = Z8536_CT_MODE_CSC |
 			      Z8536_CT_MODE_DCS_SQRWAVE;
 			break;
 		case I8254_MODE4:
-			/* Software Triggered Strobe */
+			 
 			val = Z8536_CT_MODE_REB |
 			      Z8536_CT_MODE_DCS_PULSE;
 			break;
 		case I8254_MODE5:
-			/* Hardware Triggered Strobe (watchdog) */
+			 
 			val = Z8536_CT_MODE_EOE |
 			      Z8536_CT_MODE_ETE |
 			      Z8536_CT_MODE_REB |
@@ -675,16 +585,16 @@ static int apci1500_timer_insn_config(struct comedi_device *dev,
 	case INSN_CONFIG_GET_CLOCK_SRC:
 		switch (devpriv->clk_src) {
 		case 0:
-			data[1] = 0;		/* 111.86 kHz / 2 */
-			data[2] = 17879;	/* 17879 ns (approx) */
+			data[1] = 0;		 
+			data[2] = 17879;	 
 			break;
 		case 1:
-			data[1] = 1;		/* 3.49 kHz / 2 */
-			data[2] = 573066;	/* 573066 ns (approx) */
+			data[1] = 1;		 
+			data[2] = 573066;	 
 			break;
 		case 3:
-			data[1] = 2;		/* 1.747 kHz / 2 */
-			data[2] = 1164822;	/* 1164822 ns (approx) */
+			data[1] = 2;		 
+			data[2] = 1164822;	 
 			break;
 		default:
 			return -EINVAL;
@@ -723,10 +633,10 @@ static int apci1500_timer_insn_write(struct comedi_device *dev,
 	unsigned int cmd;
 
 	cmd = z8536_read(dev, Z8536_CT_CMDSTAT_REG(chan));
-	cmd &= Z8536_CT_CMDSTAT_GCB;	/* preserve gate */
-	cmd |= Z8536_CT_CMD_TCB;	/* set trigger */
+	cmd &= Z8536_CT_CMDSTAT_GCB;	 
+	cmd |= Z8536_CT_CMD_TCB;	 
 
-	/* software trigger a timer, it only makes sense to do one write */
+	 
 	if (insn->n)
 		z8536_write(dev, cmd, Z8536_CT_CMDSTAT_REG(chan));
 
@@ -744,8 +654,8 @@ static int apci1500_timer_insn_read(struct comedi_device *dev,
 	int i;
 
 	cmd = z8536_read(dev, Z8536_CT_CMDSTAT_REG(chan));
-	cmd &= Z8536_CT_CMDSTAT_GCB;	/* preserve gate */
-	cmd |= Z8536_CT_CMD_RCC;	/* set RCC */
+	cmd &= Z8536_CT_CMDSTAT_GCB;	 
+	cmd |= Z8536_CT_CMD_RCC;	 
 
 	for (i = 0; i < insn->n; i++) {
 		z8536_write(dev, cmd, Z8536_CT_CMDSTAT_REG(chan));
@@ -792,7 +702,7 @@ static int apci1500_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -810,7 +720,7 @@ static int apci1500_auto_attach(struct comedi_device *dev,
 		s->cancel	= apci1500_di_cancel;
 	}
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -819,10 +729,10 @@ static int apci1500_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci1500_do_insn_bits;
 
-	/* reset all the digital outputs */
+	 
 	outw(0x0, devpriv->addon + APCI1500_DO_REG);
 
-	/* Counter/Timer(Watchdog) subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_TIMER;
 	s->subdev_flags	= SDF_WRITABLE | SDF_READABLE;
@@ -833,7 +743,7 @@ static int apci1500_auto_attach(struct comedi_device *dev,
 	s->insn_write	= apci1500_timer_insn_write;
 	s->insn_read	= apci1500_timer_insn_read;
 
-	/* Enable the PCI interrupt */
+	 
 	if (dev->irq) {
 		outl(0x2000 | INTCSR_INBOX_FULL_INT,
 		     devpriv->amcc + AMCC_OP_REG_INTCSR);

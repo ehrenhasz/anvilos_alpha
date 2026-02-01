@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Distributed Switch Architecture VSC9953 driver
- * Copyright (C) 2020, Maxim Kochetkov <fido_max@inbox.ru>
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/types.h>
 #include <soc/mscc/ocelot_vcap.h>
@@ -157,16 +155,16 @@ static const u32 vsc9953_qs_regmap[] = {
 };
 
 static const u32 vsc9953_vcap_regmap[] = {
-	/* VCAP_CORE_CFG */
+	 
 	REG(VCAP_CORE_UPDATE_CTRL,		0x000000),
 	REG(VCAP_CORE_MV_CFG,			0x000004),
-	/* VCAP_CORE_CACHE */
+	 
 	REG(VCAP_CACHE_ENTRY_DAT,		0x000008),
 	REG(VCAP_CACHE_MASK_DAT,		0x000108),
 	REG(VCAP_CACHE_ACTION_DAT,		0x000208),
 	REG(VCAP_CACHE_CNT_DAT,			0x000308),
 	REG(VCAP_CACHE_TG_DAT,			0x000388),
-	/* VCAP_CONST */
+	 
 	REG(VCAP_CONST_VCAP_VER,		0x000398),
 	REG(VCAP_CONST_ENTRY_WIDTH,		0x00039c),
 	REG(VCAP_CONST_ENTRY_CNT,		0x0003a0),
@@ -458,7 +456,7 @@ static const u32 *vsc9953_regmap[TARGET_MAX] = {
 	[DEV_GMII]	= vsc9953_dev_gmii_regmap,
 };
 
-/* Addresses are relative to the device's base address */
+ 
 static const struct resource vsc9953_resources[] = {
 	DEFINE_RES_MEM_NAMED(0x0010000, 0x0010000, "sys"),
 	DEFINE_RES_MEM_NAMED(0x0030000, 0x0010000, "rew"),
@@ -530,7 +528,7 @@ static const struct reg_field vsc9953_regfields[REGFIELD_MAX] = {
 	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 0, 0),
 	[GCB_MIIM_MII_STATUS_PENDING] = REG_FIELD(GCB_MIIM_MII_STATUS, 2, 2),
 	[GCB_MIIM_MII_STATUS_BUSY] = REG_FIELD(GCB_MIIM_MII_STATUS, 3, 3),
-	/* Replicated per number of ports (11), register size 4 per port */
+	 
 	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 13, 13, 11, 4),
 	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 11, 4),
 	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 11, 4),
@@ -581,7 +579,7 @@ static const struct vcap_field vsc9953_vcap_is1_keys[] = {
 	[VCAP_IS1_HK_LOOKUP]			= {  1,   2},
 	[VCAP_IS1_HK_IGR_PORT_MASK]		= {  3,  11},
 	[VCAP_IS1_HK_RSV]			= { 14,  10},
-	/* VCAP_IS1_HK_OAM_Y1731 not supported */
+	 
 	[VCAP_IS1_HK_L2_MC]			= { 24,   1},
 	[VCAP_IS1_HK_L2_BC]			= { 25,   1},
 	[VCAP_IS1_HK_IP_MC]			= { 26,   1},
@@ -591,24 +589,24 @@ static const struct vcap_field vsc9953_vcap_is1_keys[] = {
 	[VCAP_IS1_HK_VID]			= { 30,  12},
 	[VCAP_IS1_HK_DEI]			= { 42,   1},
 	[VCAP_IS1_HK_PCP]			= { 43,   3},
-	/* Specific Fields for IS1 Half Key S1_NORMAL */
+	 
 	[VCAP_IS1_HK_L2_SMAC]			= { 46,  48},
 	[VCAP_IS1_HK_ETYPE_LEN]			= { 94,   1},
 	[VCAP_IS1_HK_ETYPE]			= { 95,  16},
 	[VCAP_IS1_HK_IP_SNAP]			= {111,   1},
 	[VCAP_IS1_HK_IP4]			= {112,   1},
-	/* Layer-3 Information */
+	 
 	[VCAP_IS1_HK_L3_FRAGMENT]		= {113,   1},
 	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]		= {114,   1},
 	[VCAP_IS1_HK_L3_OPTIONS]		= {115,   1},
 	[VCAP_IS1_HK_L3_DSCP]			= {116,   6},
 	[VCAP_IS1_HK_L3_IP4_SIP]		= {122,  32},
-	/* Layer-4 Information */
+	 
 	[VCAP_IS1_HK_TCP_UDP]			= {154,   1},
 	[VCAP_IS1_HK_TCP]			= {155,   1},
 	[VCAP_IS1_HK_L4_SPORT]			= {156,  16},
 	[VCAP_IS1_HK_L4_RNG]			= {172,   8},
-	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
+	 
 	[VCAP_IS1_HK_IP4_INNER_TPID]            = { 46,   1},
 	[VCAP_IS1_HK_IP4_INNER_VID]		= { 47,  12},
 	[VCAP_IS1_HK_IP4_INNER_DEI]		= { 59,   1},
@@ -651,7 +649,7 @@ static const struct vcap_field vsc9953_vcap_is1_actions[] = {
 };
 
 static struct vcap_field vsc9953_vcap_is2_keys[] = {
-	/* Common: 41 bits */
+	 
 	[VCAP_IS2_TYPE]				= {  0,   4},
 	[VCAP_IS2_HK_FIRST]			= {  4,   1},
 	[VCAP_IS2_HK_PAG]			= {  5,   8},
@@ -664,19 +662,19 @@ static struct vcap_field vsc9953_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_VID]			= { 29,  12},
 	[VCAP_IS2_HK_DEI]			= { 41,   1},
 	[VCAP_IS2_HK_PCP]			= { 42,   3},
-	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
+	 
 	[VCAP_IS2_HK_L2_DMAC]			= { 45,  48},
 	[VCAP_IS2_HK_L2_SMAC]			= { 93,  48},
-	/* MAC_ETYPE (TYPE=000) */
+	 
 	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= {141,  16},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= {157,  16},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= {173,   8},
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= {181,   3},
-	/* MAC_LLC (TYPE=001) */
+	 
 	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= {141,  40},
-	/* MAC_SNAP (TYPE=010) */
+	 
 	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= {141,  40},
-	/* MAC_ARP (TYPE=011) */
+	 
 	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 45,  48},
 	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 93,   1},
 	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 94,   1},
@@ -688,7 +686,7 @@ static struct vcap_field vsc9953_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= {101,  32},
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= {133,  32},
 	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= {165,   1},
-	/* IP4_TCP_UDP / IP4_OTHER common */
+	 
 	[VCAP_IS2_HK_IP4]			= { 45,   1},
 	[VCAP_IS2_HK_L3_FRAGMENT]		= { 46,   1},
 	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 47,   1},
@@ -698,7 +696,7 @@ static struct vcap_field vsc9953_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L3_IP4_DIP]		= { 58,  32},
 	[VCAP_IS2_HK_L3_IP4_SIP]		= { 90,  32},
 	[VCAP_IS2_HK_DIP_EQ_SIP]		= {122,   1},
-	/* IP4_TCP_UDP (TYPE=100) */
+	 
 	[VCAP_IS2_HK_TCP]			= {123,   1},
 	[VCAP_IS2_HK_L4_DPORT]			= {124,  16},
 	[VCAP_IS2_HK_L4_SPORT]			= {140,  16},
@@ -711,10 +709,10 @@ static struct vcap_field vsc9953_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L4_PSH]			= {169,   1},
 	[VCAP_IS2_HK_L4_ACK]			= {170,   1},
 	[VCAP_IS2_HK_L4_URG]			= {171,   1},
-	/* IP4_OTHER (TYPE=101) */
+	 
 	[VCAP_IS2_HK_IP4_L3_PROTO]		= {123,   8},
 	[VCAP_IS2_HK_L3_PAYLOAD]		= {131,  56},
-	/* IP6_STD (TYPE=110) */
+	 
 	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 45,   1},
 	[VCAP_IS2_HK_L3_IP6_SIP]		= { 46, 128},
 	[VCAP_IS2_HK_IP6_L3_PROTO]		= {174,   8},
@@ -740,7 +738,7 @@ static struct vcap_props vsc9953_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[ES0_ACTION_TYPE_NORMAL] = {
-				.width = 73, /* HIT_STICKY not included */
+				.width = 73,  
 				.count = 1,
 			},
 		},
@@ -752,7 +750,7 @@ static struct vcap_props vsc9953_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[IS1_ACTION_TYPE_NORMAL] = {
-				.width = 80, /* HIT_STICKY not included */
+				.width = 80,  
 				.count = 4,
 			},
 		},
@@ -764,7 +762,7 @@ static struct vcap_props vsc9953_vcap_props[] = {
 		.action_type_width = 1,
 		.action_table = {
 			[IS2_ACTION_TYPE_NORMAL] = {
-				.width = 50, /* HIT_CNT not included */
+				.width = 50,  
 				.count = 2
 			},
 			[IS2_ACTION_TYPE_SMAC_SIP] = {
@@ -801,15 +799,12 @@ static int vsc9953_sys_ram_init_status(struct ocelot *ocelot)
 }
 
 
-/* CORE_ENA is in SYS:SYSTEM:RESET_CFG
- * MEM_INIT is in SYS:SYSTEM:RESET_CFG
- * MEM_ENA is in SYS:SYSTEM:RESET_CFG
- */
+ 
 static int vsc9953_reset(struct ocelot *ocelot)
 {
 	int val, err;
 
-	/* soft-reset the switch core */
+	 
 	ocelot_field_write(ocelot, GCB_SOFT_RST_SWC_RST, 1);
 
 	err = readx_poll_timeout(vsc9953_gcb_soft_rst_status, ocelot, val, !val,
@@ -819,7 +814,7 @@ static int vsc9953_reset(struct ocelot *ocelot)
 		return err;
 	}
 
-	/* initialize switch mem ~40us */
+	 
 	ocelot_field_write(ocelot, SYS_RESET_CFG_MEM_ENA, 1);
 	ocelot_field_write(ocelot, SYS_RESET_CFG_MEM_INIT, 1);
 
@@ -831,16 +826,13 @@ static int vsc9953_reset(struct ocelot *ocelot)
 		return err;
 	}
 
-	/* enable switch core */
+	 
 	ocelot_field_write(ocelot, SYS_RESET_CFG_CORE_ENA, 1);
 
 	return 0;
 }
 
-/* Watermark encode
- * Bit 9:   Unit; 0:1, 1:16
- * Bit 8-0: Value to be multiplied with unit
- */
+ 
 static u16 vsc9953_wm_enc(u16 value)
 {
 	WARN_ON(value >= 16 * BIT(9));
@@ -901,7 +893,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
 		return rc;
 	}
 
-	/* Needed in order to initialize the bus mutex lock */
+	 
 	rc = devm_of_mdiobus_register(dev, bus, NULL);
 	if (rc < 0) {
 		dev_err(dev, "failed to register MDIO bus\n");
@@ -945,7 +937,7 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
 			lynx_pcs_destroy(phylink_pcs);
 	}
 
-	/* mdiobus_unregister and mdiobus_free handled by devres */
+	 
 }
 
 static const struct felix_info seville_info_vsc9953 = {

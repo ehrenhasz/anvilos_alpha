@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Infrastructure for statistic tracing (histogram output).
- *
- * Copyright (C) 2008-2009 Frederic Weisbecker <fweisbec@gmail.com>
- *
- * Based on the code from trace_branch.c which is
- * Copyright (C) 2008 Steven Rostedt <srostedt@redhat.com>
- *
- */
+
+ 
 
 #include <linux/security.h>
 #include <linux/list.h>
@@ -18,17 +10,13 @@
 #include "trace.h"
 
 
-/*
- * List of stat red-black nodes from a tracer
- * We use a such tree to sort quickly the stat
- * entries from the tracer.
- */
+ 
 struct stat_node {
 	struct rb_node		node;
 	void			*stat;
 };
 
-/* A stat session is the stats output in one file */
+ 
 struct stat_session {
 	struct list_head	session_list;
 	struct tracer_stat	*ts;
@@ -37,11 +25,11 @@ struct stat_session {
 	struct dentry		*file;
 };
 
-/* All of the sessions currently in use. Each stat file embed one session */
+ 
 static LIST_HEAD(all_stat_sessions);
 static DEFINE_MUTEX(all_stat_sessions_mutex);
 
-/* The root directory for all stat files */
+ 
 static struct dentry		*stat_dir;
 
 static void __reset_stat_session(struct stat_session *session)
@@ -82,10 +70,7 @@ static int insert_stat(struct rb_root *root, void *stat, cmp_func_t cmp)
 		return -ENOMEM;
 	data->stat = stat;
 
-	/*
-	 * Figure out where to put new node
-	 * This is a descendent sorting
-	 */
+	 
 	while (*new) {
 		struct stat_node *this;
 		int result;
@@ -105,21 +90,13 @@ static int insert_stat(struct rb_root *root, void *stat, cmp_func_t cmp)
 	return 0;
 }
 
-/*
- * For tracers that don't provide a stat_cmp callback.
- * This one will force an insertion as right-most node
- * in the rbtree.
- */
+ 
 static int dummy_cmp(const void *p1, const void *p2)
 {
 	return -1;
 }
 
-/*
- * Initialize the stat rbtree at each trace_stat file opening.
- * All of these copies and sorting are required on all opening
- * since the stats could have changed between two file sessions.
- */
+ 
 static int stat_seq_init(struct stat_session *session)
 {
 	struct tracer_stat *ts = session->ts;
@@ -142,13 +119,11 @@ static int stat_seq_init(struct stat_session *session)
 	if (ret)
 		goto exit;
 
-	/*
-	 * Iterate over the tracer stat entries and store them in an rbtree.
-	 */
+	 
 	for (i = 1; ; i++) {
 		stat = ts->stat_next(stat, i);
 
-		/* End of insertion */
+		 
 		if (!stat)
 			break;
 
@@ -175,10 +150,10 @@ static void *stat_seq_start(struct seq_file *s, loff_t *pos)
 	int n = *pos;
 	int i;
 
-	/* Prevent from tracer switch or rbtree modification */
+	 
 	mutex_lock(&session->stat_mutex);
 
-	/* If we are in the beginning of the file, print the headers */
+	 
 	if (session->ts->stat_headers) {
 		if (n == 0)
 			return SEQ_START_TOKEN;
@@ -229,7 +204,7 @@ static const struct seq_operations trace_stat_seq_ops = {
 	.show		= stat_seq_show
 };
 
-/* The session stat is refilled and resorted at each stat file opening */
+ 
 static int tracing_stat_open(struct inode *inode, struct file *file)
 {
 	int ret;
@@ -255,9 +230,7 @@ static int tracing_stat_open(struct inode *inode, struct file *file)
 	return ret;
 }
 
-/*
- * Avoid consuming memory with our now useless rbtree.
- */
+ 
 static int tracing_stat_release(struct inode *i, struct file *f)
 {
 	struct stat_session *session = i->i_private;
@@ -316,7 +289,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	if (!trace->stat_start || !trace->stat_next || !trace->stat_show)
 		return -EINVAL;
 
-	/* Already registered? */
+	 
 	mutex_lock(&all_stat_sessions_mutex);
 	list_for_each_entry(node, &all_stat_sessions, session_list) {
 		if (node->ts == trace)
@@ -324,7 +297,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	}
 
 	ret = -ENOMEM;
-	/* Init the session */
+	 
 	session = kzalloc(sizeof(*session), GFP_KERNEL);
 	if (!session)
 		goto out;
@@ -340,7 +313,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	}
 
 	ret = 0;
-	/* Register */
+	 
 	list_add_tail(&session->session_list, &all_stat_sessions);
  out:
 	mutex_unlock(&all_stat_sessions_mutex);

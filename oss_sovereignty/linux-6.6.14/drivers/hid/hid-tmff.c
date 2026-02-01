@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Force feedback support for various HID compliant devices by ThrustMaster:
- *    ThrustMaster FireStorm Dual Power 2
- * and possibly others whose device ids haven't been added.
- *
- *  Modified to support ThrustMaster devices by Zinx Verituse
- *  on 2003-01-25 from the Logitech force feedback driver,
- *  which is by Johann Deneux.
- *
- *  Copyright (c) 2003 Zinx Verituse <zinx@epicsol.org>
- *  Copyright (c) 2002 Johann Deneux
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/hid.h>
 #include <linux/input.h>
@@ -36,7 +24,7 @@ static const signed short ff_joystick[] = {
 
 #ifdef CONFIG_THRUSTMASTER_FF
 
-/* Usages for thrustmaster devices I know about */
+ 
 #define THRUSTMASTER_USAGE_FF	(HID_UP_GENDESK | 0xbb)
 
 struct tmff_device {
@@ -44,7 +32,7 @@ struct tmff_device {
 	struct hid_field *ff_field;
 };
 
-/* Changes values from 0 to 0xffff into values from minimum to maximum */
+ 
 static inline int tmff_scale_u16(unsigned int in, int minimum, int maximum)
 {
 	int ret;
@@ -57,7 +45,7 @@ static inline int tmff_scale_u16(unsigned int in, int minimum, int maximum)
 	return ret;
 }
 
-/* Changes values from -0x80 to 0x7f into values from minimum to maximum */
+ 
 static inline int tmff_scale_s8(int in, int minimum, int maximum)
 {
 	int ret;
@@ -77,7 +65,7 @@ static int tmff_play(struct input_dev *dev, void *data,
 	struct tmff_device *tmff = data;
 	struct hid_field *ff_field = tmff->ff_field;
 	int x, y;
-	int left, right;	/* Rumbling */
+	int left, right;	 
 
 	switch (effect->type) {
 	case FF_CONSTANT:
@@ -102,7 +90,7 @@ static int tmff_play(struct input_dev *dev, void *data,
 					ff_field->logical_minimum,
 					ff_field->logical_maximum);
 
-		/* 2-in-1 strong motor is left */
+		 
 		if (hid->product == THRUSTMASTER_DEVICE_ID_2_IN_1_DT)
 			swap(left, right);
 
@@ -136,7 +124,7 @@ static int tmff_init(struct hid_device *hid, const signed short *ff_bits)
 	if (!tmff)
 		return -ENOMEM;
 
-	/* Find the report to use */
+	 
 	report_list = &hid->report_enum[HID_OUTPUT_REPORT].report_list;
 	list_for_each_entry(report, report_list, list) {
 		int fieldnum;
@@ -236,23 +224,23 @@ err:
 static const struct hid_device_id tm_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300),
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304),   /* FireStorm Dual Power 2 (and 3) */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304),    
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, THRUSTMASTER_DEVICE_ID_2_IN_1_DT),   /* Dual Trigger 2-in-1 */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, THRUSTMASTER_DEVICE_ID_2_IN_1_DT),    
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323),   /* Dual Trigger 3-in-1 (PC Mode) */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323),    
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb324),   /* Dual Trigger 3-in-1 (PS3 Mode) */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb324),    
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb605),   /* NASCAR PRO FF2 Wheel */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb605),    
 		.driver_data = (unsigned long)ff_joystick },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb651),	/* FGT Rumble Force Wheel */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb651),	 
 		.driver_data = (unsigned long)ff_rumble },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb653),	/* RGT Force Feedback CLUTCH Raging Wheel */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb653),	 
 		.driver_data = (unsigned long)ff_joystick },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb654),	/* FGT Force Feedback Wheel */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb654),	 
 		.driver_data = (unsigned long)ff_joystick },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb65a),	/* F430 Force Feedback Wheel */
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb65a),	 
 		.driver_data = (unsigned long)ff_joystick },
 	{ }
 };

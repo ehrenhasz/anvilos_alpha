@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_i2s.c - Tegra210 I2S driver
-//
-// Copyright (c) 2020 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -25,12 +25,7 @@ static const struct reg_default tegra210_i2s_reg_defaults[] = {
 	{ TEGRA210_I2S_CG, 0x1 },
 	{ TEGRA210_I2S_TIMING, 0x0000001f },
 	{ TEGRA210_I2S_ENABLE, 0x1 },
-	/*
-	 * Below update does not have any effect on Tegra186 and Tegra194.
-	 * On Tegra210, I2S4 has "i2s4a" and "i2s4b" pins and below update
-	 * is required to select i2s4b for it to be functional for I2S
-	 * operation.
-	 */
+	 
 	{ TEGRA210_I2S_CYA, 0x1 },
 };
 
@@ -53,7 +48,7 @@ static int tegra210_i2s_set_clock_rate(struct device *dev,
 
 	regmap_read(i2s->regmap, TEGRA210_I2S_CTRL, &val);
 
-	/* No need to set rates if I2S is being operated in slave */
+	 
 	if (!(val & I2S_CTRL_MASTER_EN))
 		return 0;
 
@@ -65,11 +60,7 @@ static int tegra210_i2s_set_clock_rate(struct device *dev,
 	}
 
 	if (!IS_ERR(i2s->clk_sync_input)) {
-		/*
-		 * Other I/O modules in AHUB can use i2s bclk as reference
-		 * clock. Below sets sync input clock rate as per bclk,
-		 * which can be used as input to other I/O modules.
-		 */
+		 
 		err = clk_set_rate(i2s->clk_sync_input, clock_rate);
 		if (err) {
 			dev_err(dev,
@@ -103,12 +94,12 @@ static int tegra210_i2s_sw_reset(struct snd_soc_component *compnt,
 		stream_reg = TEGRA210_I2S_TX_CTRL;
 	}
 
-	/* Store CIF and I2S control values */
+	 
 	regmap_read(i2s->regmap, cif_reg, &cif_ctrl);
 	regmap_read(i2s->regmap, stream_reg, &stream_ctrl);
 	regmap_read(i2s->regmap, TEGRA210_I2S_CTRL, &i2s_ctrl);
 
-	/* Reset to make sure the previous transactions are clean */
+	 
 	regmap_update_bits(i2s->regmap, reset_reg, reset_mask, reset_en);
 
 	err = regmap_read_poll_timeout(i2s->regmap, reset_reg, val,
@@ -120,7 +111,7 @@ static int tegra210_i2s_sw_reset(struct snd_soc_component *compnt,
 		return err;
 	}
 
-	/* Restore CIF and I2S control values */
+	 
 	regmap_write(i2s->regmap, cif_reg, cif_ctrl);
 	regmap_write(i2s->regmap, stream_reg, stream_ctrl);
 	regmap_write(i2s->regmap, TEGRA210_I2S_CTRL, i2s_ctrl);
@@ -151,7 +142,7 @@ static int tegra210_i2s_init(struct snd_soc_dapm_widget *w,
 		return -EINVAL;
 	}
 
-	/* Ensure I2S is in disabled state before new session */
+	 
 	err = regmap_read_poll_timeout(i2s->regmap, status_reg, val,
 				       !(val & I2S_EN_MASK & I2S_EN),
 				       10, 10000);
@@ -196,12 +187,12 @@ static int __maybe_unused tegra210_i2s_runtime_resume(struct device *dev)
 static void tegra210_i2s_set_data_offset(struct tegra210_i2s *i2s,
 					 unsigned int data_offset)
 {
-	/* Capture path */
+	 
 	regmap_update_bits(i2s->regmap, TEGRA210_I2S_TX_CTRL,
 			   I2S_CTRL_DATA_OFFSET_MASK,
 			   data_offset << I2S_DATA_SHIFT);
 
-	/* Playback path */
+	 
 	regmap_update_bits(i2s->regmap, TEGRA210_I2S_RX_CTRL,
 			   I2S_CTRL_DATA_OFFSET_MASK,
 			   data_offset << I2S_DATA_SHIFT);
@@ -237,16 +228,13 @@ static int tegra210_i2s_set_fmt(struct snd_soc_dai *dai,
 		val |= I2S_CTRL_LRCK_POL_HIGH;
 		tegra210_i2s_set_data_offset(i2s, 0);
 		break;
-	/* I2S mode has data offset of 1 */
+	 
 	case SND_SOC_DAIFMT_I2S:
 		val |= I2S_CTRL_FRAME_FMT_LRCK_MODE;
 		val |= I2S_CTRL_LRCK_POL_LOW;
 		tegra210_i2s_set_data_offset(i2s, 1);
 		break;
-	/*
-	 * For RJ mode data offset is dependent on the sample size
-	 * and the bclk ratio, and so is set when hw_params is called.
-	 */
+	 
 	case SND_SOC_DAIFMT_RIGHT_J:
 		val |= I2S_CTRL_FRAME_FMT_LRCK_MODE;
 		val |= I2S_CTRL_LRCK_POL_HIGH;
@@ -293,7 +281,7 @@ static int tegra210_i2s_set_tdm_slot(struct snd_soc_dai *dai,
 {
 	struct tegra210_i2s *i2s = snd_soc_dai_get_drvdata(dai);
 
-	/* Copy the required tx and rx mask */
+	 
 	i2s->tx_mask = (tx_mask > DEFAULT_I2S_SLOT_MASK) ?
 		       DEFAULT_I2S_SLOT_MASK : tx_mask;
 	i2s->rx_mask = (rx_mask > DEFAULT_I2S_SLOT_MASK) ?
@@ -354,14 +342,7 @@ static int tegra210_i2s_put_fsync_width(struct snd_kcontrol *kcontrol,
 
 	i2s->fsync_width = value;
 
-	/*
-	 * Frame sync width is used only for FSYNC modes and not
-	 * applicable for LRCK modes. Reset value for this field is "0",
-	 * which means the width is one bit clock wide.
-	 * The width requirement may depend on the codec and in such
-	 * cases mixer control is used to update custom values. A value
-	 * of "N" here means, width is "N + 1" bit clock wide.
-	 */
+	 
 	regmap_update_bits(i2s->regmap, TEGRA210_I2S_CTRL,
 			   I2S_CTRL_FSYNC_WIDTH_MASK,
 			   i2s->fsync_width << I2S_FSYNC_WIDTH_SHIFT);
@@ -550,7 +531,7 @@ static int tegra210_i2s_set_timing_params(struct device *dev,
 	if (i2s->dai_fmt == SND_SOC_DAIFMT_RIGHT_J)
 		tegra210_i2s_set_data_offset(i2s, num_bclk - sample_size);
 
-	/* I2S bit clock rate */
+	 
 	bclk_rate = srate * channels * num_bclk;
 
 	err = tegra210_i2s_set_clock_rate(dev, bclk_rate);
@@ -562,13 +543,7 @@ static int tegra210_i2s_set_timing_params(struct device *dev,
 
 	regmap_read(i2s->regmap, TEGRA210_I2S_CTRL, &val);
 
-	/*
-	 * For LRCK mode, channel bit count depends on number of bit clocks
-	 * on the left channel, where as for FSYNC mode bit count depends on
-	 * the number of bit clocks in both left and right channels for DSP
-	 * mode or the number of bit clocks in one TDM frame.
-	 *
-	 */
+	 
 	switch (val & I2S_CTRL_FRAME_FMT_MASK) {
 	case I2S_CTRL_FRAME_FMT_LRCK_MODE:
 		bit_count = (bclk_rate / (srate * 2)) - 1;
@@ -640,13 +615,13 @@ static int tegra210_i2s_hw_params(struct snd_pcm_substream *substream,
 		return -EOPNOTSUPP;
 	}
 
-	/* Program sample size */
+	 
 	regmap_update_bits(i2s->regmap, TEGRA210_I2S_CTRL,
 			   I2S_CTRL_BIT_SIZE_MASK, val);
 
 	srate = params_rate(params);
 
-	/* For playback I2S RX-CIF and for capture TX-CIF is used */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		path = I2S_RX_PATH;
 	else
@@ -655,7 +630,7 @@ static int tegra210_i2s_hw_params(struct snd_pcm_substream *substream,
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		unsigned int max_th;
 
-		/* FIFO threshold in terms of frames */
+		 
 		max_th = (I2S_RX_FIFO_DEPTH / cif_conf.audio_ch) - 1;
 
 		if (i2s->rx_fifo_th > max_th)
@@ -782,13 +757,13 @@ static const struct snd_soc_dapm_widget tegra210_i2s_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route tegra210_i2s_routes[] = {
-	/* Playback route from XBAR */
+	 
 	{ "XBAR-Playback",	NULL,	"XBAR-TX" },
 	{ "CIF-Playback",	NULL,	"XBAR-Playback" },
 	{ "RX",			NULL,	"CIF-Playback" },
 	{ "DAP-Playback",	NULL,	"RX" },
 	{ "SPK",		NULL,	"DAP-Playback" },
-	/* Capture route to XBAR */
+	 
 	{ "XBAR-RX",		NULL,	"XBAR-Capture" },
 	{ "XBAR-Capture",	NULL,	"CIF-Capture" },
 	{ "CIF-Capture",	NULL,	"TX" },
@@ -896,11 +871,7 @@ static int tegra210_i2s_probe(struct platform_device *pdev)
 		return PTR_ERR(i2s->clk_i2s);
 	}
 
-	/*
-	 * Not an error, as this clock is needed only when some other I/O
-	 * requires input clock from current I2S instance, which is
-	 * configurable from DT.
-	 */
+	 
 	i2s->clk_sync_input = devm_clk_get(dev, "sync_input");
 	if (IS_ERR(i2s->clk_sync_input))
 		dev_dbg(dev, "can't retrieve I2S sync input clock\n");

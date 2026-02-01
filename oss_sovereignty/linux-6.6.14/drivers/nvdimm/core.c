@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/libnvdimm.h>
 #include <linux/suspend.h>
 #include <linux/export.h>
@@ -147,13 +145,7 @@ static void nvdimm_map_put(void *data)
 	nvdimm_bus_unlock(&nvdimm_bus->dev);
 }
 
-/**
- * devm_nvdimm_memremap - map a resource that is shared across regions
- * @dev: device that will own a reference to the shared mapping
- * @offset: physical base address of the mapping
- * @size: mapping size
- * @flags: memremap flags, or, if zero, perform an ioremap instead
- */
+ 
 void *devm_nvdimm_memremap(struct device *dev, resource_size_t offset,
 		size_t size, unsigned long flags)
 {
@@ -195,28 +187,19 @@ EXPORT_SYMBOL_GPL(nd_fletcher64);
 
 struct nvdimm_bus_descriptor *to_nd_desc(struct nvdimm_bus *nvdimm_bus)
 {
-	/* struct nvdimm_bus definition is private to libnvdimm */
+	 
 	return nvdimm_bus->nd_desc;
 }
 EXPORT_SYMBOL_GPL(to_nd_desc);
 
 struct device *to_nvdimm_bus_dev(struct nvdimm_bus *nvdimm_bus)
 {
-	/* struct nvdimm_bus definition is private to libnvdimm */
+	 
 	return &nvdimm_bus->dev;
 }
 EXPORT_SYMBOL_GPL(to_nvdimm_bus_dev);
 
-/**
- * nd_uuid_store: common implementation for writing 'uuid' sysfs attributes
- * @dev: container device for the uuid property
- * @uuid_out: uuid buffer to replace
- * @buf: raw sysfs buffer to parse
- *
- * Enforce that uuids can only be changed while the device is disabled
- * (driver detached)
- * LOCKING: expects device_lock() is held on entry
- */
+ 
 int nd_uuid_store(struct device *dev, uuid_t **uuid_out, const char *buf,
 		size_t len)
 {
@@ -471,10 +454,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
 	struct nvdimm_bus_descriptor *nd_desc = nvdimm_bus->nd_desc;
 	enum nvdimm_fwa_capability cap;
 
-	/*
-	 * Both 'activate' and 'capability' disappear when no ops
-	 * detected, or a negative capability is indicated.
-	 */
+	 
 	if (!nd_desc->fw_ops)
 		return 0;
 
@@ -528,7 +508,7 @@ int nd_integrity_init(struct gendisk *disk, unsigned long meta_size)
 }
 EXPORT_SYMBOL(nd_integrity_init);
 
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else  
 int nd_integrity_init(struct gendisk *disk, unsigned long meta_size)
 {
 	return 0;

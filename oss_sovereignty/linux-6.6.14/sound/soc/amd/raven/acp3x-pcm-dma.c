@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD ALSA SoC PCM Driver
-//
-//Copyright 2016 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -132,14 +132,14 @@ static void config_acp3x_dma(struct i2s_stream_instance *rtd, int direction)
 			val = ACP_SRAM_SP_CP_PTE_OFFSET;
 		}
 	}
-	/* Group Enable */
+	 
 	rv_writel(ACP_SRAM_PTE_OFFSET | BIT(31), rtd->acp3x_base +
 		  mmACPAXI2AXI_ATU_BASE_ADDR_GRP_1);
 	rv_writel(PAGE_SIZE_4K_ENABLE, rtd->acp3x_base +
 		  mmACPAXI2AXI_ATU_PAGE_SIZE_GRP_1);
 
 	for (page_idx = 0; page_idx < rtd->num_pages; page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 
@@ -147,7 +147,7 @@ static void config_acp3x_dma(struct i2s_stream_instance *rtd, int direction)
 		high |= BIT(31);
 		rv_writel(high, rtd->acp3x_base + mmACP_SCRATCH_REG_0 + val
 				+ 4);
-		/* Move to next physically contiguous page */
+		 
 		val += 8;
 		addr += PAGE_SIZE;
 	}

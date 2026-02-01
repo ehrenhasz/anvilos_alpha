@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      uvc_status.c  --  USB Video Class driver - Status endpoint
- *
- *      Copyright (C) 2005-2009
- *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <asm/barrier.h>
 #include <linux/kernel.h>
@@ -15,21 +10,14 @@
 
 #include "uvcvideo.h"
 
-/* --------------------------------------------------------------------------
- * Input device
- */
+ 
 #ifdef CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV
 
 static bool uvc_input_has_button(struct uvc_device *dev)
 {
 	struct uvc_streaming *stream;
 
-	/*
-	 * The device has button events if both bTriggerSupport and
-	 * bTriggerUsage are one. Otherwise the camera button does not
-	 * exist or is handled automatically by the camera without host
-	 * driver or client application intervention.
-	 */
+	 
 	list_for_each_entry(stream, &dev->streams, list) {
 		if (stream->header.bTriggerSupport == 1 &&
 		    stream->header.bTriggerUsage == 1)
@@ -92,11 +80,9 @@ static void uvc_input_report_key(struct uvc_device *dev, unsigned int code,
 #define uvc_input_init(dev)
 #define uvc_input_unregister(dev)
 #define uvc_input_report_key(dev, code, value)
-#endif /* CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV */
+#endif  
 
-/* --------------------------------------------------------------------------
- * Status interrupt endpoint
- */
+ 
 static void uvc_event_streaming(struct uvc_device *dev,
 				struct uvc_status *status, int len)
 {
@@ -179,7 +165,7 @@ static bool uvc_event_control(struct urb *urb,
 		status->bOriginator, status->control.bSelector,
 		attrs[status->control.bAttribute], len);
 
-	/* Find the control. */
+	 
 	ctrl = uvc_event_find_ctrl(dev, status, &chain);
 	if (!ctrl)
 		return false;
@@ -208,10 +194,10 @@ static void uvc_status_complete(struct urb *urb)
 	case 0:
 		break;
 
-	case -ENOENT:		/* usb_kill_urb() called. */
-	case -ECONNRESET:	/* usb_unlink_urb() called. */
-	case -ESHUTDOWN:	/* The endpoint is being disabled. */
-	case -EPROTO:		/* Device is disconnected (reported by some host controllers). */
+	case -ENOENT:		 
+	case -ECONNRESET:	 
+	case -ESHUTDOWN:	 
+	case -EPROTO:		 
 		return;
 
 	default:
@@ -226,7 +212,7 @@ static void uvc_status_complete(struct urb *urb)
 		switch (dev->status->bStatusType & 0x0f) {
 		case UVC_STATUS_TYPE_CONTROL: {
 			if (uvc_event_control(urb, dev->status, len))
-				/* The URB will be resubmitted in work context. */
+				 
 				return;
 			break;
 		}
@@ -243,7 +229,7 @@ static void uvc_status_complete(struct urb *urb)
 		}
 	}
 
-	/* Resubmit the URB. */
+	 
 	urb->interval = dev->int_ep->desc.bInterval;
 	ret = usb_submit_urb(urb, GFP_ATOMIC);
 	if (ret < 0)
@@ -274,10 +260,7 @@ int uvc_status_init(struct uvc_device *dev)
 
 	pipe = usb_rcvintpipe(dev->udev, ep->desc.bEndpointAddress);
 
-	/*
-	 * For high-speed interrupt endpoints, the bInterval value is used as
-	 * an exponent of two. Some developers forgot about it.
-	 */
+	 
 	interval = ep->desc.bInterval;
 	if (interval > 16 && dev->udev->speed == USB_SPEED_HIGH &&
 	    (dev->quirks & UVC_QUIRK_STATUS_INTERVAL))
@@ -314,39 +297,20 @@ void uvc_status_stop(struct uvc_device *dev)
 {
 	struct uvc_ctrl_work *w = &dev->async_ctrl;
 
-	/*
-	 * Prevent the asynchronous control handler from requeing the URB. The
-	 * barrier is needed so the flush_status change is visible to other
-	 * CPUs running the asynchronous handler before usb_kill_urb() is
-	 * called below.
-	 */
+	 
 	smp_store_release(&dev->flush_status, true);
 
-	/*
-	 * Cancel any pending asynchronous work. If any status event was queued,
-	 * process it synchronously.
-	 */
+	 
 	if (cancel_work_sync(&w->work))
 		uvc_ctrl_status_event(w->chain, w->ctrl, w->data);
 
-	/* Kill the urb. */
+	 
 	usb_kill_urb(dev->int_urb);
 
-	/*
-	 * The URB completion handler may have queued asynchronous work. This
-	 * won't resubmit the URB as flush_status is set, but it needs to be
-	 * cancelled before returning or it could then race with a future
-	 * uvc_status_start() call.
-	 */
+	 
 	if (cancel_work_sync(&w->work))
 		uvc_ctrl_status_event(w->chain, w->ctrl, w->data);
 
-	/*
-	 * From this point, there are no events on the queue and the status URB
-	 * is dead. No events will be queued until uvc_status_start() is called.
-	 * The barrier is needed to make sure that flush_status is visible to
-	 * uvc_ctrl_status_event_work() when uvc_status_start() will be called
-	 * again.
-	 */
+	 
 	smp_store_release(&dev->flush_status, false);
 }

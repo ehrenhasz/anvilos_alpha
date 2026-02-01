@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO accel core driver for Freescale MMA7455L 3-axis 10-bit accelerometer
- * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * UNSUPPORTED hardware features:
- *  - 8-bit mode with different scales
- *  - INT1/INT2 interrupts
- *  - Offset calibration
- *  - Events
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/iio.h>
@@ -41,21 +32,12 @@
 #define  MMA7455_CTL1_DFBW_62_5HZ	0
 #define MMA7455_REG_TW			0x1e
 
-/*
- * When MMA7455 is used in 10-bit it has a fullscale of -8g
- * corresponding to raw value -512. The userspace interface
- * uses m/s^2 and we declare micro units.
- * So scale factor is given by:
- *       g * 8 * 1e6 / 512 = 153228.90625, with g = 9.80665
- */
+ 
 #define MMA7455_10BIT_SCALE	153229
 
 struct mma7455_data {
 	struct regmap *regmap;
-	/*
-	 * Used to reorganize data.  Will ensure correct alignment of
-	 * the timestamp if present
-	 */
+	 
 	struct {
 		__le16 channels[3];
 		s64 ts __aligned(8);
@@ -181,7 +163,7 @@ static int mma7455_write_raw(struct iio_dev *indio_dev,
 					  MMA7455_CTL1_DFBW_MASK, i);
 
 	case IIO_CHAN_INFO_SCALE:
-		/* In 10-bit mode there is only one scale available */
+		 
 		if (val == 0 && val2 == MMA7455_10BIT_SCALE)
 			return 0;
 		break;

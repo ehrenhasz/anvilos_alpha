@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * /dev/lcd driver for Apple Network Servers.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -103,7 +101,7 @@ anslcd_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case ANSLCD_SENDCTRL:
 		temp = (char __user *) arg;
 		__get_user(ch, temp);
-		for (; ch; temp++) { /* FIXME: This is ugly, but should work, as a \0 byte is not a valid command code */
+		for (; ch; temp++) {  
 			anslcd_write_byte_ctrl ( ch );
 			__get_user(ch, temp);
 		}
@@ -148,10 +146,10 @@ static struct miscdevice anslcd_dev = {
 };
 
 static const char anslcd_logo[] __initconst =
-				"********************"  /* Line #1 */
-				"*      LINUX!      *"  /* Line #3 */
-				"*    Welcome to    *"  /* Line #2 */
-				"********************"; /* Line #4 */
+				"********************"   
+				"*      LINUX!      *"   
+				"*    Welcome to    *"   
+				"********************";  
 
 static int __init
 anslcd_init(void)

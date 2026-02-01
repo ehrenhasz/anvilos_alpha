@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Chrontel CH7322 CEC Controller
- *
- * Copyright 2020 Google LLC.
- */
 
-/*
- * Notes
- *
- * - This device powers on in Auto Mode which has limited functionality. This
- *   driver disables Auto Mode when it attaches.
- *
- */
+ 
+
+ 
 
 #include <linux/cec.h>
 #include <linux/dmi.h>
@@ -29,7 +19,7 @@
 #define CH7322_WRITE_BOK		0x40
 #define CH7322_WRITE_NMASK		0x0f
 
-/* Write buffer is 0x01-0x10 */
+ 
 #define CH7322_WRBUF		0x01
 #define CH7322_WRBUF_LEN	0x10
 
@@ -38,7 +28,7 @@
 #define CH7322_READ_MSENT		0x20
 #define CH7322_READ_NMASK		0x0f
 
-/* Read buffer is 0x41-0x50 */
+ 
 #define CH7322_RDBUF		0x41
 #define CH7322_RDBUF_LEN	0x10
 
@@ -142,16 +132,16 @@
 #define CH7322_CTL3_SPP_ACTH		0x02
 #define CH7322_CTL3_SPP_ACTL		0x01
 
-/* BOK status means NACK */
+ 
 #define CH7322_TX_FLAG_NACK	BIT(0)
-/* Device will retry automatically */
+ 
 #define CH7322_TX_FLAG_RETRY	BIT(1)
 
 struct ch7322 {
 	struct i2c_client *i2c;
 	struct regmap *regmap;
 	struct cec_adapter *cec;
-	struct mutex mutex;	/* device access mutex */
+	struct mutex mutex;	 
 	u8 tx_flags;
 };
 
@@ -178,7 +168,7 @@ static int ch7322_send_message(struct ch7322 *ch7322, const struct cec_msg *msg)
 	if (ret)
 		return ret;
 
-	/* Buffer not ready */
+	 
 	if (!(val & CH7322_WRITE_MSENT))
 		return -EBUSY;
 
@@ -217,13 +207,13 @@ static int ch7322_receive_message(struct ch7322 *ch7322, struct cec_msg *msg)
 	if (ret)
 		return ret;
 
-	/* Message not ready */
+	 
 	if (!(val & CH7322_READ_NRDT))
 		return -EIO;
 
 	msg->len = (val & CH7322_READ_NMASK) + 1;
 
-	/* Read entire RDBUF to clear state */
+	 
 	for (i = 0; i < CH7322_RDBUF_LEN; i++) {
 		ret = regmap_read(ch7322->regmap, CH7322_RDBUF + i, &val);
 		if (ret)
@@ -245,11 +235,7 @@ static void ch7322_tx_done(struct ch7322 *ch7322)
 	flags = ch7322->tx_flags;
 	mutex_unlock(&ch7322->mutex);
 
-	/*
-	 * The device returns a one-bit OK status which usually means ACK but
-	 * actually means NACK when sending a logical address query or a
-	 * broadcast.
-	 */
+	 
 	if (ret)
 		status = CEC_TX_STATUS_ERROR;
 	else if ((val & CH7322_WRITE_BOK) && (flags & CH7322_TX_FLAG_NACK))
@@ -282,11 +268,7 @@ static void ch7322_rx_done(struct ch7322 *ch7322)
 		cec_received_msg(ch7322->cec, &msg);
 }
 
-/*
- * This device can either monitor the DDC lines to obtain the physical address
- * or it can allow the host to program it. This driver lets the device obtain
- * it.
- */
+ 
 static void ch7322_phys_addr(struct ch7322 *ch7322)
 {
 	unsigned int pah, pal;
@@ -331,7 +313,7 @@ static irqreturn_t ch7322_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/* This device is always enabled */
+ 
 static int ch7322_cec_adap_enable(struct cec_adapter *adap, bool enable)
 {
 	return 0;
@@ -394,7 +376,7 @@ static const struct dmi_system_id ch7322_dmi_table[] = {
 	{ },
 };
 
-/* Make a best-effort attempt to locate a matching HDMI port */
+ 
 static int ch7322_get_port(struct i2c_client *client,
 			   struct device **dev,
 			   const char **port)
@@ -482,12 +464,12 @@ static int ch7322_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, ch7322);
 
-	/* Disable auto mode */
+	 
 	ret = regmap_write(ch7322->regmap, CH7322_MODE, CH7322_MODE_SW);
 	if (ret)
 		goto err_mutex;
 
-	/* Enable logical address register */
+	 
 	ret = regmap_update_bits(ch7322->regmap, CH7322_CTL,
 				 CH7322_CTL_SPADL, CH7322_CTL_SPADL);
 	if (ret)
@@ -514,7 +496,7 @@ static int ch7322_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Configure, mask, and clear interrupt */
+	 
 	ret = regmap_write(ch7322->regmap, CH7322_CFG1, 0);
 	if (ret)
 		goto err_notifier;
@@ -525,7 +507,7 @@ static int ch7322_probe(struct i2c_client *client)
 	if (ret)
 		goto err_notifier;
 
-	/* If HPD is up read physical address */
+	 
 	ret = regmap_read(ch7322->regmap, CH7322_ADDLR, &val);
 	if (ret)
 		goto err_notifier;
@@ -539,7 +521,7 @@ static int ch7322_probe(struct i2c_client *client)
 	if (ret)
 		goto err_notifier;
 
-	/* Unmask interrupt */
+	 
 	mutex_lock(&ch7322->mutex);
 	ret = regmap_write(ch7322->regmap, CH7322_INTCTL, 0xff);
 	mutex_unlock(&ch7322->mutex);
@@ -569,7 +551,7 @@ static void ch7322_remove(struct i2c_client *client)
 {
 	struct ch7322 *ch7322 = i2c_get_clientdata(client);
 
-	/* Mask interrupt */
+	 
 	mutex_lock(&ch7322->mutex);
 	regmap_write(ch7322->regmap, CH7322_INTCTL, CH7322_INTCTL_INTPB);
 	mutex_unlock(&ch7322->mutex);

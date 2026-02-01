@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * es8328.c  --  ES8328 ALSA SoC Audio driver
- *
- * Copyright 2014 Sutajio Ko-Usagi PTE LTD
- *
- * Author: Sean Cross <xobs@kosagi.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -49,7 +43,7 @@ static const struct snd_pcm_hw_constraint_list constraints_11289 = {
 	.list	= rates_11289,
 };
 
-/* regulator supplies for sgtl5000, VDDD is an optional external supply */
+ 
 enum sgtl5000_regulator_supplies {
 	DVDD,
 	AVDD,
@@ -58,7 +52,7 @@ enum sgtl5000_regulator_supplies {
 	ES8328_SUPPLY_NUM
 };
 
-/* vddd is optional supply */
+ 
 static const char * const supply_names[ES8328_SUPPLY_NUM] = {
 	"DVDD",
 	"AVDD",
@@ -88,9 +82,7 @@ struct es8328_priv {
 	struct regulator_bulk_data supplies[ES8328_SUPPLY_NUM];
 };
 
-/*
- * ES8328 Controls
- */
+ 
 
 static const char * const adcpol_txt[] = {"Normal", "L Invert", "R Invert",
 					  "L + R Invert"};
@@ -117,10 +109,7 @@ static int es8328_set_deemph(struct snd_soc_component *component)
 	struct es8328_priv *es8328 = snd_soc_component_get_drvdata(component);
 	int val, i, best;
 
-	/*
-	 * If we're using deemphasis select the nearest available sample
-	 * rate.
-	 */
+	 
 	if (es8328->deemph) {
 		best = 0;
 		for (i = 1; i < ARRAY_SIZE(deemph_settings); i++) {
@@ -211,9 +200,7 @@ static const struct snd_kcontrol_new es8328_snd_controls[] = {
 			4, 0, 8, 0, mic_tlv),
 };
 
-/*
- * DAPM Controls
- */
+ 
 
 static const char * const es8328_line_texts[] = {
 	"Line 1", "Line 2", "PGA", "Differential"};
@@ -232,7 +219,7 @@ static const struct soc_enum es8328_rline_enum =
 static const struct snd_kcontrol_new es8328_right_line_controls =
 	SOC_DAPM_ENUM("Route", es8328_rline_enum);
 
-/* Left Mixer */
+ 
 static const struct snd_kcontrol_new es8328_left_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Playback Switch", ES8328_DACCONTROL17, 7, 1, 0),
 	SOC_DAPM_SINGLE("Left Bypass Switch", ES8328_DACCONTROL17, 6, 1, 0),
@@ -240,7 +227,7 @@ static const struct snd_kcontrol_new es8328_left_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Right Bypass Switch", ES8328_DACCONTROL18, 6, 1, 0),
 };
 
-/* Right Mixer */
+ 
 static const struct snd_kcontrol_new es8328_right_mixer_controls[] = {
 	SOC_DAPM_SINGLE("Left Playback Switch", ES8328_DACCONTROL19, 7, 1, 0),
 	SOC_DAPM_SINGLE("Left Bypass Switch", ES8328_DACCONTROL19, 6, 1, 0),
@@ -251,7 +238,7 @@ static const struct snd_kcontrol_new es8328_right_mixer_controls[] = {
 static const char * const es8328_pga_sel[] = {
 	"Line 1", "Line 2", "Line 3", "Differential"};
 
-/* Left PGA Mux */
+ 
 static const struct soc_enum es8328_lpga_enum =
 	SOC_ENUM_SINGLE(ES8328_ADCCONTROL2, 6,
 			      ARRAY_SIZE(es8328_pga_sel),
@@ -259,7 +246,7 @@ static const struct soc_enum es8328_lpga_enum =
 static const struct snd_kcontrol_new es8328_left_pga_controls =
 	SOC_DAPM_ENUM("Route", es8328_lpga_enum);
 
-/* Right PGA Mux */
+ 
 static const struct soc_enum es8328_rpga_enum =
 	SOC_ENUM_SINGLE(ES8328_ADCCONTROL2, 4,
 			      ARRAY_SIZE(es8328_pga_sel),
@@ -267,14 +254,14 @@ static const struct soc_enum es8328_rpga_enum =
 static const struct snd_kcontrol_new es8328_right_pga_controls =
 	SOC_DAPM_ENUM("Route", es8328_rpga_enum);
 
-/* Differential Mux */
+ 
 static const char * const es8328_diff_sel[] = {"Line 1", "Line 2"};
 static SOC_ENUM_SINGLE_DECL(diffmux,
 			    ES8328_ADCCONTROL3, 7, es8328_diff_sel);
 static const struct snd_kcontrol_new es8328_diffmux_controls =
 	SOC_DAPM_ENUM("Route", diffmux);
 
-/* Mono ADC Mux */
+ 
 static const char * const es8328_mono_mux[] = {"Stereo", "Mono (Left)",
 	"Mono (Right)", "Digital Mono"};
 static SOC_ENUM_SINGLE_DECL(monomux,
@@ -595,14 +582,14 @@ static int es8328_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
-		/* Master serial port mode, with BCLK generated automatically */
+		 
 		snd_soc_component_update_bits(component, ES8328_MASTERMODE,
 				    ES8328_MASTERMODE_MSC,
 				    ES8328_MASTERMODE_MSC);
 		es8328->provider = true;
 		break;
 	case SND_SOC_DAIFMT_CBC_CFC:
-		/* Slave serial port mode */
+		 
 		snd_soc_component_update_bits(component, ES8328_MASTERMODE,
 				    ES8328_MASTERMODE_MSC, 0);
 		es8328->provider = false;
@@ -611,7 +598,7 @@ static int es8328_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		dac_mode |= ES8328_DACCONTROL1_DACFORMAT_I2S;
@@ -629,7 +616,7 @@ static int es8328_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	if ((fmt & SND_SOC_DAIFMT_INV_MASK) != SND_SOC_DAIFMT_NB_NF)
 		return -EINVAL;
 
@@ -649,7 +636,7 @@ static int es8328_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/* VREF, VMID=2x50k, digital enabled */
+		 
 		snd_soc_component_write(component, ES8328_CHIPPOWER, 0);
 		snd_soc_component_update_bits(component, ES8328_CONTROL1,
 				ES8328_CONTROL1_VMIDSEL_MASK |
@@ -666,7 +653,7 @@ static int es8328_set_bias_level(struct snd_soc_component *component,
 					ES8328_CONTROL1_VMIDSEL_5k |
 					ES8328_CONTROL1_ENREF);
 
-			/* Charge caps */
+			 
 			msleep(100);
 		}
 
@@ -674,7 +661,7 @@ static int es8328_set_bias_level(struct snd_soc_component *component,
 				ES8328_CONTROL2_OVERCURRENT_ON |
 				ES8328_CONTROL2_THERMAL_SHUTDOWN_ON);
 
-		/* VREF, VMID=2*500k, digital stopped */
+		 
 		snd_soc_component_update_bits(component, ES8328_CONTROL1,
 				ES8328_CONTROL1_VMIDSEL_MASK |
 				ES8328_CONTROL1_ENREF,
@@ -784,7 +771,7 @@ static int es8328_component_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* Setup clocks */
+	 
 	es8328->clk = devm_clk_get(component->dev, NULL);
 	if (IS_ERR(es8328->clk)) {
 		dev_err(component->dev, "codec clock missing or invalid\n");

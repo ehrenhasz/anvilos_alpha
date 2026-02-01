@@ -1,34 +1,5 @@
-/*
- * Copyright 2009 Jerome Glisse.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors:
- *    Jerome Glisse <glisse@freedesktop.org>
- *    Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
- *    Dave Airlie
- */
+ 
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/pagemap.h>
@@ -107,11 +78,7 @@ static void radeon_evict_flags(struct ttm_buffer_object *bo,
 			unsigned fpfn = rbo->rdev->mc.visible_vram_size >> PAGE_SHIFT;
 			int i;
 
-			/* Try evicting to the CPU inaccessible part of VRAM
-			 * first, but only set GTT as busy placement, so this
-			 * BO will be evicted to GTT rather than causing other
-			 * BOs to be evicted from VRAM
-			 */
+			 
 			radeon_ttm_placement_from_domain(rbo, RADEON_GEM_DOMAIN_VRAM |
 							 RADEON_GEM_DOMAIN_GTT);
 			rbo->placement.num_busy_placement = 0;
@@ -255,7 +222,7 @@ static int radeon_bo_move(struct ttm_buffer_object *bo, bool evict,
 	}
 
 out:
-	/* update statistics */
+	 
 	atomic64_add(bo->base.size, &rdev->num_bytes_moved);
 	radeon_bo_move_notify(bo);
 	return 0;
@@ -268,12 +235,12 @@ static int radeon_ttm_io_mem_reserve(struct ttm_device *bdev, struct ttm_resourc
 
 	switch (mem->mem_type) {
 	case TTM_PL_SYSTEM:
-		/* system memory */
+		 
 		return 0;
 	case TTM_PL_TT:
 #if IS_ENABLED(CONFIG_AGP)
 		if (rdev->flags & RADEON_IS_AGP) {
-			/* RADEON_IS_AGP is set only if AGP is active */
+			 
 			mem->bus.offset = (mem->start << PAGE_SHIFT) +
 				rdev->mc.agp_base;
 			mem->bus.is_iomem = !rdev->agp->cant_use_aperture;
@@ -283,27 +250,19 @@ static int radeon_ttm_io_mem_reserve(struct ttm_device *bdev, struct ttm_resourc
 		break;
 	case TTM_PL_VRAM:
 		mem->bus.offset = mem->start << PAGE_SHIFT;
-		/* check if it's visible */
+		 
 		if ((mem->bus.offset + bus_size) > rdev->mc.visible_vram_size)
 			return -EINVAL;
 		mem->bus.offset += rdev->mc.aper_base;
 		mem->bus.is_iomem = true;
 		mem->bus.caching = ttm_write_combined;
 #ifdef __alpha__
-		/*
-		 * Alpha: use bus.addr to hold the ioremap() return,
-		 * so we can modify bus.base below.
-		 */
+		 
 		mem->bus.addr = ioremap_wc(mem->bus.offset, bus_size);
 		if (!mem->bus.addr)
 			return -ENOMEM;
 
-		/*
-		 * Alpha: Use just the bus offset plus
-		 * the hose/domain memory base for bus.base.
-		 * It then can be used to build PTEs for VRAM
-		 * access, as done in ttm_bo_vm_fault().
-		 */
+		 
 		mem->bus.offset = (mem->bus.offset & 0x0ffffffffUL) +
 			rdev->hose->dense_mem_base;
 #endif
@@ -314,9 +273,7 @@ static int radeon_ttm_io_mem_reserve(struct ttm_device *bdev, struct ttm_resourc
 	return 0;
 }
 
-/*
- * TTM backend functions.
- */
+ 
 struct radeon_ttm_tt {
 	struct ttm_tt		ttm;
 	u64				offset;
@@ -327,7 +284,7 @@ struct radeon_ttm_tt {
 	bool bound;
 };
 
-/* prepare the sg table with the user pages */
+ 
 static int radeon_ttm_tt_pin_userptr(struct ttm_device *bdev, struct ttm_tt *ttm)
 {
 	struct radeon_device *rdev = radeon_get_rdev(bdev);
@@ -343,8 +300,7 @@ static int radeon_ttm_tt_pin_userptr(struct ttm_device *bdev, struct ttm_tt *ttm
 		return -EPERM;
 
 	if (gtt->userflags & RADEON_GEM_USERPTR_ANONONLY) {
-		/* check that we only pin down anonymous memory
-		   to prevent problems with writeback */
+		 
 		unsigned long end = gtt->userptr + (u64)ttm->num_pages * PAGE_SIZE;
 		struct vm_area_struct *vma;
 		vma = find_vma(gtt->usermm, gtt->userptr);
@@ -399,11 +355,11 @@ static void radeon_ttm_tt_unpin_userptr(struct ttm_device *bdev, struct ttm_tt *
 	enum dma_data_direction direction = write ?
 		DMA_BIDIRECTIONAL : DMA_TO_DEVICE;
 
-	/* double check that we don't free the table twice */
+	 
 	if (!ttm->sg || !ttm->sg->sgl)
 		return;
 
-	/* free the sg table and pages again */
+	 
 	dma_unmap_sgtable(rdev->dev, ttm->sg, direction, 0);
 
 	for_each_sgtable_page(ttm->sg, &sg_iter, 0) {
@@ -687,7 +643,7 @@ int radeon_ttm_init(struct radeon_device *rdev)
 {
 	int r;
 
-	/* No others user of address space so set it to 0 */
+	 
 	r = ttm_device_init(&rdev->mman.bdev, &radeon_bo_driver, rdev->dev,
 			       rdev->ddev->anon_inode->i_mapping,
 			       rdev->ddev->vma_offset_manager,
@@ -704,7 +660,7 @@ int radeon_ttm_init(struct radeon_device *rdev)
 		DRM_ERROR("Failed initializing VRAM heap.\n");
 		return r;
 	}
-	/* Change the size here instead of the init above so only lpfn is affected */
+	 
 	radeon_ttm_set_active_vram_size(rdev, rdev->mc.visible_vram_size);
 
 	r = radeon_bo_create(rdev, 256 * 1024, PAGE_SIZE, true,
@@ -761,8 +717,7 @@ void radeon_ttm_fini(struct radeon_device *rdev)
 	DRM_INFO("radeon: ttm finalized\n");
 }
 
-/* this should only be called at bootup or when userspace
- * isn't running */
+ 
 void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size)
 {
 	struct ttm_resource_manager *man;
@@ -771,7 +726,7 @@ void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size)
 		return;
 
 	man = ttm_manager_type(&rdev->mman.bdev, TTM_PL_VRAM);
-	/* this just adjusts TTM size idea, which sets lpfn to the correct value */
+	 
 	man->size = size >> PAGE_SHIFT;
 }
 

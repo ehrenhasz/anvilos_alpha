@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
- */
 
-/* Qualcomm Technologies, Inc. QDF2432 EMAC SGMII Controller driver.
- */
+ 
+
+ 
 
 #include <linux/iopoll.h>
 #include "emac.h"
 
-/* EMAC_SGMII register offsets */
+ 
 #define EMAC_SGMII_PHY_TX_PWR_CTRL		0x000C
 #define EMAC_SGMII_PHY_LANE_CTRL1		0x0018
 #define EMAC_SGMII_PHY_CDR_CTRL0		0x0058
@@ -16,7 +14,7 @@
 #define EMAC_SGMII_PHY_RESET_CTRL		0x00a8
 #define EMAC_SGMII_PHY_INTERRUPT_MASK		0x00b4
 
-/* SGMII digital lane registers */
+ 
 #define EMAC_SGMII_LN_DRVR_CTRL0		0x000C
 #define EMAC_SGMII_LN_DRVR_TAP_EN		0x0018
 #define EMAC_SGMII_LN_TX_MARGINING		0x001C
@@ -41,7 +39,7 @@
 #define EMAC_SGMII_LN_RX_MISC_CNTRL0		0x02AC
 #define EMAC_SGMII_LN_DRVR_LOGIC_CLKDIV		0x02BC
 
-/* SGMII digital lane register values */
+ 
 #define UCDR_STEP_BY_TWO_MODE0			BIT(7)
 #define UCDR_xO_GAIN_MODE(x)			((x) & 0x7f)
 #define UCDR_ENABLE				BIT(6)
@@ -113,13 +111,13 @@ static void emac_reg_write_all(void __iomem *base,
 }
 
 static const struct emac_reg_write sgmii_laned[] = {
-	/* CDR Settings */
+	 
 	{EMAC_SGMII_LN_UCDR_FO_GAIN_MODE0,
 		UCDR_STEP_BY_TWO_MODE0 | UCDR_xO_GAIN_MODE(10)},
 	{EMAC_SGMII_LN_UCDR_SO_GAIN_MODE0, UCDR_xO_GAIN_MODE(0)},
 	{EMAC_SGMII_LN_UCDR_SO_CONFIG, UCDR_ENABLE | UCDR_SO_SATURATION(12)},
 
-	/* TX/RX Settings */
+	 
 	{EMAC_SGMII_LN_RX_EN_SIGNAL, SIGDET_LP_BYP_PS4 | SIGDET_EN_PS0_TO_PS2},
 
 	{EMAC_SGMII_LN_DRVR_CTRL0, TXVAL_VALID_INIT | KR_PCIGEN3_MODE},
@@ -165,19 +163,19 @@ int emac_sgmii_init_qdf2432(struct emac_adapter *adpt)
 	unsigned int i;
 	u32 lnstatus;
 
-	/* PCS lane-x init */
+	 
 	emac_reg_write_all(phy->base, physical_coding_sublayer_programming,
 			   ARRAY_SIZE(physical_coding_sublayer_programming));
 
-	/* SGMII lane-x init */
+	 
 	emac_reg_write_all(phy->digital, sgmii_laned, ARRAY_SIZE(sgmii_laned));
 
-	/* Power up PCS and start reset lane state machine */
+	 
 
 	writel(0, phy_regs + EMAC_SGMII_PHY_RESET_CTRL);
 	writel(1, laned + SGMII_LN_RSM_START);
 
-	/* Wait for c_ready assertion */
+	 
 	for (i = 0; i < SERDES_START_WAIT_TIMES; i++) {
 		lnstatus = readl(phy_regs + SGMII_PHY_LN_LANE_STATUS);
 		if (lnstatus & BIT(1))
@@ -190,12 +188,12 @@ int emac_sgmii_init_qdf2432(struct emac_adapter *adpt)
 		return -EIO;
 	}
 
-	/* Disable digital and SERDES loopback */
+	 
 	writel(0, phy_regs + SGMII_PHY_LN_BIST_GEN0);
 	writel(0, phy_regs + SGMII_PHY_LN_BIST_GEN2);
 	writel(0, phy_regs + SGMII_PHY_LN_CDR_CTRL1);
 
-	/* Mask out all the SGMII Interrupt */
+	 
 	writel(0, phy_regs + EMAC_SGMII_PHY_INTERRUPT_MASK);
 
 	return 0;

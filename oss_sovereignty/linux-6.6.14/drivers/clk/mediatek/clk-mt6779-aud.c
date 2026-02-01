@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Wendell Lin <wendell.lin@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
@@ -34,7 +31,7 @@ static const struct mtk_gate_regs audio1_cg_regs = {
 		&mtk_clk_gate_ops_no_setclr)
 
 static const struct mtk_gate audio_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_AUDIO0(CLK_AUD_AFE, "aud_afe", "audio_sel", 2),
 	GATE_AUDIO0(CLK_AUD_22M, "aud_22m", "aud_eng1_sel", 8),
 	GATE_AUDIO0(CLK_AUD_24M, "aud_24m", "aud_eng2_sel", 9),
@@ -49,7 +46,7 @@ static const struct mtk_gate audio_clks[] = {
 		    "audio_sel", 26),
 	GATE_AUDIO0(CLK_AUD_TML, "aud_tml", "audio_sel", 27),
 	GATE_AUDIO0(CLK_AUD_NLE, "aud_nle", "audio_sel", 28),
-	/* AUDIO1 */
+	 
 	GATE_AUDIO1(CLK_AUD_I2S1_BCLK_SW, "aud_i2s1_bclk",
 		    "audio_sel", 4),
 	GATE_AUDIO1(CLK_AUD_I2S2_BCLK_SW, "aud_i2s2_bclk",
@@ -97,7 +94,7 @@ static const struct of_device_id of_match_clk_mt6779_aud[] = {
 		.compatible = "mediatek,mt6779-audio",
 		.data = &audio_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6779_aud);

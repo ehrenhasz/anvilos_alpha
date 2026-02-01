@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_MESON_SM1_POWER_H
 #define _DT_BINDINGS_MESON_SM1_POWER_H

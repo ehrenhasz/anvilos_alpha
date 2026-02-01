@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * devfreq-event: a framework to provide raw data and events of devfreq devices
- *
- * Copyright (C) 2015 Samsung Electronics
- * Author: Chanwoo Choi <cw00.choi@samsung.com>
- *
- * This driver is based on drivers/devfreq/devfreq.c.
- */
+
+ 
 
 #include <linux/devfreq-event.h>
 #include <linux/kernel.h>
@@ -19,21 +12,13 @@
 
 static struct class *devfreq_event_class;
 
-/* The list of all devfreq event list */
+ 
 static LIST_HEAD(devfreq_event_list);
 static DEFINE_MUTEX(devfreq_event_list_lock);
 
 #define to_devfreq_event(DEV) container_of(DEV, struct devfreq_event_dev, dev)
 
-/**
- * devfreq_event_enable_edev() - Enable the devfreq-event dev and increase
- *				 the enable_count of devfreq-event dev.
- * @edev	: the devfreq-event device
- *
- * Note that this function increase the enable_count and enable the
- * devfreq-event device. The devfreq-event device should be enabled before
- * using it by devfreq device.
- */
+ 
 int devfreq_event_enable_edev(struct devfreq_event_dev *edev)
 {
 	int ret = 0;
@@ -56,16 +41,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(devfreq_event_enable_edev);
 
-/**
- * devfreq_event_disable_edev() - Disable the devfreq-event dev and decrease
- *				  the enable_count of the devfreq-event dev.
- * @edev	: the devfreq-event device
- *
- * Note that this function decrease the enable_count and disable the
- * devfreq-event device. After the devfreq-event device is disabled,
- * devfreq device can't use the devfreq-event device for get/set/reset
- * operations.
- */
+ 
 int devfreq_event_disable_edev(struct devfreq_event_dev *edev)
 {
 	int ret = 0;
@@ -94,15 +70,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(devfreq_event_disable_edev);
 
-/**
- * devfreq_event_is_enabled() - Check whether devfreq-event dev is enabled or
- *				not.
- * @edev	: the devfreq-event device
- *
- * Note that this function check whether devfreq-event dev is enabled or not.
- * If return true, the devfreq-event dev is enabeld. If return false, the
- * devfreq-event dev is disabled.
- */
+ 
 bool devfreq_event_is_enabled(struct devfreq_event_dev *edev)
 {
 	bool enabled = false;
@@ -121,13 +89,7 @@ bool devfreq_event_is_enabled(struct devfreq_event_dev *edev)
 }
 EXPORT_SYMBOL_GPL(devfreq_event_is_enabled);
 
-/**
- * devfreq_event_set_event() - Set event to devfreq-event dev to start.
- * @edev	: the devfreq-event device
- *
- * Note that this function set the event to the devfreq-event device to start
- * for getting the event data which could be various event type.
- */
+ 
 int devfreq_event_set_event(struct devfreq_event_dev *edev)
 {
 	int ret;
@@ -149,14 +111,7 @@ int devfreq_event_set_event(struct devfreq_event_dev *edev)
 }
 EXPORT_SYMBOL_GPL(devfreq_event_set_event);
 
-/**
- * devfreq_event_get_event() - Get {load|total}_count from devfreq-event dev.
- * @edev	: the devfreq-event device
- * @edata	: the calculated data of devfreq-event device
- *
- * Note that this function get the calculated event data from devfreq-event dev
- * after stoping the progress of whole sequence of devfreq-event dev.
- */
+ 
 int devfreq_event_get_event(struct devfreq_event_dev *edev,
 			    struct devfreq_event_data *edata)
 {
@@ -183,13 +138,7 @@ int devfreq_event_get_event(struct devfreq_event_dev *edev,
 }
 EXPORT_SYMBOL_GPL(devfreq_event_get_event);
 
-/**
- * devfreq_event_reset_event() - Reset all opeations of devfreq-event dev.
- * @edev	: the devfreq-event device
- *
- * Note that this function stop all operations of devfreq-event dev and reset
- * the current event data to make the devfreq-event device into initial state.
- */
+ 
 int devfreq_event_reset_event(struct devfreq_event_dev *edev)
 {
 	int ret = 0;
@@ -209,15 +158,7 @@ int devfreq_event_reset_event(struct devfreq_event_dev *edev)
 }
 EXPORT_SYMBOL_GPL(devfreq_event_reset_event);
 
-/**
- * devfreq_event_get_edev_by_phandle() - Get the devfreq-event dev from
- *					 devicetree.
- * @dev		: the pointer to the given device
- * @phandle_name: name of property holding a phandle value
- * @index	: the index into list of devfreq-event device
- *
- * Note that this function return the pointer of devfreq-event device.
- */
+ 
 struct devfreq_event_dev *devfreq_event_get_edev_by_phandle(struct device *dev,
 					const char *phandle_name, int index)
 {
@@ -256,13 +197,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(devfreq_event_get_edev_by_phandle);
 
-/**
- * devfreq_event_get_edev_count() - Get the count of devfreq-event dev
- * @dev		: the pointer to the given device
- * @phandle_name: name of property holding a phandle value
- *
- * Note that this function return the count of devfreq-event devices.
- */
+ 
 int devfreq_event_get_edev_count(struct device *dev, const char *phandle_name)
 {
 	int count;
@@ -292,15 +227,7 @@ static void devfreq_event_release_edev(struct device *dev)
 	kfree(edev);
 }
 
-/**
- * devfreq_event_add_edev() - Add new devfreq-event device.
- * @dev		: the device owning the devfreq-event device being created
- * @desc	: the devfreq-event device's descriptor which include essential
- *		  data for devfreq-event device.
- *
- * Note that this function add new devfreq-event device to devfreq-event class
- * list and register the device of the devfreq-event device.
- */
+ 
 struct devfreq_event_dev *devfreq_event_add_edev(struct device *dev,
 						struct devfreq_event_desc *desc)
 {
@@ -346,12 +273,7 @@ struct devfreq_event_dev *devfreq_event_add_edev(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devfreq_event_add_edev);
 
-/**
- * devfreq_event_remove_edev() - Remove the devfreq-event device registered.
- * @edev	: the devfreq-event device
- *
- * Note that this function removes the registered devfreq-event device.
- */
+ 
 int devfreq_event_remove_edev(struct devfreq_event_dev *edev)
 {
 	if (!edev)
@@ -384,16 +306,7 @@ static void devm_devfreq_event_release(struct device *dev, void *res)
 	devfreq_event_remove_edev(*(struct devfreq_event_dev **)res);
 }
 
-/**
- * devm_devfreq_event_add_edev() - Resource-managed devfreq_event_add_edev()
- * @dev		: the device owning the devfreq-event device being created
- * @desc	: the devfreq-event device's descriptor which include essential
- *		  data for devfreq-event device.
- *
- * Note that this function manages automatically the memory of devfreq-event
- * device using device resource management and simplify the free operation
- * for memory of devfreq-event device.
- */
+ 
 struct devfreq_event_dev *devm_devfreq_event_add_edev(struct device *dev,
 						struct devfreq_event_desc *desc)
 {
@@ -417,14 +330,7 @@ struct devfreq_event_dev *devm_devfreq_event_add_edev(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_devfreq_event_add_edev);
 
-/**
- * devm_devfreq_event_remove_edev()- Resource-managed devfreq_event_remove_edev()
- * @dev		: the device owning the devfreq-event device being created
- * @edev	: the devfreq-event device
- *
- * Note that this function manages automatically the memory of devfreq-event
- * device using device resource management.
- */
+ 
 void devm_devfreq_event_remove_edev(struct device *dev,
 				struct devfreq_event_dev *edev)
 {
@@ -433,9 +339,7 @@ void devm_devfreq_event_remove_edev(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_devfreq_event_remove_edev);
 
-/*
- * Device attributes for devfreq-event class.
- */
+ 
 static ssize_t name_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {

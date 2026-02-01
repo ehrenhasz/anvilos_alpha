@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM habanalabs
@@ -162,7 +157,7 @@ DEFINE_EVENT(habanalabs_reg_access_template, habanalabs_elbi_write,
 	TP_PROTO(struct device *dev, u32 addr, u32 val),
 	TP_ARGS(dev, addr, val));
 
-#endif /* if !defined(_TRACE_HABANALABS_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

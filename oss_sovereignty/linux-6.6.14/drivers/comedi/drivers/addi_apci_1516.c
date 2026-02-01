@@ -1,32 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_1516.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: Eric Stolz
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
 #include "addi_watchdog.h"
 
-/*
- * PCI bar 1 I/O Register map - Digital input/output
- */
+ 
 #define APCI1516_DI_REG			0x00
 #define APCI1516_DO_REG			0x04
 
-/*
- * PCI bar 2 I/O Register map - Watchdog (APCI-1516 and APCI-2016)
- */
+ 
 #define APCI1516_WDOG_REG		0x00
 
 enum apci1516_boardid {
@@ -135,7 +119,7 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Initialize the digital input subdevice */
+	 
 	s = &dev->subdevices[0];
 	if (board->di_nchan) {
 		s->type		= COMEDI_SUBD_DI;
@@ -148,7 +132,7 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Initialize the digital output subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (board->do_nchan) {
 		s->type		= COMEDI_SUBD_DO;
@@ -161,7 +145,7 @@ static int apci1516_auto_attach(struct comedi_device *dev,
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Initialize the watchdog subdevice */
+	 
 	s = &dev->subdevices[2];
 	if (board->has_wdog) {
 		ret = addi_watchdog_init(s, devpriv->wdog_iobase);

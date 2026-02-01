@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - ADC driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/iio.h>
@@ -17,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* register address */
+ 
 #define LP8788_ADC_CONF			0x60
 #define LP8788_ADC_RAW			0x61
 #define LP8788_ADC_DONE			0x63
@@ -62,7 +56,7 @@ static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
 	if (ret)
 		goto err_io;
 
-	/* retry until adc conversion is done */
+	 
 	data = 0;
 	while (retry--) {
 		usleep_range(100, 200);
@@ -71,7 +65,7 @@ static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
 		if (ret)
 			goto err_io;
 
-		/* conversion done */
+		 
 		if (data)
 			break;
 	}
@@ -148,7 +142,7 @@ static const struct iio_chan_spec lp8788_adc_channels[] = {
 	[LPADC_ADC4]      = LP8788_CHAN(ADC4, IIO_VOLTAGE),
 };
 
-/* default maps used by iio consumer (lp8788-charger driver) */
+ 
 static struct iio_map lp8788_default_iio_maps[] = {
 	{
 		.consumer_dev_name = "lp8788-charger",

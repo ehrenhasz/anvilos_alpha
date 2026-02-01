@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2021 Nuvoton Technology corporation
- * Copyright (C) 2019-2022 Infineon Technologies AG
- *
- * This device driver implements the TPM interface as defined in the TCG PC
- * Client Platform TPM Profile (PTP) Specification for TPM 2.0 v1.04
- * Revision 14.
- *
- * It is based on the tpm_tis_spi device driver.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/crc-ccitt.h>
 #include "tpm_tis_core.h"
 
-/* TPM registers */
+ 
 #define TPM_I2C_LOC_SEL 0x00
 #define TPM_I2C_ACCESS 0x04
 #define TPM_I2C_INTERFACE_CAPABILITY 0x30
@@ -24,21 +15,21 @@
 #define TPM_I2C_DID_VID 0x48
 #define TPM_I2C_RID 0x4C
 
-/* TIS-compatible register address to avoid clash with TPM_ACCESS (0x00) */
+ 
 #define TPM_LOC_SEL 0x0FFF
 
-/* Mask to extract the I2C register from TIS register addresses */
+ 
 #define TPM_TIS_REGISTER_MASK 0x0FFF
 
-/* Default Guard Time of 250µs until interface capability register is read */
+ 
 #define GUARD_TIME_DEFAULT_MIN 250
 #define GUARD_TIME_DEFAULT_MAX 300
 
-/* Guard Time of 250µs after I2C slave NACK */
+ 
 #define GUARD_TIME_ERR_MIN 250
 #define GUARD_TIME_ERR_MAX 300
 
-/* Guard Time bit masks; SR is repeated start, RW is read then write, etc. */
+ 
 #define TPM_GUARD_TIME_SR_MASK 0x40000000
 #define TPM_GUARD_TIME_RR_MASK 0x00100000
 #define TPM_GUARD_TIME_RW_MASK 0x00080000
@@ -47,7 +38,7 @@
 #define TPM_GUARD_TIME_MIN_MASK 0x0001FE00
 #define TPM_GUARD_TIME_MIN_SHIFT 9
 
-/* Masks with bits that must be read zero */
+ 
 #define TPM_ACCESS_READ_ZERO 0x48
 #define TPM_INT_ENABLE_ZERO 0x7FFFFF60
 #define TPM_STS_READ_ZERO 0x23
@@ -70,22 +61,7 @@ to_tpm_tis_i2c_phy(struct tpm_tis_data *data)
 	return container_of(data, struct tpm_tis_i2c_phy, priv);
 }
 
-/*
- * tpm_tis_core uses the register addresses as defined in Table 19 "Allocation
- * of Register Space for FIFO TPM Access" of the TCG PC Client PTP
- * Specification. In order for this code to work together with tpm_tis_core,
- * those addresses need to mapped to the registers defined for I2C TPMs in
- * Table 51 "I2C-TPM Register Overview".
- *
- * For most addresses this can be done by simply stripping off the locality
- * information from the address. A few addresses need to be mapped explicitly,
- * since the corresponding I2C registers have been moved around. TPM_LOC_SEL is
- * only defined for I2C TPMs and is also mapped explicitly here to distinguish
- * it from TPM_ACCESS(0).
- *
- * Locality information is ignored, since this driver assumes exclusive access
- * to the TPM and always uses locality 0.
- */
+ 
 static u8 tpm_tis_i2c_address_to_register(u32 addr)
 {
 	addr &= TPM_TIS_REGISTER_MASK;
@@ -123,13 +99,13 @@ static int tpm_tis_i2c_retry_transfer_until_ack(struct tpm_tis_data *data,
 			usleep_range(GUARD_TIME_ERR_MIN, GUARD_TIME_ERR_MAX);
 		else if (guard_time)
 			usleep_range(phy->guard_time_min, phy->guard_time_max);
-		/* retry on TPM NACK */
+		 
 	} while (ret < 0 && i++ < TPM_RETRY);
 
 	return ret;
 }
 
-/* Check that bits which must be read zero are not set */
+ 
 static int tpm_tis_i2c_sanity_check_read(u8 reg, u16 len, u8 *buf)
 {
 	u32 zero_mask;
@@ -146,7 +122,7 @@ static int tpm_tis_i2c_sanity_check_read(u8 reg, u16 len, u8 *buf)
 		value = le32_to_cpup((__le32 *)buf);
 		break;
 	default:
-		/* unknown length, skip check */
+		 
 		return 0;
 	}
 
@@ -167,7 +143,7 @@ static int tpm_tis_i2c_sanity_check_read(u8 reg, u16 len, u8 *buf)
 		zero_mask = TPM_I2C_INTERFACE_CAPABILITY_ZERO;
 		break;
 	default:
-		/* unknown register, skip check */
+		 
 		return 0;
 	}
 
@@ -192,7 +168,7 @@ static int tpm_tis_i2c_read_bytes(struct tpm_tis_data *data, u32 addr, u16 len,
 		u16 read = 0;
 
 		while (read < len) {
-			/* write register */
+			 
 			msg.len = sizeof(reg);
 			msg.buf = &reg;
 			msg.flags = 0;
@@ -200,7 +176,7 @@ static int tpm_tis_i2c_read_bytes(struct tpm_tis_data *data, u32 addr, u16 len,
 			if (ret < 0)
 				return ret;
 
-			/* read data */
+			 
 			msg.buf = result + read;
 			msg.len = len - read;
 			msg.flags = I2C_M_RD;
@@ -238,7 +214,7 @@ static int tpm_tis_i2c_write_bytes(struct tpm_tis_data *data, u32 addr, u16 len,
 	phy->io_buf[0] = reg;
 	msg.buf = phy->io_buf;
 	while (wrote < len) {
-		/* write register and data in one go */
+		 
 		msg.len = sizeof(reg) + len - wrote;
 		if (msg.len > I2C_SMBUS_BLOCK_MAX)
 			msg.len = I2C_SMBUS_BLOCK_MAX;
@@ -265,7 +241,7 @@ static int tpm_tis_i2c_verify_crc(struct tpm_tis_data *data, size_t len,
 	if (rc < 0)
 		return rc;
 
-	/* reflect crc result, regardless of host endianness */
+	 
 	crc_host = swab16(crc_ccitt(0, value, len));
 	if (crc_tpm != crc_host)
 		return -EIO;
@@ -273,24 +249,7 @@ static int tpm_tis_i2c_verify_crc(struct tpm_tis_data *data, size_t len,
 	return 0;
 }
 
-/*
- * Guard Time:
- * After each I2C operation, the TPM might require the master to wait.
- * The time period is vendor-specific and must be read from the
- * TPM_I2C_INTERFACE_CAPABILITY register.
- *
- * Before the Guard Time is read (or after the TPM failed to send an I2C NACK),
- * a Guard Time of 250µs applies.
- *
- * Various flags in the same register indicate if a guard time is needed:
- *  - SR: <I2C read with repeated start> <guard time> <I2C read>
- *  - RR: <I2C read> <guard time> <I2C read>
- *  - RW: <I2C read> <guard time> <I2C write>
- *  - WR: <I2C write> <guard time> <I2C read>
- *  - WW: <I2C write> <guard time> <I2C write>
- *
- * See TCG PC Client PTP Specification v1.04, 8.1.10 GUARD_TIME
- */
+ 
 static int tpm_tis_i2c_init_guard_time(struct tpm_tis_i2c_phy *phy)
 {
 	u32 i2c_caps;
@@ -313,7 +272,7 @@ static int tpm_tis_i2c_init_guard_time(struct tpm_tis_i2c_phy *phy)
 				(i2c_caps & TPM_GUARD_TIME_WW_MASK);
 	phy->guard_time_min = (i2c_caps & TPM_GUARD_TIME_MIN_MASK) >>
 			      TPM_GUARD_TIME_MIN_SHIFT;
-	/* guard_time_max = guard_time_min * 1.2 */
+	 
 	phy->guard_time_max = phy->guard_time_min + phy->guard_time_min / 5;
 
 	return 0;
@@ -346,7 +305,7 @@ static int tpm_tis_i2c_probe(struct i2c_client *dev)
 	set_bit(TPM_TIS_DEFAULT_CANCELLATION, &phy->priv.flags);
 	phy->i2c_client = dev;
 
-	/* must precede all communication with the tpm */
+	 
 	ret = tpm_tis_i2c_init_guard_time(phy);
 	if (ret)
 		return ret;

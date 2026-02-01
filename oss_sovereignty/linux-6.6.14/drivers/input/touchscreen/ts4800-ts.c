@@ -1,12 +1,4 @@
-/*
- * Touchscreen driver for the TS-4800 board
- *
- * Copyright (c) 2015 - Savoir-faire Linux
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/input.h>
@@ -18,12 +10,12 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* polling interval in ms */
+ 
 #define POLL_INTERVAL		3
 
 #define DEBOUNCE_COUNT		1
 
-/* sensor values are 12-bit wide */
+ 
 #define MAX_12BIT		((1 << 12) - 1)
 
 #define PENDOWN_MASK		0x1

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GPIO driver for Fintek and Nuvoton Super-I/O chips
- *
- * Copyright (C) 2010-2013 LaCie
- *
- * Author: Simon Guinot <simon.guinot@sequanux.org>
- */
+
+ 
 
 #define DRVNAME "gpio-f7188x"
 #define pr_fmt(fmt) DRVNAME ": " fmt
@@ -17,40 +11,34 @@
 #include <linux/gpio/driver.h>
 #include <linux/bitops.h>
 
-/*
- * Super-I/O registers
- */
-#define SIO_LDSEL		0x07	/* Logical device select */
-#define SIO_DEVID		0x20	/* Device ID (2 bytes) */
+ 
+#define SIO_LDSEL		0x07	 
+#define SIO_DEVID		0x20	 
 
-#define SIO_UNLOCK_KEY		0x87	/* Key to enable Super-I/O */
-#define SIO_LOCK_KEY		0xAA	/* Key to disable Super-I/O */
+#define SIO_UNLOCK_KEY		0x87	 
+#define SIO_LOCK_KEY		0xAA	 
 
-/*
- * Fintek devices.
- */
-#define SIO_FINTEK_DEVREV	0x22	/* Fintek Device revision */
-#define SIO_FINTEK_MANID	0x23    /* Fintek ID (2 bytes) */
+ 
+#define SIO_FINTEK_DEVREV	0x22	 
+#define SIO_FINTEK_MANID	0x23     
 
-#define SIO_FINTEK_ID		0x1934  /* Manufacturer ID */
+#define SIO_FINTEK_ID		0x1934   
 
-#define SIO_F71869_ID		0x0814	/* F71869 chipset ID */
-#define SIO_F71869A_ID		0x1007	/* F71869A chipset ID */
-#define SIO_F71882_ID		0x0541	/* F71882 chipset ID */
-#define SIO_F71889_ID		0x0909	/* F71889 chipset ID */
-#define SIO_F71889A_ID		0x1005	/* F71889A chipset ID */
-#define SIO_F81866_ID		0x1010	/* F81866 chipset ID */
-#define SIO_F81804_ID		0x1502  /* F81804 chipset ID, same for F81966 */
-#define SIO_F81865_ID		0x0704	/* F81865 chipset ID */
+#define SIO_F71869_ID		0x0814	 
+#define SIO_F71869A_ID		0x1007	 
+#define SIO_F71882_ID		0x0541	 
+#define SIO_F71889_ID		0x0909	 
+#define SIO_F71889A_ID		0x1005	 
+#define SIO_F81866_ID		0x1010	 
+#define SIO_F81804_ID		0x1502   
+#define SIO_F81865_ID		0x0704	 
 
-#define SIO_LD_GPIO_FINTEK	0x06	/* GPIO logical device */
+#define SIO_LD_GPIO_FINTEK	0x06	 
 
-/*
- * Nuvoton devices.
- */
-#define SIO_NCT6126D_ID		0xD283  /* NCT6126D chipset ID */
+ 
+#define SIO_NCT6126D_ID		0xD283   
 
-#define SIO_LD_GPIO_NUVOTON	0x07	/* GPIO logical device */
+#define SIO_LD_GPIO_NUVOTON	0x07	 
 
 
 enum chips {
@@ -95,9 +83,7 @@ struct f7188x_gpio_data {
 	struct f7188x_gpio_bank *bank;
 };
 
-/*
- * Super-I/O functions.
- */
+ 
 
 static inline int superio_inb(int base, int reg)
 {
@@ -125,13 +111,13 @@ static inline void superio_outb(int base, int reg, int val)
 
 static inline int superio_enter(int base)
 {
-	/* Don't step on other drivers' I/O space by accident. */
+	 
 	if (!request_muxed_region(base, 2, DRVNAME)) {
 		pr_err("I/O address 0x%04x already in use\n", base);
 		return -EBUSY;
 	}
 
-	/* According to the datasheet the key must be send twice. */
+	 
 	outb(SIO_UNLOCK_KEY, base);
 	outb(SIO_UNLOCK_KEY, base);
 
@@ -150,9 +136,7 @@ static inline void superio_exit(int base)
 	release_region(base, 2);
 }
 
-/*
- * GPIO chip.
- */
+ 
 
 static int f7188x_gpio_get_direction(struct gpio_chip *chip, unsigned offset);
 static int f7188x_gpio_direction_in(struct gpio_chip *chip, unsigned offset);
@@ -184,7 +168,7 @@ static int f7188x_gpio_set_config(struct gpio_chip *chip, unsigned offset,
 #define f7188x_gpio_dir(base) ((base) + 0)
 #define f7188x_gpio_data_out(base) ((base) + 1)
 #define f7188x_gpio_data_in(base) ((base) + 2)
-/* Output mode register (0:open drain 1:push-pull). */
+ 
 #define f7188x_gpio_out_mode(base) ((base) + 3)
 
 #define f7188x_gpio_dir_invert(type)	((type) == nct6126d)
@@ -442,9 +426,7 @@ static int f7188x_gpio_set_config(struct gpio_chip *chip, unsigned offset,
 	return 0;
 }
 
-/*
- * Platform device and driver.
- */
+ 
 
 static int f7188x_gpio_probe(struct platform_device *pdev)
 {
@@ -501,7 +483,7 @@ static int f7188x_gpio_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-	/* For each GPIO bank, register a GPIO chip. */
+	 
 	for (i = 0; i < data->nr_bank; i++) {
 		struct f7188x_gpio_bank *bank = &data->bank[i];
 
@@ -568,7 +550,7 @@ static int __init f7188x_find(int addr, struct f7188x_sio *sio)
 		goto err;
 	}
 
-	/* double check manufacturer where possible */
+	 
 	if (sio->type != nct6126d) {
 		manid = superio_inw(addr, SIO_FINTEK_MANID);
 		if (manid != SIO_FINTEK_ID) {
@@ -621,11 +603,7 @@ err:
 	return err;
 }
 
-/*
- * Try to match a supported Fintek device by reading the (hard-wired)
- * configuration I/O ports. If available, then register both the platform
- * device and driver to support the GPIOs.
- */
+ 
 
 static struct platform_driver f7188x_gpio_driver = {
 	.driver = {

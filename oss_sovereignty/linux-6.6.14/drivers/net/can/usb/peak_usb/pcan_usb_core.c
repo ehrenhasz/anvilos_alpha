@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CAN driver for PEAK System USB adapters
- * Derived from the PCAN project file driver/src/pcan_usb_core.c
- *
- * Copyright (C) 2003-2010 PEAK System-Technik GmbH
- * Copyright (C) 2010-2012 Stephane Grosjean <s.grosjean@peak-system.com>
- *
- * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/ethtool.h>
 #include <linux/init.h>
@@ -28,7 +20,7 @@ MODULE_AUTHOR("Stephane Grosjean <s.grosjean@peak-system.com>");
 MODULE_DESCRIPTION("CAN driver for PEAK-System USB adapters");
 MODULE_LICENSE("GPL v2");
 
-/* Table of devices that work with this driver */
+ 
 static const struct usb_device_id peak_usb_table[] = {
 	{
 		USB_DEVICE(PCAN_USB_VENDOR_ID, PCAN_USB_PRODUCT_ID),
@@ -49,7 +41,7 @@ static const struct usb_device_id peak_usb_table[] = {
 		USB_DEVICE(PCAN_USB_VENDOR_ID, PCAN_USBX6_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&pcan_usb_x6,
 	}, {
-		/* Terminating entry */
+		 
 	}
 };
 
@@ -64,7 +56,7 @@ static ssize_t can_channel_id_show(struct device *dev, struct device_attribute *
 }
 static DEVICE_ATTR_RO(can_channel_id);
 
-/* mutable to avoid cast in attribute_group */
+ 
 static struct attribute *peak_usb_sysfs_attrs[] = {
 	&dev_attr_can_channel_id.attr,
 	NULL,
@@ -75,9 +67,7 @@ static const struct attribute_group peak_usb_sysfs_group = {
 	.attrs	= peak_usb_sysfs_attrs,
 };
 
-/*
- * dump memory
- */
+ 
 #define DUMP_WIDTH	16
 void pcan_dump_mem(const char *prompt, const void *p, int l)
 {
@@ -87,9 +77,7 @@ void pcan_dump_mem(const char *prompt, const void *p, int l)
 		       DUMP_WIDTH, 1, p, l, false);
 }
 
-/*
- * initialize a time_ref object with usb adapter own settings
- */
+ 
 void peak_usb_init_time_ref(struct peak_time_ref *time_ref,
 			    const struct peak_usb_adapter *adapter)
 {
@@ -99,14 +87,12 @@ void peak_usb_init_time_ref(struct peak_time_ref *time_ref,
 	}
 }
 
-/*
- * sometimes, another now may be  more recent than current one...
- */
+ 
 void peak_usb_update_ts_now(struct peak_time_ref *time_ref, u32 ts_now)
 {
 	time_ref->ts_dev_2 = ts_now;
 
-	/* should wait at least two passes before computing */
+	 
 	if (ktime_to_ns(time_ref->tv_host) > 0) {
 		u32 delta_ts = time_ref->ts_dev_2 - time_ref->ts_dev_1;
 
@@ -117,21 +103,15 @@ void peak_usb_update_ts_now(struct peak_time_ref *time_ref, u32 ts_now)
 	}
 }
 
-/*
- * register device timestamp as now
- */
+ 
 void peak_usb_set_ts_now(struct peak_time_ref *time_ref, u32 ts_now)
 {
 	if (ktime_to_ns(time_ref->tv_host_0) == 0) {
-		/* use monotonic clock to correctly compute further deltas */
+		 
 		time_ref->tv_host_0 = ktime_get();
 		time_ref->tv_host = ktime_set(0, 0);
 	} else {
-		/*
-		 * delta_us should not be >= 2^32 => delta should be < 4294s
-		 * handle 32-bits wrapping here: if count of s. reaches 4200,
-		 * reset counters and change time base
-		 */
+		 
 		if (ktime_to_ns(time_ref->tv_host)) {
 			ktime_t delta = ktime_sub(time_ref->tv_host,
 						  time_ref->tv_host_0);
@@ -149,62 +129,32 @@ void peak_usb_set_ts_now(struct peak_time_ref *time_ref, u32 ts_now)
 	peak_usb_update_ts_now(time_ref, ts_now);
 }
 
-/*
- * compute time according to current ts and time_ref data
- */
+ 
 void peak_usb_get_ts_time(struct peak_time_ref *time_ref, u32 ts, ktime_t *time)
 {
-	/* protect from getting time before setting now */
+	 
 	if (ktime_to_ns(time_ref->tv_host)) {
 		u64 delta_us;
 		s64 delta_ts = 0;
 
-		/* General case: dev_ts_1 < dev_ts_2 < ts, with:
-		 *
-		 * - dev_ts_1 = previous sync timestamp
-		 * - dev_ts_2 = last sync timestamp
-		 * - ts = event timestamp
-		 * - ts_period = known sync period (theoretical)
-		 *             ~ dev_ts2 - dev_ts1
-		 * *but*:
-		 *
-		 * - time counters wrap (see adapter->ts_used_bits)
-		 * - sometimes, dev_ts_1 < ts < dev_ts2
-		 *
-		 * "normal" case (sync time counters increase):
-		 * must take into account case when ts wraps (tsw)
-		 *
-		 *      < ts_period > <          >
-		 *     |             |            |
-		 *  ---+--------+----+-------0-+--+-->
-		 *     ts_dev_1 |    ts_dev_2  |
-		 *              ts             tsw
-		 */
+		 
 		if (time_ref->ts_dev_1 < time_ref->ts_dev_2) {
-			/* case when event time (tsw) wraps */
+			 
 			if (ts < time_ref->ts_dev_1)
 				delta_ts = BIT_ULL(time_ref->adapter->ts_used_bits);
 
-		/* Otherwise, sync time counter (ts_dev_2) has wrapped:
-		 * handle case when event time (tsn) hasn't.
-		 *
-		 *      < ts_period > <          >
-		 *     |             |            |
-		 *  ---+--------+--0-+---------+--+-->
-		 *     ts_dev_1 |    ts_dev_2  |
-		 *              tsn            ts
-		 */
+		 
 		} else if (time_ref->ts_dev_1 < ts) {
 			delta_ts = -BIT_ULL(time_ref->adapter->ts_used_bits);
 		}
 
-		/* add delay between last sync and event timestamps */
+		 
 		delta_ts += (signed int)(ts - time_ref->ts_dev_2);
 
-		/* add time from beginning to last sync */
+		 
 		delta_ts += time_ref->ts_total;
 
-		/* convert ticks number into microseconds */
+		 
 		delta_us = delta_ts * time_ref->adapter->us_per_ts_scale;
 		delta_us >>= time_ref->adapter->us_per_ts_shift;
 
@@ -214,7 +164,7 @@ void peak_usb_get_ts_time(struct peak_time_ref *time_ref, u32 ts, ktime_t *time)
 	}
 }
 
-/* post received skb with native 64-bit hw timestamp */
+ 
 int peak_usb_netif_rx_64(struct sk_buff *skb, u32 ts_low, u32 ts_high)
 {
 	struct skb_shared_hwtstamps *hwts = skb_hwtstamps(skb);
@@ -227,9 +177,7 @@ int peak_usb_netif_rx_64(struct sk_buff *skb, u32 ts_low, u32 ts_high)
 	return netif_rx(skb);
 }
 
-/*
- * callback for bulk Rx urb
- */
+ 
 static void peak_usb_read_bulk_callback(struct urb *urb)
 {
 	struct peak_usb_device *dev = urb->context;
@@ -241,10 +189,10 @@ static void peak_usb_read_bulk_callback(struct urb *urb)
 	if (!netif_device_present(netdev))
 		return;
 
-	/* check reception status */
+	 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 
 	case -EILSEQ:
@@ -260,9 +208,9 @@ static void peak_usb_read_bulk_callback(struct urb *urb)
 		goto resubmit_urb;
 	}
 
-	/* protect from any incoming empty msgs */
+	 
 	if ((urb->actual_length > 0) && (dev->adapter->dev_decode_buf)) {
-		/* handle these kinds of msgs only if _start callback called */
+		 
 		if (dev->state & PCAN_USB_STATE_STARTED) {
 			err = dev->adapter->dev_decode_buf(dev, urb);
 			if (err)
@@ -292,9 +240,7 @@ resubmit_urb:
 			   err);
 }
 
-/*
- * callback for bulk Tx urb
- */
+ 
 static void peak_usb_write_bulk_callback(struct urb *urb)
 {
 	struct peak_tx_urb_context *context = urb->context;
@@ -312,10 +258,10 @@ static void peak_usb_write_bulk_callback(struct urb *urb)
 	if (!netif_device_present(netdev))
 		return;
 
-	/* check tx status */
+	 
 	switch (urb->status) {
 	case 0:
-		/* prevent tx timeout */
+		 
 		netif_trans_update(netdev);
 		break;
 
@@ -332,23 +278,21 @@ static void peak_usb_write_bulk_callback(struct urb *urb)
 		break;
 	}
 
-	/* should always release echo skb and corresponding context */
+	 
 	tx_bytes = can_get_echo_skb(netdev, context->echo_index, NULL);
 	context->echo_index = PCAN_USB_MAX_TX_URBS;
 
 	if (!urb->status) {
-		/* transmission complete */
+		 
 		netdev->stats.tx_packets++;
 		netdev->stats.tx_bytes += tx_bytes;
 
-		/* do wakeup tx queue in case of success only */
+		 
 		netif_wake_queue(netdev);
 	}
 }
 
-/*
- * called by netdev to send one skb on the CAN interface.
- */
+ 
 static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
 					   struct net_device *netdev)
 {
@@ -370,7 +314,7 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
 		}
 
 	if (!context) {
-		/* should not occur except during restart */
+		 
 		return NETDEV_TX_BUSY;
 	}
 
@@ -400,7 +344,7 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
 
 		usb_unanchor_urb(urb);
 
-		/* this context is not used in fact */
+		 
 		context->echo_index = PCAN_USB_MAX_TX_URBS;
 
 		atomic_dec(&dev->active_tx_urbs);
@@ -414,13 +358,13 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
 				    err);
 			fallthrough;
 		case -ENOENT:
-			/* cable unplugged */
+			 
 			stats->tx_dropped++;
 		}
 	} else {
 		netif_trans_update(netdev);
 
-		/* slow down tx path */
+		 
 		if (atomic_read(&dev->active_tx_urbs) >= PCAN_USB_MAX_TX_URBS)
 			netif_stop_queue(netdev);
 	}
@@ -428,10 +372,7 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
 	return NETDEV_TX_OK;
 }
 
-/*
- * start the CAN interface.
- * Rx and Tx urbs are allocated here. Rx urbs are submitted here.
- */
+ 
 static int peak_usb_start(struct peak_usb_device *dev)
 {
 	struct net_device *netdev = dev->netdev;
@@ -441,7 +382,7 @@ static int peak_usb_start(struct peak_usb_device *dev)
 		struct urb *urb;
 		u8 *buf;
 
-		/* create a URB, and a buffer for it, to receive usb messages */
+		 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
 			err = -ENOMEM;
@@ -460,7 +401,7 @@ static int peak_usb_start(struct peak_usb_device *dev)
 			buf, dev->adapter->rx_buffer_size,
 			peak_usb_read_bulk_callback, dev);
 
-		/* ask last usb_free_urb() to also kfree() transfer_buffer */
+		 
 		urb->transfer_flags |= URB_FREE_BUFFER;
 		usb_anchor_urb(urb, &dev->rx_submitted);
 
@@ -475,11 +416,11 @@ static int peak_usb_start(struct peak_usb_device *dev)
 			break;
 		}
 
-		/* drop reference, USB core will take care of freeing it */
+		 
 		usb_free_urb(urb);
 	}
 
-	/* did we submit any URBs? Warn if we was not able to submit all urbs */
+	 
 	if (i < PCAN_USB_MAX_RX_URBS) {
 		if (i == 0) {
 			netdev_err(netdev, "couldn't setup any rx URB\n");
@@ -489,13 +430,13 @@ static int peak_usb_start(struct peak_usb_device *dev)
 		netdev_warn(netdev, "rx performance may be slow\n");
 	}
 
-	/* pre-alloc tx buffers and corresponding urbs */
+	 
 	for (i = 0; i < PCAN_USB_MAX_TX_URBS; i++) {
 		struct peak_tx_urb_context *context;
 		struct urb *urb;
 		u8 *buf;
 
-		/* create a URB and a buffer for it, to transmit usb messages */
+		 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
 			err = -ENOMEM;
@@ -518,11 +459,11 @@ static int peak_usb_start(struct peak_usb_device *dev)
 			buf, dev->adapter->tx_buffer_size,
 			peak_usb_write_bulk_callback, context);
 
-		/* ask last usb_free_urb() to also kfree() transfer_buffer */
+		 
 		urb->transfer_flags |= URB_FREE_BUFFER;
 	}
 
-	/* warn if we were not able to allocate enough tx contexts */
+	 
 	if (i < PCAN_USB_MAX_TX_URBS) {
 		if (i == 0) {
 			netdev_err(netdev, "couldn't setup any tx URB\n");
@@ -540,7 +481,7 @@ static int peak_usb_start(struct peak_usb_device *dev)
 
 	dev->state |= PCAN_USB_STATE_STARTED;
 
-	/* can set bus on now */
+	 
 	if (dev->adapter->dev_set_bus) {
 		err = dev->adapter->dev_set_bus(dev, 1);
 		if (err)
@@ -567,20 +508,18 @@ err_tx:
 	return err;
 }
 
-/*
- * called by netdev to open the corresponding CAN interface.
- */
+ 
 static int peak_usb_ndo_open(struct net_device *netdev)
 {
 	struct peak_usb_device *dev = netdev_priv(netdev);
 	int err;
 
-	/* common open */
+	 
 	err = open_candev(netdev);
 	if (err)
 		return err;
 
-	/* finally start device */
+	 
 	err = peak_usb_start(dev);
 	if (err) {
 		netdev_err(netdev, "couldn't start device: %d\n", err);
@@ -593,26 +532,21 @@ static int peak_usb_ndo_open(struct net_device *netdev)
 	return 0;
 }
 
-/*
- * unlink in-flight Rx and Tx urbs and free their memory.
- */
+ 
 static void peak_usb_unlink_all_urbs(struct peak_usb_device *dev)
 {
 	int i;
 
-	/* free all Rx (submitted) urbs */
+	 
 	usb_kill_anchored_urbs(&dev->rx_submitted);
 
-	/* free unsubmitted Tx urbs first */
+	 
 	for (i = 0; i < PCAN_USB_MAX_TX_URBS; i++) {
 		struct urb *urb = dev->tx_contexts[i].urb;
 
 		if (!urb ||
 		    dev->tx_contexts[i].echo_index != PCAN_USB_MAX_TX_URBS) {
-			/*
-			 * this urb is already released or always submitted,
-			 * let usb core free by itself
-			 */
+			 
 			continue;
 		}
 
@@ -620,14 +554,12 @@ static void peak_usb_unlink_all_urbs(struct peak_usb_device *dev)
 		dev->tx_contexts[i].urb = NULL;
 	}
 
-	/* then free all submitted Tx urbs */
+	 
 	usb_kill_anchored_urbs(&dev->tx_submitted);
 	atomic_set(&dev->active_tx_urbs, 0);
 }
 
-/*
- * called by netdev to close the corresponding CAN interface.
- */
+ 
 static int peak_usb_ndo_stop(struct net_device *netdev)
 {
 	struct peak_usb_device *dev = netdev_priv(netdev);
@@ -639,13 +571,13 @@ static int peak_usb_ndo_stop(struct net_device *netdev)
 
 	dev->can.state = CAN_STATE_STOPPED;
 
-	/* unlink all pending urbs and free used memory */
+	 
 	peak_usb_unlink_all_urbs(dev);
 
 	if (dev->adapter->dev_stop)
 		dev->adapter->dev_stop(dev);
 
-	/* can set bus off now */
+	 
 	if (dev->adapter->dev_set_bus) {
 		int err = dev->adapter->dev_set_bus(dev, 0);
 
@@ -656,15 +588,13 @@ static int peak_usb_ndo_stop(struct net_device *netdev)
 	return 0;
 }
 
-/*
- * handle end of waiting for the device to reset
- */
+ 
 void peak_usb_restart_complete(struct peak_usb_device *dev)
 {
-	/* finally MUST update can state */
+	 
 	dev->can.state = CAN_STATE_ERROR_ACTIVE;
 
-	/* netdev queue can be awaken now */
+	 
 	netif_wake_queue(dev->netdev);
 }
 
@@ -674,38 +604,32 @@ void peak_usb_async_complete(struct urb *urb)
 	usb_free_urb(urb);
 }
 
-/*
- * device (auto-)restart mechanism runs in a timer context =>
- * MUST handle restart with asynchronous usb transfers
- */
+ 
 static int peak_usb_restart(struct peak_usb_device *dev)
 {
 	struct urb *urb;
 	int err;
 	u8 *buf;
 
-	/*
-	 * if device doesn't define any asynchronous restart handler, simply
-	 * wake the netdev queue up
-	 */
+	 
 	if (!dev->adapter->dev_restart_async) {
 		peak_usb_restart_complete(dev);
 		return 0;
 	}
 
-	/* first allocate a urb to handle the asynchronous steps */
+	 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb)
 		return -ENOMEM;
 
-	/* also allocate enough space for the commands to send */
+	 
 	buf = kmalloc(PCAN_USB_MAX_CMD_LEN, GFP_ATOMIC);
 	if (!buf) {
 		usb_free_urb(urb);
 		return -ENOMEM;
 	}
 
-	/* call the device specific handler for the restart */
+	 
 	err = dev->adapter->dev_restart_async(dev, urb, buf);
 	if (!err)
 		return 0;
@@ -716,10 +640,7 @@ static int peak_usb_restart(struct peak_usb_device *dev)
 	return err;
 }
 
-/*
- * candev callback used to change CAN mode.
- * Warning: this is called from a timer context!
- */
+ 
 static int peak_usb_set_mode(struct net_device *netdev, enum can_mode mode)
 {
 	struct peak_usb_device *dev = netdev_priv(netdev);
@@ -740,9 +661,7 @@ static int peak_usb_set_mode(struct net_device *netdev, enum can_mode mode)
 	return err;
 }
 
-/*
- * candev callback used to set device nominal/arbitration bitrate.
- */
+ 
 static int peak_usb_set_bittiming(struct net_device *netdev)
 {
 	struct peak_usb_device *dev = netdev_priv(netdev);
@@ -761,9 +680,7 @@ static int peak_usb_set_bittiming(struct net_device *netdev)
 	return 0;
 }
 
-/*
- * candev callback used to set device data bitrate.
- */
+ 
 static int peak_usb_set_data_bittiming(struct net_device *netdev)
 {
 	struct peak_usb_device *dev = netdev_priv(netdev);
@@ -789,7 +706,7 @@ static int peak_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	struct hwtstamp_config hwts_cfg = { 0 };
 
 	switch (cmd) {
-	case SIOCSHWTSTAMP: /* set */
+	case SIOCSHWTSTAMP:  
 		if (copy_from_user(&hwts_cfg, ifr->ifr_data, sizeof(hwts_cfg)))
 			return -EFAULT;
 		if (hwts_cfg.tx_type == HWTSTAMP_TX_OFF &&
@@ -797,7 +714,7 @@ static int peak_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 			return 0;
 		return -ERANGE;
 
-	case SIOCGHWTSTAMP: /* get */
+	case SIOCGHWTSTAMP:  
 		hwts_cfg.tx_type = HWTSTAMP_TX_OFF;
 		hwts_cfg.rx_filter = HWTSTAMP_FILTER_ALL;
 		if (copy_to_user(ifr->ifr_data, &hwts_cfg, sizeof(hwts_cfg)))
@@ -817,17 +734,13 @@ static const struct net_device_ops peak_usb_netdev_ops = {
 	.ndo_change_mtu = can_change_mtu,
 };
 
-/* CAN-USB devices generally handle 32-bit CAN channel IDs.
- * In case one doesn't, then it have to overload this function.
- */
+ 
 int peak_usb_get_eeprom_len(struct net_device *netdev)
 {
 	return sizeof(u32);
 }
 
-/* Every CAN-USB device exports the dev_get_can_channel_id() operation. It is used
- * here to fill the data buffer with the user defined CAN channel ID.
- */
+ 
 int peak_usb_get_eeprom(struct net_device *netdev,
 			struct ethtool_eeprom *eeprom, u8 *data)
 {
@@ -840,23 +753,16 @@ int peak_usb_get_eeprom(struct net_device *netdev,
 	if (err)
 		return err;
 
-	/* ethtool operates on individual bytes. The byte order of the CAN
-	 * channel id in memory depends on the kernel architecture. We
-	 * convert the CAN channel id back to the native byte order of the PEAK
-	 * device itself to ensure that the order is consistent for all
-	 * host architectures.
-	 */
+	 
 	ch_id_le = cpu_to_le32(ch_id);
 	memcpy(data, (u8 *)&ch_id_le + eeprom->offset, eeprom->len);
 
-	/* update cached value */
+	 
 	dev->can_channel_id = ch_id;
 	return err;
 }
 
-/* Every CAN-USB device exports the dev_get_can_channel_id()/dev_set_can_channel_id()
- * operations. They are used here to set the new user defined CAN channel ID.
- */
+ 
 int peak_usb_set_eeprom(struct net_device *netdev,
 			struct ethtool_eeprom *eeprom, u8 *data)
 {
@@ -865,25 +771,19 @@ int peak_usb_set_eeprom(struct net_device *netdev,
 	__le32 ch_id_le;
 	int err;
 
-	/* first, read the current user defined CAN channel ID */
+	 
 	err = dev->adapter->dev_get_can_channel_id(dev, &ch_id);
 	if (err) {
 		netdev_err(netdev, "Failed to init CAN channel id (err %d)\n", err);
 		return err;
 	}
 
-	/* do update the value with user given bytes.
-	 * ethtool operates on individual bytes. The byte order of the CAN
-	 * channel ID in memory depends on the kernel architecture. We
-	 * convert the CAN channel ID back to the native byte order of the PEAK
-	 * device itself to ensure that the order is consistent for all
-	 * host architectures.
-	 */
+	 
 	ch_id_le = cpu_to_le32(ch_id);
 	memcpy((u8 *)&ch_id_le + eeprom->offset, data, eeprom->len);
 	ch_id = le32_to_cpu(ch_id_le);
 
-	/* flash the new value now */
+	 
 	err = dev->adapter->dev_set_can_channel_id(dev, ch_id);
 	if (err) {
 		netdev_err(netdev, "Failed to write new CAN channel id (err %d)\n",
@@ -891,7 +791,7 @@ int peak_usb_set_eeprom(struct net_device *netdev,
 		return err;
 	}
 
-	/* update cached value with the new one */
+	 
 	dev->can_channel_id = ch_id;
 
 	return 0;
@@ -912,10 +812,7 @@ int pcan_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
 	return 0;
 }
 
-/*
- * create one device which is attached to CAN controller #ctrl_idx of the
- * usb adapter.
- */
+ 
 static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 			       struct usb_interface *intf, int ctrl_idx)
 {
@@ -938,7 +835,7 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 
 	dev = netdev_priv(netdev);
 
-	/* allocate a buffer large enough to send commands */
+	 
 	dev->cmd_buf = kzalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
 	if (!dev->cmd_buf) {
 		err = -ENOMEM;
@@ -965,12 +862,12 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 
 	netdev->netdev_ops = &peak_usb_netdev_ops;
 
-	netdev->flags |= IFF_ECHO; /* we support local echo */
+	netdev->flags |= IFF_ECHO;  
 
-	/* add ethtool support */
+	 
 	netdev->ethtool_ops = peak_usb_adapter->ethtool_ops;
 
-	/* register peak_usb sysfs files */
+	 
 	netdev->sysfs_groups[0] = &peak_usb_sysfs_group;
 
 	init_usb_anchor(&dev->rx_submitted);
@@ -996,7 +893,7 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 	if (dev->prev_siblings)
 		(dev->prev_siblings)->next_siblings = dev;
 
-	/* keep hw revision into the netdevice */
+	 
 	tmp16 = le16_to_cpu(usb_dev->descriptor.bcdDevice);
 	dev->device_rev = tmp16 >> 8;
 
@@ -1006,14 +903,14 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 			goto lbl_unregister_candev;
 	}
 
-	/* set bus off */
+	 
 	if (dev->adapter->dev_set_bus) {
 		err = dev->adapter->dev_set_bus(dev, 0);
 		if (err)
 			goto adap_dev_free;
 	}
 
-	/* get CAN channel id early */
+	 
 	dev->adapter->dev_get_can_channel_id(dev, &dev->can_channel_id);
 
 	netdev_info(netdev, "attached to %s channel %u (device 0x%08X)\n",
@@ -1038,15 +935,13 @@ lbl_free_candev:
 	return err;
 }
 
-/*
- * called by the usb core when the device is unplugged from the system
- */
+ 
 static void peak_usb_disconnect(struct usb_interface *intf)
 {
 	struct peak_usb_device *dev;
 	struct peak_usb_device *dev_prev_siblings;
 
-	/* unregister as many netdev devices as siblings */
+	 
 	for (dev = usb_get_intfdata(intf); dev; dev = dev_prev_siblings) {
 		struct net_device *netdev = dev->netdev;
 		char name[IFNAMSIZ];
@@ -1069,19 +964,17 @@ static void peak_usb_disconnect(struct usb_interface *intf)
 	usb_set_intfdata(intf, NULL);
 }
 
-/*
- * probe function for new PEAK-System devices
- */
+ 
 static int peak_usb_probe(struct usb_interface *intf,
 			  const struct usb_device_id *id)
 {
 	const struct peak_usb_adapter *peak_usb_adapter;
 	int i, err = -ENOMEM;
 
-	/* get corresponding PCAN-USB adapter */
+	 
 	peak_usb_adapter = (const struct peak_usb_adapter *)id->driver_info;
 
-	/* got corresponding adapter: check if it handles current interface */
+	 
 	if (peak_usb_adapter->intf_probe) {
 		err = peak_usb_adapter->intf_probe(intf);
 		if (err)
@@ -1091,7 +984,7 @@ static int peak_usb_probe(struct usb_interface *intf,
 	for (i = 0; i < peak_usb_adapter->ctrl_count; i++) {
 		err = peak_usb_create_dev(peak_usb_adapter, intf, i);
 		if (err) {
-			/* deregister already created devices */
+			 
 			peak_usb_disconnect(intf);
 			break;
 		}
@@ -1100,7 +993,7 @@ static int peak_usb_probe(struct usb_interface *intf,
 	return err;
 }
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver peak_usb_driver = {
 	.name = PCAN_USB_DRIVER_NAME,
 	.disconnect = peak_usb_disconnect,
@@ -1112,7 +1005,7 @@ static int __init peak_usb_init(void)
 {
 	int err;
 
-	/* register this driver with the USB subsystem */
+	 
 	err = usb_register(&peak_usb_driver);
 	if (err)
 		pr_err("%s: usb_register failed (err %d)\n",
@@ -1126,7 +1019,7 @@ static int peak_usb_do_device_exit(struct device *d, void *arg)
 	struct usb_interface *intf = to_usb_interface(d);
 	struct peak_usb_device *dev;
 
-	/* stop as many netdev devices as siblings */
+	 
 	for (dev = usb_get_intfdata(intf); dev; dev = dev->prev_siblings) {
 		struct net_device *netdev = dev->netdev;
 
@@ -1142,14 +1035,14 @@ static void __exit peak_usb_exit(void)
 {
 	int err;
 
-	/* last chance do send any synchronous commands here */
+	 
 	err = driver_for_each_device(&peak_usb_driver.drvwrap.driver, NULL,
 				     NULL, peak_usb_do_device_exit);
 	if (err)
 		pr_err("%s: failed to stop all can devices (err %d)\n",
 			PCAN_USB_DRIVER_NAME, err);
 
-	/* deregister this driver with the USB subsystem */
+	 
 	usb_deregister(&peak_usb_driver);
 
 	pr_info("%s: PCAN-USB interfaces driver unloaded\n",

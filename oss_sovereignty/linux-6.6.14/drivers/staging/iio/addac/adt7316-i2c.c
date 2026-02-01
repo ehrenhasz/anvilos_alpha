@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * I2C bus driver for ADT7316/7/8 ADT7516/7/9 digital temperature
- * sensor, ADC and DAC
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -14,9 +9,7 @@
 
 #include "adt7316.h"
 
-/*
- * adt7316 register access by I2C
- */
+ 
 static int adt7316_i2c_read(void *client, u8 reg, u8 *data)
 {
 	struct i2c_client *cl = client;
@@ -89,9 +82,7 @@ static int adt7316_i2c_multi_write(void *client, u8 reg, u8 count, u8 *data)
 	return 0;
 }
 
-/*
- * device probe and remove
- */
+ 
 
 static int adt7316_i2c_probe(struct i2c_client *client)
 {

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Core MFD defines for ATC260x PMICs
- *
- * Copyright (C) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- * Copyright (C) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_ATC260X_CORE_H
 #define __LINUX_MFD_ATC260X_CORE_H
@@ -36,7 +31,7 @@ struct atc260x {
 	const struct regmap_irq_chip *regmap_irq_chip;
 	struct regmap_irq_chip_data *irq_data;
 
-	struct mutex *regmap_mutex;	/* mutex for custom regmap locking */
+	struct mutex *regmap_mutex;	 
 
 	const struct mfd_cell *cells;
 	int nr_cells;
@@ -47,7 +42,7 @@ struct atc260x {
 	const char *type_name;
 	unsigned int rev_reg;
 
-	const struct atc260x_init_regs *init_regs; /* regs for device init */
+	const struct atc260x_init_regs *init_regs;  
 };
 
 struct regmap_config;
@@ -55,4 +50,4 @@ struct regmap_config;
 int atc260x_match_device(struct atc260x *atc260x, struct regmap_config *regmap_cfg);
 int atc260x_device_probe(struct atc260x *atc260x);
 
-#endif /* __LINUX_MFD_ATC260X_CORE_H */
+#endif  

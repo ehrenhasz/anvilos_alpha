@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __MTK_ETHDR_H__
 #define __MTK_ETHDR_H__

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5514-spi.c  --  RT5514 SPI driver
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/input.h>
@@ -160,11 +155,7 @@ static void rt5514_schedule_copy(struct rt5514_dsp *rt5514_dsp)
 
 	rt5514_dsp->get_size = 0;
 
-	/**
-	 * The address area x1800XXXX is the register address, and it cannot
-	 * support spi burst read perfectly. So we use the spi burst read
-	 * individually to make sure the data correctly.
-	 */
+	 
 	rt5514_spi_burst_read(RT5514_BUFFER_VOICE_BASE, (u8 *)&buf,
 		sizeof(buf));
 	rt5514_dsp->buf_base = buf[0] | buf[1] << 8 | buf[2] << 16 |
@@ -199,7 +190,7 @@ static irqreturn_t rt5514_spi_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* PCM for streaming audio from the DSP buffer */
+ 
 static int rt5514_spi_pcm_open(struct snd_soc_component *component,
 			       struct snd_pcm_substream *substream)
 {
@@ -220,7 +211,7 @@ static int rt5514_spi_hw_params(struct snd_soc_component *component,
 	rt5514_dsp->substream = substream;
 	rt5514_dsp->dma_offset = 0;
 
-	/* Read IRQ status and schedule copy accordingly. */
+	 
 	rt5514_spi_burst_read(RT5514_IRQ_CTRL, (u8 *)&buf, sizeof(buf));
 	if (buf[0] & RT5514_IRQ_STATUS_BIT)
 		rt5514_schedule_copy(rt5514_dsp);
@@ -307,15 +298,7 @@ static const struct snd_soc_component_driver rt5514_spi_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/**
- * rt5514_spi_burst_read - Read data from SPI by rt5514 address.
- * @addr: Start address.
- * @rxbuf: Data Buffer for reading.
- * @len: Data length, it must be a multiple of 8.
- *
- *
- * Returns true for success.
- */
+ 
 int rt5514_spi_burst_read(unsigned int addr, u8 *rxbuf, size_t len)
 {
 	u8 spi_cmd = RT5514_SPI_CMD_BURST_READ;
@@ -385,15 +368,7 @@ int rt5514_spi_burst_read(unsigned int addr, u8 *rxbuf, size_t len)
 }
 EXPORT_SYMBOL_GPL(rt5514_spi_burst_read);
 
-/**
- * rt5514_spi_burst_write - Write data to SPI by rt5514 address.
- * @addr: Start address.
- * @txbuf: Data Buffer for writng.
- * @len: Data length, it must be a multiple of 8.
- *
- *
- * Returns true for success.
- */
+ 
 int rt5514_spi_burst_write(u32 addr, const u8 *txbuf, size_t len)
 {
 	u8 spi_cmd = RT5514_SPI_CMD_BURST_WRITE;

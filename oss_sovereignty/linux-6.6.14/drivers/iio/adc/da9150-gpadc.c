@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DA9150 GPADC Driver
- *
- * Copyright (c) 2014 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -20,7 +14,7 @@
 #include <linux/mfd/da9150/core.h>
 #include <linux/mfd/da9150/registers.h>
 
-/* Channels */
+ 
 enum da9150_gpadc_hw_channel {
 	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
 	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
@@ -70,7 +64,7 @@ enum da9150_gpadc_channel {
 	DA9150_GPADC_CHAN_TJUNC_OVP,
 };
 
-/* Private data */
+ 
 struct da9150_gpadc {
 	struct da9150 *da9150;
 	struct device *dev;
@@ -97,33 +91,33 @@ static int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
 
 	mutex_lock(&gpadc->lock);
 
-	/* Set channel & enable measurement */
+	 
 	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
 			 (DA9150_GPADC_EN_MASK |
 			  hw_chan << DA9150_GPADC_MUX_SHIFT));
 
-	/* Consume left-over completion from a previous timeout */
+	 
 	try_wait_for_completion(&gpadc->complete);
 
-	/* Check for actual completion */
+	 
 	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
 
-	/* Read result and status from device */
+	 
 	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
 
 	mutex_unlock(&gpadc->lock);
 
-	/* Check to make sure device really has completed reading */
+	 
 	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
 		dev_err(gpadc->dev, "Timeout on channel %d of GPADC\n",
 			hw_chan);
 		return -ETIMEDOUT;
 	}
 
-	/* LSBs - 2 bits */
+	 
 	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
 		 DA9150_GPADC_RES_L_SHIFT;
-	/* MSBs - 8 bits */
+	 
 	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
 
 	return result;
@@ -131,25 +125,25 @@ static int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
 
 static inline int da9150_gpadc_gpio_6v_voltage_now(int raw_val)
 {
-	/* Convert to mV */
+	 
 	return (6 * ((raw_val * 1000) + 500)) / 1024;
 }
 
 static inline int da9150_gpadc_ibus_current_avg(int raw_val)
 {
-	/* Convert to mA */
+	 
 	return (4 * ((raw_val * 1000) + 500)) / 2048;
 }
 
 static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
 {
-	/* Convert to mV */
+	 
 	return (21 * ((raw_val * 1000) + 500)) / 1024;
 }
 
 static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
 {
-	/* Convert to mV */
+	 
 	return (3 * ((raw_val * 1000) + 500)) / 512;
 }
 
@@ -179,7 +173,7 @@ static int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
 		*val = da9150_gpadc_vsys_6v_voltage_now(raw_val);
 		break;
 	default:
-		/* No processing for other channels so return raw value */
+		 
 		*val = raw_val;
 		break;
 	}
@@ -273,7 +267,7 @@ static const struct iio_info da9150_gpadc_info = {
 	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
 			     BIT(IIO_CHAN_INFO_PROCESSED), _ext_name)
 
-/* Supported channels */
+ 
 static const struct iio_chan_spec da9150_gpadc_channels[] = {
 	DA9150_GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_6V, IIO_VOLTAGE, NULL),
 	DA9150_GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_6V, IIO_VOLTAGE, NULL),
@@ -290,7 +284,7 @@ static const struct iio_chan_spec da9150_gpadc_channels[] = {
 				    "tjunc_ovp"),
 };
 
-/* Default maps used by da9150-charger */
+ 
 static struct iio_map da9150_gpadc_default_maps[] = {
 	{
 		.consumer_dev_name = "da9150-charger",

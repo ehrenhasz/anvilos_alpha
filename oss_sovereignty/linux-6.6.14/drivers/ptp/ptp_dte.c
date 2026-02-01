@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2017 Broadcom
+
+
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -27,17 +27,17 @@
 #define DTE_NCO_INC_DEFAULT	0x80000000
 #define DTE_NUM_REGS_TO_RESTORE	4
 
-/* Full wrap around is 44bits in ns (~4.887 hrs) */
+ 
 #define DTE_WRAP_AROUND_NSEC_SHIFT 44
 
-/* 44 bits NCO */
+ 
 #define DTE_NCO_MAX_NS	0xFFFFFFFFFFFLL
 
-/* 125MHz with 3.29 reg cfg */
+ 
 #define DTE_PPB_ADJ(ppb) (u32)(div64_u64((((u64)abs(ppb) * BIT(28)) +\
 				      62500000ULL), 125000000ULL))
 
-/* ptp dte priv structure */
+ 
 struct ptp_dte {
 	void __iomem *regs;
 	struct ptp_clock *ptp_clk;
@@ -54,11 +54,11 @@ static void dte_write_nco(void __iomem *regs, s64 ns)
 	u32 sum2, sum3;
 
 	sum2 = (u32)((ns >> DTE_NCO_SUM2_SHIFT) & DTE_NCO_SUM2_MASK);
-	/* compensate for ignoring sum1 */
+	 
 	if (sum2 != DTE_NCO_SUM2_MASK)
 		sum2++;
 
-	/* to write sum3, bits [15:8] needs to be written */
+	 
 	sum3 = (u32)(((ns >> DTE_NCO_SUM3_SHIFT) & DTE_NCO_SUM3_MASK) <<
 		     DTE_NCO_SUM3_WR_SHIFT);
 
@@ -72,10 +72,7 @@ static s64 dte_read_nco(void __iomem *regs)
 	u32 sum2, sum3;
 	s64 ns;
 
-	/*
-	 * ignoring sum1 (4 bits) gives a 16ns resolution, which
-	 * works due to the async register read.
-	 */
+	 
 	sum3 = readl(regs + DTE_NCO_OVERFLOW_REG) & DTE_NCO_SUM3_MASK;
 	sum2 = readl(regs + DTE_NCO_TIME_REG);
 	ns = ((s64)sum3 << DTE_NCO_SUM3_SHIFT) |
@@ -90,7 +87,7 @@ static void dte_write_nco_delta(struct ptp_dte *ptp_dte, s64 delta)
 
 	ns = dte_read_nco(ptp_dte->regs);
 
-	/* handle wraparound conditions */
+	 
 	if ((delta < 0) && (abs(delta) > ns)) {
 		if (ptp_dte->ts_wrap_cnt) {
 			ns += DTE_NCO_MAX_NS + delta;
@@ -119,16 +116,16 @@ static s64 dte_read_nco_with_ovf(struct ptp_dte *ptp_dte)
 
 	ns = dte_read_nco(ptp_dte->regs);
 
-	/*Timestamp overflow: 8 LSB bits of sum3, 4 MSB bits of sum2 */
+	 
 	ts_ovf = (ns >> DTE_NCO_TS_WRAP_LSHIFT) & DTE_NCO_TS_WRAP_MASK;
 
-	/* Check for wrap around */
+	 
 	if (ts_ovf < ptp_dte->ts_ovf_last)
 		ptp_dte->ts_wrap_cnt++;
 
 	ptp_dte->ts_ovf_last = ts_ovf;
 
-	/* adjust for wraparounds */
+	 
 	ns += (s64)(BIT_ULL(DTE_WRAP_AROUND_NSEC_SHIFT) * ptp_dte->ts_wrap_cnt);
 
 	return ns;
@@ -190,16 +187,16 @@ static int ptp_dte_settime(struct ptp_clock_info *ptp,
 
 	spin_lock_irqsave(&ptp_dte->lock, flags);
 
-	/* Disable nco increment */
+	 
 	writel(0, ptp_dte->regs + DTE_NCO_INC_REG);
 
 	dte_write_nco(ptp_dte->regs, timespec64_to_ns(ts));
 
-	/* reset overflow and wrap counter */
+	 
 	ptp_dte->ts_ovf_last = 0;
 	ptp_dte->ts_wrap_cnt = 0;
 
-	/* Enable nco increment */
+	 
 	writel(DTE_NCO_INC_DEFAULT, ptp_dte->regs + DTE_NCO_INC_REG);
 
 	spin_unlock_irqrestore(&ptp_dte->lock, flags);
@@ -282,7 +279,7 @@ static int ptp_dte_suspend(struct device *dev)
 			readl(ptp_dte->regs + (i * sizeof(u32)));
 	}
 
-	/* disable the nco */
+	 
 	writel(0, ptp_dte->regs + DTE_NCO_INC_REG);
 
 	return 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -15,7 +13,7 @@
 #include "dcss-kms.h"
 
 static const u32 dcss_common_formats[] = {
-	/* RGB */
+	 
 	DRM_FORMAT_ARGB8888,
 	DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_ABGR8888,
@@ -297,9 +295,7 @@ static void dcss_plane_atomic_update(struct drm_plane *plane,
 	src = plane->state->src;
 	dst = plane->state->dst;
 
-	/*
-	 * The width and height after clipping.
-	 */
+	 
 	src_w = drm_rect_width(&src) >> 16;
 	src_h = drm_rect_height(&src) >> 16;
 	dst_w = drm_rect_width(&dst);

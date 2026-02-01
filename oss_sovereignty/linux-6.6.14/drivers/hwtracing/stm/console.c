@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple kernel console driver for STM devices
- * Copyright (c) 2014, Intel Corporation.
- *
- * STM console will send kernel messages over STM devices to a trace host.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

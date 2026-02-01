@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2010-2011 Canonical Ltd <jeremy.kerr@canonical.com>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- * Fixed rate clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -14,15 +9,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-/*
- * DOC: basic fixed-rate clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_(un)prepare only ensures parents are prepared
- * enable - clk_enable only ensures parents are enabled
- * rate - rate is always a fixed value.  No clk_set_rate support
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 #define to_clk_fixed_rate(_hw) container_of(_hw, struct clk_fixed_rate, hw)
 
@@ -53,11 +40,7 @@ static void devm_clk_hw_register_fixed_rate_release(struct device *dev, void *re
 {
 	struct clk_fixed_rate *fix = res;
 
-	/*
-	 * We can not use clk_hw_unregister_fixed_rate, since it will kfree()
-	 * the hw, resulting in double free. Just unregister the hw and let
-	 * devres code kfree() it.
-	 */
+	 
 	clk_hw_unregister(&fix->hw);
 }
 
@@ -73,7 +56,7 @@ struct clk_hw *__clk_hw_register_fixed_rate(struct device *dev,
 	struct clk_init_data init = {};
 	int ret = -EINVAL;
 
-	/* allocate fixed-rate clock */
+	 
 	if (devm)
 		fixed = devres_alloc(devm_clk_hw_register_fixed_rate_release,
 				     sizeof(*fixed), GFP_KERNEL);
@@ -93,13 +76,13 @@ struct clk_hw *__clk_hw_register_fixed_rate(struct device *dev,
 	else
 		init.num_parents = 0;
 
-	/* struct clk_fixed_rate assignments */
+	 
 	fixed->flags = clk_fixed_flags;
 	fixed->fixed_rate = fixed_rate;
 	fixed->fixed_accuracy = fixed_accuracy;
 	fixed->hw.init = &init;
 
-	/* register the clock */
+	 
 	hw = &fixed->hw;
 	if (dev || !np)
 		ret = clk_hw_register(dev, hw);
@@ -186,10 +169,7 @@ static struct clk_hw *_of_fixed_clk_setup(struct device_node *node)
 	return hw;
 }
 
-/**
- * of_fixed_clk_setup() - Setup function for simple fixed rate clock
- * @node:	device node for the clock
- */
+ 
 void __init of_fixed_clk_setup(struct device_node *node)
 {
 	_of_fixed_clk_setup(node);
@@ -208,10 +188,7 @@ static int of_fixed_clk_probe(struct platform_device *pdev)
 {
 	struct clk_hw *hw;
 
-	/*
-	 * This function is not executed when of_fixed_clk_setup
-	 * succeeded.
-	 */
+	 
 	hw = _of_fixed_clk_setup(pdev->dev.of_node);
 	if (IS_ERR(hw))
 		return PTR_ERR(hw);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
@@ -19,10 +15,7 @@
 #include "vmci_event.h"
 #include "vmci_route.h"
 
-/*
- * struct datagram_entry describes the datagram entity. It is used for datagram
- * entities created only on the host.
- */
+ 
 struct datagram_entry {
 	struct vmci_resource resource;
 	u32 flags;
@@ -36,17 +29,15 @@ struct delayed_datagram_info {
 	struct datagram_entry *entry;
 	struct work_struct work;
 	bool in_dg_host_queue;
-	/* msg and msg_payload must be together. */
+	 
 	struct vmci_datagram msg;
 	u8 msg_payload[];
 };
 
-/* Number of in-flight host->host datagrams */
+ 
 static atomic_t delayed_dg_host_queue_size = ATOMIC_INIT(0);
 
-/*
- * Create a datagram entry given a handle pointer.
- */
+ 
 static int dg_create_handle(u32 resource_id,
 			    u32 flags,
 			    u32 priv_flags,
@@ -83,7 +74,7 @@ static int dg_create_handle(u32 resource_id,
 	entry->client_data = client_data;
 	entry->priv_flags = priv_flags;
 
-	/* Make datagram resource live. */
+	 
 	result = vmci_resource_add(&entry->resource,
 				   VMCI_RESOURCE_TYPE_DATAGRAM,
 				   handle);
@@ -98,10 +89,7 @@ static int dg_create_handle(u32 resource_id,
 	return VMCI_SUCCESS;
 }
 
-/*
- * Internal utility function with the same purpose as
- * vmci_datagram_get_priv_flags that also takes a context_id.
- */
+ 
 static int vmci_datagram_get_priv_flags(u32 context_id,
 					struct vmci_handle handle,
 					u32 *priv_flags)
@@ -130,9 +118,7 @@ static int vmci_datagram_get_priv_flags(u32 context_id,
 	return VMCI_SUCCESS;
 }
 
-/*
- * Calls the specified callback in a delayed context.
- */
+ 
 static void dg_delayed_dispatch(struct work_struct *work)
 {
 	struct delayed_datagram_info *dg_info =
@@ -148,12 +134,7 @@ static void dg_delayed_dispatch(struct work_struct *work)
 	kfree(dg_info);
 }
 
-/*
- * Dispatch datagram as a host, to the host, or other vm context. This
- * function cannot dispatch to hypervisor context handlers. This should
- * have been handled before we get here by vmci_datagram_dispatch.
- * Returns number of bytes sent on success, error code otherwise.
- */
+ 
 static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 {
 	int retval;
@@ -162,18 +143,18 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 
 	dg_size = VMCI_DG_SIZE(dg);
 
-	/* Host cannot send to the hypervisor. */
+	 
 	if (dg->dst.context == VMCI_HYPERVISOR_CONTEXT_ID)
 		return VMCI_ERROR_DST_UNREACHABLE;
 
-	/* Check that source handle matches sending context. */
+	 
 	if (dg->src.context != context_id) {
 		pr_devel("Sender context (ID=0x%x) is not owner of src datagram entry (handle=0x%x:0x%x)\n",
 			 context_id, dg->src.context, dg->src.resource);
 		return VMCI_ERROR_NO_ACCESS;
 	}
 
-	/* Get hold of privileges of sending endpoint. */
+	 
 	retval = vmci_datagram_get_priv_flags(context_id, dg->src,
 					      &src_priv_flags);
 	if (retval != VMCI_SUCCESS) {
@@ -182,9 +163,9 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 		return retval;
 	}
 
-	/* Determine if we should route to host or guest destination. */
+	 
 	if (dg->dst.context == VMCI_HOST_CONTEXT_ID) {
-		/* Route to host datagram entry. */
+		 
 		struct datagram_entry *dst_entry;
 		struct vmci_resource *resource;
 
@@ -208,11 +189,7 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 			return VMCI_ERROR_NO_ACCESS;
 		}
 
-		/*
-		 * If a VMCI datagram destined for the host is also sent by the
-		 * host, we always run it delayed. This ensures that no locks
-		 * are held when the datagram callback runs.
-		 */
+		 
 		if (dst_entry->run_delayed ||
 		    dg->src.context == VMCI_HOST_CONTEXT_ID) {
 			struct delayed_datagram_info *dg_info;
@@ -247,7 +224,7 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 				return retval;
 		}
 	} else {
-		/* Route to destination VM context. */
+		 
 		struct vmci_datagram *new_dg;
 
 		if (context_id != dg->dst.context) {
@@ -256,10 +233,7 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 						  (dg->dst.context))) {
 				return VMCI_ERROR_NO_ACCESS;
 			} else if (VMCI_CONTEXT_IS_VM(context_id)) {
-				/*
-				 * If the sending context is a VM, it
-				 * cannot reach another VM.
-				 */
+				 
 
 				pr_devel("Datagram communication between VMs not supported (src=0x%x, dst=0x%x)\n",
 					 context_id, dg->dst.context);
@@ -267,7 +241,7 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 			}
 		}
 
-		/* We make a copy to enqueue. */
+		 
 		new_dg = kmemdup(dg, dg_size, GFP_KERNEL);
 		if (new_dg == NULL)
 			return VMCI_ERROR_NO_MEM;
@@ -279,18 +253,11 @@ static int dg_dispatch_as_host(u32 context_id, struct vmci_datagram *dg)
 		}
 	}
 
-	/*
-	 * We currently truncate the size to signed 32 bits. This doesn't
-	 * matter for this handler as it only support 4Kb messages.
-	 */
+	 
 	return (int)dg_size;
 }
 
-/*
- * Dispatch datagram as a guest, down through the VMX and potentially to
- * the host.
- * Returns number of bytes sent on success, error code otherwise.
- */
+ 
 static int dg_dispatch_as_guest(struct vmci_datagram *dg)
 {
 	int retval;
@@ -306,11 +273,7 @@ static int dg_dispatch_as_guest(struct vmci_datagram *dg)
 	return retval;
 }
 
-/*
- * Dispatch datagram.  This will determine the routing for the datagram
- * and dispatch it accordingly.
- * Returns number of bytes sent on success, error code otherwise.
- */
+ 
 int vmci_datagram_dispatch(u32 context_id,
 			   struct vmci_datagram *dg, bool from_guest)
 {
@@ -346,11 +309,7 @@ int vmci_datagram_dispatch(u32 context_id,
 	return VMCI_ERROR_DST_UNREACHABLE;
 }
 
-/*
- * Invoke the handler for the given datagram.  This is intended to be
- * called only when acting as a guest and receiving a datagram from the
- * virtual device.
- */
+ 
 int vmci_datagram_invoke_guest_handler(struct vmci_datagram *dg)
 {
 	struct vmci_resource *resource;
@@ -389,17 +348,7 @@ int vmci_datagram_invoke_guest_handler(struct vmci_datagram *dg)
 	return VMCI_SUCCESS;
 }
 
-/*
- * vmci_datagram_create_handle_priv() - Create host context datagram endpoint
- * @resource_id:        The resource ID.
- * @flags:      Datagram Flags.
- * @priv_flags: Privilege Flags.
- * @recv_cb:    Callback when receiving datagrams.
- * @client_data:        Pointer for a datagram_entry struct
- * @out_handle: vmci_handle that is populated as a result of this function.
- *
- * Creates a host context datagram endpoint and returns a handle to it.
- */
+ 
 int vmci_datagram_create_handle_priv(u32 resource_id,
 				     u32 flags,
 				     u32 priv_flags,
@@ -423,18 +372,7 @@ int vmci_datagram_create_handle_priv(u32 resource_id,
 }
 EXPORT_SYMBOL_GPL(vmci_datagram_create_handle_priv);
 
-/*
- * vmci_datagram_create_handle() - Create host context datagram endpoint
- * @resource_id:        Resource ID.
- * @flags:      Datagram Flags.
- * @recv_cb:    Callback when receiving datagrams.
- * @client_ata: Pointer for a datagram_entry struct
- * @out_handle: vmci_handle that is populated as a result of this function.
- *
- * Creates a host context datagram endpoint and returns a handle to
- * it.  Same as vmci_datagram_create_handle_priv without the priviledge
- * flags argument.
- */
+ 
 int vmci_datagram_create_handle(u32 resource_id,
 				u32 flags,
 				vmci_datagram_recv_cb recv_cb,
@@ -449,13 +387,7 @@ int vmci_datagram_create_handle(u32 resource_id,
 }
 EXPORT_SYMBOL_GPL(vmci_datagram_create_handle);
 
-/*
- * vmci_datagram_destroy_handle() - Destroys datagram handle
- * @handle:     vmci_handle to be destroyed and reaped.
- *
- * Use this function to destroy any datagram handles created by
- * vmci_datagram_create_handle{,Priv} functions.
- */
+ 
 int vmci_datagram_destroy_handle(struct vmci_handle handle)
 {
 	struct datagram_entry *entry;
@@ -478,12 +410,7 @@ int vmci_datagram_destroy_handle(struct vmci_handle handle)
 }
 EXPORT_SYMBOL_GPL(vmci_datagram_destroy_handle);
 
-/*
- * vmci_datagram_send() - Send a datagram
- * @msg:        The datagram to send.
- *
- * Sends the provided datagram on its merry way.
- */
+ 
 int vmci_datagram_send(struct vmci_datagram *msg)
 {
 	if (msg == NULL)

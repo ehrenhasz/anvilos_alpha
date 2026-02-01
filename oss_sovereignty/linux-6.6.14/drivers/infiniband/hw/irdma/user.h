@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2020 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_USER_H
 #define IRDMA_USER_H
 
@@ -238,7 +238,7 @@ struct irdma_cq_poll_info {
 	u32 qp_id;
 	u32 ud_src_qpn;
 	u32 imm_data;
-	irdma_stag inv_stag; /* or L_R_Key */
+	irdma_stag inv_stag;  
 	enum irdma_cmpl_status comp_status;
 	u16 major_err;
 	u16 minor_err;
@@ -246,7 +246,7 @@ struct irdma_cq_poll_info {
 	u8 ud_smac[6];
 	u8 op_type;
 	u8 q_type;
-	bool stag_invalid_set:1; /* or L_R_Key set */
+	bool stag_invalid_set:1;  
 	bool error:1;
 	bool solicited_event:1;
 	bool ipv4:1;
@@ -339,9 +339,9 @@ struct irdma_qp_uk {
 	u8 rq_wqe_size_multiplier;
 	bool deferred_flag:1;
 	bool first_sq_wq:1;
-	bool sq_flush_complete:1; /* Indicates flush was seen and SQ was empty after the flush */
-	bool rq_flush_complete:1; /* Indicates flush was seen and RQ was empty after the flush */
-	bool destroy_pending:1; /* Indicates the QP is being destroyed */
+	bool sq_flush_complete:1;  
+	bool rq_flush_complete:1;  
+	bool destroy_pending:1;  
 	void *back_qp;
 	u8 dbg_rq_flushed;
 	u8 sq_flush_seen;
@@ -410,4 +410,4 @@ int irdma_get_sqdepth(struct irdma_uk_attrs *uk_attrs, u32 sq_size, u8 shift,
 int irdma_get_rqdepth(struct irdma_uk_attrs *uk_attrs, u32 rq_size, u8 shift,
 		      u32 *wqdepth);
 void irdma_clr_wqes(struct irdma_qp_uk *qp, u32 qp_wqe_idx);
-#endif /* IRDMA_USER_H */
+#endif  

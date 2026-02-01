@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020-2022, Red Hat, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -43,10 +40,7 @@ xfs_iunlink_item_sort(
 	return IUL_ITEM(lip)->ip->i_ino;
 }
 
-/*
- * Look up the inode cluster buffer and log the on-disk unlinked inode change
- * we need to make.
- */
+ 
 static int
 xfs_iunlink_log_dinode(
 	struct xfs_trans	*tp,
@@ -62,17 +56,13 @@ xfs_iunlink_log_dinode(
 	error = xfs_imap_to_bp(mp, tp, &ip->i_imap, &ibp);
 	if (error)
 		return error;
-	/*
-	 * Don't log the unlinked field on stale buffers as this may be the
-	 * transaction that frees the inode cluster and relogging the buffer
-	 * here will incorrectly remove the stale state.
-	 */
+	 
 	if (ibp->b_flags & XBF_STALE)
 		goto out;
 
 	dip = xfs_buf_offset(ibp, ip->i_imap.im_boffset);
 
-	/* Make sure the old pointer isn't garbage. */
+	 
 	if (be32_to_cpu(dip->di_next_unlinked) != iup->old_agino) {
 		xfs_inode_verifier_error(ip, -EFSCORRUPTED, __func__, dip,
 				sizeof(*dip), __this_address);
@@ -97,14 +87,7 @@ out:
 	return error;
 }
 
-/*
- * On precommit, we grab the inode cluster buffer for the inode number we were
- * passed, then update the next unlinked field for that inode in the buffer and
- * log the buffer. This ensures that the inode cluster buffer was logged in the
- * correct order w.r.t. other inode cluster buffers. We can then remove the
- * iunlink item from the transaction and release it as it is has now served it's
- * purpose.
- */
+ 
 static int
 xfs_iunlink_item_precommit(
 	struct xfs_trans	*tp,
@@ -126,17 +109,7 @@ static const struct xfs_item_ops xfs_iunlink_item_ops = {
 };
 
 
-/*
- * Initialize the inode log item for a newly allocated (in-core) inode.
- *
- * Inode extents can only reside within an AG. Hence specify the starting
- * block for the inode chunk by offset within an AG as well as the
- * length of the allocated extent.
- *
- * This joins the item to the transaction and marks it dirty so
- * that we don't need a separate call to do this, nor does the
- * caller need to know anything about the iunlink item.
- */
+ 
 int
 xfs_iunlink_log_inode(
 	struct xfs_trans	*tp,
@@ -150,11 +123,7 @@ xfs_iunlink_log_inode(
 	ASSERT(xfs_verify_agino_or_null(pag, next_agino));
 	ASSERT(xfs_verify_agino_or_null(pag, ip->i_next_unlinked));
 
-	/*
-	 * Since we're updating a linked list, we should never find that the
-	 * current pointer is the same as the new value, unless we're
-	 * terminating the list.
-	 */
+	 
 	if (ip->i_next_unlinked == next_agino) {
 		if (next_agino != NULLAGINO)
 			return -EFSCORRUPTED;

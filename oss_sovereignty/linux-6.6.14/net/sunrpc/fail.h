@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021, Oracle. All rights reserved.
- */
+ 
+ 
 
 #ifndef _NET_SUNRPC_FAIL_H_
 #define _NET_SUNRPC_FAIL_H_
@@ -20,6 +18,6 @@ struct fail_sunrpc_attr {
 
 extern struct fail_sunrpc_attr fail_sunrpc;
 
-#endif /* CONFIG_FAULT_INJECTION */
+#endif  
 
-#endif /* _NET_SUNRPC_FAIL_H_ */
+#endif  

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FS-iA6B iBus RC receiver driver
- *
- * This driver provides all 14 channels of the FlySky FS-ia6B RC receiver
- * as analog values.
- *
- * Additionally, the channels can be converted to discrete switch values.
- * By default, it is configured for the offical FS-i6 remote control.
- * If you use a different hardware configuration, you can configure it
- * using the `switch_config` parameter.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -163,7 +153,7 @@ static int fsia6b_serio_connect(struct serio *serio, struct serio_driver *drv)
 		input_set_abs_params(input_dev, fsia6b_axes[i],
 				     1000, 2000, 2, 2);
 
-	/* Register switch configuration */
+	 
 	for (i = 0; i < IBUS_SERVO_COUNT; i++) {
 		if (switch_config[i] < '0' || switch_config[i] > '3') {
 			dev_err(&fsia6b->dev->dev,

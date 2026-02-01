@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* speakup_keyhelp.c
- * help module for speakup
- *
- *written by David Borowski.
- *
- *  Copyright (C) 2003  David Borowski.
- */
+
+ 
 
 #include <linux/keyboard.h>
 #include "spk_priv.h"
@@ -57,7 +51,7 @@ static void build_key_data(void)
 	memset(key_offsets, 0, sizeof(key_offsets));
 	kp = state_tbl + nstates + 1;
 	while (*kp++) {
-		/* count occurrences of each function */
+		 
 		for (i = 0; i < nstates; i++, kp++) {
 			if (!*kp)
 				continue;
@@ -74,10 +68,7 @@ static void build_key_data(void)
 		if (offset >= MAXKEYS)
 			break;
 	}
-/* leave counters set so high keycodes come first.
- * this is done so num pad and other extended keys maps are spoken before
- * the alpha with speakup type mapping.
- */
+ 
 	kp = state_tbl + nstates + 1;
 	while ((ch = *kp++)) {
 		for (i = 0; i < nstates; i++) {
@@ -144,7 +135,7 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 			synth_printf("%s\n", spk_msg_get(MSG_LEAVING_HELP));
 			return 1;
 		}
-		ch |= 32; /* lower case */
+		ch |= 32;  
 		if (ch < 'a' || ch > 'z')
 			return -1;
 		if (letter_offsets[ch - 'a'] == -1) {
@@ -165,7 +156,7 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 		   !spk_special_handler) {
 		spk_special_handler = spk_handle_help;
 		synth_printf("%s\n", spk_msg_get(MSG_HELP_INFO));
-		build_key_data(); /* rebuild each time in case new mapping */
+		build_key_data();  
 		return 1;
 	} else {
 		name = NULL;

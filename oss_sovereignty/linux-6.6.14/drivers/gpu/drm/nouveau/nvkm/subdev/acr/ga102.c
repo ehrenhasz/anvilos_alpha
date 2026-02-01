@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 
 #include <nvfw/acr.h>
@@ -136,14 +116,14 @@ ga102_acr_wpr_build(struct nvkm_acr *acr, struct nvkm_acr_lsf *rtos)
 	u32 offset = 0;
 	int ret;
 
-	/*XXX: shared sub-WPR headers, fill terminator for now. */
+	 
 	nvkm_wo32(acr->wpr, 0x300, (2 << 16) | WPR_GENERIC_HEADER_ID_LSF_SHARED_SUB_WPR);
 	nvkm_wo32(acr->wpr, 0x304, 0x14);
 	nvkm_wo32(acr->wpr, 0x308, 0xffffffff);
 	nvkm_wo32(acr->wpr, 0x30c, 0);
 	nvkm_wo32(acr->wpr, 0x310, 0);
 
-	/* Fill per-LSF structures. */
+	 
 	list_for_each_entry(lsfw, &acr->lsfw, head) {
 		struct lsf_signature_v2 *sig = (void *)lsfw->sig->data;
 
@@ -157,25 +137,25 @@ ga102_acr_wpr_build(struct nvkm_acr *acr, struct nvkm_acr_lsf *rtos)
 		hdr.wpr.bin_version = sig->ls_ucode_version;
 		hdr.wpr.status = WPR_HEADER_V1_STATUS_COPY;
 
-		/* Write WPR header. */
+		 
 		nvkm_wobj(acr->wpr, offset, &hdr, sizeof(hdr));
 		offset += sizeof(hdr);
 
-		/* Write LSB header. */
+		 
 		ret = ga102_acr_wpr_build_lsb(acr, lsfw);
 		if (ret)
 			return ret;
 
-		/* Write ucode image. */
+		 
 		nvkm_wobj(acr->wpr, lsfw->offset.img,
 				    lsfw->img.data,
 				    lsfw->img.size);
 
-		/* Write bootloader data. */
+		 
 		lsfw->func->bld_write(acr, lsfw->offset.bld, lsfw);
 	}
 
-	/* Finalise WPR. */
+	 
 	hdr.hdr.identifier = WPR_GENERIC_HEADER_ID_LSF_WPR_HEADER;
 	hdr.hdr.version = 2;
 	hdr.hdr.size = sizeof(hdr);
@@ -190,10 +170,10 @@ ga102_acr_wpr_layout(struct nvkm_acr *acr)
 	struct nvkm_acr_lsfw *lsfw;
 	u32 wpr = 0;
 
-	wpr += 21 /* MAX_LSF */ * sizeof(struct wpr_header_v2);
+	wpr += 21   * sizeof(struct wpr_header_v2);
 	wpr  = ALIGN(wpr, 256);
 
-	wpr += 0x100; /* Shared sub-WPR headers. */
+	wpr += 0x100;  
 
 	list_for_each_entry(lsfw, &acr->lsfw, head) {
 		wpr  = ALIGN(wpr, 256);

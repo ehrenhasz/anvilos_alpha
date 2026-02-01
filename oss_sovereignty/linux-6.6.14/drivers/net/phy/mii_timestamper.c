@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Support for generic time stamping devices on MII buses.
-// Copyright (C) 2018 Richard Cochran <richardcochran@gmail.com>
-//
+
+
+
+
+
 
 #include <linux/mii_timestamper.h>
 
@@ -15,14 +15,7 @@ struct mii_timestamping_desc {
 	struct device *device;
 };
 
-/**
- * register_mii_tstamp_controller() - registers an MII time stamping device.
- *
- * @device:	The device to be registered.
- * @ctrl:	Pointer to device's control interface.
- *
- * Returns zero on success or non-zero on failure.
- */
+ 
 int register_mii_tstamp_controller(struct device *device,
 				   struct mii_timestamping_ctrl *ctrl)
 {
@@ -44,11 +37,7 @@ int register_mii_tstamp_controller(struct device *device,
 }
 EXPORT_SYMBOL(register_mii_tstamp_controller);
 
-/**
- * unregister_mii_tstamp_controller() - unregisters an MII time stamping device.
- *
- * @device:	A device previously passed to register_mii_tstamp_controller().
- */
+ 
 void unregister_mii_tstamp_controller(struct device *device)
 {
 	struct mii_timestamping_desc *desc;
@@ -67,14 +56,7 @@ void unregister_mii_tstamp_controller(struct device *device)
 }
 EXPORT_SYMBOL(unregister_mii_tstamp_controller);
 
-/**
- * register_mii_timestamper - Enables a given port of an MII time stamper.
- *
- * @node:	The device tree node of the MII time stamp controller.
- * @port:	The index of the port to be enabled.
- *
- * Returns a valid interface on success or ERR_PTR otherwise.
- */
+ 
 struct mii_timestamper *register_mii_timestamper(struct device_node *node,
 						 unsigned int port)
 {
@@ -100,12 +82,7 @@ struct mii_timestamper *register_mii_timestamper(struct device_node *node,
 }
 EXPORT_SYMBOL(register_mii_timestamper);
 
-/**
- * unregister_mii_timestamper - Disables a given MII time stamper.
- *
- * @mii_ts:	An interface obtained via register_mii_timestamper().
- *
- */
+ 
 void unregister_mii_timestamper(struct mii_timestamper *mii_ts)
 {
 	struct mii_timestamping_desc *desc;
@@ -114,10 +91,7 @@ void unregister_mii_timestamper(struct mii_timestamper *mii_ts)
 	if (!mii_ts)
 		return;
 
-	/* mii_timestamper statically registered by the PHY driver won't use the
-	 * register_mii_timestamper() and thus don't have ->device set. Don't
-	 * try to unregister these.
-	 */
+	 
 	if (!mii_ts->device)
 		return;
 

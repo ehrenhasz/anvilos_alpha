@@ -1,20 +1,4 @@
-/* Copyright (C) 1991-2017 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-   
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if EXTENDED_GLOB
 int
@@ -28,7 +12,7 @@ EXTGLOB_PATTERN_P (pat)
     case L('!'):
     case L('@'):
     case L('?'):
-      return (pat[1] == L('('));	/* ) */
+      return (pat[1] == L('('));	 
     default:
       return 0;
     }
@@ -37,10 +21,7 @@ EXTGLOB_PATTERN_P (pat)
 }
 #endif
 
-/* Return 1 of the first character of STRING could match the first
-   character of pattern PAT.  Compiled to both single and wiide character
-   versions.  FLAGS is a subset of strmatch flags; used to do case-insensitive
-   matching for now. */
+ 
 int
 MATCH_PATTERN_CHAR (pat, string, flags)
      CHAR *pat, *string;
@@ -49,7 +30,7 @@ MATCH_PATTERN_CHAR (pat, string, flags)
   CHAR c;
 
   if (*string == 0)
-    return (*pat == L('*'));	/* XXX  - allow only * to match empty string */
+    return (*pat == L('*'));	 
 
   switch (c = *pat++)
     {
@@ -100,7 +81,7 @@ MATCHLEN (pat, max)
 	  break;
 	case L('?'):
 	  if (*pat == LPAREN)
-	    return (matlen = -1);		/* XXX for now */
+	    return (matlen = -1);		 
 	  else
 	    matlen++;
 	  break;
@@ -110,35 +91,34 @@ MATCHLEN (pat, max)
 	case L('!'):
 	case L('@'):
 	  if (*pat == LPAREN)
-	    return (matlen = -1);		/* XXX for now */
+	    return (matlen = -1);		 
 	  else
 	    matlen++;
 	  break;
 	case L('['):
-	  /* scan for ending `]', skipping over embedded [:...:] */
+	   
 	  bracklen = 1;
 	  c = *pat++;
 	  do
 	    {
 	      if (c == 0)
 		{
-		  pat--;			/* back up to NUL */
+		  pat--;			 
 	          matlen += bracklen;
 	          goto bad_bracket;
 	        }
 	      else if (c == L('\\'))
 		{
-		  /* *pat == backslash-escaped character */
+		   
 		  bracklen++;
-		  /* If the backslash or backslash-escape ends the string,
-		     bail.  The ++pat skips over the backslash escape */
+		   
 		  if (*pat == 0 || *++pat == 0)
 		    {
 		      matlen += bracklen;
 		      goto bad_bracket;
 		    }
 		}
-	      else if (c == L('[') && *pat == L(':'))	/* character class */
+	      else if (c == L('[') && *pat == L(':'))	 
 		{
 		  pat++;
 		  bracklen++;
@@ -150,11 +130,11 @@ MATCHLEN (pat, max)
 		  bracklen++;
 		  in_cclass = 0;
 		}
-	      else if (c == L('[') && *pat == L('.'))	/* collating symbol */
+	      else if (c == L('[') && *pat == L('.'))	 
 		{
 		  pat++;
 		  bracklen++;
-		  if (*pat == L(']'))	/* right bracket can appear as collating symbol */
+		  if (*pat == L(']'))	 
 		    {
 		      pat++;
 		      bracklen++;
@@ -167,11 +147,11 @@ MATCHLEN (pat, max)
 		  bracklen++;
 		  in_collsym = 0;
 		}
-	      else if (c == L('[') && *pat == L('='))	/* equivalence class */
+	      else if (c == L('[') && *pat == L('='))	 
 		{
 		  pat++;
 		  bracklen++;
-		  if (*pat == L(']'))	/* right bracket can appear as equivalence class */
+		  if (*pat == L(']'))	 
 		    {
 		      pat++;
 		      bracklen++;
@@ -188,7 +168,7 @@ MATCHLEN (pat, max)
 		bracklen++;
 	    }
 	  while ((c = *pat++) != L(']'));
-	  matlen++;		/* bracket expression can only match one char */
+	  matlen++;		 
 bad_bracket:
 	  break;
 	}

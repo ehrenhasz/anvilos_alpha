@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Magnachip d53e6ea8966 MIPI-DSI panel driver
- * Copyright (C) 2023 Chris Morgan
- */
+
+ 
 
 #include <drm/drm_mipi_dbi.h>
 #include <drm/drm_mipi_dsi.h>
@@ -23,47 +20,47 @@
 
 #include <video/mipi_display.h>
 
-/* Forward declaration for use in backlight function */
+ 
 struct d53e6ea8966;
 
-/* Panel info, unique to each panel */
+ 
 struct d53e6ea8966_panel_info {
-	/** @display_modes: the supported display modes */
+	 
 	const struct drm_display_mode *display_modes;
-	/** @num_modes: the number of supported display modes */
+	 
 	unsigned int num_modes;
-	/** @width_mm: panel width in mm */
+	 
 	u16 width_mm;
-	/** @height_mm: panel height in mm */
+	 
 	u16 height_mm;
-	/** @bus_flags: drm bus flags for panel */
+	 
 	u32 bus_flags;
-	/** @panel_init_seq: panel specific init sequence */
+	 
 	void (*panel_init_seq)(struct d53e6ea8966 *db);
-	/** @backlight_register: panel backlight registration or NULL */
+	 
 	int (*backlight_register)(struct d53e6ea8966 *db);
 };
 
 struct d53e6ea8966 {
-	/** @dev: the container device */
+	 
 	struct device *dev;
-	/** @dbi: the DBI bus abstraction handle */
+	 
 	struct mipi_dbi dbi;
-	/** @panel: the DRM panel instance for this device */
+	 
 	struct drm_panel panel;
-	/** @reset: reset GPIO line */
+	 
 	struct gpio_desc *reset;
-	/** @enable: enable GPIO line */
+	 
 	struct gpio_desc *enable;
-	/** @reg_vdd: VDD supply regulator for panel logic */
+	 
 	struct regulator *reg_vdd;
-	/** @reg_elvdd: ELVDD supply regulator for panel display */
+	 
 	struct regulator *reg_elvdd;
-	/** @dsi_dev: DSI child device (panel) */
+	 
 	struct mipi_dsi_device *dsi_dev;
-	/** @bl_dev: pseudo-backlight device for oled panel */
+	 
 	struct backlight_device *bl_dev;
-	/** @panel_info: struct containing panel timing and info */
+	 
 	const struct d53e6ea8966_panel_info *panel_info;
 };
 
@@ -86,7 +83,7 @@ static inline struct d53e6ea8966 *to_d53e6ea8966(struct drm_panel *panel)
 	return container_of(panel, struct d53e6ea8966, panel);
 }
 
-/* Table of gamma values provided in datasheet */
+ 
 static u8 ams495qa01_gamma[NUM_GAMMA_LEVELS][GAMMA_TABLE_COUNT] = {
 	{0x01, 0x79, 0x78, 0x8d, 0xd9, 0xdf, 0xd5, 0xcb, 0xcf, 0xc5,
 	 0xe5, 0xe0, 0xe4, 0xdc, 0xb8, 0xd4, 0xfa, 0xed, 0xe6, 0x2f,
@@ -138,10 +135,7 @@ static u8 ams495qa01_gamma[NUM_GAMMA_LEVELS][GAMMA_TABLE_COUNT] = {
 	 0x00, 0x2f},
 };
 
-/*
- * Table of elvss values provided in datasheet and corresponds to
- * gamma values.
- */
+ 
 static u8 ams495qa01_elvss[NUM_GAMMA_LEVELS] = {
 	0x15, 0x15, 0x15, 0x15, 0x15, 0x15, 0x15, 0x15, 0x15, 0x15,
 	0x15, 0x15, 0x14, 0x14, 0x13, 0x12,
@@ -155,7 +149,7 @@ static int ams495qa01_update_gamma(struct mipi_dbi *dbi, int brightness)
 			     ARRAY_SIZE(ams495qa01_gamma[tmp]));
 	mipi_dbi_command(dbi, MCS_SET_GAMMA, 0x00);
 
-	/* Undocumented command */
+	 
 	mipi_dbi_command(dbi, 0x26, 0x00);
 
 	mipi_dbi_command(dbi, MCS_TEMP_SWIRE, ams495qa01_elvss[tmp]);
@@ -170,14 +164,14 @@ static void ams495qa01_panel_init(struct d53e6ea8966 *db)
 	mipi_dbi_command(dbi, MCS_PASSWORD_0, 0x5a, 0x5a);
 	mipi_dbi_command(dbi, MCS_PASSWORD_1, 0x5a, 0x5a);
 
-	/* Undocumented commands */
+	 
 	mipi_dbi_command(dbi, 0xb0, 0x02);
 	mipi_dbi_command(dbi, 0xf3, 0x3b);
 
 	mipi_dbi_command(dbi, MCS_ANALOG_PWR_CTL_0, 0x33, 0x42, 0x00, 0x08);
 	mipi_dbi_command(dbi, MCS_ANALOG_PWR_CTL_1, 0x00, 0x06, 0x26, 0x35, 0x03);
 
-	/* Undocumented commands */
+	 
 	mipi_dbi_command(dbi, 0xf6, 0x02);
 	mipi_dbi_command(dbi, 0xc6, 0x0b, 0x00, 0x00, 0x3c, 0x00, 0x22,
 			 0x00, 0x00, 0x00, 0x00);
@@ -190,7 +184,7 @@ static void ams495qa01_panel_init(struct d53e6ea8966 *db)
 			 0x67, 0x70, 0x88, 0x7a, 0x76, 0x05, 0x09,
 			 0x23, 0x23, 0x23);
 
-	/* Undocumented commands */
+	 
 	mipi_dbi_command(dbi, 0xb5, 0xff, 0xef, 0x35, 0x42, 0x0d, 0xd7,
 			 0xff, 0x07, 0xff, 0xff, 0xfd, 0x00, 0x01,
 			 0xff, 0x05, 0x12, 0x0f, 0xff, 0xff, 0xff,
@@ -206,7 +200,7 @@ static int d53e6ea8966_prepare(struct drm_panel *panel)
 	struct d53e6ea8966 *db = to_d53e6ea8966(panel);
 	int ret;
 
-	/* Power up */
+	 
 	ret = regulator_enable(db->reg_vdd);
 	if (ret) {
 		dev_err(db->dev, "failed to enable vdd regulator: %d\n", ret);
@@ -223,13 +217,13 @@ static int d53e6ea8966_prepare(struct drm_panel *panel)
 		}
 	}
 
-	/* Enable */
+	 
 	if (db->enable)
 		gpiod_set_value_cansleep(db->enable, 1);
 
 	msleep(50);
 
-	/* Reset */
+	 
 	gpiod_set_value_cansleep(db->reset, 1);
 	usleep_range(1000, 5000);
 	gpiod_set_value_cansleep(db->reset, 0);
@@ -455,7 +449,7 @@ static void d53e6ea8966_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode ams495qa01_modes[] = {
-	{ /* 60hz */
+	{  
 		.clock = 33500,
 		.hdisplay = 960,
 		.hsync_start = 960 + 10,
@@ -468,7 +462,7 @@ static const struct drm_display_mode ams495qa01_modes[] = {
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 		.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
 		},
-	{ /* 50hz */
+	{  
 		.clock = 27800,
 		.hdisplay = 960,
 		.hsync_start = 960 + 10,
@@ -495,13 +489,13 @@ static const struct d53e6ea8966_panel_info ams495qa01_info = {
 
 static const struct of_device_id d53e6ea8966_match[] = {
 	{ .compatible = "samsung,ams495qa01", .data = &ams495qa01_info },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, d53e6ea8966_match);
 
 static const struct spi_device_id d53e6ea8966_ids[] = {
 	{ "ams495qa01", 0 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(spi, d53e6ea8966_ids);
 

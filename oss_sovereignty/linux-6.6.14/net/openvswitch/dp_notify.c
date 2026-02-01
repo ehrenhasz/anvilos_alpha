@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2012 Nicira, Inc.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <net/genetlink.h>
@@ -70,10 +68,10 @@ static int dp_device_event(struct notifier_block *unused, unsigned long event,
 		return NOTIFY_DONE;
 
 	if (event == NETDEV_UNREGISTER) {
-		/* upper_dev_unlink and decrement promisc immediately */
+		 
 		ovs_netdev_detach_dev(vport);
 
-		/* schedule vport destroy, dev_put and genl notification */
+		 
 		ovs_net = net_generic(dev_net(dev), ovs_net_id);
 		queue_work(system_wq, &ovs_net->dp_notify_work);
 	}

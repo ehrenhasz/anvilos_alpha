@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7915_TESTMODE_H
 #define __MT7915_TESTMODE_H
@@ -28,7 +28,7 @@ struct mt7915_tm_slot_time {
 
 struct mt7915_tm_clean_txq {
 	bool sta_pause;
-	u8 wcid;	/* 256 sta */
+	u8 wcid;	 
 	u8 band;
 	u8 rsv;
 };

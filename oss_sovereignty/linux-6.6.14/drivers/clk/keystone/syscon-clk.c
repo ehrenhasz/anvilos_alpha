@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/kernel.h>
@@ -171,7 +169,7 @@ static const struct ti_syscon_gate_clk_data am654_clk_data[] = {
 	TI_SYSCON_CLK_GATE("ehrpwm_tbclk3", 0xc, 0),
 	TI_SYSCON_CLK_GATE("ehrpwm_tbclk4", 0x10, 0),
 	TI_SYSCON_CLK_GATE("ehrpwm_tbclk5", 0x14, 0),
-	{ /* Sentinel */ },
+	{   },
 };
 
 static const struct ti_syscon_gate_clk_data am64_clk_data[] = {
@@ -184,19 +182,19 @@ static const struct ti_syscon_gate_clk_data am64_clk_data[] = {
 	TI_SYSCON_CLK_GATE("epwm_tbclk6", 0x0, 6),
 	TI_SYSCON_CLK_GATE("epwm_tbclk7", 0x0, 7),
 	TI_SYSCON_CLK_GATE("epwm_tbclk8", 0x0, 8),
-	{ /* Sentinel */ },
+	{   },
 };
 
 static const struct ti_syscon_gate_clk_data am62_clk_data[] = {
 	TI_SYSCON_CLK_GATE("epwm_tbclk0", 0x0, 0),
 	TI_SYSCON_CLK_GATE("epwm_tbclk1", 0x0, 1),
 	TI_SYSCON_CLK_GATE("epwm_tbclk2", 0x0, 2),
-	{ /* Sentinel */ },
+	{   },
 };
 
 static const struct ti_syscon_gate_clk_data am62_audio_clk_data[] = {
 	TI_SYSCON_CLK_GATE("audio_refclk", 0x0, 15),
-	{ /* Sentinel */ },
+	{   },
 };
 
 static const struct of_device_id ti_syscon_gate_clk_ids[] = {

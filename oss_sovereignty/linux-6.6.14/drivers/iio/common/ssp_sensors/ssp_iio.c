@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
- */
+
+ 
 
 #include <linux/iio/common/ssp_sensors.h>
 #include <linux/iio/buffer.h>
@@ -10,21 +8,13 @@
 #include <linux/slab.h>
 #include "ssp_iio_sensor.h"
 
-/**
- * ssp_common_buffer_postenable() - generic postenable callback for ssp buffer
- *
- * @indio_dev:		iio device
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
 {
 	struct ssp_sensor_data *spd = iio_priv(indio_dev);
 	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
 
-	/* the allocation is made in post because scan size is known in this
-	 * moment
-	 * */
+	 
 	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_DMA);
 	if (!spd->buffer)
 		return -ENOMEM;
@@ -34,13 +24,7 @@ int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL_NS(ssp_common_buffer_postenable, IIO_SSP_SENSORS);
 
-/**
- * ssp_common_buffer_postdisable() - generic postdisable callback for ssp buffer
- *
- * @indio_dev:		iio device
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_common_buffer_postdisable(struct iio_dev *indio_dev)
 {
 	int ret;
@@ -57,16 +41,7 @@ int ssp_common_buffer_postdisable(struct iio_dev *indio_dev)
 }
 EXPORT_SYMBOL_NS(ssp_common_buffer_postdisable, IIO_SSP_SENSORS);
 
-/**
- * ssp_common_process_data() - Common process data callback for ssp sensors
- *
- * @indio_dev:		iio device
- * @buf:		source buffer
- * @len:		sensor data length
- * @timestamp:		system timestamp
- *
- * Returns 0 or negative value in case of error
- */
+ 
 int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
 			    unsigned int len, int64_t timestamp)
 {
@@ -77,9 +52,7 @@ int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
 	if (indio_dev->scan_bytes == 0)
 		return 0;
 
-	/*
-	 * it always sends full set of samples, remember about available masks
-	 */
+	 
 	memcpy(spd->buffer, buf, len);
 
 	if (indio_dev->scan_timestamp) {

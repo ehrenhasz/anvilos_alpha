@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015-2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/tcp.h>
 #include <linux/if_vlan.h>
@@ -142,9 +112,7 @@ mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 		sq->stats->csum_none++;
 }
 
-/* Returns the number of header bytes that we plan
- * to inline later in the transmit descriptor
- */
+ 
 static inline u16
 mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb, int *hopbyhop)
 {
@@ -305,7 +273,7 @@ static void mlx5e_sq_calc_wqe_attr(struct sk_buff *skb, const struct mlx5e_tx_at
 	u16 ds_cnt_inl = 0;
 	u16 ds_cnt_ids = 0;
 
-	/* Sync the calculation with MLX5E_MAX_TX_WQEBBS. */
+	 
 
 	if (attr->insz)
 		ds_cnt_ids = DIV_ROUND_UP(sizeof(struct mlx5_wqe_inline_seg) + attr->insz,
@@ -353,7 +321,7 @@ static void mlx5e_tx_flush(struct mlx5e_txqsq *sq)
 	struct mlx5e_tx_wqe *wqe;
 	u16 pi;
 
-	/* Must not be called when a MPWQE session is active but empty. */
+	 
 	mlx5e_tx_mpwqe_ensure_complete(sq);
 
 	pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
@@ -431,7 +399,7 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 
 	stats->xmit_more += xmit_more;
 
-	/* fill wqe */
+	 
 	wi   = &sq->db.wqe_info[pi];
 	cseg = &wqe->ctrl;
 	eseg = &wqe->eth;
@@ -443,9 +411,7 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 		u8 *start = eseg->inline_hdr.start;
 
 		if (unlikely(attr->hopbyhop)) {
-			/* remove the HBH header.
-			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
-			 */
+			 
 			if (skb_vlan_tag_present(skb)) {
 				mlx5e_insert_vlan(start, skb, ETH_HLEN + sizeof(*h6));
 				ihs += VLAN_HLEN;
@@ -457,12 +423,12 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 				h6 = (struct ipv6hdr *)(start + ETH_HLEN);
 			}
 			h6->nexthdr = IPPROTO_TCP;
-			/* Copy the TCP header after the IPv6 one */
+			 
 			memcpy(h6 + 1,
 			       skb->data + ETH_HLEN + sizeof(*h6) +
 					sizeof(struct hop_jumbo_hdr),
 			       tcp_hdrlen(skb));
-			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+			 
 		} else if (skb_vlan_tag_present(skb)) {
 			mlx5e_insert_vlan(start, skb, ihs);
 			ihs += VLAN_HLEN;
@@ -511,7 +477,7 @@ static bool mlx5e_tx_mpwqe_same_eseg(struct mlx5e_txqsq *sq, struct mlx5_wqe_eth
 {
 	struct mlx5e_tx_mpwqe *session = &sq->mpwqe;
 
-	/* Assumes the session is already running and has at least one packet. */
+	 
 	return !memcmp(&session->wqe->eth, eseg, MLX5E_ACCEL_ESEG_LEN);
 }
 
@@ -622,13 +588,13 @@ mlx5e_sq_xmit_mpwqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 	mlx5e_tx_skb_update_hwts_flags(skb);
 
 	if (unlikely(mlx5e_tx_mpwqe_is_full(&sq->mpwqe, sq->max_sq_mpw_wqebbs))) {
-		/* Might stop the queue and affect the retval of __netdev_tx_sent_queue. */
+		 
 		cseg = mlx5e_tx_mpwqe_session_complete(sq);
 
 		if (__netdev_tx_sent_queue(sq->txq, txd.len, xmit_more))
 			mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, cseg);
 	} else if (__netdev_tx_sent_queue(sq->txq, txd.len, xmit_more)) {
-		/* Might stop the queue, but we were asked to ring the doorbell anyway. */
+		 
 		cseg = mlx5e_tx_mpwqe_session_complete(sq);
 
 		mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, cseg);
@@ -645,7 +611,7 @@ err_unmap:
 
 void mlx5e_tx_mpwqe_ensure_complete(struct mlx5e_txqsq *sq)
 {
-	/* Unlikely in non-MPWQE workloads; not important in MPWQE workloads. */
+	 
 	if (unlikely(mlx5e_tx_mpwqe_session_is_active(sq)))
 		mlx5e_tx_mpwqe_session_complete(sq);
 }
@@ -678,26 +644,15 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct mlx5e_txqsq *sq;
 	u16 pi;
 
-	/* All changes to txq2sq are performed in sync with mlx5e_xmit, when the
-	 * queue being changed is disabled, and smp_wmb guarantees that the
-	 * changes are visible before mlx5e_xmit tries to read from txq2sq. It
-	 * guarantees that the value of txq2sq[qid] doesn't change while
-	 * mlx5e_xmit is running on queue number qid. smb_wmb is paired with
-	 * HARD_TX_LOCK around ndo_start_xmit, which serves as an ACQUIRE.
-	 */
+	 
 	sq = priv->txq2sq[skb_get_queue_mapping(skb)];
 	if (unlikely(!sq)) {
-		/* Two cases when sq can be NULL:
-		 * 1. The HTB node is registered, and mlx5e_select_queue
-		 * selected its queue ID, but the SQ itself is not yet created.
-		 * 2. HTB SQ creation failed. Similar to the previous case, but
-		 * the SQ won't be created.
-		 */
+		 
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
 
-	/* May send SKBs and WQEs. */
+	 
 	if (unlikely(!mlx5e_accel_tx_begin(dev, sq, skb, &accel)))
 		return NETDEV_TX_OK;
 
@@ -719,7 +674,7 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
 	pi = mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
 	wqe = MLX5E_TX_FETCH_WQE(sq, pi);
 
-	/* May update the WQE, but may not post other WQEs. */
+	 
 	mlx5e_accel_tx_finish(sq, wqe, &accel,
 			      (struct mlx5_wqe_inline_seg *)(wqe->data + wqe_attr.ds_cnt_inl));
 	mlx5e_txwqe_build_eseg(priv, sq, skb, &accel, &wqe->eth, attr.ihs);
@@ -806,12 +761,10 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
 	npkts = 0;
 	nbytes = 0;
 
-	/* sq->cc must be updated only after mlx5_cqwq_update_db_record(),
-	 * otherwise a cq overrun may occur
-	 */
+	 
 	sqcc = sq->cc;
 
-	/* avoid dirtying sq cache line every cqe */
+	 
 	dma_fifo_cc = sq->dma_fifo_cc;
 
 	i = 0;
@@ -872,7 +825,7 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
 
 	mlx5_cqwq_update_db_record(&cq->wq);
 
-	/* ensure cq space is freed before enabling more cqes */
+	 
 	wmb();
 
 	sq->dma_fifo_cc = dma_fifo_cc;
@@ -993,7 +946,7 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 
 	stats->xmit_more += xmit_more;
 
-	/* fill wqe */
+	 
 	wi       = &sq->db.wqe_info[pi];
 	cseg     = &wqe->ctrl;
 	datagram = &wqe->datagram;
@@ -1010,21 +963,19 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
 		if (unlikely(attr.hopbyhop)) {
 			struct ipv6hdr *h6;
 
-			/* remove the HBH header.
-			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
-			 */
+			 
 			unsafe_memcpy(eseg->inline_hdr.start, skb->data,
 				      ETH_HLEN + sizeof(*h6),
 				      MLX5_UNSAFE_MEMCPY_DISCLAIMER);
 			h6 = (struct ipv6hdr *)((char *)eseg->inline_hdr.start + ETH_HLEN);
 			h6->nexthdr = IPPROTO_TCP;
-			/* Copy the TCP header after the IPv6 one */
+			 
 			unsafe_memcpy(h6 + 1,
 				      skb->data + ETH_HLEN + sizeof(*h6) +
 						  sizeof(struct hop_jumbo_hdr),
 				      tcp_hdrlen(skb),
 				      MLX5_UNSAFE_MEMCPY_DISCLAIMER);
-			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+			 
 		} else {
 			unsafe_memcpy(eseg->inline_hdr.start, skb->data,
 				      attr.ihs,

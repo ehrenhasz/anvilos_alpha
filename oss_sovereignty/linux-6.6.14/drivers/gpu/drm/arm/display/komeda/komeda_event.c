@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2019 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <drm/drm_atomic.h>
 #include <drm/drm_print.h>
 
@@ -15,8 +11,7 @@ struct komeda_str {
 	u32 len;
 };
 
-/* return 0 on success,  < 0 on no space.
- */
+ 
 __printf(2, 3)
 static int komeda_sprintf(struct komeda_str *str, const char *fmt, ...)
 {
@@ -66,17 +61,17 @@ static void evt_str(struct komeda_str *str, u64 events)
 	evt_sprintf(str, events & KOMEDA_EVENT_URUN, "UNDERRUN|");
 	evt_sprintf(str, events & KOMEDA_EVENT_OVR, "OVERRUN|");
 
-	/* GLB error */
+	 
 	evt_sprintf(str, events & KOMEDA_ERR_MERR, "MERR|");
 	evt_sprintf(str, events & KOMEDA_ERR_FRAMETO, "FRAMETO|");
 
-	/* DOU error */
+	 
 	evt_sprintf(str, events & KOMEDA_ERR_DRIFTTO, "DRIFTTO|");
 	evt_sprintf(str, events & KOMEDA_ERR_FRAMETO, "FRAMETO|");
 	evt_sprintf(str, events & KOMEDA_ERR_TETO, "TETO|");
 	evt_sprintf(str, events & KOMEDA_ERR_CSCE, "CSCE|");
 
-	/* LPU errors or events */
+	 
 	evt_sprintf(str, events & KOMEDA_EVENT_IBSY, "IBSY|");
 	evt_sprintf(str, events & KOMEDA_EVENT_EMPTY, "EMPTY|");
 	evt_sprintf(str, events & KOMEDA_EVENT_FULL, "FULL|");
@@ -86,14 +81,14 @@ static void evt_str(struct komeda_str *str, u64 events)
 	evt_sprintf(str, events & KOMEDA_ERR_ACE2, "ACE2|");
 	evt_sprintf(str, events & KOMEDA_ERR_ACE3, "ACE3|");
 
-	/* LPU TBU errors*/
+	 
 	evt_sprintf(str, events & KOMEDA_ERR_TCF, "TCF|");
 	evt_sprintf(str, events & KOMEDA_ERR_TTNG, "TTNG|");
 	evt_sprintf(str, events & KOMEDA_ERR_TITR, "TITR|");
 	evt_sprintf(str, events & KOMEDA_ERR_TEMR, "TEMR|");
 	evt_sprintf(str, events & KOMEDA_ERR_TTF, "TTF|");
 
-	/* CU errors*/
+	 
 	evt_sprintf(str, events & KOMEDA_ERR_CPE, "COPROC|");
 	evt_sprintf(str, events & KOMEDA_ERR_ZME, "ZME|");
 	evt_sprintf(str, events & KOMEDA_ERR_CFGE, "CFGE|");
@@ -119,7 +114,7 @@ void komeda_print_events(struct komeda_events *evts, struct drm_device *dev)
 	u16 const err_verbosity = mdev->err_verbosity;
 	u64 evts_mask = evts->global | evts->pipes[0] | evts->pipes[1];
 
-	/* reduce the same msg print, only print the first evt for one frame */
+	 
 	if (evts->global || is_new_frame(evts))
 		en_print = true;
 	if (!(err_verbosity & KOMEDA_DEV_PRINT_DISABLE_RATELIMIT) && !en_print)

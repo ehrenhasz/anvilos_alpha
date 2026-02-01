@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * x86_pkg_temp_thermal driver
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
@@ -23,27 +20,14 @@
 
 #include "thermal_interrupt.h"
 
-/*
-* Rate control delay: Idea is to introduce denounce effect
-* This should be long enough to avoid reduce events, when
-* threshold is set to a temperature, which is constantly
-* violated, but at the short enough to take any action.
-* The action can be remove threshold or change it to next
-* interesting setting. Based on experiments, in around
-* every 5 seconds under load will give us a significant
-* temperature change.
-*/
+ 
 #define PKG_TEMP_THERMAL_NOTIFY_DELAY	5000
 static int notify_delay_ms = PKG_TEMP_THERMAL_NOTIFY_DELAY;
 module_param(notify_delay_ms, int, 0644);
 MODULE_PARM_DESC(notify_delay_ms,
 	"User space notification delay in milli seconds.");
 
-/* Number of trip points in thermal zone. Currently it can't
-* be more than 2. MSR can allow setting and getting notifications
-* for only 2 thresholds. This define enforces this, if there
-* is some wrong values returned by cpuid for number of thresholds.
-*/
+ 
 #define MAX_NUMBER_OF_TRIPS	2
 
 struct zone_device {
@@ -61,19 +45,19 @@ static struct thermal_zone_params pkg_temp_tz_params = {
 	.no_hwmon	= true,
 };
 
-/* Keep track of how many zone pointers we allocated in init() */
+ 
 static int max_id __read_mostly;
-/* Array of zone pointers */
+ 
 static struct zone_device **zones;
-/* Serializes interrupt notification, work and hotplug */
+ 
 static DEFINE_RAW_SPINLOCK(pkg_temp_lock);
-/* Protects zone operation in the work function against hotplug removal */
+ 
 static DEFINE_MUTEX(thermal_zone_mutex);
 
-/* The dynamically assigned cpu hotplug state for module_exit() */
+ 
 static enum cpuhp_state pkg_thermal_hp_state __read_mostly;
 
-/* Debug counters to show using debugfs */
+ 
 static struct dentry *debugfs;
 static unsigned int pkg_interrupt_cnt;
 static unsigned int pkg_work_cnt;
@@ -88,14 +72,7 @@ static void pkg_temp_debugfs_init(void)
 			   &pkg_work_cnt);
 }
 
-/*
- * Protection:
- *
- * - cpu hotplug: Read serialized by cpu hotplug lock
- *		  Write must hold pkg_temp_lock
- *
- * - Other callsites: Must hold pkg_temp_lock
- */
+ 
 static struct zone_device *pkg_temp_thermal_get_dev(unsigned int cpu)
 {
 	int id = topology_logical_die_id(cpu);
@@ -151,10 +128,7 @@ sys_set_trip_temp(struct thermal_zone_device *tzd, int trip, int temp)
 		intr = THERM_INT_THRESHOLD0_ENABLE;
 	}
 	l &= ~mask;
-	/*
-	* When users space sets a trip temperature == 0, which is indication
-	* that, it is no longer interested in receiving notifications.
-	*/
+	 
 	if (!temp) {
 		l &= ~intr;
 	} else {
@@ -166,7 +140,7 @@ sys_set_trip_temp(struct thermal_zone_device *tzd, int trip, int temp)
 			l, h);
 }
 
-/* Thermal zone callback registry */
+ 
 static struct thermal_zone_device_ops tzone_ops = {
 	.get_temp = sys_get_curr_temp,
 	.set_trip_temp = sys_set_trip_temp,
@@ -177,14 +151,14 @@ static bool pkg_thermal_rate_control(void)
 	return true;
 }
 
-/* Enable threshold interrupt on local package/cpu */
+ 
 static inline void enable_pkg_thres_interrupt(void)
 {
 	u8 thres_0, thres_1;
 	u32 l, h;
 
 	rdmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT, l, h);
-	/* only enable/disable if it had valid threshold value */
+	 
 	thres_0 = (l & THERM_MASK_THRESHOLD0) >> THERM_SHIFT_THRESHOLD0;
 	thres_1 = (l & THERM_MASK_THRESHOLD1) >> THERM_SHIFT_THRESHOLD1;
 	if (thres_0)
@@ -194,7 +168,7 @@ static inline void enable_pkg_thres_interrupt(void)
 	wrmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT, l, h);
 }
 
-/* Disable threshold interrupt on local package/cpu */
+ 
 static inline void disable_pkg_thres_interrupt(void)
 {
 	u32 l, h;
@@ -229,10 +203,7 @@ static void pkg_temp_thermal_threshold_work_fn(struct work_struct *work)
 	enable_pkg_thres_interrupt();
 	raw_spin_unlock_irq(&pkg_temp_lock);
 
-	/*
-	 * If tzone is not NULL, then thermal_zone_mutex will prevent the
-	 * concurrent removal in the cpu offline callback.
-	 */
+	 
 	if (tzone)
 		thermal_zone_device_update(tzone, THERMAL_EVENT_UNSPECIFIED);
 
@@ -257,7 +228,7 @@ static int pkg_thermal_notify(u64 msr_val)
 
 	disable_pkg_thres_interrupt();
 
-	/* Work is per package, so scheduling it once is enough. */
+	 
 	zonedev = pkg_temp_thermal_get_dev(cpu);
 	if (zonedev && !zonedev->work_scheduled) {
 		zonedev->work_scheduled = true;
@@ -356,7 +327,7 @@ static int pkg_temp_thermal_device_add(unsigned int cpu)
 	if (err)
 		goto out_unregister_tz;
 
-	/* Store MSR value for package thermal interrupt, to restore at exit */
+	 
 	rdmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT, zonedev->msr_pkg_therm_low,
 	      zonedev->msr_pkg_therm_high);
 
@@ -388,19 +359,11 @@ static int pkg_thermal_cpu_offline(unsigned int cpu)
 	target = cpumask_any_but(&zonedev->cpumask, cpu);
 	cpumask_clear_cpu(cpu, &zonedev->cpumask);
 	lastcpu = target >= nr_cpu_ids;
-	/*
-	 * Remove the sysfs files, if this is the last cpu in the package
-	 * before doing further cleanups.
-	 */
+	 
 	if (lastcpu) {
 		struct thermal_zone_device *tzone = zonedev->tzone;
 
-		/*
-		 * We must protect against a work function calling
-		 * thermal_zone_update, after/while unregister. We null out
-		 * the pointer under the zone mutex, so the worker function
-		 * won't try to call.
-		 */
+		 
 		mutex_lock(&thermal_zone_mutex);
 		zonedev->tzone = NULL;
 		mutex_unlock(&thermal_zone_mutex);
@@ -408,55 +371,35 @@ static int pkg_thermal_cpu_offline(unsigned int cpu)
 		thermal_zone_device_unregister(tzone);
 	}
 
-	/* Protect against work and interrupts */
+	 
 	raw_spin_lock_irq(&pkg_temp_lock);
 
-	/*
-	 * Check whether this cpu was the current target and store the new
-	 * one. When we drop the lock, then the interrupt notify function
-	 * will see the new target.
-	 */
+	 
 	was_target = zonedev->cpu == cpu;
 	zonedev->cpu = target;
 
-	/*
-	 * If this is the last CPU in the package remove the package
-	 * reference from the array and restore the interrupt MSR. When we
-	 * drop the lock neither the interrupt notify function nor the
-	 * worker will see the package anymore.
-	 */
+	 
 	if (lastcpu) {
 		zones[topology_logical_die_id(cpu)] = NULL;
-		/* After this point nothing touches the MSR anymore. */
+		 
 		wrmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT,
 		      zonedev->msr_pkg_therm_low, zonedev->msr_pkg_therm_high);
 	}
 
-	/*
-	 * Check whether there is work scheduled and whether the work is
-	 * targeted at the outgoing CPU.
-	 */
+	 
 	if (zonedev->work_scheduled && was_target) {
-		/*
-		 * To cancel the work we need to drop the lock, otherwise
-		 * we might deadlock if the work needs to be flushed.
-		 */
+		 
 		raw_spin_unlock_irq(&pkg_temp_lock);
 		cancel_delayed_work_sync(&zonedev->work);
 		raw_spin_lock_irq(&pkg_temp_lock);
-		/*
-		 * If this is not the last cpu in the package and the work
-		 * did not run after we dropped the lock above, then we
-		 * need to reschedule the work, otherwise the interrupt
-		 * stays disabled forever.
-		 */
+		 
 		if (!lastcpu && zonedev->work_scheduled)
 			pkg_thermal_schedule_work(target, &zonedev->work);
 	}
 
 	raw_spin_unlock_irq(&pkg_temp_lock);
 
-	/* Final cleanup if this is the last cpu */
+	 
 	if (lastcpu) {
 		kfree(zonedev->trips);
 		kfree(zonedev);
@@ -469,11 +412,11 @@ static int pkg_thermal_cpu_online(unsigned int cpu)
 	struct zone_device *zonedev = pkg_temp_thermal_get_dev(cpu);
 	struct cpuinfo_x86 *c = &cpu_data(cpu);
 
-	/* Paranoia check */
+	 
 	if (!cpu_has(c, X86_FEATURE_DTHERM) || !cpu_has(c, X86_FEATURE_PTS))
 		return -ENODEV;
 
-	/* If the package exists, nothing to do */
+	 
 	if (zonedev) {
 		cpumask_set_cpu(cpu, &zonedev->cpumask);
 		return 0;
@@ -505,13 +448,13 @@ static int __init pkg_temp_thermal_init(void)
 	if (ret < 0)
 		goto err;
 
-	/* Store the state for module exit */
+	 
 	pkg_thermal_hp_state = ret;
 
 	platform_thermal_package_notify = pkg_thermal_notify;
 	platform_thermal_package_rate_control = pkg_thermal_rate_control;
 
-	 /* Don't care if it fails */
+	  
 	pkg_temp_debugfs_init();
 	return 0;
 

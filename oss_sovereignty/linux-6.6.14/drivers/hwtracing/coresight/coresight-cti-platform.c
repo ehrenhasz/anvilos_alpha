@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, The Linaro Limited. All rights reserved.
- */
+
+ 
 #include <linux/coresight.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -14,15 +12,15 @@
 #include "coresight-cti.h"
 #include "coresight-priv.h"
 
-/* Number of CTI signals in the v8 architecturally defined connection */
+ 
 #define NR_V8PE_IN_SIGS		2
 #define NR_V8PE_OUT_SIGS	3
 #define NR_V8ETM_INOUT_SIGS	4
 
-/* CTI device tree trigger connection node keyword */
+ 
 #define CTI_DT_CONNS		"trig-conns"
 
-/* CTI device tree connection property keywords */
+ 
 #define CTI_DT_V8ARCH_COMPAT	"arm,coresight-cti-v8-arch"
 #define CTI_DT_CSDEV_ASSOC	"arm,cs-dev-assoc"
 #define CTI_DT_TRIGIN_SIGS	"arm,trig-in-sigs"
@@ -34,11 +32,7 @@
 #define CTI_DT_CTM_ID		"arm,cti-ctm-id"
 
 #ifdef CONFIG_OF
-/*
- * CTI can be bound to a CPU, or a system device.
- * CPU can be declared at the device top level or in a connections node
- * so need to check relative to node not device.
- */
+ 
 static int of_cti_get_cpu_at_node(const struct device_node *node)
 {
 	int cpu;
@@ -48,13 +42,13 @@ static int of_cti_get_cpu_at_node(const struct device_node *node)
 		return -1;
 
 	dn = of_parse_phandle(node, "cpu", 0);
-	/* CTI affinity defaults to no cpu */
+	 
 	if (!dn)
 		return -1;
 	cpu = of_cpu_node_to_id(dn);
 	of_node_put(dn);
 
-	/* No Affinity  if no cpu nodes are found */
+	 
 	return (cpu < 0) ? -1 : cpu;
 }
 
@@ -66,11 +60,7 @@ static int of_cti_get_cpu_at_node(const struct device_node *node)
 
 #endif
 
-/*
- * CTI can be bound to a CPU, or a system device.
- * CPU can be declared at the device top level or in a connections node
- * so need to check relative to node not device.
- */
+ 
 static int cti_plat_get_cpu_at_node(struct fwnode_handle *fwnode)
 {
 	if (is_of_node(fwnode))
@@ -85,11 +75,7 @@ const char *cti_plat_get_node_name(struct fwnode_handle *fwnode)
 	return "unknown";
 }
 
-/*
- * Extract a name from the fwnode.
- * If the device associated with the node is a coresight_device, then return
- * that name and the coresight_device pointer, otherwise return the node name.
- */
+ 
 static const char *
 cti_plat_get_csdev_or_node_name(struct fwnode_handle *fwnode,
 				struct coresight_device **csdev)
@@ -124,40 +110,28 @@ static int cti_plat_create_v8_etm_connection(struct device *dev,
 	if (IS_ERR_OR_NULL(root_fwnode))
 		return -EINVAL;
 
-	/* Can optionally have an etm node - return if not  */
+	 
 	cs_fwnode = fwnode_find_reference(root_fwnode, CTI_DT_CSDEV_ASSOC, 0);
 	if (IS_ERR(cs_fwnode))
 		return 0;
 
-	/* allocate memory */
+	 
 	tc = cti_allocate_trig_con(dev, NR_V8ETM_INOUT_SIGS,
 				   NR_V8ETM_INOUT_SIGS);
 	if (!tc)
 		goto create_v8_etm_out;
 
-	/* build connection data */
-	tc->con_in->used_mask = 0xF0; /* sigs <4,5,6,7> */
-	tc->con_out->used_mask = 0xF0; /* sigs <4,5,6,7> */
+	 
+	tc->con_in->used_mask = 0xF0;  
+	tc->con_out->used_mask = 0xF0;  
 
-	/*
-	 * The EXTOUT type signals from the ETM are connected to a set of input
-	 * triggers on the CTI, the EXTIN being connected to output triggers.
-	 */
+	 
 	for (i = 0; i < NR_V8ETM_INOUT_SIGS; i++) {
 		tc->con_in->sig_types[i] = ETM_EXTOUT;
 		tc->con_out->sig_types[i] = ETM_EXTIN;
 	}
 
-	/*
-	 * We look to see if the ETM coresight device associated with this
-	 * handle has been registered with the system - i.e. probed before
-	 * this CTI. If so csdev will be non NULL and we can use the device
-	 * name and pass the csdev to the connection entry function where
-	 * the association will be recorded.
-	 * If not, then simply record the name in the connection data, the
-	 * probing of the ETM will call into the CTI driver API to update the
-	 * association then.
-	 */
+	 
 	assoc_name = cti_plat_get_csdev_or_node_name(cs_fwnode, &csdev);
 	ret = cti_add_connection_entry(dev, drvdata, tc, csdev, assoc_name);
 
@@ -166,10 +140,7 @@ create_v8_etm_out:
 	return ret;
 }
 
-/*
- * Create an architecturally defined v8 connection
- * must have a cpu, can have an ETM.
- */
+ 
 static int cti_plat_create_v8_connections(struct device *dev,
 					  struct cti_drvdata *drvdata)
 {
@@ -179,7 +150,7 @@ static int cti_plat_create_v8_connections(struct device *dev,
 	char cpu_name_str[16];
 	int ret = -ENOMEM;
 
-	/* Must have a cpu node */
+	 
 	cpuid = cti_plat_get_cpu_at_node(dev_fwnode(dev));
 	if (cpuid < 0) {
 		dev_warn(dev,
@@ -188,16 +159,16 @@ static int cti_plat_create_v8_connections(struct device *dev,
 	}
 	cti_dev->cpu = cpuid;
 
-	/* Allocate the v8 cpu connection memory */
+	 
 	tc = cti_allocate_trig_con(dev, NR_V8PE_IN_SIGS, NR_V8PE_OUT_SIGS);
 	if (!tc)
 		goto of_create_v8_out;
 
-	/* Set the v8 PE CTI connection data */
-	tc->con_in->used_mask = 0x3; /* sigs <0 1> */
+	 
+	tc->con_in->used_mask = 0x3;  
 	tc->con_in->sig_types[0] = PE_DBGTRIGGER;
 	tc->con_in->sig_types[1] = PE_PMUIRQ;
-	tc->con_out->used_mask = 0x7; /* sigs <0 1 2 > */
+	tc->con_out->used_mask = 0x7;  
 	tc->con_out->sig_types[0] = PE_EDBGREQ;
 	tc->con_out->sig_types[1] = PE_DBGRESTART;
 	tc->con_out->sig_types[2] = PE_CTIIRQ;
@@ -207,12 +178,12 @@ static int cti_plat_create_v8_connections(struct device *dev,
 	if (ret)
 		goto of_create_v8_out;
 
-	/* Create the v8 ETM associated connection */
+	 
 	ret = cti_plat_create_v8_etm_connection(dev, drvdata);
 	if (ret)
 		goto of_create_v8_out;
 
-	/* filter pe_edbgreq - PE trigout sig <0> */
+	 
 	drvdata->config.trig_out_filter |= 0x1;
 
 of_create_v8_out:
@@ -255,7 +226,7 @@ static int cti_plat_read_trig_group(struct cti_trig_grp *tgrp,
 					     values, tgrp->nr_sigs);
 
 	if (!err) {
-		/* set the signal usage mask */
+		 
 		for (idx = 0; idx < tgrp->nr_sigs; idx++)
 			tgrp->used_mask |= BIT(values[idx]);
 	}
@@ -271,17 +242,17 @@ static int cti_plat_read_trig_types(struct cti_trig_grp *tgrp,
 	int items, err = 0, nr_sigs;
 	u32 *values = NULL, i;
 
-	/* allocate an array according to number of signals in connection */
+	 
 	nr_sigs = tgrp->nr_sigs;
 	if (!nr_sigs)
 		return 0;
 
-	/* see if any types have been included in the device description */
+	 
 	items = cti_plat_count_sig_elements(fwnode, type_name);
 	if (items > nr_sigs)
 		return -EINVAL;
 
-	/* need an array to store the values iff there are any */
+	 
 	if (items) {
 		values = kcalloc(items, sizeof(u32), GFP_KERNEL);
 		if (!values)
@@ -293,10 +264,7 @@ static int cti_plat_read_trig_types(struct cti_trig_grp *tgrp,
 			goto read_trig_types_out;
 	}
 
-	/*
-	 * Match type id to signal index, 1st type to 1st index etc.
-	 * If fewer types than signals default remainder to GEN_IO.
-	 */
+	 
 	for (i = 0; i < nr_sigs; i++) {
 		if (i < items) {
 			tgrp->sig_types[i] =
@@ -348,7 +316,7 @@ static int cti_plat_create_connection(struct device *dev,
 	char cpu_name_str[16];
 	int nr_sigs_in, nr_sigs_out;
 
-	/* look to see how many in and out signals we have */
+	 
 	nr_sigs_in = cti_plat_count_sig_elements(fwnode, CTI_DT_TRIGIN_SIGS);
 	nr_sigs_out = cti_plat_count_sig_elements(fwnode, CTI_DT_TRIGOUT_SIGS);
 
@@ -360,7 +328,7 @@ static int cti_plat_create_connection(struct device *dev,
 	if (!tc)
 		return -ENOMEM;
 
-	/* look for the signals properties. */
+	 
 	err = cti_plat_read_trig_group(tc->con_in, fwnode,
 				       CTI_DT_TRIGIN_SIGS);
 	if (err)
@@ -385,17 +353,17 @@ static int cti_plat_create_connection(struct device *dev,
 	if (err)
 		goto create_con_err;
 
-	/* read the connection name if set - may be overridden by later */
+	 
 	fwnode_property_read_string(fwnode, CTI_DT_CONN_NAME, &assoc_name);
 
-	/* associated cpu ? */
+	 
 	cpuid = cti_plat_get_cpu_at_node(fwnode);
 	if (cpuid >= 0) {
 		drvdata->ctidev.cpu = cpuid;
 		scnprintf(cpu_name_str, sizeof(cpu_name_str), "cpu%d", cpuid);
 		assoc_name = cpu_name_str;
 	} else {
-		/* associated device ? */
+		 
 		struct fwnode_handle *cs_fwnode = fwnode_find_reference(fwnode,
 									CTI_DT_CSDEV_ASSOC,
 									0);
@@ -405,7 +373,7 @@ static int cti_plat_create_connection(struct device *dev,
 			fwnode_handle_put(cs_fwnode);
 		}
 	}
-	/* set up a connection */
+	 
 	err = cti_add_connection_entry(dev, drvdata, tc, csdev, assoc_name);
 
 create_con_err:
@@ -434,16 +402,16 @@ static int cti_plat_create_impdef_connections(struct device *dev,
 	return rc;
 }
 
-/* get the hardware configuration & connection data. */
+ 
 static int cti_plat_get_hw_data(struct device *dev, struct cti_drvdata *drvdata)
 {
 	int rc = 0;
 	struct cti_device *cti_dev = &drvdata->ctidev;
 
-	/* get any CTM ID - defaults to 0 */
+	 
 	device_property_read_u32(dev, CTI_DT_CTM_ID, &cti_dev->ctm_id);
 
-	/* check for a v8 architectural CTI device */
+	 
 	if (cti_plat_check_v8_arch_compatible(dev))
 		rc = cti_plat_create_v8_connections(dev, drvdata);
 	else
@@ -451,7 +419,7 @@ static int cti_plat_get_hw_data(struct device *dev, struct cti_drvdata *drvdata)
 	if (rc)
 		return rc;
 
-	/* if no connections, just add a single default based on max IN-OUT */
+	 
 	if (cti_dev->nr_trig_con == 0)
 		rc = cti_add_default_connection(dev, drvdata);
 	return rc;
@@ -468,19 +436,14 @@ coresight_cti_get_platform_data(struct device *dev)
 	if (IS_ERR_OR_NULL(fwnode))
 		goto error;
 
-	/*
-	 * Alloc platform data but leave it zero init. CTI does not use the
-	 * same connection infrastructuree as trace path components but an
-	 * empty struct enables us to use the standard coresight component
-	 * registration code.
-	 */
+	 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata) {
 		ret = -ENOMEM;
 		goto error;
 	}
 
-	/* get some CTI specifics */
+	 
 	ret = cti_plat_get_hw_data(dev, drvdata);
 
 	if (!ret)

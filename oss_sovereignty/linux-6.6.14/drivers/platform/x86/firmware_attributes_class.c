@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* Firmware attributes class helper module */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/device/class.h>
@@ -19,7 +19,7 @@ int fw_attributes_class_get(struct class **fw_attr_class)
 	int err;
 
 	mutex_lock(&fw_attr_lock);
-	if (!fw_attr_inuse) { /*first time class is being used*/
+	if (!fw_attr_inuse) {  
 		err = class_register(&firmware_attributes_class);
 		if (err) {
 			mutex_unlock(&fw_attr_lock);
@@ -41,7 +41,7 @@ int fw_attributes_class_put(void)
 		return -EINVAL;
 	}
 	fw_attr_inuse--;
-	if (!fw_attr_inuse) /* No more consumers */
+	if (!fw_attr_inuse)  
 		class_unregister(&firmware_attributes_class);
 	mutex_unlock(&fw_attr_lock);
 	return 0;

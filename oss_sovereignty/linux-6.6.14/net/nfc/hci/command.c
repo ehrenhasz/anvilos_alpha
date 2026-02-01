@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "hci: %s: " fmt, __func__
 
@@ -23,19 +21,12 @@ static int nfc_hci_execute_cmd_async(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 	pr_debug("exec cmd async through pipe=%d, cmd=%d, plen=%zd\n", pipe,
 		 cmd, param_len);
 
-	/* TODO: Define hci cmd execution delay. Should it be the same
-	 * for all commands?
-	 */
+	 
 	return nfc_hci_hcp_message_tx(hdev, pipe, NFC_HCI_HCP_COMMAND, cmd,
 				      param, param_len, cb, cb_context, MAX_FWI);
 }
 
-/*
- * HCI command execution completion callback.
- * err will be a standard linux error (may be converted from HCI response)
- * skb contains the response data and must be disposed, or may be NULL if
- * an error occurred
- */
+ 
 static void nfc_hci_execute_cb(void *context, struct sk_buff *skb, int err)
 {
 	struct hcp_exec_waiter *hcp_ew = (struct hcp_exec_waiter *)context;
@@ -65,9 +56,7 @@ static int nfc_hci_execute_cmd(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 	pr_debug("exec cmd sync through pipe=%d, cmd=%d, plen=%zd\n", pipe,
 		 cmd, param_len);
 
-	/* TODO: Define hci cmd execution delay. Should it be the same
-	 * for all commands?
-	 */
+	 
 	hcp_ew.exec_result = nfc_hci_hcp_message_tx(hdev, pipe,
 						    NFC_HCI_HCP_COMMAND, cmd,
 						    param, param_len,
@@ -104,11 +93,7 @@ int nfc_hci_send_event(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 }
 EXPORT_SYMBOL(nfc_hci_send_event);
 
-/*
- * Execute an hci command sent to gate.
- * skb will contain response data if success. skb can be NULL if you are not
- * interested by the response.
- */
+ 
 int nfc_hci_send_cmd(struct nfc_hci_dev *hdev, u8 gate, u8 cmd,
 		     const u8 *param, size_t param_len, struct sk_buff **skb)
 {
@@ -143,13 +128,7 @@ int nfc_hci_set_param(struct nfc_hci_dev *hdev, u8 gate, u8 idx,
 	int r;
 	u8 *tmp;
 
-	/* TODO ELa: reg idx must be inserted before param, but we don't want
-	 * to ask the caller to do it to keep a simpler API.
-	 * For now, just create a new temporary param buffer. This is far from
-	 * optimal though, and the plan is to modify APIs to pass idx down to
-	 * nfc_hci_hcp_message_tx where the frame is actually built, thereby
-	 * eliminating the need for the temp allocation-copy here.
-	 */
+	 
 
 	pr_debug("idx=%d to gate %d\n", idx, gate);
 
@@ -189,10 +168,7 @@ static int nfc_hci_open_pipe(struct nfc_hci_dev *hdev, u8 pipe)
 	r = nfc_hci_execute_cmd(hdev, pipe, NFC_HCI_ANY_OPEN_PIPE,
 				NULL, 0, &skb);
 	if (r == 0) {
-		/* dest host other than host controller will send
-		 * number of pipes already open on this gate before
-		 * execution. The number can be found in skb->data[0]
-		 */
+		 
 		kfree_skb(skb);
 	}
 
@@ -245,8 +221,7 @@ static int nfc_hci_clear_all_pipes(struct nfc_hci_dev *hdev)
 	u8 param[2];
 	size_t param_len = 2;
 
-	/* TODO: Find out what the identity reference data is
-	 * and fill param with it. HCI spec 6.1.3.5 */
+	 
 
 	if (test_bit(NFC_HCI_QUIRK_SHORT_CLEAR, &hdev->quirks))
 		param_len = 0;
@@ -329,8 +304,7 @@ open_pipe:
 	if (r < 0) {
 		if (pipe_created)
 			if (nfc_hci_delete_pipe(hdev, pipe) < 0) {
-				/* TODO: Cannot clean by deleting pipe...
-				 * -> inconsistent state */
+				 
 			}
 		return r;
 	}

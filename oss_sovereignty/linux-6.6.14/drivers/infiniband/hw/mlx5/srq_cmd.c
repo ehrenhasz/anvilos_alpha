@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mlx5/driver.h>
@@ -668,18 +666,14 @@ int mlx5_cmd_destroy_srq(struct mlx5_ib_dev *dev, struct mlx5_core_srq *srq)
 	struct mlx5_core_srq *tmp;
 	int err;
 
-	/* Delete entry, but leave index occupied */
+	 
 	tmp = xa_cmpxchg_irq(&table->array, srq->srqn, srq, XA_ZERO_ENTRY, 0);
 	if (WARN_ON(tmp != srq))
 		return xa_err(tmp) ?: -EINVAL;
 
 	err = destroy_srq_split(dev, srq);
 	if (err) {
-		/*
-		 * We don't need to check returned result for an error,
-		 * because  we are storing in pre-allocated space xarray
-		 * entry and it can't fail at this stage.
-		 */
+		 
 		xa_cmpxchg_irq(&table->array, srq->srqn, XA_ZERO_ENTRY, srq, 0);
 		return err;
 	}

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/atmmpc.h>
 #include <linux/slab.h>
@@ -7,14 +7,11 @@
 #include "mpoa_caches.h"
 #include "mpc.h"
 
-/*
- * mpoa_caches.c: Implementation of ingress and egress cache
- * handling functions
- */
+ 
 
 #if 0
 #define dprintk(format, args...)					\
-	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
+	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)   
 #else
 #define dprintk(format, args...)					\
 	do { if (0)							\
@@ -24,7 +21,7 @@
 
 #if 0
 #define ddprintk(format, args...)					\
-	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
+	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)   
 #else
 #define ddprintk(format, args...)					\
 	do { if (0)							\
@@ -184,9 +181,7 @@ static void in_cache_put(in_cache_entry *entry)
 	}
 }
 
-/*
- * This should be called with write lock on
- */
+ 
 static void in_cache_remove_entry(in_cache_entry *entry,
 				  struct mpoa_client *client)
 {
@@ -209,7 +204,7 @@ static void in_cache_remove_entry(in_cache_entry *entry,
 		msg_to_mpoad(&msg, client);
 	}
 
-	/* Check if the egress side still uses this VCC */
+	 
 	if (vcc != NULL) {
 		eg_cache_entry *eg_entry = client->eg_ops->get_by_vcc(vcc,
 								      client);
@@ -221,8 +216,7 @@ static void in_cache_remove_entry(in_cache_entry *entry,
 	}
 }
 
-/* Call this every MPC-p2 seconds... Not exactly correct solution,
-   but an easy one... */
+ 
 static void clear_count_and_expired(struct mpoa_client *client)
 {
 	in_cache_entry *entry, *next_entry;
@@ -245,7 +239,7 @@ static void clear_count_and_expired(struct mpoa_client *client)
 	write_unlock_bh(&client->ingress_lock);
 }
 
-/* Call this every MPC-p4 seconds. */
+ 
 static void check_resolving_entries(struct mpoa_client *client)
 {
 
@@ -263,22 +257,19 @@ static void check_resolving_entries(struct mpoa_client *client)
 
 			if ((now - entry->hold_down)
 					< client->parameters.mpc_p6) {
-				entry = entry->next;	/* Entry in hold down */
+				entry = entry->next;	 
 				continue;
 			}
 			if ((now - entry->reply_wait) > entry->retry_time) {
 				entry->retry_time = MPC_C1 * (entry->retry_time);
-				/*
-				 * Retry time maximum exceeded,
-				 * put entry in hold down.
-				 */
+				 
 				if (entry->retry_time > client->parameters.mpc_p5) {
 					entry->hold_down = ktime_get_seconds();
 					entry->retry_time = client->parameters.mpc_p4;
 					entry = entry->next;
 					continue;
 				}
-				/* Ask daemon to send a resolution request. */
+				 
 				memset(&entry->hold_down, 0, sizeof(time64_t));
 				msg.type = SND_MPOA_RES_RTRY;
 				memcpy(msg.MPS_ctrl, client->mps_ctrl_addr, ATM_ESA_LEN);
@@ -295,7 +286,7 @@ static void check_resolving_entries(struct mpoa_client *client)
 	read_unlock_bh(&client->ingress_lock);
 }
 
-/* Call this every MPC-p5 seconds. */
+ 
 static void refresh_entries(struct mpoa_client *client)
 {
 	time64_t now;
@@ -349,7 +340,7 @@ static eg_cache_entry *eg_cache_get_by_cache_id(__be32 cache_id,
 	return NULL;
 }
 
-/* This can be called from any context since it saves CPU flags */
+ 
 static eg_cache_entry *eg_cache_get_by_tag(__be32 tag, struct mpoa_client *mpc)
 {
 	unsigned long flags;
@@ -370,7 +361,7 @@ static eg_cache_entry *eg_cache_get_by_tag(__be32 tag, struct mpoa_client *mpc)
 	return NULL;
 }
 
-/* This can be called from any context since it saves CPU flags */
+ 
 static eg_cache_entry *eg_cache_get_by_vcc(struct atm_vcc *vcc,
 					   struct mpoa_client *mpc)
 {
@@ -419,9 +410,7 @@ static void eg_cache_put(eg_cache_entry *entry)
 	}
 }
 
-/*
- * This should be called with write lock on
- */
+ 
 static void eg_cache_remove_entry(eg_cache_entry *entry,
 				  struct mpoa_client *client)
 {
@@ -442,7 +431,7 @@ static void eg_cache_remove_entry(eg_cache_entry *entry,
 		msg_to_mpoad(&msg, client);
 	}
 
-	/* Check if the ingress side still uses this VCC */
+	 
 	if (vcc != NULL) {
 		in_cache_entry *in_entry = client->in_ops->get_by_vcc(vcc, client);
 		if (in_entry != NULL) {
